@@ -37,9 +37,6 @@ let transl_module =
   ref((fun _cc _rootpath _modl -> assert false) :
       module_coercion -> Path.t option -> module_expr -> lambda)
 
-let transl_object =
-  ref (fun _id _s _cl -> assert false :
-       Ident.t -> string list -> class_expr -> lambda)
 
 (* Compile an exception/extension definition *)
 
@@ -722,17 +719,7 @@ and transl_exp0 e =
       let args =
          List.map (function _, Some x -> x | _ -> assert false) args in
       let argl = transl_list args in
-      let public_send = p.prim_name = "%send"
-        || not false (*!Clflags.native_code*) && p.prim_name = "%sendcache"in
-      if public_send || p.prim_name = "%sendself" then
-        let kind = if public_send then Public None else Self in
-        let obj = List.hd argl in
-        wrap (Lsend (kind, List.nth argl 1, obj, [], e.exp_loc))
-      else if p.prim_name = "%sendcache" then
-        match argl with [obj; meth; cache; pos] ->
-          wrap (Lsend(Cached, meth, obj, [cache; pos], e.exp_loc))
-        | _ -> assert false
-      else if p.prim_name = "%raise_with_backtrace" then begin
+      if p.prim_name = "%raise_with_backtrace" then begin
         let texn1 = List.hd args (* Should not fail by typing *) in
         let texn2,bt = match argl with
           | [a;b] -> a,b
@@ -919,28 +906,9 @@ and transl_exp0 e =
   | Texp_for(param, _, low, high, dir, body) ->
       Lfor(param, transl_exp low, transl_exp high, dir,
            event_before body (transl_exp body))
-#if 1
-  | Texp_send(expr,met,_) -> 
+  | Texp_send(expr,Tmeth_name nm ,_) -> 
     let obj = transl_exp expr in   
-    begin match met with 
-    | Tmeth_name nm -> 
-      Lsend(Public(Some nm),Lambda.lambda_unit,obj,[],e.exp_loc)
-    | _ -> assert false    
-    end
-#else
-  | Texp_send(_, _, Some exp) -> transl_exp exp
-  | Texp_send(expr, met, None) ->
-      let obj = transl_exp expr in
-      let lam =
-        match met with
-          Tmeth_val id -> Lsend (Self, Lvar id, obj, [], e.exp_loc)
-        | Tmeth_name nm ->
-            let (tag, cache) = Translobj.meth obj nm in
-            let kind = if cache = [] then Public (Some nm) else Cached in
-            Lsend (kind, tag, obj, cache, e.exp_loc)
-      in
-      event_after e lam
-#end      
+    Lsend( nm,obj,e.exp_loc)
   | Texp_new _ 
   | Texp_instvar _
   | Texp_setinstvar _
@@ -1060,8 +1028,7 @@ and transl_apply ?(should_be_tailcall=false) ?(inlined = Default_inline)
       ?(specialised = Default_specialise) lam sargs loc =
   let lapply funct args =
     match funct with
-      Lsend(k, lmet, lobj, largs, loc) ->
-        Lsend(k, lmet, lobj, largs @ args, loc)
+    (** Attention: This may not be what we need to change the application arity*)
     | Lapply ap ->
         Lapply {ap with ap_args = ap.ap_args @ args; ap_loc = loc}
     | lexp ->

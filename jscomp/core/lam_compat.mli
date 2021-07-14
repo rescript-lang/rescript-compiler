@@ -50,10 +50,7 @@ type let_kind = Lambda.let_kind
 | StrictOpt
 | Variable
 
-type meth_kind = Lambda.meth_kind
-= Self
-| Public of string option
-| Cached
+
 
 
 type field_dbg_info = Lambda.field_dbg_info =

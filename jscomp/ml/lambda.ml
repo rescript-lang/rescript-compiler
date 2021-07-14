@@ -243,9 +243,6 @@ type function_kind = Curried | Tupled
 
 type let_kind = Strict | Alias | StrictOpt | Variable
 
-type public_info = string option (* label name *)
-
-type meth_kind = Self | Public of public_info | Cached
 
 type shared_code = (int * int) list
 
@@ -276,7 +273,7 @@ type lambda =
   | Lwhile of lambda * lambda
   | Lfor of Ident.t * lambda * lambda * direction_flag * lambda
   | Lassign of Ident.t * lambda
-  | Lsend of meth_kind * lambda * lambda * lambda list * Location.t
+  | Lsend of string * lambda * Location.t
 
 and lfunction =
   { kind: function_kind;
@@ -405,8 +402,8 @@ let make_key e =
         Lsequence (tr_rec env e1,tr_rec env e2)
     | Lassign (x,e) ->
         Lassign (x,tr_rec env e)
-    | Lsend (m,e1,e2,es,_loc) ->
-        Lsend (m,tr_rec env e1,tr_rec env e2,tr_recs env es,Location.none)
+    | Lsend (m,e1,_loc) ->
+        Lsend (m,tr_rec env e1,Location.none)
     | Lletrec _|Lfunction _
     | Lfor _ | Lwhile _
      ->
@@ -489,8 +486,8 @@ let iter f = function
       f e1; f e2; f e3
   | Lassign(_, e) ->
       f e
-  | Lsend (_k, met, obj, args, _) ->
-      List.iter f (met::obj::args)
+  | Lsend (_k,  obj,  _) ->
+      f obj
 
 module IdentSet = Set.Make(Ident)
 
@@ -524,8 +521,6 @@ let free_ids get l =
 let free_variables l =
   free_ids (function Lvar id -> [id] | _ -> []) l
 
-let free_methods l =
-  free_ids (function Lsend(Self, Lvar meth, _, _, _) -> [meth] | _ -> []) l
 
 (* Check if an action has a "when" guard *)
 let raise_count = ref 0
@@ -625,8 +620,8 @@ let subst_lambda s lam =
   | Lwhile(e1, e2) -> Lwhile(subst e1, subst e2)
   | Lfor(v, e1, e2, dir, e3) -> Lfor(v, subst e1, subst e2, dir, subst e3)
   | Lassign(id, e) -> Lassign(id, subst e)
-  | Lsend (k, met, obj, args, loc) ->
-      Lsend (k, subst met, subst obj, List.map subst args, loc)
+  | Lsend (k,  obj,  loc) ->
+      Lsend (k,subst obj, loc)
   and subst_decl (id, exp) = (id, subst exp)
   and subst_case (key, case) = (key, subst case)
   and subst_strcase (key, case) = (key, subst case)
@@ -690,8 +685,8 @@ let rec map f lam =
         Lfor (v, map f e1, map f e2, dir, map f e3)
     | Lassign (v, e) ->
         Lassign (v, map f e)
-    | Lsend (k, m, o, el, loc) ->
-        Lsend (k, map f m, map f o, List.map (map f) el, loc)
+    | Lsend (k, o, loc) ->
+        Lsend (k, map f o,  loc)
   in
   f lam
 

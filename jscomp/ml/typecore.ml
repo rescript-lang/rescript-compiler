@@ -173,7 +173,7 @@ let iter_expression f e =
     | Pexp_for (_, e1, e2, _, e3) -> expr e1; expr e2; expr e3
     | Pexp_override sel -> List.iter (fun (_, e) -> expr e) sel
     | Pexp_letmodule (_, me, e) -> expr e; module_expr me
-    | Pexp_object { pcstr_fields = fs } -> List.iter class_field fs
+    | Pexp_object _ -> assert false
     | Pexp_pack me -> module_expr me
     | Pexp_unreachable -> ()
 
@@ -215,15 +215,6 @@ let iter_expression f e =
 
 
 
-  and class_field cf =
-    match cf.pcf_desc with
-    | Pcf_inherit () -> ()
-    | Pcf_val (_, _, Cfk_virtual _)
-    | Pcf_method (_, _, Cfk_virtual _ ) | Pcf_constraint _ -> ()
-    | Pcf_val (_, _, Cfk_concrete (_, e))
-    | Pcf_method (_, _, Cfk_concrete (_, e)) -> expr e
-    | Pcf_initializer e -> expr e
-    | Pcf_attribute _ | Pcf_extension _ -> ()
 
   in
   expr e
@@ -2152,24 +2143,6 @@ struct
     | [], [], Dynamic -> (* The expression has unknown size,
                             but does not depend on rec-bound variables *)
         ()
-  let check_class_expr env idlist ce =
-    let rec class_expr : Env.env -> Typedtree.class_expr -> Use.t =
-      fun env ce -> match ce.cl_desc with
-        | Tcl_ident (_, _, _) -> Use.empty
-        | Tcl_structure _ -> Use.empty
-        | Tcl_fun (_, _, _, _, _) -> Use.empty
-        | Tcl_apply (_, _) -> Use.empty
-        | Tcl_let (rec_flag, valbinds, _, ce) ->
-            let _, ty = value_bindings rec_flag env valbinds in
-            Use.join ty (class_expr env ce)
-        | Tcl_constraint (ce, _, _, _, _) ->
-            class_expr env ce
-        | Tcl_open (_, _, _, _, ce) ->
-            class_expr env ce
-    in
-    match Use.unguarded (class_expr (build_unguarded_env idlist) ce) with
-    | [] -> ()
-    | _ :: _ -> raise(Error(ce.cl_loc, env, Illegal_class_expr))
 end
 
 let check_recursive_bindings env valbinds =
@@ -2180,11 +2153,6 @@ let check_recursive_bindings env valbinds =
        Rec_check.check_recursive_expression env ids vb_expr)
     valbinds
 
-let check_recursive_class_bindings env ids exprs =
-  List.iter
-    (fun expr ->
-       Rec_check.check_class_expr env ids expr)
-    exprs
 
 (* Approximate the type of an expression, for better recursion *)
 

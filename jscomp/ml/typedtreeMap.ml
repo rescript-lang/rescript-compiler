@@ -32,7 +32,6 @@ module type MapArgument = sig
   val enter_module_type : module_type -> module_type
   val enter_module_expr : module_expr -> module_expr
   val enter_with_constraint : with_constraint -> with_constraint
-  val enter_class_expr : class_expr -> class_expr
   val enter_class_signature : class_signature -> class_signature
 
   val enter_class_description : class_description -> class_description
@@ -41,8 +40,6 @@ module type MapArgument = sig
   val enter_class_type : class_type -> class_type
   val enter_class_type_field : class_type_field -> class_type_field
   val enter_core_type : core_type -> core_type
-  val enter_class_structure : class_structure -> class_structure
-  val enter_class_field : class_field -> class_field
   val enter_structure_item : structure_item -> structure_item
 
   val leave_structure : structure -> structure
@@ -61,7 +58,6 @@ module type MapArgument = sig
   val leave_module_type : module_type -> module_type
   val leave_module_expr : module_expr -> module_expr
   val leave_with_constraint : with_constraint -> with_constraint
-  val leave_class_expr : class_expr -> class_expr
   val leave_class_signature : class_signature -> class_signature
 
   val leave_class_description : class_description -> class_description
@@ -70,8 +66,6 @@ module type MapArgument = sig
   val leave_class_type : class_type -> class_type
   val leave_class_type_field : class_type_field -> class_type_field
   val leave_core_type : core_type -> core_type
-  val leave_class_structure : class_structure -> class_structure
-  val leave_class_field : class_field -> class_field
   val leave_structure_item : structure_item -> structure_item
 
 end
@@ -517,42 +511,6 @@ module MakeMap(Map : MapArgument) = struct
     in
     Map.leave_module_expr { mexpr with mod_desc = mod_desc }
 
-  and map_class_expr cexpr =
-    let cexpr = Map.enter_class_expr cexpr in
-    let cl_desc =
-      match cexpr.cl_desc with
-        | Tcl_constraint (cl, None, string_list1, string_list2, concr ) ->
-          Tcl_constraint (map_class_expr cl, None, string_list1,
-                          string_list2, concr)
-        | Tcl_structure clstr -> Tcl_structure (map_class_structure clstr)
-        | Tcl_fun (label, pat, priv, cl, partial) ->
-          Tcl_fun (label, map_pattern pat,
-                   List.map (fun (id, name, exp) ->
-                     (id, name, map_expression exp)) priv,
-                   map_class_expr cl, partial)
-
-        | Tcl_apply (cl, args) ->
-          Tcl_apply (map_class_expr cl,
-                     List.map (fun (label, expo) ->
-                       (label, may_map map_expression expo)
-                     ) args)
-        | Tcl_let (rec_flag, bindings, ivars, cl) ->
-          Tcl_let (rec_flag, map_bindings bindings,
-                   List.map (fun (id, name, exp) ->
-                     (id, name, map_expression exp)) ivars,
-                   map_class_expr cl)
-
-        | Tcl_constraint (cl, Some clty, vals, meths, concrs) ->
-          Tcl_constraint ( map_class_expr cl,
-                           Some (map_class_type clty), vals, meths, concrs)
-
-        | Tcl_ident (id, name, tyl) ->
-            Tcl_ident (id, name, List.map map_core_type tyl)
-        | Tcl_open (ovf, p, lid, env, e) ->
-            Tcl_open (ovf, p, lid, env, map_class_expr e)
-    in
-    Map.leave_class_expr { cexpr with cl_desc = cl_desc }
-
   and map_class_type ct =
     let ct = Map.enter_class_type ct in
     let cltyp_desc =
@@ -614,12 +572,6 @@ module MakeMap(Map : MapArgument) = struct
     in
     Map.leave_core_type { ct with ctyp_desc = ctyp_desc }
 
-  and map_class_structure cs =
-    let cs = Map.enter_class_structure cs in
-    let cstr_self = map_pattern cs.cstr_self in
-    let cstr_fields = List.map map_class_field cs.cstr_fields in
-    Map.leave_class_structure { cs with cstr_self; cstr_fields }
-
   and map_row_field rf =
     match rf with
         Ttag (label, attrs, bool, list) ->
@@ -632,26 +584,6 @@ module MakeMap(Map : MapArgument) = struct
           OTtag (label, attrs, map_core_type ct)
       | OTinherit ct -> OTinherit (map_core_type ct)
 
-  and map_class_field cf =
-    let cf = Map.enter_class_field cf in
-    let cf_desc =
-      match cf.cf_desc with
-          Tcf_inherit (ovf, cl, super, vals, meths) ->
-            Tcf_inherit (ovf, map_class_expr cl, super, vals, meths)
-        | Tcf_constraint (cty, cty') ->
-          Tcf_constraint (map_core_type cty, map_core_type cty')
-        | Tcf_val (lab, mut, ident, Tcfk_virtual cty, b) ->
-          Tcf_val (lab, mut, ident, Tcfk_virtual (map_core_type cty), b)
-        | Tcf_val (lab, mut, ident, Tcfk_concrete (o, exp), b) ->
-          Tcf_val (lab, mut, ident, Tcfk_concrete (o, map_expression exp), b)
-        | Tcf_method (lab, priv, Tcfk_virtual cty) ->
-          Tcf_method (lab, priv, Tcfk_virtual (map_core_type cty))
-        | Tcf_method (lab, priv, Tcfk_concrete (o, exp)) ->
-          Tcf_method (lab, priv, Tcfk_concrete (o, map_expression exp))
-        | Tcf_initializer exp -> Tcf_initializer (map_expression exp)
-        | Tcf_attribute _ as x -> x
-    in
-    Map.leave_class_field { cf with cf_desc = cf_desc }
 end
 
 
@@ -671,7 +603,6 @@ module DefaultMapArgument = struct
   let enter_module_type t = t
   let enter_module_expr t = t
   let enter_with_constraint t = t
-  let enter_class_expr t = t
   let enter_class_signature t = t
 
   let enter_class_description t = t
@@ -679,8 +610,6 @@ module DefaultMapArgument = struct
   let enter_class_type t = t
   let enter_class_type_field t = t
   let enter_core_type t = t
-  let enter_class_structure t = t
-  let enter_class_field t = t
   let enter_structure_item t = t
 
 
@@ -698,7 +627,6 @@ module DefaultMapArgument = struct
   let leave_module_type t = t
   let leave_module_expr t = t
   let leave_with_constraint t = t
-  let leave_class_expr t = t
   let leave_class_signature t = t
 
   let leave_class_description t = t
@@ -706,8 +634,6 @@ module DefaultMapArgument = struct
   let leave_class_type t = t
   let leave_class_type_field t = t
   let leave_core_type t = t
-  let leave_class_structure t = t
-  let leave_class_field t = t
   let leave_structure_item t = t
 
 end

@@ -24,10 +24,8 @@ type mapper =
     case: mapper -> case -> case;
     cases: mapper -> case list -> case list;
     class_description: mapper -> class_description -> class_description;
-    class_expr: mapper -> class_expr -> class_expr;
-    class_field: mapper -> class_field -> class_field;
+
     class_signature: mapper -> class_signature -> class_signature;
-    class_structure: mapper -> class_structure -> class_structure;
     class_type: mapper -> class_type -> class_type;
     class_type_declaration: mapper -> class_type_declaration ->
       class_type_declaration;
@@ -469,49 +467,6 @@ let module_binding sub x =
   let mb_expr = sub.module_expr sub x.mb_expr in
   {x with mb_expr}
 
-let class_expr sub x =
-  let cl_env = sub.env sub x.cl_env in
-  let cl_desc =
-    match x.cl_desc with
-    | Tcl_constraint (cl, clty, vals, meths, concrs) ->
-        Tcl_constraint (
-          sub.class_expr sub cl,
-          opt (sub.class_type sub) clty,
-          vals,
-          meths,
-          concrs
-        )
-    | Tcl_structure clstr ->
-        Tcl_structure (sub.class_structure sub clstr)
-    | Tcl_fun (label, pat, priv, cl, partial) ->
-        Tcl_fun (
-          label,
-          sub.pat sub pat,
-          List.map (tuple3 id id (sub.expr sub)) priv,
-          sub.class_expr sub cl,
-          partial
-        )
-    | Tcl_apply (cl, args) ->
-        Tcl_apply (
-          sub.class_expr sub cl,
-          List.map (tuple2 id (opt (sub.expr sub))) args
-        )
-    | Tcl_let (rec_flag, value_bindings, ivars, cl) ->
-        let (rec_flag, value_bindings) =
-          sub.value_bindings sub (rec_flag, value_bindings)
-        in
-        Tcl_let (
-          rec_flag,
-          value_bindings,
-          List.map (tuple3 id id (sub.expr sub)) ivars,
-          sub.class_expr sub cl
-        )
-    | Tcl_ident (path, lid, tyl) ->
-        Tcl_ident (path, lid, List.map (sub.typ sub) tyl)
-    | Tcl_open (ovf, p, lid, env, e) ->
-        Tcl_open (ovf, p, lid, sub.env sub env, sub.class_expr sub e)
-  in
-  {x with cl_desc; cl_env}
 
 let class_type sub x =
   let cltyp_env = sub.env sub x.cltyp_env in
@@ -585,10 +540,6 @@ let typ sub x =
   in
   {x with ctyp_desc; ctyp_env}
 
-let class_structure sub x =
-  let cstr_self = sub.pat sub x.cstr_self in
-  let cstr_fields = List.map (sub.class_field sub) x.cstr_fields in
-  {x with cstr_self; cstr_fields}
 
 let row_field sub = function
   | Ttag (label, attrs, b, list) ->
@@ -600,29 +551,7 @@ let object_field sub = function
       OTtag (label, attrs, (sub.typ sub ct))
   | OTinherit ct -> OTinherit (sub.typ sub ct)
 
-let class_field_kind sub = function
-  | Tcfk_virtual ct -> Tcfk_virtual (sub.typ sub ct)
-  | Tcfk_concrete (ovf, e) -> Tcfk_concrete (ovf, sub.expr sub e)
 
-let class_field sub x =
-  let cf_desc =
-    match x.cf_desc with
-    | Tcf_inherit (ovf, cl, super, vals, meths) ->
-        Tcf_inherit (ovf, sub.class_expr sub cl, super, vals, meths)
-    | Tcf_constraint (cty, cty') ->
-        Tcf_constraint (
-          sub.typ sub cty,
-          sub.typ sub cty'
-        )
-    | Tcf_val (s, mf, id, k, b) ->
-        Tcf_val (s, mf, id, class_field_kind sub k, b)
-    | Tcf_method (s, priv, k) ->
-        Tcf_method (s, priv, class_field_kind sub k)
-    | Tcf_initializer exp ->
-        Tcf_initializer (sub.expr sub exp)
-    | Tcf_attribute _ as d -> d
-  in
-  {x with cf_desc}
 
 let value_bindings sub (rec_flag, list) =
   (rec_flag, List.map (sub.value_binding sub) list)
@@ -649,10 +578,7 @@ let default =
     case;
     cases;
     class_description;
-    class_expr;
-    class_field;
     class_signature;
-    class_structure;
     class_type;
     class_type_declaration;
     class_type_field;

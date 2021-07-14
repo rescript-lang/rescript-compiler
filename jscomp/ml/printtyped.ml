@@ -378,10 +378,6 @@ and expression i ppf x =
       line i ppf "Texp_send \"%s\"\n" s;
       expression i ppf e;
       option i expression ppf eo
-  | Texp_send (e, Tmeth_val s, eo) ->
-      line i ppf "Texp_send \"%a\"\n" fmt_ident s;
-      expression i ppf e;
-      option i expression ppf eo
   | Texp_new _
   | Texp_setinstvar _
   | Texp_override _ ->
