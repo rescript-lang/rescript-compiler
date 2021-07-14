@@ -2296,11 +2296,11 @@ and fold_cltypes f =
 
 
 (* Make the initial environment *)
-let initial_safe_string = lazy (
+let initial_safe_string =
   Predef.build_initial_env
     (add_type ~check:false)
     (add_extension ~check:false)
-    empty)
+    empty
 
 (* Return the environment summary *)
 

@@ -143,7 +143,7 @@ let more_bs_primitives ls =
      else ls 
 
 
-let comparisons_table = Lazy.from_fun @@ fun _ -> 
+let comparisons_table = 
   create_hashtable 11 @@ more_bs_primitives [
   "%equal",
       {
@@ -435,7 +435,7 @@ let specialize_comparison table env ty =
 
 let specialize_primitive p env ty (* ~has_constant_constructor *) =
   try
-    let table = Hashtbl.find (Lazy.force comparisons_table) p.prim_name in
+    let table = Hashtbl.find comparisons_table p.prim_name in
 #if false
     let {gencomp; intcomp; simplify_constant_constructor} =
       table in
@@ -508,9 +508,9 @@ let transl_primitive_application loc prim env ty path args =
       match args with 
     | [arg1; _] when 
       is_base_type env arg1.exp_type Predef.path_bool
-      && Hashtbl.mem (Lazy.force comparisons_table) prim_name
+      && Hashtbl.mem comparisons_table prim_name
       -> 
-      (Hashtbl.find (Lazy.force comparisons_table) prim_name).boolcomp
+      (Hashtbl.find comparisons_table prim_name).boolcomp
     | _ ->   
     let has_constant_constructor = match args with
         [_; {exp_desc = Texp_construct(_, {cstr_tag = Cstr_constant _}, _)}]
@@ -520,7 +520,7 @@ let transl_primitive_application loc prim env ty path args =
       | _ -> false
     in
     if has_constant_constructor then
-      match Hashtbl.find_opt (Lazy.force comparisons_table) prim_name with 
+      match Hashtbl.find_opt comparisons_table prim_name with 
       | Some table when table.simplify_constant_constructor -> table.intcomp
       | Some _
       | None -> 

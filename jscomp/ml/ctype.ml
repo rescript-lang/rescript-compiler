@@ -233,7 +233,7 @@ let in_current_module = function
 
 let in_pervasives p =
   in_current_module p &&
-  try ignore (Env.find_type p (Lazy.force Env.initial_safe_string)); true
+  try ignore (Env.find_type p Env.initial_safe_string); true
   with Not_found -> false
 
 let is_datatype decl=

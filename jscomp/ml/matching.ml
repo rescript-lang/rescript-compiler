@@ -1479,7 +1479,7 @@ let get_mod_field modname field =
   lazy (
     try
       let mod_ident = Ident.create_persistent modname in
-      let env = Env.open_pers_signature modname @@ Lazy.force Env.initial_safe_string in
+      let env = Env.open_pers_signature modname Env.initial_safe_string in
       let p = try
         match Env.lookup_value (Longident.Lident field) env with
         | (Path.Pdot(_,_,i), _) -> i
