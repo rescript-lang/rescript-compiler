@@ -76,81 +76,16 @@ type specialized = {
 }
 
 let arity2 name : Lambda.primitive = Lambda.Pccall (Primitive.simple ~name ~arity:2 ~alloc:true)
-let more_bs_primitives ls =        
-  if !Config.bs_only then 
-      ("%bs_max",
-    { gencomp = arity2 "caml_max" ;
-      bytescomp = arity2 "caml_max"; (* FIXME bytescomp*)
-     intcomp = arity2 "caml_int_max";
-     boolcomp = arity2 "caml_bool_max" ; 
-     floatcomp = arity2 "caml_float_max" ;
-     stringcomp = arity2 "caml_string_max" ;
-     nativeintcomp = arity2 "caml_nativeint_max" ;
-     int32comp = arity2 "caml_int32_max" ;
-     int64comp = arity2 "caml_int64_max" ;
-     simplify_constant_constructor = false}) ::
-    ("%bs_min",
-    { gencomp = arity2 "caml_min";
-      bytescomp = arity2 "caml_min";
-      intcomp = arity2 "caml_int_min" ;
-     boolcomp = arity2 "caml_bool_min" ;
-     floatcomp = arity2 "caml_float_min" ;
-     stringcomp = arity2 "caml_string_min"; 
-     nativeintcomp = arity2 "caml_nativeint_min"; 
-     int32comp = arity2 "caml_int32_min"; 
-     int64comp = arity2 "caml_int64_min"; 
-     simplify_constant_constructor = false}) ::
-     (
-       "%bs_equal_null",
-       { gencomp = arity2 "caml_equal_null";  
-         bytescomp = arity2 "caml_equal_null";  (* FIXME*)               
-         intcomp = arity2 "caml_int_equal_null";                 
-         boolcomp = arity2 "caml_bool_equal_null";                                    
-         floatcomp = arity2 "caml_float_equal_null";                        
-         stringcomp = arity2 "caml_string_equal_null";                
-         nativeintcomp = arity2 "caml_nativeint_equal_null"; 
-         int32comp = arity2 "caml_int32_equal_null"; 
-         int64comp = arity2 "caml_int64_equal_null"; 
-        simplify_constant_constructor = true}
-     ) :: 
-     (
-       "%bs_equal_undefined",
-       { gencomp = arity2 "caml_equal_undefined";                 
-         bytescomp = arity2 "caml_equal_undefined"; (* FIXME*)
-         intcomp = arity2 "caml_int_equal_undefined";                 
-         boolcomp = arity2 "caml_bool_equal_undefined";                             
-         floatcomp = arity2 "caml_float_equal_undefined";                        
-         stringcomp = arity2 "caml_string_equal_undefined";                
-         nativeintcomp = arity2 "caml_nativeint_equal_undefined"; 
-         int32comp = arity2 "caml_int32_equal_undefined"; 
-         int64comp = arity2 "caml_int64_equal_undefined"; 
-         simplify_constant_constructor = true}
-     ) :: 
-     (
-       "%bs_equal_nullable",
-       { gencomp = arity2 "caml_equal_nullable";                 
-         bytescomp = arity2 "caml_equal_nullable"; (* FIXME *)
-         intcomp = arity2 "caml_int_equal_nullable";                 
-         boolcomp = arity2 "caml_bool_equal_nullable";                                    
-         floatcomp = arity2 "caml_float_equal_nullable";                        
-         stringcomp = arity2 "caml_string_equal_nullable"; 
-         nativeintcomp = arity2 "caml_nativeint_equal_nullable"; 
-         int32comp = arity2 "caml_int32_equal_nullable"; 
-         int64comp = arity2 "caml_int64_equal_nullable"; 
-         simplify_constant_constructor = true}
-     ) ::     
-     ls
-     else ls 
+
 
 
 let comparisons_table = 
-  create_hashtable 11 @@ more_bs_primitives [
+  create_hashtable 11 [
   "%equal",
       {
         gencomp = Pccall(Primitive.simple ~name:"caml_equal" ~arity:2 ~alloc:true);
         intcomp = Pintcomp Ceq;
-        boolcomp = if not !Config.bs_only then Pintcomp Ceq
-        else Pccall (Primitive.simple ~name:"caml_bool_equal" ~arity:2
+        boolcomp = Pccall (Primitive.simple ~name:"caml_bool_equal" ~arity:2
                       ~alloc:false); 
         floatcomp = Pfloatcomp Ceq;
         stringcomp = Pccall(Primitive.simple ~name:"caml_string_equal" ~arity:2
@@ -164,8 +99,7 @@ let comparisons_table =
   "%notequal",
       { gencomp = Pccall(Primitive.simple ~name:"caml_notequal" ~arity:2 ~alloc:true);
         intcomp = Pintcomp Cneq;
-        boolcomp = if not !Config.bs_only then Pintcomp Cneq
-            else Pccall (Primitive.simple ~name:"caml_bool_notequal" ~arity:2
+        boolcomp = Pccall (Primitive.simple ~name:"caml_bool_notequal" ~arity:2
                   ~alloc:false) ;         
         floatcomp = Pfloatcomp Cneq;
         stringcomp = Pccall(Primitive.simple ~name:"caml_string_notequal" ~arity:2
@@ -179,8 +113,7 @@ let comparisons_table =
   "%lessthan",
       { gencomp = Pccall(Primitive.simple ~name:"caml_lessthan" ~arity:2 ~alloc:true);
         intcomp = Pintcomp Clt;
-        boolcomp = if not !Config.bs_only then Pintcomp Clt
-        else Pccall (Primitive.simple ~name:"caml_bool_lessthan" ~arity:2
+        boolcomp = Pccall (Primitive.simple ~name:"caml_bool_lessthan" ~arity:2
                      ~alloc:false);
         floatcomp = Pfloatcomp Clt;
         stringcomp = Pccall(Primitive.simple ~name:"caml_string_lessthan" ~arity:2
@@ -194,8 +127,7 @@ let comparisons_table =
   "%greaterthan",
       { gencomp = Pccall(Primitive.simple ~name:"caml_greaterthan" ~arity:2 ~alloc:true);
         intcomp = Pintcomp Cgt;
-        boolcomp = if not !Config.bs_only then Pintcomp Cgt
-        else Pccall (Primitive.simple ~name:"caml_bool_greaterthan" ~arity:2
+        boolcomp = Pccall (Primitive.simple ~name:"caml_bool_greaterthan" ~arity:2
             ~alloc:false);
         floatcomp = Pfloatcomp Cgt;
         stringcomp = Pccall(Primitive.simple ~name:"caml_string_greaterthan" ~arity:2
@@ -209,8 +141,7 @@ let comparisons_table =
   "%lessequal",
       { gencomp = Pccall(Primitive.simple ~name:"caml_lessequal" ~arity:2 ~alloc:true);
         intcomp = Pintcomp Cle;
-        boolcomp = if not !Config.bs_only then Pintcomp Cle
-        else Pccall( Primitive.simple ~name:"caml_bool_lessequal" ~arity:2
+        boolcomp = Pccall( Primitive.simple ~name:"caml_bool_lessequal" ~arity:2
                     ~alloc:false);
         floatcomp = Pfloatcomp Cle;
         stringcomp = Pccall(Primitive.simple ~name:"caml_string_lessequal" ~arity:2
@@ -224,8 +155,7 @@ let comparisons_table =
   "%greaterequal",
       { gencomp = Pccall(Primitive.simple ~name:"caml_greaterequal" ~arity:2 ~alloc:true);
         intcomp = Pintcomp Cge;
-        boolcomp = if not !Config.bs_only then Pintcomp Cge
-        else Pccall (Primitive.simple ~name:"caml_bool_greaterequal" ~arity:2
+        boolcomp = Pccall (Primitive.simple ~name:"caml_bool_greaterequal" ~arity:2
                     ~alloc:false);
         floatcomp = Pfloatcomp Cge;
         stringcomp = Pccall(Primitive.simple ~name:"caml_string_greaterequal" ~arity:2
@@ -237,31 +167,87 @@ let comparisons_table =
         int64comp = Pbintcomp(Pint64, Cge);
         simplify_constant_constructor = false};
   "%compare",
-      let unboxed_compare name native_repr =
-        Pccall( Primitive.make ~name ~alloc:false
-                  ~native_name:(name^"_unboxed")
-                  ~native_repr_args:[native_repr;native_repr]
-                  ~native_repr_res:Untagged_int
-              ) in
       { gencomp = Pccall(Primitive.simple ~name:"caml_compare" ~arity:2 ~alloc:true);
        (* Not unboxed since the comparison is done directly on tagged int *)
         intcomp = Pccall(Primitive.simple ~name:"caml_int_compare" ~arity:2 ~alloc:false);
-        boolcomp = if not !Config.bs_only then
-            Pccall(Primitive.simple ~name:"caml_int_compare" ~arity:2 ~alloc:false)
-          else
-            Pccall (Primitive.simple ~name: "caml_bool_compare"
+        boolcomp = Pccall (Primitive.simple ~name: "caml_bool_compare"
              ~arity:2
              ~alloc:false);
-        floatcomp = unboxed_compare "caml_float_compare" Unboxed_float;
+        floatcomp = Pccall(Primitive.simple ~name:"caml_float_compare" ~arity:2
+        ~alloc:false);
         stringcomp = Pccall(Primitive.simple ~name:"caml_string_compare" ~arity:2
                 ~alloc:false);
         bytescomp = Pccall(Primitive.simple ~name:"caml_bytes_compare" ~arity:2
                 ~alloc:false);
-        nativeintcomp = unboxed_compare "caml_nativeint_compare" (Unboxed_integer Pnativeint);
-        int32comp = unboxed_compare "caml_int32_compare" (Unboxed_integer Pint32);
-        int64comp = unboxed_compare "caml_int64_compare" (Unboxed_integer Pint64);
-        simplify_constant_constructor = false}
-]
+        nativeintcomp = Pccall(Primitive.simple ~name:"caml_nativeint_compare" ~arity:2
+        ~alloc:false);
+        int32comp = Pccall(Primitive.simple ~name:"caml_int32_compare" ~arity:2
+        ~alloc:false);
+        int64comp = Pccall(Primitive.simple ~name:"caml_int64_compare" ~arity:2
+        ~alloc:false);
+        simplify_constant_constructor = false};
+          "%bs_max",
+      { gencomp = arity2 "caml_max" ;
+        bytescomp = arity2 "caml_max"; (* FIXME bytescomp*)
+      intcomp = arity2 "caml_int_max";
+      boolcomp = arity2 "caml_bool_max" ; 
+      floatcomp = arity2 "caml_float_max" ;
+      stringcomp = arity2 "caml_string_max" ;
+      nativeintcomp = arity2 "caml_nativeint_max" ;
+      int32comp = arity2 "caml_int32_max" ;
+      int64comp = arity2 "caml_int64_max" ;
+      simplify_constant_constructor = false} ;
+      ("%bs_min",
+      { gencomp = arity2 "caml_min";
+        bytescomp = arity2 "caml_min";
+        intcomp = arity2 "caml_int_min" ;
+      boolcomp = arity2 "caml_bool_min" ;
+      floatcomp = arity2 "caml_float_min" ;
+      stringcomp = arity2 "caml_string_min"; 
+      nativeintcomp = arity2 "caml_nativeint_min"; 
+      int32comp = arity2 "caml_int32_min"; 
+      int64comp = arity2 "caml_int64_min"; 
+      simplify_constant_constructor = false}) ;
+      (
+        "%bs_equal_null",
+        { gencomp = arity2 "caml_equal_null";  
+          bytescomp = arity2 "caml_equal_null";  (* FIXME*)               
+          intcomp = arity2 "caml_int_equal_null";                 
+          boolcomp = arity2 "caml_bool_equal_null";                                    
+          floatcomp = arity2 "caml_float_equal_null";                        
+          stringcomp = arity2 "caml_string_equal_null";                
+          nativeintcomp = arity2 "caml_nativeint_equal_null"; 
+          int32comp = arity2 "caml_int32_equal_null"; 
+          int64comp = arity2 "caml_int64_equal_null"; 
+          simplify_constant_constructor = true}
+      ) ;
+      (
+        "%bs_equal_undefined",
+        { gencomp = arity2 "caml_equal_undefined";                 
+          bytescomp = arity2 "caml_equal_undefined"; (* FIXME*)
+          intcomp = arity2 "caml_int_equal_undefined";                 
+          boolcomp = arity2 "caml_bool_equal_undefined";                             
+          floatcomp = arity2 "caml_float_equal_undefined";                        
+          stringcomp = arity2 "caml_string_equal_undefined";                
+          nativeintcomp = arity2 "caml_nativeint_equal_undefined"; 
+          int32comp = arity2 "caml_int32_equal_undefined"; 
+          int64comp = arity2 "caml_int64_equal_undefined"; 
+          simplify_constant_constructor = true}
+      ) ;
+      (
+        "%bs_equal_nullable",
+        { gencomp = arity2 "caml_equal_nullable";                 
+          bytescomp = arity2 "caml_equal_nullable"; (* FIXME *)
+          intcomp = arity2 "caml_int_equal_nullable";                 
+          boolcomp = arity2 "caml_bool_equal_nullable";                                    
+          floatcomp = arity2 "caml_float_equal_nullable";                        
+          stringcomp = arity2 "caml_string_equal_nullable"; 
+          nativeintcomp = arity2 "caml_nativeint_equal_nullable"; 
+          int32comp = arity2 "caml_int32_equal_nullable"; 
+          int64comp = arity2 "caml_int64_equal_nullable"; 
+          simplify_constant_constructor = true}
+      )
+  ]
 
 let primitives_table = 
   create_hashtable 57 [
