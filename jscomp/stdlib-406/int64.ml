@@ -35,8 +35,6 @@ external to_float : int64 -> float
   = "?int64_to_float" 
 external of_int32 : int -> int64 = "%int64_of_int32"
 external to_int32 : int64 -> int = "%int64_to_int32"
-external of_nativeint : nativeint -> int64 = "%int64_of_nativeint"
-external to_nativeint : int64 -> nativeint = "%int64_to_nativeint"
 
 let zero = 0L
 let one = 1L

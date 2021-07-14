@@ -69,7 +69,6 @@ type specialized = {
   floatcomp : Lambda.primitive;
   stringcomp : Lambda.primitive;
   bytescomp : Lambda.primitive;
-  nativeintcomp : Lambda.primitive;
   int32comp : Lambda.primitive;
   int64comp : Lambda.primitive;
   simplify_constant_constructor : bool
@@ -92,7 +91,7 @@ let comparisons_table =
                 ~alloc:false);
         bytescomp = Pccall(Primitive.simple ~name:"caml_bytes_equal" ~arity:2
                 ~alloc:false);
-        nativeintcomp = Pbintcomp(Pnativeint, Ceq);
+
         int32comp = Pbintcomp(Pint32, Ceq);
         int64comp = Pbintcomp(Pint64, Ceq);
         simplify_constant_constructor = true};
@@ -106,7 +105,7 @@ let comparisons_table =
                 ~alloc:false);
         bytescomp = Pccall(Primitive.simple ~name:"caml_bytes_notequal" ~arity:2
                 ~alloc:false);
-        nativeintcomp = Pbintcomp(Pnativeint, Cneq);
+
         int32comp = Pbintcomp(Pint32, Cneq);
         int64comp = Pbintcomp(Pint64, Cneq);
         simplify_constant_constructor = true};
@@ -120,7 +119,7 @@ let comparisons_table =
                 ~alloc:false);
         bytescomp = Pccall(Primitive.simple ~name:"caml_bytes_lessthan" ~arity:2
                 ~alloc:false);
-        nativeintcomp = Pbintcomp(Pnativeint, Clt);
+
         int32comp = Pbintcomp(Pint32, Clt);
         int64comp = Pbintcomp(Pint64, Clt);
         simplify_constant_constructor = false};
@@ -134,7 +133,7 @@ let comparisons_table =
                 ~alloc: false);
         bytescomp = Pccall(Primitive.simple ~name:"caml_bytes_greaterthan" ~arity:2
                 ~alloc: false);
-        nativeintcomp = Pbintcomp(Pnativeint, Cgt);
+
         int32comp = Pbintcomp(Pint32, Cgt);
         int64comp = Pbintcomp(Pint64, Cgt);
         simplify_constant_constructor = false};
@@ -148,7 +147,7 @@ let comparisons_table =
                 ~alloc:false);
         bytescomp = Pccall(Primitive.simple ~name:"caml_bytes_lessequal" ~arity:2
                 ~alloc:false);
-        nativeintcomp = Pbintcomp(Pnativeint, Cle);
+
         int32comp = Pbintcomp(Pint32, Cle);
         int64comp = Pbintcomp(Pint64, Cle);
         simplify_constant_constructor = false};
@@ -162,7 +161,7 @@ let comparisons_table =
                 ~alloc:false);
         bytescomp = Pccall(Primitive.simple ~name:"caml_bytes_greaterequal" ~arity:2
                 ~alloc:false);
-        nativeintcomp = Pbintcomp(Pnativeint, Cge);
+
         int32comp = Pbintcomp(Pint32, Cge);
         int64comp = Pbintcomp(Pint64, Cge);
         simplify_constant_constructor = false};
@@ -179,8 +178,6 @@ let comparisons_table =
                 ~alloc:false);
         bytescomp = Pccall(Primitive.simple ~name:"caml_bytes_compare" ~arity:2
                 ~alloc:false);
-        nativeintcomp = Pccall(Primitive.simple ~name:"caml_nativeint_compare" ~arity:2
-        ~alloc:false);
         int32comp = Pccall(Primitive.simple ~name:"caml_int32_compare" ~arity:2
         ~alloc:false);
         int64comp = Pccall(Primitive.simple ~name:"caml_int64_compare" ~arity:2
@@ -193,7 +190,7 @@ let comparisons_table =
       boolcomp = arity2 "caml_bool_max" ; 
       floatcomp = arity2 "caml_float_max" ;
       stringcomp = arity2 "caml_string_max" ;
-      nativeintcomp = arity2 "caml_nativeint_max" ;
+
       int32comp = arity2 "caml_int32_max" ;
       int64comp = arity2 "caml_int64_max" ;
       simplify_constant_constructor = false} ;
@@ -204,7 +201,7 @@ let comparisons_table =
       boolcomp = arity2 "caml_bool_min" ;
       floatcomp = arity2 "caml_float_min" ;
       stringcomp = arity2 "caml_string_min"; 
-      nativeintcomp = arity2 "caml_nativeint_min"; 
+
       int32comp = arity2 "caml_int32_min"; 
       int64comp = arity2 "caml_int64_min"; 
       simplify_constant_constructor = false}) ;
@@ -216,7 +213,7 @@ let comparisons_table =
           boolcomp = arity2 "caml_bool_equal_null";                                    
           floatcomp = arity2 "caml_float_equal_null";                        
           stringcomp = arity2 "caml_string_equal_null";                
-          nativeintcomp = arity2 "caml_nativeint_equal_null"; 
+
           int32comp = arity2 "caml_int32_equal_null"; 
           int64comp = arity2 "caml_int64_equal_null"; 
           simplify_constant_constructor = true}
@@ -229,7 +226,7 @@ let comparisons_table =
           boolcomp = arity2 "caml_bool_equal_undefined";                             
           floatcomp = arity2 "caml_float_equal_undefined";                        
           stringcomp = arity2 "caml_string_equal_undefined";                
-          nativeintcomp = arity2 "caml_nativeint_equal_undefined"; 
+
           int32comp = arity2 "caml_int32_equal_undefined"; 
           int64comp = arity2 "caml_int64_equal_undefined"; 
           simplify_constant_constructor = true}
@@ -242,7 +239,7 @@ let comparisons_table =
           boolcomp = arity2 "caml_bool_equal_nullable";                                    
           floatcomp = arity2 "caml_float_equal_nullable";                        
           stringcomp = arity2 "caml_string_equal_nullable"; 
-          nativeintcomp = arity2 "caml_nativeint_equal_nullable"; 
+
           int32comp = arity2 "caml_int32_equal_nullable"; 
           int64comp = arity2 "caml_int64_equal_nullable"; 
           simplify_constant_constructor = true}
@@ -400,7 +397,7 @@ let find_primitive prim_name =
 
 let specialize_comparison table env ty =
   let {gencomp; intcomp; floatcomp; stringcomp; bytescomp;
-           nativeintcomp; int32comp; int64comp; _} = table in
+            int32comp; int64comp; _} = table in
   match () with
   | () when is_base_type env ty Predef.path_int
          || is_base_type env ty Predef.path_char
@@ -408,7 +405,6 @@ let specialize_comparison table env ty =
   | () when is_base_type env ty Predef.path_float     -> floatcomp
   | () when is_base_type env ty Predef.path_string    -> stringcomp
   | () when is_base_type env ty Predef.path_bytes     -> bytescomp
-  | () when is_base_type env ty Predef.path_nativeint -> nativeintcomp
   | () when is_base_type env ty Predef.path_int32     -> int32comp
   | () when is_base_type env ty Predef.path_int64     -> int64comp
   | () when is_base_type env ty Predef.path_bool      -> table.boolcomp  
