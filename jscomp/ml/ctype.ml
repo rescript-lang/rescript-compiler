@@ -2648,7 +2648,7 @@ and unify_row env row1 row2 =
   let more =
     if fixed1 then rm1 else
     if fixed2 then rm2 else
-    newty2 (min rm1.level rm2.level) (Tvar None) in
+    newty2 (Ext_pervasives.min_int rm1.level rm2.level) (Tvar None) in
   let fixed = fixed1 || fixed2
   and closed = row1.row_closed || row2.row_closed in
   let keep switch =
