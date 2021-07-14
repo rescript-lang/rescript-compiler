@@ -8652,11 +8652,9 @@ val finally :
 val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
 
 
-
-
-
 val max_int : int -> int -> int 
 
+val min_int : int -> int -> int 
 val max_int_option : 
   int option -> 
   int option -> 
@@ -8732,6 +8730,9 @@ let with_file_as_chan filename f =
 let max_int (x : int) y =
     if x >= y then x else y
 
+let min_int (x : int) y = 
+  if x < y then x else y 
+  
 let max_int_option (x : int option) y = 
   match x, y with 
   | None, _ -> y 
