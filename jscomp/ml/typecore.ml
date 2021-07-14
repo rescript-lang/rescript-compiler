@@ -243,8 +243,8 @@ let type_constant = function
   | Const_char _ -> instance_def Predef.type_char
   | Const_string _ -> instance_def Predef.type_string
   | Const_float _ -> instance_def Predef.type_float
-  | Const_int32 _ -> instance_def Predef.type_int32
   | Const_int64 _ -> instance_def Predef.type_int64
+  | Const_int32 _ 
   | Const_nativeint _ ->  assert false
 
 let constant : Parsetree.constant -> (Asttypes.constant, error) result =
@@ -1769,7 +1769,6 @@ struct
           `Pfloatarray
         else if Path.same p Predef.path_string
              || Path.same p Predef.path_array
-             || Path.same p Predef.path_int32
              || Path.same p Predef.path_int64 then
           `Paddrarray
         else begin
