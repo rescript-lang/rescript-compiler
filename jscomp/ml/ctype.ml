@@ -2386,7 +2386,7 @@ and unify2 env t1 t2 =
   ignore (expand_head_unif !env t2);
   let t1' = expand_head_unif !env t1 in
   let t2' = expand_head_unif !env t2 in
-  let lv = min t1'.level t2'.level in
+  let lv = Ext_pervasives.min_int t1'.level t2'.level in
   update_level !env lv t2;
   update_level !env lv t1;
   if unify_eq t1' t2' then () else
@@ -2599,7 +2599,7 @@ and unify_fields env (ty1 : Types.type_expr) (ty2 : Types.type_expr) =          
   and (fields2, rest2) = flatten_fields ty2 in
   let (pairs, miss1, miss2) = associate_fields fields1 fields2 in
   let l1 = (repr ty1).level and l2 = (repr ty2).level in
-  let va = make_rowvar (min l1 l2) (miss2=[]) rest1 (miss1=[]) rest2 in
+  let va = make_rowvar (Ext_pervasives.min_int l1 l2) (miss2=[]) rest1 (miss1=[]) rest2 in
   let d1 = rest1.desc and d2 = rest2.desc in
   try
     unify env (build_fields l1 miss1 va) rest2;

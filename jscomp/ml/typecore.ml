@@ -2728,7 +2728,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
           try
             let (p0, p,_) = extract_concrete_record env ty in
             (* XXX level may be wrong *)
-            Some (p0, p, ty.level = generic_level || not !Clflags.principal)
+            Some (p0, p, true) (*ty.level = generic_level || not !Clflags.principal*)
           with Not_found -> None
         in
         match get_path ty_expected with
