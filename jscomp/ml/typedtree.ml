@@ -235,9 +235,7 @@ and primitive_coercion =
     pc_type: type_expr;
     pc_env: Env.t;
     pc_loc : Location.t;
-#if 1
-    pc_id : Ident.t;
-#end
+    pc_id : Ident.t; (*RE:Added *)
   }
 
 and signature = {
