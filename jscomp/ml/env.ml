@@ -1781,7 +1781,7 @@ and check_value_name name loc =
   (* Note: we could also check here general validity of the
      identifier, to protect against bad identifiers forged by -pp or
      -ppx preprocessors. *)
-  if !Config.bs_only && name = "|." then raise (Error(Illegal_value_name(loc, name)))  
+  if name = "|." then raise (Error(Illegal_value_name(loc, name)))  
   else if String.length name > 0 && (name.[0] = '#') then
     for i = 1 to String.length name - 1 do
       if name.[i] = '#' then
@@ -2296,11 +2296,11 @@ and fold_cltypes f =
 
 
 (* Make the initial environment *)
-let initial_safe_string = lazy (
+let initial_safe_string =
   Predef.build_initial_env
     (add_type ~check:false)
     (add_extension ~check:false)
-    empty)
+    empty
 
 (* Return the environment summary *)
 

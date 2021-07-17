@@ -124,8 +124,6 @@ let classify env ty =
       else if Path.same p Predef.path_string
            || Path.same p Predef.path_bytes
            || Path.same p Predef.path_array
-           || Path.same p Predef.path_nativeint
-           || Path.same p Predef.path_int32
            || Path.same p Predef.path_int64 then Addr
       else begin
         try
@@ -175,12 +173,8 @@ let value_kind env ty =
       Pintval
   | Tconstr(p, _, _) when Path.same p Predef.path_float ->
       Pfloatval
-  | Tconstr(p, _, _) when Path.same p Predef.path_int32 ->
-      Pboxedintval Pint32
   | Tconstr(p, _, _) when Path.same p Predef.path_int64 ->
       Pboxedintval Pint64
-  | Tconstr(p, _, _) when Path.same p Predef.path_nativeint ->
-      Pboxedintval Pnativeint
   | _ ->
       Pgenval
 

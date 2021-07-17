@@ -1479,7 +1479,7 @@ let get_mod_field modname field =
   lazy (
     try
       let mod_ident = Ident.create_persistent modname in
-      let env = Env.open_pers_signature modname @@ Lazy.force Env.initial_safe_string in
+      let env = Env.open_pers_signature modname Env.initial_safe_string in
       let p = try
         match Env.lookup_value (Longident.Lident field) env with
         | (Path.Pdot(_,_,i), _) -> i
@@ -2281,10 +2281,9 @@ let split_extension_cases tag_lambda_list =
         | _ -> assert false in
   split_rec tag_lambda_list
 
-let extension_slot_eq : Primitive.description = 
-    Primitive.simple ~name:"#extension_slot_eq" ~arity:2 ~alloc:false
-let extension_slot_eq () = 
-  if !Config.bs_only then Pccall extension_slot_eq else Pintcomp Ceq
+    
+let extension_slot_eq = 
+   Pccall (Primitive.simple ~name:"#extension_slot_eq" ~arity:2 ~alloc:false)
 let combine_constructor sw_names loc arg ex_pat cstr partial ctx def
     (tag_lambda_list, total1, pats) =
   if cstr.cstr_consts < 0 then begin
@@ -2311,7 +2310,7 @@ let combine_constructor sw_names loc arg ex_pat cstr partial ctx def
               List.fold_right
                 (fun (path, act) rem ->
                    let ext = transl_extension_path ex_pat.pat_env path in
-                   Lifthenelse(Lprim(extension_slot_eq (), [Lvar tag; ext], loc),
+                   Lifthenelse(Lprim(extension_slot_eq , [Lvar tag; ext], loc),
                                act, rem))
                 nonconsts
                 default
@@ -2324,7 +2323,7 @@ let combine_constructor sw_names loc arg ex_pat cstr partial ctx def
         List.fold_right
           (fun (path, act) rem ->
              let ext = transl_extension_path ex_pat.pat_env path in
-             Lifthenelse(Lprim(extension_slot_eq (), [arg; ext], loc),
+             Lifthenelse(Lprim(extension_slot_eq , [arg; ext], loc),
                          act, rem))
           consts
           nonconst_lambda

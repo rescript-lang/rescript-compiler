@@ -9,10 +9,6 @@ var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Ext_array_test = require("./ext_array_test.js");
 
-function f(u, v) {
-  return u > v;
-}
-
 var v = Caml_int64.add(Caml_int64.of_int32(Int32.max_int), Int64.one);
 
 var h = Caml_int64.neg(v);
@@ -2240,7 +2236,6 @@ eq("File \"int64_test.ml\", line 217, characters 5-12", Caml_int64.succ([
 
 Mt.from_pair_suites("Int64_test", suites$1.contents);
 
-exports.f = f;
 exports.v = v;
 exports.h = h;
 exports.a = a;

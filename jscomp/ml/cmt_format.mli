@@ -43,7 +43,7 @@ and binary_part =
   | Partial_structure_item of structure_item
   | Partial_expression of expression
   | Partial_pattern of pattern
-  | Partial_class_expr of class_expr
+  | Partial_class_expr of unit
   | Partial_signature of signature
   | Partial_signature_item of signature_item
   | Partial_module_type of module_type

@@ -37,9 +37,6 @@ let transl_module =
   ref((fun _cc _rootpath _modl -> assert false) :
       module_coercion -> Path.t option -> module_expr -> lambda)
 
-let transl_object =
-  ref (fun _id _s _cl -> assert false :
-       Ident.t -> string list -> class_expr -> lambda)
 
 (* Compile an exception/extension definition *)
 
@@ -72,199 +69,157 @@ type specialized = {
   floatcomp : Lambda.primitive;
   stringcomp : Lambda.primitive;
   bytescomp : Lambda.primitive;
-  nativeintcomp : Lambda.primitive;
-  int32comp : Lambda.primitive;
   int64comp : Lambda.primitive;
   simplify_constant_constructor : bool
 }
 
 let arity2 name : Lambda.primitive = Lambda.Pccall (Primitive.simple ~name ~arity:2 ~alloc:true)
-let more_bs_primitives ls =        
-  if !Config.bs_only then 
-      ("%bs_max",
-    { gencomp = arity2 "caml_max" ;
-      bytescomp = arity2 "caml_max"; (* FIXME bytescomp*)
-     intcomp = arity2 "caml_int_max";
-     boolcomp = arity2 "caml_bool_max" ; 
-     floatcomp = arity2 "caml_float_max" ;
-     stringcomp = arity2 "caml_string_max" ;
-     nativeintcomp = arity2 "caml_nativeint_max" ;
-     int32comp = arity2 "caml_int32_max" ;
-     int64comp = arity2 "caml_int64_max" ;
-     simplify_constant_constructor = false}) ::
-    ("%bs_min",
-    { gencomp = arity2 "caml_min";
-      bytescomp = arity2 "caml_min";
-      intcomp = arity2 "caml_int_min" ;
-     boolcomp = arity2 "caml_bool_min" ;
-     floatcomp = arity2 "caml_float_min" ;
-     stringcomp = arity2 "caml_string_min"; 
-     nativeintcomp = arity2 "caml_nativeint_min"; 
-     int32comp = arity2 "caml_int32_min"; 
-     int64comp = arity2 "caml_int64_min"; 
-     simplify_constant_constructor = false}) ::
-     (
-       "%bs_equal_null",
-       { gencomp = arity2 "caml_equal_null";  
-         bytescomp = arity2 "caml_equal_null";  (* FIXME*)               
-         intcomp = arity2 "caml_int_equal_null";                 
-         boolcomp = arity2 "caml_bool_equal_null";                                    
-         floatcomp = arity2 "caml_float_equal_null";                        
-         stringcomp = arity2 "caml_string_equal_null";                
-         nativeintcomp = arity2 "caml_nativeint_equal_null"; 
-         int32comp = arity2 "caml_int32_equal_null"; 
-         int64comp = arity2 "caml_int64_equal_null"; 
-        simplify_constant_constructor = true}
-     ) :: 
-     (
-       "%bs_equal_undefined",
-       { gencomp = arity2 "caml_equal_undefined";                 
-         bytescomp = arity2 "caml_equal_undefined"; (* FIXME*)
-         intcomp = arity2 "caml_int_equal_undefined";                 
-         boolcomp = arity2 "caml_bool_equal_undefined";                             
-         floatcomp = arity2 "caml_float_equal_undefined";                        
-         stringcomp = arity2 "caml_string_equal_undefined";                
-         nativeintcomp = arity2 "caml_nativeint_equal_undefined"; 
-         int32comp = arity2 "caml_int32_equal_undefined"; 
-         int64comp = arity2 "caml_int64_equal_undefined"; 
-         simplify_constant_constructor = true}
-     ) :: 
-     (
-       "%bs_equal_nullable",
-       { gencomp = arity2 "caml_equal_nullable";                 
-         bytescomp = arity2 "caml_equal_nullable"; (* FIXME *)
-         intcomp = arity2 "caml_int_equal_nullable";                 
-         boolcomp = arity2 "caml_bool_equal_nullable";                                    
-         floatcomp = arity2 "caml_float_equal_nullable";                        
-         stringcomp = arity2 "caml_string_equal_nullable"; 
-         nativeintcomp = arity2 "caml_nativeint_equal_nullable"; 
-         int32comp = arity2 "caml_int32_equal_nullable"; 
-         int64comp = arity2 "caml_int64_equal_nullable"; 
-         simplify_constant_constructor = true}
-     ) ::     
-     ls
-     else ls 
 
 
-let comparisons_table = Lazy.from_fun @@ fun _ -> 
-  create_hashtable 11 @@ more_bs_primitives [
+
+let comparisons_table = 
+  create_hashtable 11 [
   "%equal",
       {
         gencomp = Pccall(Primitive.simple ~name:"caml_equal" ~arity:2 ~alloc:true);
         intcomp = Pintcomp Ceq;
-        boolcomp = if not !Config.bs_only then Pintcomp Ceq
-        else Pccall (Primitive.simple ~name:"caml_bool_equal" ~arity:2
+        boolcomp = Pccall (Primitive.simple ~name:"caml_bool_equal" ~arity:2
                       ~alloc:false); 
         floatcomp = Pfloatcomp Ceq;
         stringcomp = Pccall(Primitive.simple ~name:"caml_string_equal" ~arity:2
                 ~alloc:false);
         bytescomp = Pccall(Primitive.simple ~name:"caml_bytes_equal" ~arity:2
                 ~alloc:false);
-        nativeintcomp = Pbintcomp(Pnativeint, Ceq);
-        int32comp = Pbintcomp(Pint32, Ceq);
         int64comp = Pbintcomp(Pint64, Ceq);
         simplify_constant_constructor = true};
   "%notequal",
       { gencomp = Pccall(Primitive.simple ~name:"caml_notequal" ~arity:2 ~alloc:true);
         intcomp = Pintcomp Cneq;
-        boolcomp = if not !Config.bs_only then Pintcomp Cneq
-            else Pccall (Primitive.simple ~name:"caml_bool_notequal" ~arity:2
+        boolcomp = Pccall (Primitive.simple ~name:"caml_bool_notequal" ~arity:2
                   ~alloc:false) ;         
         floatcomp = Pfloatcomp Cneq;
         stringcomp = Pccall(Primitive.simple ~name:"caml_string_notequal" ~arity:2
                 ~alloc:false);
         bytescomp = Pccall(Primitive.simple ~name:"caml_bytes_notequal" ~arity:2
                 ~alloc:false);
-        nativeintcomp = Pbintcomp(Pnativeint, Cneq);
-        int32comp = Pbintcomp(Pint32, Cneq);
         int64comp = Pbintcomp(Pint64, Cneq);
         simplify_constant_constructor = true};
   "%lessthan",
       { gencomp = Pccall(Primitive.simple ~name:"caml_lessthan" ~arity:2 ~alloc:true);
         intcomp = Pintcomp Clt;
-        boolcomp = if not !Config.bs_only then Pintcomp Clt
-        else Pccall (Primitive.simple ~name:"caml_bool_lessthan" ~arity:2
+        boolcomp = Pccall (Primitive.simple ~name:"caml_bool_lessthan" ~arity:2
                      ~alloc:false);
         floatcomp = Pfloatcomp Clt;
         stringcomp = Pccall(Primitive.simple ~name:"caml_string_lessthan" ~arity:2
                 ~alloc:false);
         bytescomp = Pccall(Primitive.simple ~name:"caml_bytes_lessthan" ~arity:2
                 ~alloc:false);
-        nativeintcomp = Pbintcomp(Pnativeint, Clt);
-        int32comp = Pbintcomp(Pint32, Clt);
         int64comp = Pbintcomp(Pint64, Clt);
         simplify_constant_constructor = false};
   "%greaterthan",
       { gencomp = Pccall(Primitive.simple ~name:"caml_greaterthan" ~arity:2 ~alloc:true);
         intcomp = Pintcomp Cgt;
-        boolcomp = if not !Config.bs_only then Pintcomp Cgt
-        else Pccall (Primitive.simple ~name:"caml_bool_greaterthan" ~arity:2
+        boolcomp = Pccall (Primitive.simple ~name:"caml_bool_greaterthan" ~arity:2
             ~alloc:false);
         floatcomp = Pfloatcomp Cgt;
         stringcomp = Pccall(Primitive.simple ~name:"caml_string_greaterthan" ~arity:2
                 ~alloc: false);
         bytescomp = Pccall(Primitive.simple ~name:"caml_bytes_greaterthan" ~arity:2
                 ~alloc: false);
-        nativeintcomp = Pbintcomp(Pnativeint, Cgt);
-        int32comp = Pbintcomp(Pint32, Cgt);
         int64comp = Pbintcomp(Pint64, Cgt);
         simplify_constant_constructor = false};
   "%lessequal",
       { gencomp = Pccall(Primitive.simple ~name:"caml_lessequal" ~arity:2 ~alloc:true);
         intcomp = Pintcomp Cle;
-        boolcomp = if not !Config.bs_only then Pintcomp Cle
-        else Pccall( Primitive.simple ~name:"caml_bool_lessequal" ~arity:2
+        boolcomp = Pccall( Primitive.simple ~name:"caml_bool_lessequal" ~arity:2
                     ~alloc:false);
         floatcomp = Pfloatcomp Cle;
         stringcomp = Pccall(Primitive.simple ~name:"caml_string_lessequal" ~arity:2
                 ~alloc:false);
         bytescomp = Pccall(Primitive.simple ~name:"caml_bytes_lessequal" ~arity:2
                 ~alloc:false);
-        nativeintcomp = Pbintcomp(Pnativeint, Cle);
-        int32comp = Pbintcomp(Pint32, Cle);
         int64comp = Pbintcomp(Pint64, Cle);
         simplify_constant_constructor = false};
   "%greaterequal",
       { gencomp = Pccall(Primitive.simple ~name:"caml_greaterequal" ~arity:2 ~alloc:true);
         intcomp = Pintcomp Cge;
-        boolcomp = if not !Config.bs_only then Pintcomp Cge
-        else Pccall (Primitive.simple ~name:"caml_bool_greaterequal" ~arity:2
+        boolcomp = Pccall (Primitive.simple ~name:"caml_bool_greaterequal" ~arity:2
                     ~alloc:false);
         floatcomp = Pfloatcomp Cge;
         stringcomp = Pccall(Primitive.simple ~name:"caml_string_greaterequal" ~arity:2
                 ~alloc:false);
         bytescomp = Pccall(Primitive.simple ~name:"caml_bytes_greaterequal" ~arity:2
                 ~alloc:false);
-        nativeintcomp = Pbintcomp(Pnativeint, Cge);
-        int32comp = Pbintcomp(Pint32, Cge);
         int64comp = Pbintcomp(Pint64, Cge);
         simplify_constant_constructor = false};
   "%compare",
-      let unboxed_compare name native_repr =
-        Pccall( Primitive.make ~name ~alloc:false
-                  ~native_name:(name^"_unboxed")
-                  ~native_repr_args:[native_repr;native_repr]
-                  ~native_repr_res:Untagged_int
-              ) in
       { gencomp = Pccall(Primitive.simple ~name:"caml_compare" ~arity:2 ~alloc:true);
        (* Not unboxed since the comparison is done directly on tagged int *)
         intcomp = Pccall(Primitive.simple ~name:"caml_int_compare" ~arity:2 ~alloc:false);
-        boolcomp = if not !Config.bs_only then
-            Pccall(Primitive.simple ~name:"caml_int_compare" ~arity:2 ~alloc:false)
-          else
-            Pccall (Primitive.simple ~name: "caml_bool_compare"
+        boolcomp = Pccall (Primitive.simple ~name: "caml_bool_compare"
              ~arity:2
              ~alloc:false);
-        floatcomp = unboxed_compare "caml_float_compare" Unboxed_float;
+        floatcomp = Pccall(Primitive.simple ~name:"caml_float_compare" ~arity:2
+        ~alloc:false);
         stringcomp = Pccall(Primitive.simple ~name:"caml_string_compare" ~arity:2
                 ~alloc:false);
         bytescomp = Pccall(Primitive.simple ~name:"caml_bytes_compare" ~arity:2
                 ~alloc:false);
-        nativeintcomp = unboxed_compare "caml_nativeint_compare" (Unboxed_integer Pnativeint);
-        int32comp = unboxed_compare "caml_int32_compare" (Unboxed_integer Pint32);
-        int64comp = unboxed_compare "caml_int64_compare" (Unboxed_integer Pint64);
-        simplify_constant_constructor = false}
-]
+        int64comp = Pccall(Primitive.simple ~name:"caml_int64_compare" ~arity:2
+        ~alloc:false);
+        simplify_constant_constructor = false};
+          "%bs_max",
+      { gencomp = arity2 "caml_max" ;
+        bytescomp = arity2 "caml_max"; (* FIXME bytescomp*)
+      intcomp = arity2 "caml_int_max";
+      boolcomp = arity2 "caml_bool_max" ; 
+      floatcomp = arity2 "caml_float_max" ;
+      stringcomp = arity2 "caml_string_max" ;
+      int64comp = arity2 "caml_int64_max" ;
+      simplify_constant_constructor = false} ;
+      ("%bs_min",
+      { gencomp = arity2 "caml_min";
+        bytescomp = arity2 "caml_min";
+        intcomp = arity2 "caml_int_min" ;
+      boolcomp = arity2 "caml_bool_min" ;
+      floatcomp = arity2 "caml_float_min" ;
+      stringcomp = arity2 "caml_string_min"; 
+      int64comp = arity2 "caml_int64_min"; 
+      simplify_constant_constructor = false}) ;
+      (
+        "%bs_equal_null",
+        { gencomp = arity2 "caml_equal_null";  
+          bytescomp = arity2 "caml_equal_null";  (* FIXME*)               
+          intcomp = arity2 "caml_int_equal_null";                 
+          boolcomp = arity2 "caml_bool_equal_null";                                    
+          floatcomp = arity2 "caml_float_equal_null";                        
+          stringcomp = arity2 "caml_string_equal_null";                
+          int64comp = arity2 "caml_int64_equal_null"; 
+          simplify_constant_constructor = true}
+      ) ;
+      (
+        "%bs_equal_undefined",
+        { gencomp = arity2 "caml_equal_undefined";                 
+          bytescomp = arity2 "caml_equal_undefined"; (* FIXME*)
+          intcomp = arity2 "caml_int_equal_undefined";                 
+          boolcomp = arity2 "caml_bool_equal_undefined";                             
+          floatcomp = arity2 "caml_float_equal_undefined";                        
+          stringcomp = arity2 "caml_string_equal_undefined";                
+          int64comp = arity2 "caml_int64_equal_undefined"; 
+          simplify_constant_constructor = true}
+      ) ;
+      (
+        "%bs_equal_nullable",
+        { gencomp = arity2 "caml_equal_nullable";                 
+          bytescomp = arity2 "caml_equal_nullable"; (* FIXME *)
+          intcomp = arity2 "caml_int_equal_nullable";                 
+          boolcomp = arity2 "caml_bool_equal_nullable";                                    
+          floatcomp = arity2 "caml_float_equal_nullable";                        
+          stringcomp = arity2 "caml_string_equal_nullable"; 
+          int64comp = arity2 "caml_int64_equal_nullable"; 
+          simplify_constant_constructor = true}
+      )
+  ]
 
 let primitives_table = 
   create_hashtable 57 [
@@ -414,12 +369,10 @@ let primitives_table =
 let find_primitive prim_name =
   Hashtbl.find primitives_table prim_name
 
-let prim_restore_raw_backtrace =
-  Primitive.simple ~name:"caml_restore_raw_backtrace" ~arity:2 ~alloc:false
 
 let specialize_comparison table env ty =
   let {gencomp; intcomp; floatcomp; stringcomp; bytescomp;
-           nativeintcomp; int32comp; int64comp; _} = table in
+             int64comp; _} = table in
   match () with
   | () when is_base_type env ty Predef.path_int
          || is_base_type env ty Predef.path_char
@@ -427,8 +380,6 @@ let specialize_comparison table env ty =
   | () when is_base_type env ty Predef.path_float     -> floatcomp
   | () when is_base_type env ty Predef.path_string    -> stringcomp
   | () when is_base_type env ty Predef.path_bytes     -> bytescomp
-  | () when is_base_type env ty Predef.path_nativeint -> nativeintcomp
-  | () when is_base_type env ty Predef.path_int32     -> int32comp
   | () when is_base_type env ty Predef.path_int64     -> int64comp
   | () when is_base_type env ty Predef.path_bool      -> table.boolcomp  
   | () -> gencomp
@@ -438,7 +389,7 @@ let specialize_comparison table env ty =
 
 let specialize_primitive p env ty (* ~has_constant_constructor *) =
   try
-    let table = Hashtbl.find (Lazy.force comparisons_table) p.prim_name in
+    let table = Hashtbl.find comparisons_table p.prim_name in
 #if false
     let {gencomp; intcomp; simplify_constant_constructor} =
       table in
@@ -511,9 +462,9 @@ let transl_primitive_application loc prim env ty path args =
       match args with 
     | [arg1; _] when 
       is_base_type env arg1.exp_type Predef.path_bool
-      && Hashtbl.mem (Lazy.force comparisons_table) prim_name
+      && Hashtbl.mem comparisons_table prim_name
       -> 
-      (Hashtbl.find (Lazy.force comparisons_table) prim_name).boolcomp
+      (Hashtbl.find comparisons_table prim_name).boolcomp
     | _ ->   
     let has_constant_constructor = match args with
         [_; {exp_desc = Texp_construct(_, {cstr_tag = Cstr_constant _}, _)}]
@@ -523,7 +474,7 @@ let transl_primitive_application loc prim env ty path args =
       | _ -> false
     in
     if has_constant_constructor then
-      match Hashtbl.find_opt (Lazy.force comparisons_table) prim_name with 
+      match Hashtbl.find_opt comparisons_table prim_name with 
       | Some table when table.simplify_constant_constructor -> table.intcomp
       | Some _
       | None -> 
@@ -671,32 +622,9 @@ let rec transl_exp e =
 and transl_exp0 e =
   match e.exp_desc with
     Texp_ident(path, _, {val_kind = Val_prim p}) ->
-#if 1
-#else
-      let public_send = p.prim_name = "%send" in
-      if public_send || p.prim_name = "%sendself" then
-        let kind = if public_send then Public None else Self in
-        let obj = Ident.create "obj" and meth = Ident.create "meth" in
-        Lfunction{kind = Curried; params = [obj; meth];
-                  attr = default_stub_attribute;
-                  loc = e.exp_loc;
-                  body = Lsend(kind, Lvar meth, Lvar obj, [], e.exp_loc)}
-      else if p.prim_name = "%sendcache" then
-        let obj = Ident.create "obj" and meth = Ident.create "meth" in
-        let cache = Ident.create "cache" and pos = Ident.create "pos" in
-        Lfunction{kind = Curried; params = [obj; meth; cache; pos];
-                  attr = default_stub_attribute;
-                  loc = e.exp_loc;
-                  body = Lsend(Cached, Lvar meth, Lvar obj,
-                               [Lvar cache; Lvar pos], e.exp_loc)}
-      else
-#end      
-        transl_primitive e.exp_loc p e.exp_env e.exp_type (Some path)
-  | Texp_ident(_, _, {val_kind = Val_anc _}) ->
-      raise(Error(e.exp_loc, Free_super_var))
-  | Texp_ident(path, _, {val_kind = Val_reg | Val_self _}) ->
+      transl_primitive e.exp_loc p e.exp_env e.exp_type (Some path)
+  | Texp_ident(path, _, {val_kind = Val_reg }) ->
       transl_value_path ~loc:e.exp_loc e.exp_env path
-  | Texp_ident _ -> fatal_error "Translcore.transl_exp: bad Texp_ident"
   | Texp_constant cst ->
       Lconst(Const_base cst)
   | Texp_let(rec_flag, pat_expr_list, body) ->
@@ -745,37 +673,7 @@ and transl_exp0 e =
       let args =
          List.map (function _, Some x -> x | _ -> assert false) args in
       let argl = transl_list args in
-      let public_send = p.prim_name = "%send"
-        || not false (*!Clflags.native_code*) && p.prim_name = "%sendcache"in
-      if public_send || p.prim_name = "%sendself" then
-        let kind = if public_send then Public None else Self in
-        let obj = List.hd argl in
-        wrap (Lsend (kind, List.nth argl 1, obj, [], e.exp_loc))
-      else if p.prim_name = "%sendcache" then
-        match argl with [obj; meth; cache; pos] ->
-          wrap (Lsend(Cached, meth, obj, [cache; pos], e.exp_loc))
-        | _ -> assert false
-      else if p.prim_name = "%raise_with_backtrace" then begin
-        let texn1 = List.hd args (* Should not fail by typing *) in
-        let texn2,bt = match argl with
-          | [a;b] -> a,b
-          | _ -> assert false (* idem *)
-        in
-        let vexn = Ident.create "exn" in
-        Llet(Strict, Pgenval, vexn, texn2,
-             event_before e begin
-               Lsequence(
-                 wrap  (Lprim (Pccall prim_restore_raw_backtrace,
-                               [Lvar vexn;bt],
-                               e.exp_loc)),
-                 wrap0 (Lprim(Praise Raise_reraise,
-                              [event_after texn1 (Lvar vexn)],
-                              e.exp_loc))
-               )
-             end
-            )
-      end
-      else begin
+      begin
         let prim = transl_primitive_application
             e.exp_loc p e.exp_env prim_type (Some path) args in
         match (prim, args) with
@@ -942,35 +840,10 @@ and transl_exp0 e =
   | Texp_for(param, _, low, high, dir, body) ->
       Lfor(param, transl_exp low, transl_exp high, dir,
            event_before body (transl_exp body))
-#if 1
-  | Texp_send(expr,met,_) -> 
+  | Texp_send(expr,Tmeth_name nm ,_) -> 
     let obj = transl_exp expr in   
-    begin match met with 
-    | Tmeth_name nm -> 
-      Lsend(Public(Some nm),Lambda.lambda_unit,obj,[],e.exp_loc)
-    | _ -> assert false    
-    end
-#else
-  | Texp_send(_, _, Some exp) -> transl_exp exp
-  | Texp_send(expr, met, None) ->
-      let obj = transl_exp expr in
-      let lam =
-        match met with
-          Tmeth_val id -> Lsend (Self, Lvar id, obj, [], e.exp_loc)
-        | Tmeth_name nm ->
-            let (tag, cache) = Translobj.meth obj nm in
-            let kind = if cache = [] then Public (Some nm) else Cached in
-            Lsend (kind, tag, obj, cache, e.exp_loc)
-      in
-      event_after e lam
-#end      
-  | Texp_new (cl, {Location.loc=loc}, _) ->
-      Lapply{ap_should_be_tailcall=false;
-             ap_loc=loc;
-             ap_func=Lprim(Pfield (0, Fld_tuple), [transl_class_path ~loc e.exp_env cl], loc);
-             ap_args=[lambda_unit];
-             ap_inlined=Default_inline;
-             ap_specialised=Default_specialise}
+    Lsend( nm,obj,e.exp_loc)
+  | Texp_new _ 
   | Texp_instvar _
   | Texp_setinstvar _
   | Texp_override _ ->
@@ -1089,8 +962,7 @@ and transl_apply ?(should_be_tailcall=false) ?(inlined = Default_inline)
       ?(specialised = Default_specialise) lam sargs loc =
   let lapply funct args =
     match funct with
-      Lsend(k, lmet, lobj, largs, loc) ->
-        Lsend(k, lmet, lobj, largs @ args, loc)
+    (** Attention: This may not be what we need to change the application arity*)
     | Lapply ap ->
         Lapply {ap with ap_args = ap.ap_args @ args; ap_loc = loc}
     | lexp ->

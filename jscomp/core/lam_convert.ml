@@ -796,7 +796,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
       Lam.for_ id (convert_aux from_) (convert_aux to_) dir (convert_aux loop)
     | Lassign (id, body) ->
       Lam.assign id (convert_aux body)
-    | Lsend (Public(Some name), _, obj, meth_args, loc) ->
+    | Lsend (name,  obj, loc) ->
       let obj =  convert_aux obj in 
       let args = [obj] in 
       let setter = Ext_string.ends_with name Literals.setter_suffix in 
@@ -806,13 +806,10 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
             (String.sub name 0
                (String.length name - Literals.setter_suffix_len))
         else Lam_methname.translate  name in 
-      let new_obj = prim ~primitive:(Pjs_unsafe_downgrade {name = property; setter})
-          ~args loc  in 
-      if meth_args = [] then new_obj 
-      else Lam.apply new_obj 
-          (Ext_list.map meth_args convert_aux) {ap_loc = loc; ap_inlined = Default_inline; ap_status = App_na}             
+      prim ~primitive:(Pjs_unsafe_downgrade {name = property; setter})
+          ~args loc  
 
-    | Lsend _ -> assert false  
+
 
 
   and convert_let (kind : Lam_compat.let_kind) id (e : Lambda.lambda) body : Lam.t = 

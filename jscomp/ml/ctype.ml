@@ -233,7 +233,7 @@ let in_current_module = function
 
 let in_pervasives p =
   in_current_module p &&
-  try ignore (Env.find_type p (Lazy.force Env.initial_safe_string)); true
+  try ignore (Env.find_type p Env.initial_safe_string); true
   with Not_found -> false
 
 let is_datatype decl=
@@ -1426,7 +1426,7 @@ let expand_abbrev_gen kind find_type_expansion env ty =
             (* For gadts, remember type as non exportable *)
             (* The ambiguous level registered for ty' should be the highest *)
             if !trace_gadt_instances then begin
-              match max lv (Env.gadt_instance_level env ty) with
+              match Ext_pervasives.max_int_option lv (Env.gadt_instance_level env ty) with
                 None -> ()
               | Some lv ->
                   if level < lv then raise (Unify [(ty, newvar2 level)]);
@@ -2386,7 +2386,7 @@ and unify2 env t1 t2 =
   ignore (expand_head_unif !env t2);
   let t1' = expand_head_unif !env t1 in
   let t2' = expand_head_unif !env t2 in
-  let lv = min t1'.level t2'.level in
+  let lv = Ext_pervasives.min_int t1'.level t2'.level in
   update_level !env lv t2;
   update_level !env lv t1;
   if unify_eq t1' t2' then () else
@@ -2599,7 +2599,7 @@ and unify_fields env (ty1 : Types.type_expr) (ty2 : Types.type_expr) =          
   and (fields2, rest2) = flatten_fields ty2 in
   let (pairs, miss1, miss2) = associate_fields fields1 fields2 in
   let l1 = (repr ty1).level and l2 = (repr ty2).level in
-  let va = make_rowvar (min l1 l2) (miss2=[]) rest1 (miss1=[]) rest2 in
+  let va = make_rowvar (Ext_pervasives.min_int l1 l2) (miss2=[]) rest1 (miss1=[]) rest2 in
   let d1 = rest1.desc and d2 = rest2.desc in
   try
     unify env (build_fields l1 miss1 va) rest2;
@@ -2648,7 +2648,7 @@ and unify_row env row1 row2 =
   let more =
     if fixed1 then rm1 else
     if fixed2 then rm2 else
-    newty2 (min rm1.level rm2.level) (Tvar None) in
+    newty2 (Ext_pervasives.min_int rm1.level rm2.level) (Tvar None) in
   let fixed = fixed1 || fixed2
   and closed = row1.row_closed || row2.row_closed in
   let keep switch =

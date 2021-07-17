@@ -42,7 +42,7 @@ let open_implicit_module m env =
 
 let initial_env () =
   Ident.reinit();
-  let initial = Lazy.force Env.initial_safe_string in
+  let initial = Env.initial_safe_string in
   let env =
     if !Clflags.nopervasives then initial else
       open_implicit_module "Pervasives" initial

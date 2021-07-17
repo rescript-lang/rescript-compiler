@@ -136,15 +136,6 @@ external to_int32 : int64 -> int = "%int64_to_int32"
    is taken modulo 2{^32}, i.e. the top 32 bits are lost
    during the conversion.  *)
 
-external of_nativeint : nativeint -> int64 = "%int64_of_nativeint"
-(** Convert the given native integer (type [nativeint])
-   to a 64-bit integer (type [int64]). *)
-
-external to_nativeint : int64 -> nativeint = "%int64_to_nativeint"
-(** Convert the given 64-bit integer (type [int64]) to a
-   native integer.  On 32-bit platforms, the 64-bit integer
-   is taken modulo 2{^32}.  On 64-bit platforms,
-   the conversion is exact. *)
 
 external of_string : string -> int64 = "?int64_of_string"
 (** Convert the given string to a 64-bit integer.

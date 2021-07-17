@@ -118,7 +118,7 @@ let find_component (lookup : ?loc:_ -> _) make_error env loc lid =
   try
     match lid with
     | Longident.Ldot (Longident.Lident "*predef*", s) ->
-        lookup ~loc (Longident.Lident s) (Lazy.force Env.initial_safe_string)
+        lookup ~loc (Longident.Lident s) Env.initial_safe_string
     | _ ->
         lookup ~loc lid env
   with Not_found ->

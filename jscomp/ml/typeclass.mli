@@ -44,10 +44,6 @@ type class_type_info = {
 }
 
 
-(*
-and class_declaration =
-  (class_expr, Types.class_declaration) class_infos
-*)
 
 val class_descriptions:
   Env.t -> Parsetree.class_description list ->

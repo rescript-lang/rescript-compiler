@@ -8652,11 +8652,13 @@ val finally :
 val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
 
 
+val max_int : int -> int -> int 
 
-
-
-
-
+val min_int : int -> int -> int 
+val max_int_option : 
+  int option -> 
+  int option -> 
+  int option 
 
 
 
@@ -8725,8 +8727,18 @@ let with_file_as_chan filename f =
   finally (open_out_bin filename) ~clean:close_out f 
 
 
+let max_int (x : int) y =
+    if x >= y then x else y
 
-
+let min_int (x : int) y = 
+  if x < y then x else y 
+  
+let max_int_option (x : int option) y = 
+  match x, y with 
+  | None, _ -> y 
+  | Some _, None ->  x 
+  | Some x0 , Some y0 -> 
+      if x0 >= y0 then x else y
 
 
 (* external id : 'a -> 'a = "%identity" *)

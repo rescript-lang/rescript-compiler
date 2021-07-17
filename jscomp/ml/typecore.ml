@@ -104,10 +104,6 @@ let type_package =
   ref (fun _ -> assert false)
 
 (* Forward declaration, to be filled in by Typeclass.class_structure *)
-let type_object =
-  ref (fun _env _s -> assert false :
-       Env.t -> Location.t -> Parsetree.class_structure ->
-         Typedtree.class_structure * Types.class_signature * string list)
 
 (*
   Saving and outputting type information.
@@ -177,7 +173,7 @@ let iter_expression f e =
     | Pexp_for (_, e1, e2, _, e3) -> expr e1; expr e2; expr e3
     | Pexp_override sel -> List.iter (fun (_, e) -> expr e) sel
     | Pexp_letmodule (_, me, e) -> expr e; module_expr me
-    | Pexp_object { pcstr_fields = fs } -> List.iter class_field fs
+    | Pexp_object _ -> assert false
     | Pexp_pack me -> module_expr me
     | Pexp_unreachable -> ()
 
@@ -219,15 +215,6 @@ let iter_expression f e =
 
 
 
-  and class_field cf =
-    match cf.pcf_desc with
-    | Pcf_inherit () -> ()
-    | Pcf_val (_, _, Cfk_virtual _)
-    | Pcf_method (_, _, Cfk_virtual _ ) | Pcf_constraint _ -> ()
-    | Pcf_val (_, _, Cfk_concrete (_, e))
-    | Pcf_method (_, _, Cfk_concrete (_, e)) -> expr e
-    | Pcf_initializer e -> expr e
-    | Pcf_attribute _ | Pcf_extension _ -> ()
 
   in
   expr e
@@ -256,9 +243,9 @@ let type_constant = function
   | Const_char _ -> instance_def Predef.type_char
   | Const_string _ -> instance_def Predef.type_string
   | Const_float _ -> instance_def Predef.type_float
-  | Const_int32 _ -> instance_def Predef.type_int32
   | Const_int64 _ -> instance_def Predef.type_int64
-  | Const_nativeint _ -> instance_def Predef.type_nativeint
+  | Const_int32 _ 
+  | Const_nativeint _ ->  assert false
 
 let constant : Parsetree.constant -> (Asttypes.constant, error) result =
   function
@@ -303,13 +290,13 @@ let mkexp exp_desc exp_type exp_loc exp_env =
 
 let option_none ty loc =
   let lid = Longident.Lident "None"
-  and env = Lazy.force Env.initial_safe_string in
+  and env = Env.initial_safe_string in
   let cnone = Env.lookup_constructor lid env in
   mkexp (Texp_construct(mknoloc lid, cnone, [])) ty loc env
 
 let option_some texp =
   let lid = Longident.Lident "Some" in
-  let csome = Env.lookup_constructor lid @@ Lazy.force Env.initial_safe_string in
+  let csome = Env.lookup_constructor lid Env.initial_safe_string in
   mkexp ( Texp_construct(mknoloc lid , csome, [texp]) )
     (type_option texp.exp_type) texp.exp_loc texp.exp_env
 
@@ -1474,72 +1461,7 @@ let type_pattern_list env spatl scope expected_tys allow =
   let new_env, unpacks = add_pattern_variables !new_env in
   (patl, new_env, get_ref pattern_force, unpacks)
 
-let type_class_arg_pattern cl_num val_env met_env l spat =
-  reset_pattern None false;
-  let nv = newvar () in
-  let pat = type_pat (ref val_env) spat nv in
-  if has_variants pat then begin
-    Parmatch.pressure_variants val_env [pat];
-    iter_pattern finalize_variant pat
-  end;
-  List.iter (fun f -> f()) (get_ref pattern_force);
-  if is_optional l then unify_pat val_env pat (type_option (newvar ()));
-  let (pv, met_env) =
-    List.fold_right
-      (fun (id, ty, name, loc, as_var) (pv, env) ->
-         let check s =
-           if as_var then Warnings.Unused_var s
-           else Warnings.Unused_var_strict s in
-         let id' = Ident.create (Ident.name id) in
-         ((id', name, id, ty)::pv,
-          Env.add_value id' {val_type = ty;
-                             val_kind = Val_ivar (Immutable, cl_num);
-                             val_attributes = [];
-                             Types.val_loc = loc;
-                            } ~check
-            env))
-      !pattern_variables ([], met_env)
-  in
-  let val_env, _ = add_pattern_variables val_env in
-  (pat, pv, val_env, met_env)
 
-let type_self_pattern cl_num privty val_env met_env par_env spat =
-  let open Ast_helper in
-  let spat =
-    Pat.mk (Ppat_alias (Pat.mk(Ppat_alias (spat, mknoloc "selfpat-*")),
-                        mknoloc ("selfpat-" ^ cl_num)))
-  in
-  reset_pattern None false;
-  let nv = newvar() in
-  let pat = type_pat (ref val_env) spat nv in
-  List.iter (fun f -> f()) (get_ref pattern_force);
-  let meths = ref Meths.empty in
-  let vars = ref Vars.empty in
-  let pv = !pattern_variables in
-  pattern_variables := [];
-  let (val_env, met_env, par_env) =
-    List.fold_right
-      (fun (id, ty, _name, loc, as_var) (val_env, met_env, par_env) ->
-         (Env.add_value id {val_type = ty;
-                            val_kind = Val_unbound;
-                            val_attributes = [];
-                            Types.val_loc = loc;
-                           } val_env,
-          Env.add_value id {val_type = ty;
-                            val_kind = Val_self (meths, vars, cl_num, privty);
-                            val_attributes = [];
-                            Types.val_loc = loc;
-                           }
-            ~check:(fun s -> if as_var then Warnings.Unused_var s
-                             else Warnings.Unused_var_strict s)
-            met_env,
-          Env.add_value id {val_type = ty; val_kind = Val_unbound;
-                            val_attributes = [];
-                            Types.val_loc = loc;
-                           } par_env))
-      pv (val_env, met_env, par_env)
-  in
-  (pat, meths, vars, val_env, met_env, par_env)
 
 let delayed_checks = ref []
 let reset_delayed_checks () = delayed_checks := []
@@ -1606,8 +1528,8 @@ let rec is_nonexpansive exp =
   | Texp_ifthenelse(_cond, ifso, ifnot) ->
       is_nonexpansive ifso && is_nonexpansive_opt ifnot
   | Texp_sequence (_e1, e2) -> is_nonexpansive e2  (* PR#4354 *)
-  | Texp_new (_, _, cl_decl) when Ctype.class_type_arity cl_decl.cty_type > 0 ->
-      true
+  | Texp_new _ ->
+      assert false
   (* Note: nonexpansive only means no _observable_ side effects *)
   | Texp_lazy e -> is_nonexpansive e
   | Texp_object () ->
@@ -1847,8 +1769,6 @@ struct
           `Pfloatarray
         else if Path.same p Predef.path_string
              || Path.same p Predef.path_array
-             || Path.same p Predef.path_nativeint
-             || Path.same p Predef.path_int32
              || Path.same p Predef.path_int64 then
           `Paddrarray
         else begin
@@ -1953,8 +1873,8 @@ struct
 
       | Texp_constant _ ->
         Use.empty
-      | Texp_new (pth, _, _) ->
-          Use.inspect (path env pth)
+      | Texp_new _ -> 
+          assert false
       | Texp_instvar _ ->
         Use.empty
       | Texp_apply ({exp_desc = Texp_ident (_, _, vd)}, [_, Some arg])
@@ -2221,24 +2141,6 @@ struct
     | [], [], Dynamic -> (* The expression has unknown size,
                             but does not depend on rec-bound variables *)
         ()
-  let check_class_expr env idlist ce =
-    let rec class_expr : Env.env -> Typedtree.class_expr -> Use.t =
-      fun env ce -> match ce.cl_desc with
-        | Tcl_ident (_, _, _) -> Use.empty
-        | Tcl_structure _ -> Use.empty
-        | Tcl_fun (_, _, _, _, _) -> Use.empty
-        | Tcl_apply (_, _) -> Use.empty
-        | Tcl_let (rec_flag, valbinds, _, ce) ->
-            let _, ty = value_bindings rec_flag env valbinds in
-            Use.join ty (class_expr env ce)
-        | Tcl_constraint (ce, _, _, _, _) ->
-            class_expr env ce
-        | Tcl_open (_, _, _, _, ce) ->
-            class_expr env ce
-    in
-    match Use.unguarded (class_expr (build_unguarded_env idlist) ce) with
-    | [] -> ()
-    | _ :: _ -> raise(Error(ce.cl_loc, env, Illegal_class_expr))
 end
 
 let check_recursive_bindings env valbinds =
@@ -2249,11 +2151,6 @@ let check_recursive_bindings env valbinds =
        Rec_check.check_recursive_expression env ids vb_expr)
     valbinds
 
-let check_recursive_class_bindings env ids exprs =
-  List.iter
-    (fun expr ->
-       Rec_check.check_class_expr env ids expr)
-    exprs
 
 (* Approximate the type of an expression, for better recursion *)
 
@@ -2592,15 +2489,6 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
         rue {
           exp_desc =
             begin match desc.val_kind with
-              Val_ivar (_, _cl_num) ->
-                assert false
-            | Val_self (_, _, cl_num, _) ->
-                let (path, _) =
-                  Env.lookup_value (Longident.Lident ("self-" ^ cl_num)) env
-                in
-                Texp_ident(path, lid, desc)
-            | Val_unbound ->
-                raise(Error(loc, env, Masked_instance_variable lid.txt))
             (*| Val_prim _ ->
                 let p = Env.normalize_path (Some loc) env path in
                 Env.add_required_global (Path.head p);
@@ -2840,7 +2728,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
           try
             let (p0, p,_) = extract_concrete_record env ty in
             (* XXX level may be wrong *)
-            Some (p0, p, ty.level = generic_level || not !Clflags.principal)
+            Some (p0, p, true) (*ty.level = generic_level || not !Clflags.principal*)
           with Not_found -> None
         in
         match get_path ty_expected with
@@ -3102,11 +2990,6 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
               end else true
             in
             begin match arg.exp_desc, !self_coercion, (repr ty').desc with
-              Texp_ident(_, _, {val_kind=Val_self _}), (path,r) :: _,
-              Tconstr(path',_,_) when Path.same path path' ->
-                (* prerr_endline "self coercion"; *)
-                r := loc :: !r;
-                force ()
             | _ when free_variables ~env arg.exp_type = []
                   && free_variables ~env ty' = [] ->
                 if not gen && (* first try a single coercion *)
@@ -3176,64 +3059,6 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
       begin try
         let (meth, exp, typ) =
           match obj.exp_desc with
-            Texp_ident(_path, _, {val_kind = Val_self (meths, _, _, privty)}) ->
-              obj_meths := Some meths;
-              let (id, typ) =
-                filter_self_method env met Private meths privty
-              in
-              if is_Tvar (repr typ) then
-                Location.prerr_warning loc
-                  (Warnings.Undeclared_virtual_method met);
-              (Tmeth_val id, None, typ)
-          | Texp_ident(_path, lid, {val_kind = Val_anc (methods, cl_num)}) ->
-              let method_id =
-                begin try List.assoc met methods with Not_found ->
-                  let valid_methods = List.map fst methods in
-                  raise(Error(e.pexp_loc, env,
-                              Undefined_inherited_method (met, valid_methods)))
-                end
-              in
-              begin match
-                Env.lookup_value (Longident.Lident ("selfpat-" ^ cl_num)) env,
-                Env.lookup_value (Longident.Lident ("self-" ^cl_num)) env
-              with
-                (_, ({val_kind = Val_self (meths, _, _, privty)} as desc)),
-                (path, _) ->
-                  obj_meths := Some meths;
-                  let (_, typ) =
-                    filter_self_method env met Private meths privty
-                  in
-                  let method_type = newvar () in
-                  let (obj_ty, res_ty) = filter_arrow env method_type Nolabel in
-                  unify env obj_ty desc.val_type;
-                  unify env res_ty (instance env typ);
-                  let exp =
-                    Texp_apply({exp_desc =
-                                Texp_ident(Path.Pident method_id, lid,
-                                           {val_type = method_type;
-                                            val_kind = Val_reg;
-                                            val_attributes = [];
-                                            Types.val_loc = Location.none});
-                                exp_loc = loc; exp_extra = [];
-                                exp_type = method_type;
-                                exp_attributes = []; (* check *)
-                                exp_env = env},
-                          [ Nolabel,
-                            Some {exp_desc = Texp_ident(path, lid, desc);
-                                  exp_loc = obj.exp_loc; exp_extra = [];
-                                  exp_type = desc.val_type;
-                                  exp_attributes = []; (* check *)
-                                  exp_env = env}
-                          ])
-                  in
-                  (Tmeth_name met, Some (re {exp_desc = exp;
-                                             exp_loc = loc; exp_extra = [];
-                                             exp_type = typ;
-                                             exp_attributes = []; (* check *)
-                                             exp_env = env}), typ)
-              |  _ ->
-                  assert false
-              end
           | _ ->
               (Tmeth_name met, None,
                filter_method env met Public obj.exp_type)
@@ -3283,19 +3108,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
         raise(Error(e.pexp_loc, env,
                     Undefined_method (obj.exp_type, met, valid_methods)))
       end
-  | Pexp_new cl ->
-      let (cl_path, cl_decl) = Typetexp.find_class env cl.loc cl.txt in
-      begin match cl_decl.cty_new with
-          None ->
-            raise(Error(loc, env, Virtual_class cl.txt))
-        | Some ty ->
-            rue {
-              exp_desc = Texp_new (cl_path, cl, cl_decl);
-              exp_loc = loc; exp_extra = [];
-              exp_type = instance_def ty;
-              exp_attributes = sexp.pexp_attributes;
-              exp_env = env }
-        end
+  | Pexp_new _ 
   | Pexp_setinstvar _ 
   | Pexp_override _ ->
         assert false

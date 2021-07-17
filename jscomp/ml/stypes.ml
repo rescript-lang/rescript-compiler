@@ -32,7 +32,7 @@ let output_int oc i = output_string oc (string_of_int i)
 type annotation =
   | Ti_pat   of pattern
   | Ti_expr  of expression
-  | Ti_class of class_expr
+  | Ti_class of unit
   | Ti_mod   of module_expr
   | An_call of Location.t * Annot.call
   | An_ident of Location.t * string * Annot.ident
@@ -42,7 +42,7 @@ let get_location ti =
   match ti with
     Ti_pat p   -> p.pat_loc
   | Ti_expr e  -> e.exp_loc
-  | Ti_class c -> c.cl_loc
+  | Ti_class () -> assert false
   | Ti_mod m   -> m.mod_loc
   | An_call (l, _k) -> l
   | An_ident (l, _s, _k) -> l

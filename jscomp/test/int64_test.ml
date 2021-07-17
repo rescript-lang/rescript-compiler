@@ -1,5 +1,5 @@
 (* module Mt = Mock_mt *)
-let f (u : nativeint) v = u > v  
+
 let v   = 
   Int64.add (Int64.of_int32 Int32.max_int ) Int64.one
 let h = Int64.neg v  

@@ -256,8 +256,6 @@ let init_shape modl =
         (add_name init_v id) :: init_shape_struct env rem
     | Sig_value(_, {val_kind=Val_prim _}) :: rem ->
         init_shape_struct env rem
-    | Sig_value _ :: _rem ->
-        assert false
     | Sig_type(id, tdecl, _) :: rem ->
         init_shape_struct (Env.add_type ~check:false id tdecl env) rem
     | Sig_typext _ :: _ ->

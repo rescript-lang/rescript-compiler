@@ -22,7 +22,7 @@ open Typedtree;;
 type annotation =
   | Ti_pat   of pattern
   | Ti_expr  of expression
-  | Ti_class of class_expr
+  | Ti_class of unit
   | Ti_mod   of module_expr
   | An_call of Location.t * Annot.call
   | An_ident of Location.t * string * Annot.ident

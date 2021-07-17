@@ -1581,12 +1581,8 @@ let native_repr_of_type env kind ty =
     Some Untagged_int
   | Unboxed, Tconstr (path, _, _) when Path.same path Predef.path_float ->
     Some Unboxed_float
-  | Unboxed, Tconstr (path, _, _) when Path.same path Predef.path_int32 ->
-    Some (Unboxed_integer Pint32)
   | Unboxed, Tconstr (path, _, _) when Path.same path Predef.path_int64 ->
     Some (Unboxed_integer Pint64)
-  | Unboxed, Tconstr (path, _, _) when Path.same path Predef.path_nativeint ->
-    Some (Unboxed_integer Pnativeint)
   | _ ->
     None
 

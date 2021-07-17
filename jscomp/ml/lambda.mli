@@ -278,9 +278,7 @@ type let_kind = Strict | Alias | StrictOpt | Variable
     Variable: the variable x is assigned later in e'
  *)
 
-type public_info = string option (* label name *)
 
-type meth_kind = Self | Public of public_info | Cached
 
 type shared_code = (int * int) list     (* stack size -> code label *)
 
@@ -314,7 +312,7 @@ type lambda =
   | Lwhile of lambda * lambda
   | Lfor of Ident.t * lambda * lambda * direction_flag * lambda
   | Lassign of Ident.t * lambda
-  | Lsend of meth_kind * lambda * lambda * lambda list * Location.t
+  | Lsend of string * lambda *  Location.t
 
 and lfunction =
   { kind: function_kind;
@@ -382,7 +380,6 @@ val name_lambda_list: lambda list -> (lambda list -> lambda) -> lambda
 val iter: (lambda -> unit) -> lambda -> unit
 module IdentSet: Set.S with type elt = Ident.t
 val free_variables: lambda -> IdentSet.t
-val free_methods: lambda -> IdentSet.t
 
 val transl_normal_path: Path.t -> lambda   (* Path.t is already normal *)
 val transl_path: ?loc:Location.t -> Env.t -> Path.t -> lambda

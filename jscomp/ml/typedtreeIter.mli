@@ -31,16 +31,12 @@ module type IteratorArgument = sig
     val enter_module_type : module_type -> unit
     val enter_module_expr : module_expr -> unit
     val enter_with_constraint : with_constraint -> unit
-    val enter_class_expr : class_expr -> unit
     val enter_class_signature : class_signature -> unit
-    val enter_class_declaration : class_declaration -> unit
     val enter_class_description : class_description -> unit
     val enter_class_type_declaration : class_type_declaration -> unit
     val enter_class_type : class_type -> unit
     val enter_class_type_field : class_type_field -> unit
     val enter_core_type : core_type -> unit
-    val enter_class_structure : class_structure -> unit
-    val enter_class_field : class_field -> unit
     val enter_structure_item : structure_item -> unit
 
 
@@ -57,16 +53,12 @@ module type IteratorArgument = sig
     val leave_module_type : module_type -> unit
     val leave_module_expr : module_expr -> unit
     val leave_with_constraint : with_constraint -> unit
-    val leave_class_expr : class_expr -> unit
     val leave_class_signature : class_signature -> unit
-    val leave_class_declaration : class_declaration -> unit
     val leave_class_description : class_description -> unit
     val leave_class_type_declaration : class_type_declaration -> unit
     val leave_class_type : class_type -> unit
     val leave_class_type_field : class_type_field -> unit
     val leave_core_type : core_type -> unit
-    val leave_class_structure : class_structure -> unit
-    val leave_class_field : class_field -> unit
     val leave_structure_item : structure_item -> unit
 
     val enter_bindings : rec_flag -> unit
@@ -91,7 +83,6 @@ module MakeIterator :
       val iter_expression : expression -> unit
       val iter_module_type : module_type -> unit
       val iter_pattern : pattern -> unit
-      val iter_class_expr : class_expr -> unit
     end
 
 module DefaultIteratorArgument : IteratorArgument
