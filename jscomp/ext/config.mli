@@ -43,11 +43,8 @@ val ast_impl_magic_number: string
 val cmt_magic_number: string
         (* Magic number for compiled interface files *)
 
-val lazy_tag : int
-        (* Normally the same as Obj.lazy_tag.  Separate definition because
-           of technical reasons for bootstrapping. *)
 
-
+val default_uncurry : bool ref 
 val print_config : out_channel -> unit;;
 
 

@@ -700,6 +700,7 @@ o test/ui_defs.cmi : cc test/ui_defs.mli | $stdlib
 o test/unboxed_attribute_test.cmi test/unboxed_attribute_test.cmj : cc test/unboxed_attribute_test.ml | test/mt.cmj $stdlib
 o test/unboxed_use_case.cmj : cc_cmi test/unboxed_use_case.ml | test/unboxed_use_case.cmi $stdlib
 o test/unboxed_use_case.cmi : cc test/unboxed_use_case.mli | $stdlib
+o test/uncurry_external_test.cmi test/uncurry_external_test.cmj : cc test/uncurry_external_test.ml | test/mt.cmj $stdlib
 o test/uncurry_glob_test.cmi test/uncurry_glob_test.cmj : cc test/uncurry_glob_test.ml | $stdlib
 o test/uncurry_method.cmi test/uncurry_method.cmj : cc test/uncurry_method.ml | $stdlib
 o test/uncurry_test.cmj : cc_cmi test/uncurry_test.ml | test/uncurry_test.cmi $stdlib

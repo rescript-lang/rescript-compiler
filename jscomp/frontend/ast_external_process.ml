@@ -633,6 +633,15 @@ let external_desc_of_non_obj
 
     } -> 
     let name = prim_name_or_pval_prim.name in
+    if arg_type_specs_length  = 0 then
+      (*
+         {[
+           external ff : int -> int [@bs] = "" [@@module "xx"]
+         ]}
+         FIXME: splice is not supported here 
+      *)
+      Js_var { name; external_module_name = None; scopes}
+    else 
     Js_call {splice; name; external_module_name = None; scopes}   
   | {call_name = Some {name; source = _} ;
      splice;
@@ -652,6 +661,15 @@ let external_desc_of_non_obj
      mk_obj = _ ;
      return_wrapper = _ ;
     } ->
+      if arg_type_specs_length  = 0 then
+        (*
+           {[
+             external ff : int -> int = "" [@@module "xx"]
+           ]}
+        *)
+        Js_var { name; external_module_name ; scopes}
+        (*FIXME: splice is not supported here *)
+      else 
     Js_call {splice; name; external_module_name; scopes }
   | {call_name = Some _ ; _ }
     ->
