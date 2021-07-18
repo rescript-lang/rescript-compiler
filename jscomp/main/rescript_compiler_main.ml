@@ -433,7 +433,8 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
 
     "-nopervasives", set Clflags.nopervasives, 
     "*internal*";
-
+    "-bs-uncurry", set Config.default_uncurry,
+    "*internal" ;
     "-v", unit_call print_version_string,
     "Print compiler version and location of standard library and exit";  
 
