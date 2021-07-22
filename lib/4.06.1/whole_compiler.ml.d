@@ -209,7 +209,6 @@
 ../lib/4.06.1/whole_compiler.ml: ./core/record_attributes_check.ml
 ../lib/4.06.1/whole_compiler.ml: ./core/res_compmisc.ml
 ../lib/4.06.1/whole_compiler.ml: ./core/res_compmisc.mli
-../lib/4.06.1/whole_compiler.ml: ./core/transl_single_field_record.ml
 ../lib/4.06.1/whole_compiler.ml: ./depends/ast_extract.ml
 ../lib/4.06.1/whole_compiler.ml: ./depends/ast_extract.mli
 ../lib/4.06.1/whole_compiler.ml: ./depends/binary_ast.ml

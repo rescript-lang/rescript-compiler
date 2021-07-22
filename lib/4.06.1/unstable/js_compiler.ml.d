@@ -201,7 +201,6 @@
 ../lib/4.06.1/unstable/js_compiler.ml: ./core/record_attributes_check.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./core/res_compmisc.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./core/res_compmisc.mli
-../lib/4.06.1/unstable/js_compiler.ml: ./core/transl_single_field_record.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./depends/bs_exception.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./depends/bs_exception.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./ext/bsc_args.ml
