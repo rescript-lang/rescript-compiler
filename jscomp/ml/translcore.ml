@@ -30,7 +30,7 @@ type error =
   | Unreachable_reached
 
 exception Error of Location.t * error
-let wrap_single_field_record = ref (fun _ _ lam -> lam)
+
 
 (* Forward declaration -- to be filled in by Translmod.transl_module *)
 let transl_module =
@@ -1057,7 +1057,21 @@ and transl_record loc env fields repres opt_init_expr =
    match opt_init_expr, repres, fields with 
   | None, Record_unboxed _, [|{lbl_name; lbl_loc}, Overridden (_,expr)|]
     ->     
-      !wrap_single_field_record lbl_loc lbl_name (transl_exp expr)
+      (** ReScript uncurried encoding *)
+      let loc = lbl_loc in 
+      let lambda = transl_exp expr in 
+      if lbl_name.[0] = 'I' then
+        let arity_s = String.sub lbl_name 1 (String.length lbl_name - 1) in 
+        let prim = 
+          Primitive.make ~name:"#fn_mk" 
+                  ~alloc:true 
+                  ~native_name:arity_s 
+                  ~native_repr_args:[Same_as_ocaml_repr] 
+                  ~native_repr_res: Same_as_ocaml_repr in 
+        Lprim (
+          Pccall prim (* could be replaced with Opaque in the future except arity 0*)
+            , [lambda],loc)
+      else lambda  
   | _ ->           
   let size = Array.length fields in
   (* Determine if there are "enough" fields (only relevant if this is a
