@@ -920,12 +920,6 @@ and transl_cases_try cases =
     List.filter (fun c -> c.c_rhs.exp_desc <> Texp_unreachable) cases in
   List.map transl_case_try cases
 
-and transl_tupled_cases patl_expr_list =
-  let patl_expr_list =
-    List.filter (fun (_,_,e) -> e.exp_desc <> Texp_unreachable)
-      patl_expr_list in
-  List.map (fun (patl, guard, expr) -> (patl, transl_guard guard expr))
-    patl_expr_list
 
 and transl_apply ?(should_be_tailcall=false) ?(inlined = Default_inline)
       ?(specialised = Default_specialise) lam sargs loc =
@@ -983,7 +977,7 @@ and transl_apply ?(should_be_tailcall=false) ?(inlined = Default_inline)
                                 sargs)
      : Lambda.lambda)
 
-and transl_function loc untuplify_fn repr partial param cases =
+and transl_function loc  _untuplify_fn repr partial param cases =
   match cases with
     [{c_lhs=pat; c_guard=None;
       c_rhs={exp_desc = Texp_function { arg_label = _; param = param'; cases;
@@ -993,23 +987,6 @@ and transl_function loc untuplify_fn repr partial param cases =
         transl_function exp.exp_loc false repr partial' param' cases in
       ((Curried, param :: params),
        Matching.for_function loc None (Lvar param) [pat, body] partial)
-  | {c_lhs={pat_desc = Tpat_tuple pl}} :: _ when untuplify_fn ->
-      begin try
-        let size = List.length pl in
-        let pats_expr_list =
-          List.map
-            (fun {c_lhs; c_guard; c_rhs} ->
-              (Matching.flatten_pattern size c_lhs, c_guard, c_rhs))
-            cases in
-        let params = List.map (fun _ -> Ident.create "param") pl in
-        ((Tupled, params),
-         Matching.for_tupled_function loc params
-           (transl_tupled_cases pats_expr_list) partial)
-      with Matching.Cannot_flatten ->
-        ((Curried, [param]),
-         Matching.for_function loc repr (Lvar param)
-           (transl_cases cases) partial)
-      end
   | _ ->
       ((Curried, [param]),
        Matching.for_function loc repr (Lvar param)
