@@ -294,9 +294,10 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
             let args = 
               [ Lam.const Const_js_false ; 
                 (* FIXME: arity 0 does not get proper supported*)
-                prim ~primitive:(Pjs_fn_make 0) ~args:[Lam.function_ ~arity:1 ~params:[Ident.create "param"] ~body:computation 
-                                                         ~attr:Lam.default_fn_attr] 
-                  loc             
+                Lam.function_ 
+                  ~arity:0 
+                  ~params:[] ~body:computation 
+                  ~attr:Lam.default_fn_attr                
               ] in 
             prim ~primitive:(Pmakeblock (tag,lazy_block_info,Mutable)) ~args loc  
 
