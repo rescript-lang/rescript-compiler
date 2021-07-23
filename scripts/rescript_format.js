@@ -114,7 +114,7 @@ function main(argv, rescript_exe, bsc_exe) {
         var os = require("os");
         var filename = path.join(
           os.tmpdir(),
-          "rescript_" + crypto.randomBytes(8).toString("hex") + use_stdin
+          "rescript_" + crypto.randomBytes(8).toString("hex") + path.parse(use_stdin).base
         );
         (async function () {
           var content = await readStdin();
