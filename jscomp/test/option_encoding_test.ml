@@ -2,10 +2,10 @@
   flags = [|
     "-w";
        "@A";
-    "-drawlambda";
-    "-dtypedtree";
-    "-bs-diagnose";
-    "-dparsetree";
+    (* "-drawlambda"; *)
+    (* "-dtypedtree"; *)
+    (* "-bs-diagnose"; *)
+    (* "-dparsetree"; *)
     (* "-dsource"; *)
   |]
 }]

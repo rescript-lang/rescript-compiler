@@ -1,9 +1,9 @@
 
 [@@@bs.config{flags = 
 [|
-  "-bs-diagnose"
-  ; "-drawlambda"
-  ; "-dtypedtree"
+  (* "-bs-diagnose" *)
+  (* ; "-drawlambda" *)
+  (* ; "-dtypedtree" *)
 |]}]
 
 let suites :  Mt.pair_suites ref  = ref []

@@ -5,7 +5,7 @@
     /* "-drawlambda"; */
     /* "-dtypedtree"; */
     /* "-bs-diagnose"; */
-    "-dparsetree",
+    // "-dparsetree",
     /* "-dsource"; */
   ],
 })
