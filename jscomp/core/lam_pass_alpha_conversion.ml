@@ -58,11 +58,11 @@ let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
     match lam with 
     | Lconst _ -> lam
     | Lvar _ -> lam 
-    | Lapply {ap_func = l1; ap_args =  ll;  ap_info } 
+    | Lapply {ap_func ; ap_args ;  ap_info } 
       -> (* detect functor application *)
-      let args_arity =  Lam_arity.extract_arity (Lam_arity_analysis.get_arity meta l1) in
-      let len = List.length ll in         
-      populateApplyInfo args_arity len l1 ll ap_info
+      let args_arity =  Lam_arity.extract_arity (Lam_arity_analysis.get_arity meta ap_func) in
+      let len = List.length ap_args in         
+      populateApplyInfo args_arity len ap_func ap_args ap_info
     | Llet (str, v, l1, l2) ->
       Lam.let_ str v (simpl l1) (simpl l2 )
     | Lletrec (bindings, body) ->
