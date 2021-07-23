@@ -21,9 +21,6 @@ type boxed_integer = Pnativeint | Pint32 | Pint64
    of a primitive *)
 type native_repr =
   | Same_as_ocaml_repr
-  | Unboxed_float
-  | Unboxed_integer of boxed_integer
-  | Untagged_int
 
 type description = private
   { prim_name: string;         (* Name of primitive  or C function *)
@@ -63,12 +60,6 @@ val print
 val native_name: description -> string
 val byte_name: description -> string
 
-type error =
-  | Old_style_float_with_native_repr_attribute
-  | Old_style_noalloc_with_noalloc_attribute
-  | No_native_primitive_with_repr_attribute
-
-exception Error of Location.t * error
 
 val coerce : 
   (description -> description -> bool ) ref

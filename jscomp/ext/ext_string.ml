@@ -523,3 +523,9 @@ let is_valid_hash_number (x:string) =
 let hash_number_as_i32_exn 
     ( x : string) : int32 = 
   Int32.of_string x    
+
+
+let first_marshal_char (x : string) = 
+    x <> ""   &&
+    ( String.unsafe_get x  0 = '\132')
+  

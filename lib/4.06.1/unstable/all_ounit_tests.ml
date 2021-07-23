@@ -1942,6 +1942,10 @@ val is_valid_hash_number:
 val hash_number_as_i32_exn:
   string ->
   int32
+
+val first_marshal_char:  
+  string -> 
+  bool
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
@@ -2467,6 +2471,12 @@ let is_valid_hash_number (x:string) =
 let hash_number_as_i32_exn 
     ( x : string) : int32 = 
   Int32.of_string x    
+
+
+let first_marshal_char (x : string) = 
+    x <> ""   &&
+    ( String.unsafe_get x  0 = '\132')
+  
 end
 module Ounit_array_tests
 = struct

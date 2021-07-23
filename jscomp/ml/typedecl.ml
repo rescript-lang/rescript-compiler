@@ -49,9 +49,6 @@ type error =
   | Unbound_type_var_ext of type_expr * extension_constructor
   | Varying_anonymous
   | Val_in_structure
-  | Multiple_native_repr_attributes
-  | Cannot_unbox_or_untag_type of native_repr_kind
-  | Deep_unbox_or_untag_attribute of native_repr_kind
   | Bad_immediate_attribute
   | Bad_unboxed_attribute of string
   | Boxed_and_unboxed
@@ -1557,80 +1554,19 @@ let transl_exception env sext =
   let newenv = Env.add_extension ~check:true ext.ext_id ext.ext_type env in
     ext, newenv
 
-type native_repr_attribute =
-  | Native_repr_attr_absent
-  | Native_repr_attr_present of native_repr_kind
 
-let get_native_repr_attribute attrs ~global_repr =
-  match
-    Attr_helper.get_no_payload_attribute ["unboxed"; "ocaml.unboxed"]  attrs,
-    Attr_helper.get_no_payload_attribute ["untagged"; "ocaml.untagged"] attrs,
-    global_repr
+
+let rec parse_native_repr_attributes env core_type ty =
+  match core_type.ptyp_desc, (Ctype.repr ty).desc
   with
-  | None, None, None -> Native_repr_attr_absent
-  | None, None, Some repr -> Native_repr_attr_present repr
-  | Some _, None, None -> Native_repr_attr_present Unboxed
-  | None, Some _, None -> Native_repr_attr_present Untagged
-  | Some { Location.loc }, _, _
-  | _, Some { Location.loc }, _ ->
-    raise (Error (loc, Multiple_native_repr_attributes))
-
-let native_repr_of_type env kind ty =
-  match kind, (Ctype.expand_head_opt env ty).desc with
-  | Untagged, Tconstr (path, _, _) when Path.same path Predef.path_int ->
-    Some Untagged_int
-  | Unboxed, Tconstr (path, _, _) when Path.same path Predef.path_float ->
-    Some Unboxed_float
-  | Unboxed, Tconstr (path, _, _) when Path.same path Predef.path_int64 ->
-    Some (Unboxed_integer Pint64)
-  | _ ->
-    None
-
-(* Raises an error when [core_type] contains an [@unboxed] or [@untagged]
-   attribute in a strict sub-term. *)
-let error_if_has_deep_native_repr_attributes core_type =
-  let open Ast_iterator in
-  let this_iterator =
-    { default_iterator with typ = fun iterator core_type ->
-      begin
-        match
-          get_native_repr_attribute core_type.ptyp_attributes ~global_repr:None
-        with
-        | Native_repr_attr_present kind ->
-           raise (Error (core_type.ptyp_loc,
-                         Deep_unbox_or_untag_attribute kind))
-        | Native_repr_attr_absent -> ()
-      end;
-      default_iterator.typ iterator core_type }
-  in
-  default_iterator.typ this_iterator core_type
-
-let make_native_repr env core_type ty ~global_repr =
-  error_if_has_deep_native_repr_attributes core_type;
-  match get_native_repr_attribute core_type.ptyp_attributes ~global_repr with
-  | Native_repr_attr_absent ->
-    Same_as_ocaml_repr
-  | Native_repr_attr_present kind ->
-    begin match native_repr_of_type env kind ty with
-    | None ->
-      raise (Error (core_type.ptyp_loc, Cannot_unbox_or_untag_type kind))
-    | Some repr -> repr
-    end
-
-let rec parse_native_repr_attributes env core_type ty ~global_repr =
-  match core_type.ptyp_desc, (Ctype.repr ty).desc,
-    get_native_repr_attribute core_type.ptyp_attributes ~global_repr:None
-  with
-  | Ptyp_arrow _, Tarrow _, Native_repr_attr_present kind  ->
-    raise (Error (core_type.ptyp_loc, Cannot_unbox_or_untag_type kind))
-  | Ptyp_arrow (_, ct1, ct2), Tarrow (_, t1, t2, _), _ ->
-    let repr_arg = make_native_repr env ct1 t1 ~global_repr in
+  | Ptyp_arrow (_, _, ct2), Tarrow (_, _, t2, _) ->
+    let repr_arg = Same_as_ocaml_repr  in
     let repr_args, repr_res =
-      parse_native_repr_attributes env ct2 t2 ~global_repr
+      parse_native_repr_attributes env ct2 t2 
     in
     (repr_arg :: repr_args, repr_res)
-  | Ptyp_arrow _, _, _ | _, Tarrow _, _ -> assert false
-  | _ -> ([], make_native_repr env core_type ty ~global_repr)
+  | Ptyp_arrow _, _ | _, Tarrow _ -> assert false
+  | _ -> ([], Same_as_ocaml_repr)
 
 
 let check_unboxable env loc ty =
@@ -1656,15 +1592,7 @@ let transl_value_decl env loc valdecl =
   | [] ->
       raise (Error(valdecl.pval_loc, Val_in_structure))
   | _ ->
-      let global_repr =
-        match
-          get_native_repr_attribute valdecl.pval_attributes ~global_repr:None
-        with
-        | Native_repr_attr_present repr -> Some repr
-        | Native_repr_attr_absent -> None
-      in
       let native_repr_args, native_repr_res =
-        if !Config.bs_only then          
           let rec scann (attrs : Parsetree.attributes)  = 
             match attrs with 
             | ({txt = "internal.arity";_}, 
@@ -1680,10 +1608,8 @@ let transl_value_decl env loc valdecl =
             else Primitive.Same_as_ocaml_repr :: make (n - 1)
           in 
             match scann valdecl.pval_attributes with 
-            | None ->  parse_native_repr_attributes env valdecl.pval_type ty ~global_repr
+            | None ->  parse_native_repr_attributes env valdecl.pval_type ty 
             | Some x -> make x , Primitive.Same_as_ocaml_repr
-        else
-        parse_native_repr_attributes env valdecl.pval_type ty ~global_repr
       in
       let prim =
         Primitive.parse_declaration valdecl
@@ -2048,19 +1974,6 @@ let report_error ppf = function
         "cannot be checked"
   | Val_in_structure ->
       fprintf ppf "Value declarations are only allowed in signatures"
-  | Multiple_native_repr_attributes ->
-      fprintf ppf "Too many [@@unboxed]/[@@untagged] attributes"
-  | Cannot_unbox_or_untag_type Unboxed ->
-      fprintf ppf "Don't know how to unbox this type. Only float, int32, \
-                   int64 and nativeint can be unboxed"
-  | Cannot_unbox_or_untag_type Untagged ->
-      fprintf ppf "Don't know how to untag this type. Only int \
-                   can be untagged"
-  | Deep_unbox_or_untag_attribute kind ->
-      fprintf ppf
-        "The attribute '%s' should be attached to a direct argument or \
-         result of the primitive, it should not occur deeply into its type"
-        (match kind with Unboxed -> "@unboxed" | Untagged -> "@untagged")
   | Bad_immediate_attribute ->
       fprintf ppf "@[%s@ %s@]"
         "Types marked with the immediate attribute must be"

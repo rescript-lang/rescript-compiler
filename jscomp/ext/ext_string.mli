@@ -220,3 +220,7 @@ val is_valid_hash_number:
 val hash_number_as_i32_exn:
   string ->
   int32
+
+val first_marshal_char:  
+  string -> 
+  bool

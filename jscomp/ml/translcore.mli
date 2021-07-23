@@ -20,12 +20,6 @@ open Asttypes
 open Typedtree
 open Lambda
 
-val wrap_single_field_record :
-  (
-    Location.t ->   
-    string -> 
-    lambda ->
-    lambda) ref 
 
 val transl_exp: expression -> lambda
 val transl_apply: ?should_be_tailcall:bool
