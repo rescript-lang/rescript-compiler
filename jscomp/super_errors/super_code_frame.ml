@@ -4,8 +4,7 @@ let digits_count n =
   in
   loop (abs n) 1 0
 
-let seek_2_lines_before src pos =
-  let open Lexing in
+let seek_2_lines_before src (pos : Lexing.position) =
   let original_line = pos.pos_lnum in
   let rec loop current_line current_char =
     if current_line + 2 >= original_line then
@@ -17,8 +16,7 @@ let seek_2_lines_before src pos =
   in
   loop 1 0
 
-let seek_2_lines_after src pos =
-  let open Lexing in
+let seek_2_lines_after src (pos : Lexing.position) =
   let original_line = pos.pos_lnum in
   let rec loop current_line current_char =
     if current_char = String.length src then
@@ -121,9 +119,7 @@ type line = {
   - center snippet when it's heavily indented
   - ellide intermediate lines when the reported range is huge
 *)
-let print ~is_warning ~src ~startPos ~endPos =
-  let open Lexing in
-
+let print ~is_warning ~src ~(startPos : Lexing.position) ~(endPos:Lexing.position) =
   let indent = 2 in
   let highlight_line_start_line = startPos.pos_lnum in
   let highlight_line_end_line = endPos.pos_lnum in
