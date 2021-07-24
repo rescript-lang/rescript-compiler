@@ -196,7 +196,7 @@ and value_kind =
     Pgenval 
 
 and block_shape =
-  value_kind list option
+  unit option
 
 and array_kind =
     Pgenarray | Paddrarray | Pintarray | Pfloatarray

@@ -235,7 +235,7 @@ and value_kind =
     Pgenval 
 
 and block_shape =
-  value_kind list option
+  unit option
 
 and boxed_integer = Primitive.boxed_integer =
     Pnativeint | Pint32 | Pint64
