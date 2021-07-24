@@ -567,7 +567,6 @@ let rec push_defaults loc bindings cases partial =
 
 let [@inline] event_before _exp lam = lam
 
-let [@inline] event_after _exp lam = lam
 
 
 let primitive_is_ccall = function
@@ -586,7 +585,7 @@ let assert_failed exp =
 #if 1
   let fname = Filename.basename fname in   
 #end     
-  Lprim(Praise Raise_regular, [event_after exp
+  Lprim(Praise Raise_regular, [
     (Lprim(Pmakeblock(0, Blk_extension, Immutable, None),
           [transl_normal_path Predef.path_assert_failure;
            Lconst(Const_block(0, Blk_tuple,
@@ -638,7 +637,7 @@ and transl_exp0 e =
       let args, args' = cut p.prim_arity oargs in
       let wrap f =
         if args' = []
-        then event_after e f
+        then f
         else
           let should_be_tailcall, funct =
             Translattribute.get_tailcall_attribute funct
@@ -650,7 +649,6 @@ and transl_exp0 e =
             Translattribute.get_and_remove_specialised_attribute funct
           in
           let e = { e with exp_desc = Texp_apply(funct, oargs) } in
-          event_after e
             (transl_apply ~should_be_tailcall ~inlined ~specialised
                f args' e.exp_loc)
       in
@@ -663,7 +661,7 @@ and transl_exp0 e =
         let prim = transl_primitive_application
             e.exp_loc p e.exp_env prim_type (Some path) args in
         match (prim, args) with
-          (Praise k, [arg1]) ->
+          (Praise k, [_]) ->
             let targ = List.hd argl in
             let k =
               match k, targ with
@@ -673,7 +671,7 @@ and transl_exp0 e =
               | _ ->
                   k
             in
-            wrap0 (Lprim(Praise k, [event_after arg1 targ], e.exp_loc))
+            wrap0 (Lprim(Praise k, [targ], e.exp_loc))
         | (Ploc kind, []) ->
           lam_of_loc kind e.exp_loc
         | (Ploc kind, [arg1]) ->
@@ -700,7 +698,6 @@ and transl_exp0 e =
         Translattribute.get_and_remove_specialised_attribute funct
       in
       let e = { e with exp_desc = Texp_apply(funct, oargs) } in
-      event_after e
         (transl_apply ~should_be_tailcall ~inlined ~specialised
            (transl_exp funct) oargs e.exp_loc)
   | Texp_match(arg, pat_expr_list, exn_pat_expr_list, partial) ->
