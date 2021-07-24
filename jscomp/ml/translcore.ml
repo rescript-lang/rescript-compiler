@@ -606,18 +606,7 @@ let try_ids = Hashtbl.create 8
 
 let rec transl_exp e =
   List.iter (Translattribute.check_attribute e) e.exp_attributes;
-#if 1
   transl_exp0 e
-#else
-  let eval_once =
-    (* Whether classes for immediate objects must be cached *)
-    match e.exp_desc with
-      Texp_function _ | Texp_for _ | Texp_while _ -> false
-    | _ -> true
-  in
-  if eval_once then transl_exp0 e else
-  Translobj.oo_wrap e.exp_env true transl_exp0 e
-#end
 and transl_exp0 e =
   match e.exp_desc with
     Texp_ident(path, _, {val_kind = Val_prim p}) ->
