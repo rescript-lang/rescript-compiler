@@ -43,6 +43,16 @@ let ut5 = fun [@bs] {contents = x0} {contents = x1} {contents = x2} {contents = 
 let t5 = fun  {contents = x0} {contents = x1} {contents = x2} {contents = x3} {contents = x4}-> 
     (x0,x1,x2,x3,x4)
   
+let nested0 = fun [@bs] {contents = x0} {contents = x1} {contents = x2} ->     
+    let a = x0 + x1 + x2 in 
+    fun {contents = x0} {contents = x1} {contents = x2} ->     
+    a + x0 + x1 + x2
+
+let nested1 = fun  {contents = x0} {contents = x1} {contents = x2} ->     
+    let a = x0 + x1 + x2 in 
+    fun [@bs] {contents = x0} {contents = x1} {contents = x2} ->     
+    a + x0 + x1 + x2
+
   ;; eqs __LOC__ (ut3 (ref 1) (ref 2) (ref 3) [@bs]) (1,2,3) 
 ;; eqs __LOC__ (t3 (ref 1) (ref 2) (ref 3) ) (1,2,3) 
 
