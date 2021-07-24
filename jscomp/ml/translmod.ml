@@ -118,7 +118,7 @@ and apply_coercion_result loc strict funct params args cc_res =
                 loc = loc;
                 body = apply_coercion
                          loc Strict cc_res
-                         (Lapply{ap_should_be_tailcall=false;
+                         (Lapply{
                                  ap_loc=loc;
                                  ap_func=Lvar id;
                                  ap_args=List.rev args;
@@ -207,7 +207,6 @@ let mod_prim name args loc =
                 Env.empty));
       ap_args =  args;
       ap_loc =  loc;
-      ap_should_be_tailcall = false;
       ap_inlined = Default_inline;
       ap_specialised = Default_specialise;
       }
@@ -460,7 +459,7 @@ and transl_module cc rootpath mexp =
           in
           oo_wrap mexp.mod_env true
             (apply_coercion loc Strict cc)
-            (Lapply{ap_should_be_tailcall=false;
+            (Lapply{
                     ap_loc=loc;
                     ap_func=transl_module Tcoerce_none None funct;
                     ap_args=[transl_module ccarg None arg];

@@ -286,7 +286,6 @@ and lambda_apply =
   { ap_func : lambda;
     ap_args : lambda list;
     ap_loc : Location.t;
-    ap_should_be_tailcall : bool;
     ap_inlined : inline_attribute;
     ap_specialised : specialise_attribute; }
 
@@ -635,13 +634,12 @@ let rec map f lam =
     match lam with
     | Lvar _ -> lam
     | Lconst _ -> lam
-    | Lapply { ap_func; ap_args; ap_loc; ap_should_be_tailcall;
+    | Lapply { ap_func; ap_args; ap_loc; 
           ap_inlined; ap_specialised } ->
         Lapply {
           ap_func = map f ap_func;
           ap_args = List.map (map f) ap_args;
           ap_loc;
-          ap_should_be_tailcall;
           ap_inlined;
           ap_specialised;
         }

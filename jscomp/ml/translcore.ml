@@ -895,7 +895,7 @@ and transl_cases_try cases =
   List.map transl_case_try cases
 
 
-and transl_apply ?(should_be_tailcall=false) ?(inlined = Default_inline)
+and transl_apply  ?(inlined = Default_inline)
       ?(specialised = Default_specialise) lam sargs loc =
   let lapply funct args =
     match funct with
@@ -903,7 +903,7 @@ and transl_apply ?(should_be_tailcall=false) ?(inlined = Default_inline)
     | Lapply ap ->
         Lapply {ap with ap_args = ap.ap_args @ args; ap_loc = loc}
     | lexp ->
-        Lapply {ap_should_be_tailcall=should_be_tailcall;
+        Lapply {
                 ap_loc=loc;
                 ap_func=lexp;
                 ap_args=args;
