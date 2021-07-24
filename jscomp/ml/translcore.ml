@@ -639,17 +639,13 @@ and transl_exp0 e =
         if args' = []
         then f
         else
-          let should_be_tailcall, funct =
-            Translattribute.get_tailcall_attribute funct
-          in
           let inlined, funct =
             Translattribute.get_and_remove_inlined_attribute funct
           in
-          let specialised, funct =
+          let specialised, _ =
             Translattribute.get_and_remove_specialised_attribute funct
           in
-          let e = { e with exp_desc = Texp_apply(funct, oargs) } in
-            (transl_apply ~should_be_tailcall ~inlined ~specialised
+            (transl_apply  ~inlined ~specialised
                f args' e.exp_loc)
       in
       let wrap0 f =
@@ -688,17 +684,13 @@ and transl_exp0 e =
             end
       end
   | Texp_apply(funct, oargs) ->
-      let should_be_tailcall, funct =
-        Translattribute.get_tailcall_attribute funct
-      in
       let inlined, funct =
         Translattribute.get_and_remove_inlined_attribute funct
       in
       let specialised, funct =
         Translattribute.get_and_remove_specialised_attribute funct
       in
-      let e = { e with exp_desc = Texp_apply(funct, oargs) } in
-        (transl_apply ~should_be_tailcall ~inlined ~specialised
+        (transl_apply  ~inlined ~specialised
            (transl_exp funct) oargs e.exp_loc)
   | Texp_match(arg, pat_expr_list, exn_pat_expr_list, partial) ->
     transl_match e arg pat_expr_list exn_pat_expr_list partial
