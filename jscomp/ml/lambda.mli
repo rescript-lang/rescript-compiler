@@ -264,7 +264,7 @@ type specialise_attribute =
   | Never_specialise (* [@specialise never] *)
   | Default_specialise (* no [@specialise] attribute *)
 
-type function_kind = Curried | Tupled
+
 
 type let_kind = Strict | Alias | StrictOpt | Variable
 (* Meaning of kinds for let x = e in e':
@@ -315,7 +315,7 @@ type lambda =
   | Lsend of string * lambda *  Location.t
 
 and lfunction =
-  { kind: function_kind;
+  {
     params: Ident.t list;
     body: lambda;
     attr: function_attribute; (* specified with [@inline] attribute *)

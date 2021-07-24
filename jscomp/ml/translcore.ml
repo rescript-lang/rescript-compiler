@@ -425,7 +425,7 @@ let transl_primitive loc p env ty path =
   match prim with
   | Plazyforce ->
       let parm = Ident.create "prim" in
-      Lfunction{kind = Curried; params = [parm];
+      Lfunction{ params = [parm];
                 body = Matching.inline_lazy_force (Lvar parm) Location.none;
                 loc = loc;
                 attr = default_stub_attribute }
@@ -435,7 +435,7 @@ let transl_primitive loc p env ty path =
       | 0 -> lam
       | 1 -> (* TODO: we should issue a warning ? *)
         let param = Ident.create "prim" in
-        Lfunction{kind = Curried; params = [param];
+        Lfunction{ params = [param];
                   attr = default_stub_attribute;
                   loc = loc;
                   body = Lprim(Pmakeblock(0, Lambda.Blk_tuple, Immutable, None),
@@ -450,7 +450,7 @@ let transl_primitive loc p env ty path =
         let params = 
           if prim_arity = 1 then [Ident.create "prim"]  
           else  make_params prim_arity prim_arity in
-        Lfunction{ kind = Curried; params;
+        Lfunction{ params;
                    attr = default_stub_attribute;
                    loc = loc;
                    body = Lprim(prim, List.map (fun id -> Lvar id) params, loc) }
@@ -629,7 +629,7 @@ and transl_exp0 e =
   | Texp_let(rec_flag, pat_expr_list, body) ->
       transl_let rec_flag pat_expr_list (event_before body (transl_exp body))
   | Texp_function { arg_label = _; param; cases; partial; } ->
-      let ((kind, params), body) =        
+      let ( params, body) =        
             let pl = push_defaults e.exp_loc [] cases partial in
             transl_function e.exp_loc  partial
               param pl
@@ -641,7 +641,7 @@ and transl_exp0 e =
       }
       in
       let loc = e.exp_loc in
-      Lfunction{kind; params; body; attr; loc}
+      Lfunction{ params; body; attr; loc}
   | Texp_apply({ exp_desc = Texp_ident(path, _, {val_kind = Val_prim p});
                 exp_type = prim_type } as funct, oargs)
     when List.length oargs >= p.prim_arity
@@ -954,11 +954,11 @@ and transl_apply ?(should_be_tailcall=false) ?(inlined = Default_inline)
         and id_arg = Ident.create "param" in
         let body =
           match build_apply handle ((Lvar id_arg, optional)::args') l with
-            Lfunction{kind = Curried; params = ids; body = lam; attr; loc} ->
-              Lfunction{kind = Curried; params = id_arg::ids; body = lam; attr;
+            Lfunction{params = ids; body = lam; attr; loc} ->
+              Lfunction{params = id_arg::ids; body = lam; attr;
                         loc}
           | lam ->
-              Lfunction{kind = Curried; params = [id_arg]; body = lam;
+              Lfunction{params = [id_arg]; body = lam;
                         attr = default_stub_attribute; loc = loc}
         in
         List.fold_left
@@ -980,12 +980,12 @@ and transl_function loc   partial param cases =
       c_rhs={exp_desc = Texp_function { arg_label = _; param = param'; cases;
         partial = partial'; }} as exp}]
     when Parmatch.inactive ~partial pat ->
-      let ((_, params), body) =
+      let (params, body) =
         transl_function exp.exp_loc   partial' param' cases in
-      ((Curried, param :: params),
+      ((param :: params),
        Matching.for_function loc None (Lvar param) [pat, body] partial)
   | _ ->
-      ((Curried, [param]),
+      ([param],
        Matching.for_function loc None (Lvar param)
          (transl_cases cases) partial)
 
