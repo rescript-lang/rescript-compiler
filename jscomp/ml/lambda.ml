@@ -297,18 +297,7 @@ and lambda_switch =
     sw_failaction : lambda option;
     sw_names: switch_names option }
 
-and lambda_event =
-  { lev_loc: Location.t;
-    lev_kind: lambda_event_kind;
-    lev_repr: int ref option;
-    lev_env: Env.summary }
 
-and lambda_event_kind =
-    Lev_before
-  | Lev_after of Types.type_expr
-  | Lev_function
-  | Lev_pseudo
-  | Lev_module_definition of Ident.t
 
 type program =
   { module_ident : Ident.t;
