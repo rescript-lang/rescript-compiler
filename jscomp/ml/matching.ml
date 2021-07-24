@@ -3072,8 +3072,7 @@ let for_let loc param pat body =
       Lsequence(param, body)
   | Tpat_var (id, _) ->
       (* fast path, and keep track of simple bindings to unboxable numbers *)
-      let k = Typeopt.value_kind pat.pat_env pat.pat_type in
-      Llet(Strict, k, id, param, body)
+      Llet(Strict, Pgenval, id, param, body)
   | _ ->
 #if true   
       (* Turn off such optimization to reduce diff in the beginning*)

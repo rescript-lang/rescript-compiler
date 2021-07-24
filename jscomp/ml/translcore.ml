@@ -858,8 +858,7 @@ and transl_list expr_list =
 
 and transl_list_with_shape expr_list =
   let transl_with_shape e =
-    let shape = Typeopt.value_kind e.exp_env e.exp_type in
-    transl_exp e, shape
+    transl_exp e, Pgenval
   in
   List.split (List.map transl_with_shape expr_list)
 
@@ -1040,8 +1039,8 @@ and transl_record loc env fields repres opt_init_expr =
       Array.mapi
         (fun i (lbl, definition) ->
            match definition with
-           | Kept typ ->
-               let field_kind = value_kind env typ in
+           | Kept _ ->
+               let field_kind = Pgenval in
                let access =
                  match repres with
                    Record_regular ->   Pfield (i, !Lambda.fld_record lbl) 
@@ -1051,7 +1050,7 @@ and transl_record loc env fields repres opt_init_expr =
                  | Record_float -> Pfloatfield (i, !Lambda.fld_record lbl) in
                Lprim(access, [Lvar init_id], loc), field_kind
            | Overridden (_lid, expr) ->
-               let field_kind = value_kind expr.exp_env expr.exp_type in
+               let field_kind = Pgenval in
                transl_exp expr, field_kind)
         fields
     in

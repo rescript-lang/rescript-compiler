@@ -56,9 +56,6 @@ let boxed_integer_name = function
 
 let value_kind = function
   | Pgenval -> ""
-  | Pintval -> "[int]"
-  | Pfloatval -> "[float]"
-  | Pboxedintval bi -> Printf.sprintf "[%s]" (boxed_integer_name bi)
 
 (* let field_kind = function
   | Pgenval -> "*"

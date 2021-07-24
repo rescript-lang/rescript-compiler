@@ -165,18 +165,6 @@ let array_kind exp = array_type_kind exp.exp_env exp.exp_type
 let array_pattern_kind pat = array_type_kind pat.pat_env pat.pat_type
 
 
-let value_kind env ty =
-  match scrape env ty with
-  | Tconstr(p, _, _) when Path.same p Predef.path_int ->
-      Pintval
-  | Tconstr(p, _, _) when Path.same p Predef.path_char ->
-      Pintval
-  | Tconstr(p, _, _) when Path.same p Predef.path_float ->
-      Pfloatval
-  | Tconstr(p, _, _) when Path.same p Predef.path_int64 ->
-      Pboxedintval Pint64
-  | _ ->
-      Pgenval
 
 
 (** Whether a forward block is needed for a lazy thunk on a value, i.e.

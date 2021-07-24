@@ -232,7 +232,7 @@ and array_kind =
     Pgenarray | Paddrarray | Pintarray | Pfloatarray
 
 and value_kind =
-    Pgenval | Pfloatval | Pboxedintval of boxed_integer | Pintval
+    Pgenval 
 
 and block_shape =
   value_kind list option
