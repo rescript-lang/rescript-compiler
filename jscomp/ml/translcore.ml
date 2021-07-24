@@ -569,7 +569,6 @@ let [@inline] event_before _exp lam = lam
 
 let [@inline] event_after _exp lam = lam
 
-let [@inline] event_function _exp lam = lam None
 
 let primitive_is_ccall = function
   (* Determine if a primitive is a Pccall or will be turned later into
@@ -630,12 +629,10 @@ and transl_exp0 e =
   | Texp_let(rec_flag, pat_expr_list, body) ->
       transl_let rec_flag pat_expr_list (event_before body (transl_exp body))
   | Texp_function { arg_label = _; param; cases; partial; } ->
-      let ((kind, params), body) =
-        event_function e
-          (function repr ->
+      let ((kind, params), body) =        
             let pl = push_defaults e.exp_loc [] cases partial in
-            transl_function e.exp_loc false(*!Clflags.native_code*) repr partial
-              param pl)
+            transl_function e.exp_loc  partial
+              param pl
       in
       let attr = {
         default_function_attribute with
@@ -977,19 +974,19 @@ and transl_apply ?(should_be_tailcall=false) ?(inlined = Default_inline)
                                 sargs)
      : Lambda.lambda)
 
-and transl_function loc  _untuplify_fn repr partial param cases =
+and transl_function loc   partial param cases =
   match cases with
     [{c_lhs=pat; c_guard=None;
       c_rhs={exp_desc = Texp_function { arg_label = _; param = param'; cases;
         partial = partial'; }} as exp}]
     when Parmatch.inactive ~partial pat ->
       let ((_, params), body) =
-        transl_function exp.exp_loc false repr partial' param' cases in
+        transl_function exp.exp_loc   partial' param' cases in
       ((Curried, param :: params),
        Matching.for_function loc None (Lvar param) [pat, body] partial)
   | _ ->
       ((Curried, [param]),
-       Matching.for_function loc repr (Lvar param)
+       Matching.for_function loc None (Lvar param)
          (transl_cases cases) partial)
 
 and transl_let rec_flag pat_expr_list body =
