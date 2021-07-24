@@ -1227,7 +1227,7 @@ ${mllList(ninjaCwd, [
   let depsMap = createDepsMapWithTargets(sources);
   await Promise.all(depModulesForBscAsync(sources, testDir, depsMap));
   var targets = collectTarget(sources);
-  var output = generateNinja(depsMap, targets, ninjaCwd, [stdlibTarget,compilerTarget]);
+  var output = generateNinja(depsMap, targets, ninjaCwd, [stdlibTarget,pseudoTarget("$bsc")]);
   output.push(phony(pseudoTarget('test'), fileTargets(scanFileTargets(targets,[])), ninjaCwd));
   writeFileAscii(
     path.join(testDir, ninjaOutput),
@@ -1374,7 +1374,7 @@ function updateDev() {
     `
 subninja compiler.ninja
 stdlib = stdlib-406
-${BSC_COMPILER}      
+${BSC_COMPILER}
 subninja runtime/build.ninja
 subninja others/build.ninja
 subninja $stdlib/build.ninja
