@@ -188,7 +188,7 @@ type primitive =
   | Pctconst of compile_time_constant
   (* Inhibition of optimisation *)
   | Popaque
-
+  | Puncurried_apply
 and comparison =
     Ceq | Cneq | Clt | Cgt | Cle | Cge
 

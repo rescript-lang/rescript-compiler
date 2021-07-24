@@ -137,6 +137,7 @@ let print_taginfo ppf = function
     -> fprintf ppf "[%s]" (String.concat ";" (Array.to_list ss) )
 
 let primitive ppf = function
+  | Puncurried_apply -> fprintf ppf "@app"
   | Pidentity -> fprintf ppf "id"
   | Pbytes_to_string -> fprintf ppf "bytes_to_string"
   | Pbytes_of_string -> fprintf ppf "bytes_of_string"
@@ -289,6 +290,7 @@ let primitive ppf = function
   | Popaque -> fprintf ppf "opaque"
 
 let name_of_primitive = function
+  | Puncurried_apply -> "Puncurried_apply"
   | Pidentity -> "Pidentity"
   | Pbytes_of_string -> "Pbytes_of_string"
   | Pbytes_to_string -> "Pbytes_to_string"

@@ -335,6 +335,7 @@ let primitives_table =
   "%int64_of_nativeint", Pcvtbint(Pnativeint, Pint64);
   "%int64_to_nativeint", Pcvtbint(Pint64, Pnativeint);
   "%opaque", Popaque;
+  "%uncurried_apply", Puncurried_apply;
 ]
 
 

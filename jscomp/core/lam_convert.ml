@@ -205,6 +205,7 @@ let convert_record_repr ( x : Types.record_representation)
 let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   match p with
   | Pidentity -> Ext_list.singleton_exn args 
+  | Puncurried_apply 
   | Pccall _ -> assert false
   | Prevapply -> assert false
   | Pdirapply -> assert false
@@ -680,8 +681,6 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
         | "#typeof" -> Pjs_typeof
         | "#run"  -> 
           Pvoid_run
-        | "#full_apply" ->
-          Pfull_apply  
 
         | "#fn_mk" -> Pjs_fn_make (Ext_pervasives.nat_of_string_exn p.prim_native_name)
         | "#fn_method" -> Pjs_fn_method 
@@ -689,18 +688,8 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
         | _ -> Location.raise_errorf ~loc
                  "@{<error>Error:@} internal error, using unrecognized primitive %s" s
       in
-      if primitive = Pfull_apply then
-        match args with 
-        | [Lapply {ap_func = Lprim (Popaque,[ap_func],_); ap_args}] -> 
-          let ap_func = convert_aux ap_func in 
-          let ap_args = Ext_list.map ap_args convert_aux  in 
-          prim ~primitive ~args:(ap_func::ap_args) loc
-        (* There may be some optimization opportunities here
-           for cases like `(fun [@bs] a b -> a + b ) 1 2 [@bs]` *)          
-        | _ -> assert false  
-      else
-        let args = Ext_list.map args convert_aux in
-        prim ~primitive ~args loc
+      let args = Ext_list.map args convert_aux in
+      prim ~primitive ~args loc
   and convert_aux (lam : Lambda.lambda) : Lam.t =
     match lam with
     | Lvar x ->
@@ -755,6 +744,16 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
           assert (args = []);
           Lam.global_module id
         end
+    | Lprim (Puncurried_apply,
+      [Lapply {ap_func = Lprim (Popaque,[ap_func],_); ap_args}],loc)   
+      ->
+        let ap_func = convert_aux ap_func in 
+        let ap_args = Ext_list.map ap_args convert_aux  in 
+        prim ~primitive:Pfull_apply ~args:(ap_func::ap_args) loc
+      (* There may be some optimization opportunities here
+         for cases like `(fun [@bs] a b -> a + b ) 1 2 [@bs]` *)          
+    | Lprim (Puncurried_apply, _,_ ) ->
+         assert false
     | Lprim (primitive,args, loc)
       ->
       let args = Ext_list.map args convert_aux in

@@ -125,7 +125,7 @@ end
 module MapperRt = Js_mapperRt
 module Internal = struct 
   open Fn    
-  external opaqueFullApply : 'a -> 'a = "#full_apply"
+  external opaqueFullApply : 'a -> 'a = "%uncurried_apply"
 
   (* Use opaque instead of [._n] to prevent some optimizations happening *)
   external run : 'a arity0 -> 'a = "#run" 
