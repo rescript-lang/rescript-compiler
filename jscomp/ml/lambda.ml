@@ -244,7 +244,7 @@ type specialise_attribute =
 type let_kind = Strict | Alias | StrictOpt | Variable
 
 
-type shared_code = (int * int) list
+
 
 type function_attribute = {
   inline : inline_attribute;

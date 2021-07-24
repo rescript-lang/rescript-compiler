@@ -280,7 +280,7 @@ type let_kind = Strict | Alias | StrictOpt | Variable
 
 
 
-type shared_code = (int * int) list     (* stack size -> code label *)
+
 
 type function_attribute = {
   inline : inline_attribute;
