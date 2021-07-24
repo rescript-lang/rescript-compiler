@@ -648,8 +648,7 @@ and transl_exp0 e =
             (transl_apply  ~inlined ~specialised
                f args' e.exp_loc)
       in
-      let wrap0 f =
-        if args' = [] then f else wrap f in
+      let wrap0 = wrap in
       let args =
          List.map (function _, Some x -> x | _ -> assert false) args in
       let argl = transl_list args in
