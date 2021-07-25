@@ -5,7 +5,7 @@ let b loc v  = Mt.bool_suites ~suites ~test_id loc v
 
 module Icmp =
   (val Belt.Id.comparable
-    (fun (x : int) y ->
+    ~cmp:(fun (x : int) y ->
       compare x y
      )
   )
@@ -22,15 +22,15 @@ module MI = Belt.Map.Int
 module I = Array_data_util
 module A = Belt.Array
 module L = Belt.List
-let m0 : (_,string,_) M.t = M.make (module Icmp)
+let m0 : (_,string,_) M.t = M.make ~id:(module Icmp)
 
-let m00 = Belt.Set.make (module Ic3)
+let m00 = Belt.Set.make ~id:(module Ic3)
 module I2 =
 (val Belt.Id.comparable ~cmp:(fun  (x : int) y -> compare y x ))
 
 
-let m = M.make (module Icmp2)
-let m2 : (int, string, _) M.t = M.make (module I2)
+let m = M.make ~id:(module Icmp2)
+let m2 : (int, string, _) M.t = M.make ~id:(module I2)
 let vv = MI.empty
 let vv2 = MI.empty
 module Md0 = Belt.Map.Dict
@@ -55,13 +55,13 @@ let () =
     Md0.set ~cmp:Icmp.cmp m
     1 1
   in
-  let _m20 = M.make (module Icmp) in
+  let _m20 = M.make ~id:(module Icmp) in
   Js.log m11
 
 module S0 = Belt.Set.Dict
 let () =
  let count = 100_000 in
-  let v = ISet.make (module Icmp2) in
+  let v = ISet.make ~id:(module Icmp2) in
   let m_dict = M.getId m in
   let module M = (val m_dict) in
   let cmp = M.cmp in

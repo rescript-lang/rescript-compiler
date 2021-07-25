@@ -6,7 +6,7 @@ var suites = {
   contents: /* [] */0
 };
 
-var id = {
+var test_id = {
   contents: 0
 };
 
@@ -26,11 +26,11 @@ function u2(b) {
   return b !== 0;
 }
 
-Mt.eq_suites(id, suites, "File \"gpr_4924_test.ml\", line 25, characters 23-30", u2(/* A */0), false);
+Mt.eq_suites(test_id, suites, "File \"gpr_4924_test.ml\", line 25, characters 30-37", u2(/* A */0), false);
 
-Mt.eq_suites(id, suites, "File \"gpr_4924_test.ml\", line 26, characters 23-30", u2(/* B */1), true);
+Mt.eq_suites(test_id, suites, "File \"gpr_4924_test.ml\", line 26, characters 30-37", u2(/* B */1), true);
 
-Mt.eq_suites(id, suites, "File \"gpr_4924_test.ml\", line 27, characters 23-30", u2(/* C */{
+Mt.eq_suites(test_id, suites, "File \"gpr_4924_test.ml\", line 27, characters 30-37", u2(/* C */{
           _0: 2
         }), true);
 
@@ -67,7 +67,7 @@ var eq_suites = Mt.eq_suites;
 exports.from_pair_suites = from_pair_suites;
 exports.eq_suites = eq_suites;
 exports.suites = suites;
-exports.id = id;
+exports.test_id = test_id;
 exports.u = u;
 exports.u1 = u1;
 exports.u2 = u2;

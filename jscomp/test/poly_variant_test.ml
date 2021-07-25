@@ -62,11 +62,11 @@ let () =
 
 let option = `on_closed 
 
-let v = test_string_type option 
+let v = test_string_type ~flag:option 
 
-let ff h  = test_string_type h
+let ff h  = test_string_type ~flag:h
 
-let xx = test_string_type `in_
+let xx = test_string_type ~flag:`in_
 
 type readline
 external on : 

@@ -100,7 +100,7 @@ let ()  =
   let v = ((A.makeByAndShuffle count (fun i -> i))) in 
   let u = N.fromArray v in 
   (N.checkInvariantInternal u );
-  let firstHalf = A.slice v 0 2_000 in 
+  let firstHalf = A.slice v ~offset:0 ~len:2_000 in 
   let xx = Belt.Array.reduce firstHalf u N.remove in 
   (N.checkInvariantInternal u);
   b __LOC__ N.(eq (union (fromArray firstHalf) xx) u)

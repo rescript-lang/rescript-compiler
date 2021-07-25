@@ -2,7 +2,7 @@
 
 var Mt = require("./mt.js");
 
-var id = {
+var test_id = {
   contents: 0
 };
 
@@ -134,9 +134,9 @@ var tuple = [
   hh10
 ];
 
-Mt.eq_suites(id, suites, "File \"int_poly_var.res\", line 79, characters 22-29", hihi, 3);
+Mt.eq_suites(test_id, suites, "File \"int_poly_var.res\", line 79, characters 29-36", hihi, 3);
 
-Mt.eq_suites(id, suites, "File \"int_poly_var.res\", line 80, characters 22-29", tuple, [
+Mt.eq_suites(test_id, suites, "File \"int_poly_var.res\", line 80, characters 29-36", tuple, [
       0,
       1,
       2,
@@ -179,7 +179,7 @@ var hh9 = true;
 var begin = 3;
 
 exports.eq_suites = eq_suites;
-exports.id = id;
+exports.test_id = test_id;
 exports.suites = suites;
 exports.u = u;
 exports.nest = nest;

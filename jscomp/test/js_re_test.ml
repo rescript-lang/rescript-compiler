@@ -45,7 +45,7 @@ let suites = Mt.[
   );
 
   "fromStringWithFlags", (fun _ ->
-    let res = Js.Re.fromStringWithFlags "foo" "g" in
+    let res = Js.Re.fromStringWithFlags "foo" ~flags:"g" in
 
     Eq(true, res |. Js.Re.global)
   );

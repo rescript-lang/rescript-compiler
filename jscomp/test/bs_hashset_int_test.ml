@@ -25,7 +25,7 @@ let () =
 
 let () =
   let u = I.randomRange 0 100_000 ++ I.randomRange 0 100 in 
-  let v = N.make 40 in 
+  let v = N.make ~hintSize:40 in 
   N.mergeMany v u ;
   eq __LOC__ (N.size v) 100_001;
   for i = 0 to 1_000 do  
