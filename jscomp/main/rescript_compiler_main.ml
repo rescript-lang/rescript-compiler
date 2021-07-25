@@ -453,8 +453,6 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
 
     "-modules", set Js_config.modules, 
     "*internal* serve similar to ocamldep";
-    "-nolabels", set Clflags.classic, 
-    "*internal* Ignore non-optional labels in types";  
 
     "-short-paths", clear Clflags.real_paths, 
     "*internal* Shorten paths in types";

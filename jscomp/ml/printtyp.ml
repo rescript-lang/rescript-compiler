@@ -574,7 +574,7 @@ let reset_and_mark_loops_list tyl =
   reset (); List.iter mark_loops tyl
 
 (* Disabled in classic mode when printing an unification error *)
-let print_labels = ref true
+
 
 let rec tree_of_typexp sch ty =
   let ty = repr ty in
@@ -595,7 +595,7 @@ let rec tree_of_typexp sch ty =
     | Tarrow(l, ty1, ty2, _) ->
         let pr_arrow l ty1 ty2 =
           let lab =
-            if !print_labels || is_optional l then string_of_label l else ""
+            string_of_label l
           in
           let t1 =
             if is_optional l then
@@ -1096,7 +1096,7 @@ let rec tree_of_class_type sch params =
       Octy_signature (self_ty, List.rev csil)
   | Cty_arrow (l, ty, cty) ->
       let lab =
-        if !print_labels || is_optional l then string_of_label l else ""
+         string_of_label l
       in
       let ty =
        if is_optional l then
@@ -1551,7 +1551,6 @@ let unification_error env unif tr txt1 ppf txt2 =
       let tr = filter_trace (mis = None) tr in
       let t1, t1' = may_prepare_expansion (tr = []) t1
       and t2, t2' = may_prepare_expansion (tr = []) t2 in
-      print_labels := not !Clflags.classic;
       let tr = List.map prepare_expansion tr in
       fprintf ppf
         "@[<v>\
@@ -1568,9 +1567,7 @@ let unification_error env unif tr txt1 ppf txt2 =
         warn_on_missing_def env ppf t1;
         warn_on_missing_def env ppf t2
       end;
-      print_labels := true
     with exn ->
-      print_labels := true;
       raise exn
 
 let report_unification_error ppf env ?(unif=true)
@@ -1629,7 +1626,6 @@ let super_unification_error unif tr txt1 ppf txt2 = begin
       let tr = filter_trace (mis = None) tr in
       let t1, t1' = may_prepare_expansion (tr = []) t1
       and t2, t2' = may_prepare_expansion (tr = []) t2 in
-      print_labels := not !Clflags.classic;
       let tr = List.map prepare_expansion tr in
       fprintf ppf
         "@[<v 0>\
@@ -1642,9 +1638,7 @@ let super_unification_error unif tr txt1 ppf txt2 = begin
         txt2 (super_type_expansion ~tag:"info" t2) t2'
         super_trace tr
         (explanation unif mis);
-      print_labels := true
     with exn ->
-      print_labels := true;
       raise exn
 end
 
@@ -1655,16 +1649,13 @@ let super_report_unification_error ppf env ?(unif=true)
 #end
 
 let trace fst keep_last txt ppf tr =
-  print_labels := not !Clflags.classic;
   trace_same_names tr;
   try match tr with
     t1 :: t2 :: tr' ->
       if fst then trace fst txt ppf (t1 :: t2 :: filter_trace keep_last tr')
       else trace fst txt ppf (filter_trace keep_last tr);
-      print_labels := true
   | _ -> ()
   with exn ->
-    print_labels := true;
     raise exn
 
 let report_subtyping_error ppf env tr1 txt1 tr2 =

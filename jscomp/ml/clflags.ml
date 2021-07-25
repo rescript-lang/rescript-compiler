@@ -6,7 +6,7 @@ let  output_name = ref (None : string option) (* -o *)
 and include_dirs = ref ([] : string list)(* -I *)
 and debug = ref false                   (* -g *)
 and fast = ref false                    (* -unsafe *)
-and classic = ref false                 (* -nolabels *)
+
 and nopervasives = ref false            (* -nopervasives *)
 and preprocessor = ref(None : string option) (* -pp *)
 and all_ppx = ref ([] : string list)        (* -ppx *)

@@ -3492,7 +3492,7 @@ and type_argument ?recarg env sarg ty_expected' ty_expected =
         | Tarrow (l,ty_arg,ty_fun,_) when is_optional l ->
             let ty = option_none (instance env ty_arg) sarg.pexp_loc in
             make_args ((l, Some ty) :: args) ty_fun
-        | Tarrow (l,_,ty_res',_) when l = Nolabel || !Clflags.classic ->
+        | Tarrow (Nolabel,_,ty_res',_) ->
             List.rev args, ty_fun, no_labels ty_res'
         | Tvar _ ->  List.rev args, ty_fun, false
         |  _ -> [], texp.exp_type, false
@@ -3594,7 +3594,7 @@ and type_application env funct sargs =
               unify env ty_fun (newty (Tarrow(l1,t1,t2,Clink(ref Cunknown))));
               (t1, t2)
           | Tarrow (l,t1,t2,_) when l = l1
-            || !Clflags.classic && l1 = Nolabel && not (is_optional l) ->
+            ->
               (t1, t2)
           | td ->
               let ty_fun =
@@ -3602,7 +3602,7 @@ and type_application env funct sargs =
               let ty_res = result_type (omitted @ !ignored) ty_fun in
               match ty_res.desc with
                 Tarrow _ ->
-                  if (!Clflags.classic || not (has_label l1 ty_fun)) then
+                  if (not (has_label l1 ty_fun)) then
                     raise (Error(sarg1.pexp_loc, env,
                                  Apply_wrong_label(l1, ty_res)))
                   else
@@ -3621,7 +3621,6 @@ and type_application env funct sargs =
         type_unknown_args ((l1, Some arg1) :: args) omitted ty2 sargl
   in
   let ignore_labels =
-    !Clflags.classic ||
     begin
       let ls, tvar = list_labels env funct.exp_type in
       not tvar &&
