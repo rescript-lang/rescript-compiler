@@ -2548,12 +2548,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
   | Pexp_apply(sfunct, sargs) ->
       assert (sargs <> []);
       begin_def (); (* one more level for non-returning functions *)
-      if !Clflags.principal then begin_def ();
       let funct = type_exp env sfunct in
-      if !Clflags.principal then begin
-          end_def ();
-          generalize_structure funct.exp_type
-        end;
       let rec lower_args seen ty_fun =
         let ty = expand_head env ty_fun in
         if List.memq ty seen then () else
@@ -3598,19 +3593,11 @@ and type_application env funct sargs =
        true)
     end
   in
-  let warned = ref false in
   let rec type_args args omitted ty_fun ty_fun0 ty_old sargs more_sargs =
     match expand_head env ty_fun, expand_head env ty_fun0 with
       {desc=Tarrow (l, ty, ty_fun, com); level=lv} as ty_fun',
       {desc=Tarrow (_, ty0, ty_fun0, _)}
       when (sargs <> [] || more_sargs <> []) && commu_repr com = Cok ->
-        let may_warn loc w =
-          if not !warned && !Clflags.principal && lv <> generic_level
-          then begin
-            warned := true;
-            Location.prerr_warning loc w
-          end
-        in
         let name = label_name l
         and optional = is_optional l in
         let sargs, more_sargs, arg =
@@ -3633,16 +3620,10 @@ and type_application env funct sargs =
             let (l', sarg0, sargs, more_sargs) =
               try
                 let (l', sarg0, sargs1, sargs2) = extract_label name sargs in
-                if sargs1 <> [] then
-                  may_warn sarg0.pexp_loc
-                    (Warnings.Not_principal "commuting this argument");
                 (l', sarg0, sargs1 @ sargs2, more_sargs)
               with Not_found ->
                 let (l', sarg0, sargs1, sargs2) =
                   extract_label name more_sargs in
-                if sargs1 <> [] || sargs <> [] then
-                  may_warn sarg0.pexp_loc
-                    (Warnings.Not_principal "commuting this argument");
                 (l', sarg0, sargs @ sargs1, sargs2)
             in
             if not optional && is_optional l' then
@@ -3652,8 +3633,6 @@ and type_application env funct sargs =
             if not optional || is_optional l' then
               Some (fun () -> type_argument env sarg0 ty ty0)
             else begin
-              may_warn sarg0.pexp_loc
-                (Warnings.Not_principal "using an optional argument here");
               Some (fun () -> option_some (type_argument env sarg0
                                              (extract_option_type env ty)
                                              (extract_option_type env ty0)))
@@ -3664,13 +3643,9 @@ and type_application env funct sargs =
               (List.mem_assoc Nolabel sargs
                || List.mem_assoc Nolabel more_sargs)
             then begin
-              may_warn funct.exp_loc
-                (Warnings.Without_principality "eliminated optional argument");
               ignored := (l,ty,lv) :: !ignored;
               Some (fun () -> option_none (instance env ty) Location.none)
             end else begin
-              may_warn funct.exp_loc
-                (Warnings.Without_principality "commuted an argument");
               None
             end
         in
