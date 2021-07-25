@@ -4,7 +4,6 @@ var Mt = require("./mt.js");
 var Caml = require("../../lib/js/caml.js");
 var List = require("../../lib/js/list.js");
 var $$Array = require("../../lib/js/array.js");
-var Curry = require("../../lib/js/curry.js");
 var Hashtbl = require("../../lib/js/hashtbl.js");
 var MoreLabels = require("../../lib/js/moreLabels.js");
 
@@ -86,7 +85,7 @@ var suites_1 = {
     hd: [
       "More_labels_regressionfix_374",
       (function (param) {
-          var tbl = Curry._2(MoreLabels.Hashtbl.create, undefined, 30);
+          var tbl = MoreLabels.Hashtbl.create(undefined, 30);
           Hashtbl.add(tbl, 3, 3);
           return {
                   TAG: /* Eq */0,

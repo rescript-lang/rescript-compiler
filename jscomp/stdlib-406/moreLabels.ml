@@ -15,8 +15,8 @@
 
 (* Module [MoreLabels]: meta-module for compatibility labelled libraries *)
 
-module Hashtbl = Hashtbl
+module Hashtbl = HashtblLabels
 
-module Map = Map
+module Map = MapLabels
 
-module Set = Set
+module Set = SetLabels
