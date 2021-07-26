@@ -80,7 +80,10 @@ let rec convert_constant ( const : Lambda.structured_constant) : Lam_constant.t 
         begin match xs with 
           | [_; value] -> 
             let t : Lam_tag_info.t = Blk_poly_var  in 
-            Const_block (i,t, [Const_string s; convert_constant value] )      
+            let tag_val : Lam_constant.t = 
+              if Ext_string.is_valid_hash_number s then Const_int {i = Ext_string.hash_number_as_i32_exn s; comment = None}
+              else Const_string s in 
+            Const_block (i,t, [tag_val; convert_constant value] )      
           | _ -> assert false  
         end
       | Blk_record s -> 
