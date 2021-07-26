@@ -813,13 +813,13 @@ and expression_desc cxt ~(level:int) f x : cxt  =
 
   | Caml_block(el,_,_, Blk_poly_var ) ->
     begin match el with 
-      | [{expression_desc = Str (_,name)};value] -> 
+      | [tag;value] -> 
         expression_desc 
           cxt 
           ~level 
           f 
           (Object [
-              Js_op.Lit Literals.polyvar_hash, E.str name;
+              Js_op.Lit Literals.polyvar_hash, tag ;
               Lit Literals.polyvar_value, value
             ]                       
           )

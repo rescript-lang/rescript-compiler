@@ -275,7 +275,10 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
         begin match args with 
           | [_; value] -> 
             let info : Lam_tag_info.t = Blk_poly_var  in
-            prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args:[Lam.const (Const_string s); value] loc      
+            let tag_val : Lam_constant.t = 
+              if Ext_string.is_valid_hash_number s then Const_int {i = Ext_string.hash_number_as_i32_exn s; comment = None}
+              else Const_string s in 
+            prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args:[Lam.const tag_val; value] loc      
           | _ -> assert false  
         end
       | Blk_lazy_general  
