@@ -325,6 +325,7 @@ o test/gpr_4924_test.cmi test/gpr_4924_test.cmj : cc test/gpr_4924_test.ml | tes
 o test/gpr_4931.cmi test/gpr_4931.cmj : cc test/gpr_4931.ml | $stdlib
 o test/gpr_5071_test.cmi test/gpr_5071_test.cmj : cc test/gpr_5071_test.res | test/react.cmj $stdlib
 o test/gpr_5169_test.cmi test/gpr_5169_test.cmj : cc test/gpr_5169_test.ml | $stdlib
+o test/gpr_5218_test.cmi test/gpr_5218_test.cmj : cc test/gpr_5218_test.res | test/mt.cmj $stdlib
 o test/gpr_627_test.cmi test/gpr_627_test.cmj : cc test/gpr_627_test.ml | test/mt.cmj $stdlib
 o test/gpr_658.cmi test/gpr_658.cmj : cc test/gpr_658.ml | $stdlib
 o test/gpr_858_test.cmi test/gpr_858_test.cmj : cc test/gpr_858_test.ml | $stdlib
