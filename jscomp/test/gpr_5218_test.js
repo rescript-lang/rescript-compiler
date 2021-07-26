@@ -13,30 +13,30 @@ var suites = {
 function test(x) {
   if (x.NAME === 2) {
     return {
-            NAME: "2",
+            NAME: 2,
             VAL: x.VAL
           };
   } else {
     return {
-            NAME: "1",
+            NAME: 1,
             VAL: x.VAL
           };
   }
 }
 
-Mt.eq_suites(test_id, suites, "File \"gpr_5218_test.res\", line 10, characters 27-34", test({
-          NAME: "1",
+Mt.eq_suites(test_id, suites, "File \"gpr_5218_test.res\", line 11, characters 27-34", test({
+          NAME: 1,
           VAL: 3
         }), {
-      NAME: "1",
+      NAME: 1,
       VAL: 3
     });
 
-Mt.eq_suites(test_id, suites, "File \"gpr_5218_test.res\", line 12, characters 27-34", test({
-          NAME: "2",
+Mt.eq_suites(test_id, suites, "File \"gpr_5218_test.res\", line 13, characters 27-34", test({
+          NAME: 2,
           VAL: 3
         }), {
-      NAME: "2",
+      NAME: 2,
       VAL: 3
     });
 
