@@ -111,7 +111,7 @@ and apply_coercion_result loc strict funct params args cc_res =
       (param :: params) (arg :: args) cc_res
   | _ ->
     name_lambda strict funct (fun id ->
-      Lfunction{kind = Curried; params = List.rev params;
+      Lfunction{ params = List.rev params;
                 attr = { default_function_attribute with
                          is_a_functor = true;
                          stub = true; };
@@ -425,7 +425,6 @@ let rec compile_functor mexp coercion root_path loc =
       functor_params_rev
   in
   Lfunction {
-    kind = Curried;
     params;
     attr = {
       inline = inline_attribute;

@@ -713,9 +713,8 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
       (* we need do this eargly in case [aux fn] add some wrapper *)
       Lam.apply (convert_aux fn) (Ext_list.map args convert_aux ) {ap_loc = loc; ap_inlined = (convert_inline_attr ap_inlined); ap_status =  App_na}
     | Lfunction 
-        {kind; params; body ; attr }
+        { params; body ; attr }
       ->  
-      assert (kind = Curried);
       let new_map,body = rename_optional_parameters Map_ident.empty params body in 
       let attr = convert_fn_attribute attr in 
       if Map_ident.is_empty new_map then

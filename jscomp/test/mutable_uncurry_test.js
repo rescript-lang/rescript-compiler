@@ -27,13 +27,13 @@ function eq2(x, param) {
   return Caml_obj.equal(x.contents, y);
 }
 
-eqs("File \"mutable_uncurry_test.ml\", line 13, characters 7-14", false, eq({
+eqs("File \"mutable_uncurry_test.ml\", line 15, characters 7-14", false, eq({
           contents: 1
         }, {
           contents: 2
         }));
 
-eqs("File \"mutable_uncurry_test.ml\", line 14, characters 7-14", true, eq({
+eqs("File \"mutable_uncurry_test.ml\", line 16, characters 7-14", true, eq({
           contents: 2
         }, {
           contents: 2
@@ -53,7 +53,7 @@ var h = u.hi({
       contents: 2
     });
 
-eqs("File \"mutable_uncurry_test.ml\", line 24, characters 7-14", h, false);
+eqs("File \"mutable_uncurry_test.ml\", line 26, characters 7-14", h, false);
 
 function ut3(param, param$1, param$2) {
   var x0 = param.contents;
@@ -98,6 +98,25 @@ function ut4(param, param$1, param$2, param$3) {
               }), param$2, param$3);
 }
 
+function t4(param) {
+  var x0 = param.contents;
+  return function (param) {
+    var x1 = param.contents;
+    return function (param) {
+      var x2 = param.contents;
+      return function (param) {
+        var x3 = param.contents;
+        return [
+                x0,
+                x1,
+                x2,
+                x3
+              ];
+      };
+    };
+  };
+}
+
 function ut5(param, param$1, param$2, param$3, param$4) {
   var x0 = param.contents;
   var x1 = param$1.contents;
@@ -119,7 +138,64 @@ function ut5(param, param$1, param$2, param$3, param$4) {
               }), param$2, param$3, param$4);
 }
 
-eqs("File \"mutable_uncurry_test.ml\", line 38, characters 9-16", ut3({
+function t5(param) {
+  var x0 = param.contents;
+  return function (param) {
+    var x1 = param.contents;
+    return function (param) {
+      var x2 = param.contents;
+      return function (param) {
+        var x3 = param.contents;
+        return function (param) {
+          var x4 = param.contents;
+          return [
+                  x0,
+                  x1,
+                  x2,
+                  x3,
+                  x4
+                ];
+        };
+      };
+    };
+  };
+}
+
+function nested0(param, param$1, param$2) {
+  var x0 = param.contents;
+  var x1 = param$1.contents;
+  var x2 = param$2.contents;
+  var a = (x0 + x1 | 0) + x2 | 0;
+  return function (param) {
+    var x0 = param.contents;
+    return function (param) {
+      var x1 = param.contents;
+      return function (param) {
+        var x2 = param.contents;
+        return ((a + x0 | 0) + x1 | 0) + x2 | 0;
+      };
+    };
+  };
+}
+
+function nested1(param) {
+  var x0 = param.contents;
+  return function (param) {
+    var x1 = param.contents;
+    return function (param) {
+      var x2 = param.contents;
+      var a = (x0 + x1 | 0) + x2 | 0;
+      return function (param, param$1, param$2) {
+        var x0 = param.contents;
+        var x1 = param$1.contents;
+        var x2 = param$2.contents;
+        return ((a + x0 | 0) + x1 | 0) + x2 | 0;
+      };
+    };
+  };
+}
+
+eqs("File \"mutable_uncurry_test.ml\", line 56, characters 9-16", ut3({
           contents: 1
         }, {
           contents: 2
@@ -131,7 +207,7 @@ eqs("File \"mutable_uncurry_test.ml\", line 38, characters 9-16", ut3({
       3
     ]);
 
-eqs("File \"mutable_uncurry_test.ml\", line 39, characters 7-14", Curry._1(t3({
+eqs("File \"mutable_uncurry_test.ml\", line 57, characters 7-14", Curry._1(t3({
                 contents: 1
               })({
               contents: 2
@@ -143,7 +219,7 @@ eqs("File \"mutable_uncurry_test.ml\", line 39, characters 7-14", Curry._1(t3({
       3
     ]);
 
-eqs("File \"mutable_uncurry_test.ml\", line 41, characters 7-14", ut5({
+eqs("File \"mutable_uncurry_test.ml\", line 59, characters 7-14", ut5({
           contents: 1
         }, {
           contents: 2
@@ -173,5 +249,9 @@ exports.h = h;
 exports.ut3 = ut3;
 exports.t3 = t3;
 exports.ut4 = ut4;
+exports.t4 = t4;
 exports.ut5 = ut5;
+exports.t5 = t5;
+exports.nested0 = nested0;
+exports.nested1 = nested1;
 /*  Not a pure module */

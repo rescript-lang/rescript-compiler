@@ -425,7 +425,7 @@ let transl_primitive loc p env ty path =
   match prim with
   | Plazyforce ->
       let parm = Ident.create "prim" in
-      Lfunction{kind = Curried; params = [parm];
+      Lfunction{ params = [parm];
                 body = Matching.inline_lazy_force (Lvar parm) Location.none;
                 loc = loc;
                 attr = default_stub_attribute }
@@ -435,7 +435,7 @@ let transl_primitive loc p env ty path =
       | 0 -> lam
       | 1 -> (* TODO: we should issue a warning ? *)
         let param = Ident.create "prim" in
-        Lfunction{kind = Curried; params = [param];
+        Lfunction{ params = [param];
                   attr = default_stub_attribute;
                   loc = loc;
                   body = Lprim(Pmakeblock(0, Lambda.Blk_tuple, Immutable, None),
@@ -450,7 +450,7 @@ let transl_primitive loc p env ty path =
         let params = 
           if prim_arity = 1 then [Ident.create "prim"]  
           else  make_params prim_arity prim_arity in
-        Lfunction{ kind = Curried; params;
+        Lfunction{ params;
                    attr = default_stub_attribute;
                    loc = loc;
                    body = Lprim(prim, List.map (fun id -> Lvar id) params, loc) }
@@ -567,9 +567,7 @@ let rec push_defaults loc bindings cases partial =
 
 let [@inline] event_before _exp lam = lam
 
-let [@inline] event_after _exp lam = lam
 
-let [@inline] event_function _exp lam = lam None
 
 let primitive_is_ccall = function
   (* Determine if a primitive is a Pccall or will be turned later into
@@ -587,7 +585,7 @@ let assert_failed exp =
 #if 1
   let fname = Filename.basename fname in   
 #end     
-  Lprim(Praise Raise_regular, [event_after exp
+  Lprim(Praise Raise_regular, [
     (Lprim(Pmakeblock(0, Blk_extension, Immutable, None),
           [transl_normal_path Predef.path_assert_failure;
            Lconst(Const_block(0, Blk_tuple,
@@ -607,18 +605,7 @@ let try_ids = Hashtbl.create 8
 
 let rec transl_exp e =
   List.iter (Translattribute.check_attribute e) e.exp_attributes;
-#if 1
   transl_exp0 e
-#else
-  let eval_once =
-    (* Whether classes for immediate objects must be cached *)
-    match e.exp_desc with
-      Texp_function _ | Texp_for _ | Texp_while _ -> false
-    | _ -> true
-  in
-  if eval_once then transl_exp0 e else
-  Translobj.oo_wrap e.exp_env true transl_exp0 e
-#end
 and transl_exp0 e =
   match e.exp_desc with
     Texp_ident(path, _, {val_kind = Val_prim p}) ->
@@ -630,12 +617,10 @@ and transl_exp0 e =
   | Texp_let(rec_flag, pat_expr_list, body) ->
       transl_let rec_flag pat_expr_list (event_before body (transl_exp body))
   | Texp_function { arg_label = _; param; cases; partial; } ->
-      let ((kind, params), body) =
-        event_function e
-          (function repr ->
+      let ( params, body) =        
             let pl = push_defaults e.exp_loc [] cases partial in
-            transl_function e.exp_loc false(*!Clflags.native_code*) repr partial
-              param pl)
+            transl_function e.exp_loc  partial
+              param pl
       in
       let attr = {
         default_function_attribute with
@@ -644,7 +629,7 @@ and transl_exp0 e =
       }
       in
       let loc = e.exp_loc in
-      Lfunction{kind; params; body; attr; loc}
+      Lfunction{ params; body; attr; loc}
   | Texp_apply({ exp_desc = Texp_ident(path, _, {val_kind = Val_prim p});
                 exp_type = prim_type } as funct, oargs)
     when List.length oargs >= p.prim_arity
@@ -652,20 +637,15 @@ and transl_exp0 e =
       let args, args' = cut p.prim_arity oargs in
       let wrap f =
         if args' = []
-        then event_after e f
+        then f
         else
-          let should_be_tailcall, funct =
-            Translattribute.get_tailcall_attribute funct
-          in
           let inlined, funct =
             Translattribute.get_and_remove_inlined_attribute funct
           in
-          let specialised, funct =
+          let specialised, _ =
             Translattribute.get_and_remove_specialised_attribute funct
           in
-          let e = { e with exp_desc = Texp_apply(funct, oargs) } in
-          event_after e
-            (transl_apply ~should_be_tailcall ~inlined ~specialised
+            (transl_apply  ~inlined ~specialised
                f args' e.exp_loc)
       in
       let wrap0 f =
@@ -677,7 +657,7 @@ and transl_exp0 e =
         let prim = transl_primitive_application
             e.exp_loc p e.exp_env prim_type (Some path) args in
         match (prim, args) with
-          (Praise k, [arg1]) ->
+          (Praise k, [_]) ->
             let targ = List.hd argl in
             let k =
               match k, targ with
@@ -687,7 +667,7 @@ and transl_exp0 e =
               | _ ->
                   k
             in
-            wrap0 (Lprim(Praise k, [event_after arg1 targ], e.exp_loc))
+            wrap0 (Lprim(Praise k, [targ], e.exp_loc))
         | (Ploc kind, []) ->
           lam_of_loc kind e.exp_loc
         | (Ploc kind, [arg1]) ->
@@ -704,18 +684,13 @@ and transl_exp0 e =
             end
       end
   | Texp_apply(funct, oargs) ->
-      let should_be_tailcall, funct =
-        Translattribute.get_tailcall_attribute funct
-      in
       let inlined, funct =
         Translattribute.get_and_remove_inlined_attribute funct
       in
       let specialised, funct =
         Translattribute.get_and_remove_specialised_attribute funct
       in
-      let e = { e with exp_desc = Texp_apply(funct, oargs) } in
-      event_after e
-        (transl_apply ~should_be_tailcall ~inlined ~specialised
+        (transl_apply  ~inlined ~specialised
            (transl_exp funct) oargs e.exp_loc)
   | Texp_match(arg, pat_expr_list, exn_pat_expr_list, partial) ->
     transl_match e arg pat_expr_list exn_pat_expr_list partial
@@ -920,12 +895,6 @@ and transl_cases_try cases =
     List.filter (fun c -> c.c_rhs.exp_desc <> Texp_unreachable) cases in
   List.map transl_case_try cases
 
-and transl_tupled_cases patl_expr_list =
-  let patl_expr_list =
-    List.filter (fun (_,_,e) -> e.exp_desc <> Texp_unreachable)
-      patl_expr_list in
-  List.map (fun (patl, guard, expr) -> (patl, transl_guard guard expr))
-    patl_expr_list
 
 and transl_apply ?(should_be_tailcall=false) ?(inlined = Default_inline)
       ?(specialised = Default_specialise) lam sargs loc =
@@ -963,11 +932,11 @@ and transl_apply ?(should_be_tailcall=false) ?(inlined = Default_inline)
         and id_arg = Ident.create "param" in
         let body =
           match build_apply handle ((Lvar id_arg, optional)::args') l with
-            Lfunction{kind = Curried; params = ids; body = lam; attr; loc} ->
-              Lfunction{kind = Curried; params = id_arg::ids; body = lam; attr;
+            Lfunction{params = ids; body = lam; attr; loc} ->
+              Lfunction{params = id_arg::ids; body = lam; attr;
                         loc}
           | lam ->
-              Lfunction{kind = Curried; params = [id_arg]; body = lam;
+              Lfunction{params = [id_arg]; body = lam;
                         attr = default_stub_attribute; loc = loc}
         in
         List.fold_left
@@ -983,36 +952,19 @@ and transl_apply ?(should_be_tailcall=false) ?(inlined = Default_inline)
                                 sargs)
      : Lambda.lambda)
 
-and transl_function loc untuplify_fn repr partial param cases =
+and transl_function loc   partial param cases =
   match cases with
     [{c_lhs=pat; c_guard=None;
       c_rhs={exp_desc = Texp_function { arg_label = _; param = param'; cases;
         partial = partial'; }} as exp}]
     when Parmatch.inactive ~partial pat ->
-      let ((_, params), body) =
-        transl_function exp.exp_loc false repr partial' param' cases in
-      ((Curried, param :: params),
+      let (params, body) =
+        transl_function exp.exp_loc   partial' param' cases in
+      ((param :: params),
        Matching.for_function loc None (Lvar param) [pat, body] partial)
-  | {c_lhs={pat_desc = Tpat_tuple pl}} :: _ when untuplify_fn ->
-      begin try
-        let size = List.length pl in
-        let pats_expr_list =
-          List.map
-            (fun {c_lhs; c_guard; c_rhs} ->
-              (Matching.flatten_pattern size c_lhs, c_guard, c_rhs))
-            cases in
-        let params = List.map (fun _ -> Ident.create "param") pl in
-        ((Tupled, params),
-         Matching.for_tupled_function loc params
-           (transl_tupled_cases pats_expr_list) partial)
-      with Matching.Cannot_flatten ->
-        ((Curried, [param]),
-         Matching.for_function loc repr (Lvar param)
-           (transl_cases cases) partial)
-      end
   | _ ->
-      ((Curried, [param]),
-       Matching.for_function loc repr (Lvar param)
+      ([param],
+       Matching.for_function loc None (Lvar param)
          (transl_cases cases) partial)
 
 and transl_let rec_flag pat_expr_list body =
