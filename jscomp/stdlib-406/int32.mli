@@ -37,24 +37,24 @@ val one : t
 val minus_one : t
 (** The 32-bit integer -1. *)
 
-external neg : t -> t = "%int32_neg"
+external neg : t -> t = "%negint"
 (** Unary negation. *)
 
-external add : t -> t -> t = "%int32_add"
+external add : t -> t -> t = "%addint"
 (** Addition. *)
 
-external sub : t -> t -> t = "%int32_sub"
+external sub : t -> t -> t = "%subint"
 (** Subtraction. *)
 
-external mul : t -> t -> t = "%int32_mul"
+external mul : t -> t -> t = "%mulint"
 (** Multiplication. *)
 
-external div : t -> t -> t = "%int32_div"
+external div : t -> t -> t = "%divint"
 (** Integer division.  Raise [Division_by_zero] if the second
    argument is zero.  This division rounds the real quotient of
    its arguments towards zero, as specified for {!Pervasives.(/)}. *)
 
-external rem : t -> t -> t = "%int32_mod"
+external rem : t -> t -> t = "%modint"
 (** Integer remainder.  If [y] is not zero, the result
    of [Int32.rem x y] satisfies the following property:
    [x = Int32.add (Int32.mul (Int32.div x y) y) (Int32.rem x y)].
@@ -76,39 +76,39 @@ val min_int : t
 (** The smallest representable 32-bit integer, -2{^31}. *)
 
 
-external logand : t -> t -> t = "%int32_and"
+external logand : t -> t -> t = "%andint"
 (** Bitwise logical and. *)
 
-external logor : t -> t -> t = "%int32_or"
+external logor : t -> t -> t = "%orint"
 (** Bitwise logical or. *)
 
-external logxor : t -> t -> t = "%int32_xor"
+external logxor : t -> t -> t = "%xorint"
 (** Bitwise logical exclusive or. *)
 
 val lognot : t -> t
 (** Bitwise logical negation. *)
 
-external shift_left : t -> int -> t = "%int32_lsl"
+external shift_left : t -> int -> t = "%lslint"
 (** [Int32.shift_left x y] shifts [x] to the left by [y] bits.
    The result is unspecified if [y < 0] or [y >= 32]. *)
 
-external shift_right : t -> int -> t = "%int32_asr"
+external shift_right : t -> int -> t = "%asrint"
 (** [Int32.shift_right x y] shifts [x] to the right by [y] bits.
    This is an arithmetic shift: the sign bit of [x] is replicated
    and inserted in the vacated bits.
    The result is unspecified if [y < 0] or [y >= 32]. *)
 
-external shift_right_logical : t -> int -> t = "%int32_lsr"
+external shift_right_logical : t -> int -> t = "%lsrint"
 (** [Int32.shift_right_logical x y] shifts [x] to the right by [y] bits.
    This is a logical shift: zeroes are inserted in the vacated bits
    regardless of the sign of [x].
    The result is unspecified if [y < 0] or [y >= 32]. *)
 
-external of_int : int -> t = "%int32_of_int"
+external of_int : int -> t = "%identity"
 (** Convert the given integer (type [int]) to a 32-bit integer
     (type [t]). *)
 
-external to_int : t -> int = "%int32_to_int"
+external to_int : t -> int = "%identity"
 (** Convert the given 32-bit integer (type [t]) to an
    integer (type [int]).  On 32-bit platforms, the 32-bit integer
    is taken modulo 2{^31}, i.e. the high-order bit is lost

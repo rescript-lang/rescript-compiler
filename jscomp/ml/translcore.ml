@@ -314,34 +314,6 @@ let primitives_table =
   "%floatarray_unsafe_get", Parrayrefu Pfloatarray;
   "%floatarray_unsafe_set", Parraysetu Pfloatarray;
   "%lazy_force", Plazyforce;
-  "%nativeint_of_int", Pbintofint Pnativeint;
-  "%nativeint_to_int", Pintofbint Pnativeint;
-  "%nativeint_neg", Pnegbint Pnativeint;
-  "%nativeint_add", Paddbint Pnativeint;
-  "%nativeint_sub", Psubbint Pnativeint;
-  "%nativeint_mul", Pmulbint Pnativeint;
-  "%nativeint_div", Pdivbint { size = Pnativeint; is_safe = Safe };
-  "%nativeint_mod", Pmodbint { size = Pnativeint; is_safe = Safe };
-  "%nativeint_and", Pandbint Pnativeint;
-  "%nativeint_or",  Porbint Pnativeint;
-  "%nativeint_xor", Pxorbint Pnativeint;
-  "%nativeint_lsl", Plslbint Pnativeint;
-  "%nativeint_lsr", Plsrbint Pnativeint;
-  "%nativeint_asr", Pasrbint Pnativeint;
-  "%int32_of_int", Pbintofint Pint32;
-  "%int32_to_int", Pintofbint Pint32;
-  "%int32_neg", Pnegbint Pint32;
-  "%int32_add", Paddbint Pint32;
-  "%int32_sub", Psubbint Pint32;
-  "%int32_mul", Pmulbint Pint32;
-  "%int32_div", Pdivbint { size = Pint32; is_safe = Safe };
-  "%int32_mod", Pmodbint { size = Pint32; is_safe = Safe };
-  "%int32_and", Pandbint Pint32;
-  "%int32_or",  Porbint Pint32;
-  "%int32_xor", Pxorbint Pint32;
-  "%int32_lsl", Plslbint Pint32;
-  "%int32_lsr", Plsrbint Pint32;
-  "%int32_asr", Pasrbint Pint32;
   "%int64_of_int", Pbintofint Pint64;
   "%int64_to_int", Pintofbint Pint64;
   "%int64_neg", Pnegbint Pint64;
@@ -648,8 +620,7 @@ and transl_exp0 e =
             (transl_apply  ~inlined ~specialised
                f args' e.exp_loc)
       in
-      let wrap0 f =
-        if args' = [] then f else wrap f in
+      let wrap0 = wrap in
       let args =
          List.map (function _, Some x -> x | _ -> assert false) args in
       let argl = transl_list args in
@@ -699,15 +670,15 @@ and transl_exp0 e =
       Ltrywith(transl_exp body, id,
                Matching.for_trywith (Lvar id) (transl_cases_try pat_expr_list))
   | Texp_tuple el ->
-      let ll, shape = transl_list_with_shape el in
+      let ll = transl_list el in
       let tag_info = Lambda.Blk_tuple in 
       begin try
         Lconst(Const_block(0, tag_info, List.map extract_constant ll))
       with Not_constant ->
-        Lprim(Pmakeblock(0, tag_info, Immutable, Some shape), ll, e.exp_loc)
+        Lprim(Pmakeblock(0, tag_info, Immutable, None), ll, e.exp_loc)
       end
   | Texp_construct(lid, cstr, args) ->
-      let ll, shape = transl_list_with_shape args in
+      let ll  = transl_list args in
       if cstr.cstr_inlined <> None then begin match ll with
         | [x] -> x
         | _ -> assert false
@@ -742,13 +713,13 @@ and transl_exp0 e =
           begin try
             Lconst(Const_block(n, tag_info, List.map extract_constant ll))
           with Not_constant ->
-            Lprim(Pmakeblock(n, tag_info, Immutable, Some shape), ll, e.exp_loc)
+            Lprim(Pmakeblock(n, tag_info, Immutable, None), ll, e.exp_loc)
           end
       | Cstr_extension(path, is_const) ->
           if not !Config.bs_only && is_const then
             transl_extension_path e.exp_env path
           else
-            Lprim(Pmakeblock(0, Blk_extension, Immutable, Some (Pgenval :: shape)),
+            Lprim(Pmakeblock(0, Blk_extension, Immutable, None),
                   transl_extension_path e.exp_env path :: ll, e.exp_loc)
       end
   | Texp_extension_constructor (_, path) ->
@@ -857,12 +828,6 @@ and transl_exp0 e =
 and transl_list expr_list =
   List.map transl_exp expr_list
 
-and transl_list_with_shape expr_list =
-  let transl_with_shape e =
-    let shape = Typeopt.value_kind e.exp_env e.exp_type in
-    transl_exp e, shape
-  in
-  List.split (List.map transl_with_shape expr_list)
 
 and transl_guard guard rhs =
   let expr = event_before rhs (transl_exp rhs) in
@@ -896,7 +861,7 @@ and transl_cases_try cases =
   List.map transl_case_try cases
 
 
-and transl_apply ?(should_be_tailcall=false) ?(inlined = Default_inline)
+and transl_apply  ?(inlined = Default_inline)
       ?(specialised = Default_specialise) lam sargs loc =
   let lapply funct args =
     match funct with
@@ -904,7 +869,7 @@ and transl_apply ?(should_be_tailcall=false) ?(inlined = Default_inline)
     | Lapply ap ->
         Lapply {ap with ap_args = ap.ap_args @ args; ap_loc = loc}
     | lexp ->
-        Lapply {ap_should_be_tailcall=should_be_tailcall;
+        Lapply {
                 ap_loc=loc;
                 ap_func=lexp;
                 ap_args=args;
@@ -1041,8 +1006,7 @@ and transl_record loc env fields repres opt_init_expr =
       Array.mapi
         (fun i (lbl, definition) ->
            match definition with
-           | Kept typ ->
-               let field_kind = value_kind env typ in
+           | Kept _ ->
                let access =
                  match repres with
                    Record_regular ->   Pfield (i, !Lambda.fld_record lbl) 
@@ -1050,13 +1014,12 @@ and transl_record loc env fields repres opt_init_expr =
                  | Record_unboxed _ -> assert false
                  | Record_extension -> Pfield (i + 1, Fld_record_extension {name = lbl.lbl_name}) 
                  | Record_float -> Pfloatfield (i, !Lambda.fld_record lbl) in
-               Lprim(access, [Lvar init_id], loc), field_kind
+               Lprim(access, [Lvar init_id], loc)
            | Overridden (_lid, expr) ->
-               let field_kind = value_kind expr.exp_env expr.exp_type in
-               transl_exp expr, field_kind)
+               transl_exp expr)
         fields
     in
-    let ll, shape = List.split (Array.to_list lv) in
+    let ll = Array.to_list lv in
     let mut =
       if Array.exists (fun (lbl, _) -> lbl.lbl_mut = Mutable) fields
       then Mutable
@@ -1078,12 +1041,12 @@ and transl_record loc env fields repres opt_init_expr =
       with Not_constant ->
         match repres with
           Record_regular ->
-            Lprim(Pmakeblock(0, !Lambda.blk_record fields, mut, Some shape), ll, loc)
+            Lprim(Pmakeblock(0, !Lambda.blk_record fields, mut, None), ll, loc)
         | Record_inlined {tag;name; num_nonconsts} ->
-            Lprim(Pmakeblock(tag, !Lambda.blk_record_inlined fields name num_nonconsts, mut, Some shape), ll, loc)
+            Lprim(Pmakeblock(tag, !Lambda.blk_record_inlined fields name num_nonconsts, mut, None), ll, loc)
         | Record_unboxed _ -> (match ll with [v] -> v | _ -> assert false)
         | Record_float ->
-            if !Config.bs_only then Lprim(Pmakeblock(0, !Lambda.blk_record fields, mut, Some shape), ll, loc)
+            if !Config.bs_only then Lprim(Pmakeblock(0, !Lambda.blk_record fields, mut, None), ll, loc)
             else
             Lprim(Pmakearray (Pfloatarray, mut), ll, loc)
         | Record_extension ->
@@ -1094,7 +1057,7 @@ and transl_record loc env fields repres opt_init_expr =
               | _ -> assert false
             in
             let slot = transl_extension_path env path in
-            Lprim(Pmakeblock(0, !Lambda.blk_record_ext fields, mut, Some (Pgenval :: shape)), slot :: ll, loc) 
+            Lprim(Pmakeblock(0, !Lambda.blk_record_ext fields, mut, None), slot :: ll, loc) 
     in
     begin match opt_init_expr with
       None -> lam

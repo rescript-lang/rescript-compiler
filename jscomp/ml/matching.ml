@@ -1510,7 +1510,7 @@ let code_force =
 
 
 let inline_lazy_force arg loc =
-    Lapply {ap_should_be_tailcall=false; ap_func = Lazy.force code_force; ap_inlined = Default_inline; ap_specialised = Default_specialise; ap_args = [arg]; ap_loc = loc}
+    Lapply { ap_func = Lazy.force code_force; ap_inlined = Default_inline; ap_specialised = Default_specialise; ap_args = [arg]; ap_loc = loc}
 let make_lazy_matching def = function
     [] -> fatal_error "Matching.make_lazy_matching"
   | (arg,_mut) :: argl ->
@@ -3072,8 +3072,7 @@ let for_let loc param pat body =
       Lsequence(param, body)
   | Tpat_var (id, _) ->
       (* fast path, and keep track of simple bindings to unboxable numbers *)
-      let k = Typeopt.value_kind pat.pat_env pat.pat_type in
-      Llet(Strict, k, id, param, body)
+      Llet(Strict, Pgenval, id, param, body)
   | _ ->
 #if true   
       (* Turn off such optimization to reduce diff in the beginning*)

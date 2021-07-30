@@ -193,10 +193,10 @@ and comparison =
     Ceq | Cneq | Clt | Cgt | Cle | Cge
 
 and value_kind =
-    Pgenval | Pfloatval | Pboxedintval of boxed_integer | Pintval
+    Pgenval 
 
 and block_shape =
-  value_kind list option
+  unit option
 
 and array_kind =
     Pgenarray | Paddrarray | Pintarray | Pfloatarray
@@ -244,7 +244,7 @@ type specialise_attribute =
 type let_kind = Strict | Alias | StrictOpt | Variable
 
 
-type shared_code = (int * int) list
+
 
 type function_attribute = {
   inline : inline_attribute;
@@ -286,7 +286,6 @@ and lambda_apply =
   { ap_func : lambda;
     ap_args : lambda list;
     ap_loc : Location.t;
-    ap_should_be_tailcall : bool;
     ap_inlined : inline_attribute;
     ap_specialised : specialise_attribute; }
 
@@ -298,18 +297,7 @@ and lambda_switch =
     sw_failaction : lambda option;
     sw_names: switch_names option }
 
-and lambda_event =
-  { lev_loc: Location.t;
-    lev_kind: lambda_event_kind;
-    lev_repr: int ref option;
-    lev_env: Env.summary }
 
-and lambda_event_kind =
-    Lev_before
-  | Lev_after of Types.type_expr
-  | Lev_function
-  | Lev_pseudo
-  | Lev_module_definition of Ident.t
 
 type program =
   { module_ident : Ident.t;
@@ -635,13 +623,12 @@ let rec map f lam =
     match lam with
     | Lvar _ -> lam
     | Lconst _ -> lam
-    | Lapply { ap_func; ap_args; ap_loc; ap_should_be_tailcall;
+    | Lapply { ap_func; ap_args; ap_loc; 
           ap_inlined; ap_specialised } ->
         Lapply {
           ap_func = map f ap_func;
           ap_args = List.map (map f) ap_args;
           ap_loc;
-          ap_should_be_tailcall;
           ap_inlined;
           ap_specialised;
         }

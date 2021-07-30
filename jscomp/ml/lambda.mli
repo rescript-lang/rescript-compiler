@@ -232,10 +232,10 @@ and array_kind =
     Pgenarray | Paddrarray | Pintarray | Pfloatarray
 
 and value_kind =
-    Pgenval | Pfloatval | Pboxedintval of boxed_integer | Pintval
+    Pgenval 
 
 and block_shape =
-  value_kind list option
+  unit option
 
 and boxed_integer = Primitive.boxed_integer =
     Pnativeint | Pint32 | Pint64
@@ -280,7 +280,7 @@ type let_kind = Strict | Alias | StrictOpt | Variable
 
 
 
-type shared_code = (int * int) list     (* stack size -> code label *)
+
 
 type function_attribute = {
   inline : inline_attribute;
@@ -325,7 +325,6 @@ and lambda_apply =
   { ap_func : lambda;
     ap_args : lambda list;
     ap_loc : Location.t;
-    ap_should_be_tailcall : bool;       (* true if [@tailcall] was specified *)
     ap_inlined : inline_attribute; (* specified with the [@inlined] attribute *)
     ap_specialised : specialise_attribute; }
 
@@ -336,18 +335,7 @@ and lambda_switch =
     sw_blocks: (int * lambda) list;     (* Tag block cases *)
     sw_failaction : lambda option;      (* Action to take if failure *)
     sw_names: switch_names option }
-and lambda_event =
-  { lev_loc: Location.t;
-    lev_kind: lambda_event_kind;
-    lev_repr: int ref option;
-    lev_env: Env.summary }
 
-and lambda_event_kind =
-    Lev_before
-  | Lev_after of Types.type_expr
-  | Lev_function
-  | Lev_pseudo
-  | Lev_module_definition of Ident.t
 
 type program =
   { module_ident : Ident.t;
