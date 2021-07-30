@@ -9293,12 +9293,12 @@ end = struct
         | T_LBRACKET ->
           let indexer = indexer_property env start_loc static in
           semicolon env;
-          properties allow_static env (acc, indexer::indexers, callProperties)
+          properties ~allow_static env (acc, indexer::indexers, callProperties)
         | T_LESS_THAN
         | T_LPAREN ->
           let call_prop = call_property env start_loc static in
           semicolon env;
-          properties allow_static env (acc, indexers, call_prop::callProperties)
+          properties ~allow_static env (acc, indexers, call_prop::callProperties)
         | _ ->
           let static, (_, key) = match static, Peek.token env with
           | true, T_COLON ->
@@ -9321,7 +9321,7 @@ end = struct
           | T_LPAREN -> method_property env start_loc static key
           | _ -> property env start_loc static key in
           semicolon env;
-          properties allow_static env (property::acc, indexers, callProperties)
+          properties ~allow_static env (property::acc, indexers, callProperties)
 
       in fun ?(allow_static=false) env ->
         let start_loc = Peek.loc env in

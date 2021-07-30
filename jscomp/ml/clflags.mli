@@ -3,7 +3,7 @@ val include_dirs : string list ref
 
 val debug : bool ref
 val fast : bool ref
-val classic : bool ref
+
 val nopervasives : bool ref
 val open_modules : string list ref
 val preprocessor : string option ref

@@ -25,7 +25,7 @@ let () =
       (A.makeByAndShuffle 1_000_000 (fun i -> (i,i))) in 
   let u = M.fromArray v in   
    (M.checkInvariantInternal u);
-  let firstHalf = A.slice v 0 2_000 in 
+  let firstHalf = A.slice v ~offset:0 ~len:2_000 in 
   let xx = A.reduce firstHalf u
       (fun acc (x,_) -> M.remove acc x)  in 
   (M.checkInvariantInternal u);

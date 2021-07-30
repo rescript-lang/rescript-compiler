@@ -86,10 +86,10 @@ let () =
   b __LOC__ (None = (N.get u22 59));
 
   eq __LOC__ (N.size u25) 60;
-  b __LOC__ (N.minimum (N.make (module IntCmp)) = None);
-  b __LOC__ (N.maximum (N.make (module IntCmp)) = None);
-  b __LOC__ (N.minUndefined (N.make (module IntCmp)) = Js.undefined);
-  b __LOC__ (N.maxUndefined (N.make (module IntCmp)) = Js.undefined)
+  b __LOC__ (N.minimum (N.make ~id:(module IntCmp)) = None);
+  b __LOC__ (N.maximum (N.make ~id:(module IntCmp)) = None);
+  b __LOC__ (N.minUndefined (N.make ~id:(module IntCmp)) = Js.undefined);
+  b __LOC__ (N.maxUndefined (N.make ~id:(module IntCmp)) = Js.undefined)
 
 
 let testIterToList  xs =

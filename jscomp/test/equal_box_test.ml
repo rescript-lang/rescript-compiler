@@ -23,50 +23,50 @@ let shouldBeNull () = Js.null
 let () = 
   b __LOC__ (not (eqNull 3 ~box:Js.null));
   b __LOC__ (not (eqNull None ~box:Js.null));
-  b __LOC__ (not (eqNull "3" Js.null));
-  b __LOC__ (not (eqNull '3' Js.null));
-  b __LOC__ (not (eqNull 0L Js.null));
-  b __LOC__ (not (eqNull 0 Js.null));
-  b __LOC__ (not (eqNull 0. Js.null));
-  b __LOC__ (not (eqNull (f ()) Js.null));
-  b __LOC__ ( (eqNull (shouldBeNull ()) Js.null));
-  b __LOC__ (not (eqNull 1 (Js.Null.return 3)));
-  b __LOC__ ( (eqNull None (Js.Null.return None)));
-  b __LOC__ (not (eqNull (Some 3) (Js.Null.return None)))
+  b __LOC__ (not (eqNull "3" ~box:Js.null));
+  b __LOC__ (not (eqNull '3' ~box:Js.null));
+  b __LOC__ (not (eqNull 0L ~box:Js.null));
+  b __LOC__ (not (eqNull 0 ~box:Js.null));
+  b __LOC__ (not (eqNull 0. ~box:Js.null));
+  b __LOC__ (not (eqNull (f ()) ~box:Js.null));
+  b __LOC__ ( (eqNull (shouldBeNull ()) ~box:Js.null));
+  b __LOC__ (not (eqNull 1 ~box:(Js.Null.return 3)));
+  b __LOC__ ( (eqNull None ~box:(Js.Null.return None)));
+  b __LOC__ (not (eqNull (Some 3) ~box:(Js.Null.return None)))
 
 let () = 
   let v = Js.Nullable.null in 
   b __LOC__ (not (eqNullable 3 ~box:v));
   b __LOC__ (not (eqNullable None ~box:v));
-  b __LOC__ (not (eqNullable "3" v));
-  b __LOC__ (not (eqNullable '3' v));
-  b __LOC__ (not (eqNullable 0L v));
-  b __LOC__ (not (eqNullable 0 v));
-  b __LOC__ (not (eqNullable 0. v));
-  b __LOC__ (not (eqNullable (f ()) v));
-  b __LOC__ ( (eqNullable (shouldBeNull ()) v));
-  b __LOC__ (not (eqNullable 1 (Js.Nullable.return 3)));
-  b __LOC__ ( (eqNullable None (Js.Nullable.return None)));
-  b __LOC__ (not (eqNullable (Some 3) (Js.Nullable.return None)))
+  b __LOC__ (not (eqNullable "3" ~box:v));
+  b __LOC__ (not (eqNullable '3' ~box:v));
+  b __LOC__ (not (eqNullable 0L ~box:v));
+  b __LOC__ (not (eqNullable 0 ~box:v));
+  b __LOC__ (not (eqNullable 0. ~box:v));
+  b __LOC__ (not (eqNullable (f ()) ~box:v));
+  b __LOC__ ( (eqNullable (shouldBeNull ()) ~box:v));
+  b __LOC__ (not (eqNullable 1 ~box:(Js.Nullable.return 3)));
+  b __LOC__ ( (eqNullable None ~box:(Js.Nullable.return None)));
+  b __LOC__ (not (eqNullable (Some 3) ~box:(Js.Nullable.return None)))
 
 let () = 
   let v = Js.Undefined.empty in 
   
   b __LOC__ (not (eqUndefined 3 ~box:v));
   b __LOC__ ((eqUndefined None ~box:v));
-  b __LOC__ (not (eqUndefined "3" v));
-  b __LOC__ (not (eqUndefined '3' v));
-  b __LOC__ (not (eqUndefined 0L v));
-  b __LOC__ (not (eqUndefined 0 v));
-  b __LOC__ (not (eqUndefined 0. v));
-  b __LOC__ ((eqUndefined (f ()) v)); 
+  b __LOC__ (not (eqUndefined "3" ~box:v));
+  b __LOC__ (not (eqUndefined '3' ~box:v));
+  b __LOC__ (not (eqUndefined 0L ~box:v));
+  b __LOC__ (not (eqUndefined 0 ~box:v));
+  b __LOC__ (not (eqUndefined 0. ~box:v));
+  b __LOC__ ((eqUndefined (f ()) ~box:v)); 
   (* [ None === undefined]
      [ None === Js.Undefined.return None]
   *)
-  b __LOC__ (not (eqUndefined (shouldBeNull ()) v));
-  b __LOC__ (not (eqUndefined 1 (Js.Undefined.return 3)));
-  b __LOC__ ( (eqUndefined None (Js.Undefined.return None)));
-  b __LOC__ (not (eqUndefined (Some 3) (Js.Undefined.return None)))
+  b __LOC__ (not (eqUndefined (shouldBeNull ()) ~box:v));
+  b __LOC__ (not (eqUndefined 1 ~box:(Js.Undefined.return 3)));
+  b __LOC__ ( (eqUndefined None ~box:(Js.Undefined.return None)));
+  b __LOC__ (not (eqUndefined (Some 3) ~box:(Js.Undefined.return None)))
 
 
   

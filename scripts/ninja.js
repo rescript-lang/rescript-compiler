@@ -803,9 +803,9 @@ function generateNinja(depsMap, allTargets, cwd, extraDeps = []) {
      * @type {Override[]}
      */
     var overrides = [];
-    if (mod.endsWith("Labels")) {
-      overrides.push({ key: "bsc_flags", value: "$bsc_flags -nolabels" });
-    }
+    // if (mod.endsWith("Labels")) {
+    //   overrides.push({ key: "bsc_flags", value: "$bsc_flags -nolabels" });
+    // }
 
     /**
      *
