@@ -1,6 +1,6 @@
 [@@@bs.config {
   flags = [|
-    "-drawlambda"
+    (* "-drawlambda" *)
   |]
 }]
 

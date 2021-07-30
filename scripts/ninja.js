@@ -1227,7 +1227,8 @@ ${mllList(ninjaCwd, [
   let depsMap = createDepsMapWithTargets(sources);
   await Promise.all(depModulesForBscAsync(sources, testDir, depsMap));
   var targets = collectTarget(sources);
-  var output = generateNinja(depsMap, targets, ninjaCwd, [stdlibTarget]);
+  var output = generateNinja(depsMap, targets, ninjaCwd, [stdlibTarget,pseudoTarget("$bsc")]);
+  output.push(phony(pseudoTarget('test'), fileTargets(scanFileTargets(targets,[])), ninjaCwd));
   writeFileAscii(
     path.join(testDir, ninjaOutput),
     templateTestRules + output.join("\n") + "\n"
@@ -1373,7 +1374,7 @@ function updateDev() {
     `
 subninja compiler.ninja
 stdlib = stdlib-406
-${BSC_COMPILER}      
+${BSC_COMPILER}
 subninja runtime/build.ninja
 subninja others/build.ninja
 subninja $stdlib/build.ninja
@@ -1512,7 +1513,7 @@ ${buildNapkinFiles}
 }
 
 var sourceDirs = [
-  "ml",  
+  "ml",
   "stubs",
   "ext",
   "common",
@@ -1541,7 +1542,7 @@ var bsc_libs = [
   "stubs",
   "ext",
   ...compiler_libs,
-  "js_parser",  
+  "js_parser",
   "napkin",
   "common",
   "frontend",
@@ -1554,7 +1555,7 @@ var bsc_libs = [
 var bspack_libs = [
   "stubs",
   "ext",
-  ...compiler_libs,  
+  ...compiler_libs,
   "common",
   "frontend",
   "depends",
@@ -1562,7 +1563,7 @@ var bspack_libs = [
 
 var bsb_helper_libs = ["stubs", "ext", "common", "bsb_helper"];
 
-var rescript_libs = ["stubs",  "ext", "common", "bsb"];
+var rescript_libs = ["stubs", "ext", "common", "bsb"];
 
 var cmjdumps_libs = [
   "stubs",
@@ -1577,7 +1578,7 @@ var cmjdumps_libs = [
 var cmij_libs = [
   "stubs",
   "ext",
-  ...compiler_libs,    
+  ...compiler_libs,
   "common",
   "frontend",
   "depends",
@@ -1607,7 +1608,7 @@ function nativeNinja() {
 
   var includes = sourceDirs.map((x) => `-I ${x}`).join(" ");
 
-  var flags = "-w A-4-9-40..42-30-48-50-44-45";  
+  var flags = "-w A-4-9-40..42-30-48-50-44-45";
   if (+getVersionString().split(".")[1] > 7) {
     flags += "-3-67 -error-style short";
   }

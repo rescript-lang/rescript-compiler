@@ -1,8 +1,8 @@
 [@@@config{
   flags = [|
-  "-drawlambda";
-  "-dsource";
-  "-bs-diagnose"
+  (* "-drawlambda"; *)
+  (* "-dsource"; *)
+  (* "-bs-diagnose" *)
   |]
 }]
 
