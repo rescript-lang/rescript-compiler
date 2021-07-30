@@ -9568,7 +9568,7 @@ val include_dirs : string list ref
 
 val debug : bool ref
 val fast : bool ref
-val classic : bool ref
+
 val nopervasives : bool ref
 val open_modules : string list ref
 val preprocessor : string option ref
@@ -9619,7 +9619,7 @@ let  output_name = ref (None : string option) (* -o *)
 and include_dirs = ref ([] : string list)(* -I *)
 and debug = ref false                   (* -g *)
 and fast = ref false                    (* -unsafe *)
-and classic = ref false                 (* -nolabels *)
+
 and nopervasives = ref false            (* -nopervasives *)
 and preprocessor = ref(None : string option) (* -pp *)
 and all_ppx = ref ([] : string list)        (* -ppx *)
