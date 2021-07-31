@@ -152,7 +152,6 @@ let primitive ppf = function
   | Pmakeblock(tag, taginfo, Mutable, _) ->
       fprintf ppf "makemutable %i/%a" tag print_taginfo taginfo
   | Pfield (n, fld) -> fprintf ppf "field:%s/%i" (str_of_field_info fld) n      
-  | Pfield_computed -> fprintf ppf "field_computed"
   | Psetfield(n, ptr, _, _) ->
       let instr =
         match ptr with
@@ -277,7 +276,6 @@ let name_of_primitive = function
   | Psetglobal _ -> "Psetglobal"
   | Pmakeblock _ -> "Pmakeblock"
   | Pfield _ -> "Pfield"
-  | Pfield_computed -> "Pfield_computed"
   | Psetfield _ -> "Psetfield"
   | Pfloatfield _ -> "Pfloatfield"
   | Psetfloatfield _ -> "Psetfloatfield"
