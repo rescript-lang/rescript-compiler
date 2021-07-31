@@ -3593,7 +3593,7 @@ and type_application env funct sargs =
                 Location.prerr_warning sarg1.pexp_loc Warnings.Unused_argument;
               unify env ty_fun (newty (Tarrow(l1,t1,t2,Clink(ref Cunknown))));
               (t1, t2)
-          | Tarrow (l,t1,t2,_) when l = l1
+          | Tarrow (l,t1,t2,_) when Asttypes.same_arg_label l l1
             ->
               (t1, t2)
           | td ->

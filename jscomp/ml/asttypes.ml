@@ -56,3 +56,18 @@ type variance =
   | Covariant
   | Contravariant
   | Invariant
+
+
+let same_arg_label (x : arg_label) y = 
+  match x with 
+  | Nolabel -> y = Nolabel
+  | Labelled s ->
+    begin match y with 
+    | Labelled s0 -> s = s0 
+    | _ -> false 
+    end 
+  | Optional s ->
+      begin match y with 
+      | Optional s0 -> s = s0
+      | _ -> false  
+      end  
