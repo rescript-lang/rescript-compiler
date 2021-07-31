@@ -2752,8 +2752,8 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
               (fun (_, lbl',_) -> lbl'.lbl_pos = lbl.lbl_pos)
               lbl_exp_list
           in
-          let label_definitions =
-                Array.map (fun lbl ->
+          Array.map 
+          (fun lbl ->
                     match matching_label lbl with
                     | (lid, _lbl, lbl_exp) ->
                         Overridden (lid, lbl_exp)
@@ -2772,8 +2772,6 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
                         let missing = missing_labels 0 label_names in
                         raise(Error(loc, env, Label_missing missing)))
                   lbl.lbl_all
-          in
-          label_definitions
         in
         let label_descriptions, representation =
           let (_, { lbl_all; lbl_repres }, _) = List.hd lbl_exp_list in
