@@ -2731,12 +2731,9 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
           exp_type = instance env ty_expected;
           exp_attributes = sexp.pexp_attributes;
           exp_env = env }      
-  | Pexp_record(lid_sexp_list, opt_sexp) ->
+  | Pexp_record(lid_sexp_list, Some sexp) ->
       assert (lid_sexp_list <> []);
-      let opt_exp =
-        match opt_sexp with
-          None -> None
-        | Some sexp ->
+      let opt_exp =        
             let exp = type_exp ~recarg env sexp in
             Some exp
       in
@@ -2766,7 +2763,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
             end
         | op -> ty_expected, op
       in
-      let closed = (opt_sexp = None) in
+      let closed = false in
       let lbl_exp_list =
         wrap_disambiguate "This record expression is expected to have" ty_record
           (type_label_a_list loc closed env
@@ -2830,7 +2827,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
         match lbl_exp_list with [] -> assert false
         | (_, lbl,_)::_ -> Array.length lbl.lbl_all in
       let opt_exp =
-        if opt_sexp <> None && List.length lid_sexp_list = num_fields then
+        if List.length lid_sexp_list = num_fields then
           (Location.prerr_warning loc Warnings.Useless_record_with; None)
         else opt_exp
       in
