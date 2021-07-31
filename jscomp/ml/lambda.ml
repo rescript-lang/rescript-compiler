@@ -126,10 +126,10 @@ type primitive =
   (* Operations on heap blocks *)
   | Pmakeblock of int * tag_info * mutable_flag * block_shape
   | Pfield of int * field_dbg_info
-  | Psetfield of int * immediate_or_pointer * initialization_or_assignment * set_field_dbg_info
+  | Psetfield of int *  initialization_or_assignment * set_field_dbg_info
 
   | Pfloatfield of int * field_dbg_info
-  | Psetfloatfield of int * initialization_or_assignment * set_field_dbg_info
+
   | Pduprecord of Types.record_representation * int
   (* Force lazy values *)
   | Plazyforce
