@@ -71,7 +71,6 @@ let blk_record_inlined = ref (fun fields name num_nonconst ->
 let ref_tag_info : tag_info = Blk_record [| "contents" |]
   
 type field_dbg_info = 
-  | Fld_na of string
   | Fld_record of {name : string; mutable_flag : Asttypes.mutable_flag}
   | Fld_module of {name : string }
   | Fld_record_inline of { name : string}   
@@ -89,7 +88,7 @@ let fld_record = ref (fun (lbl : Types.label_description) ->
 
 let ref_field_info : field_dbg_info = 
   Fld_record { name = "contents"; mutable_flag = Mutable}
-let fld_na = Fld_na ""
+
 
 type set_field_dbg_info = 
     | Fld_record_set of string 
