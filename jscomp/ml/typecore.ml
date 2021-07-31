@@ -2383,6 +2383,16 @@ let duplicate_ident_types caselist env =
     List.filter (fun {pc_lhs} -> contains_gadt env pc_lhs) caselist in
   Env.copy_types (all_idents_cases caselist) env
 
+  
+(* type_label_a_list returns a list of labels sorted by lbl_pos *)
+(* note: check_duplicates would better be implemented in
+         type_label_a_list directly *)  
+let rec check_duplicates loc env = function
+  | (_, lbl1, _) :: (_, lbl2, _) :: _ when lbl1.lbl_pos = lbl2.lbl_pos ->
+    raise(Error(loc, env, Label_multiply_defined lbl1.lbl_name))
+  | _ :: rem ->
+      check_duplicates loc env rem
+  | [] -> ()  
 (* Getting proper location of already typed expressions.
 
    Used to avoid confusing locations on type error messages in presence of
@@ -2720,27 +2730,15 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
                newvar (), None
           
         in
-        let closed = true in
         let lbl_exp_list =
           wrap_disambiguate "This record expression is expected to have" ty_record
-            (type_label_a_list loc closed env
+            (type_label_a_list loc true env
                (fun e k -> k (type_label_exp true env loc ty_record e))
                opath lid_sexp_list)
             (fun x -> x)
         in
         unify_exp_types loc env ty_record (instance env ty_expected);
-  
-        (* type_label_a_list returns a list of labels sorted by lbl_pos *)
-        (* note: check_duplicates would better be implemented in
-           type_label_a_list directly *)
-        let rec check_duplicates = function
-          | (_, lbl1, _) :: (_, lbl2, _) :: _ when lbl1.lbl_pos = lbl2.lbl_pos ->
-            raise(Error(loc, env, Label_multiply_defined lbl1.lbl_name))
-          | _ :: rem ->
-              check_duplicates rem
-          | [] -> ()
-        in
-        check_duplicates lbl_exp_list;
+        check_duplicates loc env lbl_exp_list;
         let  label_definitions =
           let (_lid, lbl, _lbl_exp) = List.hd lbl_exp_list in
           let matching_label lbl =
@@ -2835,18 +2833,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
           (fun x -> x)
       in
       unify_exp_types loc env ty_record (instance env ty_expected);
-
-      (* type_label_a_list returns a list of labels sorted by lbl_pos *)
-      (* note: check_duplicates would better be implemented in
-         type_label_a_list directly *)
-      let rec check_duplicates = function
-        | (_, lbl1, _) :: (_, lbl2, _) :: _ when lbl1.lbl_pos = lbl2.lbl_pos ->
-          raise(Error(loc, env, Label_multiply_defined lbl1.lbl_name))
-        | _ :: rem ->
-            check_duplicates rem
-        | [] -> ()
-      in
-      check_duplicates lbl_exp_list;
+      check_duplicates loc env lbl_exp_list;
       let opt_exp, label_definitions =
         let (_lid, lbl, _lbl_exp) = List.hd lbl_exp_list in
         let matching_label lbl =
