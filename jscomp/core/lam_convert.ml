@@ -312,7 +312,6 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
     -> prim ~primitive:(Pfield (id,info)) ~args loc
 
   | Psetfield (id,
-               _initialization_or_assignment,
                info)
     -> prim ~primitive:(Psetfield (id,info)) ~args loc
 

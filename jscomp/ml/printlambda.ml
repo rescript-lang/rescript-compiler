@@ -152,7 +152,7 @@ let primitive ppf = function
   | Pmakeblock(tag, taginfo, Mutable, _) ->
       fprintf ppf "makemutable %i/%a" tag print_taginfo taginfo
   | Pfield (n, fld) -> fprintf ppf "field:%s/%i" (str_of_field_info fld) n      
-  | Psetfield(n,  _, _) ->
+  | Psetfield(n,  _) ->
       fprintf ppf "setfield %i"   n
   | Pfloatfield (n,_) -> fprintf ppf "floatfield %i" n
   | Pduprecord (rep, size) -> fprintf ppf "duprecord %a %i" record_rep rep size

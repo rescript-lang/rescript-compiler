@@ -235,7 +235,7 @@ let primitives_table =
   "%loc_POS", Ploc Loc_POS;
   "%loc_MODULE", Ploc Loc_MODULE;
   (* BEGIN Triples for  ref data type *)
-  "%bs_ref_setfield0", Psetfield(0, Assignment, Lambda.ref_field_set_info);
+  "%bs_ref_setfield0", Psetfield(0,  Lambda.ref_field_set_info);
   "%bs_ref_field0", Pfield(0, Lambda.ref_field_info);
   "%makemutable", Pmakeblock(0, Lambda.ref_tag_info, Mutable, None);
   "%incr", Poffsetref(1);
@@ -758,13 +758,13 @@ and transl_exp0 e =
       let access =
         match lbl.lbl_repres with
           Record_regular -> 
-          Psetfield(lbl.lbl_pos, Assignment, !Lambda.fld_record_set lbl)
+          Psetfield(lbl.lbl_pos,  !Lambda.fld_record_set lbl)
         | Record_inlined _ -> 
-          Psetfield(lbl.lbl_pos, Assignment, Fld_record_inline_set lbl.lbl_name)
+          Psetfield(lbl.lbl_pos,  Fld_record_inline_set lbl.lbl_name)
         | Record_unboxed _ -> assert false
-        | Record_float -> Psetfield (lbl.lbl_pos, Assignment, !Lambda.fld_record_set lbl)
+        | Record_float -> Psetfield (lbl.lbl_pos,  !Lambda.fld_record_set lbl)
         | Record_extension -> 
-          Psetfield (lbl.lbl_pos + 1, Assignment, Fld_record_extension_set lbl.lbl_name)
+          Psetfield (lbl.lbl_pos + 1,  Fld_record_extension_set lbl.lbl_name)
       in
       Lprim(access, [transl_exp arg; transl_exp newval], e.exp_loc)
   | Texp_array expr_list ->
@@ -1076,13 +1076,13 @@ and transl_record loc env fields repres opt_init_expr =
           let upd =
             match repres with
               Record_regular -> 
-              Psetfield(lbl.lbl_pos, Assignment, !Lambda.fld_record_set lbl)
+              Psetfield(lbl.lbl_pos,  !Lambda.fld_record_set lbl)
             | Record_inlined _ -> 
-                Psetfield(lbl.lbl_pos, Assignment, Fld_record_inline_set lbl.lbl_name)
+                Psetfield(lbl.lbl_pos,  Fld_record_inline_set lbl.lbl_name)
             | Record_unboxed _ -> assert false
-            | Record_float -> Psetfield (lbl.lbl_pos, Assignment, !Lambda.fld_record_set lbl)
+            | Record_float -> Psetfield (lbl.lbl_pos,  !Lambda.fld_record_set lbl)
             | Record_extension -> 
-                Psetfield(lbl.lbl_pos + 1, Assignment, Fld_record_extension_set lbl.lbl_name)
+                Psetfield(lbl.lbl_pos + 1,  Fld_record_extension_set lbl.lbl_name)
           in
           Lsequence(Lprim(upd, [Lvar copy_id; transl_exp expr], loc), cont)
     in
