@@ -3712,7 +3712,10 @@ let warn = ref false  (* whether double coercion might do better *)
 let pred_expand n = if n mod 2 = 0 && n > 0 then pred n else n
 let pred_enlarge n = if n mod 2 = 1 then pred n else n
 
-type change = Unchanged | Equiv | Changed
+type change = Unchanged | Equiv | Changed [@@immediate]
+
+let [@inline] max (c1:change) (c2 :change)= 
+  (Obj.magic (Ext_pervasives.max_int (Obj.magic c1 : int) (Obj.magic c2 : int)) : change)
 let collect l = List.fold_left (fun c1 (_, c2) -> max c1 c2) Unchanged l
 
 let rec filter_visited = function
