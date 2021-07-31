@@ -103,9 +103,6 @@ let rec convert_constant ( const : Lambda.structured_constant) : Lam_constant.t 
         Const_block (i,t, Ext_list.map xs convert_constant )      
       | Blk_lazy_general 
         -> assert false
-      | Blk_na s  -> 
-        let t : Lam_tag_info.t = Blk_na s in 
-        Const_block (i,t, Ext_list.map xs convert_constant )      
 
       | Blk_record_inlined {name;fields;num_nonconst}  -> 
         let t : Lam_tag_info.t = Blk_record_inlined {name;fields;num_nonconst} in 

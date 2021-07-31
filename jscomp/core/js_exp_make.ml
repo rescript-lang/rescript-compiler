@@ -270,7 +270,7 @@ let dummy_obj ?comment (info : Lam_tag_info.t)  : t =
     -> 
     {comment ; expression_desc = Object []}
   | Blk_tuple | Blk_array  
-  | Blk_na _   
+
   | Blk_class | Blk_module_export 
     ->
     {comment  ; expression_desc = Array ([],Mutable)}

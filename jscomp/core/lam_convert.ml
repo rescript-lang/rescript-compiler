@@ -304,9 +304,6 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
 
           | _ -> assert false
         end
-      | Blk_na s -> 
-        let info : Lam_tag_info.t = Blk_na s in
-        prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
     end  
   | Pfield (id,info)
     -> prim ~primitive:(Pfield (id,info)) ~args loc

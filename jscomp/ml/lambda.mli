@@ -54,7 +54,7 @@ type tag_info =
       ]}
 
     *)
-  | Blk_na of string (* This string only for debugging*)
+
   | Blk_some
   | Blk_some_not_nested (* ['a option] where ['a] can not inhabit a non-like value *)
   | Blk_record_inlined of { name : string ; num_nonconst :  int ; fields : string array}   
@@ -82,7 +82,7 @@ val blk_record_inlined :
     tag_info
   ) ref
 
-val default_tag_info : tag_info
+
 
 val ref_tag_info : tag_info
 

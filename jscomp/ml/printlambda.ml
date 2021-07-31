@@ -126,7 +126,7 @@ let print_taginfo ppf = function
   | Blk_record  ss ->  fprintf ppf "[%s]" (String.concat ";" (Array.to_list ss) )
   | Blk_module ss ->  fprintf ppf "[%s]" (String.concat ";"  ss) 
   | Blk_extension_slot -> fprintf ppf "ext_slot"
-  | Blk_na s -> fprintf ppf "%s"  s 
+
   | Blk_some -> fprintf ppf "some"
   | Blk_some_not_nested -> fprintf ppf "some_not_nested" 
   | Blk_lazy_general -> fprintf ppf "lazy_general"

@@ -44,7 +44,7 @@ type tag_info =
   | Blk_module_export of Ident.t list
   | Blk_extension_slot
   | Blk_extension
-  | Blk_na of string
+  
   | Blk_some
   | Blk_some_not_nested (* ['a option] where ['a] can not inhabit a non-like value *)
   | Blk_record_inlined of { name : string ; num_nonconst :  int; fields : string array} 
@@ -52,7 +52,7 @@ type tag_info =
   | Blk_lazy_general
   | Blk_class (* Ocaml style class*) 
 
-let default_tag_info : tag_info = Blk_na ""
+
 let blk_record = ref (fun fields -> 
   let all_labels_info = fields |> Array.map (fun (x,_) -> x.Types.lbl_name) in    
   Blk_record all_labels_info
