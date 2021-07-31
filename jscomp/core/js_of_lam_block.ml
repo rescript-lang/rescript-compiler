@@ -81,8 +81,6 @@ let field_by_exp e i =
 
 let set_field (field_info : Lam_compat.set_field_dbg_info) e i e0 =  
   match field_info with 
-  | Fld_set_na 
-    -> E.assign_by_int e i e0
   | Fld_record_extension_set name
     -> 
     E.extension_assign e i name e0

@@ -92,7 +92,6 @@ let ref_field_info : field_dbg_info =
 let fld_na = Fld_na ""
 
 type set_field_dbg_info = 
-    | Fld_set_na
     | Fld_record_set of string 
     | Fld_record_inline_set of string
     | Fld_record_extension_set of string
