@@ -2737,12 +2737,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
         match opt_sexp with
           None -> None
         | Some sexp ->
-            if !Clflags.principal then begin_def ();
             let exp = type_exp ~recarg env sexp in
-            if !Clflags.principal then begin
-              end_def ();
-              generalize_structure exp.exp_type
-            end;
             Some exp
       in
       let ty_record, opath =
