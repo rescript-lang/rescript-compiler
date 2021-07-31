@@ -2711,18 +2711,14 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
       end
     | Pexp_record(lid_sexp_list, None) ->
         assert (lid_sexp_list <> []);
-        let ty_record, opath =
-          let get_path ty_expected =
-            try
-              let (p0, p,_) = extract_concrete_record env ty_expected in
+        let ty_record, opath =          
+          match extract_concrete_record env ty_expected with
+          |  (p0, p,_) ->
               (* XXX level may be wrong *)
-              Some (p0, p, true) (*ty.level = generic_level || not !Clflags.principal*)
-            with Not_found -> None
-          in
-          match get_path ty_expected with
-            None ->
+              ty_expected, Some (p0, p, true) (*ty.level = generic_level || not !Clflags.principal*)
+          | exception Not_found -> 
                newvar (), None
-          | op -> ty_expected, op
+          
         in
         let closed = true in
         let lbl_exp_list =
