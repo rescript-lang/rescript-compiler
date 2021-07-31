@@ -2315,10 +2315,7 @@ let combine_constructor sw_names loc arg ex_pat cstr partial ctx def
                 nonconsts
                 default
             in
-              if !Config.bs_only then 
               Llet(Alias, Pgenval,tag,  arg, tests)
-              else 
-              Llet(Alias, Pgenval,tag, Lprim(Pfield (0, Lambda.fld_na (*IRRELEVANT*)), [arg], loc), tests)
       in
         List.fold_right
           (fun (path, act) rem ->
