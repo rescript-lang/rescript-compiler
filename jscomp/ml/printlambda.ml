@@ -153,41 +153,16 @@ let primitive ppf = function
       fprintf ppf "makemutable %i/%a" tag print_taginfo taginfo
   | Pfield (n, fld) -> fprintf ppf "field:%s/%i" (str_of_field_info fld) n      
   | Pfield_computed -> fprintf ppf "field_computed"
-  | Psetfield(n, ptr, init, _) ->
+  | Psetfield(n, ptr, _, _) ->
       let instr =
         match ptr with
         | Pointer -> "ptr"
         | Immediate -> "imm"
       in
-      let init =
-        match init with
-        | Heap_initialization -> "(heap-init)"
-        | Root_initialization -> "(root-init)"
-        | Assignment -> ""
-      in
-      fprintf ppf "setfield_%s%s %i" instr init n
-  | Psetfield_computed (ptr, init) ->
-      let instr =
-        match ptr with
-        | Pointer -> "ptr"
-        | Immediate -> "imm"
-      in
-      let init =
-        match init with
-        | Heap_initialization -> "(heap-init)"
-        | Root_initialization -> "(root-init)"
-        | Assignment -> ""
-      in
-      fprintf ppf "setfield_%s%s_computed" instr init
+      fprintf ppf "setfield_%s %i" instr  n
   | Pfloatfield (n,_) -> fprintf ppf "floatfield %i" n
-  | Psetfloatfield (n, init, _) ->
-      let init =
-        match init with
-        | Heap_initialization -> "(heap-init)"
-        | Root_initialization -> "(root-init)"
-        | Assignment -> ""
-      in
-      fprintf ppf "setfloatfield%s %i" init n
+  | Psetfloatfield (n, _, _) ->
+      fprintf ppf "setfloatfield %i"  n
   | Pduprecord (rep, size) -> fprintf ppf "duprecord %a %i" record_rep rep size
   | Plazyforce -> fprintf ppf "force"
   | Pccall p -> fprintf ppf "%s" p.prim_name
@@ -304,7 +279,6 @@ let name_of_primitive = function
   | Pfield _ -> "Pfield"
   | Pfield_computed -> "Pfield_computed"
   | Psetfield _ -> "Psetfield"
-  | Psetfield_computed _ -> "Psetfield_computed"
   | Pfloatfield _ -> "Pfloatfield"
   | Psetfloatfield _ -> "Psetfloatfield"
   | Pduprecord _ -> "Pduprecord"

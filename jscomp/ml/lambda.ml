@@ -107,8 +107,6 @@ type immediate_or_pointer =
 
 type initialization_or_assignment =
   | Assignment
-  | Heap_initialization
-  | Root_initialization
 
 type is_safe =
   | Safe
@@ -130,7 +128,7 @@ type primitive =
   | Pfield of int * field_dbg_info
   | Pfield_computed
   | Psetfield of int * immediate_or_pointer * initialization_or_assignment * set_field_dbg_info
-  | Psetfield_computed of immediate_or_pointer * initialization_or_assignment
+
   | Pfloatfield of int * field_dbg_info
   | Psetfloatfield of int * initialization_or_assignment * set_field_dbg_info
   | Pduprecord of Types.record_representation * int
