@@ -16,11 +16,7 @@
 (* Translation from typed abstract syntax to lambda terms,
    for the module language *)
 
-module Translobj = struct 
-  let oo_wrap _env _b f a = f a 
-  
-    
-end  
+
 
 open Misc
 open Asttypes
@@ -29,7 +25,7 @@ open Path
 open Types
 open Typedtree
 open Lambda
-open Translobj
+
 open Translcore
 
 
@@ -450,14 +446,12 @@ and transl_module cc rootpath mexp =
       | Tmod_structure str ->
           fst (transl_struct loc [] cc rootpath str)
       | Tmod_functor _ ->
-          oo_wrap mexp.mod_env true (fun () ->
-            compile_functor mexp cc rootpath loc) ()
+            compile_functor mexp cc rootpath loc
       | Tmod_apply(funct, arg, ccarg) ->
           let inlined_attribute, funct =
             Translattribute.get_and_remove_inlined_attribute_on_module funct
           in
-          oo_wrap mexp.mod_env true
-            (apply_coercion loc Strict cc)
+            apply_coercion loc Strict cc
             (Lapply{
                     ap_loc=loc;
                     ap_func=transl_module Tcoerce_none None funct;
