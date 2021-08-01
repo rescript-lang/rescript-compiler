@@ -25,7 +25,7 @@ val maybe_pointer : Typedtree.expression -> Lambda.immediate_or_pointer
 
 val array_type_kind : Env.t -> Types.type_expr -> Lambda.array_kind
 val array_kind : Typedtree.expression -> Lambda.array_kind
-val array_pattern_kind : Typedtree.pattern -> Lambda.array_kind
+
 
 
 val classify_lazy_argument : Typedtree.expression ->

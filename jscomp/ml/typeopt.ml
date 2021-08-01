@@ -147,7 +147,7 @@ let array_type_kind _env _ty = Pgenarray
   
 let array_kind exp = array_type_kind exp.exp_env exp.exp_type
 
-let array_pattern_kind pat = array_type_kind pat.pat_env pat.pat_type
+
 
 
 

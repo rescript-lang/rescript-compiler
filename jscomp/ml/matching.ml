@@ -1635,7 +1635,7 @@ let matcher_array len p rem = match p.pat_desc with
 | Tpat_any -> Parmatch.omegas len @ rem
 | _ -> raise NoMatch
 
-let make_array_matching _kind p def ctx = function
+let make_array_matching  p def ctx = function
   | [] -> fatal_error "Matching.make_array_matching"
   | ((arg, _mut) :: argl) ->
       let len = get_key_array p in
@@ -1652,9 +1652,9 @@ let make_array_matching _kind p def ctx = function
         ctx=ctx ;
         pat = normalize_pat p}
 
-let divide_array kind ctx pm =
+let divide_array ctx pm =
   divide
-    (make_array_matching kind)
+    make_array_matching 
     (=) get_key_array get_args_array ctx pm
 
 
@@ -2487,7 +2487,7 @@ let combine_variant names loc row arg partial ctx def
   lambda1, jumps_union local_jumps total1
 
 
-let combine_array names loc arg _kind partial ctx def
+let combine_array names loc arg partial ctx def
     (len_lambda_list, total1, _pats)  =
   let fail, local_jumps = mk_failaction_neg partial  ctx def in
   let lambda1 =
@@ -2770,9 +2770,8 @@ and do_compile_matching repr partial ctx arg pmh = match pmh with
         ctx pm
   | Tpat_array _ ->
       let names = None in 
-      let kind = Typeopt.array_pattern_kind pat in
       compile_test (compile_match repr partial) partial
-        (divide_array kind) (combine_array names pat.pat_loc arg kind partial)
+        divide_array  (combine_array names pat.pat_loc arg partial)
         ctx pm
   | Tpat_lazy _ ->
       compile_no_test
