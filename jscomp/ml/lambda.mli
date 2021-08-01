@@ -212,8 +212,6 @@ type primitive =
 and comparison =
     Ceq | Cneq | Clt | Cgt | Cle | Cge
 
-and array_kind =
-    Pgenarray (*| Paddrarray | Pintarray | Pfloatarray*)
 
 and value_kind =
     Pgenval 

@@ -192,8 +192,6 @@ and value_kind =
 and block_shape =
   unit option
 
-and array_kind =
-    Pgenarray (*| Paddrarray | Pintarray | Pfloatarray*)
 
 and boxed_integer = Primitive.boxed_integer =
     Pnativeint | Pint32 | Pint64
