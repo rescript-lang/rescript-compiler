@@ -37,5 +37,4 @@ type t =
   | Blk_record_ext of string array
   | Blk_record_inlined of { name : string ; num_nonconst : int; fields : string array }
   | Blk_constructor of {name : string ; num_nonconst : int}
-  | Blk_class
   | Blk_module_export

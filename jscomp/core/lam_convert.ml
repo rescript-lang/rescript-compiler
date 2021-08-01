@@ -254,9 +254,6 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
             assert false
         )
 
-      | Blk_class  -> 
-        let info : Lam_tag_info.t = Blk_class in
-        prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc  
       | Blk_array -> 
         let info : Lam_tag_info.t = Blk_array in
         prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc    

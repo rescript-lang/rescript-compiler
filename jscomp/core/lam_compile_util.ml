@@ -44,7 +44,6 @@ let comment_of_tag_info  (x : Lam_tag_info.t) =
   match x with 
   | Blk_constructor {name = n} -> Some n 
   | Blk_tuple -> Some "tuple"
-  | Blk_class -> Some "class"
   | Blk_poly_var  -> None
   | Blk_record _ -> None
   | Blk_record_inlined {name = ctor} -> Some ctor
