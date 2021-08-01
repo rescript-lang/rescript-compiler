@@ -310,7 +310,7 @@ let pretty_jumps (env : jumps) = match env with
       env
 
 
-let rec jumps_extract i = function
+let rec jumps_extract (i : int) = function
   | [] -> [],[]
   | (j,pss) as x::rem as all ->
       if i=j then pss,rem
