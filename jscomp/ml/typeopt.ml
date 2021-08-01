@@ -143,23 +143,8 @@ let classify env ty =
   | Tlink _ | Tsubst _ | Tpoly _ | Tfield _ ->
       assert false
 
-let array_type_kind env ty =
-  match scrape env ty with
-  | Tconstr(p, [elt_ty], _) | Tpoly({desc = Tconstr(p, [elt_ty], _)}, _)
-    when Path.same p Predef.path_array ->
-      begin match classify env elt_ty with
-      | Any -> (*if not !Config.bs_only && Config.flat_float_array   then Pgenarray else*) Paddrarray
-      | Float -> (*if not !Config.bs_only && Config.flat_float_array  then Pfloatarray else*) Paddrarray
-      | Addr | Lazy -> Paddrarray
-      | Int -> Pintarray
-      end
-  | Tconstr(p, [], _) | Tpoly({desc = Tconstr(p, [], _)}, _)
-    when Path.same p Predef.path_floatarray ->
-      Pfloatarray
-  | _ ->
-      (* This can happen with e.g. Obj.field *)
-      Pgenarray
-
+let array_type_kind _env _ty = Pgenarray
+  
 let array_kind exp = array_type_kind exp.exp_env exp.exp_type
 
 let array_pattern_kind pat = array_type_kind pat.pat_env pat.pat_type

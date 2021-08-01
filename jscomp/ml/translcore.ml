@@ -244,8 +244,8 @@ let primitives_table =
 
   "%field0", Pfield (0, Fld_tuple);  
   "%field1", Pfield (1, Fld_tuple);
-  "%obj_field", Parrayrefu Pgenarray;
-  "%obj_set_field", Parraysetu Pgenarray;
+  "%obj_field", Parrayrefu ;
+  "%obj_set_field", Parraysetu ;
   "%obj_is_int", Pisint;
   "%raise", Praise Raise_regular;
   "%reraise", Praise Raise_reraise;
@@ -303,16 +303,16 @@ let primitives_table =
   "%bytes_safe_set", Pbytessets;
   "%bytes_unsafe_get", Pbytesrefu;
   "%bytes_unsafe_set", Pbytessetu;
-  "%array_length", Parraylength Pgenarray;
-  "%array_safe_get", Parrayrefs Pgenarray;
-  "%array_safe_set", Parraysets Pgenarray;
-  "%array_unsafe_get", Parrayrefu Pgenarray;
-  "%array_unsafe_set", Parraysetu Pgenarray;
-  "%floatarray_length", Parraylength Pfloatarray;
-  "%floatarray_safe_get", Parrayrefs Pfloatarray;
-  "%floatarray_safe_set", Parraysets Pfloatarray;
-  "%floatarray_unsafe_get", Parrayrefu Pfloatarray;
-  "%floatarray_unsafe_set", Parraysetu Pfloatarray;
+  "%array_length", Parraylength ;
+  "%array_safe_get", Parrayrefs ;
+  "%array_safe_set", Parraysets ;
+  "%array_unsafe_get", Parrayrefu ;
+  "%array_unsafe_set", Parraysetu ;
+  "%floatarray_length", Parraylength ;
+  "%floatarray_safe_get", Parrayrefs ;
+  "%floatarray_safe_set", Parraysets ;
+  "%floatarray_unsafe_get", Parrayrefu ;
+  "%floatarray_unsafe_set", Parraysetu ;
   "%lazy_force", Plazyforce;
   "%int64_of_int", Pbintofint Pint64;
   "%int64_to_int", Pintofbint Pint64;
@@ -545,8 +545,8 @@ let [@inline] event_before _exp lam = lam
 let primitive_is_ccall = function
   (* Determine if a primitive is a Pccall or will be turned later into
      a C function call that may raise an exception *)
-  | Pccall _ | Pstringrefs  | Pbytesrefs | Pbytessets | Parrayrefs _ |
-    Parraysets _  | Pduprecord _ | Pdirapply |
+  | Pccall _ | Pstringrefs  | Pbytesrefs | Pbytessets | Parrayrefs  |
+    Parraysets   | Pduprecord _ | Pdirapply |
     Prevapply -> true
   | _ -> false
 
@@ -767,9 +767,8 @@ and transl_exp0 e =
       in
       Lprim(access, [transl_exp arg; transl_exp newval], e.exp_loc)
   | Texp_array expr_list ->
-      let kind = array_kind e in
       let ll = transl_list expr_list in
-      Lprim(Pmakearray (kind, Mutable), ll, e.exp_loc)
+      Lprim(Pmakearray Mutable, ll, e.exp_loc)
 
   | Texp_ifthenelse(cond, ifso, Some ifnot) ->
       Lifthenelse(transl_exp cond,

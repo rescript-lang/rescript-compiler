@@ -1635,14 +1635,14 @@ let matcher_array len p rem = match p.pat_desc with
 | Tpat_any -> Parmatch.omegas len @ rem
 | _ -> raise NoMatch
 
-let make_array_matching kind p def ctx = function
+let make_array_matching _kind p def ctx = function
   | [] -> fatal_error "Matching.make_array_matching"
   | ((arg, _mut) :: argl) ->
       let len = get_key_array p in
       let rec make_args pos =
         if pos >= len
         then argl
-        else (Lprim(Parrayrefu kind,
+        else (Lprim(Parrayrefu ,
                     [arg; Lconst(Const_base(Const_int pos))],
                     p.pat_loc),
               StrictOpt) :: make_args (pos + 1) in
@@ -2487,7 +2487,7 @@ let combine_variant names loc row arg partial ctx def
   lambda1, jumps_union local_jumps total1
 
 
-let combine_array names loc arg kind partial ctx def
+let combine_array names loc arg _kind partial ctx def
     (len_lambda_list, total1, _pats)  =
   let fail, local_jumps = mk_failaction_neg partial  ctx def in
   let lambda1 =
@@ -2497,7 +2497,7 @@ let combine_array names loc arg kind partial ctx def
         fail (Lvar newvar)
         0 max_int len_lambda_list names in
     bind
-      Alias newvar (Lprim(Parraylength kind, [arg], loc)) switch in
+      Alias newvar (Lprim(Parraylength , [arg], loc)) switch in
   lambda1, jumps_union local_jumps total1
 
 (* Insertion of debugging events *)

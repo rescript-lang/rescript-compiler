@@ -43,11 +43,6 @@ let rec struct_const ppf = function
         List.iter (fun f -> fprintf ppf "@ %s" f) fl in
       fprintf ppf "@[<1>[|@[%s%a@]|]@]" f1 floats fl
 
-let array_kind = function
-  | Pgenarray -> "gen"
-  | Paddrarray -> "addr"
-  | Pintarray -> "int"
-  | Pfloatarray -> "float"
 
 let boxed_integer_name = function
   | Pnativeint -> "nativeint"
@@ -204,13 +199,13 @@ let primitive ppf = function
   | Pbytesrefs -> fprintf ppf "bytes.get"
   | Pbytessets -> fprintf ppf "bytes.set"
 
-  | Parraylength k -> fprintf ppf "array.length[%s]" (array_kind k)
-  | Pmakearray (k, Mutable) -> fprintf ppf "makearray[%s]" (array_kind k)
-  | Pmakearray (k, Immutable) -> fprintf ppf "makearray_imm[%s]" (array_kind k)
-  | Parrayrefu k -> fprintf ppf "array.unsafe_get[%s]" (array_kind k)
-  | Parraysetu k -> fprintf ppf "array.unsafe_set[%s]" (array_kind k)
-  | Parrayrefs k -> fprintf ppf "array.get[%s]" (array_kind k)
-  | Parraysets k -> fprintf ppf "array.set[%s]" (array_kind k)
+  | Parraylength  -> fprintf ppf "array.length" 
+  | Pmakearray Mutable -> fprintf ppf "makearray" 
+  | Pmakearray Immutable -> fprintf ppf "makearray_imm" 
+  | Parrayrefu -> fprintf ppf "array.unsafe_get" 
+  | Parraysetu -> fprintf ppf "array.unsafe_set" 
+  | Parrayrefs -> fprintf ppf "array.get" 
+  | Parraysets -> fprintf ppf "array.set" 
   | Pctconst c ->
      let const_name = match c with
        | Big_endian -> "big_endian"
@@ -306,12 +301,12 @@ let name_of_primitive = function
   | Pbytessetu -> "Pbytessetu"
   | Pbytesrefs -> "Pbytesrefs"
   | Pbytessets -> "Pbytessets"
-  | Parraylength _ -> "Parraylength"
-  | Pmakearray _ -> "Pmakearray"
-  | Parrayrefu _ -> "Parrayrefu"
-  | Parraysetu _ -> "Parraysetu"
-  | Parrayrefs _ -> "Parrayrefs"
-  | Parraysets _ -> "Parraysets"
+  | Parraylength -> "Parraylength"
+  | Pmakearray _-> "Pmakearray"
+  | Parrayrefu -> "Parrayrefu"
+  | Parraysetu -> "Parraysetu"
+  | Parrayrefs -> "Parrayrefs"
+  | Parraysets -> "Parraysets"
   | Pctconst _ -> "Pctconst"
   | Pisint -> "Pisint"
   | Pisout -> "Pisout"

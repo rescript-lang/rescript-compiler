@@ -367,13 +367,13 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Poffsetref x -> prim ~primitive:(Poffsetref x) ~args  loc
   | Pfloatcomp x -> prim ~primitive:(Pfloatcomp x) ~args loc
   | Pmakearray 
-      (_, _mutable_flag) (*FIXME*)
+      ( _mutable_flag) (*FIXME*)
     -> prim ~primitive:Pmakearray ~args  loc
-  | Parraylength _ -> prim ~primitive:Parraylength ~args loc
-  | Parrayrefu _ -> prim ~primitive:(Parrayrefu ) ~args loc
-  | Parraysetu _ -> prim ~primitive:(Parraysetu ) ~args loc
-  | Parrayrefs _ -> prim ~primitive:(Parrayrefs ) ~args loc
-  | Parraysets _ -> prim ~primitive:(Parraysets ) ~args loc
+  | Parraylength -> prim ~primitive:Parraylength ~args loc
+  | Parrayrefu  -> prim ~primitive:(Parrayrefu ) ~args loc
+  | Parraysetu  -> prim ~primitive:(Parraysetu ) ~args loc
+  | Parrayrefs  -> prim ~primitive:(Parrayrefs ) ~args loc
+  | Parraysets  -> prim ~primitive:(Parraysets ) ~args loc
   | Pbintofint x -> 
     begin match x with 
       | Pint32 | Pnativeint -> Ext_list.singleton_exn args
