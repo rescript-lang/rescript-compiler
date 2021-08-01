@@ -18,7 +18,7 @@
 
 module Translobj = struct 
   let oo_wrap _env _b f a = f a 
-  let reset_labels () : unit = () 
+  
     
 end  
 
@@ -668,7 +668,6 @@ let required_globals ~flambda body =
 (* Compile an implementation *)
 
 let transl_implementation_flambda module_name (str, cc) =
-  reset_labels ();
   primitive_declarations := [];
   Hashtbl.clear used_primitives;
   let module_id = Ident.create_persistent module_name in
