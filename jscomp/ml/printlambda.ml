@@ -152,7 +152,6 @@ let primitive ppf = function
   | Pfield (n, fld) -> fprintf ppf "field:%s/%i" (str_of_field_info fld) n      
   | Psetfield(n,  _) ->
       fprintf ppf "setfield %i"   n
-  | Pfloatfield (n,_) -> fprintf ppf "floatfield %i" n
   | Pduprecord (rep, size) -> fprintf ppf "duprecord %a %i" record_rep rep size
   | Plazyforce -> fprintf ppf "force"
   | Pccall p -> fprintf ppf "%s" p.prim_name
@@ -268,7 +267,6 @@ let name_of_primitive = function
   | Pmakeblock _ -> "Pmakeblock"
   | Pfield _ -> "Pfield"
   | Psetfield _ -> "Psetfield"
-  | Pfloatfield _ -> "Pfloatfield"
   | Pduprecord _ -> "Pduprecord"
   | Plazyforce -> "Plazyforce"
   | Pccall _ -> "Pccall"

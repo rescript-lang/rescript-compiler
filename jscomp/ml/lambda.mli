@@ -150,7 +150,7 @@ type primitive =
   | Pmakeblock of int * tag_info * mutable_flag * block_shape
   | Pfield of int * field_dbg_info
   | Psetfield of int * set_field_dbg_info
-  | Pfloatfield of int * field_dbg_info
+
 
   | Pduprecord of Types.record_representation * int
   (* Force lazy values *)

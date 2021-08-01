@@ -309,8 +309,7 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
                info)
     -> prim ~primitive:(Psetfield (id,info)) ~args loc
 
-  | Pfloatfield _
-    -> assert false  
+
   | Pduprecord (repr,_)
     -> prim ~primitive:(Pduprecord (convert_record_repr repr)) ~args loc
   | Plazyforce -> prim ~primitive:Plazyforce ~args loc
