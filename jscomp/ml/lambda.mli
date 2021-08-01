@@ -132,7 +132,6 @@ type pointer_info =
   | Pt_builtin_boolean
   | Pt_shape_none   
   | Pt_assertfalse
-  | Pt_na  
 
 
 

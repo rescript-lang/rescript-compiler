@@ -54,7 +54,6 @@ let rec convert_constant ( const : Lambda.structured_constant) : Lam_constant.t 
         if Ext_string.is_valid_hash_number name then
           Const_int {i = Ext_string.hash_number_as_i32_exn name; comment = None}
         else Const_pointer name
-      | Pt_na ->  Const_int{i = Int32.of_int i ; comment = None}      
     end 
   | Const_float_array (s) -> Const_float_array(s)
   | Const_immstring s -> Const_string s
