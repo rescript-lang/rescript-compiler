@@ -1039,15 +1039,11 @@ and transl_record loc env fields repres opt_init_expr =
             raise Not_constant
       with Not_constant ->
         match repres with
-          Record_regular ->
+          Record_regular | Record_float ->
             Lprim(Pmakeblock(0, !Lambda.blk_record fields, mut, None), ll, loc)
         | Record_inlined {tag;name; num_nonconsts} ->
             Lprim(Pmakeblock(tag, !Lambda.blk_record_inlined fields name num_nonconsts, mut, None), ll, loc)
         | Record_unboxed _ -> (match ll with [v] -> v | _ -> assert false)
-        | Record_float ->
-            if !Config.bs_only then Lprim(Pmakeblock(0, !Lambda.blk_record fields, mut, None), ll, loc)
-            else
-            Lprim(Pmakearray (Pfloatarray, mut), ll, loc)
         | Record_extension ->
             let path =
               let (label, _) = fields.(0) in
