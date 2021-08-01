@@ -19,8 +19,7 @@
 module Translobj = struct 
   let oo_wrap _env _b f a = f a 
   let reset_labels () : unit = () 
-
-  let transl_label_init f = f ()      
+    
 end  
 
 open Misc
@@ -674,9 +673,8 @@ let transl_implementation_flambda module_name (str, cc) =
   Hashtbl.clear used_primitives;
   let module_id = Ident.create_persistent module_name in
   let body, size =
-    Translobj.transl_label_init
-      (fun () -> transl_struct Location.none [] cc
-                   (global_path module_id) str)
+    transl_struct Location.none [] cc
+                   (global_path module_id) str
   in
   { module_ident = module_id;
     main_module_block_size = size;
