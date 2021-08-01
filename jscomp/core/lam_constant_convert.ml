@@ -40,10 +40,11 @@ let rec convert_constant ( const : Lambda.structured_constant) : Lam_constant.t 
   | Const_base (Const_nativeint _) -> assert false
   | Const_pointer(0, Pt_constructor{name = "()"; const = 1; non_const = 0})
     -> Const_js_undefined
+  | Const_false -> Const_js_false  
+  | Const_true -> Const_js_true
   | Const_pointer(i,p) ->
     begin match p with 
       | Pt_module_alias -> Const_module_alias
-      | Pt_builtin_boolean -> if i = 0 then Const_js_false else Const_js_true
       | Pt_shape_none ->
         Lam_constant.lam_none
       | Pt_assertfalse    -> 
