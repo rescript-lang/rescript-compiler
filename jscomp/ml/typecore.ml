@@ -1586,7 +1586,7 @@ and is_nonexpansive_opt = function
     None -> true
   | Some e -> is_nonexpansive e
 
-module Env' = Env
+
 module Rec_context =
 struct
   type access =
@@ -1755,56 +1755,7 @@ struct
           true
     | _ -> false
 
-  let scrape env ty =
-    (Ctype.repr (Ctype.expand_head_opt env (Ctype.correct_levels ty))).desc
-
-  let array_element_kind env ty =
-    match scrape env ty with
-    | Tvar _ | Tunivar _ ->
-        `Pgenarray
-    | Tconstr(p, _, _) ->
-        if Path.same p Predef.path_int || Path.same p Predef.path_char then
-          `Pintarray
-        else if Path.same p Predef.path_float then
-          `Pfloatarray
-        else if Path.same p Predef.path_string
-             || Path.same p Predef.path_array
-             || Path.same p Predef.path_int64 then
-          `Paddrarray
-        else begin
-          try
-            match Env'.find_type p env with
-              {type_kind = Type_abstract} ->
-                `Pgenarray
-            | {type_kind = Type_variant cstrs}
-              when List.for_all (fun c -> c.Types.cd_args = Types.Cstr_tuple [])
-                  cstrs ->
-                `Pintarray
-            | {type_kind = _} ->
-                `Paddrarray
-          with Not_found ->
-            (* This can happen due to e.g. missing -I options,
-               causing some .cmi files to be unavailable.
-               Maybe we should emit a warning. *)
-            `Pgenarray
-        end
-    | _ ->
-        `Paddrarray
-
-  let array_type_kind env ty =
-    match scrape env ty with
-    | Tconstr(p, [elt_ty], _) | Tpoly({desc = Tconstr(p, [elt_ty], _)}, _)
-      when Path.same p Predef.path_array ->
-        array_element_kind env elt_ty
-    | _ ->
-        (* This can happen with e.g. Obj.field *)
-        `Pgenarray
-
-  let array_kind exp = array_type_kind exp.exp_env exp.exp_type
-
-  let has_concrete_element_type : Typedtree.expression -> bool =
-    fun e -> array_kind e <> `Pgenarray
-
+  
   type sd = Static | Dynamic
 
   let rec classify_expression : Typedtree.expression -> sd =
@@ -1886,10 +1837,6 @@ struct
                 (inspect (expression env e))
                 (inspect (list arg env args)))
       | Texp_tuple exprs ->
-        Use.guard (list expression env exprs)
-      | Texp_array exprs when array_kind exp = `Pfloatarray ->
-        Use.inspect (list expression env exprs)
-      | Texp_array exprs when has_concrete_element_type exp ->
         Use.guard (list expression env exprs)
       | Texp_array exprs ->
         (* This is counted as a use, because constructing a generic array
