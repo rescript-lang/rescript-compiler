@@ -143,9 +143,6 @@ let classify env ty =
   | Tlink _ | Tsubst _ | Tpoly _ | Tfield _ ->
       assert false
 
-let array_type_kind _env _ty = Pgenarray
-  
-let array_kind exp = array_type_kind exp.exp_env exp.exp_type
 
 
 
