@@ -27,7 +27,6 @@ node ./scripts/buildocaml.js
 ## Build
 
 ```sh
-git submodule update --init # we vendor a fork of ocaml and a syntax repo
 npm install # install some JS tools for testing purposes
 ./scripts/ninja.js config # the repo is build with Ninja. Generate the ninja build files
 ./scripts/ninja.js build # runs `ninja` under the hood against the generated ninja build files

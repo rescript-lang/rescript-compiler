@@ -1,6 +1,15 @@
-# [ReScript](https://rescript-lang.org)
 
-The compiler for ReScript.
+
+<div align="center">
+
+   <h3> <a href="https://rescript-lang.org"> ReScript Documentation </a> | <a href="https://forum.rescript-lang.org/"> Forum </a> | <a href="https://rescript-lang.org.cn/"> 中文文档 </a> | <a href="https://rescript-lang.org.cn/community/roadmap#roadmap"> Roadmap</a> </h3>
+  
+</div>
+
+
+## Overview 
+
+The compiler for ReScript: a statically typed functional language focused on shipping.
 
 [![npm version](https://badge.fury.io/js/rescript.svg)](https://badge.fury.io/js/rescript) ![Build Status](https://circleci.com/gh/rescript-lang/rescript-compiler.svg?style=svg)
 
@@ -10,9 +19,6 @@ The compiler for ReScript.
 npm install --save-dev rescript
 ```
 
-## Documentation
-
-Please see the [documentation site](https://rescript-lang.org).
 
 ## Contribution
 
