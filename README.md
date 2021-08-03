@@ -2,7 +2,7 @@
 
 <div align="center">
 
-   <h3> <a href="https://rescript-lang.org"> ReScript Documentation </a> | <a href="https://forum.rescript-lang.org/"> Forum </a> | <a href="https://rescript-lang.org.cn/"> 中文文档 </a> | <a href="https://rescript-lang.org.cn/community/roadmap#roadmap"> Roadmap</a> </h3>
+   <h3> <a href="https://rescript-lang.org"> ReScript Documentation </a> | <a href="https://forum.rescript-lang.org/"> Forum </a> | <a href="https://rescript-lang.org.cn/community/roadmap#roadmap"> Roadmap</a>  | <a href="https://rescript-lang.org.cn/"> 中文 </a> | <a href="https://green-labs.github.io/rescript-in-korean/"> 한국어 </a> </h3>
   
 </div>
 
