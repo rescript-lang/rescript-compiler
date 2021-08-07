@@ -109,7 +109,6 @@ val ref_field_info : field_dbg_info
 val fld_na : field_dbg_info
 
 type set_field_dbg_info = 
-  | Fld_set_na
   | Fld_record_set of string 
   | Fld_record_inline_set of string  
   | Fld_record_extension_set of string
@@ -123,10 +122,6 @@ val fld_record_set :
 type immediate_or_pointer =
   | Immediate
   | Pointer
-
-type initialization_or_assignment =
-  | Assignment
-
 type is_safe =
   | Safe
   | Unsafe
@@ -156,10 +151,9 @@ type primitive =
   (* Operations on heap blocks *)
   | Pmakeblock of int * tag_info * mutable_flag * block_shape
   | Pfield of int * field_dbg_info
-  | Pfield_computed
-  | Psetfield of int * immediate_or_pointer * initialization_or_assignment * set_field_dbg_info
+  | Psetfield of int * set_field_dbg_info
   | Pfloatfield of int * field_dbg_info
-  | Psetfloatfield of int * initialization_or_assignment * set_field_dbg_info
+
   | Pduprecord of Types.record_representation * int
   (* Force lazy values *)
   | Plazyforce

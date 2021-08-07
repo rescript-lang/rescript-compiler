@@ -311,11 +311,10 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Pfield (id,info)
     -> prim ~primitive:(Pfield (id,info)) ~args loc
 
-  | Psetfield (id, _,
-               _initialization_or_assignment,
+  | Psetfield (id,
                info)
     -> prim ~primitive:(Psetfield (id,info)) ~args loc
-  | Psetfloatfield _
+
   | Pfloatfield _
     -> assert false  
   | Pduprecord (repr,_)
@@ -508,8 +507,6 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
       | Pint32 -> prim ~primitive:(Pintcomp b) ~args loc
       | Pint64 -> prim ~primitive:(Pint64comp b) ~args loc
     end
-  | Pfield_computed -> 
-    prim ~primitive:Pfield_computed ~args loc 
   | Popaque -> Ext_list.singleton_exn args      
 
 (* Does not exist since we compile array in js backend unlike native backend *)
