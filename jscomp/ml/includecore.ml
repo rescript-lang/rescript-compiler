@@ -170,7 +170,7 @@ let report_type_mismatch0 first second decl ppf err =
   | Record_representation b ->
       pr "Their internal representations differ:@ %s %s %s"
         (if b then second else first) decl
-        "uses unboxed float representation"
+        "uses @@obj representation"
   | Unboxed_representation b ->
       pr "Their internal representations differ:@ %s %s %s"
          (if b then second else first) decl
@@ -320,7 +320,7 @@ let type_declarations ?(equality = false) ~loc env name decl1 id decl2 =
         let err = compare_records ~loc env decl1.type_params decl2.type_params
             1 labels1 labels2 in
         if err <> [] || rep1 = rep2 then err else
-        [Record_representation (rep2 = Record_float)]
+        [Record_representation (rep2 = Record_object)]
     | (Type_open, Type_open) -> []
     | (_, _) -> [Kind]
   in

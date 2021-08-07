@@ -783,7 +783,7 @@ module Label = NameChoice (struct
   let unbound_name_error = Typetexp.unbound_label_error
   let in_env lbl =
     match lbl.lbl_repres with
-    | Record_regular | Record_float | Record_unboxed false -> true
+    | Record_regular | Record_object | Record_unboxed false -> true
     | Record_unboxed true | Record_inlined _ | Record_extension -> false
 end)
 

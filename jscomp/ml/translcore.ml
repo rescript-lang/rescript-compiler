@@ -748,7 +748,7 @@ and transl_exp0 e =
   | Texp_field(arg, _, lbl) ->
       let targ = transl_exp arg in
       begin match lbl.lbl_repres with
-          Record_regular | Record_float  -> 
+          Record_regular | Record_object  -> 
           Lprim (Pfield (lbl.lbl_pos, !Lambda.fld_record lbl), [targ], e.exp_loc) 
         | Record_inlined _ ->
           Lprim (Pfield (lbl.lbl_pos, Fld_record_inline {name = lbl.lbl_name}), [targ], e.exp_loc)
@@ -759,12 +759,11 @@ and transl_exp0 e =
   | Texp_setfield(arg, _, lbl, newval) ->
       let access =
         match lbl.lbl_repres with
-          Record_regular -> 
+          Record_regular | Record_object -> 
           Psetfield(lbl.lbl_pos,  !Lambda.fld_record_set lbl)
         | Record_inlined _ -> 
           Psetfield(lbl.lbl_pos,  Fld_record_inline_set lbl.lbl_name)
         | Record_unboxed _ -> assert false
-        | Record_float -> Psetfield (lbl.lbl_pos,  !Lambda.fld_record_set lbl)
         | Record_extension -> 
           Psetfield (lbl.lbl_pos + 1,  Fld_record_extension_set lbl.lbl_name)
       in
@@ -1011,7 +1010,7 @@ and transl_record loc env fields repres opt_init_expr =
            | Kept _ ->
                let access =
                  match repres with
-                   Record_regular | Record_float ->   Pfield (i, !Lambda.fld_record lbl) 
+                   Record_regular | Record_object ->   Pfield (i, !Lambda.fld_record lbl) 
                  | Record_inlined _ -> Pfield (i, Fld_record_inline {name = lbl.lbl_name}) 
                  | Record_unboxed _ -> assert false
                  | Record_extension -> Pfield (i + 1, Fld_record_extension {name = lbl.lbl_name})in 
@@ -1071,12 +1070,12 @@ and transl_record loc env fields repres opt_init_expr =
       | Overridden (_lid, expr) ->
           let upd =
             match repres with
-              Record_regular -> 
+            | Record_object
+            | Record_regular -> 
               Psetfield(lbl.lbl_pos,  !Lambda.fld_record_set lbl)
             | Record_inlined _ -> 
                 Psetfield(lbl.lbl_pos,  Fld_record_inline_set lbl.lbl_name)
             | Record_unboxed _ -> assert false
-            | Record_float -> Psetfield (lbl.lbl_pos,  !Lambda.fld_record_set lbl)
             | Record_extension -> 
                 Psetfield(lbl.lbl_pos + 1,  Fld_record_extension_set lbl.lbl_name)
           in

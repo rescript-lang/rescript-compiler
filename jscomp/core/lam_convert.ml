@@ -194,7 +194,7 @@ let convert_record_repr ( x : Types.record_representation)
   : Lam_primitive.record_representation = 
   match x with 
   | Record_regular 
-  | Record_float ->  Record_regular
+  | Record_object ->  Record_regular (* FIX later*)
   | Record_extension -> Record_extension 
   | Record_unboxed _ -> assert false 
   (* see patches in {!Typedecl.get_unboxed_from_attributes}*)
