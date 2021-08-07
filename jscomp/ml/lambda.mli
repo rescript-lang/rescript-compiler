@@ -178,12 +178,12 @@ type primitive =
   | Pstringlength | Pstringrefu  | Pstringrefs
   | Pbyteslength | Pbytesrefu | Pbytessetu | Pbytesrefs | Pbytessets
   (* Array operations *)
-  | Pmakearray of array_kind * mutable_flag
-  | Parraylength of array_kind
-  | Parrayrefu of array_kind
-  | Parraysetu of array_kind
-  | Parrayrefs of array_kind
-  | Parraysets of array_kind
+  | Pmakearray of  mutable_flag
+  | Parraylength 
+  | Parrayrefu 
+  | Parraysetu 
+  | Parrayrefs 
+  | Parraysets 
   (* Test if the argument is a block or an immediate integer *)
   | Pisint
   (* Test if the (integer) argument is outside an interval *)
@@ -213,7 +213,7 @@ and comparison =
     Ceq | Cneq | Clt | Cgt | Cle | Cge
 
 and array_kind =
-    Pgenarray | Paddrarray | Pintarray | Pfloatarray
+    Pgenarray (*| Paddrarray | Pintarray | Pfloatarray*)
 
 and value_kind =
     Pgenval 
