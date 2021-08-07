@@ -2383,6 +2383,16 @@ let duplicate_ident_types caselist env =
     List.filter (fun {pc_lhs} -> contains_gadt env pc_lhs) caselist in
   Env.copy_types (all_idents_cases caselist) env
 
+  
+(* type_label_a_list returns a list of labels sorted by lbl_pos *)
+(* note: check_duplicates would better be implemented in
+         type_label_a_list directly *)  
+let rec check_duplicates loc env = function
+  | (_, lbl1, _) :: (_, lbl2, _) :: _ when lbl1.lbl_pos = lbl2.lbl_pos ->
+    raise(Error(loc, env, Label_multiply_defined lbl1.lbl_name))
+  | _ :: rem ->
+      check_duplicates loc env rem
+  | [] -> ()  
 (* Getting proper location of already typed expressions.
 
    Used to avoid confusing locations on type error messages in presence of
@@ -2709,6 +2719,71 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
           exp_attributes = sexp.pexp_attributes;
           exp_env = env }
       end
+    | Pexp_record(lid_sexp_list, None) ->
+        assert (lid_sexp_list <> []);
+        let ty_record, opath =          
+          match extract_concrete_record env ty_expected with
+          |  (p0, p,_) ->
+              (* XXX level may be wrong *)
+              ty_expected, Some (p0, p, true) (*ty.level = generic_level || not !Clflags.principal*)
+          | exception Not_found -> 
+               newvar (), None
+          
+        in
+        let lbl_exp_list =
+          wrap_disambiguate "This record expression is expected to have" ty_record
+            (type_label_a_list loc true env
+               (fun e k -> k (type_label_exp true env loc ty_record e))
+               opath lid_sexp_list)
+            (fun x -> x)
+        in
+        unify_exp_types loc env ty_record (instance env ty_expected);
+        check_duplicates loc env lbl_exp_list;
+        let  label_definitions =
+          let (_lid, lbl, _lbl_exp) = List.hd lbl_exp_list in
+          let matching_label lbl =
+            List.find
+              (fun (_, lbl',_) -> lbl'.lbl_pos = lbl.lbl_pos)
+              lbl_exp_list
+          in
+          Array.map 
+          (fun lbl ->
+                    match matching_label lbl with
+                    | (lid, _lbl, lbl_exp) ->
+                        Overridden (lid, lbl_exp)
+                    | exception Not_found ->
+                        let present_indices =
+                          List.map (fun (_, lbl, _) -> lbl.lbl_pos) lbl_exp_list
+                        in
+                        let label_names = extract_label_names env ty_expected in
+                        let rec missing_labels n = function
+                            [] -> []
+                          | lbl :: rem ->
+                              if List.mem n present_indices
+                              then missing_labels (n + 1) rem
+                              else lbl :: missing_labels (n + 1) rem
+                        in
+                        let missing = missing_labels 0 label_names in
+                        raise(Error(loc, env, Label_missing missing)))
+                  lbl.lbl_all
+        in
+        let label_descriptions, representation =
+          let (_, { lbl_all; lbl_repres }, _) = List.hd lbl_exp_list in
+          lbl_all, lbl_repres
+        in
+        let fields =
+          Array.map2 (fun descr def -> descr, def)
+            label_descriptions label_definitions
+        in
+        re {
+          exp_desc = Texp_record {
+              fields; representation;
+              extended_expression = None
+            };
+          exp_loc = loc; exp_extra = [];
+          exp_type = instance env ty_expected;
+          exp_attributes = sexp.pexp_attributes;
+          exp_env = env }      
   | Pexp_record(lid_sexp_list, opt_sexp) ->
       assert (lid_sexp_list <> []);
       let opt_exp =
@@ -2758,18 +2833,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
           (fun x -> x)
       in
       unify_exp_types loc env ty_record (instance env ty_expected);
-
-      (* type_label_a_list returns a list of labels sorted by lbl_pos *)
-      (* note: check_duplicates would better be implemented in
-         type_label_a_list directly *)
-      let rec check_duplicates = function
-        | (_, lbl1, _) :: (_, lbl2, _) :: _ when lbl1.lbl_pos = lbl2.lbl_pos ->
-          raise(Error(loc, env, Label_multiply_defined lbl1.lbl_name))
-        | _ :: rem ->
-            check_duplicates rem
-        | [] -> ()
-      in
-      check_duplicates lbl_exp_list;
+      check_duplicates loc env lbl_exp_list;
       let opt_exp, label_definitions =
         let (_lid, lbl, _lbl_exp) = List.hd lbl_exp_list in
         let matching_label lbl =
