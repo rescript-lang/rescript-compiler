@@ -511,8 +511,6 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Pfield_computed -> 
     prim ~primitive:Pfield_computed ~args loc 
   | Popaque -> Ext_list.singleton_exn args      
-  | Psetfield_computed _ ->  
-    prim ~primitive:Psetfield_computed ~args loc 
 
 (* Does not exist since we compile array in js backend unlike native backend *)
 
