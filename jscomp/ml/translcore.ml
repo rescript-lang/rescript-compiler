@@ -469,9 +469,6 @@ let extract_constant = function
     Lconst sc -> sc
   | _ -> raise_notrace Not_constant
 
-let extract_float = function
-    Const_base(Const_float f) -> f
-  | _ -> fatal_error "Translcore.extract_float"
 
 (* Push the default values under the functional abstractions *)
 (* Also push bindings of module patterns, since this sound *)
@@ -1029,19 +1026,16 @@ and transl_record loc env fields repres opt_init_expr =
         if mut = Mutable then raise Not_constant;
         let cl = List.map extract_constant ll in
         match repres with
-        | Record_regular -> Lconst(Const_block(0, !Lambda.blk_record fields, cl))
+        | Record_object 
+        | Record_regular -> Lconst(Const_block(0, !Lambda.blk_record fields, cl)) (* FIXME *)
         | Record_inlined {tag;name;num_nonconsts} -> Lconst(Const_block(tag, !Lambda.blk_record_inlined fields name num_nonconsts, cl))
         | Record_unboxed _ -> Lconst(match cl with [v] -> v | _ -> assert false)
-        | Record_float ->
-            if !Config.bs_only then Lconst(Const_block(0, !Lambda.blk_record fields, cl))
-            else
-            Lconst(Const_float_array(List.map extract_float cl))
         | Record_extension ->
             raise Not_constant
       with Not_constant ->
         match repres with
-          Record_regular | Record_float ->
-            Lprim(Pmakeblock(0, !Lambda.blk_record fields, mut, None), ll, loc)
+          Record_regular | Record_object ->
+            Lprim(Pmakeblock(0, !Lambda.blk_record fields, mut, None), ll, loc) (* FIXME*)
         | Record_inlined {tag;name; num_nonconsts} ->
             Lprim(Pmakeblock(tag, !Lambda.blk_record_inlined fields name num_nonconsts, mut, None), ll, loc)
         | Record_unboxed _ -> (match ll with [v] -> v | _ -> assert false)
