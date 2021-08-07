@@ -678,6 +678,10 @@ and transl_exp0 e =
       with Not_constant ->
         Lprim(Pmakeblock(0, tag_info, Immutable, None), ll, e.exp_loc)
       end
+  | Texp_construct ({txt = Lident "false"},  _, [])
+    -> Lconst Const_false    
+  | Texp_construct ({txt = Lident "true"},  _, [])
+    -> Lconst Const_true
   | Texp_construct(lid, cstr, args) ->
       let ll  = transl_list args in
       if cstr.cstr_inlined <> None then begin match ll with
@@ -687,7 +691,6 @@ and transl_exp0 e =
         Cstr_constant n ->
           Lconst(Const_pointer (n,
           match lid.txt with
-          | Longident.Lident ("false"|"true") -> Pt_builtin_boolean
           | Longident.Ldot (Longident.Lident "*predef*", "None")
           | Longident.Lident "None"
              when Datarepr.constructor_has_optional_shape cstr

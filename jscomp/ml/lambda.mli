@@ -129,7 +129,6 @@ type pointer_info =
   | Pt_constructor of {name : string; const : int ; non_const :  int} 
   | Pt_variant of {name : string}
   | Pt_module_alias 
-  | Pt_builtin_boolean
   | Pt_shape_none   
   | Pt_assertfalse
 
@@ -212,8 +211,6 @@ type primitive =
 and comparison =
     Ceq | Cneq | Clt | Cgt | Cle | Cge
 
-and array_kind =
-    Pgenarray (*| Paddrarray | Pintarray | Pfloatarray*)
 
 and value_kind =
     Pgenval 
@@ -236,7 +233,9 @@ type structured_constant =
   | Const_block of int * tag_info * structured_constant list
   | Const_float_array of string list
   | Const_immstring of string
-
+  | Const_false
+  | Const_true
+  
 type inline_attribute =
   | Always_inline (* [@inline] or [@inline always] *)
   | Never_inline (* [@inline never] *)
