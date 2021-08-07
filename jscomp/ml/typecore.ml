@@ -1884,9 +1884,9 @@ struct
         Use.guard (option expression env eo)
       | Texp_record { fields = es; extended_expression = eo;
                       representation = rep } ->
-          let use = match rep with
-            | Record_float -> Use.inspect
+          let use = match rep with            
             | Record_unboxed _ -> (fun x -> x)
+            | Record_object
             | Record_regular | Record_inlined _
             | Record_extension -> Use.guard
           in
