@@ -94,7 +94,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pbytes_of_string 
       | Pmakeblock _  (* whether it's mutable or not *)
       | Pfield _
-      | Pfield_computed
       | Pval_from_option
       | Pval_from_option_not_nest
       (* NOP The compiler already [t option] is the same as t *)
@@ -179,7 +178,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Praise
       | Plazyforce 
       | Psetfield _ 
-      | Psetfield_computed
         -> false 
     )
   | Llet (_,_, arg,body) -> no_side_effects arg && no_side_effects body 

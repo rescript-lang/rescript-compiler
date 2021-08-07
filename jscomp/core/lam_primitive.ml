@@ -146,8 +146,6 @@ type t =
   | Psome
   | Psome_not_nest  
 
-  | Pfield_computed (* Mostly used in object compilation *)
-  | Psetfield_computed
 
 
 
@@ -286,6 +284,3 @@ let eq_primitive_approx ( lhs : t) (rhs : t) =
   | Pjs_fn_method  -> rhs = Pjs_fn_method 
   | Praw_js_code _ 
     -> false (* TOO lazy, here comparison is only approximation*)
-
-  | Pfield_computed -> rhs = Pfield_computed
-  | Psetfield_computed -> rhs = Psetfield_computed
