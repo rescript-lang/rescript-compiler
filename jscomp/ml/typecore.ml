@@ -2731,20 +2731,9 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
           exp_type = instance env ty_expected;
           exp_attributes = sexp.pexp_attributes;
           exp_env = env }      
-  | Pexp_record(lid_sexp_list, opt_sexp) ->
-      assert (lid_sexp_list <> []);
-      let opt_exp =
-        match opt_sexp with
-          None -> None
-        | Some sexp ->
-            if !Clflags.principal then begin_def ();
-            let exp = type_exp ~recarg env sexp in
-            if !Clflags.principal then begin
-              end_def ();
-              generalize_structure exp.exp_type
-            end;
-            Some exp
-      in
+  | Pexp_record(lid_sexp_list, Some sexp) ->
+      assert (lid_sexp_list <> []);      
+      let exp = type_exp ~recarg env sexp in                  
       let ty_record, opath =
         let get_path ty =
           try
@@ -2755,9 +2744,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
         in
         match get_path ty_expected with
           None ->
-            begin match opt_exp with
-              None -> newvar (), None
-            | Some exp ->
+            begin 
                 match get_path exp.exp_type with
                   None -> newvar (), None
                 | Some (_, p', _) as op ->
@@ -2771,7 +2758,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
             end
         | op -> ty_expected, op
       in
-      let closed = (opt_sexp = None) in
+      let closed = false in
       let lbl_exp_list =
         wrap_disambiguate "This record expression is expected to have" ty_record
           (type_label_a_list loc closed env
@@ -2788,31 +2775,6 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
             (fun (_, lbl',_) -> lbl'.lbl_pos = lbl.lbl_pos)
             lbl_exp_list
         in
-        match opt_exp with
-          None ->
-            let label_definitions =
-              Array.map (fun lbl ->
-                  match matching_label lbl with
-                  | (lid, _lbl, lbl_exp) ->
-                      Overridden (lid, lbl_exp)
-                  | exception Not_found ->
-                      let present_indices =
-                        List.map (fun (_, lbl, _) -> lbl.lbl_pos) lbl_exp_list
-                      in
-                      let label_names = extract_label_names env ty_expected in
-                      let rec missing_labels n = function
-                          [] -> []
-                        | lbl :: rem ->
-                            if List.mem n present_indices
-                            then missing_labels (n + 1) rem
-                            else lbl :: missing_labels (n + 1) rem
-                      in
-                      let missing = missing_labels 0 label_names in
-                      raise(Error(loc, env, Label_missing missing)))
-                lbl.lbl_all
-            in
-            None, label_definitions
-        | Some exp ->
             let ty_exp = instance env exp.exp_type in
             let unify_kept lbl =
               let _, ty_arg1, ty_res1 = instance_label false lbl in
@@ -2835,7 +2797,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
         match lbl_exp_list with [] -> assert false
         | (_, lbl,_)::_ -> Array.length lbl.lbl_all in
       let opt_exp =
-        if opt_sexp <> None && List.length lid_sexp_list = num_fields then
+        if List.length lid_sexp_list = num_fields then
           (Location.prerr_warning loc Warnings.Useless_record_with; None)
         else opt_exp
       in
