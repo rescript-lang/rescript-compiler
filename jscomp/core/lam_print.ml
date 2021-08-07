@@ -112,10 +112,6 @@ let primitive ppf (prim : Lam_primitive.t) = match prim with
        -> 
        fprintf ppf "field %s/%i" s n
     )
-  | Pfield_computed -> 
-    fprintf ppf "field_computed"
-  | Psetfield_computed -> 
-    fprintf ppf "setfield_computed"
   | Psetfield(n,  _) ->
     let instr = "setfield " in
     fprintf ppf "%s%i" instr n

@@ -77,7 +77,7 @@ let record_rep ppf r =
   | Record_inlined {tag = i} -> fprintf ppf "inlined(%i)" i
   | Record_unboxed false -> fprintf ppf "unboxed"
   | Record_unboxed true -> fprintf ppf "inlined(unboxed)"
-  | Record_float -> fprintf ppf "float"
+  | Record_object -> fprintf ppf "object"
   | Record_extension -> fprintf ppf "ext"
 ;;
 

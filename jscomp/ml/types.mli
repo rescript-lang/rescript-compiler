@@ -298,7 +298,7 @@ and type_kind =
 
 and record_representation =
     Record_regular                      (* All fields are boxed / tagged *)
-  | Record_float                        (* All fields are floats *)
+  | Record_object                        (* All fields are floats *)
   | Record_unboxed of bool    (* Unboxed single-field record, inlined or not *)
   | Record_inlined of { tag : int ; name : string; num_nonconsts : int}              (* Inlined record *)
   | Record_extension                    (* Inlined record under extension *)

@@ -163,12 +163,6 @@ let translate  loc
   | Pfield (i, fld_info) -> 
     Js_of_lam_block.field fld_info (Ext_list.singleton_exn args) (Int32.of_int i)
   (* Invariant depends on runtime *)
-  | Pfield_computed ->  
-    (match args with 
-     | [self; index] -> 
-       Js_of_lam_block.field_by_exp self  index 
-     | _ -> assert false
-    )
   (* Negate boxed int *)
 
   | Pnegint
@@ -442,13 +436,6 @@ let translate  loc
          (Js_of_lam_block.set_field field_info e0 (Int32.of_int i) e1)
      (*TODO: get rid of [E.unit ()]*)
      | _ -> assert false)    
-  | Psetfield_computed ->      
-    (match args with 
-     | [self; index; value] ->
-       ensure_value_unit cxt.continuation
-         (Js_of_lam_block.set_field_by_exp self index value)
-     | _ -> assert false
-    )
   | Parrayrefu ->  
     (match args with
      | [e;e1] -> Js_of_lam_array.ref_array e e1 (* Todo: Constant Folding *)
