@@ -62,7 +62,7 @@
 ../lib/4.06.1/unstable/bspack.ml: ./main/bspack_main.mli
 ../lib/4.06.1/unstable/bspack.ml: ./ml/ast_helper.ml
 ../lib/4.06.1/unstable/bspack.ml: ./ml/ast_helper.mli
-../lib/4.06.1/unstable/bspack.ml: ./ml/asttypes.mli
+../lib/4.06.1/unstable/bspack.ml: ./ml/asttypes.ml
 ../lib/4.06.1/unstable/bspack.ml: ./ml/builtin_attributes.ml
 ../lib/4.06.1/unstable/bspack.ml: ./ml/builtin_attributes.mli
 ../lib/4.06.1/unstable/bspack.ml: ./ml/clflags.ml

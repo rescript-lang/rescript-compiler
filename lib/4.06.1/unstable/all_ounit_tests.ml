@@ -11205,10 +11205,9 @@ let deprecated ?(def = none) ?(use = none) loc msg =
   prerr_warning loc (Warnings.Deprecated (msg, def, use))
 
 end
-(** Interface as module  *)
 module Asttypes
 = struct
-#1 "asttypes.mli"
+#1 "asttypes.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -11268,6 +11267,20 @@ type variance =
   | Contravariant
   | Invariant
 
+
+let same_arg_label (x : arg_label) y = 
+  match x with 
+  | Nolabel -> y = Nolabel
+  | Labelled s ->
+    begin match y with 
+    | Labelled s0 -> s = s0 
+    | _ -> false 
+    end 
+  | Optional s ->
+      begin match y with 
+      | Optional s0 -> s = s0
+      | _ -> false  
+      end  
 end
 module Longident : sig 
 #1 "longident.mli"
