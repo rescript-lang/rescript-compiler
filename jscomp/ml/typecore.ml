@@ -305,6 +305,14 @@ let extract_option_type env ty =
     when Path.same path Predef.path_option -> ty
   | _ -> assert false
 
+let is_option_type env ty = 
+  match expand_head env ty with 
+  | {desc = Tconstr(path, [_], _)}
+    when Path.same path Predef.path_option -> true 
+  | _ -> false 
+  | exception _ -> false
+  
+
 let extract_concrete_record env ty =
   match extract_concrete_typedecl env ty with
     (p0, p, {type_kind=Type_record (fields, _)}) -> (p0, p, fields)
@@ -323,6 +331,25 @@ let extract_label_names env ty =
   with Not_found ->
     assert false
 
+type lbl_exp_list = 
+    (Longident.t Location.loc *
+     Types.label_description * 
+     Typedtree.expression) list
+
+let missing_labels loc env ty_expected (lbl_exp_list : lbl_exp_list ) =   
+  let present_indices =
+    List.map (fun (_, lbl, _) -> lbl.lbl_pos) lbl_exp_list
+  in
+  let label_names = extract_label_names env ty_expected in
+  let rec missing_labels n = function
+      [] -> []
+    | lbl :: rem ->
+        if List.mem n present_indices
+        then missing_labels (n + 1) rem
+        else lbl :: missing_labels (n + 1) rem
+  in
+  let missing = missing_labels 0 label_names in
+  raise(Error(loc, env, Label_missing missing))    
 (* Typing of patterns *)
 
 (* unification inside type_pat*)
@@ -2699,19 +2726,11 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
                     | (lid, _lbl, lbl_exp) ->
                         Overridden (lid, lbl_exp)
                     | exception Not_found ->
-                        let present_indices =
-                          List.map (fun (_, lbl, _) -> lbl.lbl_pos) lbl_exp_list
-                        in
-                        let label_names = extract_label_names env ty_expected in
-                        let rec missing_labels n = function
-                            [] -> []
-                          | lbl :: rem ->
-                              if List.mem n present_indices
-                              then missing_labels (n + 1) rem
-                              else lbl :: missing_labels (n + 1) rem
-                        in
-                        let missing = missing_labels 0 label_names in
-                        raise(Error(loc, env, Label_missing missing)))
+                      if false && is_option_type env lbl.lbl_arg then (* Turn On Later *)                         
+                        Overridden ({loc ; txt = Lident lbl.lbl_name},
+                        option_none lbl.lbl_arg loc)
+                      else 
+                        missing_labels loc env ty_expected lbl_exp_list)
                   lbl.lbl_all
         in
         let label_descriptions, representation =

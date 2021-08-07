@@ -146,11 +146,6 @@ let get_unboxed_type_representation env ty =
   get_unboxed_type_representation env ty 100
 ;;
 
-(* Determine if a type's values are represented by floats at run-time. *)
-let is_float env ty =
-  match get_unboxed_type_representation env ty with
-    Some {desc = Tconstr(p, _, _); _} -> Path.same p Predef.path_float
-  | _ -> false
 
 (* Determine if a type definition defines a fixed type. (PW) *)
 let is_fixed_type sd =
@@ -404,9 +399,6 @@ let transl_declaration env sdecl id =
           let lbls, lbls' = transl_labels env true lbls in
           let rep =
             if unbox then Record_unboxed false
-            else if !Config.bs_only then Record_regular
-            else if List.for_all (fun l -> is_float env l.Types.ld_type) lbls'
-            then Record_float
             else Record_regular
           in
           Ttype_record lbls, Type_record(lbls', rep)
