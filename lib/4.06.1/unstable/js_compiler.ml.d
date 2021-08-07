@@ -454,7 +454,7 @@
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/ast_iterator.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/ast_mapper.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/ast_mapper.mli
-../lib/4.06.1/unstable/js_compiler.ml: ./ml/asttypes.mli
+../lib/4.06.1/unstable/js_compiler.ml: ./ml/asttypes.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/btype.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/btype.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/builtin_attributes.ml
