@@ -745,12 +745,11 @@ and transl_exp0 e =
   | Texp_field(arg, _, lbl) ->
       let targ = transl_exp arg in
       begin match lbl.lbl_repres with
-          Record_regular -> 
+          Record_regular | Record_float  -> 
           Lprim (Pfield (lbl.lbl_pos, !Lambda.fld_record lbl), [targ], e.exp_loc) 
         | Record_inlined _ ->
           Lprim (Pfield (lbl.lbl_pos, Fld_record_inline {name = lbl.lbl_name}), [targ], e.exp_loc)
         | Record_unboxed _ -> targ
-        | Record_float -> Lprim (Pfloatfield (lbl.lbl_pos, !Lambda.fld_record lbl), [targ], e.exp_loc)
         | Record_extension ->
           Lprim (Pfield (lbl.lbl_pos + 1, Fld_record_extension {name = lbl.lbl_name}), [targ], e.exp_loc) 
       end
@@ -1010,11 +1009,10 @@ and transl_record loc env fields repres opt_init_expr =
            | Kept _ ->
                let access =
                  match repres with
-                   Record_regular ->   Pfield (i, !Lambda.fld_record lbl) 
+                   Record_regular | Record_float ->   Pfield (i, !Lambda.fld_record lbl) 
                  | Record_inlined _ -> Pfield (i, Fld_record_inline {name = lbl.lbl_name}) 
                  | Record_unboxed _ -> assert false
-                 | Record_extension -> Pfield (i + 1, Fld_record_extension {name = lbl.lbl_name}) 
-                 | Record_float -> Pfloatfield (i, !Lambda.fld_record lbl) in
+                 | Record_extension -> Pfield (i + 1, Fld_record_extension {name = lbl.lbl_name})in 
                Lprim(access, [Lvar init_id], loc)
            | Overridden (_lid, expr) ->
                transl_exp expr)
@@ -1041,15 +1039,11 @@ and transl_record loc env fields repres opt_init_expr =
             raise Not_constant
       with Not_constant ->
         match repres with
-          Record_regular ->
+          Record_regular | Record_float ->
             Lprim(Pmakeblock(0, !Lambda.blk_record fields, mut, None), ll, loc)
         | Record_inlined {tag;name; num_nonconsts} ->
             Lprim(Pmakeblock(tag, !Lambda.blk_record_inlined fields name num_nonconsts, mut, None), ll, loc)
         | Record_unboxed _ -> (match ll with [v] -> v | _ -> assert false)
-        | Record_float ->
-            if !Config.bs_only then Lprim(Pmakeblock(0, !Lambda.blk_record fields, mut, None), ll, loc)
-            else
-            Lprim(Pmakearray (Pfloatarray, mut), ll, loc)
         | Record_extension ->
             let path =
               let (label, _) = fields.(0) in

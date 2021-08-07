@@ -54,13 +54,13 @@ type tag_info =
       ]}
 
     *)
-  | Blk_na of string (* This string only for debugging*)
+
   | Blk_some
   | Blk_some_not_nested (* ['a option] where ['a] can not inhabit a non-like value *)
   | Blk_record_inlined of { name : string ; num_nonconst :  int ; fields : string array}   
   | Blk_record_ext of string array
   | Blk_lazy_general    
-  | Blk_class (* ocaml style class *)
+
 
 val blk_record : 
   ( 
@@ -82,12 +82,11 @@ val blk_record_inlined :
     tag_info
   ) ref
 
-val default_tag_info : tag_info
+
 
 val ref_tag_info : tag_info
 
 type field_dbg_info = 
-  | Fld_na of string
   | Fld_record of {name : string; mutable_flag : Asttypes.mutable_flag}
   | Fld_module of {name : string}     
   | Fld_record_inline of {name : string}
@@ -106,7 +105,7 @@ val fld_record :
 
 val ref_field_info : field_dbg_info   
 
-val fld_na : field_dbg_info
+
 
 type set_field_dbg_info = 
   | Fld_record_set of string 
@@ -133,7 +132,6 @@ type pointer_info =
   | Pt_builtin_boolean
   | Pt_shape_none   
   | Pt_assertfalse
-  | Pt_na  
 
 
 
@@ -152,7 +150,7 @@ type primitive =
   | Pmakeblock of int * tag_info * mutable_flag * block_shape
   | Pfield of int * field_dbg_info
   | Psetfield of int * set_field_dbg_info
-  | Pfloatfield of int * field_dbg_info
+
 
   | Pduprecord of Types.record_representation * int
   (* Force lazy values *)

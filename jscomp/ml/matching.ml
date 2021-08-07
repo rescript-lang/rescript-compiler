@@ -1593,12 +1593,11 @@ let make_record_matching loc all_labels def = function
           let lbl = all_labels.(pos) in
           let access =
             match lbl.lbl_repres with
-            | Record_regular  -> 
+            | Record_regular | Record_float -> 
               Lprim (Pfield (lbl.lbl_pos, !Lambda.fld_record lbl), [arg], loc) 
             | Record_inlined _ ->
               Lprim (Pfield (lbl.lbl_pos, Fld_record_inline {name = lbl.lbl_name}), [arg], loc)
             | Record_unboxed _ -> arg
-            | Record_float -> Lprim (Pfloatfield (lbl.lbl_pos, !Lambda.fld_record lbl), [arg], loc)
             | Record_extension -> Lprim (Pfield (lbl.lbl_pos + 1, Fld_record_extension {name = lbl.lbl_name}), [arg], loc) 
           in
           let str =
@@ -2315,10 +2314,7 @@ let combine_constructor sw_names loc arg ex_pat cstr partial ctx def
                 nonconsts
                 default
             in
-              if !Config.bs_only then 
               Llet(Alias, Pgenval,tag,  arg, tests)
-              else 
-              Llet(Alias, Pgenval,tag, Lprim(Pfield (0, Lambda.fld_na (*IRRELEVANT*)), [arg], loc), tests)
       in
         List.fold_right
           (fun (path, act) rem ->

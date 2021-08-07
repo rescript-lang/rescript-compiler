@@ -16,12 +16,7 @@
 (* Translation from typed abstract syntax to lambda terms,
    for the module language *)
 
-module Translobj = struct 
-  let oo_wrap _env _b f a = f a 
-  let reset_labels () : unit = () 
 
-  let transl_label_init f = f ()      
-end  
 
 open Misc
 open Asttypes
@@ -30,7 +25,7 @@ open Path
 open Types
 open Typedtree
 open Lambda
-open Translobj
+
 open Translcore
 
 
@@ -451,14 +446,12 @@ and transl_module cc rootpath mexp =
       | Tmod_structure str ->
           fst (transl_struct loc [] cc rootpath str)
       | Tmod_functor _ ->
-          oo_wrap mexp.mod_env true (fun () ->
-            compile_functor mexp cc rootpath loc) ()
+            compile_functor mexp cc rootpath loc
       | Tmod_apply(funct, arg, ccarg) ->
           let inlined_attribute, funct =
             Translattribute.get_and_remove_inlined_attribute_on_module funct
           in
-          oo_wrap mexp.mod_env true
-            (apply_coercion loc Strict cc)
+            apply_coercion loc Strict cc
             (Lapply{
                     ap_loc=loc;
                     ap_func=transl_module Tcoerce_none None funct;
@@ -669,14 +662,12 @@ let required_globals ~flambda body =
 (* Compile an implementation *)
 
 let transl_implementation_flambda module_name (str, cc) =
-  reset_labels ();
   primitive_declarations := [];
   Hashtbl.clear used_primitives;
   let module_id = Ident.create_persistent module_name in
   let body, size =
-    Translobj.transl_label_init
-      (fun () -> transl_struct Location.none [] cc
-                   (global_path module_id) str)
+    transl_struct Location.none [] cc
+                   (global_path module_id) str
   in
   { module_ident = module_id;
     main_module_block_size = size;

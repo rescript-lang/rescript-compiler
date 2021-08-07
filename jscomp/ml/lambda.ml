@@ -44,15 +44,15 @@ type tag_info =
   | Blk_module_export of Ident.t list
   | Blk_extension_slot
   | Blk_extension
-  | Blk_na of string
+  
   | Blk_some
   | Blk_some_not_nested (* ['a option] where ['a] can not inhabit a non-like value *)
   | Blk_record_inlined of { name : string ; num_nonconst :  int; fields : string array} 
   | Blk_record_ext of string array
   | Blk_lazy_general
-  | Blk_class (* Ocaml style class*) 
 
-let default_tag_info : tag_info = Blk_na ""
+
+
 let blk_record = ref (fun fields -> 
   let all_labels_info = fields |> Array.map (fun (x,_) -> x.Types.lbl_name) in    
   Blk_record all_labels_info
@@ -71,7 +71,6 @@ let blk_record_inlined = ref (fun fields name num_nonconst ->
 let ref_tag_info : tag_info = Blk_record [| "contents" |]
   
 type field_dbg_info = 
-  | Fld_na of string
   | Fld_record of {name : string; mutable_flag : Asttypes.mutable_flag}
   | Fld_module of {name : string }
   | Fld_record_inline of { name : string}   
@@ -89,7 +88,7 @@ let fld_record = ref (fun (lbl : Types.label_description) ->
 
 let ref_field_info : field_dbg_info = 
   Fld_record { name = "contents"; mutable_flag = Mutable}
-let fld_na = Fld_na ""
+
 
 type set_field_dbg_info = 
     | Fld_record_set of string 
@@ -126,7 +125,7 @@ type primitive =
   | Pfield of int * field_dbg_info
   | Psetfield of int *  set_field_dbg_info
 
-  | Pfloatfield of int * field_dbg_info
+  
 
   | Pduprecord of Types.record_representation * int
   (* Force lazy values *)
@@ -212,7 +211,7 @@ type pointer_info =
   | Pt_builtin_boolean  
   | Pt_shape_none   
   | Pt_assertfalse
-  | Pt_na 
+
 
   
 type structured_constant =

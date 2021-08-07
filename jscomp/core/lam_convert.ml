@@ -254,9 +254,6 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
             assert false
         )
 
-      | Blk_class  -> 
-        let info : Lam_tag_info.t = Blk_class in
-        prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc  
       | Blk_array -> 
         let info : Lam_tag_info.t = Blk_array in
         prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc    
@@ -304,9 +301,6 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
 
           | _ -> assert false
         end
-      | Blk_na s -> 
-        let info : Lam_tag_info.t = Blk_na s in
-        prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
     end  
   | Pfield (id,info)
     -> prim ~primitive:(Pfield (id,info)) ~args loc
@@ -315,8 +309,7 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
                info)
     -> prim ~primitive:(Psetfield (id,info)) ~args loc
 
-  | Pfloatfield _
-    -> assert false  
+
   | Pduprecord (repr,_)
     -> prim ~primitive:(Pduprecord (convert_record_repr repr)) ~args loc
   | Plazyforce -> prim ~primitive:Plazyforce ~args loc

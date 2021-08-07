@@ -109,7 +109,6 @@ let str_of_field_info (fld_info : Lambda.field_dbg_info)=
   match fld_info with 
   | (Fld_module {name } | Fld_record {name} | Fld_record_inline {name} | Fld_record_extension {name})
     -> name
-  | Fld_na s  -> if s = "" then "na" else ""
   | Fld_tuple -> "[]"
   | Fld_poly_var_tag->"`"
   | Fld_poly_var_content -> "#"
@@ -127,11 +126,10 @@ let print_taginfo ppf = function
   | Blk_record  ss ->  fprintf ppf "[%s]" (String.concat ";" (Array.to_list ss) )
   | Blk_module ss ->  fprintf ppf "[%s]" (String.concat ";"  ss) 
   | Blk_extension_slot -> fprintf ppf "ext_slot"
-  | Blk_na s -> fprintf ppf "%s"  s 
+
   | Blk_some -> fprintf ppf "some"
   | Blk_some_not_nested -> fprintf ppf "some_not_nested" 
   | Blk_lazy_general -> fprintf ppf "lazy_general"
-  | Blk_class -> fprintf ppf "class"
   | Blk_module_export _ -> fprintf ppf "module/exports"
   | Blk_record_inlined {fields = ss }
     -> fprintf ppf "[%s]" (String.concat ";" (Array.to_list ss) )
@@ -154,7 +152,6 @@ let primitive ppf = function
   | Pfield (n, fld) -> fprintf ppf "field:%s/%i" (str_of_field_info fld) n      
   | Psetfield(n,  _) ->
       fprintf ppf "setfield %i"   n
-  | Pfloatfield (n,_) -> fprintf ppf "floatfield %i" n
   | Pduprecord (rep, size) -> fprintf ppf "duprecord %a %i" record_rep rep size
   | Plazyforce -> fprintf ppf "force"
   | Pccall p -> fprintf ppf "%s" p.prim_name
@@ -270,7 +267,6 @@ let name_of_primitive = function
   | Pmakeblock _ -> "Pmakeblock"
   | Pfield _ -> "Pfield"
   | Psetfield _ -> "Psetfield"
-  | Pfloatfield _ -> "Pfloatfield"
   | Pduprecord _ -> "Pduprecord"
   | Plazyforce -> "Plazyforce"
   | Pccall _ -> "Pccall"

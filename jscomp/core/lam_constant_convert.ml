@@ -54,7 +54,6 @@ let rec convert_constant ( const : Lambda.structured_constant) : Lam_constant.t 
         if Ext_string.is_valid_hash_number name then
           Const_int {i = Ext_string.hash_number_as_i32_exn name; comment = None}
         else Const_pointer name
-      | Pt_na ->  Const_int{i = Int32.of_int i ; comment = None}      
     end 
   | Const_float_array (s) -> Const_float_array(s)
   | Const_immstring s -> Const_string s
@@ -70,9 +69,6 @@ let rec convert_constant ( const : Lambda.structured_constant) : Lam_constant.t 
       | Blk_tuple ->   
         let t : Lam_tag_info.t = Blk_tuple in 
         Const_block (i,t, Ext_list.map xs convert_constant )
-      | Blk_class ->   
-        let t : Lam_tag_info.t = Blk_class in 
-        Const_block (i, t, Ext_list.map xs convert_constant )
       | Blk_array -> 
         let t : Lam_tag_info.t = Blk_array in 
         Const_block (i,t, Ext_list.map xs convert_constant )
@@ -103,9 +99,6 @@ let rec convert_constant ( const : Lambda.structured_constant) : Lam_constant.t 
         Const_block (i,t, Ext_list.map xs convert_constant )      
       | Blk_lazy_general 
         -> assert false
-      | Blk_na s  -> 
-        let t : Lam_tag_info.t = Blk_na s in 
-        Const_block (i,t, Ext_list.map xs convert_constant )      
 
       | Blk_record_inlined {name;fields;num_nonconst}  -> 
         let t : Lam_tag_info.t = Blk_record_inlined {name;fields;num_nonconst} in 

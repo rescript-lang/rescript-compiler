@@ -54,7 +54,6 @@ type let_kind = Lambda.let_kind
 
 
 type field_dbg_info = Lambda.field_dbg_info =
-  | Fld_na of string
   | Fld_record of {name : string; mutable_flag : Asttypes.mutable_flag}
   | Fld_module of {name : string }
   | Fld_record_inline of {name : string}

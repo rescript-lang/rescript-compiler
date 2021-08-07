@@ -863,8 +863,8 @@ and expression_desc cxt ~(level:int) f x : cxt  =
        && not_is_cons then 
       pp_comment_option f (Some p.name);
     expression_desc cxt ~level f (Object objs)
-  | Caml_block ( _, _, _, (Blk_module_export | Blk_na _ )) -> assert false
-  | Caml_block( el, mutable_flag, _tag, (Blk_tuple  | Blk_class | Blk_array  ))
+  | Caml_block ( _, _, _, (Blk_module_export  )) -> assert false
+  | Caml_block( el, mutable_flag, _tag, (Blk_tuple  | Blk_array  ))
     ->
     expression_desc cxt ~level f  (Array (el, mutable_flag))
 

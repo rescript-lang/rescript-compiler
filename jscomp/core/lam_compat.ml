@@ -116,7 +116,6 @@ type let_kind = Lambda.let_kind
 
 
 type field_dbg_info = Lambda.field_dbg_info =
-  | Fld_na of string
   | Fld_record of { name : string; mutable_flag : Asttypes.mutable_flag}
   | Fld_module of { name : string }
   | Fld_record_inline of { name : string}
@@ -131,7 +130,6 @@ type field_dbg_info = Lambda.field_dbg_info =
 
 let str_of_field_info (x : field_dbg_info) : string option =  
   match x with 
-  | Fld_na  s -> if s = "" then None else Some s
   | Fld_array
   | Fld_extension
   | Fld_variant
