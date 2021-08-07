@@ -16,6 +16,10 @@ var x = /* A */{
 
 var non_terminate = g(x);
 
+var xx = {};
+
+xx.xx = xx;
+
 exports.loop = loop;
 exports.non_terminate = non_terminate;
 /* loop Not a pure module */
