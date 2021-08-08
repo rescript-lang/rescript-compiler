@@ -35,11 +35,11 @@ type loc_kind =
   | Loc_POS
 
 type tag_info = 
-  | Blk_constructor of {name : string ; num_nonconst : int}
+  | Blk_constructor of {name : string ; num_nonconst : int; tag : int}
+  | Blk_record_inlined of { name : string ; num_nonconst :  int ;  tag : int; fields : string array; mutable_flag : mutable_flag}   
   | Blk_tuple
-  | Blk_array
   | Blk_poly_var of string 
-  | Blk_record of string array
+  | Blk_record of {fields : string array; mutable_flag : mutable_flag}
   | Blk_module of string list
   | Blk_module_export of Ident.t list 
   | Blk_extension_slot 
@@ -60,20 +60,22 @@ type tag_info =
 
   | Blk_some
   | Blk_some_not_nested (* ['a option] where ['a] can not inhabit a non-like value *)
-  | Blk_record_inlined of { name : string ; num_nonconst :  int ; fields : string array}   
-  | Blk_record_ext of string array
+  | Blk_record_ext of {fields : string array; mutable_flag : mutable_flag}
   | Blk_lazy_general    
 
-
+val tag_of_tag_info : tag_info -> int 
+val mutable_flag_of_tag_info : tag_info -> mutable_flag 
 val blk_record : 
   ( 
     (Types.label_description* Typedtree.record_label_definition) array ->
+    mutable_flag -> 
     tag_info
   ) ref
 
 val blk_record_ext :
   ( 
     (Types.label_description* Typedtree.record_label_definition) array ->
+    mutable_flag -> 
     tag_info
   ) ref
 
@@ -82,6 +84,8 @@ val blk_record_inlined :
     (Types.label_description* Typedtree.record_label_definition) array ->
     string ->
     int ->
+    tag:int ->    
+    mutable_flag ->  
     tag_info
   ) ref
 
@@ -149,7 +153,7 @@ type primitive =
   | Pgetglobal of Ident.t
   | Psetglobal of Ident.t
   (* Operations on heap blocks *)
-  | Pmakeblock of int * tag_info * mutable_flag * block_shape
+  | Pmakeblock of tag_info 
   | Pfield of int * field_dbg_info
   | Psetfield of int * set_field_dbg_info
 
@@ -218,8 +222,6 @@ and comparison =
 and value_kind =
     Pgenval 
 
-and block_shape =
-  unit option
 
 and boxed_integer = Primitive.boxed_integer =
     Pnativeint | Pint32 | Pint64
@@ -233,7 +235,7 @@ and raise_kind =
 type structured_constant =
     Const_base of constant
   | Const_pointer of int * pointer_info
-  | Const_block of int * tag_info * structured_constant list
+  | Const_block of  tag_info * structured_constant list
   | Const_float_array of string list
   | Const_immstring of string
   | Const_false

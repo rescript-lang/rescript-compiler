@@ -2930,9 +2930,9 @@ let partial_function loc () =
     Filename.basename fname
   in   
 #end    
-  Lprim(Praise Raise_regular, [Lprim(Pmakeblock(0, Blk_extension, Immutable, None),
+  Lprim(Praise Raise_regular, [Lprim(Pmakeblock(Blk_extension),
           [transl_normal_path Predef.path_match_failure;
-           Lconst(Const_block(0, Blk_tuple,
+           Lconst(Const_block(Blk_tuple,
               [Const_base(Const_string (fname, None));
                Const_base(Const_int line);
                Const_base(Const_int char)]))], loc)], loc)
@@ -3030,7 +3030,7 @@ let assign_pat opt nraise catch_ids loc pat lam =
   | Tpat_tuple patl, Lprim(Pmakeblock _, lams, _) ->
       opt := true;
       List.fold_left2 collect acc patl lams
-  | Tpat_tuple patl, Lconst(Const_block(_, _, scl)) ->
+  | Tpat_tuple patl, Lconst(Const_block( _, scl)) ->
       opt := true;
       let collect_const acc pat sc = collect acc pat (Lconst sc) in
       List.fold_left2 collect_const acc patl scl
@@ -3173,12 +3173,12 @@ let do_for_multiple_match loc paraml pat_act_list partial =
         let raise_num = next_raise_count () in
         raise_num,
         { cases = List.map (fun (pat, act) -> ([pat], act)) pat_act_list;
-          args = [Lprim(Pmakeblock(0, Blk_tuple, Immutable, None), paraml, loc), Strict];
+          args = [Lprim(Pmakeblock( Blk_tuple), paraml, loc), Strict];
           default = [[[omega]],raise_num] }
     | _ ->
         -1,
         { cases = List.map (fun (pat, act) -> ([pat], act)) pat_act_list;
-          args = [Lprim(Pmakeblock(0, Blk_tuple, Immutable, None), paraml, loc), Strict];
+          args = [Lprim(Pmakeblock( Blk_tuple), paraml, loc), Strict];
           default = [] } in
 
   try

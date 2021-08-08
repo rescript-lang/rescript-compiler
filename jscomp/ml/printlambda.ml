@@ -30,9 +30,11 @@ let rec struct_const ppf = function
   | Const_base(Const_int64 n) -> fprintf ppf "%LiL" n
   | Const_base(Const_nativeint n) -> fprintf ppf "%nin" n
   | Const_pointer (n,_) -> fprintf ppf "%ia" n
-  | Const_block(tag, _, []) ->
+  | Const_block(tag_info, []) ->
+      let tag = Lambda.tag_of_tag_info tag_info in 
       fprintf ppf "[%i]" tag
-  | Const_block(tag, _,sc1::scl) ->
+  | Const_block(tag_info,sc1::scl) ->
+      let tag = Lambda.tag_of_tag_info tag_info in 
       let sconsts ppf scl =
         List.iter (fun sc -> fprintf ppf "@ %a" struct_const sc) scl in
       fprintf ppf "@[<1>[%i:@ @[%a%a@]]@]" tag struct_const sc1 sconsts scl
@@ -114,12 +116,11 @@ let str_of_field_info (fld_info : Lambda.field_dbg_info)=
   | Fld_array -> "[||]" 
 let print_taginfo ppf = function
   | Blk_extension -> fprintf ppf "ext" 
-  | Blk_record_ext ss -> fprintf ppf "[%s]" (String.concat ";" (Array.to_list ss) )
+  | Blk_record_ext {fields = ss} -> fprintf ppf "[%s]" (String.concat ";" (Array.to_list ss) )
   | Blk_tuple -> fprintf ppf "tuple"
   | Blk_constructor {name ;num_nonconst} -> fprintf ppf "%s/%i" name num_nonconst
-  | Blk_array -> fprintf ppf "array"
   | Blk_poly_var name -> fprintf ppf "`%s" name 
-  | Blk_record  ss ->  fprintf ppf "[%s]" (String.concat ";" (Array.to_list ss) )
+  | Blk_record  {fields = ss} ->  fprintf ppf "[%s]" (String.concat ";" (Array.to_list ss) )
   | Blk_module ss ->  fprintf ppf "[%s]" (String.concat ";"  ss) 
   | Blk_extension_slot -> fprintf ppf "ext_slot"
 
@@ -141,10 +142,8 @@ let primitive ppf = function
   | Ploc kind -> fprintf ppf "%s" (string_of_loc_kind kind)
   | Pgetglobal id -> fprintf ppf "global %a" Ident.print id
   | Psetglobal id -> fprintf ppf "setglobal %a" Ident.print id
-  | Pmakeblock(tag, taginfo, Immutable, _) ->
-      fprintf ppf "makeblock %i/%a" tag print_taginfo taginfo
-  | Pmakeblock(tag, taginfo, Mutable, _) ->
-      fprintf ppf "makemutable %i/%a" tag print_taginfo taginfo
+  | Pmakeblock(taginfo) ->
+      fprintf ppf "makeblock %a" print_taginfo taginfo
   | Pfield (n, fld) -> fprintf ppf "field:%s/%i" (str_of_field_info fld) n      
   | Psetfield(n,  _) ->
       fprintf ppf "setfield %i"   n

@@ -51,9 +51,8 @@ let transl_extension_constructor env path ext =
   let loc = ext.ext_loc in
   match ext.ext_kind with
     Text_decl _ ->
-      let tag_info = Blk_extension_slot in 
       let ext_name = Lconst (Const_base (Const_string (name, None))) in 
-      Lprim (Pmakeblock (Obj.object_tag, tag_info, Immutable, None),
+      Lprim (Pmakeblock (Blk_extension_slot),
         [ ext_name ]
         ,
         loc)
@@ -237,7 +236,7 @@ let primitives_table =
   (* BEGIN Triples for  ref data type *)
   "%bs_ref_setfield0", Psetfield(0,  Lambda.ref_field_set_info);
   "%bs_ref_field0", Pfield(0, Lambda.ref_field_info);
-  "%makemutable", Pmakeblock(0, Lambda.ref_tag_info, Mutable, None);
+  "%makemutable", Pmakeblock(Lambda.ref_tag_info);
   "%incr", Poffsetref(1);
   "%decr", Poffsetref(-1);
   (* Finish Triples for  ref data type *)
@@ -411,7 +410,7 @@ let transl_primitive loc p env ty path =
         Lfunction{ params = [param];
                   attr = default_stub_attribute;
                   loc = loc;
-                  body = Lprim(Pmakeblock(0, Lambda.Blk_tuple, Immutable, None),
+                  body = Lprim(Pmakeblock(Blk_tuple),
                                [lam; Lvar param], loc)}
       | _ -> assert false
     end
@@ -556,9 +555,9 @@ let assert_failed exp =
   let fname = Filename.basename fname in   
 #end     
   Lprim(Praise Raise_regular, [
-    (Lprim(Pmakeblock(0, Blk_extension, Immutable, None),
+    (Lprim(Pmakeblock(Blk_extension),
           [transl_normal_path Predef.path_assert_failure;
-           Lconst(Const_block(0, Blk_tuple,
+           Lconst(Const_block(Blk_tuple,
               [Const_base(Const_string (fname, None));
                Const_base(Const_int line);
                Const_base(Const_int char)]))], exp.exp_loc))], exp.exp_loc)
@@ -641,7 +640,7 @@ and transl_exp0 e =
           lam_of_loc kind e.exp_loc
         | (Ploc kind, [arg1]) ->
           let lam = lam_of_loc kind arg1.exp_loc in
-          Lprim(Pmakeblock(0, Blk_tuple, Immutable, None), lam :: argl, e.exp_loc)
+          Lprim(Pmakeblock(Blk_tuple), lam :: argl, e.exp_loc)
         | (Ploc _, _) -> assert false
         | (_, _) ->
             begin match (prim, argl) with
@@ -669,11 +668,10 @@ and transl_exp0 e =
                Matching.for_trywith (Lvar id) (transl_cases_try pat_expr_list))
   | Texp_tuple el ->
       let ll = transl_list el in
-      let tag_info = Lambda.Blk_tuple in 
       begin try
-        Lconst(Const_block(0, tag_info, List.map extract_constant ll))
+        Lconst(Const_block(Blk_tuple, List.map extract_constant ll))
       with Not_constant ->
-        Lprim(Pmakeblock(0, tag_info, Immutable, None), ll, e.exp_loc)
+        Lprim(Pmakeblock(Blk_tuple), ll, e.exp_loc)
       end
   | Texp_construct ({txt = Lident "false"},  _, [])
     -> Lconst Const_false    
@@ -710,17 +708,14 @@ and transl_exp0 e =
                 | _ ->
                     Blk_some
               end
-            else Blk_constructor {name = cstr.cstr_name; num_nonconst = cstr.cstr_nonconsts} in      
+            else Blk_constructor {name = cstr.cstr_name; num_nonconst = cstr.cstr_nonconsts; tag = n} in      
           begin try
-            Lconst(Const_block(n, tag_info, List.map extract_constant ll))
+            Lconst(Const_block(tag_info, List.map extract_constant ll))
           with Not_constant ->
-            Lprim(Pmakeblock(n, tag_info, Immutable, None), ll, e.exp_loc)
+            Lprim(Pmakeblock(tag_info), ll, e.exp_loc)
           end
-      | Cstr_extension(path, is_const) ->
-          if not !Config.bs_only && is_const then
-            transl_extension_path e.exp_env path
-          else
-            Lprim(Pmakeblock(0, Blk_extension, Immutable, None),
+      | Cstr_extension(path, _) ->
+            Lprim(Pmakeblock(Blk_extension),
                   transl_extension_path e.exp_env path :: ll, e.exp_loc)
       end
   | Texp_extension_constructor (_, path) ->
@@ -733,10 +728,10 @@ and transl_exp0 e =
           let lam = transl_exp arg in
           let tag_info = Blk_poly_var l in 
           try
-            Lconst(Const_block(0, tag_info, [Const_base(Const_int tag);
+            Lconst(Const_block(tag_info, [Const_base(Const_int tag);
                                    extract_constant lam]))
           with Not_constant ->
-            Lprim(Pmakeblock(0, tag_info, Immutable, None),
+            Lprim(Pmakeblock(tag_info),
                   [Lconst(Const_base(Const_int tag)); lam], e.exp_loc)
       end
   | Texp_record {fields; representation; extended_expression} ->
@@ -816,7 +811,7 @@ and transl_exp0 e =
       (* when e needs no computation (constants, identifiers, ...), we
          optimize the translation just as Lazy.lazy_from_val would
          do *)
-      Lprim(Pmakeblock(0, Blk_lazy_general, Mutable, None), [transl_exp e], e.exp_loc)
+      Lprim(Pmakeblock(Blk_lazy_general), [transl_exp e], e.exp_loc)
      
   | Texp_object () ->
       assert false
@@ -1027,17 +1022,17 @@ and transl_record loc env fields repres opt_init_expr =
         let cl = List.map extract_constant ll in
         match repres with
         | Record_object 
-        | Record_regular -> Lconst(Const_block(0, !Lambda.blk_record fields, cl)) (* FIXME *)
-        | Record_inlined {tag;name;num_nonconsts} -> Lconst(Const_block(tag, !Lambda.blk_record_inlined fields name num_nonconsts, cl))
+        | Record_regular -> Lconst(Const_block(!Lambda.blk_record fields mut, cl)) (* FIXME *)
+        | Record_inlined {tag;name;num_nonconsts} -> Lconst(Const_block(!Lambda.blk_record_inlined fields name num_nonconsts ~tag mut, cl))
         | Record_unboxed _ -> Lconst(match cl with [v] -> v | _ -> assert false)
         | Record_extension ->
             raise Not_constant
       with Not_constant ->
         match repres with
           Record_regular | Record_object ->
-            Lprim(Pmakeblock(0, !Lambda.blk_record fields, mut, None), ll, loc) (* FIXME*)
+            Lprim(Pmakeblock(!Lambda.blk_record fields mut), ll, loc) (* FIXME*)
         | Record_inlined {tag;name; num_nonconsts} ->
-            Lprim(Pmakeblock(tag, !Lambda.blk_record_inlined fields name num_nonconsts, mut, None), ll, loc)
+            Lprim(Pmakeblock(!Lambda.blk_record_inlined fields name num_nonconsts ~tag mut), ll, loc)
         | Record_unboxed _ -> (match ll with [v] -> v | _ -> assert false)
         | Record_extension ->
             let path =
@@ -1047,7 +1042,7 @@ and transl_record loc env fields repres opt_init_expr =
               | _ -> assert false
             in
             let slot = transl_extension_path env path in
-            Lprim(Pmakeblock(0, !Lambda.blk_record_ext fields, mut, None), slot :: ll, loc) 
+            Lprim(Pmakeblock(!Lambda.blk_record_ext fields mut), slot :: ll, loc) 
     in
     begin match opt_init_expr with
       None -> lam

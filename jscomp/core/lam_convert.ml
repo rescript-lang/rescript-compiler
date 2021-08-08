@@ -222,10 +222,10 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
     (* we discard [Psetglobal] in the beginning*)
     drop_global_marker (Ext_list.singleton_exn args)
   (* prim ~primitive:(Psetglobal id) ~args loc *)
-  | Pmakeblock (tag,info, mutable_flag
-               , _block_shape 
-               )
+  | Pmakeblock (info)
     -> 
+    let tag = Lambda.tag_of_tag_info info in 
+    let  mutable_flag = Lambda.mutable_flag_of_tag_info info in 
     begin match info with 
       | Blk_some_not_nested 
         -> 
@@ -242,7 +242,7 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
       | Blk_extension  -> 
         let info : Lam_tag_info.t = Blk_extension in
         unbox_extension info args mutable_flag loc 
-      | Blk_record_ext s ->
+      | Blk_record_ext {fields = s} ->
         let info : Lam_tag_info.t = Blk_record_ext s in
         unbox_extension info args mutable_flag loc 
       | Blk_extension_slot -> 
@@ -254,10 +254,7 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
             assert false
         )
 
-      | Blk_array -> 
-        let info : Lam_tag_info.t = Blk_array in
-        prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc    
-      | Blk_record s -> 
+      | Blk_record {fields = s} -> 
         let info : Lam_tag_info.t = Blk_record s in
         prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc    
       | Blk_record_inlined {name; fields; num_nonconst} ->
