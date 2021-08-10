@@ -868,10 +868,18 @@ let report_error env ppf = function
     fprintf ppf "The type constructor@ %a@ is not yet completely defined"
       path p
   | Type_arity_mismatch(lid, expected, provided) ->
-    fprintf ppf
-      "@[The type constructor %a@ expects %i argument(s),@ \
-        but is here applied to %i argument(s)@]"
-      longident lid expected provided
+    if expected==0 then
+      fprintf ppf
+        "@[The type %a is not generic so expects no arguments,@ \
+          but is here applied to %i argument(s).@ \
+          Have you tried removing the angular brackets `<` and `>` and the@ \
+          arguments within them and just writing `%a` instead? @]"
+        longident lid provided longident lid
+    else 
+      fprintf ppf
+        "@[The type constructor %a@ expects %i argument(s),@ \
+          but is here applied to %i argument(s)@]"
+        longident lid expected provided
   | Bound_type_variable name ->
     fprintf ppf "Already bound type parameter '%s" name
   | Recursive_type ->
