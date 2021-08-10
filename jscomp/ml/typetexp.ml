@@ -872,9 +872,9 @@ let report_error env ppf = function
       fprintf ppf
         "@[The type %a is not generic so expects no arguments,@ \
           but is here applied to %i argument(s).@ \
-          You wrote `%a<>`. Have you tried removing the angular brackets@ \
-          and writing `%a` instead? @]"
-        longident lid provided longident lid longident lid
+          Have you tried removing the angular brackets `<` and `>` and the@ \
+          arguments within them and just writing `%a` instead? @]"
+        longident lid provided longident lid
     else 
       fprintf ppf
         "@[The type constructor %a@ expects %i argument(s),@ \
