@@ -46,8 +46,8 @@ let pp_error fmt err =
 
 type exn += Error of int  (* offset *) * error 
 
-
-
+let valid_codepoint c =
+  0 <= c && c < 0xD800 (* surrogateMin *) || 0xDFFF (* surrogateMax *) < c && c <= 0x10FFFF (* max *)
 
 let error ~loc error = 
   raise (Error (loc, error))
@@ -186,12 +186,19 @@ and unicode_codepoint_escape loc buf s offset s_len =
     let cur_char = s.[offset] in
     match cur_char with
     | '}' ->
-      Buffer.add_char buf cur_char ;
-      check_and_transform (loc + 1) buf s (offset + 1) s_len
+      Buffer.add_char buf cur_char;
+      let x = ref 0 in
+      for ix = loc to offset - 1 do
+        x := (!x * 16) + (Ext_char.hex_value s.[ix]);
+      done;
+      if valid_codepoint !x then begin
+        check_and_transform (offset + 1) buf s (offset + 1) s_len
+      end else
+        error ~loc Invalid_unicode_codepoint_escape
     | _ ->
       if Ext_char.valid_hex cur_char then begin
         Buffer.add_char buf cur_char ;
-        unicode_codepoint_escape (loc + 1) buf s (offset + 1) s_len
+        unicode_codepoint_escape loc buf s (offset + 1) s_len
       end else
         error ~loc Invalid_unicode_codepoint_escape
 

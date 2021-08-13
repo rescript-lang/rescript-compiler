@@ -83,6 +83,13 @@ let suites =
             OUnit.assert_equal offset 23
            | _ -> OUnit.assert_failure __LOC__
         end ;
+         __LOC__ >:: begin fun _ ->
+           match Ast_utf8_string.transform_test
+             {js|\u{110000}|js} with (* bigger than max valid unicode codepoint *)
+           | exception Ast_utf8_string.Error(offset,_) ->
+            OUnit.assert_equal offset 3
+           | _ -> OUnit.assert_failure __LOC__
+        end ;
 
         __LOC__ >:: begin fun _ ->
           "hie $x hi 你好" ==~
