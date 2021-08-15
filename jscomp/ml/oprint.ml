@@ -618,6 +618,9 @@ and print_out_type_decl kwd ppf td =
   let print_unboxed ppf =
     if td.otype_unboxed then fprintf ppf " [%@%@unboxed]" else ()
   in
+  let print_record_obj ppf = 
+    if td.otype_record_obj then fprintf ppf " [%@%@obj]"
+  in 
   let print_out_tkind ppf = function
   | Otyp_abstract -> ()
   | Otyp_record lbls ->
@@ -636,12 +639,13 @@ and print_out_type_decl kwd ppf td =
         print_private td.otype_private
         !out_type ty
   in
-  fprintf ppf "@[<2>@[<hv 2>%t%a@]%t%t%t@]"
+  fprintf ppf "@[<2>@[<hv 2>%t%a@]%t%t%t%t@]"
     print_name_params
     print_out_tkind ty
     print_constraints
     print_immediate
     print_unboxed
+    print_record_obj
 
 and print_out_constr ppf (name, tyl,ret_type_opt) =
   let name =

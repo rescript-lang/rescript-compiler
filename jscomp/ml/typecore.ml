@@ -35,7 +35,7 @@ type error =
   | Apply_non_function of type_expr
   | Apply_wrong_label of arg_label * type_expr
   | Label_multiply_defined of string
-  | Label_missing of Ident.t list
+  | Label_missing of string list
   | Label_not_mutable of Longident.t
   | Wrong_name of string * type_expr * string * Path.t * string * string list
   | Name_type_mismatch of
@@ -324,33 +324,6 @@ let extract_concrete_variant env ty =
   | (p0, p, {type_kind=Type_open}) -> (p0, p, [])
   | _ -> raise Not_found
 
-let extract_label_names env ty =
-  try
-    let (_, _,fields) = extract_concrete_record env ty in
-    List.map (fun l -> l.Types.ld_id) fields
-  with Not_found ->
-    assert false
-
-type lbl_exp_list = 
-    (Longident.t Location.loc *
-     Types.label_description * 
-     Typedtree.expression) list
-
-let missing_labels loc env ty_expected (lbl_exp_list : lbl_exp_list ) =   
-  let present_indices =
-    List.map (fun (_, lbl, _) -> lbl.lbl_pos) lbl_exp_list
-  in
-  let label_names = extract_label_names env ty_expected in
-  let rec missing_labels n = function
-      [] -> []
-    | lbl :: rem ->
-        if List.mem n present_indices
-        then missing_labels (n + 1) rem
-        else lbl :: missing_labels (n + 1) rem
-  in
-  let missing = missing_labels 0 label_names in
-  raise(Error(loc, env, Label_missing missing))    
-(* Typing of patterns *)
 
 (* unification inside type_pat*)
 let unify_pat_types loc env ty ty' =
@@ -2713,8 +2686,8 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
         in
         unify_exp_types loc env ty_record (instance env ty_expected);
         check_duplicates loc env lbl_exp_list;
+        let (_, { lbl_all = label_descriptions; lbl_repres = representation}, _) = List.hd lbl_exp_list in
         let  label_definitions =
-          let (_lid, lbl, _lbl_exp) = List.hd lbl_exp_list in
           let matching_label lbl =
             List.find
               (fun (_, lbl',_) -> lbl'.lbl_pos = lbl.lbl_pos)
@@ -2730,12 +2703,8 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
                         Overridden ({loc ; txt = Lident lbl.lbl_name},
                         option_none lbl.lbl_arg loc)
                       else 
-                        missing_labels loc env ty_expected lbl_exp_list)
-                  lbl.lbl_all
-        in
-        let label_descriptions, representation =
-          let (_, { lbl_all; lbl_repres }, _) = List.hd lbl_exp_list in
-          lbl_all, lbl_repres
+                        raise(Error(loc, env, Label_missing [lbl.lbl_name])))    
+                  label_descriptions
         in
         let fields =
           Array.map2 (fun descr def -> descr, def)
@@ -4374,7 +4343,7 @@ let report_error env ppf = function
       fprintf ppf "The record field label %s is defined several times" s
   | Label_missing labels ->
       let print_labels ppf =
-        List.iter (fun lbl -> fprintf ppf "@ %s" (Ident.name lbl)) in
+        List.iter (fun lbl -> fprintf ppf "@ %s" ( lbl)) in
       fprintf ppf "@[<hov>Some record fields are undefined:%a@]"
         print_labels labels
   | Label_not_mutable lid ->

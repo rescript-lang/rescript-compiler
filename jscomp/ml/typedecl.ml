@@ -399,7 +399,9 @@ let transl_declaration env sdecl id =
           let lbls, lbls' = transl_labels env true lbls in
           let rep =
             if unbox then Record_unboxed false
-            else Record_regular
+            else 
+              if Ext_list.exists sdecl.ptype_attributes (fun ({txt },_) -> txt = "obj") then Record_object
+              else Record_regular
           in
           Ttype_record lbls, Type_record(lbls', rep)
       | Ptype_open -> Ttype_open, Type_open
