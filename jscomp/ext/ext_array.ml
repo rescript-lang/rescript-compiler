@@ -24,15 +24,17 @@
 
 
 
+external (.!()) : 'a array -> int -> 'a = "%array_unsafe_get" 
 
+external (.!()<-) : 'a array -> int -> 'a -> unit  = "%array_unsafe_set" 
 
 let reverse_range a i len =
   if len = 0 then ()
   else
     for k = 0 to (len-1)/2 do
-      let t = Array.unsafe_get a (i+k) in
-      Array.unsafe_set a (i+k) ( Array.unsafe_get a (i+len-1-k));
-      Array.unsafe_set a (i+len-1-k) t;
+      let t = a.! (i+k) in
+      a.!(i+k) <-   a.!(i+len-1-k);
+      a.!(i+len-1-k) <- t;
     done
 
 
@@ -107,9 +109,8 @@ let to_list_f a f = tolist_f_aux a f (Array.length a  - 1) []
 
 let rec tolist_aux a f  i res =
   if i < 0 then res else
-    let v = Array.unsafe_get a i in
     tolist_aux a f  (i - 1)
-      (match f v with
+      (match f a.!(i) with
        | Some v -> v :: res
        | None -> res) 
 
