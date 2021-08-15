@@ -117,7 +117,7 @@ let exn_block_as_obj
         | i ->  
           "_" ^ string_of_int i
       )
-    | Blk_record_ext ss ->   
+    | Blk_record_ext {fields = ss} ->   
       (fun i ->  
          match i with 
          | 0 -> Literals.exception_id
@@ -167,7 +167,7 @@ let exp_need_paren  (e : J.expression) =
 
   | Raw_js_code {code_info = Exp _}
   | Fun _ 
-  | Caml_block (_,_,_, (Blk_record _ | Blk_module _ | Blk_poly_var  | Blk_extension | Blk_record_ext _ | Blk_record_inlined _ | Blk_constructor _ ))
+  | Caml_block (_,_,_, (Blk_record _ | Blk_module _ | Blk_poly_var _  | Blk_extension | Blk_record_ext _ | Blk_record_inlined _ | Blk_constructor _ ))
   | Object _ -> true
   | Raw_js_code {code_info = Stmt _ }
   | Length _
@@ -804,14 +804,14 @@ and expression_desc cxt ~(level:int) f x : cxt  =
            fields el 
            (fun  x -> Js_op.Lit (Ext_ident.convert x) ))))
   (*name convention of Record is slight different from modules*)        
-  | Caml_block(el,mutable_flag, _, Blk_record fields) ->  
+  | Caml_block(el,mutable_flag, _, Blk_record {fields}) ->  
     if Ext_array.for_alli fields (fun i v -> string_of_int i = v) then 
       expression_desc cxt ~level f  (Array (el, mutable_flag))
     else      
       expression_desc cxt ~level f (Object 
                                       ((Ext_list.combine_array fields el  (fun i -> Js_op.Lit i))))      
 
-  | Caml_block(el,_,_, Blk_poly_var ) ->
+  | Caml_block(el,_,_, Blk_poly_var _) ->
     begin match el with 
       | [tag;value] -> 
         expression_desc 
@@ -863,8 +863,8 @@ and expression_desc cxt ~(level:int) f x : cxt  =
        && not_is_cons then 
       pp_comment_option f (Some p.name);
     expression_desc cxt ~level f (Object objs)
-  | Caml_block ( _, _, _, (Blk_module_export  )) -> assert false
-  | Caml_block( el, mutable_flag, _tag, (Blk_tuple  | Blk_array  ))
+  | Caml_block ( _, _, _, (Blk_module_export _  | Blk_some | Blk_some_not_nested | Blk_lazy_general)) -> assert false
+  | Caml_block( el, mutable_flag, _tag, (Blk_tuple    ))
     ->
     expression_desc cxt ~level f  (Array (el, mutable_flag))
 

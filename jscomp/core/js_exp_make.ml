@@ -264,17 +264,19 @@ let dummy_obj ?comment (info : Lam_tag_info.t)  : t =
   | Blk_module _ 
   | Blk_constructor _ 
   | Blk_record_inlined _ 
-  | Blk_poly_var  
+  | Blk_poly_var  _
   | Blk_extension 
   | Blk_record_ext _ 
     -> 
     {comment ; expression_desc = Object []}
-  | Blk_tuple | Blk_array  
+  | Blk_tuple 
 
-  | Blk_module_export 
+  | Blk_module_export _
     ->
     {comment  ; expression_desc = Array ([],Mutable)}
-
+  | Blk_some 
+  | Blk_some_not_nested 
+  | Blk_lazy_general -> assert false 
 
 (* TODO: complete 
     pure ...
