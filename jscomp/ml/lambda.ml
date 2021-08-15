@@ -35,40 +35,71 @@ type loc_kind =
   | Loc_POS
 
 type tag_info = 
-  | Blk_constructor of {name : string ; num_nonconst : int}
+  | Blk_constructor of {name : string ; num_nonconst : int ; tag : int }
+  | Blk_record_inlined of { name : string ; num_nonconst :  int;  tag : int; fields : string array; mutable_flag : mutable_flag }   
   | Blk_tuple
-  | Blk_array
   | Blk_poly_var of string 
-  | Blk_record of string array (* when its empty means we dont get such information *)
+  | Blk_record of {fields : string array; mutable_flag : mutable_flag}  
   | Blk_module of string list
   | Blk_module_export of Ident.t list
   | Blk_extension_slot
-  | Blk_extension
-  
+  | Blk_extension  
   | Blk_some
   | Blk_some_not_nested (* ['a option] where ['a] can not inhabit a non-like value *)
-  | Blk_record_inlined of { name : string ; num_nonconst :  int; fields : string array} 
-  | Blk_record_ext of string array
+  | Blk_record_ext of { fields :  string array; mutable_flag : mutable_flag}
   | Blk_lazy_general
 
+let tag_of_tag_info (tag : tag_info ) = 
+  match tag with 
+  | Blk_constructor {tag}
+  | Blk_record_inlined {tag} -> tag 
+  | Blk_tuple 
+  | Blk_poly_var _ 
+  | Blk_record _ 
+  | Blk_module _ 
+  | Blk_module_export _ 
+  | Blk_extension_slot (* tag not make sense  248 *)
+  | Blk_extension 
+  | Blk_some (* tag not make sense *)
+  | Blk_some_not_nested (* tag not make sense *)
+  | Blk_lazy_general (* tag not make sense 248 *)
+  | Blk_record_ext _  (* similar to Blk_extension*)
+   -> 0
+
+let mutable_flag_of_tag_info (tag : tag_info) =
+  match tag with 
+  | Blk_record_inlined {mutable_flag}
+  | Blk_record {mutable_flag}
+  | Blk_record_ext {mutable_flag} -> mutable_flag
+  | Blk_lazy_general -> Mutable
+  | Blk_tuple
+  | Blk_constructor _ 
+  | Blk_poly_var _ 
+  | Blk_module _
+  | Blk_module_export _ 
+  | Blk_extension_slot
+  | Blk_extension
+  | Blk_some_not_nested
+  | Blk_some 
+   -> Immutable
 
 
-let blk_record = ref (fun fields -> 
-  let all_labels_info = fields |> Array.map (fun (x,_) -> x.Types.lbl_name) in    
-  Blk_record all_labels_info
+let blk_record = ref (fun _ _ -> 
+  assert false
   )
 
-let blk_record_ext =  ref (fun fields -> 
+
+let blk_record_ext =  ref (fun fields mutable_flag -> 
     let all_labels_info = fields |> Array.map (fun (x,_) -> x.Types.lbl_name) in    
-    Blk_record_ext all_labels_info
+    Blk_record_ext {fields = all_labels_info; mutable_flag }
   )
 
-let blk_record_inlined = ref (fun fields name num_nonconst -> 
+let blk_record_inlined = ref (fun fields name num_nonconst ~tag mutable_flag -> 
   let fields = fields |> Array.map (fun (x,_) -> x.Types.lbl_name) in    
-  Blk_record_inlined {fields; name; num_nonconst}
+  Blk_record_inlined {fields; name; num_nonconst; tag; mutable_flag}
 ) 
 
-let ref_tag_info : tag_info = Blk_record [| "contents" |]
+let ref_tag_info : tag_info = Blk_record {fields = [| "contents" |]; mutable_flag = Mutable}
   
 type field_dbg_info = 
   | Fld_record of {name : string; mutable_flag : Asttypes.mutable_flag}
@@ -121,7 +152,7 @@ type primitive =
   | Pgetglobal of Ident.t
   | Psetglobal of Ident.t
   (* Operations on heap blocks *)
-  | Pmakeblock of int * tag_info * mutable_flag * block_shape
+  | Pmakeblock of  tag_info 
   | Pfield of int * field_dbg_info
   | Psetfield of int *  set_field_dbg_info
 
@@ -189,8 +220,6 @@ and comparison =
 and value_kind =
     Pgenval 
 
-and block_shape =
-  unit option
 
 
 and boxed_integer = Primitive.boxed_integer =
@@ -215,7 +244,7 @@ type pointer_info =
 type structured_constant =
     Const_base of constant
   | Const_pointer of int * pointer_info
-  | Const_block of int * tag_info * structured_constant list
+  | Const_block of tag_info * structured_constant list
   | Const_float_array of string list
   | Const_immstring of string
   | Const_false
@@ -699,7 +728,7 @@ let lam_of_loc kind loc =
       loc_start.Lexing.pos_cnum + cnum in
   match kind with
   | Loc_POS ->
-    Lconst (Const_block (0, Blk_tuple, [
+    Lconst (Const_block (Blk_tuple, [
           Const_immstring file;
           Const_base (Const_int lnum);
           Const_base (Const_int cnum);

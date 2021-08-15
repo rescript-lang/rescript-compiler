@@ -79,7 +79,7 @@ let rec apply_coercion loc strict restr arg =
         let get_field_name name pos =
             Lprim (Pfield (pos, Fld_module {name}), [Lvar id], loc) in 
         let lam =
-          Lprim(Pmakeblock(0, Lambda.Blk_module runtime_fields, Immutable, None),
+          Lprim(Pmakeblock(Lambda.Blk_module runtime_fields),
                 List.mapi (fun i x -> apply_coercion_field loc (get_field_i i) x) pos_cc_list,
                 loc)
         in
@@ -213,7 +213,7 @@ let undefined_location loc =
 #if true  
   let fname = Filename.basename fname in
 #end
-  Lconst(Const_block(0, Lambda.Blk_tuple,
+  Lconst(Const_block(Lambda.Blk_tuple,
                      [Const_base(Const_string (fname, None));
                       Const_base(Const_int line);
                       Const_base(Const_int char)]))
@@ -221,19 +221,18 @@ let cstr_const = 3
 let cstr_non_const = 2
 let init_shape modl =
   let add_name x id =
-    if !Config.bs_only then
-      Const_block (0, Blk_tuple, [x; Const_base (Const_string (Ident.name id, None))])
-    else x in  
-  let module_tag_info : Lambda.tag_info = Blk_constructor {name =  "Module"; num_nonconst = 2} in 
-  let value_tag_info : Lambda.tag_info = Blk_constructor { name = "value"; num_nonconst = 2} in 
+      Const_block (Blk_tuple, [x; Const_base (Const_string (Ident.name id, None))])
+  in  
+  let module_tag_info : Lambda.tag_info = Blk_constructor {name =  "Module"; num_nonconst = 2; tag = 0} in 
+  let value_tag_info : Lambda.tag_info = Blk_constructor { name = "value"; num_nonconst = 2; tag = 1} in 
   let rec init_shape_mod env mty =
     match Mtype.scrape env mty with
       Mty_ident _ ->
         raise Not_found
     | Mty_alias _ ->
-        Const_block (1, value_tag_info, [Const_pointer (0, Pt_module_alias)])
+        Const_block (value_tag_info, [Const_pointer (0, Pt_module_alias)])
     | Mty_signature sg ->
-        Const_block(0, module_tag_info, [Const_block(0, Blk_array, init_shape_struct env sg)])
+        Const_block(module_tag_info, [Const_block(Blk_tuple, init_shape_struct env sg)])
     | Mty_functor _ ->
         raise Not_found (* can we do better? *)
   and init_shape_struct env sg =
@@ -477,9 +476,9 @@ and transl_structure loc fields cc rootpath final_env = function
                       (if is_top_root_path then 
                          export_identifiers :=  id :: !export_identifiers);
                       (Lvar id :: acc) end) [] fields ) in 
-            Lprim(Pmakeblock(0, 
+            Lprim(Pmakeblock(
               (if is_top_root_path then Blk_module_export !export_identifiers else 
-                Blk_module (List.rev_map (fun id -> id.Ident.name) fields)), Immutable, None),
+                Blk_module (List.rev_map (fun id -> id.Ident.name) fields))),
               block_fields, loc),
               List.length fields
         | Tcoerce_structure(pos_cc_list, id_pos_list, runtime_fields) ->
@@ -507,7 +506,7 @@ and transl_structure loc fields cc rootpath final_env = function
                  end)
               pos_cc_list [] in             
             let lam =
-              Lprim(Pmakeblock(0, (if is_top_root_path then Blk_module_export !export_identifiers else Blk_module runtime_fields), Immutable, None), 
+              Lprim(Pmakeblock((if is_top_root_path then Blk_module_export !export_identifiers else Blk_module runtime_fields)), 
                    result, loc)
             and id_pos_list =
               List.filter (fun (id,_,_) -> not (IdentSet.mem id ids))
