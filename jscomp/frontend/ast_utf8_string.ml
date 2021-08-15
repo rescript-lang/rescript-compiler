@@ -195,6 +195,8 @@ and unicode_codepoint_escape loc buf s offset s_len =
          | 'A'..'F' -> (Char.code c) + 32 - (Char.code 'a') + 10
          | _ -> 16 (* larger than any legal value, unicode_codepoint_escape only makes progress if we have valid hex symbols *)
         in
+        (* too long escape sequence will result in an overflow, perform an upperbound check *)
+        if !x > 0x10FFFF then error ~loc Invalid_unicode_codepoint_escape else
         x := (!x * 16) + value;
       done;
       if Uchar.is_valid !x then begin

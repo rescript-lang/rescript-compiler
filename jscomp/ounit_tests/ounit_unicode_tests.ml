@@ -90,6 +90,13 @@ let suites =
             OUnit.assert_equal offset 3
            | _ -> OUnit.assert_failure __LOC__
         end ;
+        __LOC__ >:: begin fun _ ->
+           match Ast_utf8_string.transform_test
+             {js|\u{FFFFFFFFFFFFFFFFFFFFFFFFFFFFF}|js} with (* overflow *)
+           | exception Ast_utf8_string.Error(offset,_) ->
+            OUnit.assert_equal offset 3
+           | _ -> OUnit.assert_failure __LOC__
+        end ;
 
         __LOC__ >:: begin fun _ ->
           "hie $x hi 你好" ==~
