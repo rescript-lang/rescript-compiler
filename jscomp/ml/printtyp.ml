@@ -879,6 +879,7 @@ let rec tree_of_type_decl id decl =
   in
   let (name, args) = type_defined decl in
   let constraints = tree_of_constraints params in
+  let otype_record_obj = ref false in 
   let ty, priv =
     match decl.type_kind with
     | Type_abstract ->
@@ -890,7 +891,8 @@ let rec tree_of_type_decl id decl =
     | Type_variant cstrs ->
         tree_of_manifest (Otyp_sum (List.map tree_of_constructor cstrs)),
         decl.type_private
-    | Type_record(lbls, _rep) ->
+    | Type_record(lbls, rep) ->
+        if rep = Record_object then otype_record_obj := true; 
         tree_of_manifest (Otyp_record (List.map tree_of_label lbls)),
         decl.type_private
     | Type_open ->
@@ -906,7 +908,9 @@ let rec tree_of_type_decl id decl =
       otype_private = priv;
       otype_immediate = immediate;
       otype_unboxed = decl.type_unboxed.unboxed;
-      otype_cstrs = constraints }
+      otype_cstrs = constraints ;
+      otype_record_obj = !otype_record_obj
+      }
 
 and tree_of_constructor_arguments = function
   | Cstr_tuple l -> tree_of_typlist false l
