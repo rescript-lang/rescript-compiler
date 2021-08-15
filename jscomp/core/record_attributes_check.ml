@@ -43,18 +43,18 @@ let find_name_with_loc (attr : Parsetree.attribute) :
 
 let fld_record (lbl : label) = 
   Lambda.Fld_record
-    {name = Ext_list.find_def lbl.lbl_attributes find_name lbl.lbl_name; mutable_flag = lbl.Types.lbl_mut}
+    {name = Ext_list.find_def lbl.lbl_attributes find_name lbl.lbl_name; mutable_flag = lbl.lbl_mut}
 
 let fld_record_set (lbl : label) = 
   Lambda.Fld_record_set 
     (Ext_list.find_def lbl.lbl_attributes find_name lbl.lbl_name)
 
-let blk_record  fields mut = 
+let blk_record  (fields : (label * _) array) mut record_repr = 
   let all_labels_info = 
     Ext_array.map fields   
-      (fun ((lbl : label),_) -> 
-         Ext_list.find_def lbl.Types.lbl_attributes find_name lbl.lbl_name) in  
-  Lambda.Blk_record {fields = all_labels_info ; mutable_flag = mut}
+      (fun (lbl,_) -> 
+         Ext_list.find_def lbl.lbl_attributes find_name lbl.lbl_name) in  
+  Lambda.Blk_record {fields = all_labels_info ; mutable_flag = mut; record_repr}
 
 let check_bs_attributes_inclusion
     (attrs1 : Parsetree.attributes)

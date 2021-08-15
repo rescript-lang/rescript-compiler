@@ -65,46 +65,27 @@ let rec convert_constant ( const : Lambda.structured_constant) : Lam_constant.t 
         Const_some (convert_constant (Ext_list.singleton_exn xs))
       | Blk_some -> 
         Const_some (convert_constant (Ext_list.singleton_exn xs))        
-      | Blk_constructor{name ; num_nonconst } ->   
-        let t : Lam_tag_info.t = Blk_constructor {name; num_nonconst} in 
-        Const_block (tag,t, Ext_list.map xs convert_constant )
-      | Blk_tuple ->   
-        let t : Lam_tag_info.t = Blk_tuple in 
+      | Blk_constructor _ 
+      | Blk_tuple 
+      | Blk_record _
+      | Blk_module _ 
+      | Blk_module_export _
+      | Blk_extension
+      | Blk_record_inlined _
+      | Blk_record_ext _ 
+        -> 
         Const_block (tag,t, Ext_list.map xs convert_constant )
       | Blk_poly_var s -> 
         begin match xs with 
           | [_; value] -> 
-            let t : Lam_tag_info.t = Blk_poly_var  in 
             let tag_val : Lam_constant.t = 
               if Ext_string.is_valid_hash_number s then Const_int {i = Ext_string.hash_number_as_i32_exn s; comment = None}
               else Const_string s in 
             Const_block (tag,t, [tag_val; convert_constant value] )      
           | _ -> assert false  
         end
-      | Blk_record {fields = s} -> 
-        let t : Lam_tag_info.t = Blk_record s in 
-        Const_block (tag,t, Ext_list.map xs convert_constant )
-      | Blk_module s -> 
-        let t : Lam_tag_info.t = Blk_module s in 
-        Const_block (tag,t, Ext_list.map xs convert_constant )    
-      | Blk_module_export _ -> 
-        let t : Lam_tag_info.t = Blk_module_export in 
-        Const_block (tag,t, Ext_list.map xs convert_constant )     
-      | Blk_extension_slot -> assert false 
-      (* let t : Lam_tag_info.t = Blk_extension_slot in 
-         Const_block (i,t, Ext_list.map xs convert_constant )       *)
-      | Blk_extension ->   
-        let t : Lam_tag_info.t = Blk_extension in 
-        Const_block (tag,t, Ext_list.map xs convert_constant )      
       | Blk_lazy_general 
         -> assert false
-
-      | Blk_record_inlined {name;fields;num_nonconst}  -> 
-        let t : Lam_tag_info.t = Blk_record_inlined {name;fields;num_nonconst} in 
-        Const_block (tag,t, Ext_list.map xs convert_constant )      
-      | Blk_record_ext {fields = s} -> 
-        let t : Lam_tag_info.t = Blk_record_ext s in 
-        Const_block(tag,t, Ext_list.map xs convert_constant)
 
     end
 

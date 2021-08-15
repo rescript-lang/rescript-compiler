@@ -34,18 +34,18 @@ type loc_kind =
   | Loc_LOC
   | Loc_POS
 
+type record_repr = 
+  | Record_regular 
+  | Record_object 
+
 type tag_info = 
   | Blk_constructor of {name : string ; num_nonconst : int; tag : int}
   | Blk_record_inlined of { name : string ; num_nonconst :  int ;  tag : int; fields : string array; mutable_flag : mutable_flag}   
   | Blk_tuple
   | Blk_poly_var of string 
-  | Blk_record of {fields : string array; mutable_flag : mutable_flag}
+  | Blk_record of {fields : string array; mutable_flag : mutable_flag; record_repr : record_repr }
   | Blk_module of string list
   | Blk_module_export of Ident.t list 
-  | Blk_extension_slot 
-    (* The first field of exception whose tag is 248 
-      But this does not make sense in ReScript
-    *)
   | Blk_extension
     (* underlying is the same as tuple, immutable block
       {[
@@ -69,6 +69,7 @@ val blk_record :
   ( 
     (Types.label_description* Typedtree.record_label_definition) array ->
     mutable_flag -> 
+    record_repr -> 
     tag_info
   ) ref
 
@@ -215,6 +216,7 @@ type primitive =
   (* Inhibition of optimisation *)
   | Popaque
   | Puncurried_apply
+  | Pcreate_extension of string
 and comparison =
     Ceq | Cneq | Clt | Cgt | Cle | Cge
 

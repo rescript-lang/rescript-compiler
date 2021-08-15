@@ -197,7 +197,7 @@ let subst_map (substitution : J.expression Hash_ident.t) = { super
                                                                                    (match Ext_list.nth_opt fields i with 
                                                                                     | None -> Printf.sprintf "%d" i                      
                                                                                     | Some x -> x )
-                                                                                 | Blk_record fields ->    
+                                                                                 | Blk_record {fields} ->    
                                                                                    Ext_array.get_or fields i (fun _ -> Printf.sprintf "%d" i)                     
                                                                                  | _ -> Printf.sprintf "%d" i    
                                                                                 )) in

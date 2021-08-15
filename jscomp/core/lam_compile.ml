@@ -389,7 +389,7 @@ and compile_recursive_let ~all_bindings
            S.exp
              (Js_of_lam_block.set_field 
                 (match tag_info with 
-                 | Blk_record xs -> Fld_record_set xs.(i)
+                 | Blk_record {fields = xs} -> Fld_record_set xs.(i)
                  | Blk_record_inlined xs -> Fld_record_inline_set xs.fields.(i)
                  | Blk_constructor p -> 
                    let is_cons = p.name = Literals.cons in 

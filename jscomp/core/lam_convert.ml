@@ -33,12 +33,11 @@ let lam_extension_id loc (head : Lam.t) =
   prim ~primitive:lam_caml_id ~args:[head] loc    
 
 let lazy_block_info : Lam_tag_info.t = 
-  Blk_record 
-    [|Literals.lazy_done; 
-      Literals.lazy_val|]  
-
-let unbox_extension info (args : Lam.t list) mutable_flag loc =
-  prim ~primitive:(Pmakeblock (0,info,mutable_flag)) ~args loc 
+  Blk_record {
+      fields = [|Literals.lazy_done; Literals.lazy_val|]  ; 
+      mutable_flag = Mutable; 
+      record_repr = Record_regular
+  }
 
 
 (** A conservative approach to avoid packing exceptions
@@ -214,6 +213,8 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   | Pbytes_to_string (* handled very early *)
     -> prim ~primitive:Pbytes_to_string ~args loc
   | Pbytes_of_string -> prim ~primitive:Pbytes_of_string ~args loc
+  | Pcreate_extension s ->  
+    prim ~primitive:(Pcreate_extension s) ~args loc
   | Pignore -> (* Pignore means return unit, it is not an nop *)
     seq (Ext_list.singleton_exn args) unit 
   | Pgetglobal _ ->
@@ -233,43 +234,19 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
       | Blk_some 
         ->    
         prim ~primitive:Psome ~args loc 
-      | Blk_constructor{name ; num_nonconst } ->  
-        let info : Lam_tag_info.t = Blk_constructor {name; num_nonconst} in
+      | Blk_constructor _ 
+      | Blk_tuple  
+      | Blk_record _ 
+      | Blk_record_inlined _ 
+      | Blk_module _ 
+      | Blk_module_export _
+      | Blk_extension  
+      | Blk_record_ext _ 
+        ->         
         prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
-      | Blk_tuple  -> 
-        let info : Lam_tag_info.t = Blk_tuple in
-        prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
-      | Blk_extension  -> 
-        let info : Lam_tag_info.t = Blk_extension in
-        unbox_extension info args mutable_flag loc 
-      | Blk_record_ext {fields = s} ->
-        let info : Lam_tag_info.t = Blk_record_ext s in
-        unbox_extension info args mutable_flag loc 
-      | Blk_extension_slot -> 
-        ( 
-          match args with 
-          | [ Lconst (Const_string name)] -> 
-            prim ~primitive:(Pcreate_extension name) ~args:[] loc
-          | _ ->
-            assert false
-        )
-
-      | Blk_record {fields = s} -> 
-        let info : Lam_tag_info.t = Blk_record s in
-        prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc    
-      | Blk_record_inlined {name; fields; num_nonconst} ->
-        let info : Lam_tag_info.t = Blk_record_inlined {name; fields; num_nonconst} in
-        prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
-      | Blk_module s -> 
-        let info : Lam_tag_info.t = Blk_module s in
-        prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
-      | Blk_module_export _ -> 
-        let info : Lam_tag_info.t = Blk_module_export in
-        prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc  
       | Blk_poly_var s -> 
         begin match args with 
           | [_; value] -> 
-            let info : Lam_tag_info.t = Blk_poly_var  in
             let tag_val : Lam_constant.t = 
               if Ext_string.is_valid_hash_number s then Const_int {i = Ext_string.hash_number_as_i32_exn s; comment = None}
               else Const_string s in 
@@ -647,7 +624,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) : Lam.t * Lam_module_i
         | "#apply7"
         | "#apply8" -> Pjs_apply
         | "#makemutablelist" ->
-          Pmakeblock(0, Blk_constructor{name = "::"; num_nonconst = 1},Mutable)
+          Pmakeblock(0, Blk_constructor{name = "::"; num_nonconst = 1; tag = 0},Mutable)
         | "#undefined_to_opt" -> Pundefined_to_opt
         | "#nullable_to_opt" -> Pnull_undefined_to_opt
         | "#null_to_opt" -> Pnull_to_opt

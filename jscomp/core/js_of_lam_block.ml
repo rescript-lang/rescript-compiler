@@ -37,7 +37,7 @@ module E = Js_exp_make
 let make_block mutable_flag (tag_info : Lam_tag_info.t) tag args  = 
 
   match tag_info with
-  | Blk_array -> Js_of_lam_array.make_array mutable_flag  args
+
   |  _ -> E.make_block tag tag_info args mutable_flag
 (* | _, (  Tuple | Variant _ ) -> (\** TODO: check with inline record *\) *)
 (*     E.arr Immutable *)

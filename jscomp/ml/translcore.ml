@@ -51,9 +51,8 @@ let transl_extension_constructor env path ext =
   let loc = ext.ext_loc in
   match ext.ext_kind with
     Text_decl _ ->
-      let ext_name = Lconst (Const_base (Const_string (name, None))) in 
-      Lprim (Pmakeblock (Blk_extension_slot),
-        [ ext_name ]
+      Lprim (Pcreate_extension name,
+        [  ]
         ,
         loc)
   | Text_rebind(path, _lid) ->
@@ -1021,18 +1020,20 @@ and transl_record loc env fields repres opt_init_expr =
         if mut = Mutable then raise Not_constant;
         let cl = List.map extract_constant ll in
         match repres with
-        | Record_object 
-        | Record_regular -> Lconst(Const_block(!Lambda.blk_record fields mut, cl)) (* FIXME *)
+        | Record_object -> Lconst(Const_block(!Lambda.blk_record fields mut Record_object, cl)) 
+        | Record_regular -> Lconst(Const_block(!Lambda.blk_record fields mut Record_regular, cl)) 
         | Record_inlined {tag;name;num_nonconsts} -> Lconst(Const_block(!Lambda.blk_record_inlined fields name num_nonconsts ~tag mut, cl))
         | Record_unboxed _ -> Lconst(match cl with [v] -> v | _ -> assert false)
         | Record_extension ->
             raise Not_constant
       with Not_constant ->
         match repres with
-          Record_regular | Record_object ->
-            Lprim(Pmakeblock(!Lambda.blk_record fields mut), ll, loc) (* FIXME*)
+        | Record_regular -> 
+          Lprim(Pmakeblock(!Lambda.blk_record fields mut Record_regular), ll, loc) 
+        | Record_object ->
+          Lprim(Pmakeblock(!Lambda.blk_record fields mut Record_object), ll, loc) 
         | Record_inlined {tag;name; num_nonconsts} ->
-            Lprim(Pmakeblock(!Lambda.blk_record_inlined fields name num_nonconsts ~tag mut), ll, loc)
+          Lprim(Pmakeblock(!Lambda.blk_record_inlined fields name num_nonconsts ~tag mut), ll, loc)
         | Record_unboxed _ -> (match ll with [v] -> v | _ -> assert false)
         | Record_extension ->
             let path =

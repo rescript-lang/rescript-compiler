@@ -34,15 +34,19 @@ type loc_kind =
   | Loc_LOC
   | Loc_POS
 
+type record_repr = 
+  | Record_regular 
+  | Record_object 
+
 type tag_info = 
   | Blk_constructor of {name : string ; num_nonconst : int ; tag : int }
   | Blk_record_inlined of { name : string ; num_nonconst :  int;  tag : int; fields : string array; mutable_flag : mutable_flag }   
   | Blk_tuple
   | Blk_poly_var of string 
-  | Blk_record of {fields : string array; mutable_flag : mutable_flag}  
+  | Blk_record of {fields : string array; mutable_flag : mutable_flag; record_repr : record_repr}  
   | Blk_module of string list
   | Blk_module_export of Ident.t list
-  | Blk_extension_slot
+
   | Blk_extension  
   | Blk_some
   | Blk_some_not_nested (* ['a option] where ['a] can not inhabit a non-like value *)
@@ -58,7 +62,6 @@ let tag_of_tag_info (tag : tag_info ) =
   | Blk_record _ 
   | Blk_module _ 
   | Blk_module_export _ 
-  | Blk_extension_slot (* tag not make sense  248 *)
   | Blk_extension 
   | Blk_some (* tag not make sense *)
   | Blk_some_not_nested (* tag not make sense *)
@@ -77,14 +80,13 @@ let mutable_flag_of_tag_info (tag : tag_info) =
   | Blk_poly_var _ 
   | Blk_module _
   | Blk_module_export _ 
-  | Blk_extension_slot
   | Blk_extension
   | Blk_some_not_nested
   | Blk_some 
    -> Immutable
 
 
-let blk_record = ref (fun _ _ -> 
+let blk_record = ref (fun _ _ _ -> 
   assert false
   )
 
@@ -99,7 +101,8 @@ let blk_record_inlined = ref (fun fields name num_nonconst ~tag mutable_flag ->
   Blk_record_inlined {fields; name; num_nonconst; tag; mutable_flag}
 ) 
 
-let ref_tag_info : tag_info = Blk_record {fields = [| "contents" |]; mutable_flag = Mutable}
+let ref_tag_info : tag_info = 
+  Blk_record {fields = [| "contents" |]; mutable_flag = Mutable; record_repr = Record_regular}
   
 type field_dbg_info = 
   | Fld_record of {name : string; mutable_flag : Asttypes.mutable_flag}
@@ -214,6 +217,7 @@ type primitive =
   (* Inhibition of optimisation *)
   | Popaque
   | Puncurried_apply
+  | Pcreate_extension of string
 and comparison =
     Ceq | Cneq | Clt | Cgt | Cle | Cge
 

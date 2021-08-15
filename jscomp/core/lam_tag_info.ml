@@ -27,14 +27,4 @@
    it reduces some branches e.g, 
    [Blk_some], [Blk_some_not_nested]
 *)
-type t =   
-  | Blk_tuple
-  | Blk_array
-  | Blk_poly_var
-  | Blk_record of string array 
-  | Blk_module of string list
-  | Blk_extension
-  | Blk_record_ext of string array
-  | Blk_record_inlined of { name : string ; num_nonconst : int; fields : string array }
-  | Blk_constructor of {name : string ; num_nonconst : int}
-  | Blk_module_export
+type t = Lambda.tag_info

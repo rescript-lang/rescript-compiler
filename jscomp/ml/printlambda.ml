@@ -73,7 +73,7 @@ let print_boxed_integer name ppf bi =
   fprintf ppf "%s" (boxed_integer_mark name bi);;
 
 
-let record_rep ppf r =
+let record_rep ppf (r : Types.record_representation) =
   match r with
   | Record_regular -> fprintf ppf "regular"
   | Record_inlined {tag = i} -> fprintf ppf "inlined(%i)" i
@@ -122,8 +122,6 @@ let print_taginfo ppf = function
   | Blk_poly_var name -> fprintf ppf "`%s" name 
   | Blk_record  {fields = ss} ->  fprintf ppf "[%s]" (String.concat ";" (Array.to_list ss) )
   | Blk_module ss ->  fprintf ppf "[%s]" (String.concat ";"  ss) 
-  | Blk_extension_slot -> fprintf ppf "ext_slot"
-
   | Blk_some -> fprintf ppf "some"
   | Blk_some_not_nested -> fprintf ppf "some_not_nested" 
   | Blk_lazy_general -> fprintf ppf "lazy_general"
@@ -247,7 +245,7 @@ let primitive ppf = function
   | Pbintcomp(bi, Cle) -> print_boxed_integer "<=" ppf bi
   | Pbintcomp(bi, Cge) -> print_boxed_integer ">=" ppf bi
   | Popaque -> fprintf ppf "opaque"
-
+  | Pcreate_extension s -> fprintf ppf "extension[%s]" s   
 let name_of_primitive = function
   | Puncurried_apply -> "Puncurried_apply"
   | Pidentity -> "Pidentity"
@@ -327,6 +325,7 @@ let name_of_primitive = function
   | Pasrbint _ -> "Pasrbint"
   | Pbintcomp _ -> "Pbintcomp"
   | Popaque -> "Popaque"
+  | Pcreate_extension _ -> "Pcreate_extension"
 
 let function_attribute ppf { inline; specialise; is_a_functor; stub } =
   if is_a_functor then
