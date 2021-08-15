@@ -187,7 +187,15 @@ and unicode_codepoint_escape loc buf s offset s_len =
       Buffer.add_char buf cur_char;
       let x = ref 0 in
       for ix = loc to offset - 1 do
-        x := (!x * 16) + (Ext_char.hex_value s.[ix]);
+        let c = s.[ix] in
+        let value = 
+         match c with
+         | '0'..'9' -> (Char.code c) - 48
+         | 'a'..'f' -> (Char.code c) - (Char.code 'a') + 10
+         | 'A'..'F' -> (Char.code c) + 32 - (Char.code 'a') + 10
+         | _ -> 16 (* larger than any legal value, unicode_codepoint_escape only makes progress if we have valid hex symbols *)
+        in
+        x := (!x * 16) + value;
       done;
       if Uchar.is_valid !x then begin
         check_and_transform (offset + 1) buf s (offset + 1) s_len

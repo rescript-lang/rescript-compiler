@@ -30,6 +30,5 @@
 (** Extension to Standard char module, avoid locale sensitivity *)
 
 val valid_hex : char -> bool
-val hex_value : char -> int
 val is_lower_case : char -> bool
 

@@ -38,12 +38,6 @@ let valid_hex x =
   | 'A' .. 'F' -> true
   | _ -> false 
 
-let hex_value c =
-  match c with
-  | '0'..'9' -> (Char.code c) - 48
-  | 'a'..'f' -> (Char.code c) - (Char.code 'a') + 10
-  | 'A'..'F' -> (Char.code c) + 32 - (Char.code 'a') + 10
-  | _ -> 16 (* larger than any legal value *)
 
 
 let is_lower_case c =
