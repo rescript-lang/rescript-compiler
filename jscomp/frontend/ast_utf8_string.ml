@@ -30,6 +30,7 @@ type error =
   | Invalid_escape_code of char 
   | Invalid_hex_escape
   | Invalid_unicode_escape
+  | Invalid_unicode_codepoint_escape
 
 let pp_error fmt err = 
   Format.pp_print_string fmt @@  match err with 
@@ -39,12 +40,11 @@ let pp_error fmt err =
   | Invalid_hex_escape -> 
     "Invalid \\x escape"
   | Invalid_unicode_escape -> "Invalid \\u escape"
+  | Invalid_unicode_codepoint_escape -> "Invalid \\u{…} codepoint escape sequence"
 
 
 
 type exn += Error of int  (* offset *) * error 
-
-
 
 
 let error ~loc error = 
@@ -116,11 +116,19 @@ and escape_code loc buf s offset s_len =
       Buffer.add_char buf cur_char ;
       check_and_transform (loc + 1) buf s (offset + 1) s_len 
     end 
-  | 'u' -> 
-    begin 
-      Buffer.add_char buf cur_char;
-      unicode (loc + 1) buf s (offset + 1) s_len 
-    end 
+  | 'u' -> begin
+      if offset + 1 >= s_len then error ~loc Invalid_unicode_escape
+      else begin
+        Buffer.add_char buf cur_char ;
+        let next_char = s.[offset + 1] in
+        match next_char with
+        | '{' ->
+          Buffer.add_char buf next_char ;
+          unicode_codepoint_escape (loc + 2) buf s (offset + 2) s_len
+        | _ ->
+          unicode (loc + 1) buf s (offset + 1) s_len
+      end
+    end
   | 'x' -> begin 
       Buffer.add_char buf cur_char ; 
       two_hex (loc + 1) buf s (offset + 1) s_len 
@@ -166,7 +174,41 @@ and unicode loc buf s offset s_len =
 (* http://www.2ality.com/2015/01/es6-strings.html
    console.log('\uD83D\uDE80'); (* ES6*)
    console.log('\u{1F680}');
-*)   
+*)  
+
+(* ES6 unicode codepoint escape sequences: \u{…} 
+   https://262.ecma-international.org/6.0/#sec-literals-string-literals *)
+and unicode_codepoint_escape loc buf s offset s_len =
+  if offset >= s_len then error ~loc Invalid_unicode_codepoint_escape
+  else
+    let cur_char = s.[offset] in
+    match cur_char with
+    | '}' ->
+      Buffer.add_char buf cur_char;
+      let x = ref 0 in
+      for ix = loc to offset - 1 do
+        let c = s.[ix] in
+        let value = 
+         match c with
+         | '0'..'9' -> (Char.code c) - 48
+         | 'a'..'f' -> (Char.code c) - (Char.code 'a') + 10
+         | 'A'..'F' -> (Char.code c) + 32 - (Char.code 'a') + 10
+         | _ -> 16 (* larger than any legal value, unicode_codepoint_escape only makes progress if we have valid hex symbols *)
+        in
+        (* too long escape sequence will result in an overflow, perform an upperbound check *)
+        if !x > 0x10FFFF then error ~loc Invalid_unicode_codepoint_escape else
+        x := (!x * 16) + value;
+      done;
+      if Uchar.is_valid !x then begin
+        check_and_transform (offset + 1) buf s (offset + 1) s_len
+      end else
+        error ~loc Invalid_unicode_codepoint_escape
+    | _ ->
+      if Ext_char.valid_hex cur_char then begin
+        Buffer.add_char buf cur_char ;
+        unicode_codepoint_escape loc buf s (offset + 1) s_len
+      end else
+        error ~loc Invalid_unicode_codepoint_escape
 
 
 

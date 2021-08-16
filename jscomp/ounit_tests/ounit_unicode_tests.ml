@@ -48,6 +48,15 @@ let suites =
             "\\n" =~ "\\n"
         end;
         __LOC__ >:: begin fun _ ->
+            Ast_utf8_string.transform_test "\\u{1d306}" =~ "\\u{1d306}"
+        end;
+        __LOC__ >:: begin fun _ ->
+            Ast_utf8_string.transform_test "unicode escape: \\u{1d306}" =~ "unicode escape: \\u{1d306}"
+        end;
+        __LOC__ >:: begin fun _ ->
+            Ast_utf8_string.transform_test "unicode escape: \\u{1d306} with suffix text" =~ "unicode escape: \\u{1d306} with suffix text"
+        end;
+        __LOC__ >:: begin fun _ ->
           Ast_utf8_string.transform_test
             "\\\\\\b\\t\\n\\v\\f\\r\\0\\$" =~
           "\\\\\\b\\t\\n\\v\\f\\r\\0\\$"
@@ -72,6 +81,20 @@ let suites =
              {|你BuckleScript,好啊\uffff\|} with
            | exception Ast_utf8_string.Error(offset,_) ->
             OUnit.assert_equal offset 23
+           | _ -> OUnit.assert_failure __LOC__
+        end ;
+         __LOC__ >:: begin fun _ ->
+           match Ast_utf8_string.transform_test
+             {js|\u{110000}|js} with (* bigger than max valid unicode codepoint *)
+           | exception Ast_utf8_string.Error(offset,_) ->
+            OUnit.assert_equal offset 3
+           | _ -> OUnit.assert_failure __LOC__
+        end ;
+        __LOC__ >:: begin fun _ ->
+           match Ast_utf8_string.transform_test
+             {js|\u{FFFFFFFFFFFFFFFFFFFFFFFFFFFFF}|js} with (* overflow *)
+           | exception Ast_utf8_string.Error(offset,_) ->
+            OUnit.assert_equal offset 3
            | _ -> OUnit.assert_failure __LOC__
         end ;
 
