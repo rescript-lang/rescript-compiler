@@ -3253,7 +3253,14 @@ type ('key,'a) t0 =
       r : ('key,'a) t0 ;
       h : int
     }
-
+type ('key,'a) parital_node = {
+  l : ('key,'a) t0 ;
+  k : 'key ;
+  v : 'a ;
+  r : ('key,'a) t0 ;
+  h : int
+}
+external  (~!) : ('key,'a) t0 -> ('key, 'a) parital_node = "%identity"
 let  empty = Empty
 let rec map x f = match x with
     Empty -> Empty
@@ -3379,44 +3386,44 @@ let bal l x d r =
   let hl = height l in
   let hr = height r in
   if hl > hr + 2 then begin
-    let [@warning "-8"] Node ({l=ll; r = lr} as l) = l in
+    let  {l=ll; r = lr; v = lv; k = lk} = ~!l in
     let hll = height ll in 
     let hlr = height lr in 
     if hll >= hlr then
       let hnode = calc_height hlr hr in       
-      unsafe_node l.k l.v 
+      unsafe_node lk lv 
         ll  
         (unsafe_node_maybe_leaf x d lr  r hnode)
         (calc_height hll hnode)
     else         
-      let [@warning "-8"] Node ({l=lrl; r=lrr} as lr) = lr in 
+      let {l=lrl; r=lrr;k = lrk ; v = lrv }  = ~!lr in 
       let hlrl = height lrl in 
       let hlrr = height lrr in 
       let hlnode = calc_height hll hlrl in 
       let hrnode = calc_height hlrr hr in 
-      unsafe_node lr.k lr.v 
-        (unsafe_node_maybe_leaf l.k l.v ll  lrl hlnode)  
+      unsafe_node lrk lrv 
+        (unsafe_node_maybe_leaf lk lv ll  lrl hlnode)  
         (unsafe_node_maybe_leaf x d lrr r hrnode)      
         (calc_height hlnode hrnode)
   end else if hr > hl + 2 then begin
-    let [@warning "-8"] Node ({l=rl; r=rr} as r) = r in 
+    let {l=rl; r=rr; k = rk; v = rv }  = ~!r in 
     let hrr = height rr in 
     let hrl = height rl in 
     if hrr >= hrl then
       let hnode = calc_height hl hrl in
-      unsafe_node r.k r.v 
+      unsafe_node rk rv 
         (unsafe_node_maybe_leaf x d l rl hnode)
         rr
         (calc_height hnode hrr)
     else 
-      let [@warning "-8"] Node ({l=rll;  r=rlr} as rl) = rl in 
+      let {l=rll;  r=rlr; k = rlk ; v = rlv}  = ~!rl in 
       let hrll = height rll in 
       let hrlr = height rlr in 
       let hlnode = (calc_height hl hrll) in
       let hrnode = (calc_height hrlr hrr) in      
-      unsafe_node rl.k rl.v 
+      unsafe_node rlk rlv 
         (unsafe_node_maybe_leaf x d l  rll hlnode)  
-        (unsafe_node_maybe_leaf r.k r.v rlr  rr hrnode)
+        (unsafe_node_maybe_leaf rk rv rlr  rr hrnode)
         (calc_height hlnode hrnode)
   end else
     unsafe_node_maybe_leaf x d l r (calc_height hl hr)
@@ -4133,6 +4140,9 @@ type 'a t0 =
   | Leaf of  'a 
   | Node of { l : 'a t0 ; v :  'a ; r : 'a t0 ; h :  int }
 
+type 'a partial_node = { l : 'a t0 ; v :  'a ; r : 'a t0 ; h :  int }
+
+external (~!) : 'a t0 -> 'a partial_node = "%identity"
 let empty = Empty
 let  [@inline] height = function
   | Empty -> 0 
@@ -4256,44 +4266,44 @@ let bal l v r : _ t =
   let hl = height l in
   let hr = height r in
   if hl > hr + 2 then 
-    let [@warning "-8"] Node ({l=ll;r= lr} as l) = l in 
+    let {l=ll;r= lr; v = lv}  = ~!l in 
     let hll = height ll in 
     let hlr = height lr in 
     if hll >= hlr then
       let hnode = calc_height hlr hr in       
-      unsafe_node l.v 
+      unsafe_node lv 
         ll  
         (unsafe_node_maybe_leaf v lr  r hnode ) 
         (calc_height hll hnode)
     else       
-      let [@warning "-8"] Node ({l = lrl; r = lrr } as lr) = lr in 
+      let {l = lrl; r = lrr ; v = lrv}  = ~!lr in 
       let hlrl = height lrl in 
       let hlrr = height lrr in 
       let hlnode = calc_height hll hlrl in 
       let hrnode = calc_height hlrr hr in 
-      unsafe_node lr.v 
-        (unsafe_node_maybe_leaf l.v ll  lrl hlnode)  
+      unsafe_node lrv 
+        (unsafe_node_maybe_leaf lv ll  lrl hlnode)  
         (unsafe_node_maybe_leaf v lrr  r hrnode)
         (calc_height hlnode hrnode)
   else if hr > hl + 2 then begin    
-    let [@warning "-8"] Node ({l=rl; r=rr} as r) = r in 
+    let {l=rl; r=rr; v = rv} = ~!r in 
     let hrr = height rr in 
     let hrl = height rl in 
     if hrr >= hrl then
       let hnode = calc_height hl hrl in
-      unsafe_node r.v 
+      unsafe_node rv 
         (unsafe_node_maybe_leaf v l  rl hnode) 
         rr 
         (calc_height hnode hrr )
     else begin
-      let [@warning "-8"] Node ({l = rll ; r = rlr } as rl) = rl in 
+      let {l = rll ; r = rlr ; v = rlv}  = ~!rl in 
       let hrll = height rll in 
       let hrlr = height rlr in 
       let hlnode = (calc_height hl hrll) in
       let hrnode = (calc_height hrlr hrr) in
-      unsafe_node rl.v 
+      unsafe_node rlv 
         (unsafe_node_maybe_leaf v l rll hlnode)  
-        (unsafe_node_maybe_leaf r.v rlr rr hrnode)
+        (unsafe_node_maybe_leaf rv rlr rr hrnode)
         (calc_height hlnode hrnode)
     end
   end else
