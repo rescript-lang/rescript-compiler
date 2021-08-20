@@ -420,10 +420,10 @@ let rec pretty_val ppf v =
   | Tpat_variant (l, Some w, _) ->
       fprintf ppf "@[<2>`%s@ %a@]" l pretty_arg w
   | Tpat_record (lvs,_) ->
-      let filtered_lvs = List.filter
+      let filtered_lvs = Ext_list.filter lvs
           (function
             | (_,_,{pat_desc=Tpat_any}) -> false (* do not show lbl=_ *)
-            | _ -> true) lvs in
+            | _ -> true) in
       begin match filtered_lvs with
       | [] -> fprintf ppf "_"
       | (_, lbl, _) :: q ->
@@ -1008,9 +1008,9 @@ let complete_constrs p all_tags =
   let not_tags = complete_tags c.cstr_consts c.cstr_nonconsts all_tags in
   let constrs = get_variant_constructors p.pat_env c.cstr_res in
   let others =
-    List.filter
+    Ext_list.filter constrs
       (fun cnstr -> ConstructorTagHashtbl.mem not_tags cnstr.cstr_tag)
-      constrs in
+  in
   let const, nonconst =
     List.partition (fun cnstr -> cnstr.cstr_arity = 0) others in
   const @ nonconst
@@ -2253,7 +2253,7 @@ let check_unused pred casel =
           let qs = [q] in
             begin try
               let pss =
-                  get_mins le_pats (List.filter (compats qs) pref) in
+                  get_mins le_pats (Ext_list.filter pref (compats qs)) in
               (* First look for redundant or partially redundant patterns *)
               let r = every_satisfiables (make_rows pss) (make_row qs) in
               let refute = (c_rhs.exp_desc = Texp_unreachable) in

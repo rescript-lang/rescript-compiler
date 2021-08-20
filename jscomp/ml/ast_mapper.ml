@@ -784,9 +784,8 @@ module PpxContext = struct
 
   let update_cookies fields =
     let fields =
-      List.filter
-        (function ({txt=Lident "cookies"}, _) -> false | _ -> true)
-        fields
+      Ext_list.filter fields
+        (function ({txt=Lident "cookies"}, _) -> false | _ -> true)        
     in
     fields @ [get_cookies ()]
 end

@@ -866,7 +866,7 @@ let compute_variance_type env check (required, loc) decl tyl =
     (* Check propagation from constrained parameters *)
     let args = Btype.newgenty (Ttuple params) in
     let fvl = Ctype.free_variables args in
-    let fvl = List.filter (fun v -> not (List.memq v params)) fvl in
+    let fvl = Ext_list.filter fvl (fun v -> not (List.memq v params)) in
     (* If there are no extra variables there is nothing to do *)
     if fvl = [] then () else
     let tvl2 = ref TypeMap.empty in
@@ -1167,7 +1167,7 @@ let name_recursion sdecl id decl =
 (* Translate a set of type declarations, mutually recursive or not *)
 let transl_type_decl env rec_flag sdecl_list =
   (* Add dummy types for fixed rows *)
-  let fixed_types = List.filter is_fixed_type sdecl_list in
+  let fixed_types = Ext_list.filter sdecl_list is_fixed_type in
   let sdecl_list =
     List.map
       (fun sdecl ->

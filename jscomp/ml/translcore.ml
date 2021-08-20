@@ -833,7 +833,7 @@ and transl_case {c_lhs; c_guard; c_rhs} =
 
 and transl_cases cases =
   let cases =
-    List.filter (fun c -> c.c_rhs.exp_desc <> Texp_unreachable) cases in
+    Ext_list.filter cases (fun c -> c.c_rhs.exp_desc <> Texp_unreachable) in
   List.map transl_case cases
 
 and transl_case_try {c_lhs; c_guard; c_rhs} =
@@ -849,7 +849,7 @@ and transl_case_try {c_lhs; c_guard; c_rhs} =
 
 and transl_cases_try cases =
   let cases =
-    List.filter (fun c -> c.c_rhs.exp_desc <> Texp_unreachable) cases in
+    Ext_list.filter cases (fun c -> c.c_rhs.exp_desc <> Texp_unreachable) in
   List.map transl_case_try cases
 
 

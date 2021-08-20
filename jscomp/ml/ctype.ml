@@ -1035,7 +1035,7 @@ let rec copy ?env ?partial ?keep_names ty =
                     && TypeSet.is_empty (free_univars ty)
                     && not (List.for_all not_reither row.row_fields) then
                       (more',
-                       {row_fields = List.filter not_reither row.row_fields;
+                       {row_fields = Ext_list.filter row.row_fields not_reither;
                         row_more = more'; row_bound = ();
                         row_closed = false; row_fixed = false; row_name = None})
                     else (more', row)
@@ -4267,7 +4267,7 @@ let rec normalize_type_rec env visited ty =
           row.row_fields in
       let fields =
         List.sort (fun (p,_) (q,_) -> compare p q)
-          (List.filter (fun (_,fi) -> fi <> Rabsent) fields) in
+          (Ext_list.filter fields (fun (_,fi) -> fi <> Rabsent)) in
       log_type ty;
       ty.desc <- Tvariant {row with row_fields = fields}
     | Tobject (fi, nm) ->

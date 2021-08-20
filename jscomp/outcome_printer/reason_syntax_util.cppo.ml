@@ -473,7 +473,7 @@ let attributes_conflicted attribute1 attribute2 attributes =
 (* normalized_attributes removes attribute from a list of attributes
  *)
 let normalized_attributes attribute attributes =
-  List.filter (fun x -> not (attribute_equals attribute x)) attributes
+  Ext_list.filter attributes (fun x -> not (attribute_equals attribute x))
 
 (* apply_mapper family applies an ast_mapper to an ast *)
 let apply_mapper_to_structure s mapper = mapper.structure mapper s
