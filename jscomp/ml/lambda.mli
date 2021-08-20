@@ -159,7 +159,7 @@ type primitive =
   | Psetfield of int * set_field_dbg_info
 
 
-  | Pduprecord of Types.record_representation * int
+  | Pduprecord
   (* Force lazy values *)
   | Plazyforce
   (* External call *)

@@ -22,6 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+external ( .!() ) : 'a array -> int -> 'a = "%array_unsafe_get"
+
 let rec map l f =
   match l with
   | [] -> []
@@ -65,22 +67,35 @@ let rec map_combine l1 l2 f =
   | a1 :: l1, a2 :: l2 -> (f a1, a2) :: map_combine l1 l2 f
   | _, _ -> invalid_arg "Ext_list.map_combine"
 
-let rec combine_array_unsafe arr l i j acc f =
+let rec arr_list_combine_unsafe arr l i j acc f =
   if i = j then acc
   else
     match l with
     | [] -> invalid_arg "Ext_list.combine"
     | h :: tl ->
-        (f (Array.unsafe_get arr i), h)
-        :: combine_array_unsafe arr tl (i + 1) j acc f
+        (f arr.!(i), h) :: arr_list_combine_unsafe arr tl (i + 1) j acc f
 
 let combine_array_append arr l acc f =
   let len = Array.length arr in
-  combine_array_unsafe arr l 0 len acc f
+  arr_list_combine_unsafe arr l 0 len acc f
 
 let combine_array arr l f =
   let len = Array.length arr in
-  combine_array_unsafe arr l 0 len [] f
+  arr_list_combine_unsafe arr l 0 len [] f
+
+let rec arr_list_filter_map_unasfe arr l i j acc f =
+  if i = j then acc
+  else
+    match l with
+    | [] -> invalid_arg "Ext_list.arr_list_filter_map_unsafe"
+    | h :: tl -> (
+        match f arr.!(i) h with
+        | None -> arr_list_filter_map_unasfe arr tl (i + 1) j acc f
+        | Some v -> v :: arr_list_filter_map_unasfe arr tl (i + 1) j acc f)
+
+let array_list_filter_map arr l f =
+  let len = Array.length arr in
+  arr_list_filter_map_unasfe arr l 0 len [] f
 
 let rec map_split_opt (xs : 'a list) (f : 'a -> 'b option * 'c option) :
     'b list * 'c list =
@@ -666,9 +681,9 @@ let rec mem_string (xs : string list) (x : string) =
   match xs with [] -> false | a :: l -> a = x || mem_string l x
 
 let filter lst p =
-  let rec find ~p accu lst = 
-    match lst with 
+  let rec find ~p accu lst =
+    match lst with
     | [] -> rev accu
-    | x :: l -> if p x then find (x :: accu) l ~p else find accu l ~p 
+    | x :: l -> if p x then find (x :: accu) l ~p else find accu l ~p
   in
   find [] lst ~p

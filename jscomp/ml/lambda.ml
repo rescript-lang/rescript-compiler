@@ -161,7 +161,7 @@ type primitive =
 
   
 
-  | Pduprecord of Types.record_representation * int
+  | Pduprecord
   (* Force lazy values *)
   | Plazyforce
   (* External call *)

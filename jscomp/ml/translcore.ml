@@ -541,7 +541,7 @@ let primitive_is_ccall = function
   (* Determine if a primitive is a Pccall or will be turned later into
      a C function call that may raise an exception *)
   | Pccall _ | Pstringrefs  | Pbytesrefs | Pbytessets | Parrayrefs  |
-    Parraysets   | Pduprecord _ | Pdirapply |
+    Parraysets   | Pduprecord  | Pdirapply |
     Prevapply -> true
   | _ -> false
 
@@ -986,7 +986,7 @@ and transl_record loc env fields repres opt_init_expr =
   (* Determine if there are "enough" fields (only relevant if this is a
      functional-style record update *)
   let no_init = match opt_init_expr with None -> true | _ -> false in
-  if no_init || size < 20 (*if !Config.bs_only then 20 else Config.max_young_wosize*) 
+  if no_init || (size < 20  && repres <> Record_object)
   (* TODO: More strategies
      3 + 2 * List.length lbl_expr_list >= size (density)
   *)
@@ -1075,7 +1075,7 @@ and transl_record loc env fields repres opt_init_expr =
       None -> assert false
     | Some init_expr ->
         Llet(Strict, Pgenval, copy_id,
-             Lprim(Pduprecord (repres, size), [transl_exp init_expr], loc),
+             Lprim(Pduprecord , [transl_exp init_expr], loc),
              Array.fold_left update_field (Lvar copy_id) fields)
     end
   end

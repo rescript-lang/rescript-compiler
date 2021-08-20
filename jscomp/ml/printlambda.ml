@@ -16,7 +16,6 @@
 open Format
 open Asttypes
 open Primitive
-open Types
 open Lambda
 
 
@@ -73,15 +72,7 @@ let print_boxed_integer name ppf bi =
   fprintf ppf "%s" (boxed_integer_mark name bi);;
 
 
-let record_rep ppf (r : Types.record_representation) =
-  match r with
-  | Record_regular -> fprintf ppf "regular"
-  | Record_inlined {tag = i} -> fprintf ppf "inlined(%i)" i
-  | Record_unboxed false -> fprintf ppf "unboxed"
-  | Record_unboxed true -> fprintf ppf "inlined(unboxed)"
-  | Record_object -> fprintf ppf "object"
-  | Record_extension -> fprintf ppf "ext"
-;;
+
 
 let string_of_loc_kind = function
   | Loc_FILE -> "loc_FILE"
@@ -145,7 +136,7 @@ let primitive ppf = function
   | Pfield (n, fld) -> fprintf ppf "field:%s/%i" (str_of_field_info fld) n      
   | Psetfield(n,  _) ->
       fprintf ppf "setfield %i"   n
-  | Pduprecord (rep, size) -> fprintf ppf "duprecord %a %i" record_rep rep size
+  | Pduprecord -> fprintf ppf "duprecord"
   | Plazyforce -> fprintf ppf "force"
   | Pccall p -> fprintf ppf "%s" p.prim_name
   | Praise k -> fprintf ppf "%s" (Lambda.raise_kind k)
@@ -260,7 +251,7 @@ let name_of_primitive = function
   | Pmakeblock _ -> "Pmakeblock"
   | Pfield _ -> "Pfield"
   | Psetfield _ -> "Psetfield"
-  | Pduprecord _ -> "Pduprecord"
+  | Pduprecord  -> "Pduprecord"
   | Plazyforce -> "Plazyforce"
   | Pccall _ -> "Pccall"
   | Praise _ -> "Praise"

@@ -189,17 +189,6 @@ let rec drop_global_marker (lam : Lam.t) =
 let seq = Lam.seq 
 let unit = Lam.unit 
 
-let convert_record_repr ( x : Types.record_representation) 
-  : Lam_primitive.record_representation = 
-  match x with 
-  | Record_regular 
-  | Record_object ->  Record_regular (* FIX later*)
-  | Record_extension -> Record_extension 
-  | Record_unboxed _ -> assert false 
-  (* see patches in {!Typedecl.get_unboxed_from_attributes}*)
-  | Record_inlined {tag; name; num_nonconsts} -> 
-    Record_inlined {tag; name; num_nonconsts}
-
 
 let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
   match p with
@@ -284,8 +273,8 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : Lam.t =
     -> prim ~primitive:(Psetfield (id,info)) ~args loc
 
 
-  | Pduprecord (repr,_)
-    -> prim ~primitive:(Pduprecord (convert_record_repr repr)) ~args loc
+  | Pduprecord 
+    -> prim ~primitive:Pduprecord  ~args loc
   | Plazyforce -> prim ~primitive:Plazyforce ~args loc
 
 

@@ -49,13 +49,6 @@ let rec struct_const ppf (cst : Lam_constant.t) =
 
 
 
-let record_rep ppf (r : Lam_primitive.record_representation) =
-  match r with
-  | Record_regular -> fprintf ppf "regular"
-  | Record_inlined {tag = i} -> fprintf ppf "inlined %d" i 
-  | Record_extension -> fprintf ppf "ext"
-
-;;
 
 (* let string_of_loc_kind (loc : Lambda.loc_kind) =
    match loc with 
@@ -115,7 +108,7 @@ let primitive ppf (prim : Lam_primitive.t) = match prim with
   | Psetfield(n,  _) ->
     let instr = "setfield " in
     fprintf ppf "%s%i" instr n
-  | Pduprecord rep -> fprintf ppf "duprecord %a" record_rep rep
+  | Pduprecord  -> fprintf ppf "duprecord" 
   | Plazyforce -> fprintf ppf "force"
   | Pccall p -> fprintf ppf "%s" p.prim_name
   | Pjs_call {prim_name} -> 
