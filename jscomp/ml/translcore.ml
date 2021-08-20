@@ -541,7 +541,7 @@ let primitive_is_ccall = function
   (* Determine if a primitive is a Pccall or will be turned later into
      a C function call that may raise an exception *)
   | Pccall _ | Pstringrefs  | Pbytesrefs | Pbytessets | Parrayrefs  |
-    Parraysets   | Pduprecord _ | Pdirapply |
+    Parraysets   | Pduprecord  | Pdirapply |
     Prevapply -> true
   | _ -> false
 
@@ -1075,7 +1075,7 @@ and transl_record loc env fields repres opt_init_expr =
       None -> assert false
     | Some init_expr ->
         Llet(Strict, Pgenval, copy_id,
-             Lprim(Pduprecord (repres, size), [transl_exp init_expr], loc),
+             Lprim(Pduprecord , [transl_exp init_expr], loc),
              Array.fold_left update_field (Lvar copy_id) fields)
     end
   end

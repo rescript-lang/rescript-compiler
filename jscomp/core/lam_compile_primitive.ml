@@ -490,7 +490,7 @@ let translate  loc
          (Blk_constructor {name = "Other"; num_nonconst = 1; tag = 0})
          [E.str "BS"] Immutable
     )
-  | Pduprecord (Record_regular| Record_extension| Record_inlined _ ) -> 
+  | Pduprecord -> 
     Lam_dispatch_primitive.translate loc "?obj_dup" args
 
   | Plazyforce  

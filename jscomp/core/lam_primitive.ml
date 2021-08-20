@@ -40,7 +40,7 @@ type t =
   | Pfield of int * Lam_compat.field_dbg_info
   | Psetfield of int * Lam_compat.set_field_dbg_info
   (* could have field info at least for record *)
-  | Pduprecord of record_representation
+  | Pduprecord
   (* Force lazy values *)
   | Plazyforce
   (* External call *)
@@ -166,17 +166,6 @@ let eq_set_field_dbg_info (x : Lam_compat.set_field_dbg_info)
 
 let eq_tag_info (x : Lam_tag_info.t) y = x = y
 
-let eq_record_representation (p : record_representation)
-    (p1 : record_representation) =
-  match p with
-  | Record_regular -> p1 = Record_regular
-  | Record_inlined { tag; name; num_nonconsts } -> (
-      match p1 with
-      | Record_inlined rhs ->
-          tag = rhs.tag && name = rhs.name && num_nonconsts = rhs.num_nonconsts
-      | _ -> false)
-  | Record_extension -> p1 = Record_extension
-
 let eq_primitive_approx (lhs : t) (rhs : t) =
   match lhs with
   | Pcreate_extension a -> (
@@ -258,11 +247,7 @@ let eq_primitive_approx (lhs : t) (rhs : t) =
       | Pmakeblock (i1, info1, flag1) ->
           i0 = i1 && flag0 = flag1 && eq_tag_info info0 info1
       | _ -> false)
-  | Pduprecord record_repesentation0 -> (
-      match rhs with
-      | Pduprecord record_repesentation1 ->
-          eq_record_representation record_repesentation0 record_repesentation1
-      | _ -> false)
+  | Pduprecord -> rhs = Pduprecord
   | Pjs_call { prim_name; arg_types; ffi } -> (
       match rhs with
       | Pjs_call rhs ->
