@@ -986,7 +986,7 @@ and transl_record loc env fields repres opt_init_expr =
   (* Determine if there are "enough" fields (only relevant if this is a
      functional-style record update *)
   let no_init = match opt_init_expr with None -> true | _ -> false in
-  if no_init || size < 20 (*if !Config.bs_only then 20 else Config.max_young_wosize*) 
+  if no_init || (size < 20  && repres <> Record_object)
   (* TODO: More strategies
      3 + 2 * List.length lbl_expr_list >= size (density)
   *)
