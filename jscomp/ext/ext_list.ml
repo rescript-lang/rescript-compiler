@@ -664,3 +664,11 @@ let singleton_exn xs = match xs with [ x ] -> x | _ -> assert false
 
 let rec mem_string (xs : string list) (x : string) =
   match xs with [] -> false | a :: l -> a = x || mem_string l x
+
+let filter lst p =
+  let rec find ~p accu lst = 
+    match lst with 
+    | [] -> rev accu
+    | x :: l -> if p x then find (x :: accu) l ~p else find accu l ~p 
+  in
+  find [] lst ~p

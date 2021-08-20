@@ -225,3 +225,4 @@ val singleton_exn : 'a list -> 'a
 
 val mem_string : string list -> string -> bool
 
+val filter : 'a list -> ('a -> bool) -> 'a list
