@@ -26,3 +26,22 @@ let f = (window, a, b) => {
 //   h 
 
 // }
+
+@obj
+type r = {
+    x: int,
+    y: option < int>,
+    z : int 
+}
+
+let v0 = { x :  3 , z : 2 }
+
+
+
+
+let v2 = { ... v0 , x : 3 }
+
+let v1 : r = { x : 3 
+  , z : 3
+}
+// failed to type check
