@@ -5076,177 +5076,91 @@ module Ext_list : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+val map : 'a list -> ('a -> 'b) -> 'b list
 
-val map : 
-  'a list -> 
-  ('a -> 'b) -> 
-  'b list 
+val map_combine : 'a list -> 'b list -> ('a -> 'c) -> ('c * 'b) list
 
-val map_combine :  
-  'a list -> 
-  'b list -> 
-  ('a -> 'c) -> 
-  ('c * 'b) list 
+val combine_array : 'a array -> 'b list -> ('a -> 'c) -> ('c * 'b) list
 
-val combine_array:
-  'a array ->
-  'b list -> 
-  ('a -> 'c) ->
-  ('c * 'b) list   
+val combine_array_append :
+  'a array -> 'b list -> ('c * 'b) list -> ('a -> 'c) -> ('c * 'b) list
 
-val combine_array_append:
-  'a array ->
-  'b list ->
-  ('c * 'b) list -> 
-  ('a -> 'c) ->
-  ('c * 'b) list   
+val has_string : string list -> string -> bool
 
-val has_string :   
-  string list ->
-  string -> 
-  bool
+val map_split_opt :
+  'a list -> ('a -> 'b option * 'c option) -> 'b list * 'c list
 
+val mapi : 'a list -> (int -> 'a -> 'b) -> 'b list
 
-val map_split_opt :  
-  'a list ->
-  ('a -> 'b option * 'c option) ->
-  'b list * 'c list 
+val mapi_append : 'a list -> (int -> 'a -> 'b) -> 'b list -> 'b list
 
-val mapi :
-  'a list -> 
-  (int -> 'a -> 'b) -> 
-  'b list 
+val map_snd : ('a * 'b) list -> ('b -> 'c) -> ('a * 'c) list
 
-val mapi_append :
-  'a list -> 
-  (int -> 'a -> 'b) -> 
-  'b list -> 
-  'b list 
-
-val map_snd : ('a * 'b) list -> ('b -> 'c) -> ('a * 'c) list 
-
+val map_last : 'a list -> (bool -> 'a -> 'b) -> 'b list
 (** [map_last f xs ]
     will pass [true] to [f] for the last element, 
     [false] otherwise. 
     For empty list, it returns empty
 *)
-val map_last : 
-  'a list -> 
-  (bool -> 'a -> 'b) -> 'b list
 
+val last : 'a list -> 'a
 (** [last l]
     return the last element
     raise if the list is empty
 *)
-val last : 'a list -> 'a
 
-val append : 
-  'a list -> 
-  'a list -> 
-  'a list 
+val append : 'a list -> 'a list -> 'a list
 
-val append_one :  
-  'a list -> 
-  'a -> 
-  'a list
+val append_one : 'a list -> 'a -> 'a list
 
-val map_append :  
-  'b list -> 
-  'a list -> 
-  ('b -> 'a) -> 
-  'a list
+val map_append : 'b list -> 'a list -> ('b -> 'a) -> 'a list
 
-val fold_right : 
-  'a list -> 
-  'b -> 
-  ('a -> 'b -> 'b) -> 
-  'b
+val fold_right : 'a list -> 'b -> ('a -> 'b -> 'b) -> 'b
 
-val fold_right2 : 
-  'a list -> 
-  'b list -> 
-  'c -> 
-  ('a -> 'b -> 'c -> 'c) ->  'c
+val fold_right2 : 'a list -> 'b list -> 'c -> ('a -> 'b -> 'c -> 'c) -> 'c
 
-val fold_right3 : 
-  'a list -> 
-  'b list -> 
-  'c list -> 
-  'd -> 
-  ('a -> 'b -> 'c -> 'd -> 'd) -> 
-  'd
+val fold_right3 :
+  'a list -> 'b list -> 'c list -> 'd -> ('a -> 'b -> 'c -> 'd -> 'd) -> 'd
 
+val map2 : 'a list -> 'b list -> ('a -> 'b -> 'c) -> 'c list
 
-val map2 : 
-  'a list ->
-  'b list ->
-  ('a -> 'b -> 'c) ->
-  'c list
+val fold_left_with_offset :
+  'a list -> 'acc -> int -> ('a -> 'acc -> int -> 'acc) -> 'acc
 
-val fold_left_with_offset : 
-  'a list -> 
-  'acc -> 
-  int -> 
-  ('a -> 'acc ->  int ->  'acc) ->   
-  'acc 
-
-
+val filter_map : 'a list -> ('a -> 'b option) -> 'b list
 (** @unused *)
-val filter_map : 
-  'a list -> 
-  ('a -> 'b option) -> 
-  'b list  
 
+val exclude : 'a list -> ('a -> bool) -> 'a list
 (** [exclude p l] is the opposite of [filter p l] *)
-val exclude : 
-  'a list -> 
-  ('a -> bool) -> 
-  'a list 
 
+val exclude_with_val : 'a list -> ('a -> bool) -> 'a list option
 (** [excludes p l]
     return a tuple [excluded,newl]
     where [exluded] is true indicates that at least one  
     element is removed,[newl] is the new list where all [p x] for [x] is false
 
 *)
-val exclude_with_val : 
-  'a list -> 
-  ('a -> bool) -> 
-  'a list option
-
 
 val same_length : 'a list -> 'b list -> bool
 
 val init : int -> (int -> 'a) -> 'a list
 
+val split_at : 'a list -> int -> 'a list * 'a list
 (** [split_at n l]
     will split [l] into two lists [a,b], [a] will be of length [n], 
     otherwise, it will raise
 *)
-val split_at : 
-  'a list -> 
-  int -> 
-  'a list * 'a list
 
-
+val split_at_last : 'a list -> 'a list * 'a
 (** [split_at_last l]
     It is equivalent to [split_at (List.length l - 1) l ]
 *)
-val split_at_last : 'a list -> 'a list * 'a
 
-val filter_mapi : 
-  'a list -> 
-  ('a -> int ->  'b option) -> 
-  'b list
+val filter_mapi : 'a list -> ('a -> int -> 'b option) -> 'b list
 
-val filter_map2 : 
-  'a list -> 
-  'b list -> 
-  ('a -> 'b -> 'c option) -> 
-  'c list
+val filter_map2 : 'a list -> 'b list -> ('a -> 'b -> 'c option) -> 'c list
 
-
-val length_compare : 'a list -> int -> [`Gt | `Eq | `Lt ]
+val length_compare : 'a list -> int -> [ `Gt | `Eq | `Lt ]
 
 val length_ge : 'a list -> int -> bool
 
@@ -5257,38 +5171,21 @@ val length_ge : 'a list -> int -> bool
    TODO: input checking
 *)
 
-val length_larger_than_n : 
-  'a list -> 
-  'a list -> 
-  int -> 
-  bool
+val length_larger_than_n : 'a list -> 'a list -> int -> bool
 
-
+val rev_map_append : 'a list -> 'b list -> ('a -> 'b) -> 'b list
 (**
    [rev_map_append f l1 l2]
    [map f l1] and reverse it to append [l2]
    This weird semantics is due to it is the most efficient operation
    we can do
 *)
-val rev_map_append : 
-  'a list -> 
-  'b list -> 
-  ('a -> 'b) -> 
-  'b list
 
+val flat_map : 'a list -> ('a -> 'b list) -> 'b list
 
-val flat_map : 
-  'a list -> 
-  ('a -> 'b list) -> 
-  'b list
+val flat_map_append : 'a list -> 'b list -> ('a -> 'b list) -> 'b list
 
-val flat_map_append : 
-  'a list -> 
-  'b list  ->
-  ('a -> 'b list) -> 
-  'b list
-
-
+val stable_group : 'a list -> ('a -> 'a -> bool) -> 'a list list
 (**
     [stable_group eq lst]
     Example:
@@ -5303,168 +5200,90 @@ val flat_map_append :
     TODO: this is O(n^2) behavior 
     which could be improved later
 *)
-val stable_group : 
-  'a list -> 
-  ('a -> 'a -> bool) -> 
-  'a list list 
 
+val drop : 'a list -> int -> 'a list
 (** [drop n list]
     raise when [n] is negative
     raise when list's length is less than [n]
 *)
-val drop : 
-  'a list -> 
-  int -> 
-  'a list 
 
-val find_first :   
-  'a list ->
-  ('a -> bool) ->
-  'a option 
+val find_first : 'a list -> ('a -> bool) -> 'a option
 
+val find_first_not : 'a list -> ('a -> bool) -> 'a option
 (** [find_first_not p lst ]
     if all elements in [lst] pass, return [None] 
     otherwise return the first element [e] as [Some e] which
     fails the predicate
 *)
-val find_first_not : 
-  'a list -> 
-  ('a -> bool) -> 
-  'a option 
 
 (** [find_opt f l] returns [None] if all return [None],  
     otherwise returns the first one. 
 *)
 
-val find_opt : 
-  'a list -> 
-  ('a -> 'b option) -> 
-  'b option 
+val find_opt : 'a list -> ('a -> 'b option) -> 'b option
 
-val find_def : 
-  'a list -> 
-  ('a -> 'b option) ->
-  'b ->
-  'b 
+val find_def : 'a list -> ('a -> 'b option) -> 'b -> 'b
 
+val rev_iter : 'a list -> ('a -> unit) -> unit
 
-val rev_iter : 
-  'a list -> 
-  ('a -> unit) -> 
-  unit 
+val iter : 'a list -> ('a -> unit) -> unit
 
-val iter:   
-  'a list ->  
-  ('a -> unit) -> 
-  unit
+val for_all : 'a list -> ('a -> bool) -> bool
 
-val for_all:  
-  'a list -> 
-  ('a -> bool) -> 
-  bool
-val for_all_snd:    
-  ('a * 'b) list -> 
-  ('b -> bool) -> 
-  bool
+val for_all_snd : ('a * 'b) list -> ('b -> bool) -> bool
 
+val for_all2_no_exn : 'a list -> 'b list -> ('a -> 'b -> bool) -> bool
 (** [for_all2_no_exn p xs ys]
     return [true] if all satisfied,
     [false] otherwise or length not equal
 *)
-val for_all2_no_exn : 
-  'a list -> 
-  'b list -> 
-  ('a -> 'b -> bool) -> 
-  bool
 
-
-
+val split_map : 'a list -> ('a -> 'b * 'c) -> 'b list * 'c list
 (** [f] is applied follow the list order *)
-val split_map : 
-  'a list -> 
-  ('a -> 'b * 'c) -> 
-  'b list * 'c list       
 
+val reduce_from_left : 'a list -> ('a -> 'a -> 'a) -> 'a
 (** [fn] is applied from left to right *)
-val reduce_from_left : 
-  'a list -> 
-  ('a -> 'a -> 'a) ->
-  'a
 
-val sort_via_array :
-  'a list -> 
-  ('a -> 'a -> int) -> 
-  'a list  
+val sort_via_array : 'a list -> ('a -> 'a -> int) -> 'a list
 
-val sort_via_arrayf:
-  'a list -> 
-  ('a -> 'a -> int) ->
-  ('a -> 'b ) -> 
-  'b list  
+val sort_via_arrayf : 'a list -> ('a -> 'a -> int) -> ('a -> 'b) -> 'b list
 
-
-
+val assoc_by_string : (string * 'a) list -> string -> 'a option -> 'a
 (** [assoc_by_string default key lst]
     if  [key] is found in the list  return that val,
     other unbox the [default], 
     otherwise [assert false ]
 *)
-val assoc_by_string : 
-  (string * 'a) list -> 
-  string -> 
-  'a  option ->   
-  'a  
 
-val assoc_by_int : 
-  (int * 'a) list -> 
-  int -> 
-  'a  option ->   
-  'a   
+val assoc_by_int : (int * 'a) list -> int -> 'a option -> 'a
 
+val nth_opt : 'a list -> int -> 'a option
 
-val nth_opt : 'a list -> int -> 'a option  
+val iter_snd : ('a * 'b) list -> ('b -> unit) -> unit
 
-val iter_snd : ('a * 'b) list -> ('b -> unit) -> unit 
+val iter_fst : ('a * 'b) list -> ('a -> unit) -> unit
 
-val iter_fst : ('a * 'b) list -> ('a -> unit) -> unit 
+val exists : 'a list -> ('a -> bool) -> bool
 
-val exists : 'a list -> ('a -> bool) -> bool 
+val exists_fst : ('a * 'b) list -> ('a -> bool) -> bool
 
-val exists_fst : 
-  ('a * 'b) list ->
-  ('a -> bool) ->
-  bool
+val exists_snd : ('a * 'b) list -> ('b -> bool) -> bool
 
-val exists_snd : 
-  ('a * 'b) list -> 
-  ('b -> bool) -> 
-  bool
+val concat_append : 'a list list -> 'a list -> 'a list
 
-val concat_append:
-  'a list list -> 
-  'a list -> 
-  'a list
+val fold_left2 : 'a list -> 'b list -> 'c -> ('a -> 'b -> 'c -> 'c) -> 'c
 
-val fold_left2:
-  'a list -> 
-  'b list -> 
-  'c -> 
-  ('a -> 'b -> 'c -> 'c)
-  -> 'c 
+val fold_left : 'a list -> 'b -> ('b -> 'a -> 'b) -> 'b
 
-val fold_left:    
-  'a list -> 
-  'b -> 
-  ('b -> 'a -> 'b) -> 
-  'b
+val singleton_exn : 'a list -> 'a
 
-val singleton_exn:     
-  'a list -> 'a
+val mem_string : string list -> string -> bool
 
-val mem_string :     
-  string list -> 
-  string -> 
-  bool
+val filter : 'a list -> ('a -> bool) -> 'a list
+
+val array_list_filter_map :
+  'a array -> 'b list -> ('a -> 'b -> 'c option) -> 'c list
+
 end = struct
 #1 "ext_list.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -5491,451 +5310,424 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
+external ( .!() ) : 'a array -> int -> 'a = "%array_unsafe_get"
 
 let rec map l f =
   match l with
-  | [] ->
-    []
-  | [x1] ->
-    let y1 = f x1 in
-    [y1]
-  | [x1; x2] ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    [y1; y2]
-  | [x1; x2; x3] ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    let y3 = f x3 in
-    [y1; y2; y3]
-  | [x1; x2; x3; x4] ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    let y3 = f x3 in
-    let y4 = f x4 in
-    [y1; y2; y3; y4]
-  | x1::x2::x3::x4::x5::tail ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    let y3 = f x3 in
-    let y4 = f x4 in
-    let y5 = f x5 in
-    y1::y2::y3::y4::y5::(map tail f)
+  | [] -> []
+  | [ x1 ] ->
+      let y1 = f x1 in
+      [ y1 ]
+  | [ x1; x2 ] ->
+      let y1 = f x1 in
+      let y2 = f x2 in
+      [ y1; y2 ]
+  | [ x1; x2; x3 ] ->
+      let y1 = f x1 in
+      let y2 = f x2 in
+      let y3 = f x3 in
+      [ y1; y2; y3 ]
+  | [ x1; x2; x3; x4 ] ->
+      let y1 = f x1 in
+      let y2 = f x2 in
+      let y3 = f x3 in
+      let y4 = f x4 in
+      [ y1; y2; y3; y4 ]
+  | x1 :: x2 :: x3 :: x4 :: x5 :: tail ->
+      let y1 = f x1 in
+      let y2 = f x2 in
+      let y3 = f x3 in
+      let y4 = f x4 in
+      let y5 = f x5 in
+      y1 :: y2 :: y3 :: y4 :: y5 :: map tail f
 
 let rec has_string l f =
   match l with
-  | [] ->
-    false
-  | [x1] ->
-    x1 = f
-  | [x1; x2] ->
-    x1 = f || x2 = f
-  | [x1; x2; x3] ->
-    x1 = f || x2 = f || x3 = f
-  | x1 :: x2 :: x3 :: x4 ->
-    x1 = f || x2 = f || x3 = f || has_string x4 f 
+  | [] -> false
+  | [ x1 ] -> x1 = f
+  | [ x1; x2 ] -> x1 = f || x2 = f
+  | [ x1; x2; x3 ] -> x1 = f || x2 = f || x3 = f
+  | x1 :: x2 :: x3 :: x4 -> x1 = f || x2 = f || x3 = f || has_string x4 f
 
 let rec map_combine l1 l2 f =
   match (l1, l2) with
-    ([], []) -> []
-  | (a1::l1, a2::l2) -> 
-    (f a1, a2) :: map_combine l1 l2 f 
-  | (_, _) -> 
-    invalid_arg "Ext_list.map_combine"
+  | [], [] -> []
+  | a1 :: l1, a2 :: l2 -> (f a1, a2) :: map_combine l1 l2 f
+  | _, _ -> invalid_arg "Ext_list.map_combine"
 
-let rec combine_array_unsafe arr l i j acc f =    
+let rec arr_list_combine_unsafe arr l i j acc f =
   if i = j then acc
-  else 
+  else
     match l with
     | [] -> invalid_arg "Ext_list.combine"
     | h :: tl ->
-      (f (Array.unsafe_get arr i) , h) ::
-      combine_array_unsafe arr tl (i + 1) j acc f
+        (f arr.!(i), h) :: arr_list_combine_unsafe arr tl (i + 1) j acc f
 
-let combine_array_append arr l acc f = 
+let combine_array_append arr l acc f =
   let len = Array.length arr in
-  combine_array_unsafe arr l 0 len acc f
+  arr_list_combine_unsafe arr l 0 len acc f
 
-let combine_array arr l f = 
+let combine_array arr l f =
   let len = Array.length arr in
-  combine_array_unsafe arr l 0 len [] f 
+  arr_list_combine_unsafe arr l 0 len [] f
 
-let rec map_split_opt 
-    (xs : 'a list)  (f : 'a -> 'b option * 'c option) 
-  : 'b list * 'c list = 
-  match xs with 
-  | [] -> [], []
-  | x::xs ->
-    let c,d = f x in 
-    let cs,ds = map_split_opt xs f in 
-    (match c with Some c -> c::cs | None -> cs),
-    (match d with Some d -> d::ds | None -> ds)
+let rec arr_list_filter_map_unasfe arr l i j acc f =
+  if i = j then acc
+  else
+    match l with
+    | [] -> invalid_arg "Ext_list.arr_list_filter_map_unsafe"
+    | h :: tl -> (
+        match f arr.!(i) h with
+        | None -> arr_list_filter_map_unasfe arr tl (i + 1) j acc f
+        | Some v -> v :: arr_list_filter_map_unasfe arr tl (i + 1) j acc f)
+
+let array_list_filter_map arr l f =
+  let len = Array.length arr in
+  arr_list_filter_map_unasfe arr l 0 len [] f
+
+let rec map_split_opt (xs : 'a list) (f : 'a -> 'b option * 'c option) :
+    'b list * 'c list =
+  match xs with
+  | [] -> ([], [])
+  | x :: xs -> (
+      let c, d = f x in
+      let cs, ds = map_split_opt xs f in
+      ( (match c with Some c -> c :: cs | None -> cs),
+        match d with Some d -> d :: ds | None -> ds ))
 
 let rec map_snd l f =
   match l with
-  | [] ->
-    []
-  | [ v1,x1 ] ->
-    let y1 = f x1 in
-    [v1,y1]
-  | [v1, x1; v2, x2] ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    [v1, y1; v2, y2]
-  | [ v1, x1; v2, x2; v3, x3] ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    let y3 = f x3 in
-    [v1, y1; v2, y2; v3, y3]
-  | [ v1, x1; v2, x2; v3, x3; v4, x4] ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    let y3 = f x3 in
-    let y4 = f x4 in
-    [v1, y1; v2, y2; v3, y3; v4, y4]
-  | (v1, x1) ::(v2, x2) :: (v3, x3)::(v4, x4) :: (v5, x5) ::tail ->
-    let y1 = f x1 in
-    let y2 = f x2 in
-    let y3 = f x3 in
-    let y4 = f x4 in
-    let y5 = f x5 in
-    (v1, y1)::(v2, y2) :: (v3, y3) :: (v4, y4) :: (v5, y5) :: (map_snd tail f)
+  | [] -> []
+  | [ (v1, x1) ] ->
+      let y1 = f x1 in
+      [ (v1, y1) ]
+  | [ (v1, x1); (v2, x2) ] ->
+      let y1 = f x1 in
+      let y2 = f x2 in
+      [ (v1, y1); (v2, y2) ]
+  | [ (v1, x1); (v2, x2); (v3, x3) ] ->
+      let y1 = f x1 in
+      let y2 = f x2 in
+      let y3 = f x3 in
+      [ (v1, y1); (v2, y2); (v3, y3) ]
+  | [ (v1, x1); (v2, x2); (v3, x3); (v4, x4) ] ->
+      let y1 = f x1 in
+      let y2 = f x2 in
+      let y3 = f x3 in
+      let y4 = f x4 in
+      [ (v1, y1); (v2, y2); (v3, y3); (v4, y4) ]
+  | (v1, x1) :: (v2, x2) :: (v3, x3) :: (v4, x4) :: (v5, x5) :: tail ->
+      let y1 = f x1 in
+      let y2 = f x2 in
+      let y3 = f x3 in
+      let y4 = f x4 in
+      let y5 = f x5 in
+      (v1, y1) :: (v2, y2) :: (v3, y3) :: (v4, y4) :: (v5, y5) :: map_snd tail f
 
-
-let rec map_last l f=
+let rec map_last l f =
   match l with
-  | [] ->
-    []
-  | [x1] ->
-    let y1 = f true x1 in
-    [y1]
-  | [x1; x2] ->
-    let y1 = f false x1 in
-    let y2 = f true x2 in
-    [y1; y2]
-  | [x1; x2; x3] ->
-    let y1 = f false x1 in
-    let y2 = f false x2 in
-    let y3 = f true x3 in
-    [y1; y2; y3]
-  | [x1; x2; x3; x4] ->
-    let y1 = f false x1 in
-    let y2 = f false x2 in
-    let y3 = f false x3 in
-    let y4 = f true x4 in
-    [y1; y2; y3; y4]
-  | x1::x2::x3::x4::tail ->
-    (* make sure that tail is not empty *)    
-    let y1 = f false x1 in
-    let y2 = f false x2 in
-    let y3 = f false x3 in
-    let y4 = f false x4 in
-    y1::y2::y3::y4::(map_last tail f)
+  | [] -> []
+  | [ x1 ] ->
+      let y1 = f true x1 in
+      [ y1 ]
+  | [ x1; x2 ] ->
+      let y1 = f false x1 in
+      let y2 = f true x2 in
+      [ y1; y2 ]
+  | [ x1; x2; x3 ] ->
+      let y1 = f false x1 in
+      let y2 = f false x2 in
+      let y3 = f true x3 in
+      [ y1; y2; y3 ]
+  | [ x1; x2; x3; x4 ] ->
+      let y1 = f false x1 in
+      let y2 = f false x2 in
+      let y3 = f false x3 in
+      let y4 = f true x4 in
+      [ y1; y2; y3; y4 ]
+  | x1 :: x2 :: x3 :: x4 :: tail ->
+      (* make sure that tail is not empty *)
+      let y1 = f false x1 in
+      let y2 = f false x2 in
+      let y3 = f false x3 in
+      let y4 = f false x4 in
+      y1 :: y2 :: y3 :: y4 :: map_last tail f
 
-let rec mapi_aux lst i f tail = 
+let rec mapi_aux lst i f tail =
   match lst with
-    [] -> tail
-  | a::l -> 
-    let r = f i a in r :: mapi_aux l (i + 1) f tail
+  | [] -> tail
+  | a :: l ->
+      let r = f i a in
+      r :: mapi_aux l (i + 1) f tail
 
 let mapi lst f = mapi_aux lst 0 f []
+
 let mapi_append lst f tail = mapi_aux lst 0 f tail
+
 let rec last xs =
-  match xs with 
-  | [x] -> x 
-  | _ :: tl -> last tl 
-  | [] -> invalid_arg "Ext_list.last"    
+  match xs with
+  | [ x ] -> x
+  | _ :: tl -> last tl
+  | [] -> invalid_arg "Ext_list.last"
 
-
-
-let rec append_aux l1 l2 = 
+let rec append_aux l1 l2 =
   match l1 with
   | [] -> l2
-  | [a0] -> a0::l2
-  | [a0;a1] -> a0::a1::l2
-  | [a0;a1;a2] -> a0::a1::a2::l2
-  | [a0;a1;a2;a3] -> a0::a1::a2::a3::l2
-  | [a0;a1;a2;a3;a4] -> a0::a1::a2::a3::a4::l2
-  | a0::a1::a2::a3::a4::rest -> a0::a1::a2::a3::a4::append_aux rest l2
+  | [ a0 ] -> a0 :: l2
+  | [ a0; a1 ] -> a0 :: a1 :: l2
+  | [ a0; a1; a2 ] -> a0 :: a1 :: a2 :: l2
+  | [ a0; a1; a2; a3 ] -> a0 :: a1 :: a2 :: a3 :: l2
+  | [ a0; a1; a2; a3; a4 ] -> a0 :: a1 :: a2 :: a3 :: a4 :: l2
+  | a0 :: a1 :: a2 :: a3 :: a4 :: rest ->
+      a0 :: a1 :: a2 :: a3 :: a4 :: append_aux rest l2
 
-let append l1 l2 =   
-  match l2 with 
-  | [] -> l1 
-  | _ -> append_aux l1 l2  
+let append l1 l2 = match l2 with [] -> l1 | _ -> append_aux l1 l2
 
-let append_one l1 x = append_aux l1 [x]  
+let append_one l1 x = append_aux l1 [ x ]
 
-let rec map_append l1 l2 f =   
+let rec map_append l1 l2 f =
   match l1 with
   | [] -> l2
-  | [a0] -> f a0::l2
-  | [a0;a1] -> 
-    let b0 = f a0 in 
-    let b1 = f a1 in 
-    b0::b1::l2
-  | [a0;a1;a2] -> 
-    let b0 = f a0 in 
-    let b1 = f a1 in  
-    let b2 = f a2 in 
-    b0::b1::b2::l2
-  | [a0;a1;a2;a3] -> 
-    let b0 = f a0 in 
-    let b1 = f a1 in 
-    let b2 = f a2 in 
-    let b3 = f a3 in 
-    b0::b1::b2::b3::l2
-  | [a0;a1;a2;a3;a4] -> 
-    let b0 = f a0 in 
-    let b1 = f a1 in 
-    let b2 = f a2 in 
-    let b3 = f a3 in 
-    let b4 = f a4 in 
-    b0::b1::b2::b3::b4::l2
+  | [ a0 ] -> f a0 :: l2
+  | [ a0; a1 ] ->
+      let b0 = f a0 in
+      let b1 = f a1 in
+      b0 :: b1 :: l2
+  | [ a0; a1; a2 ] ->
+      let b0 = f a0 in
+      let b1 = f a1 in
+      let b2 = f a2 in
+      b0 :: b1 :: b2 :: l2
+  | [ a0; a1; a2; a3 ] ->
+      let b0 = f a0 in
+      let b1 = f a1 in
+      let b2 = f a2 in
+      let b3 = f a3 in
+      b0 :: b1 :: b2 :: b3 :: l2
+  | [ a0; a1; a2; a3; a4 ] ->
+      let b0 = f a0 in
+      let b1 = f a1 in
+      let b2 = f a2 in
+      let b3 = f a3 in
+      let b4 = f a4 in
+      b0 :: b1 :: b2 :: b3 :: b4 :: l2
+  | a0 :: a1 :: a2 :: a3 :: a4 :: rest ->
+      let b0 = f a0 in
+      let b1 = f a1 in
+      let b2 = f a2 in
+      let b3 = f a3 in
+      let b4 = f a4 in
+      b0 :: b1 :: b2 :: b3 :: b4 :: map_append rest l2 f
 
-  | a0::a1::a2::a3::a4::rest ->
-    let b0 = f a0 in 
-    let b1 = f a1 in 
-    let b2 = f a2 in 
-    let b3 = f a3 in 
-    let b4 = f a4 in 
-    b0::b1::b2::b3::b4::map_append rest l2 f
+let rec fold_right l acc f =
+  match l with
+  | [] -> acc
+  | [ a0 ] -> f a0 acc
+  | [ a0; a1 ] -> f a0 (f a1 acc)
+  | [ a0; a1; a2 ] -> f a0 (f a1 (f a2 acc))
+  | [ a0; a1; a2; a3 ] -> f a0 (f a1 (f a2 (f a3 acc)))
+  | [ a0; a1; a2; a3; a4 ] -> f a0 (f a1 (f a2 (f a3 (f a4 acc))))
+  | a0 :: a1 :: a2 :: a3 :: a4 :: rest ->
+      f a0 (f a1 (f a2 (f a3 (f a4 (fold_right rest acc f)))))
 
-
-
-let rec fold_right l acc f  = 
-  match l with  
-  | [] -> acc 
-  | [a0] -> f a0 acc 
-  | [a0;a1] -> f a0 (f a1 acc)
-  | [a0;a1;a2] -> f a0 (f a1 (f a2 acc))
-  | [a0;a1;a2;a3] -> f a0 (f a1 (f a2 (f a3 acc))) 
-  | [a0;a1;a2;a3;a4] -> 
-    f a0 (f a1 (f a2 (f a3 (f a4 acc))))
-  | a0::a1::a2::a3::a4::rest -> 
-    f a0 (f a1 (f a2 (f a3 (f a4 (fold_right rest acc f )))))  
-
-let rec fold_right2 l r acc f = 
-  match l,r  with  
-  | [],[] -> acc 
-  | [a0],[b0] -> f a0 b0 acc 
-  | [a0;a1],[b0;b1] -> f a0 b0 (f a1 b1 acc)
-  | [a0;a1;a2],[b0;b1;b2] -> f a0 b0 (f a1 b1 (f a2 b2 acc))
-  | [a0;a1;a2;a3],[b0;b1;b2;b3] ->
-    f a0 b0 (f a1 b1 (f a2 b2 (f a3 b3 acc))) 
-  | [a0;a1;a2;a3;a4], [b0;b1;b2;b3;b4] -> 
-    f a0 b0 (f a1 b1 (f a2 b2 (f a3 b3 (f a4 b4 acc))))
-  | a0::a1::a2::a3::a4::arest, b0::b1::b2::b3::b4::brest -> 
-    f a0 b0 (f a1 b1 (f a2 b2 (f a3 b3 (f a4 b4 (fold_right2 arest brest acc f )))))  
+let rec fold_right2 l r acc f =
+  match (l, r) with
+  | [], [] -> acc
+  | [ a0 ], [ b0 ] -> f a0 b0 acc
+  | [ a0; a1 ], [ b0; b1 ] -> f a0 b0 (f a1 b1 acc)
+  | [ a0; a1; a2 ], [ b0; b1; b2 ] -> f a0 b0 (f a1 b1 (f a2 b2 acc))
+  | [ a0; a1; a2; a3 ], [ b0; b1; b2; b3 ] ->
+      f a0 b0 (f a1 b1 (f a2 b2 (f a3 b3 acc)))
+  | [ a0; a1; a2; a3; a4 ], [ b0; b1; b2; b3; b4 ] ->
+      f a0 b0 (f a1 b1 (f a2 b2 (f a3 b3 (f a4 b4 acc))))
+  | a0 :: a1 :: a2 :: a3 :: a4 :: arest, b0 :: b1 :: b2 :: b3 :: b4 :: brest ->
+      f a0 b0
+        (f a1 b1 (f a2 b2 (f a3 b3 (f a4 b4 (fold_right2 arest brest acc f)))))
   | _, _ -> invalid_arg "Ext_list.fold_right2"
 
-let rec fold_right3 l r last acc f = 
-  match l,r,last  with  
-  | [],[],[] -> acc 
-  | [a0],[b0],[c0] -> f a0 b0 c0 acc 
-  | [a0;a1],[b0;b1],[c0; c1] -> f a0 b0 c0 (f a1 b1 c1 acc)
-  | [a0;a1;a2],[b0;b1;b2],[c0;c1;c2] -> f a0 b0 c0 (f a1 b1 c1 (f a2 b2 c2 acc))
-  | [a0;a1;a2;a3],[b0;b1;b2;b3],[c0;c1;c2;c3] ->
-    f a0 b0 c0 (f a1 b1 c1 (f a2 b2 c2 (f a3 b3 c3 acc))) 
-  | [a0;a1;a2;a3;a4], [b0;b1;b2;b3;b4], [c0;c1;c2;c3;c4] -> 
-    f a0 b0 c0 (f a1 b1 c1 (f a2 b2 c2 (f a3 b3 c3 (f a4 b4 c4 acc))))
-  | a0::a1::a2::a3::a4::arest, b0::b1::b2::b3::b4::brest, c0::c1::c2::c3::c4::crest -> 
-    f a0 b0 c0 (f a1 b1 c1 (f a2 b2 c2 (f a3 b3 c3 (f a4 b4 c4 (fold_right3 arest brest crest acc f )))))  
+let rec fold_right3 l r last acc f =
+  match (l, r, last) with
+  | [], [], [] -> acc
+  | [ a0 ], [ b0 ], [ c0 ] -> f a0 b0 c0 acc
+  | [ a0; a1 ], [ b0; b1 ], [ c0; c1 ] -> f a0 b0 c0 (f a1 b1 c1 acc)
+  | [ a0; a1; a2 ], [ b0; b1; b2 ], [ c0; c1; c2 ] ->
+      f a0 b0 c0 (f a1 b1 c1 (f a2 b2 c2 acc))
+  | [ a0; a1; a2; a3 ], [ b0; b1; b2; b3 ], [ c0; c1; c2; c3 ] ->
+      f a0 b0 c0 (f a1 b1 c1 (f a2 b2 c2 (f a3 b3 c3 acc)))
+  | [ a0; a1; a2; a3; a4 ], [ b0; b1; b2; b3; b4 ], [ c0; c1; c2; c3; c4 ] ->
+      f a0 b0 c0 (f a1 b1 c1 (f a2 b2 c2 (f a3 b3 c3 (f a4 b4 c4 acc))))
+  | ( a0 :: a1 :: a2 :: a3 :: a4 :: arest,
+      b0 :: b1 :: b2 :: b3 :: b4 :: brest,
+      c0 :: c1 :: c2 :: c3 :: c4 :: crest ) ->
+      f a0 b0 c0
+        (f a1 b1 c1
+           (f a2 b2 c2
+              (f a3 b3 c3 (f a4 b4 c4 (fold_right3 arest brest crest acc f)))))
   | _, _, _ -> invalid_arg "Ext_list.fold_right2"
 
-let rec map2  l r f = 
-  match l,r  with  
-  | [],[] -> []
-  | [a0],[b0] -> [f a0 b0]
-  | [a0;a1],[b0;b1] -> 
-    let c0 = f a0 b0 in 
-    let c1 = f a1 b1 in 
-    [c0; c1]
-  | [a0;a1;a2],[b0;b1;b2] -> 
-    let c0 = f a0 b0 in 
-    let c1 = f a1 b1 in 
-    let c2 = f a2 b2 in 
-    [c0;c1;c2]
-  | [a0;a1;a2;a3],[b0;b1;b2;b3] ->
-    let c0 = f a0 b0 in 
-    let c1 = f a1 b1 in 
-    let c2 = f a2 b2 in 
-    let c3 = f a3 b3 in 
-    [c0;c1;c2;c3]
-  | [a0;a1;a2;a3;a4], [b0;b1;b2;b3;b4] -> 
-    let c0 = f a0 b0 in 
-    let c1 = f a1 b1 in 
-    let c2 = f a2 b2 in 
-    let c3 = f a3 b3 in 
-    let c4 = f a4 b4 in 
-    [c0;c1;c2;c3;c4]
-  | a0::a1::a2::a3::a4::arest, b0::b1::b2::b3::b4::brest -> 
-    let c0 = f a0 b0 in 
-    let c1 = f a1 b1 in 
-    let c2 = f a2 b2 in 
-    let c3 = f a3 b3 in 
-    let c4 = f a4 b4 in 
-    c0::c1::c2::c3::c4::map2 arest brest f
+let rec map2 l r f =
+  match (l, r) with
+  | [], [] -> []
+  | [ a0 ], [ b0 ] -> [ f a0 b0 ]
+  | [ a0; a1 ], [ b0; b1 ] ->
+      let c0 = f a0 b0 in
+      let c1 = f a1 b1 in
+      [ c0; c1 ]
+  | [ a0; a1; a2 ], [ b0; b1; b2 ] ->
+      let c0 = f a0 b0 in
+      let c1 = f a1 b1 in
+      let c2 = f a2 b2 in
+      [ c0; c1; c2 ]
+  | [ a0; a1; a2; a3 ], [ b0; b1; b2; b3 ] ->
+      let c0 = f a0 b0 in
+      let c1 = f a1 b1 in
+      let c2 = f a2 b2 in
+      let c3 = f a3 b3 in
+      [ c0; c1; c2; c3 ]
+  | [ a0; a1; a2; a3; a4 ], [ b0; b1; b2; b3; b4 ] ->
+      let c0 = f a0 b0 in
+      let c1 = f a1 b1 in
+      let c2 = f a2 b2 in
+      let c3 = f a3 b3 in
+      let c4 = f a4 b4 in
+      [ c0; c1; c2; c3; c4 ]
+  | a0 :: a1 :: a2 :: a3 :: a4 :: arest, b0 :: b1 :: b2 :: b3 :: b4 :: brest ->
+      let c0 = f a0 b0 in
+      let c1 = f a1 b1 in
+      let c2 = f a2 b2 in
+      let c3 = f a3 b3 in
+      let c4 = f a4 b4 in
+      c0 :: c1 :: c2 :: c3 :: c4 :: map2 arest brest f
   | _, _ -> invalid_arg "Ext_list.map2"
 
 let rec fold_left_with_offset l accu i f =
   match l with
   | [] -> accu
-  | a::l -> 
-    fold_left_with_offset 
-      l     
-      (f  a accu  i)  
-      (i + 1)
-      f  
+  | a :: l -> fold_left_with_offset l (f a accu i) (i + 1) f
 
-
-let rec filter_map xs (f: 'a -> 'b option)= 
-  match xs with 
+let rec filter_map xs (f : 'a -> 'b option) =
+  match xs with
   | [] -> []
-  | y :: ys -> 
-    begin match f y with 
-      | None -> filter_map ys f 
-      | Some z -> z :: filter_map ys f 
-    end
+  | y :: ys -> (
+      match f y with None -> filter_map ys f | Some z -> z :: filter_map ys f)
 
-let rec exclude (xs : 'a list) (p : 'a -> bool) : 'a list =   
-  match xs with 
-  | [] ->  []
-  | x::xs -> 
-    if p x then exclude xs p
-    else x:: exclude xs p
+let rec exclude (xs : 'a list) (p : 'a -> bool) : 'a list =
+  match xs with
+  | [] -> []
+  | x :: xs -> if p x then exclude xs p else x :: exclude xs p
 
 let rec exclude_with_val l p =
-  match l with 
-  | [] ->  None
-  | a0::xs -> 
-    if p a0 then Some (exclude xs p)
-    else 
-      match xs with 
-      | [] -> None
-      | a1::rest -> 
-        if p a1 then 
-          Some (a0:: exclude rest p)
-        else 
-          match exclude_with_val rest p with 
-          | None -> None 
-          | Some  rest -> Some (a0::a1::rest)
+  match l with
+  | [] -> None
+  | a0 :: xs -> (
+      if p a0 then Some (exclude xs p)
+      else
+        match xs with
+        | [] -> None
+        | a1 :: rest -> (
+            if p a1 then Some (a0 :: exclude rest p)
+            else
+              match exclude_with_val rest p with
+              | None -> None
+              | Some rest -> Some (a0 :: a1 :: rest)))
 
-
-
-let rec same_length xs ys = 
-  match xs, ys with 
+let rec same_length xs ys =
+  match (xs, ys) with
   | [], [] -> true
-  | _::xs, _::ys -> same_length xs ys 
-  | _, _ -> false 
+  | _ :: xs, _ :: ys -> same_length xs ys
+  | _, _ -> false
 
-
-let init n f = 
-  match n with 
+let init n f =
+  match n with
   | 0 -> []
-  | 1 -> 
-    let a0 = f 0 in  
-    [a0]
-  | 2 -> 
-    let a0 = f 0 in 
-    let a1 = f 1 in 
-    [a0; a1]
-  | 3 -> 
-    let a0 = f 0 in 
-    let a1 = f 1 in 
-    let a2 = f 2 in 
-    [a0; a1; a2]
-  | 4 -> 
-    let a0 = f 0 in 
-    let a1 = f 1 in 
-    let a2 = f 2 in 
-    let a3 = f 3 in 
-    [a0; a1; a2; a3]
-  | 5 -> 
-    let a0 = f 0 in 
-    let a1 = f 1 in 
-    let a2 = f 2 in 
-    let a3 = f 3 in 
-    let a4 = f 4 in  
-    [a0; a1; a2; a3; a4]
-  | _ ->
-    Array.to_list (Array.init n f)
+  | 1 ->
+      let a0 = f 0 in
+      [ a0 ]
+  | 2 ->
+      let a0 = f 0 in
+      let a1 = f 1 in
+      [ a0; a1 ]
+  | 3 ->
+      let a0 = f 0 in
+      let a1 = f 1 in
+      let a2 = f 2 in
+      [ a0; a1; a2 ]
+  | 4 ->
+      let a0 = f 0 in
+      let a1 = f 1 in
+      let a2 = f 2 in
+      let a3 = f 3 in
+      [ a0; a1; a2; a3 ]
+  | 5 ->
+      let a0 = f 0 in
+      let a1 = f 1 in
+      let a2 = f 2 in
+      let a3 = f 3 in
+      let a4 = f 4 in
+      [ a0; a1; a2; a3; a4 ]
+  | _ -> Array.to_list (Array.init n f)
 
 let rec rev_append l1 l2 =
   match l1 with
   | [] -> l2
-  | [a0] -> a0::l2 (* single element is common *)
-  | [a0 ; a1] -> a1 :: a0 :: l2 
-  |  a0::a1::a2::rest -> rev_append rest (a2::a1::a0::l2) 
+  | [ a0 ] -> a0 :: l2 (* single element is common *)
+  | [ a0; a1 ] -> a1 :: a0 :: l2
+  | a0 :: a1 :: a2 :: rest -> rev_append rest (a2 :: a1 :: a0 :: l2)
 
-let rev l = rev_append l []      
+let rev l = rev_append l []
 
-let rec small_split_at n acc l = 
-  if n <= 0 then rev acc , l 
-  else 
-    match l with 
-    | x::xs -> small_split_at (n - 1) (x ::acc) xs 
+let rec small_split_at n acc l =
+  if n <= 0 then (rev acc, l)
+  else
+    match l with
+    | x :: xs -> small_split_at (n - 1) (x :: acc) xs
     | _ -> invalid_arg "Ext_list.split_at"
 
-let split_at l n = 
-  small_split_at n [] l 
+let split_at l n = small_split_at n [] l
 
-let rec split_at_last_aux acc x = 
-  match x with 
+let rec split_at_last_aux acc x =
+  match x with
   | [] -> invalid_arg "Ext_list.split_at_last"
-  | [ x] -> rev acc, x
-  | y0::ys -> split_at_last_aux (y0::acc) ys   
+  | [ x ] -> (rev acc, x)
+  | y0 :: ys -> split_at_last_aux (y0 :: acc) ys
 
-let split_at_last (x : 'a list) = 
-  match x with 
+let split_at_last (x : 'a list) =
+  match x with
   | [] -> invalid_arg "Ext_list.split_at_last"
-  | [a0] -> 
-    [], a0
-  | [a0;a1] -> 
-    [a0], a1  
-  | [a0;a1;a2] -> 
-    [a0;a1], a2 
-  | [a0;a1;a2;a3] -> 
-    [a0;a1;a2], a3 
-  | [a0;a1;a2;a3;a4] ->
-    [a0;a1;a2;a3], a4 
-  | a0::a1::a2::a3::a4::rest  ->  
-    let rev, last = split_at_last_aux [] rest
-    in 
-    a0::a1::a2::a3::a4::  rev , last
+  | [ a0 ] -> ([], a0)
+  | [ a0; a1 ] -> ([ a0 ], a1)
+  | [ a0; a1; a2 ] -> ([ a0; a1 ], a2)
+  | [ a0; a1; a2; a3 ] -> ([ a0; a1; a2 ], a3)
+  | [ a0; a1; a2; a3; a4 ] -> ([ a0; a1; a2; a3 ], a4)
+  | a0 :: a1 :: a2 :: a3 :: a4 :: rest ->
+      let rev, last = split_at_last_aux [] rest in
+      (a0 :: a1 :: a2 :: a3 :: a4 :: rev, last)
 
 (**
    can not do loop unroll due to state combination
-*)  
-let  filter_mapi xs f  = 
-  let rec aux i xs = 
-    match xs with 
+*)
+let filter_mapi xs f =
+  let rec aux i xs =
+    match xs with
     | [] -> []
-    | y :: ys -> 
-      begin match f y i with 
+    | y :: ys -> (
+        match f y i with
         | None -> aux (i + 1) ys
-        | Some z -> z :: aux (i + 1) ys
-      end in
-  aux 0 xs 
+        | Some z -> z :: aux (i + 1) ys)
+  in
+  aux 0 xs
 
-let rec filter_map2  xs ys (f: 'a -> 'b -> 'c option) = 
-  match xs,ys with 
-  | [],[] -> []
-  | u::us, v :: vs -> 
-    begin match f u v with 
+let rec filter_map2 xs ys (f : 'a -> 'b -> 'c option) =
+  match (xs, ys) with
+  | [], [] -> []
+  | u :: us, v :: vs -> (
+      match f u v with
       | None -> filter_map2 us vs f (* idea: rec f us vs instead? *)
-      | Some z -> z :: filter_map2  us vs f
-    end
+      | Some z -> z :: filter_map2 us vs f)
   | _ -> invalid_arg "Ext_list.filter_map2"
 
-
 let rec rev_map_append l1 l2 f =
-  match l1 with
-  | [] -> l2
-  | a :: l -> rev_map_append l (f a :: l2) f
-
-
+  match l1 with [] -> l2 | a :: l -> rev_map_append l (f a :: l2) f
 
 (** It is not worth loop unrolling, 
     it is already tail-call, and we need to be careful 
@@ -5943,300 +5735,246 @@ let rec rev_map_append l1 l2 f =
 *)
 let rec flat_map_aux f acc append lx =
   match lx with
-  | [] -> rev_append acc  append
-  | a0::rest -> 
-    let new_acc = 
-      match f a0 with 
-      | [] -> acc 
-      | [a0] -> a0::acc
-      | [a0;a1] -> a1::a0::acc
-      | a0::a1::a2::rest -> 
-        rev_append rest (a2::a1::a0::acc)  
-    in 
-    flat_map_aux f  new_acc append rest 
+  | [] -> rev_append acc append
+  | a0 :: rest ->
+      let new_acc =
+        match f a0 with
+        | [] -> acc
+        | [ a0 ] -> a0 :: acc
+        | [ a0; a1 ] -> a1 :: a0 :: acc
+        | a0 :: a1 :: a2 :: rest -> rev_append rest (a2 :: a1 :: a0 :: acc)
+      in
+      flat_map_aux f new_acc append rest
 
-let flat_map lx f  =
-  flat_map_aux f [] [] lx
+let flat_map lx f = flat_map_aux f [] [] lx
 
-let flat_map_append lx append f =
-  flat_map_aux f [] append lx  
+let flat_map_append lx append f = flat_map_aux f [] append lx
 
+let rec length_compare l n =
+  if n < 0 then `Gt
+  else
+    match l with
+    | _ :: xs -> length_compare xs (n - 1)
+    | [] -> if n = 0 then `Eq else `Lt
 
-let rec length_compare l n = 
-  if n < 0 then `Gt 
-  else 
-    begin match l with 
-      | _ ::xs -> length_compare xs (n - 1)
-      | [] ->  
-        if n = 0 then `Eq 
-        else `Lt 
-    end
-
-let rec length_ge l n =   
-  if n > 0 then
-    match l with 
-    | _ :: tl -> length_ge tl (n - 1)
-    | [] -> false
+let rec length_ge l n =
+  if n > 0 then match l with _ :: tl -> length_ge tl (n - 1) | [] -> false
   else true
 
 (**
    {[length xs = length ys + n ]}
 *)
 let rec length_larger_than_n xs ys n =
-  match xs, ys with 
-  | _, [] -> length_compare xs n = `Eq   
-  | _::xs, _::ys -> 
-    length_larger_than_n xs ys n
-  | [], _ -> false 
-
-
-
+  match (xs, ys) with
+  | _, [] -> length_compare xs n = `Eq
+  | _ :: xs, _ :: ys -> length_larger_than_n xs ys n
+  | [], _ -> false
 
 let rec group (eq : 'a -> 'a -> bool) lst =
-  match lst with 
-  | [] -> []
-  | x::xs -> 
-    aux eq x (group eq xs )
+  match lst with [] -> [] | x :: xs -> aux eq x (group eq xs)
 
-and aux eq (x : 'a)  (xss : 'a list list) : 'a list list = 
-  match xss with 
-  | [] -> [[x]]
-  | (y0::_ as y)::ys -> (* cannot be empty *) 
-    if eq x y0 then
-      (x::y) :: ys 
-    else
-      y :: aux eq x ys                                 
-  | _ :: _ -> assert false    
+and aux eq (x : 'a) (xss : 'a list list) : 'a list list =
+  match xss with
+  | [] -> [ [ x ] ]
+  | (y0 :: _ as y) :: ys ->
+      (* cannot be empty *)
+      if eq x y0 then (x :: y) :: ys else y :: aux eq x ys
+  | _ :: _ -> assert false
 
-let stable_group lst eq =  group eq lst |> rev  
+let stable_group lst eq = group eq lst |> rev
 
-let rec drop h n = 
+let rec drop h n =
   if n < 0 then invalid_arg "Ext_list.drop"
+  else if n = 0 then h
   else
-  if n = 0 then h 
-  else 
-    match h with 
-    | [] ->
-      invalid_arg "Ext_list.drop"
-    | _ :: tl ->   
-      drop tl (n - 1)
+    match h with [] -> invalid_arg "Ext_list.drop" | _ :: tl -> drop tl (n - 1)
 
-let rec find_first x p = 
-  match x with 
+let rec find_first x p =
+  match x with [] -> None | x :: l -> if p x then Some x else find_first l p
+
+let rec find_first_not xs p =
+  match xs with
   | [] -> None
-  | x :: l -> 
-    if p x then Some x 
-    else find_first l p
+  | a :: l -> if p a then find_first_not l p else Some a
 
-let rec find_first_not  xs p = 
-  match xs with 
-  | [] -> None
-  | a::l -> 
-    if p a 
-    then find_first_not l p 
-    else Some a 
-
-
-let rec rev_iter l f = 
+let rec rev_iter l f =
   match l with
-  | [] -> ()    
-  | [x1] ->
-    f x1 
-  | [x1; x2] ->
-    f x2 ; f x1 
-  | [x1; x2; x3] ->
-    f x3 ; f x2 ; f x1 
-  | [x1; x2; x3; x4] ->
-    f x4; f x3; f x2; f x1 
-  | x1::x2::x3::x4::x5::tail ->
-    rev_iter tail f;
-    f x5; f x4 ; f x3; f x2 ; f x1
+  | [] -> ()
+  | [ x1 ] -> f x1
+  | [ x1; x2 ] ->
+      f x2;
+      f x1
+  | [ x1; x2; x3 ] ->
+      f x3;
+      f x2;
+      f x1
+  | [ x1; x2; x3; x4 ] ->
+      f x4;
+      f x3;
+      f x2;
+      f x1
+  | x1 :: x2 :: x3 :: x4 :: x5 :: tail ->
+      rev_iter tail f;
+      f x5;
+      f x4;
+      f x3;
+      f x2;
+      f x1
 
-let rec iter l f = 
+let rec iter l f =
   match l with
-  | [] -> ()    
-  | [x1] ->
-    f x1 
-  | [x1; x2] ->
-    f x1 ; f x2
-  | [x1; x2; x3] ->
-    f x1 ; f x2 ; f x3
-  | [x1; x2; x3; x4] ->
-    f x1; f x2; f x3; f x4
-  | x1::x2::x3::x4::x5::tail ->
-    f x1; f x2 ; f x3; f x4 ; f x5;
-    iter tail f 
+  | [] -> ()
+  | [ x1 ] -> f x1
+  | [ x1; x2 ] ->
+      f x1;
+      f x2
+  | [ x1; x2; x3 ] ->
+      f x1;
+      f x2;
+      f x3
+  | [ x1; x2; x3; x4 ] ->
+      f x1;
+      f x2;
+      f x3;
+      f x4
+  | x1 :: x2 :: x3 :: x4 :: x5 :: tail ->
+      f x1;
+      f x2;
+      f x3;
+      f x4;
+      f x5;
+      iter tail f
 
+let rec for_all lst p =
+  match lst with [] -> true | a :: l -> p a && for_all l p
 
-let rec for_all lst p = 
-  match lst with 
-    [] -> true
-  | a::l -> p a && for_all l p
+let rec for_all_snd lst p =
+  match lst with [] -> true | (_, a) :: l -> p a && for_all_snd l p
 
-let rec for_all_snd lst p = 
-  match lst with 
-    [] -> true
-  | (_,a)::l -> p a && for_all_snd l p
-
-
-let rec for_all2_no_exn  l1 l2 p = 
+let rec for_all2_no_exn l1 l2 p =
   match (l1, l2) with
-  | ([], []) -> true
-  | (a1::l1, a2::l2) -> p a1 a2 && for_all2_no_exn l1 l2 p
-  | (_, _) -> false
+  | [], [] -> true
+  | a1 :: l1, a2 :: l2 -> p a1 a2 && for_all2_no_exn l1 l2 p
+  | _, _ -> false
 
-
-let rec find_opt xs p = 
-  match xs with 
+let rec find_opt xs p =
+  match xs with
   | [] -> None
-  | x :: l -> 
-    match  p x with 
-    | Some _ as v  ->  v
-    | None -> find_opt l p
+  | x :: l -> ( match p x with Some _ as v -> v | None -> find_opt l p)
 
 let rec find_def xs p def =
-  match xs with 
+  match xs with
   | [] -> def
-  | x::l -> 
-    match p x with 
-    | Some v -> v 
-    | None -> find_def l p def   
+  | x :: l -> ( match p x with Some v -> v | None -> find_def l p def)
 
-let rec split_map l f = 
+let rec split_map l f =
   match l with
-  | [] ->
-    [],[]
-  | [x1] ->
-    let a0,b0 = f x1 in
-    [a0],[b0]
-  | [x1; x2] ->
-    let a1,b1 = f x1 in
-    let a2,b2 = f x2 in
-    [a1;a2],[b1;b2]
-  | [x1; x2; x3] ->
-    let a1,b1 = f x1 in
-    let a2,b2 = f x2 in
-    let a3,b3 = f x3 in
-    [a1;a2;a3], [b1;b2;b3]
-  | [x1; x2; x3; x4] ->
-    let a1,b1 = f x1 in
-    let a2,b2 = f x2 in
-    let a3,b3 = f x3 in
-    let a4,b4 = f x4 in
-    [a1;a2;a3;a4], [b1;b2;b3;b4] 
-  | x1::x2::x3::x4::x5::tail ->
-    let a1,b1 = f x1 in
-    let a2,b2 = f x2 in
-    let a3,b3 = f x3 in
-    let a4,b4 = f x4 in
-    let a5,b5 = f x5 in
-    let ass,bss = split_map tail f in 
-    a1::a2::a3::a4::a5::ass,
-    b1::b2::b3::b4::b5::bss
-
-
-
+  | [] -> ([], [])
+  | [ x1 ] ->
+      let a0, b0 = f x1 in
+      ([ a0 ], [ b0 ])
+  | [ x1; x2 ] ->
+      let a1, b1 = f x1 in
+      let a2, b2 = f x2 in
+      ([ a1; a2 ], [ b1; b2 ])
+  | [ x1; x2; x3 ] ->
+      let a1, b1 = f x1 in
+      let a2, b2 = f x2 in
+      let a3, b3 = f x3 in
+      ([ a1; a2; a3 ], [ b1; b2; b3 ])
+  | [ x1; x2; x3; x4 ] ->
+      let a1, b1 = f x1 in
+      let a2, b2 = f x2 in
+      let a3, b3 = f x3 in
+      let a4, b4 = f x4 in
+      ([ a1; a2; a3; a4 ], [ b1; b2; b3; b4 ])
+  | x1 :: x2 :: x3 :: x4 :: x5 :: tail ->
+      let a1, b1 = f x1 in
+      let a2, b2 = f x2 in
+      let a3, b3 = f x3 in
+      let a4, b4 = f x4 in
+      let a5, b5 = f x5 in
+      let ass, bss = split_map tail f in
+      (a1 :: a2 :: a3 :: a4 :: a5 :: ass, b1 :: b2 :: b3 :: b4 :: b5 :: bss)
 
 let sort_via_array lst cmp =
-  let arr = Array.of_list lst  in
+  let arr = Array.of_list lst in
   Array.sort cmp arr;
   Array.to_list arr
 
-let sort_via_arrayf lst cmp f  = 
-  let arr = Array.of_list lst  in
+let sort_via_arrayf lst cmp f =
+  let arr = Array.of_list lst in
   Array.sort cmp arr;
-  Ext_array.to_list_f arr f 
+  Ext_array.to_list_f arr f
 
+let rec assoc_by_string lst (k : string) def =
+  match lst with
+  | [] -> ( match def with None -> assert false | Some x -> x)
+  | (k1, v1) :: rest -> if k1 = k then v1 else assoc_by_string rest k def
 
-let rec assoc_by_string lst (k : string) def  = 
-  match lst with 
-  | [] -> 
-    begin match def with 
-      | None -> assert false 
-      | Some x -> x end
-  | (k1,v1)::rest -> 
-    if  k1 = k then v1 else 
-      assoc_by_string  rest k def 
-
-let rec assoc_by_int lst (k : int) def = 
-  match lst with 
-  | [] -> 
-    begin match def with
-      | None -> assert false 
-      | Some x -> x end
-  | (k1,v1)::rest -> 
-    if k1 = k then v1 else 
-      assoc_by_int rest k def 
-
+let rec assoc_by_int lst (k : int) def =
+  match lst with
+  | [] -> ( match def with None -> assert false | Some x -> x)
+  | (k1, v1) :: rest -> if k1 = k then v1 else assoc_by_int rest k def
 
 let rec nth_aux l n =
   match l with
   | [] -> None
-  | a::l -> if n = 0 then Some a else nth_aux l (n-1)
+  | a :: l -> if n = 0 then Some a else nth_aux l (n - 1)
 
-let nth_opt l n =
-  if n < 0 then None 
-  else
-    nth_aux l n
+let nth_opt l n = if n < 0 then None else nth_aux l n
 
-let rec iter_snd lst f =     
+let rec iter_snd lst f =
   match lst with
   | [] -> ()
-  | (_,x)::xs -> 
-    f x ; 
-    iter_snd xs f 
+  | (_, x) :: xs ->
+      f x;
+      iter_snd xs f
 
-let rec iter_fst lst f =     
+let rec iter_fst lst f =
   match lst with
   | [] -> ()
-  | (x,_)::xs -> 
-    f x ; 
-    iter_fst xs f 
+  | (x, _) :: xs ->
+      f x;
+      iter_fst xs f
 
-let rec exists l p =     
-  match l with 
-    [] -> false  
-  | x :: xs -> p x || exists xs p
+let rec exists l p = match l with [] -> false | x :: xs -> p x || exists xs p
 
-let rec exists_fst l p = 
-  match l with 
-    [] -> false
-  | (a,_)::l -> p a || exists_fst l p 
+let rec exists_fst l p =
+  match l with [] -> false | (a, _) :: l -> p a || exists_fst l p
 
-let rec exists_snd l p = 
-  match l with 
-    [] -> false
-  | (_, a)::l -> p a || exists_snd l p 
+let rec exists_snd l p =
+  match l with [] -> false | (_, a) :: l -> p a || exists_snd l p
 
-let rec concat_append 
-    (xss : 'a list list)  
-    (xs : 'a list) : 'a list = 
-  match xss with 
-  | [] -> xs 
-  | l::r -> append l (concat_append r xs)
+let rec concat_append (xss : 'a list list) (xs : 'a list) : 'a list =
+  match xss with [] -> xs | l :: r -> append l (concat_append r xs)
 
 let rec fold_left l accu f =
-  match l with
-    [] -> accu
-  | a::l -> fold_left l (f accu a) f 
+  match l with [] -> accu | a :: l -> fold_left l (f accu a) f
 
-let reduce_from_left lst fn = 
-  match lst with 
-  | first :: rest ->  fold_left rest first fn 
+let reduce_from_left lst fn =
+  match lst with
+  | first :: rest -> fold_left rest first fn
   | _ -> invalid_arg "Ext_list.reduce_from_left"
 
 let rec fold_left2 l1 l2 accu f =
   match (l1, l2) with
-    ([], []) -> accu
-  | (a1::l1, a2::l2) -> fold_left2  l1 l2 (f a1 a2 accu) f 
-  | (_, _) -> invalid_arg "Ext_list.fold_left2"
+  | [], [] -> accu
+  | a1 :: l1, a2 :: l2 -> fold_left2 l1 l2 (f a1 a2 accu) f
+  | _, _ -> invalid_arg "Ext_list.fold_left2"
 
-let singleton_exn xs = match xs with [x] -> x | _ -> assert false
+let singleton_exn xs = match xs with [ x ] -> x | _ -> assert false
 
-let rec mem_string (xs : string list) (x : string) = 
-  match xs with 
-    [] -> false
-  | a::l ->  a = x  || mem_string l x
+let rec mem_string (xs : string list) (x : string) =
+  match xs with [] -> false | a :: l -> a = x || mem_string l x
+
+let filter lst p =
+  let rec find ~p accu lst =
+    match lst with
+    | [] -> rev accu
+    | x :: l -> if p x then find (x :: accu) l ~p else find accu l ~p
+  in
+  find [] lst ~p
 
 end
 module Ext_ref : sig 
@@ -12514,7 +12252,7 @@ let text_attr ds =
     (text_loc, PStr [item])
 
 let add_text_attrs dsl attrs =
-  let fdsl = List.filter (function {ds_body=""} -> false| _ ->true) dsl in
+  let fdsl = Ext_list.filter dsl (function {ds_body=""} -> false| _ ->true) in
   (List.map text_attr fdsl) @ attrs
 
 (* Find the first non-info docstring in a list, attach it and return it *)
@@ -13531,7 +13269,7 @@ module Sig = struct
   let extension ?loc ?(attrs = []) a = mk ?loc (Psig_extension (a, attrs))
   let attribute ?loc a = mk ?loc (Psig_attribute a)
   let text txt =
-    let f_txt = List.filter (fun ds -> docstring_body ds <> "") txt in
+    let f_txt = Ext_list.filter txt (fun ds -> docstring_body ds <> "") in
     List.map
       (fun ds -> attribute ~loc:(docstring_loc ds) (text_attr ds))
       f_txt
@@ -13555,7 +13293,7 @@ module Str = struct
   let extension ?loc ?(attrs = []) a = mk ?loc (Pstr_extension (a, attrs))
   let attribute ?loc a = mk ?loc (Pstr_attribute a)
   let text txt =
-    let f_txt = List.filter (fun ds -> docstring_body ds <> "") txt in
+    let f_txt = Ext_list.filter txt (fun ds -> docstring_body ds <> "") in
     List.map
       (fun ds -> attribute ~loc:(docstring_loc ds) (text_attr ds))
       f_txt
@@ -13612,7 +13350,7 @@ module Ctf = struct
   let extension ?loc ?attrs a = mk ?loc ?attrs (Pctf_extension a)
   let attribute ?loc a = mk ?loc (Pctf_attribute a)
   let text txt =
-   let f_txt = List.filter (fun ds -> docstring_body ds <> "") txt in
+   let f_txt = Ext_list.filter txt (fun ds -> docstring_body ds <> "")in
      List.map
       (fun ds -> attribute ~loc:(docstring_loc ds) (text_attr ds))
       f_txt
@@ -13638,7 +13376,7 @@ module Cf = struct
   let extension ?loc ?attrs a = mk ?loc ?attrs (Pcf_extension a)
   let attribute ?loc a = mk ?loc (Pcf_attribute a)
   let text txt =
-    let f_txt = List.filter (fun ds -> docstring_body ds <> "") txt in
+    let f_txt = Ext_list.filter txt (fun ds -> docstring_body ds <> "")in
     List.map
       (fun ds -> attribute ~loc:(docstring_loc ds) (text_attr ds))
       f_txt
@@ -30131,219 +29869,201 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-module L_string_set = Set.Make(String)
+module L_string_set = Set.Make (String)
 (* lexical order *)
 
-let (@>) (b, v) acc =
-  if b then
-    v :: acc
-  else
-    acc
+let ( @> ) (b, v) acc = if b then v :: acc else acc
 
-let preprocess_to_buffer fn (str : string) (oc : Buffer.t) : unit =     
-  let lexbuf = Lexing.from_string  str in
-  Lexer.init () ;
+let preprocess_to_buffer fn (str : string) (oc : Buffer.t) : unit =
+  let lexbuf = Lexing.from_string str in
+  Lexer.init ();
   Location.init lexbuf fn;
-  let segments =    
-    Lexer.filter_directive_from_lexbuf  lexbuf in
-  Ext_list.iter segments
-    (fun (start, pos) ->
-       Buffer.add_substring  oc str start (pos - start)
-    )
+  let segments = Lexer.filter_directive_from_lexbuf lexbuf in
+  Ext_list.iter segments (fun (start, pos) ->
+      Buffer.add_substring oc str start (pos - start))
 
-let verify_valid_ml (str : string) = 
-  try 
+let verify_valid_ml (str : string) =
+  try
     ignore @@ Parse.implementation (Lexing.from_string str);
     true
   with _ -> false
 
 (* same as {!preprocess_to_buffer} except writing to channel directly *)
 let preprocess_string fn (str : string) oc =
-  let lexbuf = Lexing.from_string  str in
-  Lexer.init () ;
+  let lexbuf = Lexing.from_string str in
+  Lexer.init ();
   Location.init lexbuf fn;
-  let segments =    
-    Lexer.filter_directive_from_lexbuf  lexbuf in
-  Ext_list.iter segments
-    (fun (start, pos) ->
-       output_substring  oc str start (pos - start)
-    )
+  let segments = Lexer.filter_directive_from_lexbuf lexbuf in
+  Ext_list.iter segments (fun (start, pos) ->
+      output_substring oc str start (pos - start))
 
-let (//) = Filename.concat
+let ( // ) = Filename.concat
 
-let rec process_line cwd filedir  line =
+let rec process_line cwd filedir line =
   let line = Ext_string.trim line in
   let len = String.length line in
   if len = 0 then []
   else
     match line.[0] with
     | '#' -> []
-    | _ ->
-      let segments =
-        Ext_string.split_by ~keep_empty:false (fun x -> x = ' ' || x = '\t' ) line
-      in
-      begin
+    | _ -> (
+        let segments =
+          Ext_string.split_by ~keep_empty:false
+            (fun x -> x = ' ' || x = '\t')
+            line
+        in
         match segments with
-        | ["include" ;  path ]
-          ->
-          (* prerr_endline path;  *)
-          read_lines cwd  (filedir// path)
-        | [ x ]  ->
-          let ml = filedir // x ^ ".ml" in
-          let mli = filedir // x ^ ".mli" in
-          let ml_exists, mli_exists = Sys.file_exists ml , Sys.file_exists mli in
-          if not ml_exists && not mli_exists then
-            begin
-              prerr_endline (filedir //x ^ " not exists");
-              []
-            end
-          else
-            (ml_exists, ml) @> (mli_exists , mli) @> []
-        | _
-          ->  Ext_fmt.failwithf ~loc:__LOC__ "invalid line %s" line
-      end
-and read_lines (cwd : string) (file : string) : string list =    
+        | [ "include"; path ] ->
+            (* prerr_endline path;  *)
+            read_lines cwd (filedir // path)
+        | [ x ] ->
+            let ml = (filedir // x) ^ ".ml" in
+            let mli = (filedir // x) ^ ".mli" in
+            let ml_exists, mli_exists =
+              (Sys.file_exists ml, Sys.file_exists mli)
+            in
+            if (not ml_exists) && not mli_exists then (
+              prerr_endline ((filedir // x) ^ " not exists");
+              [])
+            else (ml_exists, ml) @> (mli_exists, mli) @> []
+        | _ -> Ext_fmt.failwithf ~loc:__LOC__ "invalid line %s" line)
+
+and read_lines (cwd : string) (file : string) : string list =
   Ext_list.fold_left (Ext_io.rev_lines_of_file file) [] (fun acc f ->
-      let filedir  =   Filename.dirname file in
-      let extras = process_line  cwd filedir f in
-      Ext_list.append extras   acc
-    ) 
+      let filedir = Filename.dirname file in
+      let extras = process_line cwd filedir f in
+      Ext_list.append extras acc)
+
 let implementation sourcefile =
   let content = Ext_io.load_file sourcefile in
   let ast =
     let oldname = !Location.input_name in
-    Location.input_name := sourcefile ;
+    Location.input_name := sourcefile;
     let lexbuf = Lexing.from_string content in
-    Location.init lexbuf sourcefile ;
-    match Parse.implementation  lexbuf
-    with
+    Location.init lexbuf sourcefile;
+    match Parse.implementation lexbuf with
     | exception e ->
-      Location.input_name := oldname;
-      raise e
+        Location.input_name := oldname;
+        raise e
     | ast ->
-      Location.input_name := oldname ;
-      ast
+        Location.input_name := oldname;
+        ast
   in
-  ast, content
+  (ast, content)
 
 let interface sourcefile =
   let content = Ext_io.load_file sourcefile in
   let ast =
     let oldname = !Location.input_name in
-    Location.input_name := sourcefile ;
+    Location.input_name := sourcefile;
     let lexbuf = Lexing.from_string content in
     Location.init lexbuf sourcefile;
-    match Parse.interface  lexbuf with
+    match Parse.interface lexbuf with
     | exception e ->
-      Location.input_name := oldname ;
-      raise e
+        Location.input_name := oldname;
+        raise e
     | ast ->
-      Location.input_name := oldname ;
-      ast in
-  ast, content
+        Location.input_name := oldname;
+        ast
+  in
+  (ast, content)
 
 let emit_line_directive = ref true
 
 let emit out_chan name =
-  if !emit_line_directive then begin   
+  if !emit_line_directive then (
     output_string out_chan "#1 \"";
     (*Note here we do this is mostly to avoid leaking user's
       information, like private path, in the future, we can have
       a flag
     *)
-    output_string out_chan (Filename.basename name) ;
-    output_string out_chan "\"\n"
-  end 
-let decorate_module 
-    ?(module_bound=true)
-    out_chan base mli_name ml_name mli_content ml_content =
-  if module_bound then begin 
+    output_string out_chan (Filename.basename name);
+    output_string out_chan "\"\n")
+
+let decorate_module ?(module_bound = true) out_chan base mli_name ml_name
+    mli_content ml_content =
+  if module_bound then (
     let base = Ext_string.capitalize_ascii base in
     output_string out_chan "module ";
-    output_string out_chan base ;
+    output_string out_chan base;
     output_string out_chan " : sig \n";
-    emit out_chan mli_name ;
+    emit out_chan mli_name;
     preprocess_string mli_name mli_content out_chan;
     output_string out_chan "\nend = struct\n";
-    emit out_chan  ml_name ;
+    emit out_chan ml_name;
     preprocess_string ml_name ml_content out_chan;
-    output_string out_chan "\nend\n"
-  end
-  else
-    begin 
-      output_string out_chan "include (struct\n";
-      emit out_chan  ml_name ;
-      preprocess_string ml_name ml_content out_chan;
-      output_string out_chan "\nend : sig \n";
-      emit out_chan mli_name ;
-      preprocess_string mli_name mli_content out_chan;
-      output_string out_chan "\nend)";
-    end
+    output_string out_chan "\nend\n")
+  else (
+    output_string out_chan "include (struct\n";
+    emit out_chan ml_name;
+    preprocess_string ml_name ml_content out_chan;
+    output_string out_chan "\nend : sig \n";
+    emit out_chan mli_name;
+    preprocess_string mli_name mli_content out_chan;
+    output_string out_chan "\nend)")
 
-let decorate_module_only 
-    ?(check : unit option)
-    ?(module_bound=true) 
-    out_chan base ml_name ml_content =
-  if module_bound then begin 
+let decorate_module_only ?(check : unit option) ?(module_bound = true) out_chan
+    base ml_name ml_content =
+  if module_bound then (
     let base = Ext_string.capitalize_ascii base in
     output_string out_chan "module ";
-    output_string out_chan base ;
-    output_string out_chan "\n= struct\n"
-  end;
-  emit out_chan  ml_name;
-  if check <> None then 
-    let buf = Buffer.create 2000 in 
-    preprocess_to_buffer ml_name ml_content buf; 
-    let str = Buffer.contents buf in 
-    if not @@ verify_valid_ml str then 
+    output_string out_chan base;
+    output_string out_chan "\n= struct\n");
+  emit out_chan ml_name;
+  if check <> None then (
+    let buf = Buffer.create 2000 in
+    preprocess_to_buffer ml_name ml_content buf;
+    let str = Buffer.contents buf in
+    if not @@ verify_valid_ml str then
       failwith (ml_name ^ " can not be a valid ml module")
-    else 
-      output_string out_chan str 
-  else 
-    preprocess_string ml_name ml_content out_chan ; 
-  if module_bound then 
-    output_string out_chan "\nend\n"
+    else output_string out_chan str)
+  else preprocess_string ml_name ml_content out_chan;
+  if module_bound then output_string out_chan "\nend\n"
 
 (** recursive module is not good for performance, here module type only 
     has to be pure types otherwise it would not compile any way
 *)
-let decorate_interface_only out_chan  base  mli_name mli_content =
+let decorate_interface_only out_chan base mli_name mli_content =
   output_string out_chan "(** Interface as module  *)\n";
   decorate_module_only out_chan base mli_name mli_content ~check:()
 
 (** set mllib *)
 let mllib = ref None
+
 let set_string s = mllib := Some s
 
 let batch_files = ref []
-let collect_file name =
-  batch_files := name :: !batch_files
+
+let collect_file name = batch_files := name :: !batch_files
 
 let output_file = ref None
+
 let set_output file = output_file := Some file
+
 let header_option = ref false
 
-type main_module = { modulename : string ; export : bool }
+type main_module = { modulename : string; export : bool }
 
 (** set bs-main*)
 let main_module : main_module option ref = ref None
 
-let set_main_module modulename = 
-  main_module := Some {modulename; export = false }
+let set_main_module modulename =
+  main_module := Some { modulename; export = false }
 
-let set_main_export modulename = 
-  main_module := Some {modulename; export = true }
+let set_main_export modulename =
+  main_module := Some { modulename; export = true }
 
-let set_mllib_file = ref false     
+let set_mllib_file = ref false
 
-let prelude = ref None 
-let set_prelude f = 
-  if Sys.file_exists f then 
-    prelude := Some f 
+let prelude = ref None
+
+let set_prelude f =
+  if Sys.file_exists f then prelude := Some f
   else raise (Arg.Bad ("file " ^ f ^ " don't exist "))
+
 let prelude_str = ref None
-let set_prelude_str f = prelude_str := Some f 
+
+let set_prelude_str f = prelude_str := Some f
 
 (**
    {[
@@ -30355,47 +30075,50 @@ let set_prelude_str f = prelude_str := Some f
      `Dir_with_excludes ("ghsogh", ["a"])
    ]}
 *)
+
 (* type dir_spec =  *)
 (*   [ `Dir of string | `Dir_with_excludes of string * string list ] *)
 
 let cwd = Sys.getcwd ()
 
-let normalize s = 
-  Ext_path.normalize_absolute_path (Ext_path.combine cwd s )
-type dir_spec = Bspack_ast_extract.dir_spec 
+let normalize s = Ext_path.normalize_absolute_path (Ext_path.combine cwd s)
 
-let process_include s : dir_spec = 
-  let i = Ext_string.rindex_neg s '?'   in 
-  if i < 0 then   
-    { dir = normalize s; excludes = []}
-  else 
+type dir_spec = Bspack_ast_extract.dir_spec
+
+let process_include s : dir_spec =
+  let i = Ext_string.rindex_neg s '?' in
+  if i < 0 then { dir = normalize s; excludes = [] }
+  else
     let dir = String.sub s 0 i in
-    { dir = normalize dir;
-      excludes = Ext_string.split 
-          (String.sub s (i + 1) (String.length s - i - 1)    )
-          ','}
+    {
+      dir = normalize dir;
+      excludes =
+        Ext_string.split (String.sub s (i + 1) (String.length s - i - 1)) ',';
+    }
 
 let deduplicate_dirs (xs : dir_spec list) =
-  let set :  dir_spec Hash_string.t = Hash_string.create 64 in 
-  List.filter (fun ({dir ; excludes = new_excludes } as y : dir_spec) -> 
+  let set : dir_spec Hash_string.t = Hash_string.create 64 in
+  Ext_list.filter xs (fun ({ dir; excludes = new_excludes } as y) ->
       match Hash_string.find_opt set dir with
-      | None ->  
-        Hash_string.add set dir y;
-        true 
-      | Some x ->  x.excludes <- new_excludes @ x.excludes ; false
-    ) xs 
+      | None ->
+          Hash_string.add set dir y;
+          true
+      | Some x ->
+          x.excludes <- new_excludes @ x.excludes;
+          false)
 
-let includes :  _ list ref = ref []
+let includes : _ list ref = ref []
 
-let add_include dir = 
-  includes := process_include    dir :: !includes
+let add_include dir = includes := process_include dir :: !includes
 
-let exclude_modules = ref []                                     
-let add_exclude module_ = 
-  exclude_modules := module_ :: !exclude_modules
-let no_implicit_include = ref false 
+let exclude_modules = ref []
+
+let add_exclude module_ = exclude_modules := module_ :: !exclude_modules
+
+let no_implicit_include = ref false
 
 let alias_map = Hash_string.create 0
+
 let alias_map_rev = Hash_string.create 0
 
 (**
@@ -30414,252 +30137,234 @@ let alias_map_rev = Hash_string.create 0
      A -> B 
        A -> C
    ]}
-*)    
-let alias_module s = 
-  match Ext_string.split s '=' with 
-  | [a;b] -> 
-    (* Error checking later*)
-    if Hash_string.mem alias_map a then 
-      raise (Arg.Bad ("duplicated module alias " ^ a))
-    else
-      begin 
+*)
+let alias_module s =
+  match Ext_string.split s '=' with
+  | [ a; b ] ->
+      (* Error checking later*)
+      if Hash_string.mem alias_map a then
+        raise (Arg.Bad ("duplicated module alias " ^ a))
+      else (
         Hash_string.add alias_map_rev b a;
-        Hash_string.add alias_map a b 
-      end
+        Hash_string.add alias_map a b)
   | _ -> raise (Arg.Bad "invalid module alias format like A=B")
 
-let undefine_symbol (s : string) = 
-  Lexer.remove_directive_built_in_value s 
-let define_symbol (s : string) = 
+let undefine_symbol (s : string) = Lexer.remove_directive_built_in_value s
+
+let define_symbol (s : string) =
   match Ext_string.split ~keep_empty:true s '=' with
-  | [key; v] -> 
-    if not @@ Lexer.define_key_value key v  then 
-      raise (Arg.Bad ("illegal definition: " ^ s))
+  | [ key; v ] ->
+      if not @@ Lexer.define_key_value key v then
+        raise (Arg.Bad ("illegal definition: " ^ s))
   | _ -> raise (Arg.Bad ("illegal definition: " ^ s))
 
 let specs : (string * Arg.spec * string) list =
-  [ "-bs-loc", (Arg.Set emit_line_directive),
-    " Add # linum filename directive";
-    "-bs-no-implicit-include", (Arg.Set no_implicit_include),
-    " Not including cwd as search path";
-    "-prelude-str", (Arg.String set_prelude_str),
-    " Set a prelude string, (before -prelude) option" ;
-    "-module-alias", (Arg.String alias_module ),
-    " -module-alis A=B, whenever need A,replace it with B" ;
-    "-prelude", (Arg.String set_prelude),
-    " Set a prelude file, literally copy into the beginning";    
-    "-bs-mllib", (Arg.String set_string),
-    " Files collected from mllib";
-    "-bs-MD", (Arg.Set set_mllib_file),
-    " Log files into mllib(only effective under -bs-main mode)";
-    "-o", (Arg.String set_output),
-    " Set output file (default to stdout)" ;
-    "-with-header", (Arg.Set header_option),
-    " with header of time stamp" ; 
-    "-bs-exclude-I", (Arg.String add_exclude),
-    " don't read and pack such modules from -I (in the future, we should detect conflicts in mllib or commandline) "
-  ;
-    "-bs-main", (Arg.String set_main_module),
-    " set the main entry module";
-    "-main-export", (Arg.String set_main_export),
-    " Set the main module and respect its exports";
-    "-I",  (Arg.String add_include),
-    " add dir to search path";
-    "-U", Arg.String undefine_symbol,
-    " Undefine a symbol when bspacking";
-    "-D", Arg.String define_symbol, 
-    " Define a symbol when bspacking"
+  [
+    ("-bs-loc", Arg.Set emit_line_directive, " Add # linum filename directive");
+    ( "-bs-no-implicit-include",
+      Arg.Set no_implicit_include,
+      " Not including cwd as search path" );
+    ( "-prelude-str",
+      Arg.String set_prelude_str,
+      " Set a prelude string, (before -prelude) option" );
+    ( "-module-alias",
+      Arg.String alias_module,
+      " -module-alis A=B, whenever need A,replace it with B" );
+    ( "-prelude",
+      Arg.String set_prelude,
+      " Set a prelude file, literally copy into the beginning" );
+    ("-bs-mllib", Arg.String set_string, " Files collected from mllib");
+    ( "-bs-MD",
+      Arg.Set set_mllib_file,
+      " Log files into mllib(only effective under -bs-main mode)" );
+    ("-o", Arg.String set_output, " Set output file (default to stdout)");
+    ("-with-header", Arg.Set header_option, " with header of time stamp");
+    ( "-bs-exclude-I",
+      Arg.String add_exclude,
+      " don't read and pack such modules from -I (in the future, we should \
+       detect conflicts in mllib or commandline) " );
+    ("-bs-main", Arg.String set_main_module, " set the main entry module");
+    ( "-main-export",
+      Arg.String set_main_export,
+      " Set the main module and respect its exports" );
+    ("-I", Arg.String add_include, " add dir to search path");
+    ("-U", Arg.String undefine_symbol, " Undefine a symbol when bspacking");
+    ("-D", Arg.String define_symbol, " Define a symbol when bspacking");
   ]
 
-
-let anonymous filename =
-  collect_file filename
+let anonymous filename = collect_file filename
 
 let usage = "Usage: bspack <options> <files>\nOptions are:"
+
 let () =
   try
-    (Arg.parse specs anonymous usage;
-     let command_files =  !batch_files in
-     let mllib = !mllib in 
-     (* emit code now *)
-     let out_chan =
-       lazy (match !output_file with
-           | None -> stdout
-           | Some file -> open_out_bin file)  in
-     let emit_header out_chan = 
-       let local_time = Unix.(localtime (gettimeofday ())) in
-       (if  !header_option 
-        then
-          output_string out_chan
-            (Printf.sprintf "(** Generated by bspack %02d/%02d-%02d:%02d *)\n"
-               (local_time.tm_mon + 1) local_time.tm_mday
-               local_time.tm_hour local_time.tm_min));
-       (match !prelude_str with 
-        | None -> ()
-        | Some s -> output_string out_chan s; output_string out_chan "\n" );
-       match !prelude with
-       | None -> ()
-       | Some f -> 
-         begin 
-           output_string out_chan (Ext_io.load_file f);
-           output_string out_chan "\n"         
-         end
-     in
-     let close_out_chan out_chan = 
-       (if  out_chan != stdout then close_out out_chan) in
-     let files =
-       Ext_list.append (match mllib with
-           | Some s
-             -> read_lines (Sys.getcwd ()) s
-           | None -> []) command_files in
+    Arg.parse specs anonymous usage;
+    let command_files = !batch_files in
+    let mllib = !mllib in
+    (* emit code now *)
+    let out_chan =
+      lazy
+        (match !output_file with
+        | None -> stdout
+        | Some file -> open_out_bin file)
+    in
+    let emit_header out_chan =
+      let local_time = Unix.(localtime (gettimeofday ())) in
+      if !header_option then
+        output_string out_chan
+          (Printf.sprintf "(** Generated by bspack %02d/%02d-%02d:%02d *)\n"
+             (local_time.tm_mon + 1) local_time.tm_mday local_time.tm_hour
+             local_time.tm_min);
+      (match !prelude_str with
+      | None -> ()
+      | Some s ->
+          output_string out_chan s;
+          output_string out_chan "\n");
+      match !prelude with
+      | None -> ()
+      | Some f ->
+          output_string out_chan (Ext_io.load_file f);
+          output_string out_chan "\n"
+    in
+    let close_out_chan out_chan =
+      if out_chan != stdout then close_out out_chan
+    in
+    let files =
+      Ext_list.append
+        (match mllib with Some s -> read_lines (Sys.getcwd ()) s | None -> [])
+        command_files
+    in
 
-     match !main_module, files with
-     | Some _ , _ :: _
-       -> 
-       Ext_fmt.failwithf ~loc:__LOC__ 
-         "-bs-main conflicts with other flags [ %s ]"
-         (String.concat ", " files)
-     | Some {modulename  = main_module ; export },  []
-       ->
-       let excludes =
-         match !exclude_modules with
-         | [] -> []
-         | xs -> 
-           Ext_list.flat_map xs (fun x -> [x ^ ".ml" ; x ^ ".mli"] ) in 
-       let extra_dirs = 
-         deduplicate_dirs @@
-         if not !no_implicit_include then {dir =  cwd; excludes = []} :: !includes 
-         else !includes 
-       in  
-       let ast_table, tasks =
-         Bspack_ast_extract.collect_from_main ~excludes ~extra_dirs ~alias_map
-           Format.err_formatter
-           (fun _ppf sourcefile -> lazy (implementation sourcefile))
-           (fun _ppf sourcefile -> lazy (interface sourcefile))
-           (fun (lazy (stru, _)) -> stru)
-           (fun (lazy (sigi, _)) -> sigi)
-           main_module
-       in 
-       if Queue.is_empty tasks then 
-         raise (Arg.Bad (main_module ^ " does not pull in any libs, maybe wrong input"))
-       ;
-       let out_chan = Lazy.force out_chan in
-       let collect_module_by_filenames  = !set_mllib_file in 
-       let collection_modules = Queue.create () in
-       let count = ref 0 in 
-       let task_length = Queue.length tasks in 
-       emit_header out_chan ;
-       begin 
-         Bspack_ast_extract.handle_queue tasks ast_table
-           (fun base ml_name (lazy(_, ml_content)) -> 
-              incr count ;  
-              if collect_module_by_filenames then 
-                Queue.add ml_name collection_modules; 
-              let module_bound = not  export || task_length > !count  in 
-              decorate_module_only ~module_bound out_chan base ml_name ml_content;
-              let aliased = Ext_string.capitalize_ascii base in 
-              Hash_string.find_all alias_map_rev aliased
-              |> List.iter 
-                (fun s -> output_string out_chan (Printf.sprintf "module %s = %s \n"  s aliased))
+    match (!main_module, files) with
+    | Some _, _ :: _ ->
+        Ext_fmt.failwithf ~loc:__LOC__
+          "-bs-main conflicts with other flags [ %s ]"
+          (String.concat ", " files)
+    | Some { modulename = main_module; export }, [] -> (
+        let excludes =
+          match !exclude_modules with
+          | [] -> []
+          | xs -> Ext_list.flat_map xs (fun x -> [ x ^ ".ml"; x ^ ".mli" ])
+        in
+        let extra_dirs =
+          deduplicate_dirs
+          @@
+          if not !no_implicit_include then
+            { dir = cwd; excludes = [] } :: !includes
+          else !includes
+        in
+        let ast_table, tasks =
+          Bspack_ast_extract.collect_from_main ~excludes ~extra_dirs ~alias_map
+            Format.err_formatter
+            (fun _ppf sourcefile -> lazy (implementation sourcefile))
+            (fun _ppf sourcefile -> lazy (interface sourcefile))
+            (fun (lazy (stru, _)) -> stru)
+            (fun (lazy (sigi, _)) -> sigi)
+            main_module
+        in
+        if Queue.is_empty tasks then
+          raise
+            (Arg.Bad
+               (main_module ^ " does not pull in any libs, maybe wrong input"));
+        let out_chan = Lazy.force out_chan in
+        let collect_module_by_filenames = !set_mllib_file in
+        let collection_modules = Queue.create () in
+        let count = ref 0 in
+        let task_length = Queue.length tasks in
+        emit_header out_chan;
+        Bspack_ast_extract.handle_queue tasks ast_table
+          (fun base ml_name (lazy (_, ml_content)) ->
+            incr count;
+            if collect_module_by_filenames then
+              Queue.add ml_name collection_modules;
+            let module_bound = (not export) || task_length > !count in
+            decorate_module_only ~module_bound out_chan base ml_name ml_content;
+            let aliased = Ext_string.capitalize_ascii base in
+            Hash_string.find_all alias_map_rev aliased
+            |> List.iter (fun s ->
+                   output_string out_chan
+                     (Printf.sprintf "module %s = %s \n" s aliased)))
+          (fun base mli_name (lazy (_, mli_content)) ->
+            incr count;
+            if collect_module_by_filenames then
+              Queue.add mli_name collection_modules;
 
-           )
-           (fun base mli_name (lazy (_, mli_content))  -> 
-              incr count ;                  
-              if collect_module_by_filenames then 
-                Queue.add mli_name collection_modules;                 
-
-              decorate_interface_only out_chan base mli_name mli_content;
-              let aliased = Ext_string.capitalize_ascii base in 
-              Hash_string.find_all alias_map_rev aliased
-              |> List.iter 
-                (fun s -> output_string out_chan (Printf.sprintf "module %s = %s \n"  s aliased))
-
-           )
-           (fun base mli_name ml_name (lazy (_, mli_content)) (lazy (_, ml_content))
-             -> 
-               incr count;  
-               (*TODO: assume mli_name, ml_name are in the same dir,
-                 Needs to be addressed 
-               *)
-               if collect_module_by_filenames then 
-                 begin 
-                   Queue.add ml_name collection_modules;
-                   Queue.add mli_name collection_modules
-                 end; 
-               (* if export 
-                   print it as 
-                   {[inclue (struct end : sig end)]}
-               *)   
-               let module_bound = not export || task_length > !count in 
-               decorate_module ~module_bound out_chan base mli_name ml_name mli_content ml_content;
-               let aliased = (Ext_string.capitalize_ascii base) in 
-               Hash_string.find_all alias_map_rev aliased
-               |> List.iter 
-                 (fun s -> output_string out_chan (Printf.sprintf "module %s = %s \n"  s aliased))
-
-           )
-       end;
-       close_out_chan out_chan;
-       begin 
-         if !set_mllib_file then
-           match !output_file with
-           | None -> ()
-           | Some file ->
-             let output = file ^ ".d" in
-             let sorted_dep_queue = 
-               Queue.fold 
-                 (fun acc collection_module -> 
-                    L_string_set.add 
-                      (
-                        (*FIXME: now we normalized path,
-                          we need a beautiful output too for relative path
-                          The relative path should be also be normalized..
-                        *)
-                        Filename.concat 
-                          (Ext_path.rel_normalized_absolute_path
-                             ~from:cwd                             
-                             (Filename.dirname collection_module)
-                          ) (Filename.basename collection_module)
-
-                      )
+            decorate_interface_only out_chan base mli_name mli_content;
+            let aliased = Ext_string.capitalize_ascii base in
+            Hash_string.find_all alias_map_rev aliased
+            |> List.iter (fun s ->
+                   output_string out_chan
+                     (Printf.sprintf "module %s = %s \n" s aliased)))
+          (fun base mli_name ml_name (lazy (_, mli_content))
+               (lazy (_, ml_content)) ->
+            incr count;
+            (*TODO: assume mli_name, ml_name are in the same dir,
+              Needs to be addressed
+            *)
+            if collect_module_by_filenames then (
+              Queue.add ml_name collection_modules;
+              Queue.add mli_name collection_modules);
+            (* if export
+                print it as
+                {[inclue (struct end : sig end)]}
+            *)
+            let module_bound = (not export) || task_length > !count in
+            decorate_module ~module_bound out_chan base mli_name ml_name
+              mli_content ml_content;
+            let aliased = Ext_string.capitalize_ascii base in
+            Hash_string.find_all alias_map_rev aliased
+            |> List.iter (fun s ->
+                   output_string out_chan
+                     (Printf.sprintf "module %s = %s \n" s aliased)));
+        close_out_chan out_chan;
+        if !set_mllib_file then
+          match !output_file with
+          | None -> ()
+          | Some file ->
+              let output = file ^ ".d" in
+              let sorted_dep_queue =
+                Queue.fold
+                  (fun acc collection_module ->
+                    L_string_set.add
+                      ((*FIXME: now we normalized path,
+                         we need a beautiful output too for relative path
+                         The relative path should be also be normalized..
+                       *)
+                       Filename.concat
+                         (Ext_path.rel_normalized_absolute_path ~from:cwd
+                            (Filename.dirname collection_module))
+                         (Filename.basename collection_module))
                       (* collection_module  *)
-                      acc
-                 ) L_string_set.empty  collection_modules in 
-             Ext_io.write_file 
-               output
-               (                 
-                 L_string_set.fold
-                   (fun dep acc  -> 
-                      acc ^ 
-                      file ^ ": " ^ dep ^
-                      "\n"
-                   ) sorted_dep_queue
+                      acc)
+                  L_string_set.empty collection_modules
+              in
+              Ext_io.write_file output
+                (L_string_set.fold
+                   (fun dep acc -> acc ^ file ^ ": " ^ dep ^ "\n")
+                   sorted_dep_queue
                    ""
                    (* (file ^ ": " ) *)
-                   (* collection_modules *)
-               )
-       end
-     | None, _ -> 
-       let ast_table =
-         Bspack_ast_extract.collect_ast_map
-           Format.err_formatter files
-           (fun _ppf sourcefile -> implementation sourcefile
-           )
-           (fun _ppf sourcefile -> interface sourcefile) in
-       let tasks = Bspack_ast_extract.sort fst  fst ast_table in
-       let out_chan = (Lazy.force out_chan) in
-       emit_header out_chan ;
-       Bspack_ast_extract.handle_queue tasks ast_table 
-         (fun base ml_name (_, ml_content) -> decorate_module_only  out_chan base ml_name ml_content)
-         (fun base mli_name (_, mli_content)  -> decorate_interface_only out_chan base mli_name mli_content )
-         (fun base mli_name ml_name (_, mli_content) (_, ml_content)
-           -> decorate_module out_chan base mli_name ml_name mli_content ml_content);
-       close_out_chan out_chan
-    )
+                   (* collection_modules *)))
+    | None, _ ->
+        let ast_table =
+          Bspack_ast_extract.collect_ast_map Format.err_formatter files
+            (fun _ppf sourcefile -> implementation sourcefile)
+            (fun _ppf sourcefile -> interface sourcefile)
+        in
+        let tasks = Bspack_ast_extract.sort fst fst ast_table in
+        let out_chan = Lazy.force out_chan in
+        emit_header out_chan;
+        Bspack_ast_extract.handle_queue tasks ast_table
+          (fun base ml_name (_, ml_content) ->
+            decorate_module_only out_chan base ml_name ml_content)
+          (fun base mli_name (_, mli_content) ->
+            decorate_interface_only out_chan base mli_name mli_content)
+          (fun base mli_name ml_name (_, mli_content) (_, ml_content) ->
+            decorate_module out_chan base mli_name ml_name mli_content
+              ml_content);
+        close_out_chan out_chan
   with x ->
-    begin
-      Location.report_exception Format.err_formatter x ;
-      exit 2
-    end
+    Location.report_exception Format.err_formatter x;
+    exit 2
 
 end
