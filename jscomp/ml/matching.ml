@@ -1956,8 +1956,8 @@ let reintroduce_fail sw = match sw.sw_failaction with
         end) t ;
     if !max >= 3 then
       let default = !i_max in
-      let remove =
-        List.filter
+      let remove ls =
+        Ext_list.filter ls
           (fun (_,lam) -> match as_simple_exit lam with
           | Some j -> j <> default
           | None -> true) in

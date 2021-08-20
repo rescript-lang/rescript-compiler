@@ -1218,8 +1218,8 @@ let modtype_of_package env loc p nl tl =
 let package_subtype env p1 nl1 tl1 p2 nl2 tl2 =
   let mkmty p nl tl =
     let ntl =
-      List.filter (fun (_n,t) -> Ctype.free_variables t = [])
-        (List.combine nl tl) in
+      Ext_list.filter (List.combine nl tl) (fun (_n,t) -> Ctype.free_variables t = [])
+    in
     let (nl, tl) = List.split ntl in
     modtype_of_package env Location.none p nl tl
   in

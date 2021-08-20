@@ -467,7 +467,7 @@ let check_name_of_type t = ignore(name_of_type new_name t)
 
 let remove_names tyl =
   let tyl = List.map repr tyl in
-  names := List.filter (fun (ty,_) -> not (List.memq ty tyl)) !names
+  names := Ext_list.filter !names (fun (ty,_) -> not (List.memq ty tyl))
 
 let visited_objects = ref ([] : type_expr list)
 let aliased = ref ([] : type_expr list)
@@ -618,16 +618,15 @@ let rec tree_of_typexp sch ty =
         let row = row_repr row in
         let fields =
           if row.row_closed then
-            List.filter (fun (_, f) -> row_field_repr f <> Rabsent)
-              row.row_fields
+            Ext_list.filter row.row_fields (fun (_, f) -> row_field_repr f <> Rabsent)
           else row.row_fields in
         let present =
-          List.filter
+          Ext_list.filter fields
             (fun (_, f) ->
                match row_field_repr f with
                | Rpresent _ -> true
                | _ -> false)
-            fields in
+        in
         let all_present = List.length present = List.length fields in
         begin match row.row_name with
         | Some(p, tyl) when namable_row row ->
@@ -684,7 +683,7 @@ let rec tree_of_typexp sch ty =
           List.map (fun li -> String.concat "." (Longident.flatten li)) n in
         Otyp_module (Path.name p, n, tree_of_typlist sch tyl)
   in
-  if List.memq px !delayed then delayed := List.filter ((!=) px) !delayed;
+  if List.memq px !delayed then delayed := Ext_list.filter !delayed ((!=) px) ;
   if is_aliased px && aliasable ty then begin
     check_name_of_type px;
     Otyp_alias (pr_typ (), name_of_type new_name px) end

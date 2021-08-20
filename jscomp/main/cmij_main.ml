@@ -34,9 +34,9 @@ let get_files ext dir =
 let check_digest output_file digest : bool =
   if Sys.file_exists output_file then
     match
-      List.filter
-        (fun x -> x <> "")
+      Ext_list.filter
         (String.split_on_char ' ' (Ext_io.load_file output_file))
+        (fun x -> x <> "")
     with
     | _head :: old_digest :: _tail -> Digest.equal digest old_digest
     | _ -> false
@@ -158,7 +158,7 @@ let mode =
   match Sys.argv with
   | [| _; "-playground"; folders |] ->
       Playground
-        (folders |> String.split_on_char ',' |> List.filter (fun s -> s <> ""))
+        (Ext_list.filter (String.split_on_char ',' folders) (fun s -> s <> ""))
   | _ -> Native
 
 let () =
@@ -193,14 +193,16 @@ let () =
   let cmi_files =
     if release_cmi then get_files Literals.suffix_cmi (".." // "lib" // "ocaml")
     else
-      (Filename.dirname Sys.argv.(0) // ".." // "runtime" // "js.cmi")
-      ::
-      (get_files Literals.suffix_cmi
-         (Filename.dirname Sys.argv.(0) // ".." // stdlib)
-      @ get_files Literals.suffix_cmi
-          (Filename.dirname Sys.argv.(0) // ".." // "others")
-      @ third_party_cmi_files)
-      |> List.filter (fun x ->
-             x |~ "js_OO" || x |~ "camlinternal" || not (x |~ "internal"))
+      let files =
+        (Filename.dirname Sys.argv.(0) // ".." // "runtime" // "js.cmi")
+        ::
+        (get_files Literals.suffix_cmi
+           (Filename.dirname Sys.argv.(0) // ".." // stdlib)
+        @ get_files Literals.suffix_cmi
+            (Filename.dirname Sys.argv.(0) // ".." // "others")
+        @ third_party_cmi_files)
+      in
+      Ext_list.filter files (fun x ->
+          x |~ "js_OO" || x |~ "camlinternal" || not (x |~ "internal"))
   in
   from_cmi cmi_files cmi_target_file

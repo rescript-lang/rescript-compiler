@@ -509,8 +509,7 @@ and transl_structure loc fields cc rootpath final_env = function
               Lprim(Pmakeblock((if is_top_root_path then Blk_module_export !export_identifiers else Blk_module runtime_fields)), 
                    result, loc)
             and id_pos_list =
-              List.filter (fun (id,_,_) -> not (IdentSet.mem id ids))
-                id_pos_list
+              Ext_list.filter id_pos_list (fun (id,_,_) -> not (IdentSet.mem id ids))                
             in
             wrap_id_pos_list loc id_pos_list get_field_name lam,
               List.length pos_cc_list

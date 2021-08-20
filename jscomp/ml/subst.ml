@@ -70,7 +70,7 @@ let is_not_doc = function
 let attrs s x =
   let x =
     if s.for_saving && not !Clflags.keep_docs then
-      List.filter is_not_doc x
+      Ext_list.filter x is_not_doc
     else x
   in
     if s.for_saving && not !Clflags.keep_locs

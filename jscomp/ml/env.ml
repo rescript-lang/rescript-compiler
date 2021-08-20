@@ -265,12 +265,11 @@ module TycompTbl =
 
     let diff_keys is_local tbl1 tbl2 =
       let keys2 = local_keys tbl2 [] in
-      List.filter
+      Ext_list.filter keys2
         (fun id ->
            is_local (find_same id tbl2) &&
            try ignore (find_same id tbl1); false
-           with Not_found -> true)
-        keys2
+           with Not_found -> true)      
 
   end
 
@@ -425,11 +424,10 @@ module IdTbl =
 
     let diff_keys tbl1 tbl2 =
       let keys2 = local_keys tbl2 [] in
-      List.filter
+      Ext_list.filter keys2
         (fun id ->
            try ignore (find_same id tbl1); false
            with Not_found -> true)
-        keys2
 
 
   end
@@ -947,10 +945,11 @@ let find_type_full path env =
         | Functor_comps _ -> assert false
       in
       let exts =
-        List.filter
-          (function {cstr_tag=Cstr_extension _} -> true | _ -> false)
+        Ext_list.filter
           (try Tbl.find_str s comps.comp_constrs
-           with Not_found -> assert false)
+            with Not_found -> assert false)
+          (function {cstr_tag=Cstr_extension _} -> true | _ -> false)
+        
       in
       match exts with
       | [cstr] -> type_of_cstr path cstr
@@ -1235,7 +1234,7 @@ let lookup_all_simple proj1 proj2 shadow ?loc lid env =
         | [] -> []
         | ((x, f) :: xs) ->
             (x, f) ::
-              (do_shadow (List.filter (fun (y, _) -> not (shadow x y)) xs))
+              (do_shadow (Ext_list.filter xs (fun (y, _) -> not (shadow x y))))
       in
         do_shadow xl
   | Ldot(l, s) ->

@@ -251,8 +251,7 @@ let process_include s : dir_spec =
 
 let deduplicate_dirs (xs : dir_spec list) =
   let set : dir_spec Hash_string.t = Hash_string.create 64 in
-  List.filter
-    (fun ({ dir; excludes = new_excludes } as y : dir_spec) ->
+  Ext_list.filter xs (fun ({ dir; excludes = new_excludes } as y) ->
       match Hash_string.find_opt set dir with
       | None ->
           Hash_string.add set dir y;
@@ -260,7 +259,6 @@ let deduplicate_dirs (xs : dir_spec list) =
       | Some x ->
           x.excludes <- new_excludes @ x.excludes;
           false)
-    xs
 
 let includes : _ list ref = ref []
 

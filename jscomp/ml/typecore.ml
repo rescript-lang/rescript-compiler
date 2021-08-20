@@ -768,9 +768,9 @@ let disambiguate_label_by_ids keep closed ids labels =
   and check_closed (lbl, _) =
     (not closed || List.length ids = Array.length lbl.lbl_all)
   in
-  let labels' = List.filter check_ids labels in
+  let labels' = Ext_list.filter labels check_ids in
   if keep && labels' = [] then (false, labels) else
-  let labels'' = List.filter check_closed labels' in
+  let labels'' = Ext_list.filter labels' check_closed in
   if keep && labels'' = [] then (false, labels') else (true, labels'')
 
 (* Only issue warnings once per record constructor/pattern *)
@@ -2177,7 +2177,7 @@ let check_univars env expans kind exp ty_expected vars =
   let vars = List.map (expand_head env) vars in
   let vars = List.map (expand_head env) vars in
   let vars' =
-    List.filter
+    Ext_list.filter vars
       (fun t ->
         let t = repr t in
         generalize t;
@@ -2185,7 +2185,7 @@ let check_univars env expans kind exp ty_expected vars =
           Tvar name when t.level = generic_level ->
             log_type t; t.desc <- Tunivar name; true
         | _ -> false)
-      vars in
+  in
   if List.length vars = List.length vars' then () else
   let ty = newgenty (Tpoly(repr exp.exp_type, vars'))
   and ty_expected = repr ty_expected in
@@ -2327,7 +2327,7 @@ let check_absent_variant env =
 
 let duplicate_ident_types caselist env =
   let caselist =
-    List.filter (fun {pc_lhs} -> contains_gadt env pc_lhs) caselist in
+    Ext_list.filter caselist (fun {pc_lhs} -> contains_gadt env pc_lhs) in
   Env.copy_types (all_idents_cases caselist) env
 
   
@@ -2699,7 +2699,8 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
                     | (lid, _lbl, lbl_exp) ->
                         Overridden (lid, lbl_exp)
                     | exception Not_found ->
-                      if false && is_option_type env lbl.lbl_arg then (* Turn On Later *)                         
+                      if  representation = Record_object 
+                          && is_option_type env lbl.lbl_arg then 
                         Overridden ({loc ; txt = Lident lbl.lbl_name},
                         option_none lbl.lbl_arg loc)
                       else 
@@ -3585,7 +3586,7 @@ and type_application env funct sargs =
     begin
       let ls, tvar = list_labels env funct.exp_type in
       not tvar &&
-      let labels = List.filter (fun l -> not (is_optional l)) ls in
+      let labels = Ext_list.filter ls (fun l -> not (is_optional l)) in
       List.length labels = List.length sargs &&
       List.for_all (fun (l,_) -> l = Nolabel) sargs &&
       List.exists (fun l -> l <> Nolabel) labels &&
@@ -3593,7 +3594,7 @@ and type_application env funct sargs =
          funct.exp_loc
          (Warnings.Labels_omitted
             (List.map Printtyp.string_of_label
-                      (List.filter ((<>) Nolabel) labels)));
+                      (Ext_list.filter labels ((<>) Nolabel))));
        true)
     end
   in

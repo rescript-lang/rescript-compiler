@@ -280,7 +280,7 @@ let  flatten (lam : Lam.t) : (print_kind * Ident.t * Lam.t ) list * Lam.t =
    | {md_type = Mty_signature signature  ; _ } -> 
     (* Env.prefix_idents, could be cached  *)
     let serializable_sigs = 
-      List.filter (fun x ->
+      Ext_list.filter (fun x ->
           match x with 
           | Sig_typext _ 
           | Sig_module _
