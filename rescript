@@ -279,7 +279,7 @@ if (
   var watch_mode = delegate_args.includes("-w");
   var wsParamIndex = delegate_args.indexOf("-ws");
   if (wsParamIndex > -1) {
-    var hostAndPortNumber = (process_argv[wsParamIndex + 1] || "").split(":");
+    var hostAndPortNumber = (delegate_args[wsParamIndex + 1] || "").split(":");
     /**
      * @type {number}
      */
