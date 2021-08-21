@@ -32,7 +32,6 @@ type t =
   | Deprecated of string * loc * loc        (*  3 *)
   | Fragile_match of string                 (*  4 *)
   | Partial_application                     (*  5 *)
-  | Labels_omitted of string list           (*  6 *)
   | Method_override of string list          (*  7 *)
   | Partial_match of string                 (*  8 *)
   | Non_closed_record_pattern of string     (*  9 *)
@@ -112,7 +111,6 @@ let number = function
   | Deprecated _ -> 3
   | Fragile_match _ -> 4
   | Partial_application -> 5
-  | Labels_omitted _ -> 6
   | Method_override _ -> 7
   | Partial_match _ -> 8
   | Non_closed_record_pattern _ -> 9
@@ -338,12 +336,6 @@ let message = function
   | Partial_application ->
       "this function application is partial,\n\
        maybe some arguments are missing."
-  | Labels_omitted [] -> assert false
-  | Labels_omitted [l] ->
-     "label " ^ l ^ " was omitted in the application of this function."
-  | Labels_omitted ls ->
-     "labels " ^ String.concat ", " ls ^
-       " were omitted in the application of this function."
   | Method_override [lab] ->
       "the method " ^ lab ^ " is overridden."
   | Method_override (cname :: slist) ->
