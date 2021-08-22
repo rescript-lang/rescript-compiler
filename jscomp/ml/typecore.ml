@@ -3603,7 +3603,7 @@ and type_application env funct sargs =
         and optional = is_optional l in
         let sargs,  arg =          
             match extract_label name sargs with 
-            | exception  Not_found ->
+            | None ->
               sargs, 
                 if optional &&
                   List.mem_assoc Nolabel sargs               
@@ -3612,11 +3612,11 @@ and type_application env funct sargs =
                   Some (fun () -> option_none (instance env ty) Location.none)
                 end else 
                   None            
-            | (l', sarg0, sargs1, sargs2) ->                   
+            | Some (l', sarg0, sargs) ->                   
             if not optional && is_optional l' then
               Location.prerr_warning sarg0.pexp_loc
                 (Warnings.Nonoptional_label (Printtyp.string_of_label l));
-             sargs1 @ sargs2,            
+             sargs,            
             if not optional || is_optional l' then
               Some (fun () -> type_argument env sarg0 ty ty0)
             else 

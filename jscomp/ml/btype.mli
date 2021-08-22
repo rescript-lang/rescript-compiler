@@ -177,8 +177,8 @@ type sargs = (arg_label * Parsetree.expression) list
 
 val extract_label :
     label -> sargs ->
-    arg_label * Parsetree.expression * sargs * sargs
-    (* actual label, value, before list, after list *)
+    (arg_label * Parsetree.expression * sargs) option 
+    (* actual label, value, new list with the same order *)
 
 (**** Utilities for backtracking ****)
 

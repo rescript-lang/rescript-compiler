@@ -626,12 +626,12 @@ let prefixed_label_name = function
 type sargs = (Asttypes.arg_label * Parsetree.expression) list
   
 let rec extract_label_aux hd l = function
-    [] -> raise Not_found
+    [] -> None
   | (l',t as p) :: ls ->
-      if label_name l' = l then (l', t, List.rev hd, ls)
+      if label_name l' = l then Some (l', t, List.rev_append hd ls)
       else extract_label_aux (p::hd) l ls
 
-let extract_label l (ls : sargs) = extract_label_aux [] l ls
+let extract_label l (ls : sargs) : (arg_label * Parsetree.expression * sargs) option = extract_label_aux [] l ls
 
 
                   (**********************************)
