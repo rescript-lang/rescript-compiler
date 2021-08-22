@@ -2393,7 +2393,8 @@ let is_ignore funct env =
         with Unify _ -> false)
   | _ -> false
 
-
+type lazy_args = 
+  (Asttypes.arg_label * (unit -> Typedtree.expression) option) list
 let rec type_exp ?recarg env sexp =
   (* We now delegate everything to type_expect *)
   type_expect ?recarg env sexp (newvar ())
@@ -3534,11 +3535,9 @@ and type_application env funct sargs =
     tvar || List.mem l ls
   in
   let ignored = ref [] in
-  let rec type_unknown_args
-      (args :
-      (Asttypes.arg_label * (unit -> Typedtree.expression) option) list)
-    omitted ty_fun = function
-      [] ->
+  let rec type_unknown_args (args : lazy_args) omitted ty_fun (syntax_args : sargs)= 
+    match syntax_args with 
+    |  [] ->
         (List.map
             (function l, None -> l, None
                 | l, Some f -> l, Some (f ()))
@@ -3604,39 +3603,38 @@ and type_application env funct sargs =
        ))
     end
   in
-  let rec type_args args omitted ~ty_fun ty_fun0  (sargs : sargs)  =
+  let rec type_args args omitted ~ty_fun ty_fun0  ~(sargs : sargs)  =
     match expand_head env ty_fun, expand_head env ty_fun0 with
       {desc=Tarrow (l, ty, ty_fun, com); level=lv} ,
       {desc=Tarrow (_, ty0, ty_fun0, _)}
       when (sargs <> [] ) && commu_repr com = Cok ->
         let name = label_name l
         and optional = is_optional l in
-        let sargs,  arg, omitted =          
+        let sargs, omitted,  arg =          
             match extract_label name sargs with 
             | None ->          
                 if optional && label_assoc Nolabel sargs
                 then begin
                   ignored := (l,ty,lv) :: !ignored;
-                  sargs, Some (fun () -> option_none (instance env ty) Location.none), omitted
+                  sargs, omitted , Some (fun () -> option_none (instance env ty) Location.none)
                 end else 
-                  sargs, None, (l,ty,lv) :: omitted 
+                  sargs, (l,ty,lv) :: omitted , None
             | Some (l', sarg0, sargs) ->                   
             if not optional && is_optional l' then
               Location.prerr_warning sarg0.pexp_loc
                 (Warnings.Nonoptional_label (Printtyp.string_of_label l));
-             sargs,            
+             sargs, omitted ,            
              Some (
             if not optional || is_optional l' then
                (fun () -> type_argument env sarg0 ty ty0)
             else 
                (fun () -> option_some (type_argument env sarg0
                                              (extract_option_type env ty)
-                                             (extract_option_type env ty0)))), omitted
+                                             (extract_option_type env ty0))))
         in
-        type_args ((l,arg)::args) omitted ~ty_fun ty_fun0
-           sargs 
+        type_args ((l,arg)::args) omitted ~ty_fun ty_fun0 ~sargs 
     | _ ->
-            type_unknown_args args omitted ty_fun0 sargs
+        type_unknown_args args omitted ty_fun0 sargs (* This is the hot path for non-labeled function*)
 
   in
   match sargs with
@@ -3656,7 +3654,7 @@ and type_application env funct sargs =
       ([Nolabel, Some exp], ty_res)
   | _ ->
       let ty = funct.exp_type in
-      type_args [] [] ~ty_fun:ty (instance env ty) sargs
+      type_args [] [] ~ty_fun:ty (instance env ty) ~sargs
 
 and type_construct env loc lid sarg ty_expected attrs =
   let opath =
