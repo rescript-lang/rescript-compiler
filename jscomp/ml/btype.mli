@@ -180,6 +180,7 @@ val extract_label :
     (arg_label * Parsetree.expression * sargs) option 
     (* actual label, value, new list with the same order *)
 
+val label_assoc : arg_label -> sargs -> bool
 (**** Utilities for backtracking ****)
 
 type snapshot

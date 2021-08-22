@@ -634,6 +634,11 @@ let rec extract_label_aux hd l = function
 let extract_label l (ls : sargs) : (arg_label * Parsetree.expression * sargs) option = extract_label_aux [] l ls
 
 
+let rec label_assoc x (args : sargs) = 
+  match args with 
+  | [] -> false
+  | (a, _) :: l -> Asttypes.same_arg_label a x  || label_assoc x l
+
                   (**********************************)
                   (*  Utilities for backtracking    *)
                   (**********************************)

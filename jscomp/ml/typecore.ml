@@ -3615,8 +3615,7 @@ and type_application env funct sargs =
             match extract_label name sargs with 
             | None ->
               sargs, 
-                if optional &&
-                  List.mem_assoc Nolabel sargs               
+                if optional && label_assoc Nolabel sargs
                 then begin
                   ignored := (l,ty,lv) :: !ignored;
                   Some (fun () -> option_none (instance env ty) Location.none)
@@ -3627,12 +3626,13 @@ and type_application env funct sargs =
               Location.prerr_warning sarg0.pexp_loc
                 (Warnings.Nonoptional_label (Printtyp.string_of_label l));
              sargs,            
+             Some (
             if not optional || is_optional l' then
-              Some (fun () -> type_argument env sarg0 ty ty0)
+               (fun () -> type_argument env sarg0 ty ty0)
             else 
-              Some (fun () -> option_some (type_argument env sarg0
+               (fun () -> option_some (type_argument env sarg0
                                              (extract_option_type env ty)
-                                             (extract_option_type env ty0)))
+                                             (extract_option_type env ty0))))
         in
         let omitted =
           if arg = None then (l,ty,lv) :: omitted else omitted in
