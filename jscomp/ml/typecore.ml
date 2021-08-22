@@ -3611,16 +3611,15 @@ and type_application env funct sargs =
       when (sargs <> [] ) && commu_repr com = Cok ->
         let name = label_name l
         and optional = is_optional l in
-        let sargs,  arg =          
+        let sargs,  arg, omitted =          
             match extract_label name sargs with 
-            | None ->
-              sargs, 
+            | None ->          
                 if optional && label_assoc Nolabel sargs
                 then begin
                   ignored := (l,ty,lv) :: !ignored;
-                  Some (fun () -> option_none (instance env ty) Location.none)
+                  sargs, Some (fun () -> option_none (instance env ty) Location.none), omitted
                 end else 
-                  None            
+                  sargs, None, (l,ty,lv) :: omitted 
             | Some (l', sarg0, sargs) ->                   
             if not optional && is_optional l' then
               Location.prerr_warning sarg0.pexp_loc
@@ -3632,10 +3631,8 @@ and type_application env funct sargs =
             else 
                (fun () -> option_some (type_argument env sarg0
                                              (extract_option_type env ty)
-                                             (extract_option_type env ty0))))
+                                             (extract_option_type env ty0)))), omitted
         in
-        let omitted =
-          if arg = None then (l,ty,lv) :: omitted else omitted in
         type_args ((l,arg)::args) omitted ~ty_fun ty_fun0
            sargs 
     | _ ->
