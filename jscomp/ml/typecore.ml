@@ -3618,11 +3618,10 @@ and type_application env funct sargs =
             sargs, more_sargs,
             if not optional || is_optional l' then
               Some (fun () -> type_argument env sarg0 ty ty0)
-            else begin
+            else 
               Some (fun () -> option_some (type_argument env sarg0
                                              (extract_option_type env ty)
                                              (extract_option_type env ty0)))
-            end
           with Not_found ->
             sargs, more_sargs,
             if optional &&
@@ -3631,9 +3630,8 @@ and type_application env funct sargs =
             then begin
               ignored := (l,ty,lv) :: !ignored;
               Some (fun () -> option_none (instance env ty) Location.none)
-            end else begin
-              None
-            end
+            end else 
+              None            
         in
         let omitted =
           if arg = None then (l,ty,lv) :: omitted else omitted in
