@@ -3603,10 +3603,10 @@ and type_application env funct sargs =
         and optional = is_optional l in
         let sargs, more_sargs, arg =
           try
-            let (l', sarg0, sargs, more_sargs) =
+            let (l', sarg0, sargs) =
                 match extract_label name sargs with 
                 | (l', sarg0, sargs1, sargs2) -> 
-                  (l', sarg0, sargs1 @ sargs2, more_sargs)
+                  (l', sarg0, sargs1 @ sargs2)
             in
             if not optional && is_optional l' then
               Location.prerr_warning sarg0.pexp_loc
