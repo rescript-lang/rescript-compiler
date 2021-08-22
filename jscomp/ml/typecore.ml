@@ -2384,6 +2384,16 @@ let unify_exp env exp expected_ty =
   let loc = proper_exp_loc exp in
   unify_exp_types loc env exp.exp_type expected_ty
 
+
+let is_ignore funct env =
+  match funct.exp_desc with
+    Texp_ident (_, _, {val_kind=Val_prim{Primitive.prim_name="%ignore"}}) ->
+      (try ignore (filter_arrow env (instance env funct.exp_type) Nolabel);
+             true
+        with Unify _ -> false)
+  | _ -> false
+
+
 let rec type_exp ?recarg env sexp =
   (* We now delegate everything to type_expect *)
   type_expect ?recarg env sexp (newvar ())
@@ -3632,17 +3642,9 @@ and type_application env funct sargs =
             type_unknown_args args omitted ty_fun0 sargs
 
   in
-  let is_ignore funct =
-    match funct.exp_desc with
-      Texp_ident (_, _, {val_kind=Val_prim{Primitive.prim_name="%ignore"}}) ->
-        (try ignore (filter_arrow env (instance env funct.exp_type) Nolabel);
-             true
-        with Unify _ -> false)
-    | _ -> false
-  in
   match sargs with
     (* Special case for ignore: avoid discarding warning *)
-    [Nolabel, sarg] when is_ignore funct ->
+    [Nolabel, sarg] when is_ignore funct env ->
       let ty_arg, ty_res =
         filter_arrow env (instance env funct.exp_type) Nolabel
       in
