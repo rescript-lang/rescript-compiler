@@ -3594,7 +3594,7 @@ and type_application env funct sargs =
        ))
     end
   in
-  let rec type_args args omitted ty_fun ty_fun0 ty_old sargs more_sargs =
+  let rec type_args args omitted ty_fun ty_fun0 ty_old (sargs : sargs) (more_sargs : sargs) =
     match expand_head env ty_fun, expand_head env ty_fun0 with
       {desc=Tarrow (l, ty, ty_fun, com); level=lv} ,
       {desc=Tarrow (_, ty0, ty_fun0, _)}
