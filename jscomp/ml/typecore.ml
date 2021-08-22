@@ -3604,13 +3604,13 @@ and type_application env funct sargs =
         let sargs, more_sargs, arg =
           try
             let (l', sarg0, sargs, more_sargs) =
-              try
-                let (l', sarg0, sargs1, sargs2) = extract_label name sargs in
-                (l', sarg0, sargs1 @ sargs2, more_sargs)
-              with Not_found ->
-                let (l', sarg0, sargs1, sargs2) =
-                  extract_label name more_sargs in
-                (l', sarg0, sargs @ sargs1, sargs2)
+                match extract_label name sargs with 
+                | (l', sarg0, sargs1, sargs2) -> 
+                  (l', sarg0, sargs1 @ sargs2, more_sargs)
+                | exception Not_found ->                  
+                  match extract_label name more_sargs with 
+                  | (l', sarg0, sargs1, sargs2) -> 
+                  (l', sarg0, sargs @ sargs1, sargs2)
             in
             if not optional && is_optional l' then
               Location.prerr_warning sarg0.pexp_loc
