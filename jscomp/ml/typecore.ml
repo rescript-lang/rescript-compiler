@@ -3598,7 +3598,7 @@ and type_application env funct sargs =
     match expand_head env ty_fun, expand_head env ty_fun0 with
       {desc=Tarrow (l, ty, ty_fun, com); level=lv} ,
       {desc=Tarrow (_, ty0, ty_fun0, _)}
-      when (sargs <> [] || more_sargs <> []) && commu_repr com = Cok ->
+      when (sargs <> [] ) && commu_repr com = Cok ->
         let name = label_name l
         and optional = is_optional l in
         let sargs, more_sargs, arg =
@@ -3607,10 +3607,6 @@ and type_application env funct sargs =
                 match extract_label name sargs with 
                 | (l', sarg0, sargs1, sargs2) -> 
                   (l', sarg0, sargs1 @ sargs2, more_sargs)
-                | exception Not_found ->                  
-                  match extract_label name more_sargs with 
-                  | (l', sarg0, sargs1, sargs2) -> 
-                  (l', sarg0, sargs @ sargs1, sargs2)
             in
             if not optional && is_optional l' then
               Location.prerr_warning sarg0.pexp_loc
@@ -3639,8 +3635,8 @@ and type_application env funct sargs =
         type_args ((l,arg)::args) omitted ty_fun ty_fun0
           ty_old sargs ~more_sargs
     | _ ->
-            type_unknown_args args omitted ty_fun0
-              (sargs @ more_sargs)
+            type_unknown_args args omitted ty_fun0 sargs
+
   in
   let is_ignore funct =
     match funct.exp_desc with
