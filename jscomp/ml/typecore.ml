@@ -3586,23 +3586,6 @@ and type_application env funct sargs =
         in
         type_unknown_args ((l1, Some arg1) :: args) omitted ty2 sargl
   in
-  let () =
-    begin
-      let ls, tvar = list_labels env funct.exp_type in
-      if not tvar then
-      let labels = Ext_list.filter ls (fun l -> not (is_optional l)) in
-      if 
-      Ext_list.same_length labels sargs &&
-      List.for_all (fun (l,_) -> l = Nolabel) sargs &&
-      List.exists (fun l -> l <> Nolabel) labels then
-      raise (Error(
-         funct.exp_loc, env,
-         (Labels_omitted
-            (List.map Printtyp.string_of_label
-                      (Ext_list.filter labels (fun x -> x <> Nolabel))))
-       ))
-    end
-  in
   let rec type_args args omitted ~ty_fun ty_fun0  ~(sargs : sargs)  =
     match expand_head env ty_fun, expand_head env ty_fun0 with
       {desc=Tarrow (l, ty, ty_fun, com); level=lv} ,
@@ -3635,7 +3618,20 @@ and type_application env funct sargs =
         type_args ((l,arg)::args) omitted ~ty_fun ty_fun0 ~sargs 
     | _ ->
         type_unknown_args args omitted ty_fun0 sargs (* This is the hot path for non-labeled function*)
-
+  in
+  let () =  
+    let ls, tvar = list_labels env funct.exp_type in
+    if not tvar then
+    let labels = Ext_list.filter ls (fun l -> not (is_optional l)) in
+    if Ext_list.same_length labels sargs &&
+       List.for_all (fun (l,_) -> l = Nolabel) sargs &&
+       List.exists (fun l -> l <> Nolabel) labels then
+        raise 
+          (Error(
+          funct.exp_loc, env,
+          (Labels_omitted
+            (List.map Printtyp.string_of_label
+                      (Ext_list.filter labels (fun x -> x <> Nolabel))))))  
   in
   match sargs with
     (* Special case for ignore: avoid discarding warning *)
