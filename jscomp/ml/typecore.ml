@@ -3601,31 +3601,28 @@ and type_application env funct sargs =
       when (sargs <> [] ) && commu_repr com = Cok ->
         let name = label_name l
         and optional = is_optional l in
-        let sargs,  arg =
-          try            
-                match extract_label name sargs with 
-                | (l', sarg0, sargs1, sargs2) -> 
-                  let (l', sarg0, sargs) =(l', sarg0, sargs1 @ sargs2)
-            in
+        let sargs,  arg =          
+            match extract_label name sargs with 
+            | exception  Not_found ->
+              sargs, 
+                if optional &&
+                  List.mem_assoc Nolabel sargs               
+                then begin
+                  ignored := (l,ty,lv) :: !ignored;
+                  Some (fun () -> option_none (instance env ty) Location.none)
+                end else 
+                  None            
+            | (l', sarg0, sargs1, sargs2) ->                   
             if not optional && is_optional l' then
               Location.prerr_warning sarg0.pexp_loc
                 (Warnings.Nonoptional_label (Printtyp.string_of_label l));
-            sargs, 
+             sargs1 @ sargs2,            
             if not optional || is_optional l' then
               Some (fun () -> type_argument env sarg0 ty ty0)
             else 
               Some (fun () -> option_some (type_argument env sarg0
                                              (extract_option_type env ty)
                                              (extract_option_type env ty0)))
-          with Not_found ->
-            sargs, 
-            if optional &&
-              List.mem_assoc Nolabel sargs               
-            then begin
-              ignored := (l,ty,lv) :: !ignored;
-              Some (fun () -> option_none (instance env ty) Location.none)
-            end else 
-              None            
         in
         let omitted =
           if arg = None then (l,ty,lv) :: omitted else omitted in
