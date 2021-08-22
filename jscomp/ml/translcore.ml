@@ -361,13 +361,6 @@ let specialize_comparison table env ty =
 let specialize_primitive p env ty (* ~has_constant_constructor *) =
   try
     let table = Hashtbl.find comparisons_table p.prim_name in
-#if false
-    let {gencomp; intcomp; simplify_constant_constructor} =
-      table in
-    if has_constant_constructor && simplify_constant_constructor then
-      intcomp
-    else
-#end    
       match is_function_type env ty with
       | Some (lhs,_rhs) -> specialize_comparison table env lhs
       | None -> table.gencomp
@@ -550,9 +543,7 @@ let primitive_is_ccall = function
 let assert_failed exp =
   let (fname, line, char) =
     Location.get_pos_info exp.exp_loc.Location.loc_start in
-#if 1
   let fname = Filename.basename fname in   
-#end     
   Lprim(Praise Raise_regular, [
     (Lprim(Pmakeblock(Blk_extension),
           [transl_normal_path Predef.path_assert_failure;
