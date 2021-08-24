@@ -16,7 +16,7 @@ module Diff: {
   let string: (string, string) => bool
 }
 module Diff2 = Diff
-type rec tree<'value> =  Nil | Node(tree<'value>, 'value, tree<'value>)
+type rec tree<'value> = Nil | Node(tree<'value>, 'value, tree<'value>)
 type intTree = tree<int>
 type rec tree2<'value> =
   | Niiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiil2
@@ -36,16 +36,16 @@ type rec tree4<'value> =
       riiiiiiiiiiiiiiiiiiiiiiight: tree3<'value>,
     })
 type color = ..
-type color +=  Blue
-type color +=  Red | Green
+type color += Blue
+type color += Red | Green
 type color +=
   | Blaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaack
   | Oraaaaaaaaaaaaaaaaaaaaaaaaaaaaaaange
   | Reeeeeeeeeeeeeeeeeeeed
 module Expr: {
   type attr = ..
-  type attr += private  Str(string)
-  type attr +=  Int(int) | Float(float)
+  type attr += private Str(string)
+  type attr += Int(int) | Float(float)
 }
 module User: {
   type t = {name: string, age: int}
@@ -449,7 +449,7 @@ module type DEVICE = {
 }
 let devices: Hashtbl.t<string, module(DEVICE)>
 module rec A: {
-  type t =  Leaf(string) | Node(ASet.t)
+  type t = Leaf(string) | Node(ASet.t)
   let compare: (t, t) => int
 }
 and ASet: {
@@ -493,3 +493,4 @@ and ASet: {
 }
 type emptyObject = {.}
 let f: (~x: 'a=?, ~y: 'b) => option<'a>
+type call = CleanStart

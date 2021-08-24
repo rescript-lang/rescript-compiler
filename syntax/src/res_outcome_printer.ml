@@ -506,7 +506,7 @@ let printPolyVarIdent txt =
      Doc.group (
        Doc.indent (
          Doc.concat [
-           Doc.line;
+           Doc.softLine;
            Doc.join ~sep:Doc.line (
              List.mapi (fun i constructor ->
                Doc.concat [
