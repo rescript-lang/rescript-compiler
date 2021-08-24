@@ -583,6 +583,7 @@ let rec parseLident p =
           loop p
         end
       in
+      Parser.err p (Diagnostics.lident p.Parser.token);
       Parser.next p;
       loop p;
       match p.Parser.token with

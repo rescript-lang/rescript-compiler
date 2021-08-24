@@ -11,7 +11,7 @@ let /* before */ 123 /* after */ = 123
 // Ppat_interval of constant * constant
 
 // Ppat_alias
-let /* before pat */ p /* after pat */ as /* before alias */ 'x /* after alias */ = ()
+let /* before pat */ p /* after pat */ as /* before alias */ x /* after alias */ = ()
 let /*c0 */ (/* c1 */ p /* c2 */ as /* c3 */x /* c4*/) as /* c5 */ y /* c6 */ = ()
 
 // Ppat_array

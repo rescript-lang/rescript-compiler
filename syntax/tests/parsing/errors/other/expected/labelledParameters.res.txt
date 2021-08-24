@@ -4,7 +4,7 @@
 
   1 │ let f = (x, y=2, z) => x + y + z
   2 │ 
-  3 │ type f = (x: int, y: int) => int
+  3 │ let g = (~?x, ~y=2, ~z) => x + y + z
 
   A labeled parameter starts with a `~`. Did you mean: `~y`?
 
@@ -14,10 +14,24 @@
 
   1 │ let f = (x, y=2, z) => x + y + z
   2 │ 
-  3 │ type f = (x: int, y: int) => int
+  3 │ let g = (~?x, ~y=2, ~z) => x + y + z
   4 │ 
+  5 │ type f = (x: int, y: int) => int
+
+  I'm expecting a lowercase name like `user or `age`
+
+
+  Syntax error!
+  tests/parsing/errors/other/labelledParameters.res:5:11
+
+  3 │ let g = (~?x, ~y=2, ~z) => x + y + z
+  4 │ 
+  5 │ type f = (x: int, y: int) => int
+  6 │ 
 
   A labeled parameter starts with a `~`. Did you mean: `~x`?
 
 let f x ?(y= 2)  z = (x + y) + z
+let g ~x:((x)[@ns.namedArgLoc ])  ?y:(((y)[@ns.namedArgLoc ])= 2) 
+  ~z:((z)[@ns.namedArgLoc ])  = (x + y) + z
 type nonrec f = x:int -> y:int -> int

@@ -68,9 +68,21 @@
 
   This let-binding misses an expression
 
+
+  Syntax error!
+  tests/parsing/errors/expressions/letBinding.res:15:12
+
+  13 │ }
+  14 │ 
+  15 │ let foo as 'x = ()
+  16 │ 
+
+  I'm expecting a lowercase name like `user or `age`
+
 let foo = 2.
 let foo = true
 let foo = 2
 let foo = f ()
 let foo = ((2)[@ns.braces ])
 let foo = (("foo")[@ns.braces ])
+let foo as x = ()

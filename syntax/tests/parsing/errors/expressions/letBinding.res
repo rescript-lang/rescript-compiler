@@ -12,3 +12,4 @@ let foo = == {
   "foo"
 }
 
+let foo as 'x = ()
