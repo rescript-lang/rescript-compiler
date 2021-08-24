@@ -7,4 +7,5 @@
 
   This string is missing a double quote at the end
 
-let z = "eof\n"
+let z = {js|eof
+|js}

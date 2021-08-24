@@ -7,9 +7,12 @@ type nonrec t = < a ;u: int   >  -> unit
 type nonrec t = (< a ;u: int   >  as 'a) -> unit
 type nonrec t = < a ;u: int   >  -> < a ;v: int   >  -> unit
 type nonrec user = < name: string   > 
-let (steve : < user ;age: int   > ) = [%obj { name = "Steve"; age = 30 }]
-let steve = ([%obj { name = "Steve"; age = 30 }] : < user ;age: int   > )
-let steve = ((([%obj { name = "Steve"; age = 30 }] : < user ;age: int   > ))
+let (steve : < user ;age: int   > ) =
+  [%obj { name = {js|Steve|js}; age = 30 }]
+let steve =
+  ([%obj { name = {js|Steve|js}; age = 30 }] : < user ;age: int   > )
+let steve =
+  ((([%obj { name = {js|Steve|js}; age = 30 }] : < user ;age: int   > ))
   [@ns.braces ])
 let printFullUser (steve : < user ;age: int   > ) = Js.log steve
 let printFullUser ~user:(((user : < user ;age: int   > ))[@ns.namedArgLoc ]) 

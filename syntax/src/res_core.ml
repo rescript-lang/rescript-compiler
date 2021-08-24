@@ -136,6 +136,7 @@ let ternaryAttr = (Location.mknoloc "ns.ternary", Parsetree.PStr [])
 let ifLetAttr = (Location.mknoloc "ns.iflet", Parsetree.PStr [])
 let suppressFragileMatchWarningAttr = (Location.mknoloc "warning", Parsetree.PStr [Ast_helper.Str.eval (Ast_helper.Exp.constant (Pconst_string ("-4", None)))])
 let makeBracesAttr loc = (Location.mkloc "ns.braces" loc, Parsetree.PStr [])
+let templateLiteralAttr = (Location.mknoloc "res.template", Parsetree.PStr [])
 
 type stringLiteralState =
   | Start
@@ -143,6 +144,9 @@ type stringLiteralState =
   | HexEscape
   | DecimalEscape
   | OctalEscape
+  | UnicodeEscape
+  | UnicodeCodePointEscape
+  | UnicodeEscapeStart
   | EscapedLineBreak
 
 type typDefOrExt =
@@ -482,15 +486,12 @@ let processUnderscoreApplication args =
   in
   (args, wrap)
 
-let hexValue x =
-  match x with
-  | '0' .. '9' ->
-    (Char.code x) - 48
-  | 'A' .. 'Z' ->
-    (Char.code x) - 55
-  | 'a' .. 'z' ->
-    (Char.code x) - 97
-  | _ -> 16
+let hexValue ch =
+  match ch with
+  | '0'..'9' -> (Char.code ch) - 48
+  | 'a'..'f' -> (Char.code ch) - (Char.code 'a') + 10
+  | 'A'..'F' -> (Char.code ch) + 32 - (Char.code 'a') + 10
+  | _ -> 16 (* larger than any legal value *)
 
 let parseStringLiteral s =
   let len = String.length s in
@@ -499,7 +500,7 @@ let parseStringLiteral s =
   let rec parse state i d =
     if i = len then
       (match state with
-      | HexEscape | DecimalEscape | OctalEscape -> false
+      | HexEscape | DecimalEscape | OctalEscape | UnicodeEscape | UnicodeCodePointEscape -> false
       | _ -> true)
     else
       let c = String.unsafe_get s i in
@@ -517,6 +518,7 @@ let parseStringLiteral s =
         | ('\\' | ' ' | '\'' | '"') as c -> Buffer.add_char b c; parse Start (i + 1) d
         | 'x' -> parse HexEscape (i + 1) 0
         | 'o' -> parse OctalEscape (i + 1) 0
+        | 'u' -> parse UnicodeEscapeStart (i + 1) 0
         | '0' .. '9' -> parse DecimalEscape i 0
         | '\010' | '\013' -> parse EscapedLineBreak (i + 1) d
         | c -> Buffer.add_char b '\\'; Buffer.add_char b c; parse Start (i + 1) d)
@@ -558,6 +560,45 @@ let parseStringLiteral s =
           )
         else
           parse OctalEscape (i + 1) (d + 1)
+      | UnicodeEscapeStart ->
+        (match c with
+        | '{' -> parse UnicodeCodePointEscape (i + 1) 0
+        | _ -> parse UnicodeEscape (i + 1) 1)
+      | UnicodeEscape ->
+        if d == 3 then
+          let c0 = String.unsafe_get s (i - 3) in
+          let c1 = String.unsafe_get s (i - 2) in
+          let c2 = String.unsafe_get s (i - 1) in
+          let c3 = String.unsafe_get s i in
+          let c = (4096 * (hexValue c0)) + (256 * (hexValue c1)) + (16 * (hexValue c2)) + (hexValue c3) in
+          if Res_utf8.isValidCodePoint c then (
+            let codePoint = Res_utf8.encodeCodePoint c in
+            Buffer.add_string b codePoint;
+            parse Start (i + 1) 0
+          ) else (
+            false
+          )
+        else
+          parse UnicodeEscape (i + 1) (d + 1)
+      | UnicodeCodePointEscape ->
+        (match c with
+        | '0'..'9' | 'a'..'f' | 'A'.. 'F' ->
+          parse UnicodeCodePointEscape (i + 1) (d + 1)
+        | '}' ->
+          let x = ref 0 in
+          for remaining = d downto 1 do
+            let ix = i - remaining in
+            x := (!x * 16) + (hexValue (String.unsafe_get s ix));
+          done;
+          let c = !x in
+          if Res_utf8.isValidCodePoint c then (
+            let codePoint = Res_utf8.encodeCodePoint !x in
+            Buffer.add_string b codePoint;
+            parse Start (i + 1) 0
+          ) else (
+            false
+          )
+        | _ -> false)
       | EscapedLineBreak ->
         (match c with
         | ' ' | '\t' -> parse EscapedLineBreak (i + 1) d
@@ -872,13 +913,18 @@ let parseConstant p =
     let floatTxt = if isNegative then "-" ^ f else f in
     Parsetree.Pconst_float (floatTxt, suffix)
   | String s ->
-    let txt = if p.mode = ParseForTypeChecker then
-      parseStringLiteral s
+    if p.mode = ParseForTypeChecker then
+      Pconst_string (s, Some "js")
     else
-      s
-    in
-    Pconst_string(txt, None)
-  | Character c -> Pconst_char c
+      Pconst_string (s, None)
+  | Codepoint {c; original} ->
+    if p.mode = ParseForTypeChecker then
+      Pconst_char c
+    else
+      (* Pconst_char char does not have enough information for formatting.
+       * When parsing for the printer, we encode the char contents as a string
+       * with a special prefix. *)
+      Pconst_string (original, Some "INTERNAL_RES_CHAR_CONTENTS")
   | token ->
     Parser.err p (Diagnostics.unexpected token p.breadcrumbs);
     Pconst_string("", None)
@@ -1070,7 +1116,7 @@ let rec parsePattern ?(alias=true) ?(or_=true) p =
     let loc = mkLoc startPos endPos in
     Ast_helper.Pat.construct ~loc
       (Location.mkloc (Longident.Lident (Token.toString token)) loc) None
-  | Int _ | String _ | Float _ | Character _ | Minus | Plus ->
+  | Int _ | String _ | Float _ | Codepoint _ | Minus | Plus ->
     let c = parseConstant p in
      begin match p.token with
       | DotDot ->
@@ -1082,7 +1128,7 @@ let rec parsePattern ?(alias=true) ?(or_=true) p =
     end
   | Backtick ->
     let constant = parseTemplateConstant ~prefix:(Some "js") p in
-    Ast_helper.Pat.constant ~loc:(mkLoc startPos p.prevEndPos) constant
+    Ast_helper.Pat.constant ~attrs:[templateLiteralAttr] ~loc:(mkLoc startPos p.prevEndPos) constant
   | Lparen ->
     Parser.next p;
     begin match p.token with
@@ -1815,7 +1861,7 @@ and parseAtomicExpr p =
       let loc = mkLoc startPos p.prevEndPos in
       Ast_helper.Exp.construct ~loc
         (Location.mkloc (Longident.Lident (Token.toString token)) loc) None
-    | Int _ | String _ | Float _ | Character _ ->
+    | Int _ | String _ | Float _ | Codepoint _ ->
       let c = parseConstant p in
       let loc = mkLoc startPos p.prevEndPos in
       Ast_helper.Exp.constant ~loc c
@@ -2182,25 +2228,19 @@ and parseTemplateExpr ?(prefix="js") p =
     | TemplateTail txt ->
       Parser.next p;
       let loc = mkLoc startPos p.prevEndPos in
-      if String.length txt > 0 then
-        let txt = if p.mode = ParseForTypeChecker then parseTemplateStringLiteral txt else txt in
-        let str = Ast_helper.Exp.constant ~loc (Pconst_string(txt, Some prefix)) in
-        Ast_helper.Exp.apply ~loc hiddenOperator
-          [Nolabel, acc; Nolabel, str]
-      else
-        acc
+      let txt = if p.mode = ParseForTypeChecker then parseTemplateStringLiteral txt else txt in
+      let str = Ast_helper.Exp.constant ~attrs:[templateLiteralAttr] ~loc (Pconst_string(txt, Some prefix)) in
+      Ast_helper.Exp.apply ~attrs:[templateLiteralAttr] ~loc hiddenOperator
+        [Nolabel, acc; Nolabel, str]
     | TemplatePart txt ->
       Parser.next p;
       let loc = mkLoc startPos p.prevEndPos in
       let expr = parseExprBlock p in
       let fullLoc = mkLoc startPos p.prevEndPos in
       let txt = if p.mode = ParseForTypeChecker then parseTemplateStringLiteral txt else txt in
-      let str = Ast_helper.Exp.constant ~loc (Pconst_string(txt, Some prefix)) in
+      let str = Ast_helper.Exp.constant ~attrs:[templateLiteralAttr] ~loc (Pconst_string(txt, Some prefix)) in
       let next =
-        let a = if String.length txt > 0 then
-            Ast_helper.Exp.apply ~loc:fullLoc hiddenOperator [Nolabel, acc; Nolabel, str]
-          else acc
-        in
+        let a = Ast_helper.Exp.apply ~attrs:[templateLiteralAttr] ~loc:fullLoc hiddenOperator [Nolabel, acc; Nolabel, str] in
         Ast_helper.Exp.apply ~loc:fullLoc hiddenOperator
           [Nolabel, a; Nolabel, expr]
       in
@@ -2215,19 +2255,16 @@ and parseTemplateExpr ?(prefix="js") p =
   | TemplateTail txt ->
     Parser.next p;
     let txt = if p.mode = ParseForTypeChecker then parseTemplateStringLiteral txt else txt in
-    Ast_helper.Exp.constant ~loc:(mkLoc startPos p.prevEndPos) (Pconst_string(txt, Some prefix))
+    Ast_helper.Exp.constant ~attrs:[templateLiteralAttr] ~loc:(mkLoc startPos p.prevEndPos) (Pconst_string(txt, Some prefix))
   | TemplatePart txt ->
     Parser.next p;
     let constantLoc = mkLoc startPos p.prevEndPos in
     let expr = parseExprBlock p in
     let fullLoc = mkLoc startPos p.prevEndPos in
     let txt = if p.mode = ParseForTypeChecker then parseTemplateStringLiteral txt else txt in
-    let str = Ast_helper.Exp.constant ~loc:constantLoc (Pconst_string(txt, Some prefix)) in
+    let str = Ast_helper.Exp.constant ~attrs:[templateLiteralAttr] ~loc:constantLoc (Pconst_string(txt, Some prefix)) in
     let next =
-      if String.length txt > 0 then
-        Ast_helper.Exp.apply ~loc:fullLoc hiddenOperator [Nolabel, str; Nolabel, expr]
-      else
-        expr
+      Ast_helper.Exp.apply ~attrs:[templateLiteralAttr] ~loc:fullLoc hiddenOperator [Nolabel, str; Nolabel, expr]
     in
     parseParts next
  | token ->

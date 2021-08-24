@@ -1,13 +1,14 @@
 let x = true
 let y = false
-let txt = "a string"
-let txtWithEscapedChar = "foo\nbar"
+let txt = {js|a string|js}
+let txtWithEscapedChar = {js|foo\nbar|js}
 let number = 1
-let template = {js|amazing
+let template = (({js|amazing
   multine
   template
      string
-|js}
+|js})
+  [@res.template ])
 let complexNumber = 1.6
 let x = 0b0000_0001
 let int32 = 42l
@@ -49,13 +50,27 @@ let x = '\017'
 let x = '\170'
 let x = '\179'
 let () = ((getResult (); (-10))[@ns.braces ])
-let x = "foo\nbar"
-let x = "foo\nbar"
-let x = "foo\nbar"
-let x = "\\abc"
-let x = "'bar"
-let x = "\nbar"
-let x = "\tbar"
-let x = "\bbar"
-let x = "\rbar"
-let x = " bar"
+let x = {js|foo\010bar|js}
+let x = {js|foo\x0Abar|js}
+let x = {js|foo\o012bar|js}
+let x = {js|\\abc|js}
+let x = {js|\'bar|js}
+let x = {js|\nbar|js}
+let x = {js|\tbar|js}
+let x = {js|\bbar|js}
+let x = {js|\rbar|js}
+let x = {js|\ bar|js}
+let x = {js|\u00A9|js}
+let x = {js|\u00a9|js}
+let x = {js|\u2665|js}
+let a = {js|\u{000000000061}|js}
+let x = {js|\u{00A9}|js}
+let x = {js|\u{00a9}|js}
+let smile = {js|\u{1F600}|js}
+let smile = {js|\u{1f600}|js}
+let smile = {js|\240\159\152\128|js}
+let u = {js|日本語|js}
+let u = {js|\u65e5\u672c\u8a9e|js}
+let u = {js|\u{000065e5}\u{0000672c}\u{00008a9e}|js}
+let u = {js|\xe6\x97\xa5\xe6\x9c\xac\xe8\xaa\x9e|js}
+let u = {js|\230\151\165\230\156\172\232\170\158|js}

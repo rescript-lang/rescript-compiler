@@ -19,5 +19,5 @@
 
   unknown escape sequence
 
-let x = "\\0"
-let x = "\\oAAA"
+let x = {js|\0|js}
+let x = {js|\oAAA|js}

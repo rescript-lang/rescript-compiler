@@ -177,3 +177,4 @@ end
 
 let () = OutcomePrinterTests.run()
 let () = ParserApiTest.run()
+let () = Res_utf8_test.run()

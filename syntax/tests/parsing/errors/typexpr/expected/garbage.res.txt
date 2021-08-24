@@ -9,4 +9,4 @@
   I'm not sure what to parse here when looking at "?".
 
 external printName : name:((unit)[@ns.namedArgLoc ]) -> unit = "printName"
-[@@bs.module "moduleName"]
+[@@bs.module {js|moduleName|js}]

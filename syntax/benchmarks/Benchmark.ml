@@ -6,7 +6,6 @@ module Printer = Res_printer
 
 module IO: sig
   val readFile: string -> string
-  val readStdin: unit -> string
 end = struct
   (* random chunk size: 2^15, TODO: why do we guess randomly? *)
   let chunkSize = 32768
@@ -19,21 +18,6 @@ end = struct
       let len = try input chan chunk 0 chunkSize with Invalid_argument _ -> 0 in
       if len == 0 then (
         close_in_noerr chan;
-        Buffer.contents buffer
-      ) else (
-        Buffer.add_subbytes buffer chunk 0 len;
-        loop ()
-      )
-    in
-    loop ()
-
-  let readStdin () =
-    let buffer = Buffer.create chunkSize in
-    let chunk = (Bytes.create [@doesNotRaise]) chunkSize in
-    let rec loop () =
-      let len = try input stdin chunk 0 chunkSize with Invalid_argument _ -> 0 in
-      if len == 0 then (
-        close_in_noerr stdin;
         Buffer.contents buffer
       ) else (
         Buffer.add_subbytes buffer chunk 0 len;
@@ -186,29 +170,6 @@ end = struct
     for n=1 to 150 do
       runIteration b n
     done
-end
-
-module Profile: sig
-  val record : name:string -> (unit -> 'a) -> 'a
-  val print: unit -> unit
-end = struct
-  let state = Hashtbl.create 2
-
-  let record ~name f =
-    let startTime = Time.now() in
-    let result = f() in
-    let endTime = Time.now() in
-
-    Hashtbl.add state name (Time.diff startTime endTime);
-    result
-
-  let print () =
-    let report = Hashtbl.fold (fun k v acc ->
-      let line = Printf.sprintf "%s: %fms\n" k (Time.print v) in
-      acc ^ line
-    ) state "\n\n"
-    in
-    print_endline report
 end
 
 module Benchmarks: sig

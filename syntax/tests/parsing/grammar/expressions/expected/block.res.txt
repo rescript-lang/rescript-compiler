@@ -23,17 +23,17 @@ let b =
   [@ns.braces ])
 let b = ((f (); g (); h (); (let arr = [|1;2;3|] in ()))[@ns.braces ])
 let res =
-  ((let a = "a starts out as" in
+  ((let a = {js|a starts out as|js} in
     (((print_string a; (let a = 20 in print_int a)))
     [@ns.braces ]);
     print_string a)
   [@ns.braces ])
 let res =
-  ((let a = "first its a string" in
+  ((let a = {js|first its a string|js} in
     let a = 20 in print_int a; print_int a; print_int a)
   [@ns.braces ])
 let res =
-  ((let a = "a is always a string" in
+  ((let a = {js|a is always a string|js} in
     print_string a; (let b = 30 in print_int b))
   [@ns.braces ])
 let nestedLet = ((let _ = 1 in ())[@ns.braces ])
@@ -49,10 +49,11 @@ let reifyStyle (type a) (x : 'a) =
          external canvasGradient : constructor = "CanvasGradient"[@@bs.val ]
          external canvasPattern : constructor = "CanvasPattern"[@@bs.val ]
          let instanceOf =
-           ([%bs.raw {js|function(x,y) {return +(x instanceof y)}|js}] : 
-           'a -> constructor -> bool)
+           ([%bs.raw
+              (({js|function(x,y) {return +(x instanceof y)}|js})
+                [@res.template ])] : 'a -> constructor -> bool)
        end in
-       ((if (Js.typeof x) = "string"
+       ((if (Js.typeof x) = {js|string|js}
          then Obj.magic String
          else
            if Internal.instanceOf x Internal.canvasGradient
@@ -63,7 +64,7 @@ let reifyStyle (type a) (x : 'a) =
              else
                raise
                  (Invalid_argument
-                    "Unknown canvas style kind. Known values are: String, CanvasGradient, CanvasPattern")),
+                    {js|Unknown canvas style kind. Known values are: String, CanvasGradient, CanvasPattern|js})),
          (Obj.magic x)))
   [@ns.braces ]) : (a style * a))
 let calc_fps t0 t1 = ((let delta = (t1 -. t0) /. 1000. in 1. /. delta)

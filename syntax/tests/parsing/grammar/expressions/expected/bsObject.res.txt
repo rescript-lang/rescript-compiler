@@ -1,7 +1,7 @@
 let x = [%obj { age = 30 }]
 let y = [%obj { age = 30 }]
-let y = [%obj { age = 30; name = "steve" }]
-let y = [%obj { age = 30; name = "steve" }]
+let y = [%obj { age = 30; name = {js|steve|js} }]
+let y = [%obj { age = 30; name = {js|steve|js} }]
 let x = (("age")[@ns.braces ])
 let x = (("age".(0))[@ns.braces ])
 let x = (("age" |. Js.log)[@ns.braces ])

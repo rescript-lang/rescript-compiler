@@ -153,7 +153,7 @@ let processBracesAttr expr =
 let filterParsingAttrs attrs =
   List.filter (fun attr ->
     match attr with
-    | ({Location.txt = ("ns.ternary" | "ns.braces" | "bs" | "ns.iflet" | "ns.namedArgLoc")}, _) -> false
+    | ({Location.txt = ("ns.ternary" | "ns.braces" | "res.template" | "bs" | "ns.iflet" | "ns.namedArgLoc")}, _) -> false
     | _ -> true
   ) attrs
 
@@ -292,7 +292,7 @@ let isIfLetExpr expr = match expr with
 
 let hasAttributes attrs =
   List.exists (fun attr -> match attr with
-    | ({Location.txt = "bs" | "ns.ternary" | "ns.braces" | "ns.iflet"}, _) -> false
+    | ({Location.txt = "bs" | "res.template" | "ns.ternary" | "ns.braces" | "ns.iflet"}, _) -> false
     (* Remove the fragile pattern warning for iflet expressions *)
     | ({Location.txt="warning"}, PStr [{
       pstr_desc = Pstr_eval ({
@@ -453,13 +453,13 @@ let shouldInlineRhsBinaryExpr rhs = match rhs.pexp_desc with
 
 let filterPrinteableAttributes attrs =
   List.filter (fun attr -> match attr with
-    | ({Location.txt="bs" | "ns.ternary" | "ns.iflet" | "JSX"}, _) -> false
+    | ({Location.txt="bs" | "res.template" | "ns.ternary" | "ns.iflet" | "JSX"}, _) -> false
     | _ -> true
   ) attrs
 
 let partitionPrinteableAttributes attrs =
   List.partition (fun attr -> match attr with
-    | ({Location.txt="bs" | "ns.ternary" | "ns.iflet" | "JSX"}, _) -> false
+    | ({Location.txt="bs" | "res.template"| "ns.ternary" | "ns.iflet" | "JSX"}, _) -> false
     | _ -> true
   ) attrs
 
@@ -511,17 +511,19 @@ let rec collectPatternsFromListConstruct acc pattern =
     collectPatternsFromListConstruct (pat::acc) rest
   | _ -> List.rev acc, pattern
 
-(* Simple heuristic to detect template literal sugar:
- *  `${user.name} lastName` parses internally as user.name ++ ` lastName`.
- *  The thing is: the ++ operator (parsed as `^`)  will always have a ghost loc.
- *  A ghost loc is only produced by our parser.
- *  Hence, if we have that ghost operator, we know for sure it's a template literal. *)
+
+let hasTemplateLiteralAttr attrs = List.exists (fun attr -> match attr with
+| ({Location.txt = "res.template"}, _) -> true
+| _ -> false) attrs
+
 let isTemplateLiteral expr =
   match expr.pexp_desc with
   | Pexp_apply (
-      {pexp_desc = Pexp_ident {txt = Longident.Lident "^"; loc}},
+      {pexp_desc = Pexp_ident {txt = Longident.Lident "^"}},
       [Nolabel, _; Nolabel, _]
-    ) when loc.loc_ghost -> true
+    ) when hasTemplateLiteralAttr expr.pexp_attributes -> true
+  | Pexp_constant (Pconst_string (_, Some "")) -> true
+  | Pexp_constant _ when hasTemplateLiteralAttr expr.pexp_attributes -> true
   | _ -> false
 
 (* Blue | Red | Green -> [Blue; Red; Green] *)

@@ -1,26 +1,81 @@
-let s = {js|foo|js}
-let s = {js|multi
+let s = (({js|foo|js})[@res.template ])
+let s = (({js|multi
   line
 
 string
-|js}
-let s = foo
-let s = {js|before|js} ^ foo
-let s = {js|before |js} ^ foo
-let s = {js|before  |js} ^ foo
-let s = foo ^ {js|after|js}
-let s = foo ^ {js| after|js}
-let s = foo ^ {js|  after|js}
-let s = foo ^ bar
-let s = (foo ^ bar) ^ baz
-let s = (foo ^ {js| |js}) ^ bar
-let s = (((foo ^ {js| |js}) ^ bar) ^ {js| |js}) ^ baz
-let s = ((({js| before |js} ^ foo) ^ {js| |js}) ^ bar) ^ {js| after |js}
+|js})[@res.template ])
 let s =
-  ((((({js|before |js} ^ foo) ^ {js| middle |js}) ^ bar) ^ {js| |js}) ^ baz)
-    ^ {js| wow |js}
+  (((((({js||js})[@res.template ]) ^ foo)[@res.template ]) ^ (({js||js})
+      [@res.template ]))
+  [@res.template ])
 let s =
-  {js|
+  (((((({js|before|js})[@res.template ]) ^ foo)[@res.template ]) ^
+      (({js||js})[@res.template ]))
+  [@res.template ])
+let s =
+  (((((({js|before |js})[@res.template ]) ^ foo)[@res.template ]) ^
+      (({js||js})[@res.template ]))
+  [@res.template ])
+let s =
+  (((((({js|before  |js})[@res.template ]) ^ foo)[@res.template ]) ^
+      (({js||js})[@res.template ]))
+  [@res.template ])
+let s =
+  (((((({js||js})[@res.template ]) ^ foo)[@res.template ]) ^ (({js|after|js})
+      [@res.template ]))
+  [@res.template ])
+let s =
+  (((((({js||js})[@res.template ]) ^ foo)[@res.template ]) ^
+      (({js| after|js})[@res.template ]))
+  [@res.template ])
+let s =
+  (((((({js||js})[@res.template ]) ^ foo)[@res.template ]) ^
+      (({js|  after|js})[@res.template ]))
+  [@res.template ])
+let s =
+  ((((((((({js||js})[@res.template ]) ^ foo)[@res.template ]) ^ (({js||js})
+         [@res.template ]))
+       [@res.template ]) ^ bar)
+      ^ (({js||js})[@res.template ]))
+  [@res.template ])
+let s =
+  (((((((((((({js||js})[@res.template ]) ^ foo)[@res.template ]) ^
+            (({js||js})[@res.template ]))
+          [@res.template ]) ^ bar)
+         ^ (({js||js})[@res.template ]))
+       [@res.template ]) ^ baz)
+      ^ (({js||js})[@res.template ]))
+  [@res.template ])
+let s =
+  ((((((((({js||js})[@res.template ]) ^ foo)[@res.template ]) ^ (({js| |js})
+         [@res.template ]))
+       [@res.template ]) ^ bar)
+      ^ (({js||js})[@res.template ]))
+  [@res.template ])
+let s =
+  (((((((((((({js||js})[@res.template ]) ^ foo)[@res.template ]) ^
+            (({js| |js})[@res.template ]))
+          [@res.template ]) ^ bar)
+         ^ (({js| |js})[@res.template ]))
+       [@res.template ]) ^ baz)
+      ^ (({js||js})[@res.template ]))
+  [@res.template ])
+let s =
+  ((((((((({js| before |js})[@res.template ]) ^ foo)[@res.template ]) ^
+         (({js| |js})[@res.template ]))
+       [@res.template ]) ^ bar)
+      ^ (({js| after |js})[@res.template ]))
+  [@res.template ])
+let s =
+  (((((((((((({js|before |js})[@res.template ]) ^ foo)[@res.template ]) ^
+            (({js| middle |js})[@res.template ]))
+          [@res.template ]) ^ bar)
+         ^ (({js| |js})[@res.template ]))
+       [@res.template ]) ^ baz)
+      ^ (({js| wow |js})[@res.template ]))
+  [@res.template ])
+let s =
+  (({js|
   multiline
 
   es6
@@ -32,13 +87,21 @@ let s =
   so convenient
 
   :)
-|js}
-let s = {js|$dollar without $braces $interpolation|js}
-let s = {json|null|json}
-let x = {js|foo`bar$\foo|js}
-let x = ((({js|foo`bar$\foo|js} ^ a) ^ {js| ` |js}) ^ b) ^ {js| ` xx|js}
-let thisIsFine = {js|$something|js}
-let thisIsAlsoFine = {js|fine$|js}
-let isThisFine = {js|shouldBeFine$|js}
-;;{js|$|js} ^ dollarAmountInt
-;;{js|$|js} ^ dollarAmountInt
+|js})
+  [@res.template ])
+let s = (({js|$dollar without $braces $interpolation|js})[@res.template ])
+let s = (({json|null|json})[@res.template ])
+let x = (({js|foo`bar$\foo|js})[@res.template ])
+let x =
+  ((((((((({js|foo`bar$\foo|js})[@res.template ]) ^ a)[@res.template ]) ^
+         (({js| ` |js})[@res.template ]))
+       [@res.template ]) ^ b)
+      ^ (({js| ` xx|js})[@res.template ]))
+  [@res.template ])
+let thisIsFine = (({js|$something|js})[@res.template ])
+let thisIsAlsoFine = (({js|fine$|js})[@res.template ])
+let isThisFine = (({js|shouldBeFine$|js})[@res.template ])
+;;(((((({js|$|js})[@res.template ]) ^ dollarAmountInt)[@res.template ]) ^
+      (({js||js})[@res.template ]))[@res.template ])
+;;(((((({js|$|js})[@res.template ]) ^ dollarAmountInt)[@res.template ]) ^
+      (({js||js})[@res.template ]))[@res.template ])

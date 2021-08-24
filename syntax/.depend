@@ -12,9 +12,10 @@ src/res_comment.cmx : src/res_comment.cmi
 src/res_comment.cmi :
 src/res_comments_table.cmx : src/res_parsetree_viewer.cmx src/res_doc.cmx \
     src/res_comment.cmx
-src/res_core.cmx : src/res_token.cmx src/res_scanner.cmx src/res_printer.cmx \
-    src/res_parser.cmx src/res_js_ffi.cmx src/res_grammar.cmx src/res_doc.cmx \
-    src/res_diagnostics.cmx src/res_comments_table.cmx src/res_core.cmi
+src/res_core.cmx : src/res_utf8.cmx src/res_token.cmx src/res_scanner.cmx \
+    src/res_printer.cmx src/res_parser.cmx src/res_js_ffi.cmx \
+    src/res_grammar.cmx src/res_doc.cmx src/res_diagnostics.cmx \
+    src/res_comments_table.cmx src/res_core.cmi
 src/res_core.cmi : src/res_parser.cmi
 src/res_diagnostics.cmx : src/res_token.cmx src/res_grammar.cmx \
     src/res_diagnostics_printing_utils.cmx src/res_diagnostics.cmi
@@ -60,16 +61,19 @@ src/res_parser.cmi : src/res_token.cmx src/res_scanner.cmi \
     src/res_comment.cmi
 src/res_parsetree_viewer.cmx : src/res_parsetree_viewer.cmi
 src/res_parsetree_viewer.cmi :
-src/res_printer.cmx : src/res_token.cmx src/res_parsetree_viewer.cmx \
-    src/res_parens.cmx src/res_doc.cmx src/res_comments_table.cmx \
-    src/res_comment.cmx src/res_printer.cmi
+src/res_printer.cmx : src/res_utf8.cmx src/res_token.cmx \
+    src/res_parsetree_viewer.cmx src/res_parens.cmx src/res_doc.cmx \
+    src/res_comments_table.cmx src/res_comment.cmx src/res_printer.cmi
 src/res_printer.cmi : src/res_doc.cmi src/res_comments_table.cmx \
     src/res_comment.cmi
 src/res_reporting.cmx : src/res_token.cmx src/res_grammar.cmx
-src/res_scanner.cmx : src/res_token.cmx src/res_diagnostics.cmx \
-    src/res_comment.cmx src/res_scanner.cmi
+src/res_scanner.cmx : src/res_utf8.cmx src/res_token.cmx \
+    src/res_diagnostics.cmx src/res_comment.cmx src/res_scanner.cmi
 src/res_scanner.cmi : src/res_token.cmx src/res_diagnostics.cmi
 src/res_token.cmx : src/res_comment.cmx
-tests/res_test.cmx : src/res_token.cmx src/res_parser.cmx \
-    src/res_outcome_printer.cmx src/res_multi_printer.cmx src/res_io.cmx \
-    src/res_driver.cmx src/res_core.cmx
+src/res_utf8.cmx : src/res_utf8.cmi
+src/res_utf8.cmi :
+tests/res_test.cmx : tests/res_utf8_test.cmx src/res_token.cmx \
+    src/res_parser.cmx src/res_outcome_printer.cmx src/res_multi_printer.cmx \
+    src/res_io.cmx src/res_driver.cmx src/res_core.cmx
+tests/res_utf8_test.cmx : src/res_utf8.cmx

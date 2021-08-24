@@ -6,8 +6,8 @@ let comparisonResult =
   ((compare currentNode.value ~targetValue:((targetValue)[@ns.namedArgLoc ]))
   [@bs ])
 ;;((callback firstNode ~y:((y)[@ns.namedArgLoc ]))[@bs ])
-;;((document.createElementWithOptions "div"
-      (elementProps ~onClick:((fun _ -> Js.log "hello world")
+;;((document.createElementWithOptions {js|div|js}
+      (elementProps ~onClick:((fun _ -> Js.log {js|hello world|js})
          [@ns.namedArgLoc ])))[@bs ])
 ;;((resolve ())[@bs ])
 ;;((resolve (let __res_unit = () in __res_unit))[@bs ])

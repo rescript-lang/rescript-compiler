@@ -323,6 +323,8 @@ let hasUncurriedAttribute attrs = List.exists (fun attr -> match attr with
   | _ -> false
 ) attrs
 
+let templateLiteralAttr = (Location.mknoloc "res.template", Parsetree.PStr [])
+
 let normalize =
   let open Ast_mapper in
   { default_mapper with
@@ -368,7 +370,7 @@ let normalize =
         in
         let s = Parsetree.Pconst_string ((escapeTemplateLiteral txt), newTag) in
         {p with
-          ppat_attributes = mapper.attributes mapper p.ppat_attributes;
+          ppat_attributes = templateLiteralAttr::(mapper.attributes mapper p.ppat_attributes);
           ppat_desc = Ppat_constant s
         }
       | _ ->
@@ -396,7 +398,7 @@ let normalize =
         in
         let s = Parsetree.Pconst_string ((escapeTemplateLiteral txt), newTag) in
         {expr with
-          pexp_attributes = mapper.attributes mapper expr.pexp_attributes;
+          pexp_attributes= templateLiteralAttr::(mapper.attributes mapper expr.pexp_attributes);
           pexp_desc = Pexp_constant s
         }
       | Pexp_apply (

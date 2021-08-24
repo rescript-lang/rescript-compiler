@@ -114,7 +114,7 @@ let make = () => {
       ref={containerRef->ReactDOMRe.Ref.domRef}>
       {state.history
       ->Array.mapWithIndex((index, item) =>
-        <div key=j`$index` className=Styles.line>
+        <div key={j`$index`} className=Styles.line>
           {ReasonReact.string(
             switch item {
             | User(value) => userPrefix ++ value

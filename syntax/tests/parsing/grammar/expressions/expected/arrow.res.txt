@@ -1,12 +1,12 @@
 let f x = x + 1
-let f _ = Js.log "test"
-let f () = Js.log "unit"
+let f _ = Js.log {js|test|js}
+let f () = Js.log {js|unit|js}
 let f (Reducer (inst, comp)) = inst.render comp
 let f (Instance) = ()
 let f a b = a + b
 let f 1 2 = ()
-let f "stringPattern" = ()
-let f "stringPattern" "stringPattern" = ()
+let f {js|stringPattern|js} = ()
+let f {js|stringPattern|js} {js|stringPattern|js} = ()
 let f () = ()
 let f (a : int) (b : int) = a + b
 let f _ _ = ()

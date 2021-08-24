@@ -24,6 +24,7 @@ API_FILES = \
 	src/res_parsetree_viewer.cmx\
 	src/res_parens.cmx\
 	src/res_comments_table.cmx\
+	src/res_utf8.cmx\
 	src/res_printer.cmx\
 	src/res_scanner.cmx\
 	src/res_js_ffi.cmx\
@@ -40,7 +41,7 @@ API_FILES = \
 
 CLI_FILES = $(API_FILES) src/res_cli.cmx
 
-TEST_FILES = $(API_FILES) tests/res_test.cmx
+TEST_FILES = $(API_FILES) tests/res_utf8_test.cmx tests/res_test.cmx
 
 .DEFAULT_GOAL := build-native
 
@@ -74,7 +75,7 @@ test: reanalyze build-native lib/test.exe
 	./lib/test.exe
 	./test.sh
 
-roundtrip-test: reanalyze bootstrap lib/test.exe
+roundtrip-test: reanalyze lib/test.exe
 	./lib/test.exe
 	ROUNDTRIP_TEST=1 ./test.sh
 

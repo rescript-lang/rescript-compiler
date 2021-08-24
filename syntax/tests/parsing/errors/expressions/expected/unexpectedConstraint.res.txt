@@ -24,4 +24,4 @@
   ("hi": string)
 
 let x = ((let a = 1 in let b = 2 in (a + b : int))[@ns.braces ])
-let x = ("hi" : string)
+let x = ({js|hi|js} : string)

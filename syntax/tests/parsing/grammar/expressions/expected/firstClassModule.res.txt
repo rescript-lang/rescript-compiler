@@ -45,22 +45,22 @@ let build_dispatch_table handlers =
 ;;((module Teenager) |. age) |. Js.log
 ;;((module Teenager).(0)) |. Js.log
 ;;((if ((module Teenager) |. age) |. isAdult
-    then Js.log "has responsibilities"
-    else Js.log "can play in the playground")[@ns.ternary ])
+    then Js.log {js|has responsibilities|js}
+    else Js.log {js|can play in the playground|js})[@ns.ternary ])
 ;;((if ((module Streets).(0)) |. isExpensive
-    then Js.log "big money"
-    else Js.log "affordable")[@ns.ternary ])
+    then Js.log {js|big money|js}
+    else Js.log {js|affordable|js})[@ns.ternary ])
 let () = ((((module Teenager) |. age) |. Js.log)[@ns.braces ])
 let () = (((module Teenager).(0))[@ns.braces ])
 let () =
   ((if ((module Teenager) |. age) |. isAdult
-    then Js.log "has responsibilities"
-    else Js.log "can play in the playground")
+    then Js.log {js|has responsibilities|js}
+    else Js.log {js|can play in the playground|js})
   [@ns.braces ][@ns.ternary ])
 let () =
   ((if ((module Streets).(0)) |. isExpensive
-    then Js.log "big money"
-    else Js.log "affordable")
+    then Js.log {js|big money|js}
+    else Js.log {js|affordable|js})
   [@ns.braces ][@ns.ternary ])
 let () =
   ((let a = 1 in
@@ -71,7 +71,7 @@ let () =
     let b = 2 in
     ((module Teenager) |. age) |. Js.log;
     ((if (((module Teenager).(0)) |. age) |. isAdult
-      then Js.log "has responsibilities"
-      else Js.log "can play in the playground")
+      then Js.log {js|has responsibilities|js}
+      else Js.log {js|can play in the playground|js})
     [@ns.ternary ]))
   [@ns.braces ])

@@ -21,6 +21,6 @@
 type nonrec action =
   | AddUser 
 ;;((string ~children:[] ())[@JSX ])
-let (a : action) = AddUser "test"
+let (a : action) = AddUser {js|test|js}
 ;;etype
 ;;s = { x = ((list < i) > ([%rescript.exprhole ])) }

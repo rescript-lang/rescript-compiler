@@ -11,4 +11,4 @@
   I'm not sure what to parse here when looking at ")".
 
 module C = struct module T = (Fun)(struct ;;foo (a + c) (b + d) end) end
-;;Js.log "test"
+;;Js.log {js|test|js}

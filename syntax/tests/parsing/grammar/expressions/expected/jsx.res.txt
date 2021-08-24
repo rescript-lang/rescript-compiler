@@ -1,29 +1,29 @@
 let _ = ((div ~children:[] ())[@JSX ])
 let _ = ((div ~children:[] ())[@JSX ])
-let _ = ((div ~className:(("menu")[@ns.namedArgLoc ]) ~children:[] ())
+let _ = ((div ~className:(({js|menu|js})[@ns.namedArgLoc ]) ~children:[] ())
   [@JSX ])
-let _ = ((div ~className:(("menu")[@ns.namedArgLoc ]) ~children:[] ())
+let _ = ((div ~className:(({js|menu|js})[@ns.namedArgLoc ]) ~children:[] ())
   [@JSX ])
-let _ = ((div ~className:(("menu")[@ns.namedArgLoc ]) ~children:[] ())
+let _ = ((div ~className:(({js|menu|js})[@ns.namedArgLoc ]) ~children:[] ())
   [@JSX ])
-let _ = ((div ~className:(("menu")[@ns.namedArgLoc ]) ~children:[] ())
+let _ = ((div ~className:(({js|menu|js})[@ns.namedArgLoc ]) ~children:[] ())
   [@JSX ])
 let _ =
-  ((div ~className:(("menu")[@ns.namedArgLoc ])
-      ~onClick:((fun _ -> Js.log "click")[@ns.namedArgLoc ][@ns.braces ])
+  ((div ~className:(({js|menu|js})[@ns.namedArgLoc ])
+      ~onClick:((fun _ -> Js.log {js|click|js})
+      [@ns.namedArgLoc ][@ns.braces ]) ~children:[] ())
+  [@JSX ])
+let _ =
+  ((div ~className:(({js|menu|js})[@ns.namedArgLoc ])
+      ~onClick:((fun _ -> Js.log {js|click|js})
+      [@ns.namedArgLoc ][@ns.braces ]) ~children:[] ())
+  [@JSX ])
+let _ = ((Navbar.createElement ~children:[] ())[@JSX ])
+let _ = ((Navbar.createElement ~children:[] ())[@JSX ])
+let _ = ((Navbar.createElement ~children:[] ())[@JSX ])
+let _ =
+  ((Navbar.createElement ~className:(({js|menu|js})[@ns.namedArgLoc ])
       ~children:[] ())
-  [@JSX ])
-let _ =
-  ((div ~className:(("menu")[@ns.namedArgLoc ])
-      ~onClick:((fun _ -> Js.log "click")[@ns.namedArgLoc ][@ns.braces ])
-      ~children:[] ())
-  [@JSX ])
-let _ = ((Navbar.createElement ~children:[] ())[@JSX ])
-let _ = ((Navbar.createElement ~children:[] ())[@JSX ])
-let _ = ((Navbar.createElement ~children:[] ())[@JSX ])
-let _ =
-  ((Navbar.createElement ~className:(("menu")[@ns.namedArgLoc ]) ~children:[]
-      ())
   [@JSX ])
 let _ = ((Dot.Up.createElement ~children:[] ())[@JSX ])
 let _ = ((Dot.Up.createElement ~children:[] ())[@JSX ])
@@ -37,8 +37,8 @@ let _ =
       ~children:[((Dot.Up.createElement ~children:[] ())[@JSX ])] ())
   [@JSX ])
 let _ =
-  ((Dot.Up.createElement ~className:(("menu")[@ns.namedArgLoc ]) ~children:[]
-      ())
+  ((Dot.Up.createElement ~className:(({js|menu|js})[@ns.namedArgLoc ])
+      ~children:[] ())
   [@JSX ])
 let _ = ((Dot.low.createElement ~children:[] ())[@JSX ])
 let _ = ((Dot.low.createElement ~children:[] ())[@JSX ])
@@ -52,7 +52,7 @@ let _ =
       ~children:[((Dot.low.createElement ~children:[] ())[@JSX ])] ())
   [@JSX ])
 let _ =
-  ((Dot.low.createElement ~className:(("menu")[@ns.namedArgLoc ])
+  ((Dot.low.createElement ~className:(({js|menu|js})[@ns.namedArgLoc ])
       ~children:[] ())
   [@JSX ])
 let _ = ((el ~punned:((punned)[@ns.namedArgLoc ]) ~children:[] ())[@JSX ])
@@ -64,20 +64,20 @@ let _ = ((el ?a:((b)[@ns.namedArgLoc ]) ~children:[] ())[@JSX ])
 let _ = (([])[@JSX ])
 let _ = (([])[@JSX ])
 let _ =
-  ((div ~className:(("menu")[@ns.namedArgLoc ])
-      ~children:[((div ~className:(("submenu")[@ns.namedArgLoc ])
+  ((div ~className:(({js|menu|js})[@ns.namedArgLoc ])
+      ~children:[((div ~className:(({js|submenu|js})[@ns.namedArgLoc ])
                      ~children:[sub1] ())
                 [@JSX ]);
-                ((div ~className:(("submenu")[@ns.namedArgLoc ])
+                ((div ~className:(({js|submenu|js})[@ns.namedArgLoc ])
                     ~children:[sub2] ())
                 [@JSX ])] ())
   [@JSX ])
 let _ =
-  ((div ~className:(("menu")[@ns.namedArgLoc ])
-      ~children:[((div ~className:(("submenu")[@ns.namedArgLoc ])
+  ((div ~className:(({js|menu|js})[@ns.namedArgLoc ])
+      ~children:[((div ~className:(({js|submenu|js})[@ns.namedArgLoc ])
                      ~children:[sub1] ())
                 [@JSX ]);
-                ((div ~className:(("submenu")[@ns.namedArgLoc ])
+                ((div ~className:(({js|submenu|js})[@ns.namedArgLoc ])
                     ~children:[sub2] ())
                 [@JSX ])] ())
   [@JSX ])
@@ -99,7 +99,7 @@ let _ =
   [@JSX ])
 let _ =
   ((div ~onClick:((onClickHandler)[@ns.namedArgLoc ])
-      ~children:[((["foobar"])[@JSX ])] ())
+      ~children:[(([{js|foobar|js}])[@JSX ])] ())
   [@JSX ])
 let _ =
   ((Window.createElement
@@ -212,10 +212,10 @@ let tuples =
 let icon =
   ((Icon.createElement
       ~name:((match state.volume with
-              | v when v < 0.1 -> "sound-off"
-              | v when v < 0.11 -> "sound-min"
-              | v when v < 0.51 -> "sound-med"
-              | _ -> "sound-max")[@ns.namedArgLoc ][@ns.braces ])
+              | v when v < 0.1 -> {js|sound-off|js}
+              | v when v < 0.11 -> {js|sound-min|js}
+              | v when v < 0.51 -> {js|sound-med|js}
+              | _ -> {js|sound-max|js})[@ns.namedArgLoc ][@ns.braces ])
       ~children:[] ())
   [@JSX ])
 let _ =
@@ -253,19 +253,19 @@ let y =
     [@JSX ])|]
 let _ =
   ((Description.createElement
-      ~term:((Text.createElement ~text:(("Age")[@ns.namedArgLoc ])
+      ~term:((Text.createElement ~text:(({js|Age|js})[@ns.namedArgLoc ])
                 ~children:[] ())[@ns.namedArgLoc ][@ns.braces ][@JSX ])
       ~children:[child] ())
   [@JSX ])
 let _ =
   ((Description.createElement
-      ~term:((Text.createElement ~text:(("Age")[@ns.namedArgLoc ])
+      ~term:((Text.createElement ~text:(({js|Age|js})[@ns.namedArgLoc ])
                 ~children:(([||])[@ns.namedArgLoc ]) ())
       [@ns.namedArgLoc ][@ns.braces ]) ~children:[child] ())
   [@JSX ])
 let _ =
   ((Description.createElement
-      ~term:((Text.createElement ~text:(("Age")[@ns.namedArgLoc ]) ())
+      ~term:((Text.createElement ~text:(({js|Age|js})[@ns.namedArgLoc ]) ())
       [@ns.namedArgLoc ][@ns.braces ][@JSX ]) ~children:[child] ())
   [@JSX ])
 let _ =
@@ -273,7 +273,7 @@ let _ =
       ~term:((Text.createElement ~superLongPunnedProp:((superLongPunnedProp)
                 [@ns.namedArgLoc ])
                 ~anotherSuperLongOneCrazyLongThingHere:((anotherSuperLongOneCrazyLongThingHere)
-                [@ns.namedArgLoc ]) ~text:(("Age")[@ns.namedArgLoc ])
+                [@ns.namedArgLoc ]) ~text:(({js|Age|js})[@ns.namedArgLoc ])
                 ~children:[] ())[@ns.namedArgLoc ][@ns.braces ][@JSX ])
       ~children:[child] ())
   [@JSX ])
@@ -285,27 +285,28 @@ let _ =
                [@ns.namedArgLoc ]) ~children:[] ())
       [@ns.namedArgLoc ][@ns.braces ][@JSX ]) ~children:[] ())
   [@JSX ])
-let _ = ((div ~children:[((span ~children:[str "hello"] ())[@JSX ])] ())
+let _ =
+  ((div ~children:[((span ~children:[str {js|hello|js}] ())[@JSX ])] ())
   [@JSX ])
 let _ =
   ((description
-      ~term:((text ~text:(("Age")[@ns.namedArgLoc ]) ~children:[] ())
+      ~term:((text ~text:(({js|Age|js})[@ns.namedArgLoc ]) ~children:[] ())
       [@ns.namedArgLoc ][@ns.braces ][@JSX ]) ~children:[child] ())
   [@JSX ])
 let _ =
   ((description
-      ~term:((text ~text:(("Age")[@ns.namedArgLoc ]) ~children:(([||])
-                [@ns.namedArgLoc ]) ())[@ns.namedArgLoc ][@ns.braces ])
+      ~term:((text ~text:(({js|Age|js})[@ns.namedArgLoc ]) ~children:((
+                [||])[@ns.namedArgLoc ]) ())[@ns.namedArgLoc ][@ns.braces ])
       ~children:[child] ())
   [@JSX ])
 let _ =
   ((description
-      ~term:((text ~text:(("Age")[@ns.namedArgLoc ]) ~children:(([||])
-                [@ns.namedArgLoc ]))[@ns.namedArgLoc ][@ns.braces ][@JSX ])
-      ~children:[child] ())
+      ~term:((text ~text:(({js|Age|js})[@ns.namedArgLoc ]) ~children:((
+                [||])[@ns.namedArgLoc ]))
+      [@ns.namedArgLoc ][@ns.braces ][@JSX ]) ~children:[child] ())
   [@JSX ])
 let _ =
-  ((description ~term:((text ~text:(("Age")[@ns.namedArgLoc ]) ())
+  ((description ~term:((text ~text:(({js|Age|js})[@ns.namedArgLoc ]) ())
       [@ns.namedArgLoc ][@ns.braces ][@JSX ]) ~children:[child] ())
   [@JSX ])
 let _ =
@@ -313,7 +314,7 @@ let _ =
       ~term:((div ~superLongPunnedProp:((superLongPunnedProp)
                 [@ns.namedArgLoc ])
                 ~anotherSuperLongOneCrazyLongThingHere:((anotherSuperLongOneCrazyLongThingHere)
-                [@ns.namedArgLoc ]) ~text:(("Age")[@ns.namedArgLoc ])
+                [@ns.namedArgLoc ]) ~text:(({js|Age|js})[@ns.namedArgLoc ])
                 ~children:[] ())[@ns.namedArgLoc ][@ns.braces ][@JSX ])
       ~children:[child] ())
   [@JSX ])
@@ -396,37 +397,39 @@ let _ =
 let _ =
   ((div
       ~children:[(((match color with
-                    | Black -> ReasonReact.string "black"
-                    | Red -> ReasonReact.string "red"))
+                    | Black -> ReasonReact.string {js|black|js}
+                    | Red -> ReasonReact.string {js|red|js}))
                 [@ns.braces ])] ())
   [@JSX ])
 let _ =
   ((div
-      ~style:((ReactDOMRe.Style.make ~width:(("20px")[@ns.namedArgLoc ])
-                 ~height:(("20px")[@ns.namedArgLoc ]) ~borderRadius:(("100%")
-                 [@ns.namedArgLoc ]) ~backgroundColor:(("red")
+      ~style:((ReactDOMRe.Style.make ~width:(({js|20px|js})
+                 [@ns.namedArgLoc ]) ~height:(({js|20px|js})
+                 [@ns.namedArgLoc ]) ~borderRadius:(({js|100%|js})
+                 [@ns.namedArgLoc ]) ~backgroundColor:(({js|red|js})
                  [@ns.namedArgLoc ]))[@ns.namedArgLoc ][@ns.braces ][@foo ])
       ~children:[] ())
   [@JSX ])
 let _ =
   ((Animated.createElement ~initialValue:((0.0)[@ns.namedArgLoc ])
       ~value:((value)[@ns.namedArgLoc ])
-      ~children:((ReactDOMRe.Style.make ~width:(("20px")[@ns.namedArgLoc ])
-                    ~height:(("20px")[@ns.namedArgLoc ])
-                    ~borderRadius:(("100%")[@ns.namedArgLoc ])
-                    ~backgroundColor:(("red")[@ns.namedArgLoc ]))
-      [@ns.braces ]) ())
+      ~children:((ReactDOMRe.Style.make ~width:(({js|20px|js})
+                    [@ns.namedArgLoc ]) ~height:(({js|20px|js})
+                    [@ns.namedArgLoc ]) ~borderRadius:(({js|100%|js})
+                    [@ns.namedArgLoc ]) ~backgroundColor:(({js|red|js})
+                    [@ns.namedArgLoc ]))[@ns.braces ]) ())
   [@JSX ])
 let _ =
   ((Animated.createElement ~initialValue:((0.0)[@ns.namedArgLoc ])
       ~value:((value)[@ns.namedArgLoc ])
       ~children:((fun value ->
                     ((div
-                        ~style:((ReactDOMRe.Style.make ~width:(("20px")
-                                   [@ns.namedArgLoc ]) ~height:(("20px")
+                        ~style:((ReactDOMRe.Style.make ~width:(({js|20px|js})
                                    [@ns.namedArgLoc ])
-                                   ~borderRadius:(("100%")[@ns.namedArgLoc ])
-                                   ~backgroundColor:(("red")
+                                   ~height:(({js|20px|js})[@ns.namedArgLoc ])
+                                   ~borderRadius:(({js|100%|js})
+                                   [@ns.namedArgLoc ])
+                                   ~backgroundColor:(({js|red|js})
                                    [@ns.namedArgLoc ]))
                         [@ns.namedArgLoc ][@ns.braces ]) ~children:[] ())
                     [@JSX ]))[@ns.braces ]) ())
@@ -436,12 +439,13 @@ let _ =
       ~value:((value)[@ns.namedArgLoc ])
       ~children:((fun value ->
                     (((div
-                         ~style:((ReactDOMRe.Style.make ~width:(("20px")
-                                    [@ns.namedArgLoc ]) ~height:(("20px")
+                         ~style:((ReactDOMRe.Style.make
+                                    ~width:(({js|20px|js})[@ns.namedArgLoc ])
+                                    ~height:(({js|20px|js})
                                     [@ns.namedArgLoc ])
-                                    ~borderRadius:(("100%")
+                                    ~borderRadius:(({js|100%|js})
                                     [@ns.namedArgLoc ])
-                                    ~backgroundColor:(("red")
+                                    ~backgroundColor:(({js|red|js})
                                     [@ns.namedArgLoc ]))
                          [@ns.namedArgLoc ][@ns.braces ]) ~children:[] ())
                     [@JSX ]) : ReasonReact.element))[@ns.braces ]) ())
@@ -451,11 +455,12 @@ let _ =
       ~value:((value)[@ns.namedArgLoc ])
       ~children:((fun value ->
                     ((div
-                        ~style:((ReactDOMRe.Style.make ~width:(("20px")
-                                   [@ns.namedArgLoc ]) ~height:(("20px")
+                        ~style:((ReactDOMRe.Style.make ~width:(({js|20px|js})
                                    [@ns.namedArgLoc ])
-                                   ~borderRadius:(("100%")[@ns.namedArgLoc ])
-                                   ~backgroundColor:(("red")
+                                   ~height:(({js|20px|js})[@ns.namedArgLoc ])
+                                   ~borderRadius:(({js|100%|js})
+                                   [@ns.namedArgLoc ])
+                                   ~backgroundColor:(({js|red|js})
                                    [@ns.namedArgLoc ]))
                         [@ns.namedArgLoc ][@ns.braces ]) ~children:[] ())
                     [@ns.braces ][@JSX ]))[@ns.braces ][@foo ]) ())
@@ -464,15 +469,15 @@ let _ =
   ((Animated.createElement ~initialValue:((0.0)[@ns.namedArgLoc ])
       ~value:((value)[@ns.namedArgLoc ])
       ~children:((fun value ->
-                    ((let width = "20px" in
-                      let height = "20px" in
+                    ((let width = {js|20px|js} in
+                      let height = {js|20px|js} in
                       ((div
                           ~style:((ReactDOMRe.Style.make ~width:((width)
                                      [@ns.namedArgLoc ]) ~height:((height)
                                      [@ns.namedArgLoc ])
-                                     ~borderRadius:(("100%")
+                                     ~borderRadius:(({js|100%|js})
                                      [@ns.namedArgLoc ])
-                                     ~backgroundColor:(("red")
+                                     ~backgroundColor:(({js|red|js})
                                      [@ns.namedArgLoc ]))
                           [@ns.namedArgLoc ][@ns.braces ]) ~children:[] ())
                         [@JSX ]))
@@ -484,19 +489,19 @@ let _ =
   [@JSX ])
 let _ =
   ((button ?id:((id)[@ns.namedArgLoc ])
-      ~className:((Cn.make [|"button";"is-fullwidth"|])
+      ~className:((Cn.make [|{js|button|js};{js|is-fullwidth|js}|])
       [@ns.namedArgLoc ][@ns.braces ]) ~onClick:((onClick)[@ns.namedArgLoc ])
       ~children:[(("Submit" |> ste)[@ns.braces ])] ())
   [@JSX ])
 let _ =
   ((button ?id:((id)[@ns.namedArgLoc ])
-      ~className:((Cn.make ["button"; "is-fullwidth"])
+      ~className:((Cn.make [{js|button|js}; {js|is-fullwidth|js}])
       [@ns.namedArgLoc ][@ns.braces ]) ~onClick:((onClick)[@ns.namedArgLoc ])
       ~children:[(("Submit" |> ste)[@ns.braces ])] ())
   [@JSX ])
 let _ =
   ((button ?id:((id)[@ns.namedArgLoc ])
-      ~className:((Cn.make ("button", "is-fullwidth"))
+      ~className:((Cn.make ({js|button|js}, {js|is-fullwidth|js}))
       [@ns.namedArgLoc ][@ns.braces ]) ~onClick:((onClick)[@ns.namedArgLoc ])
       ~children:[(("Submit" |> ste)[@ns.braces ])] ())
   [@JSX ])
@@ -506,23 +511,25 @@ let _ =
       ~children:[(("Submit" |> ste)[@ns.braces ])] ())
   [@JSX ])
 let _ =
-  ((X.createElement ~y:((z |. (Belt.Option.getWithDefault ""))
+  ((X.createElement ~y:((z |. (Belt.Option.getWithDefault {js||js}))
       [@ns.namedArgLoc ][@ns.braces ]) ~children:[] ())
   [@JSX ])
 let _ =
   ((div ~style:((getStyle ())[@ns.namedArgLoc ][@ns.braces ])
-      ~children:[((ReasonReact.string "BugTest")[@ns.braces ])] ())
+      ~children:[((ReasonReact.string {js|BugTest|js})[@ns.braces ])] ())
   [@JSX ])
 let _ =
   ((div
       ~children:[(((let left = limit |. Int.toString in
-                    (left ^ {js| characters left|js}) |. React.string))
+                    (((((({js||js})[@res.template ]) ^ left)[@res.template ])
+                        ^ (({js| characters left|js})[@res.template ]))
+                      [@res.template ]) |. React.string))
                 [@ns.braces ])] ())
   [@JSX ])
 let _ =
   ((View.createElement ~style:((styles#backgroundImageWrapper)
       [@ns.namedArgLoc ])
-      ~children:[(((let uri = "/images/header-background.png" in
+      ~children:[(((let uri = {js|/images/header-background.png|js} in
                     ((Image.createElement ~resizeMode:((Contain)
                         [@ns.namedArgLoc ]) ~style:((styles#backgroundImage)
                         [@ns.namedArgLoc ]) ~uri:((uri)[@ns.namedArgLoc ])

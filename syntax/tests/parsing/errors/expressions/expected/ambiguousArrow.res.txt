@@ -24,6 +24,6 @@
   1) (pattern): int => "test"
   2) (pattern: int) => "test"
 
-let a b = ("hi" : int)
-let x = ((let a = 1 in let b = 2 in fun pattern -> ("test" : int))
+let a b = ({js|hi|js} : int)
+let x = ((let a = 1 in let b = 2 in fun pattern -> ({js|test|js} : int))
   [@ns.braces ])

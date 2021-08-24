@@ -9,7 +9,7 @@ let s = `multi
 string
 `
 
-let s = foo
+let s = `${foo}`
 
 let s = `before${foo}`
 let s = `before ${foo}`

@@ -495,7 +495,7 @@ let printStringContents txt =
   let lines = String.split_on_char '\n' txt in
   Doc.join ~sep:Doc.literalLine (List.map Doc.text lines)
 
-let printConstant c = match c with
+let printConstant ?(templateLiteral=false) c = match c with
   | Parsetree.Pconst_integer (s, suffix) ->
     begin match suffix with
     | Some c -> Doc.text (s ^ (Char.escaped c))
@@ -508,14 +508,35 @@ let printConstant c = match c with
       Doc.text "\"";
     ]
   | Pconst_string (txt, Some prefix) ->
-    Doc.concat [
-      if prefix = "js" then Doc.nil else Doc.text prefix;
-      Doc.text "`";
-      printStringContents txt;
-      Doc.text "`";
-    ]
+    if prefix = "INTERNAL_RES_CHAR_CONTENTS" then
+      Doc.concat [Doc.text "'"; Doc.text txt; Doc.text "'"]
+    else
+      let (lquote, rquote) =
+        if templateLiteral then ("`", "`") else ("\"", "\"")
+      in
+      Doc.concat [
+        if prefix = "js" then Doc.nil else Doc.text prefix;
+        Doc.text lquote;
+        printStringContents txt;
+        Doc.text rquote;
+      ]
   | Pconst_float (s, _) -> Doc.text s
-  | Pconst_char c -> Doc.text ("'" ^ (Char.escaped c) ^ "'")
+  | Pconst_char c ->
+    let str = match c with
+    | '\'' -> "\\'"
+    | '\\' -> "\\\\"
+    | '\n' -> "\\n"
+    | '\t' -> "\\t"
+    | '\r' -> "\\r"
+    | '\b' -> "\\b"
+    | ' ' .. '~' as c ->
+      let s = (Bytes.create [@doesNotRaise]) 1 in
+      Bytes.unsafe_set s 0 c;
+      Bytes.unsafe_to_string s
+    | c ->
+      Res_utf8.encodeCodePoint (Obj.magic c)
+    in
+    Doc.text ("'" ^ str ^ "'")
 
 let rec printStructure (s : Parsetree.structure) t =
   match s with
@@ -2079,7 +2100,9 @@ and printPattern (p : Parsetree.pattern) cmtTbl =
   let patternWithoutAttributes = match p.ppat_desc with
   | Ppat_any -> Doc.text "_"
   | Ppat_var var -> printIdentLike var.txt
-  | Ppat_constant c -> printConstant c
+  | Ppat_constant c ->
+    let templateLiteral = ParsetreeViewer.hasTemplateLiteralAttr p.ppat_attributes in
+    printConstant ~templateLiteral c
   | Ppat_tuple patterns ->
     Doc.group(
       Doc.concat([
@@ -2522,7 +2545,8 @@ and printIfChain pexp_attributes ifs elseExpr cmtTbl =
 
 and printExpression (e : Parsetree.expression) cmtTbl =
   let printedExpression = match e.pexp_desc with
-  | Parsetree.Pexp_constant c -> printConstant c
+  | Parsetree.Pexp_constant c ->
+    printConstant ~templateLiteral:(ParsetreeViewer.isTemplateLiteral e) c
   | Pexp_construct _ when ParsetreeViewer.hasJsxAttribute e.pexp_attributes ->
     printJsxFragment e cmtTbl
   | Pexp_construct ({txt = Longident.Lident "()"}, _) -> Doc.text "()"

@@ -7,4 +7,4 @@
 
   Tagged template literals are currently restricted to names like: json`null`.
 
-;;{js|null|js}
+;;(({js|null|js})[@res.template ])

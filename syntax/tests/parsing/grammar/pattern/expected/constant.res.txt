@@ -1,22 +1,22 @@
-let "stringPattern" = ()
-let "stringPattern" as s = ()
-let ("stringPattern" : string) = ()
-let ("stringPattern" : string) as s = ()
+let {js|stringPattern|js} = ()
+let {js|stringPattern|js} as s = ()
+let ({js|stringPattern|js} : string) = ()
+let ({js|stringPattern|js} : string) as s = ()
 ;;match x with
-  | "stringPattern" -> ()
-  | "stringPattern" as s -> ()
-  | ("stringPattern" : string) as s -> ()
-;;for "stringPattern" = 0 to 10 do () done
-;;for "stringPattern" as s = 0 to 10 do () done
-;;for "stringPattern" = 0 to 10 do () done
-;;for "stringPattern" as s = 0 to 10 do () done
-;;for "stringPattern" as s = 0 to 10 do () done
-let f "stringPattern" = ()
-let f ("stringPattern" as s) = ()
-let f ("stringPattern" as s) = ()
-let f ("stringPattern" : string) = ()
-let f (("stringPattern" : string) as s) = ()
-let f ("stringPattern" : string) = ()
+  | {js|stringPattern|js} -> ()
+  | {js|stringPattern|js} as s -> ()
+  | ({js|stringPattern|js} : string) as s -> ()
+;;for {js|stringPattern|js} = 0 to 10 do () done
+;;for {js|stringPattern|js} as s = 0 to 10 do () done
+;;for {js|stringPattern|js} = 0 to 10 do () done
+;;for {js|stringPattern|js} as s = 0 to 10 do () done
+;;for {js|stringPattern|js} as s = 0 to 10 do () done
+let f {js|stringPattern|js} = ()
+let f ({js|stringPattern|js} as s) = ()
+let f ({js|stringPattern|js} as s) = ()
+let f ({js|stringPattern|js} : string) = ()
+let f (({js|stringPattern|js} : string) as s) = ()
+let f ({js|stringPattern|js} : string) = ()
 let 1 = ()
 let 1 as x = ()
 let (1 : int) = ()
@@ -46,11 +46,11 @@ let f (1 : int) = ()
 let _0 = 0x9A
 let print ppf i =
   match i.stamp with
-  | 0 -> fprintf ppf "%s!" i.name
-  | (-1) -> fprintf ppf "%s#" i.name
-  | 1 -> fprintf ppf "%s#" i.name
-  | (-1.) -> fprintf ppf "%s#" i.name
-  | 1. -> fprintf ppf "%s#" i.name
+  | 0 -> fprintf ppf {js|%s!|js} i.name
+  | (-1) -> fprintf ppf {js|%s#|js} i.name
+  | 1 -> fprintf ppf {js|%s#|js} i.name
+  | (-1.) -> fprintf ppf {js|%s#|js} i.name
+  | 1. -> fprintf ppf {js|%s#|js} i.name
 let (-1)..(-1.) = x
 ;;match science with
   | (1.12, (-3.13)) -> true
@@ -66,18 +66,30 @@ let (-1)..(-1.) = x
   | exception 19.34 -> true
   | _ -> false
 ;;match literal with
-  | {js|literal|js} -> true
-  | ({js|literal1|js}, {js|literal2|js}) -> true
-  | [|{js|literal1|js};{js|literal2|js}|] -> true
-  | {js|literal1|js}::{js|literal2|js}::[] -> true
-  | { x = {js|literal1|js}; y = {js|literal2|js} } -> true
-  | Constructor ({js|literal1|js}, {js|literal2|js}) -> true
-  | `Constuctor ({js|literal1|js}, {js|literal2|js}) -> true
-  | {js|literal|js} as x -> true
-  | {js|literal|js}|{js|literal|js} -> true
-  | ({js|literal|js} : string) -> true
-  | (lazy {js|literal|js}) -> true
-  | exception {js|literal|js} -> true
+  | (({js|literal|js})[@res.template ]) -> true
+  | ((({js|literal1|js})[@res.template ]),
+     (({js|literal2|js})[@res.template ])) -> true
+  | [|(({js|literal1|js})[@res.template ]);(({js|literal2|js})[@res.template
+                                                                ])|]
+      -> true
+  | (({js|literal1|js})[@res.template ])::(({js|literal2|js})[@res.template ])::[]
+      -> true
+  | { x = (({js|literal1|js})[@res.template ]);
+      y = (({js|literal2|js})[@res.template ]) } -> true
+  | Constructor
+      ((({js|literal1|js})[@res.template ]),
+       (({js|literal2|js})[@res.template ]))
+      -> true
+  | `Constuctor
+      ((({js|literal1|js})[@res.template ]),
+       (({js|literal2|js})[@res.template ]))
+      -> true
+  | (({js|literal|js})[@res.template ]) as x -> true
+  | (({js|literal|js})[@res.template ])|(({js|literal|js})[@res.template ])
+      -> true
+  | ((({js|literal|js})[@res.template ]) : string) -> true
+  | (lazy (({js|literal|js})[@res.template ])) -> true
+  | exception (({js|literal|js})[@res.template ]) -> true
   | _ -> false
-let {js|literal constant|js} = x
-;;for {js|literal constant|js} = 0 to 10 do () done
+let (({js|literal constant|js})[@res.template ]) = x
+;;for (({js|literal constant|js})[@res.template ]) = 0 to 10 do () done

@@ -18,7 +18,7 @@ module M = struct ;;match l with | None -> [] | Some l -> l#prop end
 ;;all
 ;;syntax
 ;;is
-;;"valid"
+;;{js|valid|js}
 ;;it
 ;;compiles
 ;;will

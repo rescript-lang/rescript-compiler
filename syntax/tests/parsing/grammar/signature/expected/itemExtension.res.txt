@@ -1,7 +1,7 @@
 module type Ext  =
   sig
     [%%item.extension ]
-    [%%item.extension.with.args "argument"]
+    [%%item.extension.with.args {js|argument|js}]
     [%%item.extension.with.args fun x -> f x]
     [%%item.extension ][@@withAttr ]
   end

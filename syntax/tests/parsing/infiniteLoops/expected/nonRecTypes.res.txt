@@ -71,7 +71,7 @@ include
           mutable size: int ;
           mutable root: 'value node option ;
           compare: [ [%rescript.typehole ]] Js.Internal.fn }
-        ;;{js|Arity_2('value, 'value)], int),
+        ;;(({js|Arity_2('value, 'value)], int),
                       };
                     }: {
 
@@ -82,46 +82,48 @@ include
             (
               ~size: int,
               ~root: option(node('value)),
-              ~compare: Js.Internal.fn([ | |js}
+              ~compare: Js.Internal.fn([ | |js})
+          [@res.template ])
         ;;Arity_2 (value, value)
         ;;int
-        ;;(t value) = ""
-        ;;"BS:6.0.1\132\149\166\190\000\000\000#\000\000\000\r\000\000\000&\000\000\000#\145\160\160A\160$size@\160\160A\160$root@\160\160A\160'compare@@"
+        ;;(t value) = {js||js}
+        ;;{js|BS:6.0.1\132\149\166\190\000\000\000#\000\000\000\r\000\000\000&\000\000\000#\145\160\160A\160$size@\160\160A\160$root@\160\160A\160'compare@@|js}
         external sizeSet : 'value t -> int -> unit = "size"
-        ;;"BS:6.0.1\132\149\166\190\000\000\000\021\000\000\000\t\000\000\000\026\000\000\000\025\176\160\160A\145@\160\160A\004\003@E\151\160$size@"
-        ;;[|(("use sizeGet instead or use {abstract = light} explicitly")
+        ;;{js|BS:6.0.1\132\149\166\190\000\000\000\021\000\000\000\t\000\000\000\026\000\000\000\025\176\160\160A\145@\160\160A\004\003@E\151\160$size@|js}
+        ;;[|(({js|use sizeGet instead or use {abstract = light} explicitly|js})
             [@ocaml.deprecated ])|]
         ;;[|((1)[@internal.arity ])|]
         external size : 'value t -> int = ""
-        ;;"BS:6.0.1\132\149\166\190\000\000\000\016\000\000\000\007\000\000\000\020\000\000\000\019\176\160\160A\145@@A\152\160$size@"
+        ;;{js|BS:6.0.1\132\149\166\190\000\000\000\016\000\000\000\007\000\000\000\020\000\000\000\019\176\160\160A\145@@A\152\160$size@|js}
         ;;[|((1)[@internal.arity ])|]
         external sizeGet : 'value t -> int = ""
-        ;;"BS:6.0.1\132\149\166\190\000\000\000\016\000\000\000\007\000\000\000\020\000\000\000\019\176\160\160A\145@@A\152\160$size@"
+        ;;{js|BS:6.0.1\132\149\166\190\000\000\000\016\000\000\000\007\000\000\000\020\000\000\000\019\176\160\160A\145@@A\152\160$size@|js}
         external rootSet : 'value t -> 'value node option -> unit = "root"
-        ;;"BS:6.0.1\132\149\166\190\000\000\000\021\000\000\000\t\000\000\000\026\000\000\000\025\176\160\160A\145@\160\160A\004\003@E\151\160$root@"
-        ;;[|(("use rootGet instead or use {abstract = light} explicitly")
+        ;;{js|BS:6.0.1\132\149\166\190\000\000\000\021\000\000\000\t\000\000\000\026\000\000\000\025\176\160\160A\145@\160\160A\004\003@E\151\160$root@|js}
+        ;;[|(({js|use rootGet instead or use {abstract = light} explicitly|js})
             [@ocaml.deprecated ])|]
         ;;[|((1)[@internal.arity ])|]
         external root : 'value t -> 'value node option = ""
-        ;;"BS:6.0.1\132\149\166\190\000\000\000\016\000\000\000\007\000\000\000\020\000\000\000\019\176\160\160A\145@@A\152\160$root@"
+        ;;{js|BS:6.0.1\132\149\166\190\000\000\000\016\000\000\000\007\000\000\000\020\000\000\000\019\176\160\160A\145@@A\152\160$root@|js}
         ;;[|((1)[@internal.arity ])|]
         external rootGet : 'value t -> 'value node option = ""
-        ;;"BS:6.0.1\132\149\166\190\000\000\000\016\000\000\000\007\000\000\000\020\000\000\000\019\176\160\160A\145@@A\152\160$root@"
-        ;;[|(("use compareGet instead or use {abstract = light} explicitly")
+        ;;{js|BS:6.0.1\132\149\166\190\000\000\000\016\000\000\000\007\000\000\000\020\000\000\000\019\176\160\160A\145@@A\152\160$root@|js}
+        ;;[|(({js|use compareGet instead or use {abstract = light} explicitly|js})
             [@ocaml.deprecated ])|]
         ;;[|((1)[@internal.arity ])|]
         external compare :
           'value t -> [ [%rescript.typehole ]] Js.Internal.fn
-        ;;{js|Arity_2('value, 'value)], int) =
+        ;;(({js|Arity_2('value, 'value)], int) =
             ""
             "BS:6.0.1\132\149\166\190\000\000\000\019\000\000\000\007\000\000\000\020\000\000\000\019\176\160\160A\145@@A\152\160'compare@";
           [@internal.arity 1]
           external compareGet:
-            t('value) => Js.Internal.fn([ | |js}
+            t('value) => Js.Internal.fn([ | |js})
+          [@res.template ])
         ;;Arity_2 (value, value)
         ;;int
-        ;;""
-        ;;"BS:6.0.1\132\149\166\190\000\000\000\019\000\000\000\007\000\000\000\020\000\000\000\019\176\160\160A\145@@A\152\160'compare@"
+        ;;{js||js}
+        ;;{js|BS:6.0.1\132\149\166\190\000\000\000\019\000\000\000\007\000\000\000\020\000\000\000\019\176\160\160A\145@@A\152\160'compare@|js}
       end
     let has rbt value = (_findNode rbt (rootGet rbt) value) != None
     let rec minNode node = [%rescript.exprhole ]
@@ -143,7 +145,7 @@ include
           match successor with
           | None ->
               let leaf =
-                createNode ~value:((Js.Internal.raw_expr "0")
+                createNode ~value:((Js.Internal.raw_expr {js|0|js})
                   [@ns.namedArgLoc ]) ~color:((Black)[@ns.namedArgLoc ])
                   ~height:((0.)[@ns.namedArgLoc ]) in
               let isLeaf = Js.Internal.fn_mk1 (fun x -> x == leaf) in
