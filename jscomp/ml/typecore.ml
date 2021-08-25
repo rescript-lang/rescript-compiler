@@ -3750,7 +3750,7 @@ and type_statement env sexp =
 
 (* Typing of match cases *)
 
-and type_cases ?in_function env ty_arg ty_res partial_flag loc caselist =
+and type_cases ?in_function env ty_arg ty_res partial_flag loc caselist : _ * Typedtree.partial =
   (* ty_arg is _fully_ generalized *)
   let patterns = List.map (fun {pc_lhs=p} -> p) caselist in
   let contains_polyvars = List.exists contains_polymorphic_variant patterns in
@@ -3758,10 +3758,10 @@ and type_cases ?in_function env ty_arg ty_res partial_flag loc caselist =
   and has_gadts = List.exists (contains_gadt env) patterns in
 (*  prerr_endline ( if has_gadts then "contains gadt" else "no gadt"); *)
   let ty_arg =
-    if (has_gadts || erase_either) && not !Clflags.principal
+    if (has_gadts || erase_either) 
     then correct_levels ty_arg else ty_arg
   and ty_res, env =
-    if has_gadts && not !Clflags.principal then
+    if has_gadts then
       correct_levels ty_res, duplicate_ident_types caselist env
     else ty_res, env
   in
@@ -3808,7 +3808,6 @@ and type_cases ?in_function env ty_arg ty_res partial_flag loc caselist =
           | None -> pc_rhs.pexp_loc
           | Some g -> {pc_rhs.pexp_loc with loc_start=g.pexp_loc.loc_start}
         in
-        if !Clflags.principal then begin_def (); (* propagation of pattern *)
         let scope = Some (Annot.Idef loc) in
         let (pat, ext_env, force, unpacks) =
           let partial =
@@ -3818,13 +3817,6 @@ and type_cases ?in_function env ty_arg ty_res partial_flag loc caselist =
           type_pattern ~lev env pc_lhs scope ty_arg
         in
         pattern_force := force @ !pattern_force;
-        let pat =
-          if !Clflags.principal then begin
-            end_def ();
-            iter_pattern (fun {pat_type=t} -> generalize_structure t) pat;
-            { pat with pat_type = instance ext_env pat.pat_type }
-          end else pat
-        in
         (pat, (ext_env, unpacks)))
       caselist in
   (* Unify all cases (delayed to keep it order-free) *)
@@ -3856,13 +3848,7 @@ and type_cases ?in_function env ty_arg ty_res partial_flag loc caselist =
       (fun (pat, (ext_env, unpacks)) {pc_lhs; pc_guard; pc_rhs} ->
         let sexp = wrap_unpacks pc_rhs unpacks in
         let ty_res' =
-          if !Clflags.principal then begin
-            begin_def ();
-            let ty = instance ~partial:true env ty_res in
-            end_def ();
-            generalize_structure ty; ty
-          end
-          else if contains_gadt env pc_lhs then correct_levels ty_res
+          if contains_gadt env pc_lhs then correct_levels ty_res
           else ty_res in
 (*        Format.printf "@[%i %i, ty_res' =@ %a@]@." lev (get_current_level())
           Printtyp.raw_type_expr ty_res'; *)
