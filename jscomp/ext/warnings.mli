@@ -51,7 +51,6 @@ type t =
   | Unused_open of string                   (* 33 *)
   | Unused_type_declaration of string       (* 34 *)
   | Unused_for_index of string              (* 35 *)
-  | Unused_ancestor of string               (* 36 *)
   | Unused_constructor of string * bool * bool (* 37 *)
   | Unused_extension of string * bool * bool * bool (* 38 *)
   | Unused_rec_flag                         (* 39 *)

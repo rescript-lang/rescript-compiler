@@ -58,7 +58,6 @@ type t =
   | Unused_open of string                   (* 33 *)
   | Unused_type_declaration of string       (* 34 *)
   | Unused_for_index of string              (* 35 *)
-  | Unused_ancestor of string               (* 36 *)
   | Unused_constructor of string * bool * bool  (* 37 *)
   | Unused_extension of string * bool * bool * bool (* 38 *)
   | Unused_rec_flag                         (* 39 *)
@@ -133,7 +132,6 @@ let number = function
   | Unused_open _ -> 33
   | Unused_type_declaration _ -> 34
   | Unused_for_index _ -> 35
-  | Unused_ancestor _ -> 36
   | Unused_constructor _ -> 37
   | Unused_extension _ -> 38
   | Unused_rec_flag -> 39
@@ -418,7 +416,6 @@ let message = function
   | Unused_open s -> "unused open " ^ s ^ "."
   | Unused_type_declaration s -> "unused type " ^ s ^ "."
   | Unused_for_index s -> "unused for-loop index " ^ s ^ "."
-  | Unused_ancestor s -> "unused ancestor variable " ^ s ^ "."
   | Unused_constructor (s, false, false) -> "unused constructor " ^ s ^ "."
   | Unused_constructor (s, true, _) ->
       "constructor " ^ s ^
