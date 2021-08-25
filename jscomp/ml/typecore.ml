@@ -2473,15 +2473,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
             () (* will fail later *)
         end;
         rue {
-          exp_desc =
-            begin match desc.val_kind with
-            (*| Val_prim _ ->
-                let p = Env.normalize_path (Some loc) env path in
-                Env.add_required_global (Path.head p);
-                Texp_ident(path, lid, desc)*)
-            | _ ->
-                Texp_ident(path, lid, desc)
-          end;
+          exp_desc = Texp_ident(path, lid, desc);
           exp_loc = loc; exp_extra = [];
           exp_type = instance env desc.val_type;
           exp_attributes = sexp.pexp_attributes;
@@ -3532,7 +3524,7 @@ and type_argument ?recarg env sarg ty_expected' ty_expected =
       unify_exp env texp ty_expected;
       texp
 
-and type_application env funct sargs =
+and type_application env funct (sargs : sargs) : targs * Types.type_expr =
   (* funct.exp_type may be generic *)
   let result_type omitted ty_fun =
     List.fold_left
@@ -3544,7 +3536,8 @@ and type_application env funct sargs =
     tvar || List.mem l ls
   in
   let ignored = ref [] in
-  let rec type_unknown_args (args : lazy_args) omitted ty_fun (syntax_args : sargs)= 
+  let rec type_unknown_args (args : lazy_args) omitted ty_fun (syntax_args : sargs)
+     : targs * _ = 
     match syntax_args with 
     |  [] ->
         (List.map
