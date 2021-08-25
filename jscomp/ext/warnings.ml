@@ -73,7 +73,7 @@ type t =
   | Fragile_literal_pattern                 (* 52 *)
   | Misplaced_attribute of string           (* 53 *)
   | Duplicated_attribute of string          (* 54 *)
-  | Inlining_impossible of string           (* 55 *)
+  
   | Unreachable_case                        (* 56 *)
   | Ambiguous_pattern of string list        (* 57 *)
 
@@ -81,7 +81,7 @@ type t =
 
   | Constraint_on_gadt                      (* 62 *)
     
-#if 1
+
   | Bs_unused_attribute of string           (* 101 *)
   | Bs_polymorphic_comparison               (* 102 *)
   | Bs_ffi_warning of string                (* 103 *)
@@ -91,7 +91,7 @@ type t =
   | Bs_integer_literal_overflow              (* 107 *)
   | Bs_uninterpreted_delimiters of string   (* 108 *)
   | Bs_toplevel_expression_unit             (* 109 *)
-#end  
+
 ;;
 
 (* If you remove a warning, leave a hole in the numbering.  NEVER change
@@ -147,7 +147,6 @@ let number = function
   | Fragile_literal_pattern -> 52
   | Misplaced_attribute _ -> 53
   | Duplicated_attribute _ -> 54
-  | Inlining_impossible _ -> 55
   | Unreachable_case -> 56
   | Ambiguous_pattern _ -> 57
 
@@ -489,8 +488,6 @@ let message = function
       Printf.sprintf "the %S attribute is used more than once on this \
           expression"
         attr_name
-  | Inlining_impossible reason ->
-      Printf.sprintf "Cannot inline: %s" reason
   | Ambiguous_pattern vars ->
       let msg =
         let vars = List.sort String.compare vars in
