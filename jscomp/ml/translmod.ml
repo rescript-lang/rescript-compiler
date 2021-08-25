@@ -558,7 +558,7 @@ and transl_structure loc fields cc rootpath final_env = function
       | Tstr_module mb ->
           let id = mb.mb_id in
           let body, size =
-            transl_structure loc ( if !Typemod.should_hide mb then fields else id::fields) cc rootpath final_env rem
+            transl_structure loc ( if Typemod.rescript_hide mb then fields else id::fields) cc rootpath final_env rem
           in
           let module_body =
             transl_module Tcoerce_none (field_path rootpath id) mb.mb_expr

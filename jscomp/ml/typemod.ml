@@ -51,9 +51,15 @@ exception Error of Location.t * Env.t * error
 exception Error_forward of Location.error
 
 
-#if true
-let should_hide : (Typedtree.module_binding -> bool) ref = ref (fun _ -> false)
-#end  
+
+let rescript_hide (x : Typedtree.module_binding) = 
+  match x.mb_attributes with 
+  | [] -> false
+  | ({txt = "internal.local";_},_) :: _ -> true
+  | _ :: rest -> 
+    Ext_list.exists rest (fun (x,_) -> x.txt = "internal.local")
+
+
 open Typedtree
 
 let fst3 (x,_,_) = x
@@ -1624,7 +1630,7 @@ and type_structure ?(toplevel = false) funct_body anchor env sstr scope =
         let (str_rem, sig_rem, final_env) = type_struct new_env srem in
         let new_sg = 
           match desc with 
-          | Tstr_module m when !should_hide m -> sig_rem
+          | Tstr_module m when rescript_hide m -> sig_rem
           | _ -> sg @ sig_rem in 
         (str :: str_rem, new_sg, final_env)
   in
@@ -1923,9 +1929,9 @@ let report_error ppf = function
         "This is an alias for module %a, which is missing"
         path p
 
-#if true
+
 let super_report_error_no_wrap_printing_env = report_error
-#end
+
 
 let report_error env ppf err =
   Printtyp.wrap_printing_env env (fun () -> report_error ppf err)

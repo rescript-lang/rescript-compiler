@@ -23,12 +23,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let  should_hide ( x : Typedtree.module_binding) = 
-  match x.mb_attributes with 
-  | [] -> false
-  | ({txt = "internal.local";_},_) :: _ -> true
-  | _ :: rest -> 
-    Ext_list.exists rest (fun (x,_) -> x.txt = "internal.local")
 
 let attrs : Parsetree.attributes = 
   [{txt = "internal.local";loc = Location.none}, PStr []]
