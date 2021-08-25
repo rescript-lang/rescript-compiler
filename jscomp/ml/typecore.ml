@@ -683,30 +683,10 @@ end) = struct
                                           paths, false));
             lbl
         end
-    | Some(tpath0, tpath, pr) ->
-        let warn_pr () =
-          let label = label_of_kind type_kind in
-          warn lid.loc
-            (Warnings.Not_principal
-               ("this type-based " ^ label ^ " disambiguation"))
-        in
+    | Some(tpath0, tpath) ->
         try
           let lbl, use = disambiguate_by_type env tpath scope in
           use ();
-          if not pr then begin
-            (* Check if non-principal type is affecting result *)
-            match lbls with
-              [] -> warn_pr ()
-            | (lbl', _use') :: rest ->
-                let lbl_tpath = get_type_path lbl' in
-                if not (compare_type_path env tpath lbl_tpath) then warn_pr ()
-                else
-                  let paths = ambiguous_types env lbl rest in
-                  if paths <> [] then
-                    warn lid.loc
-                      (Warnings.Ambiguous_name ([Longident.last lid.txt],
-                                                paths, false))
-          end;
           lbl
         with Not_found -> try
           let lbl = lookup_from_type env tpath lid in
@@ -717,7 +697,6 @@ end) = struct
           warn lid.loc
             (Warnings.Name_out_of_scope (s, [Longident.last lid.txt], false));
           end;
-          if not pr then warn_pr ();
           lbl
         with Not_found ->
           if lbls = [] then unbound_name_error env lid else
@@ -776,12 +755,12 @@ let disambiguate_label_by_ids keep closed ids labels =
 (* Only issue warnings once per record constructor/pattern *)
 let disambiguate_lid_a_list loc closed env opath lid_a_list =
   let ids = List.map (fun (lid, _) -> Longident.last lid.txt) lid_a_list in
-  let w_pr = ref false and w_amb = ref []
+  let w_amb = ref []
   and w_scope = ref [] and w_scope_ty = ref "" in
   let warn loc msg =
     let open Warnings in
     match msg with
-    | Not_principal _ -> w_pr := true
+
     | Ambiguous_name([s], l, _) -> w_amb := (s, l) :: !w_amb
     | Name_out_of_scope(ty, [s], _) ->
         w_scope := s :: !w_scope; w_scope_ty := ty
@@ -803,7 +782,7 @@ let disambiguate_lid_a_list loc closed env opath lid_a_list =
       Typetexp.unbound_label_error env lid;
     let (ok, labels) =
       match opath with
-        Some (_, _, true) -> (true, scope) (* disambiguate only checks scope *)
+        Some (_, _) -> (true, scope) (* disambiguate only checks scope *)
       | _  -> disambiguate_label_by_ids (opath=None) closed ids scope
     in
     if ok then Label.disambiguate lid env opath labels ~warn ~scope
@@ -811,10 +790,7 @@ let disambiguate_lid_a_list loc closed env opath lid_a_list =
   in
   let lbl_a_list =
     List.map (fun (lid,a) -> lid, process_label lid, a) lid_a_list in
-  if !w_pr then
-    Location.prerr_warning loc
-      (Warnings.Not_principal "this type-based record disambiguation")
-  else begin
+  begin
     match List.rev !w_amb with
       (_,types)::_ as amb ->
         let paths =
@@ -1097,7 +1073,7 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
       let opath =
         try
           let (p0, p, _) = extract_concrete_variant !env expected_ty in
-            Some (p0, p, true)
+            Some (p0, p)
         with Not_found -> None
       in
       let candidates =
@@ -1211,7 +1187,7 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
       let opath, record_ty =
         try
           let (p0, p,_) = extract_concrete_record !env expected_ty in
-          Some (p0, p, true), expected_ty
+          Some (p0, p), expected_ty
         with Not_found -> None, newvar ()
       in
       let type_label_pat (label_lid, label, sarg) k =
@@ -2683,7 +2659,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
           match extract_concrete_record env ty_expected with
           |  (p0, p,_) ->
               (* XXX level may be wrong *)
-              ty_expected, Some (p0, p, true) (*ty.level = generic_level || not !Clflags.principal*)
+              ty_expected, Some (p0, p) (*ty.level = generic_level || not !Clflags.principal*)
           | exception Not_found -> 
                newvar (), None
           
@@ -2739,7 +2715,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
           try
             let (p0, p,_) = extract_concrete_record env ty in
             (* XXX level may be wrong *)
-            Some (p0, p, true) (*ty.level = generic_level || not !Clflags.principal*)
+            Some (p0, p) (*ty.level = generic_level || not !Clflags.principal*)
           with Not_found -> None
         in
         match get_path ty_expected with
@@ -2747,7 +2723,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
             begin 
                 match get_path exp.exp_type with
                   None -> newvar (), None
-                | Some (_, p', _) as op ->
+                | Some (_, p') as op ->
                     let decl = Env.find_type p' env in
                     begin_def ();
                     let ty =
@@ -2976,9 +2952,6 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
                 else begin try
                   let force' = subtype env arg.exp_type ty' in
                   force (); force' ();
-                  if not gen && !Clflags.principal then
-                    Location.prerr_warning loc
-                      (Warnings.Not_principal "this ground coercion");
                 with Subtype (tr1, tr2) ->
                   (* prerr_endline "coercion failed"; *)
                   raise(Error(loc, env, Not_subtype(tr1, tr2)))
@@ -3044,10 +3017,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
           match repr typ with
             {desc = Tpoly (ty, [])} ->
               instance env ty
-          | {desc = Tpoly (ty, tl); level = l} ->
-              if !Clflags.principal && l <> generic_level then
-                Location.prerr_warning loc
-                  (Warnings.Not_principal "this use of a polymorphic method");
+          | {desc = Tpoly (ty, tl); level = _} ->
               snd (instance_poly false tl ty)
           | {desc = Tvar _} as ty ->
               let ty' = newvar () in
@@ -3251,11 +3221,6 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
       let (p, nl) =
         match Ctype.expand_head env (instance env ty_expected) with
           {desc = Tpackage (p, nl, _tl)} ->
-            if !Clflags.principal &&
-              (Ctype.expand_head env ty_expected).level < Btype.generic_level
-            then
-              Location.prerr_warning loc
-                (Warnings.Not_principal "this module packing");
             (p, nl)
         | {desc = Tvar _} ->
             raise (Error (loc, env, Cannot_infer_signature))
@@ -3357,17 +3322,12 @@ and type_function ?in_function loc attrs env ty_expected l caselist =
 
 
 and type_label_access env srecord lid =
-  if !Clflags.principal then begin_def ();
   let record = type_exp ~recarg:Allowed env srecord in
-  if !Clflags.principal then begin
-    end_def ();
-    generalize_structure record.exp_type
-  end;
   let ty_exp = record.exp_type in
   let opath =
     try
       let (p0, p,_) = extract_concrete_record env ty_exp in
-      Some(p0, p, ty_exp.level = generic_level || not !Clflags.principal)
+      Some(p0, p)
     with Not_found -> None
   in
   let labels = Typetexp.find_all_labels env lid.loc lid.txt in
@@ -3446,7 +3406,7 @@ and type_argument ?recarg env sarg ty_expected' ty_expected =
     | _ -> false
   in
   match expand_head env ty_expected' with
-    {desc = Tarrow(Nolabel,ty_arg,ty_res,_); level = lv}
+    {desc = Tarrow(Nolabel,ty_arg,ty_res,_); level = _}
     when is_inferred sarg ->
       (* apply optional arguments when expected type is "" *)
       (* we must be very careful about not breaking the semantics *)
@@ -3467,9 +3427,7 @@ and type_argument ?recarg env sarg ty_expected' ty_expected =
         |  _ -> [], texp.exp_type, false
       in
       let args, ty_fun', simple_res = make_args [] texp.exp_type in
-      let warn = !Clflags.principal &&
-        (lv <> generic_level || (repr ty_fun').level <> generic_level)
-      and texp = {texp with exp_type = instance env texp.exp_type}
+      let texp = {texp with exp_type = instance env texp.exp_type}
       and ty_fun = instance env ty_fun' in
       if not (simple_res || no_labels ty_res) then begin
         unify_exp env texp ty_expected;
@@ -3508,8 +3466,6 @@ and type_argument ?recarg env sarg ty_expected' ty_expected =
       Location.prerr_warning texp.exp_loc
         (Warnings.Eliminated_optional_arguments
            (List.map (fun (l, _) -> Printtyp.string_of_label l) args));
-      if warn then Location.prerr_warning texp.exp_loc
-          (Warnings.Without_principality "eliminated optional argument");
       (* let-expand to have side effects *)
       let let_pat, let_var = var_pair "arg" texp.exp_type in
       re { texp with exp_type = ty_fun; exp_desc =
@@ -3652,7 +3608,7 @@ and type_construct env loc lid sarg ty_expected attrs =
   let opath =
     try
       let (p0, p,_) = extract_concrete_variant env ty_expected in
-      Some(p0, p, ty_expected.level = generic_level || not !Clflags.principal)
+      Some(p0, p)
     with Not_found -> None
   in
   let constrs = Typetexp.find_all_constructors env lid.loc lid.txt in
