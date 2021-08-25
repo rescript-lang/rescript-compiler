@@ -79,7 +79,7 @@ type t =
   | Ambiguous_pattern of string list        (* 57 *)
   | Assignment_to_non_mutable_value         (* 59 *)
   | Unused_module of string                 (* 60 *)
-  | Unboxable_type_in_prim_decl of string   (* 61 *)
+
   | Constraint_on_gadt                      (* 62 *)
     
 #if 1
@@ -154,7 +154,7 @@ let number = function
   | Ambiguous_pattern _ -> 57
   | Assignment_to_non_mutable_value -> 59
   | Unused_module _ -> 60
-  | Unboxable_type_in_prim_decl _ -> 61
+  
   | Constraint_on_gadt -> 62
   | Bs_unused_attribute _ -> 101
   | Bs_polymorphic_comparison -> 102
@@ -513,12 +513,6 @@ let message = function
         in this source file.  Such assignments may generate incorrect code \n\
         when using Flambda."
   | Unused_module s -> "unused module " ^ s ^ "."
-  | Unboxable_type_in_prim_decl t ->
-      Printf.sprintf
-        "This primitive declaration uses type %s, which is unannotated and\n\
-         unboxable. The representation of such types may change in future\n\
-         versions. You should annotate the declaration of %s with [@@boxed]\n\
-         or [@@unboxed]." t t
   | Constraint_on_gadt ->
       "Type constraints do not apply to GADT cases of variant types."
 
@@ -565,10 +559,6 @@ type reporting_information =
   }
 
 let report w =
-  match w with 
-  | Unboxable_type_in_prim_decl _ (* 61 *) -> `Inactive
-  (* TODO: we could simplify the code even more *)
-  | _ -> 
   match is_active w with
   | false -> `Inactive
   | true ->

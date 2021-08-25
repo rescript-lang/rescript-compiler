@@ -72,7 +72,6 @@ type t =
   | Ambiguous_pattern of string list        (* 57 *)
   | Assignment_to_non_mutable_value         (* 59 *)
   | Unused_module of string                 (* 60 *)
-  | Unboxable_type_in_prim_decl of string   (* 61 *)
   | Constraint_on_gadt                      (* 62 *)
   | Bs_unused_attribute of string           (* 101 *)
   | Bs_polymorphic_comparison               (* 102 *)
