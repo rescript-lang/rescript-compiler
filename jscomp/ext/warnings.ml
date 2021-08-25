@@ -65,7 +65,7 @@ type t =
   | Nonoptional_label of string             (* 43 *)
   | Open_shadow_identifier of string * string (* 44 *)
   | Open_shadow_label_constructor of string * string (* 45 *)
-  | Bad_env_variable of string * string     (* 46 *)
+
   | Attribute_payload of string * string    (* 47 *)
   | Eliminated_optional_arguments of string list (* 48 *)
   | No_cmi_file of string * string option   (* 49 *)
@@ -139,7 +139,7 @@ let number = function
   | Nonoptional_label _ -> 43
   | Open_shadow_identifier _ -> 44
   | Open_shadow_label_constructor _ -> 45
-  | Bad_env_variable _ -> 46
+
   | Attribute_payload _ -> 47
   | Eliminated_optional_arguments _ -> 48
   | No_cmi_file _ -> 49
@@ -460,8 +460,6 @@ let message = function
       Printf.sprintf
         "this open statement shadows the %s %s (which is later used)"
         kind s
-  | Bad_env_variable (var, s) ->
-      Printf.sprintf "illegal environment variable %s : %s" var s
   | Attribute_payload (a, s) ->
       Printf.sprintf "illegal payload for attribute '%s'.\n%s" a s
   | Eliminated_optional_arguments sl ->

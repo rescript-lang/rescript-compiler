@@ -58,7 +58,6 @@ type t =
   | Nonoptional_label of string             (* 43 *)
   | Open_shadow_identifier of string * string (* 44 *)
   | Open_shadow_label_constructor of string * string (* 45 *)
-  | Bad_env_variable of string * string     (* 46 *)
   | Attribute_payload of string * string    (* 47 *)
   | Eliminated_optional_arguments of string list (* 48 *)
   | No_cmi_file of string * string option   (* 49 *)
