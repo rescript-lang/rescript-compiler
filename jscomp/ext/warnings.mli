@@ -35,7 +35,6 @@ type t =
   | Illegal_backslash                       (* 14 *)
   | Implicit_public_methods of string list  (* 15 *)
   | Unerasable_optional_argument            (* 16 *)
-  | Undeclared_virtual_method of string     (* 17 *)
   | Unused_argument                         (* 20 *)
   | Nonreturning_statement                  (* 21 *)
   | Preprocessor of string                  (* 22 *)

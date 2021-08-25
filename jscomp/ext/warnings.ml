@@ -42,7 +42,6 @@ type t =
   | Illegal_backslash                       (* 14 *)
   | Implicit_public_methods of string list  (* 15 *)
   | Unerasable_optional_argument            (* 16 *)
-  | Undeclared_virtual_method of string     (* 17 *)
   | Unused_argument                         (* 20 *)
   | Nonreturning_statement                  (* 21 *)
   | Preprocessor of string                  (* 22 *)
@@ -116,7 +115,6 @@ let number = function
   | Illegal_backslash -> 14
   | Implicit_public_methods _ -> 15
   | Unerasable_optional_argument -> 16
-  | Undeclared_virtual_method _ -> 17
   | Unused_argument -> 20
   | Nonreturning_statement -> 21
   | Preprocessor _ -> 22
@@ -379,7 +377,6 @@ let message = function
 #else      
   | Unerasable_optional_argument -> "this optional argument cannot be erased."
 #end  
-  | Undeclared_virtual_method m -> "the virtual method "^m^" is not declared."
   | Unused_argument -> "this argument will not be used by the function."
   | Nonreturning_statement ->
       "this statement never returns (or has an unsound type.)"
