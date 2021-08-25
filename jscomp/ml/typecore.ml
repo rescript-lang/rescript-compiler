@@ -622,7 +622,7 @@ module NameChoice(Name : sig
   val get_type: t -> type_expr
   val get_descrs: Env.type_descriptions -> t list
   val unbound_name_error: Env.t -> Longident.t loc -> 'a
-  val in_env: t -> bool
+
 end) = struct
   open Name
 
@@ -691,12 +691,6 @@ end) = struct
         with Not_found -> try
           let lbl = lookup_from_type env tpath lid in
           check_lk tpath lbl;
-          if in_env lbl then
-          begin
-          let s = Printtyp.string_of_path tpath in
-          warn lid.loc
-            (Warnings.Name_out_of_scope (s, [Longident.last lid.txt], false));
-          end;
           lbl
         with Not_found ->
           if lbls = [] then unbound_name_error env lid else
@@ -712,13 +706,6 @@ end) = struct
           raise (Error (lid.loc, env,
                         Name_type_mismatch (type_kind, lid.txt, tp, tpl)))
     in
-    if in_env lbl then
-    begin match scope with
-      (lab1,_)::_ when lab1 == lbl -> ()
-    | _ ->
-        Location.prerr_warning lid.loc
-          (Warnings.Disambiguated_name(get_name lbl))
-    end;
     lbl
 end
 
@@ -733,10 +720,6 @@ module Label = NameChoice (struct
   let get_type lbl = lbl.lbl_res
   let get_descrs = snd
   let unbound_name_error = Typetexp.unbound_label_error
-  let in_env lbl =
-    match lbl.lbl_repres with
-    | Record_regular | Record_object | Record_unboxed false -> true
-    | Record_unboxed true | Record_inlined _ | Record_extension -> false
 end)
 
 let disambiguate_label_by_ids keep closed ids labels =
@@ -755,15 +738,12 @@ let disambiguate_label_by_ids keep closed ids labels =
 (* Only issue warnings once per record constructor/pattern *)
 let disambiguate_lid_a_list loc closed env opath lid_a_list =
   let ids = List.map (fun (lid, _) -> Longident.last lid.txt) lid_a_list in
-  let w_amb = ref []
-  and w_scope = ref [] and w_scope_ty = ref "" in
+  let w_amb = ref [] in
   let warn loc msg =
     let open Warnings in
     match msg with
 
     | Ambiguous_name([s], l, _) -> w_amb := (s, l) :: !w_amb
-    | Name_out_of_scope(ty, [s], _) ->
-        w_scope := s :: !w_scope; w_scope_ty := ty
     | _ -> Location.prerr_warning loc msg
   in
   let process_label lid =
@@ -806,9 +786,6 @@ let disambiguate_lid_a_list loc closed env opath lid_a_list =
             amb
     | _ -> ()
   end;
-  if !w_scope <> [] then
-    Location.prerr_warning loc
-      (Warnings.Name_out_of_scope (!w_scope_ty, List.rev !w_scope, true));
   lbl_a_list
 
 let rec find_record_qual = function
@@ -889,7 +866,6 @@ module Constructor = NameChoice (struct
   let get_type cstr = cstr.cstr_res
   let get_descrs = fst
   let unbound_name_error = Typetexp.unbound_constructor_error
-  let in_env _ = true
 end)
 
 (* unification of a type with a tconstr with

@@ -62,9 +62,7 @@ type t =
   | Unused_constructor of string * bool * bool  (* 37 *)
   | Unused_extension of string * bool * bool * bool (* 38 *)
   | Unused_rec_flag                         (* 39 *)
-  | Name_out_of_scope of string * string list * bool (* 40 *)
   | Ambiguous_name of string list * string list *  bool    (* 41 *)
-  | Disambiguated_name of string            (* 42 *)
   | Nonoptional_label of string             (* 43 *)
   | Open_shadow_identifier of string * string (* 44 *)
   | Open_shadow_label_constructor of string * string (* 45 *)
@@ -139,9 +137,7 @@ let number = function
   | Unused_constructor _ -> 37
   | Unused_extension _ -> 38
   | Unused_rec_flag -> 39
-  | Name_out_of_scope _ -> 40
   | Ambiguous_name _ -> 41
-  | Disambiguated_name _ -> 42
   | Nonoptional_label _ -> 43
   | Open_shadow_identifier _ -> 44
   | Open_shadow_label_constructor _ -> 45
@@ -449,16 +445,6 @@ let message = function
      end
   | Unused_rec_flag ->
       "unused rec flag."
-  | Name_out_of_scope (ty, [nm], false) ->
-      nm ^ " was selected from type " ^ ty ^
-      ".\nIt is not visible in the current scope, and will not \n\
-       be selected if the type becomes unknown."
-  | Name_out_of_scope (_, _, false) -> assert false
-  | Name_out_of_scope (ty, slist, true) ->
-      "this record of type "^ ty ^" contains fields that are \n\
-       not visible in the current scope: "
-      ^ String.concat " " slist ^ ".\n\
-       They will not be selected if the type becomes unknown."
   | Ambiguous_name ([s], tl, false) ->
       s ^ " belongs to several types: " ^ String.concat " " tl ^
       "\nThe first one was selected. Please disambiguate if this is wrong."
@@ -467,9 +453,6 @@ let message = function
       "these field labels belong to several types: " ^
       String.concat " " tl ^
       "\nThe first one was selected. Please disambiguate if this is wrong."
-  | Disambiguated_name s ->
-      "this use of " ^ s ^ " relies on type-directed disambiguation,\n\
-       it will not compile with OCaml 4.00 or earlier."
   | Nonoptional_label s ->
       "the label " ^ s ^ " is not optional."
   | Open_shadow_identifier (kind, s) ->
@@ -583,8 +566,6 @@ type reporting_information =
 
 let report w =
   match w with 
-  | Name_out_of_scope _ (* 40 *)
-  | Disambiguated_name _ (* 42 *)
   | Unboxable_type_in_prim_decl _ (* 61 *) -> `Inactive
   (* TODO: we could simplify the code even more *)
   | _ -> 
