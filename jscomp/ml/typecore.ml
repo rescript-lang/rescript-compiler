@@ -2408,6 +2408,10 @@ let rec lower_args env seen ty_fun  =
         lower_args env (ty::seen) ty_fun
     | _ -> ()
 
+let not_function env ty =
+  let ls, tvar = list_labels env ty in
+  ls = [] && not tvar
+    
 type lazy_args = 
   (Asttypes.arg_label * (unit -> Typedtree.expression) option) list
 
@@ -3340,11 +3344,7 @@ and type_function ?in_function loc attrs env ty_expected l caselist =
   let cases, partial =
     type_cases ~in_function:(loc_fun,ty_fun) env ty_arg ty_res
       true loc caselist in
-  let not_function ty =
-    let ls, tvar = list_labels env ty in
-    ls = [] && not tvar
-  in
-  if is_optional l && not_function ty_res then
+  if is_optional l && not_function env ty_res then
     Location.prerr_warning (List.hd cases).c_lhs.pat_loc
       Warnings.Unerasable_optional_argument;
   let param = name_pattern "param" cases in
