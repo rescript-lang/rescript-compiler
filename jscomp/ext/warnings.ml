@@ -77,7 +77,7 @@ type t =
   | Inlining_impossible of string           (* 55 *)
   | Unreachable_case                        (* 56 *)
   | Ambiguous_pattern of string list        (* 57 *)
-  | Assignment_to_non_mutable_value         (* 59 *)
+
   | Unused_module of string                 (* 60 *)
 
   | Constraint_on_gadt                      (* 62 *)
@@ -152,7 +152,7 @@ let number = function
   | Inlining_impossible _ -> 55
   | Unreachable_case -> 56
   | Ambiguous_pattern _ -> 57
-  | Assignment_to_non_mutable_value -> 59
+
   | Unused_module _ -> 60
   
   | Constraint_on_gadt -> 62
@@ -508,10 +508,6 @@ let message = function
         "Ambiguous or-pattern variables under guard;\n\
          %s may match different arguments. (See manual section 8.5)"
         msg
-  | Assignment_to_non_mutable_value ->
-      "A potential assignment to a non-mutable value was detected \n\
-        in this source file.  Such assignments may generate incorrect code \n\
-        when using Flambda."
   | Unused_module s -> "unused module " ^ s ^ "."
   | Constraint_on_gadt ->
       "Type constraints do not apply to GADT cases of variant types."
