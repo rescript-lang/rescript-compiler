@@ -639,28 +639,6 @@ let generalize_structure var_level ty =
   simple_abbrevs := Mnil;
   generalize_structure var_level ty
 
-(* Generalize the spine of a function, if the level >= !current_level *)
-
-let rec generalize_spine ty =
-  let ty = repr ty in
-  if ty.level < !current_level || ty.level = generic_level then () else
-  match ty.desc with
-    Tarrow (_, ty1, ty2, _) ->
-      set_level ty generic_level;
-      generalize_spine ty1;
-      generalize_spine ty2;
-  | Tpoly (ty', _) ->
-      set_level ty generic_level;
-      generalize_spine ty'
-  | Ttuple tyl
-  | Tpackage (_, _, tyl) ->
-      set_level ty generic_level;
-      List.iter generalize_spine tyl
-  | Tconstr (p, tyl, memo) when not (is_object_type p) ->
-      set_level ty generic_level;
-      memo := Mnil;
-      List.iter generalize_spine tyl
-  | _ -> ()
 
 let forward_try_expand_once = (* Forward declaration *)
   ref (fun _env _ty -> raise Cannot_expand)
