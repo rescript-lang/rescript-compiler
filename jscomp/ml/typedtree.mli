@@ -606,8 +606,6 @@ val map_pattern_desc: (pattern -> pattern) -> pattern_desc -> pattern_desc
 val let_bound_idents: value_binding list -> Ident.t list
 val rev_let_bound_idents: value_binding list -> Ident.t list
 
-val let_bound_idents_with_loc:
-    value_binding list -> (Ident.t * string loc) list
 
 (** Alpha conversion of patterns *)
 val alpha_pat: (Ident.t * Ident.t) list -> pattern -> pattern
