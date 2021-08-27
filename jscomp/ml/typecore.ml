@@ -3843,7 +3843,6 @@ and type_cases ?in_function env ty_arg ty_res partial_flag loc caselist : _ * Ty
 and type_let ?(check = fun s -> Warnings.Unused_var s)
              ?(check_strict = fun s -> Warnings.Unused_var_strict s)
     env rec_flag spat_sexp_list scope allow =
-  let open Ast_helper in
   begin_def();
   let is_fake_let =
     match spat_sexp_list with
@@ -3857,19 +3856,8 @@ and type_let ?(check = fun s -> Warnings.Unused_var s)
 
   let spatl =
     List.map
-      (fun {pvb_pat=spat; pvb_expr=sexp; pvb_attributes=attrs} ->
-        attrs,
-        match spat.ppat_desc, sexp.pexp_desc with
-          (Ppat_any | Ppat_constraint _), _ -> spat
-        | _, Pexp_coerce (_, _, sty)
-        | _, Pexp_constraint (_, sty) when !Clflags.principal ->
-            (* propagate type annotation to pattern,
-               to allow it to be generalized in -principal mode *)
-            Pat.constraint_
-              ~loc:{spat.ppat_loc with Location.loc_ghost=true}
-              spat
-              sty
-        | _ -> spat)
+      (fun {pvb_pat=spat; pvb_attributes=attrs} ->
+        attrs, spat)
       spat_sexp_list in
   let nvs = List.map (fun _ -> newvar ()) spatl in
   let (pat_list, new_env, force, unpacks) =
