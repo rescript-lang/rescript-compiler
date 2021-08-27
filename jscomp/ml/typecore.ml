@@ -3845,8 +3845,6 @@ and type_let ?(check = fun s -> Warnings.Unused_var s)
     env rec_flag spat_sexp_list scope allow =
   let open Ast_helper in
   begin_def();
-  if !Clflags.principal then begin_def ();
-
   let is_fake_let =
     match spat_sexp_list with
     | [{pvb_expr={pexp_desc=Pexp_match(
@@ -3898,16 +3896,6 @@ and type_let ?(check = fun s -> Warnings.Unused_var s)
         iter_pattern finalize_variant pat
       end)
     pat_list;
-  (* Generalize the structure *)
-  let pat_list =
-    if !Clflags.principal then begin
-      end_def ();
-      List.map
-        (fun pat ->
-          iter_pattern (fun pat -> generalize_structure pat.pat_type) pat;
-          {pat with pat_type = instance env pat.pat_type})
-        pat_list
-    end else pat_list in
   (* Only bind pattern variables after generalizing *)
   List.iter (fun f -> f()) force;
   let exp_env =
@@ -3990,12 +3978,7 @@ and type_let ?(check = fun s -> Warnings.Unused_var s)
         match pat.pat_type.desc with
         | Tpoly (ty, tl) ->
             begin_def ();
-            if !Clflags.principal then begin_def ();
             let vars, ty' = instance_poly ~keep_names:true true tl ty in
-            if !Clflags.principal then begin
-              end_def ();
-              generalize_structure ty'
-            end;
             let exp =
               Builtin_attributes.warning_scope pvb_attributes
                   (fun () -> type_expect exp_env sexp ty')
