@@ -639,28 +639,6 @@ let generalize_structure var_level ty =
   simple_abbrevs := Mnil;
   generalize_structure var_level ty
 
-(* Generalize the spine of a function, if the level >= !current_level *)
-
-let rec generalize_spine ty =
-  let ty = repr ty in
-  if ty.level < !current_level || ty.level = generic_level then () else
-  match ty.desc with
-    Tarrow (_, ty1, ty2, _) ->
-      set_level ty generic_level;
-      generalize_spine ty1;
-      generalize_spine ty2;
-  | Tpoly (ty', _) ->
-      set_level ty generic_level;
-      generalize_spine ty'
-  | Ttuple tyl
-  | Tpackage (_, _, tyl) ->
-      set_level ty generic_level;
-      List.iter generalize_spine tyl
-  | Tconstr (p, tyl, memo) when not (is_object_type p) ->
-      set_level ty generic_level;
-      memo := Mnil;
-      List.iter generalize_spine tyl
-  | _ -> ()
 
 let forward_try_expand_once = (* Forward declaration *)
   ref (fun _env _ty -> raise Cannot_expand)
@@ -2198,16 +2176,6 @@ let mcomp env t1 t2 =
 
 (* Real unification *)
 
-let find_lowest_level ty =
-  let lowest = ref generic_level in
-  let rec find ty =
-    let ty = repr ty in
-    if ty.level >= lowest_level then begin
-      if ty.level < !lowest then lowest := ty.level;
-      ty.level <- pivot_level - ty.level;
-      iter_type_expr find ty
-    end
-  in find ty; unmark_type ty; !lowest
 
 let find_newtype_level env path =
   try match (Env.find_type path env).type_newtype_level with
@@ -2400,15 +2368,6 @@ and unify2 env t1 t2 =
     if lv1 > lv2 then Env.add_gadt_instance_chain !env lv1 t2 else
     if lv2 > lv1 then Env.add_gadt_instance_chain !env lv2 t1
   end;
-  let t1, t2 =
-    if !Clflags.principal
-    && (find_lowest_level t1' < lv || find_lowest_level t2' < lv) then
-      (* Expand abbreviations hiding a lower level *)
-      (* Should also do it for parameterized types, after unification... *)
-      (match t1.desc with Tconstr (_, [], _) -> t1' | _ -> t1),
-      (match t2.desc with Tconstr (_, [], _) -> t2' | _ -> t2)
-    else (t1, t2)
-  in
   if unify_eq t1 t1' || not (unify_eq t2 t2') then
     unify3 env t1 t1' t2 t2'
   else

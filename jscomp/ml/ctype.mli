@@ -101,8 +101,6 @@ val generalize_global: type_expr -> unit
            to !global_level *)
 val generalize_structure: type_expr -> unit
         (* Same, but variables are only lowered to !current_level *)
-val generalize_spine: type_expr -> unit
-        (* Special function to generalize a method during inference *)
 val correct_levels: type_expr -> type_expr
         (* Returns a copy with decreasing levels *)
 val limited_generalize: type_expr -> type_expr -> unit

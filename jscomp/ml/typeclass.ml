@@ -538,7 +538,6 @@ let initial_env define_class approx
 
   (* Temporary type for the class constructor *)
   let constr_type = approx cl.pci_expr in
-  if !Clflags.principal then Ctype.generalize_spine constr_type;
   let dummy_cty =
     Cty_signature
       { csig_self = Ctype.newvar ();

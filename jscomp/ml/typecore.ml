@@ -2635,7 +2635,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
           match extract_concrete_record env ty_expected with
           |  (p0, p,_) ->
               (* XXX level may be wrong *)
-              ty_expected, Some (p0, p) (*ty.level = generic_level || not !Clflags.principal*)
+              ty_expected, Some (p0, p) 
           | exception Not_found -> 
                newvar (), None
           
@@ -2691,7 +2691,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
           try
             let (p0, p,_) = extract_concrete_record env ty in
             (* XXX level may be wrong *)
-            Some (p0, p) (*ty.level = generic_level || not !Clflags.principal*)
+            Some (p0, p) 
           with Not_found -> None
         in
         match get_path ty_expected with
@@ -3843,10 +3843,7 @@ and type_cases ?in_function env ty_arg ty_res partial_flag loc caselist : _ * Ty
 and type_let ?(check = fun s -> Warnings.Unused_var s)
              ?(check_strict = fun s -> Warnings.Unused_var_strict s)
     env rec_flag spat_sexp_list scope allow =
-  let open Ast_helper in
   begin_def();
-  if !Clflags.principal then begin_def ();
-
   let is_fake_let =
     match spat_sexp_list with
     | [{pvb_expr={pexp_desc=Pexp_match(
@@ -3859,19 +3856,8 @@ and type_let ?(check = fun s -> Warnings.Unused_var s)
 
   let spatl =
     List.map
-      (fun {pvb_pat=spat; pvb_expr=sexp; pvb_attributes=attrs} ->
-        attrs,
-        match spat.ppat_desc, sexp.pexp_desc with
-          (Ppat_any | Ppat_constraint _), _ -> spat
-        | _, Pexp_coerce (_, _, sty)
-        | _, Pexp_constraint (_, sty) when !Clflags.principal ->
-            (* propagate type annotation to pattern,
-               to allow it to be generalized in -principal mode *)
-            Pat.constraint_
-              ~loc:{spat.ppat_loc with Location.loc_ghost=true}
-              spat
-              sty
-        | _ -> spat)
+      (fun {pvb_pat=spat; pvb_attributes=attrs} ->
+        attrs, spat)
       spat_sexp_list in
   let nvs = List.map (fun _ -> newvar ()) spatl in
   let (pat_list, new_env, force, unpacks) =
@@ -3898,16 +3884,6 @@ and type_let ?(check = fun s -> Warnings.Unused_var s)
         iter_pattern finalize_variant pat
       end)
     pat_list;
-  (* Generalize the structure *)
-  let pat_list =
-    if !Clflags.principal then begin
-      end_def ();
-      List.map
-        (fun pat ->
-          iter_pattern (fun pat -> generalize_structure pat.pat_type) pat;
-          {pat with pat_type = instance env pat.pat_type})
-        pat_list
-    end else pat_list in
   (* Only bind pattern variables after generalizing *)
   List.iter (fun f -> f()) force;
   let exp_env =
@@ -3990,12 +3966,7 @@ and type_let ?(check = fun s -> Warnings.Unused_var s)
         match pat.pat_type.desc with
         | Tpoly (ty, tl) ->
             begin_def ();
-            if !Clflags.principal then begin_def ();
             let vars, ty' = instance_poly ~keep_names:true true tl ty in
-            if !Clflags.principal then begin
-              end_def ();
-              generalize_structure ty'
-            end;
             let exp =
               Builtin_attributes.warning_scope pvb_attributes
                   (fun () -> type_expect exp_env sexp ty')
