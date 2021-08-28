@@ -622,7 +622,7 @@ module NameChoice(Name : sig
   val get_type: t -> type_expr
   val get_descrs: Env.type_descriptions -> t list
   val unbound_name_error: Env.t -> Longident.t loc -> 'a
-  val in_env: t -> bool
+
 end) = struct
   open Name
 
@@ -683,41 +683,14 @@ end) = struct
                                           paths, false));
             lbl
         end
-    | Some(tpath0, tpath, pr) ->
-        let warn_pr () =
-          let label = label_of_kind type_kind in
-          warn lid.loc
-            (Warnings.Not_principal
-               ("this type-based " ^ label ^ " disambiguation"))
-        in
+    | Some(tpath0, tpath) ->
         try
           let lbl, use = disambiguate_by_type env tpath scope in
           use ();
-          if not pr then begin
-            (* Check if non-principal type is affecting result *)
-            match lbls with
-              [] -> warn_pr ()
-            | (lbl', _use') :: rest ->
-                let lbl_tpath = get_type_path lbl' in
-                if not (compare_type_path env tpath lbl_tpath) then warn_pr ()
-                else
-                  let paths = ambiguous_types env lbl rest in
-                  if paths <> [] then
-                    warn lid.loc
-                      (Warnings.Ambiguous_name ([Longident.last lid.txt],
-                                                paths, false))
-          end;
           lbl
         with Not_found -> try
           let lbl = lookup_from_type env tpath lid in
           check_lk tpath lbl;
-          if in_env lbl then
-          begin
-          let s = Printtyp.string_of_path tpath in
-          warn lid.loc
-            (Warnings.Name_out_of_scope (s, [Longident.last lid.txt], false));
-          end;
-          if not pr then warn_pr ();
           lbl
         with Not_found ->
           if lbls = [] then unbound_name_error env lid else
@@ -733,13 +706,6 @@ end) = struct
           raise (Error (lid.loc, env,
                         Name_type_mismatch (type_kind, lid.txt, tp, tpl)))
     in
-    if in_env lbl then
-    begin match scope with
-      (lab1,_)::_ when lab1 == lbl -> ()
-    | _ ->
-        Location.prerr_warning lid.loc
-          (Warnings.Disambiguated_name(get_name lbl))
-    end;
     lbl
 end
 
@@ -754,10 +720,6 @@ module Label = NameChoice (struct
   let get_type lbl = lbl.lbl_res
   let get_descrs = snd
   let unbound_name_error = Typetexp.unbound_label_error
-  let in_env lbl =
-    match lbl.lbl_repres with
-    | Record_regular | Record_object | Record_unboxed false -> true
-    | Record_unboxed true | Record_inlined _ | Record_extension -> false
 end)
 
 let disambiguate_label_by_ids keep closed ids labels =
@@ -776,15 +738,12 @@ let disambiguate_label_by_ids keep closed ids labels =
 (* Only issue warnings once per record constructor/pattern *)
 let disambiguate_lid_a_list loc closed env opath lid_a_list =
   let ids = List.map (fun (lid, _) -> Longident.last lid.txt) lid_a_list in
-  let w_pr = ref false and w_amb = ref []
-  and w_scope = ref [] and w_scope_ty = ref "" in
+  let w_amb = ref [] in
   let warn loc msg =
     let open Warnings in
     match msg with
-    | Not_principal _ -> w_pr := true
+
     | Ambiguous_name([s], l, _) -> w_amb := (s, l) :: !w_amb
-    | Name_out_of_scope(ty, [s], _) ->
-        w_scope := s :: !w_scope; w_scope_ty := ty
     | _ -> Location.prerr_warning loc msg
   in
   let process_label lid =
@@ -803,7 +762,7 @@ let disambiguate_lid_a_list loc closed env opath lid_a_list =
       Typetexp.unbound_label_error env lid;
     let (ok, labels) =
       match opath with
-        Some (_, _, true) -> (true, scope) (* disambiguate only checks scope *)
+        Some (_, _) -> (true, scope) (* disambiguate only checks scope *)
       | _  -> disambiguate_label_by_ids (opath=None) closed ids scope
     in
     if ok then Label.disambiguate lid env opath labels ~warn ~scope
@@ -811,10 +770,7 @@ let disambiguate_lid_a_list loc closed env opath lid_a_list =
   in
   let lbl_a_list =
     List.map (fun (lid,a) -> lid, process_label lid, a) lid_a_list in
-  if !w_pr then
-    Location.prerr_warning loc
-      (Warnings.Not_principal "this type-based record disambiguation")
-  else begin
+  begin
     match List.rev !w_amb with
       (_,types)::_ as amb ->
         let paths =
@@ -830,9 +786,6 @@ let disambiguate_lid_a_list loc closed env opath lid_a_list =
             amb
     | _ -> ()
   end;
-  if !w_scope <> [] then
-    Location.prerr_warning loc
-      (Warnings.Name_out_of_scope (!w_scope_ty, List.rev !w_scope, true));
   lbl_a_list
 
 let rec find_record_qual = function
@@ -913,7 +866,6 @@ module Constructor = NameChoice (struct
   let get_type cstr = cstr.cstr_res
   let get_descrs = fst
   let unbound_name_error = Typetexp.unbound_constructor_error
-  let in_env _ = true
 end)
 
 (* unification of a type with a tconstr with
@@ -1097,7 +1049,7 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
       let opath =
         try
           let (p0, p, _) = extract_concrete_variant !env expected_ty in
-            Some (p0, p, true)
+            Some (p0, p)
         with Not_found -> None
       in
       let candidates =
@@ -1211,7 +1163,7 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
       let opath, record_ty =
         try
           let (p0, p,_) = extract_concrete_record !env expected_ty in
-          Some (p0, p, true), expected_ty
+          Some (p0, p), expected_ty
         with Not_found -> None, newvar ()
       in
       let type_label_pat (label_lid, label, sarg) k =
@@ -2408,6 +2360,10 @@ let rec lower_args env seen ty_fun  =
         lower_args env (ty::seen) ty_fun
     | _ -> ()
 
+let not_function env ty =
+  let ls, tvar = list_labels env ty in
+  ls = [] && not tvar
+    
 type lazy_args = 
   (Asttypes.arg_label * (unit -> Typedtree.expression) option) list
 
@@ -2679,7 +2635,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
           match extract_concrete_record env ty_expected with
           |  (p0, p,_) ->
               (* XXX level may be wrong *)
-              ty_expected, Some (p0, p, true) (*ty.level = generic_level || not !Clflags.principal*)
+              ty_expected, Some (p0, p) (*ty.level = generic_level || not !Clflags.principal*)
           | exception Not_found -> 
                newvar (), None
           
@@ -2735,7 +2691,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
           try
             let (p0, p,_) = extract_concrete_record env ty in
             (* XXX level may be wrong *)
-            Some (p0, p, true) (*ty.level = generic_level || not !Clflags.principal*)
+            Some (p0, p) (*ty.level = generic_level || not !Clflags.principal*)
           with Not_found -> None
         in
         match get_path ty_expected with
@@ -2743,7 +2699,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
             begin 
                 match get_path exp.exp_type with
                   None -> newvar (), None
-                | Some (_, p', _) as op ->
+                | Some (_, p') as op ->
                     let decl = Env.find_type p' env in
                     begin_def ();
                     let ty =
@@ -2972,9 +2928,6 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
                 else begin try
                   let force' = subtype env arg.exp_type ty' in
                   force (); force' ();
-                  if not gen && !Clflags.principal then
-                    Location.prerr_warning loc
-                      (Warnings.Not_principal "this ground coercion");
                 with Subtype (tr1, tr2) ->
                   (* prerr_endline "coercion failed"; *)
                   raise(Error(loc, env, Not_subtype(tr1, tr2)))
@@ -3040,10 +2993,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
           match repr typ with
             {desc = Tpoly (ty, [])} ->
               instance env ty
-          | {desc = Tpoly (ty, tl); level = l} ->
-              if !Clflags.principal && l <> generic_level then
-                Location.prerr_warning loc
-                  (Warnings.Not_principal "this use of a polymorphic method");
+          | {desc = Tpoly (ty, tl); level = _} ->
               snd (instance_poly false tl ty)
           | {desc = Tvar _} as ty ->
               let ty' = newvar () in
@@ -3247,11 +3197,6 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
       let (p, nl) =
         match Ctype.expand_head env (instance env ty_expected) with
           {desc = Tpackage (p, nl, _tl)} ->
-            if !Clflags.principal &&
-              (Ctype.expand_head env ty_expected).level < Btype.generic_level
-            then
-              Location.prerr_warning loc
-                (Warnings.Not_principal "this module packing");
             (p, nl)
         | {desc = Tvar _} ->
             raise (Error (loc, env, Cannot_infer_signature))
@@ -3340,11 +3285,7 @@ and type_function ?in_function loc attrs env ty_expected l caselist =
   let cases, partial =
     type_cases ~in_function:(loc_fun,ty_fun) env ty_arg ty_res
       true loc caselist in
-  let not_function ty =
-    let ls, tvar = list_labels env ty in
-    ls = [] && not tvar
-  in
-  if is_optional l && not_function ty_res then
+  if is_optional l && not_function env ty_res then
     Location.prerr_warning (List.hd cases).c_lhs.pat_loc
       Warnings.Unerasable_optional_argument;
   let param = name_pattern "param" cases in
@@ -3357,17 +3298,12 @@ and type_function ?in_function loc attrs env ty_expected l caselist =
 
 
 and type_label_access env srecord lid =
-  if !Clflags.principal then begin_def ();
   let record = type_exp ~recarg:Allowed env srecord in
-  if !Clflags.principal then begin
-    end_def ();
-    generalize_structure record.exp_type
-  end;
   let ty_exp = record.exp_type in
   let opath =
     try
       let (p0, p,_) = extract_concrete_record env ty_exp in
-      Some(p0, p, ty_exp.level = generic_level || not !Clflags.principal)
+      Some(p0, p)
     with Not_found -> None
   in
   let labels = Typetexp.find_all_labels env lid.loc lid.txt in
@@ -3446,7 +3382,7 @@ and type_argument ?recarg env sarg ty_expected' ty_expected =
     | _ -> false
   in
   match expand_head env ty_expected' with
-    {desc = Tarrow(Nolabel,ty_arg,ty_res,_); level = lv}
+    {desc = Tarrow(Nolabel,ty_arg,ty_res,_); level = _}
     when is_inferred sarg ->
       (* apply optional arguments when expected type is "" *)
       (* we must be very careful about not breaking the semantics *)
@@ -3467,9 +3403,7 @@ and type_argument ?recarg env sarg ty_expected' ty_expected =
         |  _ -> [], texp.exp_type, false
       in
       let args, ty_fun', simple_res = make_args [] texp.exp_type in
-      let warn = !Clflags.principal &&
-        (lv <> generic_level || (repr ty_fun').level <> generic_level)
-      and texp = {texp with exp_type = instance env texp.exp_type}
+      let texp = {texp with exp_type = instance env texp.exp_type}
       and ty_fun = instance env ty_fun' in
       if not (simple_res || no_labels ty_res) then begin
         unify_exp env texp ty_expected;
@@ -3508,8 +3442,6 @@ and type_argument ?recarg env sarg ty_expected' ty_expected =
       Location.prerr_warning texp.exp_loc
         (Warnings.Eliminated_optional_arguments
            (List.map (fun (l, _) -> Printtyp.string_of_label l) args));
-      if warn then Location.prerr_warning texp.exp_loc
-          (Warnings.Without_principality "eliminated optional argument");
       (* let-expand to have side effects *)
       let let_pat, let_var = var_pair "arg" texp.exp_type in
       re { texp with exp_type = ty_fun; exp_desc =
@@ -3652,7 +3584,7 @@ and type_construct env loc lid sarg ty_expected attrs =
   let opath =
     try
       let (p0, p,_) = extract_concrete_variant env ty_expected in
-      Some(p0, p, ty_expected.level = generic_level || not !Clflags.principal)
+      Some(p0, p)
     with Not_found -> None
   in
   let constrs = Typetexp.find_all_constructors env lid.loc lid.txt in
@@ -3750,7 +3682,7 @@ and type_statement env sexp =
 
 (* Typing of match cases *)
 
-and type_cases ?in_function env ty_arg ty_res partial_flag loc caselist =
+and type_cases ?in_function env ty_arg ty_res partial_flag loc caselist : _ * Typedtree.partial =
   (* ty_arg is _fully_ generalized *)
   let patterns = List.map (fun {pc_lhs=p} -> p) caselist in
   let contains_polyvars = List.exists contains_polymorphic_variant patterns in
@@ -3758,10 +3690,10 @@ and type_cases ?in_function env ty_arg ty_res partial_flag loc caselist =
   and has_gadts = List.exists (contains_gadt env) patterns in
 (*  prerr_endline ( if has_gadts then "contains gadt" else "no gadt"); *)
   let ty_arg =
-    if (has_gadts || erase_either) && not !Clflags.principal
+    if (has_gadts || erase_either) 
     then correct_levels ty_arg else ty_arg
   and ty_res, env =
-    if has_gadts && not !Clflags.principal then
+    if has_gadts then
       correct_levels ty_res, duplicate_ident_types caselist env
     else ty_res, env
   in
@@ -3808,7 +3740,6 @@ and type_cases ?in_function env ty_arg ty_res partial_flag loc caselist =
           | None -> pc_rhs.pexp_loc
           | Some g -> {pc_rhs.pexp_loc with loc_start=g.pexp_loc.loc_start}
         in
-        if !Clflags.principal then begin_def (); (* propagation of pattern *)
         let scope = Some (Annot.Idef loc) in
         let (pat, ext_env, force, unpacks) =
           let partial =
@@ -3818,13 +3749,6 @@ and type_cases ?in_function env ty_arg ty_res partial_flag loc caselist =
           type_pattern ~lev env pc_lhs scope ty_arg
         in
         pattern_force := force @ !pattern_force;
-        let pat =
-          if !Clflags.principal then begin
-            end_def ();
-            iter_pattern (fun {pat_type=t} -> generalize_structure t) pat;
-            { pat with pat_type = instance ext_env pat.pat_type }
-          end else pat
-        in
         (pat, (ext_env, unpacks)))
       caselist in
   (* Unify all cases (delayed to keep it order-free) *)
@@ -3856,13 +3780,7 @@ and type_cases ?in_function env ty_arg ty_res partial_flag loc caselist =
       (fun (pat, (ext_env, unpacks)) {pc_lhs; pc_guard; pc_rhs} ->
         let sexp = wrap_unpacks pc_rhs unpacks in
         let ty_res' =
-          if !Clflags.principal then begin
-            begin_def ();
-            let ty = instance ~partial:true env ty_res in
-            end_def ();
-            generalize_structure ty; ty
-          end
-          else if contains_gadt env pc_lhs then correct_levels ty_res
+          if contains_gadt env pc_lhs then correct_levels ty_res
           else ty_res in
 (*        Format.printf "@[%i %i, ty_res' =@ %a@]@." lev (get_current_level())
           Printtyp.raw_type_expr ty_res'; *)

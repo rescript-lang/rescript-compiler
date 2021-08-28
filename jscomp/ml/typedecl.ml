@@ -1563,16 +1563,6 @@ let rec parse_native_repr_attributes env core_type ty =
   | _ -> ([], Same_as_ocaml_repr)
 
 
-let check_unboxable env loc ty =
-  let ty = Ctype.repr (Ctype.expand_head_opt env ty) in
-  try match ty.desc with
-  | Tconstr (p, _, _) ->
-    let tydecl = Env.find_type p env in
-    if tydecl.type_unboxed.unboxed then
-      Location.prerr_warning loc
-        (Warnings.Unboxable_type_in_prim_decl (Path.name p))
-  | _ -> ()
-  with Not_found -> ()
 
 (* Translate a value declaration *)
 let transl_value_decl env loc valdecl =
@@ -1618,7 +1608,6 @@ let transl_value_decl env loc valdecl =
              ) && 
          (prim.prim_name = "" || (prim.prim_name.[0] <> '%' && prim.prim_name.[0] <> '#')) then
         raise(Error(valdecl.pval_type.ptyp_loc, Null_arity_external));
-      Btype.iter_type_expr (check_unboxable env loc) ty;
       { val_type = ty; val_kind = Val_prim prim; Types.val_loc = loc;
         val_attributes = valdecl.pval_attributes }
   in

@@ -2874,7 +2874,7 @@ let filter_arrow env t l =
       link_type t t';
       (t1, t2)
   | Tarrow(l', t1, t2, _)
-    when l = l'  ->
+    when Asttypes.same_arg_label l  l'  ->
       (t1, t2)
   | _ ->
       raise (Unify [])

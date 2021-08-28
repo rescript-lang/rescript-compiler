@@ -42,9 +42,6 @@ type t =
   | Illegal_backslash                       (* 14 *)
   | Implicit_public_methods of string list  (* 15 *)
   | Unerasable_optional_argument            (* 16 *)
-  | Undeclared_virtual_method of string     (* 17 *)
-  | Not_principal of string                 (* 18 *)
-  | Without_principality of string          (* 19 *)
   | Unused_argument                         (* 20 *)
   | Nonreturning_statement                  (* 21 *)
   | Preprocessor of string                  (* 22 *)
@@ -60,17 +57,14 @@ type t =
   | Unused_open of string                   (* 33 *)
   | Unused_type_declaration of string       (* 34 *)
   | Unused_for_index of string              (* 35 *)
-  | Unused_ancestor of string               (* 36 *)
   | Unused_constructor of string * bool * bool  (* 37 *)
   | Unused_extension of string * bool * bool * bool (* 38 *)
   | Unused_rec_flag                         (* 39 *)
-  | Name_out_of_scope of string * string list * bool (* 40 *)
   | Ambiguous_name of string list * string list *  bool    (* 41 *)
-  | Disambiguated_name of string            (* 42 *)
   | Nonoptional_label of string             (* 43 *)
   | Open_shadow_identifier of string * string (* 44 *)
   | Open_shadow_label_constructor of string * string (* 45 *)
-  | Bad_env_variable of string * string     (* 46 *)
+
   | Attribute_payload of string * string    (* 47 *)
   | Eliminated_optional_arguments of string list (* 48 *)
   | No_cmi_file of string * string option   (* 49 *)
@@ -78,15 +72,15 @@ type t =
   | Fragile_literal_pattern                 (* 52 *)
   | Misplaced_attribute of string           (* 53 *)
   | Duplicated_attribute of string          (* 54 *)
-  | Inlining_impossible of string           (* 55 *)
+  
   | Unreachable_case                        (* 56 *)
   | Ambiguous_pattern of string list        (* 57 *)
-  | Assignment_to_non_mutable_value         (* 59 *)
+
   | Unused_module of string                 (* 60 *)
-  | Unboxable_type_in_prim_decl of string   (* 61 *)
+
   | Constraint_on_gadt                      (* 62 *)
     
-#if 1
+
   | Bs_unused_attribute of string           (* 101 *)
   | Bs_polymorphic_comparison               (* 102 *)
   | Bs_ffi_warning of string                (* 103 *)
@@ -96,7 +90,7 @@ type t =
   | Bs_integer_literal_overflow              (* 107 *)
   | Bs_uninterpreted_delimiters of string   (* 108 *)
   | Bs_toplevel_expression_unit             (* 109 *)
-#end  
+
 ;;
 
 (* If you remove a warning, leave a hole in the numbering.  NEVER change
@@ -121,9 +115,6 @@ let number = function
   | Illegal_backslash -> 14
   | Implicit_public_methods _ -> 15
   | Unerasable_optional_argument -> 16
-  | Undeclared_virtual_method _ -> 17
-  | Not_principal _ -> 18
-  | Without_principality _ -> 19
   | Unused_argument -> 20
   | Nonreturning_statement -> 21
   | Preprocessor _ -> 22
@@ -139,17 +130,14 @@ let number = function
   | Unused_open _ -> 33
   | Unused_type_declaration _ -> 34
   | Unused_for_index _ -> 35
-  | Unused_ancestor _ -> 36
   | Unused_constructor _ -> 37
   | Unused_extension _ -> 38
   | Unused_rec_flag -> 39
-  | Name_out_of_scope _ -> 40
   | Ambiguous_name _ -> 41
-  | Disambiguated_name _ -> 42
   | Nonoptional_label _ -> 43
   | Open_shadow_identifier _ -> 44
   | Open_shadow_label_constructor _ -> 45
-  | Bad_env_variable _ -> 46
+
   | Attribute_payload _ -> 47
   | Eliminated_optional_arguments _ -> 48
   | No_cmi_file _ -> 49
@@ -157,12 +145,11 @@ let number = function
   | Fragile_literal_pattern -> 52
   | Misplaced_attribute _ -> 53
   | Duplicated_attribute _ -> 54
-  | Inlining_impossible _ -> 55
   | Unreachable_case -> 56
   | Ambiguous_pattern _ -> 57
-  | Assignment_to_non_mutable_value -> 59
+
   | Unused_module _ -> 60
-  | Unboxable_type_in_prim_decl _ -> 61
+  
   | Constraint_on_gadt -> 62
   | Bs_unused_attribute _ -> 101
   | Bs_polymorphic_comparison -> 102
@@ -390,9 +377,6 @@ let message = function
 #else      
   | Unerasable_optional_argument -> "this optional argument cannot be erased."
 #end  
-  | Undeclared_virtual_method m -> "the virtual method "^m^" is not declared."
-  | Not_principal s -> s^" is not principal."
-  | Without_principality s -> s^" without principality."
   | Unused_argument -> "this argument will not be used by the function."
   | Nonreturning_statement ->
       "this statement never returns (or has an unsound type.)"
@@ -428,7 +412,6 @@ let message = function
   | Unused_open s -> "unused open " ^ s ^ "."
   | Unused_type_declaration s -> "unused type " ^ s ^ "."
   | Unused_for_index s -> "unused for-loop index " ^ s ^ "."
-  | Unused_ancestor s -> "unused ancestor variable " ^ s ^ "."
   | Unused_constructor (s, false, false) -> "unused constructor " ^ s ^ "."
   | Unused_constructor (s, true, _) ->
       "constructor " ^ s ^
@@ -455,16 +438,6 @@ let message = function
      end
   | Unused_rec_flag ->
       "unused rec flag."
-  | Name_out_of_scope (ty, [nm], false) ->
-      nm ^ " was selected from type " ^ ty ^
-      ".\nIt is not visible in the current scope, and will not \n\
-       be selected if the type becomes unknown."
-  | Name_out_of_scope (_, _, false) -> assert false
-  | Name_out_of_scope (ty, slist, true) ->
-      "this record of type "^ ty ^" contains fields that are \n\
-       not visible in the current scope: "
-      ^ String.concat " " slist ^ ".\n\
-       They will not be selected if the type becomes unknown."
   | Ambiguous_name ([s], tl, false) ->
       s ^ " belongs to several types: " ^ String.concat " " tl ^
       "\nThe first one was selected. Please disambiguate if this is wrong."
@@ -473,9 +446,6 @@ let message = function
       "these field labels belong to several types: " ^
       String.concat " " tl ^
       "\nThe first one was selected. Please disambiguate if this is wrong."
-  | Disambiguated_name s ->
-      "this use of " ^ s ^ " relies on type-directed disambiguation,\n\
-       it will not compile with OCaml 4.00 or earlier."
   | Nonoptional_label s ->
       "the label " ^ s ^ " is not optional."
   | Open_shadow_identifier (kind, s) ->
@@ -486,8 +456,6 @@ let message = function
       Printf.sprintf
         "this open statement shadows the %s %s (which is later used)"
         kind s
-  | Bad_env_variable (var, s) ->
-      Printf.sprintf "illegal environment variable %s : %s" var s
   | Attribute_payload (a, s) ->
       Printf.sprintf "illegal payload for attribute '%s'.\n%s" a s
   | Eliminated_optional_arguments sl ->
@@ -517,8 +485,6 @@ let message = function
       Printf.sprintf "the %S attribute is used more than once on this \
           expression"
         attr_name
-  | Inlining_impossible reason ->
-      Printf.sprintf "Cannot inline: %s" reason
   | Ambiguous_pattern vars ->
       let msg =
         let vars = List.sort String.compare vars in
@@ -531,17 +497,7 @@ let message = function
         "Ambiguous or-pattern variables under guard;\n\
          %s may match different arguments. (See manual section 8.5)"
         msg
-  | Assignment_to_non_mutable_value ->
-      "A potential assignment to a non-mutable value was detected \n\
-        in this source file.  Such assignments may generate incorrect code \n\
-        when using Flambda."
   | Unused_module s -> "unused module " ^ s ^ "."
-  | Unboxable_type_in_prim_decl t ->
-      Printf.sprintf
-        "This primitive declaration uses type %s, which is unannotated and\n\
-         unboxable. The representation of such types may change in future\n\
-         versions. You should annotate the declaration of %s with [@@boxed]\n\
-         or [@@unboxed]." t t
   | Constraint_on_gadt ->
       "Type constraints do not apply to GADT cases of variant types."
 
@@ -588,12 +544,6 @@ type reporting_information =
   }
 
 let report w =
-  match w with 
-  | Name_out_of_scope _ (* 40 *)
-  | Disambiguated_name _ (* 42 *)
-  | Unboxable_type_in_prim_decl _ (* 61 *) -> `Inactive
-  (* TODO: we could simplify the code even more *)
-  | _ -> 
   match is_active w with
   | false -> `Inactive
   | true ->
