@@ -2393,8 +2393,26 @@ let is_ignore funct env =
         with Unify _ -> false)
   | _ -> false
 
+let not_identity = function
+  | Texp_ident(_,_,{val_kind=Val_prim
+                  {Primitive.prim_name="%identity"}}) ->
+    false
+  | _ -> true  
+
+let rec lower_args env seen ty_fun  =
+  let ty = expand_head env ty_fun in
+    if List.memq ty seen then () else
+    match ty.desc with
+      Tarrow (_l, ty_arg, ty_fun, _com) ->
+        (try unify_var env (newvar()) ty_arg with Unify _ -> assert false);
+        lower_args env (ty::seen) ty_fun
+    | _ -> ()
+
 type lazy_args = 
   (Asttypes.arg_label * (unit -> Typedtree.expression) option) list
+
+type targs = 
+  (Asttypes.arg_label * Typedtree.expression option) list  
 let rec type_exp ?recarg env sexp =
   (* We now delegate everything to type_expect *)
   type_expect ?recarg env sexp (newvar ())
@@ -2455,15 +2473,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
             () (* will fail later *)
         end;
         rue {
-          exp_desc =
-            begin match desc.val_kind with
-            (*| Val_prim _ ->
-                let p = Env.normalize_path (Some loc) env path in
-                Env.add_required_global (Path.head p);
-                Texp_ident(path, lid, desc)*)
-            | _ ->
-                Texp_ident(path, lid, desc)
-          end;
+          exp_desc = Texp_ident(path, lid, desc);
           exp_loc = loc; exp_extra = [];
           exp_type = instance env desc.val_type;
           exp_attributes = sexp.pexp_attributes;
@@ -2560,18 +2570,9 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
       assert (sargs <> []);
       begin_def (); (* one more level for non-returning functions *)
       let funct = type_exp env sfunct in
-      let rec lower_args seen ty_fun =
-        let ty = expand_head env ty_fun in
-        if List.memq ty seen then () else
-        match ty.desc with
-          Tarrow (_l, ty_arg, ty_fun, _com) ->
-            (try unify_var env (newvar()) ty_arg with Unify _ -> assert false);
-            lower_args (ty::seen) ty_fun
-        | _ -> ()
-      in
       let ty = instance env funct.exp_type in
       end_def ();
-      wrap_trace_gadt_instances env (lower_args []) ty;
+      wrap_trace_gadt_instances env (lower_args env []) ty;
       begin_def ();
       let (args, ty_res) = type_application env funct sargs in
       end_def ();
@@ -3523,7 +3524,7 @@ and type_argument ?recarg env sarg ty_expected' ty_expected =
       unify_exp env texp ty_expected;
       texp
 
-and type_application env funct sargs =
+and type_application env funct (sargs : sargs) : targs * Types.type_expr =
   (* funct.exp_type may be generic *)
   let result_type omitted ty_fun =
     List.fold_left
@@ -3535,7 +3536,8 @@ and type_application env funct sargs =
     tvar || List.mem l ls
   in
   let ignored = ref [] in
-  let rec type_unknown_args (args : lazy_args) omitted ty_fun (syntax_args : sargs)= 
+  let rec type_unknown_args (args : lazy_args) omitted ty_fun (syntax_args : sargs)
+     : targs * _ = 
     match syntax_args with 
     |  [] ->
         (List.map
@@ -3549,12 +3551,6 @@ and type_application env funct sargs =
           match ty_fun.desc with
             Tvar _ ->
               let t1 = newvar () and t2 = newvar () in
-              let not_identity = function
-                  Texp_ident(_,_,{val_kind=Val_prim
-                                  {Primitive.prim_name="%identity"}}) ->
-                    false
-                | _ -> true
-              in
               if ty_fun.level >= t1.level && not_identity funct.exp_desc then
                 Location.prerr_warning sarg1.pexp_loc Warnings.Unused_argument;
               unify env ty_fun (newty (Tarrow(l1,t1,t2,Clink(ref Cunknown))));
