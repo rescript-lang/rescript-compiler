@@ -27,12 +27,13 @@ val type_toplevel_phrase:
         Env.t -> Parsetree.structure ->
          Typedtree.structure * Types.signature * Env.t
 
-#if true then         
-val should_hide : (Typedtree.module_binding -> bool) ref 
+
+val rescript_hide : Typedtree.module_binding -> bool
+
 val type_implementation_more: ?check_exists:unit -> 
   string -> string -> string -> Env.t -> Parsetree.structure ->
   Typedtree.structure * Typedtree.module_coercion * Env.t * Types.signature
-#end
+
 val type_implementation:
   string -> string -> string -> Env.t -> Parsetree.structure ->
   Typedtree.structure * Typedtree.module_coercion

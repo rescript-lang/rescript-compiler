@@ -10016,7 +10016,7 @@ let parse_opt error active flags s =
     match s.[i] with
     | '0' .. '9' ->
         let i, n1, n2 = get_range i in
-        for n = n1 to min n2 last_warning_number do myset n done;
+        for n = n1 to Ext_pervasives.min_int n2 last_warning_number do myset n done;
         loop i
     | 'A' .. 'Z' ->
        List.iter myset (letter (Char.lowercase_ascii s.[i]));
