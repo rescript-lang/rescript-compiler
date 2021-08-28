@@ -173,11 +173,14 @@ val label_name : arg_label -> label
 (* Returns the label name with first character '?' or '~' as appropriate. *)
 val prefixed_label_name : arg_label -> label
 
-val extract_label :
-    label -> (arg_label * 'a) list ->
-    arg_label * 'a * (arg_label * 'a) list * (arg_label * 'a) list
-    (* actual label, value, before list, after list *)
+type sargs = (arg_label * Parsetree.expression) list
 
+val extract_label :
+    label -> sargs ->
+    (arg_label * Parsetree.expression * sargs) option 
+    (* actual label, value, new list with the same order *)
+
+val label_assoc : arg_label -> sargs -> bool
 (**** Utilities for backtracking ****)
 
 type snapshot

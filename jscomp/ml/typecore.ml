@@ -2384,6 +2384,17 @@ let unify_exp env exp expected_ty =
   let loc = proper_exp_loc exp in
   unify_exp_types loc env exp.exp_type expected_ty
 
+
+let is_ignore funct env =
+  match funct.exp_desc with
+    Texp_ident (_, _, {val_kind=Val_prim{Primitive.prim_name="%ignore"}}) ->
+      (try ignore (filter_arrow env (instance env funct.exp_type) Nolabel);
+             true
+        with Unify _ -> false)
+  | _ -> false
+
+type lazy_args = 
+  (Asttypes.arg_label * (unit -> Typedtree.expression) option) list
 let rec type_exp ?recarg env sexp =
   (* We now delegate everything to type_expect *)
   type_expect ?recarg env sexp (newvar ())
@@ -3524,11 +3535,9 @@ and type_application env funct sargs =
     tvar || List.mem l ls
   in
   let ignored = ref [] in
-  let rec type_unknown_args
-      (args :
-      (Asttypes.arg_label * (unit -> Typedtree.expression) option) list)
-    omitted ty_fun = function
-      [] ->
+  let rec type_unknown_args (args : lazy_args) omitted ty_fun (syntax_args : sargs)= 
+    match syntax_args with 
+    |  [] ->
         (List.map
             (function l, None -> l, None
                 | l, Some f -> l, Some (f ()))
@@ -3577,84 +3586,56 @@ and type_application env funct sargs =
         in
         type_unknown_args ((l1, Some arg1) :: args) omitted ty2 sargl
   in
-  let () =
-    begin
-      let ls, tvar = list_labels env funct.exp_type in
-      if not tvar then
-      let labels = Ext_list.filter ls (fun l -> not (is_optional l)) in
-      if 
-      Ext_list.same_length labels sargs &&
-      List.for_all (fun (l,_) -> l = Nolabel) sargs &&
-      List.exists (fun l -> l <> Nolabel) labels then
-      raise (Error(
-         funct.exp_loc, env,
-         (Labels_omitted
-            (List.map Printtyp.string_of_label
-                      (Ext_list.filter labels (fun x -> x <> Nolabel))))
-       ))
-    end
-  in
-  let rec type_args args omitted ty_fun ty_fun0 ty_old sargs more_sargs =
+  let rec type_args args omitted ~ty_fun ty_fun0  ~(sargs : sargs)  =
     match expand_head env ty_fun, expand_head env ty_fun0 with
       {desc=Tarrow (l, ty, ty_fun, com); level=lv} ,
       {desc=Tarrow (_, ty0, ty_fun0, _)}
-      when (sargs <> [] || more_sargs <> []) && commu_repr com = Cok ->
+      when (sargs <> [] ) && commu_repr com = Cok ->
         let name = label_name l
         and optional = is_optional l in
-        let sargs, more_sargs, arg =
-          try
-            let (l', sarg0, sargs, more_sargs) =
-              try
-                let (l', sarg0, sargs1, sargs2) = extract_label name sargs in
-                (l', sarg0, sargs1 @ sargs2, more_sargs)
-              with Not_found ->
-                let (l', sarg0, sargs1, sargs2) =
-                  extract_label name more_sargs in
-                (l', sarg0, sargs @ sargs1, sargs2)
-            in
+        let sargs, omitted,  arg =          
+            match extract_label name sargs with 
+            | None ->          
+                if optional && label_assoc Nolabel sargs
+                then begin
+                  ignored := (l,ty,lv) :: !ignored;
+                  sargs, omitted , Some (fun () -> option_none (instance env ty) Location.none)
+                end else 
+                  sargs, (l,ty,lv) :: omitted , None
+            | Some (l', sarg0, sargs) ->                   
             if not optional && is_optional l' then
               Location.prerr_warning sarg0.pexp_loc
                 (Warnings.Nonoptional_label (Printtyp.string_of_label l));
-            sargs, more_sargs,
+             sargs, omitted ,            
+             Some (
             if not optional || is_optional l' then
-              Some (fun () -> type_argument env sarg0 ty ty0)
-            else begin
-              Some (fun () -> option_some (type_argument env sarg0
+               (fun () -> type_argument env sarg0 ty ty0)
+            else 
+               (fun () -> option_some (type_argument env sarg0
                                              (extract_option_type env ty)
-                                             (extract_option_type env ty0)))
-            end
-          with Not_found ->
-            sargs, more_sargs,
-            if optional &&
-              (List.mem_assoc Nolabel sargs
-               || List.mem_assoc Nolabel more_sargs)
-            then begin
-              ignored := (l,ty,lv) :: !ignored;
-              Some (fun () -> option_none (instance env ty) Location.none)
-            end else begin
-              None
-            end
+                                             (extract_option_type env ty0))))
         in
-        let omitted =
-          if arg = None then (l,ty,lv) :: omitted else omitted in
-        let ty_old = if sargs = [] then ty_fun else ty_old in
-        type_args ((l,arg)::args) omitted ty_fun ty_fun0
-          ty_old sargs more_sargs
+        type_args ((l,arg)::args) omitted ~ty_fun ty_fun0 ~sargs 
     | _ ->
-            type_unknown_args args omitted ty_fun0
-              (sargs @ more_sargs)
+        type_unknown_args args omitted ty_fun0 sargs (* This is the hot path for non-labeled function*)
   in
-  let is_ignore funct =
-    match funct.exp_desc with
-      Texp_ident (_, _, {val_kind=Val_prim{Primitive.prim_name="%ignore"}}) ->
-        (try ignore (filter_arrow env (instance env funct.exp_type) Nolabel);
-             true
-        with Unify _ -> false)
-    | _ -> false
+  let () =  
+    let ls, tvar = list_labels env funct.exp_type in
+    if not tvar then
+    let labels = Ext_list.filter ls (fun l -> not (is_optional l)) in
+    if Ext_list.same_length labels sargs &&
+       List.for_all (fun (l,_) -> l = Nolabel) sargs &&
+       List.exists (fun l -> l <> Nolabel) labels then
+        raise 
+          (Error(
+          funct.exp_loc, env,
+          (Labels_omitted
+            (List.map Printtyp.string_of_label
+                      (Ext_list.filter labels (fun x -> x <> Nolabel))))))  
   in
   match sargs with
     (* Special case for ignore: avoid discarding warning *)
-    [Nolabel, sarg] when is_ignore funct ->
+    [Nolabel, sarg] when is_ignore funct env ->
       let ty_arg, ty_res =
         filter_arrow env (instance env funct.exp_type) Nolabel
       in
@@ -3669,7 +3650,7 @@ and type_application env funct sargs =
       ([Nolabel, Some exp], ty_res)
   | _ ->
       let ty = funct.exp_type in
-      type_args [] [] ty (instance env ty) ty sargs []
+      type_args [] [] ~ty_fun:ty (instance env ty) ~sargs
 
 and type_construct env loc lid sarg ty_expected attrs =
   let opath =

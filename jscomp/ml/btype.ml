@@ -622,14 +622,22 @@ let prefixed_label_name = function
   | Labelled s -> "~" ^ s
   | Optional s -> "?" ^ s
 
+
+type sargs = (Asttypes.arg_label * Parsetree.expression) list
+  
 let rec extract_label_aux hd l = function
-    [] -> raise Not_found
+    [] -> None
   | (l',t as p) :: ls ->
-      if label_name l' = l then (l', t, List.rev hd, ls)
+      if label_name l' = l then Some (l', t, List.rev_append hd ls)
       else extract_label_aux (p::hd) l ls
 
-let extract_label l ls = extract_label_aux [] l ls
+let extract_label l (ls : sargs) : (arg_label * Parsetree.expression * sargs) option = extract_label_aux [] l ls
 
+
+let rec label_assoc x (args : sargs) = 
+  match args with 
+  | [] -> false
+  | (a, _) :: l -> Asttypes.same_arg_label a x  || label_assoc x l
 
                   (**********************************)
                   (*  Utilities for backtracking    *)
