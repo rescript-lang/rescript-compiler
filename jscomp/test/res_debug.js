@@ -22,8 +22,14 @@ var v1 = {
   z: 3
 };
 
+var h = /* '\522' */128522;
+
+var hey = "hello, 世界";
+
 exports.f = f;
 exports.v0 = v0;
 exports.v2 = v2;
 exports.v1 = v1;
+exports.h = h;
+exports.hey = hey;
 /*  Not a pure module */

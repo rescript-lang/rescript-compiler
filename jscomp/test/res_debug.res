@@ -44,4 +44,7 @@ let v2 = { ... v0 , x : 3 }
 let v1 : r = { x : 3 
   , z : 3
 }
+
+let h = '😊'
+let hey = "hello, 世界"
 // failed to type check

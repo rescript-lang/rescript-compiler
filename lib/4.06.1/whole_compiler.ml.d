@@ -617,6 +617,8 @@
 ../lib/4.06.1/whole_compiler.ml: ./napkin/res_scanner.ml
 ../lib/4.06.1/whole_compiler.ml: ./napkin/res_scanner.mli
 ../lib/4.06.1/whole_compiler.ml: ./napkin/res_token.ml
+../lib/4.06.1/whole_compiler.ml: ./napkin/res_utf8.ml
+../lib/4.06.1/whole_compiler.ml: ./napkin/res_utf8.mli
 ../lib/4.06.1/whole_compiler.ml: ./outcome_printer/outcome_printer_ns.ml
 ../lib/4.06.1/whole_compiler.ml: ./outcome_printer/outcome_printer_ns.mli
 ../lib/4.06.1/whole_compiler.ml: ./outcome_printer/reason_outcome_printer_main.ml
