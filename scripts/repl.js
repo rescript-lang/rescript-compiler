@@ -1,12 +1,13 @@
 #!/usr/bin/env node
+
 //@ts-check
-var p = require("child_process");
+var child_process = require("child_process");
 var fs = require("fs");
 var path = require("path");
 
 var ocamlVersion = "4.06.1";
 var jscompDir = path.join(__dirname, "..", "jscomp");
-var jsRefmtCompDir = path.join(
+var sourceDir = path.join(
   __dirname,
   "..",
   "lib",
@@ -26,34 +27,32 @@ var config = {
  */
 function e(cmd) {
   console.log(`>>>>>> running command: ${cmd}`);
-  p.execSync(cmd, config);
+  child_process.execSync(cmd, config);
   console.log(`<<<<<<`);
 }
 
-if (!process.env.BS_PLAYGROUND) {
-  var defaultPlayground = `../../bucklescript-playground`;
+if (!process.env.PLAYGROUND) {
+  var defaultPlayground = `../../playground`;
   console.warn(
-    `BS_PLAYGROUND env var unset, defaulting to ${defaultPlayground}`
+    `PLAYGROUND env var unset, defaulting to ${defaultPlayground}`
   );
-  process.env.BS_PLAYGROUND = defaultPlayground;
+  process.env.PLAYGROUND = defaultPlayground;
 }
 
-var playground = process.env.BS_PLAYGROUND;
+var playground = process.env.PLAYGROUND;
+var OCAMLC = `ocamlc.opt`
 
-var nativePath = path.join(__dirname, "..", "native", "4.06.1", "bin");
-var OCAMLC = path.join(nativePath, "ocamlc.opt");
-var OCAMLRUN = path.join(nativePath, "ocamlrun");
-var JSOO = path.join(__dirname, "..", "vendor", "js_of_ocaml.bc");
+var JSOO = `js_of_ocaml`;
 function prepare(isDev) {
   var [env, ocamlFlag, jsooFlag] = isDev
     ? ["development", "-g ", "--pretty "]
     : ["production", "", ""];
   console.log(`building byte code version of the compiler [${env}]`);
   e(
-    `${OCAMLC} ${ocamlFlag}-w -30-40 -no-check-prims -I ${jsRefmtCompDir} ${jsRefmtCompDir}/js_refmt_compiler.mli ${jsRefmtCompDir}/js_refmt_compiler.ml -o jsc.byte `
+    `${OCAMLC} ${ocamlFlag}-w -30-40 -no-check-prims -I ${sourceDir} ${sourceDir}/js_compiler.mli ${sourceDir}/js_compiler.ml -o jsc.byte `
   );
   console.log("building js version");
-  e(`${OCAMLRUN} ${JSOO} compile jsc.byte ${jsooFlag}-o exports.js`);
+  e(`${JSOO} compile jsc.byte ${jsooFlag}-o exports.js`);
   console.log("copy js artifacts");
   e(`cp ../lib/js/*.js ${playground}/stdlib`);
   e(`mv ./exports.js ${playground}`);
@@ -65,7 +64,7 @@ function prepublish() {
   );
   var packageJson = JSON.stringify(
     {
-      name: "reason-js-compiler",
+      name: "rescript-compiler",
       version: mainPackageJson.version,
       license: mainPackageJson.license,
       description: mainPackageJson.description,
