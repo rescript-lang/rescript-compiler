@@ -2332,6 +2332,8 @@ let rec unify (env:Env.t ref) t1 t2 =
       && is_newtype !env p1 && is_newtype !env p2 ->
         (* Do not use local constraints more than necessary *)
         begin try
+          let [@local] (<) ((a : int) ,(b : int)) (c,d) = 
+            a < c || (a = c && b < d) in 
           if find_newtype_level !env p1 < find_newtype_level !env p2 then
             unify env t1 (try_expand_once !env t2)
           else
@@ -2445,6 +2447,9 @@ and unify3 env t1 t1' t2 t2' =
          Tconstr (path',[],_))
         when is_instantiable !env path && is_instantiable !env path'
         && !generate_equations ->
+          let [@local] (>) ((a:int),(b:int)) (c,d) = 
+            a > c || (a = c && b > d)
+          in 
           let source, destination =
             if find_newtype_level !env path > find_newtype_level !env path'
             then  path , t2'
