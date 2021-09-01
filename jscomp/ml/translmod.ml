@@ -406,7 +406,7 @@ let rec compile_functor mexp coercion root_path loc =
   let functor_params_rev, body, body_path, res_coercion, inline_attribute =
     merge_functors mexp coercion root_path
   in
-  assert (List.length functor_params_rev >= 1);  (* cf. [transl_module] *)
+  assert (functor_params_rev <> []);  (* cf. [transl_module] *)
   let params, body =
     List.fold_left (fun (params, body) (param, loc, arg_coercion) ->
         let param' = Ident.rename param in
