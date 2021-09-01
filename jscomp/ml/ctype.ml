@@ -2118,7 +2118,7 @@ and mcomp_type_decl type_pairs env p1 p2 tl1 tl2 =
       raise (Unify [])
     else
       match decl.type_kind, decl'.type_kind with
-      | Type_record (lst,r), Type_record (lst',r') when r = r' ->
+      | Type_record (lst,r), Type_record (lst',r') when Types.same_record_representation r  r' ->
           mcomp_list type_pairs env tl1 tl2;
           mcomp_record_description type_pairs env lst lst'
       | Type_variant v1, Type_variant v2 ->
