@@ -4142,7 +4142,7 @@ let cyclic_abbrev env id ty =
     let ty = repr ty in
     match ty.desc with
       Tconstr (p, _tl, _abbrev) ->
-        p = Path.Pident id || List.memq ty seen ||
+        (match p with  Path.Pident p -> Ident.same p id | _ -> false) || List.memq ty seen ||
         begin try
           check_cycle (ty :: seen) (expand_abbrev_opt env ty)
         with
