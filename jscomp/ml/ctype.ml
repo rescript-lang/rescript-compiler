@@ -2232,8 +2232,8 @@ let complete_type_list ?(allow_absent=false) env nl1 lv2 mty2 nl2 tl2 =
   let rec complete nl1 ntl2 =
     match nl1, ntl2 with
       [], _ -> ntl2
-    | n :: nl, (n2, _ as nt2) :: ntl' when n >= n2 ->
-        nt2 :: complete (if n = n2 then nl else nl1) ntl'
+    | n :: nl, (n2, _ as nt2) :: ntl' when Longident.cmp n n2 >= 0 ->
+        nt2 :: complete (if Longident.cmp n n2 = 0 then nl else nl1) ntl'
     | n :: nl, _ ->
         try
           let path =
