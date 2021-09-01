@@ -484,3 +484,5 @@ type label_description =
     lbl_loc: Location.t;
     lbl_attributes: Parsetree.attributes;
   }
+
+val same_record_representation : record_representation -> record_representation -> bool

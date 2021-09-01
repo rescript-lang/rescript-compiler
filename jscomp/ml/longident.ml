@@ -17,6 +17,20 @@ type t =
     Lident of string
   | Ldot of t * string
   | Lapply of t * t
+let rec cmp : t -> t -> int =
+ fun a b ->
+  if a == b then 0
+  else
+    match (a, b) with
+    | Lident a, Lident b -> compare a b
+    | Lident _, _ -> -1
+    | _, Lident _ -> 1
+    | Ldot (a, b), Ldot (c, d) -> (
+        match cmp a c with 0 -> compare b d | n -> n)
+    | Ldot _, _ -> -1
+    | _, Ldot _ -> 1
+    | Lapply (a, b), Lapply (c, d) -> (
+        match cmp a c with 0 -> cmp b d | n -> n)
 
 let rec flat accu = function
     Lident s -> s :: accu
