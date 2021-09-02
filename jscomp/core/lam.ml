@@ -26,7 +26,7 @@ type ident = Ident.t
 
 type apply_status = App_na | App_infer_full | App_uncurry
 
-type inline_attribute = Always_inline | Never_inline | Default_inline
+type inline_attribute = Lambda.inline_attribute
 
 type is_a_functor = Functor_yes | Functor_no | Functor_na
 

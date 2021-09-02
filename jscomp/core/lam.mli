@@ -24,15 +24,12 @@
 
 
 
-type inline_attribute = 
-  | Always_inline
-  | Never_inline
-  | Default_inline  
-
 type is_a_functor = 
   | Functor_yes
   | Functor_no 
   | Functor_na  
+type inline_attribute = Lambda.inline_attribute
+
 
 type function_attribute = {
   inline : inline_attribute;
