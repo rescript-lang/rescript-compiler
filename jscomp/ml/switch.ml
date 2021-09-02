@@ -327,7 +327,7 @@ let make_key  cases =
         else
           got_it act rem in
 
-  let make_one l h act =
+  let make_one (l:int) h act =
     if l=h then
       Kvalue (got_it act !seen)
     else

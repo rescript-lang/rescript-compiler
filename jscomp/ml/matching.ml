@@ -319,7 +319,7 @@ let rec jumps_extract (i : int) = function
         let r,rem = jumps_extract i rem in
         r,(x::rem)
 
-let rec jumps_remove i = function
+let rec jumps_remove (i:int) = function
   | [] -> []
   | (j,_)::rem when i=j -> rem
   | x::rem -> x::jumps_remove i rem
@@ -339,7 +339,7 @@ let jumps_add i pss jumps = match pss with
     let rec add = function
       | [] -> [i,pss]
       | (j,qss) as x::rem as all ->
-          if j > i then x::add rem
+          if (j:int) > i then x::add rem
       else if j < i then (i,pss)::all
       else (i,(get_mins le_ctx (pss@qss)))::rem in
     add jumps
@@ -1368,7 +1368,7 @@ let make_constr_matching p def ctx = function
 let divide_constructor ctx pm =
   divide
     make_constr_matching
-    (=) get_key_constr get_args_constr
+    Types.equal_tag get_key_constr get_args_constr
     ctx pm
 
 (* Matching against a variant *)
@@ -1424,6 +1424,9 @@ let divide_variant row ctx {cases = cl; args = al; default=def} =
           variants
         else begin
           let tag = Btype.hash_variant lab in
+          let (=) ((a:string),(b:Types.constructor_tag)) (c,d) = 
+            a = c && Types.equal_tag b d 
+          in 
           match pato with
             None ->
               add (make_variant_matching_constant p lab def ctx) variants
