@@ -363,7 +363,7 @@ let convert_inline_attr (inline : Lambda.inline_attribute) :
   match inline with
   | Always_inline -> Always_inline
   | Never_inline -> Never_inline
-  | Unroll _ | Default_inline -> Default_inline
+  | Default_inline -> Default_inline
 
 let convert_fn_attribute (attr : Lambda.function_attribute) :
     Lam.function_attribute =

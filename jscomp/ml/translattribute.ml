@@ -45,39 +45,12 @@ let find_attribute p attributes =
   in
   attr, other_attributes
 
-let is_unrolled = function
-  | {txt="unrolled"|"ocaml.unrolled"} -> true
-  | {txt="inline"|"ocaml.inline"|"inlined"|"ocaml.inlined"} -> false
-  | _ -> assert false
-
 let parse_inline_attribute attr =
   match attr with
   | None -> Default_inline
-  | Some ({txt;loc} as id, payload) ->
+  | Some ({txt;loc} , payload) ->
     let open Parsetree in
-    if is_unrolled id then begin
-      (* the 'unrolled' attributes must be used as [@unrolled n]. *)
-      let warning txt = Warnings.Attribute_payload
-          (txt, "It must be an integer literal")
-      in
-      match payload with
-      | PStr [{pstr_desc = Pstr_eval ({pexp_desc},[])}] -> begin
-          match pexp_desc with
-          | Pexp_constant (Pconst_integer(s, None)) -> begin
-              try
-                Unroll (Misc.Int_literal_converter.int s)
-              with Failure _ ->
-                Location.prerr_warning loc (warning txt);
-                Default_inline
-            end
-          | _ ->
-            Location.prerr_warning loc (warning txt);
-            Default_inline
-        end
-      | _ ->
-        Location.prerr_warning loc (warning txt);
-        Default_inline
-    end else begin
+    begin
       (* the 'inline' and 'inlined' attributes can be used as
          [@inline], [@inline never] or [@inline always].
          [@inline] is equivalent to [@inline always] *)
@@ -144,13 +117,13 @@ let add_inline_attribute expr loc attributes =
   | Lfunction({ attr = { stub = false } as attr } as funct), inline ->
       begin match attr.inline with
       | Default_inline -> ()
-      | Always_inline | Never_inline | Unroll _ ->
+      | Always_inline | Never_inline  ->
           Location.prerr_warning loc
             (Warnings.Duplicated_attribute "inline")
       end;
       let attr = { attr with inline } in
       Lfunction { funct with attr = attr }
-  | expr, (Always_inline | Never_inline | Unroll _) ->
+  | expr, (Always_inline | Never_inline ) ->
       Location.prerr_warning loc
         (Warnings.Misplaced_attribute "inline");
       expr

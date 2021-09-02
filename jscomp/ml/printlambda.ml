@@ -329,7 +329,6 @@ let function_attribute ppf { inline; specialise; is_a_functor; stub; return_unit
   | Default_inline -> ()
   | Always_inline -> fprintf ppf "always_inline@ "
   | Never_inline -> fprintf ppf "never_inline@ "
-  | Unroll i -> fprintf ppf "unroll(%i)@ " i
   end;
   begin match specialise with
   | Default_specialise -> ()
@@ -342,7 +341,6 @@ let apply_inlined_attribute ppf = function
   | Default_inline -> ()
   | Always_inline -> fprintf ppf " always_inline"
   | Never_inline -> fprintf ppf " never_inline"
-  | Unroll i -> fprintf ppf " never_inline(%i)" i
 
 let apply_specialised_attribute ppf = function
   | Default_specialise -> ()
