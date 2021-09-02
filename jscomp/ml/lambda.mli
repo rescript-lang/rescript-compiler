@@ -270,14 +270,13 @@ type let_kind = Strict | Alias | StrictOpt | Variable
 
 
 
-
+(* [true] means yes, [false] may mean unknown *)
 type function_attribute = {
   inline : inline_attribute;
   specialise : specialise_attribute;
   is_a_functor: bool;
   stub: bool;
-  return_unit : bool;
-  (* [true] means yes, [false] means unknown *)
+  return_unit : bool;  
 }
 
 type switch_names = {consts: string array; blocks: string array}

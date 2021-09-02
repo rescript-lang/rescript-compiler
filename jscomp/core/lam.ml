@@ -30,14 +30,10 @@ type inline_attribute = Lambda.inline_attribute
 
 type is_a_functor = bool
 
-type function_attribute = {
-  inline : inline_attribute;
-  is_a_functor : is_a_functor;
-}
+type function_attribute = Lambda.function_attribute
 
-let default_fn_attr : function_attribute =
-  { inline = Default_inline; is_a_functor = false }
-
+let default_fn_attr : function_attribute = Lambda.default_function_attribute
+  
 type ap_info = {
   ap_loc : Location.t;
   ap_inlined : inline_attribute;

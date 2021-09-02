@@ -28,10 +28,7 @@ type inline_attribute = Lambda.inline_attribute
 
 type is_a_functor = bool
 
-type function_attribute = {
-  inline : inline_attribute;
-  is_a_functor : is_a_functor
-}  
+
 
 type apply_status =
   | App_na
@@ -44,7 +41,7 @@ type ap_info = {
   ap_status : apply_status;
 }  
 
-val default_fn_attr : function_attribute
+val default_fn_attr : Lambda.function_attribute
 
 type ident = Ident.t
 
@@ -64,7 +61,7 @@ and lfunction =  {
   arity : int ; 
   params : ident list ;
   body : t ;
-  attr : function_attribute;
+  attr : Lambda.function_attribute;
 }
 and prim_info = private
   { primitive : Lam_primitive.t ; 
@@ -124,7 +121,7 @@ val apply :
   t
 
 val function_ : 
-  attr:function_attribute ->
+  attr:Lambda.function_attribute ->
   arity:int ->
   params:ident list -> 
   body:t -> t
