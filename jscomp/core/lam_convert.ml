@@ -218,7 +218,7 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
                   Lam.const Const_js_false;
                   (* FIXME: arity 0 does not get proper supported*)
                   Lam.function_ ~arity:0 ~params:[] ~body:computation
-                    ~attr:Lam.default_fn_attr;
+                    ~attr:Lambda.default_function_attribute;
                 ]
               in
               prim

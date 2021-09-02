@@ -26,17 +26,9 @@ type ident = Ident.t
 
 type apply_status = App_na | App_infer_full | App_uncurry
 
-type inline_attribute = Lambda.inline_attribute
-
-type is_a_functor = bool
-
-type function_attribute = Lambda.function_attribute
-
-let default_fn_attr : function_attribute = Lambda.default_function_attribute
-  
 type ap_info = {
   ap_loc : Location.t;
-  ap_inlined : inline_attribute;
+  ap_inlined : Lambda.inline_attribute;
   ap_status : apply_status;
 }
 
@@ -55,7 +47,7 @@ module Types = struct
     arity : int;
     params : ident list;
     body : t;
-    attr : function_attribute;
+    attr : Lambda.function_attribute;
   }
 
   (*
@@ -140,7 +132,7 @@ module X = struct
     arity : int;
     params : ident list;
     body : t;
-    attr : function_attribute;
+    attr : Lambda.function_attribute;
   }
 
   and t = Types.t =

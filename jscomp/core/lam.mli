@@ -24,9 +24,6 @@
 
 
 
-type inline_attribute = Lambda.inline_attribute
-
-type is_a_functor = bool
 
 
 
@@ -37,11 +34,11 @@ type apply_status =
 
 type ap_info = {
   ap_loc : Location.t ; 
-  ap_inlined : inline_attribute;
+  ap_inlined : Lambda.inline_attribute;
   ap_status : apply_status;
 }  
 
-val default_fn_attr : Lambda.function_attribute
+
 
 type ident = Ident.t
 
