@@ -82,7 +82,7 @@ let values_of_export
                 It precludes ues cases
                 - inline forEach but not forEachU
              *)
-             | Lfunction {attr = {is_a_functor = Functor_yes}}
+             | Lfunction {attr = {is_a_functor = true}}
                ->
                if Lam_closure.is_closed lambda (* TODO: seriealize more*)
                then optlam

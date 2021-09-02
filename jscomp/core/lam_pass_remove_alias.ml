@@ -162,7 +162,7 @@ let simplify_alias
 
           if Ext_list.same_length args params (* && false *)
           then               
-            if is_a_functor = Functor_yes
+            if is_a_functor 
             (* && (Set_ident.mem v meta.export_idents) && false *)
             then 
               (* TODO: check l1 if it is exported, 

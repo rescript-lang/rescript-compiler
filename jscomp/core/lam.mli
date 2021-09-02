@@ -24,12 +24,9 @@
 
 
 
-type is_a_functor = 
-  | Functor_yes
-  | Functor_no 
-  | Functor_na  
 type inline_attribute = Lambda.inline_attribute
 
+type is_a_functor = bool
 
 type function_attribute = {
   inline : inline_attribute;

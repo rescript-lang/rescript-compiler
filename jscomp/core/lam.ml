@@ -28,7 +28,7 @@ type apply_status = App_na | App_infer_full | App_uncurry
 
 type inline_attribute = Lambda.inline_attribute
 
-type is_a_functor = Functor_yes | Functor_no | Functor_na
+type is_a_functor = bool
 
 type function_attribute = {
   inline : inline_attribute;
@@ -36,7 +36,7 @@ type function_attribute = {
 }
 
 let default_fn_attr : function_attribute =
-  { inline = Default_inline; is_a_functor = Functor_na }
+  { inline = Default_inline; is_a_functor = false }
 
 type ap_info = {
   ap_loc : Location.t;

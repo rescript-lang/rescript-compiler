@@ -369,7 +369,7 @@ let convert_fn_attribute (attr : Lambda.function_attribute) :
     Lam.function_attribute =
   let inline : Lam.inline_attribute = convert_inline_attr attr.inline in
   let is_a_functor =
-    if attr.is_a_functor then Lam.Functor_yes else Functor_no
+    attr.is_a_functor
   in
   Lam.{ inline; is_a_functor }
 
