@@ -24,93 +24,81 @@
 
 type ident = Ident.t
 
-type apply_status =
-  | App_na
-  | App_infer_full
-  | App_uncurry
+type apply_status = App_na | App_infer_full | App_uncurry
 
+type inline_attribute = Always_inline | Never_inline | Default_inline
 
-type inline_attribute = 
-  | Always_inline
-  | Never_inline
-  | Default_inline
-
-type is_a_functor = 
-  | Functor_yes
-  | Functor_no 
-  | Functor_na  
+type is_a_functor = Functor_yes | Functor_no | Functor_na
 
 type function_attribute = {
   inline : inline_attribute;
-  is_a_functor : is_a_functor
-}  
-
-let default_fn_attr : function_attribute = {
-  inline = Default_inline;
-  is_a_functor = Functor_na
+  is_a_functor : is_a_functor;
 }
 
+let default_fn_attr : function_attribute =
+  { inline = Default_inline; is_a_functor = Functor_na }
+
 type ap_info = {
-  ap_loc : Location.t ; 
+  ap_loc : Location.t;
   ap_inlined : inline_attribute;
   ap_status : apply_status;
-}  
+}
+
 module Types = struct
+  type lambda_switch = {
+    sw_consts_full : bool;
+    (* TODO: refine its representation *)
+    sw_consts : (int * t) list;
+    sw_blocks_full : bool;
+    sw_blocks : (int * t) list;
+    sw_failaction : t option;
+    sw_names : Lambda.switch_names option;
+  }
 
-  type lambda_switch =
-    { sw_consts_full : bool; (* TODO: refine its representation *)
-      sw_consts: (int * t) list;
-      sw_blocks_full : bool;
-      sw_blocks: (int * t) list;
-      sw_failaction : t option;
-      sw_names : Lambda.switch_names option }
-  and lfunction = { 
-    arity : int ;
-    params : ident list ;
+  and lfunction = {
+    arity : int;
+    params : ident list;
     body : t;
-    attr : function_attribute
-  }    
-  (* 
-    Invariant: 
-    length (sw_consts) <= sw_consts_full 
-    when length (sw_consts) >= sw_consts_full -> true 
-    Note that failaction would appear in both
-     {[
-       match x with
-       | ..
-         | ..
-           | _ -> 2
-     ]}
-     since compiler would first test [x] is a const pointer
-     or not then the [default] applies to each branch.
+    attr : function_attribute;
+  }
 
-     In most cases: {[
-       let sw =
-         {sw_consts_full = cstr.cstr_consts; sw_consts = consts;
-          sw_blocks_full = cstr.cstr_nonconsts; sw_blocks = nonconsts;
-          sw_failaction = None} in
-     ]}
+  (*
+     Invariant:
+     length (sw_consts) <= sw_consts_full
+     when length (sw_consts) >= sw_consts_full -> true
+     Note that failaction would appear in both
+      {[
+        match x with
+        | ..
+          | ..
+            | _ -> 2
+      ]}
+      since compiler would first test [x] is a const pointer
+      or not then the [default] applies to each branch.
 
-     but there are some edge cases (see https://caml.inria.fr/mantis/view.php?id=6033)
-     one predicate used is
-     {[
-       (sw.sw_consts_full - List.length sw.sw_consts) +
-       (sw.sw_blocks_full - List.length sw.sw_blocks) > 1
-     ]}
-     if [= 1] with [some fail] -- called once
-     if [= 0] could not have [some fail]
+      In most cases: {[
+        let sw =
+          {sw_consts_full = cstr.cstr_consts; sw_consts = consts;
+           sw_blocks_full = cstr.cstr_nonconsts; sw_blocks = nonconsts;
+           sw_failaction = None} in
+      ]}
+
+      but there are some edge cases (see https://caml.inria.fr/mantis/view.php?id=6033)
+      one predicate used is
+      {[
+        (sw.sw_consts_full - List.length sw.sw_consts) +
+        (sw.sw_blocks_full - List.length sw.sw_blocks) > 1
+      ]}
+      if [= 1] with [some fail] -- called once
+      if [= 0] could not have [some fail]
   *)
-  and prim_info =
-    { primitive : Lam_primitive.t ;
-      args : t list ;
-      loc : Location.t;
-    }
+  and prim_info = {
+    primitive : Lam_primitive.t;
+    args : t list;
+    loc : Location.t;
+  }
 
-  and apply =
-    { ap_func : t ;
-      ap_args : t list ;
-      ap_info : ap_info;
-    }
+  and apply = { ap_func : t; ap_args : t list; ap_info : ap_info }
 
   and t =
     | Lvar of ident
@@ -131,145 +119,148 @@ module Types = struct
     | Lwhile of t * t
     | Lfor of ident * t * t * Asttypes.direction_flag * t
     | Lassign of ident * t
-    (* | Lsend of Lam_compat.meth_kind * t * t * t list * Location.t *)
+  (* | Lsend of Lam_compat.meth_kind * t * t * t list * Location.t *)
 end
 
 module X = struct
+  type lambda_switch = Types.lambda_switch = {
+    sw_consts_full : bool;
+    sw_consts : (int * t) list;
+    sw_blocks_full : bool;
+    sw_blocks : (int * t) list;
+    sw_failaction : t option;
+    sw_names : Lambda.switch_names option;
+  }
 
-  type lambda_switch
-    = Types.lambda_switch
-    =
-      { sw_consts_full: bool;
-        sw_consts: (int * t) list;
-        sw_blocks_full: bool;
-        sw_blocks: (int * t) list;
-        sw_failaction: t option;
-        sw_names: Lambda.switch_names option }
-  and prim_info
-    =  Types.prim_info
-    =
-      { primitive : Lam_primitive.t ;
-        args : t list ;
-        loc : Location.t;
-      }
-  and apply
-    = Types.apply
-    =
-      { ap_func : t ;
-        ap_args : t list ;
-        ap_info : ap_info;  
-      }
-  and lfunction = Types.lfunction = 
-    { 
-      arity : int ;
-      params : ident list ;
-      body : t;
-      attr : function_attribute
-    }   
-  and t
-    = Types.t
-    =
-      | Lvar of ident
-      | Lglobal_module of ident
-      | Lconst of Lam_constant.t
-      | Lapply of apply
-      | Lfunction of lfunction      
-      | Llet of Lam_compat.let_kind * ident * t * t
-      | Lletrec of (ident * t) list * t
-      | Lprim of prim_info
-      | Lswitch of t * lambda_switch
-      | Lstringswitch of t * (string * t) list * t option
-      | Lstaticraise of int * t list
-      | Lstaticcatch of t * (int * ident list) * t
-      | Ltrywith of t * ident * t
-      | Lifthenelse of t * t * t
-      | Lsequence of t * t
-      | Lwhile of t * t
-      | Lfor of ident * t * t * Asttypes.direction_flag * t
-      | Lassign of ident * t
-      (* | Lsend of Lam_compat.meth_kind * t * t * t list * Location.t *)
+  and prim_info = Types.prim_info = {
+    primitive : Lam_primitive.t;
+    args : t list;
+    loc : Location.t;
+  }
+
+  and apply = Types.apply = { ap_func : t; ap_args : t list; ap_info : ap_info }
+
+  and lfunction = Types.lfunction = {
+    arity : int;
+    params : ident list;
+    body : t;
+    attr : function_attribute;
+  }
+
+  and t = Types.t =
+    | Lvar of ident
+    | Lglobal_module of ident
+    | Lconst of Lam_constant.t
+    | Lapply of apply
+    | Lfunction of lfunction
+    | Llet of Lam_compat.let_kind * ident * t * t
+    | Lletrec of (ident * t) list * t
+    | Lprim of prim_info
+    | Lswitch of t * lambda_switch
+    | Lstringswitch of t * (string * t) list * t option
+    | Lstaticraise of int * t list
+    | Lstaticcatch of t * (int * ident list) * t
+    | Ltrywith of t * ident * t
+    | Lifthenelse of t * t * t
+    | Lsequence of t * t
+    | Lwhile of t * t
+    | Lfor of ident * t * t * Asttypes.direction_flag * t
+    | Lassign of ident * t
+  (* | Lsend of Lam_compat.meth_kind * t * t * t list * Location.t *)
 end
+
 include Types
-
-
-
 
 (** apply [f] to direct successor which has type [Lam.t] *)
 
-let inner_map 
-    (l : t) (f : t -> X.t ) : X.t =
-  match l  with
-  | Lvar (_ : ident)
-  | Lconst (_ : Lam_constant.t) ->
-    ( (* Obj.magic *) l : X.t)
-  | Lapply ({ap_func; ap_args; ap_info} )  ->
-    let ap_func = f ap_func in
-    let ap_args = Ext_list.map ap_args f in
-    Lapply { ap_func ; ap_args; ap_info }
-  | Lfunction({body; arity;  params ; attr } ) ->
-    let body = f body in
-    Lfunction {body; arity;  params; attr}
-  | Llet(str, id, arg, body) ->
-    let arg = f arg in let body =  f body in
-    Llet(str,id,arg,body)
-  | Lletrec(decl, body) ->
-    let body = f body in
-    let decl = Ext_list.map_snd decl f in
-    Lletrec(decl,body)
+let inner_map (l : t) (f : t -> X.t) : X.t =
+  match l with
+  | Lvar (_ : ident) | Lconst (_ : Lam_constant.t) -> ((* Obj.magic *) l : X.t)
+  | Lapply { ap_func; ap_args; ap_info } ->
+      let ap_func = f ap_func in
+      let ap_args = Ext_list.map ap_args f in
+      Lapply { ap_func; ap_args; ap_info }
+  | Lfunction { body; arity; params; attr } ->
+      let body = f body in
+      Lfunction { body; arity; params; attr }
+  | Llet (str, id, arg, body) ->
+      let arg = f arg in
+      let body = f body in
+      Llet (str, id, arg, body)
+  | Lletrec (decl, body) ->
+      let body = f body in
+      let decl = Ext_list.map_snd decl f in
+      Lletrec (decl, body)
   | Lglobal_module _ -> (l : X.t)
-  | Lprim {args; primitive ; loc}  ->
-    let args = Ext_list.map args f in
-    Lprim { args; primitive; loc}
-
-  | Lswitch(arg, {sw_consts; sw_consts_full; sw_blocks; sw_blocks_full; sw_failaction; sw_names}) ->
-    let arg = f arg in
-    let sw_consts = Ext_list.map_snd  sw_consts f in
-    let sw_blocks = Ext_list.map_snd  sw_blocks f in
-    let sw_failaction = Ext_option.map sw_failaction f in
-    Lswitch(arg, { sw_consts; sw_blocks; sw_failaction; sw_blocks_full; sw_consts_full; sw_names})
-  | Lstringswitch (arg,cases,default) ->
-    let arg = f arg  in
-    let cases = Ext_list.map_snd  cases f in
-    let default = Ext_option.map default f in
-    Lstringswitch(arg,cases,default)
-  | Lstaticraise (id,args) ->
-    let args = Ext_list.map args f in
-    Lstaticraise(id,args)
-  | Lstaticcatch(e1, vars , e2) ->
-    let e1 = f e1 in
-    let e2 = f e2 in
-    Lstaticcatch(e1, vars, e2)
-  | Ltrywith(e1, exn, e2) ->
-    let e1  = f e1 in
-    let e2 =  f e2 in
-    Ltrywith(e1,exn,e2)
-  | Lifthenelse(e1, e2, e3) ->
-    let e1 = f e1 in let e2 =  f e2 in let e3 =  f e3 in
-    Lifthenelse(e1,e2,e3)
-  | Lsequence(e1, e2) ->
-    let e1 = f e1 in let e2 =  f e2 in
-    Lsequence(e1,e2)
-  | Lwhile(e1, e2) ->
-    let e1 = f e1 in let e2 =  f e2 in
-    Lwhile(e1,e2)
-  | Lfor(v, e1, e2, dir, e3) ->
-    let e1 = f e1 in let e2 =  f e2 in let e3 =  f e3 in
-    Lfor(v,e1,e2,dir,e3)
-  | Lassign(id, e) ->
-    let e = f e in
-    Lassign(id,e)
+  | Lprim { args; primitive; loc } ->
+      let args = Ext_list.map args f in
+      Lprim { args; primitive; loc }
+  | Lswitch
+      ( arg,
+        {
+          sw_consts;
+          sw_consts_full;
+          sw_blocks;
+          sw_blocks_full;
+          sw_failaction;
+          sw_names;
+        } ) ->
+      let arg = f arg in
+      let sw_consts = Ext_list.map_snd sw_consts f in
+      let sw_blocks = Ext_list.map_snd sw_blocks f in
+      let sw_failaction = Ext_option.map sw_failaction f in
+      Lswitch
+        ( arg,
+          {
+            sw_consts;
+            sw_blocks;
+            sw_failaction;
+            sw_blocks_full;
+            sw_consts_full;
+            sw_names;
+          } )
+  | Lstringswitch (arg, cases, default) ->
+      let arg = f arg in
+      let cases = Ext_list.map_snd cases f in
+      let default = Ext_option.map default f in
+      Lstringswitch (arg, cases, default)
+  | Lstaticraise (id, args) ->
+      let args = Ext_list.map args f in
+      Lstaticraise (id, args)
+  | Lstaticcatch (e1, vars, e2) ->
+      let e1 = f e1 in
+      let e2 = f e2 in
+      Lstaticcatch (e1, vars, e2)
+  | Ltrywith (e1, exn, e2) ->
+      let e1 = f e1 in
+      let e2 = f e2 in
+      Ltrywith (e1, exn, e2)
+  | Lifthenelse (e1, e2, e3) ->
+      let e1 = f e1 in
+      let e2 = f e2 in
+      let e3 = f e3 in
+      Lifthenelse (e1, e2, e3)
+  | Lsequence (e1, e2) ->
+      let e1 = f e1 in
+      let e2 = f e2 in
+      Lsequence (e1, e2)
+  | Lwhile (e1, e2) ->
+      let e1 = f e1 in
+      let e2 = f e2 in
+      Lwhile (e1, e2)
+  | Lfor (v, e1, e2, dir, e3) ->
+      let e1 = f e1 in
+      let e2 = f e2 in
+      let e3 = f e3 in
+      Lfor (v, e1, e2, dir, e3)
+  | Lassign (id, e) ->
+      let e = f e in
+      Lassign (id, e)
 (* | Lsend (k, met, obj, args, loc) ->
    let met = f met in
    let obj = f obj in
    let args = Ext_list.map args f in
    Lsend(k,met,obj,args,loc) *)
-
-
-
-
-
-
-
 
 exception Not_simple_form
 
@@ -290,210 +281,199 @@ exception Not_simple_form
     is applied though since `[@variadic]` needs such guarantee.
     Since `[@variadic] is the tail position
 *)
-let rec is_eta_conversion_exn
-    params inner_args outer_args : t list =
-  match params, inner_args, outer_args with
-  | x::xs, Lvar y::ys, r::rest
+let rec is_eta_conversion_exn params inner_args outer_args : t list =
+  match (params, inner_args, outer_args) with
+  | x :: xs, Lvar y :: ys, r :: rest when Ident.same x y ->
+      r :: is_eta_conversion_exn xs ys rest
+  | ( x :: xs,
+      Lprim ({ primitive = Pjs_fn_make _; args = [ Lvar y ] } as p) :: ys,
+      r :: rest )
     when Ident.same x y ->
-    r :: is_eta_conversion_exn xs ys rest
-  | x::xs,
-    (Lprim ({primitive = Pjs_fn_make _;
-             args = [Lvar y] } as p ) ::ys),
-    r :: rest when Ident.same x y ->
-    Lprim ({p with args = [ r]}) ::
-    is_eta_conversion_exn xs ys rest
+      Lprim { p with args = [ r ] } :: is_eta_conversion_exn xs ys rest
   | [], [], [] -> []
   | _, _, _ -> raise_notrace Not_simple_form
 
 (** FIXME: more robust inlining check later, we should inline it before we add stub code*)
 let rec apply fn args (ap_info : ap_info) : t =
   match fn with
-  | Lfunction {
-      params;
-      body = Lprim {primitive =
-                      (Pundefined_to_opt |
-                       Pnull_to_opt |
-                       Pnull_undefined_to_opt |
-                       Pis_null |
-                       Pis_null_undefined |
-                       Pjs_typeof ) as wrap;
-                    args = [Lprim ({primitive = _; args = inner_args} as primitive_call)]
-                   }
-    } ->
-    begin match is_eta_conversion_exn params inner_args args with
-      | args
-        ->
-        let loc = ap_info.ap_loc in 
-        Lprim {primitive = wrap ; args = [Lprim { primitive_call with args ; loc  }] ; loc }
+  | Lfunction
+      {
+        params;
+        body =
+          Lprim
+            {
+              primitive =
+                ( Pundefined_to_opt | Pnull_to_opt | Pnull_undefined_to_opt
+                | Pis_null | Pis_null_undefined | Pjs_typeof ) as wrap;
+              args =
+                [
+                  Lprim ({ primitive = _; args = inner_args } as primitive_call);
+                ];
+            };
+      } -> (
+      match is_eta_conversion_exn params inner_args args with
+      | args ->
+          let loc = ap_info.ap_loc in
+          Lprim
+            {
+              primitive = wrap;
+              args = [ Lprim { primitive_call with args; loc } ];
+              loc;
+            }
       | exception Not_simple_form ->
-        Lapply { ap_func = fn; ap_args = args; ap_info; }
-    end
-  | Lfunction {
-      params;
-      body =Lprim ({primitive = _; args = inner_args}as primitive_call) }
-    ->
-    begin match is_eta_conversion_exn params inner_args args with
-      | args
-        ->
-        Lprim { primitive_call with args ; loc = ap_info.ap_loc }
+          Lapply { ap_func = fn; ap_args = args; ap_info })
+  | Lfunction
+      {
+        params;
+        body = Lprim ({ primitive = _; args = inner_args } as primitive_call);
+      } -> (
+      match is_eta_conversion_exn params inner_args args with
+      | args -> Lprim { primitive_call with args; loc = ap_info.ap_loc }
+      | exception _ -> Lapply { ap_func = fn; ap_args = args; ap_info })
+  | Lfunction
+      {
+        params;
+        body =
+          Lsequence
+            ( Lprim ({ primitive = _; args = inner_args } as primitive_call),
+              (Lconst _ as const) );
+      } -> (
+      match is_eta_conversion_exn params inner_args args with
+      | args ->
+          Lsequence
+            (Lprim { primitive_call with args; loc = ap_info.ap_loc }, const)
       | exception _ ->
-        Lapply { ap_func = fn; ap_args = args;  ap_info;}
-    end
-  | Lfunction {
-      params;
-      body = Lsequence (Lprim ({primitive = _; args = inner_args}as primitive_call), (Lconst _ as const )) }
-    ->
-    begin match is_eta_conversion_exn params inner_args args with
-      | args
-        ->
-        Lsequence(Lprim { primitive_call with args ; loc = ap_info.ap_loc }, const)
-      | exception _ ->
-        Lapply { ap_func = fn; ap_args = args;  ap_info; }
-    end
-  (* | Lfunction {params;body} when Ext_list.same_length params args ->
-      Ext_list.fold_right2 (fun p arg acc ->
-        Llet(Strict,p,arg,acc)
-      ) params args body *) (* TODO: more rigirous analysis on [let_kind] *)
-  | Llet (kind,id, e, (Lfunction _ as fn)) -> 
-    Llet (kind, id, e, apply fn args ap_info )    
-  (* | Llet (kind0, id0, e0, Llet (kind,id, e, (Lfunction _ as fn))) -> 
-     Llet(kind0,id0,e0,Llet (kind, id, e, apply fn args loc status))       *)
-  | _ ->
-    Lapply { ap_func = fn; ap_args = args;  ap_info}
+          Lapply { ap_func = fn; ap_args = args; ap_info }
+          (* | Lfunction {params;body} when Ext_list.same_length params args ->
+              Ext_list.fold_right2 (fun p arg acc ->
+                Llet(Strict,p,arg,acc)
+              ) params args body *)
+          (* TODO: more rigirous analysis on [let_kind] *))
+  | Llet (kind, id, e, (Lfunction _ as fn)) ->
+      Llet (kind, id, e, apply fn args ap_info)
+  (* | Llet (kind0, id0, e0, Llet (kind,id, e, (Lfunction _ as fn))) ->
+     Llet(kind0,id0,e0,Llet (kind, id, e, apply fn args loc status)) *)
+  | _ -> Lapply { ap_func = fn; ap_args = args; ap_info }
 
+let rec eq_approx (l1 : t) (l2 : t) =
+  match l1 with
+  | Lglobal_module i1 -> (
+      match l2 with Lglobal_module i2 -> Ident.same i1 i2 | _ -> false)
+  | Lvar i1 -> ( match l2 with Lvar i2 -> Ident.same i1 i2 | _ -> false)
+  | Lconst c1 -> (
+      match l2 with Lconst c2 -> Lam_constant.eq_approx c1 c2 | _ -> false)
+  | Lapply app1 -> (
+      match l2 with
+      | Lapply app2 ->
+          eq_approx app1.ap_func app2.ap_func
+          && eq_approx_list app1.ap_args app2.ap_args
+      | _ -> false)
+  | Lifthenelse (a, b, c) -> (
+      match l2 with
+      | Lifthenelse (a0, b0, c0) ->
+          eq_approx a a0 && eq_approx b b0 && eq_approx c c0
+      | _ -> false)
+  | Lsequence (a, b) -> (
+      match l2 with
+      | Lsequence (a0, b0) -> eq_approx a a0 && eq_approx b b0
+      | _ -> false)
+  | Lwhile (p, b) -> (
+      match l2 with
+      | Lwhile (p0, b0) -> eq_approx p p0 && eq_approx b b0
+      | _ -> false)
+  | Lassign (v0, l0) -> (
+      match l2 with
+      | Lassign (v1, l1) -> Ident.same v0 v1 && eq_approx l0 l1
+      | _ -> false)
+  | Lstaticraise (id, ls) -> (
+      match l2 with
+      | Lstaticraise (id1, ls1) -> id = id1 && eq_approx_list ls ls1
+      | _ -> false)
+  | Lprim info1 -> (
+      match l2 with
+      | Lprim info2 ->
+          Lam_primitive.eq_primitive_approx info1.primitive info2.primitive
+          && eq_approx_list info1.args info2.args
+      | _ -> false)
+  | Lstringswitch (arg, patterns, default) -> (
+      match l2 with
+      | Lstringswitch (arg2, patterns2, default2) ->
+          eq_approx arg arg2 && eq_option default default2
+          && Ext_list.for_all2_no_exn patterns patterns2
+               (fun ((k : string), v) (k2, v2) -> k = k2 && eq_approx v v2)
+      | _ -> false)
+  | Lfunction _
+  | Llet (_, _, _, _)
+  | Lletrec _ | Lswitch _ | Lstaticcatch _ | Ltrywith _
+  | Lfor (_, _, _, _, _) ->
+      false
 
-let rec 
-  eq_approx (l1 : t) (l2 : t) =
-  match l1 with 
-  | Lglobal_module i1 -> 
-    (match l2 with  Lglobal_module i2 -> Ident.same i1  i2  | _ -> false)
-  | Lvar i1 -> 
-    (match l2 with  Lvar i2 ->  Ident.same i1 i2 | _ -> false)
-  | Lconst c1 -> 
-    (match l2 with  Lconst c2 -> Lam_constant.eq_approx c1 c2  | _ -> false)
-  | Lapply app1 -> 
-    (match l2 with Lapply app2 ->
-       eq_approx app1.ap_func app2.ap_func  && eq_approx_list app1.ap_args app2.ap_args
-                 |_ -> false)
-  | Lifthenelse (a,b,c) -> 
-    (match l2 with  
-     |Lifthenelse (a0,b0,c0) ->
-       eq_approx a a0 && eq_approx b b0 && eq_approx c c0
-     | _ -> false)
-  | Lsequence (a,b) -> 
-    (match l2 with Lsequence (a0,b0) ->
-       eq_approx a a0 && eq_approx b b0
-                 | _ -> false)
-  | Lwhile (p,b) -> 
-    (match l2 with  Lwhile (p0,b0) -> eq_approx p p0 && eq_approx b b0
-                  | _ -> false)
-  | Lassign(v0,l0) -> 
-    (match l2 with  Lassign(v1,l1) -> Ident.same v0 v1 && eq_approx l0 l1
-                  | _ -> false)  
-  | Lstaticraise(id,ls) -> 
-    (match l2 with  Lstaticraise(id1,ls1) -> 
-       id  = id1 && eq_approx_list ls ls1
-                  | _ -> false)
-  | Lprim info1 -> 
-    (match l2 with 
-       Lprim info2 ->
-       Lam_primitive.eq_primitive_approx info1.primitive info2.primitive &&
-       eq_approx_list info1.args info2.args
-     | _ -> false)
-  | Lstringswitch (arg, patterns, default) ->
-    begin match l2 with 
-      |Lstringswitch(arg2,patterns2, default2) ->
-        eq_approx arg arg2 &&
-        eq_option default default2 &&
-        Ext_list.for_all2_no_exn patterns patterns2 (fun ((k:string),v) (k2,v2) -> k = k2 && eq_approx v v2)
-      | _ -> false  
-    end
-  | Lfunction _  
-  | Llet (_,_,_,_)
-  | Lletrec _
-  | Lswitch _   
-  | Lstaticcatch _ 
-  | Ltrywith _ 
-  | Lfor (_,_,_,_,_) 
-    -> false    
-and eq_option l1 l2 = 
-  match l1 with 
-  | None -> l2 = None 
-  | Some l1 -> (match l2 with Some l2 -> eq_approx l1 l2 | None -> false)
-and eq_approx_list ls ls1 =  Ext_list.for_all2_no_exn ls ls1 eq_approx
+and eq_option l1 l2 =
+  match l1 with
+  | None -> l2 = None
+  | Some l1 -> ( match l2 with Some l2 -> eq_approx l1 l2 | None -> false)
 
-
-
+and eq_approx_list ls ls1 = Ext_list.for_all2_no_exn ls ls1 eq_approx
 
 let switch lam (lam_switch : lambda_switch) : t =
   match lam with
-  | Lconst (Const_int {i})
-    ->
-    Ext_list.assoc_by_int   lam_switch.sw_consts (Int32.to_int i) lam_switch.sw_failaction  
-  | Lconst (Const_block (i,_,_)) ->
-    Ext_list.assoc_by_int lam_switch.sw_blocks i lam_switch.sw_failaction 
-  | _ ->
-    Lswitch(lam,lam_switch)
+  | Lconst (Const_int { i }) ->
+      Ext_list.assoc_by_int lam_switch.sw_consts (Int32.to_int i)
+        lam_switch.sw_failaction
+  | Lconst (Const_block (i, _, _)) ->
+      Ext_list.assoc_by_int lam_switch.sw_blocks i lam_switch.sw_failaction
+  | _ -> Lswitch (lam, lam_switch)
 
 let stringswitch (lam : t) cases default : t =
   match lam with
-  | Lconst (Const_string a) ->
-    Ext_list.assoc_by_string  cases a default
-  | _ -> Lstringswitch(lam, cases, default)
+  | Lconst (Const_string a) -> Ext_list.assoc_by_string cases a default
+  | _ -> Lstringswitch (lam, cases, default)
 
+let true_ : t = Lconst Const_js_true
 
-let true_ : t =
-  Lconst (Const_js_true)
-
-let false_ : t =
-  Lconst (Const_js_false)
+let false_ : t = Lconst Const_js_false
 
 let unit : t = Lconst Const_js_undefined
 
-
-
-
-
 let rec seq (a : t) b : t =
   match a with
-  | Lprim 
-      {primitive = Pmakeblock(_); 
-       args= x::xs} -> 
-    seq (Ext_list.fold_left xs x seq ) b 
-  | Lprim {primitive = Pnull_to_opt | Pundefined_to_opt | Pnull_undefined_to_opt; args = [a]} 
-    ->   seq a b 
-  | _ -> 
-    Lsequence (a, b)
-
+  | Lprim { primitive = Pmakeblock _; args = x :: xs } ->
+      seq (Ext_list.fold_left xs x seq) b
+  | Lprim
+      {
+        primitive = Pnull_to_opt | Pundefined_to_opt | Pnull_undefined_to_opt;
+        args = [ a ];
+      } ->
+      seq a b
+  | _ -> Lsequence (a, b)
 
 let var id : t = Lvar id
+
 let global_module id = Lglobal_module id
+
 let const ct : t = Lconst ct
-let function_ ~attr ~arity  ~params ~body : t =
-  Lfunction { arity;  params ; body; attr}
 
-let let_ kind id e body :  t
-  = Llet (kind,id,e,body)
-let letrec bindings body : t =
-  Lletrec(bindings,body)
-let while_ a b : t  =
-  Lwhile(a,b)
+let function_ ~attr ~arity ~params ~body : t =
+  Lfunction { arity; params; body; attr }
 
-let try_  body id  handler : t =
-  Ltrywith(body,id,handler)
+let let_ kind id e body : t = Llet (kind, id, e, body)
 
-let for_ v e1 e2 dir e3 : t  =
-  Lfor(v,e1,e2,dir,e3)
+let letrec bindings body : t = Lletrec (bindings, body)
 
-let assign v l : t = Lassign(v,l)
-let staticcatch  a b c : t = Lstaticcatch(a,b,c)
-let staticraise a b : t = Lstaticraise(a,b)
+let while_ a b : t = Lwhile (a, b)
 
+let try_ body id handler : t = Ltrywith (body, id, handler)
+
+let for_ v e1 e2 dir e3 : t = Lfor (v, e1, e2, dir, e3)
+
+let assign v l : t = Lassign (v, l)
+
+let staticcatch a b c : t = Lstaticcatch (a, b, c)
+
+let staticraise a b : t = Lstaticraise (a, b)
 
 module Lift = struct
-  let int i : t =
-    Lconst ((Const_int {i; comment = None}))
-
+  let int i : t = Lconst (Const_int { i; comment = None })
 
   (* let int32 i : t =
      Lconst ((Const_int32 i)) *)
@@ -509,305 +489,279 @@ module Lift = struct
   (* let nativeint b : t =
      Lconst ((Const_nativeint b)) *)
 
+  let int64 b : t = Lconst (Const_int64 b)
 
+  let string b : t = Lconst (Const_string b)
 
-  let int64 b : t =
-    Lconst ((Const_int64 b))
-  let string b : t =
-    Lconst ((Const_string (b)))
-  let char b : t =
-    Lconst ((Const_char b))
+  let char b : t = Lconst (Const_char b)
 end
 
-
-
-let prim ~primitive:(prim : Lam_primitive.t) ~args loc  : t =
-  let default () : t = Lprim { primitive = prim ;args; loc} in
+let prim ~primitive:(prim : Lam_primitive.t) ~args loc : t =
+  let default () : t = Lprim { primitive = prim; args; loc } in
   match args with
-  | [Lconst a] ->
-    begin match prim, a  with
-      | Pnegint, Const_int {i }
-        -> Lift.int (Int32.neg i)
+  | [ Lconst a ] -> (
+      match (prim, a) with
+      | Pnegint, Const_int { i } -> Lift.int (Int32.neg i)
       (* | Pfloatofint, ( (Const_int a)) *)
       (*   -> Lift.float (float_of_int a) *)
-      | Pintoffloat, Const_float a
-        ->
-        Lift.int (Int32.of_float (float_of_string a))
+      | Pintoffloat, Const_float a ->
+          Lift.int (Int32.of_float (float_of_string a))
       (* | Pnegfloat -> Lift.float (-. a) *)
       (* | Pabsfloat -> Lift.float (abs_float a) *)
-      | Pstringlength, Const_string a
-        ->
-        Lift.int (Int32.of_int (String.length a))
+      | Pstringlength, Const_string a ->
+          Lift.int (Int32.of_int (String.length a))
       (* | Pnegbint Pnativeint, ( (Const_nativeint i)) *)
       (*   ->   *)
       (*   Lift.nativeint (Nativeint.neg i) *)
-      | Pnegint64, Const_int64 a
-        ->
-        Lift.int64 (Int64.neg a)
+      | Pnegint64, Const_int64 a -> Lift.int64 (Int64.neg a)
       | Pnot, Const_js_true -> false_
       | Pnot, Const_js_false -> true_
-      | _ -> default ()
-    end
-
-
-  | [Lconst a ; Lconst b] ->
-    begin match prim, a, b  with
-      | Pint64comp cmp,  (Const_int64 a),  (Const_int64 b)
-        -> Lift.bool (Lam_compat.cmp_int64  cmp a b)
-      | Pintcomp cmp,  (Const_int a),  (Const_int b)
-        -> Lift.bool (Lam_compat.cmp_int32  cmp a.i b.i)
-      | Pfloatcomp  cmp,  (Const_float a),  (Const_float b)
-        -> (* FIXME: could raise? *)
-        Lift.bool (Lam_compat.cmp_float  cmp (float_of_string a) (float_of_string b))
-
-      | Pintcomp (Ceq | Cneq as op) ,
-        Const_pointer a,
-        Const_pointer b
-        -> Lift.bool (match op with
-            | Ceq ->  a  = (b : string)
-            | Cneq -> a <> b 
-            | _ -> assert false )
-      | (Paddint
-        | Psubint
-        | Pmulint
-        | Pdivint
-        | Pmodint
-        | Pandint
-        | Porint
-        | Pxorint
-        | Plslint
-        | Plsrint
-        | Pasrint), (Const_int {i = aa}),   (Const_int {i = bb})
-        ->
-        (* WE SHOULD keep it as [int], to preserve types *)
-        let int_  = Lift.int  in
-        begin match prim with
+      | _ -> default ())
+  | [ Lconst a; Lconst b ] -> (
+      match (prim, a, b) with
+      | Pint64comp cmp, Const_int64 a, Const_int64 b ->
+          Lift.bool (Lam_compat.cmp_int64 cmp a b)
+      | Pintcomp cmp, Const_int a, Const_int b ->
+          Lift.bool (Lam_compat.cmp_int32 cmp a.i b.i)
+      | Pfloatcomp cmp, Const_float a, Const_float b ->
+          (* FIXME: could raise? *)
+          Lift.bool
+            (Lam_compat.cmp_float cmp (float_of_string a) (float_of_string b))
+      | Pintcomp ((Ceq | Cneq) as op), Const_pointer a, Const_pointer b ->
+          Lift.bool
+            (match op with
+            | Ceq -> a = (b : string)
+            | Cneq -> a <> b
+            | _ -> assert false)
+      | ( ( Paddint | Psubint | Pmulint | Pdivint | Pmodint | Pandint | Porint
+          | Pxorint | Plslint | Plsrint | Pasrint ),
+          Const_int { i = aa },
+          Const_int { i = bb } ) -> (
+          (* WE SHOULD keep it as [int], to preserve types *)
+          let int_ = Lift.int in
+          match prim with
           | Paddint -> int_ (Int32.add aa bb)
           | Psubint -> int_ (Int32.sub aa bb)
-          | Pmulint -> int_ (Int32.mul aa  bb)
-          | Pdivint ->
-            if bb = 0l then default ()
-            else int_ (Int32.div aa bb)
-          | Pmodint ->
-            if bb = 0l then default ()
-            else int_ (Int32.rem aa bb)
+          | Pmulint -> int_ (Int32.mul aa bb)
+          | Pdivint -> if bb = 0l then default () else int_ (Int32.div aa bb)
+          | Pmodint -> if bb = 0l then default () else int_ (Int32.rem aa bb)
           | Pandint -> int_ (Int32.logand aa bb)
           | Porint -> int_ (Int32.logor aa bb)
           | Pxorint -> int_ (Int32.logxor aa bb)
-          | Plslint -> int_ (Int32.shift_left  aa (Int32.to_int bb ))
-          | Plsrint -> int_ (Int32.shift_right_logical aa  (Int32.to_int bb))
+          | Plslint -> int_ (Int32.shift_left aa (Int32.to_int bb))
+          | Plsrint -> int_ (Int32.shift_right_logical aa (Int32.to_int bb))
           | Pasrint -> int_ (Int32.shift_right aa (Int32.to_int bb))
-          | _ -> default ()
-        end            
-
-      | (Paddint64
-        | Psubint64
-        | Pmulint64
-        | Pdivint64
-        | Pmodint64
-        | Pandint64
-        | Porint64
-        | Pxorint64
-        ),  (Const_int64 aa),   (Const_int64 bb)
-        ->
-        begin match prim with
-          | Paddint64   -> Lift.int64 (Int64.add aa bb)
-          | Psubint64  -> Lift.int64 (Int64.sub aa bb)
-          | Pmulint64 -> Lift.int64 (Int64.mul aa  bb)
-          | Pdivint64 -> (try Lift.int64 (Int64.div aa  bb) with _ -> default ())
-          | Pmodint64 -> (try Lift.int64 (Int64.rem aa  bb) with _ -> default ())
+          | _ -> default ())
+      | ( ( Paddint64 | Psubint64 | Pmulint64 | Pdivint64 | Pmodint64
+          | Pandint64 | Porint64 | Pxorint64 ),
+          Const_int64 aa,
+          Const_int64 bb ) -> (
+          match prim with
+          | Paddint64 -> Lift.int64 (Int64.add aa bb)
+          | Psubint64 -> Lift.int64 (Int64.sub aa bb)
+          | Pmulint64 -> Lift.int64 (Int64.mul aa bb)
+          | Pdivint64 -> (
+              try Lift.int64 (Int64.div aa bb) with _ -> default ())
+          | Pmodint64 -> (
+              try Lift.int64 (Int64.rem aa bb) with _ -> default ())
           | Pandint64 -> Lift.int64 (Int64.logand aa bb)
           | Porint64 -> Lift.int64 (Int64.logor aa bb)
           | Pxorint64 -> Lift.int64 (Int64.logxor aa bb)
-          | _ -> default ()
-        end
-      | Plslint64,  (Const_int64 aa),  (Const_int {i = b})
-        -> Lift.int64 (Int64.shift_left  aa (Int32.to_int b ))
-      | Plsrint64,  (Const_int64 aa),  (Const_int {i = b})
-        -> Lift.int64 (Int64.shift_right_logical  aa (Int32.to_int b ))
-      | Pasrint64,  (Const_int64 aa),  (Const_int {i = b})
-        -> Lift.int64 (Int64.shift_right  aa (Int32.to_int b ))
-
-      | Psequand, Const_js_false, 
-        (Const_js_true | Const_js_false) ->
-        false_
-      | Psequand, Const_js_true, Const_js_true ->
-        true_
-      | Psequand, Const_js_true, Const_js_false ->
-        false_
-      | Psequor, Const_js_true, (Const_js_true | Const_js_false) ->
-        true_
+          | _ -> default ())
+      | Plslint64, Const_int64 aa, Const_int { i = b } ->
+          Lift.int64 (Int64.shift_left aa (Int32.to_int b))
+      | Plsrint64, Const_int64 aa, Const_int { i = b } ->
+          Lift.int64 (Int64.shift_right_logical aa (Int32.to_int b))
+      | Pasrint64, Const_int64 aa, Const_int { i = b } ->
+          Lift.int64 (Int64.shift_right aa (Int32.to_int b))
+      | Psequand, Const_js_false, (Const_js_true | Const_js_false) -> false_
+      | Psequand, Const_js_true, Const_js_true -> true_
+      | Psequand, Const_js_true, Const_js_false -> false_
+      | Psequor, Const_js_true, (Const_js_true | Const_js_false) -> true_
       | Psequor, Const_js_false, Const_js_true -> true_
-      | Psequor, Const_js_false, Const_js_false -> false_        
-      | Pstringadd, (Const_string (a)),
-        (Const_string (b))
-        ->
-        Lift.string (a ^ b)
-      | (Pstringrefs | Pstringrefu), (Const_string(a)),
-        ((Const_int {i =  b}) )
-        ->
-        begin try Lift.char (String.get a (Int32.to_int b))
-          with  _ -> default ()
-        end
-      | _ -> default ()
-    end
-  | _ -> 
-    match prim with 
-    | Pmakeblock(_size,Blk_module fields,_)->
-      let rec aux fields args (var : Ident.t) i =
-        match fields, args with 
-        | [], [] -> true 
-        | f :: fields, Lprim {primitive = Pfield (pos, Fld_module {name = f1}); args = [Lglobal_module v1 | Lvar v1]} :: args 
-          -> 
-          pos = i && 
-          f = f1 &&
-          Ident.same var v1 && aux fields args var (i + 1)
-        | _, _ -> false in   
-      begin match fields, args with   
-        | field1 :: rest, 
-          Lprim{primitive = Pfield (pos, Fld_module {name = f1}); args = [Lglobal_module v1 | Lvar v1 as lam]} :: args1
-          ->
-          if pos = 0 && field1 = f1 && aux rest args1 v1 1 then 
-            lam
-          else 
-            default ()
-        | _ -> default ()                    
-      end 
-    (* In this level, include is already expanded, so that 
-       {[
-         { x0 : y0 ; x1 : y1 }
-       ]}
-       such module x can indeed be replaced by module y
-    *)
-    | _ ->    
-      default ()
+      | Psequor, Const_js_false, Const_js_false -> false_
+      | Pstringadd, Const_string a, Const_string b -> Lift.string (a ^ b)
+      | (Pstringrefs | Pstringrefu), Const_string a, Const_int { i = b } -> (
+          try Lift.char (String.get a (Int32.to_int b)) with _ -> default ())
+      | _ -> default ())
+  | _ -> (
+      match prim with
+      | Pmakeblock (_size, Blk_module fields, _) -> (
+          let rec aux fields args (var : Ident.t) i =
+            match (fields, args) with
+            | [], [] -> true
+            | ( f :: fields,
+                Lprim
+                  {
+                    primitive = Pfield (pos, Fld_module { name = f1 });
+                    args = [ (Lglobal_module v1 | Lvar v1) ];
+                  }
+                :: args ) ->
+                pos = i && f = f1 && Ident.same var v1
+                && aux fields args var (i + 1)
+            | _, _ -> false
+          in
+          match (fields, args) with
+          | ( field1 :: rest,
+              Lprim
+                {
+                  primitive = Pfield (pos, Fld_module { name = f1 });
+                  args = [ ((Lglobal_module v1 | Lvar v1) as lam) ];
+                }
+              :: args1 ) ->
+              if pos = 0 && field1 = f1 && aux rest args1 v1 1 then lam
+              else default ()
+          | _ -> default ())
+      (* In this level, include is already expanded, so that
+         {[
+           { x0 : y0 ; x1 : y1 }
+         ]}
+         such module x can indeed be replaced by module y
+      *)
+      | _ -> default ())
 
-let not_ loc x  : t =
-  match x with 
-  | Lprim ({primitive = Pintcomp Cneq } as prim)-> 
-    Lprim {prim with primitive = Pintcomp Ceq}
-  | _   ->
-    prim ~primitive:Pnot ~args:[x] loc
+let not_ loc x : t =
+  match x with
+  | Lprim ({ primitive = Pintcomp Cneq } as prim) ->
+      Lprim { prim with primitive = Pintcomp Ceq }
+  | _ -> prim ~primitive:Pnot ~args:[ x ] loc
 
-
-let has_boolean_type (x : t) = 
-  match x with 
-  | Lprim {primitive =
-             Pnot | Psequand |
-             Psequor 
-             | Pisout _
-             | Pintcomp _ 
-             | Pis_not_none
-             | Pfloatcomp _
-             | Pccall {prim_name = "caml_string_equal" | "caml_string_notequal"}; 
-           loc}
-    -> Some loc
+let has_boolean_type (x : t) =
+  match x with
+  | Lprim
+      {
+        primitive =
+          ( Pnot | Psequand | Psequor | Pisout _ | Pintcomp _ | Pis_not_none
+          | Pfloatcomp _
+          | Pccall { prim_name = "caml_string_equal" | "caml_string_notequal" }
+            );
+        loc;
+      } ->
+      Some loc
   | _ -> None
 
 (** [complete_range sw_consts 0 7]
     is complete with [0,1,.. 7]
-*)  
-let rec complete_range  (sw_consts : (int * _) list) ~(start : int) ~finish=   
-  match sw_consts with 
+*)
+let rec complete_range (sw_consts : (int * _) list) ~(start : int) ~finish =
+  match sw_consts with
   | [] -> finish < start
-  | (i,_)::rest 
-    -> 
-    start <= finish &&
-    i = start &&
-    complete_range  rest ~start:(start + 1) ~finish
+  | (i, _) :: rest ->
+      start <= finish && i = start
+      && complete_range rest ~start:(start + 1) ~finish
 
-let rec eval_const_as_bool (v : Lam_constant.t ) : bool = 
-  match v with  
-  | (Const_int {i =  x}) -> x <> 0l
-  | (Const_char x) ->
-    Char.code x <> 0 
-  |  (Const_int64 x) ->
-    x <> 0L 
-  | Const_js_false 
-  | Const_js_null
-  | Const_module_alias
-  | Const_js_undefined -> false
-  | Const_js_true
-  | Const_string _
-  | Const_pointer _  
-  | Const_float _
-  | Const_unicode _
-  | Const_block _
-  | Const_float_array _
-    -> true
+let rec eval_const_as_bool (v : Lam_constant.t) : bool =
+  match v with
+  | Const_int { i = x } -> x <> 0l
+  | Const_char x -> Char.code x <> 0
+  | Const_int64 x -> x <> 0L
+  | Const_js_false | Const_js_null | Const_module_alias | Const_js_undefined ->
+      false
+  | Const_js_true | Const_string _ | Const_pointer _ | Const_float _
+  | Const_unicode _ | Const_block _ | Const_float_array _ ->
+      true
   | Const_some b -> eval_const_as_bool b
-
 
 let if_ (a : t) (b : t) (c : t) : t =
   match a with
-  | Lconst v ->
-    if eval_const_as_bool v then b else c
-  | _ -> 
-    match  b, c with 
-    | _, Lconst (Const_int {comment = Pt_assertfalse})
-      -> seq a b (* TODO: we could customize more cases *)
-    | Lconst (Const_int {comment = Pt_assertfalse}), _ 
-      -> seq a c
-    | Lconst(Const_js_true), Lconst(Const_js_false)
-      -> 
-      if has_boolean_type a != None then a 
-      else Lifthenelse (a,b,c)
-    | Lconst(Const_js_false), Lconst(Const_js_true)
-      ->  
-      (match  has_boolean_type a with
-       | Some loc ->  not_ loc a 
-       | None -> Lifthenelse (a,b,c))     
-    | Lprim {primitive = Praise } , _ ->    
-      begin match c with 
-        | Lconst _ -> Lifthenelse(a,b,c)
-        | _ -> seq (Lifthenelse (a,b,unit)) c
-      end 
-    | _ -> 
-      (match a with 
-       | Lprim {primitive = Pisout off; args = [Lconst(Const_int {i =  range}); Lvar xx] } 
-         -> 
-         let range = Int32.to_int range in 
-         begin match c with 
-           | Lswitch ( Lvar yy as switch_arg, 
-                       ({sw_blocks = []; sw_blocks_full = true; sw_consts ;
-                         sw_consts_full = _; sw_failaction = None} as body)
-                     )
-             when Ident.same xx yy 
-               && complete_range sw_consts 
-                    ~start:(-off) ~finish:(range - off)
-             ->  
-             Lswitch(switch_arg, 
-                     { body with sw_failaction = Some b; sw_consts_full = false; })
-           |  _ -> Lifthenelse(a,b,c)      
-         end
-       | Lprim{primitive = Pisint; args = [Lvar i];_}
-         -> 
-         begin match b with 
-           | Lifthenelse(Lprim{primitive = Pintcomp Ceq ; args = [Lvar j; Lconst _]}  , _, b_f)
-             when Ident.same i j && eq_approx b_f c ->
-             b
-           | Lprim{primitive = Pintcomp Ceq ; args = [Lvar j; Lconst _]}  
-             when Ident.same i j && eq_approx false_ c -> b
-           | Lifthenelse(Lprim({primitive = Pintcomp Cneq ; args = [Lvar j; Lconst _]} as b_pred)  , b_t, b_f)
-             when Ident.same i j && eq_approx b_t c ->
-             Lifthenelse(Lprim{b_pred with primitive = Pintcomp Ceq}, b_f, b_t)      
-           | Lprim({primitive = Pintcomp Cneq ; args = [Lvar j; Lconst _] as args ; loc} )
-           | Lprim(
-               {primitive = Pnot ; args = [Lprim{primitive = Pintcomp Ceq ; args = [Lvar j; Lconst _] as args; loc}]})
-             when Ident.same i j && eq_approx true_ c
-             -> Lprim{primitive = Pintcomp Cneq; args; loc}
-           | _ -> Lifthenelse(a,b,c)
-         end 
-       | _ ->  Lifthenelse (a,b,c))
-
-
+  | Lconst v -> if eval_const_as_bool v then b else c
+  | _ -> (
+      match (b, c) with
+      | _, Lconst (Const_int { comment = Pt_assertfalse }) ->
+          seq a b (* TODO: we could customize more cases *)
+      | Lconst (Const_int { comment = Pt_assertfalse }), _ -> seq a c
+      | Lconst Const_js_true, Lconst Const_js_false ->
+          if has_boolean_type a != None then a else Lifthenelse (a, b, c)
+      | Lconst Const_js_false, Lconst Const_js_true -> (
+          match has_boolean_type a with
+          | Some loc -> not_ loc a
+          | None -> Lifthenelse (a, b, c))
+      | Lprim { primitive = Praise }, _ -> (
+          match c with
+          | Lconst _ -> Lifthenelse (a, b, c)
+          | _ -> seq (Lifthenelse (a, b, unit)) c)
+      | _ -> (
+          match a with
+          | Lprim
+              {
+                primitive = Pisout off;
+                args = [ Lconst (Const_int { i = range }); Lvar xx ];
+              } -> (
+              let range = Int32.to_int range in
+              match c with
+              | Lswitch
+                  ( (Lvar yy as switch_arg),
+                    ({
+                       sw_blocks = [];
+                       sw_blocks_full = true;
+                       sw_consts;
+                       sw_consts_full = _;
+                       sw_failaction = None;
+                     } as body) )
+                when Ident.same xx yy
+                     && complete_range sw_consts ~start:(-off)
+                          ~finish:(range - off) ->
+                  Lswitch
+                    ( switch_arg,
+                      {
+                        body with
+                        sw_failaction = Some b;
+                        sw_consts_full = false;
+                      } )
+              | _ -> Lifthenelse (a, b, c))
+          | Lprim { primitive = Pisint; args = [ Lvar i ]; _ } -> (
+              match b with
+              | Lifthenelse
+                  ( Lprim
+                      { primitive = Pintcomp Ceq; args = [ Lvar j; Lconst _ ] },
+                    _,
+                    b_f )
+                when Ident.same i j && eq_approx b_f c ->
+                  b
+              | Lprim { primitive = Pintcomp Ceq; args = [ Lvar j; Lconst _ ] }
+                when Ident.same i j && eq_approx false_ c ->
+                  b
+              | Lifthenelse
+                  ( Lprim
+                      ({
+                         primitive = Pintcomp Cneq;
+                         args = [ Lvar j; Lconst _ ];
+                       } as b_pred),
+                    b_t,
+                    b_f )
+                when Ident.same i j && eq_approx b_t c ->
+                  Lifthenelse
+                    (Lprim { b_pred with primitive = Pintcomp Ceq }, b_f, b_t)
+              | Lprim
+                  {
+                    primitive = Pintcomp Cneq;
+                    args = [ Lvar j; Lconst _ ] as args;
+                    loc;
+                  }
+              | Lprim
+                  {
+                    primitive = Pnot;
+                    args =
+                      [
+                        Lprim
+                          {
+                            primitive = Pintcomp Ceq;
+                            args = [ Lvar j; Lconst _ ] as args;
+                            loc;
+                          };
+                      ];
+                  }
+                when Ident.same i j && eq_approx true_ c ->
+                  Lprim { primitive = Pintcomp Cneq; args; loc }
+              | _ -> Lifthenelse (a, b, c))
+          | _ -> Lifthenelse (a, b, c)))
 
 (* TODO: the smart constructor is not exploited yet*)
 (* [l || r ] *)
 let sequor l r = if_ l true_ r
 
 (** [l && r ] *)
-let sequand l r = if_ l r false_  
+let sequand l r = if_ l r false_
 
 (******************************************************************)
 (* only [handle_bs_non_obj_ffi] will be used outside *)
@@ -816,63 +770,47 @@ let sequand l r = if_ l r false_
    check if the FFI have @uncurry attribute.
    if it does not we wrap it in a nomral way otherwise
 *)
-let rec no_auto_uncurried_arg_types
-    (xs : External_arg_spec.params)  =
+let rec no_auto_uncurried_arg_types (xs : External_arg_spec.params) =
   match xs with
   | [] -> true
-  | {arg_type = Fn_uncurry_arity _ } :: _ ->
-    false
+  | { arg_type = Fn_uncurry_arity _ } :: _ -> false
   | _ :: xs -> no_auto_uncurried_arg_types xs
 
-
-let result_wrap loc (result_type : External_ffi_types.return_wrapper) result  =
+let result_wrap loc (result_type : External_ffi_types.return_wrapper) result =
   match result_type with
-  | Return_replaced_with_unit
-    -> seq result unit
-  | Return_null_to_opt -> prim ~primitive:Pnull_to_opt ~args:[result] loc
-  | Return_null_undefined_to_opt -> prim ~primitive:Pnull_undefined_to_opt ~args:[result] loc
-  | Return_undefined_to_opt -> prim ~primitive:Pundefined_to_opt ~args:[result] loc
-  | Return_unset
-  | Return_identity ->
-    result
+  | Return_replaced_with_unit -> seq result unit
+  | Return_null_to_opt -> prim ~primitive:Pnull_to_opt ~args:[ result ] loc
+  | Return_null_undefined_to_opt ->
+      prim ~primitive:Pnull_undefined_to_opt ~args:[ result ] loc
+  | Return_undefined_to_opt ->
+      prim ~primitive:Pundefined_to_opt ~args:[ result ] loc
+  | Return_unset | Return_identity -> result
 
 let rec transform_uncurried_arg_type loc (arg_types : External_arg_spec.params)
-    (args : t list ) =
-  match arg_types,args with
-  | { arg_type = Fn_uncurry_arity n ; arg_label } :: xs,
-    y::ys ->
-    let (o_arg_types, o_args) =
-      transform_uncurried_arg_type loc xs ys in
-    { External_arg_spec.arg_type = Nothing ; arg_label } :: o_arg_types ,
-    prim ~primitive:(Pjs_fn_make n) ~args:[y] loc :: o_args
-  |  x  ::xs, y::ys ->
-    begin match x with
-      | {arg_type = Arg_cst _ }  ->
-        let o_arg_types, o_args = transform_uncurried_arg_type loc xs args in
-        x :: o_arg_types , o_args
+    (args : t list) =
+  match (arg_types, args) with
+  | { arg_type = Fn_uncurry_arity n; arg_label } :: xs, y :: ys ->
+      let o_arg_types, o_args = transform_uncurried_arg_type loc xs ys in
+      ( { External_arg_spec.arg_type = Nothing; arg_label } :: o_arg_types,
+        prim ~primitive:(Pjs_fn_make n) ~args:[ y ] loc :: o_args )
+  | x :: xs, y :: ys -> (
+      match x with
+      | { arg_type = Arg_cst _ } ->
+          let o_arg_types, o_args = transform_uncurried_arg_type loc xs args in
+          (x :: o_arg_types, o_args)
       | _ ->
-        let o_arg_types, o_args = transform_uncurried_arg_type loc xs ys in
-        x :: o_arg_types , y:: o_args
-    end
-  | [] , []
-  | _::_, []
-  | [], _::_ as ok -> ok
+          let o_arg_types, o_args = transform_uncurried_arg_type loc xs ys in
+          (x :: o_arg_types, y :: o_args))
+  | ([], [] | _ :: _, [] | [], _ :: _) as ok -> ok
 
-
-let handle_bs_non_obj_ffi
-    (arg_types : External_arg_spec.params)
-    (result_type : External_ffi_types.return_wrapper)
-    ffi
-    args
-    loc
-    prim_name =
+let handle_bs_non_obj_ffi (arg_types : External_arg_spec.params)
+    (result_type : External_ffi_types.return_wrapper) ffi args loc prim_name =
   if no_auto_uncurried_arg_types arg_types then
-    result_wrap loc result_type (prim ~primitive:(Pjs_call {prim_name; arg_types; ffi})
-                                   ~args loc)
+    result_wrap loc result_type
+      (prim ~primitive:(Pjs_call { prim_name; arg_types; ffi }) ~args loc)
   else
-    let n_arg_types, n_args =
-      transform_uncurried_arg_type loc  arg_types args in
-    result_wrap loc result_type (
-      prim ~primitive:(Pjs_call {prim_name; arg_types = n_arg_types; ffi})
-        ~args:n_args loc)
-
+    let n_arg_types, n_args = transform_uncurried_arg_type loc arg_types args in
+    result_wrap loc result_type
+      (prim
+         ~primitive:(Pjs_call { prim_name; arg_types = n_arg_types; ffi })
+         ~args:n_args loc)
