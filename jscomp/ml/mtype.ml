@@ -374,7 +374,7 @@ let rec remove_aliases env excl mty =
       Mty_signature (remove_aliases_sig env excl sg)
   | Mty_alias _ ->
       let mty' = Env.scrape_alias env mty in
-      if mty' = mty then mty else
+      if mty' = mty then mty else (* nested polymorphic comparison *)
       remove_aliases env excl mty'
   | mty ->
       mty
