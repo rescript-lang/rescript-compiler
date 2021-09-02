@@ -576,7 +576,7 @@ and transl_exp0 e =
   | Texp_let(rec_flag, pat_expr_list, body) ->
       transl_let rec_flag pat_expr_list (event_before body (transl_exp body))
   | Texp_function { arg_label = _; param; cases; partial; } ->
-      let ( params, body) =        
+      let ( params, body, return_unit ) =        
             let pl = push_defaults e.exp_loc [] cases partial in
             transl_function e.exp_loc  partial
               param pl
@@ -585,6 +585,7 @@ and transl_exp0 e =
         default_function_attribute with
         inline = Translattribute.get_inline_attribute e.exp_attributes;
         specialise = Translattribute.get_specialise_attribute e.exp_attributes;
+        return_unit
       }
       in
       let loc = e.exp_loc in
@@ -906,14 +907,17 @@ and transl_function loc   partial param cases =
       c_rhs={exp_desc = Texp_function { arg_label = _; param = param'; cases;
         partial = partial'; }} as exp}]
     when Parmatch.inactive ~partial pat ->
-      let (params, body) =
+      let (params, body, return_unit) =
         transl_function exp.exp_loc   partial' param' cases in
       ((param :: params),
-       Matching.for_function loc None (Lvar param) [pat, body] partial)
-  | _ ->
+       Matching.for_function loc None (Lvar param) [pat, body] partial, return_unit)
+
+  | {c_rhs = {exp_env; exp_type}; _} :: _ ->
       ([param],
        Matching.for_function loc None (Lvar param)
-         (transl_cases cases) partial)
+         (transl_cases cases) partial, 
+         is_base_type exp_env exp_type Predef.path_unit)
+   | _ -> assert false      
 
 and transl_let rec_flag pat_expr_list body =
   match rec_flag with

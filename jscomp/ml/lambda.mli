@@ -277,6 +277,8 @@ type function_attribute = {
   specialise : specialise_attribute;
   is_a_functor: bool;
   stub: bool;
+  return_unit : bool;
+  (* [true] means yes, [false] means unknown *)
 }
 
 type switch_names = {consts: string array; blocks: string array}

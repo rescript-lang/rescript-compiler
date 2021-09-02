@@ -276,6 +276,7 @@ type function_attribute = {
   specialise : specialise_attribute;
   is_a_functor: bool;
   stub: bool;
+  return_unit : bool;
 }
 type switch_names = {consts: string array; blocks: string array}
 
@@ -347,6 +348,7 @@ let default_function_attribute = {
   specialise = Default_specialise;
   is_a_functor = false;
   stub = false;
+  return_unit = false;
 }
 
 let default_stub_attribute =
