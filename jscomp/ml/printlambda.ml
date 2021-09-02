@@ -318,7 +318,7 @@ let name_of_primitive = function
   | Popaque -> "Popaque"
   | Pcreate_extension _ -> "Pcreate_extension"
 
-let function_attribute ppf { inline; specialise; is_a_functor; stub; return_unit } =
+let function_attribute ppf { inline; is_a_functor; stub; return_unit } =
   if is_a_functor then
     fprintf ppf "is_a_functor@ ";
   if stub then
@@ -329,11 +329,6 @@ let function_attribute ppf { inline; specialise; is_a_functor; stub; return_unit
   | Default_inline -> ()
   | Always_inline -> fprintf ppf "always_inline@ "
   | Never_inline -> fprintf ppf "never_inline@ "
-  end;
-  begin match specialise with
-  | Default_specialise -> ()
-  | Always_specialise -> fprintf ppf "always_specialise@ "
-  | Never_specialise -> fprintf ppf "never_specialise@ "
   end
 
 
@@ -342,10 +337,6 @@ let apply_inlined_attribute ppf = function
   | Always_inline -> fprintf ppf " always_inline"
   | Never_inline -> fprintf ppf " never_inline"
 
-let apply_specialised_attribute ppf = function
-  | Default_specialise -> ()
-  | Always_specialise -> fprintf ppf " always_specialise"
-  | Never_specialise -> fprintf ppf " never_specialise"
 
 let rec lam ppf = function
   | Lvar id ->
@@ -355,9 +346,9 @@ let rec lam ppf = function
   | Lapply ap ->
       let lams ppf largs =
         List.iter (fun l -> fprintf ppf "@ %a" lam l) largs in
-      fprintf ppf "@[<2>(apply@ %a%a%a%a)@]" lam ap.ap_func lams ap.ap_args
+      fprintf ppf "@[<2>(apply@ %a%a%a)@]" lam ap.ap_func lams ap.ap_args
         apply_inlined_attribute ap.ap_inlined
-        apply_specialised_attribute ap.ap_specialised
+
   | Lfunction{ params; body; attr} ->
       let pr_params ppf params =
             List.iter (fun param -> fprintf ppf "@ %a" Ident.print param) params

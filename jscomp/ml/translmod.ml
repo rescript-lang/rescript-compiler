@@ -118,7 +118,7 @@ and apply_coercion_result loc strict funct params args cc_res =
                                  ap_func=Lvar id;
                                  ap_args=List.rev args;
                                  ap_inlined=Default_inline;
-                                 ap_specialised=Default_specialise})})
+                                 })})
 
 and wrap_id_pos_list loc id_pos_list get_field lam =
   let fv = free_variables lam in
@@ -203,7 +203,6 @@ let mod_prim name args loc =
       ap_args =  args;
       ap_loc =  loc;
       ap_inlined = Default_inline;
-      ap_specialised = Default_specialise;
       }
   with Not_found ->
     fatal_error ("Primitive " ^ name ^ " not found.")
@@ -419,7 +418,6 @@ let rec compile_functor mexp coercion root_path loc =
     params;
     attr = {
       inline = inline_attribute;
-      specialise = Default_specialise;
       is_a_functor = true;
       stub = false;
       return_unit = false;
@@ -455,7 +453,7 @@ and transl_module cc rootpath mexp =
                     ap_func=transl_module Tcoerce_none None funct;
                     ap_args=[transl_module ccarg None arg];
                     ap_inlined=inlined_attribute;
-                    ap_specialised=Default_specialise})
+                    })
       | Tmod_constraint(arg, _, _, ccarg) ->
           transl_module (compose_coercions cc ccarg) rootpath arg
       | Tmod_unpack(arg, _) ->

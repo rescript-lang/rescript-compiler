@@ -33,15 +33,8 @@ val get_inline_attribute
    : Parsetree.attributes
   -> Lambda.inline_attribute
 
-val add_specialise_attribute
-   : Lambda.lambda
-  -> Location.t
-  -> Parsetree.attributes
-  -> Lambda.lambda
 
-val get_specialise_attribute
-   : Parsetree.attributes
-  -> Lambda.specialise_attribute
+
 
 val get_and_remove_inlined_attribute
    : Typedtree.expression
@@ -51,9 +44,6 @@ val get_and_remove_inlined_attribute_on_module
    : Typedtree.module_expr
   -> Lambda.inline_attribute * Typedtree.module_expr
 
-val get_and_remove_specialised_attribute
-   : Typedtree.expression
-  -> Lambda.specialise_attribute * Typedtree.expression
 
 val get_tailcall_attribute
    : Typedtree.expression

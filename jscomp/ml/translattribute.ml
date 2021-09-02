@@ -25,11 +25,8 @@ let is_inlined_attribute = function
   | {txt=("inlined"|"ocaml.inlined")}, _ -> true
   | _ -> false
 
-let is_specialise_attribute = function
-  | _ -> false
 
-let is_specialised_attribute = function
-  | _ -> false
+
 
 let find_attribute p attributes =
   let inline_attribute, other_attributes =
@@ -75,41 +72,12 @@ let parse_inline_attribute attr =
         Default_inline
     end
 
-let parse_specialise_attribute attr =
-  match attr with
-  | None -> Default_specialise
-  | Some ({txt; loc}, payload) ->
-    let open Parsetree in
-    let warning txt =
-      Warnings.Attribute_payload
-      (txt, "It must be either empty, 'always' or 'never'")
-    in
-    match payload with
-    | PStr [] -> Always_specialise
-    | PStr [{pstr_desc = Pstr_eval ({pexp_desc},[])}] -> begin
-        (* the 'specialise' and 'specialised' attributes can be used as
-           [@specialise], [@specialise never] or [@specialise always].
-           [@specialise] is equivalent to [@specialise always] *)
-        match pexp_desc with
-        | Pexp_ident { txt = Longident.Lident "never" } ->
-          Never_specialise
-        | Pexp_ident { txt = Longident.Lident "always" } ->
-          Always_specialise
-        | _ ->
-          Location.prerr_warning loc (warning txt);
-          Default_specialise
-      end
-    | _ ->
-      Location.prerr_warning loc (warning txt);
-      Default_specialise
+
 
 let get_inline_attribute l =
   let attr, _ = find_attribute is_inline_attribute l in
   parse_inline_attribute attr
 
-let get_specialise_attribute l =
-  let attr, _ = find_attribute is_specialise_attribute l in
-  parse_specialise_attribute attr
 
 let add_inline_attribute expr loc attributes =
   match expr, get_inline_attribute attributes with
@@ -128,22 +96,6 @@ let add_inline_attribute expr loc attributes =
         (Warnings.Misplaced_attribute "inline");
       expr
 
-let add_specialise_attribute expr loc attributes =
-  match expr, get_specialise_attribute attributes with
-  | expr, Default_specialise -> expr
-  | Lfunction({ attr = { stub = false } as attr } as funct), specialise ->
-      begin match attr.specialise with
-      | Default_specialise -> ()
-      | Always_specialise | Never_specialise ->
-          Location.prerr_warning loc
-            (Warnings.Duplicated_attribute "specialise")
-      end;
-      let attr = { attr with specialise } in
-      Lfunction { funct with attr }
-  | expr, (Always_specialise | Never_specialise) ->
-      Location.prerr_warning loc
-        (Warnings.Misplaced_attribute "specialise");
-      expr
 
 (* Get the [@inlined] attribute payload (or default if not present).
    It also returns the expression without this attribute. This is
@@ -164,12 +116,7 @@ let get_and_remove_inlined_attribute_on_module e =
   let inlined = parse_inline_attribute attr in
   inlined, { e with mod_attributes }
 
-let get_and_remove_specialised_attribute e =
-  let attr, exp_attributes =
-    find_attribute is_specialised_attribute e.exp_attributes
-  in
-  let specialised = parse_specialise_attribute attr in
-  specialised, { e with exp_attributes }
+
 
 (* It also removes the attribute from the expression, like
    get_inlined_attribute *)

@@ -248,10 +248,6 @@ type inline_attribute =
   | Never_inline (* [@inline never] *)
   | Default_inline (* no [@inline] attribute *)
 
-type specialise_attribute =
-  | Always_specialise (* [@specialise] or [@specialise always] *)
-  | Never_specialise (* [@specialise never] *)
-  | Default_specialise (* no [@specialise] attribute *)
 
 
 
@@ -273,7 +269,6 @@ type let_kind = Strict | Alias | StrictOpt | Variable
 (* [true] means yes, [false] may mean unknown *)
 type function_attribute = {
   inline : inline_attribute;
-  specialise : specialise_attribute;
   is_a_functor: bool;
   stub: bool;
   return_unit : bool;  
@@ -316,7 +311,7 @@ and lambda_apply =
     ap_args : lambda list;
     ap_loc : Location.t;
     ap_inlined : inline_attribute; (* specified with the [@inlined] attribute *)
-    ap_specialised : specialise_attribute; }
+    }
 
 and lambda_switch =
   { sw_numconsts: int;                  (* Number of integer cases *)
