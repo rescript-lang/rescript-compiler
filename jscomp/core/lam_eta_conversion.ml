@@ -22,7 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 (*
   let f x y =  x + y 
   Invariant: there is no currying 
@@ -34,57 +33,44 @@
    [transform n loc status fn args]
    n is the number of missing arguments required for [fn].
    Return a function of airty [n]
-*) 
-let transform_under_supply n ap_info fn args = 
-  let extra_args = Ext_list.init n
-      (fun _ ->   (Ident.create Literals.param)) in
-  let extra_lambdas = Ext_list.map  extra_args Lam.var in
-  begin match Ext_list.fold_right (fn::args) ([],[])  (fun (lam : Lam.t) (acc, bind) ->
-      match lam with
-      | Lvar _
-      | Lconst (Const_int _  
-               | Const_char _ | Const_string _ 
-               | Const_float _ 
-               | Const_int64 _ 
-               | Const_pointer _ | Const_js_true | Const_js_false | Const_js_undefined) 
-      | Lprim {primitive = Pfield (_, Fld_module _);
-               _ }
-      | Lfunction _ 
-        ->
-        (lam :: acc, bind)
-      | _ ->
-        let v = Ident.create Literals.partial_arg in
-        (Lam.var v :: acc),  ((v, lam) :: bind)
-    )   with 
-  | fn :: args, [] -> 
-    (* More than no side effect in the [args], 
-       we try to avoid computation, so even if 
-       [x + y] is side effect free, we need eval it only once 
-    *)
-    (* TODO: Note we could adjust [fn] if [fn] is already a function
-       But it is dangerous to change the arity 
-       of an existing function which may cause inconsistency
-    *)
-    Lam.function_ ~arity:n  ~params:extra_args
-      ~attr:Lam.default_fn_attr
-      ~body:(Lam.apply fn (Ext_list.append args  extra_lambdas) 
-               ap_info
-            ) 
-  | fn::args , bindings ->
-
-    let rest : Lam.t = 
-      Lam.function_ ~arity:n  ~params:extra_args
-        ~attr:Lam.default_fn_attr
-        ~body:(Lam.apply fn (Ext_list.append args  extra_lambdas) 
-                 ap_info
-              ) in
-    Ext_list.fold_left bindings rest (fun lam (id,x) ->
-        Lam.let_ Strict id x lam
-      ) 
+*)
+let transform_under_supply n ap_info fn args =
+  let extra_args = Ext_list.init n (fun _ -> Ident.create Literals.param) in
+  let extra_lambdas = Ext_list.map extra_args Lam.var in
+  match
+    Ext_list.fold_right (fn :: args) ([], []) (fun (lam : Lam.t) (acc, bind) ->
+        match lam with
+        | Lvar _
+        | Lconst
+            ( Const_int _ | Const_char _ | Const_string _ | Const_float _
+            | Const_int64 _ | Const_pointer _ | Const_js_true | Const_js_false
+            | Const_js_undefined )
+        | Lprim { primitive = Pfield (_, Fld_module _); _ }
+        | Lfunction _ ->
+            (lam :: acc, bind)
+        | _ ->
+            let v = Ident.create Literals.partial_arg in
+            (Lam.var v :: acc, (v, lam) :: bind))
+  with
+  | fn :: args, [] ->
+      (* More than no side effect in the [args],
+         we try to avoid computation, so even if
+         [x + y] is side effect free, we need eval it only once
+      *)
+      (* TODO: Note we could adjust [fn] if [fn] is already a function
+         But it is dangerous to change the arity
+         of an existing function which may cause inconsistency
+      *)
+      Lam.function_ ~arity:n ~params:extra_args ~attr:Lam.default_fn_attr
+        ~body:(Lam.apply fn (Ext_list.append args extra_lambdas) ap_info)
+  | fn :: args, bindings ->
+      let rest : Lam.t =
+        Lam.function_ ~arity:n ~params:extra_args ~attr:Lam.default_fn_attr
+          ~body:(Lam.apply fn (Ext_list.append args extra_lambdas) ap_info)
+      in
+      Ext_list.fold_left bindings rest (fun lam (id, x) ->
+          Lam.let_ Strict id x lam)
   | _, _ -> assert false
-  end
-
-
 
 (* Invariant: mk0 : (unit -> 'a0) -> 'a0 t 
                 TODO: this case should be optimized, 
@@ -114,93 +100,101 @@ let transform_under_supply n ap_info fn args =
   {[ \a b -> \c -> g a b c ]}
 *)
 
-
 (** Unsafe function, we are changing arity here, it should be applied 
     cautiously, since 
     [let u = f] and we are chaning the arity of [f] it will affect 
     the collection of [u]
     A typical use case is to pass an OCaml function to JS side as a callback (i.e, [@uncurry])
 *)
-let unsafe_adjust_to_arity loc ~(to_:int) ?(from : int option) (fn : Lam.t) : Lam.t = 
-  let ap_info : Lam.ap_info = {ap_loc = loc; ap_inlined = Default_inline; ap_status = App_na } in
-  begin match from, fn  with 
-    | Some from, _ 
-    | None, Lfunction{arity=from} ->
-      if from = to_ then 
-        fn 
-      else if to_ = 0 then  
-        match fn with 
-        | Lfunction{params = [param]; body} -> 
-          Lam.function_ ~arity:0 
-            ~attr:Lam.default_fn_attr
-            ~params:[]
-            ~body:(
-              Lam.let_ Alias param Lam.unit body  
-            ) (* could be only introduced by 
-                 {[ Pjs_fn_make 0 ]} <- 
-                 {[ fun [@bs] () -> .. ]}
-              *)
-        | _ -> 
-          let wrapper, new_fn  = 
-            match fn with 
-            | Lvar _ 
-            | Lprim{primitive = Pfield (_,Fld_module _) ; args = [Lglobal_module _ | Lvar _]; _ }
-              -> 
-              None, fn 
-            | _ -> 
-              let partial_arg = Ext_ident.create Literals.partial_arg in 
-              Some partial_arg, Lam.var partial_arg in 
+let unsafe_adjust_to_arity loc ~(to_ : int) ?(from : int option) (fn : Lam.t) :
+    Lam.t =
+  let ap_info : Lam.ap_info =
+    { ap_loc = loc; ap_inlined = Default_inline; ap_status = App_na }
+  in
+  match (from, fn) with
+  | Some from, _ | None, Lfunction { arity = from } -> (
+      if from = to_ then fn
+      else if to_ = 0 then
+        match fn with
+        | Lfunction { params = [ param ]; body } ->
+            Lam.function_ ~arity:0 ~attr:Lam.default_fn_attr ~params:[]
+              ~body:(Lam.let_ Alias param Lam.unit body)
+            (* could be only introduced by
+               {[ Pjs_fn_make 0 ]} <-
+               {[ fun [@bs] () -> .. ]}
+            *)
+        | _ -> (
+            let wrapper, new_fn =
+              match fn with
+              | Lvar _
+              | Lprim
+                  {
+                    primitive = Pfield (_, Fld_module _);
+                    args = [ (Lglobal_module _ | Lvar _) ];
+                    _;
+                  } ->
+                  (None, fn)
+              | _ ->
+                  let partial_arg = Ext_ident.create Literals.partial_arg in
+                  (Some partial_arg, Lam.var partial_arg)
+            in
 
-          let cont = Lam.function_ 
-              ~attr:Lam.default_fn_attr
-              ~arity:0
-              ~params:[]
-              ~body:(
-                Lam.apply new_fn [Lam.unit ] ap_info 
-              ) in 
+            let cont =
+              Lam.function_ ~attr:Lam.default_fn_attr ~arity:0 ~params:[]
+                ~body:(Lam.apply new_fn [ Lam.unit ] ap_info)
+            in
 
-          match wrapper with 
-          | None -> cont 
-          | Some partial_arg 
-            -> Lam.let_ Strict partial_arg fn cont 
-
-      else if to_ > from then 
-        match fn with 
-        | Lfunction{params;body} -> 
-          (* {[fun x -> f]} -> 
-             {[ fun x y -> f y ]}
-          *)
-          let extra_args = Ext_list.init (to_ - from) (fun _ -> Ident.create Literals.param) in 
-          Lam.function_ ~attr:Lam.default_fn_attr
-            ~arity:to_ 
-            ~params:(Ext_list.append params  extra_args )
-            ~body:(Lam.apply body (Ext_list.map extra_args Lam.var) ap_info )
-        | _ -> 
-          let arity = to_ in 
-          let extra_args = Ext_list.init to_  (fun _ -> Ident.create Literals.param ) in 
-          let wrapper, new_fn = 
-            match fn with 
-            | Lvar _ 
-            | Lprim {primitive = Pfield (_,Fld_module _) ; args = [ Lglobal_module _ | Lvar _] ; _}  -> 
-              None, fn
-            | _ -> 
-              let partial_arg = Ext_ident.create Literals.partial_arg in 
-              Some partial_arg, Lam.var partial_arg
-          in   
-          let cont = 
-            Lam.function_ 
-              ~arity ~attr:Lam.default_fn_attr
-
-              ~params:extra_args 
-              ~body:(
-                let first_args, rest_args = Ext_list.split_at extra_args from in 
-                Lam.apply (Lam.apply new_fn (Ext_list.map first_args  Lam.var) {ap_info with ap_status = App_infer_full} ) (Ext_list.map rest_args Lam.var) ap_info  ) in 
-          begin match wrapper with 
-            | None -> cont 
-            | Some partial_arg -> 
-              Lam.let_ Strict partial_arg fn cont 
-          end    
-      else 
+            match wrapper with
+            | None -> cont
+            | Some partial_arg -> Lam.let_ Strict partial_arg fn cont)
+      else if to_ > from then
+        match fn with
+        | Lfunction { params; body } ->
+            (* {[fun x -> f]} ->
+               {[ fun x y -> f y ]}
+            *)
+            let extra_args =
+              Ext_list.init (to_ - from) (fun _ -> Ident.create Literals.param)
+            in
+            Lam.function_ ~attr:Lam.default_fn_attr ~arity:to_
+              ~params:(Ext_list.append params extra_args)
+              ~body:(Lam.apply body (Ext_list.map extra_args Lam.var) ap_info)
+        | _ -> (
+            let arity = to_ in
+            let extra_args =
+              Ext_list.init to_ (fun _ -> Ident.create Literals.param)
+            in
+            let wrapper, new_fn =
+              match fn with
+              | Lvar _
+              | Lprim
+                  {
+                    primitive = Pfield (_, Fld_module _);
+                    args = [ (Lglobal_module _ | Lvar _) ];
+                    _;
+                  } ->
+                  (None, fn)
+              | _ ->
+                  let partial_arg = Ext_ident.create Literals.partial_arg in
+                  (Some partial_arg, Lam.var partial_arg)
+            in
+            let cont =
+              Lam.function_ ~arity ~attr:Lam.default_fn_attr ~params:extra_args
+                ~body:
+                  (let first_args, rest_args =
+                     Ext_list.split_at extra_args from
+                   in
+                   Lam.apply
+                     (Lam.apply new_fn
+                        (Ext_list.map first_args Lam.var)
+                        { ap_info with ap_status = App_infer_full })
+                     (Ext_list.map rest_args Lam.var)
+                     ap_info)
+            in
+            match wrapper with
+            | None -> cont
+            | Some partial_arg -> Lam.let_ Strict partial_arg fn cont)
+      else
         (* add3  --adjust to arity 1 ->
            fun x -> (fun y z -> add3 x y z )
 
@@ -208,81 +202,83 @@ let unsafe_adjust_to_arity loc ~(to_:int) ?(from : int option) (fn : Lam.t) : La
            [fun x -> [fun y z -> f x y z ]]
            This is okay if the function is not held by other..
         *)
-        begin match fn with 
-
-          | Lfunction 
-              {params; body; } (* TODO check arity = List.length params in debug mode *)
-            -> 
-            let arity = to_ in 
-            let extra_outer_args, extra_inner_args = Ext_list.split_at params arity in 
-            Lam.function_ 
-              ~arity 
-              ~attr:Lam.default_fn_attr
-              ~params:extra_outer_args 
-              ~body:(
-                Lam.function_ ~arity:(from - to_) ~attr:Lam.default_fn_attr
-                  ~params:extra_inner_args ~body:body)
-          | _
-            -> 
-            let extra_outer_args = 
-              Ext_list.init to_
-                (fun _ ->   Ident.create Literals.param) in
-            let wrapper, new_fn = 
-              match fn with 
-              | Lvar _ 
-              | Lprim {primitive = Pfield (_, Fld_module _) ; args = [ Lglobal_module _ | Lvar _] ; _}  -> 
-                None, fn
-              | _ -> 
-                let partial_arg = Ext_ident.create Literals.partial_arg in 
-                Some partial_arg, Lam.var partial_arg
-            in   
-            let cont = 
-              Lam.function_ ~arity:to_ ~params:extra_outer_args ~attr:Lam.default_fn_attr
-                ~body:(
-                  let arity = from - to_ in 
-                  let extra_inner_args =
-                    Ext_list.init arity (fun _ -> Ident.create Literals.param ) in 
-                  Lam.function_ ~arity ~params:extra_inner_args  ~attr:Lam.default_fn_attr
-                    ~body:(Lam.apply new_fn 
-                             (Ext_list.map_append extra_outer_args 
-                                (Ext_list.map extra_inner_args Lam.var) 
-                                Lam.var 
-                             )      
-                             {ap_info with ap_status = App_infer_full} )
-                )  in 
-            begin match wrapper with 
-              | None -> cont 
-              | Some partial_arg -> Lam.let_ Strict partial_arg fn  cont    
-            end
-        end 
-    | None, _ ->      
+        match fn with
+        | Lfunction { params; body }
+        (* TODO check arity = List.length params in debug mode *) ->
+            let arity = to_ in
+            let extra_outer_args, extra_inner_args =
+              Ext_list.split_at params arity
+            in
+            Lam.function_ ~arity ~attr:Lam.default_fn_attr
+              ~params:extra_outer_args
+              ~body:
+                (Lam.function_ ~arity:(from - to_) ~attr:Lam.default_fn_attr
+                   ~params:extra_inner_args ~body)
+        | _ -> (
+            let extra_outer_args =
+              Ext_list.init to_ (fun _ -> Ident.create Literals.param)
+            in
+            let wrapper, new_fn =
+              match fn with
+              | Lvar _
+              | Lprim
+                  {
+                    primitive = Pfield (_, Fld_module _);
+                    args = [ (Lglobal_module _ | Lvar _) ];
+                    _;
+                  } ->
+                  (None, fn)
+              | _ ->
+                  let partial_arg = Ext_ident.create Literals.partial_arg in
+                  (Some partial_arg, Lam.var partial_arg)
+            in
+            let cont =
+              Lam.function_ ~arity:to_ ~params:extra_outer_args
+                ~attr:Lam.default_fn_attr
+                ~body:
+                  (let arity = from - to_ in
+                   let extra_inner_args =
+                     Ext_list.init arity (fun _ -> Ident.create Literals.param)
+                   in
+                   Lam.function_ ~arity ~params:extra_inner_args
+                     ~attr:Lam.default_fn_attr
+                     ~body:
+                       (Lam.apply new_fn
+                          (Ext_list.map_append extra_outer_args
+                             (Ext_list.map extra_inner_args Lam.var)
+                             Lam.var)
+                          { ap_info with ap_status = App_infer_full }))
+            in
+            match wrapper with
+            | None -> cont
+            | Some partial_arg -> Lam.let_ Strict partial_arg fn cont))
+  | None, _ ->
       (* In this case [fn] is not [Lfunction], otherwise we would get [arity] *)
-      if to_ = 0 then 
-        let wrapper, new_fn  = 
-          match fn with 
-          | Lvar _ 
-          | Lprim{primitive = Pfield (_, Fld_module _) ; args = [Lglobal_module _ | Lvar _]; _ }
-            -> 
-            None, fn 
-          | _ -> 
-            let partial_arg = Ext_ident.create Literals.partial_arg in 
-            Some partial_arg, Lam.var partial_arg in 
+      if to_ = 0 then
+        let wrapper, new_fn =
+          match fn with
+          | Lvar _
+          | Lprim
+              {
+                primitive = Pfield (_, Fld_module _);
+                args = [ (Lglobal_module _ | Lvar _) ];
+                _;
+              } ->
+              (None, fn)
+          | _ ->
+              let partial_arg = Ext_ident.create Literals.partial_arg in
+              (Some partial_arg, Lam.var partial_arg)
+        in
 
-        let cont = Lam.function_ ~attr:Lam.default_fn_attr
-            ~arity:0
-            ~params:[]
-            ~body:(
-              Lam.apply new_fn [Lam.unit] ap_info 
-            ) in 
+        let cont =
+          Lam.function_ ~attr:Lam.default_fn_attr ~arity:0 ~params:[]
+            ~body:(Lam.apply new_fn [ Lam.unit ] ap_info)
+        in
 
-        match wrapper with 
-        | None -> cont 
-        | Some partial_arg 
-          -> Lam.let_ Strict partial_arg fn cont 
-      else   
-        transform_under_supply to_ ap_info  fn [] 
-  end 
-
+        match wrapper with
+        | None -> cont
+        | Some partial_arg -> Lam.let_ Strict partial_arg fn cont
+      else transform_under_supply to_ ap_info fn []
 
 (* | _ -> 
    let partial_arg = Ext_ident.create Literals.partial_arg in 
