@@ -269,7 +269,7 @@ and compile_external_field_apply (appinfo : Lam.apply) (module_id : Ident.t)
 and compile_recursive_let ~all_bindings (cxt : Lam_compile_context.t)
     (id : Ident.t) (arg : Lam.t) : Js_output.t * initialization =
   match arg with
-  | Lfunction { params; body; _ } ->
+  | Lfunction { params; body; attr = { return_unit } } ->
       let continue_label = Lam_util.generate_label ~name:id.name () in
       (* TODO: Think about recursive value
          {[
@@ -295,7 +295,8 @@ and compile_recursive_let ~all_bindings (cxt : Lam_compile_context.t)
             continuation =
               EffectCall
                 (Maybe_tail_is_return
-                   (Tail_with_name { label = Some ret; in_staticcatch = false }));
+                   (Tail_with_name
+                      { label = Some ret; in_staticcatch = false; return_unit }));
             jmp_table = Lam_compile_context.empty_handler_map;
           }
           body
@@ -1482,7 +1483,7 @@ and compile_prim (prim_info : Lam.prim_info)
       | [] -> assert false)
   | { primitive = Pjs_fn_method; args = args_lambda } -> (
       match args_lambda with
-      | [ Lfunction { params; body } ] ->
+      | [ Lfunction { params; body; attr = { return_unit } } ] ->
           Js_output.output_of_block_and_expression lambda_cxt.continuation []
             (E.method_ params
                (* Invariant:  jmp_table can not across function boundary,
@@ -1496,7 +1497,11 @@ and compile_prim (prim_info : Lam.prim_info)
                          EffectCall
                            (Maybe_tail_is_return
                               (Tail_with_name
-                                 { label = None; in_staticcatch = false }));
+                                 {
+                                   label = None;
+                                   in_staticcatch = false;
+                                   return_unit;
+                                 }));
                        jmp_table = Lam_compile_context.empty_handler_map;
                      }
                      body)))
@@ -1542,7 +1547,7 @@ and compile_prim (prim_info : Lam.prim_info)
 and compile_lambda (lambda_cxt : Lam_compile_context.t) (cur_lam : Lam.t) :
     Js_output.t =
   match cur_lam with
-  | Lfunction { params; body } ->
+  | Lfunction { params; body; attr = { return_unit } } ->
       Js_output.output_of_expression lambda_cxt.continuation
         ~no_effects:no_effects_const
         (E.ocaml_fun params
@@ -1557,7 +1562,11 @@ and compile_lambda (lambda_cxt : Lam_compile_context.t) (cur_lam : Lam.t) :
                      EffectCall
                        (Maybe_tail_is_return
                           (Tail_with_name
-                             { label = None; in_staticcatch = false }));
+                             {
+                               label = None;
+                               in_staticcatch = false;
+                               return_unit;
+                             }));
                    jmp_table = Lam_compile_context.empty_handler_map;
                  }
                  body)))

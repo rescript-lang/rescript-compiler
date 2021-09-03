@@ -44,7 +44,11 @@ type value = { exit_id : Ident.t; bindings : Ident.t list; order_id : int }
 
 type let_kind = Lam_compat.let_kind
 
-type tail = { label : return_label option; in_staticcatch : bool }
+type tail = {
+  label : return_label option;
+  in_staticcatch : bool;
+  return_unit : bool;
+}
 
 type maybe_tail = Tail_in_try | Tail_with_name of tail
 

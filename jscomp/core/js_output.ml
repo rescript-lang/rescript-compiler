@@ -59,7 +59,12 @@ let output_of_block_and_expression (continuation : continuation)
     (block : J.block) exp : t =
   match continuation with
   | EffectCall Not_tail -> make block ~value:exp
-  | EffectCall (Maybe_tail_is_return _) ->
+  | EffectCall (Maybe_tail_is_return Tail_in_try) ->
+      make (Ext_list.append_one block (S.return_stmt exp)) ~output_finished:True
+  | EffectCall (Maybe_tail_is_return (Tail_with_name { return_unit })) ->
+    if return_unit then 
+      make (Ext_list.append block [S.exp exp; S.return_stmt E.undefined]) ~output_finished:True
+    else 
       make (Ext_list.append_one block (S.return_stmt exp)) ~output_finished:True
   | Declare (kind, n) ->
       make (Ext_list.append_one block (S.define_variable ~kind n exp))
