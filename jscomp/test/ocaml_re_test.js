@@ -269,6 +269,19 @@ function hash_rec(param) {
   return (match[0] + Math.imul(13, match[1]) | 0) + Math.imul(257, hash_rec(param.tl)) | 0;
 }
 
+function iter(_t, f) {
+  while(true) {
+    var t = _t;
+    if (!t) {
+      return ;
+    }
+    var match = t.hd;
+    Curry._2(f, match[0], match[1]);
+    _t = t.tl;
+    continue ;
+  };
+}
+
 function one_char(param) {
   if (!param) {
     return ;
@@ -982,7 +995,8 @@ var Table = Hashtbl.Make({
     });
 
 function reset_table(a) {
-  return $$Array.fill(a, 0, a.length, false);
+  $$Array.fill(a, 0, a.length, false);
+  
 }
 
 function mark_used_indices(tbl) {
@@ -990,19 +1004,21 @@ function mark_used_indices(tbl) {
     return List.iter((function (param) {
                   switch (param.TAG | 0) {
                     case /* TSeq */0 :
-                        return mark_used_indices(tbl)(param._0);
+                        mark_used_indices(tbl)(param._0);
+                        return ;
                     case /* TExp */1 :
                     case /* TMatch */2 :
                         break;
                     
                   }
-                  return List.iter((function (param) {
-                                var i = param[1];
-                                if (i >= 0) {
-                                  return Caml_array.set(tbl, i, true);
-                                }
-                                
-                              }), param._0.marks);
+                  List.iter((function (param) {
+                          var i = param[1];
+                          if (i >= 0) {
+                            return Caml_array.set(tbl, i, true);
+                          }
+                          
+                        }), param._0.marks);
+                  
                 }), param);
   };
 }
@@ -1404,7 +1420,8 @@ function flatten_match(m) {
         }), -1, m);
   var res = Caml_array.make(ma + 1 | 0, -1);
   List.iter((function (param) {
-          return Caml_array.set(res, param[0], param[1]);
+          Caml_array.set(res, param[0], param[1]);
+          
         }), m);
   return res;
 }
@@ -1456,7 +1473,7 @@ var Re_automata_State = {
   Table: Table
 };
 
-function iter(_n, f, _v) {
+function iter$1(_n, f, _v) {
   while(true) {
     var v = _v;
     var n = _n;
@@ -1532,7 +1549,8 @@ function validate(info, s, pos, st) {
   var cat = category(info.re, c);
   var desc$p = delta$1(info, cat, c, st);
   var st$p = find_state(info.re, desc$p);
-  return Caml_array.set(st.next, c, st$p);
+  Caml_array.set(st.next, c, st$p);
+  
 }
 
 function loop(info, s, pos, st) {
@@ -1778,21 +1796,12 @@ function is_charset(_param) {
 }
 
 function split(s, cm) {
-  var _t = s;
-  var f = function (i, j) {
-    Caml_bytes.set(cm, i, /* '\001' */1);
-    return Caml_bytes.set(cm, j + 1 | 0, /* '\001' */1);
-  };
-  while(true) {
-    var t = _t;
-    if (!t) {
-      return ;
-    }
-    var match = t.hd;
-    Curry._2(f, match[0], match[1]);
-    _t = t.tl;
-    continue ;
-  };
+  iter(s, (function (i, j) {
+          Caml_bytes.set(cm, i, /* '\001' */1);
+          Caml_bytes.set(cm, j + 1 | 0, /* '\001' */1);
+          
+        }));
+  
 }
 
 var cupper = union(seq(/* 'A' */65, /* 'Z' */90), union(seq(/* '\192' */192, /* '\214' */214), seq(/* '\216' */216, /* '\222' */222)));
@@ -1839,17 +1848,19 @@ function colorize(c, regexp) {
         switch (regexp) {
           case /* Beg_of_line */0 :
           case /* End_of_line */1 :
-              return split({
-                          hd: [
-                            /* '\n' */10,
-                            /* '\n' */10
-                          ],
-                          tl: /* [] */0
-                        }, c);
+              split({
+                    hd: [
+                      /* '\n' */10,
+                      /* '\n' */10
+                    ],
+                    tl: /* [] */0
+                  }, c);
+              return ;
           case /* Beg_of_word */2 :
           case /* End_of_word */3 :
           case /* Not_bound */4 :
-              return split(cword, c);
+              split(cword, c);
+              return ;
           case /* Last_end_of_line */7 :
               lnl.contents = true;
               return ;
@@ -1863,10 +1874,12 @@ function colorize(c, regexp) {
       } else {
         switch (regexp.TAG | 0) {
           case /* Set */0 :
-              return split(regexp._0, c);
+              split(regexp._0, c);
+              return ;
           case /* Sequence */1 :
           case /* Alternative */2 :
-              return List.iter(colorize$1, regexp._0);
+              List.iter(colorize$1, regexp._0);
+              return ;
           case /* Repeat */3 :
           case /* Group */6 :
           case /* No_group */7 :
@@ -2398,12 +2411,12 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
                             });
                 }
                 }(cr,kind$p));
-              rem = iter(j - i | 0, f, mk_expr(ids, /* Eps */0));
+              rem = iter$1(j - i | 0, f, mk_expr(ids, /* Eps */0));
             } else {
               rem = rep(ids, greedy, kind$p, cr);
             }
             return [
-                    iter(i, (function(cr,kind$p){
+                    iter$1(i, (function(cr,kind$p){
                         return function (rem) {
                           return seq$1(ids, kind$p, rename(ids, cr), rem);
                         }

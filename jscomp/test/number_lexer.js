@@ -66,7 +66,8 @@ function __ocaml_lex_token_rec(l, lexbuf, ___ocaml_lex_state) {
           ___ocaml_lex_state = 0;
           continue ;
       case 9 :
-          return Curry._1(l, "eof");
+          Curry._1(l, "eof");
+          return ;
       default:
         Curry._1(lexbuf.refill_buff, lexbuf);
         ___ocaml_lex_state = __ocaml_lex_state$1;
@@ -76,7 +77,8 @@ function __ocaml_lex_token_rec(l, lexbuf, ___ocaml_lex_state) {
 }
 
 function token(l, lexbuf) {
-  return __ocaml_lex_token_rec(l, lexbuf, 0);
+  __ocaml_lex_token_rec(l, lexbuf, 0);
+  
 }
 
 exports.l = l;

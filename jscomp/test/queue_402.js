@@ -118,16 +118,19 @@ function iter(f, q) {
     return ;
   }
   var tail = q.tail;
-  var _cell = tail.next;
-  while(true) {
-    var cell = _cell;
-    Curry._1(f, cell.content);
-    if (cell === tail) {
-      return ;
-    }
-    _cell = cell.next;
-    continue ;
+  var iter$1 = function (_cell) {
+    while(true) {
+      var cell = _cell;
+      Curry._1(f, cell.content);
+      if (cell === tail) {
+        return ;
+      }
+      _cell = cell.next;
+      continue ;
+    };
   };
+  iter$1(tail.next);
+  
 }
 
 function fold(f, accu, q) {

@@ -216,29 +216,34 @@ function open_out_bin(name) {
 }
 
 function flush_all(param) {
-  var _param = Caml_external_polyfill.resolve("ml_out_channels_list")(undefined);
-  while(true) {
-    var param$1 = _param;
-    if (!param$1) {
-      return ;
-    }
-    try {
-      Caml_external_polyfill.resolve("ml_flush")(param$1.hd);
-    }
-    catch (exn){
-      
-    }
-    _param = param$1.tl;
-    continue ;
+  var iter = function (_param) {
+    while(true) {
+      var param = _param;
+      if (!param) {
+        return ;
+      }
+      try {
+        Caml_external_polyfill.resolve("ml_flush")(param.hd);
+      }
+      catch (exn){
+        
+      }
+      _param = param.tl;
+      continue ;
+    };
   };
+  iter(Caml_external_polyfill.resolve("ml_out_channels_list")(undefined));
+  
 }
 
 function output_bytes(oc, s) {
-  return Caml_external_polyfill.resolve("ml_output")(oc, s, 0, s.length);
+  Caml_external_polyfill.resolve("ml_output")(oc, s, 0, s.length);
+  
 }
 
 function output_string(oc, s) {
-  return Caml_external_polyfill.resolve("ml_output")(oc, s, 0, s.length);
+  Caml_external_polyfill.resolve("ml_output")(oc, s, 0, s.length);
+  
 }
 
 function output(oc, s, ofs, len) {
@@ -249,7 +254,8 @@ function output(oc, s, ofs, len) {
           Error: new Error()
         };
   }
-  return Caml_external_polyfill.resolve("ml_output")(oc, s, ofs, len);
+  Caml_external_polyfill.resolve("ml_output")(oc, s, ofs, len);
+  
 }
 
 function output_substring(oc, s, ofs, len) {
@@ -260,16 +266,19 @@ function output_substring(oc, s, ofs, len) {
           Error: new Error()
         };
   }
-  return Caml_external_polyfill.resolve("ml_output")(oc, s, ofs, len);
+  Caml_external_polyfill.resolve("ml_output")(oc, s, ofs, len);
+  
 }
 
 function output_value(chan, v) {
-  return Caml_external_polyfill.resolve("output_value")(chan, v, /* [] */0);
+  Caml_external_polyfill.resolve("output_value")(chan, v, /* [] */0);
+  
 }
 
 function close_out(oc) {
   Caml_external_polyfill.resolve("ml_flush")(oc);
-  return Caml_external_polyfill.resolve("ml_close_channel")(oc);
+  Caml_external_polyfill.resolve("ml_close_channel")(oc);
+  
 }
 
 function close_out_noerr(oc) {
@@ -350,7 +359,8 @@ function really_input(ic, s, ofs, len) {
           Error: new Error()
         };
   }
-  return unsafe_really_input(ic, s, ofs, len);
+  unsafe_really_input(ic, s, ofs, len);
+  
 }
 
 function really_input_string(ic, len) {
@@ -433,13 +443,15 @@ function at_exit(f) {
   var g = exit_function.contents;
   exit_function.contents = (function (param) {
       Curry._1(f, undefined);
-      return Curry._1(g, undefined);
+      Curry._1(g, undefined);
+      
     });
   
 }
 
 function do_at_exit(param) {
-  return Curry._1(exit_function.contents, undefined);
+  Curry._1(exit_function.contents, undefined);
+  
 }
 
 function exit(retcode) {

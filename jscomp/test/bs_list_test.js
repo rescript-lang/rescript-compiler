@@ -15,15 +15,18 @@ var test_id = {
 };
 
 function eq(loc, x, y) {
-  return Mt.eq_suites(test_id, suites, loc, x, y);
+  Mt.eq_suites(test_id, suites, loc, x, y);
+  
 }
 
 function b(loc, x) {
-  return Mt.bool_suites(test_id, suites, loc, x);
+  Mt.bool_suites(test_id, suites, loc, x);
+  
 }
 
 function $$throw(loc, x) {
-  return Mt.throw_suites(test_id, suites, loc, x);
+  Mt.throw_suites(test_id, suites, loc, x);
+  
 }
 
 function sum(xs) {
@@ -53,7 +56,8 @@ var u = Belt_List.makeBy(5, (function (i) {
       }));
 
 function f(i) {
-  return eq("File \"bs_list_test.ml\", line 26, characters 7-14", Belt_List.getExn(u, i), Math.imul(i, i));
+  eq("File \"bs_list_test.ml\", line 26, characters 7-14", Belt_List.getExn(u, i), Math.imul(i, i));
+  
 }
 
 for(var i = 0; i <= 4; ++i){
@@ -1553,7 +1557,8 @@ eq("File \"bs_list_test.ml\", line 216, characters 5-12", [
 eq("File \"bs_list_test.ml\", line 219, characters 5-12", Belt_List.head(/* [] */0), undefined);
 
 $$throw("File \"bs_list_test.ml\", line 220, characters 8-15", (function (param) {
-        return Belt_List.headExn(/* [] */0);
+        Belt_List.headExn(/* [] */0);
+        
       }));
 
 $$throw("File \"bs_list_test.ml\", line 221, characters 8-15", (function (param) {
@@ -1616,7 +1621,8 @@ eq("File \"bs_list_test.ml\", line 226, characters 5-12", Belt_List.tailExn({
         }), /* [] */0);
 
 Belt_List.forEachWithIndex(length_10_id, (function (i, x) {
-        return eq("File \"bs_list_test.ml\", line 228, characters 9-16", Belt_List.get(length_10_id, i), x);
+        eq("File \"bs_list_test.ml\", line 228, characters 9-16", Belt_List.get(length_10_id, i), x);
+        
       }));
 
 eq("File \"bs_list_test.ml\", line 229, characters 5-12", Belt_List.tail(/* [] */0), undefined);
@@ -2094,9 +2100,10 @@ eq("File \"bs_list_test.ml\", line 298, characters 5-12", Belt_List.some2({
           })), false);
 
 function makeTest(n) {
-  return eq("File \"bs_list_test.ml\", line 301, characters 5-12", Belt_List.make(n, 3), Belt_List.makeBy(n, (function (param) {
-                    return 3;
-                  })));
+  eq("File \"bs_list_test.ml\", line 301, characters 5-12", Belt_List.make(n, 3), Belt_List.makeBy(n, (function (param) {
+              return 3;
+            })));
+  
 }
 
 eq("File \"bs_list_test.ml\", line 304, characters 5-12", {

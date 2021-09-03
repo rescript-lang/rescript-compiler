@@ -770,14 +770,19 @@ function update_vel(part) {
   
 }
 
+function update_pos(part) {
+  part.pos.x = part.vel.x + part.pos.x;
+  part.pos.y = part.vel.y + part.pos.y;
+  
+}
+
 function $$process(part) {
   part.life = part.life - 1 | 0;
   if (part.life === 0) {
     part.kill = true;
   }
   update_vel(part);
-  part.pos.x = part.vel.x + part.pos.x;
-  part.pos.y = part.vel.y + part.pos.y;
+  update_pos(part);
   
 }
 
@@ -1063,7 +1068,7 @@ function update_vel$1(obj) {
   }
 }
 
-function update_pos(obj) {
+function update_pos$1(obj) {
   obj.pos.x = obj.vel.x + obj.pos.x;
   if (obj.params.has_gravity) {
     obj.pos.y = obj.vel.y + obj.pos.y;
@@ -1074,7 +1079,7 @@ function update_pos(obj) {
 
 function process_obj(obj, mapy) {
   update_vel$1(obj);
-  update_pos(obj);
+  update_pos$1(obj);
   if (obj.pos.y > mapy) {
     obj.kill = true;
     return ;
@@ -1176,7 +1181,8 @@ function rev_dir(o, t, s) {
   reverse_left_right(o);
   var old_params = s.params;
   transform_enemy(t, s, o.dir);
-  return normalize_pos(o.pos, old_params, s.params);
+  normalize_pos(o.pos, old_params, s.params);
+  
 }
 
 function dec_health(obj) {
@@ -2168,6 +2174,24 @@ function run_update_collid(state, collid, all_collids) {
   return collid;
 }
 
+function run_update_particle(state, part) {
+  $$process(part);
+  var x = part.pos.x - state.vpt.pos.x;
+  var y = part.pos.y - state.vpt.pos.y;
+  render(part.params.sprite, [
+        x,
+        y
+      ]);
+  if (!part.kill) {
+    particles.contents = {
+      hd: part,
+      tl: particles.contents
+    };
+    return ;
+  }
+  
+}
+
 function update_loop(canvas, param, map_dim) {
   var player = param[0];
   var ctx = canvas.getContext("2d");
@@ -2190,7 +2214,8 @@ function update_loop(canvas, param, map_dim) {
   state.ctx.scale(1, 1);
   var update_helper = function (time, state, player, objs, parts) {
     if (state.game_over === true) {
-      return game_win(state.ctx);
+      game_win(state.ctx);
+      return ;
     }
     collid_objs.contents = /* [] */0;
     particles.contents = /* [] */0;
@@ -2202,7 +2227,8 @@ function update_loop(canvas, param, map_dim) {
     draw_bgd(state.bgd, Caml_int32.mod_(vpos_x_int, bgd_width));
     var player$1 = run_update_collid(state, player, objs);
     if (player$1._2.kill === true) {
-      return game_loss(state.ctx);
+      game_loss(state.ctx);
+      return ;
     }
     var state$1 = {
       bgd: state.bgd,
@@ -2219,30 +2245,19 @@ function update_loop(canvas, param, map_dim) {
             
           }), objs);
     List.iter((function (part) {
-            $$process(part);
-            var x = part.pos.x - state$1.vpt.pos.x;
-            var y = part.pos.y - state$1.vpt.pos.y;
-            render(part.params.sprite, [
-                  x,
-                  y
-                ]);
-            if (!part.kill) {
-              particles.contents = {
-                hd: part,
-                tl: particles.contents
-              };
-              return ;
-            }
+            run_update_particle(state$1, part);
             
           }), parts);
     fps(canvas, fps$1);
     hud(canvas, state$1.score, state$1.coins);
     requestAnimationFrame(function (t) {
-          return update_helper(t, state$1, player$1, collid_objs.contents, particles.contents);
+          update_helper(t, state$1, player$1, collid_objs.contents, particles.contents);
+          
         });
     
   };
-  return update_helper(0, state, player, param[1], /* [] */0);
+  update_helper(0, state, player, param[1], /* [] */0);
+  
 }
 
 function keydown(evt) {
@@ -3196,7 +3211,8 @@ function generate(w, h, context) {
 }
 
 function init(param) {
-  return Random.self_init(undefined);
+  Random.self_init(undefined);
+  
 }
 
 var Procedural_generator = {

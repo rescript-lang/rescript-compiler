@@ -157,9 +157,7 @@ function iter(f, _param) {
   };
 }
 
-function iteri(f, l) {
-  var _i = 0;
-  var _param = l;
+function iteri(_i, f, _param) {
   while(true) {
     var param = _param;
     var i = _i;
@@ -171,6 +169,11 @@ function iteri(f, l) {
     _i = i + 1 | 0;
     continue ;
   };
+}
+
+function iteri$1(f, l) {
+  iteri(0, f, l);
+  
 }
 
 function fold_left(f, _accu, _l) {
@@ -1514,7 +1517,7 @@ exports.map = map;
 exports.mapi = mapi$1;
 exports.rev_map = rev_map;
 exports.iter = iter;
-exports.iteri = iteri;
+exports.iteri = iteri$1;
 exports.fold_left = fold_left;
 exports.fold_right = fold_right;
 exports.map2 = map2;

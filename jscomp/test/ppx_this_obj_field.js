@@ -140,7 +140,8 @@ var eventObj = {
 };
 
 function test__(x) {
-  return eventObj.push(x);
+  eventObj.push(x);
+  
 }
 
 var zz = {

@@ -1761,7 +1761,8 @@ function yyback(n, lexbuf) {
 
 function back(lb) {
   var n = lb.lex_curr_p.pos_cnum - lb.lex_start_p.pos_cnum | 0;
-  return yyback(n, lb);
+  yyback(n, lb);
+  
 }
 
 var empty_lex_state = {
@@ -2336,7 +2337,8 @@ var keywords = Hashtbl.create(undefined, 53);
 var type_keywords = Hashtbl.create(undefined, 53);
 
 List.iter((function (param) {
-        return Hashtbl.add(keywords, param[0], param[1]);
+        Hashtbl.add(keywords, param[0], param[1]);
+        
       }), {
       hd: [
         "function",
@@ -2640,7 +2642,8 @@ List.iter((function (param) {
     });
 
 List.iter((function (param) {
-        return Hashtbl.add(type_keywords, param[0], param[1]);
+        Hashtbl.add(type_keywords, param[0], param[1]);
+        
       }), {
       hd: [
         "static",
@@ -5512,6 +5515,16 @@ function lex_until(t, i) {
   
 }
 
+function junk(t) {
+  lex_until(t, 0);
+  if (t.la_num_lexed > 1) {
+    $$Array.blit(t.la_results, 1, t.la_results, 0, t.la_num_lexed - 1 | 0);
+  }
+  Caml_array.set(t.la_results, t.la_num_lexed - 1 | 0, undefined);
+  t.la_num_lexed = t.la_num_lexed - 1 | 0;
+  
+}
+
 var default_parse_options = {
   esproposal_class_instance_fields: false,
   esproposal_class_static_fields: false,
@@ -5898,10 +5911,11 @@ function is_class(iOpt, env) {
 
 function error(env, e) {
   var loc$1 = loc(undefined, env);
-  return error_at(env, [
-              loc$1,
-              e
-            ]);
+  error_at(env, [
+        loc$1,
+        e
+      ]);
+  
 }
 
 function get_unexpected_error(param) {
@@ -5941,19 +5955,21 @@ function get_unexpected_error(param) {
 
 function error_unexpected(env) {
   error_list(env)(errors(undefined, env));
-  return error(env, get_unexpected_error([
-                  token$2(undefined, env),
-                  value(undefined, env)
-                ]));
+  error(env, get_unexpected_error([
+            token$2(undefined, env),
+            value(undefined, env)
+          ]));
+  
 }
 
 function error_on_decorators(env) {
   return function (param) {
     return List.iter((function (decorator) {
-                  return error_at(env, [
-                              decorator[0],
-                              /* UnsupportedDecorator */57
-                            ]);
+                  error_at(env, [
+                        decorator[0],
+                        /* UnsupportedDecorator */57
+                      ]);
+                  
                 }), param);
   };
 }
@@ -5992,13 +6008,7 @@ function token$3(env) {
   error_list(env)(errors(undefined, env));
   comment_list(env)(comments(undefined, env));
   env.last_loc.contents = loc(undefined, env);
-  var t = env.lookahead.contents;
-  lex_until(t, 0);
-  if (t.la_num_lexed > 1) {
-    $$Array.blit(t.la_results, 1, t.la_results, 0, t.la_num_lexed - 1 | 0);
-  }
-  Caml_array.set(t.la_results, t.la_num_lexed - 1 | 0, undefined);
-  t.la_num_lexed = t.la_num_lexed - 1 | 0;
+  junk(env.lookahead.contents);
   
 }
 
@@ -6069,7 +6079,8 @@ function token$4(env, t) {
   if (Caml_obj.notequal(token$2(undefined, env), t)) {
     error_unexpected(env);
   }
-  return token$3(env);
+  token$3(env);
+  
 }
 
 function maybe(env, t) {
@@ -6085,7 +6096,8 @@ function contextual(env, str) {
   if (value(undefined, env) !== str) {
     error_unexpected(env);
   }
-  return token$3(env);
+  token$3(env);
+  
 }
 
 var Rollback = /* @__PURE__ */Caml_exceptions.create("Flow_parser_reg_test.Parser_env.Try.Rollback");
@@ -6100,7 +6112,8 @@ function save_state(env) {
       last: /* Nil */0
     };
     env.token_sink.contents = (function (token_data) {
-        return Queue.add(token_data, buffer);
+        Queue.add(token_data, buffer);
+        
       });
     token_buffer = [
       orig_token_sink,
@@ -9015,7 +9028,8 @@ function primary$1(env) {
                     case 103 :
                     case 105 :
                     case 109 :
-                        return $$Buffer.add_char(filtered_flags, c);
+                        $$Buffer.add_char(filtered_flags, c);
+                        return ;
                     
                   }
                 }), raw_flags);
@@ -12232,31 +12246,34 @@ function fold(acc, _param) {
 }
 
 function assert_can_be_forin_or_forof(env, err, param) {
-  if (param === undefined) {
-    return error(env, err);
-  }
-  if (param.TAG === /* InitDeclaration */0) {
-    var match = param._0;
-    var declarations = match[1].declarations;
-    if (declarations && declarations.hd[1].init === undefined && !declarations.tl) {
+  if (param !== undefined) {
+    if (param.TAG === /* InitDeclaration */0) {
+      var match = param._0;
+      var declarations = match[1].declarations;
+      if (declarations && declarations.hd[1].init === undefined && !declarations.tl) {
+        return ;
+      }
+      error_at(env, [
+            match[0],
+            err
+          ]);
       return ;
     }
-    return error_at(env, [
-                match[0],
-                err
-              ]);
+    var match$1 = param._0;
+    var loc = match$1[0];
+    if (!Curry._1(Parse.is_assignable_lhs, [
+            loc,
+            match$1[1]
+          ])) {
+      return error_at(env, [
+                  loc,
+                  err
+                ]);
+    } else {
+      return ;
+    }
   }
-  var match$1 = param._0;
-  var loc = match$1[0];
-  if (!Curry._1(Parse.is_assignable_lhs, [
-          loc,
-          match$1[1]
-        ])) {
-    return error_at(env, [
-                loc,
-                err
-              ]);
-  }
+  error(env, err);
   
 }
 

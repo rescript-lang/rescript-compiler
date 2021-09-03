@@ -26,7 +26,8 @@ function x(h) {
 }
 
 function f1(u) {
-  return u.exit(2);
+  u.exit(2);
+  
 }
 
 var obj3 = {
@@ -36,7 +37,8 @@ var obj3 = {
     }),
   hh: (function () {
       var self = this ;
-      return self.hi("x", 20);
+      self.hi("x", 20);
+      
     })
 };
 

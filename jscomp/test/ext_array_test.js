@@ -19,7 +19,8 @@ function reverse_range(a, i, len) {
 }
 
 function reverse_in_place(a) {
-  return reverse_range(a, 0, a.length);
+  reverse_range(a, 0, a.length);
+  
 }
 
 function reverse(a) {

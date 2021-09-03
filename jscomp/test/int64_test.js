@@ -2141,7 +2141,8 @@ var test_id = {
 };
 
 function eq(loc, x, y) {
-  return Mt.eq_suites(test_id, suites$1, loc, x, y);
+  Mt.eq_suites(test_id, suites$1, loc, x, y);
+  
 }
 
 function id(loc, x) {

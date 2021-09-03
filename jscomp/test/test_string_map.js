@@ -162,12 +162,13 @@ function assertion_test(param) {
           }
           
         }));
-  return timing("querying", (function (param) {
-                for(var i = 0; i <= 1000000; ++i){
-                  find(String(i), m.contents);
-                }
-                
-              }));
+  timing("querying", (function (param) {
+          for(var i = 0; i <= 1000000; ++i){
+            find(String(i), m.contents);
+          }
+          
+        }));
+  
 }
 
 exports.assertion_test = assertion_test;

@@ -68,7 +68,8 @@ function xFromJs(param) {
 }
 
 function idx(v) {
-  return eq("File \"ast_abstract_test.ml\", line 32, characters 17-24", xFromJs(v), v);
+  eq("File \"ast_abstract_test.ml\", line 32, characters 17-24", xFromJs(v), v);
+  
 }
 
 idx("a");
@@ -92,7 +93,8 @@ function aFromJs(param) {
 }
 
 function id(x) {
-  return eq("File \"ast_abstract_test.ml\", line 49, characters 8-15", aFromJs(aToJs(x)), x);
+  eq("File \"ast_abstract_test.ml\", line 49, characters 8-15", aFromJs(aToJs(x)), x);
+  
 }
 
 var a0 = aToJs(/* A */0);
@@ -125,7 +127,8 @@ function bFromJs(param) {
 }
 
 function idb(v) {
-  return eq("File \"ast_abstract_test.ml\", line 71, characters 5-12", bFromJs(v + 0 | 0), v);
+  eq("File \"ast_abstract_test.ml\", line 71, characters 5-12", bFromJs(v + 0 | 0), v);
+  
 }
 
 idb(/* D0 */0);
@@ -156,7 +159,8 @@ function cFromJs(param) {
 }
 
 function idc(v) {
-  return eq("File \"ast_abstract_test.ml\", line 83, characters 15-22", cFromJs(v + 3 | 0), v);
+  eq("File \"ast_abstract_test.ml\", line 83, characters 15-22", cFromJs(v + 3 | 0), v);
+  
 }
 
 idc(/* D0 */0);

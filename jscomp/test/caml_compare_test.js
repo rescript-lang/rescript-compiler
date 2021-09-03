@@ -1116,7 +1116,8 @@ var test_id = {
 };
 
 function eq(loc, x, y) {
-  return Mt.eq_suites(test_id, suites, loc, x, y);
+  Mt.eq_suites(test_id, suites, loc, x, y);
+  
 }
 
 eq("File \"caml_compare_test.ml\", line 112, characters 6-13", true, Caml_obj.greaterthan(1, undefined));

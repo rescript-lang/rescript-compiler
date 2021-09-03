@@ -13,7 +13,8 @@ var test_id = {
 };
 
 function eq(loc, x, y) {
-  return Mt.eq_suites(test_id, suites, loc, x, y);
+  Mt.eq_suites(test_id, suites, loc, x, y);
+  
 }
 
 var v = {
@@ -82,9 +83,9 @@ eq("File \"inline_record_test.ml\", line 51, characters 6-13", tmp, 3);
 function ff(x) {
   if (x.TAG === /* A0 */0) {
     x.x = x.x + 1 | 0;
-  } else {
-    x.z = x.z + 2 | 0;
+    return ;
   }
+  x.z = x.z + 2 | 0;
   
 }
 

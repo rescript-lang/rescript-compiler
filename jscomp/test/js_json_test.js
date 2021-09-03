@@ -31,31 +31,34 @@ function add_test(loc, test) {
 }
 
 function eq(loc, x, y) {
-  return add_test(loc, (function (param) {
-                return {
-                        TAG: /* Eq */0,
-                        _0: x,
-                        _1: y
-                      };
-              }));
+  add_test(loc, (function (param) {
+          return {
+                  TAG: /* Eq */0,
+                  _0: x,
+                  _1: y
+                };
+        }));
+  
 }
 
 function false_(loc) {
-  return add_test(loc, (function (param) {
-                return {
-                        TAG: /* Ok */4,
-                        _0: false
-                      };
-              }));
+  add_test(loc, (function (param) {
+          return {
+                  TAG: /* Ok */4,
+                  _0: false
+                };
+        }));
+  
 }
 
 function true_(loc) {
-  return add_test(loc, (function (param) {
-                return {
-                        TAG: /* Ok */4,
-                        _0: true
-                      };
-              }));
+  add_test(loc, (function (param) {
+          return {
+                  TAG: /* Ok */4,
+                  _0: true
+                };
+        }));
+  
 }
 
 var v = JSON.parse(" { \"x\" : [1, 2, 3 ] } ");
@@ -226,27 +229,32 @@ if (exit$1 === 1) {
 function test(v) {
   var json = JSON.parse(JSON.stringify(v));
   var ty = Js_json.classify(json);
-  if (typeof ty !== "number") {
-    return add_test("File \"js_json_test.ml\", line 97, characters 18-25", (function (param) {
+  if (typeof ty === "number") {
+    switch (ty) {
+      case /* JSONFalse */0 :
+          eq("File \"js_json_test.ml\", line 96, characters 25-32", false, v);
+          return ;
+      case /* JSONTrue */1 :
+          eq("File \"js_json_test.ml\", line 95, characters 24-31", true, v);
+          return ;
+      case /* JSONNull */2 :
+          add_test("File \"js_json_test.ml\", line 97, characters 18-25", (function (param) {
                   return {
                           TAG: /* Ok */4,
                           _0: false
                         };
                 }));
-  }
-  switch (ty) {
-    case /* JSONFalse */0 :
-        return eq("File \"js_json_test.ml\", line 96, characters 25-32", false, v);
-    case /* JSONTrue */1 :
-        return eq("File \"js_json_test.ml\", line 95, characters 24-31", true, v);
-    case /* JSONNull */2 :
-        return add_test("File \"js_json_test.ml\", line 97, characters 18-25", (function (param) {
-                      return {
-                              TAG: /* Ok */4,
-                              _0: false
-                            };
-                    }));
-    
+          return ;
+      
+    }
+  } else {
+    add_test("File \"js_json_test.ml\", line 97, characters 18-25", (function (param) {
+            return {
+                    TAG: /* Ok */4,
+                    _0: false
+                  };
+          }));
+    return ;
   }
 }
 
@@ -351,127 +359,146 @@ if (typeof ty$4 === "number") {
 function eq_at_i(loc, json, i, kind, expected) {
   var ty = Js_json.classify(json);
   if (typeof ty === "number") {
-    return add_test(loc, (function (param) {
+    add_test(loc, (function (param) {
+            return {
+                    TAG: /* Ok */4,
+                    _0: false
+                  };
+          }));
+    return ;
+  }
+  if (ty.TAG === /* JSONArray */3) {
+    var ty$1 = Js_json.classify(Caml_array.get(ty._0, i));
+    switch (kind) {
+      case /* String */0 :
+          if (typeof ty$1 === "number") {
+            add_test(loc, (function (param) {
+                    return {
+                            TAG: /* Ok */4,
+                            _0: false
+                          };
+                  }));
+            return ;
+          }
+          if (ty$1.TAG === /* JSONString */0) {
+            eq(loc, ty$1._0, expected);
+            return ;
+          }
+          add_test(loc, (function (param) {
                   return {
                           TAG: /* Ok */4,
                           _0: false
                         };
                 }));
-  }
-  if (ty.TAG !== /* JSONArray */3) {
-    return add_test(loc, (function (param) {
+          return ;
+      case /* Number */1 :
+          if (typeof ty$1 === "number") {
+            add_test(loc, (function (param) {
+                    return {
+                            TAG: /* Ok */4,
+                            _0: false
+                          };
+                  }));
+            return ;
+          }
+          if (ty$1.TAG === /* JSONNumber */1) {
+            eq(loc, ty$1._0, expected);
+            return ;
+          }
+          add_test(loc, (function (param) {
                   return {
                           TAG: /* Ok */4,
                           _0: false
                         };
                 }));
-  }
-  var ty$1 = Js_json.classify(Caml_array.get(ty._0, i));
-  switch (kind) {
-    case /* String */0 :
-        if (typeof ty$1 === "number") {
-          return add_test(loc, (function (param) {
-                        return {
-                                TAG: /* Ok */4,
-                                _0: false
-                              };
-                      }));
-        } else if (ty$1.TAG === /* JSONString */0) {
-          return eq(loc, ty$1._0, expected);
-        } else {
-          return add_test(loc, (function (param) {
-                        return {
-                                TAG: /* Ok */4,
-                                _0: false
-                              };
-                      }));
-        }
-    case /* Number */1 :
-        if (typeof ty$1 === "number") {
-          return add_test(loc, (function (param) {
-                        return {
-                                TAG: /* Ok */4,
-                                _0: false
-                              };
-                      }));
-        } else if (ty$1.TAG === /* JSONNumber */1) {
-          return eq(loc, ty$1._0, expected);
-        } else {
-          return add_test(loc, (function (param) {
-                        return {
-                                TAG: /* Ok */4,
-                                _0: false
-                              };
-                      }));
-        }
-    case /* Object */2 :
-        if (typeof ty$1 === "number") {
-          return add_test(loc, (function (param) {
-                        return {
-                                TAG: /* Ok */4,
-                                _0: false
-                              };
-                      }));
-        } else if (ty$1.TAG === /* JSONObject */2) {
-          return eq(loc, ty$1._0, expected);
-        } else {
-          return add_test(loc, (function (param) {
-                        return {
-                                TAG: /* Ok */4,
-                                _0: false
-                              };
-                      }));
-        }
-    case /* Array */3 :
-        if (typeof ty$1 === "number") {
-          return add_test(loc, (function (param) {
-                        return {
-                                TAG: /* Ok */4,
-                                _0: false
-                              };
-                      }));
-        } else if (ty$1.TAG === /* JSONArray */3) {
-          return eq(loc, ty$1._0, expected);
-        } else {
-          return add_test(loc, (function (param) {
-                        return {
-                                TAG: /* Ok */4,
-                                _0: false
-                              };
-                      }));
-        }
-    case /* Boolean */4 :
-        if (typeof ty$1 !== "number") {
-          return add_test(loc, (function (param) {
-                        return {
-                                TAG: /* Ok */4,
-                                _0: false
-                              };
-                      }));
-        }
-        switch (ty$1) {
-          case /* JSONFalse */0 :
-              return eq(loc, false, expected);
-          case /* JSONTrue */1 :
-              return eq(loc, true, expected);
-          case /* JSONNull */2 :
+          return ;
+      case /* Object */2 :
+          if (typeof ty$1 === "number") {
+            add_test(loc, (function (param) {
+                    return {
+                            TAG: /* Ok */4,
+                            _0: false
+                          };
+                  }));
+            return ;
+          }
+          if (ty$1.TAG === /* JSONObject */2) {
+            eq(loc, ty$1._0, expected);
+            return ;
+          }
+          add_test(loc, (function (param) {
+                  return {
+                          TAG: /* Ok */4,
+                          _0: false
+                        };
+                }));
+          return ;
+      case /* Array */3 :
+          if (typeof ty$1 === "number") {
+            add_test(loc, (function (param) {
+                    return {
+                            TAG: /* Ok */4,
+                            _0: false
+                          };
+                  }));
+            return ;
+          }
+          if (ty$1.TAG === /* JSONArray */3) {
+            eq(loc, ty$1._0, expected);
+            return ;
+          }
+          add_test(loc, (function (param) {
+                  return {
+                          TAG: /* Ok */4,
+                          _0: false
+                        };
+                }));
+          return ;
+      case /* Boolean */4 :
+          if (typeof ty$1 === "number") {
+            switch (ty$1) {
+              case /* JSONFalse */0 :
+                  eq(loc, false, expected);
+                  return ;
+              case /* JSONTrue */1 :
+                  eq(loc, true, expected);
+                  return ;
+              case /* JSONNull */2 :
+                  add_test(loc, (function (param) {
+                          return {
+                                  TAG: /* Ok */4,
+                                  _0: false
+                                };
+                        }));
+                  return ;
+              
+            }
+          } else {
+            add_test(loc, (function (param) {
+                    return {
+                            TAG: /* Ok */4,
+                            _0: false
+                          };
+                  }));
+            return ;
+          }
+      case /* Null */5 :
+          if (typeof ty$1 === "number") {
+            if (ty$1 >= 2) {
+              return add_test(loc, (function (param) {
+                            return {
+                                    TAG: /* Ok */4,
+                                    _0: true
+                                  };
+                          }));
+            } else {
               return add_test(loc, (function (param) {
                             return {
                                     TAG: /* Ok */4,
                                     _0: false
                                   };
                           }));
-          
-        }
-    case /* Null */5 :
-        if (typeof ty$1 === "number") {
-          if (ty$1 >= 2) {
-            return add_test(loc, (function (param) {
-                          return {
-                                  TAG: /* Ok */4,
-                                  _0: true
-                                };
-                        }));
+            }
           } else {
             return add_test(loc, (function (param) {
                           return {
@@ -480,15 +507,16 @@ function eq_at_i(loc, json, i, kind, expected) {
                                 };
                         }));
           }
-        } else {
-          return add_test(loc, (function (param) {
-                        return {
-                                TAG: /* Ok */4,
-                                _0: false
-                              };
-                      }));
-        }
-    
+      
+    }
+  } else {
+    add_test(loc, (function (param) {
+            return {
+                    TAG: /* Ok */4,
+                    _0: false
+                  };
+          }));
+    return ;
   }
 }
 
@@ -743,7 +771,8 @@ function id(obj) {
 }
 
 function idtest(obj) {
-  return eq("File \"js_json_test.ml\", line 399, characters 5-12", obj, Js_json.deserializeUnsafe(Js_json.serializeExn(obj)));
+  eq("File \"js_json_test.ml\", line 399, characters 5-12", obj, Js_json.deserializeUnsafe(Js_json.serializeExn(obj)));
+  
 }
 
 idtest(undefined);

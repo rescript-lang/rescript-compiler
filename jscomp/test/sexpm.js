@@ -95,7 +95,8 @@ function to_buf(b, t) {
                 if (i > 0) {
                   $$Buffer.add_char(b, /* ' ' */32);
                 }
-                return to_buf(b, t$p);
+                to_buf(b, t$p);
+                
               }), l);
         return $$Buffer.add_char(b, /* ')' */41);
       } else {

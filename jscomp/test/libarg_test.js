@@ -22,11 +22,13 @@ function record(fmt) {
 }
 
 function f_unit(param) {
-  return record("unit()");
+  record("unit()");
+  
 }
 
 function f_bool(b) {
-  return record("bool(" + b + ")");
+  record("bool(" + b + ")");
+  
 }
 
 var r_set = {
@@ -38,7 +40,8 @@ var r_clear = {
 };
 
 function f_string(s) {
-  return record("string(" + s + ")");
+  record("string(" + s + ")");
+  
 }
 
 var r_string = {
@@ -46,7 +49,8 @@ var r_string = {
 };
 
 function f_int(i) {
-  return record("int(" + i + ")");
+  record("int(" + i + ")");
+  
 }
 
 var r_int = {
@@ -54,7 +58,8 @@ var r_int = {
 };
 
 function f_float(f) {
-  return record("float(" + f + ")");
+  record("float(" + f + ")");
+  
 }
 
 var r_float = {
@@ -62,15 +67,18 @@ var r_float = {
 };
 
 function f_symbol(s) {
-  return record("symbol(" + s + ")");
+  record("symbol(" + s + ")");
+  
 }
 
 function f_rest(s) {
-  return record("rest(" + s + ")");
+  record("rest(" + s + ")");
+  
 }
 
 function f_anon(s) {
-  return record("anon(" + s + ")");
+  record("anon(" + s + ")");
+  
 }
 
 var spec_0 = [
@@ -377,7 +385,8 @@ function test(argv) {
   check(r_clear, false, "Clear");
   check(r_string, "bar", "Set_string");
   check(r_int, 42, "Set_int");
-  return check(r_float, 2.72, "Set_float");
+  check(r_float, 2.72, "Set_float");
+  
 }
 
 test(args1);

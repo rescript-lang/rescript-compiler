@@ -85,13 +85,14 @@ function find_ticker_by_name(all_tickers, ticker) {
 }
 
 function print_all_composite(all_tickers) {
-  return List.iter((function (param) {
-                if (param.type_) {
-                  console.log(param.ticker_name);
-                  return ;
-                }
-                
-              }), all_tickers);
+  List.iter((function (param) {
+          if (param.type_) {
+            console.log(param.ticker_name);
+            return ;
+          }
+          
+        }), all_tickers);
+  
 }
 
 function height(param) {
@@ -1149,28 +1150,29 @@ function compute_update_sequences(all_tickers) {
 
 function process_quote(ticker_map, new_ticker, new_value) {
   var update_sequence = find(new_ticker, ticker_map);
-  return List.iter((function (ticker) {
-                var match = ticker.type_;
-                if (match) {
-                  var match$1 = match._0;
-                  var match$2 = match$1.lhs.value;
-                  var match$3 = match$1.rhs.value;
-                  var value = match$2 !== undefined && match$3 !== undefined ? (
-                      match$1.op ? match$2 - match$3 : match$2 + match$3
-                    ) : undefined;
-                  ticker.value = value;
-                  return ;
-                }
-                if (ticker.ticker_name === new_ticker) {
-                  ticker.value = new_value;
-                  return ;
-                }
-                throw {
-                      RE_EXN_ID: "Failure",
-                      _1: "Only single Market ticker should be udpated upon a new quote",
-                      Error: new Error()
-                    };
-              }), update_sequence);
+  List.iter((function (ticker) {
+          var match = ticker.type_;
+          if (match) {
+            var match$1 = match._0;
+            var match$2 = match$1.lhs.value;
+            var match$3 = match$1.rhs.value;
+            var value = match$2 !== undefined && match$3 !== undefined ? (
+                match$1.op ? match$2 - match$3 : match$2 + match$3
+              ) : undefined;
+            ticker.value = value;
+            return ;
+          }
+          if (ticker.ticker_name === new_ticker) {
+            ticker.value = new_value;
+            return ;
+          }
+          throw {
+                RE_EXN_ID: "Failure",
+                _1: "Only single Market ticker should be udpated upon a new quote",
+                Error: new Error()
+              };
+        }), update_sequence);
+  
 }
 
 function process_input_line(ticker_map, all_tickers, line) {
@@ -1355,12 +1357,13 @@ function loop(_lines, _param) {
     var param = _param;
     var lines = _lines;
     var all_tickers = param[0];
-    if (!lines) {
-      return print_all_composite(all_tickers);
+    if (lines) {
+      _param = process_input_line(param[1], all_tickers, lines.hd);
+      _lines = lines.tl;
+      continue ;
     }
-    _param = process_input_line(param[1], all_tickers, lines.hd);
-    _lines = lines.tl;
-    continue ;
+    print_all_composite(all_tickers);
+    return ;
   };
 }
 
