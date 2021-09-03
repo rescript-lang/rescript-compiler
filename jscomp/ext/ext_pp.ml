@@ -73,6 +73,14 @@ let newline t =
     done;
     t.last_new_line <- true)
 
+let at_least_two_lines t =
+  if not t.last_new_line then t.output_char '\n';
+  t.output_char '\n';
+  for _ = 0 to t.indent_level - 1 do
+    t.output_string L.indent_str
+  done;
+  t.last_new_line <- true
+
 let force_newline t =
   t.output_char '\n';
   for _ = 0 to t.indent_level - 1 do
