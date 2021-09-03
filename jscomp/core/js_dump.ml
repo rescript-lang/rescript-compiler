@@ -1225,9 +1225,7 @@ and brace_block cxt f b =
 and statements top cxt f b =
   iter_lst cxt f b
     (fun cxt f s -> statement top cxt f s)
-    (if top then (fun f ->
-     P.newline f;
-     P.force_newline f)
+    (if top then P.at_least_two_lines
     else P.newline)
 
 let string_of_block (block : J.block) =
