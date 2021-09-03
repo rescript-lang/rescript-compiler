@@ -319,7 +319,7 @@ let rec jumps_extract (i : int) = function
         let r,rem = jumps_extract i rem in
         r,(x::rem)
 
-let rec jumps_remove i = function
+let rec jumps_remove (i:int) = function
   | [] -> []
   | (j,_)::rem when i=j -> rem
   | x::rem -> x::jumps_remove i rem
@@ -339,7 +339,7 @@ let jumps_add i pss jumps = match pss with
     let rec add = function
       | [] -> [i,pss]
       | (j,qss) as x::rem as all ->
-          if j > i then x::add rem
+          if (j:int) > i then x::add rem
       else if j < i then (i,pss)::all
       else (i,(get_mins le_ctx (pss@qss)))::rem in
     add jumps
@@ -1368,7 +1368,7 @@ let make_constr_matching p def ctx = function
 let divide_constructor ctx pm =
   divide
     make_constr_matching
-    (=) get_key_constr get_args_constr
+    Types.equal_tag get_key_constr get_args_constr
     ctx pm
 
 (* Matching against a variant *)
@@ -1424,6 +1424,9 @@ let divide_variant row ctx {cases = cl; args = al; default=def} =
           variants
         else begin
           let tag = Btype.hash_variant lab in
+          let (=) ((a:string),(b:Types.constructor_tag)) (c,d) = 
+            a = c && Types.equal_tag b d 
+          in 
           match pato with
             None ->
               add (make_variant_matching_constant p lab def ctx) variants
@@ -2620,10 +2623,8 @@ let rec lower_bind v arg lam = match lam with
       bind Alias v arg lam
     else
       Llet (Alias, k, vv, lv, lower_bind v arg l)
-#if true
 | Lvar u when Ident.same u v && Ident.name u = "*sth*" -> 
     arg (* eliminate let *sth* = from_option x in *sth* *)
-#end    
 | _ ->
     bind Alias v arg lam
 
@@ -2925,11 +2926,9 @@ let compile_matching repr handler_fun arg pat_act_list partial =
 let partial_function loc () =
   (* [Location.get_pos_info] is too expensive *)
   let (fname, line, char) = Location.get_pos_info loc.Location.loc_start in
-#if true     
   let fname = 
     Filename.basename fname
   in   
-#end    
   Lprim(Praise Raise_regular, [Lprim(Pmakeblock(Blk_extension),
           [transl_normal_path Predef.path_match_failure;
            Lconst(Const_block(Blk_tuple,
@@ -3069,11 +3068,9 @@ let for_let loc param pat body =
       (* fast path, and keep track of simple bindings to unboxable numbers *)
       Llet(Strict, Pgenval, id, param, body)
   | _ ->
-#if true   
-      (* Turn off such optimization to reduce diff in the beginning*)
+      (* Turn off such optimization to reduce diff in the beginning - FIXME*)
       if !Config.bs_only then simple_for_let loc param pat body 
       else
-#end      
       let opt = ref false in
       let nraise = next_raise_count () in
       let catch_ids = pat_bound_idents pat in

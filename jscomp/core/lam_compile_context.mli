@@ -22,13 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
 (** Type definition to keep track of compilation state 
 *)
 
@@ -36,94 +29,60 @@
     (generating too many symbols will make the output code unreadable)
 *)
 
-type jbl_label = int 
+type jbl_label = int
 
 type return_label = {
   id : Ident.t;
   label : J.label;
   params : Ident.t list;
   immutable_mask : bool array;
-  mutable new_params : Ident.t Map_ident.t ;
-  mutable triggered : bool
+  mutable new_params : Ident.t Map_ident.t;
+  mutable triggered : bool;
 }
 
-
-
-type value = {
-  exit_id : Ident.t ; 
-  bindings : Ident.t list ;
-  order_id : int
-}
+type value = { exit_id : Ident.t; bindings : Ident.t list; order_id : int }
 
 type let_kind = Lam_compat.let_kind
 
-type tail = {
-  label : return_label option;
-  in_staticcatch : bool;
-}
-type maybe_tail = 
-  | Tail_in_try    
-  | Tail_with_name of tail
+type tail = { label : return_label option; in_staticcatch : bool }
 
-type tail_type = 
-  | Not_tail 
-  | Maybe_tail_is_return of maybe_tail
-  (* anonoymous function does not have identifier *)
+type maybe_tail = Tail_in_try | Tail_with_name of tail
+
+type tail_type = Not_tail | Maybe_tail_is_return of maybe_tail
+(* anonoymous function does not have identifier *)
 
 (* delegate to the callee to generate expression 
       Invariant: [output] should return a trailing expression
 *)
 
-type continuation = 
+type continuation =
   | EffectCall of tail_type
   | NeedValue of tail_type
   | Declare of let_kind * J.ident (* bound value *)
-  | Assign of J.ident 
-  (** when use [Assign], var is not needed, since it's already declared 
+  | Assign of J.ident
+      (** when use [Assign], var is not needed, since it's already declared 
       make sure all [Assign] are declared first, otherwise you are creating global variables
   *)
 
-
-
 type jmp_table = value Map_int.t
 
-val continuation_is_return:
-  continuation -> 
-  bool 
-
+val continuation_is_return : continuation -> bool
 
 type t = {
-  continuation : continuation ;
+  continuation : continuation;
   jmp_table : jmp_table;
-  meta : Lam_stats.t ;
+  meta : Lam_stats.t;
 }
 
-val empty_handler_map : jmp_table  
+val empty_handler_map : jmp_table
 
-type handler = {
-  label : jbl_label ; 
-  handler : Lam.t;
-  bindings : Ident.t list; 
-} 
+type handler = { label : jbl_label; handler : Lam.t; bindings : Ident.t list }
 
-val no_static_raise_in_handler : 
-  handler -> 
-  bool 
+val no_static_raise_in_handler : handler -> bool
 
 val add_jmps :
-  jmp_table -> 
-  Ident.t ->
-  handler list ->
-  jmp_table * (jbl_label * Lam.t) list
+  jmp_table -> Ident.t -> handler list -> jmp_table * (jbl_label * Lam.t) list
 
-val add_pseudo_jmp :
-  jmp_table ->
-  Ident.t ->
-  handler ->
-  jmp_table * Lam.t 
+val add_pseudo_jmp : jmp_table -> Ident.t -> handler -> jmp_table * Lam.t
 
-
-val find_exn : 
-  t -> 
-  jbl_label -> 
-  value
+val find_exn : t -> jbl_label -> value
