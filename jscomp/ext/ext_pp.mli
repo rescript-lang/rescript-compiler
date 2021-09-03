@@ -73,6 +73,8 @@ val newline : t -> unit
 val force_newline : t -> unit
 (** [force_newline] Always print a newline *)
 
+val at_least_two_lines : t -> unit
+
 val from_channel : out_channel -> t
 
 val from_buffer : Buffer.t -> t
