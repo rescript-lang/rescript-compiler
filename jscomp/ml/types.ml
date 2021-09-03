@@ -338,3 +338,14 @@ type label_description =
     lbl_loc: Location.t;
     lbl_attributes: Parsetree.attributes;
    }
+let same_record_representation x y =
+  match x with
+  | Record_regular -> y = Record_regular
+  | Record_object -> y = Record_object
+  | Record_inlined {tag; name; num_nonconsts} -> (
+      match y with
+      | Record_inlined y ->
+          tag = y.tag && name = y.name && num_nonconsts = y.num_nonconsts
+      | _ -> false)
+  | Record_extension -> y = Record_extension
+  | Record_unboxed x -> ( match y with Record_unboxed y -> x = y | _ -> false)

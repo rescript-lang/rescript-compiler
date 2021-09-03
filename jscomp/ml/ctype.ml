@@ -279,7 +279,7 @@ let build_fields level =
 let associate_fields 
   (fields1 : fields ) 
   (fields2 : fields ) : _ * fields * fields =
-  let rec associate p s s' =
+  let rec associate p s s'  : fields * fields -> _ =
     function
       (l, []) ->
         (List.rev p, (List.rev s) @ l, List.rev s')
@@ -2009,7 +2009,7 @@ let rec mcomp type_pairs env t1 t2 =
         match (t1'.desc, t2'.desc) with
           (Tvar _, Tvar _) -> assert false
         | (Tarrow (l1, t1, u1, _), Tarrow (l2, t2, u2, _))
-          when l1 = l2 || not (is_optional l1 || is_optional l2) ->
+          when Asttypes.same_arg_label l1  l2 || not (is_optional l1 || is_optional l2) ->
             mcomp type_pairs env t1 t2;
             mcomp type_pairs env u1 u2;
         | (Ttuple tl1, Ttuple tl2) ->
@@ -2118,7 +2118,7 @@ and mcomp_type_decl type_pairs env p1 p2 tl1 tl2 =
       raise (Unify [])
     else
       match decl.type_kind, decl'.type_kind with
-      | Type_record (lst,r), Type_record (lst',r') when r = r' ->
+      | Type_record (lst,r), Type_record (lst',r') when Types.same_record_representation r  r' ->
           mcomp_list type_pairs env tl1 tl2;
           mcomp_record_description type_pairs env lst lst'
       | Type_variant v1, Type_variant v2 ->
@@ -2232,8 +2232,8 @@ let complete_type_list ?(allow_absent=false) env nl1 lv2 mty2 nl2 tl2 =
   let rec complete nl1 ntl2 =
     match nl1, ntl2 with
       [], _ -> ntl2
-    | n :: nl, (n2, _ as nt2) :: ntl' when n >= n2 ->
-        nt2 :: complete (if n = n2 then nl else nl1) ntl'
+    | n :: nl, (n2, _ as nt2) :: ntl' when Longident.cmp n n2 >= 0 ->
+        nt2 :: complete (if Longident.cmp n n2 = 0 then nl else nl1) ntl'
     | n :: nl, _ ->
         try
           let path =
@@ -2332,6 +2332,8 @@ let rec unify (env:Env.t ref) t1 t2 =
       && is_newtype !env p1 && is_newtype !env p2 ->
         (* Do not use local constraints more than necessary *)
         begin try
+          let [@local] (<) ((a : int) ,(b : int)) (c,d) = 
+            a < c || (a = c && b < d) in 
           if find_newtype_level !env p1 < find_newtype_level !env p2 then
             unify env t1 (try_expand_once !env t2)
           else
@@ -2404,7 +2406,7 @@ and unify3 env t1 t1' t2 t2' =
     end;
     try
       begin match (d1, d2) with
-        (Tarrow (l1, t1, u1, c1), Tarrow (l2, t2, u2, c2)) when l1 = l2 ||
+        (Tarrow (l1, t1, u1, c1), Tarrow (l2, t2, u2, c2)) when Asttypes.same_arg_label l1  l2 ||
         (!umode = Pattern) &&
         not (is_optional l1 || is_optional l2) ->
           unify  env t1 t2; unify env  u1 u2;
@@ -2445,6 +2447,9 @@ and unify3 env t1 t1' t2 t2' =
          Tconstr (path',[],_))
         when is_instantiable !env path && is_instantiable !env path'
         && !generate_equations ->
+          let [@local] (>) ((a:int),(b:int)) (c,d) = 
+            a > c || (a = c && b > d)
+          in 
           let source, destination =
             if find_newtype_level !env path > find_newtype_level !env path'
             then  path , t2'
@@ -2955,7 +2960,7 @@ let rec moregen inst_nongen type_pairs env t1 t2 =
             (Tvar _, _) when may_instantiate inst_nongen t1' ->
               moregen_occur env t1'.level t2;
               link_type t1' t2
-          | (Tarrow (l1, t1, u1, _), Tarrow (l2, t2, u2, _)) when l1 = l2
+          | (Tarrow (l1, t1, u1, _), Tarrow (l2, t2, u2, _)) when Asttypes.same_arg_label l1  l2
             ->
               moregen inst_nongen type_pairs env t1 t2;
               moregen inst_nongen type_pairs env u1 u2
@@ -3223,7 +3228,7 @@ let rec eqtype rename type_pairs subst env t1 t2 =
                 then raise (Unify []);
                 subst := (t1', t2') :: !subst
               end
-          | (Tarrow (l1, t1, u1, _), Tarrow (l2, t2, u2, _)) when l1 = l2
+          | (Tarrow (l1, t1, u1, _), Tarrow (l2, t2, u2, _)) when Asttypes.same_arg_label l1 l2
             ->
               eqtype rename type_pairs subst env t1 t2;
               eqtype rename type_pairs subst env u1 u2;
@@ -3381,7 +3386,7 @@ let rec moregen_clty trace type_pairs env cty1 cty2 =
         moregen_clty true type_pairs env cty1 cty2
     | _, Cty_constr (_, _, cty2) ->
         moregen_clty true type_pairs env cty1 cty2
-    | Cty_arrow (l1, ty1, cty1'), Cty_arrow (l2, ty2, cty2') when l1 = l2 ->
+    | Cty_arrow (l1, ty1, cty1'), Cty_arrow (l2, ty2, cty2') when Asttypes.same_arg_label l1  l2 ->
         begin try moregen true type_pairs env ty1 ty2 with Unify trace ->
           raise (Failure [CM_Parameter_mismatch (env, expand_trace env trace)])
         end;
@@ -3516,7 +3521,7 @@ let rec equal_clty trace type_pairs subst env cty1 cty2 =
         equal_clty true type_pairs subst env cty1 cty2
     | _, Cty_constr (_, _, cty2) ->
         equal_clty true type_pairs subst env cty1 cty2
-    | Cty_arrow (l1, ty1, cty1'), Cty_arrow (l2, ty2, cty2') when l1 = l2 ->
+    | Cty_arrow (l1, ty1, cty1'), Cty_arrow (l2, ty2, cty2') when Asttypes.same_arg_label l1 l2 ->
         begin try eqtype true type_pairs subst env ty1 ty2 with Unify trace ->
           raise (Failure [CM_Parameter_mismatch (env, expand_trace env trace)])
         end;
@@ -3909,7 +3914,7 @@ let rec subtype_rec env trace t1 t2 cstrs =
     match (t1.desc, t2.desc) with
       (Tvar _, _) | (_, Tvar _) ->
         (trace, t1, t2, !univar_pairs)::cstrs
-    | (Tarrow(l1, t1, u1, _), Tarrow(l2, t2, u2, _)) when l1 = l2
+    | (Tarrow(l1, t1, u1, _), Tarrow(l2, t2, u2, _)) when Asttypes.same_arg_label l1 l2
        ->
         let cstrs = subtype_rec env ((t2, t1)::trace) t2 t1 cstrs in
         subtype_rec env ((u1, u2)::trace) u1 u2 cstrs
@@ -4137,7 +4142,7 @@ let cyclic_abbrev env id ty =
     let ty = repr ty in
     match ty.desc with
       Tconstr (p, _tl, _abbrev) ->
-        p = Path.Pident id || List.memq ty seen ||
+        (match p with  Path.Pident p -> Ident.same p id | _ -> false) || List.memq ty seen ||
         begin try
           check_cycle (ty :: seen) (expand_abbrev_opt env ty)
         with
