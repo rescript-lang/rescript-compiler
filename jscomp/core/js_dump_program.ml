@@ -58,9 +58,8 @@ let extract_file_comments (x : J.deps_program) =
   (comments, { x with program = { x.program with block = new_block } })
 
 let program f cxt (x : J.program) =
-  P.force_newline f;
+  P.at_least_two_lines f;
   let cxt = Js_dump.statements true cxt f x.block in
-  P.force_newline f;
   Js_dump_import_export.exports cxt f x.exports
 
 let dump_program (x : J.program) oc =
@@ -89,9 +88,8 @@ let es6_program ~output_dir fmt f (x : J.deps_program) =
              Js_name_of_module_id.string_of_module_id x ~output_dir fmt,
              is_default x.kind )))
   in
-  let () = P.force_newline f in
+  let () = P.at_least_two_lines f in
   let cxt = Js_dump.statements true cxt f x.program.block in
-  let () = P.force_newline f in
   Js_dump_import_export.es6_export cxt f x.program.exports
 
 (** Make sure github linguist happy
