@@ -242,7 +242,7 @@ let text_str pos = Str.text (rhs_text pos)
 let text_sig pos = Sig.text (rhs_text pos)
 let text_cstr pos = Cf.text (rhs_text pos)
 let text_csig pos = Ctf.text (rhs_text pos)
-let text_def pos = [Ptop_def (Str.text (rhs_text pos))]
+
 
 let extra_text text pos items =
   let pre_extras = rhs_pre_extra_text pos in
@@ -253,8 +253,6 @@ let extra_str pos items = extra_text Str.text pos items
 let extra_sig pos items = extra_text Sig.text pos items
 let extra_cstr pos items = extra_text Cf.text pos items
 let extra_csig pos items = extra_text Ctf.text pos items
-let extra_def pos items =
-  extra_text (fun txt -> [Ptop_def (Str.text txt)]) pos items
 
 let extra_rhs_core_type ct ~pos =
   let docs = rhs_info pos in
@@ -556,10 +554,6 @@ The precedences must be listed from low to high.
 %type <Parsetree.structure> implementation
 %start interface                        /* for interface files */
 %type <Parsetree.signature> interface
-%start toplevel_phrase                  /* for interactive use */
-%type <Parsetree.toplevel_phrase> toplevel_phrase
-%start use_file                         /* for the #use directive */
-%type <Parsetree.toplevel_phrase list> use_file
 %start parse_core_type
 %type <Parsetree.core_type> parse_core_type
 %start parse_expression
@@ -576,48 +570,8 @@ implementation:
 interface:
     signature EOF                        { extra_sig 1 $1 }
 ;
-toplevel_phrase:
-    top_structure SEMISEMI               { Ptop_def (extra_str 1 $1) }
-  | toplevel_directive SEMISEMI          { $1 }
-  | EOF                                  { raise End_of_file }
-;
-top_structure:
-    seq_expr post_item_attributes
-      { (text_str 1) @ [mkstrexp $1 $2] }
-  | top_structure_tail
-      { $1 }
-;
-top_structure_tail:
-    /* empty */                          { [] }
-  | structure_item top_structure_tail    { (text_str 1) @ $1 :: $2 }
-;
-use_file:
-    use_file_body                        { extra_def 1 $1 }
-;
-use_file_body:
-    use_file_tail                        { $1 }
-  | seq_expr post_item_attributes use_file_tail
-      { (text_def 1) @ Ptop_def[mkstrexp $1 $2] :: $3 }
-;
-use_file_tail:
-    EOF
-      { [] }
-  | SEMISEMI EOF
-      { text_def 1 }
-  | SEMISEMI seq_expr post_item_attributes use_file_tail
-      {  mark_rhs_docs 2 3;
-        (text_def 1) @ (text_def 2) @ Ptop_def[mkstrexp $2 $3] :: $4 }
-  | SEMISEMI structure_item use_file_tail
-      { (text_def 1) @ (text_def 2) @ Ptop_def[$2] :: $3 }
-  | SEMISEMI toplevel_directive use_file_tail
-      {  mark_rhs_docs 2 3;
-        (text_def 1) @ (text_def 2) @ $2 :: $3 }
-  | structure_item use_file_tail
-      { (text_def 1) @ Ptop_def[$1] :: $2 }
-  | toplevel_directive use_file_tail
-      { mark_rhs_docs 1 1;
-        (text_def 1) @ $1 :: $2 }
-;
+
+
 parse_core_type:
     core_type EOF { $1 }
 ;
@@ -2344,16 +2298,6 @@ class_longident:
 
 /* Toplevel directives */
 
-toplevel_directive:
-    HASH ident                 { Ptop_dir($2, Pdir_none) }
-  | HASH ident STRING          { Ptop_dir($2, Pdir_string (fst $3)) }
-  | HASH ident INT             { let (n, m) = $3 in
-                                  Ptop_dir($2, Pdir_int (n ,m)) }
-  | HASH ident val_longident   { Ptop_dir($2, Pdir_ident $3) }
-  | HASH ident mod_longident   { Ptop_dir($2, Pdir_ident $3) }
-  | HASH ident FALSE           { Ptop_dir($2, Pdir_bool false) }
-  | HASH ident TRUE            { Ptop_dir($2, Pdir_bool true) }
-;
 
 /* Miscellaneous */
 
