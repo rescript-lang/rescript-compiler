@@ -20,8 +20,6 @@
  *)
 (* Authors: Jérôme Vouillon, Hongbo Zhang  *)
 
-[@@@ocaml.warning "-57"] (* FIXME: turn off such warning temporarily*)
-
 (*
   http://stackoverflow.com/questions/2846283/what-are-the-rules-for-javascripts-automatic-semicolon-insertion-asi
   ASI catch up
@@ -645,78 +643,6 @@ and expression_desc cxt ~(level : int) f x : cxt =
       P.string f "typeof";
       P.space f;
       expression ~level:13 cxt f e
-  | Bin
-      ( Eq,
-        ({
-           expression_desc =
-             Array_index
-               ( { expression_desc = Var i; _ },
-                 { expression_desc = Number (Int { i = k0 }) } );
-         } as lhs),
-        {
-          expression_desc =
-            ( Bin
-                ( (Plus as op),
-                  {
-                    expression_desc =
-                      Array_index
-                        ( { expression_desc = Var j; _ },
-                          { expression_desc = Number (Int { i = k1 }) } );
-                    _;
-                  },
-                  delta )
-            | Bin
-                ( (Plus as op),
-                  delta,
-                  {
-                    expression_desc =
-                      Array_index
-                        ( { expression_desc = Var j; _ },
-                          { expression_desc = Number (Int { i = k1 }) } );
-                    _;
-                  } )
-            | Bin
-                ( (Minus as op),
-                  {
-                    expression_desc =
-                      Array_index
-                        ( { expression_desc = Var j; _ },
-                          { expression_desc = Number (Int { i = k1 }) } );
-                    _;
-                  },
-                  delta ) );
-        } )
-    when k0 = k1 && Js_op_util.same_vident i j
-         (* Note that
-            {[x = x + 1]}
-            is exactly the same  (side effect, and return value)
-            as {[ ++ x]}
-            same to
-            {[ x = x + a]}
-            {[ x += a ]}
-            they both return the modified value too
-         *)
-         (* TODO:
-            handle parens..
-         *) -> (
-      (* TODO: parenthesize when necessary *)
-      match (delta, op) with
-      | { expression_desc = Number (Int { i = 1l; _ }) }, Plus
-      | { expression_desc = Number (Int { i = -1l; _ }) }, Minus ->
-          P.string f L.plusplus;
-          P.space f;
-          expression ~level:13 cxt f lhs (* Static index level is 15*)
-      | { expression_desc = Number (Int { i = -1l; _ }) }, Plus
-      | { expression_desc = Number (Int { i = 1l; _ }) }, Minus ->
-          P.string f L.minusminus;
-          P.space f;
-          expression ~level:13 cxt f lhs
-      | _, _ ->
-          let cxt = expression ~level:13 cxt f lhs in
-          P.space f;
-          P.string f (if op = Plus then "+=" else "-=");
-          P.space f;
-          expression ~level:13 cxt f delta)
   | Bin
       ( Minus,
         { expression_desc = Number (Int { i = 0l; _ } | Float { f = "0." }) },
