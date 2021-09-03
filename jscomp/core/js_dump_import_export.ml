@@ -30,6 +30,16 @@ let default_export = "default"
 let esModule = ("__esModule", "true")
 (* Exports printer *)
 
+let rev_iter_inter lst f inter =
+  match lst with
+  | [] -> ()
+  | [ a ] -> f a
+  | a :: rest ->
+      Ext_list.rev_iter rest (fun x ->
+          f x;
+          inter ());
+      f a
+
 (* Print exports in Google module format, CommonJS format *)
 let exports cxt f (idents : Ident.t list) =
   let outer_cxt, reversed_list =
@@ -43,18 +53,19 @@ let exports cxt f (idents : Ident.t list) =
             esModule :: (default_export, str) :: (s, str) :: acc
           else (s, str) :: acc ))
   in
-  P.newline f;
-  Ext_list.rev_iter reversed_list (fun (s, export) ->
-      ( P.group f 0 @@ fun _ ->
-        P.string f L.exports;
-        P.string f L.dot;
-        P.string f s;
-        P.space f;
-        P.string f L.eq;
-        P.space f;
-        P.string f export;
-        P.string f L.semi );
-      P.newline f);
+  P.at_least_two_lines f;
+  rev_iter_inter reversed_list
+    (fun (s, export) ->
+      P.group f 0 (fun _ ->
+          P.string f L.exports;
+          P.string f L.dot;
+          P.string f s;
+          P.space f;
+          P.string f L.eq;
+          P.space f;
+          P.string f export;
+          P.string f L.semi))
+    (fun _ -> P.newline f);
   outer_cxt
 
 (** Print module in ES6 format, it is ES6, trailing comma is valid ES6 code *)
@@ -69,32 +80,32 @@ let es6_export cxt f (idents : Ident.t list) =
             (default_export, str) :: (s, str) :: acc
           else (s, str) :: acc ))
   in
-  P.newline f;
+  P.at_least_two_lines f;
   P.string f L.export;
   P.space f;
   P.brace_vgroup f 1 (fun _ ->
-      Ext_list.rev_iter reversed_list (fun (s, export) ->
-          ( P.group f 0 @@ fun _ ->
-            P.string f export;
-            P.space f;
-            if not @@ Ext_string.equal export s then (
-              P.string f L.as_;
+      rev_iter_inter reversed_list
+        (fun (s, export) ->
+          P.group f 0 (fun _ ->
+              P.string f export;
               P.space f;
-              P.string f s);
-            P.string f L.comma );
-          P.newline f));
+              if not @@ Ext_string.equal export s then (
+                P.string f L.as_;
+                P.space f;
+                P.string f s);
+              P.string f L.comma))
+        (fun _ -> P.newline f));
   outer_cxt
 
 (** Node or Google module style imports *)
 let requires require_lit cxt f (modules : (Ident.t * string * bool) list) =
-  P.newline f;
   (* the context used to print the following program *)
   let outer_cxt, reversed_list =
     Ext_list.fold_left modules (cxt, []) (fun (cxt, acc) (id, s, b) ->
         let str, cxt = Ext_pp_scope.str_of_ident cxt id in
         (cxt, (str, s, b) :: acc))
   in
-  P.force_newline f;
+  P.at_least_two_lines f;
   Ext_list.rev_iter reversed_list (fun (s, file, default) ->
       P.string f L.var;
       P.space f;
@@ -111,14 +122,13 @@ let requires require_lit cxt f (modules : (Ident.t * string * bool) list) =
 
 (** ES6 module style imports *)
 let imports cxt f (modules : (Ident.t * string * bool) list) =
-  P.newline f;
   (* the context used to print the following program *)
   let outer_cxt, reversed_list =
     Ext_list.fold_left modules (cxt, []) (fun (cxt, acc) (id, s, b) ->
         let str, cxt = Ext_pp_scope.str_of_ident cxt id in
         (cxt, (str, s, b) :: acc))
   in
-  P.force_newline f;
+  P.at_least_two_lines f;
   Ext_list.rev_iter reversed_list (fun (s, file, default) ->
       P.string f L.import;
       P.space f;

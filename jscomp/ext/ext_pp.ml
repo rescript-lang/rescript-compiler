@@ -85,7 +85,8 @@ let force_newline t =
   t.output_char '\n';
   for _ = 0 to t.indent_level - 1 do
     t.output_string L.indent_str
-  done
+  done;
+  t.last_new_line <- true
 
 let space t = string t L.space
 
