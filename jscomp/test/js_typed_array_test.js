@@ -823,7 +823,6 @@ var suites_1 = {
                                                                                             };
                                                                                             Js_typed_array.$$Int8Array.forEach((function (n) {
                                                                                                     sum.contents = sum.contents + n | 0;
-                                                                                                    
                                                                                                   }), new Int8Array([
                                                                                                       1,
                                                                                                       2,
@@ -845,7 +844,6 @@ var suites_1 = {
                                                                                               };
                                                                                               Js_typed_array.$$Int8Array.forEachi((function (param, i) {
                                                                                                       sum.contents = sum.contents + i | 0;
-                                                                                                      
                                                                                                     }), new Int8Array([
                                                                                                         1,
                                                                                                         2,

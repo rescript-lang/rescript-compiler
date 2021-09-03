@@ -40,7 +40,6 @@ function ocaml_run(b, c) {
 
 function a0() {
   console.log("hi");
-  
 }
 
 function a1(param) {
@@ -60,7 +59,6 @@ function a3(x, y, z) {
 function xx(param) {
   return function (param) {
     console.log(3);
-    
   };
 }
 

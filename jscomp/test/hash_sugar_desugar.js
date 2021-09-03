@@ -21,12 +21,10 @@ function h4(u) {
 
 function g5(u) {
   u.hi = 3;
-  
 }
 
 function h5(u) {
   u.hi = 3;
-  
 }
 
 function h6(u) {

@@ -12,7 +12,6 @@ var test_id = {
 
 function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
-  
 }
 
 Mt.from_pair_suites("Gpr_2789_test", suites.contents);

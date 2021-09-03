@@ -233,17 +233,14 @@ function flush_all(param) {
     };
   };
   iter(Caml_external_polyfill.resolve("ml_out_channels_list")(undefined));
-  
 }
 
 function output_bytes(oc, s) {
   Caml_external_polyfill.resolve("ml_output")(oc, s, 0, s.length);
-  
 }
 
 function output_string(oc, s) {
   Caml_external_polyfill.resolve("ml_output")(oc, s, 0, s.length);
-  
 }
 
 function output(oc, s, ofs, len) {
@@ -255,7 +252,6 @@ function output(oc, s, ofs, len) {
         };
   }
   Caml_external_polyfill.resolve("ml_output")(oc, s, ofs, len);
-  
 }
 
 function output_substring(oc, s, ofs, len) {
@@ -267,18 +263,15 @@ function output_substring(oc, s, ofs, len) {
         };
   }
   Caml_external_polyfill.resolve("ml_output")(oc, s, ofs, len);
-  
 }
 
 function output_value(chan, v) {
   Caml_external_polyfill.resolve("output_value")(chan, v, /* [] */0);
-  
 }
 
 function close_out(oc) {
   Caml_external_polyfill.resolve("ml_flush")(oc);
   Caml_external_polyfill.resolve("ml_close_channel")(oc);
-  
 }
 
 function close_out_noerr(oc) {
@@ -360,7 +353,6 @@ function really_input(ic, s, ofs, len) {
         };
   }
   unsafe_really_input(ic, s, ofs, len);
-  
 }
 
 function really_input_string(ic, len) {
@@ -444,14 +436,11 @@ function at_exit(f) {
   exit_function.contents = (function (param) {
       Curry._1(f, undefined);
       Curry._1(g, undefined);
-      
     });
-  
 }
 
 function do_at_exit(param) {
   Curry._1(exit_function.contents, undefined);
-  
 }
 
 function exit(retcode) {

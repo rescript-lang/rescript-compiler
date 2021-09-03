@@ -14,7 +14,6 @@ var test_id = {
 
 function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
-  
 }
 
 var Caml_splice_call$1 = {};
@@ -49,7 +48,6 @@ function dynamic(arr) {
               tl: /* [] */0
             }
           }));
-  
 }
 
 dynamic([
@@ -90,7 +88,6 @@ function dynamic$1(arr) {
               tl: /* [] */0
             }
           }));
-  
 }
 
 dynamic$1([

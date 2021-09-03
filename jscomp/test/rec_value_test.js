@@ -167,7 +167,6 @@ var lazy_v = {
   LAZY_DONE: true,
   VAL: (function (param) {
       CamlinternalLazy.force(lazy_v);
-      
     })
 };
 

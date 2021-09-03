@@ -28,7 +28,6 @@ function eq(loc, x, y) {
     ],
     tl: suites.contents
   };
-  
 }
 
 function b(loc, v) {
@@ -45,7 +44,6 @@ function b(loc, v) {
     ],
     tl: suites.contents
   };
-  
 }
 
 var mapOfArray = Belt_MapInt.fromArray;

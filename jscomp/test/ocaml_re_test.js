@@ -41,7 +41,6 @@ function eq(loc, x, y) {
     ],
     tl: suites.contents
   };
-  
 }
 
 function union(_l, _l$p) {
@@ -996,7 +995,6 @@ var Table = Hashtbl.Make({
 
 function reset_table(a) {
   $$Array.fill(a, 0, a.length, false);
-  
 }
 
 function mark_used_indices(tbl) {
@@ -1018,7 +1016,6 @@ function mark_used_indices(tbl) {
                           }
                           
                         }), param._0.marks);
-                  
                 }), param);
   };
 }
@@ -1421,7 +1418,6 @@ function flatten_match(m) {
   var res = Caml_array.make(ma + 1 | 0, -1);
   List.iter((function (param) {
           Caml_array.set(res, param[0], param[1]);
-          
         }), m);
   return res;
 }
@@ -1550,7 +1546,6 @@ function validate(info, s, pos, st) {
   var desc$p = delta$1(info, cat, c, st);
   var st$p = find_state(info.re, desc$p);
   Caml_array.set(st.next, c, st$p);
-  
 }
 
 function loop(info, s, pos, st) {
@@ -1799,9 +1794,7 @@ function split(s, cm) {
   iter(s, (function (i, j) {
           Caml_bytes.set(cm, i, /* '\001' */1);
           Caml_bytes.set(cm, j + 1 | 0, /* '\001' */1);
-          
         }));
-  
 }
 
 var cupper = union(seq(/* 'A' */65, /* 'Z' */90), union(seq(/* '\192' */192, /* '\214' */214), seq(/* '\216' */216, /* '\222' */222)));

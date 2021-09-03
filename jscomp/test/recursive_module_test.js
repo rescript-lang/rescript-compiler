@@ -27,7 +27,6 @@ function eq(loc, x, y) {
     ],
     tl: suites.contents
   };
-  
 }
 
 function add(suite) {
@@ -35,7 +34,6 @@ function add(suite) {
     hd: suite,
     tl: suites.contents
   };
-  
 }
 
 var Int3 = Caml_module.init_mod([
@@ -86,7 +84,6 @@ add([
                   TAG: /* ThrowAny */7,
                   _0: (function (param) {
                       Curry._1(Int3.u, 3);
-                      
                     })
                 };
         })

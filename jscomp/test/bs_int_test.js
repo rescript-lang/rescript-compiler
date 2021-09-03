@@ -13,17 +13,14 @@ var test_id = {
 
 function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
-  
 }
 
 function b(loc, x) {
   Mt.bool_suites(test_id, suites, loc, x);
-  
 }
 
 function $$throw(loc, x) {
   Mt.throw_suites(test_id, suites, loc, x);
-  
 }
 
 function neq(loc, x, y) {
@@ -41,7 +38,6 @@ function neq(loc, x, y) {
     ],
     tl: suites.contents
   };
-  
 }
 
 eq("File \"bs_int_test.ml\", line 14, characters 5-12", 1, 1.0);

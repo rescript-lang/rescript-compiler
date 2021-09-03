@@ -20,7 +20,6 @@ function Test(Queue) {
     var q = Curry._1(Queue.create, undefined);
     $$Array.iter((function (x) {
             Curry._2(Queue.add, x, q);
-            
           }), x);
     return to_array(q);
   };
@@ -47,7 +46,6 @@ function queue_1(x) {
   };
   $$Array.iter((function (x) {
           Queue.add(x, q);
-          
         }), x);
   return to_array(q);
 }
@@ -73,7 +71,6 @@ function queue_1$1(x) {
   };
   $$Array.iter((function (x) {
           Queue_402.add(x, q);
-          
         }), x);
   return to_array$1(q);
 }

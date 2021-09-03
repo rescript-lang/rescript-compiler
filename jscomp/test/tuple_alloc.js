@@ -8,12 +8,10 @@ var v = {
 
 function reset(param) {
   v.contents = 0;
-  
 }
 
 function incr(param) {
   v.contents = v.contents + 1 | 0;
-  
 }
 
 var vv = {
@@ -22,12 +20,10 @@ var vv = {
 
 function reset2(param) {
   vv.contents = 0;
-  
 }
 
 function incr2(param) {
   v.contents = v.contents + 1 | 0;
-  
 }
 
 function f(a, b, d, e) {

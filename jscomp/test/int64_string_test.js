@@ -15,7 +15,6 @@ var test_id = {
 
 function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
-  
 }
 
 var v = Caml_int64.to_string(Int64.max_int);
@@ -24,7 +23,6 @@ eq("File \"int64_string_test.ml\", line 9, characters 6-13", v, "922337203685477
 
 function f(a, b) {
   eq("File \"int64_string_test.ml\", line 11, characters 5-12", Caml_int64.to_string(a), b);
-  
 }
 
 var hh = Caml_int64.add(Int64.min_int, [

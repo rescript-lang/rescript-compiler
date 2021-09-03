@@ -21,17 +21,14 @@ var test_id = {
 
 function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
-  
 }
 
 function b(loc, x) {
   Mt.bool_suites(test_id, suites, loc, x);
-  
 }
 
 function t(loc, x) {
   Mt.throw_suites(test_id, suites, loc, x);
-  
 }
 
 var IntCmp = Belt_Id.comparable(Caml.int_compare);
@@ -206,7 +203,6 @@ function testIterToList(xs) {
             hd: x,
             tl: v.contents
           };
-          
         }));
   return Belt_List.reverse(v.contents);
 }
@@ -220,7 +216,6 @@ function testIterToList2(xs) {
             hd: x,
             tl: v.contents
           };
-          
         }));
   return Belt_List.reverse(v.contents);
 }
@@ -307,12 +302,10 @@ eq("File \"bs_poly_set_test.ml\", line 132, characters 5-12", Belt_Set.getExn(a0
 
 t("File \"bs_poly_set_test.ml\", line 133, characters 4-11", (function (param) {
         Belt_Set.getExn(a0, 1002);
-        
       }));
 
 t("File \"bs_poly_set_test.ml\", line 134, characters 4-11", (function (param) {
         Belt_Set.getExn(a0, -1);
-        
       }));
 
 eq("File \"bs_poly_set_test.ml\", line 135, characters 5-12", Belt_SetDict.size(a0.data), 1001);
@@ -374,7 +367,6 @@ Belt_List.forEach({
       }
     }, (function (x) {
         Belt_SetDict.checkInvariantInternal(x.data);
-        
       }));
 
 var a = Belt_Set.fromArray([], IntCmp);

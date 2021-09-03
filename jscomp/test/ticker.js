@@ -92,7 +92,6 @@ function print_all_composite(all_tickers) {
           }
           
         }), all_tickers);
-  
 }
 
 function height(param) {
@@ -1172,7 +1171,6 @@ function process_quote(ticker_map, new_ticker, new_value) {
                 Error: new Error()
               };
         }), update_sequence);
-  
 }
 
 function process_input_line(ticker_map, all_tickers, line) {

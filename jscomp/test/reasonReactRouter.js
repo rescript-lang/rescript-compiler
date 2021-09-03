@@ -143,7 +143,6 @@ function watchUrl(callback) {
   }
   var watcherID = function (param) {
     Curry._1(callback, url(undefined));
-    
   };
   $$window.addEventListener("popstate", watcherID);
   return watcherID;
@@ -173,7 +172,6 @@ function useUrl(serverUrl, param) {
                 Curry._1(setUrl, (function (param) {
                         return url;
                       }));
-                
               });
           var newUrl = url(undefined);
           if (urlNotEqual(newUrl, url$1)) {
@@ -183,7 +181,6 @@ function useUrl(serverUrl, param) {
           }
           return (function (param) {
                     unwatchUrl(watcherId);
-                    
                   });
         }), []);
   return url$1;

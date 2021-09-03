@@ -3,7 +3,6 @@
 
 function f(x) {
   x.case = 3;
-  
 }
 
 function g(x) {

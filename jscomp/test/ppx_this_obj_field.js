@@ -27,7 +27,6 @@ function eq(loc, param) {
     ],
     tl: suites.contents
   };
-  
 }
 
 var v5 = {
@@ -51,7 +50,6 @@ var v5 = {
     }),
   bark: (function () {
       console.log("bark");
-      
     }),
   xz: (function () {
       return 3;
@@ -64,12 +62,10 @@ var v = {
   reset: (function () {
       var self = this ;
       self.y = 0;
-      
     }),
   incr: (function () {
       var self = this ;
       self.y = self.y + 1 | 0;
-      
     }),
   getY: (function () {
       var self = this ;
@@ -84,7 +80,6 @@ var v = {
 var u = {
   incr: (function () {
       console.log("hey");
-      
     }),
   getY: (function () {
       return 3;
@@ -111,7 +106,6 @@ var z = {
   setX: (function (x) {
       var self = this ;
       self.x.contents = x;
-      
     }),
   getX: (function () {
       var self = this ;
@@ -125,13 +119,11 @@ var eventObj = {
       var self = this ;
       var a = self.events;
       a.splice(0);
-      
     }),
   push: (function (a) {
       var self = this ;
       var xs = self.events;
       xs.push(a);
-      
     }),
   needRebuild: (function () {
       var self = this ;
@@ -141,7 +133,6 @@ var eventObj = {
 
 function test__(x) {
   eventObj.push(x);
-  
 }
 
 var zz = {
@@ -149,7 +140,6 @@ var zz = {
   setX: (function (x) {
       var self = this ;
       self.x = x;
-      
     }),
   getX: (function () {
       var self = this ;
@@ -219,7 +209,6 @@ var f = {
   hei: (function () {
       var y = this ;
       y.x = y.x + 3 | 0;
-      
     })
 };
 

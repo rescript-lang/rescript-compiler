@@ -48,7 +48,6 @@ var test_id = {
 
 function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
-  
 }
 
 eq("File \"exn_error_pattern.ml\", line 34, characters 5-12", f({

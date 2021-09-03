@@ -18,17 +18,14 @@ function record(fmt) {
     hd: fmt,
     tl: accum.contents
   };
-  
 }
 
 function f_unit(param) {
   record("unit()");
-  
 }
 
 function f_bool(b) {
   record("bool(" + b + ")");
-  
 }
 
 var r_set = {
@@ -41,7 +38,6 @@ var r_clear = {
 
 function f_string(s) {
   record("string(" + s + ")");
-  
 }
 
 var r_string = {
@@ -50,7 +46,6 @@ var r_string = {
 
 function f_int(i) {
   record("int(" + i + ")");
-  
 }
 
 var r_int = {
@@ -59,7 +54,6 @@ var r_int = {
 
 function f_float(f) {
   record("float(" + f + ")");
-  
 }
 
 var r_float = {
@@ -68,17 +62,14 @@ var r_float = {
 
 function f_symbol(s) {
   record("symbol(" + s + ")");
-  
 }
 
 function f_rest(s) {
   record("rest(" + s + ")");
-  
 }
 
 function f_anon(s) {
   record("anon(" + s + ")");
-  
 }
 
 var spec_0 = [
@@ -307,7 +298,6 @@ var args2 = [
 
 function error(s) {
   console.log("error (%s)");
-  
 }
 
 function check(r, v, msg) {
@@ -377,7 +367,6 @@ function test(argv) {
   if (Caml_obj.notequal(result, reference)) {
     var f = function (x, y) {
       console.log(x, y);
-      
     };
     List.iter2(f, result, reference);
   }
@@ -386,7 +375,6 @@ function test(argv) {
   check(r_string, "bar", "Set_string");
   check(r_int, 42, "Set_int");
   check(r_float, 2.72, "Set_float");
-  
 }
 
 test(args1);

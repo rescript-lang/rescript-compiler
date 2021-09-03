@@ -24,7 +24,6 @@ function add_test(loc, test) {
     ],
     tl: suites.contents
   };
-  
 }
 
 function eq(loc, x, y) {
@@ -35,7 +34,6 @@ function eq(loc, x, y) {
                   _1: y
                 };
         }));
-  
 }
 
 function false_(loc) {
@@ -45,7 +43,6 @@ function false_(loc) {
                   _0: false
                 };
         }));
-  
 }
 
 function true_(loc) {
@@ -55,7 +52,6 @@ function true_(loc) {
                   _0: true
                 };
         }));
-  
 }
 
 var exit = 0;

@@ -9,10 +9,8 @@ var TestUtils = require("react-dom/test-utils");
 function act(func) {
   var reactFunc = function () {
     Curry._1(func, undefined);
-    
   };
   TestUtils.act(reactFunc);
-  
 }
 
 function actAsync(func) {
@@ -28,7 +26,6 @@ function changeWithValue(element, value) {
     }
   };
   TestUtils.Simulate.change(element, $$event);
-  
 }
 
 function changeWithChecked(element, value) {
@@ -38,7 +35,6 @@ function changeWithChecked(element, value) {
     }
   };
   TestUtils.Simulate.change(element, $$event);
-  
 }
 
 var Simulate = {
@@ -79,16 +75,13 @@ function prepareContainer(container, param) {
           return body.appendChild(containerElement);
         }));
   container.contents = Caml_option.some(containerElement);
-  
 }
 
 function cleanupContainer(container, param) {
   Belt_Option.map(container.contents, (function (prim) {
           prim.remove();
-          
         }));
   container.contents = undefined;
-  
 }
 
 function getContainer(container) {

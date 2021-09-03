@@ -21,7 +21,6 @@ var forIn = ((o,foo)=> {
 
 function log(x) {
   console.log(x);
-  
 }
 
 var N = {
@@ -32,7 +31,6 @@ forIn({
       x: 3
     }, (function (x) {
         console.log(x);
-        
       }));
 
 forIn({
@@ -40,7 +38,6 @@ forIn({
       y: 3
     }, (function (x) {
         console.log(x);
-        
       }));
 
 var f3 = (()=>true);

@@ -15,7 +15,6 @@ function f(str) {
           match[1]
         ]);
   }
-  
 }
 
 f("xx");

@@ -48,7 +48,6 @@ function test_closure(param) {
   }
   $$Array.iter((function (i) {
           v.contents = v.contents + Curry._1(i, 0) | 0;
-          
         }), arr);
   return v.contents;
 }
@@ -70,7 +69,6 @@ function test_closure2(param) {
   }
   $$Array.iter((function (i) {
           v.contents = v.contents + Curry._1(i, 0) | 0;
-          
         }), arr);
   return v.contents;
 }

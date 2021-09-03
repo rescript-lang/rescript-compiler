@@ -9,10 +9,8 @@ function f(X, xs) {
   X.forEach(xs, {
         i: (function (x) {
             console.log(x.x);
-            
           })
       });
-  
 }
 
 Belt_List.forEachU({
@@ -22,7 +20,6 @@ Belt_List.forEachU({
       tl: /* [] */0
     }, (function (x) {
         console.log(x.x);
-        
       }));
 
 var Foo = {};

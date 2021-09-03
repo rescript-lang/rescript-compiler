@@ -12,7 +12,6 @@ var test_id = {
 
 function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
-  
 }
 
 var _map = {"a":"x","u":"hi","b":"你","c":"我"};

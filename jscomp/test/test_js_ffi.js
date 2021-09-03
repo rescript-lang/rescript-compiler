@@ -6,7 +6,6 @@ function v(u) {
   t({
         compare: $$String.compare
       });
-  
 }
 
 function u(v) {

@@ -12,7 +12,6 @@ var test_id = {
 
 function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
-  
 }
 
 function fake_c2(a_type, b_type) {

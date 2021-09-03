@@ -30,7 +30,6 @@ var P = Caml_module.init_mod([
 
 function print(a) {
   $$Array.iter(P.print, a);
-  
 }
 
 Caml_module.update_mod({
@@ -45,7 +44,6 @@ Caml_module.update_mod({
 
 function print$1(i) {
   console.log(String(i));
-  
 }
 
 Caml_module.update_mod({

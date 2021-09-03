@@ -25,7 +25,6 @@ function eq(loc, x, y) {
     ],
     tl: suites.contents
   };
-  
 }
 
 Mt.from_pair_suites("Installation_test", suites.contents);

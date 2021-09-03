@@ -18,7 +18,6 @@ var test_id = {
 
 function eq(f, param) {
   Mt_global.collect_eq(test_id, suites, f, param[0], param[1]);
-  
 }
 
 function assert_(loc, v) {
@@ -26,7 +25,6 @@ function assert_(loc, v) {
         v,
         true
       ]);
-  
 }
 
 function to_list(s) {
@@ -38,7 +36,6 @@ function to_list(s) {
             hd: x,
             tl: l.contents
           };
-          
         }), s.c);
   return l.contents;
 }
@@ -363,7 +360,6 @@ var i$7 = {
 List.iter((function (j) {
         assert_("File \"stack_comp_test.ml\", line 112, characters 27-34", i$7.contents === j);
         i$7.contents = i$7.contents + 1 | 0;
-        
       }), s$5.c);
 
 var s1$1 = {

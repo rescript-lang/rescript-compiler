@@ -16,7 +16,6 @@ function create(param) {
 function clear(q) {
   q.length = 0;
   q.tail = undefined;
-  
 }
 
 function add(x, q) {
@@ -37,7 +36,6 @@ function add(x, q) {
   q.length = q.length + 1 | 0;
   tail.next = cell$1;
   q.tail = cell$1;
-  
 }
 
 function peek(q) {
@@ -130,7 +128,6 @@ function iter(f, q) {
     };
   };
   iter$1(tail.next);
-  
 }
 
 function fold(f, accu, q) {
@@ -169,7 +166,6 @@ function transfer(q1, q2) {
   }
   q2.length = q2.length + length1 | 0;
   q2.tail = tail1;
-  
 }
 
 var push = add;

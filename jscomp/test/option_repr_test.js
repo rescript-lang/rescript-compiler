@@ -15,12 +15,10 @@ var test_id = {
 
 function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
-  
 }
 
 function b(loc, v) {
   Mt.bool_suites(test_id, suites, loc, v);
-  
 }
 
 function f0(x) {

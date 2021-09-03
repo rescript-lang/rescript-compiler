@@ -173,7 +173,6 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at({
                                 TAG: /* ThrowAny */7,
                                 _0: (function (param) {
                                     Caml_format.float_of_string("");
-                                    
                                   })
                               };
                       })

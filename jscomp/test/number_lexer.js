@@ -5,7 +5,6 @@ var Lexing = require("../../lib/js/lexing.js");
 
 function l(prim) {
   console.log(prim);
-  
 }
 
 var __ocaml_lex_tables = {
@@ -78,7 +77,6 @@ function __ocaml_lex_token_rec(l, lexbuf, ___ocaml_lex_state) {
 
 function token(l, lexbuf) {
   __ocaml_lex_token_rec(l, lexbuf, 0);
-  
 }
 
 exports.l = l;

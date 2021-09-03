@@ -26,7 +26,6 @@ function eq(loc, x, y) {
     ],
     tl: suites.contents
   };
-  
 }
 
 eq("File \"key_word_property_plus_test.ml\", line 10, characters 5-12", [

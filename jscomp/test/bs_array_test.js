@@ -20,17 +20,14 @@ var test_id = {
 
 function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
-  
 }
 
 function b(loc, x) {
   Mt.bool_suites(test_id, suites, loc, x);
-  
 }
 
 function $$throw(loc, x) {
   Mt.throw_suites(test_id, suites, loc, x);
-  
 }
 
 function neq(loc, x, y) {
@@ -48,12 +45,10 @@ function neq(loc, x, y) {
     ],
     tl: suites.contents
   };
-  
 }
 
 function push(prim0, prim1) {
   prim0.push(prim1);
-  
 }
 
 console.log([
@@ -93,7 +88,6 @@ $$throw("File \"bs_array_test.ml\", line 31, characters 8-15", (function (param)
               0,
               1
             ], -1);
-        
       }));
 
 $$throw("File \"bs_array_test.ml\", line 32, characters 8-15", (function (param) {
@@ -101,7 +95,6 @@ $$throw("File \"bs_array_test.ml\", line 32, characters 8-15", (function (param)
               0,
               1
             ], 2);
-        
       }));
 
 var partial_arg = [
@@ -126,7 +119,6 @@ $$throw("File \"bs_array_test.ml\", line 34, characters 8-15", (function (param)
               0,
               1
             ], -1, 0);
-        
       }));
 
 $$throw("File \"bs_array_test.ml\", line 35, characters 8-15", (function (param) {
@@ -134,7 +126,6 @@ $$throw("File \"bs_array_test.ml\", line 35, characters 8-15", (function (param)
               0,
               1
             ], 2, 0);
-        
       }));
 
 b("File \"bs_array_test.ml\", line 36, characters 4-11", !Belt_Array.set([
@@ -196,7 +187,6 @@ b("File \"bs_array_test.ml\", line 40, characters 4-11", (Belt_Array.setExn(v$4,
 
 function id(x) {
   eq("File \"bs_array_test.ml\", line 43, characters 5-12", Js_vector.toList(Js_list.toVector(x)), x);
-  
 }
 
 eq("File \"bs_array_test.ml\", line 47, characters 5-12", Js_list.toVector({
@@ -1194,7 +1184,6 @@ function sumUsingForEach(xs) {
   };
   Belt_Array.forEach(xs, (function (x) {
           v.contents = v.contents + x | 0;
-          
         }));
   return v.contents;
 }
@@ -1251,13 +1240,11 @@ b("File \"bs_array_test.ml\", line 278, characters 4-11", (Belt_Array.forEachWit
             1
           ], (function (i, v) {
               c$1.contents = (c$1.contents + i | 0) + v | 0;
-              
             })), c$1.contents === 6));
 
 function id$1(loc, x) {
   var u = x.slice(0);
   eq("File \"bs_array_test.ml\", line 288, characters 5-12", Belt_Array.reverse(x), (Belt_Array.reverseInPlace(u), u));
-  
 }
 
 id$1("File \"bs_array_test.ml\", line 293, characters 5-12", []);

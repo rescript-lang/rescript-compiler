@@ -22,7 +22,6 @@ function test(param) {
     m = Belt_MapInt.remove(m, i$2);
   }
   should(Belt_MapInt.isEmpty(m));
-  
 }
 
 test(undefined);

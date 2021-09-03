@@ -17,12 +17,10 @@ var test_id = {
 
 function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
-  
 }
 
 function b(loc, v) {
   Mt.bool_suites(test_id, suites, loc, v);
-  
 }
 
 function $eq$tilde(s, i) {
@@ -161,7 +159,6 @@ var maxv = Belt_SetInt.maxUndefined(v$1);
 
 function approx(loc, x, y) {
   b(loc, x === y);
-  
 }
 
 eq("File \"bs_set_int_test.ml\", line 74, characters 5-12", Belt_SetInt.reduce(v$1, 0, (function (x, y) {

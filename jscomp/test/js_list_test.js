@@ -27,7 +27,6 @@ function eq(loc, x, y) {
     ],
     tl: suites.contents
   };
-  
 }
 
 eq("File \"js_list_test.ml\", line 11, characters 7-14", Js_list.flatten({

@@ -18,12 +18,10 @@ var test_id = {
 
 function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
-  
 }
 
 function b(loc, x) {
   Mt.bool_suites(test_id, suites, loc, x);
-  
 }
 
 function add(x, y) {
@@ -36,7 +34,6 @@ function sum2(h) {
   };
   Belt_HashSetInt.forEach(h, (function (x) {
           v.contents = v.contents + x | 0;
-          
         }));
   return v.contents;
 }

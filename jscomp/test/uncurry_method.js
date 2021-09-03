@@ -27,18 +27,15 @@ function x(h) {
 
 function f1(u) {
   u.exit(2);
-  
 }
 
 var obj3 = {
   hi: (function (name, age) {
       console.log(name);
-      
     }),
   hh: (function () {
       var self = this ;
       self.hi("x", 20);
-      
     })
 };
 

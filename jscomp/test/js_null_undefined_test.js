@@ -164,7 +164,6 @@ var suites_1 = {
                                 };
                                 Js_null_undefined.iter(null, (function (param) {
                                         hit.contents = true;
-                                        
                                       }));
                                 return {
                                         TAG: /* Eq */0,
@@ -182,7 +181,6 @@ var suites_1 = {
                                   };
                                   Js_null_undefined.iter(undefined, (function (param) {
                                           hit.contents = true;
-                                          
                                         }));
                                   return {
                                           TAG: /* Eq */0,
@@ -200,7 +198,6 @@ var suites_1 = {
                                     };
                                     Js_null_undefined.iter(undefined, (function (param) {
                                             hit.contents = true;
-                                            
                                           }));
                                     return {
                                             TAG: /* Eq */0,
@@ -218,7 +215,6 @@ var suites_1 = {
                                       };
                                       Js_null_undefined.iter(2, (function (v) {
                                               hit.contents = v;
-                                              
                                             }));
                                       return {
                                               TAG: /* Eq */0,

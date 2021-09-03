@@ -29,14 +29,12 @@ function eq(loc, x, y) {
     ],
     tl: suites.contents
   };
-  
 }
 
 function eq3(loc, a, b, c) {
   eq(loc, a, b);
   eq(loc, b, c);
   eq(loc, a, c);
-  
 }
 
 var M = {};
@@ -80,9 +78,7 @@ eq("File \"format_test.ml\", line 62, characters 5-12", (1 + 65535 / 65536) * 8,
 function f(loc, ls) {
   List.iter((function (param) {
           eq(loc, Caml_format.float_of_string(param[0]), param[1]);
-          
         }), ls);
-  
 }
 
 f("File \"format_test.ml\", line 75, characters 6-13", {
@@ -112,9 +108,7 @@ function sl(f) {
 function aux_list(loc, ls) {
   List.iter((function (param) {
           eq(loc, Caml_format.hexstring_of_float(param[0], -1, /* '-' */45), param[1]);
-          
         }), ls);
-  
 }
 
 var literals_0 = [
@@ -185,7 +179,6 @@ eq("File \"format_test.ml\", line 112, characters 5-12", Bytes.unsafe_to_string(
 
 function scan_float(loc, s, expect) {
   eq(loc, Caml_format.float_of_string(s), expect);
-  
 }
 
 scan_float("File \"format_test.ml\", line 119, characters 13-20", "0x3f.p1", 126);
@@ -194,7 +187,6 @@ scan_float("File \"format_test.ml\", line 120, characters 13-20", "0x1.333333333
 
 List.iter((function (param) {
         scan_float("File \"format_test.ml\", line 122, characters 13-20", param[1], param[0]);
-        
       }), literals);
 
 Mt.from_pair_suites("Format_test", suites.contents);

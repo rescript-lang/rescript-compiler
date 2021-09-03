@@ -81,7 +81,6 @@ function from_pair_suites(name, suites) {
             
           }
         }), suites);
-  
 }
 
 exports.from_pair_suites = from_pair_suites;

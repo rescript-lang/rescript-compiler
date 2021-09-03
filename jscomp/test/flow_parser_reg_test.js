@@ -1756,13 +1756,11 @@ function yyback(n, lexbuf) {
     pos_bol: currp.pos_bol,
     pos_cnum: currp.pos_cnum - n | 0
   };
-  
 }
 
 function back(lb) {
   var n = lb.lex_curr_p.pos_cnum - lb.lex_start_p.pos_cnum | 0;
   yyback(n, lb);
-  
 }
 
 var empty_lex_state = {
@@ -1959,7 +1957,6 @@ function start(str) {
             hd: c,
             tl: todo.contents
           };
-          
         }), str);
   return {
           negative: false,
@@ -2221,7 +2218,6 @@ function unicode_fix_cols(lb) {
     pos_bol: new_bol,
     pos_cnum: init.pos_cnum
   };
-  
 }
 
 function oct_to_int(x) {
@@ -2338,7 +2334,6 @@ var type_keywords = Hashtbl.create(undefined, 53);
 
 List.iter((function (param) {
         Hashtbl.add(keywords, param[0], param[1]);
-        
       }), {
       hd: [
         "function",
@@ -2643,7 +2638,6 @@ List.iter((function (param) {
 
 List.iter((function (param) {
         Hashtbl.add(type_keywords, param[0], param[1]);
-        
       }), {
       hd: [
         "static",
@@ -5452,7 +5446,6 @@ function grow(t, n) {
   };
   var new_arr = $$Array.init(new_size, filler);
   t.la_results = new_arr;
-  
 }
 
 function lex(t) {
@@ -5504,7 +5497,6 @@ function lex(t) {
         match$1[1]
       ]);
   t.la_num_lexed = t.la_num_lexed + 1 | 0;
-  
 }
 
 function lex_until(t, i) {
@@ -5512,7 +5504,6 @@ function lex_until(t, i) {
   while(t.la_num_lexed <= i) {
     lex(t);
   };
-  
 }
 
 function junk(t) {
@@ -5522,7 +5513,6 @@ function junk(t) {
   }
   Caml_array.set(t.la_results, t.la_num_lexed - 1 | 0, undefined);
   t.la_num_lexed = t.la_num_lexed - 1 | 0;
-  
 }
 
 var default_parse_options = {
@@ -5618,7 +5608,6 @@ function comment_list(env) {
                     hd: c,
                     tl: env.comments.contents
                   };
-                  
                 }), param);
   };
 }
@@ -5915,7 +5904,6 @@ function error(env, e) {
         loc$1,
         e
       ]);
-  
 }
 
 function get_unexpected_error(param) {
@@ -5959,7 +5947,6 @@ function error_unexpected(env) {
             token$2(undefined, env),
             value(undefined, env)
           ]));
-  
 }
 
 function error_on_decorators(env) {
@@ -5969,7 +5956,6 @@ function error_on_decorators(env) {
                         decorator[0],
                         /* UnsupportedDecorator */57
                       ]);
-                  
                 }), param);
   };
 }
@@ -6009,7 +5995,6 @@ function token$3(env) {
   comment_list(env)(comments(undefined, env));
   env.last_loc.contents = loc(undefined, env);
   junk(env.lookahead.contents);
-  
 }
 
 function push_lex_mode(env, mode) {
@@ -6018,7 +6003,6 @@ function push_lex_mode(env, mode) {
     tl: env.lex_mode_stack.contents
   };
   env.lookahead.contents = create$1(env.lex_env.contents, List.hd(env.lex_mode_stack.contents));
-  
 }
 
 function pop_lex_mode(env) {
@@ -6035,7 +6019,6 @@ function pop_lex_mode(env) {
   }
   env.lex_mode_stack.contents = new_stack;
   env.lookahead.contents = create$1(env.lex_env.contents, List.hd(env.lex_mode_stack.contents));
-  
 }
 
 function double_pop_lex_mode(env) {
@@ -6061,7 +6044,6 @@ function double_pop_lex_mode(env) {
   }
   env.lex_mode_stack.contents = new_stack;
   env.lookahead.contents = create$1(env.lex_env.contents, List.hd(env.lex_mode_stack.contents));
-  
 }
 
 function semicolon(env) {
@@ -6080,7 +6062,6 @@ function token$4(env, t) {
     error_unexpected(env);
   }
   token$3(env);
-  
 }
 
 function maybe(env, t) {
@@ -6097,7 +6078,6 @@ function contextual(env, str) {
     error_unexpected(env);
   }
   token$3(env);
-  
 }
 
 var Rollback = /* @__PURE__ */Caml_exceptions.create("Flow_parser_reg_test.Parser_env.Try.Rollback");
@@ -6113,7 +6093,6 @@ function save_state(env) {
     };
     env.token_sink.contents = (function (token_data) {
         Queue.add(token_data, buffer);
-        
       });
     token_buffer = [
       orig_token_sink,
@@ -7951,7 +7930,6 @@ function strict_post_check(env, strict, simple, id, params) {
         env$1,
         /* Empty */0
       ], params);
-  
 }
 
 function param$1(env) {
@@ -12274,7 +12252,6 @@ function assert_can_be_forin_or_forof(env, err, param) {
     }
   }
   error(env, err);
-  
 }
 
 function _if(env) {
@@ -17681,7 +17658,6 @@ function eq(loc, x, y) {
     ],
     tl: suites.contents
   };
-  
 }
 
 var f = typeof __dirname === "undefined" ? undefined : __dirname;

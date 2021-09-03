@@ -63,7 +63,6 @@ function bench(param) {
     
   }
   Belt_HashMap.logStats(empty);
-  
 }
 
 function bench2(m) {

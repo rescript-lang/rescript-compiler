@@ -43,20 +43,16 @@ function f(x) {
   x.xx(116, 3, "xxx", 1, 2, 3);
   x.xx(117, 3, "xxx", 0, "b", 1, 2, 3, 4, 5);
   x.xx(118, 3, true, false, "你好", ["你好",1,2,3], [{ "arr" : ["你好",1,2,3], "encoding" : "utf8"}], [{ "arr" : ["你好",1,2,3], "encoding" : "utf8"}], "xxx", 0, "yyy", "b", 1, 2, 3, 4, 5);
-  
 }
 
 process.on("exit", (function (exit_code) {
         console.log("error code: " + String(exit_code));
-        
       }));
 
 function register(p) {
   p.on("exit", (function (i) {
           console.log(i);
-          
         }));
-  
 }
 
 var config = {

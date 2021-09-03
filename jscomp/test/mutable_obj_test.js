@@ -8,7 +8,6 @@ function f(x) {
               y: x
             };
     });
-  
 }
 
 exports.f = f;

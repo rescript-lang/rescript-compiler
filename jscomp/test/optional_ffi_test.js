@@ -28,7 +28,6 @@ function eq(loc, param) {
     ],
     tl: suites.contents
   };
-  
 }
 
 function hey(x, y) {

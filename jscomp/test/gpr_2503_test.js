@@ -13,12 +13,10 @@ var test_id = {
 
 function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
-  
 }
 
 function b(loc, b$1) {
   Mt.bool_suites(test_id, suites, loc, b$1);
-  
 }
 
 function makeWrapper(foo, param) {
@@ -27,14 +25,12 @@ function makeWrapper(foo, param) {
     tmp.foo = Caml_option.valFromOption(foo);
   }
   console.log(tmp);
-  
 }
 
 function makeWrapper2(foo, param) {
   console.log({
         foo: foo
       });
-  
 }
 
 makeWrapper2("a", undefined);

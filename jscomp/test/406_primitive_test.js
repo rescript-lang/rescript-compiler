@@ -14,7 +14,6 @@ var test_id = {
 
 function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
-  
 }
 
 eq("File \"406_primitive_test.ml\", line 18, characters 6-13", 32, 32);

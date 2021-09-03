@@ -27,7 +27,6 @@ function add_test(loc, test) {
     ],
     tl: suites.contents
   };
-  
 }
 
 function eq(loc, x, y) {
@@ -38,7 +37,6 @@ function eq(loc, x, y) {
                   _1: y
                 };
         }));
-  
 }
 
 function false_(loc) {
@@ -48,7 +46,6 @@ function false_(loc) {
                   _0: false
                 };
         }));
-  
 }
 
 function true_(loc) {
@@ -58,7 +55,6 @@ function true_(loc) {
                   _0: true
                 };
         }));
-  
 }
 
 var v = JSON.parse(" { \"x\" : [1, 2, 3 ] } ");
@@ -772,7 +768,6 @@ function id(obj) {
 
 function idtest(obj) {
   eq("File \"js_json_test.ml\", line 399, characters 5-12", obj, Js_json.deserializeUnsafe(Js_json.serializeExn(obj)));
-  
 }
 
 idtest(undefined);

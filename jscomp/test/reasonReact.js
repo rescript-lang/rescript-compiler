@@ -117,7 +117,6 @@ function createClass(debugName) {
                         oldSelf: oldSelf,
                         newSelf: newSelf
                       });
-                  
                 }),
               componentWillUnmount: (function () {
                   var $$this = this ;
@@ -133,7 +132,6 @@ function createClass(debugName) {
                   if (subs !== null) {
                     return Js_array.forEach((function (unsubscribe) {
                                   Curry._1(unsubscribe, undefined);
-                                  
                                 }), subs);
                   }
                   
@@ -167,7 +165,6 @@ function createClass(debugName) {
                         oldSelf: oldSelf,
                         newSelf: newSelf
                       });
-                  
                 }),
               componentWillReceiveProps: (function (nextProps) {
                   var $$this = this ;
@@ -192,7 +189,6 @@ function createClass(debugName) {
                             return curTotalState;
                           }
                         }), null);
-                  
                 }),
               shouldComponentUpdate: (function (nextJsProps, nextState, param) {
                   var $$this = this ;
@@ -232,7 +228,6 @@ function createClass(debugName) {
                   } else {
                     $$this.subscriptions = [subscription];
                   }
-                  
                 }),
               handleMethod: (function (callback) {
                   var $$this = this ;
@@ -242,7 +237,6 @@ function createClass(debugName) {
                     var curReasonState = curState.reasonState;
                     var convertedReasonProps = convertPropsIfTheyreFromJs(thisJs.props, thisJs.jsPropsToReason, debugName);
                     Curry._2(callback, callbackPayload, $$this.self(curReasonState, convertedReasonProps._0.retainedProps));
-                    
                   };
                 }),
               sendMethod: (function (action) {
@@ -295,9 +289,7 @@ function createClass(debugName) {
                           }
                         }), $$this.handleMethod(function (param, self) {
                             Curry._1(sideEffects.contents, self);
-                            
                           }));
-                  
                 }),
               render: (function () {
                   var $$this = this ;

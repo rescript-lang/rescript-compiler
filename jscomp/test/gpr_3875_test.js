@@ -9,7 +9,6 @@ var result = {
 
 function log(x) {
   result.contents = x;
-  
 }
 
 var Xx = {
@@ -45,7 +44,6 @@ function compilerBug(a, b, c, f) {
   } else {
     result.contents = "Some x, f returns false";
   }
-  
 }
 
 var suites = {
@@ -58,7 +56,6 @@ var test_id = {
 
 function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
-  
 }
 
 compilerBug("x", undefined, true, (function (param) {

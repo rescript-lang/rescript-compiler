@@ -29,7 +29,6 @@ function eq(loc, x, y) {
     ],
     tl: suites.contents
   };
-  
 }
 
 function assert_bool(b) {
@@ -284,7 +283,6 @@ function createPromiseRejectTest(param) {
           reject({
                 RE_EXN_ID: "Not_found"
               });
-          
         }));
   var arg1 = function (error) {
     assert_bool(error === ({
@@ -298,7 +296,6 @@ function createPromiseRejectTest(param) {
 function createPromiseFulfillTest(param) {
   var obj = new Promise((function (resolve, param) {
           resolve("success");
-          
         }));
   var arg1 = function (resolved) {
     assert_bool(resolved === "success");

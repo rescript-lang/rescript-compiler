@@ -14,7 +14,6 @@ var test_id = {
 
 function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
-  
 }
 
 var v = {
@@ -86,7 +85,6 @@ function ff(x) {
     return ;
   }
   x.z = x.z + 2 | 0;
-  
 }
 
 var v4 = {

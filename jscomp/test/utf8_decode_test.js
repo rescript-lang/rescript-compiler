@@ -119,7 +119,6 @@ function to_list(xs) {
             hd: x,
             tl: v.contents
           };
-          
         }), xs);
   return List.rev(v.contents);
 }
@@ -239,7 +238,6 @@ function eq(loc, param) {
     ],
     tl: suites.contents
   };
-  
 }
 
 List.iter((function (param) {
@@ -249,7 +247,6 @@ List.iter((function (param) {
                       return prim0 === prim1;
                     }), to_list(utf8_decode(Stream.of_string(param[0]))), param[1])
             ]);
-        
       }), {
       hd: [
         "\xe4\xbd\xa0\xe5\xa5\xbdBuckleScript,\xe6\x9c\x80\xe5\xa5\xbd\xe7\x9a\x84JS\xe8\xaf\xad\xe8\xa8\x80",

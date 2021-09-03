@@ -16,12 +16,10 @@ var test_id = {
 
 function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
-  
 }
 
 function b(loc, x) {
   Mt.bool_suites(test_id, suites, loc, x);
-  
 }
 
 function does_raise(f, q) {
@@ -736,7 +734,6 @@ Belt_MutableQueue.forEach(q$5, (function (j) {
               };
         }
         i$7.contents = i$7.contents + 1 | 0;
-        
       }));
 
 var q1$1 = {

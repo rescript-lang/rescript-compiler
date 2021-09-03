@@ -20,7 +20,6 @@ function add_test(loc, test) {
     ],
     tl: suites.contents
   };
-  
 }
 
 function eq(loc, x, y) {
@@ -31,7 +30,6 @@ function eq(loc, x, y) {
                   _1: y
                 };
         }));
-  
 }
 
 eq("File \"js_cast_test.ml\", line 13, characters 12-19", true, 1);

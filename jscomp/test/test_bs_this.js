@@ -37,14 +37,11 @@ function f(x) {
   x.onload = (function () {
       var o = this ;
       console.log(o);
-      
     });
   x.addEventListener("onload", (function () {
           var o = this ;
           console.log(o.response);
-          
         }));
-  
 }
 
 function u(x) {
