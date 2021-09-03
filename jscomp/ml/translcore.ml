@@ -576,7 +576,7 @@ and transl_exp0 e =
   | Texp_let(rec_flag, pat_expr_list, body) ->
       transl_let rec_flag pat_expr_list (event_before body (transl_exp body))
   | Texp_function { arg_label = _; param; cases; partial; } ->
-      let ( params, body) =        
+      let ( params, body, return_unit ) =        
             let pl = push_defaults e.exp_loc [] cases partial in
             transl_function e.exp_loc  partial
               param pl
@@ -584,7 +584,7 @@ and transl_exp0 e =
       let attr = {
         default_function_attribute with
         inline = Translattribute.get_inline_attribute e.exp_attributes;
-        specialise = Translattribute.get_specialise_attribute e.exp_attributes;
+        return_unit
       }
       in
       let loc = e.exp_loc in
@@ -598,13 +598,10 @@ and transl_exp0 e =
         if args' = []
         then f
         else
-          let inlined, funct =
+          let inlined, _ =
             Translattribute.get_and_remove_inlined_attribute funct
           in
-          let specialised, _ =
-            Translattribute.get_and_remove_specialised_attribute funct
-          in
-            (transl_apply  ~inlined ~specialised
+            (transl_apply  ~inlined 
                f args' e.exp_loc)
       in
       let wrap0 = wrap in
@@ -645,10 +642,7 @@ and transl_exp0 e =
       let inlined, funct =
         Translattribute.get_and_remove_inlined_attribute funct
       in
-      let specialised, funct =
-        Translattribute.get_and_remove_specialised_attribute funct
-      in
-        (transl_apply  ~inlined ~specialised
+        (transl_apply  ~inlined 
            (transl_exp funct) oargs e.exp_loc)
   | Texp_match(arg, pat_expr_list, exn_pat_expr_list, partial) ->
     transl_match e arg pat_expr_list exn_pat_expr_list partial
@@ -845,7 +839,7 @@ and transl_cases_try cases =
 
 
 and transl_apply  ?(inlined = Default_inline)
-      ?(specialised = Default_specialise) lam sargs loc =
+      lam sargs loc =
   let lapply funct args =
     match funct with
     (** Attention: This may not be what we need to change the application arity*)
@@ -857,7 +851,7 @@ and transl_apply  ?(inlined = Default_inline)
                 ap_func=lexp;
                 ap_args=args;
                 ap_inlined=inlined;
-                ap_specialised=specialised;}
+                }
   in
   let rec build_apply lam args = function
       (None, optional) :: l ->
@@ -906,14 +900,17 @@ and transl_function loc   partial param cases =
       c_rhs={exp_desc = Texp_function { arg_label = _; param = param'; cases;
         partial = partial'; }} as exp}]
     when Parmatch.inactive ~partial pat ->
-      let (params, body) =
+      let (params, body, return_unit) =
         transl_function exp.exp_loc   partial' param' cases in
       ((param :: params),
-       Matching.for_function loc None (Lvar param) [pat, body] partial)
-  | _ ->
+       Matching.for_function loc None (Lvar param) [pat, body] partial, return_unit)
+
+  | {c_rhs = {exp_env; exp_type}; _} :: _ ->
       ([param],
        Matching.for_function loc None (Lvar param)
-         (transl_cases cases) partial)
+         (transl_cases cases) partial, 
+         is_base_type exp_env exp_type Predef.path_unit)
+   | _ -> assert false      
 
 and transl_let rec_flag pat_expr_list body =
   match rec_flag with
@@ -925,9 +922,6 @@ and transl_let rec_flag pat_expr_list body =
           let lam = transl_exp expr in
           let lam =
             Translattribute.add_inline_attribute lam vb_loc attr
-          in
-          let lam =
-            Translattribute.add_specialise_attribute lam vb_loc attr
           in
           Matching.for_let pat.pat_loc lam pat (transl rem)
       in transl pat_expr_list
@@ -943,10 +937,6 @@ and transl_let rec_flag pat_expr_list body =
         let lam = transl_exp expr in
         let lam =
           Translattribute.add_inline_attribute lam vb_loc
-            vb_attributes
-        in
-        let lam =
-          Translattribute.add_specialise_attribute lam vb_loc
             vb_attributes
         in
         (id, lam) in

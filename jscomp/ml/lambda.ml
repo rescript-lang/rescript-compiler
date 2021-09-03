@@ -256,13 +256,8 @@ type structured_constant =
 type inline_attribute =
   | Always_inline (* [@inline] or [@inline always] *)
   | Never_inline (* [@inline never] *)
-  | Unroll of int (* [@unroll x] *)
   | Default_inline (* no [@inline] attribute *)
 
-type specialise_attribute =
-  | Always_specialise (* [@specialise] or [@specialise always] *)
-  | Never_specialise (* [@specialise never] *)
-  | Default_specialise (* no [@specialise] attribute *)
 
 
 
@@ -273,9 +268,9 @@ type let_kind = Strict | Alias | StrictOpt | Variable
 
 type function_attribute = {
   inline : inline_attribute;
-  specialise : specialise_attribute;
   is_a_functor: bool;
   stub: bool;
+  return_unit : bool;
 }
 type switch_names = {consts: string array; blocks: string array}
 
@@ -312,7 +307,7 @@ and lambda_apply =
     ap_args : lambda list;
     ap_loc : Location.t;
     ap_inlined : inline_attribute;
-    ap_specialised : specialise_attribute; }
+    }
 
 and lambda_switch =
   { sw_numconsts: int;
@@ -344,9 +339,9 @@ let lambda_unit = Lconst const_unit
 
 let default_function_attribute = {
   inline = Default_inline;
-  specialise = Default_specialise;
   is_a_functor = false;
   stub = false;
+  return_unit = false;
 }
 
 let default_stub_attribute =
@@ -649,13 +644,12 @@ let rec map f lam =
     | Lvar _ -> lam
     | Lconst _ -> lam
     | Lapply { ap_func; ap_args; ap_loc; 
-          ap_inlined; ap_specialised } ->
+          ap_inlined;  } ->
         Lapply {
           ap_func = map f ap_func;
           ap_args = List.map (map f) ap_args;
           ap_loc;
           ap_inlined;
-          ap_specialised;
         }
     | Lfunction {  params; body; attr; loc; } ->
         Lfunction {  params; body = map f body; attr; loc; }

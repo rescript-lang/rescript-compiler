@@ -246,13 +246,8 @@ type structured_constant =
 type inline_attribute =
   | Always_inline (* [@inline] or [@inline always] *)
   | Never_inline (* [@inline never] *)
-  | Unroll of int (* [@unroll x] *)
   | Default_inline (* no [@inline] attribute *)
 
-type specialise_attribute =
-  | Always_specialise (* [@specialise] or [@specialise always] *)
-  | Never_specialise (* [@specialise never] *)
-  | Default_specialise (* no [@specialise] attribute *)
 
 
 
@@ -271,12 +266,12 @@ type let_kind = Strict | Alias | StrictOpt | Variable
 
 
 
-
+(* [true] means yes, [false] may mean unknown *)
 type function_attribute = {
   inline : inline_attribute;
-  specialise : specialise_attribute;
   is_a_functor: bool;
   stub: bool;
+  return_unit : bool;  
 }
 
 type switch_names = {consts: string array; blocks: string array}
@@ -316,7 +311,7 @@ and lambda_apply =
     ap_args : lambda list;
     ap_loc : Location.t;
     ap_inlined : inline_attribute; (* specified with the [@inlined] attribute *)
-    ap_specialised : specialise_attribute; }
+    }
 
 and lambda_switch =
   { sw_numconsts: int;                  (* Number of integer cases *)
