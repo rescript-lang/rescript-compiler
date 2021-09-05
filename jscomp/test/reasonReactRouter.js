@@ -142,7 +142,7 @@ function watchUrl(callback) {
     };
   }
   var watcherID = function (param) {
-    return Curry._1(callback, url(undefined));
+    Curry._1(callback, url(undefined));
   };
   $$window.addEventListener("popstate", watcherID);
   return watcherID;
@@ -169,9 +169,9 @@ function useUrl(serverUrl, param) {
   var url$1 = match[0];
   React.useEffect((function () {
           var watcherId = watchUrl(function (url) {
-                return Curry._1(setUrl, (function (param) {
-                              return url;
-                            }));
+                Curry._1(setUrl, (function (param) {
+                        return url;
+                      }));
               });
           var newUrl = url(undefined);
           if (urlNotEqual(newUrl, url$1)) {
@@ -180,7 +180,7 @@ function useUrl(serverUrl, param) {
                   }));
           }
           return (function (param) {
-                    return unwatchUrl(watcherId);
+                    unwatchUrl(watcherId);
                   });
         }), []);
   return url$1;

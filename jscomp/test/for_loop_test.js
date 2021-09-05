@@ -21,7 +21,7 @@ function for_3(x) {
         }(j)));
   }
   $$Array.iter((function (x) {
-          return Curry._1(x, undefined);
+          Curry._1(x, undefined);
         }), arr);
   return v.contents;
 }
@@ -43,7 +43,7 @@ function for_4(x) {
         }(k)));
   }
   $$Array.iter((function (x) {
-          return Curry._1(x, undefined);
+          Curry._1(x, undefined);
         }), arr);
   return v.contents;
 }
@@ -64,7 +64,7 @@ function for_5(x, u) {
         }(k)));
   }
   $$Array.iter((function (x) {
-          return Curry._1(x, undefined);
+          Curry._1(x, undefined);
         }), arr);
   return v.contents;
 }
@@ -104,7 +104,7 @@ function for_6(x, u) {
     inspect_3 = v2.contents;
   }
   $$Array.iter((function (x) {
-          return Curry._1(x, undefined);
+          Curry._1(x, undefined);
         }), arr);
   return [
           v.contents,
@@ -133,7 +133,7 @@ function for_7(param) {
     }(i));
   }
   $$Array.iter((function (f) {
-          return Curry._1(f, undefined);
+          Curry._1(f, undefined);
         }), arr);
   return v.contents;
 }
@@ -159,7 +159,7 @@ function for_8(param) {
     }(i,k));
   }
   $$Array.iter((function (f) {
-          return Curry._1(f, undefined);
+          Curry._1(f, undefined);
         }), arr);
   return v.contents;
 }
@@ -207,10 +207,10 @@ function for_9(param) {
         }(v$1)));
   }
   $$Array.iter((function (f) {
-          return Curry._1(f, undefined);
+          Curry._1(f, undefined);
         }), arr);
   $$Array.iter((function (f) {
-          return Curry._1(f, undefined);
+          Curry._1(f, undefined);
         }), arr2);
   return [[
             vv.contents,

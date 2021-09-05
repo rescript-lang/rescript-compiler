@@ -24,7 +24,7 @@ var test_id = {
 };
 
 function eq(f, a, b) {
-  return Mt_global.collect_eq(test_id, suites, f, a, b);
+  Mt_global.collect_eq(test_id, suites, f, a, b);
 }
 
 eq("File \"basic_module_test.ml\", line 39, characters 12-19", count.contents, 1);

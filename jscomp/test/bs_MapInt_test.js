@@ -21,7 +21,7 @@ function test(param) {
   for(var i$2 = 0; i$2 <= 999999; ++i$2){
     m = Belt_MapInt.remove(m, i$2);
   }
-  return should(Belt_MapInt.isEmpty(m));
+  should(Belt_MapInt.isEmpty(m));
 }
 
 test(undefined);

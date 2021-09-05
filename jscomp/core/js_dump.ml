@@ -52,8 +52,7 @@ let name_symbol = Js_op.Symbol_name
 
 module P = Ext_pp
 module E = Js_exp_make
-(* module S = Js_stmt_make *)
-
+module S = Js_stmt_make
 module L = Js_dump_lit
 
 (* There modules are dynamically inserted in the last stage
@@ -296,8 +295,8 @@ let rec try_optimize_curry cxt f len function_id =
   Curry_gen.pp_optimize_curry f len;
   P.paren_group f 1 (fun _ -> expression ~level:1 cxt f function_id)
 
-and pp_function ~is_method cxt (f : P.t) ~fn_state (l : Ident.t list)
-    (b : J.block) (env : Js_fun_env.t) : cxt =
+and pp_function ~return_unit ~is_method cxt (f : P.t) ~fn_state
+    (l : Ident.t list) (b : J.block) (env : Js_fun_env.t) : cxt =
   match b with
   | [
    {
@@ -368,13 +367,13 @@ and pp_function ~is_method cxt (f : P.t) ~fn_state (l : Ident.t list)
                     if Js_fun_env.get_unused env 0 then cxt
                     else pp_var_assign_this cxt f this
                   in
-                  function_body cxt f b))
+                  function_body ~return_unit cxt f b))
         else
           let cxt =
             P.paren_group f 1 (fun _ -> formal_parameter_list inner_cxt f l)
           in
           P.space f;
-          P.brace_vgroup f 1 (fun _ -> function_body cxt f b)
+          P.brace_vgroup f 1 (fun _ -> function_body ~return_unit cxt f b)
       in
       let lexical : Set_ident.t = Js_fun_env.get_lexical_scope env in
       let enclose lexical =
@@ -522,9 +521,10 @@ and expression_desc cxt ~(level : int) f x : cxt =
           let cxt = expression ~level:0 cxt f e1 in
           comma_sp f;
           expression ~level:0 cxt f e2)
-  | Fun (is_method, l, b, env) ->
+  | Fun (is_method, l, b, env, return_unit) ->
       (* TODO: dump for comments *)
       pp_function ~is_method cxt f ~fn_state:default_fn_exp_state l b env
+        ~return_unit
       (* TODO:
          when [e] is [Js_raw_code] with arity
          print it in a more precise way
@@ -542,8 +542,13 @@ and expression_desc cxt ~(level : int) f x : cxt =
                   let cxt = expression ~level:15 cxt f e in
                   P.paren_group f 1 (fun _ ->
                       match el with
-                      | [ { expression_desc = Fun (is_method, l, b, env) } ] ->
-                          pp_function ~is_method cxt f
+                      | [
+                       {
+                         expression_desc =
+                           Fun (is_method, l, b, env, return_unit);
+                       };
+                      ] ->
+                          pp_function ~is_method ~return_unit cxt f
                             ~fn_state:(No_name { single_arg = true })
                             l b env
                       | _ -> arguments cxt f el)
@@ -883,8 +888,8 @@ and variable_declaration top cxt f (variable : J.variable_declaration) : cxt =
           statement_desc top cxt f (J.Exp e)
       | _ -> (
           match e.expression_desc with
-          | Fun (is_method, params, b, env) ->
-              pp_function ~is_method cxt f
+          | Fun (is_method, params, b, env, return_unit) ->
+              pp_function ~is_method cxt f ~return_unit
                 ~fn_state:(if top then Name_top name else Name_non_top name)
                 params b env
           | _ ->
@@ -1110,8 +1115,11 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
       cxt
   | Return e -> (
       match e.expression_desc with
-      | Fun (is_method, l, b, env) ->
-          let cxt = pp_function ~is_method cxt f ~fn_state:Is_return l b env in
+      | Fun (is_method, l, b, env, return_unit) ->
+          let cxt =
+            pp_function ~return_unit ~is_method cxt f ~fn_state:Is_return l b
+              env
+          in
           semi f;
           cxt
       | Undefined ->
@@ -1197,7 +1205,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
                   P.space f;
                   brace_block cxt f b))
 
-and function_body (cxt : cxt) f (b : J.block) : unit =
+and function_body (cxt : cxt) f ~return_unit (b : J.block) : unit =
   match b with
   | [] -> ()
   | [ s ] -> (
@@ -1211,13 +1219,15 @@ and function_body (cxt : cxt) f (b : J.block) : unit =
                { s with statement_desc = If (bool, then_, []) }
               : cxt)
       | Return { expression_desc = Undefined } -> ()
+      | Return exp when return_unit ->
+          ignore (statement false cxt f (S.exp exp) : cxt)
       | _ -> ignore (statement false cxt f s : cxt))
   | [ s; { statement_desc = Return { expression_desc = Undefined } } ] ->
       ignore (statement false cxt f s : cxt)
   | s :: r ->
       let cxt = statement false cxt f s in
       P.newline f;
-      function_body cxt f r
+      function_body cxt f r ~return_unit
 
 and brace_block cxt f b =
   (* This one is for '{' *)

@@ -160,11 +160,11 @@ function assertion_test(param) {
             m.contents = add(String(i), String(i), m.contents);
           }
         }));
-  return timing("querying", (function (param) {
-                for(var i = 0; i <= 1000000; ++i){
-                  find(String(i), m.contents);
-                }
-              }));
+  timing("querying", (function (param) {
+          for(var i = 0; i <= 1000000; ++i){
+            find(String(i), m.contents);
+          }
+        }));
 }
 
 exports.assertion_test = assertion_test;

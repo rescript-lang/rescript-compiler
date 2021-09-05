@@ -12,7 +12,7 @@ var test_id = {
 };
 
 function eq(loc, x, y) {
-  return Mt.eq_suites(test_id, suites, loc, x, y);
+  Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
 var X = {};

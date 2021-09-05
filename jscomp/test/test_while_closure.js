@@ -28,7 +28,7 @@ function f(param) {
 f(undefined);
 
 $$Array.iter((function (x) {
-        return Curry._1(x, undefined);
+        Curry._1(x, undefined);
       }), arr);
 
 console.log(String(v.contents));

@@ -113,10 +113,10 @@ function createClass(debugName) {
                     send: oldSelf_send,
                     onUnmount: oldSelf_onUnmount
                   };
-                  return Curry._1(newComponent.didUpdate, {
-                              oldSelf: oldSelf,
-                              newSelf: newSelf
-                            });
+                  Curry._1(newComponent.didUpdate, {
+                        oldSelf: oldSelf,
+                        newSelf: newSelf
+                      });
                 }),
               componentWillUnmount: (function () {
                   var $$this = this ;
@@ -131,7 +131,7 @@ function createClass(debugName) {
                   var subs = $$this.subscriptions;
                   if (subs !== null) {
                     return Js_array.forEach((function (unsubscribe) {
-                                  return Curry._1(unsubscribe, undefined);
+                                  Curry._1(unsubscribe, undefined);
                                 }), subs);
                   }
                   
@@ -161,10 +161,10 @@ function createClass(debugName) {
                     send: oldSelf_send,
                     onUnmount: oldSelf_onUnmount
                   };
-                  return Curry._1(newComponent.willUpdate, {
-                              oldSelf: oldSelf,
-                              newSelf: newSelf
-                            });
+                  Curry._1(newComponent.willUpdate, {
+                        oldSelf: oldSelf,
+                        newSelf: newSelf
+                      });
                 }),
               componentWillReceiveProps: (function (nextProps) {
                   var $$this = this ;
@@ -177,18 +177,18 @@ function createClass(debugName) {
                   var oldJsProps = thisJs.props;
                   var oldConvertedReasonProps = nextProps === oldJsProps ? newConvertedReasonProps : convertPropsIfTheyreFromJs(oldJsProps, thisJs.jsPropsToReason, debugName);
                   var oldComponent = oldConvertedReasonProps._0;
-                  return thisJs.setState((function (curTotalState, param) {
-                                var curReasonState = curTotalState.reasonState;
-                                var oldSelf = $$this.self(curReasonState, oldComponent.retainedProps);
-                                var nextReasonState = Curry._1(newComponent.willReceiveProps, oldSelf);
-                                if (nextReasonState !== curTotalState) {
-                                  return {
-                                          reasonState: nextReasonState
-                                        };
-                                } else {
-                                  return curTotalState;
-                                }
-                              }), null);
+                  thisJs.setState((function (curTotalState, param) {
+                          var curReasonState = curTotalState.reasonState;
+                          var oldSelf = $$this.self(curReasonState, oldComponent.retainedProps);
+                          var nextReasonState = Curry._1(newComponent.willReceiveProps, oldSelf);
+                          if (nextReasonState !== curTotalState) {
+                            return {
+                                    reasonState: nextReasonState
+                                  };
+                          } else {
+                            return curTotalState;
+                          }
+                        }), null);
                 }),
               shouldComponentUpdate: (function (nextJsProps, nextState, param) {
                   var $$this = this ;
@@ -236,7 +236,7 @@ function createClass(debugName) {
                     var curState = thisJs.state;
                     var curReasonState = curState.reasonState;
                     var convertedReasonProps = convertPropsIfTheyreFromJs(thisJs.props, thisJs.jsPropsToReason, debugName);
-                    return Curry._2(callback, callbackPayload, $$this.self(curReasonState, convertedReasonProps._0.retainedProps));
+                    Curry._2(callback, callbackPayload, $$this.self(curReasonState, convertedReasonProps._0.retainedProps));
                   };
                 }),
               sendMethod: (function (action) {
@@ -253,43 +253,43 @@ function createClass(debugName) {
                       })
                   };
                   var partialStateApplication = Curry._1(component.reducer, action);
-                  return thisJs.setState((function (curTotalState, param) {
-                                var curReasonState = curTotalState.reasonState;
-                                var reasonStateUpdate = Curry._1(partialStateApplication, curReasonState);
-                                if (reasonStateUpdate === /* NoUpdate */0) {
-                                  return null;
-                                }
-                                var nextTotalState;
-                                if (typeof reasonStateUpdate === "number") {
+                  thisJs.setState((function (curTotalState, param) {
+                          var curReasonState = curTotalState.reasonState;
+                          var reasonStateUpdate = Curry._1(partialStateApplication, curReasonState);
+                          if (reasonStateUpdate === /* NoUpdate */0) {
+                            return null;
+                          }
+                          var nextTotalState;
+                          if (typeof reasonStateUpdate === "number") {
+                            nextTotalState = curTotalState;
+                          } else {
+                            switch (reasonStateUpdate.TAG | 0) {
+                              case /* Update */0 :
+                                  nextTotalState = {
+                                    reasonState: reasonStateUpdate._0
+                                  };
+                                  break;
+                              case /* SideEffects */1 :
+                                  sideEffects.contents = reasonStateUpdate._0;
                                   nextTotalState = curTotalState;
-                                } else {
-                                  switch (reasonStateUpdate.TAG | 0) {
-                                    case /* Update */0 :
-                                        nextTotalState = {
-                                          reasonState: reasonStateUpdate._0
-                                        };
-                                        break;
-                                    case /* SideEffects */1 :
-                                        sideEffects.contents = reasonStateUpdate._0;
-                                        nextTotalState = curTotalState;
-                                        break;
-                                    case /* UpdateWithSideEffects */2 :
-                                        sideEffects.contents = reasonStateUpdate._1;
-                                        nextTotalState = {
-                                          reasonState: reasonStateUpdate._0
-                                        };
-                                        break;
-                                    
-                                  }
-                                }
-                                if (nextTotalState !== curTotalState) {
-                                  return nextTotalState;
-                                } else {
-                                  return null;
-                                }
-                              }), $$this.handleMethod(function (param, self) {
-                                  return Curry._1(sideEffects.contents, self);
-                                }));
+                                  break;
+                              case /* UpdateWithSideEffects */2 :
+                                  sideEffects.contents = reasonStateUpdate._1;
+                                  nextTotalState = {
+                                    reasonState: reasonStateUpdate._0
+                                  };
+                                  break;
+                              
+                            }
+                          }
+                          if (nextTotalState !== curTotalState) {
+                            return nextTotalState;
+                          } else {
+                            return null;
+                          }
+                        }), $$this.handleMethod(function (param, self) {
+                            Curry._1(sideEffects.contents, self);
+                          }));
                 }),
               render: (function () {
                   var $$this = this ;

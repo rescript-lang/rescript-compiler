@@ -202,19 +202,20 @@ let unit : t = { expression_desc = Undefined; comment = None }
    [Js_fun_env.empty] is a mutable state ..
 *)
 
-let ocaml_fun ?comment ?immutable_mask params block : t =
+let ocaml_fun ?comment ?immutable_mask ~return_unit params block : t =
   let len = List.length params in
   {
     expression_desc =
-      Fun (false, params, block, Js_fun_env.make ?immutable_mask len);
+      Fun
+        (false, params, block, Js_fun_env.make ?immutable_mask len, return_unit);
     comment;
   }
 
-let method_ ?comment ?immutable_mask params block : t =
+let method_ ?comment ?immutable_mask ~return_unit params block : t =
   let len = List.length params in
   {
     expression_desc =
-      Fun (true, params, block, Js_fun_env.make ?immutable_mask len);
+      Fun (true, params, block, Js_fun_env.make ?immutable_mask len, return_unit);
     comment;
   }
 
@@ -488,7 +489,7 @@ let bytes_length ?comment (e : t) : t =
 
 let function_length ?comment (e : t) : t =
   match e.expression_desc with
-  | Fun (b, params, _, _) ->
+  | Fun (b, params, _, _, _) ->
       let params_length = List.length params in
       int ?comment
         (Int32.of_int (if b then params_length - 1 else params_length))
@@ -1153,6 +1154,7 @@ let rec int32_band ?comment (e1 : J.expression) (e2 : J.expression) :
     remember to add parens..
 *)
 let of_block ?comment ?e block : t =
+  let return_unit = false in (* This case is not hit that much*)
   call ~info:Js_call_info.ml_full_call
     {
       comment;
@@ -1165,7 +1167,8 @@ let of_block ?comment ?e block : t =
             | Some e ->
                 Ext_list.append block
                   [ { J.statement_desc = Return e; comment } ]),
-            Js_fun_env.make 0 );
+            Js_fun_env.make 0,
+            return_unit );
     }
     []
 

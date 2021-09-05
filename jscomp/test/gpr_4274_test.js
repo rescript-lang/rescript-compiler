@@ -6,11 +6,11 @@ var Belt_Array = require("../../lib/js/belt_Array.js");
 var N = {};
 
 function f(X, xs) {
-  return X.forEach(xs, {
-              i: (function (x) {
-                  console.log(x.x);
-                })
-            });
+  X.forEach(xs, {
+        i: (function (x) {
+            console.log(x.x);
+          })
+      });
 }
 
 Belt_List.forEachU({

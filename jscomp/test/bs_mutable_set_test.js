@@ -19,11 +19,11 @@ var test_id = {
 };
 
 function eq(loc, x, y) {
-  return Mt.eq_suites(test_id, suites, loc, x, y);
+  Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
 function b(loc, x) {
-  return Mt.bool_suites(test_id, suites, loc, x);
+  Mt.bool_suites(test_id, suites, loc, x);
 }
 
 var xs = Array_data_util.range(0, 30);
@@ -413,7 +413,7 @@ Belt_List.forEach({
         }
       }
     }, (function (x) {
-        return Belt_internalAVLset.checkInvariantInternal(x.data);
+        Belt_internalAVLset.checkInvariantInternal(x.data);
       }));
 
 var v$1 = {
@@ -503,9 +503,9 @@ function id(loc, x) {
     data: Belt_internalAVLset.fromSortedArrayUnsafe(x)
   };
   Belt_internalAVLset.checkInvariantInternal(u.data);
-  return b(loc, Belt_Array.every2(Belt_internalAVLset.toArray(u.data), x, (function (prim0, prim1) {
-                    return prim0 === prim1;
-                  })));
+  b(loc, Belt_Array.every2(Belt_internalAVLset.toArray(u.data), x, (function (prim0, prim1) {
+              return prim0 === prim1;
+            })));
 }
 
 id("File \"bs_mutable_set_test.ml\", line 229, characters 5-12", []);

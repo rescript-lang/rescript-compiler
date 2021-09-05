@@ -75,7 +75,7 @@ function __ocaml_lex_token_rec(l, lexbuf, ___ocaml_lex_state) {
 }
 
 function token(l, lexbuf) {
-  return __ocaml_lex_token_rec(l, lexbuf, 0);
+  __ocaml_lex_token_rec(l, lexbuf, 0);
 }
 
 exports.l = l;

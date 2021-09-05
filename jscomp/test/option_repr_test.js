@@ -14,11 +14,11 @@ var test_id = {
 };
 
 function eq(loc, x, y) {
-  return Mt.eq_suites(test_id, suites, loc, x, y);
+  Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
 function b(loc, v) {
-  return Mt.bool_suites(test_id, suites, loc, v);
+  Mt.bool_suites(test_id, suites, loc, v);
 }
 
 function f0(x) {

@@ -12,11 +12,11 @@ var test_id = {
 };
 
 function eq(loc, x, y) {
-  return Mt.eq_suites(test_id, suites, loc, x, y);
+  Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
 function b(loc, b$1) {
-  return Mt.bool_suites(test_id, suites, loc, b$1);
+  Mt.bool_suites(test_id, suites, loc, b$1);
 }
 
 function makeWrapper(foo, param) {

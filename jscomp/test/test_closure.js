@@ -25,7 +25,7 @@ function f(param) {
 var u = f(undefined);
 
 $$Array.iter((function (x) {
-        return Curry._1(x, undefined);
+        Curry._1(x, undefined);
       }), u);
 
 if (v.contents !== 45) {

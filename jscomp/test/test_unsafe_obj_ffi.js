@@ -7,7 +7,7 @@ function f(x) {
 
 function g(x) {
   x.method1(3);
-  return x.method2(3, 3);
+  x.method2(3, 3);
 }
 
 function h(x) {

@@ -30,31 +30,31 @@ function add_test(loc, test) {
 }
 
 function eq(loc, x, y) {
-  return add_test(loc, (function (param) {
-                return {
-                        TAG: /* Eq */0,
-                        _0: x,
-                        _1: y
-                      };
-              }));
+  add_test(loc, (function (param) {
+          return {
+                  TAG: /* Eq */0,
+                  _0: x,
+                  _1: y
+                };
+        }));
 }
 
 function false_(loc) {
-  return add_test(loc, (function (param) {
-                return {
-                        TAG: /* Ok */4,
-                        _0: false
-                      };
-              }));
+  add_test(loc, (function (param) {
+          return {
+                  TAG: /* Ok */4,
+                  _0: false
+                };
+        }));
 }
 
 function true_(loc) {
-  return add_test(loc, (function (param) {
-                return {
-                        TAG: /* Ok */4,
-                        _0: true
-                      };
-              }));
+  add_test(loc, (function (param) {
+          return {
+                  TAG: /* Ok */4,
+                  _0: true
+                };
+        }));
 }
 
 var v = JSON.parse(" { \"x\" : [1, 2, 3 ] } ");
@@ -742,7 +742,7 @@ function id(obj) {
 }
 
 function idtest(obj) {
-  return eq("File \"js_json_test.ml\", line 399, characters 5-12", obj, Js_json.deserializeUnsafe(Js_json.serializeExn(obj)));
+  eq("File \"js_json_test.ml\", line 399, characters 5-12", obj, Js_json.deserializeUnsafe(Js_json.serializeExn(obj)));
 }
 
 idtest(undefined);
