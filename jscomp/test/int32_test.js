@@ -217,7 +217,7 @@ var test_id = {
 };
 
 function eq(loc, x, y) {
-  return Mt.eq_suites(test_id, suites, loc, x, y);
+  Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
 eq("File \"int32_test.ml\", line 47, characters 5-12", Caml_float.int_bits_of_float(0.3), 1050253722);

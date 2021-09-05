@@ -15,7 +15,7 @@ var test_id = {
 };
 
 function eq(loc, x, y) {
-  return Mt.eq_suites(test_id, suites, loc, x, y);
+  Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
 var Inline_record = /* @__PURE__ */Caml_exceptions.create("Record_extension_test.Inline_record");

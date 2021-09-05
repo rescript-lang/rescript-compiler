@@ -29,7 +29,7 @@ var P = Caml_module.init_mod([
     });
 
 function print(a) {
-  return $$Array.iter(P.print, a);
+  $$Array.iter(P.print, a);
 }
 
 Caml_module.update_mod({

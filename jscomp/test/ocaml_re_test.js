@@ -981,7 +981,7 @@ var Table = Hashtbl.Make({
     });
 
 function reset_table(a) {
-  return $$Array.fill(a, 0, a.length, false);
+  $$Array.fill(a, 0, a.length, false);
 }
 
 function mark_used_indices(tbl) {
@@ -995,13 +995,13 @@ function mark_used_indices(tbl) {
                         break;
                     
                   }
-                  return List.iter((function (param) {
-                                var i = param[1];
-                                if (i >= 0) {
-                                  return Caml_array.set(tbl, i, true);
-                                }
-                                
-                              }), param._0.marks);
+                  List.iter((function (param) {
+                          var i = param[1];
+                          if (i >= 0) {
+                            return Caml_array.set(tbl, i, true);
+                          }
+                          
+                        }), param._0.marks);
                 }), param);
   };
 }
@@ -1403,7 +1403,7 @@ function flatten_match(m) {
         }), -1, m);
   var res = Caml_array.make(ma + 1 | 0, -1);
   List.iter((function (param) {
-          return Caml_array.set(res, param[0], param[1]);
+          Caml_array.set(res, param[0], param[1]);
         }), m);
   return res;
 }
@@ -1531,7 +1531,7 @@ function validate(info, s, pos, st) {
   var cat = category(info.re, c);
   var desc$p = delta$1(info, cat, c, st);
   var st$p = find_state(info.re, desc$p);
-  return Caml_array.set(st.next, c, st$p);
+  Caml_array.set(st.next, c, st$p);
 }
 
 function loop(info, s, pos, st) {
@@ -1780,7 +1780,7 @@ function split(s, cm) {
   var _t = s;
   var f = function (i, j) {
     Caml_bytes.set(cm, i, /* '\001' */1);
-    return Caml_bytes.set(cm, j + 1 | 0, /* '\001' */1);
+    Caml_bytes.set(cm, j + 1 | 0, /* '\001' */1);
   };
   while(true) {
     var t = _t;

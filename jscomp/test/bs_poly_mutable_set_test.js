@@ -18,11 +18,11 @@ var test_id = {
 };
 
 function eq(loc, x, y) {
-  return Mt.eq_suites(test_id, suites, loc, x, y);
+  Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
 function b(loc, x) {
-  return Mt.bool_suites(test_id, suites, loc, x);
+  Mt.bool_suites(test_id, suites, loc, x);
 }
 
 var IntCmp = Belt_Id.comparable(Caml.int_compare);
@@ -322,7 +322,7 @@ Belt_List.forEach({
         }
       }
     }, (function (x) {
-        return Belt_internalAVLset.checkInvariantInternal(x.data);
+        Belt_internalAVLset.checkInvariantInternal(x.data);
       }));
 
 Mt.from_pair_suites("Bs_poly_mutable_set_test", suites.contents);

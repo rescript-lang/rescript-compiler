@@ -280,9 +280,9 @@ function raceTest(param) {
 
 function createPromiseRejectTest(param) {
   var obj = new Promise((function (resolve, reject) {
-          return reject({
-                      RE_EXN_ID: "Not_found"
-                    });
+          reject({
+                RE_EXN_ID: "Not_found"
+              });
         }));
   var arg1 = function (error) {
     assert_bool(error === ({
@@ -295,7 +295,7 @@ function createPromiseRejectTest(param) {
 
 function createPromiseFulfillTest(param) {
   var obj = new Promise((function (resolve, param) {
-          return resolve("success");
+          resolve("success");
         }));
   var arg1 = function (resolved) {
     assert_bool(resolved === "success");

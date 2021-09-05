@@ -26,7 +26,7 @@ var c = [
 
 function f(param) {
   Caml_array.set(a, 0, 3.0);
-  return Caml_array.set(b, 0, 3);
+  Caml_array.set(b, 0, 3);
 }
 
 function h(param) {

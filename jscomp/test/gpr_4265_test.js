@@ -13,7 +13,7 @@ var test_id = {
 };
 
 function eq(loc, x, y) {
-  return Mt.eq_suites(test_id, suites, loc, x, y);
+  Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
 var mockMap = {
@@ -26,7 +26,7 @@ function add(id) {
 }
 
 function remove(id) {
-  return Belt_MutableMapInt.remove(mockMap, id);
+  Belt_MutableMapInt.remove(mockMap, id);
 }
 
 add(1726);

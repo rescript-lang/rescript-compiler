@@ -19,15 +19,15 @@ var test_id = {
 };
 
 function eq(loc, x, y) {
-  return Mt.eq_suites(test_id, suites, loc, x, y);
+  Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
 function b(loc, x) {
-  return Mt.bool_suites(test_id, suites, loc, x);
+  Mt.bool_suites(test_id, suites, loc, x);
 }
 
 function $$throw(loc, x) {
-  return Mt.throw_suites(test_id, suites, loc, x);
+  Mt.throw_suites(test_id, suites, loc, x);
 }
 
 function neq(loc, x, y) {
@@ -115,17 +115,17 @@ b("File \"bs_array_test.ml\", line 33, characters 4-11", Caml_obj.equal([
         ]));
 
 $$throw("File \"bs_array_test.ml\", line 34, characters 8-15", (function (param) {
-        return Belt_Array.setExn([
-                    0,
-                    1
-                  ], -1, 0);
+        Belt_Array.setExn([
+              0,
+              1
+            ], -1, 0);
       }));
 
 $$throw("File \"bs_array_test.ml\", line 35, characters 8-15", (function (param) {
-        return Belt_Array.setExn([
-                    0,
-                    1
-                  ], 2, 0);
+        Belt_Array.setExn([
+              0,
+              1
+            ], 2, 0);
       }));
 
 b("File \"bs_array_test.ml\", line 36, characters 4-11", !Belt_Array.set([
@@ -186,7 +186,7 @@ var v$4 = [
 b("File \"bs_array_test.ml\", line 40, characters 4-11", (Belt_Array.setExn(v$4, 1, 0), Belt_Array.getExn(v$4, 1) === 0));
 
 function id(x) {
-  return eq("File \"bs_array_test.ml\", line 43, characters 5-12", Js_vector.toList(Js_list.toVector(x)), x);
+  eq("File \"bs_array_test.ml\", line 43, characters 5-12", Js_vector.toList(Js_list.toVector(x)), x);
 }
 
 eq("File \"bs_array_test.ml\", line 47, characters 5-12", Js_list.toVector({
@@ -1244,7 +1244,7 @@ b("File \"bs_array_test.ml\", line 278, characters 4-11", (Belt_Array.forEachWit
 
 function id$1(loc, x) {
   var u = x.slice(0);
-  return eq("File \"bs_array_test.ml\", line 288, characters 5-12", Belt_Array.reverse(x), (Belt_Array.reverseInPlace(u), u));
+  eq("File \"bs_array_test.ml\", line 288, characters 5-12", Belt_Array.reverse(x), (Belt_Array.reverseInPlace(u), u));
 }
 
 id$1("File \"bs_array_test.ml\", line 293, characters 5-12", []);

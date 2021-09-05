@@ -98,10 +98,10 @@ function insert(idl, idh, v, ind, bucket, newNode) {
   }
   resize((sz_1.contents + sz_1.contents | 0) + 2 | 0);
   var ind$1 = hashVal(idl, idh, v) & sz_1.contents;
-  return Caml_array.set(htab.contents, ind$1, {
-              hd: newNode,
-              tl: Caml_array.get(htab.contents, ind$1)
-            });
+  Caml_array.set(htab.contents, ind$1, {
+        hd: newNode,
+        tl: Caml_array.get(htab.contents, ind$1)
+      });
 }
 
 function resetUnique(param) {

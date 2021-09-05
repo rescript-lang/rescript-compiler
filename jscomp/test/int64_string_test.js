@@ -14,7 +14,7 @@ var test_id = {
 };
 
 function eq(loc, x, y) {
-  return Mt.eq_suites(test_id, suites, loc, x, y);
+  Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
 var v = Caml_int64.to_string(Int64.max_int);
@@ -22,7 +22,7 @@ var v = Caml_int64.to_string(Int64.max_int);
 eq("File \"int64_string_test.ml\", line 9, characters 6-13", v, "9223372036854775807");
 
 function f(a, b) {
-  return eq("File \"int64_string_test.ml\", line 11, characters 5-12", Caml_int64.to_string(a), b);
+  eq("File \"int64_string_test.ml\", line 11, characters 5-12", Caml_int64.to_string(a), b);
 }
 
 var hh = Caml_int64.add(Int64.min_int, [

@@ -34,7 +34,7 @@ function eq(loc, x, y) {
 function eq3(loc, a, b, c) {
   eq(loc, a, b);
   eq(loc, b, c);
-  return eq(loc, a, c);
+  eq(loc, a, c);
 }
 
 var M = {};
@@ -76,9 +76,9 @@ eq("File \"format_test.ml\", line 59, characters 5-12", (1 + 4095 / 4096) * 8, 1
 eq("File \"format_test.ml\", line 62, characters 5-12", (1 + 65535 / 65536) * 8, 15.9998779296875);
 
 function f(loc, ls) {
-  return List.iter((function (param) {
-                return eq(loc, Caml_format.float_of_string(param[0]), param[1]);
-              }), ls);
+  List.iter((function (param) {
+          eq(loc, Caml_format.float_of_string(param[0]), param[1]);
+        }), ls);
 }
 
 f("File \"format_test.ml\", line 75, characters 6-13", {
@@ -106,9 +106,9 @@ function sl(f) {
 }
 
 function aux_list(loc, ls) {
-  return List.iter((function (param) {
-                return eq(loc, Caml_format.hexstring_of_float(param[0], -1, /* '-' */45), param[1]);
-              }), ls);
+  List.iter((function (param) {
+          eq(loc, Caml_format.hexstring_of_float(param[0], -1, /* '-' */45), param[1]);
+        }), ls);
 }
 
 var literals_0 = [
@@ -178,7 +178,7 @@ var s = Caml_format.hexstring_of_float(7.875, -1, /* '-' */45);
 eq("File \"format_test.ml\", line 112, characters 5-12", Bytes.unsafe_to_string(Bytes.uppercase_ascii(Bytes.unsafe_of_string(s))), "0X1.F8P+2");
 
 function scan_float(loc, s, expect) {
-  return eq(loc, Caml_format.float_of_string(s), expect);
+  eq(loc, Caml_format.float_of_string(s), expect);
 }
 
 scan_float("File \"format_test.ml\", line 119, characters 13-20", "0x3f.p1", 126);
@@ -186,7 +186,7 @@ scan_float("File \"format_test.ml\", line 119, characters 13-20", "0x3f.p1", 126
 scan_float("File \"format_test.ml\", line 120, characters 13-20", "0x1.3333333333333p-2", 0.3);
 
 List.iter((function (param) {
-        return scan_float("File \"format_test.ml\", line 122, characters 13-20", param[1], param[0]);
+        scan_float("File \"format_test.ml\", line 122, characters 13-20", param[1], param[0]);
       }), literals);
 
 Mt.from_pair_suites("Format_test", suites.contents);

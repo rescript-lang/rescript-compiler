@@ -13,7 +13,7 @@ var test_id = {
 };
 
 function eq(loc, x, y) {
-  return Mt.eq_suites(test_id, suites, loc, x, y);
+  Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
 var Caml_splice_call$1 = {};
@@ -41,13 +41,13 @@ function dynamic(arr) {
         1,
         arr
       ]);
-  return eq("File \"splice_test.ml\", line 34, characters 5-12", a, Caml_array.concat({
-                  hd: [1],
-                  tl: {
-                    hd: arr,
-                    tl: /* [] */0
-                  }
-                }));
+  eq("File \"splice_test.ml\", line 34, characters 5-12", a, Caml_array.concat({
+            hd: [1],
+            tl: {
+              hd: arr,
+              tl: /* [] */0
+            }
+          }));
 }
 
 dynamic([
@@ -81,13 +81,13 @@ function dynamic$1(arr) {
         1,
         arr
       ]);
-  return eq("File \"splice_test.ml\", line 56, characters 7-14", a, Caml_array.concat({
-                  hd: [1],
-                  tl: {
-                    hd: arr,
-                    tl: /* [] */0
-                  }
-                }));
+  eq("File \"splice_test.ml\", line 56, characters 7-14", a, Caml_array.concat({
+            hd: [1],
+            tl: {
+              hd: arr,
+              tl: /* [] */0
+            }
+          }));
 }
 
 dynamic$1([

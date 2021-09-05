@@ -15,7 +15,7 @@ for(var i = 1; i <= 2; ++i){
       var prev = delayed.contents;
       delayed.contents = (function (param) {
           Curry._1(prev, undefined);
-          return f(((n + 1 | 0) + i | 0) - i | 0, j - 1 | 0);
+          f(((n + 1 | 0) + i | 0) - i | 0, j - 1 | 0);
         });
       return ;
     }

@@ -18,7 +18,7 @@ function caml_array_set(xs, index, newval) {
           Error: new Error()
         };
   }
-  return Caml_array.set(xs, index, newval);
+  Caml_array.set(xs, index, newval);
 }
 
 function caml_array_get(xs, index) {

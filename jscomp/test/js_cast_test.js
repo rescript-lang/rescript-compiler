@@ -23,13 +23,13 @@ function add_test(loc, test) {
 }
 
 function eq(loc, x, y) {
-  return add_test(loc, (function (param) {
-                return {
-                        TAG: /* Eq */0,
-                        _0: x,
-                        _1: y
-                      };
-              }));
+  add_test(loc, (function (param) {
+          return {
+                  TAG: /* Eq */0,
+                  _0: x,
+                  _1: y
+                };
+        }));
 }
 
 eq("File \"js_cast_test.ml\", line 13, characters 12-19", true, 1);

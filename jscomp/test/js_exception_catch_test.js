@@ -27,31 +27,31 @@ function add_test(loc, test) {
 }
 
 function eq(loc, x, y) {
-  return add_test(loc, (function (param) {
-                return {
-                        TAG: /* Eq */0,
-                        _0: x,
-                        _1: y
-                      };
-              }));
+  add_test(loc, (function (param) {
+          return {
+                  TAG: /* Eq */0,
+                  _0: x,
+                  _1: y
+                };
+        }));
 }
 
 function false_(loc) {
-  return add_test(loc, (function (param) {
-                return {
-                        TAG: /* Ok */4,
-                        _0: false
-                      };
-              }));
+  add_test(loc, (function (param) {
+          return {
+                  TAG: /* Ok */4,
+                  _0: false
+                };
+        }));
 }
 
 function true_(loc) {
-  return add_test(loc, (function (param) {
-                return {
-                        TAG: /* Ok */4,
-                        _0: true
-                      };
-              }));
+  add_test(loc, (function (param) {
+          return {
+                  TAG: /* Ok */4,
+                  _0: true
+                };
+        }));
 }
 
 var exit = 0;

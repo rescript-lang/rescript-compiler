@@ -234,11 +234,11 @@ function flush_all(param) {
 }
 
 function output_bytes(oc, s) {
-  return Caml_external_polyfill.resolve("ml_output")(oc, s, 0, s.length);
+  Caml_external_polyfill.resolve("ml_output")(oc, s, 0, s.length);
 }
 
 function output_string(oc, s) {
-  return Caml_external_polyfill.resolve("ml_output")(oc, s, 0, s.length);
+  Caml_external_polyfill.resolve("ml_output")(oc, s, 0, s.length);
 }
 
 function output(oc, s, ofs, len) {
@@ -249,7 +249,7 @@ function output(oc, s, ofs, len) {
           Error: new Error()
         };
   }
-  return Caml_external_polyfill.resolve("ml_output")(oc, s, ofs, len);
+  Caml_external_polyfill.resolve("ml_output")(oc, s, ofs, len);
 }
 
 function output_substring(oc, s, ofs, len) {
@@ -260,16 +260,16 @@ function output_substring(oc, s, ofs, len) {
           Error: new Error()
         };
   }
-  return Caml_external_polyfill.resolve("ml_output")(oc, s, ofs, len);
+  Caml_external_polyfill.resolve("ml_output")(oc, s, ofs, len);
 }
 
 function output_value(chan, v) {
-  return Caml_external_polyfill.resolve("output_value")(chan, v, /* [] */0);
+  Caml_external_polyfill.resolve("output_value")(chan, v, /* [] */0);
 }
 
 function close_out(oc) {
   Caml_external_polyfill.resolve("ml_flush")(oc);
-  return Caml_external_polyfill.resolve("ml_close_channel")(oc);
+  Caml_external_polyfill.resolve("ml_close_channel")(oc);
 }
 
 function close_out_noerr(oc) {
@@ -350,7 +350,7 @@ function really_input(ic, s, ofs, len) {
           Error: new Error()
         };
   }
-  return unsafe_really_input(ic, s, ofs, len);
+  unsafe_really_input(ic, s, ofs, len);
 }
 
 function really_input_string(ic, len) {
@@ -433,12 +433,12 @@ function at_exit(f) {
   var g = exit_function.contents;
   exit_function.contents = (function (param) {
       Curry._1(f, undefined);
-      return Curry._1(g, undefined);
+      Curry._1(g, undefined);
     });
 }
 
 function do_at_exit(param) {
-  return Curry._1(exit_function.contents, undefined);
+  Curry._1(exit_function.contents, undefined);
 }
 
 function exit(retcode) {

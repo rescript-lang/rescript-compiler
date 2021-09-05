@@ -32,7 +32,7 @@ function test_set(x) {
 
 function f(x) {
   x.bark("he");
-  return x.fight();
+  x.fight();
 }
 
 function ff(fn, a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11) {

@@ -1168,7 +1168,7 @@ function rev_dir(o, t, s) {
   reverse_left_right(o);
   var old_params = s.params;
   transform_enemy(t, s, o.dir);
-  return normalize_pos(o.pos, old_params, s.params);
+  normalize_pos(o.pos, old_params, s.params);
 }
 
 function dec_health(obj) {
@@ -2225,10 +2225,10 @@ function update_loop(canvas, param, map_dim) {
     fps(canvas, fps$1);
     hud(canvas, state$1.score, state$1.coins);
     requestAnimationFrame(function (t) {
-          return update_helper(t, state$1, player$1, collid_objs.contents, particles.contents);
+          update_helper(t, state$1, player$1, collid_objs.contents, particles.contents);
         });
   };
-  return update_helper(0, state, player, param[1], /* [] */0);
+  update_helper(0, state, player, param[1], /* [] */0);
 }
 
 function keydown(evt) {
@@ -3182,7 +3182,7 @@ function generate(w, h, context) {
 }
 
 function init(param) {
-  return Random.self_init(undefined);
+  Random.self_init(undefined);
 }
 
 var Procedural_generator = {
