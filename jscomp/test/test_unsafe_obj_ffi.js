@@ -13,7 +13,6 @@ function g(x) {
 function h(x) {
   x.height = 3;
   x.width = 3;
-  
 }
 
 exports.f = f;

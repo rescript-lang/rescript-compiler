@@ -9,7 +9,6 @@ function f(xs) {
     
   }
   console.log("nothing to see here", xs);
-  
 }
 
 exports.f = f;

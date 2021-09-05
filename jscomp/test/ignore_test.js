@@ -25,7 +25,6 @@ function eq(loc, x, y) {
     ],
     tl: suites.contents
   };
-  
 }
 
 function f(x) {
@@ -34,7 +33,6 @@ function f(x) {
 
 function ff(x) {
   console.log(x);
-  
 }
 
 eq("File \"ignore_test.ml\", line 16, characters 5-12", undefined, undefined);

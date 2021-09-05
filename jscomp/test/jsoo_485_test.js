@@ -3,7 +3,6 @@
 
 function f(param) {
   3;
-  
 }
 
 exports.f = f;

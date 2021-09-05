@@ -222,7 +222,6 @@ function check_height_and_diff(param) {
 
 function check(tree) {
   check_height_and_diff(tree);
-  
 }
 
 function create(l, v, r) {

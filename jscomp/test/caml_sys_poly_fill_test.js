@@ -29,7 +29,6 @@ function eq(loc, x, y) {
     ],
     tl: suites.contents
   };
-  
 }
 
 Node_process.putEnvVar("Caml_sys_poly_fill_test", "X");

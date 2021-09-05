@@ -31,7 +31,6 @@ function f(param) {
   C$1.y();
   C.x();
   C.y();
-  
 }
 
 var v;

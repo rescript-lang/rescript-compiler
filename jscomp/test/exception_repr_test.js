@@ -28,7 +28,6 @@ function eq(loc, x, y) {
     ],
     tl: suites.contents
   };
-  
 }
 
 var Hi = /* @__PURE__ */Caml_exceptions.create("Exception_repr_test.Hi");

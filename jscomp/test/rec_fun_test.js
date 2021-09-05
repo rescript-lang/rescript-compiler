@@ -27,7 +27,6 @@ function eq(loc, x, y) {
     ],
     tl: suites.contents
   };
-  
 }
 
 var called = {
@@ -47,7 +46,6 @@ function g(param) {
         contents: next
       });
   console.log(String(next(0, true)));
-  
 }
 
 g(undefined);

@@ -35,7 +35,6 @@ function obj_get(param) {
 
 function obj_set(i) {
   v.contents = i;
-  
 }
 
 var obj = {

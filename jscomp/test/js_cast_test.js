@@ -20,7 +20,6 @@ function add_test(loc, test) {
     ],
     tl: suites.contents
   };
-  
 }
 
 function eq(loc, x, y) {

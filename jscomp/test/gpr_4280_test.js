@@ -23,7 +23,6 @@ function div(children, param) {
     u.contents = 300;
     console.log("nonline");
   }
-  
 }
 
 function string(s) {
@@ -31,7 +30,6 @@ function string(s) {
     u.contents = 200;
     console.log("no");
   }
-  
 }
 
 function fn(authState, route) {

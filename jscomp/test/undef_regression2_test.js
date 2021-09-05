@@ -26,7 +26,6 @@ function eq(loc, x, y) {
     ],
     tl: suites.contents
   };
-  
 }
 
 function ok(loc, x) {
@@ -43,7 +42,6 @@ function ok(loc, x) {
     ],
     tl: suites.contents
   };
-  
 }
 
 var match = typeof ___undefined_value === "undefined" ? undefined : ___undefined_value;
@@ -57,7 +55,6 @@ function test(param) {
   } else {
     console.log("producton mode");
   }
-  
 }
 
 function test2(param) {
@@ -67,7 +64,6 @@ function test2(param) {
   } else {
     console.log("non node environment");
   }
-  
 }
 
 function test3(param) {

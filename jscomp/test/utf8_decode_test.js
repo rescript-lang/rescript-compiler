@@ -119,7 +119,6 @@ function to_list(xs) {
             hd: x,
             tl: v.contents
           };
-          
         }), xs);
   return List.rev(v.contents);
 }
@@ -239,7 +238,6 @@ function eq(loc, param) {
     ],
     tl: suites.contents
   };
-  
 }
 
 List.iter((function (param) {

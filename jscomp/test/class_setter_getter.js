@@ -3,7 +3,6 @@
 
 function fff(x) {
   x.height = 2;
-  
 }
 
 function ff(x, z) {

@@ -22,7 +22,6 @@ Mt.from_pair_suites("Jsoo_400_test", {
                     TAG: /* ThrowAny */7,
                     _0: (function (param) {
                         u(undefined);
-                        
                       })
                   };
           })

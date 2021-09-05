@@ -6,7 +6,6 @@ function f(param) {
   console.log(undefined);
   console.log("hi");
   console.log(undefined);
-  
 }
 
 exports.f = f;

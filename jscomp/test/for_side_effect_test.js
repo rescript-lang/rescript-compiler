@@ -6,7 +6,6 @@ function tst(param) {
   for(var i = (console.log("hi"), 0) ,i_finish = (console.log("hello"), 3); i <= i_finish; ++i){
     
   }
-  
 }
 
 function test2(param) {

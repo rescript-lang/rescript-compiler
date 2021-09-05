@@ -24,7 +24,6 @@ function bench(param) {
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
     Hashtbl.remove(table, i$2);
   }
-  
 }
 
 bench(undefined);

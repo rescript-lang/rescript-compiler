@@ -27,7 +27,6 @@ function eq(loc, x, y) {
     ],
     tl: suites.contents
   };
-  
 }
 
 var _map = {"D":"D","C":"C","f":"x"};

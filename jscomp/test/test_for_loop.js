@@ -8,14 +8,12 @@ function for_(x) {
   for(var i = 0 ,i_finish = (console.log("hi"), x.length); i <= i_finish; ++i){
     console.log(Caml_array.get(x, i));
   }
-  
 }
 
 function for_2(x) {
   for(var i = 0 ,i_finish = x.length; i <= i_finish; ++i){
     console.log(Caml_array.get(x, i));
   }
-  
 }
 
 function for_3(x) {
@@ -30,7 +28,6 @@ function for_3(x) {
     Caml_array.set(arr, i, (function(j){
         return function (param) {
           v.contents = v.contents + j | 0;
-          
         }
         }(j)));
   }
@@ -53,7 +50,6 @@ function for_4(x) {
     Caml_array.set(arr, i, (function(k){
         return function (param) {
           v.contents = v.contents + k | 0;
-          
         }
         }(k)));
   }
@@ -75,7 +71,6 @@ function for_5(x, u) {
     Caml_array.set(arr, i, (function(k){
         return function (param) {
           v.contents = v.contents + k | 0;
-          
         }
         }(k)));
   }
@@ -112,7 +107,6 @@ function for_6(x, u) {
       Caml_array.set(arr, i, (function(k,h){
           return function (param) {
             v.contents = (((((v.contents + k | 0) + v2.contents | 0) + u | 0) + v4.contents | 0) + v5.contents | 0) + h | 0;
-            
           }
           }(k,h)));
     }

@@ -43,7 +43,6 @@ function f(x) {
   for(var i = 0; i <= 10; ++i){
     Caml_array.set(x, i, i);
   }
-  
 }
 
 exports.g = g;

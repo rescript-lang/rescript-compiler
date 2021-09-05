@@ -9,7 +9,6 @@ function f(X, xs) {
   return X.forEach(xs, {
               i: (function (x) {
                   console.log(x.x);
-                  
                 })
             });
 }
@@ -21,7 +20,6 @@ Belt_List.forEachU({
       tl: /* [] */0
     }, (function (x) {
         console.log(x.x);
-        
       }));
 
 var Foo = {};

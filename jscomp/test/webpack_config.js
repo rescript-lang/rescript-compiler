@@ -40,19 +40,15 @@ function f(param) {
   return [
           (function (prim) {
               List$3.ff();
-              
             }),
           (function (prim) {
               List$3.ff2();
-              
             }),
           (function (prim) {
               List$2.ff();
-              
             }),
           (function (prim) {
               List$2.ff2();
-              
             })
         ];
 }

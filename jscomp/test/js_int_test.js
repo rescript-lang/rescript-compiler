@@ -54,7 +54,6 @@ var suites_1 = {
                       TAG: /* ThrowAny */7,
                       _0: (function (param) {
                           (0).toExponential(101);
-                          
                         })
                     };
             })
@@ -67,7 +66,6 @@ var suites_1 = {
                         TAG: /* ThrowAny */7,
                         _0: (function (param) {
                             (0).toExponential(-1);
-                            
                           })
                       };
               })
@@ -124,7 +122,6 @@ var suites_1 = {
                                   TAG: /* ThrowAny */7,
                                   _0: (function (param) {
                                       (0).toPrecision(101);
-                                      
                                     })
                                 };
                         })
@@ -137,7 +134,6 @@ var suites_1 = {
                                     TAG: /* ThrowAny */7,
                                     _0: (function (param) {
                                         (0).toPrecision(-1);
-                                        
                                       })
                                   };
                           })
@@ -194,7 +190,6 @@ var suites_1 = {
                                               TAG: /* ThrowAny */7,
                                               _0: (function (param) {
                                                   (0).toString(37);
-                                                  
                                                 })
                                             };
                                     })
@@ -207,7 +202,6 @@ var suites_1 = {
                                                 TAG: /* ThrowAny */7,
                                                 _0: (function (param) {
                                                     (0).toString(1);
-                                                    
                                                   })
                                               };
                                       })
@@ -220,7 +214,6 @@ var suites_1 = {
                                                   TAG: /* ThrowAny */7,
                                                   _0: (function (param) {
                                                       (0).toString(-1);
-                                                      
                                                     })
                                                 };
                                         })

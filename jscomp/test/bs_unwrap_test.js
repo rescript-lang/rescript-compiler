@@ -52,7 +52,6 @@ console.log(7, Caml_option.option_unwrap((console.log("trace"), undefined)));
 
 function dyn_log3(prim0, prim1, prim2) {
   console.log(prim0.VAL, Caml_option.option_unwrap(prim1));
-  
 }
 
 dyn_log3({
@@ -71,7 +70,6 @@ console.log({
 
 function dyn_log4(prim) {
   console.log(prim.VAL);
-  
 }
 
 console.log({
@@ -80,17 +78,14 @@ console.log({
 
 function f(x) {
   console.log(x.VAL);
-  
 }
 
 function ff0(x, p) {
   console.log(Caml_option.option_unwrap(x), p);
-  
 }
 
 function ff1(x, p) {
   console.log(Caml_option.option_unwrap(Curry._1(x, undefined)), p);
-  
 }
 
 function test00(param) {

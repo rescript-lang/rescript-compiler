@@ -16,7 +16,6 @@ function f(param) {
     Caml_array.set(arr, i, (function(i){
         return function (param) {
           v.contents = v.contents + i | 0;
-          
         }
         }(i)));
   }

@@ -25,7 +25,6 @@ function eq(loc, x, y) {
     ],
     tl: suites.contents
   };
-  
 }
 
 eq("File \"gpr_1667_test.ml\", line 18, characters 7-14", 0, 0);

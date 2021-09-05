@@ -16,9 +16,7 @@ var hh = max2(1, 2);
 function f(x) {
   des(x, (function () {
           console.log("hei");
-          
         }));
-  
 }
 
 exports.u = u;

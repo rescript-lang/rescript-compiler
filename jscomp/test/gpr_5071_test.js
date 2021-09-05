@@ -14,7 +14,6 @@ function f(s, y) {
   }
   console.log(tmp);
   console.log(y);
-  
 }
 
 function make(s) {

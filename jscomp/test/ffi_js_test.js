@@ -36,7 +36,6 @@ function eq(loc, param) {
     ],
     tl: suites.contents
   };
-  
 }
 
 var int_config = {
@@ -84,7 +83,6 @@ var same_type = [
 var v_obj = {
   hi: (function () {
       console.log("hei");
-      
     })
 };
 
@@ -174,7 +172,6 @@ function ffff(x) {
     3,
     "x"
   ];
-  
 }
 
 Mt.from_pair_suites("Ffi_js_test", suites.contents);

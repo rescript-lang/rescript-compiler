@@ -32,7 +32,6 @@ function f1(u) {
 var obj3 = {
   hi: (function (name, age) {
       console.log(name);
-      
     }),
   hh: (function () {
       var self = this ;

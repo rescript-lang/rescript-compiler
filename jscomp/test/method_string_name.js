@@ -12,7 +12,6 @@ function ff(x) {
   console.log(({
           "Content-Type": "hello"
         })["Content-Type"]);
-  
 }
 
 exports.f = f;

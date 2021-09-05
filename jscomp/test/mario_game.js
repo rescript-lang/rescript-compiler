@@ -663,7 +663,6 @@ function transform_enemy(enemy_typ, spr, dir) {
   img.src = params.img_src;
   spr.params = params;
   spr.img = img;
-  
 }
 
 function update_animation(spr) {
@@ -767,7 +766,6 @@ function make_score(score, pos, ctx) {
 function update_vel(part) {
   part.vel.x = part.vel.x + part.acc.x;
   part.vel.y = part.vel.y + part.acc.y;
-  
 }
 
 function $$process(part) {
@@ -778,7 +776,6 @@ function $$process(part) {
   update_vel(part);
   part.pos.x = part.vel.x + part.pos.x;
   part.pos.y = part.vel.y + part.pos.y;
-  
 }
 
 var Particle = {
@@ -808,7 +805,6 @@ function set_vel_to_speed(obj) {
   } else {
     obj.vel.x = -speed;
   }
-  
 }
 
 function make_type$2(t) {
@@ -948,7 +944,6 @@ function normalize_pos(pos, p1, p2) {
   var match$3 = p2.bbox_size;
   pos.x = pos.x - (match$3[0] + match$1[0]) + (match$2[0] + match[0]);
   pos.y = pos.y - (match$3[1] + match$1[1]) + (match$2[1] + match[1]);
-  
 }
 
 function update_player(player, keys, context) {
@@ -1088,7 +1083,6 @@ function normalize_origin(pos, spr) {
   var match$1 = p.bbox_size;
   pos.x = pos.x - match[0];
   pos.y = pos.y - (match[1] + match$1[1]);
-  
 }
 
 function collide_block(check_xOpt, dir, obj) {
@@ -1116,7 +1110,6 @@ function collide_block(check_xOpt, dir, obj) {
 function reverse_left_right(obj) {
   obj.vel.x = -obj.vel.x;
   obj.dir = obj.dir ? /* Left */0 : /* Right */1;
-  
 }
 
 function evolve_enemy(player_dir, typ, spr, obj, context) {
@@ -1169,7 +1162,6 @@ function evolve_enemy(player_dir, typ, spr, obj, context) {
   } else {
     set_vel_to_speed(obj);
   }
-  
 }
 
 function rev_dir(o, t, s) {
@@ -1462,7 +1454,6 @@ function clear_canvas(canvas) {
   var cwidth = canvas.width;
   var cheight = canvas.height;
   context.clearRect(0, 0, cwidth, cheight);
-  
 }
 
 function hud(canvas, score, coins) {
@@ -1472,14 +1463,12 @@ function hud(canvas, score, coins) {
   context.font = "10px 'Press Start 2P'";
   context.fillText("Score: " + score_string, canvas.width - 140, 18);
   context.fillText("Coins: " + coin_string, 120, 18);
-  
 }
 
 function fps(canvas, fps_val) {
   var fps_str = String(fps_val | 0);
   var context = canvas.getContext("2d");
   context.fillText(fps_str, 10, 18);
-  
 }
 
 function game_win(ctx) {
@@ -1619,7 +1608,6 @@ function calc_fps(t0, t1) {
 
 function update_score(state, i) {
   state.score = state.score + i | 0;
-  
 }
 
 function process_collision(dir, c1, c2, state) {
@@ -2216,7 +2204,6 @@ function update_loop(canvas, param, map_dim) {
     };
     List.iter((function (obj) {
             run_update_collid(state$1, obj, objs);
-            
           }), objs);
     List.iter((function (part) {
             $$process(part);
@@ -2240,7 +2227,6 @@ function update_loop(canvas, param, map_dim) {
     requestAnimationFrame(function (t) {
           return update_helper(t, state$1, player$1, collid_objs.contents, particles.contents);
         });
-    
   };
   return update_helper(0, state, player, param[1], /* [] */0);
 }
@@ -3232,7 +3218,6 @@ function load(param) {
         256
       ]);
   console.log("asd");
-  
 }
 
 function inc_counter(param) {
@@ -3252,7 +3237,6 @@ function preload(param) {
                         inc_counter(undefined);
                         return true;
                       }), true);
-                
               }), {
               hd: "blocks.png",
               tl: {

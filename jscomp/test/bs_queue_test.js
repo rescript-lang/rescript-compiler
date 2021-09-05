@@ -734,7 +734,6 @@ Belt_MutableQueue.forEach(q$5, (function (j) {
               };
         }
         i$7.contents = i$7.contents + 1 | 0;
-        
       }));
 
 var q1$1 = {
