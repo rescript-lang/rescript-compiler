@@ -119,7 +119,6 @@ function ui_layout(compile, lookup, appContext) {
                           mk_titleRow(result.toFixed(2))
                         ];
                 }));
-          
         }), 100);
   return hw1;
 }

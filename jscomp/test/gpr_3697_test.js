@@ -26,7 +26,6 @@ function unfix(p) {
     var match = p.contents;
     p.contents = CamlinternalLazy.force(match._0);
   };
-  
 }
 
 exports.fix = fix;

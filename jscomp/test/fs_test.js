@@ -29,7 +29,6 @@ function eq(loc, param) {
     ],
     tl: suites.contents
   };
-  
 }
 
 var x = typeof __filename === "undefined" ? undefined : __filename;

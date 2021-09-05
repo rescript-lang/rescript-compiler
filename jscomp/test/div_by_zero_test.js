@@ -27,7 +27,6 @@ function eq(loc, x, y) {
     ],
     tl: suites.contents
   };
-  
 }
 
 function add(suite) {
@@ -35,7 +34,6 @@ function add(suite) {
     hd: suite,
     tl: suites.contents
   };
-  
 }
 
 add([
@@ -45,7 +43,6 @@ add([
                   TAG: /* ThrowAny */7,
                   _0: (function (param) {
                       Caml_int32.div(3, 0);
-                      
                     })
                 };
         })
@@ -58,7 +55,6 @@ add([
                   TAG: /* ThrowAny */7,
                   _0: (function (param) {
                       Caml_int32.mod_(3, 0);
-                      
                     })
                 };
         })
@@ -71,7 +67,6 @@ add([
                   TAG: /* ThrowAny */7,
                   _0: (function (param) {
                       Caml_int32.div(3, 0);
-                      
                     })
                 };
         })
@@ -84,7 +79,6 @@ add([
                   TAG: /* ThrowAny */7,
                   _0: (function (param) {
                       Caml_int32.mod_(3, 0);
-                      
                     })
                 };
         })
@@ -100,7 +94,6 @@ add([
                             0,
                             3
                           ], Caml_int64.zero);
-                      
                     })
                 };
         })
@@ -116,7 +109,6 @@ add([
                             0,
                             3
                           ], Caml_int64.zero);
-                      
                     })
                 };
         })

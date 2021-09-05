@@ -32,7 +32,6 @@ function sum(xs) {
   };
   Belt_List.forEach(xs, (function (x) {
           v.contents = v.contents + x | 0;
-          
         }));
   return v.contents;
 }
@@ -43,7 +42,6 @@ function sum2(xs, ys) {
   };
   Belt_List.forEach2(xs, ys, (function (x, y) {
           v.contents = (v.contents + x | 0) + y | 0;
-          
         }));
   return v.contents;
 }
@@ -1558,7 +1556,6 @@ $$throw("File \"bs_list_test.ml\", line 220, characters 8-15", (function (param)
 
 $$throw("File \"bs_list_test.ml\", line 221, characters 8-15", (function (param) {
         Belt_List.tailExn(/* [] */0);
-        
       }));
 
 $$throw("File \"bs_list_test.ml\", line 222, characters 8-15", (function (param) {
@@ -1569,7 +1566,6 @@ $$throw("File \"bs_list_test.ml\", line 222, characters 8-15", (function (param)
                 tl: /* [] */0
               }
             }, -1);
-        
       }));
 
 $$throw("File \"bs_list_test.ml\", line 223, characters 8-15", (function (param) {
@@ -1580,7 +1576,6 @@ $$throw("File \"bs_list_test.ml\", line 223, characters 8-15", (function (param)
                 tl: /* [] */0
               }
             }, 2);
-        
       }));
 
 eq("File \"bs_list_test.ml\", line 224, characters 5-12", Belt_List.map({

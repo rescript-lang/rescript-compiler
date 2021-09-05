@@ -20,8 +20,6 @@
  *)
 (* Authors: Jérôme Vouillon, Hongbo Zhang  *)
 
-[@@@ocaml.warning "-57"] (* FIXME: turn off such warning temporarily*)
-
 (*
   http://stackoverflow.com/questions/2846283/what-are-the-rules-for-javascripts-automatic-semicolon-insertion-asi
   ASI catch up
@@ -469,7 +467,7 @@ and pp_one_case_clause :
               | [] -> cxt
               | _ ->
                   P.newline f;
-                  statement_list false cxt f switch_body
+                  statements false cxt f switch_body
             in
             if should_break then (
               P.newline f;
@@ -645,78 +643,6 @@ and expression_desc cxt ~(level : int) f x : cxt =
       P.string f "typeof";
       P.space f;
       expression ~level:13 cxt f e
-  | Bin
-      ( Eq,
-        ({
-           expression_desc =
-             Array_index
-               ( { expression_desc = Var i; _ },
-                 { expression_desc = Number (Int { i = k0 }) } );
-         } as lhs),
-        {
-          expression_desc =
-            ( Bin
-                ( (Plus as op),
-                  {
-                    expression_desc =
-                      Array_index
-                        ( { expression_desc = Var j; _ },
-                          { expression_desc = Number (Int { i = k1 }) } );
-                    _;
-                  },
-                  delta )
-            | Bin
-                ( (Plus as op),
-                  delta,
-                  {
-                    expression_desc =
-                      Array_index
-                        ( { expression_desc = Var j; _ },
-                          { expression_desc = Number (Int { i = k1 }) } );
-                    _;
-                  } )
-            | Bin
-                ( (Minus as op),
-                  {
-                    expression_desc =
-                      Array_index
-                        ( { expression_desc = Var j; _ },
-                          { expression_desc = Number (Int { i = k1 }) } );
-                    _;
-                  },
-                  delta ) );
-        } )
-    when k0 = k1 && Js_op_util.same_vident i j
-         (* Note that
-            {[x = x + 1]}
-            is exactly the same  (side effect, and return value)
-            as {[ ++ x]}
-            same to
-            {[ x = x + a]}
-            {[ x += a ]}
-            they both return the modified value too
-         *)
-         (* TODO:
-            handle parens..
-         *) -> (
-      (* TODO: parenthesize when necessary *)
-      match (delta, op) with
-      | { expression_desc = Number (Int { i = 1l; _ }) }, Plus
-      | { expression_desc = Number (Int { i = -1l; _ }) }, Minus ->
-          P.string f L.plusplus;
-          P.space f;
-          expression ~level:13 cxt f lhs (* Static index level is 15*)
-      | { expression_desc = Number (Int { i = -1l; _ }) }, Plus
-      | { expression_desc = Number (Int { i = 1l; _ }) }, Minus ->
-          P.string f L.minusminus;
-          P.space f;
-          expression ~level:13 cxt f lhs
-      | _, _ ->
-          let cxt = expression ~level:13 cxt f lhs in
-          P.space f;
-          P.string f (if op = Plus then "+=" else "-=");
-          P.space f;
-          expression ~level:13 cxt f delta)
   | Bin
       ( Minus,
         { expression_desc = Number (Int { i = 0l; _ } | Float { f = "0." }) },
@@ -1023,7 +949,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
   | Block b ->
       (* No braces needed here *)
       ipp_comment f L.start_block;
-      let cxt = statement_list top cxt f b in
+      let cxt = statements top cxt f b in
       ipp_comment f L.end_block;
       cxt
   | Variable l -> variable_declaration top cxt f l
@@ -1033,7 +959,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
       P.space f;
       let cxt = P.paren_group f 1 (fun _ -> expression ~level:0 cxt f e) in
       P.space f;
-      let cxt = block cxt f s1 in
+      let cxt = brace_block cxt f s1 in
       match s2 with
       | [] | [ { statement_desc = Block [] | Exp { expression_desc = Var _ } } ]
         ->
@@ -1054,7 +980,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
           P.space f;
           P.string f L.else_;
           P.space f;
-          block cxt f s2)
+          brace_block cxt f s2)
   | While (label, e, s, _env) ->
       (*  FIXME: print scope as well *)
       (match label with
@@ -1080,7 +1006,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
             P.space f;
             cxt
       in
-      let cxt = block cxt f s in
+      let cxt = brace_block cxt f s in
       semi f;
       cxt
   | ForRange (for_ident_expression, finish, id, direction, s, env) ->
@@ -1152,7 +1078,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
                       pp_direction f direction;
                       Ext_pp_scope.ident cxt f id))
             in
-            block cxt f s)
+            brace_block cxt f s)
       in
       let lexical = Js_closure.get_lexical_scope env in
       if Set_ident.is_empty lexical then action cxt
@@ -1217,7 +1143,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
                   P.string f L.default;
                   P.string f L.colon;
                   P.newline f;
-                  statement_list false cxt f def))
+                  statements false cxt f def))
   | String_switch (e, cc, def) ->
       P.string f L.switch;
       P.space f;
@@ -1232,7 +1158,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
                   P.string f L.default;
                   P.string f L.colon;
                   P.newline f;
-                  statement_list false cxt f def))
+                  statements false cxt f def))
   | Throw e ->
       let e =
         match e.expression_desc with
@@ -1252,7 +1178,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
       P.vgroup f 0 (fun _ ->
           P.string f L.try_;
           P.space f;
-          let cxt = block cxt f b in
+          let cxt = brace_block cxt f b in
           let cxt =
             match ctch with
             | None -> cxt
@@ -1261,7 +1187,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
                 P.string f "catch (";
                 let cxt = Ext_pp_scope.ident cxt f i in
                 P.string f ")";
-                block cxt f b
+                brace_block cxt f b
           in
           match fin with
           | None -> cxt
@@ -1269,7 +1195,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
               P.group f 1 (fun _ ->
                   P.string f L.finally;
                   P.space f;
-                  block cxt f b))
+                  brace_block cxt f b))
 
 and function_body (cxt : cxt) f (b : J.block) : unit =
   match b with
@@ -1286,28 +1212,27 @@ and function_body (cxt : cxt) f (b : J.block) : unit =
               : cxt)
       | Return { expression_desc = Undefined } -> ()
       | _ -> ignore (statement false cxt f s : cxt))
+  | [ s; { statement_desc = Return { expression_desc = Undefined } } ] ->
+      ignore (statement false cxt f s : cxt)
   | s :: r ->
       let cxt = statement false cxt f s in
       P.newline f;
       function_body cxt f r
 
-(* similar to [block] but no braces *)
-and statement_list top cxt f b =
+and brace_block cxt f b =
+  (* This one is for '{' *)
+  P.brace_vgroup f 1 (fun _ -> statements false cxt f b)
+
+(* main entry point *)
+and statements top cxt f b =
   iter_lst cxt f b
     (fun cxt f s -> statement top cxt f s)
-    (if top then (fun f ->
-     P.newline f;
-     P.force_newline f)
-    else P.newline)
-
-and block cxt f b =
-  (* This one is for '{' *)
-  P.brace_vgroup f 1 (fun _ -> statement_list false cxt f b)
+    (if top then P.at_least_two_lines else P.newline)
 
 let string_of_block (block : J.block) =
   let buffer = Buffer.create 50 in
   let f = P.from_buffer buffer in
-  let (_ : cxt) = statement_list true Ext_pp_scope.empty f block in
+  let (_ : cxt) = statements true Ext_pp_scope.empty f block in
   P.flush f ();
   Buffer.contents buffer
 

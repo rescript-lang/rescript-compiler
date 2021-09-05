@@ -22,13 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
+type t
 (** A simple pretty printer
 
     Advantage compared with [Format], 
@@ -40,15 +34,14 @@
     {- buffer the last line, so that  we can do a smart newline, when it's really safe to do so}
     }
 *)
-type t
 
-val indent_length : int 
+val indent_length : int
 
 val string : t -> string -> unit
 
-val space :  t -> unit
+val space : t -> unit
 
-val nspace : t -> int ->  unit
+val nspace : t -> int -> unit
 
 val group : t -> int -> (unit -> 'a) -> 'a
 (** [group] will record current indentation 
@@ -63,12 +56,7 @@ val brace : t -> (unit -> 'a) -> 'a
 
 val paren_group : t -> int -> (unit -> 'a) -> 'a
 
-val cond_paren_group :
-  t -> 
-  bool -> 
-  int -> 
-  (unit -> 'a) -> 
-  'a 
+val cond_paren_group : t -> bool -> int -> (unit -> 'a) -> 'a
 
 val paren_vgroup : t -> int -> (unit -> 'a) -> 'a
 
@@ -82,8 +70,7 @@ val bracket_vgroup : t -> int -> (unit -> 'a) -> 'a
 
 val newline : t -> unit
 
-val force_newline : t -> unit
-(** [force_newline] Always print a newline *)
+val at_least_two_lines : t -> unit
 
 val from_channel : out_channel -> t
 

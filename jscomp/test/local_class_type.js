@@ -3,7 +3,6 @@
 
 function f(x) {
   x.height = 3;
-  
 }
 
 function h(x) {

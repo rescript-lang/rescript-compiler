@@ -27,7 +27,6 @@ function eq(loc, param) {
     ],
     tl: suites.contents
   };
-  
 }
 
 var u = {

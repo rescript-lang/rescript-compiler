@@ -44,7 +44,6 @@ Caml_module.update_mod({
 
 function print$1(i) {
   console.log(String(i));
-  
 }
 
 Caml_module.update_mod({

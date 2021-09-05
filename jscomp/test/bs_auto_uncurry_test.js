@@ -25,7 +25,6 @@ function eq(loc, x, y) {
     ],
     tl: suites.contents
   };
-  
 }
 
 function hi (cb){
@@ -43,7 +42,6 @@ hi(function () {
         hd: undefined,
         tl: xs.contents
       };
-      
     });
 
 hi(function () {
@@ -51,7 +49,6 @@ hi(function () {
         hd: undefined,
         tl: xs.contents
       };
-      
     });
 
 eq("File \"bs_auto_uncurry_test.ml\", line 27, characters 7-14", xs.contents, {

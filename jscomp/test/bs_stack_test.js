@@ -70,7 +70,6 @@ function inOrder3(v) {
             Belt_MutableStack.push(s, v);
             current = v.left;
           };
-          
         }));
   return Belt_MutableQueue.toArray(q);
 }
@@ -100,7 +99,6 @@ function inOrder2(v) {
       todo = false;
     }
   };
-  
 }
 
 function n(l, r, a) {
@@ -120,7 +118,6 @@ function pushAllLeft(st1, s1) {
     Belt_MutableStack.push(s1, v);
     current = v.left;
   };
-  
 }
 
 var test2 = n(Caml_option.some(n(Caml_option.some(n(Caml_option.some(n(Caml_option.some(n(undefined, undefined, 4)), undefined, 2)), undefined, 5)), undefined, 1)), undefined, 3);

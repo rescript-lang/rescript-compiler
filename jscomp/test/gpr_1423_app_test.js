@@ -27,12 +27,10 @@ function eq(loc, x, y) {
     ],
     tl: suites.contents
   };
-  
 }
 
 function foo(f) {
   console.log(Curry._2(f, "a1", undefined));
-  
 }
 
 foo(function (param) {

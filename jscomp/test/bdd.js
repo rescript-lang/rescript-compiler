@@ -85,7 +85,6 @@ function resize(newSize) {
   }
   htab.contents = newArr;
   sz_1.contents = newSz_1;
-  
 }
 
 function insert(idl, idh, v, ind, bucket, newNode) {
@@ -110,7 +109,6 @@ function resetUnique(param) {
   htab.contents = Caml_array.make(sz_1.contents + 1 | 0, /* [] */0);
   n_items.contents = 0;
   nodeC.contents = 1;
-  
 }
 
 function mkNode(low, v, high) {

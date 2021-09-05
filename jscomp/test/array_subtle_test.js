@@ -28,7 +28,6 @@ function eq(loc, param) {
     ],
     tl: suites.contents
   };
-  
 }
 
 var v = [
@@ -87,7 +86,6 @@ function f(v) {
     console.log("hi2");
   }
   console.log((v.pop(), undefined));
-  
 }
 
 function fff(x) {

@@ -3,7 +3,6 @@
 
 function f(x) {
   x.hey = 22;
-  
 }
 
 exports.f = f;

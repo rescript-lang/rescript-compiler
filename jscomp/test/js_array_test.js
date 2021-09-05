@@ -940,7 +940,6 @@ var suites_1 = {
                                                                                                               3
                                                                                                             ].forEach(function (n) {
                                                                                                                 sum.contents = sum.contents + n | 0;
-                                                                                                                
                                                                                                               });
                                                                                                           return {
                                                                                                                   TAG: /* Eq */0,
@@ -962,7 +961,6 @@ var suites_1 = {
                                                                                                                 3
                                                                                                               ].forEach(function (param, i) {
                                                                                                                   sum.contents = sum.contents + i | 0;
-                                                                                                                  
                                                                                                                 });
                                                                                                             return {
                                                                                                                     TAG: /* Eq */0,

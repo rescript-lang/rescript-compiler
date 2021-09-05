@@ -51,7 +51,6 @@ function fff(param) {
   console.log("x");
   console.log("x");
   vvv.contents = vvv.contents + 1 | 0;
-  
 }
 
 function g() {

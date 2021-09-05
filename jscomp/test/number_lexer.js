@@ -5,7 +5,6 @@ var Lexing = require("../../lib/js/lexing.js");
 
 function l(prim) {
   console.log(prim);
-  
 }
 
 var __ocaml_lex_tables = {

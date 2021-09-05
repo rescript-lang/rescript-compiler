@@ -18,7 +18,6 @@ function record(fmt) {
     hd: fmt,
     tl: accum.contents
   };
-  
 }
 
 function f_unit(param) {
@@ -299,7 +298,6 @@ var args2 = [
 
 function error(s) {
   console.log("error (%s)");
-  
 }
 
 function check(r, v, msg) {
@@ -369,7 +367,6 @@ function test(argv) {
   if (Caml_obj.notequal(result, reference)) {
     var f = function (x, y) {
       console.log(x, y);
-      
     };
     List.iter2(f, result, reference);
   }

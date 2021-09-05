@@ -27,7 +27,6 @@ function eq(loc, x, y) {
     ],
     tl: suites.contents
   };
-  
 }
 
 console.log("你好，\n世界");

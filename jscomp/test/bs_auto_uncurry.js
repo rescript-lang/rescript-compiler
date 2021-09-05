@@ -44,7 +44,6 @@ function f_0(param) {
 function f_01(param) {
   return hi(function () {
               console.log("x");
-              
             });
 }
 
@@ -52,7 +51,6 @@ function f_02(xs) {
   return hi(function () {
               xs.contents = undefined;
               console.log("x");
-              
             });
 }
 
@@ -129,7 +127,6 @@ function hh(xs) {
           xs,
           param
         ]);
-    
   };
 }
 

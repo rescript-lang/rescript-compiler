@@ -435,7 +435,6 @@ function at_exit(f) {
       Curry._1(f, undefined);
       return Curry._1(g, undefined);
     });
-  
 }
 
 function do_at_exit(param) {

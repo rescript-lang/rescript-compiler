@@ -19,12 +19,10 @@ function f(param) {
     Caml_array.set(arr, j, (function(j){
         return function (param) {
           v.contents = v.contents + j | 0;
-          
         }
         }(j)));
     n = n + 1 | 0;
   };
-  
 }
 
 f(undefined);

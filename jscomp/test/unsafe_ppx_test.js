@@ -29,7 +29,6 @@ function g(a) {
   regression4(3, (function (x) {
           return x;
         }));
-  
 }
 
 var max2 = Math.max;

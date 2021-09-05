@@ -16,7 +16,6 @@ function f(param) {
     console.log(String(n));
     n = n + 1 | 0;
   };
-  
 }
 
 function ff(param) {
@@ -26,7 +25,6 @@ function ff(param) {
         })()) {
     
   };
-  
 }
 
 exports.f = f;

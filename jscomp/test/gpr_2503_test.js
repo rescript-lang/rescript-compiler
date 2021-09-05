@@ -25,14 +25,12 @@ function makeWrapper(foo, param) {
     tmp.foo = Caml_option.valFromOption(foo);
   }
   console.log(tmp);
-  
 }
 
 function makeWrapper2(foo, param) {
   console.log({
         foo: foo
       });
-  
 }
 
 makeWrapper2("a", undefined);

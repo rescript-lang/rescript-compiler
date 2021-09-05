@@ -1756,7 +1756,6 @@ function yyback(n, lexbuf) {
     pos_bol: currp.pos_bol,
     pos_cnum: currp.pos_cnum - n | 0
   };
-  
 }
 
 function back(lb) {
@@ -1958,7 +1957,6 @@ function start(str) {
             hd: c,
             tl: todo.contents
           };
-          
         }), str);
   return {
           negative: false,
@@ -2220,7 +2218,6 @@ function unicode_fix_cols(lb) {
     pos_bol: new_bol,
     pos_cnum: init.pos_cnum
   };
-  
 }
 
 function oct_to_int(x) {
@@ -5449,7 +5446,6 @@ function grow(t, n) {
   };
   var new_arr = $$Array.init(new_size, filler);
   t.la_results = new_arr;
-  
 }
 
 function lex(t) {
@@ -5501,7 +5497,6 @@ function lex(t) {
         match$1[1]
       ]);
   t.la_num_lexed = t.la_num_lexed + 1 | 0;
-  
 }
 
 function lex_until(t, i) {
@@ -5509,7 +5504,6 @@ function lex_until(t, i) {
   while(t.la_num_lexed <= i) {
     lex(t);
   };
-  
 }
 
 var default_parse_options = {
@@ -5605,7 +5599,6 @@ function comment_list(env) {
                     hd: c,
                     tl: env.comments.contents
                   };
-                  
                 }), param);
   };
 }
@@ -5999,7 +5992,6 @@ function token$3(env) {
   }
   Caml_array.set(t.la_results, t.la_num_lexed - 1 | 0, undefined);
   t.la_num_lexed = t.la_num_lexed - 1 | 0;
-  
 }
 
 function push_lex_mode(env, mode) {
@@ -6008,7 +6000,6 @@ function push_lex_mode(env, mode) {
     tl: env.lex_mode_stack.contents
   };
   env.lookahead.contents = create$1(env.lex_env.contents, List.hd(env.lex_mode_stack.contents));
-  
 }
 
 function pop_lex_mode(env) {
@@ -6025,7 +6016,6 @@ function pop_lex_mode(env) {
   }
   env.lex_mode_stack.contents = new_stack;
   env.lookahead.contents = create$1(env.lex_env.contents, List.hd(env.lex_mode_stack.contents));
-  
 }
 
 function double_pop_lex_mode(env) {
@@ -6051,7 +6041,6 @@ function double_pop_lex_mode(env) {
   }
   env.lex_mode_stack.contents = new_stack;
   env.lookahead.contents = create$1(env.lex_env.contents, List.hd(env.lex_mode_stack.contents));
-  
 }
 
 function semicolon(env) {
@@ -7938,7 +7927,6 @@ function strict_post_check(env, strict, simple, id, params) {
         env$1,
         /* Empty */0
       ], params);
-  
 }
 
 function param$1(env) {
@@ -17664,7 +17652,6 @@ function eq(loc, x, y) {
     ],
     tl: suites.contents
   };
-  
 }
 
 var f = typeof __dirname === "undefined" ? undefined : __dirname;

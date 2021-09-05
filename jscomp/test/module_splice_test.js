@@ -29,7 +29,6 @@ function eq(loc, param) {
     ],
     tl: suites.contents
   };
-  
 }
 
 function joinClasses(prim) {

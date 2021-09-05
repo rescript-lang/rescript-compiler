@@ -26,7 +26,6 @@ function eq(loc, x, y) {
     ],
     tl: suites.contents
   };
-  
 }
 
 function foo(x) {
@@ -36,7 +35,6 @@ function foo(x) {
 function badInlining(obj) {
   var x = obj.field;
   Caml_format.int_of_string(x) !== 3;
-  
 }
 
 eq("File \"gpr_1728_test.ml\", line 17, characters 6-13", badInlining({

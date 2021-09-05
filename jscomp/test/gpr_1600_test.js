@@ -4,7 +4,6 @@
 var obj = {
   hi: (function (x) {
       console.log(x);
-      
     })
 };
 
@@ -16,7 +15,6 @@ var eventObj = {
   push: (function (a) {
       var self = this ;
       self.events[0] = a;
-      
     }),
   needRebuild: (function () {
       var self = this ;

@@ -28,7 +28,6 @@ function eq(loc, x, y) {
     ],
     tl: suites.contents
   };
-  
 }
 
 var Y0 = Functor_def.Make(Functor_inst);

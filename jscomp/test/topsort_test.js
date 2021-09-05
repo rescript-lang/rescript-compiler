@@ -413,7 +413,6 @@ function unsafe_topsort(graph) {
       hd: node,
       tl: visited.contents
     };
-    
   };
   List.iter((function (param) {
           return sort_node(param[0]);

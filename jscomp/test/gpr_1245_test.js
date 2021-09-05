@@ -20,7 +20,6 @@ function f(param) {
     contents: param[1]
   };
   console.log(a, b);
-  
 }
 
 function g(param) {

@@ -34,7 +34,6 @@ function test(param) {
   for(var j = 0; j <= 1000000; ++j){
     should(v.has(j));
   }
-  
 }
 
 function test2(param) {
@@ -42,7 +41,6 @@ function test2(param) {
   for(var j = 0; j <= 1000000; ++j){
     should(Belt_MapInt.has(v, j));
   }
-  
 }
 
 console.time("imm_map_bench.ml 44");

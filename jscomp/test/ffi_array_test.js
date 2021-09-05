@@ -25,7 +25,6 @@ function eq(loc, x, y) {
     ],
     tl: suites.contents
   };
-  
 }
 
 eq("File \"ffi_array_test.ml\", line 12, characters 5-12", [
