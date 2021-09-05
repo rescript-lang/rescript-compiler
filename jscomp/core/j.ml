@@ -142,9 +142,10 @@ and expression_desc =
   *)
   | New of expression * expression list option (* TODO: option remove *)
   | Var of vident
-  | Fun of bool * ident list * block * Js_fun_env.t
+  | Fun of bool * ident list * block * Js_fun_env.t * bool 
   (* The first parameter by default is false,
      it will be true when it's a method
+     The last pararemter [true] return unit
   *)
   | Str of bool * string
   (* A string is UTF-8 encoded, the string may contain

@@ -522,7 +522,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
           let cxt = expression ~level:0 cxt f e1 in
           comma_sp f;
           expression ~level:0 cxt f e2)
-  | Fun (is_method, l, b, env) ->
+  | Fun (is_method, l, b, env, _return_unit) ->
       (* TODO: dump for comments *)
       pp_function ~is_method cxt f ~fn_state:default_fn_exp_state l b env
       (* TODO:
@@ -542,7 +542,12 @@ and expression_desc cxt ~(level : int) f x : cxt =
                   let cxt = expression ~level:15 cxt f e in
                   P.paren_group f 1 (fun _ ->
                       match el with
-                      | [ { expression_desc = Fun (is_method, l, b, env) } ] ->
+                      | [
+                       {
+                         expression_desc =
+                           Fun (is_method, l, b, env, _return_unit);
+                       };
+                      ] ->
                           pp_function ~is_method cxt f
                             ~fn_state:(No_name { single_arg = true })
                             l b env
@@ -883,7 +888,7 @@ and variable_declaration top cxt f (variable : J.variable_declaration) : cxt =
           statement_desc top cxt f (J.Exp e)
       | _ -> (
           match e.expression_desc with
-          | Fun (is_method, params, b, env) ->
+          | Fun (is_method, params, b, env, _return_unit) ->
               pp_function ~is_method cxt f
                 ~fn_state:(if top then Name_top name else Name_non_top name)
                 params b env
@@ -1110,7 +1115,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
       cxt
   | Return e -> (
       match e.expression_desc with
-      | Fun (is_method, l, b, env) ->
+      | Fun (is_method, l, b, env, _return_unit) ->
           let cxt = pp_function ~is_method cxt f ~fn_state:Is_return l b env in
           semi f;
           cxt
