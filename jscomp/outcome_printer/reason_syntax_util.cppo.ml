@@ -482,10 +482,6 @@ let apply_mapper_to_type      s mapper = mapper.typ       mapper s
 let apply_mapper_to_expr      s mapper = mapper.expr      mapper s
 let apply_mapper_to_pattern   s mapper = mapper.pat       mapper s
 
-let apply_mapper_to_toplevel_phrase toplevel_phrase mapper =
-  match toplevel_phrase with
-  | Ptop_def x -> Ptop_def (apply_mapper_to_structure x mapper)
-  | x -> x
 
 let apply_mapper_to_use_file use_file mapper =
   List.map (fun x -> apply_mapper_to_toplevel_phrase x mapper) use_file

@@ -15,10 +15,10 @@
 
 type space_formatter = (unit, Format.formatter, unit) format
 
-val toplevel_phrase : Format.formatter -> Parsetree.toplevel_phrase -> unit
+
 val expression : Format.formatter -> Parsetree.expression -> unit
 val string_of_expression : Parsetree.expression -> string
-val top_phrase: Format.formatter -> Parsetree.toplevel_phrase -> unit
+
 val core_type: Format.formatter -> Parsetree.core_type -> unit
 val pattern: Format.formatter -> Parsetree.pattern -> unit
 val signature: Format.formatter -> Parsetree.signature -> unit

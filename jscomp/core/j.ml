@@ -22,13 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
 (* Javascript IR
 
     It's a subset of Javascript AST specialized for OCaml lambda backend
@@ -38,8 +31,7 @@
     not introduce new scope
 *)
 
-
-type mutable_flag = Js_op.mutable_flag 
+type mutable_flag = Js_op.mutable_flag
 
 type binop = Js_op.binop
 
@@ -49,103 +41,99 @@ type kind = Js_op.kind
 
 type property = Js_op.property
 
-type number = Js_op.number 
+type number = Js_op.number
 
 type ident_info = Js_op.ident_info
 
 type exports = Js_op.exports
 
-type tag_info = Js_op.tag_info 
+type tag_info = Js_op.tag_info
 
-type property_name =  Js_op.property_name
+type property_name = Js_op.property_name
 
 type label = string
 
-
-and ident = Ident.t (* we override `method ident` *)
+and ident = Ident.t
+(* we override `method ident` *)
 
 (** object literal, if key is ident, in this case, it might be renamed by 
     Google Closure  optimizer,
     currently we always use quote
 *)
 
+and module_id = { id : ident; kind : Js_op.kind }
 
-and module_id = {
-  id : ident; kind : Js_op.kind
-}
 and required_modules = module_id list
-and vident = 
-  | Id of ident
-  | Qualified of module_id * string option
-  (* Since camldot is only available for toplevel module accessors,
-     we don't need print  `A.length$2`
-     just print `A.length` - it's guarateed to be unique
 
-     when the third one is None, it means the whole module 
+and vident = Id of ident | Qualified of module_id * string option
+(* Since camldot is only available for toplevel module accessors,
+   we don't need print  `A.length$2`
+   just print `A.length` - it's guarateed to be unique
 
-     TODO: 
-     invariant, when [kind] is [Runtime], then we can ignore [ident], 
-     since all [runtime] functions are unique, when do the 
-     pattern match we can ignore the first one for simplicity
-     for example       
-     {[
-       Qualified (_, Runtime, Some "caml_int_compare")         
-     ]}       
-  *)
+   when the third one is None, it means the whole module
 
-and exception_ident = ident 
+   TODO:
+   invariant, when [kind] is [Runtime], then we can ignore [ident],
+   since all [runtime] functions are unique, when do the
+   pattern match we can ignore the first one for simplicity
+   for example
+   {[
+     Qualified (_, Runtime, Some "caml_int_compare")
+   ]}
+*)
 
-and for_ident = ident 
+and exception_ident = ident
+
+and for_ident = ident
 
 and for_direction = Js_op.direction_flag
 
-and property_map = 
-  (property_name * expression) list
+and property_map = (property_name * expression) list
+
 and length_object = Js_op.length_object
+
 and expression_desc =
   | Length of expression * length_object
-  | Is_null_or_undefined of expression 
-  (** where we use a trick [== null ] *)
-  | String_append of expression * expression 
+  | Is_null_or_undefined of expression  (** where we use a trick [== null ] *)
+  | String_append of expression * expression
   | Bool of bool (* js true/false*)
-  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
-     [typeof] is an operator     
+  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence
+     [typeof] is an operator
   *)
   | Typeof of expression
   | Js_not of expression (* !v *)
-  (* TODO: Add some primitives so that [js inliner] can do a better job *)  
+  (* TODO: Add some primitives so that [js inliner] can do a better job *)
   | Seq of expression * expression
   | Cond of expression * expression * expression
   | Bin of binop * expression * expression
-
-  (* [int_op] will guarantee return [int32] bits 
-     https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators  *)
+  (* [int_op] will guarantee return [int32] bits
+     https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators *)
   (* | Int32_bin of int_op * expression * expression *)
-  | FlatCall of expression * expression 
-  (* f.apply(null,args) -- Fully applied guaranteed 
+  | FlatCall of expression * expression
+  (* f.apply(null,args) -- Fully applied guaranteed
      TODO: once we know args's shape --
      if it's know at compile time, we can turn it into
      f(args[0], args[1], ... )
   *)
   | Call of expression * expression list * Js_call_info.t
-  (* Analysze over J expression is hard since, 
-      some primitive  call is translated 
+  (* Analysze over J expression is hard since,
+      some primitive  call is translated
       into a plain call, it's better to keep them
-  *) 
-  | String_index of expression * expression 
+  *)
+  | String_index of expression * expression
   (* str.[i])*)
-  | Array_index of expression * expression 
+  | Array_index of expression * expression
   (* arr.(i)
-     Invariant: 
+     Invariant:
      The second argument has to be type of [int],
-     This can be constructed either in a static way [E.array_index_by_int] or a dynamic way 
+     This can be constructed either in a static way [E.array_index_by_int] or a dynamic way
      [E.array_index]
   *)
   | Static_index of expression * string * int32 option
-  (* The third argument bool indicates whether we should 
-     print it as 
+  (* The third argument bool indicates whether we should
+     print it as
      a["idd"] -- false
-     or 
+     or
      a.idd  -- true
      There are several kinds of properties
      1. OCaml module dot (need to be escaped or not)
@@ -154,55 +142,59 @@ and expression_desc =
   *)
   | New of expression * expression list option (* TODO: option remove *)
   | Var of vident
-  | Fun of bool * ident list  * block * Js_fun_env.t
-  (* The first parameter by default is false, 
+  | Fun of bool * ident list * block * Js_fun_env.t
+  (* The first parameter by default is false,
      it will be true when it's a method
   *)
-  | Str of bool * string 
+  | Str of bool * string
   (* A string is UTF-8 encoded, the string may contain
      escape sequences.
      The first argument is used to mark it is non-pure, please
-     don't optimize it, since it does have side effec, 
-     examples like "use asm;" and our compiler may generate "error;..." 
+     don't optimize it, since it does have side effec,
+     examples like "use asm;" and our compiler may generate "error;..."
      which is better to leave it alone
      The last argument is passed from as `j` from `{j||j}`
   *)
-  | Unicode of string 
-  (* It is escaped string, print delimited by '"'*)   
+  | Unicode of string
+  (* It is escaped string, print delimited by '"'*)
   | Raw_js_code of Js_raw_info.t
   (* literally raw JS code 
   *)
   | Array of expression list * mutable_flag
-  | Optional_block of expression * bool 
+  | Optional_block of expression * bool
   (* [true] means [identity] *)
-  | Caml_block of expression list * mutable_flag * expression * tag_info 
+  | Caml_block of expression list * mutable_flag * expression * tag_info
   (* The third argument is [tag] , forth is [tag_info] *)
   (* | Caml_uninitialized_obj of expression * expression *)
   (* [tag] and [size] tailed  for [Obj.new_block] *)
 
-  (* For setter, it still return the value of expression, 
-     we can not use 
+  (* For setter, it still return the value of expression,
+     we can not use
      {[
        type 'a access = Get | Set of 'a
      ]}
      in another module, since it will break our code generator
-     [Caml_block_tag] can return [undefined], 
-     you have to use [E.tag] in a safe way     
+     [Caml_block_tag] can return [undefined],
+     you have to use [E.tag] in a safe way
   *)
   | Caml_block_tag of expression
   (* | Caml_block_set_tag of expression * expression *)
   (* | Caml_block_set_length of expression * expression *)
-  (* It will just fetch tag, to make it safe, when creating it, 
-     we need apply "|0", we don't do it in the 
+  (* It will just fetch tag, to make it safe, when creating it,
+     we need apply "|0", we don't do it in the
      last step since "|0" can potentially be optimized
-  *)      
+  *)
   | Number of number
   | Object of property_map
-  | Undefined 
+  | Undefined
   | Null
-and for_ident_expression = expression (* pure*)
 
-and finish_ident_expression = expression (* pure *)
+and for_ident_expression = expression
+(* pure*)
+
+and finish_ident_expression = expression
+
+(* pure *)
 (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/block
    block can be nested, specified in ES3 
 *)
@@ -271,62 +263,58 @@ and finish_ident_expression = expression (* pure *)
      }
    ]}
 *)
-and case_clause = {   
-  switch_body : block ;
-  should_break :  bool ;  (* true means break *)
-  comment : string option ;
+and case_clause = {
+  switch_body : block;
+  should_break : bool;
+  (* true means break *)
+  comment : string option;
 }
 
 and string_clause = string * case_clause
-and int_clause =  int * case_clause
+
+and int_clause = int * case_clause
 
 and statement_desc =
   | Block of block
   | Variable of variable_declaration
   (* Function declaration and Variable declaration  *)
   | Exp of expression
-  | If of expression * block * block 
-  | While of label option *  expression * block 
-             * Js_closure.t (* check if it contains loop mutable values, happens in nested loop *)
-  | ForRange of for_ident_expression option * finish_ident_expression * 
-                for_ident  *  for_direction * block
-                * Js_closure.t  
-  | Continue of label 
+  | If of expression * block * block
+  | While of label option * expression * block * Js_closure.t (* check if it contains loop mutable values, happens in nested loop *)
+  | ForRange of
+      for_ident_expression option
+      * finish_ident_expression
+      * for_ident
+      * for_direction
+      * block
+      * Js_closure.t
+  | Continue of label
   | Break (* only used when inline a fucntion *)
-  | Return of expression   (* Here we need track back a bit ?, move Return to Function ...
-                              Then we can only have one Return, which is not good *)
+  | Return of expression (* Here we need track back a bit ?, move Return to Function ...
+                            Then we can only have one Return, which is not good *)
   (* since in ocaml, it's expression oriented langauge, [return] in
-     general has no jumps, it only happens when we do 
+     general has no jumps, it only happens when we do
      tailcall conversion, in that case there is a jump.
      However, currently  a single [break] is good to cover
-     our compilation strategy 
-     Attention: we should not insert [break] arbitrarily, otherwise 
+     our compilation strategy
+     Attention: we should not insert [break] arbitrarily, otherwise
      it would break the semantics
-     A more robust signature would be 
+     A more robust signature would be
      {[ goto : label option ; ]}
   *)
-
-  | Int_switch of expression * int_clause list * block option 
-  | String_switch of expression * string_clause list * block option 
+  | Int_switch of expression * int_clause list * block option
+  | String_switch of expression * string_clause list * block option
   | Throw of expression
   | Try of block * (exception_ident * block) option * block option
   | Debugger
 
+and expression = { expression_desc : expression_desc; comment : string option }
 
+and statement = { statement_desc : statement_desc; comment : string option }
 
-and expression = {
-  expression_desc : expression_desc; 
-  comment : string option;
-} 
-
-and statement = { 
-  statement_desc :  statement_desc; 
-  comment : string option;
-}
-
-and variable_declaration = { 
-  ident : ident ;
-  value : expression  option;
+and variable_declaration = {
+  ident : ident;
+  value : expression option;
   property : property;
   ident_info : ident_info;
 }
@@ -334,40 +322,39 @@ and variable_declaration = {
 (* TODO: For efficency: block should not be a list, it should be able to 
    be concatenated in both ways 
 *)
-and block =  statement list
+and block = statement list
 
-and program = {
-  block : block ;
-  exports : exports ;
-  export_set : Set_ident.t ;
+and program = { block : block; exports : exports; export_set : Set_ident.t }
 
+and deps_program = {
+  program : program;
+  modules : required_modules;
+  side_effect : string option; (* None: no, Some reason  *)
 }
-and deps_program = 
+[@@deriving
   {
-    program : program ; 
-    modules : required_modules ;
-    side_effect : string option (* None: no, Some reason  *)
-  }
-[@@deriving {excludes =  [|
-    deps_program ; 
-    int_clause; 
-    string_clause ;
-    for_direction;
-    (* exception_ident; *)
-    for_direction;
-    expression_desc;
-    statement_desc;
-    for_ident_expression;
-    label;
-    finish_ident_expression;
-    property_map;
-    length_object;
-    (* for_ident; *)
-    required_modules;
-    case_clause
-  |] }]
+    excludes =
+      [|
+        deps_program;
+        int_clause;
+        string_clause;
+        for_direction;
+        (* exception_ident; *)
+        for_direction;
+        expression_desc;
+        statement_desc;
+        for_ident_expression;
+        label;
+        finish_ident_expression;
+        property_map;
+        length_object;
+        (* for_ident; *)
+        required_modules;
+        case_clause;
+      |];
+  }]
 (*
 FIXME: customize for each code generator 
 for each code generator, we can provide a white-list
 so that we can achieve the optimal
-*)    
+*)

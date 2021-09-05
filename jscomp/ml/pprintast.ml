@@ -1432,24 +1432,7 @@ and label_x_expression_param ctxt f (l,e) =
       else
         pp f "~%s:%a" lbl (simple_expr ctxt) e
 
-and directive_argument f x =
-  match x with
-  | Pdir_none -> ()
-  | Pdir_string (s) -> pp f "@ %S" s
-  | Pdir_int (n, None) -> pp f "@ %s" n
-  | Pdir_int (n, Some m) -> pp f "@ %s%c" n m
-  | Pdir_ident (li) -> pp f "@ %a" longident li
-  | Pdir_bool (b) -> pp f "@ %s" (string_of_bool b)
 
-let toplevel_phrase f x =
-  match x with
-  | Ptop_def (s) ->pp f "@[<hov0>%a@]"  (list (structure_item reset_ctxt)) s
-   (* pp_open_hvbox f 0; *)
-   (* pp_print_list structure_item f s ; *)
-   (* pp_close_box f (); *)
-  | Ptop_dir (s, da) ->
-   pp f "@[<hov2>#%s@ %a@]" s directive_argument da
-   (* pp f "@[<hov2>#%s@ %a@]" s directive_argument da *)
 
 let expression f x =
   pp f "@[%a@]" (expression reset_ctxt) x
@@ -1466,11 +1449,6 @@ let string_of_structure x =
   structure reset_ctxt f x;
   flush_str_formatter ()
 
-let top_phrase f x =
-  pp_print_newline f ();
-  toplevel_phrase f x;
-  pp f ";;";
-  pp_print_newline f ()
 
 let core_type = core_type reset_ctxt
 let pattern = pattern reset_ctxt

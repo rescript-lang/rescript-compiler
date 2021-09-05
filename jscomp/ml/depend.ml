@@ -476,8 +476,6 @@ and add_struct_item (bv, m) item : _ StringMap.t * _ StringMap.t =
       handle_extension e;
       (bv, m)
 
-and add_use_file bv top_phrs =
-  ignore (List.fold_left add_top_phrase bv top_phrs)
 
 and add_implementation bv l =
   if !Clflags.transparent_modules then
@@ -487,9 +485,6 @@ and add_implementation bv l =
 and add_implementation_binding bv l =
   snd (add_structure_binding bv l)
 
-and add_top_phrase bv = function
-  | Ptop_def str -> add_structure bv str
-  | Ptop_dir (_, _) -> bv
 
 
 and add_class_field bv pcf =

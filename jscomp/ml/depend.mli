@@ -31,7 +31,7 @@ val pp_deps : string list ref
 
 val open_module : bound_map -> Longident.t -> bound_map
 
-val add_use_file : bound_map -> Parsetree.toplevel_phrase list -> unit
+
 
 val add_signature : bound_map -> Parsetree.signature -> unit
 
