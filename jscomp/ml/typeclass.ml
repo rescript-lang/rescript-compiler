@@ -778,7 +778,7 @@ let class_infos  kind
     arity, pub_meths, List.rev !coercion_locs, expr) :: res,
    env)
 
-let final_decl env define_class
+let final_decl env 
     (cl, id, clty, ty_id, cltydef, obj_id, obj_abbr, cl_id, cl_abbr, ci_params,
      arity, pub_meths, coe, expr) =
 
@@ -805,9 +805,7 @@ let final_decl env define_class
     None        -> ()
   | Some reason ->
       let printer =
-        if define_class
-        then function ppf -> Printtyp.class_declaration id ppf clty
-        else function ppf -> Printtyp.cltype_declaration id ppf cltydef
+        function ppf -> Printtyp.cltype_declaration id ppf cltydef
       in
       raise(Error(cl.pci_loc, env, Unbound_type_var(printer, reason)))
   end;
@@ -926,7 +924,7 @@ let type_classes  approx kind env cls =
     List.fold_right (class_infos  kind) res ([], env)
   in
   Ctype.end_def ();
-  let res = List.rev_map (final_decl env false) res in
+  let res = List.rev_map (final_decl env ) res in
   let decls = List.fold_right extract_type_decls res [] in
   let decls = Typedecl.compute_variance_decls env decls in
   let res = List.map2 merge_type_decls res decls in
