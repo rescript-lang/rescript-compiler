@@ -869,18 +869,16 @@ let merge_type_decls
   (id, id_loc, clty, ty_id, cltydef, obj_id, obj_abbr, cl_id, cl_abbr,
    arity, pub_meths, coe, expr, req)
 
-let final_env define_class env
-    (id, _id_loc, clty, ty_id, cltydef, obj_id, obj_abbr, cl_id, cl_abbr,
+let final_env env
+    (_id, _id_loc, _clty, ty_id, cltydef, obj_id, obj_abbr, cl_id, cl_abbr,
      _arity, _pub_meths, _coe, _expr, _req) =
   (* Add definitions after cleaning them *)
   Env.add_type ~check:true obj_id
     (Subst.type_declaration Subst.identity obj_abbr) (
   Env.add_type ~check:true cl_id
     (Subst.type_declaration Subst.identity cl_abbr) (
-  Env.add_cltype ty_id (Subst.cltype_declaration Subst.identity cltydef) (
-  if define_class then
-    Env.add_class id (Subst.class_declaration Subst.identity clty) env
-  else env)))
+  Env.add_cltype ty_id (Subst.cltype_declaration Subst.identity cltydef)   
+   env))
 
 (* Check that #c is coercible to c if there is a self-coercion *)
 let check_coercions env
@@ -944,7 +942,7 @@ let type_classes  approx kind env cls =
   let decls = List.fold_right extract_type_decls res [] in
   let decls = Typedecl.compute_variance_decls env decls in
   let res = List.map2 merge_type_decls res decls in
-  let env = List.fold_left (final_env false) env res in
+  let env = List.fold_left final_env env res in
   let res = List.map (check_coercions env) res in
   (res, env)
 
