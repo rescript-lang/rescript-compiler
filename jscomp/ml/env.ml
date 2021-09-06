@@ -1981,7 +1981,7 @@ and enter_module_declaration ?arg id md env =
   (* let (id, env) = enter store_module name md env in
   (id, add_functor_arg ?arg id env) *)
 and enter_modtype = enter store_modtype
-and enter_class = enter add_class
+
 and enter_cltype = enter store_cltype
 
 let enter_module ?arg s mty env =
