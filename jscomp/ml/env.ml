@@ -1892,7 +1892,7 @@ and store_modtype id info env =
     modtypes = IdTbl.add id info env.modtypes;
     summary = Env_modtype(env.summary, id, info) }
 
-and store_class id desc env =
+and add_class id desc env =
   { env with
     classes = IdTbl.add id desc env.classes;
     summary = Env_class(env.summary, id, desc) }
@@ -1947,8 +1947,7 @@ and add_module_declaration ?(arg=false) ~check id md env =
 and add_modtype id info env =
   store_modtype id info env
 
-and add_class id ty env =
-  store_class id ty env
+
 
 and add_cltype id ty env =
   store_cltype id ty env
@@ -1982,7 +1981,7 @@ and enter_module_declaration ?arg id md env =
   (* let (id, env) = enter store_module name md env in
   (id, add_functor_arg ?arg id env) *)
 and enter_modtype = enter store_modtype
-and enter_class = enter store_class
+and enter_class = enter add_class
 and enter_cltype = enter store_cltype
 
 let enter_module ?arg s mty env =
