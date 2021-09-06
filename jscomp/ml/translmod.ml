@@ -619,36 +619,7 @@ let _ =
 
 (* Introduce dependencies on modules referenced only by "external". *)
 
-let scan_used_globals lam =
-  let globals = ref Ident.Set.empty in
-  let rec scan lam =
-    Lambda.iter scan lam;
-    match lam with
-      Lprim ((Pgetglobal id | Psetglobal id), _, _) ->
-        globals := Ident.Set.add id !globals
-    | _ -> ()
-  in
-  scan lam; !globals
 
-let required_globals ~flambda body =
-  let globals = scan_used_globals body in
-  let add_global id req =
-    if not flambda && Ident.Set.mem id globals then
-      req
-    else
-      Ident.Set.add id req
-  in
-  let required =
-    Hashtbl.fold
-      (fun path _ -> add_global (Path.head path)) used_primitives
-      (if flambda then globals else Ident.Set.empty)
-  in
-  let required =
-    List.fold_right add_global (Env.get_required_globals ()) required
-  in
-  Env.reset_required_globals ();
-  Hashtbl.clear used_primitives;
-  required
 
 (* Compile an implementation *)
 
@@ -656,17 +627,11 @@ let transl_implementation module_name (str, cc) =
   primitive_declarations := [];
   Hashtbl.clear used_primitives;
   let module_id = Ident.create_persistent module_name in
-  let body, size =
+  let body, _ =
     transl_struct Location.none [] cc
                    (global_path module_id) str
   in
-  let implementation = 
-  { module_ident = module_id;
-    main_module_block_size = size;
-    required_globals = required_globals ~flambda:true body;
-    code = body } in 
-    Lprim (Psetglobal implementation.module_ident, [implementation.code],
-    Location.none)
+  Lprim (Psetglobal module_id, [body], Location.none)
 
 (* Build the list of value identifiers defined by a toplevel structure
    (excluding primitive declarations). *)
