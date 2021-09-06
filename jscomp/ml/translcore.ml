@@ -369,21 +369,11 @@ let specialize_primitive p env ty (* ~has_constant_constructor *) =
 
 (* Eta-expand a primitive *)
 
-let used_primitives = Hashtbl.create 7
-let add_used_primitive loc env path =
-  match path with
-    Some (Path.Pdot _ as path) ->
-      let path = Env.normalize_path (Some loc) env path in
-      let unit = Path.head path in
-      if Ident.global unit && not (Hashtbl.mem used_primitives path)
-      then Hashtbl.add used_primitives path loc
-  | _ -> ()
 
-let transl_primitive loc p env ty path =
+let transl_primitive loc p env ty  =
   let prim =
     try specialize_primitive p env ty (* ~has_constant_constructor:false *)
     with Not_found ->
-      add_used_primitive loc env path;
       Pccall p
   in
   match prim with
@@ -419,7 +409,7 @@ let transl_primitive loc p env ty path =
                    loc = loc;
                    body = Lprim(prim, List.map (fun id -> Lvar id) params, loc) }
 
-let transl_primitive_application loc prim env ty path args =
+let transl_primitive_application loc prim env ty args =
   let prim_name = prim.prim_name in
   try
     (
@@ -449,7 +439,6 @@ let transl_primitive_application loc prim env ty path args =
   with Not_found ->
     if String.length prim_name > 0 && prim_name.[0] = '%' then
       raise(Error(loc, Unknown_builtin_primitive prim_name));
-    add_used_primitive loc env path;
     Pccall prim
 
 (* To propagate structured constants *)
@@ -567,8 +556,8 @@ let rec transl_exp e =
   transl_exp0 e
 and transl_exp0 e =
   match e.exp_desc with
-    Texp_ident(path, _, {val_kind = Val_prim p}) ->
-      transl_primitive e.exp_loc p e.exp_env e.exp_type (Some path)
+    Texp_ident(_, _, {val_kind = Val_prim p}) ->
+      transl_primitive e.exp_loc p e.exp_env e.exp_type 
   | Texp_ident(path, _, {val_kind = Val_reg }) ->
       transl_value_path ~loc:e.exp_loc e.exp_env path
   | Texp_constant cst ->
@@ -589,7 +578,7 @@ and transl_exp0 e =
       in
       let loc = e.exp_loc in
       Lfunction{ params; body; attr; loc}
-  | Texp_apply({ exp_desc = Texp_ident(path, _, {val_kind = Val_prim p});
+  | Texp_apply({ exp_desc = Texp_ident(_, _, {val_kind = Val_prim p});
                 exp_type = prim_type } as funct, oargs)
     when List.length oargs >= p.prim_arity
     && List.for_all (fun (_, arg) -> arg <> None) oargs ->
@@ -610,7 +599,7 @@ and transl_exp0 e =
       let argl = transl_list args in
       begin
         let prim = transl_primitive_application
-            e.exp_loc p e.exp_env prim_type (Some path) args in
+            e.exp_loc p e.exp_env prim_type  args in
         match (prim, args) with
           (Praise k, [_]) ->
             let targ = List.hd argl in

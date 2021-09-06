@@ -85,7 +85,7 @@ let rec apply_coercion loc strict restr arg =
       let carg = apply_coercion loc Alias cc_arg (Lvar param) in
       apply_coercion_result loc strict arg [param] [carg] cc_res
   | Tcoerce_primitive { pc_loc; pc_desc; pc_env; pc_type; } ->
-      transl_primitive pc_loc pc_desc pc_env pc_type None
+      transl_primitive pc_loc pc_desc pc_env pc_type
   | Tcoerce_alias (path, cc) ->
       name_lambda strict arg
         (fun _ -> apply_coercion loc Alias cc (transl_normal_path path))
@@ -491,7 +491,7 @@ and transl_structure loc fields cc rootpath final_env = function
                  | Tcoerce_primitive p -> 
                      (if is_top rootpath then 
                         export_identifiers := p.pc_id:: !export_identifiers);
-                     (transl_primitive p.pc_loc p.pc_desc p.pc_env p.pc_type None :: code)
+                     (transl_primitive p.pc_loc p.pc_desc p.pc_env p.pc_type :: code)
                  | _ -> 
                      (if is_top rootpath then 
                         export_identifiers :=  v.(pos) :: !export_identifiers);
@@ -625,7 +625,7 @@ let _ =
 
 let transl_implementation module_name (str, cc) =
   primitive_declarations := [];
-  Hashtbl.clear used_primitives;
+
   let module_id = Ident.create_persistent module_name in
   let body, _ =
     transl_struct Location.none [] cc
@@ -686,4 +686,4 @@ let reset () =
   export_identifiers := [];
   primitive_declarations := [];
   Env.reset_required_globals ();
-  Hashtbl.clear used_primitives
+
