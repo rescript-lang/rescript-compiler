@@ -652,7 +652,7 @@ let required_globals ~flambda body =
 
 (* Compile an implementation *)
 
-let transl_implementation_flambda module_name (str, cc) =
+let transl_implementation module_name (str, cc) =
   primitive_declarations := [];
   Hashtbl.clear used_primitives;
   let module_id = Ident.create_persistent module_name in
@@ -660,20 +660,13 @@ let transl_implementation_flambda module_name (str, cc) =
     transl_struct Location.none [] cc
                    (global_path module_id) str
   in
+  let implementation = 
   { module_ident = module_id;
     main_module_block_size = size;
     required_globals = required_globals ~flambda:true body;
-    code = body }
-
-let transl_implementation module_name (str, cc) : Lambda.lambda =
-  let implementation =
-    transl_implementation_flambda module_name (str, cc)
-  in
-  let code =
+    code = body } in 
     Lprim (Psetglobal implementation.module_ident, [implementation.code],
-           Location.none)
-  in
-  code 
+    Location.none)
 
 (* Build the list of value identifiers defined by a toplevel structure
    (excluding primitive declarations). *)
