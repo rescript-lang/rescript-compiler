@@ -328,24 +328,7 @@ let rec class_type s =
   | Cty_arrow (l, ty, cty) ->
       Cty_arrow (l, typexp s ty, class_type s cty)
 
-let class_declaration s decl =
-  let decl =
-    { cty_params = List.map (typexp s) decl.cty_params;
-      cty_variance = decl.cty_variance;
-      cty_type = class_type s decl.cty_type;
-      cty_path = type_path s decl.cty_path;
-      cty_new =
-        begin match decl.cty_new with
-          None    -> None
-        | Some ty -> Some (typexp s ty)
-        end;
-      cty_loc = loc s decl.cty_loc;
-      cty_attributes = attrs s decl.cty_attributes;
-    }
-  in
-  (* Do not clean up if saving: next is cltype_declaration *)
-  if not s.for_saving then cleanup_types ();
-  decl
+
 
 let cltype_declaration s decl =
   let decl =
