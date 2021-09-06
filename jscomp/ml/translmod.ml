@@ -298,6 +298,12 @@ let reorder_rec_bindings bindings =
   done;
   List.rev !res
 
+let rec pure_module m =
+  match m.mod_desc with
+    Tmod_ident _ -> Alias
+  | Tmod_constraint (m,_,_,_) -> pure_module m
+  | _ -> Strict
+
 (* Generate lambda-code for a reordered list of bindings *)
 
 let eval_rec_bindings bindings cont =
@@ -607,11 +613,6 @@ and transl_structure loc fields cc rootpath final_env = function
       | Tstr_attribute _ ->
           transl_structure loc fields cc rootpath final_env rem
 
-and pure_module m =
-  match m.mod_desc with
-    Tmod_ident _ -> Alias
-  | Tmod_constraint (m,_,_,_) -> pure_module m
-  | _ -> Strict
 
 (* Update forward declaration in Translcore *)
 let _ =
