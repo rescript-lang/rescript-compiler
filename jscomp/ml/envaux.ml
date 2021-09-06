@@ -54,9 +54,6 @@ let rec env_from_summary sum subst =
       | Env_modtype(s, id, desc) ->
           Env.add_modtype id (Subst.modtype_declaration subst desc)
                           (env_from_summary s subst)
-      | Env_class(s, id, desc) ->
-          Env.add_class id (Subst.class_declaration subst desc)
-                        (env_from_summary s subst)
       | Env_cltype (s, id, desc) ->
           Env.add_cltype id (Subst.cltype_declaration subst desc)
                          (env_from_summary s subst)
@@ -71,6 +68,7 @@ let rec env_from_summary sum subst =
           Env.add_module_declaration ~check:false
             id (Subst.module_declaration subst desc)
             ~arg:true (env_from_summary s subst)
+      | Env_class _      
       | Env_functor_arg _ -> assert false
       | Env_constraints(s, map) ->
           PathMap.fold

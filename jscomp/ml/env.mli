@@ -27,7 +27,7 @@ type summary =
   | Env_extension of summary * Ident.t * extension_constructor
   | Env_module of summary * Ident.t * module_declaration
   | Env_modtype of summary * Ident.t * modtype_declaration
-  | Env_class of summary * Ident.t * class_declaration
+  | Env_class of unit
   | Env_cltype of summary * Ident.t * class_type_declaration
   | Env_open of summary * Path.t
   | Env_functor_arg of summary * Ident.t
@@ -142,7 +142,7 @@ val add_module: ?arg:bool -> Ident.t -> module_type -> t -> t
 val add_module_declaration: ?arg:bool -> check:bool -> Ident.t ->
   module_declaration -> t -> t
 val add_modtype: Ident.t -> modtype_declaration -> t -> t
-val add_class: Ident.t -> class_declaration -> t -> t
+
 val add_cltype: Ident.t -> class_type_declaration -> t -> t
 val add_local_constraint: Path.t -> type_declaration -> int -> t -> t
 val add_local_type: Path.t -> type_declaration -> t -> t

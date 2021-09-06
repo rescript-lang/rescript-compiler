@@ -159,7 +159,7 @@ type summary =
   | Env_extension of summary * Ident.t * extension_constructor
   | Env_module of summary * Ident.t * module_declaration
   | Env_modtype of summary * Ident.t * modtype_declaration
-  | Env_class of summary * Ident.t * class_declaration
+  | Env_class of unit
   | Env_cltype of summary * Ident.t * class_type_declaration
   | Env_open of summary * Path.t
   | Env_functor_arg of summary * Ident.t
@@ -1892,10 +1892,6 @@ and store_modtype id info env =
     modtypes = IdTbl.add id info env.modtypes;
     summary = Env_modtype(env.summary, id, info) }
 
-and add_class id desc env =
-  { env with
-    classes = IdTbl.add id desc env.classes;
-    summary = Env_class(env.summary, id, desc) }
 
 and store_cltype id desc env =
   { env with
