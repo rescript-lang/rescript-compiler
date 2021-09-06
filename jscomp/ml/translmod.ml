@@ -632,7 +632,8 @@ let transl_implementation module_name (str, cc) =
     transl_struct Location.none [] cc
                    (global_path module_id) str
   in
-  Lprim (Psetglobal module_id, [body], Location.none)
+  body
+
 
 (* Build the list of value identifiers defined by a toplevel structure
    (excluding primitive declarations). *)

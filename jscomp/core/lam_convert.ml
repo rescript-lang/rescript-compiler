@@ -154,11 +154,6 @@ let happens_to_be_diff (sw_consts : (int * Lambda.lambda) list) : int option =
     see #3852, we drop all these required global modules
     but added it back based on our own module analysis
 *)
-let rec drop_global_marker (lam : Lam.t) =
-  match lam with
-  | Lsequence (Lglobal_module _, rest) -> drop_global_marker rest
-  | _ -> lam
-
 let seq = Lam.seq
 
 let unit = Lam.unit
@@ -178,10 +173,6 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
       (* Pignore means return unit, it is not an nop *)
       seq (Ext_list.singleton_exn args) unit
   | Pgetglobal _ -> assert false
-  | Psetglobal _ ->
-      (* we discard [Psetglobal] in the beginning*)
-      drop_global_marker (Ext_list.singleton_exn args)
-  (* prim ~primitive:(Psetglobal id) ~args loc *)
   | Pmakeblock info -> (
       let tag = Lambda.tag_of_tag_info info in
       let mutable_flag = Lambda.mutable_flag_of_tag_info info in
