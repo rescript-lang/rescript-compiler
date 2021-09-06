@@ -181,11 +181,6 @@ let compose_coercions c1 c2 =
 
 (* Record the primitive declarations occurring in the module compiled *)
 
-let primitive_declarations = ref ([] : Primitive.description list)
-let record_primitive = function
-  | {Types.val_kind=Val_prim p} ->
-      primitive_declarations := p :: !primitive_declarations
-  | _ -> ()
 
 (* Utilities for compiling "module rec" definitions *)
 
@@ -533,8 +528,7 @@ and transl_structure loc fields cc rootpath final_env = function
             transl_structure loc ext_fields cc rootpath final_env rem
           in
           transl_let rec_flag pat_expr_list body, size
-      | Tstr_primitive descr ->
-          record_primitive descr.val_val;
+      | Tstr_primitive _ ->
           transl_structure loc fields cc rootpath final_env rem
       | Tstr_type _ ->
           transl_structure loc fields cc rootpath final_env rem
@@ -625,7 +619,7 @@ let _ =
 (* Compile an implementation *)
 
 let transl_implementation module_name (str, cc) =
-  primitive_declarations := [];
+
 
   let module_id = Ident.create_persistent module_name in
   let body, _ =
@@ -686,6 +680,5 @@ let () =
 
 let reset () =
   export_identifiers := [];
-  primitive_declarations := [];
   Env.reset_required_globals ();
 
