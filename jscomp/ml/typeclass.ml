@@ -575,7 +575,7 @@ let initial_env  approx
     constr_type, dummy_class)::res,
    env)
 
-let class_infos define_class kind
+let class_infos  kind
     (cl, id, ty_id,
      obj_id, obj_params, obj_ty,
      cl_id, cl_params, cl_ty,
@@ -691,23 +691,11 @@ let class_infos define_class kind
      clty_loc = cl.pci_loc;
      clty_attributes = cl.pci_attributes;
     }
-  and clty =
-    {cty_params = params; cty_type = typ;
-     cty_variance = cty_variance;
-     cty_path = Path.Pident obj_id;
-     cty_new =
-       begin match cl.pci_virt with
-       | Virtual  -> None
-       | Concrete -> Some constr_type
-       end;
-     cty_loc = cl.pci_loc;
-     cty_attributes = cl.pci_attributes;
-    }
   in
   dummy_class.cty_type <- typ;
   let env =
     Env.add_cltype ty_id cltydef (
-    if define_class then Env.add_class id clty env else env)
+     env)
   in
 
   if cl.pci_virt = Concrete then begin
@@ -718,7 +706,7 @@ let class_infos define_class kind
         (fun name (_mut, vr, _ty) l -> if vr = Virtual then name :: l else l)
         sign.csig_vars [] in
     if mets <> []  || vals <> [] then
-      raise(Error(cl.pci_loc, env, Virtual_class(define_class, false, mets,
+      raise(Error(cl.pci_loc, env, Virtual_class(false, false, mets,
                                                  vals)));
   end;
 
@@ -842,7 +830,7 @@ let final_decl env define_class
  })
 (*   (cl.pci_variance, cl.pci_loc)) *)
 
-let class_infos define_class kind
+let class_infos  kind
     (cl, id, ty_id,
      obj_id, obj_params, obj_ty,
      cl_id, cl_params, cl_ty,
@@ -850,7 +838,7 @@ let class_infos define_class kind
     (res, env) =
   Builtin_attributes.warning_scope cl.pci_attributes
     (fun () ->
-       class_infos define_class kind
+       class_infos  kind
          (cl, id, ty_id,
           obj_id, obj_params, obj_ty,
           cl_id, cl_params, cl_ty,
@@ -935,7 +923,7 @@ let type_classes  approx kind env cls =
     List.fold_left (initial_env  approx) ([], env) cls
   in
   let (res, env) =
-    List.fold_right (class_infos false kind) res ([], env)
+    List.fold_right (class_infos  kind) res ([], env)
   in
   Ctype.end_def ();
   let res = List.rev_map (final_decl env false) res in
