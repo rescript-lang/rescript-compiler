@@ -338,3 +338,5 @@ type emptyObject = {.}
 let f = (~x=?, ~y as _) => x
 
 type call = CleanStart
+
+let f = (~a=1) => 1
