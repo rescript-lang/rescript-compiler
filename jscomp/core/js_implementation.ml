@@ -207,7 +207,7 @@ let after_parsing_impl ppf  outputprefix (ast : Parsetree.structure) =
       end else begin
         let lambda = Translmod.transl_implementation modulename typedtree_coercion in 
         let js_program =  
-          print_if_pipe ppf Clflags.dump_rawlambda Printlambda.lambda lambda.code
+          print_if_pipe ppf Clflags.dump_rawlambda Printlambda.lambda lambda
           |> Lam_compile_main.compile outputprefix in 
         if not !Js_config.cmj_only then 
           Lam_compile_main.lambda_as_module

@@ -665,7 +665,7 @@ let transl_implementation_flambda module_name (str, cc) =
     required_globals = required_globals ~flambda:true body;
     code = body }
 
-let transl_implementation module_name (str, cc) =
+let transl_implementation module_name (str, cc) : Lambda.lambda =
   let implementation =
     transl_implementation_flambda module_name (str, cc)
   in
@@ -673,7 +673,7 @@ let transl_implementation module_name (str, cc) =
     Lprim (Psetglobal implementation.module_ident, [implementation.code],
            Location.none)
   in
-  { implementation with code }
+  code 
 
 (* Build the list of value identifiers defined by a toplevel structure
    (excluding primitive declarations). *)

@@ -24,7 +24,7 @@ val eval_rec_bindings:
       Lambda.lambda -> Lambda.lambda) ref
 
 val transl_implementation:
-      string -> Typedtree.structure * Typedtree.module_coercion -> Lambda.program
+      string -> Typedtree.structure * Typedtree.module_coercion -> Lambda.lambda
 
 
 
