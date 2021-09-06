@@ -19,9 +19,6 @@
 
 
 
-val eval_rec_bindings:
-      ((Ident.t * (Lambda.lambda * Lambda.lambda) option * Lambda.lambda) list  -> 
-      Lambda.lambda -> Lambda.lambda) ref
 
 val transl_implementation:
       string -> Typedtree.structure * Typedtree.module_coercion -> Lambda.lambda
