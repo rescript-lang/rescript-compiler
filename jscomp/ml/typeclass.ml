@@ -529,7 +529,7 @@ let temp_abbrev loc env id arity =
   in
   (!params, ty, env)
 
-let initial_env define_class approx
+let initial_env  approx
     (res, env) (cl, id, ty_id, obj_id, cl_id) =
   (* Temporary abbreviations *)
   let arity = List.length cl.pci_params in
@@ -567,13 +567,7 @@ let initial_env define_class approx
        clty_path = unbound_class;
        clty_loc = Location.none;
        clty_attributes = [];
-      }
-      (
-        if define_class then
-          Env.add_class id dummy_class env
-        else
-          env
-      )
+      } env
   in
   ((cl, id, ty_id,
     obj_id, obj_params, obj_ty,
@@ -940,7 +934,7 @@ let type_classes  approx kind env cls =
   Ctype.init_def (Ident.current_time ());
   Ctype.begin_class_def ();
   let (res, env) =
-    List.fold_left (initial_env false approx) ([], env) cls
+    List.fold_left (initial_env  approx) ([], env) cls
   in
   let (res, env) =
     List.fold_right (class_infos false kind) res ([], env)
