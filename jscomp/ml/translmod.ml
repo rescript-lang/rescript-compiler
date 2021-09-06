@@ -18,7 +18,7 @@
 
 
 
-open Types
+
 open Typedtree
 open Lambda
 
@@ -196,7 +196,7 @@ let rec pure_module m =
    correspond to a run-time value: values, extensions, modules, classes.
    Note: manifest primitives do not correspond to a run-time value! *)
 
-let rec bound_value_identifiers = function
+let rec bound_value_identifiers : Types.signature_item list -> Ident.t list = function
     [] -> []
   | Sig_value(id, {val_kind = Val_reg}) :: rem ->
       id :: bound_value_identifiers rem
