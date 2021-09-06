@@ -927,7 +927,7 @@ let check_coercions env
    cls_info=req}
 
 (*******************************)
-
+(* FIXME: [define_class] is always [false] here *)
 let type_classes define_class approx kind env cls =
   let cls =
     List.map
@@ -960,8 +960,6 @@ let class_description env sexpr =
   (expr, expr.cltyp_type)
 
 
-let class_descriptions env cls =
-  type_classes true approx_description class_description env cls
 
 let class_type_declarations env cls =
   let (decls, env) =

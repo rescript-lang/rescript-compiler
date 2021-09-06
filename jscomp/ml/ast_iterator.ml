@@ -29,7 +29,6 @@ type iterator = {
   attributes: iterator -> attribute list -> unit;
   case: iterator -> case -> unit;
   cases: iterator -> case list -> unit;
-  class_description: iterator -> class_description -> unit;
   class_expr: iterator -> class_expr -> unit;
   class_field: iterator -> class_field -> unit;
   class_signature: iterator -> class_signature -> unit;
@@ -249,7 +248,7 @@ module MT = struct
     | Psig_modtype x -> sub.module_type_declaration sub x
     | Psig_open x -> sub.open_description sub x
     | Psig_include x -> sub.include_description sub x
-    | Psig_class l -> List.iter (sub.class_description sub) l
+    | Psig_class () -> ()
     | Psig_class_type l ->
         List.iter (sub.class_type_declaration sub) l
     | Psig_extension (x, attrs) ->
@@ -487,8 +486,6 @@ let default_iterator =
     class_type_field = CT.iter_field;
     class_signature = CT.iter_signature;
     class_type_declaration =
-      (fun this -> CE.class_infos this (this.class_type this));
-    class_description =
       (fun this -> CE.class_infos this (this.class_type this));
     type_declaration = T.iter_type_declaration;
     type_kind = T.iter_type_kind;

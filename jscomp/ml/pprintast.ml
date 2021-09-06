@@ -990,22 +990,8 @@ and signature_item ctxt f x : unit =
       type_extension ctxt f te
   | Psig_exception ed ->
       exception_declaration ctxt f ed
-  | Psig_class l ->
-      let class_description kwd f ({pci_params=ls;pci_name={txt;_};_} as x) =
-        pp f "@[<2>%s %a%a%s@;:@;%a@]%a" kwd
-          virtual_flag x.pci_virt
-          (class_params_def ctxt) ls txt
-          (class_type ctxt) x.pci_expr
-          (item_attributes ctxt) x.pci_attributes
-      in begin
-        match l with
-        | [] -> ()
-        | [x] -> class_description "class" f x
-        | x :: xs ->
-            pp f "@[<v>%a@,%a@]"
-              (class_description "class") x
-              (list ~sep:"@," (class_description "and")) xs
-      end
+  | Psig_class () ->
+    ()
   | Psig_module ({pmd_type={pmty_desc=Pmty_alias alias;
                             pmty_attributes=[]; _};_} as pmd) ->
       pp f "@[<hov>module@ %s@ =@ %a@]%a" pmd.pmd_name.txt

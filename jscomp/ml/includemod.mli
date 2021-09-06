@@ -48,9 +48,6 @@ type symptom =
   | Class_type_declarations of
       Ident.t * class_type_declaration * class_type_declaration *
       Ctype.class_match_failure list
-  | Class_declarations of
-      Ident.t * class_declaration * class_declaration *
-      Ctype.class_match_failure list
   | Unbound_modtype_path of Path.t
   | Unbound_module_path of Path.t
   | Invalid_module_alias of Path.t

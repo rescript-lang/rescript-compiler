@@ -376,8 +376,8 @@ and add_sig_item (bv, m) item =
       add_names s;
       let add = StringMap.fold StringMap.add m' in
       (add bv, add m)
-  | Psig_class cdl ->
-      List.iter (add_class_description bv) cdl; (bv, m)
+  | Psig_class () ->
+      (bv, m)
   | Psig_class_type cdtl ->
       List.iter (add_class_type_declaration bv) cdtl; (bv, m)
   | Psig_attribute _ -> (bv, m)

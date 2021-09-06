@@ -25,7 +25,6 @@ type mapper = {
   attributes: mapper -> T.attribute list -> attribute list;
   case: mapper -> T.case -> case;
   cases: mapper -> T.case list -> case list;
-  class_description: mapper -> T.class_description -> class_description;
   class_signature: mapper -> T.class_signature -> class_signature;
   class_type: mapper -> T.class_type -> class_type;
   class_type_declaration: mapper -> T.class_type_declaration
@@ -497,8 +496,8 @@ let signature_item sub item =
         Psig_open (sub.open_description sub od)
     | Tsig_include incl ->
         Psig_include (sub.include_description sub incl)
-    | Tsig_class list ->
-        Psig_class (List.map (sub.class_description sub) list)
+    | Tsig_class () ->
+        Psig_class ()
     | Tsig_class_type list ->
         Psig_class_type (List.map (sub.class_type_declaration sub) list)
     | Tsig_attribute x ->
@@ -531,7 +530,6 @@ let class_infos f sub ci =
     (map_loc sub ci.ci_id_name)
     (f sub ci.ci_expr)
 
-let class_description sub = class_infos sub.class_type sub
 let class_type_declaration sub = class_infos sub.class_type sub
 
 let module_type sub mty =
@@ -686,7 +684,6 @@ let default_mapper =
     class_type_field = class_type_field;
     class_signature = class_signature;
     class_type_declaration = class_type_declaration;
-    class_description = class_description;
     type_declaration = type_declaration;
     type_kind = type_kind;
     typ = core_type;

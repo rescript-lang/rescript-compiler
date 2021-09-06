@@ -1623,12 +1623,8 @@ let rec prefix_idents root pos sub = function
         prefix_idents root pos
                       (Subst.add_modtype id (Mty_ident p) sub) rem in
       (p::pl, final_sub)
-  | Sig_class(id, _, _) :: rem ->
-      (* pretend this is a type, cf. PR#6650 *)
-      let p = Pdot(root, Ident.name id, pos) in
-      let (pl, final_sub) =
-        prefix_idents root (pos + 1) (Subst.add_type id p sub) rem in
-      (p::pl, final_sub)
+  | Sig_class _ :: _ ->
+    assert false
   | Sig_class_type(id, _, _) :: rem ->
       let p = Pdot(root, Ident.name id, nopos) in
       let (pl, final_sub) =
@@ -1738,11 +1734,7 @@ and components_of_module_maker (env, sub, path, mty) =
             c.comp_modtypes <-
               Tbl.add (Ident.name id) (decl', nopos) c.comp_modtypes;
             env := store_modtype id decl !env
-        | Sig_class(id, decl, _) ->
-            let decl' = Subst.class_declaration sub decl in
-            c.comp_classes <-
-              Tbl.add (Ident.name id) (decl', !pos) c.comp_classes;
-            incr pos
+        | Sig_class () -> assert false
         | Sig_class_type(id, decl, _) ->
             let decl' = Subst.cltype_declaration sub decl in
             c.comp_cltypes <-
@@ -2006,7 +1998,7 @@ let add_item comp env =
   | Sig_typext(id, ext, _)  -> add_extension ~check:false id ext env
   | Sig_module(id, md, _)   -> add_module_declaration ~check:false id md env
   | Sig_modtype(id, decl)   -> add_modtype id decl env
-  | Sig_class(id, decl, _)  -> add_class id decl env
+  | Sig_class()  -> env
   | Sig_class_type(id, decl, _) -> add_cltype id decl env
 
 let rec add_signature sg env =

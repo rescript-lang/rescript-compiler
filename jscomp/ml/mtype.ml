@@ -162,9 +162,7 @@ let nondep_supertype env mid mty =
                                      mtd_attributes=[]}) :: rem'
             | _  -> raise Not_found
           end
-      | Sig_class(id, d, rs) ->
-          Sig_class(id, Ctype.nondep_class_declaration env mid d, rs)
-          :: rem'
+      | Sig_class _ -> assert false
       | Sig_class_type(id, d, rs) ->
           Sig_class_type(id, Ctype.nondep_cltype_declaration env mid d, rs)
           :: rem'

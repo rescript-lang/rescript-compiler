@@ -521,16 +521,6 @@ and class_type_field i ppf x =
       line i ppf "Tctf_attribute \"%s\"\n" s.txt;
       Printast.payload i ppf arg
 
-and class_description i ppf x =
-  line i ppf "class_description %a\n" fmt_location x.ci_loc;
-  attributes i ppf x.ci_attributes;
-  let i = i+1 in
-  line i ppf "pci_virt = %a\n" fmt_virtual_flag x.ci_virt;
-  line i ppf "pci_params =\n";
-  list (i+1) type_parameter ppf x.ci_params;
-  line i ppf "pci_name = \"%s\"\n" x.ci_id_name.txt;
-  line i ppf "pci_expr =\n";
-  class_type (i+1) ppf x.ci_expr;
 
 and class_type_declaration i ppf x =
   line i ppf "class_type_declaration %a\n" fmt_location x.ci_loc;
@@ -603,9 +593,8 @@ and signature_item i ppf x =
       line i ppf "Tsig_include\n";
       attributes i ppf incl.incl_attributes;
       module_type i ppf incl.incl_mod
-  | Tsig_class (l) ->
-      line i ppf "Tsig_class\n";
-      list i class_description ppf l;
+  | Tsig_class () ->
+      ()
   | Tsig_class_type (l) ->
       line i ppf "Tsig_class_type\n";
       list i class_type_declaration ppf l;

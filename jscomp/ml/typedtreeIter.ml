@@ -380,8 +380,7 @@ module MakeIterator(Iter : IteratorArgument) : sig
             iter_module_type_declaration mtd
         | Tsig_open _ -> ()
         | Tsig_include incl -> iter_module_type incl.incl_mod
-        | Tsig_class list ->
-            List.iter iter_class_description list
+        | Tsig_class () -> ()
         | Tsig_class_type list ->
             List.iter iter_class_type_declaration list
         | Tsig_attribute _ -> ()
@@ -398,11 +397,6 @@ module MakeIterator(Iter : IteratorArgument) : sig
       Iter.leave_module_type_declaration mtd
 
 
-    and iter_class_description cd =
-      Iter.enter_class_description cd;
-      List.iter iter_type_parameter cd.ci_params;
-      iter_class_type cd.ci_expr;
-      Iter.leave_class_description cd;
 
     and iter_class_type_declaration cd =
       Iter.enter_class_type_declaration cd;

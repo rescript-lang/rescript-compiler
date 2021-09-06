@@ -202,7 +202,7 @@ let rec bound_value_identifiers : Types.signature_item list -> Ident.t list = fu
       id :: bound_value_identifiers rem
   | Sig_typext(id, _, _) :: rem -> id :: bound_value_identifiers rem
   | Sig_module(id, _, _) :: rem -> id :: bound_value_identifiers rem
-  | Sig_class(id, _, _) :: rem -> id :: bound_value_identifiers rem
+  | Sig_class _ :: _ -> assert false
   | _ :: rem -> bound_value_identifiers rem
 
 

@@ -30,7 +30,6 @@ type mapper = {
   attributes: mapper -> attribute list -> attribute list;
   case: mapper -> case -> case;
   cases: mapper -> case list -> case list;
-  class_description: mapper -> class_description -> class_description;
   class_expr: mapper -> class_expr -> class_expr;
   class_field: mapper -> class_field -> class_field;
   class_signature: mapper -> class_signature -> class_signature;
@@ -264,7 +263,7 @@ module MT = struct
     | Psig_modtype x -> modtype ~loc (sub.module_type_declaration sub x)
     | Psig_open x -> open_ ~loc (sub.open_description sub x)
     | Psig_include x -> include_ ~loc (sub.include_description sub x)
-    | Psig_class l -> class_ ~loc (List.map (sub.class_description sub) l)
+    | Psig_class _ -> assert false
     | Psig_class_type l ->
         class_type ~loc (List.map (sub.class_type_declaration sub) l)
     | Psig_extension (x, attrs) ->
@@ -517,8 +516,6 @@ let default_mapper =
     class_type_field = CT.map_field;
     class_signature = CT.map_signature;
     class_type_declaration =
-      (fun this -> CE.class_infos this (this.class_type this));
-    class_description =
       (fun this -> CE.class_infos this (this.class_type this));
     type_declaration = T.map_type_declaration;
     type_kind = T.map_type_kind;

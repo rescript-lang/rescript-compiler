@@ -45,9 +45,6 @@ type class_type_info = {
 
 
 
-val class_descriptions:
-  Env.t -> Parsetree.class_description list ->
-  Typedtree.class_description class_info list * Env.t
 
 (*
 and class_description =
@@ -55,7 +52,7 @@ and class_description =
 *)
 
 val class_type_declarations:
-  Env.t -> Parsetree.class_description list -> class_type_info list * Env.t
+  Env.t -> Parsetree.class_type_declaration list -> class_type_info list * Env.t
 
 (*
 and class_type_declaration =
@@ -63,24 +60,10 @@ and class_type_declaration =
 *)
 
 val approx_class_declarations:
-  Env.t -> Parsetree.class_description list -> class_type_info list
+  Env.t -> Parsetree.class_type_declaration list -> class_type_info list
 
 val virtual_methods: Types.class_signature -> label list
 
-(*
-val type_classes :
-           bool ->
-           ('a -> Types.type_expr) ->
-           (Env.t -> 'a -> 'b * Types.class_type) ->
-           Env.t ->
-           'a Parsetree.class_infos list ->
-  (  Ident.t * Types.class_declaration *
-     Ident.t * Types.class_type_declaration *
-     Ident.t * Types.type_declaration *
-     Ident.t * Types.type_declaration *
-     int * string list * 'b * 'b Typedtree.class_infos)
-           list * Env.t
-*)
 
 type error =
     Unconsistent_constraint of (type_expr * type_expr) list

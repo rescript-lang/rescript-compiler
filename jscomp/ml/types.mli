@@ -410,7 +410,7 @@ and signature_item =
   | Sig_typext of Ident.t * extension_constructor * ext_status
   | Sig_module of Ident.t * module_declaration * rec_status
   | Sig_modtype of Ident.t * modtype_declaration
-  | Sig_class of Ident.t * class_declaration * rec_status
+  | Sig_class of unit
   | Sig_class_type of Ident.t * class_type_declaration * rec_status
 
 and module_declaration =
