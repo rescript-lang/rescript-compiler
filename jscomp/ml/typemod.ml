@@ -52,14 +52,18 @@ exception Error_forward of Location.error
 
 
 
-let rescript_hide (x : Typedtree.module_binding) = 
-  match x.mb_attributes with 
+let rescript_hide_attributes (x : Typedtree.attributes) = 
+  match x with 
   | [] -> false
   | ({txt = "internal.local";_},_) :: _ -> true
   | _ :: rest -> 
     Ext_list.exists rest (fun (x,_) -> x.txt = "internal.local")
 
-
+let rescript_hide (x : Typedtree.structure_item_desc) = 
+  match x with 
+  | Tstr_module {mb_attributes} -> rescript_hide_attributes mb_attributes
+  | _ -> false
+  
 open Typedtree
 
 let fst3 (x,_,_) = x
@@ -1629,9 +1633,9 @@ and type_structure ?(toplevel = false) funct_body anchor env sstr scope =
                                     :: previous_saved_types);
         let (str_rem, sig_rem, final_env) = type_struct new_env srem in
         let new_sg = 
-          match desc with 
-          | Tstr_module m when rescript_hide m -> sig_rem
-          | _ -> sg @ sig_rem in 
+          if rescript_hide desc then sig_rem 
+          else 
+            sg @ sig_rem in 
         (str :: str_rem, new_sg, final_env)
   in
   if !Clflags.annotations then

@@ -28,7 +28,7 @@ val type_toplevel_phrase:
          Typedtree.structure * Types.signature * Env.t
 
 
-val rescript_hide : Typedtree.module_binding -> bool
+val rescript_hide : Typedtree.structure_item_desc -> bool
 
 val type_implementation_more: ?check_exists:unit -> 
   string -> string -> string -> Env.t -> Parsetree.structure ->
