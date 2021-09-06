@@ -928,7 +928,7 @@ let check_coercions env
 
 (*******************************)
 (* FIXME: [define_class] is always [false] here *)
-let type_classes define_class approx kind env cls =
+let type_classes  approx kind env cls =
   let cls =
     List.map
       (function cl ->
@@ -940,17 +940,17 @@ let type_classes define_class approx kind env cls =
   Ctype.init_def (Ident.current_time ());
   Ctype.begin_class_def ();
   let (res, env) =
-    List.fold_left (initial_env define_class approx) ([], env) cls
+    List.fold_left (initial_env false approx) ([], env) cls
   in
   let (res, env) =
-    List.fold_right (class_infos define_class kind) res ([], env)
+    List.fold_right (class_infos false kind) res ([], env)
   in
   Ctype.end_def ();
-  let res = List.rev_map (final_decl env define_class) res in
+  let res = List.rev_map (final_decl env false) res in
   let decls = List.fold_right extract_type_decls res [] in
   let decls = Typedecl.compute_variance_decls env decls in
   let res = List.map2 merge_type_decls res decls in
-  let env = List.fold_left (final_env define_class) env res in
+  let env = List.fold_left (final_env false) env res in
   let res = List.map (check_coercions env) res in
   (res, env)
 
@@ -963,7 +963,7 @@ let class_description env sexpr =
 
 let class_type_declarations env cls =
   let (decls, env) =
-    type_classes false approx_description class_description env cls
+    type_classes  approx_description class_description env cls
   in
   (List.map
      (fun decl ->
