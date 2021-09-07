@@ -318,11 +318,6 @@ and lambda_switch =
 
 
 
-type program =
-  { module_ident : Ident.t;
-    main_module_block_size : int;
-    required_globals : Ident.Set.t;
-    code : lambda }
 
 (* This is actually a dummy value 
     not necessary "()", it can be used as a place holder for module 
