@@ -6,7 +6,7 @@ let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y
 [@@@ocaml.warning "-a"]
 
 
-let [|a|] = [|1|]
+(* let [|a|] = [|1|] *)
 
 
 let x = 1
