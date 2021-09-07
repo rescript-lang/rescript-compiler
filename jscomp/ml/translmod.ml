@@ -72,7 +72,8 @@ let rec apply_coercion loc strict (restr : Typedtree.module_coercion) arg =
             Lambda.Lprim
               ( Pmakeblock (Lambda.Blk_module runtime_fields),
                 List.mapi
-                  (fun i x -> apply_coercion_field loc (get_field_i i) x)
+                  (fun i (pos, cc) ->
+                    apply_coercion loc Alias cc (get_field_i i pos))
                   pos_cc_list,
                 loc )
           in
@@ -86,9 +87,6 @@ let rec apply_coercion loc strict (restr : Typedtree.module_coercion) arg =
   | Tcoerce_alias (path, cc) ->
       Lambda.name_lambda strict arg (fun _ ->
           apply_coercion loc Alias cc (Lambda.transl_normal_path path))
-
-and apply_coercion_field loc get_field (pos, cc) =
-  apply_coercion loc Alias cc (get_field pos)
 
 and apply_coercion_result loc strict funct params args cc_res =
   match cc_res with
