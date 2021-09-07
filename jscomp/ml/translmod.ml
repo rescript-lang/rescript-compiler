@@ -17,7 +17,6 @@
    for the module language *)
 
 open Typedtree
-open Lambda
 open Translcore
 
 type error = Conflicting_inline_attributes
@@ -42,13 +41,13 @@ let field_path path field : Path.t option =
 
 (* Compile type extensions *)
 
-let transl_type_extension env rootpath tyext body =
+let transl_type_extension env rootpath tyext body : Lambda.lambda =
   List.fold_right
     (fun ext body ->
       let lam =
         transl_extension_constructor env (field_path rootpath ext.ext_id) ext
       in
-      Llet (Strict, Pgenval, ext.ext_id, lam, body))
+      Lambda.Llet (Strict, Pgenval, ext.ext_id, lam, body))
     tyext.tyext_constructors body
 
 (* Compile a coercion *)
@@ -59,16 +58,16 @@ let rec apply_coercion loc strict restr arg =
   | Tcoerce_structure (pos_cc_list, id_pos_list, runtime_fields) ->
       assert (List.length runtime_fields = List.length pos_cc_list);
       let names = Array.of_list runtime_fields in
-      name_lambda strict arg (fun id ->
+      Lambda.name_lambda strict arg (fun id ->
           let get_field_i i pos =
-            Lprim
+            Lambda.Lprim
               (Pfield (pos, Fld_module { name = names.(i) }), [ Lvar id ], loc)
           in
           let get_field_name name pos =
-            Lprim (Pfield (pos, Fld_module { name }), [ Lvar id ], loc)
+            Lambda.Lprim (Pfield (pos, Fld_module { name }), [ Lvar id ], loc)
           in
           let lam =
-            Lprim
+            Lambda.Lprim
               ( Pmakeblock (Lambda.Blk_module runtime_fields),
                 List.mapi
                   (fun i x -> apply_coercion_field loc (get_field_i i) x)
@@ -83,8 +82,8 @@ let rec apply_coercion loc strict restr arg =
   | Tcoerce_primitive { pc_loc; pc_desc; pc_env; pc_type } ->
       transl_primitive pc_loc pc_desc pc_env pc_type
   | Tcoerce_alias (path, cc) ->
-      name_lambda strict arg (fun _ ->
-          apply_coercion loc Alias cc (transl_normal_path path))
+      Lambda.name_lambda strict arg (fun _ ->
+          apply_coercion loc Alias cc (Lambda.transl_normal_path path))
 
 and apply_coercion_field loc get_field (pos, cc) =
   apply_coercion loc Alias cc (get_field pos)
@@ -97,13 +96,13 @@ and apply_coercion_result loc strict funct params args cc_res =
       apply_coercion_result loc strict funct (param :: params) (arg :: args)
         cc_res
   | _ ->
-      name_lambda strict funct (fun id ->
+      Lambda.name_lambda strict funct (fun id ->
           Lfunction
             {
               params = List.rev params;
               attr =
                 {
-                  default_function_attribute with
+                  Lambda.default_function_attribute with
                   is_a_functor = true;
                   stub = true;
                 };
@@ -120,26 +119,26 @@ and apply_coercion_result loc strict funct params args cc_res =
             })
 
 and wrap_id_pos_list loc id_pos_list get_field lam =
-  let fv = free_variables lam in
+  let fv = Lambda.free_variables lam in
   (*Format.eprintf "%a@." Printlambda.lambda lam;
     IdentSet.iter (fun id -> Format.eprintf "%a " Ident.print id) fv;
     Format.eprintf "@.";*)
   let lam, s =
     List.fold_left
       (fun (lam, s) (id', pos, c) ->
-        if IdentSet.mem id' fv then
+        if Lambda.IdentSet.mem id' fv then
           let id'' = Ident.create (Ident.name id') in
-          ( Llet
+          ( Lambda.Llet
               ( Alias,
                 Pgenval,
                 id'',
                 apply_coercion loc Alias c (get_field (Ident.name id') pos),
                 lam ),
-            Ident.add id' (Lvar id'') s )
+            Ident.add id' (Lambda.Lvar id'') s )
         else (lam, s))
       (lam, Ident.empty) id_pos_list
   in
-  if s == Ident.empty then lam else subst_lambda s lam
+  if s == Ident.empty then lam else Lambda.subst_lambda s lam
 
 (* Compose two coercions
    apply_coercion c1 (apply_coercion c2 e) behaves like
@@ -190,7 +189,7 @@ let compose_coercions c1 c2 =
 
 (* Record the primitive declarations occurring in the module compiled *)
 
-let rec pure_module m =
+let rec pure_module m : Lambda.let_kind =
   match m.mod_desc with
   | Tmod_ident _ -> Alias
   | Tmod_constraint (m, _, _, _) -> pure_module m
@@ -267,12 +266,12 @@ let rec compile_functor mexp coercion root_path loc =
         let param' = Ident.rename param in
         let arg = apply_coercion loc Alias arg_coercion (Lvar param') in
         let params = param' :: params in
-        let body = Llet (Alias, Pgenval, param, arg, body) in
+        let body = Lambda.Llet (Alias, Pgenval, param, arg, body) in
         (params, body))
       ([], transl_module res_coercion body_path body)
       functor_params_rev
   in
-  Lfunction
+  Lambda.Lfunction
     {
       params;
       attr =
@@ -291,12 +290,13 @@ and transl_module cc rootpath mexp =
   List.iter (Translattribute.check_attribute_on_module mexp) mexp.mod_attributes;
   let loc = mexp.mod_loc in
   match mexp.mod_type with
-  | Mty_alias (Mta_absent, _) -> apply_coercion loc Alias cc lambda_module_alias
+  | Mty_alias (Mta_absent, _) ->
+      apply_coercion loc Alias cc Lambda.lambda_module_alias
   | _ -> (
       match mexp.mod_desc with
       | Tmod_ident (path, _) ->
           apply_coercion loc Strict cc
-            (transl_module_path ~loc mexp.mod_env path)
+            (Lambda.transl_module_path ~loc mexp.mod_env path)
       | Tmod_structure str -> fst (transl_struct loc [] cc rootpath str)
       | Tmod_functor _ -> compile_functor mexp cc rootpath loc
       | Tmod_apply (funct, arg, ccarg) ->
@@ -330,10 +330,10 @@ and transl_structure loc fields cc rootpath final_env = function
                 (fun acc id ->
                   if is_top_root_path then
                     export_identifiers := id :: !export_identifiers;
-                  Lvar id :: acc)
+                  Lambda.Lvar id :: acc)
                 [] fields
             in
-            ( Lprim
+            ( Lambda.Lprim
                 ( Pmakeblock
                     (if is_top_root_path then
                      Blk_module_export !export_identifiers
@@ -350,8 +350,10 @@ and transl_structure loc fields cc rootpath final_env = function
               Format.eprintf "@]@.";*)
             assert (List.length runtime_fields = List.length pos_cc_list);
             let v = Ext_array.reverse_of_list fields in
-            let get_field pos = Lvar v.(pos)
-            and ids = List.fold_right IdentSet.add fields IdentSet.empty in
+            let get_field pos = Lambda.Lvar v.(pos)
+            and ids =
+              List.fold_right Lambda.IdentSet.add fields Lambda.IdentSet.empty
+            in
             let get_field_name _name = get_field in
             let result =
               List.fold_right
@@ -369,7 +371,7 @@ and transl_structure loc fields cc rootpath final_env = function
                 pos_cc_list []
             in
             let lam =
-              Lprim
+              Lambda.Lprim
                 ( Pmakeblock
                     (if is_top_root_path then
                      Blk_module_export !export_identifiers
@@ -378,7 +380,7 @@ and transl_structure loc fields cc rootpath final_env = function
                   loc )
             and id_pos_list =
               Ext_list.filter id_pos_list (fun (id, _, _) ->
-                  not (IdentSet.mem id ids))
+                  not (Lambda.IdentSet.mem id ids))
             in
             ( wrap_id_pos_list loc id_pos_list get_field_name lam,
               List.length pos_cc_list )
