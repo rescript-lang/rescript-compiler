@@ -397,9 +397,6 @@ and transl_structure loc fields cc rootpath final_env = function
             transl_structure loc ext_fields cc rootpath final_env rem
           in
           (Translcore.transl_let rec_flag pat_expr_list body, size)
-      | Tstr_primitive _ ->
-          transl_structure loc fields cc rootpath final_env rem
-      | Tstr_type _ -> transl_structure loc fields cc rootpath final_env rem
       | Tstr_typext tyext ->
           let ids = List.map (fun ext -> ext.ext_id) tyext.tyext_constructors in
           let body, size =
@@ -450,7 +447,6 @@ and transl_structure loc fields cc rootpath final_env = function
               bindings body
           in
           (lam, size)
-      | Tstr_class _ -> assert false
       | Tstr_include incl ->
           let ids = bound_value_identifiers incl.incl_type in
           let modl = incl.incl_mod in
@@ -480,7 +476,8 @@ and transl_structure loc fields cc rootpath final_env = function
                 transl_module Tcoerce_none None modl,
                 body ),
             size )
-      | Tstr_modtype _ | Tstr_open _ | Tstr_class_type _ | Tstr_attribute _ ->
+      | Tstr_class _ | Tstr_primitive _ | Tstr_type _ | Tstr_modtype _
+      | Tstr_open _ | Tstr_class_type _ | Tstr_attribute _ ->
           transl_structure loc fields cc rootpath final_env rem)
 
 (* Update forward declaration in Translcore *)
