@@ -692,7 +692,7 @@ let rec transl_exp e =
   List.iter (Translattribute.check_attribute e) e.exp_attributes;
   transl_exp0 e
 
-and transl_exp0 e =
+and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
   match e.exp_desc with
   | Texp_ident (_, _, { val_kind = Val_prim p }) ->
       transl_primitive e.exp_loc p e.exp_env e.exp_type
