@@ -318,77 +318,72 @@ and transl_struct loc fields cc rootpath str =
   transl_structure loc fields cc rootpath str.str_final_env str.str_items
 
 and transl_structure loc fields cc rootpath final_env = function
-  | [] ->
+  | [] -> (
       let is_top_root_path = is_top rootpath in
-      let body, size =
-        match cc with
-        | Tcoerce_none ->
-            let block_fields =
-              List.fold_left
-                (fun acc id ->
-                  if is_top_root_path then
-                    export_identifiers := id :: !export_identifiers;
-                  Lambda.Lvar id :: acc)
-                [] fields
-            in
-            ( Lambda.Lprim
-                ( Pmakeblock
-                    (if is_top_root_path then
-                     Blk_module_export !export_identifiers
-                    else
-                      Blk_module (List.rev_map (fun id -> id.Ident.name) fields)),
-                  block_fields,
-                  loc ),
-              List.length fields )
-        | Tcoerce_structure (pos_cc_list, id_pos_list, runtime_fields) ->
-            (* Do not ignore id_pos_list ! *)
-            (*Format.eprintf "%a@.@[" Includemod.print_coercion cc;
-              List.iter (fun l -> Format.eprintf "%a@ " Ident.print l)
-                fields;
-              Format.eprintf "@]@.";*)
-            assert (List.length runtime_fields = List.length pos_cc_list);
-            let v = Ext_array.reverse_of_list fields in
-            let get_field pos = Lambda.Lvar v.(pos)
-            and ids =
-              List.fold_right Lambda.IdentSet.add fields Lambda.IdentSet.empty
-            in
-            let get_field_name _name = get_field in
-            let result =
-              List.fold_right
-                (fun (pos, cc) code ->
-                  match cc with
-                  | Tcoerce_primitive p ->
-                      if is_top rootpath then
-                        export_identifiers := p.pc_id :: !export_identifiers;
-                      Translcore.transl_primitive p.pc_loc p.pc_desc p.pc_env
-                        p.pc_type
-                      :: code
-                  | _ ->
-                      if is_top rootpath then
-                        export_identifiers := v.(pos) :: !export_identifiers;
-                      apply_coercion loc Strict cc (get_field pos) :: code)
-                pos_cc_list []
-            in
-            let lam =
-              Lambda.Lprim
-                ( Pmakeblock
-                    (if is_top_root_path then
-                     Blk_module_export !export_identifiers
-                    else Blk_module runtime_fields),
-                  result,
-                  loc )
-            and id_pos_list =
-              Ext_list.filter id_pos_list (fun (id, _, _) ->
-                  not (Lambda.IdentSet.mem id ids))
-            in
-            ( wrap_id_pos_list loc id_pos_list get_field_name lam,
-              List.length pos_cc_list )
-        | _ -> Misc.fatal_error "Translmod.transl_structure"
-      in
-      (* This debugging event provides information regarding the structure
-         items. It is ignored by the OCaml debugger but is used by
-         Js_of_ocaml to preserve variable names. *)
-      (body, size)
+
+      match cc with
+      | Tcoerce_none ->
+          let block_fields =
+            List.fold_left
+              (fun acc id ->
+                if is_top_root_path then
+                  export_identifiers := id :: !export_identifiers;
+                Lambda.Lvar id :: acc)
+              [] fields
+          in
+          ( Lambda.Lprim
+              ( Pmakeblock
+                  (if is_top_root_path then
+                   Blk_module_export !export_identifiers
+                  else
+                    Blk_module (List.rev_map (fun id -> id.Ident.name) fields)),
+                block_fields,
+                loc ),
+            List.length fields )
+      | Tcoerce_structure (pos_cc_list, id_pos_list, runtime_fields) ->
+          (* Do not ignore id_pos_list ! *)
+          (*Format.eprintf "%a@.@[" Includemod.print_coercion cc;
+            List.iter (fun l -> Format.eprintf "%a@ " Ident.print l)
+              fields;
+            Format.eprintf "@]@.";*)
+          assert (List.length runtime_fields = List.length pos_cc_list);
+          let v = Ext_array.reverse_of_list fields in
+          let get_field pos = Lambda.Lvar v.(pos)
+          and ids =
+            List.fold_right Lambda.IdentSet.add fields Lambda.IdentSet.empty
+          in
+          let get_field_name _name = get_field in
+          let result =
+            List.fold_right
+              (fun (pos, cc) code ->
+                match cc with
+                | Tcoerce_primitive p ->
+                    if is_top rootpath then
+                      export_identifiers := p.pc_id :: !export_identifiers;
+                    Translcore.transl_primitive p.pc_loc p.pc_desc p.pc_env
+                      p.pc_type
+                    :: code
+                | _ ->
+                    if is_top rootpath then
+                      export_identifiers := v.(pos) :: !export_identifiers;
+                    apply_coercion loc Strict cc (get_field pos) :: code)
+              pos_cc_list []
+          in
+          let lam =
+            Lambda.Lprim
+              ( Pmakeblock
+                  (if is_top_root_path then
+                   Blk_module_export !export_identifiers
+                  else Blk_module runtime_fields),
+                result,
+                loc )
+          and id_pos_list =
+            Ext_list.filter id_pos_list (fun (id, _, _) ->
+                not (Lambda.IdentSet.mem id ids))
+          in
+          ( wrap_id_pos_list loc id_pos_list get_field_name lam,
+            List.length pos_cc_list )
+      | _ -> Misc.fatal_error "Translmod.transl_structure")
   | item :: rem -> (
       match item.str_desc with
       | Tstr_eval (expr, _) ->
