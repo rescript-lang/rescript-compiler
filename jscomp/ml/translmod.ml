@@ -514,11 +514,11 @@ let transl_implementation module_name (str, cc) =
 
 (* Error report *)
 
-open Format
+
 
 let report_error ppf = function
   | Conflicting_inline_attributes ->
-      fprintf ppf "@[Conflicting ``inline'' attributes@]"
+      Format.fprintf ppf "@[Conflicting ``inline'' attributes@]"
 
 let () =
   Location.register_error_of_exn (function

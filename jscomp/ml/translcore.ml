@@ -25,7 +25,6 @@ open Typeopt
 open Lambda
 
 type error =
-    Free_super_var
   | Unknown_builtin_primitive of string
   | Unreachable_reached
 
@@ -1096,9 +1095,6 @@ let transl_let rec_flag pat_expr_list body =
 open Format
 
 let report_error ppf = function
-  | Free_super_var ->
-      fprintf ppf
-        "Ancestor names can only be used to select inherited methods"
   | Unknown_builtin_primitive prim_name ->
       fprintf ppf "Unknown builtin primitive \"%s\"" prim_name
   | Unreachable_reached ->
