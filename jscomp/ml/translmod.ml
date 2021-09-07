@@ -17,7 +17,6 @@
    for the module language *)
 
 open Typedtree
-open Translcore
 
 type error = Conflicting_inline_attributes
 
@@ -41,18 +40,21 @@ let field_path path field : Path.t option =
 
 (* Compile type extensions *)
 
-let transl_type_extension env rootpath tyext body : Lambda.lambda =
+let transl_type_extension env rootpath (tyext : Typedtree.type_extension) body :
+    Lambda.lambda =
   List.fold_right
     (fun ext body ->
       let lam =
-        transl_extension_constructor env (field_path rootpath ext.ext_id) ext
+        Translcore.transl_extension_constructor env
+          (field_path rootpath ext.ext_id)
+          ext
       in
       Lambda.Llet (Strict, Pgenval, ext.ext_id, lam, body))
     tyext.tyext_constructors body
 
 (* Compile a coercion *)
 
-let rec apply_coercion loc strict restr arg =
+let rec apply_coercion loc strict (restr : Typedtree.module_coercion) arg =
   match restr with
   | Tcoerce_none -> arg
   | Tcoerce_structure (pos_cc_list, id_pos_list, runtime_fields) ->
@@ -80,7 +82,7 @@ let rec apply_coercion loc strict restr arg =
       let carg = apply_coercion loc Alias cc_arg (Lvar param) in
       apply_coercion_result loc strict arg [ param ] [ carg ] cc_res
   | Tcoerce_primitive { pc_loc; pc_desc; pc_env; pc_type } ->
-      transl_primitive pc_loc pc_desc pc_env pc_type
+      Translcore.transl_primitive pc_loc pc_desc pc_env pc_type
   | Tcoerce_alias (path, cc) ->
       Lambda.name_lambda strict arg (fun _ ->
           apply_coercion loc Alias cc (Lambda.transl_normal_path path))
@@ -362,7 +364,8 @@ and transl_structure loc fields cc rootpath final_env = function
                   | Tcoerce_primitive p ->
                       if is_top rootpath then
                         export_identifiers := p.pc_id :: !export_identifiers;
-                      transl_primitive p.pc_loc p.pc_desc p.pc_env p.pc_type
+                      Translcore.transl_primitive p.pc_loc p.pc_desc p.pc_env
+                        p.pc_type
                       :: code
                   | _ ->
                       if is_top rootpath then
@@ -396,13 +399,13 @@ and transl_structure loc fields cc rootpath final_env = function
           let body, size =
             transl_structure loc fields cc rootpath final_env rem
           in
-          (Lsequence (transl_exp expr, body), size)
+          (Lsequence (Translcore.transl_exp expr, body), size)
       | Tstr_value (rec_flag, pat_expr_list) ->
           let ext_fields = rev_let_bound_idents pat_expr_list @ fields in
           let body, size =
             transl_structure loc ext_fields cc rootpath final_env rem
           in
-          (transl_let rec_flag pat_expr_list body, size)
+          (Translcore.transl_let rec_flag pat_expr_list body, size)
       | Tstr_primitive _ ->
           transl_structure loc fields cc rootpath final_env rem
       | Tstr_type _ -> transl_structure loc fields cc rootpath final_env rem
@@ -424,7 +427,7 @@ and transl_structure loc fields cc rootpath final_env = function
               ( Strict,
                 Pgenval,
                 id,
-                transl_extension_constructor item.str_env path ext,
+                Translcore.transl_extension_constructor item.str_env path ext,
                 body ),
             size )
       | Tstr_module mb as s ->
