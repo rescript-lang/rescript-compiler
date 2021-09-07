@@ -1824,7 +1824,7 @@ let rec le_pat p q =
       let ps,qs = records_args l1 l2 in
       le_pats ps qs
   | Tpat_array(ps), Tpat_array(qs) ->
-      List.length ps = List.length qs && le_pats ps qs
+      Ext_list.same_length ps qs && le_pats ps qs
 (* In all other cases, enumeration is performed *)
   | _,_  -> not (satisfiable [[p]] [q])
 
