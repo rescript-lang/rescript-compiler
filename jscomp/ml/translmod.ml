@@ -58,8 +58,6 @@ let rec apply_coercion loc strict (restr : Typedtree.module_coercion) arg =
   match restr with
   | Tcoerce_none -> arg
   | Tcoerce_structure (pos_cc_list, id_pos_list, runtime_fields) ->
-      assert (List.length runtime_fields = List.length pos_cc_list);
-      let names = Array.of_list runtime_fields in
       Lambda.name_lambda strict arg (fun id ->
           let get_field_name name pos =
             Lambda.Lprim (Pfield (pos, Fld_module { name }), [ Lvar id ], loc)
@@ -67,14 +65,10 @@ let rec apply_coercion loc strict (restr : Typedtree.module_coercion) arg =
           let lam =
             Lambda.Lprim
               ( Pmakeblock (Blk_module runtime_fields),
-                List.mapi
-                  (fun i (pos, cc) ->
+                Ext_list.map2 pos_cc_list runtime_fields (fun (pos, cc) name ->
                     apply_coercion loc Alias cc
                       (Lprim
-                         ( Pfield (pos, Fld_module { name = names.(i) }),
-                           [ Lvar id ],
-                           loc )))
-                  pos_cc_list,
+                         (Pfield (pos, Fld_module { name }), [ Lvar id ], loc))),
                 loc )
           in
           wrap_id_pos_list loc id_pos_list get_field_name lam)
