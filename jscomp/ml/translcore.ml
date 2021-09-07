@@ -38,10 +38,9 @@ let transl_module =
 
 let transl_extension_constructor env path ext =
   let name =
-    match (path, None) (*!Clflags.for_package*) with
-    | None, _ -> Ident.name ext.ext_id
-    | Some p, None -> Path.name p
-    | Some p, Some pack -> Printf.sprintf "%s.%s" pack (Path.name p)
+    match path (*!Clflags.for_package*) with
+    | None -> Ident.name ext.ext_id
+    | Some p -> Path.name p
   in
   let loc = ext.ext_loc in
   match ext.ext_kind with
