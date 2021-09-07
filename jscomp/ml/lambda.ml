@@ -743,13 +743,6 @@ let lam_of_loc kind loc =
     Lconst (Const_immstring loc)
   | Loc_LINE -> Lconst (Const_base (Const_int lnum))
 
-let merge_inline_attributes attr1 attr2 =
-  match attr1, attr2 with
-  | Default_inline, _ -> Some attr2
-  | _, Default_inline -> Some attr1
-  | _, _ ->
-    if attr1 = attr2 then Some attr1
-    else None
 
 let reset () =
   raise_count := 0

@@ -395,9 +395,5 @@ val patch_guarded : lambda -> lambda -> lambda
 val raise_kind: raise_kind -> string
 val lam_of_loc : loc_kind -> Location.t -> lambda
 
-val merge_inline_attributes
-   : inline_attribute
-  -> inline_attribute
-  -> inline_attribute option
 
 val reset: unit -> unit

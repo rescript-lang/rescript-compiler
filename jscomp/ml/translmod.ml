@@ -212,10 +212,14 @@ let rec bound_value_identifiers : Types.signature_item list -> Ident.t list =
    functor(s) being merged with.  Such an attribute will be placed on the
    resulting merged functor. *)
 
-let merge_inline_attributes attr1 attr2 loc =
-  match Lambda.merge_inline_attributes attr1 attr2 with
-  | Some attr -> attr
-  | None -> raise (Error (loc, Conflicting_inline_attributes))
+let merge_inline_attributes (attr1 : Lambda.inline_attribute)
+    (attr2 : Lambda.inline_attribute) loc =
+  match (attr1, attr2) with
+  | Lambda.Default_inline, _ -> attr2
+  | _, Lambda.Default_inline -> attr1
+  | _, _ ->
+      if attr1 = attr2 then attr1
+      else raise (Error (loc, Conflicting_inline_attributes))
 
 let merge_functors mexp coercion root_path =
   let rec merge mexp coercion path acc inline_attribute =
