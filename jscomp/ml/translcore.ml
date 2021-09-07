@@ -826,7 +826,7 @@ and transl_apply  ?(inlined = Default_inline)
       lam sargs loc =
   let lapply funct args =
     match funct with
-    (** Attention: This may not be what we need to change the application arity*)
+    (* Attention: This may not be what we need to change the application arity*)
     | Lapply ap ->
         Lapply {ap with ap_args = ap.ap_args @ args; ap_loc = loc}
     | lexp ->
@@ -931,7 +931,7 @@ and transl_record loc env fields repres opt_init_expr =
    match opt_init_expr, repres, fields with 
   | None, Record_unboxed _, [|{lbl_name; lbl_loc}, Overridden (_,expr)|]
     ->     
-      (** ReScript uncurried encoding *)
+      (* ReScript uncurried encoding *)
       let loc = lbl_loc in 
       let lambda = transl_exp expr in 
       if lbl_name.[0] = 'I' then
