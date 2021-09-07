@@ -396,10 +396,9 @@ let primitives_table =
 
 let find_primitive prim_name = Hashtbl.find primitives_table prim_name
 
-let specialize_comparison table env ty =
-  let { gencomp; intcomp; floatcomp; stringcomp; bytescomp; int64comp; _ } =
-    table
-  in
+let specialize_comparison
+    ({ gencomp; intcomp; floatcomp; stringcomp; bytescomp; int64comp; boolcomp } :
+      specialized) env ty =
   match () with
   | ()
     when is_base_type env ty Predef.path_int
@@ -410,7 +409,7 @@ let specialize_comparison table env ty =
   | () when is_base_type env ty Predef.path_string -> stringcomp
   | () when is_base_type env ty Predef.path_bytes -> bytescomp
   | () when is_base_type env ty Predef.path_int64 -> int64comp
-  | () when is_base_type env ty Predef.path_bool -> table.boolcomp
+  | () when is_base_type env ty Predef.path_bool -> boolcomp
   | () -> gencomp
 
 (* Specialize a primitive from available type information,
@@ -1249,20 +1248,6 @@ and transl_match e arg pat_expr_list exn_pat_expr_list partial =
       static_catch [ transl_exp arg ] [ val_id ]
         (Matching.for_function e.exp_loc None (Lvar val_id) cases partial)
 
-(* Wrapper for class compilation *)
-
-(*
-let transl_exp = transl_exp_wrap
-
-let transl_let rec_flag pat_expr_list body =
-  match pat_expr_list with
-    [] -> body
-  | (_, expr) :: _ ->
-      Translobj.oo_wrap expr.exp_env false
-        (transl_let rec_flag pat_expr_list) body
-*)
-
-(* Error report *)
 
 open Format
 
