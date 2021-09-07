@@ -525,5 +525,3 @@ let () =
     | Error (loc, err) -> Some (Location.error_of_printer loc report_error err)
     | _ -> None)
 
-let reset () =
-  Env.reset_required_globals ()

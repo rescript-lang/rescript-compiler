@@ -1002,13 +1002,7 @@ let find_module ~alias path env =
           raise Not_found
       end
 
-let required_globals = ref []
-let reset_required_globals () = required_globals := []
 
-let add_required_global id =
-  if Ident.global id && not !Clflags.transparent_modules
-  && not (List.exists (Ident.same id) !required_globals)
-  then required_globals := id :: !required_globals
 
 let rec normalize_path lax env path =
   let path =
@@ -1021,12 +1015,7 @@ let rec normalize_path lax env path =
   in
   try match find_module ~alias:true path env with
     {md_type=Mty_alias(_, path1)} ->
-      let path' = normalize_path lax env path1 in
-      if lax || !Clflags.transparent_modules then path' else
-      let id = Path.head path in
-      if Ident.global id && not (Ident.same id (Path.head path'))
-      then add_required_global id;
-      path'
+      normalize_path lax env path1
   | _ -> path
   with Not_found when lax
   || (match path with Pident id -> not (Ident.persistent id) | _ -> true) ->
