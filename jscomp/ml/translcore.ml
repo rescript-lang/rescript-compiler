@@ -1051,23 +1051,23 @@ and transl_let rec_flag pat_expr_list body =
       in
       transl pat_expr_list
   | Recursive ->
-      let idlist =
-        List.map
-          (fun { vb_pat = pat } ->
-            match pat.pat_desc with
-            | Tpat_var (id, _) -> id
-            | Tpat_alias ({ pat_desc = Tpat_any }, id, _) -> id
-            | _ -> assert false)
-          pat_expr_list
-      in
-      let transl_case { vb_expr = expr; vb_attributes; vb_loc } id =
+      let transl_case { vb_expr = expr; vb_attributes; vb_loc; vb_pat = pat } =
+        let id =
+          match pat.pat_desc with
+          | Tpat_var (id, _) -> id
+          | Tpat_alias ({ pat_desc = Tpat_any }, id, _) -> id
+          | _ -> assert false
+          (* Illegal_letrec_pat
+             Only variables are allowed as left-hand side of `let rec'
+          *)
+        in
         let lam = transl_exp expr in
         let lam =
           Translattribute.add_inline_attribute lam vb_loc vb_attributes
         in
         (id, lam)
       in
-      Lletrec (List.map2 transl_case pat_expr_list idlist, body)
+      Lletrec (Ext_list.map pat_expr_list transl_case, body)
 
 and transl_record loc env fields repres opt_init_expr =
   match (opt_init_expr, repres, fields) with
@@ -1247,7 +1247,6 @@ and transl_match e arg pat_expr_list exn_pat_expr_list partial =
       let val_id = Typecore.name_pattern "val" pat_expr_list in
       static_catch [ transl_exp arg ] [ val_id ]
         (Matching.for_function e.exp_loc None (Lvar val_id) cases partial)
-
 
 open Format
 
