@@ -85,7 +85,7 @@ val normalize_path: Location.t option -> t -> Path.t -> Path.t
 val normalize_path_prefix: Location.t option -> t -> Path.t -> Path.t
 (* Only normalize the prefix part of the path *)
 val reset_required_globals: unit -> unit
-val get_required_globals: unit -> Ident.t list
+
 val add_required_global: Ident.t -> unit
 
 val has_local_constraints: t -> bool

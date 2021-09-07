@@ -1004,7 +1004,7 @@ let find_module ~alias path env =
 
 let required_globals = ref []
 let reset_required_globals () = required_globals := []
-let get_required_globals () = !required_globals
+
 let add_required_global id =
   if Ident.global id && not !Clflags.transparent_modules
   && not (List.exists (Ident.same id) !required_globals)
