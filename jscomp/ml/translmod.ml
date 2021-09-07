@@ -250,7 +250,7 @@ let merge_functors mexp coercion root_path =
 
 let export_identifiers : Ident.t list ref = ref []
 
-let get_export_identifiers () = !export_identifiers
+
 
 let rec compile_functor mexp coercion root_path loc =
   let functor_params_rev, body, body_path, res_coercion, inline_attribute =
@@ -488,9 +488,10 @@ let _ = Translcore.transl_module := transl_module
 (* Compile an implementation *)
 
 let transl_implementation module_name (str, cc) =
+  export_identifiers := [];
   let module_id = Ident.create_persistent module_name in
   let body, _ = transl_struct Location.none [] cc (global_path module_id) str in
-  body
+  (body, !export_identifiers)
 
 (* Build the list of value identifiers defined by a toplevel structure
    (excluding primitive declarations). *)
@@ -525,5 +526,4 @@ let () =
     | _ -> None)
 
 let reset () =
-  export_identifiers := [];
   Env.reset_required_globals ()
