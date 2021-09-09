@@ -16,7 +16,7 @@
 (* Translation from typed abstract syntax to lambda terms,
    for the module language *)
 
-open Typedtree
+
 
 
 val eval_rec_bindings:
@@ -24,15 +24,12 @@ val eval_rec_bindings:
       Lambda.lambda -> Lambda.lambda) ref
 
 val transl_implementation:
-      string -> structure * module_coercion -> Lambda.program
+      string -> Typedtree.structure * Typedtree.module_coercion -> Lambda.lambda
 
 
-val primitive_declarations: Primitive.description list ref
 
-type error =
-  Circular_dependency of Ident.t
-| Conflicting_inline_attributes
 
+type error 
 (* exception Error of Location.t * error *)
 
 val report_error: Format.formatter -> error -> unit

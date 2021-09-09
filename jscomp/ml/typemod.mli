@@ -28,7 +28,7 @@ val type_toplevel_phrase:
          Typedtree.structure * Types.signature * Env.t
 
 
-val rescript_hide : Typedtree.module_binding -> bool
+val rescript_hide : Typedtree.structure_item_desc -> bool
 
 val type_implementation_more: ?check_exists:unit -> 
   string -> string -> string -> Env.t -> Parsetree.structure ->
@@ -67,9 +67,7 @@ type error =
   | With_cannot_remove_constrained_type
   | Repeated_name of string * string
   | Non_generalizable of type_expr
-  | Non_generalizable_class of Ident.t * class_declaration
   | Non_generalizable_module of module_type
-  | Implementation_is_required of string
   | Interface_not_compiled of string
   | Not_allowed_in_functor_body
   | Not_a_packed_module of type_expr
@@ -82,9 +80,9 @@ type error =
 exception Error of Location.t * Env.t * error
 exception Error_forward of Location.error
 
-#if true then
+
 val super_report_error_no_wrap_printing_env: formatter -> error -> unit
-#end
+
 
 val report_error: Env.t -> formatter -> error -> unit
 

@@ -21,6 +21,10 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+let [@inline] min (x :int) y = if x < y then x else y
+
 #if defined TYPE_FUNCTOR
 external unsafe_blit : 
     'a array -> int -> 'a array -> int -> int -> unit = "caml_array_blit"

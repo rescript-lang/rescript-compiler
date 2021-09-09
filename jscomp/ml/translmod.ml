@@ -18,10 +18,6 @@
 
 
 
-open Misc
-open Asttypes
-open Longident
-open Path
 open Types
 open Typedtree
 open Lambda
@@ -38,17 +34,17 @@ exception Error of Location.t * error
 (* Keep track of the root path (from the root of the namespace to the
    currently compiled module expression).  Useful for naming extensions. *)
 
-let global_path glob = Some(Pident glob)
-let is_top rootpath = 
+let global_path glob : Path.t option = Some(Pident glob)
+let is_top (rootpath : Path.t option) = 
   match rootpath with 
   | Some (Pident _ ) -> true
   | _ -> false 
 
-let functor_path path param =
+let functor_path path param : Path.t option =
   match path with
     None -> None
   | Some p -> Some(Papply(p, Pident param))
-let field_path path field =
+let field_path path field : Path.t option =
   match path with
     None -> None
   | Some p -> Some(Pdot(p, Ident.name field, Path.nopos))
@@ -168,7 +164,7 @@ let rec compose_coercions c1 c2 =
   | (c1, Tcoerce_alias (path, c2)) ->
       Tcoerce_alias (path, compose_coercions c1 c2)
   | (_, _) ->
-      fatal_error "Translmod.compose_coercions"
+      Misc.fatal_error "Translmod.compose_coercions"
 
 (*
 let apply_coercion a b c =
@@ -187,7 +183,7 @@ let compose_coercions c1 c2 =
 
 let primitive_declarations = ref ([] : Primitive.description list)
 let record_primitive = function
-  | {val_kind=Val_prim p} ->
+  | {Types.val_kind=Val_prim p} ->
       primitive_declarations := p :: !primitive_declarations
   | _ -> ()
 
@@ -205,7 +201,7 @@ let mod_prim name args loc =
       ap_inlined = Default_inline;
       }
   with Not_found ->
-    fatal_error ("Primitive " ^ name ^ " not found.")
+    Misc.fatal_error ("Primitive " ^ name ^ " not found.")
 
 let undefined_location loc =
   let (fname, line, char) = Location.get_pos_info loc.Location.loc_start in
@@ -382,7 +378,7 @@ let merge_functors mexp coercion root_path =
         | Tcoerce_none -> Tcoerce_none, Tcoerce_none
         | Tcoerce_functor (arg_coercion, res_coercion) ->
           arg_coercion, res_coercion
-        | _ -> fatal_error "Translmod.merge_functors: bad coercion"
+        | _ -> Misc.fatal_error "Translmod.merge_functors: bad coercion"
       in
       let loc = mexp.mod_loc in
       let path = functor_path path param in
@@ -511,7 +507,7 @@ and transl_structure loc fields cc rootpath final_env = function
             wrap_id_pos_list loc id_pos_list get_field_name lam,
               List.length pos_cc_list
         | _ ->
-            fatal_error "Translmod.transl_structure"
+            Misc.fatal_error "Translmod.transl_structure"
       in
       (* This debugging event provides information regarding the structure
          items. It is ignored by the OCaml debugger but is used by
@@ -552,10 +548,10 @@ and transl_structure loc fields cc rootpath final_env = function
           Llet(Strict, Pgenval, id,
                transl_extension_constructor item.str_env path ext, body),
           size
-      | Tstr_module mb ->
+      | Tstr_module mb as s ->
           let id = mb.mb_id in
           let body, size =
-            transl_structure loc ( if Typemod.rescript_hide mb then fields else id::fields) cc rootpath final_env rem
+            transl_structure loc ( if Typemod.rescript_hide s then fields else id::fields) cc rootpath final_env rem
           in
           let module_body =
             transl_module Tcoerce_none (field_path rootpath id) mb.mb_expr
@@ -669,7 +665,7 @@ let transl_implementation_flambda module_name (str, cc) =
     required_globals = required_globals ~flambda:true body;
     code = body }
 
-let transl_implementation module_name (str, cc) =
+let transl_implementation module_name (str, cc) : Lambda.lambda =
   let implementation =
     transl_implementation_flambda module_name (str, cc)
   in
@@ -677,7 +673,7 @@ let transl_implementation module_name (str, cc) =
     Lprim (Psetglobal implementation.module_ident, [implementation.code],
            Location.none)
   in
-  { implementation with code }
+  code 
 
 (* Build the list of value identifiers defined by a toplevel structure
    (excluding primitive declarations). *)
@@ -693,10 +689,6 @@ let transl_implementation module_name (str, cc) =
    "map" is a table from defined idents to (pos in global block, coercion).
    "prim" is a list of (pos in global block, primitive declaration). *)
 
-let transl_store_subst = ref Ident.empty
-  (** In the native toplevel, this reference is threaded through successive
-      calls of transl_store_structure *)
-
 
 
 (* Compile an implementation using transl_store_structure
@@ -705,8 +697,8 @@ let transl_store_subst = ref Ident.empty
 
 (* Compile a toplevel phrase *)
 
-let toploop_ident = Ident.create_persistent "Toploop"
-let aliased_idents = ref Ident.empty
+
+
 
 
 (* Error report *)
@@ -735,8 +727,5 @@ let () =
 let reset () =
   export_identifiers := [];
   primitive_declarations := [];
-  transl_store_subst := Ident.empty;
-  toploop_ident.Ident.flags <- 0;
-  aliased_idents := Ident.empty;
   Env.reset_required_globals ();
   Hashtbl.clear used_primitives

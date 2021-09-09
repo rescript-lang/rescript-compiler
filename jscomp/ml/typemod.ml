@@ -35,9 +35,7 @@ type error =
   | With_cannot_remove_constrained_type
   | Repeated_name of string * string
   | Non_generalizable of type_expr
-  | Non_generalizable_class of Ident.t * class_declaration
   | Non_generalizable_module of module_type
-  | Implementation_is_required of string
   | Interface_not_compiled of string
   | Not_allowed_in_functor_body
   | Not_a_packed_module of type_expr
@@ -52,14 +50,18 @@ exception Error_forward of Location.error
 
 
 
-let rescript_hide (x : Typedtree.module_binding) = 
-  match x.mb_attributes with 
+let rescript_hide_attributes (x : Typedtree.attributes) = 
+  match x with 
   | [] -> false
   | ({txt = "internal.local";_},_) :: _ -> true
   | _ :: rest -> 
     Ext_list.exists rest (fun (x,_) -> x.txt = "internal.local")
 
-
+let rescript_hide (x : Typedtree.structure_item_desc) = 
+  match x with 
+  | Tstr_module {mb_attributes} -> rescript_hide_attributes mb_attributes
+  | _ -> false
+  
 open Typedtree
 
 let fst3 (x,_,_) = x
@@ -1366,12 +1368,7 @@ and type_module_aux ~alias sttn funct_body anchor env smod =
          }
 
   | Pmod_unpack sexp ->
-      if !Clflags.principal then Ctype.begin_def ();
       let exp = Typecore.type_exp env sexp in
-      if !Clflags.principal then begin
-        Ctype.end_def ();
-        Ctype.generalize_structure exp.exp_type
-      end;
       let mty =
         match Ctype.expand_head env exp.exp_type with
           {desc = Tpackage (p, nl, tl)} ->
@@ -1629,9 +1626,9 @@ and type_structure ?(toplevel = false) funct_body anchor env sstr scope =
                                     :: previous_saved_types);
         let (str_rem, sig_rem, final_env) = type_struct new_env srem in
         let new_sg = 
-          match desc with 
-          | Tstr_module m when rescript_hide m -> sig_rem
-          | _ -> sg @ sig_rem in 
+          if rescript_hide desc then sig_rem 
+          else 
+            sg @ sig_rem in 
         (str :: str_rem, new_sg, final_env)
   in
   if !Clflags.annotations then
@@ -1885,20 +1882,10 @@ let report_error ppf = function
       fprintf ppf
         "@[The type of this expression,@ %a,@ \
            contains type variables that cannot be generalized@]" type_scheme typ
-  | Non_generalizable_class (id, desc) ->
-      fprintf ppf
-        "@[The type of this class,@ %a,@ \
-           contains type variables that cannot be generalized@]"
-        (class_declaration id) desc
   | Non_generalizable_module mty ->
       fprintf ppf
         "@[The type of this module,@ %a,@ \
            contains type variables that cannot be generalized@]" modtype mty
-  | Implementation_is_required intf_name ->
-      fprintf ppf
-        "@[The interface %a@ declares values, not just types.@ \
-           An implementation must be provided.@]"
-        Location.print_filename intf_name
   | Interface_not_compiled intf_name ->
       fprintf ppf
         "@[Could not find the .cmi file for interface@ %a.@]"
