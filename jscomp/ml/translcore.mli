@@ -27,12 +27,12 @@ val transl_apply: ?inlined:inline_attribute
                   -> Location.t -> lambda
 val transl_let: rec_flag -> value_binding list -> lambda -> lambda
 val transl_primitive: Location.t -> Primitive.description -> Env.t
-                      -> Types.type_expr -> Path.t option -> lambda
+                      -> Types.type_expr ->  lambda
 
 val transl_extension_constructor: Env.t -> Path.t option ->
   extension_constructor -> lambda
 
-val used_primitives: (Path.t, Location.t) Hashtbl.t
+
 
 type error =
     Free_super_var

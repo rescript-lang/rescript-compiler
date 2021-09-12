@@ -130,7 +130,6 @@ let primitive ppf = function
   | Pdirapply -> fprintf ppf "dirapply"
   | Ploc kind -> fprintf ppf "%s" (string_of_loc_kind kind)
   | Pgetglobal id -> fprintf ppf "global %a" Ident.print id
-  | Psetglobal id -> fprintf ppf "setglobal %a" Ident.print id
   | Pmakeblock(taginfo) ->
       fprintf ppf "makeblock %a" print_taginfo taginfo
   | Pfield (n, fld) -> fprintf ppf "field:%s/%i" (str_of_field_info fld) n      
@@ -247,7 +246,6 @@ let name_of_primitive = function
   | Pdirapply -> "Pdirapply"
   | Ploc _ -> "Ploc"
   | Pgetglobal _ -> "Pgetglobal"
-  | Psetglobal _ -> "Psetglobal"
   | Pmakeblock _ -> "Pmakeblock"
   | Pfield _ -> "Pfield"
   | Psetfield _ -> "Psetfield"

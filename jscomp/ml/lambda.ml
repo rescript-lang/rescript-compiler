@@ -153,7 +153,6 @@ type primitive =
   | Ploc of loc_kind
     (* Globals *)
   | Pgetglobal of Ident.t
-  | Psetglobal of Ident.t
   (* Operations on heap blocks *)
   | Pmakeblock of  tag_info 
   | Pfield of int * field_dbg_info

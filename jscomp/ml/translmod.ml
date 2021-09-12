@@ -85,7 +85,7 @@ let rec apply_coercion loc strict restr arg =
       let carg = apply_coercion loc Alias cc_arg (Lvar param) in
       apply_coercion_result loc strict arg [param] [carg] cc_res
   | Tcoerce_primitive { pc_loc; pc_desc; pc_env; pc_type; } ->
-      transl_primitive pc_loc pc_desc pc_env pc_type None
+      transl_primitive pc_loc pc_desc pc_env pc_type
   | Tcoerce_alias (path, cc) ->
       name_lambda strict arg
         (fun _ -> apply_coercion loc Alias cc (transl_normal_path path))
@@ -181,11 +181,6 @@ let compose_coercions c1 c2 =
 
 (* Record the primitive declarations occurring in the module compiled *)
 
-let primitive_declarations = ref ([] : Primitive.description list)
-let record_primitive = function
-  | {Types.val_kind=Val_prim p} ->
-      primitive_declarations := p :: !primitive_declarations
-  | _ -> ()
 
 (* Utilities for compiling "module rec" definitions *)
 
@@ -297,6 +292,12 @@ let reorder_rec_bindings bindings =
     | Defined -> ()
   done;
   List.rev !res
+
+let rec pure_module m =
+  match m.mod_desc with
+    Tmod_ident _ -> Alias
+  | Tmod_constraint (m,_,_,_) -> pure_module m
+  | _ -> Strict
 
 (* Generate lambda-code for a reordered list of bindings *)
 
@@ -491,7 +492,7 @@ and transl_structure loc fields cc rootpath final_env = function
                  | Tcoerce_primitive p -> 
                      (if is_top rootpath then 
                         export_identifiers := p.pc_id:: !export_identifiers);
-                     (transl_primitive p.pc_loc p.pc_desc p.pc_env p.pc_type None :: code)
+                     (transl_primitive p.pc_loc p.pc_desc p.pc_env p.pc_type :: code)
                  | _ -> 
                      (if is_top rootpath then 
                         export_identifiers :=  v.(pos) :: !export_identifiers);
@@ -527,8 +528,7 @@ and transl_structure loc fields cc rootpath final_env = function
             transl_structure loc ext_fields cc rootpath final_env rem
           in
           transl_let rec_flag pat_expr_list body, size
-      | Tstr_primitive descr ->
-          record_primitive descr.val_val;
+      | Tstr_primitive _ ->
           transl_structure loc fields cc rootpath final_env rem
       | Tstr_type _ ->
           transl_structure loc fields cc rootpath final_env rem
@@ -607,11 +607,6 @@ and transl_structure loc fields cc rootpath final_env = function
       | Tstr_attribute _ ->
           transl_structure loc fields cc rootpath final_env rem
 
-and pure_module m =
-  match m.mod_desc with
-    Tmod_ident _ -> Alias
-  | Tmod_constraint (m,_,_,_) -> pure_module m
-  | _ -> Strict
 
 (* Update forward declaration in Translcore *)
 let _ =
@@ -619,61 +614,20 @@ let _ =
 
 (* Introduce dependencies on modules referenced only by "external". *)
 
-let scan_used_globals lam =
-  let globals = ref Ident.Set.empty in
-  let rec scan lam =
-    Lambda.iter scan lam;
-    match lam with
-      Lprim ((Pgetglobal id | Psetglobal id), _, _) ->
-        globals := Ident.Set.add id !globals
-    | _ -> ()
-  in
-  scan lam; !globals
 
-let required_globals ~flambda body =
-  let globals = scan_used_globals body in
-  let add_global id req =
-    if not flambda && Ident.Set.mem id globals then
-      req
-    else
-      Ident.Set.add id req
-  in
-  let required =
-    Hashtbl.fold
-      (fun path _ -> add_global (Path.head path)) used_primitives
-      (if flambda then globals else Ident.Set.empty)
-  in
-  let required =
-    List.fold_right add_global (Env.get_required_globals ()) required
-  in
-  Env.reset_required_globals ();
-  Hashtbl.clear used_primitives;
-  required
 
 (* Compile an implementation *)
 
-let transl_implementation_flambda module_name (str, cc) =
-  primitive_declarations := [];
-  Hashtbl.clear used_primitives;
+let transl_implementation module_name (str, cc) =
+
+
   let module_id = Ident.create_persistent module_name in
-  let body, size =
+  let body, _ =
     transl_struct Location.none [] cc
                    (global_path module_id) str
   in
-  { module_ident = module_id;
-    main_module_block_size = size;
-    required_globals = required_globals ~flambda:true body;
-    code = body }
+  body
 
-let transl_implementation module_name (str, cc) : Lambda.lambda =
-  let implementation =
-    transl_implementation_flambda module_name (str, cc)
-  in
-  let code =
-    Lprim (Psetglobal implementation.module_ident, [implementation.code],
-           Location.none)
-  in
-  code 
 
 (* Build the list of value identifiers defined by a toplevel structure
    (excluding primitive declarations). *)
@@ -726,6 +680,5 @@ let () =
 
 let reset () =
   export_identifiers := [];
-  primitive_declarations := [];
   Env.reset_required_globals ();
-  Hashtbl.clear used_primitives
+
