@@ -22,27 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
-(** ReScript entry point in the OCaml compiler *) 
+(** ReScript entry point in the OCaml compiler *)
 
 (** Compile and register the hook of function to compile  a lambda to JS IR 
 *)
 
+val compile : string -> Ident.t list -> Lambda.lambda -> J.deps_program
 (** For toplevel, [filename] is [""] which is the same as
     {!Env.get_unit_name ()}
 *)
-val compile :  
-  string -> 
-  Lambda.lambda -> 
-  J.deps_program
 
-val lambda_as_module :  
-  J.deps_program ->
-  string ->
-  unit
+val lambda_as_module : J.deps_program -> string -> unit

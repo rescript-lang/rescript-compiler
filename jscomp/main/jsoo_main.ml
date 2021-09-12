@@ -73,12 +73,12 @@ let implementation ~use_super_errors impl str : Js.Unsafe.obj =
       (a, b)
     in
     typed_tree |> Translmod.transl_implementation modulename
-    |> (* Printlambda.lambda ppf *) fun lam ->
+    |> (* Printlambda.lambda ppf *) fun (lam, exports) ->
     let buffer = Buffer.create 1000 in
     let () =
       Js_dump_program.pp_deps_program ~output_prefix:""
         (* does not matter here *) NodeJS
-        (Lam_compile_main.compile "" lam)
+        (Lam_compile_main.compile "" exports lam)
         (Ext_pp.from_buffer buffer)
     in
     let v = Buffer.contents buffer in

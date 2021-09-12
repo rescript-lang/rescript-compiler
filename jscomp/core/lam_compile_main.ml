@@ -123,8 +123,8 @@ let _j = Js_pass_debug.dump
 *)
 let compile  
     (output_prefix : string) 
-    (lam : Lambda.lambda)   = 
-  let export_idents = Translmod.get_export_identifiers() in
+    export_idents
+    (lam : Lambda.lambda)  = 
   let export_ident_sets = Set_ident.of_list export_idents in 
   (* To make toplevel happy - reentrant for js-demo *)
   let () = 

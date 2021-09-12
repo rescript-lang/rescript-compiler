@@ -305,10 +305,12 @@ and signatures ~loc env cxt subst sig1 sig2 =
   (* Keep ids for module aliases *)
   let (id_pos_list,_) =
     List.fold_left
-      (fun (l,pos) -> function
+      (fun ((l,pos) as id_pos) -> function
           Sig_module (id, _, _) ->
             ((id,pos,Tcoerce_none)::l , pos+1)
-        | item -> (l, if is_runtime_component item then pos+1 else pos))
+        | item -> 
+          if is_runtime_component item then (l,pos+1 ) else id_pos
+      )
       ([], 0) sig1 in
 
   let runtime_fields =

@@ -25,7 +25,6 @@ open Typeopt
 open Lambda
 
 type error =
-    Free_super_var
   | Unknown_builtin_primitive of string
   | Unreachable_reached
 
@@ -513,10 +512,6 @@ let rec push_defaults loc bindings cases partial =
   | _ ->
       cases
 
-(* Insertion of debugging events *)
-
-let [@inline] event_before _exp lam = lam
-
 
 
 let primitive_is_ccall = function
@@ -563,7 +558,7 @@ and transl_exp0 e =
   | Texp_constant cst ->
       Lconst(Const_base cst)
   | Texp_let(rec_flag, pat_expr_list, body) ->
-      transl_let rec_flag pat_expr_list (event_before body (transl_exp body))
+      transl_let rec_flag pat_expr_list  (transl_exp body)
   | Texp_function { arg_label = _; param; cases; partial; } ->
       let ( params, body, return_unit ) =        
             let pl = push_defaults e.exp_loc [] cases partial in
@@ -739,19 +734,19 @@ and transl_exp0 e =
 
   | Texp_ifthenelse(cond, ifso, Some ifnot) ->
       Lifthenelse(transl_exp cond,
-                  event_before ifso (transl_exp ifso),
-                  event_before ifnot (transl_exp ifnot))
+                  transl_exp ifso,
+                  transl_exp ifnot)
   | Texp_ifthenelse(cond, ifso, None) ->
       Lifthenelse(transl_exp cond,
-                  event_before ifso (transl_exp ifso),
+                  transl_exp ifso,
                   lambda_unit)
   | Texp_sequence(expr1, expr2) ->
-      Lsequence(transl_exp expr1, event_before expr2 (transl_exp expr2))
+      Lsequence(transl_exp expr1, transl_exp expr2)
   | Texp_while(cond, body) ->
-      Lwhile(transl_exp cond, event_before body (transl_exp body))
+      Lwhile(transl_exp cond, transl_exp body)
   | Texp_for(param, _, low, high, dir, body) ->
       Lfor(param, transl_exp low, transl_exp high, dir,
-           event_before body (transl_exp body))
+           transl_exp body)
   | Texp_send(expr,Tmeth_name nm ,_) -> 
     let obj = transl_exp expr in   
     Lsend( nm,obj,e.exp_loc)
@@ -796,11 +791,11 @@ and transl_list expr_list =
 
 
 and transl_guard guard rhs =
-  let expr = event_before rhs (transl_exp rhs) in
+  let expr = transl_exp rhs in
   match guard with
   | None -> expr
   | Some cond ->
-      event_before cond (Lifthenelse(transl_exp cond, expr, staticfail))
+      Lifthenelse(transl_exp cond, expr, staticfail)
 
 and transl_case {c_lhs; c_guard; c_rhs} =
   c_lhs, transl_guard c_guard c_rhs
@@ -831,7 +826,7 @@ and transl_apply  ?(inlined = Default_inline)
       lam sargs loc =
   let lapply funct args =
     match funct with
-    (** Attention: This may not be what we need to change the application arity*)
+    (* Attention: This may not be what we need to change the application arity*)
     | Lapply ap ->
         Lapply {ap with ap_args = ap.ap_args @ args; ap_loc = loc}
     | lexp ->
@@ -936,7 +931,7 @@ and transl_record loc env fields repres opt_init_expr =
    match opt_init_expr, repres, fields with 
   | None, Record_unboxed _, [|{lbl_name; lbl_loc}, Overridden (_,expr)|]
     ->     
-      (** ReScript uncurried encoding *)
+      (* ReScript uncurried encoding *)
       let loc = lbl_loc in 
       let lambda = transl_exp expr in 
       if lbl_name.[0] = 'I' then
@@ -1096,9 +1091,6 @@ let transl_let rec_flag pat_expr_list body =
 open Format
 
 let report_error ppf = function
-  | Free_super_var ->
-      fprintf ppf
-        "Ancestor names can only be used to select inherited methods"
   | Unknown_builtin_primitive prim_name ->
       fprintf ppf "Unknown builtin primitive \"%s\"" prim_name
   | Unreachable_reached ->

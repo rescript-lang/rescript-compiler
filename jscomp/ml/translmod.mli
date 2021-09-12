@@ -16,22 +16,15 @@
 (* Translation from typed abstract syntax to lambda terms,
    for the module language *)
 
+val transl_implementation :
+  string ->
+  Typedtree.structure * Typedtree.module_coercion ->
+  Lambda.lambda * Ident.t list
 
-
-
-
-val transl_implementation:
-      string -> Typedtree.structure * Typedtree.module_coercion -> Lambda.lambda
-
-
-
-
-type error 
+type error
 (* exception Error of Location.t * error *)
 
-val report_error: Format.formatter -> error -> unit
+val report_error : Format.formatter -> error -> unit
 
-val reset: unit -> unit
 
-(** make it an array for better performance*)
-val get_export_identifiers : unit -> Ident.t list 
+

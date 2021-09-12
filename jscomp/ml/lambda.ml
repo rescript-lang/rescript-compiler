@@ -318,11 +318,6 @@ and lambda_switch =
 
 
 
-type program =
-  { module_ident : Ident.t;
-    main_module_block_size : int;
-    required_globals : Ident.Set.t;
-    code : lambda }
 
 (* This is actually a dummy value 
     not necessary "()", it can be used as a place holder for module 
@@ -743,13 +738,6 @@ let lam_of_loc kind loc =
     Lconst (Const_immstring loc)
   | Loc_LINE -> Lconst (Const_base (Const_int lnum))
 
-let merge_inline_attributes attr1 attr2 =
-  match attr1, attr2 with
-  | Default_inline, _ -> Some attr2
-  | _, Default_inline -> Some attr1
-  | _, _ ->
-    if attr1 = attr2 then Some attr1
-    else None
 
 let reset () =
   raise_count := 0

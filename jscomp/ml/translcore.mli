@@ -34,10 +34,7 @@ val transl_extension_constructor: Env.t -> Path.t option ->
 
 
 
-type error =
-    Free_super_var
-  | Unknown_builtin_primitive of string
-  | Unreachable_reached
+type error
 
 exception Error of Location.t * error
 

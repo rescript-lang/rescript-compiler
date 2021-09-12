@@ -1251,7 +1251,7 @@ and type_module_aux ~alias sttn funct_body anchor env smod =
       let aliasable = not (Env.is_functor_arg path env) in
       let md =
         if alias && aliasable then
-          (Env.add_required_global (Path.head path); md)
+          md
         else match (Env.find_module path env).md_type with
           Mty_alias(_, p1) when not alias ->
             let p1 = Env.normalize_path (Some smod.pmod_loc) env p1 in
@@ -1628,10 +1628,8 @@ and type_structure ?(toplevel = false) funct_body anchor env sstr scope =
   else Builtin_attributes.warning_scope [] run
 
 let type_toplevel_phrase env s =
-  Env.reset_required_globals ();
-  let (str, sg, env) =
-    type_structure ~toplevel:true false None env s Location.none in
-  (str, sg, env)
+  type_structure ~toplevel:true false None env s Location.none
+
 
 let type_module_alias = type_module ~alias:true true false None
 let type_module = type_module true false None
@@ -1734,7 +1732,6 @@ let type_implementation_more ?check_exists sourcefile outputprefix modulename in
   Cmt_format.clear ();
   try
   Typecore.reset_delayed_checks ();
-  Env.reset_required_globals ();
   let (str, sg, finalenv) =
     type_structure initial_env ast (Location.in_file sourcefile) in
   let simple_sg = simplify_signature sg in

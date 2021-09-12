@@ -321,12 +321,7 @@ and lambda_switch =
     sw_names: switch_names option }
 
 
-type program =
-  { module_ident : Ident.t;
-    main_module_block_size : int;
-    required_globals : Ident.Set.t;    (* Modules whose initializer side effects
-                                          must occur before [code]. *)
-    code : lambda }
+
 (* Lambda code for the middle-end.
    * In the closure case the code is a sequence of assignments to a
      preallocated block of size [main_module_block_size] using
@@ -395,9 +390,5 @@ val patch_guarded : lambda -> lambda -> lambda
 val raise_kind: raise_kind -> string
 val lam_of_loc : loc_kind -> Location.t -> lambda
 
-val merge_inline_attributes
-   : inline_attribute
-  -> inline_attribute
-  -> inline_attribute option
 
 val reset: unit -> unit
