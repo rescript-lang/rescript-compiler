@@ -159,7 +159,7 @@ type summary =
   | Env_extension of summary * Ident.t * extension_constructor
   | Env_module of summary * Ident.t * module_declaration
   | Env_modtype of summary * Ident.t * modtype_declaration
-  | Env_class of summary * Ident.t * class_declaration
+  | Env_class of unit
   | Env_cltype of summary * Ident.t * class_type_declaration
   | Env_open of summary * Path.t
   | Env_functor_arg of summary * Ident.t
@@ -1623,12 +1623,8 @@ let rec prefix_idents root pos sub = function
         prefix_idents root pos
                       (Subst.add_modtype id (Mty_ident p) sub) rem in
       (p::pl, final_sub)
-  | Sig_class(id, _, _) :: rem ->
-      (* pretend this is a type, cf. PR#6650 *)
-      let p = Pdot(root, Ident.name id, pos) in
-      let (pl, final_sub) =
-        prefix_idents root (pos + 1) (Subst.add_type id p sub) rem in
-      (p::pl, final_sub)
+  | Sig_class _ :: _ ->
+    assert false
   | Sig_class_type(id, _, _) :: rem ->
       let p = Pdot(root, Ident.name id, nopos) in
       let (pl, final_sub) =
@@ -1738,11 +1734,7 @@ and components_of_module_maker (env, sub, path, mty) =
             c.comp_modtypes <-
               Tbl.add (Ident.name id) (decl', nopos) c.comp_modtypes;
             env := store_modtype id decl !env
-        | Sig_class(id, decl, _) ->
-            let decl' = Subst.class_declaration sub decl in
-            c.comp_classes <-
-              Tbl.add (Ident.name id) (decl', !pos) c.comp_classes;
-            incr pos
+        | Sig_class () -> assert false
         | Sig_class_type(id, decl, _) ->
             let decl' = Subst.cltype_declaration sub decl in
             c.comp_cltypes <-
@@ -1900,10 +1892,6 @@ and store_modtype id info env =
     modtypes = IdTbl.add id info env.modtypes;
     summary = Env_modtype(env.summary, id, info) }
 
-and store_class id desc env =
-  { env with
-    classes = IdTbl.add id desc env.classes;
-    summary = Env_class(env.summary, id, desc) }
 
 and store_cltype id desc env =
   { env with
@@ -1955,8 +1943,7 @@ and add_module_declaration ?(arg=false) ~check id md env =
 and add_modtype id info env =
   store_modtype id info env
 
-and add_class id ty env =
-  store_class id ty env
+
 
 and add_cltype id ty env =
   store_cltype id ty env
@@ -1990,7 +1977,7 @@ and enter_module_declaration ?arg id md env =
   (* let (id, env) = enter store_module name md env in
   (id, add_functor_arg ?arg id env) *)
 and enter_modtype = enter store_modtype
-and enter_class = enter store_class
+
 and enter_cltype = enter store_cltype
 
 let enter_module ?arg s mty env =
@@ -2006,7 +1993,7 @@ let add_item comp env =
   | Sig_typext(id, ext, _)  -> add_extension ~check:false id ext env
   | Sig_module(id, md, _)   -> add_module_declaration ~check:false id md env
   | Sig_modtype(id, decl)   -> add_modtype id decl env
-  | Sig_class(id, decl, _)  -> add_class id decl env
+  | Sig_class()  -> env
   | Sig_class_type(id, decl, _) -> add_cltype id decl env
 
 let rec add_signature sg env =

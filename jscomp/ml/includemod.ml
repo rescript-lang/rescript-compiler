@@ -34,9 +34,6 @@ type symptom =
   | Class_type_declarations of
       Ident.t * class_type_declaration * class_type_declaration *
       Ctype.class_match_failure list
-  | Class_declarations of
-      Ident.t * class_declaration * class_declaration *
-      Ctype.class_match_failure list
   | Unbound_modtype_path of Path.t
   | Unbound_module_path of Path.t
   | Invalid_module_alias of Path.t
@@ -95,12 +92,6 @@ let class_type_declarations ~loc ~old_env env cxt subst id decl1 decl2 =
       raise(Error[cxt, old_env,
                   Class_type_declarations(id, decl1, decl2, reason)])
 
-let class_declarations ~old_env env cxt subst id decl1 decl2 =
-  let decl2 = Subst.class_declaration subst decl2 in
-  match Includeclass.class_declarations env decl1 decl2 with
-    []     -> ()
-  | reason ->
-      raise(Error[cxt, old_env, Class_declarations(id, decl1, decl2, reason)])
 
 (* Expand a module type identifier when possible *)
 
@@ -136,7 +127,6 @@ type field_desc =
   | Field_typext of string
   | Field_module of string
   | Field_modtype of string
-  | Field_class of string
   | Field_classtype of string
 
 let kind_of_field_desc = function
@@ -145,7 +135,6 @@ let kind_of_field_desc = function
   | Field_typext _ -> "extension constructor"
   | Field_module _ -> "module"
   | Field_modtype _ -> "module type"
-  | Field_class _ -> "class"
   | Field_classtype _ -> "class type"
 
 let item_ident_name = function
@@ -154,7 +143,7 @@ let item_ident_name = function
   | Sig_typext(id, d, _) -> (id, d.ext_loc, Field_typext(Ident.name id))
   | Sig_module(id, d, _) -> (id, d.md_loc, Field_module(Ident.name id))
   | Sig_modtype(id, d) -> (id, d.mtd_loc, Field_modtype(Ident.name id))
-  | Sig_class(id, d, _) -> (id, d.cty_loc, Field_class(Ident.name id))
+  | Sig_class () -> assert false
   | Sig_class_type(id, d, _) -> (id, d.clty_loc, Field_classtype(Ident.name id))
 
 let is_runtime_component = function
@@ -165,7 +154,7 @@ let is_runtime_component = function
   | Sig_value(_,_)
   | Sig_typext(_,_,_)
   | Sig_module(_,_,_)
-  | Sig_class(_, _,_) -> true
+  | Sig_class() -> true
 
 (* Print a coercion *)
 
@@ -328,9 +317,9 @@ and signatures ~loc env cxt subst sig1 sig2 =
       | Sig_module (i,_,_)
       | Sig_typext (i,_,_)
       | Sig_modtype(i,_)
-      | Sig_class (i,_,_)
       | Sig_class_type(i,_,_)
-      | Sig_type(i,_,_) -> Ident.name i in
+      | Sig_type(i,_,_) -> Ident.name i 
+      | Sig_class () -> assert false in
      List.fold_right (fun item fields ->
         if is_runtime_component item then get_id item :: fields else fields) sig2 [] in
 
@@ -433,9 +422,7 @@ and signature_components ~loc old_env env cxt subst paired =
   | (Sig_modtype(id1, info1), Sig_modtype(_id2, info2), _pos) :: rem ->
       modtype_infos ~loc env cxt subst id1 info1 info2;
       comps_rec rem
-  | (Sig_class(id1, decl1, _), Sig_class(_id2, decl2, _), pos) :: rem ->
-      class_declarations ~old_env env cxt subst id1 decl1 decl2;
-      (pos, Tcoerce_none) :: comps_rec rem
+  | (Sig_class _, Sig_class _ , _) :: _ -> assert false
   | (Sig_class_type(id1, info1, _),
      Sig_class_type(_id2, info2, _), _pos) :: rem ->
       class_type_declarations ~loc ~old_env env cxt subst id1 info1 info2;
@@ -596,13 +583,6 @@ let include_err ppf = function
         %a@;<1 -2>does not match@ %a@]@ %a"
       (Printtyp.cltype_declaration id) d1
       (Printtyp.cltype_declaration id) d2
-      Includeclass.report_error reason
-  | Class_declarations(id, d1, d2, reason) ->
-      fprintf ppf
-       "@[<hv 2>Class declarations do not match:@ \
-        %a@;<1 -2>does not match@ %a@]@ %a"
-      (Printtyp.class_declaration id) d1
-      (Printtyp.class_declaration id) d2
       Includeclass.report_error reason
   | Unbound_modtype_path path ->
       fprintf ppf "Unbound module type %a" Printtyp.path path

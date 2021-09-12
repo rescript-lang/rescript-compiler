@@ -329,7 +329,7 @@ let type_iterators =
     | Sig_typext (_, td, _) -> it.it_extension_constructor it td
     | Sig_module (_, md, _) -> it.it_module_declaration it md
     | Sig_modtype (_, mtd)  -> it.it_modtype_declaration it mtd
-    | Sig_class (_, cd, _)  -> it.it_class_declaration it cd
+    | Sig_class ()  -> assert false
     | Sig_class_type (_, ctd, _) -> it.it_class_type_declaration it ctd
   and it_value_description it vd =
     it.it_type_expr it vd.val_type

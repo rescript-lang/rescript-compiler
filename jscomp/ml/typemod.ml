@@ -577,7 +577,7 @@ and approx_sig env ssg =
               (extract_sig env smty.pmty_loc mty) in
           let newenv = Env.add_signature sg env in
           sg @ approx_sig newenv srem
-      | Psig_class sdecls | Psig_class_type sdecls ->
+      | Psig_class_type sdecls ->
           let decls = Typeclass.approx_class_declarations env sdecls in
           let rem = approx_sig env srem in
           List.flatten
@@ -588,6 +588,7 @@ and approx_sig env ssg =
                    Sig_type(decl.clsty_obj_id, decl.clsty_obj_abbr, rs);
                    Sig_type(decl.clsty_typesharp_id, decl.clsty_abbr, rs)])
               decls [rem])
+      | Psig_class () -> assert false               
       | _ ->
           approx_sig env srem
 
@@ -876,26 +877,7 @@ and transl_signature env sg =
             mksig (Tsig_include incl) env loc :: trem,
             sg @ rem,
             final_env
-        | Psig_class cl ->
-            List.iter
-              (fun {pci_name} -> check_name check_type names pci_name)
-              cl;
-            let (classes, newenv) = Typeclass.class_descriptions env cl in
-            let (trem, rem, final_env) = transl_sig newenv srem in
-            mksig (Tsig_class
-                     (List.map (fun decr ->
-                          decr.Typeclass.cls_info) classes)) env loc
-            :: trem,
-            List.flatten
-              (map_rec
-                 (fun rs cls ->
-                    let open Typeclass in
-                    [Sig_class(cls.cls_id, cls.cls_decl, rs);
-                     Sig_class_type(cls.cls_ty_id, cls.cls_ty_decl, rs);
-                     Sig_type(cls.cls_obj_id, cls.cls_obj_abbr, rs);
-                     Sig_type(cls.cls_typesharp_id, cls.cls_abbr, rs)])
-                 classes [rem]),
-            final_env
+        | Psig_class _ -> assert false        
         | Psig_class_type cl ->
             List.iter
               (fun {pci_name} -> check_name check_type names pci_name)

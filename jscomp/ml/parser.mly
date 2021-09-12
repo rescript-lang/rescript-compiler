@@ -805,8 +805,6 @@ signature_item:
       { let (body, ext) = $1 in mksig_ext (Psig_open body) ext }
   | sig_include_statement
       { let (body, ext) = $1 in mksig_ext (Psig_include body) ext }
-  | class_descriptions
-      { let (l, ext) = $1 in mksig_ext (Psig_class (List.rev l)) ext }
   | class_type_declarations
       { let (l, ext) = $1 in mksig_ext (Psig_class_type (List.rev l)) ext }
   | item_extension post_item_attributes
@@ -962,19 +960,6 @@ method_:
 
 /* Class types */
 
-class_type:
-    class_signature
-      { $1 }
-  | QUESTION LIDENT COLON simple_core_type_or_tuple MINUSGREATER
-    class_type
-      { mkcty(Pcty_arrow(Optional $2 , $4, $6)) }
-  | OPTLABEL simple_core_type_or_tuple MINUSGREATER class_type
-      { mkcty(Pcty_arrow(Optional $1, $2, $4)) }
-  | LIDENT COLON simple_core_type_or_tuple MINUSGREATER class_type
-      { mkcty(Pcty_arrow(Labelled $1, $3, $5)) }
-  | simple_core_type_or_tuple MINUSGREATER class_type
-      { mkcty(Pcty_arrow(Nolabel, $1, $3)) }
- ;
 class_signature:
     LBRACKET core_type_comma_list RBRACKET clty_longident
       { mkcty(Pcty_constr (mkloc $4 (rhs_loc 4), List.rev $2)) }
@@ -1037,27 +1022,6 @@ constrain:
 ;
 constrain_field:
         core_type EQUAL core_type          { $1, $3 }
-;
-class_descriptions:
-    class_description
-      { let (body, ext) = $1 in ([body],ext) }
-  | class_descriptions and_class_description
-      { let (l, ext) = $1 in ($2 :: l, ext) }
-;
-class_description:
-    CLASS ext_attributes virtual_flag class_type_parameters LIDENT COLON
-    class_type post_item_attributes
-      { let (ext, attrs) = $2 in
-        Ci.mk (mkrhs $5 5) $7 ~virt:$3 ~params:$4 ~attrs:(attrs @ $8)
-            ~loc:(symbol_rloc ()) ~docs:(symbol_docs ())
-      , ext }
-;
-and_class_description:
-    AND attributes virtual_flag class_type_parameters LIDENT COLON class_type
-    post_item_attributes
-      { Ci.mk (mkrhs $5 5) $7 ~virt:$3 ~params:$4
-              ~attrs:($2@$8) ~loc:(symbol_rloc ())
-              ~text:(symbol_text ()) ~docs:(symbol_docs ()) }
 ;
 class_type_declarations:
     class_type_declaration

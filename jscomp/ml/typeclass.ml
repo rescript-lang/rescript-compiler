@@ -529,7 +529,7 @@ let temp_abbrev loc env id arity =
   in
   (!params, ty, env)
 
-let initial_env define_class approx
+let initial_env  approx
     (res, env) (cl, id, ty_id, obj_id, cl_id) =
   (* Temporary abbreviations *)
   let arity = List.length cl.pci_params in
@@ -567,13 +567,7 @@ let initial_env define_class approx
        clty_path = unbound_class;
        clty_loc = Location.none;
        clty_attributes = [];
-      }
-      (
-        if define_class then
-          Env.add_class id dummy_class env
-        else
-          env
-      )
+      } env
   in
   ((cl, id, ty_id,
     obj_id, obj_params, obj_ty,
@@ -581,7 +575,7 @@ let initial_env define_class approx
     constr_type, dummy_class)::res,
    env)
 
-let class_infos define_class kind
+let class_infos  kind
     (cl, id, ty_id,
      obj_id, obj_params, obj_ty,
      cl_id, cl_params, cl_ty,
@@ -697,23 +691,11 @@ let class_infos define_class kind
      clty_loc = cl.pci_loc;
      clty_attributes = cl.pci_attributes;
     }
-  and clty =
-    {cty_params = params; cty_type = typ;
-     cty_variance = cty_variance;
-     cty_path = Path.Pident obj_id;
-     cty_new =
-       begin match cl.pci_virt with
-       | Virtual  -> None
-       | Concrete -> Some constr_type
-       end;
-     cty_loc = cl.pci_loc;
-     cty_attributes = cl.pci_attributes;
-    }
   in
   dummy_class.cty_type <- typ;
   let env =
     Env.add_cltype ty_id cltydef (
-    if define_class then Env.add_class id clty env else env)
+     env)
   in
 
   if cl.pci_virt = Concrete then begin
@@ -724,7 +706,7 @@ let class_infos define_class kind
         (fun name (_mut, vr, _ty) l -> if vr = Virtual then name :: l else l)
         sign.csig_vars [] in
     if mets <> []  || vals <> [] then
-      raise(Error(cl.pci_loc, env, Virtual_class(define_class, false, mets,
+      raise(Error(cl.pci_loc, env, Virtual_class(false, false, mets,
                                                  vals)));
   end;
 
@@ -796,7 +778,7 @@ let class_infos define_class kind
     arity, pub_meths, List.rev !coercion_locs, expr) :: res,
    env)
 
-let final_decl env define_class
+let final_decl env 
     (cl, id, clty, ty_id, cltydef, obj_id, obj_abbr, cl_id, cl_abbr, ci_params,
      arity, pub_meths, coe, expr) =
 
@@ -823,9 +805,7 @@ let final_decl env define_class
     None        -> ()
   | Some reason ->
       let printer =
-        if define_class
-        then function ppf -> Printtyp.class_declaration id ppf clty
-        else function ppf -> Printtyp.cltype_declaration id ppf cltydef
+        function ppf -> Printtyp.cltype_declaration id ppf cltydef
       in
       raise(Error(cl.pci_loc, env, Unbound_type_var(printer, reason)))
   end;
@@ -848,7 +828,7 @@ let final_decl env define_class
  })
 (*   (cl.pci_variance, cl.pci_loc)) *)
 
-let class_infos define_class kind
+let class_infos  kind
     (cl, id, ty_id,
      obj_id, obj_params, obj_ty,
      cl_id, cl_params, cl_ty,
@@ -856,7 +836,7 @@ let class_infos define_class kind
     (res, env) =
   Builtin_attributes.warning_scope cl.pci_attributes
     (fun () ->
-       class_infos define_class kind
+       class_infos  kind
          (cl, id, ty_id,
           obj_id, obj_params, obj_ty,
           cl_id, cl_params, cl_ty,
@@ -875,18 +855,16 @@ let merge_type_decls
   (id, id_loc, clty, ty_id, cltydef, obj_id, obj_abbr, cl_id, cl_abbr,
    arity, pub_meths, coe, expr, req)
 
-let final_env define_class env
-    (id, _id_loc, clty, ty_id, cltydef, obj_id, obj_abbr, cl_id, cl_abbr,
+let final_env env
+    (_id, _id_loc, _clty, ty_id, cltydef, obj_id, obj_abbr, cl_id, cl_abbr,
      _arity, _pub_meths, _coe, _expr, _req) =
   (* Add definitions after cleaning them *)
   Env.add_type ~check:true obj_id
     (Subst.type_declaration Subst.identity obj_abbr) (
   Env.add_type ~check:true cl_id
     (Subst.type_declaration Subst.identity cl_abbr) (
-  Env.add_cltype ty_id (Subst.cltype_declaration Subst.identity cltydef) (
-  if define_class then
-    Env.add_class id (Subst.class_declaration Subst.identity clty) env
-  else env)))
+  Env.add_cltype ty_id (Subst.cltype_declaration Subst.identity cltydef)   
+   env))
 
 (* Check that #c is coercible to c if there is a self-coercion *)
 let check_coercions env
@@ -927,8 +905,8 @@ let check_coercions env
    cls_info=req}
 
 (*******************************)
-
-let type_classes define_class approx kind env cls =
+(* FIXME: [define_class] is always [false] here *)
+let type_classes  approx kind env cls =
   let cls =
     List.map
       (function cl ->
@@ -940,17 +918,17 @@ let type_classes define_class approx kind env cls =
   Ctype.init_def (Ident.current_time ());
   Ctype.begin_class_def ();
   let (res, env) =
-    List.fold_left (initial_env define_class approx) ([], env) cls
+    List.fold_left (initial_env  approx) ([], env) cls
   in
   let (res, env) =
-    List.fold_right (class_infos define_class kind) res ([], env)
+    List.fold_right (class_infos  kind) res ([], env)
   in
   Ctype.end_def ();
-  let res = List.rev_map (final_decl env define_class) res in
+  let res = List.rev_map (final_decl env ) res in
   let decls = List.fold_right extract_type_decls res [] in
   let decls = Typedecl.compute_variance_decls env decls in
   let res = List.map2 merge_type_decls res decls in
-  let env = List.fold_left (final_env define_class) env res in
+  let env = List.fold_left final_env env res in
   let res = List.map (check_coercions env) res in
   (res, env)
 
@@ -960,12 +938,10 @@ let class_description env sexpr =
   (expr, expr.cltyp_type)
 
 
-let class_descriptions env cls =
-  type_classes true approx_description class_description env cls
 
 let class_type_declarations env cls =
   let (decls, env) =
-    type_classes false approx_description class_description env cls
+    type_classes  approx_description class_description env cls
   in
   (List.map
      (fun decl ->

@@ -429,7 +429,7 @@ module MakeMap(Map : MapArgument) = struct
         | Tsig_open _ -> item.sig_desc
         | Tsig_include incl ->
             Tsig_include {incl with incl_mod = map_module_type incl.incl_mod}
-        | Tsig_class list -> Tsig_class (List.map map_class_description list)
+        | Tsig_class () -> Tsig_class ()
         | Tsig_class_type list ->
             Tsig_class_type (List.map map_class_type_declaration list)
         | Tsig_attribute _ as x -> x
@@ -442,12 +442,6 @@ module MakeMap(Map : MapArgument) = struct
     Map.leave_module_type_declaration mtd
 
 
-  and map_class_description cd =
-    let cd = Map.enter_class_description cd in
-    let ci_params = List.map map_type_parameter cd.ci_params in
-    let ci_expr = map_class_type cd.ci_expr in
-    Map.leave_class_description
-      { cd with ci_params = ci_params; ci_expr = ci_expr}
 
   and map_class_type_declaration cd =
     let cd = Map.enter_class_type_declaration cd in

@@ -1190,8 +1190,6 @@ let wrap_env fenv ftree arg =
 
 let filter_rem_sig item rem =
   match item, rem with
-  | Sig_class _, ctydecl :: tydecl1 :: tydecl2 :: rem ->
-      ([ctydecl; tydecl1; tydecl2], rem)
   | Sig_class_type _, tydecl1 :: tydecl2 :: rem ->
       ([tydecl1; tydecl2], rem)
   | _ ->
@@ -1275,8 +1273,8 @@ and trees_of_sigitem = function
       [tree_of_module id md.md_type rs ~ellipsis]
   | Sig_modtype(id, decl) ->
       [tree_of_modtype_declaration id decl]
-  | Sig_class(id, decl, rs) ->
-      [tree_of_class_declaration id decl rs]
+  | Sig_class() ->
+      []
   | Sig_class_type(id, decl, rs) ->
       [tree_of_cltype_declaration id decl rs]
 

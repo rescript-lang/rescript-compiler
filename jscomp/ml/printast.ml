@@ -527,16 +527,6 @@ and class_type_field i ppf x =
       line i ppf "Pctf_extension \"%s\"\n" s.txt;
      payload i ppf arg
 
-and class_description i ppf x =
-  line i ppf "class_description %a\n" fmt_location x.pci_loc;
-  attributes i ppf x.pci_attributes;
-  let i = i+1 in
-  line i ppf "pci_virt = %a\n" fmt_virtual_flag x.pci_virt;
-  line i ppf "pci_params =\n";
-  list (i+1) type_parameter ppf x.pci_params;
-  line i ppf "pci_name = %a\n" fmt_string_loc x.pci_name;
-  line i ppf "pci_expr =\n";
-  class_type (i+1) ppf x.pci_expr;
 
 and class_type_declaration i ppf x =
   line i ppf "class_type_declaration %a\n" fmt_location x.pci_loc;
@@ -653,9 +643,7 @@ and signature_item i ppf x =
       line i ppf "Psig_include\n";
       module_type i ppf incl.pincl_mod;
       attributes i ppf incl.pincl_attributes
-  | Psig_class (l) ->
-      line i ppf "Psig_class\n";
-      list i class_description ppf l;
+  | Psig_class () -> ()  
   | Psig_class_type (l) ->
       line i ppf "Psig_class_type\n";
       list i class_type_declaration ppf l;
