@@ -527,6 +527,8 @@
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/tast_mapper.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/tbl.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/tbl.mli
+../lib/4.06.1/unstable/js_compiler.ml: ./ml/transl_recmodule.ml
+../lib/4.06.1/unstable/js_compiler.ml: ./ml/transl_recmodule.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/translattribute.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/translattribute.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/translcore.ml
