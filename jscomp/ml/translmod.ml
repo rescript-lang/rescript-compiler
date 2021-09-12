@@ -18,7 +18,7 @@
 
 open Typedtree
 
-type error = Conflicting_inline_attributes
+type error = Conflicting_inline_attributes | Fragile_pattern_in_toplevel
 
 exception Error of Location.t * error
 
@@ -250,8 +250,6 @@ let merge_functors mexp coercion root_path =
 
 let export_identifiers : Ident.t list ref = ref []
 
-
-
 let rec compile_functor mexp coercion root_path loc =
   let functor_params_rev, body, body_path, res_coercion, inline_attribute =
     merge_functors mexp coercion root_path
@@ -396,6 +394,15 @@ and transl_structure loc fields cc rootpath final_env = function
           let body, size =
             transl_structure loc ext_fields cc rootpath final_env rem
           in
+          (* Recursve already excludes complex pattern bindings*)
+          if is_top rootpath && rec_flag = Nonrecursive then
+            Ext_list.iter pat_expr_list (fun { vb_pat } ->
+                match vb_pat.pat_desc with
+                | Tpat_var _ | Tpat_alias _ -> ()
+                | _ ->
+                    if not (Parmatch.irrefutable vb_pat) then
+                      raise
+                        (Error (vb_pat.pat_loc, Fragile_pattern_in_toplevel)));
           (Translcore.transl_let rec_flag pat_expr_list body, size)
       | Tstr_typext tyext ->
           let ids = List.map (fun ext -> ext.ext_id) tyext.tyext_constructors in
@@ -514,14 +521,13 @@ let transl_implementation module_name (str, cc) =
 
 (* Error report *)
 
-
-
 let report_error ppf = function
   | Conflicting_inline_attributes ->
       Format.fprintf ppf "@[Conflicting ``inline'' attributes@]"
+  | Fragile_pattern_in_toplevel ->
+      Format.fprintf ppf "@[Such fragile pattern not alloewed in the toplevel@]"
 
 let () =
   Location.register_error_of_exn (function
     | Error (loc, err) -> Some (Location.error_of_printer loc report_error err)
     | _ -> None)
-

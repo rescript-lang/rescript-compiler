@@ -572,12 +572,10 @@ let transl_module_path ?(loc=Location.none) env path =
 let transl_value_path ?(loc=Location.none) env path =
   transl_normal_path (Env.normalize_path_prefix (Some loc) env path)
 
-let transl_class_path = transl_value_path
+
 let transl_extension_path = transl_value_path
 
 (* compatibility alias, deprecated in the .mli *)
-let transl_path = transl_value_path
-
 (* Compile a sequence of expressions *)
 
 let rec make_sequence fn = function
