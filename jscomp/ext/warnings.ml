@@ -386,7 +386,7 @@ let message = function
       | `ml ->
       "all the fields are explicitly listed in this record:\n\
        the 'with' clause is useless."
-      | `reason | `rescript ->
+      | `rescript ->
         "All the fields are already explicitly listed in this record. You can remove the `...` spread."
      end   
 #if true then       
