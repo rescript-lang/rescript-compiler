@@ -1997,6 +1997,8 @@ val fold_right3 :
 
 val map2 : 'a list -> 'b list -> ('a -> 'b -> 'c) -> 'c list
 
+val map2i : 'a list -> 'b list -> (int -> 'a -> 'b -> 'c) -> 'c list
+
 val fold_left_with_offset :
   'a list -> 'acc -> int -> ('a -> 'acc -> int -> 'acc) -> 'acc
 
@@ -2437,6 +2439,41 @@ let rec fold_right3 l r last acc f =
            (f a2 b2 c2
               (f a3 b3 c3 (f a4 b4 c4 (fold_right3 arest brest crest acc f)))))
   | _, _, _ -> invalid_arg "Ext_list.fold_right2"
+
+let rec map2i l r f =
+  match (l, r) with
+  | [], [] -> []
+  | [ a0 ], [ b0 ] -> [ f 0 a0 b0 ]
+  | [ a0; a1 ], [ b0; b1 ] ->
+      let c0 = f 0 a0 b0 in
+      let c1 = f 1 a1 b1 in
+      [ c0; c1 ]
+  | [ a0; a1; a2 ], [ b0; b1; b2 ] ->
+      let c0 = f 0 a0 b0 in
+      let c1 = f 1 a1 b1 in
+      let c2 = f 2 a2 b2 in
+      [ c0; c1; c2 ]
+  | [ a0; a1; a2; a3 ], [ b0; b1; b2; b3 ] ->
+      let c0 = f 0 a0 b0 in
+      let c1 = f 1 a1 b1 in
+      let c2 = f 2 a2 b2 in
+      let c3 = f 3 a3 b3 in
+      [ c0; c1; c2; c3 ]
+  | [ a0; a1; a2; a3; a4 ], [ b0; b1; b2; b3; b4 ] ->
+      let c0 = f 0 a0 b0 in
+      let c1 = f 1 a1 b1 in
+      let c2 = f 2 a2 b2 in
+      let c3 = f 3 a3 b3 in
+      let c4 = f 4 a4 b4 in
+      [ c0; c1; c2; c3; c4 ]
+  | a0 :: a1 :: a2 :: a3 :: a4 :: arest, b0 :: b1 :: b2 :: b3 :: b4 :: brest ->
+      let c0 = f 0 a0 b0 in
+      let c1 = f 1 a1 b1 in
+      let c2 = f 2 a2 b2 in
+      let c3 = f 3 a3 b3 in
+      let c4 = f 4 a4 b4 in
+      c0 :: c1 :: c2 :: c3 :: c4 :: map2i arest brest f
+  | _, _ -> invalid_arg "Ext_list.map2"
 
 let rec map2 l r f =
   match (l, r) with
