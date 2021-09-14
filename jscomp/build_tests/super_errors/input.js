@@ -3,7 +3,7 @@ const path = require('path')
 const child_process = require('child_process')
 
 
-var  bsc = path.join(__dirname,'..','..','..',process.platform,'bsc.exe')
+var  bsc = path.join(__dirname,'..','..','..','bsc')
 // var  refmt = path.join(__dirname,'..','..','..','lib','refmt.exe')
 
 
@@ -17,7 +17,7 @@ const fixtures = fs
   .filter(fileName => path.extname(fileName) === '.re')
 
 // const runtime = path.join(__dirname, '..', '..', 'runtime')
-const prefix = `${bsc} -bs-re-out  -w +A`
+const prefix = `${bsc} -w +A`
 
 const updateTests = process.argv[2] === 'update'
 

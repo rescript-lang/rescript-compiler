@@ -1491,11 +1491,6 @@ ${cppoList("ext", [
   ["hash_ident.ml", "hash.cppo.ml", dTypeIdent],
   ["hash.ml", "hash.cppo.ml", dTypeFunctor],
 ])}
-${cppoList("outcome_printer", [
-  ["tweaked_reason_oprint.ml", "tweaked_reason_oprint.cppo.ml", ""],
-  ["reason_syntax_util.ml", "reason_syntax_util.cppo.ml", ""],
-  ["reason_syntax_util.mli", "reason_syntax_util.cppo.mli", ""],
-])}
 
   
 rule copy

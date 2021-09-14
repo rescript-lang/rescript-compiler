@@ -1342,7 +1342,7 @@ val version: string
 val standard_library: string
         (* The directory containing the standard libraries *)
 
-val syntax_kind : [ `ml | `reason | `rescript ] ref       
+val syntax_kind : [ `ml  | `rescript ] ref       
 
 val bs_only : bool ref 
 
@@ -2102,7 +2102,7 @@ let message = function
       | `ml ->
       "all the fields are explicitly listed in this record:\n\
        the 'with' clause is useless."
-      | `reason | `rescript ->
+      | `rescript ->
         "All the fields are already explicitly listed in this record. You can remove the `...` spread."
      end   
        

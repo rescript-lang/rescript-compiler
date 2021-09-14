@@ -30,7 +30,7 @@ type _ kind =
 val read_ast_exn : 
   fname:string -> 
   'a kind ->  
-  ([`ml | `rescript | `reason | `default] -> unit) ->
+  ([`ml | `rescript  | `default] -> unit) ->
   'a 
 
 

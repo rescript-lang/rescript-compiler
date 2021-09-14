@@ -19,16 +19,13 @@ let set_abs_input_name sourcefile =
   Location.set_input_name sourcefile;
   sourcefile  
 
-type syntax_kind = [`ml | `reason | `rescript]
+type syntax_kind = [`ml | `rescript]
 let setup_compiler_printer (syntax_kind : [ syntax_kind | `default])= 
   (match syntax_kind with 
    | `default -> ()  
    | #syntax_kind as k -> Config.syntax_kind := k);   
   let syntax_kind = !Config.syntax_kind in 
-  if syntax_kind = `reason then begin 
-    Lazy.force Super_main.setup;  
-    Lazy.force Reason_outcome_printer_main.setup
-  end else if syntax_kind = `rescript then begin 
+  if syntax_kind = `rescript then begin 
     Lazy.force Super_main.setup;  
     Lazy.force Res_outcome_printer.setup  
   end  
@@ -49,7 +46,7 @@ let setup_runtime_path path =
   Js_config.customize_runtime := Some path
 
 let handle_reason (type a) (kind : a Ml_binary.kind) sourcefile ppf  = 
-  setup_compiler_printer `reason;
+  setup_compiler_printer `rescript;
   let tmpfile =  Ast_reason_pp.pp sourcefile in   
   let outputprefix = Config_util.output_prefix sourcefile in 
   (match kind with 
@@ -325,8 +322,6 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-unboxed-types", set Clflags.unboxed_types,
     "*internal* Unannotated unboxable types will be unboxed";
 
-    "-bs-re-out", unit_call (fun _ -> Config.syntax_kind := `reason),
-    "*internal* Print compiler output in Reason syntax";
     "-bs-ml-out", unit_call (fun _ -> Config.syntax_kind := `ml),
     "*internal* Print compiler output in ML syntax";
 
@@ -510,9 +505,9 @@ let _ : unit =
     exit 2
   | x -> 
     begin
-#if 0
+(*
         Ext_obj.bt ();
-#end
+*)
       Location.report_exception ppf x;
       exit 2
     end
