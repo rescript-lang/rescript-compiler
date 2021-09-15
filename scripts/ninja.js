@@ -1555,7 +1555,7 @@ var bsc_libs = [
   "outcome_printer",
   "core",
 ];
-
+var napkin_libs = ["stubs", "ext", ...compiler_libs, "napkin"];
 var bspack_libs = [
   "stubs",
   "ext",
@@ -1679,6 +1679,9 @@ o ../${my_target}/bsb_helper.exe: link ${makeLibs(
     bsb_helper_libs
   )} main/bsb_helper_main.cmx
     libs =  unix.cmxa str.cmxa
+o ../${my_target}/napkin.exe: link ${makeLibs(
+    napkin_libs
+  )} main/napkin_main.cmx  
 o ./bin/bspack.exe: link ${makeLibs(bspack_libs)} ./main/bspack_main.cmx
     libs = unix.cmxa 
     flags = -I ./bin -w -40-30-50    
