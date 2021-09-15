@@ -22,16 +22,24 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type outcome = Eval_false | Eval_true | Eval_unknown
+
 let id_is_for_sure_true_in_boolean (tbl : Lam_stats.ident_tbl) id =
   match Hash_ident.find_opt tbl id with
-  | Some (ImmutableBlock _) | Some (Normal_optional _) | Some (MutableBlock _)
-    ->
-      true
+  | Some (ImmutableBlock _)
+  | Some (Normal_optional _)
+  | Some (MutableBlock _)
+  | Some (Constant (Const_block _ | Const_js_true)) ->
+      Eval_true
+  | Some (Constant (Const_int { i })) ->
+      if i = 0l then Eval_false else Eval_true
+  | Some (Constant (Const_js_false | Const_js_null | Const_js_undefined)) ->
+      Eval_false
   | Some
       ( Constant _ | Module _ | FunctionId _ | Exception | Parameter | NA
       | OptionalBlock (_, (Undefined | Null | Null_undefined)) )
   | None ->
-      false
+      Eval_unknown
 
 let simplify_alias (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
   let rec simpl (lam : Lam.t) : Lam.t =
@@ -88,8 +96,11 @@ let simplify_alias (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
     *)
     | Lifthenelse (l1, l2, l3) -> (
         match l1 with
-        | Lvar id when id_is_for_sure_true_in_boolean meta.ident_tbl id ->
-            simpl l2
+        | Lvar id -> (
+            match id_is_for_sure_true_in_boolean meta.ident_tbl id with
+            | Eval_true -> simpl l2
+            | Eval_false -> simpl l3
+            | Eval_unknown -> Lam.if_ (simpl l1) (simpl l2) (simpl l3))
         | _ -> Lam.if_ (simpl l1) (simpl l2) (simpl l3))
     | Lconst _ -> lam
     | Llet (str, v, l1, l2) -> Lam.let_ str v (simpl l1) (simpl l2)
@@ -234,9 +245,15 @@ let simplify_alias (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
             sw_names;
           }
     | Lstringswitch (l, sw, d) ->
-        Lam.stringswitch (simpl l)
-          (Ext_list.map_snd sw simpl)
-          (Ext_option.map d simpl)
+        let l =
+          match l with
+          | Lvar s -> (
+              match Hash_ident.find_opt meta.ident_tbl s with
+              | Some (Constant s) -> Lam.const s
+              | Some _ | None -> simpl l)
+          | _ -> simpl l
+        in
+        Lam.stringswitch l (Ext_list.map_snd sw simpl) (Ext_option.map d simpl)
     | Lstaticraise (i, ls) -> Lam.staticraise i (Ext_list.map ls simpl)
     | Lstaticcatch (l1, ids, l2) -> Lam.staticcatch (simpl l1) ids (simpl l2)
     | Ltrywith (l1, v, l2) -> Lam.try_ (simpl l1) v (simpl l2)
