@@ -526,7 +526,6 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
         let new_map, body =
           rename_optional_parameters Map_ident.empty params body
         in
-        let attr =  attr in
         if Map_ident.is_empty new_map then
           Lam.function_ ~attr ~arity:(List.length params) ~params
             ~body:(convert_aux body)
@@ -536,7 +535,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
           in
           Lam.function_ ~attr ~arity:(List.length params) ~params
             ~body:(convert_aux body)
-    | Llet (kind, _value_kind, id, e, body) (*FIXME*) ->
+    | Llet (kind, Pgenval, id, e, body) (*FIXME*) ->
         convert_let kind id e body
     | Lletrec (bindings, body) ->
         let bindings = Ext_list.map_snd bindings convert_aux in
