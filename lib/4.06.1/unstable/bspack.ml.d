@@ -81,7 +81,7 @@
 ../lib/4.06.1/unstable/bspack.ml: ./ml/parse.mli
 ../lib/4.06.1/unstable/bspack.ml: ./ml/parser.ml
 ../lib/4.06.1/unstable/bspack.ml: ./ml/parser.mli
-../lib/4.06.1/unstable/bspack.ml: ./ml/parsetree.mli
+../lib/4.06.1/unstable/bspack.ml: ./ml/parsetree.ml
 ../lib/4.06.1/unstable/bspack.ml: ./ml/syntaxerr.ml
 ../lib/4.06.1/unstable/bspack.ml: ./ml/syntaxerr.mli
 ../lib/4.06.1/unstable/bspack.ml: ./stubs/bs_hash_stubs.ml
