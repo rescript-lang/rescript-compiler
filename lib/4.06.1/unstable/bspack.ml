@@ -3044,10 +3044,9 @@ let parse s =
   | Some v -> v
 
 end
-(** Interface as module  *)
 module Parsetree
 = struct
-#1 "parsetree.mli"
+#1 "parsetree.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)

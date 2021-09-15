@@ -461,7 +461,7 @@
 ../lib/4.06.1/whole_compiler.ml: ./main/builtin_cmj_datasets.mli
 ../lib/4.06.1/whole_compiler.ml: ./main/rescript_compiler_main.ml
 ../lib/4.06.1/whole_compiler.ml: ./main/rescript_compiler_main.mli
-../lib/4.06.1/whole_compiler.ml: ./ml/annot.mli
+../lib/4.06.1/whole_compiler.ml: ./ml/annot.ml
 ../lib/4.06.1/whole_compiler.ml: ./ml/ast_helper.ml
 ../lib/4.06.1/whole_compiler.ml: ./ml/ast_helper.mli
 ../lib/4.06.1/whole_compiler.ml: ./ml/ast_iterator.ml
@@ -513,14 +513,14 @@
 ../lib/4.06.1/whole_compiler.ml: ./ml/mtype.mli
 ../lib/4.06.1/whole_compiler.ml: ./ml/oprint.ml
 ../lib/4.06.1/whole_compiler.ml: ./ml/oprint.mli
-../lib/4.06.1/whole_compiler.ml: ./ml/outcometree.mli
+../lib/4.06.1/whole_compiler.ml: ./ml/outcometree.ml
 ../lib/4.06.1/whole_compiler.ml: ./ml/parmatch.ml
 ../lib/4.06.1/whole_compiler.ml: ./ml/parmatch.mli
 ../lib/4.06.1/whole_compiler.ml: ./ml/parse.ml
 ../lib/4.06.1/whole_compiler.ml: ./ml/parse.mli
 ../lib/4.06.1/whole_compiler.ml: ./ml/parser.ml
 ../lib/4.06.1/whole_compiler.ml: ./ml/parser.mli
-../lib/4.06.1/whole_compiler.ml: ./ml/parsetree.mli
+../lib/4.06.1/whole_compiler.ml: ./ml/parsetree.ml
 ../lib/4.06.1/whole_compiler.ml: ./ml/path.ml
 ../lib/4.06.1/whole_compiler.ml: ./ml/path.mli
 ../lib/4.06.1/whole_compiler.ml: ./ml/pprintast.ml
