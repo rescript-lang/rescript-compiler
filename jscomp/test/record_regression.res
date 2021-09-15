@@ -1,4 +1,4 @@
-@@config({flags: ["-bs-diagnose"] })
+// @@config({flags: ["-bs-diagnose"] })
 
 @obj
 type t0 = {x: int, y: option<int>, z: int}
