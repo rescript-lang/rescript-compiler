@@ -1458,9 +1458,6 @@ function preprocessorNinjaSync() {
   var napkinFiles = fs
     .readdirSync(path.join(jscompDir, "..", "syntax", "src"), "ascii")
     .filter((x) => x.endsWith(".ml") || x.endsWith(".mli"));
-  var buildNapkinFiles = napkinFiles
-    .map((file) => `o napkin/${file} : copy ../syntax/src/${file}`)
-    .join("\n");
   var cppoNative = `
 ocamlopt = ocamlopt.opt
 ocamllex = ocamllex.opt
@@ -1502,10 +1499,7 @@ ${cppoList("ext", [
 ])}
 
   
-rule copy
-  command = cp $in $out
-  description = $in -> $out    
-${buildNapkinFiles}    
+
 `;
   var cppoNinjaFile = "cppoVendor.ninja";
   writeFileSync(path.join(jscompDir, cppoNinjaFile), cppoNative);
