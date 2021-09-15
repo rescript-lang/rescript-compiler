@@ -1227,8 +1227,17 @@ ${mllList(ninjaCwd, [
   let depsMap = createDepsMapWithTargets(sources);
   await Promise.all(depModulesForBscAsync(sources, testDir, depsMap));
   var targets = collectTarget(sources);
-  var output = generateNinja(depsMap, targets, ninjaCwd, [stdlibTarget,pseudoTarget("$bsc")]);
-  output.push(phony(pseudoTarget('test'), fileTargets(scanFileTargets(targets,[])), ninjaCwd));
+  var output = generateNinja(depsMap, targets, ninjaCwd, [
+    stdlibTarget,
+    pseudoTarget("$bsc"),
+  ]);
+  output.push(
+    phony(
+      pseudoTarget("test"),
+      fileTargets(scanFileTargets(targets, [])),
+      ninjaCwd
+    )
+  );
   writeFileAscii(
     path.join(testDir, ninjaOutput),
     templateTestRules + output.join("\n") + "\n"
