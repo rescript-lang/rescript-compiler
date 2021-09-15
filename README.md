@@ -40,7 +40,7 @@ It was named BuckleScript and rebranded into [ReScript](https://rescript-lang.or
 The major contributions from contributors include super_errors from
 [Cheng](https://github.com/chenglou) and [Cristiano](https://github.com/cristianoc), react_jsx_ppx from [Ricky](https://github.com/rickyvetter).
 Cristiano also contributed to several important patches in the upstream native compiler,
-in particular, the pattern match compilation.
+in particular, the pattern match compilation. The [parser](./jscomp/napkin) was mostly written by [Maxime](https://github.com/orgs/rescript-lang/people/IwanKaramazow) from scratch.
 
 More details are available [here](https://github.com/rescript-lang/rescript-compiler/graphs/contributors).
 
