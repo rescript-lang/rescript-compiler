@@ -151,7 +151,12 @@ let compile
       |> _d "flattern1"
       |>  Lam_pass_exits.simplify_exits
       |> _d "simplyf_exits"
-      |> (fun lam -> Lam_pass_collect.collect_info meta lam; lam)
+      |> (fun lam -> Lam_pass_collect.collect_info meta lam; 
+#if undefined BS_RELEASE_BUILD      
+      let () = 
+        Ext_log.dwarn ~__POS__ "Before simplify_alias: %a@." Lam_stats.print meta in       
+#end      
+      lam)
       |>  Lam_pass_remove_alias.simplify_alias  meta
       |> _d "simplify_alias"
       |> Lam_pass_deep_flatten.deep_flatten
