@@ -9363,7 +9363,6 @@ val annotations : bool ref
 val binary_annotations : bool ref
 val noassert : bool ref
 val verbose : bool ref
-val principal : bool ref
 val real_paths : bool ref
 val applicative_functors : bool ref
 val error_size : int ref
@@ -9414,7 +9413,7 @@ let binary_annotations = ref false      (* -annot *)
 and noassert = ref false                (* -noassert *)
 and verbose = ref false                 (* -verbose *)
 and open_modules = ref []               (* -open *)
-and principal = ref false               (* -principal *)
+
 and real_paths = ref true               (* -short-paths *)
 and applicative_functors = ref true     (* -no-app-funct *)
 and error_size = ref 500                (* -error-size *)
