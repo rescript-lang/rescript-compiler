@@ -372,8 +372,8 @@ and signatures ~loc env cxt subst sig1 sig2 =
               Field_type (String.sub s 0 (String.length s - 4)), false
           | _ -> name2, true
         in
-        begin try
-          let (id1, item1, pos1) = Tbl.find name2 comps1 in
+        begin match Tbl.find name2 comps1 with 
+          | (id1, item1, pos1) ->
           let new_subst =
             match item2 with
               Sig_type _ ->
@@ -388,7 +388,7 @@ and signatures ~loc env cxt subst sig1 sig2 =
           in
           pair_components new_subst
             ((item1, item2, pos1) :: paired) unpaired rem
-        with Not_found ->
+        | exception Not_found ->
           let unpaired =
             if report then
               (cxt, env, Missing_field (id2, loc, kind_of_field_desc name2)) ::
