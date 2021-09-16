@@ -439,7 +439,7 @@ and is_destructuring_pattern : Typedtree.pattern -> bool =
       is_destructuring_pattern l || is_destructuring_pattern r
   | Tpat_lazy _ -> true
 
-let check_recursive_expression env idlist expr =
+let check_recursive_expression idlist expr =
   let ty = expression (build_unguarded_env idlist) expr in
   match (Use.unguarded ty, Use.dependent ty, classify_expression expr) with
   | _ :: _, _, _ (* The expression inspects rec-bound variables *)
@@ -452,12 +452,12 @@ let check_recursive_expression env idlist expr =
          but does not depend on rec-bound variables *)
       ()
 
-let check_recursive_bindings env valbinds =
+let check_recursive_bindings valbinds =
   let ids =
     List.concat (List.map (fun b -> pattern_variables b.vb_pat) valbinds)
   in
   List.iter
-    (fun { vb_expr } -> check_recursive_expression env ids vb_expr)
+    (fun { vb_expr } -> check_recursive_expression  ids vb_expr)
     valbinds
 
 open Format

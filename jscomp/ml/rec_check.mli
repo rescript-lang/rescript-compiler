@@ -1,1 +1,4 @@
-val check_recursive_bindings : 'a -> Typedtree.value_binding list -> unit
+
+
+
+val check_recursive_bindings :  Typedtree.value_binding list -> unit

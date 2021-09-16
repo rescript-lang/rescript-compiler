@@ -1962,7 +1962,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
         type_expect new_env (wrap_unpacks sbody unpacks) ty_expected in
       let () =
         if rec_flag = Recursive then
-          Rec_check.check_recursive_bindings env pat_exp_list
+          Rec_check.check_recursive_bindings pat_exp_list
       in
       re {
         exp_desc = Texp_let(rec_flag, pat_exp_list, body);
