@@ -22,11 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
 (* 
    Principle: since in ocaml, the apply order is not specified 
    rules:
@@ -36,12 +31,9 @@
       other wise the evaluation order is tricky (make sure eval order is correct)
 *)
 
-type value = 
-  { mutable used : bool ; 
-    lambda  : Lam.t
-  }
-let param_hash :  _ Hash_ident.t = Hash_ident.create 20
+type value = { mutable used : bool; lambda : Lam.t }
 
+let param_hash : _ Hash_ident.t = Hash_ident.create 20
 
 (* optimize cases like 
    (fun f (a,b){ g (a,b,1)} (e0, e1))
@@ -57,74 +49,74 @@ let param_hash :  _ Hash_ident.t = Hash_ident.create 20
             | _ -> false ) params args'
    ]}  
 *)
-let simple_beta_reduce params body args = 
+let simple_beta_reduce params body args =
   let exception Not_simple_apply in
-  let find_param v  opt = 
-    match Hash_ident.find_opt param_hash v with 
-    | Some exp ->  
-      if exp.used then raise_notrace Not_simple_apply
-      else 
-        exp.used <- true; exp.lambda
+  let find_param_exn v opt =
+    match Hash_ident.find_opt param_hash v with
+    | Some exp ->
+        if exp.used then raise_notrace Not_simple_apply else exp.used <- true;
+        exp.lambda
     | None -> opt
-  in  
-  let rec aux acc (us : Lam.t list) = 
-    match us with 
+  in
+  let rec aux_exn acc (us : Lam.t list) =
+    match us with
     | [] -> List.rev acc
-    | (Lvar x as a ) :: rest 
-      -> 
-      aux  (find_param x a  :: acc) rest 
-    | (Lconst  _  as u) :: rest 
-      -> aux (u :: acc) rest 
-    | _ :: _ -> raise_notrace Not_simple_apply 
-  in 
-  match (body : Lam.t) with 
-  | Lprim { primitive ; args =  ap_args ; loc = ap_loc}  (* There is no lambda in primitive *)
-    -> (* catch a special case of primitives *)
-
-    let () = 
-      List.iter2 (fun p a -> Hash_ident.add param_hash p {lambda = a; used = false }) params args  
-    in 
-    begin match aux [] ap_args with 
-      | new_args -> 
-        let result = 
-          Hash_ident.fold param_hash (Lam.prim ~primitive ~args:new_args ap_loc) (fun _param {lambda; used} acc -> 
-              if not used then
-                Lam.seq lambda acc
-              else acc)  in 
-        Hash_ident.clear param_hash;
-        Some result 
-      | exception _ -> 
-        Hash_ident.clear param_hash ;
-        None
-    end
-  | Lapply { ap_func = 
-               (Lvar _ | Lprim {primitive = Pfield _; args = [Lglobal_module _ ]} as f) ; ap_args ;  ap_info  }
-    ->  
-    let () = 
-      List.iter2 (fun p a -> Hash_ident.add param_hash p {lambda = a; used = false }) params args  
-    in 
-    (*since we adde each param only once, 
-      iff it is removed once, no exception, 
-      if it is removed twice there will be exception.
-      if it is never removed, we have it as rest keys 
-    *)
-    begin match aux [] ap_args with 
-      | new_args -> 
-        let f = 
-          match f with 
-          | Lvar fn_name -> find_param fn_name  f 
-          | _ -> f in
-        let result = 
-          Hash_ident.fold param_hash (Lam.apply  f new_args  ap_info  )
-            (fun _param {lambda; used} acc -> 
-               if not used then 
-                 Lam.seq lambda acc
-               else acc )
+    | (Lvar x as a) :: rest -> aux_exn (find_param_exn x a :: acc) rest
+    | (Lconst _ as u) :: rest -> aux_exn (u :: acc) rest
+    | _ :: _ -> raise_notrace Not_simple_apply
+  in
+  match (body : Lam.t) with
+  | Lprim { primitive; args = ap_args; loc = ap_loc }
+  (* There is no lambda in primitive *) -> (
+      (* catch a special case of primitives *)
+      let () =
+        List.iter2
+          (fun p a -> Hash_ident.add param_hash p { lambda = a; used = false })
+          params args
+      in
+      try
+        let new_args = aux_exn [] ap_args in
+        let result =
+          Hash_ident.fold param_hash (Lam.prim ~primitive ~args:new_args ap_loc)
+            (fun _param { lambda; used } acc ->
+              if not used then Lam.seq lambda acc else acc)
         in
         Hash_ident.clear param_hash;
-        Some result 
-      | exception _ -> 
-        Hash_ident.clear param_hash; 
-        None
-    end
+        Some result
+      with Not_simple_apply ->
+        Hash_ident.clear param_hash;
+        None)
+  | Lapply
+      {
+        ap_func =
+          (Lvar _ | Lprim { primitive = Pfield _; args = [ Lglobal_module _ ] })
+          as f;
+        ap_args;
+        ap_info;
+      } -> (
+      let () =
+        List.iter2
+          (fun p a -> Hash_ident.add param_hash p { lambda = a; used = false })
+          params args
+      in
+      (*since we adde each param only once,
+        iff it is removed once, no exception,
+        if it is removed twice there will be exception.
+        if it is never removed, we have it as rest keys
+      *)
+      try
+        let new_args = aux_exn [] ap_args in
+        let f =
+          match f with Lvar fn_name -> find_param_exn fn_name f | _ -> f
+        in
+        let result =
+          Hash_ident.fold param_hash (Lam.apply f new_args ap_info)
+            (fun _param { lambda; used } acc ->
+              if not used then Lam.seq lambda acc else acc)
+        in
+        Hash_ident.clear param_hash;
+        Some result
+      with Not_simple_apply ->
+        Hash_ident.clear param_hash;
+        None)
   | _ -> None

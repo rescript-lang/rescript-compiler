@@ -319,7 +319,16 @@ and pp_function ~return_unit ~is_method cxt (f : P.t) ~fn_state
             {[ function(x,y){ return u(x,y) } ]}
             it can be optimized in to either [u] or [Curry.__n(u)]
          *)
-         (not is_method) && Ext_list.for_all2_no_exn ls l is_var -> (
+         (not is_method)
+         && Ext_list.for_all2_no_exn ls l is_var
+         &&
+         match v with
+         (* This check is needed to avoid some edge cases
+            {[function(x){return x(x)}]}
+            here the function is also called `x`
+         *)
+         | Id id -> not (Ext_list.exists l (fun x -> Ident.same x id))
+         | Qualified _ -> true -> (
       let optimize len ~p cxt f v =
         if p then try_optimize_curry cxt f len function_id else vident cxt f v
       in
