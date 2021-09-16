@@ -11,7 +11,6 @@ var pairs = [
   ["Clflags.no_implicit_current_dir", "true"],
   ["Clflags.strict_formats", "true"],
   ["Clflags.compile_only", "true"],
-  ["Clflags.principal", "false"],
 ];
 
 var regexp = RegExp(
