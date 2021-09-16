@@ -77,23 +77,15 @@ type error =
   | Wrong_name of string * type_expr * string * Path.t * string * string list
   | Name_type_mismatch of
       string * Longident.t * (Path.t * Path.t) * (Path.t * Path.t) list
-  | Invalid_format of string
   | Undefined_method of type_expr * string * string list option
-  | Undefined_inherited_method of string * string list
-  | Virtual_class of Longident.t
   | Private_type of type_expr
   | Private_label of Longident.t * type_expr
-  | Unbound_instance_variable of string * string list
-  | Instance_variable_not_mutable of bool * string
   | Not_subtype of (type_expr * type_expr) list * (type_expr * type_expr) list
-  | Outside_class
-  | Value_multiply_overridden of string
   | Coercion_failure of
       type_expr * type_expr * (type_expr * type_expr) list * bool
   | Too_many_arguments of bool * type_expr
   | Abstract_wrong_label of arg_label * type_expr
   | Scoping_let_module of string * type_expr
-  | Masked_instance_variable of Longident.t
   | Not_a_variant_type of Longident.t
   | Incoherent_label_order
   | Less_general of string * (type_expr * type_expr) list
@@ -115,8 +107,7 @@ type error =
   | Literal_overflow of string
   | Unknown_literal of string * char
   | Illegal_letrec_pat
-  | Illegal_class_expr
-  | Labels_omitted of string list              
+  | Labels_omitted of string list
 exception Error of Location.t * Env.t * error
 exception Error_forward of Location.error
 

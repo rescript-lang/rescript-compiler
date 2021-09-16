@@ -40,23 +40,16 @@ type error =
   | Wrong_name of string * type_expr * string * Path.t * string * string list
   | Name_type_mismatch of
       string * Longident.t * (Path.t * Path.t) * (Path.t * Path.t) list
-  | Invalid_format of string
   | Undefined_method of type_expr * string * string list option
-  | Undefined_inherited_method of string * string list
-  | Virtual_class of Longident.t
   | Private_type of type_expr
   | Private_label of Longident.t * type_expr
-  | Unbound_instance_variable of string * string list
-  | Instance_variable_not_mutable of bool * string
+
   | Not_subtype of (type_expr * type_expr) list * (type_expr * type_expr) list
-  | Outside_class
-  | Value_multiply_overridden of string
   | Coercion_failure of
       type_expr * type_expr * (type_expr * type_expr) list * bool
   | Too_many_arguments of bool * type_expr
   | Abstract_wrong_label of arg_label * type_expr
   | Scoping_let_module of string * type_expr
-  | Masked_instance_variable of Longident.t
   | Not_a_variant_type of Longident.t
   | Incoherent_label_order
   | Less_general of string * (type_expr * type_expr) list
@@ -78,7 +71,6 @@ type error =
   | Literal_overflow of string
   | Unknown_literal of string * char
   | Illegal_letrec_pat
-  | Illegal_class_expr
   | Labels_omitted of string list
 exception Error of Location.t * Env.t * error
 exception Error_forward of Location.error
@@ -2383,7 +2375,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
   | Pexp_coerce(sarg, sty, sty') ->
       let separate = true in (* always separate, 1% slowdown for lablgtk *)
       (* Also see PR#7199 for a problem with the following:
-         let separate = !Clflags.principal || Env.has_local_constraints env in*)
+         let separate =  Env.has_local_constraints env in*)
       let (arg, ty',cty,cty') =
         match sty with
         | None ->
@@ -2464,7 +2456,6 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
                        arg.exp_extra;
       }
   | Pexp_send (e, {txt=met}) ->
-      if !Clflags.principal then begin_def ();
       let obj = type_exp env e in
       let obj_meths = ref None in
       begin try
@@ -2474,10 +2465,6 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
               (Tmeth_name met, None,
                filter_method env met Public obj.exp_type)
         in
-        if !Clflags.principal then begin
-          end_def ();
-          generalize_structure typ;
-        end;
         let typ =
           match repr typ with
             {desc = Tpoly (ty, [])} ->
@@ -2592,7 +2579,6 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
       }
   | Pexp_object _ -> assert false  
   | Pexp_poly(sbody, sty) ->
-      if !Clflags.principal then begin_def ();
       let ty, cty =
         match sty with None -> repr ty_expected, None
         | Some sty ->
@@ -2600,10 +2586,6 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
             let cty = Typetexp.transl_simple_type env false sty in
             repr cty.ctyp_type, Some cty
       in
-      if !Clflags.principal then begin
-        end_def ();
-        generalize_structure ty
-      end;
       if sty <> None then
         unify_exp_types loc env (instance env ty) (instance env ty_expected);
       let exp =
@@ -2614,12 +2596,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
         | Tpoly (ty', tl) ->
             (* One more level to generalize locally *)
             begin_def ();
-            if !Clflags.principal then begin_def ();
             let vars, ty'' = instance_poly true tl ty' in
-            if !Clflags.principal then begin
-              end_def ();
-              generalize_structure ty''
-            end;
             let exp = type_expect env sbody ty'' in
             end_def ();
             check_univars env false "method" exp ty_expected vars;
@@ -2744,7 +2721,7 @@ and type_function ?in_function loc attrs env ty_expected l caselist =
     match in_function with Some p -> p
     | None -> (loc, instance env ty_expected)
   in
-  let separate = !Clflags.principal || Env.has_local_constraints env in
+  let separate = Env.has_local_constraints env in
   if separate then begin_def ();
   let (ty_arg, ty_res) =
     try filter_arrow env (instance env ty_expected) l
@@ -2808,7 +2785,7 @@ and type_label_exp create env loc ty_expected
           (lid, label, sarg) =
   (* Here also ty_expected may be at generic_level *)
   begin_def ();
-  let separate = !Clflags.principal || Env.has_local_constraints env in
+  let separate = Env.has_local_constraints env in
   if separate then (begin_def (); begin_def ());
   let (vars, ty_arg, ty_res) = instance_label true label in
   if separate then begin
@@ -2875,12 +2852,7 @@ and type_argument ?recarg env sarg ty_expected' ty_expected =
     when is_inferred sarg ->
       (* apply optional arguments when expected type is "" *)
       (* we must be very careful about not breaking the semantics *)
-      if !Clflags.principal then begin_def ();
       let texp = type_exp env sarg in
-      if !Clflags.principal then begin
-        end_def ();
-        generalize_structure texp.exp_type
-      end;
       let rec make_args args ty_fun =
         match (expand_head env ty_fun).desc with
         | Tarrow (l,ty_arg,ty_fun,_) when is_optional l ->
@@ -3093,7 +3065,7 @@ and type_construct env loc lid sarg ty_expected attrs =
   if List.length sargs <> constr.cstr_arity then
     raise(Error(loc, env, Constructor_arity_mismatch
                   (lid.txt, constr.cstr_arity, List.length sargs)));
-  let separate = !Clflags.principal || Env.has_local_constraints env in
+  let separate = Env.has_local_constraints env in
   if separate then (begin_def (); begin_def ());
   let (ty_args, ty_res) = instance_constructor constr in
   let texp =
@@ -3212,7 +3184,7 @@ and type_cases ?in_function env ty_arg ty_res partial_flag loc caselist : _ * Ty
     Format.printf "lev = %d@.%a@." lev Printtyp.raw_type_expr ty_res; *)
   (* Do we need to propagate polymorphism *)
   let propagate =
-    !Clflags.principal || has_gadts || (repr ty_arg).level = generic_level ||
+     has_gadts || (repr ty_arg).level = generic_level ||
     match caselist with
       [{pc_lhs}] when is_var pc_lhs -> false
     | _ -> true in
@@ -3232,7 +3204,7 @@ and type_cases ?in_function env ty_arg ty_res partial_flag loc caselist : _ * Ty
         let scope = Some (Annot.Idef loc) in
         let (pat, ext_env, force, unpacks) =
           let partial =
-            if !Clflags.principal || erase_either
+            if  erase_either
             then Some false else None in
           let ty_arg = instance ?partial env ty_arg in
           type_pattern ~lev env pc_lhs scope ty_arg
@@ -3290,7 +3262,7 @@ and type_cases ?in_function env ty_arg ty_res partial_flag loc caselist : _ * Ty
       )
       pat_env_list caselist
   in
-  if !Clflags.principal || has_gadts then begin
+  if has_gadts then begin
     let ty_res' = instance env ty_res in
     List.iter (fun c -> unify_exp env c.c_rhs ty_res') cases
   end;
@@ -3684,8 +3656,6 @@ let report_error env ppf = function
         (function ppf ->
            fprintf ppf "but a %s was expected belonging to the %s type"
              name kind)
-  | Invalid_format msg ->
-      fprintf ppf "%s" msg
   | Undefined_method (ty, me, valid_methods) ->
       reset_and_mark_loops ty;
       fprintf ppf
@@ -3695,26 +3665,8 @@ let report_error env ppf = function
         | None -> ()
         | Some valid_methods -> spellcheck ppf me valid_methods
       end
-  | Undefined_inherited_method (me, valid_methods) ->
-      fprintf ppf "This expression has no field %s" me;
-      spellcheck ppf me valid_methods;
-  | Virtual_class cl ->
-      fprintf ppf "Cannot instantiate the virtual class %a"
-        longident cl
-  | Unbound_instance_variable (var, valid_vars) ->
-      fprintf ppf "Unbound instance variable %s" var;
-      spellcheck ppf var valid_vars;
-  | Instance_variable_not_mutable (b, v) ->
-      if b then
-        fprintf ppf "The instance variable %s is not mutable" v
-      else
-        fprintf ppf "The value %s is not an instance variable" v
   | Not_subtype(tr1, tr2) ->
       report_subtyping_error ppf env tr1 "is not a subtype of" tr2
-  | Outside_class ->
-      fprintf ppf "This object duplication occurs outside a method definition"
-  | Value_multiply_overridden v ->
-      fprintf ppf "The instance variable %s is overridden several times" v
   | Coercion_failure (ty, ty', trace, b) ->
       report_unification_error ppf env trace
         (function ppf ->
@@ -3757,11 +3709,6 @@ let report_error env ppf = function
        "This `let module' expression has type@ %a@ " type_expr ty;
       fprintf ppf
        "In this type, the locally bound module name %s escapes its scope" id
-  | Masked_instance_variable lid ->
-      fprintf ppf
-        "The instance variable %a@ \
-         cannot be accessed from the definition of another instance variable"
-        longident lid
   | Private_type ty ->
       fprintf ppf "Cannot create values of the private type %a" type_expr ty
   | Private_label (lid, ty) ->
@@ -3837,8 +3784,6 @@ let report_error env ppf = function
   | Illegal_letrec_pat ->
       fprintf ppf
         "Only variables are allowed as left-hand side of `let rec'"
-  | Illegal_class_expr ->
-      fprintf ppf "This kind of recursive class expression is not allowed"
   | Labels_omitted labels -> 
       fprintf ppf  "For labeled funciton, labels %s were omitted in the application of this function." 
       (String.concat ", " labels)  

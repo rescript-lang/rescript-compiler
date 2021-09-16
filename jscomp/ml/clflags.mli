@@ -12,7 +12,6 @@ val annotations : bool ref
 val binary_annotations : bool ref
 val noassert : bool ref
 val verbose : bool ref
-val principal : bool ref
 val real_paths : bool ref
 val applicative_functors : bool ref
 val error_size : int ref
