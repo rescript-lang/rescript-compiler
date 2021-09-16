@@ -40,23 +40,16 @@ type error =
   | Wrong_name of string * type_expr * string * Path.t * string * string list
   | Name_type_mismatch of
       string * Longident.t * (Path.t * Path.t) * (Path.t * Path.t) list
-  | Invalid_format of string
   | Undefined_method of type_expr * string * string list option
-  | Undefined_inherited_method of string * string list
-  | Virtual_class of Longident.t
   | Private_type of type_expr
   | Private_label of Longident.t * type_expr
-  | Unbound_instance_variable of string * string list
-  | Instance_variable_not_mutable of bool * string
+
   | Not_subtype of (type_expr * type_expr) list * (type_expr * type_expr) list
-  | Outside_class
-  | Value_multiply_overridden of string
   | Coercion_failure of
       type_expr * type_expr * (type_expr * type_expr) list * bool
   | Too_many_arguments of bool * type_expr
   | Abstract_wrong_label of arg_label * type_expr
   | Scoping_let_module of string * type_expr
-  | Masked_instance_variable of Longident.t
   | Not_a_variant_type of Longident.t
   | Incoherent_label_order
   | Less_general of string * (type_expr * type_expr) list
@@ -78,7 +71,6 @@ type error =
   | Literal_overflow of string
   | Unknown_literal of string * char
   | Illegal_letrec_pat
-  | Illegal_class_expr
   | Labels_omitted of string list
 exception Error of Location.t * Env.t * error
 exception Error_forward of Location.error
@@ -3684,8 +3676,6 @@ let report_error env ppf = function
         (function ppf ->
            fprintf ppf "but a %s was expected belonging to the %s type"
              name kind)
-  | Invalid_format msg ->
-      fprintf ppf "%s" msg
   | Undefined_method (ty, me, valid_methods) ->
       reset_and_mark_loops ty;
       fprintf ppf
@@ -3695,26 +3685,8 @@ let report_error env ppf = function
         | None -> ()
         | Some valid_methods -> spellcheck ppf me valid_methods
       end
-  | Undefined_inherited_method (me, valid_methods) ->
-      fprintf ppf "This expression has no field %s" me;
-      spellcheck ppf me valid_methods;
-  | Virtual_class cl ->
-      fprintf ppf "Cannot instantiate the virtual class %a"
-        longident cl
-  | Unbound_instance_variable (var, valid_vars) ->
-      fprintf ppf "Unbound instance variable %s" var;
-      spellcheck ppf var valid_vars;
-  | Instance_variable_not_mutable (b, v) ->
-      if b then
-        fprintf ppf "The instance variable %s is not mutable" v
-      else
-        fprintf ppf "The value %s is not an instance variable" v
   | Not_subtype(tr1, tr2) ->
       report_subtyping_error ppf env tr1 "is not a subtype of" tr2
-  | Outside_class ->
-      fprintf ppf "This object duplication occurs outside a method definition"
-  | Value_multiply_overridden v ->
-      fprintf ppf "The instance variable %s is overridden several times" v
   | Coercion_failure (ty, ty', trace, b) ->
       report_unification_error ppf env trace
         (function ppf ->
@@ -3757,11 +3729,6 @@ let report_error env ppf = function
        "This `let module' expression has type@ %a@ " type_expr ty;
       fprintf ppf
        "In this type, the locally bound module name %s escapes its scope" id
-  | Masked_instance_variable lid ->
-      fprintf ppf
-        "The instance variable %a@ \
-         cannot be accessed from the definition of another instance variable"
-        longident lid
   | Private_type ty ->
       fprintf ppf "Cannot create values of the private type %a" type_expr ty
   | Private_label (lid, ty) ->
@@ -3837,8 +3804,6 @@ let report_error env ppf = function
   | Illegal_letrec_pat ->
       fprintf ppf
         "Only variables are allowed as left-hand side of `let rec'"
-  | Illegal_class_expr ->
-      fprintf ppf "This kind of recursive class expression is not allowed"
   | Labels_omitted labels -> 
       fprintf ppf  "For labeled funciton, labels %s were omitted in the application of this function." 
       (String.concat ", " labels)  
