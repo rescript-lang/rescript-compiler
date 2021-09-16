@@ -46,18 +46,10 @@ type class_type_info = {
 
 
 
-(*
-and class_description =
-  (class_type, unit) class_infos
-*)
 
 val class_type_declarations:
   Env.t -> Parsetree.class_type_declaration list -> class_type_info list * Env.t
 
-(*
-and class_type_declaration =
-  (class_type, Types.class_type_declaration) class_infos
-*)
 
 val approx_class_declarations:
   Env.t -> Parsetree.class_type_declaration list -> class_type_info list
@@ -65,34 +57,7 @@ val approx_class_declarations:
 val virtual_methods: Types.class_signature -> label list
 
 
-type error =
-    Unconsistent_constraint of (type_expr * type_expr) list
-  | Field_type_mismatch of string * string * (type_expr * type_expr) list
-  | Structure_expected of class_type
-  | Cannot_apply of class_type
-  | Apply_wrong_label of arg_label
-  | Pattern_type_clash of type_expr
-  | Repeated_parameter
-  | Unbound_class_2 of Longident.t
-  | Unbound_class_type_2 of Longident.t
-  | Abbrev_type_clash of type_expr * type_expr * type_expr
-  | Constructor_type_mismatch of string * (type_expr * type_expr) list
-  | Virtual_class of bool * bool * string list * string list
-  | Parameter_arity_mismatch of Longident.t * int * int
-  | Parameter_mismatch of (type_expr * type_expr) list
-  | Bad_parameters of Ident.t * type_expr * type_expr
-  | Class_match_failure of Ctype.class_match_failure list
-  | Unbound_val of string
-  | Unbound_type_var of (formatter -> unit) * Ctype.closed_class_failure
-  | Make_nongen_seltype of type_expr
-  | Non_generalizable_class of Ident.t * Types.class_declaration
-  | Cannot_coerce_self of type_expr
-  | Non_collapsable_conjunction of
-      Ident.t * Types.class_declaration * (type_expr * type_expr) list
-  | Final_self_clash of (type_expr * type_expr) list
-  | Mutability_mismatch of string * mutable_flag
-  | No_overriding of string * string
-  | Duplicate of string * string
+type error 
 
 exception Error of Location.t * Env.t * error
 exception Error_forward of Location.error

@@ -49,11 +49,8 @@ type error =
     Unconsistent_constraint of (type_expr * type_expr) list
   | Field_type_mismatch of string * string * (type_expr * type_expr) list
   | Structure_expected of class_type
-  | Cannot_apply of class_type
-  | Apply_wrong_label of arg_label
   | Pattern_type_clash of type_expr
   | Repeated_parameter
-  | Unbound_class_2 of Longident.t
   | Unbound_class_type_2 of Longident.t
   | Abbrev_type_clash of type_expr * type_expr * type_expr
   | Constructor_type_mismatch of string * (type_expr * type_expr) list
@@ -61,18 +58,14 @@ type error =
   | Parameter_arity_mismatch of Longident.t * int * int
   | Parameter_mismatch of (type_expr * type_expr) list
   | Bad_parameters of Ident.t * type_expr * type_expr
-  | Class_match_failure of Ctype.class_match_failure list
-  | Unbound_val of string
+ 
   | Unbound_type_var of (formatter -> unit) * Ctype.closed_class_failure
-  | Make_nongen_seltype of type_expr
   | Non_generalizable_class of Ident.t * Types.class_declaration
   | Cannot_coerce_self of type_expr
   | Non_collapsable_conjunction of
       Ident.t * Types.class_declaration * (type_expr * type_expr) list
-  | Final_self_clash of (type_expr * type_expr) list
-  | Mutability_mismatch of string * mutable_flag
   | No_overriding of string * string
-  | Duplicate of string * string
+ 
 
 exception Error of Location.t * Env.t * error
 exception Error_forward of Location.error
@@ -994,14 +987,6 @@ let report_error env ppf = function
       fprintf ppf
         "@[This class expression is not a class structure; it has type@ %a@]"
         Printtyp.class_type clty
-  | Cannot_apply _ ->
-      fprintf ppf
-        "This class expression is not a class function, it cannot be applied"
-  | Apply_wrong_label l ->
-      let mark_label = function
-        | Nolabel -> "out label"
-        |  l -> sprintf " label %s" (Btype.prefixed_label_name l) in
-      fprintf ppf "This argument cannot be applied with%s" (mark_label l)
   | Pattern_type_clash ty ->
       (* XXX Trace *)
       (* XXX Revoir message d'erreur | Improve error message *)
@@ -1009,9 +994,6 @@ let report_error env ppf = function
       fprintf ppf "@[%s@ %a@]"
         "This pattern cannot match self: it only matches values of type"
         Printtyp.type_expr ty
-  | Unbound_class_2 cl ->
-      fprintf ppf "@[The class@ %a@ is not yet completely defined@]"
-      Printtyp.longident cl
   | Unbound_class_type_2 cl ->
       fprintf ppf "@[The class type@ %a@ is not yet completely defined@]"
       Printtyp.longident cl
@@ -1063,10 +1045,6 @@ let report_error env ppf = function
         "@[The abbreviation %a@ is used with parameters@ %a@ \
            which are incompatible with constraints@ %a@]"
         Printtyp.ident id Printtyp.type_expr params Printtyp.type_expr cstrs
-  | Class_match_failure error ->
-      Includeclass.report_error ppf error
-  | Unbound_val lab ->
-      fprintf ppf "Unbound instance variable %s" lab
   | Unbound_type_var (printer, reason) ->
       let print_common ppf kind ty0 real lab ty =
         let ty1 =
@@ -1087,12 +1065,6 @@ let report_error env ppf = function
         "@[<v>@[Some type variables are unbound in this type:@;<1 2>%t@]@ \
               @[%a@]@]"
        printer print_reason reason
-  | Make_nongen_seltype ty ->
-      fprintf ppf
-        "@[<v>@[Self type should not occur in the non-generic type@;<1 2>\
-                %a@]@,\
-           It would escape the scope of its class@]"
-        Printtyp.type_scheme ty
   | Non_generalizable_class (id, clty) ->
       fprintf ppf
         "@[The type of this class,@ %a,@ \
@@ -1112,27 +1084,11 @@ let report_error env ppf = function
       Printtyp.report_unification_error ppf env trace
         (fun ppf -> fprintf ppf "Type")
         (fun ppf -> fprintf ppf "is not compatible with type")
-  | Final_self_clash trace ->
-      Printtyp.report_unification_error ppf env trace
-        (function ppf ->
-           fprintf ppf "This object is expected to have type")
-        (function ppf ->
-           fprintf ppf "but actually has type")
-  | Mutability_mismatch (_lab, mut) ->
-      let mut1, mut2 =
-        if mut = Immutable then "mutable", "immutable"
-        else "immutable", "mutable" in
-      fprintf ppf
-        "@[The instance variable is %s;@ it cannot be redefined as %s@]"
-        mut1 mut2
   | No_overriding (_, "") ->
       fprintf ppf "@[This inheritance does not override any method@ %s@]"
         "instance variable"
   | No_overriding (kind, name) ->
       fprintf ppf "@[The %s `%s'@ has no previous definition@]" kind name
-  | Duplicate (kind, name) ->
-      fprintf ppf "@[The %s `%s'@ has multiple definitions in this object@]"
-                    kind name
 
 let report_error env ppf err =
   Printtyp.wrap_printing_env env (fun () -> report_error env ppf err)
