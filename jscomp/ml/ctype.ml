@@ -159,7 +159,7 @@ let wrap_trace_gadt_instances env f x =
 let simple_abbrevs = ref Mnil
 
 let proper_abbrevs path tl abbrev =
-  if tl <> [] || !trace_gadt_instances || !Clflags.principal ||
+  if tl <> [] || !trace_gadt_instances ||
      is_object_type path
   then abbrev
   else simple_abbrevs

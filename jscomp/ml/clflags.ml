@@ -15,7 +15,7 @@ let binary_annotations = ref false      (* -annot *)
 and noassert = ref false                (* -noassert *)
 and verbose = ref false                 (* -verbose *)
 and open_modules = ref []               (* -open *)
-and principal = ref false               (* -principal *)
+
 and real_paths = ref true               (* -short-paths *)
 and applicative_functors = ref true     (* -no-app-funct *)
 and error_size = ref 500                (* -error-size *)
