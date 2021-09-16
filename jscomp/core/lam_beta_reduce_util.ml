@@ -74,19 +74,18 @@ let simple_beta_reduce params body args =
           (fun p a -> Hash_ident.add param_hash p { lambda = a; used = false })
           params args
       in
-      match aux_exn [] ap_args with
-      | new_args ->
-          let result =
-            Hash_ident.fold param_hash
-              (Lam.prim ~primitive ~args:new_args ap_loc)
-              (fun _param { lambda; used } acc ->
-                if not used then Lam.seq lambda acc else acc)
-          in
-          Hash_ident.clear param_hash;
-          Some result
-      | exception _ ->
-          Hash_ident.clear param_hash;
-          None)
+      try
+        let new_args = aux_exn [] ap_args in
+        let result =
+          Hash_ident.fold param_hash (Lam.prim ~primitive ~args:new_args ap_loc)
+            (fun _param { lambda; used } acc ->
+              if not used then Lam.seq lambda acc else acc)
+        in
+        Hash_ident.clear param_hash;
+        Some result
+      with Not_simple_apply ->
+        Hash_ident.clear param_hash;
+        None)
   | Lapply
       {
         ap_func =
@@ -105,19 +104,19 @@ let simple_beta_reduce params body args =
         if it is removed twice there will be exception.
         if it is never removed, we have it as rest keys
       *)
-      match aux_exn [] ap_args with
-      | new_args ->
-          let f =
-            match f with Lvar fn_name -> find_param_exn fn_name f | _ -> f
-          in
-          let result =
-            Hash_ident.fold param_hash (Lam.apply f new_args ap_info)
-              (fun _param { lambda; used } acc ->
-                if not used then Lam.seq lambda acc else acc)
-          in
-          Hash_ident.clear param_hash;
-          Some result
-      | exception _ ->
-          Hash_ident.clear param_hash;
-          None)
+      try
+        let new_args = aux_exn [] ap_args in
+        let f =
+          match f with Lvar fn_name -> find_param_exn fn_name f | _ -> f
+        in
+        let result =
+          Hash_ident.fold param_hash (Lam.apply f new_args ap_info)
+            (fun _param { lambda; used } acc ->
+              if not used then Lam.seq lambda acc else acc)
+        in
+        Hash_ident.clear param_hash;
+        Some result
+      with Not_simple_apply ->
+        Hash_ident.clear param_hash;
+        None)
   | _ -> None
