@@ -640,13 +640,7 @@ let rec push_defaults loc bindings cases partial =
         Total
   | _ -> cases
 
-let primitive_is_ccall = function
-  (* Determine if a primitive is a Pccall or will be turned later into
-     a C function call that may raise an exception *)
-  | Pccall _ | Pstringrefs | Pbytesrefs | Pbytessets | Parrayrefs | Parraysets
-  | Pduprecord | Pdirapply | Prevapply ->
-      true
-  | _ -> false
+
 
 (* Assertions *)
 
@@ -732,7 +726,6 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
           in
           transl_apply ~inlined f args' e.exp_loc
       in
-      let wrap0 = wrap in
       let args =
         List.map (function _, Some x -> x | _ -> assert false) args
       in
@@ -749,7 +742,7 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
                 Raise_reraise
             | _ -> k
           in
-          wrap0 (Lprim (Praise k, [ targ ], e.exp_loc))
+          wrap (Lprim (Praise k, [ targ ], e.exp_loc))
       | Ploc kind, [] -> lam_of_loc kind e.exp_loc
       | Ploc kind, [ arg1 ] ->
           let lam = lam_of_loc kind arg1.exp_loc in
@@ -760,8 +753,8 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
           | Plazyforce, [ a ] -> wrap (Matching.inline_lazy_force a e.exp_loc)
           | Plazyforce, _ -> assert false
           | _ ->
-              let p = Lprim (prim, argl, e.exp_loc) in
-              if primitive_is_ccall prim then wrap p else wrap0 p))
+              wrap (Lprim (prim, argl, e.exp_loc))
+              ))
   | Texp_apply (funct, oargs) ->
       let inlined, funct =
         Translattribute.get_and_remove_inlined_attribute funct
