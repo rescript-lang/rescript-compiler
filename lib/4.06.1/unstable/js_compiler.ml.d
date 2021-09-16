@@ -515,6 +515,8 @@
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/printlambda.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/printtyp.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/printtyp.mli
+../lib/4.06.1/unstable/js_compiler.ml: ./ml/rec_check.ml
+../lib/4.06.1/unstable/js_compiler.ml: ./ml/rec_check.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/stypes.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/stypes.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/subst.ml
