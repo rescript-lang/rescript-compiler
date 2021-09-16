@@ -537,6 +537,8 @@
 ../lib/4.06.1/whole_compiler.ml: ./ml/printtyp.mli
 ../lib/4.06.1/whole_compiler.ml: ./ml/printtyped.ml
 ../lib/4.06.1/whole_compiler.ml: ./ml/printtyped.mli
+../lib/4.06.1/whole_compiler.ml: ./ml/rec_check.ml
+../lib/4.06.1/whole_compiler.ml: ./ml/rec_check.mli
 ../lib/4.06.1/whole_compiler.ml: ./ml/stypes.ml
 ../lib/4.06.1/whole_compiler.ml: ./ml/stypes.mli
 ../lib/4.06.1/whole_compiler.ml: ./ml/subst.ml
