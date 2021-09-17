@@ -103,8 +103,7 @@ let init_shape modl =
           rem
     | Sig_modtype (id, minfo) :: rem ->
         init_shape_struct (Env.add_modtype id minfo env) rem
-    | Sig_class _ :: _ ->
-        assert false
+    | Sig_class _ :: _ -> assert false
     | Sig_class_type _ :: rem -> init_shape_struct env rem
   in
   try
@@ -181,11 +180,9 @@ let compile_recmodule compile_rhs bindings cont =
           bindings))
     cont
 
-open Format
-
 let report_error ppf = function
   | Circular_dependency id ->
-      fprintf ppf
+      Format.fprintf ppf
         "@[Cannot safely evaluate the definition@ of the recursively-defined \
          module %a@]"
         Printtyp.ident id
