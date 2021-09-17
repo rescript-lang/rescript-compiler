@@ -33,7 +33,6 @@ let setup_env () =
   Ctype.variant_is_subtype := Matching_polyfill.variant_is_subtype;
   Clflags.dump_location := false;  
   Config.syntax_kind := `rescript;
-  Config.unsafe_empty_array := false;
   Config.bs_only := true;  
 #if BS_BROWSER
 #else    
