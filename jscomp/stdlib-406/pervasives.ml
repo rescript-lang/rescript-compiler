@@ -59,9 +59,9 @@ external ( != ) : 'a -> 'a -> bool = "%noteq"
 (* Boolean operations *)
 
 external not : bool -> bool = "%boolnot"
-external ( & ) : bool -> bool -> bool = "%sequand"
+
 external ( && ) : bool -> bool -> bool = "%sequand"
-external ( or ) : bool -> bool -> bool = "%sequor"
+
 external ( || ) : bool -> bool -> bool = "%sequor"
 
 (* Integer operations *)
