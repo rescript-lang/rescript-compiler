@@ -3114,23 +3114,9 @@ and type_statement env sexp =
   let ty = expand_head env exp.exp_type and tv = newvar() in
   if is_Tvar ty && ty.level > tv.level then
       Location.prerr_warning loc Warnings.Nonreturning_statement;
-  if true (*!Clflags.strict_sequence *)then
-    let expected_ty = instance_def Predef.type_unit in
-    unify_exp env exp expected_ty;
-    exp
-  else begin
-    begin match ty.desc with
-    | Tarrow _ ->
-        Location.prerr_warning loc Warnings.Partial_application
-    | Tconstr (p, _, _) when Path.same p Predef.path_unit -> ()
-    | Tvar _ ->
-        add_delayed_check (fun () -> check_application_result env true exp)
-    | _ ->
-        Location.prerr_warning loc Warnings.Statement_type
-    end;
-    unify_var env tv ty;
-    exp
-  end
+  let expected_ty = instance_def Predef.type_unit in
+  unify_exp env exp expected_ty;
+  exp
 
 (* Typing of match cases *)
 
