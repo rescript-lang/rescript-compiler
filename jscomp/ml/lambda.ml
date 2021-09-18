@@ -13,9 +13,9 @@
 (*                                                                        *)
 (**************************************************************************)
 
-open Misc
-open Path
-open Asttypes
+
+
+
 
 type compile_time_constant =
   | Big_endian
@@ -40,17 +40,17 @@ type record_repr =
 
 type tag_info = 
   | Blk_constructor of {name : string ; num_nonconst : int ; tag : int }
-  | Blk_record_inlined of { name : string ; num_nonconst :  int;  tag : int; fields : string array; mutable_flag : mutable_flag }   
+  | Blk_record_inlined of { name : string ; num_nonconst :  int;  tag : int; fields : string array; mutable_flag : Asttypes.mutable_flag }   
   | Blk_tuple
   | Blk_poly_var of string 
-  | Blk_record of {fields : string array; mutable_flag : mutable_flag; record_repr : record_repr}  
+  | Blk_record of {fields : string array; mutable_flag : Asttypes.mutable_flag; record_repr : record_repr}  
   | Blk_module of string list
   | Blk_module_export of Ident.t list
 
   | Blk_extension  
   | Blk_some
   | Blk_some_not_nested (* ['a option] where ['a] can not inhabit a non-like value *)
-  | Blk_record_ext of { fields :  string array; mutable_flag : mutable_flag}
+  | Blk_record_ext of { fields :  string array; mutable_flag : Asttypes.mutable_flag}
   | Blk_lazy_general
 
 let tag_of_tag_info (tag : tag_info ) = 
@@ -186,7 +186,7 @@ type primitive =
   | Pstringlength | Pstringrefu  | Pstringrefs
   | Pbyteslength | Pbytesrefu | Pbytessetu | Pbytesrefs | Pbytessets
   (* Array operations *)
-  | Pmakearray of  mutable_flag
+  | Pmakearray of  Asttypes.mutable_flag
   | Parraylength 
   | Parrayrefu 
   | Parraysetu 
@@ -245,7 +245,7 @@ type pointer_info =
 
   
 type structured_constant =
-    Const_base of constant
+    Const_base of Asttypes.constant
   | Const_pointer of int * pointer_info
   | Const_block of tag_info * structured_constant list
   | Const_float_array of string list
@@ -290,7 +290,7 @@ type lambda =
   | Lifthenelse of lambda * lambda * lambda
   | Lsequence of lambda * lambda
   | Lwhile of lambda * lambda
-  | Lfor of Ident.t * lambda * lambda * direction_flag * lambda
+  | Lfor of Ident.t * lambda * lambda * Asttypes.direction_flag * lambda
   | Lassign of Ident.t * lambda
   | Lsend of string * lambda * Location.t
 
@@ -550,19 +550,19 @@ let rec patch_guarded patch = function
       Lifthenelse (cond, body, patch)
   | Llet(str, k, id, lam, body) ->
       Llet (str, k, id, lam, patch_guarded patch body)
-  | _ -> fatal_error "Lambda.patch_guarded"
+  | _ -> assert false
 
 (* Translate an access path *)
 
 let rec transl_normal_path = function
-    Pident id ->
+    Path.Pident id ->
       if Ident.global id
       then Lprim(Pgetglobal id, [], Location.none)
       else Lvar id
   | Pdot(p, s, pos) ->
       Lprim(Pfield (pos, Fld_module {name = s}), [transl_normal_path p], Location.none)
   | Papply _ ->
-      fatal_error "Lambda.transl_path"
+      assert false
 
 (* Translation of identifiers *)
 

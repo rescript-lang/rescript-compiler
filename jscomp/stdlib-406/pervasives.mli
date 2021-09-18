@@ -143,10 +143,6 @@ external ( && ) : bool -> bool -> bool = "%sequand"
    [e2] is not evaluated at all.
    Right-associative operator at precedence level 3/11. *)
 
-external ( & ) : bool -> bool -> bool = "%sequand"
-  [@@ocaml.deprecated "Use (&&) instead."]
-(** @deprecated {!Pervasives.( && )} should be used instead.
-    Right-associative operator at precedence level 3/11. *)
 
 external ( || ) : bool -> bool -> bool = "%sequor"
 (** The boolean 'or'. Evaluation is sequential, left-to-right:
@@ -155,10 +151,6 @@ external ( || ) : bool -> bool -> bool = "%sequor"
    Right-associative operator at precedence level 2/11.
 *)
 
-external ( or ) : bool -> bool -> bool = "%sequor"
-  [@@ocaml.deprecated "Use (||) instead."]
-(** @deprecated {!Pervasives.( || )} should be used instead.
-    Right-associative operator at precedence level 2/11. *)
 
 (** {1 Debugging} *)
 

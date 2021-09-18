@@ -27,17 +27,12 @@
 (* Clflags.keep_locs := false; *)
 let setup_env () =
   Env.Persistent_signature.load := Bs_cmi_load.load_cmi;    
-  Transl_recmodule.eval_rec_bindings := Compile_rec_module.eval_rec_bindings;
   Matching.make_test_sequence_variant_constant := Polyvar_pattern_match.make_test_sequence_variant_constant;
   Matching.call_switcher_variant_constant := Polyvar_pattern_match.call_switcher_variant_constant;
   Matching.call_switcher_variant_constr := Polyvar_pattern_match.call_switcher_variant_constr;
   Ctype.variant_is_subtype := Matching_polyfill.variant_is_subtype;
-
-
   Clflags.dump_location := false;  
   Config.syntax_kind := `rescript;
-  Config.unsafe_empty_array := false;
-  Config.bs_only := true;  
 #if BS_BROWSER
 #else    
   Clflags.color := Some Always;

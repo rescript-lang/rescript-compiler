@@ -13,41 +13,31 @@
 (*                                                                        *)
 (**************************************************************************)
 
-open Typedtree
-open Lambda
-open Location
+type t = Parsetree.attribute
 
-let is_inline_attribute = function
-  | {txt=("inline"|"ocaml.inline")}, _ -> true
-  | _ -> false
+let is_inline_attribute (attr : t) =
+  match attr with { txt = "inline" }, _ -> true | _ -> false
 
-let is_inlined_attribute = function
-  | {txt=("inlined"|"ocaml.inlined")}, _ -> true
-  | _ -> false
+let is_inlined_attribute (attr : t) =
+  match attr with { txt = "inlined" }, _ -> true | _ -> false
 
-
-
-
-let find_attribute p attributes =
-  let inline_attribute, other_attributes =
-    List.partition p attributes
-  in
+let find_attribute p (attributes : t list) =
+  let inline_attribute, other_attributes = List.partition p attributes in
   let attr =
     match inline_attribute with
     | [] -> None
-    | [attr] -> Some attr
-    | _ :: ({txt;loc}, _) :: _ ->
-      Location.prerr_warning loc (Warnings.Duplicated_attribute txt);
-      None
+    | [ attr ] -> Some attr
+    | _ :: ({ txt; loc }, _) :: _ ->
+        Location.prerr_warning loc (Warnings.Duplicated_attribute txt);
+        None
   in
-  attr, other_attributes
+  (attr, other_attributes)
 
-let parse_inline_attribute attr =
+let parse_inline_attribute (attr : t option) : Lambda.inline_attribute =
   match attr with
   | None -> Default_inline
-  | Some ({txt;loc} , payload) ->
-    let open Parsetree in
-    begin
+  | Some ({ txt; loc }, payload) -> (
+      let open Parsetree in
       (* the 'inline' and 'inlined' attributes can be used as
          [@inline], [@inline never] or [@inline always].
          [@inline] is equivalent to [@inline always] *)
@@ -57,116 +47,73 @@ let parse_inline_attribute attr =
       in
       match payload with
       | PStr [] -> Always_inline
-      | PStr [{pstr_desc = Pstr_eval ({pexp_desc},[])}] -> begin
+      | PStr [ { pstr_desc = Pstr_eval ({ pexp_desc }, []) } ] -> (
           match pexp_desc with
-          | Pexp_ident { txt = Longident.Lident "never" } ->
-            Never_inline
-          | Pexp_ident { txt = Longident.Lident "always" } ->
-            Always_inline
+          | Pexp_ident { txt = Longident.Lident "never" } -> Never_inline
+          | Pexp_ident { txt = Longident.Lident "always" } -> Always_inline
           | _ ->
-            Location.prerr_warning loc (warning txt);
-            Default_inline
-        end
+              Location.prerr_warning loc (warning txt);
+              Default_inline)
       | _ ->
-        Location.prerr_warning loc (warning txt);
-        Default_inline
-    end
-
-
+          Location.prerr_warning loc (warning txt);
+          Default_inline)
 
 let get_inline_attribute l =
   let attr, _ = find_attribute is_inline_attribute l in
   parse_inline_attribute attr
 
-
-let add_inline_attribute expr loc attributes =
-  match expr, get_inline_attribute attributes with
+let add_inline_attribute (expr : Lambda.lambda) loc attributes =
+  match (expr, get_inline_attribute attributes) with
   | expr, Default_inline -> expr
-  | Lfunction({ attr = { stub = false } as attr } as funct), inline ->
-      begin match attr.inline with
+  | Lfunction ({ attr = { stub = false } as attr } as funct), inline ->
+      (match attr.inline with
       | Default_inline -> ()
-      | Always_inline | Never_inline  ->
-          Location.prerr_warning loc
-            (Warnings.Duplicated_attribute "inline")
-      end;
+      | Always_inline | Never_inline ->
+          Location.prerr_warning loc (Warnings.Duplicated_attribute "inline"));
       let attr = { attr with inline } in
-      Lfunction { funct with attr = attr }
-  | expr, (Always_inline | Never_inline ) ->
-      Location.prerr_warning loc
-        (Warnings.Misplaced_attribute "inline");
+      Lfunction { funct with attr }
+  | expr, (Always_inline | Never_inline) ->
+      Location.prerr_warning loc (Warnings.Misplaced_attribute "inline");
       expr
-
 
 (* Get the [@inlined] attribute payload (or default if not present).
    It also returns the expression without this attribute. This is
    used to ensure that this attribute is not misplaced: If it
    appears on any expression, it is an error, otherwise it would
    have been removed by this function *)
-let get_and_remove_inlined_attribute e =
+let get_and_remove_inlined_attribute (e : Typedtree.expression) =
   let attr, exp_attributes =
     find_attribute is_inlined_attribute e.exp_attributes
   in
   let inlined = parse_inline_attribute attr in
-  inlined, { e with exp_attributes }
+  (inlined, { e with exp_attributes })
 
-let get_and_remove_inlined_attribute_on_module e =
+let get_and_remove_inlined_attribute_on_module (e : Typedtree.module_expr) =
   let attr, mod_attributes =
     find_attribute is_inlined_attribute e.mod_attributes
   in
   let inlined = parse_inline_attribute attr in
-  inlined, { e with mod_attributes }
+  (inlined, { e with mod_attributes })
 
-
-
-(* It also removes the attribute from the expression, like
-   get_inlined_attribute *)
-let get_tailcall_attribute e =
-  let is_tailcall_attribute = function
-    | {txt=("tailcall"|"ocaml.tailcall")}, _ -> true
-    | _ -> false
-  in
-  let tailcalls, exp_attributes =
-    List.partition is_tailcall_attribute e.exp_attributes
-  in
-  match tailcalls with
-  | [] -> false, e
-  | _ :: r ->
-      begin match r with
-      | [] -> ()
-      | ({txt;loc}, _) :: _ ->
-          Location.prerr_warning loc (Warnings.Duplicated_attribute txt)
-      end;
-      true, { e with exp_attributes }
-
-let check_attribute e ({ txt; loc }, _) =
+let check_attribute (e : Typedtree.expression) (({ txt; loc }, _) : t) =
   match txt with
-  | "inline" | "ocaml.inline"
-  | "specialise" | "ocaml.specialise" -> begin
+  | "inline" -> (
       match e.exp_desc with
       | Texp_function _ -> ()
-      | _ ->
-          Location.prerr_warning loc
-            (Warnings.Misplaced_attribute txt)
-    end
-  | "inlined" | "ocaml.inlined"
-  | "specialised" | "ocaml.specialised"
-  | "tailcall" | "ocaml.tailcall" ->
+      | _ -> Location.prerr_warning loc (Warnings.Misplaced_attribute txt))
+  | "inlined" ->
       (* Removed by the Texp_apply cases *)
-      Location.prerr_warning loc
-        (Warnings.Misplaced_attribute txt)
+      Location.prerr_warning loc (Warnings.Misplaced_attribute txt)
   | _ -> ()
 
-let check_attribute_on_module e ({ txt; loc }, _) =
+let check_attribute_on_module (e : Typedtree.module_expr)
+    (({ txt; loc }, _) : t) =
   match txt with
-  | "inline" | "ocaml.inline" ->  begin
+  | "inline" -> (
       match e.mod_desc with
       | Tmod_functor _ -> ()
-      | _ ->
-          Location.prerr_warning loc
-            (Warnings.Misplaced_attribute txt)
-    end
-  | "inlined" | "ocaml.inlined" ->
+      | _ -> Location.prerr_warning loc (Warnings.Misplaced_attribute txt))
+  | "inlined" ->
       (* Removed by the Texp_apply cases *)
-      Location.prerr_warning loc
-        (Warnings.Misplaced_attribute txt)
+      Location.prerr_warning loc (Warnings.Misplaced_attribute txt)
   | _ -> ()
