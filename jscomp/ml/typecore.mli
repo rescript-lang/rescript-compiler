@@ -52,8 +52,8 @@ val option_none: type_expr -> Location.t -> Typedtree.expression
 val extract_option_type: Env.t -> type_expr -> type_expr
 val iter_pattern: (Typedtree.pattern -> unit) -> Typedtree.pattern -> unit
 val generalizable: int -> type_expr -> bool
-val reset_delayed_checks: unit -> unit
-val force_delayed_checks: unit -> unit
+
+
 
 val id_of_pattern : Typedtree.pattern -> Ident.t option
 val name_pattern : string -> Typedtree.case list -> Ident.t

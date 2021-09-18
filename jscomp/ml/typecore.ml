@@ -1406,21 +1406,6 @@ let type_pattern_list env spatl scope expected_tys allow =
 
 
 
-let delayed_checks = ref []
-let reset_delayed_checks () = delayed_checks := []
-let add_delayed_check f =
-  delayed_checks := (f, Warnings.backup ()) :: !delayed_checks
-
-let force_delayed_checks () =
-  (* checks may change type levels *)
-  let snap = Btype.snapshot () in
-  let w_old = Warnings.backup () in
-  List.iter
-    (fun (f, w) -> Warnings.restore w; f ())
-    (List.rev !delayed_checks);
-  Warnings.restore w_old;
-  reset_delayed_checks ();
-  Btype.backtrack snap
 
 let rec final_subexpression sexp =
   match sexp.pexp_desc with
@@ -3024,7 +3009,7 @@ and type_application env funct (sargs : sargs) : targs * Types.type_expr =
       | Tarrow _ ->
           Location.prerr_warning exp.exp_loc Warnings.Partial_application
       | Tvar _ ->
-          add_delayed_check (fun () -> check_application_result env false exp)
+          Delayed_checks.add_delayed_check (fun () -> check_application_result env false exp)
       | _ -> ()
       end;
       ([Nolabel, Some exp], ty_res)
@@ -3265,7 +3250,7 @@ and type_cases ?in_function env ty_arg ty_res partial_flag loc caselist : _ * Ty
     Parmatch.check_ambiguous_bindings cases
   in
   if contains_polyvars || do_init then
-    add_delayed_check unused_check
+    Delayed_checks.add_delayed_check unused_check
   else
     unused_check ();
   (* Check for unused cases, do not delay because of gadts *)
@@ -3369,7 +3354,7 @@ and type_let ?(check = fun s -> Warnings.Unused_var s)
                   let name = Ident.name id in
                   let used = ref false in
                   if not (name = "" || name.[0] = '_' || name.[0] = '#') then
-                    add_delayed_check
+                    Delayed_checks.add_delayed_check
                       (fun () ->
                          if not !used then
                            Location.prerr_warning vd.Types.val_loc
@@ -3782,8 +3767,6 @@ let () =
         None
     )
 
-let () =
-  Env.add_delayed_check_forward := add_delayed_check
 
 (* drop ?recarg argument from the external API *)
 let type_expect ?in_function env e ty = type_expect ?in_function env e ty
