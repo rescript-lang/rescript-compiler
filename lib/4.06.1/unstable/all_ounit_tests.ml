@@ -9613,7 +9613,7 @@ let standard_library =
 let standard_library_default = standard_library
 let syntax_kind = ref `ml
 let bs_only = ref true
-let unsafe_empty_array = ref true
+let unsafe_empty_array = ref false
 
 
 and cmi_magic_number = "Caml1999I022"

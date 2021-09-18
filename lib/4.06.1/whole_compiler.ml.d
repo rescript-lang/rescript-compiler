@@ -17,7 +17,6 @@
 ../lib/4.06.1/whole_compiler.ml: ./core/bs_conditional_initial.mli
 ../lib/4.06.1/whole_compiler.ml: ./core/cmd_ast_exception.ml
 ../lib/4.06.1/whole_compiler.ml: ./core/cmd_ppx_apply.ml
-../lib/4.06.1/whole_compiler.ml: ./core/compile_rec_module.ml
 ../lib/4.06.1/whole_compiler.ml: ./core/config_util.ml
 ../lib/4.06.1/whole_compiler.ml: ./core/config_util.mli
 ../lib/4.06.1/whole_compiler.ml: ./core/j.ml
