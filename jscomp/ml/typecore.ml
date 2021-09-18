@@ -1726,7 +1726,7 @@ let contains_gadt env p =
       | Ppat_construct (lid, _) ->
         begin try
           let cstrs = Env.lookup_all_constructors lid.txt env in
-          List.iter (fun (cstr,_) -> if cstr.cstr_generalized then raise Exit)
+          List.iter (fun (cstr,_) -> if cstr.cstr_generalized then raise_notrace Exit)
             cstrs
         with Not_found -> ()
         end; iter_ppat (loop env) p
@@ -1916,15 +1916,6 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
           exp_attributes = sexp.pexp_attributes;
           exp_env = env }
       end
-  | Pexp_constant(Pconst_string (_, _) as cst) -> (
-    let cst = constant_or_raise env loc cst in
-      rue {
-        exp_desc = Texp_constant cst;
-        exp_loc = loc; exp_extra = [];
-        exp_type = instance_def Predef.type_string;
-        exp_attributes = sexp.pexp_attributes;
-        exp_env = env }
-  )
   | Pexp_constant cst ->
       let cst = constant_or_raise env loc cst in
       rue {
