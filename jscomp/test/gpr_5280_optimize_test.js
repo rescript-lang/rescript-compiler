@@ -5,15 +5,8 @@ var a = /* Color */{
   _0: "#ffff"
 };
 
-var c;
-
-if (a) {
-  var s = "#ffff";
-  c = s === "#ffff" ? "white" : s;
-} else {
-  c = "orange";
-}
+var c = "white";
 
 exports.a = a;
 exports.c = c;
-/* c Not a pure module */
+/* No side effect */
