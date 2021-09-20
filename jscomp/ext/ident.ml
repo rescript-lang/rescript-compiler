@@ -17,6 +17,7 @@ open Format
 
 type t = { stamp: int; name: string; mutable flags: int }
 
+let [@inlnie] max (x:int) y = if x >= y then x else y 
 let global_flag = 1
 let predef_exn_flag = 2
 
@@ -49,13 +50,12 @@ let persistent i = (i.stamp = 0)
 
 let equal i1 i2 = i1.name = i2.name
 
-let same i1 i2 = i1 = i2
-  (* Possibly more efficient version (with a real compiler, at least):
-       if i1.stamp <> 0
-       then i1.stamp = i2.stamp
-       else i2.stamp = 0 && i1.name = i2.name *)
+let same ({stamp; name } : t) i2 =   
+  if stamp <> 0
+  then stamp = i2.stamp
+  else i2.stamp = 0 && name = i2.name 
 
-let compare i1 i2 = Pervasives.compare i1 i2
+
 
 let binding_time i = i.stamp
 
