@@ -486,6 +486,8 @@
 ../lib/4.06.1/whole_compiler.ml: ./ml/ctype.mli
 ../lib/4.06.1/whole_compiler.ml: ./ml/datarepr.ml
 ../lib/4.06.1/whole_compiler.ml: ./ml/datarepr.mli
+../lib/4.06.1/whole_compiler.ml: ./ml/delayed_checks.ml
+../lib/4.06.1/whole_compiler.ml: ./ml/delayed_checks.mli
 ../lib/4.06.1/whole_compiler.ml: ./ml/depend.ml
 ../lib/4.06.1/whole_compiler.ml: ./ml/depend.mli
 ../lib/4.06.1/whole_compiler.ml: ./ml/docstrings.ml
