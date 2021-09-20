@@ -24,7 +24,7 @@ open Path
 open Types
 open Btype
 
-let add_delayed_check_forward = ref (fun _ -> assert false)
+
 
 let value_declarations : ((string * Location.t), (unit -> unit)) Hashtbl.t =
   Hashtbl.create 16
@@ -819,7 +819,7 @@ let check_pers_struct name =
        deterministic. *)
     add_import name;
     if (Warnings.is_active (Warnings.No_cmi_file("", None))) then
-      !add_delayed_check_forward
+      Delayed_checks.add_delayed_check
         (fun () -> check_pers_struct name)
   end
 
@@ -1753,7 +1753,7 @@ and check_usage loc id warn tbl =
     Hashtbl.add tbl key (fun () -> used := true);
     if not (name = "" || name.[0] = '_' || name.[0] = '#')
     then
-      !add_delayed_check_forward
+      Delayed_checks.add_delayed_check
         (fun () -> if not !used then Location.prerr_warning loc (warn name))
   end;
 
@@ -1797,7 +1797,7 @@ and store_type ~check id info env =
           let used = constructor_usages () in
           Hashtbl.add used_constructors k (add_constructor_usage used);
           if not (ty = "" || ty.[0] = '_')
-          then !add_delayed_check_forward
+          then Delayed_checks.add_delayed_check
               (fun () ->
                 if not (is_in_signature env) && not used.cu_positive then
                   Location.prerr_warning loc
@@ -1844,7 +1844,7 @@ and store_extension ~check id ext env =
     if not (Hashtbl.mem used_constructors k) then begin
       let used = constructor_usages () in
       Hashtbl.add used_constructors k (add_constructor_usage used);
-      !add_delayed_check_forward
+      Delayed_checks.add_delayed_check
         (fun () ->
           if not (is_in_signature env) && not used.cu_positive then
             Location.prerr_warning loc
@@ -2064,7 +2064,7 @@ let open_signature
          || Warnings.is_active (Warnings.Open_shadow_label_constructor ("","")))
   then begin
     let used = used_slot in
-    !add_delayed_check_forward
+    Delayed_checks.add_delayed_check
       (fun () ->
          if not !used then begin
            used := true;

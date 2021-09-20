@@ -272,8 +272,7 @@ val set_type_used_callback:
 (* Forward declaration to break mutual recursion with Includemod. *)
 val check_modtype_inclusion:
       (loc:Location.t -> t -> module_type -> Path.t -> module_type -> unit) ref
-(* Forward declaration to break mutual recursion with Typecore. *)
-val add_delayed_check_forward: ((unit -> unit) -> unit) ref
+
 (* Forward declaration to break mutual recursion with Mtype. *)
 val strengthen:
     (aliasable:bool -> t -> module_type -> Path.t -> module_type) ref

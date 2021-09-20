@@ -96,7 +96,7 @@ let after_parsing_sig ppf  outputprefix ast  =
       if !Clflags.dump_typedtree then fprintf ppf "%a@." Printtyped.interface tsg;
       let sg = tsg.sig_type in
       ignore (Includemod.signatures initial_env sg sg);
-      Typecore.force_delayed_checks ();
+      Delayed_checks.force_delayed_checks ();
       Warnings.check_fatal ();
       begin
         let deprecated = Builtin_attributes.deprecated_of_sig ast in

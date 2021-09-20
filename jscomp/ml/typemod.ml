@@ -1731,7 +1731,7 @@ let () =
 let type_implementation_more ?check_exists sourcefile outputprefix modulename initial_env ast =
   Cmt_format.clear ();
   try
-  Typecore.reset_delayed_checks ();
+  Delayed_checks.reset_delayed_checks ();
   let (str, sg, finalenv) =
     type_structure initial_env ast (Location.in_file sourcefile) in
   let simple_sg = simplify_signature sg in
@@ -1749,7 +1749,7 @@ let type_implementation_more ?check_exists sourcefile outputprefix modulename in
       let dclsig = Env.read_signature modulename intf_file in
       let coercion =
         Includemod.compunit initial_env sourcefile sg intf_file dclsig in
-      Typecore.force_delayed_checks ();
+      Delayed_checks.force_delayed_checks ();
       (* It is important to run these checks after the inclusion test above,
          so that value declarations which are not used internally but exported
          are not reported as being unused. *)
@@ -1763,7 +1763,7 @@ let type_implementation_more ?check_exists sourcefile outputprefix modulename in
                             "(inferred signature)" simple_sg in
       check_nongen_schemes finalenv simple_sg;
       normalize_signature finalenv simple_sg;
-      Typecore.force_delayed_checks ();
+      Delayed_checks.force_delayed_checks ();
       (* See comment above. Here the target signature contains all
          the value being exported. We can still capture unused
          declarations like "let x = true;; let x = 1;;", because in this
