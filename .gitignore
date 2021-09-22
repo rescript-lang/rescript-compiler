@@ -131,9 +131,6 @@ jscomp/ext/map_string.ml
 jscomp/ext/set_string.ml
 jscomp/syntax/reactjs_jsx_ppx_v2.ml
 jscomp/syntax/reactjs_jsx_ppx_v3.ml
-jscomp/outcome_printer/tweaked_reason_oprint.ml
-jscomp/outcome_printer/reason_syntax_util.ml
-jscomp/outcome_printer/reason_syntax_util.mli
 jscomp/bin/all_ounit_tests.ml
 native/
 vendor/ocaml
