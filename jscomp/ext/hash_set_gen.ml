@@ -178,24 +178,3 @@ sig
 end
 
 
-#if 0
-let rec bucket_length accu = function
-  | Empty -> accu
-  | Cons l -> bucket_length (accu + 1) l.next
-
-
-
-let stats h =
-  let mbl =
-    Ext_array.fold_left h.data 0 (fun m b -> max m (bucket_length 0 b)) in
-  let histo = Array.make (mbl + 1) 0 in
-  Ext_array.iter h.data
-    (fun b ->
-       let l = bucket_length 0 b in
-       histo.(l) <- histo.(l) + 1)
-  ;
-  {Hashtbl.num_bindings = h.size;
-   num_buckets = Array.length h.data;
-   max_bucket_length = mbl;
-   bucket_histogram = histo }
-#end
