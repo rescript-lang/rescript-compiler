@@ -6901,7 +6901,6 @@ end
 
 
 
-
 end
 module Hash_string : sig 
 #1 "hash_string.mli"
@@ -31144,7 +31143,6 @@ let suites =
 
     end 
     ;
-    
     __LOC__ >:: begin fun _ -> 
       let duplicate arr = 
         let len = Array.length arr in 
@@ -36481,22 +36479,6 @@ let suites =
        Map_int.iter u (fun _ v -> v =~ 2 ) ;
        Map_int.cardinal u =~ count
     end
-  ]
-
-end
-module Ounit_ordered_hash_set_tests
-= struct
-#1 "ounit_ordered_hash_set_tests.ml"
-let ((>::),
-     (>:::)) = OUnit.((>::),(>:::))
-
-let (=~) = OUnit.assert_equal
-
-
-let suites = 
-  __FILE__
-  >::: [
-    
   ]
 
 end
@@ -42959,7 +42941,6 @@ let suites =
     Ounit_bal_tree_tests.suites;
     Ounit_hash_stubs_test.suites;
     Ounit_map_tests.suites;
-    Ounit_ordered_hash_set_tests.suites;
     Ounit_hashtbl_tests.suites;
     Ounit_string_tests.suites;
     Ounit_topsort_tests.suites;
