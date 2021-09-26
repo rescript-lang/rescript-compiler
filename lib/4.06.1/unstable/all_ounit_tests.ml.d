@@ -180,7 +180,6 @@
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./ounit_tests/ounit_json_tests.ml
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./ounit_tests/ounit_list_test.ml
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./ounit_tests/ounit_map_tests.ml
-../lib/4.06.1/unstable/all_ounit_tests.ml: ./ounit_tests/ounit_ordered_hash_set_tests.ml
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./ounit_tests/ounit_path_tests.ml
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./ounit_tests/ounit_scc_tests.ml
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./ounit_tests/ounit_string_tests.ml

@@ -91,19 +91,6 @@ let suites =
 
     end 
     ;
-#if 0
-    __LOC__ >:: begin fun _ ->
-      let v = Ordered_hash_set_string.create 3 in 
-      for i =  0 to 10 do
-        Ordered_hash_set_string.add v (string_of_int i) 
-      done; 
-      for i = 100 downto 2 do
-        Ordered_hash_set_string.add v (string_of_int i)
-      done;
-      OUnit.assert_equal (Ordered_hash_set_string.to_sorted_array v )
-        const_tbl
-    end;
-#end    
     __LOC__ >:: begin fun _ -> 
       let duplicate arr = 
         let len = Array.length arr in 

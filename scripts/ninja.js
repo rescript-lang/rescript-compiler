@@ -1626,7 +1626,7 @@ ocamlyacc = ocamlyacc
 subninja cppoVendor.ninja
 
 rule optc
-    command = $ocamlopt -strict-sequence -safe-string  -opaque ${includes} -g -linscan ${flags} -warn-error A -absname -c $in 
+    command = $ocamlopt -bin-annot -strict-sequence -safe-string  -opaque ${includes} -g -linscan ${flags} -warn-error A -absname -c $in 
     description = $out : $in
 rule archive
     command = $ocamlopt -a $in -o $out
