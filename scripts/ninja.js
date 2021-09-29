@@ -73,15 +73,7 @@ exports.vendorNinjaPath = vendorNinjaPath;
  *
  */
 
-/**
- * Note this file is not used in ninja file
- * It is used to generate ninja file
- * @returns {string}
- * Note ocamldep.opt has built-in macro handling OCAML_VERSION
- */
-var getOcamldepFile = () => {
-  return "ocamldep.opt";
-};
+
 
 /**
  * @type {string}
@@ -96,7 +88,7 @@ var getVersionString = () => {
   if (versionString === undefined) {
     var searcher = "version";
     try {
-      var output = cp.execSync(`${getOcamldepFile()} -version`, {
+      var output = cp.execSync(`ocamldep.opt -version`, {
         encoding: "ascii",
       });
       versionString = output
@@ -588,7 +580,7 @@ function sourceToTarget(y) {
 function ocamlDepForBscAsync(files, dir, depsMap) {
   return new Promise((resolve, reject) => {
     cp.exec(
-      `${getOcamldepFile()} -allow-approx -one-line -native ${files.join(" ")}`,
+      `ocamldep.opt -allow-approx -one-line -native ${files.join(" ")}`,
       {
         cwd: dir,
         encoding: "ascii",
@@ -1723,7 +1715,7 @@ o ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_gen/g
   }
 
   cp.exec(
-    `${getOcamldepFile()} -allow-approx -one-line -native ${includes} ${files.join(
+    `ocamldep.opt -allow-approx -one-line -native ${includes} ${files.join(
       " "
     )}`,
     { cwd: jscompDir, encoding: "ascii" },

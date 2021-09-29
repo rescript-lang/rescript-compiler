@@ -55,13 +55,14 @@ let flip_ongoing_traversal h =
 (* To pick random seeds if requested *)
 
 
-#if BS
+#if 1
 let randomized_default = false  
 #else
-let params =    
-  try Sys.getenv "OCAMLRUNPARAM" with Not_found ->
-  try Sys.getenv "CAMLRUNPARAM" with Not_found -> "" in
-String.contains params 'R'
+let randomized_default =   
+  let params =    
+    try Sys.getenv "OCAMLRUNPARAM" with Not_found ->
+    try Sys.getenv "CAMLRUNPARAM" with Not_found -> "" in
+  String.contains params 'R'
 #end
 
 let randomized = ref randomized_default
@@ -75,7 +76,7 @@ let prng = lazy (Random.State.make_self_init())
 
 let rec power_2_above x n =
   if x >= n then x
-#if BS 
+#if 1
   else if x * 2 < x then x (* overflow *)
 #else  
   else if x * 2 > Sys.max_array_length then x
@@ -129,7 +130,7 @@ let resize indexfun h =
   let osize = Array.length odata in
   let nsize = osize * 2 in
   if 
-#if BS
+#if 1
       nsize >= osize 
 #else    
       nsize < Sys.max_array_length

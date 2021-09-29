@@ -109,7 +109,7 @@ let lex_refill read_fun aux_buffer lexbuf =
          space since n <= String.length aux_buffer <= String.length buffer.
          Watch out for string length overflow, though. *)
       let newlen =
-#if BS
+#if 1
           (2 * Bytes.length lexbuf.lex_buffer)
 #else        
           min (2 * Bytes.length lexbuf.lex_buffer) Sys.max_string_length 

@@ -102,20 +102,17 @@ external compare : 'a -> 'a -> int = "%compare"
    The [compare] function can be used as the comparison function
    required by the {!Set.Make} and {!Map.Make} functors, as well as
    the {!List.sort} and {!Array.sort} functions. *)
-#if BS then 
+
 external min : 'a -> 'a -> 'a = "%bs_min"
-external max : 'a -> 'a -> 'a = "%bs_max"
-#else
-val min : 'a -> 'a -> 'a
 (** Return the smaller of the two arguments.
     The result is unspecified if one of the arguments contains
     the float value [nan]. *)
 
-val max : 'a -> 'a -> 'a
+external max : 'a -> 'a -> 'a = "%bs_max"
 (** Return the greater of the two arguments.
     The result is unspecified if one of the arguments contains
     the float value [nan]. *)
-#end
+
 external ( == ) : 'a -> 'a -> bool = "%eq"
 (** [e1 == e2] tests for physical equality of [e1] and [e2].
    On mutable types such as references, arrays, byte sequences, records with

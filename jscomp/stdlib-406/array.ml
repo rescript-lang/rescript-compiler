@@ -23,12 +23,10 @@ external unsafe_set: 'a array -> int -> 'a -> unit = "%array_unsafe_set"
 external make: int -> 'a -> 'a array = "?make_vect"
 external create: int -> 'a -> 'a array = "?make_vect"
 external unsafe_sub : 'a array -> int -> int -> 'a array = "?array_sub"
-#if BS
+
 external append_prim : 'a array -> 'a array -> 'a array = "concat"
-[@@bs.send]
-#else
-external append_prim : 'a array -> 'a array -> 'a array = "caml_array_append"
-#end
+[@@send]
+
 external concat : 'a array list -> 'a array = "?array_concat"
 external unsafe_blit :
   'a array -> int -> 'a array -> int -> int -> unit = "?array_blit"
