@@ -19,12 +19,13 @@ type t =
   {mutable buffer : bytes;
    mutable position : int;
    mutable length : int;
-   initial_buffer : bytes}
+
+   }
 
 let create n =
   let n = if n < 1 then 1 else n in
   let s = Bytes.create n in
-  {buffer = s; position = 0; length = n; initial_buffer = s}
+  {buffer = s; position = 0; length = n}
 
 let contents b = Bytes.sub_string b.buffer 0 b.position
 (* let to_bytes b = Bytes.sub b.buffer 0 b.position  *)
