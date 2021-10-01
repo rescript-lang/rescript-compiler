@@ -27080,6 +27080,626 @@ let parse_pattern (lexfun : Lexing.lexbuf -> token) (lexbuf : Lexing.lexbuf) =
 ;;
 
 end
+module Rescript_cpp : sig 
+#1 "rescript_cpp.mli"
+(* Copyright (C) 2021- Hongbo Zhang, Authors of ReScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val at_bol : Lexing.lexbuf -> bool
+
+val interpret_directive :
+  Lexing.lexbuf ->
+  cont:(Lexing.lexbuf -> Parser.token) ->
+  token_with_comments:(Lexing.lexbuf -> Parser.token) ->
+  Parser.token
+
+val eof_check : Lexing.lexbuf -> unit
+
+val init : unit -> unit
+
+val check_sharp_look_ahead : (unit -> Parser.token) -> Parser.token
+
+(* Methods below are used for cpp, they are not needed by the compiler patches*)
+val remove_directive_built_in_value : string -> unit
+
+val replace_directive_string : string -> string -> unit
+
+val replace_directive_bool : string -> bool -> unit
+
+val define_key_value : string -> string -> bool
+(** @return false means failed to define *)
+
+val list_variables : Format.formatter -> unit
+
+val filter_directive_from_lexbuf :
+  Lexing.lexbuf ->
+  token_with_comments:(Lexing.lexbuf -> Parser.token) ->
+  (int * int) list
+
+end = struct
+#1 "rescript_cpp.ml"
+(* Copyright (C) 2021- Hongbo Zhang, Authors of ReScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+ 
+type directive_type =
+  | Dir_type_bool
+  | Dir_type_float
+  | Dir_type_int
+  | Dir_type_string
+  | Dir_type_null
+
+type pp_error =
+  | Unterminated_paren_in_conditional
+  | Unterminated_if
+  | Unterminated_else
+  | Unexpected_token_in_conditional
+  | Expect_hash_then_in_conditional
+  | Illegal_semver of string
+  | Unexpected_directive
+  | Conditional_expr_expected_type of directive_type * directive_type
+
+exception Pp_error of pp_error * Location.t
+
+type directive_value =
+  | Dir_bool of bool
+  | Dir_float of float
+  | Dir_int of int
+  | Dir_string of string
+  | Dir_null
+
+let type_of_directive x =
+  match x with
+  | Dir_bool _ -> Dir_type_bool
+  | Dir_float _ -> Dir_type_float
+  | Dir_int _ -> Dir_type_int
+  | Dir_string _ -> Dir_type_string
+  | Dir_null -> Dir_type_null
+
+let string_of_type_directive x =
+  match x with
+  | Dir_type_bool -> "bool"
+  | Dir_type_float -> "float"
+  | Dir_type_int -> "int"
+  | Dir_type_string -> "string"
+  | Dir_type_null -> "null"
+
+let prepare_pp_error loc = function
+  | Unterminated_if -> Location.errorf ~loc "#if not terminated"
+  | Unterminated_else -> Location.errorf ~loc "#else not terminated"
+  | Unexpected_directive -> Location.errorf ~loc "Unexpected directive"
+  | Unexpected_token_in_conditional ->
+      Location.errorf ~loc "Unexpected token in conditional predicate"
+  | Unterminated_paren_in_conditional ->
+      Location.errorf ~loc "Unterminated parens in conditional predicate"
+  | Expect_hash_then_in_conditional ->
+      Location.errorf ~loc "Expect `then` after conditional predicate"
+  | Conditional_expr_expected_type (a, b) ->
+      Location.errorf ~loc "Conditional expression type mismatch (%s,%s)"
+        (string_of_type_directive a)
+        (string_of_type_directive b)
+  | Illegal_semver s ->
+      Location.errorf ~loc "Illegal semantic version string %s" s
+
+let () =
+  Location.register_error_of_exn (function
+    | Pp_error (err, loc) -> Some (prepare_pp_error loc err)
+    | _ -> None)
+
+let assert_same_type lexbuf x y =
+  let lhs = type_of_directive x in
+  let rhs = type_of_directive y in
+  if lhs <> rhs then
+    raise
+      (Pp_error (Conditional_expr_expected_type (lhs, rhs), Location.curr lexbuf))
+  else y
+
+let directive_built_in_values = Hashtbl.create 51
+
+let replace_directive_built_in_value k v =
+  Hashtbl.replace directive_built_in_values k v
+
+let remove_directive_built_in_value k =
+  Hashtbl.replace directive_built_in_values k Dir_null
+
+let replace_directive_bool k v =
+  Hashtbl.replace directive_built_in_values k (Dir_bool v)
+
+let replace_directive_string k v =
+  Hashtbl.replace directive_built_in_values k (Dir_string v)
+
+let () =
+  (* Note we use {!Config} instead of {!Sys} becasue
+     we want to overwrite in some cases with the
+     same stdlib
+  *)
+  let version = Config.version (* so that it can be overridden*) in
+  replace_directive_built_in_value "OCAML_VERSION" (Dir_string version);
+  replace_directive_built_in_value "OCAML_PATCH"
+    (Dir_string
+       (match String.rindex version '+' with
+       | exception Not_found -> ""
+       | i -> String.sub version (i + 1) (String.length version - i - 1)));
+  replace_directive_built_in_value "OS_TYPE" (Dir_string Sys.os_type);
+  replace_directive_built_in_value "BIG_ENDIAN" (Dir_bool Sys.big_endian);
+  replace_directive_built_in_value "WORD_SIZE" (Dir_int Sys.word_size)
+
+let find_directive_built_in_value k = Hashtbl.find directive_built_in_values k
+
+let iter_directive_built_in_value f = Hashtbl.iter f directive_built_in_values
+(* let iter_directive_built_in_value f = Hashtbl.iter f directive_built_in_values *)
+
+(*
+     {[
+       # semver 0 "12";;
+       - : int * int * int * string = (12, 0, 0, "");;
+       # semver 0 "12.3";;
+       - : int * int * int * string = (12, 3, 0, "");;
+         semver 0 "12.3.10";;
+       - : int * int * int * string = (12, 3, 10, "");;
+       # semver 0 "12.3.10+x";;
+       - : int * int * int * string = (12, 3, 10, "+x")
+     ]}
+  *)
+let zero = Char.code '0'
+
+let dot = Char.code '.'
+
+let semantic_version_parse str start last_index =
+  let rec aux start acc last_index =
+    if start <= last_index then
+      let c = Char.code (String.unsafe_get str start) in
+      if c = dot then (acc, start + 1) (* consume [4.] instead of [4]*)
+      else
+        let v = c - zero in
+        if v >= 0 && v <= 9 then aux (start + 1) ((acc * 10) + v) last_index
+        else (acc, start)
+    else (acc, start)
+  in
+  let major, major_end = aux start 0 last_index in
+  let minor, minor_end = aux major_end 0 last_index in
+  let patch, patch_end = aux minor_end 0 last_index in
+  let additional = String.sub str patch_end (last_index - patch_end + 1) in
+  ((major, minor, patch), additional)
+
+(** 
+     {[
+       semver Location.none "1.2.3" "~1.3.0" = false;;
+       semver Location.none "1.2.3" "^1.3.0" = true ;;
+       semver Location.none "1.2.3" ">1.3.0" = false ;;
+       semver Location.none "1.2.3" ">=1.3.0" = false ;;
+       semver Location.none "1.2.3" "<1.3.0" = true ;;
+       semver Location.none "1.2.3" "<=1.3.0" = true ;;
+     ]}
+  *)
+let semver loc lhs str =
+  let last_index = String.length str - 1 in
+  if last_index < 0 then raise (Pp_error (Illegal_semver str, loc))
+  else
+    let pred, (((major, minor, _patch) as version), _) =
+      let v = String.unsafe_get str 0 in
+      match v with
+      | '>' ->
+          if last_index = 0 then raise (Pp_error (Illegal_semver str, loc))
+          else if String.unsafe_get str 1 = '=' then
+            (`Ge, semantic_version_parse str 2 last_index)
+          else (`Gt, semantic_version_parse str 1 last_index)
+      | '<' ->
+          if last_index = 0 then raise (Pp_error (Illegal_semver str, loc))
+          else if String.unsafe_get str 1 = '=' then
+            (`Le, semantic_version_parse str 2 last_index)
+          else (`Lt, semantic_version_parse str 1 last_index)
+      | '^' -> (`Compatible, semantic_version_parse str 1 last_index)
+      | '~' -> (`Approximate, semantic_version_parse str 1 last_index)
+      | _ -> (`Exact, semantic_version_parse str 0 last_index)
+    in
+    let ((l_major, l_minor, _l_patch) as lversion), _ =
+      semantic_version_parse lhs 0 (String.length lhs - 1)
+    in
+    match pred with
+    | `Ge -> lversion >= version
+    | `Gt -> lversion > version
+    | `Le -> lversion <= version
+    | `Lt -> lversion < version
+    | `Approximate -> major = l_major && minor = l_minor
+    | `Compatible -> major = l_major
+    | `Exact -> lversion = version
+
+let pp_directive_value fmt (x : directive_value) =
+  match x with
+  | Dir_bool b -> Format.pp_print_bool fmt b
+  | Dir_int b -> Format.pp_print_int fmt b
+  | Dir_float b -> Format.pp_print_float fmt b
+  | Dir_string s -> Format.fprintf fmt "%S" s
+  | Dir_null -> Format.pp_print_string fmt "null"
+
+let list_variables fmt =
+  iter_directive_built_in_value (fun s dir_value ->
+      Format.fprintf fmt "@[%s@ %a@]@." s pp_directive_value dir_value)
+
+let defined str =
+  match find_directive_built_in_value str with
+  | Dir_null -> false
+  | _ -> true
+  | exception _ -> (
+      try
+        ignore @@ Sys.getenv str;
+        true
+      with _ -> false)
+
+let query _loc str =
+  match find_directive_built_in_value str with
+  | Dir_null -> Dir_bool false
+  | v -> v
+  | exception Not_found -> (
+      match Sys.getenv str with
+      | v -> (
+          try Dir_bool (bool_of_string v)
+          with _ -> (
+            try Dir_int (int_of_string v)
+            with _ -> (
+              try Dir_float (float_of_string v) with _ -> Dir_string v)))
+      | exception Not_found -> Dir_bool false)
+
+let define_key_value key v =
+  if String.length key > 0 && Char.uppercase_ascii key.[0] = key.[0] then (
+    replace_directive_built_in_value key
+      (* NEED Sync up across {!lexer.mll} {!bspp.ml} and here,
+         TODO: put it in {!lexer.mll}
+      *)
+      (try Dir_bool (bool_of_string v)
+       with _ -> (
+         try Dir_int (int_of_string v)
+         with _ -> (
+           try Dir_float (float_of_string v) with _ -> Dir_string v)));
+    true)
+  else false
+
+let cvt_int_literal s = -int_of_string ("-" ^ s)
+
+let value_of_token loc (t : Parser.token) =
+  match t with
+  | INT (i, None) -> Dir_int (cvt_int_literal i)
+  | STRING (s, _) -> Dir_string s
+  | FLOAT (s, None) -> Dir_float (float_of_string s)
+  | TRUE -> Dir_bool true
+  | FALSE -> Dir_bool false
+  | UIDENT s -> query loc s
+  | _ -> raise (Pp_error (Unexpected_token_in_conditional, loc))
+
+let directive_parse (token_with_comments : Lexing.lexbuf -> Parser.token) lexbuf
+    =
+  let look_ahead = ref None in
+  let token () : Parser.token =
+    let v = !look_ahead in
+    match v with
+    | Some v ->
+        look_ahead := None;
+        v
+    | None ->
+        let rec skip () =
+          match token_with_comments lexbuf with
+          | COMMENT _ | DOCSTRING _ -> skip ()
+          | EOF -> raise (Pp_error (Unterminated_if, Location.curr lexbuf))
+          | t -> t
+        in
+        skip ()
+  in
+  let push e =
+    (* INVARIANT: only look at most one token *)
+    assert (!look_ahead = None);
+    look_ahead := Some e
+  in
+  let rec token_op calc ~no lhs =
+    match token () with
+    | (LESS | GREATER | INFIXOP0 "<=" | INFIXOP0 ">=" | EQUAL | INFIXOP0 "<>")
+      as op ->
+        let f =
+          match op with
+          | LESS -> ( < )
+          | GREATER -> ( > )
+          | INFIXOP0 "<=" -> ( <= )
+          | EQUAL -> ( = )
+          | INFIXOP0 "<>" -> ( <> )
+          | _ -> assert false
+        in
+        let curr_loc = Location.curr lexbuf in
+        let rhs = value_of_token curr_loc (token ()) in
+        (not calc) || f lhs (assert_same_type lexbuf lhs rhs)
+    | INFIXOP0 "=~" -> (
+        (not calc)
+        ||
+        match lhs with
+        | Dir_string s -> (
+            let curr_loc = Location.curr lexbuf in
+            let rhs = value_of_token curr_loc (token ()) in
+            match rhs with
+            | Dir_string rhs -> semver curr_loc s rhs
+            | _ ->
+                raise
+                  (Pp_error
+                     ( Conditional_expr_expected_type
+                         (Dir_type_string, type_of_directive lhs),
+                       Location.curr lexbuf )))
+        | _ ->
+            raise
+              (Pp_error
+                 ( Conditional_expr_expected_type
+                     (Dir_type_string, type_of_directive lhs),
+                   Location.curr lexbuf )))
+    | e -> no e
+  and parse_or calc : bool = parse_or_aux calc (parse_and calc)
+  and (* a || (b || (c || d))*)
+      parse_or_aux calc v : bool =
+    (* let l = v  in *)
+    match token () with
+    | BARBAR ->
+        let b = parse_or (calc && not v) in
+        v || b
+    | e ->
+        push e;
+        v
+  and parse_and calc = parse_and_aux calc (parse_relation calc)
+  and parse_and_aux calc v =
+    (* a && (b && (c && d)) *)
+    (* let l = v  in *)
+    match token () with
+    | AMPERAMPER ->
+        let b = parse_and (calc && v) in
+        v && b
+    | e ->
+        push e;
+        v
+  and parse_relation (calc : bool) : bool =
+    let curr_token = token () in
+    let curr_loc = Location.curr lexbuf in
+    match curr_token with
+    | TRUE -> true
+    | FALSE -> false
+    | UIDENT v ->
+        let value_v = query curr_loc v in
+        token_op calc
+          ~no:(fun e ->
+            push e;
+            match value_v with
+            | Dir_bool b -> b
+            | _ ->
+                let ty = type_of_directive value_v in
+                raise
+                  (Pp_error
+                     ( Conditional_expr_expected_type (Dir_type_bool, ty),
+                       curr_loc )))
+          value_v
+    | INT (v, None) ->
+        let num_v = cvt_int_literal v in
+        token_op calc
+          ~no:(fun e ->
+            push e;
+            num_v <> 0)
+          (Dir_int num_v)
+    | FLOAT (v, None) ->
+        token_op calc
+          ~no:(fun _e ->
+            raise
+              (Pp_error
+                 ( Conditional_expr_expected_type (Dir_type_bool, Dir_type_float),
+                   curr_loc )))
+          (Dir_float (float_of_string v))
+    | STRING (v, _) ->
+        token_op calc
+          ~no:(fun _e ->
+            raise
+              (Pp_error
+                 ( Conditional_expr_expected_type
+                     (Dir_type_bool, Dir_type_string),
+                   curr_loc )))
+          (Dir_string v)
+    | LIDENT (("defined" | "undefined") as r) -> (
+        let t = token () in
+        let loc = Location.curr lexbuf in
+        match t with
+        | UIDENT s ->
+            (not calc) || if r.[0] = 'u' then not @@ defined s else defined s
+        | _ -> raise (Pp_error (Unexpected_token_in_conditional, loc)))
+    | LPAREN -> (
+        let v = parse_or calc in
+        match token () with
+        | RPAREN -> v
+        | _ ->
+            raise
+              (Pp_error (Unterminated_paren_in_conditional, Location.curr lexbuf))
+        )
+    | _ -> raise (Pp_error (Unexpected_token_in_conditional, curr_loc))
+  in
+  let v = parse_or true in
+  match token () with
+  | THEN | EOL -> v
+  | _ ->
+      raise (Pp_error (Expect_hash_then_in_conditional, Location.curr lexbuf))
+
+type dir_conditional = Dir_if_true | Dir_if_false | Dir_out
+
+(* let string_of_dir_conditional (x : dir_conditional) = *)
+(*   match x with  *)
+(*   | Dir_if_true -> "Dir_if_true" *)
+(*   | Dir_if_false -> "Dir_if_false" *)
+(*   | Dir_out -> "Dir_out" *)
+
+let is_elif (i : Parser.token) =
+  match i with LIDENT "elif" -> true | _ -> false
+(* avoid polymorphic equal *)
+
+let if_then_else = ref Dir_out
+
+(* store the token after hash, [# token]
+   when we see `#if` we do the processing immediately
+   when we see #method, we produce `HASH` token and save `method`
+   token so that the next lexing produce the right one.
+*)
+let sharp_look_ahead = ref None
+
+let update_if_then_else v =
+  (* Format.fprintf Format.err_formatter "@[update %s \n@]@." (string_of_dir_conditional v); *)
+  if_then_else := v
+
+let at_bol lexbuf =
+  let pos = Lexing.lexeme_start_p lexbuf in
+  pos.pos_cnum = pos.pos_bol
+
+let interpret_directive_cont lexbuf ~cont
+    ~(token_with_comments : Lexing.lexbuf -> Parser.token) look_ahead =
+  (* current state *)
+  let if_then_else = !if_then_else in
+  match (token_with_comments lexbuf, if_then_else) with
+  | IF, Dir_out ->
+      (* skip to #else | #end | #elif *)
+      let rec skip_from_if_false () =
+        let token = token_with_comments lexbuf in
+        if token = EOF then
+          raise (Pp_error (Unterminated_if, Location.curr lexbuf))
+        else if token = HASH && at_bol lexbuf then
+          let token = token_with_comments lexbuf in
+          match token with
+          | END ->
+              update_if_then_else Dir_out;
+              cont lexbuf
+          | ELSE ->
+              update_if_then_else Dir_if_false;
+              cont lexbuf
+          | IF -> raise (Pp_error (Unexpected_directive, Location.curr lexbuf))
+          | _ ->
+              if is_elif token && directive_parse token_with_comments lexbuf
+              then (
+                update_if_then_else Dir_if_true;
+                cont lexbuf)
+              else skip_from_if_false ()
+        else skip_from_if_false ()
+      in
+      if directive_parse token_with_comments lexbuf then (
+        update_if_then_else Dir_if_true (* Next state: ELSE *);
+        cont lexbuf)
+      else skip_from_if_false ()
+  | IF, (Dir_if_false | Dir_if_true) ->
+      raise (Pp_error (Unexpected_directive, Location.curr lexbuf))
+  | LIDENT "elif", (Dir_if_false | Dir_out) ->
+      (* when the predicate is false, it will continue eating `elif` *)
+      raise (Pp_error (Unexpected_directive, Location.curr lexbuf))
+  | ((LIDENT "elif" | ELSE) as token), Dir_if_true ->
+      (* looking for #end, however, it can not see #if anymore *)
+      let rec skip_from_if_true else_seen =
+        let token = token_with_comments lexbuf in
+        if token = EOF then
+          raise (Pp_error (Unterminated_else, Location.curr lexbuf))
+        else if token = HASH && at_bol lexbuf then
+          let token = token_with_comments lexbuf in
+          match token with
+          | END ->
+              update_if_then_else Dir_out;
+              cont lexbuf
+          | IF -> raise (Pp_error (Unexpected_directive, Location.curr lexbuf))
+          | ELSE ->
+              if else_seen then
+                raise (Pp_error (Unexpected_directive, Location.curr lexbuf))
+              else skip_from_if_true true
+          | _ ->
+              if else_seen && is_elif token then
+                raise (Pp_error (Unexpected_directive, Location.curr lexbuf))
+              else skip_from_if_true else_seen
+        else skip_from_if_true else_seen
+      in
+      skip_from_if_true (token = ELSE)
+  | ELSE, Dir_if_false | ELSE, Dir_out ->
+      raise (Pp_error (Unexpected_directive, Location.curr lexbuf))
+  | END, (Dir_if_false | Dir_if_true) ->
+      update_if_then_else Dir_out;
+      cont lexbuf
+  | END, Dir_out ->
+      raise (Pp_error (Unexpected_directive, Location.curr lexbuf))
+  | token, (Dir_if_true | Dir_if_false | Dir_out) -> look_ahead token
+
+let interpret_directive lexbuf ~cont ~token_with_comments : Parser.token =
+  interpret_directive_cont lexbuf ~cont ~token_with_comments
+    (fun (token : 'a) : 'a ->
+      sharp_look_ahead := Some token;
+      HASH)
+
+let eof_check lexbuf =
+  if !if_then_else <> Dir_out then
+    if !if_then_else = Dir_if_true then
+      raise (Pp_error (Unterminated_if, Location.curr lexbuf))
+    else raise (Pp_error (Unterminated_else, Location.curr lexbuf))
+
+let init () =
+  sharp_look_ahead := None;
+  update_if_then_else Dir_out
+
+let check_sharp_look_ahead action : Parser.token =
+  match !sharp_look_ahead with
+  | None -> action ()
+  | Some token ->
+      sharp_look_ahead := None;
+      token
+
+let rec filter_directive ~(token_with_comments : Lexing.lexbuf -> Parser.token)
+    pos acc lexbuf : (int * int) list =
+  match token_with_comments lexbuf with
+  | HASH when at_bol lexbuf ->
+      (* ^[start_pos]#if ... #then^[end_pos] *)
+      let start_pos = Lexing.lexeme_start lexbuf in
+      interpret_directive_cont lexbuf
+        ~cont:(fun lexbuf ->
+          filter_directive (Lexing.lexeme_end lexbuf) ~token_with_comments
+            ((pos, start_pos) :: acc) lexbuf)
+        ~token_with_comments
+        (fun _token -> filter_directive pos acc lexbuf ~token_with_comments)
+  | EOF -> (pos, Lexing.lexeme_end lexbuf) :: acc
+  | _ -> filter_directive ~token_with_comments pos acc lexbuf
+
+let filter_directive_from_lexbuf lexbuf ~token_with_comments =
+  List.rev (filter_directive 0 [] lexbuf ~token_with_comments)
+
+end
 module Lexer : sig 
 #1 "lexer.mli"
 (**************************************************************************)
@@ -27103,7 +27723,6 @@ val init : unit -> unit
 val token: Lexing.lexbuf -> Parser.token
 val skip_hash_bang: Lexing.lexbuf -> unit
 
-type directive_type 
 
 type error =
   | Illegal_character of char
@@ -27114,14 +27733,7 @@ type error =
   | Keyword_as_label of string
   | Invalid_literal of string
   | Invalid_directive of string * string option
-  | Unterminated_paren_in_conditional
-  | Unterminated_if
-  | Unterminated_else 
-  | Unexpected_token_in_conditional 
-  | Expect_hash_then_in_conditional
-  | Illegal_semver of string
-  | Unexpected_directive
-  | Conditional_expr_expected_type of directive_type * directive_type                           
+                          
 ;;
 
 exception Error of error * Location.t
@@ -27153,19 +27765,8 @@ val set_preprocessor :
   ((Lexing.lexbuf -> Parser.token) -> Lexing.lexbuf -> Parser.token) ->
   unit
 
-(** semantic version predicate *)
-val semver : Location.t ->   string -> string -> bool
 
-val filter_directive_from_lexbuf : Lexing.lexbuf -> (int * int) list
 
-val replace_directive_int : string -> int -> unit
-val replace_directive_string : string -> string -> unit
-val replace_directive_bool : string -> bool -> unit 
-val remove_directive_built_in_value : string -> unit
-
-(** @return false means failed to define *)
-val define_key_value : string -> string -> bool
-val list_variables : Format.formatter -> unit
 
 end = struct
 #1 "lexer.ml"
@@ -27174,36 +27775,6 @@ end = struct
 open Lexing
 open Misc
 open Parser
-
-type directive_value =
-  | Dir_bool of bool 
-  | Dir_float of float
-  | Dir_int of int
-  | Dir_string of string
-  | Dir_null 
-
-type directive_type = 
-  | Dir_type_bool 
-  | Dir_type_float 
-  | Dir_type_int 
-  | Dir_type_string 
-  | Dir_type_null 
-
-let type_of_directive x =
-  match x with 
-  | Dir_bool _ -> Dir_type_bool
-  | Dir_float _ -> Dir_type_float
-  | Dir_int _ -> Dir_type_int
-  | Dir_string _ -> Dir_type_string
-  | Dir_null -> Dir_type_null
-
-let string_of_type_directive x = 
-  match x with 
-  | Dir_type_bool  -> "bool"
-  | Dir_type_float  -> "float"
-  | Dir_type_int  -> "int"
-  | Dir_type_string  -> "string"
-  | Dir_type_null -> "null"
 
 type error =
   | Illegal_character of char
@@ -27214,395 +27785,9 @@ type error =
   | Keyword_as_label of string
   | Invalid_literal of string
   | Invalid_directive of string * string option
-  | Unterminated_paren_in_conditional
-  | Unterminated_if
-  | Unterminated_else 
-  | Unexpected_token_in_conditional 
-  | Expect_hash_then_in_conditional
-  | Illegal_semver of string
-  | Unexpected_directive 
-  | Conditional_expr_expected_type of directive_type * directive_type
-                           
 ;;
 
 exception Error of error * Location.t;;
-
-let assert_same_type  lexbuf x y = 
-  let lhs = type_of_directive x in let rhs =  type_of_directive y  in
-  if lhs <> rhs then 
-    raise (Error(Conditional_expr_expected_type(lhs,rhs), Location.curr lexbuf))
-  else y
-
-let directive_built_in_values  =
-  Hashtbl.create 51
-
-
-let replace_directive_built_in_value k v = 
-  Hashtbl.replace directive_built_in_values k v 
-
-let remove_directive_built_in_value k  = 
-  Hashtbl.replace directive_built_in_values k Dir_null
-
-let replace_directive_int k v = 
-  Hashtbl.replace directive_built_in_values k (Dir_int v)
-
-let replace_directive_bool k v = 
-  Hashtbl.replace directive_built_in_values k (Dir_bool v)
-
-let replace_directive_string k v = 
-  Hashtbl.replace directive_built_in_values k (Dir_string v)
-
-let () =
-  (* Note we use {!Config} instead of {!Sys} becasue 
-     we want to overwrite in some cases with the 
-     same stdlib
-  *)
-  let version = 
-    Config.version (* so that it can be overridden*)
-  in
-  replace_directive_built_in_value "OCAML_VERSION" 
-    (Dir_string version);
-  replace_directive_built_in_value "OS_TYPE" 
-    (Dir_string Sys.os_type);
-  replace_directive_built_in_value "BIG_ENDIAN" 
-    (Dir_bool Sys.big_endian)
-
-let find_directive_built_in_value k =
-  Hashtbl.find directive_built_in_values k 
-
-let iter_directive_built_in_value f = Hashtbl.iter f directive_built_in_values
-
-(*
-   {[
-     # semver 0 "12";;
-     - : int * int * int * string = (12, 0, 0, "");;
-     # semver 0 "12.3";;
-     - : int * int * int * string = (12, 3, 0, "");;
-       semver 0 "12.3.10";;
-     - : int * int * int * string = (12, 3, 10, "");;
-     # semver 0 "12.3.10+x";;
-     - : int * int * int * string = (12, 3, 10, "+x")
-   ]}
-*)    
-let zero = Char.code '0' 
-let dot = Char.code '.'
-let semantic_version_parse str start  last_index = 
-  let rec aux start  acc last_index =
-    if start <= last_index then
-      let c = Char.code (String.unsafe_get str start) in
-      if c = dot then (acc, start + 1) (* consume [4.] instead of [4]*)
-      else 
-        let v =  c - zero in
-        if v >=0 && v <= 9  then
-          aux (start + 1) (acc * 10 + v) last_index
-        else (acc , start)
-    else (acc, start)
-  in
-  let major, major_end =  aux start 0 last_index  in
-  let minor, minor_end = aux major_end 0 last_index in
-  let patch, patch_end = aux minor_end 0 last_index in 
-  let additional = String.sub str patch_end (last_index - patch_end  +1) in
-  (major, minor, patch), additional
-
-(** 
-   {[
-     semver Location.none "1.2.3" "~1.3.0" = false;;
-     semver Location.none "1.2.3" "^1.3.0" = true ;;
-     semver Location.none "1.2.3" ">1.3.0" = false ;;
-     semver Location.none "1.2.3" ">=1.3.0" = false ;;
-     semver Location.none "1.2.3" "<1.3.0" = true ;;
-     semver Location.none "1.2.3" "<=1.3.0" = true ;;
-   ]}
-*)
-let semver loc lhs str =
-  let last_index = String.length str - 1 in 
-  if last_index < 0 then raise (Error(Illegal_semver str, loc))
-  else 
-    let pred, ((major, minor, _patch) as version, _) = 
-      let v = String.unsafe_get str 0 in 
-      match v with
-      | '>' -> 
-          if last_index = 0 then raise (Error(Illegal_semver str, loc)) else 
-          if String.unsafe_get str 1 = '=' then 
-            `Ge, semantic_version_parse str 2 last_index
-          else `Gt, semantic_version_parse str 1 last_index
-      | '<' 
-        ->
-          if last_index = 0 then raise (Error(Illegal_semver str, loc)) else 
-          if String.unsafe_get str 1 = '=' then 
-            `Le, semantic_version_parse str 2 last_index
-          else `Lt, semantic_version_parse str 1 last_index
-      | '^' 
-        -> `Compatible, semantic_version_parse str 1 last_index
-      | '~' ->  `Approximate, semantic_version_parse str 1 last_index
-      | _ -> `Exact, semantic_version_parse str 0 last_index 
-    in 
-    let ((l_major, l_minor, _l_patch) as lversion,_) =
-      semantic_version_parse lhs 0 (String.length lhs - 1) in 
-    match pred with 
-    | `Ge -> lversion >= version 
-    | `Gt -> lversion > version 
-    | `Le -> lversion <= version
-    | `Lt -> lversion < version 
-    | `Approximate -> major = l_major && minor = l_minor 
-    |  `Compatible -> major = l_major
-    | `Exact -> lversion = version 
-
-
-let pp_directive_value fmt (x : directive_value) =
-  match x with
-  | Dir_bool b -> Format.pp_print_bool fmt b
-  | Dir_int b -> Format.pp_print_int fmt b
-  | Dir_float b -> Format.pp_print_float fmt b
-  | Dir_string s  -> Format.fprintf fmt "%S" s
-  | Dir_null -> Format.pp_print_string fmt "null"    
-
-let list_variables fmt = 
-  iter_directive_built_in_value 
-    (fun s  dir_value ->
-       Format.fprintf
-         fmt "@[%s@ %a@]@."
-         s pp_directive_value dir_value
-    )
-
-let defined str =
-  begin match  find_directive_built_in_value str with 
-  |  Dir_null -> false 
-  | _ ->  true
-  | exception _ -> 
-      try ignore @@ Sys.getenv str; true with _ ->  false 
-  end
-
-let query _loc str =
-  begin match find_directive_built_in_value str with
-  | Dir_null -> Dir_bool false
-  | v -> v
-  | exception Not_found ->
-      begin match Sys.getenv str with 
-      | v -> 
-          begin 
-            try Dir_bool (bool_of_string v) with 
-              _ -> 
-                begin 
-                  try Dir_int (int_of_string v )
-                  with 
-                    _ -> 
-                      begin try (Dir_float (float_of_string v)) 
-                      with _ -> Dir_string v
-                      end
-                end
-          end
-      | exception Not_found -> 
-          Dir_bool false
-      end
-  end
-
-
-let define_key_value key v  =
-  if String.length key > 0
-      && Char.uppercase_ascii (key.[0]) = key.[0] then 
-    begin 
-      replace_directive_built_in_value key
-      begin
-        (* NEED Sync up across {!lexer.mll} {!bspp.ml} and here,
-           TODO: put it in {!lexer.mll}
-        *)
-        try Dir_bool (bool_of_string v) with 
-          _ -> 
-          begin 
-            try Dir_int (int_of_string v )
-            with 
-              _ -> 
-              begin try (Dir_float (float_of_string v)) 
-                with _ -> Dir_string v
-              end
-          end
-      end;
-    true
-    end
-  else false 
-
-let cvt_int_literal s =
-  - int_of_string ("-" ^ s)
-  
-let value_of_token loc (t : Parser.token)  = 
-  match t with 
-  | INT (i,None) -> Dir_int (cvt_int_literal i) 
-  | STRING (s,_) -> Dir_string s 
-  | FLOAT (s,None)  -> Dir_float (float_of_string s)
-  | TRUE -> Dir_bool true
-  | FALSE -> Dir_bool false
-  | UIDENT s -> query loc s 
-  | _ -> raise (Error (Unexpected_token_in_conditional, loc))
-
-
-let directive_parse token_with_comments lexbuf =
-  let look_ahead = ref None in
-  let token () : Parser.token =
-    let v = !look_ahead in
-    match v with 
-    | Some v -> 
-        look_ahead := None ;
-        v
-    | None ->
-       let rec skip () = 
-        match token_with_comments lexbuf  with
-        | COMMENT _ 
-        | DOCSTRING _ -> skip ()
-        | EOF -> raise (Error (Unterminated_if, Location.curr lexbuf)) 
-        | t -> t 
-        in  skip ()
-  in
-  let push e =
-    (* INVARIANT: only look at most one token *)
-    assert (!look_ahead = None);
-    look_ahead := Some e 
-  in
-  let rec
-    token_op calc   ~no  lhs   =
-    match token () with 
-    | (LESS 
-    | GREATER 
-    | INFIXOP0 "<=" 
-    | INFIXOP0 ">=" 
-    | EQUAL
-    | INFIXOP0 "<>" as op) ->
-        let f =  
-          match op with 
-          | LESS -> (<) 
-          | GREATER -> (>)
-          | INFIXOP0 "<=" -> (<=)
-          | EQUAL -> (=)
-          | INFIXOP0 "<>" -> (<>) 
-          | _ -> assert false
-        in 
-        let curr_loc = Location.curr lexbuf in 
-        let rhs = value_of_token curr_loc (token ()) in 
-        not calc ||
-        f lhs (assert_same_type lexbuf lhs rhs)
-    | INFIXOP0 "=~" -> 
-        not calc ||
-        begin match lhs with 
-        | Dir_string s ->
-            let curr_loc = Location.curr lexbuf in 
-            let rhs = value_of_token curr_loc (token ()) in 
-            begin match rhs with 
-            | Dir_string rhs -> 
-                semver curr_loc s rhs
-            | _ -> 
-                raise
-                  (Error
-                     ( Conditional_expr_expected_type
-                         (Dir_type_string, type_of_directive lhs), Location.curr lexbuf))
-            end
-        | _ -> raise
-                 (Error
-                    ( Conditional_expr_expected_type
-                        (Dir_type_string, type_of_directive lhs), Location.curr lexbuf))
-        end
-    | e -> no e 
-  and
-    parse_or calc : bool =
-    parse_or_aux calc (parse_and calc)
-  and  (* a || (b || (c || d))*)
-    parse_or_aux calc v : bool =
-    (* let l = v  in *)
-    match token () with
-    | BARBAR ->
-        let b =   parse_or (calc && not v)  in
-        v || b 
-    | e -> push e ; v
-  and parse_and calc = 
-    parse_and_aux calc (parse_relation calc)
-  and parse_and_aux calc v = (* a && (b && (c && d)) *)
-    (* let l = v  in *)
-    match token () with
-    | AMPERAMPER ->
-        let b =  parse_and (calc && v) in
-        v && b
-    | e -> push e ; v
-  and parse_relation (calc : bool) : bool  =
-    let curr_token = token () in
-    let curr_loc = Location.curr lexbuf in
-    match curr_token with
-    | TRUE -> true 
-    | FALSE -> false
-    | UIDENT v ->
-        let value_v = query curr_loc v in
-        token_op calc 
-          ~no:(fun e -> push e ;
-                match value_v with 
-                | Dir_bool b -> b 
-                | _ -> 
-                    let ty = type_of_directive value_v in
-                    raise
-                      (Error(Conditional_expr_expected_type (Dir_type_bool, ty),
-                             curr_loc)))
-          value_v
-    | INT (v,None) -> 
-      let num_v = cvt_int_literal v in 
-      token_op calc
-          ~no:(fun e -> 
-                push e; 
-                num_v <> 0
-              )
-          (Dir_int num_v)
-    | FLOAT (v,None) -> 
-        token_op calc
-          ~no:(fun _e -> 
-              raise (Error(Conditional_expr_expected_type(Dir_type_bool, Dir_type_float),
-                           curr_loc)))
-          (Dir_float (float_of_string v))
-    | STRING (v,_) -> 
-        token_op calc
-          ~no:(fun _e ->
-              raise (Error
-                       (Conditional_expr_expected_type(Dir_type_bool, Dir_type_string),
-                        curr_loc)))
-          (Dir_string v)
-    | LIDENT ("defined" | "undefined" as r) ->
-        let t = token () in 
-        let loc = Location.curr lexbuf in
-        begin match t with
-        | UIDENT s -> 
-            not calc || 
-            if r.[0] = 'u' then 
-              not @@ defined s
-            else defined s 
-        | _ -> raise (Error (Unexpected_token_in_conditional, loc))
-        end
-    | LPAREN ->
-        let v = parse_or calc in
-        begin match token () with
-        | RPAREN ->  v
-        | _ -> raise (Error(Unterminated_paren_in_conditional, Location.curr lexbuf))
-        end 
-
-    | _ -> raise (Error (Unexpected_token_in_conditional, curr_loc))
-  in
-  let v = parse_or true in
-  begin match token () with
-  | THEN | EOL ->  v 
-  | _ -> raise (Error (Expect_hash_then_in_conditional, Location.curr lexbuf))
-  end
-
-
-type dir_conditional =
-  | Dir_if_true
-  | Dir_if_false
-  | Dir_out 
-
-(* let string_of_dir_conditional (x : dir_conditional) = *)
-(*   match x with  *)
-(*   | Dir_if_true -> "Dir_if_true" *)
-(*   | Dir_if_false -> "Dir_if_false" *)
-(*   | Dir_out -> "Dir_out" *)
-
-let is_elif (i : Parser.token ) =
-  match i with
-  | LIDENT "elif" -> true
-  | _ -> false (* avoid polymorphic equal *)
-
 
 (* The table of keywords *)
 
@@ -27686,11 +27871,6 @@ let in_comment () = !comment_start_loc <> [];;
 let is_in_string = ref false
 let in_string () = !is_in_string
 let print_warnings = ref true
-let if_then_else = ref Dir_out
-let sharp_look_ahead = ref None
-let update_if_then_else v = 
-  (* Format.fprintf Format.err_formatter "@[update %s \n@]@." (string_of_dir_conditional v); *)
-  if_then_else := v
 
 (* Escaped chars are interpreted in strings unless they are in comments. *)
 let store_escaped_char lexbuf c =
@@ -27841,23 +28021,6 @@ let report_error ppf = function
         | None -> ()
         | Some expl -> fprintf ppf ": %s" expl
       end
-  | Unterminated_if -> 
-      fprintf ppf "#if not terminated"
-  | Unterminated_else -> 
-      fprintf ppf "#else not terminated"
-  | Unexpected_directive -> fprintf ppf "Unexpected directive"
-  | Unexpected_token_in_conditional -> 
-      fprintf ppf "Unexpected token in conditional predicate"
-  | Unterminated_paren_in_conditional ->
-    fprintf ppf "Unterminated parens in conditional predicate"
-  | Expect_hash_then_in_conditional -> 
-      fprintf ppf "Expect `then` after conditional predicate"
-  | Conditional_expr_expected_type (a,b) -> 
-      fprintf ppf "Conditional expression type mismatch (%s,%s)" 
-        (string_of_type_directive a )
-        (string_of_type_directive b )
-  | Illegal_semver s -> 
-      fprintf ppf "Illegal semantic version string %s" s
 
 let () =
   Location.register_error_of_exn
@@ -27869,7 +28032,7 @@ let () =
     )
 
 
-# 702 "ml/lexer.ml"
+# 264 "ml/lexer.ml"
 let __ocaml_lex_tables = {
   Lexing.lex_base =
    "\000\000\166\255\167\255\094\000\129\000\164\000\199\000\234\000\
@@ -29177,111 +29340,111 @@ let rec token lexbuf =
 and __ocaml_lex_token_rec lexbuf __ocaml_lex_state =
   match Lexing.new_engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 751 "ml/lexer.mll"
+# 313 "ml/lexer.mll"
                  (
       if not !escaped_newlines then
         raise (Error(Illegal_character (Lexing.lexeme_char lexbuf 0),
                      Location.curr lexbuf));
       update_loc lexbuf None 1 false 0;
       token lexbuf )
-# 2017 "ml/lexer.ml"
+# 1579 "ml/lexer.ml"
 
   | 1 ->
-# 758 "ml/lexer.mll"
+# 320 "ml/lexer.mll"
       ( update_loc lexbuf None 1 false 0;
         EOL )
-# 2023 "ml/lexer.ml"
+# 1585 "ml/lexer.ml"
 
   | 2 ->
-# 761 "ml/lexer.mll"
+# 323 "ml/lexer.mll"
       ( token lexbuf )
-# 2028 "ml/lexer.ml"
+# 1590 "ml/lexer.ml"
 
   | 3 ->
-# 763 "ml/lexer.mll"
+# 325 "ml/lexer.mll"
       ( UNDERSCORE )
-# 2033 "ml/lexer.ml"
+# 1595 "ml/lexer.ml"
 
   | 4 ->
-# 765 "ml/lexer.mll"
+# 327 "ml/lexer.mll"
       ( TILDE )
-# 2038 "ml/lexer.ml"
+# 1600 "ml/lexer.ml"
 
   | 5 ->
-# 767 "ml/lexer.mll"
+# 329 "ml/lexer.mll"
       ( LABEL (get_label_name lexbuf) )
-# 2043 "ml/lexer.ml"
+# 1605 "ml/lexer.ml"
 
   | 6 ->
-# 769 "ml/lexer.mll"
+# 331 "ml/lexer.mll"
       ( QUESTION )
-# 2048 "ml/lexer.ml"
+# 1610 "ml/lexer.ml"
 
   | 7 ->
-# 771 "ml/lexer.mll"
+# 333 "ml/lexer.mll"
       ( OPTLABEL (get_label_name lexbuf) )
-# 2053 "ml/lexer.ml"
+# 1615 "ml/lexer.ml"
 
   | 8 ->
-# 773 "ml/lexer.mll"
+# 335 "ml/lexer.mll"
       ( let s = Lexing.lexeme lexbuf in
         try Hashtbl.find keyword_table s
         with Not_found -> LIDENT s )
-# 2060 "ml/lexer.ml"
+# 1622 "ml/lexer.ml"
 
   | 9 ->
-# 777 "ml/lexer.mll"
+# 339 "ml/lexer.mll"
       ( UIDENT(Lexing.lexeme lexbuf) )
-# 2065 "ml/lexer.ml"
+# 1627 "ml/lexer.ml"
 
   | 10 ->
-# 778 "ml/lexer.mll"
+# 340 "ml/lexer.mll"
                 ( INT (Lexing.lexeme lexbuf, None) )
-# 2070 "ml/lexer.ml"
+# 1632 "ml/lexer.ml"
 
   | 11 ->
 let
-# 779 "ml/lexer.mll"
+# 341 "ml/lexer.mll"
                     lit
-# 2076 "ml/lexer.ml"
+# 1638 "ml/lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos (lexbuf.Lexing.lex_curr_pos + -1)
 and
-# 779 "ml/lexer.mll"
+# 341 "ml/lexer.mll"
                                               modif
-# 2081 "ml/lexer.ml"
+# 1643 "ml/lexer.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_curr_pos + -1) in
-# 780 "ml/lexer.mll"
+# 342 "ml/lexer.mll"
       ( INT (lit, Some modif) )
-# 2085 "ml/lexer.ml"
+# 1647 "ml/lexer.ml"
 
   | 12 ->
-# 782 "ml/lexer.mll"
+# 344 "ml/lexer.mll"
       ( FLOAT (Lexing.lexeme lexbuf, None) )
-# 2090 "ml/lexer.ml"
+# 1652 "ml/lexer.ml"
 
   | 13 ->
 let
-# 783 "ml/lexer.mll"
+# 345 "ml/lexer.mll"
                                             lit
-# 2096 "ml/lexer.ml"
+# 1658 "ml/lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos (lexbuf.Lexing.lex_curr_pos + -1)
 and
-# 783 "ml/lexer.mll"
+# 345 "ml/lexer.mll"
                                                                       modif
-# 2101 "ml/lexer.ml"
+# 1663 "ml/lexer.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_curr_pos + -1) in
-# 784 "ml/lexer.mll"
+# 346 "ml/lexer.mll"
       ( FLOAT (lit, Some modif) )
-# 2105 "ml/lexer.ml"
+# 1667 "ml/lexer.ml"
 
   | 14 ->
-# 786 "ml/lexer.mll"
+# 348 "ml/lexer.mll"
       ( raise (Error(Invalid_literal (Lexing.lexeme lexbuf),
                      Location.curr lexbuf)) )
-# 2111 "ml/lexer.ml"
+# 1673 "ml/lexer.ml"
 
   | 15 ->
-# 789 "ml/lexer.mll"
+# 351 "ml/lexer.mll"
       ( reset_string_buffer();
         is_in_string := true;
         let string_start = lexbuf.lex_start_p in
@@ -29290,10 +29453,10 @@ and
         is_in_string := false;
         lexbuf.lex_start_p <- string_start;
         STRING (get_stored_string(), None) )
-# 2123 "ml/lexer.ml"
+# 1685 "ml/lexer.ml"
 
   | 16 ->
-# 798 "ml/lexer.mll"
+# 360 "ml/lexer.mll"
       ( reset_string_buffer();
         let delim = Lexing.lexeme lexbuf in
         let delim = String.sub delim 1 (String.length delim - 2) in
@@ -29304,70 +29467,70 @@ and
         is_in_string := false;
         lexbuf.lex_start_p <- string_start;
         STRING (get_stored_string(), Some delim) )
-# 2137 "ml/lexer.ml"
+# 1699 "ml/lexer.ml"
 
   | 17 ->
-# 809 "ml/lexer.mll"
+# 371 "ml/lexer.mll"
       ( update_loc lexbuf None 1 false 1;
         CHAR (Lexing.lexeme_char lexbuf 1) )
-# 2143 "ml/lexer.ml"
+# 1705 "ml/lexer.ml"
 
   | 18 ->
-# 812 "ml/lexer.mll"
+# 374 "ml/lexer.mll"
       ( CHAR(Lexing.lexeme_char lexbuf 1) )
-# 2148 "ml/lexer.ml"
+# 1710 "ml/lexer.ml"
 
   | 19 ->
-# 814 "ml/lexer.mll"
+# 376 "ml/lexer.mll"
       ( CHAR(char_for_backslash (Lexing.lexeme_char lexbuf 2)) )
-# 2153 "ml/lexer.ml"
+# 1715 "ml/lexer.ml"
 
   | 20 ->
-# 816 "ml/lexer.mll"
+# 378 "ml/lexer.mll"
       ( CHAR(char_for_decimal_code lexbuf 2) )
-# 2158 "ml/lexer.ml"
+# 1720 "ml/lexer.ml"
 
   | 21 ->
-# 818 "ml/lexer.mll"
+# 380 "ml/lexer.mll"
       ( CHAR(char_for_octal_code lexbuf 3) )
-# 2163 "ml/lexer.ml"
+# 1725 "ml/lexer.ml"
 
   | 22 ->
-# 820 "ml/lexer.mll"
+# 382 "ml/lexer.mll"
       ( CHAR(char_for_hexadecimal_code lexbuf 3) )
-# 2168 "ml/lexer.ml"
+# 1730 "ml/lexer.ml"
 
   | 23 ->
-# 822 "ml/lexer.mll"
+# 384 "ml/lexer.mll"
       ( let l = Lexing.lexeme lexbuf in
         let esc = String.sub l 1 (String.length l - 1) in
         raise (Error(Illegal_escape esc, Location.curr lexbuf))
       )
-# 2176 "ml/lexer.ml"
+# 1738 "ml/lexer.ml"
 
   | 24 ->
-# 827 "ml/lexer.mll"
+# 389 "ml/lexer.mll"
       ( let s, loc = with_comment_buffer comment lexbuf in
         COMMENT (s, loc) )
-# 2182 "ml/lexer.ml"
+# 1744 "ml/lexer.ml"
 
   | 25 ->
-# 830 "ml/lexer.mll"
+# 392 "ml/lexer.mll"
       ( let s, loc = with_comment_buffer comment lexbuf in
         if !handle_docstrings then
           DOCSTRING (Docstrings.docstring s loc)
         else
           COMMENT ("*" ^ s, loc)
       )
-# 2192 "ml/lexer.ml"
+# 1754 "ml/lexer.ml"
 
   | 26 ->
 let
-# 836 "ml/lexer.mll"
+# 398 "ml/lexer.mll"
                      stars
-# 2198 "ml/lexer.ml"
+# 1760 "ml/lexer.ml"
 = Lexing.sub_lexeme lexbuf (lexbuf.Lexing.lex_start_pos + 3) lexbuf.Lexing.lex_curr_pos in
-# 837 "ml/lexer.mll"
+# 399 "ml/lexer.mll"
       ( let s, loc =
           with_comment_buffer
             (fun lexbuf ->
@@ -29376,32 +29539,32 @@ let
             lexbuf
         in
         COMMENT (s, loc) )
-# 2209 "ml/lexer.ml"
+# 1771 "ml/lexer.ml"
 
   | 27 ->
-# 846 "ml/lexer.mll"
+# 408 "ml/lexer.mll"
       ( if !print_warnings then
           Location.prerr_warning (Location.curr lexbuf) Warnings.Comment_start;
         let s, loc = with_comment_buffer comment lexbuf in
         COMMENT (s, loc) )
-# 2217 "ml/lexer.ml"
+# 1779 "ml/lexer.ml"
 
   | 28 ->
 let
-# 850 "ml/lexer.mll"
+# 412 "ml/lexer.mll"
                     stars
-# 2223 "ml/lexer.ml"
+# 1785 "ml/lexer.ml"
 = Lexing.sub_lexeme lexbuf (lexbuf.Lexing.lex_start_pos + 2) (lexbuf.Lexing.lex_curr_pos + -2) in
-# 851 "ml/lexer.mll"
+# 413 "ml/lexer.mll"
       ( if !handle_docstrings && stars="" then
          (* (**) is an empty docstring *)
           DOCSTRING(Docstrings.docstring "" (Location.curr lexbuf))
         else
           COMMENT (stars, Location.curr lexbuf) )
-# 2231 "ml/lexer.ml"
+# 1793 "ml/lexer.ml"
 
   | 29 ->
-# 857 "ml/lexer.mll"
+# 419 "ml/lexer.mll"
       ( let loc = Location.curr lexbuf in
         Location.prerr_warning loc Warnings.Comment_not_end;
         lexbuf.Lexing.lex_curr_pos <- lexbuf.Lexing.lex_curr_pos - 1;
@@ -29409,25 +29572,25 @@ let
         lexbuf.lex_curr_p <- { curpos with pos_cnum = curpos.pos_cnum - 1 };
         STAR
       )
-# 2242 "ml/lexer.ml"
+# 1804 "ml/lexer.ml"
 
   | 30 ->
 let
-# 864 "ml/lexer.mll"
+# 426 "ml/lexer.mll"
                                     num
-# 2248 "ml/lexer.ml"
+# 1810 "ml/lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_mem.(0) lexbuf.Lexing.lex_mem.(1)
 and
-# 865 "ml/lexer.mll"
+# 427 "ml/lexer.mll"
                                             name
-# 2253 "ml/lexer.ml"
+# 1815 "ml/lexer.ml"
 = Lexing.sub_lexeme_opt lexbuf lexbuf.Lexing.lex_mem.(4) lexbuf.Lexing.lex_mem.(3)
 and
-# 865 "ml/lexer.mll"
+# 427 "ml/lexer.mll"
                                                              directive
-# 2258 "ml/lexer.ml"
+# 1820 "ml/lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos lexbuf.Lexing.lex_mem.(2) in
-# 867 "ml/lexer.mll"
+# 429 "ml/lexer.mll"
       (
         match int_of_string num with
         | exception _ ->
@@ -29443,317 +29606,309 @@ and
             update_loc lexbuf name line_num true 0;
             token lexbuf
       )
-# 2276 "ml/lexer.ml"
+# 1838 "ml/lexer.ml"
 
   | 31 ->
-# 882 "ml/lexer.mll"
+# 444 "ml/lexer.mll"
          ( HASH )
-# 2281 "ml/lexer.ml"
+# 1843 "ml/lexer.ml"
 
   | 32 ->
-# 883 "ml/lexer.mll"
+# 445 "ml/lexer.mll"
          ( AMPERSAND )
-# 2286 "ml/lexer.ml"
+# 1848 "ml/lexer.ml"
 
   | 33 ->
-# 884 "ml/lexer.mll"
+# 446 "ml/lexer.mll"
          ( AMPERAMPER )
-# 2291 "ml/lexer.ml"
+# 1853 "ml/lexer.ml"
 
   | 34 ->
-# 885 "ml/lexer.mll"
+# 447 "ml/lexer.mll"
          ( BACKQUOTE )
-# 2296 "ml/lexer.ml"
+# 1858 "ml/lexer.ml"
 
   | 35 ->
-# 886 "ml/lexer.mll"
+# 448 "ml/lexer.mll"
          ( QUOTE )
-# 2301 "ml/lexer.ml"
+# 1863 "ml/lexer.ml"
 
   | 36 ->
-# 887 "ml/lexer.mll"
+# 449 "ml/lexer.mll"
          ( LPAREN )
-# 2306 "ml/lexer.ml"
+# 1868 "ml/lexer.ml"
 
   | 37 ->
-# 888 "ml/lexer.mll"
+# 450 "ml/lexer.mll"
          ( RPAREN )
-# 2311 "ml/lexer.ml"
+# 1873 "ml/lexer.ml"
 
   | 38 ->
-# 889 "ml/lexer.mll"
+# 451 "ml/lexer.mll"
          ( STAR )
-# 2316 "ml/lexer.ml"
+# 1878 "ml/lexer.ml"
 
   | 39 ->
-# 890 "ml/lexer.mll"
+# 452 "ml/lexer.mll"
          ( COMMA )
-# 2321 "ml/lexer.ml"
+# 1883 "ml/lexer.ml"
 
   | 40 ->
-# 891 "ml/lexer.mll"
+# 453 "ml/lexer.mll"
          ( MINUSGREATER )
-# 2326 "ml/lexer.ml"
+# 1888 "ml/lexer.ml"
 
   | 41 ->
-# 892 "ml/lexer.mll"
+# 454 "ml/lexer.mll"
          ( DOT )
-# 2331 "ml/lexer.ml"
+# 1893 "ml/lexer.ml"
 
   | 42 ->
-# 893 "ml/lexer.mll"
+# 455 "ml/lexer.mll"
          ( DOTDOT )
-# 2336 "ml/lexer.ml"
+# 1898 "ml/lexer.ml"
 
   | 43 ->
 let
-# 894 "ml/lexer.mll"
+# 456 "ml/lexer.mll"
                                       s
-# 2342 "ml/lexer.ml"
+# 1904 "ml/lexer.ml"
 = Lexing.sub_lexeme lexbuf (lexbuf.Lexing.lex_start_pos + 1) lexbuf.Lexing.lex_curr_pos in
-# 894 "ml/lexer.mll"
+# 456 "ml/lexer.mll"
                                          ( DOTOP s )
-# 2346 "ml/lexer.ml"
+# 1908 "ml/lexer.ml"
 
   | 44 ->
-# 895 "ml/lexer.mll"
+# 457 "ml/lexer.mll"
          ( COLON )
-# 2351 "ml/lexer.ml"
+# 1913 "ml/lexer.ml"
 
   | 45 ->
-# 896 "ml/lexer.mll"
+# 458 "ml/lexer.mll"
          ( COLONCOLON )
-# 2356 "ml/lexer.ml"
+# 1918 "ml/lexer.ml"
 
   | 46 ->
-# 897 "ml/lexer.mll"
+# 459 "ml/lexer.mll"
          ( COLONEQUAL )
-# 2361 "ml/lexer.ml"
+# 1923 "ml/lexer.ml"
 
   | 47 ->
-# 898 "ml/lexer.mll"
+# 460 "ml/lexer.mll"
          ( COLONGREATER )
-# 2366 "ml/lexer.ml"
+# 1928 "ml/lexer.ml"
 
   | 48 ->
-# 899 "ml/lexer.mll"
+# 461 "ml/lexer.mll"
          ( SEMI )
-# 2371 "ml/lexer.ml"
+# 1933 "ml/lexer.ml"
 
   | 49 ->
-# 900 "ml/lexer.mll"
+# 462 "ml/lexer.mll"
          ( SEMISEMI )
-# 2376 "ml/lexer.ml"
+# 1938 "ml/lexer.ml"
 
   | 50 ->
-# 901 "ml/lexer.mll"
+# 463 "ml/lexer.mll"
          ( LESS )
-# 2381 "ml/lexer.ml"
+# 1943 "ml/lexer.ml"
 
   | 51 ->
-# 902 "ml/lexer.mll"
+# 464 "ml/lexer.mll"
          ( LESSMINUS )
-# 2386 "ml/lexer.ml"
+# 1948 "ml/lexer.ml"
 
   | 52 ->
-# 903 "ml/lexer.mll"
+# 465 "ml/lexer.mll"
          ( EQUAL )
-# 2391 "ml/lexer.ml"
+# 1953 "ml/lexer.ml"
 
   | 53 ->
-# 904 "ml/lexer.mll"
+# 466 "ml/lexer.mll"
          ( LBRACKET )
-# 2396 "ml/lexer.ml"
+# 1958 "ml/lexer.ml"
 
   | 54 ->
-# 905 "ml/lexer.mll"
+# 467 "ml/lexer.mll"
          ( LBRACKETBAR )
-# 2401 "ml/lexer.ml"
+# 1963 "ml/lexer.ml"
 
   | 55 ->
-# 906 "ml/lexer.mll"
+# 468 "ml/lexer.mll"
          ( LBRACKETLESS )
-# 2406 "ml/lexer.ml"
+# 1968 "ml/lexer.ml"
 
   | 56 ->
-# 907 "ml/lexer.mll"
+# 469 "ml/lexer.mll"
          ( LBRACKETGREATER )
-# 2411 "ml/lexer.ml"
+# 1973 "ml/lexer.ml"
 
   | 57 ->
-# 908 "ml/lexer.mll"
+# 470 "ml/lexer.mll"
          ( RBRACKET )
-# 2416 "ml/lexer.ml"
+# 1978 "ml/lexer.ml"
 
   | 58 ->
-# 909 "ml/lexer.mll"
+# 471 "ml/lexer.mll"
          ( LBRACE )
-# 2421 "ml/lexer.ml"
+# 1983 "ml/lexer.ml"
 
   | 59 ->
-# 910 "ml/lexer.mll"
+# 472 "ml/lexer.mll"
          ( LBRACELESS )
-# 2426 "ml/lexer.ml"
+# 1988 "ml/lexer.ml"
 
   | 60 ->
-# 911 "ml/lexer.mll"
+# 473 "ml/lexer.mll"
          ( BAR )
-# 2431 "ml/lexer.ml"
+# 1993 "ml/lexer.ml"
 
   | 61 ->
-# 912 "ml/lexer.mll"
+# 474 "ml/lexer.mll"
          ( BARBAR )
-# 2436 "ml/lexer.ml"
+# 1998 "ml/lexer.ml"
 
   | 62 ->
-# 913 "ml/lexer.mll"
+# 475 "ml/lexer.mll"
          ( BARRBRACKET )
-# 2441 "ml/lexer.ml"
+# 2003 "ml/lexer.ml"
 
   | 63 ->
-# 914 "ml/lexer.mll"
+# 476 "ml/lexer.mll"
          ( GREATER )
-# 2446 "ml/lexer.ml"
+# 2008 "ml/lexer.ml"
 
   | 64 ->
-# 915 "ml/lexer.mll"
+# 477 "ml/lexer.mll"
          ( GREATERRBRACKET )
-# 2451 "ml/lexer.ml"
+# 2013 "ml/lexer.ml"
 
   | 65 ->
-# 916 "ml/lexer.mll"
+# 478 "ml/lexer.mll"
          ( RBRACE )
-# 2456 "ml/lexer.ml"
+# 2018 "ml/lexer.ml"
 
   | 66 ->
-# 917 "ml/lexer.mll"
+# 479 "ml/lexer.mll"
          ( GREATERRBRACE )
-# 2461 "ml/lexer.ml"
+# 2023 "ml/lexer.ml"
 
   | 67 ->
-# 918 "ml/lexer.mll"
+# 480 "ml/lexer.mll"
          ( LBRACKETAT )
-# 2466 "ml/lexer.ml"
+# 2028 "ml/lexer.ml"
 
   | 68 ->
-# 919 "ml/lexer.mll"
+# 481 "ml/lexer.mll"
            ( LBRACKETATAT )
-# 2471 "ml/lexer.ml"
+# 2033 "ml/lexer.ml"
 
   | 69 ->
-# 920 "ml/lexer.mll"
+# 482 "ml/lexer.mll"
            ( LBRACKETATATAT )
-# 2476 "ml/lexer.ml"
+# 2038 "ml/lexer.ml"
 
   | 70 ->
-# 921 "ml/lexer.mll"
+# 483 "ml/lexer.mll"
            ( LBRACKETPERCENT )
-# 2481 "ml/lexer.ml"
+# 2043 "ml/lexer.ml"
 
   | 71 ->
-# 922 "ml/lexer.mll"
+# 484 "ml/lexer.mll"
            ( LBRACKETPERCENTPERCENT )
-# 2486 "ml/lexer.ml"
+# 2048 "ml/lexer.ml"
 
   | 72 ->
-# 923 "ml/lexer.mll"
+# 485 "ml/lexer.mll"
          ( BANG )
-# 2491 "ml/lexer.ml"
+# 2053 "ml/lexer.ml"
 
   | 73 ->
-# 924 "ml/lexer.mll"
+# 486 "ml/lexer.mll"
          ( INFIXOP0 "!=" )
-# 2496 "ml/lexer.ml"
+# 2058 "ml/lexer.ml"
 
   | 74 ->
-# 925 "ml/lexer.mll"
+# 487 "ml/lexer.mll"
          ( PLUS )
-# 2501 "ml/lexer.ml"
+# 2063 "ml/lexer.ml"
 
   | 75 ->
-# 926 "ml/lexer.mll"
+# 488 "ml/lexer.mll"
          ( PLUSDOT )
-# 2506 "ml/lexer.ml"
+# 2068 "ml/lexer.ml"
 
   | 76 ->
-# 927 "ml/lexer.mll"
+# 489 "ml/lexer.mll"
          ( PLUSEQ )
-# 2511 "ml/lexer.ml"
+# 2073 "ml/lexer.ml"
 
   | 77 ->
-# 928 "ml/lexer.mll"
+# 490 "ml/lexer.mll"
          ( MINUS )
-# 2516 "ml/lexer.ml"
+# 2078 "ml/lexer.ml"
 
   | 78 ->
-# 929 "ml/lexer.mll"
+# 491 "ml/lexer.mll"
          ( MINUSDOT )
-# 2521 "ml/lexer.ml"
+# 2083 "ml/lexer.ml"
 
   | 79 ->
-# 932 "ml/lexer.mll"
+# 494 "ml/lexer.mll"
             ( PREFIXOP(Lexing.lexeme lexbuf) )
-# 2526 "ml/lexer.ml"
+# 2088 "ml/lexer.ml"
 
   | 80 ->
-# 934 "ml/lexer.mll"
+# 496 "ml/lexer.mll"
             ( PREFIXOP(Lexing.lexeme lexbuf) )
-# 2531 "ml/lexer.ml"
+# 2093 "ml/lexer.ml"
 
   | 81 ->
-# 936 "ml/lexer.mll"
+# 498 "ml/lexer.mll"
             ( INFIXOP0(Lexing.lexeme lexbuf) )
-# 2536 "ml/lexer.ml"
+# 2098 "ml/lexer.ml"
 
   | 82 ->
-# 938 "ml/lexer.mll"
+# 500 "ml/lexer.mll"
             ( INFIXOP1(Lexing.lexeme lexbuf) )
-# 2541 "ml/lexer.ml"
+# 2103 "ml/lexer.ml"
 
   | 83 ->
-# 940 "ml/lexer.mll"
+# 502 "ml/lexer.mll"
             ( INFIXOP2(Lexing.lexeme lexbuf) )
-# 2546 "ml/lexer.ml"
+# 2108 "ml/lexer.ml"
 
   | 84 ->
-# 942 "ml/lexer.mll"
+# 504 "ml/lexer.mll"
             ( INFIXOP4(Lexing.lexeme lexbuf) )
-# 2551 "ml/lexer.ml"
+# 2113 "ml/lexer.ml"
 
   | 85 ->
-# 943 "ml/lexer.mll"
+# 505 "ml/lexer.mll"
             ( PERCENT )
-# 2556 "ml/lexer.ml"
+# 2118 "ml/lexer.ml"
 
   | 86 ->
-# 945 "ml/lexer.mll"
+# 507 "ml/lexer.mll"
             ( INFIXOP3(Lexing.lexeme lexbuf) )
-# 2561 "ml/lexer.ml"
+# 2123 "ml/lexer.ml"
 
   | 87 ->
-# 947 "ml/lexer.mll"
+# 509 "ml/lexer.mll"
             ( HASHOP(Lexing.lexeme lexbuf) )
-# 2566 "ml/lexer.ml"
+# 2128 "ml/lexer.ml"
 
   | 88 ->
-# 948 "ml/lexer.mll"
-        (
-    if !if_then_else <> Dir_out then
-      if !if_then_else = Dir_if_true then
-        raise (Error (Unterminated_if, Location.curr lexbuf))
-      else raise (Error(Unterminated_else, Location.curr lexbuf))
-    else 
-      EOF
-
-  )
-# 2579 "ml/lexer.ml"
+# 510 "ml/lexer.mll"
+        ( Rescript_cpp.eof_check lexbuf; EOF)
+# 2133 "ml/lexer.ml"
 
   | 89 ->
-# 958 "ml/lexer.mll"
+# 512 "ml/lexer.mll"
       ( raise (Error(Illegal_character (Lexing.lexeme_char lexbuf 0),
                      Location.curr lexbuf))
       )
-# 2586 "ml/lexer.ml"
+# 2140 "ml/lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_token_rec lexbuf __ocaml_lex_state
@@ -29763,15 +29918,15 @@ and comment lexbuf =
 and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 964 "ml/lexer.mll"
+# 518 "ml/lexer.mll"
       ( comment_start_loc := (Location.curr lexbuf) :: !comment_start_loc;
         store_lexeme lexbuf;
         comment lexbuf
       )
-# 2601 "ml/lexer.ml"
+# 2155 "ml/lexer.ml"
 
   | 1 ->
-# 969 "ml/lexer.mll"
+# 523 "ml/lexer.mll"
       ( match !comment_start_loc with
         | [] -> assert false
         | [_] -> comment_start_loc := []; Location.curr lexbuf
@@ -29779,10 +29934,10 @@ and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
                   store_lexeme lexbuf;
                   comment lexbuf
        )
-# 2612 "ml/lexer.ml"
+# 2166 "ml/lexer.ml"
 
   | 2 ->
-# 977 "ml/lexer.mll"
+# 531 "ml/lexer.mll"
       (
         string_start_loc := Location.curr lexbuf;
         store_string_char '\"';
@@ -29800,10 +29955,10 @@ and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
         is_in_string := false;
         store_string_char '\"';
         comment lexbuf )
-# 2633 "ml/lexer.ml"
+# 2187 "ml/lexer.ml"
 
   | 3 ->
-# 995 "ml/lexer.mll"
+# 549 "ml/lexer.mll"
       (
         let delim = Lexing.lexeme lexbuf in
         let delim = String.sub delim 1 (String.length delim - 2) in
@@ -29825,43 +29980,43 @@ and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
         store_string delim;
         store_string_char '}';
         comment lexbuf )
-# 2658 "ml/lexer.ml"
+# 2212 "ml/lexer.ml"
 
   | 4 ->
-# 1018 "ml/lexer.mll"
+# 572 "ml/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2663 "ml/lexer.ml"
+# 2217 "ml/lexer.ml"
 
   | 5 ->
-# 1020 "ml/lexer.mll"
+# 574 "ml/lexer.mll"
       ( update_loc lexbuf None 1 false 1;
         store_lexeme lexbuf;
         comment lexbuf
       )
-# 2671 "ml/lexer.ml"
+# 2225 "ml/lexer.ml"
 
   | 6 ->
-# 1025 "ml/lexer.mll"
+# 579 "ml/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2676 "ml/lexer.ml"
+# 2230 "ml/lexer.ml"
 
   | 7 ->
-# 1027 "ml/lexer.mll"
+# 581 "ml/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2681 "ml/lexer.ml"
+# 2235 "ml/lexer.ml"
 
   | 8 ->
-# 1029 "ml/lexer.mll"
+# 583 "ml/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2686 "ml/lexer.ml"
+# 2240 "ml/lexer.ml"
 
   | 9 ->
-# 1031 "ml/lexer.mll"
+# 585 "ml/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2691 "ml/lexer.ml"
+# 2245 "ml/lexer.ml"
 
   | 10 ->
-# 1033 "ml/lexer.mll"
+# 587 "ml/lexer.mll"
       ( match !comment_start_loc with
         | [] -> assert false
         | loc :: _ ->
@@ -29869,20 +30024,20 @@ and __ocaml_lex_comment_rec lexbuf __ocaml_lex_state =
           comment_start_loc := [];
           raise (Error (Unterminated_comment start, loc))
       )
-# 2702 "ml/lexer.ml"
+# 2256 "ml/lexer.ml"
 
   | 11 ->
-# 1041 "ml/lexer.mll"
+# 595 "ml/lexer.mll"
       ( update_loc lexbuf None 1 false 0;
         store_lexeme lexbuf;
         comment lexbuf
       )
-# 2710 "ml/lexer.ml"
+# 2264 "ml/lexer.ml"
 
   | 12 ->
-# 1046 "ml/lexer.mll"
+# 600 "ml/lexer.mll"
       ( store_lexeme lexbuf; comment lexbuf )
-# 2715 "ml/lexer.ml"
+# 2269 "ml/lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_comment_rec lexbuf __ocaml_lex_state
@@ -29892,56 +30047,56 @@ and string lexbuf =
 and __ocaml_lex_string_rec lexbuf __ocaml_lex_state =
   match Lexing.new_engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 1050 "ml/lexer.mll"
+# 604 "ml/lexer.mll"
       ( () )
-# 2727 "ml/lexer.ml"
+# 2281 "ml/lexer.ml"
 
   | 1 ->
 let
-# 1051 "ml/lexer.mll"
+# 605 "ml/lexer.mll"
                                   space
-# 2733 "ml/lexer.ml"
+# 2287 "ml/lexer.ml"
 = Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_mem.(0) lexbuf.Lexing.lex_curr_pos in
-# 1052 "ml/lexer.mll"
+# 606 "ml/lexer.mll"
       ( update_loc lexbuf None 1 false (String.length space);
         if in_comment () then store_lexeme lexbuf;
         string lexbuf
       )
-# 2740 "ml/lexer.ml"
+# 2294 "ml/lexer.ml"
 
   | 2 ->
-# 1057 "ml/lexer.mll"
+# 611 "ml/lexer.mll"
       ( store_escaped_char lexbuf
                            (char_for_backslash(Lexing.lexeme_char lexbuf 1));
         string lexbuf )
-# 2747 "ml/lexer.ml"
+# 2301 "ml/lexer.ml"
 
   | 3 ->
-# 1061 "ml/lexer.mll"
+# 615 "ml/lexer.mll"
       ( store_escaped_char lexbuf (char_for_decimal_code lexbuf 1);
          string lexbuf )
-# 2753 "ml/lexer.ml"
+# 2307 "ml/lexer.ml"
 
   | 4 ->
-# 1064 "ml/lexer.mll"
+# 618 "ml/lexer.mll"
       ( store_escaped_char lexbuf (char_for_octal_code lexbuf 2);
          string lexbuf )
-# 2759 "ml/lexer.ml"
+# 2313 "ml/lexer.ml"
 
   | 5 ->
-# 1067 "ml/lexer.mll"
+# 621 "ml/lexer.mll"
       ( store_escaped_char lexbuf (char_for_hexadecimal_code lexbuf 2);
          string lexbuf )
-# 2765 "ml/lexer.ml"
+# 2319 "ml/lexer.ml"
 
   | 6 ->
-# 1070 "ml/lexer.mll"
+# 624 "ml/lexer.mll"
         ( store_escaped_uchar lexbuf (uchar_for_uchar_escape lexbuf);
           string lexbuf )
-# 2771 "ml/lexer.ml"
+# 2325 "ml/lexer.ml"
 
   | 7 ->
-# 1073 "ml/lexer.mll"
+# 627 "ml/lexer.mll"
       ( if not (in_comment ()) then begin
 (*  Should be an error, but we are very lax.
           raise (Error (Illegal_escape (Lexing.lexeme lexbuf),
@@ -29953,29 +30108,29 @@ let
         store_lexeme lexbuf;
         string lexbuf
       )
-# 2786 "ml/lexer.ml"
+# 2340 "ml/lexer.ml"
 
   | 8 ->
-# 1085 "ml/lexer.mll"
+# 639 "ml/lexer.mll"
       ( if not (in_comment ()) then
           Location.prerr_warning (Location.curr lexbuf) Warnings.Eol_in_string;
         update_loc lexbuf None 1 false 0;
         store_lexeme lexbuf;
         string lexbuf
       )
-# 2796 "ml/lexer.ml"
+# 2350 "ml/lexer.ml"
 
   | 9 ->
-# 1092 "ml/lexer.mll"
+# 646 "ml/lexer.mll"
       ( is_in_string := false;
         raise (Error (Unterminated_string, !string_start_loc)) )
-# 2802 "ml/lexer.ml"
+# 2356 "ml/lexer.ml"
 
   | 10 ->
-# 1095 "ml/lexer.mll"
+# 649 "ml/lexer.mll"
       ( store_string_char(Lexing.lexeme_char lexbuf 0);
         string lexbuf )
-# 2808 "ml/lexer.ml"
+# 2362 "ml/lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_string_rec lexbuf __ocaml_lex_state
@@ -29985,34 +30140,34 @@ and quoted_string delim lexbuf =
 and __ocaml_lex_quoted_string_rec delim lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 1100 "ml/lexer.mll"
+# 654 "ml/lexer.mll"
       ( update_loc lexbuf None 1 false 0;
         store_lexeme lexbuf;
         quoted_string delim lexbuf
       )
-# 2823 "ml/lexer.ml"
+# 2377 "ml/lexer.ml"
 
   | 1 ->
-# 1105 "ml/lexer.mll"
+# 659 "ml/lexer.mll"
       ( is_in_string := false;
         raise (Error (Unterminated_string, !string_start_loc)) )
-# 2829 "ml/lexer.ml"
+# 2383 "ml/lexer.ml"
 
   | 2 ->
-# 1108 "ml/lexer.mll"
+# 662 "ml/lexer.mll"
       (
         let edelim = Lexing.lexeme lexbuf in
         let edelim = String.sub edelim 1 (String.length edelim - 2) in
         if delim = edelim then ()
         else (store_lexeme lexbuf; quoted_string delim lexbuf)
       )
-# 2839 "ml/lexer.ml"
+# 2393 "ml/lexer.ml"
 
   | 3 ->
-# 1115 "ml/lexer.mll"
+# 669 "ml/lexer.mll"
       ( store_string_char(Lexing.lexeme_char lexbuf 0);
         quoted_string delim lexbuf )
-# 2845 "ml/lexer.ml"
+# 2399 "ml/lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_quoted_string_rec delim lexbuf __ocaml_lex_state
@@ -30022,31 +30177,27 @@ and skip_hash_bang lexbuf =
 and __ocaml_lex_skip_hash_bang_rec lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 1120 "ml/lexer.mll"
+# 674 "ml/lexer.mll"
        ( update_loc lexbuf None 3 false 0 )
-# 2857 "ml/lexer.ml"
+# 2411 "ml/lexer.ml"
 
   | 1 ->
-# 1122 "ml/lexer.mll"
+# 676 "ml/lexer.mll"
        ( update_loc lexbuf None 1 false 0 )
-# 2862 "ml/lexer.ml"
+# 2416 "ml/lexer.ml"
 
   | 2 ->
-# 1123 "ml/lexer.mll"
+# 677 "ml/lexer.mll"
        ( () )
-# 2867 "ml/lexer.ml"
+# 2421 "ml/lexer.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_skip_hash_bang_rec lexbuf __ocaml_lex_state
 
 ;;
 
-# 1125 "ml/lexer.mll"
+# 679 "ml/lexer.mll"
  
-  let at_bol lexbuf = 
-    let pos = Lexing.lexeme_start_p lexbuf in 
-    pos.pos_cnum = pos.pos_bol 
-
   let token_with_comments lexbuf =
     match !preprocessor with
     | None -> token lexbuf
@@ -30069,94 +30220,6 @@ and __ocaml_lex_skip_hash_bang_rec lexbuf __ocaml_lex_state =
            preceded by a blank line *)
 
   and docstring = Docstrings.docstring
-
-  let interpret_directive lexbuf cont look_ahead = 
-    let if_then_else = !if_then_else in
-    begin match token_with_comments lexbuf, if_then_else with 
-    |  IF, Dir_out  ->
-        let rec skip_from_if_false () = 
-          let token = token_with_comments lexbuf in
-          if token = EOF then 
-            raise (Error (Unterminated_if, Location.curr lexbuf)) else
-          if token = HASH && at_bol lexbuf then 
-            begin 
-              let token = token_with_comments lexbuf in
-              match token with
-              | END -> 
-                  begin
-                    update_if_then_else Dir_out;
-                    cont lexbuf
-                  end
-              | ELSE -> 
-                  begin
-                    update_if_then_else Dir_if_false;
-                    cont lexbuf
-                  end
-              | IF ->
-                  raise (Error (Unexpected_directive, Location.curr lexbuf))
-              | _ -> 
-                  if is_elif token &&
-                     directive_parse token_with_comments lexbuf then
-                    begin
-                      update_if_then_else Dir_if_true;
-                      cont lexbuf
-                    end
-                  else skip_from_if_false ()                               
-            end
-          else skip_from_if_false () in 
-        if directive_parse token_with_comments lexbuf then
-          begin 
-            update_if_then_else Dir_if_true (* Next state: ELSE *);
-            cont lexbuf
-          end
-        else
-          skip_from_if_false ()
-    | IF,  (Dir_if_false | Dir_if_true)->
-        raise (Error(Unexpected_directive, Location.curr lexbuf))
-    | LIDENT "elif", (Dir_if_false | Dir_out)
-      -> (* when the predicate is false, it will continue eating `elif` *)
-        raise (Error(Unexpected_directive, Location.curr lexbuf))
-    | (LIDENT "elif" | ELSE as token), Dir_if_true ->           
-        (* looking for #end, however, it can not see #if anymore *)
-        let rec skip_from_if_true else_seen = 
-          let token = token_with_comments lexbuf in
-          if token = EOF then 
-            raise (Error (Unterminated_else, Location.curr lexbuf)) else
-          if token = HASH && at_bol lexbuf then 
-            begin 
-              let token = token_with_comments lexbuf in 
-              match token with  
-              | END -> 
-                  begin
-                    update_if_then_else Dir_out;
-                    cont lexbuf
-                  end  
-              | IF ->  
-                  raise (Error (Unexpected_directive, Location.curr lexbuf)) 
-              | ELSE ->
-                  if else_seen then 
-                    raise (Error (Unexpected_directive, Location.curr lexbuf))
-                  else 
-                    skip_from_if_true true
-              | _ ->
-                  if else_seen && is_elif token then  
-                    raise (Error (Unexpected_directive, Location.curr lexbuf))
-                  else 
-                    skip_from_if_true else_seen
-            end
-          else skip_from_if_true else_seen in 
-        skip_from_if_true (token = ELSE)
-    | ELSE, Dir_if_false 
-    | ELSE, Dir_out -> 
-        raise (Error(Unexpected_directive, Location.curr lexbuf))
-    | END, (Dir_if_false | Dir_if_true ) -> 
-        update_if_then_else  Dir_out;
-        cont lexbuf
-    | END,  Dir_out  -> 
-        raise (Error(Unexpected_directive, Location.curr lexbuf))
-    | token, (Dir_if_true | Dir_if_false | Dir_out) ->
-        look_ahead token 
-    end
 
   let token lexbuf =
     let post_pos = lexeme_end_p lexbuf in
@@ -30204,10 +30267,10 @@ and __ocaml_lex_skip_hash_bang_rec lexbuf __ocaml_lex_state =
             | BlankLine -> BlankLine
           in
           loop lines' docs lexbuf
-      | HASH when at_bol lexbuf -> 
-          interpret_directive lexbuf 
-            (fun lexbuf -> loop lines docs lexbuf)
-            (fun token -> sharp_look_ahead := Some token; HASH)            
+      | HASH when Rescript_cpp.at_bol lexbuf -> 
+          Rescript_cpp.interpret_directive lexbuf 
+            ~cont:(fun lexbuf -> loop lines docs lexbuf)
+            ~token_with_comments
       | DOCSTRING doc ->
           Docstrings.register doc;
           add_docstring_comment doc;
@@ -30231,16 +30294,10 @@ and __ocaml_lex_skip_hash_bang_rec lexbuf __ocaml_lex_state =
           attach lines docs (lexeme_start_p lexbuf);
           tok
     in
-      match !sharp_look_ahead with
-      | None -> 
-          loop NoLine Initial lexbuf
-      | Some token ->
-          sharp_look_ahead := None ;
-          token
+    Rescript_cpp.check_sharp_look_ahead (fun _ -> loop NoLine Initial lexbuf)
 
   let init () =
-    sharp_look_ahead := None;
-    update_if_then_else  Dir_out;
+    Rescript_cpp.init ();
     is_in_string := false;
     comment_start_loc := [];
     comment_list := [];
@@ -30248,32 +30305,13 @@ and __ocaml_lex_skip_hash_bang_rec lexbuf __ocaml_lex_state =
     | None -> ()
     | Some (init, _preprocess) -> init ()
 
-  let rec filter_directive pos   acc lexbuf : (int * int ) list =
-    match token_with_comments lexbuf with
-    | HASH when at_bol lexbuf ->
-        (* ^[start_pos]#if ... #then^[end_pos] *)
-        let start_pos = Lexing.lexeme_start lexbuf in 
-        interpret_directive lexbuf 
-          (fun lexbuf -> 
-             filter_directive 
-               (Lexing.lexeme_end lexbuf)
-               ((pos, start_pos) :: acc)
-               lexbuf
-          
-          )
-          (fun _token -> filter_directive pos acc lexbuf  )
-    | EOF -> (pos, Lexing.lexeme_end lexbuf) :: acc
-    | _ -> filter_directive pos  acc lexbuf
-
-  let filter_directive_from_lexbuf lexbuf = 
-    List.rev (filter_directive 0 [] lexbuf )
 
   let set_preprocessor init preprocess =
     escaped_newlines := true;
     preprocessor := Some (init, preprocess)
 
 
-# 3106 "ml/lexer.ml"
+# 2543 "ml/lexer.ml"
 
 end
 module Parse : sig 
