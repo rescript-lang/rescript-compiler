@@ -129,6 +129,7 @@ jscomp/ext/hash_set_string.ml
 jscomp/ext/hash_string.ml
 jscomp/ext/map_string.ml
 jscomp/ext/set_string.ml
+jscomp/ext/ext_json_parse.ml
 jscomp/syntax/reactjs_jsx_ppx_v2.ml
 jscomp/syntax/reactjs_jsx_ppx_v3.ml
 jscomp/bin/all_ounit_tests.ml

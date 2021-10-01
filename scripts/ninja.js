@@ -1493,7 +1493,9 @@ ${cppoList("ext", [
   ["hash.ml", "hash.cppo.ml", dTypeFunctor],
 ])}
 
-  
+${mllRule}
+${mllList("ext",["ext_json_parse.mll"])}
+
 rule copy
   command = cp $in $out
   description = $in -> $out    
@@ -1692,7 +1694,7 @@ rule bspack
 
 ${mllRule}
 ${mlyRule}
-${mllList("ext", ["ext_json_parse.mll"])}
+
 ${mllList("ml", ["lexer.mll"])}
 ${mlyList("ml", ["parser.mly"])}
 rule mk_shared
