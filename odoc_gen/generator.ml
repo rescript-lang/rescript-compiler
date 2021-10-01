@@ -1,3 +1,4 @@
+#if OCAML_VERSION =~ "<=4.12.0" (*investigate later*)
 open Odoc_info
 open Value
 open Type
@@ -64,12 +65,6 @@ struct
       inherit G.html as super
 
       val! mutable doctype = "<!doctype html>\n"
-#if OCAML_VERSION =~ ">4.03" then
-#else
-      method! character_encoding _ = encoding
-#end      
-
-   
       method! html_of_author_list = wrap_tag_list super#html_of_author_list
       method! html_of_version_opt = wrap_tag_opt super#html_of_version_opt
       method! html_of_before = wrap_tag_list super#html_of_before
@@ -164,204 +159,6 @@ struct
           )
           l
 
-
-      (** Print html code for a type. *)
-#if OCAML_VERSION =~ ">4.03.0" then
-#else
-      method! html_of_type b t =
-        bs b "<div class=\"type-declaration\">";
-        Odoc_info.reset_type_names ();
-        let father = Name.father t.ty_name in
-        let print_field_prefix () =
-          bp b {|<tr>
-                 
-                 <td align="left" valign="top" >
-                 <code>&nbsp;&nbsp;</code>
-                 </td> 
-                 
-                 <td align="left" valign="top" >
-                 <code>
-               |}
-        in
-        let print_field_comment = function
-          | None -> ()
-          | Some t ->
-            bp b {|
-
-            <td class="typefieldcomment" align="left" valign="top" >
-            <code>
-            (*
-            </code>
-            </td>
-            
-            <td class="typefieldcomment" align="left" valign="top" >
-            %a
-            </td>
-
-            <td class="typefieldcomment" align="left" valign="bottom" >
-            <code>
-            *)
-            </code>
-            </td>
-            |} (fun b x -> self#html_of_info b x) (Some t)
-        in
-        bs b
-          (match t.ty_manifest, t.ty_kind with
-            None, Type_abstract
-          | None, Type_open -> "\n<pre>"
-          | None, Type_variant _
-          | None, Type_record _ -> "\n<pre><code>"
-          | Some _, Type_abstract
-          | Some _, Type_open -> "\n<pre>"
-          | Some _, Type_variant _
-          | Some _, Type_record _ -> "\n<pre>"
-          );
-
-        bp b 
-          {|<span id="%s">|}
-          (Naming.type_target t);
-
-        bs b ((self#keyword "type")^" ");
-
-        self#html_of_type_expr_param_list b father t;
-        (match t.ty_parameters with [] -> () | _ -> bs b " ");
-        bs b (Name.simple t.ty_name);
-        bs b "</span> ";
-        let priv = t.ty_private = Asttypes.Private in
-        (
-        match t.ty_manifest with
-          None -> ()
-        | Some (Object_type fields) ->
-            bs b "= ";
-            if priv then bs b "private ";
-            bs b "&lt;</pre>";
-            bs b "<table class=\"typetable\">\n" ;
-            let print_one f =
-              print_field_prefix () ;
-              bp b "<span id=\"%s\">%s</span>"
-                (Naming.objfield_target t f)
-                f.of_name;
-              bs b "</td><td>: ";
-              self#html_of_type_expr b father f.of_type;
-              bs b ";</code></td>\n";
-              print_field_comment f.of_text ;
-              bs b "\n</tr>"
-            in
-            print_concat b "\n" print_one fields;
-            bs b "</table>\n>\n";
-            bs b " "
-        | Some (Other typ) ->
-            bs b "= ";
-            if priv then bs b "private ";
-            self#html_of_type_expr b father typ;
-            bs b " "
-        );
-        (match t.ty_kind with
-          Type_abstract -> bs b "</pre>"
-        | Type_variant l ->
-            bs b "= ";
-            if priv then bs b "private ";
-            bs b
-              (
-              match t.ty_manifest with
-                None -> "</code></pre>"
-              | Some _ -> "</pre>"
-              );
-            bs b "<table class=\"typetable\">\n";
-            let print_one constr =
-              bs b "<tr>\n<td align=\"left\" valign=\"top\" >\n";
-              bs b "<code>";
-              bs b (self#keyword "|");
-              bs b "</code></td>\n<td align=\"left\" valign=\"top\" >\n";
-              bs b "<code>";
-              bp b "<span id=\"%s\">%s</span>"
-                (Naming.const_target t constr)
-                (self#constructor constr.vc_name);
-              (
-              match constr.vc_args, constr.vc_ret with
-                [], None -> ()
-              | l,None ->
-                  bs b ("</td><td>" ^ (self#keyword "of") ^ "</td><td>");
-                  self#html_of_type_expr_list ~par: false b father " * " l;
-              | [],Some r ->
-                  bs b ("</td><td>" ^ (self#keyword ":") ^ "</td><td>");
-                  self#html_of_type_expr b father r;
-              | l,Some r ->
-                  bs b ("</td><td>" ^ (self#keyword ":") ^ "</td><td>");
-                  self#html_of_type_expr_list ~par: false b father " * " l;
-                  bs b ("</td><td>" ^ (self#keyword "->") ^ "</td><td>");
-                  self#html_of_type_expr b father r;
-              );
-              bs b "</code></td>\n";
-              (
-              match constr.vc_text with
-                None -> ()
-              | Some t ->
-                  bs b "<td class=\"typefieldcomment\" align=\"left\" valign=\"top\" >";
-                  bs b "<code>";
-                  bs b "(*";
-                  bs b "</code></td>";
-                  bs b "<td class=\"typefieldcomment\" align=\"left\" valign=\"top\" >";
-                  self#html_of_info b (Some t);
-                  bs b "</td>";
-                  bs b "<td class=\"typefieldcomment\" align=\"left\" valign=\"bottom\" >";
-                  bs b "<code>";
-                  bs b "*)";
-                  bs b "</code></td>";
-              );
-              bs b "\n</tr>"
-            in
-            print_concat b "\n" print_one l;
-            bs b "</table>\n"
-
-        | Type_record l ->
-            bs b "= ";
-            if priv then bs b "private " ;
-            bs b "{";
-            bs b
-              (
-              match t.ty_manifest with
-                None -> "</code></pre>"
-              | Some _ -> "</pre>"
-              );
-            bs b "<table class=\"typetable\">\n" ;
-            let print_one r =
-              bs b "<tr>\n<td align=\"left\" valign=\"top\" >\n";
-              bs b "<code>&nbsp;&nbsp;</code>";
-              bs b "</td>\n<td align=\"left\" valign=\"top\" >\n";
-              bs b "<code>";
-              if r.rf_mutable then bs b (self#keyword "mutable&nbsp;") ;
-              bp b "<span id=\"%s\">%s</span>&nbsp;: "
-                (Naming.recfield_target t r)
-                r.rf_name;
-              self#html_of_type_expr b father r.rf_type;
-              bs b ";</code></td>\n";
-              (
-              match r.rf_text with
-                None -> ()
-              | Some t ->
-                  bs b "<td class=\"typefieldcomment\" align=\"left\" valign=\"top\" >";
-                  bs b "<code>";
-                  bs b "(*";
-                  bs b "</code></td>";
-                  bs b "<td class=\"typefieldcomment\" align=\"left\" valign=\"top\" >";
-                  self#html_of_info b (Some t);
-                  bs b "</td><td class=\"typefieldcomment\" align=\"left\" valign=\"bottom\" >";
-                  bs b "<code>*)</code></td>";
-              );
-              bs b "\n</tr>"
-            in
-            print_concat b "\n" print_one l;
-            bs b "</table>\n}\n"
-        | Type_open ->
-            bs b "= ..";
-            bs b "</pre>"
-        );
-        bs b "\n";
-        bs b "</div>\n";
-        self#html_of_info b t.ty_info;
-        bs b "\n"
-#end
       val mutable navbar_module_index = ""
 
       method private print_module_index b = 
@@ -551,7 +348,7 @@ struct
   end
 end
 let _ = Odoc_args.extend_html_generator (module Generator : Odoc_gen.Html_functor);
-
+#end
 (* local variables: *)
 (* compile-command: "ocamlc.opt -I +compiler-libs -I +ocamldoc -c generator.mli generator.ml" *)
 (* end: *)

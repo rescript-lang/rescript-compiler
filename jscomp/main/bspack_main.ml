@@ -448,8 +448,9 @@ let () =
             |> List.iter (fun s ->
                    output_string out_chan
                      (Printf.sprintf "module %s = %s \n" s aliased)))
-          (fun base mli_name ml_name (lazy (_, mli_content))
-               (lazy (_, ml_content)) ->
+          (fun base mli_name ml_name mli_lazy ml_lazy
+                ->
+            let (lazy (_, mli_content)), (lazy (_, ml_content)) = mli_lazy , ml_lazy in 
             incr count;
             (*TODO: assume mli_name, ml_name are in the same dir,
               Needs to be addressed

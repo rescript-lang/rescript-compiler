@@ -1493,7 +1493,9 @@ ${cppoList("ext", [
   ["hash.ml", "hash.cppo.ml", dTypeFunctor],
 ])}
 
-  
+${mllRule}
+${mllList("ext",["ext_json_parse.mll"])}
+
 rule copy
   command = cp $in $out
   description = $in -> $out    
@@ -1605,7 +1607,11 @@ function nativeNinja() {
   var includes = sourceDirs.map((x) => `-I ${x}`).join(" ");
 
   var flags = "-w A-4-9-40..42-30-48-50-44-45";
-  if (+getVersionString().split(".")[1] > 7) {
+  var minor_version= +getVersionString().split(".")[1];
+  if (minor_version > 12) {
+    flags += "-69-70"; // we should turn -69 on except for vendored files
+  }
+  if ( minor_version > 7) {
     flags += "-3-67 -error-style short";
   }
   var templateNative = `
@@ -1688,7 +1694,7 @@ rule bspack
 
 ${mllRule}
 ${mlyRule}
-${mllList("ext", ["ext_json_parse.mll"])}
+
 ${mllList("ml", ["lexer.mll"])}
 ${mlyList("ml", ["parser.mly"])}
 rule mk_shared

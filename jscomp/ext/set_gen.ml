@@ -145,7 +145,7 @@ let bal l v r : _ t =
   let hl = height l in
   let hr = height r in
   if hl > hr + 2 then 
-    let {l=ll;r= lr; v = lv}  = ~!l in 
+    let {l=ll;r= lr; v = lv; h = _}  = ~!l in 
     let hll = height ll in 
     let hlr = height lr in 
     if hll >= hlr then

@@ -619,12 +619,13 @@ type t =
   {mutable buffer : bytes;
    mutable position : int;
    mutable length : int;
-   initial_buffer : bytes}
+
+   }
 
 let create n =
   let n = if n < 1 then 1 else n in
   let s = Bytes.create n in
-  {buffer = s; position = 0; length = n; initial_buffer = s}
+  {buffer = s; position = 0; length = n}
 
 let contents b = Bytes.sub_string b.buffer 0 b.position
 (* let to_bytes b = Bytes.sub b.buffer 0 b.position  *)
@@ -3161,7 +3162,7 @@ let bal l x d r =
   let hl = height l in
   let hr = height r in
   if hl > hr + 2 then begin
-    let  {l=ll; r = lr; v = lv; k = lk} = ~!l in
+    let  {l=ll; r = lr; v = lv; k = lk; h = _} = ~!l in
     let hll = height ll in 
     let hlr = height lr in 
     if hll >= hlr then
@@ -4041,7 +4042,7 @@ let bal l v r : _ t =
   let hl = height l in
   let hr = height r in
   if hl > hr + 2 then 
-    let {l=ll;r= lr; v = lv}  = ~!l in 
+    let {l=ll;r= lr; v = lv; h = _}  = ~!l in 
     let hll = height ll in 
     let hlr = height lr in 
     if hll >= hlr then
@@ -8916,7 +8917,8 @@ let error  (lexbuf : Lexing.lexbuf) e =
 let lexeme_len (x : Lexing.lexbuf) =
   x.lex_curr_pos - x.lex_start_pos
 
-let update_loc ({ lex_curr_p; _ } as lexbuf : Lexing.lexbuf) diff =
+let update_loc (lexbuf : Lexing.lexbuf) diff =
+  let lex_curr_p = lexbuf.lex_curr_p in 
   lexbuf.lex_curr_p <-
     {
       lex_curr_p with
@@ -8949,7 +8951,7 @@ let hex_code c1 c2 =
 
 let lf = '\010'
 
-# 124 "ext/ext_json_parse.ml"
+# 125 "ext/ext_json_parse.ml"
 let __ocaml_lex_tables = {
   Lexing.lex_base =
    "\000\000\239\255\240\255\241\255\000\000\025\000\011\000\244\255\
@@ -9137,80 +9139,80 @@ let rec lex_json buf lexbuf =
 and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 142 "ext/ext_json_parse.mll"
+# 143 "ext/ext_json_parse.mll"
           ( lex_json buf lexbuf)
-# 314 "ext/ext_json_parse.ml"
+# 315 "ext/ext_json_parse.ml"
 
   | 1 ->
-# 143 "ext/ext_json_parse.mll"
+# 144 "ext/ext_json_parse.mll"
                    ( 
     update_loc lexbuf 0;
     lex_json buf  lexbuf
   )
-# 322 "ext/ext_json_parse.ml"
+# 323 "ext/ext_json_parse.ml"
 
   | 2 ->
-# 147 "ext/ext_json_parse.mll"
+# 148 "ext/ext_json_parse.mll"
                 ( comment buf lexbuf)
-# 327 "ext/ext_json_parse.ml"
+# 328 "ext/ext_json_parse.ml"
 
   | 3 ->
-# 148 "ext/ext_json_parse.mll"
+# 149 "ext/ext_json_parse.mll"
          ( True)
-# 332 "ext/ext_json_parse.ml"
+# 333 "ext/ext_json_parse.ml"
 
   | 4 ->
-# 149 "ext/ext_json_parse.mll"
+# 150 "ext/ext_json_parse.mll"
           (False)
-# 337 "ext/ext_json_parse.ml"
+# 338 "ext/ext_json_parse.ml"
 
   | 5 ->
-# 150 "ext/ext_json_parse.mll"
+# 151 "ext/ext_json_parse.mll"
          (Null)
-# 342 "ext/ext_json_parse.ml"
+# 343 "ext/ext_json_parse.ml"
 
   | 6 ->
-# 151 "ext/ext_json_parse.mll"
+# 152 "ext/ext_json_parse.mll"
        (Lbracket)
-# 347 "ext/ext_json_parse.ml"
+# 348 "ext/ext_json_parse.ml"
 
   | 7 ->
-# 152 "ext/ext_json_parse.mll"
+# 153 "ext/ext_json_parse.mll"
        (Rbracket)
-# 352 "ext/ext_json_parse.ml"
+# 353 "ext/ext_json_parse.ml"
 
   | 8 ->
-# 153 "ext/ext_json_parse.mll"
+# 154 "ext/ext_json_parse.mll"
        (Lbrace)
-# 357 "ext/ext_json_parse.ml"
+# 358 "ext/ext_json_parse.ml"
 
   | 9 ->
-# 154 "ext/ext_json_parse.mll"
+# 155 "ext/ext_json_parse.mll"
        (Rbrace)
-# 362 "ext/ext_json_parse.ml"
+# 363 "ext/ext_json_parse.ml"
 
   | 10 ->
-# 155 "ext/ext_json_parse.mll"
+# 156 "ext/ext_json_parse.mll"
        (Comma)
-# 367 "ext/ext_json_parse.ml"
+# 368 "ext/ext_json_parse.ml"
 
   | 11 ->
-# 156 "ext/ext_json_parse.mll"
+# 157 "ext/ext_json_parse.mll"
         (Colon)
-# 372 "ext/ext_json_parse.ml"
+# 373 "ext/ext_json_parse.ml"
 
   | 12 ->
-# 157 "ext/ext_json_parse.mll"
+# 158 "ext/ext_json_parse.mll"
                       (lex_json buf lexbuf)
-# 377 "ext/ext_json_parse.ml"
+# 378 "ext/ext_json_parse.ml"
 
   | 13 ->
-# 159 "ext/ext_json_parse.mll"
+# 160 "ext/ext_json_parse.mll"
          ( Number (Lexing.lexeme lexbuf))
-# 382 "ext/ext_json_parse.ml"
+# 383 "ext/ext_json_parse.ml"
 
   | 14 ->
-# 161 "ext/ext_json_parse.mll"
+# 162 "ext/ext_json_parse.mll"
       (
   let pos = Lexing.lexeme_start_p lexbuf in
   scan_string buf pos lexbuf;
@@ -9218,22 +9220,22 @@ and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
   Buffer.clear buf ;
   String content 
 )
-# 393 "ext/ext_json_parse.ml"
+# 394 "ext/ext_json_parse.ml"
 
   | 15 ->
-# 168 "ext/ext_json_parse.mll"
+# 169 "ext/ext_json_parse.mll"
        (Eof )
-# 398 "ext/ext_json_parse.ml"
+# 399 "ext/ext_json_parse.ml"
 
   | 16 ->
 let
-# 169 "ext/ext_json_parse.mll"
+# 170 "ext/ext_json_parse.mll"
        c
-# 404 "ext/ext_json_parse.ml"
+# 405 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf lexbuf.Lexing.lex_start_pos in
-# 169 "ext/ext_json_parse.mll"
+# 170 "ext/ext_json_parse.mll"
           ( error lexbuf (Illegal_character c ))
-# 408 "ext/ext_json_parse.ml"
+# 409 "ext/ext_json_parse.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state
@@ -9243,19 +9245,19 @@ and comment buf lexbuf =
 and __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 171 "ext/ext_json_parse.mll"
+# 172 "ext/ext_json_parse.mll"
               (lex_json buf lexbuf)
-# 420 "ext/ext_json_parse.ml"
+# 421 "ext/ext_json_parse.ml"
 
   | 1 ->
-# 172 "ext/ext_json_parse.mll"
+# 173 "ext/ext_json_parse.mll"
      (comment buf lexbuf)
-# 425 "ext/ext_json_parse.ml"
+# 426 "ext/ext_json_parse.ml"
 
   | 2 ->
-# 173 "ext/ext_json_parse.mll"
+# 174 "ext/ext_json_parse.mll"
        (error lexbuf Unterminated_comment)
-# 430 "ext/ext_json_parse.ml"
+# 431 "ext/ext_json_parse.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state
@@ -9265,64 +9267,64 @@ and scan_string buf start lexbuf =
 and __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state =
   match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
-# 177 "ext/ext_json_parse.mll"
+# 178 "ext/ext_json_parse.mll"
       ( () )
-# 442 "ext/ext_json_parse.ml"
+# 443 "ext/ext_json_parse.ml"
 
   | 1 ->
-# 179 "ext/ext_json_parse.mll"
+# 180 "ext/ext_json_parse.mll"
   (
         let len = lexeme_len lexbuf - 2 in
         update_loc lexbuf len;
 
         scan_string buf start lexbuf
       )
-# 452 "ext/ext_json_parse.ml"
+# 453 "ext/ext_json_parse.ml"
 
   | 2 ->
-# 186 "ext/ext_json_parse.mll"
+# 187 "ext/ext_json_parse.mll"
       (
         let len = lexeme_len lexbuf - 3 in
         update_loc lexbuf len;
         scan_string buf start lexbuf
       )
-# 461 "ext/ext_json_parse.ml"
+# 462 "ext/ext_json_parse.ml"
 
   | 3 ->
 let
-# 191 "ext/ext_json_parse.mll"
-                                               c
-# 467 "ext/ext_json_parse.ml"
-= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
 # 192 "ext/ext_json_parse.mll"
+                                               c
+# 468 "ext/ext_json_parse.ml"
+= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
+# 193 "ext/ext_json_parse.mll"
       (
         Buffer.add_char buf (char_for_backslash c);
         scan_string buf start lexbuf
       )
-# 474 "ext/ext_json_parse.ml"
+# 475 "ext/ext_json_parse.ml"
 
   | 4 ->
 let
-# 196 "ext/ext_json_parse.mll"
+# 197 "ext/ext_json_parse.mll"
                  c1
-# 480 "ext/ext_json_parse.ml"
+# 481 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1)
 and
-# 196 "ext/ext_json_parse.mll"
+# 197 "ext/ext_json_parse.mll"
                                c2
-# 485 "ext/ext_json_parse.ml"
+# 486 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 2)
 and
-# 196 "ext/ext_json_parse.mll"
+# 197 "ext/ext_json_parse.mll"
                                              c3
-# 490 "ext/ext_json_parse.ml"
+# 491 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 3)
 and
-# 196 "ext/ext_json_parse.mll"
-                                                    s
-# 495 "ext/ext_json_parse.ml"
-= Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos (lexbuf.Lexing.lex_start_pos + 4) in
 # 197 "ext/ext_json_parse.mll"
+                                                    s
+# 496 "ext/ext_json_parse.ml"
+= Lexing.sub_lexeme lexbuf lexbuf.Lexing.lex_start_pos (lexbuf.Lexing.lex_start_pos + 4) in
+# 198 "ext/ext_json_parse.mll"
       (
         let v = dec_code c1 c2 c3 in
         if v > 255 then
@@ -9331,55 +9333,55 @@ and
 
         scan_string buf start lexbuf
       )
-# 506 "ext/ext_json_parse.ml"
+# 507 "ext/ext_json_parse.ml"
 
   | 5 ->
 let
-# 205 "ext/ext_json_parse.mll"
+# 206 "ext/ext_json_parse.mll"
                         c1
-# 512 "ext/ext_json_parse.ml"
+# 513 "ext/ext_json_parse.ml"
 = Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 2)
 and
-# 205 "ext/ext_json_parse.mll"
-                                         c2
-# 517 "ext/ext_json_parse.ml"
-= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 3) in
 # 206 "ext/ext_json_parse.mll"
+                                         c2
+# 518 "ext/ext_json_parse.ml"
+= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 3) in
+# 207 "ext/ext_json_parse.mll"
       (
         let v = hex_code c1 c2 in
         Buffer.add_char buf (Char.chr v);
 
         scan_string buf start lexbuf
       )
-# 526 "ext/ext_json_parse.ml"
+# 527 "ext/ext_json_parse.ml"
 
   | 6 ->
 let
-# 212 "ext/ext_json_parse.mll"
-             c
-# 532 "ext/ext_json_parse.ml"
-= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
 # 213 "ext/ext_json_parse.mll"
+             c
+# 533 "ext/ext_json_parse.ml"
+= Lexing.sub_lexeme_char lexbuf (lexbuf.Lexing.lex_start_pos + 1) in
+# 214 "ext/ext_json_parse.mll"
       (
         Buffer.add_char buf '\\';
         Buffer.add_char buf c;
 
         scan_string buf start lexbuf
       )
-# 541 "ext/ext_json_parse.ml"
+# 542 "ext/ext_json_parse.ml"
 
   | 7 ->
-# 220 "ext/ext_json_parse.mll"
+# 221 "ext/ext_json_parse.mll"
       (
         update_loc lexbuf 0;
         Buffer.add_char buf lf;
 
         scan_string buf start lexbuf
       )
-# 551 "ext/ext_json_parse.ml"
+# 552 "ext/ext_json_parse.ml"
 
   | 8 ->
-# 227 "ext/ext_json_parse.mll"
+# 228 "ext/ext_json_parse.mll"
       (
         let ofs = lexbuf.lex_start_pos in
         let len = lexbuf.lex_curr_pos - ofs in
@@ -9387,21 +9389,21 @@ let
 
         scan_string buf start lexbuf
       )
-# 562 "ext/ext_json_parse.ml"
+# 563 "ext/ext_json_parse.ml"
 
   | 9 ->
-# 235 "ext/ext_json_parse.mll"
+# 236 "ext/ext_json_parse.mll"
       (
         error lexbuf Unterminated_string
       )
-# 569 "ext/ext_json_parse.ml"
+# 570 "ext/ext_json_parse.ml"
 
   | __ocaml_lex_state -> lexbuf.Lexing.refill_buff lexbuf;
       __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state
 
 ;;
 
-# 239 "ext/ext_json_parse.mll"
+# 240 "ext/ext_json_parse.mll"
  
 
 
@@ -9514,7 +9516,7 @@ let parse_json_from_file s =
 
 
 
-# 689 "ext/ext_json_parse.ml"
+# 690 "ext/ext_json_parse.ml"
 
 end
 module Bs_hash_stubs
@@ -10505,7 +10507,7 @@ val scan :
   package_kind:Bsb_package_kind.t -> 
   root: string ->  
   cut_generators: bool -> 
-  namespace : string option -> 
+  (* namespace : string option ->  *)
   ignored_dirs:Set_string.t ->
   Ext_json_types.t ->   
   Bsb_file_groups.t 
@@ -10572,7 +10574,7 @@ type cxt = {
   root : string;
   cut_generators : bool;
   traverse : bool;
-  namespace : string option;
+  (* namespace : string option; *)
   ignored_dirs : Set_string.t
 }
 
@@ -10852,7 +10854,7 @@ let scan
     ~package_kind 
     ~root 
     ~cut_generators 
-    ~namespace 
+    (* ~namespace  *)
     ~ignored_dirs
     x : t  = 
   parse_sources {
@@ -10862,7 +10864,7 @@ let scan
     cwd = Filename.current_dir_name;
     root ;
     cut_generators;
-    namespace;
+    (* namespace; *)
     traverse = false
   } x 
 
@@ -11358,7 +11360,7 @@ let interpret_json
             ~package_kind
             ~root: per_proj_dir
             ~cut_generators
-            ~namespace
+            (* ~namespace *)
             sources in         
         {
           pinned_dependencies;  
@@ -12728,7 +12730,7 @@ end = struct
 
 type t = { 
   mutable used : bool; 
-  rule_name : string; 
+  (* rule_name : string;  *)
   name : out_channel -> string 
 }
 
@@ -12766,7 +12768,7 @@ let define
 
   let rec self = {
     used  = false;
-    rule_name ;
+    (* rule_name ; *)
     name = fun oc ->
       if not self.used then
         begin

@@ -157,7 +157,7 @@ let bal l x d r =
   let hl = height l in
   let hr = height r in
   if hl > hr + 2 then begin
-    let  {l=ll; r = lr; v = lv; k = lk} = ~!l in
+    let  {l=ll; r = lr; v = lv; k = lk; h = _} = ~!l in
     let hll = height ll in 
     let hlr = height lr in 
     if hll >= hlr then
