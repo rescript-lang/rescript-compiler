@@ -86,7 +86,8 @@ let error  (lexbuf : Lexing.lexbuf) e =
 let lexeme_len (x : Lexing.lexbuf) =
   x.lex_curr_pos - x.lex_start_pos
 
-let update_loc ({ lex_curr_p; _ } as lexbuf : Lexing.lexbuf) diff =
+let update_loc (lexbuf : Lexing.lexbuf) diff =
+  let lex_curr_p = lexbuf.lex_curr_p in 
   lexbuf.lex_curr_p <-
     {
       lex_curr_p with
