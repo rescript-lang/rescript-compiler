@@ -78,7 +78,8 @@ let simple_beta_reduce params body args =
         let new_args = aux_exn [] ap_args in
         let result =
           Hash_ident.fold param_hash (Lam.prim ~primitive ~args:new_args ap_loc)
-            (fun _param { lambda; used } acc ->
+            (fun _param stats acc ->
+              let { lambda; used } = stats in 
               if not used then Lam.seq lambda acc else acc)
         in
         Hash_ident.clear param_hash;
@@ -111,7 +112,8 @@ let simple_beta_reduce params body args =
         in
         let result =
           Hash_ident.fold param_hash (Lam.apply f new_args ap_info)
-            (fun _param { lambda; used } acc ->
+            (fun _param stat acc ->
+              let { lambda; used } = stat in 
               if not used then Lam.seq lambda acc else acc)
         in
         Hash_ident.clear param_hash;
