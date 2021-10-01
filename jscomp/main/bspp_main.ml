@@ -22,7 +22,7 @@ let preprocess fn oc =
   Location.init lexbuf fn;
   Lexer.init ();
   lexbuf
-  |> Lexer.filter_directive_from_lexbuf  
+  |> Rescript_cpp.filter_directive_from_lexbuf  ~token_with_comments:Lexer.token_with_comments
   (* Get a list of segments
      TODO: output line directive
   *)

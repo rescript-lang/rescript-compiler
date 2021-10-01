@@ -518,6 +518,8 @@
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/printtyp.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/rec_check.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/rec_check.mli
+../lib/4.06.1/unstable/js_compiler.ml: ./ml/rescript_cpp.ml
+../lib/4.06.1/unstable/js_compiler.ml: ./ml/rescript_cpp.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/stypes.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/stypes.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/subst.ml

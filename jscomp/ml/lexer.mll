@@ -20,36 +20,6 @@ open Lexing
 open Misc
 open Parser
 
-type directive_value =
-  | Dir_bool of bool 
-  | Dir_float of float
-  | Dir_int of int
-  | Dir_string of string
-  | Dir_null 
-
-type directive_type = 
-  | Dir_type_bool 
-  | Dir_type_float 
-  | Dir_type_int 
-  | Dir_type_string 
-  | Dir_type_null 
-
-let type_of_directive x =
-  match x with 
-  | Dir_bool _ -> Dir_type_bool
-  | Dir_float _ -> Dir_type_float
-  | Dir_int _ -> Dir_type_int
-  | Dir_string _ -> Dir_type_string
-  | Dir_null -> Dir_type_null
-
-let string_of_type_directive x = 
-  match x with 
-  | Dir_type_bool  -> "bool"
-  | Dir_type_float  -> "float"
-  | Dir_type_int  -> "int"
-  | Dir_type_string  -> "string"
-  | Dir_type_null -> "null"
-
 type error =
   | Illegal_character of char
   | Illegal_escape of string
@@ -59,395 +29,9 @@ type error =
   | Keyword_as_label of string
   | Invalid_literal of string
   | Invalid_directive of string * string option
-  | Unterminated_paren_in_conditional
-  | Unterminated_if
-  | Unterminated_else 
-  | Unexpected_token_in_conditional 
-  | Expect_hash_then_in_conditional
-  | Illegal_semver of string
-  | Unexpected_directive 
-  | Conditional_expr_expected_type of directive_type * directive_type
-                           
 ;;
 
 exception Error of error * Location.t;;
-
-let assert_same_type  lexbuf x y = 
-  let lhs = type_of_directive x in let rhs =  type_of_directive y  in
-  if lhs <> rhs then 
-    raise (Error(Conditional_expr_expected_type(lhs,rhs), Location.curr lexbuf))
-  else y
-
-let directive_built_in_values  =
-  Hashtbl.create 51
-
-
-let replace_directive_built_in_value k v = 
-  Hashtbl.replace directive_built_in_values k v 
-
-let remove_directive_built_in_value k  = 
-  Hashtbl.replace directive_built_in_values k Dir_null
-
-let replace_directive_int k v = 
-  Hashtbl.replace directive_built_in_values k (Dir_int v)
-
-let replace_directive_bool k v = 
-  Hashtbl.replace directive_built_in_values k (Dir_bool v)
-
-let replace_directive_string k v = 
-  Hashtbl.replace directive_built_in_values k (Dir_string v)
-
-let () =
-  (* Note we use {!Config} instead of {!Sys} becasue 
-     we want to overwrite in some cases with the 
-     same stdlib
-  *)
-  let version = 
-    Config.version (* so that it can be overridden*)
-  in
-  replace_directive_built_in_value "OCAML_VERSION" 
-    (Dir_string version);
-  replace_directive_built_in_value "OS_TYPE" 
-    (Dir_string Sys.os_type);
-  replace_directive_built_in_value "BIG_ENDIAN" 
-    (Dir_bool Sys.big_endian)
-
-let find_directive_built_in_value k =
-  Hashtbl.find directive_built_in_values k 
-
-let iter_directive_built_in_value f = Hashtbl.iter f directive_built_in_values
-
-(*
-   {[
-     # semver 0 "12";;
-     - : int * int * int * string = (12, 0, 0, "");;
-     # semver 0 "12.3";;
-     - : int * int * int * string = (12, 3, 0, "");;
-       semver 0 "12.3.10";;
-     - : int * int * int * string = (12, 3, 10, "");;
-     # semver 0 "12.3.10+x";;
-     - : int * int * int * string = (12, 3, 10, "+x")
-   ]}
-*)    
-let zero = Char.code '0' 
-let dot = Char.code '.'
-let semantic_version_parse str start  last_index = 
-  let rec aux start  acc last_index =
-    if start <= last_index then
-      let c = Char.code (String.unsafe_get str start) in
-      if c = dot then (acc, start + 1) (* consume [4.] instead of [4]*)
-      else 
-        let v =  c - zero in
-        if v >=0 && v <= 9  then
-          aux (start + 1) (acc * 10 + v) last_index
-        else (acc , start)
-    else (acc, start)
-  in
-  let major, major_end =  aux start 0 last_index  in
-  let minor, minor_end = aux major_end 0 last_index in
-  let patch, patch_end = aux minor_end 0 last_index in 
-  let additional = String.sub str patch_end (last_index - patch_end  +1) in
-  (major, minor, patch), additional
-
-(** 
-   {[
-     semver Location.none "1.2.3" "~1.3.0" = false;;
-     semver Location.none "1.2.3" "^1.3.0" = true ;;
-     semver Location.none "1.2.3" ">1.3.0" = false ;;
-     semver Location.none "1.2.3" ">=1.3.0" = false ;;
-     semver Location.none "1.2.3" "<1.3.0" = true ;;
-     semver Location.none "1.2.3" "<=1.3.0" = true ;;
-   ]}
-*)
-let semver loc lhs str =
-  let last_index = String.length str - 1 in 
-  if last_index < 0 then raise (Error(Illegal_semver str, loc))
-  else 
-    let pred, ((major, minor, _patch) as version, _) = 
-      let v = String.unsafe_get str 0 in 
-      match v with
-      | '>' -> 
-          if last_index = 0 then raise (Error(Illegal_semver str, loc)) else 
-          if String.unsafe_get str 1 = '=' then 
-            `Ge, semantic_version_parse str 2 last_index
-          else `Gt, semantic_version_parse str 1 last_index
-      | '<' 
-        ->
-          if last_index = 0 then raise (Error(Illegal_semver str, loc)) else 
-          if String.unsafe_get str 1 = '=' then 
-            `Le, semantic_version_parse str 2 last_index
-          else `Lt, semantic_version_parse str 1 last_index
-      | '^' 
-        -> `Compatible, semantic_version_parse str 1 last_index
-      | '~' ->  `Approximate, semantic_version_parse str 1 last_index
-      | _ -> `Exact, semantic_version_parse str 0 last_index 
-    in 
-    let ((l_major, l_minor, _l_patch) as lversion,_) =
-      semantic_version_parse lhs 0 (String.length lhs - 1) in 
-    match pred with 
-    | `Ge -> lversion >= version 
-    | `Gt -> lversion > version 
-    | `Le -> lversion <= version
-    | `Lt -> lversion < version 
-    | `Approximate -> major = l_major && minor = l_minor 
-    |  `Compatible -> major = l_major
-    | `Exact -> lversion = version 
-
-
-let pp_directive_value fmt (x : directive_value) =
-  match x with
-  | Dir_bool b -> Format.pp_print_bool fmt b
-  | Dir_int b -> Format.pp_print_int fmt b
-  | Dir_float b -> Format.pp_print_float fmt b
-  | Dir_string s  -> Format.fprintf fmt "%S" s
-  | Dir_null -> Format.pp_print_string fmt "null"    
-
-let list_variables fmt = 
-  iter_directive_built_in_value 
-    (fun s  dir_value ->
-       Format.fprintf
-         fmt "@[%s@ %a@]@."
-         s pp_directive_value dir_value
-    )
-
-let defined str =
-  begin match  find_directive_built_in_value str with 
-  |  Dir_null -> false 
-  | _ ->  true
-  | exception _ -> 
-      try ignore @@ Sys.getenv str; true with _ ->  false 
-  end
-
-let query _loc str =
-  begin match find_directive_built_in_value str with
-  | Dir_null -> Dir_bool false
-  | v -> v
-  | exception Not_found ->
-      begin match Sys.getenv str with 
-      | v -> 
-          begin 
-            try Dir_bool (bool_of_string v) with 
-              _ -> 
-                begin 
-                  try Dir_int (int_of_string v )
-                  with 
-                    _ -> 
-                      begin try (Dir_float (float_of_string v)) 
-                      with _ -> Dir_string v
-                      end
-                end
-          end
-      | exception Not_found -> 
-          Dir_bool false
-      end
-  end
-
-
-let define_key_value key v  =
-  if String.length key > 0
-      && Char.uppercase_ascii (key.[0]) = key.[0] then 
-    begin 
-      replace_directive_built_in_value key
-      begin
-        (* NEED Sync up across {!lexer.mll} {!bspp.ml} and here,
-           TODO: put it in {!lexer.mll}
-        *)
-        try Dir_bool (bool_of_string v) with 
-          _ -> 
-          begin 
-            try Dir_int (int_of_string v )
-            with 
-              _ -> 
-              begin try (Dir_float (float_of_string v)) 
-                with _ -> Dir_string v
-              end
-          end
-      end;
-    true
-    end
-  else false 
-
-let cvt_int_literal s =
-  - int_of_string ("-" ^ s)
-  
-let value_of_token loc (t : Parser.token)  = 
-  match t with 
-  | INT (i,None) -> Dir_int (cvt_int_literal i) 
-  | STRING (s,_) -> Dir_string s 
-  | FLOAT (s,None)  -> Dir_float (float_of_string s)
-  | TRUE -> Dir_bool true
-  | FALSE -> Dir_bool false
-  | UIDENT s -> query loc s 
-  | _ -> raise (Error (Unexpected_token_in_conditional, loc))
-
-
-let directive_parse token_with_comments lexbuf =
-  let look_ahead = ref None in
-  let token () : Parser.token =
-    let v = !look_ahead in
-    match v with 
-    | Some v -> 
-        look_ahead := None ;
-        v
-    | None ->
-       let rec skip () = 
-        match token_with_comments lexbuf  with
-        | COMMENT _ 
-        | DOCSTRING _ -> skip ()
-        | EOF -> raise (Error (Unterminated_if, Location.curr lexbuf)) 
-        | t -> t 
-        in  skip ()
-  in
-  let push e =
-    (* INVARIANT: only look at most one token *)
-    assert (!look_ahead = None);
-    look_ahead := Some e 
-  in
-  let rec
-    token_op calc   ~no  lhs   =
-    match token () with 
-    | (LESS 
-    | GREATER 
-    | INFIXOP0 "<=" 
-    | INFIXOP0 ">=" 
-    | EQUAL
-    | INFIXOP0 "<>" as op) ->
-        let f =  
-          match op with 
-          | LESS -> (<) 
-          | GREATER -> (>)
-          | INFIXOP0 "<=" -> (<=)
-          | EQUAL -> (=)
-          | INFIXOP0 "<>" -> (<>) 
-          | _ -> assert false
-        in 
-        let curr_loc = Location.curr lexbuf in 
-        let rhs = value_of_token curr_loc (token ()) in 
-        not calc ||
-        f lhs (assert_same_type lexbuf lhs rhs)
-    | INFIXOP0 "=~" -> 
-        not calc ||
-        begin match lhs with 
-        | Dir_string s ->
-            let curr_loc = Location.curr lexbuf in 
-            let rhs = value_of_token curr_loc (token ()) in 
-            begin match rhs with 
-            | Dir_string rhs -> 
-                semver curr_loc s rhs
-            | _ -> 
-                raise
-                  (Error
-                     ( Conditional_expr_expected_type
-                         (Dir_type_string, type_of_directive lhs), Location.curr lexbuf))
-            end
-        | _ -> raise
-                 (Error
-                    ( Conditional_expr_expected_type
-                        (Dir_type_string, type_of_directive lhs), Location.curr lexbuf))
-        end
-    | e -> no e 
-  and
-    parse_or calc : bool =
-    parse_or_aux calc (parse_and calc)
-  and  (* a || (b || (c || d))*)
-    parse_or_aux calc v : bool =
-    (* let l = v  in *)
-    match token () with
-    | BARBAR ->
-        let b =   parse_or (calc && not v)  in
-        v || b 
-    | e -> push e ; v
-  and parse_and calc = 
-    parse_and_aux calc (parse_relation calc)
-  and parse_and_aux calc v = (* a && (b && (c && d)) *)
-    (* let l = v  in *)
-    match token () with
-    | AMPERAMPER ->
-        let b =  parse_and (calc && v) in
-        v && b
-    | e -> push e ; v
-  and parse_relation (calc : bool) : bool  =
-    let curr_token = token () in
-    let curr_loc = Location.curr lexbuf in
-    match curr_token with
-    | TRUE -> true 
-    | FALSE -> false
-    | UIDENT v ->
-        let value_v = query curr_loc v in
-        token_op calc 
-          ~no:(fun e -> push e ;
-                match value_v with 
-                | Dir_bool b -> b 
-                | _ -> 
-                    let ty = type_of_directive value_v in
-                    raise
-                      (Error(Conditional_expr_expected_type (Dir_type_bool, ty),
-                             curr_loc)))
-          value_v
-    | INT (v,None) -> 
-      let num_v = cvt_int_literal v in 
-      token_op calc
-          ~no:(fun e -> 
-                push e; 
-                num_v <> 0
-              )
-          (Dir_int num_v)
-    | FLOAT (v,None) -> 
-        token_op calc
-          ~no:(fun _e -> 
-              raise (Error(Conditional_expr_expected_type(Dir_type_bool, Dir_type_float),
-                           curr_loc)))
-          (Dir_float (float_of_string v))
-    | STRING (v,_) -> 
-        token_op calc
-          ~no:(fun _e ->
-              raise (Error
-                       (Conditional_expr_expected_type(Dir_type_bool, Dir_type_string),
-                        curr_loc)))
-          (Dir_string v)
-    | LIDENT ("defined" | "undefined" as r) ->
-        let t = token () in 
-        let loc = Location.curr lexbuf in
-        begin match t with
-        | UIDENT s -> 
-            not calc || 
-            if r.[0] = 'u' then 
-              not @@ defined s
-            else defined s 
-        | _ -> raise (Error (Unexpected_token_in_conditional, loc))
-        end
-    | LPAREN ->
-        let v = parse_or calc in
-        begin match token () with
-        | RPAREN ->  v
-        | _ -> raise (Error(Unterminated_paren_in_conditional, Location.curr lexbuf))
-        end 
-
-    | _ -> raise (Error (Unexpected_token_in_conditional, curr_loc))
-  in
-  let v = parse_or true in
-  begin match token () with
-  | THEN | EOL ->  v 
-  | _ -> raise (Error (Expect_hash_then_in_conditional, Location.curr lexbuf))
-  end
-
-
-type dir_conditional =
-  | Dir_if_true
-  | Dir_if_false
-  | Dir_out 
-
-(* let string_of_dir_conditional (x : dir_conditional) = *)
-(*   match x with  *)
-(*   | Dir_if_true -> "Dir_if_true" *)
-(*   | Dir_if_false -> "Dir_if_false" *)
-(*   | Dir_out -> "Dir_out" *)
-
-let is_elif (i : Parser.token ) =
-  match i with
-  | LIDENT "elif" -> true
-  | _ -> false (* avoid polymorphic equal *)
-
 
 (* The table of keywords *)
 
@@ -531,11 +115,6 @@ let in_comment () = !comment_start_loc <> [];;
 let is_in_string = ref false
 let in_string () = !is_in_string
 let print_warnings = ref true
-let if_then_else = ref Dir_out
-let sharp_look_ahead = ref None
-let update_if_then_else v = 
-  (* Format.fprintf Format.err_formatter "@[update %s \n@]@." (string_of_dir_conditional v); *)
-  if_then_else := v
 
 (* Escaped chars are interpreted in strings unless they are in comments. *)
 let store_escaped_char lexbuf c =
@@ -686,23 +265,6 @@ let report_error ppf = function
         | None -> ()
         | Some expl -> fprintf ppf ": %s" expl
       end
-  | Unterminated_if -> 
-      fprintf ppf "#if not terminated"
-  | Unterminated_else -> 
-      fprintf ppf "#else not terminated"
-  | Unexpected_directive -> fprintf ppf "Unexpected directive"
-  | Unexpected_token_in_conditional -> 
-      fprintf ppf "Unexpected token in conditional predicate"
-  | Unterminated_paren_in_conditional ->
-    fprintf ppf "Unterminated parens in conditional predicate"
-  | Expect_hash_then_in_conditional -> 
-      fprintf ppf "Expect `then` after conditional predicate"
-  | Conditional_expr_expected_type (a,b) -> 
-      fprintf ppf "Conditional expression type mismatch (%s,%s)" 
-        (string_of_type_directive a )
-        (string_of_type_directive b )
-  | Illegal_semver s -> 
-      fprintf ppf "Illegal semantic version string %s" s
 
 let () =
   Location.register_error_of_exn
@@ -945,15 +507,7 @@ rule token = parse
             { INFIXOP3(Lexing.lexeme lexbuf) }
   | '#' (symbolchar | '#') +
             { HASHOP(Lexing.lexeme lexbuf) }
-  | eof {
-    if !if_then_else <> Dir_out then
-      if !if_then_else = Dir_if_true then
-        raise (Error (Unterminated_if, Location.curr lexbuf))
-      else raise (Error(Unterminated_else, Location.curr lexbuf))
-    else 
-      EOF
-
-  }
+  | eof { Rescript_cpp.eof_check lexbuf; EOF}
   | _
       { raise (Error(Illegal_character (Lexing.lexeme_char lexbuf 0),
                      Location.curr lexbuf))
@@ -1123,10 +677,6 @@ and skip_hash_bang = parse
   | "" { () }
 
 {
-  let at_bol lexbuf = 
-    let pos = Lexing.lexeme_start_p lexbuf in 
-    pos.pos_cnum = pos.pos_bol 
-
   let token_with_comments lexbuf =
     match !preprocessor with
     | None -> token lexbuf
@@ -1149,94 +699,6 @@ and skip_hash_bang = parse
            preceded by a blank line *)
 
   and docstring = Docstrings.docstring
-
-  let interpret_directive lexbuf cont look_ahead = 
-    let if_then_else = !if_then_else in
-    begin match token_with_comments lexbuf, if_then_else with 
-    |  IF, Dir_out  ->
-        let rec skip_from_if_false () = 
-          let token = token_with_comments lexbuf in
-          if token = EOF then 
-            raise (Error (Unterminated_if, Location.curr lexbuf)) else
-          if token = HASH && at_bol lexbuf then 
-            begin 
-              let token = token_with_comments lexbuf in
-              match token with
-              | END -> 
-                  begin
-                    update_if_then_else Dir_out;
-                    cont lexbuf
-                  end
-              | ELSE -> 
-                  begin
-                    update_if_then_else Dir_if_false;
-                    cont lexbuf
-                  end
-              | IF ->
-                  raise (Error (Unexpected_directive, Location.curr lexbuf))
-              | _ -> 
-                  if is_elif token &&
-                     directive_parse token_with_comments lexbuf then
-                    begin
-                      update_if_then_else Dir_if_true;
-                      cont lexbuf
-                    end
-                  else skip_from_if_false ()                               
-            end
-          else skip_from_if_false () in 
-        if directive_parse token_with_comments lexbuf then
-          begin 
-            update_if_then_else Dir_if_true (* Next state: ELSE *);
-            cont lexbuf
-          end
-        else
-          skip_from_if_false ()
-    | IF,  (Dir_if_false | Dir_if_true)->
-        raise (Error(Unexpected_directive, Location.curr lexbuf))
-    | LIDENT "elif", (Dir_if_false | Dir_out)
-      -> (* when the predicate is false, it will continue eating `elif` *)
-        raise (Error(Unexpected_directive, Location.curr lexbuf))
-    | (LIDENT "elif" | ELSE as token), Dir_if_true ->           
-        (* looking for #end, however, it can not see #if anymore *)
-        let rec skip_from_if_true else_seen = 
-          let token = token_with_comments lexbuf in
-          if token = EOF then 
-            raise (Error (Unterminated_else, Location.curr lexbuf)) else
-          if token = HASH && at_bol lexbuf then 
-            begin 
-              let token = token_with_comments lexbuf in 
-              match token with  
-              | END -> 
-                  begin
-                    update_if_then_else Dir_out;
-                    cont lexbuf
-                  end  
-              | IF ->  
-                  raise (Error (Unexpected_directive, Location.curr lexbuf)) 
-              | ELSE ->
-                  if else_seen then 
-                    raise (Error (Unexpected_directive, Location.curr lexbuf))
-                  else 
-                    skip_from_if_true true
-              | _ ->
-                  if else_seen && is_elif token then  
-                    raise (Error (Unexpected_directive, Location.curr lexbuf))
-                  else 
-                    skip_from_if_true else_seen
-            end
-          else skip_from_if_true else_seen in 
-        skip_from_if_true (token = ELSE)
-    | ELSE, Dir_if_false 
-    | ELSE, Dir_out -> 
-        raise (Error(Unexpected_directive, Location.curr lexbuf))
-    | END, (Dir_if_false | Dir_if_true ) -> 
-        update_if_then_else  Dir_out;
-        cont lexbuf
-    | END,  Dir_out  -> 
-        raise (Error(Unexpected_directive, Location.curr lexbuf))
-    | token, (Dir_if_true | Dir_if_false | Dir_out) ->
-        look_ahead token 
-    end
 
   let token lexbuf =
     let post_pos = lexeme_end_p lexbuf in
@@ -1284,10 +746,10 @@ and skip_hash_bang = parse
             | BlankLine -> BlankLine
           in
           loop lines' docs lexbuf
-      | HASH when at_bol lexbuf -> 
-          interpret_directive lexbuf 
-            (fun lexbuf -> loop lines docs lexbuf)
-            (fun token -> sharp_look_ahead := Some token; HASH)            
+      | HASH when Rescript_cpp.at_bol lexbuf -> 
+          Rescript_cpp.interpret_directive lexbuf 
+            ~cont:(fun lexbuf -> loop lines docs lexbuf)
+            ~token_with_comments
       | DOCSTRING doc ->
           Docstrings.register doc;
           add_docstring_comment doc;
@@ -1311,16 +773,10 @@ and skip_hash_bang = parse
           attach lines docs (lexeme_start_p lexbuf);
           tok
     in
-      match !sharp_look_ahead with
-      | None -> 
-          loop NoLine Initial lexbuf
-      | Some token ->
-          sharp_look_ahead := None ;
-          token
+    Rescript_cpp.check_sharp_look_ahead (fun _ -> loop NoLine Initial lexbuf)
 
   let init () =
-    sharp_look_ahead := None;
-    update_if_then_else  Dir_out;
+    Rescript_cpp.init ();
     is_in_string := false;
     comment_start_loc := [];
     comment_list := [];
@@ -1328,25 +784,6 @@ and skip_hash_bang = parse
     | None -> ()
     | Some (init, _preprocess) -> init ()
 
-  let rec filter_directive pos   acc lexbuf : (int * int ) list =
-    match token_with_comments lexbuf with
-    | HASH when at_bol lexbuf ->
-        (* ^[start_pos]#if ... #then^[end_pos] *)
-        let start_pos = Lexing.lexeme_start lexbuf in 
-        interpret_directive lexbuf 
-          (fun lexbuf -> 
-             filter_directive 
-               (Lexing.lexeme_end lexbuf)
-               ((pos, start_pos) :: acc)
-               lexbuf
-          
-          )
-          (fun _token -> filter_directive pos acc lexbuf  )
-    | EOF -> (pos, Lexing.lexeme_end lexbuf) :: acc
-    | _ -> filter_directive pos  acc lexbuf
-
-  let filter_directive_from_lexbuf lexbuf = 
-    List.rev (filter_directive 0 [] lexbuf )
 
   let set_preprocessor init preprocess =
     escaped_newlines := true;

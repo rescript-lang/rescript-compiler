@@ -144,3 +144,4 @@ themes
 .vscode/settings.json
 *.output # yacc output
 jscomp/ml/parser.output
+jscomp/ml/lexer.ml

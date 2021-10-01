@@ -153,6 +153,8 @@
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./ml/parser.ml
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./ml/parser.mli
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./ml/parsetree.ml
+../lib/4.06.1/unstable/all_ounit_tests.ml: ./ml/rescript_cpp.ml
+../lib/4.06.1/unstable/all_ounit_tests.ml: ./ml/rescript_cpp.mli
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./ml/syntaxerr.ml
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./ml/syntaxerr.mli
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./ounit/oUnit.ml

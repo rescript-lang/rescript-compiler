@@ -209,11 +209,11 @@ let eval (s : string) ~suffix =
 
 
 
-
+module Pp = Rescript_cpp
 let define_variable s =
   match Ext_string.split ~keep_empty:true s '=' with
   | [key; v] -> 
-    if not (Lexer.define_key_value key v)  then 
+    if not (Pp.define_key_value key v)  then 
       Bsc_args.bad_arg ("illegal definition: " ^ s)
   | _ -> Bsc_args.bad_arg ("illegal definition: " ^ s)
 
@@ -292,7 +292,7 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-bs-syntax-only", set Js_config.syntax_only,
     "*internal* Only check syntax";
 
-    "-bs-g", unit_call (fun _ -> Js_config.debug := true; Lexer.replace_directive_bool "DEBUG" true),
+    "-bs-g", unit_call (fun _ -> Js_config.debug := true; Pp.replace_directive_bool "DEBUG" true),
     "Debug mode";
 
     "-bs-v", string_call ignore, 
@@ -348,7 +348,7 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
      checks that the TERM environment variable exists and is\n\
      not empty or \"dumb\", and that isatty(stderr) holds.";    
 
-    "-bs-list-conditionals", unit_call (fun () -> Lexer.list_variables Format.err_formatter),
+    "-bs-list-conditionals", unit_call (fun () -> Pp.list_variables Format.err_formatter),
     "*internal* List existing conditional variables";  
 
     "-bs-eval", string_call (fun  s -> eval s ~suffix:Literals.suffix_ml), 
