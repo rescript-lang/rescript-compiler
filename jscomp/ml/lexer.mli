@@ -69,12 +69,10 @@ val set_preprocessor :
   ((Lexing.lexbuf -> Parser.token) -> Lexing.lexbuf -> Parser.token) ->
   unit
 
-(** semantic version predicate *)
-val semver : Location.t ->   string -> string -> bool
+
+
 
 val filter_directive_from_lexbuf : Lexing.lexbuf -> (int * int) list
-
-val replace_directive_int : string -> int -> unit
 val replace_directive_string : string -> string -> unit
 val replace_directive_bool : string -> bool -> unit 
 val remove_directive_built_in_value : string -> unit

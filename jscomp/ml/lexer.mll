@@ -88,8 +88,6 @@ let replace_directive_built_in_value k v =
 let remove_directive_built_in_value k  = 
   Hashtbl.replace directive_built_in_values k Dir_null
 
-let replace_directive_int k v = 
-  Hashtbl.replace directive_built_in_values k (Dir_int v)
 
 let replace_directive_bool k v = 
   Hashtbl.replace directive_built_in_values k (Dir_bool v)
