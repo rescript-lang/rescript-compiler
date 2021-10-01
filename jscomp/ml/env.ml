@@ -479,7 +479,7 @@ and structure_components = {
    (Subst.t * module_declaration, module_declaration) EnvLazy.t comp_tbl;
   mutable comp_modtypes: modtype_declaration comp_tbl;
   mutable comp_components: module_components comp_tbl;
-  mutable comp_classes: class_declaration comp_tbl;
+  comp_classes: class_declaration comp_tbl; (* warning -69*)
   mutable comp_cltypes: class_type_declaration comp_tbl;
 }
 
