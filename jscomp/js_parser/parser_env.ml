@@ -194,7 +194,7 @@ type env = {
   lookahead: Lookahead.t ref;
   token_sink: (token_sink_result -> unit) option ref;
   parse_options: parse_options;
-  source: File_key.t option;
+  (* source: File_key.t option; *)
   (* It is a syntax error to reference private fields not in scope. In order to enforce this,
    * we keep track of the privates we've seen declared and used. *)
   privates: (SSet.t * (string * Loc.t) list) list ref;
@@ -243,7 +243,7 @@ let init_env ?(token_sink = None) ?(parse_options = None) source content =
     lookahead = ref (Lookahead.create lex_env Lex_mode.NORMAL);
     token_sink = ref token_sink;
     parse_options;
-    source;
+    (* source; *)
     privates = ref [];
   }
 

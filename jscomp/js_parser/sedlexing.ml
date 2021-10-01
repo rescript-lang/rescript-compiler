@@ -26,7 +26,7 @@ type lexbuf = {
   mutable marked_line: int;
   mutable marked_val: int;
 
-  mutable filename: string;
+  (* mutable filename: string; *)
 
   mutable finished: bool;
 }
@@ -48,7 +48,7 @@ let empty_lexbuf = {
   marked_bol = 0;
   marked_line = 0;
   marked_val = 0;
-  filename = "";
+  (* filename = ""; *)
   finished = false;
 }
 
