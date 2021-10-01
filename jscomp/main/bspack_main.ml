@@ -29,9 +29,13 @@ let ( @> ) (b, v) acc = if b then v :: acc else acc
 
 let preprocess_to_buffer fn (str : string) (oc : Buffer.t) : unit =
   let lexbuf = Lexing.from_string str in
+  Rescript_cpp.init (); (* double init does not do any harm *)
   Lexer.init ();
   Location.init lexbuf fn;
-  let segments = Lexer.filter_directive_from_lexbuf lexbuf in
+  let segments =
+    Rescript_cpp.filter_directive_from_lexbuf
+      ~token_with_comments:Lexer.token_with_comments lexbuf
+  in
   Ext_list.iter segments (fun (start, pos) ->
       Buffer.add_substring oc str start (pos - start))
 
@@ -44,9 +48,13 @@ let verify_valid_ml (str : string) =
 (* same as {!preprocess_to_buffer} except writing to channel directly *)
 let preprocess_string fn (str : string) oc =
   let lexbuf = Lexing.from_string str in
-  Lexer.init ();
+  Rescript_cpp.init (); (* double init does not do any harm*)
+  Lexer.init ();  
   Location.init lexbuf fn;
-  let segments = Lexer.filter_directive_from_lexbuf lexbuf in
+  let segments =
+    Rescript_cpp.filter_directive_from_lexbuf
+      ~token_with_comments:Lexer.token_with_comments lexbuf
+  in
   Ext_list.iter segments (fun (start, pos) ->
       output_substring oc str start (pos - start))
 
@@ -302,12 +310,12 @@ let alias_module s =
         Hash_string.add alias_map a b)
   | _ -> raise (Arg.Bad "invalid module alias format like A=B")
 
-let undefine_symbol (s : string) = Lexer.remove_directive_built_in_value s
+let undefine_symbol (s : string) = Rescript_cpp.remove_directive_built_in_value s
 
 let define_symbol (s : string) =
   match Ext_string.split ~keep_empty:true s '=' with
   | [ key; v ] ->
-      if not @@ Lexer.define_key_value key v then
+      if not @@ Rescript_cpp.define_key_value key v then
         raise (Arg.Bad ("illegal definition: " ^ s))
   | _ -> raise (Arg.Bad ("illegal definition: " ^ s))
 
@@ -448,9 +456,10 @@ let () =
             |> List.iter (fun s ->
                    output_string out_chan
                      (Printf.sprintf "module %s = %s \n" s aliased)))
-          (fun base mli_name ml_name mli_lazy ml_lazy
-                ->
-            let (lazy (_, mli_content)), (lazy (_, ml_content)) = mli_lazy , ml_lazy in 
+          (fun base mli_name ml_name mli_lazy ml_lazy ->
+            let (lazy (_, mli_content)), (lazy (_, ml_content)) =
+              (mli_lazy, ml_lazy)
+            in
             incr count;
             (*TODO: assume mli_name, ml_name are in the same dir,
               Needs to be addressed

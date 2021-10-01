@@ -63,9 +63,9 @@ let setup_env () =
        (root_dir//"jscomp"//"runtime") ::
        !Clflags.include_dirs);
 #end
-  Lexer.replace_directive_bool "BS" true;
-  Lexer.replace_directive_bool "JS" true;
-  Lexer.replace_directive_string "BS_VERSION"  Bs_version.version
+  Rescript_cpp.replace_directive_bool "BS" true;
+  Rescript_cpp.replace_directive_bool "JS" true;
+  Rescript_cpp.replace_directive_string "BS_VERSION"  Bs_version.version
 #if false
   ; Switch.cut := 100 (* tweakable but not very useful *)
 #end  
