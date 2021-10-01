@@ -6803,12 +6803,13 @@ type t =
   {mutable buffer : bytes;
    mutable position : int;
    mutable length : int;
-   initial_buffer : bytes}
+
+   }
 
 let create n =
   let n = if n < 1 then 1 else n in
   let s = Bytes.create n in
-  {buffer = s; position = 0; length = n; initial_buffer = s}
+  {buffer = s; position = 0; length = n}
 
 let contents b = Bytes.sub_string b.buffer 0 b.position
 (* let to_bytes b = Bytes.sub b.buffer 0 b.position  *)
@@ -10154,7 +10155,7 @@ let bal l x d r =
   let hl = height l in
   let hr = height r in
   if hl > hr + 2 then begin
-    let  {l=ll; r = lr; v = lv; k = lk} = ~!l in
+    let  {l=ll; r = lr; v = lv; k = lk; h = _} = ~!l in
     let hll = height ll in 
     let hlr = height lr in 
     if hll >= hlr then
@@ -10885,7 +10886,7 @@ let bal l v r : _ t =
   let hl = height l in
   let hr = height r in
   if hl > hr + 2 then 
-    let {l=ll;r= lr; v = lv}  = ~!l in 
+    let {l=ll;r= lr; v = lv; h = _}  = ~!l in 
     let hll = height ll in 
     let hlr = height lr in 
     if hll >= hlr then
@@ -11522,7 +11523,7 @@ type ('a,'b) ast_info =
       string (* opref2*)
 
 type ('a,'b) t =
-  { module_name : string ; ast_info : ('a,'b) ast_info }
+  { (*module_name : string ;*) ast_info : ('a,'b) ast_info }
 
 
 (* only visit nodes that are currently in the domain *)
@@ -11613,7 +11614,7 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
                {ast_info =
                   (Ml (source_file, parse_implementation
                          ppf source_file, opref));
-                module_name ;
+                (* module_name ; *)
                } 
            | {ast_info = (Ml (source_file2, _, _)
                          | Ml_mli(source_file2, _, _,_,_,_))} ->
@@ -11630,7 +11631,7 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
                           intf,
                           opref2
                          );
-                module_name} 
+                (*module_name*)} 
          end
        | `Mli, opref ->
          let module_name = Ext_filename.module_name source_file in
@@ -11639,7 +11640,7 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
              Map_string.add acc module_name
                {ast_info = (Mli (source_file, parse_interface
                                    ppf source_file, opref));
-                module_name } 
+                (*module_name*) } 
            | {ast_info =
                 (Mli (source_file2, _, _) |
                  Ml_mli(_,_,_,source_file2,_,_)) } ->
@@ -11657,7 +11658,7 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
                      parse_interface ppf source_file,
                      opref
                     );
-                module_name} 
+                (*module_name*)} 
          end
     ) 
 ;;
@@ -29599,8 +29600,9 @@ let () =
             |> List.iter (fun s ->
                    output_string out_chan
                      (Printf.sprintf "module %s = %s \n" s aliased)))
-          (fun base mli_name ml_name (lazy (_, mli_content))
-               (lazy (_, ml_content)) ->
+          (fun base mli_name ml_name mli_lazy ml_lazy
+                ->
+            let (lazy (_, mli_content)), (lazy (_, ml_content)) = mli_lazy , ml_lazy in 
             incr count;
             (*TODO: assume mli_name, ml_name are in the same dir,
               Needs to be addressed
