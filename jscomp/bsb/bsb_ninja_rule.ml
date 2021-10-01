@@ -29,7 +29,7 @@
 
 type t = { 
   mutable used : bool; 
-  rule_name : string; 
+  (* rule_name : string;  *)
   name : out_channel -> string 
 }
 
@@ -67,7 +67,7 @@ let define
 
   let rec self = {
     used  = false;
-    rule_name ;
+    (* rule_name ; *)
     name = fun oc ->
       if not self.used then
         begin

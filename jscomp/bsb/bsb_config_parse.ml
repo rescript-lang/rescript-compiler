@@ -344,7 +344,7 @@ let interpret_json
             ~package_kind
             ~root: per_proj_dir
             ~cut_generators
-            ~namespace
+            (* ~namespace *)
             sources in         
         {
           pinned_dependencies;  

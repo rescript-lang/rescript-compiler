@@ -51,7 +51,7 @@ type cxt = {
   root : string;
   cut_generators : bool;
   traverse : bool;
-  namespace : string option;
+  (* namespace : string option; *)
   ignored_dirs : Set_string.t
 }
 
@@ -331,7 +331,7 @@ let scan
     ~package_kind 
     ~root 
     ~cut_generators 
-    ~namespace 
+    (* ~namespace  *)
     ~ignored_dirs
     x : t  = 
   parse_sources {
@@ -341,7 +341,7 @@ let scan
     cwd = Filename.current_dir_name;
     root ;
     cut_generators;
-    namespace;
+    (* namespace; *)
     traverse = false
   } x 
 
