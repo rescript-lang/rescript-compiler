@@ -1495,7 +1495,7 @@ ${cppoList("ext", [
 
 ${mllRule}
 ${mllList("ext",["ext_json_parse.mll"])}
-
+${mllList("ml", ["lexer.mll"])}
 rule copy
   command = cp $in $out
   description = $in -> $out    
@@ -1695,7 +1695,7 @@ rule bspack
 ${mllRule}
 ${mlyRule}
 
-${mllList("ml", ["lexer.mll"])}
+
 ${mlyList("ml", ["parser.mly"])}
 rule mk_shared
     command = $ocamlopt -I +compiler-libs -shared $flags -o $out $in
