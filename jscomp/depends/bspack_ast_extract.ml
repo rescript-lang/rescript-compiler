@@ -41,7 +41,7 @@ type ('a,'b) ast_info =
       string (* opref2*)
 
 type ('a,'b) t =
-  { module_name : string ; ast_info : ('a,'b) ast_info }
+  { (*module_name : string ;*) ast_info : ('a,'b) ast_info }
 
 
 (* only visit nodes that are currently in the domain *)
@@ -132,7 +132,7 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
                {ast_info =
                   (Ml (source_file, parse_implementation
                          ppf source_file, opref));
-                module_name ;
+                (* module_name ; *)
                } 
            | {ast_info = (Ml (source_file2, _, _)
                          | Ml_mli(source_file2, _, _,_,_,_))} ->
@@ -149,7 +149,7 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
                           intf,
                           opref2
                          );
-                module_name} 
+                (*module_name*)} 
          end
        | `Mli, opref ->
          let module_name = Ext_filename.module_name source_file in
@@ -158,7 +158,7 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
              Map_string.add acc module_name
                {ast_info = (Mli (source_file, parse_interface
                                    ppf source_file, opref));
-                module_name } 
+                (*module_name*) } 
            | {ast_info =
                 (Mli (source_file2, _, _) |
                  Ml_mli(_,_,_,source_file2,_,_)) } ->
@@ -176,7 +176,7 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
                      parse_interface ppf source_file,
                      opref
                     );
-                module_name} 
+                (*module_name*)} 
          end
     ) 
 ;;
