@@ -41,7 +41,7 @@ let used_attributes : string Asttypes.loc Hash_set_poly.t =
   Hash_set_poly.create 16 
 
 
-#if false then
+(*
   let dump_attribute fmt = (fun ( (sloc : string Asttypes.loc),payload) -> 
       Format.fprintf fmt "@[%s %a@]" sloc.txt (Printast.payload 0 ) payload
     )
@@ -50,7 +50,7 @@ let dump_used_attributes fmt =
   Format.fprintf fmt "Used attributes Listing Start:@.";
   Hash_set_poly.iter  used_attributes (fun attr -> dump_attribute fmt attr) ;
   Format.fprintf fmt "Used attributes Listing End:@."
-#end
+ *)
 
 (* only mark non-ghost used bs attribute *)
 let mark_used_bs_attribute ((x,_) : Parsetree.attribute) = 
@@ -64,10 +64,11 @@ let warn_unused_attribute
      not loc.loc_ghost &&
      not (Hash_set_poly.mem used_attributes sloc) then 
     begin    
-#if false then (*COMMENT*)
+  (* 
   dump_used_attributes Format.err_formatter; 
-dump_attribute Format.err_formatter attr ;
-#end
+dump_attribute Format.err_formatter attr ; 
+*)
+
 Location.prerr_warning loc (Bs_unused_attribute txt)
 end
 
