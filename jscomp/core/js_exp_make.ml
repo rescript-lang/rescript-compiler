@@ -51,12 +51,12 @@ let rec remove_pure_sub_exp (x : t) : t option =
 
 and is_pure_sub_exp (x : t) = remove_pure_sub_exp x = None
 
-(* let mk ?comment exp : t = 
+(* let mk ?comment exp : t =
    {expression_desc = exp ; comment  } *)
 
 let var ?comment id : t = { expression_desc = Var (Id id); comment }
 
-(* only used in property access, 
+(* only used in property access,
     Invariant: it should not call an external module .. *)
 
 let js_global ?comment (v : string) = var ?comment (Ext_ident.create_js v)
@@ -183,14 +183,14 @@ let new_ ?comment e0 args : t =
 
 let unit : t = { expression_desc = Undefined; comment = None }
 
-(* let math ?comment v args  : t = 
+(* let math ?comment v args  : t =
    {comment ; expression_desc = Math(v,args)} *)
 
 (* we can do constant folding here, but need to make sure the result is consistent
    {[
-     let f x = string_of_int x        
-     ;; f 3            
-   ]}     
+     let f x = string_of_int x
+     ;; f 3
+   ]}
    {[
      string_of_int 3
    ]}
@@ -198,7 +198,7 @@ let unit : t = { expression_desc = Undefined; comment = None }
    TODO: optimize
 *)
 
-(* Attention: Shared *mutable state* is evil, 
+(* Attention: Shared *mutable state* is evil,
    [Js_fun_env.empty] is a mutable state ..
 *)
 
@@ -233,7 +233,7 @@ let dummy_obj ?comment (info : Lam_tag_info.t) : t =
       { comment; expression_desc = Array ([], Mutable) }
   | Blk_some | Blk_some_not_nested | Blk_lazy_general -> assert false
 
-(* TODO: complete 
+(* TODO: complete
     pure ...
 *)
 let rec seq ?comment (e0 : t) (e1 : t) : t =
@@ -253,8 +253,8 @@ let rec seq ?comment (e0 : t) (e1 : t) : t =
 
 let fuse_to_seq x xs = if xs = [] then x else Ext_list.fold_left xs x seq
 
-(* let empty_string_literal : t = 
-   {expression_desc = Str (true,""); comment = None}   *)
+(* let empty_string_literal : t =
+   {expression_desc = Str (true,""); comment = None} *)
 
 let zero_int_literal : t =
   { expression_desc = Number (Int { i = 0l; c = None }); comment = None }
@@ -496,10 +496,9 @@ let function_length ?comment (e : t) : t =
   | _ -> { expression_desc = Length (e, Function); comment }
 
 (** no dependency introduced *)
-(* let js_global_dot ?comment (x : string)  (e1 : string) : t = 
-   { expression_desc = Static_index (js_global x,  e1,None); comment} 
-
-   *)
+(* let js_global_dot ?comment (x : string)  (e1 : string) : t =
+   { expression_desc = Static_index (js_global x,  e1,None); comment}
+*)
 
 let rec string_append ?comment (e : t) (el : t) : t =
   match (e.expression_desc, el.expression_desc) with
@@ -575,24 +574,24 @@ let bin ?comment (op : J.binop) (e0 : t) (e1 : t) : t =
 (* TODO: Constant folding, Google Closure will do that?,
    Even if Google Clsoure can do that, we will see how it interact with other
    optimizations
-   We wrap all boolean functions here, since OCaml boolean is a 
+   We wrap all boolean functions here, since OCaml boolean is a
    bit different from Javascript, so that we can change it in the future
 
    {[ a && (b && c) === (a && b ) && c ]}
-     is not used: benefit is not clear 
-     | Int_of_boolean e10, Bin(And, {expression_desc = Int_of_boolean e20 }, e3) 
-      -> 
-      and_ ?comment 
-        { e1 with expression_desc 
-                  = 
+     is not used: benefit is not clear
+     | Int_of_boolean e10, Bin(And, {expression_desc = Int_of_boolean e20 }, e3)
+      ->
+      and_ ?comment
+        { e1 with expression_desc
+                  =
                     J.Int_of_boolean { expression_desc = Bin (And, e10,e20); comment = None}
         }
         e3
-   Note that 
+   Note that
    {[ "" && 3 ]}
      return  "" instead of false, so [e1] is indeed useful
    optimization if [e1 = e2], then and_ e1 e2 -> e2
-     be careful for side effect        
+     be careful for side effect
 *)
 
 let and_ ?comment (e1 : t) (e2 : t) : t =
@@ -625,7 +624,7 @@ let or_ ?comment (e1 : t) (e2 : t) =
   | _, _ -> { expression_desc = Bin (Or, e1, e2); comment }
 
 (* return a value of type boolean *)
-(* TODO: 
+(* TODO:
      when comparison with Int
      it is right that !(x > 3 ) -> x <= 3 *)
 let not (e : t) : t =
@@ -752,14 +751,14 @@ let tag ?comment e : t =
     comment = None;
   }
 
-(* according to the compiler, [Btype.hash_variant], 
+(* according to the compiler, [Btype.hash_variant],
    it's reduced to 31 bits for hash
 *)
 
-(* TODO: handle arbitrary length of args .. 
+(* TODO: handle arbitrary length of args ..
    we can reduce part of the overhead by using
-   `__js` -- a easy ppx {{ x ##.hh }} 
-   the downside is that no way to swap ocaml/js implementation 
+   `__js` -- a easy ppx {{ x ##.hh }}
+   the downside is that no way to swap ocaml/js implementation
    for object part, also need encode arity..
    how about x#|getElementById|2|
 *)
@@ -791,7 +790,7 @@ let rec int32_bor ?comment (e1 : J.expression) (e2 : J.expression) :
    TODO: Note that we have to use Int64 to avoid integer overflow, this is fine
    since Js only have .
 
-   like code below 
+   like code below
    {[
      MAX_INT_VALUE - (MAX_INT_VALUE - 100) + 20
    ]}
@@ -941,9 +940,9 @@ let rec int32_lsr ?comment (e1 : J.expression) (e2 : J.expression) :
 let to_uint32 ?comment (e : J.expression) : J.expression =
   int32_lsr ?comment e zero_int_literal
 
-(* TODO: 
-   we can apply a more general optimization here, 
-   do some algebraic rewerite rules to rewrite [triple_equal]           
+(* TODO:
+   we can apply a more general optimization here,
+   do some algebraic rewerite rules to rewrite [triple_equal]
 *)
 let rec is_out ?comment (e : t) (range : t) : t =
   match (range.expression_desc, e.expression_desc) with
@@ -1150,11 +1149,12 @@ let rec int32_band ?comment (e1 : J.expression) (e2 : J.expression) :
 (* let int32_bin ?comment op e1 e2 : J.expression =  *)
 (*   {expression_desc = Int32_bin(op,e1, e2); comment} *)
 
-(* TODO -- alpha conversion 
+(* TODO -- alpha conversion
     remember to add parens..
 *)
 let of_block ?comment ?e block : t =
-  let return_unit = false in (* This case is not hit that much*)
+  let return_unit = false in
+  (* This case is not hit that much*)
   call ~info:Js_call_info.ml_full_call
     {
       comment;

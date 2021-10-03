@@ -22,23 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
 (** Utilities for lambda analysis *)
 
-
-
-val get_arity :
-  Lam_stats.t -> 
-  Lam.t ->
-  Lam_arity.t
-
-
-
-
-
+val get_arity : Lam_stats.t -> Lam.t -> Lam_arity.t

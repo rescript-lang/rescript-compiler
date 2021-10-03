@@ -28,10 +28,5 @@
     [remove] is not optimized since it is not used too much 
 *)
 
-
-
-
-
-module Make ( H : Hashtbl.HashedType) : (Hash_set_gen.S with type key = H.t)
 (** A naive t implementation on top of [hashtbl], the value is [unit]*)
-
+module Make (H : Hashtbl.HashedType) : Hash_set_gen.S with type key = H.t

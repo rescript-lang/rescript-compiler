@@ -24,33 +24,30 @@
 
 type item = Parsetree.structure_item
 
-type t = item list 
+type t = item list
 
 open Ast_helper
 
-
-let fuseAll ?(loc=Location.none)  (t : t) : item = 
-  Str.include_ ~loc 
-    (Incl.mk ~loc (Mod.structure ~loc t ))
+let fuseAll ?(loc = Location.none) (t : t) : item =
+  Str.include_ ~loc (Incl.mk ~loc (Mod.structure ~loc t))
 
 (* let fuse_with_constraint
-    ?(loc=Location.none) 
-    (item : Parsetree.type_declaration list ) (t : t) (coercion) = 
-   Str.include_ ~loc 
-    (Incl.mk ~loc 
+    ?(loc=Location.none)
+    (item : Parsetree.type_declaration list ) (t : t) (coercion) =
+   Str.include_ ~loc
+    (Incl.mk ~loc
        (Mod.constraint_
-         (Mod.structure ~loc 
+         (Mod.structure ~loc
          ({pstr_loc = loc; pstr_desc = Pstr_type item} :: t) )
          (
-           Mty.signature ~loc 
+           Mty.signature ~loc
            ({psig_loc = loc; psig_desc = Psig_type item} :: coercion)
          )
          )
-    )      *)
-let constraint_ ?(loc=Location.none) (stru : t) (sign : Ast_signature.t) = 
+    ) *)
+let constraint_ ?(loc = Location.none) (stru : t) (sign : Ast_signature.t) =
   Str.include_ ~loc
-    (Incl.mk ~loc 
+    (Incl.mk ~loc
        (Mod.constraint_ ~loc (Mod.structure ~loc stru) (Mty.signature ~loc sign)))
 
-let dummy_item  loc : item =        
-  Str.eval ~loc (Ast_literal.val_unit ~loc ())
+let dummy_item loc : item = Str.eval ~loc (Ast_literal.val_unit ~loc ())

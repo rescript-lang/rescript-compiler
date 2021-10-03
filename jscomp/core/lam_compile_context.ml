@@ -28,7 +28,7 @@ module HandlerMap = Map_int
 
 type value = { exit_id : Ident.t; bindings : Ident.t list; order_id : int }
 
-(* delegate to the callee to generate expression 
+(* delegate to the callee to generate expression
       Invariant: [output] should return a trailing expression
 *)
 type return_label = {
@@ -85,7 +85,7 @@ type handler = { label : jbl_label; handler : Lam.t; bindings : Ident.t list }
 let no_static_raise_in_handler (x : handler) : bool =
   not (Lam_exit_code.has_exit_code x.handler (fun _code -> true))
 
-(* always keep key id positive, specifically no [0] generated 
+(* always keep key id positive, specifically no [0] generated
    return a tuple
    [tbl, handlers]
    [tbl] is used for compiling [staticraise]

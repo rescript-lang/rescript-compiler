@@ -22,15 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
 (** Beta reduction of lambda IR *)
-
 
 val no_names_beta_reduce : Ident.t list -> Lam.t -> Lam.t list -> Lam.t
 (* Compile-time beta-reduction of functions immediately applied:
@@ -40,7 +32,7 @@ val no_names_beta_reduce : Ident.t list -> Lam.t -> Lam.t list -> Lam.t
         let paramN = argN in ... let param1 = arg1 in body
    Assumes |args| = |params|.
 
-   This function is used while counting used vars, no new names 
+   This function is used while counting used vars, no new names
    are generated to make this more complex
 *)
 
@@ -50,15 +42,16 @@ val no_names_beta_reduce : Ident.t list -> Lam.t -> Lam.t list -> Lam.t
    the obvious example is parameter
  *)
 
-val propogate_beta_reduce : 
-  Lam_stats.t -> 
-  Ident.t list -> 
-  Lam.t -> 
-  Lam.t list -> 
+val propogate_beta_reduce :
+  Lam_stats.t -> Ident.t list -> Lam.t -> Lam.t list -> Lam.t
+
+val propogate_beta_reduce_with_map :
+  Lam_stats.t ->
+  Lam_var_stats.stats Map_ident.t ->
+  Ident.t list ->
+  Lam.t ->
+  Lam.t list ->
   Lam.t
-
-
-
 (** 
    {[ Lam_beta_reduce.propogate_beta_reduce_with_map 
        meta param_map
@@ -79,8 +72,3 @@ val propogate_beta_reduce :
        propogate_beta_reduce_with_map meta param_map params body args  
    ]}
 *)
-val propogate_beta_reduce_with_map : 
-  Lam_stats.t ->
-  Lam_var_stats.stats Map_ident.t ->
-  Ident.t list ->
-  Lam.t -> Lam.t list -> Lam.t

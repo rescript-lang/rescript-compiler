@@ -27,13 +27,14 @@
 *)
 
 val non_exn_protect : 'a ref -> 'a -> (unit -> 'b) -> 'b
+
 val protect : 'a ref -> 'a -> (unit -> 'b) -> 'b
 
 val protect2 : 'a ref -> 'b ref -> 'a -> 'b -> (unit -> 'c) -> 'c
 
+val non_exn_protect2 : 'a ref -> 'b ref -> 'a -> 'b -> (unit -> 'c) -> 'c
 (** [non_exn_protect2 refa refb va vb f ]
     assume [f ()] would not raise
 *)
-val non_exn_protect2 : 'a ref -> 'b ref -> 'a -> 'b -> (unit -> 'c) -> 'c
 
 val protect_list : ('a ref * 'a) list -> (unit -> 'b) -> 'b

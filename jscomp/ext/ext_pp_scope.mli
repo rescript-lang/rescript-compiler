@@ -22,13 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
 (** Scope type to improve identifier name printing
     Defines scope type [t], so that the pretty printer would 
     print more beautiful code:     
@@ -36,18 +29,16 @@
     when it can
 *)
 
-type t 
+type t
 
-val empty : t 
+val empty : t
 
 val print : Format.formatter -> t -> unit
 
 val sub_scope : t -> Set_ident.t -> t
 
-val merge : t -> Set_ident.t ->  t
+val merge : t -> Set_ident.t -> t
 
+val str_of_ident : t -> Ident.t -> string * t
 
-
-val str_of_ident : t -> Ident.t -> string * t 
-
-val ident : t -> Ext_pp.t -> Ident.t -> t 
+val ident : t -> Ext_pp.t -> Ident.t -> t

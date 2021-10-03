@@ -25,9 +25,9 @@
 let init_path () =
   let dirs = !Clflags.include_dirs in
   let exp_dirs =
-    List.map (Misc.expand_directory Config.standard_library) dirs in
-  Config.load_path :=
-    List.rev_append exp_dirs [];
+    List.map (Misc.expand_directory Config.standard_library) dirs
+  in
+  Config.load_path := List.rev_append exp_dirs [];
   Env.reset_cache ()
 
 (* Return the initial environment in which compilation proceeds. *)
@@ -36,18 +36,19 @@ let init_path () =
    toplevel initialization (PR#1775) *)
 
 let open_implicit_module m env =
-  let lid = {Asttypes.loc = Location.in_file "command line";
-             txt = Longident.parse m } in
+  let lid =
+    { Asttypes.loc = Location.in_file "command line"; txt = Longident.parse m }
+  in
   snd (Typemod.type_open_ Override env lid.loc lid)
 
 let initial_env () =
-  Ident.reinit();
+  Ident.reinit ();
   let initial = Env.initial_safe_string in
   let env =
-    if !Clflags.nopervasives then initial else
-      open_implicit_module "Pervasives" initial
+    if !Clflags.nopervasives then initial
+    else open_implicit_module "Pervasives" initial
   in
-  List.fold_left (fun env m ->
-      open_implicit_module m env
-    ) env (List.rev !Clflags.open_modules)
-
+  List.fold_left
+    (fun env m -> open_implicit_module m env)
+    env
+    (List.rev !Clflags.open_modules)

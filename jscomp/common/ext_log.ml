@@ -22,24 +22,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
-
-
-type 'a logging =  ('a, Format.formatter, unit, unit, unit, unit) format6 -> 'a
-
+type 'a logging = ('a, Format.formatter, unit, unit, unit, unit) format6 -> 'a
 
 (* TODO: add {[@.]} later for all *)
-let dwarn ?(__POS__: (string * int * int * int) option) f  = 
-  if Js_config.get_diagnose () then   
-    match __POS__ with 
+let dwarn ?(__POS__ : (string * int * int * int) option) f =
+  if Js_config.get_diagnose () then
+    match __POS__ with
     | None -> Format.fprintf Format.err_formatter ("WARN: " ^^ f ^^ "@.")
-    | Some (file,line,_,_) -> 
-      Format.fprintf Format.err_formatter ("WARN: %s,%d " ^^ f ^^ "@.") file line  
-  else 
-    Format.ifprintf Format.err_formatter ("WARN: " ^^ f ^^ "@.") 
+    | Some (file, line, _, _) ->
+        Format.fprintf Format.err_formatter
+          ("WARN: %s,%d " ^^ f ^^ "@.")
+          file line
+  else Format.ifprintf Format.err_formatter ("WARN: " ^^ f ^^ "@.")

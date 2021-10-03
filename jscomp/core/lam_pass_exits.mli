@@ -11,11 +11,8 @@
 (***********************************************************************)
 (* Adapted for Javascript backend: Hongbo Zhang,                       *)
 
-
 (** A pass used to optimize the exit code compilation, adaped from the compiler's
     [simplif] module
 *)
-
-
 
 val simplify_exits : Lam.t -> Lam.t

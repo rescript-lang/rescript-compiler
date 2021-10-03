@@ -59,11 +59,11 @@ module L = Js_dump_lit
    {Caml_curry}
    {Caml_option}
 
-   They can appear anywhere so even if you have a module 
+   They can appear anywhere so even if you have a module
    {
     let module Caml_block = ...
 
-    (* Later would insert the use of Caml_block here which should 
+    (* Later would insert the use of Caml_block here which should
       point tto the runtime module
     *)
    }
@@ -180,7 +180,7 @@ let pp_paren_params (inner_cxt : cxt) (f : Ext_pp.t) (lexical : Ident.t list) :
 (* let ipp_ident cxt f id (un_used : bool) =
    Ext_pp_scope.ident cxt f (
     if un_used then
-      Ext_ident.make_unused () 
+      Ext_ident.make_unused ()
     else
       id) *)
 
@@ -227,9 +227,9 @@ let comma_nl f =
   comma f;
   P.newline f
 
-(* let drop_comment (x : J.expression) = 
-   if x.comment = None then x 
-   else {x with comment = None}   *)
+(* let drop_comment (x : J.expression) =
+   if x.comment = None then x
+   else {x with comment = None} *)
 
 let debugger_nl f =
   P.newline f;

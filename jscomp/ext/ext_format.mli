@@ -22,15 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
 (** Simplified wrapper module for the standard library [Format] module. 
-*) 
+*)
 
 type t = private Format.formatter
 
@@ -67,4 +60,7 @@ type t = private Format.formatter
 
 val pp_print_queue :
   ?pp_sep:(Format.formatter -> unit -> unit) ->
-  (Format.formatter -> 'a -> unit) -> Format.formatter -> 'a Queue.t -> unit
+  (Format.formatter -> 'a -> unit) ->
+  Format.formatter ->
+  'a Queue.t ->
+  unit

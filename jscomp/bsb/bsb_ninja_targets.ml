@@ -22,16 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+let oc_list xs oc =
+  Ext_list.iter xs (fun s ->
+      output_string oc Ext_string.single_space;
+      output_string oc s)
 
-let oc_list xs  oc = 
-  Ext_list.iter xs (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
-
-let output_build
-    ~outputs
-    ~inputs
-    ~rule
-    oc =
-  let rule = Bsb_ninja_rule.get_name rule  oc in (* Trigger building if not used *)
+let output_build ~outputs ~inputs ~rule oc =
+  let rule = Bsb_ninja_rule.get_name rule oc in
+  (* Trigger building if not used *)
   output_string oc "o";
   oc_list outputs oc;
   output_string oc " : ";
@@ -39,23 +37,19 @@ let output_build
   oc_list inputs oc;
   output_string oc "\n"
 
-let phony ?(order_only_deps=[]) ~inputs ~output oc =
+let phony ?(order_only_deps = []) ~inputs ~output oc =
   output_string oc "o ";
-  output_string oc output ;
+  output_string oc output;
   output_string oc " : ";
   output_string oc "phony";
   oc_list inputs oc;
-  if order_only_deps <> [] then 
-    begin
-      output_string oc " ||";                
-      oc_list order_only_deps oc 
-    end;
+  if order_only_deps <> [] then (
+    output_string oc " ||";
+    oc_list order_only_deps oc);
   output_string oc "\n"
 
-let output_finger key value oc  =
-  output_string oc key ;
+let output_finger key value oc =
+  output_string oc key;
   output_string oc " := ";
-  output_string oc value ;
+  output_string oc value;
   output_string oc "\n"
-
-

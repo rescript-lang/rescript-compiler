@@ -22,17 +22,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type command = 
-  { 
-    cmd : string ;
-    cwd : string ; 
-    args : string array 
-  }  
+type command = { cmd : string; cwd : string; args : string array }
 
+val command_fatal_error : command -> int -> unit
 
-val command_fatal_error : command -> int -> unit 
+val run_command_execv : command -> int
 
-val run_command_execv :   command -> int
-
-
-val remove_dir_recursive : string -> unit 
+val remove_dir_recursive : string -> unit

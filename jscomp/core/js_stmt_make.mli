@@ -22,48 +22,40 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** Creator utilities for the [J] module *)
 
+type t = J.statement
 
-
-
-
-
-
-(** Creator utilities for the [J] module *) 
-
-
-type t = J.statement 
-
-
-(** empty statement, block of length 0 *)  
-(* val empty_stmt :  
+(** empty statement, block of length 0 *)
+(* val empty_stmt :
    t *)
 
-val throw_stmt :
-  ?comment:string  ->
-  J.expression ->
-  t
+val throw_stmt : ?comment:string -> J.expression -> t
 
-val if_ : 
-  ?comment:string  ->
-  ?declaration: Lam_compat.let_kind * Ident.t ->
+val if_ :
+  ?comment:string ->
+  ?declaration:Lam_compat.let_kind * Ident.t ->
   (* when it's not None, we also need make a variable declaration in the
      begininnig, however, we can optmize such case
   *)
-  ?else_:J.block ->  
-  J.expression -> 
-  J.block -> 
-  t
-
-(**   
-   turn a block into  a single statement,
-   avoid nested block
-*)  
-val block : 
-  ?comment:string  -> 
+  ?else_:J.block ->
+  J.expression ->
   J.block ->
   t
 
+val block : ?comment:string -> J.block -> t
+(**   
+   turn a block into  a single statement,
+   avoid nested block
+*)
+
+val int_switch :
+  ?comment:string ->
+  ?declaration:Lam_compat.let_kind * Ident.t ->
+  ?default:J.block ->
+  J.expression ->
+  (int * J.case_clause) list ->
+  t
 (** [int_switch ~declaration e clauses]
 
     The [declaration] is attached to peepwhole 
@@ -78,52 +70,41 @@ val block :
     {[
       var x = yy;
     ]}
-*)  
-val int_switch :
-  ?comment:string -> 
-  ?declaration:Lam_compat.let_kind * Ident.t -> 
-  ?default:J.block -> 
-  J.expression -> 
-  (int * J.case_clause) list -> 
-  t 
+*)
 
-val string_switch : 
-  ?comment:string -> 
-  ?declaration:Lam_compat.let_kind * Ident.t -> 
+val string_switch :
+  ?comment:string ->
+  ?declaration:Lam_compat.let_kind * Ident.t ->
   ?default:J.block ->
-  J.expression -> 
+  J.expression ->
   (string * J.case_clause) list ->
   t
 
-(** Just declaration without initialization *)  
-val declare_variable : 
+val declare_variable :
   ?comment:string ->
   ?ident_info:J.ident_info ->
-  kind:Lam_compat.let_kind -> 
+  kind:Lam_compat.let_kind ->
   Ident.t ->
   t
+(** Just declaration without initialization *)
 
 (*** Declaration with initialization *)
-val define_variable : 
+val define_variable :
   ?comment:string ->
   ?ident_info:J.ident_info ->
-  kind:Lam_compat.let_kind -> 
+  kind:Lam_compat.let_kind ->
   Ident.t ->
   J.expression ->
   t
 
-(** created an alias expression *)  
+(** created an alias expression *)
 (* val alias_variable :
    ?comment:string ->
    exp:J.expression ->
    Ident.t ->
    t *)
 
-val assign :
-  ?comment:string  ->
-  J.ident ->
-  J.expression ->
-  t
+val assign : ?comment:string -> J.ident -> J.expression -> t
 
 (** Used in cases like 
     {[
@@ -131,7 +112,7 @@ val assign :
           ...
         done in ..
     ]}
-*)  
+*)
 (* val assign_unit :
    ?comment:string  ->
    J.ident ->
@@ -143,7 +124,7 @@ val assign :
           ...
         done in ..
     ]}
-*)  
+*)
 (* val declare_unit :
    ?comment:string  ->
    J.ident ->
@@ -157,45 +138,38 @@ val while_ :
   J.block ->
   t
 
-val for_ : 
+val for_ :
   ?comment:string ->
   ?env:Js_closure.t ->
   J.for_ident_expression option ->
   J.finish_ident_expression ->
-  J.for_ident  ->
+  J.for_ident ->
   J.for_direction ->
   J.block ->
   t
 
 val try_ :
-  ?comment:string  ->
+  ?comment:string ->
   ?with_:J.ident * J.block ->
   ?finally:J.block ->
   J.block ->
   t
 
-val exp :
-  ?comment:string  ->
-  J.expression ->
-  t
+val exp : ?comment:string -> J.expression -> t
 
-val return_stmt :
-  ?comment:string  ->
-  J.expression ->
-  t
-
+val return_stmt : ?comment:string -> J.expression -> t
 
 (* val return_unit : t list *)
 (** for ocaml function which returns unit 
     it will be compiled into [return 0] in js *)
 
-(** if [label] is not set, it will default to empty *)  
+(** if [label] is not set, it will default to empty *)
 (* val continue_stmt :
    ?comment:string  ->
    ?label:J.label ->
    unit  ->
    t *)
 
-val continue_ : t   
+val continue_ : t
 
-val debugger_block :  t list
+val debugger_block : t list

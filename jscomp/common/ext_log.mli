@@ -22,13 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
 (** A Poor man's logging utility
 
     Example:
@@ -37,15 +30,6 @@
     ]}
 *)
 
+type 'a logging = ('a, Format.formatter, unit, unit, unit, unit) format6 -> 'a
 
-
-type 'a logging =  ('a, Format.formatter, unit, unit, unit, unit) format6 -> 'a
-
-
-
-
-
-val dwarn : 
-  ?__POS__:(string * int * int *int) ->
-  'a logging 
-
+val dwarn : ?__POS__:string * int * int * int -> 'a logging

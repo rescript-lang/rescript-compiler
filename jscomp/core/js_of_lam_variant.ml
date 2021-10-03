@@ -25,66 +25,34 @@
 module E = Js_exp_make
 module S = Js_stmt_make
 
-type arg_expression =
-  | Splice0
-  | Splice1 of E.t
-  | Splice2 of E.t * E.t
+type arg_expression = Splice0 | Splice1 of E.t | Splice2 of E.t * E.t
 
 (* we need destruct [undefined] when input is optional *)
-let eval (arg : J.expression) (dispatches : (string * string) list ) : E.t =
-  if arg == E.undefined then E.undefined 
+let eval (arg : J.expression) (dispatches : (string * string) list) : E.t =
+  if arg == E.undefined then E.undefined
   else
     match arg.expression_desc with
-    | Str (_,s) ->     
-      let s = 
-        (Ext_list.assoc_by_string  dispatches s None) in 
-      E.str s 
-    | _ -> 
-      E.of_block
-        [(S.string_switch arg
-            (Ext_list.map dispatches (fun (i,r) ->
-                 i, J.{
-                     switch_body = [S.return_stmt (E.str r)];
-                     should_break = false; (* FIXME: if true, still print break*)
-                     comment = None;
-                   })))]
+    | Str (_, s) ->
+        let s = Ext_list.assoc_by_string dispatches s None in
+        E.str s
+    | _ ->
+        E.of_block
+          [
+            S.string_switch arg
+              (Ext_list.map dispatches (fun (i, r) ->
+                   ( i,
+                     J.
+                       {
+                         switch_body = [ S.return_stmt (E.str r) ];
+                         should_break = false;
+                         (* FIXME: if true, still print break*)
+                         comment = None;
+                       } )));
+          ]
 
 (* invariant: optional is not allowed in this case *)
 (* arg is a polyvar *)
-let eval_as_event (arg : J.expression) (dispatches : (string * string) list option) =
-  match arg.expression_desc with
-  | Caml_block([{expression_desc = Str(_,s)}; cb], _, _, Blk_poly_var _ ) when Js_analyzer.no_side_effect_expression cb 
-    -> 
-    let v = 
-      match dispatches with 
-      | Some dispatches ->   
-        Ext_list.assoc_by_string dispatches s None 
-      | None -> s in
-    Splice2(E.str v , cb )
-  | _ ->
-    Splice2
-      (
-        (match dispatches with 
-         | Some dispatches ->     
-           E.of_block
-             [
 
-               (S.string_switch (E.poly_var_tag_access arg)
-                  (Ext_list.map dispatches (fun (i,r) ->
-                       i, J.{
-                           switch_body = [S.return_stmt (E.str r)];
-                           should_break = false; (* FIXME: if true, still print break*)
-                           comment = None;
-                         }) ))
-
-             ]
-         | None -> E.poly_var_tag_access arg )
-        , (* TODO: improve, one dispatch later,
-             the problem is that we can not create bindings
-             due to the
-          *)
-        (E.poly_var_value_access  arg)
-      )
 (** FIXME:
     1. duplicated evaluation of expressions arg
      Solution: calcuate the arg once in the beginning
@@ -92,29 +60,66 @@ let eval_as_event (arg : J.expression) (dispatches : (string * string) list opti
     or always?
     a === 444? "a" : a==222? "b"
 *)
+let eval_as_event (arg : J.expression)
+    (dispatches : (string * string) list option) =
+  match arg.expression_desc with
+  | Caml_block ([ { expression_desc = Str (_, s) }; cb ], _, _, Blk_poly_var _)
+    when Js_analyzer.no_side_effect_expression cb ->
+      let v =
+        match dispatches with
+        | Some dispatches -> Ext_list.assoc_by_string dispatches s None
+        | None -> s
+      in
+      Splice2 (E.str v, cb)
+  | _ ->
+      Splice2
+        ( (match dispatches with
+          | Some dispatches ->
+              E.of_block
+                [
+                  S.string_switch
+                    (E.poly_var_tag_access arg)
+                    (Ext_list.map dispatches (fun (i, r) ->
+                         ( i,
+                           J.
+                             {
+                               switch_body = [ S.return_stmt (E.str r) ];
+                               should_break = false;
+                               (* FIXME: if true, still print break*)
+                               comment = None;
+                             } )));
+                ]
+          | None -> E.poly_var_tag_access arg),
+          (* TODO: improve, one dispatch later,
+             the problem is that we can not create bindings
+             due to the
+          *)
+          E.poly_var_value_access arg )
 
 (* we need destruct [undefined] when input is optional *)
-let eval_as_int (arg : J.expression) (dispatches : (string * int) list ) : E.t  =
-  if arg == E.undefined then E.undefined else
+let eval_as_int (arg : J.expression) (dispatches : (string * int) list) : E.t =
+  if arg == E.undefined then E.undefined
+  else
     match arg.expression_desc with
-    | Str(_,i) ->
-      E.int (Int32.of_int (Ext_list.assoc_by_string dispatches i None))
+    | Str (_, i) ->
+        E.int (Int32.of_int (Ext_list.assoc_by_string dispatches i None))
     | _ ->
-      E.of_block
-        [(S.string_switch arg
-            (Ext_list.map dispatches (fun (i,r) ->
-                 i, J.{
-                     switch_body = [S.return_stmt (E.int (Int32.of_int  r))];
-                     should_break = false; (* FIXME: if true, still print break*)
-                     comment = None;
-                   }) ))]
+        E.of_block
+          [
+            S.string_switch arg
+              (Ext_list.map dispatches (fun (i, r) ->
+                   ( i,
+                     J.
+                       {
+                         switch_body =
+                           [ S.return_stmt (E.int (Int32.of_int r)) ];
+                         should_break = false;
+                         (* FIXME: if true, still print break*)
+                         comment = None;
+                       } )));
+          ]
 
 let eval_as_unwrap (arg : J.expression) : E.t =
   match arg.expression_desc with
-  | Caml_block ([{expression_desc = Number _}; cb], _, _, _) ->
-    cb
-  | _ ->
-    E.poly_var_value_access arg 
-
-
-
+  | Caml_block ([ { expression_desc = Number _ }; cb ], _, _, _) -> cb
+  | _ -> E.poly_var_value_access arg

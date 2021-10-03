@@ -22,50 +22,50 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-type action_table = 
-  (Parsetree.expression option -> unit) Map_string.t
-
+type action_table = (Parsetree.expression option -> unit) Map_string.t
 
 let structural_config_table : action_table ref =
-  ref (Map_string.singleton
-         "no_export" 
-         (fun x ->
-            Js_config.no_export := (
-              match x with
-              |Some e -> Ast_payload.assert_bool_lit e
-              | None -> true)
-         ))
+  ref
+    (Map_string.singleton "no_export" (fun x ->
+         Js_config.no_export :=
+           match x with Some e -> Ast_payload.assert_bool_lit e | None -> true))
 
-let add_structure k v = 
-  structural_config_table := 
-    Map_string.add !structural_config_table k v 
+let add_structure k v =
+  structural_config_table := Map_string.add !structural_config_table k v
 
-let signature_config_table : action_table ref =
-  ref Map_string.empty
+let signature_config_table : action_table ref = ref Map_string.empty
 
-let add_signature k v = 
-  signature_config_table :=
-    Map_string.add !signature_config_table k v 
+let add_signature k v =
+  signature_config_table := Map_string.add !signature_config_table k v
 
-let rec iter_on_bs_config_stru (x :Parsetree.structure) =   
-  match x with 
-  | [] -> () 
-  | {pstr_desc = Pstr_attribute (({txt = "bs.config" | "config"; loc}, payload) as attr)}::_ -> 
-    Bs_ast_invariant.mark_used_bs_attribute attr;
-    Ext_list.iter (Ast_payload.ident_or_record_as_config loc payload)
-      (Ast_payload.table_dispatch !structural_config_table)
-  | {pstr_desc = Pstr_attribute _} :: rest -> 
-    iter_on_bs_config_stru rest 
-  | _ :: _ -> ()    
+let rec iter_on_bs_config_stru (x : Parsetree.structure) =
+  match x with
+  | [] -> ()
+  | {
+      pstr_desc =
+        Pstr_attribute
+          (({ txt = "bs.config" | "config"; loc }, payload) as attr);
+    }
+    :: _ ->
+      Bs_ast_invariant.mark_used_bs_attribute attr;
+      Ext_list.iter
+        (Ast_payload.ident_or_record_as_config loc payload)
+        (Ast_payload.table_dispatch !structural_config_table)
+  | { pstr_desc = Pstr_attribute _ } :: rest -> iter_on_bs_config_stru rest
+  | _ :: _ -> ()
 
-let rec iter_on_bs_config_sigi (x :Parsetree.signature) =   
-  match x with 
-  | [] -> () 
-  | {psig_desc = Psig_attribute (({txt = "bs.config" | "config"; loc}, payload) as attr)}::_ -> 
-    Bs_ast_invariant.mark_used_bs_attribute attr;
-    Ext_list.iter (Ast_payload.ident_or_record_as_config loc payload)
-      (Ast_payload.table_dispatch !signature_config_table)
-  | {psig_desc = Psig_attribute _} :: rest -> 
-    iter_on_bs_config_sigi rest 
-  | _ :: _ -> ()      
+let rec iter_on_bs_config_sigi (x : Parsetree.signature) =
+  match x with
+  | [] -> ()
+  | {
+      psig_desc =
+        Psig_attribute
+          (({ txt = "bs.config" | "config"; loc }, payload) as attr);
+    }
+    :: _ ->
+      Bs_ast_invariant.mark_used_bs_attribute attr;
+      Ext_list.iter
+        (Ast_payload.ident_or_record_as_config loc payload)
+        (Ast_payload.table_dispatch !signature_config_table)
+  | { psig_desc = Psig_attribute _ } :: rest -> iter_on_bs_config_sigi rest
+  | _ :: _ -> ()

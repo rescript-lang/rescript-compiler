@@ -22,22 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
 (** A simple wrapper around [Config] module in compiler-libs, so that the search path
     is the same
 *)
 
-
 val find_opt : string -> string option
 (** [find filename] Input is a file name, output is absolute path *)
 
-
+val output_prefix : string -> string
 (** given the input, calculate the output prefix 
 
     in: src/hello.ast
@@ -47,6 +39,3 @@ val find_opt : string -> string option
     in: src/hello.ast
     out: src/hello-Ns
 *)
-val output_prefix : 
-  string -> 
-  string 

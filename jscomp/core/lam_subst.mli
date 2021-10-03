@@ -22,9 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
 (* Apply a substitution to a lambda-term.
    Assumes that the bound variables of the lambda-term do not
    belong to the domain of the substitution.

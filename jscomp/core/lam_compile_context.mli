@@ -51,7 +51,7 @@ type maybe_tail = Tail_in_try | Tail_with_name of tail
 type tail_type = Not_tail | Maybe_tail_is_return of maybe_tail
 (* anonoymous function does not have identifier *)
 
-(* delegate to the callee to generate expression 
+(* delegate to the callee to generate expression
       Invariant: [output] should return a trailing expression
 *)
 

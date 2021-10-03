@@ -22,11 +22,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(* val happens_to_be_diff:
+   (int * Lambda.lambda) list -> int option *)
 
-(* val happens_to_be_diff:  
-   (int * Lambda.lambda) list -> int option  *)
-
-
+val convert :
+  Set_ident.t -> Lambda.lambda -> Lam.t * Lam_module_ident.Hash_set.t
 (** 
    [convert exports lam]
    it also collect [exit_map] and a collection of potential depended modules [may_depends]
@@ -48,4 +48,3 @@
     we should remove all those let aliases, otherwise, it will be
     pushed into alias table again
 *)
-val convert :  Set_ident.t -> Lambda.lambda -> Lam.t * Lam_module_ident.Hash_set.t

@@ -22,17 +22,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type t = Global of string | Scope of string * scope
 
-type t = 
-  | Global of string
-  | Scope of string * scope
-and scope = string  
+and scope = string
 
-val to_string : t -> string 
-val print : Format.formatter -> t -> unit 
-val equal : t -> t -> bool 
+val to_string : t -> string
+
+val print : Format.formatter -> t -> unit
+
+val equal : t -> t -> bool
 
 (* The second element could be empty or dropped 
 *)
-val extract_pkg_name_and_file : string -> t * string 
-val string_as_package : string -> t 
+val extract_pkg_name_and_file : string -> t * string
+
+val string_as_package : string -> t

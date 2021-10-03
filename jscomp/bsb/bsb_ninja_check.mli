@@ -30,26 +30,25 @@
    metadata again
 *)
 
-
-
-
-
-type check_result = 
+type check_result =
   | Good
   | Bsb_file_corrupted
-  | Bsb_file_not_exist (** We assume that it is a clean repo *)  
+  | Bsb_file_not_exist  (** We assume that it is a clean repo *)
   | Bsb_source_directory_changed
-  | Bsb_bsc_version_mismatch  
+  | Bsb_bsc_version_mismatch
   | Bsb_forced
   | Bsb_package_kind_inconsistent
   | Other of string
 
-val pp_check_result : 
-  Format.formatter -> 
-  check_result -> 
+val pp_check_result : Format.formatter -> check_result -> unit
+
+val record :
+  package_kind:Bsb_package_kind.t ->
+  per_proj_dir:string ->
+  file:string ->
+  config:Bsb_config_types.t ->
+  string list ->
   unit
-
-
 (** [record cwd file relevant_file_or_dirs]
     The data structure we decided to whether regenerate [build.ninja] 
     or not. 
@@ -60,19 +59,11 @@ val pp_check_result :
     We serialize such data structure and call {!check} to decide
     [build.ninja] should be regenerated
 *)
-val record : 
-  package_kind:Bsb_package_kind.t ->
-  per_proj_dir:string -> 
-  file:string -> 
-  config:Bsb_config_types.t ->
-  string list -> 
-  unit
 
-
-(** check if [build.ninja] should be regenerated *)
 val check :
   package_kind:Bsb_package_kind.t ->
-  per_proj_dir:string ->  
-  forced:bool -> 
-  file:string -> 
+  per_proj_dir:string ->
+  forced:bool ->
+  file:string ->
   check_result
+(** check if [build.ninja] should be regenerated *)

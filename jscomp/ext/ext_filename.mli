@@ -22,64 +22,31 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
 (* TODO:
-   Change the module name, this code is not really an extension of the standard 
-    library but rather specific to JS Module name convention. 
+   Change the module name, this code is not really an extension of the standard
+    library but rather specific to JS Module name convention.
 *)
-
-
-
-
 
 (** An extension module to calculate relative path follow node/npm style. 
     TODO : this short name will have to change upon renaming the file.
 *)
 
-val is_dir_sep : 
-  char -> bool 
+val is_dir_sep : char -> bool
 
-val maybe_quote:
-  string -> 
-  string
+val maybe_quote : string -> string
 
-val chop_extension_maybe:
-  string -> 
-  string
+val chop_extension_maybe : string -> string
 
-(* return an empty string if no extension found *)  
-val get_extension_maybe:   
-  string -> 
-  string
+(* return an empty string if no extension found *)
+val get_extension_maybe : string -> string
 
+val new_extension : string -> string -> string
 
-val new_extension:  
-  string -> 
-  string -> 
-  string
-
-val chop_all_extensions_maybe:
-  string -> 
-  string  
+val chop_all_extensions_maybe : string -> string
 
 (* OCaml specific abstraction*)
-val module_name:  
-  string ->
-  string
+val module_name : string -> string
 
+type module_info = { module_name : string; case : bool }
 
-
-
-type module_info = {
-  module_name : string ;
-  case : bool;
-}   
-
-
-
-val as_module:
-  basename:string -> 
-  module_info option
+val as_module : basename:string -> module_info option

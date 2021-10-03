@@ -22,14 +22,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+val cwd : string
 
-val cwd : string 
-
-val bsc_dir : string 
+val bsc_dir : string
 
 val vendor_bsc : string
 
 val vendor_ninja : string
 
 val vendor_bsdep : string
-

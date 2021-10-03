@@ -25,9 +25,9 @@
 type tdcls = Parsetree.type_declaration list
 
 type gen = {
-  structure_gen : tdcls -> Asttypes.rec_flag -> Ast_structure.t ;
-  signature_gen : tdcls -> Asttypes.rec_flag -> Ast_signature.t ; 
-  expression_gen : (Parsetree.core_type -> Parsetree.expression) option ; 
+  structure_gen : tdcls -> Asttypes.rec_flag -> Ast_structure.t;
+  signature_gen : tdcls -> Asttypes.rec_flag -> Ast_signature.t;
+  expression_gen : (Parsetree.core_type -> Parsetree.expression) option;
 }
 
 (* the first argument is [config] payload
@@ -35,54 +35,37 @@ type gen = {
      { x = {uu} }
    ]}
 *)
-type derive_table  = 
-  (Parsetree.expression option -> gen) Map_string.t
+type derive_table = (Parsetree.expression option -> gen) Map_string.t
 
 let derive_table : derive_table ref = ref Map_string.empty
 
-let register key value = 
-  derive_table := Map_string.add !derive_table key value 
+let register key value = derive_table := Map_string.add !derive_table key value
 
-
-
-(* let gen_structure 
+(* let gen_structure
     (tdcls : tdcls)
-    (actions :  Ast_payload.action list ) 
+    (actions :  Ast_payload.action list )
     (explict_nonrec : bool )
-   : Ast_structure.t = 
+   : Ast_structure.t =
    Ext_list.flat_map
-    (fun action -> 
-       (Ast_payload.table_dispatch !derive_table action).structure_gen 
+    (fun action ->
+       (Ast_payload.table_dispatch !derive_table action).structure_gen
          tdcls explict_nonrec) actions *)
 
-let gen_signature
-    tdcls
-    (actions :  Ast_payload.action list ) 
-    (explict_nonrec : Asttypes.rec_flag )
-  : Ast_signature.t = 
-  Ext_list.flat_map actions
-    (fun action -> 
-       (Ast_payload.table_dispatch !derive_table action).signature_gen
-         tdcls explict_nonrec) 
+let gen_signature tdcls (actions : Ast_payload.action list)
+    (explict_nonrec : Asttypes.rec_flag) : Ast_signature.t =
+  Ext_list.flat_map actions (fun action ->
+      (Ast_payload.table_dispatch !derive_table action).signature_gen tdcls
+        explict_nonrec)
 
+open Ast_helper
 
-
-open Ast_helper  
-let gen_structure_signature 
-    loc
-    (tdcls : tdcls)   
-    (action : Ast_payload.action)
-    (explicit_nonrec : Asttypes.rec_flag) = 
-  let derive_table = !derive_table in  
-  let u = 
-    Ast_payload.table_dispatch derive_table action in  
+let gen_structure_signature loc (tdcls : tdcls) (action : Ast_payload.action)
+    (explicit_nonrec : Asttypes.rec_flag) =
+  let derive_table = !derive_table in
+  let u = Ast_payload.table_dispatch derive_table action in
 
   let a = u.structure_gen tdcls explicit_nonrec in
   let b = u.signature_gen tdcls explicit_nonrec in
-  Str.include_ ~loc  
-    (Incl.mk ~loc 
-       (Mod.constraint_ ~loc
-          (Mod.structure ~loc a)
-          (Mty.signature ~loc b )
-       )
-    )
+  Str.include_ ~loc
+    (Incl.mk ~loc
+       (Mod.constraint_ ~loc (Mod.structure ~loc a) (Mty.signature ~loc b)))

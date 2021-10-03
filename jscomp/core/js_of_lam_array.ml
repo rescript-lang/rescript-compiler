@@ -22,13 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
 (*
    construct array,
    set array,
@@ -51,15 +44,11 @@
 
  *)
 
-module E  = Js_exp_make
-
+module E = Js_exp_make
 
 (* Parrayref(u|s) *)
-let make_array mt  args = 
-  E.array mt args 
+let make_array mt args = E.array mt args
 
-let set_array  e e0 e1 = 
-  E.assign (E.array_index e e0)  e1
+let set_array e e0 e1 = E.assign (E.array_index e e0) e1
 
-let ref_array  e e0 = 
-  E.array_index  e  e0
+let ref_array e e0 = E.array_index e e0

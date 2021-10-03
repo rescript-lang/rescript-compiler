@@ -22,28 +22,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
 (** Define type t used in JS IR to collect some meta data 
     for a function,like its closures, etc 
 *)
 
-type t 
+type t
 
-val make :  ?immutable_mask:bool array  -> int -> t
+val make : ?immutable_mask:bool array -> int -> t
 
 val no_tailcall : t -> bool list
 
 (* val is_empty : t -> bool  *)
 
-val set_unbounded :  t -> Set_ident.t -> unit
-
-
+val set_unbounded : t -> Set_ident.t -> unit
 
 val set_lexical_scope : t -> Set_ident.t -> unit
 
@@ -51,7 +42,7 @@ val get_lexical_scope : t -> Set_ident.t
 
 (* val to_string : t -> string *)
 
-val mark_unused : t -> int -> unit 
+val mark_unused : t -> int -> unit
 
 val get_unused : t -> int -> bool
 

@@ -22,5 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+include Vec.Make (struct
+  type t = Vec_int.t
 
-include Vec.Make(struct type t = Vec_int.t let null = Vec_int.empty () end)
+  let null = Vec_int.empty ()
+end)

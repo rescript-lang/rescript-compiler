@@ -22,14 +22,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 type t = int
 
-let compare (x : t) (y : t) = Pervasives.compare x y 
+let compare (x : t) (y : t) = Pervasives.compare x y
 
 let equal (x : t) (y : t) = x = y
 
 let move = 0x1_0000_0000
+
 (* works only on 64 bit platform *)
 let int32_unsigned_to_int (n : int32) : int =
-  let i = Int32.to_int n in (if i < 0 then i + move else i)
+  let i = Int32.to_int n in
+  if i < 0 then i + move else i

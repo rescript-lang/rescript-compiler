@@ -22,15 +22,17 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 type format = Ext_module_system.t
-type spec = {
-  format : format;
-  in_source : bool;
-  suffix : Ext_js_suffix.t 
-}
 
-type  t = private spec list 
-val empty : t 
-val add : spec -> t  ->  t
-val singleton : spec -> t 
+type spec = { format : format; in_source : bool; suffix : Ext_js_suffix.t }
+
+type t = private spec list
+
+val empty : t
+
+val add : spec -> t -> t
+
+val singleton : spec -> t
+
 val fold : (spec -> 'a -> 'a) -> t -> 'a -> 'a
-val iter : (spec -> unit) ->t -> unit
+
+val iter : (spec -> unit) -> t -> unit

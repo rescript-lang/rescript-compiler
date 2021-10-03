@@ -30,12 +30,12 @@ type idents_stats = {
 let add_defined_idents (x : idents_stats) ident =
   x.defined_idents <- Set_ident.add x.defined_idents ident
 
-(* Assume that functions already calculated closure correctly 
-   Maybe in the future, we should add a dirty flag, to mark the calcuated 
+(* Assume that functions already calculated closure correctly
+   Maybe in the future, we should add a dirty flag, to mark the calcuated
    closure is correct or not
 
-   Note such shaking is done in the toplevel, so that it requires us to 
-   flatten the statement first 
+   Note such shaking is done in the toplevel, so that it requires us to
+   flatten the statement first
 *)
 let super = Js_record_iter.super
 
@@ -138,7 +138,7 @@ let no_side_effect_statement st =
     true
   with _ -> false
 
-(* TODO: generate [fold2] 
+(* TODO: generate [fold2]
    This make sense, for example:
    {[
      let string_of_formatting_gen : type a b c d e f .
@@ -233,8 +233,8 @@ let rev_flatten_seq (x : J.expression) =
   in
   aux [] x
 
-(* TODO: optimization, 
-    counter the number to know if needed do a loop gain instead of doing a diff 
+(* TODO: optimization,
+    counter the number to know if needed do a loop gain instead of doing a diff
 *)
 
 let rev_toplevel_flatten block =
@@ -254,17 +254,17 @@ let rev_toplevel_flatten block =
   in
   aux [] block
 
-(* let rec is_constant (x : J.expression)  = 
-   match x.expression_desc with 
-   | Array_index (a,b) -> is_constant a && is_constant b 
+(* let rec is_constant (x : J.expression)  =
+   match x.expression_desc with
+   | Array_index (a,b) -> is_constant a && is_constant b
    | Str (b,_) -> b
    | Number _ -> true (* Can be refined later *)
-   | Array (xs,_mutable_flag)  -> Ext_list.for_all xs  is_constant 
-   | Caml_block(xs, Immutable, tag, _) 
-    -> Ext_list.for_all xs is_constant && is_constant tag 
-   | Bin (_op, a, b) -> 
-    is_constant a && is_constant b     
-   | _ -> false  *)
+   | Array (xs,_mutable_flag)  -> Ext_list.for_all xs  is_constant
+   | Caml_block(xs, Immutable, tag, _)
+    -> Ext_list.for_all xs is_constant && is_constant tag
+   | Bin (_op, a, b) ->
+    is_constant a && is_constant b
+   | _ -> false *)
 
 let rec is_okay_to_duplicate (e : J.expression) =
   match e.expression_desc with

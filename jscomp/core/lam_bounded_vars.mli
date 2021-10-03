@@ -22,13 +22,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+val rewrite : Lam.t Hash_ident.t -> Lam.t -> Lam.t
 (** [rewrite tbl lam] 
     Given a [tbl] to rewrite all bounded variables in [lam] 
 *)
-val rewrite : Lam.t Hash_ident.t -> Lam.t -> Lam.t
 
 (** refresh lambda to replace all bounded vars for new ones *)
-(* val refresh : 
-   Lam.t -> 
-   Lam.t  *)
+(* val refresh :
+   Lam.t ->
+   Lam.t *)

@@ -22,14 +22,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 type exp =
-  | Js_function of {arity : int ; arrow : bool}     
-  | Js_literal of {comment : string option}
-  (* A special handling of 
+  | Js_function of { arity : int; arrow : bool }
+  | Js_literal of { comment : string option }
+  (* A special handling of
      [%raw "/*lint*/ 0"]
   *)
-  (* Flow ast module 
+  (* Flow ast module
      {[
        and value =
            | String of string
@@ -42,22 +41,10 @@ type exp =
   *)
   | Js_exp_unknown
 
+type raw_kind = Raw_re | Raw_exp | Raw_program
 
-type raw_kind = 
-  | Raw_re 
-  | Raw_exp
-  | Raw_program
+type stmt = Js_stmt_comment | Js_stmt_unknown
 
-type stmt = 
-  | Js_stmt_comment
-  | Js_stmt_unknown
+type code_info = Exp of exp | Stmt of stmt
 
-type code_info = 
-  | Exp of exp 
-  | Stmt of stmt
-
-
-type t = {
-  code : string;
-  code_info : code_info
-}
+type t = { code : string; code_info : code_info }

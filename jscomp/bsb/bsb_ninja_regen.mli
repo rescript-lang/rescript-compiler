@@ -22,15 +22,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
+val regenerate_ninja :
+  package_kind:Bsb_package_kind.t ->
+  forced:bool ->
+  per_proj_dir:string ->
+  Bsb_config_types.t option
 (** Regenerate ninja file by need based on [.bsdeps]
     return None if we dont need regenerate
     otherwise return Some info
 *)
-val regenerate_ninja :
-  package_kind:Bsb_package_kind.t ->
-  forced: bool -> 
-  per_proj_dir:string -> 
-  Bsb_config_types.t option 

@@ -22,23 +22,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type t = 
+type t =
   | Toplevel
-  | Dependency of Bsb_package_specs.t 
-  | Pinned_dependency of Bsb_package_specs.t 
-  (*  This package specs comes from the toplevel to 
-      override the current settings
-  *)
+  | Dependency of Bsb_package_specs.t
+  | Pinned_dependency of Bsb_package_specs.t
+(* This package specs comes from the toplevel to
+   override the current settings
+*)
 
-
-let encode_no_nl ( x : t) = 
-  match x with 
+let encode_no_nl (x : t) =
+  match x with
   | Toplevel -> "0"
-  | Dependency x -> 
-    "1" ^ 
-    Bsb_package_specs.package_flag_of_package_specs x 
-      ~dirname:"."  
-  | Pinned_dependency x -> 
-    "2" ^ 
-    Bsb_package_specs.package_flag_of_package_specs x 
-      ~dirname:"."  
+  | Dependency x ->
+      "1" ^ Bsb_package_specs.package_flag_of_package_specs x ~dirname:"."
+  | Pinned_dependency x ->
+      "2" ^ Bsb_package_specs.package_flag_of_package_specs x ~dirname:"."

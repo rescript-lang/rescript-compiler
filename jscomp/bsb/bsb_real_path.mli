@@ -1,4 +1,3 @@
-
 (* Copyright (C) 2020- Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -23,5 +22,4 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-val is_same_paths_via_io : string -> string -> bool 
+val is_same_paths_via_io : string -> string -> bool

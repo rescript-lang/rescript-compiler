@@ -22,21 +22,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type t = { mutable outer_loop_mutable_values : Set_ident.t }
 
+let empty () = { outer_loop_mutable_values = Set_ident.empty }
 
+let set_lexical_scope t v = t.outer_loop_mutable_values <- v
 
-
-
-
-
-type t = {
-  mutable outer_loop_mutable_values :  Set_ident.t ;
-}
-
-let empty () = {
-  outer_loop_mutable_values  = Set_ident.empty
-}
-
-let set_lexical_scope t v = t.outer_loop_mutable_values <- v 
-
-let get_lexical_scope t = t.outer_loop_mutable_values 
+let get_lexical_scope t = t.outer_loop_mutable_values

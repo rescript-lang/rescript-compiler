@@ -22,12 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val cmp : string -> string -> int 
+val cmp : string -> string -> int
 
-val find_sorted : 
-  string array -> string -> int option
+val find_sorted : string array -> string -> int option
 
-val find_sorted_assoc : 
-  (string * 'a ) array -> 
-  string -> 
-  'a option
+val find_sorted_assoc : (string * 'a) array -> string -> 'a option

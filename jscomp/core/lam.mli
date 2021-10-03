@@ -22,50 +22,41 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-type apply_status =
-  | App_na
-  | App_infer_full
-  | App_uncurry      
+type apply_status = App_na | App_infer_full | App_uncurry
 
 type ap_info = {
-  ap_loc : Location.t ; 
+  ap_loc : Location.t;
   ap_inlined : Lambda.inline_attribute;
   ap_status : apply_status;
-}  
-
-
+}
 
 type ident = Ident.t
 
-type lambda_switch  =
-  { sw_consts_full: bool;
-    sw_consts: (int * t) list;
-    sw_blocks_full: bool;
-    sw_blocks: (int * t) list;
-    sw_failaction: t option;
-    sw_names: Lambda.switch_names option }
-and apply = private
-  { ap_func : t ; 
-    ap_args : t list ; 
-    ap_info : ap_info;
-  }
-and lfunction =  {
-  arity : int ; 
-  params : ident list ;
-  body : t ;
+type lambda_switch = {
+  sw_consts_full : bool;
+  sw_consts : (int * t) list;
+  sw_blocks_full : bool;
+  sw_blocks : (int * t) list;
+  sw_failaction : t option;
+  sw_names : Lambda.switch_names option;
+}
+
+and apply = private { ap_func : t; ap_args : t list; ap_info : ap_info }
+
+and lfunction = {
+  arity : int;
+  params : ident list;
+  body : t;
   attr : Lambda.function_attribute;
 }
-and prim_info = private
-  { primitive : Lam_primitive.t ; 
-    args : t list ; 
-    loc : Location.t 
-  }
-and  t =  private
+
+and prim_info = private {
+  primitive : Lam_primitive.t;
+  args : t list;
+  loc : Location.t;
+}
+
+and t = private
   | Lvar of ident
   | Lglobal_module of ident
   | Lconst of Lam_constant.t
@@ -84,94 +75,88 @@ and  t =  private
   | Lwhile of t * t
   | Lfor of ident * t * t * Asttypes.direction_flag * t
   | Lassign of ident * t
-  (* | Lsend of Lambda.meth_kind * t * t * t list * Location.t *)
-(* | Levent of t * Lambda.lambda_event 
-   [Levent] in the branch hurt pattern match, 
+
+(* | Lsend of Lambda.meth_kind * t * t * t list * Location.t *)
+(* | Levent of t * Lambda.lambda_event
+   [Levent] in the branch hurt pattern match,
    we should use record for trivial debugger info
 *)
 
+val inner_map : t -> (t -> t) -> t
 
-val inner_map :  t -> (t -> t) -> t
-
-
-
-
-val handle_bs_non_obj_ffi:
+val handle_bs_non_obj_ffi :
   External_arg_spec.params ->
   External_ffi_types.return_wrapper ->
-  External_ffi_types.external_spec -> 
-  t list -> 
-  Location.t -> 
-  string -> 
+  External_ffi_types.external_spec ->
+  t list ->
+  Location.t ->
+  string ->
   t
 
 (**************************************************************)
-(** Smart constructors *)
+
 val var : ident -> t
-val global_module : ident -> t 
+(** Smart constructors *)
+
+val global_module : ident -> t
+
 val const : Lam_constant.t -> t
 
-val apply : 
-  t -> 
-  t list -> 
-  ap_info -> 
-  t
+val apply : t -> t list -> ap_info -> t
 
-val function_ : 
+val function_ :
   attr:Lambda.function_attribute ->
   arity:int ->
-  params:ident list -> 
-  body:t -> t
+  params:ident list ->
+  body:t ->
+  t
 
 val let_ : Lam_compat.let_kind -> ident -> t -> t -> t
+
 val letrec : (ident * t) list -> t -> t
 
+val if_ : t -> t -> t -> t
 (**  constant folding *)
-val if_ : t -> t -> t -> t 
 
+val switch : t -> lambda_switch -> t
 (** constant folding*)
-val switch : t -> lambda_switch -> t 
 
+val stringswitch : t -> (string * t) list -> t option -> t
 (** constant folding*)
-val stringswitch : t -> (string * t) list -> t option -> t 
 
 (* val true_ : t  *)
-val false_ : t 
-val unit : t 
+val false_ : t
 
-(** convert [l || r] to [if l then true else r]*)
+val unit : t
+
 val sequor : t -> t -> t
+(** convert [l || r] to [if l then true else r]*)
 
-(** convert [l && r] to [if l then r else false *)
 val sequand : t -> t -> t
+(** convert [l && r] to [if l then r else false *)
 
+val not_ : Location.t -> t -> t
 (** constant folding *)
-val not_ : Location.t ->  t -> t 
 
-(** drop unused block *)
 val seq : t -> t -> t
+(** drop unused block *)
+
 val while_ : t -> t -> t
+
 (* val event : t -> Lambda.lambda_event -> t   *)
-val try_ : t -> ident -> t  -> t 
-val assign : ident -> t -> t 
+val try_ : t -> ident -> t -> t
 
+val assign : ident -> t -> t
 
-(** constant folding *)  
-val prim : primitive:Lam_primitive.t -> args:t list -> Location.t  ->  t
+val prim : primitive:Lam_primitive.t -> args:t list -> Location.t -> t
+(** constant folding *)
 
+val staticcatch : t -> int * ident list -> t -> t
 
-val staticcatch : 
-  t -> int * ident list -> t -> t
+val staticraise : int -> t list -> t
 
-val staticraise : 
-  int -> t list -> t
-
-val for_ : 
-  ident ->
-  t  ->
-  t -> Asttypes.direction_flag -> t -> t 
-
+val for_ : ident -> t -> t -> Asttypes.direction_flag -> t -> t
 
 (**************************************************************)
 
-val eq_approx : t -> t -> bool 
+val eq_approx : t -> t -> bool

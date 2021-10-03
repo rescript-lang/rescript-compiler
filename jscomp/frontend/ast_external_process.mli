@@ -22,15 +22,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
 type response = {
-  pval_type : Parsetree.core_type ; 
-  pval_prim : string list ; 
+  pval_type : Parsetree.core_type;
+  pval_prim : string list;
   pval_attributes : Parsetree.attributes;
-  no_inline_cross_module : bool 
+  no_inline_cross_module : bool;
 }
 
+val encode_attributes_as_string :
+  Bs_loc.t -> Ast_core_type.t -> Ast_attributes.t -> string -> response
 (**
    [encode_attributes_as_string
    loc pval_name.txt pval_type pval_attributes pval_prim]
@@ -39,25 +39,13 @@ type response = {
 
    return value is of [pval_type, pval_prims, new_attrs]
 *)
-val encode_attributes_as_string :
-  Bs_loc.t ->
-  Ast_core_type.t ->
-  Ast_attributes.t ->
-  string  ->  
-  response
 
-
-
-
+val pval_prim_of_labels : string Asttypes.loc list -> string list
 (** [pval_prim_of_labels labels]
     return [pval_prims] for FFI, it is specialized for
     external object which is used in
     {[ [%obj { x = 2; y = 1} ] ]}
 *)
-val pval_prim_of_labels : string Asttypes.loc list -> string list
-
 
 val pval_prim_of_option_labels :
-  (bool * string Asttypes.loc) list ->
-  bool ->
-  string list
+  (bool * string Asttypes.loc) list -> bool -> string list

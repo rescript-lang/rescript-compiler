@@ -29,17 +29,12 @@
 
 val is_closed : Lam.t -> bool
 
-
+val is_closed_with_map :
+  Set_ident.t -> Ident.t list -> Lam.t -> bool * Lam_var_stats.stats Map_ident.t
 (** The output is mostly used in betat reduction *)
-val is_closed_with_map : 
+
+val free_variables :
   Set_ident.t ->
-  Ident.t list -> 
-  Lam.t -> 
-  bool * Lam_var_stats.stats Map_ident.t
-
-val free_variables : 
-  Set_ident.t -> 
-  Lam_var_stats.stats Map_ident.t -> 
-  Lam.t -> 
+  Lam_var_stats.stats Map_ident.t ->
+  Lam.t ->
   Lam_var_stats.stats Map_ident.t
-

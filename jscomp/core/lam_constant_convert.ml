@@ -22,73 +22,62 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let rec convert_constant ( const : Lambda.structured_constant) : Lam_constant.t =
+let rec convert_constant (const : Lambda.structured_constant) : Lam_constant.t =
   match const with
-  | Const_base (Const_int i) -> Const_int {i = Int32.of_int i; comment = None}
+  | Const_base (Const_int i) -> Const_int { i = Int32.of_int i; comment = None }
   | Const_base (Const_char i) -> Const_char i
-  | Const_base (Const_string(i,opt)) ->
-    (match opt with
-     | Some opt when
-         Ast_utf8_string_interp.is_unicode_string opt  ->
-       Const_unicode i
-     | _ ->
-       Const_string i)
-
+  | Const_base (Const_string (i, opt)) -> (
+      match opt with
+      | Some opt when Ast_utf8_string_interp.is_unicode_string opt ->
+          Const_unicode i
+      | _ -> Const_string i)
   | Const_base (Const_float i) -> Const_float i
-  | Const_base (Const_int32 i) -> Const_int {i;comment = None}
+  | Const_base (Const_int32 i) -> Const_int { i; comment = None }
   | Const_base (Const_int64 i) -> Const_int64 i
   | Const_base (Const_nativeint _) -> assert false
-  | Const_pointer(0, Pt_constructor{name = "()"; const = 1; non_const = 0})
-    -> Const_js_undefined
-  | Const_false -> Const_js_false  
+  | Const_pointer (0, Pt_constructor { name = "()"; const = 1; non_const = 0 })
+    ->
+      Const_js_undefined
+  | Const_false -> Const_js_false
   | Const_true -> Const_js_true
-  | Const_pointer(i,p) ->
-    begin match p with 
+  | Const_pointer (i, p) -> (
+      match p with
       | Pt_module_alias -> Const_module_alias
-      | Pt_shape_none ->
-        Lam_constant.lam_none
-      | Pt_assertfalse    -> 
-        Const_int { i = Int32.of_int i ; comment = Pt_assertfalse}
-      | Pt_constructor {name;const;non_const} ->
-        Const_int {i = Int32.of_int i ; comment = Pt_constructor {name;const;non_const}} 
-      | Pt_variant {name} -> 
-        if Ext_string.is_valid_hash_number name then
-          Const_int {i = Ext_string.hash_number_as_i32_exn name; comment = None}
-        else Const_pointer name
-    end 
-  | Const_float_array (s) -> Const_float_array(s)
+      | Pt_shape_none -> Lam_constant.lam_none
+      | Pt_assertfalse ->
+          Const_int { i = Int32.of_int i; comment = Pt_assertfalse }
+      | Pt_constructor { name; const; non_const } ->
+          Const_int
+            {
+              i = Int32.of_int i;
+              comment = Pt_constructor { name; const; non_const };
+            }
+      | Pt_variant { name } ->
+          if Ext_string.is_valid_hash_number name then
+            Const_int
+              { i = Ext_string.hash_number_as_i32_exn name; comment = None }
+          else Const_pointer name)
+  | Const_float_array s -> Const_float_array s
   | Const_immstring s -> Const_string s
-  | Const_block (t,xs) ->
-    let tag = Lambda.tag_of_tag_info t in 
-    begin match t with 
-      | Blk_some_not_nested -> 
-        Const_some (convert_constant (Ext_list.singleton_exn xs))
-      | Blk_some -> 
-        Const_some (convert_constant (Ext_list.singleton_exn xs))        
-      | Blk_constructor _ 
-      | Blk_tuple 
-      | Blk_record _
-      | Blk_module _ 
-      | Blk_module_export _
-      | Blk_extension
-      | Blk_record_inlined _
-      | Blk_record_ext _ 
-        -> 
-        Const_block (tag,t, Ext_list.map xs convert_constant )
-      | Blk_poly_var s -> 
-        begin match xs with 
-          | [_; value] -> 
-            let tag_val : Lam_constant.t = 
-              if Ext_string.is_valid_hash_number s then Const_int {i = Ext_string.hash_number_as_i32_exn s; comment = None}
-              else Const_string s in 
-            Const_block (tag,t, [tag_val; convert_constant value] )      
-          | _ -> assert false  
-        end
-      | Blk_lazy_general 
-        -> assert false
-
-    end
-
-
-
-
+  | Const_block (t, xs) -> (
+      let tag = Lambda.tag_of_tag_info t in
+      match t with
+      | Blk_some_not_nested ->
+          Const_some (convert_constant (Ext_list.singleton_exn xs))
+      | Blk_some -> Const_some (convert_constant (Ext_list.singleton_exn xs))
+      | Blk_constructor _ | Blk_tuple | Blk_record _ | Blk_module _
+      | Blk_module_export _ | Blk_extension | Blk_record_inlined _
+      | Blk_record_ext _ ->
+          Const_block (tag, t, Ext_list.map xs convert_constant)
+      | Blk_poly_var s -> (
+          match xs with
+          | [ _; value ] ->
+              let tag_val : Lam_constant.t =
+                if Ext_string.is_valid_hash_number s then
+                  Const_int
+                    { i = Ext_string.hash_number_as_i32_exn s; comment = None }
+                else Const_string s
+              in
+              Const_block (tag, t, [ tag_val; convert_constant value ])
+          | _ -> assert false)
+      | Blk_lazy_general -> assert false)

@@ -172,9 +172,8 @@ let () =
   in
   let cmj_files =
     (Filename.dirname Sys.argv.(0) // ".." // "runtime" // "js.cmj")
-    ::
-    get_files Literals.suffix_cmj
-      (Filename.dirname Sys.argv.(0) // ".." // stdlib)
+    :: get_files Literals.suffix_cmj
+         (Filename.dirname Sys.argv.(0) // ".." // stdlib)
     @ get_files Literals.suffix_cmj
         (Filename.dirname Sys.argv.(0) // ".." // "others")
     @ third_party_cmj_files
@@ -195,12 +194,11 @@ let () =
     else
       let files =
         (Filename.dirname Sys.argv.(0) // ".." // "runtime" // "js.cmi")
-        ::
-        (get_files Literals.suffix_cmi
-           (Filename.dirname Sys.argv.(0) // ".." // stdlib)
-        @ get_files Literals.suffix_cmi
-            (Filename.dirname Sys.argv.(0) // ".." // "others")
-        @ third_party_cmi_files)
+        :: (get_files Literals.suffix_cmi
+              (Filename.dirname Sys.argv.(0) // ".." // stdlib)
+           @ get_files Literals.suffix_cmi
+               (Filename.dirname Sys.argv.(0) // ".." // "others")
+           @ third_party_cmi_files)
       in
       Ext_list.filter files (fun x ->
           x |~ "js_OO" || x |~ "camlinternal" || not (x |~ "internal"))

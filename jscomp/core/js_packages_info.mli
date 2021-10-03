@@ -22,91 +22,57 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type module_system = NodeJS | Es6 | Es6_global
 
-type module_system = 
-  | NodeJS  
-  | Es6
-  | Es6_global  
+val runtime_dir_of_module_system : module_system -> string
 
+val runtime_package_path : module_system -> string -> string
 
-val runtime_dir_of_module_system :  
-  module_system ->
-  string
-
-val runtime_package_path:  
-  module_system ->
-  string ->
-  string
-
-type package_info = { 
-  module_system : module_system ;
-  path :  string ;
-  suffix : Ext_js_suffix.t
+type package_info = {
+  module_system : module_system;
+  path : string;
+  suffix : Ext_js_suffix.t;
 }
 
-type t 
+type t
 
-val runtime_package_specs : t 
+val runtime_package_specs : t
 
-val runtime_test_package_specs : t  
+val runtime_test_package_specs : t
 
-val is_runtime_package:
-  t ->
-  bool
+val is_runtime_package : t -> bool
 
+val same_package_by_name : t -> t -> bool
 
+val iter : t -> (package_info -> unit) -> unit
 
-val same_package_by_name :   
-  t ->
-  t -> 
-  bool 
+val empty : t
 
-val iter : 
-  t -> 
-  (package_info -> unit) ->
-  unit 
+val from_name : string -> t
 
-val empty : t 
-val from_name : string -> t 
-val is_empty : t -> bool 
+val is_empty : t -> bool
 
-val dump_packages_info : 
-  Format.formatter -> t -> unit
+val dump_packages_info : Format.formatter -> t -> unit
 
-
+val add_npm_package_path : t -> string -> t
 (** used by command line option 
     e.g [-bs-package-output commonjs:xx/path]
 *)
-val add_npm_package_path :   
-  t ->
-  string -> 
-  t  
 
-type package_found_info =     
-  {
-
-    rel_path : string ;  
-    pkg_rel_path : string;
-    suffix : Ext_js_suffix.t   
-  }
+type package_found_info = {
+  rel_path : string;
+  pkg_rel_path : string;
+  suffix : Ext_js_suffix.t;
+}
 
 type info_query =
-  | Package_script 
-  | Package_not_found 
+  | Package_script
+  | Package_not_found
   | Package_found of package_found_info
 
-val get_output_dir:  
-  t ->
-  package_dir:string ->
-  module_system ->
-  string
+val get_output_dir : t -> package_dir:string -> module_system -> string
 
-val query_package_infos:  
-  t ->
-  module_system ->
-  info_query
+val query_package_infos : t -> module_system -> info_query
 (** Note here we compare the package info by order
     in theory, we can compare it by set semantics
 *)
-
-

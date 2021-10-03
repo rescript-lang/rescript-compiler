@@ -22,40 +22,32 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type tdcls = Parsetree.type_declaration list 
+type tdcls = Parsetree.type_declaration list
 
 type gen = {
-  structure_gen : tdcls -> Asttypes.rec_flag -> Ast_structure.t ;
-  signature_gen : tdcls -> Asttypes.rec_flag -> Ast_signature.t ; 
-  expression_gen : (Parsetree.core_type -> Parsetree.expression) option ; 
+  structure_gen : tdcls -> Asttypes.rec_flag -> Ast_structure.t;
+  signature_gen : tdcls -> Asttypes.rec_flag -> Ast_signature.t;
+  expression_gen : (Parsetree.core_type -> Parsetree.expression) option;
 }
 
+val register : string -> (Parsetree.expression option -> gen) -> unit
 (**
    [register name cb]
    example: [register "accessors" cb]
 *)
-val register : 
-  string -> 
-  (Parsetree.expression option -> gen) -> 
-  unit
 
-(* val gen_structure: 
+(* val gen_structure:
    tdcls  ->
    Ast_payload.action list ->
-   bool -> 
+   bool ->
    Ast_structure.t *)
 
-val gen_signature: 
-  tdcls ->
-  Ast_payload.action list -> 
-  Asttypes.rec_flag -> 
-  Ast_signature.t
+val gen_signature :
+  tdcls -> Ast_payload.action list -> Asttypes.rec_flag -> Ast_signature.t
 
-
-
-val gen_structure_signature :  
-  Location.t -> 
+val gen_structure_signature :
+  Location.t ->
   Parsetree.type_declaration list ->
-  Ast_payload.action -> 
-  Asttypes.rec_flag -> 
+  Ast_payload.action ->
+  Asttypes.rec_flag ->
   Parsetree.structure_item

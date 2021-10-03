@@ -89,11 +89,11 @@ let in_staticcatch (x : Lam_compile_context.tail_type) :
 
 (* let change_tail_type_in_static
    (x : Lam_compile_context.tail_type)
-   : Lam_compile_context.tail_type = 
-   match x with 
+   : Lam_compile_context.tail_type =
+   match x with
    | Maybe_tail_is_return (Tail_with_name ({in_staticcatch=false} as z) ) ->
     Maybe_tail_is_return (Tail_with_name {z with in_staticcatch=true})
-   | Maybe_tail_is_return (Tail_with_name {in_staticcatch=true} ) 
+   | Maybe_tail_is_return (Tail_with_name {in_staticcatch=true} )
    | Not_tail | Maybe_tail_is_return Tail_in_try
     -> x *)
 
@@ -186,22 +186,22 @@ let rec compile_external_field (* Like [List.empty]*)
   | _ ->
       Js_output.output_of_expression lamba_cxt.continuation
         ~no_effects:no_effects_const (E.ml_var_dot id name)
-  (* TODO: how nested module call would behave,
-     In the future, we should keep in track  of if
-     it is fully applied from [Lapply]
-     Seems that the module dependency is tricky..
-     should we depend on [Pervasives] or not?
+(* TODO: how nested module call would behave,
+   In the future, we should keep in track  of if
+   it is fully applied from [Lapply]
+   Seems that the module dependency is tricky..
+   should we depend on [Pervasives] or not?
 
-     we can not do this correctly for the return value,
-     however we can inline the definition in Pervasives
-     TODO:
-     [Pervasives.print_endline]
-     [Pervasives.prerr_endline]
-     @param id external module id
-     @param number the index of the external function
-     @param env typing environment
-     @param args arguments
-  *)
+   we can not do this correctly for the return value,
+   however we can inline the definition in Pervasives
+   TODO:
+   [Pervasives.print_endline]
+   [Pervasives.prerr_endline]
+   @param id external module id
+   @param number the index of the external function
+   @param env typing environment
+   @param args arguments
+*)
 
 (** This can not happen since this id should be already consulted by type checker
           Worst case
@@ -360,26 +360,26 @@ and compile_recursive_let ~all_bindings (cxt : Lam_compile_context.t)
       *)
       ( Js_output.make
           (S.define_variable ~kind:Variable id (E.dummy_obj tag_info)
-           ::
-           Ext_list.mapi ls (fun i x ->
-               S.exp
-                 (Js_of_lam_block.set_field
-                    (match tag_info with
-                    | Blk_record { fields = xs } -> Fld_record_set xs.(i)
-                    | Blk_record_inlined xs ->
-                        Fld_record_inline_set xs.fields.(i)
-                    | Blk_constructor p -> (
-                        let is_cons = p.name = Literals.cons in
-                        match (is_cons, i) with
-                        | true, 0 -> Fld_record_inline_set Literals.hd
-                        | true, 1 -> Fld_record_inline_set Literals.tl
-                        | _, _ -> Fld_record_inline_set ("_" ^ string_of_int i))
-                    | _ -> assert false)
-                    (E.var id) (Int32.of_int i)
-                    (match x with
-                    | Lvar lid -> E.var lid
-                    | Lconst x -> Lam_compile_const.translate x
-                    | _ -> assert false)))),
+          :: Ext_list.mapi ls (fun i x ->
+                 S.exp
+                   (Js_of_lam_block.set_field
+                      (match tag_info with
+                      | Blk_record { fields = xs } -> Fld_record_set xs.(i)
+                      | Blk_record_inlined xs ->
+                          Fld_record_inline_set xs.fields.(i)
+                      | Blk_constructor p -> (
+                          let is_cons = p.name = Literals.cons in
+                          match (is_cons, i) with
+                          | true, 0 -> Fld_record_inline_set Literals.hd
+                          | true, 1 -> Fld_record_inline_set Literals.tl
+                          | _, _ -> Fld_record_inline_set ("_" ^ string_of_int i)
+                          )
+                      | _ -> assert false)
+                      (E.var id) (Int32.of_int i)
+                      (match x with
+                      | Lvar lid -> E.var lid
+                      | Lconst x -> Lam_compile_const.translate x
+                      | _ -> assert false)))),
         [] )
   | Lprim { primitive = Pmakeblock (_, tag_info, _) } -> (
       (* Lconst should not appear here if we do [scc]
@@ -640,12 +640,12 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
       let v = Ext_ident.create_tmp () in
       Js_output.make
         (S.declare_variable ~kind:Variable v
-         :: compile_whole { lambda_cxt with continuation = Assign v })
+        :: compile_whole { lambda_cxt with continuation = Assign v })
         ~value:(E.var v)
   | Declare (kind, id) ->
       Js_output.make
         (S.declare_variable ~kind id
-         :: compile_whole { lambda_cxt with continuation = Assign id })
+        :: compile_whole { lambda_cxt with continuation = Assign id })
   | EffectCall _ | Assign _ -> Js_output.make (compile_whole lambda_cxt)
 
 and compile_string_cases cxt switch_exp table default =
@@ -655,8 +655,8 @@ and compile_string_cases cxt switch_exp table default =
     (fun ?default ?declaration e clauses ->
       S.string_switch ?default ?declaration e clauses)
     switch_exp table default
-  (* TODO: optional arguments are not good
-     for high order currying *)
+(* TODO: optional arguments are not good
+   for high order currying *)
 
 and compile_stringswitch l cases default (lambda_cxt : Lam_compile_context.t) =
   (* TODO might better optimization according to the number of cases
@@ -786,10 +786,10 @@ and compile_staticcatch (lam : Lam.t) (lambda_cxt : Lam_compile_context.t) =
       (* Declaration First, body and handler have the same value *)
       let declares =
         S.define_variable ~kind:Variable exit_id E.zero_int_literal
-        ::
-        (* we should always make it zero here, since [zero] is reserved in our mapping*)
-        Ext_list.flat_map code_table (fun { bindings } ->
-            Ext_list.map bindings (fun x -> S.declare_variable ~kind:Variable x))
+        :: (* we should always make it zero here, since [zero] is reserved in our mapping*)
+           Ext_list.flat_map code_table (fun { bindings } ->
+               Ext_list.map bindings (fun x ->
+                   S.declare_variable ~kind:Variable x))
       in
       match lambda_cxt.continuation with
       (* could be optimized when cases are less than 3 *)
@@ -878,7 +878,7 @@ and compile_sequand (l : Lam.t) (r : Lam.t) (lambda_cxt : Lam_compile_context.t)
             | EffectCall _ | NeedValue _ ->
                 let v = Ext_ident.create_tmp () in
                 Js_output.make
-                  (S.define_variable ~kind:Variable v E.false_ :: l_block
+                  ((S.define_variable ~kind:Variable v E.false_ :: l_block)
                   @ [ S.if_ l_expr (r_block @ [ S.assign v r_expr ]) ])
                   ~value:(E.var v)))
 
@@ -1004,8 +1004,8 @@ and compile_for (id : J.for_ident) (start : Lam.t) (finish : Lam.t)
         | _, _ ->
             Ext_list.append b1
               (S.define_variable ~kind:Variable id e1
-               ::
-               Ext_list.append_one b2 (S.for_ None e2 id direction block_body)))
+              :: Ext_list.append_one b2 (S.for_ None e2 id direction block_body)
+              ))
   in
   Js_output.output_of_block_and_expression lambda_cxt.continuation block E.unit
 

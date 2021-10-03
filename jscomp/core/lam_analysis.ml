@@ -66,7 +66,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       (* whether it's mutable or not *)
       | Pfield _ | Pval_from_option | Pval_from_option_not_nest
       (* NOP The compiler already [t option] is the same as t *)
-      | Pduprecord 
+      | Pduprecord
       (* Boolean operations *)
       | Psequand | Psequor | Pnot
       (* Integer operations *)
@@ -137,10 +137,10 @@ let rec no_side_effects (lam : Lam.t) : bool =
   | Lapply _ -> false
 (* we need purity analysis .. *)
 
-(* 
-    Estimate the size of lambda for better inlining 
-    threshold is 1000 - so that we 
- *)
+(*
+     Estimate the size of lambda for better inlining
+     threshold is 1000 - so that we
+*)
 exception Too_big_to_inline
 
 let really_big () = raise_notrace Too_big_to_inline

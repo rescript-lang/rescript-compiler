@@ -15,36 +15,36 @@
 
 (* System configuration *)
 
-val version: string
-        (* The current version number of the system *)
+val version : string
+(* The current version number of the system *)
 
-val standard_library: string
-        (* The directory containing the standard libraries *)
+val standard_library : string
+(* The directory containing the standard libraries *)
 
-val syntax_kind : [ `ml  | `rescript ] ref       
+val syntax_kind : [ `ml | `rescript ] ref
 
-val bs_only : bool ref 
+val bs_only : bool ref
 
-val unsafe_empty_array: bool ref 
+val unsafe_empty_array : bool ref
 
+val load_path : string list ref
+(* Directories in the search path for .cmi and .cmo files *)
 
-val load_path: string list ref
-        (* Directories in the search path for .cmi and .cmo files *)
+val interface_suffix : string ref
+(* Suffix for interface file names *)
 
-val interface_suffix: string ref
-        (* Suffix for interface file names *)
+val cmi_magic_number : string
 
-val cmi_magic_number: string
-        (* Magic number for compiled interface files *)
-val ast_intf_magic_number: string
-        (* Magic number for file holding an interface syntax tree *)
-val ast_impl_magic_number: string
-        (* Magic number for file holding an implementation syntax tree *)
-val cmt_magic_number: string
-        (* Magic number for compiled interface files *)
+(* Magic number for compiled interface files *)
+val ast_intf_magic_number : string
 
+(* Magic number for file holding an interface syntax tree *)
+val ast_impl_magic_number : string
 
-val default_uncurry : bool ref 
-val print_config : out_channel -> unit;;
+(* Magic number for file holding an implementation syntax tree *)
+val cmt_magic_number : string
+(* Magic number for compiled interface files *)
 
+val default_uncurry : bool ref
 
+val print_config : out_channel -> unit

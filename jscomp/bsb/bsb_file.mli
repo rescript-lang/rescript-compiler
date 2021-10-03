@@ -22,8 +22,5 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-(** return [true] if copied *)
 val install_if_exists : destdir:string -> string -> bool
-
+(** return [true] if copied *)

@@ -11,7 +11,6 @@
 (***********************************************************************)
 (* Adapted for Javascript backend: Hongbo Zhang                        *)
 
-
 (**
         [no_bounded_varaibles lambda]
         checks if [lambda] contains bounded variable, for
@@ -20,50 +19,40 @@
         to inline directly since if it contains bounded variables it
         must be rebounded before inlining
 *)
-let rec 
-  no_list args = Ext_list.for_all args no_bounded_variables 
-and no_list_snd : 'a. ('a * Lam.t ) list -> bool  = fun args ->
-  Ext_list.for_all_snd  args no_bounded_variables
-and no_opt x =   
-  match x with 
-  | None -> true 
-  | Some a -> no_bounded_variables a 
+let rec no_list args = Ext_list.for_all args no_bounded_variables
+
+and no_list_snd : 'a. ('a * Lam.t) list -> bool =
+ fun args -> Ext_list.for_all_snd args no_bounded_variables
+
+and no_opt x = match x with None -> true | Some a -> no_bounded_variables a
+
 and no_bounded_variables (l : Lam.t) =
   match l with
   | Lvar _ -> true
   | Lconst _ -> true
-  | Lassign(_id, e) ->
-    no_bounded_variables e
-  | Lapply{ap_func; ap_args; _} ->
-    no_bounded_variables ap_func && no_list ap_args
+  | Lassign (_id, e) -> no_bounded_variables e
+  | Lapply { ap_func; ap_args; _ } ->
+      no_bounded_variables ap_func && no_list ap_args
   | Lglobal_module _ -> true
-  | Lprim {args; primitive = _ ; } ->
-    no_list args
-  | Lswitch(arg, sw) ->
-    no_bounded_variables arg &&
-    no_list_snd sw.sw_consts &&
-    no_list_snd sw.sw_blocks &&
-    no_opt sw.sw_failaction
-  | Lstringswitch (arg,cases,default) ->
-    no_bounded_variables arg &&
-    no_list_snd cases && no_opt default
-  | Lstaticraise (_,args) ->
-    no_list args
-  | Lifthenelse(e1, e2, e3) ->
-    no_bounded_variables e1 && no_bounded_variables e2 && no_bounded_variables e3
-  | Lsequence(e1, e2) ->
-    no_bounded_variables e1 && no_bounded_variables e2
-  | Lwhile(e1, e2) ->
-    no_bounded_variables e1 && no_bounded_variables e2
-  | Lstaticcatch(e1, (_,vars), e2) ->
-    vars = [] && no_bounded_variables e1 &&  no_bounded_variables e2
-  | Lfunction{body;params} ->
-    params = [] && no_bounded_variables body;
-  | Lfor _  -> false
+  | Lprim { args; primitive = _ } -> no_list args
+  | Lswitch (arg, sw) ->
+      no_bounded_variables arg && no_list_snd sw.sw_consts
+      && no_list_snd sw.sw_blocks && no_opt sw.sw_failaction
+  | Lstringswitch (arg, cases, default) ->
+      no_bounded_variables arg && no_list_snd cases && no_opt default
+  | Lstaticraise (_, args) -> no_list args
+  | Lifthenelse (e1, e2, e3) ->
+      no_bounded_variables e1 && no_bounded_variables e2
+      && no_bounded_variables e3
+  | Lsequence (e1, e2) -> no_bounded_variables e1 && no_bounded_variables e2
+  | Lwhile (e1, e2) -> no_bounded_variables e1 && no_bounded_variables e2
+  | Lstaticcatch (e1, (_, vars), e2) ->
+      vars = [] && no_bounded_variables e1 && no_bounded_variables e2
+  | Lfunction { body; params } -> params = [] && no_bounded_variables body
+  | Lfor _ -> false
   | Ltrywith _ -> false
-  | Llet _ ->false
-  | Lletrec(decl, body) -> decl = [] && no_bounded_variables body
-
+  | Llet _ -> false
+  | Lletrec (decl, body) -> decl = [] && no_bounded_variables body
 
 (*
    TODO: 
@@ -88,15 +77,12 @@ and no_bounded_variables (l : Lam.t) =
     when do the substitution, if its occurence is > 1,
     we should refresh
 *)
-type lam_subst = 
-  | Id of Lam.t [@@unboxed]
+type lam_subst = Id of Lam.t [@@unboxed]
 (* | Refresh of Lam.t *)
 
-type subst_tbl = (Ident.t list * lam_subst ) Hash_int.t
+type subst_tbl = (Ident.t list * lam_subst) Hash_int.t
 
-let to_lam x = 
-  match x with 
-  | Id x -> x 
+let to_lam x = match x with Id x -> x
 (* | Refresh x -> Lam_bounded_vars.refresh x  *)
 
 (**
@@ -157,106 +143,97 @@ let to_lam x =
        we use the post-simplified expression, it is more consistent
        TODO: when we do the case merging on the js side, 
        the j is not very indicative                
-*)             
+*)
 
-let subst_helper (subst : subst_tbl) (query : int -> int) (lam : Lam.t) : Lam.t = 
-  let rec simplif (lam : Lam.t) = 
-    match lam with 
-    | Lstaticcatch (l1,(i,xs),l2) ->      
-      let i_occur = query i in 
-      (match i_occur , l2 with
-       | 0,_ -> simplif l1
-       | ( _ , Lvar _
-         | _, Lconst _) (* when i >= 0  # 2316 *) ->  
-         Hash_int.add subst i (xs, Id (simplif l2)) ;
-         simplif l1 (* l1 will inline *)
-       | 1,_ when i >= 0 -> (* Ask: Note that we have predicate i >=0 *)
-         Hash_int.add subst i (xs, Id (simplif l2)) ;
-         simplif l1 (* l1 will inline *)
-       |  _ ->
-         let l2 = simplif l2 in 
-         (* we only inline when [l2] does not contain bound variables
-            no need to refresh
-         *)
-         let ok_to_inline = 
-           i >=0 && 
-           (no_bounded_variables l2) &&
-           (let lam_size = Lam_analysis.size l2 in
-            (i_occur <= 2 && lam_size < Lam_analysis.exit_inline_size   )
-            || (lam_size < 5 ))
-         in 
-         if ok_to_inline 
-         then 
-           begin            
-             Hash_int.add subst i (xs,  Id l2) ;
-             simplif l1 
-           end
-         else Lam.staticcatch (simplif l1) (i,xs) l2)
-    | Lstaticraise (i,[])  ->
-      (match Hash_int.find_opt subst i with
-       | Some (_,handler) -> to_lam handler
-       | None -> lam)      
-    | Lstaticraise (i,ls) ->
-      let ls = Ext_list.map  ls simplif in
-      (match Hash_int.find_opt subst i with
-       | Some (xs, handler) -> 
-         let handler = to_lam handler in 
-         let ys = Ext_list.map xs Ident.rename in
-         let env =
-           Ext_list.fold_right2 xs ys Map_ident.empty 
-             (fun x y t -> Map_ident.add t x (Lam.var y) ) in
-         Ext_list.fold_right2 ys ls 
-           (Lam_subst.subst  env  handler)
-           (fun y l r -> Lam.let_ Strict y l r)
-       | None -> Lam.staticraise i ls
-      )
-    | Lvar _|Lconst _  -> lam
-    | Lapply {ap_func; ap_args;  ap_info } -> 
-      Lam.apply (simplif ap_func) (Ext_list.map ap_args simplif) ap_info
-    | Lfunction {arity; params; body; attr} -> 
-      Lam.function_ ~arity  ~params ~body:(simplif body) ~attr
-    | Llet (kind, v, l1, l2) -> 
-      Lam.let_ kind v (simplif l1) (simplif l2)
+let subst_helper (subst : subst_tbl) (query : int -> int) (lam : Lam.t) : Lam.t
+    =
+  let rec simplif (lam : Lam.t) =
+    match lam with
+    | Lstaticcatch (l1, (i, xs), l2) -> (
+        let i_occur = query i in
+        match (i_occur, l2) with
+        | 0, _ -> simplif l1
+        | _, Lvar _ | _, Lconst _ (* when i >= 0  # 2316 *) ->
+            Hash_int.add subst i (xs, Id (simplif l2));
+            simplif l1 (* l1 will inline *)
+        | 1, _ when i >= 0 ->
+            (* Ask: Note that we have predicate i >=0 *)
+            Hash_int.add subst i (xs, Id (simplif l2));
+            simplif l1 (* l1 will inline *)
+        | _ ->
+            let l2 = simplif l2 in
+            (* we only inline when [l2] does not contain bound variables
+               no need to refresh
+            *)
+            let ok_to_inline =
+              i >= 0 && no_bounded_variables l2
+              &&
+              let lam_size = Lam_analysis.size l2 in
+              (i_occur <= 2 && lam_size < Lam_analysis.exit_inline_size)
+              || lam_size < 5
+            in
+            if ok_to_inline then (
+              Hash_int.add subst i (xs, Id l2);
+              simplif l1)
+            else Lam.staticcatch (simplif l1) (i, xs) l2)
+    | Lstaticraise (i, []) -> (
+        match Hash_int.find_opt subst i with
+        | Some (_, handler) -> to_lam handler
+        | None -> lam)
+    | Lstaticraise (i, ls) -> (
+        let ls = Ext_list.map ls simplif in
+        match Hash_int.find_opt subst i with
+        | Some (xs, handler) ->
+            let handler = to_lam handler in
+            let ys = Ext_list.map xs Ident.rename in
+            let env =
+              Ext_list.fold_right2 xs ys Map_ident.empty (fun x y t ->
+                  Map_ident.add t x (Lam.var y))
+            in
+            Ext_list.fold_right2 ys ls (Lam_subst.subst env handler)
+              (fun y l r -> Lam.let_ Strict y l r)
+        | None -> Lam.staticraise i ls)
+    | Lvar _ | Lconst _ -> lam
+    | Lapply { ap_func; ap_args; ap_info } ->
+        Lam.apply (simplif ap_func) (Ext_list.map ap_args simplif) ap_info
+    | Lfunction { arity; params; body; attr } ->
+        Lam.function_ ~arity ~params ~body:(simplif body) ~attr
+    | Llet (kind, v, l1, l2) -> Lam.let_ kind v (simplif l1) (simplif l2)
     | Lletrec (bindings, body) ->
-      Lam.letrec
-        (Ext_list.map_snd  bindings simplif) 
-        (simplif body)
-    | Lglobal_module _ -> lam 
-    | Lprim {primitive; args; loc} -> 
-      let args = Ext_list.map args simplif in
-      Lam.prim ~primitive ~args loc
-    | Lswitch(l, sw) ->
-      let new_l = simplif l in 
-      let new_consts =  Ext_list.map_snd  sw.sw_consts simplif in 
-      let new_blocks =  Ext_list.map_snd  sw.sw_blocks simplif in 
-      let new_fail = Ext_option.map sw.sw_failaction simplif in       
-      Lam.switch
-        new_l
-        { 
-          sw with 
-          sw_consts = new_consts ;
-          sw_blocks = new_blocks; 
-          sw_failaction = new_fail}
-    | Lstringswitch(l,sw,d) ->
-      Lam.stringswitch
-        (simplif l) (Ext_list.map_snd  sw simplif)
-        (Ext_option.map d simplif)
-    | Ltrywith (l1, v, l2) -> 
-      Lam.try_ (simplif l1) v (simplif l2)
-    | Lifthenelse (l1, l2, l3) -> 
-      Lam.if_ (simplif l1) (simplif l2) (simplif l3)
+        Lam.letrec (Ext_list.map_snd bindings simplif) (simplif body)
+    | Lglobal_module _ -> lam
+    | Lprim { primitive; args; loc } ->
+        let args = Ext_list.map args simplif in
+        Lam.prim ~primitive ~args loc
+    | Lswitch (l, sw) ->
+        let new_l = simplif l in
+        let new_consts = Ext_list.map_snd sw.sw_consts simplif in
+        let new_blocks = Ext_list.map_snd sw.sw_blocks simplif in
+        let new_fail = Ext_option.map sw.sw_failaction simplif in
+        Lam.switch new_l
+          {
+            sw with
+            sw_consts = new_consts;
+            sw_blocks = new_blocks;
+            sw_failaction = new_fail;
+          }
+    | Lstringswitch (l, sw, d) ->
+        Lam.stringswitch (simplif l)
+          (Ext_list.map_snd sw simplif)
+          (Ext_option.map d simplif)
+    | Ltrywith (l1, v, l2) -> Lam.try_ (simplif l1) v (simplif l2)
+    | Lifthenelse (l1, l2, l3) -> Lam.if_ (simplif l1) (simplif l2) (simplif l3)
     | Lsequence (l1, l2) -> Lam.seq (simplif l1) (simplif l2)
     | Lwhile (l1, l2) -> Lam.while_ (simplif l1) (simplif l2)
     | Lfor (v, l1, l2, dir, l3) ->
-      Lam.for_ v (simplif l1) (simplif l2) dir (simplif l3)
-    | Lassign (v, l) -> 
-      Lam.assign v (simplif l)
-  in 
-  simplif lam 
+        Lam.for_ v (simplif l1) (simplif l2) dir (simplif l3)
+    | Lassign (v, l) -> Lam.assign v (simplif l)
+  in
+  simplif lam
 
 let simplify_exits (lam : Lam.t) =
   let exits = Lam_exit_count.count_helper lam in
-  subst_helper (Hash_int.create 17 ) (Lam_exit_count.count_exit exits) lam
+  subst_helper (Hash_int.create 17) (Lam_exit_count.count_exit exits) lam
 
 (* Compile-time beta-reduction of functions immediately applied:
       Lapply(Lfunction(Curried, params, body), args, loc) ->

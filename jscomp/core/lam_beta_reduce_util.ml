@@ -22,20 +22,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* 
-   Principle: since in ocaml, the apply order is not specified 
-   rules:
-   1. each argument it is only used once, (avoid eval duplication)
-   2. it's actually used, if not (Lsequence)
-   3. no nested  compuation, 
-      other wise the evaluation order is tricky (make sure eval order is correct)
+(*
+    Principle: since in ocaml, the apply order is not specified
+    rules:
+    1. each argument it is only used once, (avoid eval duplication)
+    2. it's actually used, if not (Lsequence)
+    3. no nested  compuation,
+       other wise the evaluation order is tricky (make sure eval order is correct)
 *)
 
 type value = { mutable used : bool; lambda : Lam.t }
 
 let param_hash : _ Hash_ident.t = Hash_ident.create 20
 
-(* optimize cases like 
+(* optimize cases like
    (fun f (a,b){ g (a,b,1)} (e0, e1))
    cases like
    (fun f (a,b){ g (a,b,a)} (e0, e1)) needs avoids double eval
@@ -47,7 +47,7 @@ let param_hash : _ Hash_ident.t = Hash_ident.create 20
             match (a : Lam.t) with
             | Lvar a -> Ident.same p a
             | _ -> false ) params args'
-   ]}  
+   ]}
 *)
 let simple_beta_reduce params body args =
   let exception Not_simple_apply in
@@ -79,7 +79,7 @@ let simple_beta_reduce params body args =
         let result =
           Hash_ident.fold param_hash (Lam.prim ~primitive ~args:new_args ap_loc)
             (fun _param stats acc ->
-              let { lambda; used } = stats in 
+              let { lambda; used } = stats in
               if not used then Lam.seq lambda acc else acc)
         in
         Hash_ident.clear param_hash;
@@ -113,7 +113,7 @@ let simple_beta_reduce params body args =
         let result =
           Hash_ident.fold param_hash (Lam.apply f new_args ap_info)
             (fun _param stat acc ->
-              let { lambda; used } = stat in 
+              let { lambda; used } = stat in
               if not used then Lam.seq lambda acc else acc)
         in
         Hash_ident.clear param_hash;

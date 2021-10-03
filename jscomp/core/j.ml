@@ -27,7 +27,7 @@
     It's a subset of Javascript AST specialized for OCaml lambda backend
 
     Note it's not exactly the same as Javascript, the AST itself follows lexical
-    convention and [Block] is just a sequence of statements, which means it does 
+    convention and [Block] is just a sequence of statements, which means it does
     not introduce new scope
 *)
 
@@ -142,7 +142,7 @@ and expression_desc =
   *)
   | New of expression * expression list option (* TODO: option remove *)
   | Var of vident
-  | Fun of bool * ident list * block * Js_fun_env.t * bool 
+  | Fun of bool * ident list * block * Js_fun_env.t * bool
   (* The first parameter by default is false,
      it will be true when it's a method
      The last pararemter [true] return unit
@@ -197,53 +197,53 @@ and finish_ident_expression = expression
 
 (* pure *)
 (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/block
-   block can be nested, specified in ES3 
+   block can be nested, specified in ES3
 *)
 
 (* Delay some units like [primitive] into JS layer ,
    benefit: better cross module inlining, and smaller IR size?
 *)
 
-(* 
-  [closure] captured loop mutable values in the outer loop
+(*
+   [closure] captured loop mutable values in the outer loop
 
-  check if it contains loop mutable values, happens in nested loop
-  when closured, it's no longer loop mutable value. 
-  which means the outer loop mutable value can not peek into the inner loop
-   {[
-     var i = f ();
-     for(var finish = 32; i < finish; ++i){
-       }
-   ]}
-   when [for_ident_expression] is [None], [var i] has to 
-   be initialized outside, so 
+   check if it contains loop mutable values, happens in nested loop
+   when closured, it's no longer loop mutable value.
+   which means the outer loop mutable value can not peek into the inner loop
+    {[
+      var i = f ();
+      for(var finish = 32; i < finish; ++i){
+        }
+    ]}
+    when [for_ident_expression] is [None], [var i] has to
+    be initialized outside, so
 
-   {[
-     var i = f ()
-       (function (xxx){
-            for(var finish = 32; i < finish; ++i)
-          }(..i))
-   ]}
-   This happens rare it's okay
+    {[
+      var i = f ()
+        (function (xxx){
+             for(var finish = 32; i < finish; ++i)
+           }(..i))
+    ]}
+    This happens rare it's okay
 
-   this is because [i] has to be initialized outside, if [j] 
-   contains a block side effect
-   TODO: create such example
+    this is because [i] has to be initialized outside, if [j]
+    contains a block side effect
+    TODO: create such example
 *)
 
-(* Since in OCaml, 
+(* Since in OCaml,
 
    [for i = 0 to k end do done ]
    k is only evaluated once , to encode this invariant in JS IR,
    make sure [ident] is defined in the first b
 
-   TODO: currently we guarantee that [bound] was only 
+   TODO: currently we guarantee that [bound] was only
    excecuted once, should encode this in AST level
 *)
 
 (* Can be simplified to keep the semantics of OCaml
    For (var i, e, ...){
-     let  j = ... 
+     let  j = ...
    }
 
    if [i] or [j] is captured inside closure
@@ -320,8 +320,8 @@ and variable_declaration = {
   ident_info : ident_info;
 }
 
-(* TODO: For efficency: block should not be a list, it should be able to 
-   be concatenated in both ways 
+(* TODO: For efficency: block should not be a list, it should be able to
+   be concatenated in both ways
 *)
 and block = statement list
 

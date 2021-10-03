@@ -25,65 +25,76 @@
 type label = Types.label_description
 
 let find_name (attr : Parsetree.attribute) =
-  match attr with 
-  | {txt = "bs.as" | "as"}, PStr 
-      [{pstr_desc = Pstr_eval ({pexp_desc = Pexp_constant (Pconst_string(s,_))},_ )}] -> 
-    Some s 
+  match attr with
+  | ( { txt = "bs.as" | "as" },
+      PStr
+        [
+          {
+            pstr_desc =
+              Pstr_eval ({ pexp_desc = Pexp_constant (Pconst_string (s, _)) }, _);
+          };
+        ] ) ->
+      Some s
   | _ -> None
 
-
-let find_name_with_loc (attr : Parsetree.attribute) : 
-  string Asttypes.loc option =
-  match attr with 
-  | {txt = "bs.as" | "as";loc}, PStr 
-      [{pstr_desc = Pstr_eval ({pexp_desc = Pexp_constant (Pconst_string(s,_))},_ )}] -> 
-    Some {txt = s; loc} 
+let find_name_with_loc (attr : Parsetree.attribute) : string Asttypes.loc option
+    =
+  match attr with
+  | ( { txt = "bs.as" | "as"; loc },
+      PStr
+        [
+          {
+            pstr_desc =
+              Pstr_eval ({ pexp_desc = Pexp_constant (Pconst_string (s, _)) }, _);
+          };
+        ] ) ->
+      Some { txt = s; loc }
   | _ -> None
 
-
-let fld_record (lbl : label) = 
+let fld_record (lbl : label) =
   Lambda.Fld_record
-    {name = Ext_list.find_def lbl.lbl_attributes find_name lbl.lbl_name; mutable_flag = lbl.lbl_mut}
+    {
+      name = Ext_list.find_def lbl.lbl_attributes find_name lbl.lbl_name;
+      mutable_flag = lbl.lbl_mut;
+    }
 
-let fld_record_set (lbl : label) = 
-  Lambda.Fld_record_set 
+let fld_record_set (lbl : label) =
+  Lambda.Fld_record_set
     (Ext_list.find_def lbl.lbl_attributes find_name lbl.lbl_name)
 
-let blk_record  (fields : (label * _) array) mut record_repr = 
-  let all_labels_info = 
-    Ext_array.map fields   
-      (fun (lbl,_) -> 
-         Ext_list.find_def lbl.lbl_attributes find_name lbl.lbl_name) in  
-  Lambda.Blk_record {fields = all_labels_info ; mutable_flag = mut; record_repr}
+let blk_record (fields : (label * _) array) mut record_repr =
+  let all_labels_info =
+    Ext_array.map fields (fun (lbl, _) ->
+        Ext_list.find_def lbl.lbl_attributes find_name lbl.lbl_name)
+  in
+  Lambda.Blk_record
+    { fields = all_labels_info; mutable_flag = mut; record_repr }
 
-let check_bs_attributes_inclusion
-    (attrs1 : Parsetree.attributes)
-    (attrs2 : Parsetree.attributes)
-    lbl_name =   
-  let a = Ext_list.find_def attrs1 find_name lbl_name in 
-  let b = Ext_list.find_def attrs2 find_name lbl_name in 
-  if a = b then None 
-  else Some (a,b)
+let check_bs_attributes_inclusion (attrs1 : Parsetree.attributes)
+    (attrs2 : Parsetree.attributes) lbl_name =
+  let a = Ext_list.find_def attrs1 find_name lbl_name in
+  let b = Ext_list.find_def attrs2 find_name lbl_name in
+  if a = b then None else Some (a, b)
 
-let rec check_duplicated_labels_aux 
-    (lbls : Parsetree.label_declaration  list) 
-    (coll : Set_string.t) = 
-  match lbls with 
-  | [] -> None 
-  | {pld_name= ({txt} as pld_name); pld_attributes}::rest ->
-    if Set_string.mem coll txt then Some            pld_name
-    else 
-      let coll_with_lbl = Set_string.add coll txt in
-      match Ext_list.find_opt pld_attributes find_name_with_loc with 
-      | None -> check_duplicated_labels_aux rest coll_with_lbl
-      | Some ({txt = s;} as l) -> 
-        if Set_string.mem coll s  
-        (*use coll to make check a bit looser
-          allow cases like [ x : int [@as "x"]]
-        *) then  
-          Some l
-        else 
-          check_duplicated_labels_aux rest (Set_string.add coll_with_lbl s)
+let rec check_duplicated_labels_aux (lbls : Parsetree.label_declaration list)
+    (coll : Set_string.t) =
+  match lbls with
+  | [] -> None
+  | { pld_name = { txt } as pld_name; pld_attributes } :: rest -> (
+      if Set_string.mem coll txt then Some pld_name
+      else
+        let coll_with_lbl = Set_string.add coll txt in
+        match Ext_list.find_opt pld_attributes find_name_with_loc with
+        | None -> check_duplicated_labels_aux rest coll_with_lbl
+        | Some ({ txt = s } as l) ->
+            if
+              Set_string.mem coll s
+              (*use coll to make check a bit looser
+                allow cases like [ x : int [@as "x"]]
+              *)
+            then Some l
+            else
+              check_duplicated_labels_aux rest (Set_string.add coll_with_lbl s))
 
-let check_duplicated_labels lbls = 
-  check_duplicated_labels_aux lbls Set_string.empty             
+let check_duplicated_labels lbls =
+  check_duplicated_labels_aux lbls Set_string.empty

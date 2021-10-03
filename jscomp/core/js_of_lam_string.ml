@@ -22,41 +22,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
-
 module E = Js_exp_make
 
-
-
-(* We use module B for string compilation, once the upstream can make changes to the 
-    patten match of range patterns, we can use module [A] which means [char] is [string] in js, 
+(* We use module B for string compilation, once the upstream can make changes to the
+    patten match of range patterns, we can use module [A] which means [char] is [string] in js,
     currently, it follows the same patten of ocaml, [char] is [int]
 *)
 
-let const_char (i : char) = 
-  E.int  
-    ~c:i (Int32.of_int @@ Char.code i)
-
+let const_char (i : char) = E.int ~c:i (Int32.of_int @@ Char.code i)
 
 (* string [s[i]] expects to return a [ocaml_char] *)
-let ref_string e e1 = 
-  E.string_index e e1
+let ref_string e e1 = E.string_index e e1
 
 (* [s[i]] excepts to return a [ocaml_char]
    We use normal array for [bytes]
-   TODO: we can use [Buffer] in the future 
+   TODO: we can use [Buffer] in the future
 *)
-let ref_byte e e0  = E.array_index  e  e0
+let ref_byte e e0 = E.array_index e e0
 
 (* {Bytes.set : bytes -> int -> char -> unit }*)
-let set_byte  e e0 e1 = 
-  E.assign (E.array_index e e0)  e1
+let set_byte e e0 e1 = E.assign (E.array_index e e0) e1
 
 (**
    Note that [String.fromCharCode] also works, but it only 
@@ -74,11 +59,8 @@ let set_byte  e e0 e1 =
        Maxiume call stack size exceeded
    ]}
 *)
-let bytes_to_string e = 
-  E.runtime_call Js_runtime_modules.bytes "bytes_to_string" [e]
+let bytes_to_string e =
+  E.runtime_call Js_runtime_modules.bytes "bytes_to_string" [ e ]
 
 let bytes_of_string s =
-  E.runtime_call Js_runtime_modules.bytes "bytes_of_string" [s]
-
-
-
+  E.runtime_call Js_runtime_modules.bytes "bytes_of_string" [ s ]

@@ -24,45 +24,36 @@
 
 (** type definitions for external argument *)
 
-type cst = 
-  | Arg_int_lit of int 
-  | Arg_string_lit of string 
+type cst =
+  | Arg_int_lit of int
+  | Arg_string_lit of string
   | Arg_js_literal of string
 
-type label_noname = 
-  | Arg_label 
-  | Arg_empty 
-  | Arg_optional
+type label_noname = Arg_label | Arg_empty | Arg_optional
 
-type label = 
-  | Obj_empty   
-  | Obj_label of {name : string }
-  | Obj_optional of {
-      name : string; 
-      for_sure_no_nested_option : bool
-    }
+type label =
+  | Obj_empty
+  | Obj_label of { name : string }
+  | Obj_optional of { name : string; for_sure_no_nested_option : bool }
 
 (* it will be ignored , side effect will be recorded *)
 
-
 (* This type is used to give some meta info on each argument *)
-type attr = 
-  | Poly_var_string of { 
-      descr :
-        (string * string) list
-        (* introduced by attributes @string
-           and @as 
-        *)
-    } 
+type attr =
+  | Poly_var_string of {
+      descr : (string * string) list;
+          (* introduced by attributes @string
+             and @as
+          *)
+    }
   | Poly_var of {
-      descr : 
-        (string * string) list option 
-        (* introduced by attributes @string
-           and @as 
-        *)
-    } 
+      descr : (string * string) list option;
+          (* introduced by attributes @string
+             and @as
+          *)
+    }
   (* `a does not have any value*)
-  | Int of (string * int ) list (* ([`a | `b ] [@int])*)
+  | Int of (string * int) list (* ([`a | `b ] [@int])*)
   | Arg_cst of cst
   | Fn_uncurry_arity of int (* annotated with [@uncurry ] or [@uncurry 2]*)
   (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
@@ -71,32 +62,27 @@ type attr =
   | Ignore
   | Unwrap
 
-type param = {
-  arg_type : attr;
-  arg_label : label_noname
-}   
+type param = { arg_type : attr; arg_label : label_noname }
 
-type obj_param = 
-  {
-    obj_arg_type : attr;
-    obj_arg_label : label
-  }
+type obj_param = { obj_arg_type : attr; obj_arg_label : label }
 
+type obj_params = obj_param list
 
-type obj_params = obj_param list 
-type params = param list 
+type params = param list
 
 let cst_obj_literal s = Arg_js_literal s
-let cst_int i = Arg_int_lit i 
-let cst_string s = Arg_string_lit s 
-let empty_label = Obj_empty 
 
-let obj_label name  = 
-  Obj_label {name }
+let cst_int i = Arg_int_lit i
+
+let cst_string s = Arg_string_lit s
+
+let empty_label = Obj_empty
+
+let obj_label name = Obj_label { name }
 
 let optional for_sure_no_nested_option name =
-  Obj_optional {name; for_sure_no_nested_option}
+  Obj_optional { name; for_sure_no_nested_option }
 
-let empty_kind obj_arg_type = { obj_arg_label = empty_label ; obj_arg_type }
-let dummy = 
-  {arg_type = Nothing; arg_label = Arg_empty}  
+let empty_kind obj_arg_type = { obj_arg_label = empty_label; obj_arg_type }
+
+let dummy = { arg_type = Nothing; arg_label = Arg_empty }

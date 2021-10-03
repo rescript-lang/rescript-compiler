@@ -23,69 +23,128 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 let function_ = "function"
+
 let var = "var" (* should be able to switch to [let] easily*)
+
 let return = "return"
+
 (* let eq = "=" *)
 let require = "require"
+
 let import = "import"
+
 let from = "from"
+
 let as_ = "as"
+
 let export = "export"
+
 let star = "*"
+
 let lparen = "("
+
 let rparen = ")"
+
 let exports = "exports"
+
 let dot = "."
+
 let comma = ","
+
 let colon = Ext_string.single_colon
+
 let colon_space = ": "
+
 let throw = "throw"
+
 let default = "default"
+
 let length = "length"
+
 let codePointAt = "codePointAt"
+
 let new_ = "new"
+
 let array = "Array"
-let question = "?"      
+
+let question = "?"
+
 let plusplus = "++"
+
 let minusminus = "--"
+
 let semi = ";"
+
 let else_ = "else"
+
 let if_ = "if"
+
 let for_ = "for"
+
 let try_ = "try"
+
 let finally = "finally"
 
 let this = "this"
+
 let while_ = "while"
+
 let empty_block = "empty_block"
+
 let start_block = "start_block"
+
 let end_block = "end_block"
+
 let json = "JSON"
+
 let stringify = "stringify"
+
 let console = "console"
+
 let define = "define"
+
 let break = "break"
+
 let continue = "continue"
+
 let switch = "switch"
+
 let strict_directive = "'use strict';"
+
 let true_ = "true"
+
 let false_ = "false"
 
 let debugger = "debugger"
+
 let tag = "TAG"
+
 let bind = "bind"
+
 let math = "Math"
+
 let apply = "apply"
+
 let null = "null"
+
 let undefined = "undefined"
+
 let string_cap = "String"
+
 let fromCharcode = "fromCharCode"
+
 let eq = "="
+
 let le = "<="
+
 let lt = "<"
+
 let ge = ">="
+
 let gt = ">"
-let plus_plus = "++" 
+
+let plus_plus = "++"
+
 (*  FIXME: use (i = i + 1 | 0) instead  *)
 let minus_minus = "--"
 
@@ -93,8 +152,10 @@ let caml_block_create = "__"
 
 (** debug symbols *)
 
-
 let block_poly_var = "polyVar"
+
 let block_variant = "variant"
+
 let block_simple_variant = "simpleVariant"
-let case = "case" 
+
+let case = "case"

@@ -22,85 +22,78 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+let ( // ) = Ext_path.combine
 
-let (//) = Ext_path.combine
+let vendor_ninja = Bsb_global_paths.vendor_ninja
 
-
-let vendor_ninja = Bsb_global_paths.vendor_ninja 
-
-let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : string array) =
+let make_world_deps cwd (config : Bsb_config_types.t option)
+    (ninja_args : string array) =
   let deps, pinned_dependencies =
     match config with
     | None ->
-      (* When this running bsb does not read bsconfig.json,
-         we will read such json file to know which [package-specs]
-         it wants
-      *)
-      Bsb_config_parse.package_specs_from_bsconfig ()
-    | Some config -> config.package_specs, config.pinned_dependencies in
-  let args = 
-    if Ext_array.is_empty ninja_args then [|vendor_ninja|] 
-    else Array.append [|vendor_ninja|] ninja_args
-  in 
+        (* When this running bsb does not read bsconfig.json,
+           we will read such json file to know which [package-specs]
+           it wants
+        *)
+        Bsb_config_parse.package_specs_from_bsconfig ()
+    | Some config -> (config.package_specs, config.pinned_dependencies)
+  in
+  let args =
+    if Ext_array.is_empty ninja_args then [| vendor_ninja |]
+    else Array.append [| vendor_ninja |] ninja_args
+  in
   let lib_artifacts_dir = Bsb_config.lib_bs in
-  let queue = 
-    Bsb_build_util.walk_all_deps  cwd ~pinned_dependencies in 
-  (* let oc = open_out_bin ".deps.log" in 
-     queue |> Queue.iter (fun ({top; proj_dir} : Bsb_build_util.package_context) -> 
-     match top with 
+  let queue = Bsb_build_util.walk_all_deps cwd ~pinned_dependencies in
+  (* let oc = open_out_bin ".deps.log" in
+     queue |> Queue.iter (fun ({top; proj_dir} : Bsb_build_util.package_context) ->
+     match top with
      | Expect_none -> ()
-     | Expect_name s ->       
+     | Expect_name s ->
       output_string oc s ;
       output_string oc " : ";
       output_string oc proj_dir;
       output_string oc "\n"
      );
-     close_out oc ;   *)
-  queue |> Queue.iter (fun ({top; proj_dir} : Bsb_build_util.package_context) ->
-      match top with 
-      | Expect_none -> ()
-      | Expect_name s ->
-        begin 
-          let is_pinned =  Set_string.mem pinned_dependencies s in 
-          (if is_pinned then  
-             print_endline ("Dependency pinned on " ^ s )
-           else print_endline ("Dependency on " ^ s ));
-          let  lib_bs_dir = proj_dir // lib_artifacts_dir in 
-          Bsb_build_util.mkp lib_bs_dir;
-          let _config : _ option = 
-            Bsb_ninja_regen.regenerate_ninja 
-              ~package_kind:(if is_pinned then Pinned_dependency deps else Dependency deps) 
-              ~per_proj_dir:proj_dir  ~forced:false in 
-          let command = 
-            {Bsb_unix.cmd = vendor_ninja;
-             cwd = lib_bs_dir;
-             args 
-            } in     
-          let eid =
-            Bsb_unix.run_command_execv
-              command in 
-          if eid <> 0 then   
-            Bsb_unix.command_fatal_error command eid;
-          (* When ninja is not regenerated, ninja will still do the build, 
-             still need reinstall check
-             Note that we can check if ninja print "no work to do", 
-             then don't need reinstall more
-          *)
-          Bsb_log.info "@{<info>Installation started@}@.";
-          let install_dir = proj_dir // "lib" // "ocaml" in 
-          Bsb_build_util.mkp install_dir;
-          let install_command = {
-            Bsb_unix.cmd = vendor_ninja; 
-            cwd = install_dir;
-            args = [| vendor_ninja ; "-f"; ".."//"bs"//"install.ninja"|]
-          } in 
-          let eid =
-            Bsb_unix.run_command_execv
-              install_command in 
-          if eid <> 0 then   
-            Bsb_unix.command_fatal_error install_command eid;            
-          Bsb_log.info "@{<info>Installation finished@}@.";
-
-        end
-    );
+     close_out oc ; *)
+  queue
+  |> Queue.iter (fun ({ top; proj_dir } : Bsb_build_util.package_context) ->
+         match top with
+         | Expect_none -> ()
+         | Expect_name s ->
+             let is_pinned = Set_string.mem pinned_dependencies s in
+             if is_pinned then print_endline ("Dependency pinned on " ^ s)
+             else print_endline ("Dependency on " ^ s);
+             let lib_bs_dir = proj_dir // lib_artifacts_dir in
+             Bsb_build_util.mkp lib_bs_dir;
+             let _config : _ option =
+               Bsb_ninja_regen.regenerate_ninja
+                 ~package_kind:
+                   (if is_pinned then Pinned_dependency deps
+                   else Dependency deps)
+                 ~per_proj_dir:proj_dir ~forced:false
+             in
+             let command =
+               { Bsb_unix.cmd = vendor_ninja; cwd = lib_bs_dir; args }
+             in
+             let eid = Bsb_unix.run_command_execv command in
+             if eid <> 0 then Bsb_unix.command_fatal_error command eid;
+             (* When ninja is not regenerated, ninja will still do the build,
+                still need reinstall check
+                Note that we can check if ninja print "no work to do",
+                then don't need reinstall more
+             *)
+             Bsb_log.info "@{<info>Installation started@}@.";
+             let install_dir = proj_dir // "lib" // "ocaml" in
+             Bsb_build_util.mkp install_dir;
+             let install_command =
+               {
+                 Bsb_unix.cmd = vendor_ninja;
+                 cwd = install_dir;
+                 args =
+                   [| vendor_ninja; "-f"; ".." // "bs" // "install.ninja" |];
+               }
+             in
+             let eid = Bsb_unix.run_command_execv install_command in
+             if eid <> 0 then Bsb_unix.command_fatal_error install_command eid;
+             Bsb_log.info "@{<info>Installation finished@}@.");
   print_endline "Dependency Finished"

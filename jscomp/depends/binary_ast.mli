@@ -22,20 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type _ kind = Ml : Parsetree.structure kind | Mli : Parsetree.signature kind
 
-type _ kind = 
-  | Ml : Parsetree.structure kind 
-  | Mli : Parsetree.signature kind
-
-val read_ast_exn : 
-  fname:string -> 
-  'a kind ->  
-  ([`ml | `rescript  | `default] -> unit) ->
-  'a 
-
+val read_ast_exn :
+  fname:string -> 'a kind -> ([ `ml | `rescript | `default ] -> unit) -> 'a
 
 val magic_sep_char : char
 
+val write_ast : sourcefile:string -> output:string -> 'a kind -> 'a -> unit
 (**
    Check out {!Bsb_depfile_gen} for set decoding
    The [.ml] file can be recognized as an ast directly, the format
@@ -51,10 +45,3 @@ val magic_sep_char : char
    Use case cat - | fan -printer -impl -
    redirect the standard input to fan
 *)
-val write_ast : 
-  sourcefile:string -> 
-  output:string -> 
-  'a kind -> 
-  'a -> 
-  unit
-

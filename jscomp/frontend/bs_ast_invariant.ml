@@ -22,24 +22,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 (** Warning unused bs attributes
     Note if we warn `deriving` too, 
     it may fail third party ppxes
 *)
-let is_bs_attribute txt = 
-  let len = String.length txt  in
-  len >= 2 &&
+let is_bs_attribute txt =
+  let len = String.length txt in
+  len >= 2
   (*TODO: check the stringing padding rule, this preciate may not be needed *)
-  String.unsafe_get txt 0 = 'b'&& 
-  String.unsafe_get txt 1 = 's' &&
-  (len = 2 ||
-   String.unsafe_get txt 2 = '.'
-  )
+  && String.unsafe_get txt 0 = 'b'
+  && String.unsafe_get txt 1 = 's'
+  && (len = 2 || String.unsafe_get txt 2 = '.')
 
-let used_attributes : string Asttypes.loc Hash_set_poly.t = 
-  Hash_set_poly.create 16 
-
+let used_attributes : string Asttypes.loc Hash_set_poly.t =
+  Hash_set_poly.create 16
 
 (*
   let dump_attribute fmt = (fun ( (sloc : string Asttypes.loc),payload) -> 
@@ -53,189 +49,159 @@ let dump_used_attributes fmt =
  *)
 
 (* only mark non-ghost used bs attribute *)
-let mark_used_bs_attribute ((x,_) : Parsetree.attribute) = 
-  if not x.loc.loc_ghost then
-    Hash_set_poly.add used_attributes x
+let mark_used_bs_attribute ((x, _) : Parsetree.attribute) =
+  if not x.loc.loc_ghost then Hash_set_poly.add used_attributes x
 
+let warn_unused_attribute ((({ txt; loc } as sloc), _) : Parsetree.attribute) =
+  if
+    is_bs_attribute txt && (not loc.loc_ghost)
+    && not (Hash_set_poly.mem used_attributes sloc)
+  then
+    (*
+         dump_used_attributes Format.err_formatter;
+       dump_attribute Format.err_formatter attr ;
+    *)
+    Location.prerr_warning loc (Bs_unused_attribute txt)
 
-let warn_unused_attribute 
-    (({txt; loc} as sloc, _) : Parsetree.attribute) = 
-  if is_bs_attribute txt && 
-     not loc.loc_ghost &&
-     not (Hash_set_poly.mem used_attributes sloc) then 
-    begin    
-  (* 
-  dump_used_attributes Format.err_formatter; 
-dump_attribute Format.err_formatter attr ; 
-*)
-
-Location.prerr_warning loc (Bs_unused_attribute txt)
-end
-
-let warn_discarded_unused_attributes (attrs : Parsetree.attributes) = 
-  if attrs <> [] then 
-    Ext_list.iter attrs warn_unused_attribute
-
+let warn_discarded_unused_attributes (attrs : Parsetree.attributes) =
+  if attrs <> [] then Ext_list.iter attrs warn_unused_attribute
 
 type iterator = Ast_iterator.iterator
+
 let super = Ast_iterator.default_iterator
 
-let check_constant loc kind (const : Parsetree.constant) = 
-  match const with 
-  | Pconst_string
-      (_, Some s) -> 
-    begin match kind with 
+let check_constant loc kind (const : Parsetree.constant) =
+  match const with
+  | Pconst_string (_, Some s) -> (
+      match kind with
       | `expr ->
-        (if Ast_utf8_string_interp.is_unescaped s  then 
-           Bs_warnings.error_unescaped_delimiter loc s) 
+          if Ast_utf8_string_interp.is_unescaped s then
+            Bs_warnings.error_unescaped_delimiter loc s
       | `pat ->
-        if s =  "j" then 
-          Location.raise_errorf ~loc  "Unicode string is not allowed in pattern match"    
-    end 
-  | Pconst_integer(s,None) -> 
-    (* range check using int32 
-       It is better to give a warning instead of error to avoid make people unhappy.
-       It also has restrictions in which platform bsc is running on since it will 
-       affect int ranges
-    *)
-    (
-      try 
-        ignore (
-          if String.length s = 0 || s.[0] = '-' then 
-            Int32.of_string s 
+          if s = "j" then
+            Location.raise_errorf ~loc
+              "Unicode string is not allowed in pattern match")
+  | Pconst_integer (s, None) -> (
+      (* range check using int32
+         It is better to give a warning instead of error to avoid make people unhappy.
+         It also has restrictions in which platform bsc is running on since it will
+         affect int ranges
+      *)
+      try
+        ignore
+          (if String.length s = 0 || s.[0] = '-' then Int32.of_string s
           else Int32.of_string ("-" ^ s))
-      with _ ->              
-        Bs_warnings.warn_literal_overflow loc
-    )
-  | Pconst_integer(_, Some 'n')
-    -> Location.raise_errorf ~loc "literal with `n` suffix is not supported"  
-  | _ -> ()   
+      with _ -> Bs_warnings.warn_literal_overflow loc)
+  | Pconst_integer (_, Some 'n') ->
+      Location.raise_errorf ~loc "literal with `n` suffix is not supported"
+  | _ -> ()
 
-(* Note we only used Bs_ast_iterator here, we can reuse compiler-libs instead of 
+(* Note we only used Bs_ast_iterator here, we can reuse compiler-libs instead of
    rolling our own*)
-let emit_external_warnings : iterator=
+let emit_external_warnings : iterator =
   {
     super with
-    type_declaration = (fun self ptyp -> 
+    type_declaration =
+      (fun self ptyp ->
         let txt = ptyp.ptype_name.txt in
-        if Ast_core_type.is_builtin_rank0_type txt then 
-          Location.raise_errorf ~loc:ptyp.ptype_loc 
-            "built-in type `%s` can not be redefined " txt
-        ;
-        super.type_declaration self ptyp
-      );
+        if Ast_core_type.is_builtin_rank0_type txt then
+          Location.raise_errorf ~loc:ptyp.ptype_loc
+            "built-in type `%s` can not be redefined " txt;
+        super.type_declaration self ptyp);
     attribute = (fun _ attr -> warn_unused_attribute attr);
-    structure_item = (fun self str_item -> 
-        match str_item.pstr_desc with 
-        | Pstr_type (Nonrecursive, [{ptype_kind = Ptype_variant ({pcd_res = Some _} :: _)}])
-          when !Config.syntax_kind = `rescript ->        
-          Location.raise_errorf ~loc:str_item.pstr_loc 
-            "GADT has to be recursive types, please try `type rec'" 
-        | Pstr_class _ -> 
-          Location.raise_errorf ~loc:str_item.pstr_loc 
-            "OCaml style classes are not supported"   
-        | _ -> super.structure_item self str_item  
-      );
-    expr = (fun self ({pexp_loc = loc} as a) -> 
-        match a.pexp_desc with  
-        | Pexp_constant(const) -> check_constant loc `expr const
-        | Pexp_object _ 
-        | Pexp_new _  -> 
-          Location.raise_errorf ~loc
-            "OCaml style objects are not supported"
-        | Pexp_variant (s,None) 
-          when Ext_string.is_valid_hash_number s 
-          ->
-          (try ignore (Ext_string.hash_number_as_i32_exn s : int32)  
-           with 
-           | _ -> 
-             Location.raise_errorf ~loc
-               "This number is too large to cause int overlow"
-          )
-        | _ -> super.expr self a         
-      );
-    label_declaration = (fun self lbl ->     
-
-        Ext_list.iter lbl.pld_attributes 
-          (fun attr -> 
-             match attr with 
-             | {txt = "bs.as" | "as"}, _ -> mark_used_bs_attribute attr
-             | _ -> ()
-          );
-        super.label_declaration self lbl      
-      );  
-    constructor_declaration = (fun self ({pcd_name = {txt;loc}} as ctr) -> 
-        (match txt with  
-         | "false"
-         | "true" 
-         | "()" -> 
-           Location.raise_errorf ~loc:loc "%s can not be redefined " txt
-         | _ -> ());
-        super.constructor_declaration self ctr  
-      );
+    structure_item =
+      (fun self str_item ->
+        match str_item.pstr_desc with
+        | Pstr_type
+            ( Nonrecursive,
+              [ { ptype_kind = Ptype_variant ({ pcd_res = Some _ } :: _) } ] )
+          when !Config.syntax_kind = `rescript ->
+            Location.raise_errorf ~loc:str_item.pstr_loc
+              "GADT has to be recursive types, please try `type rec'"
+        | Pstr_class _ ->
+            Location.raise_errorf ~loc:str_item.pstr_loc
+              "OCaml style classes are not supported"
+        | _ -> super.structure_item self str_item);
+    expr =
+      (fun self ({ pexp_loc = loc } as a) ->
+        match a.pexp_desc with
+        | Pexp_constant const -> check_constant loc `expr const
+        | Pexp_object _ | Pexp_new _ ->
+            Location.raise_errorf ~loc "OCaml style objects are not supported"
+        | Pexp_variant (s, None) when Ext_string.is_valid_hash_number s -> (
+            try ignore (Ext_string.hash_number_as_i32_exn s : int32)
+            with _ ->
+              Location.raise_errorf ~loc
+                "This number is too large to cause int overlow")
+        | _ -> super.expr self a);
+    label_declaration =
+      (fun self lbl ->
+        Ext_list.iter lbl.pld_attributes (fun attr ->
+            match attr with
+            | { txt = "bs.as" | "as" }, _ -> mark_used_bs_attribute attr
+            | _ -> ());
+        super.label_declaration self lbl);
+    constructor_declaration =
+      (fun self ({ pcd_name = { txt; loc } } as ctr) ->
+        (match txt with
+        | "false" | "true" | "()" ->
+            Location.raise_errorf ~loc "%s can not be redefined " txt
+        | _ -> ());
+        super.constructor_declaration self ctr);
     value_description =
-      (fun self v -> 
-         match v with 
-         | ( {
-             pval_loc;
-             pval_prim =
-               [byte_name];
-             pval_type
-           } : Parsetree.value_description) -> 
-           begin match byte_name with 
-             | "%identity" 
-               when not
-                   (Ast_core_type.is_arity_one pval_type)
-               -> 
-               Location.raise_errorf
-                 ~loc:pval_loc
-                 "%%identity expect its type to be of form 'a -> 'b (arity 1)"
-             | _ ->
-               if byte_name <> "" then 
-                 let c = String.unsafe_get byte_name 0 in 
-                 if not (c = '%' || c = '#' || c = '?') then 
-                 Location.prerr_warning pval_loc (Warnings.Bs_ffi_warning ( byte_name ^ " such externals are unsafe"))
-                 else  
-                   super.value_description self v 
-               else Location.prerr_warning pval_loc (Warnings.Bs_ffi_warning ( byte_name ^ " such externals are unsafe"))
-           end 
-         | _ -> super.value_description self v 
-      );
-    pat = begin fun self (pat : Parsetree.pattern) -> 
-      match pat.ppat_desc with
-      |  Ppat_constant(constant) ->
-        check_constant pat.ppat_loc `pat constant
-      | Ppat_record ([],_) ->
-        Location.raise_errorf ~loc:pat.ppat_loc "Empty record pattern is not supported"
-      | _ -> super.pat self pat
-    end 
+      (fun self v ->
+        match v with
+        | ({ pval_loc; pval_prim = [ byte_name ]; pval_type } :
+            Parsetree.value_description) -> (
+            match byte_name with
+            | "%identity" when not (Ast_core_type.is_arity_one pval_type) ->
+                Location.raise_errorf ~loc:pval_loc
+                  "%%identity expect its type to be of form 'a -> 'b (arity 1)"
+            | _ ->
+                if byte_name <> "" then
+                  let c = String.unsafe_get byte_name 0 in
+                  if not (c = '%' || c = '#' || c = '?') then
+                    Location.prerr_warning pval_loc
+                      (Warnings.Bs_ffi_warning
+                         (byte_name ^ " such externals are unsafe"))
+                  else super.value_description self v
+                else
+                  Location.prerr_warning pval_loc
+                    (Warnings.Bs_ffi_warning
+                       (byte_name ^ " such externals are unsafe")))
+        | _ -> super.value_description self v);
+    pat =
+      (fun self (pat : Parsetree.pattern) ->
+        match pat.ppat_desc with
+        | Ppat_constant constant -> check_constant pat.ppat_loc `pat constant
+        | Ppat_record ([], _) ->
+            Location.raise_errorf ~loc:pat.ppat_loc
+              "Empty record pattern is not supported"
+        | _ -> super.pat self pat);
   }
 
-let rec iter_warnings_on_stru (stru : Parsetree.structure) = 
-  match stru with 
-  | [] -> ()  
-  | head :: rest -> 
-    begin match head.pstr_desc with 
-      | Pstr_attribute attr -> 
-        Builtin_attributes.warning_attribute attr;
-        iter_warnings_on_stru rest 
-      |  _ -> ()
-    end
+let rec iter_warnings_on_stru (stru : Parsetree.structure) =
+  match stru with
+  | [] -> ()
+  | head :: rest -> (
+      match head.pstr_desc with
+      | Pstr_attribute attr ->
+          Builtin_attributes.warning_attribute attr;
+          iter_warnings_on_stru rest
+      | _ -> ())
 
-let rec iter_warnings_on_sigi (stru : Parsetree.signature) = 
-  match stru with 
-  | [] -> ()  
-  | head :: rest -> 
-    begin match head.psig_desc with 
-      | Psig_attribute attr -> 
-        Builtin_attributes.warning_attribute attr;
-        iter_warnings_on_sigi rest 
-      |  _ -> ()
-    end
+let rec iter_warnings_on_sigi (stru : Parsetree.signature) =
+  match stru with
+  | [] -> ()
+  | head :: rest -> (
+      match head.psig_desc with
+      | Psig_attribute attr ->
+          Builtin_attributes.warning_attribute attr;
+          iter_warnings_on_sigi rest
+      | _ -> ())
 
-
-let emit_external_warnings_on_structure  (stru : Parsetree.structure) =   
+let emit_external_warnings_on_structure (stru : Parsetree.structure) =
   emit_external_warnings.structure emit_external_warnings stru
 
-let emit_external_warnings_on_signature  (sigi : Parsetree.signature) = 
+let emit_external_warnings_on_signature (sigi : Parsetree.signature) =
   emit_external_warnings.signature emit_external_warnings sigi
