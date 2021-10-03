@@ -20,7 +20,11 @@ var files = content
   );
 
 for (let file of files) {
-  let base = path.parse(file).base;
+  let { base, dir } = path.parse(file);
+  // console.log(base, dir);
+  if (dir.includes("ml") && !base.includes('rescript')) {
+    continue;
+  }
   let src = path.join(__dirname, "..", "jscomp", file);
   let dest = path.join(__dirname, "..", "..", "rescript-pack", base);
   console.log(`copy ${src} -> ${dest}`);
