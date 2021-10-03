@@ -55,6 +55,8 @@ B super_errors
 S napkin
 B napkin
 
+S js_parser
+B js_parser
 # S runtime
 # B runtime
 
