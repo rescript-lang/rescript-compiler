@@ -122,7 +122,7 @@ let  from_json suffix (x : Ext_json_types.t) : Spec_set.t =
 
 let bs_package_output = "-bs-package-output"
 [@@@warning "+9"]
-(** Assume input is valid 
+(* Assume input is valid 
     coordinate with command line flag 
     {[ -bs-package-output commonjs:lib/js/jscomp/test:.js ]}    
 *)
