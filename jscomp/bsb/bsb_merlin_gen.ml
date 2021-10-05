@@ -99,7 +99,7 @@ let output_merlin_namespace buffer ns =
 
 (* Literals.dash_nostdlib::
    FIX editor tooling, note merlin does not need -nostdlib since we added S and B
-   RLS will add -I for those cmi files,  
+   RLS will add -I for those cmi files,
    Some consistency check is needed
    Unless we tell the editor to peek those cmi for auto-complete and others for building which is too
    complicated

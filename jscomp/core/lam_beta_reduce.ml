@@ -22,27 +22,27 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* 
-    A naive beta reduce would break the invariants of the optmization.
+(*
+     A naive beta reduce would break the invariants of the optmization.
 
 
-    The sane but slowest  way:
-      when we do a beta reduction, we need rename all variables inlcuding 
-      let-bound ones
+     The sane but slowest  way:
+       when we do a beta reduction, we need rename all variables inlcuding
+       let-bound ones
 
-    A conservative one:
-      - for internal one 
-        rename params and let bound variables
-      - for external one (seriaized)
-        if it's enclosed environment should be good enough
-        so far, we only inline enclosed lambdas
-    TODO: rename 
+     A conservative one:
+       - for internal one
+         rename params and let bound variables
+       - for external one (seriaized)
+         if it's enclosed environment should be good enough
+         so far, we only inline enclosed lambdas
+     TODO: rename
 
-   Optimizations:   
-   {[
-     (fun x y -> ...     ) 100 3 
-   ]}   
-   we can bound [x] to [100] in a single step     
+    Optimizations:
+    {[
+      (fun x y -> ...     ) 100 3
+    ]}
+    we can bound [x] to [100] in a single step
 *)
 let propogate_beta_reduce (meta : Lam_stats.t) (params : Ident.t list)
     (body : Lam.t) (args : Lam.t list) =

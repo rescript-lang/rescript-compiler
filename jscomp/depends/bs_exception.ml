@@ -22,62 +22,56 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 type error =
   | Cmj_not_found of string
-  | Js_not_found of string 
-  | Bs_cyclic_depends of string  list
+  | Js_not_found of string
+  | Bs_cyclic_depends of string list
   | Bs_duplicated_module of string * string
   | Bs_duplicate_exports of string (* gpr_974 *)
-  | Bs_package_not_found of string                            
-  | Bs_main_not_exist of string 
+  | Bs_package_not_found of string
+  | Bs_main_not_exist of string
   | Bs_invalid_path of string
-  | Missing_ml_dependency of string 
-  | Dependency_script_module_dependent_not  of string 
-  (** TODO: we need add location handling *)    
+  | Missing_ml_dependency of string
+  | Dependency_script_module_dependent_not of string
+      (** TODO: we need add location handling *)
+
 exception Error of error
 
 let error err = raise (Error err)
 
 let report_error ppf = function
-  | Dependency_script_module_dependent_not s
-    -> 
-    Format.fprintf ppf 
-      "%s is compiled in script mode while its dependent is not"
-      s
-  | Missing_ml_dependency s -> 
-    Format.fprintf ppf "Missing dependency %s in search path" s 
+  | Dependency_script_module_dependent_not s ->
+      Format.fprintf ppf
+        "%s is compiled in script mode while its dependent is not" s
+  | Missing_ml_dependency s ->
+      Format.fprintf ppf "Missing dependency %s in search path" s
   | Cmj_not_found s ->
-    Format.fprintf ppf "%s not found, it means either the module does not exist or it is a namespace" s
-  | Js_not_found s -> 
-    Format.fprintf ppf "%s not found, needed in script mode " s
-  | Bs_cyclic_depends  str
-    ->
-    Format.fprintf ppf "Cyclic depends : @[%a@]"
-      (Format.pp_print_list ~pp_sep:Format.pp_print_space
-         Format.pp_print_string)
-      str
-  | Bs_duplicate_exports str -> 
-    Format.fprintf ppf "%s are exported as twice" str 
-  | Bs_duplicated_module (a,b)
-    ->
-    Format.fprintf ppf "The build system does not support two files with same names yet %s, %s" a b
-  | Bs_main_not_exist main
-    ->
-    Format.fprintf ppf "File %s not found " main
-
-  | Bs_package_not_found package
-    ->
-    Format.fprintf ppf "Package %s not found or %s/lib/ocaml does not exist or please set npm_config_prefix correctly"
-      package package
-  | Bs_invalid_path path
-    ->  Format.pp_print_string ppf ("Invalid path: " ^ path )
-
+      Format.fprintf ppf
+        "%s not found, it means either the module does not exist or it is a \
+         namespace"
+        s
+  | Js_not_found s ->
+      Format.fprintf ppf "%s not found, needed in script mode " s
+  | Bs_cyclic_depends str ->
+      Format.fprintf ppf "Cyclic depends : @[%a@]"
+        (Format.pp_print_list ~pp_sep:Format.pp_print_space
+           Format.pp_print_string)
+        str
+  | Bs_duplicate_exports str ->
+      Format.fprintf ppf "%s are exported as twice" str
+  | Bs_duplicated_module (a, b) ->
+      Format.fprintf ppf
+        "The build system does not support two files with same names yet %s, %s"
+        a b
+  | Bs_main_not_exist main -> Format.fprintf ppf "File %s not found " main
+  | Bs_package_not_found package ->
+      Format.fprintf ppf
+        "Package %s not found or %s/lib/ocaml does not exist or please set \
+         npm_config_prefix correctly"
+        package package
+  | Bs_invalid_path path -> Format.pp_print_string ppf ("Invalid path: " ^ path)
 
 let () =
-  Location.register_error_of_exn
-    (function
-      | Error err
-        -> Some (Location.error_of_printer_file report_error err)
-      | _ -> None
-    )
+  Location.register_error_of_exn (function
+    | Error err -> Some (Location.error_of_printer_file report_error err)
+    | _ -> None)

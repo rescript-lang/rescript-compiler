@@ -22,20 +22,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+val handle_external : Location.t -> string -> Parsetree.expression
 
-val handle_external:
-  Location.t -> 
-  string -> 
+val handle_debugger : Location.t -> Ast_payload.t -> Parsetree.expression_desc
+
+val handle_raw :
+  kind:Js_raw_info.raw_kind ->
+  Location.t ->
+  Ast_payload.t ->
   Parsetree.expression
 
-val handle_debugger : 
-  Location.t -> Ast_payload.t -> Parsetree.expression_desc
-
-val handle_raw : 
-  kind : Js_raw_info.raw_kind ->
-  Location.t -> 
-  Ast_payload.t -> 
-  Parsetree.expression
-
-val handle_raw_structure : 
+val handle_raw_structure :
   Location.t -> Ast_payload.t -> Parsetree.structure_item

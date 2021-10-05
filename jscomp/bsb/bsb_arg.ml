@@ -22,128 +22,98 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
 type anon_fun = rev_args:string list -> unit
 
-type string_action = 
-  | String_call of (string -> unit)  
+type string_action =
+  | String_call of (string -> unit)
   | String_set of string ref
 
-type unit_action = 
-  | Unit_call of (unit -> unit) 
-  | Unit_set of bool ref
+type unit_action = Unit_call of (unit -> unit) | Unit_set of bool ref
 
-type spec =
-  | Unit of unit_action
-  | String of string_action 
+type spec = Unit of unit_action | String of string_action
 
-
-
-
-type error =
-  | Unknown of string
-  | Missing of string
+type error = Unknown of string | Missing of string
 
 type t = spec Ext_spec.t
 
-
-exception Bad of string 
+exception Bad of string
 
 let bad_arg s = raise_notrace (Bad s)
 
-let (+>) = Ext_buffer.add_string
+let ( +> ) = Ext_buffer.add_string
 
 let usage_b (buf : Ext_buffer.t) ~usage (speclist : t) =
   buf +> usage;
-  if Ext_array.is_empty speclist  then () else begin 
+  if Ext_array.is_empty speclist then ()
+  else (
     buf +> "\nOptions:\n";
-    let max_col = ref 0 in 
-    Ext_array.iter speclist (fun (key,_,_) -> 
-        if String.length key > !max_col then 
-          max_col := String.length key
-      );
-    Ext_array.iter speclist (fun (key,_,doc) -> 
-        if not (Ext_string.starts_with doc "*internal*") then begin 
+    let max_col = ref 0 in
+    Ext_array.iter speclist (fun (key, _, _) ->
+        if String.length key > !max_col then max_col := String.length key);
+    Ext_array.iter speclist (fun (key, _, doc) ->
+        if not (Ext_string.starts_with doc "*internal*") then (
           buf +> "  ";
-          buf +> key ; 
-          buf +> (String.make (!max_col - String.length key + 2 ) ' ');
-          let cur = ref 0 in 
-          let doc_length = String.length doc in 
-          while !cur < doc_length do 
-            if !cur <> 0 then begin 
-              buf +>  "\n";
-              buf +> String.make (!max_col + 4) ' ' ;
-            end;
-            match String.index_from_opt doc !cur '\n' with 
-            | None -> 
-              buf +> String.sub doc !cur (String.length doc - !cur );
-              cur := doc_length
-            | Some new_line_pos -> 
-              buf +> String.sub doc !cur (new_line_pos - !cur );
-              cur := new_line_pos + 1
-          done ;
-          buf +> "\n"
-        end
-      )
-  end 
-;;
+          buf +> key;
+          buf +> String.make (!max_col - String.length key + 2) ' ';
+          let cur = ref 0 in
+          let doc_length = String.length doc in
+          while !cur < doc_length do
+            if !cur <> 0 then (
+              buf +> "\n";
+              buf +> String.make (!max_col + 4) ' ');
+            match String.index_from_opt doc !cur '\n' with
+            | None ->
+                buf +> String.sub doc !cur (String.length doc - !cur);
+                cur := doc_length
+            | Some new_line_pos ->
+                buf +> String.sub doc !cur (new_line_pos - !cur);
+                cur := new_line_pos + 1
+          done;
+          buf +> "\n")))
 
-
-
-let stop_raise ~usage ~(error : error) (speclist : t )  =
-  let b = Ext_buffer.create 200 in  
-  begin match error with
-    | Unknown ("-help" | "--help" | "-h") -> 
-      usage_b b ~usage speclist ;
+let stop_raise ~usage ~(error : error) (speclist : t) =
+  let b = Ext_buffer.create 200 in
+  (match error with
+  | Unknown ("-help" | "--help" | "-h") ->
+      usage_b b ~usage speclist;
       Ext_buffer.output_buffer stdout b;
-      exit 0      
-    | Unknown s ->
+      exit 0
+  | Unknown s ->
       b +> "unknown option: '";
-      b +> s ;
+      b +> s;
       b +> "'.\n"
-    | Missing s ->
+  | Missing s ->
       b +> "option '";
       b +> s;
-      b +> "' needs an argument.\n"      
-  end;
-  usage_b b ~usage speclist ;
+      b +> "' needs an argument.\n");
+  usage_b b ~usage speclist;
   bad_arg (Ext_buffer.contents b)
 
-
-let parse_exn  ~usage ~argv ?(start=1) ?(finish=Array.length argv) (speclist : t) anonfun = 
-  let current = ref start in 
-  let rev_list = ref [] in 
+let parse_exn ~usage ~argv ?(start = 1) ?(finish = Array.length argv)
+    (speclist : t) anonfun =
+  let current = ref start in
+  let rev_list = ref [] in
   while !current < finish do
     let s = argv.(!current) in
-    incr current;  
-    if s <> "" && s.[0] = '-' then begin
-      match Ext_spec.assoc3 speclist s with 
-      | Some action -> begin       
-          begin match action with 
-            | Unit r -> 
-              begin match r with 
-                | Unit_set r -> r.contents <- true
-                | Unit_call f -> f ()
-              end
-            | String f  ->
-              if !current >= finish then stop_raise ~usage ~error:(Missing s) speclist 
-              else begin                 
-                let arg = argv.(!current) in 
-                incr current;  
-                match f with 
-                | String_call f ->   
-                  f arg
-                | String_set u -> u.contents <- arg
-              end             
-          end;      
-        end;      
-      | None -> stop_raise ~usage ~error:(Unknown s) speclist 
-    end else begin
-      rev_list := s :: !rev_list;      
-    end;
+    incr current;
+    if s <> "" && s.[0] = '-' then
+      match Ext_spec.assoc3 speclist s with
+      | Some action -> (
+          match action with
+          | Unit r -> (
+              match r with
+              | Unit_set r -> r.contents <- true
+              | Unit_call f -> f ())
+          | String f -> (
+              if !current >= finish then
+                stop_raise ~usage ~error:(Missing s) speclist
+              else
+                let arg = argv.(!current) in
+                incr current;
+                match f with
+                | String_call f -> f arg
+                | String_set u -> u.contents <- arg))
+      | None -> stop_raise ~usage ~error:(Unknown s) speclist
+    else rev_list := s :: !rev_list
   done;
   anonfun ~rev_args:!rev_list
-;;
-

@@ -1,4 +1,3 @@
-
 (* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
  * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
@@ -23,7 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 (** [resolve cwd module_name], 
     [cwd] is current working directory, absolute path
     Trying to find paths to load [module_name]
@@ -33,14 +31,8 @@
     it relies on [npm_config_prefix] env variable for global npm modules
 *)
 
+val resolve_bs_package : cwd:string -> Bsb_pkg_types.t -> string
 (** @raise  when not found *)
-val resolve_bs_package : 
-  cwd:string ->  Bsb_pkg_types.t -> string 
 
-
-(** used by watcher *)    
-val to_list:    
-  (Bsb_pkg_types.t  ->
-   string ->
-   'a
-  ) -> 'a list
+val to_list : (Bsb_pkg_types.t -> string -> 'a) -> 'a list
+(** used by watcher *)

@@ -22,13 +22,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* When we inline a function call, if we don't do a beta-reduction immediately, there is 
+(* When we inline a function call, if we don't do a beta-reduction immediately, there is
    a chance that it is ignored, (we can not assume that each pass is robust enough)
 
-   After we do inlining, it makes sense to do another constant folding and propogation 
+   After we do inlining, it makes sense to do another constant folding and propogation
 *)
 
-(* Check: shall we inline functions with while loop? if it is used only once, 
+(* Check: shall we inline functions with while loop? if it is used only once,
    it makes sense to inline it
 *)
 

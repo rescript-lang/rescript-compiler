@@ -22,10 +22,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+val output_ninja_and_namespace_map :
+  per_proj_dir:string ->
+  package_kind:Bsb_package_kind.t ->
+  Bsb_config_types.t ->
+  unit
 (** 
    generate ninja file based on [cwd] 
 *)
-val output_ninja_and_namespace_map :
-  per_proj_dir:string ->  
-  package_kind:Bsb_package_kind.t -> 
-  Bsb_config_types.t -> unit 

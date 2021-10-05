@@ -22,13 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 exception Pp_error
 
-val pp : 
-  string -> 
-  string
+val pp : string -> string
 
-val clean:   
-  string -> 
-  unit
+val clean : string -> unit

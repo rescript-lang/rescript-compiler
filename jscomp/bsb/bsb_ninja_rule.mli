@@ -22,40 +22,36 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
+type t
 (** The complexity comes from the fact that we allow custom rules which could
     conflict with our custom built-in rules
 *)
-type t  
 
-
-val get_name : t  -> out_channel -> string
+val get_name : t -> out_channel -> string
 
 (***********************************************************)
-(** A list of existing rules *)
+
 type builtin = {
-
   build_ast : t;
-  build_ast_from_re : t ;
-
+  build_ast_from_re : t;
   (* platform dependent, on Win32,
       invoking cmd.exe
   *)
   copy_resources : t;
   (* Rules below all need restat *)
-  build_bin_deps : t ;
-  build_bin_deps_dev : t ;
+  build_bin_deps : t;
+  build_bin_deps_dev : t;
   mj : t;
   mj_dev : t;
-  mij : t ;
-  mij_dev : t ;
+  mij : t;
+  mij_dev : t;
   mi : t;
-  mi_dev : t ;
-
-  build_package : t ;
-  customs : t Map_string.t
+  mi_dev : t;
+  build_package : t;
+  customs : t Map_string.t;
 }
+(** A list of existing rules *)
+
 (***********************************************************)
 
 (** rules are generally composed of built-in rules and customized rules, there are two design choices:
@@ -65,22 +61,23 @@ type builtin = {
 *)
 
 type command = string
-(* Since now we generate ninja files per bsconfig.json in a single process, 
+
+(* Since now we generate ninja files per bsconfig.json in a single process,
     we must make sure it is re-entrant
 *)
-val make_custom_rules : 
+val make_custom_rules :
   gentype_config:Bsb_config_types.gentype_config option ->
   has_postbuild:string option ->
   pp_file:string option ->
-  has_builtin:bool -> 
-  reason_react_jsx : Bsb_config_types.reason_react_jsx option ->
+  has_builtin:bool ->
+  reason_react_jsx:Bsb_config_types.reason_react_jsx option ->
   digest:string ->
   package_specs:Bsb_package_specs.t ->
   namespace:string option ->
   package_name:string ->
   warnings:string ->
   ppx_files:Bsb_config_types.ppx list ->
-  bsc_flags:string ->  
+  bsc_flags:string ->
   dpkg_incls:string ->
   lib_incls:string ->
   dev_incls:string ->
@@ -88,4 +85,3 @@ val make_custom_rules :
   bs_dev_dependencies:Bsb_config_types.dependencies ->
   command Map_string.t ->
   builtin
-

@@ -22,47 +22,31 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type t = int Map_int.t Map_string.t
 
-
-
-
-
-
-
-type t =  
-  int  Map_int.t Map_string.t
 (*
    -- "name" --> int map -- stamp --> index suffix
 *)
-let empty : t = 
-  Map_string.empty 
+let empty : t = Map_string.empty
 
-let rec print fmt v = 
-  Format.fprintf fmt "@[<v>{"  ;
-  Map_string.iter v (fun k m -> 
-      Format.fprintf fmt "%s: @[%a@],@ " k print_int_map m       
-    )  ;
-  Format.fprintf fmt "}@]"  
-and print_int_map fmt m = 
-  Map_int.iter m (fun k v -> 
-      Format.fprintf fmt "%d - %d" k v       
-    )    
+let rec print fmt v =
+  Format.fprintf fmt "@[<v>{";
+  Map_string.iter v (fun k m ->
+      Format.fprintf fmt "%s: @[%a@],@ " k print_int_map m);
+  Format.fprintf fmt "}@]"
 
-let add_ident ~mangled:name (stamp : int) (cxt : t) : int * t = 
-  match Map_string.find_opt cxt name with 
-  | None -> 
-    (0, Map_string.add cxt name (Map_int.add Map_int.empty stamp 0  )  )
+and print_int_map fmt m =
+  Map_int.iter m (fun k v -> Format.fprintf fmt "%d - %d" k v)
+
+let add_ident ~mangled:name (stamp : int) (cxt : t) : int * t =
+  match Map_string.find_opt cxt name with
+  | None -> (0, Map_string.add cxt name (Map_int.add Map_int.empty stamp 0))
   | Some imap -> (
       match Map_int.find_opt imap stamp with
-      | None -> 
-        let v = Map_int.cardinal imap in
-        v, Map_string.add  cxt name (Map_int.add imap stamp v )
-      | Some i -> i, cxt
-    )
-
-
-
-
+      | None ->
+          let v = Map_int.cardinal imap in
+          (v, Map_string.add cxt name (Map_int.add imap stamp v))
+      | Some i -> (i, cxt))
 
 (**
    same as {!Js_dump.ident} except it generates a string instead of doing the printing
@@ -97,40 +81,33 @@ let add_ident ~mangled:name (stamp : int) (cxt : t) : int * t =
       they can not have a collision
 
 *)
-let str_of_ident (cxt : t) (id : Ident.t)  : string * t  =
-  if Ext_ident.is_js id then 
-    (* reserved by compiler *)
-    id.name , cxt
-  else 
+let str_of_ident (cxt : t) (id : Ident.t) : string * t =
+  if Ext_ident.is_js id then (* reserved by compiler *)
+    (id.name, cxt)
+  else
     let id_name = id.name in
     let name = Ext_ident.convert id_name in
-    let i,new_cxt = add_ident  ~mangled:name id.stamp cxt in
-    (if i == 0 then 
-       name 
-     else
-       Printf.sprintf "%s$%d" name i), new_cxt 
+    let i, new_cxt = add_ident ~mangled:name id.stamp cxt in
+    ((if i == 0 then name else Printf.sprintf "%s$%d" name i), new_cxt)
 
-let ident (cxt : t) f (id : Ident.t) : t  =
+let ident (cxt : t) f (id : Ident.t) : t =
   let str, cxt = str_of_ident cxt id in
-  Ext_pp.string f str; 
-  cxt   
+  Ext_pp.string f str;
+  cxt
 
-
-let merge (cxt : t) (set : Set_ident.t) = 
-  Set_ident.fold set cxt (fun ident acc -> 
-      snd (add_ident ~mangled:(Ext_ident.convert ident.name) ident.stamp acc)) 
+let merge (cxt : t) (set : Set_ident.t) =
+  Set_ident.fold set cxt (fun ident acc ->
+      snd (add_ident ~mangled:(Ext_ident.convert ident.name) ident.stamp acc))
 
 (* Assume that all idents are already in [scope]
-   so both [param/0] and [param/1] are in idents, we don't need 
+   so both [param/0] and [param/1] are in idents, we don't need
    update twice,  once is enough
 *)
 let sub_scope (scope : t) (idents : Set_ident.t) : t =
-  Set_ident.fold idents empty (fun {name } acc -> 
-      let mangled = Ext_ident.convert name in 
-      match Map_string.find_exn scope mangled with 
-      | exception Not_found -> assert false 
-      | imap -> 
-        if Map_string.mem acc  mangled then acc 
-        else Map_string.add acc mangled imap 
-    )
-
+  Set_ident.fold idents empty (fun { name } acc ->
+      let mangled = Ext_ident.convert name in
+      match Map_string.find_exn scope mangled with
+      | exception Not_found -> assert false
+      | imap ->
+          if Map_string.mem acc mangled then acc
+          else Map_string.add acc mangled imap)

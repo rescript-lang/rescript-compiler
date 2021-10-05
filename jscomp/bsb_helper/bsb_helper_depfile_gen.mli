@@ -22,17 +22,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
+val deps_of_channel : in_channel -> string list
 (** [deps_of_channel ic]
     given an input_channel dumps all modules it depend on, only used for debugging 
 *)
-val deps_of_channel : in_channel -> string list
 
-
-val emit_d: 
-  bool ->  
-  string  option ->
+val emit_d :
+  bool ->
+  string option ->
   string ->
-  string -> (* empty string means no mliast *)
+  string ->
+  (* empty string means no mliast *)
   unit

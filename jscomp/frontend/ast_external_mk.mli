@@ -22,6 +22,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+val local_external_apply :
+  Location.t ->
+  ?pval_attributes:Parsetree.attributes ->
+  pval_prim:string list ->
+  pval_type:Parsetree.core_type ->
+  ?local_module_name:string ->
+  ?local_fun_name:string ->
+  Parsetree.expression list ->
+  Parsetree.expression_desc
 (**
    [local_module loc ~pval_prim ~pval_type args]
    generate such code 
@@ -32,16 +41,6 @@
      J.unssafe_expr args
    ]}
 *)
-val local_external_apply :
-  Location.t ->
-  ?pval_attributes:Parsetree.attributes ->
-  pval_prim:string list ->
-  pval_type:Parsetree.core_type ->
-  ?local_module_name:string ->
-  ?local_fun_name:string ->
-  Parsetree.expression list -> 
-  Parsetree.expression_desc
-
 
 val local_external_obj :
   Location.t ->
@@ -50,16 +49,16 @@ val local_external_obj :
   pval_type:Parsetree.core_type ->
   ?local_module_name:string ->
   ?local_fun_name:string ->
-  (string * Parsetree.expression) list ->  (* [ (label, exp )]*)  
+  (string * Parsetree.expression) list ->
+  (* [ (label, exp )]*)
   Parsetree.expression_desc
 
-
-
-val local_extern_cont_to_obj : 
+val local_extern_cont_to_obj :
   Location.t ->
   ?pval_attributes:Parsetree.attributes ->
   pval_prim:string list ->
   pval_type:Parsetree.core_type ->
   ?local_module_name:string ->
   ?local_fun_name:string ->
-  (Parsetree.expression -> Parsetree.expression) -> Parsetree.expression_desc
+  (Parsetree.expression -> Parsetree.expression) ->
+  Parsetree.expression_desc

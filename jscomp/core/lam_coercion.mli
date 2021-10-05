@@ -22,16 +22,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 type t = {
-  export_list : Ident.t list ;
+  export_list : Ident.t list;
   export_set : Set_ident.t;
-  export_map : Lam.t Map_ident.t ; 
-  groups : Lam_group.t list ; 
-}   
+  export_map : Lam.t Map_ident.t;
+  groups : Lam_group.t list;
+}
 
-
-val coerce_and_group_big_lambda : 
-  Lam_stats.t ->
-  Lam.t -> 
-  t * Lam_stats.t
+val coerce_and_group_big_lambda : Lam_stats.t -> Lam.t -> t * Lam_stats.t

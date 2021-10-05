@@ -22,12 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
 type node = Vec_int.t
 
-
+val graph : Vec_int.t array -> Int_vec_vec.t
 (** Assume input is int array with offset from 0 
     Typical input 
     {[
@@ -40,8 +37,6 @@ type node = Vec_int.t
     Note that we can tell how many nodes by calculating 
     [Array.length] of the input 
 *)
-val graph : Vec_int.t array -> Int_vec_vec.t
 
-
+val graph_check : node array -> int * int list
 (** Used for unit test *)
-val graph_check : node array -> int * int list 

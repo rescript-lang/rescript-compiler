@@ -22,14 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+val setup : unit -> unit
 
-val setup : unit -> unit 
-
-type level = 
-  | Debug
-  | Info 
-  | Warn
-  | Error 
+type level = Debug | Info | Warn | Error
 
 val log_level : level ref
 
@@ -37,10 +32,14 @@ type 'a fmt = Format.formatter -> ('a, Format.formatter, unit) format -> 'a
 
 type 'a log = ('a, Format.formatter, unit) format -> 'a
 
-val verbose : unit -> unit 
-val debug  : 'a log
-val info : 'a log 
-val warn : 'a log 
+val verbose : unit -> unit
+
+val debug : 'a log
+
+val info : 'a log
+
+val warn : 'a log
+
 val error : 'a log
 
 val info_args : string array -> unit

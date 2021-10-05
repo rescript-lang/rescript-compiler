@@ -22,39 +22,36 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
 exception Pp_error
 
-let cmd_nix_quote cmd sourcefile tmpfile : string = 
-  Ext_filename.maybe_quote cmd ^ " --print=binary " ^
-  Ext_filename.maybe_quote sourcefile ^
-  " > " ^ Ext_filename.maybe_quote tmpfile 
+let cmd_nix_quote cmd sourcefile tmpfile : string =
+  Ext_filename.maybe_quote cmd
+  ^ " --print=binary "
+  ^ Ext_filename.maybe_quote sourcefile
+  ^ " > "
+  ^ Ext_filename.maybe_quote tmpfile
 
-let cmd_windows_quote cmd sourcefile tmpfile : string= 
-  "cmd /S/C \"" ^
-  cmd_nix_quote cmd sourcefile tmpfile
-  ^ "\""
+let cmd_windows_quote cmd sourcefile tmpfile : string =
+  "cmd /S/C \"" ^ cmd_nix_quote cmd sourcefile tmpfile ^ "\""
 
+let clean tmpfile =
+  if not !Clflags.verbose then try Sys.remove tmpfile with _ -> ()
 
-let clean tmpfile =   
-  (if not !Clflags.verbose then try Sys.remove tmpfile with _ -> () )
-
-(* Sync up with {!Pparse.preprocess} 
-   The generated file should not sit 
+(* Sync up with {!Pparse.preprocess}
+   The generated file should not sit
    in the same directory as sourctree
 *)
-let pp (sourcefile : string) =    
+let pp (sourcefile : string) =
   let tmpfile = Filename.temp_file "bspp" "" in
-  let pp = (*TODO: check to avoid double quoting *)
-    Filename.concat (Filename.dirname Sys.executable_name) "refmt.exe" in 
-  let comm = 
-    if Sys.win32 then cmd_windows_quote pp sourcefile tmpfile 
+  let pp =
+    (*TODO: check to avoid double quoting *)
+    Filename.concat (Filename.dirname Sys.executable_name) "refmt.exe"
+  in
+  let comm =
+    if Sys.win32 then cmd_windows_quote pp sourcefile tmpfile
     else cmd_nix_quote pp sourcefile tmpfile
-  in  
-  if Ccomp.command comm <> 0 then begin
+  in
+  if Ccomp.command comm <> 0 then (
     clean tmpfile;
-    raise Pp_error
-  end;
-  tmpfile  
-
+    raise Pp_error);
+  tmpfile

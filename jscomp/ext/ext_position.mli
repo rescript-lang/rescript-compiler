@@ -22,14 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 type t = Lexing.position = {
-  pos_fname : string ;
-  pos_lnum : int ;
-  pos_bol : int ;
-  pos_cnum : int
+  pos_fname : string;
+  pos_lnum : int;
+  pos_bol : int;
+  pos_cnum : int;
 }
 
+val offset : t -> t -> t
 (** [offset pos newpos]
     return a new position
     here [newpos] is zero based, the use case is that
@@ -37,10 +37,7 @@ type t = Lexing.position = {
     therefore, we get a [newpos] and we need rebase it on top of 
     [pos]
 *)
-val offset : t -> t -> t 
 
-val lexbuf_from_channel_with_fname:
-  in_channel -> string -> 
-  Lexing.lexbuf
+val lexbuf_from_channel_with_fname : in_channel -> string -> Lexing.lexbuf
 
-val print : Format.formatter -> t -> unit 
+val print : Format.formatter -> t -> unit

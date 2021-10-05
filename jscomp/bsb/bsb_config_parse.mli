@@ -22,19 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val package_specs_from_bsconfig : 
-  unit -> 
-  Bsb_package_specs.t * Set_string.t
+val package_specs_from_bsconfig : unit -> Bsb_package_specs.t * Set_string.t
 
-
-
-
-val interpret_json : 
-  package_kind:Bsb_package_kind.t  -> 
-  per_proj_dir:string -> 
-  Bsb_config_types.t
-
-
-
-
-
+val interpret_json :
+  package_kind:Bsb_package_kind.t -> per_proj_dir:string -> Bsb_config_types.t

@@ -21,71 +21,45 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-type attr =  Parsetree.attribute
-type t =  attr list
+type attr = Parsetree.attribute
 
-type ('a,'b) st =
-  { get : 'a option ;
-    set : 'b option }
+type t = attr list
+
+type ('a, 'b) st = { get : 'a option; set : 'b option }
 
 val process_method_attributes_rev :
-  t ->
-  (bool * bool , [`Get | `No_get ]) st * t
+  t -> (bool * bool, [ `Get | `No_get ]) st * t
 
-type attr_kind = 
-  | Nothing 
-  | Meth_callback of attr 
-  | Uncurry of attr  
+type attr_kind =
+  | Nothing
+  | Meth_callback of attr
+  | Uncurry of attr
   | Method of attr
 
-val process_attributes_rev :
-  t -> attr_kind * t
+val process_attributes_rev : t -> attr_kind * t
 
-val process_pexp_fun_attributes_rev :
-  t -> bool * t
+val process_pexp_fun_attributes_rev : t -> bool * t
 
-val process_bs :
-  t -> bool * t
+val process_bs : t -> bool * t
 
+val has_inline_payload : t -> attr option
 
-
-val has_inline_payload :
-  t ->
-  attr option 
-
-type derive_attr = {
-  bs_deriving : Ast_payload.action list option
-} [@@unboxed]
-
+type derive_attr = { bs_deriving : Ast_payload.action list option } [@@unboxed]
 
 val iter_process_bs_string_int_unwrap_uncurry :
-  t -> 
-  [`Nothing | `String | `Int | `Ignore | `Unwrap | `Uncurry of int option ]
+  t -> [ `Nothing | `String | `Int | `Ignore | `Unwrap | `Uncurry of int option ]
 
+val iter_process_bs_string_as : t -> string option
 
-val iter_process_bs_string_as :
-  t -> string option
+val has_bs_optional : t -> bool
 
+val iter_process_bs_int_as : t -> int option
 
+type as_const_payload = Int of int | Str of string | Js_literal_str of string
 
-val has_bs_optional :
-  t -> bool 
+val iter_process_bs_string_or_int_as : t -> as_const_payload option
 
-val iter_process_bs_int_as :
-  t -> int option
-
-type as_const_payload = 
-  | Int of int
-  | Str of string
-  | Js_literal_str of string
-
-val iter_process_bs_string_or_int_as :
-  t ->
-  as_const_payload option
-
-
-val process_derive_type :
-  t -> derive_attr * t
+val process_derive_type : t -> derive_attr * t
 
 (* val iter_process_derive_type :
    t -> derive_attr
@@ -96,16 +70,19 @@ val is_bs : attr -> bool
 (* val is_optional : attr -> bool
    val is_bs_as : attr -> bool *)
 
-
-
 val bs_get : attr
+
 val bs_get_index : attr
-val bs_get_arity : attr 
+
+val bs_get_arity : attr
+
 val bs_set : attr
+
 val bs_return_undefined : attr
-val internal_expansive : attr 
+
+val internal_expansive : attr
 (* val deprecated : string -> attr *)
 
-val rs_externals :  t -> string list  -> bool 
+val rs_externals : t -> string list -> bool
 
-val process_send_pipe : t -> (Parsetree.core_type * t) option 
+val process_send_pipe : t -> (Parsetree.core_type * t) option

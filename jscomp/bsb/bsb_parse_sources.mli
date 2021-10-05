@@ -22,26 +22,23 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
+val scan :
+  package_kind:Bsb_package_kind.t ->
+  root:string ->
+  cut_generators:bool ->
+  (* namespace : string option ->  *)
+  ignored_dirs:Set_string.t ->
+  Ext_json_types.t ->
+  Bsb_file_groups.t
 (** [scan .. cxt json]
     entry is to the [sources] in the schema    
     given a root, return an object which is
     all relative paths, this function will do the IO
 *)
-val scan :
-  package_kind:Bsb_package_kind.t -> 
-  root: string ->  
-  cut_generators: bool -> 
-  (* namespace : string option ->  *)
-  ignored_dirs:Set_string.t ->
-  Ext_json_types.t ->   
-  Bsb_file_groups.t 
 
+val clean_re_js : string -> unit
 (** This function has some duplication 
     from [scan],
     the parsing assuming the format is 
     already valid
-*) 
-val clean_re_js:  
-  string -> unit 
+*)

@@ -22,48 +22,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-type rec_flag = 
-  | Lam_rec 
+type rec_flag =
+  | Lam_rec
   | Lam_non_rec
-
   (* TODO: This may contain some closure environment,
        check how it will interact with dead code elimination
-  *)  
+  *)
   | Lam_self_rec
-  (* not inlining in this case *)
+(* not inlining in this case *)
 
-type element = 
-  | NA 
-  | SimpleForm of Lam.t 
+type element = NA | SimpleForm of Lam.t
 
-type boxed_nullable
-  = 
-  | Undefined 
-  | Null 
-  | Null_undefined
+type boxed_nullable = Undefined | Null | Null_undefined
 
-
-type t = 
-  | Normal_optional of Lam.t
-  | OptionalBlock of Lam.t * boxed_nullable
-  | ImmutableBlock of element array
-  | MutableBlock of element array
-  | Constant of Lam_constant.t
-  | Module of Ident.t
-  (** TODO: static module vs first class module *)
-  | FunctionId of {
-      mutable arity : Lam_arity.t;
-      lambda : (Lam.t * rec_flag) option;
-    }
-  | Exception 
-  | Parameter
-  (** For this case, it can help us determine whether it should be inlined or not *)
-
-  | NA (** Not such information is associated with an identifier, it is immutable, 
-           if you only associate a property to an identifier 
-           we should consider [Lassign]
-       *)
 (** 
    {[ let v/2 =  Pnull_to_opt u]} 
 
@@ -75,8 +46,25 @@ type t =
    ]}
        so that [Pfield v/2 0] will be replaced by [v/1], 
        [Lif(v/1)] will be translated into [Lif (v/2 === undefined )]
-*)        
-
-
+*)
+type t =
+  | Normal_optional of Lam.t
+  | OptionalBlock of Lam.t * boxed_nullable
+  | ImmutableBlock of element array
+  | MutableBlock of element array
+  | Constant of Lam_constant.t
+  | Module of Ident.t  (** TODO: static module vs first class module *)
+  | FunctionId of {
+      mutable arity : Lam_arity.t;
+      lambda : (Lam.t * rec_flag) option;
+    }
+  | Exception
+  | Parameter
+      (** For this case, it can help us determine whether it should be inlined or not *)
+  | NA
+      (** Not such information is associated with an identifier, it is immutable, 
+           if you only associate a property to an identifier 
+           we should consider [Lassign]
+       *)
 
 val print : Format.formatter -> t -> unit

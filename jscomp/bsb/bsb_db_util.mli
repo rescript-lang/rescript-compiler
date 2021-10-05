@@ -1,4 +1,3 @@
-
 (* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
  * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
@@ -23,16 +22,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+val conflict_module_info :
+  string -> Bsb_db.module_info -> Bsb_db.module_info -> exn
 
-
-val conflict_module_info:
-  string ->
-  Bsb_db.module_info -> 
-  Bsb_db.module_info -> 
-  exn
-
-
-val merge : Bsb_db.map -> Bsb_db.map -> Bsb_db.map   
+val merge : Bsb_db.map -> Bsb_db.map -> Bsb_db.map
 
 val sanity_check : Bsb_db.map -> unit
 
@@ -41,9 +34,9 @@ val sanity_check : Bsb_db.map -> unit
    In the future, we may emit a warning 
 *)
 
-val add_basename:
-  dir:string -> 
-  Bsb_db.map ->  
-  ?error_on_invalid_suffix:Ext_position.t-> 
-  string -> 
+val add_basename :
+  dir:string ->
+  Bsb_db.map ->
+  ?error_on_invalid_suffix:Ext_position.t ->
+  string ->
   Bsb_db.map

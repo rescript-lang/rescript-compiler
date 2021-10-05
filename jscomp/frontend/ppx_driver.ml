@@ -22,33 +22,25 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
 let usage = "Usage: [prog] [extra_args] <infile> <outfile>\n%!"
+
 let main impl intf =
   try
     let a = Sys.argv in
     let n = Array.length a in
-    if n > 2 then begin
-      Arg.parse_argv (Array.sub Sys.argv 0 (n-2))
+    if n > 2 then (
+      Arg.parse_argv
+        (Array.sub Sys.argv 0 (n - 2))
         [
-          ("-bs-jsx",
-           Arg.Int (fun i -> Js_config.jsx_version := i),
-           " Set jsx version"
-          )
-        ] ignore usage;
-      Ppx_apply.apply_lazy ~source:a.(n - 2) ~target:a.(n - 1)
-        impl
-        intf
-    end else
-      begin
-        Printf.eprintf "%s" usage;
-        exit 2
-      end
+          ( "-bs-jsx",
+            Arg.Int (fun i -> Js_config.jsx_version := i),
+            " Set jsx version" );
+        ]
+        ignore usage;
+      Ppx_apply.apply_lazy ~source:a.(n - 2) ~target:a.(n - 1) impl intf)
+    else (
+      Printf.eprintf "%s" usage;
+      exit 2)
   with exn ->
-    begin
-      Location.report_exception Format.err_formatter exn;
-      exit 2
-    end
+    Location.report_exception Format.err_formatter exn;
+    exit 2

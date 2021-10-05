@@ -23,24 +23,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type cst = private
-  | Arg_int_lit of int 
-  | Arg_string_lit of string 
+  | Arg_int_lit of int
+  | Arg_string_lit of string
   | Arg_js_literal of string
 
-
-
-
-
-type attr = 
-  | Poly_var_string of { 
-      descr :
-        (string * string) list
-    } 
-  | Poly_var of {
-      descr : 
-        (string * string) list option 
-    }   
-  | Int of (string * int ) list (* ([`a | `b ] [@bs.int])*)
+type attr =
+  | Poly_var_string of { descr : (string * string) list }
+  | Poly_var of { descr : (string * string) list option }
+  | Int of (string * int) list (* ([`a | `b ] [@bs.int])*)
   | Arg_cst of cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
   (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
@@ -49,44 +39,35 @@ type attr =
   | Ignore
   | Unwrap
 
-
-type label_noname = 
-  | Arg_label
-  | Arg_empty 
-  | Arg_optional
+type label_noname = Arg_label | Arg_empty | Arg_optional
 
 type label = private
-  | Obj_empty 
-  | Obj_label of {name : string}  
-  | Obj_optional of {
-      name : string;
-      for_sure_no_nested_option : bool
-    }
-  (* it will be ignored , side effect will be recorded *)
+  | Obj_empty
+  | Obj_label of { name : string }
+  | Obj_optional of { name : string; for_sure_no_nested_option : bool }
+(* it will be ignored , side effect will be recorded *)
 
-type obj_param = {
-    obj_arg_type : attr;
-    obj_arg_label :label
-  }
+type obj_param = { obj_arg_type : attr; obj_arg_label : label }
 
-type param = {
-  arg_type : attr;
-  arg_label : label_noname
-} 
+type param = { arg_type : attr; arg_label : label_noname }
 
-type obj_params = obj_param list 
-type params = param list 
+type obj_params = obj_param list
 
-val cst_obj_literal : string -> cst 
+type params = param list
 
-val cst_int : int -> cst 
-val cst_string : string -> cst 
+val cst_obj_literal : string -> cst
+
+val cst_int : int -> cst
+
+val cst_string : string -> cst
 
 val empty_label : label
+
 (* val empty_lit : cst -> label  *)
-val obj_label :  string -> label
-val optional  : 
-  bool ->
-  string -> label
+val obj_label : string -> label
+
+val optional : bool -> string -> label
+
 val empty_kind : attr -> obj_param
+
 val dummy : param

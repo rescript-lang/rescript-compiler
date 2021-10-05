@@ -26,14 +26,10 @@ type t = Parsetree.pattern
 
 val is_unit_cont : yes:'a -> no:'a -> t -> 'a
 
+val arity_of_fun : t -> Parsetree.expression -> int
 (** [arity_of_fun pat e] tells the arity of 
     expression [fun pat -> e]*)
-val arity_of_fun : t -> Parsetree.expression -> int
 
+val labels_of_fun : Parsetree.expression -> Asttypes.arg_label list
 
-val labels_of_fun : 
-  Parsetree.expression -> 
-  Asttypes.arg_label list
-
-val is_single_variable_pattern_conservative : 
-  t -> string option 
+val is_single_variable_pattern_conservative : t -> string option

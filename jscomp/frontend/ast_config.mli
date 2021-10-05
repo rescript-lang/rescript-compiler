@@ -22,20 +22,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+val add_structure : string -> (Parsetree.expression option -> unit) -> unit
 
+val add_signature : string -> (Parsetree.expression option -> unit) -> unit
 
-val add_structure : 
-  string -> 
-  (Parsetree.expression option -> unit) -> unit
+val iter_on_bs_config_stru : Parsetree.structure -> unit
 
-val add_signature :
-  string -> 
-  (Parsetree.expression option -> unit ) -> unit 
-
-val iter_on_bs_config_stru : 
-  Parsetree.structure ->  
-  unit  
-
-val iter_on_bs_config_sigi : 
-  Parsetree.signature ->  
-  unit    
+val iter_on_bs_config_sigi : Parsetree.signature -> unit

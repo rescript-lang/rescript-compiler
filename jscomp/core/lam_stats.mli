@@ -22,41 +22,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
 (** Types defined for lambda analysis *)
-
-
 
 (** Keep track of which identifiers are aliased
 *)
 
-
-
-type ident_tbl = Lam_id_kind.t Hash_ident.t 
-
-
+type ident_tbl = Lam_id_kind.t Hash_ident.t
 
 type t = {
-  export_idents : Set_ident.t ;
-  exports : Ident.t list ;  
+  export_idents : Set_ident.t;
+  exports : Ident.t list;
   ident_tbl : ident_tbl;
-  (** we don't need count arities for all identifiers, for identifiers
+      (** we don't need count arities for all identifiers, for identifiers
       for sure it's not a function, there is no need to count them
   *)
-
-
 }
 
+val print : Format.formatter -> t -> unit
 
-val print : Format.formatter -> t -> unit 
-
-val make : 
-  export_idents:Ident.t list ->
-  export_ident_sets:Set_ident.t ->
-  t
+val make : export_idents:Ident.t list -> export_ident_sets:Set_ident.t -> t

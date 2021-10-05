@@ -22,21 +22,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** Helper for global Ocaml module index into meaningful names  *)
 
+val reset : unit -> unit
 
-(** Helper for global Ocaml module index into meaningful names  *) 
-
-
-
-
-
-
-
-
-
-
-val reset : unit -> unit 
-
+val add_js_module :
+  External_ffi_types.module_bind_name -> string -> bool -> Ident.t
 (** 
    [add_js_module hint_name module_name]
    Given a js module name and hint name, assign an id to it
@@ -52,53 +43,37 @@ val reset : unit -> unit
 
    Invariant: 
     any [id] as long as put in the [cached_tbl] should be always valid,
-*)  
-val add_js_module : 
-  External_ffi_types.module_bind_name -> 
-  string  -> 
-  bool -> 
-  Ident.t 
+*)
 
-
-(* The other dependencies are captured by querying 
-   either when [access] or when expansion, 
+(* The other dependencies are captured by querying
+   either when [access] or when expansion,
    however such dependency can be removed after inlining etc.
 
-   When we register such compile time dependency we classified 
-   it as 
+   When we register such compile time dependency we classified
+   it as
    Visit (ml), Builtin(built in js), External()
 
-   For external, we never remove, we only consider 
-   remove dependency for Runtime and Visit, so 
-   when compile OCaml to Javascript, we only need 
+   For external, we never remove, we only consider
+   remove dependency for Runtime and Visit, so
+   when compile OCaml to Javascript, we only need
    pay attention to for those modules are actually used or not
 *)
+
+val query_external_id_info : Ident.t -> string -> Js_cmj_format.keyed_cmj_value
 (**
    [query_external_id_info id pos env found]
    will raise if not found
 *)
-val query_external_id_info : 
-  Ident.t ->
-  string -> 
-  Js_cmj_format.keyed_cmj_value
-
 
 val is_pure_module : Lam_module_ident.t -> bool
 
+val get_package_path_from_cmj :
+  Lam_module_ident.t -> string * Js_packages_info.t * Ext_js_file_kind.case
 
-val get_package_path_from_cmj : 
-  Lam_module_ident.t -> 
-  string * Js_packages_info.t * Ext_js_file_kind.case 
-
-
-
-
-(* The second argument is mostly from [runtime] modules 
+(* The second argument is mostly from [runtime] modules
     will change the input [hard_dependencies]
     [populate_required_modules extra hard_dependencies]
     [extra] maybe removed if it is pure and not in [hard_dependencies]
 *)
-val populate_required_modules : 
-  Lam_module_ident.Hash_set.t  ->
-  Lam_module_ident.Hash_set.t -> 
-  unit
+val populate_required_modules :
+  Lam_module_ident.Hash_set.t -> Lam_module_ident.Hash_set.t -> unit

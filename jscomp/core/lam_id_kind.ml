@@ -25,80 +25,52 @@
 (** Keep track of which identifiers are aliased
 *)
 
+type rec_flag = Lam_rec | Lam_non_rec | Lam_self_rec
+(* only a
+   single mutual
+   recursive function
+*)
 
+type element = NA | SimpleForm of Lam.t
 
-type rec_flag = 
-  | Lam_rec 
-  | Lam_non_rec
-  | Lam_self_rec 
-  (* only a 
-     single mutual 
-     recursive function      
-  *)
+type boxed_nullable = Undefined | Null | Null_undefined
 
-
-
-type element = 
-  | NA 
-  | SimpleForm of Lam.t 
-
-type boxed_nullable
-  = 
-  | Undefined 
-  | Null 
-  | Null_undefined
-
-
-type t = 
+type t =
   | Normal_optional of Lam.t (* Some [x] *)
   | OptionalBlock of Lam.t * boxed_nullable
-  | ImmutableBlock of element array 
+  | ImmutableBlock of element array
   | MutableBlock of element array
   | Constant of Lam_constant.t
-  | Module of Ident.t
-  (** TODO: static module vs first class module *)
+  | Module of Ident.t  (** TODO: static module vs first class module *)
   | FunctionId of {
       mutable arity : Lam_arity.t;
       (* TODO: This may contain some closure environment,
          check how it will interact with dead code elimination
       *)
-      lambda  : (Lam.t * rec_flag) option ;
+      lambda : (Lam.t * rec_flag) option;
     }
-
-  | Exception 
+  | Exception
   | Parameter
-  (** For this case, it can help us determine whether it should be inlined or not *)
-
-  | NA (** Not such information is associated with an identifier, it is immutable, 
+      (** For this case, it can help us determine whether it should be inlined or not *)
+  | NA
+      (** Not such information is associated with an identifier, it is immutable, 
            if you only associate a property to an identifier 
            we should consider [Lassign]
        *)
 
-let pp = Format.fprintf 
+let pp = Format.fprintf
 
-let print fmt (kind : t) = 
-  match kind with 
-  | ImmutableBlock (arr) -> 
-    pp fmt "Imm(%d)" (Array.length arr)
-  | Normal_optional _
-    -> pp fmt "Some"
-  | OptionalBlock(_, Null) 
-    -> pp fmt "?Null"
-  | OptionalBlock(_, Undefined)
-    -> pp fmt "?Undefined"
-  | OptionalBlock(_,Null_undefined)
-    -> pp fmt "?Nullable"
-  | MutableBlock (arr) ->     
-    pp fmt "Mutable(%d)" (Array.length arr)
-  | Constant _  ->
-    pp fmt "Constant"
-  | Module id -> 
-    pp fmt "%s/%d" id.name id.stamp 
-  | FunctionId _ -> 
-    pp fmt "FunctionID"
-  | Exception ->
-    pp fmt "Exception" 
-  | Parameter -> 
-    pp fmt "Parameter"  
-  | NA -> 
-    pp fmt "NA"       
+let print fmt (kind : t) =
+  match kind with
+  | ImmutableBlock arr -> pp fmt "Imm(%d)" (Array.length arr)
+  | Normal_optional _ -> pp fmt "Some"
+  | OptionalBlock (_, Null) -> pp fmt "?Null"
+  | OptionalBlock (_, Undefined) -> pp fmt "?Undefined"
+  | OptionalBlock (_, Null_undefined) -> pp fmt "?Nullable"
+  | MutableBlock arr -> pp fmt "Mutable(%d)" (Array.length arr)
+  | Constant _ -> pp fmt "Constant"
+  | Module id -> pp fmt "%s/%d" id.name id.stamp
+  | FunctionId _ -> pp fmt "FunctionID"
+  | Exception -> pp fmt "Exception"
+  | Parameter -> pp fmt "Parameter"
+  | NA -> pp fmt "NA"

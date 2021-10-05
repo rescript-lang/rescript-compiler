@@ -22,74 +22,74 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* 
+(*
 
-    Base line 
-   {[
-     for i = 1 to n do (function (i){...}(i))
-     done
-     (* This is okay, since all ocaml follow the lexical scope, 
-        for generrated code too (* TODO: check *)
-     *)
-   ]}
+     Base line
+    {[
+      for i = 1 to n do (function (i){...}(i))
+      done
+      (* This is okay, since all ocaml follow the lexical scope,
+         for generrated code too (* TODO: check *)
+      *)
+    ]}
 
-   For nested loops 
-   {[
-     for i = 0 to n do 
-       for j = 0 to n do 
-         arrr.(j)<- ()=>{ i}
-       done
-     done
-   ]}
-    Three kind of variables  (defined in the loop scope)
-    1. loop mutable variables 
-       As long as variables change per iteration, defined in a loop (in the same loop)
-        and captured by a closure
-       the loop, iff  be lexically scoped 
-       Tailcall parameters are considered defined inside the loop
-   - unless it's defined 
-       outside all the loops - note that for nested loops, if it's defined 
-       in the outerloop and captured by the inner loop, 
-       it still has to be lexically scoped. 
+    For nested loops
+    {[
+      for i = 0 to n do
+        for j = 0 to n do
+          arrr.(j)<- ()=>{ i}
+        done
+      done
+    ]}
+     Three kind of variables  (defined in the loop scope)
+     1. loop mutable variables
+        As long as variables change per iteration, defined in a loop (in the same loop)
+         and captured by a closure
+        the loop, iff  be lexically scoped
+        Tailcall parameters are considered defined inside the loop
+    - unless it's defined
+        outside all the loops - note that for nested loops, if it's defined
+        in the outerloop and captured by the inner loop,
+        it still has to be lexically scoped.
 
-       How do we detect whether it is loop invariant or not 
-   - depend on loop variant 
-   - depend on mutuable valuse
-   - non pure (function call)
+        How do we detect whether it is loop invariant or not
+    - depend on loop variant
+    - depend on mutuable valuse
+    - non pure (function call)
 
-       so we need collect mutable variables 
-       1. from lambda + loop (for/i) + tailcall params
-       2. defined in the loop and can not determine it is invariant  
-          in such cases we can determine it's immutable
-          1. const 
-          2. only depend on immutable values and no function call?
+        so we need collect mutable variables
+        1. from lambda + loop (for/i) + tailcall params
+        2. defined in the loop and can not determine it is invariant
+           in such cases we can determine it's immutable
+           1. const
+           2. only depend on immutable values and no function call?
 
-    ## The following would take advantage of nested loops 
-    2. loop invariant observable varaibles 
-   {[ 
-     var x = (console.log(3), 32)
-   ]}
-    3. loop invariant non-observable variables 
+     ## The following would take advantage of nested loops
+     2. loop invariant observable varaibles
+    {[
+      var x = (console.log(3), 32)
+    ]}
+     3. loop invariant non-observable variables
 
-    Invariant: 
-    loop invariant (observable or not) variables can not depend on 
-    loop mutable values so that once we detect loop Invariant variables 
-    all its dependency are loop invariant as well, so we can do loop 
-    Invariant code motion.
+     Invariant:
+     loop invariant (observable or not) variables can not depend on
+     loop mutable values so that once we detect loop Invariant variables
+     all its dependency are loop invariant as well, so we can do loop
+     Invariant code motion.
 
-    TODO:
-    loop invariant can be layered, it will be loop invariant 
-    in the inner layer while loop variant in the outer layer.
-   {[
-     for i = 0 to 10 do 
-       for j  = 10 do 
-         let  k0 = param * 100 in (* loop invariant *)
-         let  k1 = i * i in (* inner loop invariant, loop variant *)
-         let  k2 = j * i in (* variant *)
-         ..
-       done 
-     done 
-   ]}
+     TODO:
+     loop invariant can be layered, it will be loop invariant
+     in the inner layer while loop variant in the outer layer.
+    {[
+      for i = 0 to 10 do
+        for j  = 10 do
+          let  k0 = param * 100 in (* loop invariant *)
+          let  k1 = i * i in (* inner loop invariant, loop variant *)
+          let  k2 = j * i in (* variant *)
+          ..
+        done
+      done
+    ]}
 *)
 type state = {
   defined_idents : Set_ident.t;

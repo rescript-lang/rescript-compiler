@@ -22,21 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
 (* Make it mutable so that we can do
    in-place change without constructing a new one
    -- however, it's a design choice -- to be reviewed later
 *)
 
-type immutable_mask = 
-  | All_immutable_and_no_tail_call 
-  (** iff not tailcalled 
+type immutable_mask =
+  | All_immutable_and_no_tail_call
+      (** iff not tailcalled 
       if tailcalled, in theory, it does not need change params, 
       for example
       {[
@@ -49,67 +42,63 @@ type immutable_mask =
   *)
   | Immutable_mask of bool array
 
-type t = { 
+type t = {
   mutable unbounded : Set_ident.t;
-  mutable bound_loop_mutable_values : Set_ident.t; 
+  mutable bound_loop_mutable_values : Set_ident.t;
   used_mask : bool array;
-  immutable_mask : immutable_mask; 
+  immutable_mask : immutable_mask;
 }
 (** Invariant: unused param has to be immutable *)
 
-let make ?immutable_mask n = { 
-  unbounded =  Set_ident.empty ;
-  used_mask = Array.make n false;
-  immutable_mask = 
-    (match immutable_mask with 
-     | Some x -> Immutable_mask x 
-     | None -> All_immutable_and_no_tail_call
-    );
-  bound_loop_mutable_values =Set_ident.empty;
-}
+let make ?immutable_mask n =
+  {
+    unbounded = Set_ident.empty;
+    used_mask = Array.make n false;
+    immutable_mask =
+      (match immutable_mask with
+      | Some x -> Immutable_mask x
+      | None -> All_immutable_and_no_tail_call);
+    bound_loop_mutable_values = Set_ident.empty;
+  }
 
-let no_tailcall x = 
+let no_tailcall x =
   match x.immutable_mask with
   | All_immutable_and_no_tail_call -> []
-  | Immutable_mask arr -> Array.to_list arr 
+  | Immutable_mask arr -> Array.to_list arr
 
-let mark_unused  t i = 
-  t.used_mask.(i) <- true
+let mark_unused t i = t.used_mask.(i) <- true
 
-let get_unused t i = 
-  t.used_mask.(i)
+let get_unused t i = t.used_mask.(i)
 
 (* let get_length t = Array.length t.used_mask *)
 
-(* let to_string env =  
-   String.concat "," 
-    (Ext_list.map (Set_ident.elements  env.unbounded ) 
+(* let to_string env =
+   String.concat ","
+    (Ext_list.map (Set_ident.elements  env.unbounded )
       (fun id  -> Printf.sprintf "%s/%d" id.name id.stamp)
        ) *)
 
-let get_mutable_params (params : Ident.t list) (x : t ) = 
-  match x.immutable_mask with 
+let get_mutable_params (params : Ident.t list) (x : t) =
+  match x.immutable_mask with
   | All_immutable_and_no_tail_call -> []
-  | Immutable_mask xs -> 
-    Ext_list.filter_mapi params
-      (fun p i -> if not xs.(i) then Some p else None) 
-
+  | Immutable_mask xs ->
+      Ext_list.filter_mapi params (fun p i ->
+          if not xs.(i) then Some p else None)
 
 let get_unbounded t = t.unbounded
 
-let set_unbounded env v = 
+let set_unbounded env v =
   (* Ext_log.err "%s -- set @." (to_string env); *)
   (* if Set_ident.is_empty env.bound then *)
-  env.unbounded <- v 
+  env.unbounded <- v
 (* else assert false *)
 
-let set_lexical_scope env bound_loop_mutable_values = 
+let set_lexical_scope env bound_loop_mutable_values =
   env.bound_loop_mutable_values <- bound_loop_mutable_values
 
-let get_lexical_scope env =  
-  env.bound_loop_mutable_values
+let get_lexical_scope env = env.bound_loop_mutable_values
 
-(* TODO:  can be refined if it 
-    only enclose toplevel variables 
+(* TODO:  can be refined if it
+    only enclose toplevel variables
 *)
 (* let is_empty t = Set_ident.is_empty t.unbounded *)

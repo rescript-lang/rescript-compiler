@@ -22,27 +22,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
+val output_build :
+  outputs:string list ->
+  inputs:string list ->
+  rule:Bsb_ninja_rule.t ->
+  out_channel ->
+  unit
 (** output should always be marked explicitly,
     otherwise the build system can not figure out clearly
     however, for the command we don't need pass `-o`
 *)
-val output_build :
-  outputs:string list ->
-  inputs:string list ->
-  rule:Bsb_ninja_rule.t -> 
-  out_channel -> 
-  unit
 
-
-val phony  :
+val phony :
   ?order_only_deps:string list ->
-  inputs:string list -> 
-  output:string -> 
-  out_channel -> 
+  inputs:string list ->
+  output:string ->
+  out_channel ->
   unit
 
-val output_finger : string ->  string -> out_channel -> unit 
+val output_finger : string -> string -> out_channel -> unit

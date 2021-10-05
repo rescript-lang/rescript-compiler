@@ -29,7 +29,8 @@ let ( @> ) (b, v) acc = if b then v :: acc else acc
 
 let preprocess_to_buffer fn (str : string) (oc : Buffer.t) : unit =
   let lexbuf = Lexing.from_string str in
-  Rescript_cpp.init (); (* double init does not do any harm *)
+  Rescript_cpp.init ();
+  (* double init does not do any harm *)
   Lexer.init ();
   Location.init lexbuf fn;
   let segments =
@@ -48,8 +49,9 @@ let verify_valid_ml (str : string) =
 (* same as {!preprocess_to_buffer} except writing to channel directly *)
 let preprocess_string fn (str : string) oc =
   let lexbuf = Lexing.from_string str in
-  Rescript_cpp.init (); (* double init does not do any harm*)
-  Lexer.init ();  
+  Rescript_cpp.init ();
+  (* double init does not do any harm*)
+  Lexer.init ();
   Location.init lexbuf fn;
   let segments =
     Rescript_cpp.filter_directive_from_lexbuf
@@ -310,7 +312,8 @@ let alias_module s =
         Hash_string.add alias_map a b)
   | _ -> raise (Arg.Bad "invalid module alias format like A=B")
 
-let undefine_symbol (s : string) = Rescript_cpp.remove_directive_built_in_value s
+let undefine_symbol (s : string) =
+  Rescript_cpp.remove_directive_built_in_value s
 
 let define_symbol (s : string) =
   match Ext_string.split ~keep_empty:true s '=' with

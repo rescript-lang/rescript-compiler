@@ -22,7 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 (**
    {[
      _open -> open 
@@ -59,93 +58,91 @@
 *)
 
 (* Copied from [ocaml/parsing/lexer.mll] *)
-let key_words = Hash_set_string.of_array [|
-    "and";
-    "as";
-    "assert";
-    "begin";
-    "class";
-    "constraint";
-    "do";
-    "done";
-    "downto";
-    "else";
-    "end";
-    "exception";
-    "external";
-    "false";
-    "for";
-    "fun";
-    "function";
-    "functor";
-    "if";
-    "in";
-    "include";
-    "inherit";
-    "initializer";
-    "lazy";
-    "let";
-    "match";
-    "method";
-    "module";
-    "mutable";
-    "new";
-    "nonrec";
-    "object";
-    "of";
-    "open";
-    "or";
-    (*  "parser", PARSER; *)
-    "private";
-    "rec";
-    "sig";
-    "struct";
-    "then";
-    "to";
-    "true";
-    "try";
-    "type";
-    "val";
-    "virtual";
-    "when";
-    "while";
-    "with";
+let key_words =
+  Hash_set_string.of_array
+    [|
+      "and";
+      "as";
+      "assert";
+      "begin";
+      "class";
+      "constraint";
+      "do";
+      "done";
+      "downto";
+      "else";
+      "end";
+      "exception";
+      "external";
+      "false";
+      "for";
+      "fun";
+      "function";
+      "functor";
+      "if";
+      "in";
+      "include";
+      "inherit";
+      "initializer";
+      "lazy";
+      "let";
+      "match";
+      "method";
+      "module";
+      "mutable";
+      "new";
+      "nonrec";
+      "object";
+      "of";
+      "open";
+      "or";
+      (*  "parser", PARSER; *)
+      "private";
+      "rec";
+      "sig";
+      "struct";
+      "then";
+      "to";
+      "true";
+      "try";
+      "type";
+      "val";
+      "virtual";
+      "when";
+      "while";
+      "with";
+      "mod";
+      "land";
+      "lor";
+      "lxor";
+      "lsl";
+      "lsr";
+      "asr";
+    |]
 
-    "mod";
-    "land";
-    "lor";
-    "lxor";
-    "lsl";
-    "lsr";
-    "asr";
-  |]
 let double_underscore = "__"
 
 (*https://caml.inria.fr/pub/docs/manual-ocaml/lex.html
   {[
 
-    label-name	::=	 lowercase-ident 
+    label-name	::=	 lowercase-ident
   ]}
 *)
-let valid_start_char x =
-  match x with 
-  | '_' | 'a' .. 'z' -> true 
-  | _ -> false 
-let translate name = 
-  assert (not @@ Ext_string.is_empty name);
-  let i = Ext_string.rfind ~sub:double_underscore name in 
-  if i < 0 then 
-    let name_len = String.length name in 
-    if name.[0] = '_' then  begin 
-      let try_key_word = (String.sub name 1 (name_len - 1)) in 
-      if name_len > 1 && 
-         (not (valid_start_char try_key_word.[0])
-          || Hash_set_string.mem key_words try_key_word)  then 
-        try_key_word
-      else 
-        name 
-    end
-    else name 
-  else if i = 0 then name 
-  else  String.sub name 0 i 
+let valid_start_char x = match x with '_' | 'a' .. 'z' -> true | _ -> false
 
+let translate name =
+  assert (not @@ Ext_string.is_empty name);
+  let i = Ext_string.rfind ~sub:double_underscore name in
+  if i < 0 then
+    let name_len = String.length name in
+    if name.[0] = '_' then
+      let try_key_word = String.sub name 1 (name_len - 1) in
+      if
+        name_len > 1
+        && ((not (valid_start_char try_key_word.[0]))
+           || Hash_set_string.mem key_words try_key_word)
+      then try_key_word
+      else name
+    else name
+  else if i = 0 then name
+  else String.sub name 0 i

@@ -22,13 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
 (** Utilities to wrap [string] and [bytes] compilation, 
 
     this is isolated, so that we can swap different representation in the future.
@@ -39,9 +32,7 @@ val ref_string : J.expression -> J.expression -> J.expression
 
 val ref_byte : J.expression -> J.expression -> J.expression
 
-val set_byte : J.expression -> J.expression -> J.expression -> J.expression 
-
-
+val set_byte : J.expression -> J.expression -> J.expression -> J.expression
 
 val const_char : char -> J.expression
 

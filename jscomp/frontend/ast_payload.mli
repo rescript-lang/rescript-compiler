@@ -22,39 +22,37 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
 (** A utility module used when destructuring parsetree attributes, used for 
     compiling FFI attributes and built-in ppx  *)
 
 type t = Parsetree.payload
+
 type lid = string Asttypes.loc
-type label_expr = lid  * Parsetree.expression
-type action = 
-  lid * Parsetree.expression option
+
+type label_expr = lid * Parsetree.expression
+
+type action = lid * Parsetree.expression option
 
 val is_single_string : t -> (string * string option) option
-val is_single_string_as_ast : 
-  t -> 
-  Parsetree.expression option 
 
-val is_single_int : t -> int option 
+val is_single_string_as_ast : t -> Parsetree.expression option
 
+val is_single_int : t -> int option
 
-
-(** Convert %raw into expression *)
 val raw_as_string_exp_exn :
-  kind: Js_raw_info.raw_kind ->
-  ?is_function:bool ref -> 
+  kind:Js_raw_info.raw_kind ->
+  ?is_function:bool ref ->
   t ->
   Parsetree.expression option
+(** Convert %raw into expression *)
 
-val as_core_type : Location.t -> t -> Parsetree.core_type    
+val as_core_type : Location.t -> t -> Parsetree.core_type
+
 (* val as_empty_structure :  t -> bool  *)
 val as_ident : t -> Longident.t Asttypes.loc option
+
 (* val raw_string_payload : Location.t -> string -> t  *)
-val assert_strings :
-  Location.t -> t -> string list  
+val assert_strings : Location.t -> t -> string list
 
 (** as a record or empty 
     it will accept 
@@ -74,20 +72,15 @@ val assert_strings :
     ]}
 *)
 
-val ident_or_record_as_config : 
-  Location.t ->
-  t -> action list 
+val ident_or_record_as_config : Location.t -> t -> action list
 
 val assert_bool_lit : Parsetree.expression -> bool
 
-val empty : t 
+val empty : t
 
-val table_dispatch : 
-  (Parsetree.expression option  -> 'a) Map_string.t -> action -> 'a
+val table_dispatch :
+  (Parsetree.expression option -> 'a) Map_string.t -> action -> 'a
 
+val unrecognizedConfigRecord : Location.t -> string -> unit
 (** Report to the user, as a warning, that the bs-attribute parser is bailing out. (This is to allow
     external ppx, like ppx_deriving, to pick up where the builtin ppx leave off.) *)
-val unrecognizedConfigRecord:
-  Location.t ->
-  string ->
-  unit

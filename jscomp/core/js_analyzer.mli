@@ -22,29 +22,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
-(** Analyzing utilities for [J] module *) 
+(** Analyzing utilities for [J] module *)
 
 (** for example, whether it has side effect or not.
 *)
 
-val free_variables_of_statement : 
-  J.statement -> Set_ident.t
+val free_variables_of_statement : J.statement -> Set_ident.t
 
-val free_variables_of_expression : 
-  J.finish_ident_expression -> Set_ident.t
+val free_variables_of_expression : J.finish_ident_expression -> Set_ident.t
 
 (* val no_side_effect_expression_desc :
-   J.expression_desc -> bool    *)
+   J.expression_desc -> bool *)
 
-val no_side_effect_expression : 
-  J.expression -> bool
+val no_side_effect_expression : J.expression -> bool
 (** [no_side_effect] means this expression has no side effect, 
     but it might *depend on value store*, so you can not just move it around,
 
@@ -54,8 +44,7 @@ val no_side_effect_expression :
     since it maybe changed later
 *)
 
-val no_side_effect_statement : 
-  J.statement -> bool
+val no_side_effect_statement : J.statement -> bool
 (** 
     here we say 
    {[ var x = no_side_effect_expression ]}
@@ -64,26 +53,21 @@ val no_side_effect_statement :
     then it's fine, so we delay this check later
 *)
 
-val eq_expression :
-  J.expression -> J.expression -> bool
+val eq_expression : J.expression -> J.expression -> bool
 
-val eq_statement : 
-  J.statement -> J.statement -> bool
+val eq_statement : J.statement -> J.statement -> bool
 
-val eq_block :  
-  J.block -> J.block -> bool 
+val eq_block : J.block -> J.block -> bool
 
-val rev_flatten_seq : J.expression -> J.block 
+val rev_flatten_seq : J.expression -> J.block
 
 val rev_toplevel_flatten : J.block -> J.block
 (** return the block in reverse order *)
 
 (* val is_constant : J.expression -> bool *)
 
-
 (** Simple expression, 
     no computation involved so that  it is okay to be duplicated
 *)
 
-val is_okay_to_duplicate
-  : J.expression -> bool
+val is_okay_to_duplicate : J.expression -> bool

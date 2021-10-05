@@ -24,45 +24,32 @@
 
 type t = Parsetree.core_type
 
-
-
-
 val lift_option_type : t -> t
 
 val is_unit : t -> bool
 
-val is_builtin_rank0_type : 
-  string -> bool
+val is_builtin_rank0_type : string -> bool
 
+val from_labels : loc:Location.t -> int -> string Asttypes.loc list -> t
 (** return a function type
     [from_labels ~loc tyvars labels]
     example output:
     {[x:'a0 -> y:'a1 -> < x :'a0 ;y :'a1  > Js.t]}
 *)
-val from_labels :
-  loc:Location.t -> int ->  string Asttypes.loc list -> t
 
-val make_obj :
-  loc:Location.t ->
-  Parsetree.object_field list ->
-  t
+val make_obj : loc:Location.t -> Parsetree.object_field list -> t
 
 val is_user_option : t -> bool
 
-
+val get_uncurry_arity : t -> int option
 (**
    returns 0 when it can not tell arity from the syntax
    None -- means not a function
 *)
-val get_uncurry_arity : t -> int option
 
+val get_curry_labels : t -> Asttypes.arg_label list
 
-val get_curry_labels : t -> Asttypes.arg_label list 
-
+val list_of_arrow : t -> t * Ast_compatible.param_type list
 (** fails when Ptyp_poly *)
-val list_of_arrow :
-  t ->
-  t *  
-  Ast_compatible.param_type list
 
 val is_arity_one : t -> bool

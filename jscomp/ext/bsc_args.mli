@@ -25,33 +25,30 @@
 type anon_fun = rev_args:string list -> unit
 
 type string_action =
-    String_call of (string -> unit)
+  | String_call of (string -> unit)
   | String_set of string ref
   | String_optional_set of string option ref
   | String_list_add of string list ref
+
 type unit_action =
-    Unit_call of (unit -> unit)
+  | Unit_call of (unit -> unit)
   | Unit_lazy of unit lazy_t
   | Unit_set of bool ref
   | Unit_clear of bool ref
 
-
-type spec = 
-  | Unit_dummy  
-  | Unit of unit_action   
-  | String of string_action
-
+type spec = Unit_dummy | Unit of unit_action | String of string_action
 
 type t = (string * spec * string) array
 
 exception Bad of string
-val bad_arg : 
-  string -> 'a
 
+val bad_arg : string -> 'a
 
 val parse_exn :
   usage:string ->
   argv:string array ->
-  ?start:int -> ?finish:int -> t -> (rev_args:string list -> unit) -> unit
-
-
+  ?start:int ->
+  ?finish:int ->
+  t ->
+  (rev_args:string list -> unit) ->
+  unit

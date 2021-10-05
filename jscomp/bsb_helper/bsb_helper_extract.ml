@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let read_dependency_graph_from_mlast_file fn  =
+let read_dependency_graph_from_mlast_file fn =
   let ic = open_in_bin fn in
   try
     let dep_size = input_binary_int ic in

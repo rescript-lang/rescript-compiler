@@ -22,35 +22,30 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
 let add_lam_module_ident = Lam_module_ident.Hash_set.add
+
 let create = Lam_module_ident.Hash_set.create
 
-let super = Js_record_iter.super 
-let  count_hard_dependencies hard_dependencies = {
-  super with 
-  module_id = begin 
-    fun _ vid -> 
-      add_lam_module_ident hard_dependencies vid
-  end;
-  expression = begin 
-    fun self x ->   
-      (match  Js_block_runtime.check_additional_id x with
-       | Some id -> 
-         add_lam_module_ident hard_dependencies
-           (Lam_module_ident.of_runtime 
-              id)
-       | _ -> ());
-      super.expression self x
-  end    
-}
+let super = Js_record_iter.super
 
-let calculate_hard_dependencies block = 
-  let hard_dependencies = create 17 in   
-  let obj = (count_hard_dependencies hard_dependencies) in 
-  obj.block obj block ;
+let count_hard_dependencies hard_dependencies =
+  {
+    super with
+    module_id = (fun _ vid -> add_lam_module_ident hard_dependencies vid);
+    expression =
+      (fun self x ->
+        (match Js_block_runtime.check_additional_id x with
+        | Some id ->
+            add_lam_module_ident hard_dependencies
+              (Lam_module_ident.of_runtime id)
+        | _ -> ());
+        super.expression self x);
+  }
+
+let calculate_hard_dependencies block =
+  let hard_dependencies = create 17 in
+  let obj = count_hard_dependencies hard_dependencies in
+  obj.block obj block;
   hard_dependencies
 
 (*
@@ -60,10 +55,10 @@ let calculate_hard_dependencies block =
    will not depend [variables]
 
 *)
-(* let depends_j (lam : J.expression) (variables : Set_ident.t) = 
+(* let depends_j (lam : J.expression) (variables : Set_ident.t) =
    let v = ref Set_ident.empty in
-   let add id = 
-    if Set_ident.mem variables id then 
+   let add id =
+    if Set_ident.mem variables id then
       v := Set_ident.add !v id
    in
    ignore @@ (new count_deps add ) # expression lam ;

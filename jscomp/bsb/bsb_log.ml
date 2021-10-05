@@ -22,88 +22,73 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+let ninja_ansi_forced =
+  lazy (try Sys.getenv "NINJA_ANSI_FORCED" with Not_found -> "")
 
-
-let ninja_ansi_forced = lazy 
-  (try Sys.getenv "NINJA_ANSI_FORCED" with 
-     Not_found  ->""
-  )  
 let color_enabled = lazy (Unix.isatty Unix.stdout)
 
 (* same logic as [ninja.exe] *)
-let get_color_enabled () = 
-  let colorful = 
-    match ninja_ansi_forced with 
-    | lazy "1" -> true     
-    | lazy ("0" | "false") -> false
-    | _ ->
-      Lazy.force color_enabled  in 
-  colorful 
+let get_color_enabled () =
+  let colorful =
+    match ninja_ansi_forced with
+    | (lazy "1") -> true
+    | (lazy ("0" | "false")) -> false
+    | _ -> Lazy.force color_enabled
+  in
+  colorful
 
-
-
-let color_functions : Format.formatter_tag_functions = {
-  mark_open_tag = (fun s ->  if get_color_enabled () then  Ext_color.ansi_of_tag s else Ext_string.empty) ;
-  mark_close_tag = (fun _ ->  if get_color_enabled () then Ext_color.reset_lit else Ext_string.empty);
-  print_open_tag = (fun _ -> ());
-  print_close_tag = (fun _ -> ())
-}
+let color_functions : Format.formatter_tag_functions =
+  {
+    mark_open_tag =
+      (fun s ->
+        if get_color_enabled () then Ext_color.ansi_of_tag s
+        else Ext_string.empty);
+    mark_close_tag =
+      (fun _ ->
+        if get_color_enabled () then Ext_color.reset_lit else Ext_string.empty);
+    print_open_tag = (fun _ -> ());
+    print_close_tag = (fun _ -> ());
+  }
 
 (* let set_color ppf =
    Format.pp_set_formatter_tag_functions ppf color_functions *)
 
+let setup () =
+  Format.pp_set_mark_tags Format.std_formatter true;
+  Format.pp_set_mark_tags Format.err_formatter true;
+  Format.pp_set_formatter_tag_functions Format.std_formatter color_functions;
+  Format.pp_set_formatter_tag_functions Format.err_formatter color_functions
 
-let setup () = 
-  begin 
-    Format.pp_set_mark_tags Format.std_formatter true ;
-    Format.pp_set_mark_tags Format.err_formatter true;
-    Format.pp_set_formatter_tag_functions 
-      Format.std_formatter color_functions;
-    Format.pp_set_formatter_tag_functions
-      Format.err_formatter color_functions
-  end
+type level = Debug | Info | Warn | Error
 
-type level = 
-  | Debug
-  | Info 
-  | Warn
-  | Error 
-
-let int_of_level (x : level) = 
-  match x with 
-  | Debug -> 0 
-  | Info -> 1 
-  | Warn -> 2 
-  | Error -> 3 
+let int_of_level (x : level) =
+  match x with Debug -> 0 | Info -> 1 | Warn -> 2 | Error -> 3
 
 let log_level = ref Warn
 
-let verbose () =
-  log_level := Debug
-let dfprintf level fmt = 
-  if int_of_level level >= int_of_level  !log_level then 
-    Format.fprintf fmt 
-  else Format.ifprintf fmt  
+let verbose () = log_level := Debug
 
-type 'a fmt = 
-  Format.formatter -> ('a, Format.formatter, unit) format -> 'a
-type 'a log = 
-  ('a, Format.formatter, unit) format -> 'a
+let dfprintf level fmt =
+  if int_of_level level >= int_of_level !log_level then Format.fprintf fmt
+  else Format.ifprintf fmt
 
-let debug fmt = dfprintf  Debug Format.std_formatter fmt 
+type 'a fmt = Format.formatter -> ('a, Format.formatter, unit) format -> 'a
+
+type 'a log = ('a, Format.formatter, unit) format -> 'a
+
+let debug fmt = dfprintf Debug Format.std_formatter fmt
+
 let info fmt = dfprintf Info Format.std_formatter fmt
-let warn fmt = dfprintf Warn Format.err_formatter fmt 
+
+let warn fmt = dfprintf Warn Format.err_formatter fmt
+
 let error fmt = dfprintf Error Format.err_formatter fmt
 
-
-let info_args (args : string array) = 
-  if int_of_level Info >= int_of_level !log_level then 
-    begin
-      for i  = 0 to Array.length args - 1 do
-        Format.pp_print_string Format.std_formatter (Array.unsafe_get args i) ;
-        Format.pp_print_string Format.std_formatter Ext_string.single_space;
-      done ;
-      Format.pp_print_newline Format.std_formatter ()
-    end
+let info_args (args : string array) =
+  if int_of_level Info >= int_of_level !log_level then (
+    for i = 0 to Array.length args - 1 do
+      Format.pp_print_string Format.std_formatter (Array.unsafe_get args i);
+      Format.pp_print_string Format.std_formatter Ext_string.single_space
+    done;
+    Format.pp_print_newline Format.std_formatter ())
   else ()
-

@@ -22,23 +22,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
 type t
 
+val to_merlin_string : t -> string
 (** Extra work is need to make merlin happy *)
-val to_merlin_string : t  -> string
 
+val from_map : Ext_json_types.t Map_string.t -> t
 
-
-val from_map : Ext_json_types.t Map_string.t -> t 
-
+val to_bsb_string : package_kind:Bsb_package_kind.t -> t -> string
 (** [to_bsb_string not_dev warning]
 *)
-val to_bsb_string : 
-  package_kind:Bsb_package_kind.t -> 
-  t  -> 
-  string
 
 val use_default : t

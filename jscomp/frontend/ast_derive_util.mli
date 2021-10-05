@@ -22,17 +22,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+val core_type_of_type_declaration :
+  Parsetree.type_declaration -> Parsetree.core_type
 (** Given a type declaration, extaract the type expression, mostly 
     used in code gen later
 *)
-val core_type_of_type_declaration :
-  Parsetree.type_declaration -> Parsetree.core_type
 
-val new_type_of_type_declaration : 
-  Parsetree.type_declaration -> 
-  string -> 
+val new_type_of_type_declaration :
+  Parsetree.type_declaration ->
+  string ->
   Parsetree.core_type * Parsetree.type_declaration
-
 
 (* val mk_fun :
    loc:Location.t ->
@@ -44,9 +43,6 @@ val new_type_of_type_declaration :
    Parsetree.label_declaration list ->
    (Parsetree.core_type * Parsetree.expression) list * string list *)
 
-val notApplicable:   
-  Location.t ->
-  string -> 
-  unit 
+val notApplicable : Location.t -> string -> unit
 
-val invalid_config : Parsetree.expression -> 'a   
+val invalid_config : Parsetree.expression -> 'a

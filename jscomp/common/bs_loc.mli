@@ -24,11 +24,10 @@
 
 type t = Location.t = {
   loc_start : Lexing.position;
-  loc_end : Lexing.position ; 
-  loc_ghost : bool
-} 
+  loc_end : Lexing.position;
+  loc_ghost : bool;
+}
 
 (* val is_ghost : t -> bool *)
-val merge : t -> t -> t 
+val merge : t -> t -> t
 (* val none : t  *)
-

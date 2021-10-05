@@ -24,6 +24,6 @@
 
 val version : string
 
-val header : string 
+val header : string
 
 val package_name : string ref

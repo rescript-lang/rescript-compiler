@@ -22,17 +22,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-let rec unsafe_mem_aux arr  i (key : int) bound = 
-  if i <= bound then 
-    if Array.unsafe_get arr i = (key : int) then 
-      true 
-    else unsafe_mem_aux arr (i + 1) key bound    
-  else false 
-
-
+let rec unsafe_mem_aux arr i (key : int) bound =
+  if i <= bound then
+    if Array.unsafe_get arr i = (key : int) then true
+    else unsafe_mem_aux arr (i + 1) key bound
+  else false
 
 let mem key (x : Vec_int.t) =
-  let internal_array = Vec_int.unsafe_internal_array x in 
-  let len = Vec_int.length x in 
+  let internal_array = Vec_int.unsafe_internal_array x in
+  let len = Vec_int.length x in
   unsafe_mem_aux internal_array 0 key (len - 1)

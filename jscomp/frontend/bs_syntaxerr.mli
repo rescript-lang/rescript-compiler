@@ -22,27 +22,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type error 
-  = Unsupported_predicates
-  | Conflict_bs_bs_this_bs_meth  
+type error =
+  | Unsupported_predicates
+  | Conflict_bs_bs_this_bs_meth
   | Duplicated_bs_deriving
   | Conflict_attributes
-
-  | Duplicated_bs_as 
+  | Duplicated_bs_as
   | Expect_int_literal
   | Expect_string_literal
   | Expect_int_or_string_or_json_literal
   | Unhandled_poly_type
-  | Unregistered of string 
+  | Unregistered of string
   | Invalid_underscore_type_in_external
-  | Invalid_bs_string_type 
-  | Invalid_bs_int_type 
+  | Invalid_bs_string_type
+  | Invalid_bs_int_type
   | Invalid_bs_unwrap_type
   | Conflict_ffi_attribute of string
   | Not_supported_in_bs_deriving
   | Canot_infer_arity_by_syntax
   | Illegal_attribute
-  | Inconsistent_arity of int * int 
+  | Inconsistent_arity of int * int
   (* we still rqeuire users to have explicit annotation to avoid
      {[ (((int -> int) -> int) -> int )]}
   *)
@@ -55,17 +54,8 @@ type error
 
 val err : Location.t -> error -> 'a
 
-val optional_err : 
-  Location.t -> 
-  Asttypes.arg_label -> 
-  unit
+val optional_err : Location.t -> Asttypes.arg_label -> unit
 
-val err_if_label :
-  Location.t -> 
-  Asttypes.arg_label -> 
-  unit
+val err_if_label : Location.t -> Asttypes.arg_label -> unit
 
-val err_large_arity :
-  Location.t -> 
-  int -> 
-  unit
+val err_large_arity : Location.t -> int -> unit

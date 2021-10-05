@@ -1,4 +1,3 @@
-
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -26,38 +25,25 @@
 type case = bool
 (** true means upper case*)
 
-
-type info = 
-  | Intf (* intemediate state *)
+type info =
+  | Intf
+  (* intemediate state *)
   | Impl
   | Impl_intf
 
-type syntax_kind =   
-  | Ml 
-  | Reason     
-  | Res
+type syntax_kind = Ml | Reason | Res
 
-type module_info = 
-  {
-    mutable info : info;
-    dir : string ; 
-    syntax_kind : syntax_kind;
-    case : bool;
-    name_sans_extension : string  ;
-  }
-
-
-type map = module_info Map_string.t 
-
-type 'a cat  = {
-  mutable lib : 'a;
-  mutable dev : 'a
+type module_info = {
+  mutable info : info;
+  dir : string;
+  syntax_kind : syntax_kind;
+  case : bool;
+  name_sans_extension : string;
 }
 
-type t = map cat 
+type map = module_info Map_string.t
+
+type 'a cat = { mutable lib : 'a; mutable dev : 'a }
+
+type t = map cat
 (** indexed by the group *)
-
-
-
-
-

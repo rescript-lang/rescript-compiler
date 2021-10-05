@@ -22,16 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-val read_lines : string -> string  -> string list 
-(* example 
-   {[ 
-     Line_process.read_lines "." "./tools/tools.mllib" 
-   ]} 
+val read_lines : string -> string -> string list
+(* example
+   {[
+     Line_process.read_lines "." "./tools/tools.mllib"
+   ]}
 
    FIXME: we can only concat (dir/file) not (dir/dir)
    {[
      Filename.concat "/bb/x/" "/bb/x/";;
    ]}
 *)
-

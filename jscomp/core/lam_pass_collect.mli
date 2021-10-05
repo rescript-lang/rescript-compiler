@@ -22,14 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
-
 (** This pass is used to collect meta data information.
 
     It includes:
@@ -76,6 +68,5 @@
       -
 *)
 
-(** Modify existing [meta] *)
 val collect_info : Lam_stats.t -> Lam.t -> unit
-
+(** Modify existing [meta] *)

@@ -349,8 +349,6 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
 
 (* Does not exist since we compile array in js backend unlike native backend *)
 
-
-
 let may_depend = Lam_module_ident.Hash_set.add
 
 let rec rename_optional_parameters map params (body : Lambda.lambda) =
@@ -517,11 +515,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
         (* we need do this eargly in case [aux fn] add some wrapper *)
         Lam.apply (convert_aux fn)
           (Ext_list.map args convert_aux)
-          {
-            ap_loc = loc;
-            ap_inlined =  ap_inlined;
-            ap_status = App_na;
-          }
+          { ap_loc = loc; ap_inlined; ap_status = App_na }
     | Lfunction { params; body; attr } ->
         let new_map, body =
           rename_optional_parameters Map_ident.empty params body
@@ -535,8 +529,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
           in
           Lam.function_ ~attr ~arity:(List.length params) ~params
             ~body:(convert_aux body)
-    | Llet (kind, Pgenval, id, e, body) (*FIXME*) ->
-        convert_let kind id e body
+    | Llet (kind, Pgenval, id, e, body) (*FIXME*) -> convert_let kind id e body
     | Lletrec (bindings, body) ->
         let bindings = Ext_list.map_snd bindings convert_aux in
         let body = convert_aux body in
