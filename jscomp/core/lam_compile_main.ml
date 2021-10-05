@@ -317,9 +317,12 @@ let lambda_as_module
              target_file output_chan );
         if !Warnings.has_warnings  then begin 
           Warnings.has_warnings := false ;
+#if BS_BROWSER
+#else          
           if Sys.file_exists target_file then begin 
             Bs_hash_stubs.set_as_old_file target_file
           end          
+#end          
         end             
       )
 
