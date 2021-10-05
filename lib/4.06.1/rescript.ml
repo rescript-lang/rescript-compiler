@@ -24,101 +24,53 @@ module Ext_array : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-(** Some utilities for {!Array} operations *)
 val reverse_range : 'a array -> int -> int -> unit
+(** Some utilities for {!Array} operations *)
+
 val reverse_in_place : 'a array -> unit
-val reverse : 'a array -> 'a array 
+
+val reverse : 'a array -> 'a array
+
 val reverse_of_list : 'a list -> 'a array
 
-val filter : 
-  'a array -> 
-  ('a -> bool) ->   
-  'a array
+val filter : 'a array -> ('a -> bool) -> 'a array
 
-val filter_map : 
-  'a array -> 
-  ('a -> 'b option) -> 
-  'b array
+val filter_map : 'a array -> ('a -> 'b option) -> 'b array
 
 val range : int -> int -> int array
 
-val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
+val map2i : (int -> 'a -> 'b -> 'c) -> 'a array -> 'b array -> 'c array
 
-val to_list_f : 
-  'a array -> 
-  ('a -> 'b) -> 
-  'b list 
+val to_list_f : 'a array -> ('a -> 'b) -> 'b list
 
-val to_list_map : 
-  'a array -> ('a -> 'b option) -> 'b list 
+val to_list_map : 'a array -> ('a -> 'b option) -> 'b list
 
-val to_list_map_acc : 
-  'a array -> 
-  'b list -> 
-  ('a -> 'b option) -> 
-  'b list 
+val to_list_map_acc : 'a array -> 'b list -> ('a -> 'b option) -> 'b list
 
-val of_list_map : 
-  'a list -> 
-  ('a -> 'b) -> 
-  'b array 
+val of_list_map : 'a list -> ('a -> 'b) -> 'b array
 
 val rfind_with_index : 'a array -> ('a -> 'b -> bool) -> 'b -> int
 
+type 'a split = No_split | Split of 'a array * 'a array
 
+val find_and_split : 'a array -> ('a -> 'b -> bool) -> 'b -> 'a split
 
-type 'a split = No_split | Split of  'a array *  'a array 
+val exists : 'a array -> ('a -> bool) -> bool
 
+val is_empty : 'a array -> bool
 
-val find_and_split : 
-  'a array ->
-  ('a -> 'b -> bool) ->
-  'b -> 'a split
+val for_all2_no_exn : 'a array -> 'b array -> ('a -> 'b -> bool) -> bool
 
-val exists : 
-  'a array -> 
-  ('a -> bool) ->  
-  bool 
+val for_alli : 'a array -> (int -> 'a -> bool) -> bool
 
-val is_empty : 'a array -> bool 
+val map : 'a array -> ('a -> 'b) -> 'b array
 
-val for_all2_no_exn : 
-  'a array ->
-  'b array -> 
-  ('a -> 'b -> bool) -> 
-  bool
+val iter : 'a array -> ('a -> unit) -> unit
 
-val for_alli : 
-  'a array -> 
-  (int -> 'a -> bool) -> 
-  bool 
+val fold_left : 'b array -> 'a -> ('a -> 'b -> 'a) -> 'a
 
-val map :   
-  'a array -> 
-  ('a -> 'b) -> 
-  'b array
+val get_or : 'a array -> int -> (unit -> 'a) -> 'a
 
-val iter :
-  'a array -> 
-  ('a -> unit) -> 
-  unit
-
-val fold_left :   
-  'b array -> 
-  'a -> 
-  ('a -> 'b -> 'a) ->   
-  'a
-
-val get_or :   
-  'a array -> 
-  int -> 
-  (unit -> 'a) -> 
-  'a
 end = struct
 #1 "ext_array.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -145,152 +97,138 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+external ( .!() ) : 'a array -> int -> 'a = "%array_unsafe_get"
 
-
-external (.!()) : 'a array -> int -> 'a = "%array_unsafe_get" 
-
-external (.!()<-) : 'a array -> int -> 'a -> unit  = "%array_unsafe_set" 
+external ( .!()<- ) : 'a array -> int -> 'a -> unit = "%array_unsafe_set"
 
 let reverse_range a i len =
   if len = 0 then ()
   else
-    for k = 0 to (len-1)/2 do
-      let t = a.! (i+k) in
-      a.!(i+k) <-   a.!(i+len-1-k);
-      a.!(i+len-1-k) <- t;
+    for k = 0 to (len - 1) / 2 do
+      let t = a.!(i + k) in
+      a.!(i + k) <- a.!(i + len - 1 - k);
+      a.!(i + len - 1 - k) <- t
     done
 
-
-let reverse_in_place a =
-  reverse_range a 0 (Array.length a)
+let reverse_in_place a = reverse_range a 0 (Array.length a)
 
 let reverse a =
   let b_len = Array.length a in
-  if b_len = 0 then [||] else  
-    let b = Array.copy a in  
-    for i = 0 to  b_len - 1 do
-      Array.unsafe_set b i (Array.unsafe_get a (b_len - 1 -i )) 
+  if b_len = 0 then [||]
+  else
+    let b = Array.copy a in
+    for i = 0 to b_len - 1 do
+      Array.unsafe_set b i (Array.unsafe_get a (b_len - 1 - i))
     done;
-    b  
-
+    b
 
 let reverse_of_list = function
-    [] -> [||]
-  | hd::tl ->
-      let len =  List.length tl in 
+  | [] -> [||]
+  | hd :: tl ->
+      let len = List.length tl in
       let a = Array.make (len + 1) hd in
       let rec fill i = function
-          [] -> a
-        | hd::tl -> Array.unsafe_set a i hd; fill (i-1) tl in
+        | [] -> a
+        | hd :: tl ->
+            Array.unsafe_set a i hd;
+            fill (i - 1) tl
+      in
       fill (len - 1) tl
 
 let filter a f =
   let arr_len = Array.length a in
   let rec aux acc i =
-    if i = arr_len 
-    then reverse_of_list acc 
+    if i = arr_len then reverse_of_list acc
     else
       let v = Array.unsafe_get a i in
-      if f  v then 
-        aux (v::acc) (i+1)
-      else aux acc (i + 1) 
-  in aux [] 0
+      if f v then aux (v :: acc) (i + 1) else aux acc (i + 1)
+  in
+  aux [] 0
 
-
-let filter_map a (f : _ -> _ option)  =
+let filter_map a (f : _ -> _ option) =
   let arr_len = Array.length a in
   let rec aux acc i =
-    if i = arr_len 
-    then reverse_of_list acc 
+    if i = arr_len then reverse_of_list acc
     else
       let v = Array.unsafe_get a i in
-      match f  v with 
-      | Some v -> 
-        aux (v::acc) (i+1)
-      | None -> 
-        aux acc (i + 1) 
-  in aux [] 0
+      match f v with Some v -> aux (v :: acc) (i + 1) | None -> aux acc (i + 1)
+  in
+  aux [] 0
 
 let range from to_ =
-  if from > to_ then invalid_arg "Ext_array.range"  
+  if from > to_ then invalid_arg "Ext_array.range"
   else Array.init (to_ - from + 1) (fun i -> i + from)
 
-let map2i f a b = 
-  let len = Array.length a in 
-  if len <> Array.length b then 
-    invalid_arg "Ext_array.map2i"  
+let map2i f a b =
+  let len = Array.length a in
+  if len <> Array.length b then invalid_arg "Ext_array.map2i"
+  else Array.mapi (fun i a -> f i a (Array.unsafe_get b i)) a
+
+let rec tolist_f_aux a f i res =
+  if i < 0 then res
   else
-    Array.mapi (fun i a -> f i  a ( Array.unsafe_get b i )) a 
-
-let rec tolist_f_aux a f  i res =
-  if i < 0 then res else
     let v = Array.unsafe_get a i in
-    tolist_f_aux a f  (i - 1)
-      (f v :: res)
+    tolist_f_aux a f (i - 1) (f v :: res)
 
-let to_list_f a f = tolist_f_aux a f (Array.length a  - 1) []
+let to_list_f a f = tolist_f_aux a f (Array.length a - 1) []
 
-let rec tolist_aux a f  i res =
-  if i < 0 then res else
-    tolist_aux a f  (i - 1)
-      (match f a.!(i) with
-       | Some v -> v :: res
-       | None -> res) 
+let rec tolist_aux a f i res =
+  if i < 0 then res
+  else
+    tolist_aux a f (i - 1)
+      (match f a.!(i) with Some v -> v :: res | None -> res)
 
-let to_list_map a f  = 
-  tolist_aux a f (Array.length a - 1) []
+let to_list_map a f = tolist_aux a f (Array.length a - 1) []
 
-let to_list_map_acc a acc f = 
-  tolist_aux a f (Array.length a - 1) acc
+let to_list_map_acc a acc f = tolist_aux a f (Array.length a - 1) acc
 
-
-let of_list_map a f = 
-  match a with 
+let of_list_map a f =
+  match a with
   | [] -> [||]
-  | [a0] -> 
-    let b0 = f a0 in
-    [|b0|]
-  | [a0;a1] -> 
-    let b0 = f a0 in  
-    let b1 = f a1 in 
-    [|b0;b1|]
-  | [a0;a1;a2] -> 
-    let b0 = f a0 in  
-    let b1 = f a1 in 
-    let b2 = f a2 in  
-    [|b0;b1;b2|]
-  | [a0;a1;a2;a3] -> 
-    let b0 = f a0 in  
-    let b1 = f a1 in 
-    let b2 = f a2 in  
-    let b3 = f a3 in 
-    [|b0;b1;b2;b3|]
-  | [a0;a1;a2;a3;a4] -> 
-    let b0 = f a0 in  
-    let b1 = f a1 in 
-    let b2 = f a2 in  
-    let b3 = f a3 in 
-    let b4 = f a4 in 
-    [|b0;b1;b2;b3;b4|]
-
-  | a0::a1::a2::a3::a4::tl -> 
-    let b0 = f a0 in  
-    let b1 = f a1 in 
-    let b2 = f a2 in  
-    let b3 = f a3 in 
-    let b4 = f a4 in 
-    let len = List.length tl + 5 in 
-    let arr = Array.make len b0  in
-    Array.unsafe_set arr 1 b1 ;  
-    Array.unsafe_set arr 2 b2 ;
-    Array.unsafe_set arr 3 b3 ; 
-    Array.unsafe_set arr 4 b4 ; 
-    let rec fill i = function
-      | [] -> arr 
-      | hd :: tl -> 
-        Array.unsafe_set arr i (f hd); 
-        fill (i + 1) tl in 
-    fill 5 tl
+  | [ a0 ] ->
+      let b0 = f a0 in
+      [| b0 |]
+  | [ a0; a1 ] ->
+      let b0 = f a0 in
+      let b1 = f a1 in
+      [| b0; b1 |]
+  | [ a0; a1; a2 ] ->
+      let b0 = f a0 in
+      let b1 = f a1 in
+      let b2 = f a2 in
+      [| b0; b1; b2 |]
+  | [ a0; a1; a2; a3 ] ->
+      let b0 = f a0 in
+      let b1 = f a1 in
+      let b2 = f a2 in
+      let b3 = f a3 in
+      [| b0; b1; b2; b3 |]
+  | [ a0; a1; a2; a3; a4 ] ->
+      let b0 = f a0 in
+      let b1 = f a1 in
+      let b2 = f a2 in
+      let b3 = f a3 in
+      let b4 = f a4 in
+      [| b0; b1; b2; b3; b4 |]
+  | a0 :: a1 :: a2 :: a3 :: a4 :: tl ->
+      let b0 = f a0 in
+      let b1 = f a1 in
+      let b2 = f a2 in
+      let b3 = f a3 in
+      let b4 = f a4 in
+      let len = List.length tl + 5 in
+      let arr = Array.make len b0 in
+      Array.unsafe_set arr 1 b1;
+      Array.unsafe_set arr 2 b2;
+      Array.unsafe_set arr 3 b3;
+      Array.unsafe_set arr 4 b4;
+      let rec fill i = function
+        | [] -> arr
+        | hd :: tl ->
+            Array.unsafe_set arr i (f hd);
+            fill (i + 1) tl
+      in
+      fill 5 tl
 
 (**
    {[
@@ -304,31 +242,31 @@ let of_list_map a f =
      - : int = -1
    ]}
 *)
-let rfind_with_index arr cmp v = 
-  let len = Array.length arr in 
-  let rec aux i = 
+let rfind_with_index arr cmp v =
+  let len = Array.length arr in
+  let rec aux i =
     if i < 0 then i
-    else if  cmp (Array.unsafe_get arr i) v then i
-    else aux (i - 1) in 
+    else if cmp (Array.unsafe_get arr i) v then i
+    else aux (i - 1)
+  in
   aux (len - 1)
 
-type 'a split = No_split | Split of  'a array *  'a array 
+type 'a split = No_split | Split of 'a array * 'a array
 
-
-let find_with_index arr cmp v = 
-  let len  = Array.length arr in 
-  let rec aux i len = 
-    if i >= len then -1 
-    else if cmp (Array.unsafe_get arr i ) v then i 
-    else aux (i + 1) len in 
+let find_with_index arr cmp v =
+  let len = Array.length arr in
+  let rec aux i len =
+    if i >= len then -1
+    else if cmp (Array.unsafe_get arr i) v then i
+    else aux (i + 1) len
+  in
   aux 0 len
 
-let find_and_split arr cmp v : _ split = 
-  let i = find_with_index arr cmp v in 
-  if i < 0 then 
-    No_split
+let find_and_split arr cmp v : _ split =
+  let i = find_with_index arr cmp v in
+  if i < 0 then No_split
   else
-    Split (Array.sub arr 0 i, Array.sub arr (i + 1 ) (Array.length arr - i - 1))
+    Split (Array.sub arr 0 i, Array.sub arr (i + 1) (Array.length arr - i - 1))
 
 (** TODO: available since 4.03, use {!Array.exists} *)
 
@@ -337,65 +275,60 @@ let exists a p =
   let rec loop i =
     if i = n then false
     else if p (Array.unsafe_get a i) then true
-    else loop (succ i) in
+    else loop (succ i)
+  in
   loop 0
 
+let is_empty arr = Array.length arr = 0
 
-let is_empty arr =
-  Array.length arr = 0
-
-
-let rec unsafe_loop index len p xs ys  = 
+let rec unsafe_loop index len p xs ys =
   if index >= len then true
-  else 
-    p 
-      (Array.unsafe_get xs index)
-      (Array.unsafe_get ys index) &&
-    unsafe_loop (succ index) len p xs ys 
+  else
+    p (Array.unsafe_get xs index) (Array.unsafe_get ys index)
+    && unsafe_loop (succ index) len p xs ys
 
 let for_alli a p =
   let n = Array.length a in
   let rec loop i =
     if i = n then true
     else if p i (Array.unsafe_get a i) then loop (succ i)
-    else false in
+    else false
+  in
   loop 0
 
-let for_all2_no_exn xs ys p = 
-  let len_xs = Array.length xs in 
-  let len_ys = Array.length ys in 
-  len_xs = len_ys &&    
-  unsafe_loop 0 len_xs p xs ys
-
+let for_all2_no_exn xs ys p =
+  let len_xs = Array.length xs in
+  let len_ys = Array.length ys in
+  len_xs = len_ys && unsafe_loop 0 len_xs p xs ys
 
 let map a f =
-  let open Array in 
+  let open Array in
   let l = length a in
-  if l = 0 then [||] else begin
-    let r = make l (f(unsafe_get a 0)) in
+  if l = 0 then [||]
+  else
+    let r = make l (f (unsafe_get a 0)) in
     for i = 1 to l - 1 do
-      unsafe_set r i (f(unsafe_get a i))
+      unsafe_set r i (f (unsafe_get a i))
     done;
     r
-  end
 
 let iter a f =
-  let open Array in 
-  for i = 0 to length a - 1 do f(unsafe_get a i) done
-
+  let open Array in
+  for i = 0 to length a - 1 do
+    f (unsafe_get a i)
+  done
 
 let fold_left a x f =
-  let open Array in 
-  let r = ref x in    
+  let open Array in
+  let r = ref x in
   for i = 0 to length a - 1 do
     r := f !r (unsafe_get a i)
   done;
   !r
 
-let get_or arr i cb =     
-  if i >=0 && i < Array.length arr then 
-    Array.unsafe_get arr i 
-  else cb ()  
+let get_or arr i cb =
+  if i >= 0 && i < Array.length arr then Array.unsafe_get arr i else cb ()
+
 end
 module Ext_bytes : sig 
 #1 "ext_bytes.mli"
@@ -423,16 +356,9 @@ module Ext_bytes : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
 external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
-  = "caml_blit_string" 
-[@@noalloc]
-
-
-
+  = "caml_blit_string"
+  [@@noalloc]
 
 end = struct
 #1 "ext_bytes.ml"
@@ -460,16 +386,9 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
 external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
-  = "caml_blit_string" 
-[@@noalloc]                     
-
+  = "caml_blit_string"
+  [@@noalloc]
 
 end
 module Ext_buffer : sig 
@@ -526,8 +445,8 @@ val is_empty : t -> bool
 val clear : t -> unit
 (** Empty the buffer. *)
 
-
-val [@inline] add_char : t -> char -> unit
+val add_char : t -> char -> unit
+  [@@inline]
 (** [add_char b c] appends the character [c] at the end of the buffer [b]. *)
 
 val add_string : t -> string -> unit
@@ -548,7 +467,7 @@ val add_string : t -> string -> unit
 
 (* val add_buffer : t -> t -> unit *)
 (** [add_buffer b1 b2] appends the current contents of buffer [b2]
-    at the end of buffer [b1].  [b2] is not modified. *)    
+    at the end of buffer [b1].  [b2] is not modified. *)
 
 (* val add_channel : t -> in_channel -> int -> unit *)
 (** [add_channel b ic n] reads exactly [n] character from the
@@ -558,44 +477,26 @@ val add_string : t -> string -> unit
 
 val output_buffer : out_channel -> t -> unit
 (** [output_buffer oc b] writes the current contents of buffer [b]
-    on the output channel [oc]. *)   
+    on the output channel [oc]. *)
 
-val digest : t -> Digest.t   
+val digest : t -> Digest.t
 
-val not_equal : 
-  t -> 
-  string -> 
-  bool 
+val not_equal : t -> string -> bool
 
-val add_int_1 :    
-  t -> int -> unit 
+val add_int_1 : t -> int -> unit
 
-val add_int_2 :    
-  t -> int -> unit 
+val add_int_2 : t -> int -> unit
 
-val add_int_3 :    
-  t -> int -> unit 
+val add_int_3 : t -> int -> unit
 
-val add_int_4 :    
-  t -> int -> unit 
+val add_int_4 : t -> int -> unit
 
-val add_string_char :    
-  t -> 
-  string ->
-  char -> 
-  unit
+val add_string_char : t -> string -> char -> unit
 
-val add_ninja_prefix_var : 
-  t -> 
-  string -> 
-  unit 
+val add_ninja_prefix_var : t -> string -> unit
 
+val add_char_string : t -> char -> string -> unit
 
-val add_char_string :    
-  t -> 
-  char -> 
-  string -> 
-  unit
 end = struct
 #1 "ext_buffer.ml"
 (**************************************************************************)
@@ -615,17 +516,16 @@ end = struct
 
 (* Extensible buffers *)
 
-type t =
-  {mutable buffer : bytes;
-   mutable position : int;
-   mutable length : int;
-
-   }
+type t = {
+  mutable buffer : bytes;
+  mutable position : int;
+  mutable length : int;
+}
 
 let create n =
   let n = if n < 1 then 1 else n in
   let s = Bytes.create n in
-  {buffer = s; position = 0; length = n}
+  { buffer = s; position = 0; length = n }
 
 let contents b = Bytes.sub_string b.buffer 0 b.position
 (* let to_bytes b = Bytes.sub b.buffer 0 b.position  *)
@@ -635,7 +535,6 @@ let contents b = Bytes.sub_string b.buffer 0 b.position
    then invalid_arg "Ext_buffer.sub"
    else Bytes.sub_string b.buffer ofs len *)
 
-
 (* let blit src srcoff dst dstoff len =
    if len < 0 || srcoff < 0 || srcoff > src.position - len
              || dstoff < 0 || dstoff > (Bytes.length dst) - len
@@ -644,7 +543,9 @@ let contents b = Bytes.sub_string b.buffer 0 b.position
     Bytes.unsafe_blit src.buffer srcoff dst dstoff len *)
 
 let length b = b.position
+
 let is_empty b = b.position = 0
+
 let clear b = b.position <- 0
 
 (* let reset b =
@@ -654,20 +555,22 @@ let clear b = b.position <- 0
 let resize b more =
   let len = b.length in
   let new_len = ref len in
-  while b.position + more > !new_len do new_len := 2 * !new_len done;
+  while b.position + more > !new_len do
+    new_len := 2 * !new_len
+  done;
   let new_buffer = Bytes.create !new_len in
   (* PR#6148: let's keep using [blit] rather than [unsafe_blit] in
      this tricky function that is slow anyway. *)
   Bytes.blit b.buffer 0 new_buffer 0 b.position;
   b.buffer <- new_buffer;
-  b.length <- !new_len ;
+  b.length <- !new_len;
   assert (b.position + more <= b.length)
 
-let [@inline] add_char b c =
+let[@inline] add_char b c =
   let pos = b.position in
   if pos >= b.length then resize b 1;
   Bytes.unsafe_set b.buffer pos c;
-  b.position <- pos + 1  
+  b.position <- pos + 1
 
 (* let add_substring b s offset len =
    if offset < 0 || len < 0 || offset > String.length s - len
@@ -675,8 +578,7 @@ let [@inline] add_char b c =
    let new_position = b.position + len in
    if new_position > b.length then resize b len;
    Ext_bytes.unsafe_blit_string s offset b.buffer b.position len;
-   b.position <- new_position   *)
-
+   b.position <- new_position *)
 
 (* let add_subbytes b s offset len =
    add_substring b (Bytes.unsafe_to_string s) offset len *)
@@ -686,43 +588,42 @@ let add_string b s =
   let new_position = b.position + len in
   if new_position > b.length then resize b len;
   Ext_bytes.unsafe_blit_string s 0 b.buffer b.position len;
-  b.position <- new_position  
+  b.position <- new_position
 
 (* TODO: micro-optimzie *)
 let add_string_char b s c =
   let s_len = String.length s in
-  let len = s_len + 1 in 
+  let len = s_len + 1 in
   let new_position = b.position + len in
   if new_position > b.length then resize b len;
-  let b_buffer = b.buffer in 
+  let b_buffer = b.buffer in
   Ext_bytes.unsafe_blit_string s 0 b_buffer b.position s_len;
   Bytes.unsafe_set b_buffer (new_position - 1) c;
-  b.position <- new_position 
+  b.position <- new_position
 
-let add_char_string b c s  =
+let add_char_string b c s =
   let s_len = String.length s in
-  let len = s_len + 1 in 
+  let len = s_len + 1 in
   let new_position = b.position + len in
   if new_position > b.length then resize b len;
-  let b_buffer = b.buffer in 
-  let b_position = b.position in 
-  Bytes.unsafe_set b_buffer b_position c ; 
+  let b_buffer = b.buffer in
+  let b_position = b.position in
+  Bytes.unsafe_set b_buffer b_position c;
   Ext_bytes.unsafe_blit_string s 0 b_buffer (b_position + 1) s_len;
   b.position <- new_position
 
 (* equivalent to add_char " "; add_char "$"; add_string s  *)
-let add_ninja_prefix_var b s =  
+let add_ninja_prefix_var b s =
   let s_len = String.length s in
-  let len = s_len + 2 in 
+  let len = s_len + 2 in
   let new_position = b.position + len in
   if new_position > b.length then resize b len;
-  let b_buffer = b.buffer in 
-  let b_position = b.position in 
-  Bytes.unsafe_set b_buffer b_position ' ' ; 
-  Bytes.unsafe_set b_buffer (b_position + 1) '$' ; 
+  let b_buffer = b.buffer in
+  let b_position = b.position in
+  Bytes.unsafe_set b_buffer b_position ' ';
+  Bytes.unsafe_set b_buffer (b_position + 1) '$';
   Ext_bytes.unsafe_blit_string s 0 b_buffer (b_position + 2) s_len;
   b.position <- new_position
-
 
 (* let add_bytes b s = add_string b (Bytes.unsafe_to_string s)
 
@@ -730,99 +631,85 @@ let add_ninja_prefix_var b s =
    add_subbytes b bs.buffer 0 bs.position *)
 
 (* let add_channel b ic len =
-   if len < 0 
-    || len > Sys.max_string_length 
+   if len < 0
+    || len > Sys.max_string_length
     then   (* PR#5004 *)
     invalid_arg "Ext_buffer.add_channel";
    if b.position + len > b.length then resize b len;
    really_input ic b.buffer b.position len;
    b.position <- b.position + len *)
 
-let output_buffer oc b =
-  output oc b.buffer 0 b.position  
+let output_buffer oc b = output oc b.buffer 0 b.position
 
-external unsafe_string: bytes -> int -> int -> Digest.t = "caml_md5_string"
+external unsafe_string : bytes -> int -> int -> Digest.t = "caml_md5_string"
 
-let digest b = 
-  unsafe_string 
-    b.buffer 0 b.position    
+let digest b = unsafe_string b.buffer 0 b.position
 
-let rec not_equal_aux (b : bytes) (s : string) i len = 
+let rec not_equal_aux (b : bytes) (s : string) i len =
   if i >= len then false
-  else 
-    (Bytes.unsafe_get b i 
-     <>
-     String.unsafe_get s i )
-    || not_equal_aux b s (i + 1) len 
+  else
+    Bytes.unsafe_get b i <> String.unsafe_get s i
+    || not_equal_aux b s (i + 1) len
 
 (** avoid a large copy *)
-let not_equal  (b : t) (s : string) = 
-  let b_len = b.position in 
-  let s_len = String.length s in 
-  b_len <> s_len 
-  || not_equal_aux b.buffer s 0 s_len
-
+let not_equal (b : t) (s : string) =
+  let b_len = b.position in
+  let s_len = String.length s in
+  b_len <> s_len || not_equal_aux b.buffer s 0 s_len
 
 (**
    It could be one byte, two bytes, three bytes and four bytes 
    TODO: inline for better performance
 *)
-let add_int_1 (b : t ) (x : int ) = 
-  let c = (Char.unsafe_chr (x land 0xff)) in 
+let add_int_1 (b : t) (x : int) =
+  let c = Char.unsafe_chr (x land 0xff) in
   let pos = b.position in
   if pos >= b.length then resize b 1;
   Bytes.unsafe_set b.buffer pos c;
-  b.position <- pos + 1  
+  b.position <- pos + 1
 
-let add_int_2 (b : t ) (x : int ) = 
-  let c1 = (Char.unsafe_chr (x land 0xff)) in 
-  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
+let add_int_2 (b : t) (x : int) =
+  let c1 = Char.unsafe_chr (x land 0xff) in
+  let c2 = Char.unsafe_chr ((x lsr 8) land 0xff) in
   let pos = b.position in
   if pos + 1 >= b.length then resize b 2;
-  let b_buffer = b.buffer in 
+  let b_buffer = b.buffer in
   Bytes.unsafe_set b_buffer pos c1;
   Bytes.unsafe_set b_buffer (pos + 1) c2;
   b.position <- pos + 2
 
-let add_int_3 (b : t ) (x : int ) = 
-  let c1 = (Char.unsafe_chr (x land 0xff)) in 
-  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
-  let c3 = (Char.unsafe_chr (x lsr 16 land 0xff)) in
+let add_int_3 (b : t) (x : int) =
+  let c1 = Char.unsafe_chr (x land 0xff) in
+  let c2 = Char.unsafe_chr ((x lsr 8) land 0xff) in
+  let c3 = Char.unsafe_chr ((x lsr 16) land 0xff) in
   let pos = b.position in
   if pos + 2 >= b.length then resize b 3;
-  let b_buffer = b.buffer in 
+  let b_buffer = b.buffer in
   Bytes.unsafe_set b_buffer pos c1;
   Bytes.unsafe_set b_buffer (pos + 1) c2;
   Bytes.unsafe_set b_buffer (pos + 2) c3;
   b.position <- pos + 3
 
-
-let add_int_4 (b : t ) (x : int ) = 
-  let c1 = (Char.unsafe_chr (x land 0xff)) in 
-  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
-  let c3 = (Char.unsafe_chr (x lsr 16 land 0xff)) in
-  let c4 = (Char.unsafe_chr (x lsr 24 land 0xff)) in
+let add_int_4 (b : t) (x : int) =
+  let c1 = Char.unsafe_chr (x land 0xff) in
+  let c2 = Char.unsafe_chr ((x lsr 8) land 0xff) in
+  let c3 = Char.unsafe_chr ((x lsr 16) land 0xff) in
+  let c4 = Char.unsafe_chr ((x lsr 24) land 0xff) in
   let pos = b.position in
   if pos + 3 >= b.length then resize b 4;
-  let b_buffer = b.buffer in 
+  let b_buffer = b.buffer in
   Bytes.unsafe_set b_buffer pos c1;
   Bytes.unsafe_set b_buffer (pos + 1) c2;
   Bytes.unsafe_set b_buffer (pos + 2) c3;
   Bytes.unsafe_set b_buffer (pos + 3) c4;
   b.position <- pos + 4
 
-
-
-
 end
 module Ext_spec : sig 
 #1 "ext_spec.mli"
 type 'a t = (string * 'a * string) array
 
-val assoc3 : 
-  'a t -> 
-  string -> 
-  'a option
+val assoc3 : 'a t -> string -> 'a option
 
 end = struct
 #1 "ext_spec.ml"
@@ -850,20 +737,19 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 (* A small module which is also used by {!Bsb_helper} *)
 type 'a t = (string * 'a * string) array
 
-let rec unsafe_loop i (l : 'a t) n x = 
+let rec unsafe_loop i (l : 'a t) n x =
   if i = n then None
-  else 
-    let (y1,y2,_) =  Array.unsafe_get l i in
-    if y1 = x then  Some y2
-    else unsafe_loop (i + 1) l n x 
+  else
+    let y1, y2, _ = Array.unsafe_get l i in
+    if y1 = x then Some y2 else unsafe_loop (i + 1) l n x
 
-let assoc3 (l : 'a t) (x : string)  : 'a option =
-  let n = Array.length l in 
-  unsafe_loop 0 l n x 
+let assoc3 (l : 'a t) (x : string) : 'a option =
+  let n = Array.length l in
+  unsafe_loop 0 l n x
+
 end
 module Ext_string : sig 
 #1 "ext_string.mli"
@@ -1649,35 +1535,29 @@ module Bsb_arg : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type string_action = 
-  | String_call of (string -> unit)  
-  | String_set of string ref 
+type string_action =
+  | String_call of (string -> unit)
+  | String_set of string ref
 
-type unit_action = 
-  | Unit_call of (unit -> unit) 
-  | Unit_set of bool ref 
+type unit_action = Unit_call of (unit -> unit) | Unit_set of bool ref
 
-
-
-type spec =
-  | Unit of unit_action
-  | String of string_action 
-
-
+type spec = Unit of unit_action | String of string_action
 
 type anon_fun = rev_args:string list -> unit
 
-exception Bad of string 
+exception Bad of string
 
 val parse_exn :
-  usage:string -> 
-  argv:string array -> 
+  usage:string ->
+  argv:string array ->
   ?start:int ->
   ?finish:int ->
-  (string * spec * string) array -> 
-  anon_fun  -> unit
+  (string * spec * string) array ->
+  anon_fun ->
+  unit
 
-val bad_arg : string -> 'a  
+val bad_arg : string -> 'a
+
 end = struct
 #1 "bsb_arg.ml"
 (* Copyright (C) 2020- Hongbo Zhang, Authors of ReScript
@@ -1704,131 +1584,101 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
 type anon_fun = rev_args:string list -> unit
 
-type string_action = 
-  | String_call of (string -> unit)  
+type string_action =
+  | String_call of (string -> unit)
   | String_set of string ref
 
-type unit_action = 
-  | Unit_call of (unit -> unit) 
-  | Unit_set of bool ref
+type unit_action = Unit_call of (unit -> unit) | Unit_set of bool ref
 
-type spec =
-  | Unit of unit_action
-  | String of string_action 
+type spec = Unit of unit_action | String of string_action
 
-
-
-
-type error =
-  | Unknown of string
-  | Missing of string
+type error = Unknown of string | Missing of string
 
 type t = spec Ext_spec.t
 
-
-exception Bad of string 
+exception Bad of string
 
 let bad_arg s = raise_notrace (Bad s)
 
-let (+>) = Ext_buffer.add_string
+let ( +> ) = Ext_buffer.add_string
 
 let usage_b (buf : Ext_buffer.t) ~usage (speclist : t) =
   buf +> usage;
-  if Ext_array.is_empty speclist  then () else begin 
+  if Ext_array.is_empty speclist then ()
+  else (
     buf +> "\nOptions:\n";
-    let max_col = ref 0 in 
-    Ext_array.iter speclist (fun (key,_,_) -> 
-        if String.length key > !max_col then 
-          max_col := String.length key
-      );
-    Ext_array.iter speclist (fun (key,_,doc) -> 
-        if not (Ext_string.starts_with doc "*internal*") then begin 
+    let max_col = ref 0 in
+    Ext_array.iter speclist (fun (key, _, _) ->
+        if String.length key > !max_col then max_col := String.length key);
+    Ext_array.iter speclist (fun (key, _, doc) ->
+        if not (Ext_string.starts_with doc "*internal*") then (
           buf +> "  ";
-          buf +> key ; 
-          buf +> (String.make (!max_col - String.length key + 2 ) ' ');
-          let cur = ref 0 in 
-          let doc_length = String.length doc in 
-          while !cur < doc_length do 
-            if !cur <> 0 then begin 
-              buf +>  "\n";
-              buf +> String.make (!max_col + 4) ' ' ;
-            end;
-            match String.index_from_opt doc !cur '\n' with 
-            | None -> 
-              buf +> String.sub doc !cur (String.length doc - !cur );
-              cur := doc_length
-            | Some new_line_pos -> 
-              buf +> String.sub doc !cur (new_line_pos - !cur );
-              cur := new_line_pos + 1
-          done ;
-          buf +> "\n"
-        end
-      )
-  end 
-;;
+          buf +> key;
+          buf +> String.make (!max_col - String.length key + 2) ' ';
+          let cur = ref 0 in
+          let doc_length = String.length doc in
+          while !cur < doc_length do
+            if !cur <> 0 then (
+              buf +> "\n";
+              buf +> String.make (!max_col + 4) ' ');
+            match String.index_from_opt doc !cur '\n' with
+            | None ->
+                buf +> String.sub doc !cur (String.length doc - !cur);
+                cur := doc_length
+            | Some new_line_pos ->
+                buf +> String.sub doc !cur (new_line_pos - !cur);
+                cur := new_line_pos + 1
+          done;
+          buf +> "\n")))
 
-
-
-let stop_raise ~usage ~(error : error) (speclist : t )  =
-  let b = Ext_buffer.create 200 in  
-  begin match error with
-    | Unknown ("-help" | "--help" | "-h") -> 
-      usage_b b ~usage speclist ;
+let stop_raise ~usage ~(error : error) (speclist : t) =
+  let b = Ext_buffer.create 200 in
+  (match error with
+  | Unknown ("-help" | "--help" | "-h") ->
+      usage_b b ~usage speclist;
       Ext_buffer.output_buffer stdout b;
-      exit 0      
-    | Unknown s ->
+      exit 0
+  | Unknown s ->
       b +> "unknown option: '";
-      b +> s ;
+      b +> s;
       b +> "'.\n"
-    | Missing s ->
+  | Missing s ->
       b +> "option '";
       b +> s;
-      b +> "' needs an argument.\n"      
-  end;
-  usage_b b ~usage speclist ;
+      b +> "' needs an argument.\n");
+  usage_b b ~usage speclist;
   bad_arg (Ext_buffer.contents b)
 
-
-let parse_exn  ~usage ~argv ?(start=1) ?(finish=Array.length argv) (speclist : t) anonfun = 
-  let current = ref start in 
-  let rev_list = ref [] in 
+let parse_exn ~usage ~argv ?(start = 1) ?(finish = Array.length argv)
+    (speclist : t) anonfun =
+  let current = ref start in
+  let rev_list = ref [] in
   while !current < finish do
     let s = argv.(!current) in
-    incr current;  
-    if s <> "" && s.[0] = '-' then begin
-      match Ext_spec.assoc3 speclist s with 
-      | Some action -> begin       
-          begin match action with 
-            | Unit r -> 
-              begin match r with 
-                | Unit_set r -> r.contents <- true
-                | Unit_call f -> f ()
-              end
-            | String f  ->
-              if !current >= finish then stop_raise ~usage ~error:(Missing s) speclist 
-              else begin                 
-                let arg = argv.(!current) in 
-                incr current;  
-                match f with 
-                | String_call f ->   
-                  f arg
-                | String_set u -> u.contents <- arg
-              end             
-          end;      
-        end;      
-      | None -> stop_raise ~usage ~error:(Unknown s) speclist 
-    end else begin
-      rev_list := s :: !rev_list;      
-    end;
+    incr current;
+    if s <> "" && s.[0] = '-' then
+      match Ext_spec.assoc3 speclist s with
+      | Some action -> (
+          match action with
+          | Unit r -> (
+              match r with
+              | Unit_set r -> r.contents <- true
+              | Unit_call f -> f ())
+          | String f -> (
+              if !current >= finish then
+                stop_raise ~usage ~error:(Missing s) speclist
+              else
+                let arg = argv.(!current) in
+                incr current;
+                match f with
+                | String_call f -> f arg
+                | String_set u -> u.contents <- arg))
+      | None -> stop_raise ~usage ~error:(Unknown s) speclist
+    else rev_list := s :: !rev_list
   done;
   anonfun ~rev_args:!rev_list
-;;
-
 
 end
 module Bsb_build_schemas
@@ -1858,69 +1708,106 @@ module Bsb_build_schemas
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 (* let files = "files" *)
 let version = "version"
+
 let name = "name"
+
 (* let ocaml_config = "ocaml-config" *)
 let bsdep = "bsdep"
+
 let ppx_flags = "ppx-flags"
+
 let pp_flags = "pp-flags"
+
 let bsc = "bsc"
 
-
 let bs_external_includes = "bs-external-includes"
+
 let bs_lib_dir = "bs-lib-dir"
+
 let bs_dependencies = "bs-dependencies"
+
 let pinned_dependencies = "pinned-dependencies"
+
 let bs_dev_dependencies = "bs-dev-dependencies"
 
-
 let sources = "sources"
+
 let dir = "dir"
+
 let files = "files"
+
 let subdirs = "subdirs"
+
 let bsc_flags = "bsc-flags"
+
 let excludes = "excludes"
+
 let slow_re = "slow-re"
+
 let resources = "resources"
+
 let public = "public"
+
 let js_post_build = "js-post-build"
+
 let cmd = "cmd"
+
 let ninja = "ninja"
+
 let package_specs = "package-specs"
 
 let generate_merlin = "generate-merlin"
 
 let type_ = "type"
+
 let dev = "dev"
 
 let export_all = "all"
+
 let export_none = "none"
 
-
-
 let use_stdlib = "use-stdlib"
+
 let external_stdlib = "external-stdlib"
+
 let reason = "reason"
+
 let react_jsx = "react-jsx"
 
 let entries = "entries"
+
 let backend = "backend"
+
 let main_module = "main-module"
+
 let cut_generators = "cut-generators"
+
 let generators = "generators"
+
 let command = "command"
+
 let edge = "edge"
+
 let namespace = "namespace"
+
 let in_source = "in-source"
+
 let warnings = "warnings"
+
 let number = "number"
+
 let error = "error"
+
 let suffix = "suffix"
+
 let gentypeconfig = "gentypeconfig"
+
 let language = "language"
+
 let path = "path"
+
 let ignored_dirs = "ignored-dirs"
 
 end
@@ -2890,114 +2777,122 @@ let filter lst p =
 end
 module Map_gen : sig 
 #1 "map_gen.mli"
-type ('key, + 'a) t = private
+type ('key, +'a) t = private
   | Empty
-  | Leaf of {
-      k : 'key ;
-      v : 'a
-    }
-  | Node of {
-      l : ('key,'a) t ;
-      k : 'key ;
-      v : 'a ;
-      r : ('key,'a) t ;
-      h : int
-    }
-
+  | Leaf of { k : 'key; v : 'a }
+  | Node of { l : ('key, 'a) t; k : 'key; v : 'a; r : ('key, 'a) t; h : int }
 
 val cardinal : ('a, 'b) t -> int
 
 val bindings : ('a, 'b) t -> ('a * 'b) list
-val fill_array_with_f :
-  ('a, 'b) t -> int -> 'c array -> ('a -> 'b -> 'c) -> int
+
+val fill_array_with_f : ('a, 'b) t -> int -> 'c array -> ('a -> 'b -> 'c) -> int
+
 val fill_array_aux : ('a, 'b) t -> int -> ('a * 'b) array -> int
+
 val to_sorted_array : ('key, 'a) t -> ('key * 'a) array
+
 val to_sorted_array_with_f : ('a, 'b) t -> ('a -> 'b -> 'c) -> 'c array
 
 val keys : ('a, 'b) t -> 'a list
 
 val height : ('a, 'b) t -> int
 
-
 val singleton : 'a -> 'b -> ('a, 'b) t
 
-val [@inline] unsafe_node : 
-  'a -> 
-  'b -> 
-  ('a, 'b ) t ->
-  ('a, 'b ) t ->
-  int -> 
-  ('a, 'b ) t
+val unsafe_node : 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t -> int -> ('a, 'b) t
+  [@@inline]
 
+val unsafe_two_elements : 'a -> 'b -> 'a -> 'b -> ('a, 'b) t
+  [@@inline]
 (** smaller comes first *)
-val [@inline] unsafe_two_elements :
-  'a -> 
-  'b -> 
-  'a -> 
-  'b -> 
-  ('a, 'b) t
 
 val bal : ('a, 'b) t -> 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
+
 val empty : ('a, 'b) t
+
 val is_empty : ('a, 'b) t -> bool
 
-
-
-
 val merge : ('a, 'b) t -> ('a, 'b) t -> ('a, 'b) t
+
 val iter : ('a, 'b) t -> ('a -> 'b -> unit) -> unit
+
 val map : ('a, 'b) t -> ('b -> 'c) -> ('a, 'c) t
+
 val mapi : ('a, 'b) t -> ('a -> 'b -> 'c) -> ('a, 'c) t
+
 val fold : ('a, 'b) t -> 'c -> ('a -> 'b -> 'c -> 'c) -> 'c
+
 val for_all : ('a, 'b) t -> ('a -> 'b -> bool) -> bool
+
 val exists : ('a, 'b) t -> ('a -> 'b -> bool) -> bool
 
-
 val join : ('a, 'b) t -> 'a -> 'b -> ('a, 'b) t -> ('a, 'b) t
-val concat : ('a, 'b) t -> ('a, 'b) t -> ('a, 'b) t
-val concat_or_join :
-  ('a, 'b) t -> 'a -> 'b option -> ('a, 'b) t -> ('a, 'b) t
 
-module type S =
-sig
+val concat : ('a, 'b) t -> ('a, 'b) t -> ('a, 'b) t
+
+val concat_or_join : ('a, 'b) t -> 'a -> 'b option -> ('a, 'b) t -> ('a, 'b) t
+
+module type S = sig
   type key
+
   type +'a t
+
   val empty : 'a t
+
   val compare_key : key -> key -> int
+
   val is_empty : 'a t -> bool
+
   val mem : 'a t -> key -> bool
+
   val to_sorted_array : 'a t -> (key * 'a) array
+
   val to_sorted_array_with_f : 'a t -> (key -> 'a -> 'b) -> 'b array
+
   val add : 'a t -> key -> 'a -> 'a t
+
   val adjust : 'a t -> key -> ('a option -> 'a) -> 'a t
+
   val singleton : key -> 'a -> 'a t
+
   val remove : 'a t -> key -> 'a t
+
   (* val merge :
      'a t -> 'b t -> (key -> 'a option -> 'b option -> 'c option) -> 'c t *)
-  val disjoint_merge_exn : 
-    'a t -> 
-    'a t -> 
-    (key -> 'a -> 'a -> exn) -> 
-    'a t
+  val disjoint_merge_exn : 'a t -> 'a t -> (key -> 'a -> 'a -> exn) -> 'a t
 
   val iter : 'a t -> (key -> 'a -> unit) -> unit
+
   val fold : 'a t -> 'b -> (key -> 'a -> 'b -> 'b) -> 'b
+
   val for_all : 'a t -> (key -> 'a -> bool) -> bool
+
   val exists : 'a t -> (key -> 'a -> bool) -> bool
+
   (* val filter : 'a t -> (key -> 'a -> bool) -> 'a t *)
   (* val partition : 'a t -> (key -> 'a -> bool) -> 'a t * 'a t *)
   val cardinal : 'a t -> int
+
   val bindings : 'a t -> (key * 'a) list
+
   val keys : 'a t -> key list
   (* val choose : 'a t -> key * 'a *)
 
   val find_exn : 'a t -> key -> 'a
+
   val find_opt : 'a t -> key -> 'a option
+
   val find_default : 'a t -> key -> 'a -> 'a
+
   val map : 'a t -> ('a -> 'b) -> 'b t
+
   val mapi : 'a t -> (key -> 'a -> 'b) -> 'b t
+
   val of_list : (key * 'a) list -> 'a t
+
   val of_array : (key * 'a) array -> 'a t
+
   val add_list : (key * 'b) list -> 'b t -> 'b t
 end
 
@@ -3019,245 +2914,217 @@ end = struct
 [@@@warnerror "+55"]
 (* adapted from stdlib *)
 
-type ('key,'a) t0 =
+type ('key, 'a) t0 =
   | Empty
-  | Leaf of {k : 'key ; v : 'a}
-  | Node of {
-      l : ('key,'a) t0 ;
-      k : 'key ;
-      v : 'a ;
-      r : ('key,'a) t0 ;
-      h : int
-    }
-type ('key,'a) parital_node = {
-  l : ('key,'a) t0 ;
-  k : 'key ;
-  v : 'a ;
-  r : ('key,'a) t0 ;
-  h : int
+  | Leaf of { k : 'key; v : 'a }
+  | Node of { l : ('key, 'a) t0; k : 'key; v : 'a; r : ('key, 'a) t0; h : int }
+
+type ('key, 'a) parital_node = {
+  l : ('key, 'a) t0;
+  k : 'key;
+  v : 'a;
+  r : ('key, 'a) t0;
+  h : int;
 }
-external  (~!) : ('key,'a) t0 -> ('key, 'a) parital_node = "%identity"
-let  empty = Empty
-let rec map x f = match x with
-    Empty -> Empty
-  | Leaf {k;v} -> Leaf {k; v = f v}  
-  | Node ({l; v ; r} as x) ->
-    let l' = map l f in
-    let d' = f v in
-    let r' = map r f in
-    Node { x with  l = l';  v = d'; r = r'}
 
-let rec mapi x f = match x with
-    Empty -> Empty
-  | Leaf {k;v} -> Leaf {k; v = f k v}  
-  | Node ({l; k ; v ; r} as x) ->
-    let l' = mapi l f in
-    let v' = f k v in
-    let r' = mapi r f in
-    Node {x with l = l'; v = v'; r = r'}
+external ( ~! ) : ('key, 'a) t0 -> ('key, 'a) parital_node = "%identity"
 
-let [@inline] calc_height a b = (if a >= b  then a else b) + 1 
-let [@inline] singleton k v = Leaf {k;v}
-let [@inline] height = function
-  | Empty -> 0
-  | Leaf _ -> 1
-  | Node {h} -> h
+let empty = Empty
 
-let [@inline] unsafe_node k v l  r h =   
-  Node {l; k; v; r; h}
-let [@inline] unsafe_two_elements k1 v1 k2 v2 = 
-  unsafe_node k2 v2 (singleton k1 v1) empty 2   
-let [@inline] unsafe_node_maybe_leaf k v l r h =   
-  if h = 1 then Leaf {k ; v}   
-  else Node{l;k;v;r; h }           
+let rec map x f =
+  match x with
+  | Empty -> Empty
+  | Leaf { k; v } -> Leaf { k; v = f v }
+  | Node ({ l; v; r } as x) ->
+      let l' = map l f in
+      let d' = f v in
+      let r' = map r f in
+      Node { x with l = l'; v = d'; r = r' }
 
+let rec mapi x f =
+  match x with
+  | Empty -> Empty
+  | Leaf { k; v } -> Leaf { k; v = f k v }
+  | Node ({ l; k; v; r } as x) ->
+      let l' = mapi l f in
+      let v' = f k v in
+      let r' = mapi r f in
+      Node { x with l = l'; v = v'; r = r' }
 
-type ('key, + 'a) t = ('key,'a) t0 = private
+let[@inline] calc_height a b = (if a >= b then a else b) + 1
+
+let[@inline] singleton k v = Leaf { k; v }
+
+let[@inline] height = function Empty -> 0 | Leaf _ -> 1 | Node { h } -> h
+
+let[@inline] unsafe_node k v l r h = Node { l; k; v; r; h }
+
+let[@inline] unsafe_two_elements k1 v1 k2 v2 =
+  unsafe_node k2 v2 (singleton k1 v1) empty 2
+
+let[@inline] unsafe_node_maybe_leaf k v l r h =
+  if h = 1 then Leaf { k; v } else Node { l; k; v; r; h }
+
+type ('key, +'a) t = ('key, 'a) t0 = private
   | Empty
-  | Leaf of {
-      k : 'key ;
-      v : 'a
-    }
-  | Node of {
-      l : ('key,'a) t ;
-      k : 'key ;
-      v : 'a ;
-      r : ('key,'a) t ;
-      h : int
-    }
+  | Leaf of { k : 'key; v : 'a }
+  | Node of { l : ('key, 'a) t; k : 'key; v : 'a; r : ('key, 'a) t; h : int }
 
-let rec cardinal_aux acc  = function
-  | Empty -> acc 
+let rec cardinal_aux acc = function
+  | Empty -> acc
   | Leaf _ -> acc + 1
-  | Node {l; r} -> 
-    cardinal_aux  (cardinal_aux (acc + 1)  r ) l 
+  | Node { l; r } -> cardinal_aux (cardinal_aux (acc + 1) r) l
 
-let cardinal s = cardinal_aux 0 s 
+let cardinal s = cardinal_aux 0 s
 
 let rec bindings_aux accu = function
   | Empty -> accu
-  | Leaf {k;v} -> (k,v) :: accu
-  | Node {l;k;v;r} -> bindings_aux ((k, v) :: bindings_aux accu r) l
+  | Leaf { k; v } -> (k, v) :: accu
+  | Node { l; k; v; r } -> bindings_aux ((k, v) :: bindings_aux accu r) l
 
-let bindings s =
-  bindings_aux [] s
+let bindings s = bindings_aux [] s
 
-let rec fill_array_with_f (s : _ t) i arr  f : int =    
-  match s with 
-  | Empty -> i 
-  | Leaf  {k;v} -> 
-    Array.unsafe_set arr i (f k v); i + 1
-  | Node {l; k; v; r} -> 
-    let inext = fill_array_with_f l i arr f in 
-    Array.unsafe_set arr inext (f k v);
-    fill_array_with_f r (inext + 1) arr f
+let rec fill_array_with_f (s : _ t) i arr f : int =
+  match s with
+  | Empty -> i
+  | Leaf { k; v } ->
+      Array.unsafe_set arr i (f k v);
+      i + 1
+  | Node { l; k; v; r } ->
+      let inext = fill_array_with_f l i arr f in
+      Array.unsafe_set arr inext (f k v);
+      fill_array_with_f r (inext + 1) arr f
 
-let rec fill_array_aux (s : _ t) i arr : int =    
-  match s with 
-  | Empty -> i 
-  | Leaf {k;v} -> 
-    Array.unsafe_set arr i (k, v); i + 1
-  | Node {l;k;v;r} -> 
-    let inext = fill_array_aux l i arr in 
-    Array.unsafe_set arr inext (k,v);
-    fill_array_aux r (inext + 1) arr 
+let rec fill_array_aux (s : _ t) i arr : int =
+  match s with
+  | Empty -> i
+  | Leaf { k; v } ->
+      Array.unsafe_set arr i (k, v);
+      i + 1
+  | Node { l; k; v; r } ->
+      let inext = fill_array_aux l i arr in
+      Array.unsafe_set arr inext (k, v);
+      fill_array_aux r (inext + 1) arr
 
-
-let to_sorted_array (s : ('key,'a) t)  : ('key * 'a ) array =    
-  match s with 
+let to_sorted_array (s : ('key, 'a) t) : ('key * 'a) array =
+  match s with
   | Empty -> [||]
-  | Leaf {k;v} -> [|k,v|]
-  | Node {l;k;v;r} -> 
-    let len = 
-      cardinal_aux (cardinal_aux 1 r) l in 
-    let arr =
-      Array.make len (k,v) in  
-    ignore (fill_array_aux s 0 arr : int);
-    arr 
+  | Leaf { k; v } -> [| (k, v) |]
+  | Node { l; k; v; r } ->
+      let len = cardinal_aux (cardinal_aux 1 r) l in
+      let arr = Array.make len (k, v) in
+      ignore (fill_array_aux s 0 arr : int);
+      arr
 
-let to_sorted_array_with_f (type key a b ) (s : (key,a) t)  (f : key -> a -> b): b array =    
-  match s with 
+let to_sorted_array_with_f (type key a b) (s : (key, a) t) (f : key -> a -> b) :
+    b array =
+  match s with
   | Empty -> [||]
-  | Leaf {k;v} -> [| f k v|]
-  | Node {l;k;v;r} -> 
-    let len = 
-      cardinal_aux (cardinal_aux 1 r) l in 
-    let arr =
-      Array.make len (f k v) in  
-    ignore (fill_array_with_f s 0 arr f: int);
-    arr     
+  | Leaf { k; v } -> [| f k v |]
+  | Node { l; k; v; r } ->
+      let len = cardinal_aux (cardinal_aux 1 r) l in
+      let arr = Array.make len (f k v) in
+      ignore (fill_array_with_f s 0 arr f : int);
+      arr
 
 let rec keys_aux accu = function
-    Empty -> accu
-  | Leaf {k} -> k :: accu
-  | Node {l; k;r} -> keys_aux (k :: keys_aux accu r) l
+  | Empty -> accu
+  | Leaf { k } -> k :: accu
+  | Node { l; k; r } -> keys_aux (k :: keys_aux accu r) l
 
 let keys s = keys_aux [] s
-
-
-
-
 
 let bal l x d r =
   let hl = height l in
   let hr = height r in
-  if hl > hr + 2 then begin
-    let  {l=ll; r = lr; v = lv; k = lk; h = _} = ~!l in
-    let hll = height ll in 
-    let hlr = height lr in 
+  if hl > hr + 2 then
+    let { l = ll; r = lr; v = lv; k = lk; h = _ } = ~!l in
+    let hll = height ll in
+    let hlr = height lr in
     if hll >= hlr then
-      let hnode = calc_height hlr hr in       
-      unsafe_node lk lv 
-        ll  
-        (unsafe_node_maybe_leaf x d lr  r hnode)
+      let hnode = calc_height hlr hr in
+      unsafe_node lk lv ll
+        (unsafe_node_maybe_leaf x d lr r hnode)
         (calc_height hll hnode)
-    else         
-      let {l=lrl; r=lrr;k = lrk ; v = lrv }  = ~!lr in 
-      let hlrl = height lrl in 
-      let hlrr = height lrr in 
-      let hlnode = calc_height hll hlrl in 
-      let hrnode = calc_height hlrr hr in 
-      unsafe_node lrk lrv 
-        (unsafe_node_maybe_leaf lk lv ll  lrl hlnode)  
-        (unsafe_node_maybe_leaf x d lrr r hrnode)      
+    else
+      let { l = lrl; r = lrr; k = lrk; v = lrv } = ~!lr in
+      let hlrl = height lrl in
+      let hlrr = height lrr in
+      let hlnode = calc_height hll hlrl in
+      let hrnode = calc_height hlrr hr in
+      unsafe_node lrk lrv
+        (unsafe_node_maybe_leaf lk lv ll lrl hlnode)
+        (unsafe_node_maybe_leaf x d lrr r hrnode)
         (calc_height hlnode hrnode)
-  end else if hr > hl + 2 then begin
-    let {l=rl; r=rr; k = rk; v = rv }  = ~!r in 
-    let hrr = height rr in 
-    let hrl = height rl in 
+  else if hr > hl + 2 then
+    let { l = rl; r = rr; k = rk; v = rv } = ~!r in
+    let hrr = height rr in
+    let hrl = height rl in
     if hrr >= hrl then
       let hnode = calc_height hl hrl in
-      unsafe_node rk rv 
+      unsafe_node rk rv
         (unsafe_node_maybe_leaf x d l rl hnode)
-        rr
-        (calc_height hnode hrr)
-    else 
-      let {l=rll;  r=rlr; k = rlk ; v = rlv}  = ~!rl in 
-      let hrll = height rll in 
-      let hrlr = height rlr in 
-      let hlnode = (calc_height hl hrll) in
-      let hrnode = (calc_height hrlr hrr) in      
-      unsafe_node rlk rlv 
-        (unsafe_node_maybe_leaf x d l  rll hlnode)  
-        (unsafe_node_maybe_leaf rk rv rlr  rr hrnode)
+        rr (calc_height hnode hrr)
+    else
+      let { l = rll; r = rlr; k = rlk; v = rlv } = ~!rl in
+      let hrll = height rll in
+      let hrlr = height rlr in
+      let hlnode = calc_height hl hrll in
+      let hrnode = calc_height hrlr hrr in
+      unsafe_node rlk rlv
+        (unsafe_node_maybe_leaf x d l rll hlnode)
+        (unsafe_node_maybe_leaf rk rv rlr rr hrnode)
         (calc_height hlnode hrnode)
-  end else
-    unsafe_node_maybe_leaf x d l r (calc_height hl hr)
+  else unsafe_node_maybe_leaf x d l r (calc_height hl hr)
 
-
-
-let [@inline] is_empty = function Empty -> true | _ -> false
+let[@inline] is_empty = function Empty -> true | _ -> false
 
 let rec min_binding_exn = function
-    Empty -> raise Not_found
-  | Leaf {k;v} -> (k,v)  
-  | Node{l; k; v} -> 
-    match l with 
-    | Empty -> (k, v) 
-    | Leaf _
-    | Node _ -> 
-      min_binding_exn l
-
+  | Empty -> raise Not_found
+  | Leaf { k; v } -> (k, v)
+  | Node { l; k; v } -> (
+      match l with Empty -> (k, v) | Leaf _ | Node _ -> min_binding_exn l)
 
 let rec remove_min_binding = function
-    Empty -> invalid_arg "Map.remove_min_elt"
-  | Leaf _ -> empty  
-  | Node{l=Empty;r} -> r
-  | Node{l; k; v ; r} -> bal (remove_min_binding l) k v r
+  | Empty -> invalid_arg "Map.remove_min_elt"
+  | Leaf _ -> empty
+  | Node { l = Empty; r } -> r
+  | Node { l; k; v; r } -> bal (remove_min_binding l) k v r
 
 let merge t1 t2 =
   match (t1, t2) with
-    (Empty, t) -> t
-  | (t, Empty) -> t
-  | (_, _) ->
-    let (x, d) = min_binding_exn t2 in
-    bal t1 x d (remove_min_binding t2)
+  | Empty, t -> t
+  | t, Empty -> t
+  | _, _ ->
+      let x, d = min_binding_exn t2 in
+      bal t1 x d (remove_min_binding t2)
 
-
-let rec iter x f = match x with 
-    Empty -> ()
-  | Leaf {k;v} -> (f k v : unit) 
-  | Node{l; k ; v ; r} ->
-    iter l f; f k v; iter r f
-
-
+let rec iter x f =
+  match x with
+  | Empty -> ()
+  | Leaf { k; v } -> (f k v : unit)
+  | Node { l; k; v; r } ->
+      iter l f;
+      f k v;
+      iter r f
 
 let rec fold m accu f =
   match m with
-    Empty -> accu
-  | Leaf {k;v} -> f k v accu  
-  | Node {l; k; v; r} ->
-    fold r (f k v (fold l accu f)) f 
+  | Empty -> accu
+  | Leaf { k; v } -> f k v accu
+  | Node { l; k; v; r } -> fold r (f k v (fold l accu f)) f
 
-let rec for_all x p = match x with 
-    Empty -> true
-  | Leaf {k; v} -> p k v   
-  | Node{l; k; v ; r} -> p k v && for_all l p && for_all r p
+let rec for_all x p =
+  match x with
+  | Empty -> true
+  | Leaf { k; v } -> p k v
+  | Node { l; k; v; r } -> p k v && for_all l p && for_all r p
 
-let rec exists x p = match x with
-    Empty -> false
-  | Leaf {k; v} -> p k v   
-  | Node{l; k; v; r} -> p k v || exists l p || exists r p
+let rec exists x p =
+  match x with
+  | Empty -> false
+  | Leaf { k; v } -> p k v
+  | Node { l; k; v; r } -> p k v || exists l p || exists r p
 
 (* Beware: those two functions assume that the added k is *strictly*
    smaller (or bigger) than all the present keys in the tree; it
@@ -3270,14 +3137,12 @@ let rec exists x p = match x with
 let rec add_min k v = function
   | Empty -> singleton k v
   | Leaf l -> unsafe_two_elements k v l.k l.v
-  | Node tree ->
-    bal (add_min k v tree.l) tree.k tree.v tree.r
+  | Node tree -> bal (add_min k v tree.l) tree.k tree.v tree.r
 
 let rec add_max k v = function
   | Empty -> singleton k v
   | Leaf l -> unsafe_two_elements l.k l.v k v
-  | Node tree ->
-    bal tree.l tree.k tree.v (add_max k v tree.r)
+  | Node tree -> bal tree.l tree.k tree.v (add_max k v tree.r)
 
 (* Same as create and bal, but no assumptions are made on the
    relative heights of l and r. *)
@@ -3285,19 +3150,17 @@ let rec add_max k v = function
 let rec join l v d r =
   match l with
   | Empty -> add_min v d r
-  | Leaf leaf ->
-    add_min leaf.k leaf.v (add_min v d r)
-  | Node xl ->
-    match r with  
-    | Empty -> add_max v d l
-    | Leaf leaf -> 
-      add_max leaf.k leaf.v (add_max v d l)  
-    | Node  xr ->
-      let lh = xl.h in  
-      let rh = xr.h in 
-      if lh > rh + 2 then bal xl.l xl.k xl.v (join xl.r v d r) else
-      if rh > lh + 2 then bal (join l v d xr.l) xr.k xr.v xr.r else
-        unsafe_node v d l  r (calc_height lh rh)
+  | Leaf leaf -> add_min leaf.k leaf.v (add_min v d r)
+  | Node xl -> (
+      match r with
+      | Empty -> add_max v d l
+      | Leaf leaf -> add_max leaf.k leaf.v (add_max v d l)
+      | Node xr ->
+          let lh = xl.h in
+          let rh = xr.h in
+          if lh > rh + 2 then bal xl.l xl.k xl.v (join xl.r v d r)
+          else if rh > lh + 2 then bal (join l v d xr.l) xr.k xr.v xr.r
+          else unsafe_node v d l r (calc_height lh rh))
 
 (* Merge two trees l and r into one.
    All elements of l must precede the elements of r.
@@ -3305,42 +3168,44 @@ let rec join l v d r =
 
 let concat t1 t2 =
   match (t1, t2) with
-    (Empty, t) -> t
-  | (t, Empty) -> t
-  | (_, _) ->
-    let (x, d) = min_binding_exn t2 in
-    join t1 x d (remove_min_binding t2)
+  | Empty, t -> t
+  | t, Empty -> t
+  | _, _ ->
+      let x, d = min_binding_exn t2 in
+      join t1 x d (remove_min_binding t2)
 
 let concat_or_join t1 v d t2 =
-  match d with
-  | Some d -> join t1 v d t2
-  | None -> concat t1 t2
+  match d with Some d -> join t1 v d t2 | None -> concat t1 t2
 
-
-module type S =
-sig
+module type S = sig
   type key
+
   type +'a t
-  val empty: 'a t
-  val compare_key: key -> key -> int 
-  val is_empty: 'a t -> bool
-  val mem: 'a t -> key -> bool
-  val to_sorted_array : 
-    'a t -> (key * 'a ) array
-  val to_sorted_array_with_f : 
-    'a t -> (key -> 'a -> 'b) -> 'b array  
-  val add: 'a t -> key -> 'a -> 'a t
+
+  val empty : 'a t
+
+  val compare_key : key -> key -> int
+
+  val is_empty : 'a t -> bool
+
+  val mem : 'a t -> key -> bool
+
+  val to_sorted_array : 'a t -> (key * 'a) array
+
+  val to_sorted_array_with_f : 'a t -> (key -> 'a -> 'b) -> 'b array
+
+  val add : 'a t -> key -> 'a -> 'a t
   (** [add x y m] 
       If [x] was already bound in [m], its previous binding disappears. *)
 
-  val adjust: 'a t -> key -> ('a option->  'a) ->  'a t 
+  val adjust : 'a t -> key -> ('a option -> 'a) -> 'a t
   (** [adjust acc k replace ] if not exist [add (replace None ], otherwise 
       [add k v (replace (Some old))]
   *)
 
-  val singleton: key -> 'a -> 'a t
+  val singleton : key -> 'a -> 'a t
 
-  val remove: 'a t -> key -> 'a t
+  val remove : 'a t -> key -> 'a t
   (** [remove x m] returns a map containing the same bindings as
       [m], except for [x] which is unbound in the returned map. *)
 
@@ -3353,30 +3218,24 @@ sig
       @since 3.12.0
   *)
 
-  val disjoint_merge_exn : 
-    'a t 
-    -> 'a t 
-    -> (key -> 'a -> 'a -> exn)
-    -> 'a t
+  val disjoint_merge_exn : 'a t -> 'a t -> (key -> 'a -> 'a -> exn) -> 'a t
   (* merge two maps, will raise if they have the same key *)
 
-
-
-  val iter: 'a t -> (key -> 'a -> unit) ->  unit
+  val iter : 'a t -> (key -> 'a -> unit) -> unit
   (** [iter f m] applies [f] to all bindings in map [m].
       The bindings are passed to [f] in increasing order. *)
 
-  val fold: 'a t -> 'b -> (key -> 'a -> 'b -> 'b) -> 'b
+  val fold : 'a t -> 'b -> (key -> 'a -> 'b -> 'b) -> 'b
   (** [fold f m a] computes [(f kN dN ... (f k1 d1 a)...)],
       where [k1 ... kN] are the keys of all bindings in [m]
       (in increasing order) *)
 
-  val for_all: 'a t -> (key -> 'a -> bool) -> bool
+  val for_all : 'a t -> (key -> 'a -> bool) -> bool
   (** [for_all p m] checks if all the bindings of the map.
       order unspecified
   *)
 
-  val exists: 'a t -> (key -> 'a -> bool) -> bool
+  val exists : 'a t -> (key -> 'a -> bool) -> bool
   (** [exists p m] checks if at least one binding of the map
       satisfy the predicate [p]. 
       order unspecified
@@ -3395,18 +3254,16 @@ sig
       [s] that do not satisfy [p].
   *)
 
-  val cardinal: 'a t -> int
+  val cardinal : 'a t -> int
   (** Return the number of bindings of a map. *)
 
-  val bindings: 'a t -> (key * 'a) list
+  val bindings : 'a t -> (key * 'a) list
   (** Return the list of all bindings of the given map.
       The returned list is sorted in increasing order with respect
       to the ordering *)
 
-  val keys : 'a t -> key list 
+  val keys : 'a t -> key list
   (* Increasing order *)
-
-
 
   (* val split: 'a t -> key -> 'a t * 'a option * 'a t *)
   (** [split x m] returns a triple [(l, data, r)], where
@@ -3419,27 +3276,30 @@ sig
       @since 3.12.0
   *)
 
-  val find_exn: 'a t -> key ->  'a
+  val find_exn : 'a t -> key -> 'a
   (** [find x m] returns the current binding of [x] in [m],
       or raises [Not_found] if no such binding exists. *)
-      
-  val find_opt:  'a t ->  key ->'a option
-  val find_default: 'a t -> key  ->  'a  -> 'a 
-  val map: 'a t -> ('a -> 'b) -> 'b t
+
+  val find_opt : 'a t -> key -> 'a option
+
+  val find_default : 'a t -> key -> 'a -> 'a
+
+  val map : 'a t -> ('a -> 'b) -> 'b t
   (** [map f m] returns a map with same domain as [m], where the
       associated value [a] of all bindings of [m] has been
       replaced by the result of the application of [f] to [a].
       The bindings are passed to [f] in increasing order
       with respect to the ordering over the type of the keys. *)
 
-  val mapi: 'a t ->  (key -> 'a -> 'b) -> 'b t
+  val mapi : 'a t -> (key -> 'a -> 'b) -> 'b t
   (** Same as {!Map.S.map}, but the function receives as arguments both the
       key and the associated value for each binding of the map. *)
 
-  val of_list : (key * 'a) list -> 'a t 
-  val of_array : (key * 'a ) array -> 'a t 
-  val add_list : (key * 'b) list -> 'b t -> 'b t
+  val of_list : (key * 'a) list -> 'a t
 
+  val of_array : (key * 'a) array -> 'a t
+
+  val add_list : (key * 'b) list -> 'b t -> 'b t
 end
 
 end
@@ -3468,7 +3328,6 @@ module Map_string : sig
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
 
 include Map_gen.S with type key = string
 
@@ -3687,7 +3546,6 @@ let of_array xs =
 end
 module Bsb_db : sig 
 #1 "bsb_db.mli"
-
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -3717,41 +3575,35 @@ module Bsb_db : sig
     [bsb.exe] stores such data which would be retrieved by 
     [bsb_helper.exe]. It is currently used to combine with 
     ocamldep to figure out which module->file it depends on
-*) 
+*)
 
-type case = bool 
+type case = bool
 
-type info = 
-  | Intf (* intemediate state *)
+type info =
+  | Intf
+  (* intemediate state *)
   | Impl
   | Impl_intf
 
-type syntax_kind =   
-  | Ml 
-  | Reason     
-  | Res
+type syntax_kind = Ml | Reason | Res
 
-type module_info = 
-  {
-    mutable info : info;
-    dir : string;
-    syntax_kind : syntax_kind;
-    (* This is actually not stored in bsbuild meta info 
-       since creating .d file only emit .cmj/.cmi dependencies, so it does not
-       need know which syntax it is written
-    *)
-    case : bool;
-    name_sans_extension : string;
-  }
-
-type map = module_info Map_string.t 
-
-type 'a cat  = {
-  mutable lib : 'a ; 
-  mutable dev : 'a;
+type module_info = {
+  mutable info : info;
+  dir : string;
+  syntax_kind : syntax_kind;
+  (* This is actually not stored in bsbuild meta info
+     since creating .d file only emit .cmj/.cmi dependencies, so it does not
+     need know which syntax it is written
+  *)
+  case : bool;
+  name_sans_extension : string;
 }
 
-type t = map cat  
+type map = module_info Map_string.t
+
+type 'a cat = { mutable lib : 'a; mutable dev : 'a }
+
+type t = map cat
 
 (** store  the meta data indexed by {!Bsb_dir_index}
     {[
@@ -3762,14 +3614,8 @@ type t = map cat
     ]}
 *)
 
-
-
-
-
-
 end = struct
 #1 "bsb_db.ml"
-
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -3797,99 +3643,122 @@ end = struct
 type case = bool
 (** true means upper case*)
 
-
-type info = 
-  | Intf (* intemediate state *)
+type info =
+  | Intf
+  (* intemediate state *)
   | Impl
   | Impl_intf
 
-type syntax_kind =   
-  | Ml 
-  | Reason     
-  | Res
+type syntax_kind = Ml | Reason | Res
 
-type module_info = 
-  {
-    mutable info : info;
-    dir : string ; 
-    syntax_kind : syntax_kind;
-    case : bool;
-    name_sans_extension : string  ;
-  }
-
-
-type map = module_info Map_string.t 
-
-type 'a cat  = {
-  mutable lib : 'a;
-  mutable dev : 'a
+type module_info = {
+  mutable info : info;
+  dir : string;
+  syntax_kind : syntax_kind;
+  case : bool;
+  name_sans_extension : string;
 }
 
-type t = map cat 
+type map = module_info Map_string.t
+
+type 'a cat = { mutable lib : 'a; mutable dev : 'a }
+
+type t = map cat
 (** indexed by the group *)
-
-
-
-
-
 
 end
 module Set_gen : sig 
 #1 "set_gen.mli"
-type 'a t =private
-    Empty
+type 'a t = private
+  | Empty
   | Leaf of 'a
-  | Node of { l : 'a t; v : 'a; r : 'a t; h : int; }
-
+  | Node of { l : 'a t; v : 'a; r : 'a t; h : int }
 
 val empty : 'a t
-val [@inline] is_empty : 'a t-> bool
-val unsafe_two_elements : 
-  'a -> 'a -> 'a t
 
-val cardinal : 'a t-> int
+val is_empty : 'a t -> bool [@@inline]
 
-val elements : 'a t-> 'a list
-val choose : 'a t-> 'a
-val iter : 'a t-> ('a -> unit) -> unit
-val fold : 'a t-> 'c -> ('a -> 'c -> 'c) -> 'c
-val for_all : 'a t-> ('a -> bool) -> bool
-val exists : 'a t-> ('a -> bool) -> bool
-val check : 'a t-> unit
-val bal : 'a t-> 'a -> 'a t-> 'a t
-val remove_min_elt : 'a t-> 'a t
+val unsafe_two_elements : 'a -> 'a -> 'a t
+
+val cardinal : 'a t -> int
+
+val elements : 'a t -> 'a list
+
+val choose : 'a t -> 'a
+
+val iter : 'a t -> ('a -> unit) -> unit
+
+val fold : 'a t -> 'c -> ('a -> 'c -> 'c) -> 'c
+
+val for_all : 'a t -> ('a -> bool) -> bool
+
+val exists : 'a t -> ('a -> bool) -> bool
+
+val check : 'a t -> unit
+
+val bal : 'a t -> 'a -> 'a t -> 'a t
+
+val remove_min_elt : 'a t -> 'a t
+
 val singleton : 'a -> 'a t
-val internal_merge : 'a t-> 'a t-> 'a t
-val internal_join : 'a t-> 'a -> 'a t-> 'a t
-val internal_concat : 'a t-> 'a t-> 'a t
-val partition : 'a t-> ('a -> bool) -> 'a t * 'a t
-val of_sorted_array : 'a array -> 'a t
-val is_ordered : cmp:('a -> 'a -> int) -> 'a t-> bool
-val invariant : cmp:('a -> 'a -> int) -> 'a t-> bool
 
-module type S =
-sig
+val internal_merge : 'a t -> 'a t -> 'a t
+
+val internal_join : 'a t -> 'a -> 'a t -> 'a t
+
+val internal_concat : 'a t -> 'a t -> 'a t
+
+val partition : 'a t -> ('a -> bool) -> 'a t * 'a t
+
+val of_sorted_array : 'a array -> 'a t
+
+val is_ordered : cmp:('a -> 'a -> int) -> 'a t -> bool
+
+val invariant : cmp:('a -> 'a -> int) -> 'a t -> bool
+
+module type S = sig
   type elt
+
   type t
+
   val empty : t
+
   val is_empty : t -> bool
+
   val iter : t -> (elt -> unit) -> unit
+
   val fold : t -> 'a -> (elt -> 'a -> 'a) -> 'a
+
   val for_all : t -> (elt -> bool) -> bool
+
   val exists : t -> (elt -> bool) -> bool
+
   val singleton : elt -> t
+
   val cardinal : t -> int
+
   val elements : t -> elt list
+
   val choose : t -> elt
+
   val mem : t -> elt -> bool
+
   val add : t -> elt -> t
+
   val remove : t -> elt -> t
+
   val union : t -> t -> t
+
   val inter : t -> t -> t
-  val diff : t -> t -> t    
+
+  val diff : t -> t -> t
+
   val of_list : elt list -> t
+
   val of_sorted_array : elt array -> t
+
   val invariant : t -> bool
+
   val print : Format.formatter -> t -> unit
 end
 
@@ -3911,201 +3780,180 @@ end = struct
 
 (* balanced tree based on stdlib distribution *)
 
-type 'a t0 = 
-  | Empty 
-  | Leaf of  'a 
-  | Node of { l : 'a t0 ; v :  'a ; r : 'a t0 ; h :  int }
+type 'a t0 =
+  | Empty
+  | Leaf of 'a
+  | Node of { l : 'a t0; v : 'a; r : 'a t0; h : int }
 
-type 'a partial_node = { l : 'a t0 ; v :  'a ; r : 'a t0 ; h :  int }
+type 'a partial_node = { l : 'a t0; v : 'a; r : 'a t0; h : int }
 
-external (~!) : 'a t0 -> 'a partial_node = "%identity"
+external ( ~! ) : 'a t0 -> 'a partial_node = "%identity"
+
 let empty = Empty
-let  [@inline] height = function
-  | Empty -> 0 
-  | Leaf _ -> 1
-  | Node {h} -> h   
 
-let [@inline] calc_height a b =  
-  (if a >= b then a else b) + 1 
+let[@inline] height = function Empty -> 0 | Leaf _ -> 1 | Node { h } -> h
 
-(* 
-    Invariants: 
-    1. {[ l < v < r]}
-    2. l and r balanced 
-    3. [height l] - [height r] <= 2
+let[@inline] calc_height a b = (if a >= b then a else b) + 1
+
+(*
+     Invariants:
+     1. {[ l < v < r]}
+     2. l and r balanced
+     3. [height l] - [height r] <= 2
 *)
-let [@inline] unsafe_node v l  r h = 
-  Node{l;v;r; h }         
+let[@inline] unsafe_node v l r h = Node { l; v; r; h }
 
-let [@inline] unsafe_node_maybe_leaf v l r h =   
-  if h = 1 then Leaf v   
-  else Node{l;v;r; h }         
+let[@inline] unsafe_node_maybe_leaf v l r h =
+  if h = 1 then Leaf v else Node { l; v; r; h }
 
-let [@inline] singleton x = Leaf x
+let[@inline] singleton x = Leaf x
 
-let [@inline] unsafe_two_elements x v = 
-  unsafe_node v (singleton x) empty 2 
+let[@inline] unsafe_two_elements x v = unsafe_node v (singleton x) empty 2
 
 type 'a t = 'a t0 = private
-  | Empty 
+  | Empty
   | Leaf of 'a
-  | Node of { l : 'a t0 ; v :  'a ; r : 'a t0 ; h :  int }
-
+  | Node of { l : 'a t0; v : 'a; r : 'a t0; h : int }
 
 (* Smallest and greatest element of a set *)
 
 let rec min_exn = function
   | Empty -> raise Not_found
-  | Leaf v -> v 
-  | Node{l; v} ->
-    match l with 
-    | Empty -> v 
-    | Leaf _
-    | Node _ ->  min_exn l
+  | Leaf v -> v
+  | Node { l; v } -> ( match l with Empty -> v | Leaf _ | Node _ -> min_exn l)
 
+let[@inline] is_empty = function Empty -> true | _ -> false
 
-let [@inline] is_empty = function Empty -> true | _ -> false
-
-let rec cardinal_aux acc  = function
-  | Empty -> acc 
+let rec cardinal_aux acc = function
+  | Empty -> acc
   | Leaf _ -> acc + 1
-  | Node {l;r} -> 
-    cardinal_aux  (cardinal_aux (acc + 1)  r ) l 
+  | Node { l; r } -> cardinal_aux (cardinal_aux (acc + 1) r) l
 
-let cardinal s = cardinal_aux 0 s 
+let cardinal s = cardinal_aux 0 s
 
 let rec elements_aux accu = function
   | Empty -> accu
   | Leaf v -> v :: accu
-  | Node{l; v; r} -> elements_aux (v :: elements_aux accu r) l
+  | Node { l; v; r } -> elements_aux (v :: elements_aux accu r) l
 
-let elements s =
-  elements_aux [] s
+let elements s = elements_aux [] s
 
 let choose = min_exn
 
-let rec iter  x f = match x with
+let rec iter x f =
+  match x with
   | Empty -> ()
-  | Leaf v -> f v 
-  | Node {l; v; r} -> iter l f ; f v; iter r f 
+  | Leaf v -> f v
+  | Node { l; v; r } ->
+      iter l f;
+      f v;
+      iter r f
 
 let rec fold s accu f =
   match s with
   | Empty -> accu
   | Leaf v -> f v accu
-  | Node{l; v; r} -> fold r (f v (fold l accu f)) f 
+  | Node { l; v; r } -> fold r (f v (fold l accu f)) f
 
-let rec for_all x p = match x with
+let rec for_all x p =
+  match x with
   | Empty -> true
-  | Leaf v -> p v 
-  | Node{l; v; r} -> p v && for_all l p && for_all r p 
+  | Leaf v -> p v
+  | Node { l; v; r } -> p v && for_all l p && for_all r p
 
-let rec exists x p = match x with
+let rec exists x p =
+  match x with
   | Empty -> false
-  | Leaf v -> p v 
-  | Node {l; v; r} -> p v || exists l p  || exists r p
-
-
-
-
+  | Leaf v -> p v
+  | Node { l; v; r } -> p v || exists l p || exists r p
 
 exception Height_invariant_broken
-exception Height_diff_borken 
 
-let rec check_height_and_diff = 
-  function 
+exception Height_diff_borken
+
+let rec check_height_and_diff = function
   | Empty -> 0
   | Leaf _ -> 1
-  | Node{l;r;h} -> 
-    let hl = check_height_and_diff l in
-    let hr = check_height_and_diff r in
-    if h <>  calc_height hl hr  then raise Height_invariant_broken
-    else  
-      let diff = (abs (hl - hr)) in  
-      if  diff > 2 then raise Height_diff_borken 
-      else h     
+  | Node { l; r; h } ->
+      let hl = check_height_and_diff l in
+      let hr = check_height_and_diff r in
+      if h <> calc_height hl hr then raise Height_invariant_broken
+      else
+        let diff = abs (hl - hr) in
+        if diff > 2 then raise Height_diff_borken else h
 
-let check tree = 
-  ignore (check_height_and_diff tree)
+let check tree = ignore (check_height_and_diff tree)
 
 (* Same as create, but performs one step of rebalancing if necessary.
     Invariants:
     1. {[ l < v < r ]}
-    2. l and r balanced 
+    2. l and r balanced
     3. | height l - height r | <= 3.
 
     Proof by indunction
 
-    Lemma: the height of  [bal l v r] will bounded by [max l r] + 1 
+    Lemma: the height of  [bal l v r] will bounded by [max l r] + 1
 *)
 let bal l v r : _ t =
   let hl = height l in
   let hr = height r in
-  if hl > hr + 2 then 
-    let {l=ll;r= lr; v = lv; h = _}  = ~!l in 
-    let hll = height ll in 
-    let hlr = height lr in 
+  if hl > hr + 2 then
+    let { l = ll; r = lr; v = lv; h = _ } = ~!l in
+    let hll = height ll in
+    let hlr = height lr in
     if hll >= hlr then
-      let hnode = calc_height hlr hr in       
-      unsafe_node lv 
-        ll  
-        (unsafe_node_maybe_leaf v lr  r hnode ) 
+      let hnode = calc_height hlr hr in
+      unsafe_node lv ll
+        (unsafe_node_maybe_leaf v lr r hnode)
         (calc_height hll hnode)
-    else       
-      let {l = lrl; r = lrr ; v = lrv}  = ~!lr in 
-      let hlrl = height lrl in 
-      let hlrr = height lrr in 
-      let hlnode = calc_height hll hlrl in 
-      let hrnode = calc_height hlrr hr in 
-      unsafe_node lrv 
-        (unsafe_node_maybe_leaf lv ll  lrl hlnode)  
-        (unsafe_node_maybe_leaf v lrr  r hrnode)
+    else
+      let { l = lrl; r = lrr; v = lrv } = ~!lr in
+      let hlrl = height lrl in
+      let hlrr = height lrr in
+      let hlnode = calc_height hll hlrl in
+      let hrnode = calc_height hlrr hr in
+      unsafe_node lrv
+        (unsafe_node_maybe_leaf lv ll lrl hlnode)
+        (unsafe_node_maybe_leaf v lrr r hrnode)
         (calc_height hlnode hrnode)
-  else if hr > hl + 2 then begin    
-    let {l=rl; r=rr; v = rv} = ~!r in 
-    let hrr = height rr in 
-    let hrl = height rl in 
+  else if hr > hl + 2 then
+    let { l = rl; r = rr; v = rv } = ~!r in
+    let hrr = height rr in
+    let hrl = height rl in
     if hrr >= hrl then
       let hnode = calc_height hl hrl in
-      unsafe_node rv 
-        (unsafe_node_maybe_leaf v l  rl hnode) 
-        rr 
-        (calc_height hnode hrr )
-    else begin
-      let {l = rll ; r = rlr ; v = rlv}  = ~!rl in 
-      let hrll = height rll in 
-      let hrlr = height rlr in 
-      let hlnode = (calc_height hl hrll) in
-      let hrnode = (calc_height hrlr hrr) in
-      unsafe_node rlv 
-        (unsafe_node_maybe_leaf v l rll hlnode)  
+      unsafe_node rv
+        (unsafe_node_maybe_leaf v l rl hnode)
+        rr (calc_height hnode hrr)
+    else
+      let { l = rll; r = rlr; v = rlv } = ~!rl in
+      let hrll = height rll in
+      let hrlr = height rlr in
+      let hlnode = calc_height hl hrll in
+      let hrnode = calc_height hrlr hrr in
+      unsafe_node rlv
+        (unsafe_node_maybe_leaf v l rll hlnode)
         (unsafe_node_maybe_leaf rv rlr rr hrnode)
         (calc_height hlnode hrnode)
-    end
-  end else
-    unsafe_node_maybe_leaf v l  r (calc_height hl hr)
-
+  else unsafe_node_maybe_leaf v l r (calc_height hl hr)
 
 let rec remove_min_elt = function
-    Empty -> invalid_arg "Set.remove_min_elt"
-  | Leaf _ -> empty  
-  | Node{l=Empty; r} -> r
-  | Node{l; v; r} -> bal (remove_min_elt l) v r
+  | Empty -> invalid_arg "Set.remove_min_elt"
+  | Leaf _ -> empty
+  | Node { l = Empty; r } -> r
+  | Node { l; v; r } -> bal (remove_min_elt l) v r
 
-
-
-(* 
-   All elements of l must precede the elements of r.
-       Assume | height l - height r | <= 2.
-   weak form of [concat] 
+(*
+    All elements of l must precede the elements of r.
+        Assume | height l - height r | <= 2.
+    weak form of [concat]
 *)
 
 let internal_merge l r =
   match (l, r) with
-  | (Empty, t) -> t
-  | (t, Empty) -> t
-  | (_, _) -> bal l (min_exn r) (remove_min_elt r)
-
+  | Empty, t -> t
+  | t, Empty -> t
+  | _, _ -> bal l (min_exn r) (remove_min_elt r)
 
 (* Beware: those two functions assume that the added v is *strictly*
     smaller (or bigger) than all the present elements in the tree; it
@@ -4117,14 +3965,12 @@ let internal_merge l r =
 let rec add_min v = function
   | Empty -> singleton v
   | Leaf x -> unsafe_two_elements v x
-  | Node n ->
-    bal (add_min v n.l) n.v n.r
+  | Node n -> bal (add_min v n.l) n.v n.r
 
 let rec add_max v = function
   | Empty -> singleton v
   | Leaf x -> unsafe_two_elements x v
-  | Node n  ->
-    bal n.l n.v (add_max v n.r)
+  | Node n -> bal n.l n.v (add_max v n.r)
 
 (** 
     Invariants:
@@ -4137,28 +3983,23 @@ let rec add_max v = function
 *)
 let rec internal_join l v r =
   match (l, r) with
-    (Empty, _) -> add_min v r
-  | (_, Empty) -> add_max v l
-  | Leaf lv, Node {h = rh} ->
-    if rh > 3 then 
-      add_min lv (add_min v r ) (* FIXME: could inlined *)
-    else unsafe_node  v l r (rh + 1)
-  | Leaf _, Leaf _ -> 
-    unsafe_node  v l r 2
-  | Node {h = lh}, Leaf rv ->
-    if lh > 3 then       
-      add_max rv (add_max v l)
-    else unsafe_node  v l r (lh + 1)    
-  | (Node{l=ll;v= lv;r= lr;h= lh}, Node {l=rl; v=rv; r=rr; h=rh}) ->
-    if lh > rh + 2 then 
-      (* proof by induction:
-         now [height of ll] is [lh - 1] 
-      *)
-      bal ll lv (internal_join lr v r) 
-    else
-    if rh > lh + 2 then bal (internal_join l v rl) rv rr 
-    else unsafe_node  v l r (calc_height lh rh)
-
+  | Empty, _ -> add_min v r
+  | _, Empty -> add_max v l
+  | Leaf lv, Node { h = rh } ->
+      if rh > 3 then add_min lv (add_min v r) (* FIXME: could inlined *)
+      else unsafe_node v l r (rh + 1)
+  | Leaf _, Leaf _ -> unsafe_node v l r 2
+  | Node { h = lh }, Leaf rv ->
+      if lh > 3 then add_max rv (add_max v l) else unsafe_node v l r (lh + 1)
+  | ( Node { l = ll; v = lv; r = lr; h = lh },
+      Node { l = rl; v = rv; r = rr; h = rh } ) ->
+      if lh > rh + 2 then
+        (* proof by induction:
+           now [height of ll] is [lh - 1]
+        *)
+        bal ll lv (internal_join lr v r)
+      else if rh > lh + 2 then bal (internal_join l v rl) rv rr
+      else unsafe_node v l r (calc_height lh rh)
 
 (*
     Required Invariants: 
@@ -4166,112 +4007,120 @@ let rec internal_join l v r =
 *)
 let internal_concat t1 t2 =
   match (t1, t2) with
-  | (Empty, t) -> t
-  | (t, Empty) -> t
-  | (_, _) -> internal_join t1 (min_exn t2) (remove_min_elt t2)
+  | Empty, t -> t
+  | t, Empty -> t
+  | _, _ -> internal_join t1 (min_exn t2) (remove_min_elt t2)
 
-
-let rec partition x p = match x with 
+let rec partition x p =
+  match x with
   | Empty -> (empty, empty)
-  | Leaf v -> let pv = p v in if pv then x, empty else empty, x
-  | Node{l; v; r} ->
-    (* call [p] in the expected left-to-right order *)
-    let (lt, lf) = partition l p in
-    let pv = p v in
-    let (rt, rf) = partition r p in
-    if pv
-    then (internal_join lt v rt, internal_concat lf rf)
-    else (internal_concat lt rt, internal_join lf v rf)
+  | Leaf v ->
+      let pv = p v in
+      if pv then (x, empty) else (empty, x)
+  | Node { l; v; r } ->
+      (* call [p] in the expected left-to-right order *)
+      let lt, lf = partition l p in
+      let pv = p v in
+      let rt, rf = partition r p in
+      if pv then (internal_join lt v rt, internal_concat lf rf)
+      else (internal_concat lt rt, internal_join lf v rf)
 
-
-let of_sorted_array l =   
-  let rec sub start n l  =
-    if n = 0 then empty else 
-    if n = 1 then 
+let of_sorted_array l =
+  let rec sub start n l =
+    if n = 0 then empty
+    else if n = 1 then
       let x0 = Array.unsafe_get l start in
       singleton x0
-    else if n = 2 then     
-      let x0 = Array.unsafe_get l start in 
-      let x1 = Array.unsafe_get l (start + 1) in 
-      unsafe_node x1 (singleton x0)  empty 2 else
-    if n = 3 then 
-      let x0 = Array.unsafe_get l start in 
+    else if n = 2 then
+      let x0 = Array.unsafe_get l start in
+      let x1 = Array.unsafe_get l (start + 1) in
+      unsafe_node x1 (singleton x0) empty 2
+    else if n = 3 then
+      let x0 = Array.unsafe_get l start in
       let x1 = Array.unsafe_get l (start + 1) in
       let x2 = Array.unsafe_get l (start + 2) in
-      unsafe_node x1 (singleton x0)  (singleton x2) 2
-    else 
+      unsafe_node x1 (singleton x0) (singleton x2) 2
+    else
       let nl = n / 2 in
       let left = sub start nl l in
-      let mid = start + nl in 
-      let v = Array.unsafe_get l mid in 
-      let right = sub (mid + 1) (n - nl - 1) l in        
-      unsafe_node v left  right (calc_height (height left) (height right))
+      let mid = start + nl in
+      let v = Array.unsafe_get l mid in
+      let right = sub (mid + 1) (n - nl - 1) l in
+      unsafe_node v left right (calc_height (height left) (height right))
   in
-  sub 0 (Array.length l) l 
+  sub 0 (Array.length l) l
 
 let is_ordered ~cmp tree =
   let rec is_ordered_min_max tree =
     match tree with
     | Empty -> `Empty
-    | Leaf v -> `V (v,v)
-    | Node {l;v;r} -> 
-      begin match is_ordered_min_max l with
-        | `No -> `No 
-        | `Empty ->
-          begin match is_ordered_min_max r with
-            | `No  -> `No
-            | `Empty -> `V (v,v)
-            | `V(l,r) ->
-              if cmp v l < 0 then
-                `V(v,r)
-              else
-                `No
-          end
-        | `V(min_v,max_v)->
-          begin match is_ordered_min_max r with
+    | Leaf v -> `V (v, v)
+    | Node { l; v; r } -> (
+        match is_ordered_min_max l with
+        | `No -> `No
+        | `Empty -> (
+            match is_ordered_min_max r with
             | `No -> `No
-            | `Empty -> 
-              if cmp max_v v < 0 then 
-                `V(min_v,v)
-              else
-                `No 
-            | `V(min_v_r, max_v_r) ->
-              if cmp max_v min_v_r < 0 then
-                `V(min_v,max_v_r)
-              else `No
-          end
-      end  in 
-  is_ordered_min_max tree <> `No 
+            | `Empty -> `V (v, v)
+            | `V (l, r) -> if cmp v l < 0 then `V (v, r) else `No)
+        | `V (min_v, max_v) -> (
+            match is_ordered_min_max r with
+            | `No -> `No
+            | `Empty -> if cmp max_v v < 0 then `V (min_v, v) else `No
+            | `V (min_v_r, max_v_r) ->
+                if cmp max_v min_v_r < 0 then `V (min_v, max_v_r) else `No))
+  in
+  is_ordered_min_max tree <> `No
 
-let invariant ~cmp t = 
-  check t ; 
-  is_ordered ~cmp t 
-
+let invariant ~cmp t =
+  check t;
+  is_ordered ~cmp t
 
 module type S = sig
-  type elt 
+  type elt
+
   type t
-  val empty: t
-  val is_empty: t -> bool
-  val iter: t ->  (elt -> unit) -> unit
-  val fold: t -> 'a -> (elt -> 'a -> 'a) -> 'a
-  val for_all: t -> (elt -> bool) ->  bool
-  val exists: t -> (elt -> bool) -> bool
-  val singleton: elt -> t
-  val cardinal: t -> int
-  val elements: t -> elt list
-  val choose: t -> elt
-  val mem: t -> elt -> bool
-  val add: t -> elt -> t
-  val remove: t -> elt -> t
-  val union: t -> t -> t
-  val inter: t -> t -> t
-  val diff: t -> t -> t
-  val of_list: elt list -> t
-  val of_sorted_array : elt array -> t 
-  val invariant : t -> bool 
-  val print : Format.formatter -> t -> unit 
-end 
+
+  val empty : t
+
+  val is_empty : t -> bool
+
+  val iter : t -> (elt -> unit) -> unit
+
+  val fold : t -> 'a -> (elt -> 'a -> 'a) -> 'a
+
+  val for_all : t -> (elt -> bool) -> bool
+
+  val exists : t -> (elt -> bool) -> bool
+
+  val singleton : elt -> t
+
+  val cardinal : t -> int
+
+  val elements : t -> elt list
+
+  val choose : t -> elt
+
+  val mem : t -> elt -> bool
+
+  val add : t -> elt -> t
+
+  val remove : t -> elt -> t
+
+  val union : t -> t -> t
+
+  val inter : t -> t -> t
+
+  val diff : t -> t -> t
+
+  val of_list : elt list -> t
+
+  val of_sorted_array : elt array -> t
+
+  val invariant : t -> bool
+
+  val print : Format.formatter -> t -> unit
+end
 
 end
 module Set_string : sig 
@@ -4300,10 +4149,8 @@ module Set_string : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
 include Set_gen.S with type elt = string
+
 end = struct
 #1 "set_string.ml"
 # 1 "ext/set.cppo.ml"
@@ -4566,56 +4413,38 @@ module Bsb_file_groups : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type public = Export_none | Export_all | Export_set of Set_string.t
 
-type public = 
-  | Export_none
-  | Export_all 
-  | Export_set of Set_string.t 
+type build_generator = {
+  input : string list;
+  output : string list;
+  command : string;
+}
 
+type file_group = {
+  dir : string;
+  sources : Bsb_db.map;
+  resources : string list;
+  public : public;
+  is_dev : bool;
+  (* false means not in dev mode *)
+  generators : build_generator list;
+      (* output of [generators] should be added to [sources],
+         if it is [.ml,.mli,.re,.rei]
+      *)
+}
 
-type build_generator = 
-  { input : string list ;
-    output : string list;
-    command : string}  
+type file_groups = file_group list
 
+type t = private { files : file_groups; globbed_dirs : string list }
 
-type  file_group = 
-  { dir : string ;
-    sources : Bsb_db.map; 
-    resources : string list ;
-    public : public ;
-    is_dev : bool ; (* false means not in dev mode *)
-    generators : build_generator list ; 
-    (* output of [generators] should be added to [sources],
-       if it is [.ml,.mli,.re,.rei]
-    *)
-  }     
+val empty : t
 
-type file_groups = file_group list 
+val merge : t -> t -> t
 
-type t 
-  = private
-  { files :  file_groups; 
-    globbed_dirs : string list ; 
-  }
+val cons : file_group:file_group -> ?globbed_dir:string -> t -> t
 
-val empty : t    
-
-val merge : 
-  t -> 
-  t -> 
-  t   
-
-val cons :   
-  file_group:file_group ->
-  ?globbed_dir:string ->
-  t ->
-  t
-
-val is_empty :   
-  file_group ->
-  bool
-
+val is_empty : file_group -> bool
 
 end = struct
 #1 "bsb_file_groups.ml"
@@ -4643,78 +4472,62 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type public = Export_none | Export_all | Export_set of Set_string.t
 
-type public = 
-  | Export_none
-  | Export_all 
-  | Export_set of Set_string.t 
+type build_generator = {
+  input : string list;
+  output : string list;
+  command : string;
+}
 
+type file_group = {
+  dir : string;
+  sources : Bsb_db.map;
+  resources : string list;
+  public : public;
+  is_dev : bool;
+  generators : build_generator list;
+      (* output of [generators] should be added to [sources],
+         if it is [.ml,.mli,.re,.rei]
+      *)
+}
 
-type build_generator = 
-  { input : string list ;
-    output : string list;
-    command : string}  
+type file_groups = file_group list
 
+type t = { files : file_groups; globbed_dirs : string list }
 
-type  file_group = 
-  { dir : string ;
-    sources : Bsb_db.map; 
-    resources : string list ;
-    public : public ;
-    is_dev : bool  ;
-    generators : build_generator list ; 
-    (* output of [generators] should be added to [sources],
-       if it is [.ml,.mli,.re,.rei]
-    *)
-  }     
+let empty : t = { files = []; globbed_dirs = [] }
 
-type file_groups = file_group list 
-
-type t =   
-  { files :  file_groups; 
-    globbed_dirs : string list ; 
-  }
-
-
-
-let empty : t = { files = []; globbed_dirs = [];  }
-
-
-
-let merge (u : t)  (v : t)  = 
-  if u == empty then v 
-  else if v == empty then u 
-  else 
+let merge (u : t) (v : t) =
+  if u == empty then v
+  else if v == empty then u
+  else
     {
-      files = Ext_list.append u.files  v.files ; 
-      globbed_dirs = Ext_list.append u.globbed_dirs  v.globbed_dirs ; 
-    }  
+      files = Ext_list.append u.files v.files;
+      globbed_dirs = Ext_list.append u.globbed_dirs v.globbed_dirs;
+    }
 
-let cons ~file_group ?globbed_dir (v : t) : t =  
+let cons ~file_group ?globbed_dir (v : t) : t =
   {
     files = file_group :: v.files;
-    globbed_dirs = 
-      match globbed_dir with 
+    globbed_dirs =
+      (match globbed_dir with
       | None -> v.globbed_dirs
-      | Some f -> f :: v.globbed_dirs
+      | Some f -> f :: v.globbed_dirs);
   }
-  
+
 (** when [is_empty file_group]
     we don't need issue [-I] [-S] in [.merlin] file
-*)  
-let is_empty (x : file_group) = 
-  Map_string.is_empty x.sources &&
-  x.resources = [] &&
-  x.generators = []    
+*)
+let is_empty (x : file_group) =
+  Map_string.is_empty x.sources && x.resources = [] && x.generators = []
+
 end
 module Ext_module_system
 = struct
 #1 "ext_module_system.ml"
+type t = NodeJS | Es6 | Es6_global
 
-
-
-type t =
-  | NodeJS | Es6 | Es6_global
 end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"
@@ -4742,40 +4555,22 @@ module Ext_pervasives : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
 (** Extension to standard library [Pervavives] module, safe to open 
 *)
 
-external reraise: exn -> 'a = "%reraise"
+external reraise : exn -> 'a = "%reraise"
 
-val finally : 
-  'a ->
-  clean:('a -> unit) -> 
-  ('a -> 'b) -> 'b
+val finally : 'a -> clean:('a -> unit) -> ('a -> 'b) -> 'b
 
 (* val try_it : (unit -> 'a) ->  unit  *)
 
 val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
 
+val max_int : int -> int -> int
 
-val max_int : int -> int -> int 
+val min_int : int -> int -> int
 
-val min_int : int -> int -> int 
-val max_int_option : 
-  int option -> 
-  int option -> 
-  int option 
-
-
-
-
-
+val max_int_option : int option -> int option -> int option
 
 (* external id : 'a -> 'a = "%identity" *)
 
@@ -4788,10 +4583,8 @@ val max_int_option :
 
 val nat_of_string_exn : string -> int
 
-val parse_nat_of_string:
-  string -> 
-  int ref -> 
-  int 
+val parse_nat_of_string : string -> int ref -> int
+
 end = struct
 #1 "ext_pervasives.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -4818,113 +4611,94 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+external reraise : exn -> 'a = "%reraise"
 
-
-
-
-
-external reraise: exn -> 'a = "%reraise"
-
-let finally v ~clean:action f   = 
+let finally v ~clean:action f =
   match f v with
-  | exception e -> 
-    action v ;
-    reraise e 
-  | e ->  action v ; e 
+  | exception e ->
+      action v;
+      reraise e
+  | e ->
+      action v;
+      e
 
-(* let try_it f  =   
+(* let try_it f  =
    try ignore (f ()) with _ -> () *)
 
-let with_file_as_chan filename f = 
-  finally (open_out_bin filename) ~clean:close_out f 
+let with_file_as_chan filename f =
+  finally (open_out_bin filename) ~clean:close_out f
 
+let max_int (x : int) y = if x >= y then x else y
 
-let max_int (x : int) y =
-    if x >= y then x else y
+let min_int (x : int) y = if x < y then x else y
 
-let min_int (x : int) y = 
-  if x < y then x else y 
-  
-let max_int_option (x : int option) y = 
-  match x, y with 
-  | None, _ -> y 
-  | Some _, None ->  x 
-  | Some x0 , Some y0 -> 
-      if x0 >= y0 then x else y
-
+let max_int_option (x : int option) y =
+  match (x, y) with
+  | None, _ -> y
+  | Some _, None -> x
+  | Some x0, Some y0 -> if x0 >= y0 then x else y
 
 (* external id : 'a -> 'a = "%identity" *)
 
-(* 
-let hash_variant s =
-  let accu = ref 0 in
-  for i = 0 to String.length s - 1 do
-    accu := 223 * !accu + Char.code s.[i]
-  done;
-  (* reduce to 31 bits *)
-  accu := !accu land (1 lsl 31 - 1);
-  (* make it signed for 64 bits architectures *)
-  if !accu > 0x3FFFFFFF then !accu - (1 lsl 31) else !accu *)
+(*
+   let hash_variant s =
+     let accu = ref 0 in
+     for i = 0 to String.length s - 1 do
+       accu := 223 * !accu + Char.code s.[i]
+     done;
+     (* reduce to 31 bits *)
+     accu := !accu land (1 lsl 31 - 1);
+     (* make it signed for 64 bits architectures *)
+     if !accu > 0x3FFFFFFF then !accu - (1 lsl 31) else !accu *)
 
-(* let todo loc = 
+(* let todo loc =
    failwith (loc ^ " Not supported yet")
 *)
 
+let rec int_of_string_aux s acc off len =
+  if off >= len then acc
+  else
+    let d = Char.code (String.unsafe_get s off) - 48 in
+    if d >= 0 && d <= 9 then int_of_string_aux s ((10 * acc) + d) (off + 1) len
+    else -1
+(* error *)
 
-
-let rec int_of_string_aux s acc off len =  
-  if off >= len then acc 
-  else 
-    let d = (Char.code (String.unsafe_get s off) - 48) in 
-    if d >=0 && d <= 9 then 
-      int_of_string_aux s (10*acc + d) (off + 1) len
-    else -1 (* error *)
-
-let nat_of_string_exn (s : string) = 
-  let acc = int_of_string_aux s 0 0 (String.length s) in 
-  if acc < 0 then invalid_arg s 
-  else acc 
-
+let nat_of_string_exn (s : string) =
+  let acc = int_of_string_aux s 0 0 (String.length s) in
+  if acc < 0 then invalid_arg s else acc
 
 (** return index *)
-let parse_nat_of_string (s : string) (cursor : int ref) =  
-  let current = !cursor in 
+let parse_nat_of_string (s : string) (cursor : int ref) =
+  let current = !cursor in
   assert (current >= 0);
-  let acc = ref 0 in 
-  let s_len = String.length s in 
-  let todo = ref true in 
-  let cur = ref current in 
-  while !todo && !cursor < s_len do 
-    let d = Char.code (String.unsafe_get s !cur) - 48 in 
-    if d >=0 && d <= 9 then begin 
-      acc := 10* !acc + d;
-      incr cur
-    end else todo := false
-  done ;
+  let acc = ref 0 in
+  let s_len = String.length s in
+  let todo = ref true in
+  let cur = ref current in
+  while !todo && !cursor < s_len do
+    let d = Char.code (String.unsafe_get s !cur) - 48 in
+    if d >= 0 && d <= 9 then (
+      acc := (10 * !acc) + d;
+      incr cur)
+    else todo := false
+  done;
   cursor := !cur;
-  !acc 
+  !acc
+
 end
 module Ext_fmt
 = struct
 #1 "ext_fmt.ml"
+let with_file_as_pp filename f =
+  Ext_pervasives.finally (open_out_bin filename) ~clean:close_out (fun chan ->
+      let fmt = Format.formatter_of_out_channel chan in
+      let v = f fmt in
+      Format.pp_print_flush fmt ();
+      v)
 
-
-let with_file_as_pp filename f = 
-  Ext_pervasives.finally (open_out_bin filename) ~clean:close_out
-    (fun chan -> 
-       let fmt = Format.formatter_of_out_channel chan in
-       let v = f  fmt in
-       Format.pp_print_flush fmt ();
-       v
-    ) 
-
-
-
-let failwithf ~loc fmt = Format.ksprintf (fun s -> failwith (loc ^ s))
-    fmt
+let failwithf ~loc fmt = Format.ksprintf (fun s -> failwith (loc ^ s)) fmt
 
 let invalid_argf fmt = Format.ksprintf invalid_arg fmt
-
 
 end
 module Ext_sys : sig 
@@ -4953,13 +4727,9 @@ module Ext_sys : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
 val is_directory_no_exn : string -> bool
 
-
-val is_windows_or_cygwin : bool 
-
+val is_windows_or_cygwin : bool
 
 end = struct
 #1 "ext_sys.ml"
@@ -5025,23 +4795,26 @@ module Literals
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
 let js_array_ctor = "Array"
+
 let js_type_number = "number"
+
 let js_type_string = "string"
+
 let js_type_object = "object"
+
 let js_type_boolean = "boolean"
+
 let js_undefined = "undefined"
+
 let js_prop_length = "length"
 
 let prim = "prim"
+
 let param = "param"
+
 let partial_arg = "partial_arg"
+
 let tmp = "tmp"
 
 let create = "create" (* {!Caml_exceptions.create}*)
@@ -5053,75 +4826,99 @@ let stdlib = "stdlib"
 let imul = "imul" (* signed int32 mul *)
 
 let setter_suffix = "#="
+
 let setter_suffix_len = String.length setter_suffix
 
 let debugger = "debugger"
 
 let fn_run = "fn_run"
+
 let method_run = "method_run"
 
 let fn_method = "fn_method"
+
 let fn_mk = "fn_mk"
 (*let js_fn_runmethod = "js_fn_runmethod"*)
 
-
-
-
-
 (** nodejs *)
 let node_modules = "node_modules"
+
 let node_modules_length = String.length "node_modules"
+
 let package_json = "package.json"
+
 let bsconfig_json = "bsconfig.json"
+
 let build_ninja = "build.ninja"
 
 (* Name of the library file created for each external dependency. *)
 let library_file = "lib"
 
 let suffix_a = ".a"
+
 let suffix_cmj = ".cmj"
+
 let suffix_cmo = ".cmo"
+
 let suffix_cma = ".cma"
+
 let suffix_cmi = ".cmi"
+
 let suffix_cmx = ".cmx"
+
 let suffix_cmxa = ".cmxa"
+
 let suffix_mll = ".mll"
+
 let suffix_ml = ".ml"
+
 let suffix_mli = ".mli"
+
 let suffix_re = ".re"
+
 let suffix_rei = ".rei"
+
 let suffix_res = ".res"
+
 let suffix_resi = ".resi"
+
 let suffix_mlmap = ".mlmap"
 
 let suffix_cmt = ".cmt"
+
 let suffix_cmti = ".cmti"
+
 let suffix_ast = ".ast"
+
 let suffix_iast = ".iast"
+
 let suffix_d = ".d"
+
 let suffix_js = ".js"
+
 let suffix_bs_js = ".bs.js"
+
 let suffix_mjs = ".mjs"
+
 let suffix_cjs = ".cjs"
+
 let suffix_gen_js = ".gen.js"
+
 let suffix_gen_tsx = ".gen.tsx"
 
 let commonjs = "commonjs"
 
 let es6 = "es6"
+
 let es6_global = "es6-global"
 
 let unused_attribute = "Unused attribute "
 
-
-
-
-
-
-
 (** Used when produce node compatible paths *)
 let node_sep = "/"
+
 let node_parent = ".."
+
 let node_current = "."
 
 let gentype_import = "genType.import"
@@ -5134,20 +4931,27 @@ let sourcedirs_meta = ".sourcedirs.json"
    espeically, it should not contain '-'
 *)
 let ns_sep_char = '-'
+
 let ns_sep = "-"
+
 let exception_id = "RE_EXN_ID"
 
 let polyvar_hash = "NAME"
+
 let polyvar_value = "VAL"
 
 let cons = "::"
+
 let hd = "hd"
+
 let tl = "tl"
 
 let lazy_done = "LAZY_DONE"
+
 let lazy_val = "VAL"
 
 let pure = "@__PURE__"
+
 end
 module Ext_path : sig 
 #1 "ext_path.mli"
@@ -5175,9 +4979,9 @@ module Ext_path : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type t 
+type t
 
-
+val simple_convert_node_path_to_os_path : string -> string
 (** Js_output is node style, which means 
     separator is only '/'
 
@@ -5185,21 +4989,13 @@ type t
     [node_relative_path] will discard its prefix and 
     just treat it as a library instead
 *)
-val simple_convert_node_path_to_os_path : string -> string
 
-
-
+val combine : string -> string -> string
 (**
    [combine path1 path2]
    1. add some simplifications when concatenating
    2. when [path2] is absolute, return [path2]
-*)  
-val combine : 
-  string -> 
-  string -> 
-  string    
-
-
+*)
 
 (**
    {[
@@ -5208,16 +5004,9 @@ val combine :
    ]}
 *)
 
+val node_rebase_file : from:string -> to_:string -> string -> string
 
-
-
-
-val node_rebase_file :
-  from:string -> 
-  to_:string ->
-  string -> 
-  string 
-
+val rel_normalized_absolute_path : from:string -> string -> string
 (** 
    TODO: could be highly optimized
    if [from] and [to] resolve to the same path, a zero-length string is returned 
@@ -5230,24 +5019,18 @@ val node_rebase_file :
        (Filename.basename a)
    ]}
 *)
-val rel_normalized_absolute_path : from:string -> string -> string 
 
+val normalize_absolute_path : string -> string
 
-val normalize_absolute_path : string -> string 
+val absolute_cwd_path : string -> string
 
-
-val absolute_cwd_path : string -> string 
-
+val concat : string -> string -> string
 (** [concat dirname filename]
     The same as {!Filename.concat} except a tiny optimization 
     for current directory simplification
 *)
-val concat : string -> string -> string 
 
-val check_suffix_case : 
-  string -> string -> bool
-
-
+val check_suffix_case : string -> string -> bool
 
 (* It is lazy so that it will not hit errors when in script mode *)
 val package_dir : string Lazy.t
@@ -5279,28 +5062,23 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (* [@@@warning "-37"] *)
-type t =  
-  (* | File of string  *)
-  | Dir of string  
-[@@unboxed]
+type t = (* | File of string  *)
+  | Dir of string [@@unboxed]
 
 let simple_convert_node_path_to_os_path =
-  if Sys.unix then fun x -> x 
-  else if Sys.win32 || Sys.cygwin then 
-    Ext_string.replace_slash_backward 
+  if Sys.unix then fun x -> x
+  else if Sys.win32 || Sys.cygwin then Ext_string.replace_slash_backward
   else failwith ("Unknown OS : " ^ Sys.os_type)
 
+let cwd = lazy (Sys.getcwd ())
 
-let cwd = lazy (Sys.getcwd())
-
-let split_by_sep_per_os : string -> string list = 
-  if Ext_sys.is_windows_or_cygwin then 
-    fun x -> 
-      (* on Windows, we can still accept -bs-package-output lib/js *)
-      Ext_string.split_by 
-        (fun x -> match x with |'/' |'\\' -> true | _ -> false) x
-  else 
-    fun x -> Ext_string.split x '/'
+let split_by_sep_per_os : string -> string list =
+  if Ext_sys.is_windows_or_cygwin then fun x ->
+    (* on Windows, we can still accept -bs-package-output lib/js *)
+    Ext_string.split_by
+      (fun x -> match x with '/' | '\\' -> true | _ -> false)
+      x
+  else fun x -> Ext_string.split x '/'
 
 (** example
     {[
@@ -5322,48 +5100,37 @@ let split_by_sep_per_os : string -> string list =
       /c/d
     ]}
 *)
-let node_relative_path 
-    ~from:(file_or_dir_2 : t )
-    (file_or_dir_1 : t) 
-  = 
-  let relevant_dir1 = 
-    match file_or_dir_1 with 
-    | Dir x -> x 
-    (* | File file1 ->  Filename.dirname file1 *) in
-  let relevant_dir2 = 
-    match file_or_dir_2 with 
-    | Dir x -> x 
-    (* | File file2 -> Filename.dirname file2  *) in
+let node_relative_path ~from:(file_or_dir_2 : t) (file_or_dir_1 : t) =
+  let relevant_dir1 =
+    match file_or_dir_1 with Dir x -> x
+    (* | File file1 ->  Filename.dirname file1 *)
+  in
+  let relevant_dir2 =
+    match file_or_dir_2 with Dir x -> x
+    (* | File file2 -> Filename.dirname file2  *)
+  in
   let dir1 = split_by_sep_per_os relevant_dir1 in
   let dir2 = split_by_sep_per_os relevant_dir2 in
-  let rec go (dir1 : string list) (dir2 : string list) = 
-    match dir1, dir2 with 
-    | "." :: xs, ys -> go xs ys 
-    | xs , "." :: ys -> go xs ys 
-    | x::xs , y :: ys when x = y
-      -> go xs ys 
-    | _, _ -> 
-      Ext_list.map_append  dir2  dir1  (fun _ ->  Literals.node_parent)
+  let rec go (dir1 : string list) (dir2 : string list) =
+    match (dir1, dir2) with
+    | "." :: xs, ys -> go xs ys
+    | xs, "." :: ys -> go xs ys
+    | x :: xs, y :: ys when x = y -> go xs ys
+    | _, _ -> Ext_list.map_append dir2 dir1 (fun _ -> Literals.node_parent)
   in
   match go dir1 dir2 with
-  | (x :: _ ) as ys when x = Literals.node_parent -> 
-    String.concat Literals.node_sep ys
-  | ys -> 
-    String.concat Literals.node_sep  
-    @@ Literals.node_current :: ys
+  | x :: _ as ys when x = Literals.node_parent ->
+      String.concat Literals.node_sep ys
+  | ys -> String.concat Literals.node_sep @@ (Literals.node_current :: ys)
 
+let node_concat ~dir base = dir ^ Literals.node_sep ^ base
 
-let node_concat ~dir base =
-  dir ^ Literals.node_sep ^ base 
-
-let node_rebase_file ~from ~to_ file = 
-
+let node_rebase_file ~from ~to_ file =
   node_concat
-    ~dir:(
-      if from = to_ then Literals.node_current
-      else node_relative_path ~from:(Dir from) (Dir to_)) 
+    ~dir:
+      (if from = to_ then Literals.node_current
+      else node_relative_path ~from:(Dir from) (Dir to_))
     file
-
 
 (***
    {[
@@ -5371,32 +5138,18 @@ let node_rebase_file ~from ~to_ file =
      "./"
    ]}
 *)
-let combine path1 path2 =  
+let combine path1 path2 =
   if Filename.is_relative path2 then
-    if Ext_string.is_empty path2 then 
-      path1
-    else 
-    if path1 = Filename.current_dir_name then 
-      path2
-    else
-    if path2 = Filename.current_dir_name 
-    then path1
-    else
-      Filename.concat path1 path2 
-  else
-    path2
+    if Ext_string.is_empty path2 then path1
+    else if path1 = Filename.current_dir_name then path2
+    else if path2 = Filename.current_dir_name then path1
+    else Filename.concat path1 path2
+  else path2
 
-
-
-
-
-
-
-
-let (//) x y =
+let ( // ) x y =
   if x = Filename.current_dir_name then y
-  else if y = Filename.current_dir_name then x 
-  else Filename.concat x y 
+  else if y = Filename.current_dir_name then x
+  else Filename.concat x y
 
 (**
    {[
@@ -5423,22 +5176,17 @@ let (//) x y =
 let split_aux p =
   let rec go p acc =
     let dir = Filename.dirname p in
-    if dir = p then dir, acc
+    if dir = p then (dir, acc)
     else
-      let new_path = Filename.basename p in 
-      if Ext_string.equal new_path Filename.dir_sep then 
-        go dir acc 
+      let new_path = Filename.basename p in
+      if Ext_string.equal new_path Filename.dir_sep then go dir acc
         (* We could do more path simplification here
            leave to [rel_normalized_absolute_path]
         *)
-      else 
-        go dir (new_path :: acc)
+      else go dir (new_path :: acc)
+  in
 
-  in go p []
-
-
-
-
+  go p []
 
 (** 
    TODO: optimization
@@ -5448,39 +5196,39 @@ let split_aux p =
    [amdjs-global] format and tailored for `rollup`
 *)
 let rel_normalized_absolute_path ~from to_ =
-  let root1, paths1 = split_aux from in 
-  let root2, paths2 = split_aux to_ in 
+  let root1, paths1 = split_aux from in
+  let root2, paths2 = split_aux to_ in
   if root1 <> root2 then root2
   else
     let rec go xss yss =
-      match xss, yss with 
-      | x::xs, y::ys -> 
-        if Ext_string.equal x  y then go xs ys 
-        else if x = Filename.current_dir_name then go xs yss 
-        else if y = Filename.current_dir_name then go xss ys
-        else 
-          let start = 
-            Ext_list.fold_left xs Ext_string.parent_dir_lit (fun acc  _  -> acc // Ext_string.parent_dir_lit )
-          in 
-          Ext_list.fold_left yss start (fun acc v -> acc // v)
+      match (xss, yss) with
+      | x :: xs, y :: ys ->
+          if Ext_string.equal x y then go xs ys
+          else if x = Filename.current_dir_name then go xs yss
+          else if y = Filename.current_dir_name then go xss ys
+          else
+            let start =
+              Ext_list.fold_left xs Ext_string.parent_dir_lit (fun acc _ ->
+                  acc // Ext_string.parent_dir_lit)
+            in
+            Ext_list.fold_left yss start (fun acc v -> acc // v)
       | [], [] -> Ext_string.empty
-      | [], y::ys -> Ext_list.fold_left ys y (fun acc x -> acc // x) 
-      | _::xs, [] ->
-        Ext_list.fold_left xs Ext_string.parent_dir_lit (fun acc _ -> acc // Ext_string.parent_dir_lit )
+      | [], y :: ys -> Ext_list.fold_left ys y (fun acc x -> acc // x)
+      | _ :: xs, [] ->
+          Ext_list.fold_left xs Ext_string.parent_dir_lit (fun acc _ ->
+              acc // Ext_string.parent_dir_lit)
     in
-    let v =  go paths1 paths2  in 
+    let v = go paths1 paths2 in
 
-    if Ext_string.is_empty v then  Literals.node_current
-    else 
-    if
-      v = "."
-      || v = ".."
-      || Ext_string.starts_with v "./"  
-      || Ext_string.starts_with v "../" 
-    then v 
-    else "./" ^ v 
+    if Ext_string.is_empty v then Literals.node_current
+    else if
+      v = "." || v = ".."
+      || Ext_string.starts_with v "./"
+      || Ext_string.starts_with v "../"
+    then v
+    else "./" ^ v
 
-(*TODO: could be hgighly optimized later 
+(*TODO: could be hgighly optimized later
   {[
     normalize_absolute_path "/gsho/./..";;
 
@@ -5499,57 +5247,48 @@ let rel_normalized_absolute_path ~from to_ =
     normalize_absolute_path "/a";;
   ]}
 *)
+
 (** See tests in {!Ounit_path_tests} *)
 let normalize_absolute_path x =
-  let drop_if_exist xs =
-    match xs with 
-    | [] -> []
-    | _ :: xs -> xs in 
+  let drop_if_exist xs = match xs with [] -> [] | _ :: xs -> xs in
   let rec normalize_list acc paths =
-    match paths with 
-    | [] -> acc 
-    | x :: xs -> 
-      if Ext_string.equal x Ext_string.current_dir_lit then 
-        normalize_list acc xs 
-      else if Ext_string.equal x Ext_string.parent_dir_lit then 
-        normalize_list (drop_if_exist acc ) xs 
-      else   
-        normalize_list (x::acc) xs 
+    match paths with
+    | [] -> acc
+    | x :: xs ->
+        if Ext_string.equal x Ext_string.current_dir_lit then
+          normalize_list acc xs
+        else if Ext_string.equal x Ext_string.parent_dir_lit then
+          normalize_list (drop_if_exist acc) xs
+        else normalize_list (x :: acc) xs
   in
   let root, paths = split_aux x in
-  let rev_paths =  normalize_list [] paths in 
+  let rev_paths = normalize_list [] paths in
   let rec go acc rev_paths =
-    match rev_paths with 
-    | [] -> Filename.concat root acc 
-    | last::rest ->  go (Filename.concat last acc ) rest  in 
-  match rev_paths with 
-  | [] -> root 
-  | last :: rest -> go last rest 
+    match rev_paths with
+    | [] -> Filename.concat root acc
+    | last :: rest -> go (Filename.concat last acc) rest
+  in
+  match rev_paths with [] -> root | last :: rest -> go last rest
 
-
-
-
-let absolute_path cwd s = 
-  let process s = 
-    let s = 
-      if Filename.is_relative s then
-        Lazy.force cwd // s 
-      else s in
+let absolute_path cwd s =
+  let process s =
+    let s = if Filename.is_relative s then Lazy.force cwd // s else s in
     (* Now simplify . and .. components *)
     let rec aux s =
-      let base,dir  = Filename.basename s, Filename.dirname s  in
+      let base, dir = (Filename.basename s, Filename.dirname s) in
       if dir = s then dir
       else if base = Filename.current_dir_name then aux dir
       else if base = Filename.parent_dir_name then Filename.dirname (aux dir)
       else aux dir // base
-    in aux s  in 
-  process s 
+    in
+    aux s
+  in
+  process s
 
-let absolute_cwd_path s = 
-  absolute_path cwd  s 
+let absolute_cwd_path s = absolute_path cwd s
 
-(* let absolute cwd s =   
-   match s with 
+(* let absolute cwd s =
+   match s with
    | File x -> File (absolute_path cwd x )
    | Dir x -> Dir (absolute_path cwd x) *)
 
@@ -5558,25 +5297,18 @@ let concat dirname filename =
   else if dirname = Filename.current_dir_name then filename
   else Filename.concat dirname filename
 
-
-let check_suffix_case =
-  Ext_string.ends_with
+let check_suffix_case = Ext_string.ends_with
 
 (* Input must be absolute directory *)
-let rec find_root_filename ~cwd filename   = 
-  if Sys.file_exists ( Filename.concat cwd  filename) then cwd
-  else 
-    let cwd' = Filename.dirname cwd in 
-    if String.length cwd' < String.length cwd then  
-      find_root_filename ~cwd:cwd'  filename 
-    else 
-      Ext_fmt.failwithf 
-        ~loc:__LOC__
-        "%s not found from %s" filename cwd
+let rec find_root_filename ~cwd filename =
+  if Sys.file_exists (Filename.concat cwd filename) then cwd
+  else
+    let cwd' = Filename.dirname cwd in
+    if String.length cwd' < String.length cwd then
+      find_root_filename ~cwd:cwd' filename
+    else Ext_fmt.failwithf ~loc:__LOC__ "%s not found from %s" filename cwd
 
-
-let find_package_json_dir cwd  = 
-  find_root_filename ~cwd  Literals.bsconfig_json
+let find_package_json_dir cwd = find_root_filename ~cwd Literals.bsconfig_json
 
 let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
 
@@ -5607,23 +5339,31 @@ module Bsb_config : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 val ocaml_bin_install_prefix : string -> string
+
 val proj_rel : string -> string
 
 val lib_lit : string
-val lib_js : string 
+
+val lib_js : string
+
 val lib_bs : string
-val lib_es6 : string 
-val lib_es6_global : string 
+
+val lib_es6 : string
+
+val lib_es6_global : string
+
 val lib_ocaml : string
-val all_lib_artifacts : string list 
+
+val all_lib_artifacts : string list
+
 (* we need generate path relative to [lib/bs] directory in the opposite direction *)
 val rev_lib_bs_prefix : string -> string
+
 val lib_bs_prefix_of_format : Ext_module_system.t -> string
+
 val top_prefix_of_format : Ext_module_system.t -> string
 (** default not install, only when -make-world, its dependencies will be installed  *)
-
 
 end = struct
 #1 "bsb_config.ml"
@@ -5650,44 +5390,39 @@ end = struct
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-let (//) = Ext_path.combine 
+let ( // ) = Ext_path.combine
 
 let lib_lit = "lib"
-let lib_js = lib_lit //"js"
+
+let lib_js = lib_lit // "js"
 
 let lib_ocaml = lib_lit // "ocaml"
+
 let lib_bs = lib_lit // "bs"
+
 let lib_es6 = lib_lit // "es6"
+
 let lib_es6_global = lib_lit // "es6_global"
 
-let all_lib_artifacts = 
-  [ lib_js ; 
-    lib_ocaml;
-    lib_bs ; 
-    lib_es6 ; 
-    lib_es6_global;
-  ]
-let rev_lib_bs = ".."// ".."
+let all_lib_artifacts = [ lib_js; lib_ocaml; lib_bs; lib_es6; lib_es6_global ]
 
-(* access the js directory from "lib/bs", 
+let rev_lib_bs = ".." // ".."
+
+(* access the js directory from "lib/bs",
    it would be '../js'
 *)
-let lib_bs_prefix_of_format (x : Ext_module_system.t) = 
-  ".." // match x with 
-  | NodeJS -> "js"
-  | Es6 -> "es6"
-  | Es6_global -> "es6_global"
+let lib_bs_prefix_of_format (x : Ext_module_system.t) =
+  ".."
+  // match x with NodeJS -> "js" | Es6 -> "es6" | Es6_global -> "es6_global"
 
 (* lib/js, lib/es6, lib/es6_global *)
-let top_prefix_of_format (x : Ext_module_system.t)  =   
-  match x with 
-  | NodeJS -> lib_js 
-  | Es6 -> lib_es6 
-  | Es6_global -> lib_es6_global 
+let top_prefix_of_format (x : Ext_module_system.t) =
+  match x with
+  | NodeJS -> lib_js
+  | Es6 -> lib_es6
+  | Es6_global -> lib_es6_global
 
-
-
-let rev_lib_bs_prefix p = rev_lib_bs // p 
+let rev_lib_bs_prefix p = rev_lib_bs // p
 
 let ocaml_bin_install_prefix p = lib_ocaml // p
 
@@ -5697,13 +5432,7 @@ let proj_rel path = rev_lib_bs // path
     of bsb in configuration time
 *)
 
-
-
-
-
-
 (* let cmd_package_specs = ref None  *)
-
 
 end
 module Bs_version : sig 
@@ -5734,12 +5463,12 @@ module Bs_version : sig
 
 val version : string
 
-val header : string 
+val header : string
 
 val package_name : string ref
+
 end = struct
 #1 "bs_version.ml"
-
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -5764,8 +5493,9 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 let version = "10.0.0"
-let header =
-  "// Generated by ReScript, PLEASE EDIT WITH CARE"
+
+let header = "// Generated by ReScript, PLEASE EDIT WITH CARE"
+
 let package_name = ref "rescript"
 
 end
@@ -5795,23 +5525,24 @@ module Bsb_pkg_types : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type t = Global of string | Scope of string * scope
 
-type t = 
-  | Global of string
-  | Scope of string * scope
-and scope = string  
+and scope = string
 
-val to_string : t -> string 
-val print : Format.formatter -> t -> unit 
-val equal : t -> t -> bool 
+val to_string : t -> string
+
+val print : Format.formatter -> t -> unit
+
+val equal : t -> t -> bool
 
 (* The second element could be empty or dropped 
 *)
-val extract_pkg_name_and_file : string -> t * string 
-val string_as_package : string -> t 
+val extract_pkg_name_and_file : string -> t * string
+
+val string_as_package : string -> t
+
 end = struct
 #1 "bsb_pkg_types.ml"
-
 (* Copyright (C) 2018- Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -5836,31 +5567,25 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let (//) = Filename.concat
+let ( // ) = Filename.concat
 
-type t = 
-  | Global of string
-  | Scope of string * scope
-and scope = string  
+type t = Global of string | Scope of string * scope
 
-let to_string (x : t) = 
+and scope = string
+
+let to_string (x : t) =
+  match x with Global s -> s | Scope (s, scope) -> scope // s
+
+let print fmt (x : t) =
   match x with
-  | Global s -> s
-  | Scope (s,scope) -> scope // s 
+  | Global s -> Format.pp_print_string fmt s
+  | Scope (name, scope) -> Format.fprintf fmt "%s/%s" scope name
 
-let print fmt (x : t) = 
-  match x with   
-  | Global s -> Format.pp_print_string fmt s 
-  | Scope(name,scope) -> 
-    Format.fprintf fmt "%s/%s" scope name
-
-let equal (x : t) y = 
-  match x, y with 
-  | Scope(a0,a1), Scope(b0,b1) 
-    -> a0 = b0 && a1 = b1
+let equal (x : t) y =
+  match (x, y) with
+  | Scope (a0, a1), Scope (b0, b1) -> a0 = b0 && a1 = b1
   | Global a0, Global b0 -> a0 = b0
-  | Scope _, Global _ 
-  | Global _, Scope _ -> false
+  | Scope _, Global _ | Global _, Scope _ -> false
 
 (**
    input: {[
@@ -5872,51 +5597,42 @@ let equal (x : t) y =
      hello//xh//helo
    ]}
 *)
-let extract_pkg_name_and_file (s : string) =   
-  let len = String.length s in 
-  assert (len  > 0 ); 
-  let v = String.unsafe_get s 0 in 
-  if v = '@' then 
-    let scope_id = 
-      Ext_string.no_slash_idx s  in 
+let extract_pkg_name_and_file (s : string) =
+  let len = String.length s in
+  assert (len > 0);
+  let v = String.unsafe_get s 0 in
+  if v = '@' then (
+    let scope_id = Ext_string.no_slash_idx s in
     assert (scope_id > 0);
-    let pkg_id =   
-      Ext_string.no_slash_idx_from
-        s (scope_id + 1)   in 
-    let scope =     
-      String.sub s 0 scope_id in 
+    let pkg_id = Ext_string.no_slash_idx_from s (scope_id + 1) in
+    let scope = String.sub s 0 scope_id in
 
-    if pkg_id < 0 then     
-      (Scope(String.sub s (scope_id + 1) (len - scope_id - 1), scope),"")
-    else 
-      (Scope(
-          String.sub s (scope_id + 1) (pkg_id - scope_id - 1), scope), 
-       String.sub s (pkg_id + 1) (len - pkg_id - 1))
-  else     
-    let pkg_id = Ext_string.no_slash_idx s in 
-    if pkg_id < 0 then 
-      Global s , ""
-    else 
-      Global (String.sub s 0 pkg_id), 
-      (String.sub s (pkg_id + 1) (len - pkg_id - 1))
+    if pkg_id < 0 then
+      (Scope (String.sub s (scope_id + 1) (len - scope_id - 1), scope), "")
+    else
+      ( Scope (String.sub s (scope_id + 1) (pkg_id - scope_id - 1), scope),
+        String.sub s (pkg_id + 1) (len - pkg_id - 1) ))
+  else
+    let pkg_id = Ext_string.no_slash_idx s in
+    if pkg_id < 0 then (Global s, "")
+    else
+      ( Global (String.sub s 0 pkg_id),
+        String.sub s (pkg_id + 1) (len - pkg_id - 1) )
 
-
-let string_as_package (s : string) : t = 
-  let len = String.length s in 
-  assert (len > 0); 
-  let v = String.unsafe_get s 0 in 
-  if v = '@' then 
-    let scope_id = 
-      Ext_string.no_slash_idx s in 
-    assert (scope_id > 0); 
+let string_as_package (s : string) : t =
+  let len = String.length s in
+  assert (len > 0);
+  let v = String.unsafe_get s 0 in
+  if v = '@' then (
+    let scope_id = Ext_string.no_slash_idx s in
+    assert (scope_id > 0);
     (* better-eror message for invalid scope package:
        @rescript/std
     *)
-    Scope(
-      String.sub s (scope_id + 1) (len - scope_id - 1),
-      String.sub s 0 scope_id
-    )    
-  else Global s       
+    Scope
+      (String.sub s (scope_id + 1) (len - scope_id - 1), String.sub s 0 scope_id))
+  else Global s
+
 end
 module Ext_json_types
 = struct
@@ -5946,28 +5662,23 @@ module Ext_json_types
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type loc = Lexing.position
-type json_str = 
-  { str : string ; loc : loc}
 
-type json_flo  =
-  { flo : string ; loc : loc}
-type json_array =
-  { content : t array ; 
-    loc_start : loc ; 
-    loc_end : loc ; 
-  }
+type json_str = { str : string; loc : loc }
 
-and json_map = 
-  { map : t Map_string.t ; loc :  loc }
-and t = 
-  | True of loc 
-  | False of loc 
-  | Null of loc 
+type json_flo = { flo : string; loc : loc }
+
+type json_array = { content : t array; loc_start : loc; loc_end : loc }
+
+and json_map = { map : t Map_string.t; loc : loc }
+
+and t =
+  | True of loc
+  | False of loc
+  | Null of loc
   | Flo of json_flo
   | Str of json_str
-  | Arr  of json_array
+  | Arr of json_array
   | Obj of json_map
-
 
 end
 module Ext_position : sig 
@@ -5996,14 +5707,14 @@ module Ext_position : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 type t = Lexing.position = {
-  pos_fname : string ;
-  pos_lnum : int ;
-  pos_bol : int ;
-  pos_cnum : int
+  pos_fname : string;
+  pos_lnum : int;
+  pos_bol : int;
+  pos_cnum : int;
 }
 
+val offset : t -> t -> t
 (** [offset pos newpos]
     return a new position
     here [newpos] is zero based, the use case is that
@@ -6011,13 +5722,11 @@ type t = Lexing.position = {
     therefore, we get a [newpos] and we need rebase it on top of 
     [pos]
 *)
-val offset : t -> t -> t 
 
-val lexbuf_from_channel_with_fname:
-  in_channel -> string -> 
-  Lexing.lexbuf
+val lexbuf_from_channel_with_fname : in_channel -> string -> Lexing.lexbuf
 
-val print : Format.formatter -> t -> unit 
+val print : Format.formatter -> t -> unit
+
 end = struct
 #1 "ext_position.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -6044,44 +5753,38 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 type t = Lexing.position = {
-  pos_fname : string ;
-  pos_lnum : int ;
-  pos_bol : int ;
-  pos_cnum : int
+  pos_fname : string;
+  pos_lnum : int;
+  pos_bol : int;
+  pos_cnum : int;
 }
 
-let offset (x : t) (y:t) =
+let offset (x : t) (y : t) =
   {
-    x with 
-    pos_lnum =
-      x.pos_lnum + y.pos_lnum - 1;
-    pos_cnum = 
-      x.pos_cnum + y.pos_cnum;
-    pos_bol = 
-      if y.pos_lnum = 1 then 
-        x.pos_bol
-      else x.pos_cnum + y.pos_bol
+    x with
+    pos_lnum = x.pos_lnum + y.pos_lnum - 1;
+    pos_cnum = x.pos_cnum + y.pos_cnum;
+    pos_bol = (if y.pos_lnum = 1 then x.pos_bol else x.pos_cnum + y.pos_bol);
   }
 
 let print fmt (pos : t) =
-  Format.fprintf fmt "(line %d, column %d)" pos.pos_lnum (pos.pos_cnum - pos.pos_bol)
+  Format.fprintf fmt "(line %d, column %d)" pos.pos_lnum
+    (pos.pos_cnum - pos.pos_bol)
 
-
-
-let lexbuf_from_channel_with_fname ic fname = 
-  let x = Lexing.from_function (fun buf n -> input ic buf 0 n) in 
-  let pos : t = {
-    pos_fname = fname ; 
-    pos_lnum = 1; 
-    pos_bol = 0;
-    pos_cnum = 0 (* copied from zero_pos*)
-  } in 
+let lexbuf_from_channel_with_fname ic fname =
+  let x = Lexing.from_function (fun buf n -> input ic buf 0 n) in
+  let pos : t =
+    {
+      pos_fname = fname;
+      pos_lnum = 1;
+      pos_bol = 0;
+      pos_cnum = 0 (* copied from zero_pos*);
+    }
+  in
   x.lex_start_p <- pos;
-  x.lex_curr_p <- pos ; 
+  x.lex_curr_p <- pos;
   x
-
 
 end
 module Ext_json : sig 
@@ -6110,40 +5813,32 @@ module Ext_json : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type path = string list
 
-type path = string list 
-type status = 
-  | No_path
-  | Found of Ext_json_types.t 
-  | Wrong_type of path 
+type status = No_path | Found of Ext_json_types.t | Wrong_type of path
 
+type callback =
+  [ `Str of string -> unit
+  | `Str_loc of string -> Lexing.position -> unit
+  | `Flo of string -> unit
+  | `Flo_loc of string -> Lexing.position -> unit
+  | `Bool of bool -> unit
+  | `Obj of Ext_json_types.t Map_string.t -> unit
+  | `Arr of Ext_json_types.t array -> unit
+  | `Arr_loc of
+    Ext_json_types.t array -> Lexing.position -> Lexing.position -> unit
+  | `Null of unit -> unit
+  | `Not_found of unit -> unit
+  | `Id of Ext_json_types.t -> unit ]
 
-type callback = 
-  [
-    `Str of (string -> unit) 
-  | `Str_loc of (string -> Lexing.position -> unit)
-  | `Flo of (string -> unit )
-  | `Flo_loc of (string -> Lexing.position -> unit )
-  | `Bool of (bool -> unit )
-  | `Obj of (Ext_json_types.t Map_string.t -> unit)
-  | `Arr of (Ext_json_types.t array -> unit )
-  | `Arr_loc of 
-      (Ext_json_types.t array -> Lexing.position -> Lexing.position -> unit)
-  | `Null of (unit -> unit)
-  | `Not_found of (unit -> unit)
-  | `Id of (Ext_json_types.t -> unit )
-  ]
-
-val test:
+val test :
   ?fail:(unit -> unit) ->
-  string -> callback 
-  -> Ext_json_types.t Map_string.t
-  -> Ext_json_types.t Map_string.t
-
+  string ->
+  callback ->
+  Ext_json_types.t Map_string.t ->
+  Ext_json_types.t Map_string.t
 
 val loc_of : Ext_json_types.t -> Ext_position.t
-
-
 
 end = struct
 #1 "ext_json.ml"
@@ -6171,65 +5866,51 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type callback = 
-  [
-    `Str of (string -> unit) 
-  | `Str_loc of (string -> Lexing.position -> unit)
-  | `Flo of (string -> unit )
-  | `Flo_loc of (string -> Lexing.position -> unit )
-  | `Bool of (bool -> unit )
-  | `Obj of (Ext_json_types.t Map_string.t -> unit)
-  | `Arr of (Ext_json_types.t array -> unit )
-  | `Arr_loc of (Ext_json_types.t array -> Lexing.position -> Lexing.position -> unit)
-  | `Null of (unit -> unit)
-  | `Not_found of (unit -> unit)
-  | `Id of (Ext_json_types.t -> unit )
-  ]
+type callback =
+  [ `Str of string -> unit
+  | `Str_loc of string -> Lexing.position -> unit
+  | `Flo of string -> unit
+  | `Flo_loc of string -> Lexing.position -> unit
+  | `Bool of bool -> unit
+  | `Obj of Ext_json_types.t Map_string.t -> unit
+  | `Arr of Ext_json_types.t array -> unit
+  | `Arr_loc of
+    Ext_json_types.t array -> Lexing.position -> Lexing.position -> unit
+  | `Null of unit -> unit
+  | `Not_found of unit -> unit
+  | `Id of Ext_json_types.t -> unit ]
 
+type path = string list
 
-type path = string list 
+type status = No_path | Found of Ext_json_types.t | Wrong_type of path
 
-type status = 
-  | No_path
-  | Found  of Ext_json_types.t 
-  | Wrong_type of path 
-
-let test   ?(fail=(fun () -> ())) key 
-    (cb : callback) (m  : Ext_json_types.t Map_string.t)
-  =
-  begin match Map_string.find_exn m key, cb with 
-    | exception Not_found  ->
-      begin match cb with `Not_found f ->  f ()
-                        | _ -> fail ()
-      end      
-    | True _, `Bool cb -> cb true
-    | False _, `Bool cb  -> cb false 
-    | Flo {flo = s} , `Flo cb  -> cb s 
-    | Flo {flo = s; loc} , `Flo_loc cb  -> cb s loc
-    | Obj {map = b} , `Obj cb -> cb b 
-    | Arr {content}, `Arr cb -> cb content 
-    | Arr {content; loc_start ; loc_end}, `Arr_loc cb -> 
-      cb content  loc_start loc_end 
-    | Null _, `Null cb  -> cb ()
-    | Str {str = s }, `Str cb  -> cb s 
-    | Str {str = s ; loc }, `Str_loc cb -> cb s loc 
-    |  any  , `Id  cb -> cb any
-    | _, _ -> fail () 
-  end;
+let test ?(fail = fun () -> ()) key (cb : callback)
+    (m : Ext_json_types.t Map_string.t) =
+  (match (Map_string.find_exn m key, cb) with
+  | exception Not_found -> (
+      match cb with `Not_found f -> f () | _ -> fail ())
+  | True _, `Bool cb -> cb true
+  | False _, `Bool cb -> cb false
+  | Flo { flo = s }, `Flo cb -> cb s
+  | Flo { flo = s; loc }, `Flo_loc cb -> cb s loc
+  | Obj { map = b }, `Obj cb -> cb b
+  | Arr { content }, `Arr cb -> cb content
+  | Arr { content; loc_start; loc_end }, `Arr_loc cb ->
+      cb content loc_start loc_end
+  | Null _, `Null cb -> cb ()
+  | Str { str = s }, `Str cb -> cb s
+  | Str { str = s; loc }, `Str_loc cb -> cb s loc
+  | any, `Id cb -> cb any
+  | _, _ -> fail ());
   m
-
 
 let loc_of (x : Ext_json_types.t) =
   match x with
-  | True p | False p | Null p -> p 
-  | Str p -> p.loc 
+  | True p | False p | Null p -> p
+  | Str p -> p.loc
   | Arr p -> p.loc_start
   | Obj p -> p.loc
   | Flo p -> p.loc
-
-
-
-
 
 end
 module Bsb_exception : sig 
@@ -6258,22 +5939,22 @@ module Bsb_exception : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+type error
 (**
     This module is used for fatal errros
 *)
-type error  
+
 exception Error of error
 
-val print : Format.formatter -> error -> unit 
+val print : Format.formatter -> error -> unit
+
 val package_not_found : pkg:Bsb_pkg_types.t -> json:string option -> 'a
 
-val conflict_module:
-  string -> string -> string -> exn
+val conflict_module : string -> string -> string -> exn
 
-val errorf : loc:Ext_position.t ->  ('a, unit, string, 'b) format4 -> 'a
+val errorf : loc:Ext_position.t -> ('a, unit, string, 'b) format4 -> 'a
 
-val config_error : Ext_json_types.t -> string -> 'a 
+val config_error : Ext_json_types.t -> string -> 'a
 
 val invalid_spec : string -> 'a
 
@@ -6282,6 +5963,7 @@ val invalid_json : string -> 'a
 val no_implementation : string -> 'a
 
 val not_consistent : string -> 'a
+
 end = struct
 #1 "bsb_exception.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -6308,8 +5990,6 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
 type error =
   | Package_not_found of Bsb_pkg_types.t * string option (* json file *)
   | Json_config of Ext_position.t * string
@@ -6317,75 +5997,72 @@ type error =
   | Invalid_spec of string
   | Conflict_module of string * string * string
   | No_implementation of string
-  | Not_consistent of string 
+  | Not_consistent of string
 
 exception Error of error
 
 let error err = raise (Error err)
-let package_not_found ~pkg ~json =
-  error (Package_not_found(pkg,json))
+
+let package_not_found ~pkg ~json = error (Package_not_found (pkg, json))
 
 let print (fmt : Format.formatter) (x : error) =
   match x with
-  | Conflict_module (modname,dir1,dir2) ->
-    Format.fprintf fmt
-      "@{<error>Error:@} %s found in two directories: (%s, %s)\n\
-       File names must be unique per project"
-      modname dir1 dir2
-  | Not_consistent modname ->     
-    Format.fprintf fmt 
-      "@{<error>Error:@} %s has implementation/interface in non-consistent syntax(reason/ocaml)" modname
-  | No_implementation (modname) ->     
-    Format.fprintf fmt 
-      "@{<error>Error:@} %s does not have implementation file" modname
-  | Package_not_found (name,json_opt) ->
-    let in_json = match json_opt with
-      | None -> Ext_string.empty
-      | Some x -> " in " ^ x in
-    let name = Bsb_pkg_types.to_string name in 
-    if Ext_string.equal name !Bs_version.package_name then
+  | Conflict_module (modname, dir1, dir2) ->
       Format.fprintf fmt
-        "File \"bsconfig.json\", line 1\n\
-         @{<error>Error:@} package @{<error>%s@} is not found %s\n\
-         It's the basic, required package. If you have it installed globally,\n\
-         Please run `npm link rescript` to make it available" name in_json
-    else
+        "@{<error>Error:@} %s found in two directories: (%s, %s)\n\
+         File names must be unique per project" modname dir1 dir2
+  | Not_consistent modname ->
       Format.fprintf fmt
-        "File \"bsconfig.json\", line 1\n\
-         @{<error>Error:@} package @{<error>%s@} not found or built %s\n\
-         - Did you install it?\n\
-         - If you did, did you run `rescript build -with-deps`?"
-        name
-        in_json
-
-  | Json_config (pos,s) ->
-    Format.fprintf fmt "File %S, line %d:\n\
-                        @{<error>Error:@} %s \n\
-                        For more details, please checkout the schema https://rescript-lang.org/docs/manual/latest/build-configuration-schema"
-      pos.pos_fname
-      pos.pos_lnum s
+        "@{<error>Error:@} %s has implementation/interface in non-consistent \
+         syntax(reason/ocaml)"
+        modname
+  | No_implementation modname ->
+      Format.fprintf fmt
+        "@{<error>Error:@} %s does not have implementation file" modname
+  | Package_not_found (name, json_opt) ->
+      let in_json =
+        match json_opt with None -> Ext_string.empty | Some x -> " in " ^ x
+      in
+      let name = Bsb_pkg_types.to_string name in
+      if Ext_string.equal name !Bs_version.package_name then
+        Format.fprintf fmt
+          "File \"bsconfig.json\", line 1\n\
+           @{<error>Error:@} package @{<error>%s@} is not found %s\n\
+           It's the basic, required package. If you have it installed globally,\n\
+           Please run `npm link rescript` to make it available" name in_json
+      else
+        Format.fprintf fmt
+          "File \"bsconfig.json\", line 1\n\
+           @{<error>Error:@} package @{<error>%s@} not found or built %s\n\
+           - Did you install it?\n\
+           - If you did, did you run `rescript build -with-deps`?" name in_json
+  | Json_config (pos, s) ->
+      Format.fprintf fmt
+        "File %S, line %d:\n\
+         @{<error>Error:@} %s \n\
+         For more details, please checkout the schema \
+         https://rescript-lang.org/docs/manual/latest/build-configuration-schema"
+        pos.pos_fname pos.pos_lnum s
   | Invalid_spec s ->
-    Format.fprintf fmt
-      "@{<error>Error: Invalid bsconfig.json %s@}" s
+      Format.fprintf fmt "@{<error>Error: Invalid bsconfig.json %s@}" s
   | Invalid_json s ->
-    Format.fprintf fmt
-      "File %S, line 1\n\
-       @{<error>Error: Invalid json format@}" s
+      Format.fprintf fmt
+        "File %S, line 1\n@{<error>Error: Invalid json format@}" s
 
 let conflict_module modname dir1 dir2 =
-  Error (Conflict_module (modname,dir1,dir2))
-let no_implementation modname =   
-  error (No_implementation modname)
-let not_consistent modname =   
-  error (Not_consistent modname)
-let errorf ~loc fmt =
-  Format.ksprintf (fun s -> error (Json_config (loc,s))) fmt
+  Error (Conflict_module (modname, dir1, dir2))
 
+let no_implementation modname = error (No_implementation modname)
+
+let not_consistent modname = error (Not_consistent modname)
+
+let errorf ~loc fmt =
+  Format.ksprintf (fun s -> error (Json_config (loc, s))) fmt
 
 let config_error config fmt =
   let loc = Ext_json.loc_of config in
 
-  error (Json_config (loc,fmt))
+  error (Json_config (loc, fmt))
 
 let invalid_spec s = error (Invalid_spec s)
 
@@ -6393,11 +6070,7 @@ let invalid_json s = error (Invalid_json s)
 
 let () =
   Printexc.register_printer (fun x ->
-      match x with
-      | Error x ->
-        Some (Format.asprintf "%a" print x )
-      | _ -> None
-    )
+      match x with Error x -> Some (Format.asprintf "%a" print x) | _ -> None)
 
 end
 module Ext_color : sig 
@@ -6426,24 +6099,12 @@ module Ext_color : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type color 
-  = Black
-  | Red
-  | Green
-  | Yellow
-  | Blue
-  | Magenta
-  | Cyan
-  | White
+type color = Black | Red | Green | Yellow | Blue | Magenta | Cyan | White
 
-type style 
-  = FG of color 
-  | BG of color 
-  | Bold
-  | Dim
+type style = FG of color | BG of color | Bold | Dim
 
+val ansi_of_tag : string -> string
 (** Input is the tag for example `@{<warning>@}` return escape code *)
-val ansi_of_tag : string -> string 
 
 val reset_lit : string
 
@@ -6473,25 +6134,9 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type color = Black | Red | Green | Yellow | Blue | Magenta | Cyan | White
 
-
-
-type color 
-  = Black
-  | Red
-  | Green
-  | Yellow
-  | Blue
-  | Magenta
-  | Cyan
-  | White
-
-type style 
-  = FG of color 
-  | BG of color 
-  | Bold
-  | Dim
-
+type style = FG of color | BG of color | Bold | Dim
 
 (* let ansi_of_color = function
    | Black -> "0"
@@ -6512,7 +6157,6 @@ let code_of_style = function
   | FG Magenta -> "35"
   | FG Cyan -> "36"
   | FG White -> "37"
-
   | BG Black -> "40"
   | BG Red -> "41"
   | BG Green -> "42"
@@ -6521,33 +6165,25 @@ let code_of_style = function
   | BG Magenta -> "45"
   | BG Cyan -> "46"
   | BG White -> "47"
-
   | Bold -> "1"
   | Dim -> "2"
 
-
-
 (** TODO: add more styles later *)
-let style_of_tag s = match s with
-  | "error" -> [Bold; FG Red]
-  | "warning" -> [Bold; FG Magenta]
-  | "info" -> [Bold; FG Yellow]
-  | "dim" -> [Dim]
-  | "filename" -> [FG Cyan]
+let style_of_tag s =
+  match s with
+  | "error" -> [ Bold; FG Red ]
+  | "warning" -> [ Bold; FG Magenta ]
+  | "info" -> [ Bold; FG Yellow ]
+  | "dim" -> [ Dim ]
+  | "filename" -> [ FG Cyan ]
   | _ -> []
 
-let ansi_of_tag s = 
+let ansi_of_tag s =
   let l = style_of_tag s in
-  let s =  String.concat ";" (Ext_list.map l  code_of_style) in
+  let s = String.concat ";" (Ext_list.map l code_of_style) in
   "\x1b[" ^ s ^ "m"
 
-
-
-let reset_lit = "\x1b[0m" 
-
-
-
-
+let reset_lit = "\x1b[0m"
 
 end
 module Bsb_log : sig 
@@ -6576,14 +6212,9 @@ module Bsb_log : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+val setup : unit -> unit
 
-val setup : unit -> unit 
-
-type level = 
-  | Debug
-  | Info 
-  | Warn
-  | Error 
+type level = Debug | Info | Warn | Error
 
 val log_level : level ref
 
@@ -6591,10 +6222,14 @@ type 'a fmt = Format.formatter -> ('a, Format.formatter, unit) format -> 'a
 
 type 'a log = ('a, Format.formatter, unit) format -> 'a
 
-val verbose : unit -> unit 
-val debug  : 'a log
-val info : 'a log 
-val warn : 'a log 
+val verbose : unit -> unit
+
+val debug : 'a log
+
+val info : 'a log
+
+val warn : 'a log
+
 val error : 'a log
 
 val info_args : string array -> unit
@@ -6625,96 +6260,80 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+let ninja_ansi_forced =
+  lazy (try Sys.getenv "NINJA_ANSI_FORCED" with Not_found -> "")
 
-
-let ninja_ansi_forced = lazy 
-  (try Sys.getenv "NINJA_ANSI_FORCED" with 
-     Not_found  ->""
-  )  
 let color_enabled = lazy (Unix.isatty Unix.stdout)
 
 (* same logic as [ninja.exe] *)
-let get_color_enabled () = 
-  let colorful = 
-    match ninja_ansi_forced with 
-    | lazy "1" -> true     
-    | lazy ("0" | "false") -> false
-    | _ ->
-      Lazy.force color_enabled  in 
-  colorful 
+let get_color_enabled () =
+  let colorful =
+    match ninja_ansi_forced with
+    | (lazy "1") -> true
+    | (lazy ("0" | "false")) -> false
+    | _ -> Lazy.force color_enabled
+  in
+  colorful
 
-
-
-let color_functions : Format.formatter_tag_functions = {
-  mark_open_tag = (fun s ->  if get_color_enabled () then  Ext_color.ansi_of_tag s else Ext_string.empty) ;
-  mark_close_tag = (fun _ ->  if get_color_enabled () then Ext_color.reset_lit else Ext_string.empty);
-  print_open_tag = (fun _ -> ());
-  print_close_tag = (fun _ -> ())
-}
+let color_functions : Format.formatter_tag_functions =
+  {
+    mark_open_tag =
+      (fun s ->
+        if get_color_enabled () then Ext_color.ansi_of_tag s
+        else Ext_string.empty);
+    mark_close_tag =
+      (fun _ ->
+        if get_color_enabled () then Ext_color.reset_lit else Ext_string.empty);
+    print_open_tag = (fun _ -> ());
+    print_close_tag = (fun _ -> ());
+  }
 
 (* let set_color ppf =
    Format.pp_set_formatter_tag_functions ppf color_functions *)
 
+let setup () =
+  Format.pp_set_mark_tags Format.std_formatter true;
+  Format.pp_set_mark_tags Format.err_formatter true;
+  Format.pp_set_formatter_tag_functions Format.std_formatter color_functions;
+  Format.pp_set_formatter_tag_functions Format.err_formatter color_functions
 
-let setup () = 
-  begin 
-    Format.pp_set_mark_tags Format.std_formatter true ;
-    Format.pp_set_mark_tags Format.err_formatter true;
-    Format.pp_set_formatter_tag_functions 
-      Format.std_formatter color_functions;
-    Format.pp_set_formatter_tag_functions
-      Format.err_formatter color_functions
-  end
+type level = Debug | Info | Warn | Error
 
-type level = 
-  | Debug
-  | Info 
-  | Warn
-  | Error 
-
-let int_of_level (x : level) = 
-  match x with 
-  | Debug -> 0 
-  | Info -> 1 
-  | Warn -> 2 
-  | Error -> 3 
+let int_of_level (x : level) =
+  match x with Debug -> 0 | Info -> 1 | Warn -> 2 | Error -> 3
 
 let log_level = ref Warn
 
-let verbose () =
-  log_level := Debug
-let dfprintf level fmt = 
-  if int_of_level level >= int_of_level  !log_level then 
-    Format.fprintf fmt 
-  else Format.ifprintf fmt  
+let verbose () = log_level := Debug
 
-type 'a fmt = 
-  Format.formatter -> ('a, Format.formatter, unit) format -> 'a
-type 'a log = 
-  ('a, Format.formatter, unit) format -> 'a
+let dfprintf level fmt =
+  if int_of_level level >= int_of_level !log_level then Format.fprintf fmt
+  else Format.ifprintf fmt
 
-let debug fmt = dfprintf  Debug Format.std_formatter fmt 
+type 'a fmt = Format.formatter -> ('a, Format.formatter, unit) format -> 'a
+
+type 'a log = ('a, Format.formatter, unit) format -> 'a
+
+let debug fmt = dfprintf Debug Format.std_formatter fmt
+
 let info fmt = dfprintf Info Format.std_formatter fmt
-let warn fmt = dfprintf Warn Format.err_formatter fmt 
+
+let warn fmt = dfprintf Warn Format.err_formatter fmt
+
 let error fmt = dfprintf Error Format.err_formatter fmt
 
-
-let info_args (args : string array) = 
-  if int_of_level Info >= int_of_level !log_level then 
-    begin
-      for i  = 0 to Array.length args - 1 do
-        Format.pp_print_string Format.std_formatter (Array.unsafe_get args i) ;
-        Format.pp_print_string Format.std_formatter Ext_string.single_space;
-      done ;
-      Format.pp_print_newline Format.std_formatter ()
-    end
+let info_args (args : string array) =
+  if int_of_level Info >= int_of_level !log_level then (
+    for i = 0 to Array.length args - 1 do
+      Format.pp_print_string Format.std_formatter (Array.unsafe_get args i);
+      Format.pp_print_string Format.std_formatter Ext_string.single_space
+    done;
+    Format.pp_print_newline Format.std_formatter ())
   else ()
-
 
 end
 module Bsb_real_path : sig 
 #1 "bsb_real_path.mli"
-
 (* Copyright (C) 2020- Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -6739,8 +6358,7 @@ module Bsb_real_path : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-val is_same_paths_via_io : string -> string -> bool 
+val is_same_paths_via_io : string -> string -> bool
 
 end = struct
 #1 "bsb_real_path.ml"
@@ -6768,43 +6386,32 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let (//) = Filename.concat
+let ( // ) = Filename.concat
 
-
-
-let normalize_exn (s : string) : string = 
-  let old_cwd = Sys.getcwd () in 
-  Unix.chdir s ;
-  let normalized = Sys.getcwd () in 
-  Unix.chdir old_cwd; 
+let normalize_exn (s : string) : string =
+  let old_cwd = Sys.getcwd () in
+  Unix.chdir s;
+  let normalized = Sys.getcwd () in
+  Unix.chdir old_cwd;
   normalized
 
 let real_path p =
   match Sys.is_directory p with
   | exception _ ->
-    let rec resolve dir =
-      if Sys.file_exists dir then normalize_exn dir else
-        let parent = Filename.dirname dir in
-        if dir = parent then dir
-        else  (resolve parent) // (Filename.basename dir)
-    in
-    let p =
-      if Filename.is_relative p then (Sys.getcwd ()) // p
-      else p
-    in
-    resolve p
+      let rec resolve dir =
+        if Sys.file_exists dir then normalize_exn dir
+        else
+          let parent = Filename.dirname dir in
+          if dir = parent then dir else resolve parent // Filename.basename dir
+      in
+      let p = if Filename.is_relative p then Sys.getcwd () // p else p in
+      resolve p
   | true -> normalize_exn p
-  | false ->
-    let dir = normalize_exn (Filename.dirname p) in
-    match Filename.basename p with
-    | "." -> dir
-    | base -> dir // base
+  | false -> (
+      let dir = normalize_exn (Filename.dirname p) in
+      match Filename.basename p with "." -> dir | base -> dir // base)
 
-
-let is_same_paths_via_io a b =
-  if a = b
-  then true
-  else (real_path a) = (real_path b)
+let is_same_paths_via_io a b = if a = b then true else real_path a = real_path b
 
 end
 module Ext_util : sig 
@@ -6833,12 +6440,10 @@ module Ext_util : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
 val power_2_above : int -> int -> int
 
+val stats_to_string : Hashtbl.statistics -> string
 
-val stats_to_string : Hashtbl.statistics -> string 
 end = struct
 #1 "ext_util.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -6876,14 +6481,14 @@ let rec power_2_above x n =
   else if x * 2 > Sys.max_array_length then x
   else power_2_above (x * 2) n
 
+let stats_to_string
+    ({ num_bindings; num_buckets; max_bucket_length; bucket_histogram } :
+      Hashtbl.statistics) =
+  Printf.sprintf "bindings: %d,buckets: %d, longest: %d, hist:[%s]" num_bindings
+    num_buckets max_bucket_length
+    (String.concat ","
+       (Array.to_list (Array.map string_of_int bucket_histogram)))
 
-let stats_to_string ({num_bindings; num_buckets; max_bucket_length; bucket_histogram} : Hashtbl.statistics) = 
-  Printf.sprintf 
-    "bindings: %d,buckets: %d, longest: %d, hist:[%s]" 
-    num_bindings 
-    num_buckets 
-    max_bucket_length
-    (String.concat "," (Array.to_list (Array.map string_of_int bucket_histogram)))
 end
 module Hash_gen
 = struct
@@ -6903,29 +6508,26 @@ module Hash_gen
 
 (* Hash tables *)
 
-
-
-
 (* We do dynamic hashing, and resize the table and rehash the elements
    when buckets become too long. *)
 
 type ('a, 'b) bucket =
   | Empty
   | Cons of {
-      mutable key : 'a ; 
-      mutable data : 'b ; 
-      mutable next :  ('a, 'b) bucket
+      mutable key : 'a;
+      mutable data : 'b;
+      mutable next : ('a, 'b) bucket;
     }
 
-type ('a, 'b) t =
-  { mutable size: int;                        (* number of entries *)
-    mutable data: ('a, 'b) bucket array;  (* the buckets *)
-    initial_size: int;                        (* initial array size *)
-  }
+type ('a, 'b) t = {
+  mutable size : int;
+  (* number of entries *)
+  mutable data : ('a, 'b) bucket array;
+  (* the buckets *)
+  initial_size : int; (* initial array size *)
+}
 
-
-
-let create  initial_size =
+let create initial_size =
   let s = Ext_util.power_2_above 16 initial_size in
   { initial_size = s; size = 0; data = Array.make s Empty }
 
@@ -6933,13 +6535,12 @@ let clear h =
   h.size <- 0;
   let len = Array.length h.data in
   for i = 0 to len - 1 do
-    Array.unsafe_set h.data i  Empty  
+    Array.unsafe_set h.data i Empty
   done
 
 let reset h =
   h.size <- 0;
   h.data <- Array.make h.initial_size Empty
-
 
 let length h = h.size
 
@@ -6947,41 +6548,37 @@ let resize indexfun h =
   let odata = h.data in
   let osize = Array.length odata in
   let nsize = osize * 2 in
-  if nsize < Sys.max_array_length then begin
+  if nsize < Sys.max_array_length then (
     let ndata = Array.make nsize Empty in
-    let ndata_tail = Array.make nsize Empty in 
-    h.data <- ndata;          (* so that indexfun sees the new bucket count *)
+    let ndata_tail = Array.make nsize Empty in
+    h.data <- ndata;
+    (* so that indexfun sees the new bucket count *)
     let rec insert_bucket = function
-        Empty -> ()
-      | Cons {key; next} as cell ->
-        let nidx = indexfun h key in
-        begin match Array.unsafe_get ndata_tail nidx with 
-          | Empty -> 
-            Array.unsafe_set ndata nidx cell
-          | Cons tail ->
-            tail.next <- cell  
-        end;
-        Array.unsafe_set ndata_tail nidx cell;
-        insert_bucket next
+      | Empty -> ()
+      | Cons { key; next } as cell ->
+          let nidx = indexfun h key in
+          (match Array.unsafe_get ndata_tail nidx with
+          | Empty -> Array.unsafe_set ndata nidx cell
+          | Cons tail -> tail.next <- cell);
+          Array.unsafe_set ndata_tail nidx cell;
+          insert_bucket next
     in
     for i = 0 to osize - 1 do
       insert_bucket (Array.unsafe_get odata i)
     done;
-    for i = 0 to nsize - 1 do 
-      match Array.unsafe_get ndata_tail i with 
-      | Empty -> ()  
+    for i = 0 to nsize - 1 do
+      match Array.unsafe_get ndata_tail i with
+      | Empty -> ()
       | Cons tail -> tail.next <- Empty
-    done   
-  end
-
-
+    done)
 
 let iter h f =
   let rec do_bucket = function
-    | Empty ->
-      ()
-    | Cons l  ->
-      f l.key l.data; do_bucket l.next in
+    | Empty -> ()
+    | Cons l ->
+        f l.key l.data;
+        do_bucket l.next
+  in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
     do_bucket (Array.unsafe_get d i)
@@ -6990,10 +6587,9 @@ let iter h f =
 let fold h init f =
   let rec do_bucket b accu =
     match b with
-      Empty ->
-      accu
-    | Cons l ->
-      do_bucket l.next (f l.key l.data accu) in
+    | Empty -> accu
+    | Cons l -> do_bucket l.next (f l.key l.data accu)
+  in
   let d = h.data in
   let accu = ref init in
   for i = 0 to Array.length d - 1 do
@@ -7001,150 +6597,147 @@ let fold h init f =
   done;
   !accu
 
-let to_list h f =
-  fold h [] (fun k data acc -> f k data :: acc)  
+let to_list h f = fold h [] (fun k data acc -> f k data :: acc)
 
-
-
-
-let rec small_bucket_mem (lst : _ bucket) eq key  =
-  match lst with 
-  | Empty -> false 
-  | Cons lst -> 
-    eq  key lst.key ||
-    match lst.next with
-    | Empty -> false 
-    | Cons lst -> 
-      eq key lst.key  || 
-      match lst.next with 
-      | Empty -> false 
-      | Cons lst -> 
-        eq key lst.key  ||
-        small_bucket_mem lst.next eq key 
-
+let rec small_bucket_mem (lst : _ bucket) eq key =
+  match lst with
+  | Empty -> false
+  | Cons lst -> (
+      eq key lst.key
+      ||
+      match lst.next with
+      | Empty -> false
+      | Cons lst -> (
+          eq key lst.key
+          ||
+          match lst.next with
+          | Empty -> false
+          | Cons lst -> eq key lst.key || small_bucket_mem lst.next eq key))
 
 let rec small_bucket_opt eq key (lst : _ bucket) : _ option =
-  match lst with 
-  | Empty -> None 
-  | Cons lst -> 
-    if eq  key lst.key then Some lst.data else 
-      match lst.next with
-      | Empty -> None 
-      | Cons lst -> 
-        if eq key lst.key then Some lst.data else 
-          match lst.next with 
-          | Empty -> None 
-          | Cons lst -> 
-            if eq key lst.key  then Some lst.data else 
-              small_bucket_opt eq key lst.next
-
+  match lst with
+  | Empty -> None
+  | Cons lst -> (
+      if eq key lst.key then Some lst.data
+      else
+        match lst.next with
+        | Empty -> None
+        | Cons lst -> (
+            if eq key lst.key then Some lst.data
+            else
+              match lst.next with
+              | Empty -> None
+              | Cons lst ->
+                  if eq key lst.key then Some lst.data
+                  else small_bucket_opt eq key lst.next))
 
 let rec small_bucket_key_opt eq key (lst : _ bucket) : _ option =
-  match lst with 
-  | Empty -> None 
-  | Cons {key=k;  next} -> 
-    if eq  key k then Some k else 
-      match next with
-      | Empty -> None 
-      | Cons {key=k; next} -> 
-        if eq key k then Some k else 
-          match next with 
-          | Empty -> None 
-          | Cons {key=k; next} -> 
-            if eq key k  then Some k else 
-              small_bucket_key_opt eq key next
-
+  match lst with
+  | Empty -> None
+  | Cons { key = k; next } -> (
+      if eq key k then Some k
+      else
+        match next with
+        | Empty -> None
+        | Cons { key = k; next } -> (
+            if eq key k then Some k
+            else
+              match next with
+              | Empty -> None
+              | Cons { key = k; next } ->
+                  if eq key k then Some k else small_bucket_key_opt eq key next)
+      )
 
 let rec small_bucket_default eq key default (lst : _ bucket) =
-  match lst with 
-  | Empty -> default 
-  | Cons lst -> 
-    if eq  key lst.key then  lst.data else 
-      match lst.next with
-      | Empty -> default 
-      | Cons lst -> 
-        if eq key lst.key then  lst.data else 
-          match lst.next with 
-          | Empty -> default 
-          | Cons lst -> 
-            if eq key lst.key  then lst.data else 
-              small_bucket_default eq key default lst.next
+  match lst with
+  | Empty -> default
+  | Cons lst -> (
+      if eq key lst.key then lst.data
+      else
+        match lst.next with
+        | Empty -> default
+        | Cons lst -> (
+            if eq key lst.key then lst.data
+            else
+              match lst.next with
+              | Empty -> default
+              | Cons lst ->
+                  if eq key lst.key then lst.data
+                  else small_bucket_default eq key default lst.next))
 
-let rec remove_bucket 
-    h  (i : int)
-    key 
-    ~(prec : _ bucket) 
-    (buck : _ bucket) 
-    eq_key = 
-  match buck with   
-  | Empty ->
-    ()
-  | Cons {key=k; next }  ->
-    if eq_key k key 
-    then begin
-      h.size <- h.size - 1;
-      match prec with
-      | Empty -> Array.unsafe_set h.data i  next
-      | Cons c -> c.next <- next
-    end
-    else remove_bucket h i key ~prec:buck next eq_key
+let rec remove_bucket h (i : int) key ~(prec : _ bucket) (buck : _ bucket)
+    eq_key =
+  match buck with
+  | Empty -> ()
+  | Cons { key = k; next } ->
+      if eq_key k key then (
+        h.size <- h.size - 1;
+        match prec with
+        | Empty -> Array.unsafe_set h.data i next
+        | Cons c -> c.next <- next)
+      else remove_bucket h i key ~prec:buck next eq_key
 
-let rec replace_bucket key data (buck : _ bucket) eq_key = 
-  match buck with   
-  | Empty ->
-    true
+let rec replace_bucket key data (buck : _ bucket) eq_key =
+  match buck with
+  | Empty -> true
   | Cons slot ->
-    if eq_key slot.key key
-    then (slot.key <- key; slot.data <- data; false)
-    else replace_bucket key data slot.next eq_key
+      if eq_key slot.key key then (
+        slot.key <- key;
+        slot.data <- data;
+        false)
+      else replace_bucket key data slot.next eq_key
 
-module type S = sig 
+module type S = sig
   type key
+
   type 'a t
-  val create: int -> 'a t
-  val clear: 'a t -> unit
-  val reset: 'a t -> unit
 
-  val add: 'a t -> key -> 'a -> unit
-  val add_or_update: 
-    'a t -> 
-    key -> 
-    update:('a -> 'a) -> 
-    'a -> unit 
-  val remove: 'a t -> key -> unit
-  val find_exn: 'a t -> key -> 'a
-  val find_all: 'a t -> key -> 'a list
-  val find_opt: 'a t -> key  -> 'a option
+  val create : int -> 'a t
 
+  val clear : 'a t -> unit
+
+  val reset : 'a t -> unit
+
+  val add : 'a t -> key -> 'a -> unit
+
+  val add_or_update : 'a t -> key -> update:('a -> 'a) -> 'a -> unit
+
+  val remove : 'a t -> key -> unit
+
+  val find_exn : 'a t -> key -> 'a
+
+  val find_all : 'a t -> key -> 'a list
+
+  val find_opt : 'a t -> key -> 'a option
+
+  val find_key_opt : 'a t -> key -> key option
   (** return the key found in the hashtbl.
       Use case: when you find the key existed in hashtbl, 
       you want to use the one stored in the hashtbl. 
       (they are semantically equivlanent, but may have other information different) 
   *)
-  val find_key_opt: 'a t -> key -> key option 
 
-  val find_default: 'a t -> key -> 'a -> 'a 
+  val find_default : 'a t -> key -> 'a -> 'a
 
-  val replace: 'a t -> key -> 'a -> unit
-  val mem: 'a t -> key -> bool
-  val iter: 'a t -> (key -> 'a -> unit) -> unit
-  val fold: 
-    'a t -> 'b ->
-    (key -> 'a -> 'b -> 'b) ->  'b
-  val length: 'a t -> int
+  val replace : 'a t -> key -> 'a -> unit
+
+  val mem : 'a t -> key -> bool
+
+  val iter : 'a t -> (key -> 'a -> unit) -> unit
+
+  val fold : 'a t -> 'b -> (key -> 'a -> 'b -> 'b) -> 'b
+
+  val length : 'a t -> int
+
   (* val stats: 'a t -> Hashtbl.statistics *)
   val to_list : 'a t -> (key -> 'a -> 'c) -> 'c list
-  val of_list2: key list -> 'a list -> 'a t
+
+  val of_list2 : key list -> 'a list -> 'a t
 end
-
-
-
 
 end
 module Hash : sig 
 #1 "hash.mli"
-
-
 module Make (Key : Hashtbl.HashedType) : Hash_gen.S with type key = Key.t
 
 end = struct
@@ -7275,7 +6868,6 @@ end
 end
 module Bsb_pkg : sig 
 #1 "bsb_pkg.mli"
-
 (* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
  * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
@@ -7300,7 +6892,6 @@ module Bsb_pkg : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 (** [resolve cwd module_name], 
     [cwd] is current working directory, absolute path
     Trying to find paths to load [module_name]
@@ -7310,20 +6901,14 @@ module Bsb_pkg : sig
     it relies on [npm_config_prefix] env variable for global npm modules
 *)
 
+val resolve_bs_package : cwd:string -> Bsb_pkg_types.t -> string
 (** @raise  when not found *)
-val resolve_bs_package : 
-  cwd:string ->  Bsb_pkg_types.t -> string 
 
+val to_list : (Bsb_pkg_types.t -> string -> 'a) -> 'a list
+(** used by watcher *)
 
-(** used by watcher *)    
-val to_list:    
-  (Bsb_pkg_types.t  ->
-   string ->
-   'a
-  ) -> 'a list
 end = struct
 #1 "bsb_pkg.ml"
-
 (* Copyright (C) 2017- Hongbo Zhang, Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -7348,87 +6933,79 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let (//) = Filename.concat
+let ( // ) = Filename.concat
 
 type t = Bsb_pkg_types.t
 
-(* TODO: be more restrict 
-   [bsconfig.json] does not always make sense, 
+(* TODO: be more restrict
+   [bsconfig.json] does not always make sense,
    when resolving [ppx-flags]
 *)
-let make_sub_path (x : t) : string = 
+let make_sub_path (x : t) : string =
   Literals.node_modules // Bsb_pkg_types.to_string x
 
-let node_paths : string list Lazy.t =     
-  lazy (try Ext_string.split (Sys.getenv "NODE_PATH")
-              (if Sys.win32 then ';' else ':')   
-        with _ -> [])
-        
+let node_paths : string list Lazy.t =
+  lazy
+    (try
+       Ext_string.split (Sys.getenv "NODE_PATH")
+         (if Sys.win32 then ';' else ':')
+     with _ -> [])
+
 (** It makes sense to have this function raise, when [bsb] could not resolve a package, it used to mean
     a failure
 *)
 let check_dir dir =
-  match Sys.file_exists dir with
-  | true -> Some(dir)
-  | false -> None
+  match Sys.file_exists dir with true -> Some dir | false -> None
 
-let  resolve_bs_package_aux  ~cwd (pkg : t) =
+let resolve_bs_package_aux ~cwd (pkg : t) =
   (* First try to resolve recursively from the current working directory  *)
-  let sub_path = make_sub_path pkg   in
-  let rec aux  cwd  =
-    let abs_marker =  cwd // sub_path in
+  let sub_path = make_sub_path pkg in
+  let rec aux cwd =
+    let abs_marker = cwd // sub_path in
     if Sys.file_exists abs_marker then abs_marker
     else
-      let another_cwd = Filename.dirname cwd in (* TODO: may non-terminating when see symlinks *)
-      if String.length another_cwd < String.length cwd then
-        aux    another_cwd
-      else (* To the end try other possiblilities [NODE_PATH]*)
-        (match Ext_list.find_opt (Lazy.force node_paths)
-                 (fun dir -> check_dir (dir // Bsb_pkg_types.to_string pkg))  with
-        | Some(resolved_dir) -> resolved_dir
-        | None -> Bsb_exception.package_not_found ~pkg ~json:None)    
+      let another_cwd = Filename.dirname cwd in
+      (* TODO: may non-terminating when see symlinks *)
+      if String.length another_cwd < String.length cwd then aux another_cwd
+      else
+        (* To the end try other possiblilities [NODE_PATH]*)
+        match
+          Ext_list.find_opt (Lazy.force node_paths) (fun dir ->
+              check_dir (dir // Bsb_pkg_types.to_string pkg))
+        with
+        | Some resolved_dir -> resolved_dir
+        | None -> Bsb_exception.package_not_found ~pkg ~json:None
   in
-  aux cwd 
+  aux cwd
 
+module Coll = Hash.Make (struct
+  type nonrec t = t
 
+  let equal = Bsb_pkg_types.equal
 
-
-
-
-module Coll = Hash.Make(struct
-    type nonrec t = t 
-    let equal = Bsb_pkg_types.equal
-    let hash (x : t) = Hashtbl.hash x     
-  end)
-
+  let hash (x : t) = Hashtbl.hash x
+end)
 
 let cache : string Coll.t = Coll.create 0
 
-
-let to_list cb  =   
-  Coll.to_list cache  cb 
-
-
+let to_list cb = Coll.to_list cache cb
 
 (** TODO: collect all warnings and print later *)
 let resolve_bs_package ~cwd (package : t) =
   match Coll.find_opt cache package with
   | None ->
-    let result = resolve_bs_package_aux ~cwd package in
-    Bsb_log.info "@{<info>Package@} %a -> %s@." Bsb_pkg_types.print package result ;
-    Coll.add cache package result ;
-    result
-  | Some x
-    ->
-    let result = resolve_bs_package_aux ~cwd package in
-    if not (Bsb_real_path.is_same_paths_via_io result x) then
-      begin
+      let result = resolve_bs_package_aux ~cwd package in
+      Bsb_log.info "@{<info>Package@} %a -> %s@." Bsb_pkg_types.print package
+        result;
+      Coll.add cache package result;
+      result
+  | Some x ->
+      let result = resolve_bs_package_aux ~cwd package in
+      if not (Bsb_real_path.is_same_paths_via_io result x) then
         Bsb_log.warn
-          "@{<warning>Duplicated package:@} %a %s (chosen) vs %s in %s @." 
+          "@{<warning>Duplicated package:@} %a %s (chosen) vs %s in %s @."
           Bsb_pkg_types.print package x result cwd;
-      end;
-    x
-
+      x
 
 (** The package does not need to be a bspackage
     example:
@@ -7439,7 +7016,7 @@ let resolve_bs_package ~cwd (package : t) =
     It also returns the path name
     Note the input [sub_path] is already converted to physical meaning path according to OS
 *)
-(* let resolve_npm_package_file ~cwd sub_path = *) 
+(* let resolve_npm_package_file ~cwd sub_path = *)
 (*   let rec aux  cwd  =  *)
 (*     let abs_marker =  cwd // Literals.node_modules // sub_path in  *)
 (*     if Sys.file_exists abs_marker then Some abs_marker *)
@@ -7466,29 +7043,23 @@ end
 module Ext_js_suffix
 = struct
 #1 "ext_js_suffix.ml"
-type t = 
-  | Js 
-  | Bs_js   
-  | Mjs
-  | Cjs
-  | Unknown_extension
-let to_string (x : t) =   
-  match x with 
+type t = Js | Bs_js | Mjs | Cjs | Unknown_extension
+
+let to_string (x : t) =
+  match x with
   | Js -> Literals.suffix_js
-  | Bs_js -> Literals.suffix_bs_js  
+  | Bs_js -> Literals.suffix_bs_js
   | Mjs -> Literals.suffix_mjs
   | Cjs -> Literals.suffix_cjs
   | Unknown_extension -> assert false
 
-
 let of_string (x : string) : t =
-  match () with 
-  | () when x = Literals.suffix_js -> Js 
-  | () when x = Literals.suffix_bs_js -> Bs_js       
+  match () with
+  | () when x = Literals.suffix_js -> Js
+  | () when x = Literals.suffix_bs_js -> Bs_js
   | () when x = Literals.suffix_mjs -> Mjs
-  | () when x = Literals.suffix_cjs -> Cjs 
+  | () when x = Literals.suffix_cjs -> Cjs
   | _ -> Unknown_extension
-
 
 end
 module Bsb_spec_set : sig 
@@ -7517,18 +7088,21 @@ module Bsb_spec_set : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 type format = Ext_module_system.t
-type spec = {
-  format : format;
-  in_source : bool;
-  suffix : Ext_js_suffix.t 
-}
 
-type  t = private spec list 
-val empty : t 
-val add : spec -> t  ->  t
-val singleton : spec -> t 
+type spec = { format : format; in_source : bool; suffix : Ext_js_suffix.t }
+
+type t = private spec list
+
+val empty : t
+
+val add : spec -> t -> t
+
+val singleton : spec -> t
+
 val fold : (spec -> 'a -> 'a) -> t -> 'a -> 'a
-val iter : (spec -> unit) ->t -> unit
+
+val iter : (spec -> unit) -> t -> unit
+
 end = struct
 #1 "bsb_spec_set.ml"
 (* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
@@ -7555,71 +7129,63 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-[@@@warning "+9"] 
+[@@@warning "+9"]
+
 (* TODO: sync up with {!Js_packages_info.module_system}  *)
-type format = Ext_module_system.t = 
-  | NodeJS | Es6 | Es6_global
+type format = Ext_module_system.t = NodeJS | Es6 | Es6_global
 
-type spec = {
-  format : format;
-  in_source : bool;
-  suffix : Ext_js_suffix.t 
-}
-type t = spec list 
+type spec = { format : format; in_source : bool; suffix : Ext_js_suffix.t }
 
-let cmp (s1 : spec) ({format;in_source;suffix} : spec) = 
-  let v = compare s1.format format in 
-  if v  <> 0 then v 
-  else 
-    let v = compare s1.in_source in_source in 
-    if v <> 0 then v 
-    else 
-      compare s1.suffix suffix 
+type t = spec list
+
+let cmp (s1 : spec) ({ format; in_source; suffix } : spec) =
+  let v = compare s1.format format in
+  if v <> 0 then v
+  else
+    let v = compare s1.in_source in_source in
+    if v <> 0 then v else compare s1.suffix suffix
 
 let empty = []
 
-let rec insert lst piviot = 
-  match lst with 
-  | [] -> [piviot]
-  | x::xs -> 
-    let v = cmp piviot x in 
-    if v = 0 then lst 
-    else if v < 0 then piviot :: lst 
-    else 
-      x :: insert xs piviot
+let rec insert lst piviot =
+  match lst with
+  | [] -> [ piviot ]
+  | x :: xs ->
+      let v = cmp piviot x in
+      if v = 0 then lst
+      else if v < 0 then piviot :: lst
+      else x :: insert xs piviot
 
-let add spec specs = 
-  match specs with 
-  | [] -> [spec]
-  | [a] -> 
-    let v =  cmp spec a in 
-    if v < 0 then spec :: specs 
-    else if v = 0 then specs 
-    else [a; spec]
-  | [a;b] -> 
-    let v = cmp spec a in 
-    if v < 0 then spec :: specs 
-    else if v = 0 then specs 
-    else 
-      let v1 = cmp spec b in 
-      if v < 0 then [a;spec;b]
-      else if v1 = 0 then specs
-      else 
-        [a;b;spec]
-  | _::_::_::_   -> (* unlikely to happen *)      
-    insert specs spec
+let add spec specs =
+  match specs with
+  | [] -> [ spec ]
+  | [ a ] ->
+      let v = cmp spec a in
+      if v < 0 then spec :: specs else if v = 0 then specs else [ a; spec ]
+  | [ a; b ] ->
+      let v = cmp spec a in
+      if v < 0 then spec :: specs
+      else if v = 0 then specs
+      else
+        let v1 = cmp spec b in
+        if v < 0 then [ a; spec; b ]
+        else if v1 = 0 then specs
+        else [ a; b; spec ]
+  | _ :: _ :: _ :: _ ->
+      (* unlikely to happen *)
+      insert specs spec
 
-let singleton x = [x]
+let singleton x = [ x ]
 
-let rec fold f t acc = 
-  match t with 
-  | [] -> acc 
-  | x::xs -> fold f xs (f x acc)
+let rec fold f t acc = match t with [] -> acc | x :: xs -> fold f xs (f x acc)
 
-let rec iter f t = 
-  match t with 
+let rec iter f t =
+  match t with
   | [] -> ()
-  | x::xs -> f x ; iter f xs   
+  | x :: xs ->
+      f x;
+      iter f xs
+
 end
 module Ext_filename : sig 
 #1 "ext_filename.mli"
@@ -7647,67 +7213,35 @@ module Ext_filename : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
 (* TODO:
-   Change the module name, this code is not really an extension of the standard 
-    library but rather specific to JS Module name convention. 
+   Change the module name, this code is not really an extension of the standard
+    library but rather specific to JS Module name convention.
 *)
-
-
-
-
 
 (** An extension module to calculate relative path follow node/npm style. 
     TODO : this short name will have to change upon renaming the file.
 *)
 
-val is_dir_sep : 
-  char -> bool 
+val is_dir_sep : char -> bool
 
-val maybe_quote:
-  string -> 
-  string
+val maybe_quote : string -> string
 
-val chop_extension_maybe:
-  string -> 
-  string
+val chop_extension_maybe : string -> string
 
-(* return an empty string if no extension found *)  
-val get_extension_maybe:   
-  string -> 
-  string
+(* return an empty string if no extension found *)
+val get_extension_maybe : string -> string
 
+val new_extension : string -> string -> string
 
-val new_extension:  
-  string -> 
-  string -> 
-  string
-
-val chop_all_extensions_maybe:
-  string -> 
-  string  
+val chop_all_extensions_maybe : string -> string
 
 (* OCaml specific abstraction*)
-val module_name:  
-  string ->
-  string
+val module_name : string -> string
 
+type module_info = { module_name : string; case : bool }
 
+val as_module : basename:string -> module_info option
 
-
-type module_info = {
-  module_name : string ;
-  case : bool;
-}   
-
-
-
-val as_module:
-  basename:string -> 
-  module_info option
 end = struct
 #1 "ext_filename.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -7734,75 +7268,61 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
 let is_dir_sep_unix c = c = '/'
-let is_dir_sep_win_cygwin c = 
-  c = '/' || c = '\\' || c = ':'
 
-let is_dir_sep = 
-  if Sys.unix then is_dir_sep_unix else is_dir_sep_win_cygwin
+let is_dir_sep_win_cygwin c = c = '/' || c = '\\' || c = ':'
+
+let is_dir_sep = if Sys.unix then is_dir_sep_unix else is_dir_sep_win_cygwin
 
 (* reference ninja.cc IsKnownShellSafeCharacter *)
-let maybe_quote ( s : string) = 
-  let noneed_quote = 
+let maybe_quote (s : string) =
+  let noneed_quote =
     Ext_string.for_all s (function
-        | '0' .. '9' 
-        | 'a' .. 'z' 
-        | 'A' .. 'Z'
-        | '_' | '+' 
-        | '-' | '.'
-        | '/' 
-        | '@' -> true
-        | _ -> false
-      )  in 
-  if noneed_quote then
-    s
-  else Filename.quote s 
-
+      | '0' .. '9' | 'a' .. 'z' | 'A' .. 'Z' | '_' | '+' | '-' | '.' | '/' | '@'
+        ->
+          true
+      | _ -> false)
+  in
+  if noneed_quote then s else Filename.quote s
 
 let chop_extension_maybe name =
   let rec search_dot i =
     if i < 0 || is_dir_sep (String.unsafe_get name i) then name
     else if String.unsafe_get name i = '.' then String.sub name 0 i
-    else search_dot (i - 1) in
+    else search_dot (i - 1)
+  in
   search_dot (String.length name - 1)
 
-let get_extension_maybe name =   
-  let name_len = String.length name in  
+let get_extension_maybe name =
+  let name_len = String.length name in
   let rec search_dot name i name_len =
     if i < 0 || is_dir_sep (String.unsafe_get name i) then ""
     else if String.unsafe_get name i = '.' then String.sub name i (name_len - i)
-    else search_dot name (i - 1) name_len in
+    else search_dot name (i - 1) name_len
+  in
   search_dot name (name_len - 1) name_len
 
 let chop_all_extensions_maybe name =
   let rec search_dot i last =
-    if i < 0 || is_dir_sep (String.unsafe_get name i) then 
-      (match last with 
-       | None -> name
-       | Some i -> String.sub name 0 i)  
-    else if String.unsafe_get name i = '.' then 
-      search_dot (i - 1) (Some i)
-    else search_dot (i - 1) last in
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then
+      match last with None -> name | Some i -> String.sub name 0 i
+    else if String.unsafe_get name i = '.' then search_dot (i - 1) (Some i)
+    else search_dot (i - 1) last
+  in
   search_dot (String.length name - 1) None
 
-
-let new_extension name (ext : string) = 
+let new_extension name (ext : string) =
   let rec search_dot name i ext =
-    if i < 0 || is_dir_sep (String.unsafe_get name i) then 
-      name ^ ext 
-    else if String.unsafe_get name i = '.' then 
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then name ^ ext
+    else if String.unsafe_get name i = '.' then (
       let ext_len = String.length ext in
-      let buf = Bytes.create (i + ext_len) in 
+      let buf = Bytes.create (i + ext_len) in
       Bytes.blit_string name 0 buf 0 i;
       Bytes.blit_string ext 0 buf i ext_len;
-      Bytes.unsafe_to_string buf
-    else search_dot name (i - 1) ext  in
+      Bytes.unsafe_to_string buf)
+    else search_dot name (i - 1) ext
+  in
   search_dot name (String.length name - 1) ext
-
-
 
 (** TODO: improve efficiency
     given a path, calcuate its module name 
@@ -7811,83 +7331,60 @@ let new_extension name (ext : string) =
     we can not tell the difference between "x.cpp.ml" 
     and "x.ml"
 *)
-let module_name name = 
-  let rec search_dot i  name =
-    if i < 0  then 
-      Ext_string.capitalize_ascii name
-    else 
-    if String.unsafe_get name i = '.' then 
-      Ext_string.capitalize_sub name i 
-    else 
-      search_dot (i - 1) name in  
-  let name = Filename.basename  name in 
-  let name_len = String.length name in 
-  search_dot (name_len - 1)  name 
+let module_name name =
+  let rec search_dot i name =
+    if i < 0 then Ext_string.capitalize_ascii name
+    else if String.unsafe_get name i = '.' then Ext_string.capitalize_sub name i
+    else search_dot (i - 1) name
+  in
+  let name = Filename.basename name in
+  let name_len = String.length name in
+  search_dot (name_len - 1) name
 
-type module_info = {
-  module_name : string ;
-  case : bool;
-} 
-
-
+type module_info = { module_name : string; case : bool }
 
 let rec valid_module_name_aux name off len =
-  if off >= len then true 
-  else 
-    let c = String.unsafe_get name off in 
-    match c with 
-    | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' | '.' | '[' | ']' -> 
-      valid_module_name_aux name (off + 1) len 
+  if off >= len then true
+  else
+    let c = String.unsafe_get name off in
+    match c with
+    | 'A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_' | '\'' | '.' | '[' | ']' ->
+        valid_module_name_aux name (off + 1) len
     | _ -> false
 
-type state = 
-  | Invalid
-  | Upper
-  | Lower
+type state = Invalid | Upper | Lower
 
-let valid_module_name name len =     
+let valid_module_name name len =
   if len = 0 then Invalid
-  else 
-    let c = String.unsafe_get name 0 in 
-    match c with 
-    | 'A' .. 'Z'
-      -> 
-      if valid_module_name_aux name 1 len then 
-        Upper
-      else Invalid  
-    | 'a' .. 'z' 
-    | '0' .. '9'
-    | '_'
-    | '[' 
-    | ']'
-      -> 
-      if valid_module_name_aux name 1 len then
-        Lower
-      else Invalid
+  else
+    let c = String.unsafe_get name 0 in
+    match c with
+    | 'A' .. 'Z' -> if valid_module_name_aux name 1 len then Upper else Invalid
+    | 'a' .. 'z' | '0' .. '9' | '_' | '[' | ']' ->
+        if valid_module_name_aux name 1 len then Lower else Invalid
     | _ -> Invalid
 
-
 let as_module ~basename =
-  let rec search_dot i  name name_len =
-    if i < 0  then
+  let rec search_dot i name name_len =
+    if i < 0 then
       (* Input e.g, [a_b] *)
-      match valid_module_name name name_len with 
-      | Invalid -> None 
-      | Upper ->  Some {module_name = name; case = true }
-      | Lower -> Some {module_name = Ext_string.capitalize_ascii name; case = false}
-    else 
-    if String.unsafe_get name i = '.' then 
+      match valid_module_name name name_len with
+      | Invalid -> None
+      | Upper -> Some { module_name = name; case = true }
+      | Lower ->
+          Some { module_name = Ext_string.capitalize_ascii name; case = false }
+    else if String.unsafe_get name i = '.' then
       (*Input e.g, [A_b] *)
-      match valid_module_name  name i with 
-      | Invalid -> None 
-      | Upper -> 
-        Some {module_name = Ext_string.capitalize_sub name i; case = true}
-      | Lower -> 
-        Some {module_name = Ext_string.capitalize_sub name i; case = false}
-    else 
-      search_dot (i - 1) name name_len in  
-  let name_len = String.length basename in       
-  search_dot (name_len - 1)  basename name_len
+      match valid_module_name name i with
+      | Invalid -> None
+      | Upper ->
+          Some { module_name = Ext_string.capitalize_sub name i; case = true }
+      | Lower ->
+          Some { module_name = Ext_string.capitalize_sub name i; case = false }
+    else search_dot (i - 1) name name_len
+  in
+  let name_len = String.length basename in
+  search_dot (name_len - 1) basename name_len
 
 end
 module Ext_js_file_kind
@@ -7916,20 +7413,12 @@ module Ext_js_file_kind
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-type case = 
-  | Upper
-  | Little 
+type case = Upper | Little
 
-type t = {
-  case : case; 
-  suffix : Ext_js_suffix.t;
-}
+type t = { case : case; suffix : Ext_js_suffix.t }
 
+let any_runtime_kind = { case = Little; suffix = Ext_js_suffix.Js }
 
-let any_runtime_kind = {
-  case = Little; 
-  suffix = Ext_js_suffix.Js
-}
 end
 module Ext_namespace : sig 
 #1 "ext_namespace.mli"
@@ -7957,50 +7446,36 @@ module Ext_namespace : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+val try_split_module_name : string -> (string * string) option
 
-
-val try_split_module_name :
-  string -> (string * string ) option
-
-
-
-(* Note  we have to output uncapitalized file Name, 
+(* Note  we have to output uncapitalized file Name,
    or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
-   relevant issues: #1609, #913  
+   relevant issues: #1609, #913
 
    #1933 when removing ns suffix, don't pass the bound
    of basename
 *)
-val change_ext_ns_suffix :  
-  string -> 
-  string ->
-  string
+val change_ext_ns_suffix : string -> string -> string
 
-
-
+val js_name_of_modulename :
+  string -> Ext_js_file_kind.case -> Ext_js_suffix.t -> string
 (** [js_name_of_modulename ~little A-Ns]
 *)
-val js_name_of_modulename : 
-  string -> 
-  Ext_js_file_kind.case -> 
-  Ext_js_suffix.t ->
-  string
 
-(* TODO handle cases like 
+(* TODO handle cases like
    '@angular/core'
-   its directory structure is like 
+   its directory structure is like
    {[
      @angular
      |-------- core
    ]}
 *)
-val is_valid_npm_package_name : string -> bool 
+val is_valid_npm_package_name : string -> bool
 
 val namespace_of_package_name : string -> string
 
 end = struct
 #1 "ext_namespace.ml"
-
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -8025,90 +7500,70 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-let rec rindex_rec s i  =
-  if i < 0 then i else
+let rec rindex_rec s i =
+  if i < 0 then i
+  else
     let char = String.unsafe_get s i in
-    if Ext_filename.is_dir_sep char  then -1 
-    else if char = Literals.ns_sep_char then i 
-    else
-      rindex_rec s (i - 1) 
+    if Ext_filename.is_dir_sep char then -1
+    else if char = Literals.ns_sep_char then i
+    else rindex_rec s (i - 1)
 
 let change_ext_ns_suffix name ext =
-  let i = rindex_rec name (String.length name - 1)  in 
-  if i < 0 then name ^ ext
-  else String.sub name 0 i ^ ext (* FIXME: micro-optimizaiton*)
+  let i = rindex_rec name (String.length name - 1) in
+  if i < 0 then name ^ ext else String.sub name 0 i ^ ext
+(* FIXME: micro-optimizaiton*)
 
-let try_split_module_name name = 
-  let len = String.length name in 
-  let i = rindex_rec name (len - 1)  in 
-  if i < 0 then None 
-  else 
-    Some (String.sub name (i+1) (len - i - 1),
-          String.sub name 0 i )
+let try_split_module_name name =
+  let len = String.length name in
+  let i = rindex_rec name (len - 1) in
+  if i < 0 then None
+  else Some (String.sub name (i + 1) (len - i - 1), String.sub name 0 i)
 
+let js_name_of_modulename s (case : Ext_js_file_kind.case) suffix : string =
+  let s =
+    match case with Little -> Ext_string.uncapitalize_ascii s | Upper -> s
+  in
+  change_ext_ns_suffix s (Ext_js_suffix.to_string suffix)
 
-
-
-
-let js_name_of_modulename s (case : Ext_js_file_kind.case) suffix : string = 
-  let s = match case with 
-    | Little -> 
-      Ext_string.uncapitalize_ascii s
-    | Upper -> s  in 
-  change_ext_ns_suffix s  (Ext_js_suffix.to_string suffix)
-
-(* https://docs.npmjs.com/files/package.json 
+(* https://docs.npmjs.com/files/package.json
    Some rules:
    The name must be less than or equal to 214 characters. This includes the scope for scoped packages.
    The name can't start with a dot or an underscore.
    New packages must not have uppercase letters in the name.
    The name ends up being part of a URL, an argument on the command line, and a folder name. Therefore, the name can't contain any non-URL-safe characters.
 *)
-let is_valid_npm_package_name (s : string) = 
-  let len = String.length s in 
-  len <= 214 && (* magic number forced by npm *)
-  len > 0 &&
-  match String.unsafe_get s 0 with 
-  | 'a' .. 'z' | '@' -> 
-    Ext_string.for_all_from s 1 
-      (fun x -> 
-         match x with 
-         |  'a'..'z' | '0'..'9' | '_' | '-' -> true
-         | _ -> false )
-  | _ -> false 
+let is_valid_npm_package_name (s : string) =
+  let len = String.length s in
+  len <= 214 (* magic number forced by npm *)
+  && len > 0
+  &&
+  match String.unsafe_get s 0 with
+  | 'a' .. 'z' | '@' ->
+      Ext_string.for_all_from s 1 (fun x ->
+          match x with
+          | 'a' .. 'z' | '0' .. '9' | '_' | '-' -> true
+          | _ -> false)
+  | _ -> false
 
-
-let namespace_of_package_name (s : string) : string = 
-  let len = String.length s in 
-  let buf = Ext_buffer.create len in 
-  let add capital ch = 
-    Ext_buffer.add_char buf 
-      (if capital then 
-         (Char.uppercase_ascii ch)
-       else ch) in    
-  let rec aux capital off len =     
+let namespace_of_package_name (s : string) : string =
+  let len = String.length s in
+  let buf = Ext_buffer.create len in
+  let add capital ch =
+    Ext_buffer.add_char buf (if capital then Char.uppercase_ascii ch else ch)
+  in
+  let rec aux capital off len =
     if off >= len then ()
-    else 
+    else
       let ch = String.unsafe_get s off in
-      match ch with 
-      | 'a' .. 'z' 
-      | 'A' .. 'Z' 
-      | '0' .. '9'
-      | '_'
-        ->
-        add capital ch ; 
-        aux false (off + 1) len 
-      | '/'
-      | '-' -> 
-        aux true (off + 1) len 
-      | _ -> aux capital (off+1) len
-  in 
-  aux true 0 len ;
-  Ext_buffer.contents buf 
+      match ch with
+      | 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' ->
+          add capital ch;
+          aux false (off + 1) len
+      | '/' | '-' -> aux true (off + 1) len
+      | _ -> aux capital (off + 1) len
+  in
+  aux true 0 len;
+  Ext_buffer.contents buf
 
 end
 module Bsb_package_specs : sig 
@@ -8139,31 +7594,18 @@ module Bsb_package_specs : sig
 
 type t
 
+val from_map : cwd:string -> Ext_json_types.t Map_string.t -> t
 
+val get_list_of_output_js : t -> string -> string list
 
-
-val from_map:
-  cwd:string ->
-  Ext_json_types.t Map_string.t -> t 
-
-val get_list_of_output_js : 
-  t -> 
-  string -> 
-  string list
-
+val package_flag_of_package_specs : t -> dirname:string -> string
 (**
    Sample output: {[ -bs-package-output commonjs:lib/js/jscomp/test]}
 *)
-val package_flag_of_package_specs : 
-  t -> 
-  dirname:string -> 
-  string
 
 (* used to ensure each dir does exist *)
-val list_dirs_by :   
-  t -> 
-  (string -> unit) -> 
-  unit
+val list_dirs_by : t -> (string -> unit) -> unit
+
 end = struct
 #1 "bsb_package_specs.ml"
 (* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
@@ -8190,217 +7632,195 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-let (//) = Ext_path.combine 
-
-
-
-
+let ( // ) = Ext_path.combine
 
 (*FIXME: use assoc list instead *)
 module Spec_set = Bsb_spec_set
 
 type t = {
   modules : Spec_set.t;
-  runtime: string option;  
-  (* This has to be resolved as early as possible, since 
-     the path will be inherited in sub projects
-  *)
+  runtime : string option;
+      (* This has to be resolved as early as possible, since
+         the path will be inherited in sub projects
+      *)
 }
 
-let (.?()) = Map_string.find_opt 
+let ( .?() ) = Map_string.find_opt
 
 let bad_module_format_message_exn ~loc format =
-  Bsb_exception.errorf ~loc "package-specs: `%s` isn't a valid output module format. It has to be one of:  %s, %s or %s"
-    format
-    Literals.commonjs
-    Literals.es6
-    Literals.es6_global
+  Bsb_exception.errorf ~loc
+    "package-specs: `%s` isn't a valid output module format. It has to be one \
+     of:  %s, %s or %s"
+    format Literals.commonjs Literals.es6 Literals.es6_global
 
-let supported_format (x : string) loc : Ext_module_system.t = 
+let supported_format (x : string) loc : Ext_module_system.t =
   if x = Literals.commonjs then NodeJS
   else if x = Literals.es6 then Es6
   else if x = Literals.es6_global then Es6_global
-  else bad_module_format_message_exn ~loc x 
+  else bad_module_format_message_exn ~loc x
 
 let string_of_format (x : Ext_module_system.t) =
-  match x with 
+  match x with
   | NodeJS -> Literals.commonjs
   | Es6 -> Literals.es6
   | Es6_global -> Literals.es6_global
-
 
 let rec from_array suffix (arr : Ext_json_types.t array) : Spec_set.t =
   let spec = ref Spec_set.empty in
   let has_in_source = ref false in
   Ext_array.iter arr (fun x ->
-      let result = from_json_single suffix x  in
-      if result.in_source then 
-        (
-          if not !has_in_source then
-            has_in_source:= true
-          else 
-            Bsb_exception.errorf 
-              ~loc:(Ext_json.loc_of x) 
-              "package-specs: we've detected two module formats that are both configured to be in-source." 
-        );
-      spec := Spec_set.add result !spec
-    );
+      let result = from_json_single suffix x in
+      if result.in_source then
+        if not !has_in_source then has_in_source := true
+        else
+          Bsb_exception.errorf ~loc:(Ext_json.loc_of x)
+            "package-specs: we've detected two module formats that are both \
+             configured to be in-source.";
+      spec := Spec_set.add result !spec);
   !spec
 
 (* TODO: FIXME: better API without mutating *)
 and from_json_single suffix (x : Ext_json_types.t) : Bsb_spec_set.spec =
   match x with
-  | Str {str = format; loc } ->    
-    {format = supported_format format loc  ; in_source = false ; suffix }    
-  | Obj {map; loc} ->
-    begin match map .?("module") with
-      | Some(Str {str = format}) ->
-        let in_source = 
-          match map.?(Bsb_build_schemas.in_source) with
-          | Some (True _) -> true
-          | Some _
-          | None -> false
-        in        
-        let suffix = 
-          match map.?("suffix") with
-          | Some (Str {str = suffix; loc}) ->
-            let s = Ext_js_suffix.of_string suffix in 
-            if s = Unknown_extension then 
-              Bsb_exception.errorf ~loc "expect .js,.bs.js,.mjs or .cjs"
-            else  s 
-          | Some _ -> 
-            Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "expect a string field"
-          | None -> suffix in   
-        {format = supported_format format loc ; in_source ; suffix}        
+  | Str { str = format; loc } ->
+      { format = supported_format format loc; in_source = false; suffix }
+  | Obj { map; loc } -> (
+      match map.?("module") with
+      | Some (Str { str = format }) ->
+          let in_source =
+            match map.?(Bsb_build_schemas.in_source) with
+            | Some (True _) -> true
+            | Some _ | None -> false
+          in
+          let suffix =
+            match map.?("suffix") with
+            | Some (Str { str = suffix; loc }) ->
+                let s = Ext_js_suffix.of_string suffix in
+                if s = Unknown_extension then
+                  Bsb_exception.errorf ~loc "expect .js,.bs.js,.mjs or .cjs"
+                else s
+            | Some _ ->
+                Bsb_exception.errorf ~loc:(Ext_json.loc_of x)
+                  "expect a string field"
+            | None -> suffix
+          in
+          { format = supported_format format loc; in_source; suffix }
       | Some _ ->
-        Bsb_exception.errorf ~loc
-          "package-specs: when the configuration is an object, `module` field should be a string, not an array. If you want to pass multiple module specs, try turning package-specs into an array of objects (or strings) instead."      
+          Bsb_exception.errorf ~loc
+            "package-specs: when the configuration is an object, `module` \
+             field should be a string, not an array. If you want to pass \
+             multiple module specs, try turning package-specs into an array of \
+             objects (or strings) instead."
       | None ->
-        Bsb_exception.errorf ~loc
-          "package-specs: when the configuration is an object, the `module` field is mandatory."
-    end
-  | _ -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x)
-           "package-specs: we expect either a string or an object."
+          Bsb_exception.errorf ~loc
+            "package-specs: when the configuration is an object, the `module` \
+             field is mandatory.")
+  | _ ->
+      Bsb_exception.errorf ~loc:(Ext_json.loc_of x)
+        "package-specs: we expect either a string or an object."
 
-let  from_json suffix (x : Ext_json_types.t) : Spec_set.t =
+let from_json suffix (x : Ext_json_types.t) : Spec_set.t =
   match x with
-  | Arr {content ; _} -> from_array suffix content
-  | _ -> Spec_set.singleton (from_json_single suffix x )
+  | Arr { content; _ } -> from_array suffix content
+  | _ -> Spec_set.singleton (from_json_single suffix x)
 
 let bs_package_output = "-bs-package-output"
+
 [@@@warning "+9"]
-(** Assume input is valid 
-    coordinate with command line flag 
-    {[ -bs-package-output commonjs:lib/js/jscomp/test:.js ]}    
+
+(* Assume input is valid
+    coordinate with command line flag
+    {[ -bs-package-output commonjs:lib/js/jscomp/test:.js ]}
 *)
-let package_flag ({format; in_source; suffix } : Bsb_spec_set.spec) dir =
-  Ext_string.inter2
-    bs_package_output 
-    (Ext_string.concat5
-       (string_of_format format)
+let package_flag ({ format; in_source; suffix } : Bsb_spec_set.spec) dir =
+  Ext_string.inter2 bs_package_output
+    (Ext_string.concat5 (string_of_format format) Ext_string.single_colon
+       (if in_source then dir
+       else Bsb_config.top_prefix_of_format format // dir)
        Ext_string.single_colon
-       (if in_source then dir else
-          Bsb_config.top_prefix_of_format format // dir)
-       Ext_string.single_colon  
-       (Ext_js_suffix.to_string suffix)
-    )
+       (Ext_js_suffix.to_string suffix))
 
-(* FIXME: we should adapt it *)    
-let package_flag_of_package_specs (package_specs : t) 
-    ~(dirname : string ) : string  = 
+(* FIXME: we should adapt it *)
+let package_flag_of_package_specs (package_specs : t) ~(dirname : string) :
+    string =
   let res =
-    match (package_specs.modules :> Bsb_spec_set.spec list) with 
-    | [] -> Ext_string.empty 
-    | [format] -> 
-      Ext_string.inter2 Ext_string.empty (package_flag format dirname)
-    | [a;b] -> 
-      Ext_string.inter3 Ext_string.empty 
-        (package_flag a dirname) 
-        (package_flag b dirname)
-    | [a;b;c] -> 
-      Ext_string.inter4
-        Ext_string.empty
-        (package_flag a dirname) 
-        (package_flag b dirname)  
-        (package_flag c dirname)
-    | _ ->  
-      Spec_set.fold (fun format acc ->
-          Ext_string.inter2 acc (package_flag format dirname )
-        ) package_specs.modules Ext_string.empty in 
-  match package_specs.runtime with 
+    match (package_specs.modules :> Bsb_spec_set.spec list) with
+    | [] -> Ext_string.empty
+    | [ format ] ->
+        Ext_string.inter2 Ext_string.empty (package_flag format dirname)
+    | [ a; b ] ->
+        Ext_string.inter3 Ext_string.empty (package_flag a dirname)
+          (package_flag b dirname)
+    | [ a; b; c ] ->
+        Ext_string.inter4 Ext_string.empty (package_flag a dirname)
+          (package_flag b dirname) (package_flag c dirname)
+    | _ ->
+        Spec_set.fold
+          (fun format acc ->
+            Ext_string.inter2 acc (package_flag format dirname))
+          package_specs.modules Ext_string.empty
+  in
+  match package_specs.runtime with
   | None -> res
-  | Some x -> 
-    Ext_string.inter3 res "-runtime" x 
+  | Some x -> Ext_string.inter3 res "-runtime" x
 
-let default_package_specs suffix = 
-  Spec_set.singleton 
-    { format = NodeJS ; in_source = false; suffix  }
-
-
+let default_package_specs suffix =
+  Spec_set.singleton { format = NodeJS; in_source = false; suffix }
 
 (**
     [get_list_of_output_js specs "src/hi/hello"]
 
 *)
-let get_list_of_output_js 
-    (package_specs : t)
-    (output_file_sans_extension : string)
-  = 
-  Spec_set.fold 
+let get_list_of_output_js (package_specs : t)
+    (output_file_sans_extension : string) =
+  Spec_set.fold
     (fun (spec : Bsb_spec_set.spec) acc ->
-       let basename =  
-         Ext_namespace.change_ext_ns_suffix
-           output_file_sans_extension
-           (Ext_js_suffix.to_string spec.suffix)
-       in 
-       (if spec.in_source then Bsb_config.rev_lib_bs_prefix basename
-        else Bsb_config.lib_bs_prefix_of_format spec.format // basename) 
-       :: acc
-    ) package_specs.modules []
+      let basename =
+        Ext_namespace.change_ext_ns_suffix output_file_sans_extension
+          (Ext_js_suffix.to_string spec.suffix)
+      in
+      (if spec.in_source then Bsb_config.rev_lib_bs_prefix basename
+      else Bsb_config.lib_bs_prefix_of_format spec.format // basename)
+      :: acc)
+    package_specs.modules []
 
+let list_dirs_by (package_specs : t) (f : string -> unit) =
+  Spec_set.iter
+    (fun (spec : Bsb_spec_set.spec) ->
+      if not spec.in_source then f (Bsb_config.top_prefix_of_format spec.format))
+    package_specs.modules
 
-let list_dirs_by
-    (package_specs : t)
-    (f : string -> unit)
-  =  
-  Spec_set.iter (fun (spec : Bsb_spec_set.spec)  -> 
-      if not spec.in_source then     
-        f (Bsb_config.top_prefix_of_format spec.format) 
-    ) package_specs.modules 
+type json_map = Ext_json_types.t Map_string.t
 
-type json_map = Ext_json_types.t Map_string.t 
+let extract_bs_suffix_exn (map : json_map) : Ext_js_suffix.t =
+  match map.?(Bsb_build_schemas.suffix) with
+  | None -> Js
+  | Some (Str { str; loc }) ->
+      let s = Ext_js_suffix.of_string str in
+      if s = Unknown_extension then
+        Bsb_exception.errorf ~loc "expect .bs.js, .js, .cjs, .mjs here"
+      else s
+  | Some config ->
+      Bsb_exception.config_error config
+        "expect a string exteion like \".js\" here"
 
-let extract_bs_suffix_exn (map : json_map) : Ext_js_suffix.t =  
-  match map.?(Bsb_build_schemas.suffix) with 
-  | None -> Js  
-  | Some (Str {str; loc}) -> 
-    let s =  Ext_js_suffix.of_string str  in 
-    if s = Unknown_extension then 
-      Bsb_exception.errorf ~loc
-        "expect .bs.js, .js, .cjs, .mjs here"
-    else s     
-  | Some config -> 
-    Bsb_exception.config_error config 
-      "expect a string exteion like \".js\" here"
-
-let from_map ~(cwd:string) map =  
-  let suffix = extract_bs_suffix_exn map in   
-  let modules = match map.?(Bsb_build_schemas.package_specs) with 
-    | Some x ->
-      from_json suffix x 
-    | None ->  default_package_specs suffix in 
-  let runtime = 
+let from_map ~(cwd : string) map =
+  let suffix = extract_bs_suffix_exn map in
+  let modules =
+    match map.?(Bsb_build_schemas.package_specs) with
+    | Some x -> from_json suffix x
+    | None -> default_package_specs suffix
+  in
+  let runtime =
     match map.?(Bsb_build_schemas.external_stdlib) with
-    | None -> None 
-    | Some(Str{str; _}) ->
-      Some (Bsb_pkg.resolve_bs_package ~cwd (Bsb_pkg_types.string_as_package str))
-    | _ -> assert false in   
-  {
-    runtime;  
-    modules 
-  }
-
+    | None -> None
+    | Some (Str { str; _ }) ->
+        Some
+          (Bsb_pkg.resolve_bs_package ~cwd
+             (Bsb_pkg_types.string_as_package str))
+    | _ -> assert false
+  in
+  { runtime; modules }
 
 end
 module Bsb_package_kind
@@ -8430,26 +7850,22 @@ module Bsb_package_kind
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type t = 
+type t =
   | Toplevel
-  | Dependency of Bsb_package_specs.t 
-  | Pinned_dependency of Bsb_package_specs.t 
-  (*  This package specs comes from the toplevel to 
-      override the current settings
-  *)
+  | Dependency of Bsb_package_specs.t
+  | Pinned_dependency of Bsb_package_specs.t
+(* This package specs comes from the toplevel to
+   override the current settings
+*)
 
-
-let encode_no_nl ( x : t) = 
-  match x with 
+let encode_no_nl (x : t) =
+  match x with
   | Toplevel -> "0"
-  | Dependency x -> 
-    "1" ^ 
-    Bsb_package_specs.package_flag_of_package_specs x 
-      ~dirname:"."  
-  | Pinned_dependency x -> 
-    "2" ^ 
-    Bsb_package_specs.package_flag_of_package_specs x 
-      ~dirname:"."  
+  | Dependency x ->
+      "1" ^ Bsb_package_specs.package_flag_of_package_specs x ~dirname:"."
+  | Pinned_dependency x ->
+      "2" ^ Bsb_package_specs.package_flag_of_package_specs x ~dirname:"."
+
 end
 module Bsc_warnings
 = struct
@@ -8478,8 +7894,6 @@ module Bsc_warnings
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
 (**
    See the meanings of the warning codes here: https://caml.inria.fr/pub/docs/manual-ocaml/comp.html#sec281
 
@@ -8496,8 +7910,7 @@ module Bsc_warnings
    - 45 Open statement shadows an already defined label or constructor.
    - 48 Implicit elimination of optional arguments. https://caml.inria.fr/mantis/view.php?id=6352
    - 101 (bsb-specific) unsafe polymorphic comparison.
-*) 
-
+*)
 
 (*
   The purpose of default warning set is to make it strict while
@@ -8529,7 +7942,8 @@ module Bsc_warnings
    - 102 Bs_polymorphic_comparison
 *)
 let defaults_w = "+a-4-9-20-40-41-42-50-61-102"
-let defaults_warn_error = "-a+5+6+101+109";;
+
+let defaults_warn_error = "-a+5+6+101+109"
 (*TODO: add +10*)
 
 end
@@ -8559,26 +7973,19 @@ module Bsb_warning : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
 type t
 
+val to_merlin_string : t -> string
 (** Extra work is need to make merlin happy *)
-val to_merlin_string : t  -> string
 
+val from_map : Ext_json_types.t Map_string.t -> t
 
-
-val from_map : Ext_json_types.t Map_string.t -> t 
-
+val to_bsb_string : package_kind:Bsb_package_kind.t -> t -> string
 (** [to_bsb_string not_dev warning]
 *)
-val to_bsb_string : 
-  package_kind:Bsb_package_kind.t -> 
-  t  -> 
-  string
 
 val use_default : t
+
 end = struct
 #1 "bsb_warning.ml"
 (* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
@@ -8605,100 +8012,79 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 type warning_error =
   | Warn_error_false
   (* default [false] to make our changes non-intrusive *)
   | Warn_error_true
   | Warn_error_number of string
 
-type t0 = {
-  number : string option;
-  error : warning_error
-}
+type t0 = { number : string option; error : warning_error }
 
-type nonrec t = t0 option 
+type nonrec t = t0 option
 
 let use_default = None
 
 let prepare_warning_concat ~(beg : bool) s =
-  let s = Ext_string.trim s in 
-  if s = "" then s 
-  else 
-    match s.[0] with 
-    | '0' .. '9' -> if beg then "-w +" ^ s else "+" ^ s 
-    | 'a' .. 'z' -> 
-      if beg then "-w " ^ s else "-" ^ s 
-    | 'A' .. 'Z' -> 
-      if beg then "-w " ^ s else "+" ^ s  
-    | _ -> 
-      if beg then "-w " ^ s else s
+  let s = Ext_string.trim s in
+  if s = "" then s
+  else
+    match s.[0] with
+    | '0' .. '9' -> if beg then "-w +" ^ s else "+" ^ s
+    | 'a' .. 'z' -> if beg then "-w " ^ s else "-" ^ s
+    | 'A' .. 'Z' -> if beg then "-w " ^ s else "+" ^ s
+    | _ -> if beg then "-w " ^ s else s
 
 let to_merlin_string x =
   "-w " ^ Bsc_warnings.defaults_w
   ^
-  (let customize = (match x with
-       | Some {number =None}
-       | None ->  Ext_string.empty
-       | Some {number = Some x} -> 
-         prepare_warning_concat ~beg:false x 
-     ) in 
-   if customize = "" then customize
-   else customize ^ "-40-42-61") 
+  let customize =
+    match x with
+    | Some { number = None } | None -> Ext_string.empty
+    | Some { number = Some x } -> prepare_warning_concat ~beg:false x
+  in
+  if customize = "" then customize else customize ^ "-40-42-61"
 (* see #4406 to avoid user pass A
    Sync up with {!Warnings.report}
 *)
 
-
-
 let from_map (m : Ext_json_types.t Map_string.t) =
   let number_opt = Map_string.find_opt m Bsb_build_schemas.number in
-  let error_opt = Map_string.find_opt m  Bsb_build_schemas.error in
-  match number_opt, error_opt  with
+  let error_opt = Map_string.find_opt m Bsb_build_schemas.error in
+  match (number_opt, error_opt) with
   | None, None -> None
   | _, _ ->
-    let error  =
-      match error_opt with
-      | Some (True _) -> Warn_error_true
-      | Some (False _) -> Warn_error_false
-      | Some (Str {str ; })
-        -> Warn_error_number str
-      | Some x -> Bsb_exception.config_error x "expect true/false or string"
-      | None -> Warn_error_false
-      (* To make it less intrusive : warning error has to be enabled*)
-    in
-    let number =
-      match number_opt with
-      | Some (Str { str = number}) -> Some number
-      | None -> None
-      | Some x -> Bsb_exception.config_error x "expect a string"
-    in
-    Some {number; error }
+      let error =
+        match error_opt with
+        | Some (True _) -> Warn_error_true
+        | Some (False _) -> Warn_error_false
+        | Some (Str { str }) -> Warn_error_number str
+        | Some x -> Bsb_exception.config_error x "expect true/false or string"
+        | None -> Warn_error_false
+        (* To make it less intrusive : warning error has to be enabled*)
+      in
+      let number =
+        match number_opt with
+        | Some (Str { str = number }) -> Some number
+        | None -> None
+        | Some x -> Bsb_exception.config_error x "expect a string"
+      in
+      Some { number; error }
 
-
-let to_bsb_string ~(package_kind: Bsb_package_kind.t) warning =
-  match package_kind with 
-  | Toplevel 
-  | Pinned_dependency _ -> 
-    (match warning with
-     | None -> Ext_string.empty
-     | Some warning ->     
-       (match warning.number with
-        | None ->
-          Ext_string.empty
-        | Some x ->
-          prepare_warning_concat ~beg:true x  
-       ) ^
-       (
-         match warning.error with
-         | Warn_error_true ->
-           " -warn-error A"
-         | Warn_error_number y ->
-           " -warn-error " ^ y
-         | Warn_error_false ->
-           Ext_string.empty
-       ))
-  | Dependency _ ->  " -w a" 
+let to_bsb_string ~(package_kind : Bsb_package_kind.t) warning =
+  match package_kind with
+  | Toplevel | Pinned_dependency _ -> (
+      match warning with
+      | None -> Ext_string.empty
+      | Some warning -> (
+          (match warning.number with
+          | None -> Ext_string.empty
+          | Some x -> prepare_warning_concat ~beg:true x)
+          ^
+          match warning.error with
+          | Warn_error_true -> " -warn-error A"
+          | Warn_error_number y -> " -warn-error " ^ y
+          | Warn_error_false -> Ext_string.empty))
+  | Dependency _ -> " -w a"
 (* TODO: this is the current default behavior *)
 
 end
@@ -8729,61 +8115,52 @@ module Bsb_config_types
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-type dependency = 
-  {
-    package_name : Bsb_pkg_types.t ; 
-    package_install_path : string ; 
-  }
-type dependencies = dependency list 
-
-
-
-
-type reason_react_jsx = 
-  | Jsx_v3
-  (* string option  *)
-
-
-
-type gentype_config = {
-  path : string (* resolved *)
+type dependency = {
+  package_name : Bsb_pkg_types.t;
+  package_install_path : string;
 }
+
+type dependencies = dependency list
+
+type reason_react_jsx = Jsx_v3
+(* string option  *)
+
+type gentype_config = { path : string (* resolved *) }
+
 type command = string
 
-type ppx = {
-  name : string;
-  args : string list
+type ppx = { name : string; args : string list }
+
+type t = {
+  package_name : string;
+  (* [captial-package] *)
+  namespace : string option;
+  (* CapitalPackage *)
+  external_includes : string list;
+  bsc_flags : string list;
+  ppx_files : ppx list;
+  pp_file : string option;
+  bs_dependencies : dependencies;
+  bs_dev_dependencies : dependencies;
+  pinned_dependencies : Set_string.t;
+  built_in_dependency : bool;
+  warning : Bsb_warning.t;
+  (*TODO: maybe we should always resolve rescript
+    so that we can calculate correct relative path in
+    [.merlin]
+  *)
+  js_post_build_cmd : string option;
+  package_specs : Bsb_package_specs.t;
+  file_groups : Bsb_file_groups.t;
+  files_to_install : Bsb_db.module_info Queue.t;
+  generate_merlin : bool;
+  reason_react_jsx : reason_react_jsx option;
+  (* whether apply PPX transform or not*)
+  generators : command Map_string.t;
+  cut_generators : bool;
+  (* note when used as a dev mode, we will always ignore it *)
+  gentype_config : gentype_config option;
 }
-type t = 
-  {
-    package_name : string ; 
-    (* [captial-package] *)
-    namespace : string option; 
-    (* CapitalPackage *)
-    external_includes : string list ; 
-    bsc_flags : string list ;
-    ppx_files : ppx list ;
-    pp_file : string option;
-    bs_dependencies : dependencies;
-    bs_dev_dependencies : dependencies;
-    pinned_dependencies : Set_string.t;
-    built_in_dependency : bool; 
-    warning : Bsb_warning.t;
-    (*TODO: maybe we should always resolve rescript
-      so that we can calculate correct relative path in 
-      [.merlin]
-    *)
-    js_post_build_cmd : string option;
-    package_specs : Bsb_package_specs.t ; 
-    file_groups : Bsb_file_groups.t;
-    files_to_install : Bsb_db.module_info Queue.t ;
-    generate_merlin : bool ; 
-    reason_react_jsx : reason_react_jsx option; (* whether apply PPX transform or not*)
-    generators : command Map_string.t ; 
-    cut_generators : bool; (* note when used as a dev mode, we will always ignore it *)    
-    gentype_config : gentype_config option;
-  }
 
 end
 module Ext_json_parse : sig 
@@ -8814,17 +8191,15 @@ module Ext_json_parse : sig
 
 type error
 
-val report_error : Format.formatter -> error -> unit 
+val report_error : Format.formatter -> error -> unit
 
 exception Error of Lexing.position * Lexing.position * error
 
-val parse_json_from_string : string -> Ext_json_types.t 
+val parse_json_from_string : string -> Ext_json_types.t
 
-val parse_json_from_chan :
-  string ->  in_channel -> Ext_json_types.t 
+val parse_json_from_chan : string -> in_channel -> Ext_json_types.t
 
-val parse_json_from_file  : string -> Ext_json_types.t
-
+val parse_json_from_file : string -> Ext_json_types.t
 
 end = struct
 #1 "ext_json_parse.ml"
@@ -9574,11 +8949,7 @@ module Hash_string : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 include Hash_gen.S with type key = string
-
-
-
 
 end = struct
 #1 "hash_string.ml"
@@ -9728,14 +9099,15 @@ module Bsb_build_util : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+val flag_concat : string -> string list -> string
 (**
    Use:
    {[
      flag_concat "-ppx" [ppxs]
    ]}
 *)
-val flag_concat : string -> string list -> string
 
+val ppx_flags : Bsb_config_types.ppx list -> string
 (**
    Build quoted commandline arguments for bsc.exe for the given ppx flags
 
@@ -9744,10 +9116,10 @@ val flag_concat : string -> string list -> string
      ppx_flags [ppxs]
    ]}
 *)
-val ppx_flags : Bsb_config_types.ppx list -> string
 
-val pp_flag : string  -> string
+val pp_flag : string -> string
 
+val include_dirs : string list -> string
 (**
    Build unquoted command line arguments for bsc.exe for the given include dirs
 
@@ -9756,68 +9128,41 @@ val pp_flag : string  -> string
      include_dirs [dirs]
    ]}
 *)
-val include_dirs : string list -> string
 
-val include_dirs_by : 
-  'a list ->   
-  ('a -> string ) ->
-  string
-
+val include_dirs_by : 'a list -> ('a -> string) -> string
 
 val mkp : string -> unit
 
-
-(* The path of [bsc] and [bsdep] is normalized so that the invokation of [./jscomp/bin/bsb.exe] 
+(* The path of [bsc] and [bsdep] is normalized so that the invokation of [./jscomp/bin/bsb.exe]
    and [bsb.exe] (combined with a dirty bsconfig.json) will not trigger unnecessary rebuild.
 
-   The location of [bsc] and [bsdep] is configured by the combination of [Sys.executable_name] 
+   The location of [bsc] and [bsdep] is configured by the combination of [Sys.executable_name]
    and [cwd].
 
-   In theory, we should also check the integrity of [bsb.exe], if it is changed, the rebuild 
-   should be regen, but that is too much in practice, not only you need check the integrity of 
-   path of [bsb.exe] but also the timestamp, to make it 100% correct, also the integrity of 
+   In theory, we should also check the integrity of [bsb.exe], if it is changed, the rebuild
+   should be regen, but that is too much in practice, not only you need check the integrity of
+   path of [bsb.exe] but also the timestamp, to make it 100% correct, also the integrity of
    [bsdep.exe] [bsc.exe] etc.
 *)
 
+val get_list_string_acc : Ext_json_types.t array -> string list -> string list
 
+val get_list_string : Ext_json_types.t array -> string list
 
+type top = Expect_none | Expect_name of string
 
-
-val get_list_string_acc : 
-  Ext_json_types.t array -> 
-  string list -> 
-  string list
-
-val get_list_string : 
-  Ext_json_types.t array -> 
-  string list
-
-type top = 
-  | Expect_none 
-  | Expect_name of string   
-
-type result = { path : string; checked : bool }    
+type result = { path : string; checked : bool }
 
 (* [resolve_bsb_magic_file]
    returns a tuple (path,checked)
    when checked is true, it means such file should exist without depending on env
 *)
-val resolve_bsb_magic_file : 
-  cwd:string -> 
-  desc:string ->
-  string -> 
-  result
+val resolve_bsb_magic_file : cwd:string -> desc:string -> string -> result
 
-type package_context = {
-  proj_dir : string ; 
-  top : top ; 
-}
+type package_context = { proj_dir : string; top : top }
 
-val walk_all_deps : 
-  string -> 
-  pinned_dependencies:Set_string.t ->
-  package_context Queue.t
-
+val walk_all_deps :
+  string -> pinned_dependencies:Set_string.t -> package_context Queue.t
 
 end = struct
 #1 "bsb_build_util.ml"
@@ -9845,51 +9190,43 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let flag_concat flag xs =   
+let flag_concat flag xs =
   String.concat Ext_string.single_space
-    (Ext_list.flat_map xs  (fun x -> [flag ; x]))
+    (Ext_list.flat_map xs (fun x -> [ flag; x ]))
 
-let (//) = Ext_path.combine
-
-
+let ( // ) = Ext_path.combine
 
 let ppx_flags (xs : Bsb_config_types.ppx list) =
   flag_concat "-ppx"
-    (Ext_list.map xs 
-       (fun x -> 
-          if x.args = [] then Ext_filename.maybe_quote x.name else 
-            let fmt : _ format = 
-              if Ext_sys.is_windows_or_cygwin then "\"%s %s\""
-              else "'%s %s'" in 
-            Printf.sprintf fmt x.name (String.concat " " x.args) 
-       ))
+    (Ext_list.map xs (fun x ->
+         if x.args = [] then Ext_filename.maybe_quote x.name
+         else
+           let fmt : _ format =
+             if Ext_sys.is_windows_or_cygwin then "\"%s %s\"" else "'%s %s'"
+           in
+           Printf.sprintf fmt x.name (String.concat " " x.args)))
 
-let pp_flag (xs : string) = 
-  "-pp " ^ Ext_filename.maybe_quote xs
+let pp_flag (xs : string) = "-pp " ^ Ext_filename.maybe_quote xs
 
-let include_dirs dirs = 
+let include_dirs dirs =
   String.concat Ext_string.single_space
-    (Ext_list.flat_map dirs (fun x -> ["-I"; Ext_filename.maybe_quote x]))
+    (Ext_list.flat_map dirs (fun x -> [ "-I"; Ext_filename.maybe_quote x ]))
 
-
-let include_dirs_by dirs fn = 
+let include_dirs_by dirs fn =
   String.concat Ext_string.single_space
-    (Ext_list.flat_map dirs (fun x -> ["-I"; Ext_filename.maybe_quote (fn x)]))
-
+    (Ext_list.flat_map dirs (fun x -> [ "-I"; Ext_filename.maybe_quote (fn x) ]))
 
 (* we use lazy $src_root_dir *)
-
-
 
 (* It does several conversion:
    First, it will convert unix path to windows backward on windows platform.
    Then if it is absolute path, it will do thing
-   Else if it is relative path, it will be rebased on project's root directory  *)
+   Else if it is relative path, it will be rebased on project's root directory *)
 
 let convert_and_resolve_path : string -> string -> string =
-  if Sys.unix then (//)
+  if Sys.unix then ( // )
   else fun cwd path ->
-    if Ext_sys.is_windows_or_cygwin then 
+    if Ext_sys.is_windows_or_cygwin then
       let p = Ext_string.replace_slash_backward path in
       cwd // p
     else failwith ("Unknown OS :" ^ Sys.os_type)
@@ -9905,41 +9242,32 @@ type result = { path : string; checked : bool }
    ./foo/bar => /absolute/path/to/projectRoot/./foo/bar
    Input is node path, output is OS dependent (normalized) path
 *)
-let resolve_bsb_magic_file ~cwd ~desc p : result  =
-
+let resolve_bsb_magic_file ~cwd ~desc p : result =
   let no_slash = Ext_string.no_slash_idx p in
   if no_slash < 0 then
     (* Single file FIXME: better error message for "" input *)
-    { path = p; checked =  false  }
-  else 
-    let first_char = String.unsafe_get p 0 in 
-    if Filename.is_relative p &&  
-       first_char  <> '.' then
-      let package_name, rest = 
-        Bsb_pkg_types.extract_pkg_name_and_file p 
-      in 
-      let relative_path = 
-        if Ext_sys.is_windows_or_cygwin then Ext_string.replace_slash_backward rest 
-        else rest in       
+    { path = p; checked = false }
+  else
+    let first_char = String.unsafe_get p 0 in
+    if Filename.is_relative p && first_char <> '.' then
+      let package_name, rest = Bsb_pkg_types.extract_pkg_name_and_file p in
+      let relative_path =
+        if Ext_sys.is_windows_or_cygwin then
+          Ext_string.replace_slash_backward rest
+        else rest
+      in
       (* let p = if Ext_sys.is_windows_or_cygwin then Ext_string.replace_slash_backward p else p in *)
       let package_dir = Bsb_pkg.resolve_bs_package ~cwd package_name in
-      let path = package_dir // relative_path in 
-      if Sys.file_exists path then {path; checked = true}
-      else 
-        begin 
-          Bsb_log.error "@{<error>Could not resolve @} %s in %s@." p cwd ; 
-          failwith (p ^ " not found when resolving " ^ desc)
-        end
-
+      let path = package_dir // relative_path in
+      if Sys.file_exists path then { path; checked = true }
+      else (
+        Bsb_log.error "@{<error>Could not resolve @} %s in %s@." p cwd;
+        failwith (p ^ " not found when resolving " ^ desc))
     else
       (* relative path [./x/y]*)
-      { path = convert_and_resolve_path cwd p; checked = true}
-
-
+      { path = convert_and_resolve_path cwd p; checked = true }
 
 (** converting a file from Linux path format to Windows *)
-
-
 
 (** 
    {[
@@ -9947,43 +9275,30 @@ let resolve_bsb_magic_file ~cwd ~desc p : result  =
      mkp "/a/b/c/d"
    ]}
 *)
-let rec mkp dir = 
-  if not (Sys.file_exists dir) then 
-    let parent_dir  = Filename.dirname dir in
-    if  parent_dir = Filename.current_dir_name then 
-      Unix.mkdir dir 0o777 (* leaf node *)
-    else 
-      begin 
-        mkp parent_dir ; 
-        Unix.mkdir dir 0o777 
-      end
-  else if not  @@ Sys.is_directory dir then 
-    failwith ( dir ^ " exists but it is not a directory, plz remove it first")
+let rec mkp dir =
+  if not (Sys.file_exists dir) then
+    let parent_dir = Filename.dirname dir in
+    if parent_dir = Filename.current_dir_name then Unix.mkdir dir 0o777
+      (* leaf node *)
+    else (
+      mkp parent_dir;
+      Unix.mkdir dir 0o777)
+  else if not @@ Sys.is_directory dir then
+    failwith (dir ^ " exists but it is not a directory, plz remove it first")
   else ()
 
-
-let get_list_string_acc (s : Ext_json_types.t array) acc = 
+let get_list_string_acc (s : Ext_json_types.t array) acc =
   Ext_array.to_list_map_acc s acc (fun x ->
-      match x with 
-      | Str x -> Some x.str
-      | _ -> None
-    ) 
+      match x with Str x -> Some x.str | _ -> None)
 
-let get_list_string s = get_list_string_acc s []   
-
+let get_list_string s = get_list_string_acc s []
 
 (* Key is the path *)
-let (|?)  m (key, cb) =
-  m  |> Ext_json.test key cb
+let ( |? ) m (key, cb) = m |> Ext_json.test key cb
 
-type top = 
-  | Expect_none 
-  | Expect_name of string   
+type top = Expect_none | Expect_name of string
 
-type package_context = {
-  proj_dir : string ; 
-  top : top ; 
-}
+type package_context = { proj_dir : string; top : top }
 
 (**
    TODO: check duplicate package name
@@ -9996,84 +9311,70 @@ type package_context = {
 
 *)
 
-let pp_packages_rev ppf lst = 
-  Ext_list.rev_iter lst (fun  s ->  Format.fprintf ppf "%s " s) 
+let pp_packages_rev ppf lst =
+  Ext_list.rev_iter lst (fun s -> Format.fprintf ppf "%s " s)
 
-
-let rec walk_all_deps_aux 
-    (visited : string Hash_string.t) 
-    (paths : string list) 
-    ~(top : top) 
-    (dir : string)  
-    (queue : _ Queue.t) 
-    ~pinned_dependencies = 
-  let bsconfig_json =  dir // Literals.bsconfig_json in
+let rec walk_all_deps_aux (visited : string Hash_string.t) (paths : string list)
+    ~(top : top) (dir : string) (queue : _ Queue.t) ~pinned_dependencies =
+  let bsconfig_json = dir // Literals.bsconfig_json in
   match Ext_json_parse.parse_json_from_file bsconfig_json with
-  | Obj {map; loc} ->
-    let cur_package_name = 
-      match Map_string.find_opt map Bsb_build_schemas.name with 
-      | Some (Str {str ; loc }) -> 
-        (match top with 
-         | Expect_none -> ()  
-         | Expect_name s ->  
-           if s <> str then 
-             Bsb_exception.errorf 
-               ~loc "package name is expected to be %s but got %s" s str 
-        );
-        str
-      | Some _ 
-      | None -> Bsb_exception.errorf ~loc "package name missing in %s/bsconfig.json" dir 
-    in      
-    if Ext_list.mem_string paths cur_package_name  then
-      begin
+  | Obj { map; loc } ->
+      let cur_package_name =
+        match Map_string.find_opt map Bsb_build_schemas.name with
+        | Some (Str { str; loc }) ->
+            (match top with
+            | Expect_none -> ()
+            | Expect_name s ->
+                if s <> str then
+                  Bsb_exception.errorf ~loc
+                    "package name is expected to be %s but got %s" s str);
+            str
+        | Some _ | None ->
+            Bsb_exception.errorf ~loc "package name missing in %s/bsconfig.json"
+              dir
+      in
+      if Ext_list.mem_string paths cur_package_name then (
         Bsb_log.error "@{<error>Cyclic dependencies in package stack@}@.";
-        exit 2 
-      end;
-    let package_stacks = cur_package_name :: paths in 
-    Bsb_log.info "@{<info>Package stack:@} %a @." pp_packages_rev
-      package_stacks ;    
-    if Hash_string.mem visited cur_package_name then 
-      Bsb_log.info
-        "@{<info>Visited before@} %s@." cur_package_name
-    else 
-      let explore_deps (deps : string) =   
-        map
-        |?
-        (deps,
-         `Arr (fun (new_packages : Ext_json_types.t array) ->             
-             Ext_array.iter new_packages(fun js ->
-                 match js with
-                 | Str {str = new_package} ->
-                   let package_dir = 
-                     Bsb_pkg.resolve_bs_package ~cwd:dir 
-                       (Bsb_pkg_types.string_as_package   new_package) in 
-                   walk_all_deps_aux visited package_stacks  ~top:(Expect_name new_package) package_dir queue  
-                     ~pinned_dependencies ;
-                 | _ -> 
-                   Bsb_exception.errorf ~loc 
-                     "%s expect an array"
-                     deps
-               )))
-        |> ignore in
-      begin 
-        explore_deps Bsb_build_schemas.bs_dependencies;          
-        begin match top with
-          | Expect_none ->
+        exit 2);
+      let package_stacks = cur_package_name :: paths in
+      Bsb_log.info "@{<info>Package stack:@} %a @." pp_packages_rev
+        package_stacks;
+      if Hash_string.mem visited cur_package_name then
+        Bsb_log.info "@{<info>Visited before@} %s@." cur_package_name
+      else
+        let explore_deps (deps : string) =
+          map
+          |? ( deps,
+               `Arr
+                 (fun (new_packages : Ext_json_types.t array) ->
+                   Ext_array.iter new_packages (fun js ->
+                       match js with
+                       | Str { str = new_package } ->
+                           let package_dir =
+                             Bsb_pkg.resolve_bs_package ~cwd:dir
+                               (Bsb_pkg_types.string_as_package new_package)
+                           in
+                           walk_all_deps_aux visited package_stacks
+                             ~top:(Expect_name new_package) package_dir queue
+                             ~pinned_dependencies
+                       | _ ->
+                           Bsb_exception.errorf ~loc "%s expect an array" deps))
+             )
+          |> ignore
+        in
+        explore_deps Bsb_build_schemas.bs_dependencies;
+        (match top with
+        | Expect_none -> explore_deps Bsb_build_schemas.bs_dev_dependencies
+        | Expect_name n when Set_string.mem pinned_dependencies n ->
             explore_deps Bsb_build_schemas.bs_dev_dependencies
-          | Expect_name n when 
-              Set_string.mem pinned_dependencies n -> 
-            explore_deps Bsb_build_schemas.bs_dev_dependencies
-          | Expect_name _ -> () 
-        end;
-        Queue.add {top ; proj_dir = dir} queue;
-        Hash_string.add visited cur_package_name dir;
-      end
+        | Expect_name _ -> ());
+        Queue.add { top; proj_dir = dir } queue;
+        Hash_string.add visited cur_package_name dir
   | _ -> ()
 
-
-let walk_all_deps dir ~pinned_dependencies : package_context Queue.t = 
-  let visited = Hash_string.create 0 in 
-  let cb = Queue.create () in 
+let walk_all_deps dir ~pinned_dependencies : package_context Queue.t =
+  let visited = Hash_string.create 0 in
+  let cb = Queue.create () in
   walk_all_deps_aux visited [] ~top:Expect_none dir cb ~pinned_dependencies;
   cb
 
@@ -10104,17 +9405,15 @@ module Bsb_global_paths : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+val cwd : string
 
-val cwd : string 
-
-val bsc_dir : string 
+val bsc_dir : string
 
 val vendor_bsc : string
 
 val vendor_ninja : string
 
 val vendor_bsdep : string
-
 
 end = struct
 #1 "bsb_global_paths.ml"
@@ -10144,7 +9443,6 @@ end = struct
 
 let cwd = Sys.getcwd ()
 
-
 (**
    If [Sys.executable_name] gives an absolute path, 
    nothing needs to be done.
@@ -10165,30 +9463,22 @@ let cwd = Sys.getcwd ()
      Only the latter need be adapted based on project root  
 *)
 
-let bsc_dir  = 
-  Filename.dirname 
-    (Ext_path.normalize_absolute_path 
-       (Ext_path.combine cwd  Sys.executable_name))
+let bsc_dir =
+  Filename.dirname
+    (Ext_path.normalize_absolute_path
+       (Ext_path.combine cwd Sys.executable_name))
 
-let vendor_bsc =        
-  Filename.concat bsc_dir  "bsc.exe"
+let vendor_bsc = Filename.concat bsc_dir "bsc.exe"
 
+let vendor_ninja = Filename.concat bsc_dir "ninja.exe"
 
-let vendor_ninja = 
-  Filename.concat bsc_dir "ninja.exe"      
+let vendor_bsdep = Filename.concat bsc_dir "bsb_helper.exe";;
 
-let vendor_bsdep =     
-  Filename.concat bsc_dir "bsb_helper.exe"
-
-
-
-;; assert (Sys.file_exists bsc_dir)       
-
+assert (Sys.file_exists bsc_dir)
 
 end
 module Bsb_db_util : sig 
 #1 "bsb_db_util.mli"
-
 (* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
  * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
@@ -10213,16 +9503,10 @@ module Bsb_db_util : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+val conflict_module_info :
+  string -> Bsb_db.module_info -> Bsb_db.module_info -> exn
 
-
-val conflict_module_info:
-  string ->
-  Bsb_db.module_info -> 
-  Bsb_db.module_info -> 
-  exn
-
-
-val merge : Bsb_db.map -> Bsb_db.map -> Bsb_db.map   
+val merge : Bsb_db.map -> Bsb_db.map -> Bsb_db.map
 
 val sanity_check : Bsb_db.map -> unit
 
@@ -10231,15 +9515,15 @@ val sanity_check : Bsb_db.map -> unit
    In the future, we may emit a warning 
 *)
 
-val add_basename:
-  dir:string -> 
-  Bsb_db.map ->  
-  ?error_on_invalid_suffix:Ext_position.t-> 
-  string -> 
+val add_basename :
+  dir:string ->
+  Bsb_db.map ->
+  ?error_on_invalid_suffix:Ext_position.t ->
+  string ->
   Bsb_db.map
+
 end = struct
 #1 "bsb_db_util.ml"
-
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
@@ -10264,123 +9548,96 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 type module_info = Bsb_db.module_info
+
 type t = Bsb_db.map
 
+let conflict_module_info modname (a : module_info) (b : module_info) =
+  Bsb_exception.conflict_module modname a.dir b.dir
 
-
-
-let conflict_module_info modname (a : module_info) (b : module_info) = 
-  Bsb_exception.conflict_module
-    modname
-    a.dir
-    b.dir
-
-(* merge data info from two directories*)    
+(* merge data info from two directories*)
 let merge (acc : t) (sources : t) : t =
   Map_string.disjoint_merge_exn acc sources conflict_module_info
 
-let sanity_check (map : t) = 
-  Map_string.iter map (fun m module_info -> 
-      if module_info.info = Intf then
-        Bsb_exception.no_implementation m 
-    )    
+let sanity_check (map : t) =
+  Map_string.iter map (fun m module_info ->
+      if module_info.info = Intf then Bsb_exception.no_implementation m)
 
 (* invariant check:
    ml and mli should have the same case, same path
-*)  
-let check (x : module_info) 
-    name_sans_extension 
-    case 
-    syntax_kind 
-    (module_info : Bsb_db.info)
-  =  
-  let x_ml_info = x.info in  
-  (if x.name_sans_extension <> name_sans_extension 
-   || x.case <> case 
-   || x.syntax_kind <> syntax_kind 
-   || x_ml_info = module_info 
-   || x_ml_info = Impl_intf
-   then 
-     Bsb_exception.invalid_spec 
-       (Printf.sprintf 
-          "implementation and interface have different path names or different cases %s vs %s"
-          x.name_sans_extension name_sans_extension));
-  x.info <- Impl_intf;      
+*)
+let check (x : module_info) name_sans_extension case syntax_kind
+    (module_info : Bsb_db.info) =
+  let x_ml_info = x.info in
+  if
+    x.name_sans_extension <> name_sans_extension
+    || x.case <> case
+    || x.syntax_kind <> syntax_kind
+    || x_ml_info = module_info || x_ml_info = Impl_intf
+  then
+    Bsb_exception.invalid_spec
+      (Printf.sprintf
+         "implementation and interface have different path names or different \
+          cases %s vs %s"
+         x.name_sans_extension name_sans_extension);
+  x.info <- Impl_intf;
   x
 
-
-let warning_unused_file : _ format = 
-  "@{<warning>IGNORED@}: file %s under %s is ignored because it can't be turned into a valid module name. \n\
-   The build system transforms a file name into a module name by upper-casing the first letter@."
+let warning_unused_file : _ format =
+  "@{<warning>IGNORED@}: file %s under %s is ignored because it can't be \
+   turned into a valid module name. \n\
+   The build system transforms a file name into a module name by upper-casing \
+   the first letter@."
 (* TODO: add a link for more explanations *)
 
+let is_editor_temporary_files basename = Ext_string.starts_with basename ".#"
 
-let is_editor_temporary_files basename =
-  Ext_string.starts_with basename ".#"  
-(* 
-  Example: .#hi.ml
-  Note for other files like <filename>~, <filename>.swp
-  it does not pass the suffix rules
+(*
+   Example: .#hi.ml
+   Note for other files like <filename>~, <filename>.swp
+   it does not pass the suffix rules
 *)
-let add_basename
-    ~(dir:string) 
-    (map : t)  
-    ?(error_on_invalid_suffix)
-    basename : t =   
-  if is_editor_temporary_files basename then map 
-  else 
-    begin 
-      let info = ref Bsb_db.Impl in   
-      let syntax_kind = ref Bsb_db.Ml in 
-      let invalid_suffix = ref false in
-      let file_suffix = Ext_filename.get_extension_maybe basename in 
-      begin match ()  with 
-        | _ when file_suffix = Literals.suffix_ml -> 
-          () 
-        | _ when file_suffix = Literals.suffix_res -> 
-          syntax_kind := Res     
-        | _ when file_suffix = Literals.suffix_re -> 
-          syntax_kind := Reason
-        | _ when file_suffix = Literals.suffix_mli -> 
-          info := Intf
-        | _ when file_suffix = Literals.suffix_resi -> 
-          info :=  Intf;
-          syntax_kind := Res   
-        | _ when file_suffix = Literals.suffix_rei  -> 
-          info := Intf;
-          syntax_kind := Reason 
-        | _ -> 
-          invalid_suffix := true
-      end;   
-      let info= !info in 
-      let syntax_kind = !syntax_kind in 
-      let invalid_suffix = !invalid_suffix in 
-      if invalid_suffix then 
-        match error_on_invalid_suffix with
-        | None -> map 
-        | Some loc -> 
-          Bsb_exception.errorf ~loc:loc
-            "invalid suffix %s" basename
-      else  
-        match Ext_filename.as_module ~basename:(Filename.basename basename) with 
-        | None -> 
-          Bsb_log.warn warning_unused_file basename dir; 
-          map 
-        | Some {module_name; case} ->     
-          let name_sans_extension = 
-            Filename.concat dir (Ext_filename.chop_extension_maybe basename) in 
-          let dir = Filename.dirname name_sans_extension in                
-          Map_string.adjust 
-            map
-            module_name 
-            (fun  opt_module_info -> 
-               match opt_module_info with 
-               | None -> 
-                 {dir ; name_sans_extension ; info ; syntax_kind ; case }
-               | Some x -> 
-                 check x name_sans_extension case syntax_kind info      
-            )
-    end
+let add_basename ~(dir : string) (map : t) ?error_on_invalid_suffix basename : t
+    =
+  if is_editor_temporary_files basename then map
+  else
+    let info = ref Bsb_db.Impl in
+    let syntax_kind = ref Bsb_db.Ml in
+    let invalid_suffix = ref false in
+    let file_suffix = Ext_filename.get_extension_maybe basename in
+    (match () with
+    | _ when file_suffix = Literals.suffix_ml -> ()
+    | _ when file_suffix = Literals.suffix_res -> syntax_kind := Res
+    | _ when file_suffix = Literals.suffix_re -> syntax_kind := Reason
+    | _ when file_suffix = Literals.suffix_mli -> info := Intf
+    | _ when file_suffix = Literals.suffix_resi ->
+        info := Intf;
+        syntax_kind := Res
+    | _ when file_suffix = Literals.suffix_rei ->
+        info := Intf;
+        syntax_kind := Reason
+    | _ -> invalid_suffix := true);
+    let info = !info in
+    let syntax_kind = !syntax_kind in
+    let invalid_suffix = !invalid_suffix in
+    if invalid_suffix then
+      match error_on_invalid_suffix with
+      | None -> map
+      | Some loc -> Bsb_exception.errorf ~loc "invalid suffix %s" basename
+    else
+      match Ext_filename.as_module ~basename:(Filename.basename basename) with
+      | None ->
+          Bsb_log.warn warning_unused_file basename dir;
+          map
+      | Some { module_name; case } ->
+          let name_sans_extension =
+            Filename.concat dir (Ext_filename.chop_extension_maybe basename)
+          in
+          let dir = Filename.dirname name_sans_extension in
+          Map_string.adjust map module_name (fun opt_module_info ->
+              match opt_module_info with
+              | None -> { dir; name_sans_extension; info; syntax_kind; case }
+              | Some x -> check x name_sans_extension case syntax_kind info)
+
 end
 module Ext_option : sig 
 #1 "ext_option.mli"
@@ -10408,13 +9665,6 @@ module Ext_option : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
 (** Utilities for [option] type *)
 
 val map : 'a option -> ('a -> 'b) -> 'b option
@@ -10422,6 +9672,7 @@ val map : 'a option -> ('a -> 'b) -> 'b option
 val iter : 'a option -> ('a -> unit) -> unit
 
 val exists : 'a option -> ('a -> bool) -> bool
+
 end = struct
 #1 "ext_option.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -10448,27 +9699,12 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+let map v f = match v with None -> None | Some x -> Some (f x)
 
+let iter v f = match v with None -> () | Some x -> f x
 
+let exists v f = match v with None -> false | Some x -> f x
 
-
-
-
-
-let map v f = 
-  match v with 
-  | None -> None
-  | Some x -> Some (f x )
-
-let iter v f =   
-  match v with 
-  | None -> ()
-  | Some x -> f x 
-
-let exists v f =    
-  match v with 
-  | None -> false
-  | Some x -> f x 
 end
 module Bsb_parse_sources : sig 
 #1 "bsb_parse_sources.mli"
@@ -10496,29 +9732,27 @@ module Bsb_parse_sources : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
+val scan :
+  package_kind:Bsb_package_kind.t ->
+  root:string ->
+  cut_generators:bool ->
+  (* namespace : string option ->  *)
+  ignored_dirs:Set_string.t ->
+  Ext_json_types.t ->
+  Bsb_file_groups.t
 (** [scan .. cxt json]
     entry is to the [sources] in the schema    
     given a root, return an object which is
     all relative paths, this function will do the IO
 *)
-val scan :
-  package_kind:Bsb_package_kind.t -> 
-  root: string ->  
-  cut_generators: bool -> 
-  (* namespace : string option ->  *)
-  ignored_dirs:Set_string.t ->
-  Ext_json_types.t ->   
-  Bsb_file_groups.t 
 
+val clean_re_js : string -> unit
 (** This function has some duplication 
     from [scan],
     the parsing assuming the format is 
     already valid
-*) 
-val clean_re_js:  
-  string -> unit 
+*)
+
 end = struct
 #1 "bsb_parse_sources.ml"
 (* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
@@ -10545,152 +9779,137 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
 type build_generator = Bsb_file_groups.build_generator
 
-
-let (.?()) = Map_string.find_opt
+let ( .?() ) = Map_string.find_opt
 
 (* type file_group = Bsb_file_groups.file_group *)
 
-type t = Bsb_file_groups.t 
+type t = Bsb_file_groups.t
 
-let is_input_or_output (xs : build_generator list) (x : string)  = 
-  Ext_list.exists xs (fun  {input; output} -> 
-      let it_is = fun y -> y = x  in
-      Ext_list.exists input it_is ||
-      Ext_list.exists output it_is
-    ) 
+let is_input_or_output (xs : build_generator list) (x : string) =
+  Ext_list.exists xs (fun { input; output } ->
+      let it_is y = y = x in
+      Ext_list.exists input it_is || Ext_list.exists output it_is)
 
-
-let errorf x fmt = 
-  Bsb_exception.errorf ~loc:(Ext_json.loc_of x) fmt 
+let errorf x fmt = Bsb_exception.errorf ~loc:(Ext_json.loc_of x) fmt
 
 type cxt = {
-  package_kind : Bsb_package_kind.t ;
-  is_dev : bool; 
-  cwd : string ;
+  package_kind : Bsb_package_kind.t;
+  is_dev : bool;
+  cwd : string;
   root : string;
   cut_generators : bool;
   traverse : bool;
   (* namespace : string option; *)
-  ignored_dirs : Set_string.t
+  ignored_dirs : Set_string.t;
 }
 
 (** [public] has a list of modules, we do a sanity check to see if all the listed 
     modules are indeed valid module components
 *)
-let collect_pub_modules 
-    (xs : Ext_json_types.t array)
-    (cache : Bsb_db.map) : Set_string.t = 
-  let set = ref Set_string.empty in 
-  for i = 0 to Array.length xs - 1 do 
-    let v = Array.unsafe_get xs i in 
-    match v with 
-    | Str { str; loc}
-      -> 
-      if Map_string.mem cache str then 
-        set := Set_string.add !set str
-      else 
-        Bsb_exception.errorf ~loc
-          "%S in public is not an existing module" str
-    | _ -> 
-      Bsb_exception.errorf 
-        ~loc:(Ext_json.loc_of v)
-        "public expects a list of strings"
-  done  ;
+let collect_pub_modules (xs : Ext_json_types.t array) (cache : Bsb_db.map) :
+    Set_string.t =
+  let set = ref Set_string.empty in
+  for i = 0 to Array.length xs - 1 do
+    let v = Array.unsafe_get xs i in
+    match v with
+    | Str { str; loc } ->
+        if Map_string.mem cache str then set := Set_string.add !set str
+        else
+          Bsb_exception.errorf ~loc "%S in public is not an existing module" str
+    | _ ->
+        Bsb_exception.errorf ~loc:(Ext_json.loc_of v)
+          "public expects a list of strings"
+  done;
   !set
 
-let extract_pub (input : Ext_json_types.t Map_string.t) (cur_sources : Bsb_db.map) : Bsb_file_groups.public =   
-  match input.?(Bsb_build_schemas.public) with 
-  | Some ((Str({str = s}) as x)) ->  
-    if s = Bsb_build_schemas.export_all then Export_all  else 
-    if s = Bsb_build_schemas.export_none then Export_none else 
-      errorf x "invalid str for %s "  s 
-  | Some (Arr {content}) ->         
-    Export_set (collect_pub_modules content cur_sources)
-  | Some config -> 
-    Bsb_exception.config_error config "expect array or string"
-  | None ->
-    Export_all 
+let extract_pub (input : Ext_json_types.t Map_string.t)
+    (cur_sources : Bsb_db.map) : Bsb_file_groups.public =
+  match input.?(Bsb_build_schemas.public) with
+  | Some (Str { str = s } as x) ->
+      if s = Bsb_build_schemas.export_all then Export_all
+      else if s = Bsb_build_schemas.export_none then Export_none
+      else errorf x "invalid str for %s " s
+  | Some (Arr { content }) ->
+      Export_set (collect_pub_modules content cur_sources)
+  | Some config -> Bsb_exception.config_error config "expect array or string"
+  | None -> Export_all
 
-let extract_resources (input : Ext_json_types.t Map_string.t) : string list =   
-  match input.?(Bsb_build_schemas.resources) with 
-  | Some (Arr x) ->
-    Bsb_build_util.get_list_string x.content
-  | Some config -> 
-    Bsb_exception.config_error config 
-      "expect array "  
-  | None -> [] 
-
-
-let extract_input_output (edge : Ext_json_types.t) : string list * string list = 
-  let error () = 
-    errorf edge {| invalid edge format, expect  ["output" , ":", "input" ]|}
-  in  
-  match edge with 
-  | Arr {content} -> 
-    (match Ext_array.find_and_split content 
-             (fun x () -> match x with Str { str =":"} -> true | _ -> false )
-             () with 
-    | No_split -> error ()
-    | Split (  output, input) -> 
-      (Ext_array.to_list_map output (fun x -> 
-           match x with
-           | Str {str = ":"} -> 
-             error ()
-           | Str {str } ->           
-             Some str 
-           | _ -> None) 
-       ,
-       Ext_array.to_list_map input (fun x -> 
-           match x with
-           | Str {str = ":"} -> 
-             error () 
-           | Str {str} -> 
-             Some str (* More rigirous error checking: It would trigger a ninja syntax error *)
-           | _ -> None) ))
-  | _ -> error ()    
-type json_map = Ext_json_types.t Map_string.t
-
-let extract_generators (input : json_map) : build_generator list  =
-  match input.?(Bsb_build_schemas.generators) with
-  | Some (Arr { content ; loc_start= _}) ->
-    (* Need check is dev build or not *)
-    Ext_array.fold_left content [] (fun acc x ->
-        match x with
-        | Obj { map } ->
-          (match map.?(Bsb_build_schemas.name) ,
-                 map.?(Bsb_build_schemas.edge)
-           with
-           | Some (Str command), Some edge ->
-             let output, input = extract_input_output edge in 
-             {Bsb_file_groups.input ; output ; command = command.str } :: acc
-           | _ ->
-             errorf x "Invalid generator format")
-        | _ -> errorf x "Invalid generator format"
-      )  
-  | Some x  -> errorf x "Invalid generator format"
+let extract_resources (input : Ext_json_types.t Map_string.t) : string list =
+  match input.?(Bsb_build_schemas.resources) with
+  | Some (Arr x) -> Bsb_build_util.get_list_string x.content
+  | Some config -> Bsb_exception.config_error config "expect array "
   | None -> []
 
-let extract_predicate (m : json_map)  : string -> bool =
-  let excludes = 
-    match m.?(Bsb_build_schemas.excludes) with 
-    | None -> []   
-    | Some (Arr {content = arr}) -> Bsb_build_util.get_list_string arr 
-    | Some x -> Bsb_exception.config_error x  "excludes expect array "in 
-  let slow_re = m.?(Bsb_build_schemas.slow_re) in 
-  match slow_re, excludes with 
-  | Some (Str {str = s}), [] -> 
-    let re = Str.regexp s  in 
-    fun name -> Str.string_match re name 0 
-  | Some (Str {str = s}) , _::_ -> 
-    let re = Str.regexp s in   
-    fun name -> Str.string_match re name 0 && not (Ext_list.mem_string excludes name)
-  | Some config, _ -> Bsb_exception.config_error config (Bsb_build_schemas.slow_re ^ " expect a string literal")
-  | None , _ -> 
-    fun name -> not (Ext_list.mem_string excludes name)
+let extract_input_output (edge : Ext_json_types.t) : string list * string list =
+  let error () =
+    errorf edge {| invalid edge format, expect  ["output" , ":", "input" ]|}
+  in
+  match edge with
+  | Arr { content } -> (
+      match
+        Ext_array.find_and_split content
+          (fun x () -> match x with Str { str = ":" } -> true | _ -> false)
+          ()
+      with
+      | No_split -> error ()
+      | Split (output, input) ->
+          ( Ext_array.to_list_map output (fun x ->
+                match x with
+                | Str { str = ":" } -> error ()
+                | Str { str } -> Some str
+                | _ -> None),
+            Ext_array.to_list_map input (fun x ->
+                match x with
+                | Str { str = ":" } -> error ()
+                | Str { str } ->
+                    Some str
+                    (* More rigirous error checking: It would trigger a ninja syntax error *)
+                | _ -> None) ))
+  | _ -> error ()
+
+type json_map = Ext_json_types.t Map_string.t
+
+let extract_generators (input : json_map) : build_generator list =
+  match input.?(Bsb_build_schemas.generators) with
+  | Some (Arr { content; loc_start = _ }) ->
+      (* Need check is dev build or not *)
+      Ext_array.fold_left content [] (fun acc x ->
+          match x with
+          | Obj { map } -> (
+              match
+                (map.?(Bsb_build_schemas.name), map.?(Bsb_build_schemas.edge))
+              with
+              | Some (Str command), Some edge ->
+                  let output, input = extract_input_output edge in
+                  { Bsb_file_groups.input; output; command = command.str }
+                  :: acc
+              | _ -> errorf x "Invalid generator format")
+          | _ -> errorf x "Invalid generator format")
+  | Some x -> errorf x "Invalid generator format"
+  | None -> []
+
+let extract_predicate (m : json_map) : string -> bool =
+  let excludes =
+    match m.?(Bsb_build_schemas.excludes) with
+    | None -> []
+    | Some (Arr { content = arr }) -> Bsb_build_util.get_list_string arr
+    | Some x -> Bsb_exception.config_error x "excludes expect array "
+  in
+  let slow_re = m.?(Bsb_build_schemas.slow_re) in
+  match (slow_re, excludes) with
+  | Some (Str { str = s }), [] ->
+      let re = Str.regexp s in
+      fun name -> Str.string_match re name 0
+  | Some (Str { str = s }), _ :: _ ->
+      let re = Str.regexp s in
+      fun name ->
+        Str.string_match re name 0 && not (Ext_list.mem_string excludes name)
+  | Some config, _ ->
+      Bsb_exception.config_error config
+        (Bsb_build_schemas.slow_re ^ " expect a string literal")
+  | None, _ -> fun name -> not (Ext_list.mem_string excludes name)
 
 (** [parsing_source_dir_map cxt input]
     Major work done in this function, 
@@ -10698,275 +9917,286 @@ let extract_predicate (m : json_map)  : string -> bool =
     is already checked, so we don't need check it again    
 *)
 
-
-
 (** This is the only place where we do some removal during scanning,
     configurabl
-*)    
+*)
 
-
-(********************************************************************)  
+(********************************************************************)
 (* starts parsing *)
-let rec 
-  parsing_source_dir_map 
-    ({ cwd =  dir;} as cxt )
-    (input : Ext_json_types.t Map_string.t) : Bsb_file_groups.t     
-  = 
+let rec parsing_source_dir_map ({ cwd = dir } as cxt)
+    (input : Ext_json_types.t Map_string.t) : Bsb_file_groups.t =
   if Set_string.mem cxt.ignored_dirs dir then Bsb_file_groups.empty
-  else 
-    let cur_globbed_dirs = ref false in 
+  else
+    let cur_globbed_dirs = ref false in
     let has_generators =
-      match cxt with 
-      | {cut_generators = false; package_kind = Toplevel | Pinned_dependency _ } -> true
-      | {cut_generators = false; package_kind = Dependency _} 
-      | {cut_generators = true ; _ } -> false  
-    in          
-    let scanned_generators = extract_generators input in        
-    let sub_dirs_field = input.?(Bsb_build_schemas.subdirs) in 
-    let base_name_array = 
-      lazy (cur_globbed_dirs := true ; Sys.readdir (Filename.concat cxt.root dir)) in 
-    let output_sources = 
-      Ext_list.fold_left (Ext_list.flat_map scanned_generators (fun x -> x.output))
-        Map_string.empty (fun acc o -> 
-            Bsb_db_util.add_basename ~dir acc o) in 
-    let sources = 
-      match input.?(Bsb_build_schemas.files) with 
-      | None ->  
-        (* We should avoid temporary files *)
-        Ext_array.fold_left (Lazy.force base_name_array) output_sources (fun acc basename -> 
-            if is_input_or_output scanned_generators basename then acc 
-            else 
-              Bsb_db_util.add_basename ~dir acc basename 
-          ) 
-      | Some (Arr basenames ) ->         
-        Ext_array.fold_left basenames.content output_sources (fun acc basename ->
-            match basename with 
-            | Str {str = basename;loc} -> 
-              Bsb_db_util.add_basename ~dir acc basename ~error_on_invalid_suffix:loc
-            | _ -> acc
-          ) 
-      | Some (Obj {map = map; loc = _} ) -> (* { excludes : [], slow_re : "" }*)
-        let predicate = extract_predicate map in 
-        Ext_array.fold_left (Lazy.force base_name_array) output_sources (fun acc basename -> 
-            if is_input_or_output scanned_generators basename || not (predicate basename) then acc 
-            else 
-              Bsb_db_util.add_basename  ~dir acc basename 
-          ) 
-      | Some x -> Bsb_exception.config_error x "files field expect array or object "
-    in 
+      match cxt with
+      | {
+       cut_generators = false;
+       package_kind = Toplevel | Pinned_dependency _;
+      } ->
+          true
+      | { cut_generators = false; package_kind = Dependency _ }
+      | { cut_generators = true; _ } ->
+          false
+    in
+    let scanned_generators = extract_generators input in
+    let sub_dirs_field = input.?(Bsb_build_schemas.subdirs) in
+    let base_name_array =
+      lazy
+        (cur_globbed_dirs := true;
+         Sys.readdir (Filename.concat cxt.root dir))
+    in
+    let output_sources =
+      Ext_list.fold_left
+        (Ext_list.flat_map scanned_generators (fun x -> x.output))
+        Map_string.empty
+        (fun acc o -> Bsb_db_util.add_basename ~dir acc o)
+    in
+    let sources =
+      match input.?(Bsb_build_schemas.files) with
+      | None ->
+          (* We should avoid temporary files *)
+          Ext_array.fold_left (Lazy.force base_name_array) output_sources
+            (fun acc basename ->
+              if is_input_or_output scanned_generators basename then acc
+              else Bsb_db_util.add_basename ~dir acc basename)
+      | Some (Arr basenames) ->
+          Ext_array.fold_left basenames.content output_sources
+            (fun acc basename ->
+              match basename with
+              | Str { str = basename; loc } ->
+                  Bsb_db_util.add_basename ~dir acc basename
+                    ~error_on_invalid_suffix:loc
+              | _ -> acc)
+      | Some (Obj { map; loc = _ }) ->
+          (* { excludes : [], slow_re : "" }*)
+          let predicate = extract_predicate map in
+          Ext_array.fold_left (Lazy.force base_name_array) output_sources
+            (fun acc basename ->
+              if
+                is_input_or_output scanned_generators basename
+                || not (predicate basename)
+              then acc
+              else Bsb_db_util.add_basename ~dir acc basename)
+      | Some x ->
+          Bsb_exception.config_error x "files field expect array or object "
+    in
     let resources = extract_resources input in
-    let public = extract_pub input sources in 
-    (* Doing recursive stuff *)  
-    let children =     
-      match sub_dirs_field, 
-            cxt.traverse with 
-      | None , true
-      | Some (True _), _ -> 
-        let root = cxt.root in 
-        let parent = Filename.concat root dir in
-        Ext_array.fold_left (Lazy.force base_name_array) Bsb_file_groups.empty (fun origin x -> 
-            if  not (Set_string.mem cxt.ignored_dirs x) && 
-                Ext_sys.is_directory_no_exn (Filename.concat parent x) then 
-              Bsb_file_groups.merge
-                (
-                  parsing_source_dir_map
-                    {cxt with 
-                     cwd = Ext_path.concat cxt.cwd 
-                         (Ext_path.simple_convert_node_path_to_os_path x);
-                     traverse = true
-                    } Map_string.empty)  origin               
-            else origin  
-          ) 
-      (* readdir parent avoiding scanning twice *)        
-      | None, false  
-      | Some (False _), _  -> Bsb_file_groups.empty
-      | Some s, _  -> parse_sources cxt s 
-    in 
-    (* Do some clean up *)  
+    let public = extract_pub input sources in
+    (* Doing recursive stuff *)
+    let children =
+      match (sub_dirs_field, cxt.traverse) with
+      | None, true | Some (True _), _ ->
+          let root = cxt.root in
+          let parent = Filename.concat root dir in
+          Ext_array.fold_left (Lazy.force base_name_array) Bsb_file_groups.empty
+            (fun origin x ->
+              if
+                (not (Set_string.mem cxt.ignored_dirs x))
+                && Ext_sys.is_directory_no_exn (Filename.concat parent x)
+              then
+                Bsb_file_groups.merge
+                  (parsing_source_dir_map
+                     {
+                       cxt with
+                       cwd =
+                         Ext_path.concat cxt.cwd
+                           (Ext_path.simple_convert_node_path_to_os_path x);
+                       traverse = true;
+                     }
+                     Map_string.empty)
+                  origin
+              else origin)
+      (* readdir parent avoiding scanning twice *)
+      | None, false | Some (False _), _ -> Bsb_file_groups.empty
+      | Some s, _ -> parse_sources cxt s
+    in
+    (* Do some clean up *)
     (* prune_staled_bs_js_files cxt sources ; *)
-    Bsb_file_groups.cons 
-      ~file_group:{ dir ; 
-                    sources = sources; 
-                    resources ;
-                    public ;
-                    is_dev = cxt.is_dev ;
-                    generators = if has_generators then scanned_generators else []  } 
-      ?globbed_dir:(
-        if !cur_globbed_dirs then Some dir else None)
+    Bsb_file_groups.cons
+      ~file_group:
+        {
+          dir;
+          sources;
+          resources;
+          public;
+          is_dev = cxt.is_dev;
+          generators = (if has_generators then scanned_generators else []);
+        }
+      ?globbed_dir:(if !cur_globbed_dirs then Some dir else None)
       children
 
+and parsing_single_source ({ package_kind; is_dev; cwd } as cxt)
+    (x : Ext_json_types.t) : t =
+  match x with
+  | Str { str = dir } -> (
+      match (package_kind, is_dev) with
+      | Dependency _, true -> Bsb_file_groups.empty
+      | Dependency _, false | (Toplevel | Pinned_dependency _), _ ->
+          parsing_source_dir_map
+            {
+              cxt with
+              cwd =
+                Ext_path.concat cwd
+                  (Ext_path.simple_convert_node_path_to_os_path dir);
+            }
+            Map_string.empty)
+  | Obj { map } -> (
+      let current_dir_index =
+        match map.?(Bsb_build_schemas.type_) with
+        | Some (Str { str = "dev" }) -> true
+        | Some _ ->
+            Bsb_exception.config_error x {|type field expect "dev" literal |}
+        | None -> is_dev
+      in
+      match (package_kind, current_dir_index) with
+      | Dependency _, true -> Bsb_file_groups.empty
+      | Dependency _, false | (Toplevel | Pinned_dependency _), _ ->
+          let dir =
+            match map.?(Bsb_build_schemas.dir) with
+            | Some (Str { str }) ->
+                Ext_path.simple_convert_node_path_to_os_path str
+            | Some x ->
+                Bsb_exception.config_error x "dir expected to be a string"
+            | None ->
+                Bsb_exception.config_error x
+                  ("required field :" ^ Bsb_build_schemas.dir ^ " missing")
+          in
 
-and parsing_single_source ({package_kind; is_dev ; cwd} as cxt ) (x : Ext_json_types.t )
-  : t  =
-  match x with 
-  | Str  { str = dir }  -> 
-    begin match package_kind, is_dev with 
-      | Dependency _ , true ->  
-        Bsb_file_groups.empty
-      | Dependency _, false  
-      | (Toplevel | Pinned_dependency _), _ ->
-        parsing_source_dir_map 
-          {cxt with 
-           cwd = Ext_path.concat cwd (Ext_path.simple_convert_node_path_to_os_path dir)}
-          Map_string.empty  
-    end   
-  | Obj {map} ->
-    let current_dir_index = 
-      match map.?(Bsb_build_schemas.type_) with 
-      | Some (Str {str="dev"}) -> 
-        true
-      | Some _ -> Bsb_exception.config_error x {|type field expect "dev" literal |}
-      | None -> is_dev in 
-    begin match package_kind, current_dir_index with 
-      | Dependency _ , true -> 
-        Bsb_file_groups.empty 
-      | Dependency _, false 
-      | (Toplevel | Pinned_dependency _), _ ->       
-        let dir = 
-          match map.?(Bsb_build_schemas.dir) with 
-          | Some (Str{str}) -> 
-            Ext_path.simple_convert_node_path_to_os_path str 
-          | Some x -> Bsb_exception.config_error x "dir expected to be a string"
-          | None -> 
-            Bsb_exception.config_error x
-              (
-                "required field :" ^ Bsb_build_schemas.dir ^ " missing" )
-
-        in
-        parsing_source_dir_map 
-          {cxt with is_dev = current_dir_index; 
-                    cwd= Ext_path.concat cwd dir} map
-    end            
+          parsing_source_dir_map
+            {
+              cxt with
+              is_dev = current_dir_index;
+              cwd = Ext_path.concat cwd dir;
+            }
+            map)
   | _ -> Bsb_file_groups.empty
-and  parsing_arr_sources cxt (file_groups : Ext_json_types.t array)  = 
-  Ext_array.fold_left file_groups Bsb_file_groups.empty (fun  origin x ->
-      Bsb_file_groups.merge (parsing_single_source cxt x) origin 
-    ) 
-and  parse_sources ( cxt : cxt) (sources : Ext_json_types.t )  = 
-  match sources with   
-  | Arr file_groups -> 
-    parsing_arr_sources cxt file_groups.content
+
+and parsing_arr_sources cxt (file_groups : Ext_json_types.t array) =
+  Ext_array.fold_left file_groups Bsb_file_groups.empty (fun origin x ->
+      Bsb_file_groups.merge (parsing_single_source cxt x) origin)
+
+and parse_sources (cxt : cxt) (sources : Ext_json_types.t) =
+  match sources with
+  | Arr file_groups -> parsing_arr_sources cxt file_groups.content
   | _ -> parsing_single_source cxt sources
 
+let scan ~package_kind ~root ~cut_generators ~(* ~namespace  *)
+                                             ignored_dirs x : t =
+  parse_sources
+    {
+      ignored_dirs;
+      package_kind;
+      is_dev = false;
+      cwd = Filename.current_dir_name;
+      root;
+      cut_generators;
+      (* namespace; *)
+      traverse = false;
+    }
+    x
 
-
-let scan 
-    ~package_kind 
-    ~root 
-    ~cut_generators 
-    (* ~namespace  *)
-    ~ignored_dirs
-    x : t  = 
-  parse_sources {
-    ignored_dirs;
-    package_kind;
-    is_dev = false;
-    cwd = Filename.current_dir_name;
-    root ;
-    cut_generators;
-    (* namespace; *)
-    traverse = false
-  } x 
-
-
-
-(* Walk through to do some work *) 
+(* Walk through to do some work *)
 type walk_cxt = {
-  cwd : string ;
+  cwd : string;
   root : string;
   traverse : bool;
   ignored_dirs : Set_string.t;
-  gentype_language: string;
+  gentype_language : string;
 }
 
-let rec walk_sources (cxt : walk_cxt) (sources : Ext_json_types.t) = 
-  match sources with 
-  | Arr {content} -> 
-    Ext_array.iter content (fun x -> walk_single_source cxt x) 
-  | x -> walk_single_source  cxt x    
-and walk_single_source cxt (x : Ext_json_types.t) =      
-  match x with 
-  | Str {str = dir} 
-    -> 
-    let dir = Ext_path.simple_convert_node_path_to_os_path dir in
-    walk_source_dir_map 
-      {cxt with cwd = Ext_path.concat cxt.cwd dir } None 
-  | Obj {map} ->       
-    begin match map.?(Bsb_build_schemas.dir) with 
-      | Some (Str{str}) -> 
-        let dir = Ext_path.simple_convert_node_path_to_os_path str  in 
-        walk_source_dir_map 
-          {cxt with cwd = Ext_path.concat cxt.cwd dir} map.?(Bsb_build_schemas.subdirs)
-      | _ -> ()
-    end
-  | _ -> ()  
-and walk_source_dir_map (cxt : walk_cxt)  sub_dirs_field =   
-  let working_dir = Filename.concat cxt.root cxt.cwd in 
-  if not (Set_string.mem cxt.ignored_dirs cxt.cwd) then begin 
-    let file_array = Sys.readdir working_dir in 
+let rec walk_sources (cxt : walk_cxt) (sources : Ext_json_types.t) =
+  match sources with
+  | Arr { content } ->
+      Ext_array.iter content (fun x -> walk_single_source cxt x)
+  | x -> walk_single_source cxt x
+
+and walk_single_source cxt (x : Ext_json_types.t) =
+  match x with
+  | Str { str = dir } ->
+      let dir = Ext_path.simple_convert_node_path_to_os_path dir in
+      walk_source_dir_map { cxt with cwd = Ext_path.concat cxt.cwd dir } None
+  | Obj { map } -> (
+      match map.?(Bsb_build_schemas.dir) with
+      | Some (Str { str }) ->
+          let dir = Ext_path.simple_convert_node_path_to_os_path str in
+          walk_source_dir_map
+            { cxt with cwd = Ext_path.concat cxt.cwd dir }
+            map.?(Bsb_build_schemas.subdirs)
+      | _ -> ())
+  | _ -> ()
+
+and walk_source_dir_map (cxt : walk_cxt) sub_dirs_field =
+  let working_dir = Filename.concat cxt.root cxt.cwd in
+  if not (Set_string.mem cxt.ignored_dirs cxt.cwd) then (
+    let file_array = Sys.readdir working_dir in
     (* Remove .gen.js/.gen.tsx during clean up *)
-    Ext_array.iter file_array begin fun file ->
-      let is_typescript = cxt.gentype_language = "typescript" in
-      if ((not is_typescript) && Ext_string.ends_with file Literals.suffix_gen_js) 
-      || (is_typescript && Ext_string.ends_with file Literals.suffix_gen_tsx)
-      then 
-        Sys.remove (Filename.concat working_dir file)
-    end; 
-    let cxt_traverse = cxt.traverse in     
-    match sub_dirs_field, cxt_traverse with     
-    | None, true 
-    | Some(True _), _ -> 
-      Ext_array.iter file_array begin fun f -> 
-        if not (Set_string.mem cxt.ignored_dirs f) && 
-           Ext_sys.is_directory_no_exn (Filename.concat working_dir f ) then 
-          walk_source_dir_map 
-            {cxt with 
-             cwd = 
-               Ext_path.concat cxt.cwd
-                 (Ext_path.simple_convert_node_path_to_os_path f);
-             traverse = true
-            } None 
-      end   
-    | None, _ 
-    | Some (False _), _ -> ()      
-    | Some s, _ -> walk_sources cxt s 
-  end
+    Ext_array.iter file_array (fun file ->
+        let is_typescript = cxt.gentype_language = "typescript" in
+        if
+          (not is_typescript)
+          && Ext_string.ends_with file Literals.suffix_gen_js
+          || (is_typescript && Ext_string.ends_with file Literals.suffix_gen_tsx)
+        then Sys.remove (Filename.concat working_dir file));
+    let cxt_traverse = cxt.traverse in
+    match (sub_dirs_field, cxt_traverse) with
+    | None, true | Some (True _), _ ->
+        Ext_array.iter file_array (fun f ->
+            if
+              (not (Set_string.mem cxt.ignored_dirs f))
+              && Ext_sys.is_directory_no_exn (Filename.concat working_dir f)
+            then
+              walk_source_dir_map
+                {
+                  cxt with
+                  cwd =
+                    Ext_path.concat cxt.cwd
+                      (Ext_path.simple_convert_node_path_to_os_path f);
+                  traverse = true;
+                }
+                None)
+    | None, _ | Some (False _), _ -> ()
+    | Some s, _ -> walk_sources cxt s)
+
 (* It makes use of the side effect when [walk_sources], removing suffix_re_js,
    TODO: make it configurable
 *)
-let clean_re_js root =     
-  match Ext_json_parse.parse_json_from_file 
-          (Filename.concat root Literals.bsconfig_json) with 
-  | Obj { map } -> 
-    let ignored_dirs = 
-      match map .?(Bsb_build_schemas.ignored_dirs) with       
-      | Some (Arr {content = x}) -> Set_string.of_list (Bsb_build_util.get_list_string x )
-      | Some _
-      | None -> Set_string.empty
-    in
-    let gentype_language =
-      match map.?(Bsb_build_schemas.gentypeconfig) with
-      | None -> ""
-      | Some (Obj { map }) ->
-        (match map.?(Bsb_build_schemas.language) with
-         | None -> ""
-         | Some (Str {str}) -> str
-         | Some _ -> "")
-      | Some _ -> ""
-    in
-    Ext_option.iter map.?(Bsb_build_schemas.sources) begin fun config -> 
-      try (
-        walk_sources { root ;                           
-                       traverse = true; 
-                       cwd = Filename.current_dir_name;
-                       ignored_dirs;
-                       gentype_language;
-                     } config
-      ) with _ -> ()      
-    end
-  | _  -> () 
-  | exception _ -> ()    
-
+let clean_re_js root =
+  match
+    Ext_json_parse.parse_json_from_file
+      (Filename.concat root Literals.bsconfig_json)
+  with
+  | Obj { map } ->
+      let ignored_dirs =
+        match map.?(Bsb_build_schemas.ignored_dirs) with
+        | Some (Arr { content = x }) ->
+            Set_string.of_list (Bsb_build_util.get_list_string x)
+        | Some _ | None -> Set_string.empty
+      in
+      let gentype_language =
+        match map.?(Bsb_build_schemas.gentypeconfig) with
+        | None -> ""
+        | Some (Obj { map }) -> (
+            match map.?(Bsb_build_schemas.language) with
+            | None -> ""
+            | Some (Str { str }) -> str
+            | Some _ -> "")
+        | Some _ -> ""
+      in
+      Ext_option.iter map.?(Bsb_build_schemas.sources) (fun config ->
+          try
+            walk_sources
+              {
+                root;
+                traverse = true;
+                cwd = Filename.current_dir_name;
+                ignored_dirs;
+                gentype_language;
+              }
+              config
+          with _ -> ())
+  | _ -> ()
+  | exception _ -> ()
 
 end
 module Bsb_config_parse : sig 
@@ -10995,22 +10225,10 @@ module Bsb_config_parse : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val package_specs_from_bsconfig : 
-  unit -> 
-  Bsb_package_specs.t * Set_string.t
+val package_specs_from_bsconfig : unit -> Bsb_package_specs.t * Set_string.t
 
-
-
-
-val interpret_json : 
-  package_kind:Bsb_package_kind.t  -> 
-  per_proj_dir:string -> 
-  Bsb_config_types.t
-
-
-
-
-
+val interpret_json :
+  package_kind:Bsb_package_kind.t -> per_proj_dir:string -> Bsb_config_types.t
 
 end = struct
 #1 "bsb_config_parse.ml"
@@ -11038,68 +10256,48 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 (* let get_list_string = Bsb_build_util.get_list_string *)
-let (//) = Ext_path.combine
+let ( // ) = Ext_path.combine
 
-let resolve_package cwd  package_name = 
-  let x =  Bsb_pkg.resolve_bs_package ~cwd package_name  in
+let resolve_package cwd package_name =
+  let x = Bsb_pkg.resolve_bs_package ~cwd package_name in
   {
-    Bsb_config_types.package_name ;
-    package_install_path = x // Bsb_config.lib_ocaml
+    Bsb_config_types.package_name;
+    package_install_path = x // Bsb_config.lib_ocaml;
   }
 
 type json_map = Ext_json_types.t Map_string.t
+
 (* Key is the path *)
-let (|?)  m (key, cb) =
-  m  |> Ext_json.test key cb
+let ( |? ) m (key, cb) = m |> Ext_json.test key cb
 
-
-
-let (.?()) = Map_string.find_opt
-
-
-
-
-
-
+let ( .?() ) = Map_string.find_opt
 
 (*TODO: it is a little mess that [cwd] and [project dir] are shared*)
 
-
-let extract_package_name_and_namespace
-    (map : json_map) : string * string option =   
-  let package_name = 
-    match  map.?(Bsb_build_schemas.name) with 
-
-    | Some (Str { str = "_" } as config)
-      -> 
-      Bsb_exception.config_error config "_ is a reserved package name"
-    | Some (Str {str = name }) -> 
-      name 
-    | Some config -> 
-      Bsb_exception.config_error config 
-        "name expect a string field"  
-    | None -> 
-      Bsb_exception.invalid_spec
-        "field name is required"
-  in 
-  let namespace = 
-    match map.?(Bsb_build_schemas.namespace) with 
-    | None 
-    | Some (False _) 
-      -> None 
-    | Some (True _) -> 
-      Some (Ext_namespace.namespace_of_package_name package_name)
-    | Some (Str {str}) -> 
-      (*TODO : check the validity of namespace *)
-      Some (Ext_namespace.namespace_of_package_name str)        
+let extract_package_name_and_namespace (map : json_map) : string * string option
+    =
+  let package_name =
+    match map.?(Bsb_build_schemas.name) with
+    | Some (Str { str = "_" } as config) ->
+        Bsb_exception.config_error config "_ is a reserved package name"
+    | Some (Str { str = name }) -> name
+    | Some config ->
+        Bsb_exception.config_error config "name expect a string field"
+    | None -> Bsb_exception.invalid_spec "field name is required"
+  in
+  let namespace =
+    match map.?(Bsb_build_schemas.namespace) with
+    | None | Some (False _) -> None
+    | Some (True _) ->
+        Some (Ext_namespace.namespace_of_package_name package_name)
+    | Some (Str { str }) ->
+        (*TODO : check the validity of namespace *)
+        Some (Ext_namespace.namespace_of_package_name str)
     | Some x ->
-      Bsb_exception.config_error x 
-        "namespace field expects string or boolean"
-  in 
-  package_name, namespace
-
+        Bsb_exception.config_error x "namespace field expects string or boolean"
+  in
+  (package_name, namespace)
 
 (**
     There are two things to check:
@@ -11118,204 +10316,186 @@ let extract_package_name_and_namespace
       ```
       bsc -runtime runtime_dir@version
       ```
-*)  
-let check_stdlib (map : json_map) (*built_in_package*) : bool =  
-  match map.?( Bsb_build_schemas.use_stdlib) with      
+*)
+let check_stdlib (map : json_map) : bool =
+  (*built_in_package*)
+  match map.?(Bsb_build_schemas.use_stdlib) with
   | Some (False _) -> false
-  | None 
-  | Some _ ->    
-    true
+  | None | Some _ -> true
 
-
-
-
-let extract_gentype_config (map : json_map) cwd 
-  : Bsb_config_types.gentype_config option = 
-  match map.?(Bsb_build_schemas.gentypeconfig) with 
+let extract_gentype_config (map : json_map) cwd :
+    Bsb_config_types.gentype_config option =
+  match map.?(Bsb_build_schemas.gentypeconfig) with
   | None -> None
-  | Some (Obj {map = obj}) -> 
-    Some { path = 
-             match obj.?(Bsb_build_schemas.path) with
-             | None -> 
-               (Bsb_build_util.resolve_bsb_magic_file
-                  ~cwd ~desc:"gentype.exe"
-                  "gentype/gentype.exe").path
-             | Some (Str {str}) ->  
-               (Bsb_build_util.resolve_bsb_magic_file
-                  ~cwd ~desc:"gentype.exe" str).path 
-             | Some config -> 
-               Bsb_exception.config_error config
-                 "path expect to be a string"
-         }
+  | Some (Obj { map = obj }) ->
+      Some
+        {
+          path =
+            (match obj.?(Bsb_build_schemas.path) with
+            | None ->
+                (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:"gentype.exe"
+                   "gentype/gentype.exe")
+                  .path
+            | Some (Str { str }) ->
+                (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:"gentype.exe"
+                   str)
+                  .path
+            | Some config ->
+                Bsb_exception.config_error config "path expect to be a string");
+        }
+  | Some config ->
+      Bsb_exception.config_error config "gentypeconfig expect an object"
 
-  | Some config -> 
-    Bsb_exception.config_error 
-      config "gentypeconfig expect an object"  
+let extract_string (map : json_map) (field : string) cb =
+  match map.?(field) with
+  | None -> None
+  | Some (Str { str }) -> cb str
+  | Some config -> Bsb_exception.config_error config (field ^ " expect a string")
 
+let extract_boolean (map : json_map) (field : string) (default : bool) : bool =
+  match map.?(field) with
+  | None -> default
+  | Some (True _) -> true
+  | Some (False _) -> false
+  | Some config ->
+      Bsb_exception.config_error config (field ^ " expect a boolean")
 
-let extract_string (map : json_map) (field : string) cb = 
-  match  map.?( field) with 
-  | None -> None 
-  | Some (Str{str}) -> cb str 
-  | Some config -> 
-    Bsb_exception.config_error config (field ^ " expect a string" )
-
-let extract_boolean (map : json_map) (field : string) (default : bool) : bool = 
-  match map.?(field) with 
-  | None -> default 
-  | Some (True _ ) -> true
-  | Some (False _) -> false 
-  | Some config -> 
-    Bsb_exception.config_error config (field ^ " expect a boolean" )
-
-let extract_reason_react_jsx (map : json_map) = 
-  let default : Bsb_config_types.reason_react_jsx option ref = ref None in 
+let extract_reason_react_jsx (map : json_map) =
+  let default : Bsb_config_types.reason_react_jsx option ref = ref None in
   map
-  |? (Bsb_build_schemas.reason, `Obj begin fun m -> 
-      match m.?(Bsb_build_schemas.react_jsx) with 
-      | Some (Flo{loc; flo}) -> 
-        begin match flo with 
-          | "3" -> 
-            default := Some Jsx_v3
-          | _ -> Bsb_exception.errorf ~loc "Unsupported jsx version %s" flo
-        end        
-      | Some x -> Bsb_exception.config_error x 
-                    "Unexpected input (expect a version number) for jsx, note boolean is no longer allowed"
-      | None -> ()
-    end)
+  |? ( Bsb_build_schemas.reason,
+       `Obj
+         (fun m ->
+           match m.?(Bsb_build_schemas.react_jsx) with
+           | Some (Flo { loc; flo }) -> (
+               match flo with
+               | "3" -> default := Some Jsx_v3
+               | _ -> Bsb_exception.errorf ~loc "Unsupported jsx version %s" flo
+               )
+           | Some x ->
+               Bsb_exception.config_error x
+                 "Unexpected input (expect a version number) for jsx, note \
+                  boolean is no longer allowed"
+           | None -> ()) )
   |> ignore;
   !default
 
-let extract_warning (map : json_map) = 
-  match map.?(Bsb_build_schemas.warnings) with 
-  | None -> Bsb_warning.use_default 
-  | Some (Obj {map }) -> Bsb_warning.from_map map 
+let extract_warning (map : json_map) =
+  match map.?(Bsb_build_schemas.warnings) with
+  | None -> Bsb_warning.use_default
+  | Some (Obj { map }) -> Bsb_warning.from_map map
   | Some config -> Bsb_exception.config_error config "expect an object"
 
-let extract_ignored_dirs (map : json_map) : Set_string .t =   
-  match map.?(Bsb_build_schemas.ignored_dirs) with 
+let extract_ignored_dirs (map : json_map) : Set_string.t =
+  match map.?(Bsb_build_schemas.ignored_dirs) with
   | None -> Set_string.empty
-  | Some (Arr {content}) -> 
-    Set_string.of_list (Bsb_build_util.get_list_string content)
-  | Some config -> 
-    Bsb_exception.config_error config "expect an array of string"  
-let extract_pinned_dependencies (map : json_map) : Set_string.t = 
-  match map.?(Bsb_build_schemas.pinned_dependencies) with 
-  | None -> Set_string.empty
-  | Some (Arr {content}) -> 
-    Set_string.of_list (Bsb_build_util.get_list_string content)
-  | Some config -> 
-    Bsb_exception.config_error config "expect an array of string"    
+  | Some (Arr { content }) ->
+      Set_string.of_list (Bsb_build_util.get_list_string content)
+  | Some config -> Bsb_exception.config_error config "expect an array of string"
 
-let extract_generators (map : json_map) = 
-  let generators = ref Map_string.empty in 
-  (match map.?(Bsb_build_schemas.generators) with 
-   | None -> ()
-   | Some (Arr {content = s}) -> 
-     generators :=
-       Ext_array.fold_left s Map_string.empty (fun acc json -> 
-           match json with 
-           | Obj {map = m ; loc}  -> 
-             begin match m.?(Bsb_build_schemas.name),
-                         m.?(Bsb_build_schemas.command) with 
-             | Some (Str {str = name}), Some ( Str {str = command}) -> 
-               Map_string.add acc name command 
-             | _, _ -> 
-               Bsb_exception.errorf ~loc {| generators exepect format like { "name" : "cppo",  "command"  : "cppo $in -o $out"} |}
-             end
-           | _ -> acc )
-   | Some config ->
-     Bsb_exception.config_error config (Bsb_build_schemas.generators ^ " expect an array field")       
-  );
+let extract_pinned_dependencies (map : json_map) : Set_string.t =
+  match map.?(Bsb_build_schemas.pinned_dependencies) with
+  | None -> Set_string.empty
+  | Some (Arr { content }) ->
+      Set_string.of_list (Bsb_build_util.get_list_string content)
+  | Some config -> Bsb_exception.config_error config "expect an array of string"
+
+let extract_generators (map : json_map) =
+  let generators = ref Map_string.empty in
+  (match map.?(Bsb_build_schemas.generators) with
+  | None -> ()
+  | Some (Arr { content = s }) ->
+      generators :=
+        Ext_array.fold_left s Map_string.empty (fun acc json ->
+            match json with
+            | Obj { map = m; loc } -> (
+                match
+                  (m.?(Bsb_build_schemas.name), m.?(Bsb_build_schemas.command))
+                with
+                | Some (Str { str = name }), Some (Str { str = command }) ->
+                    Map_string.add acc name command
+                | _, _ ->
+                    Bsb_exception.errorf ~loc
+                      {| generators exepect format like { "name" : "cppo",  "command"  : "cppo $in -o $out"} |}
+                )
+            | _ -> acc)
+  | Some config ->
+      Bsb_exception.config_error config
+        (Bsb_build_schemas.generators ^ " expect an array field"));
   !generators
 
-
-let extract_dependencies (map : json_map) cwd (field : string )
-  : Bsb_config_types.dependencies =   
-  match map.?(field) with 
+let extract_dependencies (map : json_map) cwd (field : string) :
+    Bsb_config_types.dependencies =
+  match map.?(field) with
   | None -> []
-  | Some (Arr ({content = s})) -> 
-    Ext_list.map (Bsb_build_util.get_list_string s) (fun s -> resolve_package cwd (Bsb_pkg_types.string_as_package s))
-  | Some config -> 
-    Bsb_exception.config_error config 
-      (field ^ " expect an array")
+  | Some (Arr { content = s }) ->
+      Ext_list.map (Bsb_build_util.get_list_string s) (fun s ->
+          resolve_package cwd (Bsb_pkg_types.string_as_package s))
+  | Some config -> Bsb_exception.config_error config (field ^ " expect an array")
 
-(* return an empty array if not found *)     
-let extract_string_list (map : json_map) (field : string) : string list = 
-  match map.?(field) with 
+(* return an empty array if not found *)
+let extract_string_list (map : json_map) (field : string) : string list =
+  match map.?(field) with
   | None -> []
-  | Some (Arr {content = s}) -> 
-    Bsb_build_util.get_list_string s 
-  | Some config ->   
-    Bsb_exception.config_error config (field ^ " expect an array")
+  | Some (Arr { content = s }) -> Bsb_build_util.get_list_string s
+  | Some config -> Bsb_exception.config_error config (field ^ " expect an array")
 
-let extract_ppx 
-    (map : json_map) 
-    (field : string) 
-    ~(cwd : string) : Bsb_config_types.ppx list =     
-  match map.?(field) with 
+let extract_ppx (map : json_map) (field : string) ~(cwd : string) :
+    Bsb_config_types.ppx list =
+  match map.?(field) with
   | None -> []
-  | Some (Arr {content }) -> 
-    let resolve s = 
-      if s = "" then Bsb_exception.invalid_spec "invalid ppx, empty string found"
-      else 
-        (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.ppx_flags s).path in 
-    Ext_array.to_list_f content (fun x -> 
-        match x with 
-        | Str x ->    
+  | Some (Arr { content }) ->
+      let resolve s =
+        if s = "" then
+          Bsb_exception.invalid_spec "invalid ppx, empty string found"
+        else
+          (Bsb_build_util.resolve_bsb_magic_file ~cwd
+             ~desc:Bsb_build_schemas.ppx_flags s)
+            .path
+      in
+      Ext_array.to_list_f content (fun x ->
+          match x with
+          | Str x -> { Bsb_config_types.name = resolve x.str; args = [] }
+          | Arr { content } -> (
+              let xs = Bsb_build_util.get_list_string content in
+              match xs with
+              | [] -> Bsb_exception.config_error x " empty array is not allowed"
+              | name :: args -> { Bsb_config_types.name = resolve name; args })
+          | config ->
+              Bsb_exception.config_error config
+                (field ^ "expect each item to be either string or array"))
+  | Some config -> Bsb_exception.config_error config (field ^ " expect an array")
 
-          {Bsb_config_types.name = 
-             resolve x.str; 
-           args = []}
-        | Arr {content } -> 
-
-          let xs = Bsb_build_util.get_list_string content in 
-          (match xs with 
-           | [] -> Bsb_exception.config_error x " empty array is not allowed"
-           | name :: args -> 
-             {Bsb_config_types.name = resolve name ; args}
-          )
-        | config -> Bsb_exception.config_error config 
-                      (field ^ "expect each item to be either string or array")
-      )
-  | Some config -> 
-    Bsb_exception.config_error config (field ^ " expect an array")
-
-
-
-let extract_js_post_build (map : json_map) cwd : string option = 
-  let js_post_build_cmd = ref None in 
-  map    
-  |? (Bsb_build_schemas.js_post_build, `Obj begin fun m ->
-      m |? (Bsb_build_schemas.cmd , `Str (fun s -> 
-          js_post_build_cmd := Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.js_post_build s).path
-
-        )
-        )
-      |> ignore
-    end)
-
-  |> ignore ;
+let extract_js_post_build (map : json_map) cwd : string option =
+  let js_post_build_cmd = ref None in
+  map
+  |? ( Bsb_build_schemas.js_post_build,
+       `Obj
+         (fun m ->
+           m
+           |? ( Bsb_build_schemas.cmd,
+                `Str
+                  (fun s ->
+                    js_post_build_cmd :=
+                      Some
+                        (Bsb_build_util.resolve_bsb_magic_file ~cwd
+                           ~desc:Bsb_build_schemas.js_post_build s)
+                          .path) )
+           |> ignore) )
+  |> ignore;
   !js_post_build_cmd
 
 (** ATT: make sure such function is re-entrant. 
     With a given [cwd] it works anywhere*)
-let interpret_json 
-    ~(package_kind : Bsb_package_kind.t)
-    ~per_proj_dir:(per_proj_dir:string)
-
-  : Bsb_config_types.t =
-
+let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
+    : Bsb_config_types.t =
   (* we should not resolve it too early,
       since it is external configuration, no {!Bsb_build_util.convert_and_resolve_path}
   *)
 
-
-
-
   (* When we plan to add more deps here,
-     Make sure check it is consistent that for nested deps, we have a 
-     quck check by just re-parsing deps 
+     Make sure check it is consistent that for nested deps, we have a
+     quck check by just re-parsing deps
      Make sure it works with [-make-world] [-clean-world]
   *)
 
@@ -11323,58 +10503,67 @@ let interpret_json
      1. if [build.ninja] does use [ninja] we need set a variable
      2. we need store it so that we can call ninja correctly
   *)
-  match  Ext_json_parse.parse_json_from_file (per_proj_dir // Literals.bsconfig_json) with
-  | Obj { map } ->
-    let package_name, namespace = 
-      extract_package_name_and_namespace  map in 
-    let gentype_config  = extract_gentype_config map per_proj_dir in  
-    (* This line has to be before any calls to Bsb_global_backend.backend, because it'll read the entries 
-         array from the bsconfig and set the backend_ref to the first entry, if any. *)
+  match
+    Ext_json_parse.parse_json_from_file (per_proj_dir // Literals.bsconfig_json)
+  with
+  | Obj { map } -> (
+      let package_name, namespace = extract_package_name_and_namespace map in
+      let gentype_config = extract_gentype_config map per_proj_dir in
 
-    (* The default situation is empty *)
-    let built_in_package : bool = check_stdlib map  in
+      (* This line has to be before any calls to Bsb_global_backend.backend, because it'll read the entries
+           array from the bsconfig and set the backend_ref to the first entry, if any. *)
 
-    let pp_flags : string option = 
-      extract_string map Bsb_build_schemas.pp_flags (fun p -> 
-          if p = "" then 
-            Bsb_exception.invalid_spec "invalid pp, empty string found"
-          else 
-            Some (Bsb_build_util.resolve_bsb_magic_file ~cwd:per_proj_dir ~desc:Bsb_build_schemas.pp_flags p).path
-        ) in 
-    let reason_react_jsx = extract_reason_react_jsx map in 
-    let bs_dependencies = extract_dependencies map per_proj_dir Bsb_build_schemas.bs_dependencies in    
-    let bs_dev_dependencies = 
-      match package_kind with 
-      | Toplevel 
-      | Pinned_dependency _ ->
-        extract_dependencies map per_proj_dir Bsb_build_schemas.bs_dev_dependencies
-      | Dependency _ -> [] in 
-    let pinned_dependencies = 
-      extract_pinned_dependencies map in   
-    begin match map.?(Bsb_build_schemas.sources) with 
-      | Some sources -> 
-        let cut_generators = 
-          extract_boolean map Bsb_build_schemas.cut_generators false in 
-        let groups = Bsb_parse_sources.scan
-            ~ignored_dirs:(extract_ignored_dirs map)
-            ~package_kind
-            ~root: per_proj_dir
-            ~cut_generators
-            (* ~namespace *)
-            sources in         
-        {
-          pinned_dependencies;  
-          gentype_config;
-          package_name ;
-          namespace ;    
-          warning = extract_warning map;
-          external_includes = extract_string_list map Bsb_build_schemas.bs_external_includes;
-          bsc_flags = extract_string_list map Bsb_build_schemas.bsc_flags ;
-          ppx_files = extract_ppx map ~cwd:per_proj_dir Bsb_build_schemas.ppx_flags;
-          pp_file = pp_flags ;          
-          bs_dependencies ;
-          bs_dev_dependencies ;
-          (*
+      (* The default situation is empty *)
+      let built_in_package : bool = check_stdlib map in
+
+      let pp_flags : string option =
+        extract_string map Bsb_build_schemas.pp_flags (fun p ->
+            if p = "" then
+              Bsb_exception.invalid_spec "invalid pp, empty string found"
+            else
+              Some
+                (Bsb_build_util.resolve_bsb_magic_file ~cwd:per_proj_dir
+                   ~desc:Bsb_build_schemas.pp_flags p)
+                  .path)
+      in
+      let reason_react_jsx = extract_reason_react_jsx map in
+      let bs_dependencies =
+        extract_dependencies map per_proj_dir Bsb_build_schemas.bs_dependencies
+      in
+      let bs_dev_dependencies =
+        match package_kind with
+        | Toplevel | Pinned_dependency _ ->
+            extract_dependencies map per_proj_dir
+              Bsb_build_schemas.bs_dev_dependencies
+        | Dependency _ -> []
+      in
+      let pinned_dependencies = extract_pinned_dependencies map in
+      match map.?(Bsb_build_schemas.sources) with
+      | Some sources ->
+          let cut_generators =
+            extract_boolean map Bsb_build_schemas.cut_generators false
+          in
+          let groups =
+            Bsb_parse_sources.scan ~ignored_dirs:(extract_ignored_dirs map)
+              ~package_kind ~root:per_proj_dir ~cut_generators
+              (* ~namespace *)
+              sources
+          in
+          {
+            pinned_dependencies;
+            gentype_config;
+            package_name;
+            namespace;
+            warning = extract_warning map;
+            external_includes =
+              extract_string_list map Bsb_build_schemas.bs_external_includes;
+            bsc_flags = extract_string_list map Bsb_build_schemas.bsc_flags;
+            ppx_files =
+              extract_ppx map ~cwd:per_proj_dir Bsb_build_schemas.ppx_flags;
+            pp_file = pp_flags;
+            bs_dependencies;
+            bs_dev_dependencies;
+            (*
             reference for quoting
              {[
                let tmpfile = Filename.temp_file "ocamlpp" "" in
@@ -11382,38 +10571,32 @@ let interpret_json
                    pp (Filename.quote sourcefile) tmpfile
                in
              ]}
-          *)          
-          js_post_build_cmd = (extract_js_post_build map per_proj_dir);
-          package_specs = 
-            (match package_kind with 
-             | Toplevel ->  Bsb_package_specs.from_map ~cwd:per_proj_dir map                
-             | Pinned_dependency x
-             | Dependency x -> x);          
-          file_groups = groups; 
-          files_to_install = Queue.create ();
-          built_in_dependency = built_in_package;
-          generate_merlin = 
-            extract_boolean map Bsb_build_schemas.generate_merlin false;
-          reason_react_jsx  ;  
-          generators = extract_generators map ; 
-          cut_generators ;
-        }
-      | None -> 
-        Bsb_exception.invalid_spec
-          "no sources specified in bsconfig.json"
-    end
-  | _ -> 
-    Bsb_exception.invalid_spec "bsconfig.json expect a json object {}"
+          *)
+            js_post_build_cmd = extract_js_post_build map per_proj_dir;
+            package_specs =
+              (match package_kind with
+              | Toplevel -> Bsb_package_specs.from_map ~cwd:per_proj_dir map
+              | Pinned_dependency x | Dependency x -> x);
+            file_groups = groups;
+            files_to_install = Queue.create ();
+            built_in_dependency = built_in_package;
+            generate_merlin =
+              extract_boolean map Bsb_build_schemas.generate_merlin false;
+            reason_react_jsx;
+            generators = extract_generators map;
+            cut_generators;
+          }
+      | None ->
+          Bsb_exception.invalid_spec "no sources specified in bsconfig.json")
+  | _ -> Bsb_exception.invalid_spec "bsconfig.json expect a json object {}"
 
-
-let package_specs_from_bsconfig () = 
+let package_specs_from_bsconfig () =
   let json = Ext_json_parse.parse_json_from_file Literals.bsconfig_json in
-  begin match json with
-    | Obj {map} ->
-      Bsb_package_specs.from_map ~cwd:Bsb_global_paths.cwd map,
-      extract_pinned_dependencies map
-    | _ -> assert false
-  end
+  match json with
+  | Obj { map } ->
+      ( Bsb_package_specs.from_map ~cwd:Bsb_global_paths.cwd map,
+        extract_pinned_dependencies map )
+  | _ -> assert false
 
 end
 module Bsb_unix : sig 
@@ -11442,20 +10625,14 @@ module Bsb_unix : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type command = 
-  { 
-    cmd : string ;
-    cwd : string ; 
-    args : string array 
-  }  
+type command = { cmd : string; cwd : string; args : string array }
 
+val command_fatal_error : command -> int -> unit
 
-val command_fatal_error : command -> int -> unit 
+val run_command_execv : command -> int
 
-val run_command_execv :   command -> int
+val remove_dir_recursive : string -> unit
 
-
-val remove_dir_recursive : string -> unit 
 end = struct
 #1 "bsb_unix.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -11482,79 +10659,65 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type command = { cmd : string; cwd : string; args : string array }
 
-
-type command = 
-  { 
-    cmd : string ;
-    cwd : string ; 
-    args : string array 
-  }  
-
-
-let log cmd = 
-  Bsb_log.info "@{<info>Entering@} %s @." cmd.cwd ;  
-  Bsb_log.info "@{<info>Cmd:@} " ; 
+let log cmd =
+  Bsb_log.info "@{<info>Entering@} %s @." cmd.cwd;
+  Bsb_log.info "@{<info>Cmd:@} ";
   Bsb_log.info_args cmd.args
 
 let command_fatal_error cmd eid =
   Bsb_log.error "@{<error>Failure:@} %s \nLocation: %s@." cmd.cmd cmd.cwd;
-  exit eid 
+  exit eid
 
-let run_command_execv_unix  cmd : int =
-  match Unix.fork () with 
-  | 0 -> 
-    log cmd;
-    Unix.chdir cmd.cwd;
-    Unix.execv cmd.cmd cmd.args 
-  | pid -> 
-    match Unix.waitpid [] pid  with 
-    | _, process_status ->       
-      match process_status with 
-      | Unix.WEXITED eid ->
-        eid    
-      | Unix.WSIGNALED _ | Unix.WSTOPPED _ -> 
-        Bsb_log.error "@{<error>Interrupted:@} %s@." cmd.cmd;
-        2 
-
-
+let run_command_execv_unix cmd : int =
+  match Unix.fork () with
+  | 0 ->
+      log cmd;
+      Unix.chdir cmd.cwd;
+      Unix.execv cmd.cmd cmd.args
+  | pid -> (
+      match Unix.waitpid [] pid with
+      | _, process_status -> (
+          match process_status with
+          | Unix.WEXITED eid -> eid
+          | Unix.WSIGNALED _ | Unix.WSTOPPED _ ->
+              Bsb_log.error "@{<error>Interrupted:@} %s@." cmd.cmd;
+              2))
 
 (** TODO: the args are not quoted, here 
     we are calling a very limited set of `bsb` commands, so that 
     we are safe
 *)
 let run_command_execv_win (cmd : command) =
-  let old_cwd = Unix.getcwd () in 
+  let old_cwd = Unix.getcwd () in
   log cmd;
   Unix.chdir cmd.cwd;
   let eid =
-    Sys.command 
-      (String.concat Ext_string.single_space 
-         ( Filename.quote cmd.cmd ::( List.tl  @@ Array.to_list cmd.args))) in 
-  Bsb_log.info "@{<info>Leaving@} %s => %s  @." cmd.cwd  old_cwd;
+    Sys.command
+      (String.concat Ext_string.single_space
+         (Filename.quote cmd.cmd :: (List.tl @@ Array.to_list cmd.args)))
+  in
+  Bsb_log.info "@{<info>Leaving@} %s => %s  @." cmd.cwd old_cwd;
   Unix.chdir old_cwd;
   eid
 
-
-let run_command_execv = 
-  if Ext_sys.is_windows_or_cygwin then 
-    run_command_execv_win
-  else run_command_execv_unix  
 (** it assume you have permissions, so always catch it to fail 
     gracefully
 *)
+let run_command_execv =
+  if Ext_sys.is_windows_or_cygwin then run_command_execv_win
+  else run_command_execv_unix
 
-let rec remove_dir_recursive dir = 
+let rec remove_dir_recursive dir =
   match Sys.is_directory dir with
-  | true -> 
-    begin 
-      let files = Sys.readdir dir in 
-      for i = 0 to Array.length files - 1 do 
+  | true ->
+      let files = Sys.readdir dir in
+      for i = 0 to Array.length files - 1 do
         remove_dir_recursive (Filename.concat dir (Array.unsafe_get files i))
-      done ;
-      Unix.rmdir dir 
-    end
-  | false ->  Sys.remove dir 
+      done;
+      Unix.rmdir dir
+  | false -> Sys.remove dir
   | exception _ -> ()
 
 end
@@ -11588,13 +10751,9 @@ module Bsb_clean : sig
     TODO: clean staled in source js artifacts
 *)
 
-val clean_bs_deps : 
-  string -> 
-  unit
+val clean_bs_deps : string -> unit
 
-val clean_self : 
-  string -> 
-  unit
+val clean_self : string -> unit
 
 end = struct
 #1 "bsb_clean.ml"
@@ -11622,49 +10781,46 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+let ( // ) = Ext_path.combine
 
-let (//) = Ext_path.combine
-
-
-let ninja_clean  proj_dir =
+let ninja_clean proj_dir =
   try
     let cmd = Bsb_global_paths.vendor_ninja in
     let lib_artifacts_dir = Bsb_config.lib_bs in
     let cwd = proj_dir // lib_artifacts_dir in
     if Sys.file_exists cwd then
       let eid =
-        Bsb_unix.run_command_execv {cmd ; args = [|cmd; "-t"; "clean"|] ; cwd} in
-      if eid <> 0 then
-        Bsb_log.warn "@{<warning>Failed@}@."
-  with  e ->
-    Bsb_log.warn "@{<warning>Failed@}: %s @." (Printexc.to_string e)
+        Bsb_unix.run_command_execv { cmd; args = [| cmd; "-t"; "clean" |]; cwd }
+      in
+      if eid <> 0 then Bsb_log.warn "@{<warning>Failed@}@."
+  with e -> Bsb_log.warn "@{<warning>Failed@}: %s @." (Printexc.to_string e)
 
 let clean_bs_garbage proj_dir =
-  Bsb_log.info "@{<info>Cleaning:@} in %s@." proj_dir ;
+  Bsb_log.info "@{<info>Cleaning:@} in %s@." proj_dir;
   let try_remove x =
     let x = proj_dir // x in
-    if Sys.file_exists x then
-      Bsb_unix.remove_dir_recursive x  in
+    if Sys.file_exists x then Bsb_unix.remove_dir_recursive x
+  in
   try
-    Bsb_parse_sources.clean_re_js proj_dir; (* clean re.js files*)
-    ninja_clean  proj_dir ;
-    Ext_list.iter Bsb_config.all_lib_artifacts try_remove ;
-  with
-    e ->
+    Bsb_parse_sources.clean_re_js proj_dir;
+    (* clean re.js files*)
+    ninja_clean proj_dir;
+    Ext_list.iter Bsb_config.all_lib_artifacts try_remove
+  with e ->
     Bsb_log.warn "@{<warning>Failed@} to clean due to %s" (Printexc.to_string e)
 
-
-let clean_bs_deps  proj_dir =
-  let _, pinned_dependencies = Bsb_config_parse.package_specs_from_bsconfig () in   
-  let queue =   
-    Bsb_build_util.walk_all_deps  proj_dir ~pinned_dependencies in 
-  Queue.iter (fun (pkg_cxt : Bsb_build_util.package_context )->
+let clean_bs_deps proj_dir =
+  let _, pinned_dependencies =
+    Bsb_config_parse.package_specs_from_bsconfig ()
+  in
+  let queue = Bsb_build_util.walk_all_deps proj_dir ~pinned_dependencies in
+  Queue.iter
+    (fun (pkg_cxt : Bsb_build_util.package_context) ->
       (* whether top or not always do the cleaning *)
-      clean_bs_garbage  pkg_cxt.proj_dir
-    ) queue
+      clean_bs_garbage pkg_cxt.proj_dir)
+    queue
 
-let clean_self  proj_dir = 
-  clean_bs_garbage  proj_dir
+let clean_self proj_dir = clean_bs_garbage proj_dir
 
 end
 module Ext_io : sig 
@@ -11727,36 +10883,30 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 (** on 32 bit , there are 16M limitation *)
 let load_file f =
-  Ext_pervasives.finally (open_in_bin f) ~clean:close_in begin fun ic ->   
-    let n = in_channel_length ic in
-    let s = Bytes.create n in
-    really_input ic s 0 n;
-    Bytes.unsafe_to_string s
-  end
+  Ext_pervasives.finally (open_in_bin f) ~clean:close_in (fun ic ->
+      let n = in_channel_length ic in
+      let s = Bytes.create n in
+      really_input ic s 0 n;
+      Bytes.unsafe_to_string s)
 
-
-let  rev_lines_of_chann chan = 
-  let rec loop acc chan = 
+let rev_lines_of_chann chan =
+  let rec loop acc chan =
     match input_line chan with
     | line -> loop (line :: acc) chan
-    | exception End_of_file -> close_in chan ; acc in
+    | exception End_of_file ->
+        close_in chan;
+        acc
+  in
   loop [] chan
 
+let rev_lines_of_file file =
+  Ext_pervasives.finally ~clean:close_in (open_in_bin file) rev_lines_of_chann
 
-let rev_lines_of_file file = 
-  Ext_pervasives.finally 
-    ~clean:close_in 
-    (open_in_bin file) rev_lines_of_chann
-
-
-let write_file f content = 
-  Ext_pervasives.finally ~clean:close_out 
-    (open_out_bin f)  begin fun oc ->   
-    output_string oc content
-  end
+let write_file f content =
+  Ext_pervasives.finally ~clean:close_out (open_out_bin f) (fun oc ->
+      output_string oc content)
 
 end
 module Bsb_merlin_gen : sig 
@@ -11785,13 +10935,8 @@ module Bsb_merlin_gen : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+val merlin_file_gen : per_proj_dir:string -> Bsb_config_types.t -> unit
 
-
-
-val merlin_file_gen : 
-  per_proj_dir:string  -> 
-  Bsb_config_types.t ->  
-  unit 
 end = struct
 #1 "bsb_merlin_gen.ml"
 (* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
@@ -11895,7 +11040,7 @@ let output_merlin_namespace buffer ns =
 
 (* Literals.dash_nostdlib::
    FIX editor tooling, note merlin does not need -nostdlib since we added S and B
-   RLS will add -I for those cmi files,  
+   RLS will add -I for those cmi files,
    Some consistency check is needed
    Unless we tell the editor to peek those cmi for auto-complete and others for building which is too
    complicated
@@ -12033,26 +11178,25 @@ module Bsb_ninja_check : sig
    metadata again
 *)
 
-
-
-
-
-type check_result = 
+type check_result =
   | Good
   | Bsb_file_corrupted
-  | Bsb_file_not_exist (** We assume that it is a clean repo *)  
+  | Bsb_file_not_exist  (** We assume that it is a clean repo *)
   | Bsb_source_directory_changed
-  | Bsb_bsc_version_mismatch  
+  | Bsb_bsc_version_mismatch
   | Bsb_forced
   | Bsb_package_kind_inconsistent
   | Other of string
 
-val pp_check_result : 
-  Format.formatter -> 
-  check_result -> 
+val pp_check_result : Format.formatter -> check_result -> unit
+
+val record :
+  package_kind:Bsb_package_kind.t ->
+  per_proj_dir:string ->
+  file:string ->
+  config:Bsb_config_types.t ->
+  string list ->
   unit
-
-
 (** [record cwd file relevant_file_or_dirs]
     The data structure we decided to whether regenerate [build.ninja] 
     or not. 
@@ -12063,22 +11207,14 @@ val pp_check_result :
     We serialize such data structure and call {!check} to decide
     [build.ninja] should be regenerated
 *)
-val record : 
-  package_kind:Bsb_package_kind.t ->
-  per_proj_dir:string -> 
-  file:string -> 
-  config:Bsb_config_types.t ->
-  string list -> 
-  unit
 
-
-(** check if [build.ninja] should be regenerated *)
 val check :
   package_kind:Bsb_package_kind.t ->
-  per_proj_dir:string ->  
-  forced:bool -> 
-  file:string -> 
+  per_proj_dir:string ->
+  forced:bool ->
+  file:string ->
   check_result
+(** check if [build.ninja] should be regenerated *)
 
 end = struct
 #1 "bsb_ninja_check.ml"
@@ -12115,16 +11251,14 @@ external hexstring_of_float : float -> int -> char -> string
 let hex_of_float f = hexstring_of_float f (-1) '-'
 
 (* This should not lose any preicision *)
-(* let id (f : float) = 
+(* let id (f : float) =
     float_of_string (hex_of_float f) = f
 *)
-
-
 
 type check_result =
   | Good
   | Bsb_file_corrupted
-  | Bsb_file_not_exist (** We assume that it is a clean repo *)
+  | Bsb_file_not_exist  (** We assume that it is a clean repo *)
   | Bsb_source_directory_changed
   | Bsb_bsc_version_mismatch
   | Bsb_forced
@@ -12132,80 +11266,72 @@ type check_result =
   | Other of string
 
 let pp_check_result fmt (check_resoult : check_result) =
-  Format.pp_print_string fmt (match check_resoult with
-      | Good -> "OK"
-      | Bsb_file_corrupted -> "Stored data corrupted"
-      | Bsb_file_not_exist -> "Dependencies information missing"
-      | Bsb_source_directory_changed ->
-        "Bsb source directory changed"
-      | Bsb_bsc_version_mismatch ->
-        "Bsc or bsb version mismatch"
-      | Bsb_forced ->
-        "Bsb forced rebuild"
-      | Bsb_package_kind_inconsistent -> 
-        "The package was built in different mode"  
-      | Other s -> s)
+  Format.pp_print_string fmt
+    (match check_resoult with
+    | Good -> "OK"
+    | Bsb_file_corrupted -> "Stored data corrupted"
+    | Bsb_file_not_exist -> "Dependencies information missing"
+    | Bsb_source_directory_changed -> "Bsb source directory changed"
+    | Bsb_bsc_version_mismatch -> "Bsc or bsb version mismatch"
+    | Bsb_forced -> "Bsb forced rebuild"
+    | Bsb_package_kind_inconsistent -> "The package was built in different mode"
+    | Other s -> s)
 
-let rec check_aux cwd (xs : string list)  =
-  match xs with 
+let rec check_aux cwd (xs : string list) =
+  match xs with
   | [] -> Good
-  | "===" :: rest ->
-    check_global_atime rest 
-  | item :: rest
-    -> 
-    match Ext_string.split item '\t' with 
-    | [file; stamp] -> 
-      let stamp = float_of_string stamp in 
-      let cur_file = (Filename.concat cwd file) in 
-      let stat = Unix.stat cur_file in 
-      if stat.st_mtime <= stamp then 
-        check_aux cwd rest 
-      else Other  cur_file
-    | _ -> Bsb_file_corrupted 
-and check_global_atime rest = 
-  match rest with 
-  | [] -> Good 
-  | item :: rest ->
-    match Ext_string.split item '\t' with 
-    | [file; stamp] -> 
-      let stamp = float_of_string stamp in 
-      let cur_file = file in 
-      let stat = Unix.stat cur_file in 
-      if stat.st_atime <= stamp then 
-        check_global_atime rest 
-      else Other  cur_file
-    | _ -> Bsb_file_corrupted 
+  | "===" :: rest -> check_global_atime rest
+  | item :: rest -> (
+      match Ext_string.split item '\t' with
+      | [ file; stamp ] ->
+          let stamp = float_of_string stamp in
+          let cur_file = Filename.concat cwd file in
+          let stat = Unix.stat cur_file in
+          if stat.st_mtime <= stamp then check_aux cwd rest else Other cur_file
+      | _ -> Bsb_file_corrupted)
 
+and check_global_atime rest =
+  match rest with
+  | [] -> Good
+  | item :: rest -> (
+      match Ext_string.split item '\t' with
+      | [ file; stamp ] ->
+          let stamp = float_of_string stamp in
+          let cur_file = file in
+          let stat = Unix.stat cur_file in
+          if stat.st_atime <= stamp then check_global_atime rest
+          else Other cur_file
+      | _ -> Bsb_file_corrupted)
 
 (* TODO: for such small data structure, maybe text format is better *)
 
-let record_global_atime buf name = 
-  let stamp = (Unix.stat name).st_atime in 
+let record_global_atime buf name =
+  let stamp = (Unix.stat name).st_atime in
   Ext_buffer.add_string_char buf name '\t';
-  Ext_buffer.add_string_char buf (hex_of_float stamp) '\n'   
-let record 
-    ~(package_kind : Bsb_package_kind.t)
-    ~per_proj_dir ~file  
-    ~(config:Bsb_config_types.t) (file_or_dirs : string list) : unit =
-  let buf = Ext_buffer.create 1_000 in   
-  Ext_buffer.add_string_char buf Bs_version.version '\n';  
+  Ext_buffer.add_string_char buf (hex_of_float stamp) '\n'
+
+let record ~(package_kind : Bsb_package_kind.t) ~per_proj_dir ~file
+    ~(config : Bsb_config_types.t) (file_or_dirs : string list) : unit =
+  let buf = Ext_buffer.create 1_000 in
+  Ext_buffer.add_string_char buf Bs_version.version '\n';
   Ext_buffer.add_string_char buf per_proj_dir '\n';
-  Ext_buffer.add_string_char buf (Bsb_package_kind.encode_no_nl package_kind) '\n';
-  Ext_list.iter file_or_dirs (fun f -> 
-      Ext_buffer.add_string_char buf f '\t'; 
-      Ext_buffer.add_string_char buf 
-        (hex_of_float (Unix.stat (Filename.concat per_proj_dir f)).st_mtime) '\n'; 
-    );
+  Ext_buffer.add_string_char buf
+    (Bsb_package_kind.encode_no_nl package_kind)
+    '\n';
+  Ext_list.iter file_or_dirs (fun f ->
+      Ext_buffer.add_string_char buf f '\t';
+      Ext_buffer.add_string_char buf
+        (hex_of_float (Unix.stat (Filename.concat per_proj_dir f)).st_mtime)
+        '\n');
   Ext_buffer.add_string buf "===\n";
   record_global_atime buf Sys.executable_name;
-  Ext_list.iter config.ppx_files (fun {name ; args = _} -> 
-      try
-        record_global_atime buf name
-      with  _ -> (* record the ppx files as a best effort *)
-        ());      
+  Ext_list.iter config.ppx_files (fun { name; args = _ } ->
+      try record_global_atime buf name
+      with _ -> (* record the ppx files as a best effort *)
+                ());
   let oc = open_out_bin file in
-  Ext_buffer.output_buffer oc buf ;
-  close_out oc    
+  Ext_buffer.output_buffer oc buf;
+  close_out oc
 
 (** check time stamp for all files
     TODO: those checks system call can be saved later
@@ -12213,36 +11339,27 @@ let record
     Even forced, we still need walk through a little
     bit in case we found a different version of compiler
 *)
-let check 
-    ~(package_kind : Bsb_package_kind.t)
-    ~(per_proj_dir:string) ~forced ~file : check_result =
-  match  open_in_bin file with   (* Windows binary mode*)    
+let check ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string) ~forced
+    ~file : check_result =
+  match open_in_bin file with
+  (* Windows binary mode*)
   | exception _ -> Bsb_file_not_exist
-  | ic ->
-    match List.rev (Ext_io.rev_lines_of_chann ic) with
-    | exception _ -> Bsb_file_corrupted 
-    | version :: source_directory ::package_kind_str:: dir_or_files ->
-      if version <> Bs_version.version then Bsb_bsc_version_mismatch
-      else 
-      if per_proj_dir <> source_directory then Bsb_source_directory_changed else
-      if forced then Bsb_forced (* No need walk through *)
-      else if 
-         (Bsb_package_kind.encode_no_nl package_kind <> package_kind_str) then 
-        Bsb_package_kind_inconsistent
-      else
-        begin 
-          try
-            check_aux per_proj_dir dir_or_files 
-          with e ->
-            begin
-              Bsb_log.info
-                "@{<info>Stat miss %s@}@."
-                (Printexc.to_string e);
-              Bsb_file_not_exist        
-            end
-        end 
-    | _ -> Bsb_file_corrupted         
-
+  | ic -> (
+      match List.rev (Ext_io.rev_lines_of_chann ic) with
+      | exception _ -> Bsb_file_corrupted
+      | version :: source_directory :: package_kind_str :: dir_or_files -> (
+          if version <> Bs_version.version then Bsb_bsc_version_mismatch
+          else if per_proj_dir <> source_directory then
+            Bsb_source_directory_changed
+          else if forced then Bsb_forced (* No need walk through *)
+          else if Bsb_package_kind.encode_no_nl package_kind <> package_kind_str
+          then Bsb_package_kind_inconsistent
+          else
+            try check_aux per_proj_dir dir_or_files
+            with e ->
+              Bsb_log.info "@{<info>Stat miss %s@}@." (Printexc.to_string e);
+              Bsb_file_not_exist)
+      | _ -> Bsb_file_corrupted)
 
 end
 module Bsb_db_encode : sig 
@@ -12271,14 +11388,9 @@ module Bsb_db_encode : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+val encode : Bsb_db.t -> Ext_buffer.t -> unit
 
-val encode : 
-  Bsb_db.t -> 
-  Ext_buffer.t -> 
-  unit 
-
-val write_build_cache : 
-  dir:string -> Bsb_db.t -> string
+val write_build_cache : dir:string -> Bsb_db.t -> string
 
 end = struct
 #1 "bsb_db_encode.ml"
@@ -12306,87 +11418,80 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 let bsbuild_cache = Literals.bsbuild_cache
 
+let nl buf = Ext_buffer.add_char buf '\n'
 
-let nl buf = 
-  Ext_buffer.add_char buf '\n'
-
-
-
-(* IDEAS: 
-   Pros: 
+(* IDEAS:
+   Pros:
    - could be even shortened to a single byte
-     Cons: 
+     Cons:
    - decode would allocate
    - code too verbose
-   - not readable 
-*)  
+   - not readable
+*)
 
 let make_encoding length buf : Ext_buffer.t -> int -> unit =
-  let max_range = length lsl 1 + 1 in 
-  if max_range <= 0xff then begin 
+  let max_range = (length lsl 1) + 1 in
+  if max_range <= 0xff then (
     Ext_buffer.add_char buf '1';
-    Ext_buffer.add_int_1
-  end
-  else if max_range <= 0xff_ff then begin 
+    Ext_buffer.add_int_1)
+  else if max_range <= 0xff_ff then (
     Ext_buffer.add_char buf '2';
-    Ext_buffer.add_int_2
-  end
-  else if length <= 0x7f_ff_ff then begin 
+    Ext_buffer.add_int_2)
+  else if length <= 0x7f_ff_ff then (
     Ext_buffer.add_char buf '3';
-    Ext_buffer.add_int_3
-  end
-  else if length <= 0x7f_ff_ff_ff then begin
+    Ext_buffer.add_int_3)
+  else if length <= 0x7f_ff_ff_ff then (
     Ext_buffer.add_char buf '4';
-    Ext_buffer.add_int_4
-  end else assert false 
+    Ext_buffer.add_int_4)
+  else assert false
+
 (* Make sure [tmp_buf1] and [tmp_buf2] is cleared ,
    they are only used to control the order.
    Strictly speaking, [tmp_buf1] is not needed
 *)
-let encode_single (db : Bsb_db.map) (buf : Ext_buffer.t) =    
-  (* module name section *)  
-  let len = Map_string.cardinal db in 
+let encode_single (db : Bsb_db.map) (buf : Ext_buffer.t) =
+  (* module name section *)
+  let len = Map_string.cardinal db in
   Ext_buffer.add_string_char buf (string_of_int len) '\n';
-  if len <> 0 then begin 
-    let mapping = Hash_string.create 50 in 
-    Map_string.iter db (fun name {dir} ->  
-        Ext_buffer.add_string_char buf name '\n'; 
+  if len <> 0 then (
+    let mapping = Hash_string.create 50 in
+    Map_string.iter db (fun name { dir } ->
+        Ext_buffer.add_string_char buf name '\n';
         if not (Hash_string.mem mapping dir) then
-          Hash_string.add mapping dir (Hash_string.length mapping)
-      ); 
-    let length = Hash_string.length mapping in   
-    let rev_mapping = Array.make length "" in 
+          Hash_string.add mapping dir (Hash_string.length mapping));
+    let length = Hash_string.length mapping in
+    let rev_mapping = Array.make length "" in
     Hash_string.iter mapping (fun k i -> Array.unsafe_set rev_mapping i k);
     (* directory name section *)
     Ext_array.iter rev_mapping (fun s -> Ext_buffer.add_string_char buf s '\t');
-    nl buf; (* module name info section *)
-    let len_encoding = make_encoding length buf in 
-    Map_string.iter db (fun _ module_info ->       
-        len_encoding buf 
-          (Hash_string.find_exn  mapping module_info.dir lsl 1 + (Obj.magic (module_info.case : bool) : int)));      
-    nl buf 
-  end
-let encode (dbs : Bsb_db.t) buf =     
-  encode_single dbs.lib buf ;
-  encode_single dbs.dev buf 
+    nl buf;
+    (* module name info section *)
+    let len_encoding = make_encoding length buf in
+    Map_string.iter db (fun _ module_info ->
+        len_encoding buf
+          ((Hash_string.find_exn mapping module_info.dir lsl 1)
+          + (Obj.magic (module_info.case : bool) : int)));
+    nl buf)
 
+let encode (dbs : Bsb_db.t) buf =
+  encode_single dbs.lib buf;
+  encode_single dbs.dev buf
 
-(*  shall we avoid writing such file (checking the digest)?
-    It is expensive to start scanning the whole code base,
-    we should we avoid it in the first place, if we do start scanning,
-    this operation seems affordable
+(* shall we avoid writing such file (checking the digest)?
+   It is expensive to start scanning the whole code base,
+   we should we avoid it in the first place, if we do start scanning,
+   this operation seems affordable
 *)
-let write_build_cache ~dir (bs_files : Bsb_db.t)  : string = 
-  let oc = open_out_bin (Filename.concat dir bsbuild_cache) in 
-  let buf = Ext_buffer.create 100_000 in 
-  encode bs_files buf ; 
+let write_build_cache ~dir (bs_files : Bsb_db.t) : string =
+  let oc = open_out_bin (Filename.concat dir bsbuild_cache) in
+  let buf = Ext_buffer.create 100_000 in
+  encode bs_files buf;
   Ext_buffer.output_buffer oc buf;
-  close_out oc; 
-  let digest = Ext_buffer.digest buf in 
-  Digest.to_hex digest 
+  close_out oc;
+  let digest = Ext_buffer.digest buf in
+  Digest.to_hex digest
 
 end
 module Ext_digest : sig 
@@ -12415,10 +11520,10 @@ module Ext_digest : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-val length : int 
+val length : int
 
 val hex_length : int
+
 end = struct
 #1 "ext_digest.ml"
 (* Copyright (C) 2019- Hongbo Zhang, Authors of ReScript
@@ -12445,10 +11550,10 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 let length = 16
 
 let hex_length = 32
+
 end
 module Bsb_namespace_map_gen : sig 
 #1 "bsb_namespace_map_gen.mli"
@@ -12476,15 +11581,12 @@ module Bsb_namespace_map_gen : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+val output : dir:string -> string -> Bsb_file_groups.file_groups -> unit
 (** [output dir namespace file_groups]
     when [build.ninja] is generated, we output a module map [.mlmap] file 
     such [.mlmap] file will be consumed by [bsc.exe] to generate [.cmi] file
 *)
-val output : 
-  dir:string ->
-  string -> 
-  Bsb_file_groups.file_groups ->
-  unit 
+
 end = struct
 #1 "bsb_namespace_map_gen.ml"
 (* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
@@ -12511,18 +11613,15 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let (//) = Ext_path.combine
+let ( // ) = Ext_path.combine
 
-
-
-
-
-let write_file fname digest contents = 
-  let oc = open_out_bin fname in 
+let write_file fname digest contents =
+  let oc = open_out_bin fname in
   Digest.output oc digest;
   output_char oc '\n';
   Ext_buffer.output_buffer oc contents;
-  close_out oc 
+  close_out oc
+
 (*
    TODO:
    sort filegroupts to ensure deterministic behavior
@@ -12531,31 +11630,22 @@ let write_file fname digest contents =
    [.mlmap] does not need to be changed too
 
 *)
-let output 
-    ~dir 
-    (namespace : string)
-    (file_groups : Bsb_file_groups.file_groups )
-  = 
-  let fname = namespace ^ Literals.suffix_mlmap in 
-  let buf = Ext_buffer.create 10000 in   
-  Ext_list.iter file_groups 
-    (fun  x ->
-       Map_string.iter x.sources (fun k _ -> 
-           Ext_buffer.add_string_char buf k '\n';
-         ) 
-    );
+let output ~dir (namespace : string) (file_groups : Bsb_file_groups.file_groups)
+    =
+  let fname = namespace ^ Literals.suffix_mlmap in
+  let buf = Ext_buffer.create 10000 in
+  Ext_list.iter file_groups (fun x ->
+      Map_string.iter x.sources (fun k _ ->
+          Ext_buffer.add_string_char buf k '\n'));
   (* let contents = Buffer.contents buf in    *)
-  let digest = Ext_buffer.digest buf in 
-  let fname = (dir// fname ) in 
-  if Sys.file_exists fname then
-    let ic = open_in_bin fname in 
-    let old_digest = really_input_string ic Ext_digest.length in 
-    close_in ic ;
-    (if old_digest <> digest then 
-       write_file fname digest buf)
-  else 
-    write_file fname digest buf
-
+  let digest = Ext_buffer.digest buf in
+  let fname = dir // fname in
+  if Sys.file_exists fname then (
+    let ic = open_in_bin fname in
+    let old_digest = really_input_string ic Ext_digest.length in
+    close_in ic;
+    if old_digest <> digest then write_file fname digest buf)
+  else write_file fname digest buf
 
 end
 module Bsb_ninja_global_vars
@@ -12585,22 +11675,14 @@ module Bsb_ninja_global_vars
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-(* Invariant: the two string literal has 
+(* Invariant: the two string literal has
    to be "a" and "$a"
 *)
 
 (* let src_root_dir = "g_root"
 
-   let lazy_src_root_dir = "$g_root"  *)
+   let lazy_src_root_dir = "$g_root" *)
 let g_finger = "g_finger"
-
-
-
-
 
 end
 module Bsb_ninja_rule : sig 
@@ -12629,40 +11711,36 @@ module Bsb_ninja_rule : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
+type t
 (** The complexity comes from the fact that we allow custom rules which could
     conflict with our custom built-in rules
 *)
-type t  
 
-
-val get_name : t  -> out_channel -> string
+val get_name : t -> out_channel -> string
 
 (***********************************************************)
-(** A list of existing rules *)
+
 type builtin = {
-
   build_ast : t;
-  build_ast_from_re : t ;
-
+  build_ast_from_re : t;
   (* platform dependent, on Win32,
       invoking cmd.exe
   *)
   copy_resources : t;
   (* Rules below all need restat *)
-  build_bin_deps : t ;
-  build_bin_deps_dev : t ;
+  build_bin_deps : t;
+  build_bin_deps_dev : t;
   mj : t;
   mj_dev : t;
-  mij : t ;
-  mij_dev : t ;
+  mij : t;
+  mij_dev : t;
   mi : t;
-  mi_dev : t ;
-
-  build_package : t ;
-  customs : t Map_string.t
+  mi_dev : t;
+  build_package : t;
+  customs : t Map_string.t;
 }
+(** A list of existing rules *)
+
 (***********************************************************)
 
 (** rules are generally composed of built-in rules and customized rules, there are two design choices:
@@ -12672,22 +11750,23 @@ type builtin = {
 *)
 
 type command = string
-(* Since now we generate ninja files per bsconfig.json in a single process, 
+
+(* Since now we generate ninja files per bsconfig.json in a single process,
     we must make sure it is re-entrant
 *)
-val make_custom_rules : 
+val make_custom_rules :
   gentype_config:Bsb_config_types.gentype_config option ->
   has_postbuild:string option ->
   pp_file:string option ->
-  has_builtin:bool -> 
-  reason_react_jsx : Bsb_config_types.reason_react_jsx option ->
+  has_builtin:bool ->
+  reason_react_jsx:Bsb_config_types.reason_react_jsx option ->
   digest:string ->
   package_specs:Bsb_package_specs.t ->
   namespace:string option ->
   package_name:string ->
   warnings:string ->
   ppx_files:Bsb_config_types.ppx list ->
-  bsc_flags:string ->  
+  bsc_flags:string ->
   dpkg_incls:string ->
   lib_incls:string ->
   dev_incls:string ->
@@ -12695,7 +11774,6 @@ val make_custom_rules :
   bs_dev_dependencies:Bsb_config_types.dependencies ->
   command Map_string.t ->
   builtin
-
 
 end = struct
 #1 "bsb_ninja_rule.ml"
@@ -12723,300 +11801,219 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-type t = { 
-  mutable used : bool; 
+type t = {
+  mutable used : bool;
   (* rule_name : string;  *)
-  name : out_channel -> string 
+  name : out_channel -> string;
 }
 
 let get_name (x : t) oc = x.name oc
-let print_rule (oc : out_channel) 
-    ?description 
-    ?(restat : unit option)  
-    ?(dyndep : unit option)
-    ~command   
-    name  =
-  output_string oc "rule "; output_string oc name ; output_string oc "\n";
-  output_string oc "  command = "; output_string oc command; output_string oc "\n";
-  (if dyndep <> None then
-     output_string oc "  dyndep = 1\n");
-  (if restat <>  None then   
-     output_string oc "  restat = 1\n");
-  begin match description with 
-    | None -> ()     
-    | Some description -> 
-      output_string oc "  description = " ; output_string oc description;
+
+let print_rule (oc : out_channel) ?description ?(restat : unit option)
+    ?(dyndep : unit option) ~command name =
+  output_string oc "rule ";
+  output_string oc name;
+  output_string oc "\n";
+  output_string oc "  command = ";
+  output_string oc command;
+  output_string oc "\n";
+  if dyndep <> None then output_string oc "  dyndep = 1\n";
+  if restat <> None then output_string oc "  restat = 1\n";
+  match description with
+  | None -> ()
+  | Some description ->
+      output_string oc "  description = ";
+      output_string oc description;
       output_string oc "\n"
-  end 
-
-
-
-
 
 (** allocate an unique name for such rule*)
-let define
-    ~command
-    ?dyndep
-    ?restat
-    rule_name : t 
-  =
-
-  let rec self = {
-    used  = false;
-    (* rule_name ; *)
-    name = fun oc ->
-      if not self.used then
-        begin
-          print_rule oc  ?dyndep ?restat ~command rule_name;
-          self.used <- true
-        end ;
-      rule_name
-  } in 
+let define ~command ?dyndep ?restat rule_name : t =
+  let rec self =
+    {
+      used = false;
+      (* rule_name ; *)
+      name =
+        (fun oc ->
+          if not self.used then (
+            print_rule oc ?dyndep ?restat ~command rule_name;
+            self.used <- true);
+          rule_name);
+    }
+  in
 
   self
-
-
-
 
 type command = string
 
 type builtin = {
-  build_ast : t;
-  (** TODO: Implement it on top of pp_flags *)
-  build_ast_from_re : t ;
+  build_ast : t;  (** TODO: Implement it on top of pp_flags *)
+  build_ast_from_re : t;
   (* build_ast_from_rei : t ; *)
-
-
   (* platform dependent, on Win32,
       invoking cmd.exe
   *)
   copy_resources : t;
   (* Rules below all need restat *)
-  build_bin_deps : t ;
-  build_bin_deps_dev : t;        
+  build_bin_deps : t;
+  build_bin_deps_dev : t;
   mj : t;
   mj_dev : t;
-  mij : t ;
-  mij_dev : t ;
+  mij : t;
+  mij_dev : t;
   mi : t;
-  mi_dev : t ;
-
-  build_package : t ;
-  customs : t Map_string.t
+  mi_dev : t;
+  build_package : t;
+  customs : t Map_string.t;
 }
 
-
-;;
-
-let make_custom_rules 
-    ~(gentype_config : Bsb_config_types.gentype_config option)        
-    ~(has_postbuild : string option)
-    ~(pp_file : string option)
+let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config option)
+    ~(has_postbuild : string option) ~(pp_file : string option)
     ~(has_builtin : bool)
     ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
-    ~(digest : string)
-    ~(package_specs: Bsb_package_specs.t)
-    ~(namespace : string option)
-    ~package_name
-    ~warnings  
-    ~(ppx_files : Bsb_config_types.ppx list)
-    ~bsc_flags
-    ~(dpkg_incls : string)
-    ~(lib_incls : string)
-    ~(dev_incls : string)
-    ~bs_dependencies
-    ~bs_dev_dependencies
-    (custom_rules : command Map_string.t) : 
-  builtin = 
+    ~(digest : string) ~(package_specs : Bsb_package_specs.t)
+    ~(namespace : string option) ~package_name ~warnings
+    ~(ppx_files : Bsb_config_types.ppx list) ~bsc_flags ~(dpkg_incls : string)
+    ~(lib_incls : string) ~(dev_incls : string) ~bs_dependencies
+    ~bs_dev_dependencies (custom_rules : command Map_string.t) : builtin =
   let bs_dep = Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep in
-  let bsc = Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc in 
-  (* FIXME: We don't need set [-o ${out}] when building ast 
+  let bsc = Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc in
+  (* FIXME: We don't need set [-o ${out}] when building ast
       since the default is already good -- it does not*)
-  let buf = Ext_buffer.create 100 in     
-  let ns_flag = 
-    match namespace with None -> ""    
-                       | Some n -> " -bs-ns " ^ n in 
-  let mk_ml_cmj_cmd 
-      ~(read_cmi : [`yes | `is_cmi | `no])
-      ~is_dev 
-      ~postbuild : string =     
+  let buf = Ext_buffer.create 100 in
+  let ns_flag = match namespace with None -> "" | Some n -> " -bs-ns " ^ n in
+  let mk_ml_cmj_cmd ~(read_cmi : [ `yes | `is_cmi | `no ]) ~is_dev ~postbuild :
+      string =
     Ext_buffer.clear buf;
-    Ext_buffer.add_string buf bsc;    
+    Ext_buffer.add_string buf bsc;
     Ext_buffer.add_string buf ns_flag;
-    if read_cmi = `yes then 
-      Ext_buffer.add_string buf " -bs-read-cmi";
+    if read_cmi = `yes then Ext_buffer.add_string buf " -bs-read-cmi";
     (* The include order matters below *)
-    if is_dev then 
-      Ext_buffer.add_char_string buf ' ' dev_incls;      
-    Ext_buffer.add_char_string buf ' ' lib_incls; 
-    if is_dev then    
-      Ext_buffer.add_char_string buf ' ' dpkg_incls;
-    if not has_builtin then   
-      Ext_buffer.add_string buf " -nostdlib";
+    if is_dev then Ext_buffer.add_char_string buf ' ' dev_incls;
+    Ext_buffer.add_char_string buf ' ' lib_incls;
+    if is_dev then Ext_buffer.add_char_string buf ' ' dpkg_incls;
+    if not has_builtin then Ext_buffer.add_string buf " -nostdlib";
     Ext_buffer.add_char_string buf ' ' bsc_flags;
-    Ext_buffer.add_char_string buf ' ' warnings; 
+    Ext_buffer.add_char_string buf ' ' warnings;
     (* we need "-w a" in the end position to take effect
        in non-toplevel mode
     *)
-    begin match gentype_config with 
-      | None -> ()
-      | Some x ->
-        Ext_buffer.add_string buf " -bs-gentype " ;
-        Ext_buffer.add_string buf x.path
-    end;
-    if read_cmi <> `is_cmi then begin 
+    (match gentype_config with
+    | None -> ()
+    | Some x ->
+        Ext_buffer.add_string buf " -bs-gentype ";
+        Ext_buffer.add_string buf x.path);
+    if read_cmi <> `is_cmi then (
       Ext_buffer.add_string buf " -bs-package-name ";
       Ext_buffer.add_string buf (Ext_filename.maybe_quote package_name);
-      Ext_buffer.add_string buf 
-        (Bsb_package_specs.package_flag_of_package_specs package_specs ~dirname:"$in_d")
-    end;
-    begin match bs_dependencies, bs_dev_dependencies with 
-      | [], [] -> ()
-      | _, _  -> 
-        Ext_buffer.add_string buf " -bs-v";    
-        Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_finger;
-    end;
+      Ext_buffer.add_string buf
+        (Bsb_package_specs.package_flag_of_package_specs package_specs
+           ~dirname:"$in_d"));
+    (match (bs_dependencies, bs_dev_dependencies) with
+    | [], [] -> ()
+    | _, _ ->
+        Ext_buffer.add_string buf " -bs-v";
+        Ext_buffer.add_ninja_prefix_var buf Bsb_ninja_global_vars.g_finger);
     Ext_buffer.add_string buf " $i";
-    begin match postbuild with 
-      | None -> ()
-      | Some cmd -> 
+    (match postbuild with
+    | None -> ()
+    | Some cmd ->
         Ext_buffer.add_string buf " && ";
-        Ext_buffer.add_string buf cmd ; 
-        Ext_buffer.add_string buf " $out_last"
-    end ;
+        Ext_buffer.add_string buf cmd;
+        Ext_buffer.add_string buf " $out_last");
     Ext_buffer.contents buf
-  in   
-  let mk_ast  ~has_reason_react_jsx : string =
-    Ext_buffer.clear buf ; 
+  in
+  let mk_ast ~has_reason_react_jsx : string =
+    Ext_buffer.clear buf;
     Ext_buffer.add_string buf bsc;
-    Ext_buffer.add_char_string buf ' ' warnings;  
+    Ext_buffer.add_char_string buf ' ' warnings;
     Ext_buffer.add_string buf " -bs-v ";
     Ext_buffer.add_string buf Bs_version.version;
-    (match ppx_files with 
-     | [ ] -> ()
-     | _ -> 
-       Ext_list.iter ppx_files (fun x -> 
-           match string_of_float (Unix.stat x.name).st_mtime with 
-           | exception _ -> () 
-           | st -> Ext_buffer.add_char_string buf ',' st 
-         );
-       Ext_buffer.add_char_string buf ' ' 
-         (Bsb_build_util.ppx_flags ppx_files)); 
-    (match pp_file with 
-     | None -> ()
-     | Some flag ->
-       Ext_buffer.add_char_string buf ' '
-         (Bsb_build_util.pp_flag flag)
-    );
-    (match has_reason_react_jsx, reason_react_jsx with
-     | false, _ 
-     | _, None -> ()
-     | _, Some Jsx_v3 
-       -> Ext_buffer.add_string buf " -bs-jsx 3"
-    );
+    (match ppx_files with
+    | [] -> ()
+    | _ ->
+        Ext_list.iter ppx_files (fun x ->
+            match string_of_float (Unix.stat x.name).st_mtime with
+            | exception _ -> ()
+            | st -> Ext_buffer.add_char_string buf ',' st);
+        Ext_buffer.add_char_string buf ' ' (Bsb_build_util.ppx_flags ppx_files));
+    (match pp_file with
+    | None -> ()
+    | Some flag ->
+        Ext_buffer.add_char_string buf ' ' (Bsb_build_util.pp_flag flag));
+    (match (has_reason_react_jsx, reason_react_jsx) with
+    | false, _ | _, None -> ()
+    | _, Some Jsx_v3 -> Ext_buffer.add_string buf " -bs-jsx 3");
 
     Ext_buffer.add_char_string buf ' ' bsc_flags;
-    Ext_buffer.add_string buf " -absname -bs-ast -o $out $i";   
+    Ext_buffer.add_string buf " -absname -bs-ast -o $out $i";
     Ext_buffer.contents buf
-  in  
-  let build_ast =
-    define
-      ~command:(mk_ast ~has_reason_react_jsx:false )
-      "ast" in
+  in
+  let build_ast = define ~command:(mk_ast ~has_reason_react_jsx:false) "ast" in
   let build_ast_from_re =
-    define
-      ~command:(mk_ast  ~has_reason_react_jsx:true)
-      "astj" in 
+    define ~command:(mk_ast ~has_reason_react_jsx:true) "astj"
+  in
 
-  let copy_resources =    
-    define 
-      ~command:(
-        if Ext_sys.is_windows_or_cygwin then
-          "cmd.exe /C copy /Y $i $out >NUL" 
-        else "cp $i $out"
-      )
-      "copy_resource" in
+  let copy_resources =
+    define
+      ~command:
+        (if Ext_sys.is_windows_or_cygwin then "cmd.exe /C copy /Y $i $out >NUL"
+        else "cp $i $out")
+      "copy_resource"
+  in
 
   let build_bin_deps =
-    define
-      ~restat:()
-      ~command:
-        (bs_dep ^ " -hash " ^ digest ^ ns_flag ^ " $in")
-      "deps" (* 
-      it seems we already have restat = 1
-      now it is an implicit dependency, we need avoid write duplicated files
+    define ~restat:()
+      ~command:(bs_dep ^ " -hash " ^ digest ^ ns_flag ^ " $in")
+      "deps"
+    (*
+       it seems we already have restat = 1
+       now it is an implicit dependency, we need avoid write duplicated files
     *)
-  in 
+  in
   let build_bin_deps_dev =
-    define
-      ~restat:()
-      ~command:
-        (bs_dep ^ " -g -hash " ^ digest ^ ns_flag ^ " $in")
-      "deps_dev" in     
-  let aux ~name ~read_cmi  ~postbuild =
-    define
-      ~command:(mk_ml_cmj_cmd 
-                  ~read_cmi  ~is_dev:false 
-                  ~postbuild)
-      ~dyndep:()
-      ~restat:() (* Always restat when having mli *)
-      name,
-    define
-      ~command:(mk_ml_cmj_cmd 
-                  ~read_cmi  ~is_dev:true
-                  ~postbuild)
-      ~dyndep:()
-      ~restat:() (* Always restat when having mli *)
-      (name ^ "_dev")
-  in 
+    define ~restat:()
+      ~command:(bs_dep ^ " -g -hash " ^ digest ^ ns_flag ^ " $in")
+      "deps_dev"
+  in
+  let aux ~name ~read_cmi ~postbuild =
+    ( define
+        ~command:(mk_ml_cmj_cmd ~read_cmi ~is_dev:false ~postbuild)
+        ~dyndep:() ~restat:() (* Always restat when having mli *) name,
+      define
+        ~command:(mk_ml_cmj_cmd ~read_cmi ~is_dev:true ~postbuild)
+        ~dyndep:() ~restat:()
+        (* Always restat when having mli *) (name ^ "_dev") )
+  in
 
-  let mj, mj_dev =
-    aux ~name:"mj" ~read_cmi:`yes ~postbuild:has_postbuild in   
-  let mij, mij_dev =
-    aux
-      ~read_cmi:`no
-      ~name:"mij" ~postbuild:has_postbuild in  
-  let mi, mi_dev =
-    aux 
-      ~read_cmi:`is_cmi  ~postbuild:None
-      ~name:"mi" in 
-  let build_package = 
+  let mj, mj_dev = aux ~name:"mj" ~read_cmi:`yes ~postbuild:has_postbuild in
+  let mij, mij_dev = aux ~read_cmi:`no ~name:"mij" ~postbuild:has_postbuild in
+  let mi, mi_dev = aux ~read_cmi:`is_cmi ~postbuild:None ~name:"mi" in
+  let build_package =
     define
       ~command:(bsc ^ " -w -49 -color always -no-alias-deps  $i")
-      ~restat:()
-      "build_package"
-  in 
+      ~restat:() "build_package"
+  in
   {
-    build_ast ;
-    build_ast_from_re  ;
+    build_ast;
+    build_ast_from_re;
     (* platform dependent, on Win32,
         invoking cmd.exe
     *)
     copy_resources;
     (* Rules below all need restat *)
-    build_bin_deps ;
+    build_bin_deps;
     build_bin_deps_dev;
-    mj  ;
-    mj_dev  ;
-    mij  ;
-    mi  ;
-
+    mj;
+    mj_dev;
+    mij;
+    mi;
     mij_dev;
-    mi_dev ;
-
-    build_package ;
+    mi_dev;
+    build_package;
     customs =
-      Map_string.mapi custom_rules begin fun name command -> 
-        define ~command ("custom_" ^ name)
-      end
+      Map_string.mapi custom_rules (fun name command ->
+          define ~command ("custom_" ^ name));
   }
-
-
 
 end
 module Bsb_ninja_targets : sig 
@@ -13045,30 +12042,25 @@ module Bsb_ninja_targets : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
+val output_build :
+  outputs:string list ->
+  inputs:string list ->
+  rule:Bsb_ninja_rule.t ->
+  out_channel ->
+  unit
 (** output should always be marked explicitly,
     otherwise the build system can not figure out clearly
     however, for the command we don't need pass `-o`
 *)
-val output_build :
-  outputs:string list ->
-  inputs:string list ->
-  rule:Bsb_ninja_rule.t -> 
-  out_channel -> 
-  unit
 
-
-val phony  :
+val phony :
   ?order_only_deps:string list ->
-  inputs:string list -> 
-  output:string -> 
-  out_channel -> 
+  inputs:string list ->
+  output:string ->
+  out_channel ->
   unit
 
-val output_finger : string ->  string -> out_channel -> unit 
+val output_finger : string -> string -> out_channel -> unit
 
 end = struct
 #1 "bsb_ninja_targets.ml"
@@ -13096,16 +12088,14 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+let oc_list xs oc =
+  Ext_list.iter xs (fun s ->
+      output_string oc Ext_string.single_space;
+      output_string oc s)
 
-let oc_list xs  oc = 
-  Ext_list.iter xs (fun s -> output_string oc Ext_string.single_space ; output_string oc s)
-
-let output_build
-    ~outputs
-    ~inputs
-    ~rule
-    oc =
-  let rule = Bsb_ninja_rule.get_name rule  oc in (* Trigger building if not used *)
+let output_build ~outputs ~inputs ~rule oc =
+  let rule = Bsb_ninja_rule.get_name rule oc in
+  (* Trigger building if not used *)
   output_string oc "o";
   oc_list outputs oc;
   output_string oc " : ";
@@ -13113,26 +12103,22 @@ let output_build
   oc_list inputs oc;
   output_string oc "\n"
 
-let phony ?(order_only_deps=[]) ~inputs ~output oc =
+let phony ?(order_only_deps = []) ~inputs ~output oc =
   output_string oc "o ";
-  output_string oc output ;
+  output_string oc output;
   output_string oc " : ";
   output_string oc "phony";
   oc_list inputs oc;
-  if order_only_deps <> [] then 
-    begin
-      output_string oc " ||";                
-      oc_list order_only_deps oc 
-    end;
+  if order_only_deps <> [] then (
+    output_string oc " ||";
+    oc_list order_only_deps oc);
   output_string oc "\n"
 
-let output_finger key value oc  =
-  output_string oc key ;
+let output_finger key value oc =
+  output_string oc key;
   output_string oc " := ";
-  output_string oc value ;
+  output_string oc value;
   output_string oc "\n"
-
-
 
 end
 module Ext_namespace_encode : sig 
@@ -13161,12 +12147,11 @@ module Ext_namespace_encode : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+val make : ?ns:string -> string -> string
 (** [make ~ns:"Ns" "a" ]
     A typical example would return "a-Ns"
     Note the namespace comes from the output of [namespace_of_package_name]
 *)
-val make : 
-  ?ns:string -> string -> string 
 
 end = struct
 #1 "ext_namespace_encode.ml"
@@ -13194,10 +12179,9 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let make ?ns cunit  = 
-  match ns with 
-  | None -> cunit
-  | Some ns -> cunit ^ Literals.ns_sep ^ ns 
+let make ?ns cunit =
+  match ns with None -> cunit | Some ns -> cunit ^ Literals.ns_sep ^ ns
+
 end
 module Bsb_ninja_file_groups : sig 
 #1 "bsb_ninja_file_groups.mli"
@@ -13225,16 +12209,14 @@ module Bsb_ninja_file_groups : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
 val handle_files_per_dir :
   out_channel ->
   rules:Bsb_ninja_rule.builtin ->
   package_specs:Bsb_package_specs.t ->
   files_to_install:Bsb_db.module_info Queue.t ->
-  namespace:string option -> 
-  Bsb_file_groups.file_group -> unit
+  namespace:string option ->
+  Bsb_file_groups.file_group ->
+  unit
 
 end = struct
 #1 "bsb_ninja_file_groups.ml"
@@ -13262,151 +12244,108 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let (//) = Ext_path.combine
+let ( // ) = Ext_path.combine
 
-
-
-
-
-
-let handle_generators oc 
-    (group : Bsb_file_groups.file_group) 
-    custom_rules =   
-  let map_to_source_dir = 
-    (fun x -> Bsb_config.proj_rel (group.dir //x )) in  
-  Ext_list.iter group.generators (fun {output; input; command} -> 
+let handle_generators oc (group : Bsb_file_groups.file_group) custom_rules =
+  let map_to_source_dir x = Bsb_config.proj_rel (group.dir // x) in
+  Ext_list.iter group.generators (fun { output; input; command } ->
       (*TODO: add a loc for better error message *)
-      match Map_string.find_opt custom_rules command with 
-      | None -> Ext_fmt.failwithf ~loc:__LOC__ "custom rule %s used but  not defined" command
-      | Some rule -> 
-        Bsb_ninja_targets.output_build oc 
-          ~outputs:(Ext_list.map  output  map_to_source_dir)
-          ~inputs:(Ext_list.map input map_to_source_dir) 
-          ~rule
-    )
+      match Map_string.find_opt custom_rules command with
+      | None ->
+          Ext_fmt.failwithf ~loc:__LOC__ "custom rule %s used but  not defined"
+            command
+      | Some rule ->
+          Bsb_ninja_targets.output_build oc
+            ~outputs:(Ext_list.map output map_to_source_dir)
+            ~inputs:(Ext_list.map input map_to_source_dir)
+            ~rule)
 
+type suffixes = { impl : string; intf : string }
 
+let re_suffixes = { impl = Literals.suffix_re; intf = Literals.suffix_rei }
 
+let ml_suffixes = { impl = Literals.suffix_ml; intf = Literals.suffix_mli }
 
-type suffixes = {
-  impl : string;
-  intf : string   
-}
+let res_suffixes = { impl = Literals.suffix_res; intf = Literals.suffix_resi }
 
-let re_suffixes = {
-  impl  = Literals.suffix_re;
-  intf = Literals.suffix_rei;
-}
-
-let ml_suffixes = {
-  impl = Literals.suffix_ml;
-  intf = Literals.suffix_mli;
-}
-let res_suffixes = {
-  impl = Literals.suffix_res;
-  intf = Literals.suffix_resi;
-}
-let emit_module_build
-    (rules : Bsb_ninja_rule.builtin)  
-    (package_specs : Bsb_package_specs.t)
-    (is_dev : bool) 
-    oc 
-    namespace
-    (module_info : Bsb_db.module_info) : unit
-  =    
-  let has_intf_file = module_info.info = Impl_intf in 
-  let config, ast_rule  = 
-    match module_info.syntax_kind with 
-    | Reason -> re_suffixes, rules.build_ast_from_re
-    | Ml -> ml_suffixes, rules.build_ast 
-    | Res -> res_suffixes, rules.build_ast_from_re (* FIXME: better names *)
-  in   
-  let filename_sans_extension = module_info.name_sans_extension in 
-  let input_impl = Bsb_config.proj_rel (filename_sans_extension ^ config.impl ) in
-  let input_intf = Bsb_config.proj_rel (filename_sans_extension ^ config.intf) in
-  let output_ast = filename_sans_extension  ^ Literals.suffix_ast in
-  let output_iast = filename_sans_extension  ^ Literals.suffix_iast in
+let emit_module_build (rules : Bsb_ninja_rule.builtin)
+    (package_specs : Bsb_package_specs.t) (is_dev : bool) oc namespace
+    (module_info : Bsb_db.module_info) : unit =
+  let has_intf_file = module_info.info = Impl_intf in
+  let config, ast_rule =
+    match module_info.syntax_kind with
+    | Reason -> (re_suffixes, rules.build_ast_from_re)
+    | Ml -> (ml_suffixes, rules.build_ast)
+    | Res -> (res_suffixes, rules.build_ast_from_re)
+    (* FIXME: better names *)
+  in
+  let filename_sans_extension = module_info.name_sans_extension in
+  let input_impl =
+    Bsb_config.proj_rel (filename_sans_extension ^ config.impl)
+  in
+  let input_intf =
+    Bsb_config.proj_rel (filename_sans_extension ^ config.intf)
+  in
+  let output_ast = filename_sans_extension ^ Literals.suffix_ast in
+  let output_iast = filename_sans_extension ^ Literals.suffix_iast in
   let output_d = filename_sans_extension ^ Literals.suffix_d in
-  let output_filename_sans_extension =  
+  let output_filename_sans_extension =
     Ext_namespace_encode.make ?ns:namespace filename_sans_extension
-  in 
-  let output_cmi =  output_filename_sans_extension ^ Literals.suffix_cmi in
-  let output_cmj =  output_filename_sans_extension ^ Literals.suffix_cmj in
+  in
+  let output_cmi = output_filename_sans_extension ^ Literals.suffix_cmi in
+  let output_cmj = output_filename_sans_extension ^ Literals.suffix_cmj in
   let output_js =
-    Bsb_package_specs.get_list_of_output_js package_specs output_filename_sans_extension in 
+    Bsb_package_specs.get_list_of_output_js package_specs
+      output_filename_sans_extension
+  in
 
-  Bsb_ninja_targets.output_build oc
-    ~outputs:[output_ast]
-    ~inputs:[input_impl]
-    ~rule:ast_rule;
-  Bsb_ninja_targets.output_build
-    oc
-    ~outputs:[output_d]
-    ~inputs:(if has_intf_file then [output_ast;output_iast] else [output_ast] )
-    ~rule:(if is_dev then rules.build_bin_deps_dev else rules.build_bin_deps)
-  ;  
-  if has_intf_file then begin           
+  Bsb_ninja_targets.output_build oc ~outputs:[ output_ast ]
+    ~inputs:[ input_impl ] ~rule:ast_rule;
+  Bsb_ninja_targets.output_build oc ~outputs:[ output_d ]
+    ~inputs:
+      (if has_intf_file then [ output_ast; output_iast ] else [ output_ast ])
+    ~rule:(if is_dev then rules.build_bin_deps_dev else rules.build_bin_deps);
+  if has_intf_file then (
     Bsb_ninja_targets.output_build oc
-      ~outputs:[output_iast]
-      (* TODO: we can get rid of absloute path if we fixed the location to be 
-          [lib/bs], better for testing?
-      *)
-      ~inputs:[input_intf]
-      ~rule:ast_rule
-    ;
-    Bsb_ninja_targets.output_build oc
-      ~outputs:[output_cmi]
-      ~inputs:[output_iast]
-      ~rule:(if is_dev then rules.mi_dev else rules.mi)
-    ;
-  end;
+      ~outputs:
+        [ output_iast ]
+        (* TODO: we can get rid of absloute path if we fixed the location to be
+            [lib/bs], better for testing?
+        *)
+      ~inputs:[ input_intf ] ~rule:ast_rule;
+    Bsb_ninja_targets.output_build oc ~outputs:[ output_cmi ]
+      ~inputs:[ output_iast ]
+      ~rule:(if is_dev then rules.mi_dev else rules.mi));
   let rule =
-    if has_intf_file then 
-      (if  is_dev then rules.mj_dev
-       else rules.mj)
-    else  
-      (if is_dev then rules.mij_dev 
-       else rules.mij
-      )
+    if has_intf_file then if is_dev then rules.mj_dev else rules.mj
+    else if is_dev then rules.mij_dev
+    else rules.mij
   in
   Bsb_ninja_targets.output_build oc
     ~outputs:
-      (if has_intf_file then output_cmj :: output_js else output_cmj::output_cmi::output_js)
-    ~inputs:(if has_intf_file then [output_ast; output_cmi] else [output_ast])
+      (if has_intf_file then output_cmj :: output_js
+      else output_cmj :: output_cmi :: output_js)
+    ~inputs:
+      (if has_intf_file then [ output_ast; output_cmi ] else [ output_ast ])
     ~rule
 
-
-
-
-let handle_files_per_dir
-    oc 
-    ~(rules : Bsb_ninja_rule.builtin)
-    ~package_specs 
-    ~files_to_install
-    ~(namespace  : string option)
-    (group: Bsb_file_groups.file_group ) 
-  : unit =
-  let is_dev = group.is_dev in   
-  handle_generators oc group rules.customs ;
+let handle_files_per_dir oc ~(rules : Bsb_ninja_rule.builtin) ~package_specs
+    ~files_to_install ~(namespace : string option)
+    (group : Bsb_file_groups.file_group) : unit =
+  let is_dev = group.is_dev in
+  handle_generators oc group rules.customs;
   let installable =
     match group.public with
     | Export_all -> fun _ -> true
     | Export_none -> fun _ -> false
-    | Export_set set ->  
-      fun module_name ->
-        Set_string.mem set module_name in
-  Map_string.iter group.sources   (fun  module_name module_info   ->
-      if installable module_name && not is_dev then 
-        Queue.add 
-          module_info files_to_install;
-      emit_module_build  rules
-        package_specs
-        is_dev
-        oc 
-        namespace module_info
-    )
+    | Export_set set -> fun module_name -> Set_string.mem set module_name
+  in
+  Map_string.iter group.sources (fun module_name module_info ->
+      if installable module_name && not is_dev then
+        Queue.add module_info files_to_install;
+      emit_module_build rules package_specs is_dev oc namespace module_info)
 
-(* ; 
+(* ;
    Bsb_ninja_targets.phony
    oc ~order_only_deps:[] ~inputs:[] ~output:group.dir *)
 
@@ -13439,13 +12378,14 @@ module Bsb_ninja_gen : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+val output_ninja_and_namespace_map :
+  per_proj_dir:string ->
+  package_kind:Bsb_package_kind.t ->
+  Bsb_config_types.t ->
+  unit
 (** 
    generate ninja file based on [cwd] 
 *)
-val output_ninja_and_namespace_map :
-  per_proj_dir:string ->  
-  package_kind:Bsb_package_kind.t -> 
-  Bsb_config_types.t -> unit 
 
 end = struct
 #1 "bsb_ninja_gen.ml"
@@ -13473,273 +12413,224 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let (//) = Ext_path.combine
+let ( // ) = Ext_path.combine
 
 (* we need copy package.json into [_build] since it does affect build output
    it is a bad idea to copy package.json which requires to copy js files
 *)
 
-
-
-
 (* let dash_i = "-I" *)
 
-
-
-let get_bsc_flags 
-    (bsc_flags : string list)
-  : string =       
+let get_bsc_flags (bsc_flags : string list) : string =
   String.concat Ext_string.single_space bsc_flags
 
-
-
-let emit_bsc_lib_includes 
-    (bs_dependencies : Bsb_config_types.dependencies)
-    (source_dirs : string list) 
-    (external_includes) 
-    (namespace : _ option): string = 
+let emit_bsc_lib_includes (bs_dependencies : Bsb_config_types.dependencies)
+    (source_dirs : string list) external_includes (namespace : _ option) :
+    string =
   (* TODO: bsc_flags contain stdlib path which is in the latter position currently *)
-  let all_includes source_dirs  = 
-    source_dirs @
-    Ext_list.map bs_dependencies (fun x -> x.package_install_path) @ 
-    (
-      (* for external includes, if it is absolute path, leave it as is 
-         for relative path './xx', we need '../.././x' since we are in 
+  let all_includes source_dirs =
+    source_dirs
+    @ Ext_list.map bs_dependencies (fun x -> x.package_install_path)
+    @ (* for external includes, if it is absolute path, leave it as is
+         for relative path './xx', we need '../.././x' since we are in
          [lib/bs], [build] is different from merlin though
       *)
-      Ext_list.map
-        external_includes
+    Ext_list.map external_includes (fun x ->
+        if Filename.is_relative x then Bsb_config.rev_lib_bs_prefix x else x)
+  in
 
-        (fun x -> if Filename.is_relative x then Bsb_config.rev_lib_bs_prefix  x else x) 
-    )
-  in 
+  Bsb_build_util.include_dirs
+    (all_includes
+       (if namespace = None then source_dirs
+       else Filename.current_dir_name :: source_dirs
+         (*working dir is [lib/bs] we include this path to have namespace mapping*)))
 
-  (Bsb_build_util.include_dirs 
-     (all_includes 
-        (if namespace = None then source_dirs 
-         else Filename.current_dir_name :: source_dirs
-         (*working dir is [lib/bs] we include this path to have namespace mapping*)
-        )))
-
-
-let output_static_resources 
-    (static_resources : string list) 
-    copy_rule 
-    oc
-  = 
-  Ext_list.iter static_resources (fun output -> 
-      Bsb_ninja_targets.output_build
-        oc
-        ~outputs:[output]
-        ~inputs:[Bsb_config.proj_rel output]
+let output_static_resources (static_resources : string list) copy_rule oc =
+  Ext_list.iter static_resources (fun output ->
+      Bsb_ninja_targets.output_build oc ~outputs:[ output ]
+        ~inputs:[ Bsb_config.proj_rel output ]
         ~rule:copy_rule);
   if static_resources <> [] then
-    Bsb_ninja_targets.phony
-      oc
-      ~order_only_deps:static_resources 
-      ~inputs:[]
-      ~output:Literals.build_ninja         
+    Bsb_ninja_targets.phony oc ~order_only_deps:static_resources ~inputs:[]
+      ~output:Literals.build_ninja
+
 (*
   FIXME: check if the trick still works
   phony build.ninja : | resources 
-*)      
-let mark_rescript oc = 
-  output_string oc "rescript = 1\n"  
-let output_installation_file cwd_lib_bs namespace files_to_install = 
-  let install_oc = open_out_bin (cwd_lib_bs // "install.ninja") in 
+*)
+let mark_rescript oc = output_string oc "rescript = 1\n"
+
+let output_installation_file cwd_lib_bs namespace files_to_install =
+  let install_oc = open_out_bin (cwd_lib_bs // "install.ninja") in
   mark_rescript install_oc;
   let o s = output_string install_oc s in
-  let[@inline] oo suffix ~dest ~src =   
-    o  "o " ; 
-    o dest ;
-    o suffix; 
+  let[@inline] oo suffix ~dest ~src =
+    o "o ";
+    o dest;
+    o suffix;
     o " : cp ";
     o src;
-    o suffix; o "\n" in 
-  let bs = ".."//"bs" in  
-  let sb = ".."//".." in 
-  o (if Ext_sys.is_windows_or_cygwin then 
-       "rule cp\n  command = cmd.exe /C copy /Y $i $out >NUL\n\
-        rule touch\n command = cmd.exe /C type nul >>$out & copy $out+,, >NUL\n"
-     else
-       "rule cp\n  command = cp $i $out\n\
-        rule touch\n command = touch $out\n"
-    );
-  let essentials = Ext_buffer.create 1_000 in   
-  files_to_install 
-  |> Queue.iter (fun ({name_sans_extension;syntax_kind; info} : Bsb_db.module_info) -> 
-      let base = Filename.basename name_sans_extension in 
-      let dest = Ext_namespace_encode.make ?ns:namespace base in
-      let ns_origin = Ext_namespace_encode.make ?ns:namespace name_sans_extension in
-      let src = bs//ns_origin in 
+    o suffix;
+    o "\n"
+  in
+  let bs = ".." // "bs" in
+  let sb = ".." // ".." in
+  o
+    (if Ext_sys.is_windows_or_cygwin then
+     "rule cp\n\
+     \  command = cmd.exe /C copy /Y $i $out >NUL\n\
+      rule touch\n\
+     \ command = cmd.exe /C type nul >>$out & copy $out+,, >NUL\n"
+    else "rule cp\n  command = cp $i $out\nrule touch\n command = touch $out\n");
+  let essentials = Ext_buffer.create 1_000 in
+  files_to_install
+  |> Queue.iter
+       (fun ({ name_sans_extension; syntax_kind; info } : Bsb_db.module_info) ->
+         let base = Filename.basename name_sans_extension in
+         let dest = Ext_namespace_encode.make ?ns:namespace base in
+         let ns_origin =
+           Ext_namespace_encode.make ?ns:namespace name_sans_extension
+         in
+         let src = bs // ns_origin in
+         oo Literals.suffix_cmi ~dest ~src;
+         oo Literals.suffix_cmj ~dest ~src;
+         oo Literals.suffix_cmt ~dest ~src;
+
+         Ext_buffer.add_string essentials dest;
+         Ext_buffer.add_string_char essentials Literals.suffix_cmi ' ';
+         Ext_buffer.add_string essentials dest;
+         Ext_buffer.add_string_char essentials Literals.suffix_cmj ' ';
+
+         let suffix =
+           match syntax_kind with
+           | Ml -> Literals.suffix_ml
+           | Reason -> Literals.suffix_re
+           | Res -> Literals.suffix_res
+         in
+         oo suffix ~dest:base ~src:(sb // name_sans_extension);
+         match info with
+         | Intf -> assert false
+         | Impl -> ()
+         | Impl_intf ->
+             let suffix_b =
+               match syntax_kind with
+               | Ml -> Literals.suffix_mli
+               | Reason -> Literals.suffix_rei
+               | Res -> Literals.suffix_resi
+             in
+             oo suffix_b ~dest:base ~src:(sb // name_sans_extension);
+             oo Literals.suffix_cmti ~dest ~src);
+  (match namespace with
+  | None -> ()
+  | Some dest ->
+      let src = bs // dest in
       oo Literals.suffix_cmi ~dest ~src;
-      oo Literals.suffix_cmj ~dest ~src;      
-      oo Literals.suffix_cmt ~dest ~src;
-
-      Ext_buffer.add_string essentials  dest ;
-      Ext_buffer.add_string_char essentials Literals.suffix_cmi ' ';    
-      Ext_buffer.add_string essentials dest ;
-      Ext_buffer.add_string_char essentials Literals.suffix_cmj ' ';
-
-      let suffix = 
-        match syntax_kind with 
-        | Ml -> Literals.suffix_ml 
-        | Reason -> Literals.suffix_re 
-        | Res -> Literals.suffix_res 
-      in  oo suffix ~dest:base ~src:(sb//name_sans_extension);
-      match info with
-      | Intf  -> assert false
-      | Impl ->  ()
-      | Impl_intf ->  
-        let  suffix_b =
-          match syntax_kind with 
-          | Ml ->  Literals.suffix_mli
-          | Reason ->  Literals.suffix_rei
-          | Res ->  Literals.suffix_resi in   
-        oo suffix_b  ~dest:base ~src:(sb//name_sans_extension);                      
-        oo Literals.suffix_cmti ~dest ~src
-    );
-  begin match namespace with 
-    | None -> ()      
-    | Some dest -> 
-      let src = bs // dest in   
-      oo Literals.suffix_cmi ~dest ~src; 
       oo Literals.suffix_cmj ~dest ~src;
       oo Literals.suffix_cmt ~dest ~src;
-      Ext_buffer.add_string essentials dest ; 
+      Ext_buffer.add_string essentials dest;
       Ext_buffer.add_string_char essentials Literals.suffix_cmi ' ';
-      Ext_buffer.add_string essentials dest ;
-      Ext_buffer.add_string essentials Literals.suffix_cmj 
-  end;
+      Ext_buffer.add_string essentials dest;
+      Ext_buffer.add_string essentials Literals.suffix_cmj);
   Ext_buffer.add_char essentials '\n';
   o "build install.stamp : touch ";
   Ext_buffer.output_buffer install_oc essentials;
   close_out install_oc
 
-let output_ninja_and_namespace_map
-    ~per_proj_dir 
-    ~package_kind           
+let output_ninja_and_namespace_map ~per_proj_dir ~package_kind
     ({
-      package_name;
-      external_includes;
-      bsc_flags ; 
-      pp_file;
-      ppx_files ;
-
-      bs_dependencies;
-      bs_dev_dependencies;
-      js_post_build_cmd;
-      package_specs;
-      file_groups = { files = bs_file_groups};
-      files_to_install;
-      built_in_dependency;
-      reason_react_jsx;
-      generators ;
-      namespace ; 
-      warning;
-      gentype_config; 
-
-    } : Bsb_config_types.t) : unit 
-  =
+       package_name;
+       external_includes;
+       bsc_flags;
+       pp_file;
+       ppx_files;
+       bs_dependencies;
+       bs_dev_dependencies;
+       js_post_build_cmd;
+       package_specs;
+       file_groups = { files = bs_file_groups };
+       files_to_install;
+       built_in_dependency;
+       reason_react_jsx;
+       generators;
+       namespace;
+       warning;
+       gentype_config;
+     } :
+      Bsb_config_types.t) : unit =
   let lib_artifacts_dir = Bsb_config.lib_bs in
-  let cwd_lib_bs = per_proj_dir // lib_artifacts_dir in   
+  let cwd_lib_bs = per_proj_dir // lib_artifacts_dir in
 
   let warnings = Bsb_warning.to_bsb_string ~package_kind warning in
-  let bsc_flags = (get_bsc_flags bsc_flags) in 
-  let dpkg_incls  =  (Bsb_build_util.include_dirs_by
-                        bs_dev_dependencies
-                        (fun x -> x.package_install_path)) in 
-  let bs_groups : Bsb_db.t = {lib = Map_string.empty; dev = Map_string.empty} in
-  let source_dirs : string list Bsb_db.cat = {lib = []; dev = []} in
+  let bsc_flags = get_bsc_flags bsc_flags in
+  let dpkg_incls =
+    Bsb_build_util.include_dirs_by bs_dev_dependencies (fun x ->
+        x.package_install_path)
+  in
+  let bs_groups : Bsb_db.t =
+    { lib = Map_string.empty; dev = Map_string.empty }
+  in
+  let source_dirs : string list Bsb_db.cat = { lib = []; dev = [] } in
   let static_resources =
-    Ext_list.fold_left 
-      bs_file_groups 
-      [] (
-      fun 
-        (acc_resources : string list) 
-        {sources; dir; resources; is_dev} 
-        ->
-          if is_dev then begin
-            bs_groups.dev <- Bsb_db_util.merge bs_groups.dev sources ;
-            source_dirs.dev <- dir :: source_dirs.dev;  
-          end else begin 
-            bs_groups.lib <- Bsb_db_util.merge bs_groups.lib sources ;
-            source_dirs.lib <- dir :: source_dirs.lib
-          end;
-          Ext_list.map_append resources  acc_resources (fun x -> dir//x) 
-    ) in
-  let lib = bs_groups.lib in 
-  let dev = bs_groups.dev in 
+    Ext_list.fold_left bs_file_groups []
+      (fun (acc_resources : string list) { sources; dir; resources; is_dev } ->
+        if is_dev then (
+          bs_groups.dev <- Bsb_db_util.merge bs_groups.dev sources;
+          source_dirs.dev <- dir :: source_dirs.dev)
+        else (
+          bs_groups.lib <- Bsb_db_util.merge bs_groups.lib sources;
+          source_dirs.lib <- dir :: source_dirs.lib);
+        Ext_list.map_append resources acc_resources (fun x -> dir // x))
+  in
+  let lib = bs_groups.lib in
+  let dev = bs_groups.dev in
   Bsb_db_util.sanity_check lib;
   Bsb_db_util.sanity_check dev;
-  Map_string.iter dev 
-    (fun k a -> 
-       if Map_string.mem lib k  then 
-         raise (Bsb_db_util.conflict_module_info k a (Map_string.find_exn lib k))
-    ) ;
-  let dev_incls = 
-    (Bsb_build_util.include_dirs source_dirs.dev) in 
+  Map_string.iter dev (fun k a ->
+      if Map_string.mem lib k then
+        raise (Bsb_db_util.conflict_module_info k a (Map_string.find_exn lib k)));
+  let dev_incls = Bsb_build_util.include_dirs source_dirs.dev in
   let digest = Bsb_db_encode.write_build_cache ~dir:cwd_lib_bs bs_groups in
-  let lib_incls = emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes namespace in
-  let rules : Bsb_ninja_rule.builtin = 
-    Bsb_ninja_rule.make_custom_rules
-      ~gentype_config
-      ~has_postbuild:js_post_build_cmd 
-      ~pp_file
-      ~has_builtin:built_in_dependency 
-      ~reason_react_jsx
-      ~package_specs
-      ~namespace
-      ~digest
-      ~package_name
-      ~warnings      
-      ~ppx_files
-      ~bsc_flags
-      ~dpkg_incls (* dev dependencies *)
-      ~lib_incls (* its own libs *)
-      ~dev_incls (* its own devs *)
-      ~bs_dependencies
-      ~bs_dev_dependencies    
-      generators in  
+  let lib_incls =
+    emit_bsc_lib_includes bs_dependencies source_dirs.lib external_includes
+      namespace
+  in
+  let rules : Bsb_ninja_rule.builtin =
+    Bsb_ninja_rule.make_custom_rules ~gentype_config
+      ~has_postbuild:js_post_build_cmd ~pp_file ~has_builtin:built_in_dependency
+      ~reason_react_jsx ~package_specs ~namespace ~digest ~package_name
+      ~warnings ~ppx_files ~bsc_flags ~dpkg_incls (* dev dependencies *)
+      ~lib_incls (* its own libs *) ~dev_incls (* its own devs *)
+      ~bs_dependencies ~bs_dev_dependencies generators
+  in
 
-  let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in 
+  let oc = open_out_bin (cwd_lib_bs // Literals.build_ninja) in
   mark_rescript oc;
-  let finger_file  = 
-    fun (x : Bsb_config_types.dependency) -> x.package_install_path //"install.stamp"
-  in  
-  Ext_list.iter bs_dependencies (fun x -> 
+  let finger_file (x : Bsb_config_types.dependency) =
+    x.package_install_path // "install.stamp"
+  in
+  Ext_list.iter bs_dependencies (fun x ->
       Bsb_ninja_targets.output_finger Bsb_ninja_global_vars.g_finger
-        (finger_file x) oc
-    );
-  Ext_list.iter bs_dev_dependencies (fun x -> 
+        (finger_file x) oc);
+  Ext_list.iter bs_dev_dependencies (fun x ->
       Bsb_ninja_targets.output_finger Bsb_ninja_global_vars.g_finger
-        (finger_file x) oc
-    );
-  (match gentype_config with 
-   | None -> ()
-   | Some x -> output_string oc ("cleaner = " ^ x.path ^ "\n"));   
-  output_static_resources static_resources rules.copy_resources oc ;
-  (* Generate build statement for each file *)        
-  Ext_list.iter bs_file_groups 
-    (fun files_per_dir ->
-       Bsb_ninja_file_groups.handle_files_per_dir oc  
-         ~rules
-         ~package_specs 
-         ~files_to_install    
-         ~namespace files_per_dir);
-  Ext_option.iter  namespace (fun ns -> 
-      let namespace_dir =     
-        per_proj_dir // lib_artifacts_dir  in
-      Bsb_namespace_map_gen.output 
-        ~dir:namespace_dir ns
-        bs_file_groups; 
-      Bsb_ninja_targets.output_build oc 
-        ~outputs:[ns ^ Literals.suffix_cmi]
-        ~inputs:[ns ^ Literals.suffix_mlmap]
-        ~rule:rules.build_package
-    );
+        (finger_file x) oc);
+  (match gentype_config with
+  | None -> ()
+  | Some x -> output_string oc ("cleaner = " ^ x.path ^ "\n"));
+  output_static_resources static_resources rules.copy_resources oc;
+  (* Generate build statement for each file *)
+  Ext_list.iter bs_file_groups (fun files_per_dir ->
+      Bsb_ninja_file_groups.handle_files_per_dir oc ~rules ~package_specs
+        ~files_to_install ~namespace files_per_dir);
+  Ext_option.iter namespace (fun ns ->
+      let namespace_dir = per_proj_dir // lib_artifacts_dir in
+      Bsb_namespace_map_gen.output ~dir:namespace_dir ns bs_file_groups;
+      Bsb_ninja_targets.output_build oc
+        ~outputs:[ ns ^ Literals.suffix_cmi ]
+        ~inputs:[ ns ^ Literals.suffix_mlmap ]
+        ~rule:rules.build_package);
   close_out oc;
-  output_installation_file cwd_lib_bs namespace files_to_install      
+  output_installation_file cwd_lib_bs namespace files_to_install
 
 end
 module Ext_json_noloc : sig 
@@ -13768,34 +12659,36 @@ module Ext_json_noloc : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-type t = private 
-  | True 
-  | False 
-  | Null 
-  | Flo of string 
+type t = private
+  | True
+  | False
+  | Null
+  | Flo of string
   | Str of string
-  | Arr of t array 
+  | Arr of t array
   | Obj of t Map_string.t
 
-val true_  : t 
-val false_ : t 
-val null : t 
-val str : string -> t 
-val flo : string -> t 
-val arr : t array -> t 
-val obj : t Map_string.t -> t 
-val kvs : (string * t) list -> t 
+val true_ : t
 
-val to_string : t -> string 
+val false_ : t
 
+val null : t
+
+val str : string -> t
+
+val flo : string -> t
+
+val arr : t array -> t
+
+val obj : t Map_string.t -> t
+
+val kvs : (string * t) list -> t
+
+val to_string : t -> string
 
 val to_channel : out_channel -> t -> unit
 
-val to_file : 
-  string -> 
-  t -> 
-  unit 
+val to_file : string -> t -> unit
 
 end = struct
 #1 "ext_json_noloc.ml"
@@ -13824,124 +12717,130 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (* This file is only used in bsb watcher searlization *)
-type t = 
-  | True 
-  | False 
-  | Null 
-  | Flo of string 
+type t =
+  | True
+  | False
+  | Null
+  | Flo of string
   | Str of string
-  | Arr of t array 
+  | Arr of t array
   | Obj of t Map_string.t
-
 
 (** poor man's serialization *)
 let naive_escaped (unmodified_input : string) : string =
   let n = ref 0 in
-  let len = String.length unmodified_input in 
+  let len = String.length unmodified_input in
   for i = 0 to len - 1 do
-    n := !n +
-         (match String.unsafe_get unmodified_input i with
-          | '\"' | '\\' | '\n' | '\t' | '\r' | '\b' -> 2
-          | _ -> 1
-         )
+    n :=
+      !n
+      +
+      match String.unsafe_get unmodified_input i with
+      | '\"' | '\\' | '\n' | '\t' | '\r' | '\b' -> 2
+      | _ -> 1
   done;
-  if !n = len then  unmodified_input else begin
+  if !n = len then unmodified_input
+  else
     let result = Bytes.create !n in
     n := 0;
     for i = 0 to len - 1 do
-      let open Bytes in   
-      begin match String.unsafe_get unmodified_input i with
-        | ('\"' | '\\') as c ->
-          unsafe_set result !n '\\'; incr n; unsafe_set result !n c
-        | '\n' ->
-          unsafe_set result !n '\\'; incr n; unsafe_set result !n 'n'
-        | '\t' ->
-          unsafe_set result !n '\\'; incr n; unsafe_set result !n 't'
-        | '\r' ->
-          unsafe_set result !n '\\'; incr n; unsafe_set result !n 'r'
-        | '\b' ->
-          unsafe_set result !n '\\'; incr n; unsafe_set result !n 'b'
-        |  c -> unsafe_set result !n c      
-      end;
+      let open Bytes in
+      (match String.unsafe_get unmodified_input i with
+      | ('\"' | '\\') as c ->
+          unsafe_set result !n '\\';
+          incr n;
+          unsafe_set result !n c
+      | '\n' ->
+          unsafe_set result !n '\\';
+          incr n;
+          unsafe_set result !n 'n'
+      | '\t' ->
+          unsafe_set result !n '\\';
+          incr n;
+          unsafe_set result !n 't'
+      | '\r' ->
+          unsafe_set result !n '\\';
+          incr n;
+          unsafe_set result !n 'r'
+      | '\b' ->
+          unsafe_set result !n '\\';
+          incr n;
+          unsafe_set result !n 'b'
+      | c -> unsafe_set result !n c);
       incr n
     done;
     Bytes.unsafe_to_string result
-  end
 
-let quot x = 
-  "\"" ^ naive_escaped x ^ "\""
+let quot x = "\"" ^ naive_escaped x ^ "\""
+
 let true_ = True
+
 let false_ = False
-let null = Null 
-let str s  = Str s 
-let flo s = Flo s 
-let arr s = Arr s 
-let obj s = Obj s 
-let kvs s = 
-  Obj (Map_string.of_list s)
 
-let rec encode_buf (x : t ) 
-    (buf : Buffer.t) : unit =  
-  let a str = Buffer.add_string buf str in 
-  match x with 
-  | Null  -> a "null"
-  | Str s   -> a (quot s)
-  | Flo  s -> 
-    a s (* 
-    since our parsing keep the original float representation, we just dump it as is, there is no cases like [nan] *)
-  | Arr  content -> 
-    begin match content with 
+let null = Null
+
+let str s = Str s
+
+let flo s = Flo s
+
+let arr s = Arr s
+
+let obj s = Obj s
+
+let kvs s = Obj (Map_string.of_list s)
+
+let rec encode_buf (x : t) (buf : Buffer.t) : unit =
+  let a str = Buffer.add_string buf str in
+  match x with
+  | Null -> a "null"
+  | Str s -> a (quot s)
+  | Flo s ->
+      a s
+      (*
+         since our parsing keep the original float representation, we just dump it as is, there is no cases like [nan] *)
+  | Arr content -> (
+      match content with
       | [||] -> a "[]"
-      | _ -> 
-        a "[ ";
-        encode_buf
-          (Array.unsafe_get content 0)
-          buf ; 
-        for i = 1 to Array.length content - 1 do 
-          a " , ";
-          encode_buf 
-            (Array.unsafe_get content i)
-            buf
-        done;    
-        a " ]"
-    end
-  | True  -> a "true"
-  | False  -> a "false"
-  | Obj map -> 
-    if Map_string.is_empty map then 
-      a "{}"
-    else 
-      begin  
+      | _ ->
+          a "[ ";
+          encode_buf (Array.unsafe_get content 0) buf;
+          for i = 1 to Array.length content - 1 do
+            a " , ";
+            encode_buf (Array.unsafe_get content i) buf
+          done;
+          a " ]")
+  | True -> a "true"
+  | False -> a "false"
+  | Obj map ->
+      if Map_string.is_empty map then a "{}"
+      else (
         (*prerr_endline "WEIRD";
-          prerr_endline (string_of_int @@ Map_string.cardinal map );   *)
+          prerr_endline (string_of_int @@ Map_string.cardinal map ); *)
         a "{ ";
-        let _ : int =  Map_string.fold map 0 (fun  k v i -> 
-            if i <> 0 then begin
-              a " , " 
-            end; 
-            a (quot k);
-            a " : ";
-            encode_buf v buf ;
-            i + 1 
-          ) in 
-        a " }"
-      end
+        let (_ : int) =
+          Map_string.fold map 0 (fun k v i ->
+              if i <> 0 then a " , ";
+              a (quot k);
+              a " : ";
+              encode_buf v buf;
+              i + 1)
+        in
+        a " }")
 
+let to_string x =
+  let buf = Buffer.create 1024 in
+  encode_buf x buf;
+  Buffer.contents buf
 
-let to_string x  = 
-  let buf = Buffer.create 1024 in 
-  encode_buf x buf ;
-  Buffer.contents buf 
+let to_channel (oc : out_channel) x =
+  let buf = Buffer.create 1024 in
+  encode_buf x buf;
+  Buffer.output_buffer oc buf
 
-let to_channel (oc : out_channel) x  = 
-  let buf = Buffer.create 1024 in 
-  encode_buf x buf ;
-  Buffer.output_buffer oc buf   
-
-let to_file name v =     
-  let ochan = open_out_bin name in 
-  to_channel ochan v ;
+let to_file name v =
+  let ochan = open_out_bin name in
+  to_channel ochan v;
   close_out ochan
+
 end
 module Bsb_watcher_gen : sig 
 #1 "bsb_watcher_gen.mli"
@@ -13969,6 +12868,7 @@ module Bsb_watcher_gen : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+val generate_sourcedirs_meta : name:string -> Bsb_file_groups.t -> unit
 (** This module try to generate some meta data so that
     everytime [bsconfig.json] is reload, we can re-read
     such meta data changes in the watcher.
@@ -13977,10 +12877,7 @@ module Bsb_watcher_gen : sig
     directly in [watcher] but that would 
     mean the duplication of logic in [bsb] and [bsb_watcher]
 *)
-val generate_sourcedirs_meta : 
-  name:string -> 
-  Bsb_file_groups.t -> 
-  unit 
+
 end = struct
 #1 "bsb_watcher_gen.ml"
 (* Copyright (C) 2017- Hongbo Zhang, Authors of ReScript
@@ -14007,39 +12904,31 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
 let kvs = Ext_json_noloc.kvs
-let arr = Ext_json_noloc.arr
-let str = Ext_json_noloc.str 
 
-let generate_sourcedirs_meta 
-    ~name (res : Bsb_file_groups.t) = 
-  let v = 
-    kvs [
-      "dirs" ,
-      arr (Ext_array.of_list_map res.files ( fun x -> 
-          str x.dir 
-        ) ) ;
-      "generated" ,
-      arr ( Array.of_list @@ Ext_list.fold_left res.files []  (fun acc x -> 
-          Ext_list.flat_map_append x.generators acc
-            (fun x -> 
-               Ext_list.map x.output str)   
-        ));        
-      "pkgs", arr 
-        (Array.of_list
-           (Bsb_pkg.to_list (fun pkg path ->
-                arr [|
-                  str (Bsb_pkg_types.to_string pkg);
-                  str path
-                |]
-              ))
-        )
-    ]
-  in 
-  Ext_json_noloc.to_file 
-    name v
+let arr = Ext_json_noloc.arr
+
+let str = Ext_json_noloc.str
+
+let generate_sourcedirs_meta ~name (res : Bsb_file_groups.t) =
+  let v =
+    kvs
+      [
+        ("dirs", arr (Ext_array.of_list_map res.files (fun x -> str x.dir)));
+        ( "generated",
+          arr
+            (Array.of_list
+            @@ Ext_list.fold_left res.files [] (fun acc x ->
+                   Ext_list.flat_map_append x.generators acc (fun x ->
+                       Ext_list.map x.output str))) );
+        ( "pkgs",
+          arr
+            (Array.of_list
+               (Bsb_pkg.to_list (fun pkg path ->
+                    arr [| str (Bsb_pkg_types.to_string pkg); str path |]))) );
+      ]
+  in
+  Ext_json_noloc.to_file name v
 
 end
 module Bsb_ninja_regen : sig 
@@ -14068,18 +12957,16 @@ module Bsb_ninja_regen : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
+val regenerate_ninja :
+  package_kind:Bsb_package_kind.t ->
+  forced:bool ->
+  per_proj_dir:string ->
+  Bsb_config_types.t option
 (** Regenerate ninja file by need based on [.bsdeps]
     return None if we dont need regenerate
     otherwise return Some info
 *)
-val regenerate_ninja :
-  package_kind:Bsb_package_kind.t ->
-  forced: bool -> 
-  per_proj_dir:string -> 
-  Bsb_config_types.t option 
+
 end = struct
 #1 "bsb_ninja_regen.ml"
 (* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
@@ -14108,72 +12995,60 @@ end = struct
 
 let bsdeps = ".bsdeps"
 
-let (//) = Ext_path.combine
+let ( // ) = Ext_path.combine
 
 (** Regenerate ninja file by need based on [.bsdeps]
     return None if we dont need regenerate
     otherwise return Some info
 *)
-let regenerate_ninja 
-    ~(package_kind : Bsb_package_kind.t)
-    ~forced ~per_proj_dir
-  : Bsb_config_types.t option =  
+let regenerate_ninja ~(package_kind : Bsb_package_kind.t) ~forced ~per_proj_dir
+    : Bsb_config_types.t option =
   let lib_artifacts_dir = Bsb_config.lib_bs in
-  let lib_bs_dir =  per_proj_dir // lib_artifacts_dir  in 
+  let lib_bs_dir = per_proj_dir // lib_artifacts_dir in
   let output_deps = lib_bs_dir // bsdeps in
-  let check_result  =
-    Bsb_ninja_check.check 
-      ~package_kind
-      ~per_proj_dir
-      ~forced ~file:output_deps in
-  match check_result  with 
-  | Good ->
-    None  (* Fast path, no need regenerate ninja *)
-  | Bsb_forced 
-  | Bsb_bsc_version_mismatch
-  | Bsb_package_kind_inconsistent
-  | Bsb_file_corrupted
-  | Bsb_file_not_exist 
-  | Bsb_source_directory_changed  
-  | Other _ -> 
-    Bsb_log.info
-      "@{<info>BSB check@} build spec : %a @." Bsb_ninja_check.pp_check_result check_result;
-    if check_result = Bsb_bsc_version_mismatch then begin 
-      Bsb_log.warn "@{<info>Different compiler version@}: clean current repo@.";
-      Bsb_clean.clean_bs_deps per_proj_dir;
-      Bsb_clean.clean_self  per_proj_dir; 
-    end ; 
+  let check_result =
+    Bsb_ninja_check.check ~package_kind ~per_proj_dir ~forced ~file:output_deps
+  in
+  match check_result with
+  | Good -> None (* Fast path, no need regenerate ninja *)
+  | Bsb_forced | Bsb_bsc_version_mismatch | Bsb_package_kind_inconsistent
+  | Bsb_file_corrupted | Bsb_file_not_exist | Bsb_source_directory_changed
+  | Other _ ->
+      Bsb_log.info "@{<info>BSB check@} build spec : %a @."
+        Bsb_ninja_check.pp_check_result check_result;
+      if check_result = Bsb_bsc_version_mismatch then (
+        Bsb_log.warn
+          "@{<info>Different compiler version@}: clean current repo@.";
+        Bsb_clean.clean_bs_deps per_proj_dir;
+        Bsb_clean.clean_self per_proj_dir);
 
-    let config : Bsb_config_types.t = 
-      Bsb_config_parse.interpret_json 
-        ~package_kind
-        ~per_proj_dir in 
-    (* create directory, lib/bs, lib/js, lib/es6 etc *)    
-    Bsb_build_util.mkp lib_bs_dir;         
-    Bsb_package_specs.list_dirs_by config.package_specs
-      (fun x -> 
-         let dir = per_proj_dir // x in (*Unix.EEXIST error*)
-         if not (Sys.file_exists dir) then  Unix.mkdir dir 0o777);
-    (match package_kind with 
-     | Toplevel -> 
-       Bsb_watcher_gen.generate_sourcedirs_meta
-         ~name:(lib_bs_dir // Literals.sourcedirs_meta)
-         config.file_groups
-     | Pinned_dependency _ (* FIXME: seems need to be watched *)
-     | Dependency _ -> ())    
-    ;
+      let config : Bsb_config_types.t =
+        Bsb_config_parse.interpret_json ~package_kind ~per_proj_dir
+      in
+      (* create directory, lib/bs, lib/js, lib/es6 etc *)
+      Bsb_build_util.mkp lib_bs_dir;
+      Bsb_package_specs.list_dirs_by config.package_specs (fun x ->
+          let dir = per_proj_dir // x in
+          (*Unix.EEXIST error*)
+          if not (Sys.file_exists dir) then Unix.mkdir dir 0o777);
+      (match package_kind with
+      | Toplevel ->
+          Bsb_watcher_gen.generate_sourcedirs_meta
+            ~name:(lib_bs_dir // Literals.sourcedirs_meta)
+            config.file_groups
+      | Pinned_dependency _ (* FIXME: seems need to be watched *) | Dependency _
+        ->
+          ());
 
-    Bsb_merlin_gen.merlin_file_gen ~per_proj_dir
-      config;       
-    Bsb_ninja_gen.output_ninja_and_namespace_map 
-      ~per_proj_dir  ~package_kind config ;                 
-    (* PR2184: we still need record empty dir 
-        since it may add files in the future *)  
-    Bsb_ninja_check.record ~package_kind ~per_proj_dir ~config ~file:output_deps 
-      (Literals.bsconfig_json::config.file_groups.globbed_dirs) ;
-    Some config 
-
-
+      Bsb_merlin_gen.merlin_file_gen ~per_proj_dir config;
+      Bsb_ninja_gen.output_ninja_and_namespace_map ~per_proj_dir ~package_kind
+        config;
+      (* PR2184: we still need record empty dir
+          since it may add files in the future *)
+      Bsb_ninja_check.record ~package_kind ~per_proj_dir ~config
+        ~file:output_deps
+        (Literals.bsconfig_json :: config.file_groups.globbed_dirs);
+      Some config
 
 end
 module Bsb_regex : sig 
@@ -14202,13 +13077,10 @@ module Bsb_regex : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+val global_substitute :
+  string -> reg:string -> (string -> string list -> string) -> string
 (** Used in `bsb -init` command *)
-val global_substitute:
-  string -> 
-  reg:string ->
-  (string -> string list -> string) -> 
-  string
+
 end = struct
 #1 "bsb_regex.ml"
 (* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
@@ -14237,9 +13109,7 @@ end = struct
 
 let string_after s n = String.sub s n (String.length s - n)
 
-
-
-(* There seems to be a bug in {!Str.global_substitute} 
+(* There seems to be a bug in {!Str.global_substitute}
    {[
      Str.global_substitute (Str.regexp "\\${rescript:\\([-a-zA-Z0-9]+\\)}") (fun x -> (x^":found")) {|   ${rescript:hello-world}  ${rescript:x} ${x}|}  ;;
      - : bytes =
@@ -14247,29 +13117,29 @@ let string_after s n = String.sub s n (String.length s - n)
    ]}
 *)
 let global_substitute text ~reg:expr repl_fun =
-  let text_len = String.length text in 
-  let expr = Str.regexp expr in  
+  let text_len = String.length text in
+  let expr = Str.regexp expr in
   let rec replace accu start last_was_empty =
     let startpos = if last_was_empty then start + 1 else start in
-    if startpos > text_len then
-      string_after text start :: accu
+    if startpos > text_len then string_after text start :: accu
     else
       match Str.search_forward expr text startpos with
-      | exception Not_found -> 
-        string_after text start :: accu
-      |  pos ->
-        let end_pos = Str.match_end() in
-        let matched = (Str.matched_string text) in 
-        let  groups = 
-          let rec aux n  acc = 
-            match Str.matched_group n text with 
-            | exception (Not_found | Invalid_argument _ ) 
-              -> acc 
-            | v -> aux (succ n) (v::acc) in 
-          aux 1 []  in 
-        let repl_text = repl_fun matched groups  in
-        replace (repl_text :: String.sub text start (pos-start) :: accu)
-          end_pos (end_pos = pos)
+      | exception Not_found -> string_after text start :: accu
+      | pos ->
+          let end_pos = Str.match_end () in
+          let matched = Str.matched_string text in
+          let groups =
+            let rec aux n acc =
+              match Str.matched_group n text with
+              | exception (Not_found | Invalid_argument _) -> acc
+              | v -> aux (succ n) (v :: acc)
+            in
+            aux 1 []
+          in
+          let repl_text = repl_fun matched groups in
+          replace
+            (repl_text :: String.sub text start (pos - start) :: accu)
+            end_pos (end_pos = pos)
   in
   String.concat "" (List.rev (replace [] 0 false))
 
@@ -16170,8 +15040,6 @@ let root = ([
 end
 module Bsb_theme_init : sig 
 #1 "bsb_theme_init.mli"
-
-
 (* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
  * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
@@ -16196,13 +15064,12 @@ module Bsb_theme_init : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+val init_sample_project : cwd:string -> theme:string -> string -> unit
 
-val init_sample_project : cwd:string -> theme:string ->  string -> unit 
+val list_themes : unit -> unit
 
-val list_themes : unit -> unit 
 end = struct
 #1 "bsb_theme_init.ml"
-
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
@@ -16227,145 +15094,118 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type file_type = Directory | Non_directory_file | Non_exists
 
-type file_type = 
-  | Directory
-  | Non_directory_file
-  | Non_exists 
-
-let classify_file name = 
-  let exists = Sys.file_exists name in 
-  if exists then 
-    if Sys.is_directory name then Directory
-    else Non_directory_file
-  else Non_exists   
+let classify_file name =
+  let exists = Sys.file_exists name in
+  if exists then if Sys.is_directory name then Directory else Non_directory_file
+  else Non_exists
 
 let replace s env : string =
   Bsb_regex.global_substitute s ~reg:"\\${rescript:\\([-a-zA-Z0-9]+\\)}"
     (fun (_s : string) templates ->
-       match templates with
-       | key::_ ->
-         Hash_string.find_exn  env key
-       | _ -> assert false
-    ) 
+      match templates with
+      | key :: _ -> Hash_string.find_exn env key
+      | _ -> assert false)
 
-let (//) = Filename.concat
-
-
+let ( // ) = Filename.concat
 
 let enter_dir cwd x action =
-  Unix.chdir x ;
+  Unix.chdir x;
   match action () with
-  | exception e -> Unix.chdir cwd ; raise e
+  | exception e ->
+      Unix.chdir cwd;
+      raise e
   | v -> v
 
-let mkdir_or_not_if_exists dir = 
-  match classify_file dir with 
+let mkdir_or_not_if_exists dir =
+  match classify_file dir with
   | Directory -> ()
-  | Non_directory_file 
-    -> 
-    Format.fprintf Format.err_formatter 
-      "%s expected to be added as dir but exist file is not a dir" dir
+  | Non_directory_file ->
+      Format.fprintf Format.err_formatter
+        "%s expected to be added as dir but exist file is not a dir" dir
   | Non_exists -> Unix.mkdir dir 0o777
 
 let rec process_theme_aux env cwd (x : Bsb_templates.node) =
   match x with
-  | File (name,content)  ->
-    let new_file = cwd // name in 
-    if not @@ Sys.file_exists new_file then
-      Ext_io.write_file new_file (replace content env)
+  | File (name, content) ->
+      let new_file = cwd // name in
+      if not @@ Sys.file_exists new_file then
+        Ext_io.write_file new_file (replace content env)
   | Dir (current, nodes) ->
-    let new_cwd = cwd // current in 
-    mkdir_or_not_if_exists new_cwd;
-    List.iter (fun x -> process_theme_aux env new_cwd x ) nodes
+      let new_cwd = cwd // current in
+      mkdir_or_not_if_exists new_cwd;
+      List.iter (fun x -> process_theme_aux env new_cwd x) nodes
 
 let list_themes () =
-  Format.fprintf Format.std_formatter "Available themes: @.";    
-  Ext_list.iter Bsb_templates.root (fun x  ->
-      match  x with
-      | Dir (x, _) ->
-        Format.fprintf Format.std_formatter "%s@." x
-
-      | _ -> ()
-    )
+  Format.fprintf Format.std_formatter "Available themes: @.";
+  Ext_list.iter Bsb_templates.root (fun x ->
+      match x with
+      | Dir (x, _) -> Format.fprintf Format.std_formatter "%s@." x
+      | _ -> ())
 
 (* @raise [Not_found] *)
-let process_themes env theme proj_dir (themes : Bsb_templates.node list ) =
-  match Ext_list.find_first themes (fun x ->
-      match  x with
-      | Dir (dir, _) -> dir = theme
-      | File _ -> false
-    )  with
+let process_themes env theme proj_dir (themes : Bsb_templates.node list) =
+  match
+    Ext_list.find_first themes (fun x ->
+        match x with Dir (dir, _) -> dir = theme | File _ -> false)
+  with
   | None ->
-    list_themes ();
-    Bsb_arg.bad_arg ( "theme " ^ theme ^ " not found")
-  | Some (Dir(_theme, nodes )) ->
-    List.iter (fun node -> process_theme_aux env proj_dir node ) nodes
+      list_themes ();
+      Bsb_arg.bad_arg ("theme " ^ theme ^ " not found")
+  | Some (Dir (_theme, nodes)) ->
+      List.iter (fun node -> process_theme_aux env proj_dir node) nodes
   | Some _ -> assert false
 
 (** TODO: run npm link *)
 let init_sample_project ~cwd ~theme name =
   let env = Hash_string.create 0 in
-  List.iter (fun (k,v) -> Hash_string.add env k v  ) [
-    "proj-version", "0.1.0";
-    "bs-version", Bs_version.version;
-    "bsb" , Filename.current_dir_name // "node_modules" // ".bin" // "bsb";
-    "platform", !Bs_version.package_name
-  ];
-  let action = fun _ ->
-    process_themes env  theme Filename.current_dir_name Bsb_templates.root
+  List.iter
+    (fun (k, v) -> Hash_string.add env k v)
+    [
+      ("proj-version", "0.1.0");
+      ("bs-version", Bs_version.version);
+      ("bsb", Filename.current_dir_name // "node_modules" // ".bin" // "bsb");
+      ("platform", !Bs_version.package_name);
+    ];
+  let action _ =
+    process_themes env theme Filename.current_dir_name Bsb_templates.root
   in
-  begin match name with
-    | "." ->
+  match name with
+  | "." ->
       let name = Filename.basename cwd in
-      if Ext_namespace.is_valid_npm_package_name name then
-        begin
-          Hash_string.add env "name" name;
-          action ()
-        end
-      else
-        begin
-          Format.fprintf Format.err_formatter
-            "@{<error>Invalid package name@} %S@}: the project name must be both a valid npm package name and a valid name as namespace@."
-            name ;
-          exit 2
-        end
-
-    | _ ->
-      if Ext_namespace.is_valid_npm_package_name name
-      then begin        
-        match classify_file name with 
-        | Non_directory_file 
-          -> 
-          begin
-            Format.fprintf Format.err_formatter "@{<error>%s already exists but it is not a directory@}@." name ;
-            exit 2
-          end
-        | Directory -> 
-          begin
-            Format.fprintf Format.std_formatter "Adding files into existing dir %s@." name; 
-            Hash_string.add env "name" name;
-            enter_dir cwd name action
-          end
-        | Non_exists
-          ->
-          begin
-            Format.fprintf Format.std_formatter "Making directory %s@." name;
-            Unix.mkdir name 0o777;            
-            Hash_string.add env "name" name;
-            enter_dir cwd name action
-          end
-      end else begin
+      if Ext_namespace.is_valid_npm_package_name name then (
+        Hash_string.add env "name" name;
+        action ())
+      else (
         Format.fprintf Format.err_formatter
-          "@{<error>Invalid package name@} %S.@} The project name must be a valid npm name, thus can't contain upper-case letters, for example."
-          name ;
-        exit 2
-      end
-  end
-
-
-
-
+          "@{<error>Invalid package name@} %S@}: the project name must be both \
+           a valid npm package name and a valid name as namespace@."
+          name;
+        exit 2)
+  | _ ->
+      if Ext_namespace.is_valid_npm_package_name name then (
+        match classify_file name with
+        | Non_directory_file ->
+            Format.fprintf Format.err_formatter
+              "@{<error>%s already exists but it is not a directory@}@." name;
+            exit 2
+        | Directory ->
+            Format.fprintf Format.std_formatter
+              "Adding files into existing dir %s@." name;
+            Hash_string.add env "name" name;
+            enter_dir cwd name action
+        | Non_exists ->
+            Format.fprintf Format.std_formatter "Making directory %s@." name;
+            Unix.mkdir name 0o777;
+            Hash_string.add env "name" name;
+            enter_dir cwd name action)
+      else (
+        Format.fprintf Format.err_formatter
+          "@{<error>Invalid package name@} %S.@} The project name must be a \
+           valid npm name, thus can't contain upper-case letters, for example."
+          name;
+        exit 2)
 
 end
 module Bsb_world : sig 
@@ -16394,11 +15234,9 @@ module Bsb_world : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val make_world_deps:
-  string ->
-  Bsb_config_types.t option ->
-  string array ->
-  unit  
+val make_world_deps :
+  string -> Bsb_config_types.t option -> string array -> unit
+
 end = struct
 #1 "bsb_world.ml"
 (* Copyright (C) 2017- Hongbo Zhang, Authors of ReScript
@@ -16425,87 +15263,80 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+let ( // ) = Ext_path.combine
 
-let (//) = Ext_path.combine
+let vendor_ninja = Bsb_global_paths.vendor_ninja
 
-
-let vendor_ninja = Bsb_global_paths.vendor_ninja 
-
-let make_world_deps cwd (config : Bsb_config_types.t option) (ninja_args : string array) =
+let make_world_deps cwd (config : Bsb_config_types.t option)
+    (ninja_args : string array) =
   let deps, pinned_dependencies =
     match config with
     | None ->
-      (* When this running bsb does not read bsconfig.json,
-         we will read such json file to know which [package-specs]
-         it wants
-      *)
-      Bsb_config_parse.package_specs_from_bsconfig ()
-    | Some config -> config.package_specs, config.pinned_dependencies in
-  let args = 
-    if Ext_array.is_empty ninja_args then [|vendor_ninja|] 
-    else Array.append [|vendor_ninja|] ninja_args
-  in 
+        (* When this running bsb does not read bsconfig.json,
+           we will read such json file to know which [package-specs]
+           it wants
+        *)
+        Bsb_config_parse.package_specs_from_bsconfig ()
+    | Some config -> (config.package_specs, config.pinned_dependencies)
+  in
+  let args =
+    if Ext_array.is_empty ninja_args then [| vendor_ninja |]
+    else Array.append [| vendor_ninja |] ninja_args
+  in
   let lib_artifacts_dir = Bsb_config.lib_bs in
-  let queue = 
-    Bsb_build_util.walk_all_deps  cwd ~pinned_dependencies in 
-  (* let oc = open_out_bin ".deps.log" in 
-     queue |> Queue.iter (fun ({top; proj_dir} : Bsb_build_util.package_context) -> 
-     match top with 
+  let queue = Bsb_build_util.walk_all_deps cwd ~pinned_dependencies in
+  (* let oc = open_out_bin ".deps.log" in
+     queue |> Queue.iter (fun ({top; proj_dir} : Bsb_build_util.package_context) ->
+     match top with
      | Expect_none -> ()
-     | Expect_name s ->       
+     | Expect_name s ->
       output_string oc s ;
       output_string oc " : ";
       output_string oc proj_dir;
       output_string oc "\n"
      );
-     close_out oc ;   *)
-  queue |> Queue.iter (fun ({top; proj_dir} : Bsb_build_util.package_context) ->
-      match top with 
-      | Expect_none -> ()
-      | Expect_name s ->
-        begin 
-          let is_pinned =  Set_string.mem pinned_dependencies s in 
-          (if is_pinned then  
-             print_endline ("Dependency pinned on " ^ s )
-           else print_endline ("Dependency on " ^ s ));
-          let  lib_bs_dir = proj_dir // lib_artifacts_dir in 
-          Bsb_build_util.mkp lib_bs_dir;
-          let _config : _ option = 
-            Bsb_ninja_regen.regenerate_ninja 
-              ~package_kind:(if is_pinned then Pinned_dependency deps else Dependency deps) 
-              ~per_proj_dir:proj_dir  ~forced:false in 
-          let command = 
-            {Bsb_unix.cmd = vendor_ninja;
-             cwd = lib_bs_dir;
-             args 
-            } in     
-          let eid =
-            Bsb_unix.run_command_execv
-              command in 
-          if eid <> 0 then   
-            Bsb_unix.command_fatal_error command eid;
-          (* When ninja is not regenerated, ninja will still do the build, 
-             still need reinstall check
-             Note that we can check if ninja print "no work to do", 
-             then don't need reinstall more
-          *)
-          Bsb_log.info "@{<info>Installation started@}@.";
-          let install_dir = proj_dir // "lib" // "ocaml" in 
-          Bsb_build_util.mkp install_dir;
-          let install_command = {
-            Bsb_unix.cmd = vendor_ninja; 
-            cwd = install_dir;
-            args = [| vendor_ninja ; "-f"; ".."//"bs"//"install.ninja"|]
-          } in 
-          let eid =
-            Bsb_unix.run_command_execv
-              install_command in 
-          if eid <> 0 then   
-            Bsb_unix.command_fatal_error install_command eid;            
-          Bsb_log.info "@{<info>Installation finished@}@.";
-
-        end
-    );
+     close_out oc ; *)
+  queue
+  |> Queue.iter (fun ({ top; proj_dir } : Bsb_build_util.package_context) ->
+         match top with
+         | Expect_none -> ()
+         | Expect_name s ->
+             let is_pinned = Set_string.mem pinned_dependencies s in
+             if is_pinned then print_endline ("Dependency pinned on " ^ s)
+             else print_endline ("Dependency on " ^ s);
+             let lib_bs_dir = proj_dir // lib_artifacts_dir in
+             Bsb_build_util.mkp lib_bs_dir;
+             let _config : _ option =
+               Bsb_ninja_regen.regenerate_ninja
+                 ~package_kind:
+                   (if is_pinned then Pinned_dependency deps
+                   else Dependency deps)
+                 ~per_proj_dir:proj_dir ~forced:false
+             in
+             let command =
+               { Bsb_unix.cmd = vendor_ninja; cwd = lib_bs_dir; args }
+             in
+             let eid = Bsb_unix.run_command_execv command in
+             if eid <> 0 then Bsb_unix.command_fatal_error command eid;
+             (* When ninja is not regenerated, ninja will still do the build,
+                still need reinstall check
+                Note that we can check if ninja print "no work to do",
+                then don't need reinstall more
+             *)
+             Bsb_log.info "@{<info>Installation started@}@.";
+             let install_dir = proj_dir // "lib" // "ocaml" in
+             Bsb_build_util.mkp install_dir;
+             let install_command =
+               {
+                 Bsb_unix.cmd = vendor_ninja;
+                 cwd = install_dir;
+                 args =
+                   [| vendor_ninja; "-f"; ".." // "bs" // "install.ninja" |];
+               }
+             in
+             let eid = Bsb_unix.run_command_execv install_command in
+             if eid <> 0 then Bsb_unix.command_fatal_error install_command eid;
+             Bsb_log.info "@{<info>Installation finished@}@.");
   print_endline "Dependency Finished"
 
 end
@@ -16561,60 +15392,62 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+let () = Bsb_log.setup ()
 
-let () =  Bsb_log.setup () 
 let current_theme = ref "basic"
+
 let separator = "--"
+
 let watch_mode = ref false
-let make_world = ref false 
+
+let make_world = ref false
+
 let do_install = ref false
+
 let force_regenerate = ref false
 
 type spec = Bsb_arg.spec
 
-let call_spec f : spec = Unit (Unit_call f )
+let call_spec f : spec = Unit (Unit_call f)
+
 let unit_set_spec b : spec = Unit (Unit_set b)
+
 let string_set_spec s : spec = String (String_set s)
 
-
-let failed_annon = (fun ~rev_args -> 
-    match rev_args with 
-    | x :: _ -> Bsb_arg.bad_arg ("Don't know what to do with " ^ x)
-    | _ -> ()
-  )
+let failed_annon ~rev_args =
+  match rev_args with
+  | x :: _ -> Bsb_arg.bad_arg ("Don't know what to do with " ^ x)
+  | _ -> ()
 
 (*Note that [keepdepfile] only makes sense when combined with [deps] for optimization*)
 
 (**  Invariant: it has to be the last command of [bsb] *)
 let exec_command_then_exit (type t) (command : string) : t =
   Bsb_log.info "@{<info>CMD:@} %s@." command;
-  exit (Sys.command command ) 
+  exit (Sys.command command)
 
 (* Execute the underlying ninja build call, then exit (as opposed to keep watching) *)
-let ninja_command_exit (type t) (ninja_args : string array)  : t =
+let ninja_command_exit (type t) (ninja_args : string array) : t =
   let ninja_args_len = Array.length ninja_args in
   let lib_artifacts_dir = Bsb_config.lib_bs in
   if Ext_sys.is_windows_or_cygwin then
-    let path_ninja = Filename.quote Bsb_global_paths.vendor_ninja in 
-    exec_command_then_exit 
-      (if ninja_args_len = 0 then      
-         Ext_string.inter3
-           path_ninja "-C" lib_artifacts_dir
-       else   
-         let args = 
-           Array.append 
-             [| path_ninja ; "-C"; lib_artifacts_dir|]
-             ninja_args in 
-         Ext_string.concat_array Ext_string.single_space args)
+    let path_ninja = Filename.quote Bsb_global_paths.vendor_ninja in
+    exec_command_then_exit
+      (if ninja_args_len = 0 then
+       Ext_string.inter3 path_ninja "-C" lib_artifacts_dir
+      else
+        let args =
+          Array.append [| path_ninja; "-C"; lib_artifacts_dir |] ninja_args
+        in
+        Ext_string.concat_array Ext_string.single_space args)
   else
-    let ninja_common_args = [|"ninja.exe"; "-C"; lib_artifacts_dir |] in 
-    let args = 
-      if ninja_args_len = 0 then ninja_common_args else 
-        Array.append ninja_common_args ninja_args in 
-    Bsb_log.info_args args ;      
-    Unix.execvp Bsb_global_paths.vendor_ninja args      
-
-
+    let ninja_common_args = [| "ninja.exe"; "-C"; lib_artifacts_dir |] in
+    let args =
+      if ninja_args_len = 0 then ninja_common_args
+      else Array.append ninja_common_args ninja_args
+    in
+    Bsb_log.info_args args;
+    Unix.execvp Bsb_global_paths.vendor_ninja args
 
 (**
    Cache files generated:
@@ -16624,30 +15457,29 @@ let ninja_command_exit (type t) (ninja_args : string array)  : t =
    What will happen, some flags are really not good
    ninja -C _build
 *)
-let clean_usage = "Usage: rescript.exe clean <options>\n\n\
-                   `rescript clean` only cleans the current project\n"
-let build_usage =  "Usage: rescript.exe build <options> -- <ninja_options>\n\n\
-                    `rescript build` implicitly builds dependencies if they aren't built\n\n\
-                    `rescript.exe -- -h` for Ninja options (internal usage only; unstable)\n"
+let clean_usage =
+  "Usage: rescript.exe clean <options>\n\n\
+   `rescript clean` only cleans the current project\n"
 
-
-
+let build_usage =
+  "Usage: rescript.exe build <options> -- <ninja_options>\n\n\
+   `rescript build` implicitly builds dependencies if they aren't built\n\n\
+   `rescript.exe -- -h` for Ninja options (internal usage only; unstable)\n"
 
 let install_target () =
-  let (//) = Filename.concat in  
-  let vendor_ninja = Bsb_global_paths.vendor_ninja in 
-  let install_dir = "lib" // "ocaml" in 
+  let ( // ) = Filename.concat in
+  let vendor_ninja = Bsb_global_paths.vendor_ninja in
+  let install_dir = "lib" // "ocaml" in
   Bsb_build_util.mkp install_dir;
-  let install_command = {
-    Bsb_unix.cmd = vendor_ninja ; 
-    cwd =  install_dir;
-    args = [| vendor_ninja ; "-f"; ".."//"bs"//"install.ninja"|]
-  } in 
-  let eid =
-    Bsb_unix.run_command_execv
-      install_command in 
-  if eid <> 0 then   
-    Bsb_unix.command_fatal_error install_command eid  
+  let install_command =
+    {
+      Bsb_unix.cmd = vendor_ninja;
+      cwd = install_dir;
+      args = [| vendor_ninja; "-f"; ".." // "bs" // "install.ninja" |];
+    }
+  in
+  let eid = Bsb_unix.run_command_execv install_command in
+  if eid <> 0 then Bsb_unix.command_fatal_error install_command eid
 
 (** check if every dependency installation dierctory is there 
     This is in hot path, so we want it to be fast.
@@ -16655,186 +15487,166 @@ let install_target () =
     we definitely need build the world.
     If it is there, we do not check if it is up-to-date, since that's
     going be slow, user can use `-with-deps` to enforce such check
-*)      
-let check_deps_installation_directory (config_opt : Bsb_config_types.t option) 
-  : bool = 
-  match config_opt with 
-  | Some {bs_dependencies; bs_dev_dependencies} ->     
-    not (
-      Ext_list.for_all bs_dependencies 
-        (fun x -> Ext_sys.is_directory_no_exn x.package_install_path ) &&
-      Ext_list.for_all bs_dev_dependencies 
-        (fun x -> Ext_sys.is_directory_no_exn x.package_install_path))     
-  | None -> 
-    false
+*)
+let check_deps_installation_directory (config_opt : Bsb_config_types.t option) :
+    bool =
+  match config_opt with
+  | Some { bs_dependencies; bs_dev_dependencies } ->
+      not
+        (Ext_list.for_all bs_dependencies (fun x ->
+             Ext_sys.is_directory_no_exn x.package_install_path)
+        && Ext_list.for_all bs_dev_dependencies (fun x ->
+               Ext_sys.is_directory_no_exn x.package_install_path))
+  | None -> false
 
-let build_subcommand ~start  argv argv_len =
-  let i =  Ext_array.rfind_with_index argv Ext_string.equal separator in   
+let build_subcommand ~start argv argv_len =
+  let i = Ext_array.rfind_with_index argv Ext_string.equal separator in
 
-  Bsb_arg.parse_exn 
-    ~usage:build_usage ~start ?finish:(if i < 0 then None else Some i )~argv [|
-    "-w", unit_set_spec watch_mode, 
-    "Watch mode";
-    "-with-deps", unit_set_spec make_world,
-    "Build dependencies explicitly";
-    "-install", unit_set_spec do_install,
-    "*internal* Install public interface files for dependencies ";
-    (* This should be put in a subcommand
-       previously it works with the implication `bsb && bsb -install`
-    *)
-    "-ws", string_set_spec (ref ""),
-    "[host]:port set up host & port for WebSocket build notifications";
-    "-regen", unit_set_spec force_regenerate,
-    "*internal* \n\
-     Always regenerate build.ninja no matter bsconfig.json is changed or not";
-    "-verbose", call_spec Bsb_log.verbose,
-    "Set the output to be verbose";
+  Bsb_arg.parse_exn ~usage:build_usage ~start
+    ?finish:(if i < 0 then None else Some i)
+    ~argv
+    [|
+      ("-w", unit_set_spec watch_mode, "Watch mode");
+      ("-with-deps", unit_set_spec make_world, "Build dependencies explicitly");
+      ( "-install",
+        unit_set_spec do_install,
+        "*internal* Install public interface files for dependencies " );
+      (* This should be put in a subcommand
+         previously it works with the implication `bsb && bsb -install`
+      *)
+      ( "-ws",
+        string_set_spec (ref ""),
+        "[host]:port set up host & port for WebSocket build notifications" );
+      ( "-regen",
+        unit_set_spec force_regenerate,
+        "*internal* \n\
+         Always regenerate build.ninja no matter bsconfig.json is changed or \
+         not" );
+      ("-verbose", call_spec Bsb_log.verbose, "Set the output to be verbose");
+    |]
+    failed_annon;
 
-  |] failed_annon;
-
-  let ninja_args = 
-    if i < 0 then [||] else (Array.sub argv (i + 1) (argv_len - i - 1)) in 
-  begin match ninja_args with 
-    | [|"-h"|] -> ninja_command_exit ninja_args
-    | _ -> 
-      let config_opt = 
-        Bsb_ninja_regen.regenerate_ninja
-          ~package_kind:Toplevel 
-          ~per_proj_dir:Bsb_global_paths.cwd
-          ~forced:!force_regenerate in   
-      let implict_build = 
-        check_deps_installation_directory config_opt in 
-      (match !make_world, implict_build with 
-       | true , _ ->
-         Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt ninja_args
-       | false, true ->
-         Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt [||]
-       | false, false -> ()  
-      );
-      if !do_install then 
-        install_target ();
-      if !watch_mode then 
-        exit 0 (* let the watcher do the build*)
-      else ninja_command_exit ninja_args    
-  end  
+  let ninja_args =
+    if i < 0 then [||] else Array.sub argv (i + 1) (argv_len - i - 1)
+  in
+  match ninja_args with
+  | [| "-h" |] -> ninja_command_exit ninja_args
+  | _ ->
+      let config_opt =
+        Bsb_ninja_regen.regenerate_ninja ~package_kind:Toplevel
+          ~per_proj_dir:Bsb_global_paths.cwd ~forced:!force_regenerate
+      in
+      let implict_build = check_deps_installation_directory config_opt in
+      (match (!make_world, implict_build) with
+      | true, _ ->
+          Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt ninja_args
+      | false, true ->
+          Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt [||]
+      | false, false -> ());
+      if !do_install then install_target ();
+      if !watch_mode then exit 0 (* let the watcher do the build*)
+      else ninja_command_exit ninja_args
 
 let clean_subcommand ~start argv =
-  Bsb_arg.parse_exn 
-    ~usage:clean_usage ~start ~argv [|
-    "-with-deps", unit_set_spec make_world,
-    "*internal* Clean dependencies too";
-    "-verbose", call_spec Bsb_log.verbose,
-    "Set the output to be verbose";
-  |] failed_annon;
-  Bsb_clean.clean_bs_deps Bsb_global_paths.cwd ; 
-  Bsb_clean.clean_self Bsb_global_paths.cwd      
-let init_usage = "Usage: rescript init [folder-name]\n\n\
-                  `rescript init` adds a small ReScript project template to the current folder\n\n\
-                  Pass folder-name to add them to a dedicated folder\n"
-let init_subcommand ~start argv =   
-  Bsb_arg.parse_exn 
-    ~usage:init_usage ~start ~argv [|
-  |] (fun 
-       ~rev_args -> 
-       let location = 
-         match rev_args with 
-         | [x]   ->
-           x 
-         | last :: _another :: _ -> 
-           raise (Bsb_arg.Bad ("Don't know what to do with " ^ last)) 
-         | [] -> 
-           "." in  
-       Bsb_theme_init.init_sample_project 
-         ~cwd:Bsb_global_paths.cwd
-         ~theme:!current_theme location
-     )
+  Bsb_arg.parse_exn ~usage:clean_usage ~start ~argv
+    [|
+      ( "-with-deps",
+        unit_set_spec make_world,
+        "*internal* Clean dependencies too" );
+      ("-verbose", call_spec Bsb_log.verbose, "Set the output to be verbose");
+    |]
+    failed_annon;
+  Bsb_clean.clean_bs_deps Bsb_global_paths.cwd;
+  Bsb_clean.clean_self Bsb_global_paths.cwd
 
-let list_files = ref false     
-let info_subcommand ~start argv =        
-  Bsb_arg.parse_exn 
-    ~usage:"query the project" ~start ~argv [|
-    "-list-files", unit_set_spec list_files,
-    "list source files"
-  |] (fun 
-       ~rev_args -> 
+let init_usage =
+  "Usage: rescript init [folder-name]\n\n\
+   `rescript init` adds a small ReScript project template to the current \
+   folder\n\n\
+   Pass folder-name to add them to a dedicated folder\n"
 
-       (match rev_args with 
-        | x :: _  ->
-          raise (Bsb_arg.Bad ("Don't know what to do with " ^ x))
-        | [] -> 
-          ());
-       if !list_files then begin 
-         match 
-           Bsb_ninja_regen.regenerate_ninja 
-             ~package_kind:Toplevel           
-             ~forced:true ~per_proj_dir:Bsb_global_paths.cwd with 
-         | None -> assert false
-         | Some {file_groups = {files}} ->
-           Ext_list.iter files (fun {sources } -> 
-               Map_string.iter sources (fun _ {info;syntax_kind;name_sans_extension} ->
-                   let extensions = 
-                     match syntax_kind,info with 
-                     | _, Intf -> assert false 
-                     | Reason , Impl -> [".re" ]
-                     | Reason, Impl_intf -> [".re"; ".rei"]                   
-                     | Ml, Impl -> [".ml"]
-                     | Ml, Impl_intf -> [".ml"; ".mli"]
-                     | Res, Impl -> [".res"]
-                     | Res, Impl_intf -> [".res"; ".resi"] in 
-                   Ext_list.iter extensions (fun x -> 
-                       print_endline (name_sans_extension ^ x )
-                     )      
-                 )
-             )
-       end
-     )  ;;
+let init_subcommand ~start argv =
+  Bsb_arg.parse_exn ~usage:init_usage ~start ~argv [||] (fun ~rev_args ->
+      let location =
+        match rev_args with
+        | [ x ] -> x
+        | last :: _another :: _ ->
+            raise (Bsb_arg.Bad ("Don't know what to do with " ^ last))
+        | [] -> "."
+      in
+      Bsb_theme_init.init_sample_project ~cwd:Bsb_global_paths.cwd
+        ~theme:!current_theme location)
+
+let list_files = ref false
+
+let info_subcommand ~start argv =
+  Bsb_arg.parse_exn ~usage:"query the project" ~start ~argv
+    [| ("-list-files", unit_set_spec list_files, "list source files") |]
+    (fun ~rev_args ->
+      (match rev_args with
+      | x :: _ -> raise (Bsb_arg.Bad ("Don't know what to do with " ^ x))
+      | [] -> ());
+      if !list_files then
+        match
+          Bsb_ninja_regen.regenerate_ninja ~package_kind:Toplevel ~forced:true
+            ~per_proj_dir:Bsb_global_paths.cwd
+        with
+        | None -> assert false
+        | Some { file_groups = { files } } ->
+            Ext_list.iter files (fun { sources } ->
+                Map_string.iter sources
+                  (fun _ { info; syntax_kind; name_sans_extension } ->
+                    let extensions =
+                      match (syntax_kind, info) with
+                      | _, Intf -> assert false
+                      | Reason, Impl -> [ ".re" ]
+                      | Reason, Impl_intf -> [ ".re"; ".rei" ]
+                      | Ml, Impl -> [ ".ml" ]
+                      | Ml, Impl_intf -> [ ".ml"; ".mli" ]
+                      | Res, Impl -> [ ".res" ]
+                      | Res, Impl_intf -> [ ".res"; ".resi" ]
+                    in
+                    Ext_list.iter extensions (fun x ->
+                        print_endline (name_sans_extension ^ x)))))
 
 (* see discussion #929, if we catch the exception, we don't have stacktrace... *)
-let () =  
-  let argv = Sys.argv in   
-  let argv_len = Array.length argv in   
+let () =
+  let argv = Sys.argv in
+  let argv_len = Array.length argv in
   try
-    if argv_len = 1 then begin 
+    if argv_len = 1 then (
       (* specialize this path which is used in watcher *)
-      let config_opt = 
-        Bsb_ninja_regen.regenerate_ninja 
-          ~package_kind:Toplevel 
-          ~forced:false 
-          ~per_proj_dir:Bsb_global_paths.cwd in 
-      if !make_world || check_deps_installation_directory config_opt then 
+      let config_opt =
+        Bsb_ninja_regen.regenerate_ninja ~package_kind:Toplevel ~forced:false
+          ~per_proj_dir:Bsb_global_paths.cwd
+      in
+      if !make_world || check_deps_installation_directory config_opt then
         Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt [||];
-      ninja_command_exit  [||] 
-    end else
-      match argv.(1) with 
-      | "build" -> 
-        build_subcommand ~start:2 argv argv_len
-      | "clean" ->         
-        clean_subcommand ~start:2 argv      
-      | "init" ->  
-        init_subcommand ~start:2 argv 
-      | "info" -> (* internal *)
-        info_subcommand ~start:2 argv   
-      | first_arg -> 
-        prerr_endline @@ "Unknown subcommand or flags: " ^ first_arg;
-        exit 1
-  with 
+      ninja_command_exit [||])
+    else
+      match argv.(1) with
+      | "build" -> build_subcommand ~start:2 argv argv_len
+      | "clean" -> clean_subcommand ~start:2 argv
+      | "init" -> init_subcommand ~start:2 argv
+      | "info" ->
+          (* internal *)
+          info_subcommand ~start:2 argv
+      | first_arg ->
+          prerr_endline @@ "Unknown subcommand or flags: " ^ first_arg;
+          exit 1
+  with
   | Bsb_exception.Error e ->
-    Bsb_exception.print Format.err_formatter e ;
-    Format.pp_print_newline Format.err_formatter ();
-    exit 2
-  | Ext_json_parse.Error (start,_,e) -> 
-    Format.fprintf Format.err_formatter
-      "File %S, line %d\n\
-       @{<error>Error:@} %a@."
-      start.pos_fname start.pos_lnum
-      Ext_json_parse.report_error e ;
-    exit 2
-  | Bsb_arg.Bad s 
-  | Sys_error s -> 
-    Format.fprintf Format.err_formatter
-      "@{<error>Error:@} %s@."
-      s ;
-    exit 2
-  | e -> Ext_pervasives.reraise e 
+      Bsb_exception.print Format.err_formatter e;
+      Format.pp_print_newline Format.err_formatter ();
+      exit 2
+  | Ext_json_parse.Error (start, _, e) ->
+      Format.fprintf Format.err_formatter
+        "File %S, line %d\n@{<error>Error:@} %a@." start.pos_fname
+        start.pos_lnum Ext_json_parse.report_error e;
+      exit 2
+  | Bsb_arg.Bad s | Sys_error s ->
+      Format.fprintf Format.err_formatter "@{<error>Error:@} %s@." s;
+      exit 2
+  | e -> Ext_pervasives.reraise e
 
 end

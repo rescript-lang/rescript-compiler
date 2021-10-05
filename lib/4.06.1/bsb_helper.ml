@@ -24,40 +24,22 @@ module Ext_pervasives : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
 (** Extension to standard library [Pervavives] module, safe to open 
 *)
 
-external reraise: exn -> 'a = "%reraise"
+external reraise : exn -> 'a = "%reraise"
 
-val finally : 
-  'a ->
-  clean:('a -> unit) -> 
-  ('a -> 'b) -> 'b
+val finally : 'a -> clean:('a -> unit) -> ('a -> 'b) -> 'b
 
 (* val try_it : (unit -> 'a) ->  unit  *)
 
 val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
 
+val max_int : int -> int -> int
 
-val max_int : int -> int -> int 
+val min_int : int -> int -> int
 
-val min_int : int -> int -> int 
-val max_int_option : 
-  int option -> 
-  int option -> 
-  int option 
-
-
-
-
-
+val max_int_option : int option -> int option -> int option
 
 (* external id : 'a -> 'a = "%identity" *)
 
@@ -70,10 +52,8 @@ val max_int_option :
 
 val nat_of_string_exn : string -> int
 
-val parse_nat_of_string:
-  string -> 
-  int ref -> 
-  int 
+val parse_nat_of_string : string -> int ref -> int
+
 end = struct
 #1 "ext_pervasives.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -100,91 +80,80 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+external reraise : exn -> 'a = "%reraise"
 
-
-
-
-
-external reraise: exn -> 'a = "%reraise"
-
-let finally v ~clean:action f   = 
+let finally v ~clean:action f =
   match f v with
-  | exception e -> 
-    action v ;
-    reraise e 
-  | e ->  action v ; e 
+  | exception e ->
+      action v;
+      reraise e
+  | e ->
+      action v;
+      e
 
-(* let try_it f  =   
+(* let try_it f  =
    try ignore (f ()) with _ -> () *)
 
-let with_file_as_chan filename f = 
-  finally (open_out_bin filename) ~clean:close_out f 
+let with_file_as_chan filename f =
+  finally (open_out_bin filename) ~clean:close_out f
 
+let max_int (x : int) y = if x >= y then x else y
 
-let max_int (x : int) y =
-    if x >= y then x else y
+let min_int (x : int) y = if x < y then x else y
 
-let min_int (x : int) y = 
-  if x < y then x else y 
-  
-let max_int_option (x : int option) y = 
-  match x, y with 
-  | None, _ -> y 
-  | Some _, None ->  x 
-  | Some x0 , Some y0 -> 
-      if x0 >= y0 then x else y
-
+let max_int_option (x : int option) y =
+  match (x, y) with
+  | None, _ -> y
+  | Some _, None -> x
+  | Some x0, Some y0 -> if x0 >= y0 then x else y
 
 (* external id : 'a -> 'a = "%identity" *)
 
-(* 
-let hash_variant s =
-  let accu = ref 0 in
-  for i = 0 to String.length s - 1 do
-    accu := 223 * !accu + Char.code s.[i]
-  done;
-  (* reduce to 31 bits *)
-  accu := !accu land (1 lsl 31 - 1);
-  (* make it signed for 64 bits architectures *)
-  if !accu > 0x3FFFFFFF then !accu - (1 lsl 31) else !accu *)
+(*
+   let hash_variant s =
+     let accu = ref 0 in
+     for i = 0 to String.length s - 1 do
+       accu := 223 * !accu + Char.code s.[i]
+     done;
+     (* reduce to 31 bits *)
+     accu := !accu land (1 lsl 31 - 1);
+     (* make it signed for 64 bits architectures *)
+     if !accu > 0x3FFFFFFF then !accu - (1 lsl 31) else !accu *)
 
-(* let todo loc = 
+(* let todo loc =
    failwith (loc ^ " Not supported yet")
 *)
 
+let rec int_of_string_aux s acc off len =
+  if off >= len then acc
+  else
+    let d = Char.code (String.unsafe_get s off) - 48 in
+    if d >= 0 && d <= 9 then int_of_string_aux s ((10 * acc) + d) (off + 1) len
+    else -1
+(* error *)
 
-
-let rec int_of_string_aux s acc off len =  
-  if off >= len then acc 
-  else 
-    let d = (Char.code (String.unsafe_get s off) - 48) in 
-    if d >=0 && d <= 9 then 
-      int_of_string_aux s (10*acc + d) (off + 1) len
-    else -1 (* error *)
-
-let nat_of_string_exn (s : string) = 
-  let acc = int_of_string_aux s 0 0 (String.length s) in 
-  if acc < 0 then invalid_arg s 
-  else acc 
-
+let nat_of_string_exn (s : string) =
+  let acc = int_of_string_aux s 0 0 (String.length s) in
+  if acc < 0 then invalid_arg s else acc
 
 (** return index *)
-let parse_nat_of_string (s : string) (cursor : int ref) =  
-  let current = !cursor in 
+let parse_nat_of_string (s : string) (cursor : int ref) =
+  let current = !cursor in
   assert (current >= 0);
-  let acc = ref 0 in 
-  let s_len = String.length s in 
-  let todo = ref true in 
-  let cur = ref current in 
-  while !todo && !cursor < s_len do 
-    let d = Char.code (String.unsafe_get s !cur) - 48 in 
-    if d >=0 && d <= 9 then begin 
-      acc := 10* !acc + d;
-      incr cur
-    end else todo := false
-  done ;
+  let acc = ref 0 in
+  let s_len = String.length s in
+  let todo = ref true in
+  let cur = ref current in
+  while !todo && !cursor < s_len do
+    let d = Char.code (String.unsafe_get s !cur) - 48 in
+    if d >= 0 && d <= 9 then (
+      acc := (10 * !acc) + d;
+      incr cur)
+    else todo := false
+  done;
   cursor := !cur;
-  !acc 
+  !acc
+
 end
 module Ext_io : sig 
 #1 "ext_io.mli"
@@ -246,36 +215,30 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
 (** on 32 bit , there are 16M limitation *)
 let load_file f =
-  Ext_pervasives.finally (open_in_bin f) ~clean:close_in begin fun ic ->   
-    let n = in_channel_length ic in
-    let s = Bytes.create n in
-    really_input ic s 0 n;
-    Bytes.unsafe_to_string s
-  end
+  Ext_pervasives.finally (open_in_bin f) ~clean:close_in (fun ic ->
+      let n = in_channel_length ic in
+      let s = Bytes.create n in
+      really_input ic s 0 n;
+      Bytes.unsafe_to_string s)
 
-
-let  rev_lines_of_chann chan = 
-  let rec loop acc chan = 
+let rev_lines_of_chann chan =
+  let rec loop acc chan =
     match input_line chan with
     | line -> loop (line :: acc) chan
-    | exception End_of_file -> close_in chan ; acc in
+    | exception End_of_file ->
+        close_in chan;
+        acc
+  in
   loop [] chan
 
+let rev_lines_of_file file =
+  Ext_pervasives.finally ~clean:close_in (open_in_bin file) rev_lines_of_chann
 
-let rev_lines_of_file file = 
-  Ext_pervasives.finally 
-    ~clean:close_in 
-    (open_in_bin file) rev_lines_of_chann
-
-
-let write_file f content = 
-  Ext_pervasives.finally ~clean:close_out 
-    (open_out_bin f)  begin fun oc ->   
-    output_string oc content
-  end
+let write_file f content =
+  Ext_pervasives.finally ~clean:close_out (open_out_bin f) (fun oc ->
+      output_string oc content)
 
 end
 module Ext_bytes : sig 
@@ -304,16 +267,9 @@ module Ext_bytes : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
 external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
-  = "caml_blit_string" 
-[@@noalloc]
-
-
-
+  = "caml_blit_string"
+  [@@noalloc]
 
 end = struct
 #1 "ext_bytes.ml"
@@ -341,16 +297,9 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
 external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
-  = "caml_blit_string" 
-[@@noalloc]                     
-
+  = "caml_blit_string"
+  [@@noalloc]
 
 end
 module Ext_string : sig 
@@ -1137,15 +1086,12 @@ module Ext_string_array : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val cmp : string -> string -> int 
+val cmp : string -> string -> int
 
-val find_sorted : 
-  string array -> string -> int option
+val find_sorted : string array -> string -> int option
 
-val find_sorted_assoc : 
-  (string * 'a ) array -> 
-  string -> 
-  'a option
+val find_sorted_assoc : (string * 'a) array -> string -> 'a option
+
 end = struct
 #1 "ext_string_array.ml"
 (* Copyright (C) 2020 - Present Hongbo Zhang, Authors of ReScript
@@ -1172,72 +1118,69 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(* Invariant: the same as encoding Map_string.compare_key  *)
+let cmp = Ext_string.compare
 
-(* Invariant: the same as encoding Map_string.compare_key  *)  
-let cmp  =  Ext_string.compare
+let rec binarySearchAux (arr : string array) (lo : int) (hi : int)
+    (key : string) : _ option =
+  let mid = (lo + hi) / 2 in
+  let midVal = Array.unsafe_get arr mid in
+  let c = cmp key midVal in
+  if c = 0 then Some mid
+  else if c < 0 then
+    (*  a[lo] =< key < a[mid] <= a[hi] *)
+    if hi = mid then
+      let loVal = Array.unsafe_get arr lo in
+      if loVal = key then Some lo else None
+    else binarySearchAux arr lo mid key
+  else if (*  a[lo] =< a[mid] < key <= a[hi] *)
+          lo = mid then
+    let hiVal = Array.unsafe_get arr hi in
+    if hiVal = key then Some hi else None
+  else binarySearchAux arr mid hi key
 
-
-let rec binarySearchAux (arr : string array) (lo : int) (hi : int) (key : string)  : _ option = 
-  let mid = (lo + hi)/2 in 
-  let midVal = Array.unsafe_get arr mid in 
-  let c = cmp key midVal in 
-  if c = 0 then Some (mid)
-  else if c < 0 then  (*  a[lo] =< key < a[mid] <= a[hi] *)
-    if hi = mid then  
-      let loVal = (Array.unsafe_get arr lo) in 
-      if  loVal = key then Some lo
-      else None
-    else binarySearchAux arr lo mid key 
-  else  (*  a[lo] =< a[mid] < key <= a[hi] *)
-  if lo = mid then 
-    let hiVal = (Array.unsafe_get arr hi) in 
-    if  hiVal = key then Some hi
-    else None
-  else binarySearchAux arr mid hi key 
-
-let find_sorted sorted key  : int option =  
-  let len = Array.length sorted in 
+let find_sorted sorted key : int option =
+  let len = Array.length sorted in
   if len = 0 then None
-  else 
-    let lo = Array.unsafe_get sorted 0 in 
-    let c = cmp key lo in 
+  else
+    let lo = Array.unsafe_get sorted 0 in
+    let c = cmp key lo in
     if c < 0 then None
     else
-      let hi = Array.unsafe_get sorted (len - 1) in 
-      let c2 = cmp key hi in 
-      if c2 > 0 then None
-      else binarySearchAux sorted 0 (len - 1) key
+      let hi = Array.unsafe_get sorted (len - 1) in
+      let c2 = cmp key hi in
+      if c2 > 0 then None else binarySearchAux sorted 0 (len - 1) key
 
-let rec binarySearchAssoc  (arr : (string * _) array) (lo : int) (hi : int) (key : string)  : _ option = 
-  let mid = (lo + hi)/2 in 
-  let midVal = Array.unsafe_get arr mid in 
-  let c = cmp key (fst midVal) in 
+let rec binarySearchAssoc (arr : (string * _) array) (lo : int) (hi : int)
+    (key : string) : _ option =
+  let mid = (lo + hi) / 2 in
+  let midVal = Array.unsafe_get arr mid in
+  let c = cmp key (fst midVal) in
   if c = 0 then Some (snd midVal)
-  else if c < 0 then  (*  a[lo] =< key < a[mid] <= a[hi] *)
-    if hi = mid then  
-      let loVal = (Array.unsafe_get arr lo) in 
-      if  fst loVal = key then Some (snd loVal)
-      else None
-    else binarySearchAssoc arr lo mid key 
-  else  (*  a[lo] =< a[mid] < key <= a[hi] *)
-  if lo = mid then 
-    let hiVal = (Array.unsafe_get arr hi) in 
-    if  fst hiVal = key then Some (snd hiVal)
-    else None
-  else binarySearchAssoc arr mid hi key 
+  else if c < 0 then
+    (*  a[lo] =< key < a[mid] <= a[hi] *)
+    if hi = mid then
+      let loVal = Array.unsafe_get arr lo in
+      if fst loVal = key then Some (snd loVal) else None
+    else binarySearchAssoc arr lo mid key
+  else if (*  a[lo] =< a[mid] < key <= a[hi] *)
+          lo = mid then
+    let hiVal = Array.unsafe_get arr hi in
+    if fst hiVal = key then Some (snd hiVal) else None
+  else binarySearchAssoc arr mid hi key
 
-let find_sorted_assoc (type a) (sorted : (string * a) array) (key : string)  : a option =  
-  let len = Array.length sorted in 
+let find_sorted_assoc (type a) (sorted : (string * a) array) (key : string) :
+    a option =
+  let len = Array.length sorted in
   if len = 0 then None
-  else 
-    let lo = Array.unsafe_get sorted 0 in 
-    let c = cmp key (fst lo) in 
+  else
+    let lo = Array.unsafe_get sorted 0 in
+    let c = cmp key (fst lo) in
     if c < 0 then None
     else
-      let hi = Array.unsafe_get sorted (len - 1) in 
-      let c2 = cmp key (fst hi) in 
-      if c2 > 0 then None
-      else binarySearchAssoc sorted 0 (len - 1) key
+      let hi = Array.unsafe_get sorted (len - 1) in
+      let c2 = cmp key (fst hi) in
+      if c2 > 0 then None else binarySearchAssoc sorted 0 (len - 1) key
 
 end
 module Literals
@@ -1267,23 +1210,26 @@ module Literals
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
 let js_array_ctor = "Array"
+
 let js_type_number = "number"
+
 let js_type_string = "string"
+
 let js_type_object = "object"
+
 let js_type_boolean = "boolean"
+
 let js_undefined = "undefined"
+
 let js_prop_length = "length"
 
 let prim = "prim"
+
 let param = "param"
+
 let partial_arg = "partial_arg"
+
 let tmp = "tmp"
 
 let create = "create" (* {!Caml_exceptions.create}*)
@@ -1295,75 +1241,99 @@ let stdlib = "stdlib"
 let imul = "imul" (* signed int32 mul *)
 
 let setter_suffix = "#="
+
 let setter_suffix_len = String.length setter_suffix
 
 let debugger = "debugger"
 
 let fn_run = "fn_run"
+
 let method_run = "method_run"
 
 let fn_method = "fn_method"
+
 let fn_mk = "fn_mk"
 (*let js_fn_runmethod = "js_fn_runmethod"*)
 
-
-
-
-
 (** nodejs *)
 let node_modules = "node_modules"
+
 let node_modules_length = String.length "node_modules"
+
 let package_json = "package.json"
+
 let bsconfig_json = "bsconfig.json"
+
 let build_ninja = "build.ninja"
 
 (* Name of the library file created for each external dependency. *)
 let library_file = "lib"
 
 let suffix_a = ".a"
+
 let suffix_cmj = ".cmj"
+
 let suffix_cmo = ".cmo"
+
 let suffix_cma = ".cma"
+
 let suffix_cmi = ".cmi"
+
 let suffix_cmx = ".cmx"
+
 let suffix_cmxa = ".cmxa"
+
 let suffix_mll = ".mll"
+
 let suffix_ml = ".ml"
+
 let suffix_mli = ".mli"
+
 let suffix_re = ".re"
+
 let suffix_rei = ".rei"
+
 let suffix_res = ".res"
+
 let suffix_resi = ".resi"
+
 let suffix_mlmap = ".mlmap"
 
 let suffix_cmt = ".cmt"
+
 let suffix_cmti = ".cmti"
+
 let suffix_ast = ".ast"
+
 let suffix_iast = ".iast"
+
 let suffix_d = ".d"
+
 let suffix_js = ".js"
+
 let suffix_bs_js = ".bs.js"
+
 let suffix_mjs = ".mjs"
+
 let suffix_cjs = ".cjs"
+
 let suffix_gen_js = ".gen.js"
+
 let suffix_gen_tsx = ".gen.tsx"
 
 let commonjs = "commonjs"
 
 let es6 = "es6"
+
 let es6_global = "es6-global"
 
 let unused_attribute = "Unused attribute "
 
-
-
-
-
-
-
 (** Used when produce node compatible paths *)
 let node_sep = "/"
+
 let node_parent = ".."
+
 let node_current = "."
 
 let gentype_import = "genType.import"
@@ -1376,20 +1346,27 @@ let sourcedirs_meta = ".sourcedirs.json"
    espeically, it should not contain '-'
 *)
 let ns_sep_char = '-'
+
 let ns_sep = "-"
+
 let exception_id = "RE_EXN_ID"
 
 let polyvar_hash = "NAME"
+
 let polyvar_value = "VAL"
 
 let cons = "::"
+
 let hd = "hd"
+
 let tl = "tl"
 
 let lazy_done = "LAZY_DONE"
+
 let lazy_val = "VAL"
 
 let pure = "@__PURE__"
+
 end
 module Bsb_db_decode : sig 
 #1 "bsb_db_decode.mli"
@@ -1417,42 +1394,36 @@ module Bsb_db_decode : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-type group = private 
-  | Dummy 
+type group = private
+  | Dummy
   | Group of {
-      modules : string array ; 
+      modules : string array;
       dir_length : int;
-      dir_info_offset : int ; 
+      dir_info_offset : int;
       module_info_offset : int;
     }
 
-type t = { 
-  lib : group ;
-  dev : group ; 
-  content : string (* string is whole content*)
+type t = {
+  lib : group;
+  dev : group;
+  content : string; (* string is whole content*)
 }
 
-val read_build_cache : 
-  dir:string -> t
+val read_build_cache : dir:string -> t
 
+type module_info = { case : bool; (* Bsb_db.case*) dir_name : string }
 
+val find :
+  t ->
+  (* contains global info *)
+  string ->
+  (* module name *)
+  bool ->
+  (* more likely to be zero *)
+  module_info option
 
-type module_info = {
-  case : bool (* Bsb_db.case*);
-  dir_name : string
-} 
+val decode : string -> t
 
-val find:
-  t -> (* contains global info *)
-  string -> (* module name *)
-  bool -> (* more likely to be zero *)
-  module_info option 
-
-
-val decode : string -> t   
 end = struct
 #1 "bsb_db_decode.ml"
 (* Copyright (C) 2019 - Present Hongbo Zhang, Authors of ReScript
@@ -1481,125 +1452,103 @@ end = struct
 
 let bsbuild_cache = Literals.bsbuild_cache
 
-
-type group = 
-  | Dummy 
+type group =
+  | Dummy
   | Group of {
-      modules : string array ; 
+      modules : string array;
       dir_length : int;
-      dir_info_offset : int ; 
+      dir_info_offset : int;
       module_info_offset : int;
     }
 
-type t = { 
-  lib : group ;
-  dev : group ; 
-  content : string (* string is whole content*)
+type t = {
+  lib : group;
+  dev : group;
+  content : string; (* string is whole content*)
 }
 
-
-type cursor = int ref 
-
+type cursor = int ref
 
 (*TODO: special case when module_count is zero *)
-let rec decode (x : string) : t =   
-  let (offset : cursor)  = ref 0 in 
-  let lib = decode_single x offset in 
+let rec decode (x : string) : t =
+  let (offset : cursor) = ref 0 in
+  let lib = decode_single x offset in
   let dev = decode_single x offset in
-  {lib; dev; content = x}
+  { lib; dev; content = x }
 
-and decode_single (x : string) (offset : cursor) : group = 
-  let module_number = Ext_pervasives.parse_nat_of_string x offset in 
+and decode_single (x : string) (offset : cursor) : group =
+  let module_number = Ext_pervasives.parse_nat_of_string x offset in
   incr offset;
-  if module_number <> 0 then begin 
-    let modules = decode_modules x offset module_number in 
-    let dir_info_offset = !offset in 
-    let module_info_offset = 
-      String.index_from x dir_info_offset '\n'  + 1 in
+  if module_number <> 0 then (
+    let modules = decode_modules x offset module_number in
+    let dir_info_offset = !offset in
+    let module_info_offset = String.index_from x dir_info_offset '\n' + 1 in
     let dir_length = Char.code x.[module_info_offset] - 48 (* Char.code '0'*) in
-    offset := 
-      module_info_offset +
-      1 +
-      dir_length * module_number +
-      1 
-    ;
-    Group { modules ; dir_info_offset; module_info_offset ; dir_length}
-  end else Dummy
-and decode_modules (x : string) (offset : cursor) module_number : string array =   
-  let result = Array.make module_number "" in 
-  let last = ref !offset in 
-  let cur = ref !offset in 
-  let tasks = ref 0 in 
-  while !tasks <> module_number do 
-    if String.unsafe_get x !cur = '\n' then 
-      begin 
-        let offs = !last in 
-        let len = (!cur - !last) in         
-        Array.unsafe_set result !tasks
-          (Ext_string.unsafe_sub x offs len);
-        incr tasks;
-        last := !cur + 1;
-      end;
+    offset := module_info_offset + 1 + (dir_length * module_number) + 1;
+    Group { modules; dir_info_offset; module_info_offset; dir_length })
+  else Dummy
+
+and decode_modules (x : string) (offset : cursor) module_number : string array =
+  let result = Array.make module_number "" in
+  let last = ref !offset in
+  let cur = ref !offset in
+  let tasks = ref 0 in
+  while !tasks <> module_number do
+    if String.unsafe_get x !cur = '\n' then (
+      let offs = !last in
+      let len = !cur - !last in
+      Array.unsafe_set result !tasks (Ext_string.unsafe_sub x offs len);
+      incr tasks;
+      last := !cur + 1);
     incr cur
-  done ;
+  done;
   offset := !cur;
   result
 
-
 (* TODO: shall we check the consistency of digest *)
-let read_build_cache ~dir  : t =   
-  let all_content = 
-    Ext_io.load_file (Filename.concat dir bsbuild_cache) in   
-  decode all_content 
+let read_build_cache ~dir : t =
+  let all_content = Ext_io.load_file (Filename.concat dir bsbuild_cache) in
+  decode all_content
 
+type module_info = { case : bool; (* which is Bsb_db.case*)
+                                  dir_name : string }
 
-
-type module_info =  {
-  case : bool ; (* which is Bsb_db.case*)
-  dir_name : string
-} 
-
-
-let find_opt 
-    ({content = whole} as db : t )  
-    lib (key : string) 
-  : module_info option = 
-  match if lib then db.lib else db.dev with  
+let find_opt ({ content = whole } as db : t) lib (key : string) :
+    module_info option =
+  match if lib then db.lib else db.dev with
   | Dummy -> None
-  | Group ({modules ;} as group) ->
-    let i = Ext_string_array.find_sorted  modules key in 
-    match i with 
-    | None -> None 
-    | Some count ->     
-      let encode_len = group.dir_length in 
-      let index = 
-        Ext_string.get_1_2_3_4 whole 
-          ~off:(group.module_info_offset + 1 + count * encode_len)
-          encode_len
-      in 
-      let case = not (index mod 2 = 0) in 
-      let ith = index lsr 1 in 
-      let dir_name_start = 
-        if ith = 0 then group.dir_info_offset 
-        else 
-          Ext_string.index_count 
-            whole group.dir_info_offset '\t'
-            ith + 1
-      in 
-      let dir_name_finish = 
-        String.index_from
-          whole dir_name_start '\t' 
-      in    
-      Some {case ; dir_name = String.sub whole dir_name_start (dir_name_finish - dir_name_start)}
+  | Group ({ modules } as group) -> (
+      let i = Ext_string_array.find_sorted modules key in
+      match i with
+      | None -> None
+      | Some count ->
+          let encode_len = group.dir_length in
+          let index =
+            Ext_string.get_1_2_3_4 whole
+              ~off:(group.module_info_offset + 1 + (count * encode_len))
+              encode_len
+          in
+          let case = not (index mod 2 = 0) in
+          let ith = index lsr 1 in
+          let dir_name_start =
+            if ith = 0 then group.dir_info_offset
+            else Ext_string.index_count whole group.dir_info_offset '\t' ith + 1
+          in
+          let dir_name_finish = String.index_from whole dir_name_start '\t' in
+          Some
+            {
+              case;
+              dir_name =
+                String.sub whole dir_name_start
+                  (dir_name_finish - dir_name_start);
+            })
 
-let find db dependent_module is_not_lib_dir =         
-  let opt = find_opt db true dependent_module in 
-  match opt with 
+let find db dependent_module is_not_lib_dir =
+  let opt = find_opt db true dependent_module in
+  match opt with
   | Some _ -> opt
-  | None -> 
-    if is_not_lib_dir then 
-      find_opt db false dependent_module 
-    else None       
+  | None -> if is_not_lib_dir then find_opt db false dependent_module else None
+
 end
 module Ext_buffer : sig 
 #1 "ext_buffer.mli"
@@ -1655,8 +1604,8 @@ val is_empty : t -> bool
 val clear : t -> unit
 (** Empty the buffer. *)
 
-
-val [@inline] add_char : t -> char -> unit
+val add_char : t -> char -> unit
+  [@@inline]
 (** [add_char b c] appends the character [c] at the end of the buffer [b]. *)
 
 val add_string : t -> string -> unit
@@ -1677,7 +1626,7 @@ val add_string : t -> string -> unit
 
 (* val add_buffer : t -> t -> unit *)
 (** [add_buffer b1 b2] appends the current contents of buffer [b2]
-    at the end of buffer [b1].  [b2] is not modified. *)    
+    at the end of buffer [b1].  [b2] is not modified. *)
 
 (* val add_channel : t -> in_channel -> int -> unit *)
 (** [add_channel b ic n] reads exactly [n] character from the
@@ -1687,44 +1636,26 @@ val add_string : t -> string -> unit
 
 val output_buffer : out_channel -> t -> unit
 (** [output_buffer oc b] writes the current contents of buffer [b]
-    on the output channel [oc]. *)   
+    on the output channel [oc]. *)
 
-val digest : t -> Digest.t   
+val digest : t -> Digest.t
 
-val not_equal : 
-  t -> 
-  string -> 
-  bool 
+val not_equal : t -> string -> bool
 
-val add_int_1 :    
-  t -> int -> unit 
+val add_int_1 : t -> int -> unit
 
-val add_int_2 :    
-  t -> int -> unit 
+val add_int_2 : t -> int -> unit
 
-val add_int_3 :    
-  t -> int -> unit 
+val add_int_3 : t -> int -> unit
 
-val add_int_4 :    
-  t -> int -> unit 
+val add_int_4 : t -> int -> unit
 
-val add_string_char :    
-  t -> 
-  string ->
-  char -> 
-  unit
+val add_string_char : t -> string -> char -> unit
 
-val add_ninja_prefix_var : 
-  t -> 
-  string -> 
-  unit 
+val add_ninja_prefix_var : t -> string -> unit
 
+val add_char_string : t -> char -> string -> unit
 
-val add_char_string :    
-  t -> 
-  char -> 
-  string -> 
-  unit
 end = struct
 #1 "ext_buffer.ml"
 (**************************************************************************)
@@ -1744,17 +1675,16 @@ end = struct
 
 (* Extensible buffers *)
 
-type t =
-  {mutable buffer : bytes;
-   mutable position : int;
-   mutable length : int;
-
-   }
+type t = {
+  mutable buffer : bytes;
+  mutable position : int;
+  mutable length : int;
+}
 
 let create n =
   let n = if n < 1 then 1 else n in
   let s = Bytes.create n in
-  {buffer = s; position = 0; length = n}
+  { buffer = s; position = 0; length = n }
 
 let contents b = Bytes.sub_string b.buffer 0 b.position
 (* let to_bytes b = Bytes.sub b.buffer 0 b.position  *)
@@ -1764,7 +1694,6 @@ let contents b = Bytes.sub_string b.buffer 0 b.position
    then invalid_arg "Ext_buffer.sub"
    else Bytes.sub_string b.buffer ofs len *)
 
-
 (* let blit src srcoff dst dstoff len =
    if len < 0 || srcoff < 0 || srcoff > src.position - len
              || dstoff < 0 || dstoff > (Bytes.length dst) - len
@@ -1773,7 +1702,9 @@ let contents b = Bytes.sub_string b.buffer 0 b.position
     Bytes.unsafe_blit src.buffer srcoff dst dstoff len *)
 
 let length b = b.position
+
 let is_empty b = b.position = 0
+
 let clear b = b.position <- 0
 
 (* let reset b =
@@ -1783,20 +1714,22 @@ let clear b = b.position <- 0
 let resize b more =
   let len = b.length in
   let new_len = ref len in
-  while b.position + more > !new_len do new_len := 2 * !new_len done;
+  while b.position + more > !new_len do
+    new_len := 2 * !new_len
+  done;
   let new_buffer = Bytes.create !new_len in
   (* PR#6148: let's keep using [blit] rather than [unsafe_blit] in
      this tricky function that is slow anyway. *)
   Bytes.blit b.buffer 0 new_buffer 0 b.position;
   b.buffer <- new_buffer;
-  b.length <- !new_len ;
+  b.length <- !new_len;
   assert (b.position + more <= b.length)
 
-let [@inline] add_char b c =
+let[@inline] add_char b c =
   let pos = b.position in
   if pos >= b.length then resize b 1;
   Bytes.unsafe_set b.buffer pos c;
-  b.position <- pos + 1  
+  b.position <- pos + 1
 
 (* let add_substring b s offset len =
    if offset < 0 || len < 0 || offset > String.length s - len
@@ -1804,8 +1737,7 @@ let [@inline] add_char b c =
    let new_position = b.position + len in
    if new_position > b.length then resize b len;
    Ext_bytes.unsafe_blit_string s offset b.buffer b.position len;
-   b.position <- new_position   *)
-
+   b.position <- new_position *)
 
 (* let add_subbytes b s offset len =
    add_substring b (Bytes.unsafe_to_string s) offset len *)
@@ -1815,43 +1747,42 @@ let add_string b s =
   let new_position = b.position + len in
   if new_position > b.length then resize b len;
   Ext_bytes.unsafe_blit_string s 0 b.buffer b.position len;
-  b.position <- new_position  
+  b.position <- new_position
 
 (* TODO: micro-optimzie *)
 let add_string_char b s c =
   let s_len = String.length s in
-  let len = s_len + 1 in 
+  let len = s_len + 1 in
   let new_position = b.position + len in
   if new_position > b.length then resize b len;
-  let b_buffer = b.buffer in 
+  let b_buffer = b.buffer in
   Ext_bytes.unsafe_blit_string s 0 b_buffer b.position s_len;
   Bytes.unsafe_set b_buffer (new_position - 1) c;
-  b.position <- new_position 
+  b.position <- new_position
 
-let add_char_string b c s  =
+let add_char_string b c s =
   let s_len = String.length s in
-  let len = s_len + 1 in 
+  let len = s_len + 1 in
   let new_position = b.position + len in
   if new_position > b.length then resize b len;
-  let b_buffer = b.buffer in 
-  let b_position = b.position in 
-  Bytes.unsafe_set b_buffer b_position c ; 
+  let b_buffer = b.buffer in
+  let b_position = b.position in
+  Bytes.unsafe_set b_buffer b_position c;
   Ext_bytes.unsafe_blit_string s 0 b_buffer (b_position + 1) s_len;
   b.position <- new_position
 
 (* equivalent to add_char " "; add_char "$"; add_string s  *)
-let add_ninja_prefix_var b s =  
+let add_ninja_prefix_var b s =
   let s_len = String.length s in
-  let len = s_len + 2 in 
+  let len = s_len + 2 in
   let new_position = b.position + len in
   if new_position > b.length then resize b len;
-  let b_buffer = b.buffer in 
-  let b_position = b.position in 
-  Bytes.unsafe_set b_buffer b_position ' ' ; 
-  Bytes.unsafe_set b_buffer (b_position + 1) '$' ; 
+  let b_buffer = b.buffer in
+  let b_position = b.position in
+  Bytes.unsafe_set b_buffer b_position ' ';
+  Bytes.unsafe_set b_buffer (b_position + 1) '$';
   Ext_bytes.unsafe_blit_string s 0 b_buffer (b_position + 2) s_len;
   b.position <- new_position
-
 
 (* let add_bytes b s = add_string b (Bytes.unsafe_to_string s)
 
@@ -1859,89 +1790,78 @@ let add_ninja_prefix_var b s =
    add_subbytes b bs.buffer 0 bs.position *)
 
 (* let add_channel b ic len =
-   if len < 0 
-    || len > Sys.max_string_length 
+   if len < 0
+    || len > Sys.max_string_length
     then   (* PR#5004 *)
     invalid_arg "Ext_buffer.add_channel";
    if b.position + len > b.length then resize b len;
    really_input ic b.buffer b.position len;
    b.position <- b.position + len *)
 
-let output_buffer oc b =
-  output oc b.buffer 0 b.position  
+let output_buffer oc b = output oc b.buffer 0 b.position
 
-external unsafe_string: bytes -> int -> int -> Digest.t = "caml_md5_string"
+external unsafe_string : bytes -> int -> int -> Digest.t = "caml_md5_string"
 
-let digest b = 
-  unsafe_string 
-    b.buffer 0 b.position    
+let digest b = unsafe_string b.buffer 0 b.position
 
-let rec not_equal_aux (b : bytes) (s : string) i len = 
+let rec not_equal_aux (b : bytes) (s : string) i len =
   if i >= len then false
-  else 
-    (Bytes.unsafe_get b i 
-     <>
-     String.unsafe_get s i )
-    || not_equal_aux b s (i + 1) len 
+  else
+    Bytes.unsafe_get b i <> String.unsafe_get s i
+    || not_equal_aux b s (i + 1) len
 
 (** avoid a large copy *)
-let not_equal  (b : t) (s : string) = 
-  let b_len = b.position in 
-  let s_len = String.length s in 
-  b_len <> s_len 
-  || not_equal_aux b.buffer s 0 s_len
-
+let not_equal (b : t) (s : string) =
+  let b_len = b.position in
+  let s_len = String.length s in
+  b_len <> s_len || not_equal_aux b.buffer s 0 s_len
 
 (**
    It could be one byte, two bytes, three bytes and four bytes 
    TODO: inline for better performance
 *)
-let add_int_1 (b : t ) (x : int ) = 
-  let c = (Char.unsafe_chr (x land 0xff)) in 
+let add_int_1 (b : t) (x : int) =
+  let c = Char.unsafe_chr (x land 0xff) in
   let pos = b.position in
   if pos >= b.length then resize b 1;
   Bytes.unsafe_set b.buffer pos c;
-  b.position <- pos + 1  
+  b.position <- pos + 1
 
-let add_int_2 (b : t ) (x : int ) = 
-  let c1 = (Char.unsafe_chr (x land 0xff)) in 
-  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
+let add_int_2 (b : t) (x : int) =
+  let c1 = Char.unsafe_chr (x land 0xff) in
+  let c2 = Char.unsafe_chr ((x lsr 8) land 0xff) in
   let pos = b.position in
   if pos + 1 >= b.length then resize b 2;
-  let b_buffer = b.buffer in 
+  let b_buffer = b.buffer in
   Bytes.unsafe_set b_buffer pos c1;
   Bytes.unsafe_set b_buffer (pos + 1) c2;
   b.position <- pos + 2
 
-let add_int_3 (b : t ) (x : int ) = 
-  let c1 = (Char.unsafe_chr (x land 0xff)) in 
-  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
-  let c3 = (Char.unsafe_chr (x lsr 16 land 0xff)) in
+let add_int_3 (b : t) (x : int) =
+  let c1 = Char.unsafe_chr (x land 0xff) in
+  let c2 = Char.unsafe_chr ((x lsr 8) land 0xff) in
+  let c3 = Char.unsafe_chr ((x lsr 16) land 0xff) in
   let pos = b.position in
   if pos + 2 >= b.length then resize b 3;
-  let b_buffer = b.buffer in 
+  let b_buffer = b.buffer in
   Bytes.unsafe_set b_buffer pos c1;
   Bytes.unsafe_set b_buffer (pos + 1) c2;
   Bytes.unsafe_set b_buffer (pos + 2) c3;
   b.position <- pos + 3
 
-
-let add_int_4 (b : t ) (x : int ) = 
-  let c1 = (Char.unsafe_chr (x land 0xff)) in 
-  let c2 = (Char.unsafe_chr (x lsr 8 land 0xff)) in   
-  let c3 = (Char.unsafe_chr (x lsr 16 land 0xff)) in
-  let c4 = (Char.unsafe_chr (x lsr 24 land 0xff)) in
+let add_int_4 (b : t) (x : int) =
+  let c1 = Char.unsafe_chr (x land 0xff) in
+  let c2 = Char.unsafe_chr ((x lsr 8) land 0xff) in
+  let c3 = Char.unsafe_chr ((x lsr 16) land 0xff) in
+  let c4 = Char.unsafe_chr ((x lsr 24) land 0xff) in
   let pos = b.position in
   if pos + 3 >= b.length then resize b 4;
-  let b_buffer = b.buffer in 
+  let b_buffer = b.buffer in
   Bytes.unsafe_set b_buffer pos c1;
   Bytes.unsafe_set b_buffer (pos + 1) c2;
   Bytes.unsafe_set b_buffer (pos + 2) c3;
   Bytes.unsafe_set b_buffer (pos + 3) c4;
   b.position <- pos + 4
-
-
-
 
 end
 module Ext_filename : sig 
@@ -1970,67 +1890,35 @@ module Ext_filename : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
 (* TODO:
-   Change the module name, this code is not really an extension of the standard 
-    library but rather specific to JS Module name convention. 
+   Change the module name, this code is not really an extension of the standard
+    library but rather specific to JS Module name convention.
 *)
-
-
-
-
 
 (** An extension module to calculate relative path follow node/npm style. 
     TODO : this short name will have to change upon renaming the file.
 *)
 
-val is_dir_sep : 
-  char -> bool 
+val is_dir_sep : char -> bool
 
-val maybe_quote:
-  string -> 
-  string
+val maybe_quote : string -> string
 
-val chop_extension_maybe:
-  string -> 
-  string
+val chop_extension_maybe : string -> string
 
-(* return an empty string if no extension found *)  
-val get_extension_maybe:   
-  string -> 
-  string
+(* return an empty string if no extension found *)
+val get_extension_maybe : string -> string
 
+val new_extension : string -> string -> string
 
-val new_extension:  
-  string -> 
-  string -> 
-  string
-
-val chop_all_extensions_maybe:
-  string -> 
-  string  
+val chop_all_extensions_maybe : string -> string
 
 (* OCaml specific abstraction*)
-val module_name:  
-  string ->
-  string
+val module_name : string -> string
 
+type module_info = { module_name : string; case : bool }
 
+val as_module : basename:string -> module_info option
 
-
-type module_info = {
-  module_name : string ;
-  case : bool;
-}   
-
-
-
-val as_module:
-  basename:string -> 
-  module_info option
 end = struct
 #1 "ext_filename.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2057,75 +1945,61 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
 let is_dir_sep_unix c = c = '/'
-let is_dir_sep_win_cygwin c = 
-  c = '/' || c = '\\' || c = ':'
 
-let is_dir_sep = 
-  if Sys.unix then is_dir_sep_unix else is_dir_sep_win_cygwin
+let is_dir_sep_win_cygwin c = c = '/' || c = '\\' || c = ':'
+
+let is_dir_sep = if Sys.unix then is_dir_sep_unix else is_dir_sep_win_cygwin
 
 (* reference ninja.cc IsKnownShellSafeCharacter *)
-let maybe_quote ( s : string) = 
-  let noneed_quote = 
+let maybe_quote (s : string) =
+  let noneed_quote =
     Ext_string.for_all s (function
-        | '0' .. '9' 
-        | 'a' .. 'z' 
-        | 'A' .. 'Z'
-        | '_' | '+' 
-        | '-' | '.'
-        | '/' 
-        | '@' -> true
-        | _ -> false
-      )  in 
-  if noneed_quote then
-    s
-  else Filename.quote s 
-
+      | '0' .. '9' | 'a' .. 'z' | 'A' .. 'Z' | '_' | '+' | '-' | '.' | '/' | '@'
+        ->
+          true
+      | _ -> false)
+  in
+  if noneed_quote then s else Filename.quote s
 
 let chop_extension_maybe name =
   let rec search_dot i =
     if i < 0 || is_dir_sep (String.unsafe_get name i) then name
     else if String.unsafe_get name i = '.' then String.sub name 0 i
-    else search_dot (i - 1) in
+    else search_dot (i - 1)
+  in
   search_dot (String.length name - 1)
 
-let get_extension_maybe name =   
-  let name_len = String.length name in  
+let get_extension_maybe name =
+  let name_len = String.length name in
   let rec search_dot name i name_len =
     if i < 0 || is_dir_sep (String.unsafe_get name i) then ""
     else if String.unsafe_get name i = '.' then String.sub name i (name_len - i)
-    else search_dot name (i - 1) name_len in
+    else search_dot name (i - 1) name_len
+  in
   search_dot name (name_len - 1) name_len
 
 let chop_all_extensions_maybe name =
   let rec search_dot i last =
-    if i < 0 || is_dir_sep (String.unsafe_get name i) then 
-      (match last with 
-       | None -> name
-       | Some i -> String.sub name 0 i)  
-    else if String.unsafe_get name i = '.' then 
-      search_dot (i - 1) (Some i)
-    else search_dot (i - 1) last in
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then
+      match last with None -> name | Some i -> String.sub name 0 i
+    else if String.unsafe_get name i = '.' then search_dot (i - 1) (Some i)
+    else search_dot (i - 1) last
+  in
   search_dot (String.length name - 1) None
 
-
-let new_extension name (ext : string) = 
+let new_extension name (ext : string) =
   let rec search_dot name i ext =
-    if i < 0 || is_dir_sep (String.unsafe_get name i) then 
-      name ^ ext 
-    else if String.unsafe_get name i = '.' then 
+    if i < 0 || is_dir_sep (String.unsafe_get name i) then name ^ ext
+    else if String.unsafe_get name i = '.' then (
       let ext_len = String.length ext in
-      let buf = Bytes.create (i + ext_len) in 
+      let buf = Bytes.create (i + ext_len) in
       Bytes.blit_string name 0 buf 0 i;
       Bytes.blit_string ext 0 buf i ext_len;
-      Bytes.unsafe_to_string buf
-    else search_dot name (i - 1) ext  in
+      Bytes.unsafe_to_string buf)
+    else search_dot name (i - 1) ext
+  in
   search_dot name (String.length name - 1) ext
-
-
 
 (** TODO: improve efficiency
     given a path, calcuate its module name 
@@ -2134,83 +2008,60 @@ let new_extension name (ext : string) =
     we can not tell the difference between "x.cpp.ml" 
     and "x.ml"
 *)
-let module_name name = 
-  let rec search_dot i  name =
-    if i < 0  then 
-      Ext_string.capitalize_ascii name
-    else 
-    if String.unsafe_get name i = '.' then 
-      Ext_string.capitalize_sub name i 
-    else 
-      search_dot (i - 1) name in  
-  let name = Filename.basename  name in 
-  let name_len = String.length name in 
-  search_dot (name_len - 1)  name 
+let module_name name =
+  let rec search_dot i name =
+    if i < 0 then Ext_string.capitalize_ascii name
+    else if String.unsafe_get name i = '.' then Ext_string.capitalize_sub name i
+    else search_dot (i - 1) name
+  in
+  let name = Filename.basename name in
+  let name_len = String.length name in
+  search_dot (name_len - 1) name
 
-type module_info = {
-  module_name : string ;
-  case : bool;
-} 
-
-
+type module_info = { module_name : string; case : bool }
 
 let rec valid_module_name_aux name off len =
-  if off >= len then true 
-  else 
-    let c = String.unsafe_get name off in 
-    match c with 
-    | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' | '.' | '[' | ']' -> 
-      valid_module_name_aux name (off + 1) len 
+  if off >= len then true
+  else
+    let c = String.unsafe_get name off in
+    match c with
+    | 'A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '_' | '\'' | '.' | '[' | ']' ->
+        valid_module_name_aux name (off + 1) len
     | _ -> false
 
-type state = 
-  | Invalid
-  | Upper
-  | Lower
+type state = Invalid | Upper | Lower
 
-let valid_module_name name len =     
+let valid_module_name name len =
   if len = 0 then Invalid
-  else 
-    let c = String.unsafe_get name 0 in 
-    match c with 
-    | 'A' .. 'Z'
-      -> 
-      if valid_module_name_aux name 1 len then 
-        Upper
-      else Invalid  
-    | 'a' .. 'z' 
-    | '0' .. '9'
-    | '_'
-    | '[' 
-    | ']'
-      -> 
-      if valid_module_name_aux name 1 len then
-        Lower
-      else Invalid
+  else
+    let c = String.unsafe_get name 0 in
+    match c with
+    | 'A' .. 'Z' -> if valid_module_name_aux name 1 len then Upper else Invalid
+    | 'a' .. 'z' | '0' .. '9' | '_' | '[' | ']' ->
+        if valid_module_name_aux name 1 len then Lower else Invalid
     | _ -> Invalid
 
-
 let as_module ~basename =
-  let rec search_dot i  name name_len =
-    if i < 0  then
+  let rec search_dot i name name_len =
+    if i < 0 then
       (* Input e.g, [a_b] *)
-      match valid_module_name name name_len with 
-      | Invalid -> None 
-      | Upper ->  Some {module_name = name; case = true }
-      | Lower -> Some {module_name = Ext_string.capitalize_ascii name; case = false}
-    else 
-    if String.unsafe_get name i = '.' then 
+      match valid_module_name name name_len with
+      | Invalid -> None
+      | Upper -> Some { module_name = name; case = true }
+      | Lower ->
+          Some { module_name = Ext_string.capitalize_ascii name; case = false }
+    else if String.unsafe_get name i = '.' then
       (*Input e.g, [A_b] *)
-      match valid_module_name  name i with 
-      | Invalid -> None 
-      | Upper -> 
-        Some {module_name = Ext_string.capitalize_sub name i; case = true}
-      | Lower -> 
-        Some {module_name = Ext_string.capitalize_sub name i; case = false}
-    else 
-      search_dot (i - 1) name name_len in  
-  let name_len = String.length basename in       
-  search_dot (name_len - 1)  basename name_len
+      match valid_module_name name i with
+      | Invalid -> None
+      | Upper ->
+          Some { module_name = Ext_string.capitalize_sub name i; case = true }
+      | Lower ->
+          Some { module_name = Ext_string.capitalize_sub name i; case = false }
+    else search_dot (i - 1) name name_len
+  in
+  let name_len = String.length basename in
+  search_dot (name_len - 1) basename name_len
 
 end
 module Ext_namespace_encode : sig 
@@ -2239,12 +2090,11 @@ module Ext_namespace_encode : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+val make : ?ns:string -> string -> string
 (** [make ~ns:"Ns" "a" ]
     A typical example would return "a-Ns"
     Note the namespace comes from the output of [namespace_of_package_name]
 *)
-val make : 
-  ?ns:string -> string -> string 
 
 end = struct
 #1 "ext_namespace_encode.ml"
@@ -2272,10 +2122,9 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let make ?ns cunit  = 
-  match ns with 
-  | None -> cunit
-  | Some ns -> cunit ^ Literals.ns_sep ^ ns 
+let make ?ns cunit =
+  match ns with None -> cunit | Some ns -> cunit ^ Literals.ns_sep ^ ns
+
 end
 module Bsb_helper_depfile_gen : sig 
 #1 "bsb_helper_depfile_gen.mli"
@@ -2303,19 +2152,17 @@ module Bsb_helper_depfile_gen : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
+val deps_of_channel : in_channel -> string list
 (** [deps_of_channel ic]
     given an input_channel dumps all modules it depend on, only used for debugging 
 *)
-val deps_of_channel : in_channel -> string list
 
-
-val emit_d: 
-  bool ->  
-  string  option ->
+val emit_d :
+  bool ->
+  string option ->
   string ->
-  string -> (* empty string means no mliast *)
+  string ->
+  (* empty string means no mliast *)
   unit
 
 end = struct
@@ -2344,36 +2191,33 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
 let dep_lit = " :"
-let write_buf name buf  =     
-  let oc = open_out_bin name in 
-  Ext_buffer.output_buffer oc buf ;
-  close_out oc 
+
+let write_buf name buf =
+  let oc = open_out_bin name in
+  Ext_buffer.output_buffer oc buf;
+  close_out oc
 
 (* should be good for small file *)
-let load_file name (buf : Ext_buffer.t): unit  = 
-  let len = Ext_buffer.length buf in 
-  let ic = open_in_bin name in 
-  let n = in_channel_length ic in   
-  if n <> len then begin close_in ic ; write_buf name buf  end 
+let load_file name (buf : Ext_buffer.t) : unit =
+  let len = Ext_buffer.length buf in
+  let ic = open_in_bin name in
+  let n = in_channel_length ic in
+  if n <> len then (
+    close_in ic;
+    write_buf name buf)
   else
-    let holder = really_input_string ic  n in 
-    close_in ic ; 
-    if Ext_buffer.not_equal buf holder then 
-      write_buf name buf 
-;;
-let write_file name  (buf : Ext_buffer.t) = 
-  if Sys.file_exists name then 
-    load_file name buf 
-  else 
-    write_buf name buf 
+    let holder = really_input_string ic n in
+    close_in ic;
+    if Ext_buffer.not_equal buf holder then write_buf name buf
+
+let write_file name (buf : Ext_buffer.t) =
+  if Sys.file_exists name then load_file name buf else write_buf name buf
 
 (* return an non-decoded string *)
-let extract_dep_raw_string (fn : string) : string =   
-  let ic = open_in_bin fn in 
-  let size = input_binary_int ic in 
+let extract_dep_raw_string (fn : string) : string =
+  let ic = open_in_bin fn in
+  let size = input_binary_int ic in
   let s = really_input_string ic size in
   close_in ic;
   s
@@ -2381,39 +2225,30 @@ let extract_dep_raw_string (fn : string) : string =
 (* Make sure it is the same as {!Binary_ast.magic_sep_char}*)
 let magic_sep_char = '\n'
 
-let deps_of_channel (ic : in_channel) : string list = 
-  let size = input_binary_int ic in 
-  let s = really_input_string ic size in   
-  let rec aux (s : string) acc (offset : int) size : string list = 
+let deps_of_channel (ic : in_channel) : string list =
+  let size = input_binary_int ic in
+  let s = really_input_string ic size in
+  let rec aux (s : string) acc (offset : int) size : string list =
     if offset < size then
-      let next_tab = String.index_from s offset magic_sep_char in        
-      aux s 
-        (String.sub s offset (next_tab - offset)::acc) (next_tab + 1) 
-        size
-    else acc    
-  in 
-  aux s [] 1 size 
-
-
-
-
+      let next_tab = String.index_from s offset magic_sep_char in
+      aux s (String.sub s offset (next_tab - offset) :: acc) (next_tab + 1) size
+    else acc
+  in
+  aux s [] 1 size
 
 (** Please refer to {!Binary_ast} for encoding format, we move it here 
     mostly for cutting the dependency so that [bsb_helper.exe] does
     not depend on compler-libs
 *)
-(* let read_deps (fn : string) : string list = 
-   let ic = open_in_bin fn in 
-   let v = deps_of_channel ic in 
+(* let read_deps (fn : string) : string list =
+   let ic = open_in_bin fn in
+   let v = deps_of_channel ic in
    close_in ic;
    v
 *)
 
-
-
-let output_file (buf : Ext_buffer.t) source namespace = 
-  Ext_buffer.add_string buf 
-    (Ext_namespace_encode.make ?ns:namespace source)
+let output_file (buf : Ext_buffer.t) source namespace =
+  Ext_buffer.add_string buf (Ext_namespace_encode.make ?ns:namespace source)
 
 (** for rescript artifacts 
     [lhs_suffix] is [.cmj]
@@ -2421,11 +2256,10 @@ let output_file (buf : Ext_buffer.t) source namespace =
     is [.cmj] if it has [ml] (in this case does not care about mli or not)
     is [.cmi] if it has [mli]
 *)
-let oc_cmi buf namespace source = 
-  Ext_buffer.add_char buf ' ';  
+let oc_cmi buf namespace source =
+  Ext_buffer.add_char buf ' ';
   output_file buf source namespace;
-  Ext_buffer.add_string buf Literals.suffix_cmi 
-
+  Ext_buffer.add_string buf Literals.suffix_cmi
 
 (* For cases with self cycle
     e.g, in b.ml
@@ -2433,7 +2267,7 @@ let oc_cmi buf namespace source =
      include B
    ]}
     When ns is not turned on, it makes sense that b may come from third party package.
-    Hoever, this case is wont supported. 
+    Hoever, this case is wont supported.
     It complicates when it has interface file or not.
    - if it has interface file, the current interface will have priority, failed to build?
    - if it does not have interface file, the build will not open this module at all(-bs-read-cmi)
@@ -2441,92 +2275,63 @@ let oc_cmi buf namespace source =
     When ns is turned on, `B` is interprted as `Ns-B` which is a cyclic dependency,
     it can be errored out earlier
 *)
-let oc_deps 
-    (ast_file : string)
-    (is_dev : bool)
-    (db : Bsb_db_decode.t)
-    (namespace : string option)
-    (buf : Ext_buffer.t)
-    (kind : [`impl | `intf ]) : unit 
-  = 
-  (* TODO: move namespace upper, it is better to resolve ealier *)  
-  let cur_module_name = Ext_filename.module_name ast_file  in
-  let at_most_once : unit lazy_t  = lazy (
-    output_file buf (Ext_filename.chop_extension_maybe ast_file) namespace ; 
-    Ext_buffer.add_string buf (if kind = `impl then Literals.suffix_cmj else Literals.suffix_cmi); 
-    (* print the source *)
-    Ext_buffer.add_string buf dep_lit ) in  
-  (match namespace with None -> () | Some ns -> 
+let oc_deps (ast_file : string) (is_dev : bool) (db : Bsb_db_decode.t)
+    (namespace : string option) (buf : Ext_buffer.t) (kind : [ `impl | `intf ])
+    : unit =
+  (* TODO: move namespace upper, it is better to resolve ealier *)
+  let cur_module_name = Ext_filename.module_name ast_file in
+  let at_most_once : unit lazy_t =
+    lazy
+      (output_file buf (Ext_filename.chop_extension_maybe ast_file) namespace;
+       Ext_buffer.add_string buf
+         (if kind = `impl then Literals.suffix_cmj else Literals.suffix_cmi);
+       (* print the source *)
+       Ext_buffer.add_string buf dep_lit)
+  in
+  (match namespace with
+  | None -> ()
+  | Some ns ->
       Lazy.force at_most_once;
       Ext_buffer.add_char buf ' ';
       Ext_buffer.add_string buf ns;
-      Ext_buffer.add_string buf Literals.suffix_cmi; (* always cmi *)
-  ) ; (* TODO: moved into static files*)
-  let s = extract_dep_raw_string ast_file in 
-  let offset = ref 1 in 
-  let size = String.length s in 
-  while !offset < size do 
+      Ext_buffer.add_string buf Literals.suffix_cmi (* always cmi *));
+  (* TODO: moved into static files*)
+  let s = extract_dep_raw_string ast_file in
+  let offset = ref 1 in
+  let size = String.length s in
+  while !offset < size do
     let next_tab = String.index_from s !offset magic_sep_char in
-    let dependent_module = String.sub s !offset (next_tab - !offset) in 
-    (if dependent_module = cur_module_name then 
-       begin
-         prerr_endline ("FAILED: " ^ cur_module_name ^ " has a self cycle");
-         exit 2
-       end
-    );
-    (match  
-       Bsb_db_decode.find db dependent_module is_dev 
-     with      
-     | None -> ()
-     | Some ({dir_name; case }) -> 
-       begin 
-         Lazy.force at_most_once;
-         let source = 
-           Filename.concat dir_name
-             (if case then 
-                dependent_module
-              else 
-                Ext_string.uncapitalize_ascii dependent_module) in 
-         Ext_buffer.add_char buf ' ';    
-         if kind = `impl then begin     
-           output_file buf source namespace;
-           Ext_buffer.add_string buf Literals.suffix_cmj;
-         end;
-         (* #3260 cmj changes does not imply cmi change anymore *)
-         oc_cmi buf namespace source
+    let dependent_module = String.sub s !offset (next_tab - !offset) in
+    if dependent_module = cur_module_name then (
+      prerr_endline ("FAILED: " ^ cur_module_name ^ " has a self cycle");
+      exit 2);
+    (match Bsb_db_decode.find db dependent_module is_dev with
+    | None -> ()
+    | Some { dir_name; case } ->
+        Lazy.force at_most_once;
+        let source =
+          Filename.concat dir_name
+            (if case then dependent_module
+            else Ext_string.uncapitalize_ascii dependent_module)
+        in
+        Ext_buffer.add_char buf ' ';
+        if kind = `impl then (
+          output_file buf source namespace;
+          Ext_buffer.add_string buf Literals.suffix_cmj);
+        (* #3260 cmj changes does not imply cmi change anymore *)
+        oc_cmi buf namespace source);
+    offset := next_tab + 1
+  done;
+  if Lazy.is_val at_most_once then Ext_buffer.add_char buf '\n'
 
-       end);     
-    offset := next_tab + 1  
-  done ;
-  if Lazy.is_val at_most_once then  
-    Ext_buffer.add_char buf '\n'
-
-
-let emit_d 
-    (is_dev : bool) 
-    (namespace : string option) (mlast : string) (mliast : string) = 
-  let data  =
-    Bsb_db_decode.read_build_cache 
-      ~dir:Filename.current_dir_name in   
-  let buf = Ext_buffer.create 2048 in 
-  let filename = 
-    Ext_filename.new_extension mlast Literals.suffix_d in   
-  oc_deps 
-    mlast
-    is_dev
-    data
-    namespace
-    buf `impl
-  ;      
-  if mliast <> "" then begin
-    oc_deps
-      mliast
-      is_dev
-      data 
-      namespace 
-      buf `intf
-  end;          
-  write_file filename buf 
+let emit_d (is_dev : bool) (namespace : string option) (mlast : string)
+    (mliast : string) =
+  let data = Bsb_db_decode.read_build_cache ~dir:Filename.current_dir_name in
+  let buf = Ext_buffer.create 2048 in
+  let filename = Ext_filename.new_extension mlast Literals.suffix_d in
+  oc_deps mlast is_dev data namespace buf `impl;
+  if mliast <> "" then oc_deps mliast is_dev data namespace buf `intf;
+  write_file filename buf
 
 end
 module Bsb_helper_main : sig 
@@ -2554,7 +2359,6 @@ module Bsb_helper_main : sig
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
 
 (** Used to generate .d file, for example 
     {[
@@ -2593,51 +2397,34 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-let () =    
+let () =
   let namespace = ref None in
-  let dev_group = ref false in   
-  let argv = Sys.argv in 
+  let dev_group = ref false in
+  let argv = Sys.argv in
   let l = Array.length argv in
-  let current = ref 1 in 
-  let rev_list = ref [] in 
+  let current = ref 1 in
+  let rev_list = ref [] in
   while !current < l do
     let s = argv.(!current) in
-    incr current;  
-    if s <> "" && s.[0] = '-' then begin
-      match s with 
-      | "-hash" ->
-        incr current
+    incr current;
+    if s <> "" && s.[0] = '-' then (
+      match s with
+      | "-hash" -> incr current
       | "-bs-ns" ->
-        let ns = argv.(!current) in
-        namespace := Some ns;
-        incr current     
-      | "-g"  ->
-        dev_group := true
-      | s -> 
-        prerr_endline ("unknown options: " ^ s);
-        prerr_endline ("available options: -hash [hash]; -bs-ns [ns]; -g");
-        exit 2
-    end else 
-      rev_list := s :: !rev_list    
+          let ns = argv.(!current) in
+          namespace := Some ns;
+          incr current
+      | "-g" -> dev_group := true
+      | s ->
+          prerr_endline ("unknown options: " ^ s);
+          prerr_endline "available options: -hash [hash]; -bs-ns [ns]; -g";
+          exit 2)
+    else rev_list := s :: !rev_list
   done;
-  (
-    match !rev_list with
-    | [x]
-      ->  Bsb_helper_depfile_gen.emit_d
-            !dev_group
-            !namespace x ""
-    | [y; x] (* reverse order *)
-      -> 
-      Bsb_helper_depfile_gen.emit_d
-        !dev_group
-        !namespace x y
-    | _ -> 
-      ()
-  ) 
-;;
-
+  match !rev_list with
+  | [ x ] -> Bsb_helper_depfile_gen.emit_d !dev_group !namespace x ""
+  | [ y; x ] (* reverse order *) ->
+      Bsb_helper_depfile_gen.emit_d !dev_group !namespace x y
+  | _ -> ()
 
 end
