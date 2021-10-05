@@ -1677,7 +1677,7 @@ o ../${my_target}/bsb_helper.exe: link ${makeLibs(
     bsb_helper_libs
   )} main/bsb_helper_main.cmx
     libs =  unix.cmxa str.cmxa
-o ./bin/bspack.exe: link ${makeLibs(bspack_libs)} ./main/bspack_main.cmx
+o ./bin/bspack.exe: link  ./main/bspack_main.cmx
     libs = unix.cmxa 
     flags = -I ./bin -w -40-30-50    
 o ./bin/cmjdump.exe: link ${makeLibs(cmjdumps_libs)} main/cmjdump_main.cmx

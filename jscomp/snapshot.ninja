@@ -32,9 +32,6 @@ o $SNAP/unstable/all_ounit_tests.ml: bspack | ./bin/bspack.exe $LTO
     flags =  -bs-MD    $includes  -I ml
     main = Ounit_tests_main         
 
-o $SNAP/unstable/bspack.ml: bspack | ./bin/bspack.exe $LTO
-    flags = -D BS_PACK=true -bs-MD   -I ml $includes
-    main = Bspack_main
 
 o $SNAP/unstable/js_compiler.ml: bspack | ./bin/bspack.exe $LTO
     flags = -D BS_BROWSER=true  -bs-MD    -I ml  $includes
