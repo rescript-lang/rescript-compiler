@@ -14,15 +14,14 @@ type t =
       kind: bigint_type;
       raw: string;
     }
-  | T_STRING of (Loc.t * string * string * bool) (* loc, value, raw, octal *)
-  | T_TEMPLATE_PART of (Loc.t * template_part * bool) (* loc, value, is_tail *)
+  | T_STRING of (Loc.t * string * string * bool)
+  | T_TEMPLATE_PART of (Loc.t * template_part * bool)
   | T_IDENTIFIER of {
       loc: Loc.t;
       value: string;
       raw: string;
     }
-  | T_REGEXP of (Loc.t * string * string) (* /pattern/flags *)
-  (* Syntax *)
+  | T_REGEXP of Loc.t * string * string
   | T_LCURLY
   | T_RCURLY
   | T_LCURLYBAR
@@ -38,7 +37,6 @@ type t =
   | T_ELLIPSIS
   | T_AT
   | T_POUND
-  (* Keywords *)
   | T_FUNCTION
   | T_IF
   | T_IN
@@ -91,7 +89,6 @@ type t =
   | T_ASYNC
   | T_AWAIT
   | T_CHECKS
-  (* Operators *)
   | T_RSHIFT3_ASSIGN
   | T_RSHIFT_ASSIGN
   | T_LSHIFT_ASSIGN
@@ -135,13 +132,10 @@ type t =
   | T_BIT_NOT
   | T_INCR
   | T_DECR
-  (* Extra tokens *)
   | T_ERROR of string
   | T_EOF
-  (* JSX *)
   | T_JSX_IDENTIFIER of { raw: string }
-  | T_JSX_TEXT of (Loc.t * string * string) (* loc, value, raw *)
-  (* Type primitives *)
+  | T_JSX_TEXT of Loc.t * string * string
   | T_ANY_TYPE
   | T_MIXED_TYPE
   | T_EMPTY_TYPE
@@ -156,17 +150,12 @@ type t =
   | T_BIGINT_SINGLETON_TYPE of {
       kind: bigint_type;
       approx_value: float;
-      (* Warning! Might lose precision! *)
       raw: string;
     }
   | T_STRING_TYPE
   | T_VOID_TYPE
   | T_SYMBOL_TYPE
 
-(* `bool` and `boolean` are equivalent annotations, but we need to track
-   which one was used for when it might be an identifier, as in
-   `(bool: boolean) => void`. It's lexed as two T_BOOLEAN_TYPEs, then the
-   first one is converted into an identifier. *)
 and bool_or_boolean =
   | BOOL
   | BOOLEAN
@@ -174,7 +163,7 @@ and bool_or_boolean =
 and number_type =
   | BINARY
   | LEGACY_OCTAL
-  | LEGACY_NON_OCTAL (* NonOctalDecimalIntegerLiteral in Annex B *)
+  | LEGACY_NON_OCTAL
   | OCTAL
   | NORMAL
 
@@ -185,15 +174,12 @@ and bigint_type =
 
 and template_part = {
   cooked: string;
-  (* string after processing special chars *)
   raw: string;
-  (* string as specified in source *)
-  literal: string; (* same as raw, plus characters like ` and ${ *)
+  literal: string;
 }
 
-(*****************************************************************************)
-(* Pretty printer (pretty?) *)
-(*****************************************************************************)
+let equal (x : t) (y : t) = x = y
+
 let token_to_string = function
   | T_NUMBER _ -> "T_NUMBER"
   | T_BIGINT _ -> "T_BIGINT"
@@ -311,12 +297,10 @@ let token_to_string = function
   | T_BIT_NOT -> "T_BIT_NOT"
   | T_INCR -> "T_INCR"
   | T_DECR -> "T_DECR"
-  (* Extra tokens *)
   | T_ERROR _ -> "T_ERROR"
   | T_EOF -> "T_EOF"
   | T_JSX_IDENTIFIER _ -> "T_JSX_IDENTIFIER"
   | T_JSX_TEXT _ -> "T_JSX_TEXT"
-  (* Type primitives *)
   | T_ANY_TYPE -> "T_ANY_TYPE"
   | T_MIXED_TYPE -> "T_MIXED_TYPE"
   | T_EMPTY_TYPE -> "T_EMPTY_TYPE"
@@ -446,21 +430,17 @@ let value_of_token = function
   | T_BIT_NOT -> "~"
   | T_INCR -> "++"
   | T_DECR -> "--"
-  (* Extra tokens *)
   | T_ERROR raw -> raw
   | T_EOF -> ""
   | T_JSX_IDENTIFIER { raw } -> raw
   | T_JSX_TEXT (_, _, raw) -> raw
-  (* Type primitives *)
   | T_ANY_TYPE -> "any"
   | T_MIXED_TYPE -> "mixed"
   | T_EMPTY_TYPE -> "empty"
   | T_BOOLEAN_TYPE kind ->
-    begin
-      match kind with
-      | BOOL -> "bool"
-      | BOOLEAN -> "boolean"
-    end
+    (match kind with
+    | BOOL -> "bool"
+    | BOOLEAN -> "boolean")
   | T_NUMBER_TYPE -> "number"
   | T_BIGINT_TYPE -> "bigint"
   | T_NUMBER_SINGLETON_TYPE { raw; _ } -> raw

@@ -5,6 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  *)
 
+module Sedlexing = Flow_sedlexing
+
+type bol = {
+  line: int;
+  offset: int;
+}
+
+type lex_state = { lex_errors_acc: (Loc.t * Parse_error.t) list } [@@ocaml.unboxed]
+
 type t = {
   lex_source: File_key.t option;
   lex_lb: Sedlexing.lexbuf;
@@ -12,17 +21,13 @@ type t = {
   lex_in_comment_syntax: bool;
   lex_enable_comment_syntax: bool;
   lex_state: lex_state;
+  lex_last_loc: Loc.t;
 }
-
-(* bol = Beginning Of Line *)
-and bol = {
-  line: int;
-  offset: int;
-}
-
-and lex_state = { lex_errors_acc: (Loc.t * Parse_error.t) list }
 
 let empty_lex_state = { lex_errors_acc = [] }
+
+let initial_last_loc =
+  { Loc.source = None; start = { Loc.line = 1; column = 0 }; _end = { Loc.line = 1; column = 0 } }
 
 let new_lex_env lex_source lex_lb ~enable_types_in_comments =
   {
@@ -32,29 +37,18 @@ let new_lex_env lex_source lex_lb ~enable_types_in_comments =
     lex_in_comment_syntax = false;
     lex_enable_comment_syntax = enable_types_in_comments;
     lex_state = empty_lex_state;
+    lex_last_loc = initial_last_loc;
   }
 
-(* copy all the mutable things so that we have a distinct lexing environment
-   that does not interfere with ordinary lexer operations *)
 let clone env =
-  let lex_lb = env.lex_lb |> Obj.repr |> Obj.dup |> Obj.obj in
+  let lex_lb = Sedlexing.lexbuf_clone env.lex_lb in
   { env with lex_lb }
 
-let get_and_clear_state env =
-  let state = env.lex_state in
-  let env =
-    if state != empty_lex_state then
-      { env with lex_state = empty_lex_state }
-    else
-      env
-  in
-  (env, state)
-
-(* let lexbuf env = env.lex_lb *)
+let lexbuf env = env.lex_lb
 
 let source env = env.lex_source
 
-(* let state env = env.lex_state *)
+let state env = env.lex_state
 
 let line env = env.lex_bol.line
 
@@ -70,10 +64,9 @@ let in_comment_syntax is_in env =
   else
     env
 
-(* TODO *)
-(* let debug_string_of_lexbuf _lb = "" *)
+let debug_string_of_lexbuf _lb = ""
 
-(* let debug_string_of_lex_env (env : t) =
+let debug_string_of_lex_env (env : t) =
   let source =
     match source env with
     | None -> "None"
@@ -85,4 +78,4 @@ let in_comment_syntax is_in env =
     (debug_string_of_lexbuf env.lex_lb)
     (is_in_comment_syntax env)
     (is_comment_syntax_enabled env)
-    (List.length (state env).lex_errors_acc) *)
+    (List.length (state env).lex_errors_acc)

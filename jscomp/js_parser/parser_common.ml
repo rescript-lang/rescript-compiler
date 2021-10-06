@@ -18,7 +18,7 @@ type pattern_cover =
   | Cover_patt of (Loc.t, Loc.t) Expression.t * pattern_errors
 
 module type PARSER = sig
-  val program : env -> (Loc.t, Loc.t) program
+  val program : env -> (Loc.t, Loc.t) Program.t
 
   val statement : env -> (Loc.t, Loc.t) Statement.t
 
@@ -51,7 +51,8 @@ module type PARSER = sig
 
   val block_body : env -> Loc.t * (Loc.t, Loc.t) Statement.Block.t
 
-  val function_block_body : env -> Loc.t * (Loc.t, Loc.t) Statement.Block.t * bool
+  val function_block_body :
+    expression:bool -> env -> Loc.t * (Loc.t, Loc.t) Statement.Block.t * bool
 
   val jsx_element_or_fragment :
     env ->
@@ -72,105 +73,91 @@ module type PARSER = sig
   val number : env -> Token.number_type -> string -> float
 end
 
-(* IdentifierName - https://tc39.github.io/ecma262/#prod-IdentifierName *)
 let identifier_name env =
-  Token.(
-    let loc = Peek.loc env in
-    let leading = Peek.comments env in
-    let name =
-      match Peek.token env with
-      (* obviously, Identifier is a valid IdentifierName *)
-      | T_IDENTIFIER { value; _ } -> value
-      (* keywords are also IdentifierNames *)
-      | T_AWAIT -> "await"
-      | T_BREAK -> "break"
-      | T_CASE -> "case"
-      | T_CATCH -> "catch"
-      | T_CLASS -> "class"
-      | T_CONST -> "const"
-      | T_CONTINUE -> "continue"
-      | T_DEBUGGER -> "debugger"
-      | T_DEFAULT -> "default"
-      | T_DELETE -> "delete"
-      | T_DO -> "do"
-      | T_ELSE -> "else"
-      | T_EXPORT -> "export"
-      | T_EXTENDS -> "extends"
-      | T_FINALLY -> "finally"
-      | T_FOR -> "for"
-      | T_FUNCTION -> "function"
-      | T_IF -> "if"
-      | T_IMPORT -> "import"
-      | T_IN -> "in"
-      | T_INSTANCEOF -> "instanceof"
-      | T_NEW -> "new"
-      | T_RETURN -> "return"
-      | T_SUPER -> "super"
-      | T_SWITCH -> "switch"
-      | T_THIS -> "this"
-      | T_THROW -> "throw"
-      | T_TRY -> "try"
-      | T_TYPEOF -> "typeof"
-      | T_VAR -> "var"
-      | T_VOID -> "void"
-      | T_WHILE -> "while"
-      | T_WITH -> "with"
-      | T_YIELD -> "yield"
-      (* FutureReservedWord *)
-      | T_ENUM -> "enum"
-      | T_LET -> "let"
-      | T_STATIC -> "static"
-      | T_INTERFACE -> "interface"
-      | T_IMPLEMENTS -> "implements"
-      | T_PACKAGE -> "package"
-      | T_PRIVATE -> "private"
-      | T_PROTECTED -> "protected"
-      | T_PUBLIC -> "public"
-      (* NullLiteral *)
-      | T_NULL -> "null"
-      (* BooleanLiteral *)
-      | T_TRUE -> "true"
-      | T_FALSE -> "false"
-      (* Flow-specific stuff *)
-      | T_DECLARE -> "declare"
-      | T_TYPE -> "type"
-      | T_OPAQUE -> "opaque"
-      | T_ANY_TYPE -> "any"
-      | T_MIXED_TYPE -> "mixed"
-      | T_EMPTY_TYPE -> "empty"
-      | T_BOOLEAN_TYPE BOOL -> "bool"
-      | T_BOOLEAN_TYPE BOOLEAN -> "boolean"
-      | T_NUMBER_TYPE -> "number"
-      | T_BIGINT_TYPE -> "bigint"
-      | T_STRING_TYPE -> "string"
-      | T_VOID_TYPE -> "void"
-      | T_SYMBOL_TYPE -> "symbol"
-      (* Contextual stuff *)
-      | T_OF -> "of"
-      | T_ASYNC -> "async"
-      (* punctuators, types, literals, etc are not identifiers *)
-      | _ ->
-        error_unexpected ~expected:"an identifier" env;
-        ""
-    in
-    Eat.token env;
-    let trailing = Peek.comments env in
-    let comments = Flow_ast_utils.mk_comments_opt ~leading ~trailing () in
-    (loc, { Identifier.name; comments }))
+  let open Token in
+  let loc = Peek.loc env in
+  let leading = Peek.comments env in
+  let name =
+    match Peek.token env with
+    | T_IDENTIFIER { value; _ } -> value
+    | T_AWAIT -> "await"
+    | T_BREAK -> "break"
+    | T_CASE -> "case"
+    | T_CATCH -> "catch"
+    | T_CLASS -> "class"
+    | T_CONST -> "const"
+    | T_CONTINUE -> "continue"
+    | T_DEBUGGER -> "debugger"
+    | T_DEFAULT -> "default"
+    | T_DELETE -> "delete"
+    | T_DO -> "do"
+    | T_ELSE -> "else"
+    | T_EXPORT -> "export"
+    | T_EXTENDS -> "extends"
+    | T_FINALLY -> "finally"
+    | T_FOR -> "for"
+    | T_FUNCTION -> "function"
+    | T_IF -> "if"
+    | T_IMPORT -> "import"
+    | T_IN -> "in"
+    | T_INSTANCEOF -> "instanceof"
+    | T_NEW -> "new"
+    | T_RETURN -> "return"
+    | T_SUPER -> "super"
+    | T_SWITCH -> "switch"
+    | T_THIS -> "this"
+    | T_THROW -> "throw"
+    | T_TRY -> "try"
+    | T_TYPEOF -> "typeof"
+    | T_VAR -> "var"
+    | T_VOID -> "void"
+    | T_WHILE -> "while"
+    | T_WITH -> "with"
+    | T_YIELD -> "yield"
+    | T_ENUM -> "enum"
+    | T_LET -> "let"
+    | T_STATIC -> "static"
+    | T_INTERFACE -> "interface"
+    | T_IMPLEMENTS -> "implements"
+    | T_PACKAGE -> "package"
+    | T_PRIVATE -> "private"
+    | T_PROTECTED -> "protected"
+    | T_PUBLIC -> "public"
+    | T_NULL -> "null"
+    | T_TRUE -> "true"
+    | T_FALSE -> "false"
+    | T_DECLARE -> "declare"
+    | T_TYPE -> "type"
+    | T_OPAQUE -> "opaque"
+    | T_ANY_TYPE -> "any"
+    | T_MIXED_TYPE -> "mixed"
+    | T_EMPTY_TYPE -> "empty"
+    | T_BOOLEAN_TYPE BOOL -> "bool"
+    | T_BOOLEAN_TYPE BOOLEAN -> "boolean"
+    | T_NUMBER_TYPE -> "number"
+    | T_BIGINT_TYPE -> "bigint"
+    | T_STRING_TYPE -> "string"
+    | T_VOID_TYPE -> "void"
+    | T_SYMBOL_TYPE -> "symbol"
+    | T_OF -> "of"
+    | T_ASYNC -> "async"
+    | _ ->
+      error_unexpected ~expected:"an identifier" env;
+      ""
+  in
+  Eat.token env;
+  let trailing = Eat.trailing_comments env in
+  let comments = Flow_ast_utils.mk_comments_opt ~leading ~trailing () in
+  (loc, { Identifier.name; comments })
 
-(**
- * The abstract operation IsLabelledFunction
- *
- * https://tc39.github.io/ecma262/#sec-islabelledfunction
- *)
 let rec is_labelled_function = function
   | (_, Flow_ast.Statement.Labeled { Flow_ast.Statement.Labeled.body; _ }) ->
-    begin
-      match body with
-      | (_, Flow_ast.Statement.FunctionDeclaration _) -> true
-      | _ -> is_labelled_function body
-    end
+    (match body with
+    | (_, Flow_ast.Statement.FunctionDeclaration _) -> true
+    | _ -> is_labelled_function body)
   | _ -> false
+  [@@ocaml.doc
+    "\n * The abstract operation IsLabelledFunction\n *\n * https://tc39.github.io/ecma262/#sec-islabelledfunction\n "]
 
 let with_loc ?start_loc fn env =
   let start_loc =
@@ -185,3 +172,8 @@ let with_loc ?start_loc fn env =
     | None -> start_loc
   in
   (loc, result)
+
+let with_loc_opt ?start_loc fn env =
+  match with_loc ?start_loc fn env with
+  | (loc, Some x) -> Some (loc, x)
+  | (_, None) -> None

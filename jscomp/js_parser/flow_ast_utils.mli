@@ -11,11 +11,14 @@ type 'loc ident = 'loc * string
 
 type 'loc source = 'loc * string
 
-(* val fold_bindings_of_pattern :
-  ('a -> ('loc, 'loc) Flow_ast.Identifier.t -> 'a) -> 'a -> ('loc, 'loc) Flow_ast.Pattern.t' -> 'a
+val fold_bindings_of_pattern :
+  ('a -> ('loc, 'loc) Flow_ast.Identifier.t -> ('loc, 'loc) Flow_ast.Type.annotation_or_hint -> 'a) ->
+  'a ->
+  ('loc, 'loc) Flow_ast.Pattern.t ->
+  'a
 
 val fold_bindings_of_variable_declarations :
-  ('a -> ('loc, 'loc) Flow_ast.Identifier.t -> 'a) ->
+  ('a -> ('loc, 'loc) Flow_ast.Identifier.t -> ('loc, 'loc) Flow_ast.Type.annotation_or_hint -> 'a) ->
   'a ->
   ('loc, 'loc) Flow_ast.Statement.VariableDeclaration.Declarator.t list ->
   'a
@@ -32,25 +35,47 @@ val loc_of_statement : ('a, 'a) Flow_ast.Statement.t -> 'a
 
 val loc_of_pattern : ('a, 'a) Flow_ast.Pattern.t -> 'a
 
-val loc_of_ident : ('a, 'a) Flow_ast.Identifier.t -> 'a *)
+val loc_of_ident : ('a, 'a) Flow_ast.Identifier.t -> 'a
 
 val name_of_ident : ('loc, 'a) Flow_ast.Identifier.t -> string
 
-(* val source_of_ident : ('a, 'a) Flow_ast.Identifier.t -> 'a source *)
+val source_of_ident : ('a, 'a) Flow_ast.Identifier.t -> 'a source
 
-val ident_of_source : 'a source -> ('a, 'a) Flow_ast.Identifier.t
+val ident_of_source :
+  ?comments:('a, unit) Flow_ast.Syntax.t -> 'a source -> ('a, 'a) Flow_ast.Identifier.t
 
-(* val mk_comments :
+val mk_comments :
   ?leading:'loc Flow_ast.Comment.t list ->
   ?trailing:'loc Flow_ast.Comment.t list ->
   'a ->
-  ('loc, 'a) Flow_ast.Syntax.t *)
+  ('loc, 'a) Flow_ast.Syntax.t
 
 val mk_comments_opt :
   ?leading:'loc Flow_ast.Comment.t list ->
   ?trailing:'loc Flow_ast.Comment.t list ->
   unit ->
   ('loc, unit) Flow_ast.Syntax.t option
+
+val mk_comments_with_internal_opt :
+  ?leading:'loc Flow_ast.Comment.t list ->
+  ?trailing:'loc Flow_ast.Comment.t list ->
+  internal:'loc Flow_ast.Comment.t list ->
+  unit ->
+  ('loc, 'loc Flow_ast.Comment.t list) Flow_ast.Syntax.t option
+
+val merge_comments :
+  inner:('M, unit) Flow_ast.Syntax.t option ->
+  outer:('M, unit) Flow_ast.Syntax.t option ->
+  ('M, unit) Flow_ast.Syntax.t option
+
+val merge_comments_with_internal :
+  inner:('M, 'loc Flow_ast.Comment.t list) Flow_ast.Syntax.t option ->
+  outer:('M, 'a) Flow_ast.Syntax.t option ->
+  ('M, 'loc Flow_ast.Comment.t list) Flow_ast.Syntax.t option
+
+val split_comments :
+  ('loc, unit) Flow_ast.Syntax.t option ->
+  ('loc, unit) Flow_ast.Syntax.t option * ('loc, unit) Flow_ast.Syntax.t option
 
 module ExpressionSort : sig
   type t =
@@ -86,9 +111,9 @@ module ExpressionSort : sig
     | Update
     | Yield
 
-  (* val to_string : t -> string *)
+  val to_string : t -> string
 end
 
-(* val string_of_assignment_operator : Flow_ast.Expression.Assignment.operator -> string *)
+val string_of_assignment_operator : Flow_ast.Expression.Assignment.operator -> string
 
-(* val string_of_binary_operator : Flow_ast.Expression.Binary.operator -> string *)
+val string_of_binary_operator : Flow_ast.Expression.Binary.operator -> string

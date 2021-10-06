@@ -10,6 +10,9 @@ type explicit_type =
   | Number
   | String
   | Symbol
+[@@immediate]
+
+let compare_explicit_type (x : explicit_type) y = compare x y
 
 let string_of_explicit_type = function
   | Boolean -> "boolean"

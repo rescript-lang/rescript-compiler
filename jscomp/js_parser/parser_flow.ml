@@ -5,15 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  *)
 
+module Sedlexing = Flow_sedlexing
 module Ast = Flow_ast
 open Token
 open Parser_env
 open Parser_common
 
-(* Sometimes we add the same error for multiple different reasons. This is hard
-   to avoid, so instead we just filter the duplicates out. This function takes
-   a reversed list of errors and returns the list in forward order with dupes
-   removed. This differs from a set because the original order is preserved. *)
 let filter_duplicate_errors =
   let module PrintableErrorSet = Set.Make (struct
     type t = Loc.t * Parse_error.t
@@ -21,7 +18,7 @@ let filter_duplicate_errors =
     let compare (a_loc, a_error) (b_loc, b_error) =
       let loc = Loc.compare a_loc b_loc in
       if loc = 0 then
-        Pervasives.compare a_error b_error
+        Parse_error.compare a_error b_error
       else
         loc
   end) in
@@ -52,19 +49,11 @@ module rec Parse : PARSER = struct
 
   let identifier ?restricted_error env =
     (match Peek.token env with
-    (* "let" is disallowed as an identifier in a few situations. 11.6.2.1
-       lists them out. It is always disallowed in strict mode *)
     | T_LET when in_strict_mode env -> error env Parse_error.StrictReservedWord
     | T_LET when no_let env -> error_unexpected env
     | T_LET -> ()
-    (* `allow_await` means that `await` is allowed to be a keyword,
-        which makes it illegal to use as an identifier.
-        https://tc39.github.io/ecma262/#sec-identifiers-static-semantics-early-errors *)
     | T_AWAIT when allow_await env -> error env Parse_error.UnexpectedReserved
     | T_AWAIT -> ()
-    (* `allow_yield` means that `yield` is allowed to be a keyword,
-        which makes it illegal to use as an identifier.
-        https://tc39.github.io/ecma262/#sec-identifiers-static-semantics-early-errors *)
     | T_YIELD when allow_yield env -> error env Parse_error.UnexpectedReserved
     | T_YIELD when in_strict_mode env -> error env Parse_error.StrictReservedWord
     | T_YIELD -> ()
@@ -77,6 +66,7 @@ module rec Parse : PARSER = struct
     identifier_name env
 
   let rec program env =
+    let leading = Eat.program_comments env in
     let stmts = module_body_with_directives env (fun _ -> false) in
     let end_loc = Peek.loc env in
     Expect.token env T_EOF;
@@ -85,8 +75,13 @@ module rec Parse : PARSER = struct
       | [] -> end_loc
       | _ -> Loc.btwn (fst (List.hd stmts)) (fst (List.hd (List.rev stmts)))
     in
-    let comments = List.rev (comments env) in
-    (loc, stmts, comments)
+    let all_comments = List.rev (comments env) in
+    ( loc,
+      {
+        Ast.Program.statements = stmts;
+        comments = Flow_ast_utils.mk_comments_opt ~leading ();
+        all_comments;
+      } )
 
   and directives =
     let check env token =
@@ -104,8 +99,6 @@ module rec Parse : PARSER = struct
         let stmts = possible_directive :: stmts in
         (match possible_directive with
         | (_, Ast.Statement.Expression { Ast.Statement.Expression.directive = Some raw; _ }) ->
-          (* 14.1.1 says that it has to be "use strict" without any
-                   escapes, so "use\x20strict" is disallowed. *)
           let strict = in_strict_mode env || raw = "use strict" in
           let string_tokens = string_token :: string_tokens in
           statement_list (env |> with_strict strict) term_fn item_fn (string_tokens, stmts)
@@ -119,7 +112,6 @@ module rec Parse : PARSER = struct
       List.iter (check env) (List.rev string_tokens);
       (env, stmts)
 
-  (* 15.2 *)
   and module_item env =
     let decorators = Object.decorator_list env in
     match Peek.token env with
@@ -128,7 +120,9 @@ module rec Parse : PARSER = struct
       error_on_decorators env decorators;
       let statement =
         match Peek.ith_token ~i:1 env with
-        | T_LPAREN -> Statement.expression env
+        | T_LPAREN
+        | T_PERIOD ->
+          Statement.expression env
         | _ -> Statement.import_declaration env
       in
       statement
@@ -140,7 +134,6 @@ module rec Parse : PARSER = struct
   and module_body_with_directives env term_fn =
     let (env, directives) = directives env term_fn module_item in
     let stmts = module_body ~term_fn env in
-    (* Prepend the directives *)
     List.fold_left (fun acc stmt -> stmt :: acc) stmts directives
 
   and module_body =
@@ -155,7 +148,6 @@ module rec Parse : PARSER = struct
   and statement_list_with_directives ~term_fn env =
     let (env, directives) = directives env term_fn statement_list_item in
     let stmts = statement_list ~term_fn env in
-    (* Prepend the directives *)
     let stmts = List.fold_left (fun acc stmt -> stmt :: acc) stmts directives in
     (stmts, in_strict_mode env)
 
@@ -170,103 +162,91 @@ module rec Parse : PARSER = struct
 
   and statement_list_item ?(decorators = []) env =
     if not (Peek.is_class env) then error_on_decorators env decorators;
-    Statement.(
-      match Peek.token env with
-      (* Remember kids, these look like statements but they're not
-      * statements... (see section 13) *)
-      | T_LET -> let_ env
-      | T_CONST -> const env
-      | _ when Peek.is_function env -> Declaration._function env
-      | _ when Peek.is_class env -> class_declaration env decorators
-      | T_INTERFACE -> interface env
-      | T_DECLARE -> declare env
-      | T_TYPE -> type_alias env
-      | T_OPAQUE -> opaque_type env
-      | T_ENUM when (parse_options env).enums -> Declaration.enum_declaration env
-      | _ -> statement env)
+    let open Statement in
+    match Peek.token env with
+    | T_LET -> let_ env
+    | T_CONST -> const env
+    | _ when Peek.is_function env -> Declaration._function env
+    | _ when Peek.is_class env -> class_declaration env decorators
+    | T_INTERFACE -> interface env
+    | T_DECLARE -> declare env
+    | T_TYPE -> type_alias env
+    | T_OPAQUE -> opaque_type env
+    | T_ENUM when (parse_options env).enums -> Declaration.enum_declaration env
+    | _ -> statement env
 
   and statement env =
-    Statement.(
-      match Peek.token env with
-      | T_EOF ->
-        error_unexpected ~expected:"the start of a statement" env;
-        (Peek.loc env, Ast.Statement.Empty)
-      | T_SEMICOLON -> empty env
-      | T_LCURLY -> block env
-      | T_VAR -> var env
-      | T_BREAK -> break env
-      | T_CONTINUE -> continue env
-      | T_DEBUGGER -> debugger env
-      | T_DO -> do_while env
-      | T_FOR -> for_ env
-      | T_IF -> if_ env
-      | T_RETURN -> return env
-      | T_SWITCH -> switch env
-      | T_THROW -> throw env
-      | T_TRY -> try_ env
-      | T_WHILE -> while_ env
-      | T_WITH -> with_ env
-      (* If we see an else then it's definitely an error, but we can probably
-       * assume that this is a malformed if statement that is missing the if *)
-      | T_ELSE -> if_ env
-      (* There are a bunch of tokens that aren't the start of any valid
-       * statement. We list them here in order to skip over them, rather than
-       * getting stuck *)
-      | T_COLON
-      | T_RPAREN
-      | T_RCURLY
-      | T_RBRACKET
-      | T_COMMA
-      | T_PERIOD
-      | T_PLING_PERIOD
-      | T_ARROW
-      | T_IN
-      | T_INSTANCEOF
-      | T_CATCH
-      | T_FINALLY
-      | T_CASE
-      | T_DEFAULT
-      | T_EXTENDS
-      | T_STATIC
-      | T_EXPORT
-      (* TODO *)
-      | T_ELLIPSIS ->
-        error_unexpected ~expected:"the start of a statement" env;
-        Eat.token env;
-        statement env
-      (* The rest of these patterns handle ExpressionStatement and its negative
-       lookaheads, which prevent ambiguities.
-       See https://tc39.github.io/ecma262/#sec-expression-statement *)
-      | _ when Peek.is_function env ->
-        let func = Declaration._function env in
-        function_as_statement_error_at env (fst func);
-        func
-      | T_LET when Peek.ith_token ~i:1 env = T_LBRACKET ->
-        (* `let [foo]` is ambiguous: either a let binding pattern, or a
-           member expression, so it is banned. *)
-        let loc = Loc.btwn (Peek.loc env) (Peek.ith_loc ~i:1 env) in
-        error_at env (loc, Parse_error.AmbiguousLetBracket);
-        Statement.expression env
-      (* recover as a member expression *)
-      | _ when Peek.is_identifier env -> maybe_labeled env
-      | _ when Peek.is_class env ->
-        error_unexpected env;
-        Eat.token env;
-        Statement.expression env
-      | _ -> Statement.expression env)
+    let open Statement in
+    match Peek.token env with
+    | T_EOF ->
+      error_unexpected ~expected:"the start of a statement" env;
+      (Peek.loc env, Ast.Statement.Empty { Ast.Statement.Empty.comments = None })
+    | T_SEMICOLON -> empty env
+    | T_LCURLY -> block env
+    | T_VAR -> var env
+    | T_BREAK -> break env
+    | T_CONTINUE -> continue env
+    | T_DEBUGGER -> debugger env
+    | T_DO -> do_while env
+    | T_FOR -> for_ env
+    | T_IF -> if_ env
+    | T_RETURN -> return env
+    | T_SWITCH -> switch env
+    | T_THROW -> throw env
+    | T_TRY -> try_ env
+    | T_WHILE -> while_ env
+    | T_WITH -> with_ env
+    | T_ELSE -> if_ env
+    | T_COLON
+    | T_RPAREN
+    | T_RCURLY
+    | T_RBRACKET
+    | T_COMMA
+    | T_PERIOD
+    | T_PLING_PERIOD
+    | T_ARROW
+    | T_IN
+    | T_INSTANCEOF
+    | T_CATCH
+    | T_FINALLY
+    | T_CASE
+    | T_DEFAULT
+    | T_EXTENDS
+    | T_STATIC
+    | T_EXPORT
+    | T_ELLIPSIS ->
+      error_unexpected ~expected:"the start of a statement" env;
+      Eat.token env;
+      statement env
+    | _ when Peek.is_function env ->
+      let func = Declaration._function env in
+      function_as_statement_error_at env (fst func);
+      func
+    | T_LET when Peek.ith_token ~i:1 env = T_LBRACKET ->
+      let loc = Loc.btwn (Peek.loc env) (Peek.ith_loc ~i:1 env) in
+      error_at env (loc, Parse_error.AmbiguousLetBracket);
+      Statement.expression env
+    | _ when Peek.is_identifier env -> maybe_labeled env
+    | _ when Peek.is_class env ->
+      error_unexpected env;
+      Eat.token env;
+      Statement.expression env
+    | _ -> Statement.expression env
 
   and expression env =
+    let start_loc = Peek.loc env in
     let expr = Expression.assignment env in
     match Peek.token env with
-    | T_COMMA -> Expression.sequence env [expr]
+    | T_COMMA -> Expression.sequence env ~start_loc [expr]
     | _ -> expr
 
   and expression_or_pattern env =
+    let start_loc = Peek.loc env in
     let expr_or_pattern = Expression.assignment_cover env in
     match Peek.token env with
     | T_COMMA ->
       let expr = Pattern_cover.as_expression env expr_or_pattern in
-      let seq = Expression.sequence env [expr] in
+      let seq = Expression.sequence env ~start_loc [expr] in
       Cover_expr seq
     | _ -> expr_or_pattern
 
@@ -297,28 +277,61 @@ module rec Parse : PARSER = struct
         Expect.token env T_PLING
       );
       let annot = Type.annotation_opt env in
-      Ast.Pattern.Identifier.{ name; optional; annot }
+      let open Ast.Pattern.Identifier in
+      { name; optional; annot }
     in
     fun env ?(no_optional = false) restricted_error ->
       with_loc (with_loc_helper no_optional restricted_error) env
 
   and block_body env =
     let start_loc = Peek.loc env in
+    let leading = Peek.comments env in
     Expect.token env T_LCURLY;
     let term_fn t = t = T_RCURLY in
     let body = statement_list ~term_fn env in
     let end_loc = Peek.loc env in
+    let internal =
+      if body = [] then
+        Peek.comments env
+      else
+        []
+    in
     Expect.token env T_RCURLY;
-    (Loc.btwn start_loc end_loc, { Ast.Statement.Block.body })
+    let trailing = Eat.trailing_comments env in
+    ( Loc.btwn start_loc end_loc,
+      {
+        Ast.Statement.Block.body;
+        comments = Flow_ast_utils.mk_comments_with_internal_opt ~leading ~trailing ~internal ();
+      } )
 
-  and function_block_body env =
+  and function_block_body ~expression env =
     let start_loc = Peek.loc env in
+    let leading = Peek.comments env in
     Expect.token env T_LCURLY;
     let term_fn t = t = T_RCURLY in
     let (body, strict) = statement_list_with_directives ~term_fn env in
     let end_loc = Peek.loc env in
+    let internal =
+      if body = [] then
+        Peek.comments env
+      else
+        []
+    in
     Expect.token env T_RCURLY;
-    (Loc.btwn start_loc end_loc, { Ast.Statement.Block.body }, strict)
+    let trailing =
+      match (expression, Peek.token env) with
+      | (true, _)
+      | (_, (T_RCURLY | T_EOF)) ->
+        Eat.trailing_comments env
+      | _ when Peek.is_line_terminator env -> Eat.comments_until_next_line env
+      | _ -> []
+    in
+    ( Loc.btwn start_loc end_loc,
+      {
+        Ast.Statement.Block.body;
+        comments = Flow_ast_utils.mk_comments_with_internal_opt ~leading ~trailing ~internal ();
+      },
+      strict )
 
   and jsx_element_or_fragment = JSX.element_or_fragment
 
@@ -327,23 +340,18 @@ module rec Parse : PARSER = struct
   and pattern_from_expr = Pattern.from_expr
 end
 
-(*****************************************************************************)
-(* Entry points *)
-(*****************************************************************************)
 let do_parse env parser fail =
   let ast = parser env in
   let error_list = filter_duplicate_errors (errors env) in
   if fail && error_list <> [] then raise (Parse_error.Error error_list);
   (ast, error_list)
 
-(* Makes the input parser expect EOF at the end. Use this to error on trailing
- * junk when parsing non-Program nodes. *)
 let with_eof parser env =
   let ast = parser env in
   Expect.token env T_EOF;
   ast
 
-(* let parse_statement env fail = do_parse env (with_eof Parse.statement_list_item) fail *)
+let parse_statement env fail = do_parse env (with_eof Parse.statement_list_item) fail
 
 let parse_expression env fail = do_parse env (with_eof Parse.expression) fail
 
@@ -351,15 +359,13 @@ let parse_program fail ?(token_sink = None) ?(parse_options = None) filename con
   let env = init_env ~token_sink ~parse_options filename content in
   do_parse env Parse.program fail
 
-(* let program ?(fail = true) ?(token_sink = None) ?(parse_options = None) content =
-  parse_program fail ~token_sink ~parse_options None content *)
+let program ?(fail = true) ?(token_sink = None) ?(parse_options = None) content =
+  parse_program fail ~token_sink ~parse_options None content
 
-(* let program_file ?(fail = true) ?(token_sink = None) ?(parse_options = None) content filename =
-  parse_program fail ~token_sink ~parse_options filename content *)
+let program_file ?(fail = true) ?(token_sink = None) ?(parse_options = None) content filename =
+  parse_program fail ~token_sink ~parse_options filename content
 
-(* even if fail=false, still raises an error on a totally invalid token, since
-   there's no legitimate fallback. *)
-(* let json_file ?(fail = true) ?(token_sink = None) ?(parse_options = None) content filename =
+let json_file ?(fail = true) ?(token_sink = None) ?(parse_options = None) content filename =
   let env = init_env ~token_sink ~parse_options filename content in
   match Peek.token env with
   | T_LBRACKET
@@ -394,4 +400,8 @@ let jsx_pragma_expression =
   in
   fun content filename ->
     let env = init_env ~token_sink:None ~parse_options:None filename content in
-    do_parse env left_hand_side true *)
+    do_parse env left_hand_side true
+
+let string_is_valid_identifier_name str =
+  let lexbuf = Sedlexing.Utf8.from_string str in
+  Flow_lexer.is_valid_identifier_name lexbuf
