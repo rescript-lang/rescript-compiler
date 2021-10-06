@@ -5,9 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  *)
 
-(* This module provides a layer between the lexer and the parser which includes
- * some parser state and some lexer state *)
-
 module SSet : Set.S with type t = Set.Make(String).t
 
 module Lex_mode : sig
@@ -19,7 +16,7 @@ module Lex_mode : sig
     | TEMPLATE
     | REGEXP
 
-  (* val debug_string_of_lex_mode : t -> string *)
+  val debug_string_of_lex_mode : t -> string
 end
 
 type token_sink_result = {
@@ -29,18 +26,19 @@ type token_sink_result = {
 }
 
 type parse_options = {
-  enums: bool;
-  esproposal_class_instance_fields: bool;
-  esproposal_class_static_fields: bool;
-  esproposal_decorators: bool;
-  esproposal_export_star_as: bool;
-  esproposal_optional_chaining: bool;
-  esproposal_nullish_coalescing: bool;
-  types: bool;
+  enums: bool; [@ocaml.doc " enable parsing of Flow enums "]
+  esproposal_class_instance_fields: bool; [@ocaml.doc " enable parsing of class instance fields "]
+  esproposal_class_static_fields: bool; [@ocaml.doc " enable parsing of class static fields "]
+  esproposal_decorators: bool; [@ocaml.doc " enable parsing of decorators "]
+  esproposal_export_star_as: bool; [@ocaml.doc " enable parsing of `export * as` syntax "]
+  esproposal_nullish_coalescing: bool; [@ocaml.doc " enable parsing of nullish coalescing (`??`) "]
+  esproposal_optional_chaining: bool; [@ocaml.doc " enable parsing of optional chaining (`?.`) "]
+  types: bool; [@ocaml.doc " enable parsing of Flow types "]
   use_strict: bool;
+      [@ocaml.doc " treat the file as strict, without needing a \"use strict\" directive "]
 }
 
-(* val default_parse_options : parse_options *)
+val default_parse_options : parse_options
 
 type env
 
@@ -49,7 +47,6 @@ type allowed_super =
   | Super_prop
   | Super_prop_or_call
 
-(* constructor: *)
 val init_env :
   ?token_sink:(token_sink_result -> unit) option ->
   ?parse_options:parse_options option ->
@@ -57,7 +54,6 @@ val init_env :
   string ->
   env
 
-(* getters: *)
 val in_strict_mode : env -> bool
 
 val last_loc : env -> Loc.t option
@@ -100,11 +96,10 @@ val errors : env -> (Loc.t * Parse_error.t) list
 
 val parse_options : env -> parse_options
 
-(* val source : env -> File_key.t option *)
+val source : env -> File_key.t option
 
 val should_parse_types : env -> bool
 
-(* mutators: *)
 val error_at : env -> Loc.t * Parse_error.t -> unit
 
 val error : env -> Parse_error.t -> unit
@@ -131,13 +126,13 @@ val add_declared_private : env -> string -> unit
 
 val add_used_private : env -> string -> Loc.t -> unit
 
-(* functional operations -- these return shallow copies, so future mutations to
- * the returned env will also affect the original: *)
+val consume_comments_until : env -> Loc.position -> unit
+
 val with_strict : bool -> env -> env
 
 val with_in_formal_parameters : bool -> env -> env
 
-(* val with_in_function : bool -> env -> env *)
+val with_in_function : bool -> env -> env
 
 val with_allow_yield : bool -> env -> env
 
@@ -198,15 +193,17 @@ module Peek : sig
 
   val comments : env -> Loc.t Flow_ast.Comment.t list
 
+  val has_eaten_comments : env -> bool
+
   val is_line_terminator : env -> bool
 
   val is_implicit_semicolon : env -> bool
 
   val is_identifier : env -> bool
 
-  (* val is_type_identifier : env -> bool *)
+  val is_type_identifier : env -> bool
 
-  (* val is_identifier_name : env -> bool *)
+  val is_identifier_name : env -> bool
 
   val is_function : env -> bool
 
@@ -216,21 +213,25 @@ module Peek : sig
 
   val ith_loc : i:int -> env -> Loc.t
 
-  (* val ith_errors : i:int -> env -> (Loc.t * Parse_error.t) list
+  val ith_errors : i:int -> env -> (Loc.t * Parse_error.t) list
 
-  val ith_comments : i:int -> env -> Loc.t Flow_ast.Comment.t list *)
+  val ith_comments : i:int -> env -> Loc.t Flow_ast.Comment.t list
 
   val ith_is_line_terminator : i:int -> env -> bool
+
+  val ith_is_implicit_semicolon : i:int -> env -> bool
 
   val ith_is_identifier : i:int -> env -> bool
 
   val ith_is_identifier_name : i:int -> env -> bool
 
-  (* val ith_is_type_identifier : i:int -> env -> bool *)
+  val ith_is_type_identifier : i:int -> env -> bool
 end
 
 module Eat : sig
   val token : env -> unit
+
+  val maybe : env -> Token.t -> bool
 
   val push_lex_mode : env -> Lex_mode.t -> unit
 
@@ -238,7 +239,11 @@ module Eat : sig
 
   val double_pop_lex_mode : env -> unit
 
-  val semicolon : ?expected:string -> env -> unit
+  val trailing_comments : env -> Loc.t Flow_ast.Comment.t list
+
+  val comments_until_next_line : env -> Loc.t Flow_ast.Comment.t list
+
+  val program_comments : env -> Loc.t Flow_ast.Comment.t list
 end
 
 module Expect : sig
@@ -246,9 +251,9 @@ module Expect : sig
 
   val token : env -> Token.t -> unit
 
-  val identifier : env -> string -> unit
+  val token_opt : env -> Token.t -> unit
 
-  val maybe : env -> Token.t -> bool
+  val identifier : env -> string -> unit
 end
 
 module Try : sig

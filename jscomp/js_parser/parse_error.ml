@@ -20,6 +20,8 @@ type t =
       enum_name: string;
       supplied_type: string option;
     }
+  | EnumInvalidExport
+  | EnumInvalidInitializerSeparator of { member_name: string }
   | EnumInvalidMemberInitializer of {
       enum_name: string;
       explicit_type: Enum_common.explicit_type option;
@@ -29,6 +31,8 @@ type t =
       enum_name: string;
       member_name: string;
     }
+  | EnumInvalidMemberSeparator
+  | EnumInvalidEllipsis of { trailing_comma: bool }
   | EnumNumberMemberNotInitialized of {
       enum_name: string;
       member_name: string;
@@ -66,6 +70,8 @@ type t =
   | InvalidLHSInExponentiation
   | InvalidLHSInForIn
   | InvalidLHSInForOf
+  | InvalidIndexedAccess of { has_bracket: bool }
+  | InvalidOptionalIndexedAccess
   | ExpectedPatternFoundExpression
   | MultipleDefaultsInSwitch
   | NoCatchOrFinally
@@ -103,8 +109,11 @@ type t =
   | AdjacentJSXElements
   | ParameterAfterRestParameter
   | ElementAfterRestElement
-  | PropertyAfterRestProperty
+  | PropertyAfterRestElement
   | DeclareAsync
+  | DeclareClassElement
+  | DeclareClassFieldInitializer
+  | DeclareOpaqueTypeInitializer
   | DeclareExportLet
   | DeclareExportConst
   | DeclareExportType
@@ -126,12 +135,12 @@ type t =
   | MalformedUnicode
   | DuplicateConstructor
   | DuplicatePrivateFields of string
-  | InvalidFieldName of {
+  | InvalidClassMemberName of {
       name: string;
       static: bool;
+      method_: bool;
       private_: bool;
     }
-  | PrivateMethod
   | PrivateDelete
   | UnboundPrivate of string
   | PrivateNotInClass
@@ -150,10 +159,19 @@ type t =
   | NullishCoalescingDisabled
   | NullishCoalescingUnexpectedLogical of string
   | WhitespaceInPrivateName
+  | ThisParamAnnotationRequired
+  | ThisParamMustBeFirst
+  | ThisParamMayNotBeOptional
+  | GetterMayNotHaveThisParam
+  | SetterMayNotHaveThisParam
+  | ThisParamBannedInArrowFunctions
+  | ThisParamBannedInConstructor
+
+let compare (x : t) (y : t) = Pervasives.compare x y
 
 exception Error of (Loc.t * t) list
 
-(* let error loc e = raise (Error [(loc, e)]) *)
+let error loc e = raise (Error [(loc, e)])
 
 module PP = struct
   let error = function
@@ -179,44 +197,52 @@ module PP = struct
           "Use one of `boolean`, `number`, `string`, or `symbol` in enum `%s`."
           enum_name
       in
-      begin
-        match supplied_type with
-        | Some supplied_type ->
-          Printf.sprintf "Enum type `%s` is not valid. %s" supplied_type suggestion
-        | None -> Printf.sprintf "Supplied enum type is not valid. %s" suggestion
-      end
+      (match supplied_type with
+      | Some supplied_type ->
+        Printf.sprintf "Enum type `%s` is not valid. %s" supplied_type suggestion
+      | None -> Printf.sprintf "Supplied enum type is not valid. %s" suggestion)
+    | EnumInvalidExport ->
+      "Cannot export an enum with `export type`, try `export enum E {}` or `module.exports = E;` instead."
+    | EnumInvalidInitializerSeparator { member_name } ->
+      Printf.sprintf
+        "Enum member names and initializers are separated with `=`. Replace `%s:` with `%s =`."
+        member_name
+        member_name
     | EnumInvalidMemberInitializer { enum_name; explicit_type; member_name } ->
-      begin
-        match explicit_type with
-        | Some (Enum_common.Boolean as explicit_type)
-        | Some (Enum_common.Number as explicit_type)
-        | Some (Enum_common.String as explicit_type) ->
-          let explicit_type_str = Enum_common.string_of_explicit_type explicit_type in
-          Printf.sprintf
-            "Enum `%s` has type `%s`, so the initializer of `%s` needs to be a %s literal."
-            enum_name
-            explicit_type_str
-            member_name
-            explicit_type_str
-        | Some Enum_common.Symbol ->
-          Printf.sprintf
-            "Symbol enum members cannot be initialized. Use `%s,` in enum `%s`."
-            member_name
-            enum_name
-        | None ->
-          Printf.sprintf
-            "The enum member initializer for `%s` needs to be a literal (either a boolean, number, or string) in enum `%s`."
-            member_name
-            enum_name
-      end
+      (match explicit_type with
+      | Some (Enum_common.Boolean as explicit_type)
+      | Some (Enum_common.Number as explicit_type)
+      | Some (Enum_common.String as explicit_type) ->
+        let explicit_type_str = Enum_common.string_of_explicit_type explicit_type in
+        Printf.sprintf
+          "Enum `%s` has type `%s`, so the initializer of `%s` needs to be a %s literal."
+          enum_name
+          explicit_type_str
+          member_name
+          explicit_type_str
+      | Some Enum_common.Symbol ->
+        Printf.sprintf
+          "Symbol enum members cannot be initialized. Use `%s,` in enum `%s`."
+          member_name
+          enum_name
+      | None ->
+        Printf.sprintf
+          "The enum member initializer for `%s` needs to be a literal (either a boolean, number, or string) in enum `%s`."
+          member_name
+          enum_name)
     | EnumInvalidMemberName { enum_name; member_name } ->
-      (* Based on the error condition, we will only receive member names starting with [a-z] *)
       let suggestion = String.capitalize_ascii member_name in
       Printf.sprintf
         "Enum member names cannot start with lowercase 'a' through 'z'. Instead of using `%s`, consider using `%s`, in enum `%s`."
         member_name
         suggestion
         enum_name
+    | EnumInvalidMemberSeparator -> "Enum members are separated with `,`. Replace `;` with `,`."
+    | EnumInvalidEllipsis { trailing_comma } ->
+      if trailing_comma then
+        "The `...` must come at the end of the enum body. Remove the trailing comma."
+      else
+        "The `...` must come after all enum members. Move it to the end of the enum body."
     | EnumNumberMemberNotInitialized { enum_name; member_name } ->
       Printf.sprintf
         "Number enum members need to be initialized, e.g. `%s = 1,` in enum `%s`."
@@ -262,6 +288,16 @@ module PP = struct
     | InvalidLHSInExponentiation -> "Invalid left-hand side in exponentiation expression"
     | InvalidLHSInForIn -> "Invalid left-hand side in for-in"
     | InvalidLHSInForOf -> "Invalid left-hand side in for-of"
+    | InvalidIndexedAccess { has_bracket } ->
+      let msg =
+        if has_bracket then
+          "Remove the period."
+        else
+          "Indexed access uses bracket notation."
+      in
+      Printf.sprintf "Invalid indexed access. %s Use the format `T[K]`." msg
+    | InvalidOptionalIndexedAccess ->
+      "Invalid optional indexed access. Indexed access uses bracket notation. Use the format `T?.[K]`."
     | ExpectedPatternFoundExpression ->
       "Expected an object pattern, array pattern, or an identifier but "
       ^ "found an expression instead"
@@ -317,9 +353,14 @@ module PP = struct
       ^ "elements must be wrapped in an enclosing parent tag"
     | ParameterAfterRestParameter -> "Rest parameter must be final parameter of an argument list"
     | ElementAfterRestElement -> "Rest element must be final element of an array pattern"
-    | PropertyAfterRestProperty -> "Rest property must be final property of an object pattern"
+    | PropertyAfterRestElement -> "Rest property must be final property of an object pattern"
     | DeclareAsync ->
       "async is an implementation detail and isn't necessary for your declare function statement. It is sufficient for your declare function to just have a Promise return type."
+    | DeclareClassElement -> "`declare` modifier can only appear on class fields."
+    | DeclareClassFieldInitializer ->
+      "Unexpected token `=`. Initializers are not allowed in a `declare`."
+    | DeclareOpaqueTypeInitializer ->
+      "Unexpected token `=`. Initializers are not allowed in a `declare opaque type`."
     | DeclareExportLet -> "`declare export let` is not supported. Use `declare export var` instead."
     | DeclareExportConst ->
       "`declare export const` is not supported. Use `declare export var` instead."
@@ -351,7 +392,7 @@ module PP = struct
     | DuplicateConstructor -> "Classes may only have one constructor"
     | DuplicatePrivateFields name ->
       "Private fields may only be declared once. `#" ^ name ^ "` is declared more than once."
-    | InvalidFieldName { name; static; private_ } ->
+    | InvalidClassMemberName { name; static; method_; private_ } ->
       let static_modifier =
         if static then
           "static "
@@ -364,8 +405,13 @@ module PP = struct
         else
           name
       in
-      "Classes may not have " ^ static_modifier ^ "fields named `" ^ name ^ "`."
-    | PrivateMethod -> "Classes may not have private methods."
+      let category =
+        if method_ then
+          "methods"
+        else
+          "fields"
+      in
+      "Classes may not have " ^ static_modifier ^ category ^ " named `" ^ name ^ "`."
     | PrivateDelete -> "Private fields may not be deleted."
     | UnboundPrivate name ->
       "Private fields must be declared before they can be referenced. `#"
@@ -394,4 +440,13 @@ module PP = struct
         "Unexpected token `%s`. Parentheses are required to combine `??` with `&&` or `||` expressions."
         operator
     | WhitespaceInPrivateName -> "Unexpected whitespace between `#` and identifier"
+    | ThisParamAnnotationRequired -> "A type annotation is required for the `this` parameter."
+    | ThisParamMustBeFirst -> "The `this` parameter must be the first function parameter."
+    | ThisParamMayNotBeOptional -> "The `this` parameter cannot be optional."
+    | GetterMayNotHaveThisParam -> "A getter cannot have a `this` parameter."
+    | SetterMayNotHaveThisParam -> "A setter cannot have a `this` parameter."
+    | ThisParamBannedInArrowFunctions ->
+      "Arrow functions cannot have a `this` parameter; arrow functions automatically bind `this` when declared."
+    | ThisParamBannedInConstructor ->
+      "Constructors cannot have a `this` parameter; constructors don't bind `this` like other functions."
 end

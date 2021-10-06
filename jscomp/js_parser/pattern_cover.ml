@@ -37,13 +37,11 @@ module Cover (Parse : PARSER) : COVER = struct
         expr
     in
     if not (Parse.is_assignable_lhs expr) then error_at env (fst expr, err);
-
     (match expr with
     | (loc, Flow_ast.Expression.Identifier (_, { Flow_ast.Identifier.name; comments = _ }))
       when is_restricted name ->
       strict_error_at env (loc, Parse_error.StrictLHSAssignment)
     | _ -> ());
-
     Parse.pattern_from_expr env expr
 
   let empty_errors = { if_patt = []; if_expr = [] }
