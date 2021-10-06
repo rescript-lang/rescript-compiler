@@ -37,7 +37,7 @@ let handleExternalInSig (self : Bs_ast_mapper.mapper)
           Psig_value
             {
               prim with
-              pval_type = Ast_helper.Typ.arrow ~loc Nolabel obj pval_type;
+              pval_type = Ast_core_type.add_last_obj pval_type obj;
               pval_prim = [];
               pval_attributes = [];
             };

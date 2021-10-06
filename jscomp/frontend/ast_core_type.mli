@@ -61,4 +61,6 @@ val mk_fn_type : param_type list -> t -> t
 val list_of_arrow : t -> t * param_type list
 (** fails when Ptyp_poly *)
 
+val add_last_obj : t -> t -> t
+
 val is_arity_one : t -> bool

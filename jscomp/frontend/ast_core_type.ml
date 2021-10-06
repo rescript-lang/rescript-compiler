@@ -172,3 +172,9 @@ let list_of_arrow (ty : t) : t * param_type list =
     | _ -> (ty, List.rev acc)
   in
   aux ty []
+
+let add_last_obj (ty : t) (obj : t) =
+  let result, params = list_of_arrow ty in
+  mk_fn_type
+    (params @ [ { label = Nolabel; ty = obj; attr = []; loc = obj.ptyp_loc } ])
+    result
