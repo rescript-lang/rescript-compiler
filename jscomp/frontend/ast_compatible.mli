@@ -119,15 +119,6 @@ val rec_type_str :
 val rec_type_sig :
   ?loc:loc -> Asttypes.rec_flag -> type_declaration list -> signature_item
 
-type param_type = {
-  label : Asttypes.arg_label;
-  ty : Parsetree.core_type;
-  attr : Parsetree.attributes;
-  loc : loc;
-}
-
-val mk_fn_type : param_type list -> core_type -> core_type
-
 type object_field = Parsetree.object_field
 
 val object_field :

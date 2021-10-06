@@ -361,7 +361,7 @@ type response = {
 }
 
 let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
-    (arg_types_ty : Ast_compatible.param_type list)
+    (arg_types_ty : Ast_core_type.param_type list)
     (result_type : Ast_core_type.t) : Parsetree.core_type * External_ffi_types.t
     =
   match st with
@@ -394,7 +394,7 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
           (fun
             param_type
             ( arg_labels,
-              (arg_types : Ast_compatible.param_type list),
+              (arg_types : Ast_core_type.param_type list),
               result_types )
           ->
             let arg_label = param_type.label in
@@ -550,7 +550,7 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
         (* TODO: do we need do some error checking here *)
         (* result type can not be labeled *)
       in
-      ( Ast_compatible.mk_fn_type new_arg_types_ty result,
+      ( Ast_core_type.mk_fn_type new_arg_types_ty result,
         External_ffi_types.ffi_obj_create arg_kinds )
   | _ -> Location.raise_errorf ~loc "Attribute found that conflicts with %@obj"
 
@@ -891,7 +891,7 @@ let handle_attributes (loc : Bs_loc.t) (type_annotation : Parsetree.core_type)
     let arg_type_specs, new_arg_types_ty, arg_type_specs_length =
       Ext_list.fold_right arg_types_ty
         (([], [], 0)
-          : External_arg_spec.params * Ast_compatible.param_type list * int)
+          : External_arg_spec.params * Ast_core_type.param_type list * int)
         (fun param_type (arg_type_specs, arg_types, i) ->
           let arg_label = param_type.label in
           let ty = param_type.ty in
@@ -956,7 +956,7 @@ let handle_attributes (loc : Bs_loc.t) (type_annotation : Parsetree.core_type)
     let return_wrapper =
       check_return_wrapper loc external_desc.return_wrapper result_type
     in
-    ( Ast_compatible.mk_fn_type new_arg_types_ty result_type,
+    ( Ast_core_type.mk_fn_type new_arg_types_ty result_type,
       External_ffi_types.ffi_bs arg_type_specs return_wrapper ffi,
       unused_attrs,
       relative )
