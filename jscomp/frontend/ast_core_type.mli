@@ -49,7 +49,16 @@ val get_uncurry_arity : t -> int option
 
 val get_curry_labels : t -> Asttypes.arg_label list
 
-val list_of_arrow : t -> t * Ast_compatible.param_type list
+type param_type = {
+  label : Asttypes.arg_label;
+  ty : t;
+  attr : Parsetree.attributes;
+  loc : Location.t;
+}
+
+val mk_fn_type : param_type list -> t -> t
+
+val list_of_arrow : t -> t * param_type list
 (** fails when Ptyp_poly *)
 
 val is_arity_one : t -> bool

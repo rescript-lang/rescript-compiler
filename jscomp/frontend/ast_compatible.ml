@@ -130,22 +130,7 @@ let const_exp_int_list_as_array xs =
    Ast_helper.Exp.array
    (Ext_list.map xs (fun x -> const_exp_string x ) ) *)
 
-type param_type = {
-  label : Asttypes.arg_label;
-  ty : Parsetree.core_type;
-  attr : Parsetree.attributes;
-  loc : loc;
-}
 
-let mk_fn_type (new_arg_types_ty : param_type list) (result : core_type) :
-    core_type =
-  Ext_list.fold_right new_arg_types_ty result
-    (fun { label; ty; attr; loc } acc ->
-      {
-        ptyp_desc = Ptyp_arrow (label, ty, acc);
-        ptyp_loc = loc;
-        ptyp_attributes = attr;
-      })
 
 type object_field = Parsetree.object_field
 
