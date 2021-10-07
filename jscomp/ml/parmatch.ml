@@ -881,10 +881,6 @@ let full_match closing env =  match env with
         (fun (tag,f) ->
           Btype.row_field_repr f = Rabsent || List.mem tag fields)
         row.row_fields
-#if 0
-| ({pat_desc = Tpat_constant(Const_char _)},_) :: _ ->
-    List.length env = 256 
-#end    
 | ({pat_desc = Tpat_constant(_)},_) :: _ -> false
 | ({pat_desc = Tpat_tuple(_)},_) :: _ -> true
 | ({pat_desc = Tpat_record(_)},_) :: _ -> true
@@ -1084,35 +1080,6 @@ let build_other ext env = match env with
             make_pat (Tpat_or (pat, p_res, None)) p.pat_type p.pat_env)
           pat other_pats
     end
-#if 0    
-| ({pat_desc = Tpat_constant(Const_char _)} as p,_) :: _ ->
-    let all_chars =
-      List.map
-        (fun (p,_) -> match p.pat_desc with
-        | Tpat_constant (Const_char c) -> c
-        | _ -> assert false)
-        env in
-
-    let rec find_other i imax =
-      if i > imax then raise Not_found
-      else
-        let ci = Char.chr i in
-        if List.mem ci all_chars then
-          find_other (i+1) imax
-        else
-          make_pat (Tpat_constant (Const_char ci)) p.pat_type p.pat_env in
-    let rec try_chars = function
-      | [] -> omega
-      | (c1,c2) :: rest ->
-          try
-            find_other (Char.code c1) (Char.code c2)
-          with
-          | Not_found -> try_chars rest in
-
-    try_chars
-      [ 'a', 'z' ; 'A', 'Z' ; '0', '9' ;
-        ' ', '~' ; Char.chr 0 , Char.chr 255] 
-#end
 | ({pat_desc=(Tpat_constant (Const_int _ | Const_char _))} as p,_) :: _ ->
     build_other_constant
       (function Tpat_constant(Const_int i) -> i 

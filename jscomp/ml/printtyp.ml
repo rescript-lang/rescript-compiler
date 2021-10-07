@@ -1576,7 +1576,7 @@ let report_unification_error ppf env ?(unif=true)
   wrap_printing_env env (fun () -> unification_error env unif tr txt1 ppf txt2)
 ;;
 
-#if undefined BS_NO_COMPILER_PATCH then
+
 let super_type_expansion ~tag t ppf t' =
   if same_path t t' then begin
     Format.pp_open_tag ppf tag;
@@ -1647,7 +1647,7 @@ let super_report_unification_error ppf env ?(unif=true)
     tr txt1 txt2 =
   wrap_printing_env env (fun () -> super_unification_error unif tr txt1 ppf txt2)
 ;;
-#end
+
 
 let trace fst keep_last txt ppf tr =
   trace_same_names tr;

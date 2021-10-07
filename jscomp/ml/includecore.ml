@@ -32,11 +32,7 @@ let value_descriptions ~loc env name
     ~use:vd2.val_loc
     loc
     vd1.val_attributes vd2.val_attributes
-#if 1
     (Ident.name name);
-#else    
-    name;
-#end  
   if Ctype.moregeneral env true vd1.val_type vd2.val_type then begin
     match (vd1.val_kind, vd2.val_kind) with
         (Val_prim p1, Val_prim p2) ->
@@ -44,9 +40,7 @@ let value_descriptions ~loc env name
       | (Val_prim p, _) ->
           let pc = {pc_desc = p; pc_type = vd2.Types.val_type;
                   pc_env = env; pc_loc = vd1.Types.val_loc;
-#if 1
                       pc_id = name;
-#end
                    } in
           Tcoerce_primitive pc
       | (_, Val_prim _) -> raise Dont_match
