@@ -8288,7 +8288,6 @@ module Color : sig
     | BG of color (* background *)
     | Bold
     | Reset
-
     | Dim
 
 
@@ -8911,7 +8910,6 @@ module Color = struct
     | BG of color (* background *)
     | Bold
     | Reset
-
     | Dim
 
 
@@ -8930,7 +8928,6 @@ module Color = struct
     | BG c -> "4" ^ ansi_of_color c
     | Bold -> "1"
     | Reset -> "0"
-
     | Dim -> "2"
 
 
@@ -8964,11 +8961,9 @@ module Color = struct
     | "error" -> (!cur_styles).error
     | "warning" -> (!cur_styles).warning
     | "loc" -> (!cur_styles).loc
-
     | "info" -> [Bold; FG Yellow]
     | "dim" -> [Dim]
     | "filename" -> [FG Cyan]
-                 
     | _ -> raise Not_found
 
   let color_enabled = ref true
@@ -9887,13 +9882,11 @@ let message = function
       "You forgot to handle a possible case here, though we don't have more information on the value."
   | Partial_match s ->
       "You forgot to handle a possible case here, for example: \n  " ^ s
-       
   | Non_closed_record_pattern s ->
       "the following labels are not bound in this record pattern: " ^ s ^
       "\nEither bind these labels explicitly or add '; _' to the pattern."
   | Statement_type -> 
     "This expression returns a value, but you're not doing anything with it. If this is on purpose, wrap it with `ignore`."      
-      
   | Unused_match -> "this match case is unused."
   | Unused_pat   -> "this sub-pattern is unused."
   | Instance_variable_override [lab] ->
@@ -9916,7 +9909,6 @@ let message = function
          "  Explanation: If the final parameter is optional, it'd be unclear whether a function application that omits it should be considered fully applied, or partially applied. Imagine writing `let title = display(\"hello!\")`, only to realize `title` isn't your desired result, but a curried call that takes a final optional argument, e.g. `~showDate`.\n\n";
          "  Formal rule: an optional argument is considered intentionally omitted when the 1st positional (i.e. neither labeled nor optional) argument defined after it is passed in."
         ]
-  
   | Unused_argument -> "this argument will not be used by the function."
   | Nonreturning_statement ->
       "this statement never returns (or has an unsound type.)"
@@ -9929,11 +9921,9 @@ let message = function
       | `rescript ->
         "All the fields are already explicitly listed in this record. You can remove the `...` spread."
      end   
-       
   | Bad_module_name (modname) ->
     "This file's name is potentially invalid. The build systems conventionally turn a file name into a module name by upper-casing the first letter. " ^ modname ^ " isn't a valid module name.\n" ^
     "Note: some build systems might e.g. turn kebab-case into CamelCase module, which is why this isn't a hard error."
-      
   | All_clauses_guarded ->
       "this pattern-matching is not exhaustive.\n\
        All clauses in this pattern-matching are guarded."
@@ -10037,8 +10027,6 @@ let message = function
   | Unused_module s -> "unused module " ^ s ^ "."
   | Constraint_on_gadt ->
       "Type constraints do not apply to GADT cases of variant types."
-
-
   | Bs_unused_attribute s ->
       "Unused attribute: " ^ s ^ "\n\
       This means such annotation is not annotated properly. \n\
@@ -10059,7 +10047,7 @@ let message = function
       "Uninterpreted delimiters " ^ s  
   | Bs_toplevel_expression_unit -> 
       "Toplevel expression is expected to have unit type."    
-      
+
 ;;
 
 let sub_locs = function
@@ -10180,7 +10168,7 @@ let descriptions =
    61, "Unboxable type in primitive declaration";
    62, "Type constraint on GADT type declaration";
     
-    
+
    101, "Unused bs attributes";
    102, "Polymorphic comparison introduced (maybe unsafe)";
    103, "Fragile FFI definitions" ;
@@ -10190,7 +10178,7 @@ let descriptions =
    107, "Integer literal exceeds the range of representable integers of type int";
    108, "Uninterpreted delimiters (for unicode)" ;
    109, "Toplevel expression has unit type"   
-   
+
   ]
 ;;
 
@@ -10326,7 +10314,7 @@ val error: ?loc:t -> ?sub:error list -> ?if_highlight:string -> string -> error
 
 
 val print_error_prefix : Format.formatter -> unit
-val pp_ksprintf : ?before:(formatter -> unit) -> (string -> 'a) -> ('b, formatter, unit, 'a) format4 -> 'b
+val pp_ksprintf : ?before:(formatter -> unit) -> (string -> 'a) -> ('b, formatter, unit, 'a) format4 -> 'b 
 
 
 val errorf: ?loc:t -> ?sub:error list -> ?if_highlight:string
@@ -10485,7 +10473,6 @@ let print_loc ppf loc =
   setup_colors ();
   let (file, line, startchar) = get_pos_info loc.loc_start in
   let startchar =  startchar + 1 in 
-      
   let endchar = loc.loc_end.pos_cnum - loc.loc_start.pos_cnum + startchar in
   begin
     fprintf ppf "%s@{<loc>%a%s%i" msg_file print_filename file msg_line line;
@@ -11885,11 +11872,9 @@ let rec error_of_extension ext =
 
 let cat s1 s2 =
   if s2 = "" then s1 else
- 
     if Clflags.bs_vscode then s1 ^ " " ^ s2
     (* 2 spaces indentation for the next line *)
     else s1 ^ "\n  " ^ s2 
-    
 
 let rec deprecated_of_attrs = function
   | [] -> None
