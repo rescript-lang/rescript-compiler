@@ -165,7 +165,7 @@ let record_value_dependency vd1 vd2 =
     value_deps := (vd1, vd2) :: !value_deps
 
 let save_cmt filename modname binary_annots sourcefile initial_env cmi =
-#if BS_BROWSER
+#if BROWSER
   ()  
 #else  
   if !Clflags.binary_annotations then begin

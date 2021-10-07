@@ -33,7 +33,7 @@ let setup_env () =
   Ctype.variant_is_subtype := Matching_polyfill.variant_is_subtype;
   Clflags.dump_location := false;  
   Config.syntax_kind := `rescript;
-#if BS_BROWSER
+#if BROWSER
 #else    
   Clflags.color := Some Always;
 #end  
@@ -52,7 +52,7 @@ let setup_env () =
   Lambda.blk_record := Record_attributes_check.blk_record;
   Matching.names_from_construct_pattern := 
     Matching_polyfill.names_from_construct_pattern;
-#if undefined BS_RELEASE_BUILD 
+#if undefined RELEASE 
     (let root_dir = 
        Filename.dirname 
          (Filename.dirname Sys.executable_name) in 

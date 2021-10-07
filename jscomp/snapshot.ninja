@@ -1,4 +1,4 @@
-releaseMode = -D BS_RELEASE_BUILD=true
+releaseMode = -D RELEASE=true
 rule bspack    
     command = ./bin/bspack.exe $releaseMode $flags -bs-main $main -o $out  $post_process
     depfile = $out.d
@@ -34,7 +34,7 @@ o $SNAP/unstable/all_ounit_tests.ml: bspack | ./bin/bspack.exe $LTO
 
 
 o $SNAP/unstable/js_compiler.ml: bspack | ./bin/bspack.exe $LTO
-    flags = -D BS_BROWSER=true  -bs-MD    -I ml  $includes
+    flags = -D BROWSER=true  -bs-MD    -I ml  $includes
     main  = Jsoo_main
 
 

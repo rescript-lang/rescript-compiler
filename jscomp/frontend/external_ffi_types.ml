@@ -264,7 +264,7 @@ let is_bs_primitive s =
   String.unsafe_get s 1 = '\149' 
 
 let () = Oprint.map_primitive_name := 
-#if BS_RELEASE_BUILD
+#if RELEASE
       (fun s ->    
          if is_bs_primitive s then "BS:external"
          else s )

@@ -768,7 +768,7 @@ and value_description ctxt f x =
            but they're already printed by the callers this method *)
   pp f "@[<hov2>%a%a@]" (core_type ctxt) x.pval_type
     (fun f x ->
-#if undefined BS_RELEASE_BUILD
+#if undefined RELEASE
       match x.pval_prim with 
       | first :: second :: _ 
         when Ext_string.first_marshal_char second

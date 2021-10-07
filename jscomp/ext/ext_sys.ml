@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (** TODO: not exported yet, wait for Windows Fix*)
-#if BS_BROWSER
+#if BROWSER
 let is_directory_no_exn f =
   try Sys.is_directory f with _ -> false  
 #else
