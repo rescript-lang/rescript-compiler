@@ -591,9 +591,7 @@ let descriptions =
     (37, "Unused constructor.");
     (38, "Unused extension constructor.");
     (39, "Unused rec flag.");
-    (40, "Constructor or label name used out of scope.");
     (41, "Ambiguous constructor or label name.");
-    (42, "Disambiguated constructor or label name (compatibility warning).");
     (43, "Nonoptional label applied as optional.");
     (44, "Open statement shadows an already defined identifier.");
     (45, "Open statement shadows an already defined label or constructor.");
@@ -609,7 +607,6 @@ let descriptions =
     (55, "Inlining impossible");
     (56, "Unreachable case in a pattern-matching (based on type information).");
     (57, "Ambiguous or-pattern variables under guard");
-    (58, "Missing cmx file");
     (59, "Assignment to non-mutable value");
     (60, "Unused module declaration");
     (61, "Unboxable type in primitive declaration");
