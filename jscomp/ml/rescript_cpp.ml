@@ -466,7 +466,7 @@ let interpret_directive_cont lexbuf ~cont
         update_if_then_else Dir_if_true (* Next state: ELSE *);
         cont lexbuf)
       else skip_from_if_false token_with_comments cont lexbuf
-  | LIDENT "ifndef", Dir_out ->
+  | LIDENT (("ifndef" | "ifdef") as s), Dir_out ->
       let rec token () =
         match token_with_comments lexbuf with
         | COMMENT _ | DOCSTRING _ -> token ()
@@ -487,11 +487,12 @@ let interpret_directive_cont lexbuf ~cont
       | _ ->
           raise
             (Pp_error (Expect_hash_then_in_conditional, Location.curr lexbuf)));
-      if not (defined t) then (
+      let boolean = defined t = (s = "ifdef") in
+      if boolean then (
         update_if_then_else Dir_if_true (* Next state: ELSE *);
         cont lexbuf)
       else skip_from_if_false token_with_comments cont lexbuf
-  | (IF | LIDENT "ifndef"), (Dir_if_false | Dir_if_true) ->
+  | (IF | LIDENT "ifndef" | LIDENT "ifdef"), (Dir_if_false | Dir_if_true) ->
       raise (Pp_error (Unexpected_directive, Location.curr lexbuf))
   | LIDENT "elif", (Dir_if_false | Dir_out) ->
       (* when the predicate is false, it will continue eating `elif` *)
