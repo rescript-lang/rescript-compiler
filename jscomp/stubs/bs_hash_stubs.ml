@@ -1,5 +1,5 @@
 
-#if BROWSER 
+#ifdef BROWSER 
 
 
 let hash_string : string -> int = Hashtbl.hash
@@ -35,6 +35,6 @@ external
   int array -> int -> int array -> int -> int -> unit = "caml_int_array_blit" [@@noalloc];;
 
 external set_as_old_file : string -> unit = "caml_stale_file"
-#end
+#endif
 
 

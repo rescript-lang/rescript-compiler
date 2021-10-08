@@ -332,11 +332,11 @@ let replace_backward_slash (x : string)=
 
 let empty = ""
 
-#if BROWSER 
+#ifdef BROWSER 
 let compare = Bs_hash_stubs.string_length_based_compare
 #else
 external compare : string -> string -> int = "caml_string_length_based_compare" [@@noalloc];;    
-#end
+#endif
 let single_space = " "
 let single_colon = ":"
 

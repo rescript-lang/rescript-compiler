@@ -23,12 +23,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (** TODO: not exported yet, wait for Windows Fix*)
-#if BROWSER
+#ifdef BROWSER
 let is_directory_no_exn f =
   try Sys.is_directory f with _ -> false  
 #else
 external is_directory_no_exn : string -> bool = "caml_sys_is_directory_no_exn"
-#end
+#endif
 
 
 let is_windows_or_cygwin = Sys.win32 || Sys.cygwin
