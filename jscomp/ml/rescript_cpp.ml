@@ -435,37 +435,37 @@ let at_bol lexbuf =
   let pos = Lexing.lexeme_start_p lexbuf in
   pos.pos_cnum = pos.pos_bol
 
+(* skip to #else | #end | #elif *)
+let rec skip_from_if_false (token_with_comments : Lexing.lexbuf -> Parser.token)
+    cont lexbuf =
+  let token = token_with_comments lexbuf in
+  if token = EOF then raise (Pp_error (Unterminated_if, Location.curr lexbuf))
+  else if token = HASH && at_bol lexbuf then
+    let token = token_with_comments lexbuf in
+    match token with
+    | END | LIDENT "endif" ->
+        update_if_then_else Dir_out;
+        cont lexbuf
+    | ELSE ->
+        update_if_then_else Dir_if_false;
+        cont lexbuf
+    | IF -> raise (Pp_error (Unexpected_directive, Location.curr lexbuf))
+    | LIDENT "elif" when directive_parse token_with_comments lexbuf ->
+        update_if_then_else Dir_if_true;
+        cont lexbuf
+    | _ -> skip_from_if_false token_with_comments cont lexbuf
+  else skip_from_if_false token_with_comments cont lexbuf
+
 let interpret_directive_cont lexbuf ~cont
     ~(token_with_comments : Lexing.lexbuf -> Parser.token) look_ahead =
   (* current state *)
   let if_then_else = !if_then_else in
   match (token_with_comments lexbuf, if_then_else) with
   | IF, Dir_out ->
-      (* skip to #else | #end | #elif *)
-      let rec skip_from_if_false () =
-        let token = token_with_comments lexbuf in
-        if token = EOF then
-          raise (Pp_error (Unterminated_if, Location.curr lexbuf))
-        else if token = HASH && at_bol lexbuf then
-          let token = token_with_comments lexbuf in
-          match token with
-          | END | LIDENT "endif" ->
-              update_if_then_else Dir_out;
-              cont lexbuf
-          | ELSE ->
-              update_if_then_else Dir_if_false;
-              cont lexbuf
-          | IF -> raise (Pp_error (Unexpected_directive, Location.curr lexbuf))
-          | LIDENT "elif" when directive_parse token_with_comments lexbuf ->
-              update_if_then_else Dir_if_true;
-              cont lexbuf
-          | _ -> skip_from_if_false ()
-        else skip_from_if_false ()
-      in
       if directive_parse token_with_comments lexbuf then (
         update_if_then_else Dir_if_true (* Next state: ELSE *);
         cont lexbuf)
-      else skip_from_if_false ()
+      else skip_from_if_false token_with_comments cont lexbuf
   | IF, (Dir_if_false | Dir_if_true) ->
       raise (Pp_error (Unexpected_directive, Location.curr lexbuf))
   | LIDENT "elif", (Dir_if_false | Dir_out) ->
