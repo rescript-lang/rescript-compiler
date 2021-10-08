@@ -229,9 +229,6 @@ let bs_version_string =
   "ReScript " ^ Bs_version.version
 
 let print_version_string () = 
-#ifndef RELEASE
-    print_string "DEV VERSION: ";
-#endif  
   print_endline bs_version_string;
   exit 0 
 
