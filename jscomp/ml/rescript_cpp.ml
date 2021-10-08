@@ -115,14 +115,7 @@ let () =
   *)
   let version = Config.version (* so that it can be overridden*) in
   replace_directive_built_in_value "OCAML_VERSION" (Dir_string version);
-  replace_directive_built_in_value "OCAML_PATCH"
-    (Dir_string
-       (match String.rindex version '+' with
-       | exception Not_found -> ""
-       | i -> String.sub version (i + 1) (String.length version - i - 1)));
-  replace_directive_built_in_value "OS_TYPE" (Dir_string Sys.os_type);
-  replace_directive_built_in_value "BIG_ENDIAN" (Dir_bool Sys.big_endian);
-  replace_directive_built_in_value "WORD_SIZE" (Dir_int Sys.word_size)
+  replace_directive_built_in_value "OS_TYPE" (Dir_string Sys.os_type)
 
 let find_directive_built_in_value k = Hashtbl.find directive_built_in_values k
 
@@ -425,7 +418,6 @@ type dir_conditional = Dir_if_true | Dir_if_false | Dir_out
 (*   | Dir_if_false -> "Dir_if_false" *)
 (*   | Dir_out -> "Dir_out" *)
 
-
 let if_then_else = ref Dir_out
 
 (* store the token after hash, [# token]
@@ -457,7 +449,7 @@ let interpret_directive_cont lexbuf ~cont
         else if token = HASH && at_bol lexbuf then
           let token = token_with_comments lexbuf in
           match token with
-          | END ->
+          | END | LIDENT "endif" ->
               update_if_then_else Dir_out;
               cont lexbuf
           | ELSE ->
@@ -489,7 +481,7 @@ let interpret_directive_cont lexbuf ~cont
         else if token = HASH && at_bol lexbuf then
           let token = token_with_comments lexbuf in
           match token with
-          | END ->
+          | END | LIDENT "endif" ->
               update_if_then_else Dir_out;
               cont lexbuf
           | IF -> raise (Pp_error (Unexpected_directive, Location.curr lexbuf))
@@ -505,10 +497,10 @@ let interpret_directive_cont lexbuf ~cont
       skip_from_if_true (token = ELSE)
   | ELSE, Dir_if_false | ELSE, Dir_out ->
       raise (Pp_error (Unexpected_directive, Location.curr lexbuf))
-  | END, (Dir_if_false | Dir_if_true) ->
+  | (END | LIDENT "endif"), (Dir_if_false | Dir_if_true) ->
       update_if_then_else Dir_out;
       cont lexbuf
-  | END, Dir_out ->
+  | (END | LIDENT "endif"), Dir_out ->
       raise (Pp_error (Unexpected_directive, Location.curr lexbuf))
   | token, (Dir_if_true | Dir_if_false | Dir_out) -> look_ahead token
 
