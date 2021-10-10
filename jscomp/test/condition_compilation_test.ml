@@ -1,18 +1,16 @@
 let b = 
-#if BUFFER_SIZE 
-    && 
-    BUFFER_SIZE > 20 
+#if (defined BUFFER_SIZE && BUFFER_SIZE > 20 )
       "cool"
 #else
       "u"
-#end
+#endif
 
 let buffer_size =
 #if true || BUFFER_SIZE 
       1
 #else
       32
-#end
+#endif
 
 
 
@@ -31,20 +29,20 @@ type open_flag =
   | O_RSYNC
 #if OCAML_VERSION =~ ">=3.13"
   | O_SHARE_DELETE
-#end
+#endif
 #if OCAML_VERSION =~ ">=4.01"
   | O_CLOEXEC
-#end
+#endif
 #if OCAML_VERSION =~ ">=4.03"
   | O_KEEPEXEC
-#end
+#endif
 
 let vv =
 #if 1
       3
 #else
       1
-#end
+#endif
 
 
 let v = ref 1
@@ -52,14 +50,14 @@ let v = ref 1
 let a =
 #if 1
 let () = incr v  in
-#end !v
+#endif !v
 
 let version_gt_3 =
 #if OCAML_VERSION  (* comment *) =~ ">1" 
       true
 #else
       false
-#end
+#endif
 
 let version =
 #if OCAML_VERSION =~ "~2" 
@@ -99,6 +97,5 @@ let eq loc x y =
 let () =
   eq __LOC__ vv 3  ;
   eq __LOC__ !v 2
-
 
 ;; Mt.from_pair_suites __MODULE__ !suites

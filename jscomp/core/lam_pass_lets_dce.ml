@@ -259,7 +259,7 @@ let apply_lets  occ lambda =
 
 let simplify_lets  (lam : Lam.t) : Lam.t = 
   let occ =  Lam_pass_count.collect_occurs  lam in 
-#if undefined BS_RELEASE_BUILD
+#ifndef RELEASE
     Ext_log.dwarn ~__POS__ "@[%a@]@." Lam_pass_count.pp_occ_tbl occ ;
-#end
+#endif
   apply_lets  occ   lam

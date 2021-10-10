@@ -108,12 +108,12 @@ let no_side_effects (rest : Lam_group.t list) : string option =
 
 
 let _d  = fun  s lam -> 
-#if undefined BS_RELEASE_BUILD
+#ifndef RELEASE
     Lam_util.dump  s lam ;
   Ext_log.dwarn ~__POS__ "START CHECKING PASS %s@." s;
   ignore @@ Lam_check.check !Location.input_name lam;
   Ext_log.dwarn ~__POS__ "FINISH CHECKING PASS %s@." s;
-#end
+#endif
   lam
 
 let _j = Js_pass_debug.dump 
@@ -128,10 +128,10 @@ let compile
   let export_ident_sets = Set_ident.of_list export_idents in 
   (* To make toplevel happy - reentrant for js-demo *)
   let () = 
-#if undefined BS_RELEASE_BUILD
+#ifndef RELEASE
       Ext_list.iter export_idents 
       (fun id -> Ext_log.dwarn ~__POS__ "export idents: %s/%d"  id.name id.stamp) ;
-#end      
+#endif      
     Lam_compile_env.reset () ;
   in 
   let lam, may_required_modules = Lam_convert.convert export_ident_sets lam in 
@@ -152,10 +152,10 @@ let compile
       |>  Lam_pass_exits.simplify_exits
       |> _d "simplyf_exits"
       |> (fun lam -> Lam_pass_collect.collect_info meta lam; 
-#if undefined BS_RELEASE_BUILD      
+#ifndef RELEASE      
       let () = 
         Ext_log.dwarn ~__POS__ "Before simplify_alias: %a@." Lam_stats.print meta in       
-#end      
+#endif      
       lam)
       |>  Lam_pass_remove_alias.simplify_alias  meta
       |> _d "simplify_alias"
@@ -192,20 +192,20 @@ let compile
        |> _d "scc" *)
     |> Lam_pass_exits.simplify_exits
     |> _d "simplify_lets"
-#if undefined BS_RELEASE_BUILD
+#ifndef RELEASE
     |> (fun lam -> 
         let () = 
           Ext_log.dwarn ~__POS__ "Before coercion: %a@." Lam_stats.print meta in 
         Lam_check.check !Location.input_name lam
       ) 
-#end    
+#endif    
   in
 
   let ({Lam_coercion.groups = groups } as coerced_input , meta) = 
     Lam_coercion.coerce_and_group_big_lambda  meta lam
   in 
 
-#if undefined BS_RELEASE_BUILD
+#ifndef RELEASE
 let () =
   Ext_log.dwarn ~__POS__ "After coercion: %a@." Lam_stats.print meta ;
   if Js_config.get_diagnose () then
@@ -216,19 +216,19 @@ let () =
         Lam_group.pp_group  fmt (coerced_input.groups) 
     end;
 in
-#end  
+#endif  
 let maybe_pure = no_side_effects groups in
-#if undefined BS_RELEASE_BUILD
+#ifndef RELEASE
 let () = Ext_log.dwarn ~__POS__ "\n@[[TIME:]Pre-compile: %f@]@."  (Sys.time () *. 1000.) in      
-#end  
+#endif  
 let body  =     
   Ext_list.map groups (fun group -> compile_group meta group)
   |> Js_output.concat
   |> Js_output.output_as_block
 in
-#if undefined BS_RELEASE_BUILD
+#ifndef RELEASE
 let () = Ext_log.dwarn ~__POS__ "\n@[[TIME:]Post-compile: %f@]@."  (Sys.time () *. 1000.) in      
-#end    
+#endif    
 (* The file is not big at all compared with [cmo] *)
 (* Ext_marshal.to_file (Ext_path.chop_extension filename ^ ".mj")  js; *)
 let meta_exports = meta.exports in 
@@ -317,12 +317,12 @@ let lambda_as_module
              target_file output_chan );
         if !Warnings.has_warnings  then begin 
           Warnings.has_warnings := false ;
-#if BS_BROWSER
+#ifdef BROWSER
 #else          
           if Sys.file_exists target_file then begin 
             Bs_hash_stubs.set_as_old_file target_file
           end          
-#end          
+#endif          
         end             
       )
 

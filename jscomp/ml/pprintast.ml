@@ -768,7 +768,7 @@ and value_description ctxt f x =
            but they're already printed by the callers this method *)
   pp f "@[<hov2>%a%a@]" (core_type ctxt) x.pval_type
     (fun f x ->
-#if undefined BS_RELEASE_BUILD
+#ifndef RELEASE
       match x.pval_prim with 
       | first :: second :: _ 
         when Ext_string.first_marshal_char second
@@ -783,7 +783,7 @@ and value_description ctxt f x =
 #else        
        if x.pval_prim <> []
        then pp f "@ =@ %a" (list constant_string) x.pval_prim
-#end
+#endif
     ) x
 
 and extension ctxt f (s, e) =

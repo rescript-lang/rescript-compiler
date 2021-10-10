@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-#if BS_RELEASE_BUILD 
+#ifdef RELEASE 
 (*true *)
 
 
@@ -73,4 +73,4 @@ let load_cmi ~unit_name : Env.Persistent_signature.t option =
   match Config_util.find_opt (unit_name ^".cmi") with 
   | Some filename -> Some {filename; cmi = Cmi_format.read_cmi filename}
   | None -> None 
-#end    
+#endif    

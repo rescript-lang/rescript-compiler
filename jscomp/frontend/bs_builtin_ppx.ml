@@ -435,11 +435,9 @@ let rec
     | Pstr_extension ( ({txt = ("bs.raw"| "raw") ; loc}, payload), _attrs)
       ->
       Ast_exp_handle_external.handle_raw_structure loc payload :: structure_mapper self rest
-#if undefined BS_RELEASE_BUILD
-    | Pstr_extension (({txt = "i"}, _),_)
+    (* | Pstr_extension (({txt = "i"}, _),_)
       -> 
-      structure_mapper self rest
-#end      
+      structure_mapper self rest *)
     | Pstr_extension (({txt = "private"}, _),_)
       -> 
       let rec aux acc (rest : Ast_structure.t) =

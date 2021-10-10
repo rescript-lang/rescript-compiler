@@ -40,9 +40,9 @@ let cross_module_inline = ref false
 let diagnose = ref false
 let get_diagnose () = 
   !diagnose
-#if undefined BS_RELEASE_BUILD
+#ifndef RELEASE
   || Sys.getenv_opt "RES_DEBUG_FILE" <> None
-#end
+#endif
 
 (* let (//) = Filename.concat *)
 
@@ -89,8 +89,8 @@ let no_export = ref false
 let as_ppx = ref false
 
 
-
-let customize_runtime = ref None 
+(* option to config `@rescript/std`*)
+let customize_runtime : string option ref = ref None 
 
 let as_pp = ref false
 

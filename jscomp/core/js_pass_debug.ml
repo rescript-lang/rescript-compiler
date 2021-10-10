@@ -26,7 +26,7 @@
 
 
 
-#if BS_BROWSER || BS_RELEASE_BUILD
+#if (defined BROWSER || defined RELEASE)
 let dump _ (prog : J.program) = 
   prog
 #else
@@ -47,5 +47,5 @@ let dump name (prog : J.program) =
         end in
     prog    
   end
-#end
+#endif
 

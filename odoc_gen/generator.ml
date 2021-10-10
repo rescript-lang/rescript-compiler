@@ -348,7 +348,7 @@ struct
   end
 end
 let _ = Odoc_args.extend_html_generator (module Generator : Odoc_gen.Html_functor);
-#end
+#endif
 (* local variables: *)
 (* compile-command: "ocamlc.opt -I +compiler-libs -I +ocamldoc -c generator.mli generator.ml" *)
 (* end: *)
