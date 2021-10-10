@@ -409,11 +409,7 @@ and attributes i ppf l =
   let i = i + 1 in
   List.iter
     (fun (s, arg) ->
-#if undefined BS_NO_COMPILER_PATCH then
       line i ppf "attribute %a \"%s\"\n"  fmt_location (s: _ Asttypes.loc).loc s.txt;    
-#else       
-      line i ppf "attribute \"%s\"\n" s.txt;
-#end
       payload (i + 1) ppf arg;
     )
     l

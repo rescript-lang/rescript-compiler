@@ -118,9 +118,7 @@ let setup_colors () =
 let print_loc ppf loc =
   setup_colors ();
   let (file, line, startchar) = get_pos_info loc.loc_start in
-#if 1
   let startchar =  startchar + 1 in 
-#end      
   let endchar = loc.loc_end.pos_cnum - loc.loc_start.pos_cnum + startchar in
   begin
     fprintf ppf "%s@{<loc>%a%s%i" msg_file print_filename file msg_line line;

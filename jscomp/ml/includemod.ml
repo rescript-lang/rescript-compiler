@@ -55,11 +55,7 @@ let value_descriptions ~loc env cxt subst id vd1 vd2 =
   Env.mark_value_used env (Ident.name id) vd1;
   let vd2 = Subst.value_description subst vd2 in
   try
-#if undefined BS_NO_COMPILER_PATCH then
     Includecore.value_descriptions ~loc env id vd1 vd2
-#else    
-    Includecore.value_descriptions ~loc env (Ident.name id) vd1 vd2
-#end      
   with Includecore.Dont_match ->
     raise(Error[cxt, env, Value_descriptions(id, vd1, vd2)])
 

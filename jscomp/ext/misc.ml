@@ -545,9 +545,8 @@ module Color = struct
     | BG of color (* background *)
     | Bold
     | Reset
-#if undefined BS_NO_COMPILER_PATCH then
     | Dim
-#end
+
 
   let ansi_of_color = function
     | Black -> "0"
@@ -564,9 +563,8 @@ module Color = struct
     | BG c -> "4" ^ ansi_of_color c
     | Bold -> "1"
     | Reset -> "0"
-#if undefined BS_NO_COMPILER_PATCH then
     | Dim -> "2"
-#end
+
 
   let ansi_of_style_l l =
     let s = match l with
@@ -598,11 +596,9 @@ module Color = struct
     | "error" -> (!cur_styles).error
     | "warning" -> (!cur_styles).warning
     | "loc" -> (!cur_styles).loc
-#if undefined BS_NO_COMPILER_PATCH then
     | "info" -> [Bold; FG Yellow]
     | "dim" -> [Dim]
     | "filename" -> [FG Cyan]
-#end                 
     | _ -> raise Not_found
 
   let color_enabled = ref true

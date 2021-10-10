@@ -66,9 +66,8 @@ let setup_env () =
   Rescript_cpp.replace_directive_bool "BS" true;
   Rescript_cpp.replace_directive_bool "JS" true;
   Rescript_cpp.replace_directive_string "BS_VERSION"  Bs_version.version
-#if false
-  ; Switch.cut := 100 (* tweakable but not very useful *)
-#end  
+  (*; Switch.cut := 100*) (* tweakable but not very useful *)
+
 
 let () = 
   at_exit (fun _ -> Format.pp_print_flush Format.err_formatter ())
