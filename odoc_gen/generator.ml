@@ -1,4 +1,4 @@
-#if OCAML_VERSION =~ "<=4.12.0" (*investigate later*)
+(*
 open Odoc_info
 open Value
 open Type
@@ -348,7 +348,7 @@ struct
   end
 end
 let _ = Odoc_args.extend_html_generator (module Generator : Odoc_gen.Html_functor);
-#endif
+*)
 (* local variables: *)
 (* compile-command: "ocamlc.opt -I +compiler-libs -I +ocamldoc -c generator.mli generator.ml" *)
 (* end: *)

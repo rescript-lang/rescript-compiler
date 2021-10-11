@@ -1,6 +1,5 @@
-# 1 "core/js_pass_debug.pp.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -27,22 +26,74 @@
 
 
 
-# 33 "core/js_pass_debug.pp.ml"
-let log_counter = ref 0 
 
-let dump name (prog : J.program) =
-  begin
-    let () = 
-      if Js_config.get_diagnose ()
-      then 
-        begin
-          incr log_counter ; 
-          Ext_log.dwarn ~__POS__ "\n@[[TIME:]%s: %f@]@." name (Sys.time () *. 1000.);          
-          Ext_pervasives.with_file_as_chan       
-            (Ext_filename.new_extension !Location.input_name
-               (Printf.sprintf ".%02d.%s.jsx"  !log_counter name)
-            ) (fun chan -> Js_dump_program.dump_program prog chan )
-        end in
-    prog    
-  end
 
+(** Browser is not set via command line only for internal use *)
+
+
+let no_version_header = ref false
+
+let cross_module_inline = ref false
+
+
+
+let diagnose = ref false
+let get_diagnose () = 
+  !diagnose
+#ifndef RELEASE
+  || Sys.getenv_opt "RES_DEBUG_FILE" <> None
+#endif
+
+(* let (//) = Filename.concat *)
+
+(* let get_packages_info () = !packages_info *)
+
+let no_builtin_ppx = ref false
+
+
+
+
+let tool_name = "ReScript"
+
+let check_div_by_zero = ref true
+let get_check_div_by_zero () = !check_div_by_zero
+
+
+
+let syntax_only = ref false
+let binary_ast = ref false
+
+
+
+let debug = ref false
+
+let cmi_only = ref false  
+let cmj_only = ref false
+
+let force_cmi = ref false
+let force_cmj = ref false
+
+let jsx_version = ref (-1)
+
+
+let js_stdout = ref true
+
+let all_module_aliases = ref false
+
+let no_stdlib = ref false
+
+let no_export = ref false
+
+
+
+let as_ppx = ref false
+
+
+(* option to config `@rescript/std`*)
+let customize_runtime : string option ref = ref None 
+
+let as_pp = ref false
+
+let self_stack : string Stack.t = Stack.create ()
+
+let modules = ref false

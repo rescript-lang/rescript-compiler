@@ -1,4 +1,3 @@
-# 1 "core/js_name_of_module_id.pp.ml"
 (* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -191,3 +190,15 @@ let string_of_module_id
 
 
 (* Override it in browser *)
+#ifdef BROWSER
+let string_of_module_id_in_browser (x : Lam_module_ident.t) =  
+  match x.kind with
+  | External {name} -> name
+  | Runtime | Ml -> 
+    "./stdlib/" ^  Ext_string.uncapitalize_ascii x.id.name ^ ".js"
+let string_of_module_id 
+    (id : Lam_module_ident.t)
+    ~output_dir:(_:string)
+    (_module_system : Js_packages_info.module_system)
+  = string_of_module_id_in_browser id
+#endif

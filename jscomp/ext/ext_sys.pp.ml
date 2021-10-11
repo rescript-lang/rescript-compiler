@@ -1,6 +1,5 @@
-# 1 "core/js_pass_debug.pp.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript 
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -23,26 +22,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** TODO: not exported yet, wait for Windows Fix*)
+#ifdef BROWSER
+let is_directory_no_exn f =
+  try Sys.is_directory f with _ -> false  
+#else
+external is_directory_no_exn : string -> bool = "caml_sys_is_directory_no_exn"
+#endif
 
 
+let is_windows_or_cygwin = Sys.win32 || Sys.cygwin
 
-
-# 33 "core/js_pass_debug.pp.ml"
-let log_counter = ref 0 
-
-let dump name (prog : J.program) =
-  begin
-    let () = 
-      if Js_config.get_diagnose ()
-      then 
-        begin
-          incr log_counter ; 
-          Ext_log.dwarn ~__POS__ "\n@[[TIME:]%s: %f@]@." name (Sys.time () *. 1000.);          
-          Ext_pervasives.with_file_as_chan       
-            (Ext_filename.new_extension !Location.input_name
-               (Printf.sprintf ".%02d.%s.jsx"  !log_counter name)
-            ) (fun chan -> Js_dump_program.dump_program prog chan )
-        end in
-    prog    
-  end
 
