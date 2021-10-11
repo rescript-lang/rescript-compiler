@@ -65,12 +65,12 @@
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./ext/ext_ref.mli
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./ext/ext_scc.ml
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./ext/ext_scc.mli
-../lib/4.06.1/unstable/all_ounit_tests.ml: ./ext/ext_string.ml
-../lib/4.06.1/unstable/all_ounit_tests.ml: ./ext/ext_string.mli
+../lib/4.06.1/unstable/all_ounit_tests.ml: ./ext/ext_string.pp.ml
+../lib/4.06.1/unstable/all_ounit_tests.ml: ./ext/ext_string.pp.mli
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./ext/ext_string_array.ml
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./ext/ext_string_array.mli
-../lib/4.06.1/unstable/all_ounit_tests.ml: ./ext/ext_sys.ml
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./ext/ext_sys.mli
+../lib/4.06.1/unstable/all_ounit_tests.ml: ./ext/ext_sys.pp.ml
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./ext/ext_topsort.ml
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./ext/ext_topsort.mli
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./ext/ext_utf8.ml
@@ -192,4 +192,4 @@
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./ounit_tests/ounit_utf8_test.ml
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./ounit_tests/ounit_util_tests.ml
 ../lib/4.06.1/unstable/all_ounit_tests.ml: ./ounit_tests/ounit_vec_test.ml
-../lib/4.06.1/unstable/all_ounit_tests.ml: ./stubs/bs_hash_stubs.ml
+../lib/4.06.1/unstable/all_ounit_tests.ml: ./stubs/bs_hash_stubs.pp.ml

@@ -752,7 +752,7 @@ let assoc3 (l : 'a t) (x : string) : 'a option =
 
 end
 module Ext_string : sig 
-#1 "ext_string.mli"
+#1 "ext_string.pp.mli"
 (* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
  * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
@@ -978,7 +978,7 @@ val first_marshal_char:
   string -> 
   bool
 end = struct
-#1 "ext_string.ml"
+#1 "ext_string.pp.ml"
 (* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
  * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
@@ -4732,7 +4732,7 @@ val is_directory_no_exn : string -> bool
 val is_windows_or_cygwin : bool
 
 end = struct
-#1 "ext_sys.ml"
+#1 "ext_sys.pp.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -8896,7 +8896,7 @@ let parse_json_from_file s =
 end
 module Bs_hash_stubs
 = struct
-#1 "bs_hash_stubs.ml"
+#1 "bs_hash_stubs.pp.ml"
 
 
 external hash_string :  string -> int = "caml_bs_hash_string" [@@noalloc];;

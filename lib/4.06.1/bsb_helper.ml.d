@@ -14,8 +14,8 @@
 ../lib/4.06.1/bsb_helper.ml: ./ext/ext_namespace_encode.mli
 ../lib/4.06.1/bsb_helper.ml: ./ext/ext_pervasives.ml
 ../lib/4.06.1/bsb_helper.ml: ./ext/ext_pervasives.mli
-../lib/4.06.1/bsb_helper.ml: ./ext/ext_string.ml
-../lib/4.06.1/bsb_helper.ml: ./ext/ext_string.mli
+../lib/4.06.1/bsb_helper.ml: ./ext/ext_string.pp.ml
+../lib/4.06.1/bsb_helper.ml: ./ext/ext_string.pp.mli
 ../lib/4.06.1/bsb_helper.ml: ./ext/ext_string_array.ml
 ../lib/4.06.1/bsb_helper.ml: ./ext/ext_string_array.mli
 ../lib/4.06.1/bsb_helper.ml: ./ext/literals.ml

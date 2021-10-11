@@ -303,7 +303,7 @@ external unsafe_blit_string : string -> int -> bytes -> int -> int -> unit
 
 end
 module Ext_string : sig 
-#1 "ext_string.mli"
+#1 "ext_string.pp.mli"
 (* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
  * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
@@ -529,7 +529,7 @@ val first_marshal_char:
   string -> 
   bool
 end = struct
-#1 "ext_string.ml"
+#1 "ext_string.pp.ml"
 (* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
  * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify

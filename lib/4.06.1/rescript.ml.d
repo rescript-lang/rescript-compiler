@@ -112,10 +112,10 @@
 ../lib/4.06.1/rescript.ml: ./ext/ext_position.mli
 ../lib/4.06.1/rescript.ml: ./ext/ext_spec.ml
 ../lib/4.06.1/rescript.ml: ./ext/ext_spec.mli
-../lib/4.06.1/rescript.ml: ./ext/ext_string.ml
-../lib/4.06.1/rescript.ml: ./ext/ext_string.mli
-../lib/4.06.1/rescript.ml: ./ext/ext_sys.ml
+../lib/4.06.1/rescript.ml: ./ext/ext_string.pp.ml
+../lib/4.06.1/rescript.ml: ./ext/ext_string.pp.mli
 ../lib/4.06.1/rescript.ml: ./ext/ext_sys.mli
+../lib/4.06.1/rescript.ml: ./ext/ext_sys.pp.ml
 ../lib/4.06.1/rescript.ml: ./ext/ext_util.ml
 ../lib/4.06.1/rescript.ml: ./ext/ext_util.mli
 ../lib/4.06.1/rescript.ml: ./ext/hash.ml
@@ -134,4 +134,4 @@
 ../lib/4.06.1/rescript.ml: ./ext/set_string.mli
 ../lib/4.06.1/rescript.ml: ./main/rescript_main.ml
 ../lib/4.06.1/rescript.ml: ./main/rescript_main.mli
-../lib/4.06.1/rescript.ml: ./stubs/bs_hash_stubs.ml
+../lib/4.06.1/rescript.ml: ./stubs/bs_hash_stubs.pp.ml
