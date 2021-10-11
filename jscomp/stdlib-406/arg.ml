@@ -80,18 +80,11 @@ let print_spec buf (key, spec, doc) =
   if String.length doc > 0 then
     match spec with
     | Symbol (l, _) ->
-#if 0    
-        bprintf buf "  %s %s%s\n" key (make_symlist "{" "|" "}" l) doc
-#else
         let sym = make_symlist "{" "|" "}" l in 
         Buffer.add_string buf {j|  $(key) $(sym)$(doc)\n|j}
-#end
     | _ ->
-#if 0    
-        bprintf buf "  %s %s\n" key doc
-#else
         Buffer.add_string buf {j|  $(key) $(doc)\n|j}
-#end
+
 
 
 let help_action () = raise (Stop (Unknown "-help"))
@@ -110,11 +103,7 @@ let add_help speclist =
 
 
 let usage_b buf speclist errmsg =
-#if 0  
-  bprintf buf "%s\n" errmsg;
-#else
   Buffer.add_string buf {j|$(errmsg)\n|j};
-#end
   List.iter (print_spec buf) (add_help speclist)
 
 
@@ -155,30 +144,13 @@ let parse_and_expand_argv_dynamic_aux allow_expand current argv speclist anonfun
       | Unknown "-help" -> ()
       | Unknown "--help" -> ()
       | Unknown s ->
-#if 0      
-          bprintf b "%s: unknown option '%s'.\n" progname s
-#else
           Buffer.add_string b {j|$(progname): unknown option '$(s)'.\n|j} 
-#end          
       | Missing s ->
-#if 0      
-          bprintf b "%s: option '%s' needs an argument.\n" progname s
-#else
           Buffer.add_string b {j|$(progname): option '$(s)' needs an argument.\n|j}
-#end          
       | Wrong (opt, arg, expected) ->
-#if 0      
-          bprintf b "%s: wrong argument '%s'; option '%s' expects %s.\n"
-                  progname arg opt expected
-#else
           Buffer.add_string b {j|$(progname): wrong argument '$(arg)'; option '$(opt)' expects $(expected).\n|j}
-#end                  
       | Message s -> (* user error message *)
-#if 0      
-          bprintf b "%s: %s.\n" progname s
-#else
           Buffer.add_string b {j|$(progname): $(s).\n|j}
-#end          
     end;
     usage_b b !speclist errmsg;
     if error = Unknown "-help" || error = Unknown "--help"
@@ -385,49 +357,3 @@ let align ?(limit=max_int) speclist =
   let len = List.fold_left max_arg_len 0 completed in
   let len = min len limit in
   List.map (add_padding len) completed
-#if 0
-let trim_cr s =
-  let len = String.length s in
-  if len > 0 && String.get s (len - 1) = '\r' then
-    String.sub s 0 (len - 1)
-  else
-    s
-
-let read_aux trim sep file =
-  let ic = open_in_bin file in
-  let buf = Buffer.create 200 in
-  let words = ref [] in
-  let stash () =
-    let word =  (Buffer.contents buf) in
-    let word = if trim then trim_cr word else word in
-    words := word :: !words;
-    Buffer.clear buf
-  in
-  let rec read () =
-    try
-      let c = input_char ic in
-      if c = sep then begin
-        stash (); read ()
-      end else begin
-        Buffer.add_char buf c; read ()
-      end
-    with End_of_file ->
-      if Buffer.length buf > 0 then
-        stash () in
-  read ();
-  close_in ic;
-  Array.of_list (List.rev !words)
-
-let read_arg = read_aux true '\n'
-
-let read_arg0 = read_aux false '\x00'
-
-let write_aux sep file args =
-  let oc = open_out_bin file in
-  Array.iter (fun s -> fprintf oc "%s%c" s sep) args;
-  close_out oc
-
-let write_arg = write_aux '\n'
-
-let write_arg0 = write_aux '\x00'
-#end

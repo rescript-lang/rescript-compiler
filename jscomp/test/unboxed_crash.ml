@@ -4,12 +4,12 @@
     [|
       "-w";
       "@A";
-      "-drawlambda";
+      (* "-drawlambda"; *)
       (* "-dtypedtree"; *)
-      "-bs-diagnose"
+      (* "-bs-diagnose" *)
       (* "-dparsetree"; *)
       (* "-dsource"; *)
-      (* "-bs-no-builtin-ppx"; *);
+      (* "-bs-no-builtin-ppx"; *)
     |];
 }]
 
