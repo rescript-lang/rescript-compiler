@@ -1,3 +1,4 @@
+# 1 "core/lam_pass_lets_dce.pp.ml"
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -259,7 +260,9 @@ let apply_lets  occ lambda =
 
 let simplify_lets  (lam : Lam.t) : Lam.t = 
   let occ =  Lam_pass_count.collect_occurs  lam in 
-#ifndef RELEASE
+    
+# 263 "core/lam_pass_lets_dce.pp.ml"
     Ext_log.dwarn ~__POS__ "@[%a@]@." Lam_pass_count.pp_occ_tbl occ ;
-#endif
+  
+# 265 "core/lam_pass_lets_dce.pp.ml"
   apply_lets  occ   lam

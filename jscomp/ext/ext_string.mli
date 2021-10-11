@@ -1,3 +1,4 @@
+# 1 "ext/ext_string.pp.mli"
 (* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
  * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
@@ -164,11 +165,9 @@ val replace_backward_slash : string -> string
 
 val empty : string 
 
-#ifdef BROWSER 
-val compare :  string -> string -> int
-#else
+# 170 "ext/ext_string.pp.mli"
 external compare : string -> string -> int = "caml_string_length_based_compare" [@@noalloc];;  
-#endif  
+# 172 "ext/ext_string.pp.mli"
 val single_space : string
 
 val concat3 : string -> string -> string -> string 

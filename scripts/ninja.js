@@ -73,8 +73,6 @@ exports.vendorNinjaPath = vendorNinjaPath;
  *
  */
 
-
-
 /**
  * @type {string}
  */
@@ -1013,6 +1011,7 @@ ${ninjaQuickBuidList([
       x.startsWith("js") &&
       (x.endsWith(".ml") || x.endsWith(".mli")) &&
       !x.includes(".cppo") &&
+      !x.includes(".pp") &&
       !x.includes("#")
   );
   var othersFiles = othersDirFiles.filter(
@@ -1426,6 +1425,7 @@ function test(dir) {
       return (
         (x.endsWith(".ml") || x.endsWith(".mli")) &&
         !(x.endsWith(".cppo.ml") || x.endsWith(".cppo.mli")) &&
+        !(x.endsWith(".pp.ml") || x.endsWith(".pp.mli")) &&
         !black_list.some((name) => x.includes(name))
       );
     })
@@ -1491,10 +1491,29 @@ ${cppoList("ext", [
   ["hash_int.ml", "hash.cppo.ml", dTypeInt],
   ["hash_ident.ml", "hash.cppo.ml", dTypeIdent],
   ["hash.ml", "hash.cppo.ml", dTypeFunctor],
+  ["ext_string.ml", "ext_string.pp.ml"],
+  ["ext_string.mli", "ext_string.pp.mli"],
+  ["ext_sys.ml", "ext_sys.pp.ml"],
 ])}
-
+${cppoList("stubs", [["bs_hash_stubs.ml", "bs_hash_stubs.pp.ml"]])}
+${cppoList("ml", [
+  ["cmt_format.ml", "cmt_format.pp.ml"],
+  ["pprintast.ml", "pprintast.pp.ml"],
+])}
+${cppoList("common", [["js_config.ml", "js_config.pp.ml"]])}
+${cppoList("frontend", [["external_ffi_types.ml", "external_ffi_types.pp.ml"]])}
+${cppoList("core", [
+  ["lam_compile_main.ml", "lam_compile_main.pp.ml"],
+  ["bs_cmi_load.ml", "bs_cmi_load.pp.ml"],
+  ["bs_conditional_initial.ml", "bs_conditional_initial.pp.ml"],
+  ["js_cmj_load.ml", "js_cmj_load.pp.ml"],
+  ["js_name_of_module_id.ml", "js_name_of_module_id.pp.ml"],
+  ["js_pass_debug.ml", "js_pass_debug.pp.ml"],
+  ["lam_pass_lets_dce.ml", "lam_pass_lets_dce.pp.ml"],
+  ["lam_util.ml", "lam_util.pp.ml"],
+])}
 ${mllRule}
-${mllList("ext",["ext_json_parse.mll"])}
+${mllList("ext", ["ext_json_parse.mll"])}
 ${mllList("ml", ["lexer.mll"])}
 rule copy
   command = cp $in $out
@@ -1550,15 +1569,6 @@ var bsc_libs = [
   "core",
 ];
 
-var bspack_libs = [
-  "stubs",
-  "ext",
-  ...compiler_libs,
-  "common",
-  "frontend",
-  "depends",
-];
-
 var bsb_helper_libs = ["stubs", "ext", "common", "bsb_helper"];
 
 var rescript_libs = ["stubs", "ext", "common", "bsb"];
@@ -1607,11 +1617,11 @@ function nativeNinja() {
   var includes = sourceDirs.map((x) => `-I ${x}`).join(" ");
 
   var flags = "-w A-4-9-40..42-30-48-50-44-45";
-  var minor_version= +getVersionString().split(".")[1];
+  var minor_version = +getVersionString().split(".")[1];
   if (minor_version > 12) {
     flags += "-69-70"; // we should turn -69 on except for vendored files
   }
-  if ( minor_version > 7) {
+  if (minor_version > 7) {
     flags += "-3-67 -error-style short";
   }
   var templateNative = `
@@ -1687,10 +1697,7 @@ o ./bin/cmij.exe: link ${makeLibs(cmij_libs)} main/cmij_main.cmx
 o ./bin/tests.exe: link ${makeLibs(tests_libs)} main/ounit_tests_main.cmx
     libs = str.cmxa unix.cmxa 
 build native: phony ../${my_target}/bsc.exe ../${my_target}/rescript.exe ../${my_target}/bsb_helper.exe ./bin/bspack.exe ./bin/cmjdump.exe ./bin/cmij.exe ./bin/tests.exe
-rule bspack
-    command = ./bin/bspack.exe $flags -bs-main $main -o $out
-    depfile = $out.d
-    generator = true
+
 
 ${mllRule}
 ${mlyRule}

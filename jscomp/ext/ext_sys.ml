@@ -1,3 +1,4 @@
+# 1 "ext/ext_sys.pp.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -23,14 +24,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (** TODO: not exported yet, wait for Windows Fix*)
-#ifdef BROWSER
-let is_directory_no_exn f =
-  try Sys.is_directory f with _ -> false  
-#else
+# 30 "ext/ext_sys.pp.ml"
 external is_directory_no_exn : string -> bool = "caml_sys_is_directory_no_exn"
-#endif
 
 
+# 34 "ext/ext_sys.pp.ml"
 let is_windows_or_cygwin = Sys.win32 || Sys.cygwin
 
 

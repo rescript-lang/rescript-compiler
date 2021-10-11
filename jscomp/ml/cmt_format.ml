@@ -1,3 +1,4 @@
+# 1 "ml/cmt_format.pp.ml"
 (**************************************************************************)
 (*                                                                        *)
 (*                                 OCaml                                  *)
@@ -165,9 +166,8 @@ let record_value_dependency vd1 vd2 =
     value_deps := (vd1, vd2) :: !value_deps
 
 let save_cmt filename modname binary_annots sourcefile initial_env cmi =
-#ifdef BROWSER
-  ()  
-#else  
+  
+# 171 "ml/cmt_format.pp.ml"
   if !Clflags.binary_annotations then begin
     (if !Config.bs_only then Misc.output_to_bin_file_directly else 
     Misc.output_to_file_via_temporary
@@ -198,4 +198,3 @@ let save_cmt filename modname binary_annots sourcefile initial_env cmi =
          output_cmt oc cmt)
   end;
   clear ()
-#endif

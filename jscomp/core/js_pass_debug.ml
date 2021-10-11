@@ -1,3 +1,4 @@
+# 1 "core/js_pass_debug.pp.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript 
  * This program is free software: you can redistribute it and/or modify
@@ -26,10 +27,7 @@
 
 
 
-#if (defined BROWSER || defined RELEASE)
-let dump _ (prog : J.program) = 
-  prog
-#else
+# 33 "core/js_pass_debug.pp.ml"
 let log_counter = ref 0 
 
 let dump name (prog : J.program) =
@@ -47,5 +45,4 @@ let dump name (prog : J.program) =
         end in
     prog    
   end
-#endif
 

@@ -1,3 +1,4 @@
+# 1 "core/lam_util.pp.ml"
 (* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
  * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript 
  * This program is free software: you can redistribute it and/or modify
@@ -211,10 +212,7 @@ let generate_label ?(name="") ()  =
   incr count; 
   Printf.sprintf "%s_tailcall_%04d" name !count
 
-#if (defined BROWSER || defined RELEASE)
-let dump ext  lam = 
-  ()
-#else
+# 218 "core/lam_util.pp.ml"
 let log_counter = ref 0
 let dump ext  lam = 
   if Js_config.get_diagnose ()
@@ -229,12 +227,12 @@ let dump ext  lam =
            (Printf.sprintf ".%02d%s.lam" !log_counter ext)
         ) lam;
     end
-#endif      
 
 
 
 
 
+# 238 "core/lam_util.pp.ml"
 let is_function (lam : Lam.t) = 
   match lam with 
   | Lfunction _ -> true | _ -> false
