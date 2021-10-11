@@ -1,6 +1,6 @@
 releaseMode = -D RELEASE=true
 rule bspack    
-    command = ./bin/bspack.exe $releaseMode $flags -bs-main $main -o $out  $post_process
+    command = ./bin/bspack.exe $releaseMode $flags -main $main -o $out  $post_process
     depfile = $out.d
     generator = true
 
@@ -14,27 +14,27 @@ SNAP=../lib/$snapshot_path
 build snapshot: phony  $SNAP/whole_compiler.ml   $SNAP/bsb_helper.ml  $SNAP/unstable/all_ounit_tests.ml
 # $SNAP/bspp.ml
 build $SNAP/whole_compiler.ml: bspack | ./bin/bspack.exe $LTO
-    flags = ${releaseMode}  -bs-MD    -I ml   $includes
+    flags = ${releaseMode}  -MD    -I ml   $includes
     main = Rescript_compiler_main
     post_process = && node $LTO $SNAP/whole_compiler.ml
 
 build $SNAP/bsb_helper.ml: bspack | ./bin/bspack.exe $LTO
-     flags = -bs-MD ${releaseMode}   $includes
+     flags = -MD ${releaseMode}   $includes
      main = Bsb_helper_main 
 
 
 build $SNAP/rescript.ml: bspack | ./bin/bspack.exe $LTO
-     flags =   -D BS_MIN_LEX_DEPS=true -bs-MD ${releaseMode} -I ml $includes
+     flags =   -D BS_MIN_LEX_DEPS=true -MD ${releaseMode} -I ml $includes
      main = Rescript_main 
 
 
 o $SNAP/unstable/all_ounit_tests.ml: bspack | ./bin/bspack.exe $LTO
-    flags =  -bs-MD    $includes  -I ml
+    flags =  -MD    $includes  -I ml
     main = Ounit_tests_main         
 
 
 o $SNAP/unstable/js_compiler.ml: bspack | ./bin/bspack.exe $LTO
-    flags = -D BROWSER=true  -bs-MD    -I ml  $includes
+    flags = -D BROWSER=true  -MD    -I ml  $includes
     main  = Jsoo_main
 
 
