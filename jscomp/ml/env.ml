@@ -658,15 +658,11 @@ let imported_units = ref StringSet.empty
 let add_import s =
   imported_units := StringSet.add s !imported_units
 
-let imported_opaque_units = ref StringSet.empty
-
-let add_imported_opaque s =
-  imported_opaque_units := StringSet.add s !imported_opaque_units
 
 let clear_imports () =
   Consistbl.clear crc_units;
-  imported_units := StringSet.empty;
-  imported_opaque_units := StringSet.empty
+  imported_units := StringSet.empty
+
 
 let check_consistency ps =
   try
@@ -686,12 +682,6 @@ let check_consistency ps =
 let save_pers_struct crc ps =
   let modname = ps.ps_name in
   Hashtbl.add persistent_structures modname (Some ps);
-  List.iter
-    (function
-        | Rectypes -> ()
-        | Deprecated _ -> ()
-        | Opaque -> add_imported_opaque modname)
-    ps.ps_flags;
   Consistbl.set crc_units modname crc ps.ps_filename;
   add_import modname
 
@@ -713,7 +703,7 @@ let acknowledge_pers_struct check modname
   let crcs = cmi.cmi_crcs in
   let flags = cmi.cmi_flags in
   let deprecated =
-    List.fold_left (fun acc -> function Deprecated s -> Some s | _ -> acc) None
+    List.fold_left (fun _ -> function Deprecated s -> Some s ) None
       flags
   in
   let comps =
@@ -731,14 +721,6 @@ let acknowledge_pers_struct check modname
            } in
   if ps.ps_name <> modname then
     error (Illegal_renaming(modname, ps.ps_name, filename));
-
-  List.iter
-    (function
-        | Rectypes ->
-              error (Need_recursive_types(ps.ps_name, !current_unit))
-        | Deprecated _ -> ()
-        | Opaque -> add_imported_opaque modname)
-    ps.ps_flags;
   if check then check_consistency ps;
   Hashtbl.add persistent_structures modname (Some ps);
   ps
@@ -2115,9 +2097,6 @@ let imports () =
       (StringSet.fold 
       (fun m acc -> if m = x then acc else m::acc) 
       !imported_units []) crc_units
-(* Returns true if [s] is an opaque imported module  *)
-let is_imported_opaque s =
-  StringSet.mem s !imported_opaque_units
 
 (* Save a signature to a file *)
 

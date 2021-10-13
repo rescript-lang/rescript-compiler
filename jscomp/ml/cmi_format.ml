@@ -14,9 +14,8 @@
 (**************************************************************************)
 
 type pers_flags =
-  | Rectypes
   | Deprecated of string
-  | Opaque
+
 
 
 type error =
