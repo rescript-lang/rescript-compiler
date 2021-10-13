@@ -189,8 +189,8 @@ let () =
   eq __LOC__ (A.sliceToEnd a 4) [|5|];
   eq __LOC__ (A.sliceToEnd a (-1)) [|5|];
   eq __LOC__ (A.sliceToEnd a (-2)) [|4;5|];
-  eq __LOC__ (A.sliceToEnd a (-10)) [|1;2;3;4;5|]
-
+  eq __LOC__ (A.sliceToEnd a (-10)) [|1;2;3;4;5|];
+  eq __LOC__ (A.sliceToEnd a 6) [||]
 let () =
   let a = A.makeBy 10 (fun x -> x) in
   A.fill a ~offset:0 ~len:3 0 ;

@@ -203,10 +203,12 @@ let slice a ~offset ~len =
       done;
       result
 
+
+
 let sliceToEnd a offset =
   let lena = length a in
   let ofs = if offset < 0 then Pervasives.max (lena + offset) 0 else offset in
-  let len = lena - ofs in
+  let len = if lena > ofs then lena - ofs else 0 in
   let result = makeUninitializedUnsafe len in
   for i = 0 to len - 1 do
     result.!(i) <- a.!(ofs + i)
