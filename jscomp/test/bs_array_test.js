@@ -743,6 +743,8 @@ eq("File \"bs_array_test.ml\", line 192, characters 5-12", Belt_Array.sliceToEnd
       5
     ]);
 
+eq("File \"bs_array_test.ml\", line 193, characters 5-12", Belt_Array.sliceToEnd(a$4, 6), []);
+
 var a$5 = Belt_Array.makeBy(10, (function (x) {
         return x;
       }));
