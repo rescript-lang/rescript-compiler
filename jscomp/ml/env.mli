@@ -236,7 +236,6 @@ type error =
   | Illegal_renaming of string * string * string
   | Inconsistent_import of string * string * string
   | Need_recursive_types of string * string
-  | Depend_on_unsafe_string_unit of string * string
   | Missing_module of Location.t * Path.t * Path.t
   | Illegal_value_name of Location.t * string
 

@@ -17,7 +17,7 @@ type pers_flags =
   | Rectypes
   | Deprecated of string
   | Opaque
-  | Unsafe_string
+
 
 type cmi_infos = {
     cmi_name : string;
