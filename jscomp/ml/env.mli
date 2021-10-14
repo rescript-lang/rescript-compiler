@@ -210,8 +210,7 @@ val crc_of_unit: string -> Digest.t
 
 val imports: unit -> (string * Digest.t option) list
 
-(* [is_imported_opaque md] returns true if [md] is an opaque imported module  *)
-val is_imported_opaque: string -> bool
+
 
 (* Direct access to the table of imported compilation units with their CRC *)
 
@@ -236,7 +235,6 @@ type error =
   | Illegal_renaming of string * string * string
   | Inconsistent_import of string * string * string
   | Need_recursive_types of string * string
-  | Depend_on_unsafe_string_unit of string * string
   | Missing_module of Location.t * Path.t * Path.t
   | Illegal_value_name of Location.t * string
 
