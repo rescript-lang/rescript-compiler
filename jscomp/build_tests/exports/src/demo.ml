@@ -1,5 +1,6 @@
 
-
+exception Stack_overflow
+exception Sys_error of string
 let _ = 
   Js.Int.toString,
   Js.Float.isNaN
