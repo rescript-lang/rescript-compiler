@@ -157,19 +157,21 @@ function orElseRejectedResolveTest(param) {
   return obj$1.catch(fail);
 }
 
+var Stack_overflow = /* @__PURE__ */Caml_exceptions.create("Js_promise_basic_test.Stack_overflow");
+
 function orElseRejectedRejectTest(param) {
   var p = Promise.reject({
         RE_EXN_ID: "Not_found"
       });
   var arg1 = function (param) {
     return Promise.reject({
-                RE_EXN_ID: "Stack_overflow"
+                RE_EXN_ID: Stack_overflow
               });
   };
   var obj = p.catch(arg1);
   var obj$1 = obj.then(fail);
   var arg1$1 = function (error) {
-    var match = Caml_exceptions.is_extension(error) && error.RE_EXN_ID === "Stack_overflow" ? 0 : undefined;
+    var match = Caml_exceptions.is_extension(error) && error.RE_EXN_ID === Stack_overflow ? 0 : undefined;
     if (match !== undefined) {
       return h;
     }
@@ -407,6 +409,7 @@ exports.orResolvedTest = orResolvedTest;
 exports.orRejectedTest = orRejectedTest;
 exports.orElseResolvedTest = orElseResolvedTest;
 exports.orElseRejectedResolveTest = orElseRejectedResolveTest;
+exports.Stack_overflow = Stack_overflow;
 exports.orElseRejectedRejectTest = orElseRejectedRejectTest;
 exports.resolveTest = resolveTest;
 exports.rejectTest = rejectTest;

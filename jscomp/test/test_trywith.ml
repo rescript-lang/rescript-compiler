@@ -1,3 +1,7 @@
+exception Out_of_memory
+exception Sys_error of string
+exception Stack_overflow
+exception Sys_blocked_io
 let ff g x =
   (
     try g x 

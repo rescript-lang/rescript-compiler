@@ -109,33 +109,29 @@ and type_extension_constructor =
 and type_floatarray = newgenty (Tconstr(path_floatarray, [], ref Mnil))
 
 let ident_match_failure = ident_create_predef_exn "Match_failure"
-and ident_out_of_memory = ident_create_predef_exn "Out_of_memory"
+
 and ident_invalid_argument = ident_create_predef_exn "Invalid_argument"
 and ident_failure = ident_create_predef_exn "Failure"
 
 and ident_js_error = ident_create_predef_exn "JsError"
 and ident_not_found = ident_create_predef_exn "Not_found"
-and ident_sys_error = ident_create_predef_exn "Sys_error"
+
 and ident_end_of_file = ident_create_predef_exn "End_of_file"
 and ident_division_by_zero = ident_create_predef_exn "Division_by_zero"
-and ident_stack_overflow = ident_create_predef_exn "Stack_overflow"
-and ident_sys_blocked_io = ident_create_predef_exn "Sys_blocked_io"
+
+
 and ident_assert_failure = ident_create_predef_exn "Assert_failure"
 and ident_undefined_recursive_module =
         ident_create_predef_exn "Undefined_recursive_module"
 
 let all_predef_exns = [
   ident_match_failure;
-  ident_out_of_memory;
   ident_invalid_argument;
   ident_failure;
   ident_js_error;
   ident_not_found;
-  ident_sys_error;
   ident_end_of_file;
   ident_division_by_zero;
-  ident_stack_overflow;
-  ident_sys_blocked_io;
   ident_assert_failure;
   ident_undefined_recursive_module;
 ]
@@ -247,14 +243,10 @@ let common_initial_env add_type add_extension empty_env =
   in
   add_extension ident_match_failure
                          [newgenty (Ttuple[type_string; type_int; type_int])] (
-  add_extension ident_out_of_memory [] (
-  add_extension ident_stack_overflow [] (
   add_extension ident_invalid_argument [type_string] (
   add_extension ident_js_error [type_unknown] (
   add_extension ident_failure [type_string] (
   add_extension ident_not_found [] (
-  add_extension ident_sys_blocked_io [] (
-  add_extension ident_sys_error [type_string] (
   add_extension ident_end_of_file [] (
   add_extension ident_division_by_zero [] (
   add_extension ident_assert_failure
@@ -276,7 +268,7 @@ let common_initial_env add_type add_extension empty_env =
   add_type ident_int decl_abstr_imm (
   add_type ident_extension_constructor decl_abstr (
   add_type ident_floatarray decl_abstr (
-    empty_env)))))))))))))))))))))))))))
+    empty_env)))))))))))))))))))))))
 
 let build_initial_env add_type add_exception empty_env =
   let common = common_initial_env add_type add_exception empty_env in
@@ -290,10 +282,10 @@ let build_initial_env add_type add_exception empty_env =
   
 let builtin_values =
   List.map (fun id -> Ident.make_global id; (Ident.name id, id))
-      [ident_match_failure; ident_out_of_memory; ident_stack_overflow;
+      [ident_match_failure; 
        ident_invalid_argument;
-       ident_failure; ident_js_error; ident_not_found; ident_sys_error; ident_end_of_file;
-       ident_division_by_zero; ident_sys_blocked_io;
+       ident_failure; ident_js_error; ident_not_found;  ident_end_of_file;
+       ident_division_by_zero; 
        ident_assert_failure; ident_undefined_recursive_module ]
 
 (* Start non-predef identifiers at 1000.  This way, more predefs can

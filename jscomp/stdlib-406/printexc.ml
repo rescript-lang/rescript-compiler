@@ -49,8 +49,6 @@ let to_string x =
         | None -> conv tl)
     | [] ->
         match x with
-        | Out_of_memory -> "Out of memory"
-        | Stack_overflow -> "Stack overflow"
         | Match_failure(file, line, char) ->
             locfmt file line char (char+5) "Pattern matching failed"
         | Assert_failure(file, line, char) ->

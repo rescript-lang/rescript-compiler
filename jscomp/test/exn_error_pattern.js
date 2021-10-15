@@ -4,13 +4,19 @@ var Mt = require("./mt.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
+var Stack_overflow = /* @__PURE__ */Caml_exceptions.create("Exn_error_pattern.Stack_overflow");
+
+var Sys_blocked_io = /* @__PURE__ */Caml_exceptions.create("Exn_error_pattern.Sys_blocked_io");
+
+var Sys_error = /* @__PURE__ */Caml_exceptions.create("Exn_error_pattern.Sys_error");
+
 function f(match) {
   if (Caml_exceptions.is_extension(match)) {
     if (match.RE_EXN_ID === "Not_found") {
       return 0;
-    } else if (match.RE_EXN_ID === "Invalid_argument" || match.RE_EXN_ID === "Stack_overflow") {
+    } else if (match.RE_EXN_ID === "Invalid_argument" || match.RE_EXN_ID === Stack_overflow) {
       return 1;
-    } else if (match.RE_EXN_ID === "Sys_error") {
+    } else if (match.RE_EXN_ID === Sys_error) {
       return 2;
     } else {
       return ;
@@ -27,7 +33,7 @@ function g(match) {
   if (Caml_exceptions.is_extension(match)) {
     if (match.RE_EXN_ID === "Not_found" || match.RE_EXN_ID === "Invalid_argument") {
       return 0;
-    } else if (match.RE_EXN_ID === "Sys_error") {
+    } else if (match.RE_EXN_ID === Sys_error) {
       return 2;
     } else if (match.RE_EXN_ID === A || match.RE_EXN_ID === B) {
       return match._1;
@@ -50,21 +56,21 @@ function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-eq("File \"exn_error_pattern.ml\", line 34, characters 5-12", f({
+eq("File \"exn_error_pattern.ml\", line 36, characters 5-12", f({
           RE_EXN_ID: "Not_found"
         }), 0);
 
-eq("File \"exn_error_pattern.ml\", line 35, characters 5-12", f({
+eq("File \"exn_error_pattern.ml\", line 37, characters 5-12", f({
           RE_EXN_ID: "Invalid_argument",
           _1: ""
         }), 1);
 
-eq("File \"exn_error_pattern.ml\", line 36, characters 5-12", f({
-          RE_EXN_ID: "Stack_overflow"
+eq("File \"exn_error_pattern.ml\", line 38, characters 5-12", f({
+          RE_EXN_ID: Stack_overflow
         }), 1);
 
-eq("File \"exn_error_pattern.ml\", line 37, characters 5-12", f({
-          RE_EXN_ID: "Sys_error",
+eq("File \"exn_error_pattern.ml\", line 39, characters 5-12", f({
+          RE_EXN_ID: Sys_error,
           _1: ""
         }), 2);
 
@@ -77,10 +83,13 @@ catch (raw_e){
   tmp = Caml_js_exceptions.internalToOCamlException(raw_e);
 }
 
-eq("File \"exn_error_pattern.ml\", line 38, characters 5-12", f(tmp), undefined);
+eq("File \"exn_error_pattern.ml\", line 40, characters 5-12", f(tmp), undefined);
 
 Mt.from_pair_suites("Exn_error_pattern", suites.contents);
 
+exports.Stack_overflow = Stack_overflow;
+exports.Sys_blocked_io = Sys_blocked_io;
+exports.Sys_error = Sys_error;
 exports.f = f;
 exports.A = A;
 exports.B = B;
