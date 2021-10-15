@@ -1,7 +1,16 @@
 'use strict';
 
 var Curry = require("../../lib/js/curry.js");
+var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
+
+var Out_of_memory = /* @__PURE__ */Caml_exceptions.create("Test_trywith.Out_of_memory");
+
+var Sys_error = /* @__PURE__ */Caml_exceptions.create("Test_trywith.Sys_error");
+
+var Stack_overflow = /* @__PURE__ */Caml_exceptions.create("Test_trywith.Stack_overflow");
+
+var Sys_blocked_io = /* @__PURE__ */Caml_exceptions.create("Test_trywith.Sys_blocked_io");
 
 function ff(g, x) {
   try {
@@ -19,7 +28,7 @@ function ff(g, x) {
   }
   catch (raw_exn$1){
     var exn$1 = Caml_js_exceptions.internalToOCamlException(raw_exn$1);
-    if (exn$1.RE_EXN_ID !== "Out_of_memory") {
+    if (exn$1.RE_EXN_ID !== Out_of_memory) {
       throw exn$1;
     }
     
@@ -29,7 +38,7 @@ function ff(g, x) {
   }
   catch (raw_exn$2){
     var exn$2 = Caml_js_exceptions.internalToOCamlException(raw_exn$2);
-    if (exn$2.RE_EXN_ID !== "Sys_error") {
+    if (exn$2.RE_EXN_ID !== Sys_error) {
       throw exn$2;
     }
     
@@ -69,7 +78,7 @@ function ff(g, x) {
   }
   catch (raw_exn$6){
     var exn$6 = Caml_js_exceptions.internalToOCamlException(raw_exn$6);
-    if (exn$6.RE_EXN_ID !== "Stack_overflow") {
+    if (exn$6.RE_EXN_ID !== Stack_overflow) {
       throw exn$6;
     }
     
@@ -79,7 +88,7 @@ function ff(g, x) {
   }
   catch (raw_exn$7){
     var exn$7 = Caml_js_exceptions.internalToOCamlException(raw_exn$7);
-    if (exn$7.RE_EXN_ID !== "Sys_blocked_io") {
+    if (exn$7.RE_EXN_ID !== Sys_blocked_io) {
       throw exn$7;
     }
     
@@ -124,7 +133,7 @@ function f(x) {
         RE_EXN_ID: "Assert_failure",
         _1: [
           "test_trywith.ml",
-          51,
+          55,
           9
         ],
         Error: new Error()
@@ -135,6 +144,10 @@ var u1 = "bad character decimal encoding \\";
 
 var v = "bad character decimal encoding \\%c%c%c";
 
+exports.Out_of_memory = Out_of_memory;
+exports.Sys_error = Sys_error;
+exports.Stack_overflow = Stack_overflow;
+exports.Sys_blocked_io = Sys_blocked_io;
 exports.ff = ff;
 exports.u = u;
 exports.u1 = u1;

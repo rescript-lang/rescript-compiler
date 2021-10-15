@@ -1,6 +1,8 @@
 
 
-
+exception Stack_overflow
+exception Sys_blocked_io
+exception Sys_error of string
 
 (*
 let f = [%bs.error? (Not_found | Invalid_argument _)]

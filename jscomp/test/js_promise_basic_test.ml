@@ -66,7 +66,7 @@ let orElseRejectedResolveTest () =
   p |> catch (fun _ -> resolve 22)
     |> then_ (fun value -> resolve @@ assert_bool (value = 22))
     |> catch fail
-
+exception Stack_overflow
 let orElseRejectedRejectTest () =
   let p = reject Not_found in
   p |> catch (fun _ -> reject Stack_overflow)
