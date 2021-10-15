@@ -23,10 +23,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type t = Caml_js_exceptions.t 
+type t = unknown 
 
 [@@@warning "-38"] (* unused extension constructor*)
-exception Error = Caml_js_exceptions.Error
+exception Error = JsError
 
 external asJsExn : exn -> t option = 
   "?as_js_exn"
@@ -45,8 +45,7 @@ external makeError : string -> error = "Error" [@@bs.new]
 external isCamlExceptionOrOpenVariant : 
   'a -> bool = "?is_extension"
 
-let anyToExnInternal x = 
-    Caml_js_exceptions.internalToOCamlException (Obj.repr x)
+external anyToExnInternal : 'a -> exn = "#wrap_exn"
   
 
 let raiseError str = 

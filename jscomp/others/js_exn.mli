@@ -43,7 +43,7 @@ external isCamlExceptionOrOpenVariant:
   'a -> bool = "?is_extension"
 (** internal use only *)
 
-val anyToExnInternal: 'a -> exn
+external anyToExnInternal : 'a -> exn = "#wrap_exn"
 (**
   `anyToExnInternal obj` will take any value `obj` and wrap it
   in a Js.Exn.Error if given value is not an exn already. If
