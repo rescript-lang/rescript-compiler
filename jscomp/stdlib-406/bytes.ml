@@ -21,6 +21,15 @@
    These functions have a "duplicated" comment above their definition.
 *)
 
+
+  
+external of_small_int_array :  
+  (_ [@bs.as {json|null|json}] ) -> 
+  int array -> string = 
+  "String.fromCharCode.apply" 
+  [@@bs.val]
+
+external (.!()) : string -> int -> char = "%string_unsafe_get"
 external length : bytes -> int = "%bytes_length"
 external%private string_length : string -> int = "%string_length"
 external get : bytes -> int -> char = "%bytes_safe_get"
@@ -86,15 +95,15 @@ let unsafe_blit (s1:bytes) i1 (s2:bytes) i2 len =
 
 let unsafe_blit_string (s1 : string) i1 (s2 : bytes) i2 (len : int ) = 
   if len > 0 then
-    let off1 = Caml_string_extern.length s1 - i1 in
+    let off1 = string_length s1 - i1 in
     if len <= off1 then 
       for i = 0 to len - 1 do 
-        s2.![i2 + i] <- Caml_string_extern.unsafe_get s1 (i1 + i)
+        s2.![i2 + i] <-  s1.!(i1 + i)
       done
     else 
       begin
         for i = 0 to off1 - 1 do 
-          s2.![i2 + i] <- Caml_string_extern.unsafe_get s1 (i1 + i)
+          s2.![i2 + i] <- s1.!(i1 + i)
         done;
         for i = off1 to len - 1 do 
           s2.![i2 + i] <- '\000'
@@ -105,7 +114,7 @@ let string_of_large_bytes (bytes : bytes) i len =
   let s_len = ref len in
   let seg = 1024 in
   if i = 0 && len <= 4 * seg && len = length bytes then 
-    Caml_string_extern.of_small_int_array  (to_int_array bytes)
+    of_small_int_array  (to_int_array bytes)
   else 
     begin
       let offset = ref 0 in
@@ -115,7 +124,7 @@ let string_of_large_bytes (bytes : bytes) i len =
         for k = 0 to next - 1 do 
           tmp_bytes.![k] <- bytes.![k + offset.contents]  
         done;   
-        s.contents <- s.contents ^ Caml_string_extern.of_small_int_array (to_int_array tmp_bytes);
+        s.contents <- s.contents ^ of_small_int_array (to_int_array tmp_bytes);
         s_len.contents <- s_len.contents - next ; 
         offset.contents <- offset.contents + next;
       done;
@@ -153,7 +162,7 @@ let of_string  (s : string) =
   let len = string_length s in
   let res = new_uninitialized len  in
   for i = 0 to len - 1 do 
-    res.![i] <- Caml_string_extern.unsafe_get s i
+    res.![i] <- s.!(i)
     (* Note that when get a char and convert it to int immedately, should be optimized
        should be [s.charCodeAt[i]]
     *)
