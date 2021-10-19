@@ -957,49 +957,6 @@ async function othersNinja(devmode = true) {
   var templateOthersRules = `
 bsc_flags = ${commonBsFlags} -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50 -warn-error A  -open Bs_stdlib_mini -I ./runtime
 ${ruleCC(ninjaCwd)}
-${
-  devmode
-    ? `${cppoRule()}
-${cppoList(ninjaCwd, [
-  ["belt_HashSetString.ml", "hashset.cppo.ml", dTypeString],
-  ["belt_HashSetString.mli", "hashset.cppo.mli", dTypeString],
-  ["belt_HashSetInt.ml", "hashset.cppo.ml", dTypeInt],
-  ["belt_HashSetInt.mli", "hashset.cppo.mli", dTypeInt],
-  ["belt_HashMapString.ml", "hashmap.cppo.ml", dTypeString],
-  ["belt_HashMapString.mli", "hashmap.cppo.mli", dTypeString],
-  ["belt_HashMapInt.ml", "hashmap.cppo.ml", dTypeInt],
-  ["belt_HashMapInt.mli", "hashmap.cppo.mli", dTypeInt],
-  ["belt_MapString.ml", "map.cppo.ml", dTypeString],
-  ["belt_MapString.mli", "map.cppo.mli", dTypeString],
-  ["belt_MapInt.ml", "map.cppo.ml", dTypeInt],
-  ["belt_MapInt.mli", "map.cppo.mli", dTypeInt],
-  ["belt_SetString.ml", "belt_Set.cppo.ml", dTypeString],
-  ["belt_SetString.mli", "belt_Set.cppo.mli", dTypeString],
-  ["belt_SetInt.ml", "belt_Set.cppo.ml", dTypeInt],
-  ["belt_SetInt.mli", "belt_Set.cppo.mli", dTypeInt],
-  ["belt_MutableMapString.ml", "mapm.cppo.ml", dTypeString],
-  ["belt_MutableMapString.mli", "mapm.cppo.mli", dTypeString],
-  ["belt_MutableMapInt.ml", "mapm.cppo.ml", dTypeInt],
-  ["belt_MutableMapInt.mli", "mapm.cppo.mli", dTypeInt],
-  ["belt_MutableSetString.ml", "setm.cppo.ml", dTypeString],
-  ["belt_MutableSetString.mli", "setm.cppo.mli", dTypeString],
-  ["belt_MutableSetInt.ml", "setm.cppo.ml", dTypeInt],
-  ["belt_MutableSetInt.mli", "setm.cppo.mli", dTypeInt],
-  ["belt_SortArrayString.ml", "sort.cppo.ml", dTypeString],
-  ["belt_SortArrayString.mli", "sort.cppo.mli", dTypeString],
-  ["belt_SortArrayInt.ml", "sort.cppo.ml", dTypeInt],
-  ["belt_SortArrayInt.mli", "sort.cppo.mli", dTypeInt],
-  ["belt_internalMapString.ml", "internal_map.cppo.ml", dTypeString],
-  ["belt_internalMapInt.ml", "internal_map.cppo.ml", dTypeInt],
-  ["belt_internalSetString.ml", "internal_set.cppo.ml", dTypeString],
-  ["belt_internalSetInt.ml", "internal_set.cppo.ml", dTypeInt],
-  ["js_typed_array.ml", "js_typed_array.cppo.ml", ""],
-  ["js_typed_array2.ml", "js_typed_array2.cppo.ml", ""],
-])}
-`
-    : `
-`
-}
 ${ninjaQuickBuidList([
   [["belt.cmj", "belt.cmi"], "belt.ml", "cc", ninjaCwd, [], [], externalDeps],
   [["node.cmj", "node.cmi"], "node.ml", "cc", ninjaCwd, [], [], externalDeps],
@@ -1512,6 +1469,43 @@ ${cppoList("core", [
   ["lam_pass_lets_dce.ml", "lam_pass_lets_dce.pp.ml"],
   ["lam_util.ml", "lam_util.pp.ml"],
 ])}
+${cppoList("others", [
+  ["belt_HashSetString.ml", "hashset.cppo.ml", dTypeString],
+  ["belt_HashSetString.mli", "hashset.cppo.mli", dTypeString],
+  ["belt_HashSetInt.ml", "hashset.cppo.ml", dTypeInt],
+  ["belt_HashSetInt.mli", "hashset.cppo.mli", dTypeInt],
+  ["belt_HashMapString.ml", "hashmap.cppo.ml", dTypeString],
+  ["belt_HashMapString.mli", "hashmap.cppo.mli", dTypeString],
+  ["belt_HashMapInt.ml", "hashmap.cppo.ml", dTypeInt],
+  ["belt_HashMapInt.mli", "hashmap.cppo.mli", dTypeInt],
+  ["belt_MapString.ml", "map.cppo.ml", dTypeString],
+  ["belt_MapString.mli", "map.cppo.mli", dTypeString],
+  ["belt_MapInt.ml", "map.cppo.ml", dTypeInt],
+  ["belt_MapInt.mli", "map.cppo.mli", dTypeInt],
+  ["belt_SetString.ml", "belt_Set.cppo.ml", dTypeString],
+  ["belt_SetString.mli", "belt_Set.cppo.mli", dTypeString],
+  ["belt_SetInt.ml", "belt_Set.cppo.ml", dTypeInt],
+  ["belt_SetInt.mli", "belt_Set.cppo.mli", dTypeInt],
+  ["belt_MutableMapString.ml", "mapm.cppo.ml", dTypeString],
+  ["belt_MutableMapString.mli", "mapm.cppo.mli", dTypeString],
+  ["belt_MutableMapInt.ml", "mapm.cppo.ml", dTypeInt],
+  ["belt_MutableMapInt.mli", "mapm.cppo.mli", dTypeInt],
+  ["belt_MutableSetString.ml", "setm.cppo.ml", dTypeString],
+  ["belt_MutableSetString.mli", "setm.cppo.mli", dTypeString],
+  ["belt_MutableSetInt.ml", "setm.cppo.ml", dTypeInt],
+  ["belt_MutableSetInt.mli", "setm.cppo.mli", dTypeInt],
+  ["belt_SortArrayString.ml", "sort.cppo.ml", dTypeString],
+  ["belt_SortArrayString.mli", "sort.cppo.mli", dTypeString],
+  ["belt_SortArrayInt.ml", "sort.cppo.ml", dTypeInt],
+  ["belt_SortArrayInt.mli", "sort.cppo.mli", dTypeInt],
+  ["belt_internalMapString.ml", "internal_map.cppo.ml", dTypeString],
+  ["belt_internalMapInt.ml", "internal_map.cppo.ml", dTypeInt],
+  ["belt_internalSetString.ml", "internal_set.cppo.ml", dTypeString],
+  ["belt_internalSetInt.ml", "internal_set.cppo.ml", dTypeInt],
+  ["js_typed_array.ml", "js_typed_array.cppo.ml", ""],
+  ["js_typed_array2.ml", "js_typed_array2.cppo.ml", ""],
+])}
+
 ${mllRule}
 ${mllList("ext", ["ext_json_parse.mll"])}
 ${mllList("ml", ["lexer.mll"])}
