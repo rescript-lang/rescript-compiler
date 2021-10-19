@@ -950,7 +950,11 @@ rule ${mlyRuleName}
     generator = true
 `;
 async function othersNinja(devmode = true) {
-  var externalDeps = [compilerTarget, fileTarget('belt_internals.cmi'), fileTarget('js.cmi')];
+  var externalDeps = [
+    compilerTarget,
+    fileTarget("belt_internals.cmi"),
+    fileTarget("js.cmi"),
+  ];
   var ninjaOutput = devmode ? "build.ninja" : "release.ninja";
   var ninjaCwd = "others";
 
@@ -991,9 +995,9 @@ ${ninjaQuickBuidList([
     "node.ml",
     "cc",
     ninjaCwd,
-    [], // need -I ./runtime
+    [], // depends on belt_internals
     [],
-    [compilerTarget, fileTarget('js.cmi')], // need js.cm*
+    [compilerTarget, fileTarget("js.cmi"), fileTarget("belt_internals.cmi")], // need js.cm*
   ],
 ])}
 `;
