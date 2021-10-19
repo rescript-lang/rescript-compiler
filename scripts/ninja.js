@@ -846,10 +846,11 @@ function generateNinja(depsMap, allTargets, cwd, extraDeps = []) {
 
 var COMPILIER = `../${my_target}/bsc.exe`;
 var BSC_COMPILER = `bsc = ${COMPILIER}`;
-var compilerTarget = pseudoTarget(COMPILIER);
+
 
 async function runtimeNinja(devmode = true) {
   var ninjaCwd = "runtime";
+  var compilerTarget = pseudoTarget('$bsc');
   var externalDeps = devmode ? [compilerTarget] : [];
   var ninjaOutput = devmode ? "build.ninja" : "release.ninja";
   var templateRuntimeRules = `
@@ -950,6 +951,7 @@ rule ${mlyRuleName}
     generator = true
 `;
 async function othersNinja(devmode = true) {
+  var compilerTarget = pseudoTarget('$bsc');
   var externalDeps = [
     compilerTarget,
     fileTarget("belt_internals.cmi"),
@@ -1068,6 +1070,7 @@ async function stdlibNinja(devmode = true) {
   var stdlibVersion = "stdlib-406";
   var ninjaCwd = stdlibVersion;
   var stdlibDir = path.join(jscompDir, stdlibVersion);
+  var compilerTarget = pseudoTarget('$bsc');
   var externalDeps = [compilerTarget, othersTarget];
   var ninjaOutput = devmode ? "build.ninja" : "release.ninja";
   var bsc_flags = "bsc_flags";
