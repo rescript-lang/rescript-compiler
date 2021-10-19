@@ -950,16 +950,51 @@ rule ${mlyRuleName}
     generator = true
 `;
 async function othersNinja(devmode = true) {
-  var externalDeps = [runtimeTarget];
+  var externalDeps = [compilerTarget, fileTarget('belt_internals.cmi'), fileTarget('js.cmi')];
   var ninjaOutput = devmode ? "build.ninja" : "release.ninja";
   var ninjaCwd = "others";
 
   var templateOthersRules = `
-bsc_flags = ${commonBsFlags} -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50 -warn-error A  -open Bs_stdlib_mini -I ./runtime
+bsc_primitive_flags =  ${commonBsFlags} -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50 -warn-error A
+bsc_flags = $bsc_primitive_flags -open Belt_internals
 ${ruleCC(ninjaCwd)}
 ${ninjaQuickBuidList([
-  [["belt.cmj", "belt.cmi"], "belt.ml", "cc", ninjaCwd, [], [], externalDeps],
-  [["node.cmj", "node.cmi"], "node.ml", "cc", ninjaCwd, [], [], externalDeps],
+  [
+    ["belt.cmj", "belt.cmi"],
+    "belt.ml",
+    "cc",
+    ninjaCwd,
+    [["bsc_flags", "$bsc_primitive_flags"]],
+    [],
+    [compilerTarget],
+  ],
+  [
+    ["js.cmj", "js.cmi"],
+    "js.ml",
+    "cc",
+    ninjaCwd,
+    [["bsc_flags", "$bsc_primitive_flags"]],
+    [],
+    [compilerTarget],
+  ],
+  [
+    ["belt_internals.cmi"],
+    "belt_internals.mli",
+    "cc",
+    ninjaCwd,
+    [["bsc_flags", "$bsc_primitive_flags"]],
+    [],
+    [compilerTarget],
+  ],
+  [
+    ["node.cmj", "node.cmi"],
+    "node.ml",
+    "cc",
+    ninjaCwd,
+    [], // need -I ./runtime
+    [],
+    [compilerTarget, fileTarget('js.cmi')], // need js.cm*
+  ],
 ])}
 `;
   var othersDirFiles = fs.readdirSync(othersDir, "ascii");
@@ -969,12 +1004,14 @@ ${ninjaQuickBuidList([
       (x.endsWith(".ml") || x.endsWith(".mli")) &&
       !x.includes(".cppo") &&
       !x.includes(".pp") &&
-      !x.includes("#")
+      !x.includes("#") &&
+      x !== "js.ml"
   );
   var othersFiles = othersDirFiles.filter(
     (x) =>
       !x.startsWith("js") &&
       x !== "belt.ml" &&
+      x !== "belt_internals.mli" &&
       x !== "node.ml" &&
       (x.endsWith(".ml") || x.endsWith(".mli")) &&
       !x.includes("#") &&
@@ -1027,7 +1064,7 @@ async function stdlibNinja(devmode = true) {
   var stdlibVersion = "stdlib-406";
   var ninjaCwd = stdlibVersion;
   var stdlibDir = path.join(jscompDir, stdlibVersion);
-  var externalDeps = [othersTarget];
+  var externalDeps = [compilerTarget, othersTarget];
   var ninjaOutput = devmode ? "build.ninja" : "release.ninja";
   var bsc_flags = "bsc_flags";
   /**
@@ -1038,7 +1075,7 @@ async function stdlibNinja(devmode = true) {
   // deprecations diabled due to string_of_float
   var warnings = "-w -9-3-106 -warn-error A";
   var templateStdlibRules = `
-${bsc_flags} = ${commonBsFlags} -bs-cross-module-opt -make-runtime    ${warnings}  -I runtime  -I others
+${bsc_flags} = ${commonBsFlags} -bs-cross-module-opt -make-runtime ${warnings} -I others
 ${ruleCC(ninjaCwd)}
 ${ninjaQuickBuidList([
   // we make it still depends on external
@@ -1176,6 +1213,7 @@ ${mllList(ninjaCwd, [
   await Promise.all(depModulesForBscAsync(sources, testDir, depsMap));
   var targets = collectTarget(sources);
   var output = generateNinja(depsMap, targets, ninjaCwd, [
+    runtimeTarget,
     stdlibTarget,
     pseudoTarget("$bsc"),
   ]);
