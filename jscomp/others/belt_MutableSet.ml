@@ -295,8 +295,8 @@ let intersect a b  : _ t =
       N.lengthNode dataa0, N.lengthNode datab0 in          
     let totalSize = sizea + sizeb in 
     let tmp = A.makeUninitializedUnsafe totalSize in 
-    ignore @@ N.fillArray dataa0 0 tmp ; 
-    ignore @@ N.fillArray datab0 sizea tmp;
+    ignore (N.fillArray dataa0 0 tmp) ; 
+    ignore (N.fillArray datab0 sizea tmp);
     let p = Belt_Id.getCmpInternal cmp in 
     if (p (A.getUnsafe tmp (sizea - 1))
           (A.getUnsafe tmp sizea) [@bs] < 0)
@@ -324,8 +324,8 @@ let diff a b : _ t =
     let sizea, sizeb = N.lengthNode dataa0, N.lengthNode datab0 in  
     let totalSize = sizea + sizeb in 
     let tmp = A.makeUninitializedUnsafe totalSize in 
-    ignore @@ N.fillArray dataa0 0 tmp ; 
-    ignore @@ N.fillArray datab0 sizea tmp;
+    ignore ( N.fillArray dataa0 0 tmp) ; 
+    ignore (N.fillArray datab0 sizea tmp);
     let p = Belt_Id.getCmpInternal cmp in 
     if (p (A.getUnsafe tmp (sizea - 1))
           (A.getUnsafe tmp sizea) [@bs] < 0)
@@ -351,8 +351,8 @@ let union a b =
     let sizea, sizeb = N.lengthNode dataa0, N.lengthNode datab0 in 
     let totalSize = sizea + sizeb in 
     let tmp = A.makeUninitializedUnsafe totalSize in 
-    ignore @@ N.fillArray dataa0 0 tmp ;
-    ignore @@ N.fillArray datab0 sizea tmp ;
+    ignore (N.fillArray dataa0 0 tmp );
+    ignore (N.fillArray datab0 sizea tmp);
     let p = (Belt_Id.getCmpInternal cmp)  in 
     if p
         (A.getUnsafe tmp (sizea - 1))

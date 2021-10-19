@@ -138,7 +138,7 @@ let rec getAux  (key : key) buckets =
 let get  h (key : key) =
   let h_buckets = h.C.buckets in 
   let nid = hash key  land (A.length h_buckets - 1) in 
-  match C.toOpt @@ A.getUnsafe h_buckets nid with
+  match C.toOpt (A.getUnsafe h_buckets nid) with
   | None -> None
   | Some cell1 ->
     if key = cell1.N.key  then Some cell1.N.value else
