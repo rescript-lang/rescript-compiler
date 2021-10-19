@@ -156,7 +156,7 @@ let rec getAux ~eq key buckets =
 let get h key =
   let h_buckets = h.C.buckets  in 
   let nid = (Belt_Id.getHashInternal h.C.hash) key [@bs] land (A.length h_buckets - 1) in 
-  match C.toOpt @@ A.getUnsafe h_buckets nid with
+  match C.toOpt (A.getUnsafe h_buckets nid) with
   | None -> None
   | Some (cell1 : _ N.bucket) ->
     let eq = Belt_Id.getEqInternal h.C.eq in

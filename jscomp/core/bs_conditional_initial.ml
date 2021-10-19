@@ -63,10 +63,9 @@ let setup_env () =
      Clflags.include_dirs :=
        (root_dir//"jscomp"//"others") ::
        (root_dir//"jscomp"//"stdlib-406") ::
-       (root_dir//"jscomp"//"runtime") ::
        !Clflags.include_dirs);
   
-# 66 "core/bs_conditional_initial.pp.ml"
+# 65 "core/bs_conditional_initial.pp.ml"
   Rescript_cpp.replace_directive_bool "BS" true;
   Rescript_cpp.replace_directive_bool "JS" true;
   Rescript_cpp.replace_directive_string "BS_VERSION"  Bs_version.version

@@ -279,8 +279,8 @@ let intersect dataa datab  =
         N.lengthNode dataa0, N.lengthNode datab0 in
     let totalSize = sizea + sizeb in
     let tmp = A.makeUninitializedUnsafe totalSize in
-    ignore @@ N.fillArray dataa0 0 tmp ;
-    ignore @@ N.fillArray datab0 sizea tmp;
+    ignore (N.fillArray dataa0 0 tmp) ;
+    ignore (N.fillArray datab0 sizea tmp);
     if ((A.getUnsafe tmp (sizea - 1) <
         A.getUnsafe tmp sizea))
       ||
@@ -303,8 +303,8 @@ let diff dataa datab : t =
     let sizea, sizeb = N.lengthNode dataa0, N.lengthNode datab0 in
     let totalSize = sizea + sizeb in
     let tmp = A.makeUninitializedUnsafe totalSize in
-    ignore @@ N.fillArray dataa0 0 tmp ;
-    ignore @@ N.fillArray datab0 sizea tmp;
+    ignore (N.fillArray dataa0 0 tmp);
+    ignore (N.fillArray datab0 sizea tmp);
     if ( (A.getUnsafe tmp (sizea - 1)) <
         (A.getUnsafe tmp sizea))
       ||
@@ -326,8 +326,8 @@ let union (dataa : t)  (datab : t) : t =
     let sizea, sizeb = N.lengthNode dataa0, N.lengthNode datab0 in
     let totalSize = sizea + sizeb in
     let tmp = A.makeUninitializedUnsafe totalSize in
-    ignore @@ N.fillArray dataa0 0 tmp ;
-    ignore @@ N.fillArray datab0 sizea tmp ;
+    ignore (N.fillArray dataa0 0 tmp);
+    ignore (N.fillArray datab0 sizea tmp);
     if
       (A.getUnsafe tmp (sizea - 1) <
       A.getUnsafe tmp sizea)  then

@@ -178,7 +178,7 @@ external parseExn : string -> t = "parse" [@@bs.val] [@@bs.scope "JSON"]
 
   (* prints `1, 2, 3` *)
   let _ =
-    Js.log @@ getIds {| { "ids" : [1, 2, 3] } |}
+    Js.log (getIds {| { "ids" : [1, 2, 3] } |})
   ```
 
   **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse)
@@ -200,7 +200,7 @@ external stringify: t -> string = "stringify"
   Js.Dict.set dict "likes"
     (Js.Json.stringArray [|"bucklescript";"ocaml";"js"|]);
 
-  Js.log @@ Js.Json.stringify (Js.Json.object_ dict)
+  Js.log (Js.Json.stringify (Js.Json.object_ dict))
   ```
 
   **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify)
@@ -222,7 +222,7 @@ external stringifyWithSpace: t -> (_ [@bs.as {json|null|json}]) -> int -> string
   Js.Dict.set dict "likes"
     (Js.Json.stringArray [|"bucklescript";"ocaml";"js"|]);
 
-  Js.log @@ Js.Json.stringifyWithSpace (Js.Json.object_ dict) 2
+  Js.log (Js.Json.stringifyWithSpace (Js.Json.object_ dict) 2)
   ```
 
   **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify)
@@ -236,7 +236,7 @@ external stringifyAny : 'a -> string option = "stringify"
 
   ```
   (* prints ``"foo", "bar"`` *)
-  Js.log @@ Js.Json.stringifyAny [| "foo"; "bar" |]
+  Js.log (Js.Json.stringifyAny [| "foo"; "bar" |])
   ```
 
   **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify)

@@ -60,7 +60,6 @@ let setup_env () =
      Clflags.include_dirs :=
        (root_dir//"jscomp"//"others") ::
        (root_dir//"jscomp"//"stdlib-406") ::
-       (root_dir//"jscomp"//"runtime") ::
        !Clflags.include_dirs);
 #endif
   Rescript_cpp.replace_directive_bool "BS" true;

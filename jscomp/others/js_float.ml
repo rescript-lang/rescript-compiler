@@ -75,10 +75,10 @@ external isFinite : float -> bool = "isFinite" [@@bs.val] [@@bs.scope "Number"]
 
   ```
   (* prints "7.71234e+1" *)
-  let _ = Js.log @@ Js.Float.toExponential 77.1234
+  let _ = Js.log (Js.Float.toExponential 77.1234)
 
   (* prints "7.7e+1" *)
-  let _ = Js.log @@ Js.Float.toExponential 77.
+  let _ = Js.log (Js.Float.toExponential 77.)
   ```
 
   **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential)
@@ -99,7 +99,7 @@ external toExponential : float -> string = "toExponential" [@@bs.send]
 
   ```
   (* prints "7.71e+1" *)
-  let _ = Js.log @@ Js.Float.toExponentialWithPrecision 77.1234 ~digits:2
+  let _ = Js.log (Js.Float.toExponentialWithPrecision 77.1234 ~digits:2)
   ```
 
   **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential)
@@ -115,10 +115,10 @@ external toExponentialWithPrecision : float -> digits:int -> string = "toExponen
 
   ```
   (* prints "12346" (note the rounding) *)
-  let _ = Js.log @@ Js.Float.toFixed 12345.6789
+  let _ = Js.log (Js.Float.toFixed 12345.6789)
 
   (* print "1.2e+21" *)
-  let _ = Js.log @@ Js.Float.toFixed 1.2e21
+  let _ = Js.log (Js.Float.toFixed 1.2e21)
   ```
 
   **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toFixed)
@@ -139,10 +139,10 @@ external toFixed : float -> string = "toFixed" [@@bs.send]
 
   ```
   (* prints "12345.7" (note the rounding) *)
-  let _ = Js.log @@ Js.Float.toFixedWithPrecision 12345.6789 ~digits:1
+  let _ = Js.log (Js.Float.toFixedWithPrecision 12345.6789 ~digits:1)
 
   (* prints "0.00" (note the added zeroes) *)
-  let _ = Js.log @@ Js.Float.toFixedWithPrecision 0. ~digits:2
+  let _ = Js.log (Js.Float.toFixedWithPrecision 0. ~digits:2)
   ```
 
   **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toFixed)
@@ -162,10 +162,10 @@ external toFixedWithPrecision : float -> digits:int -> string = "toFixed" [@@bs.
 
   ```
   (* prints "12345.6789" *)
-  let _ = Js.log @@ Js.Float.toPrecision 12345.6789
+  let _ = Js.log (Js.Float.toPrecision 12345.6789)
 
   (* print "1.2e+21" *)
-  let _ = Js.log @@ Js.Float.toPrecision 1.2e21
+  let _ = Js.log (Js.Float.toPrecision 1.2e21)
   ```
 
   **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision)
@@ -193,10 +193,10 @@ external toPrecision : float -> string = "toPrecision" [@@bs.send] (* equivalent
 
   ```
   (* prints "1e+4" *)
-  let _ = Js.log @@ Js.Float.toPrecisionWithPrecision 12345.6789 ~digits:1
+  let _ = Js.log (Js.Float.toPrecisionWithPrecision 12345.6789 ~digits:1)
 
   (* prints "0.0" *)
-  let _ = Js.log @@ Js.Float.toPrecisionWithPrecision 0. ~digits:2
+  let _ = Js.log (Js.Float.toPrecisionWithPrecision 0. ~digits:2)
   ```
 
   **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision)
@@ -211,7 +211,7 @@ external toPrecisionWithPrecision : float -> digits:int -> string = "toPrecision
 
   ```
   (* prints "12345.6789" *)
-  let _ = Js.log @@ Js.Float.toString 12345.6789
+  let _ = Js.log (Js.Float.toString 12345.6789)
   ```
 
   **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString)
@@ -230,16 +230,16 @@ external toString : float -> string = "toString" [@@bs.send]
 
   ```
   (* prints "110" *)
-  let _ = Js.log @@ Js.Float.toStringWithRadix 6. ~radix:2
+  let _ = Js.log (Js.Float.toStringWithRadix 6. ~radix:2)
 
   (* prints "11.001000111101011100001010001111010111000010100011111" *)
-  let _ = Js.log @@ Js.Float.toStringWithRadix 3.14 ~radix:2
+  let _ = Js.log (Js.Float.toStringWithRadix 3.14 ~radix:2)
 
   (* prints "deadbeef" *)
-  let _ = Js.log @@ Js.Float.toStringWithRadix 3735928559. ~radix:16
+  let _ = Js.log (Js.Float.toStringWithRadix 3735928559. ~radix:16)
 
   (* prints "3f.gez4w97ry0a18ymf6qadcxr" *)
-  let _ = Js.log @@ Js.Float.toStringWithRadix 123.456 ~radix:36
+  let _ = Js.log (Js.Float.toStringWithRadix 123.456 ~radix:36)
   ```
 
   **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString)
