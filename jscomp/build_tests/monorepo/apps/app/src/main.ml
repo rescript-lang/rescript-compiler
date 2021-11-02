@@ -1,0 +1,1 @@
+let result = NumberAdder.addNumbers 1 4

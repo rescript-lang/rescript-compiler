@@ -1,0 +1,12 @@
+{
+  "name": "warnerror",
+  "version": "0.1.0",
+  "sources": [],
+  "bs-dependencies": ["@app/number-adder", "@app/app"],
+  "pinned-dependencies": ["@app/number-adder", "@app/app"],
+  "package-specs": { "module": "es6", "in-source": true, "suffix": ".bs.js" },
+  "paths": {
+    "@app/app": "./apps/app",
+    "@app/number-adder": "./libs/number-adder"
+  }
+}

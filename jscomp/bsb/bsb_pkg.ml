@@ -79,6 +79,9 @@ let cache : string Coll.t = Coll.create 0
 
 let to_list cb = Coll.to_list cache cb
 
+let add_resolution (package : t) path =
+  Coll.add cache package path
+
 (** TODO: collect all warnings and print later *)
 let resolve_bs_package ~cwd (package : t) =
   match Coll.find_opt cache package with

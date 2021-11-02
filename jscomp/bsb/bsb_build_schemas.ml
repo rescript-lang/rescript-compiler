@@ -46,6 +46,8 @@ let pinned_dependencies = "pinned-dependencies"
 
 let bs_dev_dependencies = "bs-dev-dependencies"
 
+let paths = "paths"
+
 let sources = "sources"
 
 let dir = "dir"

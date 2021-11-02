@@ -77,3 +77,4 @@ val check_suffix_case : string -> string -> bool
 
 (* It is lazy so that it will not hit errors when in script mode *)
 val package_dir : string Lazy.t
+val find_package_json_dir : string -> string 

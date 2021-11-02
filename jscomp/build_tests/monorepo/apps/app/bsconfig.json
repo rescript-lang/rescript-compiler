@@ -1,0 +1,9 @@
+{
+  "name": "@app/app",
+  "version": "0.1.0",
+  "sources": {
+    "dir": "src",
+    "subdirs": true
+  },
+  "bs-dependencies": ["@app/number-adder"]
+}

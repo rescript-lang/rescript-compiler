@@ -35,4 +35,6 @@ val resolve_bs_package : cwd:string -> Bsb_pkg_types.t -> string
 (** @raise  when not found *)
 
 val to_list : (Bsb_pkg_types.t -> string -> 'a) -> 'a list
+
+val add_resolution : Bsb_pkg_types.t -> string -> unit
 (** used by watcher *)

@@ -1732,6 +1732,8 @@ let pinned_dependencies = "pinned-dependencies"
 
 let bs_dev_dependencies = "bs-dev-dependencies"
 
+let paths = "paths"
+
 let sources = "sources"
 
 let dir = "dir"
@@ -5034,6 +5036,7 @@ val check_suffix_case : string -> string -> bool
 
 (* It is lazy so that it will not hit errors when in script mode *)
 val package_dir : string Lazy.t
+val find_package_json_dir : string -> string 
 
 end = struct
 #1 "ext_path.ml"
@@ -6905,6 +6908,8 @@ val resolve_bs_package : cwd:string -> Bsb_pkg_types.t -> string
 (** @raise  when not found *)
 
 val to_list : (Bsb_pkg_types.t -> string -> 'a) -> 'a list
+
+val add_resolution : Bsb_pkg_types.t -> string -> unit
 (** used by watcher *)
 
 end = struct
@@ -6989,6 +6994,9 @@ end)
 let cache : string Coll.t = Coll.create 0
 
 let to_list cb = Coll.to_list cache cb
+
+let add_resolution (package : t) path =
+  Coll.add cache package path
 
 (** TODO: collect all warnings and print later *)
 let resolve_bs_package ~cwd (package : t) =
@@ -9314,11 +9322,32 @@ type package_context = { proj_dir : string; top : top }
 let pp_packages_rev ppf lst =
   Ext_list.rev_iter lst (fun s -> Format.fprintf ppf "%s " s)
 
-let rec walk_all_deps_aux (visited : string Hash_string.t) (paths : string list)
+let extract_pre_resolved dir (map: Ext_json_types.t Map_string.t) : string Map_string.t =
+  match Map_string.find_opt map "paths" with
+  | Some(Obj {map}) -> 
+    Map_string.fold 
+      map
+      Map_string.empty
+      (fun key (value: Ext_json_types.t) map ->
+        match value with
+        | Str {str} -> Map_string.add map key (dir // str)
+        | _ -> map) 
+  | _ -> Map_string.empty
+
+let merge_resolved (a: string Map_string.t) (b: string Map_string.t) : string Map_string.t =
+  List.fold_left
+  (fun map (key, value) ->
+    Map_string.add map key value)
+  a
+  (Map_string.bindings b)
+
+
+let rec walk_all_deps_aux (visited : string Hash_string.t) (pre_resolved: string Map_string.t) (paths : string list)
     ~(top : top) (dir : string) (queue : _ Queue.t) ~pinned_dependencies =
   let bsconfig_json = dir // Literals.bsconfig_json in
   match Ext_json_parse.parse_json_from_file bsconfig_json with
   | Obj { map; loc } ->
+      let pre_resolved = merge_resolved pre_resolved (extract_pre_resolved dir map) in
       let cur_package_name =
         match Map_string.find_opt map Bsb_build_schemas.name with
         | Some (Str { str; loc }) ->
@@ -9350,11 +9379,16 @@ let rec walk_all_deps_aux (visited : string Hash_string.t) (paths : string list)
                    Ext_array.iter new_packages (fun js ->
                        match js with
                        | Str { str = new_package } ->
-                           let package_dir =
-                             Bsb_pkg.resolve_bs_package ~cwd:dir
+                           let path = 
+                            Map_string.find_opt pre_resolved new_package 
+                           in
+                           let package_dir = 
+                           match path with
+                           | Some path -> dir // path
+                           | None -> Bsb_pkg.resolve_bs_package ~cwd:dir
                                (Bsb_pkg_types.string_as_package new_package)
                            in
-                           walk_all_deps_aux visited package_stacks
+                           walk_all_deps_aux visited pre_resolved package_stacks
                              ~top:(Expect_name new_package) package_dir queue
                              ~pinned_dependencies
                        | _ ->
@@ -9375,7 +9409,8 @@ let rec walk_all_deps_aux (visited : string Hash_string.t) (paths : string list)
 let walk_all_deps dir ~pinned_dependencies : package_context Queue.t =
   let visited = Hash_string.create 0 in
   let cb = Queue.create () in
-  walk_all_deps_aux visited [] ~top:Expect_none dir cb ~pinned_dependencies;
+  let pre_resolved = Map_string.empty in
+  walk_all_deps_aux visited pre_resolved [] ~top:Expect_none dir cb ~pinned_dependencies;
   cb
 
 end
@@ -10424,13 +10459,42 @@ let extract_generators (map : json_map) =
         (Bsb_build_schemas.generators ^ " expect an array field"));
   !generators
 
+let rec extract_package_path cwd (map: json_map) package =
+  let from_map (map: json_map) =
+    match map.?(Bsb_build_schemas.paths) with
+    | Some (Obj {map: json_map}) -> (
+      match Map_string.find_opt map package with
+      | Some (Str {str}) -> Some (str)
+      | _ -> None)
+    | _ -> None
+  in
+  match from_map map with
+  | Some path -> Some (cwd // path)
+  | None ->
+    try
+      let dir = Ext_path.find_package_json_dir (Filename.dirname cwd) in
+      let json = Ext_json_parse.parse_json_from_file (dir // Literals.bsconfig_json) in
+      match json with
+      | Obj {map} -> extract_package_path dir map package
+      | _ -> extract_package_path dir Map_string.empty package
+    with
+    | _ -> None
+
 let extract_dependencies (map : json_map) cwd (field : string) :
     Bsb_config_types.dependencies =
   match map.?(field) with
   | None -> []
   | Some (Arr { content = s }) ->
       Ext_list.map (Bsb_build_util.get_list_string s) (fun s ->
-          resolve_package cwd (Bsb_pkg_types.string_as_package s))
+          let package_name = Bsb_pkg_types.string_as_package s in
+          let configured_path = extract_package_path cwd map s in
+          match configured_path with
+          | Some path -> 
+            Bsb_pkg.add_resolution package_name path;
+            {Bsb_config_types.package_name = package_name; package_install_path = path // Bsb_config.lib_ocaml}
+          | None ->
+            resolve_package cwd package_name
+          )
   | Some config -> Bsb_exception.config_error config (field ^ " expect an array")
 
 (* return an empty array if not found *)
