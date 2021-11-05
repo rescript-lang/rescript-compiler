@@ -113,6 +113,9 @@ let allResolvedTest () =
          assert_bool (resolved.(2) = 3);
          h)
 
+let is_not_found (error : exn) =
+  match error with Not_found -> true | _ -> false
+
 let allRejectTest () =
   let p1 = resolve 1 in
   let p2 = resolve 3 in
@@ -120,7 +123,7 @@ let allRejectTest () =
   let promises = [| p1; p2; p3 |] in
   all promises |> then_ fail
   |> catch (fun error ->
-         assert_bool (Obj.magic error == Not_found);
+         assert_bool (is_not_found (Obj.magic error));
          h)
 
 let raceTest () =
@@ -133,7 +136,7 @@ let raceTest () =
 let createPromiseRejectTest () =
   make (fun ~resolve ~reject -> (reject Not_found [@bs]))
   |> catch (fun error ->
-         assert_bool (Obj.magic error == Not_found);
+         assert_bool (is_not_found (Obj.magic error));
          h)
 
 let createPromiseFulfillTest () =
