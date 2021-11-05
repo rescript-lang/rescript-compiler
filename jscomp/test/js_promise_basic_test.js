@@ -47,7 +47,7 @@ function fail(param) {
         RE_EXN_ID: "Assert_failure",
         _1: [
           "js_promise_basic_test.ml",
-          19,
+          17,
           2
         ],
         Error: new Error()
@@ -85,7 +85,7 @@ function assertIsNotFound(x) {
         RE_EXN_ID: "Assert_failure",
         _1: [
           "js_promise_basic_test.ml",
-          36,
+          34,
           9
         ],
         Error: new Error()
@@ -179,8 +179,8 @@ function orElseRejectedRejectTest(param) {
           RE_EXN_ID: "Assert_failure",
           _1: [
             "js_promise_basic_test.ml",
-            77,
-            18
+            79,
+            19
           ],
           Error: new Error()
         };
@@ -241,6 +241,10 @@ function allResolvedTest(param) {
   return obj.then(arg1);
 }
 
+function is_not_found(error) {
+  return error.RE_EXN_ID === "Not_found";
+}
+
 function allRejectTest(param) {
   var p1 = Promise.resolve(1);
   var p2 = Promise.resolve(3);
@@ -255,9 +259,7 @@ function allRejectTest(param) {
   var obj = Promise.all(promises);
   var obj$1 = obj.then(fail);
   var arg1 = function (error) {
-    assert_bool(error === ({
-            RE_EXN_ID: "Not_found"
-          }));
+    assert_bool(error.RE_EXN_ID === "Not_found");
     return h;
   };
   return obj$1.catch(arg1);
@@ -287,9 +289,7 @@ function createPromiseRejectTest(param) {
               });
         }));
   var arg1 = function (error) {
-    assert_bool(error === ({
-            RE_EXN_ID: "Not_found"
-          }));
+    assert_bool(error.RE_EXN_ID === "Not_found");
     return h;
   };
   return obj.catch(arg1);
@@ -343,7 +343,7 @@ var obj = Promise.all([
     ]);
 
 function arg1(param) {
-  eq("File \"js_promise_basic_test.ml\", line 169, characters 7-14", [
+  eq("File \"js_promise_basic_test.ml\", line 171, characters 12-19", [
         param[0],
         param[1]
       ], [
@@ -369,7 +369,7 @@ function re(prim) {
 
 Mt.from_promise_suites("Js_promise_basic_test", {
       hd: [
-        "File \"js_promise_basic_test.ml\", line 187, characters 4-11",
+        "File \"js_promise_basic_test.ml\", line 191, characters 5-12",
         twop.then(function (x) {
               return Promise.resolve({
                           TAG: /* Eq */0,
@@ -380,7 +380,7 @@ Mt.from_promise_suites("Js_promise_basic_test", {
       ],
       tl: {
         hd: [
-          "File \"js_promise_basic_test.ml\", line 190, characters 4-11",
+          "File \"js_promise_basic_test.ml\", line 192, characters 5-12",
           twop.then(function (x) {
                 return Promise.resolve({
                             TAG: /* Neq */1,
@@ -416,6 +416,7 @@ exports.rejectTest = rejectTest;
 exports.thenCatchChainResolvedTest = thenCatchChainResolvedTest;
 exports.thenCatchChainRejectedTest = thenCatchChainRejectedTest;
 exports.allResolvedTest = allResolvedTest;
+exports.is_not_found = is_not_found;
 exports.allRejectTest = allRejectTest;
 exports.raceTest = raceTest;
 exports.createPromiseRejectTest = createPromiseRejectTest;
