@@ -44,6 +44,7 @@
 ../lib/4.06.1/rescript.ml: ./bsb/bsb_package_specs.mli
 ../lib/4.06.1/rescript.ml: ./bsb/bsb_parse_sources.ml
 ../lib/4.06.1/rescript.ml: ./bsb/bsb_parse_sources.mli
+../lib/4.06.1/rescript.ml: ./bsb/bsb_path_resolver.ml
 ../lib/4.06.1/rescript.ml: ./bsb/bsb_pkg.ml
 ../lib/4.06.1/rescript.ml: ./bsb/bsb_pkg.mli
 ../lib/4.06.1/rescript.ml: ./bsb/bsb_pkg_types.ml

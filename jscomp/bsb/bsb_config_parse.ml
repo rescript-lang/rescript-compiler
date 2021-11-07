@@ -190,27 +190,6 @@ let extract_generators (map : json_map) =
         (Bsb_build_schemas.generators ^ " expect an array field"));
   !generators
 
-let rec extract_package_path cwd (map: json_map) package =
-  let from_map (map: json_map) =
-    match map.?(Bsb_build_schemas.paths) with
-    | Some (Obj {map: json_map}) -> (
-      match Map_string.find_opt map package with
-      | Some (Str {str}) -> Some (str)
-      | _ -> None)
-    | _ -> None
-  in
-  match from_map map with
-  | Some path -> Some (cwd // path)
-  | None ->
-    try
-      let dir = Ext_path.find_package_json_dir (Filename.dirname cwd) in
-      let json = Ext_json_parse.parse_json_from_file (dir // Literals.bsconfig_json) in
-      match json with
-      | Obj {map} -> extract_package_path dir map package
-      | _ -> extract_package_path dir Map_string.empty package
-    with
-    | _ -> None
-
 let extract_dependencies (map : json_map) cwd (field : string) :
     Bsb_config_types.dependencies =
   match map.?(field) with
@@ -218,10 +197,9 @@ let extract_dependencies (map : json_map) cwd (field : string) :
   | Some (Arr { content = s }) ->
       Ext_list.map (Bsb_build_util.get_list_string s) (fun s ->
           let package_name = Bsb_pkg_types.string_as_package s in
-          let configured_path = extract_package_path cwd map s in
+          let configured_path = Bsb_path_resolver.find_path_recursively cwd map s in
           match configured_path with
           | Some path -> 
-            Bsb_pkg.add_resolution package_name path;
             {Bsb_config_types.package_name = package_name; package_install_path = path // Bsb_config.lib_ocaml}
           | None ->
             resolve_package cwd package_name
