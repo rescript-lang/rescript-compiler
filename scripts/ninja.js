@@ -1377,6 +1377,7 @@ function updateDev() {
 subninja compiler.ninja
 stdlib = stdlib-406
 ${BSC_COMPILER}
+ocamllex = ocamllex.opt
 subninja runtime/build.ninja
 subninja others/build.ninja
 subninja $stdlib/build.ninja
