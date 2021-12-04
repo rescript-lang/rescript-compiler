@@ -29,6 +29,7 @@ type error = private
   | Unterminated_backslash
   | Invalid_escape_code of char
   | Invalid_hex_escape
+  | Invalid_dec_escape
   | Invalid_unicode_escape
   | Unterminated_variable
   | Unmatched_paren

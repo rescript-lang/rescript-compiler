@@ -26,6 +26,7 @@ type error =
   | Invalid_code_point
   | Unterminated_backslash
   | Invalid_escape_code of char
+  | Invalid_dec_escape
   | Invalid_hex_escape
   | Invalid_unicode_escape
   | Invalid_unicode_codepoint_escape
@@ -37,6 +38,7 @@ let pp_error fmt err =
   | Invalid_code_point -> "Invalid code point"
   | Unterminated_backslash -> "\\ ended unexpectedly"
   | Invalid_escape_code c -> "Invalid escape code: " ^ String.make 1 c
+  | Invalid_dec_escape -> "Invalid decimal escape"
   | Invalid_hex_escape -> "Invalid \\x escape"
   | Invalid_unicode_escape -> "Invalid \\u escape"
   | Invalid_unicode_codepoint_escape ->
@@ -93,7 +95,7 @@ and escape_code loc buf s offset s_len =
   else Buffer.add_char buf '\\';
   let cur_char = s.[offset] in
   match cur_char with
-  | '\\' | 'b' | 't' | 'n' | 'v' | 'f' | 'r' | '0' | '$' ->
+  | '\\' | 'b' | 't' | 'n' | 'v' | 'f' | 'r' | '0' | '$' | '"' | '\'' ->
       Buffer.add_char buf cur_char;
       check_and_transform (loc + 1) buf s (offset + 1) s_len
   | 'u' ->
@@ -109,6 +111,8 @@ and escape_code loc buf s offset s_len =
   | 'x' ->
       Buffer.add_char buf cur_char;
       two_hex (loc + 1) buf s (offset + 1) s_len
+  | '0'..'9' ->
+      three_dec loc buf s offset s_len
   | _ -> error ~loc (Invalid_escape_code cur_char)
 
 and two_hex loc buf s offset s_len =
@@ -121,6 +125,17 @@ and two_hex loc buf s offset s_len =
     check_and_transform (loc + 2) buf s (offset + 2) s_len)
   else error ~loc Invalid_hex_escape
 (*Location.raise_errorf ~loc "%c%c is not a valid hex code" a b*)
+
+and three_dec loc buf s offset s_len =
+  if offset + 1 >= s_len then error ~loc Invalid_dec_escape;
+  let a, b, c = (s.[offset], s.[offset + 1], s.[offset + 2]) in
+  print_char a;
+  if Ext_char.valid_dec a && Ext_char.valid_dec b && Ext_char.valid_dec c then (
+    Buffer.add_char buf a;
+    Buffer.add_char buf b;
+    Buffer.add_char buf c;
+    check_and_transform (loc + 3) buf s (offset + 3) s_len)
+else error ~loc Invalid_dec_escape
 
 and unicode loc buf s offset s_len =
   if offset + 3 >= s_len then error ~loc Invalid_unicode_escape
