@@ -39295,7 +39295,7 @@ module Ext_char : sig
 
 val valid_hex : char -> bool
 
-val valid_dec : char -> bool
+val valid_oct : char -> bool
 
 val is_lower_case : char -> bool
 
@@ -39332,8 +39332,8 @@ end = struct
 let valid_hex x =
   match x with '0' .. '9' | 'a' .. 'f' | 'A' .. 'F' -> true | _ -> false
 
-let valid_dec x =
-  match x with '0' .. '9' -> true | _ -> false
+let valid_oct x =
+  match x with '0' .. '7' -> true | _ -> false
 
 let is_lower_case c =
   (c >= 'a' && c <= 'z')
@@ -39411,7 +39411,6 @@ type error =
   | Invalid_code_point
   | Unterminated_backslash
   | Invalid_escape_code of char
-  | Invalid_dec_escape
   | Invalid_hex_escape
   | Invalid_unicode_escape
   | Invalid_unicode_codepoint_escape
@@ -39423,7 +39422,6 @@ let pp_error fmt err =
   | Invalid_code_point -> "Invalid code point"
   | Unterminated_backslash -> "\\ ended unexpectedly"
   | Invalid_escape_code c -> "Invalid escape code: " ^ String.make 1 c
-  | Invalid_dec_escape -> "Invalid decimal escape"
   | Invalid_hex_escape -> "Invalid \\x escape"
   | Invalid_unicode_escape -> "Invalid \\u escape"
   | Invalid_unicode_codepoint_escape ->
@@ -39496,8 +39494,6 @@ and escape_code loc buf s offset s_len =
   | 'x' ->
       Buffer.add_char buf cur_char;
       two_hex (loc + 1) buf s (offset + 1) s_len
-  | '0'..'9' ->
-      three_dec loc buf s offset s_len
   | _ -> error ~loc (Invalid_escape_code cur_char)
 
 and two_hex loc buf s offset s_len =
@@ -39510,17 +39506,6 @@ and two_hex loc buf s offset s_len =
     check_and_transform (loc + 2) buf s (offset + 2) s_len)
   else error ~loc Invalid_hex_escape
 (*Location.raise_errorf ~loc "%c%c is not a valid hex code" a b*)
-
-and three_dec loc buf s offset s_len =
-  if offset + 1 >= s_len then error ~loc Invalid_dec_escape;
-  let a, b, c = (s.[offset], s.[offset + 1], s.[offset + 2]) in
-  print_char a;
-  if Ext_char.valid_dec a && Ext_char.valid_dec b && Ext_char.valid_dec c then (
-    Buffer.add_char buf a;
-    Buffer.add_char buf b;
-    Buffer.add_char buf c;
-    check_and_transform (loc + 3) buf s (offset + 3) s_len)
-else error ~loc Invalid_dec_escape
 
 and unicode loc buf s offset s_len =
   if offset + 3 >= s_len then error ~loc Invalid_unicode_escape
@@ -39982,7 +39967,6 @@ type error = private
   | Unterminated_backslash
   | Invalid_escape_code of char
   | Invalid_hex_escape
-  | Invalid_dec_escape
   | Invalid_unicode_escape
   | Unterminated_variable
   | Unmatched_paren
@@ -40049,7 +40033,6 @@ type error =
   | Unterminated_backslash
   | Invalid_escape_code of char
   | Invalid_hex_escape
-  | Invalid_dec_escape
   | Invalid_unicode_escape
   | Unterminated_variable
   | Unmatched_paren
@@ -40093,7 +40076,6 @@ let pp_error fmt err =
   | Invalid_code_point -> "Invalid code point"
   | Unterminated_backslash -> "\\ ended unexpectedly"
   | Invalid_escape_code c -> "Invalid escape code: " ^ String.make 1 c
-  | Invalid_dec_escape -> "Invalid decimal escape"
   | Invalid_hex_escape -> "Invalid \\x escape"
   | Invalid_unicode_escape -> "Invalid \\u escape"
   | Unterminated_variable -> "$ unterminated"
@@ -40289,8 +40271,6 @@ and escape_code loc s offset ({ buf; s_len } as cxt) =
   | 'x' ->
       Buffer.add_char buf cur_char;
       two_hex (loc + 1) s (offset + 1) cxt
-  | '0'..'9' ->
-      three_dec loc s offset cxt
   | _ -> pos_error cxt ~loc (Invalid_escape_code cur_char)
 
 and two_hex loc s offset ({ buf; s_len } as cxt) =
@@ -40301,16 +40281,6 @@ and two_hex loc s offset ({ buf; s_len } as cxt) =
     Buffer.add_char buf b;
     check_and_transform (loc + 2) s (offset + 2) cxt)
   else pos_error cxt ~loc Invalid_hex_escape
-
-and three_dec loc s offset ({ buf; s_len } as cxt) =
-  if offset + 1 >= s_len then pos_error cxt ~loc Invalid_dec_escape;
-  let a, b, c = (s.[offset], s.[offset + 1], s.[offset + 2]) in
-  if Ext_char.valid_dec a && Ext_char.valid_dec b && Ext_char.valid_dec c then (
-    Buffer.add_char buf a;
-    Buffer.add_char buf b;
-    Buffer.add_char buf c;
-    check_and_transform (loc + 3) s (offset + 3) cxt)
-  else pos_error cxt ~loc Invalid_dec_escape
 
 and unicode loc s offset ({ buf; s_len } as cxt) =
   if offset + 3 >= s_len then pos_error cxt ~loc Invalid_unicode_escape;

@@ -26,6 +26,6 @@
 
 val valid_hex : char -> bool
 
-val valid_dec : char -> bool
+val valid_oct : char -> bool
 
 val is_lower_case : char -> bool
