@@ -1,0 +1,55 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Watch build",
+            "command": "node",
+            "options": {
+                "cwd": "${workspaceRoot}"
+            },
+            // "isShellCommand": true,
+            "type": "shell",
+            "group": {
+              "kind" : "build",
+              "isDefault": true
+            },
+            "args": [
+                ".vscode/task.js"
+            ],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "isBackground": true,
+            "problemMatcher": {
+                "fileLocation": "absolute",
+                "owner": "ocaml",
+                "background": {
+                    "activeOnStart": false,
+                    "beginsPattern": ">>>> Start compiling",
+                    "endsPattern": ">>>> Finish compiling"
+                },
+                "pattern": [
+                    {
+                        "regexp": "^File \"(.*)\", line (\\d+)(?:, characters (\\d+)-(\\d+))?:$",
+                        "file": 1,
+                        "line": 2,
+                        "column": 3,
+                        "endColumn": 4
+                    },
+                    {
+                        // "regexp": "^(?:(?:Parse\\s+)?(Warning|[Ee]rror)(?:\\s+\\d+)?:)?\\s+(.*)$",
+                        "regexp": "^(?:(?:Parse\\s+)?(Warning|[Ee]rror)(?:\\s+\\(warning \\d+\\))?(?:\\s+\\d+)?:)?\\s+(.*)$",
+                        "severity": 1,
+                        "message": 2,
+                        "loop": true
+                    }
+                ]
+            }
+    }
+    ]
+}

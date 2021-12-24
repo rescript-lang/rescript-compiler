@@ -1,0 +1,24 @@
+language: node_js 
+
+node_js:
+  - 10.15.1
+
+sudo: required
+
+env:
+  - OCAML_VERSION=4.06
+
+install: test -e .travis.opam.sh || wget https://raw.githubusercontent.com/ocaml/ocaml-ci-scripts/master/.travis-opam.sh
+
+script:
+  - bash -ex .travis-opam.sh
+  - npm install
+  - opam switch create 4.06.1
+  - eval $(opam env)
+  - ocamlopt -v
+  - make world
+  - make test
+
+os:
+  # - linux
+  - osx

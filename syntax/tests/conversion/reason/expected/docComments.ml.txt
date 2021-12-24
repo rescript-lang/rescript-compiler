@@ -1,0 +1,40 @@
+@@ocaml.text(" The first special comment of the file is the comment associated
+     to the whole module. ")
+
+@ocaml.doc(" The comment for function f ")
+let f = (x, y) => x + y
+
+@@ocaml.text(" This comment is not attached to any element since there is another
+     special comment just before the next element. ")
+
+/* A simple comment. */
+@ocaml.doc(" Comment for exception My_exception, even with a simple comment
+     between the special comment and the exception.")
+exception My_exception(int => int, int)
+
+@ocaml.doc(" Comment for type weather  ")
+type weather =
+  | @ocaml.doc(" The comment for constructor Rain ") Rain(int)
+  | @ocaml.doc(" The comment for constructor Sun ") Sun
+
+@ocaml.doc(" The comment for type my_record ")
+type my_record = {
+  @ocaml.doc(" Comment for field foo ")
+  foo: int,
+  @ocaml.doc(" Comment for field bar ")
+  bar: string,
+}
+
+@ocaml.doc(" The comment for module Foo ")
+module Foo = {
+  @ocaml.doc(" The comment for x ")
+  @ocaml.doc(" A special comment in the class, but not associated to any element. ")
+  let x = 0
+}
+
+@ocaml.doc(" The comment for module type my_module_type. ")
+module type my_module_type = {
+  /* Comment for value x. */
+  let x: int
+  /* ... */
+}

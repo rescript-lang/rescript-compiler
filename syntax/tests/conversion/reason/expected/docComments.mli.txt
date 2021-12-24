@@ -1,0 +1,69 @@
+@@ocaml.text(" The first special comment of the file is the comment associated
+     with the whole module.")
+
+@@ocaml.text(" Special comments can be placed between elements and are kept
+     by the OCamldoc tool, but are not associated to any element.
+     @-tags in these comments are ignored.")
+
+@@ocaml.text(/* ***************************************************************** */
+" Comments like the one above, with more than two asterisks,
+     are ignored. ")
+
+@ocaml.doc(" The comment for function f. ")
+@ocaml.doc(" The continuation of the comment for function f. ")
+let f: (int, int) => int
+
+/* Hello, I'm a simple comment :-) */
+@ocaml.doc(" Comment for exception My_exception, even with a simple comment
+     between the special comment and the exception.")
+exception My_exception(int => int, int)
+
+@ocaml.doc(" Comment for type weather  ")
+type weather =
+  | @ocaml.doc(" The comment for constructor Rain ") Rain(int)
+  | @ocaml.doc(" The comment for constructor Sun ") Sun
+
+@ocaml.doc(" Comment for type weather2  ")
+@ocaml.doc(" I can continue the comment for type weather2 here
+   because there is already a comment associated to the last constructor.")
+type weather2 =
+  | @ocaml.doc(" The comment for constructor Rain ") Rain(int)
+  | @ocaml.doc(" The comment for constructor Sun ") Sun
+
+@ocaml.doc(" The comment for type my_record ")
+@ocaml.doc(" Continuation of comment for type my_record ")
+type my_record = {
+  @ocaml.doc(" Comment for field foo ")
+  foo: int,
+  @ocaml.doc(" Comment for field bar ")
+  bar: string,
+}
+
+@ocaml.doc(" Comment for foo ") @ocaml.doc(" This comment is associated to foo and not to bar. ")
+let foo: string
+
+@ocaml.doc(" This comment is associated to foo and not to bar. ")
+@ocaml.doc(" This comment is associated to bar. ")
+let bar: string
+
+@ocaml.doc(" The comment for module Foo ")
+module Foo: {
+  @ocaml.doc(" The comment for x ")
+  let x: int
+
+  @@ocaml.text(" A special comment that is kept but not associated to any element ")
+}
+
+@ocaml.doc(" The comment for module type my_module_type. ")
+module type my_module_type = {
+  @ocaml.doc(" The comment for value x. ")
+  let x: int
+
+  @ocaml.doc(" The comment for module M. ")
+  module M: {
+    @ocaml.doc(" The comment for value y. ")
+    let y: int
+
+    /* ... */
+  }
+}

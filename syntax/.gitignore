@@ -1,0 +1,10 @@
+.DS_STORE
+node_modules
+*.cm*
+*.o
+*.s
+lib/*
+!lib/README.md
+.vscode/settings.json
+ # each person has its own preferences
+ _build

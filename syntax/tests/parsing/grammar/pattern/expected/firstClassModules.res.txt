@@ -1,0 +1,12 @@
+let sort (type s) (module Set)  l = ()
+let sort (type s) ((module Set)  : (module Set.S with type elt = s)) l = ()
+let sort (type s)
+  ((module Set)  : (module Set.S with type elt = s and type elt2 = t)) l = ()
+let foo (module Foo)  baz = Foo.bar baz
+let bump_list (type a) ((module B)  : (module Bumpable with type t = a))
+  (l : a list) = List.map ~f:((B.bump l)[@ns.namedArgLoc ])
+;;match x with
+  | (module Set)  -> ()
+  | ((module Set)  : (module Set.S with type elt = s)) -> ()
+  | ((module Set)  : (module Set.S with type elt = s and type elt2 = t)) ->
+      ()

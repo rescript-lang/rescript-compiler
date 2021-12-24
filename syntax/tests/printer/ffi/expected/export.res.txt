@@ -1,0 +1,12 @@
+@genType type callback = ReactEvent.Mouse.t => unit
+
+@genType type t = int @genType and s = string
+@genType type t = int and s = string
+type t = int @genType and s = string
+
+@genType let callback = _ => Js.log("Clicked")
+@genType let callback = _ => Js.log("Clicked")
+
+@genType let x = "hello world" @genType and y = 2
+@genType let x = "hello world" @genType and y = 2
+let x = "hello world" @genType and y = 2

@@ -1,0 +1,27 @@
+include
+  struct
+    external setTimeout : (unit -> unit) -> unit -> float = "setTimeout"
+    [@@val ]
+  end[@@ns.jsFfi ]
+include
+  struct
+    external timeout : (unit -> unit) -> unit -> float = "setTimeout"[@@val ]
+  end[@@ns.jsFfi ]
+include
+  struct
+    external setTimeout : (unit -> unit) -> unit -> float = "setTimeout"
+    [@@val ]
+    external clearTimeout : float -> unit = "clearTimeout"[@@val ]
+  end[@@ns.jsFfi ]
+include
+  struct
+    external random : unit -> float = "random"[@@val ][@@scope "Math"]
+  end[@@ns.jsFfi ]
+include
+  struct
+    external href : string = "href"[@@val ][@@scope ("window", "location")]
+  end[@@ns.jsFfi ]
+include
+  struct
+    external dirname : string -> string = "dirname"[@@genType.import "path"]
+  end[@@ns.jsFfi ]

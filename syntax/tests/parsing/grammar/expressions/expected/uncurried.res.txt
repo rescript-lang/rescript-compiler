@@ -1,0 +1,20 @@
+let f = ((fun a -> fun b -> a + b)[@bs ])
+let f = ((fun a -> ((fun b -> a + b)[@bs ]))[@bs ])
+let f = ((fun a -> fun b -> ((fun c -> fun d -> ((a + b) + c) + d)[@bs ]))
+  [@bs ])
+let f =
+  ((fun a -> ((fun b -> ((fun c -> ((fun d -> ())[@attr4 ]))[@bs ][@attr3 ]))
+      [@attr2 ]))
+  [@bs ][@attr ])
+let f =
+  ((fun ((a)[@attr ]) ->
+      fun ((b)[@attr2 ]) -> ((fun ((c)[@attr3 ]) -> fun ((d)[@attr4 ]) -> ())
+        [@bs ]))
+  [@bs ])
+let f =
+  ((fun ((a)[@attr ]) ->
+      fun ((b)[@attr2 ]) -> ((fun ((c)[@attr3 ]) -> fun ((d)[@attr4 ]) -> ())
+        [@bs ]))
+  [@bs ])
+;;((add 1 2)[@bs ])
+;;((((((add 2 3 4)[@bs ]) 5 6 7)[@bs ]) 8 9 10)[@bs ])
