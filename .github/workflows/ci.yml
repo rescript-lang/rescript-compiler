@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  test:
+  test-syntax:
     runs-on: macos-latest
 
     steps:
@@ -29,6 +29,10 @@ jobs:
       with:
         node-version: 14.4.0
 
-    - run: npm ci
+    - name: Install depedencies
+      working-directory: ./syntax
+      run: npm ci
 
-    - run: eval $(opam env) && make roundtrip-test
+    - name: Run tests
+      working-directory: ./syntax
+      run: eval $(opam env) && make roundtrip-test
