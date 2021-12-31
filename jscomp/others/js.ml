@@ -46,12 +46,12 @@
 type 'a t = < .. > as 'a
 (**/**)
 
-(* internal types for FFI, these types are not used by normal users 
+(* internal types for FFI, these types are not used by normal users
     Absent cmi file when looking up module alias.
 *)
 module Fn = struct
   type 'a arity0 = {
-    i0 : unit -> 'a [@internal]  
+    i0 : unit -> 'a [@internal]
   }
   type 'a arity1 = {
     i1 : 'a [@internal]
@@ -123,15 +123,15 @@ end
 
 (**/**)
 module MapperRt = Js_mapperRt
-module Internal = struct 
-  open Fn    
+module Internal = struct
+  open Fn
   external opaqueFullApply : 'a -> 'a = "%uncurried_apply"
 
   (* Use opaque instead of [._n] to prevent some optimizations happening *)
-  external run : 'a arity0 -> 'a = "#run" 
+  external run : 'a arity0 -> 'a = "#run"
   external opaque : 'a -> 'a = "%opaque"
 
-end    
+end
 (**/**)
 
 
@@ -303,3 +303,6 @@ module List = Js_list
 module Vector = Js_vector
 
 module Console = Js_console
+
+module BigInt = Js_bigint
+(** Provide bindings for BigInt *)
