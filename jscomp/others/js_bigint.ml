@@ -21,11 +21,11 @@ external div : t -> t -> t = "%divfloat"
 
 external (mod) : t -> t -> t = "caml_fmod_float" "fmod" [@@noalloc]
 
-external land: t -> t -> t = "%andint"
-external lor: t -> t -> t = "%orint"
-external lxor: t -> t -> t = "%xorint"
+external (land) : t -> t -> t = "%andint"
+external (lor) : t -> t -> t = "%orint"
+external (lxor) : t -> t -> t = "%xorint"
 
-external lsl: t -> t -> t = "%lslint"
-external asr: t -> t -> t = "%asrint"
+external (lsl) : t -> t -> t = "%lslint"
+external (asr) : t -> t -> t = "%asrint"
 
 let exp x y = [%raw x ** y] [@@inline]
