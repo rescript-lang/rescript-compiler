@@ -19,7 +19,7 @@ external sub : t -> t -> t = "%subfloat"
 external mul : t -> t -> t = "%mulfloat"
 external div : t -> t -> t = "%divfloat"
 
-external (mod) : t -> t -> t = "caml_fmod_float" "fmod" [@@noalloc]
+external (mod) : t -> t -> t = "caml_fmod_float" [@@noalloc]
 
 external (land) : t -> t -> t = "%andint"
 external (lor) : t -> t -> t = "%orint"
@@ -28,4 +28,7 @@ external (lxor) : t -> t -> t = "%xorint"
 external (lsl) : t -> t -> t = "%lslint"
 external (asr) : t -> t -> t = "%asrint"
 
-let exp x y = [%raw x ** y] [@@inline]
+let exp x y =
+  let _ = x in
+  let _ = y in
+  [%raw "x ** y"] [@@inline]
