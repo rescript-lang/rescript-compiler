@@ -6,7 +6,7 @@ external ofString : string -> t = "BigInt" [@@bs.val]
 external ofInt : int -> t = "BigInt" [@@bs.val]
 external ofFloat : float -> t = "BigInt" [@@bs.val]
 
-external toString : t -> string = "BigInt" [@@bs.send]
+external toString : t -> string = "toString" [@@bs.send]
 external toStringWithRadix : t -> radix:int -> string = "toString" [@@bs.send]
 
 external (+) : t -> t -> t = "%addfloat"
