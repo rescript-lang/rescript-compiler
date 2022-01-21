@@ -987,77 +987,89 @@ var suites = {
                                                                                             ],
                                                                                             tl: {
                                                                                               hd: [
-                                                                                                "File \"caml_compare_test.ml\", line 87, characters 4-11",
+                                                                                                "eq_no_prototype",
                                                                                                 (function (param) {
                                                                                                     return {
                                                                                                             TAG: /* Eq */0,
-                                                                                                            _0: Caml_obj.compare(null, {
-                                                                                                                  hd: 3,
-                                                                                                                  tl: /* [] */0
-                                                                                                                }),
-                                                                                                            _1: -1
+                                                                                                            _0: Caml_obj.equal({x:1}, ((function(){let o = Object.create(null);o.x = 1;return o;})())),
+                                                                                                            _1: true
                                                                                                           };
                                                                                                   })
                                                                                               ],
                                                                                               tl: {
                                                                                                 hd: [
-                                                                                                  "File \"caml_compare_test.ml\", line 90, characters 4-11",
+                                                                                                  "File \"caml_compare_test.ml\", line 88, characters 4-11",
                                                                                                   (function (param) {
                                                                                                       return {
                                                                                                               TAG: /* Eq */0,
-                                                                                                              _0: Caml_obj.compare({
+                                                                                                              _0: Caml_obj.compare(null, {
                                                                                                                     hd: 3,
                                                                                                                     tl: /* [] */0
-                                                                                                                  }, null),
-                                                                                                              _1: 1
+                                                                                                                  }),
+                                                                                                              _1: -1
                                                                                                             };
                                                                                                     })
                                                                                                 ],
                                                                                                 tl: {
                                                                                                   hd: [
-                                                                                                    "File \"caml_compare_test.ml\", line 93, characters 4-11",
+                                                                                                    "File \"caml_compare_test.ml\", line 91, characters 4-11",
                                                                                                     (function (param) {
                                                                                                         return {
                                                                                                                 TAG: /* Eq */0,
-                                                                                                                _0: Caml_obj.compare(null, 0),
-                                                                                                                _1: -1
+                                                                                                                _0: Caml_obj.compare({
+                                                                                                                      hd: 3,
+                                                                                                                      tl: /* [] */0
+                                                                                                                    }, null),
+                                                                                                                _1: 1
                                                                                                               };
                                                                                                       })
                                                                                                   ],
                                                                                                   tl: {
                                                                                                     hd: [
-                                                                                                      "File \"caml_compare_test.ml\", line 96, characters 4-11",
+                                                                                                      "File \"caml_compare_test.ml\", line 94, characters 4-11",
                                                                                                       (function (param) {
                                                                                                           return {
                                                                                                                   TAG: /* Eq */0,
-                                                                                                                  _0: Caml_obj.compare(0, null),
-                                                                                                                  _1: 1
+                                                                                                                  _0: Caml_obj.compare(null, 0),
+                                                                                                                  _1: -1
                                                                                                                 };
                                                                                                         })
                                                                                                     ],
                                                                                                     tl: {
                                                                                                       hd: [
-                                                                                                        "File \"caml_compare_test.ml\", line 99, characters 4-11",
+                                                                                                        "File \"caml_compare_test.ml\", line 97, characters 4-11",
                                                                                                         (function (param) {
                                                                                                             return {
                                                                                                                     TAG: /* Eq */0,
-                                                                                                                    _0: Caml_obj.compare(undefined, 0),
-                                                                                                                    _1: -1
+                                                                                                                    _0: Caml_obj.compare(0, null),
+                                                                                                                    _1: 1
                                                                                                                   };
                                                                                                           })
                                                                                                       ],
                                                                                                       tl: {
                                                                                                         hd: [
-                                                                                                          "File \"caml_compare_test.ml\", line 102, characters 4-11",
+                                                                                                          "File \"caml_compare_test.ml\", line 100, characters 4-11",
                                                                                                           (function (param) {
                                                                                                               return {
                                                                                                                       TAG: /* Eq */0,
-                                                                                                                      _0: Caml_obj.compare(0, undefined),
-                                                                                                                      _1: 1
+                                                                                                                      _0: Caml_obj.compare(undefined, 0),
+                                                                                                                      _1: -1
                                                                                                                     };
                                                                                                             })
                                                                                                         ],
-                                                                                                        tl: /* [] */0
+                                                                                                        tl: {
+                                                                                                          hd: [
+                                                                                                            "File \"caml_compare_test.ml\", line 103, characters 4-11",
+                                                                                                            (function (param) {
+                                                                                                                return {
+                                                                                                                        TAG: /* Eq */0,
+                                                                                                                        _0: Caml_obj.compare(0, undefined),
+                                                                                                                        _1: 1
+                                                                                                                      };
+                                                                                                              })
+                                                                                                          ],
+                                                                                                          tl: /* [] */0
+                                                                                                        }
                                                                                                       }
                                                                                                     }
                                                                                                   }
@@ -1119,21 +1131,21 @@ function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-eq("File \"caml_compare_test.ml\", line 112, characters 6-13", true, Caml_obj.greaterthan(1, undefined));
+eq("File \"caml_compare_test.ml\", line 113, characters 6-13", true, Caml_obj.greaterthan(1, undefined));
 
-eq("File \"caml_compare_test.ml\", line 113, characters 6-13", true, Caml_obj.lessthan(/* [] */0, {
+eq("File \"caml_compare_test.ml\", line 114, characters 6-13", true, Caml_obj.lessthan(/* [] */0, {
           hd: 1,
           tl: /* [] */0
         }));
 
-eq("File \"caml_compare_test.ml\", line 114, characters 6-13", false, Caml_obj.greaterthan(undefined, 1));
+eq("File \"caml_compare_test.ml\", line 115, characters 6-13", false, Caml_obj.greaterthan(undefined, 1));
 
-eq("File \"caml_compare_test.ml\", line 115, characters 6-13", false, Caml_obj.greaterthan(undefined, [
+eq("File \"caml_compare_test.ml\", line 116, characters 6-13", false, Caml_obj.greaterthan(undefined, [
           1,
           30
         ]));
 
-eq("File \"caml_compare_test.ml\", line 116, characters 6-13", false, Caml_obj.lessthan([
+eq("File \"caml_compare_test.ml\", line 117, characters 6-13", false, Caml_obj.lessthan([
           1,
           30
         ], undefined));

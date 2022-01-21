@@ -38,7 +38,7 @@ module O = struct
         for (var x in o) { foo(x) }}
       |}]
   external hasOwnProperty :    
-    t -> key -> bool = "hasOwnProperty" [@@bs.send]
+    t -> key -> bool = "call" [@@bs.scope ("Object", "prototype", "hasOwnProperty")] [@@bs.val] 
   external get_value : Obj.t -> key -> Obj.t = ""[@@bs.get_index]
 
 end

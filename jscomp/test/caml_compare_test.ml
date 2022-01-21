@@ -83,6 +83,7 @@ let suites = ref Mt.[
     "eq_in_list2", (fun _ -> Eq ([[%bs.obj {x=2}]] = [[%bs.obj {x=2}]], true));
     "eq_with_list", (fun _ -> Eq ([%bs.obj {x=[0]}] = [%bs.obj {x=[0]}], true));
     "eq_with_list2", (fun _ -> Eq ([%bs.obj {x=[0]}] = [%bs.obj {x=[1]}], false));
+    "eq_no_prototype", (fun _ -> Eq ([%bs.raw "{x:1}"] = [%bs.raw "(function(){let o = Object.create(null);o.x = 1;return o;})()"], true));
 
     __LOC__ , begin fun _ ->
         Eq(compare Js.null (Js.Null.return [3]), -1)
