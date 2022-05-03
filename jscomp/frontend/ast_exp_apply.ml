@@ -110,16 +110,16 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
           let fn = self.expr self fn in
           match fn.pexp_desc with
           | Pexp_variant (label, None) ->
-              { fn with pexp_desc = Pexp_variant (label, Some new_obj_arg) }
+              { fn with pexp_desc = Pexp_variant (label, Some new_obj_arg); pexp_loc = e.pexp_loc }
           | Pexp_construct (ctor, None) ->
-              { fn with pexp_desc = Pexp_construct (ctor, Some new_obj_arg) }
+              { fn with pexp_desc = Pexp_construct (ctor, Some new_obj_arg); pexp_loc = e.pexp_loc }
           | Pexp_apply (fn, args) ->
               Bs_ast_invariant.warn_discarded_unused_attributes
                 fn.pexp_attributes;
               {
                 pexp_desc = Pexp_apply (fn, (Nolabel, new_obj_arg) :: args);
                 pexp_attributes = [];
-                pexp_loc = fn.pexp_loc;
+                pexp_loc = e.pexp_loc;
               }
           | _ -> (
               match Ast_open_cxt.destruct fn [] with
