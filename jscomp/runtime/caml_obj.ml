@@ -37,6 +37,14 @@ module O = struct
     [%raw{|function(o,foo){
         for (var x in o) { foo(x) }}
       |}]
+  
+  (** 
+     JS objects are not guaranteed to have `Object` in their prototype
+     chain so calling `some_obj.hasOwnProperty(key)` can sometimes throw
+     an exception when dealing with JS interop. This mainly occurs when
+     objects are created via `Object.create(null)`. The only safe way
+     to call this function is directly, e.g. `Object.prototype.hasOwnProperty.call(some_obj, key)`.
+  *)
   external hasOwnProperty :    
     t -> key -> bool = "call" [@@bs.scope ("Object", "prototype", "hasOwnProperty")] [@@bs.val] 
   external get_value : Obj.t -> key -> Obj.t = ""[@@bs.get_index]
