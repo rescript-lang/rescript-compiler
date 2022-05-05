@@ -800,12 +800,12 @@ let external_desc_of_non_obj (loc : Location.t) (st : external_desc)
    val_send = None;
    set_name = None;
    get_name = None;
-   splice = false;
+   splice;
    scopes;
    mk_obj = _;
    return_wrapper = _;
   } ->
-      Js_new { name; external_module_name; scopes }
+      Js_new { name; external_module_name; splice; scopes }
   | { new_name = Some _; _ } ->
       Bs_syntaxerr.err loc
         (Conflict_ffi_attribute "Attribute found that conflicts with %@new")

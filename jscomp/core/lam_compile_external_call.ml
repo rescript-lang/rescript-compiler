@@ -26,11 +26,15 @@
 
 module E = Js_exp_make
 
-let splice_fn_apply fn args =
+let splice_apply fn args =
   E.runtime_call Js_runtime_modules.caml_splice_call "spliceApply"
     [ fn; E.array Immutable args ]
 
-let splice_obj_fn_apply obj name args =
+let splice_new_apply fn args =
+  E.runtime_call Js_runtime_modules.caml_splice_call "spliceNewApply"
+    [ fn; E.array Immutable args ]
+
+let splice_obj_apply obj name args =
   E.runtime_call Js_runtime_modules.caml_splice_call "spliceObjApply"
     [ obj; E.str name; E.array Immutable args ]
 
@@ -253,7 +257,7 @@ let translate_ffi (cxt : Lam_compile_context.t) arg_types
       if splice then
         let args, eff, dynamic = assemble_args_has_splice arg_types args in
         add_eff eff
-          (if dynamic then splice_fn_apply fn args
+          (if dynamic then splice_apply fn args
           else E.call ~info:{ arity = Full; call_info = Call_na } fn args)
       else
         let args, eff = assemble_args_no_splice arg_types args in
@@ -265,13 +269,13 @@ let translate_ffi (cxt : Lam_compile_context.t) arg_types
         let args, eff, dynamic = assemble_args_has_splice arg_types args in
         (* TODO: fix in rest calling convention *)
         add_eff eff
-          (if dynamic then splice_fn_apply fn args
+          (if dynamic then splice_apply fn args
           else E.call ~info:{ arity = Full; call_info = Call_na } fn args)
       else
         let args, eff = assemble_args_no_splice arg_types args in
         (* TODO: fix in rest calling convention *)
         add_eff eff (E.call ~info:{ arity = Full; call_info = Call_na } fn args)
-  | Js_new { external_module_name = module_name; name = fn; scopes } ->
+  | Js_new { external_module_name = module_name; name = fn; splice; scopes } ->
       (* handle [@@new]*)
       (* This has some side effect, it will
          mark its identifier (If it has) as an object,
@@ -281,15 +285,25 @@ let translate_ffi (cxt : Lam_compile_context.t) arg_types
          TODO: we should propagate this property
          as much as we can(in alias table)
       *)
-      let args, eff = assemble_args_no_splice arg_types args in
-      let fn = translate_scoped_module_val module_name fn scopes in
-      add_eff eff
-        ((match cxt.continuation with
+      let mark () =
+        match cxt.continuation with
          | Declare (_, id) | Assign id ->
              (* Format.fprintf Format.err_formatter "%a@."Ident.print  id; *)
              Ext_ident.make_js_object id
-         | EffectCall _ | NeedValue _ -> ());
-         E.new_ fn args)
+        | EffectCall _ | NeedValue _ -> ()
+      in
+      if splice then
+        let args, eff, dynamic = assemble_args_has_splice arg_types args in
+        let fn = translate_scoped_module_val module_name fn scopes in
+        add_eff eff
+          (mark ();
+          if dynamic then splice_new_apply fn args
+          else E.new_ fn args)
+      else
+        let args, eff = assemble_args_no_splice arg_types args in
+        let fn = translate_scoped_module_val module_name fn scopes in
+        add_eff eff
+          (mark (); E.new_ fn args)
   | Js_send { splice; name; js_send_scopes } -> (
       match args with
       | self :: args ->
@@ -300,7 +314,7 @@ let translate_ffi (cxt : Lam_compile_context.t) arg_types
             let args, eff, dynamic = assemble_args_has_splice arg_types args in
             add_eff eff
               (let self = translate_scoped_access js_send_scopes self in
-               if dynamic then splice_obj_fn_apply self name args
+               if dynamic then splice_obj_apply self name args
                else
                  E.call
                    ~info:{ arity = Full; call_info = Call_na }

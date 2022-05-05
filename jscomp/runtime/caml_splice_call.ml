@@ -38,6 +38,21 @@ let spliceApply : obj -> obj -> obj = [%raw{|function(fn,args){
   return fn.apply(null,applied)
 }|}] 
 
+let spliceNewApply : obj -> obj -> obj = [%raw{|function (ctor,args){
+  var i, argLen;
+  argLen = args.length
+  var applied = [null] // Function.prototype.bind.apply(fn, args) requires the first element in `args` to be `null`
+  for(i = 0; i < argLen - 1; ++i){
+    applied.push(args[i])
+  }
+  var lastOne = args[argLen - 1]
+  for(i = 0; i < lastOne.length; ++i ){
+    applied.push(lastOne[i])
+  }
+  var C = Function.prototype.bind.apply(ctor, applied)
+  return new C()
+}|}]
+
 let spliceObjApply : obj -> obj -> obj -> obj = [%raw{|function(obj,name,args){
   var i, argLen; 
   argLen = args.length

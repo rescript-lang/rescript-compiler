@@ -37,6 +37,50 @@ let dynamic arr =
 ;; dynamic [||]
 ;; dynamic [|1;1;3|]
 
+(* Array constructor with a single parameter `x`
+   just makes an array with its length set to `x`,
+   so at least two parameters are needed
+*)
+external newArr : int -> int -> int array -> int array = "Array"
+  [@@bs.splice] [@@bs.new]
+
+let () =
+  let a = newArr 1 2 [|3;4|] in
+  eq __LOC__ a [|1;2;3;4|]
+
+let dynamicNew arr =
+  let a = newArr 1 2 arr in
+  eq __LOC__ a (Array.concat [[|1; 2|]; arr])
+
+;; dynamicNew [|3;4|]
+;; dynamicNew [||]
+;; dynamicNew [|1;3|]
+
+[%%raw{|
+class Foo {
+  constructor(...names) {
+    this.names = names;
+  }
+}
+|}]
+
+type foo
+
+external newFoo : string array -> foo = "Foo" [@@bs.splice] [@@bs.new]
+external fooNames : foo -> string array = "names" [@@get]
+
+let () =
+  let f = newFoo [|"a";"b";"c"|] in
+  eq __LOC__ (fooNames f) [|"a";"b";"c"|]
+
+let dynamicFoo arr =
+  let f = newFoo arr in
+  eq __LOC__ (fooNames f) arr
+
+;; dynamicFoo [||]
+;; dynamicFoo [|"a"|]
+;; dynamicFoo [|"a";"b";"c"|]
+
 module Pipe = struct
   external push :  int array -> int -> int array -> unit = 
     "push" [@@send] [@@bs.splice] 

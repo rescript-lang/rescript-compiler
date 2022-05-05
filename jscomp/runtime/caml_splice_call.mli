@@ -27,4 +27,6 @@ type obj = Obj.t
 
 val spliceApply : obj -> obj -> obj
 
+val spliceNewApply : obj -> obj -> obj
+
 val spliceObjApply : obj -> obj -> obj -> obj
