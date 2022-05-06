@@ -1,40 +1,75 @@
 # Contributing
 
-Thanks for your help! Due to ReScript's nature, the contribution setup isn't all straightforward. If something isn't working, please file an issue!
+Welcome to the ReScript compiler project!
+
+This documet will give you guidance on how to get up and running to work on the ReScript compiler and toolchain. 
+
+We tried to keep the installation process as simple as possible. In case you are having issues or get stuck in the process, please let us know in the issue tracker.
+
+Happy hacking!
 
 ## Prerequisites
 
-- [NodeJS](https://nodejs.org/)
-- C compiler toolchain (you probably already have it installed)
-- OS: Mac/Linux (ReScript works on Windows, but developing the repo using Windows isn't tested. Contribution welcome!)
+> We are mainly working on Apple machines, so all our instructions are currently MacOS / Linux centric. Contributions for Windows development welcome!
 
-## Install native OCaml compiler
+- [NodeJS v16](https://nodejs.org/)
+- C compiler toolchain (usually installed with `xcode` on Mac)
+- `opam` (OCaml Package Manager)
+- VSCode (+ [OCaml Platform Extension](https://marketplace.visualstudio.com/items?itemName=ocamllabs.ocaml-platform))
 
-If you are familiar with OCaml toolchain, you can use 
+## Install native OCaml compiler, dune, testing utilities
+
+The ReScript compiler compiles with any recent OCaml compiler. We are using `dune` as a build system for easy workflows and proper IDE support.
 
 ```
-opam switch 4.06.1+rescript
-eval $(opam env)
+brew install opam
+opam init
+
+# Install build system
+opam install dune
+
+# Install language server for IDE support
+opam install ocaml-lsp-server
+
+# Any recent OCaml version works as a development compiler
+opam switch create 4.12.1
+
+# We use NodeJS to run our test suites and other utilities.
+npm install
 ```
 
-If you don't want to bother with opam, we provided a vendored compiler, you can use it directly
-```
-node ./scripts/buildocaml.js
-# make sure the built compiler is in your PATH, checkout native directory
-```
+## Configure and Build the Compiler (`ninja` workflow)
 
+> Note: These instructions allow you to do full builds of the project. In case you only want to build the project for development purposes, you can use the `dune` workflow.
 
-## Build
+The ReScript project is built with a vendored version of `ninja`. It requires build files to correctly detect, compile and link all the OCaml files within our project. The build files are generated and managed by a NodeJS script (`./scripts/ninja.js`).
 
 ```sh
-npm install # install some JS tools for testing purposes
-./scripts/ninja.js config # the repo is build with Ninja. Generate the ninja build files
-./scripts/ninja.js build # runs `ninja` under the hood against the generated ninja build files
+# Generate all the necessary ninja build files
+./scripts/ninja.js config 
+
+# Run ninja to read and execute the generated build files
+./scripts/ninja.js build 
+
+# Clean (remove) all ninja build files
+./scripts/ninja.js clean
 ```
 
-Whenever you edit a file, run `./scripts/ninja.js build` to rebuild. Optional watcher to auto-rebuild on file changes: `node scripts/tasks.js`.
+Whenever you edit a file, run `./scripts/ninja.js build` to rebuild the ReScript compiler. There's also an optional watcher to auto-rebuild on file changes: `node scripts/tasks.js`.
 
-In the rare case there you're making changes to the vendored OCaml fork, rebuild the fork with `node scripts/buildocaml.js` then run `./scripts/ninja.js cleanbuild`. `cleanbuild` (aka `clean` + `build`) is necessary since the binary artifacts between versions of compiler may be incompatible.
+## Building the Project During Development (`dune` workflow) 
+
+When working on a project you may want to use `dune` to compile all the files you've been working on. This is especially important for full IDE support, including auto-completion and showing compilation errors.
+
+```
+# One off build
+dune build
+
+# Watch mode
+dune build -w
+```
+
+> Please note that `dune` will not build the final `rescript` binaries. Use the aforementioned `ninja` workflow if you want to build, test and distribute the final product.
 
 ### Troubleshoot Broken Build
 
