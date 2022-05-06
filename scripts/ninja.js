@@ -4,6 +4,7 @@
 var fs = require("fs");
 var path = require("path");
 var cp = require("child_process");
+var semver = require("semver");
 
 var jscompDir = path.join(__dirname, "..", "jscomp");
 var runtimeDir = path.join(jscompDir, "runtime");
@@ -33,6 +34,15 @@ var my_target =
     : process.platform;
 
 var vendorNinjaPath = path.join(__dirname, "..", my_target, "ninja.exe");
+
+// Let's enforce a Node version >= 16 to make sure M1 users don't trip up on
+// cryptic issues caused by mismatching assembly architectures Node 16 ships
+// with a native arm64 binary, and will set process.arch to "arm64" (instead of
+// Rosetta emulated "x86")
+if(semver.lt(process.version, "16.0.0")) {
+  console.error("Requires node version 16 or above... Abort.")
+  process.exit(1);
+}
 
 exports.vendorNinjaPath = vendorNinjaPath;
 /**
