@@ -122,7 +122,38 @@ cd my-project
 npm run build
 ```
 
-## Contributing to the Runtime
+### Running Automatic Tests
+
+We provide different test suites for different levels of the compiler and build system infrastructure. Always make sure to locally build your compiler before running any tests.
+
+**Run Mocha tests for our runtime code:**
+
+This will run our `mocha` unit test suite defined in `jscomp/test`.
+
+```
+npx node scripts/ciTest.js -mocha
+```
+
+**Run build system test (integration tests):**
+
+This will run the whole build system test suite defined in `jscomp/build_tests`.
+
+```
+# Make sure to globally install rescript via npm first
+npm install -g .
+
+npx node scripts/ciTest.js -bsb
+```
+
+**Run ounit tests:**
+
+This will run unit tests for compiler related modules. The tests can be found in `jscomp/ounit_tests`.
+
+```
+npx node scripts/ciTest.js -ounit
+```
+
+## Contributing to the ReScript Runtime
 
 Our runtime implementation is written in pure OCaml with some raw JS code embedded (`jscomp/runtime` directory).
 
