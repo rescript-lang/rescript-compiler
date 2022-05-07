@@ -23,14 +23,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (**
-`jsoo_refmt_main` is the JSOO compilation entry point for building BuckleScript + Refmt + Res syntax as one bundle.
-This is usually the file you want to build for the full playground experience.
+`jsoo_refmt_main` is the JSOO compilation entry point for the bundle used for the 
+full playground experience.
 *)
 
 
 (*
  * The API version is giving information about the feature set
- * of the resulting BS bundle API.
+ * of the resulting ReScript JS bundle API.
  *
  * It follows the semver format {major.minor} which means:
  * - Whenever there is a breaking change, raise the major version
@@ -40,35 +40,36 @@ This is usually the file you want to build for the full playground experience.
  * if you are breaking any APIs. If yes, make sure to update this apiVersion
  * value accordingly.
  *
- * Reason:
- * We ship BuckleScript bindings that bind to this API. To be able to handle
+ * Rationale:
+ * We ship ReScript bindings that bind to this API. To be able to handle
  * different bundles with different API versions, we need a way to tell the
  * consumer on what interface the bundle provides.
  *
  * This will allow the frontend to have different sets of the same bindings,
  * and use the proper interfaces as stated by the apiVersion.
+ *
+ * -----------------------------
+ * Version History:
+ * v2: Remove refmt support (removes compiler.reason apis)
  * *)
-let apiVersion = "1.1"
+let apiVersion = "2"
 
 module Js = Jsoo_common.Js
-module Sys_js = Jsoo_common.Sys_js
 
 let export (field : string) v =
   Js.Unsafe.set (Js.Unsafe.global) field v
 ;;
 
 module Lang = struct
-  type t = OCaml | Reason | Res
+  type t = OCaml | Res
 
   let fromString t = match t with
     | "ocaml" | "ml" -> Some OCaml
-    | "reason" | "re" -> Some Reason
     | "res" -> Some Res
     | _ -> None
 
   let toString t = match t with
     | OCaml -> "ml"
-    | Reason -> "re"
     | Res -> "res"
 end
 
@@ -213,9 +214,6 @@ let error_of_exn e =
   | Some `Already_displayed
   | None -> None)
 
-module Converter = Refmt_api.Migrate_parsetree.Convert(Refmt_api.Migrate_parsetree.OCaml_404)(Refmt_api.Migrate_parsetree.OCaml_406)
-module Converter404 = Refmt_api.Migrate_parsetree.Convert(Refmt_api.Migrate_parsetree.OCaml_406)(Refmt_api.Migrate_parsetree.OCaml_404)
-
 (* Returns a default filename in case given value opt is not set *)
 let get_filename ~(lang: Lang.t) opt =
   match opt with
@@ -237,13 +235,6 @@ let maybe_add_newline str =
   match String.get str last with
   | '\n' -> str
   | _ -> str ^ "\n"
-
-let reason_parse ~filename str =
-  str
-  |> maybe_add_newline
-  |> lexbuf_from_string ~filename
-  |> Refmt_api.Reason_toolchain.RE.implementation
-  |> Converter.copy_structure
 
 let ocaml_parse ~filename str =
   lexbuf_from_string ~filename str |> Parse.implementation
@@ -272,48 +263,6 @@ module ResDriver = struct
       src
       err;
     Format.flush_str_formatter ()
-
-  module ReasonBinary = struct
-    (* copied from res_driver_reason_binary.ml bc it was not exposed in the mli *)
-    let isReasonDocComment (comment: Res_comment.t) =
-      let content = Res_comment.txt comment in
-      let len = String.length content in
-      if len = 0 then true
-      else if len >= 2 && (String.unsafe_get content 0 = '*' && String.unsafe_get content 1 = '*') then false
-      else if len >= 1 && (String.unsafe_get content 0 = '*') then true
-      else false
-
-    (* Originally taken and adapted from res_driver_reason_binary.ml to decouple from file access *)
-    let extractConcreteSyntax ~(filename:string) (src:string) =
-      let commentData = ref [] in
-      let stringData = ref [] in
-      let scanner = Res_scanner.make src ~filename in
-
-      let rec next prevEndPos scanner =
-        let (startPos, endPos, token) = Res_scanner.scan scanner in
-        match token with
-        | Eof -> ()
-        | Comment c ->
-          Res_comment.setPrevTokEndPos c prevEndPos;
-          commentData := c::(!commentData);
-          next endPos scanner
-        | String _ ->
-          let loc = {Location.loc_start = startPos; loc_end = endPos; loc_ghost = false} in
-          let len = endPos.pos_cnum - startPos.pos_cnum in
-          let txt = (String.sub [@doesNotRaise]) src startPos.pos_cnum len in
-          stringData := (txt, loc)::(!stringData);
-          next endPos scanner
-        | _ ->
-          next endPos scanner
-      in
-      next Lexing.dummy_pos scanner;
-      let comments =
-        !commentData
-        |> List.filter (fun c -> not (isReasonDocComment c))
-        |> List.rev
-      in
-      (comments, !stringData)
-  end
 
   let parse_implementation ~sourcefile ~forPrinter ~src =
     Location.input_name := sourcefile;
@@ -443,16 +392,6 @@ module Compile = struct
          match e with
          | Warnings.Errors ->
            ErrorRet.makeWarningError !warning_infos
-         | Refmt_api.Migrate_parsetree.Def.Migration_error (_,loc) ->
-           let error = { fullMsg=msg; shortMsg=msg; loc; } in
-           ErrorRet.fromSyntaxErrors [|error|]
-         | Refmt_api.Reason_errors.Reason_error (reason_error,loc) ->
-           let fullMsg =
-             Refmt_api.Reason_errors.report_error Format.str_formatter ~loc reason_error;
-             Format.flush_str_formatter ()
-           in
-           let error = { fullMsg; shortMsg=msg; loc; } in
-           ErrorRet.fromSyntaxErrors [|error|]
          | _ -> ErrorRet.makeUnexpectedError msg)
 
   (* Responsible for resetting all compiler state as if it were a new instance *)
@@ -543,7 +482,6 @@ module Compile = struct
       let modulename = "Playground" in
       let impl = match lang with
         | Lang.OCaml -> ocaml_parse ~filename
-        | Reason -> reason_parse ~filename
         | Res -> rescript_parse ~filename
       in
       (* let env = !Toploop.toplevel_env in *)
@@ -564,13 +502,12 @@ module Compile = struct
         (a,b) in
       typed_tree
       |>  Translmod.transl_implementation modulename
-      |> (* Printlambda.lambda ppf *) (fun {Lambda.code = lam} ->
+      |> (* Printlambda.lambda ppf *) (fun (lam, exports) ->
           let buffer = Buffer.create 1000 in
           let () = Js_dump_program.pp_deps_program
               ~output_prefix:"" (* does not matter here *)
               module_system
-              (Lam_compile_main.compile ""
-                 lam)
+              (Lam_compile_main.compile "" exports lam)
               (Ext_pp.from_buffer buffer) in
           let v = Buffer.contents buffer in
           let typeHints = collectTypeHints typed_tree in
@@ -595,67 +532,9 @@ module Compile = struct
 
   let syntax_format ?(filename: string option) ~(from:Lang.t) ~(to_:Lang.t) (src: string) =
     let open Lang in
-    let src = match from with
-      | Reason -> maybe_add_newline src
-      | _ -> src
-    in
     let filename = get_filename ~lang:from filename in
     try
       let code = match (from, to_) with
-        | (Reason, OCaml) ->
-          src
-          |> lexbuf_from_string ~filename
-          |> Refmt_api.Reason_toolchain.RE.implementation_with_comments
-          |> Refmt_api.Reason_toolchain.ML.print_implementation_with_comments Format.str_formatter;
-          Format.flush_str_formatter ()
-        | (OCaml, Reason) ->
-          src
-          |> lexbuf_from_string ~filename
-          |> Refmt_api.Reason_toolchain.ML.implementation_with_comments
-          |> Refmt_api.Reason_toolchain.RE.print_implementation_with_comments Format.str_formatter;
-          Format.flush_str_formatter ()
-        | (Reason, Res) ->
-          let (comments, stringData) = ResDriver.ReasonBinary.extractConcreteSyntax ~filename src in
-          let ast =
-            src
-            |> lexbuf_from_string ~filename
-            |> Refmt_api.Reason_toolchain.RE.implementation
-          in
-          let structure =
-            Refmt_api.Reason_syntax_util.(apply_mapper_to_structure ast remove_stylistic_attrs_mapper)
-            |> Converter.copy_structure
-            |> Res_ast_conversion.replaceStringLiteralStructure stringData
-            |> Res_ast_conversion.normalizeReasonArityStructure ~forPrinter:true
-            |> Res_ast_conversion.structure
-          in
-          Res_printer.printImplementation ~width:80 structure ~comments
-        | (Res, Reason) ->
-          let (comments, stringData) = ResDriver.ReasonBinary.extractConcreteSyntax ~filename src in
-          let (structure, _) =
-            ResDriver.parse_implementation ~forPrinter:false ~sourcefile:filename ~src
-          in
-          let sanitized = structure
-                          |> Res_ast_conversion.replaceStringLiteralStructure stringData
-                          |> Res_ast_conversion.normalizeReasonArityStructure ~forPrinter:false
-                          |> Res_ast_conversion.structure
-          in
-          let reasonComments = comments|> List.map (fun comment -> 
-              let open Refmt_api.Reason_comment in
-              let text = Res_comment.txt comment in
-              let category =
-                if Res_comment.isSingleLineComment comment then
-                  SingleLine
-                else
-                  Regular
-              in
-              {
-                location = Res_comment.loc comment;
-                category;
-                text;
-              }
-            ) in
-          Refmt_api.Reason_toolchain.RE.print_implementation_with_comments Format.str_formatter (Converter404.copy_structure sanitized, reasonComments);
-          Format.flush_str_formatter ()
         | (OCaml, Res) ->
           let structure =
             src
@@ -678,14 +557,6 @@ module Compile = struct
           in
           Res_printer.printImplementation ~width:80 structure ~comments
         | (OCaml, OCaml) -> src
-        | (Reason, Reason) ->
-          (* Pretty printing *)
-          let astAndComments = src
-                               |> lexbuf_from_string ~filename
-                               |> Refmt_api.Reason_toolchain.RE.implementation_with_comments
-          in
-          Refmt_api.Reason_toolchain.RE.print_implementation_with_comments Format.str_formatter astAndComments;
-          Format.flush_str_formatter ()
       in
       Js.Unsafe.(obj [|
           "code", inject @@ Js.string code;
@@ -718,7 +589,6 @@ module Export = struct
         inject @@
         Js.string
           (match lang with
-           | Reason -> Refmt_api.version
            | Res -> Bs_version.version
            | OCaml -> Sys.ocaml_version);
       |] in
@@ -774,8 +644,6 @@ module Export = struct
         inject @@ Js.string Bs_version.version;
         "ocaml",
         inject @@ make_compiler ~config ~lang:OCaml;
-        "reason",
-        inject @@ make_compiler ~config ~lang:Reason;
         "rescript",
         inject @@ make_compiler ~config ~lang:Res;
         "convertSyntax",

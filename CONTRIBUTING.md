@@ -213,35 +213,19 @@ This is usually the file you want to create to test certain compile behavior wit
 
 > Note: These instructions are designed for building the 4.06 based version of ReScript (ReScript v6).
 
-The "Playground bundle" is the BS compiler compiled to JavaScript, including all necessary dependency files (stdlib / belt etc). It is useful for building tools where you want to compile and execute arbitrary Reason / OCaml in the browser.
+The "Playground bundle" is a JS version of the ReScript compiler; including all necessary dependency files (stdlib / belt etc). It is useful for building tools where you want to compile and execute arbitrary ReScript code in the browser.
 
-The ReScript source code is compiled with a tool called [JSOO (js_of_ocaml)](https://ocsigen.org/js_of_ocaml/3.6.0/manual/overview), which uses OCaml bytecode to compile to JavaScript and is part of the bigger OCaml ecosystem.
+The ReScript source code is compiled with a tool called [JSOO (js_of_ocaml)](https://ocsigen.org/js_of_ocaml/4.0.0/manual/overview), which uses OCaml bytecode to compile to JavaScript and is part of the bigger OCaml ecosystem.
 
-We actually ship a bytecode version of `js_of_ocaml`, so you actually don't need to install any third party dependencies. This is usually for basic usage if you don't care about the compilation speed or a fast feedback loop (e.g. CI).
-
-For faster compilation times, we recommend to install a proper `jsoo` executable:
+Install `jsoo` via `opam`:
 
 ```sh
-# Create the right switch, if not created yet (first install)
-opam switch create 4.06.1
-
-# Makes sure to be on the right switch
-opam switch 4.06.1
-eval `opam config env`
-
-opam install js_of_ocaml.3.6.0
-```
-
-Additionally, make sure to adapt the `scripts/repl.js` file to use the `js_of_ocaml` binary instead (otherwise you'll continue using the slower bytecode version):
-
-```diff
-- e(`${OCAMLRUN} ${JSOO} compile jsc.byte ${jsooFlag}-o exports.js`);
-+ e(`js_of_ocaml compile jsc.byte ${jsooFlag}-o exports.js`);
+opam install js_of_ocaml.4.0.0
 ```
 
 ### Building the Bundle
 
-The entry point of the JSOO bundle is located in `jscomp/main/jsoo_refmt_main.ml` and the script for running JSOO can be found in `scripts/repl.js`. A full clean build can be done like this:
+The entry point of the JSOO bundle is located in `jscomp/main/jsoo_refmt_main.ml`, the code for packing the compiler into a single compiler file is located in `jscomp/snapshot.ninja`, and the script for running JSOO can be found in `scripts/repl.js`. A full clean build can be done like this:
 
 ```
 # We create a target directory for storing the bundle / stdlib files
@@ -251,7 +235,7 @@ mkdir playground && mkdir playground/stdlib
 node scripts/ninja.js config && node scripts/ninja.js build
 
 # Now we run the repl.js script pointing to our playground directory (note how it needs to be relative to the repl.js file)
-BS_PLAYGROUND=../playground node scripts/repl.js
+PLAYGROUND=../playground node scripts/repl.js js_refmt_compiler
 ```
 
 _Troubleshooting: if ninja build step failed with `Error: cannot find file '+runtime.js'`, make sure `ocamlfind` is installed with `opam install ocamlfind`._
@@ -268,7 +252,7 @@ $ node
 > require("./exports.js");
 > let compiler = rescript_compiler.make()
 > let result = compiler.rescript.compile(`Js.log(Sys.ocaml_version)`);
-> eval(result);
+> eval(result.js_code);
 4.06.2+BS
 ```
 
@@ -284,23 +268,22 @@ require('./exports.js')
 > console.log(compiler)
 ```
 
-
 ### Working on the Playground JS API
 
 Whenever you are modifying any files in the ReScript compiler, or in the `jsoo_refmt_main.ml` file, you'll need to rebuild the source and recreate the JS bundle.
 
 ```sh
 node scripts/ninja.js config && node scripts/ninja.js build
-BS_PLAYGROUND=../playground node scripts/repl.js
+PLAYGROUND=../playground node scripts/repl.js
 ```
 
 **.cmj files in the Web**
 
-A `.cmj` file contains compile information and JS package information of ReScript build artifacts (your `.re / .ml` modules) and are generated on build (`scripts/ninja.js build`).
+A `.cmj` file contains compile information and JS package information of ReScript build artifacts (your `.res / .ml` modules) and are generated on build (`scripts/ninja.js build`).
 
 A `.cmi` file is an [OCaml originated file extension](https://waleedkhan.name/blog/ocaml-file-extensions/) and contains all interface information of a certain module without any implementation.
 
-In this repo, these files usually sit right next to each compiled `.ml` / `.re` file. The structure of a `.cmj` file is defined in [js_cmj_format.ml](jscomp/core/js_cmj_format.ml). You can run a tool called `./jscomp/bin/cmjdump.exe [some-file.cmj]` to inspect the contents of given `.cmj` file.
+In this repo, these files usually sit right next to each compiled `.ml` / `.res` file. The structure of a `.cmj` file is defined in [js_cmj_format.ml](jscomp/core/js_cmj_format.ml). You can run a tool called `./jscomp/bin/cmjdump.exe [some-file.cmj]` to inspect the contents of given `.cmj` file.
 
 `.cmj` files are required for making ReScript compile modules (this includes modules like ReasonReact). ReScript includes a subset of modules by default, which can be found in `jscomp/stdlib-406` and `jscomp/others`. You can also find those modules listed in the `jsoo` call in `scripts/repl.js`. As you probably noticed, the generated `playground` files are all plain `.js`, so how are the `cmj` / `cmi` files embedded?
 
