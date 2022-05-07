@@ -69,6 +69,8 @@ val printer : (formatter -> t -> unit) ref
 val warning_printer : (t -> formatter -> Warnings.t -> unit) ref
 (** Hook for intercepting warnings. *)
 
+val formatter_for_warnings : formatter ref
+
 val default_warning_printer : t -> formatter -> Warnings.t -> unit
 (** Original warning printer for use in hooks. *)
 
