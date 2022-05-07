@@ -64,8 +64,15 @@ function prepare(isDev, targetCompilerFile) {
     ? ["development", "-g ", "--pretty "]
     : ["production", "", ""];
   console.log(`building byte code version of the compiler [${env}]`);
+
+  const mliFile = path.join(sourceDir, targetCompilerFile + ".mli")
+  const mlFile = path.join(sourceDir, targetCompilerFile + ".ml")
+
+  // There may be a situation where the .mli file doesn't exist (mostly when
+  // the snapshot hasn't been checked into `lib/4.06.1/unstable`
+  e(`touch ${mliFile}`)
   e(
-    `${OCAMLC} ${ocamlFlag}-w -30-40 -no-check-prims -I ${sourceDir} ${sourceDir}/${targetCompilerFile}.mli ${sourceDir}/${targetCompilerFile}.ml -o jsc.byte `
+    `${OCAMLC} ${ocamlFlag}-w -30-40 -no-check-prims -I ${sourceDir} ${mliFile} ${mlFile} -o jsc.byte `
   );
   console.log("building js version");
   e(`${JSOO} compile jsc.byte ${jsooFlag}-o exports.js`);
