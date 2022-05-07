@@ -12,7 +12,7 @@ Happy hacking!
 
 ## Setup
 
-> Most of our contributors are working Apple machines, so all our instructions are currently MacOS / Linux centric. Contributions for Windows development welcome!
+> Most of our contributors are working on Apple machines, so all our instructions are currently MacOS / Linux centric. Contributions for Windows development welcome!
 
 - [NodeJS v16](https://nodejs.org/)
 - C compiler toolchain (usually installed with `xcode` on Mac)
