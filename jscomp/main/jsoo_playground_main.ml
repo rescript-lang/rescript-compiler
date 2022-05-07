@@ -115,13 +115,6 @@ end
 exception RescriptParsingErrors of locErrInfo list
 
 module ErrorRet = struct
-  type err =
-    | SyntaxErr of locErrInfo array
-    | TypecheckErr of locErrInfo array
-    | WarningFlagErr of string * string (* warning, warning_error flags *)
-    | WarningErrs of LocWarnInfo.t array
-    | UnexpectedErr of string
-
   let locErrorAttributes ~(type_: string) ~(fullMsg: string) ~(shortMsg: string) (loc: Location.t) =
     let (_file,line,startchar) = Location.get_pos_info loc.Location.loc_start in
     let (_file,endline,endchar) = Location.get_pos_info loc.Location.loc_end in
@@ -225,16 +218,6 @@ let lexbuf_from_string ~filename str =
   lexbuf.lex_start_p <- { lexbuf.lex_start_p with pos_fname = filename };
   lexbuf.lex_curr_p <- { lexbuf.lex_curr_p with pos_fname = filename };
   lexbuf
-
-(* We need this for a specific parsing issue in Reason: Whenever you are
- * parsing a source where the last line is a comment (and not a \n) the parser
- * enters an infinite loop. To prevent this, we need to make sure to append a
- * newline before doing any parsing attempt *)
-let maybe_add_newline str =
-  let last = (String.length str) - 1 in
-  match String.get str last with
-  | '\n' -> str
-  | _ -> str ^ "\n"
 
 let ocaml_parse ~filename str =
   lexbuf_from_string ~filename str |> Parse.implementation
@@ -410,7 +393,6 @@ module Compile = struct
   let collectTypeHints typed_tree =
     let open Typedtree in
     let createTypeHintObj loc kind hint =
-      let open Lexing in
       let open Location in
       let (_ , startline, startcol) = Location.get_pos_info loc.loc_start in
       let (_ , endline, endcol) = Location.get_pos_info loc.loc_end in
@@ -531,7 +513,6 @@ module Compile = struct
       | _ -> handle_err e;;
 
   let syntax_format ?(filename: string option) ~(from:Lang.t) ~(to_:Lang.t) (src: string) =
-    let open Lang in
     let filename = get_filename ~lang:from filename in
     try
       let code = match (from, to_) with
@@ -691,7 +672,6 @@ module Export = struct
 end
 
 let () =
-  let open Lang in
   export "rescript_compiler"
     (Js.Unsafe.(obj
                   [|
