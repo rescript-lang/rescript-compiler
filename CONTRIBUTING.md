@@ -2,15 +2,17 @@
 
 Welcome to the ReScript compiler project!
 
-This documet will give you guidance on how to get up and running to work on the ReScript compiler and toolchain. 
+This document will give you guidance on how to get up and running to work on the ReScript compiler and toolchain.
+
+(If you want to contribute to the documentation website, check out [rescript-association/rescript-lang.org](See https://github.com/reason-association/rescript-lang.org). For contributions to the ReScript syntax, please visit the [rescript-lang/syntax](https://github.com/rescript-lang/syntax) project.)
 
 We tried to keep the installation process as simple as possible. In case you are having issues or get stuck in the process, please let us know in the issue tracker.
 
 Happy hacking!
 
-## Prerequisites
+## Setup
 
-> We are mainly working on Apple machines, so all our instructions are currently MacOS / Linux centric. Contributions for Windows development welcome!
+> Most of our contributors are working Apple machines, so all our instructions are currently MacOS / Linux centric. Contributions for Windows development welcome!
 
 - [NodeJS v16](https://nodejs.org/)
 - C compiler toolchain (usually installed with `xcode` on Mac)
@@ -57,7 +59,7 @@ The ReScript project is built with a vendored version of `ninja`. It requires bu
 
 Whenever you edit a file, run `./scripts/ninja.js build` to rebuild the ReScript compiler. There's also an optional watcher to auto-rebuild on file changes: `node scripts/tasks.js`.
 
-## Building the Project During Development (`dune` workflow) 
+## Build the Project during Development (`dune` workflow) 
 
 When working on a project you may want to use `dune` to compile all the files you've been working on. This is especially important for full IDE support, including auto-completion and showing compilation errors.
 
@@ -71,7 +73,9 @@ dune build -w
 
 > Please note that `dune` will not build the final `rescript` binaries. Use the aforementioned `ninja` workflow if you want to build, test and distribute the final product.
 
-### Troubleshoot Broken Build
+### Troubleshoot a Broken Build
+
+Usually whenever there's some issues with missing files, incompatible interfaces or stale artifacts, the easiest fix is to clean and rebuild the project:
 
 ```sh
 ./scripts/ninja.js clean # remove files not in version control
@@ -84,70 +88,38 @@ If this doesn't work (rare), then:
 - `git clean -xdf .` to wipe all artifacts
 - Then do a clean build as instructed above
 
-## Test
+## Running tests for independent ReScript files
+
+The simplest way for running tests is to run your locally built compiler on separate ReScript files:
 
 ```sh
-./darwin/bsc.exe myTestFile.ml
+# Make sure to rebuild the compiler before running any tests (./scripts/ninja.js config / build etc)
+./darwinarm64/bsc.exe myTestFile.res
 ```
 
-(`./linux/bsc` for linux developers).
+**Different architectures:**
 
-> Note: production, only `path/to/bsc myTestFile.ml` is needed. During development, you need to pass the `-I jscomp/runtime/` flag for various reasons (e.g. to avoid cyclic dependencies).
+- `darwinarm64/bsc.exe`: M1 Macs
+- `darwin/bsc.exe`: Intel Macs
+- `linux/bsc.exe`: Linux computers
 
-Tips:
-- To get a nice stack trace when you debug type errors from running `bsc`/`bsb`, uncomment the conditional compilation check in [`rescript_compiler_main.ml`](https://github.com/rescript-lang/rescript-compiler/blob/496c70d1d4e709c26dba23629e430dc944bd59f9/jscomp/main/rescript_compiler_main.ml#L501).
+### Testing the whole ReScript Package
 
-### Integration Test
-
-If you'd like to use your modified ReScript like an end-user, try:
+If you'd like to bundle up and use your modified ReScript like an end-user, try:
 
 ```sh
-npm uninstall -g bs-platform # a cache-busting uninstall is needed, but only for npm >=7
+npm uninstall -g rescript # a cache-busting uninstall is needed, but only for npm >=7
+
+# This will globally install your local build via npm
 BS_TRAVIS_CI=1 npm install -g .
 ```
 
-Then go somewhere and create a dummy project:
+Then you may initialize and build your ReScript project as usual:
 
 ```sh
-bsb -init foo -theme basic
-cd foo
+rescript init my-project
+cd my-project
 npm run build
-```
-
-## Editor Support for Developing This Repo
-
-This is hard to set up and therefore not entirely encouraged. Use this deprecated [VSCode extension](https://marketplace.visualstudio.com/items?itemName=hackwaly.ocaml).
-The extension requires using an opam switch for ocaml 4.02.3, with `merlin` and `ocp-indent` are installed.
-
-## Contribute to the Documentation
-
-See https://github.com/reason-association/rescript-lang.org
-
-## Contribute to the API Reference
-
-The API reference is generated from doc comments in the source code. [Here](https://github.com/rescript-lang/rescript-compiler/blob/99650/jscomp/others/js_re.mli#L146-L161)'s a good example.
-
-Some tips:
-
-- The first sentence or line should be a very short summary. This is used in indexes and by tools like merlin.
-- Ideally, every function should have **at least one** `@example`.
-- Cross-reference another definition with `{! identifier}`. But use them sparingly, they’re a bit verbose (currently, at least).
-- Wrap non-cross-referenced identifiers and other code in `[ ... ]`.
-- Escape `{`, `}`, `[`, `]` and `@` using `\`.
-- It’s possible to use `{%html ...}` to generate custom html, but use this very, very sparingly.
-- A number of "documentation tags" are provided that would be nice to use, but unfortunately they’re often not supported for \`external\`s. Which is of course most of the API.
-- `@param` usually doesn’t work. Use `{b <param>} ...` instead
-- `@returns` usually doesn’t work. Use `{b returns} ...` instead.
-- Always use `@deprecated` when applicable.
-- Always use `@raise` when applicable.
-- Always provide a `@see` tag pointing to MDN for more information when available.
-
-See [Ocamldoc documentation](http://caml.inria.fr/pub/docs/manual-ocaml/ocamldoc.html#sec333) for more details.
-
-To generate the html:
-
-```sh
-../scripts/ninja docs
 ```
 
 ## Contributing to the Runtime
@@ -284,6 +256,33 @@ In this repo, these files usually sit right next to each compiled `.ml` / `.re` 
 `repl.js` calls an executable called `cmjbrowser.exe` on every build, which is a compile artifact from `jscomp/main/jscmj_main.ml`. It is used to serialize `cmj` / `cmi` artifacts into two files called `jscomp/core/js_cmj_datasets.ml`. These files are only linked for the browser target, where ReScript doesn't have access to the filesystem. When working on BS, you'll see diffs on those files whenever there are changes on core modules, e.g. stdlib modules or when the ocaml version was changed. We usually check in these files to keep it in sync with the most recent compiler implementation. JSOO will pick up those files to encode them into the `exports.js` bundle.
 
 For any other dependency needed in the playground, such as `ReasonReact`, you will be required to serialize your `.cmi` / `.cmt` files accordingly from binary to hex encoded strings so that BS Playground's `ocaml.load` function can load the data. Right now we don't provide any instructions inside here yet, but [here's how the official ReasonML playground did it](https://github.com/reasonml/reasonml.github.io/blob/source/website/setupSomeArtifacts.js#L65).
+
+## Contribute to the API Reference
+
+The API reference is generated from doc comments in the source code. [Here](https://github.com/rescript-lang/rescript-compiler/blob/99650/jscomp/others/js_re.mli#L146-L161)'s a good example.
+
+Some tips:
+
+- The first sentence or line should be a very short summary. This is used in indexes and by tools like merlin.
+- Ideally, every function should have **at least one** `@example`.
+- Cross-reference another definition with `{! identifier}`. But use them sparingly, they’re a bit verbose (currently, at least).
+- Wrap non-cross-referenced identifiers and other code in `[ ... ]`.
+- Escape `{`, `}`, `[`, `]` and `@` using `\`.
+- It’s possible to use `{%html ...}` to generate custom html, but use this very, very sparingly.
+- A number of "documentation tags" are provided that would be nice to use, but unfortunately they’re often not supported for \`external\`s. Which is of course most of the API.
+- `@param` usually doesn’t work. Use `{b <param>} ...` instead
+- `@returns` usually doesn’t work. Use `{b returns} ...` instead.
+- Always use `@deprecated` when applicable.
+- Always use `@raise` when applicable.
+- Always provide a `@see` tag pointing to MDN for more information when available.
+
+See [Ocamldoc documentation](http://caml.inria.fr/pub/docs/manual-ocaml/ocamldoc.html#sec333) for more details.
+
+To generate the html:
+
+```sh
+../scripts/ninja docs
+```
 
 ## Code structure
 
