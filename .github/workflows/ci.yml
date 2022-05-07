@@ -41,7 +41,11 @@ jobs:
         node-version: 16
 
     - name: npm ci
-      run: npm ci
+      run: |
+        BS_TRAVIS_CI=1
+        NINJA_FORCE_REBUILD=1
+        OCAMLRUNPARAM=b
+        npm ci
 
     - name: Build and test
       run: |
