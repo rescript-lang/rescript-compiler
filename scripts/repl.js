@@ -10,7 +10,7 @@
  *
  * ```
  * mkdir playground && mkdir playground/stdlib
- * PLAYGROUND=../playground node scripts/repl.js js_compiler
+ * PLAYGROUND=../playground node scripts/repl.js js_playground_compiler
  * ```
  *
  */
