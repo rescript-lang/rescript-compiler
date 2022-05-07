@@ -1,0 +1,31 @@
+(copy_files# ext/*.{ml,mli})
+(copy_files# ml/*.{ml,mli})
+(copy_files# napkin/*.{ml,mli})
+(copy_files# stubs/*.{ml,mli,c})
+(copy_files# js_parser/*.{ml,mli})
+(copy_files# depends/*.{ml,mli})
+(copy_files# common/*.{ml,mli})
+(copy_files# core/*.{ml,mli})
+(copy_files# frontend/*.{ml,mli})
+(copy_files# outcome_printer/*.{ml,mli})
+(copy_files# super_errors/*.{ml,mli})
+(copy_files# main/*.{ml,mli})
+(
+  executable
+    (public_name bsc.exe)
+
+    ; The main module that will become the binary.
+    (name Rescript_compiler_main)
+
+    (flags "-w" "+26+27+32+33+39")
+
+    ; Depends on:
+    (libraries unix str)
+
+    (modules_without_implementation Jscmj_main Lam_pass_unused_params Lam_runtime)
+    (foreign_stubs
+     (language c)
+     (names ext_basic_hash_stubs)
+     (flags )
+    )
+)
