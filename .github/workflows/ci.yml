@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        # syntax explanation:
+        # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#example-including-additional-values-into-combinations
+        include:
+          - os: macos-latest
+          - os: ubuntu-latest
+          - os: windows-latest
+
+    runs-on: ${{matrix.os}}
+
+    steps:
+    # needed for Windows testing
+    - name: Set git to use LF
+      run: |
+        git config --global core.autocrlf false
+        git config --global core.eol lf
+
+    - uses: actions/checkout@v2.3.4
+
+    - name: Set env variables      
+      run: |
+        echo 'export BS_TRAVIS_CI=1' >> $BASH_ENV
+        echo 'export NINJA_FORCE_REBUILD=1' >> $BASH_ENV
+        echo 'export OCAMLRUNPARAM="b"' >> $BASH_ENV
+
+    - name: Check env variables
+      run: |
+        echo BS_TRAVIS_CI ${BS_TRAVIS_CI}
+
+    - name: Pull Submodules
+      run: |
+        git submodule init
+        git submodule update
+
+    - name: Use Node.js
+      uses: actions/setup-node@v2.1.5
+      with:
+        node-version: 16
+
+    - name: npm ci
+      run: npm ci
+
+    - name: Build and test
+      run: npm test
+
+
