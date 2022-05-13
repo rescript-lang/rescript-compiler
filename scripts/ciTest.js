@@ -93,7 +93,7 @@ function runTests() {
       }
     );
 
-    cp.execSync(`./test.exe`, { cwd: binDir, stdio: [0, 1, 2] });
+    cp.execSync(path.join(binDir, 'test.exe'), { cwd: binDir, stdio: [0, 1, 2] });
   }
 
   // running generated js tests

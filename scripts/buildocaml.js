@@ -58,7 +58,7 @@ function build(config) {
   if (config) {
     var { make } = require("./config.js");
     cp.execSync(
-      './configure  --disable-naked-pointers --enable-flambda -prefix ' +
+      "bash ./configure --disable-naked-pointers --enable-flambda -prefix " +
         prefix +
         ` && ${make} clean`,
       { cwd: ocamlSrcDir, stdio: [0, 1, 2] }

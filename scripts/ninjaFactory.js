@@ -19,7 +19,7 @@ var targetDir = process.platform === 'darwin' && process.arch === 'arm64' ? proc
  */
 function libNinja(config) {
   return `
-ocamlopt = ${config.ocamlopt}
+ocamlopt = ${config.ocamlopt}${config.isWin ? ".exe" : ""}
 ext = .exe
 INCL = ${config.INCL}
 flags = -nodynlink -I $INCL -g -w -a ../jscomp/stubs/ext_basic_hash_stubs.c
