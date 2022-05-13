@@ -98,7 +98,7 @@ function runTests() {
 
   // running generated js tests
   if (mochaTest) {
-    cp.execSync(`mocha jscomp/test/**/*test.js`, {
+    cp.execSync(`./node_modules/.bin/mocha jscomp/test/**/*test.js`, {
       cwd: path.join(__dirname, ".."),
       stdio: [0, 1, 2],
     });
