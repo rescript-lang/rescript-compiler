@@ -302,7 +302,7 @@ if (
    * @type {child_process.ChildProcess}
    */
   var p;
-  if (acquireBuild) {
+  if (acquireBuild()) {
     try {
       p = child_process.spawn(rescript_exe, delegate_args, { stdio: "inherit" });
       LAST_BUILD_START = +Date.now();
