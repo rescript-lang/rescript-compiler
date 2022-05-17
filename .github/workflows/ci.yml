@@ -56,3 +56,10 @@ jobs:
     - name: Run tests (Linux)
       if: runner.os == 'Linux'
       run: opam exec -- node scripts/ciTest.js -all
+
+    - name: Setup tmate session for debugging
+      if: ${{ failure() }}
+      uses: mxschmitt/action-tmate@v3
+      with:
+        limit-access-to-actor: true
+        timeout-minutes: 30
