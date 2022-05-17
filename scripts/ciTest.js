@@ -93,12 +93,12 @@ function runTests() {
       }
     );
 
-    cp.execSync(`./test.exe`, { cwd: binDir, stdio: [0, 1, 2] });
+    cp.execSync(path.join(binDir, 'test.exe'), { cwd: binDir, stdio: [0, 1, 2] });
   }
 
   // running generated js tests
   if (mochaTest) {
-    cp.execSync(`mocha jscomp/test/**/*test.js`, {
+    cp.execSync(`./node_modules/.bin/mocha jscomp/test/**/*test.js`, {
       cwd: path.join(__dirname, ".."),
       stdio: [0, 1, 2],
     });

@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        # Omit Windows build for now as it is unstable / not deterministic.
+        # os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [macos-latest, ubuntu-latest]
+
+    runs-on: ${{matrix.os}}
+
+    env:
+      BS_TRAVIS_CI: 1
+      NINJA_FORCE_REBUILD: 1
+      OCAMLRUNPARAM: b
+
+    steps:
+    - name: "Windows: Set git to use LF"
+      if: runner.os == 'Windows'
+      run: |
+        git config --global core.autocrlf false
+        git config --global core.eol lf
+
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        submodules: true
+
+    - name: Use OCaml 4.14.0
+      uses: ocaml/setup-ocaml@v2
+      with:
+        ocaml-compiler: 4.14.0
+        opam-pin: false
+        opam-depext: false
+
+    - name: Use Node.js
+      uses: actions/setup-node@v2.1.5
+      with:
+        node-version: 16
+
+    - name: ci-install
+      run: opam exec -- npm ci
+
+    - name: Run tests (macOS)
+      if: runner.os == 'macOS'
+      run: opam exec -- node scripts/ciTest.js -all
+    
+    - name: Run tests (Linux)
+      if: runner.os == 'Linux'
+      run: opam exec -- node scripts/ciTest.js -install-global -ounit -mocha -theme

@@ -61,10 +61,9 @@ function buildCompiler() {
   // delete process.env.OCAMLLIB
   var prebuilt = "prebuilt.ninja";
   var content = require("./ninjaFactory.js").libNinja({
-    ocamlopt: is_windows
-      ? `ocamlopt.opt.exe` :
-      (use_env_compiler ? `ocamlopt.opt`
-        : `../native/${ocamlVersion}/bin/ocamlopt.opt`),
+    ocamlopt: use_env_compiler
+      ? `ocamlopt.opt`
+      : `../native/${ocamlVersion}/bin/ocamlopt.opt`,
     INCL: ocamlVersion,
     isWin: is_windows,
   });
