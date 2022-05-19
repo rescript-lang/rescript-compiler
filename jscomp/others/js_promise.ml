@@ -93,6 +93,9 @@ external catch : ((error -> 'a t)[@bs.uncurry]) -> 'a t = "catch"
 external catch2 : 'a t -> ((exn -> 'a t)[@bs.uncurry]) -> 'a t = "catch"
   [@@bs.send]
 
+external unsafe_cast : 'a -> 'a t = "%identity"
+
+
 (*
 let errorAsExn (x :  error) (e  : (exn ->'a option))=
   if Caml_exceptions.isCamlExceptionOrOpenVariant (Obj.magic x ) then

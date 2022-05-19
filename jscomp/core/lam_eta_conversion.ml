@@ -118,8 +118,8 @@ let unsafe_adjust_to_arity loc ~(to_ : int) ?(from : int option) (fn : Lam.t) :
       if from = to_ then fn
       else if to_ = 0 then
         match fn with
-        | Lfunction { params = [ param ]; body } ->
-            Lam.function_ ~arity:0 ~attr:Lambda.default_function_attribute
+        | Lfunction { params = [ param ]; body; attr = {async} } ->
+            Lam.function_ ~arity:0 ~attr:{Lambda.default_function_attribute with async}
               ~params:[]
               ~body:(Lam.let_ Alias param Lam.unit body)
             (* could be only introduced by

@@ -255,10 +255,10 @@ let translate loc (prim_name : string) (args : J.expression list) : J.expression
   )
   | "?async" -> (
       match args with
-      | [{expression_desc = Fun (method_, params, block, env, return_unit)} as e] ->
+      | [{expression_desc = Fun (method_, params, block, env, return_unit, async)} as e] ->
         let async_exp = {e with expression_desc = Async } in
         let block = {J.statement_desc = Exp async_exp; comment = None} :: block in
-        {e with expression_desc = Fun (method_, params, block, env, return_unit)}
+        {e with expression_desc = Fun (method_, params, block, env, return_unit, async)}
       | _ -> assert false
   )
   | _ ->

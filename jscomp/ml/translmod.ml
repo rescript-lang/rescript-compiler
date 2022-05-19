@@ -276,6 +276,7 @@ let rec compile_functor mexp coercion root_path loc =
           is_a_functor = true;
           stub = false;
           return_unit = false;
+          async = false;
         };
       loc;
       body;

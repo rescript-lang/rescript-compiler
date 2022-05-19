@@ -137,7 +137,7 @@ let record_scope_pass =
     expression =
       (fun self state x ->
         match x.expression_desc with
-        | Fun (_method_, params, block, env, _return_unit) ->
+        | Fun (_method_, params, block, env, _return_unit, _async) ->
             (* Function is the only place to introduce a new scope in
                 ES5
                 TODO: check

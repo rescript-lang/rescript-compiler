@@ -124,10 +124,10 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
     begin match Ast_attributes.process_attributes_rev e.pexp_attributes with
       | Nothing, _
         -> default_expr_mapper self e
-      | Uncurry _, pexp_attributes
+      | Uncurry (_, async), pexp_attributes
         ->
         {e with
-         pexp_desc = Ast_uncurry_gen.to_uncurry_fn e.pexp_loc self label pat body  ;
+         pexp_desc = Ast_uncurry_gen.to_uncurry_fn e.pexp_loc self label pat body async;
          pexp_attributes}
       | Method _ , _
         ->  Location.raise_errorf ~loc:e.pexp_loc "%@meth is not supported in function expression"

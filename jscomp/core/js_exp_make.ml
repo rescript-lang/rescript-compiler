@@ -197,12 +197,12 @@ let unit : t = { expression_desc = Undefined; comment = None }
    [Js_fun_env.empty] is a mutable state ..
 *)
 
-let ocaml_fun ?comment ?immutable_mask ~return_unit params block : t =
+let ocaml_fun ?comment ?immutable_mask ~return_unit ~async params block : t =
   let len = List.length params in
   {
     expression_desc =
       Fun
-        (false, params, block, Js_fun_env.make ?immutable_mask len, return_unit);
+        (false, params, block, Js_fun_env.make ?immutable_mask len, return_unit, async);
     comment;
   }
 
@@ -210,7 +210,7 @@ let method_ ?comment ?immutable_mask ~return_unit params block : t =
   let len = List.length params in
   {
     expression_desc =
-      Fun (true, params, block, Js_fun_env.make ?immutable_mask len, return_unit);
+      Fun (true, params, block, Js_fun_env.make ?immutable_mask len, return_unit, false);
     comment;
   }
 
@@ -484,7 +484,7 @@ let bytes_length ?comment (e : t) : t =
 
 let function_length ?comment (e : t) : t =
   match e.expression_desc with
-  | Fun (b, params, _, _, _) ->
+  | Fun (b, params, _, _, _, _) ->
       let params_length = List.length params in
       int ?comment
         (Int32.of_int (if b then params_length - 1 else params_length))
@@ -1158,7 +1158,7 @@ let of_block ?comment ?e block : t =
                 Ext_list.append block
                   [ { J.statement_desc = Return e; comment } ]),
             Js_fun_env.make 0,
-            return_unit );
+            return_unit, (* async *) false);
     }
     []
 

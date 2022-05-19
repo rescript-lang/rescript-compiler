@@ -151,4 +151,4 @@ exports.nestedPromise = nestedPromise;
 exports.explainError = explainError;
 exports.testFetch = testFetch;
 exports.runAllTests = runAllTests;
-/* foo Not a pure module */
+/*  Not a pure module */
