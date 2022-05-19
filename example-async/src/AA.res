@@ -97,14 +97,13 @@ testFetch->addTest1("https://www.google.comsdkjdkghdsg")
 //
 // Run tests
 
-let runAllTests =
+let rec runAllTests =
   @async
-  (. ()) => {
-    for i in 0 to Array.length(tests) - 1 {
-      await(tests[i](.))
+  (. n) => {
+    if n >= 0 && n < Array.length(tests) {
+      await(tests[n](.))
+      await(runAllTests(. n + 1))
     }
-    // Note: this is no good, as await is inside a closure
-    //  tests->Js.Array2.forEach(test => await(test(.)))
   }
 
-runAllTests(.)->ignore
+runAllTests(. 0)->ignore

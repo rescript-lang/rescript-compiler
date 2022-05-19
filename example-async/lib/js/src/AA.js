@@ -124,13 +124,15 @@ addTest1(testFetch, "https://www.google.com/sdkjdkghdsg");
 
 addTest1(testFetch, "https://www.google.comsdkjdkghdsg");
 
-async function runAllTests() {
-  for(var i = 0 ,i_finish = tests.length; i < i_finish; ++i){
-    await Caml_array.get(tests, i)();
+async function runAllTests(n) {
+  if (n >= 0 && n < tests.length) {
+    await Caml_array.get(tests, n)();
+    return await runAllTests(n + 1 | 0);
   }
+  
 }
 
-runAllTests();
+runAllTests(0);
 
 exports.tests = tests;
 exports.addTest = addTest;
