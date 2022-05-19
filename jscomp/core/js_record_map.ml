@@ -178,8 +178,6 @@ let expression_desc : expression_desc fn =
   | Await _x0 ->
     let _x0 = _self.expression _self _x0 in
     Await _x0
-  | Async as v -> v
-
 
 let for_ident_expression : for_ident_expression fn =
  fun _self arg -> _self.expression _self arg
