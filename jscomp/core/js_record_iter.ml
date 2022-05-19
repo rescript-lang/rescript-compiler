@@ -134,7 +134,6 @@ let expression_desc : expression_desc fn =
   | Undefined -> ()
   | Null -> ()
   | Await _x0 -> _self.expression _self _x0
-  | Async -> ()
 
 let for_ident_expression : for_ident_expression fn =
  fun _self arg -> _self.expression _self arg

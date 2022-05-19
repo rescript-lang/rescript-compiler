@@ -167,7 +167,6 @@ let exp_need_paren (e : J.expression) =
   | Js_not _ | Bool _ | New _ ->
       false
   | Await _ -> false
-  | Async -> false
 
 let comma_idents (cxt : cxt) f ls = iter_lst cxt f ls Ext_pp_scope.ident comma
 
@@ -409,16 +408,7 @@ and pp_function ~return_unit ~async ~is_method cxt (f : P.t) ~fn_state
                 param_body b;
                 semi f
             | Name_top x ->
-                let b =
-                  match b with
-                  | { statement_desc = Exp { expression_desc = Async } } :: b
-                    ->
-                      P.string f "async ";
-                      b
-                  | _ ->
-                    let () = if async then P.string f "async " in
-                    b
-                in
+                if async then P.string f "async ";
                 P.string f L.function_;
                 P.space f;
                 ignore (Ext_pp_scope.ident inner_cxt f x : cxt);
@@ -872,7 +862,6 @@ and expression_desc cxt ~(level : int) f x : cxt =
       P.string f "await ";
       let cxt = expression ~level cxt f e in
       cxt
-  | Async -> assert false
 
 and property_name_and_value_list cxt f (l : J.property_map) =
   iter_lst cxt f l
