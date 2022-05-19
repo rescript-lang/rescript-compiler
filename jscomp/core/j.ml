@@ -182,6 +182,8 @@ and expression_desc =
   | Object of property_map
   | Undefined
   | Null
+  | Await of expression
+  | Async
 
 and for_ident_expression = expression
 (* pure*)

@@ -107,6 +107,8 @@ let rec no_side_effect_expression_desc (x : J.expression_desc) =
   (* | Caml_block_set_tag _  *)
   (* actually true? *) ->
       false
+  | Await _ -> false
+  | Async -> false
 
 and no_side_effect (x : J.expression) =
   no_side_effect_expression_desc x.expression_desc
@@ -207,6 +209,8 @@ let rec eq_expression ({ expression_desc = x0 } : J.expression)
   | Caml_block_tag _ | Object _
   | Number (Uint _) ->
       false
+  | Await _ -> false
+  | Async -> false
 
 and eq_expression_list xs ys = Ext_list.for_all2_no_exn xs ys eq_expression
 

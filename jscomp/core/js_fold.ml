@@ -171,6 +171,10 @@ class fold =
           _self
       | Undefined -> _self
       | Null -> _self
+      | Await _x0 ->
+        let _self = _self#expression _x0 in
+        _self
+      | Async -> _self
 
     method for_ident_expression : for_ident_expression -> 'self_type =
       _self#expression

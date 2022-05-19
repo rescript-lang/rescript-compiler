@@ -177,6 +177,10 @@ let expression_desc : 'a. ('a, expression_desc) fn =
       st
   | Undefined -> st
   | Null -> st
+  | Await _x0 ->
+    let st = _self.expression _self st _x0 in
+    st
+  | Async -> st
 
 let for_ident_expression : 'a. ('a, for_ident_expression) fn =
  fun _self arg -> _self.expression _self arg

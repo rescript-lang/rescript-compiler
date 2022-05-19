@@ -83,8 +83,8 @@ type t =
   | Bs_unimplemented_primitive of string (* 106 *)
   | Bs_integer_literal_overflow (* 107 *)
   | Bs_uninterpreted_delimiters of string (* 108 *)
-  | Bs_toplevel_expression_unit
-(* 109 *)
+  | Bs_toplevel_expression_unit (* 109 *)
+  | Bs_nested_promise of string (* 110 *)
 
 (* If you remove a warning, leave a hole in the numbering.  NEVER change
    the numbers of existing warnings.
@@ -150,8 +150,9 @@ let number = function
   | Bs_integer_literal_overflow -> 107
   | Bs_uninterpreted_delimiters _ -> 108
   | Bs_toplevel_expression_unit -> 109
+  | Bs_nested_promise _ -> 110
 
-let last_warning_number = 109
+let last_warning_number = 110
 
 let letter_all =
   let rec loop i = if i = 0 then [] else i :: loop (i - 1) in
@@ -493,6 +494,8 @@ let message = function
   | Bs_uninterpreted_delimiters s -> "Uninterpreted delimiters " ^ s
   | Bs_toplevel_expression_unit ->
       "Toplevel expression is expected to have unit type."
+  | Bs_nested_promise s ->
+      "Expression uses nested promise type " ^ s ^ " which is unsafe."
 
 let sub_locs = function
   | Deprecated (_, def, use) ->
