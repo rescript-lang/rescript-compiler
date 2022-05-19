@@ -1,0 +1,12 @@
+{
+  "name": "example-async",
+  "sources": [
+    {
+      "dir": "src",
+      "subdirs": true
+    }
+  ],
+  "bsc-flags": ["-w -33-44"],
+  "bs-dependencies": ["@rescript/react", "bs-fetch"],
+  "reason": { "react-jsx": 3 }
+}
