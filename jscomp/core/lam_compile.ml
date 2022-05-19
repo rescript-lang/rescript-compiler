@@ -55,7 +55,7 @@ let rec apply_with_arity_aux (fn : J.expression) (arity : int list)
           let params =
             Ext_list.init (x - len) (fun _ -> Ext_ident.create "param")
           in
-          E.ocaml_fun params ~return_unit:false (* unknown info *)
+          E.ocaml_fun params ~return_unit:false (* unknown info *) ~async:false
             [
               S.return_stmt
                 (E.call
@@ -269,7 +269,7 @@ and compile_external_field_apply (appinfo : Lam.apply) (module_id : Ident.t)
 and compile_recursive_let ~all_bindings (cxt : Lam_compile_context.t)
     (id : Ident.t) (arg : Lam.t) : Js_output.t * initialization =
   match arg with
-  | Lfunction { params; body; attr = { return_unit } } ->
+  | Lfunction { params; body; attr = { return_unit; async } } ->
       let continue_label = Lam_util.generate_label ~name:id.name () in
       (* TODO: Think about recursive value
          {[
@@ -309,7 +309,7 @@ and compile_recursive_let ~all_bindings (cxt : Lam_compile_context.t)
              it will be renamed into [method]
              when it is detected by a primitive
           *)
-            ~return_unit ~immutable_mask:ret.immutable_mask
+            ~return_unit ~async ~immutable_mask:ret.immutable_mask
             (Ext_list.map params (fun x ->
                  Map_ident.find_default ret.new_params x x))
             [
@@ -320,7 +320,7 @@ and compile_recursive_let ~all_bindings (cxt : Lam_compile_context.t)
             ]
         else
           (* TODO:  save computation of length several times *)
-          E.ocaml_fun params (Js_output.output_as_block output) ~return_unit
+          E.ocaml_fun params (Js_output.output_as_block output) ~return_unit ~async
       in
       ( Js_output.output_of_expression
           (Declare (Alias, id))
@@ -1542,10 +1542,10 @@ and compile_prim (prim_info : Lam.prim_info)
 and compile_lambda (lambda_cxt : Lam_compile_context.t) (cur_lam : Lam.t) :
     Js_output.t =
   match cur_lam with
-  | Lfunction { params; body; attr = { return_unit } } ->
+  | Lfunction { params; body; attr = { return_unit; async } } ->
       Js_output.output_of_expression lambda_cxt.continuation
         ~no_effects:no_effects_const
-        (E.ocaml_fun params ~return_unit
+        (E.ocaml_fun params ~return_unit ~async
            (* Invariant:  jmp_table can not across function boundary,
               here we share env
            *)

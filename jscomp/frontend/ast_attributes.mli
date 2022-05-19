@@ -33,7 +33,7 @@ val process_method_attributes_rev :
 type attr_kind =
   | Nothing
   | Meth_callback of attr
-  | Uncurry of attr
+  | Uncurry of attr * bool(* async *)
   | Method of attr
 
 val process_attributes_rev : t -> attr_kind * t

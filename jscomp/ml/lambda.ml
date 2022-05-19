@@ -270,6 +270,7 @@ type function_attribute = {
   is_a_functor: bool;
   stub: bool;
   return_unit : bool;
+  async : bool;
 }
 type switch_names = {consts: string array; blocks: string array}
 
@@ -336,6 +337,7 @@ let default_function_attribute = {
   is_a_functor = false;
   stub = false;
   return_unit = false;
+  async = false;
 }
 
 let default_stub_attribute =

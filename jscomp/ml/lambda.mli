@@ -270,7 +270,8 @@ type function_attribute = {
   inline : inline_attribute;
   is_a_functor: bool;
   stub: bool;
-  return_unit : bool;  
+  return_unit : bool;
+  async : bool;
 }
 
 type switch_names = {consts: string array; blocks: string array}

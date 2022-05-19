@@ -118,7 +118,7 @@ let expression_desc : expression_desc fn =
       _self.expression _self _x0;
       option (fun _self arg -> list _self.expression _self arg) _self _x1
   | Var _x0 -> _self.vident _self _x0
-  | Fun (_x0, _x1, _x2, _x3, _x4) ->
+  | Fun (_x0, _x1, _x2, _x3, _x4, _x5) ->
       list _self.ident _self _x1;
       _self.block _self _x2
   | Str _ -> ()

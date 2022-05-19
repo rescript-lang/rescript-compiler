@@ -81,15 +81,16 @@ let process_method_attributes_rev (attrs : t) =
 type attr_kind =
   | Nothing
   | Meth_callback of attr
-  | Uncurry of attr
+  | Uncurry of attr * bool
   | Method of attr
 
 let process_attributes_rev (attrs : t) : attr_kind * t =
   Ext_list.fold_left attrs (Nothing, [])
     (fun (st, acc) (({ txt; loc }, _) as attr) ->
       match (txt, st) with
+      | "async", Uncurry (attr, _async) -> (Uncurry (attr, true), attr :: acc)
       | "bs", (Nothing | Uncurry _) ->
-          (Uncurry attr, acc) (* TODO: warn unused/duplicated attribute *)
+          (Uncurry (attr, (* async *) false), acc) (* TODO: warn unused/duplicated attribute *)
       | ("bs.this" | "this"), (Nothing | Meth_callback _) ->
           (Meth_callback attr, acc)
       | ("bs.meth" | "meth"), (Nothing | Method _) -> (Method attr, acc)

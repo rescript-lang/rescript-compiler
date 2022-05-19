@@ -142,10 +142,11 @@ and expression_desc =
   *)
   | New of expression * expression list option (* TODO: option remove *)
   | Var of vident
-  | Fun of bool * ident list * block * Js_fun_env.t * bool
+  | Fun of bool * ident list * block * Js_fun_env.t * bool * bool
   (* The first parameter by default is false,
      it will be true when it's a method
-     The last pararemter [true] return unit
+     The second-last pararemter [true] return unit
+     The last pararemter [true] means async
   *)
   | Str of {delim: string option; txt: string}
   (* A string is UTF-8 encoded, and may contain
