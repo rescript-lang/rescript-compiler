@@ -63,6 +63,9 @@ external all4 : 'a0 t * 'a1 t * 'a2 t * 'a3 t -> ('a0 * 'a1 * 'a2 * 'a3) t
   = "all"
   [@@bs.val] [@@bs.scope "Promise"]
 
+external then2 : 'a t -> (('a -> 'b t)[@bs.uncurry]) -> 'b t = "then"
+  [@@bs.send]
+
 external all5 :
   'a0 t * 'a1 t * 'a2 t * 'a3 t * 'a4 t -> ('a0 * 'a1 * 'a2 * 'a3 * 'a4) t
   = "all"
@@ -86,6 +89,9 @@ external catch : ((error -> 'a t)[@bs.uncurry]) -> 'a t = "catch"
     to make it strict we enforce reject handler
     https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch
 *)
+
+external catch2 : 'a t -> ((exn -> 'a t)[@bs.uncurry]) -> 'a t = "catch"
+  [@@bs.send]
 
 (*
 let errorAsExn (x :  error) (e  : (exn ->'a option))=

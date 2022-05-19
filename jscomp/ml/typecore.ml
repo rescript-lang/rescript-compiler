@@ -1864,7 +1864,34 @@ and type_expect ?in_function ?recarg env sexp ty_expected =
          type_expect_ ?in_function ?recarg env sexp ty_expected
       )
   in
-  Cmt_format.set_saved_types
+  let () =
+    let rec extractPromise t =
+      match t.desc with
+      | Tconstr (Pdot (Pdot (Pident {name = "Js"}, "Promise", _), "t", _), [t1], _)
+        ->
+        Some t1
+      | Tlink t1 | Tsubst t1 | Tpoly (t1, []) -> extractPromise t1
+      | _ -> None
+    in
+    let rec findNestedPromise t =
+      match t.desc with
+      | Tlink t1 | Tsubst t1 | Tpoly (t1, []) -> findNestedPromise t1
+      | Tconstr (_, ts, _) -> (
+        match extractPromise t with
+        | Some t1 -> (
+          match extractPromise t1 with
+          | Some _t2 ->
+            let nestedType = Format.asprintf "%a" Printtyp.type_expr t in
+            Location.prerr_warning exp.exp_loc (Bs_nested_promise nestedType)
+          | None -> ts |> List.iter findNestedPromise)
+        | None -> ts |> List.iter findNestedPromise)
+      | Tarrow (_, t1, t2, _) ->
+        findNestedPromise t1;
+        findNestedPromise t2
+      | _ -> ()
+     in findNestedPromise exp.exp_type
+    in
+    Cmt_format.set_saved_types
     (Cmt_format.Partial_expression exp :: previous_saved_types);
   exp
 

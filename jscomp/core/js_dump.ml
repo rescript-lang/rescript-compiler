@@ -166,6 +166,8 @@ let exp_need_paren (e : J.expression) =
   | Optional_block _ | Caml_block _ | FlatCall _ | Typeof _ | Number _
   | Js_not _ | Bool _ | New _ ->
       false
+  | Await _ -> false
+  | Async -> false
 
 let comma_idents (cxt : cxt) f ls = iter_lst cxt f ls Ext_pp_scope.ident comma
 
@@ -361,7 +363,7 @@ and pp_function ~return_unit ~is_method cxt (f : P.t) ~fn_state
          if the function does not capture any variable, then the context is empty
       *)
       let inner_cxt = Ext_pp_scope.sub_scope outer_cxt set_env in
-      let param_body () : unit =
+      let param_body b : unit =
         if is_method then (
           match l with
           | [] -> assert false
@@ -393,24 +395,32 @@ and pp_function ~return_unit ~is_method cxt (f : P.t) ~fn_state
                 return_sp f;
                 P.string f L.function_;
                 P.space f;
-                param_body ()
+                param_body b
             | No_name { single_arg } ->
                 (* see # 1692, add a paren for annoymous function for safety  *)
                 P.cond_paren_group f (not single_arg) 1 (fun _ ->
                     P.string f L.function_;
                     P.space f;
-                    param_body ())
+                    param_body b)
             | Name_non_top x ->
                 ignore (pp_var_assign inner_cxt f x : cxt);
                 P.string f L.function_;
                 P.space f;
-                param_body ();
+                param_body b;
                 semi f
             | Name_top x ->
+                let b =
+                  match b with
+                  | { statement_desc = Exp { expression_desc = Async } } :: b
+                    ->
+                      P.string f "async ";
+                      b
+                  | _ -> b
+                in
                 P.string f L.function_;
                 P.space f;
                 ignore (Ext_pp_scope.ident inner_cxt f x : cxt);
-                param_body ())
+                param_body b)
           else
             (* print our closure as
                {[(function(x,y){ return function(..){...}} (x,y))]}
@@ -433,7 +443,7 @@ and pp_function ~return_unit ~is_method cxt (f : P.t) ~fn_state
                 | Is_return | No_name _ -> ()
                 | Name_non_top x | Name_top x ->
                     ignore (Ext_pp_scope.ident inner_cxt f x));
-                param_body ());
+                param_body b);
             pp_paren_params inner_cxt f lexical;
             P.string f L.rparen;
             match fn_state with
@@ -856,6 +866,11 @@ and expression_desc cxt ~(level : int) f x : cxt =
             cxt)
           else
             P.brace_vgroup f 1 (fun _ -> property_name_and_value_list cxt f lst))
+  | Await e ->
+      P.string f "await ";
+      let cxt = expression ~level cxt f e in
+      cxt
+  | Async -> assert false
 
 and property_name_and_value_list cxt f (l : J.property_map) =
   iter_lst cxt f l
