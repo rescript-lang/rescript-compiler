@@ -362,7 +362,7 @@ and pp_function ~return_unit ~async ~is_method cxt (f : P.t) ~fn_state
          if the function does not capture any variable, then the context is empty
       *)
       let inner_cxt = Ext_pp_scope.sub_scope outer_cxt set_env in
-      let param_body b : unit =
+      let param_body () : unit =
         if is_method then (
           match l with
           | [] -> assert false
@@ -394,24 +394,24 @@ and pp_function ~return_unit ~async ~is_method cxt (f : P.t) ~fn_state
                 return_sp f;
                 P.string f (L.function_async ~async);
                 P.space f;
-                param_body b
+                param_body ()
             | No_name { single_arg } ->
                 (* see # 1692, add a paren for annoymous function for safety  *)
                 P.cond_paren_group f (not single_arg) 1 (fun _ ->
                   P.string f (L.function_async ~async);
                   P.space f;
-                    param_body b)
+                    param_body ())
             | Name_non_top x ->
                 ignore (pp_var_assign inner_cxt f x : cxt);
                 P.string f (L.function_async ~async);
                 P.space f;
-                param_body b;
+                param_body ();
                 semi f
             | Name_top x ->
                 P.string f (L.function_async ~async);
                 P.space f;
                 ignore (Ext_pp_scope.ident inner_cxt f x : cxt);
-                param_body b)
+                param_body ())
           else
             (* print our closure as
                {[(function(x,y){ return function(..){...}} (x,y))]}
@@ -434,7 +434,7 @@ and pp_function ~return_unit ~async ~is_method cxt (f : P.t) ~fn_state
                 | Is_return | No_name _ -> ()
                 | Name_non_top x | Name_top x ->
                     ignore (Ext_pp_scope.ident inner_cxt f x));
-                param_body b);
+                param_body ());
             pp_paren_params inner_cxt f lexical;
             P.string f L.rparen;
             match fn_state with
