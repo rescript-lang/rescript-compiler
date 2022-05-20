@@ -76,7 +76,8 @@ let pat_mapper (self : mapper) (e : Parsetree.pattern) =
   | Ppat_constant (Pconst_integer (s, Some 'l')) ->
     {e with ppat_desc = Ppat_constant (Pconst_integer(s,None))}
   | _ -> default_pat_mapper  self e 
-let expr_mapper  (self : mapper) (e : Parsetree.expression) =
+let expr_mapper ~async_context (self : mapper) (e : Parsetree.expression) =
+  let async_saved = !async_context in
   let result =
   match e.pexp_desc with
   (* Its output should not be rewritten anymore *)
@@ -114,20 +115,28 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
          | Not_found -> 0
          | Invalid_argument -> 1
        ]}*)
+    async_context := false;
+    let result =
     (match Ast_attributes.process_pexp_fun_attributes_rev e.pexp_attributes with
      | false, _ ->
        default_expr_mapper self  e
      | true, pexp_attributes ->
-       Ast_bs_open.convertBsErrorFunction e.pexp_loc self  pexp_attributes cases)
+       Ast_bs_open.convertBsErrorFunction e.pexp_loc self  pexp_attributes cases);
+    in
+    async_context := async_saved;
+    result
 
   | Pexp_fun (label, _, pat , body)
     ->
+    async_context := false;
+    let result =
     begin match Ast_attributes.process_attributes_rev e.pexp_attributes with
       | Nothing, _
         -> default_expr_mapper self e
       | Uncurry _, pexp_attributes
         ->
         let async = Ast_attributes.has_async_payload e.pexp_attributes <> None in
+        async_context := async;
         {e with
          pexp_desc = Ast_uncurry_gen.to_uncurry_fn e.pexp_loc self label pat body async;
          pexp_attributes}
@@ -139,6 +148,9 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
         {e with pexp_desc = Ast_uncurry_gen.to_method_callback e.pexp_loc  self label pat body ;
                 pexp_attributes }
     end
+    in
+    async_context := async_saved;
+    result
   | Pexp_apply (fn, args  ) ->
     Ast_exp_apply.app_exp_mapper e self fn args
   | Pexp_object {pcstr_self;  pcstr_fields} ->
@@ -200,6 +212,8 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
   match Ast_attributes.has_await_payload e.pexp_attributes with
   | None -> result
   | Some _ ->
+    if async_saved = false then
+      Location.raise_errorf ~loc:e.pexp_loc "Await on expression not in an async context";
     let txt = Longident.Ldot (Longident.Ldot (Lident "Js", "Promise"), "unsafe_await") in
     let pexp_desc = Parsetree.Pexp_ident {txt; loc = result.pexp_loc} in
     {result with pexp_desc = Pexp_apply ({result with pexp_desc}, [(Nolabel, result)])}
@@ -466,7 +480,7 @@ let rec
 
 let  mapper : mapper =
   { default_mapper with
-    expr = expr_mapper;
+    expr = expr_mapper ~async_context:(ref false);
     pat = pat_mapper; 
     typ = typ_mapper ;
     class_type = class_type_mapper;      
