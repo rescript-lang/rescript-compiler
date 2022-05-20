@@ -147,7 +147,7 @@ let typ_mapper (self : Bs_ast_mapper.mapper) (ty : Parsetree.core_type) =
                   let attrs, core_type =
                     match Ast_attributes.process_attributes_rev attrs with
                     | Nothing, attrs -> (attrs, ty) (* #1678 *)
-                    | Uncurry (attr, _async), attrs -> (attrs, attr +> ty)
+                    | Uncurry attr, attrs -> (attrs, attr +> ty)
                     | Method _, _ ->
                         Location.raise_errorf ~loc
                           "%@get/set conflicts with %@meth"
@@ -160,7 +160,7 @@ let typ_mapper (self : Bs_ast_mapper.mapper) (ty : Parsetree.core_type) =
                   let attrs, core_type =
                     match Ast_attributes.process_attributes_rev attrs with
                     | Nothing, attrs -> (attrs, ty)
-                    | Uncurry (attr, _async), attrs -> (attrs, attr +> ty)
+                    | Uncurry attr, attrs -> (attrs, attr +> ty)
                     | Method _, _ ->
                         Location.raise_errorf ~loc
                           "%@get/set conflicts with %@meth"
@@ -174,7 +174,7 @@ let typ_mapper (self : Bs_ast_mapper.mapper) (ty : Parsetree.core_type) =
                   let attrs, core_type =
                     match Ast_attributes.process_attributes_rev ptyp_attrs with
                     | Nothing, attrs -> (attrs, ty)
-                    | Uncurry (attr, _async), attrs -> (attrs, attr +> ty)
+                    | Uncurry attr, attrs -> (attrs, attr +> ty)
                     | Method attr, attrs -> (attrs, attr +> ty)
                     | Meth_callback attr, attrs -> (attrs, attr +> ty)
                   in

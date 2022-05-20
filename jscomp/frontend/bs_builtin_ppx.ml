@@ -125,8 +125,9 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
     begin match Ast_attributes.process_attributes_rev e.pexp_attributes with
       | Nothing, _
         -> default_expr_mapper self e
-      | Uncurry (_, async), pexp_attributes
+      | Uncurry (_, _async), pexp_attributes
         ->
+        let async = Ast_attributes.has_async_payload e.pexp_attributes <> None in
         {e with
          pexp_desc = Ast_uncurry_gen.to_uncurry_fn e.pexp_loc self label pat body async;
          pexp_attributes}

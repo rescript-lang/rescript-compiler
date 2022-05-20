@@ -98,8 +98,7 @@ testFetch->addTest1("https://www.google.comsdkjdkghdsg")
 let withCallback =
   @async
   (. ()) => {
-    let callback = @async (. x) => @await (x->Js.Promise.resolve) + 1
-    callback
+    @async (. x) => @await (x->Js.Promise.resolve) + 1
   }
 
 let testWithCallback =

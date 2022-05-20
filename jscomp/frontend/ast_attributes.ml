@@ -81,16 +81,15 @@ let process_method_attributes_rev (attrs : t) =
 type attr_kind =
   | Nothing
   | Meth_callback of attr
-  | Uncurry of attr * bool
+  | Uncurry of attr
   | Method of attr
 
 let process_attributes_rev (attrs : t) : attr_kind * t =
   Ext_list.fold_left attrs (Nothing, [])
     (fun (st, acc) (({ txt; loc }, _) as attr) ->
       match (txt, st) with
-      | "async", Uncurry (attr, _async) -> (Uncurry (attr, true), attr :: acc)
       | "bs", (Nothing | Uncurry _) ->
-          (Uncurry (attr, (* async *) false), acc) (* TODO: warn unused/duplicated attribute *)
+          (Uncurry attr, acc) (* TODO: warn unused/duplicated attribute *)
       | ("bs.this" | "this"), (Nothing | Meth_callback _) ->
           (Meth_callback attr, acc)
       | ("bs.meth" | "meth"), (Nothing | Method _) -> (Method attr, acc)
@@ -166,8 +165,12 @@ let has_inline_payload (attrs : t) = Ext_list.find_first attrs is_inline
 
 let is_await : attr -> bool =
   fun ({ txt }, _) -> txt = "await"
- 
+
+let is_async : attr -> bool =
+  fun ({ txt }, _) -> txt = "async"
+
 let has_await_payload (attrs : t) = Ext_list.find_first attrs is_await
+let has_async_payload (attrs : t) = Ext_list.find_first attrs is_async
  
 
 type derive_attr = { bs_deriving : Ast_payload.action list option } [@@unboxed]
