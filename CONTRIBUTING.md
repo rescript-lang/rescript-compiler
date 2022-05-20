@@ -23,8 +23,9 @@ Happy hacking!
 
 The ReScript compiler compiles with any recent OCaml compiler. We are using `dune` as a build system for easy workflows and proper IDE support.
 
+Make sure you have [opam](https://opam.ocaml.org/doc/Install.html) installed on your machine.
+
 ```
-brew install opam
 opam init
 
 # Install build system
