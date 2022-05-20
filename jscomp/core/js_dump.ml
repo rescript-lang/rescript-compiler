@@ -398,8 +398,8 @@ and pp_function ~return_unit ~async ~is_method cxt (f : P.t) ~fn_state
             | No_name { single_arg } ->
                 (* see # 1692, add a paren for annoymous function for safety  *)
                 P.cond_paren_group f (not single_arg) 1 (fun _ ->
-                  P.string f (L.function_async ~async);
-                  P.space f;
+                    P.string f (L.function_async ~async);
+                    P.space f;
                     param_body ())
             | Name_non_top x ->
                 ignore (pp_var_assign inner_cxt f x : cxt);
@@ -858,9 +858,9 @@ and expression_desc cxt ~(level : int) f x : cxt =
           else
             P.brace_vgroup f 1 (fun _ -> property_name_and_value_list cxt f lst))
   | Await e ->
-    P.cond_paren_group f (level > 13) 1 (fun _ ->
-      P.string f "await ";
-      expression ~level:13 cxt f e)
+      P.cond_paren_group f (level > 13) 1 (fun _ ->
+          P.string f "await ";
+          expression ~level:13 cxt f e)
 
 and property_name_and_value_list cxt f (l : J.property_map) =
   iter_lst cxt f l
@@ -1131,8 +1131,8 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
       match e.expression_desc with
       | Fun (is_method, l, b, env, return_unit, async) ->
           let cxt =
-            pp_function ~return_unit ~is_method ~async cxt f ~fn_state:Is_return l b
-              env
+            pp_function ~return_unit ~is_method ~async cxt f ~fn_state:Is_return
+              l b env
           in
           semi f;
           cxt
