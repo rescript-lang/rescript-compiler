@@ -90,12 +90,18 @@ let to_uncurry_fn loc (self : Bs_ast_mapper.mapper) (label : Asttypes.arg_label)
       {result with pexp_desc = Pexp_apply ({result with pexp_desc}, [(Nolabel, result)])}
     else result in
   let body =
-    let attrs : Parsetree.attributes =
-      if async then [({txt="async"; loc=result.pexp_loc}, PStr[])]
-      else [] in
     Ext_list.fold_left rev_extra_args result (fun e (label, p) ->
-        Ast_helper.Exp.fun_ ~loc ~attrs label None p e)
+        Ast_helper.Exp.fun_ ~loc label None p e)
   in
+  let body =
+    if async then
+      {
+        body with
+        pexp_attributes = [ ({ txt = "async"; loc = Location.none }, PStr []) ];
+      }
+    else body
+  in
+
   let len = List.length rev_extra_args in
   let arity =
     match rev_extra_args with
