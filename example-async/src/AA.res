@@ -183,3 +183,5 @@ runAllTests(. 0)->ignore
 //     let cb = (. _) => @await x // Error: Await on expression not in an async context
 //     cb
 //   }
+
+// let bb = @async x => x // Error: Async can only be applied to uncurried function

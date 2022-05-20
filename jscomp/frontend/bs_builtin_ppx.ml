@@ -129,13 +129,15 @@ let expr_mapper ~async_context (self : mapper) (e : Parsetree.expression) =
   | Pexp_fun (label, _, pat , body)
     ->
     async_context := false;
+    let async = Ast_attributes.has_async_payload e.pexp_attributes <> None in
     let result =
     begin match Ast_attributes.process_attributes_rev e.pexp_attributes with
-      | Nothing, _
-        -> default_expr_mapper self e
+      | Nothing, _ ->
+        if async then
+          Location.raise_errorf ~loc:e.pexp_loc "Async can only be applied to uncurried function";
+        default_expr_mapper self e
       | Uncurry _, pexp_attributes
         ->
-        let async = Ast_attributes.has_async_payload e.pexp_attributes <> None in
         async_context := async;
         {e with
          pexp_desc = Ast_uncurry_gen.to_uncurry_fn e.pexp_loc self label pat body async;
