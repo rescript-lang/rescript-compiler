@@ -54,3 +54,7 @@ jobs:
     - name: Run tests (Linux)
       if: runner.os == 'Linux'
       run: opam exec -- node scripts/ciTest.js -install-global -ounit -mocha -theme
+    
+    - name: Run tests (Windows)
+      if: runner.os == 'Windows'
+      run: opam exec -- node scripts/ciTest.js -mocha -theme
