@@ -1,3 +1,6 @@
+external platform : [ `aix  | `darwin  | `freebsd  | `linux  | `openbsd  | `sunos  | `win32 ]
+  = "platform" [@@var] [@@scope "process"]
+
 let suites :  Mt.pair_suites ref  = ref []
 let test_id = ref 0
 let eq loc x y = 
@@ -7,6 +10,8 @@ let eq loc x y =
 
 let test = Ext_filename_test.node_relative_path true 
 let () =
+  (* TODO: adapt these tests to run on Windows. *)
+  if platform != `win32 then (
   eq __LOC__ 
     (let (//) = Ext_filename_test.combine in 
      ("/tmp"// "subdir/file.txt",
@@ -97,6 +102,7 @@ let () =
        "/a.txt"
      |] 
   ;
+  )
 
   
 
