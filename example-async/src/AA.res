@@ -45,8 +45,7 @@ let e5: testable = %raw(`function() { return Promise.reject(new Error('fail')) }
 let testTryCatch =
   @async
   (. fn) =>
-    try @await
-    fn(.) catch {
+    try {@await fn(.)} catch {
     | E(n) => Js.log2("testTryCatch: E", n)
     | JsError(_) => Js.log("testTryCatch: JsError")
     }
@@ -80,8 +79,7 @@ let explainError: unknown => string = %raw(`(e)=>e.toString()`)
 let testFetch =
   @async
   (. url) => {
-    switch @await
-    Fetch.fetch(url) {
+    switch {@await Fetch.fetch(url)} {
     | response =>
       let status = response->Fetch.Response.status
       Js.log2("Fetch returned status:", status)
