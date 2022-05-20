@@ -94,6 +94,21 @@ testFetch->addTest1("https://www.google.comsdkjdkghdsg")
 
 //
 //
+// Callbacks
+let withCallback =
+  @async
+  (. ()) => {
+    let callback = @async (. x) => x + 1
+    callback
+  } 
+
+let testWithCallback =
+  @async (. ()) => Js.log2("callback returned", @await (@await withCallback(.))(. 3))
+
+testWithCallback->addTest
+
+//
+//
 // Run tests
 
 let rec runAllTests =

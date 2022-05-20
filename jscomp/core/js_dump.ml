@@ -392,24 +392,23 @@ and pp_function ~return_unit ~async ~is_method cxt (f : P.t) ~fn_state
             match fn_state with
             | Is_return ->
                 return_sp f;
-                P.string f L.function_;
+                P.string f (L.function_async ~async);
                 P.space f;
                 param_body b
             | No_name { single_arg } ->
                 (* see # 1692, add a paren for annoymous function for safety  *)
                 P.cond_paren_group f (not single_arg) 1 (fun _ ->
-                    P.string f L.function_;
-                    P.space f;
+                  P.string f (L.function_async ~async);
+                  P.space f;
                     param_body b)
             | Name_non_top x ->
                 ignore (pp_var_assign inner_cxt f x : cxt);
-                P.string f L.function_;
+                P.string f (L.function_async ~async);
                 P.space f;
                 param_body b;
                 semi f
             | Name_top x ->
-                if async then P.string f "async ";
-                P.string f L.function_;
+                P.string f (L.function_async ~async);
                 P.space f;
                 ignore (Ext_pp_scope.ident inner_cxt f x : cxt);
                 param_body b)
@@ -425,7 +424,7 @@ and pp_function ~return_unit ~async ~is_method cxt (f : P.t) ~fn_state
             | Name_non_top name | Name_top name ->
                 ignore (pp_var_assign inner_cxt f name : cxt));
             P.string f L.lparen;
-            P.string f L.function_;
+            P.string f (L.function_async ~async);
             pp_paren_params inner_cxt f lexical;
             P.brace_vgroup f 0 (fun _ ->
                 return_sp f;
@@ -859,9 +858,9 @@ and expression_desc cxt ~(level : int) f x : cxt =
           else
             P.brace_vgroup f 1 (fun _ -> property_name_and_value_list cxt f lst))
   | Await e ->
+    P.cond_paren_group f (level > 13) 1 (fun _ ->
       P.string f "await ";
-      let cxt = expression ~level cxt f e in
-      cxt
+      expression ~level:13 cxt f e)
 
 and property_name_and_value_list cxt f (l : J.property_map) =
   iter_lst cxt f l
