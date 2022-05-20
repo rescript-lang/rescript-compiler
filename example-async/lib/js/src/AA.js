@@ -126,7 +126,7 @@ addTest1(testFetch, "https://www.google.comsdkjdkghdsg");
 
 async function withCallback() {
   return async function (x) {
-    return x + 1 | 0;
+    return await Promise.resolve(x) + 1 | 0;
   };
 }
 
