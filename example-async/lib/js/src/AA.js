@@ -2,6 +2,7 @@
 'use strict';
 
 var Js_exn = require("rescript/lib/js/js_exn.js");
+var Belt_List = require("rescript/lib/js/belt_List.js");
 var Caml_array = require("rescript/lib/js/caml_array.js");
 var Caml_exceptions = require("rescript/lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("rescript/lib/js/caml_js_exceptions.js");
@@ -136,6 +137,62 @@ async function testWithCallback() {
 
 tests.push(testWithCallback);
 
+async function map(l, f) {
+  var loop = async function (l, acc) {
+    if (l) {
+      return await loop(l.tl, {
+                  hd: await l.hd,
+                  tl: acc
+                });
+    } else {
+      return acc;
+    }
+  };
+  return await loop(Belt_List.mapReverse(l, (function (x) {
+                    return f(x);
+                  })), /* [] */0);
+}
+
+var AsyncList = {
+  map: map
+};
+
+var counter = {
+  contents: 0
+};
+
+async function ff(url) {
+  var response = await fetch(url);
+  counter.contents = counter.contents + 1 | 0;
+  return [
+          counter.contents,
+          response.status
+        ];
+}
+
+async function testFetchMany() {
+  return Belt_List.forEach(await map({
+                  hd: "https://www.google.com",
+                  tl: {
+                    hd: "https://www.google.com",
+                    tl: {
+                      hd: "https://www.google.com",
+                      tl: {
+                        hd: "https://www.google.com",
+                        tl: {
+                          hd: "https://www.google.com",
+                          tl: /* [] */0
+                        }
+                      }
+                    }
+                  }
+                }, ff), (function (param) {
+                console.log("Fetched", param[0], param[1]);
+              }));
+}
+
+tests.push(testFetchMany);
+
 async function runAllTests(n) {
   if (n >= 0 && n < tests.length) {
     await Caml_array.get(tests, n)();
@@ -145,6 +202,8 @@ async function runAllTests(n) {
 }
 
 runAllTests(0);
+
+var fetchAndCount = ff;
 
 exports.tests = tests;
 exports.addTest = addTest;
@@ -166,5 +225,8 @@ exports.explainError = explainError;
 exports.testFetch = testFetch;
 exports.withCallback = withCallback;
 exports.testWithCallback = testWithCallback;
+exports.AsyncList = AsyncList;
+exports.fetchAndCount = fetchAndCount;
+exports.testFetchMany = testFetchMany;
 exports.runAllTests = runAllTests;
 /*  Not a pure module */

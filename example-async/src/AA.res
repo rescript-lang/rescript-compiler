@@ -109,6 +109,57 @@ testWithCallback->addTest
 
 //
 //
+// Async list
+module AsyncList = {
+  let map =
+    @async
+    (. l, f) => {
+      let rec loop =
+        @async
+        (. l, acc) =>
+          switch l {
+          | list{} => acc
+          | list{p, ...rest} => @await loop(. rest, list{@await p, ...acc})
+          }
+
+      @await
+      loop(. l->Belt.List.mapReverse(x => f(. x)), list{})
+    }
+}
+
+let fetchAndCount = {
+  let counter = ref(0)
+
+  let ff =
+    @async
+    (. url) => {
+      let response = @await Fetch.fetch(url)
+      counter := counter.contents + 1
+      (counter.contents, response->Fetch.Response.status)
+    }
+
+  ff
+}
+
+let testFetchMany =
+  @async
+  (. ()) =>
+    @await
+    AsyncList.map(.
+      list{
+        "https://www.google.com",
+        "https://www.google.com",
+        "https://www.google.com",
+        "https://www.google.com",
+        "https://www.google.com",
+      },
+      fetchAndCount,
+    )->Belt.List.forEach(((i, s)) => Js.log3("Fetched", i, s))
+
+testFetchMany->addTest
+
+//
+//
 // Run tests
 
 let rec runAllTests =
