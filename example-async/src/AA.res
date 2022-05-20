@@ -172,3 +172,14 @@ let rec runAllTests =
   }
 
 runAllTests(. 0)->ignore
+
+//
+//
+// Errors
+
+// let aa =
+//   @async
+//   (. x) => {
+//     let cb = (. _) => @await x // Error: Await on expression not in an async context
+//     cb
+//   }
