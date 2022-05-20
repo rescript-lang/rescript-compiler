@@ -33,7 +33,7 @@ val process_method_attributes_rev :
 type attr_kind =
   | Nothing
   | Meth_callback of attr
-  | Uncurry of attr * bool(* async *)
+  | Uncurry of attr
   | Method of attr
 
 val process_attributes_rev : t -> attr_kind * t
@@ -45,6 +45,7 @@ val process_bs : t -> bool * t
 val has_inline_payload : t -> attr option
 
 val has_await_payload : t -> attr option
+val has_async_payload : t -> attr option
 
 type derive_attr = { bs_deriving : Ast_payload.action list option } [@@unboxed]
 
