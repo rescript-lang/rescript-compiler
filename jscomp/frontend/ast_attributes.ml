@@ -164,6 +164,12 @@ let is_inline : attr -> bool =
 
 let has_inline_payload (attrs : t) = Ext_list.find_first attrs is_inline
 
+let is_await : attr -> bool =
+  fun ({ txt }, _) -> txt = "await"
+ 
+let has_await_payload (attrs : t) = Ext_list.find_first attrs is_await
+ 
+
 type derive_attr = { bs_deriving : Ast_payload.action list option } [@@unboxed]
 
 let process_derive_type (attrs : t) : derive_attr * t =

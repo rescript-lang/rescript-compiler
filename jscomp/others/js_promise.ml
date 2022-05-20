@@ -93,7 +93,8 @@ external catch : ((error -> 'a t)[@bs.uncurry]) -> 'a t = "catch"
 external catch2 : 'a t -> ((exn -> 'a t)[@bs.uncurry]) -> 'a t = "catch"
   [@@bs.send]
 
-external unsafe_cast : 'a -> 'a t = "%identity"
+external unsafe_async : 'a -> 'a t = "%identity"
+external unsafe_await : 'a t -> 'a = "?await"
 
 
 (*

@@ -77,6 +77,7 @@ let pat_mapper (self : mapper) (e : Parsetree.pattern) =
     {e with ppat_desc = Ppat_constant (Pconst_integer(s,None))}
   | _ -> default_pat_mapper  self e 
 let expr_mapper  (self : mapper) (e : Parsetree.expression) =
+  let result =
   match e.pexp_desc with
   (* Its output should not be rewritten anymore *)
   | Pexp_extension extension ->
@@ -193,6 +194,14 @@ let expr_mapper  (self : mapper) (e : Parsetree.expression) =
      it is very hard to place attributes correctly
   *)
   | _ ->  default_expr_mapper self e
+  
+  in
+  match Ast_attributes.has_await_payload e.pexp_attributes with
+  | None -> result
+  | Some _ ->
+    let txt = Longident.Ldot (Longident.Ldot (Lident "Js", "Promise"), "unsafe_await") in
+    let pexp_desc = Parsetree.Pexp_ident {txt; loc = result.pexp_loc} in
+    {result with pexp_desc = Pexp_apply ({result with pexp_desc}, [(Nolabel, result)])}
 
 
 let typ_mapper (self : mapper) (typ : Parsetree.core_type) = 
