@@ -85,7 +85,7 @@ let to_uncurry_fn loc (self : Bs_ast_mapper.mapper) (label : Asttypes.arg_label)
   let result, rev_extra_args = aux [ (label, first_arg) ] body in
   let result =
     if async then
-      let txt = Longident.Ldot (Longident.Ldot (Lident "Js", "Promise"), "unsafe_cast") in
+      let txt = Longident.Ldot (Longident.Ldot (Lident "Js", "Promise"), "unsafe_async") in
       let pexp_desc = Parsetree.Pexp_ident {txt; loc = result.pexp_loc} in
       {result with pexp_desc = Pexp_apply ({result with pexp_desc}, [(Nolabel, result)])}
     else result in

@@ -44,6 +44,8 @@ val process_bs : t -> bool * t
 
 val has_inline_payload : t -> attr option
 
+val has_await_payload : t -> attr option
+
 type derive_attr = { bs_deriving : Ast_payload.action list option } [@@unboxed]
 
 val iter_process_bs_string_int_unwrap_uncurry :

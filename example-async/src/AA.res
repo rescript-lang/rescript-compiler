@@ -1,6 +1,3 @@
-// Boilerplate currently handwritten
-external await: Js.Promise.t<'a> => 'a = "?await"
-
 type testable = (. unit) => Js.Promise.t<unit>
 
 let tests: array<testable> = []
@@ -17,17 +14,17 @@ let foo = @async (. x, y) => x + y
 let bar =
   @async
   (. ff) => {
-    let a = await(ff(. 3, 4))
-    let b = await(foo(. 5, 6))
+    let a = @await ff(. 3, 4)
+    let b = @await foo(. 5, 6)
     a + b
   }
 
-let baz = @async (. ()) => await(bar(. foo))
+let baz = @async (. ()) => @await bar(. foo)
 
 let testBaz: testable =
   @async
   (. ()) => {
-    let n = await(baz(.))
+    let n = @await baz(.)
     Js.log2("baz returned", n)
   }
 
@@ -41,14 +38,15 @@ exception E(int)
 
 let e1: testable = @async (. ()) => raise(E(1000))
 let e2: testable = @async (. ()) => Js.Exn.raiseError("Some JS error")
-let e3: testable = @async (. ()) => await(e1(.))
-let e4: testable = @async (. ()) => await(e2(.))
+let e3: testable = @async (. ()) => @await e1(.)
+let e4: testable = @async (. ()) => @await e2(.)
 let e5: testable = %raw(`function() { return Promise.reject(new Error('fail')) }`)
 
 let testTryCatch =
   @async
   (. fn) =>
-    try await(fn(.)) catch {
+    try @await
+    fn(.) catch {
     | E(n) => Js.log2("testTryCatch: E", n)
     | JsError(_) => Js.log("testTryCatch: JsError")
     }
@@ -82,7 +80,8 @@ let explainError: unknown => string = %raw(`(e)=>e.toString()`)
 let testFetch =
   @async
   (. url) => {
-    switch await(Fetch.fetch(url)) {
+    switch @await
+    Fetch.fetch(url) {
     | response =>
       let status = response->Fetch.Response.status
       Js.log2("Fetch returned status:", status)
@@ -101,8 +100,11 @@ let rec runAllTests =
   @async
   (. n) => {
     if n >= 0 && n < Array.length(tests) {
-      await(tests[n](.))
-      await(runAllTests(. n + 1))
+      @await
+      tests[n](.)
+
+      @await
+      runAllTests(. n + 1)
     }
   }
 
