@@ -124,6 +124,18 @@ addTest1(testFetch, "https://www.google.com/sdkjdkghdsg");
 
 addTest1(testFetch, "https://www.google.comsdkjdkghdsg");
 
+async function withCallback() {
+  return async function (x) {
+    return x + 1 | 0;
+  };
+}
+
+async function testWithCallback() {
+  console.log("callback returned", await (await withCallback())(3));
+}
+
+tests.push(testWithCallback);
+
 async function runAllTests(n) {
   if (n >= 0 && n < tests.length) {
     await Caml_array.get(tests, n)();
@@ -152,5 +164,7 @@ exports.singlePromise = singlePromise;
 exports.nestedPromise = nestedPromise;
 exports.explainError = explainError;
 exports.testFetch = testFetch;
+exports.withCallback = withCallback;
+exports.testWithCallback = testWithCallback;
 exports.runAllTests = runAllTests;
 /*  Not a pure module */
