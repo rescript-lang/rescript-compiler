@@ -27,6 +27,7 @@
 external function_length : 'a -> int = "#function_length"
 external apply_args : ('a -> 'b) -> _ array -> 'b = "#apply"
 
+let _ = Caml_array.sub (* make the build dependency on Caml_array explicit *)
 let%private sub = Caml_array.sub
 (* Public *)
 let rec app f args = 
