@@ -78,7 +78,6 @@ let pat_mapper (self : mapper) (e : Parsetree.pattern) =
   | _ -> default_pat_mapper  self e 
 let expr_mapper ~async_context (self : mapper) (e : Parsetree.expression) =
   let async_saved = !async_context in
-  let result =
   match e.pexp_desc with
   (* Its output should not be rewritten anymore *)
   | Pexp_extension extension ->
@@ -209,12 +208,13 @@ let expr_mapper ~async_context (self : mapper) (e : Parsetree.expression) =
      it is very hard to place attributes correctly
   *)
   | _ ->  default_expr_mapper self e
-  
-  in
+
+let expr_mapper ~async_context (self : mapper) (e : Parsetree.expression) =
+  let result = expr_mapper ~async_context self e in
   match Ast_attributes.has_await_payload e.pexp_attributes with
   | None -> result
   | Some _ ->
-    if async_saved = false then
+    if !async_context = false then
       Location.raise_errorf ~loc:e.pexp_loc "Await on expression not in an async context";
     let txt = Longident.Ldot (Longident.Ldot (Lident "Js", "Promise"), "unsafe_await") in
     let pexp_desc = Parsetree.Pexp_ident {txt; loc = result.pexp_loc} in
