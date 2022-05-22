@@ -83,24 +83,12 @@ let to_uncurry_fn loc (self : Bs_ast_mapper.mapper) (label : Asttypes.arg_label)
   let first_arg = self.pat self pat in
 
   let result, rev_extra_args = aux [ (label, first_arg) ] body in
-  let result =
-    if async then
-      let txt = Longident.Ldot (Longident.Ldot (Lident "Js", "Promise"), "unsafe_async") in
-      let pexp_desc = Parsetree.Pexp_ident {txt; loc = result.pexp_loc} in
-      {result with pexp_desc = Pexp_apply ({result with pexp_desc}, [(Nolabel, result)])}
-    else result in
+  let result = Ast_async.add_promise_type ~async result in
   let body =
     Ext_list.fold_left rev_extra_args result (fun e (label, p) ->
         Ast_helper.Exp.fun_ ~loc label None p e)
   in
-  let body =
-    if async then
-      {
-        body with
-        pexp_attributes = [ ({ txt = "async"; loc = Location.none }, PStr []) ];
-      }
-    else body
-  in
+  let body = Ast_async.add_async_attribute ~async body in
 
   let len = List.length rev_extra_args in
   let arity =
