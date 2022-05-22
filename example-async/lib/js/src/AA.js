@@ -213,6 +213,10 @@ async function cc(x, yOpt, z) {
   return (await x + await y | 0) + await z | 0;
 }
 
+async function dd(x, y) {
+  return await x + await y | 0;
+}
+
 var fetchAndCount = ff;
 
 exports.tests = tests;
@@ -241,4 +245,5 @@ exports.testFetchMany = testFetchMany;
 exports.runAllTests = runAllTests;
 exports.bb = bb;
 exports.cc = cc;
+exports.dd = dd;
 /*  Not a pure module */

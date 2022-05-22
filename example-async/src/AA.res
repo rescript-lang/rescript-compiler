@@ -181,6 +181,8 @@ let bb = @async x => @await x
 
 let cc = @async (x, ~y=x, z) => @await x + @await y + @await z
 
+let dd = @async x => {y => @await x + @await y}
+
 //
 //
 // Errors
