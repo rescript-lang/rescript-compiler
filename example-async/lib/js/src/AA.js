@@ -217,6 +217,10 @@ async function dd(x, y) {
   return await x + await y | 0;
 }
 
+async function ee(x, y) {
+  return await x + await y | 0;
+}
+
 var fetchAndCount = ff;
 
 exports.tests = tests;
@@ -246,4 +250,5 @@ exports.runAllTests = runAllTests;
 exports.bb = bb;
 exports.cc = cc;
 exports.dd = dd;
+exports.ee = ee;
 /*  Not a pure module */
