@@ -4,6 +4,7 @@
 var Js_exn = require("rescript/lib/js/js_exn.js");
 var Belt_List = require("rescript/lib/js/belt_List.js");
 var Caml_array = require("rescript/lib/js/caml_array.js");
+var Caml_option = require("rescript/lib/js/caml_option.js");
 var Caml_exceptions = require("rescript/lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("rescript/lib/js/caml_js_exceptions.js");
 
@@ -203,6 +204,15 @@ async function runAllTests(n) {
 
 runAllTests(0);
 
+async function bb(x) {
+  return await x;
+}
+
+async function cc(x, yOpt, z) {
+  var y = yOpt !== undefined ? Caml_option.valFromOption(yOpt) : x;
+  return (await x + await y | 0) + await z | 0;
+}
+
 var fetchAndCount = ff;
 
 exports.tests = tests;
@@ -229,4 +239,6 @@ exports.AsyncList = AsyncList;
 exports.fetchAndCount = fetchAndCount;
 exports.testFetchMany = testFetchMany;
 exports.runAllTests = runAllTests;
+exports.bb = bb;
+exports.cc = cc;
 /*  Not a pure module */
