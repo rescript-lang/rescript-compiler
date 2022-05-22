@@ -77,7 +77,6 @@ let pat_mapper (self : mapper) (e : Parsetree.pattern) =
     {e with ppat_desc = Ppat_constant (Pconst_integer(s,None))}
   | _ -> default_pat_mapper  self e 
 let expr_mapper ~async_context (self : mapper) (e : Parsetree.expression) =
-  let async_saved = !async_context in
   match e.pexp_desc with
   (* Its output should not be rewritten anymore *)
   | Pexp_extension extension ->
@@ -115,21 +114,16 @@ let expr_mapper ~async_context (self : mapper) (e : Parsetree.expression) =
          | Invalid_argument -> 1
        ]}*)
     async_context := false;
-    let result =
     (match Ast_attributes.process_pexp_fun_attributes_rev e.pexp_attributes with
      | false, _ ->
        default_expr_mapper self  e
      | true, pexp_attributes ->
-       Ast_bs_open.convertBsErrorFunction e.pexp_loc self  pexp_attributes cases);
-    in
-    async_context := async_saved;
-    result
+       Ast_bs_open.convertBsErrorFunction e.pexp_loc self  pexp_attributes cases)
 
   | Pexp_fun (label, _, pat , body)
     ->
     async_context := false;
     let async = Ast_attributes.has_async_payload e.pexp_attributes <> None in
-    let result =
     begin match Ast_attributes.process_attributes_rev e.pexp_attributes with
       | Nothing, _ ->
         if async then
@@ -149,9 +143,6 @@ let expr_mapper ~async_context (self : mapper) (e : Parsetree.expression) =
         {e with pexp_desc = Ast_uncurry_gen.to_method_callback e.pexp_loc  self label pat body ;
                 pexp_attributes }
     end
-    in
-    async_context := async_saved;
-    result
   | Pexp_apply (fn, args  ) ->
     Ast_exp_apply.app_exp_mapper e self fn args
   | Pexp_object {pcstr_self;  pcstr_fields} ->
@@ -210,7 +201,9 @@ let expr_mapper ~async_context (self : mapper) (e : Parsetree.expression) =
   | _ ->  default_expr_mapper self e
 
 let expr_mapper ~async_context (self : mapper) (e : Parsetree.expression) =
+  let async_saved = !async_context in
   let result = expr_mapper ~async_context self e in
+  async_context := async_saved;
   match Ast_attributes.has_await_payload e.pexp_attributes with
   | None -> result
   | Some _ ->
