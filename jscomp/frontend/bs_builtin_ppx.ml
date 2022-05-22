@@ -209,10 +209,7 @@ let expr_mapper ~async_context (self : mapper) (e : Parsetree.expression) =
   | Some _ ->
     if !async_context = false then
       Location.raise_errorf ~loc:e.pexp_loc "Await on expression not in an async context";
-    let txt = Longident.Ldot (Longident.Ldot (Lident "Js", "Promise"), "unsafe_await") in
-    let pexp_desc = Parsetree.Pexp_ident {txt; loc = result.pexp_loc} in
-    {result with pexp_desc = Pexp_apply ({result with pexp_desc}, [(Nolabel, result)])}
-
+    Ast_await.create_await_expression result
 
 let typ_mapper (self : mapper) (typ : Parsetree.core_type) = 
   Ast_core_type_class_type.typ_mapper self typ
