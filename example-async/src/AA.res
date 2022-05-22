@@ -175,6 +175,14 @@ runAllTests(. 0)->ignore
 
 //
 //
+// Curried functions
+
+let bb = @async x => @await x
+
+let cc = @async (x, ~y=x, z) => @await x + @await y + @await z
+
+//
+//
 // Errors
 
 // let aa =
@@ -184,4 +192,4 @@ runAllTests(. 0)->ignore
 //     cb
 //   }
 
-// let bb = @async x => x // Error: Async can only be applied to uncurried function
+// let _ = @async (_, . x) => @await x // Error: Await on expression not in an async context
