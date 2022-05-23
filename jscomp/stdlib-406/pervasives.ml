@@ -15,6 +15,9 @@
 
 (* type 'a option = None | Some of 'a *)
 
+(* Internal *)
+external __unsafe_cast : 'a -> 'b = "%identity"
+
 (* Exceptions *)
 
 external raise : exn -> 'a = "%raise"
