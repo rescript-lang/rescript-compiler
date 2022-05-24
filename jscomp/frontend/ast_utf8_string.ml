@@ -25,7 +25,6 @@
 type error =
   | Invalid_code_point
   | Unterminated_backslash
-  | Invalid_escape_code of char
   | Invalid_hex_escape
   | Invalid_unicode_escape
   | Invalid_unicode_codepoint_escape
@@ -36,7 +35,6 @@ let pp_error fmt err =
   match err with
   | Invalid_code_point -> "Invalid code point"
   | Unterminated_backslash -> "\\ ended unexpectedly"
-  | Invalid_escape_code c -> "Invalid escape code: " ^ String.make 1 c
   | Invalid_hex_escape -> "Invalid \\x escape"
   | Invalid_unicode_escape -> "Invalid \\u escape"
   | Invalid_unicode_codepoint_escape ->
@@ -109,7 +107,11 @@ and escape_code loc buf s offset s_len =
   | 'x' ->
       Buffer.add_char buf cur_char;
       two_hex (loc + 1) buf s (offset + 1) s_len
-  | _ -> error ~loc (Invalid_escape_code cur_char)
+  | _ ->
+      (* Regular characters, like `a` in `\a`,
+       * are valid escape sequences *)
+      Buffer.add_char buf cur_char;
+      check_and_transform (loc + 1) buf s (offset + 1) s_len
 
 and two_hex loc buf s offset s_len =
   if offset + 1 >= s_len then error ~loc Invalid_hex_escape;
