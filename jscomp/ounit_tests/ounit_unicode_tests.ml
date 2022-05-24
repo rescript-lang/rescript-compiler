@@ -48,6 +48,9 @@ let suites =
             "\\n" =~ "\\n"
         end;
         __LOC__ >:: begin fun _ ->
+            Ast_utf8_string.transform_test {|\h\e\l\lo \"world\"!|} =~ {|\h\e\l\lo \"world\"!|}
+        end;
+        __LOC__ >:: begin fun _ ->
             Ast_utf8_string.transform_test "\\u{1d306}" =~ "\\u{1d306}"
         end;
         __LOC__ >:: begin fun _ ->
