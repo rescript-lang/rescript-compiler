@@ -57,3 +57,13 @@ jobs:
     - name: Run tests (Windows)
       if: runner.os == 'Windows'
       run: opam exec -- node scripts/ciTest.js -mocha -theme
+
+    - name: Get artifact info
+      id: get_artifact_info
+      run: node .github/workflows/get_artifact_info.js
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ steps.get_artifact_info.outputs.artifact_name }}
+        path: ${{ steps.get_artifact_info.outputs.artifact_path }}
