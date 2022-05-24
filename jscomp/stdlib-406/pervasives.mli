@@ -25,6 +25,9 @@
 *)
 
 
+(* Internal *)
+external __unsafe_cast : 'a -> 'b = "%identity"
+
 (** {1 Exceptions} *)
 
 external raise : exn -> 'a = "%raise"

@@ -25,7 +25,7 @@
 let isCamlExceptionOrOpenVariant : Longident.t =
   Ldot (Ldot (Lident "Js", "Exn"), "isCamlExceptionOrOpenVariant")
 
-let obj_magic : Longident.t = Ldot (Lident "Obj", "magic")
+let obj_magic : Longident.t = Lident "__unsafe_cast"
 
 let rec checkCases (cases : Parsetree.case list) = List.iter check_case cases
 

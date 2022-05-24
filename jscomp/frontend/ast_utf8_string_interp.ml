@@ -357,7 +357,7 @@ let concat_exp a_loc x ~(lhs : Parsetree.expression) : Parsetree.expression =
   let loc = Bs_loc.merge a_loc lhs.pexp_loc in
   Ast_compatible.apply_simple ~loc
     (Exp.ident { txt = concat_ident; loc })
-    [ lhs; aux loc x ~to_string_ident:(Longident.Ldot (Lident "Obj", "magic")) ]
+    [ lhs; aux loc x ~to_string_ident:(Longident.Lident "__unsafe_cast") ]
 
 (* Invariant: the [lhs] is always of type string *)
 let rec handle_segments loc (rev_segments : segment list) =
