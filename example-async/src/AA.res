@@ -157,6 +157,44 @@ testFetchMany->addTest
 
 //
 //
+// Fetch with Result type
+module FetchResult = {
+  let fetch =
+    @async
+    (. url) => {
+      switch {@await Fetch.fetch(url)} {
+      | response => Ok(response)
+      | exception JsError(e) => Error(e)
+      }
+    }
+}
+
+let nextFetch = (. _response) => Some("https://github.com/")
+
+let testFetchWithResult =
+  @async
+  (. ()) => {
+    switch @await
+    FetchResult.fetch(. "https://www.google.com") {
+    | Ok(response1) =>
+      Js.log2("FetchResult response1", response1->Fetch.Response.status)
+      switch nextFetch(. response1) {
+      | None => ()
+      | Some(url) =>
+        switch @await
+        FetchResult.fetch(. url) {
+        | Ok(response2) => Js.log2("FetchResult response2", response2->Fetch.Response.status)
+        | Error(_) => ()
+        }
+      }
+    | Error(_) => ()
+    }
+  }
+
+testFetchWithResult->addTest
+
+//
+//
 // Run tests
 
 let rec runAllTests =
