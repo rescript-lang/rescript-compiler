@@ -194,8 +194,8 @@ let testFetchWithResult =
 // // imaginary syntax
 // let testFetchWithResult = async () =>
 //   if let Ok(response1) = await FetchResult.fetch("https://www.google.com")
-//      let Some(url) = nextFetch(response1)
-//      let Ok(response2) = await FetchResult.fetch(url) {
+//      and Some(url) = nextFetch(response1)
+//      and Ok(response2) = await FetchResult.fetch(url) {
 //     Js.log2("FetchResult response2", response2->Fetch.Response.status)
 //   }
 
