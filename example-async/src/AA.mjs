@@ -193,6 +193,55 @@ async function testFetchMany() {
 
 tests.push(testFetchMany);
 
+async function $$fetch$1(url) {
+  var response;
+  try {
+    response = await fetch(url);
+  }
+  catch (raw_e){
+    var e = Caml_js_exceptions.internalToOCamlException(raw_e);
+    if (e.RE_EXN_ID === "JsError") {
+      return {
+              TAG: /* Error */1,
+              _0: e._1
+            };
+    }
+    throw e;
+  }
+  return {
+          TAG: /* Ok */0,
+          _0: response
+        };
+}
+
+var FetchResult = {
+  $$fetch: $$fetch$1
+};
+
+function nextFetch(_response) {
+  return "https://github.com/";
+}
+
+async function testFetchWithResult() {
+  var response1 = await $$fetch$1("https://www.google.com");
+  if (response1.TAG !== /* Ok */0) {
+    return ;
+  }
+  var response1$1 = response1._0;
+  console.log("FetchResult response1", response1$1.status);
+  var url = nextFetch(response1$1);
+  if (url === undefined) {
+    return ;
+  }
+  var response2 = await $$fetch$1(url);
+  if (response2.TAG !== /* Ok */0) {
+    return ;
+  }
+  console.log("FetchResult response2", response2._0.status);
+}
+
+tests.push(testFetchWithResult);
+
 async function runAllTests(n) {
   if (n >= 0 && n < tests.length) {
     await Caml_array.get(tests, n)();
@@ -246,6 +295,9 @@ export {
   AsyncList ,
   fetchAndCount ,
   testFetchMany ,
+  FetchResult ,
+  nextFetch ,
+  testFetchWithResult ,
   runAllTests ,
   bb ,
   cc ,
