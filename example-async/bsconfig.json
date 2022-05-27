@@ -6,6 +6,11 @@
       "subdirs": true
     }
   ],
+  "package-specs": {
+    "module": "es6",
+    "in-source": true
+  },
+  "suffix": ".mjs",
   "bsc-flags": ["-w -33-44"],
   "bs-dependencies": ["@rescript/react", "bs-fetch"],
   "reason": { "react-jsx": 3 }
