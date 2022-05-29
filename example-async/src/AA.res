@@ -74,14 +74,23 @@ let nestedPromise =
 //
 // Test error handling in fetch
 
+module Fetch = {
+  @raises(JsError)
+  let fetch = url => Fetch.fetch(url)
+
+  @raises([])
+  let status = response => Fetch.Response.status(response)
+}
+
 let explainError: unknown => string = %raw(`(e)=>e.toString()`)
 
 let testFetch =
   @async
   (. url) => {
-    switch {@await Fetch.fetch(url)} {
+    open Fetch
+    switch {@await fetch(url)} {
     | response =>
-      let status = response->Fetch.Response.status
+      let status = response->status
       Js.log2("Fetch returned status:", status)
     | exception JsError(e) => Js.log2("Fetch returned an error:", e->explainError)
     }
@@ -132,7 +141,7 @@ let fetchAndCount = {
     (. url) => {
       let response = @await Fetch.fetch(url)
       counter := counter.contents + 1
-      (counter.contents, response->Fetch.Response.status)
+      (counter.contents, response->Fetch.status)
     }
 
   ff
@@ -177,13 +186,13 @@ let testFetchWithResult =
     switch @await
     FetchResult.fetch(. "https://www.google.com") {
     | Ok(response1) =>
-      Js.log2("FetchResult response1", response1->Fetch.Response.status)
+      Js.log2("FetchResult response1", response1->Fetch.status)
       switch nextFetch(. response1) {
       | None => ()
       | Some(url) =>
         switch @await
         FetchResult.fetch(. url) {
-        | Ok(response2) => Js.log2("FetchResult response2", response2->Fetch.Response.status)
+        | Ok(response2) => Js.log2("FetchResult response2", response2->Fetch.status)
         | Error(_) => ()
         }
       }

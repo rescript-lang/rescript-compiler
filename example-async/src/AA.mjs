@@ -102,6 +102,19 @@ async function nestedPromise(x) {
   return 32;
 }
 
+function $$fetch$1(url) {
+  return fetch(url);
+}
+
+function status(response) {
+  return response.status;
+}
+
+var Fetch = {
+  $$fetch: $$fetch$1,
+  status: status
+};
+
 var explainError = ((e)=>e.toString());
 
 async function testFetch(url) {
@@ -193,7 +206,7 @@ async function testFetchMany() {
 
 tests.push(testFetchMany);
 
-async function $$fetch$1(url) {
+async function $$fetch$2(url) {
   var response;
   try {
     response = await fetch(url);
@@ -215,7 +228,7 @@ async function $$fetch$1(url) {
 }
 
 var FetchResult = {
-  $$fetch: $$fetch$1
+  $$fetch: $$fetch$2
 };
 
 function nextFetch(_response) {
@@ -223,7 +236,7 @@ function nextFetch(_response) {
 }
 
 async function testFetchWithResult() {
-  var response1 = await $$fetch$1("https://www.google.com");
+  var response1 = await $$fetch$2("https://www.google.com");
   if (response1.TAG !== /* Ok */0) {
     return ;
   }
@@ -233,7 +246,7 @@ async function testFetchWithResult() {
   if (url === undefined) {
     return ;
   }
-  var response2 = await $$fetch$1(url);
+  var response2 = await $$fetch$2(url);
   if (response2.TAG !== /* Ok */0) {
     return ;
   }
@@ -288,6 +301,7 @@ export {
   testTryCatch ,
   singlePromise ,
   nestedPromise ,
+  Fetch ,
   explainError ,
   testFetch ,
   withCallback ,
