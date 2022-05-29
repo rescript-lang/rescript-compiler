@@ -1,5 +1,8 @@
 {
   "name": "example-async",
+  "reanalyze": {
+    "analysis": ["exception"]
+  },
   "sources": [
     {
       "dir": "src",
