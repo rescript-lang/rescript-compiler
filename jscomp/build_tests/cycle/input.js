@@ -1,7 +1,13 @@
 //@ts-check
-var cp = require("child_process");
-var assert = require("assert");
+const cp = require("child_process");
+const assert = require("assert");
+const fs = require('fs')
+const path = require('path')
 
 var output = cp.spawnSync(`rescript`, { encoding: "utf8", shell: true });
 
 assert(/dependency cycle/.test(output.stdout));
+
+var compilerLogFile = path.join(__dirname, 'lib', 'bs', '.compiler.log');
+var compilerLog = fs.readFileSync(compilerLogFile, 'utf8');
+assert(/dependency cycle/.test(compilerLog));
