@@ -77,9 +77,9 @@
                 "analysis": {
                     "type": "array",
                     "items": {
-                        "enum": ["dce", "exception"]
+                        "enum": ["dce", "exception", "termination"]
                     },
-                    "description": "The types of analysis to activate. `dce` means dead code analysis, and `exception` means exception analysis."
+                    "description": "The types of analysis to activate. `dce` means dead code analysis, `exception` means exception analysis, and `termination` is to check for infinite loops."
                 },
                 "suppress": {
                     "type": "array",
