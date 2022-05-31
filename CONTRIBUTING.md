@@ -43,7 +43,7 @@ npm install
 
 ## Initialize submodules
 
-After a frech checkout or deep clean, do:
+After a fresh checkout or deep clean, do:
 
 ```
 git submodule init
