@@ -339,14 +339,14 @@
                     "type" : "string"
                 }
             },
-            "description": "path to gentype, path resolution is similar to reason"
+            "description": "path to gentype, path resolution is similar to ReScript"
         },
         "reason-specs": {
             "type": "object",
             "properties": {
                 "react-jsx": {
                     "$ref": "#/definitions/react-jsx-version",
-                    "description": "Whether to apply the [Reason-React](https://github.com/reasonml/reason-react)-specific JSX PPX transformation."
+                    "description": "Whether to apply the [RescriptReact](https://github.com/rescript-lang/rescript-react)-specific JSX PPX transformation."
                 }
             }
         },
@@ -400,7 +400,7 @@
     "properties": {
         "version": {
             "type": "string",
-            "description": "The semantic version of the OCaml library"
+            "description": "The semantic version of the ReScript library"
         },
         "name": {
             "type": "string",
@@ -423,11 +423,11 @@
         },
         "bs-dependencies": {
             "$ref": "#/definitions/dependencies",
-            "description": "OCaml/Reason dependencies of the library, like in package.json. Currently searches in `node_modules`"
+            "description": "ReScript dependencies of the library, like in package.json. Currently searches in `node_modules`"
         },
         "bs-dev-dependencies": {
             "$ref": "#/definitions/dependencies",
-            "description": "OCaml/Reason dev dependencies of the library, like in package.json. Currently searches in `node_modules`"
+            "description": "ReScript dev dependencies of the library, like in package.json. Currently searches in `node_modules`"
         },
         "pinned-dependencies" : {
             "$ref": "#/definitions/dependencies",
