@@ -41,6 +41,15 @@ opam switch create 4.12.1
 npm install
 ```
 
+## Initialize submodules
+
+After a frech checkout or deep clean, do:
+
+```
+git submodule init
+git submodule update
+```
+
 ## Configure and Build the Compiler (`ninja` workflow)
 
 > Note: These instructions allow you to do full builds of the project. In case you only want to build the project for development purposes, you can use the `dune` workflow.
