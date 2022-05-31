@@ -71,6 +71,32 @@
                 }
             ]
         },
+        "reanalyze": {
+            "type": "object",
+            "properties": {
+                "analysis": {
+                    "type": "array",
+                    "items": {
+                        "enum": ["dce", "exception"]
+                    },
+                    "description": "The types of analysis to activate. `dce` means dead code analysis, and `exception` means exception analysis."
+                },
+                "suppress": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Paths for any folders you'd like to exclude from analysis. Useful for bindings and similar. Example: `[\"src/bindings\"]`."
+                },
+                "unsuppress": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Any specific paths inside suppressed folders that you want to unsuppress. Example: [\"src/bindings/SomeBinding.res\"]."
+                }
+            }
+        },
         "react-jsx-version": {
             "title": "jsx-version",
             "type": "number",
@@ -493,6 +519,10 @@
         },
         "suffix" : {
             "$ref" : "#/definitions/suffix-spec"
+        },
+        "reanalyze": {
+            "$ref": "#/definitions/reanalyze",
+            "description": "Configure reanalyze, a static code analysis tool for ReScript."
         }
     },
     "additionalProperties": false,
