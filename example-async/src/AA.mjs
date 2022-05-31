@@ -184,22 +184,23 @@ async function ff(url) {
 }
 
 async function testFetchMany() {
-  return Belt_List.forEach(await map({
-                  hd: "https://www.google.com",
-                  tl: {
-                    hd: "https://www.google.com",
-                    tl: {
-                      hd: "https://www.google.com",
-                      tl: {
-                        hd: "https://www.google.com",
-                        tl: {
-                          hd: "https://www.google.com",
-                          tl: /* [] */0
-                        }
-                      }
-                    }
-                  }
-                }, ff), (function (param) {
+  var fetchedItems = await map({
+        hd: "https://www.google.com",
+        tl: {
+          hd: "https://www.google.com",
+          tl: {
+            hd: "https://www.google.com",
+            tl: {
+              hd: "https://www.google.com",
+              tl: {
+                hd: "https://www.google.com",
+                tl: /* [] */0
+              }
+            }
+          }
+        }
+      }, ff);
+  return Belt_List.forEach(fetchedItems, (function (param) {
                 console.log("Fetched", param[0], param[1]);
               }));
 }

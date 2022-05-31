@@ -75,10 +75,9 @@ let nestedPromise =
 // Test error handling in fetch
 
 module Fetch = {
-  @raises(JsError)
+  //@raises(JsError)
   let fetch = url => Fetch.fetch(url)
 
-  @raises([])
   let status = response => Fetch.Response.status(response)
 }
 
@@ -149,19 +148,21 @@ let fetchAndCount = {
 
 let testFetchMany =
   @async
-  (. ()) =>
-    @await
-    AsyncList.map(.
-      list{
-        "https://www.google.com",
-        "https://www.google.com",
-        "https://www.google.com",
-        "https://www.google.com",
-        "https://www.google.com",
-      },
-      fetchAndCount,
-    )->Belt.List.forEach(((i, s)) => Js.log3("Fetched", i, s))
-
+  (. ()) => {
+    let fetchedItems =
+      @await
+      AsyncList.map(.
+        list{
+          "https://www.google.com",
+          "https://www.google.com",
+          "https://www.google.com",
+          "https://www.google.com",
+          "https://www.google.com",
+        },
+        fetchAndCount,
+      )
+    fetchedItems->Belt.List.forEach(((i, s)) => Js.log3("Fetched", i, s))
+  }
 testFetchMany->addTest
 
 //
@@ -219,7 +220,7 @@ let rec runAllTests =
   (. n) => {
     if n >= 0 && n < Array.length(tests) {
       @await
-      tests[n](.)
+      (@doesNotRaise tests[n])(.)
 
       @await
       runAllTests(. n + 1)
