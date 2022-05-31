@@ -118,6 +118,8 @@ The simplest way for running tests is to run your locally built compiler on sepa
 If you'd like to bundle up and use your modified ReScript like an end-user, try:
 
 ```sh
+node scripts/install -force-lib-rebuild # make sure lib/ocaml is populated
+
 npm uninstall -g rescript # a cache-busting uninstall is needed, but only for npm >=7
 
 # This will globally install your local build via npm
