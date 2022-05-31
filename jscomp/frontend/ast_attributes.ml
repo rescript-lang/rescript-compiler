@@ -292,15 +292,16 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
                                 pexp_desc =
                                   Pexp_constant
                                     (Pconst_string
-                                      (s, ((None | Some "json") as dec)));
+                                      (s, ((None | Some "json"| Some "*j") as dec)));
                                 pexp_loc;
                                 _;
                               },
                               _ );
                         _;
                       };
-                    ] ->
-                    if dec = None then st := Some (Str s)
+                    ]
+                     ->
+                    if dec = None || dec = Some "*j" then st := Some (Str s)
                     else (
                       (match
                          Classify_function.classify
@@ -313,7 +314,7 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
                           Location.raise_errorf ~loc:pexp_loc
                             "an object literal expected");
                       st := Some (Js_literal_str s))
-                | _ -> Bs_syntaxerr.err loc Expect_int_or_string_or_json_literal
+                | _ -> Bs_syntaxerr.err loc (Expect_int_or_string_or_json_literal)
                 )
             | Some v -> st := Some (Int v))
           else Bs_syntaxerr.err loc Duplicated_bs_as
