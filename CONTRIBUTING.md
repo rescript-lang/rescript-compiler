@@ -225,17 +225,17 @@ opam install js_of_ocaml.4.0.0
 
 ### Building the Bundle
 
-The entry point of the JSOO bundle is located in `jscomp/main/jsoo_refmt_main.ml`, the code for packing the compiler into a single compiler file is located in `jscomp/snapshot.ninja`, and the script for running JSOO can be found in `scripts/repl.js`. A full clean build can be done like this:
+The entry point of the JSOO bundle is located in `jscomp/main/jsoo_playground_main.ml`, the code for packing the compiler into a single compiler file is located in `jscomp/snapshot.ninja`, and the script for running JSOO can be found in `scripts/repl.js`. A full clean build can be done like this:
 
 ```
 # We create a target directory for storing the bundle / stdlib files
 mkdir playground && mkdir playground/stdlib
 
-# We build the ReScript source code and also the bytecode for jsoo_refmt_main.ml
+# We build the ReScript source code and also the bytecode for the JSOO entrypoint
 node scripts/ninja.js config && node scripts/ninja.js build
 
 # Now we run the repl.js script pointing to our playground directory (note how it needs to be relative to the repl.js file)
-PLAYGROUND=../playground node scripts/repl.js js_refmt_compiler
+PLAYGROUND=../playground node scripts/repl.js
 ```
 
 _Troubleshooting: if ninja build step failed with `Error: cannot find file '+runtime.js'`, make sure `ocamlfind` is installed with `opam install ocamlfind`._
@@ -258,7 +258,7 @@ $ node
 
 ### Playground JS bundle API
 
-As soon as the bundle is loaded, you will get access to the functions exposed in [`jsoo_refmt_main.ml`](jscomp/refmt/jsoo_refmt_main.ml). Best way to check out the API is by inspecting a compiler instance it either in node, or in the browser:
+As soon as the bundle is loaded, you will get access to the functions exposed in [`jsoo_playground_main.ml`](jscomp/main/jsoo_playground_main.ml). Best way to check out the API is by inspecting a compiler instance it either in node, or in the browser:
 
 ```
 $ node
@@ -270,7 +270,7 @@ require('./exports.js')
 
 ### Working on the Playground JS API
 
-Whenever you are modifying any files in the ReScript compiler, or in the `jsoo_refmt_main.ml` file, you'll need to rebuild the source and recreate the JS bundle.
+Whenever you are modifying any files in the ReScript compiler, or in the `jsoo_playground_main.ml` file, you'll need to rebuild the source and recreate the JS bundle.
 
 ```sh
 node scripts/ninja.js config && node scripts/ninja.js build
