@@ -10,9 +10,17 @@
  *
  * ```
  * mkdir playground && mkdir playground/stdlib
- * PLAYGROUND=../playground node scripts/repl.js js_playground_compiler
+ * PLAYGROUND=../playground node scripts/repl.js
  * ```
  *
+ * You may also pass an alternative JSOO entrypoint (we have multiple defined
+ * in `jscomp/snapshot.ninja`) as a first parameter:
+ *
+ * ```
+ * # Builds the "simpler" JS bundle
+ * mkdir playground && mkdir playground/stdlib
+ * PLAYGROUND=../playground node scripts/repl.js js_compiler
+ * ```
  */
 
 //@ts-check
