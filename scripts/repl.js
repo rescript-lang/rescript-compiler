@@ -63,7 +63,7 @@ function prepare(isDev, targetCompilerFile) {
   var [env, ocamlFlag, jsooFlag] = isDev
     ? ["development", "-g ", "--pretty "]
     : ["production", "", ""];
-  console.log(`building byte code version of the compiler [${env}]`);
+  console.log(`building byte code version of target compiler file '${targetCompilerFile}' [${env}]`);
 
   const mliFile = path.join(sourceDir, targetCompilerFile + ".mli")
   const mlFile = path.join(sourceDir, targetCompilerFile + ".ml")
@@ -74,7 +74,7 @@ function prepare(isDev, targetCompilerFile) {
   e(
     `${OCAMLC} ${ocamlFlag}-w -30-40 -no-check-prims -I ${sourceDir} ${mliFile} ${mlFile} -o jsc.byte `
   );
-  console.log("building js version");
+  console.log(`building js version for compiler target '${targetCompilerFile}'`);
   e(`${JSOO} compile jsc.byte ${jsooFlag}-o exports.js`);
   console.log("copy js artifacts");
   e(`cp ../lib/js/*.js ${playground}/stdlib`);
@@ -108,7 +108,7 @@ function prepublish() {
 }
 
 // Relevant target compiler files can be found in jscomp/snapshot.ninja
-let targetCompilerFile = "js_compiler"
+let targetCompilerFile = "js_playground_compiler"
 
 // Let's derive the target file to compile from the last argument list.
 if(process.argv.length > 2) {
