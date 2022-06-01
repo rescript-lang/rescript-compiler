@@ -1,4 +1,16 @@
 `*` means  potential break changes
+
+# master
+
+**Compiler**
+
+**Syntax**
+
+**Playground**
+
+- Added `jsoo_playground_main.ml` as the rescript-lang.org playground bundle entrypoint
+- `*` Removed Reason syntax support for the playground experience (see https://github.com/rescript-lang/rescript-compiler/pull/5375)
+
 # 9.1.4
 
 ## Build
