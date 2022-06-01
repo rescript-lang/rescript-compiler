@@ -38,6 +38,16 @@ module Js = struct
   external create_file : js_string t -> js_string t -> unit = "caml_create_file"
 
   external to_bytestring : js_string t -> string = "caml_js_to_byte_string"
+
+  type number
+
+  external number_of_float : float -> number t = "caml_js_from_float"
+
+  external bool : bool -> bool t = "caml_js_from_bool"
+
+  type 'a js_array
+
+  external array : 'a array -> 'a js_array t = "caml_js_from_array"
 end
 
 let mk_js_error (loc : Location.t) (msg : string) =

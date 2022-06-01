@@ -1,5 +1,20 @@
 #!/usr/bin/env node
 
+
+/*
+ * This script is used to compile a bundled compiler file into a standalone JS bundle.
+ * The compiled output (including the compiled stdlib files), will be put in the defined
+ * `PLAYGROUND` directory.
+ *
+ * Example:
+ *
+ * ```
+ * mkdir playground && mkdir playground/stdlib
+ * PLAYGROUND=../playground node scripts/repl.js js_playground_compiler
+ * ```
+ *
+ */
+
 //@ts-check
 var child_process = require("child_process");
 var fs = require("fs");
@@ -43,15 +58,23 @@ var playground = process.env.PLAYGROUND;
 var OCAMLC = `ocamlc.opt`
 
 var JSOO = `js_of_ocaml`;
-function prepare(isDev) {
+
+function prepare(isDev, targetCompilerFile) {
   var [env, ocamlFlag, jsooFlag] = isDev
     ? ["development", "-g ", "--pretty "]
     : ["production", "", ""];
-  console.log(`building byte code version of the compiler [${env}]`);
+  console.log(`building byte code version of target compiler file '${targetCompilerFile}' [${env}]`);
+
+  const mliFile = path.join(sourceDir, targetCompilerFile + ".mli")
+  const mlFile = path.join(sourceDir, targetCompilerFile + ".ml")
+
+  // There may be a situation where the .mli file doesn't exist (mostly when
+  // the snapshot hasn't been checked into `lib/4.06.1/unstable`
+  e(`touch ${mliFile}`)
   e(
-    `${OCAMLC} ${ocamlFlag}-w -30-40 -no-check-prims -I ${sourceDir} ${sourceDir}/js_compiler.mli ${sourceDir}/js_compiler.ml -o jsc.byte `
+    `${OCAMLC} ${ocamlFlag}-w -30-40 -no-check-prims -I ${sourceDir} ${mliFile} ${mlFile} -o jsc.byte `
   );
-  console.log("building js version");
+  console.log(`building js version for compiler target '${targetCompilerFile}'`);
   e(`${JSOO} compile jsc.byte ${jsooFlag}-o exports.js`);
   console.log("copy js artifacts");
   e(`cp ../lib/js/*.js ${playground}/stdlib`);
@@ -84,7 +107,19 @@ function prepublish() {
   });
 }
 
-prepare(process.argv.includes("-development"));
+// Relevant target compiler files can be found in jscomp/snapshot.ninja
+let targetCompilerFile = "js_playground_compiler"
+
+// Let's derive the target file to compile from the last argument list.
+if(process.argv.length > 2) {
+  const lastArg = process.argv[process.argv.length - 1]
+
+  if(!lastArg.startsWith("-")) {
+    targetCompilerFile = lastArg
+  }
+}
+
+prepare(process.argv.includes("-development"), targetCompilerFile);
 if (process.argv.includes("-prepublish")) {
   prepublish();
 }
