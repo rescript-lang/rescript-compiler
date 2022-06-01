@@ -183,7 +183,6 @@ let format_file input =
     match ext with 
     | Ml | Mli -> `ml
     | Res | Resi -> `res 
-    | Re | Rei -> `refmt (Filename.concat (Filename.dirname Sys.executable_name) "refmt.exe") 
     | _ -> Bsc_args.bad_arg ("don't know what to do with " ^ input) in   
   let formatted =   Res_multi_printer.print syntax ~input in 
   match !Clflags.output_name with 
