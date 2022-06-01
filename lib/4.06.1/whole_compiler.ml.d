@@ -601,8 +601,6 @@
 ../lib/4.06.1/whole_compiler.ml: ./napkin/res_driver.mli
 ../lib/4.06.1/whole_compiler.ml: ./napkin/res_driver_ml_parser.ml
 ../lib/4.06.1/whole_compiler.ml: ./napkin/res_driver_ml_parser.mli
-../lib/4.06.1/whole_compiler.ml: ./napkin/res_driver_reason_binary.ml
-../lib/4.06.1/whole_compiler.ml: ./napkin/res_driver_reason_binary.mli
 ../lib/4.06.1/whole_compiler.ml: ./napkin/res_grammar.ml
 ../lib/4.06.1/whole_compiler.ml: ./napkin/res_io.ml
 ../lib/4.06.1/whole_compiler.ml: ./napkin/res_io.mli
