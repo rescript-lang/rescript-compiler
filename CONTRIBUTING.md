@@ -4,7 +4,7 @@ Welcome to the ReScript compiler project!
 
 This document will give you guidance on how to get up and running to work on the ReScript compiler and toolchain.
 
-(If you want to contribute to the documentation website, check out [rescript-association/rescript-lang.org](See https://github.com/reason-association/rescript-lang.org). For contributions to the ReScript syntax, please visit the [rescript-lang/syntax](https://github.com/rescript-lang/syntax) project.)
+(If you want to contribute to the documentation website, check out [rescript-association/rescript-lang.org](https://github.com/reason-association/rescript-lang.org). For contributions to the ReScript syntax, please visit the [rescript-lang/syntax](https://github.com/rescript-lang/syntax) project.)
 
 We tried to keep the installation process as simple as possible. In case you are having issues or get stuck in the process, please let us know in the issue tracker.
 
