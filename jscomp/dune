@@ -1,4 +1,6 @@
 (dirs
+ bsb
+ bsb_helper
  common
  core
  depends
@@ -8,9 +10,15 @@
  main
  ml
  napkin
+ ounit
+ ounit_tests
  stubs
  outcome_printer
  super_errors)
+
+(copy_files# bsb/*.{ml,mli})
+
+(copy_files# bsb_helper/*.{ml,mli})
 
 (copy_files# common/*.{ml,mli})
 
@@ -30,16 +38,18 @@
 
 (copy_files# napkin/*.{ml,mli})
 
+(copy_files# ounit/*.{ml,mli})
+
+(copy_files# ounit_tests/*.{ml,mli})
+
 (copy_files# stubs/*.{ml,mli,c})
 
 (copy_files# outcome_printer/*.{ml,mli})
 
 (copy_files# super_errors/*.{ml,mli})
 
-(executable
- (public_name bsc.exe)
- ; The main module that will become the binary.
- (name Rescript_compiler_main)
+(library
+ (name jscomp)
  (flags "-w" "+26+27+32+33+39-deprecated")
  ; Depends on:
  (libraries unix str)
