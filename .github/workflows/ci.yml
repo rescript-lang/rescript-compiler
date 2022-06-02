@@ -32,7 +32,7 @@ jobs:
         submodules: true
 
     - name: Use OCaml 4.14.0
-      uses: ocaml/setup-ocaml@v2
+      uses: AbstractMachinesLab/setup-ocaml@arm-support
       with:
         ocaml-compiler: 4.14.0
         opam-pin: false
