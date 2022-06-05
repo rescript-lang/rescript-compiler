@@ -11,7 +11,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [macos-latest, ubuntu-latest, windows-latest, macos-arm]
+        ocaml_compiler: [4.14.0]
 
     runs-on: ${{matrix.os}}
 
@@ -31,10 +32,19 @@ jobs:
       with:
         submodules: true
 
-    - name: Use OCaml 4.14.0
+    - name: Use OCaml ${{matrix.ocaml_compiler}}
+      if: runner.name != 'macos-arm'
       uses: ocaml/setup-ocaml@v2
       with:
-        ocaml-compiler: 4.14.0
+        ocaml-compiler: ${{matrix.ocaml_compiler}}
+        opam-pin: false
+        opam-depext: false
+
+    - name: Use OCaml ${{matrix.ocaml_compiler}}
+      if: runner.name == 'macos-arm'
+      uses: AbstractMachinesLab/setup-ocaml@arm-support
+      with:
+        ocaml-compiler: ${{matrix.ocaml_compiler}}
         opam-pin: false
         opam-depext: false
 
@@ -47,8 +57,12 @@ jobs:
       run: opam exec -- npm ci
 
     - name: Run tests (macOS)
-      if: runner.os == 'macOS'
+      if: runner.name == 'macos-latest'
       run: opam exec -- node scripts/ciTest.js -all
+
+    - name: Run tests (macos-arm)
+      if: runner.name == 'macos-arm'
+      run: opam exec -- node scripts/ciTest.js -ounit -mocha -theme
     
     - name: Run tests (Linux)
       if: runner.os == 'Linux'
