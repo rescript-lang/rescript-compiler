@@ -135,7 +135,7 @@ function checkPrebuiltBscCompiler() {
 
     return myOCamlVersion;
   } catch (e) {
-    console.log("No working prebuilt buckleScript compiler");
+    console.log("No working prebuilt ReScript compiler");
     if (is_windows) {
       throw new Error("no prebuilt bsc compiler on windows");
     }
