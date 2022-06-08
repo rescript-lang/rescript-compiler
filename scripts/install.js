@@ -47,7 +47,8 @@ function provideNinja() {
     console.log(`building ninja`);
     ensureExists(ninja_source_dir);
     if (fs.existsSync(path.join(root_dir, "vendor", "ninja.tar.gz"))) {
-      child_process.execSync(`tar xzvf ../ninja.tar.gz`, {
+      console.log("Extracting ninja sources...");
+      child_process.execSync(`tar xzf ../ninja.tar.gz`, {
         cwd: ninja_source_dir,
         stdio: [0, 1, 2],
       });
