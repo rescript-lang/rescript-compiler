@@ -179,25 +179,6 @@ o all: phony runtime others $stdlib
 }
 
 /**
- * works only on *unix
- * used for dev environment or our prebuilt compiler
- * does not work for such version
- * @returns {boolean}
- */
-function checkEnvCompiler() {
-  try {
-    var o = child_process.execSync(`ocamlopt.opt -version`, {
-      encoding: "utf-8",
-    });
-    console.log("checking env compiler");
-    console.log(o);
-    return true;
-  } catch (e) {
-    console.log(e);
-    return false;
-  }
-}
-/**
  * @returns {string}
  */
 function provideCompiler() {
@@ -207,7 +188,7 @@ function provideCompiler() {
   } else {
     var ocamlopt = "ocamlopt.opt";
     myVersion = "4.06.1";
-    if (!checkEnvCompiler()) {
+    if (!require("./buildocaml.js").checkEnvCompiler()) {
       // no compiler available
       var prefix = require("./buildocaml.js").build(true);
       ocamlopt=`${prefix}/bin/${ocamlopt}`

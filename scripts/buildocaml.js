@@ -8,6 +8,25 @@ var ocamlSrcDir = path.join(__dirname, "..", "native");
 var ocamlVersionFilePath = path.join(ocamlSrcDir, "VERSION");
 
 /**
+ * Checks whether an OCaml compiler is available.
+ * If it is, we do not need to build one from the vendored sources.
+ */
+function checkEnvCompiler() {
+  try {
+    var o = cp.execSync(`ocamlopt.opt -version`, {
+      encoding: "utf-8",
+    });
+    console.log("checking env compiler");
+    console.log(o);
+    return true;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+}
+exports.checkEnvCompiler = checkEnvCompiler;
+
+/**
  * Ensures the ocaml folder exists at the root of the project, either from the submodule,
  * or by extracting the vendor/ocaml.tar.gz there
  */
