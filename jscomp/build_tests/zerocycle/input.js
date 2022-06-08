@@ -1,3 +1,4 @@
 var p = require("child_process");
 var assert = require("assert");
-p.spawnSync(`rescript`, { encoding: "utf8", cwd: __dirname });
+var out = p.spawnSync(`rescript`, { encoding: "utf8", cwd: __dirname });
+assert(out.status == 0)
