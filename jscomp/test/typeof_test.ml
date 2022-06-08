@@ -10,7 +10,8 @@ let string_or_number (type t) x =
   | JSFalse | JSTrue -> false
   | JSFunction _ -> Js.log ("Function"); false
   | JSObject _ ->  false
-  | JSSymbol _ ->  false 
+  | JSSymbol _ ->  false
+  | JSBigInt _ ->  false
 
 let suites = Mt.[
     "int_type", (fun _ -> Eq(Js.typeof 3, "number") );

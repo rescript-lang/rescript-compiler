@@ -27,6 +27,9 @@
 type symbol
 (** Js symbol type only available in ES6 *)
 
+type bigint_val
+(** Js bigint type only available in ES2020 *)
+
 type obj_val
 type undefined_val
 (** This type has only one value `undefined` *)
@@ -45,6 +48,7 @@ type _ t =
   | Function : function_val t
   | Object : obj_val t
   | Symbol : symbol t
+  | BigInt : bigint_val t
 
 
 
@@ -58,6 +62,7 @@ type tagged_t =
   | JSFunction of function_val
   | JSObject of obj_val
   | JSSymbol of symbol
+  | JSBigInt of bigint_val
 
 let classify (x : 'a) : tagged_t =
   let ty = Js.typeof x in
@@ -66,7 +71,7 @@ let classify (x : 'a) : tagged_t =
   if x == (Obj.magic Js_null.empty)  then
     JSNull else
   if ty = "number" then
-    JSNumber (Obj.magic x ) else
+    JSNumber (Obj.magic x) else
   if ty = "string" then
     JSString (Obj.magic x) else
   if ty = "boolean" then
@@ -75,9 +80,11 @@ let classify (x : 'a) : tagged_t =
   if ty = "function" then
     JSFunction (Obj.magic x) else
   if ty = "object" then
-    JSObject (Obj.magic x)
-  else
+    JSObject (Obj.magic x) else
+  if ty = "symbol" then
     JSSymbol (Obj.magic x)
+  else
+    JSBigInt (Obj.magic x)
 
 
 let test (type a) (x : 'a) (v : a t) : bool =
@@ -105,5 +112,7 @@ let test (type a) (x : 'a) (v : a t) : bool =
     Js.typeof x = "object"
   | Symbol
     ->
-     Js.typeof x = "symbol"
-
+    Js.typeof x = "symbol"
+  | BigInt
+    ->
+    Js.typeof x = "bigint"
