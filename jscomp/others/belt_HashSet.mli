@@ -23,50 +23,50 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (**
-  A **mutable** Hash set which allows customized [`hash`]() behavior.
+  A **mutable** Hash set which allows customized `hash` behavior.
 
   All data are parameterized by not its only type but also a unique identity in
-  the time of initialization, so that two _HashSets of ints_ initialized with different
-  _hash_ functions will have different type.
+  the time of initialization, so that two _HashSets of ints_ initialized with
+  different _hash_ functions will have different type.
 
   For example:
 
-  ```
-  type t = int
-  module I0 =
-    (val Belt.Id.hashableU
-        ~hash:(fun[@bs] (a : t)  -> a & 0xff_ff)
-        ~eq:(fun[@bs] a b -> a = b)
+  ```res prelude
+  module I0 = unpack(
+    Belt.Id.hashableU(
+      ~hash=(. a: int) => land(a, 65535),
+      ~eq=(. a, b) => a == b,
     )
-  let s0 = make ~id:(module I0) ~hintSize:40
-  module I1 =
-    (val Belt.Id.hashableU
-        ~hash:(fun[@bs] (a : t)  -> a & 0xff)
-        ~eq:(fun[@bs] a b -> a = b)
+  )
+
+  let s0 = Belt.HashSet.make(~id=module(I0), ~hintSize=40)
+
+  module I1 = unpack(
+    Belt.Id.hashableU(
+      ~hash=(. a: int) => land(a, 255),
+      ~eq=(. a, b) => a == b,
     )
-  let s1 = make ~id:(module I1) ~hintSize:40
+  )
+
+  let s1 = Belt.HashSet.make(~id=module(I1), ~hintSize=40)
+
+  Belt.HashSet.add(s1, 0)
+  Belt.HashSet.add(s1, 1)
   ```
 
-  The invariant must be held: for two elements who are _equal_,
-  their hashed value should be the same
+  The invariant must be held: for two elements who are equal, their hashed
+  value should be the same.
 
-  Here the compiler would infer `s0` and `s1` having different type so that
-  it would not mix.
+  Here the compiler would infer `s0` and `s1` having different type so that it
+  would not mix.
 
-  ```
-  val s0 :  (int, I0.identity) t
-  val s1 :  (int, I1.identity) t
-  ```
-
-  We can add elements to the collection:
-
-  ```
-  let () =
-    add s1 0;
-    add s1 1
+  ```res sig
+  let s0: Belt.HashSet.t<int, I0.identity>
+  let s1: Belt.HashSet.t<int, I1.identity>
   ```
 
-  Since this is an mutable data strucure, `s1` will contain two pairs.
+  We can add elements to the collection (see last two lines in the example
+  above). Since this is an mutable data structure, `s1` will contain two pairs.
 *)
 
 
@@ -88,7 +88,6 @@ module String = Belt_HashSetString
 type ('a, 'id) t
 
 (** The type of hash tables from type `'a` to type `'b`. *)
-
 type ('a, 'id) id = ('a, 'id) Belt_Id.hashable
 
 val make:  hintSize:int -> id:('a,'id) id ->  ('a, 'id) t
