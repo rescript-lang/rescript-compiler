@@ -2274,6 +2274,11 @@ let oc_cmi buf namespace source =
 
     When ns is turned on, `B` is interprted as `Ns-B` which is a cyclic dependency,
     it can be errored out earlier
+
+  #5368: It turns out there are many false positives on detecting self-cycles (see: `jscomp/build_tests/zerocycle`)
+         To properly solve this, we would need to `jscomp/ml/depend.ml` because
+           cmi and cmj is broken in the first place (same problem as in ocaml/ocaml#4618).
+         So we will just ignore the self-cycles. Even if there is indeed a self-cycle, it should fail to compile anyway.
 *)
 let oc_deps (ast_file : string) (is_dev : bool) (db : Bsb_db_decode.t)
     (namespace : string option) (buf : Ext_buffer.t) (kind : [ `impl | `intf ])
@@ -2302,9 +2307,11 @@ let oc_deps (ast_file : string) (is_dev : bool) (db : Bsb_db_decode.t)
   while !offset < size do
     let next_tab = String.index_from s !offset magic_sep_char in
     let dependent_module = String.sub s !offset (next_tab - !offset) in
-    if dependent_module = cur_module_name then (
-      prerr_endline ("FAILED: " ^ cur_module_name ^ " has a self cycle");
-      exit 2);
+    if dependent_module = cur_module_name then
+      (*prerr_endline ("FAILED: " ^ cur_module_name ^ " has a self cycle");
+      exit 2*)
+      (* #5368 ignore self dependencies *) ()
+    else
     (match Bsb_db_decode.find db dependent_module is_dev with
     | None -> ()
     | Some { dir_name; case } ->
