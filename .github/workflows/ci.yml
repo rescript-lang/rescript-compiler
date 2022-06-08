@@ -57,11 +57,11 @@ jobs:
       run: opam exec -- npm ci
 
     - name: Run tests (macOS)
-      if: runner.name == 'macos-latest'
+      if: matrix.os == 'macos-latest'
       run: opam exec -- node scripts/ciTest.js -all
 
     - name: Run tests (macos-arm)
-      if: runner.name == 'macos-arm'
+      if: matrix.os == 'macos-arm'
       run: opam exec -- node scripts/ciTest.js -ounit -mocha -theme
     
     - name: Run tests (Linux)
