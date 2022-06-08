@@ -42,15 +42,19 @@ if (all) {
 }
 
 function init() {
-  var vendorOCamlPath = path.join(
-    __dirname,
-    "..",
-    "native",
-    require("./buildocaml.js").getVersionPrefix(),
-    "bin"
-  );
+  if (!require("./buildocaml.js").checkEnvCompiler()) {
+    // No compiler available on path.
+    // Assume that we built the compiler from source beforehand and add it to the path.
+    var vendorOCamlPath = path.join(
+      __dirname,
+      "..",
+      "native",
+      require("./buildocaml.js").getVersionPrefix(),
+      "bin"
+    );
 
-  process.env["PATH"] = vendorOCamlPath + path.delimiter + process.env["PATH"];
+    process.env["PATH"] = vendorOCamlPath + path.delimiter + process.env["PATH"];
+  }
 
   var ninjaPath = path.join(__dirname, "..", process.platform, "ninja.exe");
 
