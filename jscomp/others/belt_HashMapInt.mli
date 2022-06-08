@@ -1,10 +1,14 @@
 (** Specalized when key type is `int`, more efficient than the generic type *)
 
 # 4 "others/hashmap.cppo.mli"
+
+(** Type of the `Belt.HashMap.Int` key. *)
 type key = int
 
 
 # 10 "others/hashmap.cppo.mli"
+
+(** Type of the `Belt.HashMap.Int` *)
 type 'b t
 
 
