@@ -108,7 +108,7 @@ function runTests() {
   // npm config set prefix '~/.npm-global'
   if (installGlobal) {
     console.log("install bucklescript globally");
-    cp.execSync("sudo npm i -g --unsafe-perm . && bsc -bs-internal-check", {
+    cp.execSync("npm i -g --unsafe-perm . && bsc -bs-internal-check", {
       cwd: path.join(__dirname, ".."),
       stdio: [0, 1, 2],
     });
@@ -133,8 +133,9 @@ function runTests() {
       if (!fs.existsSync(path.join(testDir, "input.js"))) {
         console.warn(`input.js does not exist in ${testDir}`);
       } else {
+        console.log("XXX", file)
         // note existsSync test already ensure that it is a directory
-        cp.exec(`node input.js`, { cwd: testDir, encoding: "utf8" }, function (
+        cp.execSync(`node input.js`, { cwd: testDir, encoding: "utf8" }, function (
           error,
           stdout,
           stderr
