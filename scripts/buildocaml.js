@@ -32,7 +32,8 @@ exports.checkEnvCompiler = checkEnvCompiler;
  */
 function ensureOCamlExistsSync() {
   if (!fs.existsSync(ocamlVersionFilePath)) {
-    cp.execSync(`tar xzvf ../vendor/ocaml.tar.gz`, {
+    console.log("Extracting OCaml sources...");
+    cp.execSync(`tar xzf ../vendor/ocaml.tar.gz`, {
       cwd: ocamlSrcDir,
       stdio: [0, 1, 2],
     });
