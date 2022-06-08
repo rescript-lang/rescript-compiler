@@ -1,4 +1,4 @@
-// one-file false positive
+// one-file false positive: https://github.com/rescript-lang/rescript-compiler/issues/5368
 
 module Nested = {
   module Bar = {
