@@ -9,6 +9,14 @@ function checkSpawnOut(out) {
     assert.fail(out.stderr + "\n" + out.stdout);
   }
 }
+
+// Clean beforehand to force its dependency to be rebuilt
+var out = cp.spawnSync(`npx rescript clean`, {
+  encoding: "utf-8",
+  shell: true,
+});
+checkSpawnOut(out);
+
 var out = cp.spawnSync(`npx rescript build`, {
   encoding: "utf-8",
   shell: true,
