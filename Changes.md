@@ -4,7 +4,8 @@
 
 **Compiler**
 
-- #5364 support `@new @variadic`
+- Added support for `@new @variadic` (see https://github.com/rescript-lang/rescript-compiler/pull/5364) 
+- Added support for `@optional` fields in records (see https://github.com/rescript-lang/rescript-compiler/pull/5423)
 
 **Syntax**
 
