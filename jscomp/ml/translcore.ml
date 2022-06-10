@@ -1131,12 +1131,12 @@ and transl_record loc env fields repres opt_init_expr =
             let cl = List.map extract_constant ll in
             match repres with
             | Record_float_unused -> assert false
-            | Record_optional_labels _ ->
-                Lconst
-                  (Const_block (!Lambda.blk_record fields mut Record_optional, cl))
             | Record_regular ->
                 Lconst
                   (Const_block (!Lambda.blk_record fields mut Record_regular, cl))
+            | Record_optional_labels _ ->
+                Lconst
+                  (Const_block (!Lambda.blk_record fields mut Record_optional, cl))
             | Record_inlined { tag; name; num_nonconsts } ->
                 Lconst
                   (Const_block
@@ -1196,7 +1196,7 @@ and transl_record loc env fields repres opt_init_expr =
               let upd =
                 match repres with
                 | Record_float_unused -> assert false
-                | Record_optional_labels _ | Record_regular ->
+                | Record_regular | Record_optional_labels _ ->
                     Psetfield (lbl.lbl_pos, !Lambda.fld_record_set lbl)
                 | Record_inlined _ ->
                     Psetfield (lbl.lbl_pos, Fld_record_inline_set lbl.lbl_name)
