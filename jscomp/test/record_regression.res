@@ -85,14 +85,14 @@ type partiallyOptional = {
 
 let po = {aa: 3, bb: Some(4)}
 
-// module M: {
-//   type partiallyOptional = {
-//     @optional aa: int,
-//     bb: option<int>,
-//   }
-// } = {
-//   type partiallyOptional = {
-//     @optional aa: int,
-//     @optional bb: int,
-//   }
-// }
+module M: {
+  type partiallyOptional = {
+    @optional aa: int,
+    bb: option<int>,
+  }
+} = {
+  type partiallyOptional = {
+    @optional aa: int,
+    @optional bb: int,
+  }
+}
