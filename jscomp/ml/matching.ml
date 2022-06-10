@@ -1596,7 +1596,7 @@ let make_record_matching loc all_labels def = function
           let lbl = all_labels.(pos) in
           let access =
             match lbl.lbl_repres with
-            | Record_regular | Record_object -> 
+            | Record_regular | Record_object | Record_optional_labels _ -> 
               Lprim (Pfield (lbl.lbl_pos, !Lambda.fld_record lbl), [arg], loc) 
             | Record_inlined _ ->
               Lprim (Pfield (lbl.lbl_pos, Fld_record_inline {name = lbl.lbl_name}), [arg], loc)

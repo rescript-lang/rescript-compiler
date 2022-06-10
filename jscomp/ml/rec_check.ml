@@ -258,7 +258,7 @@ let rec expression : Env.env -> Typedtree.expression -> Use.t =
       let use =
         match rep with
         | Record_unboxed _ -> fun x -> x
-        | Record_object | Record_regular | Record_inlined _ | Record_extension
+        | Record_object | Record_optional_labels _ | Record_regular | Record_inlined _ | Record_extension
           ->
             Use.guard
       in

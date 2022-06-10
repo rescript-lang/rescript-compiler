@@ -1864,6 +1864,11 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
     unify_exp env (re exp) (instance env ty_expected);
     exp
   in
+  let label_is_optional ld =
+    match ld.lbl_repres with
+    | Record_object -> is_option_type env ld.lbl_arg
+    | Record_optional_labels lbls -> List.mem ld.lbl_name lbls
+    | _ -> false in
   match sexp.pexp_desc with
   | Pexp_ident lid ->
       begin
@@ -2102,7 +2107,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
             (type_label_a_list loc true env
                (fun (id, ld, exp) k ->
                 let exp =
-                  if ld.lbl_repres = Record_object && is_option_type env ld.lbl_arg then
+                  if label_is_optional ld then
                     {exp with pexp_desc = Pexp_construct ({id with txt = Longident.Lident "Some"}, Some exp)}
                   else exp in
                  k (type_label_exp true env loc ty_record (id, ld, exp)))
@@ -2124,8 +2129,9 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
                     | (lid, _lbl, lbl_exp) ->
                         Overridden (lid, lbl_exp)
                     | exception Not_found ->
-                      if  representation = Record_object 
-                          && is_option_type env lbl.lbl_arg then 
+                      if representation = Record_object 
+                          && is_option_type env lbl.lbl_arg
+                      || label_is_optional lbl then 
                         Overridden ({loc ; txt = Lident lbl.lbl_name},
                         option_none lbl.lbl_arg loc)
                       else 
@@ -2178,7 +2184,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
           (type_label_a_list loc closed env
              (fun (id, ld, exp) k ->
               let exp =
-                if ld.lbl_repres = Record_object && is_option_type env ld.lbl_arg then
+                if label_is_optional ld then
                   {exp with pexp_desc = Pexp_construct ({id with txt = Longident.Lident "Some"}, Some exp)}
                 else exp in
                k (type_label_exp true env loc ty_record (id, ld, exp)))

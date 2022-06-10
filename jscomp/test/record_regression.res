@@ -1,7 +1,6 @@
 // @@config({flags: ["-bs-diagnose"] })
 
-@obj
-type t0 = {x: int, y: option<int>, yy: option<option<int>>, z: int}
+type t0 = {x: int, @optional y: option<int>, @optional yy: option<option<int>>, z: int}
 
 let f1 = {x: 3, z: 2}
 
@@ -9,9 +8,9 @@ let f2 = {x: 3, z: 3, y: 3}
 
 let f3 = {...f1, y: 3}
 
-let f4 =  {...f3, yy: None}
+let f4 = {...f3, yy: None}
 
-let theseTwoShouldBeIdentical = [f4.yy,  Some(None) : option<option<int>>]
+let theseTwoShouldBeIdentical = [f4.yy, (Some(None): option<option<int>>)]
 
 type r = {
   x: int,
@@ -64,11 +63,10 @@ let v: config = {x: 2, z: 3}
 
 let h: config = {...v, y1: 22}
 
-@obj
 type small_config = {
   x: int,
-  y0: option<int>,
-  y1: option<int>,
+  @optional y0: option<int>,
+  @optional y1: option<int>,
   z: int,
 }
 
@@ -78,4 +76,23 @@ let h10: small_config = {...v1, y1: 22}
 
 let h11 = (v1): small_config => {
   {...v1, y1: 22}
+}
+
+type partiallyOptional = {
+  @optional aa: option<int>,
+  bb: option<int>,
+}
+
+let po = {aa: 3, bb: Some(4)}
+
+module M: {
+  type partiallyOptional = {
+    @optional aa: option<int>,
+    bb: option<int>,
+  }
+} = {
+  type partiallyOptional = {
+    @optional aa: option<int>,
+    @optional bb: option<int>,
+  }
 }

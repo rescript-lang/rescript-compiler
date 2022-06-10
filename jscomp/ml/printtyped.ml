@@ -152,6 +152,8 @@ let arg_label i ppf = function
 let record_representation i ppf = let open Types in function
   | Record_regular -> line i ppf "Record_regular\n"
   | Record_object -> line i ppf "Record_object\n"
+  | Record_optional_labels lbls ->
+    line i ppf "Record_optional_labels %s\n" (lbls |> String.concat ", ")
   | Record_unboxed b -> line i ppf "Record_unboxed %b\n" b
   | Record_inlined {tag = i} -> line i ppf "Record_inlined %d\n" i
   | Record_extension -> line i ppf "Record_extension\n"

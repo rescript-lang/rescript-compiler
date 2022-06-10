@@ -396,11 +396,18 @@ let transl_declaration env sdecl id =
         let tcstrs, cstrs = List.split (List.map make_cstr scstrs) in
           Ttype_variant tcstrs, Type_variant cstrs
       | Ptype_record lbls ->
+          let optionalLabels =
+            let hasOptional attrs = Ext_list.exists attrs (fun ({txt },_) -> txt = "optional") in
+            Ext_list.filter_map lbls
+            (fun lbl -> if hasOptional lbl.pld_attributes then Some lbl.pld_name.txt else None) in
+        (* XXX handle @optional here *)
           let lbls, lbls' = transl_labels env true lbls in
           let rep =
             if unbox then Record_unboxed false
             else 
               if Ext_list.exists sdecl.ptype_attributes (fun ({txt },_) -> txt = "obj") then Record_object
+              else if optionalLabels <> []
+              then Record_optional_labels optionalLabels
               else Record_regular
           in
           Ttype_record lbls, Type_record(lbls', rep)

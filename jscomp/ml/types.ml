@@ -155,6 +155,7 @@ and record_representation =
   | Record_unboxed of bool    (* Unboxed single-field record, inlined or not *)
   | Record_inlined of {tag : int; name : string; num_nonconsts : int}               (* Inlined record *)
   | Record_extension                    (* Inlined record under extension *)
+  | Record_optional_labels of string list (* List of optional labels *)
 
 and label_declaration =
   {
@@ -342,6 +343,10 @@ let same_record_representation x y =
   match x with
   | Record_regular -> y = Record_regular
   | Record_object -> y = Record_object
+  | Record_optional_labels lbls -> (
+      match y with
+      | Record_optional_labels lbls2 -> lbls = lbls2
+      | _ -> false)
   | Record_inlined {tag; name; num_nonconsts} -> (
       match y with
       | Record_inlined y ->
