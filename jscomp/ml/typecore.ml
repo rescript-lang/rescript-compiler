@@ -2100,7 +2100,12 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
         let lbl_exp_list =
           wrap_disambiguate "This record expression is expected to have" ty_record
             (type_label_a_list loc true env
-               (fun e k -> k (type_label_exp true env loc ty_record e))
+               (fun (id, ld, exp) k ->
+                let exp =
+                  if ld.lbl_repres = Record_object && is_option_type env ld.lbl_arg then
+                    {exp with pexp_desc = Pexp_construct ({id with txt = Longident.Lident "Some"}, Some exp)}
+                  else exp in
+                 k (type_label_exp true env loc ty_record (id, ld, exp)))
                opath lid_sexp_list)
             (fun x -> x)
         in
@@ -2171,7 +2176,12 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
       let lbl_exp_list =
         wrap_disambiguate "This record expression is expected to have" ty_record
           (type_label_a_list loc closed env
-             (fun e k -> k (type_label_exp true env loc ty_record e))
+             (fun (id, ld, exp) k ->
+              let exp =
+                if ld.lbl_repres = Record_object && is_option_type env ld.lbl_arg then
+                  {exp with pexp_desc = Pexp_construct ({id with txt = Longident.Lident "Some"}, Some exp)}
+                else exp in
+               k (type_label_exp true env loc ty_record (id, ld, exp)))
              opath lid_sexp_list)
           (fun x -> x)
       in
