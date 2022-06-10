@@ -409,7 +409,6 @@ let transl_declaration env sdecl id =
                   {typ with ptyp_desc = Ptyp_constr ({txt = Lident "option"; loc=typ.ptyp_loc}, [typ])}
                 else typ in
               {lbl with  pld_type = typ }) in
-        (* XXX handle @optional here *)
           let lbls, lbls' = transl_labels env true lbls in
           let rep =
             if unbox then Record_unboxed false
