@@ -718,7 +718,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
         | Record_regular ->
             expression_desc cxt ~level f
               (Object (Ext_list.combine_array fields el (fun i -> Js_op.Lit i)))
-        | Record_object ->
+        | Record_optional ->
             let fields =
               Ext_list.array_list_filter_map fields el (fun f x ->
                   match x.expression_desc with

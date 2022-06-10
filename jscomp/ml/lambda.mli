@@ -36,7 +36,7 @@ type loc_kind =
 
 type record_repr = 
   | Record_regular 
-  | Record_object 
+  | Record_optional
 
 type tag_info = 
   | Blk_constructor of {name : string ; num_nonconst : int; tag : int}
