@@ -302,6 +302,7 @@ and record_representation =
   | Record_unboxed of bool    (* Unboxed single-field record, inlined or not *)
   | Record_inlined of { tag : int ; name : string; num_nonconsts : int}              (* Inlined record *)
   | Record_extension                    (* Inlined record under extension *)
+  | Record_optional_labels of string list (* List of optional labels *)
 
 and label_declaration =
   {
