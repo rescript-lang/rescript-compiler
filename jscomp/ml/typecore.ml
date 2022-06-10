@@ -2175,8 +2175,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
       let lbl_exp_list =
         wrap_disambiguate "This record expression is expected to have" ty_record
           (type_label_a_list loc closed env
-             (fun e k ->
-               k (type_label_exp true env loc ty_record (process_optional_label e)))
+             (fun e k -> k (type_label_exp true env loc ty_record (process_optional_label e)))
              opath lid_sexp_list)
           (fun x -> x)
       in
