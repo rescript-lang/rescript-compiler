@@ -150,11 +150,12 @@ and type_kind =
   | Type_open
 
 and record_representation =
-    Record_regular                      (* All fields are boxed / tagged *)
-  | Record_object                       (* None fileds can be omitted *)
-  | Record_unboxed of bool    (* Unboxed single-field record, inlined or not *)
-  | Record_inlined of {tag : int; name : string; num_nonconsts : int}               (* Inlined record *)
-  | Record_extension                    (* Inlined record under extension *)
+  | Record_regular                        (* All fields are boxed / tagged *)
+  | Record_float_unused                   (* Was: all fields are floats. Now: unused *)
+  | Record_unboxed of bool                (* Unboxed single-field record, inlined or not *)
+  | Record_inlined of                     (* Inlined record *)
+      { tag : int ; name : string; num_nonconsts : int}
+  | Record_extension                      (* Inlined record under extension *)
   | Record_optional_labels of string list (* List of optional labels *)
 
 and label_declaration =
@@ -342,7 +343,7 @@ type label_description =
 let same_record_representation x y =
   match x with
   | Record_regular -> y = Record_regular
-  | Record_object -> y = Record_object
+  | Record_float_unused -> y = Record_float_unused
   | Record_optional_labels lbls -> (
       match y with
       | Record_optional_labels lbls2 -> lbls = lbls2
