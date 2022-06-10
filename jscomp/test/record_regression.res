@@ -1,6 +1,6 @@
 // @@config({flags: ["-bs-diagnose"] })
 
-type t0 = {x: int, @optional y: option<int>, @optional yy: option<option<int>>, z: int}
+type t0 = {x: int, @optional y: int, @optional yy: option<int>, z: int}
 
 let f1 = {x: 3, z: 2}
 
@@ -65,8 +65,8 @@ let h: config = {...v, y1: 22}
 
 type small_config = {
   x: int,
-  @optional y0: option<int>,
-  @optional y1: option<int>,
+  @optional y0: int,
+  @optional y1: int,
   z: int,
 }
 
@@ -79,20 +79,20 @@ let h11 = (v1): small_config => {
 }
 
 type partiallyOptional = {
-  @optional aa: option<int>,
+  @optional aa: int,
   bb: option<int>,
 }
 
 let po = {aa: 3, bb: Some(4)}
 
-module M: {
-  type partiallyOptional = {
-    @optional aa: option<int>,
-    bb: option<int>,
-  }
-} = {
-  type partiallyOptional = {
-    @optional aa: option<int>,
-    @optional bb: option<int>,
-  }
-}
+// module M: {
+//   type partiallyOptional = {
+//     @optional aa: int,
+//     bb: option<int>,
+//   }
+// } = {
+//   type partiallyOptional = {
+//     @optional aa: int,
+//     @optional bb: int,
+//   }
+// }

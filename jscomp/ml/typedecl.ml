@@ -396,10 +396,19 @@ let transl_declaration env sdecl id =
         let tcstrs, cstrs = List.split (List.map make_cstr scstrs) in
           Ttype_variant tcstrs, Type_variant cstrs
       | Ptype_record lbls ->
-          let optionalLabels =
-            let hasOptional attrs = Ext_list.exists attrs (fun ({txt },_) -> txt = "optional") in
+        let hasOptional attrs = Ext_list.exists attrs (fun ({txt },_) -> txt = "optional") in
+        let optionalLabels =
             Ext_list.filter_map lbls
             (fun lbl -> if hasOptional lbl.pld_attributes then Some lbl.pld_name.txt else None) in
+          let lbls =
+            if optionalLabels = [] then lbls
+            else Ext_list.map lbls (fun lbl ->
+              let typ = lbl.pld_type in
+              let typ =
+                if hasOptional lbl.pld_attributes then
+                  {typ with ptyp_desc = Ptyp_constr ({txt = Lident "option"; loc=typ.ptyp_loc}, [typ])}
+                else typ in
+              {lbl with  pld_type = typ }) in
         (* XXX handle @optional here *)
           let lbls, lbls' = transl_labels env true lbls in
           let rep =
