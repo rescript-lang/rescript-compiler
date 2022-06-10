@@ -4,6 +4,8 @@
 
 **Compiler**
 
+- #5364 support `@new @variadic`
+
 **Syntax**
 
 **Playground**

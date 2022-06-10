@@ -72,6 +72,7 @@ type external_spec =
   | Js_new of {
       name : string ;
       external_module_name : external_module_name option;
+      splice : bool ;
       scopes : string list;
     }
   | Js_set of { 
@@ -224,7 +225,7 @@ let check_ffi ?loc ffi : bool =
       -> 
       upgrade (is_package_relative_path external_module_name.bundle);
       check_external_module_name external_module_name
-    | Js_new {external_module_name ;  name; scopes = _}
+    | Js_new {external_module_name ;  name; splice = _; scopes = _}
     | Js_call {external_module_name ;  name ; splice = _; scopes = _ }
       ->
       Ext_option.iter external_module_name (fun external_module_name ->
@@ -266,10 +267,10 @@ let is_bs_primitive s =
 
 let () = Oprint.map_primitive_name := 
       
-# 272 "frontend/external_ffi_types.pp.ml"
+# 273 "frontend/external_ffi_types.pp.ml"
       String.escaped
 
-# 275 "frontend/external_ffi_types.pp.ml"
+# 276 "frontend/external_ffi_types.pp.ml"
 (* TODO:  better error message when version mismatch *)
 let from_string s : t =
   if is_bs_primitive s  then   

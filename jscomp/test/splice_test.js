@@ -64,11 +64,80 @@ dynamic([
       3
     ]);
 
-var a$1 = [];
+var a$1 = new Array(1, 2, 3, 4);
 
-a$1.push(1, 2, 3, 4);
+eq("File \"splice_test.ml\", line 49, characters 5-12", a$1, [
+      1,
+      2,
+      3,
+      4
+    ]);
 
-eq("File \"splice_test.ml\", line 51, characters 7-14", a$1, [
+function dynamicNew(arr) {
+  var a = Caml_splice_call.spliceNewApply(Array, [
+        1,
+        2,
+        arr
+      ]);
+  eq("File \"splice_test.ml\", line 53, characters 5-12", a, Caml_array.concat({
+            hd: [
+              1,
+              2
+            ],
+            tl: {
+              hd: arr,
+              tl: /* [] */0
+            }
+          }));
+}
+
+dynamicNew([
+      3,
+      4
+    ]);
+
+dynamicNew([]);
+
+dynamicNew([
+      1,
+      3
+    ]);
+
+class Foo {
+  constructor(...names) {
+    this.names = names;
+  }
+}
+;
+
+var f = new Foo("a", "b", "c");
+
+eq("File \"splice_test.ml\", line 74, characters 5-12", f.names, [
+      "a",
+      "b",
+      "c"
+    ]);
+
+function dynamicFoo(arr) {
+  var f = Caml_splice_call.spliceNewApply(Foo, [arr]);
+  eq("File \"splice_test.ml\", line 78, characters 5-12", f.names, arr);
+}
+
+dynamicFoo([]);
+
+dynamicFoo(["a"]);
+
+dynamicFoo([
+      "a",
+      "b",
+      "c"
+    ]);
+
+var a$2 = [];
+
+a$2.push(1, 2, 3, 4);
+
+eq("File \"splice_test.ml\", line 95, characters 7-14", a$2, [
       1,
       2,
       3,
@@ -81,7 +150,7 @@ function dynamic$1(arr) {
         1,
         arr
       ]);
-  eq("File \"splice_test.ml\", line 56, characters 7-14", a, Caml_array.concat({
+  eq("File \"splice_test.ml\", line 100, characters 7-14", a, Caml_array.concat({
             hd: [1],
             tl: {
               hd: arr,
@@ -115,11 +184,11 @@ function f1(c) {
             ]);
 }
 
-eq("File \"splice_test.ml\", line 67, characters 6-13", Math.max(1, 2, 3), 3);
+eq("File \"splice_test.ml\", line 111, characters 6-13", Math.max(1, 2, 3), 3);
 
-eq("File \"splice_test.ml\", line 68, characters 6-13", Math.max(1), 1);
+eq("File \"splice_test.ml\", line 112, characters 6-13", Math.max(1), 1);
 
-eq("File \"splice_test.ml\", line 69, characters 6-13", Math.max(1, 1, 2, 3, 4, 5, 2, 3), 5);
+eq("File \"splice_test.ml\", line 113, characters 6-13", Math.max(1, 1, 2, 3, 4, 5, 2, 3), 5);
 
 Mt.from_pair_suites("splice_test.ml", suites.contents);
 
@@ -129,6 +198,8 @@ exports.eq = eq;
 exports.Caml_splice_call = Caml_splice_call$1;
 exports.f00 = f00;
 exports.dynamic = dynamic;
+exports.dynamicNew = dynamicNew;
+exports.dynamicFoo = dynamicFoo;
 exports.Pipe = Pipe;
 exports.f1 = f1;
 /*  Not a pure module */
