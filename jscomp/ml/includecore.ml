@@ -178,8 +178,6 @@ let report_type_mismatch0 first second decl ppf err =
         | _ ->
           default ()
       )
-      (* pr "Their internal representations differ:@ rep1:%s rep2:%s decl:%s"
-        first second decl *)
   | Unboxed_representation b ->
       pr "Their internal representations differ:@ %s %s %s"
          (if b then second else first) decl
