@@ -3,27 +3,21 @@
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
-var f3_y = 3;
-
-var f3 = {
+var f1 = {
   x: 3,
-  y: f3_y,
   z: 2
 };
 
-var f4_y = 3;
+var newrecord = Caml_obj.obj_dup(f1);
 
-var f4_yy = Caml_option.some(undefined);
+newrecord.y = 3;
 
-var f4 = {
-  x: 3,
-  y: f4_y,
-  yy: f4_yy,
-  z: 2
-};
+var newrecord$1 = Caml_obj.obj_dup(newrecord);
+
+newrecord$1.yy = Caml_option.some(undefined);
 
 var theseTwoShouldBeIdentical = [
-  Caml_option.some(undefined),
+  newrecord$1.yy,
   Caml_option.some(undefined)
 ];
 
@@ -32,26 +26,33 @@ var v = {
   z: 3
 };
 
-var newrecord = Caml_obj.obj_dup(v);
+var newrecord$2 = Caml_obj.obj_dup(v);
 
-newrecord.y1 = 22;
+newrecord$2.y1 = 22;
 
-var h10_y1 = 22;
-
-var h10 = {
+var v1 = {
   x: 2,
-  y1: h10_y1,
   z: 3
 };
 
+var newrecord$3 = Caml_obj.obj_dup(v1);
+
+newrecord$3.y1 = 22;
+
 function h11(v1) {
-  return {
-          x: v1.x,
-          y0: v1.y0,
-          y1: 22,
-          z: v1.z
-        };
+  var newrecord = Caml_obj.obj_dup(v1);
+  newrecord.y1 = 22;
+  return newrecord;
 }
+
+var po = {
+  aa: 3,
+  bb: 4
+};
+
+var newrecord$4 = Caml_obj.obj_dup(po);
+
+newrecord$4.aa = undefined;
 
 function setAA(ao) {
   return {
@@ -59,16 +60,15 @@ function setAA(ao) {
         };
 }
 
-var f1 = {
-  x: 3,
-  z: 2
-};
-
 var f2 = {
   x: 3,
   y: 3,
   z: 3
 };
+
+var f3 = newrecord;
+
+var f4 = newrecord$1;
 
 var v2 = {
   x: 3,
@@ -76,17 +76,9 @@ var v2 = {
   z: 2
 };
 
-var h = newrecord;
+var h = newrecord$2;
 
-var v1 = {
-  x: 2,
-  z: 3
-};
-
-var po = {
-  aa: 3,
-  bb: 4
-};
+var h10 = newrecord$3;
 
 exports.f1 = f1;
 exports.f2 = f2;

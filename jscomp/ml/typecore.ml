@@ -296,14 +296,6 @@ let extract_option_type env ty =
     when Path.same path Predef.path_option -> ty
   | _ -> assert false
 
-let is_option_type env ty = 
-  match expand_head env ty with 
-  | {desc = Tconstr(path, [_], _)}
-    when Path.same path Predef.path_option -> true 
-  | _ -> false 
-  | exception _ -> false
-  
-
 let extract_concrete_record env ty =
   match extract_concrete_typedecl env ty with
     (p0, p, {type_kind=Type_record (fields, _)}) -> (p0, p, fields)
@@ -1866,7 +1858,6 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
   in
   let label_is_optional ld =
     match ld.lbl_repres with
-    | Record_object -> is_option_type env ld.lbl_arg
     | Record_optional_labels lbls -> List.mem ld.lbl_name lbls
     | _ -> false in
   let hasOptional attrs = Ext_list.exists attrs (fun ({txt },_) -> txt = "optional") in
@@ -2131,9 +2122,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
                     | (lid, _lbl, lbl_exp) ->
                         Overridden (lid, lbl_exp)
                     | exception Not_found ->
-                      if representation = Record_object 
-                          && is_option_type env lbl.lbl_arg
-                      || label_is_optional lbl then 
+                      if label_is_optional lbl then 
                         Overridden ({loc ; txt = Lident lbl.lbl_name},
                         option_none lbl.lbl_arg loc)
                       else 

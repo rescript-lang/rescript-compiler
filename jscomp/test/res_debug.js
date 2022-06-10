@@ -1,19 +1,21 @@
 'use strict';
 
+var Caml_obj = require("../../lib/js/caml_obj.js");
 
 function f($$window, a, b) {
   return $$window.location(a, b);
 }
 
-var v2 = {
-  x: 3,
-  z: 2
-};
-
 var v0 = {
   x: 3,
   z: 2
 };
+
+var newrecord = Caml_obj.obj_dup(v0);
+
+newrecord.x = 3;
+
+var v2 = newrecord;
 
 var v1 = {
   x: 3,
@@ -30,4 +32,4 @@ exports.v2 = v2;
 exports.v1 = v1;
 exports.h = h;
 exports.hey = hey;
-/* No side effect */
+/*  Not a pure module */
