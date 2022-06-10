@@ -136,7 +136,7 @@ type type_mismatch =
   | Field_arity of Ident.t
   | Field_names of int * string * string
   | Field_missing of bool * Ident.t
-  | Record_representation of bool   (* true means second one is unboxed float *)
+  | Record_representation of record_representation * record_representation
   | Unboxed_representation of bool  (* true means second one is unboxed *)
   | Immediate
 
@@ -161,10 +161,25 @@ let report_type_mismatch0 first second decl ppf err =
   | Field_missing (b, s) ->
       pr "The field %s is only present in %s %s"
         (Ident.name s) (if b then second else first) decl
-  | Record_representation b ->
-      pr "Their internal representations differ:@ %s %s %s"
-        (if b then second else first) decl
-        "uses @@obj representation"
+  | Record_representation (rep1, rep2) ->
+      let default () = pr "Their internal representations differ" in
+      ( match rep1, rep2 with
+        | Record_optional_labels lbls1, Record_optional_labels lbls2 ->
+          let onlyInLhs =
+            Ext_list.find_first lbls1 (fun l -> not (Ext_list.mem_string lbls2 l)) in
+          let onlyInRhs =
+            Ext_list.find_first lbls2 (fun l -> not (Ext_list.mem_string lbls1 l)) in
+          (match onlyInLhs, onlyInRhs with
+            | Some l, _ ->
+              pr "@optional label %s only in %s" l second
+            | _, Some l ->
+              pr "@optional label %s only in %s" l first
+            | None, None -> default ())
+        | _ ->
+          default ()
+      )
+      (* pr "Their internal representations differ:@ rep1:%s rep2:%s decl:%s"
+        first second decl *)
   | Unboxed_representation b ->
       pr "Their internal representations differ:@ %s %s %s"
          (if b then second else first) decl
@@ -314,7 +329,7 @@ let type_declarations ?(equality = false) ~loc env name decl1 id decl2 =
         let err = compare_records ~loc env decl1.type_params decl2.type_params
             1 labels1 labels2 in
         if err <> [] || rep1 = rep2 then err else
-        [Record_representation (rep2 = Record_object)]
+        [Record_representation (rep1, rep2)]
     | (Type_open, Type_open) -> []
     | (_, _) -> [Kind]
   in
