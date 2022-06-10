@@ -53,6 +53,12 @@ function h11(v1) {
         };
 }
 
+function setAA(ao) {
+  return {
+          aa: ao
+        };
+}
+
 var f1 = {
   x: 3,
   z: 2
@@ -94,4 +100,5 @@ exports.v1 = v1;
 exports.h10 = h10;
 exports.h11 = h11;
 exports.po = po;
+exports.setAA = setAA;
 /*  Not a pure module */

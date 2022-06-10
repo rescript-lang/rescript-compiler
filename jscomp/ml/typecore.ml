@@ -1869,6 +1869,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
     | Record_object -> is_option_type env ld.lbl_arg
     | Record_optional_labels lbls -> List.mem ld.lbl_name lbls
     | _ -> false in
+  let hasOptional attrs = Ext_list.exists attrs (fun ({txt },_) -> txt = "optional") in
   match sexp.pexp_desc with
   | Pexp_ident lid ->
       begin
@@ -2106,8 +2107,9 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
           wrap_disambiguate "This record expression is expected to have" ty_record
             (type_label_a_list loc true env
                (fun (id, ld, exp) k ->
+                let exp_has_optional = hasOptional exp.pexp_attributes in
                 let exp =
-                  if label_is_optional ld then
+                  if label_is_optional ld && not exp_has_optional then
                     {exp with pexp_desc = Pexp_construct ({id with txt = Longident.Lident "Some"}, Some exp)}
                   else exp in
                  k (type_label_exp true env loc ty_record (id, ld, exp)))
@@ -2183,8 +2185,9 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
         wrap_disambiguate "This record expression is expected to have" ty_record
           (type_label_a_list loc closed env
              (fun (id, ld, exp) k ->
+              let exp_has_optional = hasOptional exp.pexp_attributes in
               let exp =
-                if label_is_optional ld then
+                if label_is_optional ld && not exp_has_optional then
                   {exp with pexp_desc = Pexp_construct ({id with txt = Longident.Lident "Some"}, Some exp)}
                 else exp in
                k (type_label_exp true env loc ty_record (id, ld, exp)))

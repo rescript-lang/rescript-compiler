@@ -84,6 +84,10 @@ type partiallyOptional = {
 
 let po = {aa: 3, bb: Some(4)}
 
+let _ = {...po, aa: @optional None}
+
+let setAA = (ao: option<int>) => {aa: @optional ao, bb: None}
+
 // Trigger representation mismatch error.
 // module M: {
 //   type partiallyOptional = {
