@@ -1860,7 +1860,15 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
     match ld.lbl_repres with
     | Record_optional_labels lbls -> Ext_list.mem_string lbls ld.lbl_name
     | _ -> false in
-  let hasOptional attrs = Ext_list.exists attrs (fun ({txt },_) -> txt = "optional") in
+  let process_optional_label (id, ld, e) =
+    let exp_optional_attr =
+      Ext_list.exists e.pexp_attributes (fun ({txt },_) -> txt = "optional")
+    in
+    if label_is_optional ld && not exp_optional_attr then
+      let pexp_desc = Pexp_construct ({id with txt = Longident.Lident "Some"}, Some e)
+      in (id, ld, {e with pexp_desc})
+    else (id, ld, e)
+  in
   match sexp.pexp_desc with
   | Pexp_ident lid ->
       begin
@@ -2097,13 +2105,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
         let lbl_exp_list =
           wrap_disambiguate "This record expression is expected to have" ty_record
             (type_label_a_list loc true env
-               (fun (id, ld, exp) k ->
-                let exp_has_optional = hasOptional exp.pexp_attributes in
-                let exp =
-                  if label_is_optional ld && not exp_has_optional then
-                    {exp with pexp_desc = Pexp_construct ({id with txt = Longident.Lident "Some"}, Some exp)}
-                  else exp in
-                 k (type_label_exp true env loc ty_record (id, ld, exp)))
+               (fun x k -> k (type_label_exp true env loc ty_record (process_optional_label x)))
                opath lid_sexp_list)
             (fun x -> x)
         in
@@ -2173,13 +2175,8 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
       let lbl_exp_list =
         wrap_disambiguate "This record expression is expected to have" ty_record
           (type_label_a_list loc closed env
-             (fun (id, ld, exp) k ->
-              let exp_has_optional = hasOptional exp.pexp_attributes in
-              let exp =
-                if label_is_optional ld && not exp_has_optional then
-                  {exp with pexp_desc = Pexp_construct ({id with txt = Longident.Lident "Some"}, Some exp)}
-                else exp in
-               k (type_label_exp true env loc ty_record (id, ld, exp)))
+             (fun x k ->
+               k (type_label_exp true env loc ty_record (process_optional_label x)))
              opath lid_sexp_list)
           (fun x -> x)
       in
