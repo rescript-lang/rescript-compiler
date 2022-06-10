@@ -1858,7 +1858,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
   in
   let label_is_optional ld =
     match ld.lbl_repres with
-    | Record_optional_labels lbls -> List.mem ld.lbl_name lbls
+    | Record_optional_labels lbls -> Ext_list.mem_string lbls ld.lbl_name
     | _ -> false in
   let hasOptional attrs = Ext_list.exists attrs (fun ({txt },_) -> txt = "optional") in
   match sexp.pexp_desc with
