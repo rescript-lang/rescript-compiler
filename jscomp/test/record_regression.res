@@ -1,13 +1,17 @@
 // @@config({flags: ["-bs-diagnose"] })
 
 @obj
-type t0 = {x: int, y: option<int>, z: int}
+type t0 = {x: int, y: option<int>, yy: option<option<int>>, z: int}
 
 let f1 = {x: 3, z: 2}
 
 let f2 = {x: 3, z: 3, y: 3}
 
 let f3 = {...f1, y: 3}
+
+let f4 =  {...f3, yy: None}
+
+let theseTwoShouldBeIdentical = [f4.yy,  Some(None) : option<option<int>>]
 
 type r = {
   x: int,
