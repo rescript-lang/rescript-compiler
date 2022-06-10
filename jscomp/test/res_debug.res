@@ -27,10 +27,9 @@ let f = (window, a, b) => {
 
 // }
 
-@obj
 type r = {
     x: int,
-    y: option < int>,
+    @optional y: int,
     z : int 
 }
 
