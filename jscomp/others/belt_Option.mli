@@ -44,14 +44,12 @@ val keepU : 'a option -> ('a -> bool [@bs]) -> 'a option
 
 val keep : 'a option -> ('a -> bool) -> 'a option
 (**
-   `keep optionValue p`
+   If `optionValue` is `Some(value)` and `p(value) = true`, it returns `Some(value)`; otherwise returns `None`
 
-   If `optionValue` is `Some value` and `p value = true`, it returns `Some value`; otherwise returns `None`
-
-   ```
-   keep (Some 10)(fun x -> x > 5);; (* returns `Some 10` *)
-   keep (Some 4)(fun x -> x > 5);; (* returns `None` *)
-   keep None (fun x -> x > 5);; (* returns `None` *)
+   ```res example
+   Belt.Option.keep(Some(10), x => x > 5) /* returns `Some(10)` */
+   Belt.Option.keep(Some(4), x => x > 5) /* returns `None` */
+   Belt.Option.keep(None, x => x > 5) /* returns `None` */
    ```
 *)
 
@@ -60,13 +58,11 @@ val forEachU : 'a option -> ('a -> unit [@bs]) -> unit
 
 val forEach : 'a option -> ('a -> unit) -> unit
 (**
-   `forEach optionValue f`
+   If `optionValue` is `Some(value`), it calls `f(value)`; otherwise returns `()`
 
-   If `optionValue` is `Some value`, it calls `f value`; otherwise returns `()`
-
-   ```
-   forEach (Some "thing")(fun x -> Js.log x);; (* logs "thing" *)
-   forEach None (fun x -> Js.log x);; (* returns () *)
+   ```res example
+   Belt.Option.forEach(Some("thing"), x => Js.log(x)) /* logs "thing" */
+   Belt.Option.forEach(None, x => Js.log(x)) /* returns () */
    ```
 *)
 
@@ -83,9 +79,11 @@ val getExn : 'a option -> 'a
 
 external getUnsafe :
   'a option -> 'a = "%identity"
-(** `getUnsafe x` returns x
-    This is an unsafe operation, it assumes x is neither not None
-    or (Some (None .. ))
+(**
+   `getUnsafe(x)` returns `x`
+
+   This is an unsafe operation, it assumes `x` is neither `None`
+   nor `Some(None(...)))`
 *)
 
 val mapWithDefaultU : 'a option -> 'b -> ('a -> 'b [@bs]) -> 'b
