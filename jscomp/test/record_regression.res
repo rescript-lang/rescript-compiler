@@ -3,9 +3,11 @@
 @obj
 type t0 = {x: int, y: option<int>, z: int}
 
-// let f0 = { x : 3 ,y : None}
-
 let f1 = {x: 3, z: 2}
+
+let f2 = {x: 3, z: 3, y: 3}
+
+let f3 = {...f1, y: 3}
 
 type r = {
   x: int,
@@ -56,7 +58,7 @@ type config = {
 
 let v: config = {x: 2, z: 3}
 
-let h: config = {...v, y1: Some(22)}
+let h: config = {...v, y1: 22}
 
 @obj
 type small_config = {
@@ -68,8 +70,8 @@ type small_config = {
 
 let v1: small_config = {x: 2, z: 3}
 
-let h10: small_config = {...v1, y1: Some(22)}
+let h10: small_config = {...v1, y1: 22}
 
-let h11 = (v1) : small_config => {
-  { ... v1, y1 : Some(22)}
+let h11 = (v1): small_config => {
+  {...v1, y1: 22}
 }
