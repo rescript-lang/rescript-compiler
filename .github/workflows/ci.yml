@@ -70,7 +70,7 @@ jobs:
     
     - name: Run tests (Windows)
       if: runner.os == 'Windows'
-      run: opam exec -- node scripts/ciTest.js -mocha -theme
+      run: opam exec -- node scripts/ciTest.js -mocha -theme -bsb
 
     - name: Get artifact info
       id: get_artifact_info
