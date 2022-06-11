@@ -62,7 +62,7 @@ jobs:
 
     - name: Run tests (macos-arm)
       if: matrix.os == 'macos-arm'
-      run: opam exec -- node scripts/ciTest.js -ounit -mocha -theme
+      run: opam exec -- node scripts/ciTest.js -all
     
     - name: Run tests (Linux)
       if: runner.os == 'Linux'
