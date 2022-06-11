@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** A _immutable_ sorted set module which allows customize _compare_ behavior.
+(** An _immutable_ sorted set module which allows customized _compare_ behavior.
 
   The implementation uses balanced binary trees, and therefore searching
   and insertion take time logarithmic in the size of the map.
@@ -32,20 +32,31 @@
 
   Example usage:
 
-  ```
-  module PairComparator = Belt.Id.MakeComparable(struct
-    type t = int * int
-    let cmp (a0, a1) (b0, b1) =
-      match Pervasives.compare a0 b0 with
-      | 0 -> Pervasives.compare a1 b1
-      | c -> c
-    end)
+  ```res example
+  module PairComparator =
+    Belt.Id.MakeComparable({
+      type t = (int, int)
+      let cmp = ((a0, a1), (b0, b1)) =>
+        switch (Pervasives.compare(a0, b0)) {
+        | 0 => Pervasives.compare(a1, b1)
+        | c => c
+        }
+    })
 
-  let mySet = Belt.Set.make ~id:(module PairComparator)
-  let mySet2 = Belt.Set.add mySet (1, 2)
+  let mySet = Belt.Set.make(~id=module(PairComparator))
+  let mySet2 = Belt.Set.add(mySet, (1, 2))
   ```
 
-  The API documentation below will assume a predeclared comparator module for integers, IntCmp
+  **Note:** This module's examples will assume a predeclared module for integers
+  called `IntCmp`. It is declared like this:
+
+  ```res prelude
+  module IntCmp =
+    Belt.Id.MakeComparable({
+      type t = int
+      let cmp = Pervasives.compare
+    })
+  ```
 *)
 
 (** Specalized when value type is `int`, more efficient
@@ -59,7 +70,7 @@ module Int = Belt_SetInt
 module String = Belt_SetString
 
 
-(** This module seprate identity from data, it is a bit more verboe but slightly
+(** This module seprate identity from data, it is a bit more verbose but slightly
   more efficient due to the fact that there is no need to pack identity and data back
   after each operation
 *)
@@ -67,7 +78,10 @@ module Dict = Belt_SetDict
 
 
 type ('value, 'identity) t
-(** `('value, 'identity) t`
+(**
+  ```res prelude
+  type t<'value, 'identity>
+  ```
 
   `'value` is the element type
 
@@ -76,279 +90,563 @@ type ('value, 'identity) t
 
 
 type ('value, 'id) id = ('value, 'id) Belt_Id.comparable
-(** The identity needed for making a set from scratch
+(**
+  ```res prelude
+  type id<'value, 'id> = Belt_Id.comparable<'value, 'id>
+  ```
+
+  The identity needed for making a set from scratch
 *)
 
 val make: id:('value, 'id) id -> ('value, 'id) t
-(** `make ~id` creates a new set by taking in the comparator
-  ```
-  let s = make ~id:(module IntCmp)
+(**
+  ```res sig
+  let make: (~id: id<'value, 'id>) => t<'value, 'id>
   ```
 
+  Creates a new set by taking in the comparator
+
+  ```res example
+  let set = Belt.Set.make(~id=module(IntCmp))
+  ```
 *)
 
 
 
 val fromArray:  'value array -> id:('value, 'id) id ->  ('value, 'id) t
-(** `fromArray xs ~id`
-
+(**
+  ```res sig
+  let fromArray: (array<'value>, ~id: id<'value, 'id>) => t<'value, 'id>
   ```
-  toArray (fromArray [1;3;2;4] (module IntCmp)) = [1;2;3;4]
+
+  Creates new set from array of elements.
+
+  ```res example
+  let s0 = Belt.Set.fromArray([1, 3, 2, 4], ~id=module(IntCmp))
+
+  s0->Belt.Set.toArray /* [1, 2, 3, 4] */
   ```
 *)
 
 
 
 val fromSortedArrayUnsafe: 'value array -> id:('value, 'id) id -> ('value,'id) t
-(** `fromSortedArrayUnsafe xs ~id`
+(**
+  ```res sig
+  let fromSortedArrayUnsafe: (array<'value>, ~id: id<'value, 'id>) => t<'value, 'id>
+  ```
 
-  The same as [`fromArray`]() except it is after assuming the input array `x` is already sorted
-
-  **Unsafe**
+  The same as [fromArray][#fromarray] except it is after assuming the input array is already sorted.
 *)
 
 
 val isEmpty: _ t -> bool
 (**
+   ```res sig
+   let isEmpty: t<'a, 'b> => bool
    ```
-   isEmpty (fromArray [||] ~id:(module IntCmp)) = true;;
-   isEmpty (fromArray [|1|] ~id:(module IntCmp)) = true;;
+
+   Checks if set is empty.
+
+   ```res example
+   let empty = Belt.Set.fromArray([], ~id=module(IntCmp))
+   let notEmpty = Belt.Set.fromArray([1],~id=module(IntCmp))
+
+   Belt.Set.isEmpty(empty) /* true */
+   Belt.Set.isEmpty(notEmpty) /* false */
    ```
 *)
 
 val has: ('value, 'id) t -> 'value ->  bool
 (**
+   ```res sig
+   let has: (t<'value, 'id>, 'value) => bool
    ```
-   let v = fromArray [|1;4;2;5|] ~id:(module IntCmp);;
-   has v 3 = false;;
-   has v 1 = true;;
+
+   Checks if element exists in set.
+
+   ```res example
+   let set = Belt.Set.fromArray([1, 4, 2, 5], ~id=module(IntCmp))
+
+   set->Belt.Set.has(3) /* false */
+   set->Belt.Set.has(1) /* true */
    ```
 *)
 
 val add:
   ('value, 'id) t -> 'value -> ('value, 'id) t
-(** `add s x` If `x` was already in `s`, `s` is returned unchanged.
-
+(**
+  ```res sig
+  let add: (t<'value, 'id>, 'value) => t<'value, 'id>
   ```
-  let s0 = make ~id:(module IntCmp);;
-  let s1 = add s0 1 ;;
-  let s2 = add s1 2;;
-  let s3 = add s2 2;;
-  toArray s0 = [||];;
-  toArray s1 = [|1|];;
-  toArray s2 = [|1;2|];;
-  toArray s3 = [|1;2|];;
-  s2 == s3;;
+
+  Adds element to set. If element existed in set, value is unchanged.
+
+  ```res example
+  let s0 = Belt.Set.make(~id=module(IntCmp))
+  let s1 = s0->Belt.Set.add(1)
+  let s2 = s1->Belt.Set.add(2)
+  let s3 = s2->Belt.Set.add(2)
+  s0->Belt.Set.toArray /* [] */
+  s1->Belt.Set.toArray /* [1] */
+  s2->Belt.Set.toArray /* [1, 2] */
+  s3->Belt.Set.toArray /* [1,2 ] */
+  s2 == s3 /* true */
   ```
 *)
 
 val mergeMany: ('value, 'id) t -> 'value array -> ('value, 'id) t
-(** `mergeMany s xs`
+(**
+  ```res sig
+  let mergeMany: (t<'value, 'id>, array<'value>) => t<'value, 'id>
+  ```
 
-  Adding each of `xs` to `s`, note unlike [`add`](),
-  the reference of return value might be changed even if all values in `xs`
-  exist `s`
+  Adds each element of array to set. Unlike [add](#add), the reference of return value might be changed even if all values in array already exist in set
 
+  ```res example
+  let set = Belt.Set.make(~id=module(IntCmp))
+
+  let newSet = set->Belt.Set.mergeMany([5, 4, 3, 2, 1])
+  newSet->Belt.Set.toArray /* [1, 2, 3, 4, 5] */
+  ```
 *)
 
 val remove: ('value, 'id) t -> 'value -> ('value, 'id) t
-(** `remove m x` If `x` was not in `m`, `m` is returned reference unchanged.
-
+(**
+  ```res sig
+  let remove: (t<'value, 'id>, 'value) => t<'value, 'id>
   ```
-  let s0 = fromArray ~id:(module IntCmp) [|2;3;1;4;5|];;
-  let s1 = remove s0 1 ;;
-  let s2 = remove s1 3 ;;
-  let s3 = remove s2 3 ;;
 
-  toArray s1 = [|2;3;4;5|];;
-  toArray s2 = [|2;4;5|];;
-  s2 == s3;;
+  Removes element from set. If element wasn't existed in set, value is unchanged.
+
+  ```res example
+  let s0 = Belt.Set.fromArray([2,3,1,4,5], ~id=module(IntCmp))
+  let s1 = s0->Belt.Set.remove(1)
+  let s2 = s1->Belt.Set.remove(3)
+  let s3 = s2->Belt.Set.remove(3)
+
+  s1->Belt.Set.toArray /* [2,3,4,5] */
+  s2->Belt.Set.toArray /* [2,4,5] */
+  s2 == s3 /* true */
   ```
 *)
 
 val removeMany:
   ('value, 'id) t -> 'value array -> ('value, 'id) t
-(** `removeMany s xs`
+(**
+  ```res sig
+  let removeMany: (t<'value, 'id>, array<'value>) => t<'value, 'id>
+  ```
 
-  Removing each of `xs` to `s`, note unlike [`remove`](),
-  the reference of return value might be changed even if none in `xs`
-  exists `s`
+  Removes each element of array from set. Unlike [remove](#remove), the reference of return value might be changed even if any values in array not existed in set.
+
+  ```res example
+  let set = Belt.Set.fromArray([1, 2, 3, 4],~id=module(IntCmp))
+
+  let newSet = set->Belt.Set.removeMany([5, 4, 3, 2, 1])
+  newSet->Belt.Set.toArray /* [] */
+  ```
 *)
 
 val union: ('value, 'id) t -> ('value, 'id) t -> ('value, 'id) t
 (**
-   `union s0 s1`
-
+   ```res sig
+   let union: (t<'value, 'id>, t<'value, 'id>) => t<'value, 'id>
    ```
-   let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
-   let s1 = fromArray ~id:(module IntCmp) [|5;2;3;1;5;4;|];;
-   toArray (union s0 s1) =  [|1;2;3;4;5;6|]
+
+   Returns union of two sets.
+
+   ```res example
+   let s0 = Belt.Set.fromArray([5,2,3,5,6], ~id=module(IntCmp))
+   let s1 = Belt.Set.fromArray([5,2,3,1,5,4], ~id=module(IntCmp))
+   let union = Belt.Set.union(s0, s1)
+   union->Belt.Set.toArray /* [1,2,3,4,5,6] */
    ```
 *)
 
 val intersect: ('value, 'id) t -> ('value, 'id) t -> ('value, 'id) t
-(** `intersect s0 s1`
-  ```
-  let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
-  let s1 = fromArray ~id:(module IntCmp) [|5;2;3;1;5;4;|];;
-  toArray (intersect s0 s1) =  [|2;3;5|]
+(**
+  ```res sig
+  let intersect: (t<'value, 'id>, t<'value, 'id>) => t<'value, 'id>
   ```
 
+  Returns intersection of two sets.
+
+  ```res example
+  let s0 = Belt.Set.fromArray([5,2,3,5,6], ~id=module(IntCmp))
+  let s1 = Belt.Set.fromArray([5,2,3,1,5,4], ~id=module(IntCmp))
+  let intersect = Belt.Set.intersect(s0, s1)
+  intersect->Belt.Set.toArray /* [2,3,5] */
+  ```
 *)
 
 val diff: ('value, 'id) t -> ('value, 'id) t -> ('value, 'id) t
-(** `diff s0 s1`
+(**
+  ```res sig
+  let diff: (t<'value, 'id>, t<'value, 'id>) => t<'value, 'id>
   ```
-  let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
-  let s1 = fromArray ~id:(module IntCmp) [|5;2;3;1;5;4;|];;
-  toArray (diff s0 s1) = [|6|];;
-  toArray (diff s1 s0) = [|1;4|];;
+
+  Returns elements from first set, not existing in second set.
+
+  ```res example
+  let s0 = Belt.Set.fromArray([5,2,3,5,6], ~id=module(IntCmp))
+  let s1 = Belt.Set.fromArray([5,2,3,1,5,4], ~id=module(IntCmp))
+  Belt.Set.toArray(Belt.Set.diff(s0, s1)) /* [6] */
+  Belt.Set.toArray(Belt.Set.diff(s1,s0)) /* [1,4] */
   ```
 *)
 
 val subset: ('value, 'id) t -> ('value, 'id) t -> bool
-(** `subset s0 s1`
-
+(**
+  ```res sig
+  let subset: (t<'value, 'id>, t<'value, 'id>) => bool
   ```
-  let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
-  let s1 = fromArray ~id:(module IntCmp) [|5;2;3;1;5;4;|];;
-  let s2 = intersect s0 s1;;
-  subset s2 s0 = true;;
-  subset s2 s1 = true;;
-  subset s1 s0 = false;;
+
+  Checks if second set is subset of first set.
+
+  ```res example
+  let s0 = Belt.Set.fromArray([5,2,3,5,6], ~id=module(IntCmp))
+  let s1 = Belt.Set.fromArray([5,2,3,1,5,4], ~id=module(IntCmp))
+  let s2 = Belt.Set.intersect(s0, s1)
+  Belt.Set.subset(s2, s0) /* true */
+  Belt.Set.subset(s2, s1) /* true */
+  Belt.Set.subset(s1, s0) /* false */
   ```
 *)
 
 val cmp: ('value, 'id) t -> ('value, 'id) t -> int
-(** Total ordering between sets. Can be used as the ordering function
-  for doing sets of sets.
-  It compare `size` first and then iterate over
-  each element following the order of elements
+(**
+  ```res sig
+  let cmp: (t<'value, 'id>, t<'value, 'id>) => int
+  ```
+
+  Total ordering between sets. Can be used as the ordering function for doing sets of sets. It compares size first and then iterates over each element following the order of elements.
 *)
 
 val eq: ('value, 'id) t -> ('value, 'id) t -> bool
-(** `eq s0 s1`
+(**
+  ```res sig
+  let eq: (t<'value, 'id>, t<'value, 'id>) => bool
+  ```
 
-  **return** true if `toArray s0 = toArray s1`
+  Checks if two sets are equal.
+
+  ```res example
+  let s0 = Belt.Set.fromArray([5,2,3], ~id=module(IntCmp))
+  let s1 = Belt.Set.fromArray([3,2,5], ~id=module(IntCmp))
+
+  Belt.Set.eq(s0, s1) /* true */
+  ```
 *)
 
 val forEachU: ('value, 'id) t -> ('value -> unit [@bs]) ->  unit
-val forEach: ('value, 'id) t -> ('value -> unit ) ->  unit
-(** `forEach s f` applies `f` in turn to all elements of `s`.
-  In increasing order
-
+(**
+  ```res sig
+  let forEachU: (t<'value, 'id>, (. 'value) => unit) => unit
   ```
-  let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
-  let acc = ref [] ;;
-  forEach s0 (fun x -> acc := x !acc);;
-  !acc = [6;5;3;2];;
+
+  Same as [forEach](##forEach) but takes uncurried functon.
+*)
+
+val forEach: ('value, 'id) t -> ('value -> unit ) ->  unit
+(**
+  ```res sig
+  let forEach: (t<'value, 'id>, 'value => unit) => unit
+  ```
+
+  Applies function `f` in turn to all elements of set in increasing order.
+
+  ```res example
+  let s0 = Belt.Set.fromArray([5,2,3,5,6], ~id=module(IntCmp))
+  let acc = ref(list{})
+  s0->Belt.Set.forEach(x => {
+    acc := Belt.List.add(acc.contents, x)
+  })
+  acc /* [6,5,3,2] */
   ```
 *)
 
 val reduceU: ('value, 'id) t -> 'a  -> ('a -> 'value -> 'a [@bs]) ->  'a
-val reduce: ('value, 'id) t -> 'a  -> ('a -> 'value -> 'a ) ->  'a
-(** In increasing order.
-
+(**
+  ```res sig
+  let reduceU: (t<'value, 'id>, 'a, (. 'a, 'value) => 'a) => 'a
   ```
-  let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
-  reduce s0 [] Bs.List.add = [6;5;3;2];;
+*)
+
+val reduce: ('value, 'id) t -> 'a  -> ('a -> 'value -> 'a ) ->  'a
+(**
+  ```res sig
+  let reduce: (t<'value, 'id>, 'a, ('a, 'value) => 'a) => 'a
+  ```
+
+  Applies function `f` to each element of set in increasing order. Function `f` has two parameters: the item from the set and an “accumulator”, which starts with a value of `initialValue`. `reduce` returns the final value of the accumulator.
+
+  ```res example
+  let s0 = Belt.Set.fromArray([5,2,3,5,6], ~id=module(IntCmp))
+  s0->Belt.Set.reduce(list{}, (acc, element) =>
+    acc->Belt.List.add(element)
+  ) /* [6,5,3,2] */
   ```
 *)
 
 val everyU: ('value, 'id) t -> ('value -> bool [@bs]) -> bool
+(**
+  ```res sig
+  let everyU: (t<'value, 'id>, (. 'value) => bool) => bool
+  ```
+*)
+
 val every: ('value, 'id) t -> ('value -> bool ) -> bool
-(** `every p s` checks if all elements of the set
-  satisfy the predicate `p`. Order unspecified.
+(**
+  ```res sig
+  let every: (t<'value, 'id>, 'value => bool) => bool
+  ```
+
+  Checks if all elements of the set satisfy the predicate. Order unspecified.
+
+  ```res example
+  let isEven = x => mod(x, 2) == 0
+
+  let s0 = Belt.Set.fromArray([2,4,6,8], ~id=module(IntCmp))
+  s0->Belt.Set.every(isEven) /* true */
+  ```
 *)
 
 val someU: ('value, 'id) t ->  ('value -> bool [@bs]) -> bool
+(**
+  ```res sig
+  let someU: (t<'value, 'id>, (. 'value) => bool) => bool
+  ```
+*)
+
 val some: ('value, 'id) t ->  ('value -> bool ) -> bool
-(** `some p s` checks if at least one element of
-  the set satisfies the predicate `p`. *)
+(**
+  ```res sig
+  let some: (t<'value, 'id>, 'value => bool) => bool
+  ```
+
+  Checks if at least one element of the set satisfies the predicate.
+
+  ```res example
+  let isOdd = x => mod(x, 2) != 0
+
+  let s0 = Belt.Set.fromArray([1,2,4,6,8], ~id=module(IntCmp))
+  s0->Belt.Set.some(isOdd) /* true */
+  ```
+*)
 
 val keepU: ('value, 'id) t ->  ('value -> bool [@bs]) -> ('value, 'id) t
+(**
+  ```res sig
+  let keepU: (t<'value, 'id>, (. 'value) => bool) => t<'value, 'id>
+  ```
+*)
+
 val keep: ('value, 'id) t ->  ('value -> bool ) -> ('value, 'id) t
-(** `keep m p` returns the set of all elements in `s`
-  that satisfy predicate `p`. *)
+(**
+  ```res sig
+  let keep: (t<'value, 'id>, 'value => bool) => t<'value, 'id>
+  ```
+
+  Returns the set of all elements that satisfy the predicate.
+
+  ```res example
+  let isEven = x => mod(x, 2) == 0
+
+  let s0 = Belt.Set.fromArray([1,2,3,4,5], ~id=module(IntCmp))
+  let s1 = s0->Belt.Set.keep(isEven)
+
+  s1->Belt.Set.toArray /* [2,4] */
+  ```
+*)
 
 val partitionU: ('value, 'id) t -> ('value -> bool [@bs]) ->  ('value, 'id) t * ('value, 'id) t
+(**
+  ```res sig
+  let partitionU: (t<'value, 'id>, (. 'value) => bool) => (t<'value, 'id>, t<'value, 'id>)
+  ```
+*)
+
 val partition: ('value, 'id) t -> ('value -> bool) ->  ('value, 'id) t * ('value, 'id) t
-(** `partition m p` returns a pair of sets `(s1, s2)`, where
-  `s1` is the set of all the elements of `s` that satisfy the
-  predicate `p`, and `s2` is the set of all the elements of
-  `s` that do not satisfy `p`. *)
+(**
+  ```res sig
+  let partition: (t<'value, 'id>, 'value => bool) => (t<'value, 'id>, t<'value, 'id>)
+  ```
+
+  Returns a pair of sets, where first is the set of all the elements of set that satisfy the predicate, and second is the set of all the elements of set that do not satisfy the predicate.
+
+  ```res example
+  let isOdd = x => mod(x, 2) != 0
+
+  let s0 = Belt.Set.fromArray([1,2,3,4,5], ~id=module(IntCmp))
+  let (s1, s2) = s0->Belt.Set.partition(isOdd)
+
+  s1->Belt.Set.toArray /* [1,3,5] */
+  s2->Belt.Set.toArray /* [2,4] */
+  ```
+*)
 
 val size:  ('value, 'id) t -> int
-(** `size s`
-
+(**
+  ```res sig
+  let size: t<'value, 'id> => int
   ```
-  let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
-  size s0 = 4;;
+
+  Returns size of the set.
+
+  ```res example
+  let s0 = Belt.Set.fromArray([1,2,3,4], ~id=module(IntCmp))
+
+  s0->Belt.Set.size /* 4 */
   ```
 *)
 
 val toArray: ('value, 'id) t -> 'value array
-(** `toArray s0`
-
+(**
+  ```res sig
+  let toArray: t<'value, 'id> => array<'value>
   ```
-  let s0 = fromArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
-  toArray s0 = [|2;3;5;6|];;
+
+  Returns array of ordered set elements.
+
+  ```res example
+  let s0 = Belt.Set.fromArray([3,2,1,5], ~id=module(IntCmp))
+
+  s0->Belt.Set.toArray /* [1,2,3,5] */
   ```
 *)
 
 val toList: ('value, 'id) t -> 'value list
-(** In increasing order
+(**
+  ```res sig
+  let toList: t<'value, 'id> => list<'value>
+  ```
 
-  **See** [`toArray`]()
+  Returns list of ordered set elements.
+
+  ```res example
+  let s0 = Belt.Set.fromArray([3,2,1,5], ~id=module(IntCmp))
+
+  s0->Belt.Set.toList /* [1,2,3,5] */
+  ```
 *)
 
 val minimum: ('value, 'id) t -> 'value option
-(** `minimum s0`
+(**
+  ```res sig
+  let minimum: t<'value, 'id> => option<'value>
+  ```
 
-  **return** the minimum element of the collection, `None` if it is empty
+  Returns minimum value of the collection. `None` if collection is empty.
+
+  ```res example
+  let s0 = Belt.Set.make(~id=module(IntCmp))
+  let s1 = Belt.Set.fromArray([3,2,1,5], ~id=module(IntCmp))
+
+  s0->Belt.Set.minimum /* None */
+  s1->Belt.Set.minimum /* Some(1) */
+  ```
 *)
 
 val minUndefined: ('value, 'id) t -> 'value Js.undefined
-(** `minUndefined s0`
+(**
+  ```res sig
+  let minUndefined: t<'value, 'id> => Js.undefined<'value>
+  ```
 
-  **return** the minimum element of the collection, `undefined` if it is empty
+  Returns minimum value of the collection. `undefined` if collection is empty.
+
+  ```res example
+  let s0 = Belt.Set.make(~id=module(IntCmp))
+  let s1 = Belt.Set.fromArray([3,2,1,5], ~id=module(IntCmp))
+
+  s0->Belt.Set.minUndefined /* undefined */
+  s1->Belt.Set.minUndefined /* 1 */
+  ```
 *)
 
 val maximum: ('value, 'id) t -> 'value option
-(** `maximum s0`
+(**
+  Returns maximum value of the collection. `None` if collection is empty.
 
-  **return** the maximum element of the collection, `None` if it is empty
+  ```res example
+  let s0 = Belt.Set.make(~id=module(IntCmp))
+  let s1 = Belt.Set.fromArray([3,2,1,5], ~id=module(IntCmp))
+
+  s0->Belt.Set.maximum /* None */
+  s1->Belt.Set.maximum /* Some(5) */
+  ```
 *)
 
 val maxUndefined: ('value, 'id) t -> 'value Js.undefined
-(** `maxUndefined s0`
+(**
+  ```res sig
+  let maxUndefined: t<'value, 'id> => Js.undefined<'value>
+  ```
 
-  **return** the maximum element of the collection, `undefined` if it is empty
+  Returns maximum value of the collection. `undefined` if collection is empty.
+
+  ```res example
+  let s0 = Belt.Set.make(~id=module(IntCmp))
+  let s1 = Belt.Set.fromArray([3,2,1,5], ~id=module(IntCmp))
+
+  s0->Belt.Set.maxUndefined /* undefined */
+  s1->Belt.Set.maxUndefined /* 5 */
+  ```
 *)
 
 val get: ('value, 'id) t -> 'value -> 'value option
-(** `get s0 k`
+(**
+  ```res sig
+  let get: (t<'value, 'id>, 'value) => option<'value>
+  ```
 
-  **return** the reference of the value `k'` which is equivalent to `k`
-  using  the comparator specifiecd by this collection, `None`
-  if it does not exist
+  Returns the reference of the value which is equivalent to value using the comparator specifiecd by this collection. Returns `None` if element does not exist.
+
+  ```res example
+  let s0 = Belt.Set.fromArray([1,2,3,4,5], ~id=module(IntCmp))
+
+  s0->Belt.Set.get(3) /* Some(3) */
+  s0->Belt.Set.get(20) /* None */
+  ```
 *)
 
 val getUndefined: ('value, 'id) t -> 'value -> 'value Js.undefined
-(** **See** [`get`]()
+(**
+  ```res sig
+  let getUndefined: (t<'value, 'id>, 'value) => Js.undefined<'value>
+  ```
+
+  Same as [get](#get) but returns `undefined` when element does not exist.
 *)
 
 val getExn: ('value, 'id) t -> 'value -> 'value
-(** **See** [`get`]()
+(**
+  ```res sig
+  let getExn: (t<'value, 'id>, 'value) => 'value
+  ```
 
-  **raise** if not exist
+  Same as [get](#get) but raise when element does not exist.
 *)
 
 val split: ('value, 'id) t -> 'value -> (('value, 'id) t  * ('value, 'id) t) * bool
-(** `split set ele`
+(**
+  ```res sig
+  let split: (t<'value, 'id>, 'value) => ((t<'value, 'id>, t<'value, 'id>), bool)
+  ```
 
-  **return**  a tuple `((smaller, larger), present)`,
-  `present` is true when `ele` exist in `set`
+  Returns a tuple `((smaller, larger), present)`, `present` is true when element exist in set.
+
+  ```res example
+  let s0 = Belt.Set.fromArray([1,2,3,4,5], ~id=module(IntCmp))
+
+  let ((smaller, larger), present) = s0->Belt.Set.split(3)
+
+  present /* true */
+  smaller->Belt.Set.toArray /* [1,2] */
+  larger->Belt.Set.toArray /* [4,5] */
+
+  ```
 *)
 
 (**/**)
@@ -365,28 +663,34 @@ val checkInvariantInternal: _ t -> unit
 *)
 
 val getData: ('value, 'id) t  -> ('value, 'id) Belt_SetDict.t
-(** `getData s0`
+(**
+  ```res sig
+  let getData: t<'value, 'id> => Belt_SetDict.t<'value, 'id>
+  ```
 
   **Advanced usage only**
 
-  **return** the raw data (detached from comparator),
-  but its type is still manifested, so that user can pass identity directly
-  without boxing
+  Returns the raw data (detached from comparator), but its type is still manifested, so that user can pass identity directly without boxing.
 *)
 
 val getId: ('value, 'id) t  -> ('value, 'id) id
-(** `getId s0`
+(**
+  ```res sig
+  let getId: t<'value, 'id> => id<'value, 'id>
+  ```
 
   **Advanced usage only**
 
-  **return** the identity of `s0`
+  Returns the identity of set.
 *)
 
 val packIdData: id:('value, 'id) id -> data:('value, 'id) Belt_SetDict.t -> ('value, 'id) t
-(** `packIdData ~id ~data`
+(**
+  ```res sig
+  let packIdData: (~id: id<'value, 'id>, ~data: Belt_SetDict.t<'value, 'id>) => t<'value, 'id>
+  ```
 
   **Advanced usage only**
 
-  **return** the packed collection
+  Returns the packed collection.
 *)
-
