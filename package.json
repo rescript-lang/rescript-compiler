@@ -11,7 +11,7 @@
     "rescript": "rescript"
   },
   "scripts": {
-    "test": "node scripts/ciTest.js  -all",
+    "test": "node scripts/ciTest.js -all",
     "test-theme": "node scripts/ciTest.js -theme",
     "test-bsb": "node scripts/ciTest.js -bsb",
     "test-ocaml": "node scripts/ciTest.js -ounit",

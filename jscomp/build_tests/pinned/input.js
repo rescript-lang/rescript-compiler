@@ -11,13 +11,13 @@ function checkSpawnOut(out) {
 }
 
 // Clean beforehand to force its dependency to be rebuilt
-var out = cp.spawnSync(`npx rescript clean`, {
+var out = cp.spawnSync(`../node_modules/.bin/rescript clean`, {
   encoding: "utf-8",
   shell: true,
 });
 checkSpawnOut(out);
 
-var out = cp.spawnSync(`npx rescript build`, {
+var out = cp.spawnSync(`../node_modules/.bin/rescript build`, {
   encoding: "utf-8",
   shell: true,
 });
@@ -29,7 +29,7 @@ assert.ok(
 );
 
 var out2 = cp.spawnSync(
-  `npx rescript build -- -C node_modules/test/lib/bs/ -t targets`,
+  `../node_modules/.bin/rescript build -- -C node_modules/test/lib/bs/ -t targets`,
   {
     encoding: "utf-8",
     shell: true,

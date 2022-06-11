@@ -3,16 +3,11 @@ var cp = require("child_process");
 var path = require("path");
 var fs = require("fs");
 
-var installGlobal = false;
 var ounitTest = false;
 var mochaTest = false;
 var themeTest = false;
 var bsbTest = false;
 var all = false;
-
-if (process.argv.includes("-install-global")) {
-  installGlobal = true;
-}
 
 if (process.argv.includes("-ounit")) {
   ounitTest = true;
@@ -34,7 +29,6 @@ if (process.argv.includes("-all")) {
   all = true;
 }
 if (all) {
-  installGlobal = true;
   ounitTest = true;
   mochaTest = true;
   themeTest = true;
@@ -108,22 +102,10 @@ function runTests() {
     });
   }
 
-  // set up global directory properly using
-  // npm config set prefix '~/.npm-global'
-  if (installGlobal) {
-    console.log("install bucklescript globally");
-    cp.execSync("sudo npm i -g --unsafe-perm . && bsc -bs-internal-check", {
-      cwd: path.join(__dirname, ".."),
-      stdio: [0, 1, 2],
-    });
-  }
-
-
-
   if (bsbTest) {
     console.log("Doing build_tests");
     var buildTestDir = path.join(__dirname, "..", "jscomp", "build_tests");
-    cp.execSync(`npm link rescript`, {
+    cp.execSync(`npm link ../..`, {
       cwd: buildTestDir,
       stdio: [0, 1, 2],
       encoding: "utf8",
@@ -138,7 +120,7 @@ function runTests() {
         console.warn(`input.js does not exist in ${testDir}`);
       } else {
         // note existsSync test already ensure that it is a directory
-        cp.exec(`node input.js`, { cwd: testDir, encoding: "utf8" }, function (
+        cp.execSync(`node input.js`, { cwd: testDir, encoding: "utf8" }, function (
           error,
           stdout,
           stderr

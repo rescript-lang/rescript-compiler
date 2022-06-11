@@ -1,7 +1,7 @@
 var p = require("child_process");
 const { assert } = require("console");
 
-var o = p.spawnSync(`rescript`);
+var o = p.spawnSync(`../node_modules/.bin/rescript`);
 
 console.log(o.stderr + "");
 console.log("-----");

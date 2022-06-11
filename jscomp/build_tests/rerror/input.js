@@ -1,11 +1,11 @@
 var child_process = require("child_process");
 var assert = require("assert");
-child_process.spawnSync(`rescript clean -with-deps`, {
+child_process.spawnSync(`../node_modules/.bin/rescript clean -with-deps`, {
   cwd: __dirname,
   encoding: "utf8",
   stdio: [0, 1, 2],
 });
-var o = child_process.spawnSync(`rescript `, {
+var o = child_process.spawnSync(`../node_modules/.bin/rescript `, {
   cwd: __dirname,
   encoding: "utf8",
   shell: true,

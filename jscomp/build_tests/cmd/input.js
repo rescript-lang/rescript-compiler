@@ -28,7 +28,7 @@ let d = bar ()
 
 function evalCode(code) {
   var bsc_exe = p.spawnSync(
-    `bsc -bs-no-version-header -bs-cross-module-opt -w -40 -bs-eval '${code}'`,
+    `../node_modules/.bin/bsc -bs-no-version-header -bs-cross-module-opt -w -40 -bs-eval '${code}'`,
     {
       encoding: "utf8",
       shell: true,

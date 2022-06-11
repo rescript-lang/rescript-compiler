@@ -1,7 +1,7 @@
 //@ts-check
 var child_process = require("child_process");
 
-console.log(child_process.execSync(`rescript`, { encoding: "utf8" }));
+console.log(child_process.execSync(`../node_modules/.bin/rescript`, { encoding: "utf8" }));
 
 var fs = require("fs");
 var path = require("path");

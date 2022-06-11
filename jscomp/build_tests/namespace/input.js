@@ -1,7 +1,7 @@
 var child_process = require("child_process");
 var fs = require("fs");
 var path = require("path");
-child_process.execSync(`rescript clean -with-deps && rescript build`, {
+child_process.execSync(`../node_modules/.bin/rescript clean -with-deps && ../node_modules/.bin/rescript build`, {
   cwd: __dirname,
   stdio: [0, 1, 2],
 });

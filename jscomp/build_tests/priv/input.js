@@ -1,7 +1,7 @@
 var child_process = require("child_process");
 
 var output = child_process.spawnSync(
-  `rescript clean -with-deps && rescript build`,
+  `npx rescript clean -with-deps && npx rescript build`,
   { cwd: __dirname, shell: true, encoding: "utf8" }
 );
 

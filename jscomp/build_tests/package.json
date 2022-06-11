@@ -1,3 +1,7 @@
 {
-  "dependencies": {}
+  "name": "build_tests",
+  "version": "0.1.0",
+  "dependencies": {
+    "rescript": "file:../.."
+  }
 }

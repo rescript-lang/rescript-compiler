@@ -4,7 +4,7 @@ const assert = require("assert");
 const fs = require('fs')
 const path = require('path')
 
-var output = cp.spawnSync(`rescript`, { encoding: "utf8", shell: true });
+var output = cp.spawnSync(`../node_modules/.bin/rescript`, { encoding: "utf8", shell: true });
 
 assert(/dependency cycle/.test(output.stdout));
 
