@@ -2,7 +2,7 @@ var cp = require("child_process");
 var assert = require("assert");
 var path = require("path");
 
-var out = cp.spawnSync(`rescript`, { encoding: "utf8" });
+var out = cp.spawnSync(`../node_modules/.bin/rescript`, { encoding: "utf8" });
 
 console.log(out.stdout);
 if (out.stderr !== "") {

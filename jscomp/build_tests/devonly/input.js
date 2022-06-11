@@ -1,4 +1,4 @@
 //@ts-check
 var cp = require("child_process");
 
-cp.execSync(`rescript`, { cwd: __dirname, encoding: "utf8" });
+cp.execSync(`../node_modules/.bin/rescript`, { cwd: __dirname, encoding: "utf8" });

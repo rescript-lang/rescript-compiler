@@ -7,7 +7,7 @@ var targetTwo = `src/demo.cmj`;
 
 
 cp.exec(
-  `rescript build -- -t commands ${targetOne}`,
+  `../node_modules/.bin/rescript build -- -t commands ${targetOne}`,
   { encoding: "ascii" },
   function (err, output) {
     if (err !== null) {
@@ -16,7 +16,7 @@ cp.exec(
     }
     assert(output.split("\n").some((x) => x.includes("weird")));
     cp.exec(
-      `rescript build -- -t commands ${targetTwo}`,
+      `../node_modules/.bin/rescript build -- -t commands ${targetTwo}`,
       { encoding: "ascii" },
       function (err, output) {
         if (err !== null) {
