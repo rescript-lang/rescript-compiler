@@ -63,9 +63,9 @@ let getWithDefault opt default = match opt with
   | Some x -> x
   | None -> default
 
-let withDefault opt default = match opt with
+let orElse opt other = match opt with
   | Some _ as some -> some
-  | None -> default
+  | None -> other
 
 let isSome = function
   | Some _ -> true
