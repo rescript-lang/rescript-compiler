@@ -141,6 +141,19 @@ val getWithDefault : 'a option -> 'a -> 'a
    ```
 *)
 
+val orElse : 'a option -> 'a option -> 'a option
+(**
+   `orElse optionalValue otherOptional`
+
+   If `optionalValue` is `Some value`, returns `Some value`, otherwise `otherOptional`
+
+   ```
+   orElse (Some 1812) (Some 1066) = Some 1812;;
+   orElse None (Some 1066) = Some 1066;;
+   orElse None None = None;;
+   ```
+*)
+
 val isSome : 'a option -> bool
 (**
    Returns `true` if the argument is `Some value`, `false` otherwise
