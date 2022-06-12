@@ -141,16 +141,16 @@ val getWithDefault : 'a option -> 'a -> 'a
    ```
 *)
 
-val withDefault : 'a option -> 'a option -> 'a option
+val orElse : 'a option -> 'a option -> 'a option
 (**
-   `withDefault optionalValue optionalDefault`
+   `orElse optionalValue otherOptional`
 
-   If `optionalValue` is `Some value`, returns `Some value`, otherwise `optionalDefault`
+   If `optionalValue` is `Some value`, returns `Some value`, otherwise `otherOptional`
 
    ```
-   withDefault (Some 1812) (Some 1066) = Some 1812;;
-   withDefault None (Some 1066) = Some 1066;;
-   withDefault None None = None;;
+   orElse (Some 1812) (Some 1066) = Some 1812;;
+   orElse None (Some 1066) = Some 1066;;
+   orElse None None = None;;
    ```
 *)
 
