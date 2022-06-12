@@ -322,8 +322,10 @@
 ../lib/4.06.1/unstable/js_playground_compiler.ml: ./ext/vec_int.mli
 ../lib/4.06.1/unstable/js_playground_compiler.ml: ./ext/warnings.ml
 ../lib/4.06.1/unstable/js_playground_compiler.ml: ./ext/warnings.mli
+../lib/4.06.1/unstable/js_playground_compiler.ml: ./frontend/ast_async.ml
 ../lib/4.06.1/unstable/js_playground_compiler.ml: ./frontend/ast_attributes.ml
 ../lib/4.06.1/unstable/js_playground_compiler.ml: ./frontend/ast_attributes.mli
+../lib/4.06.1/unstable/js_playground_compiler.ml: ./frontend/ast_await.ml
 ../lib/4.06.1/unstable/js_playground_compiler.ml: ./frontend/ast_bs_open.ml
 ../lib/4.06.1/unstable/js_playground_compiler.ml: ./frontend/ast_bs_open.mli
 ../lib/4.06.1/unstable/js_playground_compiler.ml: ./frontend/ast_comb.ml
