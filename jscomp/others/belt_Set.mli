@@ -50,7 +50,7 @@
   **Note:** This module's examples will assume a predeclared module for integers
   called `IntCmp`. It is declared like this:
 
-  ```res prelude
+  ```res example
   module IntCmp =
     Belt.Id.MakeComparable({
       type t = int
@@ -79,10 +79,6 @@ module Dict = Belt_SetDict
 
 type ('value, 'identity) t
 (**
-  ```res prelude
-  type t<'value, 'identity>
-  ```
-
   `'value` is the element type
 
   `'identity` the identity of the collection
@@ -91,19 +87,11 @@ type ('value, 'identity) t
 
 type ('value, 'id) id = ('value, 'id) Belt_Id.comparable
 (**
-  ```res prelude
-  type id<'value, 'id> = Belt_Id.comparable<'value, 'id>
-  ```
-
   The identity needed for making a set from scratch
 *)
 
 val make: id:('value, 'id) id -> ('value, 'id) t
 (**
-  ```res sig
-  let make: (~id: id<'value, 'id>) => t<'value, 'id>
-  ```
-
   Creates a new set by taking in the comparator
 
   ```res example
@@ -115,10 +103,6 @@ val make: id:('value, 'id) id -> ('value, 'id) t
 
 val fromArray:  'value array -> id:('value, 'id) id ->  ('value, 'id) t
 (**
-  ```res sig
-  let fromArray: (array<'value>, ~id: id<'value, 'id>) => t<'value, 'id>
-  ```
-
   Creates new set from array of elements.
 
   ```res example
@@ -132,20 +116,12 @@ val fromArray:  'value array -> id:('value, 'id) id ->  ('value, 'id) t
 
 val fromSortedArrayUnsafe: 'value array -> id:('value, 'id) id -> ('value,'id) t
 (**
-  ```res sig
-  let fromSortedArrayUnsafe: (array<'value>, ~id: id<'value, 'id>) => t<'value, 'id>
-  ```
-
   The same as [fromArray][#fromarray] except it is after assuming the input array is already sorted.
 *)
 
 
 val isEmpty: _ t -> bool
 (**
-   ```res sig
-   let isEmpty: t<'a, 'b> => bool
-   ```
-
    Checks if set is empty.
 
    ```res example
@@ -159,10 +135,6 @@ val isEmpty: _ t -> bool
 
 val has: ('value, 'id) t -> 'value ->  bool
 (**
-   ```res sig
-   let has: (t<'value, 'id>, 'value) => bool
-   ```
-
    Checks if element exists in set.
 
    ```res example
@@ -176,10 +148,6 @@ val has: ('value, 'id) t -> 'value ->  bool
 val add:
   ('value, 'id) t -> 'value -> ('value, 'id) t
 (**
-  ```res sig
-  let add: (t<'value, 'id>, 'value) => t<'value, 'id>
-  ```
-
   Adds element to set. If element existed in set, value is unchanged.
 
   ```res example
@@ -197,10 +165,6 @@ val add:
 
 val mergeMany: ('value, 'id) t -> 'value array -> ('value, 'id) t
 (**
-  ```res sig
-  let mergeMany: (t<'value, 'id>, array<'value>) => t<'value, 'id>
-  ```
-
   Adds each element of array to set. Unlike [add](#add), the reference of return value might be changed even if all values in array already exist in set
 
   ```res example
@@ -213,10 +177,6 @@ val mergeMany: ('value, 'id) t -> 'value array -> ('value, 'id) t
 
 val remove: ('value, 'id) t -> 'value -> ('value, 'id) t
 (**
-  ```res sig
-  let remove: (t<'value, 'id>, 'value) => t<'value, 'id>
-  ```
-
   Removes element from set. If element wasn't existed in set, value is unchanged.
 
   ```res example
@@ -234,10 +194,6 @@ val remove: ('value, 'id) t -> 'value -> ('value, 'id) t
 val removeMany:
   ('value, 'id) t -> 'value array -> ('value, 'id) t
 (**
-  ```res sig
-  let removeMany: (t<'value, 'id>, array<'value>) => t<'value, 'id>
-  ```
-
   Removes each element of array from set. Unlike [remove](#remove), the reference of return value might be changed even if any values in array not existed in set.
 
   ```res example
@@ -250,10 +206,6 @@ val removeMany:
 
 val union: ('value, 'id) t -> ('value, 'id) t -> ('value, 'id) t
 (**
-   ```res sig
-   let union: (t<'value, 'id>, t<'value, 'id>) => t<'value, 'id>
-   ```
-
    Returns union of two sets.
 
    ```res example
@@ -266,10 +218,6 @@ val union: ('value, 'id) t -> ('value, 'id) t -> ('value, 'id) t
 
 val intersect: ('value, 'id) t -> ('value, 'id) t -> ('value, 'id) t
 (**
-  ```res sig
-  let intersect: (t<'value, 'id>, t<'value, 'id>) => t<'value, 'id>
-  ```
-
   Returns intersection of two sets.
 
   ```res example
@@ -282,10 +230,6 @@ val intersect: ('value, 'id) t -> ('value, 'id) t -> ('value, 'id) t
 
 val diff: ('value, 'id) t -> ('value, 'id) t -> ('value, 'id) t
 (**
-  ```res sig
-  let diff: (t<'value, 'id>, t<'value, 'id>) => t<'value, 'id>
-  ```
-
   Returns elements from first set, not existing in second set.
 
   ```res example
@@ -298,10 +242,6 @@ val diff: ('value, 'id) t -> ('value, 'id) t -> ('value, 'id) t
 
 val subset: ('value, 'id) t -> ('value, 'id) t -> bool
 (**
-  ```res sig
-  let subset: (t<'value, 'id>, t<'value, 'id>) => bool
-  ```
-
   Checks if second set is subset of first set.
 
   ```res example
@@ -316,19 +256,11 @@ val subset: ('value, 'id) t -> ('value, 'id) t -> bool
 
 val cmp: ('value, 'id) t -> ('value, 'id) t -> int
 (**
-  ```res sig
-  let cmp: (t<'value, 'id>, t<'value, 'id>) => int
-  ```
-
   Total ordering between sets. Can be used as the ordering function for doing sets of sets. It compares size first and then iterates over each element following the order of elements.
 *)
 
 val eq: ('value, 'id) t -> ('value, 'id) t -> bool
 (**
-  ```res sig
-  let eq: (t<'value, 'id>, t<'value, 'id>) => bool
-  ```
-
   Checks if two sets are equal.
 
   ```res example
@@ -341,19 +273,11 @@ val eq: ('value, 'id) t -> ('value, 'id) t -> bool
 
 val forEachU: ('value, 'id) t -> ('value -> unit [@bs]) ->  unit
 (**
-  ```res sig
-  let forEachU: (t<'value, 'id>, (. 'value) => unit) => unit
-  ```
-
   Same as [forEach](##forEach) but takes uncurried functon.
 *)
 
 val forEach: ('value, 'id) t -> ('value -> unit ) ->  unit
 (**
-  ```res sig
-  let forEach: (t<'value, 'id>, 'value => unit) => unit
-  ```
-
   Applies function `f` in turn to all elements of set in increasing order.
 
   ```res example
@@ -367,18 +291,9 @@ val forEach: ('value, 'id) t -> ('value -> unit ) ->  unit
 *)
 
 val reduceU: ('value, 'id) t -> 'a  -> ('a -> 'value -> 'a [@bs]) ->  'a
-(**
-  ```res sig
-  let reduceU: (t<'value, 'id>, 'a, (. 'a, 'value) => 'a) => 'a
-  ```
-*)
 
 val reduce: ('value, 'id) t -> 'a  -> ('a -> 'value -> 'a ) ->  'a
 (**
-  ```res sig
-  let reduce: (t<'value, 'id>, 'a, ('a, 'value) => 'a) => 'a
-  ```
-
   Applies function `f` to each element of set in increasing order. Function `f` has two parameters: the item from the set and an “accumulator”, which starts with a value of `initialValue`. `reduce` returns the final value of the accumulator.
 
   ```res example
@@ -390,18 +305,9 @@ val reduce: ('value, 'id) t -> 'a  -> ('a -> 'value -> 'a ) ->  'a
 *)
 
 val everyU: ('value, 'id) t -> ('value -> bool [@bs]) -> bool
-(**
-  ```res sig
-  let everyU: (t<'value, 'id>, (. 'value) => bool) => bool
-  ```
-*)
 
 val every: ('value, 'id) t -> ('value -> bool ) -> bool
 (**
-  ```res sig
-  let every: (t<'value, 'id>, 'value => bool) => bool
-  ```
-
   Checks if all elements of the set satisfy the predicate. Order unspecified.
 
   ```res example
@@ -413,18 +319,9 @@ val every: ('value, 'id) t -> ('value -> bool ) -> bool
 *)
 
 val someU: ('value, 'id) t ->  ('value -> bool [@bs]) -> bool
-(**
-  ```res sig
-  let someU: (t<'value, 'id>, (. 'value) => bool) => bool
-  ```
-*)
 
 val some: ('value, 'id) t ->  ('value -> bool ) -> bool
 (**
-  ```res sig
-  let some: (t<'value, 'id>, 'value => bool) => bool
-  ```
-
   Checks if at least one element of the set satisfies the predicate.
 
   ```res example
@@ -436,18 +333,9 @@ val some: ('value, 'id) t ->  ('value -> bool ) -> bool
 *)
 
 val keepU: ('value, 'id) t ->  ('value -> bool [@bs]) -> ('value, 'id) t
-(**
-  ```res sig
-  let keepU: (t<'value, 'id>, (. 'value) => bool) => t<'value, 'id>
-  ```
-*)
 
 val keep: ('value, 'id) t ->  ('value -> bool ) -> ('value, 'id) t
 (**
-  ```res sig
-  let keep: (t<'value, 'id>, 'value => bool) => t<'value, 'id>
-  ```
-
   Returns the set of all elements that satisfy the predicate.
 
   ```res example
@@ -461,18 +349,9 @@ val keep: ('value, 'id) t ->  ('value -> bool ) -> ('value, 'id) t
 *)
 
 val partitionU: ('value, 'id) t -> ('value -> bool [@bs]) ->  ('value, 'id) t * ('value, 'id) t
-(**
-  ```res sig
-  let partitionU: (t<'value, 'id>, (. 'value) => bool) => (t<'value, 'id>, t<'value, 'id>)
-  ```
-*)
 
 val partition: ('value, 'id) t -> ('value -> bool) ->  ('value, 'id) t * ('value, 'id) t
 (**
-  ```res sig
-  let partition: (t<'value, 'id>, 'value => bool) => (t<'value, 'id>, t<'value, 'id>)
-  ```
-
   Returns a pair of sets, where first is the set of all the elements of set that satisfy the predicate, and second is the set of all the elements of set that do not satisfy the predicate.
 
   ```res example
@@ -488,10 +367,6 @@ val partition: ('value, 'id) t -> ('value -> bool) ->  ('value, 'id) t * ('value
 
 val size:  ('value, 'id) t -> int
 (**
-  ```res sig
-  let size: t<'value, 'id> => int
-  ```
-
   Returns size of the set.
 
   ```res example
@@ -503,10 +378,6 @@ val size:  ('value, 'id) t -> int
 
 val toArray: ('value, 'id) t -> 'value array
 (**
-  ```res sig
-  let toArray: t<'value, 'id> => array<'value>
-  ```
-
   Returns array of ordered set elements.
 
   ```res example
@@ -518,10 +389,6 @@ val toArray: ('value, 'id) t -> 'value array
 
 val toList: ('value, 'id) t -> 'value list
 (**
-  ```res sig
-  let toList: t<'value, 'id> => list<'value>
-  ```
-
   Returns list of ordered set elements.
 
   ```res example
@@ -533,10 +400,6 @@ val toList: ('value, 'id) t -> 'value list
 
 val minimum: ('value, 'id) t -> 'value option
 (**
-  ```res sig
-  let minimum: t<'value, 'id> => option<'value>
-  ```
-
   Returns minimum value of the collection. `None` if collection is empty.
 
   ```res example
@@ -550,10 +413,6 @@ val minimum: ('value, 'id) t -> 'value option
 
 val minUndefined: ('value, 'id) t -> 'value Js.undefined
 (**
-  ```res sig
-  let minUndefined: t<'value, 'id> => Js.undefined<'value>
-  ```
-
   Returns minimum value of the collection. `undefined` if collection is empty.
 
   ```res example
@@ -580,10 +439,6 @@ val maximum: ('value, 'id) t -> 'value option
 
 val maxUndefined: ('value, 'id) t -> 'value Js.undefined
 (**
-  ```res sig
-  let maxUndefined: t<'value, 'id> => Js.undefined<'value>
-  ```
-
   Returns maximum value of the collection. `undefined` if collection is empty.
 
   ```res example
@@ -597,10 +452,6 @@ val maxUndefined: ('value, 'id) t -> 'value Js.undefined
 
 val get: ('value, 'id) t -> 'value -> 'value option
 (**
-  ```res sig
-  let get: (t<'value, 'id>, 'value) => option<'value>
-  ```
-
   Returns the reference of the value which is equivalent to value using the comparator specifiecd by this collection. Returns `None` if element does not exist.
 
   ```res example
@@ -613,28 +464,16 @@ val get: ('value, 'id) t -> 'value -> 'value option
 
 val getUndefined: ('value, 'id) t -> 'value -> 'value Js.undefined
 (**
-  ```res sig
-  let getUndefined: (t<'value, 'id>, 'value) => Js.undefined<'value>
-  ```
-
   Same as [get](#get) but returns `undefined` when element does not exist.
 *)
 
 val getExn: ('value, 'id) t -> 'value -> 'value
 (**
-  ```res sig
-  let getExn: (t<'value, 'id>, 'value) => 'value
-  ```
-
   Same as [get](#get) but raise when element does not exist.
 *)
 
 val split: ('value, 'id) t -> 'value -> (('value, 'id) t  * ('value, 'id) t) * bool
 (**
-  ```res sig
-  let split: (t<'value, 'id>, 'value) => ((t<'value, 'id>, t<'value, 'id>), bool)
-  ```
-
   Returns a tuple `((smaller, larger), present)`, `present` is true when element exist in set.
 
   ```res example
@@ -664,10 +503,6 @@ val checkInvariantInternal: _ t -> unit
 
 val getData: ('value, 'id) t  -> ('value, 'id) Belt_SetDict.t
 (**
-  ```res sig
-  let getData: t<'value, 'id> => Belt_SetDict.t<'value, 'id>
-  ```
-
   **Advanced usage only**
 
   Returns the raw data (detached from comparator), but its type is still manifested, so that user can pass identity directly without boxing.
@@ -675,10 +510,6 @@ val getData: ('value, 'id) t  -> ('value, 'id) Belt_SetDict.t
 
 val getId: ('value, 'id) t  -> ('value, 'id) id
 (**
-  ```res sig
-  let getId: t<'value, 'id> => id<'value, 'id>
-  ```
-
   **Advanced usage only**
 
   Returns the identity of set.
@@ -686,10 +517,6 @@ val getId: ('value, 'id) t  -> ('value, 'id) id
 
 val packIdData: id:('value, 'id) id -> data:('value, 'id) Belt_SetDict.t -> ('value, 'id) t
 (**
-  ```res sig
-  let packIdData: (~id: id<'value, 'id>, ~data: Belt_SetDict.t<'value, 'id>) => t<'value, 'id>
-  ```
-
   **Advanced usage only**
 
   Returns the packed collection.
