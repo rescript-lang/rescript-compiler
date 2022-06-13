@@ -38,21 +38,12 @@ val strictlySortedLengthU:
   'a array ->
   ('a -> 'a -> bool [@bs]) ->
   int
-(**
-  ```res sig
-  let strictlySortedLengthU: (array<'a>, (. 'a, 'a) => bool) => int
-  ```
-*)
 
 val strictlySortedLength:
   'a array ->
   ('a -> 'a -> bool) ->
   int
 (**
-  ```res sig
-  let strictlySortedLength: (array<'a>, ('a, 'a) => bool) => int
-  ```
-
   `strictlySortedLenght(xs, cmp);` return `+n` means increasing order `-n` means negative order
 
   ```res example
@@ -67,48 +58,17 @@ val strictlySortedLength:
 *)
 
 val isSortedU: 'a array -> ('a -> 'a -> int [@bs]) -> bool
-(**
-  ```res sig
-  let isSortedU: (array<'a>, (. 'a, 'a) => int) => bool
-  ```
-*)
-
 val isSorted: 'a array -> ('a -> 'a -> int) -> bool
 (**
-  ```res sig
-  let isSorted: (array<'a>, ('a, 'a) => int) => bool
-  ```
-
   `isSorted(arr, cmp)`: Returns true if array is increasingly sorted (equal is okay)
 *)
 
 val stableSortInPlaceByU: 'a array -> ('a -> 'a -> int [@bs]) -> unit
-(**
-  ```res sig
-  let stableSortInPlaceByU: (array<'a>, (. 'a, 'a) => int) => unit
-  ```
-*)
-
 val stableSortInPlaceBy: 'a array -> ('a -> 'a -> int ) -> unit
-(**
-  ```res sig
-  let stableSortInPlaceBy: (array<'a>, ('a, 'a) => int) => unit
-  ```
-*)
 
 val stableSortByU: 'a array -> ('a -> 'a -> int [@bs]) -> 'a array
-(**
-  ```res sig
-  let stableSortByU: (array<'a>, (. 'a, 'a) => int) => array<'a>
-  ```
-*)
-
 val stableSortBy: 'a array -> ('a -> 'a -> int) -> 'a array
 (**
-  ```res sig
-  let stableSortBy: (array<'a>, ('a, 'a) => int) => array<'a>
-  ```
-
   `stableSortBy(xs, cmp)`: Returns a fresh array Sort `xs` in place using
   comparator `cmp`, the stable means if the elements are equal, their order will
   be preserved
@@ -118,19 +78,10 @@ val stableSortBy: 'a array -> ('a -> 'a -> int) -> 'a array
 
 val binarySearchByU:
   'a array -> 'a -> ('a -> 'a -> int [@bs]) -> int
-(**
-  ```res sig
-  let binarySearchByU: (array<'a>, 'a, (. 'a, 'a) => int) => int
-  ```
-*)
 
 val binarySearchBy:
   'a array -> 'a -> ('a -> 'a -> int ) -> int
 (**
-  ```res sig
-  let binarySearchBy: (array<'a>, 'a, ('a, 'a) => int) => int
-  ```
-
   If value is not found and value is less than one or more elements in array, the
   negative number returned is the bitwise complement of the index of the first
   element that is larger than value.
