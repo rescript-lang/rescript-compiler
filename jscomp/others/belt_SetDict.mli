@@ -142,7 +142,7 @@ val mergeMany: ('value, 'id) t -> 'value array -> cmp:('value, 'id) cmp -> ('val
 
 val remove: ('value, 'id) t -> 'value -> cmp:('value, 'id) cmp -> ('value, 'id) t
 (**
-  Removes element from set. If element wasn't existed in set, value is unchanged.
+  Removes element from set. If element did not exist in set, value is unchanged.
 
   ```res example
   module IntCmp = Belt.Id.MakeComparable({

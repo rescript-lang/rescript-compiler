@@ -143,7 +143,7 @@ val mergeMany: t -> value array -> unit
 
 val remove: t -> value -> unit
 (**
-  Removes element from set. If element wasn't existed in set, value is unchanged.
+  Removes element from set. If element did not exist in set, value is unchanged.
 
   ```res example
   let s0 = Belt.MutableSet.String.fromArray(["orange", "banana", "apple"])
