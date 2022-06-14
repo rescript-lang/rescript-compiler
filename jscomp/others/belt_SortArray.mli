@@ -38,76 +38,65 @@ val strictlySortedLengthU:
   'a array ->
   ('a -> 'a -> bool [@bs]) ->
   int
+
 val strictlySortedLength:
   'a array ->
   ('a -> 'a -> bool) ->
   int
 (**
-  `strictlySortedLenght xs cmp`
+  `strictlySortedLenght(xs, cmp);` return `+n` means increasing order `-n` means negative order
 
-  **return** `+n` means increasing order. `-n` means negative order
+  ```res example
+  Belt.SortArray.strictlySortedLength([1, 2, 3, 4, 3], (x, y) => x < y) == 4
 
-  ```
-  strictlySortedLength [|1;2;3;4;3|] (fun x y -> x < y) = 4;;
-  strictlySortedLength [||] (fun x y -> x < y) = 0;;
-  strictlySortedLength [|1|] (fun x y -> x < y) = 1;;
-  strictlySortedLength [|4;3;2;1|] (fun x y -> x < y) = -4;;
+  Belt.SortArray.strictlySortedLength([], (x, y) => x < y) == 0
+
+  Belt.SortArray.strictlySortedLength([1], (x, y) => x < y) == 1
+
+  Belt.SortArray.strictlySortedLength([4, 3, 2, 1], (x, y) => x < y) == -4
   ```
 *)
 
 val isSortedU: 'a array -> ('a -> 'a -> int [@bs]) -> bool
 val isSorted: 'a array -> ('a -> 'a -> int) -> bool
 (**
-  `isSorted arr cmp`
-
-  **return** true if array is increasingly sorted (equal is okay )
-
-  ```
-  isSorted [|1;1;2;3;4|] (fun x y -> compare x y) = true
-  ```
+  `isSorted(arr, cmp)`: Returns true if array is increasingly sorted (equal is okay)
 *)
 
 val stableSortInPlaceByU: 'a array -> ('a -> 'a -> int [@bs]) -> unit
 val stableSortInPlaceBy: 'a array -> ('a -> 'a -> int ) -> unit
-(**
-  `stableSortBy xs cmp`
-
-  Sort xs in place using comparator `cmp`, the stable means if the elements
-  are equal, their order will be preserved
-*)
 
 val stableSortByU: 'a array -> ('a -> 'a -> int [@bs]) -> 'a array
 val stableSortBy: 'a array -> ('a -> 'a -> int) -> 'a array
 (**
-  `stableSort xs cmp`
-
-  **return** a fresh array
-
-  The same as [`stableSortInPlaceBy`]() except that `xs` is  not modified
+  `stableSortBy(xs, cmp)`: Returns a fresh array Sort `xs` in place using
+  comparator `cmp`, the stable means if the elements are equal, their order will
+  be preserved
 *)
 
 
 
 val binarySearchByU:
   'a array -> 'a -> ('a -> 'a -> int [@bs]) -> int
+
 val binarySearchBy:
   'a array -> 'a -> ('a -> 'a -> int ) -> int
 (**
-   If value is not found and value is less than one or more elements in array,
-   the negative number returned is the bitwise complement of the index of the first element
-   that is larger than value.
+  If value is not found and value is less than one or more elements in array, the
+  negative number returned is the bitwise complement of the index of the first
+  element that is larger than value.
 
-   If value is not found and value is greater than all elements in array,
-   the negative number returned is the bitwise complement of
-   (the index of the last element plus 1)
+  If value is not found and value is greater
+  than all elements in array, the negative number returned is the bitwise
+  complement of (the index of the last element plus 1)for example, if `key` is
+  smaller than all elements return `-1` since `lnot(-1) == 0` if `key` is larger
+  than all elements return `lnot(-1) == 0` since `lnot(- (len + 1)) == len`
 
-   for example, if `key` is smaller than all elements return `-1` since `lnot (-1) = 0`
-   if `key` is larger than all elements return `- (len + 1)` since `lnot (-(len+1)) = len`
+  ```res example
+  Belt.SortArray.binarySearchBy([1, 2, 3, 4, 33, 35, 36], 33, Pervasives.compare) == 4
 
-   ```
-   binarySearchBy [|1;2;3;4;33;35;36|] 33 = 4;;
-   lnot (binarySearchBy [|1;3;5;7|] 4) = 2;;
-   ```
+  lnot(Belt.SortArray.binarySearchBy([1, 3, 5, 7], 4, Pervasives.compare)) == 2
+  ```
 *)
 
 (**/**)
