@@ -23,122 +23,589 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** A _mutable_ sorted set module which allows customize _compare_ behavior.
+(**
+  A **mutable** sorted set module which allows customized compare behavior.
+  The implementation uses balanced binary trees, and therefore searching and insertion take time logarithmic in the size of the map.
 
-    Same as Belt.Set, but mutable.
+  It also has two specialized inner modules [Belt.MutableSet.Int](mutable-set-int) and [Belt.MutableSet.String](mutable-set-string) - This module separates data from function which is more verbose but slightly more efficient
+
+  ```res example
+  module PairComparator = Belt.Id.MakeComparable({
+    type t = (int, int)
+    let cmp = ((a0, a1), (b0, b1)) =>
+      switch Pervasives.compare(a0, b0) {
+      | 0 => Pervasives.compare(a1, b1)
+      | c => c
+      }
+  })
+
+  let mySet = Belt.MutableSet.make(~id=module(PairComparator))
+  mySet->Belt.MutableSet.add((1, 2))
+  ```
 *)
 
 
-(** Specalized when key type is `int`, more efficient
+(** Specialized when key type is `int`, more efficient
     than the generic type
 *)
 module Int = Belt_MutableSetInt
 
-(** Specalized when key type is `string`, more efficient
+(** Specialized when key type is `string`, more efficient
     than the generic type *)
 module String = Belt_MutableSetString
 
-type ('k,'id) t
+type ('value, 'identity) t
+(**
+  `'value` is the element type
 
-type ('k, 'id) id = ('k, 'id) Belt_Id.comparable
+  `'identity` the identity of the collection
+*)
+
+type ('value, 'id) id = ('value, 'id) Belt_Id.comparable
+(**
+  The identity needed for making a set from scratch
+*)
 
 val make: id:('value, 'id) id -> ('value, 'id) t
+(**
+  Creates a new set by taking in the comparator
+*)
 
-val fromArray: 'k array -> id:('k, 'id) id ->   ('k, 'id) t
+val fromArray: 'value array -> id:('value, 'id) id ->   ('value, 'id) t
+(**
+  Creates new set from array of elements.
+
+  ```res example
+  module IntCmp = Belt.Id.MakeComparable({
+    type t = int
+    let cmp = Pervasives.compare
+  })
+
+  let s0 = Belt.MutableSet.fromArray([1, 3, 2, 4], ~id=module(IntCmp))
+
+  s0->Belt.MutableSet.toArray /* [1, 2, 3, 4] */
+  ```
+*)
+
 val fromSortedArrayUnsafe: 'value array -> id:('value, 'id) id ->  ('value,'id) t
-val copy: ('k, 'id) t -> ('k, 'id) t
+(**
+  The same as [fromArray][#fromarray] except it is after assuming the input array is already sorted.
+*)
+
+val copy: ('value, 'id) t -> ('value, 'id) t
+(**
+  Returns copy of a set.
+
+  ```res example
+  module IntCmp = Belt.Id.MakeComparable({
+    type t = int
+    let cmp = Pervasives.compare
+  })
+
+  let s0 = Belt.MutableSet.fromArray([1, 3, 2, 4], ~id=module(IntCmp))
+
+  let copied = s0->Belt.MutableSet.copy
+  copied->Belt.MutableSet.toArray /* [1, 2, 3, 4] */
+  ```
+*)
+
 val isEmpty: _ t -> bool
-val has:  ('value, _) t -> 'value ->  bool
+(**
+  Checks if set is empty.
+
+  ```res example
+  module IntCmp = Belt.Id.MakeComparable({
+    type t = int
+    let cmp = Pervasives.compare
+  })
+
+  let empty = Belt.MutableSet.fromArray([], ~id=module(IntCmp))
+  let notEmpty = Belt.MutableSet.fromArray([1], ~id=module(IntCmp))
+
+  Belt.MutableSet.isEmpty(empty) /* true */
+  Belt.MutableSet.isEmpty(notEmpty) /* false */
+  ```
+*)
+
+val has:  ('value, 'id) t -> 'value ->  bool
+(**
+  Checks if element exists in set.
+
+  ```res example
+  module IntCmp = Belt.Id.MakeComparable({
+    type t = int
+    let cmp = Pervasives.compare
+  })
+
+  let set = Belt.MutableSet.fromArray([1, 4, 2, 5], ~id=module(IntCmp))
+
+  set->Belt.MutableSet.has(3) /* false */
+  set->Belt.MutableSet.has(1) /* true */
+  ```
+*)
 
 val add: ('value, 'id) t -> 'value -> unit
+(**
+  Adds element to set. If element existed in set, value is unchanged.
+
+  ```res example
+  module IntCmp = Belt.Id.MakeComparable({
+    type t = int
+    let cmp = Pervasives.compare
+  })
+
+  let s0 = Belt.MutableSet.make(~id=module(IntCmp))
+  s0->Belt.MutableSet.add(1)
+  s0->Belt.MutableSet.add(2)
+  s0->Belt.MutableSet.add(2)
+
+  s0->Belt.MutableSet.toArray /* [1, 2] */
+  ```
+*)
 
 val addCheck:
   ('value, 'id) t -> 'value -> bool
 
 val mergeMany:
   ('value, 'id) t -> 'value array -> unit
+(**
+  Adds each element of array to set.
+
+  ```res example
+  module IntCmp = Belt.Id.MakeComparable({
+    type t = int
+    let cmp = Pervasives.compare
+  })
+
+  let set = Belt.MutableSet.make(~id=module(IntCmp))
+
+  set->Belt.MutableSet.mergeMany([5, 4, 3, 2, 1])
+  set->Belt.MutableSet.toArray /* [1, 2, 3, 4, 5] */
+  ```
+*)
 
 val remove: ('value, 'id) t -> 'value -> unit
+(**
+  Removes element from set. If element did not exist in set, value is unchanged.
+
+  ```res example
+  module IntCmp = Belt.Id.MakeComparable({
+    type t = int
+    let cmp = Pervasives.compare
+  })
+
+  let s0 = Belt.MutableSet.fromArray([2, 3, 1, 4, 5], ~id=module(IntCmp))
+  s0->Belt.MutableSet.remove(1)
+  s0->Belt.MutableSet.remove(3)
+  s0->Belt.MutableSet.remove(3)
+
+  s0->Belt.MutableSet.toArray /* [2,4,5] */
+  ```
+*)
 
 val removeCheck: ('value, 'id) t -> 'value -> bool
 (* `b = removeCheck s e` `b` is true means one element removed *)
 
 val removeMany:
   ('value, 'id) t -> 'value array -> unit
+(**
+  Removes each element of array from set.
+
+  ```res example
+  module IntCmp = Belt.Id.MakeComparable({
+    type t = int
+    let cmp = Pervasives.compare
+  })
+
+  let set = Belt.MutableSet.fromArray([1, 2, 3, 4], ~id=module(IntCmp))
+
+  set->Belt.MutableSet.removeMany([5, 4, 3, 2, 1])
+  set->Belt.MutableSet.toArray /* [] */
+  ```
+*)
 
 val union: ('value, 'id) t -> ('value, 'id) t -> ('value, 'id) t
+(**
+  Returns union of two sets.
+
+  ```res example
+  module IntCmp = Belt.Id.MakeComparable({
+    type t = int
+    let cmp = Pervasives.compare
+  })
+
+  let s0 = Belt.MutableSet.fromArray([5, 2, 3, 5, 6], ~id=module(IntCmp))
+  let s1 = Belt.MutableSet.fromArray([5, 2, 3, 1, 5, 4], ~id=module(IntCmp))
+  let union = Belt.MutableSet.union(s0, s1)
+  union->Belt.MutableSet.toArray /* [1,2,3,4,5,6] */
+  ```
+*)
+
 val intersect: ('value, 'id) t -> ('value, 'id) t -> ('value, 'id) t
+(**
+  Returns intersection of two sets.
+
+  ```res example
+  module IntCmp = Belt.Id.MakeComparable({
+    type t = int
+    let cmp = Pervasives.compare
+  })
+
+  let s0 = Belt.MutableSet.fromArray([5, 2, 3, 5, 6], ~id=module(IntCmp))
+  let s1 = Belt.MutableSet.fromArray([5, 2, 3, 1, 5, 4], ~id=module(IntCmp))
+  let intersect = Belt.MutableSet.intersect(s0, s1)
+  intersect->Belt.MutableSet.toArray /* [2,3,5] */
+  ```
+*)
+
 val diff: ('value, 'id) t -> ('value, 'id) t -> ('value, 'id) t
+(**
+  Returns elements from first set, not existing in second set.
+
+  ```res example
+  module IntCmp = Belt.Id.MakeComparable({
+    type t = int
+    let cmp = Pervasives.compare
+  })
+
+  let s0 = Belt.MutableSet.fromArray([5, 2, 3, 5, 6], ~id=module(IntCmp))
+  let s1 = Belt.MutableSet.fromArray([5, 2, 3, 1, 5, 4], ~id=module(IntCmp))
+  Belt.MutableSet.toArray(Belt.MutableSet.diff(s0, s1)) /* [6] */
+  Belt.MutableSet.toArray(Belt.MutableSet.diff(s1, s0)) /* [1,4] */
+  ```
+*)
+
 val subset: ('value, 'id) t -> ('value, 'id) t -> bool
+(**
+  Checks if second set is subset of first set.
+
+  ```res example
+  module IntCmp = Belt.Id.MakeComparable({
+    type t = int
+    let cmp = Pervasives.compare
+  })
+
+  let s0 = Belt.MutableSet.fromArray([5, 2, 3, 5, 6], ~id=module(IntCmp))
+  let s1 = Belt.MutableSet.fromArray([5, 2, 3, 1, 5, 4], ~id=module(IntCmp))
+  let s2 = Belt.MutableSet.intersect(s0, s1)
+  Belt.MutableSet.subset(s2, s0) /* true */
+  Belt.MutableSet.subset(s2, s1) /* true */
+  Belt.MutableSet.subset(s1, s0) /* false */
+  ```
+*)
 
 val cmp:
   ('value, 'id) t -> ('value, 'id) t -> int
+(**
+  Total ordering between sets. Can be used as the ordering function for doing sets of sets. It compares size first and then iterates over each element following the order of elements.
+*)
+
 val eq:
   ('value, 'id) t -> ('value, 'id) t -> bool
+(**
+  Checks if two sets are equal.
+
+  ```res example
+  module IntCmp = Belt.Id.MakeComparable({
+    type t = int
+    let cmp = Pervasives.compare
+  })
+
+  let s0 = Belt.MutableSet.fromArray([5, 2, 3], ~id=module(IntCmp))
+  let s1 = Belt.MutableSet.fromArray([3, 2, 5], ~id=module(IntCmp))
+
+  Belt.MutableSet.eq(s0, s1) /* true */
+  ```
+*)
 
 val forEachU: ('value, 'id) t -> ('value -> unit [@bs]) ->  unit
+(**
+  Same as [forEach](##forEach) but takes uncurried functon.
+*)
+
 val forEach: ('value, 'id) t -> ('value -> unit) ->  unit
-(** `forEach m f` applies `f` in turn to all elements of `m`.
-    In increasing order *)
+(**
+  Applies function `f` in turn to all elements of set in increasing order.
+
+  ```res example
+  module IntCmp = Belt.Id.MakeComparable({
+    type t = int
+    let cmp = Pervasives.compare
+  })
+
+  let s0 = Belt.MutableSet.fromArray([5, 2, 3, 5, 6], ~id=module(IntCmp))
+  let acc = ref(list{})
+  s0->Belt.MutableSet.forEach(x => acc := Belt.List.add(acc.contents, x))
+  acc /* [6,5,3,2] */
+  ```
+*)
 
 val reduceU: ('value, 'id) t -> 'a -> ('a -> 'value -> 'a [@bs]) -> 'a
+
 val reduce: ('value, 'id) t -> 'a -> ('a -> 'value -> 'a) -> 'a
-(** In increasing order. *)
+(**
+  Applies function `f` to each element of set in increasing order. Function `f` has two parameters: the item from the set and an “accumulator”, which starts with a value of `initialValue`. `reduce` returns the final value of the accumulator.
+
+  ```res example
+  module IntCmp = Belt.Id.MakeComparable({
+    type t = int
+    let cmp = Pervasives.compare
+  })
+
+  let s0 = Belt.MutableSet.fromArray([5, 2, 3, 5, 6], ~id=module(IntCmp))
+  s0->Belt.MutableSet.reduce(list{}, (acc, element) => acc->Belt.List.add(element)) /* [6,5,3,2] */
+  ```
+*)
 
 val everyU: ('value, 'id) t -> ('value -> bool [@bs]) -> bool
+
 val every: ('value, 'id) t -> ('value -> bool) -> bool
-(** `every s p` checks if all elements of the set
-    satisfy the predicate `p`. Order unspecified *)
+(**
+  Checks if all elements of the set satisfy the predicate. Order unspecified.
+
+  ```res example
+  module IntCmp = Belt.Id.MakeComparable({
+    type t = int
+    let cmp = Pervasives.compare
+  })
+
+  let isEven = x => mod(x, 2) == 0
+
+  let s0 = Belt.MutableSet.fromArray([2, 4, 6, 8], ~id=module(IntCmp))
+  s0->Belt.MutableSet.every(isEven) /* true */
+  ```
+*)
 
 val someU: ('value, 'id) t ->  ('value -> bool [@bs]) -> bool
+
 val some: ('value, 'id) t ->  ('value -> bool) -> bool
-(** `some p s` checks if at least one element of
-    the set satisfies the predicate `p`. *)
+(**
+  Checks if at least one element of the set satisfies the predicate.
+
+  ```res example
+  module IntCmp = Belt.Id.MakeComparable({
+    type t = int
+    let cmp = Pervasives.compare
+  })
+
+  let isOdd = x => mod(x, 2) != 0
+
+  let s0 = Belt.MutableSet.fromArray([1, 2, 4, 6, 8], ~id=module(IntCmp))
+  s0->Belt.MutableSet.some(isOdd) /* true */
+  ```
+*)
 
 val keepU: ('value, 'id) t -> ('value -> bool [@bs]) -> ('value, 'id) t
+
 val keep: ('value, 'id) t -> ('value -> bool) -> ('value, 'id) t
-(** `keep s p` returns the set of all elements in `s`
-    that satisfy predicate `p`. *)
+(**
+  Returns the set of all elements that satisfy the predicate.
+
+  ```res example
+  module IntCmp = Belt.Id.MakeComparable({
+    type t = int
+    let cmp = Pervasives.compare
+  })
+
+  let isEven = x => mod(x, 2) == 0
+
+  let s0 = Belt.MutableSet.fromArray([1, 2, 3, 4, 5], ~id=module(IntCmp))
+  let s1 = s0->Belt.MutableSet.keep(isEven)
+
+  s1->Belt.MutableSet.toArray /* [2, 4] */
+  ```
+*)
 
 val partitionU: ('value, 'id) t -> ('value -> bool [@bs]) -> ('value, 'id) t * ('value, 'id) t
-val partition: ('value, 'id) t -> ('value -> bool) -> ('value, 'id) t * ('value, 'id) t
-(** `partition p s` returns a pair of sets `(s1, s2)`, where
-    `s1` is the set of all the elements of `s` that satisfy the
-    predicate `p`, and `s2` is the set of all the elements of
-    `s` that do not satisfy `p`. *)
 
+val partition: ('value, 'id) t -> ('value -> bool) -> ('value, 'id) t * ('value, 'id) t
+(**
+  ```res example
+  module IntCmp = Belt.Id.MakeComparable({
+    type t = int
+    let cmp = Pervasives.compare
+  })
+
+  let isOdd = x => mod(x, 2) != 0
+
+  let s0 = Belt.MutableSet.fromArray([1, 2, 3, 4, 5], ~id=module(IntCmp))
+  let (s1, s2) = s0->Belt.MutableSet.partition(isOdd)
+
+  s1->Belt.MutableSet.toArray /* [1,3,5] */
+  s2->Belt.MutableSet.toArray /* [2,4] */
+  ```
+*)
 
 val size:  ('value, 'id) t -> int
+(**
+  Returns size of the set.
+
+  ```res example
+  module IntCmp = Belt.Id.MakeComparable({
+    type t = int
+    let cmp = Pervasives.compare
+  })
+
+  let s0 = Belt.MutableSet.fromArray([1, 2, 3, 4], ~id=module(IntCmp))
+
+  s0->Belt.MutableSet.size /* 4 */
+  ```
+*)
+
 val toList: ('value, 'id) t -> 'value list
-(** In increasing order*)
+(**
+  Returns list of ordered set elements.
+
+  ```res example
+  module IntCmp = Belt.Id.MakeComparable({
+    type t = int
+    let cmp = Pervasives.compare
+  })
+
+  let s0 = Belt.MutableSet.fromArray([3, 2, 1, 5], ~id=module(IntCmp))
+
+  s0->Belt.MutableSet.toList /* [1,2,3,5] */
+  ```
+*)
 
 val toArray: ('value, 'id) t -> 'value array
-(** In increasing order*)
+(**
+  Returns array of ordered set elements.
+
+  ```res example
+  module IntCmp = Belt.Id.MakeComparable({
+    type t = int
+    let cmp = Pervasives.compare
+  })
+
+  let s0 = Belt.MutableSet.fromArray([3, 2, 1, 5], ~id=module(IntCmp))
+
+  s0->Belt.MutableSet.toArray /* [1,2,3,5] */
+  ```
+*)
 
 val minimum: ('value, 'id) t -> 'value option
+(**
+  Returns minimum value of the collection. `None` if collection is empty.
+
+  ```res example
+  module IntCmp = Belt.Id.MakeComparable({
+    type t = int
+    let cmp = Pervasives.compare
+  })
+
+  let s0 = Belt.MutableSet.make(~id=module(IntCmp))
+  let s1 = Belt.MutableSet.fromArray([3, 2, 1, 5], ~id=module(IntCmp))
+
+  s0->Belt.MutableSet.minimum /* None */
+  s1->Belt.MutableSet.minimum /* Some(1) */
+  ```
+*)
+
 val minUndefined: ('value, 'id) t -> 'value Js.undefined
+(**
+  Returns minimum value of the collection. `undefined` if collection is empty.
+
+  ```res example
+  module IntCmp = Belt.Id.MakeComparable({
+    type t = int
+    let cmp = Pervasives.compare
+  })
+
+  let s0 = Belt.MutableSet.make(~id=module(IntCmp))
+  let s1 = Belt.MutableSet.fromArray([3, 2, 1, 5], ~id=module(IntCmp))
+
+  s0->Belt.MutableSet.minUndefined /* undefined */
+  s1->Belt.MutableSet.minUndefined /* 1 */
+  ```
+*)
+
 val maximum: ('value, 'id) t -> 'value option
+(**
+  Returns maximum value of the collection. `None` if collection is empty.
+
+  ```res example
+  module IntCmp = Belt.Id.MakeComparable({
+    type t = int
+    let cmp = Pervasives.compare
+  })
+
+  let s0 = Belt.MutableSet.make(~id=module(IntCmp))
+  let s1 = Belt.MutableSet.fromArray([3, 2, 1, 5], ~id=module(IntCmp))
+
+  s0->Belt.MutableSet.maximum /* None */
+  s1->Belt.MutableSet.maximum /* Some(5) */
+  ```
+*)
+
 val maxUndefined: ('value, 'id) t -> 'value Js.undefined
+(**
+  Returns maximum value of the collection. `undefined` if collection is empty.
+
+  ```res example
+  module IntCmp = Belt.Id.MakeComparable({
+    type t = int
+    let cmp = Pervasives.compare
+  })
+
+  let s0 = Belt.MutableSet.make(~id=module(IntCmp))
+  let s1 = Belt.MutableSet.fromArray([3, 2, 1, 5], ~id=module(IntCmp))
+
+  s0->Belt.MutableSet.maxUndefined /* undefined */
+  s1->Belt.MutableSet.maxUndefined /* 5 */
+  ```
+*)
 
 val get: ('value, 'id) t -> 'value -> 'value option
-val getUndefined: ('value, 'id) t -> 'value -> 'value Js.undefined
-val getExn: ('value, 'id) t -> 'value -> 'value
+(**
+  Returns the reference of the value which is equivalent to value using the comparator specifiecd by this collection. Returns `None` if element does not exist.
 
+  ```res example
+  module IntCmp = Belt.Id.MakeComparable({
+    type t = int
+    let cmp = Pervasives.compare
+  })
+
+  let s0 = Belt.MutableSet.fromArray([1, 2, 3, 4, 5], ~id=module(IntCmp))
+
+  s0->Belt.MutableSet.get(3) /* Some(3) */
+  s0->Belt.MutableSet.get(20) /* None */
+  ```
+*)
+
+val getUndefined: ('value, 'id) t -> 'value -> 'value Js.undefined
+(**
+  Same as [get](#get) but returns `undefined` when element does not exist.
+*)
+
+val getExn: ('value, 'id) t -> 'value -> 'value
+(**
+  Same as [get](#get) but raise when element does not exist.
+*)
 
 val split: ('value, 'id) t -> 'value ->  (('value, 'id) t * ('value, 'id) t) * bool
-(** `split s x` returns a triple `((l, r), present)`, where
-      `l` is the set of elements of `s` that are
-      strictly less than `x`;
-      `r` is the set of elements of `s` that are
-      strictly greater than `x`;
-      `present` is `false` if `s` contains no element equal to `x`,
-      or `true` if `s` contains an element equal to `x`.
-    `l,r` are freshly made, no sharing with `s`
+(**
+  Returns a tuple `((smaller, larger), present)`, `present` is true when element exist in set.
+
+  ```res example
+  module IntCmp = Belt.Id.MakeComparable({
+    type t = int
+    let cmp = Pervasives.compare
+  })
+
+  let s0 = Belt.MutableSet.fromArray([1, 2, 3, 4, 5], ~id=module(IntCmp))
+
+  let ((smaller, larger), present) = s0->Belt.MutableSet.split(3)
+
+  present /* true */
+  smaller->Belt.MutableSet.toArray /* [1,2] */
+  larger->Belt.MutableSet.toArray /* [4,5] */
+  ```
 *)
 
 val checkInvariantInternal: _ t -> unit
 (**
-   **raise** when invariant is not held
+  **raise** when invariant is not held
 *)
 
 (*
@@ -148,6 +615,3 @@ val checkInvariantInternal: _ t -> unit
     ('value, 'id) t0 -> 'value ->
     ('value, 'id) t0]
   2. It is not really significantly more *)
-
-
-

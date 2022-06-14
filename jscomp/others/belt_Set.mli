@@ -59,18 +59,18 @@
   ```
 *)
 
-(** Specalized when value type is `int`, more efficient
+(** Specialized when value type is `int`, more efficient
   than the generic type, its compare behavior is fixed using the built-in comparison
 *)
 module Int = Belt_SetInt
 
-(** Specalized when value type is `string`, more efficient
+(** Specialized when value type is `string`, more efficient
   than the generic type, its compare behavior is fixed using the built-in comparison
 *)
 module String = Belt_SetString
 
 
-(** This module seprate identity from data, it is a bit more verbose but slightly
+(** This module separates identity from data, it is a bit more verbose but slightly
   more efficient due to the fact that there is no need to pack identity and data back
   after each operation
 *)
@@ -177,7 +177,7 @@ val mergeMany: ('value, 'id) t -> 'value array -> ('value, 'id) t
 
 val remove: ('value, 'id) t -> 'value -> ('value, 'id) t
 (**
-  Removes element from set. If element wasn't existed in set, value is unchanged.
+  Removes element from set. If element did not exist in set, value is unchanged.
 
   ```res example
   let s0 = Belt.Set.fromArray([2,3,1,4,5], ~id=module(IntCmp))
@@ -194,7 +194,7 @@ val remove: ('value, 'id) t -> 'value -> ('value, 'id) t
 val removeMany:
   ('value, 'id) t -> 'value array -> ('value, 'id) t
 (**
-  Removes each element of array from set. Unlike [remove](#remove), the reference of return value might be changed even if any values in array not existed in set.
+  Removes each element of array from set. Unlike [remove](#remove), the reference of return value might be changed even if none of values in array existed in set.
 
   ```res example
   let set = Belt.Set.fromArray([1, 2, 3, 4],~id=module(IntCmp))
