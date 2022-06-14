@@ -22,6 +22,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** This module separates identity from data, it is a bit more verbose but
+    slightly more efficient due to the fact that there is no need to pack
+    identity and data back after each operation.
+
+    **_Advanced usage only_**
+*)
+
+(*  ```res prelude
+    type t<'key, 'value, 'id>
+    type cmp<'key, 'id> = Belt_Id.cmp<'key, 'id>
+    ```
+*)
+
 type ('key, 'value, 'id) t
 
 type ('key, 'id) cmp = ('key, 'id) Belt_Id.cmp
@@ -60,44 +73,49 @@ val eq:
   kcmp:('k, 'id) cmp ->
   veq:('a -> 'a -> bool) ->
   bool
-(** `eq m1 m2 cmp` tests whether the maps `m1` and `m2` are
-    equal, that is, contain equal keys and associate them with
-    equal data.  `cmp` is the equality predicate used to compare
-    the data associated with the keys. *)
+(** `eq(m1, m2, cmp)` tests whether the maps `m1` and `m2` are equal, that is,
+    contain equal keys and associate them with equal data. `cmp` is the
+    equality predicate used to compare the data associated with the keys. *)
 
 val findFirstByU : ('k, 'v, 'id) t -> ('k -> 'v -> bool [@bs]) -> ('k * 'v) option
 val findFirstBy : ('k, 'v, 'id) t -> ('k -> 'v -> bool ) -> ('k * 'v) option
-(** `findFirstBy m p` uses funcion `f` to find the first key value pair
-    to match predicate `p`.
+(** `findFirstBy(m, p)` uses function `f` to find the first key value pair to
+    match predicate `p`.
 
-    ```
-    let s0 = fromArray ~id:(module IntCmp) [|4,"4";1,"1";2,"2,"3""|];;
-    findFirstBy s0 (fun k v -> k = 4 ) = option (4, "4");;
+    ```res example
+    module IntCmp = Belt.Id.MakeComparable({
+      type t = int
+      let cmp = Pervasives.compare
+    })
+
+    let s0 = Belt.Map.Dict.fromArray([(4, "4"), (1, "1"), (2, "2"), (3, "3")], ~cmp=IntCmp.cmp)
+
+    Belt.Map.Dict.findFirstBy(s0, (k, _) => k == 4) == Some((4, "4"))
     ```
 *)
 
 val forEachU: ('k, 'a, 'id) t -> ('k -> 'a -> unit [@bs]) -> unit
 val forEach: ('k, 'a, 'id) t -> ('k -> 'a -> unit) -> unit
-(** `forEach m f` applies `f` to all bindings in map `m`.
-    `f` receives the key as first argument, and the associated value
-    as second argument. The bindings are passed to `f` in increasing
-    order with respect to the ordering over the type of the keys. *)
+(** `forEach(m, f)` applies `f` to all bindings in map `m`. `f` receives the
+    key as first argument, and the associated value as second argument. The
+    bindings are passed to `f` in increasing order with respect to the ordering
+    over the type of the keys. *)
 
 val reduceU: ('k, 'a, 'id) t -> 'b -> ('b -> 'k -> 'a -> 'b [@bs]) -> 'b
 val reduce: ('k, 'a, 'id) t -> 'b -> ('b -> 'k -> 'a -> 'b) -> 'b
-(** `reduce m a f` computes `(f kN dN ... (f k1 d1 a)...)`,
-    where `k1 ... kN` are the keys of all bindings in `m`
-    (in increasing order), and `d1 ... dN` are the associated data. *)
+(** `reduce(m, a, f)` computes `f(kN, dN ... f(k1, d1, a)...)`, where `k1 ...
+    kN` are the keys of all bindings in `m` (in increasing order), and `d1 ...
+    dN` are the associated data. *)
 
 val everyU: ('k, 'a, 'id) t -> ('k -> 'a -> bool [@bs]) -> bool
 val every: ('k, 'a, 'id) t -> ('k -> 'a -> bool) -> bool
-(** `every m p` checks if all the bindings of the map
-    satisfy the predicate `p`. Order unspecified *)
+(** `every(m, p)` checks if all the bindings of the map satisfy the predicate
+    `p`. Order unspecified *)
 
 val someU: ('k, 'a, 'id) t -> ('k -> 'a -> bool [@bs]) -> bool
 val some: ('k, 'a, 'id) t -> ('k -> 'a -> bool) -> bool
-(** `some m p` checks if at least one binding of the map
-    satisfy the predicate `p`. Order unspecified *)
+(** `some(m, p)` checks if at least one binding of the map satisfy the
+    predicate `p`. Order unspecified *)
 
 val size: ('k, 'a, 'id) t -> int
 
@@ -150,16 +168,13 @@ val getExn:
   'a
 
 val checkInvariantInternal: _ t -> unit
-(**
-   **raise** when invariant is not held
-*)
 
 val remove:
   ('a, 'b, 'id) t -> 'a ->
   cmp:('a, 'id) cmp ->
   ('a, 'b, 'id) t
-(** `remove m x` returns a map containing the same bindings as
-    `m`, except for `x` which is unbound in the returned map. *)
+(** `remove(m, x)` returns a map containing the same bindings as `m`, except
+    for `x` which is unbound in the returned map. *)
 
 val removeMany:
   ('a, 'b, 'id) t ->
@@ -171,9 +186,9 @@ val set:
   ('a, 'b, 'id) t -> 'a -> 'b ->
   cmp:('a, 'id) cmp ->
   ('a, 'b, 'id) t
-(** `set m x y` returns a map containing the same bindings as
-    `m`, plus a binding of `x` to `y`. If `x` was already bound
-    in `m`, its previous binding disappears. *)
+(** `set(m, x, y)` returns a map containing the same bindings as `m`, plus a
+    binding of `x` to `y`. If `x` was already bound in `m`, its previous
+    binding disappears. *)
 
 val updateU:
   ('a, 'b, 'id) t ->
@@ -198,10 +213,9 @@ val merge:
   ('a, 'c, 'id) t ->
   ('a -> 'b option -> 'c option -> 'd option) ->
   cmp:('a, 'id) cmp -> ('a, 'd, 'id) t
-(** `merge m1 m2 f` computes a map whose keys is a subset of keys of `m1`
+(** `merge(m1, m2, f)` computes a map whose keys is a subset of keys of `m1`
     and of `m2`. The presence of each such binding, and the corresponding
-    value, is determined with the function `f`.
-*)
+    value, is determined with the function `f`. *)
 
 val mergeMany:
   ('a, 'b, 'id) t ->
@@ -217,8 +231,8 @@ val keep:
   ('k, 'a, 'id) t ->
   ('k -> 'a -> bool) ->
   ('k, 'a, 'id) t
-(** `keep m p` returns the map with all the bindings in `m`
-    that satisfy predicate `p`. *)
+(** `keep(m, p)` returns the map with all the bindings in `m` that satisfy
+    predicate `p`. *)
 
 val partitionU:
   ('k, 'a, 'id) t ->
@@ -228,33 +242,27 @@ val partition:
   ('k, 'a, 'id) t ->
   ('k -> 'a -> bool) -> 
   ('k, 'a, 'id) t * ('k, 'a, 'id) t
-(** `partition m p` returns a pair of maps `(m1, m2)`, where
-    `m1` contains all the bindings of `s` that satisfy the
-    predicate `p`, and `m2` is the map with all the bindings of
-    `s` that do not satisfy `p`.
-*)
+(** `partition(m, p)` returns a pair of maps `(m1, m2)`, where `m1` contains
+    all the bindings of `s` that satisfy the predicate `p`, and `m2` is the map
+    with all the bindings of `s` that do not satisfy `p`. *)
 
 val split:
   ('a, 'b, 'id) t ->
   'a ->
   cmp:('a, 'id) cmp ->
   (('a,'b,'id) t * ('a, 'b, 'id) t) * 'b option
-(** `split x m` returns a triple `(l, data, r)`, where
-      `l` is the map with all the bindings of `m` whose key
-    is strictly less than `x`;
-      `r` is the map with all the bindings of `m` whose key
-    is strictly greater than `x`;
-      `data` is `None` if `m` contains no binding for `x`,
-      or `Some v` if `m` binds `v` to `x`.
-*)
+(** `split(x, m)` returns a triple `(l, data, r)`, where `l` is the map with
+    all the bindings of `m` whose key is strictly less than `x`; `r` is the map
+    with all the bindings of `m` whose key is strictly greater than `x`; `data`
+    is `None` if `m` contains no binding for `x`, or `Some(v)` if `m` binds `v`
+    to `x`. *)
 
 val mapU: ('k, 'a, 'id) t -> ('a -> 'b [@bs]) -> ('k ,'b,'id) t
 val map: ('k, 'a, 'id) t -> ('a -> 'b) -> ('k ,'b,'id) t
-(** `map m f` returns a map with same domain as `m`, where the
-    associated value `a` of all bindings of `m` has been
-    replaced by the result of the application of `f` to `a`.
-    The bindings are passed to `f` in increasing order
-    with respect to the ordering over the type of the keys. *)
+(** `map(m, f)` returns a map with same domain as `m`, where the associated
+    value `a` of all bindings of `m` has been replaced by the result of the
+    application of `f` to `a`. The bindings are passed to `f` in increasing
+    order with respect to the ordering over the type of the keys. *)
 
 val mapWithKeyU: ('k, 'a, 'id) t -> ('k -> 'a -> 'b [@bs]) -> ('k, 'b, 'id) t
 val mapWithKey: ('k, 'a, 'id) t -> ('k -> 'a -> 'b) -> ('k, 'b, 'id) t
