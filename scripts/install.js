@@ -119,7 +119,7 @@ function ensureExists(dir) {
  * @returns {string|undefined}
  */
 function checkPrebuiltBscCompiler() {
-  if (process.env.BS_TRAVIS_CI || force_compiler_rebuild) {
+  if (process.env.RESCRIPT_FORCE_REBUILD || force_compiler_rebuild) {
     return;
   }
   try {
@@ -158,7 +158,7 @@ stdlib = ${stdlib}
 subninja runtime/release.ninja
 subninja others/release.ninja
 subninja $stdlib/release.ninja
-${process.env.BS_TRAVIS_CI ? "subninja test/build.ninja\n" : "\n"}
+${process.env.RESCRIPT_FORCE_REBUILD ? "subninja test/build.ninja\n" : "\n"}
 o all: phony runtime others $stdlib
 `;
   var filePath = path.join(jscomp_dir, "release.ninja");
@@ -231,7 +231,7 @@ provideCompiler();
 
 var stdlib = "stdlib-406";
 
-if (process.env.BS_TRAVIS_CI || force_lib_rebuild) {
+if (process.env.RESCRIPT_FORCE_REBUILD || force_lib_rebuild) {
   buildLibs(stdlib);
   require("./installUtils.js").install();
 }
