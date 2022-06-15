@@ -70,7 +70,7 @@ jobs:
       run: |
         opam exec -- node ./scripts/ninja.js config
         opam exec -- node ./scripts/ninja.js build
-        git diff --stat --exit-code lib/js lib/es6
+        git diff --exit-code lib/js lib/es6
 
     - name: Get artifact info
       id: get_artifact_info
