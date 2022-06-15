@@ -123,7 +123,7 @@ node scripts/install -force-lib-rebuild # make sure lib/ocaml is populated
 npm uninstall -g rescript # a cache-busting uninstall is needed, but only for npm >=7
 
 # This will globally install your local build via npm
-BS_TRAVIS_CI=1 npm install -g .
+RESCRIPT_FORCE_REBUILD=1 npm install -g .
 ```
 
 Then you may initialize and build your ReScript project as usual:
