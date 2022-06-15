@@ -40,7 +40,7 @@ jobs:
         opam-pin: false
         opam-depext: false
 
-    - name: Use OCaml ${{matrix.ocaml_compiler}}
+    - name: Use OCaml ${{matrix.ocaml_compiler}} (macOS ARM)
       if: runner.name == 'macos-arm'
       uses: AbstractMachinesLab/setup-ocaml@arm-support
       with:
@@ -56,21 +56,20 @@ jobs:
     - name: ci-install
       run: opam exec -- npm ci
 
-    - name: Run tests (macOS)
-      if: matrix.os == 'macos-latest'
-      run: opam exec -- node scripts/ciTest.js -all
-
-    - name: Run tests (macos-arm)
-      if: matrix.os == 'macos-arm'
-      run: opam exec -- node scripts/ciTest.js -all
-    
-    - name: Run tests (Linux)
-      if: runner.os == 'Linux'
+    - name: Run tests
+      if: runner.os != 'Windows'
       run: opam exec -- node scripts/ciTest.js -all
     
     - name: Run tests (Windows)
       if: runner.os == 'Windows'
       run: opam exec -- node scripts/ciTest.js -mocha -theme
+
+    - name: Ensure lib/js and lib/es6 are up to date
+      if: runner.os != 'Windows'
+      run: |
+        opam exec -- node ./scripts/ninja.js config
+        opam exec -- node ./scripts/ninja.js build
+        git diff --stat --exit-code lib/js lib/es6
 
     - name: Get artifact info
       id: get_artifact_info
