@@ -17,7 +17,6 @@ jobs:
     runs-on: ${{matrix.os}}
 
     env:
-      RESCRIPT_FORCE_REBUILD: 1
       OCAMLRUNPARAM: b
 
     steps:
@@ -53,8 +52,10 @@ jobs:
       with:
         node-version: 16
 
-    - name: ci-install
+    - name: NPM install
       run: opam exec -- npm ci
+      env:
+        RESCRIPT_FORCE_REBUILD: 1
 
     - name: Run tests
       if: runner.os != 'Windows'
