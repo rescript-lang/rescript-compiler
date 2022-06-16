@@ -22,65 +22,131 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(**
+Provide utilities for JS dictionary object.
+
+**Note:** This module's examples will assume this predeclared dictionary:
+
+```res prelude
+let ages = Js.Dict.fromList(list{("Maria", 30), ("Vinh", 22), ("Fred", 49)})
+```
+*)
 
 type 'a t
 (**
-  Dictionary type (ie an '{ }' JS object). However it is restricted
-  to hold a single type; therefore values must have the same type.
-
-  This Dictionary type is mostly used with the `Js_json.t` type.
+Dictionary type (ie an '{ }' JS object). However it is restricted to hold a
+single type; therefore values must have the same type. This Dictionary type is
+mostly used with the Js_json.t type.
 *)
 
 type key = string
-(** Key type *)
+(** The type for dictionary keys. This means that dictionaries *must* use `string`s as their keys. *)
 
-val get :
-  'a t ->
-  key ->
-  'a option
-(** `get dict key` returns `None` if the `key` is not found in the
-  dictionary, `Some value` otherwise *)
-
-external unsafeGet : 'a t -> key -> 'a = "" [@@bs.get_index]
+val get : 'a t -> key -> 'a option
 (**
-  `unsafeGet dict key` return the value if the `key` exists,
-  otherwise an **undefined** value is returned. Must be used only
-  when the existence of a key is certain. (i.e. when having called `keys`
-  function previously.
+`Js.Dict.get(key)` returns `None` if the key is not found in the dictionary,
+`Some(value)` otherwise.
 
-  ```
-  Array.iter (fun key -> Js.log (Js_dict.unsafeGet dic key)) (Js_dict.keys dict)
-  ```
+```res example
+Js.Dict.get(ages, "Vinh") == Some(22)
+Js.Dict.get(ages, "Paul") == None
+```
 *)
 
-external set : 'a t -> key -> 'a -> unit = "" [@@bs.set_index]
-(** `set dict key value` sets the `key`/`value` in `dict` *)
+external unsafeGet : 'a t -> key -> 'a = ""
+  [@@bs.get_index]
+(**
+`Js.Dict.unsafeGet(key)` returns the value if the key exists, otherwise an `undefined` value is returned. Use this only when you are sure the key exists (i.e. when having used the `keys()` function to check that the key is valid).
 
-external keys : 'a t -> string array = "Object.keys" [@@bs.val]
-(** `keys dict` returns all the keys in the dictionary `dict`*)
+```res example
+Js.Dict.unsafeGet(ages, "Fred") == 49
+Js.Dict.unsafeGet(ages, "Paul") // returns undefined
+```
+*)
 
-external empty : unit -> 'a t = "" [@@bs.obj]
-(** `empty ()` returns an empty dictionary *)
+external set : 'a t -> key -> 'a -> unit = ""
+  [@@bs.set_index]
+(**
+`Js.Dict.set(dict, key, value)` sets the key/value in the dictionary `dict`. If
+the key does not exist, and entry will be created for it.
 
+*This function modifies the original dictionary.*
+
+```res example
+Js.Dict.set(ages, "Maria", 31)
+Js.log(ages == Js.Dict.fromList(list{("Maria", 31), ("Vinh", 22), ("Fred", 49)}))
+
+Js.Dict.set(ages, "David", 66)
+Js.log(ages == Js.Dict.fromList(list{("Maria", 31), ("Vinh", 22), ("Fred", 49), ("David", 66)}))
+```
+*)
+
+external keys : 'a t -> string array = "Object.keys"
+  [@@bs.val]
+(**
+Returns all the keys in the dictionary `dict`.
+
+```res example
+Js.Dict.keys(ages) == ["Maria", "Vinh", "Fred"]
+```
+*)
+
+external empty : unit -> 'a t = ""
+  [@@bs.obj]
+(** Returns an empty dictionary. *)
+
+val unsafeDeleteKey : (string t -> string -> unit[@bs])
 (** Experimental internal function *)
-val unsafeDeleteKey : string t -> string -> unit [@bs]
 
-(* external entries : 'a t -> (key * 'a) array = "Object.entries" [@@bs.val] *)
 val entries : 'a t -> (key * 'a) array
-(** `entries dict` returns the key value pairs in `dict` (ES2017) *)
+(**
+Returns an array of key/value pairs in the given dictionary (ES2017).
 
-(* external values : 'a t -> 'a array = "Object.values" [@@bs.val] *)
+```res example
+Js.Dict.entries(ages) == [("Maria", 30), ("Vinh", 22), ("Fred", 49)]
+```
+*)
+
 val values : 'a t -> 'a array
-(** `values dict` returns the values in `dict` (ES2017) *)
+(**
+Returns the values in the given dictionary (ES2017).
+
+```res example
+Js.Dict.values(ages) == [30, 22, 49]
+```
+*)
 
 val fromList : (key * 'a) list -> 'a t
-(** `fromList entries` creates a new dictionary containing each
-  `(key, value)` pair in `entries` *)
+(**
+Creates a new dictionary containing each (key, value) pair in its list
+argument.
+
+```res example
+let capitals = Js.Dict.fromList(list{("Japan", "Tokyo"), ("France", "Paris"), ("Egypt", "Cairo")})
+```
+*)
 
 val fromArray : (key * 'a) array -> 'a t
-(** `fromArray entries` creates a new dictionary containing each
-  `(key, value)` pair in `entries` *)
+(**
+Creates a new dictionary containing each (key, value) pair in its array
+argument.
 
-val map : ('a -> 'b [@bs]) -> 'a t -> 'b t
-(** `map f dict` maps `dict` to a new dictionary with the same keys,
-  using `f` to map each value *)
+```res example
+let capitals2 = Js.Dict.fromArray([("Germany", "Berlin"), ("Burkina Faso", "Ouagadougou")])
+```
+*)
+
+val map : (('a -> 'b)[@bs]) -> 'a t -> 'b t
+(**
+`map(f, dict)` maps `dict` to a new dictionary with the same keys, using the
+function `f` to map each value.
+
+```res example
+let prices = Js.Dict.fromList(list{("pen", 1.00), ("book", 5.00), ("stapler", 7.00)})
+
+let discount = (. price) => price *. 0.90
+let salePrices = Js.Dict.map(discount, prices)
+
+salePrices == Js.Dict.fromList(list{("pen", 0.90), ("book", 4.50), ("stapler", 6.30)})
+```
+*)
