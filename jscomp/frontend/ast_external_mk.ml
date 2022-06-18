@@ -49,7 +49,7 @@ let local_external_apply loc ?(pval_attributes = []) ~(pval_prim : string list)
         pmod_attributes = [];
       },
       Ast_compatible.apply_simple
-        ({
+        ({pexp_comment = "";
            pexp_desc =
              Pexp_ident
                { txt = Ldot (Lident local_module_name, local_fun_name); loc };
@@ -85,7 +85,7 @@ let local_external_obj loc ?(pval_attributes = []) ~pval_prim ~pval_type
         pmod_attributes = [];
       },
       Ast_compatible.apply_labels
-        ({
+        ({pexp_comment = "";
            pexp_desc =
              Pexp_ident
                { txt = Ldot (Lident local_module_name, local_fun_name); loc };
@@ -121,7 +121,7 @@ let local_extern_cont_to_obj loc ?(pval_attributes = []) ~pval_prim ~pval_type
         pmod_attributes = [];
       },
       cb
-        {
+        {pexp_comment = "";
           pexp_desc =
             Pexp_ident
               { txt = Ldot (Lident local_module_name, local_fun_name); loc };

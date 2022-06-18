@@ -116,7 +116,7 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
           | Pexp_apply (fn, args) ->
               Bs_ast_invariant.warn_discarded_unused_attributes
                 fn.pexp_attributes;
-              {
+              {pexp_comment = "";
                 pexp_desc = Pexp_apply (fn, (Nolabel, new_obj_arg) :: args);
                 pexp_attributes = [];
                 pexp_loc = e.pexp_loc;
@@ -127,7 +127,7 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
                   wholes ) ->
                   Ast_open_cxt.restore_exp
                     (bound new_obj_arg (fun bounded_obj_arg ->
-                         {
+                         {pexp_comment = "";
                            pexp_desc =
                              Pexp_tuple
                                (Ext_list.map xs (fun fn ->
@@ -143,7 +143,7 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
                                         Bs_ast_invariant
                                         .warn_discarded_unused_attributes
                                           fn.pexp_attributes;
-                                        {
+                                        {pexp_comment = "";
                                           Parsetree.pexp_desc =
                                             Pexp_apply
                                               ( fn,
@@ -168,7 +168,7 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
                   in
                   Bs_ast_invariant.warn_discarded_unused_attributes
                     pexp_attributes;
-                  {
+                  {pexp_comment = "";
                     pexp_desc = Pexp_apply (fn, (Nolabel, new_obj_arg) :: args);
                     pexp_attributes = [];
                     pexp_loc = loc;

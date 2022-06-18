@@ -356,6 +356,7 @@ let bs_return_undefined : attr =
           pstr_desc =
             Pstr_eval
               ( {
+                pexp_comment = "";
                   pexp_desc =
                     Pexp_ident { txt = Lident "undefined_to_opt"; loc = locg };
                   pexp_loc = locg;

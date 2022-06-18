@@ -11086,6 +11086,7 @@ and expression =
      pexp_desc: expression_desc;
      pexp_loc: Location.t;
      pexp_attributes: attributes; (* ... [@id1] [@id2] *)
+     pexp_comment: string;
     }
 
 and expression_desc =
@@ -13114,7 +13115,8 @@ let docs_attr ds =
   let exp =
     { pexp_desc = Pexp_constant (Pconst_string(ds.ds_body, None));
       pexp_loc = ds.ds_loc;
-      pexp_attributes = []; }
+      pexp_attributes = [];
+      pexp_comment = ""; }
   in
   let item =
     { pstr_desc = Pstr_eval (exp, []); pstr_loc = exp.pexp_loc }
@@ -13161,7 +13163,8 @@ let text_attr ds =
   let exp =
     { pexp_desc = Pexp_constant (Pconst_string(ds.ds_body, None));
       pexp_loc = ds.ds_loc;
-      pexp_attributes = []; }
+      pexp_attributes = [];
+      pexp_comment = ""; }
   in
   let item =
     { pstr_desc = Pstr_eval (exp, []); pstr_loc = exp.pexp_loc }
@@ -14091,7 +14094,7 @@ end
 
 module Exp = struct
   let mk ?(loc = !default_loc) ?(attrs = []) d =
-    {pexp_desc = d; pexp_loc = loc; pexp_attributes = attrs}
+    {pexp_comment = ""; pexp_desc = d; pexp_loc = loc; pexp_attributes = attrs}
   let attr d a = {d with pexp_attributes = d.pexp_attributes @ [a]}
 
   let ident ?loc ?attrs a = mk ?loc ?attrs (Pexp_ident a)
@@ -39747,7 +39750,7 @@ let arrow ?loc ?attrs a b = Ast_helper.Typ.arrow ?loc ?attrs Nolabel a b
 
 let apply_simple ?(loc = default_loc) ?(attrs = []) (fn : expression)
     (args : expression list) : expression =
-  {
+  {pexp_comment = "";
     pexp_loc = loc;
     pexp_attributes = attrs;
     pexp_desc =
@@ -39755,21 +39758,21 @@ let apply_simple ?(loc = default_loc) ?(attrs = []) (fn : expression)
   }
 
 let app1 ?(loc = default_loc) ?(attrs = []) fn arg1 : expression =
-  {
+  {pexp_comment = "";
     pexp_loc = loc;
     pexp_attributes = attrs;
     pexp_desc = Pexp_apply (fn, [ (Nolabel, arg1) ]);
   }
 
 let app2 ?(loc = default_loc) ?(attrs = []) fn arg1 arg2 : expression =
-  {
+  {pexp_comment = "";
     pexp_loc = loc;
     pexp_attributes = attrs;
     pexp_desc = Pexp_apply (fn, [ (Nolabel, arg1); (Nolabel, arg2) ]);
   }
 
 let app3 ?(loc = default_loc) ?(attrs = []) fn arg1 arg2 arg3 : expression =
-  {
+  {pexp_comment = "";
     pexp_loc = loc;
     pexp_attributes = attrs;
     pexp_desc =
@@ -39777,7 +39780,7 @@ let app3 ?(loc = default_loc) ?(attrs = []) fn arg1 arg2 arg3 : expression =
   }
 
 let fun_ ?(loc = default_loc) ?(attrs = []) pat exp =
-  {
+  {pexp_comment = "";
     pexp_loc = loc;
     pexp_attributes = attrs;
     pexp_desc = Pexp_fun (Nolabel, None, pat, exp);
@@ -39785,14 +39788,14 @@ let fun_ ?(loc = default_loc) ?(attrs = []) pat exp =
 
 let const_exp_string ?(loc = default_loc) ?(attrs = []) ?delimiter (s : string)
     : expression =
-  {
+  {pexp_comment = "";
     pexp_loc = loc;
     pexp_attributes = attrs;
     pexp_desc = Pexp_constant (Pconst_string (s, delimiter));
   }
 
 let const_exp_int ?(loc = default_loc) ?(attrs = []) (s : int) : expression =
-  {
+  {pexp_comment = "";
     pexp_loc = loc;
     pexp_attributes = attrs;
     pexp_desc = Pexp_constant (Pconst_integer (string_of_int s, None));
@@ -39800,7 +39803,7 @@ let const_exp_int ?(loc = default_loc) ?(attrs = []) (s : int) : expression =
 
 let apply_labels ?(loc = default_loc) ?(attrs = []) fn
     (args : (string * expression) list) : expression =
-  {
+  {pexp_comment = "";
     pexp_loc = loc;
     pexp_attributes = attrs;
     pexp_desc =

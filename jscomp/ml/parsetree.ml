@@ -234,6 +234,7 @@ and expression =
      pexp_desc: expression_desc;
      pexp_loc: Location.t;
      pexp_attributes: attributes; (* ... [@id1] [@id2] *)
+     pexp_comment: string;
     }
 
 and expression_desc =

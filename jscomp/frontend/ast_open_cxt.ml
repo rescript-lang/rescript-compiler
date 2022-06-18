@@ -61,7 +61,7 @@ let restore_exp (xs : Parsetree.expression) (qualifiers : t) :
   Ext_list.fold_left qualifiers xs (fun x hole ->
       match hole with
       | Let_open (flag, lid, loc, attrs) ->
-          ({
+          ({pexp_comment = "";
              pexp_desc = Pexp_open (flag, lid, x);
              pexp_attributes = attrs;
              pexp_loc = loc;
