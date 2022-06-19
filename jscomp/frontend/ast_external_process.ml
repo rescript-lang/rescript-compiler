@@ -88,8 +88,8 @@ let refine_arg_type ~(nolabel : bool) (ptyp : Ast_core_type.t) :
     External_arg_spec.attr =
   if ptyp.ptyp_desc = Ptyp_any then
     let ptyp_attrs = ptyp.ptyp_attributes in
-    let result = Ast_attributes.iter_process_bs_string_or_int_as ptyp_attrs in
-    match result with
+    let payload = Ast_attributes.iter_process_bs_string_or_int_as ptyp_attrs in
+    match payload with
     | None -> spec_of_ptyp nolabel ptyp
     | Some cst -> (
         (* (_[@as ])*)
@@ -111,20 +111,24 @@ let refine_obj_arg_type ~(nolabel : bool) (ptyp : Ast_core_type.t) :
     External_arg_spec.attr =
   if ptyp.ptyp_desc = Ptyp_any then (
     let ptyp_attrs = ptyp.ptyp_attributes in
-    let result = Ast_attributes.iter_process_bs_string_or_int_as ptyp_attrs in
+    let payload = Ast_attributes.iter_process_bs_string_or_int_as ptyp_attrs in
     (* when ppx start dropping attributes
        we should warn, there is a trade off whether
        we should warn dropped non bs attribute or not
     *)
     Bs_ast_invariant.warn_discarded_unused_attributes ptyp_attrs;
-    match result with
+    match payload with
     | None -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
     | Some (Int i) ->
-        (* (_[@as ])*)
-        (* This type is used in obj only to construct obj type*)
+        (* @as(24) *)
+        (* This type is used in obj only to construct obj type *)
         Arg_cst (External_arg_spec.cst_int i)
-    | Some (Str i) -> Arg_cst (External_arg_spec.cst_string i)
-    | Some (Js_literal_str s) -> Arg_cst (External_arg_spec.cst_obj_literal s))
+    | Some (Str i) ->
+        (* @as("foo") *)
+        Arg_cst (External_arg_spec.cst_string i)
+    | Some (Js_literal_str s) ->
+        (* @as(json`true`) *)
+        Arg_cst (External_arg_spec.cst_obj_literal s))
   else (* ([`a|`b] [@string]) *)
     spec_of_ptyp nolabel ptyp
 
