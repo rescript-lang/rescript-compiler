@@ -282,7 +282,7 @@ let init () =
                                  PStr
                                    [
                                      Str.eval
-                                       (Exp.constant (Const.string revData  (* XXX *)));
+                                       (Exp.constant (Const.string revData));
                                    ] )
                             else expMap);
                           toJsBody
