@@ -90,7 +90,7 @@ let rec no_side_effect_expression_desc (x : J.expression_desc) =
   | String_index (a, b) | Array_index (a, b) ->
       no_side_effect a && no_side_effect b
   | Is_null_or_undefined b -> no_side_effect b
-  | Str (b, _) -> b
+  | Str (b, _, _) -> b
   | Array (xs, _mutable_flag) | Caml_block (xs, _mutable_flag, _, _) ->
       (* create [immutable] block,
           does not really mean that this opreation itself is [pure].
@@ -181,8 +181,8 @@ let rec eq_expression ({ expression_desc = x0 } : J.expression)
       | Bin (op1, a1, b1) ->
           op0 = op1 && eq_expression a0 a1 && eq_expression b0 b1
       | _ -> false)
-  | Str (a0, b0) -> (
-      match y0 with Str (a1, b1) -> a0 = a1 && b0 = b1 | _ -> false)
+  | Str (a0, b0, c0) -> (
+      match y0 with Str (a1, b1, c1) -> a0 = a1 && b0 = b1 && c0 = c1 | _ -> false)
   | Static_index (e0, p0, off0) -> (
       match y0 with
       | Static_index (e1, p1, off1) ->

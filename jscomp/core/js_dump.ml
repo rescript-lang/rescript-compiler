@@ -591,7 +591,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
       P.string f s;
       P.string f "\"";
       cxt
-  | Str (_, s) ->
+  | Str (_, s, _) ->
       (*TODO --
          when utf8-> it will not escape '\\' which is definitely not we want
       *)

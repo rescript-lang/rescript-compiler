@@ -147,14 +147,13 @@ and expression_desc =
      it will be true when it's a method
      The last pararemter [true] return unit
   *)
-  | Str of bool * string
-  (* A string is UTF-8 encoded, the string may contain
+  | Str of bool * string * bool
+  (* A string is UTF-8 encoded, and may contain
      escape sequences.
-     The first argument is used to mark it is non-pure, please
-     don't optimize it, since it does have side effec,
-     examples like "use asm;" and our compiler may generate "error;..."
-     which is better to leave it alone
-     The last argument is passed from as `j` from `{j||j}`
+     First argument: used to mark it as non-pure.
+     Please treat it carefully as it affects optimization.
+     Second argument: the string "j" in `{j||j}`.
+     The last argument: whether it should be escaped.
   *)
   | Unicode of string
   (* It is escaped string, print delimited by '"'*)
