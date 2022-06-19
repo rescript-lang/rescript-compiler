@@ -101,5 +101,7 @@ and translate (x : Lam_constant.t) : J.expression =
 let translate_arg_cst (cst : External_arg_spec.cst) =
   match cst with
   | Arg_int_lit i -> E.int (Int32.of_int i)
-  | Arg_string_lit i -> E.str ~escape:false i
+  | Arg_string_lit i ->
+      let s = "\"" ^ i ^ "\"" in
+      E.raw_js_code (Exp (Js_literal { comment = None })) s
   | Arg_js_literal s -> E.raw_js_code (Exp (Js_literal { comment = None })) s
