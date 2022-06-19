@@ -199,6 +199,23 @@ let extract_dependencies (map : json_map) cwd (field : string) :
           resolve_package cwd (Bsb_pkg_types.string_as_package s))
   | Some config -> Bsb_exception.config_error config (field ^ " expect an array")
 
+let extract_dependencies_from_package_json cwd : Bsb_config_types.dependencies =
+  match Ext_json_parse.parse_json_from_file (cwd // Literals.package_json) with
+  | Obj { map } -> (
+    match map.?(Literals.package_json_dependencies) with
+    | None -> []
+    | Some (Obj {map = dependencies}) ->
+      let bsb_deps = Map_string.keys dependencies |>
+        List.filter (fun dep ->
+          let bsconfig_json_dep = cwd // Literals.node_modules // dep // Literals.bsconfig_json in
+          Sys.file_exists bsconfig_json_dep
+        )
+        in
+      Ext_list.map bsb_deps (fun dep -> resolve_package cwd (Bsb_pkg_types.string_as_package dep))       
+    | Some config -> Bsb_exception.config_error config ("Dependencies not found in " ^ Literals.package_json)
+  )
+  | _ -> Bsb_exception.invalid_spec ("no dependencies found in " ^ Literals.package_json)
+
 (* return an empty array if not found *)
 let extract_string_list (map : json_map) (field : string) : string list =
   match map.?(field) with
@@ -293,9 +310,10 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
                   .path)
       in
       let reason_react_jsx = extract_reason_react_jsx map in
-      let bs_dependencies =
+      (* let bs_dependencies =
         extract_dependencies map per_proj_dir Bsb_build_schemas.bs_dependencies
-      in
+      in *)
+      let bs_dependencies = extract_dependencies_from_package_json per_proj_dir in
       let bs_dev_dependencies =
         match package_kind with
         | Toplevel | Pinned_dependency _ ->
