@@ -34,7 +34,7 @@ let eval (arg : J.expression) (dispatches : (string * string) list) : E.t =
     match arg.expression_desc with
     | Str (_, s, _) ->
         let s = Ext_list.assoc_by_string dispatches s None in
-        E.str (* ~escape:false *) s
+        E.str s
     | _ ->
         E.of_block
           [

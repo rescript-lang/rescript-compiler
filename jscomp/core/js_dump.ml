@@ -591,11 +591,11 @@ and expression_desc cxt ~(level : int) f x : cxt =
       P.string f s;
       P.string f "\"";
       cxt
-  | Str (_, s, _) ->
+  | Str (_, s, escape) ->
       (*TODO --
          when utf8-> it will not escape '\\' which is definitely not we want
       *)
-      Js_dump_string.pp_string f s;
+      Js_dump_string.pp_string ~escape f s;
       cxt
   | Raw_js_code { code = s; code_info = info } -> (
       match info with
