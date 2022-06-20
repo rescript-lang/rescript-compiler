@@ -113,6 +113,7 @@ function runTests() {
       encoding: "utf8",
     });
     var files = fs.readdirSync(buildTestDir);
+    var failed = [];
     files.forEach(function (file) {
       var testDir = path.join(buildTestDir, file);
       if (file === "node_modules" || !fs.lstatSync(testDir).isDirectory()) {
@@ -127,10 +128,16 @@ function runTests() {
           cp.execSync(`node input.js`, { cwd: testDir, encoding: "utf8" });
           console.log("✅ success in ", file);
         } catch (e) {
-          console.log("⚠️ error", e)
+          failed.push(file);
+          console.log("❌ error", e)
         };
       }
     });
+    if (failed.length > 0) {
+      console.log("");
+      console.log ("❌ Build tests failed", failed);
+      throw(new Error());
+    }
   }
 }
 
