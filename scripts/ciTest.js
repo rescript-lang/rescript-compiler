@@ -62,10 +62,11 @@ function runTests() {
   // var output =
   //     cp.execSync('which ocaml', { encoding: 'ascii' })
   // console.log('OCaml:', output)
+
   var binDir = path.join(__dirname, "..", "jscomp", "bin");
   if (ounitTest) {
     cp.execSync(
-      `ocamlc.opt -warn-error -a -I . -c js_compiler.mli js_compiler.ml`,
+      `ocamlc.opt -w "-d" -warn-error -a -I . -c js_compiler.mli js_compiler.ml`,
       {
         cwd: path.join(__dirname, "..", "lib", "4.06.1", "unstable"),
         stdio: [0, 1, 2],
@@ -84,7 +85,7 @@ function runTests() {
       path.join(binDir, "all_ounit_tests.ml")
     );
     cp.execSync(
-      `ocamlopt.opt -g -w -40-30 ../stubs/ext_basic_hash_stubs.c  unix.cmxa str.cmxa all_ounit_tests.ml -o test.exe`,
+      `ocamlopt.opt -g -w -40-30 -w "-d" ../stubs/ext_basic_hash_stubs.c  unix.cmxa str.cmxa all_ounit_tests.ml -o test.exe`,
       {
         cwd: binDir,
         stdio: [0, 1, 2],
