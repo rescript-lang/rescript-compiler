@@ -101,9 +101,8 @@ let escape_to_string s =
   escape_to_buffer buf s;
   Ext_buffer.contents buf
 
-let pp_string ?(escape = true) f s =
-  if escape then P.string f (escape_to_string s)
-  else P.string f ("\"" ^ s ^ "\"")
+let pp_string f s =
+  P.string f (escape_to_string s)
 (* let _best_string_quote s =
    let simple = ref 0 in
    let double = ref 0 in

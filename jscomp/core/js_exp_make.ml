@@ -125,8 +125,8 @@ let pure_runtime_call module_name fn_name args =
 
 let runtime_ref module_name fn_name = runtime_var_dot module_name fn_name
 
-let str ?(pure = true) ?comment ?(escape=true) s : t =
-  { expression_desc = Str (pure, s, escape); comment }
+let str ?(pure = true) ?comment s : t =
+  { expression_desc = Str (pure, s); comment }
 
 let unicode ?comment s : t = { expression_desc = Unicode s; comment }
 
@@ -398,7 +398,7 @@ let extension_access (e : t) name (pos : int32) : t =
 
 let string_index ?comment (e0 : t) (e1 : t) : t =
   match (e0.expression_desc, e1.expression_desc) with
-  | Str (_, s, _), Number (Int { i; _ }) ->
+  | Str (_, s), Number (Int { i; _ }) ->
       (* Don't optimize {j||j} *)
       let i = Int32.to_int i in
       if i >= 0 && i < String.length s then
@@ -477,7 +477,7 @@ let array_length ?comment (e : t) : t =
 
 let string_length ?comment (e : t) : t =
   match e.expression_desc with
-  | Str (_, v, _) -> int ?comment (Int32.of_int (String.length v))
+  | Str (_, v) -> int ?comment (Int32.of_int (String.length v))
   (* No optimization for {j||j}*)
   | _ -> { expression_desc = Length (e, String); comment }
 
@@ -502,14 +502,14 @@ let function_length ?comment (e : t) : t =
 
 let rec string_append ?comment (e : t) (el : t) : t =
   match (e.expression_desc, el.expression_desc) with
-  | Str (_, a, _), String_append ({ expression_desc = Str (_, b, _) }, c) ->
+  | Str (_, a), String_append ({ expression_desc = Str (_, b) }, c) ->
       string_append ?comment (str (a ^ b)) c
-  | String_append (c, { expression_desc = Str (_, b, _) }), Str (_, a, _) ->
+  | String_append (c, { expression_desc = Str (_, b) }), Str (_, a) ->
       string_append ?comment c (str (b ^ a))
-  | ( String_append (a, { expression_desc = Str (_, b, _) }),
-      String_append ({ expression_desc = Str (_, c, _) }, d) ) ->
+  | ( String_append (a, { expression_desc = Str (_, b) }),
+      String_append ({ expression_desc = Str (_, c) }, d) ) ->
       string_append ?comment (string_append a (str (b ^ c))) d
-  | Str (_, a, _), Str (_, b, _) -> str ?comment (a ^ b)
+  | Str (_, a), Str (_, b) -> str ?comment (a ^ b)
   | _, _ -> { comment; expression_desc = String_append (e, el) }
 
 let obj ?comment properties : t =
@@ -548,7 +548,7 @@ let rec triple_equal ?comment (e0 : t) (e1 : t) : t =
       (Null | Undefined) )
     when no_side_effect e0 ->
       false_
-  | Str (_, x, _), Str (_, y, _) ->
+  | Str (_, x), Str (_, y) ->
       (* CF*)
       bool (Ext_string.equal x y)
   | Number (Int { i = i0; _ }), Number (Int { i = i1; _ }) -> bool (i0 = i1)
@@ -726,7 +726,7 @@ let int_equal = float_equal
 
 let string_equal ?comment (e0 : t) (e1 : t) : t =
   match (e0.expression_desc, e1.expression_desc) with
-  | Str (_, a0, _), Str (_, b0, _) -> bool (Ext_string.equal a0 b0)
+  | Str (_, a0), Str (_, b0) -> bool (Ext_string.equal a0 b0)
   | Unicode a0, Unicode b0 -> bool (Ext_string.equal a0 b0)
   | _, _ -> { expression_desc = Bin (EqEqEq, e0, e1); comment }
 
@@ -810,7 +810,7 @@ let uint32 ?comment n : J.expression =
 
 let string_comp (cmp : J.binop) ?comment (e0 : t) (e1 : t) =
   match (e0.expression_desc, e1.expression_desc) with
-  | Str (_, a0, _), Str (_, b0, _) -> (
+  | Str (_, a0), Str (_, b0) -> (
       match cmp with
       | EqEqEq -> bool (a0 = b0)
       | NotEqEq -> bool (a0 <> b0)

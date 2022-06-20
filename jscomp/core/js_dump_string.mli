@@ -26,4 +26,4 @@
    JS lexing convention
 *)
 val escape_to_string : string -> string
-val pp_string : ?escape:bool -> Ext_pp.t -> string -> unit
+val pp_string : Ext_pp.t -> string -> unit
