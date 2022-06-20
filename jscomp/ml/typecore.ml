@@ -1149,6 +1149,19 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
           Some (p0, p), expected_ty
         with Not_found -> None, newvar ()
       in
+      let label_is_optional ld =
+        match ld.lbl_repres with
+        | Record_optional_labels lbls -> Ext_list.mem_string lbls ld.lbl_name
+        | _ -> false in
+      let process_optional_label (id, ld, pat) =
+        let exp_optional_attr =
+          Ext_list.exists pat.ppat_attributes (fun ({txt },_) -> txt = "optional")
+        in
+        if label_is_optional ld && not exp_optional_attr then
+          let ppat_desc = Ppat_construct ({id with txt = Longident.Lident "Some"}, Some pat)
+          in {pat with ppat_desc}
+        else pat
+      in    
       let type_label_pat (label_lid, label, sarg) k =
         begin_def ();
         let (vars, ty_arg, ty_res) = instance_label false label in
@@ -1159,6 +1172,7 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
           raise(Error(label_lid.loc, !env,
                       Label_mismatch(label_lid.txt, trace)))
         end;
+        let sarg = process_optional_label (label_lid, label, sarg) in
         type_pat sarg ty_arg (fun arg ->
           if vars <> [] then begin
             end_def ();
