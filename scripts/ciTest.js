@@ -105,7 +105,9 @@ function runTests() {
   if (bsbTest) {
     console.log("Doing build_tests");
     var buildTestDir = path.join(__dirname, "..", "jscomp", "build_tests");
-    cp.execSync(`npm link ../..`, {
+    var linkCmd = `npm link ../..`;
+    console.log(linkCmd);
+    cp.execSync(linkCmd, {
       cwd: buildTestDir,
       stdio: [0, 1, 2],
       encoding: "utf8",
@@ -119,20 +121,14 @@ function runTests() {
       if (!fs.existsSync(path.join(testDir, "input.js"))) {
         console.warn(`input.js does not exist in ${testDir}`);
       } else {
+        console.log(`testing ${file}`);
         // note existsSync test already ensure that it is a directory
-        cp.execSync(`node input.js`, { cwd: testDir, encoding: "utf8" }, function (
-          error,
-          stdout,
-          stderr
-        ) {
-          console.log(stdout);
-
-          if (error !== null) {
-            console.log(stderr);
-            throw new Error(`working in ${testDir} Error: \n${error} `);
-          }
-          console.log("success in ", file);
-        });
+        try {
+          cp.execSync(`node input.js`, { cwd: testDir, encoding: "utf8" });
+          console.log("✅ success in ", file);
+        } catch (e) {
+          console.log("⚠️ error", e)
+        };
       }
     });
   }
