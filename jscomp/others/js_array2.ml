@@ -56,10 +56,11 @@ type 'a array_like
 (** A type used to describe JavaScript objects that are like an array or are iterable. *)
 
 (* commented out until bs has a plan for iterators
-type 'a array_iter = 'a array_like
+   type 'a array_iter = 'a array_like
 *)
 
-external from : 'a array_like -> 'a array = "Array.from" [@@bs.val] (* ES2015 *)
+external from : 'a array_like -> 'a array = "Array.from"
+  [@@bs.val]
 (**
 Creates a shallow copy of an array from an array-like object. See
 [`Array.from`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from)
@@ -70,8 +71,11 @@ let strArr = Js.String.castToArrayLike("abcd")
 Js.Array2.from(strArr) == ["a", "b", "c", "d"]
 ```
 *)
+(* ES2015 *)
 
-external fromMap : 'a array_like -> ('a -> 'b [@bs.uncurry]) -> 'b array = "Array.from" [@@bs.val] (* ES2015 *)
+external fromMap : 'a array_like -> (('a -> 'b)[@bs.uncurry]) -> 'b array
+  = "Array.from"
+  [@@bs.val]
 (**
 Creates a new array by applying a function (the second argument) to each item
 in the `array_like` first argument.  See
@@ -84,8 +88,10 @@ let code = s => Js.String.charCodeAt(0, s)
 Js.Array2.fromMap(strArr, code) == [97.0, 98.0, 99.0, 100.0]
 ```
 *)
+(* ES2015 *)
 
-external isArray : 'a -> bool = "Array.isArray" [@@bs.val]
+external isArray : 'a -> bool = "Array.isArray"
+  [@@bs.val]
 (**
 Returns `true` if its argument is an array; `false` otherwise. This is a runtime check, which is why the second example returns `true`---a list is internally represented as a nested JavaScript array.
 
@@ -96,18 +102,18 @@ Js.Array2.isArray("abcd") == false
 ```
 *)
 
-external length : 'a array -> int = "length" [@@bs.get]
+external length : 'a array -> int = "length"
+  [@@bs.get]
 (**
 Returns the number of elements in the array. See
 [`Array.length`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length)
 on MDN.
 *)
 
-
-
 (* Mutator functions *)
 
-external copyWithin : 'a t -> to_:int -> 'a t = "copyWithin" [@@bs.send] (* ES2015 *)
+external copyWithin : 'a t -> to_:int -> 'a t = "copyWithin"
+  [@@bs.send]
 (**
 Copies from the first element in the given array to the designated `~to_`
 position, returning the resulting array. *This function modifies the original
@@ -121,8 +127,10 @@ Js.Array2.copyWithin(arr, ~to_=2) == [100, 101, 100, 101, 102]
 arr == [100, 101, 100, 101, 102]
 ```
 *)
+(* ES2015 *)
 
-external copyWithinFrom : 'a t -> to_:int -> from:int -> 'a t = "copyWithin" [@@bs.send] (* ES2015 *)
+external copyWithinFrom : 'a t -> to_:int -> from:int -> 'a t = "copyWithin"
+  [@@bs.send]
 (**
 Copies starting at element `~from` in the given array to the designated `~to_`
 position, returning the resulting array. *This function modifies the original
@@ -136,8 +144,11 @@ Js.Array2.copyWithinFrom(arr, ~from=2, ~to_=0) == [102, 103, 104, 103, 104]
 arr == [102, 103, 104, 103, 104]
 ```
 *)
+(* ES2015 *)
 
-external copyWithinFromRange : 'a t -> to_:int -> start:int -> end_:int -> 'a t = "copyWithin" [@@bs.send] (* ES2015 *)
+external copyWithinFromRange : 'a t -> to_:int -> start:int -> end_:int -> 'a t
+  = "copyWithin"
+  [@@bs.send]
 (**
 Copies starting at element `~start` in the given array up to but not including
 `~end_` to the designated `~to_` position, returning the resulting array. *This
@@ -151,8 +162,10 @@ Js.Array2.copyWithinFromRange(arr, ~start=2, ~end_=5, ~to_=1) == [100, 102, 103,
 arr == [100, 102, 103, 104, 104, 105]
 ```
 *)
+(* ES2015 *)
 
-external fillInPlace : 'a t -> 'a -> 'a t = "fill" [@@bs.send] (* ES2015 *)
+external fillInPlace : 'a t -> 'a -> 'a t = "fill"
+  [@@bs.send]
 (**
 Sets all elements of the given array (the first arumgent) to the designated
 value (the secon argument), returning the resulting array. *This function
@@ -168,8 +181,10 @@ Js.Array2.fillInPlace(arr, 99) == [99, 99, 99, 99, 99]
 arr == [99, 99, 99, 99, 99]
 ```
 *)
+(* ES2015 *)
 
-external fillFromInPlace : 'a t -> 'a -> from:int -> 'a t = "fill" [@@bs.send] (* ES2015 *)
+external fillFromInPlace : 'a t -> 'a -> from:int -> 'a t = "fill"
+  [@@bs.send]
 (**
 Sets all elements of the given array (the first arumgent) from position `~from`
 to the end to the designated value (the second argument), returning the
@@ -183,8 +198,10 @@ Js.Array2.fillFromInPlace(arr, 99, ~from=2) == [100, 101, 99, 99, 99]
 arr == [100, 101, 99, 99, 99]
 ```
 *)
+(* ES2015 *)
 
-external fillRangeInPlace : 'a t -> 'a -> start:int -> end_:int -> 'a t = "fill" [@@bs.send] (* ES2015 *)
+external fillRangeInPlace : 'a t -> 'a -> start:int -> end_:int -> 'a t = "fill"
+  [@@bs.send]
 (**
 Sets the elements of the given array (the first arumgent) from position
 `~start` up to but not including position `~end_` to the designated value (the
@@ -199,8 +216,10 @@ Js.Array2.fillRangeInPlace(arr, 99, ~start=1, ~end_=4) == [100, 99, 99, 99, 104]
 arr == [100, 99, 99, 99, 104]
 ```
 *)
+(* ES2015 *)
 
-external pop : 'a t -> 'a option = "pop" [@@bs.send] [@@bs.return undefined_to_opt]
+external pop : 'a t -> 'a option = "pop"
+  [@@bs.send] [@@bs.return undefined_to_opt]
 (**
 If the array is not empty, removes the last element and returns it as
 `Some(value)`; returns `None` if the array is empty. *This function modifies
@@ -218,7 +237,8 @@ Js.Array2.pop(empty) == None
 ```
 *)
 
-external push : 'a t -> 'a -> int = "push" [@@bs.send]
+external push : 'a t -> 'a -> int = "push"
+  [@@bs.send]
 (**
 Appends the given value to the array, returning the number of elements in the
 updated array. *This function modifies the original array.* See
@@ -232,7 +252,8 @@ arr == ["ant", "bee", "cat", "dog"]
 ```
 *)
 
-external pushMany : 'a t -> 'a array -> int = "push" [@@bs.send] [@@bs.splice]
+external pushMany : 'a t -> 'a array -> int = "push"
+  [@@bs.send] [@@bs.splice]
 (**
 Appends the values from one array (the second argument) to another (the first
 argument), returning the number of elements in the updated array. *This
@@ -247,7 +268,8 @@ arr == ["ant", "bee", "cat", "dog", "elk"]
 ```
 *)
 
-external reverseInPlace : 'a t -> 'a t = "reverse" [@@bs.send]
+external reverseInPlace : 'a t -> 'a t = "reverse"
+  [@@bs.send]
 (**
 Returns an array with the elements of the input array in reverse order. *This
 function modifies the original array.* See
@@ -261,7 +283,8 @@ arr == ["cat", "bee", "ant"]
 ```
 *)
 
-external shift : 'a t -> 'a option = "shift" [@@bs.send] [@@bs.return undefined_to_opt]
+external shift : 'a t -> 'a option = "shift"
+  [@@bs.send] [@@bs.return undefined_to_opt]
 (**
 If the array is not empty, removes the first element and returns it as
 `Some(value)`; returns `None` if the array is empty. *This function modifies
@@ -279,7 +302,8 @@ Js.Array2.shift(empty) == None
 ```
 *)
 
-external sortInPlace : 'a t -> 'a t = "sort" [@@bs.send]
+external sortInPlace : 'a t -> 'a t = "sort"
+  [@@bs.send]
 (**
 Sorts the given array in place and returns the sorted array. JavaScript sorts
 the array by converting the arguments to UTF-16 strings and sorting them. See
@@ -299,7 +323,9 @@ numbers == [1, 10, 2, 20, 3, 30]
 ```
 *)
 
-external sortInPlaceWith : 'a t -> ('a -> 'a -> int [@bs.uncurry]) -> 'a t = "sort" [@@bs.send]
+external sortInPlaceWith : 'a t -> (('a -> 'a -> int)[@bs.uncurry]) -> 'a t
+  = "sort"
+  [@@bs.send]
 (**
 Sorts the given array in place and returns the sorted array. *This function
   modifies the original array.*
@@ -329,7 +355,9 @@ Js.Array2.sortInPlaceWith(numbers, reverseNumeric) == [30, 20, 10, 3, 2, 1]
 ```
 *)
 
-external spliceInPlace : 'a t -> pos:int -> remove:int -> add:('a array) -> 'a t = "splice" [@@bs.send] [@@bs.splice]
+external spliceInPlace : 'a t -> pos:int -> remove:int -> add:'a array -> 'a t
+  = "splice"
+  [@@bs.send] [@@bs.splice]
 (**
 Starting at position `~pos`, remove `~remove` elements and then add the
 elements from the `~add` array. Returns an array consisting of the removed
@@ -352,7 +380,8 @@ arr3 == ["a", "b", "c", "d", "e", "f", "x", "y", "z"]
 ```
 *)
 
-external removeFromInPlace : 'a t -> pos:int -> 'a t = "splice" [@@bs.send]
+external removeFromInPlace : 'a t -> pos:int -> 'a t = "splice"
+  [@@bs.send]
 (**
 Removes elements from the given array starting at position `~pos` to the end of
 the array, returning the removed elements. *This function modifies the original
@@ -367,7 +396,8 @@ arr == ["a", "b", "c", "d"]
 ```
 *)
 
-external removeCountInPlace : 'a t -> pos:int -> count:int -> 'a t = "splice" [@@bs.send]
+external removeCountInPlace : 'a t -> pos:int -> count:int -> 'a t = "splice"
+  [@@bs.send]
 (**
 Removes `~count` elements from the given array starting at position `~pos`,
 returning the removed elements. *This function modifies the original array.*
@@ -382,7 +412,8 @@ arr == ["a", "b", "f"]
 ```
 *)
 
-external unshift : 'a t -> 'a -> int = "unshift" [@@bs.send]
+external unshift : 'a t -> 'a -> int = "unshift"
+  [@@bs.send]
 (**
 Adds the given element to the array, returning the new number of elements in
 the array. *This function modifies the original array.* See
@@ -396,7 +427,8 @@ arr == ["a", "b", "c", "d"]
 ```
 *)
 
-external unshiftMany : 'a t -> 'a array -> int = "unshift" [@@bs.send] [@@bs.splice]
+external unshiftMany : 'a t -> 'a array -> int = "unshift"
+  [@@bs.send] [@@bs.splice]
 (**
 Adds the elements in the second array argument at the beginning of the first
 array argument, returning the new number of elements in the array. *This
@@ -413,10 +445,11 @@ arr == ["a", "b", "c", "d", "e"]
 
 (* Accessor functions
 *)
-external append : 'a t -> 'a -> 'a t = "concat" [@@bs.send]
-[@@deprecated "`append` is not type-safe. Use `concat` instead."]
+external append : 'a t -> 'a -> 'a t = "concat"
+  [@@bs.send] [@@deprecated "`append` is not type-safe. Use `concat` instead."]
 
-external concat : 'a t -> 'a t -> 'a t = "concat" [@@bs.send]
+external concat : 'a t -> 'a t -> 'a t = "concat"
+  [@@bs.send]
 (**
 Concatenates the second array argument to the first array argument, returning a
 new array. The original arrays are not modified. See
@@ -428,7 +461,8 @@ Js.Array2.concat(["a", "b"], ["c", "d", "e"]) == ["a", "b", "c", "d", "e"]
 ```
 *)
 
-external concatMany : 'a t -> 'a t array -> 'a t = "concat" [@@bs.send] [@@bs.splice]
+external concatMany : 'a t -> 'a t array -> 'a t = "concat"
+  [@@bs.send] [@@bs.splice]
 (**
 The second argument to `concatMany()` is an array of arrays; these are added at
 the end of the first argument, returning a new array. See
@@ -449,7 +483,8 @@ Js.Array2.concatMany(["a", "b", "c"], [["d", "e"], ["f", "g", "h"]]) == [
 ```
 *)
 
-external includes : 'a t -> 'a -> bool = "includes" [@@bs.send] (** ES2016 *)
+external includes : 'a t -> 'a -> bool = "includes"
+  [@@bs.send]
 (**
 Returns true if the given value is in the array, `false` otherwise. See
 [`Array.includes`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes)
@@ -461,7 +496,8 @@ Js.Array2.includes(["a", "b", "c"], "x") == false
 ```
 *)
 
-external indexOf : 'a t -> 'a  -> int = "indexOf" [@@bs.send]
+external indexOf : 'a t -> 'a -> int = "indexOf"
+  [@@bs.send]
 (**
 Returns the index of the first element in the array that has the given value.
 If the value is not in the array, returns -1. See
@@ -474,7 +510,8 @@ Js.Array2.indexOf([100, 101, 102, 103], 999) == -1
 ```
 *)
 
-external indexOfFrom : 'a t -> 'a -> from:int -> int = "indexOf" [@@bs.send]
+external indexOfFrom : 'a t -> 'a -> from:int -> int = "indexOf"
+  [@@bs.send]
 (**
 Returns the index of the first element in the array with the given value. The
 search starts at position `~from`. See
@@ -488,7 +525,8 @@ Js.Array2.indexOfFrom(["a", "b", "a", "c", "a"], "b", ~from=2) == -1
 ```
 *)
 
-external joinWith : 'a t -> string -> string = "join" [@@bs.send]
+external joinWith : 'a t -> string -> string = "join"
+  [@@bs.send]
 (**
 This function converts each element of the array to a string (via JavaScript)
 and concatenates them, separated by the string given in the first argument,
@@ -504,7 +542,8 @@ Js.Array2.joinWith([2.5, 3.6, 3e-2], ";") == "2.5;3.6;0.03"
 ```
 *)
 
-external lastIndexOf : 'a t -> 'a -> int = "lastIndexOf" [@@bs.send]
+external lastIndexOf : 'a t -> 'a -> int = "lastIndexOf"
+  [@@bs.send]
 (**
 Returns the index of the last element in the array that has the given value. If
 the value is not in the array, returns -1. See
@@ -517,7 +556,8 @@ Js.Array2.lastIndexOf(["a", "b", "a", "c"], "x") == -1
 ```
 *)
 
-external lastIndexOfFrom : 'a t -> 'a -> from:int -> int = "lastIndexOf" [@@bs.send]
+external lastIndexOfFrom : 'a t -> 'a -> from:int -> int = "lastIndexOf"
+  [@@bs.send]
 (**
 Returns the index of the last element in the array that has the given value,
 searching from position `~from` down to the start of the array. If the value is
@@ -531,7 +571,8 @@ Js.Array2.lastIndexOfFrom(["a", "b", "a", "c", "a", "d"], "c", ~from=2) == -1
 ```
 *)
 
-external slice : 'a t -> start:int -> end_:int -> 'a t = "slice" [@@bs.send]
+external slice : 'a t -> start:int -> end_:int -> 'a t = "slice"
+  [@@bs.send]
 (**
 Returns a shallow copy of the given array from the `~start` index up to but not
 including the `~end_` position. Negative numbers indicate an offset from the
@@ -547,7 +588,8 @@ Js.Array2.slice(arr, ~start=9, ~end_=10) == []
 ```
 *)
 
-external copy : 'a t -> 'a t = "slice" [@@bs.send]
+external copy : 'a t -> 'a t = "slice"
+  [@@bs.send]
 (**
 Returns a copy of the entire array. Same as `Js.Array2.Slice(arr, ~start=0,
 ~end_=Js.Array2.length(arr))`. See
@@ -555,14 +597,16 @@ Returns a copy of the entire array. Same as `Js.Array2.Slice(arr, ~start=0,
 on MDN.
 *)
 
-external sliceFrom : 'a t -> int -> 'a t = "slice" [@@bs.send]
+external sliceFrom : 'a t -> int -> 'a t = "slice"
+  [@@bs.send]
 (**
 Returns a shallow copy of the given array from the given index to the end. See
 [`Array.slice`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
 on MDN.
 *)
 
-external toString : 'a t -> string = "toString" [@@bs.send]
+external toString : 'a t -> string = "toString"
+  [@@bs.send]
 (**
 Converts the array to a string. Each element is converted to a string using
 JavaScript. Unlike the JavaScript `Array.toString()`, all elements in a
@@ -576,7 +620,8 @@ Js.Array2.toString(["a", "b", "c"]) == "a,b,c"
 ```
 *)
 
-external toLocaleString : 'a t -> string = "toLocaleString" [@@bs.send]
+external toLocaleString : 'a t -> string = "toLocaleString"
+  [@@bs.send]
 (**
 Converts the array to a string using the conventions of the current locale.
 Each element is converted to a string using JavaScript. Unlike the JavaScript
@@ -592,14 +637,14 @@ Js.Array2.toLocaleString([Js.Date.make()])
 ```
 *)
 
-
 (* Iteration functions
 *)
 (* commented out until bs has a plan for iterators
-external entries : 'a t -> (int * 'a) array_iter = "" [@@bs.send] (* ES2015 *)
+   external entries : 'a t -> (int * 'a) array_iter = "" [@@bs.send] (* ES2015 *)
 *)
 
-external every : 'a t -> ('a  -> bool[@bs.uncurry]) -> bool = "every" [@@bs.send]
+external every : 'a t -> (('a -> bool)[@bs.uncurry]) -> bool = "every"
+  [@@bs.send]
 (**
 The first argument to `every()` is an array. The second argument is a predicate
 function that returns a boolean. The `every()` function returns `true` if the
@@ -615,7 +660,8 @@ Js.Array2.every([6, 22, 7, 4], isEven) == false
 ```
 *)
 
-external everyi : 'a t -> ('a -> int -> bool [@bs.uncurry]) -> bool = "every" [@@bs.send]
+external everyi : 'a t -> (('a -> int -> bool)[@bs.uncurry]) -> bool = "every"
+  [@@bs.send]
 (**
 The first argument to `everyi()` is an array. The second argument is a
 predicate function with two arguments: an array element and that element’s
@@ -634,7 +680,8 @@ Js.Array2.everyi([6, 3, -5, 8], evenIndexPositive) == false
 ```
 *)
 
-external filter : 'a t -> ('a -> bool [@bs.uncurry]) -> 'a t = "filter" [@@bs.send]
+external filter : 'a t -> (('a -> bool)[@bs.uncurry]) -> 'a t = "filter"
+  [@@bs.send]
 (**
 Applies the given predicate function (the second argument) to each element in
 the array; the result is an array of those elements for which the predicate
@@ -648,7 +695,8 @@ Js.Array2.filter(["abc", "", "", "def", "ghi"], nonEmpty) == ["abc", "def", "ghi
 ```
 *)
 
-external filteri : 'a t -> ('a -> int  -> bool[@bs.uncurry]) -> 'a t = "filter" [@@bs.send]
+external filteri : 'a t -> (('a -> int -> bool)[@bs.uncurry]) -> 'a t = "filter"
+  [@@bs.send]
 (**
 Each element of the given array are passed to the predicate function. The
 return value is an array of all those elements for which the predicate function
@@ -666,7 +714,8 @@ Js.Array2.filteri([6, 3, 5, 8, 7, -4, 1], positiveOddElement) == [3, 8]
 ```
 *)
 
-external find : 'a t -> ('a -> bool [@bs.uncurry]) -> 'a option = "find" [@@bs.send] [@@bs.return {undefined_to_opt}] (* ES2015 *)
+external find : 'a t -> (('a -> bool)[@bs.uncurry]) -> 'a option = "find"
+  [@@bs.send] [@@bs.return { undefined_to_opt }]
 (**
 Returns `Some(value)` for the first element in the array that satisifies the
 given predicate function, or `None` if no element satisifies the predicate. See
@@ -679,8 +728,11 @@ Js.Array2.find([33, 22, -55, 77, -44], x => x < 0) == Some(-55)
 Js.Array2.find([33, 22, 55, 77, 44], x => x < 0) == None
 ```
 *)
+(* ES2015 *)
 
-external findi : 'a t -> ('a -> int -> bool [@bs.uncurry]) -> 'a option  = "find" [@@bs.send] [@@bs.return {undefined_to_opt}] (* ES2015 *)
+external findi : 'a t -> (('a -> int -> bool)[@bs.uncurry]) -> 'a option
+  = "find"
+  [@@bs.send] [@@bs.return { undefined_to_opt }]
 (**
 Returns `Some(value)` for the first element in the array that satisifies the
 given predicate function, or `None` if no element satisifies the predicate. The
@@ -696,8 +748,10 @@ Js.Array2.findi([66, -33, 55, 88, 22], positiveOddElement) == Some(88)
 Js.Array2.findi([66, -33, 55, -88, 22], positiveOddElement) == None
 ```
 *)
+(* ES2015 *)
 
-external findIndex : 'a t -> ('a -> bool [@bs.uncurry]) -> int = "findIndex" [@@bs.send] (* ES2015 *)
+external findIndex : 'a t -> (('a -> bool)[@bs.uncurry]) -> int = "findIndex"
+  [@@bs.send]
 (**
 Returns the index of the first element in the array that satisifies the given
 predicate function, or -1 if no element satisifies the predicate. See
@@ -709,8 +763,11 @@ Js.Array2.findIndex([33, 22, -55, 77, -44], x => x < 0) == 2
 Js.Array2.findIndex([33, 22, 55, 77, 44], x => x < 0) == -1
 ```
 *)
+(* ES2015 *)
 
-external findIndexi : 'a t -> ('a -> int -> bool [@bs.uncurry]) -> int = "findIndex" [@@bs.send] (* ES2015 *)
+external findIndexi : 'a t -> (('a -> int -> bool)[@bs.uncurry]) -> int
+  = "findIndex"
+  [@@bs.send]
 (**
 Returns `Some(value)` for the first element in the array that satisifies the
 given predicate function, or `None` if no element satisifies the predicate. The
@@ -726,8 +783,10 @@ Js.Array2.findIndexi([66, -33, 55, 88, 22], positiveOddElement) == 3
 Js.Array2.findIndexi([66, -33, 55, -88, 22], positiveOddElement) == -1
 ```
 *)
+(* ES2015 *)
 
-external forEach : 'a t -> ('a -> unit [@bs.uncurry]) -> unit = "forEach" [@@bs.send]
+external forEach : 'a t -> (('a -> unit)[@bs.uncurry]) -> unit = "forEach"
+  [@@bs.send]
 (**
 The `forEach()` function applies the function given as the second argument to
 each element in the array. The function you provide returns `unit`, and the
@@ -743,7 +802,9 @@ Js.Array2.forEach(["a", "b", "c"], x => Js.log(x)) == ()
 ```
 *)
 
-external forEachi : 'a t -> ('a -> int -> unit [@bs.uncurry]) -> unit  = "forEach" [@@bs.send]
+external forEachi : 'a t -> (('a -> int -> unit)[@bs.uncurry]) -> unit
+  = "forEach"
+  [@@bs.send]
 (**
 The `forEachi()` function applies the function given as the second argument to
 each element in the array. The function you provide takes an item in the array
@@ -761,10 +822,11 @@ Js.Array2.forEachi(["a", "b", "c"], (item, index) => Js.log2(index + 1, item)) =
 *)
 
 (* commented out until bs has a plan for iterators
-external keys : 'a t -> int array_iter = "" [@@bs.send] (* ES2015 *)
+   external keys : 'a t -> int array_iter = "" [@@bs.send] (* ES2015 *)
 *)
 
-external map : 'a t -> ('a  -> 'b [@bs.uncurry]) -> 'b t = "map" [@@bs.send]
+external map : 'a t -> (('a -> 'b)[@bs.uncurry]) -> 'b t = "map"
+  [@@bs.send]
 (**
 Applies the function (the second argument) to each item in the array, returning
 a new array. The result array does not have to have elements of the same type
@@ -778,7 +840,8 @@ Js.Array2.map(["animal", "vegetable", "mineral"], Js.String.length) == [6, 9, 7]
 ```
 *)
 
-external mapi : 'a t -> ('a -> int ->  'b [@bs.uncurry]) -> 'b t = "map" [@@bs.send]
+external mapi : 'a t -> (('a -> int -> 'b)[@bs.uncurry]) -> 'b t = "map"
+  [@@bs.send]
 (**
 Applies the function (the second argument) to each item in the array, returning
 a new array. The function acceps two arguments: an item from the array and its
@@ -794,7 +857,8 @@ Js.Array2.mapi([10, 11, 12], product) == [0, 11, 24]
 ```
 *)
 
-external reduce : 'a t ->  ('b -> 'a  -> 'b [@bs.uncurry]) -> 'b -> 'b = "reduce" [@@bs.send]
+external reduce : 'a t -> (('b -> 'a -> 'b)[@bs.uncurry]) -> 'b -> 'b = "reduce"
+  [@@bs.send]
 (**
 The `reduce()` function takes three parameters: an array, a *reducer function*,
 and a beginning accumulator value. The reducer function has two parameters: an
@@ -825,7 +889,9 @@ Js.Array2.reduce([2.0, 4.0], (acc, item) => item /. acc, 1.0) == 2.0 // 4.0 / (2
 ```
 *)
 
-external reducei : 'a t -> ('b -> 'a -> int -> 'b [@bs.uncurry]) -> 'b -> 'b = "reduce" [@@bs.send]
+external reducei : 'a t -> (('b -> 'a -> int -> 'b)[@bs.uncurry]) -> 'b -> 'b
+  = "reduce"
+  [@@bs.send]
 (**
 The `reducei()` function takes three parameters: an array, a *reducer
 function*, and a beginning accumulator value. The reducer function has three
@@ -857,7 +923,9 @@ Js.Array2.reducei([2, 5, 1, 4, 3], sumOfEvens, 0) == 6
 ```
 *)
 
-external reduceRight : 'a t ->  ('b -> 'a  -> 'b [@bs.uncurry]) -> 'b -> 'b = "reduceRight" [@@bs.send]
+external reduceRight : 'a t -> (('b -> 'a -> 'b)[@bs.uncurry]) -> 'b -> 'b
+  = "reduceRight"
+  [@@bs.send]
 (**
 The `reduceRight()` function takes three parameters: an array, a *reducer
 function*, and a beginning accumulator value. The reducer function has two
@@ -886,7 +954,9 @@ Js.Array2.reduceRight([2.0, 4.0], (acc, item) => item /. acc, 1.0) == 0.5 // 2.0
 ```
 *)
 
-external reduceRighti : 'a t -> ('b -> 'a -> int -> 'b [@bs.uncurry]) -> 'b -> 'b = "reduceRight" [@@bs.send]
+external reduceRighti :
+  'a t -> (('b -> 'a -> int -> 'b)[@bs.uncurry]) -> 'b -> 'b = "reduceRight"
+  [@@bs.send]
 (**
 The `reduceRighti()` function takes three parameters: an array, a *reducer
 function*, and a beginning accumulator value. The reducer function has three
@@ -920,7 +990,8 @@ Js.Array2.reduceRighti([2, 5, 1, 4, 3], sumOfEvens, 0) == 6
 ```
 *)
 
-external some : 'a t -> ('a  -> bool [@bs.uncurry]) -> bool = "some" [@@bs.send]
+external some : 'a t -> (('a -> bool)[@bs.uncurry]) -> bool = "some"
+  [@@bs.send]
 (**
 Returns `true` if the predicate function given as the second argument to
 `some()` returns `true` for any element in the array; `false` otherwise.
@@ -933,7 +1004,8 @@ Js.Array2.some([3, 7, 5, 1, 9], isEven) == false
 ```
 *)
 
-external somei : 'a t -> ('a  -> int -> bool [@bs.uncurry]) -> bool = "some" [@@bs.send]
+external somei : 'a t -> (('a -> int -> bool)[@bs.uncurry]) -> bool = "some"
+  [@@bs.send]
 (**
 Returns `true` if the predicate function given as the second argument to
 `somei()` returns `true` for any element in the array; `false` otherwise. The
@@ -954,7 +1026,7 @@ Js.Array2.somei(["a", "bc", "def", "gh"], sameLength) == false
 *)
 
 (* commented out until bs has a plan for iterators
-external values : 'a t -> 'a array_iter = "" [@@bs.send] (* ES2015 *)
+   external values : 'a t -> 'a array_iter = "" [@@bs.send] (* ES2015 *)
 *)
 
 external unsafe_get : 'a array -> int -> 'a = "%array_unsafe_get"
@@ -991,4 +1063,3 @@ Js.Array2.unsafe_set(arr, -1, 66)
 // you don't want to know.
 ```
 *)
-
