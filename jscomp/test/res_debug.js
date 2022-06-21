@@ -16,7 +16,19 @@ var newrecord = Caml_obj.obj_dup(v0);
 newrecord.x = 3;
 
 function testMatch(v) {
-  return v.y;
+  var y = v.y;
+  if (y !== undefined) {
+    return y;
+  }
+  throw {
+        RE_EXN_ID: "Match_failure",
+        _1: [
+          "res_debug.res",
+          50,
+          2
+        ],
+        Error: new Error()
+      };
 }
 
 var v2 = newrecord;

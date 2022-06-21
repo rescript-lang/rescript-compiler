@@ -44,7 +44,7 @@ let v1 : r = { x : 3
   , z : 3
 }
 
-//@@warning("-56") // Turn off match case unreachable
+@@warning("-8") // Turn off incomplete pattern match
 
 let testMatch = v =>
   switch v {
