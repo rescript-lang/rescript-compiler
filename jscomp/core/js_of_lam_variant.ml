@@ -32,8 +32,8 @@ let eval (arg : J.expression) (dispatches : (string * string) list) : E.t =
   if arg == E.undefined then E.undefined
   else
     match arg.expression_desc with
-    | Str (_, s) ->
-        let s = Ext_list.assoc_by_string dispatches s None in
+    | Str {txt} ->
+        let s = Ext_list.assoc_by_string dispatches txt None in
         E.str s
     | _ ->
         E.of_block
@@ -63,12 +63,12 @@ let eval (arg : J.expression) (dispatches : (string * string) list) : E.t =
 let eval_as_event (arg : J.expression)
     (dispatches : (string * string) list option) =
   match arg.expression_desc with
-  | Caml_block ([ { expression_desc = Str (_, s) }; cb ], _, _, Blk_poly_var _)
+  | Caml_block ([ { expression_desc = Str {txt} }; cb ], _, _, Blk_poly_var _)
     when Js_analyzer.no_side_effect_expression cb ->
       let v =
         match dispatches with
-        | Some dispatches -> Ext_list.assoc_by_string dispatches s None
-        | None -> s
+        | Some dispatches -> Ext_list.assoc_by_string dispatches txt None
+        | None -> txt
       in
       Splice2 (E.str v, cb)
   | _ ->
@@ -101,8 +101,8 @@ let eval_as_int (arg : J.expression) (dispatches : (string * int) list) : E.t =
   if arg == E.undefined then E.undefined
   else
     match arg.expression_desc with
-    | Str (_, i) ->
-        E.int (Int32.of_int (Ext_list.assoc_by_string dispatches i None))
+    | Str {txt} ->
+        E.int (Int32.of_int (Ext_list.assoc_by_string dispatches txt None))
     | _ ->
         E.of_block
           [
