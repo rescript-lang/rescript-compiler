@@ -19,16 +19,9 @@ function testMatch(v) {
   var y = v.y;
   if (y !== undefined) {
     return y;
+  } else {
+    return 42;
   }
-  throw {
-        RE_EXN_ID: "Match_failure",
-        _1: [
-          "res_debug.res",
-          50,
-          2
-        ],
-        Error: new Error()
-      };
 }
 
 var v2 = newrecord;

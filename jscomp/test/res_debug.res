@@ -44,12 +44,10 @@ let v1 : r = { x : 3
   , z : 3
 }
 
-@@warning("-8") // Turn off incomplete pattern match
-
 let testMatch = v =>
   switch v {
   | {y} => y
-//  | {y: @optional None} => 42
+  | {y: @optional None} => 42
   }
 
 let h = '😊'
