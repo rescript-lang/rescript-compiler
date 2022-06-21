@@ -44,12 +44,12 @@ let v1 : r = { x : 3
   , z : 3
 }
 
-@@warning("-56") // Turn off match case unreachable
+//@@warning("-56") // Turn off match case unreachable
 
 let testMatch = v =>
   switch v {
   | {y} => y
-  | {y: @optional None} => 42
+//  | {y: @optional None} => 42
   }
 
 let h = '😊'

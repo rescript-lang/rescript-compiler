@@ -1153,16 +1153,17 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
         match ld.lbl_repres with
         | Record_optional_labels lbls -> Ext_list.mem_string lbls ld.lbl_name
         | _ -> false in
-      let process_optional_label (id, ld, pat) =
+      let process_optional_label (ld, pat) =
         let exp_optional_attr =
           Ext_list.exists pat.ppat_attributes (fun ({txt },_) -> txt = "optional")
         in
         if label_is_optional ld && not exp_optional_attr then
-          let ppat_desc = Ppat_construct ({id with txt = Longident.Lident "Some"}, Some pat)
-          in {pat with ppat_desc}
+          let lid = mknoloc (Longident.(Ldot (Lident "*predef*", "Some"))) in
+          Ast_helper.Pat.construct ~loc:pat.ppat_loc lid (Some pat)
         else pat
       in    
       let type_label_pat (label_lid, label, sarg) k =
+        let sarg = process_optional_label (label, sarg) in
         begin_def ();
         let (vars, ty_arg, ty_res) = instance_label false label in
         if vars = [] then end_def ();
@@ -1172,7 +1173,6 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
           raise(Error(label_lid.loc, !env,
                       Label_mismatch(label_lid.txt, trace)))
         end;
-        let sarg = process_optional_label (label_lid, label, sarg) in
         type_pat sarg ty_arg (fun arg ->
           if vars <> [] then begin
             end_def ();
@@ -1879,8 +1879,9 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
       Ext_list.exists e.pexp_attributes (fun ({txt },_) -> txt = "optional")
     in
     if label_is_optional ld && not exp_optional_attr then
-      let pexp_desc = Pexp_construct ({id with txt = Longident.Lident "Some"}, Some e)
-      in (id, ld, {e with pexp_desc})
+      let lid = mknoloc (Longident.(Ldot (Lident "*predef*", "Some"))) in
+      let e = Ast_helper.Exp.construct ~loc:e.pexp_loc lid (Some e)
+      in (id, ld, e)
     else (id, ld, e)
   in
   match sexp.pexp_desc with
