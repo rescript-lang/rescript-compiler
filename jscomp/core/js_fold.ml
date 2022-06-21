@@ -288,4 +288,3 @@ class fold =
         let _self = _self#required_modules _x1 in
         _self
   end
- 
