@@ -147,7 +147,7 @@ and expression_desc =
      it will be true when it's a method
      The last pararemter [true] return unit
   *)
-  | Str of {pure: bool; txt: string}
+  | Str of {delim: string option; txt: string}
   (* A string is UTF-8 encoded, and may contain
      escape sequences.
   *)
