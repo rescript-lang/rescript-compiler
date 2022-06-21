@@ -1157,7 +1157,12 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
         let exp_optional_attr =
           Ext_list.exists pat.ppat_attributes (fun ({txt },_) -> txt = "optional")
         in
-        if label_is_optional ld && not exp_optional_attr then
+        let isFromPamatch = match pat.ppat_desc with
+          | Ppat_construct ({txt = Lident s}, _) ->
+            String.length s >= 2 && s.[0] = '#' && s.[1] = '$'
+          | _ -> false
+        in
+        if label_is_optional ld && not exp_optional_attr && not isFromPamatch then
           let lid = mknoloc (Longident.(Ldot (Lident "*predef*", "Some"))) in
           Ast_helper.Pat.construct ~loc:pat.ppat_loc lid (Some pat)
         else pat
