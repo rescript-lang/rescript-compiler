@@ -125,8 +125,8 @@ let pure_runtime_call module_name fn_name args =
 
 let runtime_ref module_name fn_name = runtime_var_dot module_name fn_name
 
-let str ?(pure = true) ?comment s : t =
-  { expression_desc = Str {pure; txt=s}; comment }
+let str ?(delim = None) ?comment txt : t =
+  { expression_desc = Str {txt; delim}; comment }
 
 let unicode ?comment s : t = { expression_desc = Unicode s; comment }
 
