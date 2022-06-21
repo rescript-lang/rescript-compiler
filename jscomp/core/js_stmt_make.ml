@@ -131,11 +131,11 @@ let string_switch ?(comment : string option)
     ?(declaration : (J.property * Ident.t) option) ?(default : J.block option)
     (e : J.expression) (clauses : (string * J.case_clause) list) : t =
   match e.expression_desc with
-  | Str (_, s) -> (
+  | Str {txt} -> (
       let continuation =
         match
           Ext_list.find_opt clauses (fun (switch_case, x) ->
-              if switch_case = s then Some x.switch_body else None)
+              if switch_case = txt then Some x.switch_body else None)
         with
         | Some case -> case
         | None -> ( match default with Some x -> x | None -> assert false)
