@@ -24,9 +24,9 @@ function parseOutput(output) {
       output.lastIndexOf("npm notice === Tarball Details ===")
     )
     .split("\n")
-    .map((x) => x.split(" ").filter(Boolean))
-    .filter((x) => x[0] === "npm" && x[1] === "notice")
-    .map((x) => x[x.length - 1]);
+    .map(x => x.split(" ").filter(Boolean))
+    .filter(x => x[0] === "npm" && x[1] === "notice")
+    .map(x => x[x.length - 1]);
   return publishedFiles;
 }
 
@@ -64,7 +64,9 @@ function check(map) {
   // since it's already snapshot
 
   // make sure the remote and current are on the same commit
-  var currentBranch = (p.execSync(`git rev-parse --abbrev-ref HEAD`) + "").trim();
+  var currentBranch = (
+    p.execSync(`git rev-parse --abbrev-ref HEAD`) + ""
+  ).trim();
   var command = `git fetch origin && git diff ${currentBranch} origin/${currentBranch}`;
   console.log(`Running '${command}'`);
   var remoteDiffs = p.execSync(command) + "";

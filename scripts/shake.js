@@ -36,7 +36,7 @@ function dsource(file) {
     {
       cwd,
       encoding: "utf8",
-      shell: true
+      shell: true,
     }
   );
   // check output.status
@@ -62,7 +62,7 @@ function checkDiff(file, msg) {
   var output = cp.spawnSync(`git diff --quiet ${file}`, {
     shell: true,
     encoding: "utf8",
-    cwd
+    cwd,
   });
   if (output.status !== 0) {
     var output = cp.spawnSync(
@@ -90,12 +90,12 @@ function shake(file) {
     {
       cwd,
       encoding: "utf8",
-      shell: true
+      shell: true,
     }
   );
   if (output.status !== 0) {
     console.error(`shake failure`);
-    console.error(fs.readFileSync(tmp)+"");
+    console.error(fs.readFileSync(tmp) + "");
     process.exit(2);
   } else {
     // fs.writeFileSync(path.join(cwd, file), output.stderr);
@@ -112,7 +112,7 @@ function attachDead(file) {
   var output = cp.spawnSync(`${ocamlopt} -bin-annot  -c ${file}`, {
     cwd,
     encoding: "utf8",
-    shell: true
+    shell: true,
   });
 
   var genType = path.join(esy, "genType.exe");
@@ -120,7 +120,7 @@ function attachDead(file) {
   output = cp.spawnSync(`Write=1 ${genType} -dce-cmt ${base}.cmt`, {
     cwd,
     encoding: "utf8",
-    shell: true
+    shell: true,
   });
   if (output.status !== 0) {
     console.error(`dce failure`);

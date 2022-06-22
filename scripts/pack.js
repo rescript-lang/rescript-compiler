@@ -8,12 +8,12 @@ var child_process = require("child_process");
 // { name : "basic", children : ... }
 // { name : "xx", content : ... }
 /**
- * 
- * @param {string} dir 
+ *
+ * @param {string} dir
  */
 function scanDir(dir) {
   var files = fs.readdirSync(dir).sort();
-  var children = files.map((file) => {
+  var children = files.map(file => {
     var curFile = path.join(dir, file);
     var stat = fs.statSync(curFile);
     if (stat.isFile()) {
@@ -27,9 +27,9 @@ function scanDir(dir) {
 }
 
 /**
- * 
- * @param {string} s 
- * @param {number} indent 
+ *
+ * @param {string} s
+ * @param {number} indent
  */
 function escape(s, indent) {
   return (
@@ -56,7 +56,7 @@ function toString(data, indent) {
   var output = "";
   if (data.children) {
     output += `${" ".repeat(indent)}Dir("${data.name}",[
-${data.children.map((x) => toString(x, indent + 1)).join(";\n")}        
+${data.children.map(x => toString(x, indent + 1)).join(";\n")}        
 ${" ".repeat(indent)}])`;
   } else {
     output += `${" ".repeat(indent)}File("${data.name}",
@@ -70,7 +70,7 @@ ${" ".repeat(indent)})`;
  *
  */
 function updateThemes() {
-  var templatesDir = path.join(__dirname, "..", "jscomp", "bsb", "templates");  
+  var templatesDir = path.join(__dirname, "..", "jscomp", "bsb", "templates");
   var output = child_process.spawnSync(`git clean -dfx ${templatesDir}`, {
     shell: true,
     encoding: "utf-8",
@@ -93,15 +93,14 @@ type  node =
 let root = ([
 ${fs
   .readdirSync(templatesDir)
-  .filter((x) => fs.statSync(path.join(templatesDir, x)).isDirectory())
-  .map((x) => toString(scanDir(path.join(templatesDir, x)), 3))
+  .filter(x => fs.statSync(path.join(templatesDir, x)).isDirectory())
+  .map(x => toString(scanDir(path.join(templatesDir, x)), 3))
   .join(";\n")}
 ])`,
     "utf8"
   );
 }
 exports.updateThemes = updateThemes;
-
 
 if (require.main === module) {
   updateThemes();

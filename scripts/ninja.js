@@ -15,10 +15,10 @@ var jsDir = path.join(__dirname, "..", "lib", "js");
 
 var runtimeFiles = fs.readdirSync(runtimeDir, "ascii");
 var runtimeMlFiles = runtimeFiles.filter(
-  (x) => !x.startsWith("bs_stdlib_mini") && x.endsWith(".ml") && x !== "js.ml"
+  x => !x.startsWith("bs_stdlib_mini") && x.endsWith(".ml") && x !== "js.ml"
 );
 var runtimeMliFiles = runtimeFiles.filter(
-  (x) => !x.startsWith("bs_stdlib_mini") && x.endsWith(".mli") && x !== "js.mli"
+  x => !x.startsWith("bs_stdlib_mini") && x.endsWith(".mli") && x !== "js.mli"
 );
 var runtimeSourceFiles = runtimeMlFiles.concat(runtimeMliFiles);
 var runtimeJsFiles = [...new Set(runtimeSourceFiles.map(baseName))];
@@ -39,8 +39,8 @@ var vendorNinjaPath = path.join(__dirname, "..", my_target, "ninja.exe");
 // cryptic issues caused by mismatching assembly architectures Node 16 ships
 // with a native arm64 binary, and will set process.arch to "arm64" (instead of
 // Rosetta emulated "x86")
-if(semver.lt(process.version, "16.0.0")) {
-  console.error("Requires node version 16 or above... Abort.")
+if (semver.lt(process.version, "16.0.0")) {
+  console.error("Requires node version 16 or above... Abort.");
   process.exit(1);
 }
 
@@ -349,7 +349,7 @@ function targetToString(file, cwd) {
  * @returns {string} return a string separated with whitespace
  */
 function targetsToString(files, cwd) {
-  return files.map((x) => targetToString(x, cwd)).join(" ");
+  return files.map(x => targetToString(x, cwd)).join(" ");
 }
 /**
  *
@@ -374,7 +374,7 @@ function ninjaBuild(outputs, inputs, rule, deps, cwd, overrides) {
     stmt +=
       `\n` +
       overrides
-        .map((x) => {
+        .map(x => {
           return `    ${x.key} = ${x.value}`;
         })
         .join("\n");
@@ -426,7 +426,7 @@ function ninjaQuickBuild(
     rule,
     ds.concat(dds),
     cwd,
-    overrides.map((x) => {
+    overrides.map(x => {
       return { key: x[0], value: x[1] };
     })
   );
@@ -441,7 +441,7 @@ function ninjaQuickBuild(
  */
 function ninjaQuickBuidList(xs) {
   return xs
-    .map((x) => ninjaQuickBuild(x[0], x[1], x[2], x[3], x[4], x[5], x[6]))
+    .map(x => ninjaQuickBuild(x[0], x[1], x[2], x[3], x[4], x[5], x[6]))
     .join("\n");
 }
 
@@ -453,7 +453,7 @@ function ninjaQuickBuidList(xs) {
  */
 function cppoList(cwd, xs) {
   return xs
-    .map((x) => {
+    .map(x => {
       /**
        * @type {KV[]}
        */
@@ -484,7 +484,7 @@ function cppoList(cwd, xs) {
  */
 function mllList(cwd, xs) {
   return xs
-    .map((x) => {
+    .map(x => {
       var output = baseName(x) + ".ml";
       return ninjaQuickBuild(output, x, mllRuleName, cwd, [], [], []);
     })
@@ -499,7 +499,7 @@ function mllList(cwd, xs) {
  */
 function mlyList(cwd, xs) {
   return xs
-    .map((x) => {
+    .map(x => {
       var output = baseName(x) + ".ml";
       return ninjaQuickBuild(output, x, mlyRuleName, cwd, [], [], []);
     })
@@ -529,7 +529,7 @@ function pseudoTarget(name) {
  * @returns {Targets}
  */
 function fileTargets(args) {
-  return args.map((name) => fileTarget(name));
+  return args.map(name => fileTarget(name));
 }
 
 /**
@@ -549,10 +549,10 @@ function buildStmt(outputs, inputs, rule, depsMap, cwd, overrides, extraDeps) {
   for (var i = 0; i < outputs.length; ++i) {
     var curDeps = depsMap.get(outputs[i]);
     if (curDeps !== undefined) {
-      curDeps.forEach((x) => deps.add(x));
+      curDeps.forEach(x => deps.add(x));
     }
   }
-  extraDeps.forEach((x) => deps.add(x));
+  extraDeps.forEach(x => deps.add(x));
   return ninjaBuild(os, is, rule, deps.toSortedArray(), cwd, overrides);
 }
 
@@ -597,15 +597,15 @@ function ocamlDepForBscAsync(files, dir, depsMap) {
         if (error !== null) {
           return reject(error);
         } else {
-          var pairs = stdout.split("\n").map((x) => x.split(":"));
-          pairs.forEach((x) => {
+          var pairs = stdout.split("\n").map(x => x.split(":"));
+          pairs.forEach(x => {
             var deps;
             let source = replaceCmj(x[0]);
             if (x[1] !== undefined && (deps = x[1].trim())) {
               deps = deps.split(" ");
               updateDepsKVsByFile(
                 source,
-                deps.map((x) => replaceCmj(x)),
+                deps.map(x => replaceCmj(x)),
                 depsMap
               );
             }
@@ -627,9 +627,9 @@ function ocamlDepForBscAsync(files, dir, depsMap) {
  * By default `ocamldep.opt` only list dependencies in its args
  */
 function depModulesForBscAsync(files, dir, depsMap) {
-  let ocamlFiles = files.filter((x) => x.endsWith(".ml") || x.endsWith(".mli"));
-  let reFiles = files.filter((x) => x.endsWith(".re") || x.endsWith(".rei"));
-  let resFiles = files.filter((x) => x.endsWith(".res") || x.endsWith(".resi"));
+  let ocamlFiles = files.filter(x => x.endsWith(".ml") || x.endsWith(".mli"));
+  let reFiles = files.filter(x => x.endsWith(".re") || x.endsWith(".rei"));
+  let resFiles = files.filter(x => x.endsWith(".res") || x.endsWith(".resi"));
   /**
    *
    * @param {(value:void) =>void} resolve
@@ -645,8 +645,8 @@ function depModulesForBscAsync(files, dir, depsMap) {
       if (error !== null) {
         return reject(error);
       } else {
-        var pairs = stdout.split("\n").map((x) => x.split(":"));
-        pairs.forEach((x) => {
+        var pairs = stdout.split("\n").map(x => x.split(":"));
+        pairs.forEach(x => {
           var modules;
           let source = sourceToTarget(x[0].trim());
           if (x[1] !== undefined && (modules = x[1].trim())) {
@@ -687,7 +687,7 @@ function collectTarget(sourceFiles) {
    * @type {Map<string,FileInfo>}
    */
   var allTargets = new Map();
-  sourceFiles.forEach((x) => {
+  sourceFiles.forEach(x => {
     var { ext, name } = path.parse(x);
     var existExt = allTargets.get(name);
     if (existExt === undefined) {
@@ -857,10 +857,9 @@ function generateNinja(depsMap, allTargets, cwd, extraDeps = []) {
 var COMPILIER = `../${my_target}/bsc.exe`;
 var BSC_COMPILER = `bsc = ${COMPILIER}`;
 
-
 async function runtimeNinja(devmode = true) {
   var ninjaCwd = "runtime";
-  var compilerTarget = pseudoTarget('$bsc');
+  var compilerTarget = pseudoTarget("$bsc");
   var externalDeps = devmode ? [compilerTarget] : [];
   var ninjaOutput = devmode ? "build.ninja" : "release.ninja";
   var templateRuntimeRules = `
@@ -961,7 +960,7 @@ rule ${mlyRuleName}
     generator = true
 `;
 async function othersNinja(devmode = true) {
-  var compilerTarget = pseudoTarget('$bsc');
+  var compilerTarget = pseudoTarget("$bsc");
   var externalDeps = [
     compilerTarget,
     fileTarget("belt_internals.cmi"),
@@ -1015,7 +1014,7 @@ ${ninjaQuickBuidList([
 `;
   var othersDirFiles = fs.readdirSync(othersDir, "ascii");
   var jsPrefixSourceFiles = othersDirFiles.filter(
-    (x) =>
+    x =>
       x.startsWith("js") &&
       (x.endsWith(".ml") || x.endsWith(".mli")) &&
       !x.includes(".cppo") &&
@@ -1024,7 +1023,7 @@ ${ninjaQuickBuidList([
       x !== "js.ml"
   );
   var othersFiles = othersDirFiles.filter(
-    (x) =>
+    x =>
       !x.startsWith("js") &&
       x !== "belt.ml" &&
       x !== "belt_internals.mli" &&
@@ -1080,7 +1079,7 @@ async function stdlibNinja(devmode = true) {
   var stdlibVersion = "stdlib-406";
   var ninjaCwd = stdlibVersion;
   var stdlibDir = path.join(jscompDir, stdlibVersion);
-  var compilerTarget = pseudoTarget('$bsc');
+  var compilerTarget = pseudoTarget("$bsc");
   var externalDeps = [compilerTarget, othersTarget];
   var ninjaOutput = devmode ? "build.ninja" : "release.ninja";
   var bsc_flags = "bsc_flags";
@@ -1119,7 +1118,7 @@ ${ninjaQuickBuidList([
 ])}
 `;
   var stdlibDirFiles = fs.readdirSync(stdlibDir, "ascii");
-  var sources = stdlibDirFiles.filter((x) => {
+  var sources = stdlibDirFiles.filter(x => {
     return (
       !x.startsWith("pervasives") && (x.endsWith(".ml") || x.endsWith(".mli"))
     );
@@ -1216,7 +1215,7 @@ ${mllList(ninjaCwd, [
 ])}
 `;
   var testDirFiles = fs.readdirSync(testDir, "ascii");
-  var sources = testDirFiles.filter((x) => {
+  var sources = testDirFiles.filter(x => {
     return (
       x.endsWith(".re") ||
       x.endsWith(".rei") ||
@@ -1252,7 +1251,7 @@ ${mllList(ninjaCwd, [
  * @param {DepsMap} depsMap
  */
 function runJSCheckAsync(depsMap) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     var count = 0;
     var tasks = runtimeJsFiles.length;
     var updateTick = () => {
@@ -1261,14 +1260,12 @@ function runJSCheckAsync(depsMap) {
         resolve(count);
       }
     };
-    runtimeJsFiles.forEach((name) => {
+    runtimeJsFiles.forEach(name => {
       var jsFile = path.join(jsDir, name + ".js");
       fs.readFile(jsFile, "utf8", function (err, fileContent) {
         if (err === null) {
-          var deps = getDeps(fileContent).map(
-            (x) => path.parse(x).name + ".cmj"
-          );
-          fs.exists(path.join(runtimeDir, name + ".mli"), (exist) => {
+          var deps = getDeps(fileContent).map(x => path.parse(x).name + ".cmj");
+          fs.exists(path.join(runtimeDir, name + ".mli"), exist => {
             if (exist) {
               deps.push(name + ".cmi");
             }
@@ -1285,9 +1282,9 @@ function runJSCheckAsync(depsMap) {
 }
 
 function checkEffect() {
-  var jsPaths = runtimeJsFiles.map((x) => path.join(jsDir, x + ".js"));
+  var jsPaths = runtimeJsFiles.map(x => path.join(jsDir, x + ".js"));
   var effect = jsPaths
-    .map((x) => {
+    .map(x => {
       return {
         file: x,
         content: fs.readFileSync(x, "utf8"),
@@ -1327,7 +1324,7 @@ function checkEffect() {
   // @ts-ignore
   assert(
     effect.length === black_list.size &&
-      effect.every((x) => black_list.has(x.file))
+      effect.every(x => black_list.has(x.file))
   );
 
   console.log(effect);
@@ -1359,7 +1356,7 @@ function sortFilesByDeps(domain, dependency_graph) {
       visiting.add(current);
       var next = dependency_graph.get(current);
       if (next !== undefined && next.size > 0) {
-        next.forEach((x) => {
+        next.forEach(x => {
           visit(visiting, path.concat(current), x);
         });
       }
@@ -1434,15 +1431,15 @@ var black_list = [];
  */
 function test(dir) {
   return readdirSync(path.join(jscompDir, dir))
-    .filter((x) => {
+    .filter(x => {
       return (
         (x.endsWith(".ml") || x.endsWith(".mli")) &&
         !(x.endsWith(".cppo.ml") || x.endsWith(".cppo.mli")) &&
         !(x.endsWith(".pp.ml") || x.endsWith(".pp.mli")) &&
-        !black_list.some((name) => x.includes(name))
+        !black_list.some(name => x.includes(name))
       );
     })
-    .map((x) => path.join(dir, x));
+    .map(x => path.join(dir, x));
 }
 
 /**
@@ -1462,15 +1459,15 @@ function setSortedToStringAsNativeDeps(xs) {
 function preprocessorNinjaSync() {
   var napkinFiles = fs
     .readdirSync(path.join(jscompDir, "..", "syntax", "src"), "ascii")
-    .filter((x) => x.endsWith(".ml") || x.endsWith(".mli"));
+    .filter(x => x.endsWith(".ml") || x.endsWith(".mli"));
   var napkinCliFiles = fs
     .readdirSync(path.join(jscompDir, "..", "syntax", "cli"), "ascii")
-    .filter((x) => x.endsWith(".ml") || x.endsWith(".mli"));
-  var buildNapkinFiles = napkinFiles 
-    .map((file) => `o napkin/${file} : copy ../syntax/src/${file}`)
+    .filter(x => x.endsWith(".ml") || x.endsWith(".mli"));
+  var buildNapkinFiles = napkinFiles
+    .map(file => `o napkin/${file} : copy ../syntax/src/${file}`)
     .join("\n");
-  var buildNapkinCliFiles = napkinCliFiles 
-    .map((file) => `o napkin/${file} : copy ../syntax/cli/${file}`)
+  var buildNapkinCliFiles = napkinCliFiles
+    .map(file => `o napkin/${file} : copy ../syntax/cli/${file}`)
     .join("\n");
   var cppoNative = `
 ocamlopt = ocamlopt.opt
@@ -1609,7 +1606,7 @@ var sourceDirs = [
  * @param {string[]} dirs
  */
 function makeLibs(dirs) {
-  return dirs.map((x) => `${x}/${x}.cmxa`).join(" ");
+  return dirs.map(x => `${x}/${x}.cmxa`).join(" ");
 }
 var compiler_libs = ["ml"];
 var bsc_libs = [
@@ -1671,7 +1668,7 @@ var tests_libs = [
 function nativeNinja() {
   var ninjaOutput = "compiler.ninja";
 
-  var includes = sourceDirs.map((x) => `-I ${x}`).join(" ");
+  var includes = sourceDirs.map(x => `-I ${x}`).join(" ");
 
   var flags = "-w A-4-9-40..42-30-48-50-44-45";
   var minor_version = +getVersionString().split(".")[1];
@@ -1770,7 +1767,7 @@ o ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_gen/g
    * @type { {name : string, libs: string[]}[]}
    */
   var libs = [];
-  sourceDirs.forEach((name) => {
+  sourceDirs.forEach(name => {
     if (name !== "main" && name !== "stubs") {
       libs.push({ name, libs: [] });
     }
@@ -1798,8 +1795,8 @@ o ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_gen/g
        */
       var map = new Map();
 
-      var pairs = out.split("\n").map((x) => x.split(":").map((x) => x.trim()));
-      pairs.forEach((pair) => {
+      var pairs = out.split("\n").map(x => x.split(":").map(x => x.trim()));
+      pairs.forEach(pair => {
         /**
          * @type {string[]|string}
          */
@@ -1812,7 +1809,7 @@ o ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_gen/g
           map.set(key, new Set(deps));
         }
         if (key.endsWith("cmx")) {
-          libs.forEach((x) => {
+          libs.forEach(x => {
             if (path.dirname(key) === x.name) {
               x.libs.push(key);
             }
@@ -1822,7 +1819,7 @@ o ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_gen/g
 
       // not ocamldep output
       // when no mli exists no deps for cmi otherwise add cmi
-      var stmts = pairs.map((pair) => {
+      var stmts = pairs.map(pair => {
         if (pair[0]) {
           var target = pair[0];
           var y = path.parse(target);
@@ -1845,7 +1842,7 @@ o ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_gen/g
           }
         }
       });
-      libs.forEach((x) => {
+      libs.forEach(x => {
         var output = sortFilesByDeps(x.libs, map);
         var name = x.name;
         stmts.push(`o ${name}/${name}.cmxa : archive ${output.join(" ")}`);

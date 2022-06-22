@@ -58,11 +58,17 @@ function provideNinja() {
         cwd: ninja_source_dir,
         stdio: [0, 1, 2],
       });
-      fs.copyFileSync(path.join(ninja_source_dir, ninja_bin_filename), ninja_bin_output);
+      fs.copyFileSync(
+        path.join(ninja_source_dir, ninja_bin_filename),
+        ninja_bin_output
+      );
     } else {
       console.log(`ninja.tar.gz not availble in CI mode`);
       require("../ninja/snapshot").build();
-      fs.copyFileSync(path.join(root_dir, "ninja", ninja_bin_filename), ninja_bin_output);
+      fs.copyFileSync(
+        path.join(root_dir, "ninja", ninja_bin_filename),
+        ninja_bin_output
+      );
     }
 
     console.log("ninja binary is ready: ", ninja_bin_output);
@@ -192,7 +198,7 @@ function provideCompiler() {
     if (!require("./buildocaml.js").checkEnvCompiler()) {
       // no compiler available
       var prefix = require("./buildocaml.js").build(true);
-      ocamlopt=`${prefix}/bin/${ocamlopt}`
+      ocamlopt = `${prefix}/bin/${ocamlopt}`;
     }
     // Note this ninja file only works under *nix due to the suffix
     // under windows require '.exe'

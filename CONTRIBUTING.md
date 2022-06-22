@@ -58,10 +58,10 @@ The ReScript project is built with a vendored version of `ninja`. It requires bu
 
 ```sh
 # Generate all the necessary ninja build files
-./scripts/ninja.js config 
+./scripts/ninja.js config
 
 # Run ninja to read and execute the generated build files
-./scripts/ninja.js build 
+./scripts/ninja.js build
 
 # Clean (remove) all ninja build files
 ./scripts/ninja.js clean
@@ -69,7 +69,7 @@ The ReScript project is built with a vendored version of `ninja`. It requires bu
 
 Whenever you edit a file, run `./scripts/ninja.js build` to rebuild the ReScript compiler. There's also an optional watcher to auto-rebuild on file changes: `node scripts/tasks.js`.
 
-## Build the Project during Development (`dune` workflow) 
+## Build the Project during Development (`dune` workflow)
 
 When working on a project you may want to use `dune` to compile all the files you've been working on. This is especially important for full IDE support, including auto-completion and showing compilation errors.
 
@@ -94,6 +94,7 @@ Usually whenever there's some issues with missing files, incompatible interfaces
 ```
 
 If this doesn't work (rare), then:
+
 - Save your changes
 - `git clean -xdf .` to wipe all artifacts
 - Then do a clean build as instructed above

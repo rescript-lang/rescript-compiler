@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-
 /*
  * This script is used to compile a bundled compiler file into a standalone JS bundle.
  * The compiled output (including the compiled stdlib files), will be put in the defined
@@ -30,13 +29,7 @@ var path = require("path");
 
 var ocamlVersion = "4.06.1";
 var jscompDir = path.join(__dirname, "..", "jscomp");
-var sourceDir = path.join(
-  __dirname,
-  "..",
-  "lib",
-  ocamlVersion,
-  "unstable"
-);
+var sourceDir = path.join(__dirname, "..", "lib", ocamlVersion, "unstable");
 
 var config = {
   cwd: jscompDir,
@@ -56,14 +49,12 @@ function e(cmd) {
 
 if (!process.env.PLAYGROUND) {
   var defaultPlayground = `../../playground`;
-  console.warn(
-    `PLAYGROUND env var unset, defaulting to ${defaultPlayground}`
-  );
+  console.warn(`PLAYGROUND env var unset, defaulting to ${defaultPlayground}`);
   process.env.PLAYGROUND = defaultPlayground;
 }
 
 var playground = process.env.PLAYGROUND;
-var OCAMLC = `ocamlc.opt`
+var OCAMLC = `ocamlc.opt`;
 
 var JSOO = `js_of_ocaml`;
 
@@ -71,18 +62,22 @@ function prepare(isDev, targetCompilerFile) {
   var [env, ocamlFlag, jsooFlag] = isDev
     ? ["development", "-g ", "--pretty "]
     : ["production", "", ""];
-  console.log(`building byte code version of target compiler file '${targetCompilerFile}' [${env}]`);
+  console.log(
+    `building byte code version of target compiler file '${targetCompilerFile}' [${env}]`
+  );
 
-  const mliFile = path.join(sourceDir, targetCompilerFile + ".mli")
-  const mlFile = path.join(sourceDir, targetCompilerFile + ".ml")
+  const mliFile = path.join(sourceDir, targetCompilerFile + ".mli");
+  const mlFile = path.join(sourceDir, targetCompilerFile + ".ml");
 
   // There may be a situation where the .mli file doesn't exist (mostly when
   // the snapshot hasn't been checked into `lib/4.06.1/unstable`
-  e(`touch ${mliFile}`)
+  e(`touch ${mliFile}`);
   e(
     `${OCAMLC} ${ocamlFlag}-w -30-40 -no-check-prims -I ${sourceDir} ${mliFile} ${mlFile} -o jsc.byte `
   );
-  console.log(`building js version for compiler target '${targetCompilerFile}'`);
+  console.log(
+    `building js version for compiler target '${targetCompilerFile}'`
+  );
   e(`${JSOO} compile jsc.byte ${jsooFlag}-o exports.js`);
   console.log("copy js artifacts");
   e(`cp ../lib/js/*.js ${playground}/stdlib`);
@@ -116,14 +111,14 @@ function prepublish() {
 }
 
 // Relevant target compiler files can be found in jscomp/snapshot.ninja
-let targetCompilerFile = "js_playground_compiler"
+let targetCompilerFile = "js_playground_compiler";
 
 // Let's derive the target file to compile from the last argument list.
-if(process.argv.length > 2) {
-  const lastArg = process.argv[process.argv.length - 1]
+if (process.argv.length > 2) {
+  const lastArg = process.argv[process.argv.length - 1];
 
-  if(!lastArg.startsWith("-")) {
-    targetCompilerFile = lastArg
+  if (!lastArg.startsWith("-")) {
+    targetCompilerFile = lastArg;
   }
 }
 

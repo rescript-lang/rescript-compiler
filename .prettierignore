@@ -1,0 +1,7 @@
+docs/
+jscomp/
+lib/
+vendor/
+ninja/
+syntax/
+ocaml-tree/

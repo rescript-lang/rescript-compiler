@@ -1,13 +1,10 @@
-
-
 <div align="center">
 
    <h3> <a href="https://rescript-lang.org"> ReScript Documentation </a> | <a href="https://forum.rescript-lang.org/"> Forum </a> | <a href="https://rescript-lang.org.cn/community/roadmap#roadmap"> Roadmap</a>  | <a href="https://rescript-lang.org.cn/"> 中文 </a> | <a href="https://green-labs.github.io/rescript-in-korean/"> 한국어 </a> </h3>
   
 </div>
 
-
-## Overview 
+## Overview
 
 The compiler for ReScript: a statically typed functional language focused on shipping.
 
@@ -19,16 +16,15 @@ The compiler for ReScript: a statically typed functional language focused on shi
 npm install --save-dev rescript
 ```
 
-
 ## Contribution
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Acknowledgments
 
-* Thanks to the [OCaml](https://ocaml.org) team, obviously, without such a beautiful yet practical language, this project would not exist. The original type system was inherited from [it](jscomp/ml) with lots of modifications to fit with JS ecosystem better.
-* Thanks to [ninja-build](https://ninja-build.org), ReScript also comes with a blazing fast build tool on top of it, `ninja` is a truly [well engineered](http://aosabook.org/en/posa/ninja.html) scalable build tool
-* Thanks to [Bloomberg](https://www.techatbloomberg.com) and [Facebook](https://github.com/facebook/). This project began at Bloomberg and was published in 2016; without the support of Bloomberg, it would not have happened. This project's funded by Facebook since July 2017
+- Thanks to the [OCaml](https://ocaml.org) team, obviously, without such a beautiful yet practical language, this project would not exist. The original type system was inherited from [it](jscomp/ml) with lots of modifications to fit with JS ecosystem better.
+- Thanks to [ninja-build](https://ninja-build.org), ReScript also comes with a blazing fast build tool on top of it, `ninja` is a truly [well engineered](http://aosabook.org/en/posa/ninja.html) scalable build tool
+- Thanks to [Bloomberg](https://www.techatbloomberg.com) and [Facebook](https://github.com/facebook/). This project began at Bloomberg and was published in 2016; without the support of Bloomberg, it would not have happened. This project's funded by Facebook since July 2017
 
 ## History
 

@@ -45,7 +45,7 @@ function hasExtension(extensions) {
   /**
    * @param {string} x
    */
-  var pred = (x) => extensions.some((ext) => x.endsWith(ext));
+  var pred = x => extensions.some(ext => x.endsWith(ext));
   return pred;
 }
 async function readStdin() {
@@ -69,7 +69,7 @@ function main(argv, rescript_exe, bsc_exe) {
      * @type {string[]}
      */
     var files = [];
-    arg.parse_exn(format_usage, argv, specs, (xs) => {
+    arg.parse_exn(format_usage, argv, specs, xs => {
       files = xs;
     });
 
@@ -82,15 +82,19 @@ function main(argv, rescript_exe, bsc_exe) {
       }
       // -all
       // TODO: check the rest arguments
-      var output = child_process.spawnSync(rescript_exe, ["info", "-list-files"], {
-        encoding: "utf-8",
-      });
+      var output = child_process.spawnSync(
+        rescript_exe,
+        ["info", "-list-files"],
+        {
+          encoding: "utf-8",
+        }
+      );
       if (output.status !== 0) {
         console.error(output.stdout);
         console.error(output.stderr);
         process.exit(2);
       }
-      files = output.stdout.split("\n").map((x) => x.trim());
+      files = output.stdout.split("\n").map(x => x.trim());
       var hasError = false;
       for (let arg of files) {
         if (isSupportedFile(arg)) {
@@ -116,12 +120,14 @@ function main(argv, rescript_exe, bsc_exe) {
         var os = require("os");
         var filename = path.join(
           os.tmpdir(),
-          "rescript_" + crypto.randomBytes(8).toString("hex") + path.parse(use_stdin).base
+          "rescript_" +
+            crypto.randomBytes(8).toString("hex") +
+            path.parse(use_stdin).base
         );
         (async function () {
           var content = await readStdin();
           fs.writeFileSync(filename, content, "utf8");
-          process.addListener('exit', () => fs.unlinkSync(filename));
+          process.addListener("exit", () => fs.unlinkSync(filename));
           child_process.execFile(
             bsc_exe,
             ["-format", filename],
@@ -156,7 +162,7 @@ function main(argv, rescript_exe, bsc_exe) {
         }
       }
       var hasError = false;
-      files.forEach((file) => {
+      files.forEach(file => {
         var write = isSupportedFile(file);
         var flags = write ? ["-o", file, "-format", file] : ["-format", file];
         child_process.execFile(bsc_exe, flags, (error, stdout, stderr) => {

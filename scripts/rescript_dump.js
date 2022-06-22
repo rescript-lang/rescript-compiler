@@ -14,9 +14,9 @@ var specs = [];
  */
 function main(argv, rescript_exe, bsc_exe) {
   var target;
-  arg.parse_exn(dump_usage, argv, specs, (xs) => {
+  arg.parse_exn(dump_usage, argv, specs, xs => {
     if (xs.length !== 1) {
-      arg.bad_arg(`Expect only one target, ${xs.length} found` );
+      arg.bad_arg(`Expect only one target, ${xs.length} found`);
     }
     target = xs[0];
   });
@@ -27,26 +27,17 @@ function main(argv, rescript_exe, bsc_exe) {
     process.exit(2);
   }
 
-
-  var output = child_process.spawnSync(
-    rescript_exe,
-    ["build", "--", target],
-    {
-      encoding: "utf-8",
-    }
-  );
+  var output = child_process.spawnSync(rescript_exe, ["build", "--", target], {
+    encoding: "utf-8",
+  });
   if (output.status !== 0) {
     console.log(output.stdout);
     console.error(output.stderr);
     process.exit(2);
   }
-  output = child_process.spawnSync(
-    bsc_exe,
-    [path.join("lib", "bs", target)],
-    {
-      encoding: "utf-8",
-    }
-  );
+  output = child_process.spawnSync(bsc_exe, [path.join("lib", "bs", target)], {
+    encoding: "utf-8",
+  });
   console.log(output.stdout.trimEnd());
   if (output.status !== 0) {
     console.error(output.stderr);

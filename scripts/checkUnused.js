@@ -21,7 +21,7 @@ var sourceDirs = [
   "bsb_helper",
   "ounit",
   "ounit_tests",
-  "main"
+  "main",
 ];
 var fileMap = new Map();
 for (let dir of sourceDirs) {
@@ -36,8 +36,8 @@ for (let dir of sourceDirs) {
 }
 
 /**
- * 
- * @param {string} file 
+ *
+ * @param {string} file
  */
 function check(file) {
   var output = cp.spawnSync(
@@ -58,6 +58,6 @@ function check(file) {
   console.log(result);
 }
 
-// 
-console.log(process.argv)
-check(process.argv[2])
+//
+console.log(process.argv);
+check(process.argv[2]);

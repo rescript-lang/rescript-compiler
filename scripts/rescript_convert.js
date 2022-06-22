@@ -33,7 +33,7 @@ var specs = [
  * @param {string} file
  */
 function shouldConvert(file) {
-  return [".ml", ".mli", ".re", ".rei"].some((x) => file.endsWith(x));
+  return [".ml", ".mli", ".re", ".rei"].some(x => file.endsWith(x));
 }
 
 /**
@@ -73,7 +73,7 @@ function main(argv, rescript_exe, bsc_exe) {
      * @type {string[]}
      */
     var files = [];
-    arg.parse_exn(format_usage, argv, specs, (xs) => {
+    arg.parse_exn(format_usage, argv, specs, xs => {
       files = xs;
     });
 
@@ -86,15 +86,19 @@ function main(argv, rescript_exe, bsc_exe) {
       }
       // -all
       // TODO: check the rest arguments
-      var output = child_process.spawnSync(rescript_exe, ["info", "-list-files"], {
-        encoding: "utf-8",
-      });
+      var output = child_process.spawnSync(
+        rescript_exe,
+        ["info", "-list-files"],
+        {
+          encoding: "utf-8",
+        }
+      );
       if (output.status !== 0) {
         console.error(output.stdout);
         console.error(output.stderr);
         process.exit(2);
       }
-      files = output.stdout.split("\n").map((x) => x.trim());
+      files = output.stdout.split("\n").map(x => x.trim());
       for (let file of files) {
         if (shouldConvert(file)) {
           handleOneFile(file, bsc_exe);
@@ -108,7 +112,7 @@ function main(argv, rescript_exe, bsc_exe) {
           process.exit(2);
         }
       }
-      files.forEach((file) => {
+      files.forEach(file => {
         handleOneFile(file, bsc_exe);
       });
     }

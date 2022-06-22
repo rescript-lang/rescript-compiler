@@ -11,10 +11,10 @@ var content = fs.readFileSync(
 var files = content
   .split("\n")
   .filter(Boolean)
-  .map((x) =>
+  .map(x =>
     x
       .split(":")
-      .map((x) => x.trim())
+      .map(x => x.trim())
       .filter(Boolean)
       .at(-1)
   );
@@ -22,7 +22,7 @@ var files = content
 for (let file of files) {
   let { base, dir } = path.parse(file);
   // console.log(base, dir);
-  if (dir.includes("ml") && !base.includes('rescript')) {
+  if (dir.includes("ml") && !base.includes("rescript")) {
     continue;
   }
   let src = path.join(__dirname, "..", "jscomp", file);

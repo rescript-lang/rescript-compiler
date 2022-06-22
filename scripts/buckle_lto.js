@@ -15,7 +15,7 @@ var pairs = [
 
 var regexp = RegExp(
   `${pairs
-    .map((x) => {
+    .map(x => {
       let result = [];
       result.push("!" + x[0]);
       let xs = x[0].split(".");
@@ -24,7 +24,7 @@ var regexp = RegExp(
       }
       return result;
     })
-    .reduce((x,y)=>x.concat(y))
+    .reduce((x, y) => x.concat(y))
     .join("|")}`,
   "g"
 );
@@ -34,7 +34,7 @@ var regexp = RegExp(
  * @param {string} s
  */
 function transform(s) {
-  return s.replace(regexp, (s) => {
+  return s.replace(regexp, s => {
     for (let [k, v] of pairs) {
       if (s.includes(k.split(".")[1])) {
         // "bs_only" instead of "Clflags.bs_only"

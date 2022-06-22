@@ -23,7 +23,7 @@ function verifyVersion(bsVersion, version) {
   try {
     let [major, minor] = bsVersion
       .split("\n")
-      .find((x) => x.startsWith("let version = "))
+      .find(x => x.startsWith("let version = "))
       .split("=")[1]
       .trim()
       .slice(1, -1)
@@ -51,9 +51,14 @@ function rebuild() {
   });
 }
 
-var use_env_compiler = process.argv.includes('-use-env-compiler')
-var bin_path =
-  path.join(__dirname, '..', process.platform === 'darwin' && process.arch === 'arm64' ? process.platform + process.arch : process.platform)
+var use_env_compiler = process.argv.includes("-use-env-compiler");
+var bin_path = path.join(
+  __dirname,
+  "..",
+  process.platform === "darwin" && process.arch === "arm64"
+    ? process.platform + process.arch
+    : process.platform
+);
 
 function buildCompiler() {
   var prebuilt = "prebuilt.ninja";
@@ -69,12 +74,12 @@ function buildCompiler() {
   // This is for ninja access
   process.env.PATH = `${bin_path}${path.delimiter}${process.env.PATH}`;
   let ninjaPath = `ninja.exe`;
-  console.log(`start build`)
+  console.log(`start build`);
   cp.execSync(
     `${ninjaPath} -C lib -f ${prebuilt} -v -t clean && ${ninjaPath} -v -C lib -f ${prebuilt}`,
     root_config
   );
-  console.log('compiler built done')
+  console.log("compiler built done");
 }
 if (!is_windows) {
   if (!process.argv.includes("-no-clean")) {
@@ -82,8 +87,6 @@ if (!is_windows) {
     rebuild();
     require("./ninja.js").updateRelease();
   }
-
-
 }
 
 function createNinjaTar() {
