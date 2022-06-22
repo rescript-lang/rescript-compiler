@@ -24,8 +24,7 @@
 
 type cst = private
   | Arg_int_lit of int
-  | Arg_string_lit of string
-  | Arg_js_literal of string
+  | Arg_string_lit of string * string option
 
 type attr =
   | Poly_var_string of { descr : (string * string) list }
@@ -55,11 +54,9 @@ type obj_params = obj_param list
 
 type params = param list
 
-val cst_obj_literal : string -> cst
-
 val cst_int : int -> cst
 
-val cst_string : string -> cst
+val cst_string : string -> string option -> cst
 
 val empty_label : label
 

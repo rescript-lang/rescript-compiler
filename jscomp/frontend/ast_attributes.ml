@@ -271,7 +271,7 @@ let iter_process_bs_int_as (attrs : t) =
       | _ -> ());
   !st
 
-type as_const_payload = Int of int | Str of string | Js_literal_str of string
+type as_const_payload = Int of int | Str of string * string option
 
 let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
   let st = ref None in
@@ -292,7 +292,7 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
                                 pexp_desc =
                                   Pexp_constant
                                     (Pconst_string
-                                      (s, ((None | Some "json"| Some "*j") as dec)));
+                                      (s, ((None | Some "json"| Some "*j") as delim)));
                                 pexp_loc;
                                 _;
                               },
@@ -301,19 +301,20 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
                       };
                     ]
                      ->
-                    if dec = None || dec = Some "*j" then st := Some (Str s)
-                    else (
-                      (match
+                    st := Some (Str (s, delim));
+                    if delim = Some "json" then (
+                      (* check that it is a valid object literal *)
+                      match
                          Classify_function.classify
                            ~check:
-                             (pexp_loc, Bs_flow_ast_utils.flow_deli_offset dec)
+                             (pexp_loc, Bs_flow_ast_utils.flow_deli_offset delim)
                            s
                        with
                       | Js_literal _ -> ()
                       | _ ->
                           Location.raise_errorf ~loc:pexp_loc
-                            "an object literal expected");
-                      st := Some (Js_literal_str s))
+                            "an object literal expected"
+                    )
                 | _ -> Bs_syntaxerr.err loc (Expect_int_or_string_or_json_literal)
                 )
             | Some v -> st := Some (Int v))
