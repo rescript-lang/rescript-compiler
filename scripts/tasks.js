@@ -89,7 +89,7 @@ function onSourceChange(eventType, filename) {
     filename.endsWith(".mll") ||
     filename.endsWith(".mly") ||
     filename.endsWith(".json") ||
-    filename.endsWith(".re") || 
+    filename.endsWith(".re") ||
     filename.endsWith(".rei") ||
     filename.endsWith(".res") ||
     filename.endsWith(".resi")
@@ -110,7 +110,7 @@ var readline = require("readline");
 readline
   .createInterface({
     input: process.stdin,
-    output: process.stdout
+    output: process.stdout,
   })
   .on("line", input => {
     switch (input.toLowerCase()) {
@@ -122,12 +122,13 @@ readline
           console.log(`it's building`);
         } else {
           isBuilding = true;
-          cp
-            .fork(path.join(__dirname, "ninja.js"), ["config"])
-            .on("close", () => {
+          cp.fork(path.join(__dirname, "ninja.js"), ["config"]).on(
+            "close",
+            () => {
               isBuilding = false;
               rebuild();
-            });
+            }
+          );
         }
         break;
       case "clean":
@@ -135,11 +136,12 @@ readline
           console.log(`it's building`);
         } else {
           isBuilding = true;
-          cp
-            .fork(path.join(__dirname, "ninja.js"), ["cleanbuild"])
-            .on("close", () => {
+          cp.fork(path.join(__dirname, "ninja.js"), ["cleanbuild"]).on(
+            "close",
+            () => {
               isBuilding = false;
-            });
+            }
+          );
         }
 
         break;

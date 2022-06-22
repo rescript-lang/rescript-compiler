@@ -36,7 +36,7 @@ for (let dir of sourceDirs) {
   for (let file of files) {
     if (
       (file.endsWith(".ml") || file.endsWith(".mli")) &&
-      !skips.some((x) => file.includes(x))
+      !skips.some(x => file.includes(x))
     ) {
       let source = path.join(dir1, file);
       let content = fs.readFileSync(source, "utf-8");

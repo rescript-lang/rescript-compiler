@@ -47,7 +47,8 @@ function init() {
       "bin"
     );
 
-    process.env["PATH"] = vendorOCamlPath + path.delimiter + process.env["PATH"];
+    process.env["PATH"] =
+      vendorOCamlPath + path.delimiter + process.env["PATH"];
   }
 
   var ninjaPath = path.join(__dirname, "..", process.platform, "ninja.exe");
@@ -92,7 +93,10 @@ function runTests() {
       }
     );
 
-    cp.execSync(path.join(binDir, 'test.exe'), { cwd: binDir, stdio: [0, 1, 2] });
+    cp.execSync(path.join(binDir, "test.exe"), {
+      cwd: binDir,
+      stdio: [0, 1, 2],
+    });
   }
 
   // running generated js tests
@@ -130,14 +134,14 @@ function runTests() {
           console.log("✅ success in ", file);
         } catch (e) {
           failed.push(file);
-          console.log("❌ error", e)
-        };
+          console.log("❌ error", e);
+        }
       }
     });
     if (failed.length > 0) {
       console.log("");
-      console.log ("❌ Build tests failed", failed);
-      throw(new Error());
+      console.log("❌ Build tests failed", failed);
+      throw new Error();
     }
   }
 }

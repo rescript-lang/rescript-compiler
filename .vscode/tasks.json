@@ -1,106 +1,92 @@
 {
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "Watch build",
-            "command": "node",
-            "options": {
-                "cwd": "${workspaceRoot}/jscomp"
-            },
-            // "isShellCommand": true,
-            "type": "shell",
-            "group": {
-              "kind" : "build",
-              "isDefault": true
-            },
-            "args": [
-                "../scripts/tasks.js"
-            ],
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": false
-            },
-            "isBackground": true,
-            "problemMatcher": {
-                "fileLocation":["autodetect","${workspaceRoot}/jscomp"],
-                "owner": "ocaml",
-                "background": {
-                    "activeOnStart": false,
-                    "beginsPattern": ">>>> Start compiling",
-                    "endsPattern": ">>>> Finish compiling"
-                },
-                "pattern": [
-                    {
-                        "regexp": "^File \"(.*)\", line (\\d+)(?:, characters (\\d+)-(\\d+))?:$",
-                        "file": 1,
-                        "line": 2,
-                        "column": 3,
-                        "endColumn": 4
-                    },
-                    {
-                        // "regexp": "^(?:(?:Parse\\s+)?(Warning|[Ee]rror)(?:\\s+\\d+)?:)?\\s+(.*)$",
-                        "regexp": "^(?:(?:Parse\\s+)?(Warning|[Ee]rror)(?:\\s+(\\(warning \\d+\\)|\\(alert \\w+\\)))?(?:\\s+\\d+)?:)?\\s+(.*)$",
-                        "severity": 1,
-                        "message": 2,
-                        "loop": true
-                    }
-                ]
-            }
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Watch build",
+      "command": "node",
+      "options": {
+        "cwd": "${workspaceRoot}/jscomp"
+      },
+      // "isShellCommand": true,
+      "type": "shell",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "args": ["../scripts/tasks.js"],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "fileLocation": ["autodetect", "${workspaceRoot}/jscomp"],
+        "owner": "ocaml",
+        "background": {
+          "activeOnStart": false,
+          "beginsPattern": ">>>> Start compiling",
+          "endsPattern": ">>>> Finish compiling"
+        },
+        "pattern": [
+          {
+            "regexp": "^File \"(.*)\", line (\\d+)(?:, characters (\\d+)-(\\d+))?:$",
+            "file": 1,
+            "line": 2,
+            "column": 3,
+            "endColumn": 4
+          },
+          {
+            // "regexp": "^(?:(?:Parse\\s+)?(Warning|[Ee]rror)(?:\\s+\\d+)?:)?\\s+(.*)$",
+            "regexp": "^(?:(?:Parse\\s+)?(Warning|[Ee]rror)(?:\\s+(\\(warning \\d+\\)|\\(alert \\w+\\)))?(?:\\s+\\d+)?:)?\\s+(.*)$",
+            "severity": 1,
+            "message": 2,
+            "loop": true
+          }
+        ]
+      }
     },
     {
-        "label": "check unused bsc",
-        "command" : "node",
-        "options": {
-            "cwd": "${workspaceRoot}/lib"
-        },
-        "args": [
-            "../scripts/checkUnused.js",
-            "whole_compiler" 
-        ],
-        "problemMatcher" :{
-            "base": "$ocamlc",
-            "fileLocation" :
-                "autoDetect",
-                "owner": "globalUnused"     
-        }                
+      "label": "check unused bsc",
+      "command": "node",
+      "options": {
+        "cwd": "${workspaceRoot}/lib"
+      },
+      "args": ["../scripts/checkUnused.js", "whole_compiler"],
+      "problemMatcher": {
+        "base": "$ocamlc",
+        "fileLocation": "autoDetect",
+        "owner": "globalUnused"
+      }
     },
     {
-        "label": "check unused bsb_helper",
-        "command" : "node",
-        "options": {
-            "cwd": "${workspaceRoot}/lib"
-        },
-        "args": [
-            "../scripts/checkUnused.js" ,
-            "bsb_helper"
-        ],
-        "problemMatcher" :{
-            "base": "$ocamlc",
-            "fileLocation" :
-                "autoDetect",
-                "owner": "globalUnused"     
-        }                
+      "label": "check unused bsb_helper",
+      "command": "node",
+      "options": {
+        "cwd": "${workspaceRoot}/lib"
+      },
+      "args": ["../scripts/checkUnused.js", "bsb_helper"],
+      "problemMatcher": {
+        "base": "$ocamlc",
+        "fileLocation": "autoDetect",
+        "owner": "globalUnused"
+      }
     },
     {
-        "label": "check unused refmt",
-        "command" : "node",
-        "options": {
-            "cwd": "${workspaceRoot}/lib"
-        },
-        "args": [
-            "../scripts/checkUnused.js" ,
-            "refmt_main3"
-        ],
-        "problemMatcher" :{
-            "base": "$ocamlc",
-            "fileLocation" :
-                "autoDetect",
-                "owner": "globalUnused"     
-        }                
+      "label": "check unused refmt",
+      "command": "node",
+      "options": {
+        "cwd": "${workspaceRoot}/lib"
+      },
+      "args": ["../scripts/checkUnused.js", "refmt_main3"],
+      "problemMatcher": {
+        "base": "$ocamlc",
+        "fileLocation": "autoDetect",
+        "owner": "globalUnused"
+      }
     }
-    ]
+  ]
 }

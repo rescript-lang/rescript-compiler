@@ -89,7 +89,7 @@ function build(config) {
     cwd: ocamlSrcDir,
     stdio: [0, 1, 2],
   });
-  return prefix
+  return prefix;
 }
 
 exports.build = build;

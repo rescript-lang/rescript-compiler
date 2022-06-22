@@ -6,7 +6,7 @@ let path = require("path");
 function copyReasonReact() {
   let dir = path.join(__dirname, "..", "..", "reason-react", "src");
   let files = fs.readdirSync(dir);
-  files.forEach((x) => {
+  files.forEach(x => {
     if (!(x.endsWith(".re") || x.endsWith(".rei"))) {
       return;
     }

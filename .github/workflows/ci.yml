@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   test:
@@ -20,64 +20,64 @@ jobs:
       OCAMLRUNPARAM: b
 
     steps:
-    - name: "Windows: Set git to use LF"
-      if: runner.os == 'Windows'
-      run: |
-        git config --global core.autocrlf false
-        git config --global core.eol lf
+      - name: "Windows: Set git to use LF"
+        if: runner.os == 'Windows'
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
 
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        submodules: true
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: true
 
-    - name: Use OCaml ${{matrix.ocaml_compiler}}
-      if: runner.name != 'macos-arm'
-      uses: ocaml/setup-ocaml@v2
-      with:
-        ocaml-compiler: ${{matrix.ocaml_compiler}}
-        opam-pin: false
-        opam-depext: false
+      - name: Use OCaml ${{matrix.ocaml_compiler}}
+        if: runner.name != 'macos-arm'
+        uses: ocaml/setup-ocaml@v2
+        with:
+          ocaml-compiler: ${{matrix.ocaml_compiler}}
+          opam-pin: false
+          opam-depext: false
 
-    - name: Use OCaml ${{matrix.ocaml_compiler}} (macOS ARM)
-      if: runner.name == 'macos-arm'
-      uses: AbstractMachinesLab/setup-ocaml@arm-support
-      with:
-        ocaml-compiler: ${{matrix.ocaml_compiler}}
-        opam-pin: false
-        opam-depext: false
+      - name: Use OCaml ${{matrix.ocaml_compiler}} (macOS ARM)
+        if: runner.name == 'macos-arm'
+        uses: AbstractMachinesLab/setup-ocaml@arm-support
+        with:
+          ocaml-compiler: ${{matrix.ocaml_compiler}}
+          opam-pin: false
+          opam-depext: false
 
-    - name: Use Node.js
-      uses: actions/setup-node@v2.1.5
-      with:
-        node-version: 16
+      - name: Use Node.js
+        uses: actions/setup-node@v2.1.5
+        with:
+          node-version: 16
 
-    - name: NPM install
-      run: opam exec -- npm ci
-      env:
-        RESCRIPT_FORCE_REBUILD: 1
+      - name: NPM install
+        run: opam exec -- npm ci
+        env:
+          RESCRIPT_FORCE_REBUILD: 1
 
-    - name: Run tests
-      if: runner.os != 'Windows'
-      run: opam exec -- node scripts/ciTest.js -all
-    
-    - name: Run tests (Windows)
-      if: runner.os == 'Windows'
-      run: opam exec -- node scripts/ciTest.js -mocha -theme
+      - name: Run tests
+        if: runner.os != 'Windows'
+        run: opam exec -- node scripts/ciTest.js -all
 
-    - name: Ensure lib/js and lib/es6 are up to date
-      if: runner.os != 'Windows'
-      run: |
-        opam exec -- node ./scripts/ninja.js config
-        opam exec -- node ./scripts/ninja.js build
-        git diff --exit-code lib/js lib/es6
+      - name: Run tests (Windows)
+        if: runner.os == 'Windows'
+        run: opam exec -- node scripts/ciTest.js -mocha -theme
 
-    - name: Get artifact info
-      id: get_artifact_info
-      run: node .github/workflows/get_artifact_info.js
+      - name: Ensure lib/js and lib/es6 are up to date
+        if: runner.os != 'Windows'
+        run: |
+          opam exec -- node ./scripts/ninja.js config
+          opam exec -- node ./scripts/ninja.js build
+          git diff --exit-code lib/js lib/es6
 
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ steps.get_artifact_info.outputs.artifact_name }}
-        path: ${{ steps.get_artifact_info.outputs.artifact_path }}
+      - name: Get artifact info
+        id: get_artifact_info
+        run: node .github/workflows/get_artifact_info.js
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.get_artifact_info.outputs.artifact_name }}
+          path: ${{ steps.get_artifact_info.outputs.artifact_path }}

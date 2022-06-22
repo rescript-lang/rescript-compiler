@@ -1,65 +1,79 @@
+var assert = require("assert");
 
-var assert = require('assert')
-
-function initArray(n){
-    var res = new Array(n)
-    for (var i = 0; i < n; ++i){
-        res[i] = i
-    }
-    return res
+function initArray(n) {
+  var res = new Array(n);
+  for (var i = 0; i < n; ++i) {
+    res[i] = i;
+  }
+  return res;
 }
 
-function gen_normal(arity){
-    if(arity === 0){
-        return "unit -> 'a0"
-    } else {
-        return initArray(arity+1).map(x=>`'a${x}`).join(' -> ')
-    }
+function gen_normal(arity) {
+  if (arity === 0) {
+    return "unit -> 'a0";
+  } else {
+    return initArray(arity + 1)
+      .map(x => `'a${x}`)
+      .join(" -> ");
+  }
 }
 
-function gen_bs(arity){
-    if (arity === 0) {
-        return "([`Arity_0], 'a0) fn"
-    } else {
-        return `([\`Arity_${arity} of ( ${initArray(arity).map(x=>`'a${x}`).join(" * ")} )], 'a${arity}) fn`
-    }
+function gen_bs(arity) {
+  if (arity === 0) {
+    return "([`Arity_0], 'a0) fn";
+  } else {
+    return `([\`Arity_${arity} of ( ${initArray(arity)
+      .map(x => `'a${x}`)
+      .join(" * ")} )], 'a${arity}) fn`;
+  }
 }
 
-function gen_bs_this(arity){
-    assert.notEqual(arity,0)
-    return `([\`Arity_${arity} of ( ${initArray(arity).map(x=>`'a${x}`).join(" * ")} )], 'a${arity} ) meth_callback`
+function gen_bs_this(arity) {
+  assert.notEqual(arity, 0);
+  return `([\`Arity_${arity} of ( ${initArray(arity)
+    .map(x => `'a${x}`)
+    .join(" * ")} )], 'a${arity} ) meth_callback`;
 }
 
-function gen_bs_meth(arity){
-    if(arity === 0){
-        return `([\`Arity_0], 'a0) meth`
-    }
-    return `([\`Arity_${arity} of ( ${initArray(arity).map(x=>`'a${x}`).join(" * ")} )], 'a${arity}) meth`
+function gen_bs_meth(arity) {
+  if (arity === 0) {
+    return `([\`Arity_0], 'a0) meth`;
+  }
+  return `([\`Arity_${arity} of ( ${initArray(arity)
+    .map(x => `'a${x}`)
+    .join(" * ")} )], 'a${arity}) meth`;
 }
 
-function generate_mk(arity){
-   return `external fn_mk${arity} : (${gen_normal(arity)}) -> (${gen_bs(arity)}) = "#fn_mk" "${arity}" `
+function generate_mk(arity) {
+  return `external fn_mk${arity} : (${gen_normal(arity)}) -> (${gen_bs(
+    arity
+  )}) = "#fn_mk" "${arity}" `;
 }
 
-function generate_call_back_mk(arity){
-
-   var arity = arity + 1 
-   return `external fn_method${arity} : (${gen_normal(arity)}) -> (${gen_bs_this(arity)}) = "#fn_method" "${arity}" `
+function generate_call_back_mk(arity) {
+  var arity = arity + 1;
+  return `external fn_method${arity} : (${gen_normal(arity)}) -> (${gen_bs_this(
+    arity
+  )}) = "#fn_method" "${arity}" `;
 }
 
-function generate_run(arity){
-    if(arity===0){
-        return `external fn_run0 : (([\`Arity_0], 'a0) fn) ->  'a0  = "#fn_run" "0" `
-    }
+function generate_run(arity) {
+  if (arity === 0) {
+    return `external fn_run0 : (([\`Arity_0], 'a0) fn) ->  'a0  = "#fn_run" "0" `;
+  }
 
-    return `external fn_run${arity} : (${gen_bs(arity)}) -> (${gen_normal(arity)} ) = "#fn_run" "${arity}" `
+  return `external fn_run${arity} : (${gen_bs(arity)}) -> (${gen_normal(
+    arity
+  )} ) = "#fn_run" "${arity}" `;
 }
 
-function generate_method_run(arity){
-    if(arity === 0){
-        return `external method_run0 : (([\`Arity_0], 'a0) meth) -> 'a0 = "#method_run" "0" `
-    }
-    return `external method_run${arity} : (${gen_bs_meth(arity)}) -> (${gen_normal(arity)} ) = "#method_run" "${arity}" `
+function generate_method_run(arity) {
+  if (arity === 0) {
+    return `external method_run0 : (([\`Arity_0], 'a0) meth) -> 'a0 = "#method_run" "0" `;
+  }
+  return `external method_run${arity} : (${gen_bs_meth(
+    arity
+  )}) -> (${gen_normal(arity)} ) = "#method_run" "${arity}" `;
 }
 
 var prelude = `
@@ -74,34 +88,48 @@ external raw_expr : string -> 'a = "#raw_expr"
 external raw_stmt : string -> 'a = "#raw_stmt"
 external raw_function: string ->  'a = "#raw_function"
 external unsafe_downgrade : 'a t -> 'a = "#unsafe_downgrade"
-`.split('\n')
+`.split("\n");
 
-function genAll(prefix){
-    var arities = initArray(10)
-    var code  = 
-    `${prefix} ${Array.prototype.concat(
-                prelude,
-                arities.map(generate_mk),
-                arities.map(generate_call_back_mk),
-                arities.map(generate_run),
-                arities.map(generate_method_run)).map(x=>" " + x).join('\n')}
-end`        
-        // console.log(arities, arities.map(x=>generate_call_back_mk(x)))
-    return code
+function genAll(prefix) {
+  var arities = initArray(10);
+  var code = `${prefix} ${Array.prototype
+    .concat(
+      prelude,
+      arities.map(generate_mk),
+      arities.map(generate_call_back_mk),
+      arities.map(generate_run),
+      arities.map(generate_method_run)
+    )
+    .map(x => " " + x)
+    .join("\n")}
+end`;
+  // console.log(arities, arities.map(x=>generate_call_back_mk(x)))
+  return code;
 }
 
-var fs = require('fs')
-var path = require('path')
+var fs = require("fs");
+var path = require("path");
 
-if(require.main === module){
-    // fs.writeFileSync(path.join(__dirname, '..', 'jscomp', 'runtime', 'js_unsafe.ml'), genAll(), 'utf8')
-    var jsMlFile = path.join(__dirname,'..','jscomp','runtime','js.ml')
-    var jsMliFile = path.join(__dirname,'..','jscomp','runtime','js.mli')
-    var replacement = genAll('module Internal = struct')
+if (require.main === module) {
+  // fs.writeFileSync(path.join(__dirname, '..', 'jscomp', 'runtime', 'js_unsafe.ml'), genAll(), 'utf8')
+  var jsMlFile = path.join(__dirname, "..", "jscomp", "runtime", "js.ml");
+  var jsMliFile = path.join(__dirname, "..", "jscomp", "runtime", "js.mli");
+  var replacement = genAll("module Internal = struct");
 
-    var jsCode = fs.readFileSync(jsMlFile,'utf8')
-    fs.writeFileSync(jsMlFile, jsCode.replace(/module Internal = struct([^])*?end/m, replacement),'utf8')
+  var jsCode = fs.readFileSync(jsMlFile, "utf8");
+  fs.writeFileSync(
+    jsMlFile,
+    jsCode.replace(/module Internal = struct([^])*?end/m, replacement),
+    "utf8"
+  );
 
-    jsCode = fs.readFileSync(jsMliFile,'utf8')
-    fs.writeFileSync(jsMliFile, jsCode.replace(/module Internal : sig([^])*?end/m, genAll('module Internal : sig')),'utf8')
+  jsCode = fs.readFileSync(jsMliFile, "utf8");
+  fs.writeFileSync(
+    jsMliFile,
+    jsCode.replace(
+      /module Internal : sig([^])*?end/m,
+      genAll("module Internal : sig")
+    ),
+    "utf8"
+  );
 }

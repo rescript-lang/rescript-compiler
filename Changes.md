@@ -1,10 +1,10 @@
-`*` means  potential break changes
+`*` means potential break changes
 
 # master
 
 **Compiler**
 
-- Add support for `@new @variadic` (see https://github.com/rescript-lang/rescript-compiler/pull/5364) 
+- Add support for `@new @variadic` (see https://github.com/rescript-lang/rescript-compiler/pull/5364)
 - New records with `@optional` fields [#5423](https://github.com/rescript-lang/rescript-compiler/pull/5423) [#5452](https://github.com/rescript-lang/rescript-compiler/issues/5452)
 
 **Syntax**
@@ -26,14 +26,19 @@
 # 9.1.4
 
 ## Build
+
 - #5167 add dump subcommand so that
+
 ```
 rescript dump path/to/file.cmi
 ```
+
 Will dump the interface to a readable output, note this is integrated into the build system that the build will try to build it if it is not already there
+
 - clean will clean its dependency by default.
   subcommand `clean -with-deps`, `-with-deps` is not needed any more
 - hide most bsc options, officially supported bsc flags (this is not a breaking change, those internal options are still there but subject to removal in the future)
+
 ```
 Usage: bsc <options> <files>
 Options are:
@@ -56,41 +61,48 @@ Options:
                             to <list>.  See option -w for the syntax of <list>.
                             Default setting is -a+5+6+101+109
 ```
+
 ## Syntax
+
 - #432 bad error message for unterminated quote
+
 ## Compiler
+
 - #5165 bad error message for uncurried type mistmatch
 - #5169 fix a code gen issue with user defined `None`
 
 # 9.1.3 (bug fix release)
 
-## Build 
+## Build
 
-- #5154  when toplevel package-specs get changed, its dependencies should be rebuilt
+- #5154 when toplevel package-specs get changed, its dependencies should be rebuilt
 - #5152 Rebuild not triggered when deletion with nested modules
-- #5153 when Different compiler version triggered, 
+- #5153 when Different compiler version triggered,
   it should clean the whole dependencies instead of just the repo itself
-- #5080 Add back -ws option for the build   
+- #5080 Add back -ws option for the build
 
-## Syntax 
+## Syntax
+
 - #425 fix CRLF handling for windows
 - #414 Fix printing of underscore Pexp_fun sugar in context of Array.get
-- #408 Don't parse Int token with suffices as hash ident for poly variants 
+- #408 Don't parse Int token with suffices as hash ident for poly variants
 - #410 Fix parsing of arrow type with objects in constructor declaration args
 - #404 fix printing of Osig_module in outcome printer
 - #402 Implement printing of `Otyp_module` in outcome printer
 
 # 9.1
+
 - Remove depercated APIs Js.Re.exec, Js.Re.test, Node.Fs.on
 - #5014 #5063 #5027 the new ReScript CLI interface
-Thew new CLI is self explainatory:
+  Thew new CLI is self explainatory:
+
 ```
 rescript -h
 Available flags
 -v, -version  display version number
--h, -help     display help 
+-h, -help     display help
 Subcommands:
-    build    
+    build
     clean
     format
     convert
@@ -103,14 +115,14 @@ For example:
 
 - #5025 in place format support, this is subsumed into `rescript format` subcommand
 - #5060 #5055
-Add formatting support for stdin/sdout
+  Add formatting support for stdin/sdout
 - #5053 #5050 clean up structural object semantics
-- #5037 
-Allows coercion from nullary types to int/string.
-This applies to collections types too
+- #5037
+  Allows coercion from nullary types to int/string.
+  This applies to collections types too
 - #5029
-int polyvar is compiled into int.
-`#0` is the same as 0 except it is structually typed as `#0`
+  int polyvar is compiled into int.
+  `#0` is the same as 0 except it is structually typed as `#0`
 - #5023 generate interface file in rescript syntax by default
 - #5021 makes int64 runtime payload small for just comparison
 - #5019, #5017, #5016, #5015, #5010 improve error message
@@ -118,9 +130,8 @@ int polyvar is compiled into int.
 - #5005 not depending on Format for Arg module, smaller size
 - #4985 fix the schema of bsb on `dev` property
 - #4967 #4986, #4984, #4971, #4972, #4969 Breaking changes
-Remove ocaml style classes while structural objects and structural typings are simplified. Js.t is no longer needed. If user does not know
-what ocaml style class is, this should not affect them.
-
+  Remove ocaml style classes while structural objects and structural typings are simplified. Js.t is no longer needed. If user does not know
+  what ocaml style class is, this should not affect them.
 
 # 9.0.2
 
@@ -133,7 +144,9 @@ Provide user with a sugar to pattern match over modules:
 ```res
 let {length, cons} = module(List)
 ```
+
 More discussions can be found [here](https://forum.rescript-lang.org/t/introducing-an-extension-to-make-pattern-match-works-on-modules/1196)
+
 # 9.0
 
 - #4933 update syntax bf6561bb5d84
@@ -141,6 +154,7 @@ More discussions can be found [here](https://forum.rescript-lang.org/t/introduci
 - #4934 generate `@pure` annotations to help esbuild remove more dead code
 
 - #4932 #4931 turn flow syntax checking from a error into warning 103, so it can be turned off as below
+
 ```res
 @@config({
   flags: ["-w", "-103"],
@@ -152,39 +166,42 @@ if (import.meta.hot){
 }
 `)
 ```
+
 The rationale is that flow could be not standard compilant so we need provide a work around, here
 `import.meta` is something new in Ecmascript
 
-- #4926 #4928 
-  *internal* changes, move jscomp/syntax to jscomp/frontend to avoid conflicts
+- #4926 #4928
+  _internal_ changes, move jscomp/syntax to jscomp/frontend to avoid conflicts
 
-- #4924 #4927 better code generated for pattern match. 
+- #4924 #4927 better code generated for pattern match.
   Take advantage of the JS runtime, some predicates can be simplified
 
 - #4920 #4925 support external-stdlib config
+
 ```
 "external-stdlib" : "@rescript/std"
 ```
-- #4922 #4923 *breaking changes" Allow embed records in structural js objects
+
+- #4922 #4923 \*breaking changes" Allow embed records in structural js objects
 
 - #4908 #4919 #4917 #4916 #4914 #4913 #4910
   Get rid of camlp4 as a dev dependency, introduce an optimized visitor pattern
   generator, better performance, no object usage and less dependency thanks to wasm
 
-- #4911 Relax uninterpretable attributes from error to warn to make ppx_deriving happy  
+- #4911 Relax uninterpretable attributes from error to warn to make ppx_deriving happy
 
-- #4905 *internal* add `Js_exn.anyToExnInternal`
+- #4905 _internal_ add `Js_exn.anyToExnInternal`
 
 - #4903 porting to open BSD/adJ
 
 - #4902 for stdlib es6 artifacts ship .mjs instead of .js, so that
-on the user side, if they config es6 with .mjs, it will work out of box
+  on the user side, if they config es6 with .mjs, it will work out of box
 
 - #4900 #4986 `'` in string literals does not need to be escaped
 
-- #4893 *internal* simplify numbers in JS IR
+- #4893 _internal_ simplify numbers in JS IR
 
-- #4892 #4891  *internal* simplify boxed int operations
+- #4892 #4891 _internal_ simplify boxed int operations
 
 - #4890 clean up constant in lambda IR, fix a subtle bug when do constant folding
 
@@ -196,14 +213,14 @@ on the user side, if they config es6 with .mjs, it will work out of box
 
 - #4870 fix typo in uncurried error message
 
-- #4867 *internal* clean up bsb_helper
+- #4867 _internal_ clean up bsb_helper
 
 # 8.4.2
 
 - #4864 #4865
   Not install dev directory for pinned dependencies
 - #4863
-  for a package, only cmi/cmj artifact changes will trigger a rebuild 
+  for a package, only cmi/cmj artifact changes will trigger a rebuild
 
 # 8.4.1
 
@@ -211,11 +228,12 @@ on the user side, if they config es6 with .mjs, it will work out of box
 - #4856 #4858
   Improve code generation for pattern match:
   Input:
+
   ```res
   type t =
-    | A 
+    | A
     | B
-    | C 
+    | C
     | D (int )
     | E (int)
 
@@ -224,12 +242,14 @@ on the user side, if they config es6 with .mjs, it will work out of box
         | A => 0
         | B => 1
         | C => 2
-        | D (x) => x 
+        | D (x) => x
         | E (x) => x + 1
     }
-  }    
+  }
   ```
+
   Output was:
+
   ```js
     function f(x) {
       if (typeof x !== "number") {
@@ -238,54 +258,51 @@ on the user side, if they config es6 with .mjs, it will work out of box
       } else {
         return x._0;
       }
-      
+
       switch (x) {
         case /* A */0 :
           return 0;
         case /* B */1 :
           return 1;
         case /* C */2 :
-          return 2;      
+          return 2;
     }
   }
   ```
 
   Now:
+
   ```js
   function f(x) {
     if (typeof x !== "number") {
-      if (x.TAG === /* D */0) {
+      if (x.TAG === /* D */ 0) {
         return x._0;
       } else {
-        return x._0 + 1 | 0;
+        return (x._0 + 1) | 0;
       }
     }
     switch (x) {
-      case /* A */0 :
-          return 0;
-      case /* B */1 :
-          return 1;
-      case /* C */2 :
-          return 2;
-      
+      case /* A */ 0:
+        return 0;
+      case /* B */ 1:
+        return 1;
+      case /* C */ 2:
+        return 2;
     }
   }
   ```
 
-
-
-- #4855 *internal changes*
+- #4855 _internal changes_
   changes to compiler-libs will trigger a rebuild of the compiler, this allows us to
   see how changes of compiler-libs affect bsc.exe quickly
 
 - #4850 replace ocp-ocamlres with a lightweight nodejs script, get rid of such dev dependency
 
 - #4854 #4848 #4847 #4844 #4836 #4826 #4824
-  
+
   Pinned packages support and `-make-world` respect changes of dependencies
 
 - #4840 #4841 more robust handling of removing stale output
-
 
 - #4831 use relative paths in the command line
   It will be expanded to absolute path right after the compiler see the path,
@@ -293,7 +310,7 @@ on the user side, if they config es6 with .mjs, it will work out of box
 
 - #4828 no need pass -o for compiling, inferred directly (with namespace support too)
 
-- #4827 *internal* the dev version of bsc now behave roughly the same as the released version
+- #4827 _internal_ the dev version of bsc now behave roughly the same as the released version
 
 - #4825 fix a typo in the warning `%@string` -> `@string`
 
@@ -302,15 +319,15 @@ on the user side, if they config es6 with .mjs, it will work out of box
 
 - #4822 more robust hanlding of : ignore warnings and warn-error when bsb is building dependencies
 
-
-
 # 8.3.3
-This is a bug release for 8.3.*
-- #4817 *internal* add an option RES_SKIP_STDLIB_CHECK so that 
+
+This is a bug release for 8.3.\*
+
+- #4817 _internal_ add an option RES_SKIP_STDLIB_CHECK so that
   for a true monorepo, it does not need follow `node_modules` layout
-- #4807 #4815 remove unused code in refmt parser *a lot* (around 50_000 loc)
+- #4807 #4815 remove unused code in refmt parser _a lot_ (around 50_000 loc)
   on darwin, the binary size is dropped fom 9.69M to 8.48M
-- #4808 add back basic-reason theme to avoid breakage for existing docs  
+- #4808 add back basic-reason theme to avoid breakage for existing docs
 - #4806 Fix broken ocaml build with gcc 10
 - #4804 restore back-wards compatibility with `build statement` in generated ninja files
 - #4803 fix the bsb build schema location in the error message
@@ -318,9 +335,10 @@ This is a bug release for 8.3.*
 - #4801 add a sanity check for name field in bsconfig.json to match real package name
 - #4810 #4784 regressions for weird indentation in warning output
 
-
 # 8.3.1
+
 This is a minor bug fix release for 8.3.0
+
 - capture warnings when rebuild without enforce warn-as-error
 - #4716 internal, make ninja a submodule in dev process
 - #4722 better dataflow for cases like `let {a;b} as obj = ...`
@@ -329,13 +347,13 @@ This is a minor bug fix release for 8.3.0
 
 # 8.3
 
-- #4694, #4712 improving/customizing the underlying ninja build system, better performance  
+- #4694, #4712 improving/customizing the underlying ninja build system, better performance
 
 - #4681, #4710 creating persistent lib/bs.compiler.log per each build for editor diagnostics
 
 - #4688, #4707 better error message
 
-- * #4702  remove nativeint module which is not meaningful on js platform
+- - #4702 remove nativeint module which is not meaningful on js platform
 
 - #4701 support both `bs.val` and `val` attributes, in the future to recommend the shorter ones
 
@@ -357,9 +375,9 @@ This is a minor bug fix release for 8.3.0
 
 - #4661 (internal) not depending on upstream compenv module
 
-- #4639, #4642 refined static analysis to generate better code 
+- #4639, #4642 refined static analysis to generate better code
 
-- #4636, #4641 es6 default import support 
+- #4636, #4641 es6 default import support
 
 - #4638 clean up the confusing error message over uncurry label
 
@@ -374,7 +392,6 @@ This is a minor bug fix release for 8.3.0
 - #4613 (internal) pass down @inlined attribute from upstream. (the info is passed down, how to make use of it is not done yet)
 
 - #4609 Lift the restriction that user can only define a type with less than 256 constructors
-
 
 - #4606, #3961 (internal) use is_a_functor from upstream instead of guessing
 
@@ -395,6 +412,7 @@ This is a minor bug fix release for 8.3.0
 - #4573, #4565, #4559, #4558, #4556, #4554, #4553, #4550 introudce string literal types
 
 - #4580 #4581, #4582, #4463, #4583 relax bs.as to allow object literals instead of json, so FFI below is allowed:
+
   ```ocaml
   external fff0 : int -> int -> (_[@bs.as {json|[undefined,undefined]|json}]) -> int = "say"
   [@@bs.val]
@@ -402,6 +420,7 @@ This is a minor bug fix release for 8.3.0
   let testUndefined () =
     fff0 1 2
   ```
+
 - #4570 refine purity analysis so that object literals in raw will be considered pure
 
 - #4548 #4555 fix ghost locaption in empty array
@@ -409,7 +428,7 @@ This is a minor bug fix release for 8.3.0
 - #4540 optimize code generation for recursive modules
 - #4530 internal -color option default to always
 
-- #4569 emit a warning for use of ``( [ `a| `b] [@bs.string]) `` since it is no longer needed
+- #4569 emit a warning for use of `` ( [ `a| `b] [@bs.string])  `` since it is no longer needed
 - #4531 better generated js code for belt
 - #4526 add `bsc -fmt file` option, format into the new syntax
 - #4495 enable newish es syntax in raw
@@ -422,6 +441,7 @@ This is a minor bug fix release for 8.3.0
 - #4470 tweak error message for not found record fields/constructors
 
 * bug fixes
+
 - #4572, #4585 fix a corner case for ffi to allow such bindings:
   ```ocaml
   external get : _ -> _ -> _ = "" [@@bs.get_index]
@@ -431,13 +451,14 @@ This is a minor bug fix release for 8.3.0
 - #4505 #4502, fix bad error message in bsb -bla
 
 * internal
-- #4497 #4507, #4516 compiler performance improvement
 
+- #4497 #4507, #4516 compiler performance improvement
 
 # 8.0
 
-* Code generation
-- #4308,#4309, #4397 #4403 #4404 #4409 variant as objects
+- Code generation
+
+* #4308,#4309, #4397 #4403 #4404 #4409 variant as objects
   ```
   A (0,1)
   ```
@@ -445,8 +466,8 @@ This is a minor bug fix release for 8.3.0
   ```js
   { TAG : /*A*/0, _0 : 0, _1:1 }
   ```
-- #4399 remove magics in Belt.List to prepare new data representations
-- #4405 polyvar as objects
+* #4399 remove magics in Belt.List to prepare new data representations
+* #4405 polyvar as objects
   ```
   A 1
   ```
@@ -454,82 +475,86 @@ This is a minor bug fix release for 8.3.0
   ```js
   {HASH:MAGIC_NUMBER, VAL:1}
   ```
-- #4331,#4332 #4337,#4339, #4338, #4337 Encoding exception as dictionary, add stacktrace support
-- #4322, #4325,#4326, #4364, #4383, #4371 lazy values as objects, make `caml_update_dummy` generalized
-- #4456, #4458 optimize String.make
-- #4447, #4442 improve arity inference over raw named function expression
-- #4413 changed internal encoding of Some ((Some .. None)), not relying on physiclal equivalence, friendlier to serialization
-- #4379 make bs.config take effect ASAP, however, it can not happen befor parsing.
+* #4331,#4332 #4337,#4339, #4338, #4337 Encoding exception as dictionary, add stacktrace support
+* #4322, #4325,#4326, #4364, #4383, #4371 lazy values as objects, make `caml_update_dummy` generalized
+* #4456, #4458 optimize String.make
+* #4447, #4442 improve arity inference over raw named function expression
+* #4413 changed internal encoding of Some ((Some .. None)), not relying on physiclal equivalence, friendlier to serialization
+* #4379 make bs.config take effect ASAP, however, it can not happen befor parsing.
   This meangs, it won't have effect over flags like `-bs-D` when it happens in lexing.
-- #4426, #4428 apply bs.inline to float literals
-- #4378 apply bs.inline to int64, proper error for not supported types
-- #4425 optimize `bs.as "0"` to allow users to turn record representation into array when needed
-- #4407, #4423 Fix compatiblity layer between debug mode and none-debug mode
+* #4426, #4428 apply bs.inline to float literals
+* #4378 apply bs.inline to int64, proper error for not supported types
+* #4425 optimize `bs.as "0"` to allow users to turn record representation into array when needed
+* #4407, #4423 Fix compatiblity layer between debug mode and none-debug mode
   - For exmaple, `A (1,2)` are equal for code generated either in debug or non-debug mode
-- #4422 remove Unix  module from stdlib
-- #4421 special encode list as `{hd : v0, tl : ...}`
-- #4420 remove legacy jsx v2
+* #4422 remove Unix module from stdlib
+* #4421 special encode list as `{hd : v0, tl : ...}`
+* #4420 remove legacy jsx v2
 
-- #4390 less parens for `bs.as` json literals
-- #4245, #4385 breaking changes: enable strict-sequence, strict-formats by default
-- #4304, #4293 better code generated for string interpolation
-* Fix
+* #4390 less parens for `bs.as` json literals
+* #4245, #4385 breaking changes: enable strict-sequence, strict-formats by default
+* #4304, #4293 better code generated for string interpolation
 
-- #4451, #4454 fix imprecise locations over pipe
-- #4442 fix gentypeconfig.language parsing
-- #4430 when cleaning generated files, use `langauge` from `gentypeconfig`
-- #4324 fix react-hooks theme name field
+- Fix
 
-* Libs
+* #4451, #4454 fix imprecise locations over pipe
+* #4442 fix gentypeconfig.language parsing
+* #4430 when cleaning generated files, use `langauge` from `gentypeconfig`
+* #4324 fix react-hooks theme name field
 
-- #4443 provide a best effort generic seralization mechanism
-- #4427 better error message for non-existing module in `sources[n].public`
-- #4414, #4419  better error message for cases like below
+- Libs
+
+* #4443 provide a best effort generic seralization mechanism
+* #4427 better error message for non-existing module in `sources[n].public`
+* #4414, #4419 better error message for cases like below
   ```
   Error: This expression should not be a function, the expected type is
   (int bounce -> 'a bounce [@bs])
   ```
-- #4416 fix typo (unrecognized primitive -> unrecognized primitive)
-- #4408 [playground] fix jsoo_refmt_main, remove load_modules (uneeded)
-- #4395 fix jsoo_refmt_main, delete playground folder
-- #4394 repl.js: add dev mode
-- #4393 Playground: bring back load_modules API
-- #4389 React JSX ppx: better error message for missing labels
-- #4388 [jsx] fix unused pattern warnings
-- #4380 [jsx] remove bs.config handling in jsx ppx, use bs.config.flags instead
-- #4376 remove Math.imul polyfill, inline Math.imul
-- #4370 remove deprecated support for `fun%raw`
-- #3845, #4367 fix `output too many parens for callback`
-- #4359 [jsx] rais error if creating react.component with unnamed argument
-- #4364 remove customised formatter for exceptions
-- #4358 change reasonreact version for templates
-- #4351 force binding location on the actual make binding
+* #4416 fix typo (unrecognized primitive -> unrecognized primitive)
+* #4408 [playground] fix jsoo_refmt_main, remove load_modules (uneeded)
+* #4395 fix jsoo_refmt_main, delete playground folder
+* #4394 repl.js: add dev mode
+* #4393 Playground: bring back load_modules API
+* #4389 React JSX ppx: better error message for missing labels
+* #4388 [jsx] fix unused pattern warnings
+* #4380 [jsx] remove bs.config handling in jsx ppx, use bs.config.flags instead
+* #4376 remove Math.imul polyfill, inline Math.imul
+* #4370 remove deprecated support for `fun%raw`
+* #3845, #4367 fix `output too many parens for callback`
+* #4359 [jsx] rais error if creating react.component with unnamed argument
+* #4364 remove customised formatter for exceptions
+* #4358 change reasonreact version for templates
+* #4351 force binding location on the actual make binding
 
-* Internal tools/refactoring
+- Internal tools/refactoring
 
-- #4460 bspack is a stand alone file not relying on c stubs
-- #4459 bsb customized command line parsing, prettier output over `bsb -h`
-- #4455 simplify bsb_helper command line parsing
-- #4458 clean up lexing runtime, stay close to lexing.c
-- #4441 remove unused Obj.set_tag
-- #4438 tweak post-processing after linking, better constant substitution
-- #4429 #4431 #4435 minor breaking changes
-    - more compatct encoding of .bsbuild
-    - flatten dev gropus
-    - for files in dev directory they can refer each other
-- #4402 move `caml_set_oo_id` into `caml_oo` module
-- #4392 remove unused return_exp in J.ml ast
-- #4387 fix a build bug when no mli provided, add reason-react for testing
-- #4366, #4373 update polymoprhic comparison not relying for lazy values
-- #4372 vendor jsoo byte code, build playground on the fly
-- #4354 `bstracing -all` can handle multiple build sessions
+* #4460 bspack is a stand alone file not relying on c stubs
+* #4459 bsb customized command line parsing, prettier output over `bsb -h`
+* #4455 simplify bsb_helper command line parsing
+* #4458 clean up lexing runtime, stay close to lexing.c
+* #4441 remove unused Obj.set_tag
+* #4438 tweak post-processing after linking, better constant substitution
+* #4429 #4431 #4435 minor breaking changes
+  - more compatct encoding of .bsbuild
+  - flatten dev gropus
+  - for files in dev directory they can refer each other
+* #4402 move `caml_set_oo_id` into `caml_oo` module
+* #4392 remove unused return_exp in J.ml ast
+* #4387 fix a build bug when no mli provided, add reason-react for testing
+* #4366, #4373 update polymoprhic comparison not relying for lazy values
+* #4372 vendor jsoo byte code, build playground on the fly
+* #4354 `bstracing -all` can handle multiple build sessions
 
 # 7.3.2
+
 - #4315 synup super_errors for better uncurry error message
 - #4335 fix js_date.setUTCTime
 - #4343 fix regex syntax checking for empty or comment string
 - #4351 precie binding location for reasonreact jsx
+
 # 7.3
+
 - #4235 #4237 #4241 #4244 #4240 generalized uncurry work
 - #4255 #4258 #3953 code generation: compiling unit to `undefined`
 - #4288 code generation: improve module alias code generation
@@ -552,6 +577,7 @@ This is a minor bug fix release for 8.3.0
 - #4217 make compiler int64 encoding agnostic
 
 # 7.2
+
 - #4211 #4210 optimize int64 performance, Int64.to_string (10x faster), Int64.neg etc
 - #4209 add a space after "acquire lock" in bsb error handling
 - #4208 #4206 let%private support
@@ -579,12 +605,12 @@ This is a minor bug fix release for 8.3.0
 - #4190 (internal) remove bsdep which is not used
 - #4188 better encoding around internals for performance and size
 - #4155 fix React PPX regressions from 7.1.0 which caused a type error when writing recursive components.
-- #4185 remove staled tasks.json in bsb themes for vscode, leave it for users to keep it  up to date
+- #4185 remove staled tasks.json in bsb themes for vscode, leave it for users to keep it up to date
 - #4159 #4161 #4182 improve the startup time, reducing both the size of cmi and cmj
 - #4179 (internal) remove bsppx, use "bsc.exe -as-ppx" for editor tooling
 - #4171 add a warning for using `fun%raw`, use `[%raw]` directly
 - #4169 An escape hatch for function level comments
-- #4164 #4162 #4165 make code generation  platform agnostic (not depending on printf either)
+- #4164 #4162 #4165 make code generation platform agnostic (not depending on printf either)
 - #4164 add Node.Buffer.toStringWithEncoding
 - #4150 Grab the hostname from window.location when conntecting to websocket for react-hooks theme
 - #4143 better compilation of optional arguments
@@ -592,7 +618,9 @@ This is a minor bug fix release for 8.3.0
 - #4140 docs: update README in basic reason template
 
 # 7.1.0
-(it was 7.0.2 but bumped into 7.1.0 due to a breaking  change introduced in 7.0.2)
+
+(it was 7.0.2 but bumped into 7.1.0 due to a breaking change introduced in 7.0.2)
+
 - #4131 support `bstracing -C`
 
 # 7.0.2
@@ -600,18 +628,21 @@ This is a minor bug fix release for 8.3.0
 - #4117 Upgrade to Reason 3.6.0 @ 8f71db0
 - #4097 introduce a js parser for syntax checking inside raw.
 
-    We can now tell whether the code inside raw is a function or not and  the arity of raw function, so
-    ```ocaml
-    let f = [%raw{|function(x){return x}|}]
-    ```
-    ```ocaml
-    let f = fun%raw x -> {|x|}
-    ```
-    will be treated the same, to make FFI simpler, the special form `fun%raw` will be discouraged.
+  We can now tell whether the code inside raw is a function or not and the arity of raw function, so
+
+  ```ocaml
+  let f = [%raw{|function(x){return x}|}]
+  ```
+
+  ```ocaml
+  let f = fun%raw x -> {|x|}
+  ```
+
+  will be treated the same, to make FFI simpler, the special form `fun%raw` will be discouraged.
 
 - #4090 #4087 fix the unsoundess issue of Js.Array.push
-    now the empty array `[||]` won't have a polymorophic type, it will have a concrete type.
-    This is a bug fix but also a breaking change
+  now the empty array `[||]` won't have a polymorophic type, it will have a concrete type.
+  This is a bug fix but also a breaking change
 - #4038 Duplicated package warning for symlinked folders
 - #41112 #4111 #4067 #4101 provide websocket error better error message and better docs
 
@@ -624,17 +655,19 @@ This is a minor bug fix release for 8.3.0
 - #4199 Change ReactJS PPX to avoid modifying locations of existing code (better integration with editors)
 - #4122 toplevel [@@@warning "+101"] works for our own warnings (apart from OCaml ones)
 
-    `bsc -warn-help` listed several of our own warnings
-    ```
-    101 BuckleScript warning: Unused bs attributes
-    102 BuckleScript warning: polymorphic comparison introduced (maybe unsafe)
-    103 BuckleScript warning: about fragile FFI definitions
-    104 BuckleScript warning: bs.deriving warning with customized message
-    105 BuckleScript warning: the external name is inferred from val name is unsafe from refactoring when changing value name
-    106 BuckleScript warning: Unimplemented primitive used:
-    107 BuckleScript warning: Integer literal exceeds the range of representable integers of type int
-    108 BuckleScript warning: Uninterpreted delimiters (for unicode)
-    ```
+  `bsc -warn-help` listed several of our own warnings
+
+  ```
+  101 BuckleScript warning: Unused bs attributes
+  102 BuckleScript warning: polymorphic comparison introduced (maybe unsafe)
+  103 BuckleScript warning: about fragile FFI definitions
+  104 BuckleScript warning: bs.deriving warning with customized message
+  105 BuckleScript warning: the external name is inferred from val name is unsafe from refactoring when changing value name
+  106 BuckleScript warning: Unimplemented primitive used:
+  107 BuckleScript warning: Integer literal exceeds the range of representable integers of type int
+  108 BuckleScript warning: Uninterpreted delimiters (for unicode)
+  ```
+
 - #4060 #4057 add unboxed type support
 
 - #4078, #4069 better code generated for cases like `match x with true -> ..| false -> ..`
@@ -650,13 +683,14 @@ This is a minor bug fix release for 8.3.0
 - #4025 #4026 fix corner case of code gen for empty object literal
 - #4024 Playground: update repl.js and docs to support jsoo 3.5.1
 
-
 # 7.0.1
+
 - #4009 #4011 fix ocaml type checking bug (cherry pick)
 - #4000 #4010 add react-starter theme
 - #4005 fix windows installing issues
 
 # 7.0.0
+
 - #4003 not doing ast invariant checking, leave it to us (faster compilation)
 - #4002 upgrade ocamldoc in 4.06, fix document build
 - #4001 tweak error message
@@ -705,31 +739,28 @@ This is a minor bug fix release for 8.3.0
 - #3962 #3960 set env var `BSB_PROJECT_ROOT` for bsb
 - #3965 better inline heruistics
 - #3966 #3897 improve module coercion code gen in strict subtyping
-Deprecations
+  Deprecations
 - #3889 remove deprecated light names in bs.deriving abstract
 
 # 5.2.1 (2019/10/16)
 
 Fixes
 
-- #3884  (not using temp file when creating cmt for ocaml 4.06 only)
+- #3884 (not using temp file when creating cmt for ocaml 4.06 only)
 - #3877, #3881 Pattern match bug over list of integers
 - #3875, #3879 regression introduced in 5.2.0 over pattern match optimization
 - #3865 consistent name mangling when compiling modules into object
 - #3852, #3870 for module with all module aliases and no interface file, always make it pure (treat it the same as namespace file)
 - #3874 internal bug fix for ocaml cmpiler
-Codegen
+  Codegen
 - #3880 optimize pattern match for (string|int) option
 - #3866 update react-hooks template
 - #3843 mitigate windows anti-virius issue
 
-
-
-
-
 # 5.2.0 (2019/09/23)
 
 Features
+
 - #3803 Add a -install flag for mono-repository improvement for parallel compilation
 - #3790 #3802 #3799 #3792 #3836 Compile locla modules to objects and clean up
 - #3836 initial support of esy
@@ -739,7 +770,7 @@ Features
 - #3764 better code gen for lazy evaluation
 - #3822 allow `f##"Content-Type"` for uncommon property name
 - #3810 annoate constructor names in pattern match compilation
-Fixes
+  Fixes
 - #3809 Escape question mark and ampersand to special chars
 - #3805 #3796 Fix stale builds (module alias + namespace interaction)
 - #3777 More friendly error message for invalid package name
@@ -751,6 +782,7 @@ Fixes
 - #3823 fix reason language server
 
 Docs
+
 - #3795 Fix docs for stringifyAny
 - #3788 Rename getUnasfe to getUnsafe
 - #3830 fix isSortedExample
@@ -759,12 +791,10 @@ Docs
 - #3827 fix partition example
 - #3826 simplify truncateToLengthUnsafe example
 
-
-
-
 # 5.1.0 (2019/08/15)
 
 Features
+
 - #3731 #3734 #3724 #3714 enable bsc for reason, so that for one file, `bsc hi.re` works
 - #3671 add tool `bstracing` to visualize the building process
 - #3730 #3738 Code gen: simplify `return undefined` as `return`
@@ -772,6 +802,7 @@ Features
 - #3708 #3701 respect NODE_PATH when resolving node modules
 
 Fixes
+
 - #3699 Exit code from bsb in watch mode should be 0 instead of 2
 - #3692, #3693 fix "cyclic dependencies error is swallowed"
 - #3530, #3690 best effort support for shared library support
@@ -781,16 +812,16 @@ Fixes
 - #3667, #3664 Fix "Warning number does not concat properly in some cases"
 - #3662, #3515 Fix "bsb doesn't work with non-Unicode characters in the file path "
 - #3653, #3519 Fix "[@react.component] vs .rei " in 4.06 branch
-- #3655  Improve OCaml version file error
+- #3655 Improve OCaml version file error
 - #3652 Fix pnpm install (again)
 - #3651 Fix "React PPX: Show warning 26 on unused props with default value"
-Internal
+  Internal
 - #3711 not inlining self recursive functions
 - #3740 enable backtrace by default for compiler in dev mode
 - #3705 dump package path in .sourcedirs.json for troubleshooting
 - #3698 better data format for .bsdeps
 - #3680, #3684, #3677, #3675, #3672 better encoding for .bsbuild
-- #3673 strip the binary by default on *nix platform
+- #3673 strip the binary by default on \*nix platform
 - #3658 #3545 fix a bunch of edge cases with dev build
 - #3643 Fix nasty out of bound error in string/bytes access
 
@@ -808,8 +839,8 @@ Fixes
 - #3635 fix debug mode runtime crash
 - #3633 fix bs dev dependency issue
 
-
 # 5.0.5
+
 Fixes
 
 - #3615 pruning staled build artifacts in bsb, more robust to file changes (moving files around, renaming)
@@ -821,7 +852,7 @@ Fixes
 - #3574, #3566 Fix code generation when some built in module names are reused
 - #3572, #3570 fix infinite loop in bsb -w (edge case)
 
-- #3558, #3557  fix missing Js.MapperRt module (playground js)
+- #3558, #3557 fix missing Js.MapperRt module (playground js)
 - #3555, #3546 bs.deriving `accessors` add support for GADT
 - #3553, #3549 Fix code generation for leading zero float (edge case)
 - #3474 fix bad error message when bsconfig `dev` and `non-dev` overlap
@@ -832,17 +863,17 @@ Fixes
 - #3534 correct commands for building vendor OCaml from ocaml.tar.gz
 - `*` enforce the rule that a module has to contain `.ml` or `.re` file, interface only file is not supported
 
-
 Features
 
 - #3600 allow user to polyfill missing c stubs
 - #3613, #3612 add a warning number 105 (on by default) for cases as below
 
-
 ```ocaml
 external f : int -> int = "" [@@bs.val]
 ```
+
 Such ffi declaration is fragile to refactoring when changing names of `f`
+
 - #3587, #3571, #3568 simplify debugger mode, `debugger.chrome` is not needed to turn on debug mode
 
 Internals
@@ -850,15 +881,18 @@ Internals
 - #3556, #3554 allow test reason files directly
 - #3594, #3586, #3580, #3575 upgrade ninja to a customized more performant internal version
 
-
 # 5.0.4
+
 Features
+
 - #3523, #3516 Fusing react-jsx ppx as a flag
 
 Docs
+
 - #3522 add BS_VSCODE variable docs
 
 Fixes
+
 - #3540, #3482 remove unsupported items in the bsconfig.json schema
 - #3539, #3474 fix bad error message when a repo has same name for two modules
 - #3538, #3532 update docs
@@ -872,22 +906,28 @@ Fixes
 - #3506 sync location and optional fixes for new jsx ppx
 - #3501, #3505 fix inconsistency between Js.String and Js.String2
 - #3502, #3503 fix pipe syntax on qualified opens
-- #3492, #3499 fix code gen in external when apply  bs.uncurry to (unit -> ..)
+- #3492, #3499 fix code gen in external when apply bs.uncurry to (unit -> ..)
 - #3496, #3495 fix 'bs.module isn't being resolved relatively correctly'
+
 # 5.0.1
+
 Features
+
 - #3479 add a theme named react-hooks for the new ppx
 - #3476 add bs.inline support for literals (int, string, bool) so that it gets a stronger guarantee for inlining
 - #3473 upstream reason@3c6a9ca98
 - #3470,#3466 ract jsx ppx
 
 Fixes
+
 - #3455 fix polymorphic comparison and equality for js date
 - #3465 fix brutal console.clear
 - #3468 add BS_VSCODE to disable -super-errors, which works better with vscode problem matcher
+
 # 5.0.0
 
 Features
+
 - #3418 sync up with refmt 681c491ba760cdf3b49f92297c3dab1703682808
 - #3395, #3417 better gentype support (gentype.import)
 - #3412,#3416 Warning against usage of `string_of_float`
@@ -903,53 +943,58 @@ Features
 - #3329 Allow namespace in bsconfig.json to be customized
 - #3334 Add Belt.Array.getBy
 - #3204, #3208 add bs.deriving {light} support to allow short names
-Fixes
+  Fixes
 - #3413, #2893 deprecate Js.Array.join
-- #3407, #3408  rebuild when ppx binary changes
+- #3407, #3408 rebuild when ppx binary changes
 - #3406, #3399 fix the interaction between external and relative paths
-- #3393  deprecate Node.Fs.Watch.on in favor of Node.Fs.Watch.on_
-- #3315  depercate Js.Re.test, Js.Re.exec in favor of Js.Re.test_, Js.Re.exec_
+- #3393 deprecate Node.Fs.Watch.on in favor of Node.Fs.Watch.on\_
+- #3315 depercate Js.Re.test, Js.Re.exec in favor of Js.Re.test*, Js.Re.exec*
 - #3386, #3387 fix a codegen in with bs.raw
 - #3386 make it more forgiving when interact with Js functions with arity 0
 - #3381 remove golang as a dev dependency
+
 * #3388 (breaking) Fix Js.Re.(splitbyReAtMost, splitByRe) binding
+
 - #3332 remove `-bs-gen-tds` from docs in favor of gentype
 
-
 # 4.0.17
+
 Features
 
 - #3229 true seperate compilation, incredible perf for incremental build
 
 Fixes
+
 - #3226, #3223 absolute path generated in recursive module path and `assert false`
 - #3220 ppx-flags & scoped packages
 - #3214 shadowing of js Promise constructor
 - #3213 Allow build to be re-entrant to deal with yarn issues
 
-
-
 # 4.0.10
+
 Fixes
+
 - upstream a bug fix for refmt
 - Fix installation issues
 
 # 4.0.8
 
-
 Features
-* Support OCaml 4.06 under a config
-- #3146 support `#if 1` and `#if 0` in the built-in conditional compilation language
-- #3159 Add Node.Buffer.concat
-- #3181 sync in refmt 9fcbbca
-- #3185 better performance in compilation, not reading runtime cmj files when not needed
+
+- Support OCaml 4.06 under a config
+
+* #3146 support `#if 1` and `#if 0` in the built-in conditional compilation language
+* #3159 Add Node.Buffer.concat
+* #3181 sync in refmt 9fcbbca
+* #3185 better performance in compilation, not reading runtime cmj files when not needed
 
 Code gen
+
 - #3134 Better arity infer when using first class module as function
 - #3169 allow _ in bs.raw so that `fun%raw a _ -> ` works
 - #3170, #3171 better code gen for bs.raw
 - #2967 bs.variadic attribute (bs.splice still works)
-Fixes
+  Fixes
 - #3154 Fix binding `Js.Dict.get`
 - #3132 Fix `int_of_string` semantics in an edge case
 - #3142 Fix the combination of bs.as and unicode
@@ -957,6 +1002,7 @@ Fixes
 - #3180 clean up .gen.js/.gen.tsx for gentype
 
 Docs
+
 - #3133 Tweak Belt docs
 - #3136 Fix typo in react and react-lite tempaltes
 - #3161 improve perf of some functions in String module
@@ -964,15 +1010,18 @@ Docs
 # 4.0.7
 
 Features
+
 - #3072 Add List.filter/WithIndex and List.keep/WithIndex
 
 Fix
+
 - #3084,#3083 optimization triggers exception
 - #3085 Wrong optimizer
 - #3105 A corner case of optional encoding
 
 Code gen
-- * #3073, #3079, #3080 no arity tweaking. Function with unit as argument will have arity one
+
+- - #3073, #3079, #3080 no arity tweaking. Function with unit as argument will have arity one
 - #3078 better codegen for switch
 - #3088 better codegen for if statement
 
@@ -981,23 +1030,27 @@ Code gen
 ## ReasonML synced 76b27
 
 Fixes
+
 - #3064 upgrade `webpack-cli` to fix broken `npm run webpack`
 - #3054, #3502 fix some potential bugs in codegen
 - #3047 handle null values correctly in the devtools custom formatter
 - #3036 fix #3018 about dom in playground
-- #3017 *important* fix #3010 nodejs browser loader evaluated code twice
+- #3017 _important_ fix #3010 nodejs browser loader evaluated code twice
 
 Features
+
 - #3051,#3039 add List.keepWithIndex, reduceWithIndex
 - #3046 add Js.Global.setTimeOutFloat and setIntervalFloat
 
 Docs
+
 - #3603 add documentation to Belt.Result
 - #3031 fix typo in Belt.Option.flatMap example
 
-
 # 4.0.4
+
 Fixes
+
 - #3001 fix regressios in refmt
 - #2986 #2973 #2974 fix bsb websocket exit error
 - #2983 #2988 determinsic behavior
@@ -1005,19 +1058,24 @@ Fixes
   when NINJA_ANSI_FORCED=1 yes color
 
 # 4.0.3
+
 Fixes
+
 - #2956 clean re.js for genFlow proj
 - #2970 remove one obsolte error
 - #2970 address one regression from refmt
 
 # 4.0.2
+
 Fixes
+
 - #2963 fix ppx-flags quoting issue
 
 Features
+
 - #2951 sync up with reason
 - #2964 customize ninja to make output less verbose
-        Add NINJA_ANSI_FORCE env variable support so that third party tools running bsb can still preserve colors
+  Add NINJA_ANSI_FORCE env variable support so that third party tools running bsb can still preserve colors
 - #2960 add tea theme support
 - #2959 less verbose bsb output
 - #2958 make `bsb -init` more forgiving
@@ -1025,11 +1083,14 @@ Features
 # 4.0.1
 
 Fixes:
+
 - #2949 fix optional regression
 - #2946 fix react-lite theme on Linux
+
 # 4.0.0
 
 Fixes:
+
 - #2832 fix compiler crash
 - #2837 `toFixed`, `toExponential` too strict
 - #2841 fix some inconsistency betweeen debug mode and release mode
@@ -1047,11 +1108,13 @@ Features:
 
 - #2280 prettier output in debug mode (chrome custom formatter)
 - #2823 add build-success hook
+
 ```
 bsb -make-world -w -build-success 'your_script'
 ```
+
 - #2856 provide websocket intergration with bsb
-- #2858 add  react-lite theme hot module reloading without webpack
+- #2858 add react-lite theme hot module reloading without webpack
 - #2873 add Belt.Array.sliceToEnd
 - #2825 Add Belt.Array.partition
 - #2882, #2885, #2886, #2889, #2890,#2894, #2896, #2897,#2898, #2900
@@ -1068,9 +1131,6 @@ bsb -make-world -w -build-success 'your_script'
 - #2917 remove trailing `return undefined`
 - #2935 comments in codegen for `ref` generation
 - #2863 optimize away unused blocks
-
-
-
 
 # 3.1.4
 
@@ -1103,6 +1163,7 @@ Fixes:
 - #2781, improve location info on bs.deriving abstract
 - #2776, lift the function limitation on bs.deriving abstract
 - #2752, fix binding Buffer.toString
+
 # 3.0.0
 
 Features:
@@ -1114,23 +1175,23 @@ Features:
 - #2696, #2742, #2706, #2711, compile OCaml boolean as JS boolean
   Breaking change to your code path relying on `Obj.magic` and `bs.raw`
 
-
-
-- #2741  add Node.Buffer.fromStringWithEncoding
+- #2741 add Node.Buffer.fromStringWithEncoding
 - #2737 add Js.Json.stringifyWithSpace
 - #2728 add console.error and console.trace
 - #2666 add List.sort to belt
 - #2664 pipe syntax support tuple
-            `obj |. method a b ` and `obj |. (m1 , m2)`
-
+  `obj |. method a b ` and `obj |. (m1 , m2)`
 
 Perf:
+
 - #2676 beter optimizations for tuple allocation
 
 Docs:
+
 - #2730, #2729, #2733, #2722, #2701, #2699 More docs to Belt
 
 Fixes:
+
 - #2657 more intuitive polymorphic comparison with objects
 - #2686 playground unicode
 - #2720, #2719, #2718, error message enhancment
@@ -1142,17 +1203,20 @@ Fixes:
 # 2.2.3
 
 Features:
+
 - #2646,#2622 Adding Belt.Option
 - #2342, #2624 (|.) pipe syntax for t first convention
 - #2589 Expose Id.MakeComparable functor
 - #2587 Added production ready settings for react theme
-- * remove refmt syntax version 2
+- - remove refmt syntax version 2
 
 Performances:
+
 - #2438 using concrete predicates for integer comparison
 - #2584 better handling of if then else common sub expression
 
 Fixes:
+
 - #2303 defining or using a module named "Block" causes runtime errors
 - #2616,#2612,#2554 better error message
 - #2352 return value of assignment expression
@@ -1166,43 +1230,50 @@ Fixes:
 # 2.2.2
 
 Features:
+
 - Upgrade with latest reason syntax (native unucurry support etc)
 - #2531 add missing functions in Js.Nullable fromoption/toOption
 - #2527 Belt.List.shuffle
 
 Fixes:
+
 - #2503 bs.string and bs.obj interaction
 - #2549, #2548, $2548, #2542, #2541 improve error message
 
 # 2.2.0
+
 Features:
+
 - A beta release for the new stdlib called Belt
 - #2436, #2381, #2377, #2353 bs.deriving abstract support
 
-
 Performances:
+
 - #2452 specialized comparison with Js.null, Js.undefined, Js.boolean
 - #2412, provide specialized primitives for comparison with null/undefined
-- #2361, better  optimization for temporary tuple
-Fixes:
+- #2361, better optimization for temporary tuple
+  Fixes:
 - #2451 better error message when arity mismatch for reason syntax
 - #2399, turn partial application warnings to error in react template
 - #2465 build on FreeBSD
 - #2450 ignore bsb.lock
 - #2356 ship build-schema.json
-- #2489, #2464  capitalize names in combination of '/'
+- #2489, #2464 capitalize names in combination of '/'
 - #2459 subdirs:true by default for templates
 - #2428, fix trailing space on react-jsx
 - #2401, stop tab-aligning imports for smaller diff
 - #2383, drop bs.deriving attribute after post-processing
+
 # 2.1.0
+
 Features:
+
 - #2282, #2280,#2272,#2271,#2270,#2262,#2260,#2255,#2253
   Automatically derive js converter between ocaml and Js values
 - #2238, #2225, #2221
   Make the compiler relocatable
   prebuilt compiler (this release for Mac/Win)
-- #2276  update reason syntax@d0d18
+- #2276 update reason syntax@d0d18
 - #2229 improve error message with regard to `@bs`
 - #2266, add Js_global.(encode|decode)URI(Component) bindings
 - #2220 make watcher mode in linux accept ninja progress animation
@@ -1211,27 +1282,33 @@ Features:
   and unused bs attributes
 
 Performance:
+
 - #2269 type specialized comparison also applied to nullable polymorphic variants
 - #2208 type specialized comparison allpied to nullable variants
 - #2213 refine caml_obj_dump into caml_array_dup better array initialization code
 
 Fixes:
+
 - #2316 Pattern match with exception case and a single catch-all pattern is optimized incorrectly
 - #2318 no absname in Match_failure
 - #2250 #1285, fix code gen for object oriented code
 - #2278, #2274 fix fatal errors regression and syntactice fatal errors(-werror A) don't stop building
 - #2259 fix fatal errors don't stop generating cmj file
-- #1972 bsb -init does not rely on `npm link` on *nix platform
+- #1972 bsb -init does not rely on `npm link` on \*nix platform
 - #2207 nop rebuild to work around yarn bug
 - #2226 kill bsb -w when stdin is closed
 - #2184 bsb should exclude -I empty dirs
 
 # 2.0
+
 Features
+
 - update reason3 syntax
 
 # 1.10.3
+
 Features:
+
 - #2112, introduced a key `suffix`, so that user can
   choose `suffix : ".bs.js"`
 - #2138, in combination of `.bs.js` suffix and `in-source` build,
@@ -1248,6 +1325,7 @@ Features:
 - #2134, allow people to make customized playground via a plugin
 
 Fixes:
+
 - #2157, fix unnecessary rebuilding when adding files with namespace option on
 - #2145, fix bsb unnecessary rebuild issues
 - #2150, fix an edge case of comparison between cyclic value
@@ -1263,6 +1341,7 @@ Fixes:
 # 1.9.3
 
 Features:
+
 - #2049, add a dedicated `warning` field, so that it is easy to override, enable `warn-error` and customize it.
 - React JSX PPX V3 is in. This allows a custom component's `children` to be of any type. When the child's a single non-JSX item, it's not wrapped in an array anymore.
 - #2016, add a flag `bsb -v` to tell the version number
@@ -1272,12 +1351,13 @@ Features:
 - #2047, make bsb error message more professional
 - #2048, turn `-bs-super-error` by default for reason files
 
-
 Deprecations:
+
 - React JSX PPX V1 has been removed, and the bsconfig `"react-jsx": true` is removed too (use `2` or `3`). JSX only accept a version number
 - #1666, remove deprecated API
 
 Fixes:
+
 - #2029, error message: fix display line and column
 - #2033, #2040 error message: trim output when too many lines
 - #2042, better react error message
@@ -1289,7 +1369,8 @@ Fixes:
 # 1.9.2
 
 Fixes:
-- #1943, Wrong name mangling for properties "_50"
+
+- #1943, Wrong name mangling for properties "\_50"
 - #1029, tree shaking in playground
 - #1946, Fix invalid JS output
 - #1965, more JS modules exported in playground
@@ -1299,6 +1380,7 @@ Fixes:
 - A bunch of improvements for better error message by Cheng Lou and Cristiano Calcagno
 
 Features:
+
 - #1944, bspack support -main-export
 - #1990, better optimizations for pattern match compilation
 - #1991, Accept `bs.deriving accessors` applies to `bs.config` as well for single field
@@ -1307,53 +1389,69 @@ Features:
 - #1964, for `Capital_file.ml` generate `Capital_file.js` instead of `capital_file.js`
 
 Deprecations:
+
 - #1968, remove support for Google module system
+
 # 1.9.1 (Recovery 1.9.0)
+
 Fixes
+
 - #1933 hyphen directory name fixes
+
 # 1.9.0
 
 Features:
+
 - Namespace support in the build system
 - #1839, #1653, allow in-source build in package-specs , allow single package-spec element in package-specs
 - #1802 introduce [@bs.unwrap] for polymorphic variant as external argument
 - Improve error message via -bs-super-errors
-- Reason syntax error message  for .re/.rei files
+- Reason syntax error message for .re/.rei files
 - #1908 two APIs for Js.Re
 - #1905, #1906, simplify the workflow of handling null or undefined (via nullable)
-Optimizations:
+  Optimizations:
 - #1918, better code gen for pattern match
 - #1865, Add Js.logN
 
 Fixes
+
 - #1925, fix missing js modules in playground
 - #1893, fix Js.Array.append (Js.Vector.append)
 
 # 1.8.2
+
 Features:
+
 - #1798 make `default` the same semantics as ES6 exports
 - #1785 upgrade playground
 - #1758 generator support
 - #1826 add `bsb -where` support so that bsb.exe can be located and cached in a more robust way
 
 Optimizations:
+
 - #1796, #1793 improve submodule arity inference
 - #1810 don't rebuild ninja if binary already exists in bin folder
 
 Fixes:
+
 - #1811 add relative PPX paths to .merlin correctly
 - #1822, fix an optimization bug
 
 Internal:
+
 - add a tool cmjdump.exe
 
 # 1.8.1
+
 Fixes:
+
 - #1762, discard effectful unused code
 - #1760, div by zero effect analysis
 
 # 1.8.0
+
 Fixes:
+
 - #1573, don't include `-bs` flags in `.merlin`
 - #1716, fix wrong optimization of recursive values
 - #1728, bad inlining
@@ -1365,17 +1463,19 @@ Fixes:
 # 1.7.5
 
 Fixes:
+
 - #1676, `bsb -w` will always build regardless of filetype when fs.watch doesn't send a filename
 - #1655, fix #1653 Js.Promise.all[n] interfaces
 - #1658, fix typeof = "null" issue
 - #1656, bs.get/set/get_index/set_index respects bs.ignore
 - #1654, `bsb -init` fails if package or current dir has space (parent dir can have spaces)
-- #1678, bs.get{null;undefined}  in object type
+- #1678, bs.get{null;undefined} in object type
 - #1692, fix invalid js syntax output
-- #1701, fix tailcall handling interaction with  exception handler
+- #1701, fix tailcall handling interaction with exception handler
 - #1666, fix misuse of GADT API
 
 Features:
+
 - #1648, exposed `bsc` in the npm environment
 - #1647, special handling `bsb -init .` to reuse current directory
 - #1667, fix an optimization bug
@@ -1388,9 +1488,11 @@ Features:
 # 1.7.4
 
 Internal:
+
 - #1583, add -U -D support for bspack
 
 Features:
+
 - #1630, add modules Option, Result, List, and Vector into Js namespace, update docs
 
 - #1613, allow bs.scope with bs.send/bs.send.pipe/bs.set/bs.get/bs.set_index/bs.get_index
@@ -1399,6 +1501,7 @@ Features:
 - #1632, bsb themes support
 
 Fixes:
+
 - #1581, more error checking
 - #1633, fix missing installations
 - #1581, more error checking %identity
@@ -1406,20 +1509,24 @@ Fixes:
 # 1.7.3
 
 Fixes:
+
 - #1556, fix duplicated requires of runtime (report by Cheng Lou)
 - #1568, internal compiler error
 
 Features:
+
 - #1564: scoped values in FF, see `bs.scope` in the Manual
 
 # 1.3.2
 
 Features:
+
 - Significantly improve bsb experience
 
 ## 1.2.1 + dev
 
 Features:
+
 - #861, add `-bs-assume-no-mli` and `-bs-no-implicit-include` for deterministic build
 - #851, add -bs-D -bs-list-conditionals flags
 - add `-bs-syntax-only`
@@ -1428,9 +1535,11 @@ Features:
 # 1.1.2
 
 Fixes:
+
 - #831, bug fix with opam issues
 
 Features:
+
 - Provide `bspp.exe` for the official compiler
 
 # 1.1.1
@@ -1446,6 +1555,7 @@ Features:
 # 1.0.3
 
 Incompatible changes (to better support Windows):
+
 - `bsc`, `bspack` and `bsppx` are renamed into `bsc.exe`, `bspack.exe` and `bsppx.exe`
 - No symlink from .bin any more.
 
@@ -1464,23 +1574,28 @@ Incompatible changes (to better support Windows):
   Now these symlinks are removed. You have to refer to `bs-platform/bin/bsc.exe`.
 
 Features:
+
 - #787, add an option `-bs-no-warn-unused-bs-attribute`
 
 # 1.0.2
 
 Fixes:
+
 - #743, Fix Bytes.blit when `src == dst`
 
 Features:
+
 - #783, by default, `bsc.exe` will warn when it detect some OCaml data types are passed from/to external FFI
 - #784, add an option `-bs-eval`
 
 # 1.0.1
 
 Fixes:
+
 - #718, Enforce `#=` always return unit for better error messages
 
 Features:
+
 - FFI
   - #694, support fields and mutable fields in JS object creation and private method
   - #686, introduce phantom arguments (`bs.ignore`) for ad-hoc polymorphism

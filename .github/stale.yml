@@ -1,12 +1,12 @@
 # Number of days of inactivity before an issue becomes stale
-daysUntilStale: 720 
+daysUntilStale: 720
 # Number of days of inactivity before a stale issue is closed
 daysUntilClose: 7
 # Issues with these labels will never be considered stale
 exemptLabels:
   - "PRIORITY:HIGH"
   - bug
-  - non-critical-bug 
+  - non-critical-bug
   - security
   - enhancement
   - optimization
