@@ -35,7 +35,7 @@ type t = J.expression
  *)
 let rec remove_pure_sub_exp (x : t) : t option =
   match x.expression_desc with
-  | Var _ | Str _ | Number _ -> None (* Can be refined later *)
+  | Var _ | Str _ | Unicode _ | Number _ -> None (* Can be refined later *)
   | Array_index (a, b) ->
       if is_pure_sub_exp a && is_pure_sub_exp b then None else Some x
   | Array (xs, _mutable_flag) ->
@@ -173,7 +173,7 @@ module L = Literals
 let typeof ?comment (e : t) : t =
   match e.expression_desc with
   | Number _ | Length _ -> str ?comment L.js_type_number
-  | Str _ -> str ?comment L.js_type_string
+  | Str _ | Unicode _ -> str ?comment L.js_type_string
   | Array _ -> str ?comment L.js_type_object
   | Bool _ -> str ?comment L.js_type_boolean
   | _ -> { expression_desc = Typeof e; comment }
@@ -551,6 +551,8 @@ let rec triple_equal ?comment (e0 : t) (e1 : t) : t =
   | Str {txt=x}, Str {txt=y} ->
       (* CF*)
       bool (Ext_string.equal x y)
+  | Unicode x, Unicode y ->
+      bool (Ext_string.equal x y)
   | Number (Int { i = i0; _ }), Number (Int { i = i1; _ }) -> bool (i0 = i1)
   | Optional_block (a, _), Optional_block (b, _) -> triple_equal ?comment a b
   | Undefined, Optional_block _
@@ -810,7 +812,8 @@ let uint32 ?comment n : J.expression =
 
 let string_comp (cmp : J.binop) ?comment (e0 : t) (e1 : t) =
   match (e0.expression_desc, e1.expression_desc) with
-  | Str {txt=a0}, Str {txt=b0} -> (
+  | Str {txt=a0}, Str {txt=b0}
+  | Unicode a0, Unicode b0 -> (
       match cmp with
       | EqEqEq -> bool (a0 = b0)
       | NotEqEq -> bool (a0 <> b0)
