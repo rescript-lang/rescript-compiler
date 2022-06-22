@@ -4,10 +4,19 @@
 
 **Compiler**
 
-- Added support for `@new @variadic` (see https://github.com/rescript-lang/rescript-compiler/pull/5364) 
-- Added support for `@optional` fields in records (see https://github.com/rescript-lang/rescript-compiler/pull/5423)
+- Add support for `@new @variadic` (see https://github.com/rescript-lang/rescript-compiler/pull/5364) 
+- New records with `@optional` fields [#5423](https://github.com/rescript-lang/rescript-compiler/pull/5423) [#5452](https://github.com/rescript-lang/rescript-compiler/issues/5452)
 
 **Syntax**
+
+- Fix printing for inline nullary functor types [#477](https://github.com/rescript-lang/syntax/pull/477)
+- Fix stripping of quotes for empty poly variants [#474](https://github.com/rescript-lang/syntax/pull/474)
+- Implement syntax for arity zero vs arity one in uncurried application in [#139](https://github.com/rescript-lang/syntax/pull/139)
+- Fix parsing of first class module exprs as part of binary/ternary expr in [#256](https://github.com/rescript-lang/syntax/pull/256)
+
+**Libraries**
+
+- Several Belt libraries are now converted to ReScript syntax, with corresponding comments in Markdown format suitable for hovering.
 
 **Playground**
 
