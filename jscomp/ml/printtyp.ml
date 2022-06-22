@@ -926,7 +926,11 @@ and tree_of_constructor cd =
       (name, args, Some ret)
 
 and tree_of_label l =
-  (Ident.name l.ld_id, l.ld_mutable = Mutable, tree_of_typexp false l.ld_type)
+  let opt = l.ld_attributes |> List.exists (fun ({txt}, _) -> txt = "optional") in
+  let typ = match l.ld_type.desc with
+    | Tconstr (p, [t1], _) when Path.same p Predef.path_option -> t1
+    | _ -> l.ld_type in
+  (Ident.name l.ld_id, l.ld_mutable = Mutable, opt, tree_of_typexp false typ)
 
 let tree_of_type_declaration id decl rs =
   Osig_type (tree_of_type_decl id decl, tree_of_rec rs)
