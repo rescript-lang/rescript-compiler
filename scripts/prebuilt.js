@@ -56,15 +56,12 @@ var bin_path =
   path.join(__dirname, '..', process.platform === 'darwin' && process.arch === 'arm64' ? process.platform + process.arch : process.platform)
 
 function buildCompiler() {
-  // for 4.02.3 it relies on OCAMLLIB to find stdlib path
-  // for 4.06.1 OCAMLLIB is another PATH
-  // delete process.env.OCAMLLIB
   var prebuilt = "prebuilt.ninja";
   var content = require("./ninjaFactory.js").libNinja({
     ocamlopt: use_env_compiler
       ? `ocamlopt.opt`
       : `../native/${ocamlVersion}/bin/ocamlopt.opt`,
-    INCL: ocamlVersion,
+    INCL: "4.06.1",
     isWin: is_windows,
   });
 
@@ -89,15 +86,9 @@ if (!is_windows) {
 
 }
 
-function createOCamlTar() {
+function createNinjaTar() {
   if (isHostPlatform()) {
     require("./installUtils.js").install();
-    console.log(`status in ocaml submodule:`);
-    cp.execSync(`git -C ocaml status -uno`, { cwd: root, stdio: [0, 1, 2] });
-    cp.execSync(
-      `git  -C ocaml archive --format=tar.gz HEAD -o ../vendor/ocaml.tar.gz`,
-      { cwd: root, stdio: [0, 1, 2] }
-    );
     console.log(`status in ninja submodule:`);
     cp.execSync(`git -C ninja status -uno`, { cwd: root, stdio: [0, 1, 2] });
     cp.execSync(
@@ -107,5 +98,5 @@ function createOCamlTar() {
   }
 }
 
-createOCamlTar();
+createNinjaTar();
 buildCompiler();
