@@ -22,10 +22,8 @@ let cautious f ppf arg =
   try f ppf arg with
     Ellipsis -> fprintf ppf "..."
 
-
 let out_ident = ref pp_print_string
 let map_primitive_name = ref (fun x -> x)
-
 
 let print_lident ppf = function
   | "::" -> !out_ident ppf "(::)"
@@ -294,7 +292,7 @@ and print_simple_out_type ppf =
   | Otyp_constr (Oide_dot (Oide_dot (Oide_ident "Js_OO", "Callback" ), _),
                  [tyl])
     -> 
-      fprintf ppf "@[<0>(%a@ [@bs.this])@]" print_out_type_1 tyl
+      fprintf ppf "@[<0>(%a@ [@bs.this])@]" print_out_type_1 tyl  
   | Otyp_constr (id, tyl) ->
       pp_open_box ppf 0;
       print_typargs ppf tyl;
@@ -391,8 +389,8 @@ and print_typargs ppf =
       pp_print_char ppf ')';
       pp_close_box ppf ();
       pp_print_space ppf ()
-and print_out_label ppf (name, mut, arg) =
-  fprintf ppf "@[<2>%s%s :@ %a@];" (if mut then "mutable " else "") name
+and print_out_label ppf (name, mut, opt, arg) =
+  fprintf ppf "@[<2>%s%s%s :@ %a@];" (if opt then "@optional " else "") (if mut then "mutable " else "") name
     print_out_type arg
 
 let out_type = ref print_out_type
