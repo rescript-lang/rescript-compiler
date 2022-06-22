@@ -22,24 +22,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-[@@@deprecated "Use Belt.Array instead" ] 
+[@@@deprecated "Use Belt.Array instead"]
 
 type 'a t = 'a array
 
-val filterInPlace : ('a -> bool [@bs]) -> 'a t -> unit
-
+val filterInPlace : (('a -> bool)[@bs]) -> 'a t -> unit
 val empty : 'a t -> unit
-
 val pushBack : 'a -> 'a t -> unit
 
 val copy : 'a t -> 'a t
 (** shallow copy *)
 
 val memByRef : 'a -> 'a t -> bool
-
-val iter : ('a -> unit [@bs]) -> 'a t -> unit
-val iteri : (int -> 'a -> unit [@bs]) -> 'a t -> unit
-
+val iter : (('a -> unit)[@bs]) -> 'a t -> unit
+val iteri : ((int -> 'a -> unit)[@bs]) -> 'a t -> unit
 
 (* [@@deprecated "Use Js.List.toVector instead"] *)
 (* val ofList : 'a list -> 'a t   *)
@@ -47,63 +43,50 @@ val iteri : (int -> 'a -> unit [@bs]) -> 'a t -> unit
 *)
 
 val toList : 'a t -> 'a list
+val map : (('a -> 'b)[@bs]) -> 'a t -> 'b t
+val mapi : ((int -> 'a -> 'b)[@bs]) -> 'a t -> 'b t
+val foldLeft : (('a -> 'b -> 'a)[@bs]) -> 'a -> 'b t -> 'a
+val foldRight : (('b -> 'a -> 'a)[@bs]) -> 'b t -> 'a -> 'a
 
-val map : ('a -> 'b [@bs]) -> 'a t -> 'b t
-val mapi : (int -> 'a -> 'b [@bs]) -> 'a t -> 'b t
-val foldLeft : ('a -> 'b -> 'a [@bs]) -> 'a -> 'b t -> 'a
-val foldRight : ('b -> 'a -> 'a [@bs]) -> 'b t -> 'a -> 'a
 external length : 'a t -> int = "%array_length"
-(** **return** the length (number of elements) of the given array. *)
+(** Return the length (number of elements) of the given array. *)
 
 external get : 'a t -> int -> 'a = "%array_safe_get"
 (**
-  `Array.get a n` returns the element number `n` of array `a`.
-  The first element has number 0.
-  The last element has number `Array.length a - 1`.
-  You can also write `a.(n)` instead of `Array.get a n`.
-
-  **raise** `Invalid_argument "index out of bounds"`
-  if `n` is outside the range 0 to `Array.length a - 1`.
+`Vector.get(a, n)` returns the element number `n` of vector `a`. The first
+element has number 0. The last element has number `Vector.length(a) - 1`. You
+can also write `a[n]` instead of `Vector.get(a, n)`. Raise `Invalid_argument
+"index out of bounds"` if `n` is outside the range 0 to (`Array.length(a) -
+1`).
 *)
 
 external set : 'a t -> int -> 'a -> unit = "%array_safe_set"
 (**
-  `Array.set a n x` modifies array `a` in place, replacing
-  element number `n` with `x`.
-  You can also write `a.(n) <- x` instead of `Array.set a n x`.
-
-  **raise** `Invalid_argument "index out of bounds"`
-  if `n` is outside the range 0 to `Array.length a - 1`.
+`Vector.set(a, n, x)` modifies vector `a` in place, replacing element number
+`n` with `x`. Raise `Invalid_argument "index out of bounds"` if `n` is outside
+the range 0 to `Array.length(a) - 1`.
 *)
-
 
 external make : int -> 'a -> 'a t = "?make_vect"
 (**
-  `Array.make n x` returns a fresh array of length `n`,
-  initialized with `x`.
-  All the elements of this new array are initially
-  physically equal to `x` (in the sense of the `==` predicate).
-  Consequently, if `x` is mutable, it is shared among all elements
-  of the array, and modifying `x` through one of the array entries
-  will modify all other entries at the same time.
-
-  **raise** `Invalid_argument` if `n < 0` or `n > Sys.max_array_length`.
-  If the value of `x` is a floating-point number, then the maximum
-  size is only `Sys.max_array_length / 2`.
+`Vector.make(n, x)` returns a fresh vector of length `n`, initialized with `x`.
+All the elements of this new vector are initially physically equal to `x` (in
+the sense of the `==` predicate). Consequently, if `x` is mutable, it is shared
+among all elements of the array, and modifying `x` through one of the array
+entries will modify all other entries at the same time. Raise
+`Invalid_argument` if `n < 0` or `n > Sys.max_array_length`. If the value of
+`x` is a floating-point number, then the maximum size is only
+`Sys.max_array_length / 2`.
 *)
 
-
-val init : int -> (int -> 'a [@bs]) -> 'a t
+val init : int -> ((int -> 'a)[@bs]) -> 'a t
 (**
-  **param** n size
-
-  **param** fn callback
-
-  **raise** RangeError when `n` is negative
+Raises `RangeError` when n is negative.
+n : size
 *)
 
 val append : 'a -> 'a t -> 'a t
-(** `append x a` returns a fresh array with x appended to a *)
+(** `append(x, a)` returns a fresh vector with `x` appended to `a`. *)
 
 external unsafe_get : 'a t -> int -> 'a = "%array_unsafe_get"
 external unsafe_set : 'a t -> int -> 'a -> unit = "%array_unsafe_set"
