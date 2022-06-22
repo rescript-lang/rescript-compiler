@@ -183,6 +183,8 @@ let rec eq_expression ({ expression_desc = x0 } : J.expression)
       | _ -> false)
   | Str {delim=a0; txt=b0} -> (
       match y0 with Str {delim=a1; txt=b1} -> a0 = a1 && b0 = b1 | _ -> false)
+  | Unicode s0 -> (
+      match y0 with Unicode s1 -> s0 = s1 | _ -> false)
   | Static_index (e0, p0, off0) -> (
       match y0 with
       | Static_index (e1, p1, off1) ->
@@ -203,7 +205,7 @@ let rec eq_expression ({ expression_desc = x0 } : J.expression)
           eq_expression_list ls0 ls1 && flag0 = flag1 && eq_expression tag0 tag1
       | _ -> false)
   | Length _ | Is_null_or_undefined _ | String_append _ | Typeof _ | Js_not _
-  | Cond _ | FlatCall _ | New _ | Fun _ | Unicode _ | Raw_js_code _ | Array _
+  | Cond _ | FlatCall _ | New _ | Fun _ | Raw_js_code _ | Array _
   | Caml_block_tag _ | Object _
   | Number (Uint _) ->
       false
@@ -268,6 +270,6 @@ let rev_toplevel_flatten block =
 
 let rec is_okay_to_duplicate (e : J.expression) =
   match e.expression_desc with
-  | Var _ | Bool _ | Str _ | Number _ -> true
+  | Var _ | Bool _ | Str _ | Unicode _ | Number _ -> true
   | Static_index (e, _s, _off) -> is_okay_to_duplicate e
   | _ -> false
