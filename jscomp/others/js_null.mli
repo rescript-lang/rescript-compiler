@@ -24,71 +24,64 @@
 
 (** Provides functionality for dealing with the `'a Js.null` type *)
 
+(** Provides functionality for dealing with the `Js.null('a)` type *)
 
+type +'a t = 'a Js.null
+(** Local alias for `Js.null('a)` *)
 
-type + 'a t = 'a Js.null
-(** Local alias for `'a Js.null` *)
-
-external return : 'a -> 'a t  = "%identity"
-(** Constructs a value of `'a Js.null` containing a value of `'a` *)
-
+external return : 'a -> 'a t = "%identity"
+(** Constructs a value of `Js.null('a)` containing a value of `'a`. *)
 
 val test : 'a t -> bool
-[@@deprecated "Use = Js.null directly "]
-(** **return** `true` if the given value is `empty` (`null`), `false` otherwise *)
+  [@@deprecated "Use = Js.null directly "]
+(** Returns `true` if the given value is empty (`null`), `false` otherwise. *)
 
-(** The empty value, `null` *)
 external empty : 'a t = "#null"
-
+(** The empty value, `null` *)
 
 external getUnsafe : 'a t -> 'a = "%identity"
-
 val getExn : 'a t -> 'a
 
+val bind : 'a t -> (('a -> 'b)[@bs]) -> 'b t
 (**
-  Maps the contained value using the given function
+Maps the contained value using the given function.
 
-  If `'a Js.null` contains a value, that value is unwrapped, mapped to a `'b` using
-  the given function `a' -> 'b`, then wrapped back up and returned as `'b Js.null`
+If `Js.null('a)` contains a value, that value is unwrapped, mapped to a `'b`
+using the given function `'a => 'b`, then wrapped back up and returned as
+`Js.null('b)`.
 
-  ```
-  let maybeGreetWorld (maybeGreeting: string Js.null) =
-  Js.Null.bind maybeGreeting (fun greeting -> greeting ^ " world!")
-  ```
+```res example
+let maybeGreetWorld = (maybeGreeting: Js.null<string>) =>
+  Js.Null.bind(maybeGreeting, (. greeting) => greeting ++ " world!")
+```
 *)
-val bind : 'a t -> ('a -> 'b [@bs]) -> 'b t
 
+val iter : 'a t -> (('a -> unit)[@bs]) -> unit
 (**
-  Iterates over the contained value with the given function
+Iterates over the contained value with the given function.
+If `Js.null('a)` contains a value, that value is unwrapped and applied to the given function.
 
-  If `'a Js.null` contains a value, that value is unwrapped and applied to
-  the given function.
-
-  ```
-  let maybeSay (maybeMessage: string Js.null) =
-  Js.Null.iter maybeMessage (fun message -> Js.log message)
-  ```
+```res example
+let maybeSay = (maybeMessage: Js.null<string>) =>
+  Js.Null.iter(maybeMessage, (. message) => Js.log(message))
+```
 *)
-val iter : 'a t -> ('a -> unit [@bs]) -> unit
 
+val fromOption : 'a option -> 'a t
 (**
-  Maps `'a option` to `'a Js.null`
-
-  `Some a` -> `return a`
-  `None` -> `empty`
+Maps `option('a)` to `Js.null('a)`.
+`Some(a)` => `a`
+`None` => `empty`
 *)
-val fromOption: 'a option -> 'a t
 
-val from_opt : 'a option -> 'a t
-[@@deprecated "Use fromOption instead"]
+val from_opt : 'a option -> 'a t [@@deprecated "Use fromOption instead"]
 
-(**
-  Maps `'a Js.null` to `'a option`
-
-  `return a` -> `Some a`
-  `empty` -> `None`
-*)
 external toOption : 'a t -> 'a option = "#null_to_opt"
+(**
+Maps `Js.null('a)` to `option('a)`.
+`a` => `Some(a)`
+`empty` => `None`
+*)
 
 external to_opt : 'a t -> 'a option = "#null_to_opt"
-[@@deprecated "Use toOption instead"]
+  [@@deprecated "Use toOption instead"]

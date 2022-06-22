@@ -22,86 +22,79 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** Provides functions for inspecting and maniplating native JavaScript objects *)
+(** Provides functions for inspecting and manipulating native JavaScript objects *)
 
-(** `empty ()` returns the empty object `{}` *)
-external empty : unit -> < .. >  = "" [@@bs.obj]
+external empty : unit -> < .. > = ""
+  [@@bs.obj]
+(** `empty()` returns the empty object `{}` *)
 
+external assign : < .. > -> < .. > -> < .. > = "Object.assign"
+  [@@bs.val]
 (**
-  `assign target source` copies properties from `source` to `target`
+`assign(target, source)` copies properties from source to target.
+Properties in `target` will be overwritten by properties in `source` if they have the same key.
+Returns `target`.
 
-  Properties in `target` will be overwritten by properties in `source` if they
-  have the same key.
+**See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign)
 
-  **return** `target`
+```res example
+/* Copy an object */
 
-  ```
-  (* Copy an object *)
+let obj = {"a": 1}
 
-  let obj = [%obj { a = 1 }]
+let copy = Js.Obj.assign(Js.Obj.empty(), obj)
 
-  let copy = Js.Obj.assign (Js.Obj.empty ()) obj
+/* prints "{ a: 1 }" */
+Js.log(copy)
 
-  (* prints "{ a: 1 }" *)
-  let _ = Js.log copy
-  ```
+/* Merge objects with same properties */
 
-  ```
-  (* Merge objects with same properties *)
+let target = {"a": 1, "b": 1}
+let source = {"b": 2}
 
-  let target = [%obj { a = 1; b = 1; }]
-  let source = [%obj { b = 2; }]
+let obj = Js.Obj.assign(target, source)
 
-  let obj = Js.Obj.assign target source
+/* prints "{ a: 1, b: 2 }" */
+Js.log(obj)
 
-  (* prints "{ a: 1, b: 2 }" *)
-  let _ = Js.log obj
-
-  (* prints "{ a: 1, b: 2 }", target is modified *)
-  let _ = Js.log target
-  ```
-
-  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign)
+/* prints "{ a: 1, b: 2 }", target is modified */
+Js.log(target)
+```
 *)
-external assign : < .. > -> < .. >  -> < .. >  = "Object.assign" [@@bs.val]
 
 (* TODO:
 
-Should we map this API as directly as possible, provide some abstractions, or deliberately nerf it?
+   Should we map this API as directly as possible, provide some abstractions, or deliberately nerf it?
 
-"static":
-- Object.create
-- Object.defineProperty
-- Object.defineProperties
-- Object.entries - experimental
-- Object.getOwnPropertyDescriptor
-- Object.getOwnPropertyDescriptors
-- Object.getOwnPropertyNames
-- Object.getOwnPropertySymbols
-- Object.getPrototypeOf
-- Object.isExtensible
-- Object.isFrozen
-- Object.isSealed
-- Object.preventExtension
-- Object.seal
-- Object.setPrototypeOf
-- Object.values - experimental
+   "static":
+   - Object.create
+   - Object.defineProperty
+   - Object.defineProperties
+   - Object.entries - experimental
+   - Object.getOwnPropertyDescriptor
+   - Object.getOwnPropertyDescriptors
+   - Object.getOwnPropertyNames
+   - Object.getOwnPropertySymbols
+   - Object.getPrototypeOf
+   - Object.isExtensible
+   - Object.isFrozen
+   - Object.isSealed
+   - Object.preventExtension
+   - Object.seal
+   - Object.setPrototypeOf
+   - Object.values - experimental
 
-bs.send:
-- hasOwnProperty
-- isPrototypeOf
-- propertyIsEnumerable
-- toLocaleString
-- toString
+   bs.send:
+   - hasOwnProperty
+   - isPrototypeOf
+   - propertyIsEnumerable
+   - toLocaleString
+   - toString
 
-Put directly on Js?
-- Object.is
-
+   Put directly on Js?
+   - Object.is
 *)
 
-(**
-  `keys obj` returns an array of the keys of `obj`'s own enumerable properties
-
-  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys)
-*)
-external keys : < .. >  -> string array = "Object.keys" [@@bs.val]
+external keys : < .. > -> string array = "Object.keys"
+  [@@bs.val]
+(** `keys(obj)` returns an `array` of the keys of `obj`'s own enumerable properties. *)

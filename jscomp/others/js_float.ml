@@ -22,15 +22,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** Provides functions for inspecting and manipulating `float`s *)
+(** Provide utilities for JS float. *)
 
+external _NaN : float = "NaN"
+  [@@bs.val]
 (**
   The special value "Not a Number"
 
-  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN)
+  **See:** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN)
 *)
-external _NaN : float = "NaN" [@@bs.val]
 
+external isNaN : float -> bool = "isNaN"
+  [@@bs.val] [@@bs.scope "Number"]
 (**
   Tests if the given value is `_NaN`
 
@@ -41,31 +44,33 @@ external _NaN : float = "NaN" [@@bs.val]
 
   **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isNaN)
 *)
-external isNaN : float -> bool = "isNaN" [@@bs.val] [@@bs.scope "Number"]
 
+external isFinite : float -> bool = "isFinite"
+  [@@bs.val] [@@bs.scope "Number"]
 (**
   Tests if the given value is finite
 
   **return** `true` if the given value is a finite number, `false` otherwise
 
-  ```
-  (* returns `false` *)
-  let _ = Js.Float.isFinite infinity
+  ```res example
+  /* returns [false] */
+  Js.Float.isFinite(infinity)
 
-  (* returns `false` *)
-  let _ = Js.Float.isFinite neg_infinity
+  /* returns [false] */
+  Js.Float.isFinite(neg_infinity)
 
-  (* returns `false` *)
-  let _ = Js.Float.isFinite _NaN
+  /* returns [false] */
+  Js.Float.isFinite(Js.Float._NaN)
 
-  (* returns `true` *)
-  let _ = Js.Float.isFinite 1234
+  /* returns [true] */
+  Js.Float.isFinite(1234.)
   ```
 
   **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isFinite)
 *)
-external isFinite : float -> bool = "isFinite" [@@bs.val] [@@bs.scope "Number"]
 
+external toExponential : float -> string = "toExponential"
+  [@@bs.send]
 (**
   Formats a `float` using exponential (scientific) notation
 
@@ -73,18 +78,20 @@ external isFinite : float -> bool = "isFinite" [@@bs.val] [@@bs.scope "Number"]
 
   **raise** RangeError if digits is not in the range [0, 20] (inclusive)
 
-  ```
-  (* prints "7.71234e+1" *)
-  let _ = Js.log (Js.Float.toExponential 77.1234)
+  ```res example
+  /* prints "7.71234e+1" */
+  Js.Float.toExponential(77.1234)->Js.log
 
-  (* prints "7.7e+1" *)
-  let _ = Js.log (Js.Float.toExponential 77.)
+  /* prints "7.7e+1" */
+  Js.Float.toExponential(77.)->Js.log
   ```
 
-  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential)
+  **See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential)
 *)
-external toExponential : float -> string = "toExponential" [@@bs.send]
 
+external toExponentialWithPrecision : float -> digits:int -> string
+  = "toExponential"
+  [@@bs.send]
 (**
   Formats a `float` using exponential (scientific) notation
 
@@ -97,15 +104,16 @@ external toExponential : float -> string = "toExponential" [@@bs.send]
 
   **raise** RangeError if digits is not in the range [0, 20] (inclusive)
 
-  ```
-  (* prints "7.71e+1" *)
-  let _ = Js.log (Js.Float.toExponentialWithPrecision 77.1234 ~digits:2)
+  ```res example
+  /* prints "7.71e+1" */
+  Js.Float.toExponentialWithPrecision(77.1234, ~digits=2)->Js.log
   ```
 
   **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential)
 *)
-external toExponentialWithPrecision : float -> digits:int -> string = "toExponential" [@@bs.send]
 
+external toFixed : float -> string = "toFixed"
+  [@@bs.send]
 (**
   Formats a `float` using fixed point notation
 
@@ -113,18 +121,19 @@ external toExponentialWithPrecision : float -> digits:int -> string = "toExponen
 
   **raise** RangeError if digits is not in the range [0, 20] (inclusive)
 
-  ```
-  (* prints "12346" (note the rounding) *)
-  let _ = Js.log (Js.Float.toFixed 12345.6789)
+  ```res example
+  /* prints "12346" (note the rounding) */
+  Js.Float.toFixed(12345.6789)->Js.log
 
-  (* print "1.2e+21" *)
-  let _ = Js.log (Js.Float.toFixed 1.2e21)
+  /* print "1.2e+21" */
+  Js.Float.toFixed(1.2e21)->Js.log
   ```
 
-  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toFixed)
+  **See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toFixed)
 *)
-external toFixed : float -> string = "toFixed" [@@bs.send]
 
+external toFixedWithPrecision : float -> digits:int -> string = "toFixed"
+  [@@bs.send]
 (**
   Formats a `float` using fixed point notation
 
@@ -137,18 +146,19 @@ external toFixed : float -> string = "toFixed" [@@bs.send]
 
   **raise** RangeError if digits is not in the range [0, 20] (inclusive)
 
-  ```
-  (* prints "12345.7" (note the rounding) *)
-  let _ = Js.log (Js.Float.toFixedWithPrecision 12345.6789 ~digits:1)
+  ```res example
+  /* prints "12345.7" (note the rounding) */
+  Js.Float.toFixedWithPrecision(12345.6789, ~digits=1)->Js.log
 
-  (* prints "0.00" (note the added zeroes) *)
-  let _ = Js.log (Js.Float.toFixedWithPrecision 0. ~digits:2)
+  /* prints "0.00" (note the added zeroes) */
+  Js.Float.toFixedWithPrecision(0., ~digits=2)->Js.log
   ```
 
-  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toFixed)
+  **See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toFixed)
 *)
-external toFixedWithPrecision : float -> digits:int -> string = "toFixed" [@@bs.send]
 
+external toPrecision : float -> string = "toPrecision"
+  [@@bs.send]
 (**
   Formats a `float` using some fairly arbitrary rules
 
@@ -160,18 +170,21 @@ external toFixedWithPrecision : float -> digits:int -> string = "toFixed" [@@bs.
 
   **raise** RangeError if digits is not in the range accepted by this function (what do you mean "vague"?)
 
-  ```
-  (* prints "12345.6789" *)
-  let _ = Js.log (Js.Float.toPrecision 12345.6789)
+  ```res example
+  /* prints "12345.6789" */
+  Js.Float.toPrecision(12345.6789)->Js.log
 
-  (* print "1.2e+21" *)
-  let _ = Js.log (Js.Float.toPrecision 1.2e21)
+  /* print "1.2e+21" */
+  Js.Float.toPrecision(1.2e21)->Js.log
   ```
 
-  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision)
+  **See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision)
 *)
-external toPrecision : float -> string = "toPrecision" [@@bs.send] (* equivalent to `toString` I think *)
+(* equivalent to `toString` I think *)
 
+external toPrecisionWithPrecision : float -> digits:int -> string
+  = "toPrecision"
+  [@@bs.send]
 (**
   Formats a `float` using some fairly arbitrary rules
 
@@ -191,33 +204,34 @@ external toPrecision : float -> string = "toPrecision" [@@bs.send] (* equivalent
 
   **raise** RangeError if digits is not in the range accepted by this function (what do you mean "vague"?)
 
-  ```
-  (* prints "1e+4" *)
-  let _ = Js.log (Js.Float.toPrecisionWithPrecision 12345.6789 ~digits:1)
+  ```res example
+  /* prints "1e+4" */
+  Js.Float.toPrecisionWithPrecision(12345.6789, ~digits=1)->Js.log
 
-  (* prints "0.0" *)
-  let _ = Js.log (Js.Float.toPrecisionWithPrecision 0. ~digits:2)
+  /* prints "0.0" */
+  Js.Float.toPrecisionWithPrecision(0., ~digits=2)->Js.log
   ```
 
-  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision)
+  **See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision)
 *)
-external toPrecisionWithPrecision : float -> digits:int -> string = "toPrecision" [@@bs.send]
 
-
+external toString : float -> string = "toString"
+  [@@bs.send]
 (**
   Formats a `float` as a string
 
   **return** a `string` representing the given value in fixed-point (usually)
 
-  ```
-  (* prints "12345.6789" *)
-  let _ = Js.log (Js.Float.toString 12345.6789)
+  ```res example
+  /* prints "12345.6789" */
+  Js.Float.toString(12345.6789)->Js.log
   ```
 
-  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString)
+  **See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString)
 *)
-external toString : float -> string = "toString" [@@bs.send]
 
+external toStringWithRadix : float -> radix:int -> string = "toString"
+  [@@bs.send]
 (**
   Formats a `float` as a string
 
@@ -228,55 +242,53 @@ external toString : float -> string = "toString" [@@bs.send]
 
   **raise** RangeError if radix is not in the range [2, 36] (inclusive)
 
+  ```res example
+  /* prints "110" */
+  Js.Float.toStringWithRadix(6., ~radix=2)->Js.log
+
+  /* prints "11.001000111101011100001010001111010111000010100011111" */
+  Js.Float.toStringWithRadix(3.14, ~radix=2)->Js.log
+
+  /* prints "deadbeef" */
+  Js.Float.toStringWithRadix(3735928559., ~radix=16)->Js.log
+
+  /* prints "3f.gez4w97ry0a18ymf6qadcxr" */
+  Js.Float.toStringWithRadix(123.456, ~radix=36)->Js.log
   ```
-  (* prints "110" *)
-  let _ = Js.log (Js.Float.toStringWithRadix 6. ~radix:2)
 
-  (* prints "11.001000111101011100001010001111010111000010100011111" *)
-  let _ = Js.log (Js.Float.toStringWithRadix 3.14 ~radix:2)
-
-  (* prints "deadbeef" *)
-  let _ = Js.log (Js.Float.toStringWithRadix 3735928559. ~radix:16)
-
-  (* prints "3f.gez4w97ry0a18ymf6qadcxr" *)
-  let _ = Js.log (Js.Float.toStringWithRadix 123.456 ~radix:36)
-  ```
-
-  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString)
+  **See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString)
 *)
-external toStringWithRadix : float -> radix:int -> string = "toString" [@@bs.send]
 
+external fromString : string -> float = "Number"
+  [@@bs.val]
 (**
   Parses the given `string` into a `float` using JavaScript semantics
 
   **return** the number as a `float` if successfully parsed, `_NaN` otherwise.
 
-  ```
-  (* returns 123 *)
-  let _ = Js.Float.fromString "123"
+  ```res example
+  /* returns 123 */
+  Js.Float.fromString("123")
 
-  (* returns 12.3 *)
-  let _ = Js.Float.fromString "12.3"
+  /* returns 12.3 */
+  Js.Float.fromString("12.3")
 
-  (* returns 0 *)
-  let _ = Js.Float.fromString ""
+  /* returns 0 */
+  Js.Float.fromString("")
 
-  (* returns 17 *)
-  let _ = Js.Float.fromString "0x11"
+  /* returns 17 */
+  Js.Float.fromString("0x11")
 
-  (* returns 3 *)
-  let _ = Js.Float.fromString "0b11"
+  /* returns 3 */
+  Js.Float.fromString("0b11")
 
-  (* returns 9 *)
-  let _ = Js.Float.fromString "0o11"
+  /* returns 9 */
+  Js.Float.fromString("0o11")
 
-  (* returns `_NaN` *)
-  let _ = Js.Float.fromString "foo"
+  /* returns [_NaN] */
+  Js.Float.fromString("hello")
 
-  (* returns `_NaN` *)
-  let _ = Js.Float.fromString "100a"
+  /* returns [_NaN] */
+  Js.Float.fromString("100a")
   ```
 *)
-external fromString : string -> float = "Number" [@@bs.val]
-
-

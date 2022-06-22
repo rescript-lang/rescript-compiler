@@ -22,97 +22,183 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** A stdlib shipped with ReScript
+(** The ReScript standard library.
 
-  This stdlib is still in _beta_ but we encourage you to try it out and
-  give us feedback.
+Belt is currently mostly covering collection types. It has no string or date functions yet, although Belt.String is in the works. In the meantime, use [Js.String](js/string) for string functions and [Js.Date](js/date) for date functions.
 
-  **Motivation**
+## Motivation
 
-  The motivation for creating such library is to provide ReScript users a
-  better end-to-end user experience, since the original OCaml stdlib was not
-  written with JS in mind. Below is a list of areas this lib aims to
-  improve:
-  1. Consistency in name convention: camlCase, and arguments order
-  2. Exception thrown functions are all suffixed with _Exn_, e.g, _getExn_
-  3. Better performance and smaller code size running on JS platform
+Belt provides:
 
-  **Name Convention**
+- The **highest quality** immutable data structures in JavaScript.
+- Safety by default: A Belt function will never throw exceptions, unless it is
+  indicated explicitly in the function name (suffix "Exn").
+- Better performance and smaller code size running on the JS platform.
+- Ready for [Tree Shaking](https://webpack.js.org/guides/tree-shaking/).
 
-  For higher order functions, it will be suffixed **U** if it takes uncurried
-  callback.
+## Usage
 
-  ```
-  val forEach  : 'a t -> ('a -> unit) -> unit
-  val forEachU : 'a t -> ('a -> unit [@bs]) -> unit
-  ```
+To use modules from Belt, either refer to them by their fully qualified name (`Belt.List`, `Belt.Array` etc.) or open the `Belt` module by putting
 
-  In general, uncurried version will be faster, but it may be less familiar to
-  people who have a background in functional programming.
+```
+open Belt
+```
 
-   **A special encoding for collection safety**
+at the top of your source files. After opening Belt this way, `Array` will refer to `Belt.Array`, `List` will refer to `Belt.List` etc. in the subsequent code.
 
-   When we create a collection library for a custom data type we need a way to provide a comparator
-   function. Take _Set_ for example, suppose its element type is a pair of ints,
-  it needs a custom _compare_ function that takes two tuples and returns their order.
-  The _Set_ could not just be typed as `Set.t (int * int)`, its customized _compare_ function
-  needs to manifest itself in the signature, otherwise, if the user creates another
-  customized _compare_ function, the two collection could mix which would result in runtime error.
+If you want to open Belt globally for all files in your project instead, you can put
 
-  The original OCaml stdlib solved the problem using _functor_ which creates a big
-  closure at runtime and makes dead code elimination much harder.
-  We use a phantom type to solve the problem:
+```json
+  "bsc-flags": ["-open Belt"],
+```
 
-  ```
-  module Comparable1 = Belt.Id.MakeComparable(struct
-  type t = int * int
-  let cmp (a0, a1) (b0, b1) =
-    match Pervasives.compare a0 b0 with
-    | 0 -> Pervasives.compare a1 b1
-    | c -> c
-  end)
+into your `bsconfig.json`.
 
-  let mySet1 = Belt.Set.make ~id:(module Comparable1)
+**Note**: this is the **only** `open` we encourage.
 
-  module Comparable2 = Belt.Id.MakeComparable(struct
-    type t = int * int
-    let cmp (a0, a1) (b0, b1) =
-    match Pervasives.compare a0 b0 with
-    | 0 -> Pervasives.compare a1 b1
-    | c -> c
-  end)
+Example usage:
 
-  let mySet2 = Belt.Set.make ~id:(module Comparable2)
-  ```
+```
+let someNumbers = [1, 1, 4, 2, 3, 6, 3, 4, 2]
 
-  Here, the compiler would infer `mySet1` and `mySet2` having different type, so
-  e.g. a `merge` operation that tries to merge these two sets will correctly fail.
+let greaterThan2UniqueAndSorted =
+  someNumbers
+  ->Belt.Array.keep(x => x > 2)
+  // convert to and from set to make values unique
+  ->Belt.Set.Int.fromArray
+  ->Belt.Set.Int.toArray // output is already sorted
 
-  ```
-  val mySet1 : ((int * int), Comparable1.identity) t
-  val mySet2 : ((int * int), Comparable2.identity) t
-  ```
+Js.log2("result", greaterThan2UniqueAndSorted)
+```
 
-  `Comparable1.identity` and `Comparable2.identity` are not the same using our encoding scheme.
+## Curried vs. Uncurried Callbacks
 
-  **Collection Hierarchy**
+For functions taking a callback parameter, there are usually two versions
+available:
 
-  In general, we provide a generic collection module, but also create specialized
-  modules for commonly used data type. Take _Belt.Set_ for example, we provide:
+- curried (no suffix)
+- uncurried (suffixed with `U`)
 
-  ```
-  Belt.Set
-  Belt.Set.Int
-  Belt.Set.String
-  ```
+E.g.:
 
-  The specialized modules _Belt.Set.Int_, _Belt.Set.String_ are in general more
-  efficient.
+```
+let forEach: (t<'a>, 'a => unit) => unit
 
-  Currently, both _Belt_Set_ and _Belt.Set_ are accessible to users for some
-  technical reasons,
-  we **strongly recommend** users stick to qualified import, _Belt.Set_, we may hide
-  the internal, _i.e_, _Belt_Set_ in the future
+let forEachU: (t<'a>, (. 'a) => unit) => unit
+```
+
+The uncurried version will be faster in some cases, but for simplicity we recommend to stick with the curried version unless you need the extra performance.
+
+The two versions can be invoked as follows:
+
+```
+["a", "b", "c"]->Belt.Array.forEach(x => Js.log(x))
+
+["a", "b", "c"]->Belt.Array.forEachU((. x) => Js.log(x))
+```
+
+## Specialized Collections
+
+For collections types like set or map, Belt provides both a generic module as well as specialized, more efficient implementations for string and int keys.
+
+For example, Belt has the following set modules:
+
+- [Belt.Set](belt/set)
+- [Belt.Set.Int](belt/set-int)
+- [Belt.Set.String](belt/set-string)
+
+## Implementation Details
+
+### Array access runtime safety
+
+One common confusion comes from the way Belt handles array access. It differs from than the default standard library's.
+
+```
+let letters = ["a", "b", "c"]
+let a = letters[0] // a == "a"
+let capitalA = Js.String.toUpperCase(a)
+let k = letters[10] // Raises an exception! The 10th index doesn't exist.
+```
+
+Because Belt avoids exceptions and returns `options` instead, this code behaves differently:
+
+```
+open Belt
+let letters = ["a", "b", "c"]
+let a = letters[0] // a == Some("a")
+let captialA = Js.String.toUpperCase(a) // Type error! This code will not compile.
+let k = letters[10] // k == None
+```
+
+Although we've fixed the problem where `k` raises an exception, we now have a type error when trying to capitalize `a`. There are a few things going on here:
+
+- Reason transforms array index access to the function `Array.get`. So `letters[0]` is the same as `Array.get(letters, 0)`.
+- The compiler uses whichever `Array` module is in scope. If you `open Belt`, then it uses `Belt.Array`.
+- `Belt.Array.get` returns values wrapped in options, so `letters[0] == Some("a")`.
+
+Fortunately, this is easy to fix:
+
+```res example
+open Belt
+let letters = ["a", "b", "c"]
+let a = letters[0]
+
+// Use a switch statement:
+let capitalA =
+  switch a {
+  | Some(a) => Some(Js.String.toUpperCase(a))
+  | None => None
+  }
+
+let k = letters[10] // k == None
+```
+
+With that little bit of tweaking, our code now compiles successfully and is 100% free of runtime errors!
+
+### A Special Encoding for Collection Safety
+
+When we create a collection library for a custom data type we need a way to provide a comparator function. Take Set for example, suppose its element type is a pair of ints, it needs a custom compare function that takes two tuples and returns their order. The Set could not just be typed as Set.t (int \* int) , its customized compare function needs to manifest itself in the signature, otherwise, if the user creates another customized compare function, the two collection could mix which would result in runtime error.
+
+We use a phantom type to solve the problem:
+
+```
+module Comparable1 =
+  Belt.Id.MakeComparable(
+    {
+      type t = (int, int)
+      let cmp = ((a0, a1), (b0, b1)) =>
+        switch Pervasives.compare(a0, b0) {
+        | 0 => Pervasives.compare(a1, b1)
+        | c => c
+        }
+    }
+  )
+
+let mySet1 = Belt.Set.make(~id=module(Comparable1))
+
+module Comparable2 =
+  Belt.Id.MakeComparable(
+    {
+      type t = (int, int)
+      let cmp = ((a0, a1), (b0, b1)) =>
+        switch Pervasives.compare(a0, b0) {
+        | 0 => Pervasives.compare(a1, b1)
+        | c => c
+        }
+    }
+  )
+
+let mySet2 = Belt.Set.make(~id=module(Comparable2))
+```
+
+Here, the compiler would infer `mySet1` and `mySet2` having different type, so e.g. a `merge` operation that tries to merge these two sets will correctly fail.
+
+```
+let mySet1: t<(int, int), Comparable1.identity>
+let mySet2: t<(int, int), Comparable2.identity>
+```
+
+`Comparable1.identity` and `Comparable2.identity` are not the same using our encoding scheme.
 
 *)
 
@@ -255,7 +341,6 @@ module Result = Belt_Result
 *)
 
 module Int = Belt_Int
-
 
 (** [`Belt.Float`]()
 

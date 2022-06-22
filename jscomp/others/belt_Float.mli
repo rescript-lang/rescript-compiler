@@ -22,22 +22,85 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** [`Belt.Float`]()
-    Utililites for Float
-*)
+(** This module includes convenience methods for handling `float` types. *)
 
 external toInt: float -> int = "%intoffloat"
+(**
+Converts a given `float` to an `int`.
+
+```res example
+Js.log(Belt.Float.toInt(1.0) === 1) /* true */
+```
+*)
 
 external fromInt: int -> float = "%identity"
+(** 
+  Converts a given `int` to a `float`.
+
+  ```res example
+  Js.log(Belt.Float.fromInt(1) === 1.0) /* true */
+  ```
+*)
 
 val fromString: string -> float option
+(** 
+  Converts a given `string` to a `float`. Returns `Some(float)` when the input is a number, `None` otherwise.
+
+  ```res example
+  Js.log(Belt.Float.fromString("1.0") === Some(1.0)) /* true */
+  ```
+*)
+
 
 external toString: float -> string = "String" [@@bs.val]
+(**
+  Converts a given `float` to a `string`. Uses the JavaScript `String` constructor under the hood.
+
+  ```res example
+  Js.log(Belt.Float.toString(1.0) === "1.0") /* true */
+  ```
+*)
 
 external ( + ) : float -> float -> float = "%addfloat"
+(**
+  Addition of two `float` values.
+  Can be opened in a module to avoid dot-notation (`+.`), however this yields a shadow warning (Warning number 44) in the default configuration.
+
+  ```res example
+  open Belt.Float
+  Js.log(2.0 + 2.0 === 4.0) /* true */
+  ```
+*)
 
 external ( - ) : float -> float -> float = "%subfloat"
+(**
+  Subtraction of two `float` values.
+  Can be opened in a module to avoid dot-notation (`-.`), however this yields a shadow warning (Warning number 44) in the default configuration.
+
+  ```res example
+  open Belt.Float
+  Js.log(2.0 - 1.0 === 1.0) /* true */
+  ```
+*)
 
 external ( * ) : float -> float -> float = "%mulfloat"
+(**
+  Multiplication of two `float` values.
+  Can be opened in a module to avoid dot-notation (`*.`), however this yields a shadow warning (Warning number 44) in the default configuration.
+
+  ```res example
+  open Belt.Float
+  Js.log(2.0 * 2.0 === 4.0) /* true */
+  ```
+*)
 
 external ( / ) : float -> float -> float = "%divfloat"
+(** 
+  Division of two `float` values.
+  Can be opened in a module to avoid dot-notation (`/.`), however this yields a shadow warning (Warning number 44) in the default configuration.
+
+  ```res example
+  open Belt.Float
+  Js.log(4.0 / 2.0 === 2.0) /* true */
+  ```
+*)

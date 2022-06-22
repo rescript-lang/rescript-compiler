@@ -22,170 +22,184 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** [`Belt.Result`]()
-
-    Utilities for result data type.
-*)
-
-
 (**
-  `Belt.Result` is a data type with two variants: `Ok` and `Error`. Each of these variants can
-  contain data, and those two pieces of data need not have the same data type. `Belt.Result` is
-  useful when you need to not only determine whether some data is valid or not (use `Belt.Option`
-  for that), but also keep information about the invalid data.
+  Result types are really useful to describe the result of a certain operation
+  without relying on exceptions or `option` types.
 
-  In the examples, we presume the existence of two variables:
-
-  ```
-  let good = Ok 42
-  let bad = Error "Invalid data"
-  ```
+  This module gives you useful utilities to create and combine `Result` data.
 *)
 
 type ('a,'b) t = Ok of 'a | Error of 'b
+(**
+  The type `Result.t(result, err)` describes a variant of two states:
+  `Ok(someResult)` represents a successful operation, whereby
+  ``Error(someError)` signals an erronous operation.
+
+  In this concrete example, we are defining our own `Result` type to reflect an HTTP like
+  query operation:
+
+  ```res example
+  type responseError = NotAvailable | NotFound
+  type queryResult = t<string, responseError>
+
+  let failQueryUser = (username: string): queryResult => {
+    Error(NotAvailable)
+  }
+```
+*)
 
 val getExn : ('a, 'b) t -> 'a
 (**
-  `getExn res`
+  `getExn(res)`: when `res` is `Ok(n)`, returns `n` when `res` is `Error(m)`, raise an exception
 
-  when `res` is `Ok n`, returns `n`
-  when `res` is `Error m`, **raise** an exception
+  ```res example
+  Belt.Result.getExn(Belt.Result.Ok(42)) == 42
 
-  ```
-  getExn good = 42;;
-  getExn bad;; (* raises exception *)
+  Belt.Result.getExn(Belt.Result.Error("Invalid data")) /* raises exception */
   ```
 *)
 
 val mapWithDefaultU : ('a, 'c) t -> 'b -> ('a -> 'b [@bs]) -> 'b
 val mapWithDefault : ('a, 'c) t -> 'b -> ('a -> 'b) -> 'b
 (**
-  `mapWithDefault res default f`
+  `mapWithDefault(res, default, f)`: When res is `Ok(n)`, returns `f(n)`,
+  otherwise `default`.
 
-  When `res` is `Ok n`, returns `f n`, otherwise `default`.
+  ```res example
+  let ok = Belt.Result.Ok(42)
+  Belt.Result.mapWithDefault(ok, 0, (x) => x / 2) == 21
 
-  ```
-  mapWithDefault good 0 (fun x -> x / 2) = 21
-  mapWithDefault bad 0 (fun x -> x / 2) = 0
+  let error = Belt.Result.Error("Invalid data")
+  Belt.Result.mapWithDefault(error, 0, (x) => x / 2) == 0
   ```
 *)
 
 val mapU : ('a, 'c) t -> ('a -> 'b [@bs]) -> ('b, 'c) t
 val map : ('a, 'c) t -> ('a -> 'b) -> ('b, 'c) t
 (**
-  `map res f`
+  `map(res, f)`: When res is `Ok(n)`, returns `Ok(f(n))`. Otherwise returns res
+  unchanged. Function `f` takes a value of the same type as `n` and returns an
+  ordinary value.
 
-  When `res` is `Ok n`, returns `Ok (f n)`. Otherwise returns `res` unchanged.
-  Function `f` takes a value of the same type as `n` and returns an ordinary value.
+  ```res example
+  let f = (x) => sqrt(Belt.Int.toFloat(x))
 
-  ```
-  let f x = sqrt (float_of_int x)
-  map (Ok 64) f = Ok 8.0
-  map (Error "Invalid data") f = Error "Invalid data"
+  Belt.Result.map(Ok(64), f) == Ok(8.0)
+
+  Belt.Result.map(Error("Invalid data"), f) == Error("Invalid data")
   ```
 *)
 
 val flatMapU : ('a, 'c) t -> ('a -> ('b, 'c) t [@bs]) -> ('b, 'c) t
 val flatMap : ('a, 'c) t -> ('a -> ('b, 'c) t) -> ('b, 'c) t
 (**
-  `flatMap res f`
+  `flatMap(res, f)`: When res is `Ok(n)`, returns `f(n)`. Otherwise, returns res
+  unchanged. Function `f` takes a value of the same type as `n` and returns a
+  `Belt.Result`.
 
-  When `res` is `Ok n`, returns `f n`. Otherwise, returns `res` unchanged.
-  Function `f` takes a value of the same type as `n` and returns a `Belt.Result`.
+  ```res example
+  let recip = (x) =>
+    if (x !== 0.0) {
+      Belt.Result.Ok(1.0 /. x)
+    } else {
+      Belt.Result.Error("Divide by zero")
+    }
 
-  ```
-  let recip x =
-    if x != 0.0
-    then
-      Ok (1.0 /. x)
-    else
-      Error "Divide by zero"
+  Belt.Result.flatMap(Ok(2.0), recip) == Ok(0.5)
 
-  flatMap (Ok 2.0) recip = Ok 0.5
-  flatMap (Ok 0.0) recip = Error "Divide by zero"
-  flatMap (Error "Already bad") recip = Error "Already bad"
+  Belt.Result.flatMap(Ok(0.0), recip) == Error("Divide by zero")
+
+  Belt.Result.flatMap(Error("Already bad"), recip) == Error("Already bad")
   ```
 *)
 
 val getWithDefault : ('a, 'b) t -> 'a -> 'a
 (**
-  `getWithDefault res defaultValue`
+  `getWithDefault(res, defaultValue)`: If `res` is `Ok(n)`, returns `n`,
+  otherwise `default`
 
-  if `res` is `Ok n`, returns `n`, otherwise `default`
+  ```res example
+  Belt.Result.getWithDefault(Ok(42), 0) == 42
 
-  ```
-  getWithDefault (Ok 42) 0 = 42
-  getWithDefault (Error "Invalid Data") = 0
+  Belt.Result.getWithDefault(Error("Invalid Data"), 0) == 0
   ```
 *)
 
 val isOk : ('a, 'b) t -> bool
 (**
-   `isOk res`
-
-   Returns `true` if `res` is of the form `Ok n`, `false` if it is the `Error e` variant.
+  `isOk(res)`: Returns `true` if `res` is of the form `Ok(n)`, `false` if it is
+  the `Error(e)` variant.
 *)
 
 val isError : ('a, 'b) t -> bool
 (**
-   `isError res`
-
-   Returns `true` if `res` is of the form `Error e`, `false` if it is the `Ok n` variant.
+  `isError(res)`: Returns `true` if `res` is of the form `Error(e)`, `false` if
+  it is the `Ok(n)` variant.
 *)
 
 val eqU : ('a, 'c) t -> ('b, 'd) t -> ('a -> 'b -> bool [@bs]) -> bool
 val eq : ('a, 'c) t -> ('b, 'd) t -> ('a -> 'b -> bool) -> bool
 (**
-  `eq res1 res2 f`
+  `eq(res1, res2, f)`: Determine if two `Belt.Result` variables are equal with
+  respect to an equality function. If `res1` and `res2` are of the form `Ok(n)`
+  and `Ok(m)`, return the result of `f(n, m)`. If one of `res1` and `res2` are of
+  the form `Error(e)`, return false If both `res1` and `res2` are of the form
+  `Error(e)`, return true
 
-  Determine if two `Belt.Result` variables are equal with respect to an equality function.
-  If `res1` and `res2` are of the form `Ok n` and `Ok m`, return the result of `f n m`.
-  If one of `res1` and `res2` are of the form `Error e`, return false
-  If both `res1` and `res2` are of the form `Error e`, return true
+  ```res example
+  let good1 = Belt.Result.Ok(42)
 
-  ```
-  let good1 = Ok 42
-  let good2 = Ok 32
-  let bad1 = Error "invalid"
-  let bad2 = Error "really invalid"
+  let good2 = Belt.Result.Ok(32)
 
-  let mod10equal a b =
-    a mod 10 == b mod 10
+  let bad1 = Belt.Result.Error("invalid")
 
-  eq good1 good2 mod10equal = true
-  eq good1 bad1 mod10equal = false
-  eq bad2 good2 mod10equal = false
-  eq bad1 bad2 mod10equal = true
+  let bad2 = Belt.Result.Error("really invalid")
+
+  let mod10equal = (a, b) => mod(a, 10) === mod(b, 10)
+
+  Belt.Result.eq(good1, good2, mod10equal) == true
+
+  Belt.Result.eq(good1, bad1, mod10equal) == false
+
+  Belt.Result.eq(bad2, good2, mod10equal) == false
+
+  Belt.Result.eq(bad1, bad2, mod10equal) == true
   ```
 *)
 
 val cmpU : ('a, 'c) t -> ('b, 'd) t -> ('a -> 'b -> int [@bs]) -> int
 val cmp : ('a, 'c) t -> ('b, 'd) t -> ('a -> 'b -> int) -> int
 (**
-  `cmp res1 res2 f`
+  `cmp(res1, res2, f)`: Compare two `Belt.Result` variables with respect to a
+  comparison function. The comparison function returns -1 if the first variable
+  is "less than" the second, 0 if the two variables are equal, and 1 if the first
+  is "greater than" the second.
 
-  Compare two `Belt.Result` variables with respect to a comparison function.
-  The comparison function returns -1 if the first variable is "less than" the second,
-  0 if the two variables are equal, and 1 if the first is "greater than" the second.
+  If `res1` and `res2` are of the form `Ok(n)` and `Ok(m)`, return the result of
+  `f(n, m)`. If `res1` is of the form `Error(e)` and `res2` of the form `Ok(n)`,
+  return -1 (nothing is less than something) If `res1` is of the form `Ok(n)` and
+  `res2` of the form `Error(e)`, return 1 (something is greater than nothing) If
+  both `res1` and `res2` are of the form `Error(e)`, return 0 (equal)
 
-  If `res1` and `res2` are of the form `Ok n` and `Ok m`, return the result of `f n m`.
-  If `res1` is of the form `Error e` and `res2` of the form `Ok n`, return -1 (nothing is less than something)
-  If `res1` is of the form `Ok n` and `res2` of the form `Error e`, return 1 (something is greater than nothing)
-  If both `res1` and `res2` are of the form `Error e`, return 0 (equal)
+  ```res example
+  let good1 = Belt.Result.Ok(59)
 
-  ```
-  let good1 = Ok 59
-  let good2 = Ok 37
-  let bad1 = Error "invalid"
-  let bad2 = Error "really invalid"
+  let good2 = Belt.Result.Ok(37)
 
-  let mod10cmp a b =
-    Pervasives.compare (a mod 10) (b mod 10)
+  let bad1 = Belt.Result.Error("invalid")
 
-  cmp (Ok 39) (Ok 57) mod10cmp = 1
-  cmp (Ok 57) (Ok 39) mod10cmp = -1
-  cmp (Ok 39) (Error "y") mod10cmp = 1
-  cmp (Error "x") (Ok 57) mod10cmp = -1
-  cmp (Error "x") (Error "y") mod10cmp = 0
+  let bad2 = Belt.Result.Error("really invalid")
+
+  let mod10cmp = (a, b) => Pervasives.compare(mod(a, 10), mod(b, 10))
+
+  Belt.Result.cmp(Ok(39), Ok(57), mod10cmp) == 1
+
+  Belt.Result.cmp(Ok(57), Ok(39), mod10cmp) == (-1)
+
+  Belt.Result.cmp(Ok(39), Error("y"), mod10cmp) == 1
+
+  Belt.Result.cmp(Error("x"), Ok(57), mod10cmp) == (-1)
+
+  Belt.Result.cmp(Error("x"), Error("y"), mod10cmp) == 0
   ```
 *)

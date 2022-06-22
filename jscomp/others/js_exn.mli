@@ -22,7 +22,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** Provide utilities for dealing with JS exceptions. *)
+
 type t
+(** Represents a JS exception *)
 
 type exn += private Error of t
 
@@ -53,7 +56,7 @@ external anyToExnInternal : 'a -> exn = "#wrap_exn"
   that potentially is either exn, a JS error, or any other JS value really (e.g. for
   a value passed to a Promise.catch callback)
 
-  IMPORTANT: This is an internal API and may be changed / removed any time in the future.
+  **IMPORTANT**: This is an internal API and may be changed / removed any time in the future.
 
   ```
   switch (Js.Exn.unsafeAnyToExn("test")) {

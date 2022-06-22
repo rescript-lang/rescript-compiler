@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-[@@@bs.config {flags = [|"-unboxed-types";"-w" ;"-49"|]}]
+[@@@bs.config { flags = [| "-unboxed-types"; "-w"; "-49" |] }]
 (* DESIGN:
    - It does not have any code, all its code will be inlined so that
        there will never be
@@ -30,221 +30,212 @@
    - Its interface should be minimal
 *)
 
-(** This library provides bindings and necessary support for JS FFI.
-    It contains all bindings into [Js] namespace.
+(**
+  The Js module mostly contains ReScript bindings to _standard JavaScript APIs_
+  like [console.log](https://developer.mozilla.org/en-US/docs/Web/API/Console/log),
+  or the JavaScript
+  [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String),
+  [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date), and
+  [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
+  classes.
 
-    @example {[
-      [| 1;2;3;4|]
-      |. Js.Array2.map (fun x -> x + 1 )
-      |. Js.Array2.reduce (+) 0
-      |. Js.log
-    ]}
+  It is meant as a zero-abstraction interop layer and directly exposes JavaScript functions as they are. If you can find your API in this module, prefer this over an equivalent Belt helper. For example, prefer [Js.Array2](js/array-2) over [Belt.Array](belt/array)
+
+  ## Argument Order
+
+  For historical reasons, some APIs in the Js namespace (e.g. [Js.String](js/string)) are
+  using the data-last argument order whereas others (e.g. [Js.Date](js/date)) are using data-first.
+
+  For more information about these argument orders and the trade-offs between them, see
+  [this blog post](https://www.javierchavarri.com/data-first-and-data-last-a-comparison/).
+
+  _Eventually, all modules in the Js namespace are going to be migrated to data-first though._
+
+  In the meantime, there are several options for dealing with the data-last APIs:
+
+  ```res example
+  /* Js.String (data-last API used with pipe last operator) */
+  Js.log("2019-11-10" |> Js.String.split("-"))
+  Js.log("ReScript" |> Js.String.startsWith("Re"))
+
+  /* Js.String (data-last API used with pipe first operator) */
+  Js.log("2019-11-10"->Js.String.split("-", _))
+  Js.log("ReScript"->Js.String.startsWith("Re", _))
+
+  /* Js.String (data-last API used without any piping) */
+  Js.log(Js.String.split("-", "2019-11-10"))
+  Js.log(Js.String.startsWith("Re", "ReScript"))
+  ```
+  ## Js.Xxx2 Modules
+
+  Prefer `Js.Array2` over `Js.Array`, `Js.String2` over `Js.String`, etc. The latters are old modules.
 *)
 
-(**/**)
-(** Types for JS objects *)
 type 'a t = < .. > as 'a
+(** JS object type *)
+
 (**/**)
 
-(* internal types for FFI, these types are not used by normal users 
+(* internal types for FFI, these types are not used by normal users
     Absent cmi file when looking up module alias.
 *)
+
 module Fn = struct
-  type 'a arity0 = {
-    i0 : unit -> 'a [@internal]  
-  }
-  type 'a arity1 = {
-    i1 : 'a [@internal]
-  }
-  type 'a arity2 = {
-    i2 : 'a [@internal]
-  }
-  type 'a arity3 = {
-    i3 : 'a [@internal]
-  }
-  type 'a arity4 = {
-    i4 : 'a [@internal]
-  }
-  type 'a arity5 = {
-    i5 : 'a [@internal]
-  }
-  type 'a arity6 = {
-    i6 : 'a [@internal]
-  }
-  type 'a arity7 = {
-    i7 : 'a [@internal]
-  }
-  type 'a arity8 = {
-    i8 : 'a [@internal]
-  }
-  type 'a arity9 = {
-    i9 : 'a [@internal]
-  }
-  type 'a arity10 = {
-    i10 : 'a [@internal]
-  }
-  type 'a arity11 = {
-    i11 : 'a [@internal]
-  }
-  type 'a arity12 = {
-    i12 : 'a [@internal]
-  }
-  type 'a arity13 = {
-    i13 : 'a [@internal]
-  }
-  type 'a arity14 = {
-    i14 : 'a [@internal]
-  }
-  type 'a arity15 = {
-    i15 : 'a [@internal]
-  }
-  type 'a arity16 = {
-    i16 : 'a [@internal]
-  }
-  type 'a arity17 = {
-    i17 : 'a [@internal]
-  }
-  type 'a arity18 = {
-    i18 : 'a [@internal]
-  }
-  type 'a arity19 = {
-    i19 : 'a [@internal]
-  }
-  type 'a arity20 = {
-    i20 : 'a [@internal]
-  }
-  type 'a arity21 = {
-    i21 : 'a [@internal]
-  }
-  type 'a arity22 = {
-    i22 : 'a [@internal]
-  }
+  type 'a arity0 = { i0 : unit -> 'a [@internal] }
+  type 'a arity1 = { i1 : 'a [@internal] }
+  type 'a arity2 = { i2 : 'a [@internal] }
+  type 'a arity3 = { i3 : 'a [@internal] }
+  type 'a arity4 = { i4 : 'a [@internal] }
+  type 'a arity5 = { i5 : 'a [@internal] }
+  type 'a arity6 = { i6 : 'a [@internal] }
+  type 'a arity7 = { i7 : 'a [@internal] }
+  type 'a arity8 = { i8 : 'a [@internal] }
+  type 'a arity9 = { i9 : 'a [@internal] }
+  type 'a arity10 = { i10 : 'a [@internal] }
+  type 'a arity11 = { i11 : 'a [@internal] }
+  type 'a arity12 = { i12 : 'a [@internal] }
+  type 'a arity13 = { i13 : 'a [@internal] }
+  type 'a arity14 = { i14 : 'a [@internal] }
+  type 'a arity15 = { i15 : 'a [@internal] }
+  type 'a arity16 = { i16 : 'a [@internal] }
+  type 'a arity17 = { i17 : 'a [@internal] }
+  type 'a arity18 = { i18 : 'a [@internal] }
+  type 'a arity19 = { i19 : 'a [@internal] }
+  type 'a arity20 = { i20 : 'a [@internal] }
+  type 'a arity21 = { i21 : 'a [@internal] }
+  type 'a arity22 = { i22 : 'a [@internal] }
 end
 
 (**/**)
+
 module MapperRt = Js_mapperRt
-module Internal = struct 
-  open Fn    
+
+module Internal = struct
+  open Fn
+
   external opaqueFullApply : 'a -> 'a = "%uncurried_apply"
 
   (* Use opaque instead of [._n] to prevent some optimizations happening *)
-  external run : 'a arity0 -> 'a = "#run" 
+  external run : 'a arity0 -> 'a = "#run"
   external opaque : 'a -> 'a = "%opaque"
+end
 
-end    
 (**/**)
 
-
-type + 'a null
-(** nullable, value of this type can be either [null] or ['a]
-    this type is the same as type [t] in {!Null}
+type +'a null
+(**
+  Nullable value of this type can be either null or 'a. This type is equivalent to Js.Null.t.
 *)
 
-type + 'a undefined
-(** value of this type can be either [undefined] or ['a]
-    this type is the same as type [t] in {!Undefined}  *)
+type +'a undefined
+(**
+  A value of this type can be either undefined or 'a. This type is equivalent to Js.Undefined.t.
+*)
 
-type + 'a nullable
-(** value of this type can be [undefined], [null] or ['a]
-    this type is the same as type [t] n {!Null_undefined} *)
+type +'a nullable
+(**
+  A value of this type can be undefined, null or 'a. This type is equivalent to Js.Null_undefined.t.
+*)
 
-type + 'a null_undefined = 'a nullable
+type +'a null_undefined = 'a nullable
 
-external toOption : 'a nullable  -> 'a option = "#nullable_to_opt"
+external toOption : 'a nullable -> 'a option = "#nullable_to_opt"
 external undefinedToOption : 'a undefined -> 'a option = "#undefined_to_opt"
 external nullToOption : 'a null -> 'a option = "#null_to_opt"
-
 external isNullable : 'a nullable -> bool = "#is_nullable"
 
-(** The same as {!test} except that it is more permissive on the types of input *)
 external testAny : 'a -> bool = "#is_nullable"
-
+(** The same as {!test} except that it is more permissive on the types of input *)
 
 type (+'a, +'e) promise
-(** The promise type, defined here for interoperation across packages
-    @deprecated please use {!Js.Promise}
+(**
+  The promise type, defined here for interoperation across packages.
+  @deprecated please use `Js.Promise`.
 *)
 
 external null : 'a null = "#null"
-(** The same as [empty] in {!Js.Null} will be compiled as [null]*)
+(**
+  The same as empty in `Js.Null`. Compiles to `null`.
+*)
 
 external undefined : 'a undefined = "#undefined"
-(** The same as  [empty] {!Js.Undefined} will be compiled as [undefined]*)
-
-
+(**
+  The same as empty `Js.Undefined`. Compiles to `undefined`.
+*)
 
 external typeof : 'a -> string = "#typeof"
-(** [typeof x] will be compiled as [typeof x] in JS
-    Please consider functions in {!Types} for a type safe way of reflection
+(**
+`typeof x` will be compiled as `typeof x` in JS. Please consider functions in
+`Js.Types` for a type safe way of reflection.
 *)
 
 external log : 'a -> unit = "log"
-[@@val] [@@scope "console"]
-(** A convenience function to log everything *)
+  [@@val] [@@scope "console"]
+(** Equivalent to console.log any value. *)
 
-external log2 : 'a -> 'b -> unit = "log"
-[@@bs.val] [@@bs.scope "console"]
-external log3 : 'a -> 'b -> 'c -> unit = "log"
-[@@bs.val] [@@bs.scope "console"]
+external log2 : 'a -> 'b -> unit = "log" [@@bs.val] [@@bs.scope "console"]
+external log3 : 'a -> 'b -> 'c -> unit = "log" [@@bs.val] [@@bs.scope "console"]
+
 external log4 : 'a -> 'b -> 'c -> 'd -> unit = "log"
-[@@bs.val] [@@bs.scope "console"]
+  [@@bs.val] [@@bs.scope "console"]
 
 external logMany : 'a array -> unit = "log"
-[@@bs.val] [@@bs.scope "console"] [@@bs.splice]
-(** A convenience function to log more than 4 arguments *)
+  [@@bs.val] [@@bs.scope "console"] [@@bs.splice]
+(** A convenience function to console.log more than 4 arguments *)
 
 external eqNull : 'a -> 'a null -> bool = "%bs_equal_null"
 external eqUndefined : 'a -> 'a undefined -> bool = "%bs_equal_undefined"
 external eqNullable : 'a -> 'a nullable -> bool = "%bs_equal_nullable"
 
-(** {4 operators }*)
+(** ## Operators *)
 
 external unsafe_lt : 'a -> 'a -> bool = "#unsafe_lt"
-(** [unsafe_lt a b] will be compiled as [a < b].
+(**
+   `unsafe_lt(a, b)` will be compiled as `a < b`.
     It is marked as unsafe, since it is impossible
     to give a proper semantics for comparision which applies to any type
 *)
 
-
 external unsafe_le : 'a -> 'a -> bool = "#unsafe_le"
-(**  [unsafe_le a b] will be compiled as [a <= b].
-     See also {!unsafe_lt}
+(**
+   `unsafe_le(a, b) will be compiled as `a <= b`.
+   See also `Js.unsafe_lt`.
 *)
 
-
 external unsafe_gt : 'a -> 'a -> bool = "#unsafe_gt"
-(**  [unsafe_gt a b] will be compiled as [a > b].
-     See also {!unsafe_lt}
+(**
+   `unsafe_gt(a, b)` will be compiled as `a > b`.
+    See also `Js.unsafe_lt`.
 *)
 
 external unsafe_ge : 'a -> 'a -> bool = "#unsafe_ge"
-(**  [unsafe_ge a b] will be compiled as [a >= b].
-     See also {!unsafe_lt}
+(**
+   `unsafe_ge(a, b)` will be compiled as `a >= b`.
+   See also `Js.unsafe_lt`.
 *)
 
-
-(** {12 nested modules}*)
+(** ## Nested Modules *)
 
 module Null = Js_null
-(** Provide utilities around ['a null] *)
+(** Provide utilities for `Js.null<'a>` *)
 
 module Undefined = Js_undefined
-(** Provide utilities around {!undefined} *)
+(** Provide utilities for `Js.undefined<'a>` *)
 
 module Nullable = Js_null_undefined
-(** Provide utilities around {!null_undefined} *)
+(** Provide utilities for `Js.null_undefined` *)
 
 module Null_undefined = Js_null_undefined
-(** @deprecated please use {!Js.Nullable} *)
+(** @deprecated please use `Js.Nullable` *)
 
 module Exn = Js_exn
 (** Provide utilities for dealing with Js exceptions *)
 
 module Array = Js_array
-(** Provide bindings to Js array*)
+(** Provide bindings to JS array*)
 
 module Array2 = Js_array2
-(** Provide bindings to Js array*)
+(** Provide bindings to JS array*)
 
 module String = Js_string
 (** Provide bindings to JS string *)
@@ -253,10 +244,10 @@ module String2 = Js_string2
 (** Provide bindings to JS string *)
 
 module Re = Js_re
-(** Provide bindings to Js regex expression *)
+(** Provide bindings to JS regex expression *)
 
 module Promise = Js_promise
-(** Provide bindings to JS promise *)
+(** Provide bindings to JS Promise *)
 
 module Date = Js_date
 (** Provide bindings for JS Date *)
@@ -271,10 +262,10 @@ module Json = Js_json
 (** Provide utilities for json *)
 
 module Math = Js_math
-(** Provide bindings for JS [Math] object *)
+(** Provide bindings for JS `Math` object *)
 
-module Obj  = Js_obj
-(** Provide utilities for {!Js.t} *)
+module Obj = Js_obj
+(** Provide utilities for `Js.t` *)
 
 module Typed_array = Js_typed_array
 (** Provide bindings for JS typed array *)
@@ -301,5 +292,7 @@ module List = Js_list
 (** Provide utilities for list *)
 
 module Vector = Js_vector
+(** Provides bindings for JS Vector *)
 
 module Console = Js_console
+(** Provides bindings for console *)

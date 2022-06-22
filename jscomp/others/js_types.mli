@@ -22,13 +22,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** *)
-
+(** Provide utilities for manipulating JS types. *)
 
 type symbol
-(** Js symbol type only available in ES6 *)
+(** Js symbol type (only available in ES6) *)
 
 type obj_val
+
 type undefined_val
 (** This type has only one value `undefined` *)
 
@@ -38,7 +38,7 @@ type null_val
 type function_val
 
 type _ t =
-  | Undefined :  undefined_val t
+  | Undefined : undefined_val t
   | Null : null_val t
   | Boolean : bool t
   | Number : float t
@@ -47,14 +47,17 @@ type _ t =
   | Object : obj_val t
   | Symbol : symbol t
 
-
 val test : 'a -> 'b t -> bool
 (**
-  ```
-  test "x" String = true
-  ```
-*)
+   `test(value, t)` returns `true` if `value` is `typeof t`, otherwise `false`.
+   This is useful for doing runtime reflection on any given value.
 
+   ```res example
+   test("test", String) == true
+   test(() => true, Function) == true
+   test("test", Boolean) == false
+   ```
+*)
 
 type tagged_t =
   | JSFalse
@@ -67,6 +70,4 @@ type tagged_t =
   | JSObject of obj_val
   | JSSymbol of symbol
 
-
 val classify : 'a -> tagged_t
-
