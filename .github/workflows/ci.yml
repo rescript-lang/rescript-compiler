@@ -57,9 +57,6 @@ jobs:
         env:
           RESCRIPT_FORCE_REBUILD: 1
 
-      - name: Check format
-        run: npm run checkFormat
-
       - name: Run tests
         if: runner.os != 'Windows'
         run: opam exec -- node scripts/ciTest.js -all

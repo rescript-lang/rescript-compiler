@@ -146,10 +146,18 @@ function runTests() {
   }
 }
 
+function checkFormat() {
+  cp.execSync("npm run checkFormat", {
+    cwd: path.join(__dirname, ".."),
+    stdio: [0, 1, 2],
+  });
+}
+
 function main() {
   try {
     init();
     runTests();
+    checkFormat();
   } catch (err) {
     console.error(err);
     process.exit(2);
