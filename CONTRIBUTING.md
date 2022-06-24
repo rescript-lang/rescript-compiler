@@ -35,7 +35,7 @@ opam install dune
 opam install ocaml-lsp-server
 
 # Any recent OCaml version works as a development compiler
-opam switch create 4.12.1
+opam switch create 4.14.0 # can also create local switch with opam switch create . 4.14.0
 
 # We use NodeJS to run our test suites and other utilities.
 npm install
@@ -52,7 +52,7 @@ git submodule update
 
 ## Configure and Build the Compiler (`ninja` workflow)
 
-> Note: These instructions allow you to do full builds of the project. In case you only want to build the project for development purposes, you can use the `dune` workflow.
+> Note: These instructions allow you to do full builds of the project. In case you only want to build the project for development purposes, you can use the `dune` workflow, but you will still need to run the first step: `./scripts/ninja.js config`.
 
 The ReScript project is built with a vendored version of `ninja`. It requires build files to correctly detect, compile and link all the OCaml files within our project. The build files are generated and managed by a NodeJS script (`./scripts/ninja.js`).
 

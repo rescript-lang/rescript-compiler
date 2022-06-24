@@ -145,3 +145,6 @@ themes
 *.output # yacc output
 jscomp/ml/parser.output
 jscomp/ml/lexer.ml
+
+# opam local switch is stored in `_opam` folder
+_opam
