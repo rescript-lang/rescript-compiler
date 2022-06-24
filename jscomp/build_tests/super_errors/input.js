@@ -14,7 +14,7 @@ const expectedDir = path.join(__dirname, 'expected')
 
 const fixtures = fs
   .readdirSync(path.join(__dirname, 'fixtures'))
-  .filter(fileName => path.extname(fileName) === '.re')
+  .filter(fileName => path.extname(fileName) === '.res')
 
 // const runtime = path.join(__dirname, '..', '..', 'runtime')
 const prefix = `${bsc} -w +A`
