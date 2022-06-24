@@ -2116,8 +2116,14 @@ let do_check_partial ?pred exhaust loc casel pss = match pss with
                 with _ ->
                   ""
               in
-                Location.prerr_warning loc (Warnings.Partial_match errmsg)
-            end;
+              Location.prerr_warning loc
+                (Warnings.Partial_match
+                  (String.map
+                      (function
+                        | '`' -> '#'
+                        | x -> x)
+                      errmsg))
+              end;
             Partial
         end
     | _ ->
