@@ -6,6 +6,9 @@ var path = require("path");
 var cp = require("child_process");
 var semver = require("semver");
 
+var isWindows = process.platform === "win32";
+var exeExtension = isWindows ? ".exe" : "";
+
 var jscompDir = path.join(__dirname, "..", "jscomp");
 var runtimeDir = path.join(jscompDir, "runtime");
 var othersDir = path.join(jscompDir, "others");
@@ -1384,7 +1387,7 @@ function updateDev() {
 subninja compiler.ninja
 stdlib = stdlib-406
 ${BSC_COMPILER}
-ocamllex = ocamllex.opt
+ocamllex = ocamllex.opt${exeExtension}
 subninja runtime/build.ninja
 subninja others/build.ninja
 subninja $stdlib/build.ninja
@@ -1395,7 +1398,7 @@ o all: phony runtime others $stdlib test
   writeFileAscii(
     path.join(jscompDir, "..", "lib", "build.ninja"),
     `
-ocamlopt = ocamlopt.opt 
+ocamlopt = ocamlopt.opt${exeExtension}
 ext = exe
 INCL= "4.06.1+BS"
 include body.ninja               
@@ -1470,12 +1473,12 @@ function preprocessorNinjaSync() {
     .map(file => `o napkin/${file} : copy ../syntax/cli/${file}`)
     .join("\n");
   var cppoNative = `
-ocamlopt = ocamlopt.opt
-ocamllex = ocamllex.opt
-ocamlc = ocamlc.opt
-ocamlmklib = ocamlmklib
-ocaml = ocaml
-ocamlyacc = ocamlyacc  
+ocamlopt = ocamlopt.opt${exeExtension}
+ocamllex = ocamllex.opt${exeExtension}
+ocamlc = ocamlc.opt${exeExtension}
+ocamlmklib = ocamlmklib${exeExtension}
+ocaml = ocaml${exeExtension}
+ocamlyacc = ocamlyacc${exeExtension}
 rule link
     command =  $ocamlopt -g   $flags $libs $in -o $out
 rule bytelink
@@ -1679,12 +1682,12 @@ function nativeNinja() {
     flags += "-3-67 -error-style short";
   }
   var templateNative = `
-ocamlopt = ocamlopt.opt
-ocamllex = ocamllex.opt
-ocamlc = ocamlc.opt
-ocamlmklib = ocamlmklib
-ocaml = ocaml
-ocamlyacc = ocamlyacc
+ocamlopt = ocamlopt.opt${exeExtension}
+ocamllex = ocamllex.opt${exeExtension}
+ocamlc = ocamlc.opt${exeExtension}
+ocamlmklib = ocamlmklib${exeExtension}
+ocaml = ocaml${exeExtension}
+ocamlyacc = ocamlyacc${exeExtension}
 subninja cppoVendor.ninja
 
 rule optc
