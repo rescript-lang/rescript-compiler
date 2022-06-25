@@ -9,7 +9,7 @@
   14 [2m│[0m 
 
   the following labels are not bound in this record pattern: someValue, typ
-Either bind these labels explicitly or add '; _' to the pattern.
+Either bind these labels explicitly or add ', _' to the pattern.
 
 
   [1;33mWarning number 8[0m
@@ -37,7 +37,7 @@ Either bind these labels explicitly or add '; _' to the pattern.
   18 [2m│[0m 
 
   the following labels are not bound in this record pattern: someValue, otherValue
-Either bind these labels explicitly or add '; _' to the pattern.
+Either bind these labels explicitly or add ', _' to the pattern.
 
 
   [1;33mWarning number 8[0m

@@ -9870,7 +9870,7 @@ let message = function
       "You forgot to handle a possible case here, for example: \n  " ^ s
   | Non_closed_record_pattern s ->
       "the following labels are not bound in this record pattern: " ^ s
-      ^ "\nEither bind these labels explicitly or add '; _' to the pattern."
+      ^ "\nEither bind these labels explicitly or add ', _' to the pattern."
   | Statement_type ->
       "This expression returns a value, but you're not doing anything with it. \
        If this is on purpose, wrap it with `ignore`."
