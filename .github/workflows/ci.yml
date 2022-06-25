@@ -57,12 +57,16 @@ jobs:
         env:
           RESCRIPT_FORCE_REBUILD: 1
 
-      - name: Ninja build
+      - name: ninja config
         if: runner.os != 'Windows'
-        run: |
-          opam exec -- node ./scripts/ninja.js config
-          opam exec -- node ./scripts/ninja.js build
-          git diff --exit-code lib/js lib/es6
+        run: opam exec -- node ./scripts/ninja.js config
+
+      - name: ninja build
+        if: runner.os != 'Windows'
+        run: opam exec -- node ./scripts/ninja.js build
+
+      - name: Check for changes in lib folder
+        run: git diff --exit-code lib/js lib/es6
 
       - name: Run tests
         if: runner.os != 'Windows'
