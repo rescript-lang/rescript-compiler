@@ -56,11 +56,9 @@ jobs:
         run: opam exec -- npm ci --ignore-scripts
 
       - name: ninja config
-        if: runner.os != 'Windows'
         run: opam exec -- node ./scripts/ninja.js config
 
       - name: ninja build
-        if: runner.os != 'Windows'
         run: opam exec -- node ./scripts/ninja.js build
 
       - name: Check for changes in lib folder
