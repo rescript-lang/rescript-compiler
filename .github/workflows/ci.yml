@@ -57,6 +57,13 @@ jobs:
         env:
           RESCRIPT_FORCE_REBUILD: 1
 
+      - name: Ninja build
+        if: runner.os != 'Windows'
+        run: |
+          opam exec -- node ./scripts/ninja.js config
+          opam exec -- node ./scripts/ninja.js build
+          git diff --exit-code lib/js lib/es6
+
       - name: Run tests
         if: runner.os != 'Windows'
         run: opam exec -- node scripts/ciTest.js -all
@@ -64,13 +71,6 @@ jobs:
       - name: Run tests (Windows)
         if: runner.os == 'Windows'
         run: opam exec -- node scripts/ciTest.js -mocha -theme
-
-      - name: Ensure lib/js and lib/es6 are up to date
-        if: runner.os != 'Windows'
-        run: |
-          opam exec -- node ./scripts/ninja.js config
-          opam exec -- node ./scripts/ninja.js build
-          git diff --exit-code lib/js lib/es6
 
       - name: Get artifact info
         id: get_artifact_info
