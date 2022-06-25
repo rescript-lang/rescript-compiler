@@ -432,7 +432,7 @@ let rec pretty_val ppf v =
             pretty_lvals filtered_lvs elision_mark
       end
   | Tpat_array vs ->
-      fprintf ppf "@[[%a]@]" (pretty_vals " ;") vs
+      fprintf ppf "@[[%a]@]" (pretty_vals ",") vs
   | Tpat_lazy v ->
       fprintf ppf "@[<2>lazy@ %a@]" pretty_arg v
   | Tpat_alias (v, x,_) ->

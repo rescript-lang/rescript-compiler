@@ -80,6 +80,21 @@ Either bind these labels explicitly or add ', _' to the pattern.
   [1;33m26[0m [2m│[0m [1;33m| [one] => Js.log(one)[0m
   [1;33m27[0m [2m│[0m [1;33m}[0m
   28 [2m│[0m 
+  29 [2m│[0m switch arr {
 
   You forgot to handle a possible case here, for example: 
   []
+
+
+  [1;33mWarning number 8[0m
+  [36m/.../fixtures/warnings5.res[0m:[2m29:1-31:1[0m
+
+  27 [2m│[0m }
+  28 [2m│[0m 
+  [1;33m29[0m [2m│[0m [1;33mswitch arr {[0m
+  [1;33m30[0m [2m│[0m [1;33m| [1, 2] => ()[0m
+  [1;33m31[0m [2m│[0m [1;33m}[0m
+  32 [2m│[0m 
+
+  You forgot to handle a possible case here, for example: 
+  [1, 0] | [0, _] | []

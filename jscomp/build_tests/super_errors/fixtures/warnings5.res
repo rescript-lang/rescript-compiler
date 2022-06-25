@@ -25,3 +25,7 @@ switch arr {
 switch arr {
 | [one] => Js.log(one)
 }
+
+switch arr {
+| [1, 2] => ()
+}
