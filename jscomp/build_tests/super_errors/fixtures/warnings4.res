@@ -1,6 +1,6 @@
 type myType = [
   | #first
-  | #second
+  | #second(string)
   | #third
   | #fourth
 ]
