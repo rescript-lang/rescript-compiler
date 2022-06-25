@@ -406,7 +406,7 @@ let rec pretty_val ppf v =
   | Tpat_construct (_, cstr, []) ->
       fprintf ppf "%s" cstr.cstr_name
   | Tpat_construct (_, cstr, [w]) ->
-      fprintf ppf "@[<2>%s@ %a@]" cstr.cstr_name pretty_arg w
+      fprintf ppf "@[<2>%s(%a)@]" cstr.cstr_name pretty_arg w
   | Tpat_construct (_, cstr, vs) ->
       let name = cstr.cstr_name in
       begin match (name, vs) with
@@ -426,23 +426,19 @@ let rec pretty_val ppf v =
             | _ -> true) in
       begin match filtered_lvs with
       | [] -> fprintf ppf "_"
-      | (_, lbl, _) :: q ->
-          let elision_mark ppf =
-            (* we assume that there is no label repetitions here *)
-             if Array.length lbl.lbl_all > 1 + List.length q then
-               fprintf ppf ";@ _@ "
-             else () in
+      | (_, _lbl, _) :: _q ->
+          let elision_mark _ = () in
           fprintf ppf "@[{%a%t}@]"
             pretty_lvals filtered_lvs elision_mark
       end
   | Tpat_array vs ->
-      fprintf ppf "@[[| %a |]@]" (pretty_vals " ;") vs
+      fprintf ppf "@[[%a]@]" (pretty_vals ",") vs
   | Tpat_lazy v ->
       fprintf ppf "@[<2>lazy@ %a@]" pretty_arg v
   | Tpat_alias (v, x,_) ->
       fprintf ppf "@[(%a@ as %a)@]" pretty_val v Ident.print x
   | Tpat_or (v,w,_)    ->
-      fprintf ppf "@[(%a|@,%a)@]" pretty_or v pretty_or w
+      fprintf ppf "@[%a | @,%a@]" pretty_or v pretty_or w
 
 and pretty_car ppf v = match v.pat_desc with
 | Tpat_construct (_,cstr, [_ ; _])
@@ -463,7 +459,7 @@ and pretty_arg ppf v = match v.pat_desc with
 
 and pretty_or ppf v = match v.pat_desc with
 | Tpat_or (v,w,_) ->
-    fprintf ppf "%a|@,%a" pretty_or v pretty_or w
+    fprintf ppf "%a | @,%a" pretty_or v pretty_or w
 | _ -> pretty_val ppf v
 
 and pretty_vals sep ppf = function
@@ -475,9 +471,9 @@ and pretty_vals sep ppf = function
 and pretty_lvals ppf = function
   | [] -> ()
   | [_,lbl,v] ->
-      fprintf ppf "%s=%a" lbl.lbl_name pretty_val v
+      fprintf ppf "%s: %a" lbl.lbl_name pretty_val v
   | (_, lbl,v)::rest ->
-      fprintf ppf "%s=%a;@ %a"
+      fprintf ppf "%s: %a,@ %a"
         lbl.lbl_name pretty_val v pretty_lvals rest
 
 let top_pretty ppf v =
