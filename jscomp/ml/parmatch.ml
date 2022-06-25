@@ -416,9 +416,9 @@ let rec pretty_val ppf v =
           fprintf ppf "@[<2>%s@ @[(%a)@]@]" name (pretty_vals ",") vs
       end
   | Tpat_variant (l, None, _) ->
-      fprintf ppf "`%s" l
+      fprintf ppf "#%s" l
   | Tpat_variant (l, Some w, _) ->
-      fprintf ppf "@[<2>`%s@ %a@]" l pretty_arg w
+      fprintf ppf "@[<2>#%s(%a)@]" l pretty_arg w
   | Tpat_record (lvs,_) ->
       let filtered_lvs = Ext_list.filter lvs
           (function
@@ -2116,14 +2116,8 @@ let do_check_partial ?pred exhaust loc casel pss = match pss with
                 with _ ->
                   ""
               in
-              Location.prerr_warning loc
-                (Warnings.Partial_match
-                  (String.map
-                      (function
-                        | '`' -> '#'
-                        | x -> x)
-                      errmsg))
-              end;
+              Location.prerr_warning loc (Warnings.Partial_match errmsg)
+            end;
             Partial
         end
     | _ ->
