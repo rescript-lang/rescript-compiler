@@ -1,4 +1,4 @@
-type someTyp = Variant | WithPayload(bool)
+type someTyp = Variant | WithPayload(bool) | One | Two | Three | Four | Five | Six | Seven(int)
 
 type someRecord = {
   someValue: string,

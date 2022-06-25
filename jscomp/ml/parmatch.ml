@@ -438,7 +438,7 @@ let rec pretty_val ppf v =
   | Tpat_alias (v, x,_) ->
       fprintf ppf "@[(%a@ as %a)@]" pretty_val v Ident.print x
   | Tpat_or (v,w,_)    ->
-      fprintf ppf "@[(%a|@,%a)@]" pretty_or v pretty_or w
+      fprintf ppf "@[%a | @,%a@]" pretty_or v pretty_or w
 
 and pretty_car ppf v = match v.pat_desc with
 | Tpat_construct (_,cstr, [_ ; _])
@@ -459,7 +459,7 @@ and pretty_arg ppf v = match v.pat_desc with
 
 and pretty_or ppf v = match v.pat_desc with
 | Tpat_or (v,w,_) ->
-    fprintf ppf "%a|@,%a" pretty_or v pretty_or w
+    fprintf ppf "%a | @,%a" pretty_or v pretty_or w
 | _ -> pretty_val ppf v
 
 and pretty_vals sep ppf = function

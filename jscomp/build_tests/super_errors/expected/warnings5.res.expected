@@ -52,7 +52,8 @@ Either bind these labels explicitly or add ', _' to the pattern.
   19 [2m│[0m let arr = [1]
 
   You forgot to handle a possible case here, for example: 
-  ({typ: WithPayload(false)}|{typ: Variant})
+  {typ: WithPayload(false)} | 
+{typ: Variant | One | Two | Three | Four | Five | Six | Seven(_)}
 
 
   [1;33mWarning number 8[0m
