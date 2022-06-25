@@ -53,9 +53,7 @@ jobs:
           node-version: 16
 
       - name: NPM install
-        run: opam exec -- npm ci
-        env:
-          RESCRIPT_FORCE_REBUILD: 1
+        run: opam exec -- npm ci --ignore-scripts
 
       - name: ninja config
         if: runner.os != 'Windows'
