@@ -24,14 +24,10 @@ if (supported_os.indexOf(process.platform) < 0) {
 }
 var is_windows = process.platform === "win32";
 
-var my_target =
-  process.platform === "darwin" && process.arch === "arm64"
-    ? process.platform + process.arch
-    : process.platform;
-var bin_path = path.join(root_dir, my_target);
+var bsc_exe = require("./bin_path").bsc_exe;
 
 var ninja_bin_filename = process.platform === "win32" ? "ninja.exe" : "ninja";
-var ninja_bin_output = path.join(bin_path, "ninja.exe");
+var ninja_bin_output = require("./bin_path").ninja_exe;
 
 var force_compiler_rebuild = process.argv.includes("-force-compiler-rebuild");
 var force_lib_rebuild = process.argv.includes("-force-lib-rebuild");
@@ -130,7 +126,7 @@ function checkPrebuiltBscCompiler() {
   }
   try {
     var version = String(
-      child_process.execFileSync(path.join(bin_path, "bsc.exe"), ["-v"])
+      child_process.execFileSync(bsc_exe, ["-v"])
     );
 
     var myOCamlVersion = version.substr(
@@ -159,7 +155,7 @@ function buildLibs(stdlib) {
   ensureExists(path.join(lib_dir, "es6"));
   process.env.NINJA_IGNORE_GENERATOR = "true";
   var releaseNinja = `
-bsc = ../${my_target}/bsc.exe
+bsc = ${bsc_exe}
 stdlib = ${stdlib}
 subninja runtime/release.ninja
 subninja others/release.ninja

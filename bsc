@@ -2,14 +2,7 @@
 "use strict";
 
 var child_process = require("child_process");
-var path = require("path");
-var exe = path.join(
-  __dirname,
-  process.platform === "darwin" && process.arch === "arm64"
-    ? process.platform + process.arch
-    : process.platform,
-  "bsc.exe"
-);
+var exe = require("./scripts/bin_path").bsc_exe;
 var delegate_args = process.argv.slice(2);
 
 try {
