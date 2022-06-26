@@ -152,15 +152,11 @@ function runTests() {
   }
 
   if (formatTest) {
-    checkFormat();
+    cp.execSync("npm run checkFormat", {
+      cwd: path.join(__dirname, ".."),
+      stdio: [0, 1, 2],
+    });
   }
-}
-
-function checkFormat() {
-  cp.execSync("npm run checkFormat", {
-    cwd: path.join(__dirname, ".."),
-    stdio: [0, 1, 2],
-  });
 }
 
 function main() {
