@@ -130,7 +130,7 @@ function runTests() {
         console.log(`testing ${file}`);
         // note existsSync test already ensure that it is a directory
         try {
-          cp.execSync(`node input.js`, { cwd: testDir, encoding: "utf8" });
+          cp.exec(`node input.js`, { cwd: testDir, encoding: "utf8" });
           console.log("✅ success in ", file);
         } catch (e) {
           failed.push(file);
