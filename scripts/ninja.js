@@ -5,6 +5,7 @@ var fs = require("fs");
 var path = require("path");
 var cp = require("child_process");
 var semver = require("semver");
+var tmp = require("tmp");
 
 var isWindows = process.platform === "win32";
 var exeExtension = isWindows ? ".exe" : "";
@@ -590,8 +591,12 @@ function sourceToTarget(y) {
  */
 function ocamlDepForBscAsync(files, dir, depsMap) {
   return new Promise((resolve, reject) => {
+    var argsFile = tmp.fileSync().name;
+    var args = files.join("\n");
+
+    fs.writeFileSync(argsFile, args);
     cp.exec(
-      `ocamldep.opt -allow-approx -one-line -native ${files.join(" ")}`,
+      `ocamldep.opt -allow-approx -one-line -native -args ${argsFile}`,
       {
         cwd: dir,
         encoding: "ascii",
@@ -1784,10 +1789,11 @@ o ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_gen/g
     files = files.concat(test(dir));
   }
 
+  var argsFile = tmp.fileSync().name;
+  var args = includes.replace(/ /g, "\n") + files.join("\n");
+  fs.writeFileSync(argsFile, args);
   cp.exec(
-    `ocamldep.opt -allow-approx -one-line -native ${includes} ${files.join(
-      " "
-    )}`,
+    `ocamldep.opt -allow-approx -one-line -native -args ${argsFile}`,
     { cwd: jscompDir, encoding: "ascii" },
     function (error, out) {
       if (error !== null) {
