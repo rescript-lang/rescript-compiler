@@ -3,7 +3,15 @@ const path = require('path')
 const child_process = require('child_process')
 
 
-var  bsc = path.join(__dirname,'..','..','..','bsc')
+var root = path.join(__dirname,'..','..','..')
+var bsc = path.join(
+  root,
+  process.platform === "darwin" && process.arch === "arm64"
+    ? process.platform + process.arch
+    : process.platform,
+  "bsc.exe"
+);
+
 // var  refmt = path.join(__dirname,'..','..','..','lib','refmt.exe')
 
 
