@@ -7,6 +7,7 @@ var ounitTest = false;
 var mochaTest = false;
 var themeTest = false;
 var bsbTest = false;
+var formatTest = false;
 var all = false;
 
 if (process.argv.includes("-ounit")) {
@@ -25,6 +26,10 @@ if (process.argv.includes("-bsb")) {
   bsbTest = true;
 }
 
+if (process.argv.includes("-format")) {
+  formatTest = true;
+}
+
 if (process.argv.includes("-all")) {
   all = true;
 }
@@ -33,6 +38,7 @@ if (all) {
   mochaTest = true;
   themeTest = true;
   bsbTest = true;
+  formatTest = true;
 }
 
 function init() {
@@ -144,6 +150,10 @@ function runTests() {
       throw new Error();
     }
   }
+
+  if (formatTest) {
+    checkFormat();
+  }
 }
 
 function checkFormat() {
@@ -157,7 +167,6 @@ function main() {
   try {
     init();
     runTests();
-    checkFormat();
   } catch (err) {
     console.error(err);
     process.exit(2);
