@@ -125,9 +125,7 @@ function checkPrebuiltBscCompiler() {
     return;
   }
   try {
-    var version = String(
-      child_process.execFileSync(bsc_exe, ["-v"])
-    );
+    var version = String(child_process.execFileSync(bsc_exe, ["-v"]));
 
     var myOCamlVersion = version.substr(
       version.indexOf(":") + 1,
