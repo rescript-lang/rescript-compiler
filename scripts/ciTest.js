@@ -118,7 +118,6 @@ function runTests() {
       encoding: "utf8",
     });
     var files = fs.readdirSync(buildTestDir);
-    var failed = [];
     files.forEach(function (file) {
       var testDir = path.join(buildTestDir, file);
       if (file === "node_modules" || !fs.lstatSync(testDir).isDirectory()) {
@@ -129,20 +128,22 @@ function runTests() {
       } else {
         console.log(`testing ${file}`);
         // note existsSync test already ensure that it is a directory
-        try {
-          cp.exec(`node input.js`, { cwd: testDir, encoding: "utf8" });
-          console.log("✅ success in ", file);
-        } catch (e) {
-          failed.push(file);
-          console.log("❌ error", e);
-        }
+        cp.exec(
+          `node input.js`,
+          { cwd: testDir, encoding: "utf8" },
+          function (error, stdout, stderr) {
+            console.log(stdout);
+
+            if (error !== null) {
+              console.log(stderr);
+              throw new Error(`❌ error in ${file}: \n${error} `);
+            } else {
+              console.log("✅ success in ", file);
+            }
+          }
+        );
       }
     });
-    if (failed.length > 0) {
-      console.log("");
-      console.log("❌ Build tests failed", failed);
-      throw new Error();
-    }
   }
 }
 

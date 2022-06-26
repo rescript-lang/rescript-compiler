@@ -8,7 +8,6 @@ var rescript_exe = require("../../../scripts/bin_path").rescript_exe;
 p.spawnSync(rescript_exe, {
   encoding: "utf8",
   cwd: __dirname,
-  stdio: [0, 1, 2],
 });
 
 var o = fs.readFileSync(path.join(__dirname, "src", "hello.bs.js"), "ascii");

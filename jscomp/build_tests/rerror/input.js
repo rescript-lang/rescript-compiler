@@ -4,7 +4,6 @@ var rescript_exe = require("../../../scripts/bin_path").rescript_exe;
 child_process.spawnSync(`${rescript_exe} clean -with-deps`, {
   cwd: __dirname,
   encoding: "utf8",
-  stdio: [0, 1, 2],
 });
 var o = child_process.spawnSync(rescript_exe, {
   cwd: __dirname,

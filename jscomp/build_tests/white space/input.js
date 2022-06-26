@@ -7,7 +7,6 @@ try {
   p.execSync(`${rescript_exe} build`, {
     cwd: __dirname,
     encoding: "utf8",
-    stdio: [0, 1, 2],
   });
   r.rollup({
     input: path.join(__dirname, "yy.js"),
