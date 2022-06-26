@@ -11,23 +11,9 @@ var child_process = require("child_process");
 var os = require("os");
 var path = require("path");
 var fs = require("fs");
+var bsc_exe = require("./scripts/bin_path").bsc_exe;
+var rescript_exe = require("./scripts/bin_path").rescript_exe;
 var bsconfig = "bsconfig.json";
-
-/**
- *
- * @type{string}
- */
-var bin_path = path.join(
-  __dirname,
-  process.platform === "darwin" && process.arch === "arm64"
-    ? process.platform + process.arch
-    : process.platform
-);
-
-/**
- * @type{string}
- */
-var rescript_exe = path.join(bin_path, "rescript.exe");
 
 var LAST_BUILD_START = 0;
 var LAST_FIRED_EVENT = 0;
@@ -225,11 +211,6 @@ if (
   maybe_subcommand !== "info"
   // delegate to native
 ) {
-  /**
-   * @type {string}
-   */
-  var bsc_exe = path.join(bin_path, "bsc.exe");
-
   switch (maybe_subcommand) {
     case "format":
       require("./scripts/rescript_format.js").main(
