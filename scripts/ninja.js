@@ -28,7 +28,7 @@ var js_package = pseudoTarget("js_pkg");
 var runtimeTarget = pseudoTarget("runtime");
 var othersTarget = pseudoTarget("others");
 var stdlibTarget = pseudoTarget("$stdlib");
-var my_target = require("./bin_path").folder;
+var my_target = require("./bin_path").absolutePath;
 var bsc_exe = require("./bin_path").bsc_exe;
 
 var vendorNinjaPath = require("./bin_path").ninja_exe;

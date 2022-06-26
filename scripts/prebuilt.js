@@ -52,7 +52,7 @@ function rebuild() {
 }
 
 var use_env_compiler = process.argv.includes("-use-env-compiler");
-var bin_path = require("./bin_path").folder;
+var bin_path = require("./bin_path").absolutePath;
 
 function buildCompiler() {
   var prebuilt = "prebuilt.ninja";
