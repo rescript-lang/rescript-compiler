@@ -1,3 +1,4 @@
 var p  = require('child_process')
+var rescript_exe = require("../../../scripts/bin_path").rescript_exe;
 
-p.execSync(`../node_modules/.bin/rescript`)
+p.execSync(rescript_exe)

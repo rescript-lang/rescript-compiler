@@ -1,7 +1,8 @@
 var child_process = require("child_process");
 var assert = require("assert");
+var rescript_exe = require("../../../scripts/bin_path").rescript_exe;
 var output = child_process.spawnSync(
-  `../node_modules/.bin/rescript clean -with-deps && ../node_modules/.bin/rescript build`,
+  `${rescript_exe} clean -with-deps && ${rescript_exe} build`,
   {
     cwd: __dirname,
     encoding: "utf8",

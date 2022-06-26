@@ -2,6 +2,8 @@ var p = require("child_process");
 
 var assert = require("assert");
 
+var bsc_exe_path = require("../../../scripts/bin_path").bsc_exe;
+
 var react = `
 type u 
 
@@ -28,7 +30,7 @@ let d = bar ()
 
 function evalCode(code) {
   var bsc_exe = p.spawnSync(
-    `../node_modules/.bin/bsc -bs-no-version-header -bs-cross-module-opt -w -40 -bs-eval '${code}'`,
+    `${bsc_exe_path} -bs-no-version-header -bs-cross-module-opt -w -40 -bs-eval '${code}'`,
     {
       encoding: "utf8",
       shell: true,

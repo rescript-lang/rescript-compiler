@@ -1,7 +1,8 @@
 var cp = require("child_process");
 var assert = require("assert");
+var rescript_exe = require("../../../scripts/bin_path").rescript_exe;
 
-var out = cp.spawnSync(`../node_modules/.bin/rescript build`, {
+var out = cp.spawnSync(`${rescript_exe} build`, {
   encoding: "utf-8",
   shell: true,
 });
