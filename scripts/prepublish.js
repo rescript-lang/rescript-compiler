@@ -88,7 +88,7 @@ function toJSON(map) {
   var keys = [...map.keys()].sort();
   for (let k of keys) {
     // @ts-ignore
-    o[k] = [...map.get(k)];
+    o[k] = [...map.get(k)].sort();
   }
   return o;
 }
