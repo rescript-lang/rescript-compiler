@@ -6,7 +6,6 @@ var rescript_exe = require("../../../scripts/bin_path").rescript_exe;
 
 child_process.execSync(`${rescript_exe} clean -with-deps && ${rescript_exe} build`, {
   cwd: __dirname,
-  stdio: [0, 1, 2],
 });
 
 var x = require("./src/demo.bs.js");
