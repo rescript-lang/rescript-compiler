@@ -20,8 +20,8 @@ var bin_path = path.join(
 var bsc_exe = path.join(bin_path, "bsc.exe");
 
 /**
-* @type{string}
-*/
+ * @type{string}
+ */
 var ninja_exe = path.join(bin_path, "ninja.exe");
 
 /**
