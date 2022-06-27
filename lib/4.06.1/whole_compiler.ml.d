@@ -622,6 +622,7 @@
 ../lib/4.06.1/whole_compiler.ml: ./napkin/res_reporting.ml
 ../lib/4.06.1/whole_compiler.ml: ./napkin/res_scanner.ml
 ../lib/4.06.1/whole_compiler.ml: ./napkin/res_scanner.mli
+../lib/4.06.1/whole_compiler.ml: ./napkin/res_string.ml
 ../lib/4.06.1/whole_compiler.ml: ./napkin/res_token.ml
 ../lib/4.06.1/whole_compiler.ml: ./napkin/res_utf8.ml
 ../lib/4.06.1/whole_compiler.ml: ./napkin/res_utf8.mli
