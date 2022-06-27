@@ -41,3 +41,12 @@ syntax/
 *.log
 ninja
 ocaml-tree
+.istanbul.yml
+.prettierignore
+.prettierrc.json
+dummy.opam
+dune
+dune-project
+scripts/deps.js
+scripts/format.js
+scripts/local_br_clean.sh
