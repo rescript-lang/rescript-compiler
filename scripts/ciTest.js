@@ -107,7 +107,7 @@ function runTests() {
 
   // running generated js tests
   if (mochaTest) {
-    cp.execSync(`npx mocha -t 100 jscomp/test/**/*test.js`, {
+    cp.execSync(`npx mocha -t 5000 jscomp/test/**/*test.js`, {
       cwd: path.join(__dirname, ".."),
       stdio: [0, 1, 2],
     });
