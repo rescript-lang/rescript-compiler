@@ -1155,7 +1155,7 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
         | _ -> false in
       let process_optional_label (ld, pat) =
         let exp_optional_attr =
-          Ext_list.exists pat.ppat_attributes (fun ({txt },_) -> txt = "optional")
+          Ext_list.exists pat.ppat_attributes (fun ({txt },_) -> txt = "ns.optional")
         in
         let isFromPamatch = match pat.ppat_desc with
           | Ppat_construct ({txt = Lident s}, _) ->
@@ -1881,7 +1881,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
     | _ -> false in
   let process_optional_label (id, ld, e) =
     let exp_optional_attr =
-      Ext_list.exists e.pexp_attributes (fun ({txt },_) -> txt = "optional")
+      Ext_list.exists e.pexp_attributes (fun ({txt },_) -> txt = "ns.optional")
     in
     if label_is_optional ld && not exp_optional_attr then
       let lid = mknoloc (Longident.(Ldot (Lident "*predef*", "Some"))) in

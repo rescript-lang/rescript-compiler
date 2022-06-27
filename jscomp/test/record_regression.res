@@ -1,6 +1,6 @@
 // @@config({flags: ["-bs-diagnose"] })
 
-type t0 = {x: int, @optional y: int, @optional yy: option<int>, z: int}
+type t0 = {x: int, @ns.optional y: int, @ns.optional yy: option<int>, z: int}
 
 let f1 = {x: 3, z: 2}
 
@@ -31,30 +31,30 @@ let v2: r = {x: 3, y: None, z: 2}
 
 type config = {
   x: int,
-  @optional y0: int,
-  @optional y1: int,
-  @optional y2: int,
-  @optional y3: int,
-  @optional y4: int,
-  @optional y5: int,
-  @optional y6: int,
-  @optional y7: int,
-  @optional y8: int,
-  @optional y9: int,
-  @optional y10: int,
-  @optional y11: int,
-  @optional y12: int,
-  @optional y13: int,
-  @optional y14: int,
-  @optional y15: int,
-  @optional y16: int,
-  @optional y17: int,
-  @optional y18: int,
-  @optional y19: int,
-  @optional y20: int,
-  @optional y21: int,
-  @optional y22: int,
-  @optional y23: int,
+  @ns.optional y0: int,
+  @ns.optional y1: int,
+  @ns.optional y2: int,
+  @ns.optional y3: int,
+  @ns.optional y4: int,
+  @ns.optional y5: int,
+  @ns.optional y6: int,
+  @ns.optional y7: int,
+  @ns.optional y8: int,
+  @ns.optional y9: int,
+  @ns.optional y10: int,
+  @ns.optional y11: int,
+  @ns.optional y12: int,
+  @ns.optional y13: int,
+  @ns.optional y14: int,
+  @ns.optional y15: int,
+  @ns.optional y16: int,
+  @ns.optional y17: int,
+  @ns.optional y18: int,
+  @ns.optional y19: int,
+  @ns.optional y20: int,
+  @ns.optional y21: int,
+  @ns.optional y22: int,
+  @ns.optional y23: int,
   z: int,
 }
 
@@ -64,8 +64,8 @@ let h: config = {...v, y1: 22}
 
 type small_config = {
   x: int,
-  @optional y0: int,
-  @optional y1: int,
+  @ns.optional y0: int,
+  @ns.optional y1: int,
   z: int,
 }
 
@@ -78,25 +78,25 @@ let h11 = (v1): small_config => {
 }
 
 type partiallyOptional = {
-  @optional aa: int,
+  @ns.optional aa: int,
   bb: option<int>,
 }
 
 let po = {aa: 3, bb: Some(4)}
 
-let _ = {...po, aa: @optional None}
+let _ = {...po, aa: @ns.optional None}
 
-let setAA = (ao: option<int>) => {aa: @optional ao, bb: None}
+let setAA = (ao: option<int>) => {aa: @ns.optional ao, bb: None}
 
 // Trigger representation mismatch error.
 // module M: {
 //   type partiallyOptional = {
-//     @optional aa: int,
+//     @ns.optional aa: int,
 //     bb: option<int>,
 //   }
 // } = {
 //   type partiallyOptional = {
-//     @optional aa: int,
-//     @optional bb: int,
+//     @ns.optional aa: int,
+//     @ns.optional bb: int,
 //   }
 // }
