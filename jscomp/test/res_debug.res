@@ -29,7 +29,7 @@ let f = (window, a, b) => {
 
 type r = {
     x: int,
-    @optional y: int,
+    @ns.optional y: int,
     z : int 
 }
 
@@ -47,7 +47,7 @@ let v1 : r = { x : 3
 let testMatch = v =>
   switch v {
   | {y} => y
-  | {y: @optional None} => 42
+  | {y: @ns.optional None} => 42
   }
 
 let h = '😊'

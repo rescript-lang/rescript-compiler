@@ -926,7 +926,7 @@ and tree_of_constructor cd =
       (name, args, Some ret)
 
 and tree_of_label l =
-  let opt = l.ld_attributes |> List.exists (fun ({txt}, _) -> txt = "optional") in
+  let opt = l.ld_attributes |> List.exists (fun ({txt}, _) -> txt = "ns.optional") in
   let typ = match l.ld_type.desc with
     | Tconstr (p, [t1], _) when opt && Path.same p Predef.path_option -> t1
     | _ -> l.ld_type in
