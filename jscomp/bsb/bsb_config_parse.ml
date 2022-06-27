@@ -36,7 +36,6 @@ type json_map = Ext_json_types.t Map_string.t
 
 (* Key is the path *)
 let ( |? ) m (key, cb) = m |> Ext_json.test key cb
-
 let ( .?() ) = Map_string.find_opt
 
 (*TODO: it is a little mess that [cwd] and [project dir] are shared*)
@@ -127,6 +126,46 @@ let extract_reason_react_jsx (map : json_map) =
                Bsb_exception.config_error x
                  "Unexpected input (expect a version number) for jsx, note \
                   boolean is no longer allowed"
+           | None -> ()) )
+  |> ignore;
+  !default
+
+let extract_react_jsx (map : json_map) =
+  let default : Bsb_config_types.react_jsx option ref = ref None in
+  map
+  |? ( Bsb_build_schemas.react,
+       `Obj
+         (fun m ->
+           match m.?(Bsb_build_schemas.jsx_version) with
+           | Some (Flo { loc; flo }) -> (
+               match flo with
+               | "3" -> default := Some Jsx_v3
+               | "4" -> default := Some Jsx_v4
+               | _ -> Bsb_exception.errorf ~loc "Unsupported react-jsx %s" flo)
+           | Some x ->
+               Bsb_exception.config_error x
+                 "Unexpected input (expect a version number) for jsx"
+           | None -> ()) )
+  |> ignore;
+  !default
+
+let extract_react_runtime (map : json_map) =
+  let default : Bsb_config_types.react_runtime option ref = ref None in
+  map
+  |? ( Bsb_build_schemas.react,
+       `Obj
+         (fun m ->
+           match m.?(Bsb_build_schemas.react_runtime) with
+           | Some (Str { loc; str }) -> (
+               match str with
+               | "classic" -> default := Some Classic
+               | "automatic" -> default := Some Automatic
+               | _ ->
+                   Bsb_exception.errorf ~loc "Unsupported react-runtime %s" str)
+           | Some x ->
+               Bsb_exception.config_error x
+                 "Unexpected input (expect classic or automatic) for \
+                  react-runtime"
            | None -> ()) )
   |> ignore;
   !default
@@ -278,6 +317,8 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
                   .path)
       in
       let reason_react_jsx = extract_reason_react_jsx map in
+      let react_jsx = extract_react_jsx map in
+      let react_runtime = extract_react_runtime map in
       let bs_dependencies =
         extract_dependencies map per_proj_dir Bsb_build_schemas.bs_dependencies
       in
@@ -334,6 +375,8 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
             generate_merlin =
               extract_boolean map Bsb_build_schemas.generate_merlin false;
             reason_react_jsx;
+            react_jsx;
+            react_runtime;
             generators = extract_generators map;
             cut_generators;
           }
