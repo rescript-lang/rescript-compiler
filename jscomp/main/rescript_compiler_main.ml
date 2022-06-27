@@ -275,9 +275,14 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "*internal* <module>  Opens the module <module> before typing";
 
     "-bs-jsx", string_call (fun i -> 
-        (if i <> "3" then Bsc_args.bad_arg (" Not supported jsx version : " ^  i));
-        Js_config.jsx_version := 3),
+        (if i <> "3" && i <> "4" then Bsc_args.bad_arg (" Not supported jsx version : " ^  i));
+        Js_config.jsx_version := int_of_string i),
     "*internal* Set jsx version";
+
+    "-bs-react-runtime", string_call (fun i ->
+      (if i <> "classic" && i <> "automatic" then Bsc_args.bad_arg (" Not supported react-runtime : " ^ i));
+      Js_config.react_runtime := i),
+    "*internal* Set react runtime";
 
     "-bs-package-output", string_call Js_packages_state.update_npm_package_path, 
     "*internal* Set npm-output-path: [opt_module]:path, for example: 'lib/cjs', 'amdjs:lib/amdjs', 'es6:lib/es6' ";

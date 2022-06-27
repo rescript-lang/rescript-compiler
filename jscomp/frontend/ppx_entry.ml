@@ -32,6 +32,9 @@ let rewrite_signature (ast : Parsetree.signature) : Parsetree.signature =
     | 3 ->
         Reactjs_jsx_ppx.rewrite_signature ~jsxVersion:3 ~jsxModule:""
           ~jsxMode:"" ast
+    | 4 ->
+        Reactjs_jsx_ppx.rewrite_signature ~jsxVersion:4 ~jsxModule:""
+          ~jsxMode:!Js_config.react_runtime ast
     | _ -> ast
     (* react-jsx ppx relies on built-in ones like `##` *)
   in
@@ -39,7 +42,7 @@ let rewrite_signature (ast : Parsetree.signature) : Parsetree.signature =
   else
     let result = unsafe_mapper.signature unsafe_mapper ast in
     (* Keep this check, since the check is not inexpensive*)
-    Bs_ast_invariant.emit_external_warnings_on_signature result;
+    (* Bs_ast_invariant.emit_external_warnings_on_signature result; *)
     result
 
 let rewrite_implementation (ast : Parsetree.structure) : Parsetree.structure =
@@ -50,11 +53,14 @@ let rewrite_implementation (ast : Parsetree.structure) : Parsetree.structure =
     | 3 ->
         Reactjs_jsx_ppx.rewrite_implementation ~jsxVersion:3 ~jsxModule:""
           ~jsxMode:"" ast
+    | 4 ->
+        Reactjs_jsx_ppx.rewrite_implementation ~jsxVersion:4 ~jsxModule:""
+          ~jsxMode:!Js_config.react_runtime ast
     | _ -> ast
   in
   if !Js_config.no_builtin_ppx then ast
   else
     let result = unsafe_mapper.structure unsafe_mapper ast in
     (* Keep this check since it is not inexpensive*)
-    Bs_ast_invariant.emit_external_warnings_on_structure result;
+    (* Bs_ast_invariant.emit_external_warnings_on_structure result; *)
     result

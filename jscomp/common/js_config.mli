@@ -75,6 +75,8 @@ val force_cmj : bool ref
 
 val jsx_version : int ref
 
+val react_runtime: string ref
+
 val js_stdout : bool ref
 
 val all_module_aliases : bool ref

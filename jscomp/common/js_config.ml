@@ -23,79 +23,44 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
 (** Browser is not set via command line only for internal use *)
 
-
 let no_version_header = ref false
-
 let cross_module_inline = ref false
-
-
-
 let diagnose = ref false
-let get_diagnose () = 
-  !diagnose
-  
-# 44 "common/js_config.pp.ml"
-  || Sys.getenv_opt "RES_DEBUG_FILE" <> None
 
-# 47 "common/js_config.pp.ml"
+let get_diagnose () =
+  !diagnose
+    
+# 34 "common/js_config.pp.ml"
+    || Sys.getenv_opt "RES_DEBUG_FILE" <> None
+
+# 37 "common/js_config.pp.ml"
 (* let (//) = Filename.concat *)
 
 (* let get_packages_info () = !packages_info *)
 
 let no_builtin_ppx = ref false
-
-
-
-
 let tool_name = "ReScript"
-
 let check_div_by_zero = ref true
 let get_check_div_by_zero () = !check_div_by_zero
-
-
-
 let syntax_only = ref false
 let binary_ast = ref false
-
-
-
 let debug = ref false
-
-let cmi_only = ref false  
+let cmi_only = ref false
 let cmj_only = ref false
-
 let force_cmi = ref false
 let force_cmj = ref false
-
 let jsx_version = ref (-1)
-
-
+let react_runtime = ref "classic"
 let js_stdout = ref true
-
 let all_module_aliases = ref false
-
 let no_stdlib = ref false
-
 let no_export = ref false
-
-
-
 let as_ppx = ref false
 
-
 (* option to config `@rescript/std`*)
-let customize_runtime : string option ref = ref None 
-
+let customize_runtime : string option ref = ref None
 let as_pp = ref false
-
 let self_stack : string Stack.t = Stack.create ()
-
 let modules = ref false

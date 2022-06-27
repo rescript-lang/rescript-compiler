@@ -350,6 +350,19 @@
                 }
             }
         },
+        "react-specs": {
+            "type": "object",
+            "properties": {
+                "jsx": {
+                    "$ref": "#/definitions/jsx-version",
+                    "description": "Whether to apply the [RescriptReact](https://github.com/rescript-lang/rescript-react)-specific JSX PPX transformation."
+                },
+                "runtime": {
+                    "$ref": "#/definitions/react-runtime",
+                    "description": "Whether to apply the [RescriptReact](https://github.com/rescript-lang/rescript-react)-specific JSX PPX transformation."
+                }
+            }
+        },
         "refmt-specs": {
             "oneOf": [
                 {

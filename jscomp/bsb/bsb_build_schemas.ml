@@ -90,6 +90,12 @@ let reason = "reason"
 
 let react_jsx = "react-jsx"
 
+let react = "react"
+
+let jsx_version = "jsx"
+
+let react_runtime = "runtime"
+
 let entries = "entries"
 
 let backend = "backend"
