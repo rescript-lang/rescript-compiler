@@ -28,7 +28,12 @@ var lockFileName = path.join(cwd, ".bsb.lock");
 process.env.BSB_PROJECT_ROOT = cwd;
 // console.log('BSB_PROJECT_ROOT:', process.env.BSB_PROJECT_ROOT)
 
-var generatedFileExtension = require(path.join(cwd, "bsconfig.json")).gentypeconfig.generatedFileExtension;
+// If the project uses gentype and uses custom file extension
+// via generatedFileextension, ignore them in watch mode
+var genTypeConfig = require(path.join(cwd, bsconfig)).gentypeconfig
+if (genTypeConfig) {
+  var genTypeFileExtension = genTypeConfig.generatedFileExtension
+}
 
 // All clients of type MiniWebSocket
 /**
@@ -408,7 +413,7 @@ if (
         fileName.endsWith(".mjs") ||
         fileName.endsWith(".cjs") ||
         fileName.endsWith(".gen.tsx") ||
-        fileName.endsWith(generatedFileExtension) ||
+        fileName.endsWith(genTypeFileExtension) ||
         watch_generated.indexOf(fileName) >= 0 ||
         fileName.endsWith(".swp")
       );
