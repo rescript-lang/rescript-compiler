@@ -29,7 +29,7 @@ process.env.BSB_PROJECT_ROOT = cwd;
 // console.log('BSB_PROJECT_ROOT:', process.env.BSB_PROJECT_ROOT)
 
 // If the project uses gentype and uses custom file extension
-// via generatedFileextension, ignore them in watch mode
+// via generatedFileExtension, ignore them in watch mode
 var genTypeConfig = require(path.join(cwd, bsconfig)).gentypeconfig
 if (genTypeConfig) {
   var genTypeFileExtension = genTypeConfig.generatedFileExtension
