@@ -71,7 +71,7 @@ let report_error env ppf = function
                               - Did you list it in bsconfig.json?@,\
                               - @[Did you run `rescript build` instead of `rescript build -with-deps`@ (latter builds third-parties)@]?\
                               @]@,\
-                              - Did you include the file's directory in bsconfig.json?@]\
+                              - Did you include the file's directory in package.json?@]\
                               @]"
             Printtyp.longident lid
         end

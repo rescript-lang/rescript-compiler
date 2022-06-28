@@ -25,8 +25,10 @@
 type error =
   | Package_not_found of Bsb_pkg_types.t * string option (* json file *)
   | Json_config of Ext_position.t * string
+  | PackageJson_config of Ext_position.t * string
   | Invalid_json of string
   | Invalid_spec of string
+  | Invalid_package_json_spec of string
   | Conflict_module of string * string * string
   | No_implementation of string
   | Not_consistent of string
@@ -34,7 +36,6 @@ type error =
 exception Error of error
 
 let error err = raise (Error err)
-
 let package_not_found ~pkg ~json = error (Package_not_found (pkg, json))
 
 let print (fmt : Format.formatter) (x : error) =
@@ -58,13 +59,13 @@ let print (fmt : Format.formatter) (x : error) =
       let name = Bsb_pkg_types.to_string name in
       if Ext_string.equal name !Bs_version.package_name then
         Format.fprintf fmt
-          "File \"bsconfig.json\", line 1\n\
+          "File \"package.json\", line 1\n\
            @{<error>Error:@} package @{<error>%s@} is not found %s\n\
            It's the basic, required package. If you have it installed globally,\n\
            Please run `npm link rescript` to make it available" name in_json
       else
         Format.fprintf fmt
-          "File \"bsconfig.json\", line 1\n\
+          "File \"package.json\", line 1\n\
            @{<error>Error:@} package @{<error>%s@} not found or built %s\n\
            - Did you install it?\n\
            - If you did, did you run `rescript build -with-deps`?" name in_json
@@ -75,8 +76,13 @@ let print (fmt : Format.formatter) (x : error) =
          For more details, please checkout the schema \
          https://rescript-lang.org/docs/manual/latest/build-configuration-schema"
         pos.pos_fname pos.pos_lnum s
+  | PackageJson_config (pos, s) ->
+      Format.fprintf fmt "File %S, line %d:\n@{<error>Error:@} %s" pos.pos_fname
+        pos.pos_lnum s
   | Invalid_spec s ->
       Format.fprintf fmt "@{<error>Error: Invalid bsconfig.json %s@}" s
+  | Invalid_package_json_spec s ->
+      Format.fprintf fmt "@{<error>Error: Invalid package.json %s@}" s
   | Invalid_json s ->
       Format.fprintf fmt
         "File %S, line 1\n@{<error>Error: Invalid json format@}" s
@@ -85,7 +91,6 @@ let conflict_module modname dir1 dir2 =
   Error (Conflict_module (modname, dir1, dir2))
 
 let no_implementation modname = error (No_implementation modname)
-
 let not_consistent modname = error (Not_consistent modname)
 
 let errorf ~loc fmt =
@@ -96,8 +101,13 @@ let config_error config fmt =
 
   error (Json_config (loc, fmt))
 
-let invalid_spec s = error (Invalid_spec s)
+let package_json_config_error config fmt =
+  let loc = Ext_json.loc_of config in
 
+  error (PackageJson_config (loc, fmt))
+
+let invalid_spec s = error (Invalid_spec s)
+let invalid_package_json_spec s = error (Invalid_package_json_spec s)
 let invalid_json s = error (Invalid_json s)
 
 let () =

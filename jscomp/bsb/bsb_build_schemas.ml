@@ -123,3 +123,8 @@ let language = "language"
 let path = "path"
 
 let ignored_dirs = "ignored-dirs"
+
+module PackageJson = struct
+  let dependencies = "dependencies"
+  let devDependencies = "devDependencies"
+end
