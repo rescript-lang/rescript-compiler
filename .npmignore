@@ -47,6 +47,7 @@ ocaml-tree
 dummy.opam
 dune
 dune-project
+scripts/moveArtifacts.sh
 scripts/deps.js
 scripts/format.js
 scripts/local_br_clean.sh
