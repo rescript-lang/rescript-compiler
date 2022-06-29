@@ -5,6 +5,9 @@
     "nyc": "^15.0.0",
     "prettier": "^2.7.1"
   },
+  "dependencies": {
+    "tmp": "^0.2.1"
+  },
   "bin": {
     "bsc": "bsc",
     "bsrefmt": "bsrefmt",

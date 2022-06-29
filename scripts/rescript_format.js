@@ -5,8 +5,8 @@ var format_usage = `Usage: rescript format <options> [files]
 \`rescript format\` formats the current directory
 `;
 var child_process = require("child_process");
-var path = require("path");
 var fs = require("fs");
+var tmp = require("tmp");
 /**
  * @type {arg.stringref}
  */
@@ -116,18 +116,10 @@ function main(argv, rescript_exe, bsc_exe) {
       }
     } else if (use_stdin) {
       if (isSupportedStd(use_stdin)) {
-        var crypto = require("crypto");
-        var os = require("os");
-        var filename = path.join(
-          os.tmpdir(),
-          "rescript_" +
-            crypto.randomBytes(8).toString("hex") +
-            path.parse(use_stdin).base
-        );
+        var filename = tmp.fileSync({ postfix: use_stdin }).name;
         (async function () {
           var content = await readStdin();
           fs.writeFileSync(filename, content, "utf8");
-          process.addListener("exit", () => fs.unlinkSync(filename));
           child_process.execFile(
             bsc_exe,
             ["-format", filename],
