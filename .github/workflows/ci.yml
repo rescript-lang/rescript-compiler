@@ -7,7 +7,7 @@ on:
     branches: [master]
 
 jobs:
-  test:
+  build:
     strategy:
       fail-fast: false
       matrix:
@@ -48,7 +48,7 @@ jobs:
           opam-depext: false
 
       - name: Use Node.js
-        uses: actions/setup-node@v2.1.5
+        uses: actions/setup-node@v3
         with:
           node-version: 16
 
@@ -56,17 +56,6 @@ jobs:
         run: opam exec -- npm ci
         env:
           RESCRIPT_FORCE_REBUILD: 1
-
-      - name: ninja config
-        if: runner.os != 'Windows'
-        run: opam exec -- node ./scripts/ninja.js config
-
-      - name: ninja build
-        if: runner.os != 'Windows'
-        run: opam exec -- node ./scripts/ninja.js build
-
-      - name: Check for changes in lib folder
-        run: git diff --exit-code lib/js lib/es6
 
       - name: Run tests
         if: runner.os != 'Windows'
@@ -80,8 +69,73 @@ jobs:
         id: get_artifact_info
         run: node .github/workflows/get_artifact_info.js
 
-      - name: Upload artifacts
+      - name: "Upload artifacts: binaries"
         uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.get_artifact_info.outputs.artifact_name }}
           path: ${{ steps.get_artifact_info.outputs.artifact_path }}
+
+      - name: "Upload artifacts: lib/ocaml"
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v3
+        with:
+          name: lib-ocaml
+          path: lib/ocaml
+
+      # Important: the ninja build must run after the artifact upload because for some reason
+      # the bsc.exe created by the ninja build does not find the Pervasives module.
+      # So this is run here just to test the normal dev workflow, too.
+      - name: ninja config
+        if: runner.os != 'Windows'
+        run: opam exec -- node ./scripts/ninja.js config
+
+      - name: ninja build
+        if: runner.os != 'Windows'
+        run: opam exec -- node ./scripts/ninja.js build
+
+      - name: Check for changes in lib folder
+        run: git diff --exit-code lib/js lib/es6
+
+  package:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: NPM install
+        run: npm ci --ignore-scripts
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Copy artifacts
+        run: ./scripts/moveArtifacts.sh
+
+      - name: Create ninja.tar.gz
+        run: git -C ninja archive --format=tar.gz HEAD -o ../vendor/ninja.tar.gz
+
+      - name: Run prepublish.js
+        run: node ./scripts/prepublish.js -nocheck
+
+      - name: npm pack
+        run: npm pack
+
+      - name: Get package info
+        id: get_package_info
+        # For pull requests, pass the correct commit SHA explicitly as GITHUB_SHA points to the wrong commit.
+        run: node .github/workflows/get_package_info.js ${{ github.event.pull_request.head.sha }}
+
+      - name: "Upload artifact: npm package tarball"
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.get_package_info.outputs.artifact_name }}
+          path: ${{ steps.get_package_info.outputs.artifact_path }}

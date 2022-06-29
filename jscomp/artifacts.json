@@ -45,9 +45,7 @@
   ],
   "lib": [
     "bstracing",
-    "build.ninja",
-    "minisocket.js",
-    "prebuilt.ninja"
+    "minisocket.js"
   ],
   "lib/4.06.1": [
     "bsb_helper.ml",

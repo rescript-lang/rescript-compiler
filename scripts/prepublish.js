@@ -103,11 +103,11 @@ if (!process.argv.includes("-nocheck")) {
   check(map);
 }
 
-var output = p.spawnSync(`git diff jscomp/artifacts.json`, {
+var output = p.spawnSync(`git diff --exit-code jscomp/artifacts.json`, {
   cwd: root,
   encoding: "utf8",
   shell: true,
 });
 
-assert(output.status === 0);
 console.log("The diff of artifacts", output.stdout);
+assert(output.status === 0);
