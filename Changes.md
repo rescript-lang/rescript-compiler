@@ -6,6 +6,7 @@
 
 - Add support for `@new @variadic` (see https://github.com/rescript-lang/rescript-compiler/pull/5364)
 - New records with `@optional` fields [#5423](https://github.com/rescript-lang/rescript-compiler/pull/5423) [#5452](https://github.com/rescript-lang/rescript-compiler/issues/5452)
+- Classify bigint correctly [#5351](https://github.com/rescript-lang/rescript-compiler/pull/5351)
 
 **Syntax**
 
