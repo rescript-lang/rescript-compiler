@@ -1,0 +1,26 @@
+{
+  "name": "@rescript/std",
+  "version": "10.0.0-beta.1",
+  "keywords": [
+    "rescript",
+    "stdlib",
+    "functional programming"
+  ],
+  "author": {
+    "name": "Hongbo Zhang"
+  },
+  "maintainers": [
+    {
+      "name": "hongbo_zhang",
+      "email": "bobzhang1988@gmail.com"
+    }
+  ],
+  "files": [
+    "lib"
+  ],
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/rescript-compiler/issues"
+  },
+  "homepage": "http://rescript-lang.org"
+}

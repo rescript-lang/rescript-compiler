@@ -6,11 +6,15 @@ const { name, version } = packageSpec;
 const commitHash = process.argv[2] || process.env.GITHUB_SHA;
 const commitHashShort = commitHash.substring(0, 7);
 
-const packageName = `${name}-${version}.tgz`;
-const artifactName = `${name}-${version}-${commitHashShort}.tgz`;
+const rescriptPackagePath = `${name}-${version}.tgz`;
+const rescriptArtifactName = `${name}-${version}-${commitHashShort}.tgz`;
 
-fs.renameSync(packageName, artifactName);
+const stdlibPackagePath = `packages/std/rescript-std-${version}.tgz`;
+const stdlibArtifactName = `rescript-std-${version}-${commitHashShort}.tgz`;
 
-// Pass artifactPath and artifactName to subsequent GitHub actions
-console.log(`::set-output name=artifact_path::${artifactName}`);
-console.log(`::set-output name=artifact_name::${artifactName}`);
+fs.renameSync(rescriptPackagePath, rescriptArtifactName);
+fs.renameSync(stdlibPackagePath, stdlibArtifactName);
+
+// Pass information to subsequent GitHub actions
+console.log(`::set-output name=rescript_package::${rescriptArtifactName}`);
+console.log(`::set-output name=stdlib_package::${stdlibArtifactName}`);
