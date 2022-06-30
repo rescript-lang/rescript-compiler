@@ -117,7 +117,7 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v3
 
-      - name: Copy artifacts
+      - name: Move artifacts
         run: ./scripts/moveArtifacts.sh
 
       - name: Create ninja.tar.gz
@@ -126,16 +126,25 @@ jobs:
       - name: Run prepublish.js
         run: node ./scripts/prepublish.js -nocheck
 
-      - name: npm pack
+      - name: npm pack (rescript)
         run: npm pack
+
+      - name: Copy JS files to stdlib package
+        run: mkdir -p packages/std/lib && cp -R lib/es6 lib/js packages/std/lib
+
+      - name: npm pack (@rescript/std)
+        run: npm pack
+        working-directory: packages/std
 
       - name: Get package info
         id: get_package_info
         # For pull requests, pass the correct commit SHA explicitly as GITHUB_SHA points to the wrong commit.
         run: node .github/workflows/get_package_info.js ${{ github.event.pull_request.head.sha }}
 
-      - name: "Upload artifact: npm package tarball"
+      - name: "Upload artifact: npm packages"
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ steps.get_package_info.outputs.artifact_name }}
-          path: ${{ steps.get_package_info.outputs.artifact_path }}
+          name: npm-packages
+          path: |
+            ${{ steps.get_package_info.outputs.rescript_package }}
+            ${{ steps.get_package_info.outputs.stdlib_package }}

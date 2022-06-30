@@ -2,19 +2,23 @@
 /**
  * This file is used only in dev time, feel free to use es6
  */
-var fs = require("fs");
-var path = require("path");
-var package_spec = JSON.parse(fs.readFileSync("../package.json", "utf8"));
+const fs = require("fs");
+const path = require("path");
 
-var { version, name } = package_spec;
+const packageSpec = JSON.parse(fs.readFileSync("./package.json", "utf8"));
+const { version, name } = packageSpec;
 
-// var preRelelease = version.lastIndexOf("-");
-// if(preRelelease>=0){
-//     version = version.substr(0,preRelelease)
-// }
+const stdlibPackageSpec = JSON.parse(
+  fs.readFileSync("./packages/std/package.json", "utf8")
+);
+stdlibPackageSpec.version = version;
+fs.writeFileSync(
+  "./packages/std/package.json",
+  JSON.stringify(stdlibPackageSpec, null, 2)
+);
 
 fs.writeFileSync(
-  path.join(__dirname, "common", "bs_version.ml"),
+  "./jscomp/common/bs_version.ml",
   `(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
