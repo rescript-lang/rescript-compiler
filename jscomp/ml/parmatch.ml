@@ -367,6 +367,9 @@ let get_type_path ty tenv =
 (* Values as patterns pretty printer *)
 (*************************************)
 
+let print_res_pat: (Typedtree.pattern -> string) ref =
+  ref (fun _ -> assert false)
+
 open Format
 ;;
 
@@ -2090,8 +2093,7 @@ let do_check_partial ?pred exhaust loc casel pss = match pss with
               let errmsg =
                 try
                   let buf = Buffer.create 16 in
-                  let fmt = formatter_of_buffer buf in
-                  top_pretty fmt v;
+                  Buffer.add_string buf (!print_res_pat v);
                   begin match check_partial_all v casel with
                   | None -> ()
                   | Some _ ->
