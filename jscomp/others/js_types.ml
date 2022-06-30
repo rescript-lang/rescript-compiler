@@ -72,19 +72,19 @@ let classify (x : 'a) : tagged_t =
     JSNull else
   if ty = "number" then
     JSNumber (Obj.magic x) else
+  if ty = "bigint" then
+    JSBigInt (Obj.magic x) else
   if ty = "string" then
     JSString (Obj.magic x) else
   if ty = "boolean" then
-    if (Obj.magic x) =  true then JSTrue
+    if (Obj.magic x) = true then JSTrue
     else JSFalse else
-  if ty = "function" then
-    JSFunction (Obj.magic x) else
-  if ty = "object" then
-    JSObject (Obj.magic x) else
   if ty = "symbol" then
-    JSSymbol (Obj.magic x)
+    JSSymbol (Obj.magic x) else
+  if ty = "function" then
+    JSFunction (Obj.magic x)
   else
-    JSBigInt (Obj.magic x)
+    JSObject (Obj.magic x)
 
 
 let test (type a) (x : 'a) (v : a t) : bool =
