@@ -313,7 +313,7 @@ if (
       }
     });
   } else {
-    console.warn(`Another build detected or staled lockfile ${lockFileName}`);
+    console.warn(`Another build detected or stale lockfile ${lockFileName}`);
     // racing magic code
     process.exit(133);
   }
