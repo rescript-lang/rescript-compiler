@@ -37,7 +37,7 @@ let annotate (meta : Lam_stats.t) rec_flag (k : Ident.t) (arity : Lam_arity.t)
     (FunctionId { arity; lambda = Some (lambda, rec_flag) })
 (* see #3609
    we have to update since bounded function lambda
-   may contain staled unbounded varaibles
+   may contain stale unbounded varaibles
 *)
 (* match Hash_ident.find_opt  meta.ident_tbl k  with
    | None -> (** FIXME: need do a sanity check of arity is NA or Determin(_,[],_) *)

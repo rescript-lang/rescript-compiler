@@ -368,7 +368,7 @@ This is a minor bug fix release for 8.3.0
 
 - #4679 better error message for nonrec GADT
 
-- #4671, #4678 better strategies to remove staled output for the build system
+- #4671, #4678 better strategies to remove stale output for the build system
 
 - #4676 (internal) add Config.syntax_kind so that some changes in super_errors can be made upstream
 
@@ -606,7 +606,7 @@ This is a minor bug fix release for 8.3.0
 - #4190 (internal) remove bsdep which is not used
 - #4188 better encoding around internals for performance and size
 - #4155 fix React PPX regressions from 7.1.0 which caused a type error when writing recursive components.
-- #4185 remove staled tasks.json in bsb themes for vscode, leave it for users to keep it up to date
+- #4185 remove stale tasks.json in bsb themes for vscode, leave it for users to keep it up to date
 - #4159 #4161 #4182 improve the startup time, reducing both the size of cmi and cmj
 - #4179 (internal) remove bsppx, use "bsc.exe -as-ppx" for editor tooling
 - #4171 add a warning for using `fun%raw`, use `[%raw]` directly
@@ -844,7 +844,7 @@ Fixes
 
 Fixes
 
-- #3615 pruning staled build artifacts in bsb, more robust to file changes (moving files around, renaming)
+- #3615 pruning stale build artifacts in bsb, more robust to file changes (moving files around, renaming)
 
 - #3609, #3914 Fix a fatal error in code generation
 - #3598, #3595 Fix code generation when toplevel binding is partial match (edge case)
@@ -1313,7 +1313,7 @@ Features:
 - #2112, introduced a key `suffix`, so that user can
   choose `suffix : ".bs.js"`
 - #2138, in combination of `.bs.js` suffix and `in-source` build,
-  bsb is able to remove staled build artifact
+  bsb is able to remove stale build artifact
 - #2091 bsc xx.cmi will print xx.mli so users can generate
   mli in the beginning. `bsc -output-re xx.cmi` will print
   it in reason syntax
