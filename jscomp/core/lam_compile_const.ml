@@ -71,7 +71,7 @@ and translate (x : Lam_constant.t) : J.expression =
       (* https://github.com/google/closure-library/blob/master/closure%2Fgoog%2Fmath%2Flong.js *)
   | Const_float f -> E.float f (* TODO: preserve float *)
   | Const_string i (*TODO: here inline js*) -> E.str i
-  | Const_unicode i -> E.unicode i
+  | Const_unicode i -> E.str ~delim:(Some "j") i
   | Const_pointer name -> E.str name
   | Const_block (tag, tag_info, xs) ->
       Js_of_lam_block.make_block NA tag_info (E.small_int tag)

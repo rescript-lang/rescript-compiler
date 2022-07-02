@@ -151,8 +151,6 @@ and expression_desc =
   (* A string is UTF-8 encoded, and may contain
      escape sequences.
   *)
-  | Unicode of string
-  (* It is escaped string, print delimited by '"'*)
   | Raw_js_code of Js_raw_info.t
   (* literally raw JS code 
   *)

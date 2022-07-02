@@ -183,7 +183,7 @@ eq("File \"chn_test.ml\", line 63, characters 5-12", convert("\uD83D\uDE80\uD83D
       }
     });
 
-eq("No inline string length", "\uD83D\uDE80\0".length, 3);
+eq("No inline string length", 14, 3);
 
 eq("File \"chn_test.ml\", line 72, characters 6-13", Caml_string.get("\uD83D\uDE80\0", 0), 128640);
 
