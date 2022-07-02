@@ -475,7 +475,7 @@ let array_length ?comment (e : t) : t =
 
 let string_length ?comment (e : t) : t =
   match e.expression_desc with
-  | Str {txt} -> int ?comment (Int32.of_int (String.length txt))
+  | Str {txt; delim=None} -> int ?comment (Int32.of_int (String.length txt))
   (* No optimization for {j||j}*)
   | _ -> { expression_desc = Length (e, String); comment }
 
