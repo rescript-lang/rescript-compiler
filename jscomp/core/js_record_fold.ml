@@ -157,7 +157,6 @@ let expression_desc : 'a. ('a, expression_desc) fn =
       let st = _self.block _self st _x2 in
       st
   | Str _ -> st
-  | Unicode _ -> st
   | Raw_js_code _ -> st
   | Array (_x0, _x1) ->
       let st = list _self.expression _self st _x0 in

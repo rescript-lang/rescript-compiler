@@ -162,7 +162,7 @@ let exp_need_paren (e : J.expression) =
   | Raw_js_code { code_info = Stmt _ }
   | Length _ | Call _ | Caml_block_tag _ | Seq _ | Static_index _ | Cond _
   | Bin _ | Is_null_or_undefined _ | String_index _ | Array_index _
-  | String_append _ | Var _ | Undefined | Null | Str _ | Unicode _ | Array _
+  | String_append _ | Var _ | Undefined | Null | Str _ | Array _
   | Optional_block _ | Caml_block _ | FlatCall _ | Typeof _ | Number _
   | Js_not _ | Bool _ | New _ ->
       false
@@ -586,11 +586,6 @@ and expression_desc cxt ~(level : int) f x : cxt =
           P.string f L.codePointAt;
           (* FIXME: use code_point_at *)
           P.paren_group f 1 (fun _ -> expression ~level:0 cxt f b))
-  | Unicode s ->
-      P.string f "\"";
-      P.string f s;
-      P.string f "\"";
-      cxt
   | Str {delim; txt} ->
       (*TODO --
          when utf8-> it will not escape '\\' which is definitely not we want

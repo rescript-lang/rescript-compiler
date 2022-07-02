@@ -122,7 +122,6 @@ let expression_desc : expression_desc fn =
       list _self.ident _self _x1;
       _self.block _self _x2
   | Str _ -> ()
-  | Unicode _ -> ()
   | Raw_js_code _ -> ()
   | Array (_x0, _x1) -> list _self.expression _self _x0
   | Optional_block (_x0, _x1) -> _self.expression _self _x0

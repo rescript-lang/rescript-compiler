@@ -192,7 +192,7 @@ let subst_map (substitution : J.expression Hash_ident.t) =
             let _, e, bindings =
               Ext_list.fold_left ls (0, [], []) (fun (i, e, acc) x ->
                   match x.expression_desc with
-                  | Var _ | Number _ | Str _ | Unicode _ | J.Bool _ | Undefined ->
+                  | Var _ | Number _ | Str _ | J.Bool _ | Undefined ->
                       (* TODO: check the optimization *)
                       (i + 1, x :: e, acc)
                   | _ ->
