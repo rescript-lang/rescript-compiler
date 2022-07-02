@@ -155,7 +155,6 @@ let expression_desc : expression_desc fn =
       let _x2 = _self.block _self _x2 in
       Fun (_x0, _x1, _x2, _x3, _x4)
   | Str _ as v -> v
-  | Unicode _ as v -> v
   | Raw_js_code _ as v -> v
   | Array (_x0, _x1) ->
       let _x0 = list _self.expression _self _x0 in

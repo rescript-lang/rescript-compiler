@@ -84,8 +84,6 @@ val runtime_ref : string -> string -> t
 
 val str : ?delim: string option -> ?comment: string -> string -> t
 
-val unicode : ?comment:string -> string -> t
-
 val ocaml_fun :
   ?comment:string ->
   ?immutable_mask:bool array ->
