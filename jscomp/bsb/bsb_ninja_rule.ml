@@ -91,8 +91,9 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
     ~(has_postbuild : string option) ~(pp_file : string option)
     ~(has_builtin : bool)
     ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
-    ~(react_jsx : Bsb_config_types.react_jsx option)
-    ~(react_runtime : Bsb_config_types.react_runtime option) ~(digest : string)
+    ~(jsx_version : Bsb_config_types.jsx_version option)
+    ~(jsx_module : Bsb_config_types.jsx_module option)
+    ~(jsx_mode : Bsb_config_types.jsx_mode option) ~(digest : string)
     ~(package_specs : Bsb_package_specs.t) ~(namespace : string option)
     ~package_name ~warnings ~(ppx_files : Bsb_config_types.ppx list) ~bsc_flags
     ~(dpkg_incls : string) ~(lib_incls : string) ~(dev_incls : string)
@@ -162,17 +163,18 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
     | None -> ()
     | Some flag ->
         Ext_buffer.add_char_string buf ' ' (Bsb_build_util.pp_flag flag));
-    (match (has_reason_react_jsx, reason_react_jsx) with
-    | false, _ | _, None -> ()
-    | _, Some Jsx_v3 -> Ext_buffer.add_string buf " -bs-jsx 3");
-    (match react_jsx with
+    (match (has_reason_react_jsx, reason_react_jsx, jsx_version) with
+    | _, _, Some Jsx_v3 -> Ext_buffer.add_string buf " -bs-jsx 3"
+    | _, _, Some Jsx_v4 -> Ext_buffer.add_string buf " -bs-jsx 4"
+    | _, Some Jsx_v3, None -> Ext_buffer.add_string buf " -bs-jsx 3"
+    | _ -> ());
+    (match jsx_module with
     | None -> ()
-    | Some Jsx_v3 -> Ext_buffer.add_string buf " -bs-jsx 3"
-    | Some Jsx_v4 -> Ext_buffer.add_string buf " -bs-jsx 4");
-    (match react_runtime with
+    | Some React -> Ext_buffer.add_string buf " -bs-jsx-module react");
+    (match jsx_mode with
     | None -> ()
-    | Some Classic -> Ext_buffer.add_string buf " -bs-react-runtime classic"
-    | Some Automatic -> Ext_buffer.add_string buf " -bs-react-runtime automatic");
+    | Some Classic -> Ext_buffer.add_string buf " -bs-jsx-mode classic"
+    | Some Automatic -> Ext_buffer.add_string buf " -bs-jsx-mode automatic");
 
     Ext_buffer.add_char_string buf ' ' bsc_flags;
     Ext_buffer.add_string buf " -absname -bs-ast -o $out $i";
