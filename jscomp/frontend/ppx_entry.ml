@@ -30,11 +30,11 @@ let rewrite_signature (ast : Parsetree.signature) : Parsetree.signature =
   let ast =
     match !Js_config.jsx_version with
     | 3 ->
-        Reactjs_jsx_ppx.rewrite_signature ~jsxVersion:3 ~jsxModule:""
-          ~jsxMode:"" ast
+        Reactjs_jsx_ppx.rewrite_signature ~jsxVersion:3
+          ~jsxModule:!Js_config.jsx_module ~jsxMode:!Js_config.jsx_mode ast
     | 4 ->
-        Reactjs_jsx_ppx.rewrite_signature ~jsxVersion:4 ~jsxModule:""
-          ~jsxMode:!Js_config.react_runtime ast
+        Reactjs_jsx_ppx.rewrite_signature ~jsxVersion:4
+          ~jsxModule:!Js_config.jsx_module ~jsxMode:!Js_config.jsx_mode ast
     | _ -> ast
     (* react-jsx ppx relies on built-in ones like `##` *)
   in
@@ -51,11 +51,11 @@ let rewrite_implementation (ast : Parsetree.structure) : Parsetree.structure =
   let ast =
     match !Js_config.jsx_version with
     | 3 ->
-        Reactjs_jsx_ppx.rewrite_implementation ~jsxVersion:3 ~jsxModule:""
-          ~jsxMode:"" ast
+        Reactjs_jsx_ppx.rewrite_implementation ~jsxVersion:3
+          ~jsxModule:!Js_config.jsx_module ~jsxMode:!Js_config.jsx_mode ast
     | 4 ->
-        Reactjs_jsx_ppx.rewrite_implementation ~jsxVersion:4 ~jsxModule:""
-          ~jsxMode:!Js_config.react_runtime ast
+        Reactjs_jsx_ppx.rewrite_implementation ~jsxVersion:4
+          ~jsxModule:!Js_config.jsx_module ~jsxMode:!Js_config.jsx_mode ast
     | _ -> ast
   in
   if !Js_config.no_builtin_ppx then ast

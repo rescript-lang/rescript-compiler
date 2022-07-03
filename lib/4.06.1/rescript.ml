@@ -1776,11 +1776,13 @@ let reason = "reason"
 
 let react_jsx = "react-jsx"
 
-let react = "react"
+let jsx = "jsx"
 
-let jsx_version = "jsx"
+let jsx_version = "version"
 
-let react_runtime = "runtime"
+let jsx_module = "module"
+
+let jsx_mode = "mode"
 
 let entries = "entries"
 
@@ -8128,8 +8130,9 @@ type dependencies = dependency list
 type reason_react_jsx = Jsx_v3
 (* string option  *)
 
-type react_jsx = Jsx_v3 | Jsx_v4
-type react_runtime = Classic | Automatic
+type jsx_version = Jsx_v3 | Jsx_v4
+type jsx_module = React
+type jsx_mode = Classic | Automatic
 type gentype_config = bool
 type command = string
 type ppx = { name : string; args : string list }
@@ -8158,8 +8161,9 @@ type t = {
   files_to_install : Bsb_db.module_info Queue.t;
   generate_merlin : bool;
   reason_react_jsx : reason_react_jsx option;
-  react_jsx : react_jsx option;
-  react_runtime : react_runtime option;
+  jsx_version : jsx_version option;
+  jsx_module : jsx_module option;
+  jsx_mode : jsx_mode option;
   (* whether apply PPX transform or not*)
   generators : command Map_string.t;
   cut_generators : bool;
@@ -10369,10 +10373,10 @@ let extract_reason_react_jsx (map : json_map) =
   |> ignore;
   !default
 
-let extract_react_jsx (map : json_map) =
-  let default : Bsb_config_types.react_jsx option ref = ref None in
+let extract_jsx_version (map : json_map) =
+  let default : Bsb_config_types.jsx_version option ref = ref None in
   map
-  |? ( Bsb_build_schemas.react,
+  |? ( Bsb_build_schemas.jsx,
        `Obj
          (fun m ->
            match m.?(Bsb_build_schemas.jsx_version) with
@@ -10380,31 +10384,48 @@ let extract_react_jsx (map : json_map) =
                match flo with
                | "3" -> default := Some Jsx_v3
                | "4" -> default := Some Jsx_v4
-               | _ -> Bsb_exception.errorf ~loc "Unsupported react-jsx %s" flo)
+               | _ -> Bsb_exception.errorf ~loc "Unsupported jsx-version %s" flo
+               )
            | Some x ->
                Bsb_exception.config_error x
-                 "Unexpected input (expect a version number) for jsx"
+                 "Unexpected input (expect a version number) for jsx-version"
            | None -> ()) )
   |> ignore;
   !default
 
-let extract_react_runtime (map : json_map) =
-  let default : Bsb_config_types.react_runtime option ref = ref None in
+let extract_jsx_module (map : json_map) =
+  let default : Bsb_config_types.jsx_module option ref = ref None in
   map
-  |? ( Bsb_build_schemas.react,
+  |? ( Bsb_build_schemas.jsx,
        `Obj
          (fun m ->
-           match m.?(Bsb_build_schemas.react_runtime) with
+           match m.?(Bsb_build_schemas.jsx_module) with
+           | Some (Str { loc; str }) -> (
+               match str with
+               | "react" -> default := Some React
+               | _ -> Bsb_exception.errorf ~loc "Unsupported jsx-module %s" str)
+           | Some x ->
+               Bsb_exception.config_error x
+                 "Unexpected input (jsx module name) for jsx-mode"
+           | None -> ()) )
+  |> ignore;
+  !default
+
+let extract_jsx_mode (map : json_map) =
+  let default : Bsb_config_types.jsx_mode option ref = ref None in
+  map
+  |? ( Bsb_build_schemas.jsx,
+       `Obj
+         (fun m ->
+           match m.?(Bsb_build_schemas.jsx_mode) with
            | Some (Str { loc; str }) -> (
                match str with
                | "classic" -> default := Some Classic
                | "automatic" -> default := Some Automatic
-               | _ ->
-                   Bsb_exception.errorf ~loc "Unsupported react-runtime %s" str)
+               | _ -> Bsb_exception.errorf ~loc "Unsupported jsx-mode %s" str)
            | Some x ->
                Bsb_exception.config_error x
-                 "Unexpected input (expect classic or automatic) for \
-                  react-runtime"
+                 "Unexpected input (expect classic or automatic) for jsx-mode"
            | None -> ()) )
   |> ignore;
   !default
@@ -10556,8 +10577,9 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
                   .path)
       in
       let reason_react_jsx = extract_reason_react_jsx map in
-      let react_jsx = extract_react_jsx map in
-      let react_runtime = extract_react_runtime map in
+      let jsx_version = extract_jsx_version map in
+      let jsx_module = extract_jsx_module map in
+      let jsx_mode = extract_jsx_mode map in
       let bs_dependencies =
         extract_dependencies map per_proj_dir Bsb_build_schemas.bs_dependencies
       in
@@ -10614,8 +10636,9 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
             generate_merlin =
               extract_boolean map Bsb_build_schemas.generate_merlin false;
             reason_react_jsx;
-            react_jsx;
-            react_runtime;
+            jsx_version;
+            jsx_module;
+            jsx_mode;
             generators = extract_generators map;
             cut_generators;
           }
@@ -11558,8 +11581,9 @@ val make_custom_rules :
   pp_file:string option ->
   has_builtin:bool ->
   reason_react_jsx:Bsb_config_types.reason_react_jsx option ->
-  react_jsx:Bsb_config_types.react_jsx option ->
-  react_runtime:Bsb_config_types.react_runtime option ->
+  jsx_version:Bsb_config_types.jsx_version option ->
+  jsx_module:Bsb_config_types.jsx_module option ->
+  jsx_mode:Bsb_config_types.jsx_mode option ->
   digest:string ->
   package_specs:Bsb_package_specs.t ->
   namespace:string option ->
@@ -11670,8 +11694,9 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
     ~(has_postbuild : string option) ~(pp_file : string option)
     ~(has_builtin : bool)
     ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
-    ~(react_jsx : Bsb_config_types.react_jsx option)
-    ~(react_runtime : Bsb_config_types.react_runtime option) ~(digest : string)
+    ~(jsx_version : Bsb_config_types.jsx_version option)
+    ~(jsx_module : Bsb_config_types.jsx_module option)
+    ~(jsx_mode : Bsb_config_types.jsx_mode option) ~(digest : string)
     ~(package_specs : Bsb_package_specs.t) ~(namespace : string option)
     ~package_name ~warnings ~(ppx_files : Bsb_config_types.ppx list) ~bsc_flags
     ~(dpkg_incls : string) ~(lib_incls : string) ~(dev_incls : string)
@@ -11741,17 +11766,18 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
     | None -> ()
     | Some flag ->
         Ext_buffer.add_char_string buf ' ' (Bsb_build_util.pp_flag flag));
-    (match (has_reason_react_jsx, reason_react_jsx) with
-    | false, _ | _, None -> ()
-    | _, Some Jsx_v3 -> Ext_buffer.add_string buf " -bs-jsx 3");
-    (match react_jsx with
+    (match (has_reason_react_jsx, reason_react_jsx, jsx_version) with
+    | _, _, Some Jsx_v3 -> Ext_buffer.add_string buf " -bs-jsx 3"
+    | _, _, Some Jsx_v4 -> Ext_buffer.add_string buf " -bs-jsx 4"
+    | _, Some Jsx_v3, None -> Ext_buffer.add_string buf " -bs-jsx 3"
+    | _ -> ());
+    (match jsx_module with
     | None -> ()
-    | Some Jsx_v3 -> Ext_buffer.add_string buf " -bs-jsx 3"
-    | Some Jsx_v4 -> Ext_buffer.add_string buf " -bs-jsx 4");
-    (match react_runtime with
+    | Some React -> Ext_buffer.add_string buf " -bs-jsx-module react");
+    (match jsx_mode with
     | None -> ()
-    | Some Classic -> Ext_buffer.add_string buf " -bs-react-runtime classic"
-    | Some Automatic -> Ext_buffer.add_string buf " -bs-react-runtime automatic");
+    | Some Classic -> Ext_buffer.add_string buf " -bs-jsx-mode classic"
+    | Some Automatic -> Ext_buffer.add_string buf " -bs-jsx-mode automatic");
 
     Ext_buffer.add_char_string buf ' ' bsc_flags;
     Ext_buffer.add_string buf " -absname -bs-ast -o $out $i";
@@ -12360,8 +12386,9 @@ let output_ninja_and_namespace_map ~per_proj_dir ~package_kind
        files_to_install;
        built_in_dependency;
        reason_react_jsx;
-       react_jsx;
-       react_runtime;
+       jsx_version;
+       jsx_module;
+       jsx_mode;
        generators;
        namespace;
        warning;
@@ -12408,8 +12435,8 @@ let output_ninja_and_namespace_map ~per_proj_dir ~package_kind
   let rules : Bsb_ninja_rule.builtin =
     Bsb_ninja_rule.make_custom_rules ~gentype_config
       ~has_postbuild:js_post_build_cmd ~pp_file ~has_builtin:built_in_dependency
-      ~reason_react_jsx ~react_jsx ~react_runtime ~package_specs ~namespace
-      ~digest ~package_name ~warnings ~ppx_files ~bsc_flags
+      ~reason_react_jsx ~jsx_version ~jsx_module ~jsx_mode ~package_specs
+      ~namespace ~digest ~package_name ~warnings ~ppx_files ~bsc_flags
       ~dpkg_incls (* dev dependencies *)
       ~lib_incls (* its own libs *)
       ~dev_incls (* its own devs *)

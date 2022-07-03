@@ -90,11 +90,13 @@ let reason = "reason"
 
 let react_jsx = "react-jsx"
 
-let react = "react"
+let jsx = "jsx"
 
-let jsx_version = "jsx"
+let jsx_version = "version"
 
-let react_runtime = "runtime"
+let jsx_module = "module"
+
+let jsx_mode = "mode"
 
 let entries = "entries"
 

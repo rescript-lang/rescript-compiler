@@ -35,9 +35,12 @@ let main impl intf =
           ( "-bs-jsx",
             Arg.Int (fun i -> Js_config.jsx_version := i),
             " Set jsx version" );
-          ( "-bs-react-runtime",
-            Arg.String (fun i -> Js_config.react_runtime := i),
-            " Set react runtime" );
+          ( "-bs-jsx-module",
+            Arg.String (fun i -> Js_config.jsx_module := i),
+            " Set jsx module" );
+          ( "-bs-jsx-mode",
+            Arg.String (fun i -> Js_config.jsx_mode := i),
+            " Set jsx mode" );
         ]
         ignore usage;
       Ppx_apply.apply_lazy ~source:a.(n - 2) ~target:a.(n - 1) impl intf)
