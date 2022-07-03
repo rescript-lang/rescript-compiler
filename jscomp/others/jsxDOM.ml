@@ -374,177 +374,177 @@ type domProps = {
   [@ns.optional];
   wrap: string (* "hard" or "soft" *)
   [@ns.optional];
-  (* Clipboard events
-  onCopy: ReactEvent.Clipboard.t -> unit
+  (* Clipboard events *)
+  onCopy: JsxEvent.Clipboard.t -> unit
   [@ns.optional];
-  onCut: ReactEvent.Clipboard.t -> unit
+  onCut: JsxEvent.Clipboard.t -> unit
   [@ns.optional];
-  onPaste: ReactEvent.Clipboard.t -> unit
+  onPaste: JsxEvent.Clipboard.t -> unit
   [@ns.optional];
   (* Composition events *)
-  onCompositionEnd: ReactEvent.Composition.t -> unit
+  onCompositionEnd: JsxEvent.Composition.t -> unit
   [@ns.optional];
-  onCompositionStart: ReactEvent.Composition.t -> unit
+  onCompositionStart: JsxEvent.Composition.t -> unit
   [@ns.optional];
-  onCompositionUpdate: ReactEvent.Composition.t -> unit
+  onCompositionUpdate: JsxEvent.Composition.t -> unit
   [@ns.optional];
   (* Keyboard events *)
-  onKeyDown: ReactEvent.Keyboard.t -> unit
+  onKeyDown: JsxEvent.Keyboard.t -> unit
   [@ns.optional];
-  onKeyPress: ReactEvent.Keyboard.t -> unit
+  onKeyPress: JsxEvent.Keyboard.t -> unit
   [@ns.optional];
-  onKeyUp: ReactEvent.Keyboard.t -> unit
+  onKeyUp: JsxEvent.Keyboard.t -> unit
   [@ns.optional];
   (* Focus events *)
-  onFocus: ReactEvent.Focus.t -> unit
+  onFocus: JsxEvent.Focus.t -> unit
   [@ns.optional];
-  onBlur: ReactEvent.Focus.t -> unit
+  onBlur: JsxEvent.Focus.t -> unit
   [@ns.optional];
   (* Form events *)
-  onChange: ReactEvent.Form.t -> unit
+  onChange: JsxEvent.Form.t -> unit
   [@ns.optional];
-  onInput: ReactEvent.Form.t -> unit
+  onInput: JsxEvent.Form.t -> unit
   [@ns.optional];
-  onSubmit: ReactEvent.Form.t -> unit
+  onSubmit: JsxEvent.Form.t -> unit
   [@ns.optional];
-  onInvalid: ReactEvent.Form.t -> unit
+  onInvalid: JsxEvent.Form.t -> unit
   [@ns.optional];
   (* Mouse events *)
-  onClick: ReactEvent.Mouse.t -> unit
+  onClick: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onContextMenu: ReactEvent.Mouse.t -> unit
+  onContextMenu: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onDoubleClick: ReactEvent.Mouse.t -> unit
+  onDoubleClick: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onDrag: ReactEvent.Mouse.t -> unit
+  onDrag: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onDragEnd: ReactEvent.Mouse.t -> unit
+  onDragEnd: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onDragEnter: ReactEvent.Mouse.t -> unit
+  onDragEnter: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onDragExit: ReactEvent.Mouse.t -> unit
+  onDragExit: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onDragLeave: ReactEvent.Mouse.t -> unit
+  onDragLeave: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onDragOver: ReactEvent.Mouse.t -> unit
+  onDragOver: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onDragStart: ReactEvent.Mouse.t -> unit
+  onDragStart: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onDrop: ReactEvent.Mouse.t -> unit
+  onDrop: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onMouseDown: ReactEvent.Mouse.t -> unit
+  onMouseDown: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onMouseEnter: ReactEvent.Mouse.t -> unit
+  onMouseEnter: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onMouseLeave: ReactEvent.Mouse.t -> unit
+  onMouseLeave: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onMouseMove: ReactEvent.Mouse.t -> unit
+  onMouseMove: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onMouseOut: ReactEvent.Mouse.t -> unit
+  onMouseOut: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onMouseOver: ReactEvent.Mouse.t -> unit
+  onMouseOver: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onMouseUp: ReactEvent.Mouse.t -> unit
+  onMouseUp: JsxEvent.Mouse.t -> unit
   [@ns.optional];
   (* Selection events *)
-  onSelect: ReactEvent.Selection.t -> unit
+  onSelect: JsxEvent.Selection.t -> unit
   [@ns.optional];
   (* Touch events *)
-  onTouchCancel: ReactEvent.Touch.t -> unit
+  onTouchCancel: JsxEvent.Touch.t -> unit
   [@ns.optional];
-  onTouchEnd: ReactEvent.Touch.t -> unit
+  onTouchEnd: JsxEvent.Touch.t -> unit
   [@ns.optional];
-  onTouchMove: ReactEvent.Touch.t -> unit
+  onTouchMove: JsxEvent.Touch.t -> unit
   [@ns.optional];
-  onTouchStart: ReactEvent.Touch.t -> unit
+  onTouchStart: JsxEvent.Touch.t -> unit
   [@ns.optional];
   (* Pointer events *)
-  onPointerOver: ReactEvent.Pointer.t -> unit
+  onPointerOver: JsxEvent.Pointer.t -> unit
   [@ns.optional];
-  onPointerEnter: ReactEvent.Pointer.t -> unit
+  onPointerEnter: JsxEvent.Pointer.t -> unit
   [@ns.optional];
-  onPointerDown: ReactEvent.Pointer.t -> unit
+  onPointerDown: JsxEvent.Pointer.t -> unit
   [@ns.optional];
-  onPointerMove: ReactEvent.Pointer.t -> unit
+  onPointerMove: JsxEvent.Pointer.t -> unit
   [@ns.optional];
-  onPointerUp: ReactEvent.Pointer.t -> unit
+  onPointerUp: JsxEvent.Pointer.t -> unit
   [@ns.optional];
-  onPointerCancel: ReactEvent.Pointer.t -> unit
+  onPointerCancel: JsxEvent.Pointer.t -> unit
   [@ns.optional];
-  onPointerOut: ReactEvent.Pointer.t -> unit
+  onPointerOut: JsxEvent.Pointer.t -> unit
   [@ns.optional];
-  onPointerLeave: ReactEvent.Pointer.t -> unit
+  onPointerLeave: JsxEvent.Pointer.t -> unit
   [@ns.optional];
-  onGotPointerCapture: ReactEvent.Pointer.t -> unit
+  onGotPointerCapture: JsxEvent.Pointer.t -> unit
   [@ns.optional];
-  onLostPointerCapture: ReactEvent.Pointer.t -> unit
+  onLostPointerCapture: JsxEvent.Pointer.t -> unit
   [@ns.optional];
   (* UI events *)
-  onScroll: ReactEvent.UI.t -> unit
+  onScroll: JsxEvent.UI.t -> unit
   [@ns.optional];
   (* Wheel events *)
-  onWheel: ReactEvent.Wheel.t -> unit
+  onWheel: JsxEvent.Wheel.t -> unit
   [@ns.optional];
   (* Media events *)
-  onAbort: ReactEvent.Media.t -> unit
+  onAbort: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onCanPlay: ReactEvent.Media.t -> unit
+  onCanPlay: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onCanPlayThrough: ReactEvent.Media.t -> unit
+  onCanPlayThrough: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onDurationChange: ReactEvent.Media.t -> unit
+  onDurationChange: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onEmptied: ReactEvent.Media.t -> unit
+  onEmptied: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onEncrypted: ReactEvent.Media.t -> unit
+  onEncrypted: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onEnded: ReactEvent.Media.t -> unit
+  onEnded: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onError: ReactEvent.Media.t -> unit
+  onError: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onLoadedData: ReactEvent.Media.t -> unit
+  onLoadedData: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onLoadedMetadata: ReactEvent.Media.t -> unit
+  onLoadedMetadata: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onLoadStart: ReactEvent.Media.t -> unit
+  onLoadStart: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onPause: ReactEvent.Media.t -> unit
+  onPause: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onPlay: ReactEvent.Media.t -> unit
+  onPlay: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onPlaying: ReactEvent.Media.t -> unit
+  onPlaying: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onProgress: ReactEvent.Media.t -> unit
+  onProgress: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onRateChange: ReactEvent.Media.t -> unit
+  onRateChange: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onSeeked: ReactEvent.Media.t -> unit
+  onSeeked: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onSeeking: ReactEvent.Media.t -> unit
+  onSeeking: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onStalled: ReactEvent.Media.t -> unit
+  onStalled: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onSuspend: ReactEvent.Media.t -> unit
+  onSuspend: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onTimeUpdate: ReactEvent.Media.t -> unit
+  onTimeUpdate: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onVolumeChange: ReactEvent.Media.t -> unit
+  onVolumeChange: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onWaiting: ReactEvent.Media.t -> unit
+  onWaiting: JsxEvent.Media.t -> unit
   [@ns.optional];
   (* Image events *)
-  onLoad: ReactEvent.Image.t -> unit (* duplicate *) (* ~onError: ReactEvent.Image.t -> unit=?, *)
+  onLoad: JsxEvent.Image.t -> unit (* duplicate *) (* ~onError: JsxEvent.Image.t -> unit=?, *)
   [@ns.optional];
   (* Animation events *)
-  onAnimationStart: ReactEvent.Animation.t -> unit
+  onAnimationStart: JsxEvent.Animation.t -> unit
   [@ns.optional];
-  onAnimationEnd: ReactEvent.Animation.t -> unit
+  onAnimationEnd: JsxEvent.Animation.t -> unit
   [@ns.optional];
-  onAnimationIteration: ReactEvent.Animation.t -> unit
+  onAnimationIteration: JsxEvent.Animation.t -> unit
   [@ns.optional];
   (* Transition events *)
-  onTransitionEnd: ReactEvent.Transition.t -> unit
-  [@ns.optional]; *)
+  onTransitionEnd: JsxEvent.Transition.t -> unit
+  [@ns.optional];
   (* svg *)
   accentHeight: string
   [@ns.optional];
@@ -1406,176 +1406,176 @@ type props = {
   wrap: string (* "hard" or "soft" *)
   [@ns.optional];
   (* Clipboard events *)
-  (* onCopy: ReactEvent.Clipboard.t -> unit
-  [@ns.optional]; *)
-  (* onCut: ReactEvent.Clipboard.t -> unit
-  [@ns.optional]; *)
-  (* onPaste: ReactEvent.Clipboard.t -> unit
-  [@ns.optional] *)
+  onCopy: JsxEvent.Clipboard.t -> unit
+  [@ns.optional];
+  onCut: JsxEvent.Clipboard.t -> unit
+  [@ns.optional];
+  onPaste: JsxEvent.Clipboard.t -> unit
+  [@ns.optional];
   (* Composition events *)
-  (* onCompositionEnd: ReactEvent.Composition.t -> unit
-  [@ns.optional]; *)
-  (* onCompositionStart: ReactEvent.Composition.t -> unit
-  [@ns.optional]; *)
-  (* onCompositionUpdate: ReactEvent.Composition.t -> unit
-  [@ns.optional]; *)
+  onCompositionEnd: JsxEvent.Composition.t -> unit
+  [@ns.optional];
+  onCompositionStart: JsxEvent.Composition.t -> unit
+  [@ns.optional];
+  onCompositionUpdate: JsxEvent.Composition.t -> unit
+  [@ns.optional];
   (* Keyboard events *)
-  (* onKeyDown: ReactEvent.Keyboard.t -> unit
+  onKeyDown: JsxEvent.Keyboard.t -> unit
   [@ns.optional];
-  onKeyPress: ReactEvent.Keyboard.t -> unit
+  onKeyPress: JsxEvent.Keyboard.t -> unit
   [@ns.optional];
-  onKeyUp: ReactEvent.Keyboard.t -> unit
+  onKeyUp: JsxEvent.Keyboard.t -> unit
   [@ns.optional];
   (* Focus events *)
-  onFocus: ReactEvent.Focus.t -> unit
+  onFocus: JsxEvent.Focus.t -> unit
   [@ns.optional];
-  onBlur: ReactEvent.Focus.t -> unit
+  onBlur: JsxEvent.Focus.t -> unit
   [@ns.optional];
   (* Form events *)
-  onChange: ReactEvent.Form.t -> unit
+  onChange: JsxEvent.Form.t -> unit
   [@ns.optional];
-  onInput: ReactEvent.Form.t -> unit
+  onInput: JsxEvent.Form.t -> unit
   [@ns.optional];
-  onSubmit: ReactEvent.Form.t -> unit
+  onSubmit: JsxEvent.Form.t -> unit
   [@ns.optional];
-  onInvalid: ReactEvent.Form.t -> unit
+  onInvalid: JsxEvent.Form.t -> unit
   [@ns.optional];
   (* Mouse events *)
-  onClick: ReactEvent.Mouse.t -> unit
+  onClick: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onContextMenu: ReactEvent.Mouse.t -> unit
+  onContextMenu: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onDoubleClick: ReactEvent.Mouse.t -> unit
+  onDoubleClick: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onDrag: ReactEvent.Mouse.t -> unit
+  onDrag: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onDragEnd: ReactEvent.Mouse.t -> unit
+  onDragEnd: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onDragEnter: ReactEvent.Mouse.t -> unit
+  onDragEnter: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onDragExit: ReactEvent.Mouse.t -> unit
+  onDragExit: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onDragLeave: ReactEvent.Mouse.t -> unit
+  onDragLeave: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onDragOver: ReactEvent.Mouse.t -> unit
+  onDragOver: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onDragStart: ReactEvent.Mouse.t -> unit
+  onDragStart: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onDrop: ReactEvent.Mouse.t -> unit
+  onDrop: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onMouseDown: ReactEvent.Mouse.t -> unit
+  onMouseDown: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onMouseEnter: ReactEvent.Mouse.t -> unit
+  onMouseEnter: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onMouseLeave: ReactEvent.Mouse.t -> unit
+  onMouseLeave: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onMouseMove: ReactEvent.Mouse.t -> unit
+  onMouseMove: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onMouseOut: ReactEvent.Mouse.t -> unit
+  onMouseOut: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onMouseOver: ReactEvent.Mouse.t -> unit
+  onMouseOver: JsxEvent.Mouse.t -> unit
   [@ns.optional];
-  onMouseUp: ReactEvent.Mouse.t -> unit
+  onMouseUp: JsxEvent.Mouse.t -> unit
   [@ns.optional];
   (* Selection events *)
-  onSelect: ReactEvent.Selection.t -> unit
+  onSelect: JsxEvent.Selection.t -> unit
   [@ns.optional];
   (* Touch events *)
-  onTouchCancel: ReactEvent.Touch.t -> unit
+  onTouchCancel: JsxEvent.Touch.t -> unit
   [@ns.optional];
-  onTouchEnd: ReactEvent.Touch.t -> unit
+  onTouchEnd: JsxEvent.Touch.t -> unit
   [@ns.optional];
-  onTouchMove: ReactEvent.Touch.t -> unit
+  onTouchMove: JsxEvent.Touch.t -> unit
   [@ns.optional];
-  onTouchStart: ReactEvent.Touch.t -> unit
+  onTouchStart: JsxEvent.Touch.t -> unit
   [@ns.optional];
   (* Pointer events *)
-  onPointerOver: ReactEvent.Pointer.t -> unit
+  onPointerOver: JsxEvent.Pointer.t -> unit
   [@ns.optional];
-  onPointerEnter: ReactEvent.Pointer.t -> unit
+  onPointerEnter: JsxEvent.Pointer.t -> unit
   [@ns.optional];
-  onPointerDown: ReactEvent.Pointer.t -> unit
+  onPointerDown: JsxEvent.Pointer.t -> unit
   [@ns.optional];
-  onPointerMove: ReactEvent.Pointer.t -> unit
+  onPointerMove: JsxEvent.Pointer.t -> unit
   [@ns.optional];
-  onPointerUp: ReactEvent.Pointer.t -> unit
+  onPointerUp: JsxEvent.Pointer.t -> unit
   [@ns.optional];
-  onPointerCancel: ReactEvent.Pointer.t -> unit
+  onPointerCancel: JsxEvent.Pointer.t -> unit
   [@ns.optional];
-  onPointerOut: ReactEvent.Pointer.t -> unit
+  onPointerOut: JsxEvent.Pointer.t -> unit
   [@ns.optional];
-  onPointerLeave: ReactEvent.Pointer.t -> unit
+  onPointerLeave: JsxEvent.Pointer.t -> unit
   [@ns.optional];
-  onGotPointerCapture: ReactEvent.Pointer.t -> unit
+  onGotPointerCapture: JsxEvent.Pointer.t -> unit
   [@ns.optional];
-  onLostPointerCapture: ReactEvent.Pointer.t -> unit
+  onLostPointerCapture: JsxEvent.Pointer.t -> unit
   [@ns.optional];
   (* UI events *)
-  onScroll: ReactEvent.UI.t -> unit
+  onScroll: JsxEvent.UI.t -> unit
   [@ns.optional];
   (* Wheel events *)
-  onWheel: ReactEvent.Wheel.t -> unit
+  onWheel: JsxEvent.Wheel.t -> unit
   [@ns.optional];
   (* Media events *)
-  onAbort: ReactEvent.Media.t -> unit
+  onAbort: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onCanPlay: ReactEvent.Media.t -> unit
+  onCanPlay: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onCanPlayThrough: ReactEvent.Media.t -> unit
+  onCanPlayThrough: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onDurationChange: ReactEvent.Media.t -> unit
+  onDurationChange: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onEmptied: ReactEvent.Media.t -> unit
+  onEmptied: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onEncrypted: ReactEvent.Media.t -> unit
+  onEncrypted: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onEnded: ReactEvent.Media.t -> unit
+  onEnded: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onError: ReactEvent.Media.t -> unit
+  onError: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onLoadedData: ReactEvent.Media.t -> unit
+  onLoadedData: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onLoadedMetadata: ReactEvent.Media.t -> unit
+  onLoadedMetadata: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onLoadStart: ReactEvent.Media.t -> unit
+  onLoadStart: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onPause: ReactEvent.Media.t -> unit
+  onPause: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onPlay: ReactEvent.Media.t -> unit
+  onPlay: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onPlaying: ReactEvent.Media.t -> unit
+  onPlaying: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onProgress: ReactEvent.Media.t -> unit
+  onProgress: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onRateChange: ReactEvent.Media.t -> unit
+  onRateChange: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onSeeked: ReactEvent.Media.t -> unit
+  onSeeked: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onSeeking: ReactEvent.Media.t -> unit
+  onSeeking: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onStalled: ReactEvent.Media.t -> unit
+  onStalled: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onSuspend: ReactEvent.Media.t -> unit
+  onSuspend: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onTimeUpdate: ReactEvent.Media.t -> unit
+  onTimeUpdate: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onVolumeChange: ReactEvent.Media.t -> unit
+  onVolumeChange: JsxEvent.Media.t -> unit
   [@ns.optional];
-  onWaiting: ReactEvent.Media.t -> unit
+  onWaiting: JsxEvent.Media.t -> unit
   [@ns.optional];
   (* Image events *)
-  onLoad: ReactEvent.Image.t -> unit (* duplicate *) (* ~onError: ReactEvent.Image.t -> unit=?, *)
+  onLoad: JsxEvent.Image.t -> unit (* duplicate *) (* ~onError: JsxEvent.Image.t -> unit=?, *)
   [@ns.optional];
   (* Animation events *)
-  onAnimationStart: ReactEvent.Animation.t -> unit
+  onAnimationStart: JsxEvent.Animation.t -> unit
   [@ns.optional];
-  onAnimationEnd: ReactEvent.Animation.t -> unit
+  onAnimationEnd: JsxEvent.Animation.t -> unit
   [@ns.optional];
-  onAnimationIteration: ReactEvent.Animation.t -> unit
+  onAnimationIteration: JsxEvent.Animation.t -> unit
   [@ns.optional];
   (* Transition events *)
-  onTransitionEnd: ReactEvent.Transition.t -> unit
-  [@ns.optional]; *)
+  onTransitionEnd: JsxEvent.Transition.t -> unit
+  [@ns.optional];
   (* svg *)
   accentHeight: string
   [@ns.optional];
