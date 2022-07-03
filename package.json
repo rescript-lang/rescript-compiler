@@ -24,6 +24,25 @@
   },
   "version": "10.0.0-alpha.1",
   "description": "ReScript toolchain",
+  "files": [
+    "Changes.md",
+    "Credits.md",
+    "bsc",
+    "bsrefmt",
+    "rescript",
+    "darwin",
+    "darwinarm64",
+    "freebsd",
+    "linux",
+    "openbsd",
+    "win32",
+    "docs/docson/build-schema.json",
+    "jscomp/stubs/ext_basic_hash_stubs.c",
+    "lib",
+    "scripts",
+    "vendor/ninja.tar.gz",
+    "vendor/ocaml.tar.gz"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rescript-lang/rescript-compiler.git"

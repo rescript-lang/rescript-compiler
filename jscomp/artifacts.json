@@ -1,17 +1,12 @@
 {
   "": [
-    ".gitattributes",
-    ".gitmodules",
-    "CONTRIBUTING.md",
     "COPYING",
     "COPYING.LESSER",
     "Changes.md",
     "Credits.md",
-    "DCO.md",
     "LICENSE",
     "README.md",
     "bsc",
-    "bsconfig.json",
     "bsrefmt",
     "package.json",
     "rescript"
@@ -33,8 +28,6 @@
     "rescript.exe"
   ],
   "docs/docson": [
-    "LICENSE",
-    "README.md",
     "build-schema.json"
   ],
   "freebsd": [
