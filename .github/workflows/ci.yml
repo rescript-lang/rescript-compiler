@@ -148,3 +148,36 @@ jobs:
           path: |
             ${{ steps.get_package_info.outputs.rescript_package }}
             ${{ steps.get_package_info.outputs.stdlib_package }}
+
+  test:
+    needs: package
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest, macos-arm]
+
+    runs-on: ${{matrix.os}}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: npm-packages
+          path: packages/test
+
+      - name: Install ReScript package
+        run: npm i rescript-10*.tgz
+        shell: bash
+        working-directory: packages/test
+
+      - name: Test installation
+        run: npm test
+        working-directory: packages/test
