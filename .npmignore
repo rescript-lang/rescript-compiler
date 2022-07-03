@@ -52,4 +52,4 @@ scripts/deps.js
 scripts/format.js
 scripts/local_br_clean.sh
 scripts/setVersion.js
-packages/std/
+packages/
