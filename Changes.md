@@ -7,6 +7,8 @@
 - Add support for `@new @variadic` (see https://github.com/rescript-lang/rescript-compiler/pull/5364)
 - New records with `@optional` fields [#5423](https://github.com/rescript-lang/rescript-compiler/pull/5423) [#5452](https://github.com/rescript-lang/rescript-compiler/issues/5452)
 - Classify bigint correctly [#5351](https://github.com/rescript-lang/rescript-compiler/pull/5351)
+* `@bs.send.pipe` is now removed. Eaerlier it was deprecated.
+* Missing labels in function application is now an error (https://forum.rescript-lang.org/t/ann-more-strict-checks-in-missed-labels/2117).
 
 **Syntax**
 
@@ -14,9 +16,14 @@
 - Fix stripping of quotes for empty poly variants [#474](https://github.com/rescript-lang/syntax/pull/474)
 - Implement syntax for arity zero vs arity one in uncurried application in [#139](https://github.com/rescript-lang/syntax/pull/139)
 - Fix parsing of first class module exprs as part of binary/ternary expr in [#256](https://github.com/rescript-lang/syntax/pull/256)
+* Fix formatter hanging on deeply nested function calls [#261](https://github.com/rescript-lang/syntax/issues/261)
+* Remove parsing of "import" and "export" which was never officially supported.
+* Doc comments `/** ... */` are now supported. Inernally, they are attributes, so are only valid at positions where `@foo` is allowed, or a syntax error is given. Similarly for module-level `/*** comments */` that can go where `@@attributes` go.
 
 **Libraries**
 
+* Removed printing modules (Printf, Format etc) and related functions. Details of files added/removed: https://github.com/rescript-lang/rescript-compiler/commit/0fd8bb0e77c4b0e96a9647ac8af614305057003f.
+- There could be issues with `rescript-relay`. See https://github.com/rescript-lang/rescript-compiler/issues/5493.
 - Several Belt libraries are now converted to ReScript syntax, with corresponding comments in Markdown format suitable for hovering.
 
 **Playground**
