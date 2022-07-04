@@ -69,7 +69,6 @@ let regenerate_ninja ~(package_kind : Bsb_package_kind.t) ~forced ~per_proj_dir
         ->
           ());
 
-      Bsb_merlin_gen.merlin_file_gen ~per_proj_dir config;
       Bsb_ninja_gen.output_ninja_and_namespace_map ~per_proj_dir ~package_kind
         config;
       (* PR2184: we still need record empty dir
