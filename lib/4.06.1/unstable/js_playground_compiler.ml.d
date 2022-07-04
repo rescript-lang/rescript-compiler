@@ -580,7 +580,6 @@
 ../lib/4.06.1/unstable/js_playground_compiler.ml: ./napkin/res_grammar.ml
 ../lib/4.06.1/unstable/js_playground_compiler.ml: ./napkin/res_io.ml
 ../lib/4.06.1/unstable/js_playground_compiler.ml: ./napkin/res_io.mli
-../lib/4.06.1/unstable/js_playground_compiler.ml: ./napkin/res_js_ffi.ml
 ../lib/4.06.1/unstable/js_playground_compiler.ml: ./napkin/res_minibuffer.ml
 ../lib/4.06.1/unstable/js_playground_compiler.ml: ./napkin/res_minibuffer.mli
 ../lib/4.06.1/unstable/js_playground_compiler.ml: ./napkin/res_outcome_printer.ml
