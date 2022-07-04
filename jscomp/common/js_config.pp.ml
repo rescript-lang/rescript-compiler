@@ -30,9 +30,9 @@ let diagnose = ref false
 
 let get_diagnose () =
   !diagnose
-  #ifndef RELEASE
-    || Sys.getenv_opt "RES_DEBUG_FILE" <> None
-  #endif
+#ifndef RELEASE
+  || Sys.getenv_opt "RES_DEBUG_FILE" <> None
+#endif
 
 (* let (//) = Filename.concat *)
 

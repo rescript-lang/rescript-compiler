@@ -31,9 +31,9 @@ let diagnose = ref false
 
 let get_diagnose () =
   !diagnose
-    
+  
 # 34 "common/js_config.pp.ml"
-    || Sys.getenv_opt "RES_DEBUG_FILE" <> None
+  || Sys.getenv_opt "RES_DEBUG_FILE" <> None
 
 # 37 "common/js_config.pp.ml"
 (* let (//) = Filename.concat *)
