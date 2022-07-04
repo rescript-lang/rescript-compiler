@@ -8,7 +8,7 @@
 - New records with `@optional` fields [#5423](https://github.com/rescript-lang/rescript-compiler/pull/5423) [#5452](https://github.com/rescript-lang/rescript-compiler/issues/5452)
 - Classify bigint correctly [#5351](https://github.com/rescript-lang/rescript-compiler/pull/5351)
 
-* `@bs.send.pipe` is now removed. Eaerlier it was deprecated.
+* `@bs.send.pipe` is now removed. Earlier it was deprecated.
 * Missing labels in function application is now an error (https://forum.rescript-lang.org/t/ann-more-strict-checks-in-missed-labels/2117).
 
 **Syntax**
