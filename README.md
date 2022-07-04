@@ -44,10 +44,10 @@ More details are available [here](https://github.com/rescript-lang/rescript-comp
 
 See [COPYING](./COPYING) and [COPYING.LESSER](./COPYING.LESSER)
 
-The [`ocaml`](ocaml) directory contains the official [OCaml](https://ocaml.org) compiler (version 4.06.1).
+`vendor/ocaml.tar.gz` contains the official [OCaml](https://ocaml.org) compiler (version 4.14.0).
 Refer to its copyright and license notices for information about its licensing.
 
-The `vendor/ninja.tar.gz` contains the vendored [ninja](https://github.com/ninja-build/ninja).
+`vendor/ninja.tar.gz` contains the vendored [ninja](https://github.com/ninja-build/ninja).
 Refer to its copyright and license notices for information about its licensing.
 
 Note that OSS is for sharing of knowledge, but the authorship should be respected. Copyright headers in each file, Acknowledgements and History section in this file should be kept **intact**.
