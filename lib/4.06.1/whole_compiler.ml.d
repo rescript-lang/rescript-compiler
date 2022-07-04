@@ -604,7 +604,6 @@
 ../lib/4.06.1/whole_compiler.ml: ./napkin/res_grammar.ml
 ../lib/4.06.1/whole_compiler.ml: ./napkin/res_io.ml
 ../lib/4.06.1/whole_compiler.ml: ./napkin/res_io.mli
-../lib/4.06.1/whole_compiler.ml: ./napkin/res_js_ffi.ml
 ../lib/4.06.1/whole_compiler.ml: ./napkin/res_minibuffer.ml
 ../lib/4.06.1/whole_compiler.ml: ./napkin/res_minibuffer.mli
 ../lib/4.06.1/whole_compiler.ml: ./napkin/res_multi_printer.ml
