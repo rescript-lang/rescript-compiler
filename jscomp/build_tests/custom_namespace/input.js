@@ -10,6 +10,3 @@ child_process.execSync(`${rescript_exe} clean -with-deps && ${rescript_exe} buil
 
 var x = require("./src/demo.bs.js");
 assert.equal(x.v, 42);
-
-var merlin = fs.readFileSync(path.join(__dirname, ".merlin"), "utf8");
-assert.ok(merlin.includes("-open Foo_bar"));

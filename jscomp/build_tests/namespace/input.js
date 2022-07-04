@@ -15,11 +15,7 @@ var demo_bs_js = fs.readFileSync(
 assert.ok(demo_bs_js.includes("liba/src/demo.bs.js"));
 assert.equal(x.v, 3);
 
-var merlin = fs.readFileSync(path.join(__dirname, ".merlin"), "utf8");
 var warn_flag = "-40+6+7"; // Note it is additive now
-assert.ok(merlin.includes("-open"));
-assert.ok(merlin.includes(warn_flag));
-assert.ok(merlin.includes("emptydir") !== true);
 
 var testDepsNoWarning = "-w a";
 function hasWarnError(file) {
