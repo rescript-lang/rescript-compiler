@@ -2,6 +2,8 @@
 
 # master
 
+# 10.0.alpha
+
 **Compiler**
 
 - Add support for `@new @variadic` (see https://github.com/rescript-lang/rescript-compiler/pull/5364)
