@@ -29,12 +29,12 @@
 - Removed printing modules (Printf, Format etc) and related functions. Details of files added/removed: https://github.com/rescript-lang/rescript-compiler/commit/0fd8bb0e77c4b0e96a9647ac8af614305057003f.
 
 * There could be issues with `rescript-relay`. See https://github.com/rescript-lang/rescript-compiler/issues/5493.
-* Several Belt libraries are now converted to ReScript syntax, with corresponding comments in Markdown format suitable for hovering.
+* Several Belt / Js libraries are now converted to ReScript syntax, with corresponding comments in Markdown format suitable for hovering. See [#5361](https://github.com/rescript-lang/rescript-compiler/pull/5361).
 
 **Playground**
 
 - Added `jsoo_playground_main.ml` as the rescript-lang.org playground bundle entrypoint
-- `*` Removed Reason syntax support for the playground experience (see https://github.com/rescript-lang/rescript-compiler/pull/5375)
+- `*` Removed Reason syntax support for the playground experience. See https://github.com/rescript-lang/rescript-compiler/pull/5375
 
 # 9.1.4
 
