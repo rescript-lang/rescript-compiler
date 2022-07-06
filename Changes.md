@@ -2,7 +2,8 @@
 
 # master
 
-- `bsconfig.json` does not support // line comments anymore
+- `*` `bsconfig.json` does not support // line comments anymore
+- `*` Externals without `@val` annotations do not work anymore, and externals with `= ""` give an error.
 
 # 10.0.0-alpha.1
 
