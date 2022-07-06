@@ -1,7 +1,4 @@
 {
   "name": "rescript-test",
-  "version": "0.0.0",
-  "scripts": {
-    "test": "bsc Test.res"
-  }
+  "version": "0.0.0"
 }

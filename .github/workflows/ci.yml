@@ -179,5 +179,6 @@ jobs:
         working-directory: packages/test
 
       - name: Test installation
-        run: npm test
+        run: npx rescript -h && npx rescript build && cat src/Test.bs.js
+        shell: bash
         working-directory: packages/test
