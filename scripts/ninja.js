@@ -1582,22 +1582,22 @@ ${buildNapkinCliFiles}
 }
 
 var sourceDirs = [
-  "ml",
-  "stubs",
-  "ext",
-  "common",
-  "js_parser",
-  "frontend",
-  "depends",
-  "core",
-  "super_errors",
-  "outcome_printer",
   "bsb",
   "bsb_helper",
-  "ounit",
-  "napkin",
-  "ounit_tests",
+  "common",
+  "core",
+  "depends",
+  "frontend",
+  "js_parser",
+  "ext",
   "main",
+  "ml",
+  "ounit",
+  "ounit_tests",
+  "outcome_printer",
+  "napkin",
+  "stubs",
+  "super_errors",
 ];
 /**
  *
