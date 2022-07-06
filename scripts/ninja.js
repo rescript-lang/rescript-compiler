@@ -1588,6 +1588,7 @@ var sourceDirs = [
   "core",
   "depends",
   "frontend",
+  "gentype",
   "js_parser",
   "ext",
   "main",

@@ -6,6 +6,7 @@
  depends
  ext
  frontend
+ gentype
  js_parser
  main
  ml
@@ -29,6 +30,8 @@
 (copy_files# ext/*.{ml,mli})
 
 (copy_files# frontend/*.{ml,mli})
+
+(copy_files# gentype/*.{ml,mli})
 
 (copy_files# js_parser/*.{ml,mli})
 
