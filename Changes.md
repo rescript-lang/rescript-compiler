@@ -2,6 +2,8 @@
 
 # master
 
+- `bsconfig.json` does not support // line comments anymore
+
 # 10.0.0-alpha.1
 
 **Compiler**
