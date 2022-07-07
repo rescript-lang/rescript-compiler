@@ -109,7 +109,7 @@ let test (type a) (x : 'a) (v : a t) : bool =
     Js.typeof x = "function"
   | Object
     ->
-    Js.typeof x = "object"
+    x != (Obj.magic Js_null.empty) && Js.typeof x = "object"
   | Symbol
     ->
     Js.typeof x = "symbol"
