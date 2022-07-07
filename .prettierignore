@@ -4,6 +4,7 @@ lib/
 vendor/
 ninja/
 syntax/
+example-async/
 ocaml-tree/
 _opam
 Changes.md
