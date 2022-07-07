@@ -9,20 +9,20 @@ let addTest1 = (t, x) => tests->Js.Array2.push((. ()) => t(. x))->ignore
 //
 // Basic tests
 
-let foo = @res.async (. x, y) => x + y
+let foo = async (. x, y) => x + y
 
 let bar =
-  @res.async
+  async
   (. ff) => {
     let a = @res.await ff(. 3, 4)
     let b = @res.await foo(. 5, 6)
     a + b
   }
 
-let baz = @res.async (. ()) => @res.await bar(. foo)
+let baz = async (. ()) => @res.await bar(. foo)
 
 let testBaz: testable =
-  @res.async
+  async
   (. ()) => {
     let n = @res.await baz(.)
     Js.log2("baz returned", n)
@@ -36,14 +36,14 @@ testBaz->addTest
 
 exception E(int)
 
-let e1: testable = @res.async (. ()) => raise(E(1000))
-let e2: testable = @res.async (. ()) => Js.Exn.raiseError("Some JS error")
-let e3: testable = @res.async (. ()) => @res.await e1(.)
-let e4: testable = @res.async (. ()) => @res.await e2(.)
+let e1: testable = async (. ()) => raise(E(1000))
+let e2: testable = async (. ()) => Js.Exn.raiseError("Some JS error")
+let e3: testable = async (. ()) => @res.await e1(.)
+let e4: testable = async (. ()) => @res.await e2(.)
 let e5: testable = %raw(`function() { return Promise.reject(new Error('fail')) }`)
 
 let testTryCatch =
-  @res.async
+  async
   (. fn) =>
     try {@res.await fn(.)} catch {
     | E(n) => Js.log2("testTryCatch: E", n)
@@ -60,10 +60,10 @@ testTryCatch->addTest1(e5)
 //
 // Check for nested promise
 
-let singlePromise = @res.async (. x) => x + 1
+let singlePromise = async (. x) => x + 1
 
 let nestedPromise =
-  @res.async
+  async
   (. x) => {
     let resolve = x => [Js.Promise.resolve(x)]
     let _result = singlePromise(. x + 1)->resolve
@@ -84,7 +84,7 @@ module Fetch = {
 let explainError: unknown => string = %raw(`(e)=>e.toString()`)
 
 let testFetch =
-  @res.async
+  async
   (. url) => {
     open Fetch
     switch {@res.await fetch(url)} {
@@ -102,13 +102,13 @@ testFetch->addTest1("https://www.google.comsdkjdkghdsg")
 //
 // Callbacks
 let withCallback =
-  @res.async
+  async
   (. ()) => {
-    @res.async (. x) => @res.await (x->Js.Promise.resolve) + 1
+    async (. x) => @res.await (x->Js.Promise.resolve) + 1
   }
 
 let testWithCallback =
-  @res.async (. ()) => Js.log2("callback returned", @res.await (@res.await withCallback(.))(. 3))
+  async (. ()) => Js.log2("callback returned", @res.await (@res.await withCallback(.))(. 3))
 
 testWithCallback->addTest
 
@@ -117,10 +117,10 @@ testWithCallback->addTest
 // Async list
 module AsyncList = {
   let map =
-    @res.async
+    async
     (. l, f) => {
       let rec loop =
-        @res.async
+        async
         (. l, acc) =>
           switch l {
           | list{} => acc
@@ -136,7 +136,7 @@ let fetchAndCount = {
   let counter = ref(0)
 
   let ff =
-    @res.async
+    async
     (. url) => {
       let response = @res.await Fetch.fetch(url)
       counter := counter.contents + 1
@@ -147,7 +147,7 @@ let fetchAndCount = {
 }
 
 let testFetchMany =
-  @res.async
+  async
   (. ()) => {
     let fetchedItems =
       @res.await
@@ -170,7 +170,7 @@ testFetchMany->addTest
 // Fetch with Result type
 module FetchResult = {
   let fetch =
-    @res.async
+    async
     (. url) => {
       switch {@res.await Fetch.fetch(url)} {
       | response => Ok(response)
@@ -182,7 +182,7 @@ module FetchResult = {
 let nextFetch = (. _response) => Some("https://github.com/")
 
 let testFetchWithResult =
-  @res.async
+  async
   (. ()) => {
     switch @res.await
     FetchResult.fetch(. "https://www.google.com") {
@@ -216,7 +216,7 @@ testFetchWithResult->addTest
 // Run tests
 
 let rec runAllTests =
-  @res.async
+  async
   (. n) => {
     if n >= 0 && n < Array.length(tests) {
       @res.await
@@ -233,23 +233,23 @@ runAllTests(. 0)->ignore
 //
 // Curried functions
 
-let bb = @res.async x => @res.await x
+let bb = async x => @res.await x
 
-let cc = @res.async (x, ~y=x, z) => (@res.await x) + (@res.await y) + (@res.await z)
+let cc = async (x, ~y=x, z) => (@res.await x) + (@res.await y) + (@res.await z)
 
-let dd = @res.async x => {y => (@res.await x) + (@res.await y)}
+let dd = async x => {y => (@res.await x) + (@res.await y)}
 
-let ee = @res.async (. x) => {y => (@res.await x) + (@res.await y)}
+let ee = async (. x) => {y => (@res.await x) + (@res.await y)}
 
 //
 //
 // Errors
 
 // let aa =
-//   @res.async
+//   async
 //   (. x) => {
 //     let cb = (. _) => @res.await x // Error: Await on expression not in an async context
 //     cb
 //   }
 
-// let _ = @res.async (_, . x) => @res.await x // Error: Await on expression not in an async context
+// let _ = async (_, . x) => @res.await x // Error: Await on expression not in an async context
