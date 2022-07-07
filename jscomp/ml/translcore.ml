@@ -696,7 +696,7 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
   | Texp_let (rec_flag, pat_expr_list, body) ->
       transl_let rec_flag pat_expr_list (transl_exp body)
   | Texp_function { arg_label = _; param; cases; partial } ->
-      let async = e.exp_attributes |> List.exists (fun ({txt}, _payload) -> txt = "async") in
+      let async = e.exp_attributes |> List.exists (fun ({txt}, _payload) -> txt = "async" || txt = "res.async") in
       let params, body, return_unit =
         let pl = push_defaults e.exp_loc [] cases partial in
         transl_function e.exp_loc partial param pl
