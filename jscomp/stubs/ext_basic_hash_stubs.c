@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdint.h>
 #include "caml/memory.h"
+#include "caml/osdeps.h"
 #include "caml/signals.h"
 #include "caml/misc.h"
 #include <sys/stat.h>
