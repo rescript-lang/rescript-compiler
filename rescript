@@ -31,6 +31,7 @@ process.env.BSB_PROJECT_ROOT = cwd;
 // If the project uses gentype and uses custom file extension
 // via generatedFileExtension, ignore them in watch mode
 var bsConfigFile = path.join(cwd, bsconfig);
+var genTypeFileExtension = undefined;
 
 if (fs.existsSync(bsConfigFile)) {
   var genTypeConfig = require(bsConfigFile).gentypeconfig
@@ -417,7 +418,7 @@ if (
         fileName.endsWith(".mjs") ||
         fileName.endsWith(".cjs") ||
         fileName.endsWith(".gen.tsx") ||
-        fileName.endsWith(genTypeFileExtension) ||
+        (genTypeFileExtension && fileName.endsWith(genTypeFileExtension)) ||
         watch_generated.indexOf(fileName) >= 0 ||
         fileName.endsWith(".swp")
       );
