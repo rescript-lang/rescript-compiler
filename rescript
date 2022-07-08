@@ -36,7 +36,7 @@ var genTypeFileExtension = undefined;
 if (fs.existsSync(bsConfigFile)) {
   var genTypeConfig = require(bsConfigFile).gentypeconfig
   if (genTypeConfig) {
-    var genTypeFileExtension = genTypeConfig.generatedFileExtension
+    genTypeFileExtension = genTypeConfig.generatedFileExtension
   }
 }
 
