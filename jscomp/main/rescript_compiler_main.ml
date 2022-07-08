@@ -281,7 +281,7 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
 
     "-bs-jsx-module", string_call (fun i ->
       (if i <> "react" then Bsc_args.bad_arg (" Not supported jsx-module : " ^ i));
-      Js_config.jsx_mode := i),
+      Js_config.jsx_module := i),
     "*internal* Set jsx module";
 
     "-bs-jsx-mode", string_call (fun i ->
