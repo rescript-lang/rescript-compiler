@@ -30,9 +30,13 @@ process.env.BSB_PROJECT_ROOT = cwd;
 
 // If the project uses gentype and uses custom file extension
 // via generatedFileExtension, ignore them in watch mode
-var genTypeConfig = require(path.join(cwd, bsconfig)).gentypeconfig
-if (genTypeConfig) {
-  var genTypeFileExtension = genTypeConfig.generatedFileExtension
+var bsConfigFile = path.join(cwd, bsconfig);
+
+if (fs.existsSync(bsConfigFile)) {
+  var genTypeConfig = require(bsConfigFile).gentypeconfig
+  if (genTypeConfig) {
+    var genTypeFileExtension = genTypeConfig.generatedFileExtension
+  }
 }
 
 // All clients of type MiniWebSocket
