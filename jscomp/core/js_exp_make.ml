@@ -60,9 +60,7 @@ let var ?comment id : t = { expression_desc = Var (Id id); comment }
     Invariant: it should not call an external module .. *)
 
 let js_global ?comment (v : string) = var ?comment (Ext_ident.create_js v)
-
 let undefined : t = { expression_desc = Undefined; comment = None }
-
 let nil : t = { expression_desc = Null; comment = None }
 
 let call ?comment ~info e0 args : t =
@@ -126,7 +124,7 @@ let pure_runtime_call module_name fn_name args =
 let runtime_ref module_name fn_name = runtime_var_dot module_name fn_name
 
 let str ?(delim = None) ?comment txt : t =
-  { expression_desc = Str {txt; delim}; comment }
+  { expression_desc = Str { txt; delim }; comment }
 
 let raw_js_code ?comment info s : t =
   {
@@ -135,7 +133,6 @@ let raw_js_code ?comment info s : t =
   }
 
 let array ?comment mt es : t = { expression_desc = Array (es, mt); comment }
-
 let some_comment = None
 
 let optional_block e : J.expression =
@@ -396,7 +393,7 @@ let extension_access (e : t) name (pos : int32) : t =
 
 let string_index ?comment (e0 : t) (e1 : t) : t =
   match (e0.expression_desc, e1.expression_desc) with
-  | Str {txt}, Number (Int { i; _ }) ->
+  | Str { txt }, Number (Int { i; _ }) ->
       (* Don't optimize {j||j} *)
       let i = Int32.to_int i in
       if i >= 0 && i < String.length txt then
@@ -475,7 +472,7 @@ let array_length ?comment (e : t) : t =
 
 let string_length ?comment (e : t) : t =
   match e.expression_desc with
-  | Str {txt; delim=None} -> int ?comment (Int32.of_int (String.length txt))
+  | Str { txt; delim = None } -> int ?comment (Int32.of_int (String.length txt))
   (* No optimization for {j||j}*)
   | _ -> { expression_desc = Length (e, String); comment }
 
@@ -500,14 +497,14 @@ let function_length ?comment (e : t) : t =
 
 let rec string_append ?comment (e : t) (el : t) : t =
   match (e.expression_desc, el.expression_desc) with
-  | Str {txt=a}, String_append ({ expression_desc = Str {txt=b} }, c) ->
+  | Str { txt = a }, String_append ({ expression_desc = Str { txt = b } }, c) ->
       string_append ?comment (str (a ^ b)) c
-  | String_append (c, { expression_desc = Str {txt=b} }), Str {txt=a} ->
+  | String_append (c, { expression_desc = Str { txt = b } }), Str { txt = a } ->
       string_append ?comment c (str (b ^ a))
-  | ( String_append (a, { expression_desc = Str {txt=b} }),
-      String_append ({ expression_desc = Str {txt=c} }, d) ) ->
+  | ( String_append (a, { expression_desc = Str { txt = b } }),
+      String_append ({ expression_desc = Str { txt = c } }, d) ) ->
       string_append ?comment (string_append a (str (b ^ c))) d
-  | Str {txt=a}, Str {txt=b} -> str ?comment (a ^ b)
+  | Str { txt = a }, Str { txt = b } -> str ?comment (a ^ b)
   | _, _ -> { comment; expression_desc = String_append (e, el) }
 
 let obj ?comment properties : t =
@@ -520,9 +517,7 @@ let obj ?comment properties : t =
 
 (* var (Jident.create_js "true") *)
 let true_ : t = { comment = None; expression_desc = Bool true }
-
 let false_ : t = { comment = None; expression_desc = Bool false }
-
 let bool v = if v then true_ else false_
 
 (** Arith operators *)
@@ -546,7 +541,7 @@ let rec triple_equal ?comment (e0 : t) (e1 : t) : t =
       (Null | Undefined) )
     when no_side_effect e0 ->
       false_
-  | Str {txt=x}, Str {txt=y} ->
+  | Str { txt = x }, Str { txt = y } ->
       (* CF*)
       bool (Ext_string.equal x y)
   | Number (Int { i = i0; _ }), Number (Int { i = i1; _ }) -> bool (i0 = i1)
@@ -724,7 +719,7 @@ let int_equal = float_equal
 
 let string_equal ?comment (e0 : t) (e1 : t) : t =
   match (e0.expression_desc, e1.expression_desc) with
-  | Str {txt=a0}, Str {txt=b0} -> bool (Ext_string.equal a0 b0)
+  | Str { txt = a0 }, Str { txt = b0 } -> bool (Ext_string.equal a0 b0)
   | _, _ -> { expression_desc = Bin (EqEqEq, e0, e1); comment }
 
 let is_type_number ?comment (e : t) : t =
@@ -807,7 +802,7 @@ let uint32 ?comment n : J.expression =
 
 let string_comp (cmp : J.binop) ?comment (e0 : t) (e1 : t) =
   match (e0.expression_desc, e1.expression_desc) with
-  | Str {txt=a0}, Str {txt=b0} -> (
+  | Str { txt = a0 }, Str { txt = b0 } -> (
       match cmp with
       | EqEqEq -> bool (a0 = b0)
       | NotEqEq -> bool (a0 <> b0)
@@ -1035,7 +1030,6 @@ and float_minus ?comment (e1 : t) (e2 : t) : t =
 (* bin ?comment Minus e1 e2 *)
 
 let unchecked_int32_add ?comment e1 e2 = float_add ?comment e1 e2
-
 let int32_add ?comment e1 e2 = to_int32 (float_add ?comment e1 e2)
 
 let offset e1 (offset : int) =
@@ -1048,7 +1042,6 @@ let unchecked_int32_minus ?comment e1 e2 : J.expression =
   float_minus ?comment e1 e2
 
 let float_div ?comment e1 e2 = bin ?comment Div e1 e2
-
 let float_notequal ?comment e1 e2 = bin ?comment NotEqEq e1 e2
 
 let int32_asr ?comment e1 e2 : J.expression =
@@ -1170,7 +1163,6 @@ let of_block ?comment ?e block : t =
     []
 
 let is_null ?comment (x : t) = triple_equal ?comment x nil
-
 let is_undef ?comment x = triple_equal ?comment x undefined
 
 let for_sure_js_null_undefined (x : t) =
