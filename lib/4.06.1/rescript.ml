@@ -11748,7 +11748,7 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
         Ext_buffer.add_string buf " $out_last");
     Ext_buffer.contents buf
   in
-  let mk_ast ~has_reason_react_jsx : string =
+  let mk_ast =
     Ext_buffer.clear buf;
     Ext_buffer.add_string buf bsc;
     Ext_buffer.add_char_string buf ' ' warnings;
@@ -11766,11 +11766,11 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
     | None -> ()
     | Some flag ->
         Ext_buffer.add_char_string buf ' ' (Bsb_build_util.pp_flag flag));
-    (match (has_reason_react_jsx, reason_react_jsx, jsx_version) with
-    | _, _, Some Jsx_v3 -> Ext_buffer.add_string buf " -bs-jsx 3"
-    | _, _, Some Jsx_v4 -> Ext_buffer.add_string buf " -bs-jsx 4"
-    | _, Some Jsx_v3, None -> Ext_buffer.add_string buf " -bs-jsx 3"
-    | _ -> ());
+    (match (reason_react_jsx, jsx_version) with
+    | _, Some Jsx_v3 -> Ext_buffer.add_string buf " -bs-jsx 3"
+    | _, Some Jsx_v4 -> Ext_buffer.add_string buf " -bs-jsx 4"
+    | Some Jsx_v3, None -> Ext_buffer.add_string buf " -bs-jsx 3"
+    | None, None -> ());
     (match jsx_module with
     | None -> ()
     | Some React -> Ext_buffer.add_string buf " -bs-jsx-module react");
@@ -11783,10 +11783,8 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
     Ext_buffer.add_string buf " -absname -bs-ast -o $out $i";
     Ext_buffer.contents buf
   in
-  let build_ast = define ~command:(mk_ast ~has_reason_react_jsx:false) "ast" in
-  let build_ast_from_re =
-    define ~command:(mk_ast ~has_reason_react_jsx:true) "astj"
-  in
+  let build_ast = define ~command:mk_ast "ast" in
+  let build_ast_from_re = define ~command:mk_ast "astj" in
 
   let copy_resources =
     define
