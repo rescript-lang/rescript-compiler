@@ -1,7 +1,9 @@
-`*` means potential break changes
+`*` means potential breaking changes
 
-# master
+# 10.0.0-beta.1
 
+- Fixed crash in `rescript build` on Windows [#5516](https://github.com/rescript-lang/rescript-compiler/pull/5516)
+- Fixed `rescript init` command not working [#5526](https://github.com/rescript-lang/rescript-compiler/pull/5526)
 - `*` `bsconfig.json` does not support // line comments anymore
 - `*` Externals without `@val` annotations do not work anymore, and externals with `= ""` give an error.
 - `*` Regular expressions don't need escaping. E.g. `let blockCommentsRe = %re("/\\/\\*([^*]|[\\r\\n]|(\\*+([^*/]|[\\r\\n])))*\\*+\\//g")` is now `let blockCommentsRe = %re("/\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\//g")`.
