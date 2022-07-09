@@ -149,7 +149,7 @@ jobs:
             ${{ steps.get_package_info.outputs.rescript_package }}
             ${{ steps.get_package_info.outputs.stdlib_package }}
 
-  test:
+  installationTest:
     needs: package
     strategy:
       fail-fast: false
