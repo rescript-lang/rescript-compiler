@@ -296,3 +296,6 @@ module Vector = Js_vector
 
 module Console = Js_console
 (** Provides bindings for console *)
+
+module BigInt = Js_bigint
+(** Provide bindings for BigInt *)
