@@ -4,6 +4,7 @@
 
 - `*` `bsconfig.json` does not support // line comments anymore
 - `*` Externals without `@val` annotations do not work anymore, and externals with `= ""` give an error.
+- `*` Regular expressions don't need escaping. E.g. `let blockCommentsRe = %re("/\\/\\*([^*]|[\\r\\n]|(\\*+([^*/]|[\\r\\n])))*\\*+\\//g")` is now `let blockCommentsRe = %re("/\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\//g")`.
 
 # 10.0.0-alpha.1
 
