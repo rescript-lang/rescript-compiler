@@ -15,6 +15,7 @@
 - Classify bigint correctly [#5351](https://github.com/rescript-lang/rescript-compiler/pull/5351)
 - `*` `@bs.send.pipe` is now removed. Earlier it was deprecated.
 - `*` Missing labels in function application is now an error (https://forum.rescript-lang.org/t/ann-more-strict-checks-in-missed-labels/2117).
+- `*` Fix Js.String.match\_ return type [#5070](https://github.com/rescript-lang/rescript-compiler/pull/5070)
 - Proper M1 support (CI now supports M1 native builds)
 
 **Syntax**
