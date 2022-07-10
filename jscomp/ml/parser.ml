@@ -372,7 +372,7 @@ type let_binding =
     lb_text: text Lazy.t;
     lb_loc: Location.t; }
 
-type let_bindings =
+type [@warning "-69"] let_bindings =
   { lbs_bindings: let_binding list;
     lbs_rec: rec_flag;
     lbs_extension: string Asttypes.loc option;

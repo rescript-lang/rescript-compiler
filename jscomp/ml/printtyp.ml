@@ -1579,20 +1579,21 @@ let report_unification_error ppf env ?(unif=true)
 
 
 let super_type_expansion ~tag t ppf t' =
+  let tag = Format.String_tag tag in
   if same_path t t' then begin
-    Format.pp_open_tag ppf tag;
+    Format.pp_open_stag ppf tag;
     type_expr ppf t;
-    Format.pp_close_tag ppf ();
+    Format.pp_close_stag ppf ();
   end else begin
     let t' = if proxy t == proxy t' then unalias t' else t' in
     fprintf ppf "@[<2>";
-    Format.pp_open_tag ppf tag;
+    Format.pp_open_stag ppf tag;
     fprintf ppf "%a" type_expr t;
-    Format.pp_close_tag ppf ();
+    Format.pp_close_stag ppf ();
     fprintf ppf "@ @{<dim>(defined as@}@ ";
-    Format.pp_open_tag ppf tag;
+    Format.pp_open_stag ppf tag;
     fprintf ppf "%a" type_expr t';
-    Format.pp_close_tag ppf ();
+    Format.pp_close_stag ppf ();
     fprintf ppf "@{<dim>)@}";
     fprintf ppf "@]";
   end

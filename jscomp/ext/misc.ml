@@ -274,7 +274,7 @@ let string_of_file ic =
   in copy()
 
 let output_to_bin_file_directly filename fn =  
-  let oc = Pervasives.open_out_bin filename in 
+  let oc = open_out_bin filename in 
   match fn filename oc with 
   | v -> close_out oc ; v 
   | exception e -> close_out oc ; raise e
@@ -593,12 +593,12 @@ module Color = struct
   (* map a tag to a style, if the tag is known.
      @raise Not_found otherwise *)
   let style_of_tag s = match s with
-    | "error" -> (!cur_styles).error
-    | "warning" -> (!cur_styles).warning
-    | "loc" -> (!cur_styles).loc
-    | "info" -> [Bold; FG Yellow]
-    | "dim" -> [Dim]
-    | "filename" -> [FG Cyan]
+    | Format.String_tag "error" -> (!cur_styles).error
+    | Format.String_tag "warning" -> (!cur_styles).warning
+    | Format.String_tag "loc" -> (!cur_styles).loc
+    | Format.String_tag "info" -> [Bold; FG Yellow]
+    | Format.String_tag "dim" -> [Dim]
+    | Format.String_tag "filename" -> [FG Cyan]
     | _ -> raise Not_found
 
   let color_enabled = ref true
@@ -619,13 +619,13 @@ module Color = struct
   (* add color handling to formatter [ppf] *)
   let set_color_tag_handling ppf =
     let open Format in
-    let functions = pp_get_formatter_tag_functions ppf () in
+    let functions = pp_get_formatter_stag_functions ppf () in
     let functions' = {functions with
-      mark_open_tag=(mark_open_tag ~or_else:functions.mark_open_tag);
-      mark_close_tag=(mark_close_tag ~or_else:functions.mark_close_tag);
+      mark_open_stag=(mark_open_tag ~or_else:functions.mark_open_stag);
+      mark_close_stag=(mark_close_tag ~or_else:functions.mark_close_stag);
     } in
     pp_set_mark_tags ppf true; (* enable tags *)
-    pp_set_formatter_tag_functions ppf functions';
+    pp_set_formatter_stag_functions ppf functions';
     (* also setup margins *)
     pp_set_margin ppf (pp_get_margin std_formatter());
     ()

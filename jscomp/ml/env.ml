@@ -635,7 +635,7 @@ let current_unit = ref ""
 
 (* Persistent structure descriptions *)
 
-type pers_struct =
+type [@warning "-69"] pers_struct =
   { ps_name: string;
     ps_sig: signature Lazy.t;
     ps_comps: module_components;

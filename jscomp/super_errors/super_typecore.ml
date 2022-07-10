@@ -13,11 +13,6 @@ let super_report_unification_error = Printtyp.super_report_unification_error
 let reset_and_mark_loops = Printtyp.reset_and_mark_loops
 let type_expr = Printtyp.type_expr
 
-let tagged tag fn ppf arg =
-  Format.pp_open_tag ppf tag;
-  fn ppf arg;
-  Format.pp_close_tag ppf ()
-
 let rec bottom_aliases = function
   | (_, one) :: (_, two) :: rest -> begin match bottom_aliases rest with
       | Some types -> Some types

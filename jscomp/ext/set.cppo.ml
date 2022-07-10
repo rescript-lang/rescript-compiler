@@ -31,12 +31,12 @@ let print_elt = Format.pp_print_string
 #elif defined TYPE_IDENT
 type elt = Ident.t
 let compare_elt (x : elt) (y : elt) = 
-  let a =  Pervasives.compare (x.stamp : int) y.stamp in 
+  let a =  Stdlib.compare (x.stamp : int) y.stamp in 
   if a <> 0 then a 
   else 
-    let b = Pervasives.compare (x.name : string) y.name in 
+    let b = Stdlib.compare (x.name : string) y.name in 
     if b <> 0 then b 
-    else Pervasives.compare (x.flags : int) y.flags     
+    else Stdlib.compare (x.flags : int) y.flags     
 let [@inline] eq_elt (x : elt) y = Ident.same x y
 let print_elt = Ident.print
 #elif defined TYPE_INT

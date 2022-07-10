@@ -436,7 +436,7 @@ let enter_variable ?(is_module=false) ?(is_as_variable=false) loc name ty =
 let sort_pattern_variables vs =
   List.sort
     (fun (x,_,_,_,_) (y,_,_,_,_) ->
-      Pervasives.compare (Ident.name x) (Ident.name y))
+      compare (Ident.name x) (Ident.name y))
     vs
 
 let enter_orpat_variables loc env  p1_vs p2_vs =
