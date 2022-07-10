@@ -7413,7 +7413,7 @@ module Ext_js_file_kind
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 type case = Upper | Little
 
-type t = { case : case; suffix : Ext_js_suffix.t }
+type [@warning "-69"] t = { case : case; suffix : Ext_js_suffix.t }
 
 let any_runtime_kind = { case = Little; suffix = Ext_js_suffix.Js }
 

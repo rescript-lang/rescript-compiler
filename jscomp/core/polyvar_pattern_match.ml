@@ -33,7 +33,7 @@ type output = (hash_names * lam) list
 module Coll = Hash.Make (struct
   type t = lam
 
-  let equal = Pervasives.( = )
+  let equal = Stdlib.( = )
 
   let hash = Hashtbl.hash
 end)

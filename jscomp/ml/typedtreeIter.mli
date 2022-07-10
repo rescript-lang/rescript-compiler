@@ -73,7 +73,7 @@ module type IteratorArgument = sig
 
 end
 
-module MakeIterator :
+module [@warning "-67"] MakeIterator :
   functor (Iter : IteratorArgument) ->
     sig
       val iter_structure : structure -> unit

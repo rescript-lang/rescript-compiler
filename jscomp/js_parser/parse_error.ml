@@ -167,7 +167,7 @@ type t =
   | ThisParamBannedInArrowFunctions
   | ThisParamBannedInConstructor
 
-let compare (x : t) (y : t) = Pervasives.compare x y
+let compare (x : t) (y : t) = Stdlib.compare x y
 
 exception Error of (Loc.t * t) list
 

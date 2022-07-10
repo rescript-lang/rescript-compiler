@@ -37,7 +37,7 @@ val le_pat : pattern -> pattern -> bool
 val le_pats : pattern list -> pattern list -> bool
 
 (* Exported compatibility functor, abstracted over constructor equality *)
-module Compat :
+module [@warning "-67"] Compat :
   functor
     (Constr: sig
       val equal :

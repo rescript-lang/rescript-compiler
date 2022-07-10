@@ -19,7 +19,7 @@ exception MalFormed
 
 type apos = int
 
-type lexbuf = {
+type [@warning "-69"] lexbuf = {
   mutable buf: int array;
   mutable len: int;
   mutable offset: apos;
