@@ -388,7 +388,7 @@ To build a new version and release it on NPM, follow these steps:
    npm publish rescript-<version>.tgz [--tag next]
    npm publish rescript-std-<version>.tgz [--tag next]
    ```
-1. Tag the commit accordingly in git and push the tag.
+1. Tag the commit with the version number (e.g., "10.0.0", or "10.0.0-beta.1") and push the tag.
 
 ## Contribution Licensing
 
