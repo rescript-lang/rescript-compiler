@@ -1,5 +1,9 @@
 `*` means potential breaking changes
 
+# 10.0.0-beta.2
+
+- Changed Linux build to depend on GLIBC 2.28 again for compatibility with Debian 10.
+
 # 10.0.0-beta.1
 
 - Fixed crash in `rescript build` on Windows [#5516](https://github.com/rescript-lang/rescript-compiler/pull/5516)
