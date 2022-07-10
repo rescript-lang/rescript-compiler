@@ -365,6 +365,31 @@ Javascript Code
 
 Note that there is one design goal to keep in mind, never introduce any meaningless symbol unless necessary, we do optimizations, however, it should also compile readable output code.
 
+## Release Process
+
+To build a new version and release it on NPM, follow these steps:
+
+1. Increment the version number in `package.json`.
+1. Run `node scripts/setVersion.js` to take that version number over into other files.
+1. Snapshot (run ninja build to regenerate `whole_compiler.ml` etc.).
+1. Update `Changes.md`.
+1. Create a PR.
+1. Once that PR is merged, download the `npm-packages.zip` artifact for that commit from the Github Actions page.
+1. Extract `npm-packages.zip` to get the package tarballs to publish.
+1. Run the publish commands with `--dry-run` to see if everything (especially the version number) looks good:
+   ```sh
+   # Use the tag "next" when publishing an alpha/beta version.
+   npm publish rescript-<version>.tgz [--tag next] --dry-run
+   npm publish rescript-std-<version>.tgz [--tag next] --dry-run
+   ```
+1. Publish for real:
+   ```sh
+   # Use the tag "next" when publishing an alpha/beta version.
+   npm publish rescript-<version>.tgz [--tag next]
+   npm publish rescript-std-<version>.tgz [--tag next]
+   ```
+1. Tag the commit accordingly in git and push the tag.
+
 ## Contribution Licensing
 
 Since ReScript is distributed under the terms of the [LGPL Version 3](LICENSE), contributions that you make are licensed under the same terms. In order for us to be able to accept your contributions, we will need explicit confirmation from you that you are able and willing to provide them under these terms, and the mechanism we use to do this is called a Developer's Certificate of Origin [DCO](DCO.md). This is very similar to the process used by the Linux(R) kernel, Samba, and many other major open source projects.
