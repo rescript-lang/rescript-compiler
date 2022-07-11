@@ -12,9 +12,12 @@
     "rescript"
   ],
   "darwin": [
+    "bsb_helper.exe",
+    "bsc.exe",
     "ninja.COPYING",
     "ninja.exe",
-    "refmt.exe"
+    "refmt.exe",
+    "rescript.exe"
   ],
   "darwinarm64": [
     "bsb_helper.exe",
@@ -35,7 +38,6 @@
   ],
   "lib": [
     "bstracing",
-    "build.ninja",
     "minisocket.js"
   ],
   "lib/4.06.1": [
@@ -928,9 +930,12 @@
     "uchar.mli"
   ],
   "linux": [
+    "bsb_helper.exe",
+    "bsc.exe",
     "ninja.COPYING",
     "ninja.exe",
-    "refmt.exe"
+    "refmt.exe",
+    "rescript.exe"
   ],
   "openbsd": [
     ".keep"
@@ -973,11 +978,15 @@
     "validate.js"
   ],
   "vendor": [
+    "ninja.tar.gz",
     "ocaml.tar.gz"
   ],
   "win32": [
+    "bsb_helper.exe",
+    "bsc.exe",
     "ninja.COPYING",
     "ninja.exe",
-    "refmt.exe"
+    "refmt.exe",
+    "rescript.exe"
   ]
 }
