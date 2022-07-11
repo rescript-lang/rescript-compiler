@@ -12,12 +12,9 @@
     "rescript"
   ],
   "darwin": [
-    "bsb_helper.exe",
-    "bsc.exe",
     "ninja.COPYING",
     "ninja.exe",
-    "refmt.exe",
-    "rescript.exe"
+    "refmt.exe"
   ],
   "darwinarm64": [
     "bsb_helper.exe",
@@ -38,6 +35,7 @@
   ],
   "lib": [
     "bstracing",
+    "build.ninja",
     "minisocket.js"
   ],
   "lib/4.06.1": [
@@ -147,6 +145,7 @@
     "js_OO.js",
     "js_array.js",
     "js_array2.js",
+    "js_bigint.js",
     "js_cast.js",
     "js_console.js",
     "js_date.js",
@@ -302,6 +301,7 @@
     "js_OO.js",
     "js_array.js",
     "js_array2.js",
+    "js_bigint.js",
     "js_cast.js",
     "js_console.js",
     "js_date.js",
@@ -675,6 +675,9 @@
     "js_array2.cmi",
     "js_array2.cmt",
     "js_array2.ml",
+    "js_bigint.cmi",
+    "js_bigint.cmt",
+    "js_bigint.ml",
     "js_cast.cmi",
     "js_cast.cmt",
     "js_cast.cmti",
@@ -925,12 +928,9 @@
     "uchar.mli"
   ],
   "linux": [
-    "bsb_helper.exe",
-    "bsc.exe",
     "ninja.COPYING",
     "ninja.exe",
-    "refmt.exe",
-    "rescript.exe"
+    "refmt.exe"
   ],
   "openbsd": [
     ".keep"
@@ -973,15 +973,11 @@
     "validate.js"
   ],
   "vendor": [
-    "ninja.tar.gz",
     "ocaml.tar.gz"
   ],
   "win32": [
-    "bsb_helper.exe",
-    "bsc.exe",
     "ninja.COPYING",
     "ninja.exe",
-    "refmt.exe",
-    "rescript.exe"
+    "refmt.exe"
   ]
 }
