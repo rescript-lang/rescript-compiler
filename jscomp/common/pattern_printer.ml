@@ -76,9 +76,8 @@ let normalize_or_patterns pat =
   let rec loop pat =
     match pat.ppat_desc with
     | Ppat_or (l, r) ->
-        let p = mkpat (Ppat_or (loop l, loop r)) in
-        let c = p |> flatten_or_patterns |> join_or_patterns in
-        c
+        let p_normalized = mkpat (Ppat_or (loop l, loop r)) in
+        p_normalized |> flatten_or_patterns |> join_or_patterns
     | Ppat_any -> pat
     | Ppat_var _ -> pat
     | Ppat_constant _ -> pat
