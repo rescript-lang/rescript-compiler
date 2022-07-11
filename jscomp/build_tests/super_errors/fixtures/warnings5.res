@@ -29,3 +29,19 @@ switch arr {
 switch arr {
 | [1, 2] => ()
 }
+
+let lst = list{}
+
+switch lst {
+  | list{} => ()
+}
+
+switch lst {
+  | list{1,2} => ()
+}
+
+switch lst {
+  | list{1} => ()
+}
+
+
