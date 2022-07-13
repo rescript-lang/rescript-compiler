@@ -130,8 +130,10 @@ let extract_reason_react_jsx (map : json_map) =
   |> ignore;
   !default
 
-let extract_jsx_version (map : json_map) =
-  let default : Bsb_config_types.jsx_version option ref = ref None in
+let extract_jsx (map : json_map) =
+  let version : Bsb_config_types.jsx_version option ref = ref None in
+  let module_ : Bsb_config_types.jsx_module option ref = ref None in
+  let mode : Bsb_config_types.jsx_mode option ref = ref None in
   map
   |? ( Bsb_build_schemas.jsx,
        `Obj
@@ -139,53 +141,41 @@ let extract_jsx_version (map : json_map) =
            match m.?(Bsb_build_schemas.jsx_version) with
            | Some (Flo { loc; flo }) -> (
                match flo with
-               | "3" -> default := Some Jsx_v3
-               | "4" -> default := Some Jsx_v4
+               | "3" -> version := Some Jsx_v3
+               | "4" -> version := Some Jsx_v4
                | _ -> Bsb_exception.errorf ~loc "Unsupported jsx-version %s" flo
                )
            | Some x ->
                Bsb_exception.config_error x
                  "Unexpected input (expect a version number) for jsx-version"
            | None -> ()) )
-  |> ignore;
-  !default
-
-let extract_jsx_module (map : json_map) =
-  let default : Bsb_config_types.jsx_module option ref = ref None in
-  map
   |? ( Bsb_build_schemas.jsx,
        `Obj
          (fun m ->
            match m.?(Bsb_build_schemas.jsx_module) with
            | Some (Str { loc; str }) -> (
                match str with
-               | "react" -> default := Some React
+               | "react" -> module_ := Some React
                | _ -> Bsb_exception.errorf ~loc "Unsupported jsx-module %s" str)
            | Some x ->
                Bsb_exception.config_error x
                  "Unexpected input (jsx module name) for jsx-mode"
            | None -> ()) )
-  |> ignore;
-  !default
-
-let extract_jsx_mode (map : json_map) =
-  let default : Bsb_config_types.jsx_mode option ref = ref None in
-  map
   |? ( Bsb_build_schemas.jsx,
        `Obj
          (fun m ->
            match m.?(Bsb_build_schemas.jsx_mode) with
            | Some (Str { loc; str }) -> (
                match str with
-               | "classic" -> default := Some Classic
-               | "automatic" -> default := Some Automatic
+               | "classic" -> mode := Some Classic
+               | "automatic" -> mode := Some Automatic
                | _ -> Bsb_exception.errorf ~loc "Unsupported jsx-mode %s" str)
            | Some x ->
                Bsb_exception.config_error x
                  "Unexpected input (expect classic or automatic) for jsx-mode"
            | None -> ()) )
   |> ignore;
-  !default
+  (!version, !module_, !mode)
 
 let extract_warning (map : json_map) =
   match map.?(Bsb_build_schemas.warnings) with
@@ -334,9 +324,7 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
                   .path)
       in
       let reason_react_jsx = extract_reason_react_jsx map in
-      let jsx_version = extract_jsx_version map in
-      let jsx_module = extract_jsx_module map in
-      let jsx_mode = extract_jsx_mode map in
+      let jsx_version, jsx_module, jsx_mode = extract_jsx map in
       let bs_dependencies =
         extract_dependencies map per_proj_dir Bsb_build_schemas.bs_dependencies
       in
