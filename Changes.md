@@ -1,5 +1,8 @@
 `*` means potential breaking changes
 
+# master
+Fix issue with compiler log not terminated that causes problems with editor extension not clearing issues when fixed [#5545](https://github.com/rescript-lang/rescript-compiler/issues/5545)
+
 # 10.0.0-beta.2
 
 - Changed Linux build to depend on GLIBC 2.28 again for compatibility with Debian 10.
