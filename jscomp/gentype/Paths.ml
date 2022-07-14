@@ -83,5 +83,4 @@ let relativePathFromBsLib fileName =
     | [] -> fileName
     | root :: dirs -> dirs |> List.fold_left concat root
 
-let readConfig ~bsVersion ~namespace =
-  Config.readConfig ~bsVersion ~getBsConfigFile ~namespace
+let readConfig ~namespace = Config.readConfig ~getBsConfigFile ~namespace
