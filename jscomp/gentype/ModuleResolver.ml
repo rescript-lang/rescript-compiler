@@ -17,7 +17,7 @@ let readBsDependenciesDirs ~root =
 
 type pkgs = { dirs : string list; pkgs : (string, string) Hashtbl.t }
 
-let readDirsFromConfig ~(config : Config.config) =
+let readDirsFromConfig ~(config : Config.t) =
   let dirs = ref [] in
   let root = config.projectRoot in
   let ( +++ ) = Filename.concat in
@@ -51,7 +51,7 @@ let readDirsFromConfig ~(config : Config.config) =
   | None -> ());
   !dirs
 
-let readSourceDirs ~(config : Config.config) =
+let readSourceDirs ~(config : Config.t) =
   let sourceDirs =
     [ "lib"; "bs"; ".sourcedirs.json" ]
     |> List.fold_left ( +++ ) config.bsbProjectRoot
@@ -196,7 +196,7 @@ let apply ~resolver ~useBsDependencies moduleName =
 
 (** Resolve a reference to ModuleName, and produce a path suitable for require.
    E.g. require "../foo/bar/ModuleName.ext" where ext is ".re" or ".js". *)
-let resolveModule ~(config : Config.config) ~importExtension ~outputFileRelative
+let resolveModule ~(config : Config.t) ~importExtension ~outputFileRelative
     ~resolver ~useBsDependencies moduleName =
   let outputFileRelativeDir =
     (* e.g. src if we're generating src/File.re.js *)
@@ -264,7 +264,7 @@ let resolveGeneratedModule ~config ~outputFileRelative ~resolver moduleName =
   importPath
 
 (** Returns the path to import a given Reason module name. *)
-let importPathForReasonModuleName ~(config : Config.config) ~outputFileRelative
+let importPathForReasonModuleName ~(config : Config.t) ~outputFileRelative
     ~resolver moduleName =
   if !Debug.moduleResolution then
     Log_.item "Resolve Reason Module: %s\n" (moduleName |> ModuleName.toString);

@@ -3,7 +3,7 @@ module ModuleNameMap = Map.Make (ModuleName)
 type module_ = CommonJS | ES6
 type bsVersion = int * int * int
 
-type config = {
+type t = {
   mutable bsbProjectRoot : string;
   bsDependencies : string list;
   mutable emitImportCurry : bool;
@@ -92,7 +92,8 @@ let rec findProjectRoot ~dir =
     let parent = dir |> Filename.dirname in
     if parent = dir then (
       prerr_endline
-        ("Error: cannot find project root containing " ^ compilerConfigFile ^ ".");
+        ("Error: cannot find project root containing " ^ compilerConfigFile
+       ^ ".");
       assert false)
     else findProjectRoot ~dir:parent
 

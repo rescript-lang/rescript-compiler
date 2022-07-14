@@ -144,7 +144,7 @@ struct
       Some (packageName |> namespace_of_package_name)
     else None
 
-  let isGeneratedModule id ~(config : Config.config) =
+  let isGeneratedModule id ~(config : Config.t) =
     config.bsDependencies
     |> List.exists (fun packageName ->
            packageName |> packageNameToGeneratedModuleName

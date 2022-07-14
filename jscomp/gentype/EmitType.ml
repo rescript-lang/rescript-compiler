@@ -13,14 +13,14 @@ let fileHeader ~sourceFile =
     ~lines:[ "TypeScript file generated from " ^ sourceFile ^ " by genType." ]
   ^ "/* eslint-disable import/first */\n\n"
 
-let generatedFilesExtension ~(config : Config.config) =
+let generatedFilesExtension ~(config : Config.t) =
   match config.generatedFileExtension with
   | Some s ->
       (* from .foo.bar to .foo *)
       Filename.remove_extension s
   | None -> ".gen"
 
-let outputFileSuffix ~(config : Config.config) =
+let outputFileSuffix ~(config : Config.t) =
   match config.generatedFileExtension with
   | Some s when Filename.extension s <> "" (* double extension  *) -> s
   | _ -> generatedFilesExtension ~config ^ ".tsx"
@@ -28,7 +28,7 @@ let outputFileSuffix ~(config : Config.config) =
 let generatedModuleExtension ~config = generatedFilesExtension ~config
 let shimExtension = ".shim.ts"
 
-let interfaceName ~(config: Config.config) name =
+let interfaceName ~(config: Config.t) name =
   match config.exportInterfaces with true -> "I" ^ name | false -> name
 
 let typeAny = ident ~builtin:true "any"
@@ -73,7 +73,7 @@ let isTypeReactRef ~fields =
 let isTypeFunctionComponent ~fields type_ =
   type_ |> isTypeReactElement && not (isTypeReactRef ~fields)
 
-let rec renderType ~(config: Config.config) ?(indent = None) ~typeNameIsInterface ~inFunType
+let rec renderType ~(config: Config.t) ?(indent = None) ~typeNameIsInterface ~inFunType
     type0 =
   match type0 with
   | Array (t, arrayKind) ->
@@ -280,7 +280,7 @@ let emitExportConst ~early ?(comment = "") ~config ?(docString = "") ~emitters
 let emitExportDefault ~emitters name =
   "export default " ^ name ^ ";" |> Emitters.export ~emitters
 
-let emitExportType ~(config: Config.config) ~emitters ~nameAs ~opaque ~type_ ~typeNameIsInterface
+let emitExportType ~(config: Config.t) ~emitters ~nameAs ~opaque ~type_ ~typeNameIsInterface
     ~typeVars resolvedTypeName =
   let typeParamsString = EmitText.genericsString ~typeVars in
   let isInterface = resolvedTypeName |> typeNameIsInterface in
@@ -334,7 +334,7 @@ let emitImportValueAsEarly ~emitters ~name ~nameAs importPath =
   ^ "';"
   |> Emitters.requireEarly ~emitters
 
-let emitRequire ~importedValueOrComponent ~early ~emitters ~(config: Config.config) ~moduleName
+let emitRequire ~importedValueOrComponent ~early ~emitters ~(config: Config.t) ~moduleName
     importPath =
   let commentBeforeRequire =
     match importedValueOrComponent with
