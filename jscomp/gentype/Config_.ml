@@ -99,7 +99,7 @@ let rec findProjectRoot ~dir =
       assert false)
     else findProjectRoot ~dir:parent
 
-let readConfig ~bsVersion ~getBsConfigFile ~namespace =
+let readConfig ~getBsConfigFile ~namespace =
   let projectRoot = findProjectRoot ~dir:(Sys.getcwd ()) in
   let bsbProjectRoot =
     match Sys.getenv_opt "BSB_PROJECT_ROOT" with
@@ -145,37 +145,19 @@ let readConfig ~bsVersion ~getBsConfigFile ~namespace =
       | Some b -> b
     in
     let generatedFileExtension = generatedFileExtensionStringOption in
-    let bsVersion =
-      match bsVersion with
-      | None -> (0, 0, 0)
-      | Some s -> (
-          match s |> Str.split (Str.regexp (Str.quote ".")) with
-          | x1 :: x2 :: x3 :: _ ->
-              let v1 = int_of_string x1 in
-              let v2 = int_of_string x2 in
-              let v3 =
-                match x3 |> Str.split (Str.regexp "-") with
-                | x3 :: _ -> int_of_string x3
-                | _ -> 0
-              in
-              (v1, v2, v3)
-          | _ -> (0, 0, 0))
-    in
     let externalStdlib = bsconf |> getStringOption "external-stdlib" in
-    let v1, v2, v3 = bsVersion in
     let platformLib =
       match externalStdlib with
-      | None -> if v1 >= 9 && v2 >= 1 then "rescript" else "bs-platform"
+      | None -> "rescript"
       | Some externalStdlib -> externalStdlib
     in
     if !Debug.config then (
       Log_.item "Project root: %s\n" projectRoot;
       if bsbProjectRoot <> projectRoot then
         Log_.item "bsb project root: %s\n" bsbProjectRoot;
-      Log_.item "Config module:%s shims:%d entries bsVersion:%d.%d.%d\n"
+      Log_.item "Config module:%s shims:%d entries \n"
         (match moduleString with None -> "" | Some s -> s)
-        (shimsMap |> ModuleNameMap.cardinal)
-        v1 v2 v3);
+        (shimsMap |> ModuleNameMap.cardinal));
     let namespace =
       match bsconf |> getOpt "namespace" with
       | Some (True _) -> namespace

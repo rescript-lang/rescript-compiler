@@ -4,9 +4,7 @@ let signFile s = s
 type cliCommand = Add of string | Clean | NoOp | Rm of string list
 
 let cli () =
-  let bsVersion = ref None in
   let cliCommand = ref NoOp in
-  let setBsVersion s = bsVersion := Some s in
   let usage = "genType version " ^ version in
   let versionAndExit () =
     print_endline usage;
@@ -23,7 +21,6 @@ let cli () =
   and setClean () = Clean |> setCliCommand
   and speclist =
     [
-      ("-bs-version", Arg.String setBsVersion, "set the bucklescript version");
       ("-clean", Arg.Unit setClean, "clean all the generated files");
       ("-cmt-add", Arg.String setAdd, "compile a .cmt[i] file");
       ( "-cmt-rm",
@@ -33,7 +30,7 @@ let cli () =
       ("--version", Arg.Unit versionAndExit, "show version information and exit");
     ]
   in
-  let executeCliCommand ~bsVersion cliCommand =
+  let executeCliCommand cliCommand =
     match cliCommand with
     | Add s ->
         Log_.Color.forceColor := true;
@@ -45,14 +42,12 @@ let cli () =
               (cmt, mlast)
           | _ -> assert false
         in
-        let config =
-          Paths.readConfig ~bsVersion ~namespace:(cmt |> Paths.findNameSpace)
-        in
+        let config = Paths.readConfig ~namespace:(cmt |> Paths.findNameSpace) in
         if !Debug.basic then Log_.item "Add %s  %s\n" cmt mlast;
         cmt |> GenTypeMain.processCmtFile ~signFile ~config;
         exit 0
     | Clean ->
-        let config = Paths.readConfig ~bsVersion ~namespace:None in
+        let config = Paths.readConfig ~namespace:None in
         let sourceDirs = ModuleResolver.readSourceDirs ~config in
         if !Debug.basic then
           Log_.item "Clean %d dirs\n" (sourceDirs.dirs |> List.length);
@@ -83,7 +78,7 @@ let cli () =
           (* somehow the CMT hook is passing an absolute path here *)
           let cmt = cmtAbsolutePath |> Paths.relativePathFromBsLib in
           let config =
-            Paths.readConfig ~bsVersion ~namespace:(cmt |> Paths.findNameSpace)
+            Paths.readConfig ~namespace:(cmt |> Paths.findNameSpace)
           in
           let outputFile = cmt |> Paths.getOutputFile ~config in
           if !Debug.basic then Log_.item "Remove %s\n" cmt;
@@ -98,7 +93,7 @@ let cli () =
     | _ -> print_endline s
   in
   Arg.parse speclist anonArg usage;
-  executeCliCommand ~bsVersion:!bsVersion !cliCommand
+  executeCliCommand !cliCommand
 ;;
 
 cli ()
