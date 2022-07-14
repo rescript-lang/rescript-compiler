@@ -2,7 +2,7 @@ open GenTypeCommon
 
 type t = string * string
 
-let bsCurryPath ~config = ("", Config_.getBsCurryPath ~config)
+let bsCurryPath ~config = ("", Config.getBsCurryPath ~config)
 
 let fromModule ~dir ~importExtension moduleName =
   let withNoPath =
@@ -18,7 +18,7 @@ let chopExtensionSafe s =
 
 let dump (dir, s) = NodeFilename.concat dir s
 
-let toCmt ~config ~outputFileRelative (dir, s) =
+let toCmt ~(config : Config.config) ~outputFileRelative (dir, s) =
   let open Filename in
   concat
     (outputFileRelative |> dirname)

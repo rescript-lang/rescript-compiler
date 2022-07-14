@@ -1,7 +1,6 @@
 module StringMap = Map.Make (String)
 module StringSet = Set.Make (String)
-module Config = Config_
-include Config
+module Config = GenTypeConfig
 
 let logNotImplemented x =
   if !Debug.notImplemented then Log_.item "Not Implemented: %s\n" x
@@ -145,7 +144,7 @@ struct
       Some (packageName |> namespace_of_package_name)
     else None
 
-  let isGeneratedModule id ~config =
+  let isGeneratedModule id ~(config : Config.config) =
     config.bsDependencies
     |> List.exists (fun packageName ->
            packageName |> packageNameToGeneratedModuleName
