@@ -25,8 +25,8 @@
   },
   "description": "ReScript toolchain",
   "files": [
-    "Changes.md",
-    "Credits.md",
+    "CHANGELOG.md",
+    "CREDITS.md",
     "bsc",
     "bsrefmt",
     "rescript",
