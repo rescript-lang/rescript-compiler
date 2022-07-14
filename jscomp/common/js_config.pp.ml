@@ -24,6 +24,10 @@
 
 (** Browser is not set via command line only for internal use *)
 
+type jsx_version = Jsx_v3 | Jsx_v4 | NotSelected
+type jsx_module = React
+type jsx_mode = Classic | Automatic
+
 let no_version_header = ref false
 let cross_module_inline = ref false
 let diagnose = ref false
@@ -49,14 +53,40 @@ let cmi_only = ref false
 let cmj_only = ref false
 let force_cmi = ref false
 let force_cmj = ref false
-let jsx_version = ref (-1)
-let jsx_module = ref "react"
-let jsx_mode = ref "classic"
+let jsx_version = ref NotSelected
+let jsx_module = ref React
+let jsx_mode = ref Classic
 let js_stdout = ref true
 let all_module_aliases = ref false
 let no_stdlib = ref false
 let no_export = ref false
 let as_ppx = ref false
+
+let int_of_jsx_version = function
+| Jsx_v3 -> 3
+| Jsx_v4 -> 4
+| NotSelected -> -1
+
+let string_of_jsx_module = function
+| React -> "react"
+
+let string_of_jsx_mode = function
+| Classic -> "classic"
+| Automatic -> "automatic"
+
+let jsx_version_of_int = function
+| 3 -> Jsx_v3
+| 4 -> Jsx_v4
+| _ -> NotSelected
+
+let jsx_module_of_string = function
+| "react" -> React
+| _ -> React
+
+let jsx_mode_of_string = function
+| "classic" -> Classic
+| "automatic" -> Automatic
+| _ -> Classic
 
 (* option to config `@rescript/std`*)
 let customize_runtime : string option ref = ref None

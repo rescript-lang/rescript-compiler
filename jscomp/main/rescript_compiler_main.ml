@@ -275,18 +275,21 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "*internal* <module>  Opens the module <module> before typing";
 
     "-bs-jsx", string_call (fun i -> 
-        (if i <> "3" && i <> "4" then Bsc_args.bad_arg (" Not supported jsx version : " ^  i));
-        Js_config.jsx_version := int_of_string i),
+      (if i <> "3" && i <> "4" then Bsc_args.bad_arg (" Not supported jsx version : " ^  i));
+      let open Js_config in
+      jsx_version := jsx_version_of_int @@ int_of_string i),
     "*internal* Set jsx version";
 
     "-bs-jsx-module", string_call (fun i ->
       (if i <> "react" then Bsc_args.bad_arg (" Not supported jsx-module : " ^ i));
-      Js_config.jsx_module := i),
+      let open Js_config in
+      Js_config.jsx_module := jsx_module_of_string i),
     "*internal* Set jsx module";
 
     "-bs-jsx-mode", string_call (fun i ->
       (if i <> "classic" && i <> "automatic" then Bsc_args.bad_arg (" Not supported jsx-mode : " ^ i));
-      Js_config.jsx_mode := i),
+      let open Js_config in
+      Js_config.jsx_mode := jsx_mode_of_string i),
     "*internal* Set jsx mode";
 
     "-bs-package-output", string_call Js_packages_state.update_npm_package_path, 
