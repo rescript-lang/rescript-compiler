@@ -1,51 +1,100 @@
-`*` means potential breaking changes
+# Changelog
+
+> **Tags:**
+>
+> - :boom: [Breaking Change]
+> - :eyeglasses: [Spec Compliance]
+> - :rocket: [New Feature]
+> - :bug: [Bug Fix]
+> - :memo: [Documentation]
+> - :house: [Internal]
+> - :nail_care: [Polish]
 
 # master
-Fix issue with compiler log not terminated that causes problems with editor extension not clearing issues when fixed [#5545](https://github.com/rescript-lang/rescript-compiler/issues/5545)
+
+#### :bug: Bug Fix
+
+- Fix issue with compiler log not terminated that causes problems with editor extension not clearing issues when fixed [#5545](https://github.com/rescript-lang/rescript-compiler/issues/5545)
 
 # 10.0.0-beta.2
+
+##### :nail_care: Polish
 
 - Changed Linux build to depend on GLIBC 2.28 again for compatibility with Debian 10.
 
 # 10.0.0-beta.1
 
+#### :bug: Bug Fix
+
 - Fixed crash in `rescript build` on Windows [#5516](https://github.com/rescript-lang/rescript-compiler/pull/5516)
 - Fixed `rescript init` command not working [#5526](https://github.com/rescript-lang/rescript-compiler/pull/5526)
-- `*` `bsconfig.json` does not support // line comments anymore
-- `*` Externals without `@val` annotations do not work anymore, and externals with `= ""` give an error.
-- `*` Regular expressions don't need escaping. E.g. `let blockCommentsRe = %re("/\\/\\*([^*]|[\\r\\n]|(\\*+([^*/]|[\\r\\n])))*\\*+\\//g")` is now `let blockCommentsRe = %re("/\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\//g")`.
+
+#### :boom: Breaking Change
+
+- `bsconfig.json` does not support `// line` comments anymore
+- Externals without `@val` annotations do not work anymore, and externals with `= ""` give an error.
+- Regular expressions don't need escaping. E.g. `let blockCommentsRe = %re("/\\/\\*([^*]|[\\r\\n]|(\\*+([^*/]|[\\r\\n])))*\\*+\\//g")` is now `let blockCommentsRe = %re("/\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\//g")`.
 
 # 10.0.0-alpha.1
 
 **Compiler**
 
+#### :rocket: New Feature
+
 - Add support for `@new @variadic` (see https://github.com/rescript-lang/rescript-compiler/pull/5364)
 - New records with `@optional` fields [#5423](https://github.com/rescript-lang/rescript-compiler/pull/5423) [#5452](https://github.com/rescript-lang/rescript-compiler/issues/5452)
+
+#### :bug: Bug Fix
+
 - Classify bigint correctly [#5351](https://github.com/rescript-lang/rescript-compiler/pull/5351)
-- `*` `@bs.send.pipe` is now removed. Earlier it was deprecated.
-- `*` Missing labels in function application is now an error (https://forum.rescript-lang.org/t/ann-more-strict-checks-in-missed-labels/2117).
-- `*` Fix Js.String.match\_ return type [#5070](https://github.com/rescript-lang/rescript-compiler/pull/5070)
+
+#### :boom: Breaking Change
+
+- `@bs.send.pipe` is now removed. Earlier it was deprecated.
+- Missing labels in function application is now an error (https://forum.rescript-lang.org/t/ann-more-strict-checks-in-missed-labels/2117).
+- Fix Js.String.match\_ return type [#5070](https://github.com/rescript-lang/rescript-compiler/pull/5070)
+
+#### :house: [Internal]
+
 - Proper M1 support (CI now supports M1 native builds)
 
 **Syntax**
 
+#### :rocket: New Feature
+
 - Doc comments `/** ... */` are now supported. Inernally, they are attributes, so are only valid at positions where `@foo` is allowed, or a syntax error is given. Similarly for module-level `/*** comments */` that can go where `@@attributes` go.
+
+#### :bug: Bug Fix
+
 - Fix printing for inline nullary functor types [#477](https://github.com/rescript-lang/syntax/pull/477)
 - Fix stripping of quotes for empty poly variants [#474](https://github.com/rescript-lang/syntax/pull/474)
 - Implement syntax for arity zero vs arity one in uncurried application in [#139](https://github.com/rescript-lang/syntax/pull/139)
 - Fix parsing of first class module exprs as part of binary/ternary expr in [#256](https://github.com/rescript-lang/syntax/pull/256)
 - Fix formatter hanging on deeply nested function calls [#261](https://github.com/rescript-lang/syntax/issues/261)
+
+#### :boom: Breaking Change
+
 - Remove parsing of "import" and "export" which was never officially supported.
 
 **Libraries**
 
-- `*` Removed printing modules (Printf, Format etc) and related functions. Details of files added/removed: https://github.com/rescript-lang/rescript-compiler/commit/0fd8bb0e77c4b0e96a9647ac8af614305057003f.
-- `*` There could be issues with `rescript-relay`. See https://github.com/rescript-lang/rescript-compiler/issues/5493.
+#### :boom: Breaking Change
+
+- Removed printing modules (Printf, Format etc) and related functions. Details of files added/removed: https://github.com/rescript-lang/rescript-compiler/commit/0fd8bb0e77c4b0e96a9647ac8af614305057003f.
+- There could be issues with `rescript-relay`. See https://github.com/rescript-lang/rescript-compiler/issues/5493.
+
+#### :nail_care: Polish
+
 - Several Belt / Js libraries are now converted to ReScript syntax, with corresponding comments in Markdown format suitable for hovering. See [#5361](https://github.com/rescript-lang/rescript-compiler/pull/5361).
 
 **Playground**
 
+#### :house: Internal
+
 - Added `jsoo_playground_main.ml` as the rescript-lang.org playground bundle entrypoint
+
+#### :boom: Breaking Change
+
 - `*` Removed Reason syntax support for the playground experience. See https://github.com/rescript-lang/rescript-compiler/pull/5375
 
 # 9.1.4
