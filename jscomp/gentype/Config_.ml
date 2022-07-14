@@ -43,10 +43,7 @@ let bsPlatformLib ~config =
   | ES6 -> config.platformLib ^ "/lib/es6"
   | CommonJS -> config.platformLib ^ "/lib/js"
 
-let bsPlatformLibExtension = ".js"
-
-let getBsCurryPath ~config =
-  bsPlatformLib ~config ^ "/curry" ^ bsPlatformLibExtension
+let getBsCurryPath ~config = Filename.concat (bsPlatformLib ~config) "curry.js"
 
 type map = Ext_json_types.t Map_string.t
 
@@ -87,15 +84,15 @@ let setDebug ~gtconf =
   | Some (Obj { map }) -> Map_string.iter map Debug.setItem
   | _ -> ()
 
-let bsconfig = "bsconfig.json"
+let compilerConfigFile = "bsconfig.json"
 
 let rec findProjectRoot ~dir =
-  if Sys.file_exists (Filename.concat dir bsconfig) then dir
+  if Sys.file_exists (Filename.concat dir compilerConfigFile) then dir
   else
     let parent = dir |> Filename.dirname in
     if parent = dir then (
       prerr_endline
-        ("Error: cannot find project root containing " ^ bsconfig ^ ".");
+        ("Error: cannot find project root containing " ^ compilerConfigFile ^ ".");
       assert false)
     else findProjectRoot ~dir:parent
 
