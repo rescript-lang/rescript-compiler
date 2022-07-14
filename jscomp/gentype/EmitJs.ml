@@ -225,12 +225,12 @@ let rec emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
     let nameGen = EmitText.newNameGen () in
     let importPath =
       fileName
-      |> ModuleResolver.resolveModule ~importExtension:config.suffix
+      |> ModuleResolver.resolveModule ~config ~importExtension:config.suffix
            ~outputFileRelative ~resolver ~useBsDependencies:false
     in
     let fileNameBs = fileName |> ModuleName.forBsFile in
     let envWithRequires =
-      fileNameBs |> requireModule ~import:false ~env ~importPath
+      fileNameBs |> requireModule ~import:false  ~env ~importPath
     in
     let default = "default" in
     let make = "make" in

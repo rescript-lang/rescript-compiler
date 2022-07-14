@@ -1,24 +1,5 @@
 open GenTypeCommon
 
-let bsconfig = "bsconfig.json"
-
-let rec findProjectRoot ~dir =
-  if Sys.file_exists (Filename.concat dir bsconfig) then dir
-  else
-    let parent = dir |> Filename.dirname in
-    if parent = dir then (
-      prerr_endline
-        ("Error: cannot find project root containing " ^ bsconfig ^ ".");
-      assert false)
-    else findProjectRoot ~dir:parent
-
-let setProjectRoot () =
-  projectRoot := findProjectRoot ~dir:(Sys.getcwd ());
-  bsbProjectRoot :=
-    match Sys.getenv_opt "BSB_PROJECT_ROOT" with
-    | None -> !projectRoot
-    | Some s -> s
-
 let concat = Filename.concat
 
 let handleNamespace cmt =
@@ -48,7 +29,7 @@ let getOutputFileRelative ~config cmt =
   (cmt |> handleNamespace) ^ EmitType.outputFileSuffix ~config
 
 let getOutputFile ~config cmt =
-  Filename.concat !projectRoot (getOutputFileRelative ~config cmt)
+  Filename.concat config.projectRoot (getOutputFileRelative ~config cmt)
 
 let getModuleName cmt =
   cmt |> handleNamespace |> Filename.basename |> ModuleName.fromStringUnsafe
@@ -75,8 +56,8 @@ let getCmtFile cmt =
   in
   cmtFile
 
-let getBsConfigFile () =
-  let bsconfig = concat !projectRoot "bsconfig.json" in
+let getBsConfigFile ~projectRoot =
+  let bsconfig = concat projectRoot "bsconfig.json" in
   match bsconfig |> Sys.file_exists with true -> Some bsconfig | false -> None
 
 (** Find the relative path from /.../bs/lib
@@ -87,9 +68,9 @@ let relativePathFromBsLib fileName =
     let rec pathToList path =
       let isRoot = path |> Filename.basename = path in
       match isRoot with
-      | true -> [path]
+      | true -> [ path ]
       | false ->
-        (path |> Filename.basename) :: (path |> Filename.dirname |> pathToList)
+          (path |> Filename.basename) :: (path |> Filename.dirname |> pathToList)
     in
     let rec fromLibBs ~acc reversedList =
       match reversedList with
@@ -103,5 +84,4 @@ let relativePathFromBsLib fileName =
     | root :: dirs -> dirs |> List.fold_left concat root
 
 let readConfig ~bsVersion ~namespace =
-  setProjectRoot ();
   Config.readConfig ~bsVersion ~getBsConfigFile ~namespace

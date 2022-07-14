@@ -7,7 +7,6 @@ let logNotImplemented x =
   if !Debug.notImplemented then Log_.item "Not Implemented: %s\n" x
 
 type optional = Mandatory | Optional
-
 type mutable_ = Immutable | Mutable
 
 type labelJS =
@@ -16,7 +15,7 @@ type labelJS =
   | IntLabel of string
   | StringLabel of string
 
-type case = {label : string; labelJS : labelJS}
+type case = { label : string; labelJS : labelJS }
 
 let isJSSafePropertyName name =
   let jsSafeRegex = {|^[A-z][A-z0-9]*$|} |> Str.regexp in
@@ -42,8 +41,8 @@ let labelJSToString ?(alwaysQuotes = false) case =
   | FloatLabel s -> s |> addQuotes
   | IntLabel i -> i |> addQuotes
   | StringLabel s ->
-    if s = case.label && isNumber s then s |> addQuotes
-    else s |> EmitText.quotes
+      if s = case.label && isNumber s then s |> addQuotes
+      else s |> EmitText.quotes
 
 type closedFlag = Open | Closed
 
@@ -63,8 +62,7 @@ type type_ =
   | Variant of variant
 
 and fields = field list
-
-and argType = {aName : string; aType : type_}
+and argType = { aName : string; aType : type_ }
 
 and field = {
   mutable_ : mutable_;
@@ -82,7 +80,7 @@ and function_ = {
   uncurried : bool;
 }
 
-and ident = {builtin : bool; name : string; typeArgs : type_ list}
+and ident = { builtin : bool; name : string; typeArgs : type_ list }
 
 and variant = {
   bsStringOrInt : bool;
@@ -94,7 +92,7 @@ and variant = {
   unboxed : bool;
 }
 
-and payload = {case : case; inlineRecord : bool; numArgs : int; t : type_}
+and payload = { case : case; inlineRecord : bool; numArgs : int; t : type_ }
 
 let typeIsObject type_ =
   match type_ with
@@ -133,8 +131,8 @@ struct
         let ch = String.unsafe_get s off in
         match ch with
         | 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' ->
-          add capital ch;
-          aux false (off + 1) len
+            add capital ch;
+            aux false (off + 1) len
         | '/' | '-' -> aux true (off + 1) len
         | _ -> aux capital (off + 1) len
     in
@@ -159,7 +157,7 @@ struct
 
   (** Common-DemoSomelibrary -> Common *)
   let removeGeneratedModule s =
-    match s |> String.split_on_char '-' with [name; _scope] -> name | _ -> s
+    match s |> String.split_on_char '-' with [ name; _scope ] -> name | _ -> s
 end
 
 let rec depToString dep =
@@ -182,29 +180,30 @@ let createVariant ~bsStringOrInt ~inherits ~noPayloads ~payloads ~polymorphic =
   in
   let unboxed = payloads = [] in
   Variant
-    {bsStringOrInt; hash; inherits; noPayloads; payloads; polymorphic; unboxed}
+    {
+      bsStringOrInt;
+      hash;
+      inherits;
+      noPayloads;
+      payloads;
+      polymorphic;
+      unboxed;
+    }
 
 let variantTable hash ~toJS =
   (match toJS with true -> "$$toJS" | false -> "$$toRE") ^ string_of_int hash
 
 let ident ?(builtin = true) ?(typeArgs = []) name =
-  Ident {builtin; name; typeArgs}
+  Ident { builtin; name; typeArgs }
 
 let sanitizeTypeName name = name |> Str.global_replace (Str.regexp "'") "_"
-
 let unknown = ident "unknown"
-
 let booleanT = ident "boolean"
-
 let dateT = ident "Date"
-
 let numberT = ident "number"
-
 let stringT = ident "string"
-
 let unitT = ident "void"
-
-let int64T = Tuple [numberT; numberT]
+let int64T = Tuple [ numberT; numberT ]
 
 module NodeFilename = struct
   include Filename
@@ -216,9 +215,7 @@ module NodeFilename = struct
     type t
 
     val normalize : string -> t
-
     val concat : t -> string -> t
-
     val toString : t -> string
   end = struct
     type t = string
@@ -229,7 +226,6 @@ module NodeFilename = struct
       | _ -> path
 
     let toString path = path
-
     let length path = String.length path
 
     let concat dirname filename =
