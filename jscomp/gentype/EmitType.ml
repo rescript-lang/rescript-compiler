@@ -28,7 +28,7 @@ let outputFileSuffix ~(config : Config.t) =
 let generatedModuleExtension ~config = generatedFilesExtension ~config
 let shimExtension = ".shim.ts"
 
-let interfaceName ~(config: Config.t) name =
+let interfaceName ~(config : Config.t) name =
   match config.exportInterfaces with true -> "I" ^ name | false -> name
 
 let typeAny = ident ~builtin:true "any"
@@ -73,8 +73,8 @@ let isTypeReactRef ~fields =
 let isTypeFunctionComponent ~fields type_ =
   type_ |> isTypeReactElement && not (isTypeReactRef ~fields)
 
-let rec renderType ~(config: Config.t) ?(indent = None) ~typeNameIsInterface ~inFunType
-    type0 =
+let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
+    ~inFunType type0 =
   match type0 with
   | Array (t, arrayKind) ->
       let typeIsSimple =
@@ -280,8 +280,8 @@ let emitExportConst ~early ?(comment = "") ~config ?(docString = "") ~emitters
 let emitExportDefault ~emitters name =
   "export default " ^ name ^ ";" |> Emitters.export ~emitters
 
-let emitExportType ~(config: Config.t) ~emitters ~nameAs ~opaque ~type_ ~typeNameIsInterface
-    ~typeVars resolvedTypeName =
+let emitExportType ~(config : Config.t) ~emitters ~nameAs ~opaque ~type_
+    ~typeNameIsInterface ~typeVars resolvedTypeName =
   let typeParamsString = EmitText.genericsString ~typeVars in
   let isInterface = resolvedTypeName |> typeNameIsInterface in
   let resolvedTypeName =
@@ -334,8 +334,8 @@ let emitImportValueAsEarly ~emitters ~name ~nameAs importPath =
   ^ "';"
   |> Emitters.requireEarly ~emitters
 
-let emitRequire ~importedValueOrComponent ~early ~emitters ~(config: Config.t) ~moduleName
-    importPath =
+let emitRequire ~importedValueOrComponent ~early ~emitters ~(config : Config.t)
+    ~moduleName importPath =
   let commentBeforeRequire =
     match importedValueOrComponent with
     | true -> "// tslint:disable-next-line:no-var-requires\n"
