@@ -59,7 +59,7 @@ let implementation ~use_super_errors impl str : Js.Unsafe.obj =
     Lazy.force Super_main.setup);
 
   try
-    Js_config.jsx_version := 3;
+    Js_config.jsx_version := Js_config.Jsx_v3;
     (* default *)
     let ast = impl (Lexing.from_string str) in
     let ast = Ppx_entry.rewrite_implementation ast in

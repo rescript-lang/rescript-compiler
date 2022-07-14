@@ -29,14 +29,13 @@ let rewrite_signature (ast : Parsetree.signature) : Parsetree.signature =
   Ast_config.iter_on_bs_config_sigi ast;
   let ast =
     match !Js_config.jsx_version with
-    | 3 ->
-        Reactjs_jsx_ppx.rewrite_signature ~jsxVersion:3
-          ~jsxModule:!Js_config.jsx_module ~jsxMode:!Js_config.jsx_mode ast
-    | 4 ->
-        Reactjs_jsx_ppx.rewrite_signature ~jsxVersion:4
-          ~jsxModule:!Js_config.jsx_module ~jsxMode:!Js_config.jsx_mode ast
-    | _ -> ast
-    (* react-jsx ppx relies on built-in ones like `##` *)
+    | NotSelected -> ast
+    | _ ->
+        let open Js_config in
+        let jsxVersion = int_of_jsx_version !jsx_version in
+        let jsxModule = string_of_jsx_module !jsx_module in
+        let jsxMode = string_of_jsx_mode !jsx_mode in
+        Reactjs_jsx_ppx.rewrite_signature ~jsxVersion ~jsxModule ~jsxMode ast
   in
   if !Js_config.no_builtin_ppx then ast
   else
@@ -50,13 +49,14 @@ let rewrite_implementation (ast : Parsetree.structure) : Parsetree.structure =
   Ast_config.iter_on_bs_config_stru ast;
   let ast =
     match !Js_config.jsx_version with
-    | 3 ->
-        Reactjs_jsx_ppx.rewrite_implementation ~jsxVersion:3
-          ~jsxModule:!Js_config.jsx_module ~jsxMode:!Js_config.jsx_mode ast
-    | 4 ->
-        Reactjs_jsx_ppx.rewrite_implementation ~jsxVersion:4
-          ~jsxModule:!Js_config.jsx_module ~jsxMode:!Js_config.jsx_mode ast
-    | _ -> ast
+    | NotSelected -> ast
+    | _ ->
+        let open Js_config in
+        let jsxVersion = int_of_jsx_version !jsx_version in
+        let jsxModule = string_of_jsx_module !jsx_module in
+        let jsxMode = string_of_jsx_mode !jsx_mode in
+        Reactjs_jsx_ppx.rewrite_implementation ~jsxVersion ~jsxModule ~jsxMode
+          ast
   in
   if !Js_config.no_builtin_ppx then ast
   else

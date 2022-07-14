@@ -22,6 +22,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type jsx_version = Jsx_v3 | Jsx_v4 | NotSelected
+type jsx_module = React
+type jsx_mode = Classic | Automatic
+
 (* val get_packages_info :
    unit -> Js_packages_info.t *)
 
@@ -73,11 +77,11 @@ val force_cmi : bool ref
 
 val force_cmj : bool ref
 
-val jsx_version : int ref
+val jsx_version : jsx_version ref
 
-val jsx_module: string ref
+val jsx_module: jsx_module ref
 
-val jsx_mode: string ref
+val jsx_mode: jsx_mode ref
 
 val js_stdout : bool ref
 
@@ -88,6 +92,18 @@ val no_stdlib : bool ref
 val no_export : bool ref
 
 val as_ppx : bool ref
+
+val int_of_jsx_version : jsx_version -> int
+
+val string_of_jsx_module : jsx_module -> string
+
+val string_of_jsx_mode : jsx_mode -> string
+
+val jsx_version_of_int : int -> jsx_version
+
+val jsx_module_of_string : string -> jsx_module
+
+val jsx_mode_of_string : string -> jsx_mode
 
 val customize_runtime : string option ref
 

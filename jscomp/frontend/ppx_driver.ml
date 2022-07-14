@@ -33,13 +33,17 @@ let main impl intf =
         (Array.sub Sys.argv 0 (n - 2))
         [
           ( "-bs-jsx",
-            Arg.Int (fun i -> Js_config.jsx_version := i),
+            Arg.Int
+              (fun i -> Js_config.jsx_version := Js_config.jsx_version_of_int i),
             " Set jsx version" );
           ( "-bs-jsx-module",
-            Arg.String (fun i -> Js_config.jsx_module := i),
+            Arg.String
+              (fun i ->
+                Js_config.jsx_module := Js_config.jsx_module_of_string i),
             " Set jsx module" );
           ( "-bs-jsx-mode",
-            Arg.String (fun i -> Js_config.jsx_mode := i),
+            Arg.String
+              (fun i -> Js_config.jsx_mode := Js_config.jsx_mode_of_string i),
             " Set jsx mode" );
         ]
         ignore usage;
