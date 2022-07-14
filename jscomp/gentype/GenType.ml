@@ -1,5 +1,4 @@
 let version = Version.version
-let signFile s = s
 
 type cliCommand = Add of string | Clean | NoOp | Rm of string list
 
@@ -44,7 +43,7 @@ let cli () =
         in
         let config = Paths.readConfig ~namespace:(cmt |> Paths.findNameSpace) in
         if !Debug.basic then Log_.item "Add %s  %s\n" cmt mlast;
-        cmt |> GenTypeMain.processCmtFile ~signFile ~config;
+        cmt |> GenTypeMain.processCmtFile ~config;
         exit 0
     | Clean ->
         let config = Paths.readConfig ~namespace:None in
