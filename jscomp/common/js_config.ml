@@ -25,7 +25,7 @@
 
 (** Browser is not set via command line only for internal use *)
 
-type jsx_version = Jsx_v3 | Jsx_v4 | NotSelected
+type jsx_version = Jsx_v3 | Jsx_v4
 type jsx_module = React
 type jsx_mode = Classic | Automatic
 
@@ -55,7 +55,7 @@ let cmi_only = ref false
 let cmj_only = ref false
 let force_cmi = ref false
 let force_cmj = ref false
-let jsx_version = ref NotSelected
+let jsx_version = ref None
 let jsx_module = ref React
 let jsx_mode = ref Classic
 let js_stdout = ref true
@@ -67,7 +67,6 @@ let as_ppx = ref false
 let int_of_jsx_version = function
 | Jsx_v3 -> 3
 | Jsx_v4 -> 4
-| NotSelected -> -1
 
 let string_of_jsx_module = function
 | React -> "react"
@@ -77,9 +76,9 @@ let string_of_jsx_mode = function
 | Automatic -> "automatic"
 
 let jsx_version_of_int = function
-| 3 -> Jsx_v3
-| 4 -> Jsx_v4
-| _ -> NotSelected
+| 3 -> Some Jsx_v3
+| 4 -> Some Jsx_v4
+| _ -> None
 
 let jsx_module_of_string = function
 | "react" -> React

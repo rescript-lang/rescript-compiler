@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type jsx_version = Jsx_v3 | Jsx_v4 | NotSelected
+type jsx_version = Jsx_v3 | Jsx_v4
 type jsx_module = React
 type jsx_mode = Classic | Automatic
 
@@ -77,7 +77,7 @@ val force_cmi : bool ref
 
 val force_cmj : bool ref
 
-val jsx_version : jsx_version ref
+val jsx_version : jsx_version option ref
 
 val jsx_module: jsx_module ref
 
@@ -99,7 +99,7 @@ val string_of_jsx_module : jsx_module -> string
 
 val string_of_jsx_mode : jsx_mode -> string
 
-val jsx_version_of_int : int -> jsx_version
+val jsx_version_of_int : int -> jsx_version option
 
 val jsx_module_of_string : string -> jsx_module
 

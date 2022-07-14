@@ -29,10 +29,10 @@ let rewrite_signature (ast : Parsetree.signature) : Parsetree.signature =
   Ast_config.iter_on_bs_config_sigi ast;
   let ast =
     match !Js_config.jsx_version with
-    | NotSelected -> ast
-    | _ ->
+    | None -> ast
+    | Some jsxVersion ->
         let open Js_config in
-        let jsxVersion = int_of_jsx_version !jsx_version in
+        let jsxVersion = int_of_jsx_version jsxVersion in
         let jsxModule = string_of_jsx_module !jsx_module in
         let jsxMode = string_of_jsx_mode !jsx_mode in
         Reactjs_jsx_ppx.rewrite_signature ~jsxVersion ~jsxModule ~jsxMode ast
@@ -49,10 +49,10 @@ let rewrite_implementation (ast : Parsetree.structure) : Parsetree.structure =
   Ast_config.iter_on_bs_config_stru ast;
   let ast =
     match !Js_config.jsx_version with
-    | NotSelected -> ast
-    | _ ->
+    | None -> ast
+    | Some jsxVersion ->
         let open Js_config in
-        let jsxVersion = int_of_jsx_version !jsx_version in
+        let jsxVersion = int_of_jsx_version jsxVersion in
         let jsxModule = string_of_jsx_module !jsx_module in
         let jsxMode = string_of_jsx_mode !jsx_mode in
         Reactjs_jsx_ppx.rewrite_implementation ~jsxVersion ~jsxModule ~jsxMode
