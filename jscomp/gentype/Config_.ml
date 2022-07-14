@@ -1,12 +1,10 @@
 module ModuleNameMap = Map.Make (ModuleName)
 
-let bsbProjectRoot = ref ""
-let projectRoot = ref ""
-
 type module_ = CommonJS | ES6
 type bsVersion = int * int * int
 
 type config = {
+  mutable bsbProjectRoot : string;
   bsDependencies : string list;
   mutable emitImportCurry : bool;
   mutable emitImportReact : bool;
@@ -16,6 +14,7 @@ type config = {
   module_ : module_;
   namespace : string option;
   platformLib : string;
+  mutable projectRoot : string;
   shimsMap : ModuleName.t ModuleNameMap.t;
   sources : Ext_json_types.t option;
   suffix : string;
@@ -23,6 +22,7 @@ type config = {
 
 let default =
   {
+    bsbProjectRoot = "";
     bsDependencies = [];
     emitImportCurry = false;
     emitImportReact = false;
@@ -32,6 +32,7 @@ let default =
     module_ = ES6;
     namespace = None;
     platformLib = "";
+    projectRoot = "";
     shimsMap = ModuleNameMap.empty;
     sources = None;
     suffix = "";
@@ -86,7 +87,25 @@ let setDebug ~gtconf =
   | Some (Obj { map }) -> Map_string.iter map Debug.setItem
   | _ -> ()
 
+let bsconfig = "bsconfig.json"
+
+let rec findProjectRoot ~dir =
+  if Sys.file_exists (Filename.concat dir bsconfig) then dir
+  else
+    let parent = dir |> Filename.dirname in
+    if parent = dir then (
+      prerr_endline
+        ("Error: cannot find project root containing " ^ bsconfig ^ ".");
+      assert false)
+    else findProjectRoot ~dir:parent
+
 let readConfig ~bsVersion ~getBsConfigFile ~namespace =
+  let projectRoot = findProjectRoot ~dir:(Sys.getcwd ()) in
+  let bsbProjectRoot =
+    match Sys.getenv_opt "BSB_PROJECT_ROOT" with
+    | None -> projectRoot
+    | Some s -> s
+  in
   let parseConfig ~bsconf ~gtconf =
     let moduleString = gtconf |> getStringOption "module" in
     let exportInterfacesBool = gtconf |> getBool "exportInterfaces" in
@@ -150,9 +169,9 @@ let readConfig ~bsVersion ~getBsConfigFile ~namespace =
       | Some externalStdlib -> externalStdlib
     in
     if !Debug.config then (
-      Log_.item "Project root: %s\n" !projectRoot;
-      if !bsbProjectRoot <> !projectRoot then
-        Log_.item "bsb project root: %s\n" !bsbProjectRoot;
+      Log_.item "Project root: %s\n" projectRoot;
+      if bsbProjectRoot <> projectRoot then
+        Log_.item "bsb project root: %s\n" bsbProjectRoot;
       Log_.item "Config module:%s shims:%d entries bsVersion:%d.%d.%d\n"
         (match moduleString with None -> "" | Some s -> s)
         (shimsMap |> ModuleNameMap.cardinal)
@@ -186,6 +205,7 @@ let readConfig ~bsVersion ~getBsConfigFile ~namespace =
       | _ -> default.sources
     in
     {
+      bsbProjectRoot;
       bsDependencies;
       suffix;
       emitImportCurry = false;
@@ -196,11 +216,12 @@ let readConfig ~bsVersion ~getBsConfigFile ~namespace =
       module_;
       namespace;
       platformLib;
+      projectRoot;
       shimsMap;
       sources;
     }
   in
-  match getBsConfigFile () with
+  match getBsConfigFile ~projectRoot with
   | Some bsConfigFile -> (
       try
         let json = bsConfigFile |> Ext_json_parse.parse_json_from_file in

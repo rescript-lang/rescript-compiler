@@ -17,9 +17,9 @@ let readBsDependenciesDirs ~root =
 
 type pkgs = { dirs : string list; pkgs : (string, string) Hashtbl.t }
 
-let readDirsFromConfig ~configSources =
+let readDirsFromConfig ~config =
   let dirs = ref [] in
-  let root = !projectRoot in
+  let root = config.projectRoot in
   let ( +++ ) = Filename.concat in
   let rec processDir ~subdirs dir =
     let absDir = match dir = "" with true -> root | false -> root +++ dir in
@@ -46,15 +46,15 @@ let readDirsFromConfig ~configSources =
     | Arr { content } -> Array.iter processSourceItem content
     | _ -> ()
   in
-  (match configSources with
+  (match config.sources with
   | Some sourceItem -> processSourceItem sourceItem
   | None -> ());
   !dirs
 
-let readSourceDirs ~configSources =
+let readSourceDirs ~config =
   let sourceDirs =
     [ "lib"; "bs"; ".sourcedirs.json" ]
-    |> List.fold_left ( +++ ) !bsbProjectRoot
+    |> List.fold_left ( +++ ) config.bsbProjectRoot
   in
   let dirs = ref [] in
   let pkgs = Hashtbl.create 1 in
@@ -93,15 +93,15 @@ let readSourceDirs ~configSources =
   if sourceDirs |> Sys.file_exists then
     try
       let json = sourceDirs |> Ext_json_parse.parse_json_from_file in
-      if !bsbProjectRoot <> !projectRoot then
-        dirs := readDirsFromConfig ~configSources
+      if config.bsbProjectRoot <> config.projectRoot then
+        dirs := readDirsFromConfig ~config
       else readDirs json;
       readPkgs json
     with _ -> ()
   else (
     Log_.item "Warning: can't find source dirs: %s\n" sourceDirs;
     Log_.item "Types for cross-references will not be found by genType.\n";
-    dirs := readDirsFromConfig ~configSources);
+    dirs := readDirsFromConfig ~config);
   { dirs = !dirs; pkgs }
 
 (** Read the project's .sourcedirs.json file if it exists
@@ -129,10 +129,11 @@ let sourcedirsJsonToMap ~config ~extensions ~excludeFile =
                     (fname |> chopExtensions |> ModuleName.fromStringUnsafe)
                     dirEmitted)
   in
-  let { dirs; pkgs } = readSourceDirs ~configSources:config.sources in
+  let { dirs; pkgs } = readSourceDirs ~config in
   dirs
   |> List.iter (fun dir ->
-         addDir ~dirEmitted:dir ~dirOnDisk:(!projectRoot +++ dir)
+         addDir ~dirEmitted:dir
+           ~dirOnDisk:(config.projectRoot +++ dir)
            ~filter:filterGivenExtension ~map:fileMap);
   config.bsDependencies
   |> List.iter (fun packageName ->
@@ -195,13 +196,13 @@ let apply ~resolver ~useBsDependencies moduleName =
 
 (** Resolve a reference to ModuleName, and produce a path suitable for require.
    E.g. require "../foo/bar/ModuleName.ext" where ext is ".re" or ".js". *)
-let resolveModule ~importExtension ~outputFileRelative ~resolver
+let resolveModule ~config ~importExtension ~outputFileRelative ~resolver
     ~useBsDependencies moduleName =
   let outputFileRelativeDir =
     (* e.g. src if we're generating src/File.re.js *)
     Filename.dirname outputFileRelative
   in
-  let outputFileAbsoluteDir = !projectRoot +++ outputFileRelativeDir in
+  let outputFileAbsoluteDir = config.projectRoot +++ outputFileRelativeDir in
   let moduleNameReFile =
     (* Check if the module is in the same directory as the file being generated.
        So if e.g. project_root/src/ModuleName.re exists. *)
@@ -254,7 +255,7 @@ let resolveGeneratedModule ~config ~outputFileRelative ~resolver moduleName =
     Log_.item "Resolve Generated Module: %s\n"
       (moduleName |> ModuleName.toString);
   let importPath =
-    resolveModule
+    resolveModule ~config
       ~importExtension:(EmitType.generatedModuleExtension ~config)
       ~outputFileRelative ~resolver ~useBsDependencies:true moduleName
   in
@@ -272,8 +273,8 @@ let importPathForReasonModuleName ~config ~outputFileRelative ~resolver
       if !Debug.moduleResolution then
         Log_.item "ShimModuleName: %s\n" (shimModuleName |> ModuleName.toString);
       let importPath =
-        resolveModule ~importExtension:".shim" ~outputFileRelative ~resolver
-          ~useBsDependencies:false shimModuleName
+        resolveModule ~config ~importExtension:".shim" ~outputFileRelative
+          ~resolver ~useBsDependencies:false shimModuleName
       in
       if !Debug.moduleResolution then
         Log_.item "Import Path: %s\n" (importPath |> ImportPath.dump);
