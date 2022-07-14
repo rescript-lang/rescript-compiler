@@ -33,15 +33,27 @@ switch arr {
 let lst = list{}
 
 switch lst {
-  | list{} => ()
+| list{} => ()
 }
 
 switch lst {
-  | list{1,2} => ()
+| list{1, 2} => ()
 }
 
 switch lst {
-  | list{1} => ()
+| list{1} => ()
 }
 
+switch "abc" {
+| "" => ()
+}
 
+switch 0 {
+| 1 => ()
+}
+
+let tuple = (1, true)
+
+switch tuple {
+| (_, false) => ()
+}
