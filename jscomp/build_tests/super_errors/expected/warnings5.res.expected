@@ -23,7 +23,8 @@ Either bind these labels explicitly or add ', _' to the pattern.
   14 [2m│[0m 
   15 [2m│[0m switch y {
 
-  You forgot to handle a possible case here, though we don't have more information on the value.
+  You forgot to handle a possible case here, for example: 
+  {otherValue: true, _}
 
 
   [1;33mWarning number 9[0m
@@ -50,7 +51,9 @@ Either bind these labels explicitly or add ', _' to the pattern.
   18 [2m│[0m 
   19 [2m│[0m let arr = [1]
 
-  You forgot to handle a possible case here, though we don't have more information on the value.
+  You forgot to handle a possible case here, for example: 
+  {typ: WithPayload(false), _}
+| {typ: Variant | One | Two | Three | Four | Five | Six | Seven(_), _}
 
 
   [1;33mWarning number 8[0m
@@ -64,7 +67,8 @@ Either bind these labels explicitly or add ', _' to the pattern.
   24 [2m│[0m 
   25 [2m│[0m switch arr {
 
-  You forgot to handle a possible case here, though we don't have more information on the value.
+  You forgot to handle a possible case here, for example: 
+  [_]
 
 
   [1;33mWarning number 8[0m
@@ -78,7 +82,8 @@ Either bind these labels explicitly or add ', _' to the pattern.
   28 [2m│[0m 
   29 [2m│[0m switch arr {
 
-  You forgot to handle a possible case here, though we don't have more information on the value.
+  You forgot to handle a possible case here, for example: 
+  []
 
 
   [1;33mWarning number 8[0m
@@ -92,7 +97,8 @@ Either bind these labels explicitly or add ', _' to the pattern.
   32 [2m│[0m 
   33 [2m│[0m let lst = list{}
 
-  You forgot to handle a possible case here, though we don't have more information on the value.
+  You forgot to handle a possible case here, for example: 
+  [1, 0] | [0, _] | []
 
 
   [1;33mWarning number 8[0m
@@ -101,12 +107,13 @@ Either bind these labels explicitly or add ', _' to the pattern.
   33 [2m│[0m let lst = list{}
   34 [2m│[0m 
   [1;33m35[0m [2m│[0m [1;33mswitch lst {[0m
-  [1;33m36[0m [2m│[0m [1;33m  | list{} => ()[0m
+  [1;33m36[0m [2m│[0m [1;33m| list{} => ()[0m
   [1;33m37[0m [2m│[0m [1;33m}[0m
   38 [2m│[0m 
   39 [2m│[0m switch lst {
 
-  You forgot to handle a possible case here, though we don't have more information on the value.
+  You forgot to handle a possible case here, for example: 
+  list{_, ..._}
 
 
   [1;33mWarning number 8[0m
@@ -115,12 +122,13 @@ Either bind these labels explicitly or add ', _' to the pattern.
   37 [2m│[0m }
   38 [2m│[0m 
   [1;33m39[0m [2m│[0m [1;33mswitch lst {[0m
-  [1;33m40[0m [2m│[0m [1;33m  | list{1,2} => ()[0m
+  [1;33m40[0m [2m│[0m [1;33m| list{1, 2} => ()[0m
   [1;33m41[0m [2m│[0m [1;33m}[0m
   42 [2m│[0m 
   43 [2m│[0m switch lst {
 
-  You forgot to handle a possible case here, though we don't have more information on the value.
+  You forgot to handle a possible case here, for example: 
+  list{1, 2, _, ..._} | list{1, 0, ..._} | list{1} | list{0, ..._} | list{}
 
 
   [1;33mWarning number 8[0m
@@ -129,9 +137,54 @@ Either bind these labels explicitly or add ', _' to the pattern.
   41 [2m│[0m }
   42 [2m│[0m 
   [1;33m43[0m [2m│[0m [1;33mswitch lst {[0m
-  [1;33m44[0m [2m│[0m [1;33m  | list{1} => ()[0m
+  [1;33m44[0m [2m│[0m [1;33m| list{1} => ()[0m
   [1;33m45[0m [2m│[0m [1;33m}[0m
   46 [2m│[0m 
-  47 [2m│[0m 
+  47 [2m│[0m switch "abc" {
 
-  You forgot to handle a possible case here, though we don't have more information on the value.
+  You forgot to handle a possible case here, for example: 
+  list{1, _, ..._} | list{0, ..._} | list{}
+
+
+  [1;33mWarning number 8[0m
+  [36m/.../fixtures/warnings5.res[0m:[2m47:1-49:1[0m
+
+  45 [2m│[0m }
+  46 [2m│[0m 
+  [1;33m47[0m [2m│[0m [1;33mswitch "abc" {[0m
+  [1;33m48[0m [2m│[0m [1;33m| "" => ()[0m
+  [1;33m49[0m [2m│[0m [1;33m}[0m
+  50 [2m│[0m 
+  51 [2m│[0m switch 0 {
+
+  You forgot to handle a possible case here, for example: 
+  "*"
+
+
+  [1;33mWarning number 8[0m
+  [36m/.../fixtures/warnings5.res[0m:[2m51:1-53:1[0m
+
+  49 [2m│[0m }
+  50 [2m│[0m 
+  [1;33m51[0m [2m│[0m [1;33mswitch 0 {[0m
+  [1;33m52[0m [2m│[0m [1;33m| 1 => ()[0m
+  [1;33m53[0m [2m│[0m [1;33m}[0m
+  54 [2m│[0m 
+  55 [2m│[0m let tuple = (1, true)
+
+  You forgot to handle a possible case here, for example: 
+  0
+
+
+  [1;33mWarning number 8[0m
+  [36m/.../fixtures/warnings5.res[0m:[2m57:1-59:1[0m
+
+  55 [2m│[0m let tuple = (1, true)
+  56 [2m│[0m 
+  [1;33m57[0m [2m│[0m [1;33mswitch tuple {[0m
+  [1;33m58[0m [2m│[0m [1;33m| (_, false) => ()[0m
+  [1;33m59[0m [2m│[0m [1;33m}[0m
+  60 [2m│[0m 
+
+  You forgot to handle a possible case here, for example: 
+  (_, true)
