@@ -34,6 +34,7 @@ let setup_env () =
   Ctype.variant_is_subtype := Matching_polyfill.variant_is_subtype;
   Clflags.dump_location := false;  
   Config.syntax_kind := `rescript;
+  Parmatch.print_res_pat := Pattern_printer.print_pattern;
   
 # 38 "core/bs_conditional_initial.pp.ml"
   Clflags.color := Some Always;
