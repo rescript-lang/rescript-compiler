@@ -14,7 +14,7 @@ val checkMutableObjectField : previousName:string -> name:string -> bool
 
 val default : string
 
-val emitModuleAccessPath : config:config -> moduleAccessPath -> string
+val emitModuleAccessPath : config:Config.config -> moduleAccessPath -> string
 
 val emitJSVariantGetLabel : polymorphic:bool -> string -> string
 

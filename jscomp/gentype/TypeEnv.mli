@@ -5,7 +5,7 @@ type t
 val addModuleEquation : dep:dep -> internal:bool -> t -> unit
 val addModulePath : typeEnv:t -> string -> ResolvedName.t
 val addTypeEquations : typeEquations:(Longident.t * type_) list -> t -> t
-val applyTypeEquations : config:config -> path:Path.t -> t -> type_ option
+val applyTypeEquations : config:Config.config -> path:Path.t -> t -> type_ option
 val expandAliasToExternalModule : name:string -> t -> dep option
 val getModuleEquations : t -> ResolvedName.eq list
 val getModuleAccessPath : name:string -> t -> Runtime.moduleAccessPath

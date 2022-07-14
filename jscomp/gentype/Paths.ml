@@ -28,7 +28,7 @@ let findNameSpace cmt =
 let getOutputFileRelative ~config cmt =
   (cmt |> handleNamespace) ^ EmitType.outputFileSuffix ~config
 
-let getOutputFile ~config cmt =
+let getOutputFile ~(config : Config.config) cmt =
   Filename.concat config.projectRoot (getOutputFileRelative ~config cmt)
 
 let getModuleName cmt =
@@ -57,7 +57,7 @@ let getCmtFile cmt =
   cmtFile
 
 let getBsConfigFile ~projectRoot =
-  let bsconfig = concat projectRoot compilerConfigFile in
+  let bsconfig = concat projectRoot Config.compilerConfigFile in
   match bsconfig |> Sys.file_exists with true -> Some bsconfig | false -> None
 
 (** Find the relative path from /.../bs/lib
