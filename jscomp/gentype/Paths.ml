@@ -57,7 +57,7 @@ let getCmtFile cmt =
   cmtFile
 
 let getBsConfigFile ~projectRoot =
-  let bsconfig = concat projectRoot "bsconfig.json" in
+  let bsconfig = concat projectRoot compilerConfigFile in
   match bsconfig |> Sys.file_exists with true -> Some bsconfig | false -> None
 
 (** Find the relative path from /.../bs/lib
