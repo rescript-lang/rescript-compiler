@@ -63,7 +63,7 @@ and exportModuleItemToFields =
          let fieldForValue = {fieldForType with type_ = typeForValue} in
          {fieldForValue; fieldForType; needsConversion} :: fields)
        exportModuleItem []
-    : config:Config.config -> exportModuleItem -> fieldInfo list)
+    : config:Config.t -> exportModuleItem -> fieldInfo list)
 
 let rec extendExportModuleItem x ~converter
     ~(exportModuleItem : exportModuleItem) ~type_ ~valueName =

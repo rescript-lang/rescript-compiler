@@ -28,7 +28,7 @@ let findNameSpace cmt =
 let getOutputFileRelative ~config cmt =
   (cmt |> handleNamespace) ^ EmitType.outputFileSuffix ~config
 
-let getOutputFile ~(config : Config.config) cmt =
+let getOutputFile ~(config : Config.t) cmt =
   Filename.concat config.projectRoot (getOutputFileRelative ~config cmt)
 
 let getModuleName cmt =

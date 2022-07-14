@@ -18,7 +18,7 @@ let chopExtensionSafe s =
 
 let dump (dir, s) = NodeFilename.concat dir s
 
-let toCmt ~(config : Config.config) ~outputFileRelative (dir, s) =
+let toCmt ~(config : Config.t) ~outputFileRelative (dir, s) =
   let open Filename in
   concat
     (outputFileRelative |> dirname)
