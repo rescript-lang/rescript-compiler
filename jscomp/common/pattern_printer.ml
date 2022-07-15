@@ -2,47 +2,17 @@ open Types
 open Typedtree
 open Parsetree
 
-module Non_empty_list : sig
-  type 'a t = 'a * 'a list
-
-  val concat : 'a t -> 'a t -> 'a t
-end = struct
-  type 'a t = 'a * 'a list
-
-  let concat l r =
-    let lhead, ltail = l in
-    let rhead, rtail = r in
-    (lhead, ltail @ (rhead :: rtail))
-end
-
 let mkpat desc = Ast_helper.Pat.mk desc
-
-let join_or_patterns = function
-  | p, [] -> p
-  | init_l, init_r :: t ->
-      let initial_value = mkpat (Ppat_or (init_l, init_r)) in
-      let result =
-        List.fold_left (fun l r -> mkpat (Ppat_or (l, r))) initial_value t
-      in
-      result
-
-let flatten_or_patterns p =
-  let rec loop p =
-    match p.ppat_desc with
-    | Ppat_or (l, r) ->
-        let lhs_patterns = loop l in
-        let rhs_patterns = loop r in
-        Non_empty_list.concat lhs_patterns rhs_patterns
-    | _ -> (p, [])
-  in
-  loop p
 
 let untype typed =
   let rec loop pat =
     match pat.pat_desc with
-    | Tpat_or (pa, pb, _) ->
-        mkpat (Ppat_or (loop pa, loop pb))
-        |> flatten_or_patterns |> join_or_patterns
+    | Tpat_or (p1, { pat_desc = Tpat_or (p2, p3, rI) }, rO) ->
+      (* Turn A | (B | C) into (A | B) | C for pretty printing without parens *)
+        let newInner = { pat with pat_desc = Tpat_or (p1, p2, rI) } in
+        let newOuter = { pat with pat_desc = Tpat_or (newInner, p3, rO) } in
+        loop newOuter
+    | Tpat_or (pa, pb, _) -> mkpat (Ppat_or (loop pa, loop pb))
     | Tpat_any | Tpat_var _ -> mkpat Ppat_any
     | Tpat_constant c -> mkpat (Ppat_constant (Untypeast.constant c))
     | Tpat_alias (p, _, _) -> loop p
