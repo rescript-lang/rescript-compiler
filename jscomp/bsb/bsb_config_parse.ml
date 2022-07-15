@@ -36,34 +36,30 @@ type json_map = Ext_json_types.t Map_string.t
 
 (* Key is the path *)
 let ( |? ) m (key, cb) = m |> Ext_json.test key cb
-
 let ( .?() ) = Map_string.find_opt
 
 (*TODO: it is a little mess that [cwd] and [project dir] are shared*)
 
-let extract_package_name_and_namespace (map : json_map) : string * string option
-    =
-  let package_name =
-    match map.?(Bsb_build_schemas.name) with
-    | Some (Str { str = "_" } as config) ->
-        Bsb_exception.config_error config "_ is a reserved package name"
-    | Some (Str { str = name }) -> name
-    | Some config ->
-        Bsb_exception.config_error config "name expect a string field"
-    | None -> Bsb_exception.invalid_spec "field name is required"
-  in
-  let namespace =
-    match map.?(Bsb_build_schemas.namespace) with
-    | None | Some (False _) -> None
-    | Some (True _) ->
-        Some (Ext_namespace.namespace_of_package_name package_name)
-    | Some (Str { str }) ->
-        (*TODO : check the validity of namespace *)
-        Some (Ext_namespace.namespace_of_package_name str)
-    | Some x ->
-        Bsb_exception.config_error x "namespace field expects string or boolean"
-  in
-  (package_name, namespace)
+let extract_package_name (map : json_map) =
+  match map.?(Bsb_build_schemas.name) with
+  | Some (Str { str = "_" } as config) ->
+      Bsb_exception.package_json_config_error config
+        "_ is a reserved package name"
+  | Some (Str { str = name }) -> name
+  | Some config ->
+      Bsb_exception.package_json_config_error config
+        "name expect a string field"
+  | None -> Bsb_exception.invalid_package_json_spec "field name is required"
+
+let extract_namespace (map : json_map) package_name =
+  match map.?(Bsb_build_schemas.namespace) with
+  | None | Some (False _) -> None
+  | Some (True _) -> Some (Ext_namespace.namespace_of_package_name package_name)
+  | Some (Str { str }) ->
+      (*TODO : check the validity of namespace *)
+      Some (Ext_namespace.namespace_of_package_name str)
+  | Some x ->
+      Bsb_exception.config_error x "namespace field expects string or boolean"
 
 (**
     There are two things to check:
@@ -190,14 +186,24 @@ let extract_generators (map : json_map) =
         (Bsb_build_schemas.generators ^ " expect an array field"));
   !generators
 
-let extract_dependencies (map : json_map) cwd (field : string) :
-    Bsb_config_types.dependencies =
+let extract_dependencies_from_package_json (map : json_map) cwd (field : string)
+    : Bsb_config_types.dependencies =
   match map.?(field) with
   | None -> []
-  | Some (Arr { content = s }) ->
-      Ext_list.map (Bsb_build_util.get_list_string s) (fun s ->
-          resolve_package cwd (Bsb_pkg_types.string_as_package s))
-  | Some config -> Bsb_exception.config_error config (field ^ " expect an array")
+  | Some (Obj { map = dependencies }) ->
+      let bsb_deps =
+        Map_string.keys dependencies
+        |> List.filter (fun dep ->
+               let bsconfig =
+                 Bsb_pkg.resolve_bs_package ~cwd
+                   (Bsb_pkg_types.string_as_package dep)
+               in
+               Sys.file_exists bsconfig)
+      in
+      Ext_list.map bsb_deps (fun dep ->
+          resolve_package cwd (Bsb_pkg_types.string_as_package dep))
+  | Some config ->
+      Bsb_exception.package_json_config_error config (field ^ " expect a object")
 
 (* return an empty array if not found *)
 let extract_string_list (map : json_map) (field : string) : string list =
@@ -251,6 +257,11 @@ let extract_js_post_build (map : json_map) cwd : string option =
   |> ignore;
   !js_post_build_cmd
 
+let read_packge_json cwd =
+  match Ext_json_parse.parse_json_from_file (cwd // Literals.package_json) with
+  | Obj { map } -> map
+  | _ -> Bsb_exception.invalid_package_json_spec "expect a json object {}"
+
 (** ATT: make sure such function is re-entrant. 
     With a given [cwd] it works anywhere*)
 let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
@@ -273,7 +284,11 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
     Ext_json_parse.parse_json_from_file (per_proj_dir // Literals.bsconfig_json)
   with
   | Obj { map } -> (
-      let package_name, namespace = extract_package_name_and_namespace map in
+      let map_json = read_packge_json per_proj_dir in
+
+      let package_name = extract_package_name map_json in
+      let namespace = extract_namespace map package_name in
+
       let gentype_config = extract_gentype_config map per_proj_dir in
 
       (* This line has to be before any calls to Bsb_global_backend.backend, because it'll read the entries
@@ -294,13 +309,14 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
       in
       let reason_react_jsx = extract_reason_react_jsx map in
       let bs_dependencies =
-        extract_dependencies map per_proj_dir Bsb_build_schemas.bs_dependencies
+        extract_dependencies_from_package_json map_json per_proj_dir
+          Bsb_build_schemas.PackageJson.dependencies
       in
       let bs_dev_dependencies =
         match package_kind with
         | Toplevel | Pinned_dependency _ ->
-            extract_dependencies map per_proj_dir
-              Bsb_build_schemas.bs_dev_dependencies
+            extract_dependencies_from_package_json map_json per_proj_dir
+              Bsb_build_schemas.PackageJson.devDependencies
         | Dependency _ -> []
       in
       let pinned_dependencies = extract_pinned_dependencies map in

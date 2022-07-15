@@ -125,11 +125,7 @@ let get_list_string_acc (s : Ext_json_types.t array) acc =
 
 let get_list_string s = get_list_string_acc s []
 
-(* Key is the path *)
-let ( |? ) m (key, cb) = m |> Ext_json.test key cb
-
 type top = Expect_none | Expect_name of string
-
 type package_context = { proj_dir : string; top : top }
 
 (**
@@ -148,8 +144,8 @@ let pp_packages_rev ppf lst =
 
 let rec walk_all_deps_aux (visited : string Hash_string.t) (paths : string list)
     ~(top : top) (dir : string) (queue : _ Queue.t) ~pinned_dependencies =
-  let bsconfig_json = dir // Literals.bsconfig_json in
-  match Ext_json_parse.parse_json_from_file bsconfig_json with
+  let package_json = dir // Literals.package_json in
+  match Ext_json_parse.parse_json_from_file package_json with
   | Obj { map; loc } ->
       let cur_package_name =
         match Map_string.find_opt map Bsb_build_schemas.name with
@@ -162,7 +158,7 @@ let rec walk_all_deps_aux (visited : string Hash_string.t) (paths : string list)
                     "package name is expected to be %s but got %s" s str);
             str
         | Some _ | None ->
-            Bsb_exception.errorf ~loc "package name missing in %s/bsconfig.json"
+            Bsb_exception.errorf ~loc "package name missing in %s/package.json"
               dir
       in
       if Ext_list.mem_string paths cur_package_name then (
@@ -174,31 +170,40 @@ let rec walk_all_deps_aux (visited : string Hash_string.t) (paths : string list)
       if Hash_string.mem visited cur_package_name then
         Bsb_log.info "@{<info>Visited before@} %s@." cur_package_name
       else
-        let explore_deps (deps : string) =
-          map
-          |? ( deps,
-               `Arr
-                 (fun (new_packages : Ext_json_types.t array) ->
-                   Ext_array.iter new_packages (fun js ->
-                       match js with
-                       | Str { str = new_package } ->
-                           let package_dir =
-                             Bsb_pkg.resolve_bs_package ~cwd:dir
-                               (Bsb_pkg_types.string_as_package new_package)
-                           in
-                           walk_all_deps_aux visited package_stacks
-                             ~top:(Expect_name new_package) package_dir queue
-                             ~pinned_dependencies
-                       | _ ->
-                           Bsb_exception.errorf ~loc "%s expect an array" deps))
-             )
-          |> ignore
+        let explore_deps_in_package_json (field : string) =
+          match Map_string.find_opt map field with
+          | Some (Obj { map = dependencies }) ->
+              let bsb_deps =
+                Map_string.keys dependencies
+                |> List.filter (fun dep ->
+                       let dep_dir =
+                         Bsb_pkg.resolve_bs_package ~cwd:dir
+                           (Bsb_pkg_types.string_as_package dep)
+                       in
+                       let bsconfig = dep_dir // Literals.bsconfig_json in
+                       (* NOTE: "rescript" package should be ignore *)
+                       dep <> Literals.rescript && Sys.file_exists bsconfig)
+              in
+              List.iter
+                (fun dep ->
+                  let package_dir =
+                    Bsb_pkg.resolve_bs_package ~cwd:dir
+                      (Bsb_pkg_types.string_as_package dep)
+                  in
+                  walk_all_deps_aux visited package_stacks
+                    ~top:(Expect_name dep) package_dir queue
+                    ~pinned_dependencies)
+                bsb_deps
+          | _ -> ()
         in
-        explore_deps Bsb_build_schemas.bs_dependencies;
+        explore_deps_in_package_json Bsb_build_schemas.PackageJson.dependencies;
         (match top with
-        | Expect_none -> explore_deps Bsb_build_schemas.bs_dev_dependencies
+        | Expect_none ->
+            explore_deps_in_package_json
+              Bsb_build_schemas.PackageJson.devDependencies
         | Expect_name n when Set_string.mem pinned_dependencies n ->
-            explore_deps Bsb_build_schemas.bs_dev_dependencies
+            explore_deps_in_package_json
+              Bsb_build_schemas.PackageJson.devDependencies
         | Expect_name _ -> ());
         Queue.add { top; proj_dir = dir } queue;
         Hash_string.add visited cur_package_name dir
