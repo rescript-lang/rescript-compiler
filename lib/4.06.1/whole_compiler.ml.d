@@ -12,6 +12,8 @@
 ../lib/4.06.1/whole_compiler.ml: ./common/lam_methname.mli
 ../lib/4.06.1/whole_compiler.ml: ./common/ml_binary.ml
 ../lib/4.06.1/whole_compiler.ml: ./common/ml_binary.mli
+../lib/4.06.1/whole_compiler.ml: ./common/pattern_printer.ml
+../lib/4.06.1/whole_compiler.ml: ./common/pattern_printer.mli
 ../lib/4.06.1/whole_compiler.ml: ./core/bs_cmi_load.pp.ml
 ../lib/4.06.1/whole_compiler.ml: ./core/bs_conditional_initial.mli
 ../lib/4.06.1/whole_compiler.ml: ./core/bs_conditional_initial.pp.ml

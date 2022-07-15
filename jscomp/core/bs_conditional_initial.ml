@@ -36,10 +36,10 @@ let setup_env () =
   Config.syntax_kind := `rescript;
   Parmatch.print_res_pat := Pattern_printer.print_pattern;
   
-# 38 "core/bs_conditional_initial.pp.ml"
+# 39 "core/bs_conditional_initial.pp.ml"
   Clflags.color := Some Always;
   
-# 40 "core/bs_conditional_initial.pp.ml"
+# 41 "core/bs_conditional_initial.pp.ml"
   (* default true
      otherwise [bsc -I sc src/hello.ml ] will include current directory to search path
   *)
@@ -56,7 +56,7 @@ let setup_env () =
   Matching.names_from_construct_pattern := 
     Matching_polyfill.names_from_construct_pattern;
     
-# 56 "core/bs_conditional_initial.pp.ml"
+# 57 "core/bs_conditional_initial.pp.ml"
     (let root_dir = 
        Filename.dirname 
          (Filename.dirname Sys.executable_name) in 
@@ -66,7 +66,7 @@ let setup_env () =
        (root_dir//"jscomp"//"stdlib-406") ::
        !Clflags.include_dirs);
   
-# 65 "core/bs_conditional_initial.pp.ml"
+# 66 "core/bs_conditional_initial.pp.ml"
   Rescript_cpp.replace_directive_bool "BS" true;
   Rescript_cpp.replace_directive_bool "JS" true;
   Rescript_cpp.replace_directive_string "BS_VERSION"  Bs_version.version
