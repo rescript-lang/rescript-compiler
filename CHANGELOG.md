@@ -10,6 +10,12 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
+# master
+
+#### :nail_care: Polish
+
+- Print patterns in warnings using rescript printer https://github.com/rescript-lang/rescript-compiler/pull/5492
+
 # 10.0.0-beta.3
 
 #### :bug: Bug Fix
