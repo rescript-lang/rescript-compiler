@@ -69,20 +69,6 @@ The ReScript project is built with a vendored version of `ninja`. It requires bu
 
 Whenever you edit a file, run `./scripts/ninja.js build` to rebuild the ReScript compiler. There's also an optional watcher to auto-rebuild on file changes: `node scripts/tasks.js`.
 
-## Build the Project during Development (`dune` workflow)
-
-When working on a project you may want to use `dune` to compile all the files you've been working on. This is especially important for full IDE support, including auto-completion and showing compilation errors.
-
-```
-# One off build
-dune build
-
-# Watch mode
-dune build -w
-```
-
-> Please note that `dune` will not build the final `rescript` binaries. Use the aforementioned `ninja` workflow if you want to build, test and distribute the final product.
-
 ### Troubleshoot a Broken Build
 
 Usually whenever there's some issues with missing files, incompatible interfaces or stale artifacts, the easiest fix is to clean and rebuild the project:
@@ -98,6 +84,26 @@ If this doesn't work (rare), then:
 - Save your changes
 - `git clean -xdf .` to wipe all artifacts
 - Then do a clean build as instructed above
+
+## Build the Project during Development (`dune` workflow)
+
+When working on a project you may want to use `dune` to compile all the files you've been working on. This is especially important for full IDE support, including auto-completion and showing compilation errors.
+
+```
+# One off build
+dune build
+
+# Watch mode
+dune build -w
+```
+
+> Please note that `dune` will not build the final `rescript` binaries. Use the aforementioned `ninja` workflow if you want to build, test and distribute the final product.
+
+## Adding new Files
+
+To make sure that no files are added to or removed from the npm package inadvertently, an artifact list is kept at `packages/artifacts.txt`. During CI build, it is verified that only the files that are listed there are actually included in the npm package.
+
+When adding a new file to the repository that should go into the npm package - e.g., a new stdlib module -, first compile and test everything locally. Next, run `./scripts/makeArtifactList.js` to update the artifact list and include the updated artifact list in your commit.
 
 ## Running tests for independent ReScript files
 

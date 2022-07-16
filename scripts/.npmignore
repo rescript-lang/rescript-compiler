@@ -3,3 +3,4 @@ deps.js
 format.js
 local_br_clean.sh
 setVersion.js
+makeArtifactList.js

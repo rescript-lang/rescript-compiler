@@ -125,8 +125,8 @@ jobs:
       - name: Create ninja.tar.gz
         run: git -C ninja archive --format=tar.gz HEAD -o ../vendor/ninja.tar.gz
 
-      - name: Run prepublish.js
-        run: node ./scripts/prepublish.js -nocheck
+      - name: Check artifact list
+        run: node ./scripts/makeArtifactList.js -check
 
       - name: npm pack (rescript)
         run: npm pack
