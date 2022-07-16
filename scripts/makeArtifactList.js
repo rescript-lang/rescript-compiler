@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 // This script creates the list of the files that go into the rescript npm package.
 //
 // In local dev, invoke it without any args after adding or removing files.
