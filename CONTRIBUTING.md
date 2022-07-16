@@ -99,6 +99,12 @@ dune build -w
 
 > Please note that `dune` will not build the final `rescript` binaries. Use the aforementioned `ninja` workflow if you want to build, test and distribute the final product.
 
+## Adding new Files
+
+To make sure that no files are added to or removed from the npm package inadvertently, an artifact list is kept at `packages/artifacts.txt`. During CI build, it is verified that only the files that are listed there are actually included in the npm package.
+
+When adding a new file to the repository that should go into the npm package - e.g., a new stdlib module -, first compile and test everything locally. Next, run `./scripts/makeArtifactList.js` to update the artifact list and include the updated artifact list in your commit.
+
 ## Running tests for independent ReScript files
 
 The simplest way for running tests is to run your locally built compiler on separate ReScript files:
