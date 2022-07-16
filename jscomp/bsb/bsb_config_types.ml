@@ -32,7 +32,7 @@ type dependencies = dependency list
 type reason_react_jsx = Jsx_v3
 (* string option  *)
 
-type gentype_config = { path : string (* resolved *) }
+type gentype_config = bool
 
 type command = string
 
@@ -66,5 +66,5 @@ type t = {
   generators : command Map_string.t;
   cut_generators : bool;
   (* note when used as a dev mode, we will always ignore it *)
-  gentype_config : gentype_config option;
+  gentype_config : gentype_config;
 }

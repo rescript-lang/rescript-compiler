@@ -8123,7 +8123,7 @@ type dependencies = dependency list
 type reason_react_jsx = Jsx_v3
 (* string option  *)
 
-type gentype_config = { path : string (* resolved *) }
+type gentype_config = bool
 
 type command = string
 
@@ -8157,7 +8157,7 @@ type t = {
   generators : command Map_string.t;
   cut_generators : bool;
   (* note when used as a dev mode, we will always ignore it *)
-  gentype_config : gentype_config option;
+  gentype_config : gentype_config;
 }
 
 end
@@ -10321,26 +10321,11 @@ let check_stdlib (map : json_map) : bool =
   | Some (False _) -> false
   | None | Some _ -> true
 
-let extract_gentype_config (map : json_map) cwd :
-    Bsb_config_types.gentype_config option =
+let extract_gentype_config (map : json_map) :
+    Bsb_config_types.gentype_config =
   match map.?(Bsb_build_schemas.gentypeconfig) with
-  | None -> None
-  | Some (Obj { map = obj }) ->
-      Some
-        {
-          path =
-            (match obj.?(Bsb_build_schemas.path) with
-            | None ->
-                (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:"gentype.exe"
-                   "gentype/gentype.exe")
-                  .path
-            | Some (Str { str }) ->
-                (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:"gentype.exe"
-                   str)
-                  .path
-            | Some config ->
-                Bsb_exception.config_error config "path expect to be a string");
-        }
+  | None -> false
+  | Some (Obj _) -> true
   | Some config ->
       Bsb_exception.config_error config "gentypeconfig expect an object"
 
@@ -10506,7 +10491,7 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
   with
   | Obj { map } -> (
       let package_name, namespace = extract_package_name_and_namespace map in
-      let gentype_config = extract_gentype_config map per_proj_dir in
+      let gentype_config = extract_gentype_config map in
 
       (* This line has to be before any calls to Bsb_global_backend.backend, because it'll read the entries
            array from the bsconfig and set the backend_ref to the first entry, if any. *)
@@ -11518,7 +11503,7 @@ type command = string
     we must make sure it is re-entrant
 *)
 val make_custom_rules :
-  gentype_config:Bsb_config_types.gentype_config option ->
+  gentype_config:Bsb_config_types.gentype_config ->
   has_postbuild:string option ->
   pp_file:string option ->
   has_builtin:bool ->
@@ -11629,7 +11614,7 @@ type builtin = {
   customs : t Map_string.t;
 }
 
-let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config option)
+let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
     ~(has_postbuild : string option) ~(pp_file : string option)
     ~(has_builtin : bool)
     ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
@@ -11661,8 +11646,8 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config option)
        in non-toplevel mode
     *)
     (match gentype_config with
-    | None -> ()
-    | Some _ ->
+    | false -> ()
+    | true ->
         Ext_buffer.add_string buf " -bs-gentype");
     if read_cmi <> `is_cmi then (
       Ext_buffer.add_string buf " -bs-package-name ";
@@ -12376,9 +12361,6 @@ let output_ninja_and_namespace_map ~per_proj_dir ~package_kind
   Ext_list.iter bs_dev_dependencies (fun x ->
       Bsb_ninja_targets.output_finger Bsb_ninja_global_vars.g_finger
         (finger_file x) oc);
-  (match gentype_config with
-  | None -> ()
-  | Some x -> output_string oc ("cleaner = " ^ x.path ^ "\n"));
   output_static_resources static_resources rules.copy_resources oc;
   (* Generate build statement for each file *)
   Ext_list.iter bs_file_groups (fun files_per_dir ->

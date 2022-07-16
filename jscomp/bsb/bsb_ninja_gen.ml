@@ -223,9 +223,6 @@ let output_ninja_and_namespace_map ~per_proj_dir ~package_kind
   Ext_list.iter bs_dev_dependencies (fun x ->
       Bsb_ninja_targets.output_finger Bsb_ninja_global_vars.g_finger
         (finger_file x) oc);
-  (match gentype_config with
-  | None -> ()
-  | Some x -> output_string oc ("cleaner = " ^ x.path ^ "\n"));
   output_static_resources static_resources rules.copy_resources oc;
   (* Generate build statement for each file *)
   Ext_list.iter bs_file_groups (fun files_per_dir ->

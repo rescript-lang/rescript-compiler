@@ -89,26 +89,11 @@ let check_stdlib (map : json_map) : bool =
   | Some (False _) -> false
   | None | Some _ -> true
 
-let extract_gentype_config (map : json_map) cwd :
-    Bsb_config_types.gentype_config option =
+let extract_gentype_config (map : json_map) :
+    Bsb_config_types.gentype_config =
   match map.?(Bsb_build_schemas.gentypeconfig) with
-  | None -> None
-  | Some (Obj { map = obj }) ->
-      Some
-        {
-          path =
-            (match obj.?(Bsb_build_schemas.path) with
-            | None ->
-                (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:"gentype.exe"
-                   "gentype/gentype.exe")
-                  .path
-            | Some (Str { str }) ->
-                (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:"gentype.exe"
-                   str)
-                  .path
-            | Some config ->
-                Bsb_exception.config_error config "path expect to be a string");
-        }
+  | None -> false
+  | Some (Obj _) -> true
   | Some config ->
       Bsb_exception.config_error config "gentypeconfig expect an object"
 
@@ -274,7 +259,7 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
   with
   | Obj { map } -> (
       let package_name, namespace = extract_package_name_and_namespace map in
-      let gentype_config = extract_gentype_config map per_proj_dir in
+      let gentype_config = extract_gentype_config map in
 
       (* This line has to be before any calls to Bsb_global_backend.backend, because it'll read the entries
            array from the bsconfig and set the backend_ref to the first entry, if any. *)
