@@ -120,9 +120,8 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config option)
     *)
     (match gentype_config with
     | None -> ()
-    | Some x ->
-        Ext_buffer.add_string buf " -bs-gentype ";
-        Ext_buffer.add_string buf x.path);
+    | Some _ ->
+        Ext_buffer.add_string buf " -bs-gentype");
     if read_cmi <> `is_cmi then (
       Ext_buffer.add_string buf " -bs-package-name ";
       Ext_buffer.add_string buf (Ext_filename.maybe_quote package_name);

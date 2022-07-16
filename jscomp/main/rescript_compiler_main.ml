@@ -306,7 +306,7 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-no-alias-deps", set Clflags.transparent_modules, 
     "*internal*Do not record dependencies for module aliases";
 
-    "-bs-gentype", set Clflags.bs_gentype ,
+    "-bs-gentype", set Clflags.bs_gentype,
     "*internal* Pass gentype command";
 
     (******************************************************************************)
