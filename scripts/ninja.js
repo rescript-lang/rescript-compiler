@@ -1617,6 +1617,7 @@ var bsc_libs = [
   "common",
   "frontend",
   "depends",
+  "gentype",
   "super_errors",
   "outcome_printer",
   "core",
@@ -1732,6 +1733,7 @@ o core/js_record_fold.ml: p4of core/j.ml
 o ${my_target}/bsc.exe: link  ${makeLibs(
     bsc_libs
   )} main/rescript_compiler_main.cmx
+  libs =  unix.cmxa str.cmxa    
 o ${my_target}/rescript.exe: link ${makeLibs(
     rescript_libs
   )} main/rescript_main.cmx

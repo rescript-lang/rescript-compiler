@@ -54,8 +54,6 @@
 (library
  (name jscomp)
  (flags "-w" "+26+27+32+33+39-d")
- ; Depends on:
- (libraries unix str)
  (modules_without_implementation
   Jscmj_main
   Lam_pass_unused_params

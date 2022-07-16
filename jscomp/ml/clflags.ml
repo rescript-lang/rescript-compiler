@@ -66,6 +66,6 @@ let bs_vscode =
        we don't want to rebuild when flip on or off
     *)
 let dont_record_crc_unit : string option ref = ref None
-let bs_gentype = ref None
+let bs_gentype = ref false
 let no_assert_false = ref false
 let dump_location = ref true

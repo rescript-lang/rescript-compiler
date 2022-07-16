@@ -43,17 +43,9 @@ let output_deps_set name set =
 
 let process_with_gentype filename =
   match !Clflags.bs_gentype with
-  | None -> ()
-  | Some cmd ->
-      let comm =
-        cmd ^ " -bs-version " ^ Bs_version.version ^ " -cmt-add " ^ filename
-        ^ ":" ^ !Location.input_name
-      in
-      if !Clflags.verbose then (
-        prerr_string "+ ";
-        prerr_endline comm;
-        prerr_newline ());
-      ignore (Sys.command comm)
+  | false -> ()
+  | true ->
+      GenType.executeCliCommand ~printUsageAndExit:(fun () -> ()) (Add filename)
 
 let after_parsing_sig ppf outputprefix ast =
   Ast_config.iter_on_bs_config_sigi ast;

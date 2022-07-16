@@ -9154,7 +9154,7 @@ type mli_status =  Mli_exists | Mli_non_exists
 val assume_no_mli : mli_status ref
 val bs_vscode : bool
 val dont_record_crc_unit : string option ref
-val bs_gentype : string option ref
+val bs_gentype : bool ref
 val no_assert_false : bool ref
 val dump_location : bool ref
 
@@ -9229,7 +9229,7 @@ let bs_vscode =
        we don't want to rebuild when flip on or off
     *)
 let dont_record_crc_unit : string option ref = ref None
-let bs_gentype = ref None
+let bs_gentype = ref false
 let no_assert_false = ref false
 let dump_location = ref true
 
