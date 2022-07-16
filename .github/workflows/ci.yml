@@ -184,3 +184,30 @@ jobs:
         run: npx rescript -h && npx rescript build && cat src/Test.bs.js
         shell: bash
         working-directory: packages/test
+
+  # The following job tests installation from source on FreeBSD via cross-platform-actions.
+  # Disabled by default, as it takes ~11m.
+  # Can be enabled temporarily in a PR to verify that installation from source
+  # on an "exotic" platform still works.
+  #
+  # installationTestFreeBSD:
+  #   needs: package
+  #   runs-on: macos-latest
+  #
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #
+  #     - name: Download artifacts
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: npm-packages
+  #         path: packages/test
+  #
+  #     - name: Test installation on FreeBSD
+  #       uses: cross-platform-actions/action@v0.6.2
+  #       with:
+  #         operating_system: freebsd
+  #         version: "13.0"
+  #         shell: bash
+  #         run: cd packages/test && ./test_freebsd.sh
