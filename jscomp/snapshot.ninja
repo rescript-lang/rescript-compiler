@@ -8,7 +8,7 @@ snapshot_path = 4.06.1
 LTO= ../scripts/buckle_lto.js
 
 
-includes = -I js_parser -I stubs -I ext -I common -I frontend -I bsb_helper -I depends -I core -I super_errors -I outcome_printer -I bsb -I ounit -I ounit_tests -I napkin -I main
+includes = -I js_parser -I stubs -I ext -I common -I frontend -I gentype -I bsb_helper -I depends -I core -I super_errors -I outcome_printer -I bsb -I ounit -I ounit_tests -I napkin -I main
 SNAP=../lib/$snapshot_path
 
 build snapshot: phony  $SNAP/whole_compiler.ml   $SNAP/bsb_helper.ml  $SNAP/unstable/all_ounit_tests.ml
