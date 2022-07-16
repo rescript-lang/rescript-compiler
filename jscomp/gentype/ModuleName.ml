@@ -1,7 +1,7 @@
 type t = string
 
 let curry = "Curry"
-let rescriptPervasives = "ReasonPervasives"
+let rescriptPervasives = "RescriptPervasives"
 let dotRegex = "." |> Str.quote |> Str.regexp
 let lbracketRegex = "[" |> Str.quote |> Str.regexp
 let rbracketRegex = "]" |> Str.quote |> Str.regexp
