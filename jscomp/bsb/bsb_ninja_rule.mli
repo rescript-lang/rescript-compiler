@@ -66,7 +66,7 @@ type command = string
     we must make sure it is re-entrant
 *)
 val make_custom_rules :
-  gentype_config:Bsb_config_types.gentype_config option ->
+  gentype_config:Bsb_config_types.gentype_config ->
   has_postbuild:string option ->
   pp_file:string option ->
   has_builtin:bool ->
