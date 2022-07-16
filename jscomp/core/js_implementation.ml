@@ -45,7 +45,9 @@ let process_with_gentype filename =
   match !Clflags.bs_gentype with
   | false -> ()
   | true ->
-      GenType.executeCliCommand ~printUsageAndExit:(fun () -> ()) (Add filename)
+      GenType.executeCliCommand
+        ~printUsageAndExit:(fun () -> ())
+        (Add (filename ^ ":" ^ !Location.input_name))
 
 let after_parsing_sig ppf outputprefix ast =
   Ast_config.iter_on_bs_config_sigi ast;
