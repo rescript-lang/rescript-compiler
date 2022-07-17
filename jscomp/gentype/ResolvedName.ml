@@ -1,11 +1,8 @@
 type t = string list
 
-let dot s x = x @ [s]
-
-let fromString x = [x]
-
+let dot s x = x @ [ s ]
+let fromString x = [ x ]
 let toList x = x
-
 let toString x = x |> String.concat "_"
 
 type eq = t * t
@@ -19,17 +16,17 @@ module NameSet = Set.Make (struct
     | [], _ :: _ -> -1
     | _ :: _, [] -> -1
     | s1 :: rest1, s2 :: rest2 -> (
-      let n = String.compare s1 s2 in
-      match n <> 0 with true -> n | false -> compare rest1 rest2)
+        let n = String.compare s1 s2 in
+        match n <> 0 with true -> n | false -> compare rest1 rest2)
 end)
 
 let rec applyEquation ~(el : t) (eq : eq) : t list =
   match (eq, el) with
-  | ([], rhs), _ -> [rhs @ el]
+  | ([], rhs), _ -> [ rhs @ el ]
   | (s1 :: rest1, rhs), s2 :: rest2 -> (
-    match s1 = s2 with
-    | true -> (rest1, rhs) |> applyEquation ~el:rest2
-    | false -> [])
+      match s1 = s2 with
+      | true -> (rest1, rhs) |> applyEquation ~el:rest2
+      | false -> [])
   | (_ :: _, _), [] -> []
 
 let rec applyEquationsToElements ~(eqs : eq list) ~seen (elements : t list) :
@@ -49,11 +46,11 @@ let rec applyEquationsToElements ~(eqs : eq list) ~seen (elements : t list) :
   match newEquations = [] with
   | true -> newEquations
   | false ->
-    newEquations @ (newElements |> applyEquationsToElements ~eqs ~seen:newSeen)
+      newEquations @ (newElements |> applyEquationsToElements ~eqs ~seen:newSeen)
 
 (* Apply equations of the form e.g. X.Y = A from the alias: module A = X.Y.
    Return a list of equations on types.
    E.g. if the element is X.Y.t, return equation A.t = X.Y.t *)
 
 let applyEquations ~(eqs : eq list) (el : t) : eq list =
-  [el] |> applyEquationsToElements ~eqs ~seen:NameSet.empty
+  [ el ] |> applyEquationsToElements ~eqs ~seen:NameSet.empty

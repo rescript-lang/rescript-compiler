@@ -82,8 +82,7 @@ let read_build_cache ~dir : t =
   let all_content = Ext_io.load_file (Filename.concat dir bsbuild_cache) in
   decode all_content
 
-type module_info = { case : bool; (* which is Bsb_db.case*)
-                                  dir_name : string }
+type module_info = { case : bool; (* which is Bsb_db.case*) dir_name : string }
 
 let find_opt ({ content = whole } as db : t) lib (key : string) :
     module_info option =

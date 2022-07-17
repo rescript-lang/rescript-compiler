@@ -1,7 +1,6 @@
 type t = string option
 
 let break ~indent = match indent with None -> "" | Some s -> "\n" ^ s
-
 let more indent = match indent with None -> None | Some s -> Some ("  " ^ s)
 
 let heuristicFields ~indent fields =

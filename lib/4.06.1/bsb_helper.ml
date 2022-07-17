@@ -1510,8 +1510,7 @@ let read_build_cache ~dir : t =
   let all_content = Ext_io.load_file (Filename.concat dir bsbuild_cache) in
   decode all_content
 
-type module_info = { case : bool; (* which is Bsb_db.case*)
-                                  dir_name : string }
+type module_info = { case : bool; (* which is Bsb_db.case*) dir_name : string }
 
 let find_opt ({ content = whole } as db : t) lib (key : string) :
     module_info option =
@@ -2262,23 +2261,23 @@ let oc_cmi buf namespace source =
   Ext_buffer.add_string buf Literals.suffix_cmi
 
 (* For cases with self cycle
-    e.g, in b.ml
-   {[
-     include B
-   ]}
-    When ns is not turned on, it makes sense that b may come from third party package.
-    Hoever, this case is wont supported.
-    It complicates when it has interface file or not.
-   - if it has interface file, the current interface will have priority, failed to build?
-   - if it does not have interface file, the build will not open this module at all(-bs-read-cmi)
+     e.g, in b.ml
+    {[
+      include B
+    ]}
+     When ns is not turned on, it makes sense that b may come from third party package.
+     Hoever, this case is wont supported.
+     It complicates when it has interface file or not.
+    - if it has interface file, the current interface will have priority, failed to build?
+    - if it does not have interface file, the build will not open this module at all(-bs-read-cmi)
 
-    When ns is turned on, `B` is interprted as `Ns-B` which is a cyclic dependency,
-    it can be errored out earlier
+     When ns is turned on, `B` is interprted as `Ns-B` which is a cyclic dependency,
+     it can be errored out earlier
 
-  #5368: It turns out there are many false positives on detecting self-cycles (see: `jscomp/build_tests/zerocycle`)
-         To properly solve this, we would need to `jscomp/ml/depend.ml` because
-           cmi and cmj is broken in the first place (same problem as in ocaml/ocaml#4618).
-         So we will just ignore the self-cycles. Even if there is indeed a self-cycle, it should fail to compile anyway.
+   #5368: It turns out there are many false positives on detecting self-cycles (see: `jscomp/build_tests/zerocycle`)
+          To properly solve this, we would need to `jscomp/ml/depend.ml` because
+            cmi and cmj is broken in the first place (same problem as in ocaml/ocaml#4618).
+          So we will just ignore the self-cycles. Even if there is indeed a self-cycle, it should fail to compile anyway.
 *)
 let oc_deps (ast_file : string) (is_dev : bool) (db : Bsb_db_decode.t)
     (namespace : string option) (buf : Ext_buffer.t) (kind : [ `impl | `intf ])
@@ -2307,26 +2306,26 @@ let oc_deps (ast_file : string) (is_dev : bool) (db : Bsb_db_decode.t)
   while !offset < size do
     let next_tab = String.index_from s !offset magic_sep_char in
     let dependent_module = String.sub s !offset (next_tab - !offset) in
-    if dependent_module = cur_module_name then
-      (*prerr_endline ("FAILED: " ^ cur_module_name ^ " has a self cycle");
-      exit 2*)
-      (* #5368 ignore self dependencies *) ()
+    (if dependent_module = cur_module_name then
+     (*prerr_endline ("FAILED: " ^ cur_module_name ^ " has a self cycle");
+       exit 2*)
+     (* #5368 ignore self dependencies *) ()
     else
-    (match Bsb_db_decode.find db dependent_module is_dev with
-    | None -> ()
-    | Some { dir_name; case } ->
-        Lazy.force at_most_once;
-        let source =
-          Filename.concat dir_name
-            (if case then dependent_module
-            else Ext_string.uncapitalize_ascii dependent_module)
-        in
-        Ext_buffer.add_char buf ' ';
-        if kind = `impl then (
-          output_file buf source namespace;
-          Ext_buffer.add_string buf Literals.suffix_cmj);
-        (* #3260 cmj changes does not imply cmi change anymore *)
-        oc_cmi buf namespace source);
+      match Bsb_db_decode.find db dependent_module is_dev with
+      | None -> ()
+      | Some { dir_name; case } ->
+          Lazy.force at_most_once;
+          let source =
+            Filename.concat dir_name
+              (if case then dependent_module
+              else Ext_string.uncapitalize_ascii dependent_module)
+          in
+          Ext_buffer.add_char buf ' ';
+          if kind = `impl then (
+            output_file buf source namespace;
+            Ext_buffer.add_string buf Literals.suffix_cmj);
+          (* #3260 cmj changes does not imply cmi change anymore *)
+          oc_cmi buf namespace source);
     offset := next_tab + 1
   done;
   if Lazy.is_val at_most_once then Ext_buffer.add_char buf '\n'
