@@ -30,20 +30,38 @@
 
 # 10.0.0-beta.1
 
+#### :boom: Breaking Change
+
+- `bsconfig.json` does not support `// line` comments anymore.
+  - Example: `"suffix": ".bs.js" // determine the suffix`
+  - Fix: remove the comment and use standard json.
+- Externals without `@val` annotations do not work anymore, and externals with `= ""` give an error.
+  - Example: `external setTimeout: (unit => unit, int) => float = "setTimeout"` is not supported anymore.
+  - Fix: use `[@val] external setTimeout: (unit => unit, int) => float = "setTimeout"` instead.
+  - Example2: `[@val] external setTimeout: (unit => unit, int) => float = ""` is not supported anymore.
+  - Fix2: use `[@val] external setTimeout: (unit => unit, int) => float = "setTimeout"` instead.
+- Regular expressions don't need escaping.
+  - Example: `let blockCommentsRe = %re("/\\/\\*([^*]|[\\r\\n]|(\\*+([^*/]|[\\r\\n])))*\\*+\\//g")`.
+  - Fix: use `let blockCommentsRe = %re("/\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\//g")` instead.
+
 #### :bug: Bug Fix
 
 - Fixed crash in `rescript build` on Windows [#5516](https://github.com/rescript-lang/rescript-compiler/pull/5516)
 - Fixed `rescript init` command not working [#5526](https://github.com/rescript-lang/rescript-compiler/pull/5526)
 
-#### :boom: Breaking Change
-
-- `bsconfig.json` does not support `// line` comments anymore
-- Externals without `@val` annotations do not work anymore, and externals with `= ""` give an error.
-- Regular expressions don't need escaping. E.g. `let blockCommentsRe = %re("/\\/\\*([^*]|[\\r\\n]|(\\*+([^*/]|[\\r\\n])))*\\*+\\//g")` is now `let blockCommentsRe = %re("/\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\//g")`.
-
 # 10.0.0-alpha.1
 
 **Compiler**
+
+#### :boom: Breaking Change
+
+- `@bs.send.pipe` is now removed. Earlier it was deprecated.
+- Missing labels in function application is now an error (https://forum.rescript-lang.org/t/ann-more-strict-checks-in-missed-labels/2117).
+  - Example: `let f = (x, ~z) => x + z; f(1, 2)`
+  - Fix: do `let f = (x, ~z) => x + z; f(1, ~z=2)` instead
+- Changed return type of `Js.String.match_` as it was wrong. [#5070](https://github.com/rescript-lang/rescript-compiler/pull/5070)
+  - Example: any use of `Js.String.match_` and `Js.String2.match_`
+  - Fix: follow the type errors
 
 #### :rocket: New Feature
 
@@ -54,17 +72,19 @@
 
 - Classify bigint correctly [#5351](https://github.com/rescript-lang/rescript-compiler/pull/5351)
 
-#### :boom: Breaking Change
-
-- `@bs.send.pipe` is now removed. Earlier it was deprecated.
-- Missing labels in function application is now an error (https://forum.rescript-lang.org/t/ann-more-strict-checks-in-missed-labels/2117).
-- Fix Js.String.match\_ return type [#5070](https://github.com/rescript-lang/rescript-compiler/pull/5070)
-
 #### :house: [Internal]
 
 - Proper M1 support (CI now supports M1 native builds)
 
 **Syntax**
+
+#### :boom: Breaking Change
+
+- Remove parsing of "import" and "export" which was never officially supported https://github.com/rescript-lang/syntax/pull/597 https://github.com/rescript-lang/syntax/pull/599
+  - Example: `export type t = int`
+  - Fix: `@genType type t = int`
+  - Example2: `import realValue: complexNumber => float from "./MyMath"`
+  - Fix2: `@genType.import("./MyMath") external realValue: complexNumber => float = "realValue"`
 
 #### :rocket: New Feature
 
@@ -78,16 +98,15 @@
 - Fix parsing of first class module exprs as part of binary/ternary expr in [#256](https://github.com/rescript-lang/syntax/pull/256)
 - Fix formatter hanging on deeply nested function calls [#261](https://github.com/rescript-lang/syntax/issues/261)
 
-#### :boom: Breaking Change
-
-- Remove parsing of "import" and "export" which was never officially supported.
-
 **Libraries**
 
 #### :boom: Breaking Change
 
+- **"Attributes not allowed here"**. If you see this error chances are you're using a ppx that needs updating to a new version.
+  See an exampe of how to [update a ppx](https://github.com/zth/rescript-relay/pull/372)
+  - Example: for `rescript-relay` 0.23.0 is not supported.
+  - Fix: use `rescript-relay@beta` or the new version when released.
 - Removed printing modules (Printf, Format etc) and related functions. Details of files added/removed: https://github.com/rescript-lang/rescript-compiler/commit/0fd8bb0e77c4b0e96a9647ac8af614305057003f.
-- There could be issues with `rescript-relay`. See https://github.com/rescript-lang/rescript-compiler/issues/5493.
 
 #### :nail_care: Polish
 
@@ -101,7 +120,7 @@
 
 #### :boom: Breaking Change
 
-- `*` Removed Reason syntax support for the playground experience. See https://github.com/rescript-lang/rescript-compiler/pull/5375
+- Removed Reason syntax support for the playground experience. See https://github.com/rescript-lang/rescript-compiler/pull/5375
 
 # 9.1.4
 
