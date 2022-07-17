@@ -1,21 +1,5 @@
-(dirs
- bsb
- bsb_helper
- common
- core
- depends
- ext
- frontend
- gentype
- js_parser
- main
- ml
- napkin
- ounit
- ounit_tests
- stubs
- outcome_printer
- super_errors)
+(dirs bsb bsb_helper common core depends ext frontend gentype js_parser main
+  ml napkin ounit ounit_tests stubs outcome_printer super_errors)
 
 (copy_files# bsb/*.{ml,mli})
 
@@ -54,10 +38,8 @@
 (library
  (name jscomp)
  (flags "-w" "+26+27+32+33+39-d")
- (modules_without_implementation
-  Jscmj_main
-  Lam_pass_unused_params
-  Lam_runtime)
+ (modules_without_implementation Jscmj_main Lam_pass_unused_params
+   Lam_runtime)
  (foreign_stubs
   (language c)
   (names ext_basic_hash_stubs)

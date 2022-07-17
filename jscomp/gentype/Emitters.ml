@@ -30,13 +30,16 @@ let exportEarly ~emitters s =
   }
 
 let require ~emitters s =
-  {emitters with requireEmitter = s |> string ~emitter:emitters.requireEmitter}
+  {
+    emitters with
+    requireEmitter = s |> string ~emitter:emitters.requireEmitter;
+  }
 
 let import ~emitters s =
-  {emitters with importEmitter = s |> string ~emitter:emitters.importEmitter}
+  { emitters with importEmitter = s |> string ~emitter:emitters.importEmitter }
 
 let export ~emitters s =
-  {emitters with exportEmitter = s |> string ~emitter:emitters.exportEmitter}
+  { emitters with exportEmitter = s |> string ~emitter:emitters.exportEmitter }
 
 let toString ~separator emitters =
   [

@@ -1,5 +1,6 @@
 type t
-type eq = (t * t)
+type eq = t * t
+
 val applyEquations : eqs:eq list -> t -> eq list
 val dot : string -> t -> t
 val fromString : string -> t

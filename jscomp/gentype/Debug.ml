@@ -8,6 +8,7 @@ let notImplemented = ref false
 let translation = ref false
 let typeEnv = ref false
 let typeResolution = ref false
+
 let setAll () =
   basic := true;
   codeItems := true;
@@ -19,9 +20,11 @@ let setAll () =
   translation := true;
   typeEnv := true;
   typeResolution := true
+
 let setItem debugItem debugValue =
   let isOn =
-    match debugValue with | Ext_json_types.True _ -> true | _ -> false in
+    match debugValue with Ext_json_types.True _ -> true | _ -> false
+  in
   match debugItem with
   | "all" when isOn -> setAll ()
   | "basic" -> basic := isOn

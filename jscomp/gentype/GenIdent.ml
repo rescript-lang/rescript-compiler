@@ -10,7 +10,7 @@ type typeVarsGen = {
   mutable typeNameCounter : int;
 }
 
-let createTypeVarsGen () = {typeNameMap = IntMap.empty; typeNameCounter = 0}
+let createTypeVarsGen () = { typeNameMap = IntMap.empty; typeNameCounter = 0 }
 
 let jsTypeNameForAnonymousTypeID ~typeVarsGen id =
   try typeVarsGen.typeNameMap |> IntMap.find id
