@@ -140,7 +140,7 @@ let rec emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
         match valueName = asPath with
         | true -> (valueName, "")
         | false -> (
-            match asPath |> Str.split (Str.regexp "\\.") with
+            match asPath |> String.split_on_char '.' with
             | x :: y -> (x, "" :: y |> String.concat ".")
             | _ -> (asPath, ""))
       in

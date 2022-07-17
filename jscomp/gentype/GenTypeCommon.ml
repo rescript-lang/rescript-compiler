@@ -17,8 +17,12 @@ type labelJS =
 type case = { label : string; labelJS : labelJS }
 
 let isJSSafePropertyName name =
-  let jsSafeRegex = {|^[A-z][A-z0-9]*$|} |> Str.regexp in
-  Str.string_match jsSafeRegex name 0
+  name = ""
+  || (match name.[0] with 'A' .. 'z' -> true | _ -> false)
+     && name
+        |> String.for_all (function
+             | 'A' .. 'z' | '0' .. '9' -> true
+             | _ -> false)
 
 let labelJSToString ?(alwaysQuotes = false) case =
   let addQuotes x =
@@ -195,7 +199,7 @@ let variantTable hash ~toJS =
 let ident ?(builtin = true) ?(typeArgs = []) name =
   Ident { builtin; name; typeArgs }
 
-let sanitizeTypeName name = name |> Str.global_replace (Str.regexp "'") "_"
+let sanitizeTypeName name = name |> String.map (function '\'' -> '_' | c -> c)
 let unknown = ident "unknown"
 let booleanT = ident "boolean"
 let dateT = ident "Date"
@@ -221,7 +225,7 @@ module NodeFilename = struct
 
     let normalize path : t =
       match Sys.os_type with
-      | "Win32" -> path |> Str.split (Str.regexp "\\") |> String.concat dirSep
+      | "Win32" -> path |> String.split_on_char '\\' |> String.concat dirSep
       | _ -> path
 
     let toString path = path

@@ -72,7 +72,9 @@ let getShims map =
       |> Array.iter (fun x ->
              match x with
              | Ext_json_types.Str { str } ->
-                 let fromTo = Str.split (Str.regexp "=") str |> Array.of_list in
+                 let fromTo =
+                   str |> String.split_on_char '=' |> Array.of_list
+                 in
                  assert (Array.length fromTo == 2);
                  shims := (fromTo.(0), fromTo.(1)) :: !shims
              | _ -> ())
