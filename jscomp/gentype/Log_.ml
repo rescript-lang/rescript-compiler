@@ -1,12 +1,5 @@
 module Color = struct
-  let color_enabled = lazy (Unix.isatty Unix.stdout)
-
-  let forceColor = ref false
-
-  let get_color_enabled () = !forceColor || Lazy.force color_enabled
-
   type color = Red | Yellow | Magenta | Cyan
-
   type style = FG of color | Bold | Dim
 
   let code_of_style = function
@@ -19,11 +12,11 @@ module Color = struct
 
   let style_of_stag s =
     match s with
-    | Format.String_tag "error" -> [Bold; FG Red]
-    | Format.String_tag "warning" -> [Bold; FG Magenta]
-    | Format.String_tag "info" -> [Bold; FG Yellow]
-    | Format.String_tag "dim" -> [Dim]
-    | Format.String_tag "filename" -> [FG Cyan]
+    | Format.String_tag "error" -> [ Bold; FG Red ]
+    | Format.String_tag "warning" -> [ Bold; FG Magenta ]
+    | Format.String_tag "info" -> [ Bold; FG Yellow ]
+    | Format.String_tag "dim" -> [ Dim ]
+    | Format.String_tag "filename" -> [ FG Cyan ]
     | _ -> []
 
   let ansi_of_stag s =
@@ -35,10 +28,8 @@ module Color = struct
 
   let color_functions =
     (({
-        mark_open_stag =
-          (fun s -> if get_color_enabled () then ansi_of_stag s else "");
-        mark_close_stag =
-          (fun _ -> if get_color_enabled () then reset_lit else "");
+        mark_open_stag = (fun s -> ansi_of_stag s);
+        mark_close_stag = (fun _ -> reset_lit);
         print_open_stag = (fun _ -> ());
         print_close_stag = (fun _ -> ());
       }
@@ -50,7 +41,6 @@ module Color = struct
     Format.pp_set_formatter_stag_functions Format.std_formatter color_functions
 
   let error ppf s = Format.fprintf ppf "@{<error>%s@}" s [@@dead "Color.error"]
-
   let info ppf s = Format.fprintf ppf "@{<info>%s@}" s
 end
 
@@ -72,16 +62,16 @@ module Loc = struct
         | Some
             ((start_line, start_line_start_char), (end_line, end_line_end_char))
           ->
-          if start_line = end_line then
-            if start_line_start_char = end_line_end_char then
-              Format.fprintf ppf ":@{<dim>%i:%i@}" start_line
-                start_line_start_char
+            if start_line = end_line then
+              if start_line_start_char = end_line_end_char then
+                Format.fprintf ppf ":@{<dim>%i:%i@}" start_line
+                  start_line_start_char
+              else
+                Format.fprintf ppf ":@{<dim>%i:%i-%i@}" start_line
+                  start_line_start_char end_line_end_char
             else
-              Format.fprintf ppf ":@{<dim>%i:%i-%i@}" start_line
-                start_line_start_char end_line_end_char
-          else
-            Format.fprintf ppf ":@{<dim>%i:%i-%i:%i@}" start_line
-              start_line_start_char end_line end_line_end_char
+              Format.fprintf ppf ":@{<dim>%i:%i-%i:%i@}" start_line
+                start_line_start_char end_line end_line_end_char
       in
       Format.fprintf ppf "@{<filename>%a@}%a" print_filename file dim_loc
         normalizedRange
