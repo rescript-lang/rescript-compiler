@@ -231,7 +231,8 @@ and structureCheckAnnotation ~checkAnnotation (structure : Typedtree.structure)
   structure.str_items
   |> List.exists (structureItemCheckAnnotation ~checkAnnotation)
 
-let sanitizeVariableName name = name |> Str.global_replace (Str.regexp "-") "_"
+let sanitizeVariableName name =
+  name |> String.map (function '-' -> '_' | c -> c)
 
 let importFromString importString : import =
   let name =

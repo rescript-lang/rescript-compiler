@@ -29,7 +29,7 @@ build ../${targetDir}/rescript$ext:  cc $INCL/rescript.mli $INCL/rescript.ml
 build ../${targetDir}/bsb_helper$ext:  cc $INCL/bsb_helper.mli $INCL/bsb_helper.ml
     flags = $flags  -unboxed-types -w -a
 build ../${targetDir}/bsc$ext: cc $INCL/whole_compiler.mli $INCL/whole_compiler.ml
-    flags = $flags -w A-4-9-48-40-45-41-44-50-21-30-32-34-37-27-60-42 str.cmxa
+    flags = $flags -w A-4-9-48-40-45-41-44-50-21-30-32-34-37-27-60-42
 `;
 }
 
