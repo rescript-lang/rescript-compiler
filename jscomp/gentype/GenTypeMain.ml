@@ -165,4 +165,4 @@ let processCmtFile cmt =
       outputFile |> GeneratedFiles.logFileAction TypeError
     else (
       outputFile |> GeneratedFiles.logFileAction NoMatch;
-      if Sys.file_exists outputFile then Unix.unlink outputFile)
+      if Sys.file_exists outputFile then Sys.remove outputFile)
