@@ -93,7 +93,9 @@ let readCmt cmtFile =
     Log_.item "And try to clean and rebuild.\n\n";
     assert false
 
-let processCmtFile ~config cmt =
+let processCmtFile cmt =
+  let config = Paths.readConfig ~namespace:(cmt |> Paths.findNameSpace) in
+  if !Debug.basic then Log_.item "Cmt %s\n" cmt;
   let cmtFile = cmt |> Paths.getCmtFile in
   if cmtFile <> "" then
     let outputFile = cmt |> Paths.getOutputFile ~config in
