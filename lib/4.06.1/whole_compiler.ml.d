@@ -444,7 +444,6 @@
 ../lib/4.06.1/whole_compiler.ml: ./gentype/ExportModule.ml
 ../lib/4.06.1/whole_compiler.ml: ./gentype/FindSourceFile.ml
 ../lib/4.06.1/whole_compiler.ml: ./gentype/GenIdent.ml
-../lib/4.06.1/whole_compiler.ml: ./gentype/GenType.ml
 ../lib/4.06.1/whole_compiler.ml: ./gentype/GenTypeCommon.ml
 ../lib/4.06.1/whole_compiler.ml: ./gentype/GenTypeConfig.ml
 ../lib/4.06.1/whole_compiler.ml: ./gentype/GenTypeMain.ml
