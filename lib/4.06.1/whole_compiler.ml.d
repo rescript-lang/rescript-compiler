@@ -472,7 +472,6 @@
 ../lib/4.06.1/whole_compiler.ml: ./gentype/TypeEnv.ml
 ../lib/4.06.1/whole_compiler.ml: ./gentype/TypeEnv.mli
 ../lib/4.06.1/whole_compiler.ml: ./gentype/TypeVars.ml
-../lib/4.06.1/whole_compiler.ml: ./gentype/Version.ml
 ../lib/4.06.1/whole_compiler.ml: ./js_parser/comment_attachment.ml
 ../lib/4.06.1/whole_compiler.ml: ./js_parser/declaration_parser.ml
 ../lib/4.06.1/whole_compiler.ml: ./js_parser/enum_common.ml
