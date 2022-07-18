@@ -1,0 +1,1 @@
+{ "dirs" : [ "src" , "src/nested" , "src/strange_file_names" , "src/shims" , "src/location" ] , "pkgs" : [ [ "@rescript/react" , "/Users/cristianocalcagno/GitHub/genType/examples/typescript-react-example/node_modules/@rescript/react" ] ] , "generated" : [] }
