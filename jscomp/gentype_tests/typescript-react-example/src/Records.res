@@ -15,7 +15,7 @@ let computeArea = ({x, y, z}) => {
   x * y * z->mapWithDefault(1, n => n)
 }
 
-@genType let coord2d = (x, y) => {x: x, y: y, z: None}
+@genType let coord2d = (x, y) => {x, y, z: None}
 
 @genType
 type person = {
@@ -43,7 +43,7 @@ let findAddress = (business: business): list<string> =>
 let findAllAddresses = (businesses: array<business>): array<string> =>
   businesses
   ->Array.map(business =>
-    \"@"(
+    Belt.List.concat(
       business.address->getOpt(list{}, a => list{a}),
       business.owner->getOpt(list{}, p => p.address->getOpt(list{}, a => list{a})),
     )

@@ -2,7 +2,6 @@
 
 import * as Belt_List from "rescript/lib/es6/belt_List.js";
 import * as Belt_Array from "rescript/lib/es6/belt_Array.js";
-import * as Pervasives from "rescript/lib/es6/pervasives.js";
 import * as Belt_Option from "rescript/lib/es6/belt_Option.js";
 import * as Caml_option from "rescript/lib/es6/caml_option.js";
 
@@ -33,7 +32,7 @@ function findAddress(business) {
 
 function findAllAddresses(businesses) {
   return Belt_List.toArray(Belt_List.flatten(Belt_List.fromArray(Belt_Array.map(businesses, (function (business) {
-                            return Pervasives.$at(Belt_Option.mapWithDefault(business.address, /* [] */0, (function (a) {
+                            return Belt_List.concat(Belt_Option.mapWithDefault(business.address, /* [] */0, (function (a) {
                                               return {
                                                       hd: a,
                                                       tl: /* [] */0
