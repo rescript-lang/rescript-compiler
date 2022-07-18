@@ -1,0 +1,16 @@
+####{BSB GENERATED: NO EDIT
+FLG -ppx '/Users/cristianocalcagno/GitHub/genType/examples/typescript-react-example/node_modules/rescript/darwin/bsc.exe -as-ppx -bs-jsx 3'
+S /Users/cristianocalcagno/GitHub/genType/examples/typescript-react-example/node_modules/rescript/lib/ocaml
+B /Users/cristianocalcagno/GitHub/genType/examples/typescript-react-example/node_modules/rescript/lib/ocaml
+FLG -w +a-4-9-20-40-41-42-50-61-102
+S /Users/cristianocalcagno/GitHub/genType/examples/typescript-react-example/node_modules/@rescript/react/lib/ocaml
+B /Users/cristianocalcagno/GitHub/genType/examples/typescript-react-example/node_modules/@rescript/react/lib/ocaml
+S src
+B lib/bs/src
+S src/nested
+B lib/bs/src/nested
+S src/strange_file_names
+B lib/bs/src/strange_file_names
+S src/location
+B lib/bs/src/location
+####BSB GENERATED: NO EDIT}
