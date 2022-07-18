@@ -16,6 +16,11 @@
 
 - Vendor genType, which does not need to be installed separately anymore. **Only TypeScript back-end** supported.
 
+#### :rocket: New Feature
+
+- Add support for for `async`/`await` https://github.com/rescript-lang/rescript-compiler/pull/5537
+
+
 #### :nail_care: Polish
 
 - Print patterns in warnings using rescript printer https://github.com/rescript-lang/rescript-compiler/pull/5492
