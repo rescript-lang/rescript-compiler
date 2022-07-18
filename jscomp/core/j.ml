@@ -32,27 +32,17 @@
 *)
 
 type mutable_flag = Js_op.mutable_flag
-
 type binop = Js_op.binop
-
 type int_op = Js_op.int_op
-
 type kind = Js_op.kind
-
 type property = Js_op.property
-
 type number = Js_op.number
-
 type ident_info = Js_op.ident_info
-
 type exports = Js_op.exports
-
 type tag_info = Js_op.tag_info
-
 type property_name = Js_op.property_name
 
 type label = string
-
 and ident = Ident.t
 (* we override `method ident` *)
 
@@ -64,7 +54,6 @@ and ident = Ident.t
 and module_id = { id : ident; kind : Js_op.kind }
 
 and required_modules = module_id list
-
 and vident = Id of ident | Qualified of module_id * string option
 (* Since camldot is only available for toplevel module accessors,
    we don't need print  `A.length$2`
@@ -83,13 +72,9 @@ and vident = Id of ident | Qualified of module_id * string option
 *)
 
 and exception_ident = ident
-
 and for_ident = ident
-
 and for_direction = Js_op.direction_flag
-
 and property_map = (property_name * expression) list
-
 and length_object = Js_op.length_object
 
 and expression_desc =
@@ -142,13 +127,15 @@ and expression_desc =
   *)
   | New of expression * expression list option (* TODO: option remove *)
   | Var of vident
-  | Fun of bool * ident list * block * Js_fun_env.t * bool * bool
-  (* The first parameter by default is false,
-     it will be true when it's a method
-     The second-last pararemter [true] return unit
-     The last pararemter [true] means async
-  *)
-  | Str of {delim: string option; txt: string}
+  | Fun of {
+      is_method : bool;
+      params : ident list;
+      body : block;
+      env : Js_fun_env.t;
+      return_unit : bool;
+      async : bool;
+    }
+  | Str of { delim : string option; txt : string }
   (* A string is UTF-8 encoded, and may contain
      escape sequences.
   *)
@@ -267,7 +254,6 @@ and case_clause = {
 }
 
 and string_clause = string * case_clause
-
 and int_clause = int * case_clause
 
 and statement_desc =
@@ -276,7 +262,8 @@ and statement_desc =
   (* Function declaration and Variable declaration  *)
   | Exp of expression
   | If of expression * block * block
-  | While of label option * expression * block * Js_closure.t (* check if it contains loop mutable values, happens in nested loop *)
+  | While of label option * expression * block * Js_closure.t
+    (* check if it contains loop mutable values, happens in nested loop *)
   | ForRange of
       for_ident_expression option
       * finish_ident_expression
@@ -286,8 +273,9 @@ and statement_desc =
       * Js_closure.t
   | Continue of label
   | Break (* only used when inline a fucntion *)
-  | Return of expression (* Here we need track back a bit ?, move Return to Function ...
-                            Then we can only have one Return, which is not good *)
+  | Return of expression
+  (* Here we need track back a bit ?, move Return to Function ...
+     Then we can only have one Return, which is not good *)
   (* since in ocaml, it's expression oriented langauge, [return] in
      general has no jumps, it only happens when we do
      tailcall conversion, in that case there is a jump.
@@ -305,7 +293,6 @@ and statement_desc =
   | Debugger
 
 and expression = { expression_desc : expression_desc; comment : string option }
-
 and statement = { statement_desc : statement_desc; comment : string option }
 
 and variable_declaration = {
@@ -319,7 +306,6 @@ and variable_declaration = {
    be concatenated in both ways
 *)
 and block = statement list
-
 and program = { block : block; exports : exports; export_set : Set_ident.t }
 
 and deps_program = {

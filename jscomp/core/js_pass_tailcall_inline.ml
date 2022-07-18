@@ -165,7 +165,7 @@ let subst (export_set : Set_ident.t) stats =
                      Some
                        {
                          expression_desc =
-                           Fun (false, params, block, env, _return_unit, _async);
+                           Fun {is_method=false; params; body; env};
                          comment = _;
                        };
                    (*TODO: don't inline method tail call yet,
@@ -179,7 +179,7 @@ let subst (export_set : Set_ident.t) stats =
                 Js_op_util.update_used_stats v.ident_info Dead_pure;
                 let no_tailcall = Js_fun_env.no_tailcall env in
                 let processed_blocks =
-                  self.block self block
+                  self.block self body
                   (* see #278 before changes*)
                 in
                 inline_call no_tailcall params args processed_blocks
@@ -200,7 +200,7 @@ let subst (export_set : Set_ident.t) stats =
                    Call
                      ( {
                          expression_desc =
-                           Fun (false, params, block, env, _return_unit, _async);
+                           Fun {is_method=false; params; body; env};
                        },
                        args,
                        _info );
@@ -210,7 +210,7 @@ let subst (export_set : Set_ident.t) stats =
           when Ext_list.same_length params args ->
             let no_tailcall = Js_fun_env.no_tailcall env in
             let processed_blocks =
-              self.block self block
+              self.block self body
               (* see #278 before changes*)
             in
             inline_call no_tailcall params args processed_blocks

@@ -93,13 +93,11 @@ module Curry_gen = struct
 end
 
 let return_indent = String.length L.return / Ext_pp.indent_length
-
 let throw_indent = String.length L.throw / Ext_pp.indent_length
 
 type cxt = Ext_pp_scope.t
 
 let semi f = P.string f L.semi
-
 let comma f = P.string f L.comma
 
 let exn_block_as_obj ~(stack : bool) (el : J.expression list) (ext : J.tag_info)
@@ -531,10 +529,10 @@ and expression_desc cxt ~(level : int) f x : cxt =
           let cxt = expression ~level:0 cxt f e1 in
           comma_sp f;
           expression ~level:0 cxt f e2)
-  | Fun (is_method, l, b, env, return_unit, async) ->
+  | Fun { is_method; params; body; env; return_unit; async } ->
       (* TODO: dump for comments *)
-      pp_function ~is_method cxt f ~fn_state:default_fn_exp_state l b env
-        ~return_unit ~async
+      pp_function ~is_method cxt f ~fn_state:default_fn_exp_state params body
+        env ~return_unit ~async
       (* TODO:
          when [e] is [Js_raw_code] with arity
          print it in a more precise way
@@ -555,12 +553,20 @@ and expression_desc cxt ~(level : int) f x : cxt =
                       | [
                        {
                          expression_desc =
-                           Fun (is_method, l, b, env, return_unit, async);
+                           Fun
+                             {
+                               is_method;
+                               params;
+                               body;
+                               env;
+                               return_unit;
+                               async;
+                             };
                        };
                       ] ->
                           pp_function ~is_method ~return_unit ~async cxt f
                             ~fn_state:(No_name { single_arg = true })
-                            l b env
+                            params body env
                       | _ -> arguments cxt f el)
               | _, _ ->
                   let len = List.length el in
@@ -587,16 +593,14 @@ and expression_desc cxt ~(level : int) f x : cxt =
           P.string f L.codePointAt;
           (* FIXME: use code_point_at *)
           P.paren_group f 1 (fun _ -> expression ~level:0 cxt f b))
-  | Str {delim; txt} ->
+  | Str { delim; txt } ->
       (*TODO --
          when utf8-> it will not escape '\\' which is definitely not we want
       *)
       if delim = Some "j" || delim = Some "*j" then
         P.string f ("\"" ^ txt ^ "\"")
-      else if delim = Some "json" then
-        P.string f txt
-      else
-        Js_dump_string.pp_string f txt;
+      else if delim = Some "json" then P.string f txt
+      else Js_dump_string.pp_string f txt;
       cxt
   | Raw_js_code { code = s; code_info = info } -> (
       match info with
@@ -902,10 +906,10 @@ and variable_declaration top cxt f (variable : J.variable_declaration) : cxt =
           statement_desc top cxt f (J.Exp e)
       | _ -> (
           match e.expression_desc with
-          | Fun (is_method, params, b, env, return_unit, async) ->
+          | Fun { is_method; params; body; env; return_unit; async } ->
               pp_function ~is_method cxt f ~return_unit ~async
                 ~fn_state:(if top then Name_top name else Name_non_top name)
-                params b env
+                params body env
           | _ ->
               let cxt = pp_var_assign cxt f name in
               let cxt = expression ~level:1 cxt f e in
@@ -1129,10 +1133,10 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
       cxt
   | Return e -> (
       match e.expression_desc with
-      | Fun (is_method, l, b, env, return_unit, async) ->
+      | Fun { is_method; params; body; env; return_unit; async } ->
           let cxt =
             pp_function ~return_unit ~is_method ~async cxt f ~fn_state:Is_return
-              l b env
+              params body env
           in
           semi f;
           cxt
