@@ -1,7 +1,7 @@
 rescript = 1
 g_finger := /Users/cristianocalcagno/GitHub/rescript-compiler/jscomp/gentype_tests/typescript-react-example/node_modules/@rescript/react/lib/ocaml/install.stamp
 rule astj
-  command = /Users/cristianocalcagno/GitHub/rescript-compiler/darwinarm64/bsc.exe  -bs-v 10.0.0-beta.3 -bs-jsx 3 -bs-super-errors -absname -bs-ast -o $out $i
+  command = /Users/cristianocalcagno/GitHub/rescript-compiler/darwinarm64/bsc.exe  -bs-v 10.1.0-alpha.1 -bs-jsx 3 -bs-super-errors -absname -bs-ast -o $out $i
 o src/GADT.ast : astj ../../src/GADT.res
 rule deps
   command = /Users/cristianocalcagno/GitHub/rescript-compiler/darwinarm64/bsb_helper.exe -hash c437042097262a052b6eefb146903afb $in
