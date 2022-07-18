@@ -1,5 +1,5 @@
 rescript = 1
-g_finger := /Users/cristianocalcagno/GitHub/genType/examples/typescript-react-example/node_modules/@rescript/react/lib/ocaml/install.stamp
+g_finger := /Users/cristianocalcagno/GitHub/rescript-compiler/jscomp/gentype_tests/typescript-react-example/node_modules/@rescript/react/lib/ocaml/install.stamp
 rule astj
   command = /Users/cristianocalcagno/GitHub/rescript-compiler/darwinarm64/bsc.exe  -bs-v 10.0.0-beta.3 -bs-jsx 3 -bs-super-errors -absname -bs-ast -o $out $i
 o src/GADT.ast : astj ../../src/GADT.res
@@ -8,7 +8,7 @@ rule deps
   restat = 1
 o src/GADT.d : deps src/GADT.ast
 rule mij
-  command = /Users/cristianocalcagno/GitHub/rescript-compiler/darwinarm64/bsc.exe -I src/location -I src/shims -I src/strange_file_names -I src/nested -I src -I /Users/cristianocalcagno/GitHub/genType/examples/typescript-react-example/node_modules/@rescript/react/lib/ocaml -bs-super-errors  -bs-gentype -bs-package-name sample-typescript-app -bs-package-output es6:$in_d:.bs.js -bs-v $g_finger $i
+  command = /Users/cristianocalcagno/GitHub/rescript-compiler/darwinarm64/bsc.exe -I src/location -I src/shims -I src/strange_file_names -I src/nested -I src -I /Users/cristianocalcagno/GitHub/rescript-compiler/jscomp/gentype_tests/typescript-react-example/node_modules/@rescript/react/lib/ocaml -bs-super-errors  -bs-gentype -bs-package-name sample-typescript-app -bs-package-output es6:$in_d:.bs.js -bs-v $g_finger $i
   dyndep = 1
   restat = 1
 o src/GADT.cmj src/GADT.cmi ../../src/GADT.bs.js : mij src/GADT.ast
@@ -94,12 +94,12 @@ o src/ErrorHandler.ast : astj ../../src/ErrorHandler.res
 o src/ErrorHandler.d : deps src/ErrorHandler.ast src/ErrorHandler.iast
 o src/ErrorHandler.iast : astj ../../src/ErrorHandler.resi
 rule mi
-  command = /Users/cristianocalcagno/GitHub/rescript-compiler/darwinarm64/bsc.exe -I src/location -I src/shims -I src/strange_file_names -I src/nested -I src -I /Users/cristianocalcagno/GitHub/genType/examples/typescript-react-example/node_modules/@rescript/react/lib/ocaml -bs-super-errors  -bs-gentype -bs-v $g_finger $i
+  command = /Users/cristianocalcagno/GitHub/rescript-compiler/darwinarm64/bsc.exe -I src/location -I src/shims -I src/strange_file_names -I src/nested -I src -I /Users/cristianocalcagno/GitHub/rescript-compiler/jscomp/gentype_tests/typescript-react-example/node_modules/@rescript/react/lib/ocaml -bs-super-errors  -bs-gentype -bs-v $g_finger $i
   dyndep = 1
   restat = 1
 o src/ErrorHandler.cmi : mi src/ErrorHandler.iast
 rule mj
-  command = /Users/cristianocalcagno/GitHub/rescript-compiler/darwinarm64/bsc.exe -bs-read-cmi -I src/location -I src/shims -I src/strange_file_names -I src/nested -I src -I /Users/cristianocalcagno/GitHub/genType/examples/typescript-react-example/node_modules/@rescript/react/lib/ocaml -bs-super-errors  -bs-gentype -bs-package-name sample-typescript-app -bs-package-output es6:$in_d:.bs.js -bs-v $g_finger $i
+  command = /Users/cristianocalcagno/GitHub/rescript-compiler/darwinarm64/bsc.exe -bs-read-cmi -I src/location -I src/shims -I src/strange_file_names -I src/nested -I src -I /Users/cristianocalcagno/GitHub/rescript-compiler/jscomp/gentype_tests/typescript-react-example/node_modules/@rescript/react/lib/ocaml -bs-super-errors  -bs-gentype -bs-package-name sample-typescript-app -bs-package-output es6:$in_d:.bs.js -bs-v $g_finger $i
   dyndep = 1
   restat = 1
 o src/ErrorHandler.cmj ../../src/ErrorHandler.bs.js : mj src/ErrorHandler.ast src/ErrorHandler.cmi
