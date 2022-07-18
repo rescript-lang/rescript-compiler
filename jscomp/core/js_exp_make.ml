@@ -197,20 +197,35 @@ let unit : t = { expression_desc = Undefined; comment = None }
    [Js_fun_env.empty] is a mutable state ..
 *)
 
-let ocaml_fun ?comment ?immutable_mask ~return_unit ~async params block : t =
+let ocaml_fun ?comment ?immutable_mask ~return_unit ~async params body : t =
   let len = List.length params in
   {
     expression_desc =
       Fun
-        (false, params, block, Js_fun_env.make ?immutable_mask len, return_unit, async);
+        {
+          is_method = false;
+          params;
+          body;
+          env = Js_fun_env.make ?immutable_mask len;
+          return_unit;
+          async;
+        };
     comment;
   }
 
-let method_ ?comment ?immutable_mask ~return_unit params block : t =
+let method_ ?comment ?immutable_mask ~return_unit params body : t =
   let len = List.length params in
   {
     expression_desc =
-      Fun (true, params, block, Js_fun_env.make ?immutable_mask len, return_unit, false);
+      Fun
+        {
+          is_method = true;
+          params;
+          body;
+          env = Js_fun_env.make ?immutable_mask len;
+          return_unit;
+          async = false;
+        };
     comment;
   }
 
@@ -484,10 +499,10 @@ let bytes_length ?comment (e : t) : t =
 
 let function_length ?comment (e : t) : t =
   match e.expression_desc with
-  | Fun (b, params, _, _, _, _) ->
+  | Fun { is_method; params } ->
       let params_length = List.length params in
       int ?comment
-        (Int32.of_int (if b then params_length - 1 else params_length))
+        (Int32.of_int (if is_method then params_length - 1 else params_length))
   | _ -> { expression_desc = Length (e, Function); comment }
 
 (** no dependency introduced *)
@@ -1150,15 +1165,19 @@ let of_block ?comment ?e block : t =
       comment;
       expression_desc =
         Fun
-          ( false,
-            [],
-            (match e with
-            | None -> block
-            | Some e ->
-                Ext_list.append block
-                  [ { J.statement_desc = Return e; comment } ]),
-            Js_fun_env.make 0,
-            return_unit, (* async *) false);
+          {
+            is_method = false;
+            params = [];
+            body =
+              (match e with
+              | None -> block
+              | Some e ->
+                  Ext_list.append block
+                    [ { J.statement_desc = Return e; comment } ]);
+            env = Js_fun_env.make 0;
+            return_unit;
+            async = false;
+          };
     }
     []
 

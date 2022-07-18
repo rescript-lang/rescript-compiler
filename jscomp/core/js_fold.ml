@@ -146,9 +146,9 @@ class fold =
       | Var _x0 ->
           let _self = _self#vident _x0 in
           _self
-      | Fun (_x0, _x1, _x2, _x3, _x4, _x5) ->
-          let _self = list (fun _self -> _self#ident) _self _x1 in
-          let _self = _self#block _x2 in
+      | Fun {params=x1; body=x2} ->
+          let _self = list (fun _self -> _self#ident) _self x1 in
+          let _self = _self#block x2 in
           _self
       | Str _ -> _self
       | Raw_js_code _ -> _self

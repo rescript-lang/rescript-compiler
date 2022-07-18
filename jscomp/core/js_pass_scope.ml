@@ -137,7 +137,7 @@ let record_scope_pass =
     expression =
       (fun self state x ->
         match x.expression_desc with
-        | Fun (_method_, params, block, env, _return_unit, _async) ->
+        | Fun {params; body; env} ->
             (* Function is the only place to introduce a new scope in
                 ES5
                 TODO: check
@@ -155,7 +155,7 @@ let record_scope_pass =
                   mutable_values =
                     Set_ident.of_list (Js_fun_env.get_mutable_params params env);
                 }
-                block
+                body
             in
             (* let defined_idents', used_idents' =
                obj#get_defined_idents, obj#get_used_idents  in *)
