@@ -3,13 +3,9 @@
 # dependencies
 /node_modules
 
-# testing
-/coverage
-
-# production
-/build
 
 # misc
+.lib
 .DS_Store
 .env.local
 .env.development.local
