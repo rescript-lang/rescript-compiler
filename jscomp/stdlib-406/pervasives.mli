@@ -665,7 +665,7 @@ external snd : 'a * 'b -> 'b = "%field1"
 *)
 
 val ( @ ) : 'a list -> 'a list -> 'a list
-[@@ocaml.deprecated "Use Belt.List.append instead"]    
+[@@ocaml.deprecated "Use Belt.List.concat instead"]    
 (** List concatenation.  Tail-recursive (length of the first argument).
     Right-associative operator at precedence level 5/11. *)
 
