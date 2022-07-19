@@ -7,6 +7,7 @@ test: node_modules/.bin/tsc
 	npm run build
 
 clean:
+	npm run clean
 	rm -rf node_modules lib
 
 .DEFAULT_GOAL := test

@@ -5,7 +5,7 @@
 
 
 # misc
-.lib
+/lib
 .DS_Store
 .env.local
 .env.development.local
