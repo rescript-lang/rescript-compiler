@@ -1,1 +1,0 @@
-{ "dirs" : [ "src" , "src/nested" , "src/strange_file_names" , "src/shims" , "src/location" ] , "pkgs" : [ [ "@rescript/react" , "/Users/cristianocalcagno/GitHub/rescript-compiler/jscomp/gentype_tests/typescript-react-example/node_modules/@rescript/react" ] ] , "generated" : [] }

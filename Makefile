@@ -4,8 +4,8 @@ config:
 	./scripts/ninja.js config
 
 build: config
-	dune build
 	./scripts/ninja.js build
+	dune build
 
 watch: config
 	dune build -w
@@ -19,12 +19,17 @@ test: build
 test-gentype: build
 	make -C jscomp/gentype_tests/typescript-react-example test
 
+test-all: test test-gentype
+
+clean-gentype:
+	make -C jscomp/gentype_tests/typescript-react-example clean
+
 clean:
 	dune clean
 	./scripts/ninja.js clean
-	make -C jscomp/gentype_tests/typescript-react-example clean
 
+clean-all: clean clean-gentype
 
 .DEFAULT_GOAL := build
 
-.PHONY: config build test test-gentype
+.PHONY: clean clean-gentype clean-all config build test test-gentype test-all
