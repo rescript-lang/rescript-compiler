@@ -7,8 +7,12 @@ var make = ImportHookDefaultGen$1.make;
 
 var make2 = ImportHookDefaultGen;
 
+var MM = {
+  make2: make2
+};
+
 export {
   make ,
-  make2 ,
+  MM ,
 }
 /* make Not a pure module */

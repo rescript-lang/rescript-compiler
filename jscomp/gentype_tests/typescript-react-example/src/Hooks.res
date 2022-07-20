@@ -14,37 +14,43 @@ let make = (~vehicle) => {
     </p>
     <button onClick={_ => setCount(_ => count + 1)}> {React.string("Click me")} </button>
     <ImportHooks person={name: "Mary", age: 71} renderMe={x => React.string(x["randomString"])}>
-      {React.string("child1")} {React.string("child2")}
+      {React.string("child1")}
+      {React.string("child2")}
     </ImportHooks>
     <ImportHookDefault
       person={name: "DefaultImport", age: 42} renderMe={x => React.string(x["randomString"])}>
-      {React.string("child1")} {React.string("child2")}
+      {React.string("child1")}
+      {React.string("child2")}
     </ImportHookDefault>
   </div>
 }
 
 @genType let default = make
 
-@genType @react.component
-let anotherComponent = (~vehicle, ~callback: unit => unit) => {
-  callback()
-  <div> {React.string("Another Hook " ++ vehicle.name)} </div>
+module Another = {
+  @genType @react.component
+  let anotherComponent = (~vehicle, ~callback: unit => unit) => {
+    callback()
+    <div> {React.string("Another Hook " ++ vehicle.name)} </div>
+  }
 }
 
 module Inner = {
   @genType @react.component
   let make = (~vehicle) => <div> {React.string("Another Hook " ++ vehicle.name)} </div>
-
-  @genType @react.component
-  let anotherComponent = (~vehicle) => <div> {React.string("Another Hook " ++ vehicle.name)} </div>
-
-  module Inner2 = {
-    @genType @react.component
-    let make = (~vehicle) => <div> {React.string("Another Hook " ++ vehicle.name)} </div>
-
+  module Another = {
     @genType @react.component
     let anotherComponent = (~vehicle) =>
       <div> {React.string("Another Hook " ++ vehicle.name)} </div>
+  }
+  module Inner2 = {
+    @genType @react.component
+    let make = (~vehicle) => <div> {React.string("Another Hook " ++ vehicle.name)} </div>
+    module Another = {
+      @genType @react.component
+      let anotherComponent = (~vehicle) =>
+        <div> {React.string("Another Hook " ++ vehicle.name)} </div>
+    }
   }
 }
 
@@ -61,28 +67,36 @@ let functionWithRenamedArgs = (~_to, ~_Type, ~cb: cb) => {
   _to.name ++ _Type.name
 }
 
-@genType @react.component
-let componentWithRenamedArgs = (~_to, ~_Type, ~cb: cb) => {
-  cb(~_to)
-  React.string(_to.name ++ _Type.name)
+module WithRename = {
+  @genType @react.component
+  let componentWithRenamedArgs = (~_to, ~_Type, ~cb: cb) => {
+    cb(~_to)
+    React.string(_to.name ++ _Type.name)
+  }
 }
 
-@genType @react.component
-let makeWithRef = (~vehicle) => {
-  let _ = 34
-  ref =>
-    switch ref->Js.Nullable.toOption {
-    | Some(ref) => <button ref={ReactDOM.Ref.domRef(ref)}> {React.string(vehicle.name)} </button>
-    | None => React.null
-    }
+module WithRef = {
+  @genType @react.component
+  let makeWithRef = (~vehicle) => {
+    let _ = 34
+    ref =>
+      switch ref->Js.Nullable.toOption {
+      | Some(ref) => <button ref={ReactDOM.Ref.domRef(ref)}> {React.string(vehicle.name)} </button>
+      | None => React.null
+      }
+  }
 }
 
-@genType let testForwardRef = React.forwardRef(makeWithRef)
+@genType let testForwardRef = React.forwardRef(WithRef.makeWithRef)
 
 type r = {x: string}
 
-@genType @react.component
-let input = React.forwardRef((~r, (), ref) => <div ref={Obj.magic(ref)}> {React.string(r.x)} </div>)
+module ForwardRef = {
+  @genType @react.component
+  let input = React.forwardRef((~r, (), ref) =>
+    <div ref={Obj.magic(ref)}> {React.string(r.x)} </div>
+  )
+}
 
 @genType type callback<'input, 'output> = React.callback<'input, 'output>
 
@@ -94,11 +108,15 @@ let input = React.forwardRef((~r, (), ref) => <div ref={Obj.magic(ref)}> {React.
 
 @genType type testDomRef2 = ReactDOM.Ref.t
 
-@genType @react.component
-let polymorphicComponent = (~p as (x, _)) => React.string(x.name)
+module Poly = {
+  @genType @react.component
+  let polymorphicComponent = (~p as (x, _)) => React.string(x.name)
+}
 
-@genType @react.component
-let functionReturningReactElement = (~name) => React.string(name)
+module Fun = {
+  @genType @react.component
+  let functionReturningReactElement = (~name) => React.string(name)
+}
 
 module RenderPropRequiresConversion = {
   @genType @react.component
@@ -108,9 +126,14 @@ module RenderPropRequiresConversion = {
   }
 }
 
-@genType @react.component
-let aComponentWithChildren = (~vehicle, ~children) =>
-  <div> {React.string("Another Hook " ++ vehicle.name)} <div> children </div> </div>
+module WithChildren = {
+  @genType @react.component
+  let aComponentWithChildren = (~vehicle, ~children) =>
+    <div>
+      {React.string("Another Hook " ++ vehicle.name)}
+      <div> children </div>
+    </div>
+}
 
 module DD = {
   @genType @react.component
