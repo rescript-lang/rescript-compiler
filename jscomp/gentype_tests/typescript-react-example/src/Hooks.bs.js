@@ -39,41 +39,53 @@ function Hooks(Props) {
                 }, "child1", "child2"));
 }
 
-function Hooks$anotherComponent(Props) {
+function Hooks$Another$anotherComponent(Props) {
   var vehicle = Props.vehicle;
   var callback = Props.callback;
   Curry._1(callback, undefined);
   return React.createElement("div", undefined, "Another Hook " + vehicle.name);
 }
 
+var Another = {
+  anotherComponent: Hooks$Another$anotherComponent
+};
+
 function Hooks$Inner(Props) {
   var vehicle = Props.vehicle;
   return React.createElement("div", undefined, "Another Hook " + vehicle.name);
 }
 
-function Hooks$Inner$anotherComponent(Props) {
+function Hooks$Inner$Another$anotherComponent(Props) {
   var vehicle = Props.vehicle;
   return React.createElement("div", undefined, "Another Hook " + vehicle.name);
 }
+
+var Another$1 = {
+  anotherComponent: Hooks$Inner$Another$anotherComponent
+};
 
 function Hooks$Inner$Inner2(Props) {
   var vehicle = Props.vehicle;
   return React.createElement("div", undefined, "Another Hook " + vehicle.name);
 }
 
-function Hooks$Inner$Inner2$anotherComponent(Props) {
+function Hooks$Inner$Inner2$Another$anotherComponent(Props) {
   var vehicle = Props.vehicle;
   return React.createElement("div", undefined, "Another Hook " + vehicle.name);
 }
 
+var Another$2 = {
+  anotherComponent: Hooks$Inner$Inner2$Another$anotherComponent
+};
+
 var Inner2 = {
   make: Hooks$Inner$Inner2,
-  anotherComponent: Hooks$Inner$Inner2$anotherComponent
+  Another: Another$2
 };
 
 var Inner = {
   make: Hooks$Inner,
-  anotherComponent: Hooks$Inner$anotherComponent,
+  Another: Another$1,
   Inner2: Inner2
 };
 
@@ -90,7 +102,7 @@ function functionWithRenamedArgs(_to, _Type, cb) {
   return _to.name + _Type.name;
 }
 
-function Hooks$componentWithRenamedArgs(Props) {
+function Hooks$WithRename$componentWithRenamedArgs(Props) {
   var _to = Props.to;
   var _Type = Props.Type;
   var cb = Props.cb;
@@ -98,8 +110,11 @@ function Hooks$componentWithRenamedArgs(Props) {
   return _to.name + _Type.name;
 }
 
-function Hooks$makeWithRef(Props) {
-  var vehicle = Props.vehicle;
+var WithRename = {
+  componentWithRenamedArgs: Hooks$WithRename$componentWithRenamedArgs
+};
+
+function makeWithRef(vehicle) {
   return function (ref) {
     if (ref == null) {
       return null;
@@ -111,8 +126,16 @@ function Hooks$makeWithRef(Props) {
   };
 }
 
+function Hooks$WithRef$makeWithRef(Props) {
+  return makeWithRef(Props.vehicle);
+}
+
+var WithRef = {
+  makeWithRef: Hooks$WithRef$makeWithRef
+};
+
 var testForwardRef = React.forwardRef(function (param, param$1) {
-      return Hooks$makeWithRef(param)(param$1);
+      return makeWithRef(param.vehicle)(param$1);
     });
 
 var input = React.forwardRef(function (Props, param) {
@@ -122,14 +145,26 @@ var input = React.forwardRef(function (Props, param) {
                 }, partial_arg.x);
     });
 
-function Hooks$polymorphicComponent(Props) {
+var ForwardRef = {
+  input: input
+};
+
+function Hooks$Poly$polymorphicComponent(Props) {
   var param = Props.p;
   return param[0].name;
 }
 
-function Hooks$functionReturningReactElement(Props) {
+var Poly = {
+  polymorphicComponent: Hooks$Poly$polymorphicComponent
+};
+
+function Hooks$Fun$functionReturningReactElement(Props) {
   return Props.name;
 }
+
+var Fun = {
+  functionReturningReactElement: Hooks$Fun$functionReturningReactElement
+};
 
 function Hooks$RenderPropRequiresConversion(Props) {
   var renderVehicle = Props.renderVehicle;
@@ -145,11 +180,15 @@ var RenderPropRequiresConversion = {
   make: Hooks$RenderPropRequiresConversion
 };
 
-function Hooks$aComponentWithChildren(Props) {
+function Hooks$WithChildren$aComponentWithChildren(Props) {
   var vehicle = Props.vehicle;
   var children = Props.children;
   return React.createElement("div", undefined, "Another Hook " + vehicle.name, React.createElement("div", undefined, children));
 }
+
+var WithChildren = {
+  aComponentWithChildren: Hooks$WithChildren$aComponentWithChildren
+};
 
 function Hooks$DD(Props) {
   var name = Props.name;
@@ -164,34 +203,22 @@ var make = Hooks;
 
 var $$default = Hooks;
 
-var anotherComponent = Hooks$anotherComponent;
-
-var componentWithRenamedArgs = Hooks$componentWithRenamedArgs;
-
-var makeWithRef = Hooks$makeWithRef;
-
-var polymorphicComponent = Hooks$polymorphicComponent;
-
-var functionReturningReactElement = Hooks$functionReturningReactElement;
-
-var aComponentWithChildren = Hooks$aComponentWithChildren;
-
 export {
   make ,
   $$default ,
   $$default as default,
-  anotherComponent ,
+  Another ,
   Inner ,
   NoProps ,
   functionWithRenamedArgs ,
-  componentWithRenamedArgs ,
-  makeWithRef ,
+  WithRename ,
+  WithRef ,
   testForwardRef ,
-  input ,
-  polymorphicComponent ,
-  functionReturningReactElement ,
+  ForwardRef ,
+  Poly ,
+  Fun ,
   RenderPropRequiresConversion ,
-  aComponentWithChildren ,
+  WithChildren ,
   DD ,
 }
 /* testForwardRef Not a pure module */

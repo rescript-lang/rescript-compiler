@@ -10,9 +10,12 @@ external make: (
   ~renderMe: ImportHooks.renderMe<string>,
 ) => React.element = "make"
 
+module MM = {
 @genType.import("./hookExample") @react.component
 external make2: (
   ~person: person,
   ~children: React.element,
   ~renderMe: ImportHooks.renderMe<string>,
 ) => React.element = "default"
+}
+
