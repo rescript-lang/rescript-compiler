@@ -121,7 +121,7 @@ Make sure to build the compiler first following the instructions above.
 ### Project
 
 ```sh
-node scripts/install -force-lib-rebuild ## populare lib/ocaml
+node scripts/install -force-lib-rebuild ## populate lib/ocaml
 cd myProject
 npm install __path_to_this_repository__
 ```
