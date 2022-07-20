@@ -99,58 +99,48 @@ dune build -w
 
 > Please note that `dune` will not build the final `rescript` binaries. Use the aforementioned `ninja` workflow if you want to build, test and distribute the final product.
 
-## Adding new Files
+## Adding new Files to the Npm Package
 
 To make sure that no files are added to or removed from the npm package inadvertently, an artifact list is kept at `packages/artifacts.txt`. During CI build, it is verified that only the files that are listed there are actually included in the npm package.
 
-When adding a new file to the repository that should go into the npm package - e.g., a new stdlib module -, first compile and test everything locally. Next, run `./scripts/makeArtifactList.js` to update the artifact list and include the updated artifact list in your commit.
+When adding a new file to the repository that should go into the npm package - e.g., a new stdlib module -, first compile and test everything locally. Then
 
-## Running tests for independent ReScript files
+- `node scripts/install -force-lib-rebuild` to copy library files into `lib/ocaml`
+- `./scripts/makeArtifactList.js` to update the artifact list and include the updated artifact list in your commit.
 
-The simplest way for running tests is to run your locally built compiler on separate ReScript files:
+## Test the compiler
+
+Make sure to build the compiler first following the instructions above.
+
+### Single file
 
 ```sh
-# Make sure to rebuild the compiler before running any tests (./scripts/ninja.js config / build etc)
-./darwinarm64/bsc.exe myTestFile.res
+./bsc myTestFile.res
 ```
 
-**Different architectures:**
-
-- `darwinarm64/bsc.exe`: M1 Macs
-- `darwin/bsc.exe`: Intel Macs
-- `linux/bsc.exe`: Linux computers
-
-### Testing the whole ReScript Package
-
-If you'd like to bundle up and use your modified ReScript like an end-user, try:
+### Project
 
 ```sh
-node scripts/install -force-lib-rebuild # make sure lib/ocaml is populated
-
-npm uninstall -g rescript # a cache-busting uninstall is needed, but only for npm >=7
-
-# This will globally install your local build via npm
-RESCRIPT_FORCE_REBUILD=1 npm install -g .
-```
-
-Then you may initialize and build your ReScript project as usual:
-
-```sh
-rescript init my-project
-cd my-project
-npm run build
+node scripts/install -force-lib-rebuild ## populare lib/ocaml
+cd myProject
+npm install __path_to_this_repository__
 ```
 
 ### Running Automatic Tests
 
 We provide different test suites for different levels of the compiler and build system infrastructure. Always make sure to locally build your compiler before running any tests.
 
-**Run Mocha tests for our runtime code:**
+To run all tests:
+```sh
+npm test
+```
+
+**Run Mocha tests only (for our runtime code):**
 
 This will run our `mocha` unit test suite defined in `jscomp/test`.
 
 ```
-npx node scripts/ciTest.js -mocha
+node scripts/ciTest.js -mocha
 ```
 
 **Run build system test (integration tests):**
@@ -158,10 +148,7 @@ npx node scripts/ciTest.js -mocha
 This will run the whole build system test suite defined in `jscomp/build_tests`.
 
 ```
-# Make sure to globally install rescript via npm first
-npm install -g .
-
-npx node scripts/ciTest.js -bsb
+node scripts/ciTest.js -bsb
 ```
 
 **Run ounit tests:**
@@ -169,14 +156,14 @@ npx node scripts/ciTest.js -bsb
 This will run unit tests for compiler related modules. The tests can be found in `jscomp/ounit_tests`.
 
 ```
-npx node scripts/ciTest.js -ounit
+node scripts/ciTest.js -ounit
 ```
 
-## Contributing to the ReScript Runtime
+## Contributing to the Runtime
 
-Our runtime implementation is written in pure OCaml with some raw JS code embedded (`jscomp/runtime` directory).
+The runtime implementation is written in OCaml with some raw JS code embedded (`jscomp/runtime` directory).
 
-The goal is to implement the runtime **purely in OCaml**. This includes removing all existing occurrences of embedded raw JS code as well, and you can help!
+The goal is to implement the runtime **purely in OCaml**. This includes removing all existing occurrences of embedded raw JS code as well whenever possible, and you can help!
 
 Each new PR should include appropriate testing.
 
@@ -184,8 +171,8 @@ Currently all tests are located in the `jscomp/test` directory and you should ei
 
 There are currently two formats for test files:
 
-1. Proper mocha test files with executed javascript test code
-2. Plain `.ml` files which are only supposed to be compiled to JS (without any logic validation)
+1. Mocha test files that run javascript test code
+2. Plain `.ml` files to check the result of compilation to JS (expectation tests)
 
 Below we will discuss on how to write, build and run these test files.
 
