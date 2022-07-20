@@ -131,6 +131,7 @@ npm install __path_to_this_repository__
 We provide different test suites for different levels of the compiler and build system infrastructure. Always make sure to locally build your compiler before running any tests.
 
 To run all tests:
+
 ```sh
 npm test
 ```
