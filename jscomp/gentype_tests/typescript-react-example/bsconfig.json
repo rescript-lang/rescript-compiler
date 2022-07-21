@@ -16,7 +16,7 @@
   },
   "name": "sample-typescript-app",
   "bsc-flags": ["-bs-super-errors"],
-  "jsx": { "version": 3 },
+  "jsx": { "version": 4 },
   "bs-dependencies": ["@rescript/react"],
   "sources": [
     {
