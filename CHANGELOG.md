@@ -68,7 +68,7 @@
   - Fix: use `[@val] external setTimeout: (unit => unit, int) => float = "setTimeout"` instead.
   - Example2: `[@val] external setTimeout: (unit => unit, int) => float = ""` is not supported anymore.
   - Fix2: use `[@val] external setTimeout: (unit => unit, int) => float = "setTimeout"` instead.
-- String constants don't need escaping anymore.
+- Strings processed at compile-time don't need escaping anymore.
   - Example: `let blockCommentsRe = %re("/\\/\\*([^*]|[\\r\\n]|(\\*+([^*/]|[\\r\\n])))*\\*+\\//g")`.
   - Fix: use `let blockCommentsRe = %re("/\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\//g")` instead.
 - Remove parsing of "import" and "export" which was never officially supported https://github.com/rescript-lang/syntax/pull/597 https://github.com/rescript-lang/syntax/pull/599
