@@ -20,6 +20,9 @@
 
 - Add support for for `async`/`await` https://github.com/rescript-lang/rescript-compiler/pull/5537
 
+- Initial support for JSX V4, still work in progress.
+  - :boom: when V4 is activated, at most one component is allowed for each module.
+
 #### :nail_care: Polish
 
 - Print patterns in warnings using rescript printer https://github.com/rescript-lang/rescript-compiler/pull/5492
