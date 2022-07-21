@@ -71,14 +71,11 @@
 - String constants don't need escaping anymore.
   - Example: `let blockCommentsRe = %re("/\\/\\*([^*]|[\\r\\n]|(\\*+([^*/]|[\\r\\n])))*\\*+\\//g")`.
   - Fix: use `let blockCommentsRe = %re("/\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\//g")` instead.
-- Externals without `@val` annotations do not work anymore, and externals with `= ""` give an error.
-  - Example: `external setTimeout: (unit => unit, int) => float = "setTimeout"` is not supported anymore.
-  - Fix: use `[@val] external setTimeout: (unit => unit, int) => float = "setTimeout"` instead.
-  - Example2: `[@val] external setTimeout: (unit => unit, int) => float = ""` is not supported anymore.
-  - Fix2: use `[@val] external setTimeout: (unit => unit, int) => float = "setTimeout"` instead.
-- String constants don't need escaping anymore.
-  - Example: `let blockCommentsRe = %re("/\\/\\*([^*]|[\\r\\n]|(\\*+([^*/]|[\\r\\n])))*\\*+\\//g")`.
-  - Fix: use `let blockCommentsRe = %re("/\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\//g")` instead.
+- Remove parsing of "import" and "export" which was never officially supported https://github.com/rescript-lang/syntax/pull/597 https://github.com/rescript-lang/syntax/pull/599
+  - Example: `export type t = int`
+  - Fix: `@genType type t = int`
+  - Example2: `import realValue: complexNumber => float from "./MyMath"`
+  - Fix2: `@genType.import("./MyMath") external realValue: complexNumber => float = "realValue"`
 
 #### :rocket: New Feature
 
