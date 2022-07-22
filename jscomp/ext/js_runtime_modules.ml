@@ -41,6 +41,7 @@ let format = "Caml_format"
 let string = "Caml_string"
 
 let bytes = "Caml_bytes"
+let bytes_ = "Bytes"
 
 let float = "Caml_float"
 
