@@ -32,7 +32,6 @@ type record_representation =
 
 type t =
   | Pbytes_to_string
-  | Pbytes_of_string
   | Pmakeblock of int * Lam_tag_info.t * Asttypes.mutable_flag
   | Pfield of int * Lambda.field_dbg_info
   | Psetfield of int * Lambda.set_field_dbg_info

@@ -124,7 +124,6 @@ let primitive ppf = function
   | Puncurried_apply -> fprintf ppf "@app"
   | Pidentity -> fprintf ppf "id"
   | Pbytes_to_string -> fprintf ppf "bytes_to_string"
-  | Pbytes_of_string -> fprintf ppf "bytes_of_string"
   | Pignore -> fprintf ppf "ignore"
   | Prevapply -> fprintf ppf "revapply"
   | Pdirapply -> fprintf ppf "dirapply"
@@ -239,7 +238,6 @@ let primitive ppf = function
 let name_of_primitive = function
   | Puncurried_apply -> "Puncurried_apply"
   | Pidentity -> "Pidentity"
-  | Pbytes_of_string -> "Pbytes_of_string"
   | Pbytes_to_string -> "Pbytes_to_string"
   | Pignore -> "Pignore"
   | Prevapply -> "Prevapply"

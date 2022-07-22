@@ -34,7 +34,6 @@ type record_representation =
 
 type t =
   | Pbytes_to_string
-  | Pbytes_of_string
   (* Operations on heap blocks *)
   | Pmakeblock of int * Lam_tag_info.t * Asttypes.mutable_flag
   | Pfield of int * Lam_compat.field_dbg_info
@@ -172,7 +171,6 @@ let eq_primitive_approx (lhs : t) (rhs : t) =
       match rhs with Pcreate_extension b -> a = (b : string) | _ -> false)
   | Pwrap_exn -> rhs = Pwrap_exn
   | Pbytes_to_string -> rhs = Pbytes_to_string
-  | Pbytes_of_string -> rhs = Pbytes_of_string
   | Praise -> rhs = Praise
   | Psequand -> rhs = Psequand
   | Psequor -> rhs = Psequor
