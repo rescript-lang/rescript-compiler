@@ -56,7 +56,6 @@ let primitive ppf (prim : Lam_primitive.t) =
   | Pinit_mod -> fprintf ppf "init_mod!"
   | Pupdate_mod -> fprintf ppf "update_mod!"
   | Pbytes_to_string -> fprintf ppf "bytes_to_string"
-  | Pbytes_of_string -> fprintf ppf "bytes_of_string"
   | Pjs_apply -> fprintf ppf "#apply"
   | Pjs_runtime_apply -> fprintf ppf "#runtime_apply"
   | Pjs_unsafe_downgrade { name; setter } ->

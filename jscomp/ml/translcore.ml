@@ -282,7 +282,6 @@ let primitives_table =
     [
       ("%identity", Pidentity);
       ("%bytes_to_string", Pbytes_to_string);
-      ("%bytes_of_string", Pbytes_of_string);
       ("%ignore", Pignore);
       ("%revapply", Prevapply);
       ("%apply", Pdirapply);

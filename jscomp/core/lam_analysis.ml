@@ -62,7 +62,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pundefined_to_opt | Pnull_undefined_to_opt | Pjs_fn_make _
       | Pjs_object_create _
       (* TODO: check *)
-      | Pbytes_to_string | Pbytes_of_string | Pmakeblock _
+      | Pbytes_to_string | Pmakeblock _
       (* whether it's mutable or not *)
       | Pfield _ | Pval_from_option | Pval_from_option_not_nest
       (* NOP The compiler already [t option] is the same as t *)

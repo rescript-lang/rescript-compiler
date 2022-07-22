@@ -167,7 +167,6 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
   | Ploc _ -> assert false (* already compiled away here*)
   | Pbytes_to_string (* handled very early *) ->
       prim ~primitive:Pbytes_to_string ~args loc
-  | Pbytes_of_string -> prim ~primitive:Pbytes_of_string ~args loc
   | Pcreate_extension s -> prim ~primitive:(Pcreate_extension s) ~args loc
   | Pignore ->
       (* Pignore means return unit, it is not an nop *)
