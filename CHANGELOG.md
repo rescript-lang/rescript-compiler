@@ -22,7 +22,9 @@
 
 # 10.0 first full release
 
-- No change yet w.r.t. beta.3
+#### :bug: Bug Fix
+
+- Fix library issue with missing `bytes_to_string` https://github.com/rescript-lang/rescript-compiler/issues/5573
 
 # 10.0.0-beta.3
 
