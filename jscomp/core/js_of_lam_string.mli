@@ -37,5 +37,3 @@ val set_byte : J.expression -> J.expression -> J.expression -> J.expression
 val const_char : char -> J.expression
 
 val bytes_to_string : J.expression -> J.expression
-
-val bytes_of_string : J.expression -> J.expression

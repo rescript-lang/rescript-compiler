@@ -219,12 +219,6 @@ let translate loc (cxt : Lam_compile_context.t) (prim : Lam_primitive.t)
       *)
       | [ range; e ] -> E.is_out (E.offset e off) range
       | _ -> assert false)
-  | Pbytes_of_string ->
-      (* TODO: write a js primitive  - or is it necessary ?
-         if we have byte_get/string_get
-         still necessary, since you can set it now.
-      *)
-      Js_of_lam_string.bytes_of_string (Ext_list.singleton_exn args)
   | Pbytes_to_string ->
       Js_of_lam_string.bytes_to_string (Ext_list.singleton_exn args)
   | Pstringlength -> E.string_length (Ext_list.singleton_exn args)

@@ -145,7 +145,6 @@ type pointer_info =
 type primitive =
   | Pidentity
   | Pbytes_to_string
-  | Pbytes_of_string
   | Pignore
   | Prevapply
   | Pdirapply
