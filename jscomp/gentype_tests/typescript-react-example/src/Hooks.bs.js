@@ -5,14 +5,13 @@ import * as React from "react";
 import * as ImportHooks from "./ImportHooks.bs.js";
 import * as ImportHookDefault from "./ImportHookDefault.bs.js";
 
-function Hooks(Props) {
-  var vehicle = Props.vehicle;
+function Hooks(props) {
   var match = React.useState(function () {
         return 0;
       });
   var setCount = match[1];
   var count = match[0];
-  return React.createElement("div", undefined, React.createElement("p", undefined, "Hooks example " + (vehicle.name + (" clicked " + (String(count) + " times")))), React.createElement("button", {
+  return React.createElement("div", undefined, React.createElement("p", undefined, "Hooks example " + (props.vehicle.name + (" clicked " + (String(count) + " times")))), React.createElement("button", {
                   onClick: (function (param) {
                       Curry._1(setCount, (function (param) {
                               return count + 1 | 0;
@@ -39,39 +38,33 @@ function Hooks(Props) {
                 }, "child1", "child2"));
 }
 
-function Hooks$Another$anotherComponent(Props) {
-  var vehicle = Props.vehicle;
-  var callback = Props.callback;
-  Curry._1(callback, undefined);
-  return React.createElement("div", undefined, "Another Hook " + vehicle.name);
+function Hooks$Another$anotherComponent(props) {
+  Curry._1(props.callback, undefined);
+  return React.createElement("div", undefined, "Another Hook " + props.vehicle.name);
 }
 
 var Another = {
   anotherComponent: Hooks$Another$anotherComponent
 };
 
-function Hooks$Inner(Props) {
-  var vehicle = Props.vehicle;
-  return React.createElement("div", undefined, "Another Hook " + vehicle.name);
+function Hooks$Inner(props) {
+  return React.createElement("div", undefined, "Another Hook " + props.vehicle.name);
 }
 
-function Hooks$Inner$Another$anotherComponent(Props) {
-  var vehicle = Props.vehicle;
-  return React.createElement("div", undefined, "Another Hook " + vehicle.name);
+function Hooks$Inner$Another$anotherComponent(props) {
+  return React.createElement("div", undefined, "Another Hook " + props.vehicle.name);
 }
 
 var Another$1 = {
   anotherComponent: Hooks$Inner$Another$anotherComponent
 };
 
-function Hooks$Inner$Inner2(Props) {
-  var vehicle = Props.vehicle;
-  return React.createElement("div", undefined, "Another Hook " + vehicle.name);
+function Hooks$Inner$Inner2(props) {
+  return React.createElement("div", undefined, "Another Hook " + props.vehicle.name);
 }
 
-function Hooks$Inner$Inner2$Another$anotherComponent(Props) {
-  var vehicle = Props.vehicle;
-  return React.createElement("div", undefined, "Another Hook " + vehicle.name);
+function Hooks$Inner$Inner2$Another$anotherComponent(props) {
+  return React.createElement("div", undefined, "Another Hook " + props.vehicle.name);
 }
 
 var Another$2 = {
@@ -89,7 +82,7 @@ var Inner = {
   Inner2: Inner2
 };
 
-function Hooks$NoProps(Props) {
+function Hooks$NoProps(props) {
   return React.createElement("div", undefined, null);
 }
 
@@ -102,19 +95,18 @@ function functionWithRenamedArgs(_to, _Type, cb) {
   return _to.name + _Type.name;
 }
 
-function Hooks$WithRename$componentWithRenamedArgs(Props) {
-  var _to = Props.to;
-  var _Type = Props.Type;
-  var cb = Props.cb;
-  Curry._1(cb, _to);
-  return _to.name + _Type.name;
+function Hooks$WithRename$componentWithRenamedArgs(props) {
+  var _to = props._to;
+  Curry._1(props.cb, _to);
+  return _to.name + props._Type.name;
 }
 
 var WithRename = {
   componentWithRenamedArgs: Hooks$WithRename$componentWithRenamedArgs
 };
 
-function makeWithRef(vehicle) {
+function makeWithRef(param) {
+  var vehicle = param.vehicle;
   return function (ref) {
     if (ref == null) {
       return null;
@@ -126,49 +118,44 @@ function makeWithRef(vehicle) {
   };
 }
 
-function Hooks$WithRef$makeWithRef(Props) {
-  return makeWithRef(Props.vehicle);
-}
+var Hooks$WithRef$makeWithRef = makeWithRef;
 
 var WithRef = {
   makeWithRef: Hooks$WithRef$makeWithRef
 };
 
 var testForwardRef = React.forwardRef(function (param, param$1) {
-      return makeWithRef(param.vehicle)(param$1);
+      return makeWithRef(param)(param$1);
     });
 
-var input = React.forwardRef(function (Props, param) {
-      var partial_arg = Props.r;
+var input = React.forwardRef(function (props, ref) {
       return React.createElement("div", {
-                  ref: param
-                }, partial_arg.x);
+                  ref: ref
+                }, props.r.x);
     });
 
 var ForwardRef = {
   input: input
 };
 
-function Hooks$Poly$polymorphicComponent(Props) {
-  var param = Props.p;
-  return param[0].name;
+function Hooks$Poly$polymorphicComponent(props) {
+  return props.p[0].name;
 }
 
 var Poly = {
   polymorphicComponent: Hooks$Poly$polymorphicComponent
 };
 
-function Hooks$Fun$functionReturningReactElement(Props) {
-  return Props.name;
+function Hooks$Fun$functionReturningReactElement(props) {
+  return props.name;
 }
 
 var Fun = {
   functionReturningReactElement: Hooks$Fun$functionReturningReactElement
 };
 
-function Hooks$RenderPropRequiresConversion(Props) {
-  var renderVehicle = Props.renderVehicle;
-  return Curry._1(renderVehicle, {
+function Hooks$RenderPropRequiresConversion(props) {
+  return Curry._1(props.renderVehicle, {
               vehicle: {
                 name: "Car"
               },
@@ -180,19 +167,16 @@ var RenderPropRequiresConversion = {
   make: Hooks$RenderPropRequiresConversion
 };
 
-function Hooks$WithChildren$aComponentWithChildren(Props) {
-  var vehicle = Props.vehicle;
-  var children = Props.children;
-  return React.createElement("div", undefined, "Another Hook " + vehicle.name, React.createElement("div", undefined, children));
+function Hooks$WithChildren$aComponentWithChildren(props) {
+  return React.createElement("div", undefined, "Another Hook " + props.vehicle.name, React.createElement("div", undefined, props.children));
 }
 
 var WithChildren = {
   aComponentWithChildren: Hooks$WithChildren$aComponentWithChildren
 };
 
-function Hooks$DD(Props) {
-  var name = Props.name;
-  return name;
+function Hooks$DD(props) {
+  return props.name;
 }
 
 var DD = {

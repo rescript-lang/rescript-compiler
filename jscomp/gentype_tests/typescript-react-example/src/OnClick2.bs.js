@@ -2,10 +2,9 @@
 
 import * as React from "react";
 
-function OnClick2(Props) {
-  var onClick = Props.onClick;
+function OnClick2(props) {
   return React.createElement("div", {
-              onClick: onClick
+              onClick: props.onClick
             });
 }
 
