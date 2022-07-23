@@ -30,8 +30,6 @@ type t = whole list
 
 val restore_exp : Parsetree.expression -> t -> Parsetree.expression
 
-val destruct : Parsetree.expression -> t -> Parsetree.expression * t
-
 val destruct_open_tuple :
   Parsetree.expression ->
   t ->

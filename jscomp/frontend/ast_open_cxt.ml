@@ -32,9 +32,7 @@ type whole =
       * Parsetree.attributes)
 
 type t = whole list
-
 type exp = Parsetree.expression
-
 type destruct_output = exp list
 
 (**
@@ -49,12 +47,6 @@ let rec destruct_open_tuple (e : Parsetree.expression) (acc : t) :
         (Let_open (flag, lid, e.pexp_loc, e.pexp_attributes) :: acc)
   | Pexp_tuple es -> Some (acc, es, e.pexp_attributes)
   | _ -> None
-
-let rec destruct (e : Parsetree.expression) (acc : t) =
-  match e.pexp_desc with
-  | Pexp_open (flag, lid, cont) ->
-      destruct cont (Let_open (flag, lid, e.pexp_loc, e.pexp_attributes) :: acc)
-  | _ -> (e, acc)
 
 let restore_exp (xs : Parsetree.expression) (qualifiers : t) :
     Parsetree.expression =

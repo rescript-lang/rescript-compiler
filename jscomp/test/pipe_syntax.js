@@ -1,7 +1,6 @@
 'use strict';
 
 var Curry = require("../../lib/js/curry.js");
-var Belt_Array = require("../../lib/js/belt_Array.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
 function t0(x, f) {
@@ -80,12 +79,6 @@ function f8(a) {
   return Caml_option.some(Caml_option.some(a));
 }
 
-function hi(x) {
-  return Belt_Array.map(x, (function (x) {
-                return x + 1 | 0;
-              }));
-}
-
 var with_poly = {
   NAME: "Foo",
   VAL: 1
@@ -104,6 +97,5 @@ exports.f5 = f5;
 exports.f6 = f6;
 exports.f7 = f7;
 exports.f8 = f8;
-exports.hi = hi;
 exports.with_poly = with_poly;
 /* No side effect */
