@@ -53,3 +53,16 @@ let testMatch = v =>
 let h = '😊'
 let hey = "hello, 世界"
 // failed to type check
+
+let optionMap = (x, f) =>
+  switch x {
+  | None => None
+  | Some(v) => Some(f(v))
+  }
+
+type props<'name> = {key?: string, name?: string}
+
+let name = None
+
+let ok = {name: ?optionMap(name, x => x)}
+let bad = {name: ?name->optionMap(x => x)}

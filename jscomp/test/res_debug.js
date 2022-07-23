@@ -1,6 +1,8 @@
 'use strict';
 
+var Curry = require("../../lib/js/curry.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
+var Caml_option = require("../../lib/js/caml_option.js");
 
 function f($$window, a, b) {
   return $$window.location(a, b);
@@ -24,6 +26,29 @@ function testMatch(v) {
   }
 }
 
+function optionMap(x, f) {
+  if (x !== undefined) {
+    return Caml_option.some(Curry._1(f, Caml_option.valFromOption(x)));
+  }
+  
+}
+
+var ok_name = optionMap(undefined, (function (x) {
+        return x;
+      }));
+
+var ok = {
+  name: ok_name
+};
+
+var bad_name = optionMap(undefined, (function (x) {
+        return x;
+      }));
+
+var bad = {
+  name: bad_name
+};
+
 var v2 = newrecord;
 
 var v1 = {
@@ -35,6 +60,8 @@ var h = /* '\522' */128522;
 
 var hey = "hello, 世界";
 
+var name;
+
 exports.f = f;
 exports.v0 = v0;
 exports.v2 = v2;
@@ -42,4 +69,8 @@ exports.v1 = v1;
 exports.testMatch = testMatch;
 exports.h = h;
 exports.hey = hey;
+exports.optionMap = optionMap;
+exports.name = name;
+exports.ok = ok;
+exports.bad = bad;
 /*  Not a pure module */
