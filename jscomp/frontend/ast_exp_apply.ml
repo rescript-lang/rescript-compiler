@@ -70,7 +70,6 @@ let view_as_app (fn : exp) (s : string list) : app_pattern option =
   | _ -> None
 
 let inner_ops = [ "##"; "#@" ]
-
 let infix_ops = [ "|."; "#="; "##" ]
 
 let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
@@ -110,16 +109,24 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
           let fn = self.expr self fn in
           match fn.pexp_desc with
           | Pexp_variant (label, None) ->
-              { fn with pexp_desc = Pexp_variant (label, Some new_obj_arg); pexp_loc = e.pexp_loc }
-          | Pexp_construct (ctor, None) ->
-              { fn with pexp_desc = Pexp_construct (ctor, Some new_obj_arg); pexp_loc = e.pexp_loc }
-          | Pexp_apply (fn, args) ->
-              Bs_ast_invariant.warn_discarded_unused_attributes
-                fn.pexp_attributes;
               {
-                pexp_desc = Pexp_apply (fn, (Nolabel, new_obj_arg) :: args);
-                pexp_attributes = [];
+                fn with
+                pexp_desc = Pexp_variant (label, Some new_obj_arg);
                 pexp_loc = e.pexp_loc;
+              }
+          | Pexp_construct (ctor, None) ->
+              {
+                fn with
+                pexp_desc = Pexp_construct (ctor, Some new_obj_arg);
+                pexp_loc = e.pexp_loc;
+              }
+          | Pexp_apply (fn1, args) ->
+              Bs_ast_invariant.warn_discarded_unused_attributes
+                fn1.pexp_attributes;
+              {
+                pexp_desc = Pexp_apply (fn1, (Nolabel, new_obj_arg) :: args);
+                pexp_loc = e.pexp_loc;
+                pexp_attributes = e.pexp_attributes;
               }
           | _ -> (
               match Ast_open_cxt.destruct fn [] with
