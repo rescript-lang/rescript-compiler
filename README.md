@@ -1,55 +1,114 @@
-<div align="center">
+<h1 align="center">
+  <a href="https://rescript-lang.org/">
+    ReScript
+  </a>
+</h1>
 
-   <h3> <a href="https://rescript-lang.org"> ReScript Documentation </a> | <a href="https://forum.rescript-lang.org/"> Forum </a> | <a href="https://rescript-lang.org.cn/community/roadmap#roadmap"> Roadmap</a>  | <a href="https://rescript-lang.org.cn/"> 中文 </a> | <a href="https://green-labs.github.io/rescript-in-korean/"> 한국어 </a> </h3>
-  
-</div>
+<p align="center">
+  <strong>Fast, Simple, Fully Typed JavaScript from the Future.</strong>
+</p>
 
-## Overview
+<p align="center">
+  <a href="https://www.npmjs.org/package/rescript">
+    <img src="https://img.shields.io/npm/v/rescript?color=brightgreen&label=npm%20package" alt="Current npm package version." />
+  </a>
+  <a href="https://github.com/rescript-lang/rescript-compiler/actions">
+    <img src="https://github.com//rescript-lang/rescript-compiler/workflows/CI/badge.svg" alt="Current Github Actions workflow status." />
+  </a>
+  <a href="https://github.com/rescript-lang/rescript-compiler/blob/HEAD/LICENSE">
+    <img src="https://img.shields.io/badge/License-LGPL%20v3-blue.svg" alt="ReScript is released under the LGPL license." />
+  </a>
+  <a href="https://twitter.com/intent/follow?screen_name=rescriptlang">
+    <img src="https://img.shields.io/twitter/follow/rescriptlang.svg?label=Follow%20@rescriptlang" alt="Follow @rescriptlang" />
+  </a>
+</p>
 
-The compiler for ReScript: a statically typed functional language focused on shipping.
+<h3 align="center">
+  <a href="https://rescript-lang.org/docs/manual/latest/introduction">Introduction</a>
+  <span> · </span>
+  <a href="https://rescript-lang.org/docs/manual/latest/installation">Installation</a>
+  <span> · </span>
+  <a href="https://rescript-lang.org/try">Try Online</a>
+  <span> · </span>
+  <a href="https://forum.rescript-lang.org/">Forum</a>
+  <span> · </span>
+  <a href="CONTRIBUTING.md">Contribute</a>
+</h3>
 
-[![npm version](https://badge.fury.io/js/rescript.svg)](https://badge.fury.io/js/rescript) ![Build Status](https://circleci.com/gh/rescript-lang/rescript-compiler.svg?style=svg)
+ReScript is a robustly typed language that compiles to efficient and human-readable JavaScript. It comes with a lightning fast compiler toolchain that scales to any codebase size.
 
-## Installation
+- **Fast and Simple.** ReScript cares about a consistent and fast feedback loop for any codebase size. Refactor code, pull complex changes, or switch to feature branches as you please. No sluggish CI builds, stale caches, wrong type hints, or memory hungry language servers that slow you down.
+- **A Robust Type System.** Every ReScript app is fully typed and provides reliable type information for any given value in your program. We prioritize simpler types over complex types for the sake of clarity and easy debugability. No `any`, no magic types, no surprise `undefined`.
+- **Seamless Integration.** Use any library from JavaScript, export ReScript libraries to JavaScript, automatically generate TypeScript types. It's like you've never left the good parts of JavaScript at all.
+- **Tooling that just works out of the box.** A builtin pretty printer, memory friendly [VSCode](https://github.com/rescript-lang/rescript-vscode) & [Vim](https://github.com/rescript-lang/vim-rescript) plugins, a stable type system and compiler that doesn't require lots of extra configuration. ReScript brings all the tools you need to build reliable JavaScript, Node and ReactJS applications.
+- **Easy to adopt — without any lock-in.** ReScript was made with gradual adoption in mind. If you ever want to go back to plain JavaScript, just remove all source files and keep its clean JavaScript output. Tell your coworkers that your project will keep functioning with or without ReScript!
 
-```sh
-npm install --save-dev rescript
-```
+ReScript is used by many companies to ship and maintain mission-critical products and is maintained by the [ReScript community](https://rescript-lang.org/community).
 
-## Contribution
+## Contents
 
-See [CONTRIBUTING.md](CONTRIBUTING.md).
+- [Getting Started](#-getting-started)
+- [Documentation](#-documentation)
+- [Upgrading](#-upgrading)
+- [How to Contribute](#-how-to-contribute)
+- [License](#-license)
+- [Acknowledgments](#-Acknowledgments)
 
-## Acknowledgments
+## 🎉 Getting Started
 
-- Thanks to the [OCaml](https://ocaml.org) team, obviously, without such a beautiful yet practical language, this project would not exist. The original type system was inherited from [it](jscomp/ml) with lots of modifications to fit with JS ecosystem better.
-- Thanks to [ninja-build](https://ninja-build.org), ReScript also comes with a blazing fast build tool on top of it, `ninja` is a truly [well engineered](http://aosabook.org/en/posa/ninja.html) scalable build tool
-- Thanks to [Bloomberg](https://www.techatbloomberg.com) and [Facebook](https://github.com/facebook/). This project began at Bloomberg and was published in 2016; without the support of Bloomberg, it would not have happened. This project's funded by Facebook since July 2017
+Follow the [Installation Guide](https://rescript-lang.org/docs/manual/latest/installation) to set up a new ReScript project or integrate ReScript into your existing JavaScript project.
 
-## History
+For more information on building React apps with ReScript, see the [rescript-react documentation](https://rescript-lang.org/docs/react/latest/installation).
 
-This project was originally created by [Hongbo Zhang](https://github.com/bobzhang) in 2015 and
-still actively maintained by Hongbo Zhang hosted at
-[here](https://github.com/rescript-lang/rescript-compiler)
+For React Native apps, see the [rescript-react-native website](https://rescript-react-native.github.io/).
 
-It was named BuckleScript and rebranded into [ReScript](https://rescript-lang.org/) in 2020.
-The major contributions from contributors include super_errors from
-[Cheng](https://github.com/chenglou) and [Cristiano](https://github.com/cristianoc), react_jsx_ppx from [Ricky](https://github.com/rickyvetter).
-Cristiano also contributed to several important patches in the upstream native compiler,
-in particular, the pattern match compilation.
+## 📖 Documentation
 
-More details are available [here](https://github.com/rescript-lang/rescript-compiler/graphs/contributors).
+The full documentation for the ReScript language can be found on our [website](https://rescript-lang.org/).
 
-## Licensing
+The source for the ReScript documentation and website is hosted in a [separate repo](https://github.com/rescript-association/rescript-lang.org).
 
-See [COPYING](./COPYING) and [COPYING.LESSER](./COPYING.LESSER)
+## 🚀 Upgrading
+
+See the [Upgrading Guide](https://rescript-lang.org/docs/manual/latest/installation) for instructions on upgrading to newer ReScript versions.
+
+## 👏 How to Contribute
+
+### [Contributing Guide](CONTRIBUTING.md)
+
+Read our [Contributing Guide](CONTRIBUTING.md) to learn about our development process, how to propose bugfixes and improvements, and how to build and test your changes to ReScript.
+
+### [Code of Conduct][code]
+
+The ReScript community has adopted a Code of Conduct that we expect project participants to adhere to.
+Please read the [full text][code] so that you can understand what actions will and will not be tolerated.
+
+[code]: https://rescript-lang.org/community/code-of-conduct
+
+### [Roadmap][roadmap]
+
+You can learn more about our vision for ReScript in the [Roadmap][roadmap].
+
+[roadmap]: https://rescript-lang.org/community/roadmap
+
+### [Discussions][discussions]
+
+For discussions on ongoing development, see the [Development](https://forum.rescript-lang.org/c/development/8) section of the ReScript forum.
+
+[discussions]: https://rescript-lang.org/community/roadmap
+
+## 📄 License
+
+ReScript is licensed under LGPL version 3, with relaxed rules about creating and distributing combined work. See the [LICENSE](LICENSE) file for details.
 
 `vendor/ocaml.tar.gz` contains the official [OCaml](https://ocaml.org) compiler (version 4.14.0).
 Refer to its copyright and license notices for information about its licensing.
 
-`vendor/ninja.tar.gz` contains the vendored [ninja](https://github.com/ninja-build/ninja).
+The `ninja` submodule contains the vendored [ninja](https://github.com/ninja-build/ninja) build system.
 Refer to its copyright and license notices for information about its licensing.
 
-Note that OSS is for sharing of knowledge, but the authorship should be respected. Copyright headers in each file, Acknowledgements and History section in this file should be kept **intact**.
+## 🏅 Acknowledgments
 
-See [Credits](./CREDITS.md) for more details.
+ReScript was originally created by [Hongbo Zhang](https://github.com/bobzhang) in 2015.
+
+See [CREDITS.md](CREDITS.md) for further acknowledgements and project history.
