@@ -128,6 +128,12 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
                 pexp_loc = e.pexp_loc;
                 pexp_attributes = e.pexp_attributes;
               }
+          | Pexp_ident _ ->
+              {
+                pexp_desc = Pexp_apply (fn, [ (Nolabel, new_obj_arg) ]);
+                pexp_loc = e.pexp_loc;
+                pexp_attributes = e.pexp_attributes;
+              }
           | _ -> (
               match Ast_open_cxt.destruct fn [] with
               | ( { pexp_desc = Pexp_tuple xs; pexp_attributes = tuple_attrs },
