@@ -126,12 +126,6 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
                 pexp_loc = e.pexp_loc;
                 pexp_attributes = e.pexp_attributes;
               }
-          | Pexp_ident _ ->
-              {
-                pexp_desc = Pexp_apply (fn, [ (Nolabel, new_obj_arg) ]);
-                pexp_loc = e.pexp_loc;
-                pexp_attributes = e.pexp_attributes;
-              }
           | Pexp_tuple xs ->
               bound new_obj_arg (fun bounded_obj_arg ->
                   {
