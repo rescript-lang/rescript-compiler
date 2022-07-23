@@ -53,9 +53,15 @@ function identity(x) {
   return x;
 }
 
-var ok1 = {};
+var name1 = "ReScript";
 
-var bad1 = {};
+var ok1 = {
+  name: name1
+};
+
+var bad1 = {
+  name: name1
+};
 
 var v2 = newrecord;
 
@@ -82,6 +88,7 @@ exports.name = name;
 exports.ok = ok;
 exports.bad = bad;
 exports.identity = identity;
+exports.name1 = name1;
 exports.ok1 = ok1;
 exports.bad1 = bad1;
 /*  Not a pure module */
