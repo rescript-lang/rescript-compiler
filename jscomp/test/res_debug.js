@@ -49,6 +49,14 @@ var bad = {
   name: bad_name
 };
 
+function identity(x) {
+  return x;
+}
+
+var ok1 = {};
+
+var bad1 = {};
+
 var v2 = newrecord;
 
 var v1 = {
@@ -73,4 +81,7 @@ exports.optionMap = optionMap;
 exports.name = name;
 exports.ok = ok;
 exports.bad = bad;
+exports.identity = identity;
+exports.ok1 = ok1;
+exports.bad1 = bad1;
 /*  Not a pure module */
