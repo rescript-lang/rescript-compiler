@@ -23,6 +23,10 @@
 - Initial support for JSX V4, still work in progress.
   - :boom: when V4 is activated, at most one component is allowed for each module.
 
+#### :bug: Bug Fix
+
+- Fix issue where pipe `->` processing eats up attributes https://github.com/rescript-lang/rescript-compiler/pull/5581
+
 #### :nail_care: Polish
 
 - Print patterns in warnings using rescript printer https://github.com/rescript-lang/rescript-compiler/pull/5492
