@@ -20,7 +20,7 @@
 
 - Print patterns in warnings using rescript printer https://github.com/rescript-lang/rescript-compiler/pull/5492
 
-# 10.0 first full release
+# 10.0.0-rc.1
 
 #### :bug: Bug Fix
 
