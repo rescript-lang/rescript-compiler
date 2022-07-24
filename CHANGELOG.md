@@ -26,6 +26,7 @@
 #### :bug: Bug Fix
 
 - Fix issue where pipe `->` processing eats up attributes https://github.com/rescript-lang/rescript-compiler/pull/5581
+- Fix issue where cancelling `rescript build` would leave the `.bsb.lock` file behind and block future builds
 
 #### :nail_care: Polish
 
