@@ -10,15 +10,11 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# master
+# 10.0.0-rc.2
 
-#### :boom: Breaking Change
+#### :bug: Bug Fix
 
-- Vendor genType, which does not need to be installed separately anymore. **Only TypeScript back-end** supported.
-
-#### :nail_care: Polish
-
-- Print patterns in warnings using rescript printer https://github.com/rescript-lang/rescript-compiler/pull/5492
+- Further fix to  `bytes_to_string` https://github.com/rescript-lang/rescript-compiler/pull/5589
 
 # 10.0.0-rc.1
 
