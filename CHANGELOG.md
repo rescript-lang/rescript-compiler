@@ -31,67 +31,40 @@
 
 - Print patterns in warnings using rescript printer https://github.com/rescript-lang/rescript-compiler/pull/5492
 
-# 10.0 first full release
-
-- No change yet w.r.t. beta.3
-
-# 10.0.0-beta.3
+# 10.0.0-rc.1
 
 #### :bug: Bug Fix
 
-- Fix issue with compiler log not terminated that causes problems with editor extension not clearing issues when fixed [#5545](https://github.com/rescript-lang/rescript-compiler/issues/5545)
+- Fix library issue with missing `bytes_to_string` https://github.com/rescript-lang/rescript-compiler/issues/5573
 
-# 10.0.0-beta.2
+# 10.0.0-beta.3
 
-##### :nail_care: Polish
-
-- Changed Linux build to depend on GLIBC 2.28 again for compatibility with Debian 10.
-
-# 10.0.0-beta.1
+**Compiler**
 
 #### :boom: Breaking Change
 
 - `bsconfig.json` does not support `// line` comments anymore.
   - Example: `"suffix": ".bs.js" // determine the suffix`
   - Fix: remove the comment and use standard json.
-- Externals without `@val` annotations do not work anymore, and externals with `= ""` give an error.
-  - Example: `external setTimeout: (unit => unit, int) => float = "setTimeout"` is not supported anymore.
-  - Fix: use `[@val] external setTimeout: (unit => unit, int) => float = "setTimeout"` instead.
-  - Example2: `[@val] external setTimeout: (unit => unit, int) => float = ""` is not supported anymore.
-  - Fix2: use `[@val] external setTimeout: (unit => unit, int) => float = "setTimeout"` instead.
-- Regular expressions don't need escaping.
-  - Example: `let blockCommentsRe = %re("/\\/\\*([^*]|[\\r\\n]|(\\*+([^*/]|[\\r\\n])))*\\*+\\//g")`.
-  - Fix: use `let blockCommentsRe = %re("/\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\//g")` instead.
-
-#### :bug: Bug Fix
-
-- Fixed crash in `rescript build` on Windows [#5516](https://github.com/rescript-lang/rescript-compiler/pull/5516)
-- Fixed `rescript init` command not working [#5526](https://github.com/rescript-lang/rescript-compiler/pull/5526)
-
-# 10.0.0-alpha.1
-
-**Compiler**
-
-#### :boom: Breaking Change
-
-- `@bs.send.pipe` is now removed. Earlier it was deprecated.
-- Missing labels in function application is now an error (https://forum.rescript-lang.org/t/ann-more-strict-checks-in-missed-labels/2117).
-  - Example: `let f = (x, ~z) => x + z; f(1, 2)`
-  - Fix: do `let f = (x, ~z) => x + z; f(1, ~z=2)` instead
 - Changed return type of `Js.String.match_` as it was wrong. [#5070](https://github.com/rescript-lang/rescript-compiler/pull/5070)
   - Example: any use of `Js.String.match_` and `Js.String2.match_`
   - Fix: follow the type errors
 
 #### :rocket: New Feature
 
+- New records with `@optional` fields e.g. `type opt = {x: int, ?y: string}` were added as an experimental feature [#5423](https://github.com/rescript-lang/rescript-compiler/pull/5423) [#5452](https://github.com/rescript-lang/rescript-compiler/issues/5452) [New Syntax](https://github.com/rescript-lang/syntax/pull/589/files)
 - Add support for `@new @variadic` (see https://github.com/rescript-lang/rescript-compiler/pull/5364)
-- New records with `@optional` fields [#5423](https://github.com/rescript-lang/rescript-compiler/pull/5423) [#5452](https://github.com/rescript-lang/rescript-compiler/issues/5452)
 
 #### :bug: Bug Fix
 
 - Classify bigint correctly [#5351](https://github.com/rescript-lang/rescript-compiler/pull/5351)
+- Fixed crash in `rescript build` on Windows [#5516](https://github.com/rescript-lang/rescript-compiler/pull/5516)
+- Fixed `rescript init` command not working [#5526](https://github.com/rescript-lang/rescript-compiler/pull/5526)
+- Fix issue with compiler log not terminated that causes problems with editor extension not clearing issues when fixed [#5545](https://github.com/rescript-lang/rescript-compiler/issues/5545)
 
-#### :house: [Internal]
+##### :nail_care: Polish
+
+- Changed Linux build to depend on GLIBC 2.28 again for compatibility with Debian 10.
 
 - Proper M1 support (CI now supports M1 native builds)
 
@@ -99,6 +72,18 @@
 
 #### :boom: Breaking Change
 
+- `@bs.send.pipe` is now removed. Earlier it was deprecated.
+- Missing labels in function application is now an error (https://forum.rescript-lang.org/t/ann-more-strict-checks-in-missed-labels/2117).
+  - Example: `let f = (x, ~z) => x + z; f(1, 2)`
+  - Fix: do `let f = (x, ~z) => x + z; f(1, ~z=2)` instead
+- Externals without `@val` annotations do not work anymore, and externals with `= ""` give an error.
+  - Example: `external setTimeout: (unit => unit, int) => float = "setTimeout"` is not supported anymore.
+  - Fix: use `@val external setTimeout: (unit => unit, int) => float = "setTimeout"` instead.
+  - Example2: `@val external setTimeout: (unit => unit, int) => float = ""` is not supported anymore.
+  - Fix2: use `@val external setTimeout: (unit => unit, int) => float = "setTimeout"` instead.
+- Strings processed at compile-time don't need escaping anymore.
+  - Example: `let blockCommentsRe = %re("/\\/\\*([^*]|[\\r\\n]|(\\*+([^*/]|[\\r\\n])))*\\*+\\//g")`.
+  - Fix: use `let blockCommentsRe = %re("/\/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+\//g")` instead.
 - Remove parsing of "import" and "export" which was never officially supported https://github.com/rescript-lang/syntax/pull/597 https://github.com/rescript-lang/syntax/pull/599
   - Example: `export type t = int`
   - Fix: `@genType type t = int`
