@@ -14,7 +14,7 @@
 
 #### :bug: Bug Fix
 
-- Further fix to  `bytes_to_string` https://github.com/rescript-lang/rescript-compiler/pull/5589
+- Further fix to `bytes_to_string` https://github.com/rescript-lang/rescript-compiler/pull/5589
 
 # 10.0.0-rc.1
 
