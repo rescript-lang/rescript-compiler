@@ -215,6 +215,28 @@ function acquireBuild() {
   }
 }
 
+
+function onUncaughtException(err) {
+  console.error("Uncaught Exception", err);
+  releaseBuild();
+  process.exit(1);
+}
+function exitProcess() {
+  releaseBuild();
+  process.exit(0);
+}
+
+process.on("uncaughtException", onUncaughtException);
+
+// OS signal handlers
+// Ctrl+C
+process.on("SIGINT", exitProcess);
+// kill pid
+process.on("SIGUSR1", exitProcess);
+process.on("SIGUSR2", exitProcess);
+process.on("SIGTERM", exitProcess);
+process.on("SIGHUP", exitProcess);
+
 if (
   maybe_subcommand !== undefined &&
   maybe_subcommand !== "build" &&
@@ -336,27 +358,6 @@ if (
      * watchers are held so that we close it later
      */
     var watchers = [];
-
-    function onUncaughtException(err) {
-      console.error("Uncaught Exception", err);
-      releaseBuild();
-      process.exit(1);
-    }
-    function exitProcess() {
-      releaseBuild();
-      process.exit(0);
-    }
-
-    process.on("uncaughtException", onUncaughtException);
-
-    // OS signal handlers
-    // Ctrl+C
-    process.on("SIGINT", exitProcess);
-    // kill pid
-    process.on("SIGUSR1", exitProcess);
-    process.on("SIGUSR2", exitProcess);
-    process.on("SIGTERM", exitProcess);
-    process.on("SIGHUP", exitProcess);
 
     process.stdin.on("close", exitProcess);
     // close when stdin stops
