@@ -11714,8 +11714,7 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
     *)
     (match gentype_config with
     | false -> ()
-    | true ->
-        Ext_buffer.add_string buf " -bs-gentype");
+    | true -> Ext_buffer.add_string buf " -bs-gentype");
     if read_cmi <> `is_cmi then (
       Ext_buffer.add_string buf " -bs-package-name ";
       Ext_buffer.add_string buf (Ext_filename.maybe_quote package_name);
@@ -11757,7 +11756,8 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
     (match (reason_react_jsx, jsx_version) with
     | _, Some Jsx_v3 -> Ext_buffer.add_string buf " -bs-jsx 3"
     | _, Some Jsx_v4 -> Ext_buffer.add_string buf " -bs-jsx 4"
-    | Some Jsx_v3, None -> Ext_buffer.add_string buf " -bs-jsx 3"
+    (* V4 as default, even though the old config exists *)
+    | Some _, None -> Ext_buffer.add_string buf " -bs-jsx 4"
     | None, None -> ());
     (match jsx_module with
     | None -> ()
