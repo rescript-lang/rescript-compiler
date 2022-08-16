@@ -32,6 +32,12 @@
 
 - Print patterns in warnings using rescript printer https://github.com/rescript-lang/rescript-compiler/pull/5492
 
+# 10.0.0-rc.2
+
+#### :bug: Bug Fix
+
+- Further fix to `bytes_to_string` https://github.com/rescript-lang/rescript-compiler/pull/5589
+
 # 10.0.0-rc.1
 
 #### :bug: Bug Fix
