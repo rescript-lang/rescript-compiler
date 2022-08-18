@@ -647,13 +647,13 @@ catch (exn){
         }));
 }
 
-eq("File \"js_json_test.ml\", line 296, characters 12-19", JSON.stringify([
+eq("File \"js_json_test.ml\", line 296, characters 12-19", Js_json.stringifyAny([
           1,
           2,
           3
         ]), "[1,2,3]");
 
-eq("File \"js_json_test.ml\", line 300, characters 2-9", JSON.stringify({
+eq("File \"js_json_test.ml\", line 300, characters 2-9", Js_json.stringifyAny({
           foo: 1,
           bar: "hello",
           baz: {
@@ -661,9 +661,9 @@ eq("File \"js_json_test.ml\", line 300, characters 2-9", JSON.stringify({
           }
         }), "{\"foo\":1,\"bar\":\"hello\",\"baz\":{\"baaz\":10}}");
 
-eq("File \"js_json_test.ml\", line 304, characters 12-19", JSON.stringify(null), "null");
+eq("File \"js_json_test.ml\", line 304, characters 12-19", Js_json.stringifyAny(null), "null");
 
-eq("File \"js_json_test.ml\", line 306, characters 12-19", JSON.stringify(undefined), undefined);
+eq("File \"js_json_test.ml\", line 306, characters 12-19", Js_json.stringifyAny(undefined), undefined);
 
 eq("File \"js_json_test.ml\", line 309, characters 5-12", Js_json.decodeString("test"), "test");
 

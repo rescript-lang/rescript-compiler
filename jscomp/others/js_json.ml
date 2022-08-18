@@ -108,9 +108,11 @@ let decodeNull json : _ Js.null option =
 external parseExn : string -> t = "parse"
   [@@bs.val] [@@bs.scope "JSON"]
 
-external stringifyAny : 'a -> string option =
+external stringifyAnyExn : 'a -> string option =
 "stringify" [@@bs.val]  [@@bs.scope "JSON"]
 (* TODO: more docs when parse error happens or stringify non-stringfy value *)
+
+let stringifyAny x = try stringifyAnyExn x with _ -> None
 
 external null : t = "null" [@@bs.val]
 external string : string -> t = "%identity"
