@@ -306,6 +306,10 @@ let () = eq __LOC__ (J.stringifyAny Js.Null.empty) (Some "null")
 let () = eq __LOC__ (J.stringifyAny Js.Undefined.empty) None
 
 let () =
+  let bigInt = [%bs.raw{|BigInt(9007199254740991)|}] in
+  eq __LOC__ (J.stringifyAny bigInt) None
+
+let () =
   eq __LOC__
     (J.decodeString (J.string "test")) (Some "test");
   eq __LOC__
