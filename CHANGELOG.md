@@ -59,7 +59,7 @@
 
 #### :rocket: New Feature
 
-- New records with `@optional` fields e.g. `type opt = {x: int, ?y: string}` were added as an experimental feature [#5423](https://github.com/rescript-lang/rescript-compiler/pull/5423) [#5452](https://github.com/rescript-lang/rescript-compiler/issues/5452) [New Syntax](https://github.com/rescript-lang/syntax/pull/589/files)
+- New records with optional fields e.g. `type opt = {x: int, y?: string}` were added as an experimental feature [#5423](https://github.com/rescript-lang/rescript-compiler/pull/5423) [#5452](https://github.com/rescript-lang/rescript-compiler/issues/5452) [New Syntax](https://github.com/rescript-lang/syntax/pull/589/files)
 - Add support for `@new @variadic` (see https://github.com/rescript-lang/rescript-compiler/pull/5364)
 
 #### :bug: Bug Fix
