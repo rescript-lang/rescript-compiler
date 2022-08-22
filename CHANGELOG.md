@@ -10,19 +10,7 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# 10.0.0-rc.2
-
-#### :bug: Bug Fix
-
-- Further fix to `bytes_to_string` https://github.com/rescript-lang/rescript-compiler/pull/5589
-
-# 10.0.0-rc.1
-
-#### :bug: Bug Fix
-
-- Fix library issue with missing `bytes_to_string` https://github.com/rescript-lang/rescript-compiler/issues/5573
-
-# 10.0.0-beta.3
+# 10.0.0
 
 **Compiler**
 
@@ -96,6 +84,10 @@
   - Example: for `rescript-relay` 0.23.0 is not supported.
   - Fix: use `rescript-relay@beta` or the new version when released.
 - Removed printing modules (Printf, Format etc) and related functions. Details of files added/removed: https://github.com/rescript-lang/rescript-compiler/commit/0fd8bb0e77c4b0e96a9647ac8af614305057003f.
+
+#### :bug: Bug Fix
+
+- Fix library issue with missing `bytes_to_string` https://github.com/rescript-lang/rescript-compiler/issues/5573 https://github.com/rescript-lang/rescript-compiler/pull/5589
 
 #### :nail_care: Polish
 
