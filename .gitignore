@@ -148,3 +148,10 @@ jscomp/ml/lexer.ml
 
 # opam local switch is stored in `_opam` folder
 _opam
+
+.env
+playground/packages/
+playground/stdlib/
+playground/*.cmj
+playground/*.cmi
+playground/compiler.js
