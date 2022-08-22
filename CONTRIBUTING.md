@@ -241,27 +241,42 @@ mkdir playground && mkdir playground/stdlib
 # We build the ReScript source code and also the bytecode for the JSOO entrypoint
 node scripts/ninja.js config && node scripts/ninja.js build
 
-# Now we run the repl.js script pointing to our playground directory (note how it needs to be relative to the repl.js file)
-PLAYGROUND=../playground node scripts/repl.js
+# Now we run the repl.js script which will create all the required artifacts in the `./playground` directory
+node scripts/repl.js
+```
+
+In case you want to build the project with our default third party packages (like `@rescript/react`), prepare the `playground-bundling` project and then run `repl.js` with `BUILD_THIRD_PARTY` enabled:
+
+```
+# Prepare the `playground-bundling` project to allow building of the third party cmij packages
+npm link
+cd packages/playground-bundling
+npm install
+npm link rescript
+
+BUILD_THIRD_PARTY=true node scripts/repl.js
 ```
 
 _Troubleshooting: if ninja build step failed with `Error: cannot find file '+runtime.js'`, make sure `ocamlfind` is installed with `opam install ocamlfind`._
 
 After a successful compilation, you will find following files in your project:
 
-- `playground/exports.js` -> This is the ReScript compiler, which binds the ReScript API to the `window` object.
+- `playground/compiler.js` -> This is the ReScript compiler, which binds the ReScript API to the `window` object.
 - `playground/stdlib/*.js` -> All the ReScript runtime files.
+- `playground/packages` -> Contains third party deps with cmij.js files (as defined in `packages/playground-bundling/bsconfig.json`)
 
-You can now use the `exports.js` file either directly by using a `<script src="/path/to/exports.js"/>` inside a html file, use a browser bundler infrastructure to optimize it, or you can even use it with `nodejs`:
+You can now use the `compiler.js` file either directly by using a `<script src="/path/to/compiler.js"/>` inside a html file, use a browser bundler infrastructure to optimize it, or you can even use it with `nodejs`:
 
 ```
 $ node
-> require("./exports.js");
+> require("./compiler.js");
 > let compiler = rescript_compiler.make()
 > let result = compiler.rescript.compile(`Js.log(Sys.ocaml_version)`);
 > eval(result.js_code);
 4.06.2+BS
 ```
+
+You can also run `node playground/playground_test.js` for a quick sanity check to see if all the build artifacts are working together correctly.
 
 ### Playground JS bundle API
 
@@ -269,7 +284,7 @@ As soon as the bundle is loaded, you will get access to the functions exposed in
 
 ```
 $ node
-require('./exports.js')
+require('./compiler.js')
 
 > let compiler = rescript_compiler.make()
 > console.log(compiler)
@@ -294,7 +309,7 @@ In this repo, these files usually sit right next to each compiled `.ml` / `.res`
 
 `.cmj` files are required for making ReScript compile modules (this includes modules like ReasonReact). ReScript includes a subset of modules by default, which can be found in `jscomp/stdlib-406` and `jscomp/others`. You can also find those modules listed in the `jsoo` call in `scripts/repl.js`. As you probably noticed, the generated `playground` files are all plain `.js`, so how are the `cmj` / `cmi` files embedded?
 
-`repl.js` calls an executable called `cmjbrowser.exe` on every build, which is a compile artifact from `jscomp/main/jscmj_main.ml`. It is used to serialize `cmj` / `cmi` artifacts into two files called `jscomp/core/js_cmj_datasets.ml`. These files are only linked for the browser target, where ReScript doesn't have access to the filesystem. When working on BS, you'll see diffs on those files whenever there are changes on core modules, e.g. stdlib modules or when the ocaml version was changed. We usually check in these files to keep it in sync with the most recent compiler implementation. JSOO will pick up those files to encode them into the `exports.js` bundle.
+`repl.js` calls an executable called `cmjbrowser.exe` on every build, which is a compile artifact from `jscomp/main/jscmj_main.ml`. It is used to serialize `cmj` / `cmi` artifacts into two files called `jscomp/core/js_cmj_datasets.ml`. These files are only linked for the browser target, where ReScript doesn't have access to the filesystem. When working on BS, you'll see diffs on those files whenever there are changes on core modules, e.g. stdlib modules or when the ocaml version was changed. We usually check in these files to keep it in sync with the most recent compiler implementation. JSOO will pick up those files to encode them into the `compiler.js` bundle.
 
 For any other dependency needed in the playground, such as `ReasonReact`, you will be required to serialize your `.cmi` / `.cmt` files accordingly from binary to hex encoded strings so that BS Playground's `ocaml.load` function can load the data. Right now we don't provide any instructions inside here yet, but [here's how the official ReasonML playground did it](https://github.com/reasonml/reasonml.github.io/blob/source/website/setupSomeArtifacts.js#L65).
 

@@ -48,13 +48,17 @@ function e(cmd) {
 }
 
 if (!process.env.PLAYGROUND) {
-  var defaultPlayground = `../../playground`;
+  var defaultPlayground = path.join(__dirname, "..", "playground");
   console.warn(`PLAYGROUND env var unset, defaulting to ${defaultPlayground}`);
   process.env.PLAYGROUND = defaultPlayground;
 }
 
+const BUILD_THIRD_PARTY = process.env.BUILD_THIRD_PARTY || false;
 var playground = process.env.PLAYGROUND;
 var OCAMLC = `ocamlc.opt`;
+
+// This mini project is needed to build cmij files for third party deps like @rescript/react
+const PLAYGROUND_BUNDLING = path.join(__dirname, "..", "packages", "playground-bundling");
 
 var JSOO = `js_of_ocaml`;
 
@@ -65,6 +69,14 @@ function prepare(isDev, targetCompilerFile) {
   console.log(
     `building byte code version of target compiler file '${targetCompilerFile}' [${env}]`
   );
+
+  if (!fs.existsSync(playground)) {
+    console.log(`Creating output folder "${playground}"`);
+
+    // Create both, the `playground` and `playground/stdlib` dir
+    const stdlibDir = path.join(playground, "stdlib");
+    fs.mkdirSync(stdlibDir, { recursive: true });
+  }
 
   const mliFile = path.join(sourceDir, targetCompilerFile + ".mli");
   const mlFile = path.join(sourceDir, targetCompilerFile + ".ml");
@@ -78,10 +90,17 @@ function prepare(isDev, targetCompilerFile) {
   console.log(
     `building js version for compiler target '${targetCompilerFile}'`
   );
-  e(`${JSOO} compile jsc.byte ${jsooFlag}-o exports.js`);
+  e(`${JSOO} compile jsc.byte ${jsooFlag}-o compiler.js`);
   console.log("copy js artifacts");
   e(`cp ../lib/js/*.js ${playground}/stdlib`);
-  e(`mv ./exports.js ${playground}`);
+  e(`mv ./compiler.js ${playground}`);
+
+
+  // BUILDING THIRD PARTY CMIJ FILES
+  if(BUILD_THIRD_PARTY) {
+    console.log('Building third party packages...');
+    e(`cd ${PLAYGROUND_BUNDLING} && npm run build`)
+  }
 }
 
 function prepublish() {
@@ -99,7 +118,7 @@ function prepublish() {
       maintainers: mainPackageJson.maintainers,
       bugs: mainPackageJson.bugs,
       homepage: mainPackageJson.homepage,
-      main: "exports.js",
+      main: "compiler.js",
     },
     null,
     2
