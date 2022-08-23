@@ -65,6 +65,7 @@
 
 #### :rocket: New Feature
 
+- Unicode is now supported in regular strings and chars. Means that this is now going to work: `let str = "Σ"`. And, you'll be able to pattern match on unicode chars: `switch c { | 'Σ' => "what a fine unicode char" | _ => "unicode is fun" }`
 - Doc comments `/** ... */` are now supported. Inernally, they are attributes, so are only valid at positions where `@foo` is allowed, or a syntax error is given. Similarly for module-level `/*** comments */` that can go where `@@attributes` go.
 
 #### :bug: Bug Fix
