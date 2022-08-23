@@ -7,7 +7,7 @@
     "in-source": false
   },
   "sources": {
-    "dir" : "src",
-    "subdirs" : true
+    "dir": "src",
+    "subdirs": true
   }
 }
