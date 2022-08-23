@@ -58,7 +58,12 @@ var playground = process.env.PLAYGROUND;
 var OCAMLC = `ocamlc.opt`;
 
 // This mini project is needed to build cmij files for third party deps like @rescript/react
-const PLAYGROUND_BUNDLING = path.join(__dirname, "..", "packages", "playground-bundling");
+const PLAYGROUND_BUNDLING = path.join(
+  __dirname,
+  "..",
+  "packages",
+  "playground-bundling"
+);
 
 var JSOO = `js_of_ocaml`;
 
@@ -95,11 +100,10 @@ function prepare(isDev, targetCompilerFile) {
   e(`cp ../lib/js/*.js ${playground}/stdlib`);
   e(`mv ./compiler.js ${playground}`);
 
-
   // BUILDING THIRD PARTY CMIJ FILES
-  if(BUILD_THIRD_PARTY) {
-    console.log('Building third party packages...');
-    e(`cd ${PLAYGROUND_BUNDLING} && npm run build`)
+  if (BUILD_THIRD_PARTY) {
+    console.log("Building third party packages...");
+    e(`cd ${PLAYGROUND_BUNDLING} && npm run build`);
   }
 }
 

@@ -24,7 +24,8 @@ const path = require("path");
 const bsconfig = require("../bsconfig.json");
 
 const PLAYGROUND_DIR =
-  process.env.PLAYGROUND || path.join(__dirname, "..", "..", "..", "playground");
+  process.env.PLAYGROUND ||
+  path.join(__dirname, "..", "..", "..", "playground");
 
 const PROJECT_ROOT_DIR = path.join(__dirname, "..");
 const PACKAGES_DIR = path.join(PLAYGROUND_DIR, "packages");
