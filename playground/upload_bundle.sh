@@ -1,5 +1,9 @@
 #/usr/bin/sh
 
+# This script will publish the compiler.js bundle / packages cmij.js files to our KeyCDN server.
+# The target folder on KeyCDN will be the compiler.js' version number.
+# This script requires `curl` / `openssl` to be installed.
+
 SCRIPT_DIR=$(cd "$(dirname "$0")"; pwd -P)
 
 # Get the actual version from the compiled playground bundle
@@ -17,7 +21,6 @@ fi
 
 KEYCDN_SRV="ftp.keycdn.com"
 NETRC_FILE="${SCRIPT_DIR}/.netrc"
-
 
 # To make sure to not leak any secrets in the bash history, we create a NETRC_FILE
 # with the credentials provided via ENV variables.
