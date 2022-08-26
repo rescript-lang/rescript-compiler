@@ -1,5 +1,5 @@
 require("./compiler.js")
-require("./@rescript/react/cmij.js")
+require("./packages/@rescript/react/cmij.js")
 
 let compiler = rescript_compiler.make()
 
@@ -9,6 +9,8 @@ let result = compiler.rescript.compile(`
 
 if(result.js_code != "") {
   console.log('-- Playground test output --');
+  console.log(`ReScript version: ${compiler.rescript.version}`);
+  console.log('----');
   console.log(result.js_code);
   console.log('-- Playground test complete --');
 }
