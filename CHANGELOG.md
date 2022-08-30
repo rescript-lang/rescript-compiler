@@ -10,6 +10,12 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
+# 10.0.1
+
+#### :bug: Bug Fix
+
+- Fix issue where watch mode would give an error on Windows https://github.com/rescript-lang/rescript-compiler/pull/5621
+
 # 10.0.0
 
 **Compiler**
