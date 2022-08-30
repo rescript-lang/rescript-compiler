@@ -13,4 +13,8 @@ export type props<x,y> = {
   readonly y: y
 };
 
-export const make: (_1:props<string,string>) => JSX.Element = JSXV4BS.make;
+export const make: React.ComponentType<{
+  readonly key?: string; 
+  readonly x: string; 
+  readonly y: string
+}> = JSXV4BS.make;
