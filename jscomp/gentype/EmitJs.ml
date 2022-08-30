@@ -125,8 +125,8 @@ let emitExportFromTypeDeclarations ~config ~emitters ~env ~typeGetNormalized
        (env, emitters)
 
 let rec emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
-    ~outputFileRelative ~resolver ~typeGetConverter ~typeGetNormalized
-    ~typeNameIsInterface ~variantTables codeItem =
+    ~outputFileRelative ~resolver ~typeGetConverter ~typeGetInlined
+    ~typeGetNormalized ~typeNameIsInterface ~variantTables codeItem =
   if !Debug.codeItems then
     Log_.item "Code Item: %s\n"
       (codeItem |> codeItemToString ~config ~typeNameIsInterface);
@@ -307,6 +307,62 @@ let rec emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
             in
             ( Function { function_ with componentName = Some hookName },
               Some { HookType.propsType; resolvedTypeName; typeVars } )
+        | Function
+            ({
+               argTypes = [ { aType = Ident { name = "props" } as propsType } ];
+               retType;
+             } as function_)
+          when retType |> EmitType.isTypeFunctionComponent ~fields:[] ->
+            let compType =
+              match typeGetInlined propsType with
+              | Object (closedFlags, fields) ->
+                  let propsType =
+                    let fields =
+                      fields
+                      |> List.map (fun (field : field) ->
+                             match
+                               field.nameJS = "children"
+                               && field.type_ |> EmitType.isTypeReactElement
+                             with
+                             | true ->
+                                 { field with type_ = EmitType.typeReactChild }
+                             | false -> field)
+                    in
+                    Object (closedFlags, fields)
+                  in
+                  let function_ =
+                    {
+                      function_ with
+                      argTypes = [ { aName = ""; aType = propsType } ];
+                    }
+                  in
+                  let chopSuffix suffix =
+                    match resolvedNameStr = suffix with
+                    | true -> ""
+                    | false -> (
+                        match
+                          Filename.check_suffix resolvedNameStr ("_" ^ suffix)
+                        with
+                        | true ->
+                            Filename.chop_suffix resolvedNameStr ("_" ^ suffix)
+                        | false -> resolvedNameStr)
+                  in
+                  let suffix =
+                    if originalName = default then chopSuffix default
+                    else if originalName = make then chopSuffix make
+                    else resolvedNameStr
+                  in
+                  let hookName =
+                    (fileName |> ModuleName.toString)
+                    ^
+                    match suffix = "" with
+                    | true -> suffix
+                    | false -> "_" ^ suffix
+                  in
+                  Function { function_ with componentName = Some hookName }
+              | _ -> type_
+            in
+            (compType, None)
         | _ -> (type_, None)
       in
 
@@ -329,7 +385,8 @@ let rec emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
             in
             (* For doc gen (https://github.com/cristianoc/genType/issues/342) *)
             config.emitImportReact <- true;
-            emitExportType ~emitters ~config ~typeGetNormalized
+            emitExportType ~emitters ~config
+              ~typeGetNormalized
               ~typeNameIsInterface exportType
         | _ -> emitters
       in
@@ -350,14 +407,14 @@ let rec emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
       (envWithRequires, emitters)
 
 and emitCodeItems ~config ~outputFileRelative ~emitters ~moduleItemsEmitter ~env
-    ~fileName ~resolver ~typeNameIsInterface ~typeGetConverter
+    ~fileName ~resolver ~typeNameIsInterface ~typeGetConverter ~typeGetInlined
     ~typeGetNormalized ~variantTables codeItems =
   codeItems
   |> List.fold_left
        (fun (env, emitters) ->
          emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
-           ~outputFileRelative ~resolver ~typeGetConverter ~typeGetNormalized
-           ~typeNameIsInterface ~variantTables)
+           ~outputFileRelative ~resolver ~typeGetConverter ~typeGetInlined
+           ~typeGetNormalized ~typeNameIsInterface ~variantTables)
        (env, emitters)
 
 let emitRequires ~importedValueOrComponent ~early ~config ~requires emitters =
@@ -627,12 +684,13 @@ let emitTranslationAsString ~config ~fileName ~inputCmtTranslateTypeDeclarations
     try exportTypeMap |> StringMap.find s
     with Not_found -> env.exportTypeMapFromOtherFiles |> StringMap.find s
   in
-  let typeGetNormalized_ ~env type_ =
+  let typeGetNormalized__ ~inline ~env type_ =
     type_
-    |> Converter.typeGetNormalized ~config ~inline:false
-         ~lookupId:(lookupId_ ~env)
+    |> Converter.typeGetNormalized ~config ~inline ~lookupId:(lookupId_ ~env)
          ~typeNameIsInterface:(typeNameIsInterface ~env)
   in
+  let typeGetNormalized_ = typeGetNormalized__ ~inline:false in
+  let typeGetInlined_ = typeGetNormalized__ ~inline:true in
   let typeGetConverter_ ~env type_ =
     type_
     |> Converter.typeGetConverter ~config ~lookupId:(lookupId_ ~env)
@@ -657,7 +715,7 @@ let emitTranslationAsString ~config ~fileName ~inputCmtTranslateTypeDeclarations
   let env, emitters =
     translation.codeItems
     |> emitCodeItems ~config ~emitters ~moduleItemsEmitter ~env ~fileName
-         ~outputFileRelative ~resolver
+         ~outputFileRelative ~resolver ~typeGetInlined:(typeGetInlined_ ~env)
          ~typeGetNormalized:(typeGetNormalized_ ~env)
          ~typeGetConverter:(typeGetConverter_ ~env)
          ~typeNameIsInterface:(typeNameIsInterface ~env) ~variantTables
