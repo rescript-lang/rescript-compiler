@@ -204,7 +204,8 @@ function acquireBuild() {
     return false;
   } else {
     try {
-      fs.openSync(lockFileName, "wx", 0o664);
+      const fid = fs.openSync(lockFileName, "wx", 0o664);
+      fs.closeSync(fid);
       is_building = true;
     } catch (err) {
       if (err.code === "EEXIST") {
