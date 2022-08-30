@@ -308,11 +308,10 @@ let rec emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
             ( Function { function_ with componentName = Some hookName },
               Some { HookType.propsType; resolvedTypeName; typeVars } )
         | Function
-            ({
-               argTypes = [ { aType = Ident { name = "props" } as propsType } ];
-               retType;
-             } as function_)
-          when retType |> EmitType.isTypeFunctionComponent ~fields:[] ->
+            ({ argTypes = [ { aType = Ident { name } as propsType } ]; retType }
+            as function_)
+          when Filename.check_suffix name "props"
+               && retType |> EmitType.isTypeFunctionComponent ~fields:[] ->
             let compType =
               match typeGetInlined propsType with
               | Object (closedFlags, fields) ->
@@ -385,8 +384,7 @@ let rec emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
             in
             (* For doc gen (https://github.com/cristianoc/genType/issues/342) *)
             config.emitImportReact <- true;
-            emitExportType ~emitters ~config
-              ~typeGetNormalized
+            emitExportType ~emitters ~config ~typeGetNormalized
               ~typeNameIsInterface exportType
         | _ -> emitters
       in
