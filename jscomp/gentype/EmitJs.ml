@@ -162,6 +162,7 @@ let rec emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
                retType;
              } as function_)
           when retType |> EmitType.isTypeFunctionComponent ~fields ->
+            (* JSX V3 *)
             let componentName =
               match importFile with "." | ".." -> None | _ -> Some importFile
             in
@@ -182,6 +183,43 @@ let rec emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
               }
             in
             Function { function_ with componentName }
+        | Function
+            ({
+               argTypes = [ { aType = Ident { name } as propsType; aName } ];
+               retType;
+             } as function_)
+          when Filename.check_suffix name "props"
+               && retType |> EmitType.isTypeFunctionComponent ~fields:[] -> (
+            let _ = function_ in
+            let _ = propsType in
+            match typeGetInlined propsType with
+            | Object (closedFlags, fields) ->
+                (* JSX V3 *)
+                let componentName =
+                  match importFile with
+                  | "." | ".." -> None
+                  | _ -> Some importFile
+                in
+                let fields =
+                  Ext_list.filter_map fields (fun (field : field) ->
+                      match field.nameJS with
+                      | "children"
+                        when field.type_ |> EmitType.isTypeReactElement ->
+                          Some { field with type_ = EmitType.typeReactChild }
+                      | "key" ->
+                          (* Filter out key, which is added to the props type definition in V4 *)
+                          None
+                      | _ -> Some field)
+                in
+                let function_ =
+                  {
+                    function_ with
+                    argTypes =
+                      [ { aType = Object (closedFlags, fields); aName } ];
+                  }
+                in
+                Function { function_ with componentName }
+            | _ -> type_)
         | _ -> type_
       in
       let converter = type_ |> typeGetConverter in
