@@ -249,6 +249,23 @@ let rec emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
           typeVars : string list;
         }
       end in
+      let getHookName () =
+        let chopSuffix suffix =
+          match resolvedNameStr = suffix with
+          | true -> ""
+          | false -> (
+              match Filename.check_suffix resolvedNameStr ("_" ^ suffix) with
+              | true -> Filename.chop_suffix resolvedNameStr ("_" ^ suffix)
+              | false -> resolvedNameStr)
+        in
+        let suffix =
+          if originalName = default then chopSuffix default
+          else if originalName = make then chopSuffix make
+          else resolvedNameStr
+        in
+        (fileName |> ModuleName.toString)
+        ^ match suffix = "" with true -> suffix | false -> "_" ^ suffix
+      in
       let type_, hookType =
         match type_ with
         | Function
@@ -258,6 +275,7 @@ let rec emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
                typeVars;
              } as function_)
           when retType |> EmitType.isTypeFunctionComponent ~fields ->
+            (* JSX V3 *)
             let propsType =
               let fields =
                 fields
@@ -277,25 +295,6 @@ let rec emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
                 argTypes = [ { aName = ""; aType = propsType } ];
               }
             in
-            let chopSuffix suffix =
-              match resolvedNameStr = suffix with
-              | true -> ""
-              | false -> (
-                  match
-                    Filename.check_suffix resolvedNameStr ("_" ^ suffix)
-                  with
-                  | true -> Filename.chop_suffix resolvedNameStr ("_" ^ suffix)
-                  | false -> resolvedNameStr)
-            in
-            let suffix =
-              if originalName = default then chopSuffix default
-              else if originalName = make then chopSuffix make
-              else resolvedNameStr
-            in
-            let hookName =
-              (fileName |> ModuleName.toString)
-              ^ match suffix = "" with true -> suffix | false -> "_" ^ suffix
-            in
             let resolvedTypeName =
               if
                 (not config.emitTypePropDone)
@@ -305,7 +304,7 @@ let rec emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
                 ResolvedName.fromString "Props")
               else ResolvedName.fromString name |> ResolvedName.dot "Props"
             in
-            ( Function { function_ with componentName = Some hookName },
+            ( Function { function_ with componentName = Some (getHookName ()) },
               Some { HookType.propsType; resolvedTypeName; typeVars } )
         | Function
             ({ argTypes = [ { aType = Ident { name } as propsType } ]; retType }
@@ -337,30 +336,8 @@ let rec emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
                       argTypes = [ { aName = ""; aType = propsType } ];
                     }
                   in
-                  let chopSuffix suffix =
-                    match resolvedNameStr = suffix with
-                    | true -> ""
-                    | false -> (
-                        match
-                          Filename.check_suffix resolvedNameStr ("_" ^ suffix)
-                        with
-                        | true ->
-                            Filename.chop_suffix resolvedNameStr ("_" ^ suffix)
-                        | false -> resolvedNameStr)
-                  in
-                  let suffix =
-                    if originalName = default then chopSuffix default
-                    else if originalName = make then chopSuffix make
-                    else resolvedNameStr
-                  in
-                  let hookName =
-                    (fileName |> ModuleName.toString)
-                    ^
-                    match suffix = "" with
-                    | true -> suffix
-                    | false -> "_" ^ suffix
-                  in
-                  Function { function_ with componentName = Some hookName }
+                  Function
+                    { function_ with componentName = Some (getHookName ()) }
               | _ -> type_
             in
             (compType, None)
