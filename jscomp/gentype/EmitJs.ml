@@ -126,8 +126,7 @@ let emitExportFromTypeDeclarations ~config ~emitters ~env ~typeGetNormalized
 
 let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
     ~outputFileRelative ~resolver ~typeGetConverter ~inlineOneLevel
-    ~typeGetInlined ~typeGetNormalized ~typeNameIsInterface ~variantTables
-    codeItem =
+    ~typeGetNormalized ~typeNameIsInterface ~variantTables codeItem =
   if !Debug.codeItems then
     Log_.item "Code Item: %s\n"
       (codeItem |> codeItemToString ~config ~typeNameIsInterface);
@@ -349,7 +348,7 @@ let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
           when Filename.check_suffix name "props"
                && retType |> EmitType.isTypeFunctionComponent ~fields:[] ->
             let compType =
-              match typeGetInlined propsType with
+              match inlineOneLevel propsType with
               | Object (closedFlags, fields) ->
                   (* JSX V4 *)
                   let propsType =
@@ -422,14 +421,13 @@ let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
 
 let emitCodeItems ~config ~outputFileRelative ~emitters ~moduleItemsEmitter ~env
     ~fileName ~resolver ~typeNameIsInterface ~typeGetConverter ~inlineOneLevel
-    ~typeGetInlined ~typeGetNormalized ~variantTables codeItems =
+    ~typeGetNormalized ~variantTables codeItems =
   codeItems
   |> List.fold_left
        (fun (env, emitters) ->
          emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
            ~outputFileRelative ~resolver ~typeGetConverter ~inlineOneLevel
-           ~typeGetInlined ~typeGetNormalized ~typeNameIsInterface
-           ~variantTables)
+           ~typeGetNormalized ~typeNameIsInterface ~variantTables)
        (env, emitters)
 
 let emitRequires ~importedValueOrComponent ~early ~config ~requires emitters =
@@ -705,7 +703,6 @@ let emitTranslationAsString ~config ~fileName ~inputCmtTranslateTypeDeclarations
          ~typeNameIsInterface:(typeNameIsInterface ~env)
   in
   let typeGetNormalized_ = typeGetNormalized__ ~inline:false in
-  let typeGetInlined_ = typeGetNormalized__ ~inline:true in
   let typeGetConverter_ ~env type_ =
     type_
     |> Converter.typeGetConverter ~config ~lookupId:(lookupId_ ~env)
@@ -750,7 +747,6 @@ let emitTranslationAsString ~config ~fileName ~inputCmtTranslateTypeDeclarations
     translation.codeItems
     |> emitCodeItems ~config ~emitters ~moduleItemsEmitter ~env ~fileName
          ~outputFileRelative ~resolver ~inlineOneLevel
-         ~typeGetInlined:(typeGetInlined_ ~env)
          ~typeGetNormalized:(typeGetNormalized_ ~env)
          ~typeGetConverter:(typeGetConverter_ ~env)
          ~typeNameIsInterface:(typeNameIsInterface ~env) ~variantTables
