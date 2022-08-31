@@ -22,17 +22,9 @@ export type CompV4_props<x,y> = {
   readonly y: y
 };
 
-export const make: React.ComponentType<{
-  readonly key?: string; 
-  readonly x: string; 
-  readonly y: string
-}> = JSXV4BS.make;
+export const make: React.ComponentType<{ readonly x: string; readonly y: string }> = JSXV4BS.make;
 
-export const CompV4_make: React.ComponentType<{
-  readonly key?: string; 
-  readonly x: string; 
-  readonly y: string
-}> = JSXV4BS.CompV4.make;
+export const CompV4_make: React.ComponentType<{ readonly x: string; readonly y: string }> = JSXV4BS.CompV4.make;
 
 // tslint:disable-next-line:interface-over-type-literal
 export type Props = { readonly x: string; readonly y: string };
@@ -41,8 +33,4 @@ export const CompV3_make: React.ComponentType<{ readonly x: string; readonly y: 
 
 export const CompV3: { make: React.ComponentType<{ readonly x: string; readonly y: string }> } = JSXV4BS.CompV3
 
-export const CompV4: { make: React.ComponentType<{
-  readonly key?: string; 
-  readonly x: string; 
-  readonly y: string
-}> } = JSXV4BS.CompV4
+export const CompV4: { make: React.ComponentType<{ readonly x: string; readonly y: string }> } = JSXV4BS.CompV4
