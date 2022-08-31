@@ -8,18 +8,18 @@ import * as React from 'react';
 
 // In case of type error, check the type of 'make' in 'JSXV4.re' and './hookExample'.
 export const makeTypeChecked: React.ComponentType<{
-  readonly actions?: actions; 
+  readonly actions?: JSX.Element; 
   readonly person: person; 
-  readonly children: children; 
-  readonly renderMe: renderMe
+  readonly children: React.ReactNode; 
+  readonly renderMe: renderMe<any>
 }> = makeNotChecked;
 
 // Export 'make' early to allow circular import from the '.bs.js' file.
 export const make: unknown = makeTypeChecked as React.ComponentType<{
-  readonly actions?: actions; 
+  readonly actions?: JSX.Element; 
   readonly person: person; 
-  readonly children: children; 
-  readonly renderMe: renderMe
+  readonly children: React.ReactNode; 
+  readonly renderMe: renderMe<any>
 }>;
 
 // tslint:disable-next-line:no-var-requires

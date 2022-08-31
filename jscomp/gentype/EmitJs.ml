@@ -125,8 +125,9 @@ let emitExportFromTypeDeclarations ~config ~emitters ~env ~typeGetNormalized
        (env, emitters)
 
 let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
-    ~outputFileRelative ~resolver ~typeGetConverter ~expandOneLevel ~typeGetInlined
-    ~typeGetNormalized ~typeNameIsInterface ~variantTables codeItem =
+    ~outputFileRelative ~resolver ~typeGetConverter ~expandOneLevel
+    ~typeGetInlined ~typeGetNormalized ~typeNameIsInterface ~variantTables
+    codeItem =
   if !Debug.codeItems then
     Log_.item "Code Item: %s\n"
       (codeItem |> codeItemToString ~config ~typeNameIsInterface);
@@ -420,14 +421,15 @@ let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
       (envWithRequires, emitters)
 
 let emitCodeItems ~config ~outputFileRelative ~emitters ~moduleItemsEmitter ~env
-    ~fileName ~resolver ~typeNameIsInterface ~typeGetConverter ~expandOneLevel ~typeGetInlined
-    ~typeGetNormalized ~variantTables codeItems =
+    ~fileName ~resolver ~typeNameIsInterface ~typeGetConverter ~expandOneLevel
+    ~typeGetInlined ~typeGetNormalized ~variantTables codeItems =
   codeItems
   |> List.fold_left
        (fun (env, emitters) ->
          emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
-           ~outputFileRelative ~resolver ~typeGetConverter ~expandOneLevel ~typeGetInlined
-           ~typeGetNormalized ~typeNameIsInterface ~variantTables)
+           ~outputFileRelative ~resolver ~typeGetConverter ~expandOneLevel
+           ~typeGetInlined ~typeGetNormalized ~typeNameIsInterface
+           ~variantTables)
        (env, emitters)
 
 let emitRequires ~importedValueOrComponent ~early ~config ~requires emitters =
@@ -727,16 +729,28 @@ let emitTranslationAsString ~config ~fileName ~inputCmtTranslateTypeDeclarations
   in
   let expandOneLevel type_ =
     match type_ with
-    | Ident { builtin = false; name } -> (
+    | Ident { builtin = false; name; typeArgs } -> (
         match name |> lookupId_ ~env with
-        | (t : CodeItem.exportTypeItem) -> t.type_
+        | { type_; typeVars } ->
+            let pairs =
+              try List.combine typeVars typeArgs with Invalid_argument _ -> []
+            in
+            let f typeVar =
+              match
+                pairs |> List.find (fun (typeVar1, _) -> typeVar = typeVar1)
+              with
+              | _, typeArgument -> Some typeArgument
+              | exception Not_found -> None
+            in
+            type_ |> TypeVars.substitute ~f
         | exception Not_found -> type_)
     | _ -> type_
   in
   let env, emitters =
     translation.codeItems
     |> emitCodeItems ~config ~emitters ~moduleItemsEmitter ~env ~fileName
-         ~outputFileRelative ~resolver ~expandOneLevel ~typeGetInlined:(typeGetInlined_ ~env)
+         ~outputFileRelative ~resolver ~expandOneLevel
+         ~typeGetInlined:(typeGetInlined_ ~env)
          ~typeGetNormalized:(typeGetNormalized_ ~env)
          ~typeGetConverter:(typeGetConverter_ ~env)
          ~typeNameIsInterface:(typeNameIsInterface ~env) ~variantTables
