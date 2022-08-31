@@ -2,18 +2,15 @@
 /* eslint-disable import/first */
 
 
-import {foo as fooNotChecked} from './hookExample';
+import {make as makeNotChecked} from './hookExample';
 
 import * as React from 'react';
 
-// In case of type error, check the type of 'foo' in 'JSXV4.re' and './hookExample'.
-export const fooTypeChecked: (_1:{ readonly person: person }) => string = fooNotChecked;
+// In case of type error, check the type of 'make' in 'JSXV4.re' and './hookExample'.
+export const makeTypeChecked: <a>(_1:props<JSX.Element,person,JSX.Element,renderMe<a>>) => JSX.Element = makeNotChecked;
 
-// Export 'foo' early to allow circular import from the '.bs.js' file.
-export const foo: unknown = function (Argperson: any) {
-  const result = fooTypeChecked({person:Argperson});
-  return result
-} as (_1:{ readonly person: person }) => string;
+// Export 'make' early to allow circular import from the '.bs.js' file.
+export const make: unknown = makeTypeChecked as <a>(_1:props<JSX.Element,person,JSX.Element,renderMe<a>>) => JSX.Element;
 
 // tslint:disable-next-line:no-var-requires
 const JSXV4BS = require('./JSXV4.bs');
@@ -27,6 +24,18 @@ export type CompV4_props<x,y> = {
 
 // tslint:disable-next-line:interface-over-type-literal
 export type person = { readonly name: string; readonly age: number };
+
+// tslint:disable-next-line:interface-over-type-literal
+export type renderMe<a> = React.ComponentType<{ readonly randomString: string; readonly poly: a }>;
+
+// tslint:disable-next-line:interface-over-type-literal
+export type props<actions,person,children,renderMe> = {
+  readonly key?: string; 
+  readonly actions?: actions; 
+  readonly person: person; 
+  readonly children: children; 
+  readonly renderMe: renderMe
+};
 
 export const CompV4_make: React.ComponentType<{ readonly x: string; readonly y: string }> = JSXV4BS.CompV4.make;
 
