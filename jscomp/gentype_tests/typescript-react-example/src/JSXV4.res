@@ -12,3 +12,12 @@ module CompV3 = {
   let make = (~x, ~y) => React.string(x ++ y)
 }
 
+@genType
+type person = {
+  name: string,
+  age: int,
+}
+
+@@jsxConfig({version: 4})
+
+@genType.import("./hookExample") external foo4: (~person: person) => string = "foo"

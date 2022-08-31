@@ -2,11 +2,21 @@
 /* eslint-disable import/first */
 
 
+import {foo as fooNotChecked} from './hookExample';
+
 import * as React from 'react';
 
-// @ts-ignore: Implicit any on import
-import * as JSXV4BS__Es6Import from './JSXV4.bs';
-const JSXV4BS: any = JSXV4BS__Es6Import;
+// In case of type error, check the type of 'foo' in 'JSXV4.re' and './hookExample'.
+export const fooTypeChecked: (_1:{ readonly person: person }) => string = fooNotChecked;
+
+// Export 'foo' early to allow circular import from the '.bs.js' file.
+export const foo: unknown = function (Argperson: any) {
+  const result = fooTypeChecked({person:Argperson});
+  return result
+} as (_1:{ readonly person: person }) => string;
+
+// tslint:disable-next-line:no-var-requires
+const JSXV4BS = require('./JSXV4.bs');
 
 // tslint:disable-next-line:interface-over-type-literal
 export type CompV4_props<x,y> = {
@@ -14,6 +24,9 @@ export type CompV4_props<x,y> = {
   readonly x: x; 
   readonly y: y
 };
+
+// tslint:disable-next-line:interface-over-type-literal
+export type person = { readonly name: string; readonly age: number };
 
 export const CompV4_make: React.ComponentType<{ readonly x: string; readonly y: string }> = JSXV4BS.CompV4.make;
 
