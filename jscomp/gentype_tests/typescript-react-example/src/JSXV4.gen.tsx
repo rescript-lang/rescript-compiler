@@ -7,10 +7,32 @@ import {make as makeNotChecked} from './hookExample';
 import * as React from 'react';
 
 // In case of type error, check the type of 'make' in 'JSXV4.re' and './hookExample'.
-export const makeTypeChecked: <a>(_1:props<JSX.Element,person,JSX.Element,renderMe<a>>) => JSX.Element = makeNotChecked;
+export const makeTypeChecked: React.ComponentType<{
+  readonly actions?: JSX.Element; 
+  readonly person: {
+    readonly name: string; 
+    readonly age: number
+  }; 
+  readonly children: React.ReactNode; 
+  readonly renderMe: React.ComponentType<{
+    readonly randomString: string; 
+    readonly poly: any
+  }>
+}> = makeNotChecked;
 
 // Export 'make' early to allow circular import from the '.bs.js' file.
-export const make: unknown = makeTypeChecked as <a>(_1:props<JSX.Element,person,JSX.Element,renderMe<a>>) => JSX.Element;
+export const make: unknown = makeTypeChecked as React.ComponentType<{
+  readonly actions?: JSX.Element; 
+  readonly person: {
+    readonly name: string; 
+    readonly age: number
+  }; 
+  readonly children: React.ReactNode; 
+  readonly renderMe: React.ComponentType<{
+    readonly randomString: string; 
+    readonly poly: any
+  }>
+}>;
 
 // tslint:disable-next-line:no-var-requires
 const JSXV4BS = require('./JSXV4.bs');
