@@ -34,16 +34,7 @@ jobs:
           submodules: true
 
       - name: Use OCaml ${{matrix.ocaml_compiler}}
-        if: runner.name != 'macos-arm'
         uses: ocaml/setup-ocaml@v2
-        with:
-          ocaml-compiler: ${{matrix.ocaml_compiler}}
-          opam-pin: false
-          opam-depext: false
-
-      - name: Use OCaml ${{matrix.ocaml_compiler}} (macOS ARM)
-        if: runner.name == 'macos-arm'
-        uses: AbstractMachinesLab/setup-ocaml@arm-support
         with:
           ocaml-compiler: ${{matrix.ocaml_compiler}}
           opam-pin: false
