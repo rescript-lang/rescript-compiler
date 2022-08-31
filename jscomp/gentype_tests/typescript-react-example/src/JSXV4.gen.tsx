@@ -9,20 +9,11 @@ import * as JSXV4BS__Es6Import from './JSXV4.bs';
 const JSXV4BS: any = JSXV4BS__Es6Import;
 
 // tslint:disable-next-line:interface-over-type-literal
-export type props<x,y> = {
-  readonly key?: string; 
-  readonly x: x; 
-  readonly y: y
-};
-
-// tslint:disable-next-line:interface-over-type-literal
 export type CompV4_props<x,y> = {
   readonly key?: string; 
   readonly x: x; 
   readonly y: y
 };
-
-export const make: React.ComponentType<{ readonly x: string; readonly y: string }> = JSXV4BS.make;
 
 export const CompV4_make: React.ComponentType<{ readonly x: string; readonly y: string }> = JSXV4BS.CompV4.make;
 
