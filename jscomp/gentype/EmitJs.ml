@@ -125,7 +125,7 @@ let emitExportFromTypeDeclarations ~config ~emitters ~env ~typeGetNormalized
        (env, emitters)
 
 let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
-    ~outputFileRelative ~resolver ~typeGetConverter ~expandOneLevel
+    ~outputFileRelative ~resolver ~typeGetConverter ~inlineOneLevel
     ~typeGetInlined ~typeGetNormalized ~typeNameIsInterface ~variantTables
     codeItem =
   if !Debug.codeItems then
@@ -191,7 +191,7 @@ let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
              } as function_)
           when Filename.check_suffix name "props"
                && retType |> EmitType.isTypeFunctionComponent ~fields:[] -> (
-            match expandOneLevel propsType with
+            match inlineOneLevel propsType with
             | Object (closedFlags, fields) ->
                 (* JSX V3 *)
                 let componentName =
@@ -421,13 +421,13 @@ let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
       (envWithRequires, emitters)
 
 let emitCodeItems ~config ~outputFileRelative ~emitters ~moduleItemsEmitter ~env
-    ~fileName ~resolver ~typeNameIsInterface ~typeGetConverter ~expandOneLevel
+    ~fileName ~resolver ~typeNameIsInterface ~typeGetConverter ~inlineOneLevel
     ~typeGetInlined ~typeGetNormalized ~variantTables codeItems =
   codeItems
   |> List.fold_left
        (fun (env, emitters) ->
          emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
-           ~outputFileRelative ~resolver ~typeGetConverter ~expandOneLevel
+           ~outputFileRelative ~resolver ~typeGetConverter ~inlineOneLevel
            ~typeGetInlined ~typeGetNormalized ~typeNameIsInterface
            ~variantTables)
        (env, emitters)
@@ -727,7 +727,7 @@ let emitTranslationAsString ~config ~fileName ~inputCmtTranslateTypeDeclarations
          ~typeGetNormalized:(typeGetNormalized_ ~env) ~env
          ~typeNameIsInterface:(typeNameIsInterface ~env)
   in
-  let expandOneLevel type_ =
+  let inlineOneLevel type_ =
     match type_ with
     | Ident { builtin = false; name; typeArgs } -> (
         match name |> lookupId_ ~env with
@@ -749,7 +749,7 @@ let emitTranslationAsString ~config ~fileName ~inputCmtTranslateTypeDeclarations
   let env, emitters =
     translation.codeItems
     |> emitCodeItems ~config ~emitters ~moduleItemsEmitter ~env ~fileName
-         ~outputFileRelative ~resolver ~expandOneLevel
+         ~outputFileRelative ~resolver ~inlineOneLevel
          ~typeGetInlined:(typeGetInlined_ ~env)
          ~typeGetNormalized:(typeGetNormalized_ ~env)
          ~typeGetConverter:(typeGetConverter_ ~env)
