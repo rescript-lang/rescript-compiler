@@ -315,17 +315,19 @@ let rec emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
             let compType =
               match typeGetInlined propsType with
               | Object (closedFlags, fields) ->
+                  (* JSX V4 *)
                   let propsType =
                     let fields =
-                      fields
-                      |> List.map (fun (field : field) ->
-                             match
-                               field.nameJS = "children"
-                               && field.type_ |> EmitType.isTypeReactElement
-                             with
-                             | true ->
-                                 { field with type_ = EmitType.typeReactChild }
-                             | false -> field)
+                      Ext_list.filter_map fields (fun (field : field) ->
+                          match field.nameJS with
+                          | "children"
+                            when field.type_ |> EmitType.isTypeReactElement ->
+                              Some
+                                { field with type_ = EmitType.typeReactChild }
+                          | "key" ->
+                              (* Filter out key, which is added to the props type definition in V4 *)
+                              None
+                          | _ -> Some field)
                     in
                     Object (closedFlags, fields)
                   in
