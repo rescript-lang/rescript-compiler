@@ -7,16 +7,32 @@ import {default as makeNotChecked} from './hookExample';
 import {default as defaultNotChecked} from './hookExample';
 
 // In case of type error, check the type of 'make' in 'ImportHookDefault.re' and './hookExample'.
-export const makeTypeChecked: (_1:props<person,JSX.Element,ImportHooks_renderMe<string>>) => JSX.Element = makeNotChecked;
+export const makeTypeChecked: React.ComponentType<{
+  readonly person: person; 
+  readonly children: React.ReactNode; 
+  readonly renderMe: ImportHooks_renderMe<string>
+}> = makeNotChecked;
 
 // Export 'make' early to allow circular import from the '.bs.js' file.
-export const make: unknown = makeTypeChecked as (_1:props<person,JSX.Element,ImportHooks_renderMe<string>>) => JSX.Element;
+export const make: unknown = makeTypeChecked as React.ComponentType<{
+  readonly person: person; 
+  readonly children: React.ReactNode; 
+  readonly renderMe: ImportHooks_renderMe<string>
+}>;
 
 // In case of type error, check the type of 'default' in 'ImportHookDefault.re' and './hookExample'.
-export const defaultTypeChecked: (_1:MM_props<person,JSX.Element,ImportHooks_renderMe<string>>) => JSX.Element = defaultNotChecked;
+export const defaultTypeChecked: React.ComponentType<{
+  readonly person: person; 
+  readonly children: React.ReactNode; 
+  readonly renderMe: ImportHooks_renderMe<string>
+}> = defaultNotChecked;
 
 // Export '$$default' early to allow circular import from the '.bs.js' file.
-export const $$default: unknown = defaultTypeChecked as (_1:MM_props<person,JSX.Element,ImportHooks_renderMe<string>>) => JSX.Element;
+export const $$default: unknown = defaultTypeChecked as React.ComponentType<{
+  readonly person: person; 
+  readonly children: React.ReactNode; 
+  readonly renderMe: ImportHooks_renderMe<string>
+}>;
 
 import type {renderMe as ImportHooks_renderMe} from './ImportHooks.gen';
 
