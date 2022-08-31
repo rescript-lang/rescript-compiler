@@ -124,8 +124,8 @@ let emitExportFromTypeDeclarations ~config ~emitters ~env ~typeGetNormalized
            ~typeNameIsInterface)
        (env, emitters)
 
-let rec emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
-    ~outputFileRelative ~resolver ~typeGetConverter ~typeGetInlined
+let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
+    ~outputFileRelative ~resolver ~typeGetConverter ~expandOneLevel ~typeGetInlined
     ~typeGetNormalized ~typeNameIsInterface ~variantTables codeItem =
   if !Debug.codeItems then
     Log_.item "Code Item: %s\n"
@@ -190,9 +190,7 @@ let rec emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
              } as function_)
           when Filename.check_suffix name "props"
                && retType |> EmitType.isTypeFunctionComponent ~fields:[] -> (
-            let _ = function_ in
-            let _ = propsType in
-            match typeGetInlined propsType with
+            match expandOneLevel propsType with
             | Object (closedFlags, fields) ->
                 (* JSX V3 *)
                 let componentName =
@@ -421,14 +419,14 @@ let rec emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
       in
       (envWithRequires, emitters)
 
-and emitCodeItems ~config ~outputFileRelative ~emitters ~moduleItemsEmitter ~env
-    ~fileName ~resolver ~typeNameIsInterface ~typeGetConverter ~typeGetInlined
+let emitCodeItems ~config ~outputFileRelative ~emitters ~moduleItemsEmitter ~env
+    ~fileName ~resolver ~typeNameIsInterface ~typeGetConverter ~expandOneLevel ~typeGetInlined
     ~typeGetNormalized ~variantTables codeItems =
   codeItems
   |> List.fold_left
        (fun (env, emitters) ->
          emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
-           ~outputFileRelative ~resolver ~typeGetConverter ~typeGetInlined
+           ~outputFileRelative ~resolver ~typeGetConverter ~expandOneLevel ~typeGetInlined
            ~typeGetNormalized ~typeNameIsInterface ~variantTables)
        (env, emitters)
 
@@ -727,10 +725,18 @@ let emitTranslationAsString ~config ~fileName ~inputCmtTranslateTypeDeclarations
          ~typeGetNormalized:(typeGetNormalized_ ~env) ~env
          ~typeNameIsInterface:(typeNameIsInterface ~env)
   in
+  let expandOneLevel type_ =
+    match type_ with
+    | Ident { builtin = false; name } -> (
+        match name |> lookupId_ ~env with
+        | (t : CodeItem.exportTypeItem) -> t.type_
+        | exception Not_found -> type_)
+    | _ -> type_
+  in
   let env, emitters =
     translation.codeItems
     |> emitCodeItems ~config ~emitters ~moduleItemsEmitter ~env ~fileName
-         ~outputFileRelative ~resolver ~typeGetInlined:(typeGetInlined_ ~env)
+         ~outputFileRelative ~resolver ~expandOneLevel ~typeGetInlined:(typeGetInlined_ ~env)
          ~typeGetNormalized:(typeGetNormalized_ ~env)
          ~typeGetConverter:(typeGetConverter_ ~env)
          ~typeNameIsInterface:(typeNameIsInterface ~env) ~variantTables
