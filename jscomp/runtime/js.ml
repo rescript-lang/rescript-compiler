@@ -314,7 +314,7 @@ module WeakSet = Js_weakset
 (** Provides bindings for ES6 WeakSet *)
 
 module Map = Js_map
-(** Provides bindings for ES6 Set *)
+(** Provides bindings for ES6 Map *)
 
 module WeakMap = Js_weakmap
-(** Provides bindings for ES6 WeakSet *)
+(** Provides bindings for ES6 WeakMap *)
