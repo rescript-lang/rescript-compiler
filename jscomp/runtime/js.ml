@@ -306,3 +306,15 @@ module List = Js_list
 module Vector = Js_vector
 
 module Console = Js_console
+
+module Set = Js_set
+(** Provides bindings for ES6 Set *)
+
+module WeakSet = Js_weakset
+(** Provides bindings for ES6 WeakSet *)
+
+module Map = Js_map
+(** Provides bindings for ES6 Set *)
+
+module WeakMap = Js_weakmap
+(** Provides bindings for ES6 WeakSet *)
