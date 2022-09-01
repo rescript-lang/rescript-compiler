@@ -21,9 +21,10 @@
 - Add support for for `async`/`await` https://github.com/rescript-lang/rescript-compiler/pull/5537
 
 - Initial support for JSX V4 including genType, still work in progress.
+
   - :boom: when V4 is activated, at most one component is allowed for each module.
 
-- Add placeholder types for ES6 collections (`Set`, `Map`, `WeakSet`, `WeakMap`) https://github.com/rescript-lang/rescript-compiler/pull/5630
+- Add placeholder types for ES6 collections: `Set`, `Map`, `WeakSet`, and `WeakMap` https://github.com/rescript-lang/rescript-compiler/pull/5630
 
 #### :bug: Bug Fix
 
