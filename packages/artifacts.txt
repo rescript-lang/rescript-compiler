@@ -137,6 +137,7 @@ lib/es6/js_global.js
 lib/es6/js_int.js
 lib/es6/js_json.js
 lib/es6/js_list.js
+lib/es6/js_map.js
 lib/es6/js_mapperRt.js
 lib/es6/js_math.js
 lib/es6/js_null.js
@@ -146,6 +147,7 @@ lib/es6/js_option.js
 lib/es6/js_promise.js
 lib/es6/js_re.js
 lib/es6/js_result.js
+lib/es6/js_set.js
 lib/es6/js_string.js
 lib/es6/js_string2.js
 lib/es6/js_typed_array.js
@@ -153,6 +155,8 @@ lib/es6/js_typed_array2.js
 lib/es6/js_types.js
 lib/es6/js_undefined.js
 lib/es6/js_vector.js
+lib/es6/js_weakmap.js
+lib/es6/js_weakset.js
 lib/es6/jsx.js
 lib/es6/jsxDOM.js
 lib/es6/jsxDOMStyle.js
@@ -295,6 +299,7 @@ lib/js/js_global.js
 lib/js/js_int.js
 lib/js/js_json.js
 lib/js/js_list.js
+lib/js/js_map.js
 lib/js/js_mapperRt.js
 lib/js/js_math.js
 lib/js/js_null.js
@@ -304,6 +309,7 @@ lib/js/js_option.js
 lib/js/js_promise.js
 lib/js/js_re.js
 lib/js/js_result.js
+lib/js/js_set.js
 lib/js/js_string.js
 lib/js/js_string2.js
 lib/js/js_typed_array.js
@@ -311,6 +317,8 @@ lib/js/js_typed_array2.js
 lib/js/js_types.js
 lib/js/js_undefined.js
 lib/js/js_vector.js
+lib/js/js_weakmap.js
+lib/js/js_weakset.js
 lib/js/jsx.js
 lib/js/jsxDOM.js
 lib/js/jsxDOMStyle.js
@@ -704,6 +712,9 @@ lib/ocaml/js_list.cmt
 lib/ocaml/js_list.cmti
 lib/ocaml/js_list.ml
 lib/ocaml/js_list.mli
+lib/ocaml/js_map.cmi
+lib/ocaml/js_map.cmt
+lib/ocaml/js_map.ml
 lib/ocaml/js_mapperRt.cmi
 lib/ocaml/js_mapperRt.cmt
 lib/ocaml/js_mapperRt.cmti
@@ -741,6 +752,9 @@ lib/ocaml/js_result.cmt
 lib/ocaml/js_result.cmti
 lib/ocaml/js_result.ml
 lib/ocaml/js_result.mli
+lib/ocaml/js_set.cmi
+lib/ocaml/js_set.cmt
+lib/ocaml/js_set.ml
 lib/ocaml/js_string.cmi
 lib/ocaml/js_string.cmt
 lib/ocaml/js_string.ml
@@ -770,6 +784,12 @@ lib/ocaml/js_vector.cmt
 lib/ocaml/js_vector.cmti
 lib/ocaml/js_vector.ml
 lib/ocaml/js_vector.mli
+lib/ocaml/js_weakmap.cmi
+lib/ocaml/js_weakmap.cmt
+lib/ocaml/js_weakmap.ml
+lib/ocaml/js_weakset.cmi
+lib/ocaml/js_weakset.cmt
+lib/ocaml/js_weakset.ml
 lib/ocaml/jsx.cmi
 lib/ocaml/jsx.cmt
 lib/ocaml/jsx.ml
