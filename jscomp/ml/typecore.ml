@@ -2304,17 +2304,22 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
         exp_attributes = sexp.pexp_attributes;
         exp_env = env }
   | Pexp_field(srecord, lid) ->
-      let (record, label, _) = type_label_access env srecord lid in
+     let label_is_optional ld =
+      match ld.lbl_repres with
+      | Record_optional_labels lbls -> Ext_list.mem_string lbls ld.lbl_name
+      | _ -> false in
+      let (record, label, _, is_option) = type_label_access env srecord lid in
+      let should_add_option = is_option && not (label_is_optional label) in
       let (_, ty_arg, ty_res) = instance_label false label in
       unify_exp env record ty_res;
       rue {
         exp_desc = Texp_field(record, lid, label);
         exp_loc = loc; exp_extra = [];
-        exp_type = ty_arg;
+        exp_type = if should_add_option then type_option ty_arg else ty_arg;
         exp_attributes = sexp.pexp_attributes;
         exp_env = env }
   | Pexp_setfield(srecord, lid, snewval) ->
-      let (record, label, opath) = type_label_access env srecord lid in
+      let (record, label, opath, _is_option) = type_label_access env srecord lid in
       let ty_record = if opath = None then newvar () else record.exp_type in
       let (label_loc, label, newval) =
         type_label_exp false env loc ty_record (lid, label, snewval) in
@@ -2818,6 +2823,10 @@ and type_function ?in_function loc attrs env ty_expected l caselist =
 and type_label_access env srecord lid =
   let record = type_exp ~recarg:Allowed env srecord in
   let ty_exp = record.exp_type in
+  let ty_exp, is_option = match (extract_option_type env ty_exp) with
+  | t -> t, true
+  | exception Assert_failure _ -> ty_exp, false in
+  let record = if is_option then  {record with exp_type = ty_exp} else record in
   let opath =
     try
       let (p0, p, _, _) = extract_concrete_record env ty_exp in
@@ -2828,7 +2837,7 @@ and type_label_access env srecord lid =
   let label =
     wrap_disambiguate "This expression has" ty_exp
       (Label.disambiguate lid env opath) labels in
-  (record, label, opath)
+  (record, label, opath, is_option)
 
 (* Typing format strings for printing or reading.
    These formats are used by functions in modules Printf, Format, and Scanf.
