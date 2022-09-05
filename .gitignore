@@ -154,4 +154,5 @@ playground/packages/
 playground/stdlib/
 playground/*.cmj
 playground/*.cmi
+playground/.netrc
 playground/compiler.js
