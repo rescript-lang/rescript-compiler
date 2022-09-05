@@ -99,49 +99,58 @@ dune build -w
 
 > Please note that `dune` will not build the final `rescript` binaries. Use the aforementioned `ninja` workflow if you want to build, test and distribute the final product.
 
-## Adding new Files to the Npm Package
+## Adding new Files
 
 To make sure that no files are added to or removed from the npm package inadvertently, an artifact list is kept at `packages/artifacts.txt`. During CI build, it is verified that only the files that are listed there are actually included in the npm package.
 
-When adding a new file to the repository that should go into the npm package - e.g., a new stdlib module -, first compile and test everything locally. Then
+When adding a new file to the repository that should go into the npm package - e.g., a new stdlib module -, first compile and test everything locally. Next, run `./scripts/makeArtifactList.js` to update the artifact list and include the updated artifact list in your commit.
 
-- `node scripts/install -force-lib-rebuild` to copy library files into `lib/ocaml`
-- `./scripts/makeArtifactList.js` to update the artifact list and include the updated artifact list in your commit.
+## Running tests for independent ReScript files
 
-## Test the compiler
-
-Make sure to build the compiler first following the instructions above.
-
-### Single file
+The simplest way for running tests is to run your locally built compiler on separate ReScript files:
 
 ```sh
-./bsc myTestFile.res
+# Make sure to rebuild the compiler before running any tests (./scripts/ninja.js config / build etc)
+./darwinarm64/bsc.exe myTestFile.res
 ```
 
-### Project
+**Different architectures:**
+
+- `darwinarm64/bsc.exe`: M1 Macs
+- `darwin/bsc.exe`: Intel Macs
+- `linux/bsc.exe`: Linux computers
+
+### Testing the whole ReScript Package
+
+If you'd like to bundle up and use your modified ReScript like an end-user, try:
 
 ```sh
-node scripts/install -force-lib-rebuild ## populate lib/ocaml
-cd myProject
-npm install __path_to_this_repository__
+node scripts/install -force-lib-rebuild # make sure lib/ocaml is populated
+
+npm uninstall -g rescript # a cache-busting uninstall is needed, but only for npm >=7
+
+# This will globally install your local build via npm
+RESCRIPT_FORCE_REBUILD=1 npm install -g .
+```
+
+Then you may initialize and build your ReScript project as usual:
+
+```sh
+rescript init my-project
+cd my-project
+npm run build
 ```
 
 ### Running Automatic Tests
 
 We provide different test suites for different levels of the compiler and build system infrastructure. Always make sure to locally build your compiler before running any tests.
 
-To run all tests:
-
-```sh
-npm test
-```
-
-**Run Mocha tests only (for our runtime code):**
+**Run Mocha tests for our runtime code:**
 
 This will run our `mocha` unit test suite defined in `jscomp/test`.
 
 ```
-node scripts/ciTest.js -mocha
+npx node scripts/ciTest.js -mocha
 ```
 
 **Run build system test (integration tests):**
@@ -149,7 +158,10 @@ node scripts/ciTest.js -mocha
 This will run the whole build system test suite defined in `jscomp/build_tests`.
 
 ```
-node scripts/ciTest.js -bsb
+# Make sure to globally install rescript via npm first
+npm install -g .
+
+npx node scripts/ciTest.js -bsb
 ```
 
 **Run ounit tests:**
@@ -157,14 +169,14 @@ node scripts/ciTest.js -bsb
 This will run unit tests for compiler related modules. The tests can be found in `jscomp/ounit_tests`.
 
 ```
-node scripts/ciTest.js -ounit
+npx node scripts/ciTest.js -ounit
 ```
 
-## Contributing to the Runtime
+## Contributing to the ReScript Runtime
 
-The runtime implementation is written in OCaml with some raw JS code embedded (`jscomp/runtime` directory).
+Our runtime implementation is written in pure OCaml with some raw JS code embedded (`jscomp/runtime` directory).
 
-The goal is to implement the runtime **purely in OCaml**. This includes removing all existing occurrences of embedded raw JS code as well whenever possible, and you can help!
+The goal is to implement the runtime **purely in OCaml**. This includes removing all existing occurrences of embedded raw JS code as well, and you can help!
 
 Each new PR should include appropriate testing.
 
@@ -172,8 +184,8 @@ Currently all tests are located in the `jscomp/test` directory and you should ei
 
 There are currently two formats for test files:
 
-1. Mocha test files that run javascript test code
-2. Plain `.ml` files to check the result of compilation to JS (expectation tests)
+1. Proper mocha test files with executed javascript test code
+2. Plain `.ml` files which are only supposed to be compiled to JS (without any logic validation)
 
 Below we will discuss on how to write, build and run these test files.
 
@@ -284,7 +296,7 @@ Whenever you are modifying any files in the ReScript compiler, or in the `jsoo_p
 
 ```sh
 node scripts/ninja.js config && node scripts/ninja.js build
-PLAYGROUND=../playground node scripts/repl.js
+node scripts/repl.js
 ```
 
 **.cmj files in the Web**
@@ -295,11 +307,23 @@ A `.cmi` file is an [OCaml originated file extension](https://waleedkhan.name/bl
 
 In this repo, these files usually sit right next to each compiled `.ml` / `.res` file. The structure of a `.cmj` file is defined in [js_cmj_format.ml](jscomp/core/js_cmj_format.ml). You can run a tool called `./jscomp/bin/cmjdump.exe [some-file.cmj]` to inspect the contents of given `.cmj` file.
 
-`.cmj` files are required for making ReScript compile modules (this includes modules like ReasonReact). ReScript includes a subset of modules by default, which can be found in `jscomp/stdlib-406` and `jscomp/others`. You can also find those modules listed in the `jsoo` call in `scripts/repl.js`. As you probably noticed, the generated `playground` files are all plain `.js`, so how are the `cmj` / `cmi` files embedded?
+`.cmj` files are required to compile modules (this includes modules like RescriptReact). ReScript includes a subset of modules by default, which can be found in `jscomp/stdlib-406` and `jscomp/others`. You can also find those modules listed in the JSOO call in `scripts/repl.js`. As you probably noticed, the generated `playground` files are all plain `.js`, so how are the `cmj` / `cmi` files embedded?
 
-`repl.js` calls an executable called `cmjbrowser.exe` on every build, which is a compile artifact from `jscomp/main/jscmj_main.ml`. It is used to serialize `cmj` / `cmi` artifacts into two files called `jscomp/core/js_cmj_datasets.ml`. These files are only linked for the browser target, where ReScript doesn't have access to the filesystem. When working on BS, you'll see diffs on those files whenever there are changes on core modules, e.g. stdlib modules or when the ocaml version was changed. We usually check in these files to keep it in sync with the most recent compiler implementation. JSOO will pick up those files to encode them into the `compiler.js` bundle.
+JSOO offers an `build-fs` subcommand that takes a list of `.cmi` and `.cmj` files and creates a `cmij.js` file that can be loaded by the JS runtime **after** the `compiler.js` bundle has been loaded (either via a `require()` call in Node, or via `<link/>` directive in an HTML file). Since we are shipping our playground with third party modules like `RescriptReact`, we created a utility directory `packages/playground-bundling` that comes with a utility script to do the `cmij.js` file creation for us. Check out `packages/playground-bundling/scripts/generate_cmijs.js` for details.
 
-For any other dependency needed in the playground, such as `ReasonReact`, you will be required to serialize your `.cmi` / `.cmt` files accordingly from binary to hex encoded strings so that BS Playground's `ocaml.load` function can load the data. Right now we don't provide any instructions inside here yet, but [here's how the official ReasonML playground did it](https://github.com/reasonml/reasonml.github.io/blob/source/website/setupSomeArtifacts.js#L65).
+### Publishing the Playground Bundle on our KeyCDN
+
+> Note: If you want to publish from your local machine, make sure to set the `KEYCDN_USER` and `KEYCDN_PASSWORD` environment variables accordingly (credentials currently managed by @ryyppy). Our CI servers / GH Action servers are already pre-configured with the right env variable values.
+
+Our `compiler.js` and third-party packages bundles are hosted on [KeyCDN](https://www.keycdn.com) and uploaded via FTPS.
+
+After a successful bundle build, run our upload script to publish the build artifacts to our server:
+
+```
+playground/upload_bundle.sh
+```
+
+The script will automatically detect the ReScript version from the `compiler.js` bundle and automatically create the correct directory structure on our CDN ftp server.
 
 ## Contribute to the API Reference
 
