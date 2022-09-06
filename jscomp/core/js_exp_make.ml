@@ -511,15 +511,25 @@ let function_length ?comment (e : t) : t =
 *)
 
 let rec string_append ?comment (e : t) (el : t) : t =
+  let concat a b ~delim =
+    { e with expression_desc = Str { txt = a ^ b; delim } }
+  in
   match (e.expression_desc, el.expression_desc) with
-  | Str { txt = a }, String_append ({ expression_desc = Str { txt = b } }, c) ->
-      string_append ?comment (str (a ^ b)) c
-  | String_append (c, { expression_desc = Str { txt = b } }), Str { txt = a } ->
-      string_append ?comment c (str (b ^ a))
-  | ( String_append (a, { expression_desc = Str { txt = b } }),
-      String_append ({ expression_desc = Str { txt = c } }, d) ) ->
-      string_append ?comment (string_append a (str (b ^ c))) d
-  | Str { txt = a }, Str { txt = b } -> str ?comment (a ^ b)
+  | ( Str { txt = a; delim },
+      String_append ({ expression_desc = Str { txt = b; delim = delim_ } }, c) )
+    when delim = delim_ ->
+      string_append ?comment (concat a b ~delim) c
+  | ( String_append (c, { expression_desc = Str { txt = b; delim } }),
+      Str { txt = a; delim = delim_ } )
+    when delim = delim_ ->
+      string_append ?comment c (concat b a ~delim)
+  | ( String_append (a, { expression_desc = Str { txt = b; delim } }),
+      String_append ({ expression_desc = Str { txt = c; delim = delim_ } }, d) )
+    when delim = delim_ ->
+      string_append ?comment (string_append a (concat b c ~delim)) d
+  | Str { txt = a; delim }, Str { txt = b; delim = delim_ } when delim = delim_
+    ->
+      { (concat a b ~delim) with comment }
   | _, _ -> { comment; expression_desc = String_append (e, el) }
 
 let obj ?comment properties : t =
