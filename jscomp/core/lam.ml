@@ -23,7 +23,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type ident = Ident.t
-
 type apply_status = App_na | App_infer_full | App_uncurry
 
 type ap_info = {
@@ -414,13 +413,12 @@ let switch lam (lam_switch : lambda_switch) : t =
 
 let stringswitch (lam : t) cases default : t =
   match lam with
-  | Lconst (Const_string a) -> Ext_list.assoc_by_string cases a default
+  | Lconst (Const_string { s; unicode = false }) ->
+      Ext_list.assoc_by_string cases s default
   | _ -> Lstringswitch (lam, cases, default)
 
 let true_ : t = Lconst Const_js_true
-
 let false_ : t = Lconst Const_js_false
-
 let unit : t = Lconst Const_js_undefined
 
 let rec seq (a : t) b : t =
@@ -436,28 +434,19 @@ let rec seq (a : t) b : t =
   | _ -> Lsequence (a, b)
 
 let var id : t = Lvar id
-
 let global_module id = Lglobal_module id
-
 let const ct : t = Lconst ct
 
 let function_ ~attr ~arity ~params ~body : t =
   Lfunction { arity; params; body; attr }
 
 let let_ kind id e body : t = Llet (kind, id, e, body)
-
 let letrec bindings body : t = Lletrec (bindings, body)
-
 let while_ a b : t = Lwhile (a, b)
-
 let try_ body id handler : t = Ltrywith (body, id, handler)
-
 let for_ v e1 e2 dir e3 : t = Lfor (v, e1, e2, dir, e3)
-
 let assign v l : t = Lassign (v, l)
-
 let staticcatch a b c : t = Lstaticcatch (a, b, c)
-
 let staticraise a b : t = Lstaticraise (a, b)
 
 module Lift = struct
@@ -478,9 +467,7 @@ module Lift = struct
      Lconst ((Const_nativeint b)) *)
 
   let int64 b : t = Lconst (Const_int64 b)
-
-  let string b : t = Lconst (Const_string b)
-
+  let string s : t = Lconst (Const_string { s; unicode = false })
   let char b : t = Lconst (Const_char b)
 end
 
@@ -496,8 +483,8 @@ let prim ~primitive:(prim : Lam_primitive.t) ~args loc : t =
           Lift.int (Int32.of_float (float_of_string a))
       (* | Pnegfloat -> Lift.float (-. a) *)
       (* | Pabsfloat -> Lift.float (abs_float a) *)
-      | Pstringlength, Const_string a ->
-          Lift.int (Int32.of_int (String.length a))
+      | Pstringlength, Const_string { s; unicode = false } ->
+          Lift.int (Int32.of_int (String.length s))
       (* | Pnegbint Pnativeint, ( (Const_nativeint i)) *)
       (*   ->   *)
       (*   Lift.nativeint (Nativeint.neg i) *)
@@ -568,8 +555,13 @@ let prim ~primitive:(prim : Lam_primitive.t) ~args loc : t =
       | Psequor, Const_js_true, (Const_js_true | Const_js_false) -> true_
       | Psequor, Const_js_false, Const_js_true -> true_
       | Psequor, Const_js_false, Const_js_false -> false_
-      | Pstringadd, Const_string a, Const_string b -> Lift.string (a ^ b)
-      | (Pstringrefs | Pstringrefu), Const_string a, Const_int { i = b } -> (
+      | ( Pstringadd,
+          Const_string { s = a; unicode = false },
+          Const_string { s = b; unicode = false } ) ->
+          Lift.string (a ^ b)
+      | ( (Pstringrefs | Pstringrefu),
+          Const_string { s = a; unicode = false },
+          Const_int { i = b } ) -> (
           try Lift.char (String.get a (Int32.to_int b)) with _ -> default ())
       | _ -> default ())
   | _ -> (

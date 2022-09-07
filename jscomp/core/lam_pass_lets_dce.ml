@@ -67,7 +67,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam : Lam.t =
           *)
           ->
           Hash_ident.add subst v (simplif l1); simplif l2
-        | _, Lconst (Const_string s ) -> 
+        | _, Lconst (Const_string {s; unicode = false} ) -> 
           (* only "" added for later inlining *)
           Hash_ident.add string_table v s;
           Lam.let_ Alias v l1 (simplif l2)
@@ -116,7 +116,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam : Lam.t =
           | _ -> 
             let l1 = simplif l1 in         
             begin match l1 with 
-              | Lconst(Const_string s) -> 
+              | Lconst(Const_string { s; unicode = false }) -> 
                 Hash_ident.add string_table v s; 
                 (* we need move [simplif lbody] later, since adding Hash does have side effect *)
                 Lam.let_ Alias v l1 (simplif lbody)
@@ -138,7 +138,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam : Lam.t =
         let l1 = (simplif l1) in 
 
         begin match kind, l1 with 
-          | Strict, Lconst((Const_string s))
+          | Strict, Lconst((Const_string { s; unicode = false }))
             -> 
             Hash_ident.add string_table v s;
             Lam.let_ Alias v l1 (simplif l2)
@@ -173,7 +173,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam : Lam.t =
         let r' = simplif r in
         let opt_l = 
           match l' with 
-          | Lconst((Const_string ls)) -> Some ls 
+          | Lconst(Const_string { s = ls; unicode = false }) -> Some ls 
           | Lvar i -> Hash_ident.find_opt string_table i 
           | _ -> None in 
         match opt_l with   
@@ -181,13 +181,13 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam : Lam.t =
         | Some l_s -> 
           let opt_r = 
             match r' with 
-            | Lconst ( (Const_string rs)) -> Some rs 
+            | Lconst (Const_string {s = rs; unicode = false}) -> Some rs 
             | Lvar i -> Hash_ident.find_opt string_table i 
             | _ -> None in 
           begin match opt_r with 
             | None -> Lam.prim ~primitive:Pstringadd ~args:[l';r'] loc 
             | Some r_s -> 
-              Lam.const (Const_string(l_s^r_s))
+              Lam.const (Const_string { s = l_s^r_s; unicode = false })
           end
       end
 
@@ -198,7 +198,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam : Lam.t =
       let r' = simplif r in 
       let opt_l =
         match l' with 
-        | Lconst (Const_string ls) -> 
+        | Lconst (Const_string { s = ls; unicode = false }) -> 
           Some ls 
         | Lvar i -> Hash_ident.find_opt string_table i 
         | _ -> None in 

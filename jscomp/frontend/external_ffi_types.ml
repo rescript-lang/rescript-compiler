@@ -314,7 +314,7 @@ let inline_string_primitive (s : string) (op : string option) : string list =
       when Ast_utf8_string_interp.is_unicode_string op ->
       Const_unicode s
     | _ ->
-      (Const_string s) in 
+      (Const_string { s; unicode = false }) in 
   [""; to_string (Ffi_inline_const lam )]
 
 (* Let's only do it for string ATM

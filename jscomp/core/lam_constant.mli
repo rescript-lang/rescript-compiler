@@ -39,7 +39,7 @@ type t =
   | Const_js_false
   | Const_int of { i : int32; comment : pointer_info }
   | Const_char of char
-  | Const_string of string (* use record later *)
+  | Const_string of { s : string; unicode : bool }
   | Const_unicode of string
   | Const_float of string
   | Const_int64 of int64
