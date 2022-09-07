@@ -23,9 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type attr = Parsetree.attribute
-
 type t = attr list
-
 type ('a, 'b) st = { get : 'a option; set : 'b option }
 
 let process_method_attributes_rev (attrs : t) =
@@ -164,14 +162,13 @@ let is_inline : attr -> bool =
 let has_inline_payload (attrs : t) = Ext_list.find_first attrs is_inline
 
 let is_await : attr -> bool =
-  fun ({ txt }, _) -> txt = "await" || txt = "res.await"
+ fun ({ txt }, _) -> txt = "await" || txt = "res.await"
 
 let is_async : attr -> bool =
-  fun ({ txt }, _) -> txt = "async" || txt = "res.async"
+ fun ({ txt }, _) -> txt = "async" || txt = "res.async"
 
 let has_await_payload (attrs : t) = Ext_list.find_first attrs is_await
 let has_async_payload (attrs : t) = Ext_list.find_first attrs is_async
- 
 
 type derive_attr = { bs_deriving : Ast_payload.action list option } [@@unboxed]
 
@@ -281,10 +278,16 @@ let iter_process_bs_int_as (attrs : t) =
       | _ -> ());
   !st
 
-type as_const_payload = Int of int | Str of string * string option
+type as_const_payload = Int of int | Str of string * J.delim
 
 let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
   let st = ref None in
+  let process_delim = function
+    | None -> Some J.Nothing
+    | Some "json" -> Some Json
+    | Some "*j" -> Some StarJ
+    | _ -> None
+  in
   Ext_list.iter attrs (fun (({ txt; loc }, payload) as attr) ->
       match txt with
       | "bs.as" | "as" ->
@@ -300,9 +303,7 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
                           Pstr_eval
                             ( {
                                 pexp_desc =
-                                  Pexp_constant
-                                    (Pconst_string
-                                      (s, ((None | Some "json"| Some "*j") as delim)));
+                                  Pexp_constant (Pconst_string (s, delim_));
                                 pexp_loc;
                                 _;
                               },
@@ -310,22 +311,26 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
                         _;
                       };
                     ]
-                     ->
+                  when process_delim delim_ <> None -> (
+                    let delim =
+                      match process_delim delim_ with
+                      | None -> assert false
+                      | Some delim -> delim
+                    in
                     st := Some (Str (s, delim));
-                    if delim = Some "json" then (
+                    if delim = Json then
                       (* check that it is a valid object literal *)
                       match
-                         Classify_function.classify
-                           ~check:
-                             (pexp_loc, Bs_flow_ast_utils.flow_deli_offset delim)
-                           s
-                       with
+                        Classify_function.classify
+                          ~check:
+                            (pexp_loc, Bs_flow_ast_utils.flow_deli_offset delim_)
+                          s
+                      with
                       | Js_literal _ -> ()
                       | _ ->
                           Location.raise_errorf ~loc:pexp_loc
-                            "an object literal expected"
-                    )
-                | _ -> Bs_syntaxerr.err loc (Expect_int_or_string_or_json_literal)
+                            "an object literal expected")
+                | _ -> Bs_syntaxerr.err loc Expect_int_or_string_or_json_literal
                 )
             | Some v -> st := Some (Int v))
           else Bs_syntaxerr.err loc Duplicated_bs_as

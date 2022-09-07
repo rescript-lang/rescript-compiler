@@ -24,7 +24,7 @@
 
 type cst = private
   | Arg_int_lit of int
-  | Arg_string_lit of string * string option
+  | Arg_string_lit of string * J.delim
 
 type attr =
   | Poly_var_string of { descr : (string * string) list }
@@ -56,7 +56,7 @@ type params = param list
 
 val cst_int : int -> cst
 
-val cst_string : string -> string option -> cst
+val cst_string : string -> J.delim -> cst
 
 val empty_label : label
 
