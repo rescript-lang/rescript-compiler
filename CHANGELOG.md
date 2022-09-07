@@ -28,6 +28,7 @@
 
 #### :bug: Bug Fix
 
+- Fix issue with arrays and creation of recursive values https://github.com/rescript-lang/rescript-compiler/pull/5640
 - Fix issue where characters such as newlines would be escaped in a template string expression https://github.com/rescript-lang/rescript-compiler/issues/5638
 - Fix issue where pipe `->` processing eats up attributes https://github.com/rescript-lang/rescript-compiler/pull/5581
 - Fix issue where cancelling `rescript build` would leave the `.bsb.lock` file behind and block future builds
