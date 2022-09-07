@@ -78,7 +78,8 @@ let check_constant loc kind (const : Parsetree.constant) =
           if Ast_utf8_string_interp.is_unescaped s then
             Bs_warnings.error_unescaped_delimiter loc s
       | `pat ->
-          if s = "j" then
+          if Ast_utf8_string_interp.parse_processed_delim (Some s) = Some DStarJ
+          then
             Location.raise_errorf ~loc
               "Unicode string is not allowed in pattern match")
   | Pconst_integer (s, None) -> (

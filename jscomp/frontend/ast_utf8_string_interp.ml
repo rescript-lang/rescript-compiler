@@ -47,7 +47,6 @@ type pos = {
 (** Note the position is about code point *)
 
 type segment = { start : pos; finish : pos; kind : kind; content : string }
-
 type segments = segment list
 
 type cxt = {
@@ -324,13 +323,23 @@ let concat_ident : Longident.t = Ldot (Lident "Pervasives", "^")
 (* Longident.parse "Js.String.make"     *)
 let to_string_ident : Longident.t = Ldot (Ldot (Lident "Js", "String2"), "make")
 
-let escaped_j_delimiter = "*j" (* not user level syntax allowed *)
+module Delim = struct
+  let parse_processed = function
+    | None -> Some J.DNone
+    | Some "json" -> Some DJson
+    | Some "*j" -> Some DStarJ
+    | _ -> None
 
-let unescaped_j_delimiter = "j"
+  let parse_unprocessed = function
+    | "js" -> `string_interpolation
+    | "j" -> `old_unsafe_interpolation
+    | _ -> `no_interpolation
 
-let unescaped_js_delimiter = "js"
-
-let escaped = Some escaped_j_delimiter
+  let escaped_j_delimiter = "*j" (* not user level syntax allowed *)
+  let unescaped_j_delimiter = "j"
+  let unescaped_js_delimiter = "js"
+  let escaped = Some escaped_j_delimiter
+end
 
 let border = String.length "{j|"
 
@@ -340,7 +349,7 @@ let aux loc (segment : segment) ~to_string_ident : Parsetree.expression =
       match kind with
       | String ->
           let loc = update border start finish loc in
-          Ast_compatible.const_exp_string content ?delimiter:escaped ~loc
+          Ast_compatible.const_exp_string content ?delimiter:Delim.escaped ~loc
       | Var (soffset, foffset) ->
           let loc =
             {
@@ -362,7 +371,7 @@ let concat_exp a_loc x ~(lhs : Parsetree.expression) : Parsetree.expression =
 (* Invariant: the [lhs] is always of type string *)
 let rec handle_segments loc (rev_segments : segment list) =
   match rev_segments with
-  | [] -> Ast_compatible.const_exp_string ~loc "" ?delimiter:escaped
+  | [] -> Ast_compatible.const_exp_string ~loc "" ?delimiter:Delim.escaped
   | [ segment ] -> aux loc segment ~to_string_ident (* string literal *)
   | { content = "" } :: rest -> handle_segments loc rest
   | a :: rest -> concat_exp loc a ~lhs:(handle_segments loc rest)
@@ -389,15 +398,20 @@ let transform_interp loc s =
     Location.raise_errorf ~loc:(update border start pos loc) "%a" pp_error error
 
 let transform (e : Parsetree.expression) s delim : Parsetree.expression =
-  if Ext_string.equal delim unescaped_js_delimiter then
-    let js_str = Ast_utf8_string.transform e.pexp_loc s in
-    { e with pexp_desc = Pexp_constant (Pconst_string (js_str, escaped)) }
-  else if Ext_string.equal delim unescaped_j_delimiter then
-    transform_interp e.pexp_loc s
-  else e
+  match Delim.parse_unprocessed delim with
+  | `string_interpolation ->
+      let js_str = Ast_utf8_string.transform e.pexp_loc s in
+      {
+        e with
+        pexp_desc = Pexp_constant (Pconst_string (js_str, Delim.escaped));
+      }
+  | `old_unsafe_interpolation -> transform_interp e.pexp_loc s
+  | `no_interpolation -> e
 
-let is_unicode_string opt = Ext_string.equal opt escaped_j_delimiter
+let is_unicode_string opt = Ext_string.equal opt Delim.escaped_j_delimiter
 
 let is_unescaped s =
-  Ext_string.equal s unescaped_j_delimiter
-  || Ext_string.equal s unescaped_js_delimiter
+  Ext_string.equal s Delim.unescaped_j_delimiter
+  || Ext_string.equal s Delim.unescaped_js_delimiter
+
+let parse_processed_delim = Delim.parse_processed
