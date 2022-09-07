@@ -236,10 +236,7 @@ let rec expression : Env.env -> Typedtree.expression -> Use.t =
       let arg env (_, eo) = option expression env eo in
       Use.(join (inspect (expression env e)) (inspect (list arg env args)))
   | Texp_tuple exprs -> Use.guard (list expression env exprs)
-  | Texp_array exprs ->
-      (* This is counted as a use, because constructing a generic array
-         involves inspecting the elements (PR#6939). *)
-      Use.inspect (list expression env exprs)
+  | Texp_array exprs -> Use.guard (list expression env exprs)
   | Texp_construct (_, desc, exprs) ->
       let access_constructor =
         match desc.cstr_tag with
