@@ -282,12 +282,6 @@ type as_const_payload = Int of int | Str of string * J.delim
 
 let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
   let st = ref None in
-  let process_delim = function
-    | None -> Some J.DNone
-    | Some "json" -> Some DJson
-    | Some "*j" -> Some DStarJ
-    | _ -> None
-  in
   Ext_list.iter attrs (fun (({ txt; loc }, payload) as attr) ->
       match txt with
       | "bs.as" | "as" ->
@@ -311,9 +305,9 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
                         _;
                       };
                     ]
-                  when process_delim delim_ <> None -> (
+                  when Ast_utf8_string_interp.parse_processed_delim delim_ <> None -> (
                     let delim =
-                      match process_delim delim_ with
+                      match Ast_utf8_string_interp.parse_processed_delim delim_ with
                       | None -> assert false
                       | Some delim -> delim
                     in

@@ -597,10 +597,12 @@ and expression_desc cxt ~(level : int) f x : cxt =
       (*TODO --
          when utf8-> it will not escape '\\' which is definitely not we want
       *)
-      if delim = DJ || delim = DStarJ then
-        P.string f ("\"" ^ txt ^ "\"")
-      else if delim = DJson then P.string f txt
-      else Js_dump_string.pp_string f txt;
+      let () =
+        match delim with
+        | DStarJ -> P.string f ("\"" ^ txt ^ "\"")
+        | DJson -> P.string f txt
+        | DNone -> Js_dump_string.pp_string f txt
+      in
       cxt
   | Raw_js_code { code = s; code_info = info } -> (
       match info with

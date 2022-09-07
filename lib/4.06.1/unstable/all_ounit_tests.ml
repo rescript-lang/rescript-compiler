@@ -39939,6 +39939,11662 @@ let merge (l : t) (r : t) =
 (* let none = Location.none *)
 
 end
+module Js_call_info : sig 
+#1 "js_call_info.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * Copyright (C) 2016 - Hongbo Zhang, Authors of ReScript 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(** Type for collecting call site information, used in JS IR *)
+
+type arity = Full | NA
+
+type call_info =
+  | Call_ml (* called by plain ocaml expression *)
+  | Call_builtin_runtime (* built-in externals *)
+  | Call_na
+(* either from [@@val] or not available,
+   such calls does not follow such rules
+   {[ fun x y -> f x y === f ]} when [f] is an atom
+*)
+
+type t = { call_info : call_info; arity : arity }
+
+val dummy : t
+
+val builtin_runtime_call : t
+
+val ml_full_call : t
+
+end = struct
+#1 "js_call_info.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * Copyright (C) 2016 - Hongbo Zhang, Authors of ReScript
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type arity = Full | NA
+
+type call_info =
+  | Call_ml (* called by plain ocaml expression *)
+  | Call_builtin_runtime (* built-in externals *)
+  | Call_na
+(* either from [@@val] or not available,
+   such calls does not follow such rules
+   {[ fun x y -> (f x y) === f ]} when [f] is an atom
+*)
+
+type t = { call_info : call_info; arity : arity }
+
+let dummy = { arity = NA; call_info = Call_na }
+
+let builtin_runtime_call = { arity = Full; call_info = Call_builtin_runtime }
+
+let ml_full_call = { arity = Full; call_info = Call_ml }
+
+end
+module Set_ident : sig 
+#1 "set_ident.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+include Set_gen.S with type elt = Ident.t
+
+
+
+
+
+end = struct
+#1 "set_ident.ml"
+# 1 "ext/set.cppo.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+# 32 "ext/set.cppo.ml"
+type elt = Ident.t
+let compare_elt (x : elt) (y : elt) = 
+  let a =  Stdlib.compare (x.stamp : int) y.stamp in 
+  if a <> 0 then a 
+  else 
+    let b = Stdlib.compare (x.name : string) y.name in 
+    if b <> 0 then b 
+    else Stdlib.compare (x.flags : int) y.flags     
+let [@inline] eq_elt (x : elt) y = Ident.same x y
+let print_elt = Ident.print
+
+
+# 52 "ext/set.cppo.ml"
+(* let (=) (a:int) b = a = b *)
+
+type ('a ) t0 = 'a Set_gen.t 
+
+type  t = elt t0
+
+let empty = Set_gen.empty 
+let is_empty = Set_gen.is_empty
+let iter = Set_gen.iter
+let fold = Set_gen.fold
+let for_all = Set_gen.for_all 
+let exists = Set_gen.exists 
+let singleton = Set_gen.singleton 
+let cardinal = Set_gen.cardinal
+let elements = Set_gen.elements
+let choose = Set_gen.choose 
+
+let of_sorted_array = Set_gen.of_sorted_array
+
+let rec mem (tree : t) (x : elt) =  match tree with 
+  | Empty -> false
+  | Leaf v -> eq_elt x  v 
+  | Node{l; v; r} ->
+    let c = compare_elt x v in
+    c = 0 || mem (if c < 0 then l else r) x
+
+type split = 
+  | Yes of  {l : t ;  r :  t }
+  | No of { l : t; r : t}  
+
+let [@inline] split_l (x : split) = 
+  match x with 
+  | Yes {l} | No {l} -> l 
+
+let [@inline] split_r (x : split) = 
+  match x with 
+  | Yes {r} | No {r} -> r       
+
+let [@inline] split_pres (x : split) = match x with | Yes _ -> true | No _ -> false   
+
+let rec split (tree : t) x : split =  match tree with 
+  | Empty ->
+     No {l = empty;  r = empty}
+  | Leaf v ->   
+    let c = compare_elt x v in
+    if c = 0 then Yes {l = empty; r = empty}
+    else if c < 0 then
+      No {l = empty;  r = tree}
+    else
+      No {l = tree;  r = empty}
+  | Node {l; v; r} ->
+    let c = compare_elt x v in
+    if c = 0 then Yes {l; r}
+    else if c < 0 then
+      match split l x with 
+      | Yes result -> 
+        Yes { result with r = Set_gen.internal_join result.r v r }
+      | No result ->
+        No { result with r= Set_gen.internal_join result.r v r }
+    else
+      match split r x with
+      | Yes result -> 
+        Yes {result with l = Set_gen.internal_join l v result.l}
+      | No result ->   
+        No {result with l = Set_gen.internal_join l v result.l}
+
+let rec add (tree : t) x : t =  match tree with 
+  | Empty -> singleton x
+  | Leaf v -> 
+    let c = compare_elt x v in
+    if c = 0 then tree else     
+    if c < 0 then 
+      Set_gen.unsafe_two_elements x v
+    else 
+      Set_gen.unsafe_two_elements v x 
+  | Node {l; v; r} as t ->
+    let c = compare_elt x v in
+    if c = 0 then t else
+    if c < 0 then Set_gen.bal (add l x ) v r else Set_gen.bal l v (add r x )
+
+let rec union (s1 : t) (s2 : t) : t  =
+  match (s1, s2) with
+  | (Empty, t) 
+  | (t, Empty) -> t
+  | Node _, Leaf v2 ->
+    add s1 v2 
+  | Leaf v1, Node _ -> 
+    add s2 v1 
+  | Leaf x, Leaf v -> 
+    let c = compare_elt x v in
+    if c = 0 then s1 else     
+    if c < 0 then 
+      Set_gen.unsafe_two_elements x v
+    else 
+      Set_gen.unsafe_two_elements v x
+  | Node{l=l1; v=v1; r=r1; h=h1}, Node{l=l2; v=v2; r=r2; h=h2} ->
+    if h1 >= h2 then    
+      let split_result =  split s2 v1 in
+      Set_gen.internal_join 
+        (union l1 (split_l split_result)) v1 
+        (union r1 (split_r split_result))  
+    else    
+      let split_result =  split s1 v2 in
+      Set_gen.internal_join 
+        (union (split_l split_result) l2) v2 
+        (union (split_r split_result) r2)
+
+
+let rec inter (s1 : t)  (s2 : t) : t  =
+  match (s1, s2) with
+  | (Empty, _) 
+  | (_, Empty) -> empty  
+  | Leaf v, _ -> 
+    if mem s2 v then s1 else empty
+  | Node ({ v } as s1), _ ->
+    let result = split s2 v in 
+    if split_pres result then 
+      Set_gen.internal_join 
+        (inter s1.l (split_l result)) 
+        v 
+        (inter s1.r (split_r result))
+    else
+      Set_gen.internal_concat 
+        (inter s1.l (split_l result)) 
+        (inter s1.r (split_r result))
+
+
+let rec diff (s1 : t) (s2 : t) : t  =
+  match (s1, s2) with
+  | (Empty, _) -> empty
+  | (t1, Empty) -> t1
+  | Leaf v, _-> 
+    if mem s2 v then empty else s1 
+  | (Node({ v} as s1), _) ->
+    let result =  split s2 v in
+    if split_pres result then 
+      Set_gen.internal_concat 
+        (diff s1.l (split_l result)) 
+        (diff s1.r (split_r result))    
+    else
+      Set_gen.internal_join 
+        (diff s1.l (split_l result))
+        v 
+        (diff s1.r (split_r result))
+
+
+
+
+
+
+
+let rec remove (tree : t)  (x : elt) : t = match tree with 
+  | Empty -> empty (* This case actually would be never reached *)
+  | Leaf v ->     
+    if eq_elt x  v then empty else tree    
+  | Node{l; v; r} ->
+    let c = compare_elt x v in
+    if c = 0 then Set_gen.internal_merge l r else
+    if c < 0 then Set_gen.bal (remove l x) v r else Set_gen.bal l v (remove r x )
+
+(* let compare s1 s2 = Set_gen.compare ~cmp:compare_elt s1 s2  *)
+
+
+
+let of_list l =
+  match l with
+  | [] -> empty
+  | [x0] -> singleton x0
+  | [x0; x1] -> add (singleton x0) x1 
+  | [x0; x1; x2] -> add (add (singleton x0)  x1) x2 
+  | [x0; x1; x2; x3] -> add (add (add (singleton x0) x1 ) x2 ) x3 
+  | [x0; x1; x2; x3; x4] -> add (add (add (add (singleton x0) x1) x2 ) x3 ) x4 
+  | _ -> 
+    let arrs = Array.of_list l in 
+    Array.sort compare_elt arrs ; 
+    of_sorted_array arrs
+
+
+
+(* also check order *)
+let invariant t =
+  Set_gen.check t ;
+  Set_gen.is_ordered ~cmp:compare_elt t          
+
+let print fmt s = 
+  Format.fprintf 
+   fmt   "@[<v>{%a}@]@."
+    (fun fmt s   -> 
+       iter s
+         (fun e -> Format.fprintf fmt "@[<v>%a@],@ " 
+         print_elt e) 
+    )
+    s     
+
+
+
+
+
+
+end
+module Js_closure : sig 
+#1 "js_closure.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * Copyright (C) 2016 - Hongbo Zhang, Authors of ReScript 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(** Define a type used in JS IR to help convert lexical scope to JS [var] 
+    based scope convention
+*)
+
+type t = { mutable outer_loop_mutable_values : Set_ident.t }
+
+val empty : unit -> t
+
+val get_lexical_scope : t -> Set_ident.t
+
+val set_lexical_scope : t -> Set_ident.t -> unit
+
+end = struct
+#1 "js_closure.ml"
+(* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
+ * Copyright (C) 2016 - Hongbo Zhang, Authors of ReScript 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = { mutable outer_loop_mutable_values : Set_ident.t }
+
+let empty () = { outer_loop_mutable_values = Set_ident.empty }
+
+let set_lexical_scope t v = t.outer_loop_mutable_values <- v
+
+let get_lexical_scope t = t.outer_loop_mutable_values
+
+end
+module Js_fun_env : sig 
+#1 "js_fun_env.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(** Define type t used in JS IR to collect some meta data 
+    for a function,like its closures, etc 
+*)
+
+type t
+
+val make : ?immutable_mask:bool array -> int -> t
+
+val no_tailcall : t -> bool list
+
+(* val is_empty : t -> bool  *)
+
+val set_unbounded : t -> Set_ident.t -> unit
+
+val set_lexical_scope : t -> Set_ident.t -> unit
+
+val get_lexical_scope : t -> Set_ident.t
+
+(* val to_string : t -> string *)
+
+val mark_unused : t -> int -> unit
+
+val get_unused : t -> int -> bool
+
+val get_mutable_params : Ident.t list -> t -> Ident.t list
+
+val get_unbounded : t -> Set_ident.t
+
+(* val get_length : t -> int *)
+
+end = struct
+#1 "js_fun_env.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(* Make it mutable so that we can do
+   in-place change without constructing a new one
+   -- however, it's a design choice -- to be reviewed later
+*)
+
+type immutable_mask =
+  | All_immutable_and_no_tail_call
+      (** iff not tailcalled 
+      if tailcalled, in theory, it does not need change params, 
+      for example
+      {[
+        let rec f  (n : int ref) = 
+          if !n > 0 then decr n; print_endline "hi"
+      else  f n
+      ]}
+      in this case, we still create [Immutable_mask], 
+      since the inline behavior is slightly different
+  *)
+  | Immutable_mask of bool array
+
+type t = {
+  mutable unbounded : Set_ident.t;
+  mutable bound_loop_mutable_values : Set_ident.t;
+  used_mask : bool array;
+  immutable_mask : immutable_mask;
+}
+(** Invariant: unused param has to be immutable *)
+
+let make ?immutable_mask n =
+  {
+    unbounded = Set_ident.empty;
+    used_mask = Array.make n false;
+    immutable_mask =
+      (match immutable_mask with
+      | Some x -> Immutable_mask x
+      | None -> All_immutable_and_no_tail_call);
+    bound_loop_mutable_values = Set_ident.empty;
+  }
+
+let no_tailcall x =
+  match x.immutable_mask with
+  | All_immutable_and_no_tail_call -> []
+  | Immutable_mask arr -> Array.to_list arr
+
+let mark_unused t i = t.used_mask.(i) <- true
+
+let get_unused t i = t.used_mask.(i)
+
+(* let get_length t = Array.length t.used_mask *)
+
+(* let to_string env =
+   String.concat ","
+    (Ext_list.map (Set_ident.elements  env.unbounded )
+      (fun id  -> Printf.sprintf "%s/%d" id.name id.stamp)
+       ) *)
+
+let get_mutable_params (params : Ident.t list) (x : t) =
+  match x.immutable_mask with
+  | All_immutable_and_no_tail_call -> []
+  | Immutable_mask xs ->
+      Ext_list.filter_mapi params (fun p i ->
+          if not xs.(i) then Some p else None)
+
+let get_unbounded t = t.unbounded
+
+let set_unbounded env v =
+  (* Ext_log.err "%s -- set @." (to_string env); *)
+  (* if Set_ident.is_empty env.bound then *)
+  env.unbounded <- v
+(* else assert false *)
+
+let set_lexical_scope env bound_loop_mutable_values =
+  env.bound_loop_mutable_values <- bound_loop_mutable_values
+
+let get_lexical_scope env = env.bound_loop_mutable_values
+
+(* TODO:  can be refined if it
+    only enclose toplevel variables
+*)
+(* let is_empty t = Set_ident.is_empty t.unbounded *)
+
+end
+module Path : sig 
+#1 "path.mli"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
+(*                                                                        *)
+(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(* Access paths *)
+
+type t =
+    Pident of Ident.t
+  | Pdot of t * string * int
+  | Papply of t * t
+
+val same: t -> t -> bool
+val compare: t -> t -> int
+val isfree: Ident.t -> t -> bool
+val binding_time: t -> int
+val flatten : t -> [ `Contains_apply | `Ok of Ident.t * string list ]
+
+val nopos: int
+
+val name: ?paren:(string -> bool) -> t -> string
+    (* [paren] tells whether a path suffix needs parentheses *)
+val head: t -> Ident.t
+
+val heads: t -> Ident.t list
+
+val last: t -> string
+
+type typath =
+  | Regular of t
+  | Ext of t * string
+  | LocalExt of Ident.t
+  | Cstr of t * string
+
+val constructor_typath: t -> typath
+val is_constructor_typath: t -> bool
+
+end = struct
+#1 "path.ml"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
+(*                                                                        *)
+(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+type t =
+    Pident of Ident.t
+  | Pdot of t * string * int
+  | Papply of t * t
+
+let nopos = -1
+
+let rec same p1 p2 =
+  match (p1, p2) with
+    (Pident id1, Pident id2) -> Ident.same id1 id2
+  | (Pdot(p1, s1, _pos1), Pdot(p2, s2, _pos2)) -> s1 = s2 && same p1 p2
+  | (Papply(fun1, arg1), Papply(fun2, arg2)) ->
+       same fun1 fun2 && same arg1 arg2
+  | (_, _) -> false
+
+let rec compare p1 p2 =
+  match (p1, p2) with
+    (Pident id1, Pident id2) -> Ident.compare id1 id2
+  | (Pdot(p1, s1, _pos1), Pdot(p2, s2, _pos2)) ->
+      let h = compare p1 p2 in
+      if h <> 0 then h else String.compare s1 s2
+  | (Papply(fun1, arg1), Papply(fun2, arg2)) ->
+      let h = compare fun1 fun2 in
+      if h <> 0 then h else compare arg1 arg2
+  | ((Pident _ | Pdot _), (Pdot _ | Papply _)) -> -1
+  | ((Pdot _ | Papply _), (Pident _ | Pdot _)) -> 1
+
+let rec isfree id = function
+    Pident id' -> Ident.same id id'
+  | Pdot(p, _s, _pos) -> isfree id p
+  | Papply(p1, p2) -> isfree id p1 || isfree id p2
+
+let rec binding_time = function
+    Pident id -> Ident.binding_time id
+  | Pdot(p, _s, _pos) -> binding_time p
+  | Papply(p1, p2) -> Ext_pervasives.max_int (binding_time p1) (binding_time p2)
+
+let kfalse _ = false
+
+let rec name ?(paren=kfalse) = function
+    Pident id -> Ident.name id
+  | Pdot(p, s, _pos) ->
+      name ~paren p ^ if paren s then ".( " ^ s ^ " )" else "." ^ s
+  | Papply(p1, p2) -> name ~paren p1 ^ "(" ^ name ~paren p2 ^ ")"
+
+let rec head = function
+    Pident id -> id
+  | Pdot(p, _s, _pos) -> head p
+  | Papply _ -> assert false
+
+let flatten =
+  let rec flatten acc = function
+    | Pident id -> `Ok (id, acc)
+    | Pdot (p, s, _) -> flatten (s :: acc) p
+    | Papply _ -> `Contains_apply
+  in
+  fun t -> flatten [] t
+
+let heads p =
+  let rec heads p acc = match p with
+    | Pident id -> id :: acc
+    | Pdot (p, _s, _pos) -> heads p acc
+    | Papply(p1, p2) ->
+        heads p1 (heads p2 acc)
+  in heads p []
+
+let rec last = function
+  | Pident id -> Ident.name id
+  | Pdot(_, s, _) -> s
+  | Papply(_, p) -> last p
+
+let is_uident s =
+  assert (s <> "");
+  match s.[0] with
+  | 'A'..'Z' -> true
+  | _ -> false
+
+type typath =
+  | Regular of t
+  | Ext of t * string
+  | LocalExt of Ident.t
+  | Cstr of t * string
+
+let constructor_typath = function
+  | Pident id when is_uident (Ident.name id) -> LocalExt id
+  | Pdot(ty_path, s, _) when is_uident s ->
+      if is_uident (last ty_path) then Ext (ty_path, s)
+      else Cstr (ty_path, s)
+  | p -> Regular p
+
+let is_constructor_typath p =
+  match constructor_typath p with
+  | Regular _ -> false
+  | _ -> true
+
+end
+module Outcometree
+= struct
+#1 "outcometree.ml"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*      Daniel de Rauglaudre, projet Cristal, INRIA Rocquencourt          *)
+(*                                                                        *)
+(*   Copyright 2001 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(* Module [Outcometree]: results displayed by the toplevel *)
+
+(* These types represent messages that the toplevel displays as normal
+   results or errors. The real displaying is customisable using the hooks:
+      [Toploop.print_out_value]
+      [Toploop.print_out_type]
+      [Toploop.print_out_sig_item]
+      [Toploop.print_out_phrase] *)
+
+type out_ident =
+  | Oide_apply of out_ident * out_ident
+  | Oide_dot of out_ident * string
+  | Oide_ident of string
+
+type out_string =
+  | Ostr_string
+  | Ostr_bytes
+
+type out_attribute =
+  { oattr_name: string }
+
+type out_value =
+  | Oval_array of out_value list
+  | Oval_char of char
+  | Oval_constr of out_ident * out_value list
+  | Oval_ellipsis
+  | Oval_float of float
+  | Oval_int of int
+  | Oval_int32 of int32
+  | Oval_int64 of int64
+  | Oval_nativeint of nativeint
+  | Oval_list of out_value list
+  | Oval_printer of (Format.formatter -> unit)
+  | Oval_record of (out_ident * out_value) list
+  | Oval_string of string * int * out_string (* string, size-to-print, kind *)
+  | Oval_stuff of string
+  | Oval_tuple of out_value list
+  | Oval_variant of string * out_value option
+
+type out_type =
+  | Otyp_abstract
+  | Otyp_open
+  | Otyp_alias of out_type * string
+  | Otyp_arrow of string * out_type * out_type
+  | Otyp_class of bool * out_ident * out_type list
+  | Otyp_constr of out_ident * out_type list
+  | Otyp_manifest of out_type * out_type
+  | Otyp_object of (string * out_type) list * bool option
+  | Otyp_record of (string * bool * bool * out_type) list
+  | Otyp_stuff of string
+  | Otyp_sum of (string * out_type list * out_type option) list
+  | Otyp_tuple of out_type list
+  | Otyp_var of bool * string
+  | Otyp_variant of
+      bool * out_variant * bool * (string list) option
+  | Otyp_poly of string list * out_type
+  | Otyp_module of string * string list * out_type list
+  | Otyp_attribute of out_type * out_attribute
+
+and out_variant =
+  | Ovar_fields of (string * bool * out_type list) list
+  | Ovar_typ of out_type
+
+type out_class_type =
+  | Octy_constr of out_ident * out_type list
+  | Octy_arrow of string * out_type * out_class_type
+  | Octy_signature of out_type option * out_class_sig_item list
+and out_class_sig_item =
+  | Ocsg_constraint of out_type * out_type
+  | Ocsg_method of string * bool * bool * out_type
+  | Ocsg_value of string * bool * bool * out_type
+
+type out_module_type =
+  | Omty_abstract
+  | Omty_functor of string * out_module_type option * out_module_type
+  | Omty_ident of out_ident
+  | Omty_signature of out_sig_item list
+  | Omty_alias of out_ident
+and out_sig_item =
+  | Osig_class of
+      bool * string * (string * (bool * bool)) list * out_class_type *
+        out_rec_status
+  | Osig_class_type of
+      bool * string * (string * (bool * bool)) list * out_class_type *
+        out_rec_status
+  | Osig_typext of out_extension_constructor * out_ext_status
+  | Osig_modtype of string * out_module_type
+  | Osig_module of string * out_module_type * out_rec_status
+  | Osig_type of out_type_decl * out_rec_status
+  | Osig_value of out_val_decl
+  | Osig_ellipsis
+and out_type_decl =
+  { otype_name: string;
+    otype_params: (string * (bool * bool)) list;
+    otype_type: out_type;
+    otype_private: Asttypes.private_flag;
+    otype_immediate: bool;
+    otype_unboxed: bool;
+    otype_cstrs: (out_type * out_type) list }
+and out_extension_constructor =
+  { oext_name: string;
+    oext_type_name: string;
+    oext_type_params: string list;
+    oext_args: out_type list;
+    oext_ret_type: out_type option;
+    oext_private: Asttypes.private_flag }
+and out_type_extension =
+  { otyext_name: string;
+    otyext_params: string list;
+    otyext_constructors: (string * out_type list * out_type option) list;
+    otyext_private: Asttypes.private_flag }
+and out_val_decl =
+  { oval_name: string;
+    oval_type: out_type;
+    oval_prims: string list;
+    oval_attributes: out_attribute list }
+and out_rec_status =
+  | Orec_not
+  | Orec_first
+  | Orec_next
+and out_ext_status =
+  | Oext_first
+  | Oext_next
+  | Oext_exception
+
+type out_phrase =
+  | Ophr_eval of out_value * out_type
+  | Ophr_signature of (out_sig_item * out_value option) list
+  | Ophr_exception of (exn * out_value)
+
+end
+module Primitive : sig 
+#1 "primitive.mli"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
+(*                                                                        *)
+(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(* Description of primitive functions *)
+
+type boxed_integer = Pnativeint | Pint32 | Pint64
+
+(* Representation of arguments/result for the native code version
+   of a primitive *)
+type native_repr =
+  | Same_as_ocaml_repr
+
+type description = private
+  { prim_name: string;         (* Name of primitive  or C function *)
+    prim_arity: int;           (* Number of arguments *)
+    prim_alloc: bool;          (* Does it allocates or raise? *)
+    prim_native_name: string;  (* Name of C function for the nat. code gen. *)
+    prim_native_repr_args: native_repr list;
+    prim_native_repr_res: native_repr }
+
+(* Invariant [List.length d.prim_native_repr_args = d.prim_arity] *)
+
+val simple
+  :  name:string
+  -> arity:int
+  -> alloc:bool
+  -> description
+
+val make
+  :  name:string
+  -> alloc:bool
+  -> native_name:string
+  -> native_repr_args: native_repr list
+  -> native_repr_res: native_repr
+  -> description
+
+val parse_declaration
+  :  Parsetree.value_description
+  -> native_repr_args:native_repr list
+  -> native_repr_res:native_repr
+  -> description
+
+val print
+  :  description
+  -> Outcometree.out_val_decl
+  -> Outcometree.out_val_decl
+
+val native_name: description -> string
+val byte_name: description -> string
+
+
+val coerce : 
+  (description -> description -> bool ) ref
+end = struct
+#1 "primitive.ml"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
+(*                                                                        *)
+(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(* Description of primitive functions *)
+
+open Misc
+open Parsetree
+
+type boxed_integer = Pnativeint | Pint32 | Pint64
+
+type native_repr =
+  | Same_as_ocaml_repr
+
+type description =
+  { prim_name: string;         (* Name of primitive  or C function *)
+    prim_arity: int;           (* Number of arguments *)
+    prim_alloc: bool;          (* Does it allocates or raise? *)
+    prim_native_name: string;  (* Name of C function for the nat. code gen. *)
+    prim_native_repr_args: native_repr list;
+    prim_native_repr_res: native_repr }
+
+let coerce : (description -> description -> bool) ref = 
+  ref (fun 
+        (p1 : description) (p2 : description) ->
+        p1 = p2
+      )
+
+
+
+let rec make_native_repr_args arity x =
+  if arity = 0 then
+    []
+  else
+    x :: make_native_repr_args (arity - 1) x
+
+let simple ~name ~arity ~alloc =
+  {prim_name = name;
+   prim_arity = arity;
+   prim_alloc = alloc;
+   prim_native_name = "";
+   prim_native_repr_args = make_native_repr_args arity Same_as_ocaml_repr;
+   prim_native_repr_res = Same_as_ocaml_repr}
+
+let make ~name ~alloc ~native_name ~native_repr_args ~native_repr_res =
+  {prim_name = name;
+   prim_arity = List.length native_repr_args;
+   prim_alloc = alloc;
+   prim_native_name = native_name;
+   prim_native_repr_args = native_repr_args;
+   prim_native_repr_res = native_repr_res}
+
+let parse_declaration valdecl ~native_repr_args ~native_repr_res =
+  let arity = List.length native_repr_args in
+  let name, native_name =
+    match valdecl.pval_prim with
+    | name :: name2 :: _ -> (name, name2)
+    | name :: _ -> (name, "")
+    | [] ->
+        fatal_error "Primitive.parse_declaration"
+  in
+  {prim_name = name;
+   prim_arity = arity;
+   prim_alloc = true;
+   prim_native_name = native_name;
+   prim_native_repr_args = native_repr_args;
+   prim_native_repr_res = native_repr_res}
+
+open Outcometree
+
+let print p osig_val_decl =
+  let prims =
+    if p.prim_native_name <> "" then
+      [p.prim_name; p.prim_native_name]
+    else
+      [p.prim_name]
+  in
+  { osig_val_decl with
+    oval_prims = prims;
+    oval_attributes = [] }
+
+let native_name p =
+  if p.prim_native_name <> ""
+  then p.prim_native_name
+  else p.prim_name
+
+let byte_name p =
+  p.prim_name
+
+
+end
+module Types : sig 
+#1 "types.mli"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
+(*                                                                        *)
+(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(** {0 Representation of types and declarations} *)
+
+(** [Types] defines the representation of types and declarations (that is, the
+    content of module signatures).
+
+    CMI files are made of marshalled types.
+*)
+
+(** Asttypes exposes basic definitions shared both by Parsetree and Types. *)
+open Asttypes
+
+(** Type expressions for the core language.
+
+    The [type_desc] variant defines all the possible type expressions one can
+    find in OCaml. [type_expr] wraps this with some annotations.
+
+    The [level] field tracks the level of polymorphism associated to a type,
+    guiding the generalization algorithm.
+    Put shortly, when referring to a type in a given environment, both the type
+    and the environment have a level. If the type has an higher level, then it
+    can be considered fully polymorphic (type variables will be printed as
+    ['a]), otherwise it'll be weakly polymorphic, or non generalized (type
+    variables printed as ['_a]).
+    See [http://okmij.org/ftp/ML/generalization.html] for more information.
+
+    Note about [type_declaration]: one should not make the confusion between
+    [type_expr] and [type_declaration].
+
+    [type_declaration] refers specifically to the [type] construct in OCaml
+    language, where you create and name a new type or type alias.
+
+    [type_expr] is used when you refer to existing types, e.g. when annotating
+    the expected type of a value.
+
+    Also, as the type system of OCaml is generative, a [type_declaration] can
+    have the side-effect of introducing a new type constructor, different from
+    all other known types.
+    Whereas [type_expr] is a pure construct which allows referring to existing
+    types.
+
+    Note on mutability: TBD.
+ *)
+type type_expr =
+  { mutable desc: type_desc;
+    mutable level: int;
+    id: int }
+
+and type_desc =
+  | Tvar of string option
+  (** [Tvar (Some "a")] ==> ['a] or ['_a]
+      [Tvar None]       ==> [_] *)
+
+  | Tarrow of arg_label * type_expr * type_expr * commutable
+  (** [Tarrow (Nolabel,      e1, e2, c)] ==> [e1    -> e2]
+      [Tarrow (Labelled "l", e1, e2, c)] ==> [l:e1  -> e2]
+      [Tarrow (Optional "l", e1, e2, c)] ==> [?l:e1 -> e2]
+
+      See [commutable] for the last argument. *)
+
+  | Ttuple of type_expr list
+  (** [Ttuple [t1;...;tn]] ==> [(t1 * ... * tn)] *)
+
+  | Tconstr of Path.t * type_expr list * abbrev_memo ref
+  (** [Tconstr (`A.B.t', [t1;...;tn], _)] ==> [(t1,...,tn) A.B.t]
+      The last parameter keep tracks of known expansions, see [abbrev_memo]. *)
+
+  | Tobject of type_expr * (Path.t * type_expr list) option ref
+  (** [Tobject (`f1:t1;...;fn: tn', `None')] ==> [< f1: t1; ...; fn: tn >]
+      f1, fn are represented as a linked list of types using Tfield and Tnil
+      constructors.
+
+      [Tobject (_, `Some (`A.ct', [t1;...;tn]')] ==> [(t1, ..., tn) A.ct].
+      where A.ct is the type of some class.
+
+      There are also special cases for so-called "class-types", cf. [Typeclass]
+      and [Ctype.set_object_name]:
+
+        [Tobject (Tfield(_,_,...(Tfield(_,_,rv)...),
+                         Some(`A.#ct`, [rv;t1;...;tn])]
+             ==> [(t1, ..., tn) #A.ct]
+        [Tobject (_, Some(`A.#ct`, [Tnil;t1;...;tn])] ==> [(t1, ..., tn) A.ct]
+
+      where [rv] is the hidden row variable.
+  *)
+
+  | Tfield of string * field_kind * type_expr * type_expr
+  (** [Tfield ("foo", Fpresent, t, ts)] ==> [<...; foo : t; ts>] *)
+
+  | Tnil
+  (** [Tnil] ==> [<...; >] *)
+
+  | Tlink of type_expr
+  (** Indirection used by unification engine. *)
+
+  | Tsubst of type_expr         (* for copying *)
+  (** [Tsubst] is used temporarily to store information in low-level
+      functions manipulating representation of types, such as
+      instantiation or copy.
+      This constructor should not appear outside of these cases. *)
+
+  | Tvariant of row_desc
+  (** Representation of polymorphic variants, see [row_desc]. *)
+
+  | Tunivar of string option
+  (** Occurrence of a type variable introduced by a
+      forall quantifier / [Tpoly]. *)
+
+  | Tpoly of type_expr * type_expr list
+  (** [Tpoly (ty,tyl)] ==> ['a1... 'an. ty],
+      where 'a1 ... 'an are names given to types in tyl
+      and occurrences of those types in ty. *)
+
+  | Tpackage of Path.t * Longident.t list * type_expr list
+  (** Type of a first-class module (a.k.a package). *)
+
+(** [  `X | `Y ]       (row_closed = true)
+    [< `X | `Y ]       (row_closed = true)
+    [> `X | `Y ]       (row_closed = false)
+    [< `X | `Y > `X ]  (row_closed = true)
+
+    type t = [> `X ] as 'a      (row_more = Tvar a)
+    type t = private [> `X ]    (row_more = Tconstr (t#row, [], ref Mnil)
+
+    And for:
+
+        let f = function `X -> `X -> | `Y -> `X
+
+    the type of "f" will be a [Tarrow] whose lhs will (basically) be:
+
+        Tvariant { row_fields = [("X", _)];
+                   row_more   =
+                     Tvariant { row_fields = [("Y", _)];
+                                row_more   =
+                                  Tvariant { row_fields = [];
+                                             row_more   = _;
+                                             _ };
+                                _ };
+                   _
+                 }
+
+*)
+and row_desc =
+    { row_fields: (label * row_field) list;
+      row_more: type_expr;
+      row_bound: unit; (* kept for compatibility *)
+      row_closed: bool;
+      row_fixed: bool;
+      row_name: (Path.t * type_expr list) option }
+
+and row_field =
+    Rpresent of type_expr option
+  | Reither of bool * type_expr list * bool * row_field option ref
+        (* 1st true denotes a constant constructor *)
+        (* 2nd true denotes a tag in a pattern matching, and
+           is erased later *)
+  | Rabsent
+
+(** [abbrev_memo] allows one to keep track of different expansions of a type
+    alias. This is done for performance purposes.
+
+    For instance, when defining [type 'a pair = 'a * 'a], when one refers to an
+    ['a pair], it is just a shortcut for the ['a * 'a] type.
+    This expansion will be stored in the [abbrev_memo] of the corresponding
+    [Tconstr] node.
+
+    In practice, [abbrev_memo] behaves like list of expansions with a mutable
+    tail.
+
+    Note on marshalling: [abbrev_memo] must not appear in saved types.
+    [Btype], with [cleanup_abbrev] and [memo], takes care of tracking and
+    removing abbreviations.
+*)
+and abbrev_memo =
+  | Mnil (** No known abbreviation *)
+
+  | Mcons of private_flag * Path.t * type_expr * type_expr * abbrev_memo
+  (** Found one abbreviation.
+      A valid abbreviation should be at least as visible and reachable by the
+      same path.
+      The first expression is the abbreviation and the second the expansion. *)
+
+  | Mlink of abbrev_memo ref
+  (** Abbreviations can be found after this indirection *)
+
+and field_kind =
+    Fvar of field_kind option ref
+  | Fpresent
+  | Fabsent
+
+(** [commutable] is a flag appended to every arrow type.
+
+    When typing an application, if the type of the functional is
+    known, its type is instantiated with [Cok] arrows, otherwise as
+    [Clink (ref Cunknown)].
+
+    When the type is not known, the application will be used to infer
+    the actual type.  This is fragile in presence of labels where
+    there is no principal type.
+
+    Two incompatible applications relying on [Cunknown] arrows will
+    trigger an error.
+
+    let f g =
+      g ~a:() ~b:();
+      g ~b:() ~a:();
+
+    Error: This function is applied to arguments
+    in an order different from other calls.
+    This is only allowed when the real type is known.
+*)
+and commutable =
+    Cok
+  | Cunknown
+  | Clink of commutable ref
+
+module TypeOps : sig
+  type t = type_expr
+  val compare : t -> t -> int
+  val equal : t -> t -> bool
+  val hash : t -> int
+end
+
+(* Maps of methods and instance variables *)
+
+module Meths : Map.S with type key = string
+module Vars  : Map.S with type key = string
+
+(* Value descriptions *)
+
+type value_description =
+  { val_type: type_expr;                (* Type of the value *)
+    val_kind: value_kind;
+    val_loc: Location.t;
+    val_attributes: Parsetree.attributes;
+   }
+
+and value_kind =
+    Val_reg                             (* Regular value *)
+  | Val_prim of Primitive.description   (* Primitive *)
+
+(* Variance *)
+
+module Variance : sig
+  type t
+  type f = May_pos | May_neg | May_weak | Inj | Pos | Neg | Inv
+  val null : t                          (* no occurrence *)
+  val full : t                          (* strictly invariant *)
+  val covariant : t                     (* strictly covariant *)
+  val may_inv : t                       (* maybe invariant *)
+  val union  : t -> t -> t
+  val inter  : t -> t -> t
+  val subset : t -> t -> bool
+  val set : f -> bool -> t -> t
+  val mem : f -> t -> bool
+  val conjugate : t -> t                (* exchange positive and negative *)
+  val get_upper : t -> bool * bool                  (* may_pos, may_neg   *)
+  val get_lower : t -> bool * bool * bool * bool    (* pos, neg, inv, inj *)
+end
+
+(* Type definitions *)
+
+type type_declaration =
+  { type_params: type_expr list;
+    type_arity: int;
+    type_kind: type_kind;
+    type_private: private_flag;
+    type_manifest: type_expr option;
+    type_variance: Variance.t list;
+    (* covariant, contravariant, weakly contravariant, injective *)
+    type_newtype_level: (int * int) option;
+    (* definition level * expansion level *)
+    type_loc: Location.t;
+    type_attributes: Parsetree.attributes;
+    type_immediate: bool; (* true iff type should not be a pointer *)
+    type_unboxed: unboxed_status;
+  }
+
+and type_kind =
+    Type_abstract
+  | Type_record of label_declaration list  * record_representation
+  | Type_variant of constructor_declaration list
+  | Type_open
+
+and record_representation =
+  | Record_regular                        (* All fields are boxed / tagged *)
+  | Record_float_unused                   (* Was: all fields are floats. Now: unused *)
+  | Record_unboxed of bool                (* Unboxed single-field record, inlined or not *)
+  | Record_inlined of                     (* Inlined record *)
+      { tag : int ; name : string; num_nonconsts : int}
+  | Record_extension                      (* Inlined record under extension *)
+  | Record_optional_labels of string list (* List of optional labels *)
+
+and label_declaration =
+  {
+    ld_id: Ident.t;
+    ld_mutable: mutable_flag;
+    ld_type: type_expr;
+    ld_loc: Location.t;
+    ld_attributes: Parsetree.attributes;
+  }
+
+and constructor_declaration =
+  {
+    cd_id: Ident.t;
+    cd_args: constructor_arguments;
+    cd_res: type_expr option;
+    cd_loc: Location.t;
+    cd_attributes: Parsetree.attributes;
+  }
+
+and constructor_arguments =
+  | Cstr_tuple of type_expr list
+  | Cstr_record of label_declaration list
+
+and unboxed_status = private
+  (* This type must be private in order to ensure perfect sharing of the
+     four possible values. Otherwise, ocamlc.byte and ocamlc.opt produce
+     different executables. *)
+  {
+    unboxed: bool;
+    default: bool; (* True for unannotated unboxable types. *)
+  }
+
+val unboxed_false_default_false : unboxed_status
+val unboxed_false_default_true : unboxed_status
+val unboxed_true_default_false : unboxed_status
+val unboxed_true_default_true : unboxed_status
+
+type extension_constructor =
+    {
+      ext_type_path: Path.t;
+      ext_type_params: type_expr list;
+      ext_args: constructor_arguments;
+      ext_ret_type: type_expr option;
+      ext_private: private_flag;
+      ext_loc: Location.t;
+      ext_attributes: Parsetree.attributes;
+    }
+
+and type_transparence =
+    Type_public      (* unrestricted expansion *)
+  | Type_new         (* "new" type *)
+  | Type_private     (* private type *)
+
+(* Type expressions for the class language *)
+
+module Concr : Set.S with type elt = string
+
+type class_type =
+    Cty_constr of Path.t * type_expr list * class_type
+  | Cty_signature of class_signature
+  | Cty_arrow of arg_label * type_expr * class_type
+
+and class_signature =
+  { csig_self: type_expr;
+    csig_vars:
+      (Asttypes.mutable_flag * Asttypes.virtual_flag * type_expr) Vars.t;
+    csig_concr: Concr.t;
+    csig_inher: (Path.t * type_expr list) list }
+
+type class_declaration =
+  { cty_params: type_expr list;
+    mutable cty_type: class_type;
+    cty_path: Path.t;
+    cty_new: type_expr option;
+    cty_variance: Variance.t list;
+    cty_loc: Location.t;
+    cty_attributes: Parsetree.attributes;
+  }
+
+type class_type_declaration =
+  { clty_params: type_expr list;
+    clty_type: class_type;
+    clty_path: Path.t;
+    clty_variance: Variance.t list;
+    clty_loc: Location.t;
+    clty_attributes: Parsetree.attributes;
+  }
+
+(* Type expressions for the module language *)
+
+type module_type =
+    Mty_ident of Path.t
+  | Mty_signature of signature
+  | Mty_functor of Ident.t * module_type option * module_type
+  | Mty_alias of alias_presence * Path.t
+
+and alias_presence =
+  | Mta_present
+  | Mta_absent
+
+and signature = signature_item list
+
+and signature_item =
+    Sig_value of Ident.t * value_description
+  | Sig_type of Ident.t * type_declaration * rec_status
+  | Sig_typext of Ident.t * extension_constructor * ext_status
+  | Sig_module of Ident.t * module_declaration * rec_status
+  | Sig_modtype of Ident.t * modtype_declaration
+  | Sig_class of unit
+  | Sig_class_type of Ident.t * class_type_declaration * rec_status
+
+and module_declaration =
+  {
+    md_type: module_type;
+    md_attributes: Parsetree.attributes;
+    md_loc: Location.t;
+  }
+
+and modtype_declaration =
+  {
+    mtd_type: module_type option;  (* None: abstract *)
+    mtd_attributes: Parsetree.attributes;
+    mtd_loc: Location.t;
+  }
+
+and rec_status =
+    Trec_not                   (* first in a nonrecursive group *)
+  | Trec_first                 (* first in a recursive group *)
+  | Trec_next                  (* not first in a recursive/nonrecursive group *)
+
+and ext_status =
+    Text_first                     (* first constructor in an extension *)
+  | Text_next                      (* not first constructor in an extension *)
+  | Text_exception
+
+
+(* Constructor and record label descriptions inserted held in typing
+   environments *)
+
+type constructor_description =
+  { cstr_name: string;                  (* Constructor name *)
+    cstr_res: type_expr;                (* Type of the result *)
+    cstr_existentials: type_expr list;  (* list of existentials *)
+    cstr_args: type_expr list;          (* Type of the arguments *)
+    cstr_arity: int;                    (* Number of arguments *)
+    cstr_tag: constructor_tag;          (* Tag for heap blocks *)
+    cstr_consts: int;                   (* Number of constant constructors *)
+    cstr_nonconsts: int;                (* Number of non-const constructors *)
+    cstr_normal: int;                   (* Number of non generalized constrs *)
+    cstr_generalized: bool;             (* Constrained return type? *)
+    cstr_private: private_flag;         (* Read-only constructor? *)
+    cstr_loc: Location.t;
+    cstr_attributes: Parsetree.attributes;
+    cstr_inlined: type_declaration option;
+   }
+
+and constructor_tag =
+    Cstr_constant of int                (* Constant constructor (an int) *)
+  | Cstr_block of int                   (* Regular constructor (a block) *)
+  | Cstr_unboxed                        (* Constructor of an unboxed type *)
+  | Cstr_extension of Path.t * bool     (* Extension constructor
+                                           true if a constant false if a block*)
+
+(* Constructors are the same *)
+val equal_tag :  constructor_tag -> constructor_tag -> bool
+
+(* Constructors may be the same, given potential rebinding *)
+val may_equal_constr :
+    constructor_description ->  constructor_description -> bool
+
+type label_description =
+  { lbl_name: string;                   (* Short name *)
+    lbl_res: type_expr;                 (* Type of the result *)
+    lbl_arg: type_expr;                 (* Type of the argument *)
+    lbl_mut: mutable_flag;              (* Is this a mutable field? *)
+    lbl_pos: int;                       (* Position in block *)
+    lbl_all: label_description array;   (* All the labels in this type *)
+    lbl_repres: record_representation;  (* Representation for this record *)
+    lbl_private: private_flag;          (* Read-only field? *)
+    lbl_loc: Location.t;
+    lbl_attributes: Parsetree.attributes;
+  }
+
+val same_record_representation : record_representation -> record_representation -> bool
+end = struct
+#1 "types.ml"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
+(*                                                                        *)
+(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(* Representation of types and declarations *)
+
+open Asttypes
+
+(* Type expressions for the core language *)
+
+type type_expr =
+  { mutable desc: type_desc;
+    mutable level: int;
+    id: int }
+
+and type_desc =
+    Tvar of string option
+  | Tarrow of arg_label * type_expr * type_expr * commutable
+  | Ttuple of type_expr list
+  | Tconstr of Path.t * type_expr list * abbrev_memo ref
+  | Tobject of type_expr * (Path.t * type_expr list) option ref
+  | Tfield of string * field_kind * type_expr * type_expr
+  | Tnil
+  | Tlink of type_expr
+  | Tsubst of type_expr         (* for copying *)
+  | Tvariant of row_desc
+  | Tunivar of string option
+  | Tpoly of type_expr * type_expr list
+  | Tpackage of Path.t * Longident.t list * type_expr list
+
+and row_desc =
+    { row_fields: (label * row_field) list;
+      row_more: type_expr;
+      row_bound: unit;
+      row_closed: bool;
+      row_fixed: bool;
+      row_name: (Path.t * type_expr list) option }
+
+and row_field =
+    Rpresent of type_expr option
+  | Reither of bool * type_expr list * bool * row_field option ref
+        (* 1st true denotes a constant constructor *)
+        (* 2nd true denotes a tag in a pattern matching, and
+           is erased later *)
+  | Rabsent
+
+and abbrev_memo =
+    Mnil
+  | Mcons of private_flag * Path.t * type_expr * type_expr * abbrev_memo
+  | Mlink of abbrev_memo ref
+
+and field_kind =
+    Fvar of field_kind option ref
+  | Fpresent
+  | Fabsent
+
+and commutable =
+    Cok
+  | Cunknown
+  | Clink of commutable ref
+
+module TypeOps = struct
+  type t = type_expr
+  let compare t1 t2 = t1.id - t2.id
+  let hash t = t.id
+  let equal t1 t2 = t1 == t2
+end
+
+(* Maps of methods and instance variables *)
+
+module OrderedString =
+  struct type t = string let compare (x:t) y = compare x y end
+module Meths = Map.Make(OrderedString)
+module Vars = Meths
+
+(* Value descriptions *)
+
+type value_description =
+  { val_type: type_expr;                (* Type of the value *)
+    val_kind: value_kind;
+    val_loc: Location.t;
+    val_attributes: Parsetree.attributes;
+ }
+
+and value_kind =
+    Val_reg                             (* Regular value *)
+  | Val_prim of Primitive.description   (* Primitive *)
+
+(* Variance *)
+
+module Variance = struct
+  type t = int
+  type f = May_pos | May_neg | May_weak | Inj | Pos | Neg | Inv
+  let single = function
+    | May_pos -> 1
+    | May_neg -> 2
+    | May_weak -> 4
+    | Inj -> 8
+    | Pos -> 16
+    | Neg -> 32
+    | Inv -> 64
+  let union v1 v2 = v1 lor v2
+  let inter v1 v2 = v1 land v2
+  let subset v1 v2 = (v1 land v2 = v1)
+  let set x b v =
+    if b then v lor single x else  v land (lnot (single x))
+  let mem x = subset (single x)
+  let null = 0
+  let may_inv = 7
+  let full = 127
+  let covariant = single May_pos lor single Pos lor single Inj
+  let swap f1 f2 v =
+    let v' = set f1 (mem f2 v) v in set f2 (mem f1 v) v'
+  let conjugate v = swap May_pos May_neg (swap Pos Neg v)
+  let get_upper v = (mem May_pos v, mem May_neg v)
+  let get_lower v = (mem Pos v, mem Neg v, mem Inv v, mem Inj v)
+end
+
+(* Type definitions *)
+
+type type_declaration =
+  { type_params: type_expr list;
+    type_arity: int;
+    type_kind: type_kind;
+    type_private: private_flag;
+    type_manifest: type_expr option;
+    type_variance: Variance.t list;
+    type_newtype_level: (int * int) option;
+    type_loc: Location.t;
+    type_attributes: Parsetree.attributes;
+    type_immediate: bool;
+    type_unboxed: unboxed_status;
+ }
+
+and type_kind =
+    Type_abstract
+  | Type_record of label_declaration list  * record_representation
+  | Type_variant of constructor_declaration list
+  | Type_open
+
+and record_representation =
+  | Record_regular                        (* All fields are boxed / tagged *)
+  | Record_float_unused                   (* Was: all fields are floats. Now: unused *)
+  | Record_unboxed of bool                (* Unboxed single-field record, inlined or not *)
+  | Record_inlined of                     (* Inlined record *)
+      { tag : int ; name : string; num_nonconsts : int}
+  | Record_extension                      (* Inlined record under extension *)
+  | Record_optional_labels of string list (* List of optional labels *)
+
+and label_declaration =
+  {
+    ld_id: Ident.t;
+    ld_mutable: mutable_flag;
+    ld_type: type_expr;
+    ld_loc: Location.t;
+    ld_attributes: Parsetree.attributes;
+  }
+
+and constructor_declaration =
+  {
+    cd_id: Ident.t;
+    cd_args: constructor_arguments;
+    cd_res: type_expr option;
+    cd_loc: Location.t;
+    cd_attributes: Parsetree.attributes;
+  }
+
+and constructor_arguments =
+  | Cstr_tuple of type_expr list
+  | Cstr_record of label_declaration list
+
+and unboxed_status =
+  {
+    unboxed: bool;
+    default: bool; (* False if the unboxed field was set from an attribute. *)
+  }
+
+let unboxed_false_default_false = {unboxed = false; default = false}
+let unboxed_false_default_true = {unboxed = false; default = true}
+let unboxed_true_default_false = {unboxed = true; default = false}
+let unboxed_true_default_true = {unboxed = true; default = true}
+
+type extension_constructor =
+    { ext_type_path: Path.t;
+      ext_type_params: type_expr list;
+      ext_args: constructor_arguments;
+      ext_ret_type: type_expr option;
+      ext_private: private_flag;
+      ext_loc: Location.t;
+      ext_attributes: Parsetree.attributes; }
+
+and type_transparence =
+    Type_public      (* unrestricted expansion *)
+  | Type_new         (* "new" type *)
+  | Type_private     (* private type *)
+
+(* Type expressions for the class language *)
+
+module Concr = Set.Make(OrderedString)
+
+type class_type =
+    Cty_constr of Path.t * type_expr list * class_type
+  | Cty_signature of class_signature
+  | Cty_arrow of arg_label * type_expr * class_type
+
+and class_signature =
+  { csig_self: type_expr;
+    csig_vars:
+      (Asttypes.mutable_flag * Asttypes.virtual_flag * type_expr) Vars.t;
+    csig_concr: Concr.t;
+    csig_inher: (Path.t * type_expr list) list }
+
+type class_declaration =
+  { cty_params: type_expr list;
+    mutable cty_type: class_type;
+    cty_path: Path.t;
+    cty_new: type_expr option;
+    cty_variance: Variance.t list;
+    cty_loc: Location.t;
+    cty_attributes: Parsetree.attributes;
+ }
+
+type class_type_declaration =
+  { clty_params: type_expr list;
+    clty_type: class_type;
+    clty_path: Path.t;
+    clty_variance: Variance.t list;
+    clty_loc: Location.t;
+    clty_attributes: Parsetree.attributes;
+  }
+
+(* Type expressions for the module language *)
+
+type module_type =
+    Mty_ident of Path.t
+  | Mty_signature of signature
+  | Mty_functor of Ident.t * module_type option * module_type
+  | Mty_alias of alias_presence * Path.t
+
+and alias_presence =
+  | Mta_present
+  | Mta_absent
+
+and signature = signature_item list
+
+and signature_item =
+    Sig_value of Ident.t * value_description
+  | Sig_type of Ident.t * type_declaration * rec_status
+  | Sig_typext of Ident.t * extension_constructor * ext_status
+  | Sig_module of Ident.t * module_declaration * rec_status
+  | Sig_modtype of Ident.t * modtype_declaration
+  | Sig_class of unit
+  | Sig_class_type of Ident.t * class_type_declaration * rec_status
+
+and module_declaration =
+  {
+    md_type: module_type;
+    md_attributes: Parsetree.attributes;
+    md_loc: Location.t;
+  }
+
+and modtype_declaration =
+  {
+    mtd_type: module_type option;  (* Note: abstract *)
+    mtd_attributes: Parsetree.attributes;
+    mtd_loc: Location.t;
+  }
+
+and rec_status =
+    Trec_not                   (* first in a nonrecursive group *)
+  | Trec_first                 (* first in a recursive group *)
+  | Trec_next                  (* not first in a recursive/nonrecursive group *)
+
+and ext_status =
+    Text_first                     (* first constructor of an extension *)
+  | Text_next                      (* not first constructor of an extension *)
+  | Text_exception                 (* an exception *)
+
+
+(* Constructor and record label descriptions inserted held in typing
+   environments *)
+
+type constructor_description =
+  { cstr_name: string;                  (* Constructor name *)
+    cstr_res: type_expr;                (* Type of the result *)
+    cstr_existentials: type_expr list;  (* list of existentials *)
+    cstr_args: type_expr list;          (* Type of the arguments *)
+    cstr_arity: int;                    (* Number of arguments *)
+    cstr_tag: constructor_tag;          (* Tag for heap blocks *)
+    cstr_consts: int;                   (* Number of constant constructors *)
+    cstr_nonconsts: int;                (* Number of non-const constructors *)
+    cstr_normal: int;                   (* Number of non generalized constrs *)
+    cstr_generalized: bool;             (* Constrained return type? *)
+    cstr_private: private_flag;         (* Read-only constructor? *)
+    cstr_loc: Location.t;
+    cstr_attributes: Parsetree.attributes;
+    cstr_inlined: type_declaration option;
+   }
+
+and constructor_tag =
+    Cstr_constant of int                (* Constant constructor (an int) *)
+  | Cstr_block of int                   (* Regular constructor (a block) *)
+  | Cstr_unboxed                        (* Constructor of an unboxed type *)
+  | Cstr_extension of Path.t * bool     (* Extension constructor
+                                           true if a constant false if a block*)
+
+let equal_tag t1 t2 = 
+  match (t1, t2) with
+  | Cstr_constant i1, Cstr_constant i2 -> i2 = i1
+  | Cstr_block i1, Cstr_block i2 -> i2 = i1
+  | Cstr_unboxed, Cstr_unboxed -> true
+  | Cstr_extension (path1, b1), Cstr_extension (path2, b2) -> 
+      Path.same path1 path2 && b1 = b2
+  | (Cstr_constant _|Cstr_block _|Cstr_unboxed|Cstr_extension _), _ -> false
+
+let may_equal_constr c1 c2 = match c1.cstr_tag,c2.cstr_tag with
+| Cstr_extension _,Cstr_extension _ -> c1.cstr_arity = c2.cstr_arity
+| tag1,tag2 -> equal_tag tag1 tag2
+
+type label_description =
+  { lbl_name: string;                   (* Short name *)
+    lbl_res: type_expr;                 (* Type of the result *)
+    lbl_arg: type_expr;                 (* Type of the argument *)
+    lbl_mut: mutable_flag;              (* Is this a mutable field? *)
+    lbl_pos: int;                       (* Position in block *)
+    lbl_all: label_description array;   (* All the labels in this type *)
+    lbl_repres: record_representation;  (* Representation for this record *)
+    lbl_private: private_flag;          (* Read-only field? *)
+    lbl_loc: Location.t;
+    lbl_attributes: Parsetree.attributes;
+   }
+let same_record_representation x y =
+  match x with
+  | Record_regular -> y = Record_regular
+  | Record_float_unused -> y = Record_float_unused
+  | Record_optional_labels lbls -> (
+      match y with
+      | Record_optional_labels lbls2 -> lbls = lbls2
+      | _ -> false)
+  | Record_inlined {tag; name; num_nonconsts} -> (
+      match y with
+      | Record_inlined y ->
+          tag = y.tag && name = y.name && num_nonconsts = y.num_nonconsts
+      | _ -> false)
+  | Record_extension -> y = Record_extension
+  | Record_unboxed x -> ( match y with Record_unboxed y -> x = y | _ -> false)
+
+end
+module Btype : sig 
+#1 "btype.mli"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
+(*                                                                        *)
+(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(* Basic operations on core types *)
+
+open Asttypes
+open Types
+
+(**** Sets, maps and hashtables of types ****)
+
+module TypeSet  : Set.S with type elt = type_expr
+module TypeMap  : Map.S with type key = type_expr
+module TypeHash : Hashtbl.S with type key = type_expr
+
+(**** Levels ****)
+
+val generic_level: int
+
+val newty2: int -> type_desc -> type_expr
+        (* Create a type *)
+val newgenty: type_desc -> type_expr
+        (* Create a generic type *)
+val newgenvar: ?name:string -> unit -> type_expr
+        (* Return a fresh generic variable *)
+
+(* Use Tsubst instead
+val newmarkedvar: int -> type_expr
+        (* Return a fresh marked variable *)
+val newmarkedgenvar: unit -> type_expr
+        (* Return a fresh marked generic variable *)
+*)
+
+(**** Types ****)
+
+val is_Tvar: type_expr -> bool
+val is_Tunivar: type_expr -> bool
+val is_Tconstr: type_expr -> bool
+val dummy_method: label
+val default_mty: module_type option -> module_type
+
+val repr: type_expr -> type_expr
+        (* Return the canonical representative of a type. *)
+
+val field_kind_repr: field_kind -> field_kind
+        (* Return the canonical representative of an object field
+           kind. *)
+
+val commu_repr: commutable -> commutable
+        (* Return the canonical representative of a commutation lock *)
+
+(**** polymorphic variants ****)
+
+val row_repr: row_desc -> row_desc
+        (* Return the canonical representative of a row description *)
+val row_field_repr: row_field -> row_field
+val row_field: label -> row_desc -> row_field
+        (* Return the canonical representative of a row field *)
+val row_more: row_desc -> type_expr
+        (* Return the extension variable of the row *)
+val row_fixed: row_desc -> bool
+        (* Return whether the row should be treated as fixed or not *)
+val static_row: row_desc -> bool
+        (* Return whether the row is static or not *)
+val hash_variant: label -> int
+        (* Hash function for variant tags *)
+
+val proxy: type_expr -> type_expr
+        (* Return the proxy representative of the type: either itself
+           or a row variable *)
+
+(**** Utilities for private abbreviations with fixed rows ****)
+val row_of_type: type_expr -> type_expr
+val has_constr_row: type_expr -> bool
+val is_row_name: string -> bool
+val is_constr_row: allow_ident:bool -> type_expr -> bool
+
+(**** Utilities for type traversal ****)
+
+val iter_type_expr: (type_expr -> unit) -> type_expr -> unit
+        (* Iteration on types *)
+val iter_row: (type_expr -> unit) -> row_desc -> unit
+        (* Iteration on types in a row *)
+val iter_abbrev: (type_expr -> unit) -> abbrev_memo -> unit
+        (* Iteration on types in an abbreviation list *)
+
+type type_iterators =
+  { it_signature: type_iterators -> signature -> unit;
+    it_signature_item: type_iterators -> signature_item -> unit;
+    it_value_description: type_iterators -> value_description -> unit;
+    it_type_declaration: type_iterators -> type_declaration -> unit;
+    it_extension_constructor: type_iterators -> extension_constructor -> unit;
+    it_module_declaration: type_iterators -> module_declaration -> unit;
+    it_modtype_declaration: type_iterators -> modtype_declaration -> unit;
+    it_class_declaration: type_iterators -> class_declaration -> unit;
+    it_class_type_declaration: type_iterators -> class_type_declaration -> unit;
+    it_module_type: type_iterators -> module_type -> unit;
+    it_class_type: type_iterators -> class_type -> unit;
+    it_type_kind: type_iterators -> type_kind -> unit;
+    it_do_type_expr: type_iterators -> type_expr -> unit;
+    it_type_expr: type_iterators -> type_expr -> unit;
+    it_path: Path.t -> unit; }
+val type_iterators: type_iterators
+        (* Iteration on arbitrary type information.
+           [it_type_expr] calls [mark_type_node] to avoid loops. *)
+val unmark_iterators: type_iterators
+        (* Unmark any structure containing types. See [unmark_type] below. *)
+
+val copy_type_desc:
+    ?keep_names:bool -> (type_expr -> type_expr) -> type_desc -> type_desc
+        (* Copy on types *)
+val copy_row:
+    (type_expr -> type_expr) ->
+    bool -> row_desc -> bool -> type_expr -> row_desc
+val copy_kind: field_kind -> field_kind
+
+val save_desc: type_expr -> type_desc -> unit
+        (* Save a type description *)
+val dup_kind: field_kind option ref -> unit
+        (* Save a None field_kind, and make it point to a fresh Fvar *)
+val cleanup_types: unit -> unit
+        (* Restore type descriptions *)
+
+val lowest_level: int
+        (* Marked type: ty.level < lowest_level *)
+val pivot_level: int
+        (* Type marking: ty.level <- pivot_level - ty.level *)
+val mark_type: type_expr -> unit
+        (* Mark a type *)
+val mark_type_node: type_expr -> unit
+        (* Mark a type node (but not its sons) *)
+val mark_type_params: type_expr -> unit
+        (* Mark the sons of a type node *)
+val unmark_type: type_expr -> unit
+val unmark_type_decl: type_declaration -> unit
+val unmark_extension_constructor: extension_constructor -> unit
+val unmark_class_type: class_type -> unit
+val unmark_class_signature: class_signature -> unit
+        (* Remove marks from a type *)
+
+(**** Memorization of abbreviation expansion ****)
+
+val find_expans: private_flag -> Path.t -> abbrev_memo -> type_expr option
+        (* Look up a memorized abbreviation *)
+val cleanup_abbrev: unit -> unit
+        (* Flush the cache of abbreviation expansions.
+           When some types are saved (using [output_value]), this
+           function MUST be called just before. *)
+val memorize_abbrev:
+        abbrev_memo ref ->
+        private_flag -> Path.t -> type_expr -> type_expr -> unit
+        (* Add an expansion in the cache *)
+val forget_abbrev:
+        abbrev_memo ref -> Path.t -> unit
+        (* Remove an abbreviation from the cache *)
+
+(**** Utilities for labels ****)
+
+val is_optional : arg_label -> bool
+val label_name : arg_label -> label
+
+(* Returns the label name with first character '?' or '~' as appropriate. *)
+val prefixed_label_name : arg_label -> label
+
+type sargs = (arg_label * Parsetree.expression) list
+
+val extract_label :
+    label -> sargs ->
+    (arg_label * Parsetree.expression * sargs) option 
+    (* actual label, value, new list with the same order *)
+
+val label_assoc : arg_label -> sargs -> bool
+(**** Utilities for backtracking ****)
+
+type snapshot
+        (* A snapshot for backtracking *)
+val snapshot: unit -> snapshot
+        (* Make a snapshot for later backtracking. Costs nothing *)
+val backtrack: snapshot -> unit
+        (* Backtrack to a given snapshot. Only possible if you have
+           not already backtracked to a previous snapshot.
+           Calls [cleanup_abbrev] internally *)
+val undo_compress: snapshot -> unit
+        (* Backtrack only path compression. Only meaningful if you have
+           not already backtracked to a previous snapshot.
+           Does not call [cleanup_abbrev] *)
+
+(* Functions to use when modifying a type (only Ctype?) *)
+val link_type: type_expr -> type_expr -> unit
+        (* Set the desc field of [t1] to [Tlink t2], logging the old
+           value if there is an active snapshot *)
+val set_level: type_expr -> int -> unit
+val set_name:
+    (Path.t * type_expr list) option ref ->
+    (Path.t * type_expr list) option -> unit
+val set_row_field: row_field option ref -> row_field -> unit
+val set_univar: type_expr option ref -> type_expr -> unit
+val set_kind: field_kind option ref -> field_kind -> unit
+val set_commu: commutable ref -> commutable -> unit
+val set_typeset: TypeSet.t ref -> TypeSet.t -> unit
+        (* Set references, logging the old value *)
+val log_type: type_expr -> unit
+        (* Log the old value of a type, before modifying it by hand *)
+
+(**** Forward declarations ****)
+val print_raw: (Format.formatter -> type_expr -> unit) ref
+
+val iter_type_expr_kind: (type_expr -> unit) -> (type_kind -> unit)
+
+val iter_type_expr_cstr_args: (type_expr -> unit) ->
+  (constructor_arguments -> unit)
+val map_type_expr_cstr_args: (type_expr -> type_expr) ->
+  (constructor_arguments -> constructor_arguments)
+
+end = struct
+#1 "btype.ml"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*  Xavier Leroy and Jerome Vouillon, projet Cristal, INRIA Rocquencourt  *)
+(*                                                                        *)
+(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(* Basic operations on core types *)
+
+open Misc
+open Asttypes
+open Types
+
+(**** Sets, maps and hashtables of types ****)
+
+module TypeSet = Set.Make(TypeOps)
+module TypeMap = Map.Make (TypeOps)
+module TypeHash = Hashtbl.Make(TypeOps)
+
+(**** Forward declarations ****)
+
+let print_raw =
+  ref (fun _ -> assert false : Format.formatter -> type_expr -> unit)
+
+(**** Type level management ****)
+
+let generic_level = 100000000
+
+(* Used to mark a type during a traversal. *)
+let lowest_level = 0
+let pivot_level = 2 * lowest_level - 1
+    (* pivot_level - lowest_level < lowest_level *)
+
+(**** Some type creators ****)
+
+let new_id = ref (-1)
+
+let newty2 level desc  =
+  incr new_id; { desc; level; id = !new_id }
+let newgenty desc      = newty2 generic_level desc
+let newgenvar ?name () = newgenty (Tvar name)
+(*
+let newmarkedvar level =
+  incr new_id; { desc = Tvar; level = pivot_level - level; id = !new_id }
+let newmarkedgenvar () =
+  incr new_id;
+  { desc = Tvar; level = pivot_level - generic_level; id = !new_id }
+*)
+
+(**** Check some types ****)
+
+let is_Tvar = function {desc=Tvar _} -> true | _ -> false
+let is_Tunivar = function {desc=Tunivar _} -> true | _ -> false
+let is_Tconstr = function {desc=Tconstr _} -> true | _ -> false
+
+let dummy_method = "*dummy method*"
+let default_mty = function
+    Some mty -> mty
+  | None -> Mty_signature []
+
+(**** Definitions for backtracking ****)
+
+type change =
+    Ctype of type_expr * type_desc
+  | Ccompress of type_expr * type_desc * type_desc
+  | Clevel of type_expr * int
+  | Cname of
+      (Path.t * type_expr list) option ref * (Path.t * type_expr list) option
+  | Crow of row_field option ref * row_field option
+  | Ckind of field_kind option ref * field_kind option
+  | Ccommu of commutable ref * commutable
+  | Cuniv of type_expr option ref * type_expr option
+  | Ctypeset of TypeSet.t ref * TypeSet.t
+
+type changes =
+    Change of change * changes ref
+  | Unchanged
+  | Invalid
+
+let trail = Weak.create 1
+
+let log_change ch =
+  match Weak.get trail 0 with None -> ()
+  | Some r ->
+      let r' = ref Unchanged in
+      r := Change (ch, r');
+      Weak.set trail 0 (Some r')
+
+(**** Representative of a type ****)
+
+let rec field_kind_repr =
+  function
+    Fvar {contents = Some kind} -> field_kind_repr kind
+  | kind                        -> kind
+
+let rec repr_link compress t d =
+ function
+   {desc = Tlink t' as d'} ->
+     repr_link true t d' t'
+ | {desc = Tfield (_, k, _, t') as d'} when field_kind_repr k = Fabsent ->
+     repr_link true t d' t'
+ | t' ->
+     if compress then begin
+       log_change (Ccompress (t, t.desc, d)); t.desc <- d
+     end;
+     t'
+
+let repr t =
+  match t.desc with
+   Tlink t' as d ->
+     repr_link false t d t'
+ | Tfield (_, k, _, t') as d when field_kind_repr k = Fabsent ->
+     repr_link false t d t'
+ | _ -> t
+
+let rec commu_repr = function
+    Clink r when !r <> Cunknown -> commu_repr !r
+  | c -> c
+
+let rec row_field_repr_aux tl = function
+    Reither(_, tl', _, {contents = Some fi}) ->
+      row_field_repr_aux (tl@tl') fi
+  | Reither(c, tl', m, r) ->
+      Reither(c, tl@tl', m, r)
+  | Rpresent (Some _) when tl <> [] ->
+      Rpresent (Some (List.hd tl))
+  | fi -> fi
+
+let row_field_repr fi = row_field_repr_aux [] fi
+
+let rec rev_concat l ll =
+  match ll with
+    [] -> l
+  | l'::ll -> rev_concat (l'@l) ll
+
+let rec row_repr_aux ll row =
+  match (repr row.row_more).desc with
+  | Tvariant row' ->
+      let f = row.row_fields in
+      row_repr_aux (if f = [] then ll else f::ll) row'
+  | _ ->
+      if ll = [] then row else
+      {row with row_fields = rev_concat row.row_fields ll}
+
+let row_repr row = row_repr_aux [] row
+
+let rec row_field tag row =
+  let rec find = function
+    | (tag',f) :: fields ->
+        if tag = tag' then row_field_repr f else find fields
+    | [] ->
+        match repr row.row_more with
+        | {desc=Tvariant row'} -> row_field tag row'
+        | _ -> Rabsent
+  in find row.row_fields
+
+let rec row_more row =
+  match repr row.row_more with
+  | {desc=Tvariant row'} -> row_more row'
+  | ty -> ty
+
+let row_fixed row =
+  let row = row_repr row in
+  row.row_fixed ||
+  match (repr row.row_more).desc with
+    Tvar _ | Tnil -> false
+  | Tunivar _ | Tconstr _ -> true
+  | _ -> assert false
+
+let static_row row =
+  let row = row_repr row in
+  row.row_closed &&
+  List.for_all
+    (fun (_,f) -> match row_field_repr f with Reither _ -> false | _ -> true)
+    row.row_fields
+
+let hash_variant s =
+  let accu = ref 0 in
+  for i = 0 to String.length s - 1 do
+    accu := 223 * !accu + Char.code s.[i]
+  done;
+  (* reduce to 31 bits *)
+  accu := !accu land (1 lsl 31 - 1);
+  (* make it signed for 64 bits architectures *)
+  if !accu > 0x3FFFFFFF then !accu - (1 lsl 31) else !accu
+
+let proxy ty =
+  let ty0 = repr ty in
+  match ty0.desc with
+  | Tvariant row when not (static_row row) ->
+      row_more row
+  | Tobject (ty, _) ->
+      let rec proxy_obj ty =
+        match ty.desc with
+          Tfield (_, _, _, ty) | Tlink ty -> proxy_obj ty
+        | Tvar _ | Tunivar _ | Tconstr _ -> ty
+        | Tnil -> ty0
+        | _ -> assert false
+      in proxy_obj ty
+  | _ -> ty0
+
+(**** Utilities for fixed row private types ****)
+
+let row_of_type t = 
+  match (repr t).desc with
+    Tobject(t,_) ->
+      let rec get_row t =
+        let t = repr t in
+        match t.desc with
+          Tfield(_,_,_,t) -> get_row t
+        | _ -> t
+      in get_row t
+  | Tvariant row ->
+      row_more row
+  | _ ->
+      t
+
+let has_constr_row t =
+  not (is_Tconstr t) && is_Tconstr (row_of_type t)
+
+let is_row_name s =
+  let l = String.length s in
+  if l < 4 then false else String.sub s (l-4) 4 = "#row"
+
+let is_constr_row ~allow_ident t =
+  match t.desc with
+    Tconstr (Path.Pident id, _, _) when allow_ident ->
+      is_row_name (Ident.name id)
+  | Tconstr (Path.Pdot (_, s, _), _, _) -> is_row_name s
+  | _ -> false
+
+
+                  (**********************************)
+                  (*  Utilities for type traversal  *)
+                  (**********************************)
+
+let rec iter_row f row =
+  List.iter
+    (fun (_, fi) ->
+      match row_field_repr fi with
+      | Rpresent(Some ty) -> f ty
+      | Reither(_, tl, _, _) -> List.iter f tl
+      | _ -> ())
+    row.row_fields;
+  match (repr row.row_more).desc with
+    Tvariant row -> iter_row f row
+  | Tvar _ | Tunivar _ | Tsubst _ | Tconstr _ | Tnil ->
+      Misc.may (fun (_,l) -> List.iter f l) row.row_name
+  | _ -> assert false
+
+let iter_type_expr f ty =
+  match ty.desc with
+    Tvar _              -> ()
+  | Tarrow (_, ty1, ty2, _) -> f ty1; f ty2
+  | Ttuple l            -> List.iter f l
+  | Tconstr (_, l, _)   -> List.iter f l
+  | Tobject(ty, {contents = Some (_, p)})
+                        -> f ty; List.iter f p
+  | Tobject (ty, _)     -> f ty
+  | Tvariant row        -> iter_row f row; f (row_more row)
+  | Tfield (_, _, ty1, ty2) -> f ty1; f ty2
+  | Tnil                -> ()
+  | Tlink ty            -> f ty
+  | Tsubst ty           -> f ty
+  | Tunivar _           -> ()
+  | Tpoly (ty, tyl)     -> f ty; List.iter f tyl
+  | Tpackage (_, _, l)  -> List.iter f l
+
+let rec iter_abbrev f = function
+    Mnil                   -> ()
+  | Mcons(_, _, ty, ty', rem) -> f ty; f ty'; iter_abbrev f rem
+  | Mlink rem              -> iter_abbrev f !rem
+
+type type_iterators =
+  { it_signature: type_iterators -> signature -> unit;
+    it_signature_item: type_iterators -> signature_item -> unit;
+    it_value_description: type_iterators -> value_description -> unit;
+    it_type_declaration: type_iterators -> type_declaration -> unit;
+    it_extension_constructor: type_iterators -> extension_constructor -> unit;
+    it_module_declaration: type_iterators -> module_declaration -> unit;
+    it_modtype_declaration: type_iterators -> modtype_declaration -> unit;
+    it_class_declaration: type_iterators -> class_declaration -> unit;
+    it_class_type_declaration: type_iterators -> class_type_declaration -> unit;
+    it_module_type: type_iterators -> module_type -> unit;
+    it_class_type: type_iterators -> class_type -> unit;
+    it_type_kind: type_iterators -> type_kind -> unit;
+    it_do_type_expr: type_iterators -> type_expr -> unit;
+    it_type_expr: type_iterators -> type_expr -> unit;
+    it_path: Path.t -> unit; }
+
+let iter_type_expr_cstr_args f = function
+  | Cstr_tuple tl -> List.iter f tl
+  | Cstr_record lbls -> List.iter (fun d -> f d.ld_type) lbls
+
+let map_type_expr_cstr_args f = function
+  | Cstr_tuple tl -> Cstr_tuple (List.map f tl)
+  | Cstr_record lbls ->
+      Cstr_record (List.map (fun d -> {d with ld_type=f d.ld_type}) lbls)
+
+let iter_type_expr_kind f = function
+  | Type_abstract -> ()
+  | Type_variant cstrs ->
+      List.iter
+        (fun cd ->
+           iter_type_expr_cstr_args f cd.cd_args;
+           Misc.may f cd.cd_res
+        )
+        cstrs
+  | Type_record(lbls, _) ->
+      List.iter (fun d -> f d.ld_type) lbls
+  | Type_open ->
+      ()
+
+
+let type_iterators =
+  let it_signature it =
+    List.iter (it.it_signature_item it)
+  and it_signature_item it = function
+      Sig_value (_, vd)     -> it.it_value_description it vd
+    | Sig_type (_, td, _)   -> it.it_type_declaration it td
+    | Sig_typext (_, td, _) -> it.it_extension_constructor it td
+    | Sig_module (_, md, _) -> it.it_module_declaration it md
+    | Sig_modtype (_, mtd)  -> it.it_modtype_declaration it mtd
+    | Sig_class ()  -> assert false
+    | Sig_class_type (_, ctd, _) -> it.it_class_type_declaration it ctd
+  and it_value_description it vd =
+    it.it_type_expr it vd.val_type
+  and it_type_declaration it td =
+    List.iter (it.it_type_expr it) td.type_params;
+    may (it.it_type_expr it) td.type_manifest;
+    it.it_type_kind it td.type_kind
+  and it_extension_constructor it td =
+    it.it_path td.ext_type_path;
+    List.iter (it.it_type_expr it) td.ext_type_params;
+    iter_type_expr_cstr_args (it.it_type_expr it) td.ext_args;
+    may (it.it_type_expr it) td.ext_ret_type
+  and it_module_declaration it md =
+    it.it_module_type it md.md_type
+  and it_modtype_declaration it mtd =
+    may (it.it_module_type it) mtd.mtd_type
+  and it_class_declaration it cd =
+    List.iter (it.it_type_expr it) cd.cty_params;
+    it.it_class_type it cd.cty_type;
+    may (it.it_type_expr it) cd.cty_new;
+    it.it_path cd.cty_path
+  and it_class_type_declaration it ctd =
+    List.iter (it.it_type_expr it) ctd.clty_params;
+    it.it_class_type it ctd.clty_type;
+    it.it_path ctd.clty_path
+  and it_module_type it = function
+      Mty_ident p
+    | Mty_alias(_, p) -> it.it_path p
+    | Mty_signature sg -> it.it_signature it sg
+    | Mty_functor (_, mto, mt) ->
+        may (it.it_module_type it) mto;
+        it.it_module_type it mt
+  and it_class_type it = function
+      Cty_constr (p, tyl, cty) ->
+        it.it_path p;
+        List.iter (it.it_type_expr it) tyl;
+        it.it_class_type it cty
+    | Cty_signature cs ->
+        it.it_type_expr it cs.csig_self;
+        Vars.iter (fun _ (_,_,ty) -> it.it_type_expr it ty) cs.csig_vars;
+        List.iter
+          (fun (p, tl) -> it.it_path p; List.iter (it.it_type_expr it) tl)
+          cs.csig_inher
+    | Cty_arrow  (_, ty, cty) ->
+        it.it_type_expr it ty;
+        it.it_class_type it cty
+  and it_type_kind it kind =
+    iter_type_expr_kind (it.it_type_expr it) kind
+  and it_do_type_expr it ty =
+    iter_type_expr (it.it_type_expr it) ty;
+    match ty.desc with
+      Tconstr (p, _, _)
+    | Tobject (_, {contents=Some (p, _)})
+    | Tpackage (p, _, _) ->
+        it.it_path p
+    | Tvariant row ->
+        may (fun (p,_) -> it.it_path p) (row_repr row).row_name
+    | _ -> ()
+  and it_path _p = ()
+  in
+  { it_path; it_type_expr = it_do_type_expr; it_do_type_expr;
+    it_type_kind; it_class_type; it_module_type;
+    it_signature; it_class_type_declaration; it_class_declaration;
+    it_modtype_declaration; it_module_declaration; it_extension_constructor;
+    it_type_declaration; it_value_description; it_signature_item; }
+
+let copy_row f fixed row keep more =
+  let fields = List.map
+      (fun (l, fi) -> l,
+        match row_field_repr fi with
+        | Rpresent(Some ty) -> Rpresent(Some(f ty))
+        | Reither(c, tl, m, e) ->
+            let e = if keep then e else ref None in
+            let m = if row.row_fixed then fixed else m in
+            let tl = List.map f tl in
+            Reither(c, tl, m, e)
+        | _ -> fi)
+      row.row_fields in
+  let name =
+    match row.row_name with None -> None
+    | Some (path, tl) -> Some (path, List.map f tl) in
+  { row_fields = fields; row_more = more;
+    row_bound = (); row_fixed = row.row_fixed && fixed;
+    row_closed = row.row_closed; row_name = name; }
+
+let rec copy_kind = function
+    Fvar{contents = Some k} -> copy_kind k
+  | Fvar _   -> Fvar (ref None)
+  | Fpresent -> Fpresent
+  | Fabsent  -> assert false
+
+let copy_commu c =
+  if commu_repr c = Cok then Cok else Clink (ref Cunknown)
+
+(* Since univars may be used as row variables, we need to do some
+   encoding during substitution *)
+let rec norm_univar ty =
+  match ty.desc with
+    Tunivar _ | Tsubst _ -> ty
+  | Tlink ty           -> norm_univar ty
+  | Ttuple (ty :: _)   -> norm_univar ty
+  | _                  -> assert false
+
+let rec copy_type_desc ?(keep_names=false) f = function
+    Tvar _ as ty        -> if keep_names then ty else Tvar None
+  | Tarrow (p, ty1, ty2, c)-> Tarrow (p, f ty1, f ty2, copy_commu c)
+  | Ttuple l            -> Ttuple (List.map f l)
+  | Tconstr (p, l, _)   -> Tconstr (p, List.map f l, ref Mnil)
+  | Tobject(ty, {contents = Some (p, tl)})
+                        -> Tobject (f ty, ref (Some(p, List.map f tl)))
+  | Tobject (ty, _)     -> Tobject (f ty, ref None)
+  | Tvariant _          -> assert false (* too ambiguous *)
+  | Tfield (p, k, ty1, ty2) -> (* the kind is kept shared *)
+      Tfield (p, field_kind_repr k, f ty1, f ty2)
+  | Tnil                -> Tnil
+  | Tlink ty            -> copy_type_desc f ty.desc
+  | Tsubst _            -> assert false
+  | Tunivar _ as ty     -> ty (* always keep the name *)
+  | Tpoly (ty, tyl)     ->
+      let tyl = List.map (fun x -> norm_univar (f x)) tyl in
+      Tpoly (f ty, tyl)
+  | Tpackage (p, n, l)  -> Tpackage (p, n, List.map f l)
+
+(* Utilities for copying *)
+
+let saved_desc = ref []
+  (* Saved association of generic nodes with their description. *)
+
+let save_desc ty desc =
+  saved_desc := (ty, desc)::!saved_desc
+
+let saved_kinds = ref [] (* duplicated kind variables *)
+let new_kinds = ref []   (* new kind variables *)
+let dup_kind r =
+  (match !r with None -> () | Some _ -> assert false);
+  if not (List.memq r !new_kinds) then begin
+    saved_kinds := r :: !saved_kinds;
+    let r' = ref None in
+    new_kinds := r' :: !new_kinds;
+    r := Some (Fvar r')
+  end
+
+(* Restored type descriptions. *)
+let cleanup_types () =
+  List.iter (fun (ty, desc) -> ty.desc <- desc) !saved_desc;
+  List.iter (fun r -> r := None) !saved_kinds;
+  saved_desc := []; saved_kinds := []; new_kinds := []
+
+(* Mark a type. *)
+let rec mark_type ty =
+  let ty = repr ty in
+  if ty.level >= lowest_level then begin
+    ty.level <- pivot_level - ty.level;
+    iter_type_expr mark_type ty
+  end
+
+let mark_type_node ty =
+  let ty = repr ty in
+  if ty.level >= lowest_level then begin
+    ty.level <- pivot_level - ty.level;
+  end
+
+let mark_type_params ty =
+  iter_type_expr mark_type ty
+
+let type_iterators =
+  let it_type_expr it ty =
+    let ty = repr ty in
+    if ty.level >= lowest_level then begin
+      mark_type_node ty;
+      it.it_do_type_expr it ty;
+    end
+  in
+  {type_iterators with it_type_expr}
+
+
+(* Remove marks from a type. *)
+let rec unmark_type ty =
+  let ty = repr ty in
+  if ty.level < lowest_level then begin
+    ty.level <- pivot_level - ty.level;
+    iter_type_expr unmark_type ty
+  end
+
+let unmark_iterators =
+  let it_type_expr _it ty = unmark_type ty in
+  {type_iterators with it_type_expr}
+
+let unmark_type_decl decl =
+  unmark_iterators.it_type_declaration unmark_iterators decl
+
+let unmark_extension_constructor ext =
+  List.iter unmark_type ext.ext_type_params;
+  iter_type_expr_cstr_args unmark_type ext.ext_args;
+  Misc.may unmark_type ext.ext_ret_type
+
+let unmark_class_signature sign =
+  unmark_type sign.csig_self;
+  Vars.iter (fun _l (_m, _v, t) -> unmark_type t) sign.csig_vars
+
+let unmark_class_type cty =
+  unmark_iterators.it_class_type unmark_iterators cty
+
+
+                  (*******************************************)
+                  (*  Memorization of abbreviation expansion *)
+                  (*******************************************)
+
+(* Search whether the expansion has been memorized. *)
+
+let lte_public p1 p2 =  (* Private <= Public *)
+  match p1, p2 with
+  | Private, _ | _, Public -> true
+  | Public, Private -> false
+
+let rec find_expans priv p1 = function
+    Mnil -> None
+  | Mcons (priv', p2, _ty0, ty, _)
+    when lte_public priv priv' && Path.same p1 p2 -> Some ty
+  | Mcons (_, _, _, _, rem)   -> find_expans priv p1 rem
+  | Mlink {contents = rem} -> find_expans priv p1 rem
+
+(* debug: check for cycles in abbreviation. only works with -principal
+let rec check_expans visited ty =
+  let ty = repr ty in
+  assert (not (List.memq ty visited));
+  match ty.desc with
+    Tconstr (path, args, abbrev) ->
+      begin match find_expans path !abbrev with
+        Some ty' -> check_expans (ty :: visited) ty'
+      | None -> ()
+      end
+  | _ -> ()
+*)
+
+let memo = ref []
+        (* Contains the list of saved abbreviation expansions. *)
+
+let cleanup_abbrev () =
+        (* Remove all memorized abbreviation expansions. *)
+  List.iter (fun abbr -> abbr := Mnil) !memo;
+  memo := []
+
+let memorize_abbrev mem priv path v v' =
+        (* Memorize the expansion of an abbreviation. *)
+  mem := Mcons (priv, path, v, v', !mem);
+  (* check_expans [] v; *)
+  memo := mem :: !memo
+
+let rec forget_abbrev_rec mem path =
+  match mem with
+    Mnil ->
+      assert false
+  | Mcons (_, path', _, _, rem) when Path.same path path' ->
+      rem
+  | Mcons (priv, path', v, v', rem) ->
+      Mcons (priv, path', v, v', forget_abbrev_rec rem path)
+  | Mlink mem' ->
+      mem' := forget_abbrev_rec !mem' path;
+      raise Exit
+
+let forget_abbrev mem path =
+  try mem := forget_abbrev_rec !mem path with Exit -> ()
+
+(* debug: check for invalid abbreviations
+let rec check_abbrev_rec = function
+    Mnil -> true
+  | Mcons (_, ty1, ty2, rem) ->
+      repr ty1 != repr ty2
+  | Mlink mem' ->
+      check_abbrev_rec !mem'
+
+let check_memorized_abbrevs () =
+  List.for_all (fun mem -> check_abbrev_rec !mem) !memo
+*)
+
+                  (**********************************)
+                  (*  Utilities for labels          *)
+                  (**********************************)
+
+let is_optional = function Optional _ -> true | _ -> false
+
+let label_name = function
+    Nolabel -> ""
+  | Labelled s
+  | Optional s -> s
+
+let prefixed_label_name = function
+    Nolabel -> ""
+  | Labelled s -> "~" ^ s
+  | Optional s -> "?" ^ s
+
+
+type sargs = (Asttypes.arg_label * Parsetree.expression) list
+  
+let rec extract_label_aux hd l = function
+    [] -> None
+  | (l',t as p) :: ls ->
+      if label_name l' = l then Some (l', t, List.rev_append hd ls)
+      else extract_label_aux (p::hd) l ls
+
+let extract_label l (ls : sargs) : (arg_label * Parsetree.expression * sargs) option = extract_label_aux [] l ls
+
+
+let rec label_assoc x (args : sargs) = 
+  match args with 
+  | [] -> false
+  | (a, _) :: l -> Asttypes.same_arg_label a x  || label_assoc x l
+
+                  (**********************************)
+                  (*  Utilities for backtracking    *)
+                  (**********************************)
+
+let undo_change = function
+    Ctype  (ty, desc) -> ty.desc <- desc
+  | Ccompress  (ty, desc, _) -> ty.desc <- desc
+  | Clevel (ty, level) -> ty.level <- level
+  | Cname  (r, v) -> r := v
+  | Crow   (r, v) -> r := v
+  | Ckind  (r, v) -> r := v
+  | Ccommu (r, v) -> r := v
+  | Cuniv  (r, v) -> r := v
+  | Ctypeset (r, v) -> r := v
+
+type snapshot = changes ref * int
+let last_snapshot = ref 0
+
+let log_type ty =
+  if ty.id <= !last_snapshot then log_change (Ctype (ty, ty.desc))
+let link_type ty ty' =
+  log_type ty;
+  let desc = ty.desc in
+  ty.desc <- Tlink ty';
+  (* Name is a user-supplied name for this unification variable (obtained
+   * through a type annotation for instance). *)
+  match desc, ty'.desc with
+    Tvar name, Tvar name' ->
+      begin match name, name' with
+      | Some _, None ->  log_type ty'; ty'.desc <- Tvar name
+      | None, Some _ ->  ()
+      | Some _, Some _ ->
+          if ty.level < ty'.level then (log_type ty'; ty'.desc <- Tvar name)
+      | None, None   ->  ()
+      end
+  | _ -> ()
+  (* ; assert (check_memorized_abbrevs ()) *)
+  (*  ; check_expans [] ty' *)
+let set_level ty level =
+  if ty.id <= !last_snapshot then log_change (Clevel (ty, ty.level));
+  ty.level <- level
+let set_univar rty ty =
+  log_change (Cuniv (rty, !rty)); rty := Some ty
+let set_name nm v =
+  log_change (Cname (nm, !nm)); nm := v
+let set_row_field e v =
+  log_change (Crow (e, !e)); e := Some v
+let set_kind rk k =
+  log_change (Ckind (rk, !rk)); rk := Some k
+let set_commu rc c =
+  log_change (Ccommu (rc, !rc)); rc := c
+let set_typeset rs s =
+  log_change (Ctypeset (rs, !rs)); rs := s
+
+let snapshot () =
+  let old = !last_snapshot in
+  last_snapshot := !new_id;
+  match Weak.get trail 0 with Some r -> (r, old)
+  | None ->
+      let r = ref Unchanged in
+      Weak.set trail 0 (Some r);
+      (r, old)
+
+let rec rev_log accu = function
+    Unchanged -> accu
+  | Invalid -> assert false
+  | Change (ch, next) ->
+      let d = !next in
+      next := Invalid;
+      rev_log (ch::accu) d
+
+let backtrack (changes, old) =
+  match !changes with
+    Unchanged -> last_snapshot := old
+  | Invalid -> failwith "Btype.backtrack"
+  | Change _ as change ->
+      cleanup_abbrev ();
+      let backlog = rev_log [] change in
+      List.iter undo_change backlog;
+      changes := Unchanged;
+      last_snapshot := old;
+      Weak.set trail 0 (Some changes)
+
+let rec rev_compress_log log r =
+  match !r with
+    Unchanged | Invalid ->
+      log
+  | Change (Ccompress _, next) ->
+      rev_compress_log (r::log) next
+  | Change (_, next) ->
+      rev_compress_log log next
+
+let undo_compress (changes, _old) =
+  match !changes with
+    Unchanged
+  | Invalid -> ()
+  | Change _ ->
+      let log = rev_compress_log [] changes in
+      List.iter
+        (fun r -> match !r with
+          Change (Ccompress (ty, desc, d), next) when ty.desc == d ->
+            ty.desc <- desc; r := !next
+        | _ -> ())
+        log
+
+end
+module Cmi_format : sig 
+#1 "cmi_format.mli"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*                   Fabrice Le Fessant, INRIA Saclay                     *)
+(*                                                                        *)
+(*   Copyright 2012 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+type pers_flags =
+  | Deprecated of string
+
+
+
+type cmi_infos = {
+    cmi_name : string;
+    cmi_sign : Types.signature_item list;
+    cmi_crcs : (string * Digest.t option) list;
+    cmi_flags : pers_flags list;
+}
+
+(* write the magic + the cmi information *)
+val output_cmi : string -> out_channel -> cmi_infos -> Digest.t
+
+val create_cmi : ?check_exists:unit -> string -> cmi_infos -> Digest.t
+
+(* read the cmi information (the magic is supposed to have already been read) *)
+val input_cmi : in_channel -> cmi_infos
+
+(* read a cmi from a filename, checking the magic *)
+val read_cmi : string -> cmi_infos
+
+(* Error report *)
+
+type error =
+    Not_an_interface of string
+  | Wrong_version_interface of string * string
+  | Corrupted_interface of string
+
+exception Error of error
+
+open Format
+
+val report_error: formatter -> error -> unit
+
+end = struct
+#1 "cmi_format.ml"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*                   Fabrice Le Fessant, INRIA Saclay                     *)
+(*                                                                        *)
+(*   Copyright 2012 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+type pers_flags =
+  | Deprecated of string
+
+
+
+type error =
+    Not_an_interface of string
+  | Wrong_version_interface of string * string
+  | Corrupted_interface of string
+
+exception Error of error
+
+type cmi_infos = {
+    cmi_name : string;
+    cmi_sign : Types.signature_item list;
+    cmi_crcs : (string * Digest.t option) list;
+    cmi_flags : pers_flags list;
+}
+
+let input_cmi ic =
+  let (name, sign) = input_value ic in
+  let crcs = input_value ic in
+  let flags = input_value ic in
+  {
+      cmi_name = name;
+      cmi_sign = sign;
+      cmi_crcs = crcs;
+      cmi_flags = flags;
+    }
+
+let read_cmi filename =
+  let ic = open_in_bin filename in
+  try
+    let buffer =
+      really_input_string ic (String.length Config.cmi_magic_number)
+    in
+    if buffer <> Config.cmi_magic_number then begin
+      close_in ic;
+      let pre_len = String.length Config.cmi_magic_number - 3 in
+      if String.sub buffer 0 pre_len
+          = String.sub Config.cmi_magic_number 0 pre_len then
+      begin
+        let msg =
+          if buffer < Config.cmi_magic_number then "an older" else "a newer" in
+        raise (Error (Wrong_version_interface (filename, msg)))
+      end else begin
+        raise(Error(Not_an_interface filename))
+      end
+    end;
+    let cmi = input_cmi ic in
+    close_in ic;
+    cmi
+  with End_of_file | Failure _ ->
+      close_in ic;
+      raise(Error(Corrupted_interface(filename)))
+    | Error e ->
+      close_in ic;
+      raise (Error e)
+
+let output_cmi filename oc cmi =
+(* beware: the provided signature must have been substituted for saving *)
+  output_string oc Config.cmi_magic_number;
+  output_value oc (cmi.cmi_name, cmi.cmi_sign);
+  flush oc;
+  let crc = Digest.file filename in
+  let crcs = (cmi.cmi_name, Some crc) :: cmi.cmi_crcs in
+  output_value oc crcs;
+  output_value oc cmi.cmi_flags;
+  crc
+
+
+(* This function is also called by [save_cmt] as cmi_format is subset of 
+       cmt_format, so dont close the channel yet
+*)
+let create_cmi ?check_exists filename (cmi : cmi_infos) =
+  (* beware: the provided signature must have been substituted for saving *)
+  let content = 
+    Config.cmi_magic_number ^ Marshal.to_string  (cmi.cmi_name, cmi.cmi_sign) []
+    (* checkout [output_value] in {!Pervasives} module *)
+  in 
+  let crc = Digest.string content in   
+  let cmi_infos = 
+    if check_exists <> None && Sys.file_exists filename then 
+      Some (read_cmi filename)
+    else None in   
+  match cmi_infos with 
+  | Some {cmi_name = _; cmi_sign = _; cmi_crcs = (old_name, Some old_crc)::rest ; cmi_flags} 
+    (* TODO: design the cmi format so that we don't need read the whole cmi *)
+    when 
+      cmi.cmi_name = old_name &&
+      crc = old_crc &&
+      cmi.cmi_crcs = rest &&
+      cmi_flags = cmi.cmi_flags -> 
+      crc 
+  | _ -> 
+      let crcs = (cmi.cmi_name, Some crc) :: cmi.cmi_crcs in
+      let oc = open_out_bin filename in 
+      output_string oc content;
+      output_value oc crcs;
+      output_value oc cmi.cmi_flags;
+      close_out oc; 
+      crc
+
+
+
+  
+(* Error report *)
+
+open Format
+
+let report_error ppf = function
+  | Not_an_interface filename ->
+      fprintf ppf "%a@ is not a compiled interface"
+        Location.print_filename filename
+  | Wrong_version_interface (filename, older_newer) ->
+      fprintf ppf
+        "%a@ is not a compiled interface for this version of OCaml.@.\
+         It seems to be for %s version of OCaml."
+        Location.print_filename filename older_newer
+  | Corrupted_interface filename ->
+      fprintf ppf "Corrupted compiled interface@ %a"
+        Location.print_filename filename
+
+let () =
+  Location.register_error_of_exn
+    (function
+      | Error err -> Some (Location.error_of_printer_file report_error err)
+      | _ -> None
+    )
+
+end
+module Consistbl : sig 
+#1 "consistbl.mli"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
+(*                                                                        *)
+(*   Copyright 2002 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(* Consistency tables: for checking consistency of module CRCs *)
+
+type t
+
+val create: unit -> t
+
+val clear: t -> unit
+
+val check: t -> string -> Digest.t -> string -> unit
+      (* [check tbl name crc source]
+           checks consistency of ([name], [crc]) with infos previously
+           stored in [tbl].  If no CRC was previously associated with
+           [name], record ([name], [crc]) in [tbl].
+           [source] is the name of the file from which the information
+           comes from.  This is used for error reporting. *)
+
+val check_noadd: t -> string -> Digest.t -> string -> unit
+      (* Same as [check], but raise [Not_available] if no CRC was previously
+           associated with [name]. *)
+
+val set: t -> string -> Digest.t -> string -> unit
+      (* [set tbl name crc source] forcefully associates [name] with
+         [crc] in [tbl], even if [name] already had a different CRC
+         associated with [name] in [tbl]. *)
+
+val source: t -> string -> string
+      (* [source tbl name] returns the file name associated with [name]
+         if the latter has an associated CRC in [tbl].
+         Raise [Not_found] otherwise. *)
+
+val extract: string list -> t -> (string * Digest.t option) list
+      (* [extract tbl names] returns an associative list mapping each string
+         in [names] to the CRC associated with it in [tbl]. If no CRC is
+         associated with a name then it is mapped to [None]. *)
+
+val filter: (string -> bool) -> t -> unit
+      (* [filter pred tbl] removes from [tbl] table all (name, CRC) pairs
+         such that [pred name] is [false]. *)
+
+exception Inconsistency of string * string * string
+      (* Raised by [check] when a CRC mismatch is detected.
+         First string is the name of the compilation unit.
+         Second string is the source that caused the inconsistency.
+         Third string is the source that set the CRC. *)
+
+exception Not_available of string
+      (* Raised by [check_noadd] when a name doesn't have an associated CRC. *)
+
+end = struct
+#1 "consistbl.ml"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
+(*                                                                        *)
+(*   Copyright 2002 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(* Consistency tables: for checking consistency of module CRCs *)
+
+type t = (string, Digest.t * string) Hashtbl.t
+
+let create () = Hashtbl.create 13
+
+let clear = Hashtbl.clear
+
+exception Inconsistency of string * string * string
+
+exception Not_available of string
+
+let check tbl name crc source =
+  try
+    let (old_crc, old_source) = Hashtbl.find tbl name in
+    if crc <> old_crc then raise(Inconsistency(name, source, old_source))
+  with Not_found ->
+    Hashtbl.add tbl name (crc, source)
+
+let check_noadd tbl name crc source =
+  try
+    let (old_crc, old_source) = Hashtbl.find tbl name in
+    if crc <> old_crc then raise(Inconsistency(name, source, old_source))
+  with Not_found ->
+    raise (Not_available name)
+
+let set tbl name crc source = Hashtbl.add tbl name (crc, source)
+
+let source tbl name = snd (Hashtbl.find tbl name)
+
+let extract l tbl =
+  let l = List.sort_uniq String.compare l in
+  List.fold_left
+    (fun assc name ->
+       try
+         let (crc, _) = Hashtbl.find tbl name in
+           (name, Some crc) :: assc
+       with Not_found ->
+         (name, None) :: assc)
+    [] l
+
+let filter p tbl =
+  let to_remove = ref [] in
+  Hashtbl.iter
+    (fun name _ ->
+      if not (p name) then to_remove := name :: !to_remove)
+    tbl;
+  List.iter
+    (fun name ->
+       while Hashtbl.mem tbl name do Hashtbl.remove tbl name done)
+    !to_remove
+
+end
+module Datarepr : sig 
+#1 "datarepr.mli"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
+(*                                                                        *)
+(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(* Compute constructor and label descriptions from type declarations,
+   determining their representation. *)
+
+open Types
+
+val constructor_has_optional_shape:
+  Types.constructor_description -> bool
+
+val extension_descr:
+  Path.t -> extension_constructor -> constructor_description
+
+val labels_of_type:
+  Path.t -> type_declaration ->
+  (Ident.t * label_description) list
+val constructors_of_type:
+  Path.t -> type_declaration ->
+  (Ident.t * constructor_description) list
+
+
+exception Constr_not_found
+
+val find_constr_by_tag:
+  constructor_tag -> constructor_declaration list ->
+    constructor_declaration
+
+val constructor_existentials :
+    constructor_arguments -> type_expr option -> type_expr list * type_expr list
+(** Takes [cd_args] and [cd_res] from a [constructor_declaration] and
+    returns:
+    - the types of the constructor's arguments
+    - the existential variables introduced by the constructor
+ *)
+
+
+(* Set the polymorphic variant row_name field *)
+val set_row_name : type_declaration -> Path.t -> unit
+
+end = struct
+#1 "datarepr.ml"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
+(*                                                                        *)
+(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(* Compute constructor and label descriptions from type declarations,
+   determining their representation. *)
+
+open Asttypes
+open Types
+open Btype
+
+(* Simplified version of Ctype.free_vars *)
+let free_vars ?(param=false) ty =
+  let ret = ref TypeSet.empty in
+  let rec loop ty =
+    let ty = repr ty in
+    if ty.level >= lowest_level then begin
+      ty.level <- pivot_level - ty.level;
+      match ty.desc with
+      | Tvar _ ->
+          ret := TypeSet.add ty !ret
+      | Tvariant row ->
+          let row = row_repr row in
+          iter_row loop row;
+          if not (static_row row) then begin
+            match row.row_more.desc with
+            | Tvar _ when param -> ret := TypeSet.add ty !ret
+            | _ -> loop row.row_more
+          end
+      (* XXX: What about Tobject ? *)
+      | _ ->
+          iter_type_expr loop ty
+    end
+  in
+  loop ty;
+  unmark_type ty;
+  !ret
+
+let newgenconstr path tyl = newgenty (Tconstr (path, tyl, ref Mnil))
+
+let constructor_existentials cd_args cd_res =
+  let tyl =
+    match cd_args with
+    | Cstr_tuple l -> l
+    | Cstr_record l -> List.map (fun l -> l.ld_type) l
+  in
+  let existentials =
+    match cd_res with
+    | None -> []
+    | Some type_ret ->
+        let arg_vars_set = free_vars (newgenty (Ttuple tyl)) in
+        let res_vars = free_vars type_ret in
+        TypeSet.elements (TypeSet.diff arg_vars_set res_vars)
+  in
+  (tyl, existentials)
+
+let constructor_args priv cd_args cd_res path rep =
+  let tyl, existentials = constructor_existentials cd_args cd_res in
+  match cd_args with
+  | Cstr_tuple l -> existentials, l, None
+  | Cstr_record lbls ->
+      let arg_vars_set = free_vars ~param:true (newgenty (Ttuple tyl)) in
+      let type_params = TypeSet.elements arg_vars_set in
+      let type_unboxed =
+        match rep with
+        | Record_unboxed _ -> unboxed_true_default_false
+        | _ -> unboxed_false_default_false
+      in
+      let tdecl =
+        {
+          type_params;
+          type_arity = List.length type_params;
+          type_kind = Type_record (lbls, rep);
+          type_private = priv;
+          type_manifest = None;
+          type_variance = List.map (fun _ -> Variance.full) type_params;
+          type_newtype_level = None;
+          type_loc = Location.none;
+          type_attributes = [];
+          type_immediate = false;
+          type_unboxed;
+        }
+      in
+      existentials,
+      [ newgenconstr path type_params ],
+      Some tdecl
+
+let internal_optional = "internal.optional"
+  
+let optional_shape : Parsetree.attribute =
+  {txt = internal_optional ; loc = Location.none}, Parsetree.PStr []
+
+let constructor_has_optional_shape ({cstr_attributes = attrs} : constructor_description) =
+  List.exists (fun (x,_) -> x.txt = internal_optional) attrs
+
+
+let constructor_descrs ty_path decl cstrs =
+  let ty_res = newgenconstr ty_path decl.type_params in
+  let num_consts = ref 0 and num_nonconsts = ref 0  and num_normal = ref 0 in
+  List.iter
+    (fun {cd_args; cd_res; _} ->
+      if cd_args = Cstr_tuple [] then incr num_consts else incr num_nonconsts;
+      if cd_res = None then incr num_normal)
+    cstrs;
+  let rec describe_constructors idx_const idx_nonconst = function
+      [] -> []
+    | {cd_id; cd_args; cd_res; cd_loc; cd_attributes} :: rem ->
+        let ty_res =
+          match cd_res with
+          | Some ty_res' -> ty_res'
+          | None -> ty_res
+        in
+        let (tag, descr_rem) =
+          match cd_args with
+          | _ when decl.type_unboxed.unboxed ->
+            assert (rem = []);
+            (Cstr_unboxed, [])
+          | Cstr_tuple [] -> (Cstr_constant idx_const,
+                   describe_constructors (idx_const+1) idx_nonconst rem)
+          | _  -> (Cstr_block idx_nonconst,
+                   describe_constructors idx_const (idx_nonconst+1) rem) in
+        let cstr_name = Ident.name cd_id in
+        let existentials, cstr_args, cstr_inlined =
+          let representation =
+            if decl.type_unboxed.unboxed
+            then Record_unboxed true
+            else Record_inlined {tag = idx_nonconst; name = cstr_name; num_nonconsts = !num_nonconsts}
+          in
+          constructor_args decl.type_private cd_args cd_res
+            (Path.Pdot (ty_path, cstr_name, Path.nopos)) representation
+        in
+        let cstr =
+          { cstr_name;
+            cstr_res = ty_res;
+            cstr_existentials = existentials;
+            cstr_args;
+            cstr_arity = List.length cstr_args;
+            cstr_tag = tag;
+            cstr_consts = !num_consts;
+            cstr_nonconsts = !num_nonconsts;
+            cstr_normal = !num_normal;
+            cstr_private = decl.type_private;
+            cstr_generalized = cd_res <> None;
+            cstr_loc = cd_loc;
+            cstr_attributes = cd_attributes;
+            cstr_inlined;
+          } in
+        (cd_id, cstr) :: descr_rem in
+  let result = describe_constructors 0 0 cstrs in 
+  match result with
+  | (
+    [ ({Ident.name = "None"} as a_id, ({cstr_args = []} as a_descr) )  ;
+      ({Ident.name = "Some"} as b_id, ({ cstr_args = [_]} as b_descr))
+    ] |
+    [ ({Ident.name = "Some"} as a_id, ({cstr_args = [_]} as a_descr) )  ;
+      ({Ident.name = "None"} as b_id, ({ cstr_args = []} as b_descr))
+    ]
+   )
+    ->
+      [
+        (a_id, {a_descr with
+                   cstr_attributes =
+                     optional_shape :: a_descr.cstr_attributes});
+        (b_id, {b_descr with
+                   cstr_attributes =
+                     optional_shape :: b_descr.cstr_attributes
+                  })
+      ]
+  | _ -> result        
+
+let extension_descr path_ext ext =
+  let ty_res =
+    match ext.ext_ret_type with
+        Some type_ret -> type_ret
+      | None -> newgenconstr ext.ext_type_path ext.ext_type_params
+  in
+  let existentials, cstr_args, cstr_inlined =
+    constructor_args ext.ext_private ext.ext_args ext.ext_ret_type
+      path_ext Record_extension
+  in
+    { cstr_name = Path.last path_ext;
+      cstr_res = ty_res;
+      cstr_existentials = existentials;
+      cstr_args;
+      cstr_arity = List.length cstr_args;
+      cstr_tag = Cstr_extension(path_ext, cstr_args = []);
+      cstr_consts = -1;
+      cstr_nonconsts = -1;
+      cstr_private = ext.ext_private;
+      cstr_normal = -1;
+      cstr_generalized = ext.ext_ret_type <> None;
+      cstr_loc = ext.ext_loc;
+      cstr_attributes = ext.ext_attributes;
+      cstr_inlined;
+    }
+
+let none = {desc = Ttuple []; level = -1; id = -1}
+                                        (* Clearly ill-formed type *)
+let dummy_label =
+  { lbl_name = ""; lbl_res = none; lbl_arg = none; lbl_mut = Immutable;
+    lbl_pos = (-1); lbl_all = [||]; lbl_repres = Record_regular;
+    lbl_private = Public;
+    lbl_loc = Location.none;
+    lbl_attributes = [];
+  }
+
+let label_descrs ty_res lbls repres priv =
+  let all_labels = Array.make (List.length lbls) dummy_label in
+  let rec describe_labels num = function
+      [] -> []
+    | l :: rest ->
+        let lbl =
+          { lbl_name = Ident.name l.ld_id;
+            lbl_res = ty_res;
+            lbl_arg = l.ld_type;
+            lbl_mut = l.ld_mutable;
+            lbl_pos = num;
+            lbl_all = all_labels;
+            lbl_repres = repres;
+            lbl_private = priv;
+            lbl_loc = l.ld_loc;
+            lbl_attributes = l.ld_attributes;
+          } in
+        all_labels.(num) <- lbl;
+        (l.ld_id, lbl) :: describe_labels (num+1) rest in
+  describe_labels 0 lbls
+
+exception Constr_not_found
+
+let rec find_constr tag num_const num_nonconst = function
+    [] ->
+      raise Constr_not_found
+  | {cd_args = Cstr_tuple []; _} as c  :: rem ->
+      if Types.equal_tag tag  (Cstr_constant num_const)
+      then c
+      else find_constr tag (num_const + 1) num_nonconst rem
+  | c :: rem ->
+      if Types.equal_tag tag (Cstr_block num_nonconst) || tag = Cstr_unboxed
+      then c
+      else find_constr tag num_const (num_nonconst + 1) rem
+
+let find_constr_by_tag tag cstrlist =
+  find_constr tag 0 0 cstrlist
+
+let constructors_of_type ty_path decl =
+  match decl.type_kind with
+  | Type_variant cstrs -> constructor_descrs ty_path decl cstrs
+  | Type_record _ | Type_abstract | Type_open -> []
+
+let labels_of_type ty_path decl =
+  match decl.type_kind with
+  | Type_record(labels, rep) ->
+      label_descrs (newgenconstr ty_path decl.type_params)
+        labels rep decl.type_private
+  | Type_variant _ | Type_abstract | Type_open -> []
+
+(* Set row_name in Env, cf. GPR#1204/1329 *)
+let set_row_name decl path =
+  match decl.type_manifest with
+    None -> ()
+  | Some ty ->
+      let ty = repr ty in
+      match ty.desc with
+        Tvariant row when static_row row ->
+          let row = {(row_repr row) with
+                     row_name = Some (path, decl.type_params)} in
+          ty.desc <- Tvariant row
+      | _ -> ()
+
+end
+module Delayed_checks : sig 
+#1 "delayed_checks.mli"
+
+
+
+val reset_delayed_checks : unit -> unit
+val add_delayed_check : (unit -> unit) -> unit
+val force_delayed_checks : unit -> unit
+
+end = struct
+#1 "delayed_checks.ml"
+let delayed_checks = ref []
+let reset_delayed_checks () = delayed_checks := []
+let add_delayed_check f =
+  delayed_checks := (f, Warnings.backup ()) :: !delayed_checks
+
+let force_delayed_checks () =
+  (* checks may change type levels *)
+  let snap = Btype.snapshot () in
+  let w_old = Warnings.backup () in
+  List.iter
+    (fun (f, w) -> Warnings.restore w; f ())
+    (List.rev !delayed_checks);
+  Warnings.restore w_old;
+  reset_delayed_checks ();
+  Btype.backtrack snap
+end
+module Predef : sig 
+#1 "predef.mli"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
+(*                                                                        *)
+(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(* Predefined type constructors (with special typing rules in typecore) *)
+
+open Types
+
+val type_int: type_expr
+val type_char: type_expr
+val type_string: type_expr
+val type_bytes: type_expr
+val type_float: type_expr
+val type_bool: type_expr
+val type_unit: type_expr
+val type_exn: type_expr
+val type_array: type_expr -> type_expr
+val type_list: type_expr -> type_expr
+val type_option: type_expr -> type_expr
+
+
+val type_int64: type_expr
+val type_lazy_t: type_expr -> type_expr
+val type_extension_constructor:type_expr
+val type_floatarray:type_expr
+
+val path_int: Path.t
+val path_char: Path.t
+val path_string: Path.t
+val path_bytes: Path.t
+val path_float: Path.t
+val path_bool: Path.t
+val path_unit: Path.t
+val path_exn: Path.t
+val path_array: Path.t
+val path_list: Path.t
+val path_option: Path.t
+
+
+val path_int64: Path.t
+val path_lazy_t: Path.t
+val path_extension_constructor: Path.t
+val path_floatarray: Path.t
+
+val path_match_failure: Path.t
+val path_assert_failure : Path.t
+val path_undefined_recursive_module : Path.t
+
+(* To build the initial environment. Since there is a nasty mutual
+   recursion between predef and env, we break it by parameterizing
+   over Env.t, Env.add_type and Env.add_extension. *)
+
+val build_initial_env:
+  (Ident.t -> type_declaration -> 'a -> 'a) ->
+  (Ident.t -> extension_constructor -> 'a -> 'a) ->
+  'a -> 'a 
+
+(* To initialize linker tables *)
+
+val builtin_values: (string * Ident.t) list
+val builtin_idents: (string * Ident.t) list
+
+(** All predefined exceptions, exposed as [Ident.t] for flambda (for
+    building value approximations).
+    The [Ident.t] for division by zero is also exported explicitly
+    so flambda can generate code to raise it. *)
+val ident_division_by_zero: Ident.t
+val all_predef_exns : Ident.t list
+
+type test =
+  | For_sure_yes
+  | For_sure_no 
+  | NA
+
+val type_is_builtin_path_but_option : 
+  Path.t -> test 
+
+end = struct
+#1 "predef.ml"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
+(*                                                                        *)
+(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(* Predefined type constructors (with special typing rules in typecore) *)
+
+open Path
+open Types
+open Btype
+
+let builtin_idents = ref []
+
+let wrap create s =
+  let id = create s in
+  builtin_idents := (s, id) :: !builtin_idents;
+  id
+
+let ident_create = wrap Ident.create
+let ident_create_predef_exn = wrap Ident.create_predef_exn
+
+let ident_int = ident_create "int"
+and ident_char = ident_create "char"
+and ident_bytes = ident_create "bytes"
+and ident_float = ident_create "float"
+and ident_bool = ident_create "bool"
+and ident_unit = ident_create "unit"
+and ident_exn = ident_create "exn"
+and ident_array = ident_create "array"
+and ident_list = ident_create "list"
+and ident_option = ident_create "option"
+
+and ident_int64 = ident_create "int64"
+and ident_lazy_t = ident_create "lazy_t"
+and ident_string = ident_create "string"
+and ident_extension_constructor = ident_create "extension_constructor"
+and ident_floatarray = ident_create "floatarray"
+
+and ident_unknown = ident_create "unknown"
+
+type test =
+  | For_sure_yes
+  | For_sure_no 
+  | NA
+
+let type_is_builtin_path_but_option (p : Path.t) : test  =
+  match p with
+  | Pident {stamp} ->
+      if 
+        stamp >= ident_int.stamp
+        && stamp  <= ident_floatarray.stamp    
+      then    
+        if  (stamp = ident_option.stamp)
+         || (stamp = ident_unit.stamp) then 
+          For_sure_no
+        else For_sure_yes
+      else NA 
+  | _ -> NA
+
+let path_int = Pident ident_int
+and path_char = Pident ident_char
+and path_bytes = Pident ident_bytes
+and path_float = Pident ident_float
+and path_bool = Pident ident_bool
+and path_unit = Pident ident_unit
+and path_exn = Pident ident_exn
+and path_array = Pident ident_array
+and path_list = Pident ident_list
+and path_option = Pident ident_option
+
+
+and path_int64 = Pident ident_int64
+and path_lazy_t = Pident ident_lazy_t
+and path_string = Pident ident_string
+
+and path_unkonwn = Pident ident_unknown
+and path_extension_constructor = Pident ident_extension_constructor
+and path_floatarray = Pident ident_floatarray
+
+let type_int = newgenty (Tconstr(path_int, [], ref Mnil))
+and type_char = newgenty (Tconstr(path_char, [], ref Mnil))
+and type_bytes = newgenty (Tconstr(path_bytes, [], ref Mnil))
+and type_float = newgenty (Tconstr(path_float, [], ref Mnil))
+and type_bool = newgenty (Tconstr(path_bool, [], ref Mnil))
+and type_unit = newgenty (Tconstr(path_unit, [], ref Mnil))
+and type_exn = newgenty (Tconstr(path_exn, [], ref Mnil))
+and type_array t = newgenty (Tconstr(path_array, [t], ref Mnil))
+and type_list t = newgenty (Tconstr(path_list, [t], ref Mnil))
+and type_option t = newgenty (Tconstr(path_option, [t], ref Mnil))
+
+
+and type_int64 = newgenty (Tconstr(path_int64, [], ref Mnil))
+and type_lazy_t t = newgenty (Tconstr(path_lazy_t, [t], ref Mnil))
+and type_string = newgenty (Tconstr(path_string, [], ref Mnil))
+
+and type_unknown = newgenty (Tconstr(path_unkonwn, [], ref Mnil))
+and type_extension_constructor =
+      newgenty (Tconstr(path_extension_constructor, [], ref Mnil))
+and type_floatarray = newgenty (Tconstr(path_floatarray, [], ref Mnil))
+
+let ident_match_failure = ident_create_predef_exn "Match_failure"
+
+and ident_invalid_argument = ident_create_predef_exn "Invalid_argument"
+and ident_failure = ident_create_predef_exn "Failure"
+
+and ident_js_error = ident_create_predef_exn "JsError"
+and ident_not_found = ident_create_predef_exn "Not_found"
+
+and ident_end_of_file = ident_create_predef_exn "End_of_file"
+and ident_division_by_zero = ident_create_predef_exn "Division_by_zero"
+
+
+and ident_assert_failure = ident_create_predef_exn "Assert_failure"
+and ident_undefined_recursive_module =
+        ident_create_predef_exn "Undefined_recursive_module"
+
+let all_predef_exns = [
+  ident_match_failure;
+  ident_invalid_argument;
+  ident_failure;
+  ident_js_error;
+  ident_not_found;
+  ident_end_of_file;
+  ident_division_by_zero;
+  ident_assert_failure;
+  ident_undefined_recursive_module;
+]
+
+let path_match_failure = Pident ident_match_failure
+and path_assert_failure = Pident ident_assert_failure
+and path_undefined_recursive_module = Pident ident_undefined_recursive_module
+
+let decl_abstr =
+  {type_params = [];
+   type_arity = 0;
+   type_kind = Type_abstract;
+   type_loc = Location.none;
+   type_private = Asttypes.Public;
+   type_manifest = None;
+   type_variance = [];
+   type_newtype_level = None;
+   type_attributes = [];
+   type_immediate = false;
+   type_unboxed = unboxed_false_default_false;
+  }
+
+let decl_abstr_imm = {decl_abstr with type_immediate = true}
+
+let cstr id args =
+  {
+    cd_id = id;
+    cd_args = Cstr_tuple args;
+    cd_res = None;
+    cd_loc = Location.none;
+    cd_attributes = [];
+  }
+
+let ident_false = ident_create "false"
+and ident_true = ident_create "true"
+and ident_void = ident_create "()"
+and ident_nil = ident_create "[]"
+and ident_cons = ident_create "::"
+and ident_none = ident_create "None"
+and ident_some = ident_create "Some"
+
+and ident_ctor_unknown = ident_create "Unknown"
+let common_initial_env add_type add_extension empty_env =
+  let decl_bool =
+    {decl_abstr with
+     type_kind = Type_variant([cstr ident_false []; cstr ident_true []]);
+     type_immediate = true}
+  and decl_unit =
+    {decl_abstr with
+     type_kind = Type_variant([cstr ident_void []]);
+     type_immediate = true}
+  and decl_exn =
+    {decl_abstr with
+     type_kind = Type_open}
+  and decl_array =
+    let tvar = newgenvar() in
+    {decl_abstr with
+     type_params = [tvar];
+     type_arity = 1;
+     type_variance = [Variance.full]}
+  and decl_list =
+    let tvar = newgenvar() in
+    {decl_abstr with
+     type_params = [tvar];
+     type_arity = 1;
+     type_kind =
+     Type_variant([cstr ident_nil []; cstr ident_cons [tvar; type_list tvar]]);
+     type_variance = [Variance.covariant]}
+  and decl_option =
+    let tvar = newgenvar() in
+    {decl_abstr with
+     type_params = [tvar];
+     type_arity = 1;
+     type_kind = Type_variant([cstr ident_none []; cstr ident_some [tvar]]);
+     type_variance = [Variance.covariant]}
+  and decl_unknown = 
+    let tvar = newgenvar () in 
+    {decl_abstr with 
+      type_params = [];
+      type_arity = 0;
+      type_kind = Type_variant ([ {
+        cd_id = ident_ctor_unknown;
+        cd_args = Cstr_tuple [tvar]; 
+        cd_res = Some type_unknown; 
+        cd_loc = Location.none;
+        cd_attributes = []
+      }]);
+      type_unboxed = Types.unboxed_true_default_false
+    }   
+  and decl_lazy_t =
+    let tvar = newgenvar() in
+    {decl_abstr with
+     type_params = [tvar];
+     type_arity = 1;
+     type_variance = [Variance.covariant]}
+  in
+
+  let add_extension id l =
+    add_extension id
+      { ext_type_path = path_exn;
+        ext_type_params = [];
+        ext_args = Cstr_tuple l;
+        ext_ret_type = None;
+        ext_private = Asttypes.Public;
+        ext_loc = Location.none;
+        ext_attributes = [{Asttypes.txt="ocaml.warn_on_literal_pattern";
+                           loc=Location.none},
+                          Parsetree.PStr[]] }
+  in
+  add_extension ident_match_failure
+                         [newgenty (Ttuple[type_string; type_int; type_int])] (
+  add_extension ident_invalid_argument [type_string] (
+  add_extension ident_js_error [type_unknown] (
+  add_extension ident_failure [type_string] (
+  add_extension ident_not_found [] (
+  add_extension ident_end_of_file [] (
+  add_extension ident_division_by_zero [] (
+  add_extension ident_assert_failure
+                         [newgenty (Ttuple[type_string; type_int; type_int])] (
+  add_extension ident_undefined_recursive_module
+                         [newgenty (Ttuple[type_string; type_int; type_int])] (
+  add_type ident_int64 decl_abstr (
+
+  add_type ident_lazy_t decl_lazy_t (
+  add_type ident_option decl_option (
+  add_type ident_list decl_list (
+  add_type ident_array decl_array (
+  add_type ident_exn decl_exn (
+  add_type ident_unit decl_unit (
+  add_type ident_bool decl_bool (
+  add_type ident_float decl_abstr (
+  add_type ident_unknown decl_unknown(  
+  add_type ident_string decl_abstr (
+  add_type ident_int decl_abstr_imm (
+  add_type ident_extension_constructor decl_abstr (
+  add_type ident_floatarray decl_abstr (
+    empty_env)))))))))))))))))))))))
+
+let build_initial_env add_type add_exception empty_env =
+  let common = common_initial_env add_type add_exception empty_env in
+  let res = add_type ident_bytes decl_abstr common in 
+  let decl_type_char = 
+        {decl_abstr with 
+        type_manifest = Some type_int; 
+        type_private = Private} in 
+    add_type ident_char decl_type_char res 
+  
+  
+let builtin_values =
+  List.map (fun id -> Ident.make_global id; (Ident.name id, id))
+      [ident_match_failure; 
+       ident_invalid_argument;
+       ident_failure; ident_js_error; ident_not_found;  ident_end_of_file;
+       ident_division_by_zero; 
+       ident_assert_failure; ident_undefined_recursive_module ]
+
+(* Start non-predef identifiers at 1000.  This way, more predefs can
+   be defined in this file (above!) without breaking .cmi
+   compatibility. *)
+
+let _ = Ident.set_current_time 999
+let builtin_idents = List.rev !builtin_idents
+
+end
+module Ast_mapper : sig 
+#1 "ast_mapper.mli"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*                         Alain Frisch, LexiFi                           *)
+(*                                                                        *)
+(*   Copyright 2012 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(** The interface of a -ppx rewriter
+
+  A -ppx rewriter is a program that accepts a serialized abstract syntax
+  tree and outputs another, possibly modified, abstract syntax tree.
+  This module encapsulates the interface between the compiler and
+  the -ppx rewriters, handling such details as the serialization format,
+  forwarding of command-line flags, and storing state.
+
+  {!mapper} allows to implement AST rewriting using open recursion.
+  A typical mapper would be based on {!default_mapper}, a deep
+  identity mapper, and will fall back on it for handling the syntax it
+  does not modify. For example:
+
+  {[
+open Asttypes
+open Parsetree
+open Ast_mapper
+
+let test_mapper argv =
+  { default_mapper with
+    expr = fun mapper expr ->
+      match expr with
+      | { pexp_desc = Pexp_extension ({ txt = "test" }, PStr [])} ->
+        Ast_helper.Exp.constant (Const_int 42)
+      | other -> default_mapper.expr mapper other; }
+
+let () =
+  register "ppx_test" test_mapper]}
+
+  This -ppx rewriter, which replaces [[%test]] in expressions with
+  the constant [42], can be compiled using
+  [ocamlc -o ppx_test -I +compiler-libs ocamlcommon.cma ppx_test.ml].
+
+  *)
+
+open Parsetree
+
+(** {1 A generic Parsetree mapper} *)
+
+type mapper = {
+  attribute: mapper -> attribute -> attribute;
+  attributes: mapper -> attribute list -> attribute list;
+  case: mapper -> case -> case;
+  cases: mapper -> case list -> case list;
+  class_expr: mapper -> class_expr -> class_expr;
+  class_field: mapper -> class_field -> class_field;
+  class_signature: mapper -> class_signature -> class_signature;
+  class_structure: mapper -> class_structure -> class_structure;
+  class_type: mapper -> class_type -> class_type;
+  class_type_declaration: mapper -> class_type_declaration
+                          -> class_type_declaration;
+  class_type_field: mapper -> class_type_field -> class_type_field;
+  constructor_declaration: mapper -> constructor_declaration
+                           -> constructor_declaration;
+  expr: mapper -> expression -> expression;
+  extension: mapper -> extension -> extension;
+  extension_constructor: mapper -> extension_constructor
+                         -> extension_constructor;
+  include_declaration: mapper -> include_declaration -> include_declaration;
+  include_description: mapper -> include_description -> include_description;
+  label_declaration: mapper -> label_declaration -> label_declaration;
+  location: mapper -> Location.t -> Location.t;
+  module_binding: mapper -> module_binding -> module_binding;
+  module_declaration: mapper -> module_declaration -> module_declaration;
+  module_expr: mapper -> module_expr -> module_expr;
+  module_type: mapper -> module_type -> module_type;
+  module_type_declaration: mapper -> module_type_declaration
+                           -> module_type_declaration;
+  open_description: mapper -> open_description -> open_description;
+  pat: mapper -> pattern -> pattern;
+  payload: mapper -> payload -> payload;
+  signature: mapper -> signature -> signature;
+  signature_item: mapper -> signature_item -> signature_item;
+  structure: mapper -> structure -> structure;
+  structure_item: mapper -> structure_item -> structure_item;
+  typ: mapper -> core_type -> core_type;
+  type_declaration: mapper -> type_declaration -> type_declaration;
+  type_extension: mapper -> type_extension -> type_extension;
+  type_kind: mapper -> type_kind -> type_kind;
+  value_binding: mapper -> value_binding -> value_binding;
+  value_description: mapper -> value_description -> value_description;
+  with_constraint: mapper -> with_constraint -> with_constraint;
+}
+(** A mapper record implements one "method" per syntactic category,
+    using an open recursion style: each method takes as its first
+    argument the mapper to be applied to children in the syntax
+    tree. *)
+
+val default_mapper: mapper
+(** A default mapper, which implements a "deep identity" mapping. *)
+
+(** {1 Apply mappers to compilation units} *)
+
+val tool_name: unit -> string
+(** Can be used within a ppx preprocessor to know which tool is
+    calling it ["ocamlc"], ["ocamlopt"], ["ocamldoc"], ["ocamldep"],
+    ["ocaml"], ...  Some global variables that reflect command-line
+    options are automatically synchronized between the calling tool
+    and the ppx preprocessor: {!Clflags.include_dirs},
+    {!Config.load_path}, {!Clflags.open_modules}, {!Clflags.for_package},
+    {!Clflags.debug}. *)
+
+
+val apply: source:string -> target:string -> mapper -> unit
+(** Apply a mapper (parametrized by the unit name) to a dumped
+    parsetree found in the [source] file and put the result in the
+    [target] file. The [structure] or [signature] field of the mapper
+    is applied to the implementation or interface.  *)
+
+val run_main: (string list -> mapper) -> unit
+(** Entry point to call to implement a standalone -ppx rewriter from a
+    mapper, parametrized by the command line arguments.  The current
+    unit name can be obtained from {!Location.input_name}.  This
+    function implements proper error reporting for uncaught
+    exceptions. *)
+
+(** {1 Registration API} *)
+
+val register_function: (string -> (string list -> mapper) -> unit) ref
+
+val register: string -> (string list -> mapper) -> unit
+(** Apply the [register_function].  The default behavior is to run the
+    mapper immediately, taking arguments from the process command
+    line.  This is to support a scenario where a mapper is linked as a
+    stand-alone executable.
+
+    It is possible to overwrite the [register_function] to define
+    "-ppx drivers", which combine several mappers in a single process.
+    Typically, a driver starts by defining [register_function] to a
+    custom implementation, then lets ppx rewriters (linked statically
+    or dynamically) register themselves, and then run all or some of
+    them.  It is also possible to have -ppx drivers apply rewriters to
+    only specific parts of an AST.
+
+    The first argument to [register] is a symbolic name to be used by
+    the ppx driver.  *)
+
+
+(** {1 Convenience functions to write mappers} *)
+
+val map_opt: ('a -> 'b) -> 'a option -> 'b option
+
+val extension_of_error: Location.error -> extension
+(** Encode an error into an 'ocaml.error' extension node which can be
+    inserted in a generated Parsetree.  The compiler will be
+    responsible for reporting the error. *)
+
+val attribute_of_warning: Location.t -> string -> attribute
+(** Encode a warning message into an 'ocaml.ppwarning' attribute which can be
+    inserted in a generated Parsetree.  The compiler will be
+    responsible for reporting the warning. *)
+
+(** {1 Helper functions to call external mappers} *)
+
+val add_ppx_context_str:
+    tool_name:string -> Parsetree.structure -> Parsetree.structure
+(** Extract information from the current environment and encode it
+    into an attribute which is prepended to the list of structure
+    items in order to pass the information to an external
+    processor. *)
+
+val add_ppx_context_sig:
+    tool_name:string -> Parsetree.signature -> Parsetree.signature
+(** Same as [add_ppx_context_str], but for signatures. *)
+
+val drop_ppx_context_str:
+    restore:bool -> Parsetree.structure -> Parsetree.structure
+(** Drop the ocaml.ppx.context attribute from a structure.  If
+    [restore] is true, also restore the associated data in the current
+    process. *)
+
+val drop_ppx_context_sig:
+    restore:bool -> Parsetree.signature -> Parsetree.signature
+(** Same as [drop_ppx_context_str], but for signatures. *)
+
+(** {1 Cookies} *)
+
+(** Cookies are used to pass information from a ppx processor to
+    a further invocation of itself, when called from the OCaml
+    toplevel (or other tools that support cookies). *)
+
+val set_cookie: string -> Parsetree.expression -> unit
+val get_cookie: string -> Parsetree.expression option
+
+end = struct
+#1 "ast_mapper.ml"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*                         Alain Frisch, LexiFi                           *)
+(*                                                                        *)
+(*   Copyright 2012 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(* A generic Parsetree mapping class *)
+
+(*
+[@@@ocaml.warning "+9"]
+  (* Ensure that record patterns don't miss any field. *)
+*)
+
+
+open Parsetree
+open Ast_helper
+open Location
+
+type mapper = {
+  attribute: mapper -> attribute -> attribute;
+  attributes: mapper -> attribute list -> attribute list;
+  case: mapper -> case -> case;
+  cases: mapper -> case list -> case list;
+  class_expr: mapper -> class_expr -> class_expr;
+  class_field: mapper -> class_field -> class_field;
+  class_signature: mapper -> class_signature -> class_signature;
+  class_structure: mapper -> class_structure -> class_structure;
+  class_type: mapper -> class_type -> class_type;
+  class_type_declaration: mapper -> class_type_declaration
+                          -> class_type_declaration;
+  class_type_field: mapper -> class_type_field -> class_type_field;
+  constructor_declaration: mapper -> constructor_declaration
+                           -> constructor_declaration;
+  expr: mapper -> expression -> expression;
+  extension: mapper -> extension -> extension;
+  extension_constructor: mapper -> extension_constructor
+                         -> extension_constructor;
+  include_declaration: mapper -> include_declaration -> include_declaration;
+  include_description: mapper -> include_description -> include_description;
+  label_declaration: mapper -> label_declaration -> label_declaration;
+  location: mapper -> Location.t -> Location.t;
+  module_binding: mapper -> module_binding -> module_binding;
+  module_declaration: mapper -> module_declaration -> module_declaration;
+  module_expr: mapper -> module_expr -> module_expr;
+  module_type: mapper -> module_type -> module_type;
+  module_type_declaration: mapper -> module_type_declaration
+                           -> module_type_declaration;
+  open_description: mapper -> open_description -> open_description;
+  pat: mapper -> pattern -> pattern;
+  payload: mapper -> payload -> payload;
+  signature: mapper -> signature -> signature;
+  signature_item: mapper -> signature_item -> signature_item;
+  structure: mapper -> structure -> structure;
+  structure_item: mapper -> structure_item -> structure_item;
+  typ: mapper -> core_type -> core_type;
+  type_declaration: mapper -> type_declaration -> type_declaration;
+  type_extension: mapper -> type_extension -> type_extension;
+  type_kind: mapper -> type_kind -> type_kind;
+  value_binding: mapper -> value_binding -> value_binding;
+  value_description: mapper -> value_description -> value_description;
+  with_constraint: mapper -> with_constraint -> with_constraint;
+}
+
+let map_fst f (x, y) = (f x, y)
+let map_snd f (x, y) = (x, f y)
+let map_tuple f1 f2 (x, y) = (f1 x, f2 y)
+let map_tuple3 f1 f2 f3 (x, y, z) = (f1 x, f2 y, f3 z)
+let map_opt f = function None -> None | Some x -> Some (f x)
+
+let map_loc sub {loc; txt} = {loc = sub.location sub loc; txt}
+
+module T = struct
+  (* Type expressions for the core language *)
+
+  let row_field sub = function
+    | Rtag (l, attrs, b, tl) ->
+        Rtag (map_loc sub l, sub.attributes sub attrs,
+              b, List.map (sub.typ sub) tl)
+    | Rinherit t -> Rinherit (sub.typ sub t)
+
+  let object_field sub = function
+    | Otag (l, attrs, t) ->
+        Otag (map_loc sub l, sub.attributes sub attrs, sub.typ sub t)
+    | Oinherit t -> Oinherit (sub.typ sub t)
+
+  let map sub {ptyp_desc = desc; ptyp_loc = loc; ptyp_attributes = attrs} =
+    let open Typ in
+    let loc = sub.location sub loc in
+    let attrs = sub.attributes sub attrs in
+    match desc with
+    | Ptyp_any -> any ~loc ~attrs ()
+    | Ptyp_var s -> var ~loc ~attrs s
+    | Ptyp_arrow (lab, t1, t2) ->
+        arrow ~loc ~attrs lab (sub.typ sub t1) (sub.typ sub t2)
+    | Ptyp_tuple tyl -> tuple ~loc ~attrs (List.map (sub.typ sub) tyl)
+    | Ptyp_constr (lid, tl) ->
+        constr ~loc ~attrs (map_loc sub lid) (List.map (sub.typ sub) tl)
+    | Ptyp_object (l, o) ->
+        object_ ~loc ~attrs (List.map (object_field sub) l) o
+    | Ptyp_class (lid, tl) ->
+        class_ ~loc ~attrs (map_loc sub lid) (List.map (sub.typ sub) tl)
+    | Ptyp_alias (t, s) -> alias ~loc ~attrs (sub.typ sub t) s
+    | Ptyp_variant (rl, b, ll) ->
+        variant ~loc ~attrs (List.map (row_field sub) rl) b ll
+    | Ptyp_poly (sl, t) -> poly ~loc ~attrs
+                             (List.map (map_loc sub) sl) (sub.typ sub t)
+    | Ptyp_package (lid, l) ->
+        package ~loc ~attrs (map_loc sub lid)
+          (List.map (map_tuple (map_loc sub) (sub.typ sub)) l)
+    | Ptyp_extension x -> extension ~loc ~attrs (sub.extension sub x)
+
+  let map_type_declaration sub
+      {ptype_name; ptype_params; ptype_cstrs;
+       ptype_kind;
+       ptype_private;
+       ptype_manifest;
+       ptype_attributes;
+       ptype_loc} =
+    Type.mk (map_loc sub ptype_name)
+      ~params:(List.map (map_fst (sub.typ sub)) ptype_params)
+      ~priv:ptype_private
+      ~cstrs:(List.map
+                (map_tuple3 (sub.typ sub) (sub.typ sub) (sub.location sub))
+                ptype_cstrs)
+      ~kind:(sub.type_kind sub ptype_kind)
+      ?manifest:(map_opt (sub.typ sub) ptype_manifest)
+      ~loc:(sub.location sub ptype_loc)
+      ~attrs:(sub.attributes sub ptype_attributes)
+
+  let map_type_kind sub = function
+    | Ptype_abstract -> Ptype_abstract
+    | Ptype_variant l ->
+        Ptype_variant (List.map (sub.constructor_declaration sub) l)
+    | Ptype_record l -> Ptype_record (List.map (sub.label_declaration sub) l)
+    | Ptype_open -> Ptype_open
+
+  let map_constructor_arguments sub = function
+    | Pcstr_tuple l -> Pcstr_tuple (List.map (sub.typ sub) l)
+    | Pcstr_record l ->
+        Pcstr_record (List.map (sub.label_declaration sub) l)
+
+  let map_type_extension sub
+      {ptyext_path; ptyext_params;
+       ptyext_constructors;
+       ptyext_private;
+       ptyext_attributes} =
+    Te.mk
+      (map_loc sub ptyext_path)
+      (List.map (sub.extension_constructor sub) ptyext_constructors)
+      ~params:(List.map (map_fst (sub.typ sub)) ptyext_params)
+      ~priv:ptyext_private
+      ~attrs:(sub.attributes sub ptyext_attributes)
+
+  let map_extension_constructor_kind sub = function
+      Pext_decl(ctl, cto) ->
+        Pext_decl(map_constructor_arguments sub ctl, map_opt (sub.typ sub) cto)
+    | Pext_rebind li ->
+        Pext_rebind (map_loc sub li)
+
+  let map_extension_constructor sub
+      {pext_name;
+       pext_kind;
+       pext_loc;
+       pext_attributes} =
+    Te.constructor
+      (map_loc sub pext_name)
+      (map_extension_constructor_kind sub pext_kind)
+      ~loc:(sub.location sub pext_loc)
+      ~attrs:(sub.attributes sub pext_attributes)
+
+end
+
+module CT = struct
+  (* Type expressions for the class language *)
+
+  let map sub {pcty_loc = loc; pcty_desc = desc; pcty_attributes = attrs} =
+    let open Cty in
+    let loc = sub.location sub loc in
+    let attrs = sub.attributes sub attrs in
+    match desc with
+    | Pcty_constr (lid, tys) ->
+        constr ~loc ~attrs (map_loc sub lid) (List.map (sub.typ sub) tys)
+    | Pcty_signature x -> signature ~loc ~attrs (sub.class_signature sub x)
+    | Pcty_arrow (lab, t, ct) ->
+        arrow ~loc ~attrs lab (sub.typ sub t) (sub.class_type sub ct)
+    | Pcty_extension x -> extension ~loc ~attrs (sub.extension sub x)
+    | Pcty_open (ovf, lid, ct) ->
+        open_ ~loc ~attrs ovf (map_loc sub lid) (sub.class_type sub ct)
+
+  let map_field sub {pctf_desc = desc; pctf_loc = loc; pctf_attributes = attrs}
+    =
+    let open Ctf in
+    let loc = sub.location sub loc in
+    let attrs = sub.attributes sub attrs in
+    match desc with
+    | Pctf_inherit ct -> inherit_ ~loc ~attrs (sub.class_type sub ct)
+    | Pctf_val (s, m, v, t) ->
+        val_ ~loc ~attrs (map_loc sub s) m v (sub.typ sub t)
+    | Pctf_method (s, p, v, t) ->
+        method_ ~loc ~attrs (map_loc sub s) p v (sub.typ sub t)
+    | Pctf_constraint (t1, t2) ->
+        constraint_ ~loc ~attrs (sub.typ sub t1) (sub.typ sub t2)
+    | Pctf_attribute x -> attribute ~loc (sub.attribute sub x)
+    | Pctf_extension x -> extension ~loc ~attrs (sub.extension sub x)
+
+  let map_signature sub {pcsig_self; pcsig_fields} =
+    Csig.mk
+      (sub.typ sub pcsig_self)
+      (List.map (sub.class_type_field sub) pcsig_fields)
+end
+
+module MT = struct
+  (* Type expressions for the module language *)
+
+  let map sub {pmty_desc = desc; pmty_loc = loc; pmty_attributes = attrs} =
+    let open Mty in
+    let loc = sub.location sub loc in
+    let attrs = sub.attributes sub attrs in
+    match desc with
+    | Pmty_ident s -> ident ~loc ~attrs (map_loc sub s)
+    | Pmty_alias s -> alias ~loc ~attrs (map_loc sub s)
+    | Pmty_signature sg -> signature ~loc ~attrs (sub.signature sub sg)
+    | Pmty_functor (s, mt1, mt2) ->
+        functor_ ~loc ~attrs (map_loc sub s)
+          (Misc.may_map (sub.module_type sub) mt1)
+          (sub.module_type sub mt2)
+    | Pmty_with (mt, l) ->
+        with_ ~loc ~attrs (sub.module_type sub mt)
+          (List.map (sub.with_constraint sub) l)
+    | Pmty_typeof me -> typeof_ ~loc ~attrs (sub.module_expr sub me)
+    | Pmty_extension x -> extension ~loc ~attrs (sub.extension sub x)
+
+  let map_with_constraint sub = function
+    | Pwith_type (lid, d) ->
+        Pwith_type (map_loc sub lid, sub.type_declaration sub d)
+    | Pwith_module (lid, lid2) ->
+        Pwith_module (map_loc sub lid, map_loc sub lid2)
+    | Pwith_typesubst (lid, d) ->
+        Pwith_typesubst (map_loc sub lid, sub.type_declaration sub d)
+    | Pwith_modsubst (s, lid) ->
+        Pwith_modsubst (map_loc sub s, map_loc sub lid)
+
+  let map_signature_item sub {psig_desc = desc; psig_loc = loc} =
+    let open Sig in
+    let loc = sub.location sub loc in
+    match desc with
+    | Psig_value vd -> value ~loc (sub.value_description sub vd)
+    | Psig_type (rf, l) -> type_ ~loc rf (List.map (sub.type_declaration sub) l)
+    | Psig_typext te -> type_extension ~loc (sub.type_extension sub te)
+    | Psig_exception ed -> exception_ ~loc (sub.extension_constructor sub ed)
+    | Psig_module x -> module_ ~loc (sub.module_declaration sub x)
+    | Psig_recmodule l ->
+        rec_module ~loc (List.map (sub.module_declaration sub) l)
+    | Psig_modtype x -> modtype ~loc (sub.module_type_declaration sub x)
+    | Psig_open x -> open_ ~loc (sub.open_description sub x)
+    | Psig_include x -> include_ ~loc (sub.include_description sub x)
+    | Psig_class _ -> assert false
+    | Psig_class_type l ->
+        class_type ~loc (List.map (sub.class_type_declaration sub) l)
+    | Psig_extension (x, attrs) ->
+        extension ~loc (sub.extension sub x) ~attrs:(sub.attributes sub attrs)
+    | Psig_attribute x -> attribute ~loc (sub.attribute sub x)
+end
+
+
+module M = struct
+  (* Value expressions for the module language *)
+
+  let map sub {pmod_loc = loc; pmod_desc = desc; pmod_attributes = attrs} =
+    let open Mod in
+    let loc = sub.location sub loc in
+    let attrs = sub.attributes sub attrs in
+    match desc with
+    | Pmod_ident x -> ident ~loc ~attrs (map_loc sub x)
+    | Pmod_structure str -> structure ~loc ~attrs (sub.structure sub str)
+    | Pmod_functor (arg, arg_ty, body) ->
+        functor_ ~loc ~attrs (map_loc sub arg)
+          (Misc.may_map (sub.module_type sub) arg_ty)
+          (sub.module_expr sub body)
+    | Pmod_apply (m1, m2) ->
+        apply ~loc ~attrs (sub.module_expr sub m1) (sub.module_expr sub m2)
+    | Pmod_constraint (m, mty) ->
+        constraint_ ~loc ~attrs (sub.module_expr sub m)
+                    (sub.module_type sub mty)
+    | Pmod_unpack e -> unpack ~loc ~attrs (sub.expr sub e)
+    | Pmod_extension x -> extension ~loc ~attrs (sub.extension sub x)
+
+  let map_structure_item sub {pstr_loc = loc; pstr_desc = desc} =
+    let open Str in
+    let loc = sub.location sub loc in
+    match desc with
+    | Pstr_eval (x, attrs) ->
+        eval ~loc ~attrs:(sub.attributes sub attrs) (sub.expr sub x)
+    | Pstr_value (r, vbs) -> value ~loc r (List.map (sub.value_binding sub) vbs)
+    | Pstr_primitive vd -> primitive ~loc (sub.value_description sub vd)
+    | Pstr_type (rf, l) -> type_ ~loc rf (List.map (sub.type_declaration sub) l)
+    | Pstr_typext te -> type_extension ~loc (sub.type_extension sub te)
+    | Pstr_exception ed -> exception_ ~loc (sub.extension_constructor sub ed)
+    | Pstr_module x -> module_ ~loc (sub.module_binding sub x)
+    | Pstr_recmodule l -> rec_module ~loc (List.map (sub.module_binding sub) l)
+    | Pstr_modtype x -> modtype ~loc (sub.module_type_declaration sub x)
+    | Pstr_open x -> open_ ~loc (sub.open_description sub x)
+    | Pstr_class () -> {pstr_loc = loc ; pstr_desc = Pstr_class ()}
+    | Pstr_class_type l ->
+        class_type ~loc (List.map (sub.class_type_declaration sub) l)
+    | Pstr_include x -> include_ ~loc (sub.include_declaration sub x)
+    | Pstr_extension (x, attrs) ->
+        extension ~loc (sub.extension sub x) ~attrs:(sub.attributes sub attrs)
+    | Pstr_attribute x -> attribute ~loc (sub.attribute sub x)
+end
+
+module E = struct
+  (* Value expressions for the core language *)
+
+  let map sub {pexp_loc = loc; pexp_desc = desc; pexp_attributes = attrs} =
+    let open Exp in
+    let loc = sub.location sub loc in
+    let attrs = sub.attributes sub attrs in
+    match desc with
+    | Pexp_ident x -> ident ~loc ~attrs (map_loc sub x)
+    | Pexp_constant x -> constant ~loc ~attrs x
+    | Pexp_let (r, vbs, e) ->
+        let_ ~loc ~attrs r (List.map (sub.value_binding sub) vbs)
+          (sub.expr sub e)
+    | Pexp_fun (lab, def, p, e) ->
+        fun_ ~loc ~attrs lab (map_opt (sub.expr sub) def) (sub.pat sub p)
+          (sub.expr sub e)
+    | Pexp_function pel -> function_ ~loc ~attrs (sub.cases sub pel)
+    | Pexp_apply (e, l) ->
+        apply ~loc ~attrs (sub.expr sub e) (List.map (map_snd (sub.expr sub)) l)
+    | Pexp_match (e, pel) ->
+        match_ ~loc ~attrs (sub.expr sub e) (sub.cases sub pel)
+    | Pexp_try (e, pel) -> try_ ~loc ~attrs (sub.expr sub e) (sub.cases sub pel)
+    | Pexp_tuple el -> tuple ~loc ~attrs (List.map (sub.expr sub) el)
+    | Pexp_construct (lid, arg) ->
+        construct ~loc ~attrs (map_loc sub lid) (map_opt (sub.expr sub) arg)
+    | Pexp_variant (lab, eo) ->
+        variant ~loc ~attrs lab (map_opt (sub.expr sub) eo)
+    | Pexp_record (l, eo) ->
+        record ~loc ~attrs (List.map (map_tuple (map_loc sub) (sub.expr sub)) l)
+          (map_opt (sub.expr sub) eo)
+    | Pexp_field (e, lid) ->
+        field ~loc ~attrs (sub.expr sub e) (map_loc sub lid)
+    | Pexp_setfield (e1, lid, e2) ->
+        setfield ~loc ~attrs (sub.expr sub e1) (map_loc sub lid)
+          (sub.expr sub e2)
+    | Pexp_array el -> array ~loc ~attrs (List.map (sub.expr sub) el)
+    | Pexp_ifthenelse (e1, e2, e3) ->
+        ifthenelse ~loc ~attrs (sub.expr sub e1) (sub.expr sub e2)
+          (map_opt (sub.expr sub) e3)
+    | Pexp_sequence (e1, e2) ->
+        sequence ~loc ~attrs (sub.expr sub e1) (sub.expr sub e2)
+    | Pexp_while (e1, e2) ->
+        while_ ~loc ~attrs (sub.expr sub e1) (sub.expr sub e2)
+    | Pexp_for (p, e1, e2, d, e3) ->
+        for_ ~loc ~attrs (sub.pat sub p) (sub.expr sub e1) (sub.expr sub e2) d
+          (sub.expr sub e3)
+    | Pexp_coerce (e, t1, t2) ->
+        coerce ~loc ~attrs (sub.expr sub e) (map_opt (sub.typ sub) t1)
+          (sub.typ sub t2)
+    | Pexp_constraint (e, t) ->
+        constraint_ ~loc ~attrs (sub.expr sub e) (sub.typ sub t)
+    | Pexp_send (e, s) ->
+        send ~loc ~attrs (sub.expr sub e) (map_loc sub s)
+    | Pexp_new lid -> new_ ~loc ~attrs (map_loc sub lid)
+    | Pexp_setinstvar (s, e) ->
+        setinstvar ~loc ~attrs (map_loc sub s) (sub.expr sub e)
+    | Pexp_override sel ->
+        override ~loc ~attrs
+          (List.map (map_tuple (map_loc sub) (sub.expr sub)) sel)
+    | Pexp_letmodule (s, me, e) ->
+        letmodule ~loc ~attrs (map_loc sub s) (sub.module_expr sub me)
+          (sub.expr sub e)
+    | Pexp_letexception (cd, e) ->
+        letexception ~loc ~attrs
+          (sub.extension_constructor sub cd)
+          (sub.expr sub e)
+    | Pexp_assert e -> assert_ ~loc ~attrs (sub.expr sub e)
+    | Pexp_lazy e -> lazy_ ~loc ~attrs (sub.expr sub e)
+    | Pexp_poly (e, t) ->
+        poly ~loc ~attrs (sub.expr sub e) (map_opt (sub.typ sub) t)
+    | Pexp_object cls -> object_ ~loc ~attrs (sub.class_structure sub cls)
+    | Pexp_newtype (s, e) ->
+        newtype ~loc ~attrs (map_loc sub s) (sub.expr sub e)
+    | Pexp_pack me -> pack ~loc ~attrs (sub.module_expr sub me)
+    | Pexp_open (ovf, lid, e) ->
+        open_ ~loc ~attrs ovf (map_loc sub lid) (sub.expr sub e)
+    | Pexp_extension x -> extension ~loc ~attrs (sub.extension sub x)
+    | Pexp_unreachable -> unreachable ~loc ~attrs ()
+end
+
+module P = struct
+  (* Patterns *)
+
+  let map sub {ppat_desc = desc; ppat_loc = loc; ppat_attributes = attrs} =
+    let open Pat in
+    let loc = sub.location sub loc in
+    let attrs = sub.attributes sub attrs in
+    match desc with
+    | Ppat_any -> any ~loc ~attrs ()
+    | Ppat_var s -> var ~loc ~attrs (map_loc sub s)
+    | Ppat_alias (p, s) -> alias ~loc ~attrs (sub.pat sub p) (map_loc sub s)
+    | Ppat_constant c -> constant ~loc ~attrs c
+    | Ppat_interval (c1, c2) -> interval ~loc ~attrs c1 c2
+    | Ppat_tuple pl -> tuple ~loc ~attrs (List.map (sub.pat sub) pl)
+    | Ppat_construct (l, p) ->
+        construct ~loc ~attrs (map_loc sub l) (map_opt (sub.pat sub) p)
+    | Ppat_variant (l, p) -> variant ~loc ~attrs l (map_opt (sub.pat sub) p)
+    | Ppat_record (lpl, cf) ->
+        record ~loc ~attrs
+               (List.map (map_tuple (map_loc sub) (sub.pat sub)) lpl) cf
+    | Ppat_array pl -> array ~loc ~attrs (List.map (sub.pat sub) pl)
+    | Ppat_or (p1, p2) -> or_ ~loc ~attrs (sub.pat sub p1) (sub.pat sub p2)
+    | Ppat_constraint (p, t) ->
+        constraint_ ~loc ~attrs (sub.pat sub p) (sub.typ sub t)
+    | Ppat_type s -> type_ ~loc ~attrs (map_loc sub s)
+    | Ppat_lazy p -> lazy_ ~loc ~attrs (sub.pat sub p)
+    | Ppat_unpack s -> unpack ~loc ~attrs (map_loc sub s)
+    | Ppat_open (lid,p) -> open_ ~loc ~attrs (map_loc sub lid) (sub.pat sub p)
+    | Ppat_exception p -> exception_ ~loc ~attrs (sub.pat sub p)
+    | Ppat_extension x -> extension ~loc ~attrs (sub.extension sub x)
+end
+
+module CE = struct
+  (* Value expressions for the class language *)
+
+  let map sub {pcl_loc = loc; pcl_desc = desc; pcl_attributes = attrs} =
+    let open Cl in
+    let loc = sub.location sub loc in
+    let attrs = sub.attributes sub attrs in
+    match desc with
+    | Pcl_constr (lid, tys) ->
+        constr ~loc ~attrs (map_loc sub lid) (List.map (sub.typ sub) tys)
+    | Pcl_structure s ->
+        structure ~loc ~attrs (sub.class_structure sub s)
+    | Pcl_fun (lab, e, p, ce) ->
+        fun_ ~loc ~attrs lab
+          (map_opt (sub.expr sub) e)
+          (sub.pat sub p)
+          (sub.class_expr sub ce)
+    | Pcl_apply (ce, l) ->
+        apply ~loc ~attrs (sub.class_expr sub ce)
+          (List.map (map_snd (sub.expr sub)) l)
+    | Pcl_let (r, vbs, ce) ->
+        let_ ~loc ~attrs r (List.map (sub.value_binding sub) vbs)
+          (sub.class_expr sub ce)
+    | Pcl_constraint (ce, ct) ->
+        constraint_ ~loc ~attrs (sub.class_expr sub ce) (sub.class_type sub ct)
+    | Pcl_extension x -> extension ~loc ~attrs (sub.extension sub x)
+    | Pcl_open (ovf, lid, ce) ->
+        open_ ~loc ~attrs ovf (map_loc sub lid) (sub.class_expr sub ce)
+
+  let map_kind sub = function
+    | Cfk_concrete (o, e) -> Cfk_concrete (o, sub.expr sub e)
+    | Cfk_virtual t -> Cfk_virtual (sub.typ sub t)
+
+  let map_field sub {pcf_desc = desc; pcf_loc = loc; pcf_attributes = attrs} =
+    let open Cf in
+    let loc = sub.location sub loc in
+    let attrs = sub.attributes sub attrs in
+    match desc with
+    | Pcf_inherit () ->
+      {pcf_desc = desc; pcf_loc = loc; pcf_attributes = attrs}
+    | Pcf_val (s, m, k) -> val_ ~loc ~attrs (map_loc sub s) m (map_kind sub k)
+    | Pcf_method (s, p, k) ->
+        method_ ~loc ~attrs (map_loc sub s) p (map_kind sub k)
+    | Pcf_constraint (t1, t2) ->
+        constraint_ ~loc ~attrs (sub.typ sub t1) (sub.typ sub t2)
+    | Pcf_initializer e -> initializer_ ~loc ~attrs (sub.expr sub e)
+    | Pcf_attribute x -> attribute ~loc (sub.attribute sub x)
+    | Pcf_extension x -> extension ~loc ~attrs (sub.extension sub x)
+
+  let map_structure sub {pcstr_self; pcstr_fields} =
+    {
+      pcstr_self = sub.pat sub pcstr_self;
+      pcstr_fields = List.map (sub.class_field sub) pcstr_fields;
+    }
+
+  let class_infos sub f {pci_virt; pci_params = pl; pci_name; pci_expr;
+                         pci_loc; pci_attributes} =
+    Ci.mk
+     ~virt:pci_virt
+     ~params:(List.map (map_fst (sub.typ sub)) pl)
+      (map_loc sub pci_name)
+      (f pci_expr)
+      ~loc:(sub.location sub pci_loc)
+      ~attrs:(sub.attributes sub pci_attributes)
+end
+
+(* Now, a generic AST mapper, to be extended to cover all kinds and
+   cases of the OCaml grammar.  The default behavior of the mapper is
+   the identity. *)
+
+let default_mapper =
+  {
+    structure = (fun this l -> List.map (this.structure_item this) l);
+    structure_item = M.map_structure_item;
+    module_expr = M.map;
+    signature = (fun this l -> List.map (this.signature_item this) l);
+    signature_item = MT.map_signature_item;
+    module_type = MT.map;
+    with_constraint = MT.map_with_constraint;
+    class_expr = CE.map;
+    class_field = CE.map_field;
+    class_structure = CE.map_structure;
+    class_type = CT.map;
+    class_type_field = CT.map_field;
+    class_signature = CT.map_signature;
+    class_type_declaration =
+      (fun this -> CE.class_infos this (this.class_type this));
+    type_declaration = T.map_type_declaration;
+    type_kind = T.map_type_kind;
+    typ = T.map;
+    type_extension = T.map_type_extension;
+    extension_constructor = T.map_extension_constructor;
+    value_description =
+      (fun this {pval_name; pval_type; pval_prim; pval_loc;
+                 pval_attributes} ->
+        Val.mk
+          (map_loc this pval_name)
+          (this.typ this pval_type)
+          ~attrs:(this.attributes this pval_attributes)
+          ~loc:(this.location this pval_loc)
+          ~prim:pval_prim
+      );
+
+    pat = P.map;
+    expr = E.map;
+
+    module_declaration =
+      (fun this {pmd_name; pmd_type; pmd_attributes; pmd_loc} ->
+         Md.mk
+           (map_loc this pmd_name)
+           (this.module_type this pmd_type)
+           ~attrs:(this.attributes this pmd_attributes)
+           ~loc:(this.location this pmd_loc)
+      );
+
+    module_type_declaration =
+      (fun this {pmtd_name; pmtd_type; pmtd_attributes; pmtd_loc} ->
+         Mtd.mk
+           (map_loc this pmtd_name)
+           ?typ:(map_opt (this.module_type this) pmtd_type)
+           ~attrs:(this.attributes this pmtd_attributes)
+           ~loc:(this.location this pmtd_loc)
+      );
+
+    module_binding =
+      (fun this {pmb_name; pmb_expr; pmb_attributes; pmb_loc} ->
+         Mb.mk (map_loc this pmb_name) (this.module_expr this pmb_expr)
+           ~attrs:(this.attributes this pmb_attributes)
+           ~loc:(this.location this pmb_loc)
+      );
+
+
+    open_description =
+      (fun this {popen_lid; popen_override; popen_attributes; popen_loc} ->
+         Opn.mk (map_loc this popen_lid)
+           ~override:popen_override
+           ~loc:(this.location this popen_loc)
+           ~attrs:(this.attributes this popen_attributes)
+      );
+
+
+    include_description =
+      (fun this {pincl_mod; pincl_attributes; pincl_loc} ->
+         Incl.mk (this.module_type this pincl_mod)
+           ~loc:(this.location this pincl_loc)
+           ~attrs:(this.attributes this pincl_attributes)
+      );
+
+    include_declaration =
+      (fun this {pincl_mod; pincl_attributes; pincl_loc} ->
+         Incl.mk (this.module_expr this pincl_mod)
+           ~loc:(this.location this pincl_loc)
+           ~attrs:(this.attributes this pincl_attributes)
+      );
+
+
+    value_binding =
+      (fun this {pvb_pat; pvb_expr; pvb_attributes; pvb_loc} ->
+         Vb.mk
+           (this.pat this pvb_pat)
+           (this.expr this pvb_expr)
+           ~loc:(this.location this pvb_loc)
+           ~attrs:(this.attributes this pvb_attributes)
+      );
+
+
+    constructor_declaration =
+      (fun this {pcd_name; pcd_args; pcd_res; pcd_loc; pcd_attributes} ->
+        Type.constructor
+          (map_loc this pcd_name)
+          ~args:(T.map_constructor_arguments this pcd_args)
+          ?res:(map_opt (this.typ this) pcd_res)
+          ~loc:(this.location this pcd_loc)
+          ~attrs:(this.attributes this pcd_attributes)
+      );
+
+    label_declaration =
+      (fun this {pld_name; pld_type; pld_loc; pld_mutable; pld_attributes} ->
+         Type.field
+           (map_loc this pld_name)
+           (this.typ this pld_type)
+           ~mut:pld_mutable
+           ~loc:(this.location this pld_loc)
+           ~attrs:(this.attributes this pld_attributes)
+      );
+
+    cases = (fun this l -> List.map (this.case this) l);
+    case =
+      (fun this {pc_lhs; pc_guard; pc_rhs} ->
+         {
+           pc_lhs = this.pat this pc_lhs;
+           pc_guard = map_opt (this.expr this) pc_guard;
+           pc_rhs = this.expr this pc_rhs;
+         }
+      );
+
+
+
+    location = (fun _this l -> l);
+
+    extension = (fun this (s, e) -> (map_loc this s, this.payload this e));
+    attribute = (fun this (s, e) -> (map_loc this s, this.payload this e));
+    attributes = (fun this l -> List.map (this.attribute this) l);
+    payload =
+      (fun this -> function
+         | PStr x -> PStr (this.structure this x)
+         | PSig x -> PSig (this.signature this x)
+         | PTyp x -> PTyp (this.typ this x)
+         | PPat (x, g) -> PPat (this.pat this x, map_opt (this.expr this) g)
+      );
+  }
+
+let rec extension_of_error {loc; msg; if_highlight; sub} =
+  { loc; txt = "ocaml.error" },
+  PStr ([Str.eval (Exp.constant (Pconst_string (msg, None)));
+         Str.eval (Exp.constant (Pconst_string (if_highlight, None)))] @
+        (List.map (fun ext -> Str.extension (extension_of_error ext)) sub))
+
+let attribute_of_warning loc s =
+  { loc; txt = "ocaml.ppwarning" },
+  PStr ([Str.eval ~loc (Exp.constant (Pconst_string (s, None)))])
+
+module StringMap = Map.Make(struct
+    type t = string
+    let compare = compare
+end)
+
+let cookies = ref StringMap.empty
+
+let get_cookie k =
+  try Some (StringMap.find k !cookies)
+  with Not_found -> None
+
+let set_cookie k v =
+  cookies := StringMap.add k v !cookies
+
+let tool_name_ref = ref "_none_"
+
+let tool_name () = !tool_name_ref
+
+
+module PpxContext = struct
+  open Longident
+  open Asttypes
+  open Ast_helper
+
+  let lid name = { txt = Lident name; loc = Location.none }
+
+  let make_string x = Exp.constant (Pconst_string (x, None))
+
+  let make_bool x =
+    if x
+    then Exp.construct (lid "true") None
+    else Exp.construct (lid "false") None
+
+  let rec make_list f lst =
+    match lst with
+    | x :: rest ->
+      Exp.construct (lid "::") (Some (Exp.tuple [f x; make_list f rest]))
+    | [] ->
+      Exp.construct (lid "[]") None
+
+  let make_pair f1 f2 (x1, x2) =
+    Exp.tuple [f1 x1; f2 x2]
+
+
+  let get_cookies () =
+    lid "cookies",
+    make_list (make_pair make_string (fun x -> x))
+      (StringMap.bindings !cookies)
+
+  let mk fields =
+    { txt = "ocaml.ppx.context"; loc = Location.none },
+    Parsetree.PStr [Str.eval (Exp.record fields None)]
+
+  let make ~tool_name () =
+    let fields =
+      [
+        lid "tool_name",    make_string tool_name;
+        lid "include_dirs", make_list make_string !Clflags.include_dirs;
+        lid "load_path",    make_list make_string !Config.load_path;
+        lid "open_modules", make_list make_string !Clflags.open_modules;
+        lid "debug",        make_bool !Clflags.debug;
+        get_cookies ()
+      ]
+    in
+    mk fields
+
+  let get_fields = function
+    | PStr [{pstr_desc = Pstr_eval
+                 ({ pexp_desc = Pexp_record (fields, None) }, [])}] ->
+        fields
+    | _ ->
+        raise_errorf "Internal error: invalid [@@@ocaml.ppx.context] syntax"
+
+  let restore fields =
+    let field name payload =
+      let rec get_string = function
+        | { pexp_desc = Pexp_constant (Pconst_string (str, None)) } -> str
+        | _ -> raise_errorf "Internal error: invalid [@@@ocaml.ppx.context \
+                             { %s }] string syntax" name
+      and get_bool pexp =
+        match pexp with
+        | {pexp_desc = Pexp_construct ({txt = Longident.Lident "true"},
+                                       None)} ->
+            true
+        | {pexp_desc = Pexp_construct ({txt = Longident.Lident "false"},
+                                       None)} ->
+            false
+        | _ -> raise_errorf "Internal error: invalid [@@@ocaml.ppx.context \
+                             { %s }] bool syntax" name
+      and get_list elem = function
+        | {pexp_desc =
+             Pexp_construct ({txt = Longident.Lident "::"},
+                             Some {pexp_desc = Pexp_tuple [exp; rest]}) } ->
+            elem exp :: get_list elem rest
+        | {pexp_desc =
+             Pexp_construct ({txt = Longident.Lident "[]"}, None)} ->
+            []
+        | _ -> raise_errorf "Internal error: invalid [@@@ocaml.ppx.context \
+                             { %s }] list syntax" name
+      and get_pair f1 f2 = function
+        | {pexp_desc = Pexp_tuple [e1; e2]} ->
+            (f1 e1, f2 e2)
+        | _ -> raise_errorf "Internal error: invalid [@@@ocaml.ppx.context \
+                             { %s }] pair syntax" name
+      in
+      match name with
+      | "tool_name" ->
+          tool_name_ref := get_string payload
+      | "include_dirs" ->
+          Clflags.include_dirs := get_list get_string payload
+      | "load_path" ->
+          Config.load_path := get_list get_string payload
+      | "open_modules" ->
+          Clflags.open_modules := get_list get_string payload
+      | "debug" ->
+          Clflags.debug := get_bool payload
+      | "cookies" ->
+          let l = get_list (get_pair get_string (fun x -> x)) payload in
+          cookies :=
+            List.fold_left
+              (fun s (k, v) -> StringMap.add k v s) StringMap.empty
+              l
+      | _ ->
+          ()
+    in
+    List.iter (function ({txt=Lident name}, x) -> field name x | _ -> ()) fields
+
+  let update_cookies fields =
+    let fields =
+      Ext_list.filter fields
+        (function ({txt=Lident "cookies"}, _) -> false | _ -> true)        
+    in
+    fields @ [get_cookies ()]
+end
+
+let ppx_context = PpxContext.make
+
+let extension_of_exn exn =
+  match error_of_exn exn with
+  | Some (`Ok error) -> extension_of_error error
+  | Some `Already_displayed -> { loc = Location.none; txt = "ocaml.error" }, PStr []
+  | None -> raise exn
+
+
+let apply_lazy ~source ~target mapper =
+  let implem ast =
+    let fields, ast =
+      match ast with
+      | {pstr_desc = Pstr_attribute ({txt = "ocaml.ppx.context"}, x)} :: l ->
+          PpxContext.get_fields x, l
+      | _ -> [], ast
+    in
+    PpxContext.restore fields;
+    let ast =
+      try
+        let mapper = mapper () in
+        mapper.structure mapper ast
+      with exn ->
+        [{pstr_desc = Pstr_extension (extension_of_exn exn, []);
+          pstr_loc  = Location.none}]
+    in
+    let fields = PpxContext.update_cookies fields in
+    Str.attribute (PpxContext.mk fields) :: ast
+  in
+  let iface ast =
+    let fields, ast =
+      match ast with
+      | {psig_desc = Psig_attribute ({txt = "ocaml.ppx.context"}, x)} :: l ->
+          PpxContext.get_fields x, l
+      | _ -> [], ast
+    in
+    PpxContext.restore fields;
+    let ast =
+      try
+        let mapper = mapper () in
+        mapper.signature mapper ast
+      with exn ->
+        [{psig_desc = Psig_extension (extension_of_exn exn, []);
+          psig_loc  = Location.none}]
+    in
+    let fields = PpxContext.update_cookies fields in
+    Sig.attribute (PpxContext.mk fields) :: ast
+  in
+
+  let ic = open_in_bin source in
+  let magic =
+    really_input_string ic (String.length Config.ast_impl_magic_number)
+  in
+
+  let rewrite transform =
+    Location.set_input_name @@ input_value ic;
+    let ast = input_value ic in
+    close_in ic;
+    let ast = transform ast in
+    let oc = open_out_bin target in
+    output_string oc magic;
+    output_value oc !Location.input_name;
+    output_value oc ast;
+    close_out oc
+  and fail () =
+    close_in ic;
+    failwith "Ast_mapper: OCaml version mismatch or malformed input";
+  in
+
+  if magic = Config.ast_impl_magic_number then
+    rewrite (implem : structure -> structure)
+  else if magic = Config.ast_intf_magic_number then
+    rewrite (iface : signature -> signature)
+  else fail ()
+
+let drop_ppx_context_str ~restore = function
+  | {pstr_desc = Pstr_attribute({Location.txt = "ocaml.ppx.context"}, a)}
+    :: items ->
+      if restore then
+        PpxContext.restore (PpxContext.get_fields a);
+      items
+  | items -> items
+
+let drop_ppx_context_sig ~restore = function
+  | {psig_desc = Psig_attribute({Location.txt = "ocaml.ppx.context"}, a)}
+    :: items ->
+      if restore then
+        PpxContext.restore (PpxContext.get_fields a);
+      items
+  | items -> items
+
+let add_ppx_context_str ~tool_name ast =
+  Ast_helper.Str.attribute (ppx_context ~tool_name ()) :: ast
+
+let add_ppx_context_sig ~tool_name ast =
+  Ast_helper.Sig.attribute (ppx_context ~tool_name ()) :: ast
+
+
+let apply ~source ~target mapper =
+  apply_lazy ~source ~target (fun () -> mapper)
+
+let run_main mapper =
+  try
+    let a = Sys.argv in
+    let n = Array.length a in
+    if n > 2 then
+      let mapper () =
+        try mapper (Array.to_list (Array.sub a 1 (n - 3)))
+        with exn ->
+          (* PR#6463 *)
+          let f _ _ = raise exn in
+          {default_mapper with structure = f; signature = f}
+      in
+      apply_lazy ~source:a.(n - 2) ~target:a.(n - 1) mapper
+    else begin
+      Printf.eprintf "Usage: %s [extra_args] <infile> <outfile>\n%!"
+                     Sys.executable_name;
+      exit 2
+    end
+  with exn ->
+    prerr_endline (Printexc.to_string exn);
+    exit 2
+
+let register_function = ref (fun _name f -> run_main f)
+let register name f = !register_function name f
+
+end
+module Tbl : sig 
+#1 "tbl.mli"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
+(*                                                                        *)
+(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(* Association tables from any ordered type to any type.
+   We use the generic ordering to compare keys. *)
+
+type ('k, 'v) t
+
+val empty: ('k, 'v) t
+val add: 'k -> 'v -> ('k, 'v) t -> ('k, 'v) t
+val find: 'k -> ('k, 'v) t -> 'v
+val find_str: string -> (string, 'v) t -> 'v
+val mem: 'k -> ('k, 'v) t -> bool
+val remove: 'k -> ('k,  'v) t -> ('k, 'v) t
+val iter: ('k -> 'v -> unit) -> ('k, 'v) t -> unit
+val map: ('k -> 'v1 -> 'v2) -> ('k, 'v1) t -> ('k, 'v2) t
+val fold: ('k -> 'v -> 'acc -> 'acc) -> ('k, 'v) t -> 'acc -> 'acc
+
+open Format
+
+val print: (formatter -> 'k -> unit) -> (formatter -> 'v -> unit) ->
+           formatter -> ('k, 'v) t -> unit
+
+end = struct
+#1 "tbl.ml"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
+(*                                                                        *)
+(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+type ('k, 'v) t =
+    Empty
+  | Node of ('k, 'v) t * 'k * 'v * ('k, 'v) t * int
+
+let empty = Empty
+
+let height = function
+    Empty -> 0
+  | Node(_,_,_,_,h) -> h
+
+let create l x d r =
+  let hl = height l and hr = height r in
+  Node(l, x, d, r, (if hl >= hr then hl + 1 else hr + 1))
+
+let bal l x d r =
+  let hl = height l and hr = height r in
+  if hl > hr + 1 then
+    match l with
+    | Node (ll, lv, ld, lr, _) when height ll >= height lr ->
+        create ll lv ld (create lr x d r)
+    | Node (ll, lv, ld, Node (lrl, lrv, lrd, lrr, _), _) ->
+        create (create ll lv ld lrl) lrv lrd (create lrr x d r)
+    | _ -> assert false
+  else if hr > hl + 1 then
+    match r with
+    | Node (rl, rv, rd, rr, _) when height rr >= height rl ->
+        create (create l x d rl) rv rd rr
+    | Node (Node (rll, rlv, rld, rlr, _), rv, rd, rr, _) ->
+        create (create l x d rll) rlv rld (create rlr rv rd rr)
+    | _ -> assert false
+  else
+    create l x d r
+
+let rec add x data = function
+    Empty ->
+      Node(Empty, x, data, Empty, 1)
+  | Node(l, v, d, r, h) ->
+      let c = compare x v in
+      if c = 0 then
+        Node(l, x, data, r, h)
+      else if c < 0 then
+        bal (add x data l) v d r
+      else
+        bal l v d (add x data r)
+
+let rec find x = function
+    Empty ->
+      raise Not_found
+  | Node(l, v, d, r, _) ->
+      let c = compare x v in
+      if c = 0 then d
+      else find x (if c < 0 then l else r)
+
+let rec find_str (x : string) = function
+    Empty ->
+      raise Not_found
+  | Node(l, v, d, r, _) ->
+      let c = compare x v in
+      if c = 0 then d
+      else find_str x (if c < 0 then l else r)
+
+let rec mem x = function
+    Empty -> false
+  | Node(l, v, _d, r, _) ->
+      let c = compare x v in
+      c = 0 || mem x (if c < 0 then l else r)
+
+let rec merge t1 t2 =
+  match (t1, t2) with
+    (Empty, t) -> t
+  | (t, Empty) -> t
+  | (Node(l1, v1, d1, r1, _h1), Node(l2, v2, d2, r2, _h2)) ->
+      bal l1 v1 d1 (bal (merge r1 l2) v2 d2 r2)
+
+let rec remove x = function
+    Empty ->
+      Empty
+  | Node(l, v, d, r, _h) ->
+      let c = compare x v in
+      if c = 0 then
+        merge l r
+      else if c < 0 then
+        bal (remove x l) v d r
+      else
+        bal l v d (remove x r)
+
+let rec iter f = function
+    Empty -> ()
+  | Node(l, v, d, r, _) ->
+      iter f l; f v d; iter f r
+
+let rec map f = function
+    Empty -> Empty
+  | Node(l, v, d, r, h) -> Node(map f l, v, f v d, map f r, h)
+
+let rec fold f m accu =
+  match m with
+  | Empty -> accu
+  | Node(l, v, d, r, _) ->
+      fold f r (f v d (fold f l accu))
+
+open Format
+
+let print print_key print_data ppf tbl =
+  let print_tbl ppf tbl =
+    iter (fun k d -> fprintf ppf "@[<2>%a ->@ %a;@]@ " print_key k print_data d)
+      tbl in
+  fprintf ppf "@[<hv 2>[[%a]]@]" print_tbl tbl
+
+end
+module Subst : sig 
+#1 "subst.mli"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
+(*                                                                        *)
+(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(* Substitutions *)
+
+open Types
+
+type t
+
+(*
+   Substitutions are used to translate a type from one context to
+   another.  This requires substituting paths for identifiers, and
+   possibly also lowering the level of non-generic variables so that
+   they are inferior to the maximum level of the new context.
+
+   Substitutions can also be used to create a "clean" copy of a type.
+   Indeed, non-variable node of a type are duplicated, with their
+   levels set to generic level.  That way, the resulting type is
+   well-formed (decreasing levels), even if the original one was not.
+*)
+
+val identity: t
+
+val add_type: Ident.t -> Path.t -> t -> t
+val add_type_path: Path.t -> Path.t -> t -> t
+val add_type_function:
+  Path.t -> params:type_expr list -> body:type_expr -> t -> t
+val add_module: Ident.t -> Path.t -> t -> t
+val add_module_path: Path.t -> Path.t -> t -> t
+val add_modtype: Ident.t -> module_type -> t -> t
+val for_saving: t -> t
+val reset_for_saving: unit -> unit
+
+val module_path: t -> Path.t -> Path.t
+val type_path: t -> Path.t -> Path.t
+
+val type_expr: t -> type_expr -> type_expr
+val class_type: t -> class_type -> class_type
+val value_description: t -> value_description -> value_description
+val type_declaration: t -> type_declaration -> type_declaration
+val extension_constructor:
+        t -> extension_constructor -> extension_constructor
+
+val cltype_declaration: t -> class_type_declaration -> class_type_declaration
+val modtype: t -> module_type -> module_type
+val signature: t -> signature -> signature
+val modtype_declaration: t -> modtype_declaration -> modtype_declaration
+val module_declaration: t -> module_declaration -> module_declaration
+val typexp : t -> Types.type_expr -> Types.type_expr
+val class_signature: t -> class_signature -> class_signature
+
+(* Composition of substitutions:
+     apply (compose s1 s2) x = apply s2 (apply s1 x) *)
+val compose: t -> t -> t
+
+(* A forward reference to be filled in ctype.ml. *)
+val ctype_apply_env_empty:
+  (type_expr list -> type_expr -> type_expr list -> type_expr) ref
+
+end = struct
+#1 "subst.ml"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
+(*                                                                        *)
+(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(* Substitutions *)
+
+open Misc
+open Path
+open Types
+open Btype
+
+type type_replacement =
+  | Path of Path.t
+  | Type_function of { params : type_expr list; body : type_expr }
+
+module PathMap = Map.Make(Path)
+
+type t =
+  { types: type_replacement PathMap.t;
+    modules: Path.t PathMap.t;
+    modtypes: (Ident.t, module_type) Tbl.t;
+    for_saving: bool;
+  }
+
+let identity =
+  { types = PathMap.empty;
+    modules = PathMap.empty;
+    modtypes = Tbl.empty;
+    for_saving = false;
+  }
+
+let add_type_path id p s = { s with types = PathMap.add id (Path p) s.types }
+let add_type id p s = add_type_path (Pident id) p s
+
+let add_type_function id ~params ~body s =
+  { s with types = PathMap.add id (Type_function { params; body }) s.types }
+
+let add_module_path id p s = { s with modules = PathMap.add id p s.modules }
+let add_module id p s = add_module_path (Pident id) p s
+
+let add_modtype id ty s = { s with modtypes = Tbl.add id ty s.modtypes }
+
+let for_saving s = { s with for_saving = true }
+
+let loc s x =
+  if s.for_saving && not !Clflags.keep_locs then Location.none else x
+
+let remove_loc =
+  let open Ast_mapper in
+  {default_mapper with location = (fun _this _loc -> Location.none)}
+
+let is_not_doc = function
+  | ({Location.txt = "ocaml.doc"}, _) -> false
+  | ({Location.txt = "ocaml.text"}, _) -> false
+  | ({Location.txt = "doc"}, _) -> false
+  | ({Location.txt = "text"}, _) -> false
+  | _ -> true
+
+let attrs s x =
+  let x =
+    if s.for_saving && not !Clflags.keep_docs then
+      Ext_list.filter x is_not_doc
+    else x
+  in
+    if s.for_saving && not !Clflags.keep_locs
+    then remove_loc.Ast_mapper.attributes remove_loc x
+    else x
+
+let rec module_path s path =
+  try PathMap.find path s.modules
+  with Not_found ->
+    match path with
+    | Pident _ -> path
+    | Pdot(p, n, pos) ->
+       Pdot(module_path s p, n, pos)
+    | Papply(p1, p2) ->
+       Papply(module_path s p1, module_path s p2)
+
+let modtype_path s = function
+    Pident id as p ->
+      begin try
+        match Tbl.find id s.modtypes with
+          | Mty_ident p -> p
+          | _ -> fatal_error "Subst.modtype_path"
+      with Not_found -> p end
+  | Pdot(p, n, pos) ->
+      Pdot(module_path s p, n, pos)
+  | Papply _ ->
+      fatal_error "Subst.modtype_path"
+
+let type_path s path =
+  match PathMap.find path s.types with
+  | Path p -> p
+  | Type_function _ -> assert false
+  | exception Not_found ->
+     match path with
+     | Pident _ -> path
+     | Pdot(p, n, pos) ->
+        Pdot(module_path s p, n, pos)
+     | Papply _ ->
+        fatal_error "Subst.type_path"
+
+let type_path s p =
+  match Path.constructor_typath p with
+  | Regular p -> type_path s p
+  | Cstr (ty_path, cstr) -> Pdot(type_path s ty_path, cstr, nopos)
+  | LocalExt _ -> type_path s p
+  | Ext (p, cstr) -> Pdot(module_path s p, cstr, nopos)
+
+let to_subst_by_type_function s p =
+  match PathMap.find p s.types with
+  | Path _ -> false
+  | Type_function _ -> true
+  | exception Not_found -> false
+
+(* Special type ids for saved signatures *)
+
+let new_id = ref (-1)
+let reset_for_saving () = new_id := -1
+
+let newpersty desc =
+  decr new_id;
+  { desc = desc; level = generic_level; id = !new_id }
+
+(* ensure that all occurrences of 'Tvar None' are physically shared *)
+let tvar_none = Tvar None
+let tunivar_none = Tunivar None
+let norm = function
+  | Tvar None -> tvar_none
+  | Tunivar None -> tunivar_none
+  | d -> d
+
+let ctype_apply_env_empty = ref (fun _ -> assert false)
+
+(* Similar to [Ctype.nondep_type_rec]. *)
+let rec typexp s ty =
+  let ty = repr ty in
+  match ty.desc with
+    Tvar _ | Tunivar _ as desc ->
+      if s.for_saving || ty.id < 0 then
+        let ty' =
+          if s.for_saving then newpersty (norm desc)
+          else newty2 ty.level desc
+        in
+        save_desc ty desc; ty.desc <- Tsubst ty'; ty'
+      else ty
+  | Tsubst ty ->
+      ty
+  | Tfield (m, k, _t1, _t2) when not s.for_saving && m = dummy_method
+      && field_kind_repr k <> Fabsent && (repr ty).level < generic_level ->
+      (* do not copy the type of self when it is not generalized *)
+      ty
+(* cannot do it, since it would omit substitution
+  | Tvariant row when not (static_row row) ->
+      ty
+*)
+  | _ ->
+    let desc = ty.desc in
+    save_desc ty desc;
+    let tm = row_of_type ty in
+    let has_fixed_row =
+      not (is_Tconstr ty) && is_constr_row ~allow_ident:false tm in
+    (* Make a stub *)
+    let ty' = if s.for_saving then newpersty (Tvar None) else newgenvar () in
+    ty.desc <- Tsubst ty';
+    ty'.desc <-
+      begin if has_fixed_row then
+        match tm.desc with (* PR#7348 *)
+          Tconstr (Pdot(m,i,pos), tl, _abbrev) ->
+            let i' = String.sub i 0 (String.length i - 4) in
+            Tconstr(type_path s (Pdot(m,i',pos)), tl, ref Mnil)
+        | _ -> assert false
+      else match desc with
+      | Tconstr (p, args, _abbrev) ->
+         let args = List.map (typexp s) args in
+         begin match PathMap.find p s.types with
+         | exception Not_found -> Tconstr(type_path s p, args, ref Mnil)
+         | Path _ -> Tconstr(type_path s p, args, ref Mnil)
+         | Type_function { params; body } ->
+            (!ctype_apply_env_empty params body args).desc
+         end
+      | Tpackage(p, n, tl) ->
+          Tpackage(modtype_path s p, n, List.map (typexp s) tl)
+      | Tobject (t1, name) ->
+          Tobject (typexp s t1,
+                 ref (match !name with
+                        None -> None
+                      | Some (p, tl) ->
+                         if to_subst_by_type_function s p
+                         then None
+                         else Some (type_path s p, List.map (typexp s) tl)))
+      | Tvariant row ->
+          let row = row_repr row in
+          let more = repr row.row_more in
+          (* We must substitute in a subtle way *)
+          (* Tsubst takes a tuple containing the row var and the variant *)
+          begin match more.desc with
+            Tsubst {desc = Ttuple [_;ty2]} ->
+              (* This variant type has been already copied *)
+              ty.desc <- Tsubst ty2; (* avoid Tlink in the new type *)
+              Tlink ty2
+          | _ ->
+              let dup =
+                s.for_saving || more.level = generic_level || static_row row ||
+                match more.desc with Tconstr _ -> true | _ -> false in
+              (* Various cases for the row variable *)
+              let more' =
+                match more.desc with
+                  Tsubst ty -> ty
+                | Tconstr _ | Tnil -> typexp s more
+                | Tunivar _ | Tvar _ ->
+                    save_desc more more.desc;
+                    if s.for_saving then newpersty (norm more.desc) else
+                    if dup && is_Tvar more then newgenty more.desc else more
+                | _ -> assert false
+              in
+              (* Register new type first for recursion *)
+              more.desc <- Tsubst(newgenty(Ttuple[more';ty']));
+              (* Return a new copy *)
+              let row =
+                copy_row (typexp s) true row (not dup) more' in
+              match row.row_name with
+              | Some (p, tl) ->
+                 Tvariant {row with row_name =
+                                      if to_subst_by_type_function s p
+                                      then None
+                                      else Some (type_path s p, tl)}
+              | None ->
+                  Tvariant row
+          end
+      | Tfield(_label, kind, _t1, t2) when field_kind_repr kind = Fabsent ->
+          Tlink (typexp s t2)
+      | _ -> copy_type_desc (typexp s) desc
+      end;
+    ty'
+
+(*
+   Always make a copy of the type. If this is not done, type levels
+   might not be correct.
+*)
+let type_expr s ty =
+  let ty' = typexp s ty in
+  cleanup_types ();
+  ty'
+
+let label_declaration s l =
+  {
+    ld_id = l.ld_id;
+    ld_mutable = l.ld_mutable;
+    ld_type = typexp s l.ld_type;
+    ld_loc = loc s l.ld_loc;
+    ld_attributes = attrs s l.ld_attributes;
+  }
+
+let constructor_arguments s = function
+  | Cstr_tuple l ->
+      Cstr_tuple (List.map (typexp s) l)
+  | Cstr_record l ->
+      Cstr_record (List.map (label_declaration s) l)
+
+let constructor_declaration s c =
+  {
+    cd_id = c.cd_id;
+    cd_args = constructor_arguments s c.cd_args;
+    cd_res = may_map (typexp s) c.cd_res;
+    cd_loc = loc s c.cd_loc;
+    cd_attributes = attrs s c.cd_attributes;
+  }
+
+let type_declaration s decl =
+  let decl =
+    { type_params = List.map (typexp s) decl.type_params;
+      type_arity = decl.type_arity;
+      type_kind =
+        begin match decl.type_kind with
+          Type_abstract -> Type_abstract
+        | Type_variant cstrs ->
+            Type_variant (List.map (constructor_declaration s) cstrs)
+        | Type_record(lbls, rep) ->
+            Type_record (List.map (label_declaration s) lbls, rep)
+        | Type_open -> Type_open
+        end;
+      type_manifest =
+        begin
+          match decl.type_manifest with
+            None -> None
+          | Some ty -> Some(typexp s ty)
+        end;
+      type_private = decl.type_private;
+      type_variance = decl.type_variance;
+      type_newtype_level = None;
+      type_loc = loc s decl.type_loc;
+      type_attributes = attrs s decl.type_attributes;
+      type_immediate = decl.type_immediate;
+      type_unboxed = decl.type_unboxed;
+    }
+  in
+  cleanup_types ();
+  decl
+
+let class_signature s sign =
+  { csig_self = typexp s sign.csig_self;
+    csig_vars =
+      Vars.map (function (m, v, t) -> (m, v, typexp s t)) sign.csig_vars;
+    csig_concr = sign.csig_concr;
+    csig_inher =
+      List.map (fun (p, tl) -> (type_path s p, List.map (typexp s) tl))
+        sign.csig_inher;
+  }
+
+let rec class_type s =
+  function
+    Cty_constr (p, tyl, cty) ->
+      Cty_constr (type_path s p, List.map (typexp s) tyl, class_type s cty)
+  | Cty_signature sign ->
+      Cty_signature (class_signature s sign)
+  | Cty_arrow (l, ty, cty) ->
+      Cty_arrow (l, typexp s ty, class_type s cty)
+
+
+
+let cltype_declaration s decl =
+  let decl =
+    { clty_params = List.map (typexp s) decl.clty_params;
+      clty_variance = decl.clty_variance;
+      clty_type = class_type s decl.clty_type;
+      clty_path = type_path s decl.clty_path;
+      clty_loc = loc s decl.clty_loc;
+      clty_attributes = attrs s decl.clty_attributes;
+    }
+  in
+  (* Do clean up even if saving: type_declaration may be recursive *)
+  cleanup_types ();
+  decl
+
+let class_type s cty =
+  let cty = class_type s cty in
+  cleanup_types ();
+  cty
+
+let value_description s descr =
+  { val_type = type_expr s descr.val_type;
+    val_kind = descr.val_kind;
+    val_loc = loc s descr.val_loc;
+    val_attributes = attrs s descr.val_attributes;
+   }
+
+let extension_constructor s ext =
+  let ext =
+    { ext_type_path = type_path s ext.ext_type_path;
+      ext_type_params = List.map (typexp s) ext.ext_type_params;
+      ext_args = constructor_arguments s ext.ext_args;
+      ext_ret_type = may_map (typexp s) ext.ext_ret_type;
+      ext_private = ext.ext_private;
+      ext_attributes = attrs s ext.ext_attributes;
+      ext_loc = if s.for_saving then Location.none else ext.ext_loc; }
+  in
+    cleanup_types ();
+    ext
+
+let rec rename_bound_idents s idents = function
+    [] -> (List.rev idents, s)
+  | Sig_type(id, _, _) :: sg ->
+      let id' = Ident.rename id in
+      rename_bound_idents (add_type id (Pident id') s) (id' :: idents) sg
+  | Sig_module(id, _, _) :: sg ->
+      let id' = Ident.rename id in
+      rename_bound_idents (add_module id (Pident id') s) (id' :: idents) sg
+  | Sig_modtype(id, _) :: sg ->
+      let id' = Ident.rename id in
+      rename_bound_idents (add_modtype id (Mty_ident(Pident id')) s)
+                          (id' :: idents) sg
+  |  Sig_class_type(id, _, _) :: sg ->
+      (* cheat and pretend they are types cf. PR#6650 *)
+      let id' = Ident.rename id in
+      rename_bound_idents (add_type id (Pident id') s) (id' :: idents) sg
+  | (Sig_value(id, _) | Sig_typext(id, _, _)) :: sg ->
+      let id' = Ident.rename id in
+      rename_bound_idents s (id' :: idents) sg
+  | Sig_class _ :: _ -> assert false
+let rec modtype s = function
+    Mty_ident p as mty ->
+      begin match p with
+        Pident id ->
+          begin try Tbl.find id s.modtypes with Not_found -> mty end
+      | Pdot(p, n, pos) ->
+          Mty_ident(Pdot(module_path s p, n, pos))
+      | Papply _ ->
+          fatal_error "Subst.modtype"
+      end
+  | Mty_signature sg ->
+      Mty_signature(signature s sg)
+  | Mty_functor(id, arg, res) ->
+      let id' = Ident.rename id in
+      Mty_functor(id', may_map (modtype s) arg,
+                       modtype (add_module id (Pident id') s) res)
+  | Mty_alias(pres, p) ->
+      Mty_alias(pres, module_path s p)
+
+and signature s sg =
+  (* Components of signature may be mutually recursive (e.g. type declarations
+     or class and type declarations), so first build global renaming
+     substitution... *)
+  let (new_idents, s') = rename_bound_idents s [] sg in
+  (* ... then apply it to each signature component in turn *)
+  List.map2 (signature_component s') sg new_idents
+
+and signature_component s comp newid =
+  match comp with
+    Sig_value(_id, d) ->
+      Sig_value(newid, value_description s d)
+  | Sig_type(_id, d, rs) ->
+      Sig_type(newid, type_declaration s d, rs)
+  | Sig_typext(_id, ext, es) ->
+      Sig_typext(newid, extension_constructor s ext, es)
+  | Sig_module(_id, d, rs) ->
+      Sig_module(newid, module_declaration s d, rs)
+  | Sig_modtype(_id, d) ->
+      Sig_modtype(newid, modtype_declaration s d)
+  | Sig_class() ->
+      Sig_class()
+  | Sig_class_type(_id, d, rs) ->
+      Sig_class_type(newid, cltype_declaration s d, rs)
+
+and module_declaration s decl =
+  {
+    md_type = modtype s decl.md_type;
+    md_attributes = attrs s decl.md_attributes;
+    md_loc = loc s decl.md_loc;
+  }
+
+and modtype_declaration s decl  =
+  {
+    mtd_type = may_map (modtype s) decl.mtd_type;
+    mtd_attributes = attrs s decl.mtd_attributes;
+    mtd_loc = loc s decl.mtd_loc;
+  }
+
+(* For every binding k |-> d of m1, add k |-> f d to m2
+   and return resulting merged map. *)
+
+let merge_tbls f m1 m2 =
+  Tbl.fold (fun k d accu -> Tbl.add k (f d) accu) m1 m2
+
+let merge_path_maps f m1 m2 =
+  PathMap.fold (fun k d accu -> PathMap.add k (f d) accu) m1 m2
+
+let type_replacement s = function
+  | Path p -> Path (type_path s p)
+  | Type_function { params; body } ->
+     let params = List.map (typexp s) params in
+     let body = typexp s body in
+     Type_function { params; body }
+
+(* Composition of substitutions:
+     apply (compose s1 s2) x = apply s2 (apply s1 x) *)
+
+let compose s1 s2 =
+  { types = merge_path_maps (type_replacement s2) s1.types s2.types;
+    modules = merge_path_maps (module_path s2) s1.modules s2.modules;
+    modtypes = merge_tbls (modtype s2) s1.modtypes s2.modtypes;
+    for_saving = s1.for_saving || s2.for_saving;
+  }
+
+end
+module Env : sig 
+#1 "env.mli"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
+(*                                                                        *)
+(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(* Environment handling *)
+
+open Types
+
+module PathMap : Map.S with type key = Path.t
+                        and type 'a t = 'a Map.Make(Path).t
+
+type summary =
+    Env_empty
+  | Env_value of summary * Ident.t * value_description
+  | Env_type of summary * Ident.t * type_declaration
+  | Env_extension of summary * Ident.t * extension_constructor
+  | Env_module of summary * Ident.t * module_declaration
+  | Env_modtype of summary * Ident.t * modtype_declaration
+  | Env_class of unit
+  | Env_cltype of summary * Ident.t * class_type_declaration
+  | Env_open of summary * Path.t
+  | Env_functor_arg of summary * Ident.t
+  | Env_constraints of summary * type_declaration PathMap.t
+  | Env_copy_types of summary * string list
+
+type t
+
+val empty: t
+val initial_safe_string: t
+
+val diff: t -> t -> Ident.t list
+val copy_local: from:t -> t -> t
+
+type type_descriptions =
+    constructor_description list * label_description list
+
+(* For short-paths *)
+type iter_cont
+val iter_types:
+    (Path.t -> Path.t * (type_declaration * type_descriptions) -> unit) ->
+    t -> iter_cont
+val run_iter_cont: iter_cont list -> (Path.t * iter_cont) list
+val same_types: t -> t -> bool
+val used_persistent: unit -> Concr.t
+val find_shadowed_types: Path.t -> t -> Path.t list
+val without_cmis: ('a -> 'b) -> 'a -> 'b
+        (* [without_cmis f arg] applies [f] to [arg], but does not
+           allow opening cmis during its execution *)
+
+(* Lookup by paths *)
+
+val find_value: Path.t -> t -> value_description
+val find_type: Path.t -> t -> type_declaration
+val find_type_descrs: Path.t -> t -> type_descriptions
+val find_module: Path.t -> t -> module_declaration
+val find_modtype: Path.t -> t -> modtype_declaration
+val find_class: Path.t -> t -> class_declaration
+val find_cltype: Path.t -> t -> class_type_declaration
+
+val find_type_expansion:
+    Path.t -> t -> type_expr list * type_expr * int option
+val find_type_expansion_opt:
+    Path.t -> t -> type_expr list * type_expr * int option
+(* Find the manifest type information associated to a type for the sake
+   of the compiler's type-based optimisations. *)
+val find_modtype_expansion: Path.t -> t -> module_type
+val add_functor_arg: Ident.t -> t -> t
+val is_functor_arg: Path.t -> t -> bool
+val normalize_path: Location.t option -> t -> Path.t -> Path.t
+(* Normalize the path to a concrete value or module.
+   If the option is None, allow returning dangling paths.
+   Otherwise raise a Missing_module error, and may add forgotten
+   head as required global. *)
+val normalize_path_prefix: Location.t option -> t -> Path.t -> Path.t
+(* Only normalize the prefix part of the path *)
+
+
+
+
+val has_local_constraints: t -> bool
+val add_gadt_instance_level: int -> t -> t
+val gadt_instance_level: t -> type_expr -> int option
+val add_gadt_instances: t -> int -> type_expr list -> unit
+val add_gadt_instance_chain: t -> int -> type_expr -> unit
+
+(* Lookup by long identifiers *)
+
+(* ?loc is used to report 'deprecated module' warnings *)
+
+val lookup_value:
+  ?loc:Location.t -> Longident.t -> t -> Path.t * value_description
+val lookup_constructor:
+  ?loc:Location.t -> Longident.t -> t -> constructor_description
+val lookup_all_constructors:
+  ?loc:Location.t ->
+  Longident.t -> t -> (constructor_description * (unit -> unit)) list
+val lookup_label:
+  ?loc:Location.t -> Longident.t -> t -> label_description
+val lookup_all_labels:
+  ?loc:Location.t ->
+  Longident.t -> t -> (label_description * (unit -> unit)) list
+val lookup_type:
+  ?loc:Location.t -> Longident.t -> t -> Path.t
+  (* Since 4.04, this function no longer returns [type_description].
+     To obtain it, you should either call [Env.find_type], or replace
+     it by [Typetexp.find_type] *)
+val lookup_module:
+  load:bool -> ?loc:Location.t -> Longident.t -> t -> Path.t
+val lookup_modtype:
+  ?loc:Location.t -> Longident.t -> t -> Path.t * modtype_declaration
+val lookup_class:
+  ?loc:Location.t -> Longident.t -> t -> Path.t * class_declaration
+val lookup_cltype:
+  ?loc:Location.t -> Longident.t -> t -> Path.t * class_type_declaration
+
+val copy_types: string list -> t -> t
+  (* Used only in Typecore.duplicate_ident_types. *)
+
+exception Recmodule
+  (* Raise by lookup_module when the identifier refers
+     to one of the modules of a recursive definition
+     during the computation of its approximation (see #5965). *)
+
+(* Insertion by identifier *)
+
+val add_value:
+    ?check:(string -> Warnings.t) -> Ident.t -> value_description -> t -> t
+val add_type: check:bool -> Ident.t -> type_declaration -> t -> t
+val add_extension: check:bool -> Ident.t -> extension_constructor -> t -> t
+val add_module: ?arg:bool -> Ident.t -> module_type -> t -> t
+val add_module_declaration: ?arg:bool -> check:bool -> Ident.t ->
+  module_declaration -> t -> t
+val add_modtype: Ident.t -> modtype_declaration -> t -> t
+
+val add_cltype: Ident.t -> class_type_declaration -> t -> t
+val add_local_constraint: Path.t -> type_declaration -> int -> t -> t
+val add_local_type: Path.t -> type_declaration -> t -> t
+
+(* Insertion of all fields of a signature. *)
+
+val add_item: signature_item -> t -> t
+val add_signature: signature -> t -> t
+
+(* Insertion of all fields of a signature, relative to the given path.
+   Used to implement open. Returns None if the path refers to a functor,
+   not a structure. *)
+val open_signature:
+    ?used_slot:bool ref ->
+    ?loc:Location.t -> ?toplevel:bool -> Asttypes.override_flag -> Path.t ->
+      t -> t option
+
+val open_pers_signature: string -> t -> t
+
+(* Insertion by name *)
+
+val enter_value:
+    ?check:(string -> Warnings.t) ->
+    string -> value_description -> t -> Ident.t * t
+val enter_type: string -> type_declaration -> t -> Ident.t * t
+val enter_extension: string -> extension_constructor -> t -> Ident.t * t
+val enter_module: ?arg:bool -> string -> module_type -> t -> Ident.t * t
+val enter_module_declaration:
+    ?arg:bool -> Ident.t -> module_declaration -> t -> t
+val enter_modtype: string -> modtype_declaration -> t -> Ident.t * t
+
+val enter_cltype: string -> class_type_declaration -> t -> Ident.t * t
+
+(* Initialize the cache of in-core module interfaces. *)
+val reset_cache: unit -> unit
+
+(* To be called before each toplevel phrase. *)
+val reset_cache_toplevel: unit -> unit
+
+(* Remember the name of the current compilation unit. *)
+val set_unit_name: string -> unit
+val get_unit_name: unit -> string
+
+(* Read, save a signature to/from a file *)
+
+val read_signature: string -> string -> signature
+        (* Arguments: module name, file name. Results: signature. *)
+val save_signature:
+  ?check_exists:unit ->
+  deprecated:string option -> signature -> string -> string -> Cmi_format.cmi_infos
+        (* Arguments: signature, module name, file name. *)
+val save_signature_with_imports:
+  ?check_exists:unit -> 
+  deprecated:string option ->
+  signature -> string -> string -> (string * Digest.t option) list
+  -> Cmi_format.cmi_infos
+        (* Arguments: signature, module name, file name,
+           imported units with their CRCs. *)
+
+(* Return the CRC of the interface of the given compilation unit *)
+
+val crc_of_unit: string -> Digest.t
+
+(* Return the set of compilation units imported, with their CRC *)
+
+val imports: unit -> (string * Digest.t option) list
+
+
+
+(* Direct access to the table of imported compilation units with their CRC *)
+
+val crc_units: Consistbl.t
+val add_import: string -> unit
+
+(* Summaries -- compact representation of an environment, to be
+   exported in debugging information. *)
+
+val summary: t -> summary
+
+(* Return an equivalent environment where all fields have been reset,
+   except the summary. The initial environment can be rebuilt from the
+   summary, using Envaux.env_of_only_summary. *)
+
+val keep_only_summary : t -> t
+val env_of_only_summary : (summary -> Subst.t -> t) -> t -> t
+
+(* Error report *)
+
+type error =
+  | Illegal_renaming of string * string * string
+  | Inconsistent_import of string * string * string
+  | Need_recursive_types of string * string
+  | Missing_module of Location.t * Path.t * Path.t
+  | Illegal_value_name of Location.t * string
+
+exception Error of error
+
+open Format
+
+val report_error: formatter -> error -> unit
+
+
+val mark_value_used: t -> string -> value_description -> unit
+val mark_module_used: t -> string -> Location.t -> unit
+val mark_type_used: t -> string -> type_declaration -> unit
+
+type constructor_usage = Positive | Pattern | Privatize
+val mark_constructor_used:
+    constructor_usage -> t -> string -> type_declaration -> string -> unit
+val mark_constructor:
+    constructor_usage -> t -> string -> constructor_description -> unit
+val mark_extension_used:
+    constructor_usage -> t -> extension_constructor -> string -> unit
+
+val in_signature: bool -> t -> t
+val implicit_coercion: t -> t
+
+val is_in_signature: t -> bool
+
+val set_value_used_callback:
+    string -> value_description -> (unit -> unit) -> unit
+val set_type_used_callback:
+    string -> type_declaration -> ((unit -> unit) -> unit) -> unit
+
+(* Forward declaration to break mutual recursion with Includemod. *)
+val check_modtype_inclusion:
+      (loc:Location.t -> t -> module_type -> Path.t -> module_type -> unit) ref
+
+(* Forward declaration to break mutual recursion with Mtype. *)
+val strengthen:
+    (aliasable:bool -> t -> module_type -> Path.t -> module_type) ref
+(* Forward declaration to break mutual recursion with Ctype. *)
+val same_constr: (t -> type_expr -> type_expr -> bool) ref
+
+(** Folding over all identifiers (for analysis purpose) *)
+
+val fold_values:
+  (string -> Path.t -> value_description -> 'a -> 'a) ->
+  Longident.t option -> t -> 'a -> 'a
+val fold_types:
+  (string -> Path.t -> type_declaration * type_descriptions -> 'a -> 'a) ->
+  Longident.t option -> t -> 'a -> 'a
+val fold_constructors:
+  (constructor_description -> 'a -> 'a) ->
+  Longident.t option -> t -> 'a -> 'a
+val fold_labels:
+  (label_description -> 'a -> 'a) ->
+  Longident.t option -> t -> 'a -> 'a
+
+(** Persistent structures are only traversed if they are already loaded. *)
+val fold_modules:
+  (string -> Path.t -> module_declaration -> 'a -> 'a) ->
+  Longident.t option -> t -> 'a -> 'a
+
+val fold_modtypes:
+  (string -> Path.t -> modtype_declaration -> 'a -> 'a) ->
+  Longident.t option -> t -> 'a -> 'a
+val fold_classs:
+  (string -> Path.t -> class_declaration -> 'a -> 'a) ->
+  Longident.t option -> t -> 'a -> 'a
+val fold_cltypes:
+  (string -> Path.t -> class_type_declaration -> 'a -> 'a) ->
+  Longident.t option -> t -> 'a -> 'a
+
+(** Utilities *)
+val scrape_alias: t -> module_type -> module_type
+val check_value_name: string -> Location.t -> unit
+
+module Persistent_signature : sig
+  type t =
+    { filename : string; (** Name of the file containing the signature. *)
+      cmi : Cmi_format.cmi_infos }
+
+  (** Function used to load a persistent signature. The default is to look for
+      the .cmi file in the load path. This function can be overridden to load
+      it from memory, for instance to build a self-contained toplevel. *)
+  val load : (unit_name:string -> t option) ref
+end
+
+end = struct
+#1 "env.ml"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
+(*                                                                        *)
+(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(* Environment handling *)
+
+open Cmi_format
+open Config
+open Misc
+open Asttypes
+open Longident
+open Path
+open Types
+open Btype
+
+
+
+let value_declarations : ((string * Location.t), (unit -> unit)) Hashtbl.t =
+  Hashtbl.create 16
+    (* This table is used to usage of value declarations.  A declaration is
+       identified with its name and location.  The callback attached to a
+       declaration is called whenever the value is used explicitly
+       (lookup_value) or implicitly (inclusion test between signatures,
+       cf Includemod.value_descriptions). *)
+
+let type_declarations = Hashtbl.create 16
+let module_declarations = Hashtbl.create 16
+
+type constructor_usage = Positive | Pattern | Privatize
+type constructor_usages =
+    {
+     mutable cu_positive: bool;
+     mutable cu_pattern: bool;
+     mutable cu_privatize: bool;
+    }
+let add_constructor_usage cu = function
+  | Positive -> cu.cu_positive <- true
+  | Pattern -> cu.cu_pattern <- true
+  | Privatize -> cu.cu_privatize <- true
+let constructor_usages () =
+  {cu_positive = false; cu_pattern = false; cu_privatize = false}
+
+let used_constructors :
+    (string * Location.t * string, (constructor_usage -> unit)) Hashtbl.t
+  = Hashtbl.create 16
+
+let prefixed_sg = Hashtbl.create 113
+
+type error =
+  | Illegal_renaming of string * string * string
+  | Inconsistent_import of string * string * string
+  | Need_recursive_types of string * string
+  | Missing_module of Location.t * Path.t * Path.t
+  | Illegal_value_name of Location.t * string
+
+exception Error of error
+
+let error err = raise (Error err)
+
+module EnvLazy : sig
+  type ('a,'b) t
+
+  type log
+
+  val force : ('a -> 'b) -> ('a,'b) t -> 'b
+  val create : 'a -> ('a,'b) t
+  val get_arg : ('a,'b) t -> 'a option
+
+  (* [force_logged log f t] is equivalent to [force f t] but if [f] returns [None] then
+     [t] is recorded in [log]. [backtrack log] will then reset all the recorded [t]s back
+     to their original state. *)
+  val log : unit -> log
+  val force_logged : log -> ('a -> 'b option) -> ('a,'b option) t -> 'b option
+  val backtrack : log -> unit
+
+end  = struct
+
+  type ('a,'b) t = ('a,'b) eval ref
+
+  and ('a,'b) eval =
+    | Done of 'b
+    | Raise of exn
+    | Thunk of 'a
+
+  type undo =
+    | Nil
+    | Cons : ('a, 'b) t * 'a * undo -> undo
+
+  type log = undo ref
+
+  let force f x =
+    match !x with
+    | Done x -> x
+    | Raise e -> raise e
+    | Thunk e ->
+        match f e with
+        | y ->
+          x := Done y;
+          y
+        | exception e ->
+          x := Raise e;
+          raise e
+
+  let get_arg x =
+    match !x with Thunk a -> Some a | _ -> None
+
+  let create x =
+    ref (Thunk x)
+
+  let log () =
+    ref Nil
+
+  let force_logged log f x =
+    match !x with
+    | Done x -> x
+    | Raise e -> raise e
+    | Thunk e ->
+      match f e with
+      | None ->
+          x := Done None;
+          log := Cons(x, e, !log);
+          None
+      | Some _ as y ->
+          x := Done y;
+          y
+      | exception e ->
+          x := Raise e;
+          raise e
+
+  let backtrack log =
+    let rec loop = function
+      | Nil -> ()
+      | Cons(x, e, rest) ->
+          x := Thunk e;
+          loop rest
+    in
+    loop !log
+
+end
+
+module PathMap = Map.Make(Path)
+
+type summary =
+    Env_empty
+  | Env_value of summary * Ident.t * value_description
+  | Env_type of summary * Ident.t * type_declaration
+  | Env_extension of summary * Ident.t * extension_constructor
+  | Env_module of summary * Ident.t * module_declaration
+  | Env_modtype of summary * Ident.t * modtype_declaration
+  | Env_class of unit
+  | Env_cltype of summary * Ident.t * class_type_declaration
+  | Env_open of summary * Path.t
+  | Env_functor_arg of summary * Ident.t
+  | Env_constraints of summary * type_declaration PathMap.t
+  | Env_copy_types of summary * string list
+
+module TycompTbl =
+  struct
+    (** This module is used to store components of types (i.e. labels
+        and constructors).  We keep a representation of each nested
+        "open" and the set of local bindings between each of them. *)
+
+    type 'a t = {
+      current: 'a Ident.tbl;
+      (** Local bindings since the last open. *)
+
+      opened: 'a opened option;
+      (** Symbolic representation of the last (innermost) open, if any. *)
+    }
+
+    and 'a opened = {
+      components: (string, 'a list) Tbl.t;
+      (** Components from the opened module. We keep a list of
+          bindings for each name, as in comp_labels and
+          comp_constrs. *)
+
+      using: (string -> ('a * 'a) option -> unit) option;
+      (** A callback to be applied when a component is used from this
+          "open".  This is used to detect unused "opens".  The
+          arguments are used to detect shadowing. *)
+
+      next: 'a t;
+      (** The table before opening the module. *)
+    }
+
+    let empty = { current = Ident.empty; opened = None }
+
+    let add id x tbl =
+      {tbl with current = Ident.add id x tbl.current}
+
+    let add_open slot wrap components next =
+      let using =
+        match slot with
+        | None -> None
+        | Some f -> Some (fun s x -> f s (wrap x))
+      in
+      {
+        current = Ident.empty;
+        opened = Some {using; components; next};
+      }
+
+    let rec find_same id tbl =
+      try Ident.find_same id tbl.current
+      with Not_found as exn ->
+        begin match tbl.opened with
+        | Some {next; _} -> find_same id next
+        | None -> raise exn
+        end
+
+    let nothing = fun () -> ()
+
+    let mk_callback rest name desc = function
+      | None -> nothing
+      | Some f ->
+          (fun () ->
+             match rest with
+             | [] -> f name None
+             | (hidden, _) :: _ -> f name (Some (desc, hidden))
+          )
+
+    let rec find_all name tbl =
+      List.map (fun (_id, desc) -> desc, nothing)
+        (Ident.find_all name tbl.current) @
+      match tbl.opened with
+      | None -> []
+      | Some {using; next; components} ->
+          let rest = find_all name next in
+          match Tbl.find_str name components with
+          | exception Not_found -> rest
+          | opened ->
+              List.map
+                (fun desc -> desc, mk_callback rest name desc using)
+                opened
+              @ rest
+
+    let rec fold_name f tbl acc =
+      let acc = Ident.fold_name (fun _id d -> f d) tbl.current acc in
+      match tbl.opened with
+      | Some {using = _; next; components} ->
+          acc
+          |> Tbl.fold
+            (fun _name -> List.fold_right (fun desc -> f desc))
+            components
+          |> fold_name f next
+      | None ->
+          acc
+
+    let rec local_keys tbl acc =
+      let acc = Ident.fold_all (fun k _ accu -> k::accu) tbl.current acc in
+      match tbl.opened with
+      | Some o -> local_keys o.next acc
+      | None -> acc
+
+    let diff_keys is_local tbl1 tbl2 =
+      let keys2 = local_keys tbl2 [] in
+      Ext_list.filter keys2
+        (fun id ->
+           is_local (find_same id tbl2) &&
+           try ignore (find_same id tbl1); false
+           with Not_found -> true)      
+
+  end
+
+
+module IdTbl =
+  struct
+    (** This module is used to store all kinds of components except
+        (labels and constructors) in environments.  We keep a
+        representation of each nested "open" and the set of local
+        bindings between each of them. *)
+
+
+    type 'a t = {
+      current: 'a Ident.tbl;
+      (** Local bindings since the last open *)
+
+      opened: 'a opened option;
+      (** Symbolic representation of the last (innermost) open, if any. *)
+    }
+
+    and 'a opened = {
+      root: Path.t;
+      (** The path of the opened module, to be prefixed in front of
+          its local names to produce a valid path in the current
+          environment. *)
+
+      components: (string, 'a * int) Tbl.t;
+      (** Components from the opened module. *)
+
+      using: (string -> ('a * 'a) option -> unit) option;
+      (** A callback to be applied when a component is used from this
+          "open".  This is used to detect unused "opens".  The
+          arguments are used to detect shadowing. *)
+
+      next: 'a t;
+      (** The table before opening the module. *)
+    }
+
+    let empty = { current = Ident.empty; opened = None }
+
+    let add id x tbl =
+      {tbl with current = Ident.add id x tbl.current}
+
+    let add_open slot wrap root components next =
+      let using =
+        match slot with
+        | None -> None
+        | Some f -> Some (fun s x -> f s (wrap x))
+      in
+      {
+        current = Ident.empty;
+        opened = Some {using; root; components; next};
+      }
+
+    let rec find_same id tbl =
+      try Ident.find_same id tbl.current
+      with Not_found as exn ->
+        begin match tbl.opened with
+        | Some {next; _} -> find_same id next
+        | None -> raise exn
+        end
+
+    let rec find_name mark name tbl =
+      try
+        let (id, desc) = Ident.find_name name tbl.current in
+        Pident id, desc
+      with Not_found as exn ->
+        begin match tbl.opened with
+        | Some {using; root; next; components} ->
+            begin try
+              let (descr, pos) = Tbl.find_str name components in
+              let res = Pdot (root, name, pos), descr in
+              if mark then begin match using with
+              | None -> ()
+              | Some f ->
+                  begin try f name (Some (snd (find_name false name next), snd res))
+                  with Not_found -> f name None
+                  end
+              end;
+              res
+            with Not_found ->
+              find_name mark name next
+            end
+        | None ->
+            raise exn
+        end
+
+    let find_name name tbl = find_name true name tbl
+
+    let rec update name f tbl =
+      try
+        let (id, desc) = Ident.find_name name tbl.current in
+        let new_desc = f desc in
+        {tbl with current = Ident.add id new_desc tbl.current}
+      with Not_found ->
+        begin match tbl.opened with
+        | Some {root; using; next; components} ->
+            begin try
+              let (desc, pos) = Tbl.find_str name components in
+              let new_desc = f desc in
+              let components = Tbl.add name (new_desc, pos) components in
+              {tbl with opened = Some {root; using; next; components}}
+            with Not_found ->
+              let next = update name f next in
+              {tbl with opened = Some {root; using; next; components}}
+            end
+        | None ->
+            tbl
+        end
+
+
+
+    let rec find_all name tbl =
+      List.map (fun (id, desc) -> Pident id, desc) (Ident.find_all name tbl.current) @
+      match tbl.opened with
+      | None -> []
+      | Some {root; using = _; next; components} ->
+          try
+            let (desc, pos) = Tbl.find_str name components in
+            (Pdot (root, name, pos), desc) :: find_all name next
+          with Not_found ->
+            find_all name next
+
+    let rec fold_name f tbl acc =
+      let acc = Ident.fold_name (fun id d -> f (Ident.name id) (Pident id, d)) tbl.current acc in
+      match tbl.opened with
+      | Some {root; using = _; next; components} ->
+          acc
+          |> Tbl.fold
+            (fun name (desc, pos) -> f name (Pdot (root, name, pos), desc))
+            components
+          |> fold_name f next
+      | None ->
+          acc
+
+    let rec local_keys tbl acc =
+      let acc = Ident.fold_all (fun k _ accu -> k::accu) tbl.current acc in
+      match tbl.opened with
+      | Some o -> local_keys o.next acc
+      | None -> acc
+
+
+    let rec iter f tbl =
+      Ident.iter (fun id desc -> f id (Pident id, desc)) tbl.current;
+      match tbl.opened with
+      | Some {root; using = _; next; components} ->
+          Tbl.iter
+            (fun s (x, pos) -> f (Ident.hide (Ident.create s) (* ??? *)) (Pdot (root, s, pos), x))
+            components;
+          iter f next
+      | None -> ()
+
+    let diff_keys tbl1 tbl2 =
+      let keys2 = local_keys tbl2 [] in
+      Ext_list.filter keys2
+        (fun id ->
+           try ignore (find_same id tbl1); false
+           with Not_found -> true)
+
+
+  end
+
+type type_descriptions =
+    constructor_description list * label_description list
+
+let in_signature_flag = 0x01
+let implicit_coercion_flag = 0x02
+
+type t = {
+  values: value_description IdTbl.t;
+  constrs: constructor_description TycompTbl.t;
+  labels: label_description TycompTbl.t;
+  types: (type_declaration * type_descriptions) IdTbl.t;
+  modules: (Subst.t * module_declaration, module_declaration) EnvLazy.t IdTbl.t;
+  modtypes: modtype_declaration IdTbl.t;
+  components: module_components IdTbl.t;
+  classes: class_declaration IdTbl.t;
+  cltypes: class_type_declaration IdTbl.t;
+  functor_args: unit Ident.tbl;
+  summary: summary;
+  local_constraints: type_declaration PathMap.t;
+  gadt_instances: (int * TypeSet.t ref) list;
+  flags: int;
+}
+
+and module_components =
+  {
+    deprecated: string option;
+    loc: Location.t;
+    comps:
+      (t * Subst.t * Path.t * Types.module_type, module_components_repr option)
+        EnvLazy.t;
+  }
+
+and module_components_repr =
+    Structure_comps of structure_components
+  | Functor_comps of functor_components
+
+and 'a comp_tbl = (string, ('a * int)) Tbl.t
+
+and structure_components = {
+  mutable comp_values: value_description comp_tbl;
+  mutable comp_constrs: (string, constructor_description list) Tbl.t;
+  mutable comp_labels: (string, label_description list) Tbl.t;
+  mutable comp_types: (type_declaration * type_descriptions) comp_tbl;
+  mutable comp_modules:
+   (Subst.t * module_declaration, module_declaration) EnvLazy.t comp_tbl;
+  mutable comp_modtypes: modtype_declaration comp_tbl;
+  mutable comp_components: module_components comp_tbl;
+  comp_classes: class_declaration comp_tbl; (* warning -69*)
+  mutable comp_cltypes: class_type_declaration comp_tbl;
+}
+
+and functor_components = {
+  fcomp_param: Ident.t;                 (* Formal parameter *)
+  fcomp_arg: module_type option;        (* Argument signature *)
+  fcomp_res: module_type;               (* Result signature *)
+  fcomp_cache: (Path.t, module_components) Hashtbl.t;  (* For memoization *)
+  fcomp_subst_cache: (Path.t, module_type) Hashtbl.t
+}
+
+let copy_local ~from env =
+  { env with
+    local_constraints = from.local_constraints;
+    gadt_instances = from.gadt_instances;
+    flags = from.flags }
+
+let same_constr = ref (fun _ _ _ -> assert false)
+
+(* Helper to decide whether to report an identifier shadowing
+   by some 'open'. For labels and constructors, we do not report
+   if the two elements are from the same re-exported declaration.
+
+   Later, one could also interpret some attributes on value and
+   type declarations to silence the shadowing warnings. *)
+
+let check_shadowing env = function
+  | `Constructor (Some (c1, c2))
+    when not (!same_constr env c1.cstr_res c2.cstr_res) ->
+      Some "constructor"
+  | `Label (Some (l1, l2))
+    when not (!same_constr env l1.lbl_res l2.lbl_res) ->
+      Some "label"
+  | `Value (Some _) -> Some "value"
+  | `Type (Some _) -> Some "type"
+  | `Module (Some _) | `Component (Some _) -> Some "module"
+  | `Module_type (Some _) -> Some "module type"
+  | `Class (Some _) -> Some "class"
+  | `Class_type (Some _) -> Some "class type"
+  | `Constructor _ | `Label _
+  | `Value None | `Type None | `Module None | `Module_type None
+  | `Class None | `Class_type None | `Component None ->
+      None
+
+let subst_modtype_maker (subst, md) =
+  if subst == Subst.identity then md
+  else {md with md_type = Subst.modtype subst md.md_type}
+
+let empty = {
+  values = IdTbl.empty; constrs = TycompTbl.empty;
+  labels = TycompTbl.empty; types = IdTbl.empty;
+  modules = IdTbl.empty; modtypes = IdTbl.empty;
+  components = IdTbl.empty; classes = IdTbl.empty;
+  cltypes = IdTbl.empty;
+  summary = Env_empty; local_constraints = PathMap.empty; gadt_instances = [];
+  flags = 0;
+  functor_args = Ident.empty;
+ }
+
+let in_signature b env =
+  let flags =
+    if b then env.flags lor in_signature_flag
+    else env.flags land (lnot in_signature_flag)
+  in
+  {env with flags}
+
+let implicit_coercion env =
+  {env with flags = env.flags lor implicit_coercion_flag}
+
+let is_in_signature env = env.flags land in_signature_flag <> 0
+let is_implicit_coercion env = env.flags land implicit_coercion_flag <> 0
+
+let is_ident = function
+    Pident _ -> true
+  | Pdot _ | Papply _ -> false
+
+let is_local_ext = function
+  | {cstr_tag = Cstr_extension(p, _)} -> is_ident p
+  | _ -> false
+
+let diff env1 env2 =
+  IdTbl.diff_keys env1.values env2.values @
+  TycompTbl.diff_keys is_local_ext env1.constrs env2.constrs @
+  IdTbl.diff_keys env1.modules env2.modules @
+  IdTbl.diff_keys env1.classes env2.classes
+
+type can_load_cmis =
+  | Can_load_cmis
+  | Cannot_load_cmis of EnvLazy.log
+
+let can_load_cmis = ref Can_load_cmis
+
+let without_cmis f x =
+  let log = EnvLazy.log () in
+  let res =
+    Misc.(protect_refs
+            [R (can_load_cmis, Cannot_load_cmis log)]
+            (fun () -> f x))
+  in
+  EnvLazy.backtrack log;
+  res
+
+(* Forward declarations *)
+
+let components_of_module' =
+  ref ((fun ~deprecated:_ ~loc:_ _env _sub _path _mty -> assert false) :
+         deprecated:string option -> loc:Location.t -> t -> Subst.t ->
+       Path.t -> module_type ->
+       module_components)
+let components_of_module_maker' =
+  ref ((fun (_env, _sub, _path, _mty) -> assert false) :
+          t * Subst.t * Path.t * module_type -> module_components_repr option)
+let components_of_functor_appl' =
+  ref ((fun _f _env _p1 _p2 -> assert false) :
+          functor_components -> t -> Path.t -> Path.t -> module_components)
+let check_modtype_inclusion =
+  (* to be filled with Includemod.check_modtype_inclusion *)
+  ref ((fun ~loc:_ _env _mty1 _path1 _mty2 -> assert false) :
+          loc:Location.t -> t -> module_type -> Path.t -> module_type -> unit)
+let strengthen =
+  (* to be filled with Mtype.strengthen *)
+  ref ((fun ~aliasable:_ _env _mty _path -> assert false) :
+         aliasable:bool -> t -> module_type -> Path.t -> module_type)
+
+let md md_type =
+  {md_type; md_attributes=[]; md_loc=Location.none}
+
+let get_components_opt c =
+  match !can_load_cmis with
+  | Can_load_cmis ->
+    EnvLazy.force !components_of_module_maker' c.comps
+  | Cannot_load_cmis log ->
+    EnvLazy.force_logged log !components_of_module_maker' c.comps
+
+let empty_structure =
+  Structure_comps {
+    comp_values = Tbl.empty;
+    comp_constrs = Tbl.empty;
+    comp_labels = Tbl.empty;
+    comp_types = Tbl.empty;
+    comp_modules = Tbl.empty; comp_modtypes = Tbl.empty;
+    comp_components = Tbl.empty; comp_classes = Tbl.empty;
+    comp_cltypes = Tbl.empty }
+
+let get_components c =
+  match get_components_opt c with
+  | None -> empty_structure
+  | Some c -> c
+
+(* The name of the compilation unit currently compiled.
+   "" if outside a compilation unit. *)
+
+let current_unit = ref ""
+
+(* Persistent structure descriptions *)
+
+type [@warning "-69"] pers_struct =
+  { ps_name: string;
+    ps_sig: signature Lazy.t;
+    ps_comps: module_components;
+    ps_crcs: (string * Digest.t option) list;
+    ps_filename: string;
+    ps_flags: pers_flags list }
+
+let persistent_structures =
+  (Hashtbl.create 17 : (string, pers_struct option) Hashtbl.t)
+
+(* Consistency between persistent structures *)
+
+let crc_units = Consistbl.create()
+
+module StringSet =
+  Set.Make(struct type t = string let compare = String.compare end)
+
+let imported_units = ref StringSet.empty
+
+let add_import s =
+  imported_units := StringSet.add s !imported_units
+
+
+let clear_imports () =
+  Consistbl.clear crc_units;
+  imported_units := StringSet.empty
+
+
+let check_consistency ps =
+  try
+    List.iter
+      (fun (name, crco) ->
+         match crco with
+            None -> ()
+          | Some crc ->
+              add_import name;
+              Consistbl.check crc_units name crc ps.ps_filename)
+      ps.ps_crcs;
+  with Consistbl.Inconsistency(name, source, auth) ->
+    error (Inconsistent_import(name, auth, source))
+
+(* Reading persistent structures from .cmi files *)
+
+let save_pers_struct crc ps =
+  let modname = ps.ps_name in
+  Hashtbl.add persistent_structures modname (Some ps);
+  Consistbl.set crc_units modname crc ps.ps_filename;
+  add_import modname
+
+module Persistent_signature = struct
+  type t =
+    { filename : string;
+      cmi : Cmi_format.cmi_infos }
+
+  let load = ref (fun ~unit_name ->
+    match find_in_path_uncap !load_path (unit_name ^ ".cmi") with
+    | filename -> Some { filename; cmi = read_cmi filename }
+    | exception Not_found -> None)
+end
+
+let acknowledge_pers_struct check modname
+      { Persistent_signature.filename; cmi } =
+  let name = cmi.cmi_name in
+  let sign = cmi.cmi_sign in
+  let crcs = cmi.cmi_crcs in
+  let flags = cmi.cmi_flags in
+  let deprecated =
+    List.fold_left (fun _ -> function Deprecated s -> Some s ) None
+      flags
+  in
+  let comps =
+      !components_of_module' ~deprecated ~loc:Location.none
+        empty Subst.identity
+                             (Pident(Ident.create_persistent name))
+                             (Mty_signature sign)
+  in
+  let ps = { ps_name = name;
+             ps_sig = lazy (Subst.signature Subst.identity sign);
+             ps_comps = comps;
+             ps_crcs = crcs;
+             ps_filename = filename;
+             ps_flags = flags;
+           } in
+  if ps.ps_name <> modname then
+    error (Illegal_renaming(modname, ps.ps_name, filename));
+  if check then check_consistency ps;
+  Hashtbl.add persistent_structures modname (Some ps);
+  ps
+
+let read_pers_struct check modname filename =
+  add_import modname;
+  let cmi = read_cmi filename in
+  acknowledge_pers_struct check modname
+    { Persistent_signature.filename; cmi }
+
+let find_pers_struct check name =
+  if name = "*predef*" then raise Not_found;
+  match Hashtbl.find persistent_structures name with
+  | Some ps -> ps
+  | None -> raise Not_found
+  | exception Not_found ->
+    match !can_load_cmis with
+    | Cannot_load_cmis _ -> raise Not_found
+    | Can_load_cmis ->
+        let ps =
+          match !Persistent_signature.load ~unit_name:name with
+          | Some ps -> ps
+          | None ->
+            Hashtbl.add persistent_structures name None;
+            raise Not_found
+        in
+        add_import name;
+        acknowledge_pers_struct check name ps
+
+(* Emits a warning if there is no valid cmi for name *)
+let check_pers_struct name =
+  try
+    ignore (find_pers_struct false name)
+  with
+  | Not_found ->
+      let warn = Warnings.No_cmi_file(name, None) in
+        Location.prerr_warning Location.none warn
+  | Cmi_format.Error err ->
+      let msg = Format.asprintf "%a" Cmi_format.report_error err in
+      let warn = Warnings.No_cmi_file(name, Some msg) in
+        Location.prerr_warning Location.none warn
+  | Error err ->
+      let msg =
+        match err with
+        | Illegal_renaming(name, ps_name, filename) ->
+            Format.asprintf
+              " %a@ contains the compiled interface for @ \
+               %s when %s was expected"
+              Location.print_filename filename ps_name name
+        | Inconsistent_import _ -> assert false
+        | Need_recursive_types(name, _) ->
+            Format.sprintf
+              "%s uses recursive types"
+              name
+        | Missing_module _ -> assert false
+        | Illegal_value_name _ -> assert false
+      in
+      let warn = Warnings.No_cmi_file(name, Some msg) in
+        Location.prerr_warning Location.none warn
+
+let read_pers_struct modname filename =
+  read_pers_struct true modname filename
+
+let find_pers_struct name =
+  find_pers_struct true name
+
+let check_pers_struct name =
+  if not (Hashtbl.mem persistent_structures name) then begin
+    (* PR#6843: record the weak dependency ([add_import]) regardless of
+       whether the check succeeds, to help make builds more
+       deterministic. *)
+    add_import name;
+    if (Warnings.is_active (Warnings.No_cmi_file("", None))) then
+      Delayed_checks.add_delayed_check
+        (fun () -> check_pers_struct name)
+  end
+
+let reset_cache () =
+  current_unit := "";
+  Hashtbl.clear persistent_structures;
+  clear_imports ();
+  Hashtbl.clear value_declarations;
+  Hashtbl.clear type_declarations;
+  Hashtbl.clear module_declarations;
+  Hashtbl.clear used_constructors;
+  Hashtbl.clear prefixed_sg
+
+let reset_cache_toplevel () =
+  (* Delete 'missing cmi' entries from the cache. *)
+  let l =
+    Hashtbl.fold
+      (fun name r acc -> if r = None then name :: acc else acc)
+      persistent_structures []
+  in
+  List.iter (Hashtbl.remove persistent_structures) l;
+  Hashtbl.clear value_declarations;
+  Hashtbl.clear type_declarations;
+  Hashtbl.clear module_declarations;
+  Hashtbl.clear used_constructors;
+  Hashtbl.clear prefixed_sg
+
+
+let set_unit_name name =
+  current_unit := name
+
+let get_unit_name () =
+  !current_unit
+
+(* Lookup by identifier *)
+
+let rec find_module_descr path env =
+  match path with
+    Pident id ->
+      begin try
+        IdTbl.find_same id env.components
+      with Not_found ->
+        if Ident.persistent id && not (Ident.name id = !current_unit)
+        then (find_pers_struct (Ident.name id)).ps_comps
+        else raise Not_found
+      end
+  | Pdot(p, s, _pos) ->
+      begin match get_components (find_module_descr p env) with
+        Structure_comps c ->
+          let (descr, _pos) = Tbl.find_str s c.comp_components in
+          descr
+      | Functor_comps _ ->
+         raise Not_found
+      end
+  | Papply(p1, p2) ->
+      begin match get_components (find_module_descr p1 env) with
+        Functor_comps f ->
+          !components_of_functor_appl' f env p1 p2
+      | Structure_comps _ ->
+          raise Not_found
+      end
+
+let find proj1 proj2 path env =
+  match path with
+    Pident id ->
+      IdTbl.find_same id (proj1 env)
+  | Pdot(p, s, _pos) ->
+      begin match get_components (find_module_descr p env) with
+        Structure_comps c ->
+          let (data, _pos) = Tbl.find_str s (proj2 c) in data
+      | Functor_comps _ ->
+          raise Not_found
+      end
+  | Papply _ ->
+      raise Not_found
+
+let find_value =
+  find (fun env -> env.values) (fun sc -> sc.comp_values)
+and find_type_full =
+  find (fun env -> env.types) (fun sc -> sc.comp_types)
+and find_modtype =
+  find (fun env -> env.modtypes) (fun sc -> sc.comp_modtypes)
+and find_class =
+  find (fun env -> env.classes) (fun sc -> sc.comp_classes)
+and find_cltype =
+  find (fun env -> env.cltypes) (fun sc -> sc.comp_cltypes)
+
+let type_of_cstr path = function
+  | {cstr_inlined = Some d; _} ->
+      (d, ([], List.map snd (Datarepr.labels_of_type path d)))
+  | _ ->
+      assert false
+
+let find_type_full path env =
+  match Path.constructor_typath path with
+  | Regular p ->
+      (try (PathMap.find p env.local_constraints, ([], []))
+       with Not_found -> find_type_full p env)
+  | Cstr (ty_path, s) ->
+      let (_, (cstrs, _)) =
+        try find_type_full ty_path env
+        with Not_found -> assert false
+      in
+      let cstr =
+        try List.find (fun cstr -> cstr.cstr_name = s) cstrs
+        with Not_found -> assert false
+      in
+      type_of_cstr path cstr
+  | LocalExt id ->
+      let cstr =
+        try TycompTbl.find_same id env.constrs
+        with Not_found -> assert false
+      in
+      type_of_cstr path cstr
+  | Ext (mod_path, s) ->
+      let comps =
+        try find_module_descr mod_path env
+        with Not_found -> assert false
+      in
+      let comps =
+        match get_components comps with
+        | Structure_comps c -> c
+        | Functor_comps _ -> assert false
+      in
+      let exts =
+        Ext_list.filter
+          (try Tbl.find_str s comps.comp_constrs
+            with Not_found -> assert false)
+          (function {cstr_tag=Cstr_extension _} -> true | _ -> false)
+        
+      in
+      match exts with
+      | [cstr] -> type_of_cstr path cstr
+      | _ -> assert false
+
+let find_type p env =
+  fst (find_type_full p env)
+let find_type_descrs p env =
+  snd (find_type_full p env)
+
+let find_module ~alias path env =
+  match path with
+    Pident id ->
+      begin try
+        let data = IdTbl.find_same id env.modules in
+        EnvLazy.force subst_modtype_maker data
+      with Not_found ->
+        if Ident.persistent id && not (Ident.name id = !current_unit) then
+          let ps = find_pers_struct (Ident.name id) in
+          md (Mty_signature(Lazy.force ps.ps_sig))
+        else raise Not_found
+      end
+  | Pdot(p, s, _pos) ->
+      begin match get_components (find_module_descr p env) with
+        Structure_comps c ->
+          let (data, _pos) = Tbl.find_str s c.comp_modules in
+          EnvLazy.force subst_modtype_maker data
+      | Functor_comps _ ->
+          raise Not_found
+      end
+  | Papply(p1, p2) ->
+      let desc1 = find_module_descr p1 env in
+      begin match get_components desc1 with
+        Functor_comps f ->
+          md begin match f.fcomp_res with
+          | Mty_alias _ as mty -> mty
+          | mty ->
+              if alias then mty else
+              try
+                Hashtbl.find f.fcomp_subst_cache p2
+              with Not_found ->
+                let mty =
+                  Subst.modtype
+                    (Subst.add_module f.fcomp_param p2 Subst.identity)
+                    f.fcomp_res in
+                Hashtbl.add f.fcomp_subst_cache p2 mty;
+                mty
+          end
+      | Structure_comps _ ->
+          raise Not_found
+      end
+
+
+
+let rec normalize_path lax env path =
+  let path =
+    match path with
+      Pdot(p, s, pos) ->
+        Pdot(normalize_path lax env p, s, pos)
+    | Papply(p1, p2) ->
+        Papply(normalize_path lax env p1, normalize_path true env p2)
+    | _ -> path
+  in
+  try match find_module ~alias:true path env with
+    {md_type=Mty_alias(_, path1)} ->
+      normalize_path lax env path1
+  | _ -> path
+  with Not_found when lax
+  || (match path with Pident id -> not (Ident.persistent id) | _ -> true) ->
+      path
+
+let normalize_path oloc env path =
+  try normalize_path (oloc = None) env path
+  with Not_found ->
+    match oloc with None -> assert false
+    | Some loc ->
+        raise (Error(Missing_module(loc, path, normalize_path true env path)))
+
+let normalize_path_prefix oloc env path =
+  match path with
+    Pdot(p, s, pos) ->
+      Pdot(normalize_path oloc env p, s, pos)
+  | Pident _ ->
+      path
+  | Papply _ ->
+      assert false
+
+
+let find_module = find_module ~alias:false
+
+(* Find the manifest type associated to a type when appropriate:
+   - the type should be public or should have a private row,
+   - the type should have an associated manifest type. *)
+let find_type_expansion path env =
+  let decl = find_type path env in
+  match decl.type_manifest with
+  | Some body when decl.type_private = Public
+              || decl.type_kind <> Type_abstract
+              || Btype.has_constr_row body ->
+                  (decl.type_params, body, may_map snd decl.type_newtype_level)
+  (* The manifest type of Private abstract data types without
+     private row are still considered unknown to the type system.
+     Hence, this case is caught by the following clause that also handles
+     purely abstract data types without manifest type definition. *)
+  | _ -> raise Not_found
+
+(* Find the manifest type information associated to a type, i.e.
+   the necessary information for the compiler's type-based optimisations.
+   In particular, the manifest type associated to a private abstract type
+   is revealed for the sake of compiler's type-based optimisations. *)
+let find_type_expansion_opt path env =
+  let decl = find_type path env in
+  match decl.type_manifest with
+  (* The manifest type of Private abstract data types can still get
+     an approximation using their manifest type. *)
+  | Some body -> (decl.type_params, body, may_map snd decl.type_newtype_level)
+  | _ -> raise Not_found
+
+let find_modtype_expansion path env =
+  match (find_modtype path env).mtd_type with
+  | None -> raise Not_found
+  | Some mty -> mty
+
+let rec is_functor_arg path env =
+  match path with
+    Pident id ->
+      begin try Ident.find_same id env.functor_args; true
+      with Not_found -> false
+      end
+  | Pdot (p, _s, _) -> is_functor_arg p env
+  | Papply _ -> true
+
+(* Lookup by name *)
+
+exception Recmodule
+
+let report_deprecated ?loc p deprecated =
+  match loc, deprecated with
+  | Some loc, Some txt ->
+      let txt = if txt = "" then "" else "\n" ^ txt in
+      Location.deprecated loc (Printf.sprintf "module %s%s" (Path.name p) txt)
+  | _ -> ()
+
+let mark_module_used env name loc =
+  if not (is_implicit_coercion env) then
+    try Hashtbl.find module_declarations (name, loc) ()
+    with Not_found -> ()
+
+let rec lookup_module_descr_aux ?loc lid env =
+  match lid with
+    Lident s ->
+      begin try
+        IdTbl.find_name s env.components
+      with Not_found ->
+        if s = !current_unit then raise Not_found;
+        let ps = find_pers_struct s in
+        (Pident(Ident.create_persistent s), ps.ps_comps)
+      end
+  | Ldot(l, s) ->
+      let (p, descr) = lookup_module_descr ?loc l env in
+      begin match get_components descr with
+        Structure_comps c ->
+          let (descr, pos) = Tbl.find_str s c.comp_components in
+          (Pdot(p, s, pos), descr)
+      | Functor_comps _ ->
+          raise Not_found
+      end
+  | Lapply(l1, l2) ->
+      let (p1, desc1) = lookup_module_descr ?loc l1 env in
+      let p2 = lookup_module ~load:true ?loc l2 env in
+      let {md_type=mty2} = find_module p2 env in
+      begin match get_components desc1 with
+        Functor_comps f ->
+          let loc = match loc with Some l -> l | None -> Location.none in
+          Misc.may (!check_modtype_inclusion ~loc env mty2 p2) f.fcomp_arg;
+          (Papply(p1, p2), !components_of_functor_appl' f env p1 p2)
+      | Structure_comps _ ->
+          raise Not_found
+      end
+
+and lookup_module_descr ?loc lid env =
+  let (p, comps) as res = lookup_module_descr_aux ?loc lid env in
+  mark_module_used env (Path.last p) comps.loc;
+(*
+  Format.printf "USE module %s at %a@." (Path.last p)
+    Location.print comps.loc;
+*)
+  report_deprecated ?loc p comps.deprecated;
+  res
+
+and lookup_module ~load ?loc lid env : Path.t =
+  match lid with
+    Lident s ->
+      begin try
+        let (p, data) = IdTbl.find_name s env.modules in
+        let {md_loc; md_attributes; md_type} =
+          EnvLazy.force subst_modtype_maker data
+        in
+        mark_module_used env s md_loc;
+        begin match md_type with
+        | Mty_ident (Path.Pident id) when Ident.name id = "#recmod#" ->
+          (* see #5965 *)
+          raise Recmodule
+        | Mty_alias (_, Path.Pident id) ->   
+          if !Config.bs_only && not !Clflags.transparent_modules && Ident.persistent id then 
+            find_pers_struct (Ident.name id) |> ignore 
+        | _ -> ()
+        end;
+        report_deprecated ?loc p
+          (Builtin_attributes.deprecated_of_attrs md_attributes);
+        p
+      with Not_found ->
+        if s = !current_unit then raise Not_found;
+        let p = Pident(Ident.create_persistent s) in
+        if !Clflags.transparent_modules && not load then check_pers_struct s
+        else begin
+          let ps = find_pers_struct s in
+          report_deprecated ?loc p ps.ps_comps.deprecated
+        end;
+        p
+      end
+  | Ldot(l, s) ->
+      let (p, descr) = lookup_module_descr ?loc l env in
+      begin match get_components descr with
+        Structure_comps c ->
+          let (_data, pos) = Tbl.find_str s c.comp_modules in
+          let (comps, _) = Tbl.find_str s c.comp_components in
+          mark_module_used env s comps.loc;
+          let p = Pdot(p, s, pos) in
+          report_deprecated ?loc p comps.deprecated;
+          p
+      | Functor_comps _ ->
+          raise Not_found
+      end
+  | Lapply(l1, l2) ->
+      let (p1, desc1) = lookup_module_descr ?loc l1 env in
+      let p2 = lookup_module ~load:true ?loc l2 env in
+      let {md_type=mty2} = find_module p2 env in
+      let p = Papply(p1, p2) in
+      begin match get_components desc1 with
+        Functor_comps f ->
+          let loc = match loc with Some l -> l | None -> Location.none in
+          Misc.may (!check_modtype_inclusion ~loc env mty2 p2) f.fcomp_arg;
+          p
+      | Structure_comps _ ->
+          raise Not_found
+      end
+
+let lookup proj1 proj2 ?loc lid env =
+  match lid with
+    Lident s ->
+      IdTbl.find_name s (proj1 env)
+  | Ldot(l, s) ->
+      let (p, desc) = lookup_module_descr ?loc l env in
+      begin match get_components desc with
+        Structure_comps c ->
+          let (data, pos) = Tbl.find_str s (proj2 c) in
+          (Pdot(p, s, pos), data)
+      | Functor_comps _ ->
+          raise Not_found
+      end
+  | Lapply _ ->
+      raise Not_found
+
+let lookup_all_simple proj1 proj2 shadow ?loc lid env =
+  match lid with
+    Lident s ->
+      let xl = TycompTbl.find_all s (proj1 env) in
+      let rec do_shadow =
+        function
+        | [] -> []
+        | ((x, f) :: xs) ->
+            (x, f) ::
+              (do_shadow (Ext_list.filter xs (fun (y, _) -> not (shadow x y))))
+      in
+        do_shadow xl
+  | Ldot(l, s) ->
+      let (_p, desc) = lookup_module_descr ?loc l env in
+      begin match get_components desc with
+        Structure_comps c ->
+          let comps =
+            try Tbl.find_str s (proj2 c) with Not_found -> []
+          in
+          List.map
+            (fun data -> (data, (fun () -> ())))
+            comps
+      | Functor_comps _ ->
+          raise Not_found
+      end
+  | Lapply _ ->
+      raise Not_found
+
+let has_local_constraints env = not (PathMap.is_empty env.local_constraints)
+
+let cstr_shadow cstr1 cstr2 =
+  match cstr1.cstr_tag, cstr2.cstr_tag with
+  | Cstr_extension _, Cstr_extension _ -> true
+  | _ -> false
+
+let lbl_shadow _lbl1 _lbl2 = false
+
+let lookup_value =
+  lookup (fun env -> env.values) (fun sc -> sc.comp_values)
+let lookup_all_constructors =
+  lookup_all_simple (fun env -> env.constrs) (fun sc -> sc.comp_constrs)
+    cstr_shadow
+let lookup_all_labels =
+  lookup_all_simple (fun env -> env.labels) (fun sc -> sc.comp_labels)
+    lbl_shadow
+let lookup_type =
+  lookup (fun env -> env.types) (fun sc -> sc.comp_types)
+let lookup_modtype =
+  lookup (fun env -> env.modtypes) (fun sc -> sc.comp_modtypes)
+let lookup_class =
+  lookup (fun env -> env.classes) (fun sc -> sc.comp_classes)
+let lookup_cltype =
+  lookup (fun env -> env.cltypes) (fun sc -> sc.comp_cltypes)
+
+let copy_types l env =
+  let f desc = {desc with val_type = Subst.type_expr Subst.identity desc.val_type} in
+  let values = List.fold_left (fun env s -> IdTbl.update s f env) env.values l in
+  {env with values; summary = Env_copy_types (env.summary, l)}
+
+let mark_value_used env name vd =
+  if not (is_implicit_coercion env) then
+    try Hashtbl.find value_declarations (name, vd.val_loc) ()
+    with Not_found -> ()
+
+let mark_type_used env name vd =
+  if not (is_implicit_coercion env) then
+    try Hashtbl.find type_declarations (name, vd.type_loc) ()
+    with Not_found -> ()
+
+let mark_constructor_used usage env name vd constr =
+  if not (is_implicit_coercion env) then
+    try Hashtbl.find used_constructors (name, vd.type_loc, constr) usage
+    with Not_found -> ()
+
+let mark_extension_used usage env ext name =
+  if not (is_implicit_coercion env) then
+    let ty_name = Path.last ext.ext_type_path in
+    try Hashtbl.find used_constructors (ty_name, ext.ext_loc, name) usage
+    with Not_found -> ()
+
+let set_value_used_callback name vd callback =
+  let key = (name, vd.val_loc) in
+  try
+    let old = Hashtbl.find value_declarations key in
+    Hashtbl.replace value_declarations key (fun () -> old (); callback ())
+      (* this is to support cases like:
+               let x = let x = 1 in x in x
+         where the two declarations have the same location
+         (e.g. resulting from Camlp4 expansion of grammar entries) *)
+  with Not_found ->
+    Hashtbl.add value_declarations key callback
+
+let set_type_used_callback name td callback =
+  let loc = td.type_loc in
+  if loc.Location.loc_ghost then ()
+  else let key = (name, loc) in
+  let old =
+    try Hashtbl.find type_declarations key
+    with Not_found -> assert false
+  in
+  Hashtbl.replace type_declarations key (fun () -> callback old)
+
+let lookup_value ?loc lid env =
+  let (_, desc) as r = lookup_value ?loc lid env in
+  mark_value_used env (Longident.last lid) desc;
+  r
+
+let lookup_type ?loc lid env =
+  let (path, (decl, _)) = lookup_type ?loc lid env in
+  mark_type_used env (Longident.last lid) decl;
+  path
+
+let mark_type_path env path =
+  try
+    let decl = find_type path env in
+    mark_type_used env (Path.last path) decl
+  with Not_found -> ()
+
+let ty_path t =
+  match repr t with
+  | {desc=Tconstr(path, _, _)} -> path
+  | _ -> assert false
+
+let lookup_constructor ?loc lid env =
+  match lookup_all_constructors ?loc lid env with
+    [] -> raise Not_found
+  | (desc, use) :: _ ->
+      mark_type_path env (ty_path desc.cstr_res);
+      use ();
+      desc
+
+let is_lident = function
+    Lident _ -> true
+  | _ -> false
+
+let lookup_all_constructors ?loc lid env =
+  try
+    let cstrs = lookup_all_constructors ?loc lid env in
+    let wrap_use desc use () =
+      mark_type_path env (ty_path desc.cstr_res);
+      use ()
+    in
+    List.map (fun (cstr, use) -> (cstr, wrap_use cstr use)) cstrs
+  with
+    Not_found when is_lident lid -> []
+
+let mark_constructor usage env name desc =
+  if not (is_implicit_coercion env)
+  then match desc.cstr_tag with
+  | Cstr_extension _ ->
+      begin
+        let ty_path = ty_path desc.cstr_res in
+        let ty_name = Path.last ty_path in
+        try Hashtbl.find used_constructors (ty_name, desc.cstr_loc, name) usage
+        with Not_found -> ()
+      end
+  | _ ->
+      let ty_path = ty_path desc.cstr_res in
+      let ty_decl = try find_type ty_path env with Not_found -> assert false in
+      let ty_name = Path.last ty_path in
+      mark_constructor_used usage env ty_name ty_decl name
+
+let lookup_label ?loc lid env =
+  match lookup_all_labels ?loc lid env with
+    [] -> raise Not_found
+  | (desc, use) :: _ ->
+      mark_type_path env (ty_path desc.lbl_res);
+      use ();
+      desc
+
+let lookup_all_labels ?loc lid env =
+  try
+    let lbls = lookup_all_labels ?loc lid env in
+    let wrap_use desc use () =
+      mark_type_path env (ty_path desc.lbl_res);
+      use ()
+    in
+    List.map (fun (lbl, use) -> (lbl, wrap_use lbl use)) lbls
+  with
+    Not_found when is_lident lid -> []
+
+let lookup_class ?loc lid env =
+  let (_, desc) as r = lookup_class ?loc lid env in
+  (* special support for Typeclass.unbound_class *)
+  if Path.name desc.cty_path = "" then ignore (lookup_type ?loc lid env)
+  else mark_type_path env desc.cty_path;
+  r
+
+let lookup_cltype ?loc lid env =
+  let (_, desc) as r = lookup_cltype ?loc lid env in
+  if Path.name desc.clty_path = "" then ignore (lookup_type ?loc lid env)
+  else mark_type_path env desc.clty_path;
+  mark_type_path env desc.clty_path;
+  r
+
+(* Iter on an environment (ignoring the body of functors and
+   not yet evaluated structures) *)
+
+type iter_cont = unit -> unit
+let iter_env_cont = ref []
+
+let rec scrape_alias_for_visit env mty =
+  match mty with
+  | Mty_alias(_, Pident id)
+    when Ident.persistent id
+      && not (Hashtbl.mem persistent_structures (Ident.name id)) -> false
+  | Mty_alias(_, path) -> (* PR#6600: find_module may raise Not_found *)
+      begin try scrape_alias_for_visit env (find_module path env).md_type
+      with Not_found -> false
+      end
+  | _ -> true
+
+let iter_env proj1 proj2 f env () =
+  IdTbl.iter (fun id x -> f (Pident id) x) (proj1 env);
+  let rec iter_components path path' mcomps =
+    let cont () =
+      let visit =
+        match EnvLazy.get_arg mcomps.comps with
+        | None -> true
+        | Some (env, _sub, _path, mty) -> scrape_alias_for_visit env mty
+      in
+      if not visit then () else
+      match get_components mcomps with
+        Structure_comps comps ->
+          Tbl.iter
+            (fun s (d, n) -> f (Pdot (path, s, n)) (Pdot (path', s, n), d))
+            (proj2 comps);
+          Tbl.iter
+            (fun s (c, n) ->
+              iter_components (Pdot (path, s, n)) (Pdot (path', s, n)) c)
+            comps.comp_components
+      | Functor_comps _ -> ()
+    in iter_env_cont := (path, cont) :: !iter_env_cont
+  in
+  Hashtbl.iter
+    (fun s pso ->
+      match pso with None -> ()
+      | Some ps ->
+          let id = Pident (Ident.create_persistent s) in
+          iter_components id id ps.ps_comps)
+    persistent_structures;
+  IdTbl.iter
+    (fun id (path, comps) -> iter_components (Pident id) path comps)
+    env.components
+
+let run_iter_cont l =
+  iter_env_cont := [];
+  List.iter (fun c -> c ()) l;
+  let cont = List.rev !iter_env_cont in
+  iter_env_cont := [];
+  cont
+
+let iter_types f = iter_env (fun env -> env.types) (fun sc -> sc.comp_types) f
+
+let same_types env1 env2 =
+  env1.types == env2.types && env1.components == env2.components
+
+let used_persistent () =
+  let r = ref Concr.empty in
+  Hashtbl.iter (fun s pso -> if pso != None then r := Concr.add s !r)
+    persistent_structures;
+  !r
+
+let find_all_comps proj s (p,mcomps) =
+  match get_components mcomps with
+    Functor_comps _ -> []
+  | Structure_comps comps ->
+      try let (c,n) = Tbl.find_str s (proj comps) in [Pdot(p,s,n), c]
+      with Not_found -> []
+
+let rec find_shadowed_comps path env =
+  match path with
+    Pident id ->
+      IdTbl.find_all (Ident.name id) env.components
+  | Pdot (p, s, _) ->
+      let l = find_shadowed_comps p env in
+      let l' =
+        List.map (find_all_comps (fun comps -> comps.comp_components) s) l in
+      List.flatten l'
+  | Papply _ -> []
+
+let find_shadowed proj1 proj2 path env =
+  match path with
+    Pident id ->
+      IdTbl.find_all (Ident.name id) (proj1 env)
+  | Pdot (p, s, _) ->
+      let l = find_shadowed_comps p env in
+      let l' = List.map (find_all_comps proj2 s) l in
+      List.flatten l'
+  | Papply _ -> []
+
+let find_shadowed_types path env =
+  List.map fst
+    (find_shadowed
+       (fun env -> env.types) (fun comps -> comps.comp_types) path env)
+
+
+(* GADT instance tracking *)
+
+let add_gadt_instance_level lv env =
+  {env with
+   gadt_instances = (lv, ref TypeSet.empty) :: env.gadt_instances}
+
+let is_Tlink = function {desc = Tlink _} -> true | _ -> false
+
+let gadt_instance_level env t =
+  let rec find_instance = function
+      [] -> None
+    | (lv, r) :: rem ->
+        if TypeSet.exists is_Tlink !r then
+          (* Should we use set_typeset ? *)
+          r := TypeSet.fold (fun ty -> TypeSet.add (repr ty)) !r TypeSet.empty;
+        if TypeSet.mem t !r then Some lv else find_instance rem
+  in find_instance env.gadt_instances
+
+let add_gadt_instances env lv tl =
+  let r =
+    try List.assoc lv env.gadt_instances with Not_found -> assert false in
+  (* Format.eprintf "Added";
+  List.iter (fun ty -> Format.eprintf "@ %a" !Btype.print_raw ty) tl;
+  Format.eprintf "@."; *)
+  set_typeset r (List.fold_right TypeSet.add tl !r)
+
+(* Only use this after expand_head! *)
+let add_gadt_instance_chain env lv t =
+  let r =
+    try List.assoc lv env.gadt_instances with Not_found -> assert false in
+  let rec add_instance t =
+    let t = repr t in
+    if not (TypeSet.mem t !r) then begin
+      (* Format.eprintf "@ %a" !Btype.print_raw t; *)
+      set_typeset r (TypeSet.add t !r);
+      match t.desc with
+        Tconstr (p, _, memo) ->
+          may add_instance (find_expans Private p !memo)
+      | _ -> ()
+    end
+  in
+  (* Format.eprintf "Added chain"; *)
+  add_instance t
+  (* Format.eprintf "@." *)
+
+(* Expand manifest module type names at the top of the given module type *)
+
+let rec scrape_alias env ?path mty =
+  match mty, path with
+    Mty_ident p, _ ->
+      begin try
+        scrape_alias env (find_modtype_expansion p env) ?path
+      with Not_found ->
+        mty
+      end
+  | Mty_alias(_, path), _ ->
+      begin try
+        scrape_alias env (find_module path env).md_type ~path
+      with Not_found ->
+        (*Location.prerr_warning Location.none
+          (Warnings.No_cmi_file (Path.name path));*)
+        mty
+      end
+  | mty, Some path ->
+      !strengthen ~aliasable:true env mty path
+  | _ -> mty
+
+let scrape_alias env mty = scrape_alias env mty
+
+(* Given a signature and a root path, prefix all idents in the signature
+   by the root path and build the corresponding substitution. *)
+
+let rec prefix_idents root pos sub = function
+    [] -> ([], sub)
+  | Sig_value(id, decl) :: rem ->
+      let p = Pdot(root, Ident.name id, pos) in
+      let nextpos = match decl.val_kind with Val_prim _ -> pos | _ -> pos+1 in
+      let (pl, final_sub) = prefix_idents root nextpos sub rem in
+      (p::pl, final_sub)
+  | Sig_type(id, _, _) :: rem ->
+      let p = Pdot(root, Ident.name id, nopos) in
+      let (pl, final_sub) =
+        prefix_idents root pos (Subst.add_type id p sub) rem in
+      (p::pl, final_sub)
+  | Sig_typext(id, _, _) :: rem ->
+      let p = Pdot(root, Ident.name id, pos) in
+      (* we extend the substitution in case of an inlined record *)
+      let (pl, final_sub) =
+        prefix_idents root (pos+1) (Subst.add_type id p sub) rem in
+      (p::pl, final_sub)
+  | Sig_module(id, _, _) :: rem ->
+      let p = Pdot(root, Ident.name id, pos) in
+      let (pl, final_sub) =
+        prefix_idents root (pos+1) (Subst.add_module id p sub) rem in
+      (p::pl, final_sub)
+  | Sig_modtype(id, _) :: rem ->
+      let p = Pdot(root, Ident.name id, nopos) in
+      let (pl, final_sub) =
+        prefix_idents root pos
+                      (Subst.add_modtype id (Mty_ident p) sub) rem in
+      (p::pl, final_sub)
+  | Sig_class _ :: _ ->
+    assert false
+  | Sig_class_type(id, _, _) :: rem ->
+      let p = Pdot(root, Ident.name id, nopos) in
+      let (pl, final_sub) =
+        prefix_idents root pos (Subst.add_type id p sub) rem in
+      (p::pl, final_sub)
+
+let prefix_idents root sub sg =
+  if sub = Subst.identity then
+    let sgs =
+      try
+        Hashtbl.find prefixed_sg root
+      with Not_found ->
+        let sgs = ref [] in
+        Hashtbl.add prefixed_sg root sgs;
+        sgs
+    in
+    try
+      List.assq sg !sgs
+    with Not_found ->
+      let r = prefix_idents root 0 sub sg in
+      sgs := (sg, r) :: !sgs;
+      r
+  else
+    prefix_idents root 0 sub sg
+
+(* Compute structure descriptions *)
+
+let add_to_tbl id decl tbl =
+  let decls =
+    try Tbl.find_str id tbl with Not_found -> [] in
+  Tbl.add id (decl :: decls) tbl
+
+let rec components_of_module ~deprecated ~loc env sub path mty =
+  {
+    deprecated;
+    loc;
+    comps = EnvLazy.create (env, sub, path, mty)
+  }
+
+and components_of_module_maker (env, sub, path, mty) =
+  match scrape_alias env mty with
+    Mty_signature sg ->
+      let c =
+        { comp_values = Tbl.empty;
+          comp_constrs = Tbl.empty;
+          comp_labels = Tbl.empty; comp_types = Tbl.empty;
+          comp_modules = Tbl.empty; comp_modtypes = Tbl.empty;
+          comp_components = Tbl.empty; comp_classes = Tbl.empty;
+          comp_cltypes = Tbl.empty } in
+      let pl, sub = prefix_idents path sub sg in
+      let env = ref env in
+      let pos = ref 0 in
+      List.iter2 (fun item path ->
+        match item with
+          Sig_value(id, decl) ->
+            let decl' = Subst.value_description sub decl in
+            c.comp_values <-
+              Tbl.add (Ident.name id) (decl', !pos) c.comp_values;
+            begin match decl.val_kind with
+              Val_prim _ -> () | _ -> incr pos
+            end
+        | Sig_type(id, decl, _) ->
+            let decl' = Subst.type_declaration sub decl in
+            Datarepr.set_row_name decl' (Subst.type_path sub (Path.Pident id));
+            let constructors =
+              List.map snd (Datarepr.constructors_of_type path decl') in
+            let labels =
+              List.map snd (Datarepr.labels_of_type path decl') in
+            c.comp_types <-
+              Tbl.add (Ident.name id)
+                ((decl', (constructors, labels)), nopos)
+                  c.comp_types;
+            List.iter
+              (fun descr ->
+                c.comp_constrs <-
+                  add_to_tbl descr.cstr_name descr c.comp_constrs)
+              constructors;
+            List.iter
+              (fun descr ->
+                c.comp_labels <-
+                  add_to_tbl descr.lbl_name descr c.comp_labels)
+              labels;
+            env := store_type_infos id decl !env
+        | Sig_typext(id, ext, _) ->
+            let ext' = Subst.extension_constructor sub ext in
+            let descr = Datarepr.extension_descr path ext' in
+            c.comp_constrs <-
+              add_to_tbl (Ident.name id) descr c.comp_constrs;
+            incr pos
+        | Sig_module(id, md, _) ->
+            let md' = EnvLazy.create (sub, md) in
+            c.comp_modules <-
+              Tbl.add (Ident.name id) (md', !pos) c.comp_modules;
+            let deprecated =
+              Builtin_attributes.deprecated_of_attrs md.md_attributes
+            in
+            let comps =
+              components_of_module ~deprecated ~loc:md.md_loc !env sub path
+                md.md_type
+            in
+            c.comp_components <-
+              Tbl.add (Ident.name id) (comps, !pos) c.comp_components;
+            env := store_module ~check:false id md !env;
+            incr pos
+        | Sig_modtype(id, decl) ->
+            let decl' = Subst.modtype_declaration sub decl in
+            c.comp_modtypes <-
+              Tbl.add (Ident.name id) (decl', nopos) c.comp_modtypes;
+            env := store_modtype id decl !env
+        | Sig_class () -> assert false
+        | Sig_class_type(id, decl, _) ->
+            let decl' = Subst.cltype_declaration sub decl in
+            c.comp_cltypes <-
+              Tbl.add (Ident.name id) (decl', !pos) c.comp_cltypes)
+        sg pl;
+        Some (Structure_comps c)
+  | Mty_functor(param, ty_arg, ty_res) ->
+        Some (Functor_comps {
+          fcomp_param = param;
+          (* fcomp_arg and fcomp_res must be prefixed eagerly, because
+             they are interpreted in the outer environment *)
+          fcomp_arg = may_map (Subst.modtype sub) ty_arg;
+          fcomp_res = Subst.modtype sub ty_res;
+          fcomp_cache = Hashtbl.create 17;
+          fcomp_subst_cache = Hashtbl.create 17 })
+  | Mty_ident _
+  | Mty_alias _ -> None
+
+(* Insertion of bindings by identifier + path *)
+
+and check_usage loc id warn tbl =
+  if not loc.Location.loc_ghost && Warnings.is_active (warn "") then begin
+    let name = Ident.name id in
+    let key = (name, loc) in
+    if Hashtbl.mem tbl key then ()
+    else let used = ref false in
+    Hashtbl.add tbl key (fun () -> used := true);
+    if not (name = "" || name.[0] = '_' || name.[0] = '#')
+    then
+      Delayed_checks.add_delayed_check
+        (fun () -> if not !used then Location.prerr_warning loc (warn name))
+  end;
+
+and check_value_name name loc =
+  (* Note: we could also check here general validity of the
+     identifier, to protect against bad identifiers forged by -pp or
+     -ppx preprocessors. *)
+  if name = "|." then raise (Error(Illegal_value_name(loc, name)))  
+  else if String.length name > 0 && (name.[0] = '#') then
+    for i = 1 to String.length name - 1 do
+      if name.[i] = '#' then
+        raise (Error(Illegal_value_name(loc, name)))
+    done
+
+
+and store_value ?check id decl env =
+  check_value_name (Ident.name id) decl.val_loc;
+  may (fun f -> check_usage decl.val_loc id f value_declarations) check;
+  { env with
+    values = IdTbl.add id decl env.values;
+    summary = Env_value(env.summary, id, decl) }
+
+and store_type ~check id info env =
+  let loc = info.type_loc in
+  if check then
+    check_usage loc id (fun s -> Warnings.Unused_type_declaration s)
+      type_declarations;
+  let path = Pident id in
+  let constructors = Datarepr.constructors_of_type path info in
+  let labels = Datarepr.labels_of_type path info in
+  let descrs = (List.map snd constructors, List.map snd labels) in
+
+  if check && not loc.Location.loc_ghost &&
+    Warnings.is_active (Warnings.Unused_constructor ("", false, false))
+  then begin
+    let ty = Ident.name id in
+    List.iter
+      begin fun (_, {cstr_name = c; _}) ->
+        let k = (ty, loc, c) in
+        if not (Hashtbl.mem used_constructors k) then
+          let used = constructor_usages () in
+          Hashtbl.add used_constructors k (add_constructor_usage used);
+          if not (ty = "" || ty.[0] = '_')
+          then Delayed_checks.add_delayed_check
+              (fun () ->
+                if not (is_in_signature env) && not used.cu_positive then
+                  Location.prerr_warning loc
+                    (Warnings.Unused_constructor
+                       (c, used.cu_pattern, used.cu_privatize)))
+      end
+      constructors
+  end;
+  { env with
+    constrs =
+      List.fold_right
+        (fun (id, descr) constrs -> TycompTbl.add id descr constrs)
+        constructors
+        env.constrs;
+    labels =
+      List.fold_right
+        (fun (id, descr) labels -> TycompTbl.add id descr labels)
+        labels
+        env.labels;
+    types =
+      IdTbl.add id (info, descrs) env.types;
+    summary = Env_type(env.summary, id, info) }
+
+and store_type_infos id info env =
+  (* Simplified version of store_type that doesn't compute and store
+     constructor and label infos, but simply record the arity and
+     manifest-ness of the type.  Used in components_of_module to
+     keep track of type abbreviations (e.g. type t = float) in the
+     computation of label representations. *)
+  { env with
+    types = IdTbl.add id (info,([],[]))
+        env.types;
+    summary = Env_type(env.summary, id, info) }
+
+and store_extension ~check id ext env =
+  let loc = ext.ext_loc in
+  if check && not loc.Location.loc_ghost &&
+    Warnings.is_active (Warnings.Unused_extension ("", false, false, false))
+  then begin
+    let is_exception = Path.same ext.ext_type_path Predef.path_exn in
+    let ty = Path.last ext.ext_type_path in
+    let n = Ident.name id in
+    let k = (ty, loc, n) in
+    if not (Hashtbl.mem used_constructors k) then begin
+      let used = constructor_usages () in
+      Hashtbl.add used_constructors k (add_constructor_usage used);
+      Delayed_checks.add_delayed_check
+        (fun () ->
+          if not (is_in_signature env) && not used.cu_positive then
+            Location.prerr_warning loc
+              (Warnings.Unused_extension
+                 (n, is_exception, used.cu_pattern, used.cu_privatize)
+              )
+        )
+    end;
+  end;
+  { env with
+    constrs = TycompTbl.add id
+                (Datarepr.extension_descr (Pident id) ext)
+                env.constrs;
+    summary = Env_extension(env.summary, id, ext) }
+
+and store_module ~check id md env =
+  let loc = md.md_loc in
+  if check then
+    check_usage loc id (fun s -> Warnings.Unused_module s)
+      module_declarations;
+
+  let deprecated = Builtin_attributes.deprecated_of_attrs md.md_attributes in
+  { env with
+    modules = IdTbl.add id (EnvLazy.create (Subst.identity, md)) env.modules;
+    components =
+      IdTbl.add id
+        (components_of_module ~deprecated ~loc:md.md_loc
+           env Subst.identity (Pident id) md.md_type)
+        env.components;
+    summary = Env_module(env.summary, id, md) }
+
+and store_modtype id info env =
+  { env with
+    modtypes = IdTbl.add id info env.modtypes;
+    summary = Env_modtype(env.summary, id, info) }
+
+
+and store_cltype id desc env =
+  { env with
+    cltypes = IdTbl.add id desc env.cltypes;
+    summary = Env_cltype(env.summary, id, desc) }
+
+(* Compute the components of a functor application in a path. *)
+
+let components_of_functor_appl f env p1 p2 =
+  try
+    Hashtbl.find f.fcomp_cache p2
+  with Not_found ->
+    let p = Papply(p1, p2) in
+    let sub = Subst.add_module f.fcomp_param p2 Subst.identity in
+    let mty = Subst.modtype sub f.fcomp_res in
+    let comps = components_of_module ~deprecated:None ~loc:Location.none
+        (*???*)
+        env Subst.identity p mty in
+    Hashtbl.add f.fcomp_cache p2 comps;
+    comps
+
+(* Define forward functions *)
+
+let _ =
+  components_of_module' := components_of_module;
+  components_of_functor_appl' := components_of_functor_appl;
+  components_of_module_maker' := components_of_module_maker
+
+(* Insertion of bindings by identifier *)
+
+let add_functor_arg id env =
+  {env with
+   functor_args = Ident.add id () env.functor_args;
+   summary = Env_functor_arg (env.summary, id)}
+
+let add_value ?check id desc env =
+  store_value ?check id desc env
+
+let add_type ~check id info env =
+  store_type ~check id info env
+
+and add_extension ~check id ext env =
+  store_extension ~check id ext env
+
+and add_module_declaration ?(arg=false) ~check id md env =
+  let env = store_module ~check id md env in
+  if arg then add_functor_arg id env else env
+
+and add_modtype id info env =
+  store_modtype id info env
+
+
+
+and add_cltype id ty env =
+  store_cltype id ty env
+
+let add_module ?arg id mty env =
+  add_module_declaration ~check:false ?arg id (md mty) env
+
+let add_local_type path info env =
+  { env with
+    local_constraints = PathMap.add path info env.local_constraints }
+
+let add_local_constraint path info elv env =
+  match info with
+    {type_manifest = Some _; type_newtype_level = Some (lv, _)} ->
+      (* elv is the expansion level, lv is the definition level *)
+      let info = {info with type_newtype_level = Some (lv, elv)} in
+      add_local_type path info env
+  | _ -> assert false
+
+
+(* Insertion of bindings by name *)
+
+let enter store_fun name data env =
+  let id = Ident.create name in (id, store_fun id data env)
+
+let enter_value ?check = enter (store_value ?check)
+and enter_type = enter (store_type ~check:true)
+and enter_extension = enter (store_extension ~check:true)
+and enter_module_declaration ?arg id md env =
+  add_module_declaration ?arg ~check:true id md env
+  (* let (id, env) = enter store_module name md env in
+  (id, add_functor_arg ?arg id env) *)
+and enter_modtype = enter store_modtype
+
+and enter_cltype = enter store_cltype
+
+let enter_module ?arg s mty env =
+  let id = Ident.create s in
+  (id, enter_module_declaration ?arg id (md mty) env)
+
+(* Insertion of all components of a signature *)
+
+let add_item comp env =
+  match comp with
+    Sig_value(id, decl)     -> add_value id decl env
+  | Sig_type(id, decl, _)   -> add_type ~check:false id decl env
+  | Sig_typext(id, ext, _)  -> add_extension ~check:false id ext env
+  | Sig_module(id, md, _)   -> add_module_declaration ~check:false id md env
+  | Sig_modtype(id, decl)   -> add_modtype id decl env
+  | Sig_class()  -> env
+  | Sig_class_type(id, decl, _) -> add_cltype id decl env
+
+let rec add_signature sg env =
+  match sg with
+    [] -> env
+  | comp :: rem -> add_signature rem (add_item comp env)
+
+(* Open a signature path *)
+
+let add_components slot root env0 comps =
+  let add_l w comps env0 =
+    TycompTbl.add_open slot w comps env0
+  in
+
+  let add w comps env0 = IdTbl.add_open slot w root comps env0 in
+
+  let constrs =
+    add_l (fun x -> `Constructor x) comps.comp_constrs env0.constrs
+  in
+  let labels =
+    add_l (fun x -> `Label x) comps.comp_labels env0.labels
+  in
+
+  let values =
+    add (fun x -> `Value x) comps.comp_values env0.values
+  in
+  let types =
+    add (fun x -> `Type x) comps.comp_types env0.types
+  in
+  let modtypes =
+    add (fun x -> `Module_type x) comps.comp_modtypes env0.modtypes
+  in
+  let classes =
+    add (fun x -> `Class x) comps.comp_classes env0.classes
+  in
+  let cltypes =
+    add (fun x -> `Class_type x) comps.comp_cltypes env0.cltypes
+  in
+  let components =
+    add (fun x -> `Component x) comps.comp_components env0.components
+  in
+
+  let modules =
+    add (fun x -> `Module x) comps.comp_modules env0.modules
+  in
+
+  { env0 with
+    summary = Env_open(env0.summary, root);
+    constrs;
+    labels;
+    values;
+    types;
+    modtypes;
+    classes;
+    cltypes;
+    components;
+    modules;
+  }
+
+let open_signature slot root env0 =
+  match get_components (find_module_descr root env0) with
+  | Functor_comps _ -> None
+  | Structure_comps comps -> Some (add_components slot root env0 comps)
+
+
+(* Open a signature from a file *)
+
+let open_pers_signature name env =
+  match open_signature None (Pident(Ident.create_persistent name)) env with
+  | Some env -> env
+  | None -> assert false (* a compilation unit cannot refer to a functor *)
+
+let open_signature
+    ?(used_slot = ref false)
+    ?(loc = Location.none) ?(toplevel = false) ovf root env =
+  if not toplevel && ovf = Asttypes.Fresh && not loc.Location.loc_ghost
+     && (Warnings.is_active (Warnings.Unused_open "")
+         || Warnings.is_active (Warnings.Open_shadow_identifier ("", ""))
+         || Warnings.is_active (Warnings.Open_shadow_label_constructor ("","")))
+  then begin
+    let used = used_slot in
+    Delayed_checks.add_delayed_check
+      (fun () ->
+         if not !used then begin
+           used := true;
+           Location.prerr_warning loc (Warnings.Unused_open (Path.name root))
+         end
+      );
+    let shadowed = ref [] in
+    let slot s b =
+      begin match check_shadowing env b with
+      | Some kind when not (List.mem (kind, s) !shadowed) ->
+          shadowed := (kind, s) :: !shadowed;
+          let w =
+            match kind with
+            | "label" | "constructor" ->
+                Warnings.Open_shadow_label_constructor (kind, s)
+            | _ -> Warnings.Open_shadow_identifier (kind, s)
+          in
+          Location.prerr_warning loc w
+      | _ -> ()
+      end;
+      used := true
+    in
+    open_signature (Some slot) root env
+  end
+  else open_signature None root env
+
+(* Read a signature from a file *)
+
+let read_signature modname filename =
+  let ps = read_pers_struct modname filename in
+  Lazy.force ps.ps_sig
+
+(* Return the CRC of the interface of the given compilation unit *)
+
+let crc_of_unit name =
+  let ps = find_pers_struct name in
+  let crco =
+    try
+      List.assoc name ps.ps_crcs
+    with Not_found ->
+      assert false
+  in
+    match crco with
+      None -> assert false
+    | Some crc -> crc
+
+(* Return the list of imported interfaces with their CRCs *)
+
+let imports () =
+  let dont_record_crc_unit = !Clflags.dont_record_crc_unit in 
+  match dont_record_crc_unit with 
+  | None -> Consistbl.extract (StringSet.elements !imported_units) crc_units
+  | Some x -> 
+    Consistbl.extract 
+      (StringSet.fold 
+      (fun m acc -> if m = x then acc else m::acc) 
+      !imported_units []) crc_units
+
+(* Save a signature to a file *)
+
+let save_signature_with_imports ?check_exists ~deprecated sg modname filename imports =
+  (*prerr_endline filename;
+  List.iter (fun (name, crc) -> prerr_endline name) imports;*)
+  Btype.cleanup_abbrev ();
+  Subst.reset_for_saving ();
+  let sg = Subst.signature (Subst.for_saving Subst.identity) sg in
+  let flags =
+      (match deprecated with Some s -> [Deprecated s] | None -> [])
+  in
+  try
+    let cmi = {
+      cmi_name = modname;
+      cmi_sign = sg;
+      cmi_crcs = imports;
+      cmi_flags = flags;
+    } in
+    let crc =
+      create_cmi ?check_exists filename cmi in
+    (* Enter signature in persistent table so that imported_unit()
+       will also return its crc *)
+    let comps =
+      components_of_module ~deprecated ~loc:Location.none
+        empty Subst.identity
+        (Pident(Ident.create_persistent modname)) (Mty_signature sg) in
+    let ps =
+      { ps_name = modname;
+        ps_sig = lazy (Subst.signature Subst.identity sg);
+        ps_comps = comps;
+        ps_crcs = (cmi.cmi_name, Some crc) :: imports;
+        ps_filename = filename;
+        ps_flags = cmi.cmi_flags;
+      } in
+    save_pers_struct crc ps;
+    cmi
+  with exn ->
+    remove_file filename;
+    raise exn
+
+let save_signature ?check_exists ~deprecated sg modname filename =
+  save_signature_with_imports ?check_exists ~deprecated sg modname filename (imports())
+
+(* Folding on environments *)
+
+let find_all proj1 proj2 f lid env acc =
+  match lid with
+    | None ->
+      IdTbl.fold_name
+        (fun name (p, data) acc -> f name p data acc)
+        (proj1 env) acc
+    | Some l ->
+      let p, desc = lookup_module_descr l env in
+      begin match get_components desc with
+          Structure_comps c ->
+            Tbl.fold
+              (fun s (data, pos) acc -> f s (Pdot (p, s, pos)) data acc)
+              (proj2 c) acc
+        | Functor_comps _ ->
+            acc
+      end
+
+let find_all_simple_list proj1 proj2 f lid env acc =
+  match lid with
+    | None ->
+      TycompTbl.fold_name
+        (fun data acc -> f data acc)
+        (proj1 env) acc
+    | Some l ->
+      let (_p, desc) = lookup_module_descr l env in
+      begin match get_components desc with
+          Structure_comps c ->
+            Tbl.fold
+              (fun _s comps acc ->
+                match comps with
+                  [] -> acc
+                | data :: _ ->
+                  f data acc)
+              (proj2 c) acc
+        | Functor_comps _ ->
+            acc
+      end
+
+let fold_modules f lid env acc =
+  match lid with
+    | None ->
+      let acc =
+        IdTbl.fold_name
+          (fun name (p, data) acc ->
+             let data = EnvLazy.force subst_modtype_maker data in
+             f name p data acc
+          )
+          env.modules
+          acc
+      in
+      Hashtbl.fold
+        (fun name ps acc ->
+          match ps with
+              None -> acc
+            | Some ps ->
+              f name (Pident(Ident.create_persistent name))
+                     (md (Mty_signature (Lazy.force ps.ps_sig))) acc)
+        persistent_structures
+        acc
+    | Some l ->
+      let p, desc = lookup_module_descr l env in
+      begin match get_components desc with
+          Structure_comps c ->
+            Tbl.fold
+              (fun s (data, pos) acc ->
+                f s (Pdot (p, s, pos))
+                    (EnvLazy.force subst_modtype_maker data) acc)
+              c.comp_modules
+              acc
+        | Functor_comps _ ->
+            acc
+      end
+
+let fold_values f =
+  find_all (fun env -> env.values) (fun sc -> sc.comp_values) f
+and fold_constructors f =
+  find_all_simple_list (fun env -> env.constrs) (fun sc -> sc.comp_constrs) f
+and fold_labels f =
+  find_all_simple_list (fun env -> env.labels) (fun sc -> sc.comp_labels) f
+and fold_types f =
+  find_all (fun env -> env.types) (fun sc -> sc.comp_types) f
+and fold_modtypes f =
+  find_all (fun env -> env.modtypes) (fun sc -> sc.comp_modtypes) f
+and fold_classs f =
+  find_all (fun env -> env.classes) (fun sc -> sc.comp_classes) f
+and fold_cltypes f =
+  find_all (fun env -> env.cltypes) (fun sc -> sc.comp_cltypes) f
+
+
+(* Make the initial environment *)
+let initial_safe_string =
+  Predef.build_initial_env
+    (add_type ~check:false)
+    (add_extension ~check:false)
+    empty
+
+(* Return the environment summary *)
+
+let summary env =
+  if PathMap.is_empty env.local_constraints then env.summary
+  else Env_constraints (env.summary, env.local_constraints)
+
+let last_env = ref empty
+let last_reduced_env = ref empty
+
+let keep_only_summary env =
+  if !last_env == env then !last_reduced_env
+  else begin
+    let new_env =
+      {
+       empty with
+       summary = env.summary;
+       local_constraints = env.local_constraints;
+       flags = env.flags;
+      }
+    in
+    last_env := env;
+    last_reduced_env := new_env;
+    new_env
+  end
+
+
+let env_of_only_summary env_from_summary env =
+  let new_env = env_from_summary env.summary Subst.identity in
+  { new_env with
+    local_constraints = env.local_constraints;
+    flags = env.flags;
+  }
+
+(* Error report *)
+
+open Format
+
+let report_error ppf = function
+  | Illegal_renaming(modname, ps_name, filename) -> fprintf ppf
+      "Wrong file naming: %a@ contains the compiled interface for @ \
+       %s when %s was expected"
+      Location.print_filename filename ps_name modname
+  | Inconsistent_import(name, source1, source2) -> fprintf ppf
+      "@[<hov>The files %a@ and %a@ \
+              make inconsistent assumptions@ over interface %s@]"
+      Location.print_filename source1 Location.print_filename source2 name
+  | Need_recursive_types(import, export) ->
+      fprintf ppf
+        "@[<hov>Unit %s imports from %s, which uses recursive types.@ %s@]"
+        export import "The compilation flag -rectypes is required"
+  | Missing_module(_, path1, path2) ->
+      fprintf ppf "@[@[<hov>";
+      if Path.same path1 path2 then
+        fprintf ppf "Internal path@ %s@ is dangling." (Path.name path1)
+      else
+        fprintf ppf "Internal path@ %s@ expands to@ %s@ which is dangling."
+          (Path.name path1) (Path.name path2);
+      fprintf ppf "@]@ @[%s@ %s@ %s.@]@]"
+        "The compiled interface for module" (Ident.name (Path.head path2))
+        "was not found"
+  | Illegal_value_name(_loc, name) ->
+      fprintf ppf "'%s' is not a valid value identifier."
+        name
+
+let () =
+  Location.register_error_of_exn
+    (function
+      | Error (Missing_module (loc, _, _)
+              | Illegal_value_name (loc, _)
+               as err) when loc <> Location.none ->
+          Some (Location.error_of_printer loc report_error err)
+      | Error err -> Some (Location.error_of_printer_file report_error err)
+      | _ -> None
+    )
+
+end
+module Typedtree : sig 
+#1 "typedtree.mli"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
+(*                                                                        *)
+(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(** Abstract syntax tree after typing *)
+
+
+(** By comparison with {!Parsetree}:
+    - Every {!Longindent.t} is accompanied by a resolved {!Path.t}.
+
+*)
+
+open Asttypes
+open Types
+
+(* Value expressions for the core language *)
+
+type partial = Partial | Total
+
+(** {1 Extension points} *)
+
+type attribute = Parsetree.attribute
+type attributes = attribute list
+
+(** {1 Core language} *)
+
+type pattern =
+  { pat_desc: pattern_desc;
+    pat_loc: Location.t;
+    pat_extra : (pat_extra * Location.t * attributes) list;
+    pat_type: type_expr;
+    mutable pat_env: Env.t;
+    pat_attributes: attributes;
+   }
+
+and pat_extra =
+  | Tpat_constraint of core_type
+        (** P : T          { pat_desc = P
+                           ; pat_extra = (Tpat_constraint T, _, _) :: ... }
+         *)
+  | Tpat_type of Path.t * Longident.t loc
+        (** #tconst        { pat_desc = disjunction
+                           ; pat_extra = (Tpat_type (P, "tconst"), _, _) :: ...}
+
+                           where [disjunction] is a [Tpat_or _] representing the
+                           branches of [tconst].
+         *)
+  | Tpat_open of Path.t * Longident.t loc * Env.t
+  | Tpat_unpack
+        (** (module P)     { pat_desc  = Tpat_var "P"
+                           ; pat_extra = (Tpat_unpack, _, _) :: ... }
+         *)
+
+and pattern_desc =
+    Tpat_any
+        (** _ *)
+  | Tpat_var of Ident.t * string loc
+        (** x *)
+  | Tpat_alias of pattern * Ident.t * string loc
+        (** P as a *)
+  | Tpat_constant of constant
+        (** 1, 'a', "true", 1.0, 1l, 1L, 1n *)
+  | Tpat_tuple of pattern list
+        (** (P1, ..., Pn)
+
+            Invariant: n >= 2
+         *)
+  | Tpat_construct of
+      Longident.t loc * constructor_description * pattern list
+        (** C                []
+            C P              [P]
+            C (P1, ..., Pn)  [P1; ...; Pn]
+          *)
+  | Tpat_variant of label * pattern option * row_desc ref
+        (** `A             (None)
+            `A P           (Some P)
+
+            See {!Types.row_desc} for an explanation of the last parameter.
+         *)
+  | Tpat_record of
+      (Longident.t loc * label_description * pattern) list *
+        closed_flag
+        (** { l1=P1; ...; ln=Pn }     (flag = Closed)
+            { l1=P1; ...; ln=Pn; _}   (flag = Open)
+
+            Invariant: n > 0
+         *)
+  | Tpat_array of pattern list
+        (** [| P1; ...; Pn |] *)
+  | Tpat_or of pattern * pattern * row_desc option
+        (** P1 | P2
+
+            [row_desc] = [Some _] when translating [Ppat_type _],
+                         [None] otherwise.
+         *)
+  | Tpat_lazy of pattern
+        (** lazy P *)
+
+and expression =
+  { exp_desc: expression_desc;
+    exp_loc: Location.t;
+    exp_extra: (exp_extra * Location.t * attributes) list;
+    exp_type: type_expr;
+    exp_env: Env.t;
+    exp_attributes: attributes;
+   }
+
+and exp_extra =
+  | Texp_constraint of core_type
+        (** E : T *)
+  | Texp_coerce of core_type option * core_type
+        (** E :> T           [Texp_coerce (None, T)]
+            E : T0 :> T      [Texp_coerce (Some T0, T)]
+         *)
+  | Texp_open of override_flag * Path.t * Longident.t loc * Env.t
+        (** let open[!] M in    [Texp_open (!, P, M, env)]
+                                where [env] is the environment after opening [P]
+         *)
+  | Texp_poly of core_type option
+        (** Used for method bodies. *)
+  | Texp_newtype of string
+        (** fun (type t) ->  *)
+
+and expression_desc =
+    Texp_ident of Path.t * Longident.t loc * Types.value_description
+        (** x
+            M.x
+         *)
+  | Texp_constant of constant
+        (** 1, 'a', "true", 1.0, 1l, 1L, 1n *)
+  | Texp_let of rec_flag * value_binding list * expression
+        (** let P1 = E1 and ... and Pn = EN in E       (flag = Nonrecursive)
+            let rec P1 = E1 and ... and Pn = EN in E   (flag = Recursive)
+         *)
+  | Texp_function of { arg_label : arg_label; param : Ident.t;
+      cases : case list; partial : partial; }
+        (** [Pexp_fun] and [Pexp_function] both translate to [Texp_function].
+            See {!Parsetree} for more details.
+
+            [param] is the identifier that is to be used to name the
+            parameter of the function.
+
+            partial =
+              [Partial] if the pattern match is partial
+              [Total] otherwise.
+         *)
+  | Texp_apply of expression * (arg_label * expression option) list
+        (** E0 ~l1:E1 ... ~ln:En
+
+            The expression can be None if the expression is abstracted over
+            this argument. It currently appears when a label is applied.
+
+            For example:
+            let f x ~y = x + y in
+            f ~y:3
+
+            The resulting typedtree for the application is:
+            Texp_apply (Texp_ident "f/1037",
+                        [(Nolabel, None);
+                         (Labelled "y", Some (Texp_constant Const_int 3))
+                        ])
+         *)
+  | Texp_match of expression * case list * case list * partial
+        (** match E0 with
+            | P1 -> E1
+            | P2 -> E2
+            | exception P3 -> E3
+
+            [Texp_match (E0, [(P1, E1); (P2, E2)], [(P3, E3)], _)]
+         *)
+  | Texp_try of expression * case list
+        (** try E with P1 -> E1 | ... | PN -> EN *)
+  | Texp_tuple of expression list
+        (** (E1, ..., EN) *)
+  | Texp_construct of
+      Longident.t loc * constructor_description * expression list
+        (** C                []
+            C E              [E]
+            C (E1, ..., En)  [E1;...;En]
+         *)
+  | Texp_variant of label * expression option
+  | Texp_record of {
+      fields : ( Types.label_description * record_label_definition ) array;
+      representation : Types.record_representation;
+      extended_expression : expression option;
+    }
+        (** { l1=P1; ...; ln=Pn }           (extended_expression = None)
+            { E0 with l1=P1; ...; ln=Pn }   (extended_expression = Some E0)
+
+            Invariant: n > 0
+
+            If the type is { l1: t1; l2: t2 }, the expression
+            { E0 with t2=P2 } is represented as
+            Texp_record
+              { fields = [| l1, Kept t1; l2 Override P2 |]; representation;
+                extended_expression = Some E0 }
+        *)
+  | Texp_field of expression * Longident.t loc * label_description
+  | Texp_setfield of
+      expression * Longident.t loc * label_description * expression
+  | Texp_array of expression list
+  | Texp_ifthenelse of expression * expression * expression option
+  | Texp_sequence of expression * expression
+  | Texp_while of expression * expression
+  | Texp_for of
+      Ident.t * Parsetree.pattern * expression * expression * direction_flag *
+        expression
+  | Texp_send of expression * meth * expression option
+  | Texp_new of unit
+  | Texp_instvar of unit
+  | Texp_setinstvar of unit
+  | Texp_override of unit
+  | Texp_letmodule of Ident.t * string loc * module_expr * expression
+  | Texp_letexception of extension_constructor * expression
+  | Texp_assert of expression
+  | Texp_lazy of expression
+  | Texp_object of unit
+  | Texp_pack of module_expr
+  | Texp_unreachable
+  | Texp_extension_constructor of Longident.t loc * Path.t
+
+and meth =
+    Tmeth_name of string
+
+and case =
+    {
+     c_lhs: pattern;
+     c_guard: expression option;
+     c_rhs: expression;
+    }
+
+and record_label_definition =
+  | Kept of Types.type_expr
+  | Overridden of Longident.t loc * expression
+
+
+
+(* Value expressions for the module language *)
+
+and module_expr =
+  { mod_desc: module_expr_desc;
+    mod_loc: Location.t;
+    mod_type: Types.module_type;
+    mod_env: Env.t;
+    mod_attributes: attributes;
+   }
+
+(** Annotations for [Tmod_constraint]. *)
+and module_type_constraint =
+  | Tmodtype_implicit
+  (** The module type constraint has been synthesized during typechecking. *)
+  | Tmodtype_explicit of module_type
+  (** The module type was in the source file. *)
+
+and module_expr_desc =
+    Tmod_ident of Path.t * Longident.t loc
+  | Tmod_structure of structure
+  | Tmod_functor of Ident.t * string loc * module_type option * module_expr
+  | Tmod_apply of module_expr * module_expr * module_coercion
+  | Tmod_constraint of
+      module_expr * Types.module_type * module_type_constraint * module_coercion
+    (** ME          (constraint = Tmodtype_implicit)
+        (ME : MT)   (constraint = Tmodtype_explicit MT)
+     *)
+  | Tmod_unpack of expression * Types.module_type
+
+and structure = {
+  str_items : structure_item list;
+  str_type : Types.signature;
+  str_final_env : Env.t;
+}
+
+and structure_item =
+  { str_desc : structure_item_desc;
+    str_loc : Location.t;
+    str_env : Env.t
+  }
+
+and structure_item_desc =
+    Tstr_eval of expression * attributes
+  | Tstr_value of rec_flag * value_binding list
+  | Tstr_primitive of value_description
+  | Tstr_type of rec_flag * type_declaration list
+  | Tstr_typext of type_extension
+  | Tstr_exception of extension_constructor
+  | Tstr_module of module_binding
+  | Tstr_recmodule of module_binding list
+  | Tstr_modtype of module_type_declaration
+  | Tstr_open of open_description
+  | Tstr_class of unit
+  | Tstr_class_type of (Ident.t * string loc * class_type_declaration) list
+  | Tstr_include of include_declaration
+  | Tstr_attribute of attribute
+
+and module_binding =
+    {
+     mb_id: Ident.t;
+     mb_name: string loc;
+     mb_expr: module_expr;
+     mb_attributes: attributes;
+     mb_loc: Location.t;
+    }
+
+and value_binding =
+  {
+    vb_pat: pattern;
+    vb_expr: expression;
+    vb_attributes: attributes;
+    vb_loc: Location.t;
+  }
+
+and module_coercion =
+    Tcoerce_none
+  | Tcoerce_structure of (int * module_coercion) list *
+                         (Ident.t * int * module_coercion) list *
+                         string list (* runtime fields *)
+  | Tcoerce_functor of module_coercion * module_coercion
+  | Tcoerce_primitive of primitive_coercion
+  | Tcoerce_alias of Path.t * module_coercion
+
+and module_type =
+  { mty_desc: module_type_desc;
+    mty_type : Types.module_type;
+    mty_env : Env.t;
+    mty_loc: Location.t;
+    mty_attributes: attributes;
+   }
+
+and module_type_desc =
+    Tmty_ident of Path.t * Longident.t loc
+  | Tmty_signature of signature
+  | Tmty_functor of Ident.t * string loc * module_type option * module_type
+  | Tmty_with of module_type * (Path.t * Longident.t loc * with_constraint) list
+  | Tmty_typeof of module_expr
+  | Tmty_alias of Path.t * Longident.t loc
+
+and primitive_coercion =
+  {
+    pc_desc: Primitive.description;
+    pc_type: type_expr;
+    pc_env: Env.t;
+    pc_loc : Location.t;
+    pc_id : Ident.t;
+  }
+
+and signature = {
+  sig_items : signature_item list;
+  sig_type : Types.signature;
+  sig_final_env : Env.t;
+}
+
+and signature_item =
+  { sig_desc: signature_item_desc;
+    sig_env : Env.t; (* BINANNOT ADDED *)
+    sig_loc: Location.t }
+
+and signature_item_desc =
+    Tsig_value of value_description
+  | Tsig_type of rec_flag * type_declaration list
+  | Tsig_typext of type_extension
+  | Tsig_exception of extension_constructor
+  | Tsig_module of module_declaration
+  | Tsig_recmodule of module_declaration list
+  | Tsig_modtype of module_type_declaration
+  | Tsig_open of open_description
+  | Tsig_include of include_description
+  | Tsig_class of unit
+  | Tsig_class_type of class_type_declaration list
+  | Tsig_attribute of attribute
+
+and module_declaration =
+    {
+     md_id: Ident.t;
+     md_name: string loc;
+     md_type: module_type;
+     md_attributes: attributes;
+     md_loc: Location.t;
+    }
+
+and module_type_declaration =
+    {
+     mtd_id: Ident.t;
+     mtd_name: string loc;
+     mtd_type: module_type option;
+     mtd_attributes: attributes;
+     mtd_loc: Location.t;
+    }
+
+and open_description =
+    {
+     open_path: Path.t;
+     open_txt: Longident.t loc;
+     open_override: override_flag;
+     open_loc: Location.t;
+     open_attributes: attribute list;
+    }
+
+and 'a include_infos =
+    {
+     incl_mod: 'a;
+     incl_type: Types.signature;
+     incl_loc: Location.t;
+     incl_attributes: attribute list;
+    }
+
+and include_description = module_type include_infos
+
+and include_declaration = module_expr include_infos
+
+and with_constraint =
+    Twith_type of type_declaration
+  | Twith_module of Path.t * Longident.t loc
+  | Twith_typesubst of type_declaration
+  | Twith_modsubst of Path.t * Longident.t loc
+
+and core_type =
+  { mutable ctyp_desc : core_type_desc;
+      (** mutable because of [Typeclass.declare_method] *)
+    mutable ctyp_type : type_expr;
+      (** mutable because of [Typeclass.declare_method] *)
+    ctyp_env : Env.t; (* BINANNOT ADDED *)
+    ctyp_loc : Location.t;
+    ctyp_attributes: attributes;
+   }
+
+and core_type_desc =
+    Ttyp_any
+  | Ttyp_var of string
+  | Ttyp_arrow of arg_label * core_type * core_type
+  | Ttyp_tuple of core_type list
+  | Ttyp_constr of Path.t * Longident.t loc * core_type list
+  | Ttyp_object of object_field list * closed_flag
+  | Ttyp_class of Path.t * Longident.t loc * core_type list
+  | Ttyp_alias of core_type * string
+  | Ttyp_variant of row_field list * closed_flag * label list option
+  | Ttyp_poly of string list * core_type
+  | Ttyp_package of package_type
+
+and package_type = {
+  pack_path : Path.t;
+  pack_fields : (Longident.t loc * core_type) list;
+  pack_type : Types.module_type;
+  pack_txt : Longident.t loc;
+}
+
+and row_field =
+    Ttag of string loc * attributes * bool * core_type list
+  | Tinherit of core_type
+
+and object_field =
+  | OTtag of string loc * attributes * core_type
+  | OTinherit of core_type
+
+and value_description =
+  { val_id: Ident.t;
+    val_name: string loc;
+    val_desc: core_type;
+    val_val: Types.value_description;
+    val_prim: string list;
+    val_loc: Location.t;
+    val_attributes: attributes;
+    }
+
+and type_declaration =
+  {
+    typ_id: Ident.t;
+    typ_name: string loc;
+    typ_params: (core_type * variance) list;
+    typ_type: Types.type_declaration;
+    typ_cstrs: (core_type * core_type * Location.t) list;
+    typ_kind: type_kind;
+    typ_private: private_flag;
+    typ_manifest: core_type option;
+    typ_loc: Location.t;
+    typ_attributes: attributes;
+   }
+
+and type_kind =
+    Ttype_abstract
+  | Ttype_variant of constructor_declaration list
+  | Ttype_record of label_declaration list
+  | Ttype_open
+
+and label_declaration =
+    {
+     ld_id: Ident.t;
+     ld_name: string loc;
+     ld_mutable: mutable_flag;
+     ld_type: core_type;
+     ld_loc: Location.t;
+     ld_attributes: attributes;
+    }
+
+and constructor_declaration =
+    {
+     cd_id: Ident.t;
+     cd_name: string loc;
+     cd_args: constructor_arguments;
+     cd_res: core_type option;
+     cd_loc: Location.t;
+     cd_attributes: attributes;
+    }
+
+and constructor_arguments =
+  | Cstr_tuple of core_type list
+  | Cstr_record of label_declaration list
+
+and type_extension =
+  {
+    tyext_path: Path.t;
+    tyext_txt: Longident.t loc;
+    tyext_params: (core_type * variance) list;
+    tyext_constructors: extension_constructor list;
+    tyext_private: private_flag;
+    tyext_attributes: attributes;
+  }
+
+and extension_constructor =
+  {
+    ext_id: Ident.t;
+    ext_name: string loc;
+    ext_type : Types.extension_constructor;
+    ext_kind : extension_constructor_kind;
+    ext_loc : Location.t;
+    ext_attributes: attributes;
+  }
+
+and extension_constructor_kind =
+    Text_decl of constructor_arguments * core_type option
+  | Text_rebind of Path.t * Longident.t loc
+
+and class_type =
+    {
+     cltyp_desc: class_type_desc;
+     cltyp_type: Types.class_type;
+     cltyp_env: Env.t;
+     cltyp_loc: Location.t;
+     cltyp_attributes: attributes;
+    }
+
+and class_type_desc =
+    Tcty_constr of Path.t * Longident.t loc * core_type list
+  | Tcty_signature of class_signature
+  | Tcty_arrow of arg_label * core_type * class_type
+  | Tcty_open of override_flag * Path.t * Longident.t loc * Env.t * class_type
+
+and class_signature = {
+    csig_self : core_type;
+    csig_fields : class_type_field list;
+    csig_type : Types.class_signature;
+  }
+
+and class_type_field = {
+    ctf_desc: class_type_field_desc;
+    ctf_loc: Location.t;
+    ctf_attributes: attributes;
+  }
+
+and class_type_field_desc =
+  | Tctf_inherit of class_type
+  | Tctf_val of (string * mutable_flag * virtual_flag * core_type)
+  | Tctf_method of (string * private_flag * virtual_flag * core_type)
+  | Tctf_constraint of (core_type * core_type)
+  | Tctf_attribute of attribute
+
+
+and class_description =
+  class_type class_infos
+
+and class_type_declaration =
+  class_type class_infos
+
+and 'a class_infos =
+  { ci_virt: virtual_flag;
+    ci_params: (core_type * variance) list;
+    ci_id_name : string loc;
+    ci_id_class: Ident.t;
+    ci_id_class_type : Ident.t;
+    ci_id_object : Ident.t;
+    ci_id_typehash : Ident.t;
+    ci_expr: 'a;
+    ci_decl: Types.class_declaration;
+    ci_type_decl : Types.class_type_declaration;
+    ci_loc: Location.t;
+    ci_attributes: attributes;
+   }
+
+(* Auxiliary functions over the a.s.t. *)
+
+val iter_pattern_desc: (pattern -> unit) -> pattern_desc -> unit
+val map_pattern_desc: (pattern -> pattern) -> pattern_desc -> pattern_desc
+
+val let_bound_idents: value_binding list -> Ident.t list
+val rev_let_bound_idents: value_binding list -> Ident.t list
+
+
+(** Alpha conversion of patterns *)
+val alpha_pat: (Ident.t * Ident.t) list -> pattern -> pattern
+
+val mknoloc: 'a -> 'a Asttypes.loc
+val mkloc: 'a -> Location.t -> 'a Asttypes.loc
+
+val pat_bound_idents: pattern -> Ident.t list
+
+end = struct
+#1 "typedtree.ml"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
+(*                                                                        *)
+(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(* Abstract syntax tree after typing *)
+
+open Misc
+open Asttypes
+open Types
+
+(* Value expressions for the core language *)
+
+type partial = Partial | Total
+
+type attribute = Parsetree.attribute
+type attributes = attribute list
+
+type pattern =
+  { pat_desc: pattern_desc;
+    pat_loc: Location.t;
+    pat_extra : (pat_extra * Location.t * attribute list) list;
+    pat_type: type_expr;
+    mutable pat_env: Env.t;
+    pat_attributes: attribute list;
+   }
+
+and pat_extra =
+  | Tpat_constraint of core_type
+  | Tpat_type of Path.t * Longident.t loc
+  | Tpat_open of Path.t * Longident.t loc * Env.t
+  | Tpat_unpack
+
+and pattern_desc =
+    Tpat_any
+  | Tpat_var of Ident.t * string loc
+  | Tpat_alias of pattern * Ident.t * string loc
+  | Tpat_constant of constant
+  | Tpat_tuple of pattern list
+  | Tpat_construct of
+      Longident.t loc * constructor_description * pattern list
+  | Tpat_variant of label * pattern option * row_desc ref
+  | Tpat_record of
+      (Longident.t loc * label_description * pattern) list *
+        closed_flag
+  | Tpat_array of pattern list
+  | Tpat_or of pattern * pattern * row_desc option
+  | Tpat_lazy of pattern
+
+and expression =
+  { exp_desc: expression_desc;
+    exp_loc: Location.t;
+    exp_extra: (exp_extra * Location.t * attribute list) list;
+    exp_type: type_expr;
+    exp_env: Env.t;
+    exp_attributes: attribute list;
+   }
+
+and exp_extra =
+  | Texp_constraint of core_type
+  | Texp_coerce of core_type option * core_type
+  | Texp_open of override_flag * Path.t * Longident.t loc * Env.t
+  | Texp_poly of core_type option
+  | Texp_newtype of string
+
+and expression_desc =
+    Texp_ident of Path.t * Longident.t loc * Types.value_description
+  | Texp_constant of constant
+  | Texp_let of rec_flag * value_binding list * expression
+  | Texp_function of { arg_label : arg_label; param : Ident.t;
+      cases : case list; partial : partial; }
+  | Texp_apply of expression * (arg_label * expression option) list
+  | Texp_match of expression * case list * case list * partial
+  | Texp_try of expression * case list
+  | Texp_tuple of expression list
+  | Texp_construct of
+      Longident.t loc * constructor_description * expression list
+  | Texp_variant of label * expression option
+  | Texp_record of {
+      fields : ( Types.label_description * record_label_definition ) array;
+      representation : Types.record_representation;
+      extended_expression : expression option;
+    }
+  | Texp_field of expression * Longident.t loc * label_description
+  | Texp_setfield of
+      expression * Longident.t loc * label_description * expression
+  | Texp_array of expression list
+  | Texp_ifthenelse of expression * expression * expression option
+  | Texp_sequence of expression * expression
+  | Texp_while of expression * expression
+  | Texp_for of
+      Ident.t * Parsetree.pattern * expression * expression * direction_flag *
+        expression
+  | Texp_send of expression * meth * expression option
+  | Texp_new of unit
+  | Texp_instvar of unit
+  | Texp_setinstvar of unit
+  | Texp_override of unit
+  | Texp_letmodule of Ident.t * string loc * module_expr * expression
+  | Texp_letexception of extension_constructor * expression
+  | Texp_assert of expression
+  | Texp_lazy of expression
+  | Texp_object of unit
+  | Texp_pack of module_expr
+  | Texp_unreachable
+  | Texp_extension_constructor of Longident.t loc * Path.t
+
+and meth =
+    Tmeth_name of string
+
+and case =
+    {
+     c_lhs: pattern;
+     c_guard: expression option;
+     c_rhs: expression;
+    }
+
+and record_label_definition =
+  | Kept of Types.type_expr
+  | Overridden of Longident.t loc * expression
+
+(* Value expressions for the class language *)
+
+
+
+
+
+(* Value expressions for the module language *)
+
+and module_expr =
+  { mod_desc: module_expr_desc;
+    mod_loc: Location.t;
+    mod_type: Types.module_type;
+    mod_env: Env.t;
+    mod_attributes: attribute list;
+   }
+
+and module_type_constraint =
+  Tmodtype_implicit
+| Tmodtype_explicit of module_type
+
+and module_expr_desc =
+    Tmod_ident of Path.t * Longident.t loc
+  | Tmod_structure of structure
+  | Tmod_functor of Ident.t * string loc * module_type option * module_expr
+  | Tmod_apply of module_expr * module_expr * module_coercion
+  | Tmod_constraint of
+      module_expr * Types.module_type * module_type_constraint * module_coercion
+  | Tmod_unpack of expression * Types.module_type
+
+and structure = {
+  str_items : structure_item list;
+  str_type : Types.signature;
+  str_final_env : Env.t;
+}
+
+and structure_item =
+  { str_desc : structure_item_desc;
+    str_loc : Location.t;
+    str_env : Env.t
+  }
+
+and structure_item_desc =
+    Tstr_eval of expression * attributes
+  | Tstr_value of rec_flag * value_binding list
+  | Tstr_primitive of value_description
+  | Tstr_type of rec_flag * type_declaration list
+  | Tstr_typext of type_extension
+  | Tstr_exception of extension_constructor
+  | Tstr_module of module_binding
+  | Tstr_recmodule of module_binding list
+  | Tstr_modtype of module_type_declaration
+  | Tstr_open of open_description
+  | Tstr_class of unit
+  | Tstr_class_type of (Ident.t * string loc * class_type_declaration) list
+  | Tstr_include of include_declaration
+  | Tstr_attribute of attribute
+
+and module_binding =
+    {
+     mb_id: Ident.t;
+     mb_name: string loc;
+     mb_expr: module_expr;
+     mb_attributes: attribute list;
+     mb_loc: Location.t;
+    }
+
+and value_binding =
+  {
+    vb_pat: pattern;
+    vb_expr: expression;
+    vb_attributes: attributes;
+    vb_loc: Location.t;
+  }
+
+and module_coercion =
+    Tcoerce_none
+  | Tcoerce_structure of (int * module_coercion) list *
+                         (Ident.t * int * module_coercion) list *
+                         string list (* runtime fields *)
+  | Tcoerce_functor of module_coercion * module_coercion
+  | Tcoerce_primitive of primitive_coercion
+  | Tcoerce_alias of Path.t * module_coercion
+
+and module_type =
+  { mty_desc: module_type_desc;
+    mty_type : Types.module_type;
+    mty_env : Env.t;
+    mty_loc: Location.t;
+    mty_attributes: attribute list;
+   }
+
+and module_type_desc =
+    Tmty_ident of Path.t * Longident.t loc
+  | Tmty_signature of signature
+  | Tmty_functor of Ident.t * string loc * module_type option * module_type
+  | Tmty_with of module_type * (Path.t * Longident.t loc * with_constraint) list
+  | Tmty_typeof of module_expr
+  | Tmty_alias of Path.t * Longident.t loc
+
+(* Keep primitive type information for type-based lambda-code specialization *)
+and primitive_coercion =
+  {
+    pc_desc: Primitive.description;
+    pc_type: type_expr;
+    pc_env: Env.t;
+    pc_loc : Location.t;
+    pc_id : Ident.t; (*RE:Added *)
+  }
+
+and signature = {
+  sig_items : signature_item list;
+  sig_type : Types.signature;
+  sig_final_env : Env.t;
+}
+
+and signature_item =
+  { sig_desc: signature_item_desc;
+    sig_env : Env.t; (* BINANNOT ADDED *)
+    sig_loc: Location.t }
+
+and signature_item_desc =
+    Tsig_value of value_description
+  | Tsig_type of rec_flag * type_declaration list
+  | Tsig_typext of type_extension
+  | Tsig_exception of extension_constructor
+  | Tsig_module of module_declaration
+  | Tsig_recmodule of module_declaration list
+  | Tsig_modtype of module_type_declaration
+  | Tsig_open of open_description
+  | Tsig_include of include_description
+  | Tsig_class of unit
+  | Tsig_class_type of class_type_declaration list
+  | Tsig_attribute of attribute
+
+and module_declaration =
+    {
+     md_id: Ident.t;
+     md_name: string loc;
+     md_type: module_type;
+     md_attributes: attribute list;
+     md_loc: Location.t;
+    }
+
+and module_type_declaration =
+    {
+     mtd_id: Ident.t;
+     mtd_name: string loc;
+     mtd_type: module_type option;
+     mtd_attributes: attribute list;
+     mtd_loc: Location.t;
+    }
+
+and open_description =
+    {
+     open_path: Path.t;
+     open_txt: Longident.t loc;
+     open_override: override_flag;
+     open_loc: Location.t;
+     open_attributes: attribute list;
+    }
+
+and 'a include_infos =
+    {
+     incl_mod: 'a;
+     incl_type: Types.signature;
+     incl_loc: Location.t;
+     incl_attributes: attribute list;
+    }
+
+and include_description = module_type include_infos
+
+and include_declaration = module_expr include_infos
+
+and with_constraint =
+    Twith_type of type_declaration
+  | Twith_module of Path.t * Longident.t loc
+  | Twith_typesubst of type_declaration
+  | Twith_modsubst of Path.t * Longident.t loc
+
+and core_type =
+(* mutable because of [Typeclass.declare_method] *)
+  { mutable ctyp_desc : core_type_desc;
+    mutable ctyp_type : type_expr;
+    ctyp_env : Env.t; (* BINANNOT ADDED *)
+    ctyp_loc : Location.t;
+    ctyp_attributes: attribute list;
+   }
+
+and core_type_desc =
+    Ttyp_any
+  | Ttyp_var of string
+  | Ttyp_arrow of arg_label * core_type * core_type
+  | Ttyp_tuple of core_type list
+  | Ttyp_constr of Path.t * Longident.t loc * core_type list
+  | Ttyp_object of object_field list * closed_flag
+  | Ttyp_class of Path.t * Longident.t loc * core_type list
+  | Ttyp_alias of core_type * string
+  | Ttyp_variant of row_field list * closed_flag * label list option
+  | Ttyp_poly of string list * core_type
+  | Ttyp_package of package_type
+
+and package_type = {
+  pack_path : Path.t;
+  pack_fields : (Longident.t loc * core_type) list;
+  pack_type : Types.module_type;
+  pack_txt : Longident.t loc;
+}
+
+and row_field =
+    Ttag of string loc * attributes * bool * core_type list
+  | Tinherit of core_type
+
+and object_field =
+  | OTtag of string loc * attributes * core_type
+  | OTinherit of core_type
+
+and value_description =
+  { val_id: Ident.t;
+    val_name: string loc;
+    val_desc: core_type;
+    val_val: Types.value_description;
+    val_prim: string list;
+    val_loc: Location.t;
+    val_attributes: attribute list;
+    }
+
+and type_declaration =
+  { typ_id: Ident.t;
+    typ_name: string loc;
+    typ_params: (core_type * variance) list;
+    typ_type: Types.type_declaration;
+    typ_cstrs: (core_type * core_type * Location.t) list;
+    typ_kind: type_kind;
+    typ_private: private_flag;
+    typ_manifest: core_type option;
+    typ_loc: Location.t;
+    typ_attributes: attribute list;
+   }
+
+and type_kind =
+    Ttype_abstract
+  | Ttype_variant of constructor_declaration list
+  | Ttype_record of label_declaration list
+  | Ttype_open
+
+and label_declaration =
+    {
+     ld_id: Ident.t;
+     ld_name: string loc;
+     ld_mutable: mutable_flag;
+     ld_type: core_type;
+     ld_loc: Location.t;
+     ld_attributes: attribute list;
+    }
+
+and constructor_declaration =
+    {
+     cd_id: Ident.t;
+     cd_name: string loc;
+     cd_args: constructor_arguments;
+     cd_res: core_type option;
+     cd_loc: Location.t;
+     cd_attributes: attribute list;
+    }
+
+and constructor_arguments =
+  | Cstr_tuple of core_type list
+  | Cstr_record of label_declaration list
+
+and type_extension =
+  {
+    tyext_path: Path.t;
+    tyext_txt: Longident.t loc;
+    tyext_params: (core_type * variance) list;
+    tyext_constructors: extension_constructor list;
+    tyext_private: private_flag;
+    tyext_attributes: attribute list;
+  }
+
+and extension_constructor =
+  {
+    ext_id: Ident.t;
+    ext_name: string loc;
+    ext_type: Types.extension_constructor;
+    ext_kind: extension_constructor_kind;
+    ext_loc: Location.t;
+    ext_attributes: attribute list;
+  }
+
+and extension_constructor_kind =
+    Text_decl of constructor_arguments * core_type option
+  | Text_rebind of Path.t * Longident.t loc
+
+and class_type =
+    {
+     cltyp_desc: class_type_desc;
+     cltyp_type: Types.class_type;
+     cltyp_env: Env.t;
+     cltyp_loc: Location.t;
+     cltyp_attributes: attribute list;
+    }
+
+and class_type_desc =
+    Tcty_constr of Path.t * Longident.t loc * core_type list
+  | Tcty_signature of class_signature
+  | Tcty_arrow of arg_label * core_type * class_type
+  | Tcty_open of override_flag * Path.t * Longident.t loc * Env.t * class_type
+
+and class_signature = {
+    csig_self: core_type;
+    csig_fields: class_type_field list;
+    csig_type: Types.class_signature;
+  }
+
+and class_type_field = {
+    ctf_desc: class_type_field_desc;
+    ctf_loc: Location.t;
+    ctf_attributes: attribute list;
+  }
+
+and class_type_field_desc =
+  | Tctf_inherit of class_type
+  | Tctf_val of (string * mutable_flag * virtual_flag * core_type)
+  | Tctf_method of (string * private_flag * virtual_flag * core_type)
+  | Tctf_constraint of (core_type * core_type)
+  | Tctf_attribute of attribute
+
+
+and class_description =
+  class_type class_infos
+
+and class_type_declaration =
+  class_type class_infos
+
+and 'a class_infos =
+  { ci_virt: virtual_flag;
+    ci_params: (core_type * variance) list;
+    ci_id_name: string loc;
+    ci_id_class: Ident.t;
+    ci_id_class_type: Ident.t;
+    ci_id_object: Ident.t;
+    ci_id_typehash: Ident.t;
+    ci_expr: 'a;
+    ci_decl: Types.class_declaration;
+    ci_type_decl: Types.class_type_declaration;
+    ci_loc: Location.t;
+    ci_attributes: attribute list;
+   }
+
+(* Auxiliary functions over the a.s.t. *)
+
+let iter_pattern_desc f = function
+  | Tpat_alias(p, _, _) -> f p
+  | Tpat_tuple patl -> List.iter f patl
+  | Tpat_construct(_, _, patl) -> List.iter f patl
+  | Tpat_variant(_, pat, _) -> may f pat
+  | Tpat_record (lbl_pat_list, _) ->
+      List.iter (fun (_, _, pat) -> f pat) lbl_pat_list
+  | Tpat_array patl -> List.iter f patl
+  | Tpat_or(p1, p2, _) -> f p1; f p2
+  | Tpat_lazy p -> f p
+  | Tpat_any
+  | Tpat_var _
+  | Tpat_constant _ -> ()
+
+let map_pattern_desc f d =
+  match d with
+  | Tpat_alias (p1, id, s) ->
+      Tpat_alias (f p1, id, s)
+  | Tpat_tuple pats ->
+      Tpat_tuple (List.map f pats)
+  | Tpat_record (lpats, closed) ->
+      Tpat_record (List.map (fun (lid, l,p) -> lid, l, f p) lpats, closed)
+  | Tpat_construct (lid, c,pats) ->
+      Tpat_construct (lid, c, List.map f pats)
+  | Tpat_array pats ->
+      Tpat_array (List.map f pats)
+  | Tpat_lazy p1 -> Tpat_lazy (f p1)
+  | Tpat_variant (x1, Some p1, x2) ->
+      Tpat_variant (x1, Some (f p1), x2)
+  | Tpat_or (p1,p2,path) ->
+      Tpat_or (f p1, f p2, path)
+  | Tpat_var _
+  | Tpat_constant _
+  | Tpat_any
+  | Tpat_variant (_,None,_) -> d
+
+(* List the identifiers bound by a pattern or a let *)
+
+let idents = ref([]: (Ident.t * string loc) list)
+
+let rec bound_idents pat =
+  match pat.pat_desc with
+  | Tpat_var (id,s) -> idents := (id,s) :: !idents
+  | Tpat_alias(p, id, s ) ->
+      bound_idents p; idents := (id,s) :: !idents
+  | Tpat_or(p1, _, _) ->
+      (* Invariant : both arguments binds the same variables *)
+      bound_idents p1
+  | d -> iter_pattern_desc bound_idents d
+
+let pat_bound_idents pat =
+  idents := [];
+  bound_idents pat;
+  let res = !idents in
+  idents := [];
+  List.map fst res
+
+let rev_let_bound_idents_with_loc bindings =
+  idents := [];
+  List.iter (fun vb -> bound_idents vb.vb_pat) bindings;
+  let res = !idents in idents := []; res
+
+let let_bound_idents_with_loc pat_expr_list =
+  List.rev(rev_let_bound_idents_with_loc pat_expr_list)
+
+let rev_let_bound_idents pat = List.map fst (rev_let_bound_idents_with_loc pat)
+let let_bound_idents pat = List.map  fst (let_bound_idents_with_loc pat)
+
+let alpha_var env id = List.assoc id env
+
+let rec alpha_pat env p = match p.pat_desc with
+| Tpat_var (id, s) -> (* note the ``Not_found'' case *)
+    {p with pat_desc =
+     try Tpat_var (alpha_var env id, s) with
+     | Not_found -> Tpat_any}
+| Tpat_alias (p1, id, s) ->
+    let new_p =  alpha_pat env p1 in
+    begin try
+      {p with pat_desc = Tpat_alias (new_p, alpha_var env id, s)}
+    with
+    | Not_found -> new_p
+    end
+| d ->
+    {p with pat_desc = map_pattern_desc (alpha_pat env) d}
+
+let mkloc = Location.mkloc
+let mknoloc = Location.mknoloc
+
+end
+module Lambda : sig 
+#1 "lambda.mli"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
+(*                                                                        *)
+(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+(* The "lambda" intermediate code *)
+
+open Asttypes
+
+type compile_time_constant =
+  | Big_endian
+  | Word_size
+  | Int_size
+  | Max_wosize
+  | Ostype_unix
+  | Ostype_win32
+  | Ostype_cygwin
+  | Backend_type
+
+type loc_kind =
+  | Loc_FILE
+  | Loc_LINE
+  | Loc_MODULE
+  | Loc_LOC
+  | Loc_POS
+
+type record_repr = 
+  | Record_regular 
+  | Record_optional
+
+type tag_info = 
+  | Blk_constructor of {name : string ; num_nonconst : int; tag : int}
+  | Blk_record_inlined of { name : string ; num_nonconst :  int ;  tag : int; fields : string array; mutable_flag : mutable_flag}   
+  | Blk_tuple
+  | Blk_poly_var of string 
+  | Blk_record of {fields : string array; mutable_flag : mutable_flag; record_repr : record_repr }
+  | Blk_module of string list
+  | Blk_module_export of Ident.t list 
+  | Blk_extension
+    (* underlying is the same as tuple, immutable block
+      {[
+         exception A of int * int 
+      ]}
+      is translated into
+      {[
+        [A, x, y]
+      ]}
+
+    *)
+
+  | Blk_some
+  | Blk_some_not_nested (* ['a option] where ['a] can not inhabit a non-like value *)
+  | Blk_record_ext of {fields : string array; mutable_flag : mutable_flag}
+  | Blk_lazy_general    
+
+val tag_of_tag_info : tag_info -> int 
+val mutable_flag_of_tag_info : tag_info -> mutable_flag 
+val blk_record : 
+  ( 
+    (Types.label_description* Typedtree.record_label_definition) array ->
+    mutable_flag -> 
+    record_repr -> 
+    tag_info
+  ) ref
+
+val blk_record_ext :
+  ( 
+    (Types.label_description* Typedtree.record_label_definition) array ->
+    mutable_flag -> 
+    tag_info
+  ) ref
+
+val blk_record_inlined :   
+  ( 
+    (Types.label_description* Typedtree.record_label_definition) array ->
+    string ->
+    int ->
+    tag:int ->    
+    mutable_flag ->  
+    tag_info
+  ) ref
+
+
+
+val ref_tag_info : tag_info
+
+type field_dbg_info = 
+  | Fld_record of {name : string; mutable_flag : Asttypes.mutable_flag}
+  | Fld_module of {name : string}     
+  | Fld_record_inline of {name : string}
+  | Fld_record_extension of {name : string}
+  | Fld_tuple
+  | Fld_poly_var_tag
+  | Fld_poly_var_content
+  | Fld_extension
+  | Fld_variant
+  | Fld_cons
+  | Fld_array
+  
+val fld_record :
+  (Types.label_description -> 
+  field_dbg_info) ref
+
+val ref_field_info : field_dbg_info   
+
+
+
+type set_field_dbg_info = 
+  | Fld_record_set of string 
+  | Fld_record_inline_set of string  
+  | Fld_record_extension_set of string
+
+val ref_field_set_info : set_field_dbg_info    
+
+val fld_record_set : 
+  (Types.label_description ->
+  set_field_dbg_info) ref
+
+type immediate_or_pointer =
+  | Immediate
+  | Pointer
+type is_safe =
+  | Safe
+  | Unsafe
+
+type pointer_info = 
+  | Pt_constructor of {name : string; const : int ; non_const :  int} 
+  | Pt_variant of {name : string}
+  | Pt_module_alias 
+  | Pt_shape_none   
+  | Pt_assertfalse
+
+
+
+type primitive =
+  | Pidentity
+  | Pbytes_to_string
+  | Pignore
+  | Prevapply
+  | Pdirapply
+  | Ploc of loc_kind
+    (* Globals *)
+  | Pgetglobal of Ident.t
+  (* Operations on heap blocks *)
+  | Pmakeblock of tag_info 
+  | Pfield of int * field_dbg_info
+  | Psetfield of int * set_field_dbg_info
+
+
+  | Pduprecord
+  (* Force lazy values *)
+  | Plazyforce
+  (* External call *)
+  | Pccall of Primitive.description
+  (* Exceptions *)
+  | Praise of raise_kind
+  (* Boolean operations *)
+  | Psequand | Psequor | Pnot
+  (* Integer operations *)
+  | Pnegint | Paddint | Psubint | Pmulint
+  | Pdivint of is_safe | Pmodint of is_safe
+  | Pandint | Porint | Pxorint
+  | Plslint | Plsrint | Pasrint
+  | Pintcomp of comparison
+  | Poffsetint of int
+  | Poffsetref of int
+  (* Float operations *)
+  | Pintoffloat | Pfloatofint
+  | Pnegfloat | Pabsfloat
+  | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
+  | Pfloatcomp of comparison
+  (* String operations *)
+  | Pstringlength | Pstringrefu  | Pstringrefs
+  | Pbyteslength | Pbytesrefu | Pbytessetu | Pbytesrefs | Pbytessets
+  (* Array operations *)
+  | Pmakearray of  mutable_flag
+  | Parraylength 
+  | Parrayrefu 
+  | Parraysetu 
+  | Parrayrefs 
+  | Parraysets 
+  (* Test if the argument is a block or an immediate integer *)
+  | Pisint
+  (* Test if the (integer) argument is outside an interval *)
+  | Pisout
+  (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)
+  | Pbintofint of boxed_integer
+  | Pintofbint of boxed_integer
+  | Pcvtbint of boxed_integer (*source*) * boxed_integer (*destination*)
+  | Pnegbint of boxed_integer
+  | Paddbint of boxed_integer
+  | Psubbint of boxed_integer
+  | Pmulbint of boxed_integer
+  | Pdivbint of { size : boxed_integer; is_safe : is_safe }
+  | Pmodbint of { size : boxed_integer; is_safe : is_safe }
+  | Pandbint of boxed_integer
+  | Porbint of boxed_integer
+  | Pxorbint of boxed_integer
+  | Plslbint of boxed_integer
+  | Plsrbint of boxed_integer
+  | Pasrbint of boxed_integer
+  | Pbintcomp of boxed_integer * comparison
+  | Pctconst of compile_time_constant
+  (* Inhibition of optimisation *)
+  | Popaque
+  | Puncurried_apply
+  | Pcreate_extension of string
+and comparison =
+    Ceq | Cneq | Clt | Cgt | Cle | Cge
+
+
+and value_kind =
+    Pgenval 
+
+
+and boxed_integer = Primitive.boxed_integer =
+    Pnativeint | Pint32 | Pint64
+
+
+and raise_kind =
+  | Raise_regular
+  | Raise_reraise
+  | Raise_notrace
+
+type structured_constant =
+    Const_base of constant
+  | Const_pointer of int * pointer_info
+  | Const_block of  tag_info * structured_constant list
+  | Const_float_array of string list
+  | Const_immstring of string
+  | Const_false
+  | Const_true
+  
+type inline_attribute =
+  | Always_inline (* [@inline] or [@inline always] *)
+  | Never_inline (* [@inline never] *)
+  | Default_inline (* no [@inline] attribute *)
+
+
+
+
+type let_kind = Strict | Alias | StrictOpt | Variable
+(* Meaning of kinds for let x = e in e':
+    Strict: e may have side-effects; always evaluate e first
+      (If e is a simple expression, e.g. a variable or constant,
+       we may still substitute e'[x/e].)
+    Alias: e is pure, we can substitute e'[x/e] if x has 0 or 1 occurrences
+      in e'
+    StrictOpt: e does not have side-effects, but depend on the store;
+      we can discard e if x does not appear in e'
+    Variable: the variable x is assigned later in e'
+ *)
+
+
+
+
+(* [true] means yes, [false] may mean unknown *)
+type function_attribute = {
+  inline : inline_attribute;
+  is_a_functor: bool;
+  stub: bool;
+  return_unit : bool;
+  async : bool;
+}
+
+type switch_names = {consts: string array; blocks: string array}
+
+type lambda =
+    Lvar of Ident.t
+  | Lconst of structured_constant
+  | Lapply of lambda_apply
+  | Lfunction of lfunction
+  | Llet of let_kind * value_kind * Ident.t * lambda * lambda
+  | Lletrec of (Ident.t * lambda) list * lambda
+  | Lprim of primitive * lambda list * Location.t
+  | Lswitch of lambda * lambda_switch * Location.t
+(* switch on strings, clauses are sorted by string order,
+   strings are pairwise distinct *)
+  | Lstringswitch of
+      lambda * (string * lambda) list * lambda option * Location.t
+  | Lstaticraise of int * lambda list
+  | Lstaticcatch of lambda * (int * Ident.t list) * lambda
+  | Ltrywith of lambda * Ident.t * lambda
+  | Lifthenelse of lambda * lambda * lambda
+  | Lsequence of lambda * lambda
+  | Lwhile of lambda * lambda
+  | Lfor of Ident.t * lambda * lambda * direction_flag * lambda
+  | Lassign of Ident.t * lambda
+  | Lsend of string * lambda *  Location.t
+
+and lfunction =
+  {
+    params: Ident.t list;
+    body: lambda;
+    attr: function_attribute; (* specified with [@inline] attribute *)
+    loc : Location.t; }
+
+and lambda_apply =
+  { ap_func : lambda;
+    ap_args : lambda list;
+    ap_loc : Location.t;
+    ap_inlined : inline_attribute; (* specified with the [@inlined] attribute *)
+    }
+
+and lambda_switch =
+  { sw_numconsts: int;                  (* Number of integer cases *)
+    sw_consts: (int * lambda) list;     (* Integer cases *)
+    sw_numblocks: int;                  (* Number of tag block cases *)
+    sw_blocks: (int * lambda) list;     (* Tag block cases *)
+    sw_failaction : lambda option;      (* Action to take if failure *)
+    sw_names: switch_names option }
+
+
+
+(* Lambda code for the middle-end.
+   * In the closure case the code is a sequence of assignments to a
+     preallocated block of size [main_module_block_size] using
+     (Setfield(Getglobal(module_ident))). The size is used to preallocate
+     the block.
+   * In the flambda case the code is an expression returning a block
+     value of size [main_module_block_size]. The size is used to build
+     the module root as an initialize_symbol
+     Initialize_symbol(module_name, 0,
+       [getfield 0; ...; getfield (main_module_block_size - 1)])
+*)
+
+(* Sharing key *)
+val make_key: lambda -> lambda option
+
+val const_unit: structured_constant
+val lambda_assert_false: lambda
+val lambda_unit: lambda
+val lambda_module_alias : lambda
+val name_lambda: let_kind -> lambda -> (Ident.t -> lambda) -> lambda
+val name_lambda_list: lambda list -> (lambda list -> lambda) -> lambda
+
+val iter: (lambda -> unit) -> lambda -> unit
+module IdentSet: Set.S with type elt = Ident.t
+val free_variables: lambda -> IdentSet.t
+
+val transl_normal_path: Path.t -> lambda   (* Path.t is already normal *)
+
+val transl_module_path: ?loc:Location.t -> Env.t -> Path.t -> lambda
+val transl_value_path: ?loc:Location.t -> Env.t -> Path.t -> lambda
+val transl_extension_path: ?loc:Location.t -> Env.t -> Path.t -> lambda
+
+
+val make_sequence: ('a -> lambda) -> 'a list -> lambda
+
+val subst_lambda: lambda Ident.tbl -> lambda -> lambda
+val map : (lambda -> lambda) -> lambda -> lambda
+val bind : let_kind -> Ident.t -> lambda -> lambda -> lambda
+
+val commute_comparison : comparison -> comparison
+val negate_comparison : comparison -> comparison
+
+val default_function_attribute : function_attribute
+val default_stub_attribute : function_attribute
+
+(***********************)
+(* For static failures *)
+(***********************)
+
+(* Get a new static failure ident *)
+val next_raise_count : unit -> int
+val next_negative_raise_count : unit -> int
+  (* Negative raise counts are used to compile 'match ... with
+     exception x -> ...'.  This disabled some simplifications
+     performed by the Simplif module that assume that static raises
+     are in tail position in their handler. *)
+
+val staticfail : lambda (* Anticipated static failure *)
+
+(* Check anticipated failure, substitute its final value *)
+val is_guarded: lambda -> bool
+val patch_guarded : lambda -> lambda -> lambda
+
+val raise_kind: raise_kind -> string
+val lam_of_loc : loc_kind -> Location.t -> lambda
+
+
+val reset: unit -> unit
+
+end = struct
+#1 "lambda.ml"
+(**************************************************************************)
+(*                                                                        *)
+(*                                 OCaml                                  *)
+(*                                                                        *)
+(*             Xavier Leroy, projet Cristal, INRIA Rocquencourt           *)
+(*                                                                        *)
+(*   Copyright 1996 Institut National de Recherche en Informatique et     *)
+(*     en Automatique.                                                    *)
+(*                                                                        *)
+(*   All rights reserved.  This file is distributed under the terms of    *)
+(*   the GNU Lesser General Public License version 2.1, with the          *)
+(*   special exception on linking described in the file LICENSE.          *)
+(*                                                                        *)
+(**************************************************************************)
+
+
+
+
+
+type compile_time_constant =
+  | Big_endian
+  | Word_size
+  | Int_size
+  | Max_wosize
+  | Ostype_unix
+  | Ostype_win32
+  | Ostype_cygwin
+  | Backend_type
+
+type loc_kind =
+  | Loc_FILE
+  | Loc_LINE
+  | Loc_MODULE
+  | Loc_LOC
+  | Loc_POS
+
+type record_repr = 
+  | Record_regular
+  | Record_optional
+
+type tag_info = 
+  | Blk_constructor of {name : string ; num_nonconst : int ; tag : int }
+  | Blk_record_inlined of { name : string ; num_nonconst :  int;  tag : int; fields : string array; mutable_flag : Asttypes.mutable_flag }   
+  | Blk_tuple
+  | Blk_poly_var of string 
+  | Blk_record of {fields : string array; mutable_flag : Asttypes.mutable_flag; record_repr : record_repr}  
+  | Blk_module of string list
+  | Blk_module_export of Ident.t list
+
+  | Blk_extension  
+  | Blk_some
+  | Blk_some_not_nested (* ['a option] where ['a] can not inhabit a non-like value *)
+  | Blk_record_ext of { fields :  string array; mutable_flag : Asttypes.mutable_flag}
+  | Blk_lazy_general
+
+let tag_of_tag_info (tag : tag_info ) = 
+  match tag with 
+  | Blk_constructor {tag}
+  | Blk_record_inlined {tag} -> tag 
+  | Blk_tuple 
+  | Blk_poly_var _ 
+  | Blk_record _ 
+  | Blk_module _ 
+  | Blk_module_export _ 
+  | Blk_extension 
+  | Blk_some (* tag not make sense *)
+  | Blk_some_not_nested (* tag not make sense *)
+  | Blk_lazy_general (* tag not make sense 248 *)
+  | Blk_record_ext _  (* similar to Blk_extension*)
+   -> 0
+
+let mutable_flag_of_tag_info (tag : tag_info) =
+  match tag with 
+  | Blk_record_inlined {mutable_flag}
+  | Blk_record {mutable_flag}
+  | Blk_record_ext {mutable_flag} -> mutable_flag
+  | Blk_lazy_general -> Mutable
+  | Blk_tuple
+  | Blk_constructor _ 
+  | Blk_poly_var _ 
+  | Blk_module _
+  | Blk_module_export _ 
+  | Blk_extension
+  | Blk_some_not_nested
+  | Blk_some 
+   -> Immutable
+
+
+let blk_record = ref (fun _ _ _ -> 
+  assert false
+  )
+
+
+let blk_record_ext =  ref (fun fields mutable_flag -> 
+    let all_labels_info = fields |> Array.map (fun (x,_) -> x.Types.lbl_name) in    
+    Blk_record_ext {fields = all_labels_info; mutable_flag }
+  )
+
+let blk_record_inlined = ref (fun fields name num_nonconst ~tag mutable_flag -> 
+  let fields = fields |> Array.map (fun (x,_) -> x.Types.lbl_name) in    
+  Blk_record_inlined {fields; name; num_nonconst; tag; mutable_flag}
+) 
+
+let ref_tag_info : tag_info = 
+  Blk_record {fields = [| "contents" |]; mutable_flag = Mutable; record_repr = Record_regular}
+  
+type field_dbg_info = 
+  | Fld_record of {name : string; mutable_flag : Asttypes.mutable_flag}
+  | Fld_module of {name : string }
+  | Fld_record_inline of { name : string}   
+  | Fld_record_extension of {name : string}
+  | Fld_tuple  
+  | Fld_poly_var_tag
+  | Fld_poly_var_content
+  | Fld_extension
+  | Fld_variant
+  | Fld_cons 
+  | Fld_array
+  
+let fld_record = ref (fun (lbl : Types.label_description) ->
+  Fld_record {name = lbl.lbl_name; mutable_flag = Mutable})
+
+let ref_field_info : field_dbg_info = 
+  Fld_record { name = "contents"; mutable_flag = Mutable}
+
+
+type set_field_dbg_info = 
+    | Fld_record_set of string 
+    | Fld_record_inline_set of string
+    | Fld_record_extension_set of string
+
+let ref_field_set_info : set_field_dbg_info = Fld_record_set "contents"    
+let fld_record_set = ref ( fun (lbl : Types.label_description) ->
+  Fld_record_set lbl.lbl_name  )
+
+type immediate_or_pointer =
+  | Immediate
+  | Pointer
+
+
+
+type is_safe =
+  | Safe
+  | Unsafe
+
+type primitive =
+  | Pidentity
+  | Pbytes_to_string
+  | Pignore
+  | Prevapply
+  | Pdirapply
+  | Ploc of loc_kind
+    (* Globals *)
+  | Pgetglobal of Ident.t
+  (* Operations on heap blocks *)
+  | Pmakeblock of  tag_info 
+  | Pfield of int * field_dbg_info
+  | Psetfield of int *  set_field_dbg_info
+
+  
+
+  | Pduprecord
+  (* Force lazy values *)
+  | Plazyforce
+  (* External call *)
+  | Pccall of Primitive.description
+  (* Exceptions *)
+  | Praise of raise_kind
+  (* Boolean operations *)
+  | Psequand | Psequor | Pnot
+  (* Integer operations *)
+  | Pnegint | Paddint | Psubint | Pmulint
+  | Pdivint of is_safe | Pmodint of is_safe
+  | Pandint | Porint | Pxorint
+  | Plslint | Plsrint | Pasrint
+  | Pintcomp of comparison
+  | Poffsetint of int
+  | Poffsetref of int
+  (* Float operations *)
+  | Pintoffloat | Pfloatofint
+  | Pnegfloat | Pabsfloat
+  | Paddfloat | Psubfloat | Pmulfloat | Pdivfloat
+  | Pfloatcomp of comparison
+  (* String operations *)
+  | Pstringlength | Pstringrefu  | Pstringrefs
+  | Pbyteslength | Pbytesrefu | Pbytessetu | Pbytesrefs | Pbytessets
+  (* Array operations *)
+  | Pmakearray of  Asttypes.mutable_flag
+  | Parraylength 
+  | Parrayrefu 
+  | Parraysetu 
+  | Parrayrefs 
+  | Parraysets 
+  (* Test if the argument is a block or an immediate integer *)
+  | Pisint
+  (* Test if the (integer) argument is outside an interval *)
+  | Pisout
+  | Pbintofint of boxed_integer
+  | Pintofbint of boxed_integer
+  | Pcvtbint of boxed_integer (*source*) * boxed_integer (*destination*)
+  | Pnegbint of boxed_integer
+  | Paddbint of boxed_integer
+  | Psubbint of boxed_integer
+  | Pmulbint of boxed_integer
+  | Pdivbint of { size : boxed_integer; is_safe : is_safe }
+  | Pmodbint of { size : boxed_integer; is_safe : is_safe }
+  | Pandbint of boxed_integer
+  | Porbint of boxed_integer
+  | Pxorbint of boxed_integer
+  | Plslbint of boxed_integer
+  | Plsrbint of boxed_integer
+  | Pasrbint of boxed_integer
+  | Pbintcomp of boxed_integer * comparison
+  | Pctconst of compile_time_constant
+  (* Inhibition of optimisation *)
+  | Popaque
+  | Puncurried_apply
+  | Pcreate_extension of string
+and comparison =
+    Ceq | Cneq | Clt | Cgt | Cle | Cge
+
+and value_kind =
+    Pgenval 
+
+
+
+and boxed_integer = Primitive.boxed_integer =
+    Pnativeint | Pint32 | Pint64
+
+
+and raise_kind =
+  | Raise_regular
+  | Raise_reraise
+  | Raise_notrace
+
+type pointer_info = 
+  | Pt_constructor of {name : string; const : int ; non_const : int }
+  | Pt_variant of {name : string}
+  | Pt_module_alias 
+
+  | Pt_shape_none   
+  | Pt_assertfalse
+
+
+  
+type structured_constant =
+    Const_base of Asttypes.constant
+  | Const_pointer of int * pointer_info
+  | Const_block of tag_info * structured_constant list
+  | Const_float_array of string list
+  | Const_immstring of string
+  | Const_false
+  | Const_true
+type inline_attribute =
+  | Always_inline (* [@inline] or [@inline always] *)
+  | Never_inline (* [@inline never] *)
+  | Default_inline (* no [@inline] attribute *)
+
+
+
+
+type let_kind = Strict | Alias | StrictOpt | Variable
+
+
+
+
+type function_attribute = {
+  inline : inline_attribute;
+  is_a_functor: bool;
+  stub: bool;
+  return_unit : bool;
+  async : bool;
+}
+type switch_names = {consts: string array; blocks: string array}
+
+type lambda =
+    Lvar of Ident.t
+  | Lconst of structured_constant
+  | Lapply of lambda_apply
+  | Lfunction of lfunction
+  | Llet of let_kind * value_kind * Ident.t * lambda * lambda
+  | Lletrec of (Ident.t * lambda) list * lambda
+  | Lprim of primitive * lambda list * Location.t
+  | Lswitch of lambda * lambda_switch * Location.t
+  | Lstringswitch of
+      lambda * (string * lambda) list * lambda option * Location.t
+  | Lstaticraise of int * lambda list
+  | Lstaticcatch of lambda * (int * Ident.t list) * lambda
+  | Ltrywith of lambda * Ident.t * lambda
+  | Lifthenelse of lambda * lambda * lambda
+  | Lsequence of lambda * lambda
+  | Lwhile of lambda * lambda
+  | Lfor of Ident.t * lambda * lambda * Asttypes.direction_flag * lambda
+  | Lassign of Ident.t * lambda
+  | Lsend of string * lambda * Location.t
+
+and lfunction =
+  { 
+    params: Ident.t list;
+    body: lambda;
+    attr: function_attribute; (* specified with [@inline] attribute *)
+    loc: Location.t; }
+
+and lambda_apply =
+  { ap_func : lambda;
+    ap_args : lambda list;
+    ap_loc : Location.t;
+    ap_inlined : inline_attribute;
+    }
+
+and lambda_switch =
+  { sw_numconsts: int;
+    sw_consts: (int * lambda) list;
+    sw_numblocks: int;
+    sw_blocks: (int * lambda) list;
+    sw_failaction : lambda option;
+    sw_names: switch_names option }
+
+
+
+
+(* This is actually a dummy value 
+    not necessary "()", it can be used as a place holder for module 
+    alias etc.
+*)
+let const_unit = Const_pointer(0, Pt_constructor{name = "()"; const = 1; non_const = 0})
+
+let lambda_assert_false = Lconst (Const_pointer(0, Pt_assertfalse))  
+
+let lambda_module_alias = Lconst (Const_pointer(0, Pt_module_alias)) 
+
+let lambda_unit = Lconst const_unit
+
+let default_function_attribute = {
+  inline = Default_inline;
+  is_a_functor = false;
+  stub = false;
+  return_unit = false;
+  async = false;
+}
+
+let default_stub_attribute =
+  { default_function_attribute with stub = true }
+
+(* Build sharing keys *)
+(*
+   Those keys are later compared with Pervasives.compare.
+   For that reason, they should not include cycles.
+*)
+
+exception Not_simple
+
+let max_raw = 32
+
+let make_key e =
+  let count = ref 0   (* Used for controling size *)
+  and make_key = Ident.make_key_generator () in
+  (* make_key is used for normalizing let-bound variables *)
+  let rec tr_rec env e =
+    incr count ;
+    if !count > max_raw then raise_notrace Not_simple ; (* Too big ! *)
+    match e with
+    | Lvar id ->
+      begin
+        try Ident.find_same id env
+        with Not_found -> e
+      end
+    | Lconst  (Const_base (Const_string _)) ->
+        (* Mutable constants are not shared *)
+        raise_notrace Not_simple
+    | Lconst _ -> e
+    | Lapply ap ->
+        Lapply {ap with ap_func = tr_rec env ap.ap_func;
+                        ap_args = tr_recs env ap.ap_args;
+                        ap_loc = Location.none}
+    | Llet (Alias,_k,x,ex,e) -> (* Ignore aliases -> substitute *)
+        let ex = tr_rec env ex in
+        tr_rec (Ident.add x ex env) e
+    | Llet ((Strict | StrictOpt),_k,x,ex,Lvar v) when Ident.same v x ->
+        tr_rec env ex
+    | Llet (str,k,x,ex,e) ->
+     (* Because of side effects, keep other lets with normalized names *)
+        let ex = tr_rec env ex in
+        let y = make_key x in
+        Llet (str,k,y,ex,tr_rec (Ident.add x (Lvar y) env) e)
+    | Lprim (p,es,_) ->
+        Lprim (p,tr_recs env es, Location.none)
+    | Lswitch (e,sw,loc) ->
+        Lswitch (tr_rec env e,tr_sw env sw,loc)
+    | Lstringswitch (e,sw,d,_) ->
+        Lstringswitch
+          (tr_rec env e,
+           List.map (fun (s,e) -> s,tr_rec env e) sw,
+           tr_opt env d,
+          Location.none)
+    | Lstaticraise (i,es) ->
+        Lstaticraise (i,tr_recs env es)
+    | Lstaticcatch (e1,xs,e2) ->
+        Lstaticcatch (tr_rec env e1,xs,tr_rec env e2)
+    | Ltrywith (e1,x,e2) ->
+        Ltrywith (tr_rec env e1,x,tr_rec env e2)
+    | Lifthenelse (cond,ifso,ifnot) ->
+        Lifthenelse (tr_rec env cond,tr_rec env ifso,tr_rec env ifnot)
+    | Lsequence (e1,e2) ->
+        Lsequence (tr_rec env e1,tr_rec env e2)
+    | Lassign (x,e) ->
+        Lassign (x,tr_rec env e)
+    | Lsend (m,e1,_loc) ->
+        Lsend (m,tr_rec env e1,Location.none)
+    | Lletrec _|Lfunction _
+    | Lfor _ | Lwhile _
+     ->
+        raise_notrace Not_simple
+
+  and tr_recs env es = List.map (tr_rec env) es
+
+  and tr_sw env sw =
+    { sw with
+      sw_consts = List.map (fun (i,e) -> i,tr_rec env e) sw.sw_consts ;
+      sw_blocks = List.map (fun (i,e) -> i,tr_rec env e) sw.sw_blocks ;
+      sw_failaction = tr_opt env sw.sw_failaction ; }
+
+  and tr_opt env = function
+    | None -> None
+    | Some e -> Some (tr_rec env e) in
+
+  try
+    Some (tr_rec Ident.empty e)
+  with Not_simple -> None
+
+(***************)
+
+let name_lambda strict arg fn =
+  match arg with
+    Lvar id -> fn id
+  | _ -> let id = Ident.create "let" in Llet(strict, Pgenval, id, arg, fn id)
+
+let name_lambda_list args fn =
+  let rec name_list names = function
+    [] -> fn (List.rev names)
+  | (Lvar _ as arg) :: rem ->
+      name_list (arg :: names) rem
+  | arg :: rem ->
+      let id = Ident.create "let" in
+      Llet(Strict, Pgenval, id, arg, name_list (Lvar id :: names) rem) in
+  name_list [] args
+
+
+let iter_opt f = function
+  | None -> ()
+  | Some e -> f e
+
+let iter f = function
+    Lvar _
+  | Lconst _ -> ()
+  | Lapply{ap_func = fn; ap_args = args} ->
+      f fn; List.iter f args
+  | Lfunction{body} ->
+      f body
+  | Llet(_str, _k, _id, arg, body) ->
+      f arg; f body
+  | Lletrec(decl, body) ->
+      f body;
+      List.iter (fun (_id, exp) -> f exp) decl
+  | Lprim(_p, args, _loc) ->
+      List.iter f args
+  | Lswitch(arg, sw,_) ->
+      f arg;
+      List.iter (fun (_key, case) -> f case) sw.sw_consts;
+      List.iter (fun (_key, case) -> f case) sw.sw_blocks;
+      iter_opt f sw.sw_failaction
+  | Lstringswitch (arg,cases,default,_) ->
+      f arg ;
+      List.iter (fun (_,act) -> f act) cases ;
+      iter_opt f default
+  | Lstaticraise (_,args) ->
+      List.iter f args
+  | Lstaticcatch(e1, _, e2) ->
+      f e1; f e2
+  | Ltrywith(e1, _, e2) ->
+      f e1; f e2
+  | Lifthenelse(e1, e2, e3) ->
+      f e1; f e2; f e3
+  | Lsequence(e1, e2) ->
+      f e1; f e2
+  | Lwhile(e1, e2) ->
+      f e1; f e2
+  | Lfor(_v, e1, e2, _dir, e3) ->
+      f e1; f e2; f e3
+  | Lassign(_, e) ->
+      f e
+  | Lsend (_k,  obj,  _) ->
+      f obj
+
+module IdentSet = Set.Make(Ident)
+
+let free_ids get l =
+  let fv = ref IdentSet.empty in
+  let rec free l =
+    iter free l;
+    fv := List.fold_right IdentSet.add (get l) !fv;
+    match l with
+      Lfunction{params} ->
+        List.iter (fun param -> fv := IdentSet.remove param !fv) params
+    | Llet(_str, _k, id, _arg, _body) ->
+        fv := IdentSet.remove id !fv
+    | Lletrec(decl, _body) ->
+        List.iter (fun (id, _exp) -> fv := IdentSet.remove id !fv) decl
+    | Lstaticcatch(_e1, (_,vars), _e2) ->
+        List.iter (fun id -> fv := IdentSet.remove id !fv) vars
+    | Ltrywith(_e1, exn, _e2) ->
+        fv := IdentSet.remove exn !fv
+    | Lfor(v, _e1, _e2, _dir, _e3) ->
+        fv := IdentSet.remove v !fv
+    | Lassign(id, _e) ->
+        fv := IdentSet.add id !fv
+    | Lvar _ | Lconst _ | Lapply _
+    | Lprim _ | Lswitch _ | Lstringswitch _ | Lstaticraise _
+    | Lifthenelse _ | Lsequence _ | Lwhile _
+    | Lsend _
+     -> ()
+  in free l; !fv
+
+let free_variables l =
+  free_ids (function Lvar id -> [id] | _ -> []) l
+
+
+(* Check if an action has a "when" guard *)
+let raise_count = ref 0
+
+let next_raise_count () =
+  incr raise_count ;
+  !raise_count
+
+let negative_raise_count = ref 0
+
+let next_negative_raise_count () =
+  decr negative_raise_count ;
+  !negative_raise_count
+
+(* Anticipated staticraise, for guards *)
+let staticfail = Lstaticraise (0,[])
+
+let rec is_guarded = function
+  | Lifthenelse(_cond, _body, Lstaticraise (0,[])) -> true
+  | Llet(_str, _k, _id, _lam, body) -> is_guarded body
+  | _ -> false
+
+let rec patch_guarded patch = function
+  | Lifthenelse (cond, body, Lstaticraise (0,[])) ->
+      Lifthenelse (cond, body, patch)
+  | Llet(str, k, id, lam, body) ->
+      Llet (str, k, id, lam, patch_guarded patch body)
+  | _ -> assert false
+
+(* Translate an access path *)
+
+let rec transl_normal_path = function
+    Path.Pident id ->
+      if Ident.global id
+      then Lprim(Pgetglobal id, [], Location.none)
+      else Lvar id
+  | Pdot(p, s, pos) ->
+      Lprim(Pfield (pos, Fld_module {name = s}), [transl_normal_path p], Location.none)
+  | Papply _ ->
+      assert false
+
+(* Translation of identifiers *)
+
+let transl_module_path ?(loc=Location.none) env path =
+  transl_normal_path (Env.normalize_path (Some loc) env path)
+
+let transl_value_path ?(loc=Location.none) env path =
+  transl_normal_path (Env.normalize_path_prefix (Some loc) env path)
+
+
+let transl_extension_path = transl_value_path
+
+(* compatibility alias, deprecated in the .mli *)
+(* Compile a sequence of expressions *)
+
+let rec make_sequence fn = function
+    [] -> lambda_unit
+  | [x] -> fn x
+  | x::rem ->
+      let lam = fn x in Lsequence(lam, make_sequence fn rem)
+
+(* Apply a substitution to a lambda-term.
+   Assumes that the bound variables of the lambda-term do not
+   belong to the domain of the substitution.
+   Assumes that the image of the substitution is out of reach
+   of the bound variables of the lambda-term (no capture). *)
+
+let subst_lambda s lam =
+  let rec subst = function
+    Lvar id as l ->
+      begin try Ident.find_same id s with Not_found -> l end
+  | Lconst _ as l -> l
+  | Lapply ap ->
+      Lapply{ap with ap_func = subst ap.ap_func;
+                     ap_args = List.map subst ap.ap_args}
+  | Lfunction{ params; body; attr; loc} ->
+      Lfunction{ params; body = subst body; attr; loc}
+  | Llet(str, k, id, arg, body) -> Llet(str, k, id, subst arg, subst body)
+  | Lletrec(decl, body) -> Lletrec(List.map subst_decl decl, subst body)
+  | Lprim(p, args, loc) -> Lprim(p, List.map subst args, loc)
+  | Lswitch(arg, sw, loc) ->
+      Lswitch(subst arg,
+              {sw with sw_consts = List.map subst_case sw.sw_consts;
+                       sw_blocks = List.map subst_case sw.sw_blocks;
+                       sw_failaction = subst_opt  sw.sw_failaction; },
+              loc)
+  | Lstringswitch (arg,cases,default,loc) ->
+      Lstringswitch
+        (subst arg,List.map subst_strcase cases,subst_opt default,loc)
+  | Lstaticraise (i,args) ->  Lstaticraise (i, List.map subst args)
+  | Lstaticcatch(e1, io, e2) -> Lstaticcatch(subst e1, io, subst e2)
+  | Ltrywith(e1, exn, e2) -> Ltrywith(subst e1, exn, subst e2)
+  | Lifthenelse(e1, e2, e3) -> Lifthenelse(subst e1, subst e2, subst e3)
+  | Lsequence(e1, e2) -> Lsequence(subst e1, subst e2)
+  | Lwhile(e1, e2) -> Lwhile(subst e1, subst e2)
+  | Lfor(v, e1, e2, dir, e3) -> Lfor(v, subst e1, subst e2, dir, subst e3)
+  | Lassign(id, e) -> Lassign(id, subst e)
+  | Lsend (k,  obj,  loc) ->
+      Lsend (k,subst obj, loc)
+  and subst_decl (id, exp) = (id, subst exp)
+  and subst_case (key, case) = (key, subst case)
+  and subst_strcase (key, case) = (key, subst case)
+  and subst_opt = function
+    | None -> None
+    | Some e -> Some (subst e)
+  in subst lam
+
+let rec map f lam =
+  let lam =
+    match lam with
+    | Lvar _ -> lam
+    | Lconst _ -> lam
+    | Lapply { ap_func; ap_args; ap_loc; 
+          ap_inlined;  } ->
+        Lapply {
+          ap_func = map f ap_func;
+          ap_args = List.map (map f) ap_args;
+          ap_loc;
+          ap_inlined;
+        }
+    | Lfunction {  params; body; attr; loc; } ->
+        Lfunction {  params; body = map f body; attr; loc; }
+    | Llet (str, k, v, e1, e2) ->
+        Llet (str, k, v, map f e1, map f e2)
+    | Lletrec (idel, e2) ->
+        Lletrec (List.map (fun (v, e) -> (v, map f e)) idel, map f e2)
+    | Lprim (p, el, loc) ->
+        Lprim (p, List.map (map f) el, loc)
+    | Lswitch (e, sw, loc) ->
+        Lswitch (map f e,
+          { sw_numconsts = sw.sw_numconsts;
+            sw_consts = List.map (fun (n, e) -> (n, map f e)) sw.sw_consts;
+            sw_numblocks = sw.sw_numblocks;
+            sw_blocks = List.map (fun (n, e) -> (n, map f e)) sw.sw_blocks;
+            sw_failaction = Misc.may_map (map f) sw.sw_failaction;
+            sw_names = sw.sw_names
+          },
+          loc)
+    | Lstringswitch (e, sw, default, loc) ->
+        Lstringswitch (
+          map f e,
+          List.map (fun (s, e) -> (s, map f e)) sw,
+          Misc.may_map (map f) default,
+          loc)
+    | Lstaticraise (i, args) ->
+        Lstaticraise (i, List.map (map f) args)
+    | Lstaticcatch (body, id, handler) ->
+        Lstaticcatch (map f body, id, map f handler)
+    | Ltrywith (e1, v, e2) ->
+        Ltrywith (map f e1, v, map f e2)
+    | Lifthenelse (e1, e2, e3) ->
+        Lifthenelse (map f e1, map f e2, map f e3)
+    | Lsequence (e1, e2) ->
+        Lsequence (map f e1, map f e2)
+    | Lwhile (e1, e2) ->
+        Lwhile (map f e1, map f e2)
+    | Lfor (v, e1, e2, dir, e3) ->
+        Lfor (v, map f e1, map f e2, dir, map f e3)
+    | Lassign (v, e) ->
+        Lassign (v, map f e)
+    | Lsend (k, o, loc) ->
+        Lsend (k, map f o,  loc)
+  in
+  f lam
+
+(* To let-bind expressions to variables *)
+
+let bind str var exp body =
+  match exp with
+    Lvar var' when Ident.same var var' -> body
+  | _ -> Llet(str, Pgenval, var, exp, body)
+
+and commute_comparison = function
+| Ceq -> Ceq| Cneq -> Cneq
+| Clt -> Cgt | Cle -> Cge
+| Cgt -> Clt | Cge -> Cle
+
+and negate_comparison = function
+| Ceq -> Cneq| Cneq -> Ceq
+| Clt -> Cge | Cle -> Cgt
+| Cgt -> Cle | Cge -> Clt
+
+let raise_kind = function
+  | Raise_regular -> "raise"
+  | Raise_reraise -> "reraise"
+  | Raise_notrace -> "raise_notrace"
+
+let lam_of_loc kind loc =
+  let loc_start = loc.Location.loc_start in
+  let (file, lnum, cnum) = Location.get_pos_info loc_start in
+  let file = Filename.basename file in  
+  let enum = loc.Location.loc_end.Lexing.pos_cnum -
+      loc_start.Lexing.pos_cnum + cnum in
+  match kind with
+  | Loc_POS ->
+    Lconst (Const_block (Blk_tuple, [
+          Const_immstring file;
+          Const_base (Const_int lnum);
+          Const_base (Const_int cnum);
+          Const_base (Const_int enum);
+        ]))
+  | Loc_FILE -> Lconst (Const_immstring file)
+  | Loc_MODULE ->
+    let filename = Filename.basename file in
+    let name = Env.get_unit_name () in
+    let module_name = if name = "" then "//"^filename^"//" else name in
+    Lconst (Const_immstring module_name)
+  | Loc_LOC ->
+    let loc = Printf.sprintf "File %S, line %d, characters %d-%d"
+        file lnum cnum enum in
+    Lconst (Const_immstring loc)
+  | Loc_LINE -> Lconst (Const_base (Const_int lnum))
+
+
+let reset () =
+  raise_count := 0
+
+end
+module Lam_compat : sig 
+#1 "lam_compat.mli"
+(* Copyright (C) 2018 - Hongbo Zhang, Authors of ReScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type boxed_integer = Lambda.boxed_integer = Pnativeint | Pint32 | Pint64
+
+type comparison = Lambda.comparison = Ceq | Cneq | Clt | Cgt | Cle | Cge
+
+type compile_time_constant =
+  | Big_endian
+  | Ostype_unix
+  | Ostype_win32
+  | Ostype
+  | Backend_type
+
+type let_kind = Lambda.let_kind = Strict | Alias | StrictOpt | Variable
+
+type field_dbg_info = Lambda.field_dbg_info =
+  | Fld_record of { name : string; mutable_flag : Asttypes.mutable_flag }
+  | Fld_module of { name : string }
+  | Fld_record_inline of { name : string }
+  | Fld_record_extension of { name : string }
+  | Fld_tuple
+  | Fld_poly_var_tag
+  | Fld_poly_var_content
+  | Fld_extension
+  | Fld_variant
+  | Fld_cons
+  | Fld_array
+
+val str_of_field_info : field_dbg_info -> string option
+
+type set_field_dbg_info = Lambda.set_field_dbg_info =
+  | Fld_record_set of string
+  | Fld_record_inline_set of string
+  | Fld_record_extension_set of string
+
+val cmp_int32 : comparison -> int32 -> int32 -> bool
+
+val cmp_int64 : comparison -> int64 -> int64 -> bool
+
+val cmp_nativeint : comparison -> nativeint -> nativeint -> bool
+
+val cmp_float : comparison -> float -> float -> bool
+
+val cmp_int : comparison -> int -> int -> bool
+
+val eq_comparison : comparison -> comparison -> bool
+
+val eq_boxed_integer : boxed_integer -> boxed_integer -> bool
+
+val eq_compile_time_constant :
+  compile_time_constant -> compile_time_constant -> bool
+
+end = struct
+#1 "lam_compat.ml"
+(* Copyright (C) 2018 Hongbo Zhang, Authors of ReScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type boxed_integer = Lambda.boxed_integer = Pnativeint | Pint32 | Pint64
+
+let eq_boxed_integer (p : boxed_integer) (p1 : boxed_integer) =
+  match p with
+  | Pnativeint -> p1 = Pnativeint
+  | Pint32 -> p1 = Pint32
+  | Pint64 -> p1 = Pint64
+
+type comparison = Lambda.comparison = Ceq | Cneq | Clt | Cgt | Cle | Cge
+
+let eq_comparison (p : comparison) (p1 : comparison) =
+  match p with
+  | Cge -> p1 = Cge
+  | Cgt -> p1 = Cgt
+  | Cle -> p1 = Cle
+  | Clt -> p1 = Clt
+  | Ceq -> p1 = Ceq
+  | Cneq -> p1 = Cneq
+
+let cmp_int32 (cmp : comparison) (a : int32) b : bool =
+  match cmp with
+  | Ceq -> a = b
+  | Cneq -> a <> b
+  | Cgt -> a > b
+  | Cle -> a <= b
+  | Clt -> a < b
+  | Cge -> a >= b
+
+let cmp_int64 (cmp : comparison) (a : int64) b : bool =
+  match cmp with
+  | Ceq -> a = b
+  | Cneq -> a <> b
+  | Cgt -> a > b
+  | Cle -> a <= b
+  | Clt -> a < b
+  | Cge -> a >= b
+
+let cmp_nativeint (cmp : comparison) (a : nativeint) b : bool =
+  match cmp with
+  | Ceq -> a = b
+  | Cneq -> a <> b
+  | Cgt -> a > b
+  | Cle -> a <= b
+  | Clt -> a < b
+  | Cge -> a >= b
+
+let cmp_float (cmp : comparison) (a : float) b : bool =
+  match cmp with
+  | Ceq -> a = b
+  | Cneq -> a <> b
+  | Cgt -> a > b
+  | Cle -> a <= b
+  | Clt -> a < b
+  | Cge -> a >= b
+
+let cmp_int (cmp : comparison) (a : int) b : bool =
+  match cmp with
+  | Ceq -> a = b
+  | Cneq -> a <> b
+  | Cgt -> a > b
+  | Cle -> a <= b
+  | Clt -> a < b
+  | Cge -> a >= b
+
+type compile_time_constant =
+  | Big_endian
+  | Ostype_unix
+  | Ostype_win32
+  | Ostype
+  | Backend_type
+
+(** relies on the fact that [compile_time_constant] is enum type *)
+let eq_compile_time_constant (p : compile_time_constant)
+    (p1 : compile_time_constant) =
+  p = p1
+
+type let_kind = Lambda.let_kind = Strict | Alias | StrictOpt | Variable
+
+type field_dbg_info = Lambda.field_dbg_info =
+  | Fld_record of { name : string; mutable_flag : Asttypes.mutable_flag }
+  | Fld_module of { name : string }
+  | Fld_record_inline of { name : string }
+  | Fld_record_extension of { name : string }
+  | Fld_tuple
+  | Fld_poly_var_tag
+  | Fld_poly_var_content
+  | Fld_extension
+  | Fld_variant
+  | Fld_cons
+  | Fld_array
+
+let str_of_field_info (x : field_dbg_info) : string option =
+  match x with
+  | Fld_array | Fld_extension | Fld_variant | Fld_cons | Fld_poly_var_tag
+  | Fld_poly_var_content | Fld_tuple ->
+      None
+  | Fld_record { name; _ }
+  | Fld_module { name; _ }
+  | Fld_record_inline { name }
+  | Fld_record_extension { name } ->
+      Some name
+
+type set_field_dbg_info = Lambda.set_field_dbg_info =
+  | Fld_record_set of string
+  | Fld_record_inline_set of string
+  | Fld_record_extension_set of string
+
+end
+module Lam_tag_info
+= struct
+#1 "lam_tag_info.ml"
+(* Copyright (C) 2018-Present Hongbo Zhang, Authors of ReScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(* Similiar to {!Lambda.tag_info}
+   In particular,
+   it reduces some branches e.g,
+   [Blk_some], [Blk_some_not_nested]
+*)
+type t = Lambda.tag_info
+
+end
+module Js_op
+= struct
+#1 "js_op.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(** Define some basic types used in JS IR *)
+
+type binop =
+  | Eq (* acutally assignment ..
+          TODO: move it into statement, so that all expressions
+          are side efffect free (except function calls)
+       *)
+  | Or
+  | And
+  | EqEqEq
+  | NotEqEq (* | InstanceOf *)
+  | Lt
+  | Le
+  | Gt
+  | Ge
+  | Bor
+  | Bxor
+  | Band
+  | Lsl
+  | Lsr
+  | Asr
+  | Plus
+  | Minus
+  | Mul
+  | Div
+  | Mod
+
+(**
+   note that we don't need raise [Div_by_zero] in ReScript
+
+   {[
+     let add x y = x + y  (* | 0 *)
+     let minus x y = x - y (* | 0 *)
+     let mul x y = x * y   (* caml_mul | Math.imul *)
+     let div x y = x / y (* caml_div (x/y|0)*)
+     let imod x y = x mod y  (* caml_mod (x%y) (zero_divide)*)
+
+     let bor x y = x lor y   (* x  | y *)
+     let bxor x y = x lxor y (* x ^ y *)
+     let band x y = x land y (* x & y *)
+     let ilnot  y  = lnot y (* let lnot x = x lxor (-1) *)
+     let ilsl x y = x lsl y (* x << y*)
+     let ilsr x y = x lsr y  (* x >>> y | 0 *)
+     let iasr  x y = x asr y (* x >> y *)
+   ]}
+
+
+   Note that js treat unsigned shift 0 bits in a special way
+   Unsigned shifts convert their left-hand side to Uint32, 
+   signed shifts convert it to Int32.
+   Shifting by 0 digits returns the converted value.
+   {[
+     function ToUint32(x) {
+         return x >>> 0;
+       }
+         function ToInt32(x) {
+             return x >> 0;
+           }
+   ]}
+   So in Js, [-1 >>>0] will be the largest Uint32, while [-1>>0] will remain [-1]
+   and [-1 >>> 0 >> 0 ] will be [-1]
+*)
+type int_op =
+  | Bor
+  | Bxor
+  | Band
+  | Lsl
+  | Lsr
+  | Asr
+  | Plus
+  (* for [+], given two numbers
+     x + y | 0
+  *)
+  | Minus
+  (* x - y | 0 *)
+  | Mul
+  (* *)
+  | Div
+  (* x / y | 0 *)
+  | Mod
+(* x  % y *)
+
+(* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Expressions_and_Operators#Bitwise_operators
+   {[
+     ~
+   ]}
+    ~0xff -> -256
+    design; make sure each operation type is consistent
+*)
+type level = Log | Info | Warn | Error
+
+type kind = Ml | Runtime | External of { name : string; default : bool }
+
+type property = Lam_compat.let_kind = Strict | Alias | StrictOpt | Variable
+
+type property_name = Lit of string | Symbol_name
+
+type 'a access = Getter | Setter
+
+(* literal char *)
+type float_lit = { f : string } [@@unboxed]
+
+type number =
+  | Float of float_lit
+  | Int of { i : int32; c : char option }
+  | Uint of int32
+
+(* becareful when constant folding +/-,
+   since we treat it as js nativeint, bitwise operators:
+   https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators
+   The operands of all bitwise operators are converted to signed 32-bit integers in two's complement format.'
+*)
+
+type mutable_flag = Mutable | Immutable | NA
+
+type direction_flag = Upto | Downto | Up
+
+(*
+    {[
+      let rec x = 1 :: y
+      and y = 1 :: x
+    ]}
+*)
+type recursive_info = SingleRecursive | NonRecursie | NA
+
+type used_stats =
+  | Dead_pure
+  (* only [Dead] should be taken serious,
+      other status can be converted during
+      inlining
+      -- all exported symbols can not be dead
+      -- once a symbole is called Dead_pure,
+      it can not be alive anymore, we should avoid iterating it
+  *)
+  | Dead_non_pure
+  (* we still need iterating it,
+     just its bindings does not make sense any more *)
+  | Exported (* Once it's exported, shall we change its status anymore? *)
+  (* In general, we should count in one pass, and eliminate code in another
+     pass, you can not do it in a single pass, however, some simple
+     dead code can be detected in a single pass
+  *)
+  | Once_pure (* used only once so that, if we do the inlining, it will be [Dead] *)
+  | Used (**)
+  | Scanning_pure
+  | Scanning_non_pure
+  | NA
+
+type ident_info = {
+  (* mutable recursive_info : recursive_info; *)
+  mutable used_stats : used_stats;
+}
+
+type exports = Ident.t list
+
+type tag_info = Lam_tag_info.t
+
+type length_object = Array | String | Bytes | Function | Caml_block
+
+(** TODO: define constant - for better constant folding  *)
+(* type constant =  *)
+(*   | Const_int of int *)
+(*   | Const_ *)
+
+end
+module Js_raw_info
+= struct
+#1 "js_raw_info.ml"
+(* Copyright (C) 2020 Hongbo Zhang, Authors of ReScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type exp =
+  | Js_function of { arity : int; arrow : bool }
+  | Js_literal of { comment : string option }
+  (* A special handling of
+     [%raw "/*lint*/ 0"]
+  *)
+  (* Flow ast module
+     {[
+       and value =
+           | String of string
+         | Boolean of bool
+         | Null
+         | Number of float
+         | BigInt of float
+         | RegExp of RegExp.t
+     ]}
+  *)
+  | Js_exp_unknown
+
+type raw_kind = Raw_re | Raw_exp | Raw_program
+
+type stmt = Js_stmt_comment | Js_stmt_unknown
+
+type code_info = Exp of exp | Stmt of stmt
+
+type t = { code : string; code_info : code_info }
+
+end
+module J
+= struct
+#1 "j.ml"
+(* Copyright (C) 2015- Hongbo Zhang, Authors of ReScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(* Javascript IR
+
+    It's a subset of Javascript AST specialized for OCaml lambda backend
+
+    Note it's not exactly the same as Javascript, the AST itself follows lexical
+    convention and [Block] is just a sequence of statements, which means it does
+    not introduce new scope
+*)
+
+type mutable_flag = Js_op.mutable_flag
+type binop = Js_op.binop
+type int_op = Js_op.int_op
+type kind = Js_op.kind
+type property = Js_op.property
+type number = Js_op.number
+type ident_info = Js_op.ident_info
+type exports = Js_op.exports
+type tag_info = Js_op.tag_info
+type property_name = Js_op.property_name
+
+type label = string
+and ident = Ident.t
+(* we override `method ident` *)
+
+(** object literal, if key is ident, in this case, it might be renamed by 
+    Google Closure  optimizer,
+    currently we always use quote
+*)
+
+and module_id = { id : ident; kind : Js_op.kind }
+
+and required_modules = module_id list
+and vident = Id of ident | Qualified of module_id * string option
+(* Since camldot is only available for toplevel module accessors,
+   we don't need print  `A.length$2`
+   just print `A.length` - it's guarateed to be unique
+
+   when the third one is None, it means the whole module
+
+   TODO:
+   invariant, when [kind] is [Runtime], then we can ignore [ident],
+   since all [runtime] functions are unique, when do the
+   pattern match we can ignore the first one for simplicity
+   for example
+   {[
+     Qualified (_, Runtime, Some "caml_int_compare")
+   ]}
+*)
+
+and exception_ident = ident
+and for_ident = ident
+and for_direction = Js_op.direction_flag
+and property_map = (property_name * expression) list
+and length_object = Js_op.length_object
+and delim = | DNone | DStarJ | DJson
+
+and expression_desc =
+  | Length of expression * length_object
+  | Is_null_or_undefined of expression  (** where we use a trick [== null ] *)
+  | String_append of expression * expression
+  | Bool of bool (* js true/false*)
+  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence
+     [typeof] is an operator
+  *)
+  | Typeof of expression
+  | Js_not of expression (* !v *)
+  (* TODO: Add some primitives so that [js inliner] can do a better job *)
+  | Seq of expression * expression
+  | Cond of expression * expression * expression
+  | Bin of binop * expression * expression
+  (* [int_op] will guarantee return [int32] bits
+     https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators *)
+  (* | Int32_bin of int_op * expression * expression *)
+  | FlatCall of expression * expression
+  (* f.apply(null,args) -- Fully applied guaranteed
+     TODO: once we know args's shape --
+     if it's know at compile time, we can turn it into
+     f(args[0], args[1], ... )
+  *)
+  | Call of expression * expression list * Js_call_info.t
+  (* Analysze over J expression is hard since,
+      some primitive  call is translated
+      into a plain call, it's better to keep them
+  *)
+  | String_index of expression * expression
+  (* str.[i])*)
+  | Array_index of expression * expression
+  (* arr.(i)
+     Invariant:
+     The second argument has to be type of [int],
+     This can be constructed either in a static way [E.array_index_by_int] or a dynamic way
+     [E.array_index]
+  *)
+  | Static_index of expression * string * int32 option
+  (* The third argument bool indicates whether we should
+     print it as
+     a["idd"] -- false
+     or
+     a.idd  -- true
+     There are several kinds of properties
+     1. OCaml module dot (need to be escaped or not)
+        All exported declarations have to be OCaml identifiers
+     2. Javascript dot (need to be preserved/or using quote)
+  *)
+  | New of expression * expression list option (* TODO: option remove *)
+  | Var of vident
+  | Fun of {
+      is_method : bool;
+      params : ident list;
+      body : block;
+      env : Js_fun_env.t;
+      return_unit : bool;
+      async : bool;
+    }
+  | Str of { delim : delim; txt : string }
+  (* A string is UTF-8 encoded, and may contain
+     escape sequences.
+  *)
+  | Raw_js_code of Js_raw_info.t
+  (* literally raw JS code 
+  *)
+  | Array of expression list * mutable_flag
+  | Optional_block of expression * bool
+  (* [true] means [identity] *)
+  | Caml_block of expression list * mutable_flag * expression * tag_info
+  (* The third argument is [tag] , forth is [tag_info] *)
+  (* | Caml_uninitialized_obj of expression * expression *)
+  (* [tag] and [size] tailed  for [Obj.new_block] *)
+
+  (* For setter, it still return the value of expression,
+     we can not use
+     {[
+       type 'a access = Get | Set of 'a
+     ]}
+     in another module, since it will break our code generator
+     [Caml_block_tag] can return [undefined],
+     you have to use [E.tag] in a safe way
+  *)
+  | Caml_block_tag of expression
+  (* | Caml_block_set_tag of expression * expression *)
+  (* | Caml_block_set_length of expression * expression *)
+  (* It will just fetch tag, to make it safe, when creating it,
+     we need apply "|0", we don't do it in the
+     last step since "|0" can potentially be optimized
+  *)
+  | Number of number
+  | Object of property_map
+  | Undefined
+  | Null
+  | Await of expression
+
+and for_ident_expression = expression
+(* pure*)
+
+and finish_ident_expression = expression
+
+(* pure *)
+(* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/block
+   block can be nested, specified in ES3
+*)
+
+(* Delay some units like [primitive] into JS layer ,
+   benefit: better cross module inlining, and smaller IR size?
+*)
+
+(*
+   [closure] captured loop mutable values in the outer loop
+
+   check if it contains loop mutable values, happens in nested loop
+   when closured, it's no longer loop mutable value.
+   which means the outer loop mutable value can not peek into the inner loop
+    {[
+      var i = f ();
+      for(var finish = 32; i < finish; ++i){
+        }
+    ]}
+    when [for_ident_expression] is [None], [var i] has to
+    be initialized outside, so
+
+    {[
+      var i = f ()
+        (function (xxx){
+             for(var finish = 32; i < finish; ++i)
+           }(..i))
+    ]}
+    This happens rare it's okay
+
+    this is because [i] has to be initialized outside, if [j]
+    contains a block side effect
+    TODO: create such example
+*)
+
+(* Since in OCaml,
+
+   [for i = 0 to k end do done ]
+   k is only evaluated once , to encode this invariant in JS IR,
+   make sure [ident] is defined in the first b
+
+   TODO: currently we guarantee that [bound] was only
+   excecuted once, should encode this in AST level
+*)
+
+(* Can be simplified to keep the semantics of OCaml
+   For (var i, e, ...){
+     let  j = ...
+   }
+
+   if [i] or [j] is captured inside closure
+
+   for (var i , e, ...){
+     (function (){
+     })(i)
+   }
+*)
+
+(* Single return is good for ininling..
+   However, when you do tail-call optmization
+   you loose the expression oriented semantics
+   Block is useful for implementing goto
+   {[
+     xx:{
+       break xx;
+     }
+   ]}
+*)
+and case_clause = {
+  switch_body : block;
+  should_break : bool;
+  (* true means break *)
+  comment : string option;
+}
+
+and string_clause = string * case_clause
+and int_clause = int * case_clause
+
+and statement_desc =
+  | Block of block
+  | Variable of variable_declaration
+  (* Function declaration and Variable declaration  *)
+  | Exp of expression
+  | If of expression * block * block
+  | While of label option * expression * block * Js_closure.t
+    (* check if it contains loop mutable values, happens in nested loop *)
+  | ForRange of
+      for_ident_expression option
+      * finish_ident_expression
+      * for_ident
+      * for_direction
+      * block
+      * Js_closure.t
+  | Continue of label
+  | Break (* only used when inline a fucntion *)
+  | Return of expression
+  (* Here we need track back a bit ?, move Return to Function ...
+     Then we can only have one Return, which is not good *)
+  (* since in ocaml, it's expression oriented langauge, [return] in
+     general has no jumps, it only happens when we do
+     tailcall conversion, in that case there is a jump.
+     However, currently  a single [break] is good to cover
+     our compilation strategy
+     Attention: we should not insert [break] arbitrarily, otherwise
+     it would break the semantics
+     A more robust signature would be
+     {[ goto : label option ; ]}
+  *)
+  | Int_switch of expression * int_clause list * block option
+  | String_switch of expression * string_clause list * block option
+  | Throw of expression
+  | Try of block * (exception_ident * block) option * block option
+  | Debugger
+
+and expression = { expression_desc : expression_desc; comment : string option }
+and statement = { statement_desc : statement_desc; comment : string option }
+
+and variable_declaration = {
+  ident : ident;
+  value : expression option;
+  property : property;
+  ident_info : ident_info;
+}
+
+(* TODO: For efficency: block should not be a list, it should be able to
+   be concatenated in both ways
+*)
+and block = statement list
+and program = { block : block; exports : exports; export_set : Set_ident.t }
+
+and deps_program = {
+  program : program;
+  modules : required_modules;
+  side_effect : string option; (* None: no, Some reason  *)
+}
+[@@deriving
+  {
+    excludes =
+      [|
+        deps_program;
+        int_clause;
+        string_clause;
+        for_direction;
+        (* exception_ident; *)
+        for_direction;
+        expression_desc;
+        statement_desc;
+        for_ident_expression;
+        label;
+        finish_ident_expression;
+        property_map;
+        length_object;
+        (* for_ident; *)
+        required_modules;
+        case_clause;
+      |];
+  }]
+(*
+FIXME: customize for each code generator 
+for each code generator, we can provide a white-list
+so that we can achieve the optimal
+*)
+
+end
 module Ast_utf8_string_interp : sig 
 #1 "ast_utf8_string_interp.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -39981,7 +51637,6 @@ type pos = { lnum : int; offset : int; byte_bol : int }
 (** Note the position is about code point *)
 
 type segment = { start : pos; finish : pos; kind : kind; content : string }
-
 type segments = segment list
 
 type cxt = {
@@ -39998,15 +51653,11 @@ type cxt = {
 type exn += Error of pos * pos * error
 
 val empty_segment : segment -> bool
-
 val transform_test : string -> segment list
-
 val transform : Parsetree.expression -> string -> string -> Parsetree.expression
-
 val is_unicode_string : string -> bool
-
 val is_unescaped : string -> bool
-
+val parse_processed_delim : string option -> J.delim option
 end = struct
 #1 "ast_utf8_string_interp.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -40058,7 +51709,6 @@ type pos = {
 (** Note the position is about code point *)
 
 type segment = { start : pos; finish : pos; kind : kind; content : string }
-
 type segments = segment list
 
 type cxt = {
@@ -40335,13 +51985,23 @@ let concat_ident : Longident.t = Ldot (Lident "Pervasives", "^")
 (* Longident.parse "Js.String.make"     *)
 let to_string_ident : Longident.t = Ldot (Ldot (Lident "Js", "String2"), "make")
 
-let escaped_j_delimiter = "*j" (* not user level syntax allowed *)
+module Delim = struct
+  let parse_processed = function
+    | None -> Some J.DNone
+    | Some "json" -> Some DJson
+    | Some "*j" -> Some DStarJ
+    | _ -> None
 
-let unescaped_j_delimiter = "j"
+  let parse_unprocessed = function
+    | "js" -> `string_interpolation
+    | "j" -> `old_unsafe_interpolation
+    | _ -> `no_interpolation
 
-let unescaped_js_delimiter = "js"
-
-let escaped = Some escaped_j_delimiter
+  let escaped_j_delimiter = "*j" (* not user level syntax allowed *)
+  let unescaped_j_delimiter = "j"
+  let unescaped_js_delimiter = "js"
+  let escaped = Some escaped_j_delimiter
+end
 
 let border = String.length "{j|"
 
@@ -40351,7 +52011,7 @@ let aux loc (segment : segment) ~to_string_ident : Parsetree.expression =
       match kind with
       | String ->
           let loc = update border start finish loc in
-          Ast_compatible.const_exp_string content ?delimiter:escaped ~loc
+          Ast_compatible.const_exp_string content ?delimiter:Delim.escaped ~loc
       | Var (soffset, foffset) ->
           let loc =
             {
@@ -40373,7 +52033,7 @@ let concat_exp a_loc x ~(lhs : Parsetree.expression) : Parsetree.expression =
 (* Invariant: the [lhs] is always of type string *)
 let rec handle_segments loc (rev_segments : segment list) =
   match rev_segments with
-  | [] -> Ast_compatible.const_exp_string ~loc "" ?delimiter:escaped
+  | [] -> Ast_compatible.const_exp_string ~loc "" ?delimiter:Delim.escaped
   | [ segment ] -> aux loc segment ~to_string_ident (* string literal *)
   | { content = "" } :: rest -> handle_segments loc rest
   | a :: rest -> concat_exp loc a ~lhs:(handle_segments loc rest)
@@ -40400,18 +52060,23 @@ let transform_interp loc s =
     Location.raise_errorf ~loc:(update border start pos loc) "%a" pp_error error
 
 let transform (e : Parsetree.expression) s delim : Parsetree.expression =
-  if Ext_string.equal delim unescaped_js_delimiter then
-    let js_str = Ast_utf8_string.transform e.pexp_loc s in
-    { e with pexp_desc = Pexp_constant (Pconst_string (js_str, escaped)) }
-  else if Ext_string.equal delim unescaped_j_delimiter then
-    transform_interp e.pexp_loc s
-  else e
+  match Delim.parse_unprocessed delim with
+  | `string_interpolation ->
+      let js_str = Ast_utf8_string.transform e.pexp_loc s in
+      {
+        e with
+        pexp_desc = Pexp_constant (Pconst_string (js_str, Delim.escaped));
+      }
+  | `old_unsafe_interpolation -> transform_interp e.pexp_loc s
+  | `no_interpolation -> e
 
-let is_unicode_string opt = Ext_string.equal opt escaped_j_delimiter
+let is_unicode_string opt = Ext_string.equal opt Delim.escaped_j_delimiter
 
 let is_unescaped s =
-  Ext_string.equal s unescaped_j_delimiter
-  || Ext_string.equal s unescaped_js_delimiter
+  Ext_string.equal s Delim.unescaped_j_delimiter
+  || Ext_string.equal s Delim.unescaped_js_delimiter
+
+let parse_processed_delim = Delim.parse_processed
 
 end
 module Ounit_unicode_tests
