@@ -26,7 +26,7 @@
 
 type cst =
   | Arg_int_lit of int
-  | Arg_string_lit of string * string option
+  | Arg_string_lit of string * J.delim
 
 type label_noname = Arg_label | Arg_empty | Arg_optional
 
