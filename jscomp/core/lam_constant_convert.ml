@@ -26,11 +26,13 @@ let rec convert_constant (const : Lambda.structured_constant) : Lam_constant.t =
   match const with
   | Const_base (Const_int i) -> Const_int { i = Int32.of_int i; comment = None }
   | Const_base (Const_char i) -> Const_char i
-  | Const_base (Const_string (i, opt)) -> (
-      match opt with
-      | Some opt when Ast_utf8_string_interp.is_unicode_string opt ->
-          Const_unicode i
-      | _ -> Const_string i)
+  | Const_base (Const_string (s, opt)) ->
+      let unicode =
+        match opt with
+        | Some opt -> Ast_utf8_string_interp.is_unicode_string opt
+        | _ -> false
+      in
+      Const_string { s; unicode }
   | Const_base (Const_float i) -> Const_float i
   | Const_base (Const_int32 i) -> Const_int { i; comment = None }
   | Const_base (Const_int64 i) -> Const_int64 i
@@ -58,7 +60,7 @@ let rec convert_constant (const : Lambda.structured_constant) : Lam_constant.t =
               { i = Ext_string.hash_number_as_i32_exn name; comment = None }
           else Const_pointer name)
   | Const_float_array s -> Const_float_array s
-  | Const_immstring s -> Const_string s
+  | Const_immstring s -> Const_string { s; unicode = false }
   | Const_block (t, xs) -> (
       let tag = Lambda.tag_of_tag_info t in
       match t with
@@ -76,7 +78,7 @@ let rec convert_constant (const : Lambda.structured_constant) : Lam_constant.t =
                 if Ext_string.is_valid_hash_number s then
                   Const_int
                     { i = Ext_string.hash_number_as_i32_exn s; comment = None }
-                else Const_string s
+                else Const_string { s; unicode = false }
               in
               Const_block (tag, t, [ tag_val; convert_constant value ])
           | _ -> assert false)

@@ -26,7 +26,6 @@ let caml_id_field_info : Lambda.field_dbg_info =
   Fld_record { name = Literals.exception_id; mutable_flag = Immutable }
 
 let lam_caml_id : Lam_primitive.t = Pfield (0, caml_id_field_info)
-
 let prim = Lam.prim
 
 let lam_extension_id loc (head : Lam.t) =
@@ -112,7 +111,6 @@ let exception_id_destructed (l : Lam.t) (fv : Ident.t) : bool =
   hit l
 
 let abs_int x = if x < 0 then -x else x
-
 let no_over_flow x = abs_int x < 0x1fff_ffff
 
 let lam_is_var (x : Lam.t) (y : Ident.t) =
@@ -129,7 +127,7 @@ let happens_to_be_diff (sw_consts : (int * Lambda.lambda) list) : int option =
     :: ( b,
          Lconst
            (Const_pointer (b0, Pt_constructor _) | Const_base (Const_int b0)) )
-       :: rest
+    :: rest
     when no_over_flow a && no_over_flow a0 && no_over_flow b && no_over_flow b0
     ->
       let diff = a0 - a in
@@ -188,7 +186,7 @@ let lam_prim ~primitive:(p : Lambda.primitive) ~args loc : Lam.t =
                 if Ext_string.is_valid_hash_number s then
                   Const_int
                     { i = Ext_string.hash_number_as_i32_exn s; comment = None }
-                else Const_string s
+                else Const_string { s; unicode = false }
               in
               prim
                 ~primitive:(Pmakeblock (tag, info, mutable_flag))
@@ -544,7 +542,8 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
     | Lprim (Pccall a, args, loc) -> convert_ccall a args loc
     | Lprim (Pgetglobal id, args, _) ->
         let args = Ext_list.map args convert_aux in
-        if Ident.is_predef_exn id then Lam.const (Const_string id.name)
+        if Ident.is_predef_exn id then
+          Lam.const (Const_string { s = id.name; unicode = false })
         else (
           may_depend may_depends (Lam_module_ident.of_ml id);
           assert (args = []);
