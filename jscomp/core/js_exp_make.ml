@@ -123,7 +123,7 @@ let pure_runtime_call module_name fn_name args =
 
 let runtime_ref module_name fn_name = runtime_var_dot module_name fn_name
 
-let str ?(delim = J.Nothing) ?comment txt : t =
+let str ?(delim = J.DNone) ?comment txt : t =
   { expression_desc = Str { txt; delim }; comment }
 
 let raw_js_code ?comment info s : t =
@@ -487,7 +487,7 @@ let array_length ?comment (e : t) : t =
 
 let string_length ?comment (e : t) : t =
   match e.expression_desc with
-  | Str { txt; delim = Nothing } -> int ?comment (Int32.of_int (String.length txt))
+  | Str { txt; delim = DNone } -> int ?comment (Int32.of_int (String.length txt))
   (* No optimization for {j||j}*)
   | _ -> { expression_desc = Length (e, String); comment }
 

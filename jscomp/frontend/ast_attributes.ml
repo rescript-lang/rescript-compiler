@@ -283,9 +283,9 @@ type as_const_payload = Int of int | Str of string * J.delim
 let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
   let st = ref None in
   let process_delim = function
-    | None -> Some J.Nothing
-    | Some "json" -> Some Json
-    | Some "*j" -> Some StarJ
+    | None -> Some J.DNone
+    | Some "json" -> Some DJson
+    | Some "*j" -> Some DStarJ
     | _ -> None
   in
   Ext_list.iter attrs (fun (({ txt; loc }, payload) as attr) ->
@@ -318,7 +318,7 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
                       | Some delim -> delim
                     in
                     st := Some (Str (s, delim));
-                    if delim = Json then
+                    if delim = DJson then
                       (* check that it is a valid object literal *)
                       match
                         Classify_function.classify
