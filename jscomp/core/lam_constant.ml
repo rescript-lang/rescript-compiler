@@ -44,7 +44,6 @@ type t =
   | Const_int of { i : int32; comment : pointer_info }
   | Const_char of char
   | Const_string of { s : string; unicode : bool }
-  | Const_unicode of string
   | Const_float of string
   | Const_int64 of int64
   | Const_pointer of string
@@ -69,8 +68,6 @@ let rec eq_approx (x : t) (y : t) =
       match y with
       | Const_string { s = sy; unicode = uy } -> sx = sy && ux = uy
       | _ -> false)
-  | Const_unicode ix -> (
-      match y with Const_unicode iy -> ix = iy | _ -> false)
   | Const_float ix -> ( match y with Const_float iy -> ix = iy | _ -> false)
   | Const_int64 ix -> ( match y with Const_int64 iy -> ix = iy | _ -> false)
   | Const_pointer ix -> (
