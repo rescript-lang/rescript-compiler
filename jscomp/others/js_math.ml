@@ -496,7 +496,7 @@ external minMany_float : float array -> float = "min" [@@bs.val] [@@bs.splice] [
   ```
 *)
 external pow_int : base:int -> exp:int -> int = "pow" [@@bs.val] [@@bs.scope "Math"]
-[@@deprecated "use `power_float` instead, the return type may be not int"]
+[@@deprecated "use `pow_float` instead, the return type may be not int"]
 
 (**
   Raises the given base to the given exponent. (Arguments and result are
