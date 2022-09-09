@@ -1869,16 +1869,20 @@ and type_expect ?in_function ?recarg env sexp ty_expected =
   (Cmt_format.Partial_expression exp :: previous_saved_types);
   exp
 
-and checkTypeInvariant exp =
+(* NOTE: the type invariant check should have no side effects and be efficient *)
+and checkTypeInvariant exp : unit =
   let rec extractPromise t =
     match t.desc with
     | Tconstr
         (Pdot (Pdot (Pident { name = "Js" }, "Promise", _), "t", _), [ t1 ], _)
     | Tconstr (Pident { name = "promise" }, [ t1 ], _) ->
+      (* Improvement: check for type aliases, if it can be done efficiently *)
         Some t1
     | Tlink t1 | Tsubst t1 | Tpoly (t1, []) -> extractPromise t1
     | _ -> None
   in
+  (* Only traverse arguments of a type constructors and function types.
+     This should guarantee that the traversal finished quickly. *)
   let rec findNestedPromise t =
     match t.desc with
     | Tlink t1 | Tsubst t1 | Tpoly (t1, []) -> findNestedPromise t1
