@@ -43611,6 +43611,7 @@ val path_int64: Path.t
 val path_lazy_t: Path.t
 val path_extension_constructor: Path.t
 val path_floatarray: Path.t
+val path_promise: Path.t
 
 val path_match_failure: Path.t
 val path_assert_failure : Path.t
@@ -43697,6 +43698,8 @@ and ident_floatarray = ident_create "floatarray"
 
 and ident_unknown = ident_create "unknown"
 
+and ident_promise = ident_create "promise"
+
 type test =
   | For_sure_yes
   | For_sure_no 
@@ -43735,6 +43738,8 @@ and path_string = Pident ident_string
 and path_unkonwn = Pident ident_unknown
 and path_extension_constructor = Pident ident_extension_constructor
 and path_floatarray = Pident ident_floatarray
+
+and path_promise = Pident ident_promise
 
 let type_int = newgenty (Tconstr(path_int, [], ref Mnil))
 and type_char = newgenty (Tconstr(path_char, [], ref Mnil))
@@ -43876,6 +43881,12 @@ let common_initial_env add_type add_extension empty_env =
      type_params = [tvar];
      type_arity = 1;
      type_variance = [Variance.covariant]}
+  and decl_promise =
+    let tvar = newgenvar() in
+    {decl_abstr with
+     type_params = [tvar];
+     type_arity = 1;
+     type_variance = [Variance.covariant]}
   in
 
   let add_extension id l =
@@ -43917,7 +43928,8 @@ let common_initial_env add_type add_extension empty_env =
   add_type ident_int decl_abstr_imm (
   add_type ident_extension_constructor decl_abstr (
   add_type ident_floatarray decl_abstr (
-    empty_env)))))))))))))))))))))))
+    add_type ident_promise decl_promise (
+      empty_env))))))))))))))))))))))))
 
 let build_initial_env add_type add_exception empty_env =
   let common = common_initial_env add_type add_exception empty_env in
