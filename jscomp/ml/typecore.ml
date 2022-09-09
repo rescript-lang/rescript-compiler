@@ -2044,6 +2044,38 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
       assert (sargs <> []);
       begin_def (); (* one more level for non-returning functions *)
       let funct = type_exp env sfunct in
+
+      let typ_cannot_be_option t = match expand_head env t with
+        | {desc = Tconstr (p, _, _) } when
+          Path.same p Predef.path_int ||
+          Path.same p Predef.path_char ||
+          Path.same p Predef.path_string ||
+          Path.same p Predef.path_bytes ||
+          Path.same p Predef.path_float ||
+          Path.same p Predef.path_bool ->
+            true
+        | {desc = Tarrow _} ->
+            true
+        | _ ->
+          (match extract_concrete_typedecl env t with
+          | (_, _, {type_kind = Type_record _}) -> true
+          | _ -> false
+          | exception Not_found -> false)
+      in
+
+      let funct, wrap_in_option = match expand_head env funct.exp_type with
+        | {desc = Tarrow (Nolabel, t1, t2, comm)} when typ_cannot_be_option t1 ->
+          let _, arg1 = List.hd sargs in
+          let ty1 = type_exp env arg1 in
+          (match extract_option_type env ty1.exp_type with
+          | _ ->
+            let newT = {funct.exp_type with desc = Tarrow (Nolabel, type_option t1, t2, comm)} in
+            let funct = {funct with exp_type = newT} in
+            funct, true
+          | exception Assert_failure _ -> funct, false
+          )
+        | _ -> funct, false in
+
       let ty = instance env funct.exp_type in
       end_def ();
       wrap_trace_gadt_instances env (lower_args env []) ty;
@@ -2051,6 +2083,14 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
       let (args, ty_res) = type_application env funct sargs in
       end_def ();
       unify_var env (newvar()) funct.exp_type;
+
+      let ty_res =
+        if wrap_in_option then
+          match (extract_option_type env ty_res) with
+          | _ -> ty_res
+          | exception Assert_failure _ -> type_option ty_res
+        else ty_res in
+ 
       rue {
         exp_desc = Texp_apply(funct, args);
         exp_loc = loc; exp_extra = [];
@@ -2309,13 +2349,13 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
       | Record_optional_labels lbls -> Ext_list.mem_string lbls ld.lbl_name
       | _ -> false in
       let (record, label, _, is_option) = type_label_access env srecord lid in
-      let should_add_option = is_option && not (label_is_optional label) in
+      let should_wrap_in_option = is_option && not (label_is_optional label) in
       let (_, ty_arg, ty_res) = instance_label false label in
       unify_exp env record ty_res;
       rue {
         exp_desc = Texp_field(record, lid, label);
         exp_loc = loc; exp_extra = [];
-        exp_type = if should_add_option then type_option ty_arg else ty_arg;
+        exp_type = if should_wrap_in_option then type_option ty_arg else ty_arg;
         exp_attributes = sexp.pexp_attributes;
         exp_env = env }
   | Pexp_setfield(srecord, lid, snewval) ->
