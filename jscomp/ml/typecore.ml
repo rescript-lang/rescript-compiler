@@ -1868,6 +1868,7 @@ and type_expect ?in_function ?recarg env sexp ty_expected =
     let rec extractPromise t =
       match t.desc with
       | Tconstr (Pdot (Pdot (Pident {name = "Js"}, "Promise", _), "t", _), [t1], _)
+      | Tconstr (Pident {name = "promise"}, [t1], _)
         ->
         Some t1
       | Tlink t1 | Tsubst t1 | Tpoly (t1, []) -> extractPromise t1

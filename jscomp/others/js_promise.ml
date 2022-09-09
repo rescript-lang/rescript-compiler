@@ -31,7 +31,7 @@
 
 [@@@warning "-103"]
 
-type +'a t
+type +'a t = 'a promise
 type error
 
 (*
@@ -43,43 +43,43 @@ type error
 external make :
   ((resolve:(('a -> unit)[@bs]) -> reject:((exn -> unit)[@bs]) -> unit)
   [@bs.uncurry]) ->
-  'a t = "Promise"
+  'a promise = "Promise"
   [@@bs.new]
 
 (* `make (fun resolve reject -> .. )` *)
-external resolve : 'a -> 'a t = "resolve" [@@bs.val] [@@bs.scope "Promise"]
-external reject : exn -> 'a t = "reject" [@@bs.val] [@@bs.scope "Promise"]
+external resolve : 'a -> 'a promise = "resolve" [@@bs.val] [@@bs.scope "Promise"]
+external reject : exn -> 'a promise = "reject" [@@bs.val] [@@bs.scope "Promise"]
 
-external all : 'a t array -> 'a array t = "all"
+external all : 'a promise array -> 'a array promise = "all"
   [@@bs.val] [@@bs.scope "Promise"]
 
-external all2 : 'a0 t * 'a1 t -> ('a0 * 'a1) t = "all"
+external all2 : 'a0 promise * 'a1 promise -> ('a0 * 'a1) promise = "all"
   [@@bs.val] [@@bs.scope "Promise"]
 
-external all3 : 'a0 t * 'a1 t * 'a2 t -> ('a0 * 'a1 * 'a2) t = "all"
+external all3 : 'a0 promise * 'a1 promise * 'a2 promise -> ('a0 * 'a1 * 'a2) promise = "all"
   [@@bs.val] [@@bs.scope "Promise"]
 
-external all4 : 'a0 t * 'a1 t * 'a2 t * 'a3 t -> ('a0 * 'a1 * 'a2 * 'a3) t
+external all4 : 'a0 promise * 'a1 promise * 'a2 promise * 'a3 promise -> ('a0 * 'a1 * 'a2 * 'a3) promise
   = "all"
   [@@bs.val] [@@bs.scope "Promise"]
 
 external all5 :
-  'a0 t * 'a1 t * 'a2 t * 'a3 t * 'a4 t -> ('a0 * 'a1 * 'a2 * 'a3 * 'a4) t
+  'a0 promise * 'a1 promise * 'a2 promise * 'a3 promise * 'a4 promise -> ('a0 * 'a1 * 'a2 * 'a3 * 'a4) promise
   = "all"
   [@@bs.val] [@@bs.scope "Promise"]
 
 external all6 :
-  'a0 t * 'a1 t * 'a2 t * 'a3 t * 'a4 t * 'a5 t ->
-  ('a0 * 'a1 * 'a2 * 'a3 * 'a4 * 'a5) t = "all"
+  'a0 promise * 'a1 promise * 'a2 promise * 'a3 promise * 'a4 promise * 'a5 promise ->
+  ('a0 * 'a1 * 'a2 * 'a3 * 'a4 * 'a5) promise = "all"
   [@@bs.val] [@@bs.scope "Promise"]
 
-external race : 'a t array -> 'a t = "race" [@@bs.val] [@@bs.scope "Promise"]
+external race : 'a promise array -> 'a promise = "race" [@@bs.val] [@@bs.scope "Promise"]
 
-external then_ : (('a -> 'b t)[@bs.uncurry]) -> 'b t = "then"
-  [@@bs.send.pipe: 'a t]
+external then_ : (('a -> 'b promise)[@bs.uncurry]) -> 'b promise = "then"
+  [@@bs.send.pipe: 'a promise]
 
-external catch : ((error -> 'a t)[@bs.uncurry]) -> 'a t = "catch"
-  [@@bs.send.pipe: 'a t]
+external catch : ((error -> 'a promise)[@bs.uncurry]) -> 'a promise = "catch"
+  [@@bs.send.pipe: 'a promise]
 (* ` p|> catch handler`
     Note in JS the returned promise type is actually runtime dependent,
     if promise is rejected, it will pick the `handler` otherwise the original promise,
@@ -87,8 +87,8 @@ external catch : ((error -> 'a t)[@bs.uncurry]) -> 'a t = "catch"
     https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch
 *)
 
-external unsafe_async : 'a -> 'a t = "%identity"
-external unsafe_await : 'a t -> 'a = "?await"
+external unsafe_async : 'a -> 'a promise = "%identity"
+external unsafe_await : 'a promise -> 'a = "?await"
 
 
 (*
