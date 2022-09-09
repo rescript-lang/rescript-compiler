@@ -18,7 +18,7 @@
 
 #### :rocket: New Feature
 
-- Add support for for `async`/`await` https://github.com/rescript-lang/rescript-compiler/pull/5537
+- Experimental support for for `async`/`await` https://github.com/rescript-lang/rescript-compiler/pull/5537
 
 - Make `promise` a built-in type https://github.com/rescript-lang/rescript-compiler/pull/5650
 
