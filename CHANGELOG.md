@@ -15,6 +15,7 @@
 #### :boom: Breaking Change
 
 - Vendor genType, which does not need to be installed separately anymore. **Only TypeScript back-end** supported.
+- Pipe `->` does not support a code block on the right-hand side e.g. `x->{ open A; get("test") }`
 
 #### :rocket: New Feature
 
