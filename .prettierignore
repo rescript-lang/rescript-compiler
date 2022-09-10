@@ -6,6 +6,6 @@ ninja/
 syntax/
 ocaml-tree/
 _opam
-Changes.md
+CHANGELOG.md
 README.md
 playground/
