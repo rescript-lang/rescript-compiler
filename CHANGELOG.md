@@ -12,6 +12,10 @@
 
 # 10.1.0-alpha.2
 
+#### :bug: Bug Fix
+
+- Fix printing of type declarations in error message where they would be considered recursive by default 
+
 # 10.1.0-alpha.1
 
 #### :boom: Breaking Change

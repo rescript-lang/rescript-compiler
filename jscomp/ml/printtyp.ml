@@ -936,7 +936,7 @@ let tree_of_type_declaration id decl rs =
   Osig_type (tree_of_type_decl id decl, tree_of_rec rs)
 
 let type_declaration id ppf decl =
-  !Oprint.out_sig_item ppf (tree_of_type_declaration id decl Trec_first)
+  !Oprint.out_sig_item ppf (tree_of_type_declaration id decl Trec_not)
 
 let constructor_arguments ppf a =
   let tys = tree_of_constructor_arguments a in
