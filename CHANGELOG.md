@@ -14,7 +14,9 @@
 
 #### :bug: Bug Fix
 
-- Fix printing of type declarations in error message where they would be considered recursive by default 
+- Fix printing of type declarations in error message where they would be considered recursive by default
+- Fix issue where the printer would omit attributes for `->` and `|>` https://github.com/rescript-lang/syntax/pull/629
+- Fix printing of optional fiels in records https://github.com/rescript-lang/rescript-compiler/issues/5654
 
 # 10.1.0-alpha.1
 
