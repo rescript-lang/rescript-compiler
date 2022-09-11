@@ -35,7 +35,7 @@ type error =
   | Apply_non_function of type_expr
   | Apply_wrong_label of arg_label * type_expr
   | Label_multiply_defined of string
-  | Label_missing of string list
+  | Labels_missing of string list
   | Label_not_mutable of Longident.t
   | Wrong_name of string * type_expr * string * Path.t * string * string list
   | Name_type_mismatch of
@@ -2167,7 +2167,8 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
         unify_exp_types loc env ty_record (instance env ty_expected);
         check_duplicates loc env lbl_exp_list;
         let (_, { lbl_all = label_descriptions; lbl_repres = representation}, _) = List.hd lbl_exp_list in
-        let  label_definitions =
+        let labels_missing = ref [] in
+        let label_definitions =
           let matching_label lbl =
             List.find
               (fun (_, lbl',_) -> lbl'.lbl_pos = lbl.lbl_pos)
@@ -2179,13 +2180,12 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
                     | (lid, _lbl, lbl_exp) ->
                         Overridden (lid, lbl_exp)
                     | exception Not_found ->
-                      if label_is_optional lbl then 
-                        Overridden ({loc ; txt = Lident lbl.lbl_name},
-                        option_none lbl.lbl_arg loc)
-                      else 
-                        raise(Error(loc, env, Label_missing [lbl.lbl_name])))    
+                      if not (label_is_optional lbl) then labels_missing := lbl.lbl_name :: !labels_missing;
+                      Overridden ({loc ; txt = Lident lbl.lbl_name}, option_none lbl.lbl_arg loc))
                   label_descriptions
         in
+        if !labels_missing <> [] then
+          raise(Error(loc, env, Labels_missing (List.rev !labels_missing)));
         let fields =
           Array.map2 (fun descr def -> descr, def)
             label_descriptions label_definitions
@@ -3643,10 +3643,10 @@ let report_error env ppf = function
         type_expr ty print_label l
   | Label_multiply_defined s ->
       fprintf ppf "The record field label %s is defined several times" s
-  | Label_missing labels ->
+  | Labels_missing labels ->
       let print_labels ppf =
         List.iter (fun lbl -> fprintf ppf "@ %s" ( lbl)) in
-      fprintf ppf "@[<hov>Some record fields are undefined:%a@]"
+      fprintf ppf "@[<hov>Some required record fields are missing:%a@]"
         print_labels labels
   | Label_not_mutable lid ->
       fprintf ppf "The record field %a is not mutable" longident lid
