@@ -18,6 +18,10 @@
 - Fix issue where the printer would omit attributes for `->` and `|>` https://github.com/rescript-lang/syntax/pull/629
 - Fix printing of optional fields in records https://github.com/rescript-lang/rescript-compiler/issues/5654
 
+#### :nail_care: Polish
+
+- Print all missing labels in error message for records, not just one.
+
 # 10.1.0-alpha.1
 
 #### :boom: Breaking Change
