@@ -20,7 +20,7 @@
 
 #### :nail_care: Polish
 
-- Print all missing labels in error message for records, not just one.
+- Print all missing labels in error message for records, not just one https://github.com/rescript-lang/rescript-compiler/pull/5657
 
 # 10.1.0-alpha.1
 
