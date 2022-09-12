@@ -72,6 +72,7 @@ type error =
   | Unknown_literal of string * char
   | Illegal_letrec_pat
   | Labels_omitted of string list
+  | Empty_record_literal
 exception Error of Location.t * Env.t * error
 exception Error_forward of Location.error
 
@@ -298,7 +299,7 @@ let extract_option_type env ty =
 
 let extract_concrete_record env ty =
   match extract_concrete_typedecl env ty with
-    (p0, p, {type_kind=Type_record (fields, _)}) -> (p0, p, fields)
+    (p0, p, {type_kind=Type_record (fields, repr)}) -> (p0, p, fields, repr)
   | _ -> raise Not_found
 
 let extract_concrete_variant env ty =
@@ -1145,7 +1146,7 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
       assert (lid_sp_list <> []);
       let opath, record_ty =
         try
-          let (p0, p,_) = extract_concrete_record !env expected_ty in
+          let (p0, p, _, _) = extract_concrete_record !env expected_ty in
           Some (p0, p), expected_ty
         with Not_found -> None, newvar ()
       in
@@ -2147,14 +2148,13 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
           exp_env = env }
       end
     | Pexp_record(lid_sexp_list, None) ->
-        assert (lid_sexp_list <> []);
-        let ty_record, opath =          
+        let ty_record, opath, fields, repr_opt =          
           match extract_concrete_record env ty_expected with
-          |  (p0, p,_) ->
+          |  (p0, p, fields, repr) ->
               (* XXX level may be wrong *)
-              ty_expected, Some (p0, p) 
+              ty_expected, Some (p0, p), fields, Some repr 
           | exception Not_found -> 
-               newvar (), None
+               newvar (), None, [], None
           
         in
         let lbl_exp_list =
@@ -2166,7 +2166,20 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
         in
         unify_exp_types loc env ty_record (instance env ty_expected);
         check_duplicates loc env lbl_exp_list;
-        let (_, { lbl_all = label_descriptions; lbl_repres = representation}, _) = List.hd lbl_exp_list in
+        let label_descriptions, representation = match lbl_exp_list, repr_opt with
+        | (_, { lbl_all = label_descriptions; lbl_repres = representation}, _) :: _, _ -> label_descriptions, representation
+        | [], Some (Record_optional_labels optional_labels as representation) when lid_sexp_list = [] ->
+            let filter_missing (ld : Types.label_declaration) =
+              let name = Ident.name ld.ld_id in
+              if List.mem name optional_labels then
+                None
+              else
+                Some name in
+            let labels_missing = fields |> List.filter_map filter_missing in
+            if labels_missing <> [] then
+              raise(Error(loc, env, Labels_missing labels_missing));
+            [||], representation
+        | [], _ -> raise(Error(loc, env, Empty_record_literal)) in
         let labels_missing = ref [] in
         let label_definitions =
           let matching_label lbl =
@@ -2205,7 +2218,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
       let ty_record, opath =
         let get_path ty =
           try
-            let (p0, p,_) = extract_concrete_record env ty in
+            let (p0, p, _, _) = extract_concrete_record env ty in
             (* XXX level may be wrong *)
             Some (p0, p) 
           with Not_found -> None
@@ -2803,7 +2816,7 @@ and type_label_access env srecord lid =
   let ty_exp = record.exp_type in
   let opath =
     try
-      let (p0, p,_) = extract_concrete_record env ty_exp in
+      let (p0, p, _, _) = extract_concrete_record env ty_exp in
       Some(p0, p)
     with Not_found -> None
   in
@@ -3805,9 +3818,11 @@ let report_error env ppf = function
   | Illegal_letrec_pat ->
       fprintf ppf
         "Only variables are allowed as left-hand side of `let rec'"
-  | Labels_omitted labels -> 
+  | Labels_omitted labels ->
       fprintf ppf  "For labeled funciton, labels %s were omitted in the application of this function." 
       (String.concat ", " labels)  
+  | Empty_record_literal ->
+      fprintf ppf  "Empty record literal {} should be type annotated or used in a record context."
 
 let super_report_error_no_wrap_printing_env = report_error
 

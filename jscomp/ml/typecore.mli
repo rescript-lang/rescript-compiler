@@ -108,6 +108,7 @@ type error =
   | Unknown_literal of string * char
   | Illegal_letrec_pat
   | Labels_omitted of string list
+  | Empty_record_literal
 exception Error of Location.t * Env.t * error
 exception Error_forward of Location.error
 
