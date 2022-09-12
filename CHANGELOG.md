@@ -12,6 +12,10 @@
 
 # 10.1.0-alpha.2
 
+#### :rocket: New Feature
+
+- Add support for empty record literal `{}` for records where all fields are optional https://github.com/rescript-lang/rescript-compiler/pull/5658
+
 #### :bug: Bug Fix
 
 - Fix printing of type declarations in error message where they would be considered recursive by default
