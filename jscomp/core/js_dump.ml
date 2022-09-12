@@ -718,7 +718,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
                 Js_op.Lit (Ext_ident.convert x))))
   (*name convention of Record is slight different from modules*)
   | Caml_block (el, mutable_flag, _, Blk_record { fields; record_repr }) -> (
-      if Ext_array.for_alli fields (fun i v -> string_of_int i = v) then
+      if Array.length fields <> 0 && Ext_array.for_alli fields (fun i v -> string_of_int i = v) then
         expression_desc cxt ~level f (Array (el, mutable_flag))
       else
         match record_repr with
