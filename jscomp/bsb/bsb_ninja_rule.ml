@@ -91,14 +91,11 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
     ~(has_postbuild : string option) ~(pp_file : string option)
     ~(has_builtin : bool)
     ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
-    ~(jsx_version : Bsb_config_types.jsx_version option)
-    ~(jsx_module : Bsb_config_types.jsx_module option)
-    ~(jsx_mode : Bsb_config_types.jsx_mode option) ~(digest : string)
-    ~(package_specs : Bsb_package_specs.t) ~(namespace : string option)
-    ~package_name ~warnings ~(ppx_files : Bsb_config_types.ppx list) ~bsc_flags
-    ~(dpkg_incls : string) ~(lib_incls : string) ~(dev_incls : string)
-    ~bs_dependencies ~bs_dev_dependencies (custom_rules : command Map_string.t)
-    : builtin =
+    ~(jsx : Bsb_jsx.t) ~(digest : string) ~(package_specs : Bsb_package_specs.t)
+    ~(namespace : string option) ~package_name ~warnings
+    ~(ppx_files : Bsb_config_types.ppx list) ~bsc_flags ~(dpkg_incls : string)
+    ~(lib_incls : string) ~(dev_incls : string) ~bs_dependencies
+    ~bs_dev_dependencies (custom_rules : command Map_string.t) : builtin =
   let bs_dep = Ext_filename.maybe_quote Bsb_global_paths.vendor_bsdep in
   let bsc = Ext_filename.maybe_quote Bsb_global_paths.vendor_bsc in
   (* FIXME: We don't need set [-o ${out}] when building ast
@@ -123,8 +120,7 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
     *)
     (match gentype_config with
     | false -> ()
-    | true ->
-        Ext_buffer.add_string buf " -bs-gentype");
+    | true -> Ext_buffer.add_string buf " -bs-gentype");
     if read_cmi <> `is_cmi then (
       Ext_buffer.add_string buf " -bs-package-name ";
       Ext_buffer.add_string buf (Ext_filename.maybe_quote package_name);
@@ -163,15 +159,15 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
     | None -> ()
     | Some flag ->
         Ext_buffer.add_char_string buf ' ' (Bsb_build_util.pp_flag flag));
-    (match (reason_react_jsx, jsx_version) with
+    (match (reason_react_jsx, jsx.version) with
     | _, Some Jsx_v3 -> Ext_buffer.add_string buf " -bs-jsx 3"
     | _, Some Jsx_v4 -> Ext_buffer.add_string buf " -bs-jsx 4"
     | Some Jsx_v3, None -> Ext_buffer.add_string buf " -bs-jsx 3"
     | None, None -> ());
-    (match jsx_module with
+    (match jsx.module_ with
     | None -> ()
     | Some React -> Ext_buffer.add_string buf " -bs-jsx-module react");
-    (match jsx_mode with
+    (match jsx.mode with
     | None -> ()
     | Some Classic -> Ext_buffer.add_string buf " -bs-jsx-mode classic"
     | Some Automatic -> Ext_buffer.add_string buf " -bs-jsx-mode automatic");

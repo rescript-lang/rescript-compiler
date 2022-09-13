@@ -71,9 +71,7 @@ val make_custom_rules :
   pp_file:string option ->
   has_builtin:bool ->
   reason_react_jsx:Bsb_config_types.reason_react_jsx option ->
-  jsx_version:Bsb_config_types.jsx_version option ->
-  jsx_module:Bsb_config_types.jsx_module option ->
-  jsx_mode:Bsb_config_types.jsx_mode option ->
+  jsx:Bsb_jsx.t ->
   digest:string ->
   package_specs:Bsb_package_specs.t ->
   namespace:string option ->

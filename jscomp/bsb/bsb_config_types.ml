@@ -31,9 +31,6 @@ type dependencies = dependency list
 type reason_react_jsx = Jsx_v3
 (* string option  *)
 
-type jsx_version = Jsx_v3 | Jsx_v4
-type jsx_module = React
-type jsx_mode = Classic | Automatic
 type gentype_config = bool
 type command = string
 type ppx = { name : string; args : string list }
@@ -62,9 +59,7 @@ type t = {
   files_to_install : Bsb_db.module_info Queue.t;
   generate_merlin : bool;
   reason_react_jsx : reason_react_jsx option;
-  jsx_version : jsx_version option;
-  jsx_module : jsx_module option;
-  jsx_mode : jsx_mode option;
+  jsx: Bsb_jsx.t;
   (* whether apply PPX transform or not*)
   generators : command Map_string.t;
   cut_generators : bool;
