@@ -325,14 +325,17 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
             package_specs =
               (match package_kind with
               | Toplevel -> Bsb_package_specs.from_map ~cwd:per_proj_dir map
-              | Pinned_dependency x | Dependency x -> x);
+              | Pinned_dependency x | Dependency x -> x.package_specs);
             file_groups = groups;
             files_to_install = Queue.create ();
             built_in_dependency = built_in_package;
             generate_merlin =
               extract_boolean map Bsb_build_schemas.generate_merlin false;
             reason_react_jsx;
-            jsx = Bsb_jsx.from_map map;
+            jsx =
+              (match package_kind with
+              | Toplevel -> Bsb_jsx.from_map map
+              | Pinned_dependency x | Dependency x -> x.jsx);
             generators = extract_generators map;
             cut_generators;
           }
@@ -340,10 +343,11 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
           Bsb_exception.invalid_spec "no sources specified in bsconfig.json")
   | _ -> Bsb_exception.invalid_spec "bsconfig.json expect a json object {}"
 
-let package_specs_from_bsconfig () =
+let deps_from_bsconfig () =
   let json = Ext_json_parse.parse_json_from_file Literals.bsconfig_json in
   match json with
   | Obj { map } ->
       ( Bsb_package_specs.from_map ~cwd:Bsb_global_paths.cwd map,
+        Bsb_jsx.from_map map,
         extract_pinned_dependencies map )
   | _ -> assert false

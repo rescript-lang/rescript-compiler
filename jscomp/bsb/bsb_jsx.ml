@@ -8,6 +8,18 @@ type t = {
   mode : mode option;
 }
 
+let encode_no_nl jsx =
+  (match jsx.version with
+  | None -> ""
+  | Some Jsx_v3 -> "3"
+  | Some Jsx_v4 -> "4")
+  ^ (match jsx.module_ with None -> "" | Some React -> "React")
+  ^
+  match jsx.mode with
+  | None -> ""
+  | Some Classic -> "Classic"
+  | Some Automatic -> "Automatic"
+
 let ( .?() ) = Map_string.find_opt
 let ( |? ) m (key, cb) = m |> Ext_json.test key cb
 

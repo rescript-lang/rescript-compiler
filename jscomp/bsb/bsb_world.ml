@@ -23,20 +23,20 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 let ( // ) = Ext_path.combine
-
 let vendor_ninja = Bsb_global_paths.vendor_ninja
 
 let make_world_deps cwd (config : Bsb_config_types.t option)
     (ninja_args : string array) =
-  let deps, pinned_dependencies =
+  let package_specs, jsx, pinned_dependencies =
     match config with
     | None ->
         (* When this running bsb does not read bsconfig.json,
            we will read such json file to know which [package-specs]
            it wants
         *)
-        Bsb_config_parse.package_specs_from_bsconfig ()
-    | Some config -> (config.package_specs, config.pinned_dependencies)
+        Bsb_config_parse.deps_from_bsconfig ()
+    | Some config ->
+        (config.package_specs, config.jsx, config.pinned_dependencies)
   in
   let args =
     if Ext_array.is_empty ninja_args then [| vendor_ninja |]
@@ -68,8 +68,8 @@ let make_world_deps cwd (config : Bsb_config_types.t option)
              let _config : _ option =
                Bsb_ninja_regen.regenerate_ninja
                  ~package_kind:
-                   (if is_pinned then Pinned_dependency deps
-                   else Dependency deps)
+                   (if is_pinned then Pinned_dependency { package_specs; jsx }
+                   else Dependency { package_specs; jsx })
                  ~per_proj_dir:proj_dir ~forced:false
              in
              let command =

@@ -22,10 +22,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type dep_payload = { package_specs : Bsb_package_specs.t; jsx : Bsb_jsx.t }
+
 type t =
   | Toplevel
-  | Dependency of Bsb_package_specs.t
-  | Pinned_dependency of Bsb_package_specs.t
+  | Dependency of dep_payload
+  | Pinned_dependency of dep_payload
 (* This package specs comes from the toplevel to
    override the current settings
 *)
@@ -34,6 +36,12 @@ let encode_no_nl (x : t) =
   match x with
   | Toplevel -> "0"
   | Dependency x ->
-      "1" ^ Bsb_package_specs.package_flag_of_package_specs x ~dirname:"."
+      "1"
+      ^ Bsb_package_specs.package_flag_of_package_specs x.package_specs
+          ~dirname:"."
+      ^ Bsb_jsx.encode_no_nl x.jsx
   | Pinned_dependency x ->
-      "2" ^ Bsb_package_specs.package_flag_of_package_specs x ~dirname:"."
+      "2"
+      ^ Bsb_package_specs.package_flag_of_package_specs x.package_specs
+          ~dirname:"."
+      ^ Bsb_jsx.encode_no_nl x.jsx

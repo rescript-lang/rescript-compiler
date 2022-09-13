@@ -5180,6 +5180,18 @@ type t = {
   mode : mode option;
 }
 
+let encode_no_nl jsx =
+  (match jsx.version with
+  | None -> ""
+  | Some Jsx_v3 -> "3"
+  | Some Jsx_v4 -> "4")
+  ^ (match jsx.module_ with None -> "" | Some React -> "React")
+  ^
+  match jsx.mode with
+  | None -> ""
+  | Some Classic -> "Classic"
+  | Some Automatic -> "Automatic"
+
 let ( .?() ) = Map_string.find_opt
 let ( |? ) m (key, cb) = m |> Ext_json.test key cb
 
@@ -7920,10 +7932,12 @@ module Bsb_package_kind
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type dep_payload = { package_specs : Bsb_package_specs.t; jsx : Bsb_jsx.t }
+
 type t =
   | Toplevel
-  | Dependency of Bsb_package_specs.t
-  | Pinned_dependency of Bsb_package_specs.t
+  | Dependency of dep_payload
+  | Pinned_dependency of dep_payload
 (* This package specs comes from the toplevel to
    override the current settings
 *)
@@ -7932,9 +7946,15 @@ let encode_no_nl (x : t) =
   match x with
   | Toplevel -> "0"
   | Dependency x ->
-      "1" ^ Bsb_package_specs.package_flag_of_package_specs x ~dirname:"."
+      "1"
+      ^ Bsb_package_specs.package_flag_of_package_specs x.package_specs
+          ~dirname:"."
+      ^ Bsb_jsx.encode_no_nl x.jsx
   | Pinned_dependency x ->
-      "2" ^ Bsb_package_specs.package_flag_of_package_specs x ~dirname:"."
+      "2"
+      ^ Bsb_package_specs.package_flag_of_package_specs x.package_specs
+          ~dirname:"."
+      ^ Bsb_jsx.encode_no_nl x.jsx
 
 end
 module Bsc_warnings
@@ -10293,7 +10313,7 @@ module Bsb_config_parse : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val package_specs_from_bsconfig : unit -> Bsb_package_specs.t * Set_string.t
+val deps_from_bsconfig : unit -> Bsb_package_specs.t * Bsb_jsx.t * Set_string.t
 
 val interpret_json :
   package_kind:Bsb_package_kind.t -> per_proj_dir:string -> Bsb_config_types.t
@@ -10627,14 +10647,17 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
             package_specs =
               (match package_kind with
               | Toplevel -> Bsb_package_specs.from_map ~cwd:per_proj_dir map
-              | Pinned_dependency x | Dependency x -> x);
+              | Pinned_dependency x | Dependency x -> x.package_specs);
             file_groups = groups;
             files_to_install = Queue.create ();
             built_in_dependency = built_in_package;
             generate_merlin =
               extract_boolean map Bsb_build_schemas.generate_merlin false;
             reason_react_jsx;
-            jsx = Bsb_jsx.from_map map;
+            jsx =
+              (match package_kind with
+              | Toplevel -> Bsb_jsx.from_map map
+              | Pinned_dependency x | Dependency x -> x.jsx);
             generators = extract_generators map;
             cut_generators;
           }
@@ -10642,11 +10665,12 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
           Bsb_exception.invalid_spec "no sources specified in bsconfig.json")
   | _ -> Bsb_exception.invalid_spec "bsconfig.json expect a json object {}"
 
-let package_specs_from_bsconfig () =
+let deps_from_bsconfig () =
   let json = Ext_json_parse.parse_json_from_file Literals.bsconfig_json in
   match json with
   | Obj { map } ->
       ( Bsb_package_specs.from_map ~cwd:Bsb_global_paths.cwd map,
+        Bsb_jsx.from_map map,
         extract_pinned_dependencies map )
   | _ -> assert false
 
@@ -10862,9 +10886,7 @@ let clean_bs_garbage proj_dir =
     Bsb_log.warn "@{<warning>Failed@} to clean due to %s" (Printexc.to_string e)
 
 let clean_bs_deps proj_dir =
-  let _, pinned_dependencies =
-    Bsb_config_parse.package_specs_from_bsconfig ()
-  in
+  let _, _, pinned_dependencies = Bsb_config_parse.deps_from_bsconfig () in
   let queue = Bsb_build_util.walk_all_deps proj_dir ~pinned_dependencies in
   Queue.iter
     (fun (pkg_cxt : Bsb_build_util.package_context) ->
@@ -15085,20 +15107,20 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 let ( // ) = Ext_path.combine
-
 let vendor_ninja = Bsb_global_paths.vendor_ninja
 
 let make_world_deps cwd (config : Bsb_config_types.t option)
     (ninja_args : string array) =
-  let deps, pinned_dependencies =
+  let package_specs, jsx, pinned_dependencies =
     match config with
     | None ->
         (* When this running bsb does not read bsconfig.json,
            we will read such json file to know which [package-specs]
            it wants
         *)
-        Bsb_config_parse.package_specs_from_bsconfig ()
-    | Some config -> (config.package_specs, config.pinned_dependencies)
+        Bsb_config_parse.deps_from_bsconfig ()
+    | Some config ->
+        (config.package_specs, config.jsx, config.pinned_dependencies)
   in
   let args =
     if Ext_array.is_empty ninja_args then [| vendor_ninja |]
@@ -15130,8 +15152,8 @@ let make_world_deps cwd (config : Bsb_config_types.t option)
              let _config : _ option =
                Bsb_ninja_regen.regenerate_ninja
                  ~package_kind:
-                   (if is_pinned then Pinned_dependency deps
-                   else Dependency deps)
+                   (if is_pinned then Pinned_dependency { package_specs; jsx }
+                   else Dependency { package_specs; jsx })
                  ~per_proj_dir:proj_dir ~forced:false
              in
              let command =
