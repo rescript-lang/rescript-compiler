@@ -206,7 +206,6 @@ let make_params env params =
     List.map make_param params
 
 let transl_labels env closed lbls =
-  assert (lbls <> []);
   if !Config.bs_only then 
     match !Builtin_attributes.check_duplicated_labels lbls with 
     | None -> ()
