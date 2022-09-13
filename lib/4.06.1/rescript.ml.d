@@ -20,6 +20,7 @@
 ../lib/4.06.1/rescript.ml: ./bsb/bsb_file_groups.mli
 ../lib/4.06.1/rescript.ml: ./bsb/bsb_global_paths.ml
 ../lib/4.06.1/rescript.ml: ./bsb/bsb_global_paths.mli
+../lib/4.06.1/rescript.ml: ./bsb/bsb_jsx.ml
 ../lib/4.06.1/rescript.ml: ./bsb/bsb_log.ml
 ../lib/4.06.1/rescript.ml: ./bsb/bsb_log.mli
 ../lib/4.06.1/rescript.ml: ./bsb/bsb_namespace_map_gen.ml
