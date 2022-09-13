@@ -2179,7 +2179,11 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
             if labels_missing <> [] then
               raise(Error(loc, env, Labels_missing labels_missing));
             [||], representation
-        | [], _ -> raise(Error(loc, env, Empty_record_literal)) in
+        | [], _ ->
+          if fields = [] then
+            [||], Record_optional_labels []
+          else
+            raise(Error(loc, env, Empty_record_literal)) in
         let labels_missing = ref [] in
         let label_definitions =
           let matching_label lbl =
