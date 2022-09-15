@@ -335,7 +335,7 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
             jsx =
               (match package_kind with
               | (Pinned_dependency x | Dependency x)
-                when not (List.mem package_name x.jsx.exclude_dependencies) ->
+                when not (List.mem package_name x.jsx.preserve_dependencies) ->
                   x.jsx
               | _ -> Bsb_jsx.from_map map);
             generators = extract_generators map;

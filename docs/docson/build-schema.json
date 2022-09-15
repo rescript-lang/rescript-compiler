@@ -346,7 +346,7 @@
           "enum": ["classic", "automatic"],
           "description": "JSX transformation mode"
         },
-        "exclude-dependencies": {
+        "preserve-dependencies": {
           "$ref": "#/definitions/dependencies",
           "description": "Don't propagate the jsx configuration to these dependencies."
         }
