@@ -1710,112 +1710,61 @@ module Bsb_build_schemas
 
 (* let files = "files" *)
 let version = "version"
-
 let name = "name"
 
 (* let ocaml_config = "ocaml-config" *)
 let bsdep = "bsdep"
-
 let ppx_flags = "ppx-flags"
-
 let pp_flags = "pp-flags"
-
 let bsc = "bsc"
-
 let bs_external_includes = "bs-external-includes"
-
 let bs_lib_dir = "bs-lib-dir"
-
 let bs_dependencies = "bs-dependencies"
-
 let pinned_dependencies = "pinned-dependencies"
-
 let bs_dev_dependencies = "bs-dev-dependencies"
-
 let sources = "sources"
-
 let dir = "dir"
-
 let files = "files"
-
 let subdirs = "subdirs"
-
 let bsc_flags = "bsc-flags"
-
 let excludes = "excludes"
-
 let slow_re = "slow-re"
-
 let resources = "resources"
-
 let public = "public"
-
 let js_post_build = "js-post-build"
-
 let cmd = "cmd"
-
 let ninja = "ninja"
-
 let package_specs = "package-specs"
-
 let generate_merlin = "generate-merlin"
-
 let type_ = "type"
-
 let dev = "dev"
-
 let export_all = "all"
-
 let export_none = "none"
-
 let use_stdlib = "use-stdlib"
-
 let external_stdlib = "external-stdlib"
-
 let reason = "reason"
-
 let react_jsx = "react-jsx"
-
 let jsx = "jsx"
-
 let jsx_version = "version"
-
 let jsx_module = "module"
-
 let jsx_mode = "mode"
-
+let jsx_exclude_dependencies = "exclude-dependencies"
 let entries = "entries"
-
 let backend = "backend"
-
 let main_module = "main-module"
-
 let cut_generators = "cut-generators"
-
 let generators = "generators"
-
 let command = "command"
-
 let edge = "edge"
-
 let namespace = "namespace"
-
 let in_source = "in-source"
-
 let warnings = "warnings"
-
 let number = "number"
-
 let error = "error"
-
 let suffix = "suffix"
-
 let gentypeconfig = "gentypeconfig"
-
 let language = "language"
-
 let path = "path"
-
 let ignored_dirs = "ignored-dirs"
 
 end
@@ -5173,11 +5122,13 @@ module Bsb_jsx
 type version = Jsx_v3 | Jsx_v4
 type module_ = React
 type mode = Classic | Automatic
+type dependencies = string list
 
 type t = {
   version : version option;
   module_ : module_ option;
   mode : mode option;
+  exclude_dependencies : dependencies;
 }
 
 let encode_no_nl jsx =
@@ -5195,10 +5146,17 @@ let encode_no_nl jsx =
 let ( .?() ) = Map_string.find_opt
 let ( |? ) m (key, cb) = m |> Ext_json.test key cb
 
+let get_list_string_acc (s : Ext_json_types.t array) acc =
+  Ext_array.to_list_map_acc s acc (fun x ->
+      match x with Str x -> Some x.str | _ -> None)
+
+let get_list_string s = get_list_string_acc s []
+
 let from_map map =
   let version : version option ref = ref None in
   let module_ : module_ option ref = ref None in
   let mode : mode option ref = ref None in
+  let exclude_dependencies : dependencies ref = ref [] in
   map
   |? ( Bsb_build_schemas.jsx,
        `Obj
@@ -5208,11 +5166,11 @@ let from_map map =
                match flo with
                | "3" -> version := Some Jsx_v3
                | "4" -> version := Some Jsx_v4
-               | _ -> Bsb_exception.errorf ~loc "Unsupported jsx-version %s" flo
+               | _ -> Bsb_exception.errorf ~loc "Unsupported jsx version %s" flo
                )
            | Some x ->
                Bsb_exception.config_error x
-                 "Unexpected input (expect a version number) for jsx-version"
+                 "Unexpected input (expect a version number) for jsx version"
            | None -> ()) )
   |? ( Bsb_build_schemas.jsx,
        `Obj
@@ -5221,10 +5179,10 @@ let from_map map =
            | Some (Str { loc; str }) -> (
                match str with
                | "react" -> module_ := Some React
-               | _ -> Bsb_exception.errorf ~loc "Unsupported jsx-module %s" str)
+               | _ -> Bsb_exception.errorf ~loc "Unsupported jsx module %s" str)
            | Some x ->
                Bsb_exception.config_error x
-                 "Unexpected input (jsx module name) for jsx-mode"
+                 "Unexpected input (jsx module name) for jsx module"
            | None -> ()) )
   |? ( Bsb_build_schemas.jsx,
        `Obj
@@ -5234,13 +5192,28 @@ let from_map map =
                match str with
                | "classic" -> mode := Some Classic
                | "automatic" -> mode := Some Automatic
-               | _ -> Bsb_exception.errorf ~loc "Unsupported jsx-mode %s" str)
+               | _ -> Bsb_exception.errorf ~loc "Unsupported jsx mode %s" str)
            | Some x ->
                Bsb_exception.config_error x
-                 "Unexpected input (expect classic or automatic) for jsx-mode"
+                 "Unexpected input (expect classic or automatic) for jsx mode"
+           | None -> ()) )
+  |? ( Bsb_build_schemas.jsx,
+       `Obj
+         (fun m ->
+           match m.?(Bsb_build_schemas.jsx_exclude_dependencies) with
+           | Some (Arr { content }) ->
+               exclude_dependencies := get_list_string content
+           | Some x ->
+               Bsb_exception.config_error x
+                 "Unexpected input for jsx exclude_dependencies"
            | None -> ()) )
   |> ignore;
-  { version = !version; module_ = !module_; mode = !mode }
+  {
+    version = !version;
+    module_ = !module_;
+    mode = !mode;
+    exclude_dependencies = !exclude_dependencies;
+  }
 
 end
 module Ext_module_system
@@ -10656,8 +10629,10 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
             reason_react_jsx;
             jsx =
               (match package_kind with
-              | Toplevel -> Bsb_jsx.from_map map
-              | Pinned_dependency x | Dependency x -> x.jsx);
+              | (Pinned_dependency x | Dependency x)
+                when not (List.mem package_name x.jsx.exclude_dependencies) ->
+                  x.jsx
+              | _ -> Bsb_jsx.from_map map);
             generators = extract_generators map;
             cut_generators;
           }
