@@ -2344,18 +2344,20 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
         exp_attributes = sexp.pexp_attributes;
         exp_env = env }
   | Pexp_field(srecord, lid) ->
-     let label_is_optional ld =
-      match ld.lbl_repres with
-      | Record_optional_labels lbls -> Ext_list.mem_string lbls ld.lbl_name
-      | _ -> false in
       let (record, label, _, is_option) = type_label_access env srecord lid in
-      let should_wrap_in_option = is_option && not (label_is_optional label) in
       let (_, ty_arg, ty_res) = instance_label false label in
       unify_exp env record ty_res;
+      let ty_arg =
+        if is_option then
+          (match extract_option_type env ty_arg with
+          | _ -> ty_arg
+          | exception Assert_failure _ -> type_option ty_arg)
+        else
+          ty_arg in
       rue {
         exp_desc = Texp_field(record, lid, label);
         exp_loc = loc; exp_extra = [];
-        exp_type = if should_wrap_in_option then type_option ty_arg else ty_arg;
+        exp_type = ty_arg;
         exp_attributes = sexp.pexp_attributes;
         exp_env = env }
   | Pexp_setfield(srecord, lid, snewval) ->
