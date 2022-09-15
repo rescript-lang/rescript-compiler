@@ -14,6 +14,7 @@
 
 #### :rocket: New Feature
 
+- Propagte `"jsx"` configuration to dependencies https://github.com/rescript-lang/rescript-compiler/pull/5661
 - Add support for empty record literal `{}` for records where all fields are optional https://github.com/rescript-lang/rescript-compiler/pull/5658
 - Add support for empty record type (e.g. `type empty = {}`) https://github.com/rescript-lang/rescript-compiler/pull/5658
 
