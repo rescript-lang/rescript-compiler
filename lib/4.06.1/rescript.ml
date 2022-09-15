@@ -1748,7 +1748,7 @@ let jsx = "jsx"
 let jsx_version = "version"
 let jsx_module = "module"
 let jsx_mode = "mode"
-let jsx_exclude_dependencies = "exclude-dependencies"
+let jsx_preserve_dependencies = "preserve-dependencies"
 let entries = "entries"
 let backend = "backend"
 let main_module = "main-module"
@@ -5128,7 +5128,7 @@ type t = {
   version : version option;
   module_ : module_ option;
   mode : mode option;
-  exclude_dependencies : dependencies;
+  preserve_dependencies : dependencies;
 }
 
 let encode_no_nl jsx =
@@ -5156,7 +5156,7 @@ let from_map map =
   let version : version option ref = ref None in
   let module_ : module_ option ref = ref None in
   let mode : mode option ref = ref None in
-  let exclude_dependencies : dependencies ref = ref [] in
+  let preserve_dependencies : dependencies ref = ref [] in
   map
   |? ( Bsb_build_schemas.jsx,
        `Obj
@@ -5200,19 +5200,19 @@ let from_map map =
   |? ( Bsb_build_schemas.jsx,
        `Obj
          (fun m ->
-           match m.?(Bsb_build_schemas.jsx_exclude_dependencies) with
+           match m.?(Bsb_build_schemas.jsx_preserve_dependencies) with
            | Some (Arr { content }) ->
-               exclude_dependencies := get_list_string content
+               preserve_dependencies := get_list_string content
            | Some x ->
                Bsb_exception.config_error x
-                 "Unexpected input for jsx exclude_dependencies"
+                 "Unexpected input for jsx preserve-dependencies"
            | None -> ()) )
   |> ignore;
   {
     version = !version;
     module_ = !module_;
     mode = !mode;
-    exclude_dependencies = !exclude_dependencies;
+    preserve_dependencies = !preserve_dependencies;
   }
 
 end
@@ -10630,7 +10630,7 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
             jsx =
               (match package_kind with
               | (Pinned_dependency x | Dependency x)
-                when not (List.mem package_name x.jsx.exclude_dependencies) ->
+                when not (List.mem package_name x.jsx.preserve_dependencies) ->
                   x.jsx
               | _ -> Bsb_jsx.from_map map);
             generators = extract_generators map;
