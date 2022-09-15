@@ -350,7 +350,9 @@
           "$ref": "#/definitions/dependencies",
           "description": "Don't propagate the jsx configuration to these dependencies."
         }
-      }
+      },
+      "additionalProperties": false,
+      "required": ["version"]
     },
     "refmt-specs": {
       "oneOf": [
