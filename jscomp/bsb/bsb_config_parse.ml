@@ -334,8 +334,10 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
             reason_react_jsx;
             jsx =
               (match package_kind with
-              | Toplevel -> Bsb_jsx.from_map map
-              | Pinned_dependency x | Dependency x -> x.jsx);
+              | (Pinned_dependency x | Dependency x)
+                when not (List.mem package_name x.jsx.exclude_dependencies) ->
+                  x.jsx
+              | _ -> Bsb_jsx.from_map map);
             generators = extract_generators map;
             cut_generators;
           }
