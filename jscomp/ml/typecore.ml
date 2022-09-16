@@ -280,17 +280,66 @@ let type_option ty =
 let mkexp exp_desc exp_type exp_loc exp_env =
   { exp_desc; exp_type; exp_loc; exp_env; exp_extra = []; exp_attributes = [] }
 
+let mkpat pat_desc pat_type pat_loc pat_env =
+  { pat_desc; pat_type; pat_loc; pat_env; pat_extra = []; pat_attributes = [] }
+
 let option_none ty loc =
   let lid = Longident.Lident "None"
   and env = Env.initial_safe_string in
   let cnone = Env.lookup_constructor lid env in
   mkexp (Texp_construct(mknoloc lid, cnone, [])) ty loc env
 
+let pat_option_none ty loc env =
+  let lid = Longident.Lident "None" in
+  let cnone = Env.lookup_constructor lid env in
+  mkpat (Tpat_construct(mknoloc lid, cnone, [])) ty loc env
+
 let option_some texp =
   let lid = Longident.Lident "Some" in
   let csome = Env.lookup_constructor lid Env.initial_safe_string in
   mkexp ( Texp_construct(mknoloc lid , csome, [texp]) )
     (type_option texp.exp_type) texp.exp_loc texp.exp_env
+
+let pat_option_some tpat =
+  let lid = Longident.Lident "Some" in
+  let csome = Env.lookup_constructor lid tpat.pat_env in
+  mkpat ( Tpat_construct(mknoloc lid , csome, [tpat]) )
+    (type_option tpat.pat_type) tpat.pat_loc tpat.pat_env
+
+let wrapOptionCheck
+    ~(mk_body : expression -> expression)
+    (e : expression) =
+  let loc = e.exp_loc in
+  let env = e.exp_env in
+  let typ = e.exp_type in
+  let typ_opt = type_option typ in
+  let case_none : case = {
+    c_lhs = pat_option_none typ_opt loc env;
+    c_guard = None;
+    c_rhs = option_none typ_opt loc;
+   } in
+  let var_pair name ty =
+    let id = Ident.create name in
+    {pat_desc = Tpat_var (id, mknoloc name); pat_type = ty;pat_extra=[];
+      pat_attributes = [];
+      pat_loc = Location.none; pat_env = env},
+    {exp_type = ty; exp_loc = Location.none; exp_env = env;
+      exp_extra = []; exp_attributes = [];
+      exp_desc =
+      Texp_ident(Path.Pident id, mknoloc (Longident.Lident name),
+                {val_type = ty; val_kind = Val_reg;
+                  val_attributes = [];
+                  Types.val_loc = Location.none})}
+  in
+  let x_pat, x_var = var_pair "x" typ in  
+  let case_some : case =
+    {
+      c_lhs = pat_option_some x_pat;
+      c_guard = None;
+      c_rhs = mk_body x_var;
+    } in
+  let cases = [case_none; case_some] in
+  Texp_match (e, cases, [], Total)
 
 let extract_option_type env ty =
   match expand_head env ty with {desc = Tconstr(path, [ty], _)}
@@ -2063,7 +2112,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
           | exception Not_found -> false)
       in
 
-      let funct, wrap_in_option = match expand_head env funct.exp_type with
+      let funct, wrap_1st_arg_option = match expand_head env funct.exp_type with
         | {desc = Tarrow (Nolabel, t1, t2, comm)} when typ_cannot_be_option t1 ->
           let _, arg1 = List.hd sargs in
           let ty1 = type_exp env arg1 in
@@ -2084,19 +2133,27 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
       end_def ();
       unify_var env (newvar()) funct.exp_type;
 
-      let ty_res =
-        if wrap_in_option then
+      let should_wrap_option =
+        if wrap_1st_arg_option then
           match (extract_option_type env ty_res) with
-          | _ -> ty_res
-          | exception Assert_failure _ -> type_option ty_res
-        else ty_res in
- 
-      rue {
-        exp_desc = Texp_apply(funct, args);
+          | _ -> false
+          | exception Assert_failure _ -> true
+        else false in
+      let exp_desc = match args with
+        | (l, Some arg1) :: rest when wrap_1st_arg_option ->
+          wrapOptionCheck
+          ~mk_body:(fun e -> { e with exp_desc = Texp_apply(funct, (l, Some e) :: rest) })
+          arg1 
+          | _ ->
+         Texp_apply(funct, args)
+         in
+      let res =  {
+        exp_desc;
         exp_loc = loc; exp_extra = [];
         exp_type = ty_res;
         exp_attributes = sexp.pexp_attributes;
-        exp_env = env }
+        exp_env = env } in
+      rue (if should_wrap_option then option_some res else res)
   | Pexp_match(sarg, caselist) ->
       begin_def ();
       let arg = type_exp env sarg in
@@ -2347,19 +2404,28 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
       let (record, label, _, is_option) = type_label_access env srecord lid in
       let (_, ty_arg, ty_res) = instance_label false label in
       unify_exp env record ty_res;
-      let ty_arg =
+      let should_wrap_option =
         if is_option then
           (match extract_option_type env ty_arg with
-          | _ -> ty_arg
-          | exception Assert_failure _ -> type_option ty_arg)
+          | _ -> false
+          | exception Assert_failure _ -> true)
         else
-          ty_arg in
-      rue {
-        exp_desc = Texp_field(record, lid, label);
+          false in
+      let exp_desc =
+        if is_option then
+          wrapOptionCheck
+          ~mk_body:(fun e -> { e with exp_desc = Texp_field(e, lid, label) })
+          record
+        else
+          Texp_field(record, lid, label) in
+      let res = 
+          {
+        exp_desc;
         exp_loc = loc; exp_extra = [];
         exp_type = ty_arg;
         exp_attributes = sexp.pexp_attributes;
-        exp_env = env }
+        exp_env = env } in
+      rue (if should_wrap_option then option_some res else res)
   | Pexp_setfield(srecord, lid, snewval) ->
       let (record, label, opath, _is_option) = type_label_access env srecord lid in
       let ty_record = if opath = None then newvar () else record.exp_type in
