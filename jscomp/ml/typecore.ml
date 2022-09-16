@@ -2093,38 +2093,6 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
       assert (sargs <> []);
       begin_def (); (* one more level for non-returning functions *)
       let funct = type_exp env sfunct in
-
-      let typ_cannot_be_option t = match expand_head env t with
-        | {desc = Tconstr (p, _, _) } when
-          Path.same p Predef.path_int ||
-          Path.same p Predef.path_char ||
-          Path.same p Predef.path_string ||
-          Path.same p Predef.path_bytes ||
-          Path.same p Predef.path_float ||
-          Path.same p Predef.path_bool ->
-            true
-        | {desc = Tarrow _} ->
-            true
-        | _ ->
-          (match extract_concrete_typedecl env t with
-          | (_, _, {type_kind = Type_record _}) -> true
-          | _ -> false
-          | exception Not_found -> false)
-      in
-
-      let funct, wrap_1st_arg_option = match expand_head env funct.exp_type with
-        | {desc = Tarrow (Nolabel, t1, t2, comm)} when typ_cannot_be_option t1 ->
-          let _, arg1 = List.hd sargs in
-          let ty1 = type_exp env arg1 in
-          (match extract_option_type env ty1.exp_type with
-          | _ ->
-            let newT = {funct.exp_type with desc = Tarrow (Nolabel, type_option t1, t2, comm)} in
-            let funct = {funct with exp_type = newT} in
-            funct, true
-          | exception Assert_failure _ -> funct, false
-          )
-        | _ -> funct, false in
-
       let ty = instance env funct.exp_type in
       end_def ();
       wrap_trace_gadt_instances env (lower_args env []) ty;
@@ -2132,28 +2100,12 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
       let (args, ty_res) = type_application env funct sargs in
       end_def ();
       unify_var env (newvar()) funct.exp_type;
-
-      let should_wrap_option =
-        if wrap_1st_arg_option then
-          match (extract_option_type env ty_res) with
-          | _ -> false
-          | exception Assert_failure _ -> true
-        else false in
-      let exp_desc = match args with
-        | (l, Some arg1) :: rest when wrap_1st_arg_option ->
-          wrapOptionCheck
-          ~mk_body:(fun e -> { e with exp_desc = Texp_apply(funct, (l, Some e) :: rest) })
-          arg1 
-          | _ ->
-         Texp_apply(funct, args)
-         in
-      let res =  {
-        exp_desc;
+      rue {
+        exp_desc = Texp_apply(funct, args);
         exp_loc = loc; exp_extra = [];
         exp_type = ty_res;
         exp_attributes = sexp.pexp_attributes;
-        exp_env = env } in
-      rue (if should_wrap_option then option_some res else res)
+        exp_env = env }
   | Pexp_match(sarg, caselist) ->
       begin_def ();
       let arg = type_exp env sarg in
