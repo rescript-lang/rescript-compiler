@@ -37,3 +37,7 @@ type 'props component = ('props, element) componentLike
 (* this function exists to prepare for making `component` abstract *)
 external component : ('props, element) componentLike -> 'props component
   = "%identity"
+
+let addKeyProp (o : 't) k =
+  Obj.magic (Js.Obj.assign (Obj.magic o) [%obj { key = k }])
+  [@@inline]
