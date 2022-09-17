@@ -38,6 +38,6 @@ type 'props component = ('props, element) componentLike
 external component : ('props, element) componentLike -> 'props component
   = "%identity"
 
-let addKeyProp (o : 't) k =
+let addKeyProp (o : 't) (k : string) =
   Obj.magic (Js.Obj.assign (Obj.magic o) [%obj { key = k }])
   [@@inline]
