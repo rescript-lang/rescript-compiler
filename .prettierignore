@@ -3,7 +3,6 @@ lib/
 vendor/
 ninja/
 syntax/
-ocaml-tree/
 _opam
 CHANGELOG.md
 README.md

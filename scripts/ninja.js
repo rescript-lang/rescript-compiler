@@ -1718,18 +1718,6 @@ o stubs/stubs.cmxa : stubslib stubs/bs_hash_stubs.cmx stubs/libbs_hash.a
     ml = stubs/bs_hash_stubs.cmx
     clib = stubs/libbs_hash.a
 
-rule p4of
-    command = node ../ocaml-tree/wasm.js $flags -i $i -o $out
-    generator = true
-o core/js_fold.ml: p4of core/j.ml
-    flags = -fold
-o core/js_record_iter.ml: p4of core/j.ml
-    flags = -record-iter
-o core/js_record_map.ml: p4of core/j.ml
-    flags = -record-map
-o core/js_record_fold.ml: p4of core/j.ml
-    flags = -record-fold
-
 o ${my_target}/bsc.exe: link  ${makeLibs(
     bsc_libs
   )} main/rescript_compiler_main.cmx
