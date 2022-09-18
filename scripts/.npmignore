@@ -4,3 +4,4 @@ format.js
 local_br_clean.sh
 setVersion.js
 makeArtifactList.js
+buildNinjaBinary.js

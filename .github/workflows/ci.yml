@@ -45,6 +45,16 @@ jobs:
         with:
           node-version: 16
 
+      # Required for ninja build
+      - name: "Windows: Use MSVC"
+        if: runner.os == 'Windows'
+        uses: TheMrMilchmann/setup-msvc-dev@v2
+        with:
+          arch: x64
+
+      - name: Build ninja
+        run: node scripts/buildNinjaBinary.js
+
       - name: NPM install
         run: opam exec -- npm ci
         env:
