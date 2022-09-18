@@ -39,5 +39,7 @@ external component : ('props, element) componentLike -> 'props component
   = "%identity"
 
 let addKeyProp (o : 't) (k : string) =
-  Obj.magic (Js.Obj.assign (Obj.magic o) [%obj { key = k }])
+  (* Use Js_obj.assign, not Js.Obj.assign, otherwise the dependency will not be picked up correctly
+     in the ninja file. *)
+  Obj.magic (Js_obj.assign (Obj.magic o) [%obj { key = k }])
   [@@inline]
