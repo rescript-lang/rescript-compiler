@@ -36,9 +36,6 @@ opam install ocaml-lsp-server
 
 # Any recent OCaml version works as a development compiler
 opam switch create 4.14.0 # can also create local switch with opam switch create . 4.14.0
-
-# We use NodeJS to run our test suites and other utilities.
-npm install
 ```
 
 ## Initialize submodules
@@ -49,6 +46,10 @@ After a fresh checkout or deep clean, do:
 git submodule init
 git submodule update
 ```
+
+## npm install
+
+Run `npm install`. This will build the ninja binary and run an initial `./scripts/ninja.js config` and `./scripts/ninja.js build` (see below).
 
 ## Configure and Build the Compiler (`ninja` workflow)
 
