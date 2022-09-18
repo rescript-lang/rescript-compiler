@@ -27,7 +27,7 @@
 
 #### :nail_care: Polish
 
-- JSC V4 does not list `key` in `props` type definition anymore.
+- JSX V4 does not list `key` in `props` type definition anymore.
 - Mention all missing fields in error message for records, not just one https://github.com/rescript-lang/rescript-compiler/pull/5657
 
 # 10.1.0-alpha.1
