@@ -20,10 +20,6 @@ if (platform === "win32") {
 }
 
 const src = path.join(ninjaDir, `ninja${platform === "win32" ? ".exe" : ""}`);
-
-const dst =
-  platform === "darwin" && process.arch === "arm64"
-    ? path.join(__dirname, "..", process.platform + process.arch, `ninja.exe`)
-    : path.join(__dirname, "..", platform, `ninja.exe`);
+const dst = require("./bin_path").ninja_exe;
 
 fs.copyFileSync(src, dst);
