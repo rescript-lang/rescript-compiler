@@ -2168,7 +2168,10 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
         check_duplicates loc env lbl_exp_list;
         let label_descriptions, representation = match lbl_exp_list, repr_opt with
         | (_, { lbl_all = label_descriptions; lbl_repres = representation}, _) :: _, _ -> label_descriptions, representation
-        | [], Some (Record_optional_labels optional_labels as representation) when lid_sexp_list = [] ->
+        | [], Some (representation) when lid_sexp_list = [] ->
+            let optional_labels = match representation with
+            | Record_optional_labels optional_labels -> optional_labels
+            | _ -> [] in
             let filter_missing (ld : Types.label_declaration) =
               let name = Ident.name ld.ld_id in
               if List.mem name optional_labels then
@@ -3663,7 +3666,7 @@ let report_error env ppf = function
   | Labels_missing labels ->
       let print_labels ppf =
         List.iter (fun lbl -> fprintf ppf "@ %s" ( lbl)) in
-      fprintf ppf "@[<hov>Some required record fields are missing:%a@]"
+      fprintf ppf "@[<hov>Some required record fields are missing:%a. If this is a component, add the missing props.@]"
         print_labels labels
   | Label_not_mutable lid ->
       fprintf ppf "The record field %a is not mutable" longident lid
