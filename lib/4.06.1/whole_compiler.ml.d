@@ -632,11 +632,8 @@
 ../lib/4.06.1/whole_compiler.ml: ./ml/typetexp.mli
 ../lib/4.06.1/whole_compiler.ml: ./ml/untypeast.ml
 ../lib/4.06.1/whole_compiler.ml: ./ml/untypeast.mli
-../lib/4.06.1/whole_compiler.ml: ./napkin/react_jsx_common.ml
 ../lib/4.06.1/whole_compiler.ml: ./napkin/reactjs_jsx_ppx.ml
 ../lib/4.06.1/whole_compiler.ml: ./napkin/reactjs_jsx_ppx.mli
-../lib/4.06.1/whole_compiler.ml: ./napkin/reactjs_jsx_v3.ml
-../lib/4.06.1/whole_compiler.ml: ./napkin/reactjs_jsx_v4.ml
 ../lib/4.06.1/whole_compiler.ml: ./napkin/res_ast_conversion.ml
 ../lib/4.06.1/whole_compiler.ml: ./napkin/res_ast_conversion.mli
 ../lib/4.06.1/whole_compiler.ml: ./napkin/res_comment.ml
