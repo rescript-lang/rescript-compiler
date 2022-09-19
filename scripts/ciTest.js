@@ -57,7 +57,7 @@ function init() {
       vendorOCamlPath + path.delimiter + process.env["PATH"];
   }
 
-  var ninjaPath = path.join(__dirname, "..", process.platform, "ninja.exe");
+  var ninjaPath = require("./bin_path").ninja_exe;
 
   if (!fs.existsSync(ninjaPath)) {
     throw new Error("ninja could not be configured");
