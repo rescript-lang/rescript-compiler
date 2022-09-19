@@ -39,10 +39,14 @@ var force_lib_rebuild = process.argv.includes("-force-lib-rebuild");
 function provideNinja() {
   var vendor_ninja_version = "1.9.0.git";
   var ninja_source_dir = path.join(root_dir, "vendor", "ninja");
+
   function build_ninja() {
     console.log(`building ninja`);
     ensureExists(ninja_source_dir);
+
     if (fs.existsSync(path.join(root_dir, "vendor", "ninja.tar.gz"))) {
+      // Build from source on installation of the npm package
+      // for platforms where we don't provide a pre-built binary.
       console.log("Extracting ninja sources...");
       child_process.execSync(`tar xzf ../ninja.tar.gz`, {
         cwd: ninja_source_dir,
@@ -59,8 +63,8 @@ function provideNinja() {
         ninja_bin_output
       );
     } else {
-      console.log(`ninja.tar.gz not availble in CI mode`);
-      require("../ninja/snapshot").build();
+      // Build from source for "npm install" in local dev.
+      require("../scripts/buildNinjaBinary");
       fs.copyFileSync(
         path.join(root_dir, "ninja", ninja_bin_filename),
         ninja_bin_output
