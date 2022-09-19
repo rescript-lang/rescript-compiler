@@ -567,8 +567,11 @@
 ../lib/4.06.1/unstable/js_playground_compiler.ml: ./ml/typetexp.mli
 ../lib/4.06.1/unstable/js_playground_compiler.ml: ./ml/untypeast.ml
 ../lib/4.06.1/unstable/js_playground_compiler.ml: ./ml/untypeast.mli
+../lib/4.06.1/unstable/js_playground_compiler.ml: ./napkin/react_jsx_common.ml
 ../lib/4.06.1/unstable/js_playground_compiler.ml: ./napkin/reactjs_jsx_ppx.ml
 ../lib/4.06.1/unstable/js_playground_compiler.ml: ./napkin/reactjs_jsx_ppx.mli
+../lib/4.06.1/unstable/js_playground_compiler.ml: ./napkin/reactjs_jsx_v3.ml
+../lib/4.06.1/unstable/js_playground_compiler.ml: ./napkin/reactjs_jsx_v4.ml
 ../lib/4.06.1/unstable/js_playground_compiler.ml: ./napkin/res_comment.ml
 ../lib/4.06.1/unstable/js_playground_compiler.ml: ./napkin/res_comment.mli
 ../lib/4.06.1/unstable/js_playground_compiler.ml: ./napkin/res_comments_table.ml
