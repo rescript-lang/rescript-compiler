@@ -19,7 +19,11 @@ if (platform === "win32") {
   child_process.execSync(`strip ninja`, { stdio: [0, 1, 2], cwd: ninjaDir });
 }
 
+const { absolutePath, ninja_exe } = require("./bin_path");
 const src = path.join(ninjaDir, `ninja${platform === "win32" ? ".exe" : ""}`);
-const dst = require("./bin_path").ninja_exe;
 
-fs.copyFileSync(src, dst);
+if (!fs.existsSync(absolutePath)) {
+  fs.mkdirSync(absolutePath);
+}
+
+fs.copyFileSync(src, ninja_exe);
