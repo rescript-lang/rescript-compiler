@@ -8,18 +8,15 @@ bsc
 bsrefmt
 darwin/bsb_helper.exe
 darwin/bsc.exe
-darwin/ninja.COPYING
 darwin/ninja.exe
 darwin/refmt.exe
 darwin/rescript.exe
 darwinarm64/bsb_helper.exe
 darwinarm64/bsc.exe
-darwinarm64/ninja.COPYING
 darwinarm64/ninja.exe
 darwinarm64/refmt.exe
 darwinarm64/rescript.exe
 docs/docson/build-schema.json
-freebsd/ninja.COPYING
 jscomp/stubs/ext_basic_hash_stubs.c
 lib/4.06.1/bsb_helper.ml
 lib/4.06.1/bsb_helper.mli
@@ -946,7 +943,6 @@ lib/ocaml/uchar.ml
 lib/ocaml/uchar.mli
 linux/bsb_helper.exe
 linux/bsc.exe
-linux/ninja.COPYING
 linux/ninja.exe
 linux/refmt.exe
 linux/rescript.exe
@@ -990,7 +986,6 @@ vendor/ninja.tar.gz
 vendor/ocaml.tar.gz
 win32/bsb_helper.exe
 win32/bsc.exe
-win32/ninja.COPYING
 win32/ninja.exe
 win32/refmt.exe
 win32/rescript.exe
