@@ -950,7 +950,6 @@ linux/ninja.COPYING
 linux/ninja.exe
 linux/refmt.exe
 linux/rescript.exe
-openbsd/.keep
 package.json
 rescript
 scripts/LICENSE.ml
