@@ -51,7 +51,7 @@ var ReactPropTypeLocationNames;
 
 var factory = (function factory(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
   /**
-   * Policies that describe methods in `ReactClassInterface`.
+   * Policies that describe methods in \`ReactClassInterface\`.
    */
 
   var injectedMixins = [];
@@ -60,9 +60,9 @@ var factory = (function factory(ReactComponent, isValidElement, ReactNoopUpdateQ
    * Composite components are higher-level components that compose other composite
    * or host components.
    *
-   * To create a new type of `ReactClass`, pass a specification of
-   * your new class to `React.createClass`. The only requirement of your class
-   * specification is that you implement a `render` method.
+   * To create a new type of \`ReactClass\`, pass a specification of
+   * your new class to \`React.createClass\`. The only requirement of your class
+   * specification is that you implement a \`render\` method.
    *
    *   var MyComponent = React.createClass({
    *     render: function() {
@@ -71,7 +71,7 @@ var factory = (function factory(ReactComponent, isValidElement, ReactNoopUpdateQ
    *   });
    *
    * The class specification supports a specific protocol of methods that have
-   * special meaning (e.g. `render`). See `ReactClassInterface` for
+   * special meaning (e.g. \`render\`). See \`ReactClassInterface\` for
    * more the comprehensive protocol. Any other properties and methods in the
    * class specification will be available on the prototype.
    *
@@ -124,10 +124,10 @@ var factory = (function factory(ReactComponent, isValidElement, ReactNoopUpdateQ
 
     /**
      * Invoked when the component is mounted. Values in the mapping will be set on
-     * `this.props` if that prop is not specified (i.e. using an `in` check).
+     * \`this.props\` if that prop is not specified (i.e. using an \`in\` check).
      *
-     * This method is invoked before `getInitialState` and therefore cannot rely
-     * on `this.state` or use `this.setState`.
+     * This method is invoked before \`getInitialState\` and therefore cannot rely
+     * on \`this.state\` or use \`this.setState\`.
      *
      * @return {object}
      * @optional
@@ -136,7 +136,7 @@ var factory = (function factory(ReactComponent, isValidElement, ReactNoopUpdateQ
 
     /**
      * Invoked once before the component is mounted. The return value will be used
-     * as the initial value of `this.state`.
+     * as the initial value of \`this.state\`.
      *
      *   getInitialState: function() {
      *     return {
@@ -157,7 +157,7 @@ var factory = (function factory(ReactComponent, isValidElement, ReactNoopUpdateQ
     getChildContext: 'DEFINE_MANY_MERGED',
 
     /**
-     * Uses props from `this.props` and state from `this.state` to render the
+     * Uses props from \`this.props\` and state from \`this.state\` to render the
      * structure of the component.
      *
      * No guarantees are made about when or how often this method is invoked, so
@@ -178,7 +178,7 @@ var factory = (function factory(ReactComponent, isValidElement, ReactNoopUpdateQ
     /**
      * Invoked when the component is initially created and about to be mounted.
      * This may have side effects, but any external subscriptions or data created
-     * by this method must be cleaned up in `componentWillUnmount`.
+     * by this method must be cleaned up in \`componentWillUnmount\`.
      *
      * @optional
      */
@@ -200,7 +200,7 @@ var factory = (function factory(ReactComponent, isValidElement, ReactNoopUpdateQ
      * Invoked before the component receives new props.
      *
      * Use this as an opportunity to react to a prop transition by updating the
-     * state using `this.setState`. Current props are accessed via `this.props`.
+     * state using \`this.setState\`. Current props are accessed via \`this.props\`.
      *
      *   componentWillReceiveProps: function(nextProps, nextContext) {
      *     this.setState({
@@ -208,9 +208,9 @@ var factory = (function factory(ReactComponent, isValidElement, ReactNoopUpdateQ
      *     });
      *   }
      *
-     * NOTE: There is no equivalent `componentWillReceiveState`. An incoming prop
+     * NOTE: There is no equivalent \`componentWillReceiveState\`. An incoming prop
      * transition may cause a state change, but the opposite is not true. If you
-     * need it, you are probably looking for `componentWillUpdate`.
+     * need it, you are probably looking for \`componentWillUpdate\`.
      *
      * @param {object} nextProps
      * @optional
@@ -221,7 +221,7 @@ var factory = (function factory(ReactComponent, isValidElement, ReactNoopUpdateQ
      * Invoked while deciding if the component should be updated as a result of
      * receiving new props, state and/or context.
      *
-     * Use this as an opportunity to `return false` when you're certain that the
+     * Use this as an opportunity to \`return false\` when you're certain that the
      * transition to the new props/state/context will not require a component
      * update.
      *
@@ -241,12 +241,12 @@ var factory = (function factory(ReactComponent, isValidElement, ReactNoopUpdateQ
 
     /**
      * Invoked when the component is about to update due to a transition from
-     * `this.props`, `this.state` and `this.context` to `nextProps`, `nextState`
-     * and `nextContext`.
+     * \`this.props\`, \`this.state\` and \`this.context\` to \`nextProps\`, \`nextState\`
+     * and \`nextContext\`.
      *
      * Use this as an opportunity to perform preparation before an update occurs.
      *
-     * NOTE: You **cannot** use `this.setState()` in this method.
+     * NOTE: You **cannot** use \`this.setState()\` in this method.
      *
      * @param {object} nextProps
      * @param {?object} nextState
@@ -276,7 +276,7 @@ var factory = (function factory(ReactComponent, isValidElement, ReactNoopUpdateQ
      *
      * Use this as an opportunity to deallocate any external resources.
      *
-     * NOTE: There is no `componentDidUnmount` since your component will have been
+     * NOTE: There is no \`componentDidUnmount\` since your component will have been
      * destroyed by that point.
      *
      * @optional
@@ -302,7 +302,7 @@ var factory = (function factory(ReactComponent, isValidElement, ReactNoopUpdateQ
    * Mapping from class specification keys to special processing functions.
    *
    * Although these are declared like instance properties in the specification
-   * when defining classes using `React.createClass`, they are actually static
+   * when defining classes using \`React.createClass\`, they are actually static
    * and are accessible on the constructor instead of the prototype. Despite
    * being static, they must be defined outside of the "statics" key under
    * which all other static methods are defined.
@@ -372,7 +372,7 @@ var factory = (function factory(ReactComponent, isValidElement, ReactNoopUpdateQ
       //   // if (process.env.NODE_ENV !== 'production') {
       //   //   warning(
       //   //     typeof typeDef[propName] === 'function',
-      //   //     '%s: %s type `%s` is invalid; it must be a function, usually from ' +
+      //   //     '%s: %s type \`%s\` is invalid; it must be a function, usually from ' +
       //   //       'React.PropTypes.',
       //   //     Constructor.displayName || 'ReactClass',
       //   //     ReactPropTypeLocationNames[location],
@@ -393,7 +393,7 @@ var factory = (function factory(ReactComponent, isValidElement, ReactNoopUpdateQ
       // _invariant(
       //   specPolicy === 'OVERRIDE_BASE',
       //   'ReactClassInterface: You are attempting to override ' +
-      //     '`%s` from your class specification. Ensure that your method names ' +
+      //     '\`%s\` from your class specification. Ensure that your method names ' +
       //     'do not overlap with React methods.',
       //   name
       // );
@@ -404,7 +404,7 @@ var factory = (function factory(ReactComponent, isValidElement, ReactNoopUpdateQ
       // _invariant(
       //   specPolicy === 'DEFINE_MANY' || specPolicy === 'DEFINE_MANY_MERGED',
       //   'ReactClassInterface: You are attempting to define ' +
-      //     '`%s` on your component more than once. This conflict may be due ' +
+      //     '\`%s\` on your component more than once. This conflict may be due ' +
       //     'to a mixin.',
       //   name
       // );
@@ -542,7 +542,7 @@ var factory = (function factory(ReactComponent, isValidElement, ReactNoopUpdateQ
       // _invariant(
       //   !isReserved,
       //   'ReactClass: You are attempting to define a reserved ' +
-      //     'property, `%s`, that shouldn\'t be on the "statics" key. Define it ' +
+      //     'property, \`%s\`, that shouldn\\'t be on the "statics" key. Define it ' +
       //     'as an instance property instead; it will still be accessible on the ' +
       //     'constructor.',
       //   name
@@ -552,7 +552,7 @@ var factory = (function factory(ReactComponent, isValidElement, ReactNoopUpdateQ
       // _invariant(
       //   !isInherited,
       //   'ReactClass: You are attempting to define ' +
-      //     '`%s` on your component more than once. This conflict may be ' +
+      //     '\`%s\` on your component more than once. This conflict may be ' +
       //     'due to a mixin.',
       //   name
       // );
@@ -578,7 +578,7 @@ var factory = (function factory(ReactComponent, isValidElement, ReactNoopUpdateQ
         // _invariant(
         //   one[key] === undefined,
         //   'mergeIntoWithNoDuplicateKeys(): ' +
-        //     'Tried to merge two objects with the same key: `%s`. This conflict ' +
+        //     'Tried to merge two objects with the same key: \`%s\`. This conflict ' +
         //     'may be due to a mixin; in particular, this may be caused by two ' +
         //     'getInitialState() or getDefaultProps() methods returning objects ' +
         //     'with clashing keys.',
@@ -762,7 +762,7 @@ var factory = (function factory(ReactComponent, isValidElement, ReactNoopUpdateQ
    * Creates a composite component class given a class specification.
    * See https://facebook.github.io/react/docs/top-level-api.html#react.createclass
    *
-   * @param {object} spec Class specification (which must define `render`).
+   * @param {object} spec Class specification (which must define \`render\`).
    * @return {function} Component constructor function.
    * @public
    */
@@ -847,7 +847,7 @@ var factory = (function factory(ReactComponent, isValidElement, ReactNoopUpdateQ
 
     // _invariant(
     //   Constructor.prototype.render,
-    //   'createClass(...): Class specification must implement a `render` method.'
+    //   'createClass(...): Class specification must implement a \`render\` method.'
     // );
 
     // if (process.env.NODE_ENV !== 'production') {
