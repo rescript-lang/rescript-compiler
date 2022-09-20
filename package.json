@@ -27,6 +27,7 @@
   "files": [
     "CHANGELOG.md",
     "CREDITS.md",
+    "ninja.COPYING",
     "bsc",
     "bsrefmt",
     "rescript",
