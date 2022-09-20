@@ -168,8 +168,11 @@ let convertPropsIfTheyreFromJs = (props, jsPropsToReason, debugName) => {
   }
 }
 
-let createClass = (type reasonState retainedProps action, debugName): reactClass =>
-  ReasonReactOptimizedCreateClass.createClass(. Pexp_object not impemented in printer)
+// Old reason-react sources converted from .re syntax.
+// The OCaml object system is not available in ReScript anymore
+// let createClass = (type reasonState retainedProps action, debugName): reactClass =>
+//   ReasonReactOptimizedCreateClass.createClass(. Pexp_object not impemented in printer)
+let createClass = Obj.magic
 
 let basicComponent = debugName => {
   let componentTemplate = {
