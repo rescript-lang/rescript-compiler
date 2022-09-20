@@ -946,6 +946,7 @@ linux/bsc.exe
 linux/ninja.exe
 linux/refmt.exe
 linux/rescript.exe
+ninja.COPYING
 package.json
 rescript
 scripts/LICENSE.ml

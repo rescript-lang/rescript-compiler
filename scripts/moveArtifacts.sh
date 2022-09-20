@@ -11,3 +11,4 @@ mv binaries-win32/* win32
 rmdir binaries-*
 
 mv lib-ocaml lib/ocaml
+mv ninja/COPYING ninja.COPYING
