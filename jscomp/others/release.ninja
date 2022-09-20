@@ -63,7 +63,7 @@ o others/js_vector.cmj : cc_cmi others/js_vector.ml | others/belt_internals.cmi 
 o others/js_vector.cmi : cc others/js_vector.mli | others/belt_internals.cmi others/js.cmi $bsc
 o others/js_weakmap.cmi others/js_weakmap.cmj : cc others/js_weakmap.ml | others/belt_internals.cmi others/js.cmi $bsc
 o others/js_weakset.cmi others/js_weakset.cmj : cc others/js_weakset.ml | others/belt_internals.cmi others/js.cmi $bsc
-o others/jsx.cmi others/jsx.cmj : cc others/jsx.ml | others/belt_internals.cmi others/js.cmi others/js_obj.cmj $bsc
+o others/jsx.cmi others/jsx.cmj : cc others/jsx.ml | others/belt_internals.cmi others/js.cmi $bsc
 o others/jsxDOM.cmi others/jsxDOM.cmj : cc others/jsxDOM.ml | others/belt_internals.cmi others/js.cmi others/jsx.cmj others/jsxDOMStyle.cmj others/jsxEvent.cmj $bsc
 o others/jsxDOMStyle.cmi others/jsxDOMStyle.cmj : cc others/jsxDOMStyle.ml | others/belt_internals.cmi others/js.cmi $bsc
 o others/jsxEvent.cmi others/jsxEvent.cmj : cc others/jsxEvent.ml | others/belt_internals.cmi others/js.cmi $bsc
