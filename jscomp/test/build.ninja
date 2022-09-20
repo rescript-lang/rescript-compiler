@@ -40,7 +40,7 @@ o test/ari_regress_test.cmi : cc test/ari_regress_test.mli | $bsc $stdlib runtim
 o test/arith_lexer.cmi test/arith_lexer.cmj : cc test/arith_lexer.ml | test/arith_parser.cmj test/arith_syntax.cmj $bsc $stdlib runtime
 o test/arith_parser.cmi test/arith_parser.cmj : cc test/arith_parser.ml | test/arith_syntax.cmj $bsc $stdlib runtime
 o test/arith_syntax.cmi test/arith_syntax.cmj : cc test/arith_syntax.ml | $bsc $stdlib runtime
-o test/arity.cmi test/arity.cmj : cc test/arity.re | $bsc $stdlib runtime
+o test/arity.cmi test/arity.cmj : cc test/arity.res | $bsc $stdlib runtime
 o test/arity_deopt.cmi test/arity_deopt.cmj : cc test/arity_deopt.ml | test/mt.cmj $bsc $stdlib runtime
 o test/arity_infer.cmi test/arity_infer.cmj : cc test/arity_infer.ml | $bsc $stdlib runtime
 o test/arity_ml.cmi test/arity_ml.cmj : cc test/arity_ml.ml | $bsc $stdlib runtime
@@ -218,7 +218,7 @@ o test/functor_inst.cmi test/functor_inst.cmj : cc test/functor_inst.ml | $bsc $
 o test/functors.cmi test/functors.cmj : cc test/functors.ml | $bsc $stdlib runtime
 o test/gbk.cmi test/gbk.cmj : cc test/gbk.ml | $bsc $stdlib runtime
 o test/genlex_test.cmi test/genlex_test.cmj : cc test/genlex_test.ml | test/mt.cmj $bsc $stdlib runtime
-o test/gentTypeReTest.cmi test/gentTypeReTest.cmj : cc test/gentTypeReTest.re | $bsc $stdlib runtime
+o test/gentTypeReTest.cmi test/gentTypeReTest.cmj : cc test/gentTypeReTest.res | $bsc $stdlib runtime
 o test/global_exception_regression_test.cmi test/global_exception_regression_test.cmj : cc test/global_exception_regression_test.ml | test/mt.cmj $bsc $stdlib runtime
 o test/global_mangles.cmi test/global_mangles.cmj : cc test/global_mangles.ml | $bsc $stdlib runtime
 o test/global_module_alias_test.cmi test/global_module_alias_test.cmj : cc test/global_module_alias_test.ml | test/mt.cmj $bsc $stdlib runtime
@@ -297,9 +297,9 @@ o test/gpr_3852_alias.cmi test/gpr_3852_alias.cmj : cc test/gpr_3852_alias.ml | 
 o test/gpr_3852_alias_reify.cmj : cc_cmi test/gpr_3852_alias_reify.ml | test/gpr_3852_alias_reify.cmi test/gpr_3852_effect.cmj $bsc $stdlib runtime
 o test/gpr_3852_alias_reify.cmi : cc test/gpr_3852_alias_reify.mli | $bsc $stdlib runtime
 o test/gpr_3852_effect.cmi test/gpr_3852_effect.cmj : cc test/gpr_3852_effect.ml | $bsc $stdlib runtime
-o test/gpr_3865.cmi test/gpr_3865.cmj : cc test/gpr_3865.re | test/gpr_3865_bar.cmj test/gpr_3865_foo.cmj $bsc $stdlib runtime
-o test/gpr_3865_bar.cmi test/gpr_3865_bar.cmj : cc test/gpr_3865_bar.re | $bsc $stdlib runtime
-o test/gpr_3865_foo.cmi test/gpr_3865_foo.cmj : cc test/gpr_3865_foo.re | $bsc $stdlib runtime
+o test/gpr_3865.cmi test/gpr_3865.cmj : cc test/gpr_3865.res | test/gpr_3865_bar.cmj test/gpr_3865_foo.cmj $bsc $stdlib runtime
+o test/gpr_3865_bar.cmi test/gpr_3865_bar.cmj : cc test/gpr_3865_bar.res | $bsc $stdlib runtime
+o test/gpr_3865_foo.cmi test/gpr_3865_foo.cmj : cc test/gpr_3865_foo.res | $bsc $stdlib runtime
 o test/gpr_3875_test.cmi test/gpr_3875_test.cmj : cc test/gpr_3875_test.ml | test/mt.cmj $bsc $stdlib runtime
 o test/gpr_3877_test.cmi test/gpr_3877_test.cmj : cc test/gpr_3877_test.ml | $bsc $stdlib runtime
 o test/gpr_3895_test.cmi test/gpr_3895_test.cmj : cc test/gpr_3895_test.ml | $bsc $stdlib runtime
@@ -419,7 +419,7 @@ o test/label_uncurry.cmi test/label_uncurry.cmj : cc test/label_uncurry.ml | $bs
 o test/large_integer_pat.cmi test/large_integer_pat.cmj : cc test/large_integer_pat.ml | $bsc $stdlib runtime
 o test/large_record_duplication_test.cmi test/large_record_duplication_test.cmj : cc test/large_record_duplication_test.ml | test/mt.cmj $bsc $stdlib runtime
 o test/largest_int_flow.cmi test/largest_int_flow.cmj : cc test/largest_int_flow.ml | $bsc $stdlib runtime
-o test/lazy_demo.cmi test/lazy_demo.cmj : cc test/lazy_demo.re | $bsc $stdlib runtime
+o test/lazy_demo.cmi test/lazy_demo.cmj : cc test/lazy_demo.res | $bsc $stdlib runtime
 o test/lazy_test.cmi test/lazy_test.cmj : cc test/lazy_test.ml | test/mt.cmj $bsc $stdlib runtime
 o test/lexer_test.cmi test/lexer_test.cmj : cc test/lexer_test.ml | test/arith_lexer.cmj test/arith_parser.cmj test/arith_syntax.cmj test/mt.cmj test/number_lexer.cmj $bsc $stdlib runtime
 o test/lib_js_test.cmi test/lib_js_test.cmj : cc test/lib_js_test.ml | test/mt.cmj $bsc $stdlib runtime
@@ -439,7 +439,7 @@ o test/mario_game.cmi test/mario_game.cmj : cc test/mario_game.ml | $bsc $stdlib
 o test/marshal.cmi test/marshal.cmj : cc test/marshal.ml | $bsc $stdlib runtime
 o test/method_chain.cmi test/method_chain.cmj : cc test/method_chain.ml | $bsc $stdlib runtime
 o test/method_name_test.cmi test/method_name_test.cmj : cc test/method_name_test.ml | test/mt.cmj $bsc $stdlib runtime
-o test/method_string_name.cmi test/method_string_name.cmj : cc test/method_string_name.re | $bsc $stdlib runtime
+o test/method_string_name.cmi test/method_string_name.cmj : cc test/method_string_name.res | $bsc $stdlib runtime
 o test/minimal_test.cmi test/minimal_test.cmj : cc test/minimal_test.ml | $bsc $stdlib runtime
 o test/miss_colon_test.cmi test/miss_colon_test.cmj : cc test/miss_colon_test.ml | $bsc $stdlib runtime
 o test/mock_mt.cmi test/mock_mt.cmj : cc test/mock_mt.ml | test/mt.cmj $bsc $stdlib runtime
@@ -512,20 +512,20 @@ o test/raw_hash_tbl_bench.cmi test/raw_hash_tbl_bench.cmj : cc test/raw_hash_tbl
 o test/raw_output_test.cmi test/raw_output_test.cmj : cc test/raw_output_test.ml | $bsc $stdlib runtime
 o test/raw_pure_test.cmi test/raw_pure_test.cmj : cc test/raw_pure_test.ml | $bsc $stdlib runtime
 o test/rbset.cmi test/rbset.cmj : cc test/rbset.ml | $bsc $stdlib runtime
-o test/react.cmi test/react.cmj : cc test/react.re | $bsc $stdlib runtime
-o test/reactDOMRe.cmi test/reactDOMRe.cmj : cc test/reactDOMRe.re | test/react.cmj test/reactEvent.cmj test/reasonReact.cmj $bsc $stdlib runtime
-o test/reactDOMServerRe.cmi test/reactDOMServerRe.cmj : cc test/reactDOMServerRe.re | test/react.cmj $bsc $stdlib runtime
-o test/reactEvent.cmj : cc_cmi test/reactEvent.re | test/reactEvent.cmi $bsc $stdlib runtime
-o test/reactEvent.cmi : cc test/reactEvent.rei | $bsc $stdlib runtime
-o test/reactTestUtils.cmj : cc_cmi test/reactTestUtils.re | test/react.cmj test/reactTestUtils.cmi $bsc $stdlib runtime
-o test/reactTestUtils.cmi : cc test/reactTestUtils.rei | test/react.cmi $bsc $stdlib runtime
-o test/reasonReact.cmj : cc_cmi test/reasonReact.re | test/react.cmj test/reasonReact.cmi test/reasonReactOptimizedCreateClass.cmj test/reasonReactRouter.cmj $bsc $stdlib runtime
-o test/reasonReact.cmi : cc test/reasonReact.rei | test/react.cmi test/reasonReactRouter.cmi $bsc $stdlib runtime
-o test/reasonReactCompat.cmj : cc_cmi test/reasonReactCompat.re | test/react.cmj test/reasonReact.cmj test/reasonReactCompat.cmi $bsc $stdlib runtime
-o test/reasonReactCompat.cmi : cc test/reasonReactCompat.rei | test/react.cmi test/reasonReact.cmi $bsc $stdlib runtime
-o test/reasonReactOptimizedCreateClass.cmi test/reasonReactOptimizedCreateClass.cmj : cc test/reasonReactOptimizedCreateClass.re | $bsc $stdlib runtime
-o test/reasonReactRouter.cmj : cc_cmi test/reasonReactRouter.re | test/react.cmj test/reasonReactRouter.cmi $bsc $stdlib runtime
-o test/reasonReactRouter.cmi : cc test/reasonReactRouter.rei | $bsc $stdlib runtime
+o test/react.cmi test/react.cmj : cc test/react.res | $bsc $stdlib runtime
+o test/reactDOMRe.cmi test/reactDOMRe.cmj : cc test/reactDOMRe.res | test/react.cmj test/reactEvent.cmj test/reasonReact.cmj $bsc $stdlib runtime
+o test/reactDOMServerRe.cmi test/reactDOMServerRe.cmj : cc test/reactDOMServerRe.res | test/react.cmj $bsc $stdlib runtime
+o test/reactEvent.cmj : cc_cmi test/reactEvent.res | test/reactEvent.cmi $bsc $stdlib runtime
+o test/reactEvent.cmi : cc test/reactEvent.resi | $bsc $stdlib runtime
+o test/reactTestUtils.cmj : cc_cmi test/reactTestUtils.res | test/react.cmj test/reactTestUtils.cmi $bsc $stdlib runtime
+o test/reactTestUtils.cmi : cc test/reactTestUtils.resi | test/react.cmi $bsc $stdlib runtime
+o test/reasonReact.cmj : cc_cmi test/reasonReact.res | test/react.cmj test/reasonReact.cmi test/reasonReactRouter.cmj $bsc $stdlib runtime
+o test/reasonReact.cmi : cc test/reasonReact.resi | test/react.cmi test/reasonReactRouter.cmi $bsc $stdlib runtime
+o test/reasonReactCompat.cmj : cc_cmi test/reasonReactCompat.res | test/react.cmj test/reasonReact.cmj test/reasonReactCompat.cmi $bsc $stdlib runtime
+o test/reasonReactCompat.cmi : cc test/reasonReactCompat.resi | test/react.cmi test/reasonReact.cmi $bsc $stdlib runtime
+o test/reasonReactOptimizedCreateClass.cmi test/reasonReactOptimizedCreateClass.cmj : cc test/reasonReactOptimizedCreateClass.res | $bsc $stdlib runtime
+o test/reasonReactRouter.cmj : cc_cmi test/reasonReactRouter.res | test/react.cmj test/reasonReactRouter.cmi $bsc $stdlib runtime
+o test/reasonReactRouter.cmi : cc test/reasonReactRouter.resi | $bsc $stdlib runtime
 o test/rebind_module.cmi test/rebind_module.cmj : cc test/rebind_module.ml | $bsc $stdlib runtime
 o test/rebind_module_test.cmi test/rebind_module_test.cmj : cc test/rebind_module_test.ml | test/rebind_module.cmj $bsc $stdlib runtime
 o test/rec_array_test.cmi test/rec_array_test.cmj : cc test/rec_array_test.res | $bsc $stdlib runtime
@@ -540,7 +540,7 @@ o test/record_regression.cmi test/record_regression.cmj : cc test/record_regress
 o test/record_with_test.cmi test/record_with_test.cmj : cc test/record_with_test.ml | test/mt.cmj $bsc $stdlib runtime
 o test/recursive_module.cmi test/recursive_module.cmj : cc test/recursive_module.ml | test/mt.cmj $bsc $stdlib runtime
 o test/recursive_module_test.cmi test/recursive_module_test.cmj : cc test/recursive_module_test.ml | test/mt.cmj $bsc $stdlib runtime
-o test/recursive_react_component.cmi test/recursive_react_component.cmj : cc test/recursive_react_component.re | test/react.cmj $bsc $stdlib runtime
+o test/recursive_react_component.cmi test/recursive_react_component.cmj : cc test/recursive_react_component.res | test/react.cmj $bsc $stdlib runtime
 o test/recursive_records_test.cmi test/recursive_records_test.cmj : cc test/recursive_records_test.ml | test/mt.cmj $bsc $stdlib runtime
 o test/recursive_unbound_module_test.cmi test/recursive_unbound_module_test.cmj : cc test/recursive_unbound_module_test.ml | $bsc $stdlib runtime
 o test/regression_print.cmi test/regression_print.cmj : cc test/regression_print.ml | $bsc $stdlib runtime
