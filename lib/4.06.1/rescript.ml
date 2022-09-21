@@ -10593,16 +10593,16 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
               (* ~namespace *)
               sources
           in
+          let bsc_flags = extract_string_list map Bsb_build_schemas.bsc_flags in
+          let jsx = Bsb_jsx.from_map map in
           let jsx, bsc_flags =
             match package_kind with
-            | (Pinned_dependency x | Dependency x)
-              when List.mem package_name x.jsx.v3_dependencies ->
-                ( { (Bsb_jsx.from_map map) with version = Some Jsx_v3 },
-                  "-open ReactV3"
-                  :: extract_string_list map Bsb_build_schemas.bsc_flags )
-            | _ ->
-                ( Bsb_jsx.from_map map,
-                  extract_string_list map Bsb_build_schemas.bsc_flags )
+            | Pinned_dependency x | Dependency x ->
+                if List.mem package_name x.jsx.v3_dependencies then
+                  ( { jsx with version = Some Jsx_v3 },
+                    "-open ReactV3" :: bsc_flags )
+                else (x.jsx, bsc_flags)
+            | _ -> (jsx, bsc_flags)
           in
           {
             pinned_dependencies;
