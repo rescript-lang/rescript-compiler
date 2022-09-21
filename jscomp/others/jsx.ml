@@ -37,6 +37,3 @@ type 'props component = ('props, element) componentLike
 (* this function exists to prepare for making `component` abstract *)
 external component : ('props, element) componentLike -> 'props component
   = "%identity"
-
-external addKeyProp : 'props -> string -> 'props = "Object.assign"
-  [@@inline] [@@bs.val]
