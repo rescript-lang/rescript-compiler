@@ -1,13 +1,8 @@
-'use strict';
+let _assign = Js.Obj.assign
 
-var React = require("react");
+let emptyObject = Js.Obj.empty()
 
-function _assign(prim0, prim1) {
-  return Object.assign(prim0, prim1);
-}
-
-var emptyObject = {};
-
+%%raw(`
 /**
  * Copyright 2013-present, Facebook, Inc.
  * All rights reserved.
@@ -47,9 +42,10 @@ var ReactPropTypeLocationNames;
 // } else {
   ReactPropTypeLocationNames = {};
 // }
-;
+`)
 
-var factory = (function factory(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
+let factory = %raw(`
+function factory(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
   /**
    * Policies that describe methods in \`ReactClassInterface\`.
    */
@@ -878,15 +874,16 @@ var factory = (function factory(ReactComponent, isValidElement, ReactNoopUpdateQ
   }
 
   return createClass;
-});
+}
+`)
 
-var reactNoopUpdateQueue = new React.Component().updater;
+@module("react") external reactComponent: 'a = "Component"
 
-var createClass = factory(React.Component, React.isValidElement, reactNoopUpdateQueue);
+@module("react") external reactIsValidElement: bool = "isValidElement"
 
-exports._assign = _assign;
-exports.emptyObject = emptyObject;
-exports.factory = factory;
-exports.reactNoopUpdateQueue = reactNoopUpdateQueue;
-exports.createClass = createClass;
-/*  Not a pure module */
+@module("react") @new
+external newReactComponent: unit => {"updater": 'a} = "Component"
+
+let reactNoopUpdateQueue = newReactComponent()["updater"]
+
+let createClass = factory(. reactComponent, reactIsValidElement, reactNoopUpdateQueue)
