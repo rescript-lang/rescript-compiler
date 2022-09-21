@@ -298,6 +298,17 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
               (* ~namespace *)
               sources
           in
+          let jsx, bsc_flags =
+            match package_kind with
+            | (Pinned_dependency x | Dependency x)
+              when List.mem package_name x.jsx.v3_dependencies ->
+                ( { (Bsb_jsx.from_map map) with version = Some Jsx_v3 },
+                  "-open ReactV3"
+                  :: extract_string_list map Bsb_build_schemas.bsc_flags )
+            | _ ->
+                ( Bsb_jsx.from_map map,
+                  extract_string_list map Bsb_build_schemas.bsc_flags )
+          in
           {
             pinned_dependencies;
             gentype_config;
@@ -306,7 +317,7 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
             warning = extract_warning map;
             external_includes =
               extract_string_list map Bsb_build_schemas.bs_external_includes;
-            bsc_flags = extract_string_list map Bsb_build_schemas.bsc_flags;
+            bsc_flags;
             ppx_files =
               extract_ppx map ~cwd:per_proj_dir Bsb_build_schemas.ppx_flags;
             pp_file = pp_flags;
@@ -332,12 +343,7 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
             generate_merlin =
               extract_boolean map Bsb_build_schemas.generate_merlin false;
             reason_react_jsx;
-            jsx =
-              (match package_kind with
-              | (Pinned_dependency x | Dependency x)
-                when not (List.mem package_name x.jsx.preserve_dependencies) ->
-                  x.jsx
-              | _ -> Bsb_jsx.from_map map);
+            jsx;
             generators = extract_generators map;
             cut_generators;
           }
