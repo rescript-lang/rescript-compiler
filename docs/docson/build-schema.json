@@ -346,9 +346,9 @@
           "enum": ["classic", "automatic"],
           "description": "JSX transformation mode"
         },
-        "preserve-dependencies": {
+        "v3-dependencies": {
           "$ref": "#/definitions/dependencies",
-          "description": "Don't propagate the jsx configuration to these dependencies."
+          "description": "Build the given dependencies in JSX V3 compatibility mode."
         }
       },
       "additionalProperties": false,
