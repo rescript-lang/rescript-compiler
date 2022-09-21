@@ -41,7 +41,7 @@ let read_ast_exn (type t) ~fname (_ : t kind) setup : t =
      Ext_file_extensions.classify_input
        (Ext_filename.get_extension_maybe sourcefile)
    with
-  | Re | Rei | Res | Resi -> setup `rescript
+  | Res | Resi -> setup `rescript
   | _ -> ());
   ast
 

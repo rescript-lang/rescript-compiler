@@ -45,30 +45,6 @@ let setup_runtime_path path =
      Bs_version.package_name := std);
   Js_config.customize_runtime := Some path
 
-let handle_reason (type a) (kind : a Ml_binary.kind) sourcefile ppf  = 
-  setup_compiler_printer `rescript;
-  let tmpfile =  Ast_reason_pp.pp sourcefile in   
-  let outputprefix = Config_util.output_prefix sourcefile in 
-  (match kind with 
-   | Ml_binary.Ml -> 
-     Js_implementation.implementation
-       ~parser:(fun file_in -> 
-           let in_chan = open_in_bin file_in in 
-           let ast = Ml_binary.read_ast Ml in_chan in 
-           close_in in_chan; ast 
-         )
-       ppf  tmpfile ~outputprefix
-
-   | Ml_binary.Mli ->
-     Js_implementation.interface 
-       ~parser:(fun file_in -> 
-           let in_chan = open_in_bin file_in in 
-           let ast = Ml_binary.read_ast Mli in_chan in 
-           close_in in_chan; ast 
-         )
-       ppf  tmpfile ~outputprefix  );
-  Ast_reason_pp.clean tmpfile 
-
 
 let process_file sourcefile ?(kind ) ppf = 
   (* This is a better default then "", it will be changed later 
@@ -80,13 +56,6 @@ let process_file sourcefile ?(kind ) ppf =
     | None -> Ext_file_extensions.classify_input (Ext_filename.get_extension_maybe sourcefile)  
     | Some kind -> kind in 
   match kind with 
-  | Re -> 
-    let sourcefile = set_abs_input_name  sourcefile in 
-    handle_reason Ml sourcefile ppf 
-  | Rei ->
-    let sourcefile = set_abs_input_name  sourcefile in 
-    handle_reason Mli sourcefile ppf  
-  (* The printer setup is doen in [handle_reason] *)
   | Ml ->
     let sourcefile = set_abs_input_name  sourcefile in     
     setup_compiler_printer `ml;
@@ -200,7 +169,7 @@ let eval (s : string) ~suffix =
   let tmpfile = Filename.temp_file "eval" suffix in 
   Ext_io.write_file tmpfile s;   
   anonymous  ~rev_args:[tmpfile];
-  Ast_reason_pp.clean tmpfile
+  if not !Clflags.verbose then try Sys.remove tmpfile with _ -> ()
 
 
 (* let (//) = Filename.concat *)

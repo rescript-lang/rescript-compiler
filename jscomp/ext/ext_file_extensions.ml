@@ -1,8 +1,6 @@
 type valid_input =
   | Ml
   | Mli
-  | Re
-  | Rei
   | Res
   | Resi
   | Intf_ast
@@ -19,9 +17,7 @@ type valid_input =
 let classify_input ext =
   match () with
   | _ when ext = Literals.suffix_ml -> Ml
-  | _ when ext = Literals.suffix_re -> Re
   | _ when ext = !Config.interface_suffix -> Mli
-  | _ when ext = Literals.suffix_rei -> Rei
   | _ when ext = Literals.suffix_ast -> Impl_ast
   | _ when ext = Literals.suffix_iast -> Intf_ast
   | _ when ext = Literals.suffix_mlmap -> Mlmap
