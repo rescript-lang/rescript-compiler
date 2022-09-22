@@ -34,7 +34,7 @@ var collection = new Map();
 for (let file of filesPath) {
   let base = path.basename(file);
   if (collection.has(base)) {
-    if (base.endsWith(".ml") && !file.includes("templates")) {
+    if (base.endsWith(".ml")) {
       console.log(`duplicate ${base} : ${collection.get(base)} vs ${file}`);
     }
   } else {
