@@ -81,14 +81,10 @@ let add_basename ~(dir : string) (map : t) ?error_on_invalid_suffix basename : t
     (match () with
     | _ when file_suffix = Literals.suffix_ml -> ()
     | _ when file_suffix = Literals.suffix_res -> syntax_kind := Res
-    | _ when file_suffix = Literals.suffix_re -> syntax_kind := Reason
     | _ when file_suffix = Literals.suffix_mli -> info := Intf
     | _ when file_suffix = Literals.suffix_resi ->
         info := Intf;
         syntax_kind := Res
-    | _ when file_suffix = Literals.suffix_rei ->
-        info := Intf;
-        syntax_kind := Reason
     | _ -> invalid_suffix := true);
     let info = !info in
     let syntax_kind = !syntax_kind in

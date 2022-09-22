@@ -5228,7 +5228,7 @@ type info =
   | Impl
   | Impl_intf
 
-type syntax_kind = Ml | Reason | Res
+type syntax_kind = Ml | Res
 
 type module_info = {
   mutable info : info;
@@ -5292,7 +5292,7 @@ type info =
   | Impl
   | Impl_intf
 
-type syntax_kind = Ml | Reason | Res
+type syntax_kind = Ml | Res
 
 type module_info = {
   mutable info : info;
@@ -5781,10 +5781,6 @@ let suffix_mll = ".mll"
 let suffix_ml = ".ml"
 
 let suffix_mli = ".mli"
-
-let suffix_re = ".re"
-
-let suffix_rei = ".rei"
 
 let suffix_res = ".res"
 
