@@ -29,7 +29,7 @@
 
 #### :nail_care: Polish
 
-- JSX V4 does not list `key` in `props` type definition anymore.
+- Improvements and fixes for JSX V4. See guide https://github.com/rescript-lang/syntax/blob/master/cli/JSXV4.md
 - Mention all missing fields in error message for records, not just one https://github.com/rescript-lang/rescript-compiler/pull/5657
 
 # 10.1.0-alpha.1
