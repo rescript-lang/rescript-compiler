@@ -1,0 +1,18 @@
+
+    
+  (rule
+    (targets stdlib.cmi )
+    (deps (:inputs stdlib.mli) (alias ./stdlib_modules/stdlib))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A  -I ../runtime  -I ../others  -I ./stdlib_modules -nopervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets stdlib.cmj )
+    (deps (:inputs stdlib.ml) stdlib.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A  -I ../runtime  -I ../others  -I ./stdlib_modules -nopervasives  -I . %{inputs})))
+
+    

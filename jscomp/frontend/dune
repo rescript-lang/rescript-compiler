@@ -1,0 +1,9 @@
+(library
+ (name frontend)
+ (wrapped false)
+ (flags
+  (:standard -w -9-50 -open Compiler_libs))
+ (preprocess
+  (action
+   (run cppo %{env:CPPO_FLAGS=} %{input-file})))
+ (libraries ext common compiler-libs outcome_printer js_parser))

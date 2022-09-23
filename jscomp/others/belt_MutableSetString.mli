@@ -1,4 +1,4 @@
-# 1 "others/setm.cppo.mli"
+# 1 "setm.cppo.mli"
 (* Copyright (C) 2017 Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -33,10 +33,10 @@
 *)
 
 
-# 36 "others/setm.cppo.mli"
+# 36 "setm.cppo.mli"
 type value = string
   
-# 42 "others/setm.cppo.mli"
+# 42 "setm.cppo.mli"
   (** The type of the set elements. *)
 
 

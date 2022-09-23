@@ -1,4 +1,4 @@
-# 1 "others/belt_Set.cppo.mli"
+# 1 "belt_Set.cppo.mli"
 (* Copyright (C) 2017 Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -31,10 +31,10 @@
   **See** [`Belt.Set`]()
 *)
 
-# 36 "others/belt_Set.cppo.mli"
+# 36 "belt_Set.cppo.mli"
 type value = int
   
-# 40 "others/belt_Set.cppo.mli"
+# 40 "belt_Set.cppo.mli"
   (** The type of the set elements. *)
 
 

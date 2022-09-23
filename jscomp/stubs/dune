@@ -1,0 +1,6 @@
+(library
+ (name bs_hash_stubs)
+ (modules bs_hash_stubs)
+ (foreign_stubs
+  (language c)
+  (names ext_basic_hash_stubs)))

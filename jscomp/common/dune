@@ -1,0 +1,5 @@
+(library
+ (name common)
+ (wrapped false)
+ (flags :standard -open Compiler_libs)
+ (libraries ext compiler-libs))

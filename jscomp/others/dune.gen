@@ -1,0 +1,1426 @@
+
+
+
+(rule
+  (targets belt_HashSetString.ml)
+  (deps hashset.cppo.ml)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_STRING %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets belt_HashSetString.mli)
+  (deps hashset.cppo.mli)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_STRING %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets belt_HashSetInt.ml)
+  (deps hashset.cppo.ml)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_INT %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets belt_HashSetInt.mli)
+  (deps hashset.cppo.mli)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_INT %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets belt_HashMapString.ml)
+  (deps hashmap.cppo.ml)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_STRING %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets belt_HashMapString.mli)
+  (deps hashmap.cppo.mli)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_STRING %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets belt_HashMapInt.ml)
+  (deps hashmap.cppo.ml)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_INT %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets belt_HashMapInt.mli)
+  (deps hashmap.cppo.mli)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_INT %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets belt_MapString.ml)
+  (deps map.cppo.ml)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_STRING %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets belt_MapString.mli)
+  (deps map.cppo.mli)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_STRING %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets belt_MapInt.ml)
+  (deps map.cppo.ml)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_INT %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets belt_MapInt.mli)
+  (deps map.cppo.mli)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_INT %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets belt_SetString.ml)
+  (deps belt_Set.cppo.ml)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_STRING %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets belt_SetString.mli)
+  (deps belt_Set.cppo.mli)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_STRING %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets belt_SetInt.ml)
+  (deps belt_Set.cppo.ml)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_INT %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets belt_SetInt.mli)
+  (deps belt_Set.cppo.mli)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_INT %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets belt_MutableMapString.ml)
+  (deps mapm.cppo.ml)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_STRING %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets belt_MutableMapString.mli)
+  (deps mapm.cppo.mli)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_STRING %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets belt_MutableMapInt.ml)
+  (deps mapm.cppo.ml)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_INT %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets belt_MutableMapInt.mli)
+  (deps mapm.cppo.mli)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_INT %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets belt_MutableSetString.ml)
+  (deps setm.cppo.ml)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_STRING %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets belt_MutableSetString.mli)
+  (deps setm.cppo.mli)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_STRING %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets belt_MutableSetInt.ml)
+  (deps setm.cppo.ml)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_INT %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets belt_MutableSetInt.mli)
+  (deps setm.cppo.mli)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_INT %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets belt_SortArrayString.ml)
+  (deps sort.cppo.ml)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_STRING %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets belt_SortArrayString.mli)
+  (deps sort.cppo.mli)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_STRING %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets belt_SortArrayInt.ml)
+  (deps sort.cppo.ml)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_INT %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets belt_SortArrayInt.mli)
+  (deps sort.cppo.mli)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_INT %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets belt_internalMapString.ml)
+  (deps internal_map.cppo.ml)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_STRING %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets belt_internalMapInt.ml)
+  (deps internal_map.cppo.ml)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_INT %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets belt_internalSetString.ml)
+  (deps internal_set.cppo.ml)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_STRING %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets belt_internalSetInt.ml)
+  (deps internal_set.cppo.ml)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo -D TYPE_INT %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets js_typed_array.ml)
+  (deps js_typed_array.cppo.ml)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo  %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+(rule
+  (targets js_typed_array2.ml)
+  (deps js_typed_array2.cppo.ml)
+  (mode
+   (promote
+    (until-clean)
+    (only :standard)))
+  (action
+   (run cppo  %{deps} %{env:CPPO_FLAGS=} -o %{targets})))
+
+
+
+  (rule
+    (targets belt.cmj belt.cmi )
+    (deps (:inputs belt.ml) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets node.cmj node.cmi )
+    (deps (:inputs node.ml) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_OO.cmi js_OO.cmj js_OO.cmt )
+    (deps (:inputs js_OO.ml) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_array.cmi js_array.cmj js_array.cmt )
+    (deps (:inputs js_array.ml) (alias ../runtime/runtime) js_array2.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_array2.cmi js_array2.cmj js_array2.cmt )
+    (deps (:inputs js_array2.ml) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_cast.cmj js_cast.cmt )
+    (deps (:inputs js_cast.ml) (alias ../runtime/runtime) js_cast.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_cast.cmi js_cast.cmti )
+    (deps (:inputs js_cast.mli) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_console.cmi js_console.cmj js_console.cmt )
+    (deps (:inputs js_console.ml) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_date.cmi js_date.cmj js_date.cmt )
+    (deps (:inputs js_date.ml) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_dict.cmj js_dict.cmt )
+    (deps (:inputs js_dict.ml) (alias ../runtime/runtime) js_array2.cmj js_dict.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_dict.cmi js_dict.cmti )
+    (deps (:inputs js_dict.mli) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_exn.cmj js_exn.cmt )
+    (deps (:inputs js_exn.ml) (alias ../runtime/runtime) js_exn.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_exn.cmi js_exn.cmti )
+    (deps (:inputs js_exn.mli) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_float.cmi js_float.cmj js_float.cmt )
+    (deps (:inputs js_float.ml) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_global.cmi js_global.cmj js_global.cmt )
+    (deps (:inputs js_global.ml) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_int.cmi js_int.cmj js_int.cmt )
+    (deps (:inputs js_int.ml) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_json.cmj js_json.cmt )
+    (deps (:inputs js_json.ml) (alias ../runtime/runtime) js_array2.cmj js_dict.cmj js_json.cmi js_string.cmj js_types.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_json.cmi js_json.cmti )
+    (deps (:inputs js_json.mli) (alias ../runtime/runtime) js_dict.cmi js_null.cmi js_string.cmj js_types.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_list.cmj js_list.cmt )
+    (deps (:inputs js_list.ml) (alias ../runtime/runtime) js_array2.cmj js_list.cmi js_vector.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_list.cmi js_list.cmti )
+    (deps (:inputs js_list.mli) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_mapperRt.cmj js_mapperRt.cmt )
+    (deps (:inputs js_mapperRt.ml) (alias ../runtime/runtime) js_mapperRt.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_mapperRt.cmi js_mapperRt.cmti )
+    (deps (:inputs js_mapperRt.mli) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_math.cmi js_math.cmj js_math.cmt )
+    (deps (:inputs js_math.ml) (alias ../runtime/runtime) js_int.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_null.cmj js_null.cmt )
+    (deps (:inputs js_null.ml) (alias ../runtime/runtime) js_exn.cmj js_null.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_null.cmi js_null.cmti )
+    (deps (:inputs js_null.mli) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_null_undefined.cmj js_null_undefined.cmt )
+    (deps (:inputs js_null_undefined.ml) (alias ../runtime/runtime) js_null_undefined.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_null_undefined.cmi js_null_undefined.cmti )
+    (deps (:inputs js_null_undefined.mli) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_obj.cmi js_obj.cmj js_obj.cmt )
+    (deps (:inputs js_obj.ml) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_option.cmj js_option.cmt )
+    (deps (:inputs js_option.ml) (alias ../runtime/runtime) js_exn.cmj js_option.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_option.cmi js_option.cmti )
+    (deps (:inputs js_option.mli) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_promise.cmi js_promise.cmj js_promise.cmt )
+    (deps (:inputs js_promise.ml) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_re.cmi js_re.cmj js_re.cmt )
+    (deps (:inputs js_re.ml) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_result.cmj js_result.cmt )
+    (deps (:inputs js_result.ml) (alias ../runtime/runtime) js_result.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_result.cmi js_result.cmti )
+    (deps (:inputs js_result.mli) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_string.cmi js_string.cmj js_string.cmt )
+    (deps (:inputs js_string.ml) (alias ../runtime/runtime) js_array2.cmj js_re.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_string2.cmi js_string2.cmj js_string2.cmt )
+    (deps (:inputs js_string2.ml) (alias ../runtime/runtime) js_array2.cmj js_re.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_types.cmj js_types.cmt )
+    (deps (:inputs js_types.ml) (alias ../runtime/runtime) js_null.cmj js_types.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_types.cmi js_types.cmti )
+    (deps (:inputs js_types.mli) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_undefined.cmj js_undefined.cmt )
+    (deps (:inputs js_undefined.ml) (alias ../runtime/runtime) js_exn.cmj js_undefined.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_undefined.cmi js_undefined.cmti )
+    (deps (:inputs js_undefined.mli) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_vector.cmj js_vector.cmt )
+    (deps (:inputs js_vector.ml) (alias ../runtime/runtime) js_array2.cmj js_vector.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_vector.cmi js_vector.cmti )
+    (deps (:inputs js_vector.mli) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+    (alias
+      (name js_pkg)
+      (deps js_OO.cmi js_OO.cmj js_array.cmi js_array.cmj js_array2.cmi js_array2.cmj js_cast.cmi js_cast.cmj js_console.cmi js_console.cmj js_date.cmi js_date.cmj js_dict.cmi js_dict.cmj js_exn.cmi js_exn.cmj js_float.cmi js_float.cmj js_global.cmi js_global.cmj js_int.cmi js_int.cmj js_json.cmi js_json.cmj js_list.cmi js_list.cmj js_mapperRt.cmi js_mapperRt.cmj js_math.cmi js_math.cmj js_null.cmi js_null.cmj js_null_undefined.cmi js_null_undefined.cmj js_obj.cmi js_obj.cmj js_option.cmi js_option.cmj js_promise.cmi js_promise.cmj js_re.cmi js_re.cmj js_result.cmi js_result.cmj js_string.cmi js_string.cmj js_string2.cmi js_string2.cmj js_types.cmi js_types.cmj js_undefined.cmi js_undefined.cmj js_vector.cmi js_vector.cmj))
+  
+
+  (rule
+    (targets belt_Array.cmj belt_Array.cmt )
+    (deps (:inputs belt_Array.ml) (alias ../runtime/runtime) belt.cmi belt_Array.cmi js_math.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_Array.cmi belt_Array.cmti )
+    (deps (:inputs belt_Array.mli) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_Float.cmj belt_Float.cmt )
+    (deps (:inputs belt_Float.ml) (alias ../runtime/runtime) belt.cmi belt_Float.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_Float.cmi belt_Float.cmti )
+    (deps (:inputs belt_Float.mli) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_HashMap.cmj belt_HashMap.cmt )
+    (deps (:inputs belt_HashMap.ml) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_Array.cmj belt_HashMap.cmi belt_HashMapInt.cmi belt_HashMapInt.cmj belt_HashMapString.cmi belt_HashMapString.cmj belt_Id.cmj belt_internalBuckets.cmj belt_internalBucketsType.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_HashMap.cmi belt_HashMap.cmti )
+    (deps (:inputs belt_HashMap.mli) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_HashMapInt.cmi belt_HashMapInt.cmj belt_HashMapString.cmi belt_HashMapString.cmj belt_Id.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_HashMapInt.cmj belt_HashMapInt.cmt )
+    (deps (:inputs belt_HashMapInt.ml) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_Array.cmi belt_Array.cmj belt_HashMapInt.cmi belt_internalBuckets.cmi belt_internalBuckets.cmj belt_internalBucketsType.cmi belt_internalBucketsType.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_HashMapInt.cmi belt_HashMapInt.cmti )
+    (deps (:inputs belt_HashMapInt.mli) (alias ../runtime/runtime) (alias js_pkg) belt_Array.cmi belt_Array.cmj belt_internalBuckets.cmi belt_internalBuckets.cmj belt_internalBucketsType.cmi belt_internalBucketsType.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_HashMapString.cmj belt_HashMapString.cmt )
+    (deps (:inputs belt_HashMapString.ml) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_Array.cmi belt_Array.cmj belt_HashMapString.cmi belt_internalBuckets.cmi belt_internalBuckets.cmj belt_internalBucketsType.cmi belt_internalBucketsType.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_HashMapString.cmi belt_HashMapString.cmti )
+    (deps (:inputs belt_HashMapString.mli) (alias ../runtime/runtime) (alias js_pkg) belt_Array.cmi belt_Array.cmj belt_internalBuckets.cmi belt_internalBuckets.cmj belt_internalBucketsType.cmi belt_internalBucketsType.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_HashSet.cmj belt_HashSet.cmt )
+    (deps (:inputs belt_HashSet.ml) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_Array.cmj belt_HashSet.cmi belt_HashSetInt.cmi belt_HashSetInt.cmj belt_HashSetString.cmi belt_HashSetString.cmj belt_Id.cmj belt_internalBucketsType.cmj belt_internalSetBuckets.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_HashSet.cmi belt_HashSet.cmti )
+    (deps (:inputs belt_HashSet.mli) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_HashSetInt.cmi belt_HashSetInt.cmj belt_HashSetString.cmi belt_HashSetString.cmj belt_Id.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_HashSetInt.cmj belt_HashSetInt.cmt )
+    (deps (:inputs belt_HashSetInt.ml) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_Array.cmi belt_Array.cmj belt_HashSetInt.cmi belt_internalBucketsType.cmi belt_internalBucketsType.cmj belt_internalSetBuckets.cmi belt_internalSetBuckets.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_HashSetInt.cmi belt_HashSetInt.cmti )
+    (deps (:inputs belt_HashSetInt.mli) (alias ../runtime/runtime) (alias js_pkg) belt_Array.cmi belt_Array.cmj belt_internalBucketsType.cmi belt_internalBucketsType.cmj belt_internalSetBuckets.cmi belt_internalSetBuckets.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_HashSetString.cmj belt_HashSetString.cmt )
+    (deps (:inputs belt_HashSetString.ml) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_Array.cmi belt_Array.cmj belt_HashSetString.cmi belt_internalBucketsType.cmi belt_internalBucketsType.cmj belt_internalSetBuckets.cmi belt_internalSetBuckets.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_HashSetString.cmi belt_HashSetString.cmti )
+    (deps (:inputs belt_HashSetString.mli) (alias ../runtime/runtime) (alias js_pkg) belt_Array.cmi belt_Array.cmj belt_internalBucketsType.cmi belt_internalBucketsType.cmj belt_internalSetBuckets.cmi belt_internalSetBuckets.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_Id.cmj belt_Id.cmt )
+    (deps (:inputs belt_Id.ml) (alias ../runtime/runtime) belt.cmi belt_Id.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_Id.cmi belt_Id.cmti )
+    (deps (:inputs belt_Id.mli) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_Int.cmj belt_Int.cmt )
+    (deps (:inputs belt_Int.ml) (alias ../runtime/runtime) belt.cmi belt_Int.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_Int.cmi belt_Int.cmti )
+    (deps (:inputs belt_Int.mli) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_List.cmj belt_List.cmt )
+    (deps (:inputs belt_List.ml) (alias ../runtime/runtime) belt.cmi belt_Array.cmj belt_List.cmi belt_SortArray.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_List.cmi belt_List.cmti )
+    (deps (:inputs belt_List.mli) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_Map.cmj belt_Map.cmt )
+    (deps (:inputs belt_Map.ml) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_Id.cmj belt_Map.cmi belt_MapDict.cmj belt_MapInt.cmi belt_MapInt.cmj belt_MapString.cmi belt_MapString.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_Map.cmi belt_Map.cmti )
+    (deps (:inputs belt_Map.mli) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_Id.cmi belt_MapDict.cmi belt_MapInt.cmi belt_MapInt.cmj belt_MapString.cmi belt_MapString.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_MapDict.cmj belt_MapDict.cmt )
+    (deps (:inputs belt_MapDict.ml) (alias ../runtime/runtime) belt.cmi belt_Array.cmj belt_Id.cmj belt_MapDict.cmi belt_internalAVLtree.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_MapDict.cmi belt_MapDict.cmti )
+    (deps (:inputs belt_MapDict.mli) (alias ../runtime/runtime) belt.cmi belt_Id.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_MapInt.cmj belt_MapInt.cmt )
+    (deps (:inputs belt_MapInt.ml) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_Array.cmi belt_Array.cmj belt_MapInt.cmi belt_internalAVLtree.cmi belt_internalAVLtree.cmj belt_internalMapInt.cmi belt_internalMapInt.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_MapInt.cmi belt_MapInt.cmti )
+    (deps (:inputs belt_MapInt.mli) (alias ../runtime/runtime) (alias js_pkg) belt_Array.cmi belt_Array.cmj belt_internalAVLtree.cmi belt_internalAVLtree.cmj belt_internalMapInt.cmi belt_internalMapInt.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_MapString.cmj belt_MapString.cmt )
+    (deps (:inputs belt_MapString.ml) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_Array.cmi belt_Array.cmj belt_MapString.cmi belt_internalAVLtree.cmi belt_internalAVLtree.cmj belt_internalMapString.cmi belt_internalMapString.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_MapString.cmi belt_MapString.cmti )
+    (deps (:inputs belt_MapString.mli) (alias ../runtime/runtime) (alias js_pkg) belt_Array.cmi belt_Array.cmj belt_internalAVLtree.cmi belt_internalAVLtree.cmj belt_internalMapString.cmi belt_internalMapString.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_MutableMap.cmj belt_MutableMap.cmt )
+    (deps (:inputs belt_MutableMap.ml) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_Array.cmj belt_Id.cmj belt_MutableMap.cmi belt_MutableMapInt.cmi belt_MutableMapInt.cmj belt_MutableMapString.cmi belt_MutableMapString.cmj belt_internalAVLtree.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_MutableMap.cmi belt_MutableMap.cmti )
+    (deps (:inputs belt_MutableMap.mli) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_Id.cmi belt_MutableMapInt.cmi belt_MutableMapInt.cmj belt_MutableMapString.cmi belt_MutableMapString.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_MutableMapInt.cmj belt_MutableMapInt.cmt )
+    (deps (:inputs belt_MutableMapInt.ml) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_Array.cmi belt_Array.cmj belt_MutableMapInt.cmi belt_internalAVLtree.cmi belt_internalAVLtree.cmj belt_internalMapInt.cmi belt_internalMapInt.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_MutableMapInt.cmi belt_MutableMapInt.cmti )
+    (deps (:inputs belt_MutableMapInt.mli) (alias ../runtime/runtime) (alias js_pkg) belt_Array.cmi belt_Array.cmj belt_internalAVLtree.cmi belt_internalAVLtree.cmj belt_internalMapInt.cmi belt_internalMapInt.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_MutableMapString.cmj belt_MutableMapString.cmt )
+    (deps (:inputs belt_MutableMapString.ml) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_Array.cmi belt_Array.cmj belt_MutableMapString.cmi belt_internalAVLtree.cmi belt_internalAVLtree.cmj belt_internalMapString.cmi belt_internalMapString.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_MutableMapString.cmi belt_MutableMapString.cmti )
+    (deps (:inputs belt_MutableMapString.mli) (alias ../runtime/runtime) (alias js_pkg) belt_Array.cmi belt_Array.cmj belt_internalAVLtree.cmi belt_internalAVLtree.cmj belt_internalMapString.cmi belt_internalMapString.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_MutableQueue.cmj belt_MutableQueue.cmt )
+    (deps (:inputs belt_MutableQueue.ml) (alias ../runtime/runtime) belt.cmi belt_Array.cmj belt_MutableQueue.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_MutableQueue.cmi belt_MutableQueue.cmti )
+    (deps (:inputs belt_MutableQueue.mli) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_MutableSet.cmj belt_MutableSet.cmt )
+    (deps (:inputs belt_MutableSet.ml) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_Array.cmj belt_Id.cmj belt_MutableSet.cmi belt_MutableSetInt.cmi belt_MutableSetInt.cmj belt_MutableSetString.cmi belt_MutableSetString.cmj belt_SortArray.cmj belt_internalAVLset.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_MutableSet.cmi belt_MutableSet.cmti )
+    (deps (:inputs belt_MutableSet.mli) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_Id.cmi belt_MutableSetInt.cmi belt_MutableSetInt.cmj belt_MutableSetString.cmi belt_MutableSetString.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_MutableSetInt.cmj belt_MutableSetInt.cmt )
+    (deps (:inputs belt_MutableSetInt.ml) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_Array.cmi belt_Array.cmj belt_MutableSetInt.cmi belt_SortArrayInt.cmi belt_SortArrayInt.cmj belt_internalAVLset.cmi belt_internalAVLset.cmj belt_internalSetInt.cmi belt_internalSetInt.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_MutableSetInt.cmi belt_MutableSetInt.cmti )
+    (deps (:inputs belt_MutableSetInt.mli) (alias ../runtime/runtime) (alias js_pkg) belt_Array.cmi belt_Array.cmj belt_SortArrayInt.cmi belt_SortArrayInt.cmj belt_internalAVLset.cmi belt_internalAVLset.cmj belt_internalSetInt.cmi belt_internalSetInt.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_MutableSetString.cmj belt_MutableSetString.cmt )
+    (deps (:inputs belt_MutableSetString.ml) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_Array.cmi belt_Array.cmj belt_MutableSetString.cmi belt_SortArrayString.cmi belt_SortArrayString.cmj belt_internalAVLset.cmi belt_internalAVLset.cmj belt_internalSetString.cmi belt_internalSetString.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_MutableSetString.cmi belt_MutableSetString.cmti )
+    (deps (:inputs belt_MutableSetString.mli) (alias ../runtime/runtime) (alias js_pkg) belt_Array.cmi belt_Array.cmj belt_SortArrayString.cmi belt_SortArrayString.cmj belt_internalAVLset.cmi belt_internalAVLset.cmj belt_internalSetString.cmi belt_internalSetString.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_MutableStack.cmj belt_MutableStack.cmt )
+    (deps (:inputs belt_MutableStack.ml) (alias ../runtime/runtime) belt.cmi belt_MutableStack.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_MutableStack.cmi belt_MutableStack.cmti )
+    (deps (:inputs belt_MutableStack.mli) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_Option.cmj belt_Option.cmt )
+    (deps (:inputs belt_Option.ml) (alias ../runtime/runtime) belt.cmi belt_Option.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_Option.cmi belt_Option.cmti )
+    (deps (:inputs belt_Option.mli) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_Range.cmj belt_Range.cmt )
+    (deps (:inputs belt_Range.ml) (alias ../runtime/runtime) belt.cmi belt_Range.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_Range.cmi belt_Range.cmti )
+    (deps (:inputs belt_Range.mli) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_Result.cmj belt_Result.cmt )
+    (deps (:inputs belt_Result.ml) (alias ../runtime/runtime) belt.cmi belt_Result.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_Result.cmi belt_Result.cmti )
+    (deps (:inputs belt_Result.mli) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_Set.cmj belt_Set.cmt )
+    (deps (:inputs belt_Set.ml) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_Id.cmj belt_Set.cmi belt_SetDict.cmj belt_SetInt.cmi belt_SetInt.cmj belt_SetString.cmi belt_SetString.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_Set.cmi belt_Set.cmti )
+    (deps (:inputs belt_Set.mli) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_Id.cmi belt_SetDict.cmi belt_SetInt.cmi belt_SetInt.cmj belt_SetString.cmi belt_SetString.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_SetDict.cmj belt_SetDict.cmt )
+    (deps (:inputs belt_SetDict.ml) (alias ../runtime/runtime) belt.cmi belt_Array.cmj belt_Id.cmj belt_SetDict.cmi belt_internalAVLset.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_SetDict.cmi belt_SetDict.cmti )
+    (deps (:inputs belt_SetDict.mli) (alias ../runtime/runtime) belt.cmi belt_Id.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_SetInt.cmj belt_SetInt.cmt )
+    (deps (:inputs belt_SetInt.ml) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_Array.cmi belt_Array.cmj belt_SetInt.cmi belt_internalAVLset.cmi belt_internalAVLset.cmj belt_internalSetInt.cmi belt_internalSetInt.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_SetInt.cmi belt_SetInt.cmti )
+    (deps (:inputs belt_SetInt.mli) (alias ../runtime/runtime) (alias js_pkg) belt_Array.cmi belt_Array.cmj belt_internalAVLset.cmi belt_internalAVLset.cmj belt_internalSetInt.cmi belt_internalSetInt.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_SetString.cmj belt_SetString.cmt )
+    (deps (:inputs belt_SetString.ml) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_Array.cmi belt_Array.cmj belt_SetString.cmi belt_internalAVLset.cmi belt_internalAVLset.cmj belt_internalSetString.cmi belt_internalSetString.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_SetString.cmi belt_SetString.cmti )
+    (deps (:inputs belt_SetString.mli) (alias ../runtime/runtime) (alias js_pkg) belt_Array.cmi belt_Array.cmj belt_internalAVLset.cmi belt_internalAVLset.cmj belt_internalSetString.cmi belt_internalSetString.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_SortArray.cmj belt_SortArray.cmt )
+    (deps (:inputs belt_SortArray.ml) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_Array.cmj belt_SortArray.cmi belt_SortArrayInt.cmi belt_SortArrayInt.cmj belt_SortArrayString.cmi belt_SortArrayString.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_SortArray.cmi belt_SortArray.cmti )
+    (deps (:inputs belt_SortArray.mli) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_SortArrayInt.cmi belt_SortArrayInt.cmj belt_SortArrayString.cmi belt_SortArrayString.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_SortArrayInt.cmj belt_SortArrayInt.cmt )
+    (deps (:inputs belt_SortArrayInt.ml) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_Array.cmi belt_Array.cmj belt_SortArrayInt.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_SortArrayInt.cmi belt_SortArrayInt.cmti )
+    (deps (:inputs belt_SortArrayInt.mli) (alias ../runtime/runtime) (alias js_pkg) belt_Array.cmi belt_Array.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_SortArrayString.cmj belt_SortArrayString.cmt )
+    (deps (:inputs belt_SortArrayString.ml) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_Array.cmi belt_Array.cmj belt_SortArrayString.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_SortArrayString.cmi belt_SortArrayString.cmti )
+    (deps (:inputs belt_SortArrayString.mli) (alias ../runtime/runtime) (alias js_pkg) belt_Array.cmi belt_Array.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_internalAVLset.cmj belt_internalAVLset.cmt )
+    (deps (:inputs belt_internalAVLset.ml) (alias ../runtime/runtime) belt.cmi belt_Array.cmj belt_Id.cmj belt_SortArray.cmj belt_internalAVLset.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_internalAVLset.cmi belt_internalAVLset.cmti )
+    (deps (:inputs belt_internalAVLset.mli) (alias ../runtime/runtime) belt.cmi belt_Id.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_internalAVLtree.cmj belt_internalAVLtree.cmt )
+    (deps (:inputs belt_internalAVLtree.ml) (alias ../runtime/runtime) belt.cmi belt_Array.cmj belt_Id.cmj belt_SortArray.cmj belt_internalAVLtree.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_internalAVLtree.cmi belt_internalAVLtree.cmti )
+    (deps (:inputs belt_internalAVLtree.mli) (alias ../runtime/runtime) belt.cmi belt_Id.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_internalBuckets.cmj belt_internalBuckets.cmt )
+    (deps (:inputs belt_internalBuckets.ml) (alias ../runtime/runtime) belt.cmi belt_Array.cmj belt_internalBuckets.cmi belt_internalBucketsType.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_internalBuckets.cmi belt_internalBuckets.cmti )
+    (deps (:inputs belt_internalBuckets.mli) (alias ../runtime/runtime) belt.cmi belt_internalBucketsType.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_internalBucketsType.cmj belt_internalBucketsType.cmt )
+    (deps (:inputs belt_internalBucketsType.ml) (alias ../runtime/runtime) belt.cmi belt_Array.cmj belt_internalBucketsType.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_internalBucketsType.cmi belt_internalBucketsType.cmti )
+    (deps (:inputs belt_internalBucketsType.mli) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_internalMapInt.cmi belt_internalMapInt.cmj belt_internalMapInt.cmt )
+    (deps (:inputs belt_internalMapInt.ml) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_Array.cmi belt_Array.cmj belt_SortArray.cmi belt_SortArray.cmj belt_internalAVLtree.cmi belt_internalAVLtree.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_internalMapString.cmi belt_internalMapString.cmj belt_internalMapString.cmt )
+    (deps (:inputs belt_internalMapString.ml) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_Array.cmi belt_Array.cmj belt_SortArray.cmi belt_SortArray.cmj belt_internalAVLtree.cmi belt_internalAVLtree.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_internalSetBuckets.cmj belt_internalSetBuckets.cmt )
+    (deps (:inputs belt_internalSetBuckets.ml) (alias ../runtime/runtime) belt.cmi belt_Array.cmj belt_internalBucketsType.cmj belt_internalSetBuckets.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_internalSetBuckets.cmi belt_internalSetBuckets.cmti )
+    (deps (:inputs belt_internalSetBuckets.mli) (alias ../runtime/runtime) belt.cmi belt_internalBucketsType.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_internalSetInt.cmi belt_internalSetInt.cmj belt_internalSetInt.cmt )
+    (deps (:inputs belt_internalSetInt.ml) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_Array.cmi belt_Array.cmj belt_SortArrayInt.cmi belt_SortArrayInt.cmj belt_internalAVLset.cmi belt_internalAVLset.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets belt_internalSetString.cmi belt_internalSetString.cmj belt_internalSetString.cmt )
+    (deps (:inputs belt_internalSetString.ml) (alias ../runtime/runtime) (alias js_pkg) belt.cmi belt_Array.cmi belt_Array.cmj belt_SortArrayString.cmi belt_SortArrayString.cmj belt_internalAVLset.cmi belt_internalAVLset.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets dom.cmi dom.cmj dom.cmt )
+    (deps (:inputs dom.ml) (alias ../runtime/runtime) dom_storage.cmj dom_storage2.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets dom_storage.cmi dom_storage.cmj dom_storage.cmt )
+    (deps (:inputs dom_storage.ml) (alias ../runtime/runtime) dom_storage2.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets dom_storage2.cmi dom_storage2.cmj dom_storage2.cmt )
+    (deps (:inputs dom_storage2.ml) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets node_buffer.cmi node_buffer.cmj node_buffer.cmt )
+    (deps (:inputs node_buffer.ml) (alias ../runtime/runtime) node.cmi node.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets node_child_process.cmi node_child_process.cmj node_child_process.cmt )
+    (deps (:inputs node_child_process.ml) (alias ../runtime/runtime) node.cmi node.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets node_fs.cmi node_fs.cmj node_fs.cmt )
+    (deps (:inputs node_fs.ml) (alias ../runtime/runtime) js_string.cmj node.cmi node.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets node_module.cmi node_module.cmj node_module.cmt )
+    (deps (:inputs node_module.ml) (alias ../runtime/runtime) js_dict.cmj node.cmi node.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets node_path.cmi node_path.cmj node_path.cmt )
+    (deps (:inputs node_path.ml) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets node_process.cmj node_process.cmt )
+    (deps (:inputs node_process.ml) (alias ../runtime/runtime) js_dict.cmj node.cmi node_process.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets node_process.cmi node_process.cmti )
+    (deps (:inputs node_process.mli) (alias ../runtime/runtime) js_dict.cmi node.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_typed_array.cmi js_typed_array.cmj js_typed_array.cmt )
+    (deps (:inputs js_typed_array.ml) (alias ../runtime/runtime) (alias js_pkg) js_typed_array2.cmi js_typed_array2.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+  (rule
+    (targets js_typed_array2.cmi js_typed_array2.cmj js_typed_array2.cmt )
+    (deps (:inputs js_typed_array2.ml) (alias ../runtime/runtime))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50-9-20 -warn-error A  -open Bs_stdlib_mini -I ../runtime -I . %{inputs})))
+
+
+    (alias
+      (name others)
+      (deps belt_Array.cmi belt_Array.cmj belt_Float.cmi belt_Float.cmj belt_HashMap.cmi belt_HashMap.cmj belt_HashMapInt.cmi belt_HashMapInt.cmj belt_HashMapString.cmi belt_HashMapString.cmj belt_HashSet.cmi belt_HashSet.cmj belt_HashSetInt.cmi belt_HashSetInt.cmj belt_HashSetString.cmi belt_HashSetString.cmj belt_Id.cmi belt_Id.cmj belt_Int.cmi belt_Int.cmj belt_List.cmi belt_List.cmj belt_Map.cmi belt_Map.cmj belt_MapDict.cmi belt_MapDict.cmj belt_MapInt.cmi belt_MapInt.cmj belt_MapString.cmi belt_MapString.cmj belt_MutableMap.cmi belt_MutableMap.cmj belt_MutableMapInt.cmi belt_MutableMapInt.cmj belt_MutableMapString.cmi belt_MutableMapString.cmj belt_MutableQueue.cmi belt_MutableQueue.cmj belt_MutableSet.cmi belt_MutableSet.cmj belt_MutableSetInt.cmi belt_MutableSetInt.cmj belt_MutableSetString.cmi belt_MutableSetString.cmj belt_MutableStack.cmi belt_MutableStack.cmj belt_Option.cmi belt_Option.cmj belt_Range.cmi belt_Range.cmj belt_Result.cmi belt_Result.cmj belt_Set.cmi belt_Set.cmj belt_SetDict.cmi belt_SetDict.cmj belt_SetInt.cmi belt_SetInt.cmj belt_SetString.cmi belt_SetString.cmj belt_SortArray.cmi belt_SortArray.cmj belt_SortArrayInt.cmi belt_SortArrayInt.cmj belt_SortArrayString.cmi belt_SortArrayString.cmj belt_internalAVLset.cmi belt_internalAVLset.cmj belt_internalAVLtree.cmi belt_internalAVLtree.cmj belt_internalBuckets.cmi belt_internalBuckets.cmj belt_internalBucketsType.cmi belt_internalBucketsType.cmj belt_internalMapInt.cmi belt_internalMapInt.cmj belt_internalMapString.cmi belt_internalMapString.cmj belt_internalSetBuckets.cmi belt_internalSetBuckets.cmj belt_internalSetInt.cmi belt_internalSetInt.cmj belt_internalSetString.cmi belt_internalSetString.cmj dom.cmi dom.cmj dom_storage.cmi dom_storage.cmj dom_storage2.cmi dom_storage2.cmj node_buffer.cmi node_buffer.cmj node_child_process.cmi node_child_process.cmj node_fs.cmi node_fs.cmj node_module.cmi node_module.cmj node_path.cmi node_path.cmj node_process.cmi node_process.cmj js_typed_array.cmi js_typed_array.cmj js_typed_array2.cmi js_typed_array2.cmj))
+  

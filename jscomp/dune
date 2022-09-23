@@ -1,66 +1,13 @@
-(dirs
- bsb
- bsb_helper
- common
- core
- depends
- ext
- frontend
- gentype
- js_parser
- main
- ml
- napkin
- ounit
- ounit_tests
- stubs
- outcome_printer
- super_errors)
+(rule
+ (deps
+  (alias runtime/runtime)
+  (alias others/others)
+  stdlib-406/stdlib.cmj)
+ (target libocaml.tar.gz)
+ (action
+  (bash
+   "tar -czf libocaml.tar.gz runtime/*.{ml,cm}* others/*.{ml,cm}* stdlib-406/*.{ml,cm}* stdlib-406/stdlib_modules/*.{ml,cm}*")))
 
-(copy_files# bsb/*.{ml,mli})
-
-(copy_files# bsb_helper/*.{ml,mli})
-
-(copy_files# common/*.{ml,mli})
-
-(copy_files# core/*.{ml,mli})
-
-(copy_files# depends/*.{ml,mli})
-
-(copy_files# ext/*.{ml,mli})
-
-(copy_files# frontend/*.{ml,mli})
-
-(copy_files# gentype/*.{ml,mli})
-
-(copy_files# js_parser/*.{ml,mli})
-
-(copy_files# main/*.{ml,mli})
-
-(copy_files# ml/*.{ml,mli})
-
-(copy_files# napkin/*.{ml,mli})
-
-(copy_files# ounit/*.{ml,mli})
-
-(copy_files# ounit_tests/*.{ml,mli})
-
-(copy_files# stubs/*.{ml,mli,c})
-
-(copy_files# outcome_printer/*.{ml,mli})
-
-(copy_files# super_errors/*.{ml,mli})
-
-(library
- (name jscomp)
- (flags "-w" "+26+27+32+33+39-d")
- ; Depends on:
- (libraries unix str)
- (modules_without_implementation
-  Jscmj_main
-  Lam_pass_unused_params
-  Lam_runtime)
- (foreign_stubs
-  (language c)
-  (names ext_basic_hash_stubs)
-  (flags)))
+(install
+ (files libocaml.tar.gz)
+ (section lib))

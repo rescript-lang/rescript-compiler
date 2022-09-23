@@ -1,0 +1,26 @@
+(library
+ (name bsb)
+ (preprocess
+  (action
+   (run %{bin:cppo} %{env:CPPO_FLAGS=} %{input-file})))
+ (modules :standard \ bsb_config)
+ (flags
+  (:standard -w -9-50))
+ (libraries
+  bsb_config
+  bsb_helper
+  bs_hash_stubs
+  ext
+  common
+  str
+  unix
+  base64
+  luv))
+
+(library
+ (name bsb_config)
+ (preprocess
+  (action
+   (run %{bin:cppo} %{env:CPPO_FLAGS=} %{input-file})))
+ (modules bsb_config)
+ (libraries ext unix))

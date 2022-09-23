@@ -1,0 +1,594 @@
+
+  (rule
+    (targets pervasives.cmi )
+    (deps (:inputs pervasives.mli) (alias ../../others/others))
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -I . %{inputs})))
+
+
+  (rule
+    (targets pervasives.cmj )
+    (deps (:inputs pervasives.ml) pervasives.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -I . %{inputs})))
+
+
+  (rule
+    (targets arg.cmj arg.cmt )
+    (deps (:inputs arg.ml) (alias ../../others/others) arg.cmi array.cmj buffer.cmj list.cmj string.cmj sys.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets arg.cmi arg.cmti )
+    (deps (:inputs arg.mli) (alias ../../others/others) pervasives.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets array.cmj array.cmt )
+    (deps (:inputs array.ml) (alias ../../others/others) array.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets array.cmi array.cmti )
+    (deps (:inputs array.mli) (alias ../../others/others) pervasives.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets arrayLabels.cmj arrayLabels.cmt )
+    (deps (:inputs arrayLabels.ml) (alias ../../others/others) array.cmj arrayLabels.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -nolabels -I . %{inputs})))
+
+
+  (rule
+    (targets arrayLabels.cmi arrayLabels.cmti )
+    (deps (:inputs arrayLabels.mli) (alias ../../others/others) pervasives.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -nolabels -I . %{inputs})))
+
+
+  (rule
+    (targets buffer.cmj buffer.cmt )
+    (deps (:inputs buffer.ml) (alias ../../others/others) buffer.cmi bytes.cmj string.cmj sys.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets buffer.cmi buffer.cmti )
+    (deps (:inputs buffer.mli) (alias ../../others/others) pervasives.cmj uchar.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets bytes.cmj bytes.cmt )
+    (deps (:inputs bytes.ml) (alias ../../others/others) bytes.cmi char.cmj sys.cmj uchar.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets bytes.cmi bytes.cmti )
+    (deps (:inputs bytes.mli) (alias ../../others/others) pervasives.cmj uchar.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets bytesLabels.cmj bytesLabels.cmt )
+    (deps (:inputs bytesLabels.ml) (alias ../../others/others) bytes.cmj bytesLabels.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -nolabels -I . %{inputs})))
+
+
+  (rule
+    (targets bytesLabels.cmi bytesLabels.cmti )
+    (deps (:inputs bytesLabels.mli) (alias ../../others/others) pervasives.cmj uchar.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -nolabels -I . %{inputs})))
+
+
+  (rule
+    (targets callback.cmj callback.cmt )
+    (deps (:inputs callback.ml) (alias ../../others/others) callback.cmi obj.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets callback.cmi callback.cmti )
+    (deps (:inputs callback.mli) (alias ../../others/others) pervasives.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets camlinternalLazy.cmj camlinternalLazy.cmt )
+    (deps (:inputs camlinternalLazy.ml) (alias ../../others/others) camlinternalLazy.cmi sys.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets camlinternalLazy.cmi camlinternalLazy.cmti )
+    (deps (:inputs camlinternalLazy.mli) (alias ../../others/others) pervasives.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets camlinternalMod.cmj camlinternalMod.cmt )
+    (deps (:inputs camlinternalMod.ml) (alias ../../others/others) array.cmj camlinternalMod.cmi lazy.cmj obj.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets camlinternalMod.cmi camlinternalMod.cmti )
+    (deps (:inputs camlinternalMod.mli) (alias ../../others/others) lazy.cmi obj.cmi pervasives.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+  (rule
+    (targets char.cmj char.cmt )
+    (deps (:inputs char.ml) (alias ../../others/others) char.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets char.cmi char.cmti )
+    (deps (:inputs char.mli) (alias ../../others/others) pervasives.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets complex.cmj complex.cmt )
+    (deps (:inputs complex.ml) (alias ../../others/others) complex.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets complex.cmi complex.cmti )
+    (deps (:inputs complex.mli) (alias ../../others/others) pervasives.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets digest.cmj digest.cmt )
+    (deps (:inputs digest.ml) (alias ../../others/others) bytes.cmj char.cmj digest.cmi string.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets digest.cmi digest.cmti )
+    (deps (:inputs digest.mli) (alias ../../others/others) pervasives.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets filename.cmj filename.cmt )
+    (deps (:inputs filename.ml) (alias ../../others/others) buffer.cmj filename.cmi lazy.cmj list.cmj random.cmj string.cmj sys.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets filename.cmi filename.cmti )
+    (deps (:inputs filename.mli) (alias ../../others/others) pervasives.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets genlex.cmj genlex.cmt )
+    (deps (:inputs genlex.ml) (alias ../../others/others) bytes.cmj char.cmj genlex.cmi hashtbl.cmj list.cmj stream.cmj string.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets genlex.cmi genlex.cmti )
+    (deps (:inputs genlex.mli) (alias ../../others/others) pervasives.cmj stream.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets hashtbl.cmj hashtbl.cmt )
+    (deps (:inputs hashtbl.ml) (alias ../../others/others) array.cmj hashtbl.cmi lazy.cmj random.cmj string.cmj sys.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets hashtbl.cmi hashtbl.cmti )
+    (deps (:inputs hashtbl.mli) (alias ../../others/others) pervasives.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+
+  (rule
+    (targets int32.cmj int32.cmt )
+    (deps (:inputs int32.ml) (alias ../../others/others) int32.cmi sys.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets int32.cmi int32.cmti )
+    (deps (:inputs int32.mli) (alias ../../others/others) pervasives.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets int64.cmj int64.cmt )
+    (deps (:inputs int64.ml) (alias ../../others/others) int64.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets int64.cmi int64.cmti )
+    (deps (:inputs int64.mli) (alias ../../others/others) pervasives.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets lazy.cmj lazy.cmt )
+    (deps (:inputs lazy.ml) (alias ../../others/others) camlinternalLazy.cmj lazy.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets lazy.cmi lazy.cmti )
+    (deps (:inputs lazy.mli) (alias ../../others/others) camlinternalLazy.cmi pervasives.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets lexing.cmj lexing.cmt )
+    (deps (:inputs lexing.ml) (alias ../../others/others) array.cmj bytes.cmj lexing.cmi string.cmj sys.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets lexing.cmi lexing.cmti )
+    (deps (:inputs lexing.mli) (alias ../../others/others) pervasives.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+  (rule
+    (targets list.cmj list.cmt )
+    (deps (:inputs list.ml) (alias ../../others/others) list.cmi sys.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets list.cmi list.cmti )
+    (deps (:inputs list.mli) (alias ../../others/others) pervasives.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+  (rule
+    (targets listLabels.cmj listLabels.cmt )
+    (deps (:inputs listLabels.ml) (alias ../../others/others) list.cmj listLabels.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -nolabels -I . %{inputs})))
+
+
+  (rule
+    (targets listLabels.cmi listLabels.cmti )
+    (deps (:inputs listLabels.mli) (alias ../../others/others) pervasives.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -nolabels -I . %{inputs})))
+
+
+  (rule
+    (targets map.cmj map.cmt )
+    (deps (:inputs map.ml) (alias ../../others/others) map.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets map.cmi map.cmti )
+    (deps (:inputs map.mli) (alias ../../others/others) pervasives.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets moreLabels.cmj moreLabels.cmt )
+    (deps (:inputs moreLabels.ml) (alias ../../others/others) hashtbl.cmj map.cmj moreLabels.cmi set.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -nolabels -I . %{inputs})))
+
+
+  (rule
+    (targets moreLabels.cmi moreLabels.cmti )
+    (deps (:inputs moreLabels.mli) (alias ../../others/others) hashtbl.cmi map.cmi set.cmi pervasives.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -nolabels -I . %{inputs})))
+
+
+  (rule
+    (targets obj.cmj obj.cmt )
+    (deps (:inputs obj.ml) (alias ../../others/others) int32.cmj obj.cmi sys.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets obj.cmi obj.cmti )
+    (deps (:inputs obj.mli) (alias ../../others/others) int32.cmi pervasives.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets parsing.cmj parsing.cmt )
+    (deps (:inputs parsing.ml) (alias ../../others/others) array.cmj lexing.cmj obj.cmj parsing.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets parsing.cmi parsing.cmti )
+    (deps (:inputs parsing.mli) (alias ../../others/others) lexing.cmi obj.cmi pervasives.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets printexc.cmj printexc.cmt )
+    (deps (:inputs printexc.ml) (alias ../../others/others) array.cmj buffer.cmj printexc.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets printexc.cmi printexc.cmti )
+    (deps (:inputs printexc.mli) (alias ../../others/others) pervasives.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets queue.cmj queue.cmt )
+    (deps (:inputs queue.ml) (alias ../../others/others) queue.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets queue.cmi queue.cmti )
+    (deps (:inputs queue.mli) (alias ../../others/others) pervasives.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets random.cmj random.cmt )
+    (deps (:inputs random.ml) (alias ../../others/others) array.cmj char.cmj digest.cmj int32.cmj int64.cmj random.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets random.cmi random.cmti )
+    (deps (:inputs random.mli) (alias ../../others/others) int32.cmi int64.cmi pervasives.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets set.cmj set.cmt )
+    (deps (:inputs set.ml) (alias ../../others/others) list.cmj set.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets set.cmi set.cmti )
+    (deps (:inputs set.mli) (alias ../../others/others) pervasives.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets stack.cmj stack.cmt )
+    (deps (:inputs stack.ml) (alias ../../others/others) list.cmj stack.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets stack.cmi stack.cmti )
+    (deps (:inputs stack.mli) (alias ../../others/others) pervasives.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets stdLabels.cmj stdLabels.cmt )
+    (deps (:inputs stdLabels.ml) (alias ../../others/others) arrayLabels.cmj bytesLabels.cmj listLabels.cmj stdLabels.cmi stringLabels.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -nolabels -I . %{inputs})))
+
+
+  (rule
+    (targets stdLabels.cmi stdLabels.cmti )
+    (deps (:inputs stdLabels.mli) (alias ../../others/others) arrayLabels.cmi bytesLabels.cmi listLabels.cmi pervasives.cmj stringLabels.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -nolabels -I . %{inputs})))
+
+
+  (rule
+    (targets stream.cmj stream.cmt )
+    (deps (:inputs stream.ml) (alias ../../others/others) bytes.cmj lazy.cmj list.cmj stream.cmi string.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets stream.cmi stream.cmti )
+    (deps (:inputs stream.mli) (alias ../../others/others) pervasives.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets string.cmj string.cmt )
+    (deps (:inputs string.ml) (alias ../../others/others) bytes.cmj string.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets string.cmi string.cmti )
+    (deps (:inputs string.mli) (alias ../../others/others) pervasives.cmj uchar.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets stringLabels.cmj stringLabels.cmt )
+    (deps (:inputs stringLabels.ml) (alias ../../others/others) string.cmj stringLabels.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -nolabels -I . %{inputs})))
+
+
+  (rule
+    (targets stringLabels.cmi stringLabels.cmti )
+    (deps (:inputs stringLabels.mli) (alias ../../others/others) pervasives.cmj uchar.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -nolabels -I . %{inputs})))
+
+
+  (rule
+    (targets sys.cmj sys.cmt )
+    (deps (:inputs sys.ml) (alias ../../others/others) sys.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets sys.cmi sys.cmti )
+    (deps (:inputs sys.mli) (alias ../../others/others) pervasives.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets uchar.cmj uchar.cmt )
+    (deps (:inputs uchar.ml) (alias ../../others/others) char.cmj uchar.cmi)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-read-cmi -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+
+  (rule
+    (targets uchar.cmi uchar.cmti )
+    (deps (:inputs uchar.mli) (alias ../../others/others) pervasives.cmj)
+
+    (action
+     (run %{workspace_root}/jscomp/main/rescript_compiler_main.exe -bs-cmi -bs-cmj -no-keep-locs -no-alias-deps -bs-no-version-header -bs-no-check-div-by-zero -nostdlib  -bs-cross-module-opt -make-runtime -w -9-106 -warn-error A -I ../../runtime -I ../../others  -nopervasives -open Pervasives  -I . %{inputs})))
+
+    (alias
+      (name stdlib)
+      (deps pervasives.cmi arg.cmi arg.cmj array.cmi array.cmj arrayLabels.cmi arrayLabels.cmj buffer.cmi buffer.cmj bytes.cmi bytes.cmj bytesLabels.cmi bytesLabels.cmj callback.cmi callback.cmj camlinternalLazy.cmi camlinternalLazy.cmj camlinternalMod.cmi camlinternalMod.cmj char.cmi char.cmj complex.cmi complex.cmj digest.cmi digest.cmj filename.cmi filename.cmj genlex.cmi genlex.cmj hashtbl.cmi hashtbl.cmj int32.cmi int32.cmj int64.cmi int64.cmj lazy.cmi lazy.cmj lexing.cmi lexing.cmj list.cmi list.cmj listLabels.cmi listLabels.cmj map.cmi map.cmj moreLabels.cmi moreLabels.cmj obj.cmi obj.cmj parsing.cmi parsing.cmj pervasives.cmi pervasives.cmj printexc.cmi printexc.cmj queue.cmi queue.cmj random.cmi random.cmj set.cmi set.cmj stack.cmi stack.cmj stdLabels.cmi stdLabels.cmj stream.cmi stream.cmj string.cmi string.cmj stringLabels.cmi stringLabels.cmj sys.cmi sys.cmj uchar.cmi uchar.cmj))
+  

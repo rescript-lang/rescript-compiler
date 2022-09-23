@@ -1,0 +1,5 @@
+(library
+ (name outcome_printer)
+ (libraries compiler-libs ext reason)
+ (flags
+  (:standard -open Compiler_libs)))

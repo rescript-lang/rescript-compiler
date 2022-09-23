@@ -1,0 +1,4 @@
+(library
+ (name bsb_helper)
+ (modules bsb_db_decode bsb_helper_depfile_gen)
+ (libraries base64 bsb_config bs_hash_stubs ext common unix str))

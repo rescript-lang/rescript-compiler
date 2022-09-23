@@ -1,5 +1,5 @@
 
-# 2 "others/sort.cppo.mli"
+# 2 "sort.cppo.mli"
 (* Copyright (C) 2017 Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
@@ -29,10 +29,10 @@
     applies here, except the comparator is fixed and inlined
 *)
 
-# 32 "others/sort.cppo.mli"
+# 32 "sort.cppo.mli"
 type element = int
 
-# 39 "others/sort.cppo.mli"
+# 39 "sort.cppo.mli"
 val strictlySortedLength: element array -> int
 (**
   The same as [`Belt_SortArray.strictlySortedLength`]() except the comparator is fixed

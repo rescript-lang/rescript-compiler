@@ -1,0 +1,56 @@
+(executable
+ (name rescript_compiler_main)
+ (public_name bsc)
+ (modes byte native)
+ (flags :standard -open Compiler_libs)
+ (libraries
+  js_parser
+  bs_hash_stubs
+  ext
+  common
+  outcome_printer
+  compiler-libs
+  core
+  cmdliner)
+ (modules rescript_compiler_main)
+ (preprocessor_deps
+  rescript_compiler_main.ml
+  ../../package.json
+  ../../bsconfig.json
+  ../../lib/js/.gitkeep
+  ../../lib/es6/.gitkeep)
+ (preprocess
+  (action
+   (run cppo %{env:CPPO_FLAGS=} %{input-file}))))
+
+(executable
+ (name rescript_main)
+ (public_name rescript)
+ (modes native)
+ (modules rescript_main)
+ (libraries bs_hash_stubs ext common bsb cmdliner luv))
+
+(executable
+ (name cmjdump_main)
+ (modes native)
+ (modules cmjdump_main)
+ (libraries bs_hash_stubs ext common core))
+
+(executable
+ (name cmij_main)
+ (modes native)
+ (modules cmij_main)
+ (flags
+  (:standard -w -9))
+ (libraries bs_hash_stubs ext common core))
+
+(test
+ (name ounit_tests_main)
+ (modes native)
+ (modules ounit_tests_main)
+ (deps
+  bsc.exe
+  (alias ../runtime/all)
+  (alias ../others/all)
+  (alias ../stdlib-412/all))
+ (libraries ounit2 bs_hash_stubs ext common bsb bsb_helper core ounit_tests))

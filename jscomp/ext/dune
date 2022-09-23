@@ -1,0 +1,116 @@
+(library
+ (name ext)
+ (wrapped false)
+ (flags
+  (:standard -w -9-50 -open Compiler_libs))
+ (libraries unix bs_hash_stubs compiler-libs))
+
+(rule
+ (targets hash_set_string.ml)
+ (deps hash_set.cppo.ml)
+ (action
+  (run cppo -D TYPE_STRING %{env:CPPO_FLAGS=} %{deps} -o %{targets})))
+
+(rule
+ (targets hash_set_int.ml)
+ (deps hash_set.cppo.ml)
+ (action
+  (run cppo -D TYPE_INT %{env:CPPO_FLAGS=} %{deps} -o %{targets})))
+
+(rule
+ (targets hash_set_ident.ml)
+ (deps hash_set.cppo.ml)
+ (action
+  (run cppo -D TYPE_IDENT %{env:CPPO_FLAGS=} %{deps} -o %{targets})))
+
+(rule
+ (targets hash_set.ml)
+ (deps hash_set.cppo.ml)
+ (action
+  (run cppo -D TYPE_FUNCTOR %{env:CPPO_FLAGS=} %{deps} -o %{targets})))
+
+(rule
+ (targets hash_set_poly.ml)
+ (deps hash_set.cppo.ml)
+ (action
+  (run cppo -D TYPE_POLY %{env:CPPO_FLAGS=} %{deps} -o %{targets})))
+
+(rule
+ (targets vec_int.ml)
+ (deps vec.cppo.ml)
+ (action
+  (run cppo -D TYPE_INT %{env:CPPO_FLAGS=} %{deps} -o %{targets})))
+
+(rule
+ (targets vec.ml)
+ (deps vec.cppo.ml)
+ (action
+  (run cppo -D TYPE_FUNCTOR %{env:CPPO_FLAGS=} %{deps} -o %{targets})))
+
+(rule
+ (targets set_string.ml)
+ (deps set.cppo.ml)
+ (action
+  (run cppo -D TYPE_STRING %{env:CPPO_FLAGS=} %{deps} -o %{targets})))
+
+(rule
+ (targets set_int.ml)
+ (deps set.cppo.ml)
+ (action
+  (run cppo -D TYPE_INT %{env:CPPO_FLAGS=} %{deps} -o %{targets})))
+
+(rule
+ (targets set_ident.ml)
+ (deps set.cppo.ml)
+ (action
+  (run cppo -D TYPE_IDENT %{env:CPPO_FLAGS=} %{deps} -o %{targets})))
+
+(rule
+ (targets map_string.ml)
+ (deps map.cppo.ml)
+ (action
+  (run cppo -D TYPE_STRING %{env:CPPO_FLAGS=} %{deps} -o %{targets})))
+
+(rule
+ (targets map_int.ml)
+ (deps map.cppo.ml)
+ (action
+  (run cppo -D TYPE_INT %{env:CPPO_FLAGS=} %{deps} -o %{targets})))
+
+(rule
+ (targets map_ident.ml)
+ (deps map.cppo.ml)
+ (action
+  (run cppo -D TYPE_IDENT %{env:CPPO_FLAGS=} %{deps} -o %{targets})))
+
+(rule
+ (targets ordered_hash_map_local_ident.ml)
+ (deps ordered_hash_map.cppo.ml)
+ (action
+  (run cppo -D TYPE_LOCAL_IDENT %{env:CPPO_FLAGS=} %{deps} -o %{targets})))
+
+(rule
+ (targets hash_string.ml)
+ (deps hash.cppo.ml)
+ (action
+  (run cppo -D TYPE_STRING %{env:CPPO_FLAGS=} %{deps} -o %{targets})))
+
+(rule
+ (targets hash_int.ml)
+ (deps hash.cppo.ml)
+ (action
+  (run cppo -D TYPE_INT %{env:CPPO_FLAGS=} %{deps} -o %{targets})))
+
+(rule
+ (targets hash_ident.ml)
+ (deps hash.cppo.ml)
+ (action
+  (run cppo -D TYPE_IDENT %{env:CPPO_FLAGS=} %{deps} -o %{targets})))
+
+(rule
+ (targets hash.ml)
+ (deps hash.cppo.ml)
+ (action
+  (run cppo -D TYPE_FUNCTOR %{env:CPPO_FLAGS=} %{deps} -o %{targets})))
+
+(ocamllex ext_json_parse)

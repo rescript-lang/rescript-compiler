@@ -1,4 +1,4 @@
-# 1 "others/js_typed_array.cppo.ml"
+# 1 "js_typed_array.cppo.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -167,14 +167,14 @@ end
 
 
   
-# 287 "others/js_typed_array.cppo.ml"
+# 287 "js_typed_array.cppo.ml"
   (* commented out until bs has a plan for iterators
   external values : elt array_iter = "" [@@bs.send.pipe: t]
   *)
 
 module Int8Array = struct
   
-# 292 "others/js_typed_array.cppo.ml"
+# 292 "js_typed_array.cppo.ml"
   
   (** *)
   type elt = int
@@ -294,13 +294,13 @@ module Int8Array = struct
   external fromLength : int -> t = "Int8Array" [@@bs.new]
   external from : elt array_like -> t = "Int8Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 293 "others/js_typed_array.cppo.ml"
+# 293 "js_typed_array.cppo.ml"
 end
 
 
 module Uint8Array = struct
   
-# 297 "others/js_typed_array.cppo.ml"
+# 297 "js_typed_array.cppo.ml"
   
   (** *)
   type elt = int
@@ -420,12 +420,12 @@ module Uint8Array = struct
   external fromLength : int -> t = "Uint8Array" [@@bs.new]
   external from : elt array_like -> t = "Uint8Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 298 "others/js_typed_array.cppo.ml"
+# 298 "js_typed_array.cppo.ml"
 end
 
 module Uint8ClampedArray = struct
   
-# 301 "others/js_typed_array.cppo.ml"
+# 301 "js_typed_array.cppo.ml"
   
   (** *)
   type elt = int
@@ -545,12 +545,12 @@ module Uint8ClampedArray = struct
   external fromLength : int -> t = "Uint8ClampedArray" [@@bs.new]
   external from : elt array_like -> t = "Uint8ClampedArray.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 302 "others/js_typed_array.cppo.ml"
+# 302 "js_typed_array.cppo.ml"
 end
 
 module Int16Array = struct
   
-# 305 "others/js_typed_array.cppo.ml"
+# 305 "js_typed_array.cppo.ml"
   
   (** *)
   type elt = int
@@ -670,12 +670,12 @@ module Int16Array = struct
   external fromLength : int -> t = "Int16Array" [@@bs.new]
   external from : elt array_like -> t = "Int16Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 306 "others/js_typed_array.cppo.ml"
+# 306 "js_typed_array.cppo.ml"
 end
 
 module Uint16Array = struct
   
-# 309 "others/js_typed_array.cppo.ml"
+# 309 "js_typed_array.cppo.ml"
   
   (** *)
   type elt = int
@@ -795,12 +795,12 @@ module Uint16Array = struct
   external fromLength : int -> t = "Uint16Array" [@@bs.new]
   external from : elt array_like -> t = "Uint16Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 310 "others/js_typed_array.cppo.ml"
+# 310 "js_typed_array.cppo.ml"
 end
 
 module Int32Array = struct
   
-# 313 "others/js_typed_array.cppo.ml"
+# 313 "js_typed_array.cppo.ml"
   
   (** *)
   type elt = int
@@ -922,7 +922,7 @@ module Int32Array = struct
   (* *Array.of is redundant, use make *) 
 
   
-# 315 "others/js_typed_array.cppo.ml"
+# 315 "js_typed_array.cppo.ml"
   external create : int array -> t = "Int32Array" [@@bs.new]
   [@@deprecated "use `make` instead"]
   external of_buffer : array_buffer -> t = "Int32Array" [@@bs.new]
@@ -934,7 +934,7 @@ module Int32_array = Int32Array
 
 module Uint32Array = struct
   
-# 325 "others/js_typed_array.cppo.ml"
+# 325 "js_typed_array.cppo.ml"
   
   (** *)
   type elt = int
@@ -1054,7 +1054,7 @@ module Uint32Array = struct
   external fromLength : int -> t = "Uint32Array" [@@bs.new]
   external from : elt array_like -> t = "Uint32Array.from" [@@bs.val]
   (* *Array.of is redundant, use make *) 
-# 326 "others/js_typed_array.cppo.ml"
+# 326 "js_typed_array.cppo.ml"
 end
 
 
@@ -1063,7 +1063,7 @@ end
 *)
 module Float32Array = struct
   
-# 333 "others/js_typed_array.cppo.ml"
+# 333 "js_typed_array.cppo.ml"
   
   (** *)
   type elt = float
@@ -1185,7 +1185,7 @@ module Float32Array = struct
   (* *Array.of is redundant, use make *) 
 
   
-# 335 "others/js_typed_array.cppo.ml"
+# 335 "js_typed_array.cppo.ml"
   external create : float array -> t = "Float32Array" [@@bs.new]
   [@@deprecated "use `make` instead"]
   external of_buffer : array_buffer -> t = "Float32Array" [@@bs.new]
@@ -1197,7 +1197,7 @@ module Float32_array = Float32Array
 
 module Float64Array = struct
   
-# 345 "others/js_typed_array.cppo.ml"
+# 345 "js_typed_array.cppo.ml"
   
   (** *)
   type elt = float
@@ -1319,7 +1319,7 @@ module Float64Array = struct
   (* *Array.of is redundant, use make *) 
 
   
-# 347 "others/js_typed_array.cppo.ml"
+# 347 "js_typed_array.cppo.ml"
   external create : float array -> t = "Float64Array" [@@bs.new]
   [@@deprecated "use `make` instead"]
   external of_buffer : array_buffer -> t = "Float64Array" [@@bs.new]

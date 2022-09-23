@@ -1,0 +1,4 @@
+(library
+ (flags
+  (:standard -w -9-27-32..34-50 -I +ocamldoc))
+ (name generator))

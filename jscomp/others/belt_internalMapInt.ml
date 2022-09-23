@@ -1,9 +1,9 @@
-# 1 "others/internal_map.cppo.ml"
+# 1 "internal_map.cppo.ml"
 [@@@bs.config {flags = [| "-bs-noassertfalse" |]}]
-# 5 "others/internal_map.cppo.ml"
+# 5 "internal_map.cppo.ml"
 type key = int
 
-# 10 "others/internal_map.cppo.ml"
+# 10 "internal_map.cppo.ml"
 module N = Belt_internalAVLtree
 module A = Belt_Array 
 module S = Belt_SortArray

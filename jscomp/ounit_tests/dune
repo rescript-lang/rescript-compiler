@@ -1,0 +1,5 @@
+(library
+ (name ounit_tests)
+ (flags
+  (:standard -w -9-50 -open Compiler_libs))
+ (libraries ounit2 ext bsb bsb_helper core compiler-libs))
