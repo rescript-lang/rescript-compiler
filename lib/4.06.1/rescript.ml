@@ -3542,7 +3542,7 @@ type info =
   | Impl
   | Impl_intf
 
-type syntax_kind = Ml | Reason | Res
+type syntax_kind = Ml | Res
 
 type module_info = {
   mutable info : info;
@@ -3606,7 +3606,7 @@ type info =
   | Impl
   | Impl_intf
 
-type syntax_kind = Ml | Reason | Res
+type syntax_kind = Ml | Res
 
 type module_info = {
   mutable info : info;
@@ -5566,10 +5566,6 @@ let suffix_mll = ".mll"
 let suffix_ml = ".ml"
 
 let suffix_mli = ".mli"
-
-let suffix_re = ".re"
-
-let suffix_rei = ".rei"
 
 let suffix_res = ".res"
 
@@ -9668,14 +9664,10 @@ let add_basename ~(dir : string) (map : t) ?error_on_invalid_suffix basename : t
     (match () with
     | _ when file_suffix = Literals.suffix_ml -> ()
     | _ when file_suffix = Literals.suffix_res -> syntax_kind := Res
-    | _ when file_suffix = Literals.suffix_re -> syntax_kind := Reason
     | _ when file_suffix = Literals.suffix_mli -> info := Intf
     | _ when file_suffix = Literals.suffix_resi ->
         info := Intf;
         syntax_kind := Res
-    | _ when file_suffix = Literals.suffix_rei ->
-        info := Intf;
-        syntax_kind := Reason
     | _ -> invalid_suffix := true);
     let info = !info in
     let syntax_kind = !syntax_kind in
@@ -12088,8 +12080,6 @@ let handle_generators oc (group : Bsb_file_groups.file_group) custom_rules =
 
 type suffixes = { impl : string; intf : string }
 
-let re_suffixes = { impl = Literals.suffix_re; intf = Literals.suffix_rei }
-
 let ml_suffixes = { impl = Literals.suffix_ml; intf = Literals.suffix_mli }
 
 let res_suffixes = { impl = Literals.suffix_res; intf = Literals.suffix_resi }
@@ -12100,7 +12090,6 @@ let emit_module_build (rules : Bsb_ninja_rule.builtin)
   let has_intf_file = module_info.info = Impl_intf in
   let config, ast_rule =
     match module_info.syntax_kind with
-    | Reason -> (re_suffixes, rules.build_ast_from_re)
     | Ml -> (ml_suffixes, rules.build_ast)
     | Res -> (res_suffixes, rules.build_ast_from_re)
     (* FIXME: better names *)
@@ -12330,7 +12319,6 @@ let output_installation_file cwd_lib_bs namespace files_to_install =
          let suffix =
            match syntax_kind with
            | Ml -> Literals.suffix_ml
-           | Reason -> Literals.suffix_re
            | Res -> Literals.suffix_res
          in
          oo suffix ~dest:base ~src:(sb // name_sans_extension);
@@ -12341,7 +12329,6 @@ let output_installation_file cwd_lib_bs namespace files_to_install =
              let suffix_b =
                match syntax_kind with
                | Ml -> Literals.suffix_mli
-               | Reason -> Literals.suffix_rei
                | Res -> Literals.suffix_resi
              in
              oo suffix_b ~dest:base ~src:(sb // name_sans_extension);
@@ -13246,8 +13233,6 @@ let info_subcommand ~start argv =
                     let extensions =
                       match (syntax_kind, info) with
                       | _, Intf -> assert false
-                      | Reason, Impl -> [ ".re" ]
-                      | Reason, Impl_intf -> [ ".re"; ".rei" ]
                       | Ml, Impl -> [ ".ml" ]
                       | Ml, Impl_intf -> [ ".ml"; ".mli" ]
                       | Res, Impl -> [ ".res" ]

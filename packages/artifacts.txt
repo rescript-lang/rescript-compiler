@@ -5,23 +5,18 @@ CREDITS.md
 LICENSE
 README.md
 bsc
-bsrefmt
 darwin/bsb_helper.exe
 darwin/bsc.exe
 darwin/ninja.exe
-darwin/refmt.exe
 darwin/rescript.exe
 darwinarm64/bsb_helper.exe
 darwinarm64/bsc.exe
 darwinarm64/ninja.exe
-darwinarm64/refmt.exe
 darwinarm64/rescript.exe
 docs/docson/build-schema.json
 jscomp/stubs/ext_basic_hash_stubs.c
 lib/4.06.1/bsb_helper.ml
 lib/4.06.1/bsb_helper.mli
-lib/4.06.1/refmt_main3.ml
-lib/4.06.1/refmt_main3.mli
 lib/4.06.1/rescript.ml
 lib/4.06.1/rescript.mli
 lib/4.06.1/whole_compiler.ml
@@ -944,7 +939,6 @@ lib/ocaml/uchar.mli
 linux/bsb_helper.exe
 linux/bsc.exe
 linux/ninja.exe
-linux/refmt.exe
 linux/rescript.exe
 ninja.COPYING
 package.json
@@ -965,5 +959,4 @@ vendor/ocaml.tar.gz
 win32/bsb_helper.exe
 win32/bsc.exe
 win32/ninja.exe
-win32/refmt.exe
 win32/rescript.exe

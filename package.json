@@ -8,7 +8,6 @@
   },
   "bin": {
     "bsc": "bsc",
-    "bsrefmt": "bsrefmt",
     "bstracing": "lib/bstracing",
     "rescript": "rescript"
   },
@@ -29,7 +28,6 @@
     "CREDITS.md",
     "ninja.COPYING",
     "bsc",
-    "bsrefmt",
     "rescript",
     "darwin",
     "darwinarm64",

@@ -4,11 +4,6 @@ const child_process = require('child_process')
 
 
 var bsc = require("../../../scripts/bin_path").bsc_exe;
-// var  refmt = path.join(__dirname,'..','..','..','lib','refmt.exe')
-
-
-// work around CI issue
-// child_process.execSync(`chmod u+x ${refmt}`)
 
 const expectedDir = path.join(__dirname, 'expected')
 
@@ -24,7 +19,6 @@ const updateTests = process.argv[2] === 'update'
 function postProcessErrorOutput(output) {
   output = output.trimRight()
   output = output.replace(/\/[^ ]+?jscomp\/build_tests\/super_errors\//g, '/.../')
-  output = output.replace(/[^ ]+?\/refmt.exe /gim, '/.../refmt.exe ')
   return output
 }
 

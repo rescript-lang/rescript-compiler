@@ -73,9 +73,6 @@ jscomp/bin/*.exe
 # so that `npm install && npm intall -g .`
 # the second install would use the cached ninja.exe (instead of being ignored)
 #
-!bin/bsrefmt
-
-
 #ninja
 .ninja_log
 .ninja_deps

@@ -10,7 +10,14 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# 10.1.0-rc.1
+# 11.0.0-alpha.1
+
+#### :boom: Breaking Change
+
+- Remove support for the legacy Reason syntax. Existing Reason code can be converted to ReScript syntax using ReScript 9 as follows:
+  - `npm i -g rescript@9`
+  - `rescript convert <reason files>`
+- Remove obsolete built-in project templates and the "rescript init" functionality. This will be replaced by the create-rescript-app project that is maintained separately.
 
 # 10.1.0-alpha.2
 

@@ -37,7 +37,7 @@ type info =
   | Impl
   | Impl_intf
 
-type syntax_kind = Ml | Reason | Res
+type syntax_kind = Ml | Res
 
 type module_info = {
   mutable info : info;
