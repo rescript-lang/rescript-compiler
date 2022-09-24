@@ -24,9 +24,6 @@ test-all: test test-gentype
 lib: build
 	node scripts/install -force-lib-rebuild
 
-artifacts: lib
-	./scripts/makeArtifactList.js
-
 clean-gentype:
 	make -C jscomp/gentype_tests/typescript-react-example clean
 
@@ -38,4 +35,4 @@ clean-all: clean clean-gentype
 
 .DEFAULT_GOAL := build
 
-.PHONY: artifacts build clean clean-gentype clean-all config lib test test-all test-gentype
+.PHONY: build clean clean-gentype clean-all config lib test test-all test-gentype
