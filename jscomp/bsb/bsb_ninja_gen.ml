@@ -113,7 +113,6 @@ let output_installation_file cwd_lib_bs namespace files_to_install =
          let suffix =
            match syntax_kind with
            | Ml -> Literals.suffix_ml
-           | Reason -> Literals.suffix_re
            | Res -> Literals.suffix_res
          in
          oo suffix ~dest:base ~src:(sb // name_sans_extension);
@@ -124,7 +123,6 @@ let output_installation_file cwd_lib_bs namespace files_to_install =
              let suffix_b =
                match syntax_kind with
                | Ml -> Literals.suffix_mli
-               | Reason -> Literals.suffix_rei
                | Res -> Literals.suffix_resi
              in
              oo suffix_b ~dest:base ~src:(sb // name_sans_extension);

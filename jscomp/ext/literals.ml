@@ -101,10 +101,6 @@ let suffix_ml = ".ml"
 
 let suffix_mli = ".mli"
 
-let suffix_re = ".re"
-
-let suffix_rei = ".rei"
-
 let suffix_res = ".res"
 
 let suffix_resi = ".resi"

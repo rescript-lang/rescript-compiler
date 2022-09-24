@@ -22,11 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(**
-`jsoo_refmt_main` is the JSOO compilation entry point for the bundle used for the 
-full playground experience.
-*)
-
 
 (*
  * The API version is giving information about the feature set

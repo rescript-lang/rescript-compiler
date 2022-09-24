@@ -22,7 +22,6 @@ var sourceDirs = [
   "ml",
   "ounit_tests",
   "bsb_helper",
-  "refmt",
   "napkin",
   "js_parser",
 ];

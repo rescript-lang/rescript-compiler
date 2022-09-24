@@ -1483,7 +1483,7 @@ function setSortedToStringAsNativeDeps(xs) {
 }
 
 /**
- * Built cppo.exe refmt.exe etc for dev purpose
+ * Built cppo.exe for dev purpose
  */
 function preprocessorNinjaSync() {
   var napkinFiles = fs

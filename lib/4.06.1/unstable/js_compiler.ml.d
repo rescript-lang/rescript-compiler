@@ -372,8 +372,6 @@
 ../lib/4.06.1/unstable/js_compiler.ml: ./frontend/ast_payload.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./frontend/ast_polyvar.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./frontend/ast_polyvar.mli
-../lib/4.06.1/unstable/js_compiler.ml: ./frontend/ast_reason_pp.ml
-../lib/4.06.1/unstable/js_compiler.ml: ./frontend/ast_reason_pp.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./frontend/ast_signature.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./frontend/ast_signature.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./frontend/ast_structure.ml
@@ -463,8 +461,6 @@
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/btype.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/builtin_attributes.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/builtin_attributes.mli
-../lib/4.06.1/unstable/js_compiler.ml: ./ml/ccomp.ml
-../lib/4.06.1/unstable/js_compiler.ml: ./ml/ccomp.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/clflags.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/clflags.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/cmi_format.ml
@@ -595,7 +591,6 @@
 ../lib/4.06.1/unstable/js_compiler.ml: ./super_errors/super_location.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./super_errors/super_location.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./super_errors/super_main.ml
-../lib/4.06.1/unstable/js_compiler.ml: ./super_errors/super_pparse.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./super_errors/super_typecore.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./super_errors/super_typemod.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./super_errors/super_typetexp.ml

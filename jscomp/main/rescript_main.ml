@@ -209,8 +209,6 @@ let info_subcommand ~start argv =
                     let extensions =
                       match (syntax_kind, info) with
                       | _, Intf -> assert false
-                      | Reason, Impl -> [ ".re" ]
-                      | Reason, Impl_intf -> [ ".re"; ".rei" ]
                       | Ml, Impl -> [ ".ml" ]
                       | Ml, Impl_intf -> [ ".ml"; ".mli" ]
                       | Res, Impl -> [ ".res" ]
