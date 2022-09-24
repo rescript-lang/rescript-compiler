@@ -171,7 +171,6 @@ Options:
   -h, -help     display help
 
 Subcommands:
-  init
   build
   clean
   format
@@ -242,7 +241,6 @@ if (
   maybe_subcommand !== undefined &&
   maybe_subcommand !== "build" &&
   maybe_subcommand !== "clean" &&
-  maybe_subcommand !== "init" &&
   maybe_subcommand !== "info"
   // delegate to native
 ) {

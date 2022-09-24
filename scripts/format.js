@@ -28,7 +28,7 @@ var sourceDirs = [
   //   "ounit_tests",
   "main",
 ];
-var skips = ["dataset", "templates", "ident"];
+var skips = ["dataset", "ident"];
 // ident comes from upstream
 for (let dir of sourceDirs) {
   let dir1 = path.join(__dirname, "..", "jscomp", dir);

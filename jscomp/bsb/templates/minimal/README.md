@@ -1,2 +1,0 @@
-
-  # ${rescript:name}

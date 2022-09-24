@@ -24,8 +24,6 @@
 
 let () = Bsb_log.setup ()
 
-let current_theme = ref "basic"
-
 let separator = "--"
 
 let watch_mode = ref false
@@ -189,24 +187,6 @@ let clean_subcommand ~start argv =
   Bsb_clean.clean_bs_deps Bsb_global_paths.cwd;
   Bsb_clean.clean_self Bsb_global_paths.cwd
 
-let init_usage =
-  "Usage: rescript init [folder-name]\n\n\
-   `rescript init` adds a small ReScript project template to the current \
-   folder\n\n\
-   Pass folder-name to add them to a dedicated folder\n"
-
-let init_subcommand ~start argv =
-  Bsb_arg.parse_exn ~usage:init_usage ~start ~argv [||] (fun ~rev_args ->
-      let location =
-        match rev_args with
-        | [ x ] -> x
-        | last :: _another :: _ ->
-            raise (Bsb_arg.Bad ("Don't know what to do with " ^ last))
-        | [] -> "."
-      in
-      Bsb_theme_init.init_sample_project ~cwd:Bsb_global_paths.cwd
-        ~theme:!current_theme location)
-
 let list_files = ref false
 
 let info_subcommand ~start argv =
@@ -257,7 +237,6 @@ let () =
       match argv.(1) with
       | "build" -> build_subcommand ~start:2 argv argv_len
       | "clean" -> clean_subcommand ~start:2 argv
-      | "init" -> init_subcommand ~start:2 argv
       | "info" ->
           (* internal *)
           info_subcommand ~start:2 argv
