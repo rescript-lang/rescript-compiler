@@ -47,9 +47,9 @@ if (isCheckMode) {
 
 function getFilesAddedByCI() {
   const platforms = ["darwin", "darwinarm64", "linux", "win32"];
-  const exes = ["bsb_helper.exe", "bsc.exe", "rescript.exe"];
+  const exes = ["bsb_helper.exe", "bsc.exe", "ninja.exe", "rescript.exe"];
 
-  const files = ["vendor/ninja.tar.gz"];
+  const files = ["ninja.COPYING", "vendor/ninja.tar.gz"];
 
   for (let platform of platforms) {
     for (let exe of exes) {
