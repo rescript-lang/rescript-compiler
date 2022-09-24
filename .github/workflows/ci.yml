@@ -177,7 +177,7 @@ jobs:
           path: packages/test
 
       - name: Install ReScript package
-        run: npm i rescript-10*.tgz
+        run: npm i rescript-11*.tgz
         shell: bash
         working-directory: packages/test
 
