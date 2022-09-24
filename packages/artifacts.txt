@@ -5,7 +5,6 @@ CREDITS.md
 LICENSE
 README.md
 bsc
-bsrefmt
 darwin/bsb_helper.exe
 darwin/bsc.exe
 darwin/ninja.exe
