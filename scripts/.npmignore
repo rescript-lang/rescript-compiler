@@ -1,7 +1,11 @@
-moveArtifacts.sh
-deps.js
-format.js
-local_br_clean.sh
-setVersion.js
-makeArtifactList.js
-buildNinjaBinary.js
+# Ignore all scripts used in dev time only,
+# keep only those actually needed in the npm package.
+*
+!bin_path.js
+!buildNinjaBinary.js
+!buildocaml.js
+!config.js
+!install.js
+!installUtils.js
+!ninjaFactory.js
+!rescript_*.js
