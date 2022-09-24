@@ -53,7 +53,7 @@ function provideNinja() {
         stdio: [0, 1, 2],
       });
       console.log("No prebuilt Ninja, building Ninja now");
-      var build_ninja_command = "./configure.py --bootstrap";
+      var build_ninja_command = "python3 ./configure.py --bootstrap";
       child_process.execSync(build_ninja_command, {
         cwd: ninja_source_dir,
         stdio: [0, 1, 2],
