@@ -49,14 +49,8 @@
 ../lib/4.06.1/rescript.ml: ./bsb/bsb_pkg_types.mli
 ../lib/4.06.1/rescript.ml: ./bsb/bsb_real_path.ml
 ../lib/4.06.1/rescript.ml: ./bsb/bsb_real_path.mli
-../lib/4.06.1/rescript.ml: ./bsb/bsb_regex.ml
-../lib/4.06.1/rescript.ml: ./bsb/bsb_regex.mli
 ../lib/4.06.1/rescript.ml: ./bsb/bsb_spec_set.ml
 ../lib/4.06.1/rescript.ml: ./bsb/bsb_spec_set.mli
-../lib/4.06.1/rescript.ml: ./bsb/bsb_templates.ml
-../lib/4.06.1/rescript.ml: ./bsb/bsb_templates.mli
-../lib/4.06.1/rescript.ml: ./bsb/bsb_theme_init.ml
-../lib/4.06.1/rescript.ml: ./bsb/bsb_theme_init.mli
 ../lib/4.06.1/rescript.ml: ./bsb/bsb_unix.ml
 ../lib/4.06.1/rescript.ml: ./bsb/bsb_unix.mli
 ../lib/4.06.1/rescript.ml: ./bsb/bsb_warning.ml
