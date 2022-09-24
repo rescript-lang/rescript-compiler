@@ -946,7 +946,6 @@ linux/bsc.exe
 linux/ninja.exe
 linux/refmt.exe
 linux/rescript.exe
-ninja.COPYING
 package.json
 rescript
 scripts/LICENSE.ml
@@ -962,7 +961,6 @@ scripts/cover.sh
 scripts/curry_gen.ml
 scripts/dbg
 scripts/dedupe.js
-scripts/doc_gen.js
 scripts/install.js
 scripts/installUtils.js
 scripts/js_internal_gen.js
