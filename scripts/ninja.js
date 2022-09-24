@@ -1747,10 +1747,7 @@ ${mlyRule}
 
 
 ${mlyList("ml", ["parser.mly"])}
-rule mk_shared
-    command = $ocamlopt -I +compiler-libs -shared $flags -o $out $in
-o ../odoc_gen/generator.cmxs : mk_shared ../odoc_gen/generator.mli ../odoc_gen/generator.ml
-    flags = -I +ocamldoc -I ../odoc_gen -absname
+
 `;
   /**
    * @type { {name : string, libs: string[]}[]}

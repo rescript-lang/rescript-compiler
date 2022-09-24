@@ -61,7 +61,6 @@ lib/ocaml
 *.tgz
 bin/*
 jscomp/bin/*.exe
-odoc_gen/*.cmxs
 
 # for npm publish
 *.exe
