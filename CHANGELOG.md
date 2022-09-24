@@ -12,6 +12,9 @@
 
 # 10.1.0-rc.1
 
+#### :bug: Bug Fix
+- Fix location issue in error messages with JSX V4 where the multiple props types are defined https://github.com/rescript-lang/syntax/pull/655
+
 # 10.1.0-alpha.2
 
 #### :rocket: New Feature
