@@ -63,7 +63,7 @@ type domProps = {
   [@ns.optional] [@bs.as "aria-expanded"];
   (* [@ns.optional] [@bs.as "aria-haspopup"] ariaHaspopup: false|true|menu|listbox|tree|grid|dialog, *)
   ariaLevel: int
-  [@ns.optional] [@bs.as "aria-lavel"];
+  [@ns.optional] [@bs.as "aria-level"];
   ariaModal: bool
   [@ns.optional] [@bs.as "aria-modal"];
   ariaMultiline: bool
