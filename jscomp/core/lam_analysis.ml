@@ -46,10 +46,10 @@ let rec no_side_effects (lam : Lam.t) : bool =
               ( "?int64_float_of_bits"
               (* more safe to check if arguments are constant *)
               (* non-observable side effect *)
-              | "?sys_get_argv" (* should be fine *)
-              | "?string_repeat" | "?make_vect" | "?create_bytes" | "?obj_dup"
-              | "caml_array_dup" | "?nativeint_add" | "?nativeint_div"
-              | "?nativeint_mod" | "?nativeint_lsr" | "?nativeint_mul" ),
+              | "?sys_get_argv" (* should be fine *) | "?string_repeat"
+              | "?make_vect" | "?create_bytes" | "?obj_dup" | "caml_array_dup"
+              | "?nativeint_add" | "?nativeint_div" | "?nativeint_mod"
+              | "?nativeint_lsr" | "?nativeint_mul" ),
               _ ) ->
               true
           | _, _ -> false)
@@ -58,9 +58,9 @@ let rec no_side_effects (lam : Lam.t) : bool =
           | [ _; Lconst cst ] -> not_zero_constant cst
           | _ -> false)
       | Pcreate_extension _ | Pjs_typeof | Pis_null | Pis_not_none | Psome
-      | Psome_not_nest | Pis_undefined | Pis_null_undefined | Pnull_to_opt
-      | Pundefined_to_opt | Pnull_undefined_to_opt | Pjs_fn_make _
-      | Pjs_object_create _
+      | Psome_not_nest | Pis_undefined | Pis_null_undefined | Pimport
+      | Pnull_to_opt | Pundefined_to_opt | Pnull_undefined_to_opt
+      | Pjs_fn_make _ | Pjs_object_create _
       (* TODO: check *)
       | Pbytes_to_string | Pmakeblock _
       (* whether it's mutable or not *)
@@ -87,9 +87,8 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pasrint64 | Pint64comp _
       (* Operations on big arrays: (unsafe, #dimensions, kind, layout) *)
       (* Compile time constants *)
-      | Pctconst _ (* Integer to external pointer *)
-      | Poffsetint _ | Pstringadd | Pjs_function_length | Pcaml_obj_length
-      | Pwrap_exn
+      | Pctconst _ (* Integer to external pointer *) | Poffsetint _ | Pstringadd
+      | Pjs_function_length | Pcaml_obj_length | Pwrap_exn
       | Praw_js_code
           {
             code_info =
@@ -197,8 +196,7 @@ and size_constant x =
   | Const_js_null | Const_js_undefined | Const_module_alias | Const_js_true
   | Const_js_false ->
       1
-  | Const_string _ ->
-      1
+  | Const_string _ -> 1
   | Const_some s -> size_constant s
   | Const_block (_, _, str) ->
       Ext_list.fold_left str 0 (fun acc x -> acc + size_constant x)
@@ -211,7 +209,6 @@ let args_all_const (args : Lam.t list) =
   Ext_list.for_all args (fun x -> match x with Lconst _ -> true | _ -> false)
 
 let exit_inline_size = 7
-
 let small_inline_size = 5
 
 (** destruct pattern will work better 

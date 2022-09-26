@@ -78,6 +78,14 @@ let translate loc (cxt : Lam_compile_context.t) (prim : Lam_primitive.t)
           | _ -> E.runtime_call Js_runtime_modules.option "nullable_to_opt" args
           )
       | _ -> assert false)
+  | Pimport -> (
+      match args with
+      | [ e ] -> (
+          match e.expression_desc with
+          | _ ->
+              let d = Js_dump.string_of_expression e in
+              E.str ("TODO:import " ^ d) )
+      | _ -> assert false)
   | Pjs_function_length -> E.function_length (Ext_list.singleton_exn args)
   | Pcaml_obj_length -> E.obj_length (Ext_list.singleton_exn args)
   | Pis_null -> E.is_null (Ext_list.singleton_exn args)
@@ -301,7 +309,8 @@ let translate loc (cxt : Lam_compile_context.t) (prim : Lam_primitive.t)
       | Backend_type ->
           E.make_block E.zero_int_literal
             (Blk_constructor { name = "Other"; num_nonconst = 1; tag = 0 })
-            [ E.str "BS" ] Immutable)
+            [ E.str "BS" ]
+            Immutable)
   | Pduprecord -> Lam_dispatch_primitive.translate loc "?obj_dup" args
   | Plazyforce
   (* FIXME: we don't inline lazy force or at least

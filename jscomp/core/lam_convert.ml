@@ -480,6 +480,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
           | "#nullable_to_opt" -> Pnull_undefined_to_opt
           | "#null_to_opt" -> Pnull_to_opt
           | "#is_nullable" -> Pis_null_undefined
+          | "#import" -> Pimport
           | "#string_append" -> Pstringadd
           | "#wrap_exn" -> Pwrap_exn
           | "#obj_length" -> Pcaml_obj_length

@@ -142,6 +142,7 @@ type t =
   | Pis_null
   | Pis_undefined
   | Pis_null_undefined
+  | Pimport
   | Pjs_typeof
   | Pjs_function_length
   | Pcaml_obj_length
@@ -218,6 +219,7 @@ let eq_primitive_approx (lhs : t) (rhs : t) =
   | Psome_not_nest -> rhs = Psome_not_nest
   | Pis_undefined -> rhs = Pis_undefined
   | Pis_null_undefined -> rhs = Pis_null_undefined
+  | Pimport -> rhs = Pimport
   | Pjs_typeof -> rhs = Pjs_typeof
   | Pisint -> rhs = Pisint
   | Pis_poly_var_block -> rhs = Pis_poly_var_block

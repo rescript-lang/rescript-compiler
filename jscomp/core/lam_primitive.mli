@@ -130,6 +130,7 @@ type t =
   | Pis_null
   | Pis_undefined
   | Pis_null_undefined
+  | Pimport
   | Pjs_typeof
   | Pjs_function_length
   | Pcaml_obj_length
