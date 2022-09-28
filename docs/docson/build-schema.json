@@ -6,7 +6,7 @@
       "description": "es6-global generate relative `require` paths instead of relying on NodeJS' module resolution. Default: commonjs."
     },
     "suffix-spec": {
-      "enum": [".js", ".bs.js", ".mjs", ".cjs"],
+      "enum": [".js", ".mjs", ".cjs", ".bs.js", ".bs.mjs", ".bs.cjs"],
       "description": "suffix of generated js files, default to [.js] "
     },
     "module-format-object": {
