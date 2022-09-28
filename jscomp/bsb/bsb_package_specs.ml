@@ -189,7 +189,7 @@ let extract_bs_suffix_exn (map : json_map) : Ext_js_suffix.t =
       let s = Ext_js_suffix.of_string str in
       if s = Unknown_extension then
         Bsb_exception.errorf ~loc
-          "expect .js, .bs.js, .res.js, .mjs, .bs.mjs, .res.mjs, .cjs, .bs.cjs, .res.cjs here"
+          "expect .js, .mjs, .cjs or .bs.js, .bs.mjs, .bs.cjs here"
       else s
   | Some config ->
       Bsb_exception.config_error config
