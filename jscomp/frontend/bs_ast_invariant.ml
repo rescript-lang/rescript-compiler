@@ -157,7 +157,8 @@ let emit_external_warnings : iterator =
             match byte_name with
             | "%identity" when not (Ast_core_type.is_arity_one pval_type) ->
                 Location.raise_errorf ~loc:pval_loc
-                  "%%identity expect its type to be of form 'a -> 'b (arity 1)"
+                  "%%identity expects a function type of the form 'a => 'b \
+                   (arity 1)"
             | _ ->
                 if byte_name <> "" then
                   let c = String.unsafe_get byte_name 0 in
