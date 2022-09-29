@@ -19,9 +19,18 @@
   - `rescript convert <reason files>`
 - Remove obsolete built-in project templates and the "rescript init" functionality. This will be replaced by the create-rescript-app project that is maintained separately.
 
-#### :rocket: New Feature
+# 10.1.0-rc.1
+
+## :rocket: New Feature
 
 - Add extra variants for output filename suffixes in `bsconfig.json`: `.bs.mjs` and `.bs.cjs` are allowed https://github.com/rescript-lang/rescript-compiler/pull/5631
+
+#### :bug: Bug Fix
+
+- Fix printing of comments inside empty blocks https://github.com/rescript-lang/syntax/pull/647
+- Fix location issue in error messages with JSX V4 where the multiple props types are defined https://github.com/rescript-lang/syntax/pull/655
+- Fix location issue in make function in JSX V4 that breaks dead code elimination https://github.com/rescript-lang/syntax/pull/660
+- Fix parsing (hence pretty printing) of expressions with underscore `_` and comments.
 
 # 10.1.0-alpha.2
 
