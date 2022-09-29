@@ -19,6 +19,10 @@
   - `rescript convert <reason files>`
 - Remove obsolete built-in project templates and the "rescript init" functionality. This will be replaced by the create-rescript-app project that is maintained separately.
 
+#### :rocket: New Feature
+
+- Add extra variants for output filename suffixes in `bsconfig.json`: `.bs.mjs` and `.bs.cjs` are allowed https://github.com/rescript-lang/rescript-compiler/pull/5631
+
 # 10.1.0-alpha.2
 
 #### :rocket: New Feature
