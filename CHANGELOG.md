@@ -20,6 +20,7 @@
 
 - Fix location issue in error messages with JSX V4 where the multiple props types are defined https://github.com/rescript-lang/syntax/pull/655
 - Fix location issue in make function in JSX V4 that breaks dead code elimination https://github.com/rescript-lang/syntax/pull/660
+- Fix parsing (hence pretty printing) of expressions with underscore `_` and comments.
 
 # 10.1.0-alpha.2
 
