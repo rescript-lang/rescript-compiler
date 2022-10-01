@@ -7,7 +7,7 @@ async function nestedPromise(xxx) {
   Js_promise2.then_(xx, (function (x) {
           return Promise.resolve((console.log("Promise2.then_", x), undefined));
         }));
-  Js_promise2.catch_(xx, (function (x) {
+  Js_promise2.$$catch(xx, (function (x) {
           console.log("Promise2.catch_", x);
           return Promise.resolve(0);
         }));
