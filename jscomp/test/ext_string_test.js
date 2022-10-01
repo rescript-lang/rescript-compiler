@@ -493,11 +493,11 @@ function is_valid_source_name(name) {
   var x = check_any_suffix_case_then_chop(name, {
         hd: ".ml",
         tl: {
-          hd: ".re",
+          hd: ".res",
           tl: {
             hd: ".mli",
             tl: {
-              hd: ".rei",
+              hd: ".resi",
               tl: /* [] */0
             }
           }
