@@ -12,6 +12,10 @@
 
 # 10.1.0-rc.1
 
+#### :boom: Breaking Change
+
+- Change the DOM element attribute `method` to `method_`
+
 ## :rocket: New Feature
 
 - Add extra variants for output filename suffixes in `bsconfig.json`: `.bs.mjs` and `.bs.cjs` are allowed https://github.com/rescript-lang/rescript-compiler/pull/5631
