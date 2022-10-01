@@ -4,7 +4,7 @@ var format_usage = `Usage: rescript convert <options> [files]
 
 \`rescript convert\` converts the current directory
 
-**This command removes old Reason/OCaml files and creates new ReScript 
+**This command removes old OCaml files and creates new ReScript 
 files. Make sure your work is saved first!**
 `;
 
@@ -33,7 +33,7 @@ var specs = [
  * @param {string} file
  */
 function shouldConvert(file) {
-  return [".ml", ".mli", ".re", ".rei"].some(x => file.endsWith(x));
+  return [".ml", ".mli"].some(x => file.endsWith(x));
 }
 
 /**

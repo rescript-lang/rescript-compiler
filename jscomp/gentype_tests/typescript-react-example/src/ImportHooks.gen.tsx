@@ -6,7 +6,7 @@ import {makeRenamed as makeRenamedNotChecked} from './hookExample';
 
 import {foo as fooNotChecked} from './hookExample';
 
-// In case of type error, check the type of 'makeRenamed' in 'ImportHooks.re' and './hookExample'.
+// In case of type error, check the type of 'makeRenamed' in 'ImportHooks.res' and './hookExample'.
 export const makeRenamedTypeChecked: React.ComponentType<{
   readonly actions?: JSX.Element; 
   readonly person: person; 
@@ -22,7 +22,7 @@ export const makeRenamed: unknown = makeRenamedTypeChecked as React.ComponentTyp
   readonly renderMe: renderMe<any>
 }>;
 
-// In case of type error, check the type of 'foo' in 'ImportHooks.re' and './hookExample'.
+// In case of type error, check the type of 'foo' in 'ImportHooks.res' and './hookExample'.
 export const fooTypeChecked: (_1:{ readonly person: person }) => string = fooNotChecked;
 
 // Export 'foo' early to allow circular import from the '.bs.js' file.
