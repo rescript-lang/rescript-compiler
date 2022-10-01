@@ -19,6 +19,7 @@
 ## :rocket: New Feature
 
 - Add extra variants for output filename suffixes in `bsconfig.json`: `.bs.mjs` and `.bs.cjs` are allowed https://github.com/rescript-lang/rescript-compiler/pull/5631
+- Safe promises: t-first Js.Promise2 bindings, and remove warning for nested promises https://github.com/rescript-lang/rescript-compiler/pull/5709
 
 #### :bug: Bug Fix
 
