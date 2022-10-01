@@ -585,13 +585,33 @@ function sourceToTarget(y) {
  */
 function ocamlDepForBscAsync(files, dir, depsMap) {
   return new Promise((resolve, reject) => {
+    let mlfiles = [];
+    files.forEach(f => {
+      if (f.endsWith(".res") || f.endsWith(".resi")) {
+        isIntf = f.endsWith(".resi")
+        let mlname = f.slice(0, isIntf ? -5 : -4) + (isIntf ? ".mli" : ".ml") 
+        mlfiles.push(mlname)
+        try {
+          cp.execSync(
+            `${bsc_exe} -dsource ${f} 2>${mlname}`,
+            {
+              cwd: dir,
+              shell:true,
+              encoding: "ascii",
+            }
+          );
+        } catch (err) {
+        }
+      }
+    });
     cp.exec(
-      `ocamldep.opt -allow-approx -one-line -native ${files.join(" ")}`,
+      `ocamldep.opt -allow-approx -one-line -native ${files.join(" ")} ${mlfiles.join(" ")}`,
       {
         cwd: dir,
         encoding: "ascii",
       },
       function (error, stdout, stderr) {
+        mlfiles.forEach(ml => { fs.unlink(path.join(dir, ml), ()=>{}) } );
         if (error !== null) {
           return reject(error);
         } else {
@@ -1014,7 +1034,7 @@ ${ninjaQuickBuidList([
   var jsPrefixSourceFiles = othersDirFiles.filter(
     x =>
       x.startsWith("js") &&
-      (x.endsWith(".ml") || x.endsWith(".mli")) &&
+      (x.endsWith(".ml") || x.endsWith(".mli") || x.endsWith(".res") || x.endsWith(".resi")) &&
       !x.includes(".cppo") &&
       !x.includes(".pp") &&
       !x.includes("#") &&
