@@ -82,7 +82,9 @@ type result = { path : string; checked : bool }
 *)
 val resolve_bsb_magic_file : cwd:string -> desc:string -> string -> result
 
-type package_context = { proj_dir : string; top : top }
+type package_context = { proj_dir : string; top : top; is_pinned: bool }
+
+val extract_pinned_dependencies: Ext_json_types.t Map_string.t -> Set_string.t
 
 val walk_all_deps :
   string -> pinned_dependencies:Set_string.t -> package_context Queue.t
