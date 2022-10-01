@@ -38643,12 +38643,12 @@ let suites =
     (* __LOC__ >:: begin fun _ -> 
       OUnit.assert_bool __LOC__ @@
       List.for_all (fun x -> Ext_string.is_valid_source_name x = Good)
-        ["x.ml"; "x.mli"; "x.re"; "x.rei"; 
+        ["x.ml"; "x.mli"; "x.res"; "x.resi"; 
          "A_x.ml"; "ab.ml"; "a_.ml"; "a__.ml";
          "ax.ml"];
       OUnit.assert_bool __LOC__ @@ not @@
       List.exists (fun x -> Ext_string.is_valid_source_name x = Good)
-        [".re"; ".rei";"..re"; "..rei"; "..ml"; ".mll~"; 
+        [".res"; ".resi";"..res"; "..resi"; "..ml"; ".mll~"; 
          "...ml"; "_.mli"; "_x.ml"; "__.ml"; "__.rei"; 
          ".#hello.ml"; ".#hello.rei"; "a-.ml"; "a-b.ml"; "-a-.ml"
         ; "-.ml"
@@ -39057,7 +39057,10 @@ let suites =
           (Ext_filename.module_name "a/b/c.d")
           "C";
         string_eq 
-          (Ext_filename.module_name "a/b/xc.re")
+          (Ext_filename.module_name "a/b/xc.res")
+          "Xc";
+        string_eq 
+          (Ext_filename.module_name "a/b/xc.resi")
           "Xc";
         string_eq 
           (Ext_filename.module_name "a/b/xc.ml")

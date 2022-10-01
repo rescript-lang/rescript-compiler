@@ -4387,7 +4387,7 @@ type file_group = {
   (* false means not in dev mode *)
   generators : build_generator list;
       (* output of [generators] should be added to [sources],
-         if it is [.ml,.mli,.re,.rei]
+         if it is [.ml,.mli,.res,.resi]
       *)
 }
 
@@ -4445,7 +4445,7 @@ type file_group = {
   is_dev : bool;
   generators : build_generator list;
       (* output of [generators] should be added to [sources],
-         if it is [.ml,.mli,.re,.rei]
+         if it is [.ml,.mli,.res,.resi]
       *)
 }
 

@@ -568,9 +568,9 @@ function replaceCmj(x) {
  * @param {string} y
  */
 function sourceToTarget(y) {
-  if (y.endsWith(".ml") || y.endsWith(".re") || y.endsWith(".res")) {
+  if (y.endsWith(".ml") || y.endsWith(".res")) {
     return replaceExt(y, ".cmj");
-  } else if (y.endsWith(".mli") || y.endsWith(".rei") || y.endsWith(".resi")) {
+  } else if (y.endsWith(".mli") || y.endsWith(".resi")) {
     return replaceExt(y, ".cmi");
   }
   return y;
@@ -654,7 +654,6 @@ function ocamlDepForBscAsync(files, dir, depsMap) {
  */
 function depModulesForBscAsync(files, dir, depsMap) {
   let ocamlFiles = files.filter(x => x.endsWith(".ml") || x.endsWith(".mli"));
-  let reFiles = files.filter(x => x.endsWith(".re") || x.endsWith(".rei"));
   let resFiles = files.filter(x => x.endsWith(".res") || x.endsWith(".resi"));
   /**
    *
@@ -694,7 +693,7 @@ function depModulesForBscAsync(files, dir, depsMap) {
       cp.exec(
         `${bsc_exe}  -modules -bs-syntax-only ${resFiles.join(
           " "
-        )} ${reFiles.join(" ")} ${ocamlFiles.join(" ")}`,
+        )} ${ocamlFiles.join(" ")}`,
         config,
         cb(resolve, reject)
       );
@@ -703,7 +702,7 @@ function depModulesForBscAsync(files, dir, depsMap) {
 }
 
 /**
- * @typedef {('HAS_ML' | 'HAS_MLI' | 'HAS_BOTH' | 'HAS_RE' | 'HAS_RES' | 'HAS_REI' | 'HAS_RESI' | 'HAS_BOTH_RE' | 'HAS_BOTH_RES')} FileInfo
+ * @typedef {('HAS_ML' | 'HAS_MLI' | 'HAS_BOTH' | 'HAS_RES' | 'HAS_RESI' | 'HAS_BOTH_RES')} FileInfo
  * @param {string[]} sourceFiles
  * @returns {Map<string, FileInfo>}
  * We make a set to ensure that `sourceFiles` are not duplicated
@@ -721,12 +720,8 @@ function collectTarget(sourceFiles) {
         allTargets.set(name, "HAS_ML");
       } else if (ext === ".mli") {
         allTargets.set(name, "HAS_MLI");
-      } else if (ext === ".re") {
-        allTargets.set(name, "HAS_RE");
       } else if (ext === ".res") {
         allTargets.set(name, "HAS_RES");
-      } else if (ext === ".rei") {
-        allTargets.set(name, "HAS_REI");
       } else if (ext === ".resi") {
         allTargets.set(name, "HAS_RESI");
       }
@@ -735,11 +730,6 @@ function collectTarget(sourceFiles) {
         case "HAS_ML":
           if (ext === ".mli") {
             allTargets.set(name, "HAS_BOTH");
-          }
-          break;
-        case "HAS_RE":
-          if (ext === ".rei") {
-            allTargets.set(name, "HAS_BOTH_RE");
           }
           break;
         case "HAS_RES":
@@ -752,17 +742,11 @@ function collectTarget(sourceFiles) {
             allTargets.set(name, "HAS_BOTH");
           }
           break;
-        case "HAS_REI":
-          if (ext === ".re") {
-            allTargets.set(name, "HAS_BOTH_RE");
-          }
-          break;
         case "HAS_RESI":
           if (ext === ".res") {
             allTargets.set(name, "HAS_BOTH_RES");
           }
           break;
-        case "HAS_BOTH_RE":
         case "HAS_BOTH":
         case "HAS_BOTH_RES":
           break;
@@ -783,17 +767,14 @@ function scanFileTargets(allTargets, collIn) {
   var coll = collIn.concat();
   allTargets.forEach((ext, mod) => {
     switch (ext) {
-      case "HAS_MLI":
-      case "HAS_REI":
       case "HAS_RESI":
+      case "HAS_MLI":
         coll.push(`${mod}.cmi`);
         break;
       case "HAS_BOTH_RES":
-      case "HAS_BOTH_RE":
       case "HAS_BOTH":
         coll.push(`${mod}.cmi`, `${mod}.cmj`);
         break;
-      case "HAS_RE":
       case "HAS_RES":
       case "HAS_ML":
         coll.push(`${mod}.cmi`, `${mod}.cmj`);
@@ -821,9 +802,7 @@ function generateNinja(depsMap, allTargets, cwd, extraDeps = []) {
     let output_cmi = mod + ".cmi";
     let input_ml = mod + ".ml";
     let input_mli = mod + ".mli";
-    let input_re = mod + ".re";
     let input_res = mod + ".res";
-    let input_rei = mod + ".rei";
     let input_resi = mod + ".resi";
     /**
      * @type {Override[]}
@@ -849,25 +828,15 @@ function generateNinja(depsMap, allTargets, cwd, extraDeps = []) {
         mk([ouptput_cmj], [input_ml], "cc_cmi");
         mk([output_cmi], [input_mli]);
         break;
-      case "HAS_BOTH_RE":
-        mk([ouptput_cmj], [input_re], "cc_cmi");
-        mk([output_cmi], [input_rei], "cc");
-        break;
       case "HAS_BOTH_RES":
         mk([ouptput_cmj], [input_res], "cc_cmi");
         mk([output_cmi], [input_resi], "cc");
-        break;
-      case "HAS_RE":
-        mk([output_cmi, ouptput_cmj], [input_re], "cc");
         break;
       case "HAS_RES":
         mk([output_cmi, ouptput_cmj], [input_res], "cc");
         break;
       case "HAS_ML":
         mk([output_cmi, ouptput_cmj], [input_ml]);
-        break;
-      case "HAS_REI":
-        mk([output_cmi], [input_rei], "cc");
         break;
       case "HAS_RESI":
         mk([output_cmi], [input_resi], "cc");
@@ -1246,8 +1215,6 @@ ${mllList(ninjaCwd, [
   var testDirFiles = fs.readdirSync(testDir, "ascii");
   var sources = testDirFiles.filter(x => {
     return (
-      x.endsWith(".re") ||
-      x.endsWith(".rei") ||
       x.endsWith(".resi") ||
       x.endsWith(".res") ||
       ((x.endsWith(".ml") || x.endsWith(".mli")) && !x.endsWith("bspack.ml"))

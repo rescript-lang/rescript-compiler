@@ -229,7 +229,7 @@ let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
                ("In case of type error, check the type of '" ^ valueName
               ^ "' in '"
                ^ (fileName |> ModuleName.toString)
-               ^ ".re'" ^ " and '"
+               ^ ".res'" ^ " and '"
                ^ (importPath |> ImportPath.emit)
                ^ "'.")
              ~early:true ~emitters ~name:valueNameTypeChecked ~type_

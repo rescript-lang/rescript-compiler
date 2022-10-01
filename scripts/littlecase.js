@@ -7,7 +7,7 @@ function copyReasonReact() {
   let dir = path.join(__dirname, "..", "..", "reason-react", "src");
   let files = fs.readdirSync(dir);
   files.forEach(x => {
-    if (!(x.endsWith(".re") || x.endsWith(".rei"))) {
+    if (!(x.endsWith(".res") || x.endsWith(".resi"))) {
       return;
     }
     let little = x[0].toLowerCase() + x.slice(1);
