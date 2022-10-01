@@ -24,6 +24,9 @@ test-all: test test-gentype
 lib: build
 	node scripts/install -force-lib-rebuild
 
+artifacts: lib
+	./scripts/makeArtifactList.js
+
 clean-gentype:
 	make -C jscomp/gentype_tests/typescript-react-example clean
 

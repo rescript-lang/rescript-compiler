@@ -142,6 +142,7 @@ lib/es6/js_null_undefined.js
 lib/es6/js_obj.js
 lib/es6/js_option.js
 lib/es6/js_promise.js
+lib/es6/js_promise2.js
 lib/es6/js_re.js
 lib/es6/js_result.js
 lib/es6/js_set.js
@@ -304,6 +305,7 @@ lib/js/js_null_undefined.js
 lib/js/js_obj.js
 lib/js/js_option.js
 lib/js/js_promise.js
+lib/js/js_promise2.js
 lib/js/js_re.js
 lib/js/js_result.js
 lib/js/js_set.js
@@ -741,6 +743,9 @@ lib/ocaml/js_option.mli
 lib/ocaml/js_promise.cmi
 lib/ocaml/js_promise.cmt
 lib/ocaml/js_promise.ml
+lib/ocaml/js_promise2.cmi
+lib/ocaml/js_promise2.cmt
+lib/ocaml/js_promise2.ml
 lib/ocaml/js_re.cmi
 lib/ocaml/js_re.cmt
 lib/ocaml/js_re.ml
