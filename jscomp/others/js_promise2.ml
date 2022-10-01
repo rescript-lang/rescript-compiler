@@ -7,7 +7,7 @@ let then_ : 'a promise -> ('a -> 'b promise) -> 'b promise =
   }
   |}]
 
-let catch_ : 'a promise -> (error -> 'a promise) -> 'a promise =
+let catch : 'a promise -> (error -> 'a promise) -> 'a promise =
   [%raw
     {|
     function(p, cont) {
