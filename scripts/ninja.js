@@ -611,7 +611,7 @@ function ocamlDepForBscAsync(files, dir, depsMap) {
         encoding: "ascii",
       },
       function (error, stdout, stderr) {
-        mlfiles.forEach(ml => { fs.unlink(path.join(dir, ml), ()=>{}) } );
+        mlfiles.forEach(ml => { fs.unlinkSync(path.join(dir, ml)) } );
         if (error !== null) {
           return reject(error);
         } else {
@@ -1389,13 +1389,13 @@ function sortFilesByDeps(domain, dependency_graph) {
   return result;
 }
 
-function updateRelease() {
+async function updateRelease() {
   runtimeNinja(false);
   stdlibNinja(false);
-  othersNinja(false);
+  await othersNinja(false);
 }
 
-function updateDev() {
+async function updateDev() {
   writeFileAscii(
     path.join(jscompDir, "build.ninja"),
     `
@@ -1427,10 +1427,15 @@ include body.ninja
   if (fs.existsSync(bsc_exe)) {
     testNinja();
   }
-  othersNinja();
+  await othersNinja();
 }
 exports.updateDev = updateDev;
 exports.updateRelease = updateRelease;
+
+async function updateDevRelease() {
+  await updateDev();
+  await updateRelease();
+}
 
 /**
  *
@@ -1928,8 +1933,7 @@ function main() {
         break;
       case "config":
         console.log(`config for the first time may take a while`);
-        updateDev();
-        updateRelease();
+        updateDevRelease();
 
         break;
       case "cleanbuild":
@@ -1963,15 +1967,13 @@ function main() {
         break;
       default:
         if (process.argv.length === emptyCount) {
-          updateDev();
-          updateRelease();
+          updateDevRelease();
         } else {
           var dev = process.argv.includes("-dev");
           var release = process.argv.includes("-release");
           var all = process.argv.includes("-all");
           if (all) {
-            updateDev();
-            updateRelease();
+            updateDevRelease();
           } else if (dev) {
             updateDev();
           } else if (release) {
