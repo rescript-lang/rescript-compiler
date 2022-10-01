@@ -144,6 +144,8 @@ type domProps = {
   [@ns.optional];
   contextMenu: string
   [@ns.optional];
+  dataTestId: string
+  [@ns.optional] [@bs.as "data-testid"];
   dir: string (* "ltr", "rtl" or "auto" *)
   [@ns.optional];
   draggable: bool
@@ -398,9 +400,13 @@ type domProps = {
   onBlur: JsxEvent.Focus.t -> unit
   [@ns.optional];
   (* Form events *)
+  onBeforeInput: JsxEvent.Form.t -> unit
+  [@ns.optional];
   onChange: JsxEvent.Form.t -> unit
   [@ns.optional];
   onInput: JsxEvent.Form.t -> unit
+  [@ns.optional];
+  onReset: JsxEvent.Form.t -> unit
   [@ns.optional];
   onSubmit: JsxEvent.Form.t -> unit
   [@ns.optional];
