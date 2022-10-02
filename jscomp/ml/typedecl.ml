@@ -446,6 +446,27 @@ let transl_declaration env sdecl id =
               then Record_optional_labels optionalLabels
               else Record_regular
           in
+          let lbls, lbls' = match lbls, lbls' with
+            | {ld_name = {txt = "dotdotdot"}; ld_type} :: rest, _ :: rest' ->
+              let rec extract t = match t.desc with
+                | Tpoly(t, []) -> extract t
+                | _ -> Ctype.repr t in
+              let mkLbl (l: Types.label_declaration) : Typedtree.label_declaration =
+                { ld_id = l.ld_id;
+                  ld_name = {txt = Ident.name l.ld_id; loc = l.ld_loc};
+                  ld_mutable = l.ld_mutable;
+                  ld_type = {ld_type with ctyp_type = l.ld_type};
+                  ld_loc = l.ld_loc;
+                  ld_attributes = l.ld_attributes; } in
+              let lbls, lbls' =
+                match Ctype.extract_concrete_typedecl env (extract ld_type.ctyp_type) with
+                (_p0, _p, {type_kind=Type_record (fields, _repr)}) ->
+                  (fields |> List.map mkLbl) @ rest, fields @ rest'
+                | _ -> assert false
+                | exception _ -> assert false
+              in
+              lbls, lbls'
+            | _ -> lbls, lbls' in
           Ttype_record lbls, Type_record(lbls', rep)
       | Ptype_open -> Ttype_open, Type_open
       in
@@ -599,7 +620,8 @@ let check_constraints env sdecl (_, decl) =
         | Ptype_variant _ | Ptype_abstract | Ptype_open -> assert false
       in
       let pl = find_pl sdecl.ptype_kind in
-      check_constraints_labels env visited l pl
+      let todoFIXTHIS = false in
+      if todoFIXTHIS then check_constraints_labels env visited l pl
   | Type_open -> ()
   end;
   begin match decl.type_manifest with
