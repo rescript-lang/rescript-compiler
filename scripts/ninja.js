@@ -589,12 +589,13 @@ function ocamlDepForBscAsync(files, dir, depsMap) {
     let tmpdir = null;
     let mlfiles = []; // convert .res files to temporary .ml files in tmpdir
     files.forEach(f => {
-      const {name, ext} = path.parse(f);
+      const { name, ext } = path.parse(f);
       if (ext === ".res" || ext === ".resi") {
-        const isIntf = ext === ".resi";
-        let mlname = isIntf ? name + ".mli" : name + ".ml";
-        if (tmpdir == null) { tmpdir = fs.mkdtempSync(os.tmpdir()) };
-        mlfile = path.join(tmpdir, mlname)
+        let mlname = ext === ".resi" ? name + ".mli" : name + ".ml";
+        if (tmpdir == null) {
+          tmpdir = fs.mkdtempSync(os.tmpdir());
+        }
+        mlfile = path.join(tmpdir, mlname);
         mlfiles.push(mlfile);
         try {
           cp.execSync(`${bsc_exe} -dsource -only-parse ${f} 2>${mlfile}`, {
@@ -617,7 +618,7 @@ function ocamlDepForBscAsync(files, dir, depsMap) {
       function (error, stdout, stderr) {
         if (tmpdir != null) {
           fs.rmSync(tmpdir, { recursive: true, force: true });
-        };
+        }
         if (error !== null) {
           return reject(error);
         } else {
