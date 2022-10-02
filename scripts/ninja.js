@@ -589,9 +589,10 @@ function ocamlDepForBscAsync(files, dir, depsMap) {
     let tmpdir = null;
     let mlfiles = []; // convert .res files to temporary .ml files in tmpdir
     files.forEach(f => {
-      if (f.endsWith(".res") || f.endsWith(".resi")) {
-        isIntf = f.endsWith(".resi");
-        let mlname = f.slice(0, isIntf ? -5 : -4) + (isIntf ? ".mli" : ".ml");
+      const {name, ext} = path.parse(f);
+      if (ext === ".res" || ext === ".resi") {
+        const isIntf = ext === ".resi";
+        let mlname = isIntf ? name + ".mli" : name + ".ml";
         if (tmpdir == null) { tmpdir = fs.mkdtempSync(os.tmpdir()) };
         mlfile = path.join(tmpdir, mlname)
         mlfiles.push(mlfile);
