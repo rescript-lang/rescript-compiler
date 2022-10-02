@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 //@ts-check
 
+var os = require("os");
 var fs = require("fs");
 var path = require("path");
 var cp = require("child_process");
@@ -585,14 +586,17 @@ function sourceToTarget(y) {
  */
 function ocamlDepForBscAsync(files, dir, depsMap) {
   return new Promise((resolve, reject) => {
-    let mlfiles = [];
+    let tmpdir = null;
+    let mlfiles = []; // convert .res files to temporary .ml files in tmpdir
     files.forEach(f => {
       if (f.endsWith(".res") || f.endsWith(".resi")) {
         isIntf = f.endsWith(".resi");
         let mlname = f.slice(0, isIntf ? -5 : -4) + (isIntf ? ".mli" : ".ml");
-        mlfiles.push(mlname);
+        if (tmpdir == null) { tmpdir = fs.mkdtempSync(os.tmpdir()) };
+        mlfile = path.join(tmpdir, mlname)
+        mlfiles.push(mlfile);
         try {
-          cp.execSync(`${bsc_exe} -dsource -only-parse ${f} 2>${mlname}`, {
+          cp.execSync(`${bsc_exe} -dsource -only-parse ${f} 2>${mlfile}`, {
             cwd: dir,
             shell: true,
             encoding: "ascii",
@@ -600,8 +604,9 @@ function ocamlDepForBscAsync(files, dir, depsMap) {
         } catch (err) {}
       }
     });
+    let minusI = tmpdir == null ? "" : `-I ${tmpdir}`;
     cp.exec(
-      `ocamldep.opt -allow-approx -one-line -native ${files.join(
+      `ocamldep.opt -allow-approx -one-line ${minusI} -native ${files.join(
         " "
       )} ${mlfiles.join(" ")}`,
       {
@@ -609,21 +614,21 @@ function ocamlDepForBscAsync(files, dir, depsMap) {
         encoding: "ascii",
       },
       function (error, stdout, stderr) {
-        mlfiles.forEach(ml => {
-          fs.unlinkSync(path.join(dir, ml));
-        });
+        if (tmpdir != null) {
+          fs.rmSync(tmpdir, { recursive: true, force: true });
+        };
         if (error !== null) {
           return reject(error);
         } else {
           var pairs = stdout.split("\n").map(x => x.split(":"));
           pairs.forEach(x => {
             var deps;
-            let source = replaceCmj(x[0]);
+            let source = replaceCmj(path.basename(x[0]));
             if (x[1] !== undefined && (deps = x[1].trim())) {
               deps = deps.split(" ");
               updateDepsKVsByFile(
                 source,
-                deps.map(x => replaceCmj(x)),
+                deps.map(x => replaceCmj(path.basename(x))),
                 depsMap
               );
             }
