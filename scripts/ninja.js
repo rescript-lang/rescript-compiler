@@ -1397,13 +1397,13 @@ function sortFilesByDeps(domain, dependency_graph) {
   return result;
 }
 
-async function updateRelease() {
+function updateRelease() {
   runtimeNinja(false);
   stdlibNinja(false);
-  await othersNinja(false);
+  othersNinja(false);
 }
 
-async function updateDev() {
+function updateDev() {
   writeFileAscii(
     path.join(jscompDir, "build.ninja"),
     `
@@ -1435,15 +1435,10 @@ include body.ninja
   if (fs.existsSync(bsc_exe)) {
     testNinja();
   }
-  await othersNinja();
+  othersNinja();
 }
 exports.updateDev = updateDev;
 exports.updateRelease = updateRelease;
-
-async function updateDevRelease() {
-  await updateDev();
-  await updateRelease();
-}
 
 /**
  *
@@ -1941,7 +1936,8 @@ function main() {
         break;
       case "config":
         console.log(`config for the first time may take a while`);
-        updateDevRelease();
+        updateDev();
+        updateRelease();
 
         break;
       case "cleanbuild":
@@ -1975,13 +1971,15 @@ function main() {
         break;
       default:
         if (process.argv.length === emptyCount) {
-          updateDevRelease();
+          updateDev();
+          updateRelease();
         } else {
           var dev = process.argv.includes("-dev");
           var release = process.argv.includes("-release");
           var all = process.argv.includes("-all");
           if (all) {
-            updateDevRelease();
+            updateDev();
+            updateRelease();
           } else if (dev) {
             updateDev();
           } else if (release) {
