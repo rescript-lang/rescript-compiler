@@ -593,7 +593,7 @@ function ocamlDepForBscAsync(files, dir, depsMap) {
       if (ext === ".res" || ext === ".resi") {
         let mlname = ext === ".resi" ? name + ".mli" : name + ".ml";
         if (tmpdir == null) {
-          tmpdir = fs.mkdtempSync(os.tmpdir());
+          tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), "resToMl"));
         }
         mlfile = path.join(tmpdir, mlname);
         mlfiles.push(mlfile);
