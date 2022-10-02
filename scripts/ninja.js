@@ -592,7 +592,7 @@ function ocamlDepForBscAsync(files, dir, depsMap) {
         let mlname = f.slice(0, isIntf ? -5 : -4) + (isIntf ? ".mli" : ".ml");
         mlfiles.push(mlname);
         try {
-          cp.execSync(`${bsc_exe} -dsource ${f} 2>${mlname}`, {
+          cp.execSync(`${bsc_exe} -dsource -only-parse ${f} 2>${mlname}`, {
             cwd: dir,
             shell: true,
             encoding: "ascii",

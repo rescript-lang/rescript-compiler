@@ -423,6 +423,9 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-format", string_call format_file,
     "*internal* Format as Res syntax";
 
+    "-only-parse", set Clflags.only_parse, 
+    "*internal* stop after parsing";
+
     "-where", unit_call print_standard_library, 
     "*internal* Print location of standard library and exit";
 
