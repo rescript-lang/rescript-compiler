@@ -45,7 +45,7 @@ function install() {
   });
 
   // for merlin or other IDE
-  var installed_suffixes = [".ml", ".mli", ".cmi", ".cmt", ".cmti"];
+  var installed_suffixes = [".ml", ".mli", ".res", ".resi", ".cmi", ".cmt", ".cmti"];
   installDirBy(others_dir, ocaml_dir, function (file) {
     var y = path.parse(file);
     if (y.ext === ".cmi") {
