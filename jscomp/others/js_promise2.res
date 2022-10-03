@@ -14,5 +14,5 @@ let catch: (promise<'a>, error => promise<'a>) => promise<'a> = %raw(`
     }
     `)
 
-/** Old syntax, can use then instead */
+@deprecated("Use then instead")
 let then_ = then
