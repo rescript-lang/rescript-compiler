@@ -4,8 +4,8 @@ var Js_promise2 = require("../../lib/js/js_promise2.js");
 
 async function nestedPromise(xxx) {
   var xx = await xxx;
-  Js_promise2.then_(xx, (function (x) {
-          return Promise.resolve((console.log("Promise2.then_", x), undefined));
+  Js_promise2.then(xx, (function (x) {
+          return Promise.resolve((console.log("Promise2.then", x), undefined));
         }));
   Js_promise2.$$catch(xx, (function (x) {
           console.log("Promise2.catch_", x);

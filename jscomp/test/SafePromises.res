@@ -3,7 +3,7 @@
 let nestedPromise = async (xxx: promise<promise<int>>) => {
   let xx = await xxx
 
-  let _ = xx->Js.Promise2.then_(x => Js.log2("Promise2.then_", x) |> Js.Promise.resolve)
+  let _ = xx->Js.Promise2.then(x => Js.log2("Promise2.then", x) |> Js.Promise.resolve)
   let _ = xx->Js.Promise2.catch(x => {
     Js.log2("Promise2.catch_", x)
     0 |> Js.Promise.resolve
