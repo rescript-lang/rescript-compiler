@@ -9143,6 +9143,7 @@ val dump_lambda : bool ref
 val dont_write_files : bool ref
 val keep_docs : bool ref
 val keep_locs : bool ref
+val only_parse : bool ref
 
 
 val parse_color_setting : string -> Misc.Color.setting option
@@ -9191,7 +9192,7 @@ let dump_parsetree = ref false          (* -dparsetree *)
 and dump_typedtree = ref false          (* -dtypedtree *)
 and dump_rawlambda = ref false          (* -drawlambda *)
 and dump_lambda = ref false             (* -dlambda *)
-
+and only_parse = ref false             (* -only-parse *)
 
 let dont_write_files = ref false        (* set to true under ocamldoc *)
 
