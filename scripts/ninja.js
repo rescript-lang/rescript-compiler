@@ -599,7 +599,6 @@ function ocamlDepForBscAsync(files, dir, depsMap) {
           const mlfile = path.join(tmpdir, mlname);
           cp.execSync(`${bsc_exe} -dsource -only-parse ${f} 2>${mlfile}`, {
             cwd: dir,
-            shell: true,
             encoding: "ascii",
           });
           mlfiles.push(mlfile);
