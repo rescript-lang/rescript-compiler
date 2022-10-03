@@ -15,9 +15,6 @@ let catch: (promise<'a>, error => promise<'a>) => promise<'a> = %raw(`
     }
     `)
 
-@deprecated("Use then instead")
-let then_ = then
-
 @new
 external make: ((@uncurry ~resolve: (. 'a) => unit, ~reject: (. exn) => unit) => unit) => promise<
   'a,
