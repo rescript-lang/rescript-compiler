@@ -25,6 +25,8 @@
  type t = {
   azimuth: string
   [@ns.optional];
+  backdropFilter: string
+  [@ns.optional];
   background: string
   [@ns.optional];
   backgroundAttachment: string
