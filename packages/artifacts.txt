@@ -745,7 +745,7 @@ lib/ocaml/js_promise.cmt
 lib/ocaml/js_promise.ml
 lib/ocaml/js_promise2.cmi
 lib/ocaml/js_promise2.cmt
-lib/ocaml/js_promise2.ml
+lib/ocaml/js_promise2.res
 lib/ocaml/js_re.cmi
 lib/ocaml/js_re.cmt
 lib/ocaml/js_re.ml
