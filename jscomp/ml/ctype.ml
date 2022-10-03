@@ -3951,7 +3951,33 @@ let rec subtype_rec env trace t1 t2 cstrs =
         end
     | (Tconstr(p1, _, _), _) when generic_private_abbrev env p1 ->
         subtype_rec env trace (expand_abbrev_opt env t1) t2 cstrs
-(*  | (_, Tconstr(p2, _, _)) when generic_private_abbrev false env p2 ->
+    | (Tconstr(_, [], _), Tconstr(_, [], _)) -> (* type coercion for records *)
+      (match extract_concrete_typedecl env t1, extract_concrete_typedecl env t2 with
+      | (_, _, {type_kind=Type_record (fields1, repr1)}), (_, _, {type_kind=Type_record (fields2, repr2)}) ->
+        let field_is_optional id repr = match repr with
+          | Record_optional_labels lbls -> List.mem (Ident.name id) lbls
+          | _ -> false in
+        let violation = ref false in
+        let label_decl_sub (acc1, acc2) ld2 =
+          match fields1 |> List.find_opt (fun ld1 -> Ident.name ld1.ld_id = Ident.name ld2.ld_id) with
+          | Some ld1 ->
+            if field_is_optional ld1.ld_id repr1 && not (field_is_optional ld2.ld_id repr2) then
+              (* optional field can't be cast to non-optional one *)
+              violation := true;
+            ld1.ld_type :: acc1, ld2.ld_type :: acc2
+          | None ->
+            (* field must be present *)
+            violation := true;
+            (acc1, acc2) in
+        let tl1, tl2 = List.fold_left label_decl_sub ([], []) fields2 in
+        if !violation
+        then (trace, t1, t2, !univar_pairs)::cstrs
+        else
+          subtype_list env trace tl1 tl2 cstrs
+      | _ -> (trace, t1, t2, !univar_pairs)::cstrs
+      | exception Not_found -> (trace, t1, t2, !univar_pairs)::cstrs
+    )
+    (*  | (_, Tconstr(p2, _, _)) when generic_private_abbrev false env p2 ->
         subtype_rec env trace t1 (expand_abbrev_opt env t2) cstrs *)
     | (Tobject (f1, _), Tobject (f2, _))
       when is_Tvar (object_row f1) && is_Tvar (object_row f2) ->
