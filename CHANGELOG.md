@@ -12,6 +12,10 @@
 
 # 11.0.0-alpha.2 (Unreleased)
 
+## :rocket: Main New Features
+
+- Add support for type coercion `:>` for records. https://github.com/rescript-lang/rescript-compiler/pull/5721
+
 # 11.0.0-alpha.1
 
 ## :rocket: Main New Features
