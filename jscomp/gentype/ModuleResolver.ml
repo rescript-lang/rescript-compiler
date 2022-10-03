@@ -195,20 +195,17 @@ let apply ~resolver ~useBsDependencies moduleName =
   moduleName |> Lazy.force resolver.lazyFind ~useBsDependencies
 
 (** Resolve a reference to ModuleName, and produce a path suitable for require.
-   E.g. require "../foo/bar/ModuleName.ext" where ext is ".re" or ".js". *)
+   E.g. require "../foo/bar/ModuleName.ext" where ext is ".res" or ".js". *)
 let resolveModule ~(config : Config.t) ~importExtension ~outputFileRelative
     ~resolver ~useBsDependencies moduleName =
   let outputFileRelativeDir =
-    (* e.g. src if we're generating src/File.re.js *)
+    (* e.g. src if we're generating src/File.bs.js *)
     Filename.dirname outputFileRelative
   in
   let outputFileAbsoluteDir = config.projectRoot +++ outputFileRelativeDir in
-  let moduleNameReFile =
-    (* Check if the module is in the same directory as the file being generated.
-       So if e.g. project_root/src/ModuleName.re exists. *)
-    outputFileAbsoluteDir +++ (ModuleName.toString moduleName ^ ".re")
-  in
   let moduleNameResFile =
+    (* Check if the module is in the same directory as the file being generated.
+       So if e.g. project_root/src/ModuleName.res exists. *)
     outputFileAbsoluteDir +++ (ModuleName.toString moduleName ^ ".res")
   in
   let candidate =
@@ -216,7 +213,7 @@ let resolveModule ~(config : Config.t) ~importExtension ~outputFileRelative
     moduleName
     |> ImportPath.fromModule ~dir:Filename.current_dir_name ~importExtension
   in
-  if Sys.file_exists moduleNameReFile || Sys.file_exists moduleNameResFile then
+  if Sys.file_exists moduleNameResFile then
     candidate
   else
     let rec pathToList path =
@@ -229,7 +226,7 @@ let resolveModule ~(config : Config.t) ~importExtension ~outputFileRelative
     match moduleName |> apply ~resolver ~useBsDependencies with
     | None -> candidate
     | Some (resolvedModuleDir, case, bsDependencies) ->
-        (* e.g. "dst" in case of dst/ModuleName.re  *)
+        (* e.g. "dst" in case of dst/ModuleName.res *)
         let walkUpOutputDir =
           outputFileRelativeDir |> pathToList
           |> List.map (fun _ -> Filename.parent_dir_name)

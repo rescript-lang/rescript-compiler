@@ -5804,7 +5804,11 @@ let suffix_bs_js = ".bs.js"
 
 let suffix_mjs = ".mjs"
 
+let suffix_bs_mjs = ".bs.mjs"
+
 let suffix_cjs = ".cjs"
+
+let suffix_bs_cjs = ".bs.cjs"
 
 let suffix_gen_js = ".gen.js"
 
@@ -38344,22 +38348,33 @@ end
 module Ext_js_suffix
 = struct
 #1 "ext_js_suffix.ml"
-type t = Js | Bs_js | Mjs | Cjs | Unknown_extension
+type t =
+  | Js
+  | Mjs
+  | Cjs
+  | Bs_js
+  | Bs_mjs
+  | Bs_cjs
+  | Unknown_extension
 
 let to_string (x : t) =
   match x with
   | Js -> Literals.suffix_js
-  | Bs_js -> Literals.suffix_bs_js
   | Mjs -> Literals.suffix_mjs
   | Cjs -> Literals.suffix_cjs
+  | Bs_js -> Literals.suffix_bs_js
+  | Bs_mjs -> Literals.suffix_bs_mjs
+  | Bs_cjs -> Literals.suffix_bs_cjs
   | Unknown_extension -> assert false
 
 let of_string (x : string) : t =
   match () with
   | () when x = Literals.suffix_js -> Js
-  | () when x = Literals.suffix_bs_js -> Bs_js
   | () when x = Literals.suffix_mjs -> Mjs
   | () when x = Literals.suffix_cjs -> Cjs
+  | () when x = Literals.suffix_bs_js -> Bs_js
+  | () when x = Literals.suffix_bs_mjs -> Bs_mjs
+  | () when x = Literals.suffix_bs_cjs -> Bs_cjs
   | _ -> Unknown_extension
 
 end
@@ -38632,12 +38647,12 @@ let suites =
     (* __LOC__ >:: begin fun _ -> 
       OUnit.assert_bool __LOC__ @@
       List.for_all (fun x -> Ext_string.is_valid_source_name x = Good)
-        ["x.ml"; "x.mli"; "x.re"; "x.rei"; 
+        ["x.ml"; "x.mli"; "x.res"; "x.resi"; 
          "A_x.ml"; "ab.ml"; "a_.ml"; "a__.ml";
          "ax.ml"];
       OUnit.assert_bool __LOC__ @@ not @@
       List.exists (fun x -> Ext_string.is_valid_source_name x = Good)
-        [".re"; ".rei";"..re"; "..rei"; "..ml"; ".mll~"; 
+        [".res"; ".resi";"..res"; "..resi"; "..ml"; ".mll~"; 
          "...ml"; "_.mli"; "_x.ml"; "__.ml"; "__.rei"; 
          ".#hello.ml"; ".#hello.rei"; "a-.ml"; "a-b.ml"; "-a-.ml"
         ; "-.ml"
@@ -39046,7 +39061,10 @@ let suites =
           (Ext_filename.module_name "a/b/c.d")
           "C";
         string_eq 
-          (Ext_filename.module_name "a/b/xc.re")
+          (Ext_filename.module_name "a/b/xc.res")
+          "Xc";
+        string_eq 
+          (Ext_filename.module_name "a/b/xc.resi")
           "Xc";
         string_eq 
           (Ext_filename.module_name "a/b/xc.ml")

@@ -4,7 +4,7 @@
 
 import {default as defaultNotChecked} from './';
 
-// In case of type error, check the type of 'default' in 'ImportIndex.re' and './'.
+// In case of type error, check the type of 'default' in 'ImportIndex.res' and './'.
 export const defaultTypeChecked: React.ComponentType<{ readonly method?: "push" | "replace" }> = defaultNotChecked;
 
 // Export '$$default' early to allow circular import from the '.bs.js' file.

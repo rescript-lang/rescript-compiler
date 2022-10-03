@@ -61,7 +61,7 @@ let getBsConfigFile ~projectRoot =
   match bsconfig |> Sys.file_exists with true -> Some bsconfig | false -> None
 
 (** Find the relative path from /.../bs/lib
-   e.g. /foo/bar/bs/lib/src/Hello.re --> src/Hello.re *)
+   e.g. /foo/bar/bs/lib/src/Hello.res --> src/Hello.res *)
 let relativePathFromBsLib fileName =
   if Filename.is_relative fileName then fileName
   else

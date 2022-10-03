@@ -6,7 +6,7 @@ import {default as makeNotChecked} from './hookExample';
 
 import {default as defaultNotChecked} from './hookExample';
 
-// In case of type error, check the type of 'make' in 'ImportHookDefault.re' and './hookExample'.
+// In case of type error, check the type of 'make' in 'ImportHookDefault.res' and './hookExample'.
 export const makeTypeChecked: React.ComponentType<{
   readonly person: person; 
   readonly children: React.ReactNode; 
@@ -20,7 +20,7 @@ export const make: unknown = makeTypeChecked as React.ComponentType<{
   readonly renderMe: ImportHooks_renderMe<string>
 }>;
 
-// In case of type error, check the type of 'default' in 'ImportHookDefault.re' and './hookExample'.
+// In case of type error, check the type of 'default' in 'ImportHookDefault.res' and './hookExample'.
 export const defaultTypeChecked: React.ComponentType<{
   readonly person: person; 
   readonly children: React.ReactNode; 

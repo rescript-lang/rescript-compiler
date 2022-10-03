@@ -6,7 +6,7 @@ import {make as makeNotChecked} from './hookExample';
 
 import * as React from 'react';
 
-// In case of type error, check the type of 'make' in 'JSXV4.re' and './hookExample'.
+// In case of type error, check the type of 'make' in 'JSXV4.res' and './hookExample'.
 export const makeTypeChecked: React.ComponentType<{
   readonly actions?: JSX.Element; 
   readonly person: person; 

@@ -363,9 +363,9 @@ type check_result =
 let is_valid_source_name name : check_result =
   match check_any_suffix_case_then_chop name [
       ".ml"; 
-      ".re";
+      ".res";
       ".mli"; 
-      ".rei"
+      ".resi"
     ] with 
   | None -> Suffix_mismatch
   | Some x -> 

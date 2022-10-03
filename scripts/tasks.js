@@ -88,8 +88,6 @@ function onSourceChange(eventType, filename) {
     filename.endsWith(".mll") ||
     filename.endsWith(".mly") ||
     filename.endsWith(".json") ||
-    filename.endsWith(".re") ||
-    filename.endsWith(".rei") ||
     filename.endsWith(".res") ||
     filename.endsWith(".resi")
   ) {
