@@ -586,27 +586,29 @@ function sourceToTarget(y) {
  */
 function ocamlDepForBscAsync(files, dir, depsMap) {
   return new Promise((resolve, reject) => {
-    let tmpdir = null;
-    let mlfiles = []; // convert .res files to temporary .ml files in tmpdir
+    var tmpdir = null;
+    const mlfiles = []; // convert .res files to temporary .ml files in tmpdir
     files.forEach(f => {
       const { name, ext } = path.parse(f);
       if (ext === ".res" || ext === ".resi") {
-        let mlname = ext === ".resi" ? name + ".mli" : name + ".ml";
+        const mlname = ext === ".resi" ? name + ".mli" : name + ".ml";
         if (tmpdir == null) {
           tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), "resToMl"));
         }
-        mlfile = path.join(tmpdir, mlname);
-        mlfiles.push(mlfile);
         try {
+          const mlfile = path.join(tmpdir, mlname);
           cp.execSync(`${bsc_exe} -dsource -only-parse ${f} 2>${mlfile}`, {
             cwd: dir,
             shell: true,
             encoding: "ascii",
           });
-        } catch (err) {}
+          mlfiles.push(mlfile);  
+        } catch (err) {
+          console.log(err);
+        }
       }
     });
-    let minusI = tmpdir == null ? "" : `-I ${tmpdir}`;
+    const minusI = tmpdir == null ? "" : `-I ${tmpdir}`;
     cp.exec(
       `ocamldep.opt -allow-approx -one-line ${minusI} -native ${files.join(
         " "
@@ -622,7 +624,7 @@ function ocamlDepForBscAsync(files, dir, depsMap) {
         if (error !== null) {
           return reject(error);
         } else {
-          var pairs = stdout.split("\n").map(x => x.split(":"));
+          const pairs = stdout.split("\n").map(x => x.split(":"));
           pairs.forEach(x => {
             var deps;
             let source = replaceCmj(path.basename(x[0]));
