@@ -30,6 +30,7 @@ type domRef
 */
 type domProps = {
   key?: string,
+  children?: Jsx.element,
   ref?: domRef,
   /* accessibility */
   /* https://www.w3.org/TR/wai-aria-1.1/ */
