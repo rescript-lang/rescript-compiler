@@ -53,11 +53,7 @@ type domProps = {
   @as("aria-autocomplete") ariaAutocomplete?: [#inline | #list | #both | #none],
   /* https://www.w3.org/TR/wai-aria-1.1/#valuetype_tristate */
   @as("aria-checked")
-  ariaChecked?: [
-    | #"true"
-    | #"false"
-    | #mixed
-  ],
+  ariaChecked?: [#"true" | #"false" | #mixed],
   @as("aria-expanded")
   ariaExpanded?: bool,
   @as("aria-haspopup")
@@ -143,7 +139,7 @@ type domProps = {
   contentEditable?: bool,
   contextMenu?: string,
   @as("data-testid") dataTestId?: string,
-  dir?: string /* "ltr", "rtl" or "auto" */,
+  dir?: [#ltr | #rtl | #auto],
   draggable?: bool,
   hidden?: bool,
   id?: string,
@@ -186,11 +182,11 @@ type domProps = {
   defer?: bool,
   disabled?: bool,
   download?: string /* should really be either a boolean, signifying presence, or a string */,
-  encType?: string /* "application/x-www-form-urlencoded", "multipart/form-data" or "text/plain" */,
+  encType?: [#"application/x-www-form-urlencoded" | #"multipart/form-data" | #"text/plain"],
   form?: string,
   formAction?: string /* uri */,
-  formTarget?: string /* "_blank", "_self", etc. */,
-  formMethod?: string /* "post", "get", "put" */,
+  formTarget?: [#_self | #_blank | #_parent | #_top],
+  formMethod?: [#get | #head | #post | #put | #delete | #connect | #options | #trace | #patch],
   headers?: string,
   height?: string /* in html5 this can only be a number, but in html4 it can ba a percentage as well */,
   high?: int,
@@ -199,7 +195,7 @@ type domProps = {
   htmlFor?: string /* substitute for "for" */,
   httpEquiv?: string /* has a fixed set of possible values */,
   icon?: string /* uri? */,
-  inputMode?: string /* "verbatim", "latin", "numeric", etc. */,
+  inputMode?: [#none | #text | #decimal | #numeric | #tel | #search | #email | #url],
   integrity?: string,
   keyType?: string,
   kind?: string /* has a fixed set of possible values */,
@@ -213,7 +209,7 @@ type domProps = {
   maxLength?: int,
   media?: string /* a valid media query */,
   mediaGroup?: string,
-  method?: string /* "post" or "get" */,
+  method?: [#post | #get | #dialog],
   min?: string,
   minLength?: int,
   multiple?: bool,
