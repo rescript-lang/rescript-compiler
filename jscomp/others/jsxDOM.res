@@ -373,7 +373,7 @@ type domProps = {
   baseProfile?: string,
   baselineShift?: string,
   bbox?: string,
-  begin: string,
+  begin?: string,
   @deprecated("Please use begin")
   begin_?: string,
   bias?: string,
@@ -553,7 +553,7 @@ type domProps = {
   textDecoration?: string,
   textLength?: string,
   textRendering?: string,
-  to: string,
+  to?: string,
   @deprecated("Please use to")
   to_?: string,
   transform?: string,
