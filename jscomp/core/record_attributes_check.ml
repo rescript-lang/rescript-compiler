@@ -81,7 +81,8 @@ let rec check_duplicated_labels_aux (lbls : Parsetree.label_declaration list)
   match lbls with
   | [] -> None
   | { pld_name = { txt } as pld_name; pld_attributes } :: rest -> (
-      if Set_string.mem coll txt then Some pld_name
+      (* TODO: this operates on the parse tree and does not know about expansion *)
+      if Set_string.mem coll txt && txt <> "dotdotdot" then Some pld_name
       else
         let coll_with_lbl = Set_string.add coll txt in
         match Ext_list.find_opt pld_attributes find_name_with_loc with

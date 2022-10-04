@@ -7,5 +7,14 @@ var v = {
   z: ""
 };
 
+var v2 = {
+  x: 10,
+  y: "",
+  z: "",
+  v: 1.0,
+  w: 2.0
+};
+
 exports.v = v;
+exports.v2 = v2;
 /* No side effect */

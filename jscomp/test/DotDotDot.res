@@ -6,6 +6,12 @@ type c = {dotdotdot: b, z: string}
 
 let v: c = {x: 10, y: "", z: ""}
 
+type vw = {v: float, w: float}
+
+type cvw = {dotdotdot: c, dotdotdot: vw}
+
+let v2: cvw = {x: 10, y: "", z: "", v: 1.0, w: 2.0}
+
 type globalProps = {
   id?: string,
   name?: string,
@@ -21,9 +27,7 @@ type anchorProps = {
 }
 
 // globalProps only case?
-type divProps = {
-  dotdotdot: globalProps,
-}
+type divProps = {dotdotdot: globalProps}
 
 type svgProps = {
   dotdotdot: globalProps,

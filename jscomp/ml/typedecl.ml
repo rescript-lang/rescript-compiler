@@ -447,7 +447,7 @@ let transl_declaration env sdecl id =
               else Record_regular
           in
           let lbls, lbls' = match lbls, lbls' with
-            | {ld_name = {txt = "dotdotdot"}; ld_type} :: rest, _ :: rest' ->
+            | {ld_name = {txt = "dotdotdot"}; ld_type} :: _, _ :: _ ->
               let rec extract t = match t.desc with
                 | Tpoly(t, []) -> extract t
                 | _ -> Ctype.repr t in
@@ -458,14 +458,17 @@ let transl_declaration env sdecl id =
                   ld_type = {ld_type with ctyp_type = l.ld_type};
                   ld_loc = l.ld_loc;
                   ld_attributes = l.ld_attributes; } in
-              let lbls, lbls' =
-                match Ctype.extract_concrete_typedecl env (extract ld_type.ctyp_type) with
-                (_p0, _p, {type_kind=Type_record (fields, _repr)}) ->
-                  (fields |> List.map mkLbl) @ rest, fields @ rest'
-                | _ -> assert false
-                | exception _ -> assert false
+              let rec process_lbls acc lbls lbls' = match lbls, lbls' with
+                | {ld_name = {txt = "dotdotdot"}; ld_type} :: rest, _ :: rest' ->
+                  (match Ctype.extract_concrete_typedecl env (extract ld_type.ctyp_type) with
+                    (_p0, _p, {type_kind=Type_record (fields, _repr)}) ->
+                      process_lbls (fst acc @ (fields |> List.map mkLbl), snd acc @ fields) rest rest'
+                    | _ -> assert false
+                    | exception _ -> assert false)
+                | lbl::rest, lbl'::rest' -> process_lbls (fst acc @ [lbl], snd acc @ [lbl']) rest rest'
+                | _ -> acc
               in
-              lbls, lbls'
+              process_lbls ([], []) lbls lbls'
             | _ -> lbls, lbls' in
           Ttype_record lbls, Type_record(lbls', rep)
       | Ptype_open -> Ttype_open, Type_open
