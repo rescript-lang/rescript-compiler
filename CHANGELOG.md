@@ -14,7 +14,8 @@
 
 #### :boom: Breaking Change
 
-- Change the DOM element attribute `method` to `method_`
+- Deprecate DOM element attributes in `JsxDOM.domProps`: `begin_`, `end_`, `to_`
+  - Use `begin`, `end`, `to` instead.
 
 ## :rocket: New Feature
 
@@ -27,6 +28,10 @@
 - Fix location issue in make function in JSX V4 that breaks dead code elimination https://github.com/rescript-lang/syntax/pull/660
 - Fix parsing (hence pretty printing) of expressions with underscore `_` and comments.
 - Fix issue where uncurried async functions were emitted without `async` https://github.com/rescript-lang/rescript-compiler/pull/5718
+
+#### :nail_care: Polish
+
+- Add `loading`, `aria-*` DOM element attributes in `JsxDOM.domProps`: `ariaCurrent`, `ariaInvalid`, `ariaAutocomplete`, etc.
 
 # 10.1.0-alpha.2
 
