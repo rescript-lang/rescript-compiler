@@ -19,6 +19,11 @@
   - `rescript convert <reason files>`
 - Remove obsolete built-in project templates and the "rescript init" functionality. This will be replaced by the create-rescript-app project that is maintained separately.
 
+#### :boom: Breaking Change
+
+- Made pinned dependencies transitive: if *a* is a pinned dependency of *b* and *b* is a pinned dependency of *c*, then *a* is implicitly a pinned dependency of *c*.
+- This change is only breaking if your build process assumes non-transitivity. Few if any builds do. In the typical case where you build your monorepo by running `rescript build` on each package in your repo, you don't need to make any changes. There is no way of building with the old, non-transitive behavior.
+
 # 10.1.0-rc.1
 
 ## :rocket: New Feature

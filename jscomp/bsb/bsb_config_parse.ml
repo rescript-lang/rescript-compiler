@@ -142,13 +142,6 @@ let extract_ignored_dirs (map : json_map) : Set_string.t =
       Set_string.of_list (Bsb_build_util.get_list_string content)
   | Some config -> Bsb_exception.config_error config "expect an array of string"
 
-let extract_pinned_dependencies (map : json_map) : Set_string.t =
-  match map.?(Bsb_build_schemas.pinned_dependencies) with
-  | None -> Set_string.empty
-  | Some (Arr { content }) ->
-      Set_string.of_list (Bsb_build_util.get_list_string content)
-  | Some config -> Bsb_exception.config_error config "expect an array of string"
-
 let extract_generators (map : json_map) =
   let generators = ref Map_string.empty in
   (match map.?(Bsb_build_schemas.generators) with
@@ -286,7 +279,7 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
               Bsb_build_schemas.bs_dev_dependencies
         | Dependency _ -> []
       in
-      let pinned_dependencies = extract_pinned_dependencies map in
+      let pinned_dependencies = Bsb_build_util.extract_pinned_dependencies map in
       match map.?(Bsb_build_schemas.sources) with
       | Some sources ->
           let cut_generators =
@@ -357,5 +350,5 @@ let deps_from_bsconfig () =
   | Obj { map } ->
       ( Bsb_package_specs.from_map ~cwd:Bsb_global_paths.cwd map,
         Bsb_jsx.from_map map,
-        extract_pinned_dependencies map )
+        Bsb_build_util.extract_pinned_dependencies map )
   | _ -> assert false

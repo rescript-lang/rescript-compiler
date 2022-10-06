@@ -56,11 +56,10 @@ let make_world_deps cwd (config : Bsb_config_types.t option)
      );
      close_out oc ; *)
   queue
-  |> Queue.iter (fun ({ top; proj_dir } : Bsb_build_util.package_context) ->
+  |> Queue.iter (fun ({ top; proj_dir; is_pinned } : Bsb_build_util.package_context) ->
          match top with
          | Expect_none -> ()
          | Expect_name s ->
-             let is_pinned = Set_string.mem pinned_dependencies s in
              if is_pinned then print_endline ("Dependency pinned on " ^ s)
              else print_endline ("Dependency on " ^ s);
              let lib_bs_dir = proj_dir // lib_artifacts_dir in
