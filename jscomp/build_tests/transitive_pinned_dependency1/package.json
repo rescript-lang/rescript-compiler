@@ -1,0 +1,8 @@
+{
+  "name": "top",
+  "workspaces": [
+    "a",
+    "b",
+    "c"
+  ]
+}

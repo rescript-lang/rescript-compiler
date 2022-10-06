@@ -9232,7 +9232,9 @@ type result = { path : string; checked : bool }
 *)
 val resolve_bsb_magic_file : cwd:string -> desc:string -> string -> result
 
-type package_context = { proj_dir : string; top : top }
+type package_context = { proj_dir : string; top : top; is_pinned: bool }
+
+val extract_pinned_dependencies: Ext_json_types.t Map_string.t -> Set_string.t
 
 val walk_all_deps :
   string -> pinned_dependencies:Set_string.t -> package_context Queue.t
@@ -9371,7 +9373,7 @@ let ( |? ) m (key, cb) = m |> Ext_json.test key cb
 
 type top = Expect_none | Expect_name of string
 
-type package_context = { proj_dir : string; top : top }
+type package_context = { proj_dir : string; top : top; is_pinned: bool }
 
 (**
    TODO: check duplicate package name
@@ -9386,6 +9388,13 @@ type package_context = { proj_dir : string; top : top }
 
 let pp_packages_rev ppf lst =
   Ext_list.rev_iter lst (fun s -> Format.fprintf ppf "%s " s)
+
+let extract_pinned_dependencies (map : Ext_json_types.t Map_string.t) : Set_string.t =
+  match Map_string.find_opt map Bsb_build_schemas.pinned_dependencies with
+  | None -> Set_string.empty
+  | Some (Arr { content }) ->
+      Set_string.of_list (get_list_string content)
+  | Some config -> Bsb_exception.config_error config "expect an array of string"
 
 let rec walk_all_deps_aux (visited : string Hash_string.t) (paths : string list)
     ~(top : top) (dir : string) (queue : _ Queue.t) ~pinned_dependencies =
@@ -9415,9 +9424,9 @@ let rec walk_all_deps_aux (visited : string Hash_string.t) (paths : string list)
       if Hash_string.mem visited cur_package_name then
         Bsb_log.info "@{<info>Visited before@} %s@." cur_package_name
       else
-        let explore_deps (deps : string) =
+        let explore_deps (deps : string) pinned_dependencies =
           map
-          |? ( deps,
+          |? ( deps,                
                `Arr
                  (fun (new_packages : Ext_json_types.t array) ->
                    Ext_array.iter new_packages (fun js ->
@@ -9435,13 +9444,24 @@ let rec walk_all_deps_aux (visited : string Hash_string.t) (paths : string list)
              )
           |> ignore
         in
-        explore_deps Bsb_build_schemas.bs_dependencies;
+        let is_pinned = match top with
+        | Expect_name n when Set_string.mem pinned_dependencies n -> true
+        | _ -> false
+        in
+        let pinned_dependencies = match is_pinned with 
+        | true -> 
+          let transitive_pinned_dependencies = extract_pinned_dependencies map
+          in
+          Set_string.union transitive_pinned_dependencies pinned_dependencies
+        | false -> pinned_dependencies
+        in
+        explore_deps Bsb_build_schemas.bs_dependencies pinned_dependencies;
         (match top with
-        | Expect_none -> explore_deps Bsb_build_schemas.bs_dev_dependencies
-        | Expect_name n when Set_string.mem pinned_dependencies n ->
-            explore_deps Bsb_build_schemas.bs_dev_dependencies
+        | Expect_none -> explore_deps Bsb_build_schemas.bs_dev_dependencies pinned_dependencies
+        | Expect_name _ when is_pinned ->
+            explore_deps Bsb_build_schemas.bs_dev_dependencies pinned_dependencies
         | Expect_name _ -> ());
-        Queue.add { top; proj_dir = dir } queue;
+        Queue.add { top; proj_dir = dir; is_pinned } queue;
         Hash_string.add visited cur_package_name dir
   | _ -> ()
 
@@ -10445,13 +10465,6 @@ let extract_ignored_dirs (map : json_map) : Set_string.t =
       Set_string.of_list (Bsb_build_util.get_list_string content)
   | Some config -> Bsb_exception.config_error config "expect an array of string"
 
-let extract_pinned_dependencies (map : json_map) : Set_string.t =
-  match map.?(Bsb_build_schemas.pinned_dependencies) with
-  | None -> Set_string.empty
-  | Some (Arr { content }) ->
-      Set_string.of_list (Bsb_build_util.get_list_string content)
-  | Some config -> Bsb_exception.config_error config "expect an array of string"
-
 let extract_generators (map : json_map) =
   let generators = ref Map_string.empty in
   (match map.?(Bsb_build_schemas.generators) with
@@ -10589,7 +10602,7 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
               Bsb_build_schemas.bs_dev_dependencies
         | Dependency _ -> []
       in
-      let pinned_dependencies = extract_pinned_dependencies map in
+      let pinned_dependencies = Bsb_build_util.extract_pinned_dependencies map in
       match map.?(Bsb_build_schemas.sources) with
       | Some sources ->
           let cut_generators =
@@ -10660,7 +10673,7 @@ let deps_from_bsconfig () =
   | Obj { map } ->
       ( Bsb_package_specs.from_map ~cwd:Bsb_global_paths.cwd map,
         Bsb_jsx.from_map map,
-        extract_pinned_dependencies map )
+        Bsb_build_util.extract_pinned_dependencies map )
   | _ -> assert false
 
 end
@@ -12967,11 +12980,10 @@ let make_world_deps cwd (config : Bsb_config_types.t option)
      );
      close_out oc ; *)
   queue
-  |> Queue.iter (fun ({ top; proj_dir } : Bsb_build_util.package_context) ->
+  |> Queue.iter (fun ({ top; proj_dir; is_pinned } : Bsb_build_util.package_context) ->
          match top with
          | Expect_none -> ()
          | Expect_name s ->
-             let is_pinned = Set_string.mem pinned_dependencies s in
              if is_pinned then print_endline ("Dependency pinned on " ^ s)
              else print_endline ("Dependency on " ^ s);
              let lib_bs_dir = proj_dir // lib_artifacts_dir in

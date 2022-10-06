@@ -76,6 +76,7 @@ Usually whenever there's some issues with missing files, incompatible interfaces
 
 ```sh
 ./scripts/ninja.js clean # remove files not in version control
+npm install
 ./scripts/ninja.js config
 ./scripts/ninja.js build
 ```
