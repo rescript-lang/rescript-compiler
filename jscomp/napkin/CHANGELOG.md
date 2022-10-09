@@ -31,6 +31,17 @@
 - Fix location issue in error messages with JSX V4 where the multiple props types are defined https://github.com/rescript-lang/syntax/pull/655
 - Fix location issue in make function in JSX V4 that breaks dead code elimination https://github.com/rescript-lang/syntax/pull/660
 - Fix parsing (hence pretty printing) of expressions with underscore `_` and comments.
+- Fix printing of comments inside JSX tag https://github.com/rescript-lang/syntax/pull/664
+- Fix issue where formatter erases tail comments inside JSX tag https://github.com/rescript-lang/syntax/issues/663
+- Fix issue where the JSX prop has type annotation of the first class module https://github.com/rescript-lang/syntax/pull/666
+
+#### :eyeglasses: Spec Compliance
+
+- Functions with consecutive dots now print as multiple arrow functions like in JavaScript.
+
+#### :nail_care Polish
+
+- Change the internal representation of props for the lowercase components to record. https://github.com/rescript-lang/syntax/pull/665
 
 ## ReScript 10.0
 
