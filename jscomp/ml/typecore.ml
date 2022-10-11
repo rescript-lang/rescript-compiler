@@ -2148,7 +2148,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
               raise(Error(loc, env, Labels_missing labels_missing));
             [||], representation
         | [], _ ->
-          if fields = [] then
+          if fields = [] && repr_opt <> None then
             [||], Record_optional_labels []
           else
             raise(Error(loc, env, Empty_record_literal)) in
