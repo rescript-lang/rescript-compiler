@@ -16,6 +16,7 @@
 
 - Deprecate DOM element attributes in `JsxDOM.domProps`: `begin_`, `end_`, `to_`
   - Use `begin`, `end`, `to` instead.
+- Emit an error when a `@string` or `@int` attribute is used in a V4 component https://github.com/rescript-lang/rescript-compiler/issues/5724
 
 ## :rocket: New Feature
 

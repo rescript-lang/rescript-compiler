@@ -10,6 +10,10 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
+#### :boom: Breaking Change
+
+- Emit an error when a `@string` or `@int` attribute is used in a V4 component https://github.com/rescript-lang/rescript-compiler/issues/5724
+
 #### :rocket: New Feature
 
 - Add surface syntax for `async`/`await` https://github.com/rescript-lang/syntax/pull/600
