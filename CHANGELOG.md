@@ -10,6 +10,8 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
+# 10.1.0-rc.2
+
 # 10.1.0-rc.1
 
 #### :boom: Breaking Change
