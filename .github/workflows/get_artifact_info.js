@@ -1,3 +1,6 @@
+const fs = require("fs");
+const os = require("os");
+
 const artifactPath =
   process.platform === "darwin" && process.arch === "arm64"
     ? process.platform + process.arch
@@ -6,5 +9,7 @@ const artifactPath =
 const artifactName = "binaries-" + artifactPath;
 
 // Pass artifactPath and artifactName to subsequent GitHub actions
-console.log(`::set-output name=artifact_path::${artifactPath}`);
-console.log(`::set-output name=artifact_name::${artifactName}`);
+fs.appendFileSync(
+  process.env.GITHUB_ENV,
+  `artifact_path=${artifactPath}${os.EOL}artifact_name=${artifactName}${os.EOL}`
+);
