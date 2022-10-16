@@ -2144,7 +2144,7 @@ function float_of_string(str) {
         var exponent = decimal_exponent !== undefined ? f.exponent + decimal_exponent | 0 : f.exponent;
         var ret$1 = exponent === 0 ? ret : Math.pow(ret, exponent);
         if (f.negative) {
-          return -ret$1;
+          return - ret$1;
         } else {
           return ret$1;
         }
@@ -2320,7 +2320,7 @@ function mk_num_singleton(number_type, num, neg) {
   } else {
     value = Caml_format.int_of_string(num);
   }
-  var value$1 = neg === "" ? value : -value;
+  var value$1 = neg === "" ? value : - value;
   return {
           TAG: /* T_NUMBER_SINGLETON_TYPE */5,
           _0: number_type,
