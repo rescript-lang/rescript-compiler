@@ -14,6 +14,7 @@
 
 #### :bug: Bug Fix
 
+- Fix issue with changes not being applied with React Native's Metro bundler for files with warnings https://github.com/rescript-lang/rescript-compiler/pull/5738
 - Fix emitting unary minus for floats in case of negative constants https://github.com/rescript-lang/rescript-compiler/pull/5737
 - Fix issue where a spread `...x` in non-last position would not be reported as syntax error https://github.com/rescript-lang/syntax/pull/673/
 - Fix issue where the formatter would delete `async` in a function with labelled arguments.

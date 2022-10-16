@@ -327,12 +327,18 @@ let lambda_as_module
         if !Warnings.has_warnings  then begin 
           Warnings.has_warnings := false ;
           
-# 322 "core/lam_compile_main.pp.ml"
-          if Sys.file_exists target_file then begin 
-            Bs_hash_stubs.set_as_old_file target_file
+# 321 "core/lam_compile_main.pp.ml"
+          (* 5206: When there were warnings found during the compilation, we want the file
+             to be rebuilt on the next "rescript build" so that the warnings keep being shown.
+             Set the timestamp of the ast file to 1970-01-01 to make this rebuild happen.
+             (Do *not* set the timestamp of the JS output file instead
+             as that does not play well with every bundler.) *)
+          let ast_file = output_prefix ^ Literals.suffix_ast in
+          if Sys.file_exists ast_file then begin 
+            Bs_hash_stubs.set_as_old_file ast_file
           end          
         
-# 326 "core/lam_compile_main.pp.ml"
+# 331 "core/lam_compile_main.pp.ml"
         end             
       )
 
