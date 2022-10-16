@@ -35,6 +35,7 @@
 - Fix issue where formatter erases tail comments inside JSX tag https://github.com/rescript-lang/syntax/issues/663
 - Fix issue where the JSX prop has type annotation of the first class module https://github.com/rescript-lang/syntax/pull/666
 - Fix issue where an empty record literal {} expected to have a non-record type would type check https://github.com/rescript-lang/rescript-compiler/pull/5729
+- Fix emitting unary minus for floats in case of negative constants https://github.com/rescript-lang/rescript-compiler/pull/5737
 
 #### :eyeglasses: Spec Compliance
 
