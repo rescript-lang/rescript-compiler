@@ -122,6 +122,9 @@ let () =
   scan_float __LOC__ b a 
   ) literals
 
-
+let () =
+  let f = -9.9 in
+  let f1 = -.f in
+  eq __LOC__ f1 9.9
 
 let () = Mt.from_pair_suites __MODULE__ !suites
