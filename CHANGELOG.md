@@ -12,6 +12,15 @@
 
 # 10.1.0-rc.2
 
+#### :bug: Bug Fix
+
+- Fix emitting unary minus for floats in case of negative constants https://github.com/rescript-lang/rescript-compiler/pull/5737
+- Fix issue where a spread `...x` in non-last position would not be reported as syntax error https://github.com/rescript-lang/syntax/pull/673/
+- Fix issue where the formatter would delete `async` in a function with labelled arguments.
+- Fix several printing issues with `async` including an infinite loop https://github.com/rescript-lang/syntax/pull/680
+- Fix issue where certain JSX expressions would be formatted differenctly in compiler 10.1.0-rc.1 https://github.com/rescript-lang/syntax/issues/675
+- Fix issue where printing nested pipe discards await https://github.com/rescript-lang/syntax/issues/687
+
 # 10.1.0-rc.1
 
 #### :boom: Breaking Change
@@ -35,7 +44,6 @@
 - Fix issue where formatter erases tail comments inside JSX tag https://github.com/rescript-lang/syntax/issues/663
 - Fix issue where the JSX prop has type annotation of the first class module https://github.com/rescript-lang/syntax/pull/666
 - Fix issue where an empty record literal {} expected to have a non-record type would type check https://github.com/rescript-lang/rescript-compiler/pull/5729
-- Fix emitting unary minus for floats in case of negative constants https://github.com/rescript-lang/rescript-compiler/pull/5737
 
 #### :eyeglasses: Spec Compliance
 
