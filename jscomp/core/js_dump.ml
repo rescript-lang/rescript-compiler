@@ -666,7 +666,10 @@ and expression_desc cxt ~(level : int) f x : cxt =
       expression ~level:13 cxt f e
   | Bin
       ( Minus,
-        { expression_desc = Number (Int { i = 0l; _ } | Float { f = "0." }) },
+        {
+          expression_desc =
+            Number ((Int { i = 0l; _ } | Float { f = "0." }) as desc);
+        },
         e )
   (* TODO:
      Handle multiple cases like
@@ -675,7 +678,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
      {[ 0.000 - x ]}
   *) ->
       P.cond_paren_group f (level > 13) 1 (fun _ ->
-          P.string f "-";
+          P.string f (match desc with Float _ -> "- " | _ -> "-");
           expression ~level:13 cxt f e)
   | Bin (op, e1, e2) ->
       let out, lft, rght = Js_op_util.op_prec op in
@@ -718,8 +721,10 @@ and expression_desc cxt ~(level : int) f x : cxt =
                 Js_op.Lit (Ext_ident.convert x))))
   (*name convention of Record is slight different from modules*)
   | Caml_block (el, mutable_flag, _, Blk_record { fields; record_repr }) -> (
-      if Array.length fields <> 0 && Ext_array.for_alli fields (fun i v -> string_of_int i = v) then
-        expression_desc cxt ~level f (Array (el, mutable_flag))
+      if
+        Array.length fields <> 0
+        && Ext_array.for_alli fields (fun i v -> string_of_int i = v)
+      then expression_desc cxt ~level f (Array (el, mutable_flag))
       else
         match record_repr with
         | Record_regular ->

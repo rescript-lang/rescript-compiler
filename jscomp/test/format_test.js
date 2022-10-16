@@ -189,6 +189,10 @@ List.iter((function (param) {
         scan_float("File \"format_test.ml\", line 122, characters 13-20", param[1], param[0]);
       }), literals);
 
+var f1 = - -9.9;
+
+eq("File \"format_test.ml\", line 128, characters 5-12", f1, 9.9);
+
 Mt.from_pair_suites("Format_test", suites.contents);
 
 exports.suites = suites;
