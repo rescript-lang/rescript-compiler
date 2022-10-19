@@ -1352,7 +1352,7 @@ let partial_pred ~lev ?mode ?explode env expected_ty constrs labels p =
     reset_pattern None true;
     let expected_ty = match p.ppat_desc, expected_ty.desc with
     | Ppat_constant (Pconst_integer _ ), Tconstr (path, [], _) when Path.same path Predef.path_char ->
-      (* Constants such as 'foo' are represented as Pconst_integer but expected to have type char *)
+      (* Constants such as 'x' are represented as Pconst_integer but expected to have type char *)
       Predef.type_int
     | _ -> expected_ty in
     let typed_p =
