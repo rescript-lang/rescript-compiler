@@ -12,6 +12,10 @@
 
 # 10.1.0-rc.3
 
+#### :bug: Bug Fix
+
+- Fix issue where exhaustiveness check for pattern matching char was not working  https://github.com/rescript-lang/rescript-compiler/issues/5557
+
 # 10.1.0-rc.2
 
 #### :bug: Bug Fix
