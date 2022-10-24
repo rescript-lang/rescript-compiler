@@ -12,6 +12,8 @@
 
 # 10.1.0-rc.3
 
+- Fix issue where the JSX key type is not an optional string https://github.com/rescript-lang/syntax/pull/693
+
 # 10.1.0-rc.2
 
 #### :bug: Bug Fix
