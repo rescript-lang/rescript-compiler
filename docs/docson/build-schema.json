@@ -83,8 +83,13 @@
             "type": "string"
           },
           "description": "Any specific paths inside suppressed folders that you want to unsuppress. Example: [\"src/bindings/SomeBinding.res\"]."
+        },
+        "transitive": {
+          "type": "boolean",
+          "description": "specify whether transitively dead items should be reported (default: false)"
         }
-      }
+      },
+      "additionalProperties": false
     },
     "react-jsx-version": {
       "title": "jsx-version",
