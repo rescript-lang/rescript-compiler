@@ -1779,8 +1779,8 @@ function is_charset(_param) {
 function split(s, cm) {
   var _t = s;
   var f = function (i, j) {
-    Caml_bytes.set(cm, i, /* '\001' */1);
-    Caml_bytes.set(cm, j + 1 | 0, /* '\001' */1);
+    Caml_bytes.set(cm, i, /* '' */1);
+    Caml_bytes.set(cm, j + 1 | 0, /* '' */1);
   };
   while(true) {
     var t = _t;
@@ -1794,20 +1794,20 @@ function split(s, cm) {
   };
 }
 
-var cupper = union(seq(/* 'A' */65, /* 'Z' */90), union(seq(/* '\192' */192, /* '\214' */214), seq(/* '\216' */216, /* '\222' */222)));
+var cupper = union(seq(/* 'A' */65, /* 'Z' */90), union(seq(/* 'À' */192, /* 'Ö' */214), seq(/* 'Ø' */216, /* 'Þ' */222)));
 
 var clower = offset(32, cupper);
 
 var calpha = List.fold_right(cadd, {
-      hd: /* '\170' */170,
+      hd: /* 'ª' */170,
       tl: {
-        hd: /* '\181' */181,
+        hd: /* 'µ' */181,
         tl: {
-          hd: /* '\186' */186,
+          hd: /* 'º' */186,
           tl: {
-            hd: /* '\223' */223,
+            hd: /* 'ß' */223,
             tl: {
-              hd: /* '\255' */255,
+              hd: /* 'ÿ' */255,
               tl: /* [] */0
             }
           }
@@ -1899,10 +1899,10 @@ function flatten_cmap(cm) {
   var c = Caml_bytes.create(256);
   var col_repr = Caml_bytes.create(256);
   var v = 0;
-  Caml_bytes.set(c, 0, /* '\000' */0);
-  Caml_bytes.set(col_repr, 0, /* '\000' */0);
+  Caml_bytes.set(c, 0, /* ' ' */0);
+  Caml_bytes.set(col_repr, 0, /* ' ' */0);
   for(var i = 1; i <= 255; ++i){
-    if (Caml_bytes.get(cm, i) !== /* '\000' */0) {
+    if (Caml_bytes.get(cm, i) !== /* ' ' */0) {
       v = v + 1 | 0;
     }
     Caml_bytes.set(c, i, Char.chr(v));
@@ -2827,8 +2827,8 @@ var lower = alt$1({
           TAG: /* Set */0,
           _0: {
             hd: [
-              /* '\181' */181,
-              /* '\181' */181
+              /* 'µ' */181,
+              /* 'µ' */181
             ],
             tl: /* [] */0
           }
@@ -2836,12 +2836,12 @@ var lower = alt$1({
         tl: {
           hd: {
             TAG: /* Set */0,
-            _0: seq(/* '\223' */223, /* '\246' */246)
+            _0: seq(/* 'ß' */223, /* 'ö' */246)
           },
           tl: {
             hd: {
               TAG: /* Set */0,
-              _0: seq(/* '\248' */248, /* '\255' */255)
+              _0: seq(/* 'ø' */248, /* 'ÿ' */255)
             },
             tl: /* [] */0
           }
@@ -2857,12 +2857,12 @@ var upper = alt$1({
       tl: {
         hd: {
           TAG: /* Set */0,
-          _0: seq(/* '\192' */192, /* '\214' */214)
+          _0: seq(/* 'À' */192, /* 'Ö' */214)
         },
         tl: {
           hd: {
             TAG: /* Set */0,
-            _0: seq(/* '\216' */216, /* '\222' */222)
+            _0: seq(/* 'Ø' */216, /* 'Þ' */222)
           },
           tl: /* [] */0
         }
@@ -2878,8 +2878,8 @@ var alpha = alt$1({
             TAG: /* Set */0,
             _0: {
               hd: [
-                /* '\170' */170,
-                /* '\170' */170
+                /* 'ª' */170,
+                /* 'ª' */170
               ],
               tl: /* [] */0
             }
@@ -2889,8 +2889,8 @@ var alpha = alt$1({
               TAG: /* Set */0,
               _0: {
                 hd: [
-                  /* '\186' */186,
-                  /* '\186' */186
+                  /* 'º' */186,
+                  /* 'º' */186
                 ],
                 tl: /* [] */0
               }
@@ -2933,7 +2933,7 @@ var wordc = alt$1({
 
 var ascii = {
   TAG: /* Set */0,
-  _0: seq(/* '\000' */0, /* '\127' */127)
+  _0: seq(/* ' ' */0, /* '' */127)
 };
 
 var blank = set("\t ");
@@ -2941,12 +2941,12 @@ var blank = set("\t ");
 var cntrl = alt$1({
       hd: {
         TAG: /* Set */0,
-        _0: seq(/* '\000' */0, /* '\031' */31)
+        _0: seq(/* ' ' */0, /* '' */31)
       },
       tl: {
         hd: {
           TAG: /* Set */0,
-          _0: seq(/* '\127' */127, /* '\159' */159)
+          _0: seq(/* '' */127, /* '' */159)
         },
         tl: /* [] */0
       }
@@ -2960,7 +2960,7 @@ var graph = alt$1({
       tl: {
         hd: {
           TAG: /* Set */0,
-          _0: seq(/* '\160' */160, /* '\255' */255)
+          _0: seq(/* ' ' */160, /* 'ÿ' */255)
         },
         tl: /* [] */0
       }
@@ -2974,7 +2974,7 @@ var print = alt$1({
       tl: {
         hd: {
           TAG: /* Set */0,
-          _0: seq(/* '\160' */160, /* '\255' */255)
+          _0: seq(/* ' ' */160, /* 'ÿ' */255)
         },
         tl: /* [] */0
       }
@@ -3003,30 +3003,30 @@ var punct = alt$1({
             tl: {
               hd: {
                 TAG: /* Set */0,
-                _0: seq(/* '\160' */160, /* '\169' */169)
+                _0: seq(/* ' ' */160, /* '©' */169)
               },
               tl: {
                 hd: {
                   TAG: /* Set */0,
-                  _0: seq(/* '\171' */171, /* '\180' */180)
+                  _0: seq(/* '«' */171, /* '´' */180)
                 },
                 tl: {
                   hd: {
                     TAG: /* Set */0,
-                    _0: seq(/* '\182' */182, /* '\185' */185)
+                    _0: seq(/* '¶' */182, /* '¹' */185)
                   },
                   tl: {
                     hd: {
                       TAG: /* Set */0,
-                      _0: seq(/* '\187' */187, /* '\191' */191)
+                      _0: seq(/* '»' */187, /* '¿' */191)
                     },
                     tl: {
                       hd: {
                         TAG: /* Set */0,
                         _0: {
                           hd: [
-                            /* '\215' */215,
-                            /* '\215' */215
+                            /* '×' */215,
+                            /* '×' */215
                           ],
                           tl: /* [] */0
                         }
@@ -3036,8 +3036,8 @@ var punct = alt$1({
                           TAG: /* Set */0,
                           _0: {
                             hd: [
-                              /* '\247' */247,
-                              /* '\247' */247
+                              /* '÷' */247,
+                              /* '÷' */247
                             ],
                             tl: /* [] */0
                           }
@@ -3110,7 +3110,7 @@ function compile(r) {
           }
         });
   var regexp$1 = handle_case(false, regexp);
-  var c = Bytes.make(257, /* '\000' */0);
+  var c = Bytes.make(257, /* ' ' */0);
   var need_lnl = colorize(c, regexp$1);
   var match = flatten_cmap(c);
   var ncol = match[2];

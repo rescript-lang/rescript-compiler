@@ -28,6 +28,8 @@
 
 - Fix issue where async as an id cannot be used with application and labelled arguments https://github.com/rescript-lang/syntax/issues/707
 
+- Fix Char pattern and change the payload of Pconst_char for type safety. https://github.com/rescript-lang/rescript-compiler/pull/5749 https://github.com/rescript-lang/syntax/pull/709
+
 # 10.1.0-rc.2
 
 #### :bug: Bug Fix

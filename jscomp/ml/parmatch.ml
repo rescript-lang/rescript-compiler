@@ -379,7 +379,7 @@ let is_cons = function
 
 let pretty_const c = match c with
 | Const_int i -> Printf.sprintf "%d" i
-| Const_char c -> Printf.sprintf "%C" c
+| Const_char i -> Printf.sprintf "%s" (Pprintast.string_of_int_as_char i)
 | Const_string (s, _) -> Printf.sprintf "%S" s
 | Const_float f -> Printf.sprintf "%s" f
 | Const_int32 i -> Printf.sprintf "%ldl" i
@@ -1037,7 +1037,7 @@ let build_other_constant proj make first next p env =
 
 let some_other_tag = "<some other tag>"
 
-let build_other ext env = match env with
+let build_other ext env : Typedtree.pattern = match env with
 | ({pat_desc = Tpat_construct (lid, {cstr_tag=Cstr_extension _},_)},_) :: _ ->
         (* let c = {c with cstr_name = "*extension*"} in *) (* PR#7330 *)
         make_pat (Tpat_var (Ident.create "*extension*",
@@ -1079,13 +1079,19 @@ let build_other ext env = match env with
             make_pat (Tpat_or (pat, p_res, None)) p.pat_type p.pat_env)
           pat other_pats
     end
-| ({pat_desc=(Tpat_constant (Const_int _ | Const_char _))} as p,_) :: _ ->
+| ({pat_desc=(Tpat_constant (Const_int _ ))} as p,_) :: _ ->
     build_other_constant
       (function Tpat_constant(Const_int i) -> i 
-      | Tpat_constant (Const_char i) -> Char.code i
       | _ -> assert false)
       (function i -> Tpat_constant(Const_int i))
       0 succ p env
+| ({pat_desc=(Tpat_constant (Const_char _ ))} as p,_) :: _ ->
+        build_other_constant
+          (function 
+          | Tpat_constant (Const_char i) -> i
+          | _ -> assert false)
+          (function i -> Tpat_constant(Const_char (i)))
+          0 succ p env      
 | ({pat_desc=(Tpat_constant (Const_int32 _))} as p,_) :: _ ->
     build_other_constant
       (function Tpat_constant(Const_int32 i) -> i | _ -> assert false)
