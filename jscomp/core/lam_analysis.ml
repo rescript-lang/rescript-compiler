@@ -247,6 +247,7 @@ let destruct_pattern (body : Lam.t) params args =
 (** Hints to inlining *)
 let ok_to_inline_fun_when_app (m : Lam.lfunction) (args : Lam.t list) =
   match m.attr.inline with
+  | _ when m.attr.async -> false
   | Always_inline -> true
   | Never_inline -> false
   | Default_inline -> (

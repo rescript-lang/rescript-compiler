@@ -12,7 +12,11 @@
 
 # 10.1.0-rc.3
 
+#### :bug: Bug Fix
+
 - Fix issue where the JSX key type is not an optional string https://github.com/rescript-lang/syntax/pull/693
+
+- Prevent inlining of async functions
 
 # 10.1.0-rc.2
 
