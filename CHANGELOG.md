@@ -16,7 +16,7 @@
 
 - Fix issue where the JSX key type is not an optional string https://github.com/rescript-lang/syntax/pull/693
 
-- Prevent inlining of async functions
+- Prevent inlining of async functions https://github.com/rescript-lang/rescript-compiler/issues/5754
 
 # 10.1.0-rc.2
 
