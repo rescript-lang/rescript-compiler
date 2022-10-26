@@ -211,8 +211,8 @@ let simplify_alias (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
               else normal ()
             else normal ()
         | Some _ | None -> normal ())
-    | Lapply { ap_func = Lfunction { params; body; attr }; ap_args = args; _ }
-      when Ext_list.same_length params args && not attr.async ->
+    | Lapply { ap_func = Lfunction ({ params; body } as lfunction); ap_args = args; _ }
+      when Ext_list.same_length params args && Lam_analysis.lfunction_can_be_inlined lfunction ->
         simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args)
     (* | Lapply{ fn = Lfunction{function_kind =  Tupled;  params; body};  *)
     (*          args = [Lprim {primitive = Pmakeblock _; args; _}]; _} *)
