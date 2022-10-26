@@ -244,6 +244,10 @@ let destruct_pattern (body : Lam.t) params args =
       | Some _ | None -> false)
   | _ -> false
 
+(* Async functions cannot be beta reduced *)
+let lfunction_can_be_beta_reduced (lfunction : Lam.lfunction) =
+  not lfunction.attr.async
+
 (** Hints to inlining *)
 let ok_to_inline_fun_when_app (m : Lam.lfunction) (args : Lam.t list) =
   match m.attr.inline with

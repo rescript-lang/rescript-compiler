@@ -147,8 +147,8 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam : Lam.t =
         end
     | Lsequence(l1, l2) -> Lam.seq (simplif l1) (simplif l2)
 
-    | Lapply{ap_func = Lfunction{params; body};  ap_args = args; _}
-      when  Ext_list.same_length params args ->
+    | Lapply{ap_func = Lfunction ({params; body} as lfunction);  ap_args = args; _}
+      when  Ext_list.same_length params args && Lam_analysis.lfunction_can_be_beta_reduced lfunction ->
       simplif (Lam_beta_reduce.no_names_beta_reduce  params body args)
     (* | Lapply{ fn = Lfunction{function_kind = Tupled; params; body}; *)
     (*           args = [Lprim {primitive = Pmakeblock _;  args; _}]; _} *)
