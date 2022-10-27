@@ -794,7 +794,7 @@ lib/ocaml/js_weakset.cmt
 lib/ocaml/js_weakset.ml
 lib/ocaml/jsx.cmi
 lib/ocaml/jsx.cmt
-lib/ocaml/jsx.ml
+lib/ocaml/jsx.res
 lib/ocaml/jsxDOM.cmi
 lib/ocaml/jsxDOM.cmt
 lib/ocaml/jsxDOM.res
