@@ -513,6 +513,8 @@
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/parsetree.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/path.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/path.mli
+../lib/4.06.1/unstable/js_compiler.ml: ./ml/pprintast.mli
+../lib/4.06.1/unstable/js_compiler.ml: ./ml/pprintast.pp.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/predef.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/predef.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/primitive.ml
@@ -584,6 +586,8 @@
 ../lib/4.06.1/unstable/js_compiler.ml: ./napkin/res_printer.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./napkin/res_printer.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./napkin/res_token.ml
+../lib/4.06.1/unstable/js_compiler.ml: ./napkin/res_utf8.ml
+../lib/4.06.1/unstable/js_compiler.ml: ./napkin/res_utf8.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./outcome_printer/outcome_printer_ns.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./outcome_printer/outcome_printer_ns.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./stubs/bs_hash_stubs.pp.ml

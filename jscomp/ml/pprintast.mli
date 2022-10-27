@@ -24,3 +24,4 @@ val pattern: Format.formatter -> Parsetree.pattern -> unit
 val signature: Format.formatter -> Parsetree.signature -> unit
 val structure: Format.formatter -> Parsetree.structure -> unit
 val string_of_structure: Parsetree.structure -> string
+val string_of_int_as_char: int -> string

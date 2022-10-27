@@ -29,7 +29,7 @@ module E = Js_exp_make
     currently, it follows the same patten of ocaml, [char] is [int]
 *)
 
-let const_char (i : char) = E.int ~c:i (Int32.of_int @@ (Char.code i))
+let const_char (i : int) = E.int ~c:i (Int32.of_int @@ i)
 
 (* string [s[i]] expects to return a [ocaml_char] *)
 let ref_string e e1 = E.string_index e e1

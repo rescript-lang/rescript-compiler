@@ -10698,7 +10698,7 @@ module Asttypes
 
 type constant =
     Const_int of int
-  | Const_char of char
+  | Const_char of int
   | Const_string of string * string option
   | Const_float of string
   | Const_int32 of int32
@@ -10752,6 +10752,7 @@ let same_arg_label (x : arg_label) y =
       | Optional s0 -> s = s0
       | _ -> false  
       end  
+
 end
 module Longident : sig 
 #1 "longident.mli"
@@ -10879,7 +10880,7 @@ type constant =
      Suffixes [g-z][G-Z] are accepted by the parser.
      Suffixes except 'l', 'L' and 'n' are rejected by the typechecker
   *)
-  | Pconst_char of char
+  | Pconst_char of int
   (* 'c' *)
   | Pconst_string of string * string option
   (* "constant"
@@ -13983,7 +13984,7 @@ module Const = struct
   let int64 ?(suffix='L') i = integer ~suffix (Int64.to_string i)
   let nativeint ?(suffix='n') i = integer ~suffix (Nativeint.to_string i)
   let float ?suffix f = Pconst_float (f, suffix)
-  let char c = Pconst_char c
+  let char c = Pconst_char (Char.code c)
   let string ?quotation_delimiter s = Pconst_string (s, quotation_delimiter)
 end
 
@@ -25657,7 +25658,7 @@ let yyact = [|
     let _1 = (Parsing.peek_val __caml_parser_env 0 : char) in
     Obj.repr(
 # 2155 "ml/parser.mly"
-                 ( Pconst_char _1 )
+                 ( Pconst_char (Char.code _1) )
 # 11020 "ml/parser.ml"
                : 'constant))
 ; (fun __caml_parser_env ->
@@ -51154,7 +51155,7 @@ type float_lit = { f : string } [@@unboxed]
 
 type number =
   | Float of float_lit
-  | Int of { i : int32; c : char option }
+  | Int of { i : int32; c : int option }
   | Uint of int32
 
 (* becareful when constant folding +/-,
