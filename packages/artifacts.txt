@@ -180,6 +180,7 @@ lib/es6/pervasives.js
 lib/es6/printexc.js
 lib/es6/queue.js
 lib/es6/random.js
+lib/es6/reactPPX4Support.js
 lib/es6/set.js
 lib/es6/setLabels.js
 lib/es6/sort.js
@@ -342,6 +343,7 @@ lib/js/pervasives.js
 lib/js/printexc.js
 lib/js/queue.js
 lib/js/random.js
+lib/js/reactPPX4Support.js
 lib/js/set.js
 lib/js/setLabels.js
 lib/js/sort.js
@@ -894,6 +896,8 @@ lib/ocaml/random.cmt
 lib/ocaml/random.cmti
 lib/ocaml/random.ml
 lib/ocaml/random.mli
+lib/ocaml/reactPPX4Support.res
+lib/ocaml/react_ppx_support.res
 lib/ocaml/set.cmi
 lib/ocaml/set.cmt
 lib/ocaml/set.cmti
