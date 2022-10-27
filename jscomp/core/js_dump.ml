@@ -630,7 +630,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
         match v with
         | Float { f } -> Js_number.caml_float_literal_to_js_string f
         (* attach string here for float constant folding?*)
-        | Int { i; c = Some c } -> Format.asprintf "/* %C */%ld" c i
+        | Int { i; c = Some c } -> Format.asprintf "/* %C */%ld" (Char.unsafe_chr c) i
         | Int { i; c = None } ->
             Int32.to_string i
             (* check , js convention with ocaml lexical convention *)
