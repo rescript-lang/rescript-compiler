@@ -896,8 +896,9 @@ lib/ocaml/random.cmt
 lib/ocaml/random.cmti
 lib/ocaml/random.ml
 lib/ocaml/random.mli
+lib/ocaml/reactPPX4Support.cmi
+lib/ocaml/reactPPX4Support.cmt
 lib/ocaml/reactPPX4Support.res
-lib/ocaml/react_ppx_support.res
 lib/ocaml/set.cmi
 lib/ocaml/set.cmt
 lib/ocaml/set.cmti
