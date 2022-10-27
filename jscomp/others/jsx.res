@@ -38,21 +38,3 @@ type component<'props> = componentLike<'props, element>
 
 /* this function exists to prepare for making `component` abstract */
 external component: componentLike<'props, element> => component<'props> = "%identity"
-
-%%private(
-  @val
-  external propsWithKey: (@as(json`{}`) _, 'props, {"key": string}) => 'props = "Object.assign"
-
-  @inline
-  let addKeyProp = (~key: option<string>=?, p: 'props): 'props =>
-    switch key {
-    | Some(key) => propsWithKey(p, {"key": key})
-    | None => p
-    }
-)
-
-let createElementWithKey = (~key=?, createElement, component, props) =>
-  createElement(component, addKeyProp(~key?, props))
-
-let createElementVariadicWithKey = (~key=?, createElementVariadic, component, props, elements) =>
-  createElementVariadic(component, addKeyProp(~key?, props), elements)

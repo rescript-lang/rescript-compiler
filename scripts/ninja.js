@@ -1057,7 +1057,10 @@ ${ninjaQuickBuidList([
       x !== "belt.ml" &&
       x !== "belt_internals.mli" &&
       x !== "node.ml" &&
-      (x.endsWith(".ml") || x.endsWith(".mli")) &&
+      (x.endsWith(".ml") ||
+        x.endsWith(".mli") ||
+        x.endsWith(".res") ||
+        x.endsWith(".resi")) &&
       !x.includes("#") &&
       !x.includes(".cppo") // we have node ..
   );
