@@ -379,7 +379,7 @@ let is_cons = function
 
 let pretty_const c = match c with
 | Const_int i -> Printf.sprintf "%d" i
-| Const_char c -> Printf.sprintf "%C" c
+| Const_char i -> Printf.sprintf "%s" (string_of_int i)
 | Const_string (s, _) -> Printf.sprintf "%S" s
 | Const_float f -> Printf.sprintf "%s" f
 | Const_int32 i -> Printf.sprintf "%ldl" i
@@ -1088,9 +1088,9 @@ let build_other ext env : Typedtree.pattern = match env with
 | ({pat_desc=(Tpat_constant (Const_char _ ))} as p,_) :: _ ->
         build_other_constant
           (function 
-          | Tpat_constant (Const_char i) -> Char.code i
+          | Tpat_constant (Const_char i) -> i
           | _ -> assert false)
-          (function i -> Tpat_constant(Const_char (Obj.magic (i:int) : char)))
+          (function i -> Tpat_constant(Const_char (i)))
           0 succ p env      
 | ({pat_desc=(Tpat_constant (Const_int32 _))} as p,_) :: _ ->
     build_other_constant

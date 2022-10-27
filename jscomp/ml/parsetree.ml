@@ -24,7 +24,7 @@ type constant =
      Suffixes [g-z][G-Z] are accepted by the parser.
      Suffixes except 'l', 'L' and 'n' are rejected by the typechecker
   *)
-  | Pconst_char of char
+  | Pconst_char of int
   (* 'c' *)
   | Pconst_string of string * string option
   (* "constant"
