@@ -1041,8 +1041,7 @@ ${ninjaQuickBuidList([
   var othersDirFiles = fs.readdirSync(othersDir, "ascii");
   var jsPrefixSourceFiles = othersDirFiles.filter(
     x =>
-      (x.startsWith("js") ||
-        x.startsWith("reactPPX4Support")) &&
+      x.startsWith("js") &&
       (x.endsWith(".ml") ||
         x.endsWith(".mli") ||
         x.endsWith(".res") ||
@@ -1054,13 +1053,11 @@ ${ninjaQuickBuidList([
   );
   var othersFiles = othersDirFiles.filter(
     x =>
-      !(x.startsWith("js") ||
-        x.startsWith("reactPPX4Support")) &&
+      !x.startsWith("js") &&
       x !== "belt.ml" &&
       x !== "belt_internals.mli" &&
       x !== "node.ml" &&
-      (x.endsWith(".ml") ||
-        x.endsWith(".mli")) &&
+      (x.endsWith(".ml") || x.endsWith(".mli")) &&
       !x.includes("#") &&
       !x.includes(".cppo") // we have node ..
   );
