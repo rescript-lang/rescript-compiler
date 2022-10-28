@@ -379,7 +379,7 @@ let is_cons = function
 
 let pretty_const c = match c with
 | Const_int i -> Printf.sprintf "%d" i
-| Const_char i -> Printf.sprintf "%s" (string_of_int i)
+| Const_char i -> Printf.sprintf "%C" (Char.unsafe_chr i)
 | Const_string (s, _) -> Printf.sprintf "%S" s
 | Const_float f -> Printf.sprintf "%s" f
 | Const_int32 i -> Printf.sprintf "%ldl" i
