@@ -62,7 +62,7 @@
 
 - Add `loading`, `aria-*` DOM element attributes in `JsxDOM.domProps`: `ariaCurrent`, `ariaInvalid`, `ariaAutocomplete`, etc.
 - Change the internal representation of props for the lowercase components to record. https://github.com/rescript-lang/syntax/pull/665
-- Add `ReactPPX4Support` module to relocate the helper functions for JSX v4 from `rescript-react`
+- Add `JsxPPXReactSupport` module to relocate the helper functions for JSX v4 from `rescript-react`
 
 # 10.1.0-alpha.2
 
