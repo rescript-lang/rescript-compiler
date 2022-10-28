@@ -159,6 +159,7 @@ lib/es6/jsx.js
 lib/es6/jsxDOM.js
 lib/es6/jsxDOMStyle.js
 lib/es6/jsxEvent.js
+lib/es6/jsxPPXReactSupport.js
 lib/es6/lazy.js
 lib/es6/lexing.js
 lib/es6/list.js
@@ -322,6 +323,7 @@ lib/js/jsx.js
 lib/js/jsxDOM.js
 lib/js/jsxDOMStyle.js
 lib/js/jsxEvent.js
+lib/js/jsxPPXReactSupport.js
 lib/js/lazy.js
 lib/js/lexing.js
 lib/js/list.js
@@ -804,6 +806,9 @@ lib/ocaml/jsxDOMStyle.ml
 lib/ocaml/jsxEvent.cmi
 lib/ocaml/jsxEvent.cmt
 lib/ocaml/jsxEvent.ml
+lib/ocaml/jsxPPXReactSupport.cmi
+lib/ocaml/jsxPPXReactSupport.cmt
+lib/ocaml/jsxPPXReactSupport.res
 lib/ocaml/lazy.cmi
 lib/ocaml/lazy.cmt
 lib/ocaml/lazy.cmti
