@@ -34,8 +34,15 @@
     }
 )
 
-let createElementWithKey = (~key=?, createElement, component, props) =>
+@module("react")
+external createElement: (Jsx.component<'props>, 'props) => Jsx.element = "createElement"
+
+@variadic @module("react")
+external createElementVariadic: (Jsx.component<'props>, 'props, array<Jsx.element>) => Jsx.element =
+  "createElement"
+
+let createElementWithKey = (~key=?, component, props) =>
   createElement(component, addKeyProp(~key?, props))
 
-let createElementVariadicWithKey = (~key=?, createElementVariadic, component, props, elements) =>
+let createElementVariadicWithKey = (~key=?, component, props, elements) =>
   createElementVariadic(component, addKeyProp(~key?, props), elements)
