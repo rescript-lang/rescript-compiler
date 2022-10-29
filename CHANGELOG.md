@@ -12,11 +12,21 @@
 
 # 10.1.0-rc.3
 
+#### :rocket: New Feature
+
+- Support the use of spread anywhere in list creation (e.g. `list{...x, 1, ...y, ...z}). https://github.com/rescript-lang/syntax/pull/692
+
+- Add support for the argument of `@react.component` to set a props type from the outside. https://github.com/rescript-lang/syntax/pull/699
+
 #### :bug: Bug Fix
 
 - Fix issue where the JSX key type is not an optional string https://github.com/rescript-lang/syntax/pull/693
 
 - Prevent inlining of async functions https://github.com/rescript-lang/rescript-compiler/issues/5754
+
+- Fix issue where the JSX fragment without children build error https://github.com/rescript-lang/syntax/pull/704
+
+- Fix issue where async as an id cannot be used with application and labelled arguments https://github.com/rescript-lang/syntax/issues/707
 
 # 10.1.0-rc.2
 

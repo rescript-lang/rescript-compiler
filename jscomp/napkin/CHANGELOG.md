@@ -24,6 +24,10 @@
 
 - Add support for empty record literal `{}` for records with only optional fields, and type definition of empty record (e.g. `type empty = {}`) https://github.com/rescript-lang/syntax/pull/632
 
+- Support the use of spread anywhere in list creation (e.g. `list{...x, 1, ...y, ...z}). https://github.com/rescript-lang/syntax/pull/692
+
+- Add support for the argument of `@react.component` to set a props type from the outside. https://github.com/rescript-lang/syntax/pull/699
+
 #### :bug: Bug Fix
 
 - Fix issue in formatting JSX spread props https://github.com/rescript-lang/syntax/pull/644
@@ -44,6 +48,9 @@
 - Fix issue where certain JSX expressions would be formatted differenctly in compiler 10.1.0-rc.1 https://github.com/rescript-lang/syntax/issues/675
 - Fix issue where printing nested pipe discards await https://github.com/rescript-lang/syntax/issues/687
 - Fix issue where the JSX key type is not an optional string https://github.com/rescript-lang/syntax/pull/693
+- Fix issue where the JSX fragment without children build error https://github.com/rescript-lang/syntax/pull/704
+- Fix issue where async as an id cannot be used with application and labelled arguments https://github.com/rescript-lang/syntax/issues/707
+
 
 #### :eyeglasses: Spec Compliance
 
