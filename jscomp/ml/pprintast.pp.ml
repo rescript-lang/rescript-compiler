@@ -191,12 +191,7 @@ let rec longident f = function
 
 let longident_loc f x = pp f "%a" longident x.txt
 
-let string_of_int_as_char i =
-  if i >= 0 && i <= 255
-  then
-    Printf.sprintf "\'%s\'" (Char.escaped (Char.unsafe_chr i))
-  else
-    Printf.sprintf "\'\\%d\'" i
+let string_of_int_as_char i = Ext_util.string_of_int_as_char i
 
 let constant f = function
   | Pconst_char i -> pp f "%s"  (string_of_int_as_char i)

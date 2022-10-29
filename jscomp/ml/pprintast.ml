@@ -192,12 +192,7 @@ let rec longident f = function
 
 let longident_loc f x = pp f "%a" longident x.txt
 
-let string_of_int_as_char i =
-  if i >= 0 && i <= 255
-  then
-    Printf.sprintf "\'%s\'" (Char.escaped (Char.unsafe_chr i))
-  else
-    Printf.sprintf "\'\\%d\'" i
+let string_of_int_as_char i = Ext_util.string_of_int_as_char i
 
 let constant f = function
   | Pconst_char i -> pp f "%s"  (string_of_int_as_char i)
@@ -777,7 +772,7 @@ and value_description ctxt f x =
   pp f "@[<hov2>%a%a@]" (core_type ctxt) x.pval_type
     (fun f x ->
       
-# 779 "ml/pprintast.pp.ml"
+# 774 "ml/pprintast.pp.ml"
       match x.pval_prim with 
       | first :: second :: _ 
         when Ext_string.first_marshal_char second
@@ -790,7 +785,7 @@ and value_description ctxt f x =
         pp f "@ =@ %a" (list constant_string) x.pval_prim
       
     
-# 794 "ml/pprintast.pp.ml"
+# 789 "ml/pprintast.pp.ml"
     ) x
 
 and extension ctxt f (s, e) =

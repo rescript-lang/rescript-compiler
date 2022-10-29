@@ -40,3 +40,10 @@ let stats_to_string
     num_buckets max_bucket_length
     (String.concat ","
        (Array.to_list (Array.map string_of_int bucket_histogram)))
+
+let string_of_int_as_char i =
+  if i >= 0 && i <= 255
+  then
+    Printf.sprintf "\'%s\'" (Char.escaped (Char.unsafe_chr i))
+  else
+    Printf.sprintf "\'\\%d\'" i
