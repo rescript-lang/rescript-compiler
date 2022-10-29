@@ -6419,6 +6419,9 @@ val power_2_above : int -> int -> int
 
 val stats_to_string : Hashtbl.statistics -> string
 
+val string_of_int_as_char : int -> string
+
+
 end = struct
 #1 "ext_util.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -6463,6 +6466,13 @@ let stats_to_string
     num_buckets max_bucket_length
     (String.concat ","
        (Array.to_list (Array.map string_of_int bucket_histogram)))
+
+let string_of_int_as_char i =
+  if i >= 0 && i <= 255
+  then
+    Printf.sprintf "\'%s\'" (Char.escaped (Char.unsafe_chr i))
+  else
+    Printf.sprintf "\'\\%d\'" i
 
 end
 module Hash_gen
