@@ -13,6 +13,13 @@
 open Format
 open Asttypes
 
+let string_of_int_as_char i =
+  if i >= 0 && i <= 255
+  then
+    Printf.sprintf "\'%s\'" (Char.escaped (Char.unsafe_chr i))
+  else
+    Printf.sprintf "\'\\%d\'" i
+
 let rec struct_const ppf (cst : Lam_constant.t) =
   match cst with
   | Const_js_true -> fprintf ppf "#true"
@@ -21,7 +28,7 @@ let rec struct_const ppf (cst : Lam_constant.t) =
   | Const_module_alias -> fprintf ppf "#alias"
   | Const_js_undefined -> fprintf ppf "#undefined"
   | Const_int { i } -> fprintf ppf "%ld" i
-  | Const_char c -> fprintf ppf "%C" (Char.unsafe_chr c)
+  | Const_char i -> fprintf ppf "%s" (string_of_int_as_char i)
   | Const_string { s } -> fprintf ppf "%S" s
   | Const_float f -> fprintf ppf "%s" f
   | Const_int64 n -> fprintf ppf "%LiL" n
