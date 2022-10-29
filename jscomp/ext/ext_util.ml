@@ -46,4 +46,4 @@ let string_of_int_as_char i =
   then
     Printf.sprintf "\'%s\'" (Char.escaped (Char.unsafe_chr i))
   else
-    Printf.sprintf "\'\\%d\'" i
+    Printf.sprintf "\'%s\'" (Ext_utf8.encode_codepoint i)

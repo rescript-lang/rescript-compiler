@@ -47,9 +47,9 @@ function f(x) {
 
 eq("File \"string_unicode_test.ml\", line 27, characters 7-14", f(/* '{' */123), 0);
 
-eq("File \"string_unicode_test.ml\", line 28, characters 7-14", f(/* '\333' */333), 2);
+eq("File \"string_unicode_test.ml\", line 28, characters 7-14", f(/* 'ō' */333), 2);
 
-eq("File \"string_unicode_test.ml\", line 29, characters 7-14", f(/* '\444' */444), 3);
+eq("File \"string_unicode_test.ml\", line 29, characters 7-14", f(/* 'Ƽ' */444), 3);
 
 Mt.from_pair_suites("string_unicode_test.ml", suites.contents);
 

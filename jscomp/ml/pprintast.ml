@@ -192,7 +192,7 @@ let rec longident f = function
 
 let longident_loc f x = pp f "%a" longident x.txt
 
-let string_of_int_as_char i = Ext_util.string_of_int_as_char i
+let string_of_int_as_char i = Ext_utf8.encode_codepoint i
 
 let constant f = function
   | Pconst_char i -> pp f "%s"  (string_of_int_as_char i)
