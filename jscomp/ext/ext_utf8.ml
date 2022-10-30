@@ -94,6 +94,7 @@ let decode_utf8_string s =
    assert false *)
 
 let encode_codepoint c =
+  (* reused from syntax/src/res_utf8.ml *)
   let h2 = 0b1100_0000 in
   let h3 = 0b1110_0000 in
   let h4 = 0b1111_0000 in

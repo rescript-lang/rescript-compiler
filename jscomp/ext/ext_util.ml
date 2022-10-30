@@ -42,8 +42,18 @@ let stats_to_string
        (Array.to_list (Array.map string_of_int bucket_histogram)))
 
 let string_of_int_as_char i =
-  if i >= 0 && i <= 255
-  then
-    Printf.sprintf "\'%s\'" (Char.escaped (Char.unsafe_chr i))
-  else
-    Printf.sprintf "\'%s\'" (Ext_utf8.encode_codepoint i)
+  let str = match Char.unsafe_chr i with
+    | '\'' -> "\\'"
+    | '\\' -> "\\\\"
+    | '\n' -> "\\n"
+    | '\t' -> "\\t"
+    | '\r' -> "\\r"
+    | '\b' -> "\\b"
+    | ' ' .. '~' as c ->
+      let s = (Bytes.create [@doesNotRaise]) 1 in
+      Bytes.unsafe_set s 0 c;
+      Bytes.unsafe_to_string s
+    | _ ->  Ext_utf8.encode_codepoint i
+  in
+  Printf.sprintf "\'%s\'" str
+
