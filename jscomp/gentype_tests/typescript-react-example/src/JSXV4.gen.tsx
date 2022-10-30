@@ -26,11 +26,7 @@ export const make: unknown = makeTypeChecked as React.ComponentType<{
 const JSXV4BS = require('./JSXV4.bs');
 
 // tslint:disable-next-line:interface-over-type-literal
-export type CompV4_props<x,y> = {
-  readonly key?: string; 
-  readonly x: x; 
-  readonly y: y
-};
+export type CompV4_props<x,y> = { readonly x: x; readonly y: y };
 
 // tslint:disable-next-line:interface-over-type-literal
 export type person = { readonly name: string; readonly age: number };
@@ -40,7 +36,6 @@ export type renderMe<a> = React.ComponentType<{ readonly randomString: string; r
 
 // tslint:disable-next-line:interface-over-type-literal
 export type props<actions,person,children,renderMe> = {
-  readonly key?: string; 
   readonly actions?: actions; 
   readonly person: person; 
   readonly children: children; 
