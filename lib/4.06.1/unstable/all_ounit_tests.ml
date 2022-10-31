@@ -6645,22 +6645,24 @@ let stats_to_string
     (String.concat ","
        (Array.to_list (Array.map string_of_int bucket_histogram)))
 
-let string_of_int_as_char i =
-  let str = match Char.unsafe_chr i with
-    | '\'' -> "\\'"
-    | '\\' -> "\\\\"
-    | '\n' -> "\\n"
-    | '\t' -> "\\t"
-    | '\r' -> "\\r"
-    | '\b' -> "\\b"
-    | ' ' .. '~' as c ->
-      let s = (Bytes.create [@doesNotRaise]) 1 in
-      Bytes.unsafe_set s 0 c;
-      Bytes.unsafe_to_string s
-    | _ ->  Ext_utf8.encode_codepoint i
-  in
-  Printf.sprintf "\'%s\'" str
-
+let string_of_int_as_char (i : int) : string =
+  if i <= 255 && i >= 0 then Format.asprintf "%C" (Char.unsafe_chr i)
+  else
+    let str =
+      match Char.unsafe_chr i with
+      | '\'' -> "\\'"
+      | '\\' -> "\\\\"
+      | '\n' -> "\\n"
+      | '\t' -> "\\t"
+      | '\r' -> "\\r"
+      | '\b' -> "\\b"
+      | ' ' .. '~' as c ->
+          let s = (Bytes.create [@doesNotRaise]) 1 in
+          Bytes.unsafe_set s 0 c;
+          Bytes.unsafe_to_string s
+      | _ -> Ext_utf8.encode_codepoint i
+    in
+    Printf.sprintf "\'%s\'" str
 
 end
 module Hash_gen
