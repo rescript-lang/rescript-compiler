@@ -50,7 +50,7 @@
 - Fix issue where the JSX key type is not an optional string https://github.com/rescript-lang/syntax/pull/693
 - Fix issue where the JSX fragment without children build error https://github.com/rescript-lang/syntax/pull/704
 - Fix issue where async as an id cannot be used with application and labelled arguments https://github.com/rescript-lang/syntax/issues/707
-
+- Treat await as almost-unary operator weaker than pipe so `await foo->bar` means `await (foo->bar)` https://github.com/rescript-lang/syntax/pull/711
 
 #### :eyeglasses: Spec Compliance
 
