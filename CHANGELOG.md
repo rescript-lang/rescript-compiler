@@ -32,7 +32,9 @@
 
 - Fix 5753 the comment for unicode char is inaccurate https://github.com/rescript-lang/syntax/pull/709
 
-- Internal changes: the payload of Pconst_char from char to int  type safety. https://github.com/rescript-lang/syntax/pull/709
+- Internal changes: the payload of Pconst_char from char to int type safety. https://github.com/rescript-lang/syntax/pull/709
+
+- Treat await as almost-unary operator weaker than pipe so `await foo->bar` means `await (foo->bar)` https://github.com/rescript-lang/syntax/pull/711
 
 # 10.1.0-rc.2
 
@@ -79,7 +81,6 @@
 - Add `loading`, `aria-*` DOM element attributes in `JsxDOM.domProps`: `ariaCurrent`, `ariaInvalid`, `ariaAutocomplete`, etc.
 - Change the internal representation of props for the lowercase components to record. https://github.com/rescript-lang/syntax/pull/665
 - Add `JsxPPXReactSupport` module to relocate the helper functions for JSX v4 from `rescript-react`
-
 
 # 10.1.0-alpha.2
 
