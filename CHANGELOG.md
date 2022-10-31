@@ -13,6 +13,8 @@
 # 10.1.0-rc.3
 
 - Fix issue where the JSX key type is not an optional string https://github.com/rescript-lang/syntax/pull/693
+- Change the payload of Pconst_char for type safety. https://github.com/rescript-lang/syntax/pull/709 https://github.com/rescript-lang/rescript-compiler/pull/5749
+
 
 # 10.1.0-rc.2
 
@@ -58,7 +60,6 @@
 
 - Add `loading`, `aria-*` DOM element attributes in `JsxDOM.domProps`: `ariaCurrent`, `ariaInvalid`, `ariaAutocomplete`, etc.
 - Change the internal representation of props for the lowercase components to record. https://github.com/rescript-lang/syntax/pull/665
-- Change the payload of Pconst_char for type safety. https://github.com/rescript-lang/syntax/pull/709
 
 # 10.1.0-alpha.2
 
