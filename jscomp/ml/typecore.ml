@@ -1009,7 +1009,7 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
         else
           or_ ~loc:gloc
             (constant ~loc:gloc (Pconst_char c1))
-            (loop (Char.chr(Char.code c1 + 1)) c2)
+            (loop (c1 + 1) c2)
       in
       let p = if c1 <= c2 then loop c1 c2 else loop c2 c1 in
       let p = {p with ppat_loc=loc} in

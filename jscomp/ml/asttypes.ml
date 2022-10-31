@@ -17,7 +17,7 @@
 
 type constant =
     Const_int of int
-  | Const_char of char
+  | Const_char of int
   | Const_string of string * string option
   | Const_float of string
   | Const_int32 of int32

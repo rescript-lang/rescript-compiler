@@ -126,7 +126,7 @@ type float_lit = { f : string } [@@unboxed]
 
 type number =
   | Float of float_lit
-  | Int of { i : int32; c : char option }
+  | Int of { i : int32; c : int option }
   | Uint of int32
 
 (* becareful when constant folding +/-,

@@ -209,7 +209,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam : Lam.t =
           |Lconst((Const_int {i})) -> 
             let i = Int32.to_int i in
             if i < String.length l_s && i >= 0  then
-              Lam.const ((Const_char l_s.[i]))
+              Lam.const ((Const_char (Char.code l_s.[i])))
             else 
               Lam.prim ~primitive ~args:[l';r'] loc 
           | _ -> 

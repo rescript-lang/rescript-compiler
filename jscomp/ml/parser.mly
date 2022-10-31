@@ -2152,7 +2152,7 @@ label:
 
 constant:
   | INT          { let (n, m) = $1 in Pconst_integer (n, m) }
-  | CHAR         { Pconst_char $1 }
+  | CHAR         { Pconst_char (Char.code $1) }
   | STRING       { let (s, d) = $1 in Pconst_string (s, d) }
   | FLOAT        { let (f, m) = $1 in Pconst_float (f, m) }
 ;

@@ -11015,7 +11015,7 @@ let yyact = [|
     let _1 = (Parsing.peek_val __caml_parser_env 0 : char) in
     Obj.repr(
 # 2155 "ml/parser.mly"
-                 ( Pconst_char _1 )
+                 ( Pconst_char (Char.code _1) )
 # 11020 "ml/parser.ml"
                : 'constant))
 ; (fun __caml_parser_env ->
