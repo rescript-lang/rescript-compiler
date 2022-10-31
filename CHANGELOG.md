@@ -58,6 +58,7 @@
 
 - Add `loading`, `aria-*` DOM element attributes in `JsxDOM.domProps`: `ariaCurrent`, `ariaInvalid`, `ariaAutocomplete`, etc.
 - Change the internal representation of props for the lowercase components to record. https://github.com/rescript-lang/syntax/pull/665
+- Change the payload of Pconst_char for type safety. https://github.com/rescript-lang/syntax/pull/709
 
 # 10.1.0-alpha.2
 
