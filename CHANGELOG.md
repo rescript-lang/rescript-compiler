@@ -14,27 +14,22 @@
 
 #### :rocket: New Feature
 
-- Support the use of spread anywhere in list creation (e.g. `list{...x, 1, ...y, ...z}). https://github.com/rescript-lang/syntax/pull/692
-
+- Support the use of spread anywhere in list creation (e.g. `list{...x, 1, ...y, ...z}`). https://github.com/rescript-lang/syntax/pull/692
 - Add support for the argument of `@react.component` to set a props type from the outside. https://github.com/rescript-lang/syntax/pull/699
 
 #### :bug: Bug Fix
 
 - Fix issue where the JSX key type is not an optional string https://github.com/rescript-lang/syntax/pull/693
-
 - Prevent inlining of async functions https://github.com/rescript-lang/rescript-compiler/issues/5754
-
-- Fix issue where the JSX fragment without children build error https://github.com/rescript-lang/syntax/pull/704
-
+- Fix build error for JSX fragment without children https://github.com/rescript-lang/syntax/pull/704
 - Fix issue where async as an id cannot be used with application and labelled arguments https://github.com/rescript-lang/syntax/issues/707
-
-- Fix 5557 the exhaustive checking for Char is incorrect during the unicode migration https://github.com/rescript-lang/rescript-compiler/pull/5749
-
-- Fix 5753 the comment for unicode char is inaccurate https://github.com/rescript-lang/syntax/pull/709
-
-- Internal changes: the payload of Pconst_char from char to int type safety. https://github.com/rescript-lang/syntax/pull/709
-
+- Fix 5557: the exhaustive checking for char is incorrect during the unicode migration https://github.com/rescript-lang/rescript-compiler/pull/5749
+- Fix 5753: the comment for unicode char is inaccurate https://github.com/rescript-lang/syntax/pull/709
 - Treat await as almost-unary operator weaker than pipe so `await foo->bar` means `await (foo->bar)` https://github.com/rescript-lang/syntax/pull/711
+
+#### :nail_care: Polish
+
+- Change payload of `Pconst_char` from `char` to `int` https://github.com/rescript-lang/syntax/pull/709
 
 # 10.1.0-rc.2
 
