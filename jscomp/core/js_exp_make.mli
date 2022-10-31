@@ -103,7 +103,7 @@ val method_ :
 
 val econd : ?comment:string -> t -> t -> t -> t
 
-val int : ?comment:string -> ?c:char -> int32 -> t
+val int : ?comment:string -> ?c:int -> int32 -> t
 
 val uint32 : ?comment:string -> int32 -> t
 
