@@ -28,6 +28,10 @@
 
 - Fix issue where async as an id cannot be used with application and labelled arguments https://github.com/rescript-lang/syntax/issues/707
 
+- Fix 5557 the exhaustive checking for Char is incorrect during the unicode migration
+
+- Fix 5753 the comment for unicode char is inaccurate
+
 # 10.1.0-rc.2
 
 #### :bug: Bug Fix

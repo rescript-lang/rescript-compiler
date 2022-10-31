@@ -59,6 +59,7 @@
 #### :nail_care Polish
 
 - Change the internal representation of props for the lowercase components to record. https://github.com/rescript-lang/syntax/pull/665
+- Change the payload of Pconst_char for type safety. https://github.com/rescript-lang/rescript-compiler/pull/5759
 
 ## ReScript 10.0
 
