@@ -36,3 +36,5 @@ val next : string -> remaining:int -> int -> int
 exception Invalid_utf8 of string
 
 val decode_utf8_string : string -> int list
+
+val encode_codepoint : int -> string

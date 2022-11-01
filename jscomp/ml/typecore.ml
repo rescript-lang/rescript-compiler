@@ -1009,7 +1009,7 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
         else
           or_ ~loc:gloc
             (constant ~loc:gloc (Pconst_char c1))
-            (loop (Char.chr(Char.code c1 + 1)) c2)
+            (loop (c1 + 1) c2)
       in
       let p = if c1 <= c2 then loop c1 c2 else loop c2 c1 in
       let p = {p with ppat_loc=loc} in
@@ -1865,44 +1865,9 @@ and type_expect ?in_function ?recarg env sexp ty_expected =
          type_expect_ ?in_function ?recarg env sexp ty_expected
       )
   in
-  checkTypeInvariant exp;
   Cmt_format.set_saved_types
   (Cmt_format.Partial_expression exp :: previous_saved_types);
   exp
-
-(* NOTE: the type invariant check should have no side effects and be efficient *)
-and checkTypeInvariant exp : unit =
-  let rec extractPromise t =
-    match t.desc with
-    | Tconstr
-        (Pdot (Pdot (Pident { name = "Js" }, "Promise", _), "t", _), [ t1 ], _)
-    | Tconstr (Pident { name = "promise" }, [ t1 ], _) ->
-      (* Improvement: check for type aliases, if it can be done efficiently *)
-        Some t1
-    | Tlink t1 | Tsubst t1 | Tpoly (t1, []) -> extractPromise t1
-    | _ -> None
-  in
-  (* Only traverse arguments of a type constructors and function types.
-     This should guarantee that the traversal finished quickly. *)
-  let rec findNestedPromise t =
-    match t.desc with
-    | Tlink t1 | Tsubst t1 | Tpoly (t1, []) -> findNestedPromise t1
-    | Tconstr (_, ts, _) -> (
-        match extractPromise t with
-        | Some t1 -> (
-            match extractPromise t1 with
-            | Some _t2 ->
-                let nestedType = Format.asprintf "%a" Printtyp.type_expr t in
-                Location.prerr_warning exp.exp_loc
-                  (Bs_nested_promise nestedType)
-            | None -> ts |> List.iter findNestedPromise)
-        | None -> ts |> List.iter findNestedPromise)
-    | Tarrow (_, t1, t2, _) ->
-        findNestedPromise t1;
-        findNestedPromise t2
-    | _ -> ()
-  in
-  findNestedPromise exp.exp_type
 
 and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
   let loc = sexp.pexp_loc in
@@ -2183,7 +2148,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
               raise(Error(loc, env, Labels_missing labels_missing));
             [||], representation
         | [], _ ->
-          if fields = [] then
+          if fields = [] && repr_opt <> None then
             [||], Record_optional_labels []
           else
             raise(Error(loc, env, Empty_record_literal)) in

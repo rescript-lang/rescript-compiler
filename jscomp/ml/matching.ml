@@ -2202,7 +2202,7 @@ let combine_constant names loc arg cst partial ctx def
         call_switcher loc fail arg min_int max_int int_lambda_list names
     | Const_char _ ->
         let int_lambda_list =
-          List.map (function Const_char c, l -> (Char.code c, l)
+          List.map (function Const_char c, l -> (c, l)
             | _ -> assert false)
             const_lambda_list in
         call_switcher loc fail arg 0 max_int int_lambda_list names

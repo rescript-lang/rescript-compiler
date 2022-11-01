@@ -45,39 +45,41 @@ let process_with_gentype cmt_file =
   if !Clflags.bs_gentype then GenTypeMain.processCmtFile cmt_file
 
 let after_parsing_sig ppf outputprefix ast =
-  Ast_config.iter_on_bs_config_sigi ast;
-  if !Js_config.modules then
-    output_deps_set !Location.input_name
-      (Ast_extract.read_parse_and_extract Mli ast);
-  (if !Js_config.binary_ast then
-   let sourcefile = !Location.input_name in
-   Binary_ast.write_ast Mli ~sourcefile
-     ~output:(outputprefix ^ Literals.suffix_iast)
-     (* to support relocate to another directory *)
-     ast);
-  if !Js_config.as_pp then (
-    output_string stdout Config.ast_intf_magic_number;
-    output_value stdout (!Location.input_name : string);
-    output_value stdout ast);
-  if !Js_config.syntax_only then Warnings.check_fatal ()
-  else
-    let modulename = module_of_filename outputprefix in
-    Lam_compile_env.reset ();
-    let initial_env = Res_compmisc.initial_env () in
-    Env.set_unit_name modulename;
-    let tsg = Typemod.transl_signature initial_env ast in
-    if !Clflags.dump_typedtree then fprintf ppf "%a@." Printtyped.interface tsg;
-    let sg = tsg.sig_type in
-    ignore (Includemod.signatures initial_env sg sg);
-    Delayed_checks.force_delayed_checks ();
-    Warnings.check_fatal ();
-    let deprecated = Builtin_attributes.deprecated_of_sig ast in
-    let sg =
-      Env.save_signature ~deprecated sg modulename (outputprefix ^ ".cmi")
-    in
-    Typemod.save_signature modulename tsg outputprefix !Location.input_name
-      initial_env sg;
-    process_with_gentype (outputprefix ^ ".cmti")
+  if !Clflags.only_parse = false then (
+    Ast_config.iter_on_bs_config_sigi ast;
+    if !Js_config.modules then
+      output_deps_set !Location.input_name
+        (Ast_extract.read_parse_and_extract Mli ast);
+    (if !Js_config.binary_ast then
+     let sourcefile = !Location.input_name in
+     Binary_ast.write_ast Mli ~sourcefile
+       ~output:(outputprefix ^ Literals.suffix_iast)
+       (* to support relocate to another directory *)
+       ast);
+    if !Js_config.as_pp then (
+      output_string stdout Config.ast_intf_magic_number;
+      output_value stdout (!Location.input_name : string);
+      output_value stdout ast);
+    if !Js_config.syntax_only then Warnings.check_fatal ()
+    else
+      let modulename = module_of_filename outputprefix in
+      Lam_compile_env.reset ();
+      let initial_env = Res_compmisc.initial_env () in
+      Env.set_unit_name modulename;
+      let tsg = Typemod.transl_signature initial_env ast in
+      if !Clflags.dump_typedtree then
+        fprintf ppf "%a@." Printtyped.interface tsg;
+      let sg = tsg.sig_type in
+      ignore (Includemod.signatures initial_env sg sg);
+      Delayed_checks.force_delayed_checks ();
+      Warnings.check_fatal ();
+      let deprecated = Builtin_attributes.deprecated_of_sig ast in
+      let sg =
+        Env.save_signature ~deprecated sg modulename (outputprefix ^ ".cmi")
+      in
+      Typemod.save_signature modulename tsg outputprefix !Location.input_name
+        initial_env sg;
+      process_with_gentype (outputprefix ^ ".cmti"))
 
 let interface ~parser ppf ?outputprefix fname =
   let outputprefix =
@@ -126,48 +128,49 @@ let no_export (rest : Parsetree.structure) : Parsetree.structure =
   | _ -> rest
 
 let after_parsing_impl ppf outputprefix (ast : Parsetree.structure) =
-  Js_config.all_module_aliases :=
-    !Clflags.assume_no_mli = Mli_non_exists && all_module_alias ast;
-  Ast_config.iter_on_bs_config_stru ast;
-  let ast = if !Js_config.no_export then no_export ast else ast in
-  if !Js_config.modules then
-    output_deps_set !Location.input_name
-      (Ast_extract.read_parse_and_extract Ml ast);
-  (if !Js_config.binary_ast then
-   let sourcefile = !Location.input_name in
-   Binary_ast.write_ast ~sourcefile Ml
-     ~output:(outputprefix ^ Literals.suffix_ast)
-     ast);
-  if !Js_config.as_pp then (
-    output_string stdout Config.ast_impl_magic_number;
-    output_value stdout (!Location.input_name : string);
-    output_value stdout ast);
-  if !Js_config.syntax_only then Warnings.check_fatal ()
-  else
-    let modulename = Ext_filename.module_name outputprefix in
-    Lam_compile_env.reset ();
-    let env = Res_compmisc.initial_env () in
-    Env.set_unit_name modulename;
-    let typedtree, coercion, _, _ =
-      Typemod.type_implementation_more
-        ?check_exists:(if !Js_config.force_cmi then None else Some ())
-        !Location.input_name outputprefix modulename env ast
-    in
-    let typedtree_coercion = (typedtree, coercion) in
-    print_if ppf Clflags.dump_typedtree Printtyped.implementation_with_coercion
-      typedtree_coercion;
-    (if !Js_config.cmi_only then Warnings.check_fatal ()
+  if !Clflags.only_parse = false then (
+    Js_config.all_module_aliases :=
+      !Clflags.assume_no_mli = Mli_non_exists && all_module_alias ast;
+    Ast_config.iter_on_bs_config_stru ast;
+    let ast = if !Js_config.no_export then no_export ast else ast in
+    if !Js_config.modules then
+      output_deps_set !Location.input_name
+        (Ast_extract.read_parse_and_extract Ml ast);
+    (if !Js_config.binary_ast then
+     let sourcefile = !Location.input_name in
+     Binary_ast.write_ast ~sourcefile Ml
+       ~output:(outputprefix ^ Literals.suffix_ast)
+       ast);
+    if !Js_config.as_pp then (
+      output_string stdout Config.ast_impl_magic_number;
+      output_value stdout (!Location.input_name : string);
+      output_value stdout ast);
+    if !Js_config.syntax_only then Warnings.check_fatal ()
     else
-      let lambda, exports =
-        Translmod.transl_implementation modulename typedtree_coercion
+      let modulename = Ext_filename.module_name outputprefix in
+      Lam_compile_env.reset ();
+      let env = Res_compmisc.initial_env () in
+      Env.set_unit_name modulename;
+      let typedtree, coercion, _, _ =
+        Typemod.type_implementation_more
+          ?check_exists:(if !Js_config.force_cmi then None else Some ())
+          !Location.input_name outputprefix modulename env ast
       in
-      let js_program =
-        print_if_pipe ppf Clflags.dump_rawlambda Printlambda.lambda lambda
-        |> Lam_compile_main.compile outputprefix exports
-      in
-      if not !Js_config.cmj_only then
-        Lam_compile_main.lambda_as_module js_program outputprefix);
-    process_with_gentype (outputprefix ^ ".cmt")
+      let typedtree_coercion = (typedtree, coercion) in
+      print_if ppf Clflags.dump_typedtree
+        Printtyped.implementation_with_coercion typedtree_coercion;
+      (if !Js_config.cmi_only then Warnings.check_fatal ()
+      else
+        let lambda, exports =
+          Translmod.transl_implementation modulename typedtree_coercion
+        in
+        let js_program =
+          print_if_pipe ppf Clflags.dump_rawlambda Printlambda.lambda lambda
+          |> Lam_compile_main.compile outputprefix exports
+        in
+        if not !Js_config.cmj_only then
+          Lam_compile_main.lambda_as_module js_program outputprefix);
+      process_with_gentype (outputprefix ^ ".cmt"))
 
 let implementation ~parser ppf ?outputprefix fname =
   let outputprefix =

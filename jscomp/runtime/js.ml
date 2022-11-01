@@ -258,6 +258,9 @@ module Re = Js_re
 module Promise = Js_promise
 (** Provide bindings to JS promise *)
 
+module Promise2 = Js_promise2
+(** Provide bindings to JS promise *)
+
 module Date = Js_date
 (** Provide bindings for JS Date *)
 

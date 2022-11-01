@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 //@ts-check
 
+var os = require("os");
 var fs = require("fs");
 var path = require("path");
 var cp = require("child_process");
@@ -585,25 +586,52 @@ function sourceToTarget(y) {
  */
 function ocamlDepForBscAsync(files, dir, depsMap) {
   return new Promise((resolve, reject) => {
+    var tmpdir = null;
+    const mlfiles = []; // convert .res files to temporary .ml files in tmpdir
+    files.forEach(f => {
+      const { name, ext } = path.parse(f);
+      if (ext === ".res" || ext === ".resi") {
+        const mlname = ext === ".resi" ? name + ".mli" : name + ".ml";
+        if (tmpdir == null) {
+          tmpdir = fs.mkdtempSync(path.join(os.tmpdir(), "resToMl"));
+        }
+        try {
+          const mlfile = path.join(tmpdir, mlname);
+          cp.execSync(`${bsc_exe} -dsource -only-parse ${f} 2>${mlfile}`, {
+            cwd: dir,
+            encoding: "ascii",
+          });
+          mlfiles.push(mlfile);
+        } catch (err) {
+          console.log(err);
+        }
+      }
+    });
+    const minusI = tmpdir == null ? "" : `-I ${tmpdir}`;
     cp.exec(
-      `ocamldep.opt -allow-approx -one-line -native ${files.join(" ")}`,
+      `ocamldep.opt -allow-approx -one-line ${minusI} -native ${files.join(
+        " "
+      )} ${mlfiles.join(" ")}`,
       {
         cwd: dir,
         encoding: "ascii",
       },
       function (error, stdout, stderr) {
+        if (tmpdir != null) {
+          fs.rmSync(tmpdir, { recursive: true, force: true });
+        }
         if (error !== null) {
           return reject(error);
         } else {
-          var pairs = stdout.split("\n").map(x => x.split(":"));
+          const pairs = stdout.split("\n").map(x => x.split(":"));
           pairs.forEach(x => {
             var deps;
-            let source = replaceCmj(x[0]);
+            let source = replaceCmj(path.basename(x[0]));
             if (x[1] !== undefined && (deps = x[1].trim())) {
               deps = deps.split(" ");
               updateDepsKVsByFile(
                 source,
-                deps.map(x => replaceCmj(x)),
+                deps.map(x => replaceCmj(path.basename(x))),
                 depsMap
               );
             }
@@ -983,7 +1011,10 @@ ${ninjaQuickBuidList([
   var jsPrefixSourceFiles = othersDirFiles.filter(
     x =>
       x.startsWith("js") &&
-      (x.endsWith(".ml") || x.endsWith(".mli")) &&
+      (x.endsWith(".ml") ||
+        x.endsWith(".mli") ||
+        x.endsWith(".res") ||
+        x.endsWith(".resi")) &&
       !x.includes(".cppo") &&
       !x.includes(".pp") &&
       !x.includes("#") &&

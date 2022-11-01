@@ -109,6 +109,8 @@
 ../lib/4.06.1/rescript.ml: ./ext/ext_string.pp.mli
 ../lib/4.06.1/rescript.ml: ./ext/ext_sys.mli
 ../lib/4.06.1/rescript.ml: ./ext/ext_sys.pp.ml
+../lib/4.06.1/rescript.ml: ./ext/ext_utf8.ml
+../lib/4.06.1/rescript.ml: ./ext/ext_utf8.mli
 ../lib/4.06.1/rescript.ml: ./ext/ext_util.ml
 ../lib/4.06.1/rescript.ml: ./ext/ext_util.mli
 ../lib/4.06.1/rescript.ml: ./ext/hash.ml

@@ -69,14 +69,13 @@ jobs:
         run: opam exec -- node scripts/ciTest.js -mocha -theme -format
 
       - name: Get artifact info
-        id: get_artifact_info
         run: node .github/workflows/get_artifact_info.js
 
       - name: "Upload artifacts: binaries"
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ steps.get_artifact_info.outputs.artifact_name }}
-          path: ${{ steps.get_artifact_info.outputs.artifact_path }}
+          name: ${{ env.artifact_name }}
+          path: ${{ env.artifact_path }}
 
       - name: "Upload artifacts: lib/ocaml"
         if: runner.os == 'Linux'
@@ -140,7 +139,6 @@ jobs:
         working-directory: packages/std
 
       - name: Get package info
-        id: get_package_info
         # For pull requests, pass the correct commit SHA explicitly as GITHUB_SHA points to the wrong commit.
         run: node .github/workflows/get_package_info.js ${{ github.event.pull_request.head.sha }}
 
@@ -149,8 +147,8 @@ jobs:
         with:
           name: npm-packages
           path: |
-            ${{ steps.get_package_info.outputs.rescript_package }}
-            ${{ steps.get_package_info.outputs.stdlib_package }}
+            ${{ env.rescript_package }}
+            ${{ env.stdlib_package }}
 
   installationTest:
     needs: package

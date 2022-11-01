@@ -42,10 +42,10 @@ val no_names_beta_reduce : Ident.t list -> Lam.t -> Lam.t list -> Lam.t
    the obvious example is parameter
  *)
 
-val propogate_beta_reduce :
+val propagate_beta_reduce :
   Lam_stats.t -> Ident.t list -> Lam.t -> Lam.t list -> Lam.t
 
-val propogate_beta_reduce_with_map :
+val propagate_beta_reduce_with_map :
   Lam_stats.t ->
   Lam_var_stats.stats Map_ident.t ->
   Ident.t list ->

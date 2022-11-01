@@ -562,7 +562,7 @@ let prim ~primitive:(prim : Lam_primitive.t) ~args loc : t =
       | ( (Pstringrefs | Pstringrefu),
           Const_string { s = a; unicode = false },
           Const_int { i = b } ) -> (
-          try Lift.char (String.get a (Int32.to_int b)) with _ -> default ())
+          try Lift.char (Char.code (String.get a (Int32.to_int b))) with _ -> default ())
       | _ -> default ())
   | _ -> (
       match prim with
@@ -633,7 +633,7 @@ let rec complete_range (sw_consts : (int * _) list) ~(start : int) ~finish =
 let rec eval_const_as_bool (v : Lam_constant.t) : bool =
   match v with
   | Const_int { i = x } -> x <> 0l
-  | Const_char x -> Char.code x <> 0
+  | Const_char x -> x <> 0
   | Const_int64 x -> x <> 0L
   | Const_js_false | Const_js_null | Const_module_alias | Const_js_undefined ->
       false

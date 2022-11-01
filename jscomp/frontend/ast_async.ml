@@ -15,7 +15,7 @@ let add_async_attribute ~async (body : Parsetree.expression) =
     {
       body with
       pexp_attributes =
-        ({ txt = "async"; loc = Location.none }, PStr [])
+        ({ txt = "res.async"; loc = Location.none }, PStr [])
         :: body.pexp_attributes;
     }
   else body

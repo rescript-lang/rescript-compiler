@@ -192,8 +192,10 @@ let rec longident f = function
 
 let longident_loc f x = pp f "%a" longident x.txt
 
+let string_of_int_as_char i = Ext_util.string_of_int_as_char i
+
 let constant f = function
-  | Pconst_char i -> pp f "%C"  i
+  | Pconst_char i -> pp f "%s"  (string_of_int_as_char i)
   | Pconst_string (i, None) -> pp f "%S" i
   | Pconst_string (i, Some delim) -> pp f "{%s|%s|%s}" delim i delim
   | Pconst_integer (i, None) -> paren (i.[0]='-') (fun f -> pp f "%s") f i
@@ -770,7 +772,7 @@ and value_description ctxt f x =
   pp f "@[<hov2>%a%a@]" (core_type ctxt) x.pval_type
     (fun f x ->
       
-# 772 "ml/pprintast.pp.ml"
+# 774 "ml/pprintast.pp.ml"
       match x.pval_prim with 
       | first :: second :: _ 
         when Ext_string.first_marshal_char second
@@ -783,7 +785,7 @@ and value_description ctxt f x =
         pp f "@ =@ %a" (list constant_string) x.pval_prim
       
     
-# 787 "ml/pprintast.pp.ml"
+# 789 "ml/pprintast.pp.ml"
     ) x
 
 and extension ctxt f (s, e) =
