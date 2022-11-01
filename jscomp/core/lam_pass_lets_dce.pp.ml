@@ -146,8 +146,8 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam : Lam.t =
         end
     | Lsequence(l1, l2) -> Lam.seq (simplif l1) (simplif l2)
 
-    | Lapply{ap_func = Lfunction{params; body};  ap_args = args; _}
-      when  Ext_list.same_length params args ->
+    | Lapply{ap_func = Lfunction ({params; body} as lfunction);  ap_args = args; _}
+      when  Ext_list.same_length params args && Lam_analysis.lfunction_can_be_beta_reduced lfunction ->
       simplif (Lam_beta_reduce.no_names_beta_reduce  params body args)
     (* | Lapply{ fn = Lfunction{function_kind = Tupled; params; body}; *)
     (*           args = [Lprim {primitive = Pmakeblock _;  args; _}]; _} *)
@@ -208,7 +208,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam : Lam.t =
           |Lconst((Const_int {i})) -> 
             let i = Int32.to_int i in
             if i < String.length l_s && i >= 0  then
-              Lam.const ((Const_char l_s.[i]))
+              Lam.const ((Const_char (Char.code l_s.[i])))
             else 
               Lam.prim ~primitive ~args:[l';r'] loc 
           | _ -> 

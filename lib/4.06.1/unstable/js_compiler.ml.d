@@ -509,6 +509,8 @@
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/parsetree.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/path.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/path.mli
+../lib/4.06.1/unstable/js_compiler.ml: ./ml/pprintast.mli
+../lib/4.06.1/unstable/js_compiler.ml: ./ml/pprintast.pp.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/predef.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/predef.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./ml/primitive.ml

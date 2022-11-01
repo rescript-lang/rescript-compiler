@@ -221,14 +221,14 @@ and compile_external_field_apply (appinfo : Lam.apply) (module_id : Ident.t)
   in
   let ap_args = appinfo.ap_args in
   match ident_info.persistent_closed_lambda with
-  | Some (Lfunction { params; body; _ })
-    when Ext_list.same_length params ap_args ->
+  | Some (Lfunction ({ params; body; _ } as lfunction))
+    when Ext_list.same_length params ap_args && Lam_analysis.lfunction_can_be_beta_reduced lfunction ->
       (* TODO: serialize it when exporting to save compile time *)
       let _, param_map =
         Lam_closure.is_closed_with_map Set_ident.empty params body
       in
       compile_lambda lambda_cxt
-        (Lam_beta_reduce.propogate_beta_reduce_with_map lambda_cxt.meta
+        (Lam_beta_reduce.propagate_beta_reduce_with_map lambda_cxt.meta
            param_map params body ap_args)
   | _ ->
       let args_code, args =

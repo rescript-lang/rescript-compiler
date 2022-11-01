@@ -29,6 +29,8 @@ val no_side_effects : Lam.t -> bool
 
 val size : Lam.t -> int
 
+val lfunction_can_be_beta_reduced : Lam.lfunction -> bool
+
 val ok_to_inline_fun_when_app : Lam.lfunction -> Lam.t list -> bool
 
 val small_inline_size : int

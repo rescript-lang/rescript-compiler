@@ -24,18 +24,72 @@
 - Made pinned dependencies transitive: if *a* is a pinned dependency of *b* and *b* is a pinned dependency of *c*, then *a* is implicitly a pinned dependency of *c*.
 - This change is only breaking if your build process assumes non-transitivity. Few if any builds do. In the typical case where you build your monorepo by running `rescript build` on each package in your repo, you don't need to make any changes. There is no way of building with the old, non-transitive behavior.
 
+# 10.1.0-rc.3
+
+#### :rocket: New Feature
+
+- Support the use of spread anywhere in list creation (e.g. `list{...x, 1, ...y, ...z}`). https://github.com/rescript-lang/syntax/pull/692
+- Add support for the argument of `@react.component` to set a props type from the outside. https://github.com/rescript-lang/syntax/pull/699
+
+#### :bug: Bug Fix
+
+- Fix issue where the JSX key type is not an optional string https://github.com/rescript-lang/syntax/pull/693
+- Prevent inlining of async functions https://github.com/rescript-lang/rescript-compiler/issues/5754
+- Fix build error for JSX fragment without children https://github.com/rescript-lang/syntax/pull/704
+- Fix issue where async as an id cannot be used with application and labelled arguments https://github.com/rescript-lang/syntax/issues/707
+- Fix 5557: the exhaustive checking for char is incorrect during the unicode migration https://github.com/rescript-lang/rescript-compiler/pull/5749
+- Fix 5753: the comment for unicode char is inaccurate https://github.com/rescript-lang/syntax/pull/709
+- Treat await as almost-unary operator weaker than pipe so `await foo->bar` means `await (foo->bar)` https://github.com/rescript-lang/syntax/pull/711
+
+#### :nail_care: Polish
+
+- Change payload of `Pconst_char` from `char` to `int` https://github.com/rescript-lang/syntax/pull/709
+
+# 10.1.0-rc.2
+
+#### :bug: Bug Fix
+
+- Fix issue with changes not being applied with React Native's Metro bundler for files with warnings https://github.com/rescript-lang/rescript-compiler/pull/5738
+- Fix emitting unary minus for floats in case of negative constants https://github.com/rescript-lang/rescript-compiler/pull/5737
+- Fix issue where a spread `...x` in non-last position would not be reported as syntax error https://github.com/rescript-lang/syntax/pull/673/
+- Fix issue where the formatter would delete `async` in a function with labelled arguments.
+- Fix several printing issues with `async` including an infinite loop https://github.com/rescript-lang/syntax/pull/680
+- Fix issue where certain JSX expressions would be formatted differenctly in compiler 10.1.0-rc.1 https://github.com/rescript-lang/syntax/issues/675
+- Fix issue where printing nested pipe discards await https://github.com/rescript-lang/syntax/issues/687
+
 # 10.1.0-rc.1
+
+#### :boom: Breaking Change
+
+- Deprecate DOM element attributes in `JsxDOM.domProps`: `begin_`, `end_`, `to_`
+  - Use `begin`, `end`, `to` instead.
+- Emit an error when a `@string` or `@int` attribute is used in a V4 component https://github.com/rescript-lang/rescript-compiler/issues/5724
 
 ## :rocket: New Feature
 
 - Add extra variants for output filename suffixes in `bsconfig.json`: `.bs.mjs` and `.bs.cjs` are allowed https://github.com/rescript-lang/rescript-compiler/pull/5631
+- Safe promises: t-first Js.Promise2 bindings, and remove warning for nested promises https://github.com/rescript-lang/rescript-compiler/pull/5709
 
 #### :bug: Bug Fix
 
-- Fix printing of comments inside empty blocks https://github.com/rescript-lang/syntax/pull/647
+- Fix issue where uncurried async functions were emitted without `async` https://github.com/rescript-lang/rescript-compiler/pull/5718
 - Fix location issue in error messages with JSX V4 where the multiple props types are defined https://github.com/rescript-lang/syntax/pull/655
 - Fix location issue in make function in JSX V4 that breaks dead code elimination https://github.com/rescript-lang/syntax/pull/660
 - Fix parsing (hence pretty printing) of expressions with underscore `_` and comments.
+- Fix printing of comments inside JSX tag https://github.com/rescript-lang/syntax/pull/664
+- Fix issue where formatter erases tail comments inside JSX tag https://github.com/rescript-lang/syntax/issues/663
+- Fix issue where the JSX prop has type annotation of the first class module https://github.com/rescript-lang/syntax/pull/666
+- Fix issue where an empty record literal {} expected to have a non-record type would type check https://github.com/rescript-lang/rescript-compiler/pull/5729
+
+#### :eyeglasses: Spec Compliance
+
+- Functions with consecutive dots now print as multiple arrow functions like in JavaScript.
+
+#### :nail_care: Polish
+
+- Add `loading`, `aria-*` DOM element attributes in `JsxDOM.domProps`: `ariaCurrent`, `ariaInvalid`, `ariaAutocomplete`, etc.
+- Change the internal representation of props for the lowercase components to record. https://github.com/rescript-lang/syntax/pull/665
+- Add `JsxPPXReactSupport` module to relocate the helper functions for JSX v4 from `rescript-react`
 
 # 10.1.0-alpha.2
 

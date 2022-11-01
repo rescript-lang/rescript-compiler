@@ -143,8 +143,8 @@ let collect_occurs lam : occ_tbl =
         List.iter (fun (_v, l) -> count bv l) bindings;
         count bv body
     (* Note there is a difference here when do beta reduction for *)
-    | Lapply { ap_func = Lfunction { params; body }; ap_args = args; _ }
-      when Ext_list.same_length params args ->
+    | Lapply { ap_func = Lfunction ({ params; body } as lfunction); ap_args = args; _ }
+      when Ext_list.same_length params args && Lam_analysis.lfunction_can_be_beta_reduced lfunction ->
         count bv (Lam_beta_reduce.no_names_beta_reduce params body args)
     (* | Lapply{fn = Lfunction{function_kind = Tupled; params; body}; *)
     (*          args = [Lprim {primitive = Pmakeblock _;  args; _}]; _} *)

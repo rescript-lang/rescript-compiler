@@ -92,3 +92,40 @@ let decode_utf8_string s =
 
 (* let verify s loc =
    assert false *)
+
+let encode_codepoint c =
+  (* reused from syntax/src/res_utf8.ml *)
+  let h2 = 0b1100_0000 in
+  let h3 = 0b1110_0000 in
+  let h4 = 0b1111_0000 in
+  let cont_mask = 0b0011_1111 in
+  if c <= 127 then (
+    let bytes = (Bytes.create [@doesNotRaise]) 1 in
+    Bytes.unsafe_set bytes 0 (Char.unsafe_chr c);
+    Bytes.unsafe_to_string bytes)
+  else if c <= 2047 then (
+    let bytes = (Bytes.create [@doesNotRaise]) 2 in
+    Bytes.unsafe_set bytes 0 (Char.unsafe_chr (h2 lor (c lsr 6)));
+    Bytes.unsafe_set bytes 1
+      (Char.unsafe_chr (0b1000_0000 lor (c land cont_mask)));
+    Bytes.unsafe_to_string bytes)
+  else if c <= 65535 then (
+    let bytes = (Bytes.create [@doesNotRaise]) 3 in
+    Bytes.unsafe_set bytes 0 (Char.unsafe_chr (h3 lor (c lsr 12)));
+    Bytes.unsafe_set bytes 1
+      (Char.unsafe_chr (0b1000_0000 lor ((c lsr 6) land cont_mask)));
+    Bytes.unsafe_set bytes 2
+      (Char.unsafe_chr (0b1000_0000 lor (c land cont_mask)));
+    Bytes.unsafe_to_string bytes)
+  else
+    (* if c <= max then *)
+    let bytes = (Bytes.create [@doesNotRaise]) 4 in
+    Bytes.unsafe_set bytes 0 (Char.unsafe_chr (h4 lor (c lsr 18)));
+    Bytes.unsafe_set bytes 1
+      (Char.unsafe_chr (0b1000_0000 lor ((c lsr 12) land cont_mask)));
+    Bytes.unsafe_set bytes 2
+      (Char.unsafe_chr (0b1000_0000 lor ((c lsr 6) land cont_mask)));
+    Bytes.unsafe_set bytes 3
+      (Char.unsafe_chr (0b1000_0000 lor (c land cont_mask)));
+    Bytes.unsafe_to_string bytes
+

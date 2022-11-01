@@ -10,6 +10,10 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
+#### :boom: Breaking Change
+
+- Emit an error when a `@string` or `@int` attribute is used in a V4 component https://github.com/rescript-lang/rescript-compiler/issues/5724
+
 #### :rocket: New Feature
 
 - Add surface syntax for `async`/`await` https://github.com/rescript-lang/syntax/pull/600
@@ -19,6 +23,10 @@
   - :boom: when V4 is activated, at most one component is allowed for each module.
 
 - Add support for empty record literal `{}` for records with only optional fields, and type definition of empty record (e.g. `type empty = {}`) https://github.com/rescript-lang/syntax/pull/632
+
+- Support the use of spread anywhere in list creation (e.g. `list{...x, 1, ...y, ...z}). https://github.com/rescript-lang/syntax/pull/692
+
+- Add support for the argument of `@react.component` to set a props type from the outside. https://github.com/rescript-lang/syntax/pull/699
 
 #### :bug: Bug Fix
 
@@ -31,6 +39,27 @@
 - Fix location issue in error messages with JSX V4 where the multiple props types are defined https://github.com/rescript-lang/syntax/pull/655
 - Fix location issue in make function in JSX V4 that breaks dead code elimination https://github.com/rescript-lang/syntax/pull/660
 - Fix parsing (hence pretty printing) of expressions with underscore `_` and comments.
+- Fix printing of comments inside JSX tag https://github.com/rescript-lang/syntax/pull/664
+- Fix issue where formatter erases tail comments inside JSX tag https://github.com/rescript-lang/syntax/issues/663
+- Fix issue where the JSX prop has type annotation of the first class module https://github.com/rescript-lang/syntax/pull/666
+- Fix issue where a spread `...x` in non-last position would not be reported as syntax error https://github.com/rescript-lang/syntax/pull/673/
+- Fix issue where the formatter would delete `async` in a function with labelled arguments.
+- Fix several printing issues with `async` including an infinite loop https://github.com/rescript-lang/syntax/pull/680
+- Fix issue where certain JSX expressions would be formatted differenctly in compiler 10.1.0-rc.1 https://github.com/rescript-lang/syntax/issues/675
+- Fix issue where printing nested pipe discards await https://github.com/rescript-lang/syntax/issues/687
+- Fix issue where the JSX key type is not an optional string https://github.com/rescript-lang/syntax/pull/693
+- Fix issue where the JSX fragment without children build error https://github.com/rescript-lang/syntax/pull/704
+- Fix issue where async as an id cannot be used with application and labelled arguments https://github.com/rescript-lang/syntax/issues/707
+- Treat await as almost-unary operator weaker than pipe so `await foo->bar` means `await (foo->bar)` https://github.com/rescript-lang/syntax/pull/711
+
+#### :eyeglasses: Spec Compliance
+
+- Functions with consecutive dots now print as multiple arrow functions like in JavaScript.
+
+#### :nail_care Polish
+
+- Change the internal representation of props for the lowercase components to record. https://github.com/rescript-lang/syntax/pull/665
+- Change the payload of Pconst_char for type safety. https://github.com/rescript-lang/rescript-compiler/pull/5759
 
 ## ReScript 10.0
 

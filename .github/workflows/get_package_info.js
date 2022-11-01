@@ -1,4 +1,5 @@
 const fs = require("fs");
+const os = require("os");
 
 const packageSpec = JSON.parse(fs.readFileSync("./package.json", "utf8"));
 const { name, version } = packageSpec;
@@ -16,5 +17,7 @@ fs.renameSync(rescriptPackagePath, rescriptArtifactName);
 fs.renameSync(stdlibPackagePath, stdlibArtifactName);
 
 // Pass information to subsequent GitHub actions
-console.log(`::set-output name=rescript_package::${rescriptArtifactName}`);
-console.log(`::set-output name=stdlib_package::${stdlibArtifactName}`);
+fs.appendFileSync(
+  process.env.GITHUB_ENV,
+  `rescript_package=${rescriptArtifactName}${os.EOL}stdlib_package=${stdlibArtifactName}${os.EOL}`
+);

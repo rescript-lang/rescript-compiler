@@ -526,7 +526,7 @@ let report_error ppf = function
   | Conflicting_inline_attributes ->
       Format.fprintf ppf "@[Conflicting ``inline'' attributes@]"
   | Fragile_pattern_in_toplevel ->
-      Format.fprintf ppf "@[Such fragile pattern not alloewed in the toplevel@]"
+      Format.fprintf ppf "@[Such fragile pattern not allowed in the toplevel@]"
 
 let () =
   Location.register_error_of_exn (function

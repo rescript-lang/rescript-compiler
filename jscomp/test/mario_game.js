@@ -803,7 +803,7 @@ function set_vel_to_speed(obj) {
   if (match) {
     obj.vel.x = speed;
   } else {
-    obj.vel.x = -speed;
+    obj.vel.x = - speed;
   }
 }
 
@@ -955,7 +955,7 @@ function update_player(player, keys, context) {
           switch (param) {
             case /* CLeft */0 :
                 if (!player.crouch) {
-                  if (player.vel.x > -player.params.speed) {
+                  if (player.vel.x > - player.params.speed) {
                     player.vel.x = player.vel.x - (0.4 - lr_acc);
                   }
                   player.dir = /* Left */0;
@@ -1108,7 +1108,7 @@ function collide_block(check_xOpt, dir, obj) {
 }
 
 function reverse_left_right(obj) {
-  obj.vel.x = -obj.vel.x;
+  obj.vel.x = - obj.vel.x;
   obj.dir = obj.dir ? /* Left */0 : /* Right */1;
 }
 
@@ -1440,7 +1440,7 @@ function render(sprite, param) {
 
 function draw_bgd(bgd, off_x) {
   render(bgd, [
-        -off_x,
+        - off_x,
         0
       ]);
   return render(bgd, [
@@ -1909,7 +1909,7 @@ function process_collision(dir, c1, c2, state) {
         o1.grounded = true;
         if (typ >= 3) {
           var r2 = evolve_enemy(o1.dir, typ, s2, o2, context);
-          o1.vel.y = -4;
+          o1.vel.y = - 4;
           o1.pos.y = o1.pos.y - 5;
           return [
                   undefined,
@@ -1917,7 +1917,7 @@ function process_collision(dir, c1, c2, state) {
                 ];
         }
         dec_health(o2);
-        o1.vel.y = -4;
+        o1.vel.y = - 4;
         if (state.multiplier === 8) {
           update_score(state, 800);
           o2.score = 800;

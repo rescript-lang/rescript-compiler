@@ -32,7 +32,7 @@
 [@@@warning "-103"]
 
 type +'a t = 'a promise
-type error
+type error = Js_promise2.error
 
 (*
 ```res prelude

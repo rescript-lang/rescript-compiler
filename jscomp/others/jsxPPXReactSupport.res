@@ -1,4 +1,4 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+/* Copyright (C) 2022- Authors of ReScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -20,20 +20,29 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-type element
-type ref
+%%private(
+  @val
+  external propsWithKey: (@as(json`{}`) _, 'props, {"key": string}) => 'props = "Object.assign"
 
-external null : element = "null" [@@bs.val]
-external float : float -> element = "%identity"
-external int : int -> element = "%identity"
-external string : string -> element = "%identity"
-external array : element array -> element = "%identity"
+  @inline
+  let addKeyProp = (~key: option<string>=?, p: 'props): 'props =>
+    switch key {
+    | Some(key) => propsWithKey(p, {"key": key})
+    | None => p
+    }
+)
 
-type ('props, 'return) componentLike = 'props -> 'return
-type 'props component = ('props, element) componentLike
+@module("react")
+external createElement: (Jsx.component<'props>, 'props) => Jsx.element = "createElement"
 
-(* this function exists to prepare for making `component` abstract *)
-external component : ('props, element) componentLike -> 'props component
-  = "%identity"
+@variadic @module("react")
+external createElementVariadic: (Jsx.component<'props>, 'props, array<Jsx.element>) => Jsx.element =
+  "createElement"
+
+let createElementWithKey = (~key=?, component, props) =>
+  createElement(component, addKeyProp(~key?, props))
+
+let createElementVariadicWithKey = (~key=?, component, props, elements) =>
+  createElementVariadic(component, addKeyProp(~key?, props), elements)
