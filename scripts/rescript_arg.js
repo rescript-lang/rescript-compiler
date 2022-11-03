@@ -26,7 +26,7 @@ function bad_arg(s) {
 /**
  * @typedef {{val : string}} stringref
  * @typedef {{val : boolean}} boolref
- * @typedef {{kind:"Unit_call",data : ()=>void } | {kind : "Unit_set", data : boolref}}unit_action
+ * @typedef {{kind:"Unit_call",data : ()=>void } | {kind : "Unit_set", data : boolref}} unit_action
  * @typedef {{kind:"String_call",data:(s : string)=>void} | {kind : "String_set",data: stringref}} string_action
  * @typedef {{kind:"Unit",data : unit_action } | {kind:"String", data: string_action}} action
  * @typedef {Array<[string,action,string]>} specs
@@ -67,9 +67,7 @@ function usage_b(b, usage, specs) {
           cur = i + 1;
         }
       }
-      if (i < specs.length - 1) {
-        b.add("\n");
-      }
+      b.add("\n");
     }
   }
 }

@@ -10,6 +10,16 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
+# 10.1.0-rc.4
+
+#### :rocket: New Feature
+
+- Support format check with `rescript format -check`. https://github.com/rescript-lang/rescript-compiler/pull/5760
+
+#### :bug: Bug Fix
+
+- Fix issue where the last line of `rescript format --help` usage was being swallowed https://github.com/rescript-lang/rescript-compiler/pull/5760
+
 # 10.1.0-rc.3
 
 #### :rocket: New Feature

@@ -5,8 +5,11 @@ var format_usage = `Usage: rescript format <options> [files]
 \`rescript format\` formats the current directory
 `;
 var child_process = require("child_process");
+var util = require("node:util");
+var asyncExecFile = util.promisify(child_process.execFile);
 var path = require("path");
 var fs = require("fs");
+var asyncFs = fs.promises;
 /**
  * @type {arg.stringref}
  */
@@ -18,6 +21,11 @@ var stdin = { val: undefined };
 var format = { val: undefined };
 
 /**
+ * @type {arg.boolref}
+ */
+var check = { val: undefined };
+
+/**
  * @type{arg.specs}
  */
 var specs = [
@@ -27,11 +35,15 @@ var specs = [
     `[.res|.resi|.ml|.mli] Read the code from stdin and print
 the formatted code to stdout in ReScript syntax`,
   ],
-  //  ml|mli
   [
     "-all",
     { kind: "Unit", data: { kind: "Unit_set", data: format } },
     "Format the whole project ",
+  ],
+  [
+    "-check",
+    { kind: "Unit", data: { kind: "Unit_set", data: check } },
+    "Check formatting only",
   ],
 ];
 var formattedStdExtensions = [".res", ".resi", ".ml", ".mli"];
@@ -56,11 +68,54 @@ async function readStdin() {
 }
 
 /**
+ * @param {string[]} files
+ * @param {string} bsc_exe
+ * @param {(x: string) => boolean} isSupportedFile
+ * @param {boolean} checkFormatting
+ */
+async function formatFiles(files, bsc_exe, isSupportedFile, checkFormatting) {
+  var incorrectlyFormattedFiles = 0;
+  try {
+    const _promises = await Promise.all(
+      files.map(async file => {
+        if (isSupportedFile(file)) {
+          const flags = checkFormatting
+            ? ["-format", file]
+            : ["-o", file, "-format", file];
+          const { stdout } = await asyncExecFile(bsc_exe, flags);
+          if (check.val) {
+            const original = await asyncFs.readFile(file, "utf-8");
+            if (original != stdout) {
+              console.error("[format check]", file);
+              incorrectlyFormattedFiles++;
+            }
+          }
+        }
+        return null;
+      })
+    );
+  } catch (err) {
+    console.error(err);
+    process.exit(2);
+  }
+  if (incorrectlyFormattedFiles > 0) {
+    if (incorrectlyFormattedFiles == 1) {
+      console.error("The file listed above needs formatting");
+    } else {
+      console.error(
+        `The ${incorrectlyFormattedFiles} files listed above need formatting`
+      );
+    }
+    process.exit(3);
+  }
+}
+
+/**
  * @param {string[]} argv
  * @param {string} rescript_exe
  * @param {string} bsc_exe
  */
-function main(argv, rescript_exe, bsc_exe) {
+async function main(argv, rescript_exe, bsc_exe) {
   var isSupportedFile = hasExtension(formattedFileExtensions);
   var isSupportedStd = hasExtension(formattedStdExtensions);
 
@@ -95,26 +150,12 @@ function main(argv, rescript_exe, bsc_exe) {
         process.exit(2);
       }
       files = output.stdout.split("\n").map(x => x.trim());
-      var hasError = false;
-      for (let arg of files) {
-        if (isSupportedFile(arg)) {
-          // console.log(`processing ${arg}`);
-          child_process.execFile(
-            bsc_exe,
-            ["-o", arg, "-format", arg],
-            (error, _stdout, stderr) => {
-              if (error !== null) {
-                console.error(stderr);
-                hasError = true;
-              }
-            }
-          );
-        }
-      }
-      if (hasError) {
+      await formatFiles(files, bsc_exe, isSupportedFile, check.val);
+    } else if (use_stdin) {
+      if (check.val) {
+        console.error("format -stdin cannot be used with -check flag");
         process.exit(2);
       }
-    } else if (use_stdin) {
       if (isSupportedStd(use_stdin)) {
         var crypto = require("crypto");
         var os = require("os");
@@ -144,7 +185,7 @@ function main(argv, rescript_exe, bsc_exe) {
           );
         })();
       } else {
-        console.error(`Unsupported exetnsion ${use_stdin}`);
+        console.error(`Unsupported extension ${use_stdin}`);
         console.error(`Supported extensions: ${formattedStdExtensions} `);
         process.exit(2);
       }
@@ -163,24 +204,7 @@ function main(argv, rescript_exe, bsc_exe) {
           process.exit(2);
         }
       }
-      var hasError = false;
-      files.forEach(file => {
-        var write = isSupportedFile(file);
-        var flags = write ? ["-o", file, "-format", file] : ["-format", file];
-        child_process.execFile(bsc_exe, flags, (error, stdout, stderr) => {
-          if (error === null) {
-            if (!write) {
-              process.stdout.write(stdout);
-            }
-          } else {
-            console.error(stderr);
-            hasError = true;
-          }
-        });
-      });
-      if (hasError) {
-        process.exit(2);
-      }
+      await formatFiles(files, bsc_exe, isSupportedFile, check.val);
     }
   } catch (e) {
     if (e instanceof arg.ArgError) {
