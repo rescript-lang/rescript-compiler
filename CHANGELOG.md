@@ -19,6 +19,7 @@
 #### :bug: Bug Fix
 
 - Fix issue where the last line of `rescript format --help` usage was being swallowed https://github.com/rescript-lang/rescript-compiler/pull/5760
+- Specialize the printing of the rhs of a record field assignment for optional values `{x: ? e}` https://github.com/rescript-lang/syntax/issues/714
 
 # 10.1.0-rc.3
 

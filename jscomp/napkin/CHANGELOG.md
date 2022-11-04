@@ -60,6 +60,7 @@
 
 - Change the internal representation of props for the lowercase components to record. https://github.com/rescript-lang/syntax/pull/665
 - Change the payload of Pconst_char for type safety. https://github.com/rescript-lang/rescript-compiler/pull/5759
+- Specialize the printing of the rhs of a record field assignment for optional values `{x: ? e}` https://github.com/rescript-lang/syntax/issues/714
 
 ## ReScript 10.0
 
