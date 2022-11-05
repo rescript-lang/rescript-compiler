@@ -72,13 +72,10 @@ function runTests() {
 
   var binDir = path.join(__dirname, "..", "jscomp", "bin");
   if (ounitTest) {
-    cp.execSync(
-      `ocamlc.opt -w "-d" -warn-error -a -I . -c js_compiler.mli js_compiler.ml`,
-      {
-        cwd: path.join(__dirname, "..", "lib", "4.06.1", "unstable"),
-        stdio: [0, 1, 2],
-      }
-    );
+    cp.execSync(`ocamlc.opt -w "-d" -warn-error -a -I . -c js_compiler.ml`, {
+      cwd: path.join(__dirname, "..", "lib", "4.06.1", "unstable"),
+      stdio: [0, 1, 2],
+    });
     // running tests for native code
     fs.copyFileSync(
       path.join(

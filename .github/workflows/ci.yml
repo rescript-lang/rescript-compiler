@@ -60,6 +60,21 @@ jobs:
         env:
           RESCRIPT_FORCE_REBUILD: 1
 
+      - name: ninja config
+        if: runner.os != 'Windows'
+        run: opam exec -- node scripts/ninja.js config
+
+      - name: ninja build
+        if: runner.os != 'Windows'
+        run: opam exec -- node scripts/ninja.js build
+
+      - name: lib rebuild
+        if: runner.os != 'Windows'
+        run: opam exec --	node scripts/install -force-lib-rebuild
+
+      - name: Check for changes in lib folder
+        run: git diff --exit-code lib/js lib/es6
+
       - name: Run tests
         if: runner.os != 'Windows'
         run: opam exec -- node scripts/ciTest.js -all
@@ -84,19 +99,14 @@ jobs:
           name: lib-ocaml
           path: lib/ocaml
 
-      # Important: the ninja build must run after the artifact upload because for some reason
-      # the bsc.exe created by the ninja build does not find the Pervasives module.
-      # So this is run here just to test the normal dev workflow, too.
-      - name: ninja config
-        if: runner.os != 'Windows'
-        run: opam exec -- node ./scripts/ninja.js config
-
-      - name: ninja build
-        if: runner.os != 'Windows'
-        run: opam exec -- node ./scripts/ninja.js build
-
-      - name: Check for changes in lib folder
-        run: git diff --exit-code lib/js lib/es6
+      - name: "Upload artifacts: JS compiler"
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v3
+        with:
+          name: js-compiler
+          path: |
+            lib/4.06.1/unstable/js_compiler.ml
+            lib/4.06.1/unstable/js_playground_compiler.ml
 
   package:
     needs: build
