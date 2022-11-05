@@ -1925,16 +1925,11 @@ function main() {
           stdio: [0, 1, 2],
         });
         break;
-      case "docs":
-        console.log(`building docs`);
-        require("./doc_gen").main();
-        break;
       case "help":
         console.log(`supported subcommands:
 [exe] config        
 [exe] build
 [exe] cleanbuild
-[exe] docs
 [exe] help
 [exe] clean
         `);
