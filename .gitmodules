@@ -1,8 +1,0 @@
-[submodule "ocaml"]
-	path = ocaml
-	url = https://github.com/rescript-lang/ocaml
-	ignore = untracked
-[submodule "syntax"]
-	path = syntax
-	url = https://github.com/rescript-lang/syntax
-	branch = master
