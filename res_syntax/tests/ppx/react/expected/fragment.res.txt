@@ -1,0 +1,19 @@
+@@jsxConfig({version: 4, mode: "classic"})
+
+let _ = ReactDOM.createElement(React.fragment, [])
+let _ = ReactDOM.createElement(React.fragment, [ReactDOM.createDOMElementVariadic("div", [])])
+let _ = ReactDOM.createElement(React.fragment, [ReactDOM.createElement(React.fragment, [])])
+let _ = React.createElement(Z.make, {})
+let _ = React.createElement(Z.make, {children: ReactDOM.createDOMElementVariadic("div", [])})
+let _ = ReactDOM.createDOMElementVariadic("div", [])
+let _ = ReactDOM.createDOMElementVariadic("div", [ReactDOM.createDOMElementVariadic("div", [])])
+
+@@jsxConfig({version: 4, mode: "automatic"})
+
+let _ = React.jsx(React.jsxFragment, {})
+let _ = React.jsx(React.jsxFragment, {children: ReactDOM.jsx("div", {})})
+let _ = React.jsx(React.jsxFragment, {children: React.jsx(React.jsxFragment, {})})
+let _ = React.jsx(Z.make, {})
+let _ = React.jsx(Z.make, {children: ReactDOM.jsx("div", {})})
+let _ = ReactDOM.jsx("div", {})
+let _ = ReactDOM.jsx("div", {children: ?ReactDOM.someElement(ReactDOM.jsx("div", {}))})

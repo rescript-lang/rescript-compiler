@@ -1,0 +1,20 @@
+(executable
+ (name benchmark)
+ (public_name bench)
+ (enabled_if
+  (or
+   (= %{system} macosx)
+   ; or one of Linuxes (see https://github.com/ocaml/ocaml/issues/10613)
+   (= %{system} linux)
+   (= %{system} linux_elf)
+   (= %{system} elf)
+   (= %{system} linux_eabihf)
+   (= %{system} linux_eabi)))
+ (flags
+  (-open Syntax -open Compilerlibs406))
+ (foreign_stubs
+  (language c)
+  (names time))
+ (libraries syntax compilerlibs406))
+
+(data_only_dirs data)

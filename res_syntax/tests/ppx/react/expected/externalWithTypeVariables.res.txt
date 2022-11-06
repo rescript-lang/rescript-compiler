@@ -1,0 +1,38 @@
+@@jsxConfig({version: 3})
+
+module V3 = {
+  @obj
+  external makeProps: (
+    ~x: t<'a>,
+    ~children: React.element,
+    ~key: string=?,
+    unit,
+  ) => {"x": t<'a>, "children": React.element} = ""
+  @module("c")
+  external make: React.componentLike<{"x": t<'a>, "children": React.element}, React.element> =
+    "component"
+}
+
+@@jsxConfig({version: 4, mode: "classic"})
+
+module V4C = {
+  type props<'x, 'children> = {
+    x: 'x,
+    children: 'children,
+  }
+
+  @module("c")
+  external make: React.componentLike<props<t<'a>, React.element>, React.element> = "component"
+}
+
+@@jsxConfig({version: 4, mode: "automatic"})
+
+module V4C = {
+  type props<'x, 'children> = {
+    x: 'x,
+    children: 'children,
+  }
+
+  @module("c")
+  external make: React.componentLike<props<t<'a>, React.element>, React.element> = "component"
+}

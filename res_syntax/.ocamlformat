@@ -1,0 +1,11 @@
+profile = default
+version = 0.22.4
+
+field-space = tight-decl
+break-cases = toplevel
+module-item-spacing = preserve
+cases-exp-indent = 2
+space-around-arrays = false
+space-around-lists = false
+space-around-records = false
+space-around-variants = false

@@ -1,0 +1,7 @@
+[@@@ns.doc " This is a module comment "]
+[@@@ns.doc " This is another module comment "]
+let z = 34[@@ns.doc " This is a doc \226\156\133 comment "]
+[@@@ns.doc {js|And this is a ns.doc module annotation|js}]
+let q = 11[@@ns.doc {js|And this is a ns.doc ✅ annotation|js}]
+type nonrec h = int[@@ns.doc
+                     " This\n  * is a multi-line\n  multiline doc comment\n  "]
