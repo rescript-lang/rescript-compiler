@@ -1569,7 +1569,6 @@ rule copy
   description = $in -> $out    
 ${buildNapkinFiles}    
 ${buildNapkinCliFiles}
-o napkin/CHANGELOG.md : copy ../res_syntax/CHANGELOG.md
 `;
   var cppoNinjaFile = "cppoVendor.ninja";
   writeFileSync(path.join(jscompDir, cppoNinjaFile), cppoNative);
