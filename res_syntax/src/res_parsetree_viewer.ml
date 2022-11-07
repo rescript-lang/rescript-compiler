@@ -136,7 +136,7 @@ let funExpr expr =
       collectNewTypes (stringLoc :: acc) returnExpr
     | returnExpr -> (List.rev acc, returnExpr)
   in
-  let rec collect n attrsBefore acc expr =
+  let rec collect attrsBefore acc expr =
     match expr with
     | {
      pexp_desc =
@@ -147,48 +147,28 @@ let funExpr expr =
            {pexp_desc = Pexp_apply _} );
     } ->
       (attrsBefore, List.rev acc, rewriteUnderscoreApply expr)
+    | {pexp_desc = Pexp_newtype (stringLoc, rest); pexp_attributes = attrs} ->
+      let stringLocs, returnExpr = collectNewTypes [stringLoc] rest in
+      let param = NewTypes {attrs; locs = stringLocs} in
+      collect attrsBefore (param :: acc) returnExpr
     | {
      pexp_desc = Pexp_fun (lbl, defaultExpr, pattern, returnExpr);
      pexp_attributes = [];
     } ->
       let parameter = Parameter {attrs = []; lbl; defaultExpr; pat = pattern} in
-      collect (n + 1) attrsBefore (parameter :: acc) returnExpr
-    | {pexp_desc = Pexp_newtype (stringLoc, rest); pexp_attributes = attrs} ->
-      let stringLocs, returnExpr = collectNewTypes [stringLoc] rest in
-      let param = NewTypes {attrs; locs = stringLocs} in
-      collect (n + 1) attrsBefore (param :: acc) returnExpr
-    | {pexp_desc = Pexp_fun _; pexp_attributes}
-      when pexp_attributes
-           |> List.exists (fun ({Location.txt}, _) ->
-                  txt = "bs" || txt = "res.async")
-           && n > 0 ->
-      (* stop here, the uncurried or async attribute always indicates the beginning of an arrow function
-       * e.g. `(. a) => (. b)` instead of `(. a, . b)` *)
-      (attrsBefore, List.rev acc, expr)
-    | {
-     pexp_desc =
-       Pexp_fun
-         (((Labelled _ | Optional _) as lbl), defaultExpr, pattern, returnExpr);
-     pexp_attributes = attrs;
-    } ->
-      (* Normally attributes are attached to the labelled argument, e.g. (@foo ~x) => ...
-         In the case of `@res.async`, pass the attribute to the outside *)
-      let attrs_async, attrs_other =
-        attrs |> List.partition (fun ({Location.txt}, _) -> txt = "res.async")
-      in
-      let parameter =
-        Parameter {attrs = attrs_other; lbl; defaultExpr; pat = pattern}
-      in
-      collect (n + 1) (attrs_async @ attrsBefore) (parameter :: acc) returnExpr
+      collect attrsBefore (parameter :: acc) returnExpr
+    (* If a fun has an attribute, then it stops here and makes currying.
+       i.e attributes outside of (...), uncurried `(.)` and `async` make currying *)
+    | {pexp_desc = Pexp_fun _} -> (attrsBefore, List.rev acc, expr)
     | expr -> (attrsBefore, List.rev acc, expr)
   in
   match expr with
   | {
-      pexp_desc = Pexp_fun (Nolabel, _defaultExpr, _pattern, _returnExpr);
+      pexp_desc = Pexp_fun (_, _defaultExpr, _pattern, _returnExpr);
       pexp_attributes = attrs;
     } as expr ->
-    collect 0 attrs [] {expr with pexp_attributes = []}
-  | expr -> collect 0 [] [] expr
+    collect attrs [] {expr with pexp_attributes = []}
+  | expr -> collect [] [] expr
 
 let processBracesAttr expr =
   match expr.pexp_attributes with

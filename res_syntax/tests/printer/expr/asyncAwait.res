@@ -113,3 +113,7 @@ let b1  = await (3+4)
 let b2 = await (3**4)
 let b3 = await (foo->bar(~arg))
 let b4 = await (foo.bar.baz)
+
+let c1 = @foo x => @bar y => x + y
+let c2 = (. x) => y => x+y
+let c3 = (. x) => @foo y => x+y

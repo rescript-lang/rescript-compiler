@@ -5,7 +5,8 @@ module V3 = {
 
   @react.component
   let make =
-    (@warning("-16") ~msg) => {
+    @warning("-16")
+    (~msg) => {
       ReactDOMRe.createDOMElementVariadic("div", [{msg->React.string}])
     }
   let make = {

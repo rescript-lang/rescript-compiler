@@ -4,10 +4,13 @@ module Bar = {
 
   @react.component
   let make =
-    (@warning("-16") ~a, @warning("-16") ~b, _) => {
-      Js.log("This function should be named `InnerModule.react$Bar`")
-      ReactDOMRe.createDOMElementVariadic("div", [])
-    }
+    @warning("-16")
+    (~a) =>
+      @warning("-16")
+      (~b, _) => {
+        Js.log("This function should be named `InnerModule.react$Bar`")
+        ReactDOMRe.createDOMElementVariadic("div", [])
+      }
   let make = {
     let \"InnerModule$Bar" = (\"Props": {"a": 'a, "b": 'b}) =>
       make(~b=\"Props"["b"], ~a=\"Props"["a"], ())
@@ -17,10 +20,13 @@ module Bar = {
 
   @react.component
   let component =
-    (@warning("-16") ~a, @warning("-16") ~b, _) => {
-      Js.log("This function should be named `InnerModule.react$Bar$component`")
-      ReactDOMRe.createDOMElementVariadic("div", [])
-    }
+    @warning("-16")
+    (~a) =>
+      @warning("-16")
+      (~b, _) => {
+        Js.log("This function should be named `InnerModule.react$Bar$component`")
+        ReactDOMRe.createDOMElementVariadic("div", [])
+      }
   let component = {
     let \"InnerModule$Bar$component" = (\"Props": {"a": 'a, "b": 'b}) =>
       component(~b=\"Props"["b"], ~a=\"Props"["a"], ())

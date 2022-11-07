@@ -1458,6 +1458,12 @@ and parseTernaryExpr leftOperand p =
 and parseEs6ArrowExpression ?context ?parameters p =
   let startPos = p.Parser.startPos in
   Parser.leaveBreadcrumb p Grammar.Es6ArrowExpr;
+  (* Parsing function parameters and attributes:
+     1. Basically, attributes outside of `(...)` are added to the function, except
+     the uncurried attribute `(.)` is added to the function. e.g. async, uncurried
+
+     2. Attributes inside `(...)` are added to the arguments regardless of whether
+     labeled, optional or nolabeled *)
   let parameters =
     match parameters with
     | Some params -> params
@@ -1531,12 +1537,6 @@ and parseParameter p =
   then
     let startPos = p.Parser.startPos in
     let uncurried = Parser.optional p Token.Dot in
-    (* two scenarios:
-     *   attrs ~lbl ...
-     *   attrs pattern
-     * Attributes before a labelled arg, indicate that it's on the whole arrow expr
-     * Otherwise it's part of the pattern
-     * *)
     let attrs = parseAttributes p in
     if p.Parser.token = Typ then (
       Parser.next p;
@@ -1554,9 +1554,9 @@ and parseParameter p =
           match p.Parser.token with
           | Comma | Equal | Rparen ->
             let loc = mkLoc startPos p.prevEndPos in
-            ( attrs,
+            ( [],
               Asttypes.Labelled lblName,
-              Ast_helper.Pat.var ~attrs:[propLocAttr] ~loc
+              Ast_helper.Pat.var ~attrs:(propLocAttr :: attrs) ~loc
                 (Location.mkloc lblName loc) )
           | Colon ->
             let lblEnd = p.prevEndPos in
@@ -1566,25 +1566,30 @@ and parseParameter p =
             let pat =
               let pat = Ast_helper.Pat.var ~loc (Location.mkloc lblName loc) in
               let loc = mkLoc startPos p.prevEndPos in
-              Ast_helper.Pat.constraint_ ~attrs:[propLocAttr] ~loc pat typ
+              Ast_helper.Pat.constraint_ ~attrs:(propLocAttr :: attrs) ~loc pat
+                typ
             in
-            (attrs, Asttypes.Labelled lblName, pat)
+            ([], Asttypes.Labelled lblName, pat)
           | As ->
             Parser.next p;
             let pat =
               let pat = parseConstrainedPattern p in
-              {pat with ppat_attributes = propLocAttr :: pat.ppat_attributes}
+              {
+                pat with
+                ppat_attributes = (propLocAttr :: attrs) @ pat.ppat_attributes;
+              }
             in
-            (attrs, Asttypes.Labelled lblName, pat)
+            ([], Asttypes.Labelled lblName, pat)
           | t ->
             Parser.err p (Diagnostics.unexpected t p.breadcrumbs);
             let loc = mkLoc startPos p.prevEndPos in
-            ( attrs,
+            ( [],
               Asttypes.Labelled lblName,
-              Ast_helper.Pat.var ~loc (Location.mkloc lblName loc) ))
+              Ast_helper.Pat.var ~attrs:(propLocAttr :: attrs) ~loc
+                (Location.mkloc lblName loc) ))
         | _ ->
           let pattern = parseConstrainedPattern p in
-          let attrs = List.concat [attrs; pattern.ppat_attributes] in
+          let attrs = List.concat [pattern.ppat_attributes; attrs] in
           ([], Asttypes.Nolabel, {pattern with ppat_attributes = attrs})
       in
       match p.Parser.token with

@@ -5,10 +5,13 @@ module V3 = {
 
   @react.component
   let make =
-    (@warning("-16") ~a, @warning("-16") ~b, _) => {
-      Js.log("This function should be named 'TopLevel.react'")
-      ReactDOMRe.createDOMElementVariadic("div", [])
-    }
+    @warning("-16")
+    (~a) =>
+      @warning("-16")
+      (~b, _) => {
+        Js.log("This function should be named 'TopLevel.react'")
+        ReactDOMRe.createDOMElementVariadic("div", [])
+      }
   let make = {
     let \"TopLevel$V3" = (\"Props": {"a": 'a, "b": 'b}) =>
       make(~b=\"Props"["b"], ~a=\"Props"["a"], ())

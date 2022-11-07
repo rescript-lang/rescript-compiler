@@ -4835,13 +4835,23 @@ and printExprFunParameters ~customLayout ~inCallback ~async ~uncurried
        attrs = [];
        lbl = Asttypes.Nolabel;
        defaultExpr = None;
-       pat = {Parsetree.ppat_desc = Ppat_var stringLoc};
+       pat =
+         {
+           Parsetree.ppat_desc = Ppat_var stringLoc;
+           Parsetree.ppat_attributes = attrs;
+         };
      };
   ]
     when not uncurried ->
     let txtDoc =
       let var = printIdentLike stringLoc.txt in
-      let var = if hasConstraint then addParens var else var in
+      let var =
+        match attrs with
+        | [] -> if hasConstraint then addParens var else var
+        | attrs ->
+          let attrs = printAttributes ~customLayout attrs cmtTbl in
+          addParens (Doc.concat [attrs; var])
+      in
       if async then addAsync var else var
     in
     printComments txtDoc cmtTbl stringLoc.loc
@@ -4932,22 +4942,25 @@ and printExpFunParameter ~customLayout parameter cmtTbl =
       match (lbl, pattern) with
       | Asttypes.Nolabel, pattern -> printPattern ~customLayout pattern cmtTbl
       | ( (Asttypes.Labelled lbl | Optional lbl),
-          {
-            ppat_desc = Ppat_var stringLoc;
-            ppat_attributes = [] | [({Location.txt = "ns.namedArgLoc"}, _)];
-          } )
+          {ppat_desc = Ppat_var stringLoc; ppat_attributes} )
         when lbl = stringLoc.txt ->
         (* ~d *)
-        Doc.concat [Doc.text "~"; printIdentLike lbl]
+        Doc.concat
+          [
+            printAttributes ~customLayout ppat_attributes cmtTbl;
+            Doc.text "~";
+            printIdentLike lbl;
+          ]
       | ( (Asttypes.Labelled lbl | Optional lbl),
           {
             ppat_desc = Ppat_constraint ({ppat_desc = Ppat_var {txt}}, typ);
-            ppat_attributes = [] | [({Location.txt = "ns.namedArgLoc"}, _)];
+            ppat_attributes;
           } )
         when lbl = txt ->
         (* ~d: e *)
         Doc.concat
           [
+            printAttributes ~customLayout ppat_attributes cmtTbl;
             Doc.text "~";
             printIdentLike lbl;
             Doc.text ": ";

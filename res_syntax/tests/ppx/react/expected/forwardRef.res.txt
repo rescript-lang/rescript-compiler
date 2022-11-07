@@ -13,25 +13,28 @@ module V3 = {
 
     @react.component
     let make =
-      (@warning("-16") ~className=?, @warning("-16") ~children) =>
+      @warning("-16")
+      (~className=?) =>
         @warning("-16")
-        ref =>
-          ReactDOMRe.createDOMElementVariadic(
-            "div",
-            [
-              ReactDOMRe.createDOMElementVariadic(
-                "input",
-                ~props=ReactDOMRe.domProps(
-                  ~type_="text",
-                  ~className?,
-                  ~ref=?{Js.Nullable.toOption(ref)->Belt.Option.map(ReactDOM.Ref.domRef)},
-                  (),
+        (~children) =>
+          @warning("-16")
+          ref =>
+            ReactDOMRe.createDOMElementVariadic(
+              "div",
+              [
+                ReactDOMRe.createDOMElementVariadic(
+                  "input",
+                  ~props=ReactDOMRe.domProps(
+                    ~type_="text",
+                    ~className?,
+                    ~ref=?{Js.Nullable.toOption(ref)->Belt.Option.map(ReactDOM.Ref.domRef)},
+                    (),
+                  ),
+                  [],
                 ),
-                [],
-              ),
-              children,
-            ],
-          )
+                children,
+              ],
+            )
     let make = React.forwardRef({
       let \"ForwardRef$V3$FancyInput" = (
         \"Props": {"className": option<'className>, "children": 'children},
