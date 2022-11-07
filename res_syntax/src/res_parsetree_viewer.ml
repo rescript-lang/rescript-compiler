@@ -157,6 +157,8 @@ let funExpr expr =
     } ->
       let parameter = Parameter {attrs = []; lbl; defaultExpr; pat = pattern} in
       collect attrsBefore (parameter :: acc) returnExpr
+    (* If a fun has an attribute, then it stops here and makes currying.
+       i.e attributes outside of (...), uncurried `(.)` and `async` make currying *)
     | {pexp_desc = Pexp_fun _} -> (attrsBefore, List.rev acc, expr)
     | expr -> (attrsBefore, List.rev acc, expr)
   in
