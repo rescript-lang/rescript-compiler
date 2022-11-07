@@ -1569,7 +1569,7 @@ and parseParameter p =
               Ast_helper.Pat.constraint_ ~attrs:(propLocAttr :: attrs) ~loc pat
                 typ
             in
-            (attrs, Asttypes.Labelled lblName, pat)
+            ([], Asttypes.Labelled lblName, pat)
           | As ->
             Parser.next p;
             let pat =
@@ -1585,7 +1585,8 @@ and parseParameter p =
             let loc = mkLoc startPos p.prevEndPos in
             ( [],
               Asttypes.Labelled lblName,
-              Ast_helper.Pat.var ~loc (Location.mkloc lblName loc) ))
+              Ast_helper.Pat.var ~attrs:(propLocAttr :: attrs) ~loc
+                (Location.mkloc lblName loc) ))
         | _ ->
           let pattern = parseConstrainedPattern p in
           let attrs = List.concat [pattern.ppat_attributes; attrs] in
