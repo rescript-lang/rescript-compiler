@@ -1,0 +1,42 @@
+@@jsxConfig({version: 3})
+
+module V3 = {
+  @obj
+  external makeProps: (
+    ~x: string,
+    ~ref: ReactDOM.Ref.currentDomRef=?,
+    ~key: string=?,
+    unit,
+  ) => {"x": string, "ref": option<ReactDOM.Ref.currentDomRef>} = ""
+  @module("componentForwardRef")
+  external make: React.componentLike<
+    {"x": string, "ref": option<ReactDOM.Ref.currentDomRef>},
+    React.element,
+  > = "component"
+}
+
+@@jsxConfig({version: 4, mode: "classic"})
+
+module V4C = {
+  type props<'x, 'ref> = {
+    x: 'x,
+    ref?: 'ref,
+  }
+
+  @module("componentForwardRef")
+  external make: React.componentLike<props<string, ReactDOM.Ref.currentDomRef>, React.element> =
+    "component"
+}
+
+@@jsxConfig({version: 4, mode: "automatic"})
+
+module V4C = {
+  type props<'x, 'ref> = {
+    x: 'x,
+    ref?: 'ref,
+  }
+
+  @module("componentForwardRef")
+  external make: React.componentLike<props<string, ReactDOM.Ref.currentDomRef>, React.element> =
+    "component"
+}

@@ -1,0 +1,12 @@
+module Device = (val
+  (((let deviceName = parseCmdline () in
+     try Hashtbl.find devices deviceName with | Not_found -> exit 2)
+  [@ns.braces ]) : (module Device)))
+let draw_using_device device_name picture =
+  ((let module Device = (val
+      (Hashtbl.find devices device_name : (module DEVICE))) in
+      Device.draw picture)
+  [@ns.braces ])
+module New_three = (val (three : (module X_int)))
+let to_int m = ((let module M = (val (m : (module X_int))) in M.x)
+  [@ns.braces ])

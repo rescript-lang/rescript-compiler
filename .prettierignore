@@ -2,7 +2,7 @@ jscomp/
 lib/
 vendor/
 ninja/
-syntax/
+res_syntax/
 _opam
 CHANGELOG.md
 README.md

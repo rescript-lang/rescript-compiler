@@ -55,7 +55,6 @@ coverage
 ppx_tools/
 vendor/ocaml/stdlib/target_camlheader
 vendor/ocaml/stdlib/target_camlheaderd
-reason/
 man/
 lib/ocaml
 *.tgz

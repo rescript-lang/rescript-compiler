@@ -1454,16 +1454,16 @@ function setSortedToStringAsNativeDeps(xs) {
  */
 function preprocessorNinjaSync() {
   var napkinFiles = fs
-    .readdirSync(path.join(jscompDir, "..", "syntax", "src"), "ascii")
+    .readdirSync(path.join(jscompDir, "..", "res_syntax", "src"), "ascii")
     .filter(x => x.endsWith(".ml") || x.endsWith(".mli"));
   var napkinCliFiles = fs
-    .readdirSync(path.join(jscompDir, "..", "syntax", "cli"), "ascii")
+    .readdirSync(path.join(jscompDir, "..", "res_syntax", "cli"), "ascii")
     .filter(x => x.endsWith(".ml") || x.endsWith(".mli"));
   var buildNapkinFiles = napkinFiles
-    .map(file => `o napkin/${file} : copy ../syntax/src/${file}`)
+    .map(file => `o napkin/${file} : copy ../res_syntax/src/${file}`)
     .join("\n");
   var buildNapkinCliFiles = napkinCliFiles
-    .map(file => `o napkin/${file} : copy ../syntax/cli/${file}`)
+    .map(file => `o napkin/${file} : copy ../res_syntax/cli/${file}`)
     .join("\n");
   var cppoNative = `
 ocamlopt = ocamlopt.opt
@@ -1569,7 +1569,7 @@ rule copy
   description = $in -> $out    
 ${buildNapkinFiles}    
 ${buildNapkinCliFiles}
-o napkin/CHANGELOG.md : copy ../syntax/CHANGELOG.md
+o napkin/CHANGELOG.md : copy ../res_syntax/CHANGELOG.md
 `;
   var cppoNinjaFile = "cppoVendor.ninja";
   writeFileSync(path.join(jscompDir, cppoNinjaFile), cppoNative);

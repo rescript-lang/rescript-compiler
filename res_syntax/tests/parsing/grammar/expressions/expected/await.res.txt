@@ -1,0 +1,18 @@
+;;((wait 2)[@res.await ])
+let maybeSomeValue =
+  match ((fetchData url)[@res.await ]) with
+  | data -> Some data
+  | exception JsError _ -> None
+let x = ((1)[@res.await ]) + 2
+let x = ((wait 1)[@res.await ]) + ((wait 2)[@res.await ])
+let () =
+  ((let response = ((fetch {js|/users.json|js})[@res.await ]) in
+    let users = ((response.json ())[@res.await ]) in
+    let comments =
+      ((((fetch {js|comment.json|js})[@res.await ]).json ())
+      [@res.await ]).(0) in
+    Js.log2 users comments)
+  [@ns.braces ])
+let () = ((delay 10)[@ns.braces ][@res.await ])
+let () = ((((delay 10)[@res.await ]); ((delay 20)[@res.await ]))
+  [@ns.braces ])

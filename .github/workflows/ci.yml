@@ -31,7 +31,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          submodules: true
+          fetch-depth: 2 # to be able to check for changes in subfolder res_syntax later
 
       - name: Use OCaml ${{matrix.ocaml_compiler}}
         uses: ocaml/setup-ocaml@v2
@@ -40,10 +40,35 @@ jobs:
           opam-pin: false
           opam-depext: false
 
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
+      - name: "Check if syntax subfolder has changed"
+        id: syntax-diff
+        shell: bash
+        run: |
+          if git diff --name-only --exit-code HEAD^ HEAD -- res_syntax; then
+            echo "syntax_status=unchanged" >> $GITHUB_ENV
+          else
+            echo "syntax_status=changed" >> $GITHUB_ENV
+          fi
+
+      - name: "Syntax: install OPAM dependencies"
+        if: env.syntax_status == 'changed'
+        run: opam install . --deps-only
+        working-directory: res_syntax
+
+      - name: "Syntax: build CLI"
+        if: env.syntax_status == 'changed'
+        run: opam exec -- dune build
+        working-directory: res_syntax
+
+      - name: "Syntax: Run roundtrip tests"
+        if: ${{ env.syntax_status == 'changed' && runner.os != 'Windows' }}
+        run: opam exec -- make roundtrip-test
+        working-directory: res_syntax
+
+      - name: "Syntax: Run tests (Windows)"
+        if: ${{ env.syntax_status == 'changed' && runner.os == 'Windows' }}
+        run: opam exec -- make test
+        working-directory: res_syntax
 
       # Required for ninja build
       - name: "Windows: Use MSVC"
@@ -54,6 +79,11 @@ jobs:
 
       - name: Build ninja
         run: node scripts/buildNinjaBinary.js
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
 
       - name: NPM install
         run: opam exec -- npm ci

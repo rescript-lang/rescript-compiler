@@ -1,0 +1,6 @@
+(executable
+ (name res_test)
+ (public_name testrunner)
+ (flags
+  (-open Syntax -open Compilerlibs406))
+ (libraries syntax compilerlibs406))
