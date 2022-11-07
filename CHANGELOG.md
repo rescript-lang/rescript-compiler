@@ -18,6 +18,7 @@
   - `npm i -g rescript@9`
   - `rescript convert <reason files>`
 - Remove obsolete built-in project templates and the "rescript init" functionality. This will be replaced by the create-rescript-app project that is maintained separately.
+- Parse the attributes of labelled argument to the pattern attributes of argument instead of function.
 
 #### :boom: Breaking Change
 
