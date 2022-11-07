@@ -46,16 +46,17 @@ let f = ((fun a -> fun b -> fun c -> ())[@bs ])
 let f = ((fun a -> fun b -> ((fun c -> fun d -> ())[@bs ]))[@bs ])
 let f = ((fun a -> ((fun b -> ((fun c -> ())[@bs ]))[@bs ]))[@bs ])
 let f =
-  ((fun ~a:((a)[@ns.namedArgLoc ]) ->
-      fun b -> ((fun ~c:((c)[@ns.namedArgLoc ]) -> fun d -> ())
-        [@bs ][@attr ]))
-  [@bs ][@attr ])
+  ((fun ~a:((a)[@ns.namedArgLoc ][@attr ]) ->
+      fun b -> ((fun ~c:((c)[@ns.namedArgLoc ][@attr ]) -> fun d -> ())
+        [@bs ]))
+  [@bs ])
 let f =
-  ((fun ~a:((a)[@ns.namedArgLoc ]) ->
+  ((fun ~a:((a)[@ns.namedArgLoc ][@attr ]) ->
       fun ((b)[@attrOnB ]) ->
-        ((fun ~c:((c)[@ns.namedArgLoc ]) -> fun ((d)[@attrOnD ]) -> ())
-        [@bs ][@attr ]))
-  [@bs ][@attr ])
+        ((fun ~c:((c)[@ns.namedArgLoc ][@attr ]) ->
+            fun ((d)[@attrOnD ]) -> ())
+        [@bs ]))
+  [@bs ])
 let f list = list ()
 ;;match colour with
   | Red when
