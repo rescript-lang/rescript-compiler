@@ -13,6 +13,7 @@
 #### :boom: Breaking Change
 
 - Emit an error when a `@string` or `@int` attribute is used in a V4 component https://github.com/rescript-lang/rescript-compiler/issues/5724
+- Parse the attributes of labelled argument to the pattern attributes of argument instead of function.
 
 #### :rocket: New Feature
 
