@@ -16,7 +16,7 @@ type nonrec t =
      ((int)[@attr2 ]) ->
        (((bool)[@attr3 ]) -> ((string)[@attr4 ]) -> unit) Js.Fn.arity2)
     Js.Fn.arity2
-external setTimeout :
-  (unit -> unit) Js.Fn.arity0 -> int -> timerId = "setTimeout"[@@bs.val ]
+external setTimeout : unit Js.Fn.arity0 -> int -> timerId = "setTimeout"
+[@@bs.val ]
 external setTimeout :
   ((unit -> unit) -> int -> timerId) Js.Fn.arity2 = "setTimeout"

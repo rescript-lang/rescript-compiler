@@ -4153,9 +4153,11 @@ and parseEs6ArrowType ~attrs p =
             in
             let _, args, _ = Res_parsetree_viewer.arrowType t in
             let arity = 1 + List.length args in
-            let arity = if isUnit && arity = 1 then 0 else arity in
             let loc = mkLoc startPos endPos in
-            let tArg = Ast_helper.Typ.arrow ~loc ~attrs argLbl typ t in
+            let arity, tArg =
+              if isUnit && arity = 1 then (0, t)
+              else (arity, Ast_helper.Typ.arrow ~loc ~attrs argLbl typ t)
+            in
             Ast_helper.Typ.constr ~loc
               {
                 txt =
