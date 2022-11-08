@@ -1922,6 +1922,11 @@ and printObjectField ~customLayout (field : Parsetree.object_field) cmtTbl =
  * type t = (~foo: string, ~bar: float=?, unit) => unit
  * i.e. ~foo: string, ~bar: float *)
 and printTypeParameter ~customLayout (attrs, lbl, typ) cmtTbl =
+  (* Converting .ml code to .res requires processing uncurried attributes *)
+  let isUncurried, attrs = ParsetreeViewer.processUncurriedAttribute attrs in
+  let uncurried =
+    if isUncurried then Doc.concat [Doc.dot; Doc.space] else Doc.nil
+  in
   let attrs = printAttributes ~customLayout attrs cmtTbl in
   let label =
     match lbl with
@@ -1947,7 +1952,11 @@ and printTypeParameter ~customLayout (attrs, lbl, typ) cmtTbl =
     Doc.group
       (Doc.concat
          [
-           attrs; label; printTypExpr ~customLayout typ cmtTbl; optionalIndicator;
+           uncurried;
+           attrs;
+           label;
+           printTypExpr ~customLayout typ cmtTbl;
+           optionalIndicator;
          ])
   in
   printComments doc cmtTbl loc
