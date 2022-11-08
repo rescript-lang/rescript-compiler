@@ -1570,6 +1570,13 @@ and printLabelDeclaration ~customLayout (ld : Parsetree.label_declaration)
 and printTypExpr ~customLayout (typExpr : Parsetree.core_type) cmtTbl =
   let printArrow ~uncurried typExpr =
     let attrsBefore, args, returnType = ParsetreeViewer.arrowType typExpr in
+    let uncurried, attrsBefore =
+      (* Converting .ml code to .res requires processing uncurried attributes *)
+      let isUncurried, attrs =
+        ParsetreeViewer.processUncurriedAttribute attrsBefore
+      in
+      (uncurried || isUncurried, attrs)
+    in
     let returnTypeNeedsParens =
       match returnType.ptyp_desc with
       | Ptyp_alias _ -> true
