@@ -421,8 +421,12 @@
 ../lib/4.06.1/unstable/js_compiler.ml: ./js_parser/flow_ast_utils.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./js_parser/flow_ast_utils.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./js_parser/flow_lexer.ml
+../lib/4.06.1/unstable/js_compiler.ml: ./js_parser/flow_lexer.mli
 ../lib/4.06.1/unstable/js_compiler.ml: ./js_parser/flow_sedlexing.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./js_parser/flow_sedlexing.mli
+../lib/4.06.1/unstable/js_compiler.ml: ./js_parser/js_id.ml
+../lib/4.06.1/unstable/js_compiler.ml: ./js_parser/js_id.mli
+../lib/4.06.1/unstable/js_compiler.ml: ./js_parser/js_id_unicode.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./js_parser/jsx_parser.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./js_parser/lex_env.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./js_parser/lex_result.ml
@@ -436,6 +440,7 @@
 ../lib/4.06.1/unstable/js_compiler.ml: ./js_parser/parser_flow.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./js_parser/pattern_cover.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./js_parser/pattern_parser.ml
+../lib/4.06.1/unstable/js_compiler.ml: ./js_parser/primitive_deriving.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./js_parser/statement_parser.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./js_parser/token.ml
 ../lib/4.06.1/unstable/js_compiler.ml: ./js_parser/type_parser.ml
