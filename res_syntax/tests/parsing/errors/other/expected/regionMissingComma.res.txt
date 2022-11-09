@@ -24,7 +24,7 @@
 
 external make :
   ?style:((ReactDOMRe.Style.t)[@ns.namedArgLoc ]) ->
-    ((?image:((bool)[@ns.namedArgLoc ]) -> React.element)[@bs ]) =
+    (?image:((bool)[@ns.namedArgLoc ]) -> React.element) Js.Fn.arity1 =
     "ModalContent"
 type nonrec 'extraInfo student =
   {

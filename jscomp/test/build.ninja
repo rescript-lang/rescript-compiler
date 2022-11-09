@@ -419,7 +419,7 @@ o test/jsoo_485_test.cmi test/jsoo_485_test.cmj : cc test/jsoo_485_test.ml | $bs
 o test/key_word_property.cmi test/key_word_property.cmj : cc test/key_word_property.ml | $bsc $stdlib runtime
 o test/key_word_property2.cmi test/key_word_property2.cmj : cc test/key_word_property2.ml | test/export_keyword.cmj $bsc $stdlib runtime
 o test/key_word_property_plus_test.cmi test/key_word_property_plus_test.cmj : cc test/key_word_property_plus_test.ml | test/global_mangles.cmj test/mt.cmj $bsc $stdlib runtime
-o test/label_uncurry.cmi test/label_uncurry.cmj : cc test/label_uncurry.ml | $bsc $stdlib runtime
+o test/label_uncurry.cmi test/label_uncurry.cmj : cc test/label_uncurry.res | $bsc $stdlib runtime
 o test/large_integer_pat.cmi test/large_integer_pat.cmj : cc test/large_integer_pat.ml | $bsc $stdlib runtime
 o test/large_record_duplication_test.cmi test/large_record_duplication_test.cmj : cc test/large_record_duplication_test.ml | test/mt.cmj $bsc $stdlib runtime
 o test/largest_int_flow.cmi test/largest_int_flow.cmj : cc test/largest_int_flow.ml | $bsc $stdlib runtime
@@ -491,8 +491,8 @@ o test/pipe_send_readline.cmi test/pipe_send_readline.cmj : cc test/pipe_send_re
 o test/pipe_syntax.cmi test/pipe_syntax.cmj : cc test/pipe_syntax.ml | $bsc $stdlib runtime
 o test/poly_empty_array.cmi test/poly_empty_array.cmj : cc test/poly_empty_array.ml | $bsc $stdlib runtime
 o test/poly_type.cmi test/poly_type.cmj : cc test/poly_type.ml | $bsc $stdlib runtime
-o test/poly_variant_test.cmj : cc_cmi test/poly_variant_test.ml | test/mt.cmj test/poly_variant_test.cmi $bsc $stdlib runtime
-o test/poly_variant_test.cmi : cc test/poly_variant_test.mli | $bsc $stdlib runtime
+o test/poly_variant_test.cmj : cc_cmi test/poly_variant_test.res | test/mt.cmj test/poly_variant_test.cmi $bsc $stdlib runtime
+o test/poly_variant_test.cmi : cc test/poly_variant_test.resi | $bsc $stdlib runtime
 o test/polymorphic_raw_test.cmi test/polymorphic_raw_test.cmj : cc test/polymorphic_raw_test.ml | test/mt.cmj $bsc $stdlib runtime
 o test/polymorphism_test.cmj : cc_cmi test/polymorphism_test.ml | test/polymorphism_test.cmi $bsc $stdlib runtime
 o test/polymorphism_test.cmi : cc test/polymorphism_test.mli | $bsc $stdlib runtime

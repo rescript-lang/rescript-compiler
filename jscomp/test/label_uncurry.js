@@ -15,7 +15,7 @@ function u1(f) {
   console.log(f(2, "x"));
 }
 
-function h(unit) {
+function h(x) {
   return 3;
 }
 
