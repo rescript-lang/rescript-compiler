@@ -1,5 +1,5 @@
 (*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,7 +9,6 @@ open Flow_ast
 open Parser_common
 open Parser_env
 open Token
-module SSet = Set.Make (String)
 
 module Enum (Parse : Parser_common.PARSER) : sig
   val declaration : env -> (Loc.t, Loc.t) Statement.t
@@ -70,7 +69,8 @@ end = struct
               NumberLiteral.value;
               raw;
               comments = Flow_ast_utils.mk_comments_opt ~leading ~trailing ();
-            } )
+            }
+          )
       else
         InvalidInit loc
     | T_STRING (loc, value, raw, octal) ->
@@ -84,7 +84,8 @@ end = struct
               StringLiteral.value;
               raw;
               comments = Flow_ast_utils.mk_comments_opt ~leading ~trailing ();
-            } )
+            }
+          )
       else
         InvalidInit loc
     | (T_TRUE | T_FALSE) as token ->
@@ -96,7 +97,8 @@ end = struct
             {
               BooleanLiteral.value = token = T_TRUE;
               comments = Flow_ast_utils.mk_comments_opt ~leading ~trailing ();
-            } )
+            }
+          )
       else
         InvalidInit loc
     | _ ->
@@ -118,7 +120,8 @@ end = struct
             member_init env
           | _ -> NoInit
         in
-        (id, init))
+        (id, init)
+    )
 
   let check_explicit_type_mismatch env ~enum_name ~explicit_type ~member_name literal_type loc =
     match explicit_type with
@@ -134,6 +137,7 @@ end = struct
     let { members; seen_names; _ } = acc in
     let (member_loc, (id, init)) = member_raw env in
     let (id_loc, { Identifier.name = member_name; _ }) = id in
+    (* if we parsed an empty name, something has gone wrong and we should abort analysis *)
     if member_name = "" then
       acc
     else (
@@ -164,25 +168,27 @@ end = struct
           (loc, Parse_error.EnumInvalidMemberInitializer { enum_name; explicit_type; member_name });
         acc
       | NoInit ->
-        (match explicit_type with
-        | Some Enum_common.Boolean ->
-          error_at
-            env
-            (member_loc, Parse_error.EnumBooleanMemberNotInitialized { enum_name; member_name });
-          acc
-        | Some Enum_common.Number ->
-          error_at
-            env
-            (member_loc, Parse_error.EnumNumberMemberNotInitialized { enum_name; member_name });
-          acc
-        | Some Enum_common.String
-        | Some Enum_common.Symbol
-        | None ->
-          let member = (member_loc, { DefaultedMember.id }) in
-          {
-            acc with
-            members = { members with defaulted_members = member :: members.defaulted_members };
-          })
+        begin
+          match explicit_type with
+          | Some Enum_common.Boolean ->
+            error_at
+              env
+              (member_loc, Parse_error.EnumBooleanMemberNotInitialized { enum_name; member_name });
+            acc
+          | Some Enum_common.Number ->
+            error_at
+              env
+              (member_loc, Parse_error.EnumNumberMemberNotInitialized { enum_name; member_name });
+            acc
+          | Some Enum_common.String
+          | Some Enum_common.Symbol
+          | None ->
+            let member = (member_loc, { DefaultedMember.id }) in
+            {
+              acc with
+              members = { members with defaulted_members = member :: members.defaulted_members };
+            }
+        end
     )
 
   let rec enum_members ~enum_name ~explicit_type acc env =
@@ -196,9 +202,11 @@ end = struct
           defaulted_members = List.rev acc.members.defaulted_members;
         },
         acc.has_unknown_members,
-        acc.internal_comments )
+        acc.internal_comments
+      )
     | T_ELLIPSIS ->
       let loc = Peek.loc env in
+      (* Internal comments may appear before the ellipsis *)
       let internal_comments = Peek.comments env in
       Eat.token env;
       (match Peek.token env with
@@ -366,50 +374,53 @@ end = struct
                   comments;
                 }
             in
-            (match (bools_len, nums_len, strs_len, defaulted_len) with
-            | (0, 0, 0, 0) -> empty ()
-            | (0, 0, _, _) ->
-              string_body
-                ~env
-                ~enum_name
-                ~is_explicit:false
-                ~has_unknown_members
-                members.string_members
-                members.defaulted_members
-                comments
-            | (_, 0, 0, _) when bools_len >= defaulted_len ->
-              List.iter
-                (fun (loc, { DefaultedMember.id = (_, { Identifier.name = member_name; _ }) }) ->
-                  error_at
-                    env
-                    (loc, Parse_error.EnumBooleanMemberNotInitialized { enum_name; member_name }))
-                members.defaulted_members;
-              BooleanBody
-                {
-                  BooleanBody.members = members.boolean_members;
-                  explicit_type = false;
-                  has_unknown_members;
-                  comments;
-                }
-            | (0, _, 0, _) when nums_len >= defaulted_len ->
-              List.iter
-                (fun (loc, { DefaultedMember.id = (_, { Identifier.name = member_name; _ }) }) ->
-                  error_at
-                    env
-                    (loc, Parse_error.EnumNumberMemberNotInitialized { enum_name; member_name }))
-                members.defaulted_members;
-              NumberBody
-                {
-                  NumberBody.members = members.number_members;
-                  explicit_type = false;
-                  has_unknown_members;
-                  comments;
-                }
-            | _ ->
-              error_at env (name_loc, Parse_error.EnumInconsistentMemberValues { enum_name });
-              empty ())
+            begin
+              match (bools_len, nums_len, strs_len, defaulted_len) with
+              | (0, 0, 0, 0) -> empty ()
+              | (0, 0, _, _) ->
+                string_body
+                  ~env
+                  ~enum_name
+                  ~is_explicit:false
+                  ~has_unknown_members
+                  members.string_members
+                  members.defaulted_members
+                  comments
+              | (_, 0, 0, _) when bools_len >= defaulted_len ->
+                List.iter
+                  (fun (loc, { DefaultedMember.id = (_, { Identifier.name = member_name; _ }) }) ->
+                    error_at
+                      env
+                      (loc, Parse_error.EnumBooleanMemberNotInitialized { enum_name; member_name }))
+                  members.defaulted_members;
+                BooleanBody
+                  {
+                    BooleanBody.members = members.boolean_members;
+                    explicit_type = false;
+                    has_unknown_members;
+                    comments;
+                  }
+              | (0, _, 0, _) when nums_len >= defaulted_len ->
+                List.iter
+                  (fun (loc, { DefaultedMember.id = (_, { Identifier.name = member_name; _ }) }) ->
+                    error_at
+                      env
+                      (loc, Parse_error.EnumNumberMemberNotInitialized { enum_name; member_name }))
+                  members.defaulted_members;
+                NumberBody
+                  {
+                    NumberBody.members = members.number_members;
+                    explicit_type = false;
+                    has_unknown_members;
+                    comments;
+                  }
+              | _ ->
+                error_at env (name_loc, Parse_error.EnumInconsistentMemberValues { enum_name });
+                empty ()
+            end
         in
-        body)
+        body
+    )
 
   let declaration =
     with_loc (fun env ->
@@ -419,5 +430,6 @@ end = struct
         let (name_loc, { Identifier.name = enum_name; _ }) = id in
         let body = enum_body ~enum_name ~name_loc env in
         let comments = Flow_ast_utils.mk_comments_opt ~leading () in
-        Statement.EnumDeclaration { id; body; comments })
+        Statement.EnumDeclaration { id; body; comments }
+    )
 end

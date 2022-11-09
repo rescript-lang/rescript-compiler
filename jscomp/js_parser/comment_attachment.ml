@@ -1,5 +1,5 @@
 (*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -25,6 +25,7 @@ let id_list_last (map : 'a -> 'a) (lst : 'a list) : 'a list =
     else
       List.rev (hd' :: tl)
 
+(* Mapper that removes all trailing comments that appear after a given position in an AST node *)
 class ['loc] trailing_comments_remover ~after_pos =
   object (this)
     inherit ['loc] Flow_ast_mapper.mapper
@@ -33,11 +34,7 @@ class ['loc] trailing_comments_remover ~after_pos =
       let open Syntax in
       let { trailing; _ } = comments in
       let trailing' =
-        List.filter
-          (fun (loc, _) ->
-            let open Loc in
-            pos_cmp loc.start after_pos < 0)
-          trailing
+        List.filter (fun (loc, _) -> Loc.(pos_cmp loc.start after_pos < 0)) trailing
       in
       if List.length trailing = List.length trailing' then
         comments
@@ -93,13 +90,13 @@ class ['loc] trailing_comments_remover ~after_pos =
       let open Ast.Expression.ArgList in
       let (loc, { arguments; comments }) = arg_list in
       id this#syntax_opt comments arg_list (fun comments' ->
-          (loc, { arguments; comments = comments' }))
+          (loc, { arguments; comments = comments' })
+      )
 
     method! call_type_args targs =
       let open Ast.Expression.CallTypeArgs in
       let (loc, { arguments; comments }) = targs in
-      id this#syntax_opt comments targs (fun comments' ->
-          (loc, { arguments; comments = comments' }))
+      id this#syntax_opt comments targs (fun comments' -> (loc, { arguments; comments = comments' }))
 
     method! class_ _loc cls =
       let open Ast.Class in
@@ -115,7 +112,8 @@ class ['loc] trailing_comments_remover ~after_pos =
       let open Ast.Class.Body in
       let (loc, { body = _body; comments }) = body in
       id this#syntax_opt comments body (fun comments' ->
-          (loc, { body = _body; comments = comments' }))
+          (loc, { body = _body; comments = comments' })
+      )
 
     method! class_extends _loc extends =
       let open Ast.Class.Extends in
@@ -129,7 +127,8 @@ class ['loc] trailing_comments_remover ~after_pos =
       let open Ast.Class.Implements in
       let (loc, { interfaces; comments }) = implements in
       id (id_list_last this#class_implements_interface) interfaces implements (fun interfaces' ->
-          (loc, { interfaces = interfaces'; comments }))
+          (loc, { interfaces = interfaces'; comments })
+      )
 
     method! class_implements_interface interface =
       let open Ast.Class.Implements.Interface in
@@ -138,7 +137,8 @@ class ['loc] trailing_comments_remover ~after_pos =
         id this#identifier id_ interface (fun id' -> (loc, { id = id'; targs }))
       else
         id (map_opt this#type_args) targs interface (fun targs' ->
-            (loc, { id = id_; targs = targs' }))
+            (loc, { id = id_; targs = targs' })
+        )
 
     method! computed_key key =
       let open Ast.ComputedKey in
@@ -169,7 +169,8 @@ class ['loc] trailing_comments_remover ~after_pos =
       let open Ast.Function.Params in
       let { comments; _ } = params in
       id this#syntax_opt comments (loc, params) (fun comments' ->
-          (loc, { params with comments = comments' }))
+          (loc, { params with comments = comments' })
+      )
 
     method! function_type _loc func =
       let open Ast.Type.Function in
@@ -245,18 +246,21 @@ class ['loc] trailing_comments_remover ~after_pos =
       let { callee; targs; arguments; comments } = expr in
       let comments' = this#syntax_opt comments in
       match (targs, arguments) with
+      (* new Callee<T>() *)
       | (_, Some _) ->
         let arguments' = map_opt this#call_arguments arguments in
         if arguments == arguments' && comments == comments' then
           expr
         else
           { expr with arguments = arguments'; comments = comments' }
+      (* new Callee<T> *)
       | (Some _, _) ->
         let targs' = map_opt this#call_type_args targs in
         if targs == targs' && comments == comments' then
           expr
         else
           { expr with targs = targs'; comments = comments' }
+      (* new Callee *)
       | (None, None) ->
         let callee' = this#expression callee in
         if callee == callee' && comments == comments' then
@@ -338,7 +342,8 @@ class ['loc] trailing_comments_remover ~after_pos =
       match init with
       | None ->
         id (this#variable_declarator_pattern ~kind) ident decl (fun ident' ->
-            (loc, { id = ident'; init }))
+            (loc, { id = ident'; init })
+        )
       | Some init ->
         id this#expression init decl (fun init' -> (loc, { id = ident; init = Some init' }))
   end
@@ -348,6 +353,8 @@ type trailing_and_remover_result = {
   remove_trailing: 'a. 'a -> (Loc.t trailing_comments_remover -> 'a -> 'a) -> 'a;
 }
 
+(* Returns a remover function which removes comments beginning after the previous token.
+   No trailing comments are returned, since all comments since the last loc should be removed. *)
 let trailing_and_remover_after_last_loc : Parser_env.env -> trailing_and_remover_result =
  fun env ->
   let open Loc in
@@ -369,6 +376,8 @@ let trailing_and_remover_after_last_loc : Parser_env.env -> trailing_and_remover
         | Some remover -> f remover node);
   }
 
+(* Consumes and returns comments on the same line as the previous token. Also returns a remover
+   function which can be used to remove comments beginning after the previous token's line. *)
 let trailing_and_remover_after_last_line : Parser_env.env -> trailing_and_remover_result =
  fun env ->
   let open Loc in
@@ -448,7 +457,8 @@ let generic_type_remove_trailing env ty =
 let generic_type_list_remove_trailing env extends =
   let { remove_trailing; _ } = trailing_and_remover env in
   remove_trailing extends (fun remover extends ->
-      id_list_last (map_loc remover#generic_type) extends)
+      id_list_last (map_loc remover#generic_type) extends
+  )
 
 let class_implements_remove_trailing env implements =
   let { remove_trailing; _ } = trailing_and_remover env in
@@ -537,8 +547,12 @@ let statement_add_comments
       VariableDeclaration { s with VariableDeclaration.comments = merge_comments comments }
     | While ({ While.comments; _ } as s) ->
       While { s with While.comments = merge_comments comments }
-    | With ({ With.comments; _ } as s) -> With { s with With.comments = merge_comments comments } )
+    | With ({ With.comments; _ } as s) -> With { s with With.comments = merge_comments comments }
+  )
 
+(* Collects the first leading and last trailing comment on an AST node or its children.
+   The first leading comment is the first attached comment that begins before the given node's loc,
+   and the last trailing comment is the last attached comment that begins after the given node's loc. *)
 class ['loc] comment_bounds_collector ~loc =
   object (this)
     inherit ['loc] Flow_ast_mapper.mapper
@@ -584,11 +598,14 @@ class ['loc] comment_bounds_collector ~loc =
       block
   end
 
+(* Given an AST node and a function to collect all its comments, return the first leading
+   and last trailing comment on the node. *)
 let comment_bounds loc node f =
   let collector = new comment_bounds_collector ~loc in
   ignore (f collector node);
   collector#comment_bounds
 
+(* Expand node's loc to include its attached comments *)
 let expand_loc_with_comment_bounds loc (first_leading, last_trailing) =
   let open Loc in
   let start =
@@ -603,6 +620,7 @@ let expand_loc_with_comment_bounds loc (first_leading, last_trailing) =
   in
   btwn start _end
 
+(* Remove the trailing comment bound if it is a line comment *)
 let comment_bounds_without_trailing_line_comment (leading, trailing) =
   match trailing with
   | Some (_, { Ast.Comment.kind = Ast.Comment.Line; _ }) -> (leading, None)
@@ -611,6 +629,7 @@ let comment_bounds_without_trailing_line_comment (leading, trailing) =
 let collect_without_trailing_line_comment collector =
   comment_bounds_without_trailing_line_comment collector#comment_bounds
 
+(* Return the first leading and last trailing comment of a statement *)
 let statement_comment_bounds ((loc, _) as stmt : (Loc.t, Loc.t) Statement.t) :
     Loc.t Comment.t option * Loc.t Comment.t option =
   let collector = new comment_bounds_collector ~loc in

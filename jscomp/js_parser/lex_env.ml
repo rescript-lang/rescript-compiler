@@ -1,5 +1,5 @@
 (*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,6 +7,7 @@
 
 module Sedlexing = Flow_sedlexing
 
+(* bol = Beginning Of Line *)
 type bol = {
   line: int;
   offset: int;
@@ -26,6 +27,8 @@ type t = {
 
 let empty_lex_state = { lex_errors_acc = [] }
 
+(* The lex_last_loc should initially be set to the beginning of the first line, so that
+   comments on the first line are reported as not being on a new line. *)
 let initial_last_loc =
   { Loc.source = None; start = { Loc.line = 1; column = 0 }; _end = { Loc.line = 1; column = 0 } }
 
@@ -40,6 +43,8 @@ let new_lex_env lex_source lex_lb ~enable_types_in_comments =
     lex_last_loc = initial_last_loc;
   }
 
+(* copy all the mutable things so that we have a distinct lexing environment
+   that does not interfere with ordinary lexer operations *)
 let clone env =
   let lex_lb = Sedlexing.lexbuf_clone env.lex_lb in
   { env with lex_lb }
@@ -64,6 +69,7 @@ let in_comment_syntax is_in env =
   else
     env
 
+(* TODO *)
 let debug_string_of_lexbuf _lb = ""
 
 let debug_string_of_lex_env (env : t) =

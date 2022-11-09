@@ -1,5 +1,5 @@
 (*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,7 +11,6 @@ open Parser_common
 open Parser_env
 open Flow_ast
 open Comment_attachment
-module SSet = Set.Make (String)
 
 module type DECLARATION = sig
   val async : env -> bool * Loc.t Comment.t list
@@ -23,14 +22,16 @@ module type DECLARATION = sig
   val function_params : await:bool -> yield:bool -> env -> (Loc.t, Loc.t) Ast.Function.Params.t
 
   val function_body :
-    env -> async:bool -> generator:bool -> expression:bool -> (Loc.t, Loc.t) Function.body * bool
-
-  val is_simple_function_params : (Loc.t, Loc.t) Ast.Function.Params.t -> bool
+    env ->
+    async:bool ->
+    generator:bool ->
+    expression:bool ->
+    simple_params:bool ->
+    (Loc.t, Loc.t) Function.body * bool
 
   val strict_post_check :
     env ->
-    strict:bool ->
-    simple:bool ->
+    contains_use_strict:bool ->
     (Loc.t, Loc.t) Identifier.t option ->
     (Loc.t, Loc.t) Ast.Function.Params.t ->
     unit
@@ -63,26 +64,28 @@ module Declaration (Parse : Parser_common.PARSER) (Type : Type_parser.TYPE) : DE
 
   let check_param =
     let rec pattern ((env, _) as check_env) (loc, p) =
-      let open Pattern in
-      match p with
-      | Object o -> _object check_env o
-      | Array arr -> _array check_env arr
-      | Identifier id -> identifier_pattern check_env id
-      | Expression _ ->
-        error_at env (loc, Parse_error.ExpectedPatternFoundExpression);
-        check_env
+      Pattern.(
+        match p with
+        | Object o -> _object check_env o
+        | Array arr -> _array check_env arr
+        | Identifier id -> identifier_pattern check_env id
+        | Expression _ ->
+          error_at env (loc, Parse_error.ExpectedPatternFoundExpression);
+          check_env
+      )
     and _object check_env o = List.fold_left object_property check_env o.Pattern.Object.properties
     and object_property check_env =
       let open Pattern.Object in
       function
       | Property (_, property) ->
-        let open Property in
-        let check_env =
-          match property.key with
-          | Identifier id -> identifier_no_dupe_check check_env id
-          | _ -> check_env
-        in
-        pattern check_env property.pattern
+        Property.(
+          let check_env =
+            match property.key with
+            | Identifier id -> identifier_no_dupe_check check_env id
+            | _ -> check_env
+          in
+          pattern check_env property.pattern
+        )
       | RestElement (_, { Pattern.RestElement.argument; comments = _ }) ->
         pattern check_env argument
     and _array check_env arr = List.fold_left array_element check_env arr.Pattern.Array.elements
@@ -106,15 +109,21 @@ module Declaration (Parse : Parser_common.PARSER) (Type : Type_parser.TYPE) : DE
     in
     pattern
 
-  let strict_post_check
-      env ~strict ~simple id (_, { Ast.Function.Params.params; rest; this_ = _; comments = _ }) =
-    if strict || not simple then (
-      let env =
-        if strict then
-          env |> with_strict (not (Parser_env.in_strict_mode env))
-        else
-          env
-      in
+  let strict_post_check env ~contains_use_strict id params =
+    let strict_mode = Parser_env.in_strict_mode env in
+    let simple = is_simple_parameter_list params in
+    let (_, { Ast.Function.Params.params; rest; this_ = _; comments = _ }) = params in
+    (* If we were already in strict mode and therefore already threw strict
+       errors, we want to do these checks outside of strict mode. If we
+       were in non-strict mode but the function contains "use strict", then
+       we want to do these checks in strict mode *)
+    let env =
+      if strict_mode then
+        with_strict false env
+      else
+        with_strict contains_use_strict env
+    in
+    if contains_use_strict || strict_mode || not simple then (
       (match id with
       | Some (loc, { Identifier.name; comments = _ }) ->
         if is_restricted name then strict_error_at env (loc, Parse_error.StrictFunctionName);
@@ -144,7 +153,8 @@ module Declaration (Parse : Parser_common.PARSER) (Type : Type_parser.TYPE) : DE
             ) else
               None
           in
-          { Function.Param.argument; default })
+          { Function.Param.argument; default }
+      )
     and param_list env acc =
       match Peek.token env with
       | (T_EOF | T_RPAREN | T_ELLIPSIS) as t ->
@@ -163,7 +173,8 @@ module Declaration (Parse : Parser_common.PARSER) (Type : Type_parser.TYPE) : DE
                 {
                   Function.RestParam.argument = id;
                   comments = Flow_ast_utils.mk_comments_opt ~leading ();
-                } )
+                }
+              )
           else
             None
         in
@@ -181,10 +192,10 @@ module Declaration (Parse : Parser_common.PARSER) (Type : Type_parser.TYPE) : DE
           with_loc
             (fun env ->
               Expect.token env T_THIS;
-              if Peek.token env <> T_COLON then (
+              if Peek.token env <> T_COLON then begin
                 error env Parse_error.ThisParamAnnotationRequired;
                 None
-              ) else
+              end else
                 Some (Type.annotation env))
             env
         in
@@ -197,7 +208,8 @@ module Declaration (Parse : Parser_common.PARSER) (Type : Type_parser.TYPE) : DE
               {
                 Ast.Function.ThisParam.annot;
                 comments = Flow_ast_utils.mk_comments_opt ~leading ();
-              } )
+              }
+            )
       ) else
         None
     in
@@ -221,12 +233,13 @@ module Declaration (Parse : Parser_common.PARSER) (Type : Type_parser.TYPE) : DE
             rest;
             comments = Flow_ast_utils.mk_comments_with_internal_opt ~leading ~trailing ~internal ();
             this_;
-          })
+          }
+      )
 
-  let function_body env ~async ~generator ~expression =
-    let env = enter_function env ~async ~generator in
-    let (loc, block, strict) = Parse.function_block_body env ~expression in
-    (Function.BodyBlock (loc, block), strict)
+  let function_body env ~async ~generator ~expression ~simple_params =
+    let env = enter_function env ~async ~generator ~simple_params in
+    let (body_block, contains_use_strict) = Parse.function_block_body env ~expression in
+    (Function.BodyBlock body_block, contains_use_strict)
 
   let variance env is_async is_generator =
     let loc = Peek.loc env in
@@ -247,7 +260,8 @@ module Declaration (Parse : Parser_common.PARSER) (Type : Type_parser.TYPE) : DE
             {
               Variance.kind = Variance.Minus;
               comments = Flow_ast_utils.mk_comments_opt ~leading ();
-            } )
+            }
+          )
       | _ -> None
     in
     match variance with
@@ -264,6 +278,8 @@ module Declaration (Parse : Parser_common.PARSER) (Type : Type_parser.TYPE) : DE
     ) else
       (false, [])
 
+  (* Returns true and consumes a token if the token is `async` and the token after it is on
+     the same line (see https://tc39.github.io/ecma262/#sec-async-function-definitions) *)
   let async env =
     if Peek.token env = T_ASYNC && not (Peek.ith_is_line_terminator ~i:1 env) then
       let leading = Peek.comments env in
@@ -271,14 +287,6 @@ module Declaration (Parse : Parser_common.PARSER) (Type : Type_parser.TYPE) : DE
       (true, leading)
     else
       (false, [])
-
-  let is_simple_function_params =
-    let is_simple_param = function
-      | (_, { Ast.Function.Param.argument = (_, Pattern.Identifier _); default = None }) -> true
-      | _ -> false
-    in
-    fun (_, { Ast.Function.Params.params; rest; comments = _; this_ = _ }) ->
-      rest = None && List.for_all is_simple_param params
 
   let _function =
     with_loc (fun env ->
@@ -291,7 +299,7 @@ module Declaration (Parse : Parser_common.PARSER) (Type : Type_parser.TYPE) : DE
               let (generator, leading_generator) = generator env in
               let leading = List.concat [leading_async; leading_function; leading_generator] in
               let (tparams, id) =
-                match (in_export env, Peek.token env) with
+                match (in_export_default env, Peek.token env) with
                 | (true, T_LPAREN) -> (None, None)
                 | (true, T_LESS_THAN) ->
                   let tparams = type_params_remove_trailing env (Type.type_params env) in
@@ -309,9 +317,15 @@ module Declaration (Parse : Parser_common.PARSER) (Type : Type_parser.TYPE) : DE
                   (tparams, id)
                 | _ ->
                   let id =
-                    id_remove_trailing
-                      env
-                      (Parse.identifier ~restricted_error:Parse_error.StrictFunctionName env)
+                    if Peek.is_identifier env then
+                      id_remove_trailing
+                        env
+                        (Parse.identifier ~restricted_error:Parse_error.StrictFunctionName env)
+                    else (
+                      (* don't consume the identifier here like Parse.identifier does. *)
+                      error_nameless_declaration env "function";
+                      (Peek.loc env, { Identifier.name = ""; comments = None })
+                    )
                   in
                   let tparams = type_params_remove_trailing env (Type.type_params env) in
                   (tparams, Some id)
@@ -332,9 +346,11 @@ module Declaration (Parse : Parser_common.PARSER) (Type : Type_parser.TYPE) : DE
               (generator, tparams, id, params, return, predicate, leading))
             env
         in
-        let (body, strict) = function_body env ~async ~generator ~expression:false in
-        let simple = is_simple_function_params params in
-        strict_post_check env ~strict ~simple id params;
+        let simple_params = is_simple_parameter_list params in
+        let (body, contains_use_strict) =
+          function_body env ~async ~generator ~expression:false ~simple_params
+        in
+        strict_post_check env ~contains_use_strict id params;
         Statement.FunctionDeclaration
           {
             Function.id;
@@ -347,7 +363,8 @@ module Declaration (Parse : Parser_common.PARSER) (Type : Type_parser.TYPE) : DE
             tparams;
             sig_loc;
             comments = Flow_ast_utils.mk_comments_opt ~leading ();
-          })
+          }
+    )
 
   let variable_declaration_list =
     let variable_declaration env =
@@ -363,9 +380,7 @@ module Declaration (Parse : Parser_common.PARSER) (Type : Type_parser.TYPE) : DE
                 | (_, Ast.Pattern.Identifier _) -> (None, None)
                 | (loc, _) -> (None, Some (loc, Parse_error.NoUninitializedDestructuring))
             in
-            ( (let open Ast.Statement.VariableDeclaration.Declarator in
-              { id; init }),
-              err ))
+            (Ast.Statement.VariableDeclaration.Declarator.{ id; init }, err))
           env
       in
       ((loc, decl), err)
@@ -396,6 +411,7 @@ module Declaration (Parse : Parser_common.PARSER) (Type : Type_parser.TYPE) : DE
   let const env =
     let env = env |> with_no_let true in
     let (declarations, leading_comments, errs) = declarations T_CONST env in
+    (* Make sure all consts defined are initialized *)
     let errs =
       List.fold_left
         (fun errs decl ->

@@ -1,5 +1,5 @@
 (*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -52,7 +52,7 @@ module type PARSER = sig
   val block_body : env -> Loc.t * (Loc.t, Loc.t) Statement.Block.t
 
   val function_block_body :
-    expression:bool -> env -> Loc.t * (Loc.t, Loc.t) Statement.Block.t * bool
+    expression:bool -> env -> (Loc.t * (Loc.t, Loc.t) Statement.Block.t) * bool
 
   val jsx_element_or_fragment :
     env ->
@@ -71,15 +71,17 @@ module type PARSER = sig
   val is_assignable_lhs : (Loc.t, Loc.t) Expression.t -> bool
 
   val number : env -> Token.number_type -> string -> float
+
+  val annot : env -> (Loc.t, Loc.t) Type.annotation
 end
 
-let identifier_name env =
+let identifier_name_raw env =
   let open Token in
-  let loc = Peek.loc env in
-  let leading = Peek.comments env in
   let name =
     match Peek.token env with
+    (* obviously, Identifier is a valid IdentifierName *)
     | T_IDENTIFIER { value; _ } -> value
+    (* keywords are also IdentifierNames *)
     | T_AWAIT -> "await"
     | T_BREAK -> "break"
     | T_CASE -> "case"
@@ -114,6 +116,7 @@ let identifier_name env =
     | T_WHILE -> "while"
     | T_WITH -> "with"
     | T_YIELD -> "yield"
+    (* FutureReservedWord *)
     | T_ENUM -> "enum"
     | T_LET -> "let"
     | T_STATIC -> "static"
@@ -123,9 +126,12 @@ let identifier_name env =
     | T_PRIVATE -> "private"
     | T_PROTECTED -> "protected"
     | T_PUBLIC -> "public"
+    (* NullLiteral *)
     | T_NULL -> "null"
+    (* BooleanLiteral *)
     | T_TRUE -> "true"
     | T_FALSE -> "false"
+    (* Flow-specific stuff *)
     | T_DECLARE -> "declare"
     | T_TYPE -> "type"
     | T_OPAQUE -> "opaque"
@@ -139,25 +145,68 @@ let identifier_name env =
     | T_STRING_TYPE -> "string"
     | T_VOID_TYPE -> "void"
     | T_SYMBOL_TYPE -> "symbol"
+    (* Contextual stuff *)
     | T_OF -> "of"
     | T_ASYNC -> "async"
+    (* punctuators, types, literals, etc are not identifiers *)
     | _ ->
       error_unexpected ~expected:"an identifier" env;
       ""
   in
   Eat.token env;
+  name
+
+(* IdentifierName - https://tc39.github.io/ecma262/#prod-IdentifierName *)
+let identifier_name env =
+  let loc = Peek.loc env in
+  let leading = Peek.comments env in
+  let name = identifier_name_raw env in
   let trailing = Eat.trailing_comments env in
   let comments = Flow_ast_utils.mk_comments_opt ~leading ~trailing () in
   (loc, { Identifier.name; comments })
 
+(** PrivateIdentifier - https://tc39.es/ecma262/#prod-PrivateIdentifier
+
+    N.B.: whitespace, line terminators, and comments are not allowed
+    between the # and IdentifierName because PrivateIdentifier is a
+    CommonToken which is considered a single token. See also
+    https://tc39.es/ecma262/#prod-InputElementDiv *)
+let private_identifier env =
+  let start_loc = Peek.loc env in
+  let leading = Peek.comments env in
+  Expect.token env Token.T_POUND;
+  let name_loc = Peek.loc env in
+  let name = identifier_name_raw env in
+  let trailing = Eat.trailing_comments env in
+  let comments = Flow_ast_utils.mk_comments_opt ~leading ~trailing () in
+  let loc = Loc.btwn start_loc name_loc in
+  if not (Loc.equal_position start_loc.Loc._end name_loc.Loc.start) then
+    error_at env (loc, Parse_error.WhitespaceInPrivateName);
+  (loc, { PrivateName.name; comments })
+
+(** The operation IsSimpleParamterList
+    https://tc39.es/ecma262/#sec-static-semantics-issimpleparameterlist *)
+let is_simple_parameter_list =
+  let is_simple_param = function
+    | (_, { Flow_ast.Function.Param.argument = (_, Pattern.Identifier _); default = None }) -> true
+    | _ -> false
+  in
+  fun (_, { Flow_ast.Function.Params.params; rest; comments = _; this_ = _ }) ->
+    rest = None && List.for_all is_simple_param params
+
+(**
+ * The abstract operation IsLabelledFunction
+ *
+ * https://tc39.github.io/ecma262/#sec-islabelledfunction
+ *)
 let rec is_labelled_function = function
   | (_, Flow_ast.Statement.Labeled { Flow_ast.Statement.Labeled.body; _ }) ->
-    (match body with
-    | (_, Flow_ast.Statement.FunctionDeclaration _) -> true
-    | _ -> is_labelled_function body)
+    begin
+      match body with
+      | (_, Flow_ast.Statement.FunctionDeclaration _) -> true
+      | _ -> is_labelled_function body
+    end
   | _ -> false
-  [@@ocaml.doc
-    "\n * The abstract operation IsLabelledFunction\n *\n * https://tc39.github.io/ecma262/#sec-islabelledfunction\n "]
 
 let with_loc ?start_loc fn env =
   let start_loc =
@@ -177,3 +226,7 @@ let with_loc_opt ?start_loc fn env =
   match with_loc ?start_loc fn env with
   | (loc, Some x) -> Some (loc, x)
   | (_, None) -> None
+
+let with_loc_extra ?start_loc fn env =
+  let (loc, (x, extra)) = with_loc ?start_loc fn env in
+  ((loc, x), extra)

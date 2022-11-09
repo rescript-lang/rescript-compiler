@@ -1,5 +1,5 @@
 (*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,39 +8,52 @@
 open Flow_ast
 
 type 'loc binding = 'loc * string
-
 type 'loc ident = 'loc * string
-
 type 'loc source = 'loc * string
 
 let rec fold_bindings_of_pattern =
-  let open Pattern in
-  let property f acc =
-    let open Object in
-    function
-    | Property (_, { Property.pattern = p; _ })
-    | RestElement (_, { RestElement.argument = p; comments = _ }) ->
-      fold_bindings_of_pattern f acc p
-  in
-  let element f acc =
-    let open Array in
-    function
-    | Hole _ -> acc
-    | Element (_, { Element.argument = p; default = _ })
-    | RestElement (_, { RestElement.argument = p; comments = _ }) ->
-      fold_bindings_of_pattern f acc p
-  in
-  fun f acc -> function
-    | (_, Identifier { Identifier.name; annot; _ }) -> f acc name annot
-    | (_, Object { Object.properties; _ }) -> List.fold_left (property f) acc properties
-    | (_, Array { Array.elements; _ }) -> List.fold_left (element f) acc elements
-    | (_, Expression _) -> acc
+  Pattern.(
+    let property f acc =
+      Object.(
+        function
+        | Property (_, { Property.pattern = p; _ })
+        | RestElement (_, { RestElement.argument = p; comments = _ }) ->
+          fold_bindings_of_pattern f acc p
+      )
+    in
+    let element f acc =
+      Array.(
+        function
+        | Hole _ -> acc
+        | Element (_, { Element.argument = p; default = _ })
+        | RestElement (_, { RestElement.argument = p; comments = _ }) ->
+          fold_bindings_of_pattern f acc p
+      )
+    in
+    fun f acc -> function
+      | (_, Identifier { Identifier.name; _ }) -> f acc name
+      | (_, Object { Object.properties; _ }) -> List.fold_left (property f) acc properties
+      | (_, Array { Array.elements; _ }) -> List.fold_left (element f) acc elements
+      (* This is for assignment and default param destructuring `[a.b=1]=c`, ignore these for now. *)
+      | (_, Expression _) -> acc
+  )
 
 let fold_bindings_of_variable_declarations f acc declarations =
   let open Flow_ast.Statement.VariableDeclaration in
   List.fold_left
     (fun acc -> function
-      | (_, { Declarator.id = pattern; _ }) -> fold_bindings_of_pattern f acc pattern)
+      | (_, { Declarator.id = pattern; _ }) ->
+        let has_anno =
+          (* Only the toplevel annotation in a pattern is meaningful *)
+          let open Flow_ast.Pattern in
+          match pattern with
+          | (_, Array { Array.annot = Flow_ast.Type.Available _; _ })
+          | (_, Object { Object.annot = Flow_ast.Type.Available _; _ })
+          | (_, Identifier { Identifier.annot = Flow_ast.Type.Available _; _ }) ->
+            true
+          | _ -> false
+        in
+        fold_bindings_of_pattern (f has_anno) acc pattern)
     acc
     declarations
 
@@ -53,6 +66,44 @@ let partition_directives statements =
   in
   helper [] statements
 
+let hoist_function_declarations stmts =
+  let open Flow_ast.Statement in
+  let (func_decs, other_stmts) =
+    List.partition
+      (function
+        (* function f() {} *)
+        | (_, FunctionDeclaration { Flow_ast.Function.id = Some _; _ })
+        (* export function f() {} *)
+        | ( _,
+            ExportNamedDeclaration
+              {
+                ExportNamedDeclaration.declaration =
+                  Some (_, FunctionDeclaration { Flow_ast.Function.id = Some _; _ });
+                _;
+              }
+          )
+        (* export default function f() {} *)
+        | ( _,
+            ExportDefaultDeclaration
+              {
+                ExportDefaultDeclaration.declaration =
+                  ExportDefaultDeclaration.Declaration
+                    (_, FunctionDeclaration { Flow_ast.Function.id = Some _; _ });
+                _;
+              }
+          )
+        (* declare function f(): void; *)
+        | (_, DeclareFunction _)
+        (* declare export function f(): void; *)
+        | ( _,
+            DeclareExportDeclaration DeclareExportDeclaration.{ declaration = Some (Function _); _ }
+          ) ->
+          true
+        | _ -> false)
+      stmts
+  in
+  func_decs @ other_stmts
+
 let negate_number_literal (value, raw) =
   let raw_len = String.length raw in
   let raw =
@@ -61,22 +112,75 @@ let negate_number_literal (value, raw) =
     else
       "-" ^ raw
   in
-  (-.value, raw)
+  (~-.value, raw)
+
+let is_call_to_invariant callee =
+  match callee with
+  | (_, Expression.Identifier (_, { Identifier.name = "invariant"; _ })) -> true
+  | _ -> false
+
+let is_call_to_is_array callee =
+  match callee with
+  | ( _,
+      Flow_ast.Expression.Member
+        {
+          Flow_ast.Expression.Member._object =
+            ( _,
+              Flow_ast.Expression.Identifier
+                (_, { Flow_ast.Identifier.name = "Array"; comments = _ })
+            );
+          property =
+            Flow_ast.Expression.Member.PropertyIdentifier
+              (_, { Flow_ast.Identifier.name = "isArray"; comments = _ });
+          comments = _;
+        }
+    ) ->
+    true
+  | _ -> false
+
+let is_call_to_object_dot_freeze callee =
+  match callee with
+  | ( _,
+      Flow_ast.Expression.Member
+        {
+          Flow_ast.Expression.Member._object =
+            ( _,
+              Flow_ast.Expression.Identifier
+                (_, { Flow_ast.Identifier.name = "Object"; comments = _ })
+            );
+          property =
+            Flow_ast.Expression.Member.PropertyIdentifier
+              (_, { Flow_ast.Identifier.name = "freeze"; comments = _ });
+          comments = _;
+        }
+    ) ->
+    true
+  | _ -> false
+
+let is_call_to_object_static_method callee =
+  match callee with
+  | ( _,
+      Flow_ast.Expression.Member
+        {
+          Flow_ast.Expression.Member._object =
+            ( _,
+              Flow_ast.Expression.Identifier
+                (_, { Flow_ast.Identifier.name = "Object"; comments = _ })
+            );
+          property = Flow_ast.Expression.Member.PropertyIdentifier _;
+          comments = _;
+        }
+    ) ->
+    true
+  | _ -> false
 
 let loc_of_statement = fst
-
 let loc_of_expression = fst
-
 let loc_of_pattern = fst
-
 let loc_of_ident = fst
-
 let name_of_ident (_, { Identifier.name; comments = _ }) = name
-
 let source_of_ident (loc, { Identifier.name; comments = _ }) = (loc, name)
-
 let ident_of_source ?comments (loc, name) = (loc, { Identifier.name; comments })
-
 let mk_comments ?(leading = []) ?(trailing = []) a = { Syntax.leading; trailing; internal = a }
 
 let mk_comments_opt ?(leading = []) ?(trailing = []) () =
@@ -107,7 +211,8 @@ let merge_comments_with_internal ~inner ~outer =
   | (None, Some { Syntax.leading; trailing; _ }) ->
     mk_comments_with_internal_opt ~leading ~trailing ~internal:[] ()
   | ( Some { Syntax.leading = inner_leading; trailing = inner_trailing; internal },
-      Some { Syntax.leading = outer_leading; trailing = outer_trailing; _ } ) ->
+      Some { Syntax.leading = outer_leading; trailing = outer_trailing; _ }
+    ) ->
     mk_comments_with_internal_opt
       ~leading:(outer_leading @ inner_leading)
       ~trailing:(inner_trailing @ outer_trailing)
@@ -135,6 +240,9 @@ let string_of_assignment_operator op =
   | BitOrAssign -> "|="
   | BitXorAssign -> "^="
   | BitAndAssign -> "&="
+  | NullishAssign -> "??="
+  | AndAssign -> "&&="
+  | OrAssign -> "||="
 
 let string_of_binary_operator op =
   let open Flow_ast.Expression.Binary in
