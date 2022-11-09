@@ -10,3 +10,19 @@ let wrapSomethingAsync: unit => unit = () => {
     }
   )(777)
 }
+
+module M: {
+  let broken: (unit => promise<'a>) => promise<'a>
+} = {
+  let doSomethingAsync = async (someAsyncFunction) => {
+    await someAsyncFunction()
+  }
+
+  let broken = someAsyncFunction => doSomethingAsync(someAsyncFunction)
+}
+
+let broken = async (someAsyncFunction) => {
+  await someAsyncFunction()
+}
+
+let broken = someAsyncFunction => broken(someAsyncFunction)

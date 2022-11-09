@@ -25,6 +25,23 @@
 
 - Syntax: process uncurried types explicitly in the parser/printer https://github.com/rescript-lang/rescript-compiler/pull/5784
 
+# 10.1.0-rc.5
+
+#### :bug: Bug Fix
+
+- Prevent inlining of async functions in last stage of the compiler when the functions are not exported (not in interface file or shadowed) https://github.com/rescript-lang/rescript-compiler/pull/5790
+
+# 10.1.0-rc.4
+
+#### :rocket: New Feature
+
+- Support format check with `rescript format -check`. https://github.com/rescript-lang/rescript-compiler/pull/5760
+
+#### :bug: Bug Fix
+
+- Fix issue where the last line of `rescript format --help` usage was being swallowed https://github.com/rescript-lang/rescript-compiler/pull/5760
+- Specialize the printing of the rhs of a record field assignment for optional values `{x: ? e}` https://github.com/rescript-lang/syntax/issues/714
+
 # 10.1.0-rc.3
 
 #### :rocket: New Feature
