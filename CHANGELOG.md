@@ -10,6 +10,12 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
+# 10.1.0-rc.5
+
+#### :bug: Bug Fix
+
+- Prevent inlining of async functions in last stage of the compiler when the functions are not exported (not in interface file or shadowed) https://github.com/rescript-lang/rescript-compiler/pull/5790
+
 # 10.1.0-rc.4
 
 #### :rocket: New Feature

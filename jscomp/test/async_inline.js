@@ -1,5 +1,6 @@
 'use strict';
 
+var Curry = require("../../lib/js/curry.js");
 
 async function willBeInlined(param) {
   return 3;
@@ -14,7 +15,25 @@ function wrapSomethingAsync(param) {
         })(777));
 }
 
+async function doSomethingAsync(someAsyncFunction) {
+  return await Curry._1(someAsyncFunction, undefined);
+}
+
+var broken = doSomethingAsync;
+
+var M = {
+  broken: broken
+};
+
+async function broken$1(someAsyncFunction) {
+  return await Curry._1(someAsyncFunction, undefined);
+}
+
+var broken$2 = broken$1;
+
 exports.willBeInlined = willBeInlined;
 exports.inlined = inlined;
 exports.wrapSomethingAsync = wrapSomethingAsync;
+exports.M = M;
+exports.broken = broken$2;
 /* inlined Not a pure module */
