@@ -1,5 +1,5 @@
 (*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -28,17 +28,25 @@ module Lex_mode = struct
     | REGEXP -> "REGEXP"
 end
 
+(* READ THIS BEFORE YOU MODIFY:
+ *
+ * The current implementation for lookahead beyond a single token is
+ * inefficient. If you believe you need to increase this constant, do one of the
+ * following:
+ * - Find another way
+ * - Benchmark your change and provide convincing evidence that it doesn't
+ *   actually have a significant perf impact.
+ * - Refactor this to memoize all requested lookahead, so we aren't lexing the
+ *   same token multiple times.
+ *)
+
 module Lookahead : sig
   type t
 
   val create : Lex_env.t -> Lex_mode.t -> t
-
   val peek_0 : t -> Lex_result.t
-
   val peek_1 : t -> Lex_result.t
-
   val lex_env_0 : t -> Lex_env.t
-
   val junk : t -> unit
 end = struct
   type la_result = (Lex_env.t * Lex_result.t) option
@@ -54,6 +62,7 @@ end = struct
     let lex_env = Lex_env.clone lex_env in
     { la_results_0 = None; la_results_1 = None; la_lex_mode = mode; la_lex_env = lex_env }
 
+  (* precondition: there is enough room in t.la_results for the result *)
   let lex t =
     let lex_env = t.la_lex_env in
     let (lex_env, lex_result) =
@@ -68,9 +77,11 @@ end = struct
     let cloned_env = Lex_env.clone lex_env in
     let result = (cloned_env, lex_result) in
     t.la_lex_env <- lex_env;
-    (match t.la_results_0 with
-    | None -> t.la_results_0 <- Some result
-    | Some _ -> t.la_results_1 <- Some result);
+    begin
+      match t.la_results_0 with
+      | None -> t.la_results_0 <- Some result
+      | Some _ -> t.la_results_1 <- Some result
+    end;
     result
 
   let peek_0 t =
@@ -91,6 +102,7 @@ end = struct
     | Some (lex_env, _) -> lex_env
     | None -> fst (lex t)
 
+  (* Throws away the first peeked-at token, shifting any subsequent tokens up *)
   let junk t =
     match t.la_results_1 with
     | None ->
@@ -108,30 +120,14 @@ type token_sink_result = {
 }
 
 type parse_options = {
-  enums: bool; [@ocaml.doc " enable parsing of Flow enums "]
-  esproposal_class_instance_fields: bool; [@ocaml.doc " enable parsing of class instance fields "]
-  esproposal_class_static_fields: bool; [@ocaml.doc " enable parsing of class static fields "]
-  esproposal_decorators: bool; [@ocaml.doc " enable parsing of decorators "]
-  esproposal_export_star_as: bool; [@ocaml.doc " enable parsing of `export * as` syntax "]
-  esproposal_nullish_coalescing: bool; [@ocaml.doc " enable parsing of nullish coalescing (`??`) "]
-  esproposal_optional_chaining: bool; [@ocaml.doc " enable parsing of optional chaining (`?.`) "]
-  types: bool; [@ocaml.doc " enable parsing of Flow types "]
-  use_strict: bool;
-      [@ocaml.doc " treat the file as strict, without needing a \"use strict\" directive "]
+  enums: bool;  (** enable parsing of Flow enums *)
+  esproposal_decorators: bool;  (** enable parsing of decorators *)
+  types: bool;  (** enable parsing of Flow types *)
+  use_strict: bool;  (** treat the file as strict, without needing a "use strict" directive *)
 }
 
 let default_parse_options =
-  {
-    enums = false;
-    esproposal_class_instance_fields = false;
-    esproposal_class_static_fields = false;
-    esproposal_decorators = false;
-    esproposal_export_star_as = false;
-    esproposal_optional_chaining = false;
-    esproposal_nullish_coalescing = false;
-    types = true;
-    use_strict = false;
-  }
+  { enums = false; esproposal_decorators = false; types = true; use_strict = false }
 
 type allowed_super =
   | No_super
@@ -142,10 +138,10 @@ type env = {
   errors: (Loc.t * Parse_error.t) list ref;
   comments: Loc.t Comment.t list ref;
   labels: SSet.t;
-  exports: SSet.t ref;
   last_lex_result: Lex_result.t option ref;
   in_strict_mode: bool;
   in_export: bool;
+  in_export_default: bool;
   in_loop: bool;
   in_switch: bool;
   in_formal_parameters: bool;
@@ -158,19 +154,28 @@ type env = {
   allow_yield: bool;
   allow_await: bool;
   allow_directive: bool;
+  has_simple_parameters: bool;
   allow_super: allowed_super;
   error_callback: (env -> Parse_error.t -> unit) option;
   lex_mode_stack: Lex_mode.t list ref;
+  (* lex_env is the lex_env after the single lookahead has been lexed *)
   lex_env: Lex_env.t ref;
+  (* This needs to be cleared whenever we advance. *)
   lookahead: Lookahead.t ref;
   token_sink: (token_sink_result -> unit) option ref;
   parse_options: parse_options;
   source: File_key.t option;
+  (* It is a syntax error to reference private fields not in scope. In order to enforce this,
+   * we keep track of the privates we've seen declared and used. *)
   privates: (SSet.t * (string * Loc.t) list) list ref;
+  (* The position up to which comments have been consumed, exclusive. *)
   consumed_comments_pos: Loc.position ref;
 }
 
+(* constructor *)
 let init_env ?(token_sink = None) ?(parse_options = None) source content =
+  (* let lb = Sedlexing.Utf16.from_string
+     content (Some Sedlexing.Utf16.Little_endian) in *)
   let (lb, errors) =
     try (Sedlexing.Utf8.from_string content, []) with
     | Sedlexing.MalFormed ->
@@ -187,10 +192,11 @@ let init_env ?(token_sink = None) ?(parse_options = None) source content =
     errors = ref errors;
     comments = ref [];
     labels = SSet.empty;
-    exports = ref SSet.empty;
     last_lex_result = ref None;
+    has_simple_parameters = true;
     in_strict_mode = parse_options.use_strict;
     in_export = false;
+    in_export_default = false;
     in_loop = false;
     in_switch = false;
     in_formal_parameters = false;
@@ -215,66 +221,51 @@ let init_env ?(token_sink = None) ?(parse_options = None) source content =
     consumed_comments_pos = ref { Loc.line = 0; column = 0 };
   }
 
+(* getters: *)
 let in_strict_mode env = env.in_strict_mode
-
 let lex_mode env = List.hd !(env.lex_mode_stack)
-
 let in_export env = env.in_export
-
+let in_export_default env = env.in_export_default
 let comments env = !(env.comments)
-
 let labels env = env.labels
-
 let in_loop env = env.in_loop
-
 let in_switch env = env.in_switch
-
 let in_formal_parameters env = env.in_formal_parameters
-
 let in_function env = env.in_function
-
 let allow_yield env = env.allow_yield
-
 let allow_await env = env.allow_await
-
 let allow_directive env = env.allow_directive
-
 let allow_super env = env.allow_super
-
+let has_simple_parameters env = env.has_simple_parameters
 let no_in env = env.no_in
-
 let no_call env = env.no_call
-
 let no_let env = env.no_let
-
 let no_anon_function_type env = env.no_anon_function_type
-
 let no_new env = env.no_new
-
 let errors env = !(env.errors)
-
 let parse_options env = env.parse_options
-
 let source env = env.source
-
 let should_parse_types env = env.parse_options.types
 
+(* mutators: *)
 let error_at env (loc, e) =
   env.errors := (loc, e) :: !(env.errors);
   match env.error_callback with
   | None -> ()
   | Some callback -> callback env e
 
-let record_export env (loc, { Identifier.name = export_name; comments = _ }) =
-  if export_name = "" then
-    ()
-  else
-    let exports = !(env.exports) in
-    if SSet.mem export_name exports then
-      error_at env (loc, Parse_error.DuplicateExport export_name)
-    else
-      env.exports := SSet.add export_name !(env.exports)
-
+(* Since private fields out of scope are a parse error, we keep track of the declared and used
+ * private fields.
+ *
+ * Whenever we enter a class, we push new empty lists of declared and used privates.
+ * When we encounter a new declared private, we add it to the top of the declared_privates list
+ * via add_declared_private. We do the same with used_privates via add_used_private.
+ *
+ * When we exit a class, we look for all the unbound private variables. Since class fields
+ * are hoisted to the scope of the class, we may need to look further before we conclude that
+ * a field is out of scope. To do that, we add all of the unbound private fields to the
+ * next used_private list. Once we run out of declared private lists, any leftover used_privates
+ * are unbound private variables. *)
 let enter_class env = env.privates := (SSet.empty, []) :: !(env.privates)
 
 let exit_class env =
@@ -306,8 +297,8 @@ let add_used_private env name loc =
 
 let consume_comments_until env pos = env.consumed_comments_pos := pos
 
+(* lookahead: *)
 let lookahead_0 env = Lookahead.peek_0 !(env.lookahead)
-
 let lookahead_1 env = Lookahead.peek_1 !(env.lookahead)
 
 let lookahead ~i env =
@@ -316,6 +307,7 @@ let lookahead ~i env =
   | 1 -> lookahead_1 env
   | _ -> assert false
 
+(* functional operations: *)
 let with_strict in_strict_mode env =
   if in_strict_mode = env.in_strict_mode then
     env
@@ -400,6 +392,12 @@ let with_in_export in_export env =
   else
     { env with in_export }
 
+let with_in_export_default in_export_default env =
+  if in_export_default = env.in_export_default then
+    env
+  else
+    { env with in_export_default }
+
 let with_no_call no_call env =
   if no_call = env.no_call then
     env
@@ -408,6 +406,7 @@ let with_no_call no_call env =
 
 let with_error_callback error_callback env = { env with error_callback = Some error_callback }
 
+(* other helper functions: *)
 let error_list env = List.iter (error_at env)
 
 let last_loc env =
@@ -421,22 +420,24 @@ let last_token env =
   | None -> None
 
 let without_error_callback env = { env with error_callback = None }
-
 let add_label env label = { env with labels = SSet.add label env.labels }
 
-let enter_function env ~async ~generator =
+let enter_function env ~async ~generator ~simple_params =
   {
     env with
     in_formal_parameters = false;
+    has_simple_parameters = simple_params;
     in_function = true;
     in_loop = false;
     in_switch = false;
     in_export = false;
+    in_export_default = false;
     labels = SSet.empty;
     allow_await = async;
     allow_yield = generator;
   }
 
+(* #sec-keywords *)
 let is_keyword = function
   | "await"
   | "break"
@@ -476,57 +477,61 @@ let is_keyword = function
   | _ -> false
 
 let token_is_keyword =
-  let open Token in
-  function
-  | T_IDENTIFIER { raw; _ } when is_keyword raw -> true
-  | T_AWAIT
-  | T_BREAK
-  | T_CASE
-  | T_CATCH
-  | T_CLASS
-  | T_CONST
-  | T_CONTINUE
-  | T_DEBUGGER
-  | T_DEFAULT
-  | T_DELETE
-  | T_DO
-  | T_ELSE
-  | T_EXPORT
-  | T_EXTENDS
-  | T_FINALLY
-  | T_FOR
-  | T_FUNCTION
-  | T_IF
-  | T_IMPORT
-  | T_IN
-  | T_INSTANCEOF
-  | T_NEW
-  | T_RETURN
-  | T_SUPER
-  | T_SWITCH
-  | T_THIS
-  | T_THROW
-  | T_TRY
-  | T_TYPEOF
-  | T_VAR
-  | T_VOID
-  | T_WHILE
-  | T_WITH
-  | T_YIELD ->
-    true
-  | _ -> false
+  Token.(
+    function
+    | T_IDENTIFIER { raw; _ } when is_keyword raw -> true
+    | T_AWAIT
+    | T_BREAK
+    | T_CASE
+    | T_CATCH
+    | T_CLASS
+    | T_CONST
+    | T_CONTINUE
+    | T_DEBUGGER
+    | T_DEFAULT
+    | T_DELETE
+    | T_DO
+    | T_ELSE
+    | T_EXPORT
+    | T_EXTENDS
+    | T_FINALLY
+    | T_FOR
+    | T_FUNCTION
+    | T_IF
+    | T_IMPORT
+    | T_IN
+    | T_INSTANCEOF
+    | T_NEW
+    | T_RETURN
+    | T_SUPER
+    | T_SWITCH
+    | T_THIS
+    | T_THROW
+    | T_TRY
+    | T_TYPEOF
+    | T_VAR
+    | T_VOID
+    | T_WHILE
+    | T_WITH
+    | T_YIELD ->
+      true
+    | _ -> false
+  )
 
+(* #sec-future-reserved-words *)
 let is_future_reserved = function
   | "enum" -> true
   | _ -> false
 
 let token_is_future_reserved =
-  let open Token in
-  function
-  | T_IDENTIFIER { raw; _ } when is_future_reserved raw -> true
-  | T_ENUM -> true
-  | _ -> false
+  Token.(
+    function
+    | T_IDENTIFIER { raw; _ } when is_future_reserved raw -> true
+    | T_ENUM -> true
+    | _ -> false
+  )
 
+(* #sec-strict-mode-of-ecmascript *)
 let is_strict_reserved = function
   | "interface"
   | "implements"
@@ -540,20 +545,22 @@ let is_strict_reserved = function
   | _ -> false
 
 let token_is_strict_reserved =
-  let open Token in
-  function
-  | T_IDENTIFIER { raw; _ } when is_strict_reserved raw -> true
-  | T_INTERFACE
-  | T_IMPLEMENTS
-  | T_PACKAGE
-  | T_PRIVATE
-  | T_PROTECTED
-  | T_PUBLIC
-  | T_STATIC
-  | T_YIELD ->
-    true
-  | _ -> false
+  Token.(
+    function
+    | T_IDENTIFIER { raw; _ } when is_strict_reserved raw -> true
+    | T_INTERFACE
+    | T_IMPLEMENTS
+    | T_PACKAGE
+    | T_PRIVATE
+    | T_PROTECTED
+    | T_PUBLIC
+    | T_STATIC
+    | T_YIELD ->
+      true
+    | _ -> false
+  )
 
+(* #sec-strict-mode-of-ecmascript *)
 let is_restricted = function
   | "eval"
   | "arguments" ->
@@ -561,11 +568,13 @@ let is_restricted = function
   | _ -> false
 
 let token_is_restricted =
-  let open Token in
-  function
-  | T_IDENTIFIER { raw; _ } when is_restricted raw -> true
-  | _ -> false
+  Token.(
+    function
+    | T_IDENTIFIER { raw; _ } when is_restricted raw -> true
+    | _ -> false
+  )
 
+(* #sec-reserved-words *)
 let is_reserved str_val =
   is_keyword str_val
   || is_future_reserved str_val
@@ -611,14 +620,13 @@ let is_reserved_type str_val =
     true
   | _ -> false
 
+(* Answer questions about what comes next *)
 module Peek = struct
   open Loc
   open Token
 
   let ith_token ~i env = Lex_result.token (lookahead ~i env)
-
   let ith_loc ~i env = Lex_result.loc (lookahead ~i env)
-
   let ith_errors ~i env = Lex_result.errors (lookahead ~i env)
 
   let ith_comments ~i env =
@@ -631,20 +639,18 @@ module Peek = struct
         comments
 
   let token env = ith_token ~i:0 env
-
   let loc env = ith_loc ~i:0 env
 
+  (* loc_skip_lookahead is used to give a loc hint to optional tokens such as type annotations *)
   let loc_skip_lookahead env =
     let loc =
       match last_loc env with
       | Some loc -> loc
       | None -> failwith "Peeking current location when not available"
     in
-    let open Loc in
-    { loc with start = loc._end }
+    Loc.{ loc with start = loc._end }
 
   let errors env = ith_errors ~i:0 env
-
   let comments env = ith_comments ~i:0 env
 
   let has_eaten_comments env =
@@ -655,6 +661,7 @@ module Peek = struct
 
   let lex_env env = Lookahead.lex_env_0 !(env.lookahead)
 
+  (* True if there is a line terminator before the next token *)
   let ith_is_line_terminator ~i env =
     let loc =
       if i > 0 then
@@ -697,13 +704,19 @@ module Peek = struct
 
   let ith_is_type_identifier ~i env =
     match lex_mode env with
-    | Lex_mode.TYPE ->
-      (match ith_token ~i env with
+    | Lex_mode.TYPE -> begin
+      match ith_token ~i env with
       | T_IDENTIFIER _ -> true
-      | _ -> false)
-    | Lex_mode.NORMAL ->
-      (match ith_token ~i env with
+      | _ -> false
+    end
+    | Lex_mode.NORMAL -> begin
+      (* Sometimes we peek at type identifiers while in normal lex mode. For
+         example, when deciding whether a `type` token is an identifier or the
+         start of a type declaration, based on whether the following token
+         `is_type_identifier`. *)
+      match ith_token ~i env with
       | T_IDENTIFIER { raw; _ } when is_reserved_type raw -> false
+      (* reserved type identifiers, but these don't appear in NORMAL mode *)
       | T_ANY_TYPE
       | T_MIXED_TYPE
       | T_EMPTY_TYPE
@@ -715,6 +728,7 @@ module Peek = struct
       | T_BOOLEAN_TYPE _
       | T_NUMBER_SINGLETON_TYPE _
       | T_BIGINT_SINGLETON_TYPE _
+      (* identifier-ish *)
       | T_ASYNC
       | T_AWAIT
       | T_BREAK
@@ -765,10 +779,12 @@ module Peek = struct
       | T_WITH
       | T_YIELD ->
         true
+      (* identifier-ish, but not valid types *)
       | T_STATIC
       | T_TYPEOF
       | T_VOID ->
         false
+      (* syntax *)
       | T_LCURLY
       | T_RCURLY
       | T_LCURLYBAR
@@ -797,6 +813,9 @@ module Peek = struct
       | T_EXP_ASSIGN
       | T_MINUS_ASSIGN
       | T_PLUS_ASSIGN
+      | T_NULLISH_ASSIGN
+      | T_AND_ASSIGN
+      | T_OR_ASSIGN
       | T_ASSIGN
       | T_PLING_PERIOD
       | T_PLING_PLING
@@ -830,15 +849,18 @@ module Peek = struct
       | T_DECR
       | T_EOF ->
         false
+      (* literals *)
       | T_NUMBER _
       | T_BIGINT _
       | T_STRING _
       | T_TEMPLATE_PART _
       | T_REGEXP _
+      (* misc that shouldn't appear in NORMAL mode *)
       | T_JSX_IDENTIFIER _
       | T_JSX_TEXT _
       | T_ERROR _ ->
-        false)
+        false
+    end
     | Lex_mode.JSX_TAG
     | Lex_mode.JSX_CHILD
     | Lex_mode.TEMPLATE
@@ -847,10 +869,10 @@ module Peek = struct
 
   let ith_is_identifier_name ~i env = ith_is_identifier ~i env || ith_is_type_identifier ~i env
 
+  (* This returns true if the next token is identifier-ish (even if it is an
+     error) *)
   let is_identifier env = ith_is_identifier ~i:0 env
-
   let is_identifier_name env = ith_is_identifier_name ~i:0 env
-
   let is_type_identifier env = ith_is_type_identifier ~i:0 env
 
   let is_function env =
@@ -867,6 +889,11 @@ module Peek = struct
     | _ -> false
 end
 
+(*****************************************************************************)
+(* Errors *)
+(*****************************************************************************)
+
+(* Complains about an error at the location of the lookahead *)
 let error env e =
   let loc = Peek.loc env in
   error_at env (loc, e)
@@ -883,39 +910,74 @@ let get_unexpected_error ?expected token =
     | None -> Parse_error.Unexpected unexpected
 
 let error_unexpected ?expected env =
+  (* So normally we consume the lookahead lex result when Eat.token calls
+   * Parser_env.advance, which will add any lexing errors to our list of errors.
+   * However, raising an unexpected error for a lookahead is kind of like
+   * consuming that token, so we should process any lexing errors before
+   * complaining about the unexpected token *)
   error_list env (Peek.errors env);
   error env (get_unexpected_error ?expected (Peek.token env))
 
 let error_on_decorators env =
   List.iter (fun decorator -> error_at env (fst decorator, Parse_error.UnsupportedDecorator))
 
-let strict_error env e = if in_strict_mode env then error env e
+let error_nameless_declaration env kind =
+  let expected =
+    if in_export env then
+      Printf.sprintf
+        "an identifier. When exporting a %s as a named export, you must specify a %s name. Did you mean `export default %s ...`?"
+        kind
+        kind
+        kind
+    else
+      "an identifier"
+  in
+  error_unexpected ~expected env
 
+let strict_error env e = if in_strict_mode env then error env e
 let strict_error_at env (loc, e) = if in_strict_mode env then error_at env (loc, e)
 
 let function_as_statement_error_at env loc =
   error_at env (loc, Parse_error.FunctionAsStatement { in_strict_mode = in_strict_mode env })
 
+(* Consume zero or more tokens *)
 module Eat = struct
+  (* Consume a single token *)
   let token env =
+    (* If there's a token_sink, emit the lexed token before moving forward *)
     (match !(env.token_sink) with
     | None -> ()
     | Some token_sink ->
-      token_sink { token_loc = Peek.loc env; token = Peek.token env; token_context = lex_mode env });
+      token_sink
+        {
+          token_loc = Peek.loc env;
+          token = Peek.token env;
+          (*
+           * The lex mode is useful because it gives context to some
+           * context-sensitive tokens.
+           *
+           * Some examples of such tokens include:
+           *
+           * `=>` - Part of an arrow function? or part of a type annotation?
+           * `<`  - A less-than? Or an opening to a JSX element?
+           * ...etc...
+           *)
+          token_context = lex_mode env;
+        });
+
     env.lex_env := Peek.lex_env env;
+
     error_list env (Peek.errors env);
     env.comments := List.rev_append (Lex_result.comments (lookahead ~i:0 env)) !(env.comments);
     env.last_lex_result := Some (lookahead ~i:0 env);
+
     Lookahead.junk !(env.lookahead)
 
+  (** [maybe env t] eats the next token and returns [true] if it is [t], else return [false] *)
   let maybe env t =
-    if Token.equal (Peek.token env) t then (
-      token env;
-      true
-    ) else
-      false
-    [@@ocaml.doc
-      " [maybe env t] eats the next token and returns [true] if it is [t], else return [false] "]
+    let is_t = Token.equal (Peek.token env) t in
+    if is_t then token env;
+    is_t
 
   let push_lex_mode env mode =
     env.lex_mode_stack := mode :: !(env.lex_mode_stack);
@@ -983,14 +1045,13 @@ module Eat = struct
       in
       contains_flow_directive_after_offset 0
     in
+    (* Comments up through the last comment with an @flow directive are considered program comments *)
     let rec flow_directive_comments comments =
       match comments with
       | [] -> []
       | (loc, comment) :: rest ->
         if contains_flow_directive comment then (
-          (env.consumed_comments_pos :=
-             let open Loc in
-             loc._end);
+          (env.consumed_comments_pos := Loc.(loc._end));
           List.rev ((loc, comment) :: rest)
         ) else
           flow_directive_comments rest
@@ -1000,12 +1061,12 @@ module Eat = struct
       if program_comments <> [] then
         program_comments
       else
+        (* If there is no @flow directive, consider the first block comment a program comment if
+           it starts with "/**" *)
         match comments with
         | ((loc, { kind = Block; text; _ }) as first_comment) :: _
           when String.length text >= 1 && text.[0] = '*' ->
-          (env.consumed_comments_pos :=
-             let open Loc in
-             loc._end);
+          (env.consumed_comments_pos := Loc.(loc._end));
           [first_comment]
         | _ -> []
     in
@@ -1013,6 +1074,10 @@ module Eat = struct
 end
 
 module Expect = struct
+  let get_error env t =
+    let expected = Token.explanation_of_token ~use_article:true t in
+    (Peek.loc env, get_unexpected_error ~expected (Peek.token env))
+
   let error env t =
     let expected = Token.explanation_of_token ~use_article:true t in
     error_unexpected ~expected env
@@ -1021,24 +1086,33 @@ module Expect = struct
     if not (Token.equal (Peek.token env) t) then error env t;
     Eat.token env
 
-  let token_opt env t =
-    if not (Token.equal (Peek.token env) t) then
-      error env t
-    else
-      Eat.token env
-    [@@ocaml.doc
-      " [token_opt env T_FOO] eats a token if it is [T_FOO], and errors without consuming if not.\n      This differs from [token], which always consumes. Only use [token_opt] when it's ok for\n      the parser to not advance, like if you are guaranteed that something else has eaten a\n      token. "]
+  (** [token_maybe env T_FOO] eats a token if it is [T_FOO], and errors without consuming if
+      not. Returns whether it consumed a token, like [Eat.maybe]. *)
+  let token_maybe env t =
+    let ate = Eat.maybe env t in
+    if not ate then error env t;
+    ate
+
+  (** [token_opt env T_FOO] eats a token if it is [T_FOO], and errors without consuming if not.
+      This differs from [token], which always consumes. Only use [token_opt] when it's ok for
+      the parser to not advance, like if you are guaranteed that something else has eaten a
+      token. *)
+  let token_opt env t = ignore (token_maybe env t)
 
   let identifier env name =
     let t = Peek.token env in
-    (match t with
-    | Token.T_IDENTIFIER { raw; _ } when raw = name -> ()
-    | _ ->
-      let expected = Printf.sprintf "the identifier `%s`" name in
-      error_unexpected ~expected env);
+    begin
+      match t with
+      | Token.T_IDENTIFIER { raw; _ } when raw = name -> ()
+      | _ ->
+        let expected = Printf.sprintf "the identifier `%s`" name in
+        error_unexpected ~expected env
+    end;
     Eat.token env
 end
 
+(* This module allows you to try parsing and rollback if you need. This is not
+ * cheap and its usage is strongly discouraged *)
 module Try = struct
   type 'a parse_result =
     | ParsedSuccessfully of 'a
@@ -1091,6 +1165,7 @@ module Try = struct
     env.lex_env := saved_state.saved_lex_env;
     env.consumed_comments_pos := saved_state.saved_consumed_comments_pos;
     env.lookahead := Lookahead.create !(env.lex_env) (lex_mode env);
+
     FailedToParse
 
   let success env saved_state result =

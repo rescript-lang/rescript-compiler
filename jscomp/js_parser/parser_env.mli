@@ -1,11 +1,14 @@
 (*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *)
 
-module SSet : Set.S with type t = Set.Make(String).t
+(* This module provides a layer between the lexer and the parser which includes
+ * some parser state and some lexer state *)
+
+module SSet : Set.S with type elt = string
 
 module Lex_mode : sig
   type t =
@@ -26,16 +29,10 @@ type token_sink_result = {
 }
 
 type parse_options = {
-  enums: bool; [@ocaml.doc " enable parsing of Flow enums "]
-  esproposal_class_instance_fields: bool; [@ocaml.doc " enable parsing of class instance fields "]
-  esproposal_class_static_fields: bool; [@ocaml.doc " enable parsing of class static fields "]
-  esproposal_decorators: bool; [@ocaml.doc " enable parsing of decorators "]
-  esproposal_export_star_as: bool; [@ocaml.doc " enable parsing of `export * as` syntax "]
-  esproposal_nullish_coalescing: bool; [@ocaml.doc " enable parsing of nullish coalescing (`??`) "]
-  esproposal_optional_chaining: bool; [@ocaml.doc " enable parsing of optional chaining (`?.`) "]
-  types: bool; [@ocaml.doc " enable parsing of Flow types "]
-  use_strict: bool;
-      [@ocaml.doc " treat the file as strict, without needing a \"use strict\" directive "]
+  enums: bool;  (** enable parsing of Flow enums *)
+  esproposal_decorators: bool;  (** enable parsing of decorators *)
+  types: bool;  (** enable parsing of Flow types *)
+  use_strict: bool;  (** treat the file as strict, without needing a "use strict" directive *)
 }
 
 val default_parse_options : parse_options
@@ -47,6 +44,7 @@ type allowed_super =
   | Super_prop
   | Super_prop_or_call
 
+(* constructor: *)
 val init_env :
   ?token_sink:(token_sink_result -> unit) option ->
   ?parse_options:parse_options option ->
@@ -54,6 +52,7 @@ val init_env :
   string ->
   env
 
+(* getters: *)
 val in_strict_mode : env -> bool
 
 val last_loc : env -> Loc.t option
@@ -61,6 +60,8 @@ val last_loc : env -> Loc.t option
 val last_token : env -> Token.t option
 
 val in_export : env -> bool
+
+val in_export_default : env -> bool
 
 val labels : env -> SSet.t
 
@@ -82,6 +83,8 @@ val allow_directive : env -> bool
 
 val allow_super : env -> allowed_super
 
+val has_simple_parameters : env -> bool
+
 val no_in : env -> bool
 
 val no_call : env -> bool
@@ -100,6 +103,9 @@ val source : env -> File_key.t option
 
 val should_parse_types : env -> bool
 
+val get_unexpected_error : ?expected:string -> Token.t -> Parse_error.t
+
+(* mutators: *)
 val error_at : env -> Loc.t * Parse_error.t -> unit
 
 val error : env -> Parse_error.t -> unit
@@ -108,6 +114,8 @@ val error_unexpected : ?expected:string -> env -> unit
 
 val error_on_decorators : env -> (Loc.t * 'a) list -> unit
 
+val error_nameless_declaration : env -> string -> unit
+
 val strict_error : env -> Parse_error.t -> unit
 
 val strict_error_at : env -> Loc.t * Parse_error.t -> unit
@@ -115,8 +123,6 @@ val strict_error_at : env -> Loc.t * Parse_error.t -> unit
 val function_as_statement_error_at : env -> Loc.t -> unit
 
 val error_list : env -> (Loc.t * Parse_error.t) list -> unit
-
-val record_export : env -> (Loc.t, Loc.t) Flow_ast.Identifier.t -> unit
 
 val enter_class : env -> unit
 
@@ -128,6 +134,8 @@ val add_used_private : env -> string -> Loc.t -> unit
 
 val consume_comments_until : env -> Loc.position -> unit
 
+(* functional operations -- these return shallow copies, so future mutations to
+ * the returned env will also affect the original: *)
 val with_strict : bool -> env -> env
 
 val with_in_formal_parameters : bool -> env -> env
@@ -156,6 +164,8 @@ val with_in_switch : bool -> env -> env
 
 val with_in_export : bool -> env -> env
 
+val with_in_export_default : bool -> env -> env
+
 val with_no_call : bool -> env -> env
 
 val with_error_callback : (env -> Parse_error.t -> unit) -> env -> env
@@ -164,7 +174,7 @@ val without_error_callback : env -> env
 
 val add_label : env -> string -> env
 
-val enter_function : env -> async:bool -> generator:bool -> env
+val enter_function : env -> async:bool -> generator:bool -> simple_params:bool -> env
 
 val is_reserved : string -> bool
 
@@ -247,11 +257,15 @@ module Eat : sig
 end
 
 module Expect : sig
+  val get_error : env -> Token.t -> Loc.t * Parse_error.t
+
   val error : env -> Token.t -> unit
 
   val token : env -> Token.t -> unit
 
   val token_opt : env -> Token.t -> unit
+
+  val token_maybe : env -> Token.t -> bool
 
   val identifier : env -> string -> unit
 end

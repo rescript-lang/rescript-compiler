@@ -1,5 +1,5 @@
 (*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -28,7 +28,7 @@ and PrivateName : sig
   type 'M t = 'M * 'M t'
 
   and 'M t' = {
-    id: ('M, 'M) Identifier.t;
+    name: string;
     comments: ('M, unit) Syntax.t option;
   }
 end =
@@ -42,6 +42,7 @@ and Literal : sig
     }
   end
 
+  (* Literals also carry along their raw value *)
   type 'M t = {
     value: value;
     raw: string;
@@ -53,7 +54,7 @@ and Literal : sig
     | Boolean of bool
     | Null
     | Number of float
-    | BigInt of float
+    | BigInt of int64 option
     | RegExp of RegExp.t
 end =
   Literal
@@ -78,8 +79,9 @@ end =
 
 and BigIntLiteral : sig
   type 'M t = {
-    approx_value: float;
-    bigint: string;
+    (* This will be None if we couldn't parse `raw`. That could be if the number is out of range or invalid (like a float) *)
+    value: int64 option;
+    raw: string;
     comments: ('M, unit) Syntax.t option;
   }
 end =
@@ -270,6 +272,13 @@ and Type : sig
 
     type ('M, 'T) t = {
       exact: bool;
+      (* Inexact indicates the presence of ... in the object. It is more
+       * easily understood if exact is read as "explicitly exact" and "inexact"
+       * is read as "explicitly inexact".
+       *
+       * This confusion will go away when we get rid of the exact flag in favor
+       * of inexact as part of the work to make object types exact by default.
+       * *)
       inexact: bool;
       properties: ('M, 'T) property list;
       comments: ('M, 'M Comment.t list) Syntax.t option;
@@ -299,9 +308,21 @@ and Type : sig
   end
 
   module Typeof : sig
+    module Target : sig
+      type ('M, 'T) t =
+        | Unqualified of ('M, 'T) Identifier.t
+        | Qualified of ('M, 'T) qualified
+
+      and ('M, 'T) qualified' = {
+        qualification: ('M, 'T) t;
+        id: ('M, 'T) Identifier.t;
+      }
+
+      and ('M, 'T) qualified = 'T * ('M, 'T) qualified'
+    end
+
     type ('M, 'T) t = {
-      argument: ('M, 'T) Type.t;
-      internal: bool;
+      argument: ('M, 'T) Target.t;
       comments: ('M, unit) Syntax.t option;
     }
   end
@@ -336,6 +357,8 @@ and Type : sig
 
   type ('M, 'T) t = 'T * ('M, 'T) t'
 
+  (* Yes, we could add a little complexity here to show that Any and Void
+   * should never be declared nullable, but that check can happen later *)
   and ('M, 'T) t' =
     | Any of ('M, unit) Syntax.t option
     | Mixed of ('M, unit) Syntax.t option
@@ -365,6 +388,10 @@ and Type : sig
     | BigIntLiteral of 'M BigIntLiteral.t
     | BooleanLiteral of 'M BooleanLiteral.t
 
+  (* Type.annotation is a concrete syntax node with a location that starts at
+   * the colon and ends after the type. For example, "var a: number", the
+   * identifier a would have a property annot which contains a
+   * Type.annotation with a location from column 6-14 *)
   and ('M, 'T) annotation = 'M * ('M, 'T) t
 
   and ('M, 'T) annotation_or_hint =
@@ -509,6 +536,7 @@ and Statement : sig
       discriminant: ('M, 'T) Expression.t;
       cases: ('M, 'T) Case.t list;
       comments: ('M, unit) Syntax.t option;
+      exhaustive_out: 'T;
     }
   end
 
@@ -516,6 +544,7 @@ and Statement : sig
     type ('M, 'T) t = {
       argument: ('M, 'T) Expression.t option;
       comments: ('M, unit) Syntax.t option;
+      return_out: 'T;
     }
   end
 
@@ -628,7 +657,6 @@ and Statement : sig
   module EnumDeclaration : sig
     module DefaultedMember : sig
       type 'M t = 'M * 'M t'
-
       and 'M t' = { id: ('M, 'M) Identifier.t }
     end
 
@@ -720,7 +748,7 @@ and Statement : sig
   module DeclareVariable : sig
     type ('M, 'T) t = {
       id: ('M, 'T) Identifier.t;
-      annot: ('M, 'T) Type.annotation_or_hint;
+      annot: ('M, 'T) Type.annotation;
       comments: ('M, unit) Syntax.t option;
     }
   end
@@ -739,14 +767,14 @@ and Statement : sig
       | Identifier of ('M, 'T) Identifier.t
       | Literal of ('T * 'M StringLiteral.t)
 
-    and 'M module_kind =
-      | CommonJS of 'M
-      | ES of 'M
+    and module_kind =
+      | CommonJS
+      | ES
 
     and ('M, 'T) t = {
       id: ('M, 'T) id;
       body: 'M * ('M, 'T) Block.t;
-      kind: 'M module_kind;
+      kind: module_kind;
       comments: ('M, unit) Syntax.t option;
     }
   end
@@ -799,12 +827,21 @@ and Statement : sig
 
   module DeclareExportDeclaration : sig
     type ('M, 'T) declaration =
+      (* declare export var *)
       | Variable of ('M * ('M, 'T) DeclareVariable.t)
+      (* declare export function *)
       | Function of ('M * ('M, 'T) DeclareFunction.t)
+      (* declare export class *)
       | Class of ('M * ('M, 'T) DeclareClass.t)
+      (* declare export default [type]
+       * this corresponds to things like
+       * export default 1+1; *)
       | DefaultType of ('M, 'T) Type.t
+      (* declare export type *)
       | NamedType of ('M * ('M, 'T) TypeAlias.t)
+      (* declare export opaque type *)
       | NamedOpaqueType of ('M * ('M, 'T) OpaqueType.t)
+      (* declare export interface *)
       | Interface of ('M * ('M, 'T) Interface.t)
 
     and ('M, 'T) t = {
@@ -834,7 +871,7 @@ and Statement : sig
 
     and ('M, 'T) t = {
       import_kind: import_kind;
-      source: 'M * 'M StringLiteral.t;
+      source: 'T * 'M StringLiteral.t;
       default: ('M, 'T) Identifier.t option;
       specifiers: ('M, 'T) specifier option;
       comments: ('M, unit) Syntax.t option;
@@ -904,7 +941,6 @@ and Expression : sig
   module CallTypeArg : sig
     module Implicit : sig
       type ('M, 'T) t = 'T * 'M t'
-
       and 'M t' = { comments: ('M, unit) Syntax.t option }
     end
 
@@ -1096,6 +1132,9 @@ and Expression : sig
       | BitOrAssign
       | BitXorAssign
       | BitAndAssign
+      | NullishAssign
+      | AndAssign
+      | OrAssign
 
     and ('M, 'T) t = {
       operator: operator option;
@@ -1175,6 +1214,7 @@ and Expression : sig
   module OptionalCall : sig
     type ('M, 'T) t = {
       call: ('M, 'T) Call.t;
+      filtered_out: 'T;
       optional: bool;
     }
   end
@@ -1195,6 +1235,7 @@ and Expression : sig
   module OptionalMember : sig
     type ('M, 'T) t = {
       member: ('M, 'T) Member.t;
+      filtered_out: 'T;
       optional: bool;
     }
   end
@@ -1204,6 +1245,7 @@ and Expression : sig
       argument: ('M, 'T) Expression.t option;
       comments: ('M, unit) Syntax.t option;
       delegate: bool;
+      result_out: 'T;
     }
   end
 
@@ -1396,7 +1438,6 @@ and JSX : sig
 
   module Closing : sig
     type ('M, 'T) t = 'M * ('M, 'T) t'
-
     and ('M, 'T) t' = { name: ('M, 'T) name }
   end
 
@@ -1688,6 +1729,10 @@ and Function : sig
     return: ('M, 'T) Type.annotation_or_hint;
     tparams: ('M, 'T) Type.TypeParams.t option;
     comments: ('M, unit) Syntax.t option;
+    (* Location of the signature portion of a function, e.g.
+     * function foo(): void {}
+     * ^^^^^^^^^^^^^^^^^^^^
+     *)
     sig_loc: 'M;
   }
 
