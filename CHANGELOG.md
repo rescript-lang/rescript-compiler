@@ -24,6 +24,8 @@
 #### :nail_care: Polish
 
 - Syntax: process uncurried types explicitly in the parser/printer https://github.com/rescript-lang/rescript-compiler/pull/5784
+- Syntax: process uncurried function declarations explicitly in the parser/printer
+
 
 # 10.1.0-rc.5
 

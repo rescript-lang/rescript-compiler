@@ -1,6 +1,6 @@
 ;;foo (fun _ -> bla) blaz
 ;;foo (fun _ -> bla) blaz
-;;foo ((fun _ -> bla)[@bs ]) blaz
+;;foo { Js.Fn.I1 = (fun _ -> bla) } blaz
 ;;foo (fun _ -> bla) (fun _ -> blaz)
 ;;List.map (fun x -> x + 1) myList
 ;;List.reduce (fun acc -> fun curr -> acc + curr) 0 myList
