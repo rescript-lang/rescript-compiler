@@ -117,3 +117,6 @@ let b4 = await (foo.bar.baz)
 let c1 = @foo x => @bar y => x + y
 let c2 = (. x) => y => x+y
 let c3 = (. x) => @foo y => x+y
+
+type t1 = (. int) => string => bool
+type t2 = (. int, string) => bool
