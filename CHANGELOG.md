@@ -21,6 +21,8 @@
 - Parse the attributes of labelled argument to the pattern attributes of argument instead of function.
 - Made pinned dependencies transitive: if *a* is a pinned dependency of *b* and *b* is a pinned dependency of *c*, then *a* is implicitly a pinned dependency of *c*. This change is only breaking if your build process assumes non-transitivity.
 - Curried after uncurried is not fused anymore: `(. x) => y => 3` is not equivalent to `(. x, y) => 3` anymore. It's instead equivalent to `(. x) => { y => 3 }`.
+Also, `(. int) => string => bool` is not equivalen to `(. int, string) => bool` anymore.
+These are only breaking changes for unformatted code.
 
 #### :nail_care: Polish
 
