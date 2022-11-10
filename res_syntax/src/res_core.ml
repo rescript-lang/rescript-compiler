@@ -1455,7 +1455,8 @@ and parseTernaryExpr leftOperand p =
       (Some falseBranch)
   | _ -> leftOperand
 
-and parseEs6ArrowExpression ?context ?parameters p =
+and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
+    ?parameters p =
   let startPos = p.Parser.startPos in
   Parser.leaveBreadcrumb p Grammar.Es6ArrowExpr;
   (* Parsing function parameters and attributes:
@@ -1468,6 +1469,32 @@ and parseEs6ArrowExpression ?context ?parameters p =
     match parameters with
     | Some params -> params
     | None -> parseParameters p
+  in
+  let parameters =
+    match parameters with
+    | TermParameter p :: rest ->
+      TermParameter
+        {
+          p with
+          attrs = arrowAttrs @ p.attrs;
+          pos =
+            (match arrowStartPos with
+            | Some startPos -> startPos
+            | None -> p.pos);
+        }
+      :: rest
+    | TypeParameter p :: rest ->
+      TypeParameter
+        {
+          p with
+          attrs = arrowAttrs @ p.attrs;
+          pos =
+            (match arrowStartPos with
+            | Some startPos -> startPos
+            | None -> p.pos);
+        }
+      :: rest
+    | [] -> parameters
   in
   let returnType =
     match p.Parser.token with
@@ -1488,9 +1515,21 @@ and parseEs6ArrowExpression ?context ?parameters p =
   in
   Parser.eatBreadcrumb p;
   let endPos = p.prevEndPos in
-  let arrowExpr =
+  let body =
+    match parameters with
+    | TermParameter {uncurried = true} :: _
+      when match body.pexp_desc with
+           | Pexp_fun _ -> true
+           | _ -> false ->
+      {
+        body with
+        pexp_attributes = makeBracesAttr body.pexp_loc :: body.pexp_attributes;
+      }
+    | _ -> body
+  in
+  let arrowExpr, _arity =
     List.fold_right
-      (fun parameter expr ->
+      (fun parameter (expr, arity) ->
         match parameter with
         | TermParameter
             {
@@ -1501,13 +1540,34 @@ and parseEs6ArrowExpression ?context ?parameters p =
               pat;
               pos = startPos;
             } ->
-          let attrs = if uncurried then uncurryAttr :: attrs else attrs in
-          Ast_helper.Exp.fun_ ~loc:(mkLoc startPos endPos) ~attrs lbl
-            defaultExpr pat expr
+          let loc = mkLoc startPos endPos in
+          let funExpr =
+            Ast_helper.Exp.fun_ ~loc ~attrs lbl defaultExpr pat expr
+          in
+          if uncurried then
+            let arirtForFn =
+              match pat.ppat_desc with
+              | Ppat_construct ({txt = Lident "()"}, _) when arity = 1 -> 0
+              | _ -> arity
+            in
+            ( Ast_helper.Exp.record ~loc
+                [
+                  ( {
+                      txt =
+                        Ldot
+                          ( Ldot (Lident "Js", "Fn"),
+                            "I" ^ string_of_int arirtForFn );
+                      loc;
+                    },
+                    funExpr );
+                ]
+                None,
+              1 )
+          else (funExpr, arity + 1)
         | TypeParameter {uncurried; attrs; locs = newtypes; pos = startPos} ->
           let attrs = if uncurried then uncurryAttr :: attrs else attrs in
-          makeNewtypes ~attrs ~loc:(mkLoc startPos endPos) newtypes expr)
-      parameters body
+          (makeNewtypes ~attrs ~loc:(mkLoc startPos endPos) newtypes expr, arity))
+      parameters (body, 1)
   in
   {arrowExpr with pexp_loc = {arrowExpr.pexp_loc with loc_start = startPos}}
 
@@ -1726,25 +1786,8 @@ and parseParameters p =
         ]
       | _ -> (
         match parseParameterList p with
-        | TermParameter
-            {
-              attrs;
-              label = lbl;
-              expr = defaultExpr;
-              pat = pattern;
-              pos = startPos;
-            }
-          :: rest ->
-          TermParameter
-            {
-              uncurried = true;
-              attrs;
-              label = lbl;
-              expr = defaultExpr;
-              pat = pattern;
-              pos = startPos;
-            }
-          :: rest
+        | TermParameter p :: rest ->
+          TermParameter {p with uncurried = true; pos = startPos} :: rest
         | parameters -> parameters))
     | _ -> parseParameterList p)
   | token ->
@@ -3128,12 +3171,8 @@ and parseAsyncArrowExpression p =
   let startPos = p.Parser.startPos in
   Parser.expect (Lident "async") p;
   let asyncAttr = makeAsyncAttr (mkLoc startPos p.prevEndPos) in
-  let expr = parseEs6ArrowExpression p in
-  {
-    expr with
-    pexp_attributes = asyncAttr :: expr.pexp_attributes;
-    pexp_loc = {expr.pexp_loc with loc_start = startPos};
-  }
+  parseEs6ArrowExpression ~arrowAttrs:[asyncAttr] ~arrowStartPos:(Some startPos)
+    p
 
 and parseAwaitExpression p =
   let awaitLoc = mkLoc p.Parser.startPos p.endPos in

@@ -1,6 +1,6 @@
 let foo ~a:((a)[@ns.namedArgLoc ])  =
   ((a (let __res_unit = () in __res_unit))[@bs ]) +. 1.
-let a = ((fun () -> 2)[@bs ])
+let a = { Js.Fn.I0 = (fun () -> 2) }
 let bar = foo ~a:((a)[@ns.namedArgLoc ])
 let comparisonResult =
   ((compare currentNode.value ~targetValue:((targetValue)[@ns.namedArgLoc ]))

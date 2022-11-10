@@ -40,23 +40,37 @@ let f ?a:(((x : int option))[@ns.namedArgLoc ])
   ?b:(((y : int option))[@ns.namedArgLoc ])  c =
   match (x, y) with | (Some a, Some b) -> (a + b) + c | _ -> 3
 let f a b = a + b
-let f = ((fun () -> ())[@bs ])
-let f = ((fun () -> ())[@bs ])
-let f = ((fun a -> fun b -> fun c -> ())[@bs ])
-let f = ((fun a -> fun b -> ((fun c -> fun d -> ())[@bs ]))[@bs ])
-let f = ((fun a -> ((fun b -> ((fun c -> ())[@bs ]))[@bs ]))[@bs ])
+let f = { Js.Fn.I0 = (fun () -> ()) }
+let f = { Js.Fn.I0 = (fun () -> ()) }
+let f = { Js.Fn.I3 = (fun a -> fun b -> fun c -> ()) }
 let f =
-  ((fun ~a:((a)[@ns.namedArgLoc ][@attr ]) ->
-      fun b -> ((fun ~c:((c)[@ns.namedArgLoc ][@attr ]) -> fun d -> ())
-        [@bs ]))
-  [@bs ])
+  { Js.Fn.I2 = (fun a -> fun b -> { Js.Fn.I2 = (fun c -> fun d -> ()) }) }
 let f =
-  ((fun ~a:((a)[@ns.namedArgLoc ][@attr ]) ->
-      fun ((b)[@attrOnB ]) ->
-        ((fun ~c:((c)[@ns.namedArgLoc ][@attr ]) ->
-            fun ((d)[@attrOnD ]) -> ())
-        [@bs ]))
-  [@bs ])
+  {
+    Js.Fn.I1 =
+      (fun a -> { Js.Fn.I1 = (fun b -> { Js.Fn.I1 = (fun c -> ()) }) })
+  }
+let f =
+  {
+    Js.Fn.I2 =
+      (fun ~a:((a)[@ns.namedArgLoc ][@attr ]) ->
+         fun b ->
+           {
+             Js.Fn.I2 =
+               (fun ~c:((c)[@ns.namedArgLoc ][@attr ]) -> fun d -> ())
+           })
+  }
+let f =
+  {
+    Js.Fn.I2 =
+      (fun ~a:((a)[@ns.namedArgLoc ][@attr ]) ->
+         fun ((b)[@attrOnB ]) ->
+           {
+             Js.Fn.I2 =
+               (fun ~c:((c)[@ns.namedArgLoc ][@attr ]) ->
+                  fun ((d)[@attrOnD ]) -> ())
+           })
+  }
 let f list = list ()
 ;;match colour with
   | Red when

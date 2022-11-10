@@ -5,13 +5,12 @@ let greetUser =
       [@ns.braces ]))
   [@res.async ])
 ;;((fun () -> 123)[@res.async ])
-let fetch = ((fun url -> ((browserFetch url)[@bs ]))
-  [@ns.braces ][@res.async ][@bs ])
+let fetch =
+  (({ Js.Fn.I1 = ((fun url -> ((browserFetch url)[@bs ]))[@res.async ]) })
+  [@ns.braces ])
 let fetch2 =
-  (((((fun url -> ((browserFetch url)[@bs ])))
-    [@res.async ][@bs ]);
-    (((fun url -> ((browserFetch2 url)[@bs ])))
-    [@res.async ][@bs ]))
+  (({ Js.Fn.I1 = (((fun url -> ((browserFetch url)[@bs ])))[@res.async ]) };
+    { Js.Fn.I1 = (((fun url -> ((browserFetch2 url)[@bs ])))[@res.async ]) })
   [@ns.braces ])
 let async =
   ((let f = async () in

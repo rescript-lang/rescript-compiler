@@ -2647,6 +2647,79 @@ and printIfChain ~customLayout pexp_attributes ifs elseExpr cmtTbl =
   Doc.concat [printAttributes ~customLayout attrs cmtTbl; ifDocs; elseDoc]
 
 and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
+  let printArrow ~isUncurried e =
+    let attrsOnArrow, parameters, returnExpr = ParsetreeViewer.funExpr e in
+    let ParsetreeViewer.{async; uncurried; attributes = attrs} =
+      ParsetreeViewer.processFunctionAttributes attrsOnArrow
+    in
+    let uncurried = uncurried || isUncurried in
+    let returnExpr, typConstraint =
+      match returnExpr.pexp_desc with
+      | Pexp_constraint (expr, typ) ->
+        ( {
+            expr with
+            pexp_attributes =
+              List.concat [expr.pexp_attributes; returnExpr.pexp_attributes];
+          },
+          Some typ )
+      | _ -> (returnExpr, None)
+    in
+    let hasConstraint =
+      match typConstraint with
+      | Some _ -> true
+      | None -> false
+    in
+    let parametersDoc =
+      printExprFunParameters ~customLayout ~inCallback:NoCallback ~uncurried
+        ~async ~hasConstraint parameters cmtTbl
+    in
+    let returnExprDoc =
+      let optBraces, _ = ParsetreeViewer.processBracesAttr returnExpr in
+      let shouldInline =
+        match (returnExpr.pexp_desc, optBraces) with
+        | _, Some _ -> true
+        | ( ( Pexp_array _ | Pexp_tuple _
+            | Pexp_construct (_, Some _)
+            | Pexp_record _ ),
+            _ ) ->
+          true
+        | _ -> false
+      in
+      let shouldIndent =
+        match returnExpr.pexp_desc with
+        | Pexp_sequence _ | Pexp_let _ | Pexp_letmodule _ | Pexp_letexception _
+        | Pexp_open _ ->
+          false
+        | _ -> true
+      in
+      let returnDoc =
+        let doc = printExpressionWithComments ~customLayout returnExpr cmtTbl in
+        match Parens.expr returnExpr with
+        | Parens.Parenthesized -> addParens doc
+        | Braced braces -> printBraces doc returnExpr braces
+        | Nothing -> doc
+      in
+      if shouldInline then Doc.concat [Doc.space; returnDoc]
+      else
+        Doc.group
+          (if shouldIndent then Doc.indent (Doc.concat [Doc.line; returnDoc])
+          else Doc.concat [Doc.space; returnDoc])
+    in
+    let typConstraintDoc =
+      match typConstraint with
+      | Some typ ->
+        let typDoc =
+          let doc = printTypExpr ~customLayout typ cmtTbl in
+          if Parens.arrowReturnTypExpr typ then addParens doc else doc
+        in
+        Doc.concat [Doc.text ": "; typDoc]
+      | _ -> Doc.nil
+    in
+    let attrs = printAttributes ~customLayout attrs cmtTbl in
+    Doc.group
+      (Doc.concat
+         [attrs; parametersDoc; typConstraintDoc; Doc.text " =>"; returnExprDoc])
+  in
   let printedExpression =
     match e.pexp_desc with
     | Parsetree.Pexp_constant c ->
@@ -2902,6 +2975,20 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
             ]
       in
       Doc.group (Doc.concat [variantName; args])
+    | Pexp_fun
+        ( Nolabel,
+          None,
+          {ppat_desc = Ppat_var {txt = "__x"}},
+          {pexp_desc = Pexp_apply _} ) ->
+      (* (__x) => f(a, __x, c) -----> f(a, _, c)  *)
+      printExpressionWithComments ~customLayout
+        (ParsetreeViewer.rewriteUnderscoreApply e)
+        cmtTbl
+    | Pexp_fun _ | Pexp_newtype _ -> printArrow ~isUncurried:false e
+    | Pexp_record
+        ([({txt = Ldot (Ldot (Lident "Js", "Fn"), name)}, funExpr)], None)
+      when String.length name >= 1 && name.[0] = 'I' ->
+      printArrow ~isUncurried:true funExpr
     | Pexp_record (rows, spreadExpr) ->
       if rows = [] then
         Doc.concat
@@ -3190,94 +3277,6 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
     | Pexp_sequence _ ->
       printExpressionBlock ~customLayout ~braces:true e cmtTbl
     | Pexp_let _ -> printExpressionBlock ~customLayout ~braces:true e cmtTbl
-    | Pexp_fun
-        ( Nolabel,
-          None,
-          {ppat_desc = Ppat_var {txt = "__x"}},
-          {pexp_desc = Pexp_apply _} ) ->
-      (* (__x) => f(a, __x, c) -----> f(a, _, c)  *)
-      printExpressionWithComments ~customLayout
-        (ParsetreeViewer.rewriteUnderscoreApply e)
-        cmtTbl
-    | Pexp_fun _ | Pexp_newtype _ ->
-      let attrsOnArrow, parameters, returnExpr = ParsetreeViewer.funExpr e in
-      let ParsetreeViewer.{async; uncurried; attributes = attrs} =
-        ParsetreeViewer.processFunctionAttributes attrsOnArrow
-      in
-      let returnExpr, typConstraint =
-        match returnExpr.pexp_desc with
-        | Pexp_constraint (expr, typ) ->
-          ( {
-              expr with
-              pexp_attributes =
-                List.concat [expr.pexp_attributes; returnExpr.pexp_attributes];
-            },
-            Some typ )
-        | _ -> (returnExpr, None)
-      in
-      let hasConstraint =
-        match typConstraint with
-        | Some _ -> true
-        | None -> false
-      in
-      let parametersDoc =
-        printExprFunParameters ~customLayout ~inCallback:NoCallback ~uncurried
-          ~async ~hasConstraint parameters cmtTbl
-      in
-      let returnExprDoc =
-        let optBraces, _ = ParsetreeViewer.processBracesAttr returnExpr in
-        let shouldInline =
-          match (returnExpr.pexp_desc, optBraces) with
-          | _, Some _ -> true
-          | ( ( Pexp_array _ | Pexp_tuple _
-              | Pexp_construct (_, Some _)
-              | Pexp_record _ ),
-              _ ) ->
-            true
-          | _ -> false
-        in
-        let shouldIndent =
-          match returnExpr.pexp_desc with
-          | Pexp_sequence _ | Pexp_let _ | Pexp_letmodule _
-          | Pexp_letexception _ | Pexp_open _ ->
-            false
-          | _ -> true
-        in
-        let returnDoc =
-          let doc =
-            printExpressionWithComments ~customLayout returnExpr cmtTbl
-          in
-          match Parens.expr returnExpr with
-          | Parens.Parenthesized -> addParens doc
-          | Braced braces -> printBraces doc returnExpr braces
-          | Nothing -> doc
-        in
-        if shouldInline then Doc.concat [Doc.space; returnDoc]
-        else
-          Doc.group
-            (if shouldIndent then Doc.indent (Doc.concat [Doc.line; returnDoc])
-            else Doc.concat [Doc.space; returnDoc])
-      in
-      let typConstraintDoc =
-        match typConstraint with
-        | Some typ ->
-          let typDoc =
-            let doc = printTypExpr ~customLayout typ cmtTbl in
-            if Parens.arrowReturnTypExpr typ then addParens doc else doc
-          in
-          Doc.concat [Doc.text ": "; typDoc]
-        | _ -> Doc.nil
-      in
-      let attrs = printAttributes ~customLayout attrs cmtTbl in
-      Doc.group
-        (Doc.concat
-           [
-             attrs;
-             parametersDoc;
-             typConstraintDoc;
-             Doc.text " =>";
-             returnExprDoc;
-           ])
     | Pexp_try (expr, cases) ->
       let exprDoc =
         let doc = printExpressionWithComments ~customLayout expr cmtTbl in
