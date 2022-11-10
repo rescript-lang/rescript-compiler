@@ -9,9 +9,13 @@ let f =
   (({
       Js.Fn.I1 =
         (fun a ->
-           ((fun b -> (({ Js.Fn.I1 = (fun c -> ((fun d -> ())[@attr4 ])) })
+           ((fun b ->
+               (({
+                   Js.Fn.I1 =
+                     (fun c -> ((fun d -> ())[@ns.braces ][@attr4 ]))
+                 })
                [@attr3 ]))
-           [@attr2 ]))
+           [@ns.braces ][@attr2 ]))
     })
   [@attr ])
 let f =

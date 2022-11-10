@@ -1515,6 +1515,18 @@ and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
   in
   Parser.eatBreadcrumb p;
   let endPos = p.prevEndPos in
+  let body =
+    match parameters with
+    | TermParameter {uncurried = true} :: _
+      when match body.pexp_desc with
+           | Pexp_fun _ -> true
+           | _ -> false ->
+      {
+        body with
+        pexp_attributes = makeBracesAttr body.pexp_loc :: body.pexp_attributes;
+      }
+    | _ -> body
+  in
   let arrowExpr, _arity =
     List.fold_right
       (fun parameter (expr, arity) ->
