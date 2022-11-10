@@ -2985,7 +2985,8 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
         (ParsetreeViewer.rewriteUnderscoreApply e)
         cmtTbl
     | Pexp_fun _ | Pexp_newtype _ -> printArrow ~isUncurried:false e
-    | Pexp_record ([({txt = Ldot (Ldot (Lident "Js", "Fn"), name)}, funExpr)], None)
+    | Pexp_record
+        ([({txt = Ldot (Ldot (Lident "Js", "Fn"), name)}, funExpr)], None)
       when String.length name >= 1 && name.[0] = 'I' ->
       printArrow ~isUncurried:true funExpr
     | Pexp_record (rows, spreadExpr) ->

@@ -115,5 +115,9 @@ let b3 = await (foo->bar(~arg))
 let b4 = await (foo.bar.baz)
 
 let c1 = @foo x => @bar y => x + y
-let c2 = (. x) => y => x+y
+
+// This is not idempotent:
+// let c2 = (. x) => y => x+y
+
+let c2 = (. x, y) => x+y
 let c3 = (. x) => @foo y => x+y
