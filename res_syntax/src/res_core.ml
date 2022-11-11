@@ -180,6 +180,14 @@ type argument = {
   expr: Parsetree.expression;
 }
 
+type typeParameter = {
+  dotted: bool;
+  attrs: Ast_helper.attrs;
+  label: Asttypes.arg_label;
+  typ: Parsetree.core_type;
+  startPos: Lexing.position;
+}
+
 type typDefOrExt =
   | TypeDef of {
       recFlag: Asttypes.rec_flag;
@@ -1586,7 +1594,7 @@ and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
   {arrowExpr with pexp_loc = {arrowExpr.pexp_loc with loc_start = startPos}}
 
 (*
- * uncurried_parameter ::=
+ * dotted_parameter ::=
  *   | . parameter
  *
  * parameter ::=
@@ -3460,7 +3468,7 @@ and parseSwitchExpression p =
  *   | ~ label-name = ? _           (* syntax sugar *)
  *   | ~ label-name = ? expr : type
  *
- *  uncurried_argument ::=
+ *  dotted_argument ::=
  *   | . argument
  *)
 and parseArgument p : argument option =
@@ -4089,7 +4097,7 @@ and parseTypeAlias p typ =
    *  | attrs ~ident: type_expr    -> attrs are on the arrow
    *  | attrs type_expr            -> attrs are here part of the type_expr
    *
-   * uncurried_type_parameter ::=
+   * dotted_type_parameter ::=
    *  | . type_parameter
 *)
 and parseTypeParameter p =
@@ -4099,7 +4107,7 @@ and parseTypeParameter p =
     || Grammar.isTypExprStart p.token
   then
     let startPos = p.Parser.startPos in
-    let uncurried = Parser.optional p Dot in
+    let dotted = Parser.optional p Dot in
     let attrs = parseAttributes p in
     match p.Parser.token with
     | Tilde -> (
@@ -4117,8 +4125,8 @@ and parseTypeParameter p =
       | Equal ->
         Parser.next p;
         Parser.expect Question p;
-        Some (uncurried, attrs, Asttypes.Optional name, typ, startPos)
-      | _ -> Some (uncurried, attrs, Asttypes.Labelled name, typ, startPos))
+        Some {dotted; attrs; label = Optional name; typ; startPos}
+      | _ -> Some {dotted; attrs; label = Labelled name; typ; startPos})
     | Lident _ -> (
       let name, loc = parseLident p in
       match p.token with
@@ -4136,8 +4144,8 @@ and parseTypeParameter p =
         | Equal ->
           Parser.next p;
           Parser.expect Question p;
-          Some (uncurried, attrs, Asttypes.Optional name, typ, startPos)
-        | _ -> Some (uncurried, attrs, Asttypes.Labelled name, typ, startPos))
+          Some {dotted; attrs; label = Optional name; typ; startPos}
+        | _ -> Some {dotted; attrs; label = Labelled name; typ; startPos})
       | _ ->
         let constr = Location.mkloc (Longident.Lident name) loc in
         let args = parseTypeConstructorArgs ~constrName:constr p in
@@ -4149,13 +4157,14 @@ and parseTypeParameter p =
 
         let typ = parseArrowTypeRest ~es6Arrow:true ~startPos typ p in
         let typ = parseTypeAlias p typ in
-        Some (uncurried, [], Asttypes.Nolabel, typ, startPos))
+        Some {dotted; attrs = []; label = Nolabel; typ; startPos})
     | _ ->
       let typ = parseTypExpr p in
       let typWithAttributes =
         {typ with ptyp_attributes = List.concat [attrs; typ.ptyp_attributes]}
       in
-      Some (uncurried, [], Asttypes.Nolabel, typWithAttributes, startPos)
+      Some
+        {dotted; attrs = []; label = Nolabel; typ = typWithAttributes; startPos}
   else None
 
 (* (int, ~x:string, float) *)
@@ -4168,7 +4177,7 @@ and parseTypeParameters p =
     let loc = mkLoc startPos p.prevEndPos in
     let unitConstr = Location.mkloc (Longident.Lident "unit") loc in
     let typ = Ast_helper.Typ.constr unitConstr [] in
-    [(false, [], Asttypes.Nolabel, typ, startPos)]
+    [{dotted = false; attrs = []; label = Nolabel; typ; startPos}]
   | _ ->
     let params =
       parseCommaDelimitedRegion ~grammar:Grammar.TypeParameters ~closing:Rparen
@@ -4208,8 +4217,8 @@ and parseEs6ArrowType ~attrs p =
     let endPos = p.prevEndPos in
     let typ =
       List.fold_right
-        (fun (uncurried, attrs, argLbl, (typ : Parsetree.core_type), startPos) t ->
-          if uncurried then
+        (fun {dotted; attrs; label = argLbl; typ; startPos} t ->
+          if dotted then
             let isUnit =
               match typ.ptyp_desc with
               | Ptyp_constr ({txt = Lident "unit"}, []) -> true
