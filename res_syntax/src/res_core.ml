@@ -189,7 +189,7 @@ type typDefOrExt =
 
 type labelledParameter =
   | TermParameter of {
-      uncurried: bool;
+      dotted: bool;
       attrs: Parsetree.attributes;
       label: Asttypes.arg_label;
       expr: Parsetree.expression option;
@@ -197,7 +197,7 @@ type labelledParameter =
       pos: Lexing.position;
     }
   | TypeParameter of {
-      uncurried: bool;
+      dotted: bool;
       attrs: Parsetree.attributes;
       locs: string Location.loc list;
       pos: Lexing.position;
@@ -1523,7 +1523,7 @@ and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
   let endPos = p.prevEndPos in
   let body =
     match parameters with
-    | TermParameter {uncurried = true} :: _
+    | TermParameter {dotted = true} :: _
       when match body.pexp_desc with
            | Pexp_fun _ -> true
            | _ -> false ->
@@ -1539,7 +1539,7 @@ and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
         match parameter with
         | TermParameter
             {
-              uncurried;
+              dotted;
               attrs;
               label = lbl;
               expr = defaultExpr;
@@ -1550,7 +1550,7 @@ and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
           let funExpr =
             Ast_helper.Exp.fun_ ~loc ~attrs lbl defaultExpr pat expr
           in
-          if uncurried then
+          if dotted then
             let arirtForFn =
               match pat.ppat_desc with
               | Ppat_construct ({txt = Lident "()"}, _) when arity = 1 -> 0
@@ -1570,8 +1570,8 @@ and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
                 None,
               1 )
           else (funExpr, arity + 1)
-        | TypeParameter {uncurried; attrs; locs = newtypes; pos = startPos} ->
-          let attrs = if uncurried then uncurryAttr :: attrs else attrs in
+        | TypeParameter {dotted; attrs; locs = newtypes; pos = startPos} ->
+          let attrs = if dotted then uncurryAttr :: attrs else attrs in
           (makeNewtypes ~attrs ~loc:(mkLoc startPos endPos) newtypes expr, arity))
       parameters (body, 1)
   in
@@ -1602,12 +1602,12 @@ and parseParameter p =
     || Grammar.isPatternStart p.token
   then
     let startPos = p.Parser.startPos in
-    let uncurried = Parser.optional p Token.Dot in
+    let dotted = Parser.optional p Token.Dot in
     let attrs = parseAttributes p in
     if p.Parser.token = Typ then (
       Parser.next p;
       let lidents = parseLidentList p in
-      Some (TypeParameter {uncurried; attrs; locs = lidents; pos = startPos}))
+      Some (TypeParameter {dotted; attrs; locs = lidents; pos = startPos}))
     else
       let attrs, lbl, pat =
         match p.Parser.token with
@@ -1681,13 +1681,13 @@ and parseParameter p =
           Parser.next p;
           Some
             (TermParameter
-               {uncurried; attrs; label = lbl; expr = None; pat; pos = startPos})
+               {dotted; attrs; label = lbl; expr = None; pat; pos = startPos})
         | _ ->
           let expr = parseConstrainedOrCoercedExpr p in
           Some
             (TermParameter
                {
-                 uncurried;
+                 dotted;
                  attrs;
                  label = lbl;
                  expr = Some expr;
@@ -1697,7 +1697,7 @@ and parseParameter p =
       | _ ->
         Some
           (TermParameter
-             {uncurried; attrs; label = lbl; expr = None; pat; pos = startPos})
+             {dotted; attrs; label = lbl; expr = None; pat; pos = startPos})
   else None
 
 and parseParameterList p =
@@ -1724,7 +1724,7 @@ and parseParameters p =
     [
       TermParameter
         {
-          uncurried = false;
+          dotted = false;
           attrs = [];
           label = Asttypes.Nolabel;
           expr = None;
@@ -1738,7 +1738,7 @@ and parseParameters p =
     [
       TermParameter
         {
-          uncurried = false;
+          dotted = false;
           attrs = [];
           label = Asttypes.Nolabel;
           expr = None;
@@ -1760,7 +1760,7 @@ and parseParameters p =
       [
         TermParameter
           {
-            uncurried = false;
+            dotted = false;
             attrs = [];
             label = Asttypes.Nolabel;
             expr = None;
@@ -1782,7 +1782,7 @@ and parseParameters p =
         [
           TermParameter
             {
-              uncurried = true;
+              dotted = true;
               attrs = [];
               label = Asttypes.Nolabel;
               expr = None;
@@ -1793,7 +1793,7 @@ and parseParameters p =
       | _ -> (
         match parseParameterList p with
         | TermParameter p :: rest ->
-          TermParameter {p with uncurried = true; pos = startPos} :: rest
+          TermParameter {p with dotted = true; pos = startPos} :: rest
         | parameters -> parameters))
     | _ -> parseParameterList p)
   | token ->
@@ -2889,7 +2889,7 @@ and parseBracedOrRecordExpr p =
               [
                 TermParameter
                   {
-                    uncurried = false;
+                    dotted = false;
                     attrs = [];
                     label = Asttypes.Nolabel;
                     expr = None;
