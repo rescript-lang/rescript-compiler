@@ -4218,7 +4218,10 @@ and parseEs6ArrowType ~attrs p =
     let typ =
       List.fold_right
         (fun {dotted; attrs; label = argLbl; typ; startPos} t ->
-          if dotted then
+          let uncurried =
+            if p.uncurried_by_default then not dotted else dotted
+          in
+          if uncurried then
             let isUnit =
               match typ.ptyp_desc with
               | Ptyp_constr ({txt = Lident "unit"}, []) -> true
@@ -4295,7 +4298,12 @@ and parseArrowTypeRest ~es6Arrow ~startPos typ p =
     Parser.next p;
     let returnType = parseTypExpr ~alias:false p in
     let loc = mkLoc startPos p.prevEndPos in
-    Ast_helper.Typ.arrow ~loc Asttypes.Nolabel typ returnType
+    let arrowTyp = Ast_helper.Typ.arrow ~loc Asttypes.Nolabel typ returnType in
+    if p.uncurried_by_default then
+      Ast_helper.Typ.constr ~loc
+        {txt = Ldot (Ldot (Lident "Js", "Fn"), "arity1"); loc}
+        [arrowTyp]
+    else arrowTyp
   | _ -> typ
 
 and parseTypExprRegion p =
