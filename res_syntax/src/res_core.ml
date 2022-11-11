@@ -174,6 +174,12 @@ let templateLiteralAttr = (Location.mknoloc "res.template", Parsetree.PStr [])
 
 let spreadAttr = (Location.mknoloc "res.spread", Parsetree.PStr [])
 
+type argument = {
+  dotted: bool;
+  label: Asttypes.arg_label;
+  expr: Parsetree.expression;
+}
+
 type typDefOrExt =
   | TypeDef of {
       recFlag: Asttypes.rec_flag;
@@ -3449,7 +3455,7 @@ and parseSwitchExpression p =
  *  uncurried_argument ::=
  *   | . argument
  *)
-and parseArgument p =
+and parseArgument p : argument option =
   if
     p.Parser.token = Token.Tilde
     || p.token = Dot || p.token = Underscore
@@ -3457,7 +3463,7 @@ and parseArgument p =
   then
     match p.Parser.token with
     | Dot -> (
-      let uncurried = true in
+      let dotted = true in
       Parser.next p;
       match p.token with
       (* apply(.) *)
@@ -3467,21 +3473,21 @@ and parseArgument p =
             (Location.mknoloc (Longident.Lident "()"))
             None
         in
-        Some (uncurried, Asttypes.Nolabel, unitExpr)
-      | _ -> parseArgument2 p ~uncurried)
-    | _ -> parseArgument2 p ~uncurried:false
+        Some {dotted; label = Asttypes.Nolabel; expr = unitExpr}
+      | _ -> parseArgument2 p ~dotted)
+    | _ -> parseArgument2 p ~dotted:false
   else None
 
-and parseArgument2 p ~uncurried =
+and parseArgument2 p ~dotted : argument option =
   match p.Parser.token with
   (* foo(_), do not confuse with foo(_ => x), TODO: performance *)
   | Underscore when not (isEs6ArrowExpression ~inTernary:false p) ->
     let loc = mkLoc p.startPos p.endPos in
     Parser.next p;
-    let exp =
+    let expr =
       Ast_helper.Exp.ident ~loc (Location.mkloc (Longident.Lident "_") loc)
     in
-    Some (uncurried, Asttypes.Nolabel, exp)
+    Some {dotted; label = Nolabel; expr}
   | Tilde -> (
     Parser.next p;
     (* TODO: nesting of pattern matches not intuitive for error recovery *)
@@ -3501,7 +3507,7 @@ and parseArgument2 p ~uncurried =
       match p.Parser.token with
       | Question ->
         Parser.next p;
-        Some (uncurried, Asttypes.Optional ident, identExpr)
+        Some {dotted; label = Optional ident; expr = identExpr}
       | Equal ->
         Parser.next p;
         let label =
@@ -3522,7 +3528,7 @@ and parseArgument2 p ~uncurried =
             let expr = parseConstrainedOrCoercedExpr p in
             {expr with pexp_attributes = propLocAttr :: expr.pexp_attributes}
         in
-        Some (uncurried, label, expr)
+        Some {dotted; label; expr}
       | Colon ->
         Parser.next p;
         let typ = parseTypExpr p in
@@ -3530,12 +3536,12 @@ and parseArgument2 p ~uncurried =
         let expr =
           Ast_helper.Exp.constraint_ ~attrs:[propLocAttr] ~loc identExpr typ
         in
-        Some (uncurried, Labelled ident, expr)
-      | _ -> Some (uncurried, Labelled ident, identExpr))
+        Some {dotted; label = Labelled ident; expr}
+      | _ -> Some {dotted; label = Labelled ident; expr = identExpr})
     | t ->
       Parser.err p (Diagnostics.lident t);
-      Some (uncurried, Nolabel, Recover.defaultExpr ()))
-  | _ -> Some (uncurried, Nolabel, parseConstrainedOrCoercedExpr p)
+      Some {dotted; label = Nolabel; expr = Recover.defaultExpr ()})
+  | _ -> Some {dotted; label = Nolabel; expr = parseConstrainedOrCoercedExpr p}
 
 and parseCallExpr p funExpr =
   Parser.expect Lparen p;
@@ -3552,20 +3558,26 @@ and parseCallExpr p funExpr =
       let loc = mkLoc startPos p.prevEndPos in
       (* No args -> unit sugar: `foo()` *)
       [
-        ( false,
-          Asttypes.Nolabel,
-          Ast_helper.Exp.construct ~loc
-            (Location.mkloc (Longident.Lident "()") loc)
-            None );
+        {
+          dotted = false;
+          label = Nolabel;
+          expr =
+            Ast_helper.Exp.construct ~loc
+              (Location.mkloc (Longident.Lident "()") loc)
+              None;
+        };
       ]
     | [
-     ( true,
-       Asttypes.Nolabel,
-       ({
-          pexp_desc = Pexp_construct ({txt = Longident.Lident "()"}, None);
-          pexp_loc = loc;
-          pexp_attributes = [];
-        } as expr) );
+     {
+       dotted = true;
+       label = Nolabel;
+       expr =
+         {
+           pexp_desc = Pexp_construct ({txt = Longident.Lident "()"}, None);
+           pexp_loc = loc;
+           pexp_attributes = [];
+         } as expr;
+     };
     ]
       when (not loc.loc_ghost) && p.mode = ParseForTypeChecker ->
       (*  Since there is no syntax space for arity zero vs arity one,
@@ -3581,40 +3593,44 @@ and parseCallExpr p funExpr =
        *  Related: https://github.com/rescript-lang/syntax/issues/138
        *)
       [
-        ( true,
-          Asttypes.Nolabel,
-          Ast_helper.Exp.let_ Asttypes.Nonrecursive
-            [
-              Ast_helper.Vb.mk
-                (Ast_helper.Pat.var (Location.mknoloc "__res_unit"))
-                expr;
-            ]
-            (Ast_helper.Exp.ident
-               (Location.mknoloc (Longident.Lident "__res_unit"))) );
+        {
+          dotted = true;
+          label = Nolabel;
+          expr =
+            Ast_helper.Exp.let_ Asttypes.Nonrecursive
+              [
+                Ast_helper.Vb.mk
+                  (Ast_helper.Pat.var (Location.mknoloc "__res_unit"))
+                  expr;
+              ]
+              (Ast_helper.Exp.ident
+                 (Location.mknoloc (Longident.Lident "__res_unit")));
+        };
       ]
     | args -> args
   in
   let loc = {funExpr.pexp_loc with loc_end = p.prevEndPos} in
   let args =
     match args with
-    | (u, lbl, expr) :: args ->
-      let group (grp, acc) (uncurried, lbl, expr) =
-        let _u, grp = grp in
-        if uncurried == true then
-          ((true, [(lbl, expr)]), (_u, List.rev grp) :: acc)
-        else ((_u, (lbl, expr) :: grp), acc)
+    | {dotted = d; label = lbl; expr} :: args ->
+      let group (grp, acc) {dotted; label = lbl; expr} =
+        let _d, grp = grp in
+        if dotted == true then ((true, [(lbl, expr)]), (_d, List.rev grp) :: acc)
+        else ((_d, (lbl, expr) :: grp), acc)
       in
-      let (_u, grp), acc = List.fold_left group ((u, [(lbl, expr)]), []) args in
-      List.rev ((_u, List.rev grp) :: acc)
+      let (_d, grp), acc = List.fold_left group ((d, [(lbl, expr)]), []) args in
+      List.rev ((_d, List.rev grp) :: acc)
     | [] -> []
   in
   let apply =
     List.fold_left
       (fun callBody group ->
-        let uncurried, args = group in
+        let dotted, args = group in
         let args, wrap = processUnderscoreApplication args in
         let exp =
-          let uncurried = if p.uncurried then not uncurried else uncurried in
+          let uncurried =
+            if p.uncurried_by_default then not dotted else dotted
+          in
           if uncurried then
             let attrs = [uncurryAttr] in
             Ast_helper.Exp.apply ~loc ~attrs callBody args
@@ -6332,7 +6348,7 @@ and parseStandaloneAttribute p =
   let startPos = p.startPos in
   Parser.expect AtAt p;
   let attrId = parseAttributeId ~startPos p in
-  if attrId.txt = "uncurried" then p.uncurried <- true;
+  if attrId.txt = "uncurried" then p.uncurried_by_default <- true;
   let payload = parsePayload p in
   (attrId, payload)
 
