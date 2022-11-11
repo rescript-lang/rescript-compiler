@@ -1523,8 +1523,10 @@ and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
   let endPos = p.prevEndPos in
   let body =
     match parameters with
-    | TermParameter {dotted = true} :: _
-      when match body.pexp_desc with
+    | TermParameter {dotted} :: _
+      when (if p.uncurried_by_default then not dotted else dotted)
+           &&
+           match body.pexp_desc with
            | Pexp_fun _ -> true
            | _ -> false ->
       {
@@ -1550,7 +1552,10 @@ and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
           let funExpr =
             Ast_helper.Exp.fun_ ~loc ~attrs lbl defaultExpr pat expr
           in
-          if dotted then
+          let uncurried =
+            if p.uncurried_by_default then not dotted else dotted
+          in
+          if uncurried then
             let arirtForFn =
               match pat.ppat_desc with
               | Ppat_construct ({txt = Lident "()"}, _) when arity = 1 -> 0
@@ -1571,7 +1576,10 @@ and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
               1 )
           else (funExpr, arity + 1)
         | TypeParameter {dotted; attrs; locs = newtypes; pos = startPos} ->
-          let attrs = if dotted then uncurryAttr :: attrs else attrs in
+          let uncurried =
+            if p.uncurried_by_default then not dotted else dotted
+          in
+          let attrs = if uncurried then uncurryAttr :: attrs else attrs in
           (makeNewtypes ~attrs ~loc:(mkLoc startPos endPos) newtypes expr, arity))
       parameters (body, 1)
   in
