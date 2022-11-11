@@ -1,5 +1,25 @@
-let u = foo 3
-let c = ((foo 3)[@bs ])
+let cApp = foo 3
+let uApp = ((foo 3)[@bs ])
+let cFun x = 3
+let uFun = { Js.Fn.I1 = (fun x -> 3) }
+let mixFun a =
+  {
+    Js.Fn.I2 =
+      (fun b ->
+         fun c ->
+           fun d -> fun e -> fun f -> fun g -> { Js.Fn.I1 = (fun h -> 4) })
+  }
+let bracesFun = { Js.Fn.I1 = (fun x -> ((fun y -> x + y)[@ns.braces ])) }
 [@@@uncurried ]
-let u = foo 3
-let c = ((foo 3)[@bs ])
+let cApp = foo 3
+let uApp = ((foo 3)[@bs ])
+let cFun x = 3
+let uFun = { Js.Fn.I1 = (fun x -> 3) }
+let mixFun a =
+  {
+    Js.Fn.I2 =
+      (fun b ->
+         fun c ->
+           fun d -> fun e -> fun f -> fun g -> { Js.Fn.I1 = (fun h -> 4) })
+  }
+let bracesFun = { Js.Fn.I1 = (fun x -> ((fun y -> x + y)[@ns.braces ])) }
