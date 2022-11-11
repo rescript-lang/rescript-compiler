@@ -1,0 +1,5 @@
+let u = foo 3
+let c = ((foo 3)[@bs ])
+[@@@uncurried ]
+let u = foo 3
+let c = ((foo 3)[@bs ])

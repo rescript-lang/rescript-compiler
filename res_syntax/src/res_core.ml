@@ -3614,6 +3614,7 @@ and parseCallExpr p funExpr =
         let uncurried, args = group in
         let args, wrap = processUnderscoreApplication args in
         let exp =
+          let uncurried = if p.uncurried then not uncurried else uncurried in
           if uncurried then
             let attrs = [uncurryAttr] in
             Ast_helper.Exp.apply ~loc ~attrs callBody args
@@ -6329,9 +6330,9 @@ and parseAttributes p =
  *)
 and parseStandaloneAttribute p =
   let startPos = p.startPos in
-  (*  XX *)
   Parser.expect AtAt p;
   let attrId = parseAttributeId ~startPos p in
+  if attrId.txt = "uncurried" then p.uncurried <- true;
   let payload = parsePayload p in
   (attrId, payload)
 
