@@ -10,6 +10,15 @@ let mixFun a =
            fun d -> fun e -> fun f -> fun g -> { Js.Fn.I1 = (fun h -> 4) })
   }
 let bracesFun = { Js.Fn.I1 = (fun x -> ((fun y -> x + y)[@ns.braces ])) }
+type nonrec cTyp = string -> int
+type nonrec uTyp = (string -> int) Js.Fn.arity1
+type nonrec mixTyp =
+  string ->
+    (string ->
+       string ->
+         string -> string -> string -> string -> (string -> int) Js.Fn.arity1)
+      Js.Fn.arity6
+type nonrec bTyp = (string -> string -> int) Js.Fn.arity2
 [@@@uncurried ]
 let cApp = foo 3
 let uApp = ((foo 3)[@bs ])
@@ -23,3 +32,12 @@ let mixFun a =
            fun d -> fun e -> fun f -> fun g -> { Js.Fn.I1 = (fun h -> 4) })
   }
 let bracesFun = { Js.Fn.I1 = (fun x -> ((fun y -> x + y)[@ns.braces ])) }
+type nonrec cTyp = string -> int
+type nonrec uTyp = (string -> int) Js.Fn.arity1
+type nonrec mixTyp =
+  string ->
+    (string ->
+       string ->
+         string -> string -> string -> string -> (string -> int) Js.Fn.arity1)
+      Js.Fn.arity6
+type nonrec bTyp = (string -> string -> int) Js.Fn.arity1
