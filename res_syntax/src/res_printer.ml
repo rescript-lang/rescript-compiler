@@ -572,19 +572,29 @@ let printOptionalLabel attrs =
   if Res_parsetree_viewer.hasOptionalAttribute attrs then Doc.text "?"
   else Doc.nil
 
-let customLayoutThreshold = 2
+module State = struct
+  let customLayoutThreshold = 2
 
-let rec printStructure ~customLayout (s : Parsetree.structure) t =
+  type t = {customLayout: int; uncurried: bool}
+
+  let init = {customLayout = 0; uncurried = false}
+
+  let nextCustomLayout t = {t with customLayout = t.customLayout + 1}
+
+  let shouldBreakCallback t = t.customLayout > customLayoutThreshold
+end
+
+let rec printStructure ~state (s : Parsetree.structure) t =
   match s with
   | [] -> printCommentsInsideFile t
   | structure ->
     printList
       ~getLoc:(fun s -> s.Parsetree.pstr_loc)
       ~nodes:structure
-      ~print:(printStructureItem ~customLayout)
+      ~print:(printStructureItem ~state)
       t
 
-and printStructureItem ~customLayout (si : Parsetree.structure_item) cmtTbl =
+and printStructureItem ~state (si : Parsetree.structure_item) cmtTbl =
   match si.pstr_desc with
   | Pstr_value (rec_flag, valueBindings) ->
     let recFlag =
@@ -592,58 +602,56 @@ and printStructureItem ~customLayout (si : Parsetree.structure_item) cmtTbl =
       | Asttypes.Nonrecursive -> Doc.nil
       | Asttypes.Recursive -> Doc.text "rec "
     in
-    printValueBindings ~customLayout ~recFlag valueBindings cmtTbl
+    printValueBindings ~state ~recFlag valueBindings cmtTbl
   | Pstr_type (recFlag, typeDeclarations) ->
     let recFlag =
       match recFlag with
       | Asttypes.Nonrecursive -> Doc.nil
       | Asttypes.Recursive -> Doc.text "rec "
     in
-    printTypeDeclarations ~customLayout ~recFlag typeDeclarations cmtTbl
+    printTypeDeclarations ~state ~recFlag typeDeclarations cmtTbl
   | Pstr_primitive valueDescription ->
-    printValueDescription ~customLayout valueDescription cmtTbl
+    printValueDescription ~state valueDescription cmtTbl
   | Pstr_eval (expr, attrs) ->
     let exprDoc =
-      let doc = printExpressionWithComments ~customLayout expr cmtTbl in
+      let doc = printExpressionWithComments ~state expr cmtTbl in
       match Parens.structureExpr expr with
       | Parens.Parenthesized -> addParens doc
       | Braced braces -> printBraces doc expr braces
       | Nothing -> doc
     in
-    Doc.concat [printAttributes ~customLayout attrs cmtTbl; exprDoc]
+    Doc.concat [printAttributes ~state attrs cmtTbl; exprDoc]
   | Pstr_attribute attr ->
-    fst (printAttribute ~customLayout ~standalone:true attr cmtTbl)
+    fst (printAttribute ~state ~standalone:true attr cmtTbl)
   | Pstr_extension (extension, attrs) ->
     Doc.concat
       [
-        printAttributes ~customLayout attrs cmtTbl;
-        Doc.concat
-          [printExtension ~customLayout ~atModuleLvl:true extension cmtTbl];
+        printAttributes ~state attrs cmtTbl;
+        Doc.concat [printExtension ~state ~atModuleLvl:true extension cmtTbl];
       ]
   | Pstr_include includeDeclaration ->
-    printIncludeDeclaration ~customLayout includeDeclaration cmtTbl
+    printIncludeDeclaration ~state includeDeclaration cmtTbl
   | Pstr_open openDescription ->
-    printOpenDescription ~customLayout openDescription cmtTbl
+    printOpenDescription ~state openDescription cmtTbl
   | Pstr_modtype modTypeDecl ->
-    printModuleTypeDeclaration ~customLayout modTypeDecl cmtTbl
+    printModuleTypeDeclaration ~state modTypeDecl cmtTbl
   | Pstr_module moduleBinding ->
-    printModuleBinding ~customLayout ~isRec:false moduleBinding cmtTbl 0
+    printModuleBinding ~state ~isRec:false moduleBinding cmtTbl 0
   | Pstr_recmodule moduleBindings ->
     printListi
       ~getLoc:(fun mb -> mb.Parsetree.pmb_loc)
       ~nodes:moduleBindings
-      ~print:(printModuleBinding ~customLayout ~isRec:true)
+      ~print:(printModuleBinding ~state ~isRec:true)
       cmtTbl
   | Pstr_exception extensionConstructor ->
-    printExceptionDef ~customLayout extensionConstructor cmtTbl
-  | Pstr_typext typeExtension ->
-    printTypeExtension ~customLayout typeExtension cmtTbl
+    printExceptionDef ~state extensionConstructor cmtTbl
+  | Pstr_typext typeExtension -> printTypeExtension ~state typeExtension cmtTbl
   | Pstr_class _ | Pstr_class_type _ -> Doc.nil
 
-and printTypeExtension ~customLayout (te : Parsetree.type_extension) cmtTbl =
+and printTypeExtension ~state (te : Parsetree.type_extension) cmtTbl =
   let prefix = Doc.text "type " in
   let name = printLidentPath te.ptyext_path cmtTbl in
-  let typeParams = printTypeParams ~customLayout te.ptyext_params cmtTbl in
+  let typeParams = printTypeParams ~state te.ptyext_params cmtTbl in
   let extensionConstructors =
     let ecs = te.ptyext_constructors in
     let forceBreak =
@@ -661,7 +669,7 @@ and printTypeExtension ~customLayout (te : Parsetree.type_extension) cmtTbl =
     let rows =
       printListi
         ~getLoc:(fun n -> n.Parsetree.pext_loc)
-        ~print:(printExtensionConstructor ~customLayout)
+        ~print:(printExtensionConstructor ~state)
         ~nodes:ecs ~forceBreak cmtTbl
     in
     Doc.breakableGroup ~forceBreak
@@ -679,8 +687,8 @@ and printTypeExtension ~customLayout (te : Parsetree.type_extension) cmtTbl =
   Doc.group
     (Doc.concat
        [
-         printAttributes ~customLayout ~loc:te.ptyext_path.loc
-           te.ptyext_attributes cmtTbl;
+         printAttributes ~state ~loc:te.ptyext_path.loc te.ptyext_attributes
+           cmtTbl;
          prefix;
          name;
          typeParams;
@@ -688,7 +696,7 @@ and printTypeExtension ~customLayout (te : Parsetree.type_extension) cmtTbl =
          extensionConstructors;
        ])
 
-and printModuleBinding ~customLayout ~isRec moduleBinding cmtTbl i =
+and printModuleBinding ~state ~isRec moduleBinding cmtTbl i =
   let prefix =
     if i = 0 then
       Doc.concat
@@ -698,9 +706,9 @@ and printModuleBinding ~customLayout ~isRec moduleBinding cmtTbl i =
   let modExprDoc, modConstraintDoc =
     match moduleBinding.pmb_expr with
     | {pmod_desc = Pmod_constraint (modExpr, modType)} ->
-      ( printModExpr ~customLayout modExpr cmtTbl,
-        Doc.concat [Doc.text ": "; printModType ~customLayout modType cmtTbl] )
-    | modExpr -> (printModExpr ~customLayout modExpr cmtTbl, Doc.nil)
+      ( printModExpr ~state modExpr cmtTbl,
+        Doc.concat [Doc.text ": "; printModType ~state modType cmtTbl] )
+    | modExpr -> (printModExpr ~state modExpr cmtTbl, Doc.nil)
   in
   let modName =
     let doc = Doc.text moduleBinding.pmb_name.Location.txt in
@@ -709,7 +717,7 @@ and printModuleBinding ~customLayout ~isRec moduleBinding cmtTbl i =
   let doc =
     Doc.concat
       [
-        printAttributes ~customLayout ~loc:moduleBinding.pmb_name.loc
+        printAttributes ~state ~loc:moduleBinding.pmb_name.loc
           moduleBinding.pmb_attributes cmtTbl;
         prefix;
         modName;
@@ -720,7 +728,7 @@ and printModuleBinding ~customLayout ~isRec moduleBinding cmtTbl i =
   in
   printComments doc cmtTbl moduleBinding.pmb_loc
 
-and printModuleTypeDeclaration ~customLayout
+and printModuleTypeDeclaration ~state
     (modTypeDecl : Parsetree.module_type_declaration) cmtTbl =
   let modName =
     let doc = Doc.text modTypeDecl.pmtd_name.txt in
@@ -728,23 +736,23 @@ and printModuleTypeDeclaration ~customLayout
   in
   Doc.concat
     [
-      printAttributes ~customLayout modTypeDecl.pmtd_attributes cmtTbl;
+      printAttributes ~state modTypeDecl.pmtd_attributes cmtTbl;
       Doc.text "module type ";
       modName;
       (match modTypeDecl.pmtd_type with
       | None -> Doc.nil
       | Some modType ->
-        Doc.concat [Doc.text " = "; printModType ~customLayout modType cmtTbl]);
+        Doc.concat [Doc.text " = "; printModType ~state modType cmtTbl]);
     ]
 
-and printModType ~customLayout modType cmtTbl =
+and printModType ~state modType cmtTbl =
   let modTypeDoc =
     match modType.pmty_desc with
     | Parsetree.Pmty_ident longident ->
       Doc.concat
         [
-          printAttributes ~customLayout ~loc:longident.loc
-            modType.pmty_attributes cmtTbl;
+          printAttributes ~state ~loc:longident.loc modType.pmty_attributes
+            cmtTbl;
           printLongidentLocation longident cmtTbl;
         ]
     | Pmty_signature [] ->
@@ -765,17 +773,13 @@ and printModType ~customLayout modType cmtTbl =
              [
                Doc.lbrace;
                Doc.indent
-                 (Doc.concat
-                    [Doc.line; printSignature ~customLayout signature cmtTbl]);
+                 (Doc.concat [Doc.line; printSignature ~state signature cmtTbl]);
                Doc.line;
                Doc.rbrace;
              ])
       in
       Doc.concat
-        [
-          printAttributes ~customLayout modType.pmty_attributes cmtTbl;
-          signatureDoc;
-        ]
+        [printAttributes ~state modType.pmty_attributes cmtTbl; signatureDoc]
     | Pmty_functor _ ->
       let parameters, returnType = ParsetreeViewer.functorType modType in
       let parametersDoc =
@@ -785,10 +789,8 @@ and printModType ~customLayout modType cmtTbl =
           let cmtLoc =
             {loc with loc_end = modType.Parsetree.pmty_loc.loc_end}
           in
-          let attrs = printAttributes ~customLayout attrs cmtTbl in
-          let doc =
-            Doc.concat [attrs; printModType ~customLayout modType cmtTbl]
-          in
+          let attrs = printAttributes ~state attrs cmtTbl in
+          let doc = Doc.concat [attrs; printModType ~state modType cmtTbl] in
           printComments doc cmtTbl cmtLoc
         | params ->
           Doc.group
@@ -814,7 +816,7 @@ and printModType ~customLayout modType cmtTbl =
                                    }
                                in
                                let attrs =
-                                 printAttributes ~customLayout attrs cmtTbl
+                                 printAttributes ~state attrs cmtTbl
                                in
                                let lblDoc =
                                  if lbl.Location.txt = "_" || lbl.txt = "*" then
@@ -835,8 +837,7 @@ and printModType ~customLayout modType cmtTbl =
                                          [
                                            (if lbl.txt = "_" then Doc.nil
                                            else Doc.text ": ");
-                                           printModType ~customLayout modType
-                                             cmtTbl;
+                                           printModType ~state modType cmtTbl;
                                          ]);
                                    ]
                                in
@@ -849,7 +850,7 @@ and printModType ~customLayout modType cmtTbl =
                ])
       in
       let returnDoc =
-        let doc = printModType ~customLayout returnType cmtTbl in
+        let doc = printModType ~state returnType cmtTbl in
         if Parens.modTypeFunctorReturn returnType then addParens doc else doc
       in
       Doc.group
@@ -860,14 +861,14 @@ and printModType ~customLayout modType cmtTbl =
            ])
     | Pmty_typeof modExpr ->
       Doc.concat
-        [Doc.text "module type of "; printModExpr ~customLayout modExpr cmtTbl]
+        [Doc.text "module type of "; printModExpr ~state modExpr cmtTbl]
     | Pmty_extension extension ->
-      printExtension ~customLayout ~atModuleLvl:false extension cmtTbl
+      printExtension ~state ~atModuleLvl:false extension cmtTbl
     | Pmty_alias longident ->
       Doc.concat [Doc.text "module "; printLongidentLocation longident cmtTbl]
     | Pmty_with (modType, withConstraints) ->
       let operand =
-        let doc = printModType ~customLayout modType cmtTbl in
+        let doc = printModType ~state modType cmtTbl in
         if Parens.modTypeWithOperand modType then addParens doc else doc
       in
       Doc.group
@@ -876,10 +877,7 @@ and printModType ~customLayout modType cmtTbl =
              operand;
              Doc.indent
                (Doc.concat
-                  [
-                    Doc.line;
-                    printWithConstraints ~customLayout withConstraints cmtTbl;
-                  ]);
+                  [Doc.line; printWithConstraints ~state withConstraints cmtTbl]);
            ])
   in
   let attrsAlreadyPrinted =
@@ -891,13 +889,13 @@ and printModType ~customLayout modType cmtTbl =
     Doc.concat
       [
         (if attrsAlreadyPrinted then Doc.nil
-        else printAttributes ~customLayout modType.pmty_attributes cmtTbl);
+        else printAttributes ~state modType.pmty_attributes cmtTbl);
         modTypeDoc;
       ]
   in
   printComments doc cmtTbl modType.pmty_loc
 
-and printWithConstraints ~customLayout withConstraints cmtTbl =
+and printWithConstraints ~state withConstraints cmtTbl =
   let rows =
     List.mapi
       (fun i withConstraint ->
@@ -905,19 +903,19 @@ and printWithConstraints ~customLayout withConstraints cmtTbl =
           (Doc.concat
              [
                (if i == 0 then Doc.text "with " else Doc.text "and ");
-               printWithConstraint ~customLayout withConstraint cmtTbl;
+               printWithConstraint ~state withConstraint cmtTbl;
              ]))
       withConstraints
   in
   Doc.join ~sep:Doc.line rows
 
-and printWithConstraint ~customLayout
-    (withConstraint : Parsetree.with_constraint) cmtTbl =
+and printWithConstraint ~state (withConstraint : Parsetree.with_constraint)
+    cmtTbl =
   match withConstraint with
   (* with type X.t = ... *)
   | Pwith_type (longident, typeDeclaration) ->
     Doc.group
-      (printTypeDeclaration ~customLayout
+      (printTypeDeclaration ~state
          ~name:(printLidentPath longident cmtTbl)
          ~equalSign:"=" ~recFlag:Doc.nil 0 typeDeclaration CommentTable.empty)
   (* with module X.Y = Z *)
@@ -932,7 +930,7 @@ and printWithConstraint ~customLayout
   (* with type X.t := ..., same format as [Pwith_type] *)
   | Pwith_typesubst (longident, typeDeclaration) ->
     Doc.group
-      (printTypeDeclaration ~customLayout
+      (printTypeDeclaration ~state
          ~name:(printLidentPath longident cmtTbl)
          ~equalSign:":=" ~recFlag:Doc.nil 0 typeDeclaration CommentTable.empty)
   | Pwith_modsubst ({txt = longident1}, {txt = longident2}) ->
@@ -944,60 +942,58 @@ and printWithConstraint ~customLayout
         Doc.indent (Doc.concat [Doc.line; printLongident longident2]);
       ]
 
-and printSignature ~customLayout signature cmtTbl =
+and printSignature ~state signature cmtTbl =
   match signature with
   | [] -> printCommentsInsideFile cmtTbl
   | signature ->
     printList
       ~getLoc:(fun s -> s.Parsetree.psig_loc)
       ~nodes:signature
-      ~print:(printSignatureItem ~customLayout)
+      ~print:(printSignatureItem ~state)
       cmtTbl
 
-and printSignatureItem ~customLayout (si : Parsetree.signature_item) cmtTbl =
+and printSignatureItem ~state (si : Parsetree.signature_item) cmtTbl =
   match si.psig_desc with
   | Parsetree.Psig_value valueDescription ->
-    printValueDescription ~customLayout valueDescription cmtTbl
+    printValueDescription ~state valueDescription cmtTbl
   | Psig_type (recFlag, typeDeclarations) ->
     let recFlag =
       match recFlag with
       | Asttypes.Nonrecursive -> Doc.nil
       | Asttypes.Recursive -> Doc.text "rec "
     in
-    printTypeDeclarations ~customLayout ~recFlag typeDeclarations cmtTbl
-  | Psig_typext typeExtension ->
-    printTypeExtension ~customLayout typeExtension cmtTbl
+    printTypeDeclarations ~state ~recFlag typeDeclarations cmtTbl
+  | Psig_typext typeExtension -> printTypeExtension ~state typeExtension cmtTbl
   | Psig_exception extensionConstructor ->
-    printExceptionDef ~customLayout extensionConstructor cmtTbl
+    printExceptionDef ~state extensionConstructor cmtTbl
   | Psig_module moduleDeclaration ->
-    printModuleDeclaration ~customLayout moduleDeclaration cmtTbl
+    printModuleDeclaration ~state moduleDeclaration cmtTbl
   | Psig_recmodule moduleDeclarations ->
-    printRecModuleDeclarations ~customLayout moduleDeclarations cmtTbl
+    printRecModuleDeclarations ~state moduleDeclarations cmtTbl
   | Psig_modtype modTypeDecl ->
-    printModuleTypeDeclaration ~customLayout modTypeDecl cmtTbl
+    printModuleTypeDeclaration ~state modTypeDecl cmtTbl
   | Psig_open openDescription ->
-    printOpenDescription ~customLayout openDescription cmtTbl
+    printOpenDescription ~state openDescription cmtTbl
   | Psig_include includeDescription ->
-    printIncludeDescription ~customLayout includeDescription cmtTbl
+    printIncludeDescription ~state includeDescription cmtTbl
   | Psig_attribute attr ->
-    fst (printAttribute ~customLayout ~standalone:true attr cmtTbl)
+    fst (printAttribute ~state ~standalone:true attr cmtTbl)
   | Psig_extension (extension, attrs) ->
     Doc.concat
       [
-        printAttributes ~customLayout attrs cmtTbl;
-        Doc.concat
-          [printExtension ~customLayout ~atModuleLvl:true extension cmtTbl];
+        printAttributes ~state attrs cmtTbl;
+        Doc.concat [printExtension ~state ~atModuleLvl:true extension cmtTbl];
       ]
   | Psig_class _ | Psig_class_type _ -> Doc.nil
 
-and printRecModuleDeclarations ~customLayout moduleDeclarations cmtTbl =
+and printRecModuleDeclarations ~state moduleDeclarations cmtTbl =
   printListi
     ~getLoc:(fun n -> n.Parsetree.pmd_loc)
     ~nodes:moduleDeclarations
-    ~print:(printRecModuleDeclaration ~customLayout)
+    ~print:(printRecModuleDeclaration ~state)
     cmtTbl
 
-and printRecModuleDeclaration ~customLayout md cmtTbl i =
+and printRecModuleDeclaration ~state md cmtTbl i =
   let body =
     match md.pmd_type.pmty_desc with
     | Parsetree.Pmty_alias longident ->
@@ -1009,7 +1005,7 @@ and printRecModuleDeclaration ~customLayout md cmtTbl i =
         | _ -> false
       in
       let modTypeDoc =
-        let doc = printModType ~customLayout md.pmd_type cmtTbl in
+        let doc = printModType ~state md.pmd_type cmtTbl in
         if needsParens then addParens doc else doc
       in
       Doc.concat [Doc.text ": "; modTypeDoc]
@@ -1017,34 +1013,32 @@ and printRecModuleDeclaration ~customLayout md cmtTbl i =
   let prefix = if i < 1 then "module rec " else "and " in
   Doc.concat
     [
-      printAttributes ~customLayout ~loc:md.pmd_name.loc md.pmd_attributes cmtTbl;
+      printAttributes ~state ~loc:md.pmd_name.loc md.pmd_attributes cmtTbl;
       Doc.text prefix;
       printComments (Doc.text md.pmd_name.txt) cmtTbl md.pmd_name.loc;
       body;
     ]
 
-and printModuleDeclaration ~customLayout (md : Parsetree.module_declaration)
-    cmtTbl =
+and printModuleDeclaration ~state (md : Parsetree.module_declaration) cmtTbl =
   let body =
     match md.pmd_type.pmty_desc with
     | Parsetree.Pmty_alias longident ->
       Doc.concat [Doc.text " = "; printLongidentLocation longident cmtTbl]
-    | _ ->
-      Doc.concat [Doc.text ": "; printModType ~customLayout md.pmd_type cmtTbl]
+    | _ -> Doc.concat [Doc.text ": "; printModType ~state md.pmd_type cmtTbl]
   in
   Doc.concat
     [
-      printAttributes ~customLayout ~loc:md.pmd_name.loc md.pmd_attributes cmtTbl;
+      printAttributes ~state ~loc:md.pmd_name.loc md.pmd_attributes cmtTbl;
       Doc.text "module ";
       printComments (Doc.text md.pmd_name.txt) cmtTbl md.pmd_name.loc;
       body;
     ]
 
-and printOpenDescription ~customLayout
-    (openDescription : Parsetree.open_description) cmtTbl =
+and printOpenDescription ~state (openDescription : Parsetree.open_description)
+    cmtTbl =
   Doc.concat
     [
-      printAttributes ~customLayout openDescription.popen_attributes cmtTbl;
+      printAttributes ~state openDescription.popen_attributes cmtTbl;
       Doc.text "open";
       (match openDescription.popen_override with
       | Asttypes.Fresh -> Doc.space
@@ -1052,45 +1046,45 @@ and printOpenDescription ~customLayout
       printLongidentLocation openDescription.popen_lid cmtTbl;
     ]
 
-and printIncludeDescription ~customLayout
+and printIncludeDescription ~state
     (includeDescription : Parsetree.include_description) cmtTbl =
   Doc.concat
     [
-      printAttributes ~customLayout includeDescription.pincl_attributes cmtTbl;
+      printAttributes ~state includeDescription.pincl_attributes cmtTbl;
       Doc.text "include ";
-      printModType ~customLayout includeDescription.pincl_mod cmtTbl;
+      printModType ~state includeDescription.pincl_mod cmtTbl;
     ]
 
-and printIncludeDeclaration ~customLayout
+and printIncludeDeclaration ~state
     (includeDeclaration : Parsetree.include_declaration) cmtTbl =
   Doc.concat
     [
-      printAttributes ~customLayout includeDeclaration.pincl_attributes cmtTbl;
+      printAttributes ~state includeDeclaration.pincl_attributes cmtTbl;
       Doc.text "include ";
       (let includeDoc =
-         printModExpr ~customLayout includeDeclaration.pincl_mod cmtTbl
+         printModExpr ~state includeDeclaration.pincl_mod cmtTbl
        in
        if Parens.includeModExpr includeDeclaration.pincl_mod then
          addParens includeDoc
        else includeDoc);
     ]
 
-and printValueBindings ~customLayout ~recFlag
-    (vbs : Parsetree.value_binding list) cmtTbl =
+and printValueBindings ~state ~recFlag (vbs : Parsetree.value_binding list)
+    cmtTbl =
   printListi
     ~getLoc:(fun vb -> vb.Parsetree.pvb_loc)
     ~nodes:vbs
-    ~print:(printValueBinding ~customLayout ~recFlag)
+    ~print:(printValueBinding ~state ~recFlag)
     cmtTbl
 
-and printValueDescription ~customLayout valueDescription cmtTbl =
+and printValueDescription ~state valueDescription cmtTbl =
   let isExternal =
     match valueDescription.pval_prim with
     | [] -> false
     | _ -> true
   in
   let attrs =
-    printAttributes ~customLayout ~loc:valueDescription.pval_name.loc
+    printAttributes ~state ~loc:valueDescription.pval_name.loc
       valueDescription.pval_attributes cmtTbl
   in
   let header = if isExternal then "external " else "let " in
@@ -1103,7 +1097,7 @@ and printValueDescription ~customLayout valueDescription cmtTbl =
            (printIdentLike valueDescription.pval_name.txt)
            cmtTbl valueDescription.pval_name.loc;
          Doc.text ": ";
-         printTypExpr ~customLayout valueDescription.pval_type cmtTbl;
+         printTypExpr ~state valueDescription.pval_type cmtTbl;
          (if isExternal then
           Doc.group
             (Doc.concat
@@ -1124,11 +1118,11 @@ and printValueDescription ~customLayout valueDescription cmtTbl =
          else Doc.nil);
        ])
 
-and printTypeDeclarations ~customLayout ~recFlag typeDeclarations cmtTbl =
+and printTypeDeclarations ~state ~recFlag typeDeclarations cmtTbl =
   printListi
     ~getLoc:(fun n -> n.Parsetree.ptype_loc)
     ~nodes:typeDeclarations
-    ~print:(printTypeDeclaration2 ~customLayout ~recFlag)
+    ~print:(printTypeDeclaration2 ~state ~recFlag)
     cmtTbl
 
 (*
@@ -1163,16 +1157,16 @@ and printTypeDeclarations ~customLayout ~recFlag typeDeclarations cmtTbl =
  *        (* Invariant: non-empty list *)
  *  | Ptype_open
  *)
-and printTypeDeclaration ~customLayout ~name ~equalSign ~recFlag i
+and printTypeDeclaration ~state ~name ~equalSign ~recFlag i
     (td : Parsetree.type_declaration) cmtTbl =
   let attrs =
-    printAttributes ~customLayout ~loc:td.ptype_loc td.ptype_attributes cmtTbl
+    printAttributes ~state ~loc:td.ptype_loc td.ptype_attributes cmtTbl
   in
   let prefix =
     if i > 0 then Doc.text "and " else Doc.concat [Doc.text "type "; recFlag]
   in
   let typeName = name in
-  let typeParams = printTypeParams ~customLayout td.ptype_params cmtTbl in
+  let typeParams = printTypeParams ~state td.ptype_params cmtTbl in
   let manifestAndKind =
     match td.ptype_kind with
     | Ptype_abstract -> (
@@ -1183,7 +1177,7 @@ and printTypeDeclaration ~customLayout ~name ~equalSign ~recFlag i
           [
             Doc.concat [Doc.space; Doc.text equalSign; Doc.space];
             printPrivateFlag td.ptype_private;
-            printTypExpr ~customLayout typ cmtTbl;
+            printTypExpr ~state typ cmtTbl;
           ])
     | Ptype_open ->
       Doc.concat
@@ -1200,7 +1194,7 @@ and printTypeDeclaration ~customLayout ~name ~equalSign ~recFlag i
           Doc.concat
             [
               Doc.concat [Doc.space; Doc.text equalSign; Doc.space];
-              printTypExpr ~customLayout typ cmtTbl;
+              printTypExpr ~state typ cmtTbl;
             ]
       in
       Doc.concat
@@ -1208,7 +1202,7 @@ and printTypeDeclaration ~customLayout ~name ~equalSign ~recFlag i
           manifest;
           Doc.concat [Doc.space; Doc.text equalSign; Doc.space];
           printPrivateFlag td.ptype_private;
-          printRecordDeclaration ~customLayout lds cmtTbl;
+          printRecordDeclaration ~state lds cmtTbl;
         ]
     | Ptype_variant cds ->
       let manifest =
@@ -1218,39 +1212,37 @@ and printTypeDeclaration ~customLayout ~name ~equalSign ~recFlag i
           Doc.concat
             [
               Doc.concat [Doc.space; Doc.text equalSign; Doc.space];
-              printTypExpr ~customLayout typ cmtTbl;
+              printTypExpr ~state typ cmtTbl;
             ]
       in
       Doc.concat
         [
           manifest;
           Doc.concat [Doc.space; Doc.text equalSign];
-          printConstructorDeclarations ~customLayout
-            ~privateFlag:td.ptype_private cds cmtTbl;
+          printConstructorDeclarations ~state ~privateFlag:td.ptype_private cds
+            cmtTbl;
         ]
   in
-  let constraints =
-    printTypeDefinitionConstraints ~customLayout td.ptype_cstrs
-  in
+  let constraints = printTypeDefinitionConstraints ~state td.ptype_cstrs in
   Doc.group
     (Doc.concat
        [attrs; prefix; typeName; typeParams; manifestAndKind; constraints])
 
-and printTypeDeclaration2 ~customLayout ~recFlag
-    (td : Parsetree.type_declaration) cmtTbl i =
+and printTypeDeclaration2 ~state ~recFlag (td : Parsetree.type_declaration)
+    cmtTbl i =
   let name =
     let doc = printIdentLike td.Parsetree.ptype_name.txt in
     printComments doc cmtTbl td.ptype_name.loc
   in
   let equalSign = "=" in
   let attrs =
-    printAttributes ~customLayout ~loc:td.ptype_loc td.ptype_attributes cmtTbl
+    printAttributes ~state ~loc:td.ptype_loc td.ptype_attributes cmtTbl
   in
   let prefix =
     if i > 0 then Doc.text "and " else Doc.concat [Doc.text "type "; recFlag]
   in
   let typeName = name in
-  let typeParams = printTypeParams ~customLayout td.ptype_params cmtTbl in
+  let typeParams = printTypeParams ~state td.ptype_params cmtTbl in
   let manifestAndKind =
     match td.ptype_kind with
     | Ptype_abstract -> (
@@ -1261,7 +1253,7 @@ and printTypeDeclaration2 ~customLayout ~recFlag
           [
             Doc.concat [Doc.space; Doc.text equalSign; Doc.space];
             printPrivateFlag td.ptype_private;
-            printTypExpr ~customLayout typ cmtTbl;
+            printTypExpr ~state typ cmtTbl;
           ])
     | Ptype_open ->
       Doc.concat
@@ -1289,7 +1281,7 @@ and printTypeDeclaration2 ~customLayout ~recFlag
             Doc.concat
               [
                 Doc.concat [Doc.space; Doc.text equalSign; Doc.space];
-                printTypExpr ~customLayout typ cmtTbl;
+                printTypExpr ~state typ cmtTbl;
               ]
         in
         Doc.concat
@@ -1297,7 +1289,7 @@ and printTypeDeclaration2 ~customLayout ~recFlag
             manifest;
             Doc.concat [Doc.space; Doc.text equalSign; Doc.space];
             printPrivateFlag td.ptype_private;
-            printRecordDeclaration ~customLayout lds cmtTbl;
+            printRecordDeclaration ~state lds cmtTbl;
           ]
     | Ptype_variant cds ->
       let manifest =
@@ -1307,25 +1299,23 @@ and printTypeDeclaration2 ~customLayout ~recFlag
           Doc.concat
             [
               Doc.concat [Doc.space; Doc.text equalSign; Doc.space];
-              printTypExpr ~customLayout typ cmtTbl;
+              printTypExpr ~state typ cmtTbl;
             ]
       in
       Doc.concat
         [
           manifest;
           Doc.concat [Doc.space; Doc.text equalSign];
-          printConstructorDeclarations ~customLayout
-            ~privateFlag:td.ptype_private cds cmtTbl;
+          printConstructorDeclarations ~state ~privateFlag:td.ptype_private cds
+            cmtTbl;
         ]
   in
-  let constraints =
-    printTypeDefinitionConstraints ~customLayout td.ptype_cstrs
-  in
+  let constraints = printTypeDefinitionConstraints ~state td.ptype_cstrs in
   Doc.group
     (Doc.concat
        [attrs; prefix; typeName; typeParams; manifestAndKind; constraints])
 
-and printTypeDefinitionConstraints ~customLayout cstrs =
+and printTypeDefinitionConstraints ~state cstrs =
   match cstrs with
   | [] -> Doc.nil
   | cstrs ->
@@ -1336,20 +1326,18 @@ and printTypeDefinitionConstraints ~customLayout cstrs =
               Doc.line;
               Doc.group
                 (Doc.join ~sep:Doc.line
-                   (List.map
-                      (printTypeDefinitionConstraint ~customLayout)
-                      cstrs));
+                   (List.map (printTypeDefinitionConstraint ~state) cstrs));
             ]))
 
-and printTypeDefinitionConstraint ~customLayout
+and printTypeDefinitionConstraint ~state
     ((typ1, typ2, _loc) :
       Parsetree.core_type * Parsetree.core_type * Location.t) =
   Doc.concat
     [
       Doc.text "constraint ";
-      printTypExpr ~customLayout typ1 CommentTable.empty;
+      printTypExpr ~state typ1 CommentTable.empty;
       Doc.text " = ";
-      printTypExpr ~customLayout typ2 CommentTable.empty;
+      printTypExpr ~state typ2 CommentTable.empty;
     ]
 
 and printPrivateFlag (flag : Asttypes.private_flag) =
@@ -1357,7 +1345,7 @@ and printPrivateFlag (flag : Asttypes.private_flag) =
   | Private -> Doc.text "private "
   | Public -> Doc.nil
 
-and printTypeParams ~customLayout typeParams cmtTbl =
+and printTypeParams ~state typeParams cmtTbl =
   match typeParams with
   | [] -> Doc.nil
   | typeParams ->
@@ -1373,9 +1361,7 @@ and printTypeParams ~customLayout typeParams cmtTbl =
                     ~sep:(Doc.concat [Doc.comma; Doc.line])
                     (List.map
                        (fun typeParam ->
-                         let doc =
-                           printTypeParam ~customLayout typeParam cmtTbl
-                         in
+                         let doc = printTypeParam ~state typeParam cmtTbl in
                          printComments doc cmtTbl
                            (fst typeParam).Parsetree.ptyp_loc)
                        typeParams);
@@ -1385,8 +1371,8 @@ and printTypeParams ~customLayout typeParams cmtTbl =
            Doc.greaterThan;
          ])
 
-and printTypeParam ~customLayout
-    (param : Parsetree.core_type * Asttypes.variance) cmtTbl =
+and printTypeParam ~state (param : Parsetree.core_type * Asttypes.variance)
+    cmtTbl =
   let typ, variance = param in
   let printedVariance =
     match variance with
@@ -1394,10 +1380,10 @@ and printTypeParam ~customLayout
     | Contravariant -> Doc.text "-"
     | Invariant -> Doc.nil
   in
-  Doc.concat [printedVariance; printTypExpr ~customLayout typ cmtTbl]
+  Doc.concat [printedVariance; printTypExpr ~state typ cmtTbl]
 
-and printRecordDeclaration ~customLayout
-    (lds : Parsetree.label_declaration list) cmtTbl =
+and printRecordDeclaration ~state (lds : Parsetree.label_declaration list)
+    cmtTbl =
   let forceBreak =
     match (lds, List.rev lds) with
     | first :: _, last :: _ ->
@@ -1416,9 +1402,7 @@ and printRecordDeclaration ~customLayout
                   ~sep:(Doc.concat [Doc.comma; Doc.line])
                   (List.map
                      (fun ld ->
-                       let doc =
-                         printLabelDeclaration ~customLayout ld cmtTbl
-                       in
+                       let doc = printLabelDeclaration ~state ld cmtTbl in
                        printComments doc cmtTbl ld.Parsetree.pld_loc)
                      lds);
               ]);
@@ -1427,7 +1411,7 @@ and printRecordDeclaration ~customLayout
          Doc.rbrace;
        ])
 
-and printConstructorDeclarations ~customLayout ~privateFlag
+and printConstructorDeclarations ~state ~privateFlag
     (cds : Parsetree.constructor_declaration list) cmtTbl =
   let forceBreak =
     match (cds, List.rev cds) with
@@ -1445,16 +1429,16 @@ and printConstructorDeclarations ~customLayout ~privateFlag
       ~getLoc:(fun cd -> cd.Parsetree.pcd_loc)
       ~nodes:cds
       ~print:(fun cd cmtTbl i ->
-        let doc = printConstructorDeclaration2 ~customLayout i cd cmtTbl in
+        let doc = printConstructorDeclaration2 ~state i cd cmtTbl in
         printComments doc cmtTbl cd.Parsetree.pcd_loc)
       ~forceBreak cmtTbl
   in
   Doc.breakableGroup ~forceBreak
     (Doc.indent (Doc.concat [Doc.line; privateFlag; rows]))
 
-and printConstructorDeclaration2 ~customLayout i
+and printConstructorDeclaration2 ~state i
     (cd : Parsetree.constructor_declaration) cmtTbl =
-  let attrs = printAttributes ~customLayout cd.pcd_attributes cmtTbl in
+  let attrs = printAttributes ~state cd.pcd_attributes cmtTbl in
   let bar =
     if i > 0 || cd.pcd_attributes <> [] then Doc.text "| "
     else Doc.ifBreaks (Doc.text "| ") Doc.nil
@@ -1464,14 +1448,13 @@ and printConstructorDeclaration2 ~customLayout i
     printComments doc cmtTbl cd.pcd_name.loc
   in
   let constrArgs =
-    printConstructorArguments ~customLayout ~indent:true cd.pcd_args cmtTbl
+    printConstructorArguments ~state ~indent:true cd.pcd_args cmtTbl
   in
   let gadt =
     match cd.pcd_res with
     | None -> Doc.nil
     | Some typ ->
-      Doc.indent
-        (Doc.concat [Doc.text ": "; printTypExpr ~customLayout typ cmtTbl])
+      Doc.indent (Doc.concat [Doc.text ": "; printTypExpr ~state typ cmtTbl])
   in
   Doc.concat
     [
@@ -1487,7 +1470,7 @@ and printConstructorDeclaration2 ~customLayout i
            ]);
     ]
 
-and printConstructorArguments ~customLayout ~indent
+and printConstructorArguments ~state ~indent
     (cdArgs : Parsetree.constructor_arguments) cmtTbl =
   match cdArgs with
   | Pcstr_tuple [] -> Doc.nil
@@ -1503,7 +1486,7 @@ and printConstructorArguments ~customLayout ~indent
                  Doc.join
                    ~sep:(Doc.concat [Doc.comma; Doc.line])
                    (List.map
-                      (fun typexpr -> printTypExpr ~customLayout typexpr cmtTbl)
+                      (fun typexpr -> printTypExpr ~state typexpr cmtTbl)
                       types);
                ]);
           Doc.trailingComma;
@@ -1527,9 +1510,7 @@ and printConstructorArguments ~customLayout ~indent
                    ~sep:(Doc.concat [Doc.comma; Doc.line])
                    (List.map
                       (fun ld ->
-                        let doc =
-                          printLabelDeclaration ~customLayout ld cmtTbl
-                        in
+                        let doc = printLabelDeclaration ~state ld cmtTbl in
                         printComments doc cmtTbl ld.Parsetree.pld_loc)
                       lds);
                ]);
@@ -1541,10 +1522,9 @@ and printConstructorArguments ~customLayout ~indent
     in
     if indent then Doc.indent args else args
 
-and printLabelDeclaration ~customLayout (ld : Parsetree.label_declaration)
-    cmtTbl =
+and printLabelDeclaration ~state (ld : Parsetree.label_declaration) cmtTbl =
   let attrs =
-    printAttributes ~customLayout ~loc:ld.pld_name.loc ld.pld_attributes cmtTbl
+    printAttributes ~state ~loc:ld.pld_name.loc ld.pld_attributes cmtTbl
   in
   let mutableFlag =
     match ld.pld_mutable with
@@ -1564,10 +1544,10 @@ and printLabelDeclaration ~customLayout (ld : Parsetree.label_declaration)
          name;
          optional;
          Doc.text ": ";
-         printTypExpr ~customLayout ld.pld_type cmtTbl;
+         printTypExpr ~state ld.pld_type cmtTbl;
        ])
 
-and printTypExpr ~customLayout (typExpr : Parsetree.core_type) cmtTbl =
+and printTypExpr ~state (typExpr : Parsetree.core_type) cmtTbl =
   let printArrow ~uncurried typExpr =
     let attrsBefore, args, returnType = ParsetreeViewer.arrowType typExpr in
     let uncurried, attrsBefore =
@@ -1583,7 +1563,7 @@ and printTypExpr ~customLayout (typExpr : Parsetree.core_type) cmtTbl =
       | _ -> false
     in
     let returnDoc =
-      let doc = printTypExpr ~customLayout returnType cmtTbl in
+      let doc = printTypExpr ~state returnType cmtTbl in
       if returnTypeNeedsParens then Doc.concat [Doc.lparen; doc; Doc.rparen]
       else doc
     in
@@ -1593,11 +1573,11 @@ and printTypExpr ~customLayout (typExpr : Parsetree.core_type) cmtTbl =
       let hasAttrsBefore = not (attrsBefore = []) in
       let attrs =
         if hasAttrsBefore then
-          printAttributes ~customLayout ~inline:true attrsBefore cmtTbl
+          printAttributes ~state ~inline:true attrsBefore cmtTbl
         else Doc.nil
       in
       let typDoc =
-        let doc = printTypExpr ~customLayout n cmtTbl in
+        let doc = printTypExpr ~state n cmtTbl in
         match n.ptyp_desc with
         | Ptyp_arrow _ | Ptyp_tuple _ | Ptyp_alias _ -> addParens doc
         | _ -> doc
@@ -1620,9 +1600,7 @@ and printTypExpr ~customLayout (typExpr : Parsetree.core_type) cmtTbl =
                else Doc.concat [typDoc; Doc.text " => "; returnDoc]);
            ])
     | args ->
-      let attrs =
-        printAttributes ~customLayout ~inline:true attrsBefore cmtTbl
-      in
+      let attrs = printAttributes ~state ~inline:true attrsBefore cmtTbl in
       let renderedArgs =
         Doc.concat
           [
@@ -1637,7 +1615,7 @@ and printTypExpr ~customLayout (typExpr : Parsetree.core_type) cmtTbl =
                    Doc.join
                      ~sep:(Doc.concat [Doc.comma; Doc.line])
                      (List.map
-                        (fun tp -> printTypeParameter ~customLayout tp cmtTbl)
+                        (fun tp -> printTypeParameter ~state tp cmtTbl)
                         args);
                  ]);
             Doc.trailingComma;
@@ -1653,7 +1631,7 @@ and printTypExpr ~customLayout (typExpr : Parsetree.core_type) cmtTbl =
     | Ptyp_var var ->
       Doc.concat [Doc.text "'"; printIdentLike ~allowUident:true var]
     | Ptyp_extension extension ->
-      printExtension ~customLayout ~atModuleLvl:false extension cmtTbl
+      printExtension ~state ~atModuleLvl:false extension cmtTbl
     | Ptyp_alias (typ, alias) ->
       let typ =
         (* Technically type t = (string, float) => unit as 'x, doesn't require
@@ -1665,14 +1643,14 @@ and printTypExpr ~customLayout (typExpr : Parsetree.core_type) cmtTbl =
           | Ptyp_arrow _ -> true
           | _ -> false
         in
-        let doc = printTypExpr ~customLayout typ cmtTbl in
+        let doc = printTypExpr ~state typ cmtTbl in
         if needsParens then Doc.concat [Doc.lparen; doc; Doc.rparen] else doc
       in
       Doc.concat
         [typ; Doc.text " as "; Doc.concat [Doc.text "'"; printIdentLike alias]]
     (* object printings *)
     | Ptyp_object (fields, openFlag) ->
-      printObject ~customLayout ~inline:false fields openFlag cmtTbl
+      printObject ~state ~inline:false fields openFlag cmtTbl
     | Ptyp_arrow _ -> printArrow ~uncurried:false typExpr
     | Ptyp_constr ({txt = Ldot (Ldot (Lident "Js", "Fn"), "arity0")}, [tArg]) ->
       let unitConstr = Location.mkloc (Longident.Lident "unit") tArg.ptyp_loc in
@@ -1692,7 +1670,7 @@ and printTypExpr ~customLayout (typExpr : Parsetree.core_type) cmtTbl =
         [
           constrName;
           Doc.lessThan;
-          printObject ~customLayout ~inline:true fields openFlag cmtTbl;
+          printObject ~state ~inline:true fields openFlag cmtTbl;
           Doc.greaterThan;
         ]
     | Ptyp_constr (longidentLoc, [{ptyp_desc = Parsetree.Ptyp_tuple tuple}]) ->
@@ -1702,7 +1680,7 @@ and printTypExpr ~customLayout (typExpr : Parsetree.core_type) cmtTbl =
            [
              constrName;
              Doc.lessThan;
-             printTupleType ~customLayout ~inline:true tuple cmtTbl;
+             printTupleType ~state ~inline:true tuple cmtTbl;
              Doc.greaterThan;
            ])
     | Ptyp_constr (longidentLoc, constrArgs) -> (
@@ -1722,17 +1700,15 @@ and printTypExpr ~customLayout (typExpr : Parsetree.core_type) cmtTbl =
                       Doc.join
                         ~sep:(Doc.concat [Doc.comma; Doc.line])
                         (List.map
-                           (fun typexpr ->
-                             printTypExpr ~customLayout typexpr cmtTbl)
+                           (fun typexpr -> printTypExpr ~state typexpr cmtTbl)
                            constrArgs);
                     ]);
                Doc.trailingComma;
                Doc.softLine;
                Doc.greaterThan;
              ]))
-    | Ptyp_tuple types ->
-      printTupleType ~customLayout ~inline:false types cmtTbl
-    | Ptyp_poly ([], typ) -> printTypExpr ~customLayout typ cmtTbl
+    | Ptyp_tuple types -> printTupleType ~state ~inline:false types cmtTbl
+    | Ptyp_poly ([], typ) -> printTypExpr ~state typ cmtTbl
     | Ptyp_poly (stringLocs, typ) ->
       Doc.concat
         [
@@ -1744,11 +1720,11 @@ and printTypExpr ~customLayout (typExpr : Parsetree.core_type) cmtTbl =
                stringLocs);
           Doc.dot;
           Doc.space;
-          printTypExpr ~customLayout typ cmtTbl;
+          printTypExpr ~state typ cmtTbl;
         ]
     | Ptyp_package packageType ->
-      printPackageType ~customLayout ~printModuleKeywordAndParens:true
-        packageType cmtTbl
+      printPackageType ~state ~printModuleKeywordAndParens:true packageType
+        cmtTbl
     | Ptyp_class _ -> Doc.text "classes are not supported in types"
     | Ptyp_variant (rowFields, closedFlag, labelsOpt) ->
       let forceBreak =
@@ -1761,7 +1737,7 @@ and printTypExpr ~customLayout (typExpr : Parsetree.core_type) cmtTbl =
             Doc.group
               (Doc.concat
                  [
-                   printAttributes ~customLayout attrs cmtTbl;
+                   printAttributes ~state attrs cmtTbl;
                    Doc.concat [Doc.text "#"; printPolyVarIdent txt];
                  ])
           in
@@ -1769,10 +1745,9 @@ and printTypExpr ~customLayout (typExpr : Parsetree.core_type) cmtTbl =
         | Rtag ({txt}, attrs, truth, types) ->
           let doType t =
             match t.Parsetree.ptyp_desc with
-            | Ptyp_tuple _ -> printTypExpr ~customLayout t cmtTbl
+            | Ptyp_tuple _ -> printTypExpr ~state t cmtTbl
             | _ ->
-              Doc.concat
-                [Doc.lparen; printTypExpr ~customLayout t cmtTbl; Doc.rparen]
+              Doc.concat [Doc.lparen; printTypExpr ~state t cmtTbl; Doc.rparen]
           in
           let printedTypes = List.map doType types in
           let cases =
@@ -1784,11 +1759,11 @@ and printTypExpr ~customLayout (typExpr : Parsetree.core_type) cmtTbl =
           Doc.group
             (Doc.concat
                [
-                 printAttributes ~customLayout attrs cmtTbl;
+                 printAttributes ~state attrs cmtTbl;
                  Doc.concat [Doc.text "#"; printPolyVarIdent txt];
                  cases;
                ])
-        | Rinherit coreType -> printTypExpr ~customLayout coreType cmtTbl
+        | Rinherit coreType -> printTypExpr ~state coreType cmtTbl
       in
       let docs = List.map printRowField rowFields in
       let cases = Doc.join ~sep:(Doc.concat [Doc.line; Doc.text "| "]) docs in
@@ -1834,13 +1809,12 @@ and printTypExpr ~customLayout (typExpr : Parsetree.core_type) cmtTbl =
   let doc =
     match typExpr.ptyp_attributes with
     | _ :: _ as attrs when not shouldPrintItsOwnAttributes ->
-      Doc.group
-        (Doc.concat [printAttributes ~customLayout attrs cmtTbl; renderedType])
+      Doc.group (Doc.concat [printAttributes ~state attrs cmtTbl; renderedType])
     | _ -> renderedType
   in
   printComments doc cmtTbl typExpr.ptyp_loc
 
-and printObject ~customLayout ~inline fields openFlag cmtTbl =
+and printObject ~state ~inline fields openFlag cmtTbl =
   let doc =
     match fields with
     | [] ->
@@ -1871,7 +1845,7 @@ and printObject ~customLayout ~inline fields openFlag cmtTbl =
                  Doc.join
                    ~sep:(Doc.concat [Doc.comma; Doc.line])
                    (List.map
-                      (fun field -> printObjectField ~customLayout field cmtTbl)
+                      (fun field -> printObjectField ~state field cmtTbl)
                       fields);
                ]);
           Doc.trailingComma;
@@ -1881,8 +1855,7 @@ and printObject ~customLayout ~inline fields openFlag cmtTbl =
   in
   if inline then doc else Doc.group doc
 
-and printTupleType ~customLayout ~inline (types : Parsetree.core_type list)
-    cmtTbl =
+and printTupleType ~state ~inline (types : Parsetree.core_type list) cmtTbl =
   let tuple =
     Doc.concat
       [
@@ -1894,7 +1867,7 @@ and printTupleType ~customLayout ~inline (types : Parsetree.core_type list)
                Doc.join
                  ~sep:(Doc.concat [Doc.comma; Doc.line])
                  (List.map
-                    (fun typexpr -> printTypExpr ~customLayout typexpr cmtTbl)
+                    (fun typexpr -> printTypExpr ~state typexpr cmtTbl)
                     types);
              ]);
         Doc.trailingComma;
@@ -1904,7 +1877,7 @@ and printTupleType ~customLayout ~inline (types : Parsetree.core_type list)
   in
   if inline == false then Doc.group tuple else tuple
 
-and printObjectField ~customLayout (field : Parsetree.object_field) cmtTbl =
+and printObjectField ~state (field : Parsetree.object_field) cmtTbl =
   match field with
   | Otag (labelLoc, attrs, typ) ->
     let lbl =
@@ -1914,27 +1887,27 @@ and printObjectField ~customLayout (field : Parsetree.object_field) cmtTbl =
     let doc =
       Doc.concat
         [
-          printAttributes ~customLayout ~loc:labelLoc.loc attrs cmtTbl;
+          printAttributes ~state ~loc:labelLoc.loc attrs cmtTbl;
           lbl;
           Doc.text ": ";
-          printTypExpr ~customLayout typ cmtTbl;
+          printTypExpr ~state typ cmtTbl;
         ]
     in
     let cmtLoc = {labelLoc.loc with loc_end = typ.ptyp_loc.loc_end} in
     printComments doc cmtTbl cmtLoc
   | Oinherit typexpr ->
-    Doc.concat [Doc.dotdotdot; printTypExpr ~customLayout typexpr cmtTbl]
+    Doc.concat [Doc.dotdotdot; printTypExpr ~state typexpr cmtTbl]
 
 (* es6 arrow type arg
  * type t = (~foo: string, ~bar: float=?, unit) => unit
  * i.e. ~foo: string, ~bar: float *)
-and printTypeParameter ~customLayout (attrs, lbl, typ) cmtTbl =
+and printTypeParameter ~state (attrs, lbl, typ) cmtTbl =
   (* Converting .ml code to .res requires processing uncurried attributes *)
   let isUncurried, attrs = ParsetreeViewer.processUncurriedAttribute attrs in
   let uncurried =
     if isUncurried then Doc.concat [Doc.dot; Doc.space] else Doc.nil
   in
-  let attrs = printAttributes ~customLayout attrs cmtTbl in
+  let attrs = printAttributes ~state attrs cmtTbl in
   let label =
     match lbl with
     | Asttypes.Nolabel -> Doc.nil
@@ -1962,17 +1935,15 @@ and printTypeParameter ~customLayout (attrs, lbl, typ) cmtTbl =
            uncurried;
            attrs;
            label;
-           printTypExpr ~customLayout typ cmtTbl;
+           printTypExpr ~state typ cmtTbl;
            optionalIndicator;
          ])
   in
   printComments doc cmtTbl loc
 
-and printValueBinding ~customLayout ~recFlag (vb : Parsetree.value_binding)
-    cmtTbl i =
+and printValueBinding ~state ~recFlag (vb : Parsetree.value_binding) cmtTbl i =
   let attrs =
-    printAttributes ~customLayout ~loc:vb.pvb_pat.ppat_loc vb.pvb_attributes
-      cmtTbl
+    printAttributes ~state ~loc:vb.pvb_pat.ppat_loc vb.pvb_attributes cmtTbl
   in
   let header =
     if i == 0 then Doc.concat [Doc.text "let "; recFlag] else Doc.text "and "
@@ -2006,7 +1977,7 @@ and printValueBinding ~customLayout ~recFlag (vb : Parsetree.value_binding)
            [
              attrs;
              header;
-             printPattern ~customLayout pattern cmtTbl;
+             printPattern ~state pattern cmtTbl;
              Doc.text ":";
              Doc.indent
                (Doc.concat
@@ -2014,13 +1985,10 @@ and printValueBinding ~customLayout ~recFlag (vb : Parsetree.value_binding)
                     Doc.line;
                     abstractType;
                     Doc.space;
-                    printTypExpr ~customLayout typ cmtTbl;
+                    printTypExpr ~state typ cmtTbl;
                     Doc.text " =";
                     Doc.concat
-                      [
-                        Doc.line;
-                        printExpressionWithComments ~customLayout expr cmtTbl;
-                      ];
+                      [Doc.line; printExpressionWithComments ~state expr cmtTbl];
                   ]);
            ])
     | _ ->
@@ -2033,7 +2001,7 @@ and printValueBinding ~customLayout ~recFlag (vb : Parsetree.value_binding)
            [
              attrs;
              header;
-             printPattern ~customLayout pattern cmtTbl;
+             printPattern ~state pattern cmtTbl;
              Doc.text ":";
              Doc.indent
                (Doc.concat
@@ -2041,25 +2009,22 @@ and printValueBinding ~customLayout ~recFlag (vb : Parsetree.value_binding)
                     Doc.line;
                     abstractType;
                     Doc.space;
-                    printTypExpr ~customLayout patTyp cmtTbl;
+                    printTypExpr ~state patTyp cmtTbl;
                     Doc.text " =";
                     Doc.concat
-                      [
-                        Doc.line;
-                        printExpressionWithComments ~customLayout expr cmtTbl;
-                      ];
+                      [Doc.line; printExpressionWithComments ~state expr cmtTbl];
                   ]);
            ]))
   | _ ->
     let optBraces, expr = ParsetreeViewer.processBracesAttr vb.pvb_expr in
     let printedExpr =
-      let doc = printExpressionWithComments ~customLayout vb.pvb_expr cmtTbl in
+      let doc = printExpressionWithComments ~state vb.pvb_expr cmtTbl in
       match Parens.expr vb.pvb_expr with
       | Parens.Parenthesized -> addParens doc
       | Braced braces -> printBraces doc expr braces
       | Nothing -> doc
     in
-    let patternDoc = printPattern ~customLayout vb.pvb_pat cmtTbl in
+    let patternDoc = printPattern ~state vb.pvb_pat cmtTbl in
     (*
      * we want to optimize the layout of one pipe:
      *   let tbl = data->Js.Array2.reduce((map, curr) => {
@@ -2121,7 +2086,7 @@ and printValueBinding ~customLayout ~recFlag (vb : Parsetree.value_binding)
              else Doc.concat [Doc.space; printedExpr]);
            ])
 
-and printPackageType ~customLayout ~printModuleKeywordAndParens
+and printPackageType ~state ~printModuleKeywordAndParens
     (packageType : Parsetree.package_type) cmtTbl =
   let doc =
     match packageType with
@@ -2132,7 +2097,7 @@ and printPackageType ~customLayout ~printModuleKeywordAndParens
         (Doc.concat
            [
              printLongidentLocation longidentLoc cmtTbl;
-             printPackageConstraints ~customLayout packageConstraints cmtTbl;
+             printPackageConstraints ~state packageConstraints cmtTbl;
              Doc.softLine;
            ])
   in
@@ -2140,7 +2105,7 @@ and printPackageType ~customLayout ~printModuleKeywordAndParens
     Doc.concat [Doc.text "module("; doc; Doc.rparen]
   else doc
 
-and printPackageConstraints ~customLayout packageConstraints cmtTbl =
+and printPackageConstraints ~state packageConstraints cmtTbl =
   Doc.concat
     [
       Doc.text " with";
@@ -2158,25 +2123,23 @@ and printPackageConstraints ~customLayout packageConstraints cmtTbl =
                         loc_end = typexpr.Parsetree.ptyp_loc.loc_end;
                       }
                     in
-                    let doc =
-                      printPackageConstraint ~customLayout i cmtTbl pc
-                    in
+                    let doc = printPackageConstraint ~state i cmtTbl pc in
                     printComments doc cmtTbl cmtLoc)
                   packageConstraints);
            ]);
     ]
 
-and printPackageConstraint ~customLayout i cmtTbl (longidentLoc, typ) =
+and printPackageConstraint ~state i cmtTbl (longidentLoc, typ) =
   let prefix = if i == 0 then Doc.text "type " else Doc.text "and type " in
   Doc.concat
     [
       prefix;
       printLongidentLocation longidentLoc cmtTbl;
       Doc.text " = ";
-      printTypExpr ~customLayout typ cmtTbl;
+      printTypExpr ~state typ cmtTbl;
     ]
 
-and printExtension ~customLayout ~atModuleLvl (stringLoc, payload) cmtTbl =
+and printExtension ~state ~atModuleLvl (stringLoc, payload) cmtTbl =
   let txt = convertBsExtension stringLoc.Location.txt in
   let extName =
     let doc =
@@ -2189,9 +2152,9 @@ and printExtension ~customLayout ~atModuleLvl (stringLoc, payload) cmtTbl =
     in
     printComments doc cmtTbl stringLoc.Location.loc
   in
-  Doc.group (Doc.concat [extName; printPayload ~customLayout payload cmtTbl])
+  Doc.group (Doc.concat [extName; printPayload ~state payload cmtTbl])
 
-and printPattern ~customLayout (p : Parsetree.pattern) cmtTbl =
+and printPattern ~state (p : Parsetree.pattern) cmtTbl =
   let patternWithoutAttributes =
     match p.ppat_desc with
     | Ppat_any -> Doc.text "_"
@@ -2213,7 +2176,7 @@ and printPattern ~customLayout (p : Parsetree.pattern) cmtTbl =
                     Doc.join
                       ~sep:(Doc.concat [Doc.text ","; Doc.line])
                       (List.map
-                         (fun pat -> printPattern ~customLayout pat cmtTbl)
+                         (fun pat -> printPattern ~state pat cmtTbl)
                          patterns);
                   ]);
              Doc.trailingComma;
@@ -2235,7 +2198,7 @@ and printPattern ~customLayout (p : Parsetree.pattern) cmtTbl =
                     Doc.join
                       ~sep:(Doc.concat [Doc.text ","; Doc.line])
                       (List.map
-                         (fun pat -> printPattern ~customLayout pat cmtTbl)
+                         (fun pat -> printPattern ~state pat cmtTbl)
                          patterns);
                   ]);
              Doc.trailingComma;
@@ -2264,15 +2227,12 @@ and printPattern ~customLayout (p : Parsetree.pattern) cmtTbl =
             (if shouldHug then Doc.nil else Doc.softLine);
             Doc.join
               ~sep:(Doc.concat [Doc.text ","; Doc.line])
-              (List.map
-                 (fun pat -> printPattern ~customLayout pat cmtTbl)
-                 patterns);
+              (List.map (fun pat -> printPattern ~state pat cmtTbl) patterns);
             (match tail.Parsetree.ppat_desc with
             | Ppat_construct ({txt = Longident.Lident "[]"}, _) -> Doc.nil
             | _ ->
               let doc =
-                Doc.concat
-                  [Doc.text "..."; printPattern ~customLayout tail cmtTbl]
+                Doc.concat [Doc.text "..."; printPattern ~state tail cmtTbl]
               in
               let tail = printComments doc cmtTbl tail.ppat_loc in
               Doc.concat [Doc.text ","; Doc.line; tail]);
@@ -2308,8 +2268,7 @@ and printPattern ~customLayout (p : Parsetree.pattern) cmtTbl =
           Doc.concat [Doc.lparen; printCommentsInside cmtTbl loc; Doc.rparen]
         (* Some((1, 2) *)
         | Some {ppat_desc = Ppat_tuple [({ppat_desc = Ppat_tuple _} as arg)]} ->
-          Doc.concat
-            [Doc.lparen; printPattern ~customLayout arg cmtTbl; Doc.rparen]
+          Doc.concat [Doc.lparen; printPattern ~state arg cmtTbl; Doc.rparen]
         | Some {ppat_desc = Ppat_tuple patterns} ->
           Doc.concat
             [
@@ -2321,7 +2280,7 @@ and printPattern ~customLayout (p : Parsetree.pattern) cmtTbl =
                      Doc.join
                        ~sep:(Doc.concat [Doc.comma; Doc.line])
                        (List.map
-                          (fun pat -> printPattern ~customLayout pat cmtTbl)
+                          (fun pat -> printPattern ~state pat cmtTbl)
                           patterns);
                    ]);
               Doc.trailingComma;
@@ -2329,7 +2288,7 @@ and printPattern ~customLayout (p : Parsetree.pattern) cmtTbl =
               Doc.rparen;
             ]
         | Some arg ->
-          let argDoc = printPattern ~customLayout arg cmtTbl in
+          let argDoc = printPattern ~state arg cmtTbl in
           let shouldHug = ParsetreeViewer.isHuggablePattern arg in
           Doc.concat
             [
@@ -2360,8 +2319,7 @@ and printPattern ~customLayout (p : Parsetree.pattern) cmtTbl =
           Doc.concat [Doc.lparen; printCommentsInside cmtTbl loc; Doc.rparen]
         (* Some((1, 2) *)
         | Some {ppat_desc = Ppat_tuple [({ppat_desc = Ppat_tuple _} as arg)]} ->
-          Doc.concat
-            [Doc.lparen; printPattern ~customLayout arg cmtTbl; Doc.rparen]
+          Doc.concat [Doc.lparen; printPattern ~state arg cmtTbl; Doc.rparen]
         | Some {ppat_desc = Ppat_tuple patterns} ->
           Doc.concat
             [
@@ -2373,7 +2331,7 @@ and printPattern ~customLayout (p : Parsetree.pattern) cmtTbl =
                      Doc.join
                        ~sep:(Doc.concat [Doc.comma; Doc.line])
                        (List.map
-                          (fun pat -> printPattern ~customLayout pat cmtTbl)
+                          (fun pat -> printPattern ~state pat cmtTbl)
                           patterns);
                    ]);
               Doc.trailingComma;
@@ -2381,7 +2339,7 @@ and printPattern ~customLayout (p : Parsetree.pattern) cmtTbl =
               Doc.rparen;
             ]
         | Some arg ->
-          let argDoc = printPattern ~customLayout arg cmtTbl in
+          let argDoc = printPattern ~state arg cmtTbl in
           let shouldHug = ParsetreeViewer.isHuggablePattern arg in
           Doc.concat
             [
@@ -2412,8 +2370,7 @@ and printPattern ~customLayout (p : Parsetree.pattern) cmtTbl =
                     Doc.join
                       ~sep:(Doc.concat [Doc.text ","; Doc.line])
                       (List.map
-                         (fun row ->
-                           printPatternRecordRow ~customLayout row cmtTbl)
+                         (fun row -> printPatternRecordRow ~state row cmtTbl)
                          rows);
                     (match openFlag with
                     | Open -> Doc.concat [Doc.text ","; Doc.line; Doc.text "_"]
@@ -2430,7 +2387,7 @@ and printPattern ~customLayout (p : Parsetree.pattern) cmtTbl =
         | _ -> false
       in
       let pat =
-        let p = printPattern ~customLayout p cmtTbl in
+        let p = printPattern ~state p cmtTbl in
         if needsParens then Doc.concat [Doc.text "("; p; Doc.text ")"] else p
       in
       Doc.group (Doc.concat [Doc.text "exception"; Doc.line; pat])
@@ -2440,7 +2397,7 @@ and printPattern ~customLayout (p : Parsetree.pattern) cmtTbl =
       let docs =
         List.mapi
           (fun i pat ->
-            let patternDoc = printPattern ~customLayout pat cmtTbl in
+            let patternDoc = printPattern ~state pat cmtTbl in
             Doc.concat
               [
                 (if i == 0 then Doc.nil
@@ -2459,8 +2416,7 @@ and printPattern ~customLayout (p : Parsetree.pattern) cmtTbl =
         | _ -> false
       in
       Doc.breakableGroup ~forceBreak:isSpreadOverMultipleLines (Doc.concat docs)
-    | Ppat_extension ext ->
-      printExtension ~customLayout ~atModuleLvl:false ext cmtTbl
+    | Ppat_extension ext -> printExtension ~state ~atModuleLvl:false ext cmtTbl
     | Ppat_lazy p ->
       let needsParens =
         match p.ppat_desc with
@@ -2468,7 +2424,7 @@ and printPattern ~customLayout (p : Parsetree.pattern) cmtTbl =
         | _ -> false
       in
       let pat =
-        let p = printPattern ~customLayout p cmtTbl in
+        let p = printPattern ~state p cmtTbl in
         if needsParens then Doc.concat [Doc.text "("; p; Doc.text ")"] else p
       in
       Doc.concat [Doc.text "lazy "; pat]
@@ -2479,7 +2435,7 @@ and printPattern ~customLayout (p : Parsetree.pattern) cmtTbl =
         | _ -> false
       in
       let renderedPattern =
-        let p = printPattern ~customLayout p cmtTbl in
+        let p = printPattern ~state p cmtTbl in
         if needsParens then Doc.concat [Doc.text "("; p; Doc.text ")"] else p
       in
       Doc.concat
@@ -2495,7 +2451,7 @@ and printPattern ~customLayout (p : Parsetree.pattern) cmtTbl =
           printComments (Doc.text stringLoc.txt) cmtTbl stringLoc.loc;
           Doc.text ": ";
           printComments
-            (printPackageType ~customLayout ~printModuleKeywordAndParens:false
+            (printPackageType ~state ~printModuleKeywordAndParens:false
                packageType cmtTbl)
             cmtTbl ptyp_loc;
           Doc.rparen;
@@ -2503,9 +2459,9 @@ and printPattern ~customLayout (p : Parsetree.pattern) cmtTbl =
     | Ppat_constraint (pattern, typ) ->
       Doc.concat
         [
-          printPattern ~customLayout pattern cmtTbl;
+          printPattern ~state pattern cmtTbl;
           Doc.text ": ";
-          printTypExpr ~customLayout typ cmtTbl;
+          printTypExpr ~state typ cmtTbl;
         ]
     (* Note: module(P : S) is represented as *)
     (* Ppat_constraint(Ppat_unpack, Ptyp_package) *)
@@ -2526,13 +2482,11 @@ and printPattern ~customLayout (p : Parsetree.pattern) cmtTbl =
     | attrs ->
       Doc.group
         (Doc.concat
-           [
-             printAttributes ~customLayout attrs cmtTbl; patternWithoutAttributes;
-           ])
+           [printAttributes ~state attrs cmtTbl; patternWithoutAttributes])
   in
   printComments doc cmtTbl p.ppat_loc
 
-and printPatternRecordRow ~customLayout row cmtTbl =
+and printPatternRecordRow ~state row cmtTbl =
   match row with
   (* punned {x}*)
   | ( ({Location.txt = Longident.Lident ident} as longident),
@@ -2541,7 +2495,7 @@ and printPatternRecordRow ~customLayout row cmtTbl =
     Doc.concat
       [
         printOptionalLabel ppat_attributes;
-        printAttributes ~customLayout ppat_attributes cmtTbl;
+        printAttributes ~state ppat_attributes cmtTbl;
         printLidentPath longident cmtTbl;
       ]
   | longident, pattern ->
@@ -2549,7 +2503,7 @@ and printPatternRecordRow ~customLayout row cmtTbl =
       {longident.loc with loc_end = pattern.Parsetree.ppat_loc.loc_end}
     in
     let rhsDoc =
-      let doc = printPattern ~customLayout pattern cmtTbl in
+      let doc = printPattern ~state pattern cmtTbl in
       let doc =
         if Parens.patternRecordRowRhs pattern then addParens doc else doc
       in
@@ -2568,11 +2522,11 @@ and printPatternRecordRow ~customLayout row cmtTbl =
     in
     printComments doc cmtTbl locForComments
 
-and printExpressionWithComments ~customLayout expr cmtTbl : Doc.t =
-  let doc = printExpression ~customLayout expr cmtTbl in
+and printExpressionWithComments ~state expr cmtTbl : Doc.t =
+  let doc = printExpression ~state expr cmtTbl in
   printComments doc cmtTbl expr.Parsetree.pexp_loc
 
-and printIfChain ~customLayout pexp_attributes ifs elseExpr cmtTbl =
+and printIfChain ~state pexp_attributes ifs elseExpr cmtTbl =
   let ifDocs =
     Doc.join ~sep:Doc.space
       (List.mapi
@@ -2583,11 +2537,9 @@ and printIfChain ~customLayout pexp_attributes ifs elseExpr cmtTbl =
              | ParsetreeViewer.If ifExpr ->
                let condition =
                  if ParsetreeViewer.isBlockExpr ifExpr then
-                   printExpressionBlock ~customLayout ~braces:true ifExpr cmtTbl
+                   printExpressionBlock ~state ~braces:true ifExpr cmtTbl
                  else
-                   let doc =
-                     printExpressionWithComments ~customLayout ifExpr cmtTbl
-                   in
+                   let doc = printExpressionWithComments ~state ifExpr cmtTbl in
                    match Parens.expr ifExpr with
                    | Parens.Parenthesized -> addParens doc
                    | Braced braces -> printBraces doc ifExpr braces
@@ -2604,14 +2556,12 @@ and printIfChain ~customLayout pexp_attributes ifs elseExpr cmtTbl =
                       | Some _, expr -> expr
                       | _ -> thenExpr
                     in
-                    printExpressionBlock ~customLayout ~braces:true thenExpr
-                      cmtTbl);
+                    printExpressionBlock ~state ~braces:true thenExpr cmtTbl);
                  ]
              | IfLet (pattern, conditionExpr) ->
                let conditionDoc =
                  let doc =
-                   printExpressionWithComments ~customLayout conditionExpr
-                     cmtTbl
+                   printExpressionWithComments ~state conditionExpr cmtTbl
                  in
                  match Parens.expr conditionExpr with
                  | Parens.Parenthesized -> addParens doc
@@ -2622,12 +2572,11 @@ and printIfChain ~customLayout pexp_attributes ifs elseExpr cmtTbl =
                  [
                    ifTxt;
                    Doc.text "let ";
-                   printPattern ~customLayout pattern cmtTbl;
+                   printPattern ~state pattern cmtTbl;
                    Doc.text " = ";
                    conditionDoc;
                    Doc.space;
-                   printExpressionBlock ~customLayout ~braces:true thenExpr
-                     cmtTbl;
+                   printExpressionBlock ~state ~braces:true thenExpr cmtTbl;
                  ]
            in
            printLeadingComments doc cmtTbl.leading outerLoc)
@@ -2639,14 +2588,13 @@ and printIfChain ~customLayout pexp_attributes ifs elseExpr cmtTbl =
     | Some expr ->
       Doc.concat
         [
-          Doc.text " else ";
-          printExpressionBlock ~customLayout ~braces:true expr cmtTbl;
+          Doc.text " else "; printExpressionBlock ~state ~braces:true expr cmtTbl;
         ]
   in
   let attrs = ParsetreeViewer.filterFragileMatchAttributes pexp_attributes in
-  Doc.concat [printAttributes ~customLayout attrs cmtTbl; ifDocs; elseDoc]
+  Doc.concat [printAttributes ~state attrs cmtTbl; ifDocs; elseDoc]
 
-and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
+and printExpression ~state (e : Parsetree.expression) cmtTbl =
   let printArrow ~isUncurried e =
     let attrsOnArrow, parameters, returnExpr = ParsetreeViewer.funExpr e in
     let ParsetreeViewer.{async; uncurried; attributes = attrs} =
@@ -2670,8 +2618,8 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
       | None -> false
     in
     let parametersDoc =
-      printExprFunParameters ~customLayout ~inCallback:NoCallback ~uncurried
-        ~async ~hasConstraint parameters cmtTbl
+      printExprFunParameters ~state ~inCallback:NoCallback ~uncurried ~async
+        ~hasConstraint parameters cmtTbl
     in
     let returnExprDoc =
       let optBraces, _ = ParsetreeViewer.processBracesAttr returnExpr in
@@ -2693,7 +2641,7 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
         | _ -> true
       in
       let returnDoc =
-        let doc = printExpressionWithComments ~customLayout returnExpr cmtTbl in
+        let doc = printExpressionWithComments ~state returnExpr cmtTbl in
         match Parens.expr returnExpr with
         | Parens.Parenthesized -> addParens doc
         | Braced braces -> printBraces doc returnExpr braces
@@ -2709,13 +2657,13 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
       match typConstraint with
       | Some typ ->
         let typDoc =
-          let doc = printTypExpr ~customLayout typ cmtTbl in
+          let doc = printTypExpr ~state typ cmtTbl in
           if Parens.arrowReturnTypExpr typ then addParens doc else doc
         in
         Doc.concat [Doc.text ": "; typDoc]
       | _ -> Doc.nil
     in
-    let attrs = printAttributes ~customLayout attrs cmtTbl in
+    let attrs = printAttributes ~state attrs cmtTbl in
     Doc.group
       (Doc.concat
          [attrs; parametersDoc; typConstraintDoc; Doc.text " =>"; returnExprDoc])
@@ -2725,7 +2673,7 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
     | Parsetree.Pexp_constant c ->
       printConstant ~templateLiteral:(ParsetreeViewer.isTemplateLiteral e) c
     | Pexp_construct _ when ParsetreeViewer.hasJsxAttribute e.pexp_attributes ->
-      printJsxFragment ~customLayout e cmtTbl
+      printJsxFragment ~state e cmtTbl
     | Pexp_construct ({txt = Longident.Lident "()"}, _) -> Doc.text "()"
     | Pexp_construct ({txt = Longident.Lident "[]"}, _) ->
       Doc.concat
@@ -2740,9 +2688,7 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
               Doc.text ",";
               Doc.line;
               Doc.dotdotdot;
-              (let doc =
-                 printExpressionWithComments ~customLayout expr cmtTbl
-               in
+              (let doc = printExpressionWithComments ~state expr cmtTbl in
                match Parens.expr expr with
                | Parens.Parenthesized -> addParens doc
                | Braced braces -> printBraces doc expr braces
@@ -2763,8 +2709,7 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
                       (List.map
                          (fun expr ->
                            let doc =
-                             printExpressionWithComments ~customLayout expr
-                               cmtTbl
+                             printExpressionWithComments ~state expr cmtTbl
                            in
                            match Parens.expr expr with
                            | Parens.Parenthesized -> addParens doc
@@ -2790,7 +2735,7 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
           Doc.concat
             [
               Doc.lparen;
-              (let doc = printExpressionWithComments ~customLayout arg cmtTbl in
+              (let doc = printExpressionWithComments ~state arg cmtTbl in
                match Parens.expr arg with
                | Parens.Parenthesized -> addParens doc
                | Braced braces -> printBraces doc arg braces
@@ -2810,8 +2755,7 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
                        (List.map
                           (fun expr ->
                             let doc =
-                              printExpressionWithComments ~customLayout expr
-                                cmtTbl
+                              printExpressionWithComments ~state expr cmtTbl
                             in
                             match Parens.expr expr with
                             | Parens.Parenthesized -> addParens doc
@@ -2825,7 +2769,7 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
             ]
         | Some arg ->
           let argDoc =
-            let doc = printExpressionWithComments ~customLayout arg cmtTbl in
+            let doc = printExpressionWithComments ~state arg cmtTbl in
             match Parens.expr arg with
             | Parens.Parenthesized -> addParens doc
             | Braced braces -> printBraces doc arg braces
@@ -2862,8 +2806,7 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
                       (List.map
                          (fun expr ->
                            let doc =
-                             printExpressionWithComments ~customLayout expr
-                               cmtTbl
+                             printExpressionWithComments ~state expr cmtTbl
                            in
                            match Parens.expr expr with
                            | Parens.Parenthesized -> addParens doc
@@ -2892,8 +2835,7 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
                       (List.map
                          (fun expr ->
                            let doc =
-                             printExpressionWithComments ~customLayout expr
-                               cmtTbl
+                             printExpressionWithComments ~state expr cmtTbl
                            in
                            match Parens.expr expr with
                            | Parens.Parenthesized -> addParens doc
@@ -2918,7 +2860,7 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
           Doc.concat
             [
               Doc.lparen;
-              (let doc = printExpressionWithComments ~customLayout arg cmtTbl in
+              (let doc = printExpressionWithComments ~state arg cmtTbl in
                match Parens.expr arg with
                | Parens.Parenthesized -> addParens doc
                | Braced braces -> printBraces doc arg braces
@@ -2938,8 +2880,7 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
                        (List.map
                           (fun expr ->
                             let doc =
-                              printExpressionWithComments ~customLayout expr
-                                cmtTbl
+                              printExpressionWithComments ~state expr cmtTbl
                             in
                             match Parens.expr expr with
                             | Parens.Parenthesized -> addParens doc
@@ -2953,7 +2894,7 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
             ]
         | Some arg ->
           let argDoc =
-            let doc = printExpressionWithComments ~customLayout arg cmtTbl in
+            let doc = printExpressionWithComments ~state arg cmtTbl in
             match Parens.expr arg with
             | Parens.Parenthesized -> addParens doc
             | Braced braces -> printBraces doc arg braces
@@ -2981,7 +2922,7 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
           {ppat_desc = Ppat_var {txt = "__x"}},
           {pexp_desc = Pexp_apply _} ) ->
       (* (__x) => f(a, __x, c) -----> f(a, _, c)  *)
-      printExpressionWithComments ~customLayout
+      printExpressionWithComments ~state
         (ParsetreeViewer.rewriteUnderscoreApply e)
         cmtTbl
     | Pexp_fun _ | Pexp_newtype _ -> printArrow ~isUncurried:false e
@@ -3001,9 +2942,7 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
             Doc.concat
               [
                 Doc.dotdotdot;
-                (let doc =
-                   printExpressionWithComments ~customLayout expr cmtTbl
-                 in
+                (let doc = printExpressionWithComments ~state expr cmtTbl in
                  match Parens.expr expr with
                  | Parens.Parenthesized -> addParens doc
                  | Braced braces -> printBraces doc expr braces
@@ -3039,7 +2978,7 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
                         ~sep:(Doc.concat [Doc.text ","; Doc.line])
                         (List.map
                            (fun row ->
-                             printExpressionRecordRow ~customLayout row cmtTbl
+                             printExpressionRecordRow ~state row cmtTbl
                                punningAllowed)
                            rows);
                     ]);
@@ -3075,31 +3014,29 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
                       Doc.join
                         ~sep:(Doc.concat [Doc.text ","; Doc.line])
                         (List.map
-                           (fun row ->
-                             printBsObjectRow ~customLayout row cmtTbl)
+                           (fun row -> printBsObjectRow ~state row cmtTbl)
                            rows);
                     ]);
                Doc.trailingComma;
                Doc.softLine;
                Doc.rbrace;
              ])
-      | extension ->
-        printExtension ~customLayout ~atModuleLvl:false extension cmtTbl)
+      | extension -> printExtension ~state ~atModuleLvl:false extension cmtTbl)
     | Pexp_apply (e, [(Nolabel, {pexp_desc = Pexp_array subLists})])
       when ParsetreeViewer.isSpreadBeltListConcat e ->
-      printBeltListConcatApply ~customLayout subLists cmtTbl
+      printBeltListConcatApply ~state subLists cmtTbl
     | Pexp_apply _ ->
       if ParsetreeViewer.isUnaryExpression e then
-        printUnaryExpression ~customLayout e cmtTbl
+        printUnaryExpression ~state e cmtTbl
       else if ParsetreeViewer.isTemplateLiteral e then
-        printTemplateLiteral ~customLayout e cmtTbl
+        printTemplateLiteral ~state e cmtTbl
       else if ParsetreeViewer.isBinaryExpression e then
-        printBinaryExpression ~customLayout e cmtTbl
-      else printPexpApply ~customLayout e cmtTbl
+        printBinaryExpression ~state e cmtTbl
+      else printPexpApply ~state e cmtTbl
     | Pexp_unreachable -> Doc.dot
     | Pexp_field (expr, longidentLoc) ->
       let lhs =
-        let doc = printExpressionWithComments ~customLayout expr cmtTbl in
+        let doc = printExpressionWithComments ~state expr cmtTbl in
         match Parens.fieldExpr expr with
         | Parens.Parenthesized -> addParens doc
         | Braced braces -> printBraces doc expr braces
@@ -3107,7 +3044,7 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
       in
       Doc.concat [lhs; Doc.dot; printLidentPath longidentLoc cmtTbl]
     | Pexp_setfield (expr1, longidentLoc, expr2) ->
-      printSetFieldExpr ~customLayout e.pexp_attributes expr1 longidentLoc expr2
+      printSetFieldExpr ~state e.pexp_attributes expr1 longidentLoc expr2
         e.pexp_loc cmtTbl
     | Pexp_ifthenelse (_ifExpr, _thenExpr, _elseExpr)
       when ParsetreeViewer.isTernaryExpr e ->
@@ -3118,7 +3055,7 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
           Doc.group
             (Doc.concat
                [
-                 printTernaryOperand ~customLayout condition1 cmtTbl;
+                 printTernaryOperand ~state condition1 cmtTbl;
                  Doc.indent
                    (Doc.concat
                       [
@@ -3127,8 +3064,7 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
                           (Doc.concat
                              [
                                Doc.text "? ";
-                               printTernaryOperand ~customLayout consequent1
-                                 cmtTbl;
+                               printTernaryOperand ~state consequent1 cmtTbl;
                              ]);
                         Doc.concat
                           (List.map
@@ -3137,18 +3073,15 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
                                  [
                                    Doc.line;
                                    Doc.text ": ";
-                                   printTernaryOperand ~customLayout condition
-                                     cmtTbl;
+                                   printTernaryOperand ~state condition cmtTbl;
                                    Doc.line;
                                    Doc.text "? ";
-                                   printTernaryOperand ~customLayout consequent
-                                     cmtTbl;
+                                   printTernaryOperand ~state consequent cmtTbl;
                                  ])
                              rest);
                         Doc.line;
                         Doc.text ": ";
-                        Doc.indent
-                          (printTernaryOperand ~customLayout alternate cmtTbl);
+                        Doc.indent (printTernaryOperand ~state alternate cmtTbl);
                       ]);
                ])
         | _ -> Doc.nil
@@ -3161,15 +3094,15 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
       in
       Doc.concat
         [
-          printAttributes ~customLayout attrs cmtTbl;
+          printAttributes ~state attrs cmtTbl;
           (if needsParens then addParens ternaryDoc else ternaryDoc);
         ]
     | Pexp_ifthenelse (_ifExpr, _thenExpr, _elseExpr) ->
       let ifs, elseExpr = ParsetreeViewer.collectIfExpressions e in
-      printIfChain ~customLayout e.pexp_attributes ifs elseExpr cmtTbl
+      printIfChain ~state e.pexp_attributes ifs elseExpr cmtTbl
     | Pexp_while (expr1, expr2) ->
       let condition =
-        let doc = printExpressionWithComments ~customLayout expr1 cmtTbl in
+        let doc = printExpressionWithComments ~state expr1 cmtTbl in
         match Parens.expr expr1 with
         | Parens.Parenthesized -> addParens doc
         | Braced braces -> printBraces doc expr1 braces
@@ -3182,32 +3115,28 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
              (if ParsetreeViewer.isBlockExpr expr1 then condition
              else Doc.group (Doc.ifBreaks (addParens condition) condition));
              Doc.space;
-             printExpressionBlock ~customLayout ~braces:true expr2 cmtTbl;
+             printExpressionBlock ~state ~braces:true expr2 cmtTbl;
            ])
     | Pexp_for (pattern, fromExpr, toExpr, directionFlag, body) ->
       Doc.breakableGroup ~forceBreak:true
         (Doc.concat
            [
              Doc.text "for ";
-             printPattern ~customLayout pattern cmtTbl;
+             printPattern ~state pattern cmtTbl;
              Doc.text " in ";
-             (let doc =
-                printExpressionWithComments ~customLayout fromExpr cmtTbl
-              in
+             (let doc = printExpressionWithComments ~state fromExpr cmtTbl in
               match Parens.expr fromExpr with
               | Parens.Parenthesized -> addParens doc
               | Braced braces -> printBraces doc fromExpr braces
               | Nothing -> doc);
              printDirectionFlag directionFlag;
-             (let doc =
-                printExpressionWithComments ~customLayout toExpr cmtTbl
-              in
+             (let doc = printExpressionWithComments ~state toExpr cmtTbl in
               match Parens.expr toExpr with
               | Parens.Parenthesized -> addParens doc
               | Braced braces -> printBraces doc toExpr braces
               | Nothing -> doc);
              Doc.space;
-             printExpressionBlock ~customLayout ~braces:true body cmtTbl;
+             printExpressionBlock ~state ~braces:true body cmtTbl;
            ])
     | Pexp_constraint
         ( {pexp_desc = Pexp_pack modExpr},
@@ -3220,10 +3149,10 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
                (Doc.concat
                   [
                     Doc.softLine;
-                    printModExpr ~customLayout modExpr cmtTbl;
+                    printModExpr ~state modExpr cmtTbl;
                     Doc.text ": ";
                     printComments
-                      (printPackageType ~customLayout
+                      (printPackageType ~state
                          ~printModuleKeywordAndParens:false packageType cmtTbl)
                       cmtTbl ptyp_loc;
                   ]);
@@ -3232,20 +3161,20 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
            ])
     | Pexp_constraint (expr, typ) ->
       let exprDoc =
-        let doc = printExpressionWithComments ~customLayout expr cmtTbl in
+        let doc = printExpressionWithComments ~state expr cmtTbl in
         match Parens.expr expr with
         | Parens.Parenthesized -> addParens doc
         | Braced braces -> printBraces doc expr braces
         | Nothing -> doc
       in
-      Doc.concat [exprDoc; Doc.text ": "; printTypExpr ~customLayout typ cmtTbl]
+      Doc.concat [exprDoc; Doc.text ": "; printTypExpr ~state typ cmtTbl]
     | Pexp_letmodule ({txt = _modName}, _modExpr, _expr) ->
-      printExpressionBlock ~customLayout ~braces:true e cmtTbl
+      printExpressionBlock ~state ~braces:true e cmtTbl
     | Pexp_letexception (_extensionConstructor, _expr) ->
-      printExpressionBlock ~customLayout ~braces:true e cmtTbl
+      printExpressionBlock ~state ~braces:true e cmtTbl
     | Pexp_assert expr ->
       let rhs =
-        let doc = printExpressionWithComments ~customLayout expr cmtTbl in
+        let doc = printExpressionWithComments ~state expr cmtTbl in
         match Parens.lazyOrAssertOrAwaitExprRhs expr with
         | Parens.Parenthesized -> addParens doc
         | Braced braces -> printBraces doc expr braces
@@ -3254,7 +3183,7 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
       Doc.concat [Doc.text "assert "; rhs]
     | Pexp_lazy expr ->
       let rhs =
-        let doc = printExpressionWithComments ~customLayout expr cmtTbl in
+        let doc = printExpressionWithComments ~state expr cmtTbl in
         match Parens.lazyOrAssertOrAwaitExprRhs expr with
         | Parens.Parenthesized -> addParens doc
         | Braced braces -> printBraces doc expr braces
@@ -3262,24 +3191,22 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
       in
       Doc.group (Doc.concat [Doc.text "lazy "; rhs])
     | Pexp_open (_overrideFlag, _longidentLoc, _expr) ->
-      printExpressionBlock ~customLayout ~braces:true e cmtTbl
+      printExpressionBlock ~state ~braces:true e cmtTbl
     | Pexp_pack modExpr ->
       Doc.group
         (Doc.concat
            [
              Doc.text "module(";
              Doc.indent
-               (Doc.concat
-                  [Doc.softLine; printModExpr ~customLayout modExpr cmtTbl]);
+               (Doc.concat [Doc.softLine; printModExpr ~state modExpr cmtTbl]);
              Doc.softLine;
              Doc.rparen;
            ])
-    | Pexp_sequence _ ->
-      printExpressionBlock ~customLayout ~braces:true e cmtTbl
-    | Pexp_let _ -> printExpressionBlock ~customLayout ~braces:true e cmtTbl
+    | Pexp_sequence _ -> printExpressionBlock ~state ~braces:true e cmtTbl
+    | Pexp_let _ -> printExpressionBlock ~state ~braces:true e cmtTbl
     | Pexp_try (expr, cases) ->
       let exprDoc =
-        let doc = printExpressionWithComments ~customLayout expr cmtTbl in
+        let doc = printExpressionWithComments ~state expr cmtTbl in
         match Parens.expr expr with
         | Parens.Parenthesized -> addParens doc
         | Braced braces -> printBraces doc expr braces
@@ -3290,43 +3217,37 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
           Doc.text "try ";
           exprDoc;
           Doc.text " catch ";
-          printCases ~customLayout cases cmtTbl;
+          printCases ~state cases cmtTbl;
         ]
     | Pexp_match (_, [_; _]) when ParsetreeViewer.isIfLetExpr e ->
       let ifs, elseExpr = ParsetreeViewer.collectIfExpressions e in
-      printIfChain ~customLayout e.pexp_attributes ifs elseExpr cmtTbl
+      printIfChain ~state e.pexp_attributes ifs elseExpr cmtTbl
     | Pexp_match (expr, cases) ->
       let exprDoc =
-        let doc = printExpressionWithComments ~customLayout expr cmtTbl in
+        let doc = printExpressionWithComments ~state expr cmtTbl in
         match Parens.expr expr with
         | Parens.Parenthesized -> addParens doc
         | Braced braces -> printBraces doc expr braces
         | Nothing -> doc
       in
       Doc.concat
-        [
-          Doc.text "switch ";
-          exprDoc;
-          Doc.space;
-          printCases ~customLayout cases cmtTbl;
-        ]
+        [Doc.text "switch "; exprDoc; Doc.space; printCases ~state cases cmtTbl]
     | Pexp_function cases ->
-      Doc.concat
-        [Doc.text "x => switch x "; printCases ~customLayout cases cmtTbl]
+      Doc.concat [Doc.text "x => switch x "; printCases ~state cases cmtTbl]
     | Pexp_coerce (expr, typOpt, typ) ->
-      let docExpr = printExpressionWithComments ~customLayout expr cmtTbl in
-      let docTyp = printTypExpr ~customLayout typ cmtTbl in
+      let docExpr = printExpressionWithComments ~state expr cmtTbl in
+      let docTyp = printTypExpr ~state typ cmtTbl in
       let ofType =
         match typOpt with
         | None -> Doc.nil
         | Some typ1 ->
-          Doc.concat [Doc.text ": "; printTypExpr ~customLayout typ1 cmtTbl]
+          Doc.concat [Doc.text ": "; printTypExpr ~state typ1 cmtTbl]
       in
       Doc.concat
         [Doc.lparen; docExpr; ofType; Doc.text " :> "; docTyp; Doc.rparen]
     | Pexp_send (parentExpr, label) ->
       let parentDoc =
-        let doc = printExpressionWithComments ~customLayout parentExpr cmtTbl in
+        let doc = printExpressionWithComments ~state parentExpr cmtTbl in
         match Parens.unaryExprOperand parentExpr with
         | Parens.Parenthesized -> addParens doc
         | Braced braces -> printBraces doc parentExpr braces
@@ -3378,11 +3299,10 @@ and printExpression ~customLayout (e : Parsetree.expression) cmtTbl =
   match e.pexp_attributes with
   | [] -> exprWithAwait
   | attrs when not shouldPrintItsOwnAttributes ->
-    Doc.group
-      (Doc.concat [printAttributes ~customLayout attrs cmtTbl; exprWithAwait])
+    Doc.group (Doc.concat [printAttributes ~state attrs cmtTbl; exprWithAwait])
   | _ -> exprWithAwait
 
-and printPexpFun ~customLayout ~inCallback e cmtTbl =
+and printPexpFun ~state ~inCallback e cmtTbl =
   let attrsOnArrow, parameters, returnExpr = ParsetreeViewer.funExpr e in
   let ParsetreeViewer.{async; uncurried; attributes = attrs} =
     ParsetreeViewer.processFunctionAttributes attrsOnArrow
@@ -3399,7 +3319,7 @@ and printPexpFun ~customLayout ~inCallback e cmtTbl =
     | _ -> (returnExpr, None)
   in
   let parametersDoc =
-    printExprFunParameters ~customLayout ~inCallback ~async ~uncurried
+    printExprFunParameters ~state ~inCallback ~async ~uncurried
       ~hasConstraint:
         (match typConstraint with
         | Some _ -> true
@@ -3426,7 +3346,7 @@ and printPexpFun ~customLayout ~inCallback e cmtTbl =
       | _ -> false
     in
     let returnDoc =
-      let doc = printExpressionWithComments ~customLayout returnExpr cmtTbl in
+      let doc = printExpressionWithComments ~state returnExpr cmtTbl in
       match Parens.expr returnExpr with
       | Parens.Parenthesized -> addParens doc
       | Braced braces -> printBraces doc returnExpr braces
@@ -3447,36 +3367,35 @@ and printPexpFun ~customLayout ~inCallback e cmtTbl =
   in
   let typConstraintDoc =
     match typConstraint with
-    | Some typ ->
-      Doc.concat [Doc.text ": "; printTypExpr ~customLayout typ cmtTbl]
+    | Some typ -> Doc.concat [Doc.text ": "; printTypExpr ~state typ cmtTbl]
     | _ -> Doc.nil
   in
   Doc.concat
     [
-      printAttributes ~customLayout attrs cmtTbl;
+      printAttributes ~state attrs cmtTbl;
       parametersDoc;
       typConstraintDoc;
       Doc.text " =>";
       returnExprDoc;
     ]
 
-and printTernaryOperand ~customLayout expr cmtTbl =
-  let doc = printExpressionWithComments ~customLayout expr cmtTbl in
+and printTernaryOperand ~state expr cmtTbl =
+  let doc = printExpressionWithComments ~state expr cmtTbl in
   match Parens.ternaryOperand expr with
   | Parens.Parenthesized -> addParens doc
   | Braced braces -> printBraces doc expr braces
   | Nothing -> doc
 
-and printSetFieldExpr ~customLayout attrs lhs longidentLoc rhs loc cmtTbl =
+and printSetFieldExpr ~state attrs lhs longidentLoc rhs loc cmtTbl =
   let rhsDoc =
-    let doc = printExpressionWithComments ~customLayout rhs cmtTbl in
+    let doc = printExpressionWithComments ~state rhs cmtTbl in
     match Parens.setFieldExprRhs rhs with
     | Parens.Parenthesized -> addParens doc
     | Braced braces -> printBraces doc rhs braces
     | Nothing -> doc
   in
   let lhsDoc =
-    let doc = printExpressionWithComments ~customLayout lhs cmtTbl in
+    let doc = printExpressionWithComments ~state lhs cmtTbl in
     match Parens.fieldExpr lhs with
     | Parens.Parenthesized -> addParens doc
     | Braced braces -> printBraces doc lhs braces
@@ -3499,12 +3418,11 @@ and printSetFieldExpr ~customLayout attrs lhs longidentLoc rhs loc cmtTbl =
   let doc =
     match attrs with
     | [] -> doc
-    | attrs ->
-      Doc.group (Doc.concat [printAttributes ~customLayout attrs cmtTbl; doc])
+    | attrs -> Doc.group (Doc.concat [printAttributes ~state attrs cmtTbl; doc])
   in
   printComments doc cmtTbl loc
 
-and printTemplateLiteral ~customLayout expr cmtTbl =
+and printTemplateLiteral ~state expr cmtTbl =
   let tag = ref "js" in
   let rec walkExpr expr =
     let open Parsetree in
@@ -3519,7 +3437,7 @@ and printTemplateLiteral ~customLayout expr cmtTbl =
       tag := prefix;
       printStringContents txt
     | _ ->
-      let doc = printExpressionWithComments ~customLayout expr cmtTbl in
+      let doc = printExpressionWithComments ~state expr cmtTbl in
       Doc.group (Doc.concat [Doc.text "${"; Doc.indent doc; Doc.rbrace])
   in
   let content = walkExpr expr in
@@ -3531,7 +3449,7 @@ and printTemplateLiteral ~customLayout expr cmtTbl =
       Doc.text "`";
     ]
 
-and printUnaryExpression ~customLayout expr cmtTbl =
+and printUnaryExpression ~state expr cmtTbl =
   let printUnaryOperator op =
     Doc.text
       (match op with
@@ -3547,7 +3465,7 @@ and printUnaryExpression ~customLayout expr cmtTbl =
       ( {pexp_desc = Pexp_ident {txt = Longident.Lident operator}},
         [(Nolabel, operand)] ) ->
     let printedOperand =
-      let doc = printExpressionWithComments ~customLayout operand cmtTbl in
+      let doc = printExpressionWithComments ~state operand cmtTbl in
       match Parens.unaryExprOperand operand with
       | Parens.Parenthesized -> addParens doc
       | Braced braces -> printBraces doc operand braces
@@ -3557,7 +3475,7 @@ and printUnaryExpression ~customLayout expr cmtTbl =
     printComments doc cmtTbl expr.pexp_loc
   | _ -> assert false
 
-and printBinaryExpression ~customLayout (expr : Parsetree.expression) cmtTbl =
+and printBinaryExpression ~state (expr : Parsetree.expression) cmtTbl =
   let printBinaryOperator ~inlineRhs operator =
     let operatorTxt =
       match operator with
@@ -3604,7 +3522,7 @@ and printBinaryExpression ~customLayout (expr : Parsetree.expression) cmtTbl =
                   right.pexp_attributes
               in
               let doc =
-                printExpressionWithComments ~customLayout
+                printExpressionWithComments ~state
                   {right with pexp_attributes = rightInternalAttrs}
                   cmtTbl
               in
@@ -3615,10 +3533,7 @@ and printBinaryExpression ~customLayout (expr : Parsetree.expression) cmtTbl =
               in
               let doc =
                 Doc.concat
-                  [
-                    printAttributes ~customLayout rightPrinteableAttrs cmtTbl;
-                    doc;
-                  ]
+                  [printAttributes ~state rightPrinteableAttrs cmtTbl; doc]
               in
               match rightPrinteableAttrs with
               | [] -> doc
@@ -3663,7 +3578,7 @@ and printBinaryExpression ~customLayout (expr : Parsetree.expression) cmtTbl =
               ParsetreeViewer.partitionPrintableAttributes expr.pexp_attributes
             in
             let doc =
-              printExpressionWithComments ~customLayout
+              printExpressionWithComments ~state
                 {expr with pexp_attributes = internalAttrs}
                 cmtTbl
             in
@@ -3676,8 +3591,7 @@ and printBinaryExpression ~customLayout (expr : Parsetree.expression) cmtTbl =
               then Doc.concat [Doc.lparen; doc; Doc.rparen]
               else doc
             in
-            Doc.concat
-              [printAttributes ~customLayout printeableAttrs cmtTbl; doc]
+            Doc.concat [printAttributes ~state printeableAttrs cmtTbl; doc]
         | _ -> assert false
       else
         match expr.pexp_desc with
@@ -3685,19 +3599,19 @@ and printBinaryExpression ~customLayout (expr : Parsetree.expression) cmtTbl =
             ( {pexp_desc = Pexp_ident {txt = Longident.Lident "^"; loc}},
               [(Nolabel, _); (Nolabel, _)] )
           when loc.loc_ghost ->
-          let doc = printTemplateLiteral ~customLayout expr cmtTbl in
+          let doc = printTemplateLiteral ~state expr cmtTbl in
           printComments doc cmtTbl expr.Parsetree.pexp_loc
         | Pexp_setfield (lhs, field, rhs) ->
           let doc =
-            printSetFieldExpr ~customLayout expr.pexp_attributes lhs field rhs
+            printSetFieldExpr ~state expr.pexp_attributes lhs field rhs
               expr.pexp_loc cmtTbl
           in
           if isLhs then addParens doc else doc
         | Pexp_apply
             ( {pexp_desc = Pexp_ident {txt = Longident.Lident "#="}},
               [(Nolabel, lhs); (Nolabel, rhs)] ) ->
-          let rhsDoc = printExpressionWithComments ~customLayout rhs cmtTbl in
-          let lhsDoc = printExpressionWithComments ~customLayout lhs cmtTbl in
+          let rhsDoc = printExpressionWithComments ~state rhs cmtTbl in
+          let lhsDoc = printExpressionWithComments ~state lhs cmtTbl in
           (* TODO: unify indentation of "=" *)
           let shouldIndent = ParsetreeViewer.isBinaryExpression rhs in
           let doc =
@@ -3715,12 +3629,11 @@ and printBinaryExpression ~customLayout (expr : Parsetree.expression) cmtTbl =
             match expr.pexp_attributes with
             | [] -> doc
             | attrs ->
-              Doc.group
-                (Doc.concat [printAttributes ~customLayout attrs cmtTbl; doc])
+              Doc.group (Doc.concat [printAttributes ~state attrs cmtTbl; doc])
           in
           if isLhs then addParens doc else doc
         | _ -> (
-          let doc = printExpressionWithComments ~customLayout expr cmtTbl in
+          let doc = printExpressionWithComments ~state expr cmtTbl in
           match Parens.binaryExprOperand ~isLhs expr with
           | Parens.Parenthesized -> addParens doc
           | Braced braces -> printBraces doc expr braces
@@ -3735,15 +3648,14 @@ and printBinaryExpression ~customLayout (expr : Parsetree.expression) cmtTbl =
     when not
            (ParsetreeViewer.isBinaryExpression lhs
            || ParsetreeViewer.isBinaryExpression rhs
-           || printAttributes ~customLayout expr.pexp_attributes cmtTbl
-              <> Doc.nil) ->
+           || printAttributes ~state expr.pexp_attributes cmtTbl <> Doc.nil) ->
     let lhsHasCommentBelow = hasCommentBelow cmtTbl lhs.pexp_loc in
     let lhsDoc = printOperand ~isLhs:true lhs op in
     let rhsDoc = printOperand ~isLhs:false rhs op in
     Doc.group
       (Doc.concat
          [
-           printAttributes ~customLayout expr.pexp_attributes cmtTbl;
+           printAttributes ~state expr.pexp_attributes cmtTbl;
            lhsDoc;
            (match (lhsHasCommentBelow, op) with
            | true, "|." -> Doc.concat [Doc.softLine; Doc.text "->"]
@@ -3777,7 +3689,7 @@ and printBinaryExpression ~customLayout (expr : Parsetree.expression) cmtTbl =
     Doc.group
       (Doc.concat
          [
-           printAttributes ~customLayout expr.pexp_attributes cmtTbl;
+           printAttributes ~state expr.pexp_attributes cmtTbl;
            (match
               Parens.binaryExpr
                 {
@@ -3793,14 +3705,14 @@ and printBinaryExpression ~customLayout (expr : Parsetree.expression) cmtTbl =
          ])
   | _ -> Doc.nil
 
-and printBeltListConcatApply ~customLayout subLists cmtTbl =
+and printBeltListConcatApply ~state subLists cmtTbl =
   let makeSpreadDoc commaBeforeSpread = function
     | Some expr ->
       Doc.concat
         [
           commaBeforeSpread;
           Doc.dotdotdot;
-          (let doc = printExpressionWithComments ~customLayout expr cmtTbl in
+          (let doc = printExpressionWithComments ~state expr cmtTbl in
            match Parens.expr expr with
            | Parens.Parenthesized -> addParens doc
            | Braced braces -> printBraces doc expr braces
@@ -3821,9 +3733,7 @@ and printBeltListConcatApply ~customLayout subLists cmtTbl =
           ~sep:(Doc.concat [Doc.text ","; Doc.line])
           (List.map
              (fun expr ->
-               let doc =
-                 printExpressionWithComments ~customLayout expr cmtTbl
-               in
+               let doc = printExpressionWithComments ~state expr cmtTbl in
                match Parens.expr expr with
                | Parens.Parenthesized -> addParens doc
                | Braced braces -> printBraces doc expr braces
@@ -3851,13 +3761,13 @@ and printBeltListConcatApply ~customLayout subLists cmtTbl =
        ])
 
 (* callExpr(arg1, arg2) *)
-and printPexpApply ~customLayout expr cmtTbl =
+and printPexpApply ~state expr cmtTbl =
   match expr.pexp_desc with
   | Pexp_apply
       ( {pexp_desc = Pexp_ident {txt = Longident.Lident "##"}},
         [(Nolabel, parentExpr); (Nolabel, memberExpr)] ) ->
     let parentDoc =
-      let doc = printExpressionWithComments ~customLayout parentExpr cmtTbl in
+      let doc = printExpressionWithComments ~state parentExpr cmtTbl in
       match Parens.unaryExprOperand parentExpr with
       | Parens.Parenthesized -> addParens doc
       | Braced braces -> printBraces doc parentExpr braces
@@ -3868,14 +3778,14 @@ and printPexpApply ~customLayout expr cmtTbl =
         match memberExpr.pexp_desc with
         | Pexp_ident lident ->
           printComments (printLongident lident.txt) cmtTbl memberExpr.pexp_loc
-        | _ -> printExpressionWithComments ~customLayout memberExpr cmtTbl
+        | _ -> printExpressionWithComments ~state memberExpr cmtTbl
       in
       Doc.concat [Doc.text "\""; memberDoc; Doc.text "\""]
     in
     Doc.group
       (Doc.concat
          [
-           printAttributes ~customLayout expr.pexp_attributes cmtTbl;
+           printAttributes ~state expr.pexp_attributes cmtTbl;
            parentDoc;
            Doc.lbracket;
            member;
@@ -3885,7 +3795,7 @@ and printPexpApply ~customLayout expr cmtTbl =
       ( {pexp_desc = Pexp_ident {txt = Longident.Lident "#="}},
         [(Nolabel, lhs); (Nolabel, rhs)] ) -> (
     let rhsDoc =
-      let doc = printExpressionWithComments ~customLayout rhs cmtTbl in
+      let doc = printExpressionWithComments ~state rhs cmtTbl in
       match Parens.expr rhs with
       | Parens.Parenthesized -> addParens doc
       | Braced braces -> printBraces doc rhs braces
@@ -3900,7 +3810,7 @@ and printPexpApply ~customLayout expr cmtTbl =
       Doc.group
         (Doc.concat
            [
-             printExpressionWithComments ~customLayout lhs cmtTbl;
+             printExpressionWithComments ~state lhs cmtTbl;
              Doc.text " =";
              (if shouldIndent then
               Doc.group (Doc.indent (Doc.concat [Doc.line; rhsDoc]))
@@ -3909,8 +3819,8 @@ and printPexpApply ~customLayout expr cmtTbl =
     in
     match expr.pexp_attributes with
     | [] -> doc
-    | attrs ->
-      Doc.group (Doc.concat [printAttributes ~customLayout attrs cmtTbl; doc]))
+    | attrs -> Doc.group (Doc.concat [printAttributes ~state attrs cmtTbl; doc])
+    )
   | Pexp_apply
       ( {pexp_desc = Pexp_ident {txt = Longident.Ldot (Lident "Array", "get")}},
         [(Nolabel, parentExpr); (Nolabel, memberExpr)] )
@@ -3918,7 +3828,7 @@ and printPexpApply ~customLayout expr cmtTbl =
     (* Don't print the Array.get(_, 0) sugar a.k.a. (__x) => Array.get(__x, 0) as _[0] *)
     let member =
       let memberDoc =
-        let doc = printExpressionWithComments ~customLayout memberExpr cmtTbl in
+        let doc = printExpressionWithComments ~state memberExpr cmtTbl in
         match Parens.expr memberExpr with
         | Parens.Parenthesized -> addParens doc
         | Braced braces -> printBraces doc memberExpr braces
@@ -3935,7 +3845,7 @@ and printPexpApply ~customLayout expr cmtTbl =
           [Doc.indent (Doc.concat [Doc.softLine; memberDoc]); Doc.softLine]
     in
     let parentDoc =
-      let doc = printExpressionWithComments ~customLayout parentExpr cmtTbl in
+      let doc = printExpressionWithComments ~state parentExpr cmtTbl in
       match Parens.unaryExprOperand parentExpr with
       | Parens.Parenthesized -> addParens doc
       | Braced braces -> printBraces doc parentExpr braces
@@ -3944,7 +3854,7 @@ and printPexpApply ~customLayout expr cmtTbl =
     Doc.group
       (Doc.concat
          [
-           printAttributes ~customLayout expr.pexp_attributes cmtTbl;
+           printAttributes ~state expr.pexp_attributes cmtTbl;
            parentDoc;
            Doc.lbracket;
            member;
@@ -3956,7 +3866,7 @@ and printPexpApply ~customLayout expr cmtTbl =
     ->
     let member =
       let memberDoc =
-        let doc = printExpressionWithComments ~customLayout memberExpr cmtTbl in
+        let doc = printExpressionWithComments ~state memberExpr cmtTbl in
         match Parens.expr memberExpr with
         | Parens.Parenthesized -> addParens doc
         | Braced braces -> printBraces doc memberExpr braces
@@ -3990,14 +3900,14 @@ and printPexpApply ~customLayout expr cmtTbl =
           || ParsetreeViewer.isArrayAccess e
     in
     let targetExpr =
-      let doc = printExpressionWithComments ~customLayout targetExpr cmtTbl in
+      let doc = printExpressionWithComments ~state targetExpr cmtTbl in
       match Parens.expr targetExpr with
       | Parens.Parenthesized -> addParens doc
       | Braced braces -> printBraces doc targetExpr braces
       | Nothing -> doc
     in
     let parentDoc =
-      let doc = printExpressionWithComments ~customLayout parentExpr cmtTbl in
+      let doc = printExpressionWithComments ~state parentExpr cmtTbl in
       match Parens.unaryExprOperand parentExpr with
       | Parens.Parenthesized -> addParens doc
       | Braced braces -> printBraces doc parentExpr braces
@@ -4006,7 +3916,7 @@ and printPexpApply ~customLayout expr cmtTbl =
     Doc.group
       (Doc.concat
          [
-           printAttributes ~customLayout expr.pexp_attributes cmtTbl;
+           printAttributes ~state expr.pexp_attributes cmtTbl;
            parentDoc;
            Doc.lbracket;
            member;
@@ -4019,7 +3929,7 @@ and printPexpApply ~customLayout expr cmtTbl =
   (* TODO: cleanup, are those branches even remotely performant? *)
   | Pexp_apply ({pexp_desc = Pexp_ident lident}, args)
     when ParsetreeViewer.isJsxExpression expr ->
-    printJsxExpression ~customLayout lident args cmtTbl
+    printJsxExpression ~state lident args cmtTbl
   | Pexp_apply (callExpr, args) ->
     let args =
       List.map
@@ -4030,7 +3940,7 @@ and printPexpApply ~customLayout expr cmtTbl =
       ParsetreeViewer.processUncurriedAttribute expr.pexp_attributes
     in
     let callExprDoc =
-      let doc = printExpressionWithComments ~customLayout callExpr cmtTbl in
+      let doc = printExpressionWithComments ~state callExpr cmtTbl in
       match Parens.callExpr callExpr with
       | Parens.Parenthesized -> addParens doc
       | Braced braces -> printBraces doc callExpr braces
@@ -4038,15 +3948,12 @@ and printPexpApply ~customLayout expr cmtTbl =
     in
     if ParsetreeViewer.requiresSpecialCallbackPrintingFirstArg args then
       let argsDoc =
-        printArgumentsWithCallbackInFirstPosition ~uncurried ~customLayout args
-          cmtTbl
+        printArgumentsWithCallbackInFirstPosition ~uncurried ~state args cmtTbl
       in
-      Doc.concat
-        [printAttributes ~customLayout attrs cmtTbl; callExprDoc; argsDoc]
+      Doc.concat [printAttributes ~state attrs cmtTbl; callExprDoc; argsDoc]
     else if ParsetreeViewer.requiresSpecialCallbackPrintingLastArg args then
       let argsDoc =
-        printArgumentsWithCallbackInLastPosition ~customLayout ~uncurried args
-          cmtTbl
+        printArgumentsWithCallbackInLastPosition ~state ~uncurried args cmtTbl
       in
       (*
        * Fixes the following layout (the `[` and `]` should break):
@@ -4068,19 +3975,18 @@ and printPexpApply ~customLayout expr cmtTbl =
       Doc.concat
         [
           maybeBreakParent;
-          printAttributes ~customLayout attrs cmtTbl;
+          printAttributes ~state attrs cmtTbl;
           callExprDoc;
           argsDoc;
         ]
     else
-      let argsDoc = printArguments ~customLayout ~uncurried args cmtTbl in
-      Doc.concat
-        [printAttributes ~customLayout attrs cmtTbl; callExprDoc; argsDoc]
+      let argsDoc = printArguments ~state ~uncurried args cmtTbl in
+      Doc.concat [printAttributes ~state attrs cmtTbl; callExprDoc; argsDoc]
   | _ -> assert false
 
-and printJsxExpression ~customLayout lident args cmtTbl =
+and printJsxExpression ~state lident args cmtTbl =
   let name = printJsxName lident in
-  let formattedProps, children = printJsxProps ~customLayout args cmtTbl in
+  let formattedProps, children = printJsxProps ~state args cmtTbl in
   (* <div className="test" /> *)
   let hasChildren =
     match children with
@@ -4119,8 +4025,7 @@ and printJsxExpression ~customLayout lident args cmtTbl =
                Doc.line;
                (match children with
                | Some childrenExpression ->
-                 printJsxChildren ~customLayout childrenExpression ~sep:lineSep
-                   cmtTbl
+                 printJsxChildren ~state childrenExpression ~sep:lineSep cmtTbl
                | None -> Doc.nil);
              ]);
         lineSep;
@@ -4176,7 +4081,7 @@ and printJsxExpression ~customLayout lident args cmtTbl =
              ]);
        ])
 
-and printJsxFragment ~customLayout expr cmtTbl =
+and printJsxFragment ~state expr cmtTbl =
   let opening = Doc.text "<>" in
   let closing = Doc.text "</>" in
   let lineSep =
@@ -4191,16 +4096,12 @@ and printJsxFragment ~customLayout expr cmtTbl =
          | _ ->
            Doc.indent
              (Doc.concat
-                [
-                  Doc.line;
-                  printJsxChildren ~customLayout expr ~sep:lineSep cmtTbl;
-                ]));
+                [Doc.line; printJsxChildren ~state expr ~sep:lineSep cmtTbl]));
          lineSep;
          closing;
        ])
 
-and printJsxChildren ~customLayout (childrenExpr : Parsetree.expression) ~sep
-    cmtTbl =
+and printJsxChildren ~state (childrenExpr : Parsetree.expression) ~sep cmtTbl =
   match childrenExpr.pexp_desc with
   | Pexp_construct ({txt = Longident.Lident "::"}, _) ->
     let children, _ = ParsetreeViewer.collectListExpressions childrenExpr in
@@ -4211,9 +4112,7 @@ and printJsxChildren ~customLayout (childrenExpr : Parsetree.expression) ~sep
               let leadingLineCommentPresent =
                 hasLeadingLineComment cmtTbl expr.pexp_loc
               in
-              let exprDoc =
-                printExpressionWithComments ~customLayout expr cmtTbl
-              in
+              let exprDoc = printExpressionWithComments ~state expr cmtTbl in
               let addParensOrBraces exprDoc =
                 (* {(20: int)} make sure that we also protect the expression inside *)
                 let innerDoc =
@@ -4232,9 +4131,7 @@ and printJsxChildren ~customLayout (childrenExpr : Parsetree.expression) ~sep
     let leadingLineCommentPresent =
       hasLeadingLineComment cmtTbl childrenExpr.pexp_loc
     in
-    let exprDoc =
-      printExpressionWithComments ~customLayout childrenExpr cmtTbl
-    in
+    let exprDoc = printExpressionWithComments ~state childrenExpr cmtTbl in
     Doc.concat
       [
         Doc.dotdotdot;
@@ -4249,8 +4146,7 @@ and printJsxChildren ~customLayout (childrenExpr : Parsetree.expression) ~sep
         | Nothing -> exprDoc);
       ]
 
-and printJsxProps ~customLayout args cmtTbl :
-    Doc.t * Parsetree.expression option =
+and printJsxProps ~state args cmtTbl : Doc.t * Parsetree.expression option =
   (* This function was introduced because we have different formatting behavior for self-closing tags and other tags
      we always put /> on a new line for self-closing tag when it breaks
      <A
@@ -4301,7 +4197,7 @@ and printJsxProps ~customLayout args cmtTbl :
         | _ -> expr.pexp_loc
       in
       let trailingCommentsPresent = hasTrailingComments cmtTbl loc in
-      let propDoc = printJsxProp ~customLayout lastProp cmtTbl in
+      let propDoc = printJsxProp ~state lastProp cmtTbl in
       let formattedProps =
         Doc.concat
           [
@@ -4322,12 +4218,12 @@ and printJsxProps ~customLayout args cmtTbl :
       in
       (formattedProps, Some children)
     | arg :: args ->
-      let propDoc = printJsxProp ~customLayout arg cmtTbl in
+      let propDoc = printJsxProp ~state arg cmtTbl in
       loop (propDoc :: props) args
   in
   loop [] args
 
-and printJsxProp ~customLayout arg cmtTbl =
+and printJsxProp ~state arg cmtTbl =
   match arg with
   | ( ((Asttypes.Labelled lblTxt | Optional lblTxt) as lbl),
       {
@@ -4353,7 +4249,7 @@ and printJsxProp ~customLayout arg cmtTbl =
     | Labelled _lbl -> printIdentLike ident
     | Optional _lbl -> Doc.concat [Doc.question; printIdentLike ident])
   | Asttypes.Labelled "_spreadProps", expr ->
-    let doc = printExpressionWithComments ~customLayout expr cmtTbl in
+    let doc = printExpressionWithComments ~state expr cmtTbl in
     Doc.concat [Doc.lbrace; Doc.dotdotdot; Doc.softLine; doc; Doc.rbrace]
   | lbl, expr ->
     let argLoc, expr =
@@ -4376,7 +4272,7 @@ and printJsxProp ~customLayout arg cmtTbl =
       let leadingLineCommentPresent =
         hasLeadingLineComment cmtTbl expr.pexp_loc
       in
-      let doc = printExpressionWithComments ~customLayout expr cmtTbl in
+      let doc = printExpressionWithComments ~state expr cmtTbl in
       match Parens.jsxPropExpr expr with
       | Parenthesized | Braced _ ->
         (* {(20: int)} make sure that we also protect the expression inside *)
@@ -4406,12 +4302,11 @@ and printJsxName {txt = lident} =
     let segments = flatten [] lident in
     Doc.join ~sep:Doc.dot (List.map Doc.text segments)
 
-and printArgumentsWithCallbackInFirstPosition ~uncurried ~customLayout args
-    cmtTbl =
+and printArgumentsWithCallbackInFirstPosition ~uncurried ~state args cmtTbl =
   (* Because the same subtree gets printed twice, we need to copy the cmtTbl.
    * consumed comments need to be marked not-consumed and reprinted…
    * Cheng's different comment algorithm will solve this. *)
-  let customLayout = customLayout + 1 in
+  let state = State.nextCustomLayout state in
   let cmtTblCopy = CommentTable.copy cmtTbl in
   let callback, printedArgs =
     match args with
@@ -4426,17 +4321,14 @@ and printArgumentsWithCallbackInFirstPosition ~uncurried ~customLayout args
       in
       let callback =
         Doc.concat
-          [
-            lblDoc;
-            printPexpFun ~customLayout ~inCallback:FitsOnOneLine expr cmtTbl;
-          ]
+          [lblDoc; printPexpFun ~state ~inCallback:FitsOnOneLine expr cmtTbl]
       in
       let callback = lazy (printComments callback cmtTbl expr.pexp_loc) in
       let printedArgs =
         lazy
           (Doc.join
              ~sep:(Doc.concat [Doc.comma; Doc.line])
-             (List.map (fun arg -> printArgument ~customLayout arg cmtTbl) args))
+             (List.map (fun arg -> printArgument ~state arg cmtTbl) args))
       in
       (callback, printedArgs)
     | _ -> assert false
@@ -4467,9 +4359,7 @@ and printArgumentsWithCallbackInFirstPosition ~uncurried ~customLayout args
    *   arg3,
    * )
    *)
-  let breakAllArgs =
-    lazy (printArguments ~customLayout ~uncurried args cmtTblCopy)
-  in
+  let breakAllArgs = lazy (printArguments ~state ~uncurried args cmtTblCopy) in
 
   (* Sometimes one of the non-callback arguments will break.
    * There might be a single line comment in there, or a multiline string etc.
@@ -4486,16 +4376,15 @@ and printArgumentsWithCallbackInFirstPosition ~uncurried ~customLayout args
    * In this case, we always want the arguments broken over multiple lines,
    * like a normal function call.
    *)
-  if customLayout > customLayoutThreshold then Lazy.force breakAllArgs
+  if state |> State.shouldBreakCallback then Lazy.force breakAllArgs
   else if Doc.willBreak (Lazy.force printedArgs) then Lazy.force breakAllArgs
   else Doc.customLayout [Lazy.force fitsOnOneLine; Lazy.force breakAllArgs]
 
-and printArgumentsWithCallbackInLastPosition ~customLayout ~uncurried args
-    cmtTbl =
+and printArgumentsWithCallbackInLastPosition ~state ~uncurried args cmtTbl =
   (* Because the same subtree gets printed twice, we need to copy the cmtTbl.
    * consumed comments need to be marked not-consumed and reprinted…
    * Cheng's different comment algorithm will solve this. *)
-  let customLayout = customLayout + 1 in
+  let state = state |> State.nextCustomLayout in
   let cmtTblCopy = CommentTable.copy cmtTbl in
   let cmtTblCopy2 = CommentTable.copy cmtTbl in
   let rec loop acc args =
@@ -4513,7 +4402,7 @@ and printArgumentsWithCallbackInLastPosition ~customLayout ~uncurried args
       let callbackFitsOnOneLine =
         lazy
           (let pexpFunDoc =
-             printPexpFun ~customLayout ~inCallback:FitsOnOneLine expr cmtTbl
+             printPexpFun ~state ~inCallback:FitsOnOneLine expr cmtTbl
            in
            let doc = Doc.concat [lblDoc; pexpFunDoc] in
            printComments doc cmtTbl expr.pexp_loc)
@@ -4521,7 +4410,7 @@ and printArgumentsWithCallbackInLastPosition ~customLayout ~uncurried args
       let callbackArgumentsFitsOnOneLine =
         lazy
           (let pexpFunDoc =
-             printPexpFun ~customLayout ~inCallback:ArgumentsFitOnOneLine expr
+             printPexpFun ~state ~inCallback:ArgumentsFitOnOneLine expr
                cmtTblCopy
            in
            let doc = Doc.concat [lblDoc; pexpFunDoc] in
@@ -4531,7 +4420,7 @@ and printArgumentsWithCallbackInLastPosition ~customLayout ~uncurried args
         callbackFitsOnOneLine,
         callbackArgumentsFitsOnOneLine )
     | arg :: args ->
-      let argDoc = printArgument ~customLayout arg cmtTbl in
+      let argDoc = printArgument ~state arg cmtTbl in
       loop (Doc.line :: Doc.comma :: argDoc :: acc) args
   in
   let printedArgs, callback, callback2 = loop [] args in
@@ -4570,9 +4459,7 @@ and printArgumentsWithCallbackInLastPosition ~customLayout ~uncurried args
    *   (param1, parm2) => doStuff(param1, parm2)
    * )
    *)
-  let breakAllArgs =
-    lazy (printArguments ~customLayout ~uncurried args cmtTblCopy2)
-  in
+  let breakAllArgs = lazy (printArguments ~state ~uncurried args cmtTblCopy2) in
 
   (* Sometimes one of the non-callback arguments will break.
    * There might be a single line comment in there, or a multiline string etc.
@@ -4589,7 +4476,7 @@ and printArgumentsWithCallbackInLastPosition ~customLayout ~uncurried args
    * In this case, we always want the arguments broken over multiple lines,
    * like a normal function call.
    *)
-  if customLayout > customLayoutThreshold then Lazy.force breakAllArgs
+  if state |> State.shouldBreakCallback then Lazy.force breakAllArgs
   else if Doc.willBreak (Lazy.force printedArgs) then Lazy.force breakAllArgs
   else
     Doc.customLayout
@@ -4599,7 +4486,7 @@ and printArgumentsWithCallbackInLastPosition ~customLayout ~uncurried args
         Lazy.force breakAllArgs;
       ]
 
-and printArguments ~customLayout ~uncurried
+and printArguments ~state ~uncurried
     (args : (Asttypes.arg_label * Parsetree.expression) list) cmtTbl =
   match args with
   | [
@@ -4618,7 +4505,7 @@ and printArguments ~customLayout ~uncurried
     | _ -> Doc.text "()")
   | [(Nolabel, arg)] when ParsetreeViewer.isHuggableExpression arg ->
     let argDoc =
-      let doc = printExpressionWithComments ~customLayout arg cmtTbl in
+      let doc = printExpressionWithComments ~state arg cmtTbl in
       match Parens.expr arg with
       | Parens.Parenthesized -> addParens doc
       | Braced braces -> printBraces doc arg braces
@@ -4637,9 +4524,7 @@ and printArguments ~customLayout ~uncurried
                   (if uncurried then Doc.line else Doc.softLine);
                   Doc.join
                     ~sep:(Doc.concat [Doc.comma; Doc.line])
-                    (List.map
-                       (fun arg -> printArgument ~customLayout arg cmtTbl)
-                       args);
+                    (List.map (fun arg -> printArgument ~state arg cmtTbl) args);
                 ]);
            Doc.trailingComma;
            Doc.softLine;
@@ -4660,7 +4545,7 @@ and printArguments ~customLayout ~uncurried
  *   | ~ label-name = ? expr
  *   | ~ label-name = ? _           (* syntax sugar *)
  *   | ~ label-name = ? expr : type *)
-and printArgument ~customLayout (argLbl, arg) cmtTbl =
+and printArgument ~state (argLbl, arg) cmtTbl =
   match (argLbl, arg) with
   (* ~a (punned)*)
   | ( Asttypes.Labelled lbl,
@@ -4700,7 +4585,7 @@ and printArgument ~customLayout (argLbl, arg) cmtTbl =
           Doc.tilde;
           printIdentLike lbl;
           Doc.text ": ";
-          printTypExpr ~customLayout typ cmtTbl;
+          printTypExpr ~state typ cmtTbl;
         ]
     in
     printComments doc cmtTbl loc
@@ -4738,7 +4623,7 @@ and printArgument ~customLayout (argLbl, arg) cmtTbl =
         printComments doc cmtTbl argLoc
     in
     let printedExpr =
-      let doc = printExpressionWithComments ~customLayout expr cmtTbl in
+      let doc = printExpressionWithComments ~state expr cmtTbl in
       match Parens.expr expr with
       | Parens.Parenthesized -> addParens doc
       | Braced braces -> printBraces doc expr braces
@@ -4748,7 +4633,7 @@ and printArgument ~customLayout (argLbl, arg) cmtTbl =
     let doc = Doc.concat [printedLbl; printedExpr] in
     printComments doc cmtTbl loc
 
-and printCases ~customLayout (cases : Parsetree.case list) cmtTbl =
+and printCases ~state (cases : Parsetree.case list) cmtTbl =
   Doc.breakableGroup ~forceBreak:true
     (Doc.concat
        [
@@ -4762,22 +4647,22 @@ and printCases ~customLayout (cases : Parsetree.case list) cmtTbl =
                    n.Parsetree.pc_lhs.ppat_loc with
                    loc_end = n.pc_rhs.pexp_loc.loc_end;
                  })
-               ~print:(printCase ~customLayout) ~nodes:cases cmtTbl;
+               ~print:(printCase ~state) ~nodes:cases cmtTbl;
            ];
          Doc.line;
          Doc.rbrace;
        ])
 
-and printCase ~customLayout (case : Parsetree.case) cmtTbl =
+and printCase ~state (case : Parsetree.case) cmtTbl =
   let rhs =
     match case.pc_rhs.pexp_desc with
     | Pexp_let _ | Pexp_letmodule _ | Pexp_letexception _ | Pexp_open _
     | Pexp_sequence _ ->
-      printExpressionBlock ~customLayout
+      printExpressionBlock ~state
         ~braces:(ParsetreeViewer.isBracedExpr case.pc_rhs)
         case.pc_rhs cmtTbl
     | _ -> (
-      let doc = printExpressionWithComments ~customLayout case.pc_rhs cmtTbl in
+      let doc = printExpressionWithComments ~state case.pc_rhs cmtTbl in
       match Parens.expr case.pc_rhs with
       | Parenthesized -> addParens doc
       | _ -> doc)
@@ -4792,7 +4677,7 @@ and printCase ~customLayout (case : Parsetree.case) cmtTbl =
            [
              Doc.line;
              Doc.text "if ";
-             printExpressionWithComments ~customLayout expr cmtTbl;
+             printExpressionWithComments ~state expr cmtTbl;
            ])
   in
   let shouldInlineRhs =
@@ -4809,7 +4694,7 @@ and printCase ~customLayout (case : Parsetree.case) cmtTbl =
     | _ -> true
   in
   let patternDoc =
-    let doc = printPattern ~customLayout case.pc_lhs cmtTbl in
+    let doc = printPattern ~state case.pc_lhs cmtTbl in
     match case.pc_lhs.ppat_desc with
     | Ppat_constraint _ -> addParens doc
     | _ -> doc
@@ -4826,8 +4711,8 @@ and printCase ~customLayout (case : Parsetree.case) cmtTbl =
   in
   Doc.group (Doc.concat [Doc.text "| "; content])
 
-and printExprFunParameters ~customLayout ~inCallback ~async ~uncurried
-    ~hasConstraint parameters cmtTbl =
+and printExprFunParameters ~state ~inCallback ~async ~uncurried ~hasConstraint
+    parameters cmtTbl =
   match parameters with
   (* let f = _ => () *)
   | [
@@ -4866,7 +4751,7 @@ and printExprFunParameters ~customLayout ~inCallback ~async ~uncurried
         match attrs with
         | [] -> if hasConstraint then addParens var else var
         | attrs ->
-          let attrs = printAttributes ~customLayout attrs cmtTbl in
+          let attrs = printAttributes ~state attrs cmtTbl in
           addParens (Doc.concat [attrs; var])
       in
       if async then addAsync var else var
@@ -4908,7 +4793,7 @@ and printExprFunParameters ~customLayout ~inCallback ~async ~uncurried
           Doc.join
             ~sep:(Doc.concat [Doc.comma; Doc.line])
             (List.map
-               (fun p -> printExpFunParameter ~customLayout p cmtTbl)
+               (fun p -> printExpFunParameter ~state p cmtTbl)
                parameters);
         ]
     in
@@ -4923,13 +4808,13 @@ and printExprFunParameters ~customLayout ~inCallback ~async ~uncurried
            Doc.rparen;
          ])
 
-and printExpFunParameter ~customLayout parameter cmtTbl =
+and printExpFunParameter ~state parameter cmtTbl =
   match parameter with
   | ParsetreeViewer.NewTypes {attrs; locs = lbls} ->
     Doc.group
       (Doc.concat
          [
-           printAttributes ~customLayout attrs cmtTbl;
+           printAttributes ~state attrs cmtTbl;
            Doc.text "type ";
            Doc.join ~sep:Doc.space
              (List.map
@@ -4944,27 +4829,27 @@ and printExpFunParameter ~customLayout parameter cmtTbl =
     let uncurried =
       if isUncurried then Doc.concat [Doc.dot; Doc.space] else Doc.nil
     in
-    let attrs = printAttributes ~customLayout attrs cmtTbl in
+    let attrs = printAttributes ~state attrs cmtTbl in
     (* =defaultValue *)
     let defaultExprDoc =
       match defaultExpr with
       | Some expr ->
         Doc.concat
-          [Doc.text "="; printExpressionWithComments ~customLayout expr cmtTbl]
+          [Doc.text "="; printExpressionWithComments ~state expr cmtTbl]
       | None -> Doc.nil
     in
     (* ~from as hometown
      * ~from                   ->  punning *)
     let labelWithPattern =
       match (lbl, pattern) with
-      | Asttypes.Nolabel, pattern -> printPattern ~customLayout pattern cmtTbl
+      | Asttypes.Nolabel, pattern -> printPattern ~state pattern cmtTbl
       | ( (Asttypes.Labelled lbl | Optional lbl),
           {ppat_desc = Ppat_var stringLoc; ppat_attributes} )
         when lbl = stringLoc.txt ->
         (* ~d *)
         Doc.concat
           [
-            printAttributes ~customLayout ppat_attributes cmtTbl;
+            printAttributes ~state ppat_attributes cmtTbl;
             Doc.text "~";
             printIdentLike lbl;
           ]
@@ -4977,11 +4862,11 @@ and printExpFunParameter ~customLayout parameter cmtTbl =
         (* ~d: e *)
         Doc.concat
           [
-            printAttributes ~customLayout ppat_attributes cmtTbl;
+            printAttributes ~state ppat_attributes cmtTbl;
             Doc.text "~";
             printIdentLike lbl;
             Doc.text ": ";
-            printTypExpr ~customLayout typ cmtTbl;
+            printTypExpr ~state typ cmtTbl;
           ]
       | (Asttypes.Labelled lbl | Optional lbl), pattern ->
         (* ~b as c *)
@@ -4990,7 +4875,7 @@ and printExpFunParameter ~customLayout parameter cmtTbl =
             Doc.text "~";
             printIdentLike lbl;
             Doc.text " as ";
-            printPattern ~customLayout pattern cmtTbl;
+            printPattern ~state pattern cmtTbl;
           ]
     in
     let optionalLabelSuffix =
@@ -5030,7 +4915,7 @@ and printExpFunParameter ~customLayout parameter cmtTbl =
     in
     printComments doc cmtTbl cmtLoc
 
-and printExpressionBlock ~customLayout ~braces expr cmtTbl =
+and printExpressionBlock ~state ~braces expr cmtTbl =
   let rec collectRows acc expr =
     match expr.Parsetree.pexp_desc with
     | Parsetree.Pexp_letmodule (modName, modExpr, expr2) ->
@@ -5044,7 +4929,7 @@ and printExpressionBlock ~customLayout ~braces expr cmtTbl =
             Doc.text "module ";
             name;
             Doc.text " = ";
-            printModExpr ~customLayout modExpr cmtTbl;
+            printModExpr ~state modExpr cmtTbl;
           ]
       in
       let loc = {expr.pexp_loc with loc_end = modExpr.pmod_loc.loc_end} in
@@ -5061,7 +4946,7 @@ and printExpressionBlock ~customLayout ~braces expr cmtTbl =
           {cmtLoc with loc_end = loc.loc_end}
       in
       let letExceptionDoc =
-        printExceptionDef ~customLayout extensionConstructor cmtTbl
+        printExceptionDef ~state extensionConstructor cmtTbl
       in
       collectRows ((loc, letExceptionDoc) :: acc) expr2
     | Pexp_open (overrideFlag, longidentLoc, expr2) ->
@@ -5078,7 +4963,7 @@ and printExpressionBlock ~customLayout ~braces expr cmtTbl =
       collectRows ((loc, openDoc) :: acc) expr2
     | Pexp_sequence (expr1, expr2) ->
       let exprDoc =
-        let doc = printExpression ~customLayout expr1 cmtTbl in
+        let doc = printExpression ~state expr1 cmtTbl in
         match Parens.expr expr1 with
         | Parens.Parenthesized -> addParens doc
         | Braced braces -> printBraces doc expr1 braces
@@ -5105,9 +4990,7 @@ and printExpressionBlock ~customLayout ~braces expr cmtTbl =
         | Asttypes.Nonrecursive -> Doc.nil
         | Asttypes.Recursive -> Doc.text "rec "
       in
-      let letDoc =
-        printValueBindings ~customLayout ~recFlag valueBindings cmtTbl
-      in
+      let letDoc = printValueBindings ~state ~recFlag valueBindings cmtTbl in
       (* let () = {
        *   let () = foo()
        *   ()
@@ -5120,7 +5003,7 @@ and printExpressionBlock ~customLayout ~braces expr cmtTbl =
       | _ -> collectRows ((loc, letDoc) :: acc) expr2)
     | _ ->
       let exprDoc =
-        let doc = printExpression ~customLayout expr cmtTbl in
+        let doc = printExpression ~state expr cmtTbl in
         match Parens.expr expr with
         | Parens.Parenthesized -> addParens doc
         | Braced braces -> printBraces doc expr braces
@@ -5197,7 +5080,7 @@ and printDirectionFlag flag =
   | Asttypes.Downto -> Doc.text " downto "
   | Asttypes.Upto -> Doc.text " to "
 
-and printExpressionRecordRow ~customLayout (lbl, expr) cmtTbl punningAllowed =
+and printExpressionRecordRow ~state (lbl, expr) cmtTbl punningAllowed =
   let cmtLoc = {lbl.loc with loc_end = expr.pexp_loc.loc_end} in
   let doc =
     Doc.group
@@ -5207,7 +5090,7 @@ and printExpressionRecordRow ~customLayout (lbl, expr) cmtTbl punningAllowed =
         (* print punned field *)
         Doc.concat
           [
-            printAttributes ~customLayout expr.pexp_attributes cmtTbl;
+            printAttributes ~state expr.pexp_attributes cmtTbl;
             printOptionalLabel expr.pexp_attributes;
             printLidentPath lbl cmtTbl;
           ]
@@ -5217,7 +5100,7 @@ and printExpressionRecordRow ~customLayout (lbl, expr) cmtTbl punningAllowed =
             printLidentPath lbl cmtTbl;
             Doc.text ": ";
             printOptionalLabel expr.pexp_attributes;
-            (let doc = printExpressionWithComments ~customLayout expr cmtTbl in
+            (let doc = printExpressionWithComments ~state expr cmtTbl in
              match Parens.exprRecordRowRhs expr with
              | Parens.Parenthesized -> addParens doc
              | Braced braces -> printBraces doc expr braces
@@ -5226,7 +5109,7 @@ and printExpressionRecordRow ~customLayout (lbl, expr) cmtTbl punningAllowed =
   in
   printComments doc cmtTbl cmtLoc
 
-and printBsObjectRow ~customLayout (lbl, expr) cmtTbl =
+and printBsObjectRow ~state (lbl, expr) cmtTbl =
   let cmtLoc = {lbl.loc with loc_end = expr.pexp_loc.loc_end} in
   let lblDoc =
     let doc =
@@ -5239,7 +5122,7 @@ and printBsObjectRow ~customLayout (lbl, expr) cmtTbl =
       [
         lblDoc;
         Doc.text ": ";
-        (let doc = printExpressionWithComments ~customLayout expr cmtTbl in
+        (let doc = printExpressionWithComments ~state expr cmtTbl in
          match Parens.expr expr with
          | Parens.Parenthesized -> addParens doc
          | Braced braces -> printBraces doc expr braces
@@ -5254,8 +5137,8 @@ and printBsObjectRow ~customLayout (lbl, expr) cmtTbl =
  *  `@attr
  *   type t = string` -> attr is on prev line, print the attributes
  *   with a line break between, we respect the users' original layout *)
-and printAttributes ?loc ?(inline = false) ~customLayout
-    (attrs : Parsetree.attributes) cmtTbl =
+and printAttributes ?loc ?(inline = false) ~state (attrs : Parsetree.attributes)
+    cmtTbl =
   match ParsetreeViewer.filterParsingAttrs attrs with
   | [] -> Doc.nil
   | attrs ->
@@ -5273,17 +5156,15 @@ and printAttributes ?loc ?(inline = false) ~customLayout
       [
         Doc.group
           (Doc.joinWithSep
-             (List.map
-                (fun attr -> printAttribute ~customLayout attr cmtTbl)
-                attrs));
+             (List.map (fun attr -> printAttribute ~state attr cmtTbl) attrs));
         (if inline then Doc.space else lineBreak);
       ]
 
-and printPayload ~customLayout (payload : Parsetree.payload) cmtTbl =
+and printPayload ~state (payload : Parsetree.payload) cmtTbl =
   match payload with
   | PStr [] -> Doc.nil
   | PStr [{pstr_desc = Pstr_eval (expr, attrs)}] ->
-    let exprDoc = printExpressionWithComments ~customLayout expr cmtTbl in
+    let exprDoc = printExpressionWithComments ~state expr cmtTbl in
     let needsParens =
       match attrs with
       | [] -> false
@@ -5294,7 +5175,7 @@ and printPayload ~customLayout (payload : Parsetree.payload) cmtTbl =
       Doc.concat
         [
           Doc.lparen;
-          printAttributes ~customLayout attrs cmtTbl;
+          printAttributes ~state attrs cmtTbl;
           (if needsParens then addParens exprDoc else exprDoc);
           Doc.rparen;
         ]
@@ -5306,22 +5187,21 @@ and printPayload ~customLayout (payload : Parsetree.payload) cmtTbl =
             (Doc.concat
                [
                  Doc.softLine;
-                 printAttributes ~customLayout attrs cmtTbl;
+                 printAttributes ~state attrs cmtTbl;
                  (if needsParens then addParens exprDoc else exprDoc);
                ]);
           Doc.softLine;
           Doc.rparen;
         ]
   | PStr [({pstr_desc = Pstr_value (_recFlag, _bindings)} as si)] ->
-    addParens (printStructureItem ~customLayout si cmtTbl)
-  | PStr structure -> addParens (printStructure ~customLayout structure cmtTbl)
+    addParens (printStructureItem ~state si cmtTbl)
+  | PStr structure -> addParens (printStructure ~state structure cmtTbl)
   | PTyp typ ->
     Doc.concat
       [
         Doc.lparen;
         Doc.text ":";
-        Doc.indent
-          (Doc.concat [Doc.line; printTypExpr ~customLayout typ cmtTbl]);
+        Doc.indent (Doc.concat [Doc.line; printTypExpr ~state typ cmtTbl]);
         Doc.softLine;
         Doc.rparen;
       ]
@@ -5333,7 +5213,7 @@ and printPayload ~customLayout (payload : Parsetree.payload) cmtTbl =
           [
             Doc.line;
             Doc.text "if ";
-            printExpressionWithComments ~customLayout expr cmtTbl;
+            printExpressionWithComments ~state expr cmtTbl;
           ]
       | None -> Doc.nil
     in
@@ -5345,7 +5225,7 @@ and printPayload ~customLayout (payload : Parsetree.payload) cmtTbl =
              [
                Doc.softLine;
                Doc.text "? ";
-               printPattern ~customLayout pat cmtTbl;
+               printPattern ~state pat cmtTbl;
                whenDoc;
              ]);
         Doc.softLine;
@@ -5357,12 +5237,12 @@ and printPayload ~customLayout (payload : Parsetree.payload) cmtTbl =
         Doc.lparen;
         Doc.text ":";
         Doc.indent
-          (Doc.concat [Doc.line; printSignature ~customLayout signature cmtTbl]);
+          (Doc.concat [Doc.line; printSignature ~state signature cmtTbl]);
         Doc.softLine;
         Doc.rparen;
       ]
 
-and printAttribute ?(standalone = false) ~customLayout
+and printAttribute ?(standalone = false) ~state
     ((id, payload) : Parsetree.attribute) cmtTbl =
   match (id, payload) with
   | ( {txt = "ns.doc"},
@@ -5386,11 +5266,11 @@ and printAttribute ?(standalone = false) ~customLayout
            [
              Doc.text (if standalone then "@@" else "@");
              Doc.text (convertBsExternalAttribute id.txt);
-             printPayload ~customLayout payload cmtTbl;
+             printPayload ~state payload cmtTbl;
            ]),
       Doc.line )
 
-and printModExpr ~customLayout modExpr cmtTbl =
+and printModExpr ~state modExpr cmtTbl =
   let doc =
     match modExpr.pmod_desc with
     | Pmod_ident longidentLoc -> printLongidentLocation longidentLoc cmtTbl
@@ -5408,7 +5288,7 @@ and printModExpr ~customLayout modExpr cmtTbl =
              Doc.lbrace;
              Doc.indent
                (Doc.concat
-                  [Doc.softLine; printStructure ~customLayout structure cmtTbl]);
+                  [Doc.softLine; printStructure ~state structure cmtTbl]);
              Doc.softLine;
              Doc.rbrace;
            ])
@@ -5428,7 +5308,7 @@ and printModExpr ~customLayout modExpr cmtTbl =
             (expr, {ptyp_desc = Ptyp_package packageType; ptyp_loc}) ->
           let packageDoc =
             let doc =
-              printPackageType ~customLayout ~printModuleKeywordAndParens:false
+              printPackageType ~state ~printModuleKeywordAndParens:false
                 packageType cmtTbl
             in
             printComments doc cmtTbl ptyp_loc
@@ -5444,10 +5324,7 @@ and printModExpr ~customLayout modExpr cmtTbl =
       let unpackDoc =
         Doc.group
           (Doc.concat
-             [
-               printExpressionWithComments ~customLayout expr cmtTbl;
-               moduleConstraint;
-             ])
+             [printExpressionWithComments ~state expr cmtTbl; moduleConstraint])
       in
       Doc.group
         (Doc.concat
@@ -5463,7 +5340,7 @@ and printModExpr ~customLayout modExpr cmtTbl =
              Doc.rparen;
            ])
     | Pmod_extension extension ->
-      printExtension ~customLayout ~atModuleLvl:false extension cmtTbl
+      printExtension ~state ~atModuleLvl:false extension cmtTbl
     | Pmod_apply _ ->
       let args, callExpr = ParsetreeViewer.modExprApply modExpr in
       let isUnitSugar =
@@ -5479,17 +5356,15 @@ and printModExpr ~customLayout modExpr cmtTbl =
       Doc.group
         (Doc.concat
            [
-             printModExpr ~customLayout callExpr cmtTbl;
+             printModExpr ~state callExpr cmtTbl;
              (if isUnitSugar then
-              printModApplyArg ~customLayout
-                (List.hd args [@doesNotRaise])
-                cmtTbl
+              printModApplyArg ~state (List.hd args [@doesNotRaise]) cmtTbl
              else
                Doc.concat
                  [
                    Doc.lparen;
                    (if shouldHug then
-                    printModApplyArg ~customLayout
+                    printModApplyArg ~state
                       (List.hd args [@doesNotRaise])
                       cmtTbl
                    else
@@ -5501,7 +5376,7 @@ and printModExpr ~customLayout modExpr cmtTbl =
                               ~sep:(Doc.concat [Doc.comma; Doc.line])
                               (List.map
                                  (fun modArg ->
-                                   printModApplyArg ~customLayout modArg cmtTbl)
+                                   printModApplyArg ~state modArg cmtTbl)
                                  args);
                           ]));
                    (if not shouldHug then
@@ -5513,15 +5388,15 @@ and printModExpr ~customLayout modExpr cmtTbl =
     | Pmod_constraint (modExpr, modType) ->
       Doc.concat
         [
-          printModExpr ~customLayout modExpr cmtTbl;
+          printModExpr ~state modExpr cmtTbl;
           Doc.text ": ";
-          printModType ~customLayout modType cmtTbl;
+          printModType ~state modType cmtTbl;
         ]
-    | Pmod_functor _ -> printModFunctor ~customLayout modExpr cmtTbl
+    | Pmod_functor _ -> printModFunctor ~state modExpr cmtTbl
   in
   printComments doc cmtTbl modExpr.pmod_loc
 
-and printModFunctor ~customLayout modExpr cmtTbl =
+and printModFunctor ~state modExpr cmtTbl =
   let parameters, returnModExpr = ParsetreeViewer.modExprFunctor modExpr in
   (* let shouldInline = match returnModExpr.pmod_desc with *)
   (* | Pmod_structure _ | Pmod_ident _ -> true *)
@@ -5532,18 +5407,18 @@ and printModFunctor ~customLayout modExpr cmtTbl =
     match returnModExpr.pmod_desc with
     | Pmod_constraint (modExpr, modType) ->
       let constraintDoc =
-        let doc = printModType ~customLayout modType cmtTbl in
+        let doc = printModType ~state modType cmtTbl in
         if Parens.modExprFunctorConstraint modType then addParens doc else doc
       in
       let modConstraint = Doc.concat [Doc.text ": "; constraintDoc] in
-      (modConstraint, printModExpr ~customLayout modExpr cmtTbl)
-    | _ -> (Doc.nil, printModExpr ~customLayout returnModExpr cmtTbl)
+      (modConstraint, printModExpr ~state modExpr cmtTbl)
+    | _ -> (Doc.nil, printModExpr ~state returnModExpr cmtTbl)
   in
   let parametersDoc =
     match parameters with
     | [(attrs, {txt = "*"}, None)] ->
       Doc.group
-        (Doc.concat [printAttributes ~customLayout attrs cmtTbl; Doc.text "()"])
+        (Doc.concat [printAttributes ~state attrs cmtTbl; Doc.text "()"])
     | [([], {txt = lbl}, None)] -> Doc.text lbl
     | parameters ->
       Doc.group
@@ -5557,8 +5432,7 @@ and printModFunctor ~customLayout modExpr cmtTbl =
                     Doc.join
                       ~sep:(Doc.concat [Doc.comma; Doc.line])
                       (List.map
-                         (fun param ->
-                           printModFunctorParam ~customLayout param cmtTbl)
+                         (fun param -> printModFunctorParam ~state param cmtTbl)
                          parameters);
                   ]);
              Doc.trailingComma;
@@ -5570,14 +5444,14 @@ and printModFunctor ~customLayout modExpr cmtTbl =
     (Doc.concat
        [parametersDoc; returnConstraint; Doc.text " => "; returnModExpr])
 
-and printModFunctorParam ~customLayout (attrs, lbl, optModType) cmtTbl =
+and printModFunctorParam ~state (attrs, lbl, optModType) cmtTbl =
   let cmtLoc =
     match optModType with
     | None -> lbl.Asttypes.loc
     | Some modType ->
       {lbl.loc with loc_end = modType.Parsetree.pmty_loc.loc_end}
   in
-  let attrs = printAttributes ~customLayout attrs cmtTbl in
+  let attrs = printAttributes ~state attrs cmtTbl in
   let lblDoc =
     let doc = if lbl.txt = "*" then Doc.text "()" else Doc.text lbl.txt in
     printComments doc cmtTbl lbl.loc
@@ -5591,19 +5465,17 @@ and printModFunctorParam ~customLayout (attrs, lbl, optModType) cmtTbl =
            (match optModType with
            | None -> Doc.nil
            | Some modType ->
-             Doc.concat
-               [Doc.text ": "; printModType ~customLayout modType cmtTbl]);
+             Doc.concat [Doc.text ": "; printModType ~state modType cmtTbl]);
          ])
   in
   printComments doc cmtTbl cmtLoc
 
-and printModApplyArg ~customLayout modExpr cmtTbl =
+and printModApplyArg ~state modExpr cmtTbl =
   match modExpr.pmod_desc with
   | Pmod_structure [] -> Doc.text "()"
-  | _ -> printModExpr ~customLayout modExpr cmtTbl
+  | _ -> printModExpr ~state modExpr cmtTbl
 
-and printExceptionDef ~customLayout (constr : Parsetree.extension_constructor)
-    cmtTbl =
+and printExceptionDef ~state (constr : Parsetree.extension_constructor) cmtTbl =
   let kind =
     match constr.pext_kind with
     | Pext_rebind longident ->
@@ -5614,15 +5486,11 @@ and printExceptionDef ~customLayout (constr : Parsetree.extension_constructor)
     | Pext_decl (args, gadt) ->
       let gadtDoc =
         match gadt with
-        | Some typ ->
-          Doc.concat [Doc.text ": "; printTypExpr ~customLayout typ cmtTbl]
+        | Some typ -> Doc.concat [Doc.text ": "; printTypExpr ~state typ cmtTbl]
         | None -> Doc.nil
       in
       Doc.concat
-        [
-          printConstructorArguments ~customLayout ~indent:false args cmtTbl;
-          gadtDoc;
-        ]
+        [printConstructorArguments ~state ~indent:false args cmtTbl; gadtDoc]
   in
   let name =
     printComments (Doc.text constr.pext_name.txt) cmtTbl constr.pext_name.loc
@@ -5631,7 +5499,7 @@ and printExceptionDef ~customLayout (constr : Parsetree.extension_constructor)
     Doc.group
       (Doc.concat
          [
-           printAttributes ~customLayout constr.pext_attributes cmtTbl;
+           printAttributes ~state constr.pext_attributes cmtTbl;
            Doc.text "exception ";
            name;
            kind;
@@ -5639,9 +5507,9 @@ and printExceptionDef ~customLayout (constr : Parsetree.extension_constructor)
   in
   printComments doc cmtTbl constr.pext_loc
 
-and printExtensionConstructor ~customLayout
-    (constr : Parsetree.extension_constructor) cmtTbl i =
-  let attrs = printAttributes ~customLayout constr.pext_attributes cmtTbl in
+and printExtensionConstructor ~state (constr : Parsetree.extension_constructor)
+    cmtTbl i =
+  let attrs = printAttributes ~state constr.pext_attributes cmtTbl in
   let bar =
     if i > 0 then Doc.text "| " else Doc.ifBreaks (Doc.text "| ") Doc.nil
   in
@@ -5655,37 +5523,33 @@ and printExtensionConstructor ~customLayout
     | Pext_decl (args, gadt) ->
       let gadtDoc =
         match gadt with
-        | Some typ ->
-          Doc.concat [Doc.text ": "; printTypExpr ~customLayout typ cmtTbl]
+        | Some typ -> Doc.concat [Doc.text ": "; printTypExpr ~state typ cmtTbl]
         | None -> Doc.nil
       in
       Doc.concat
-        [
-          printConstructorArguments ~customLayout ~indent:false args cmtTbl;
-          gadtDoc;
-        ]
+        [printConstructorArguments ~state ~indent:false args cmtTbl; gadtDoc]
   in
   let name =
     printComments (Doc.text constr.pext_name.txt) cmtTbl constr.pext_name.loc
   in
   Doc.concat [bar; Doc.group (Doc.concat [attrs; name; kind])]
 
-let printTypeParams = printTypeParams ~customLayout:0
-let printTypExpr = printTypExpr ~customLayout:0
-let printExpression = printExpression ~customLayout:0
-let printPattern = printPattern ~customLayout:0
+let printTypeParams = printTypeParams ~state:State.init
+let printTypExpr = printTypExpr ~state:State.init
+let printExpression = printExpression ~state:State.init
+let printPattern = printPattern ~state:State.init
 
 let printImplementation ~width (s : Parsetree.structure) ~comments =
   let cmtTbl = CommentTable.make () in
   CommentTable.walkStructure s cmtTbl comments;
   (* CommentTable.log cmtTbl; *)
-  let doc = printStructure ~customLayout:0 s cmtTbl in
+  let doc = printStructure ~state:State.init s cmtTbl in
   (* Doc.debug doc; *)
   Doc.toString ~width doc ^ "\n"
 
 let printInterface ~width (s : Parsetree.signature) ~comments =
   let cmtTbl = CommentTable.make () in
   CommentTable.walkSignature s cmtTbl comments;
-  Doc.toString ~width (printSignature ~customLayout:0 s cmtTbl) ^ "\n"
+  Doc.toString ~width (printSignature ~state:State.init s cmtTbl) ^ "\n"
 
-let printStructure = printStructure ~customLayout:0
+let printStructure = printStructure ~state:State.init
