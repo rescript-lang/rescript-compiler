@@ -575,9 +575,9 @@ let printOptionalLabel attrs =
 module State = struct
   let customLayoutThreshold = 2
 
-  type t = {customLayout: int; uncurried: bool}
+  type t = {customLayout: int; mutable uncurried_by_default: bool}
 
-  let init = {customLayout = 0; uncurried = false}
+  let init = {customLayout = 0; uncurried_by_default = false}
 
   let nextCustomLayout t = {t with customLayout = t.customLayout + 1}
 
@@ -1552,10 +1552,8 @@ and printTypExpr ~state (typExpr : Parsetree.core_type) cmtTbl =
     let attrsBefore, args, returnType = ParsetreeViewer.arrowType typExpr in
     let uncurried, attrsBefore =
       (* Converting .ml code to .res requires processing uncurried attributes *)
-      let isUncurried, attrs =
-        ParsetreeViewer.processUncurriedAttribute attrsBefore
-      in
-      (uncurried || isUncurried, attrs)
+      let dotted, attrs = ParsetreeViewer.processDottedAttribute attrsBefore in
+      (uncurried || dotted, attrs)
     in
     let returnTypeNeedsParens =
       match returnType.ptyp_desc with
@@ -1903,10 +1901,8 @@ and printObjectField ~state (field : Parsetree.object_field) cmtTbl =
  * i.e. ~foo: string, ~bar: float *)
 and printTypeParameter ~state (attrs, lbl, typ) cmtTbl =
   (* Converting .ml code to .res requires processing uncurried attributes *)
-  let isUncurried, attrs = ParsetreeViewer.processUncurriedAttribute attrs in
-  let uncurried =
-    if isUncurried then Doc.concat [Doc.dot; Doc.space] else Doc.nil
-  in
+  let dotted, attrs = ParsetreeViewer.processDottedAttribute attrs in
+  let uncurried = if dotted then Doc.concat [Doc.dot; Doc.space] else Doc.nil in
   let attrs = printAttributes ~state attrs cmtTbl in
   let label =
     match lbl with
@@ -3936,8 +3932,8 @@ and printPexpApply ~state expr cmtTbl =
         (fun (lbl, arg) -> (lbl, ParsetreeViewer.rewriteUnderscoreApply arg))
         args
     in
-    let uncurried, attrs =
-      ParsetreeViewer.processUncurriedAttribute expr.pexp_attributes
+    let dotted, attrs =
+      ParsetreeViewer.processDottedAttribute expr.pexp_attributes
     in
     let callExprDoc =
       let doc = printExpressionWithComments ~state callExpr cmtTbl in
@@ -3948,12 +3944,14 @@ and printPexpApply ~state expr cmtTbl =
     in
     if ParsetreeViewer.requiresSpecialCallbackPrintingFirstArg args then
       let argsDoc =
-        printArgumentsWithCallbackInFirstPosition ~uncurried ~state args cmtTbl
+        printArgumentsWithCallbackInFirstPosition ~uncurried:dotted ~state args
+          cmtTbl
       in
       Doc.concat [printAttributes ~state attrs cmtTbl; callExprDoc; argsDoc]
     else if ParsetreeViewer.requiresSpecialCallbackPrintingLastArg args then
       let argsDoc =
-        printArgumentsWithCallbackInLastPosition ~state ~uncurried args cmtTbl
+        printArgumentsWithCallbackInLastPosition ~state ~uncurried:dotted args
+          cmtTbl
       in
       (*
        * Fixes the following layout (the `[` and `]` should break):
@@ -3980,7 +3978,7 @@ and printPexpApply ~state expr cmtTbl =
           argsDoc;
         ]
     else
-      let argsDoc = printArguments ~state ~uncurried args cmtTbl in
+      let argsDoc = printArguments ~state ~uncurried:dotted args cmtTbl in
       Doc.concat [printAttributes ~state attrs cmtTbl; callExprDoc; argsDoc]
   | _ -> assert false
 
@@ -4825,9 +4823,9 @@ and printExpFunParameter ~state parameter cmtTbl =
                 lbls);
          ])
   | Parameter {attrs; lbl; defaultExpr; pat = pattern} ->
-    let isUncurried, attrs = ParsetreeViewer.processUncurriedAttribute attrs in
+    let dotted, attrs = ParsetreeViewer.processDottedAttribute attrs in
     let uncurried =
-      if isUncurried then Doc.concat [Doc.dot; Doc.space] else Doc.nil
+      if dotted then Doc.concat [Doc.dot; Doc.space] else Doc.nil
     in
     let attrs = printAttributes ~state attrs cmtTbl in
     (* =defaultValue *)
@@ -5261,6 +5259,7 @@ and printAttribute ?(standalone = false) ~state
         ],
       Doc.hardLine )
   | _ ->
+    if id.txt = "uncurried" then state.uncurried_by_default <- true;
     ( Doc.group
         (Doc.concat
            [
