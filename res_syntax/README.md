@@ -1,10 +1,6 @@
-# ReScript Syntax ![Tests](https://github.com/rescript-lang/syntax/workflows/CI/badge.svg)
+# ReScript Syntax
 
 Documentation: https://rescript-lang.org/docs/manual/latest/overview
-
-This repo is the source of truth for the ReScript parser & printer. Issues go here.
-
-**You don't need this repo to use the ReScript syntax**. This comes with ReScript >=8.1. This repo is for syntax developers.
 
 ## Contribute
 
@@ -19,7 +15,7 @@ was more than if I hand wrote the code myself.
 "
 J. Blow.
 
-### Setup & Usage (For Repo Devs Only)
+### Setup & Usage
 
 Required:
 
@@ -29,8 +25,6 @@ Required:
 - OS: macOS, Linux or Windows
 
 ```sh
-git clone https://github.com/rescript-lang/syntax.git
-cd syntax
 opam install . --deps-only --with-test
 make # or "dune build"
 ```
@@ -89,8 +83,8 @@ This is likely a known knowledge: add the above line into your shell rc file so 
 
 #### Folder Structure
 
-- `src` contains all the parser/printer source code. Don't change folder structure without notice; The [rescript-compiler](https://github.com/rescript-lang/rescript-compiler) repo uses this repo as a submodule and assumes `src`.
-- `benchmarks`, `cli` and `tests` contain the source code for the executables used for testing/benchmarking. These are not used by the [rescript-compiler](https://github.com/rescript-lang/rescript-compiler) repo.
+- `src` contains all the parser/printer source code. Don't change folder structure without notice.
+- `benchmarks`, `cli` and `tests` contain the source code for the executables used for testing/benchmarking.
 
 #### Error Reporting Logic
 
