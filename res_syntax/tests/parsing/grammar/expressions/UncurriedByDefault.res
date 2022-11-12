@@ -5,6 +5,8 @@ let cFun = x => 3
 let uFun = (.x) => 3
 let mixFun = (a, .b, c) => (d, e, f) => (g, .h) => 4
 let bracesFun = (. x) => y => x+y
+// let cFun2 = (x, y) => 3
+// let uFun2 = (. x, y) => 3
 
 type cTyp = string => int
 type uTyp = (. string) => int
@@ -20,6 +22,8 @@ let cFun = (. x) => 3
 let uFun = x => 3
 let mixFun = (.a, b, .c) => (.d, .e, .f) => (.g, h) => 4
 let bracesFun = x => (. y) => x+y
+// let cFun2 = (. x, y) => 3
+// let uFun2 = (x, y) => 3
 
 type cTyp = (. string) => int
 type uTyp = string => int
