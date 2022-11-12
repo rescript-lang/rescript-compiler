@@ -12,6 +12,10 @@
 
 # 11.0.0-alpha.1
 
+#### :rocket: New Feature
+
+- Introduce experimental uncurried by default mode. Can be turned on mid-file by adding standalone annotation `@@uncurried`. For experimentation only. https://github.com/rescript-lang/rescript-compiler/pull/5796
+
 #### :boom: Breaking Change
 
 - Remove support for the legacy Reason syntax. Existing Reason code can be converted to ReScript syntax using ReScript 9 as follows:
