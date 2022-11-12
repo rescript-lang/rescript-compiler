@@ -20,8 +20,8 @@ type nonrec mixTyp =
     (string ->
        string ->
          string -> string -> string -> string -> (string -> int) Js.Fn.arity1)
-      Js.Fn.arity6
-type nonrec bTyp = (string -> string -> int) Js.Fn.arity2
+      Js.Fn.arity2
+type nonrec bTyp = (string -> string -> int) Js.Fn.arity1
 type nonrec cTyp2 = string -> string -> int
 type nonrec uTyp2 = (string -> string -> int) Js.Fn.arity2
 [@@@uncurried ]
@@ -48,7 +48,7 @@ type nonrec mixTyp =
     (string ->
        string ->
          string -> string -> string -> string -> (string -> int) Js.Fn.arity1)
-      Js.Fn.arity6
+      Js.Fn.arity2
 type nonrec bTyp = (string -> string -> int) Js.Fn.arity1
 type nonrec cTyp2 = string -> string -> int
 type nonrec uTyp2 = (string -> string -> int) Js.Fn.arity2

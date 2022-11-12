@@ -4232,9 +4232,19 @@ and parseEs6ArrowType ~attrs p =
     Parser.expect EqualGreater p;
     let returnType = parseTypExpr ~alias:false p in
     let endPos = p.prevEndPos in
-    let _paramNum, typ =
+    let returnTypeArity =
+      match parameters with
+      | _ when p.uncurried_by_default -> 0
+      | _ ->
+        if parameters |> List.exists (function {dotted; typ = _} -> dotted)
+        then 0
+        else
+          let _, args, _ = Res_parsetree_viewer.arrowType returnType in
+          List.length args
+    in
+    let _paramNum, typ, _arity =
       List.fold_right
-        (fun {dotted; attrs; label = argLbl; typ; startPos} (paramNum, t) ->
+        (fun {dotted; attrs; label = argLbl; typ; startPos} (paramNum, t, arity) ->
           let uncurried =
             if p.uncurried_by_default then not dotted else dotted
           in
@@ -4244,10 +4254,8 @@ and parseEs6ArrowType ~attrs p =
               | Ptyp_constr ({txt = Lident "unit"}, []) -> true
               | _ -> false
             in
-            let _, args, _ = Res_parsetree_viewer.arrowType t in
-            let arity = 1 + List.length args in
             let loc = mkLoc startPos endPos in
-            let arity, tArg =
+            let fnArity, tArg =
               if isUnit && arity = 1 then (0, t)
               else (arity, Ast_helper.Typ.arrow ~loc ~attrs argLbl typ t)
             in
@@ -4256,16 +4264,18 @@ and parseEs6ArrowType ~attrs p =
                 {
                   txt =
                     Ldot
-                      (Ldot (Lident "Js", "Fn"), "arity" ^ string_of_int arity);
+                      (Ldot (Lident "Js", "Fn"), "arity" ^ string_of_int fnArity);
                   loc;
                 }
-                [tArg] )
+                [tArg],
+              1 )
           else
             ( paramNum - 1,
               Ast_helper.Typ.arrow ~loc:(mkLoc startPos endPos) ~attrs argLbl
-                typ t ))
+                typ t,
+              arity + 1 ))
         parameters
-        (List.length parameters, returnType)
+        (List.length parameters, returnType, returnTypeArity + 1)
     in
     {
       typ with
