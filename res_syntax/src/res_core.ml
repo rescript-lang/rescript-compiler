@@ -4232,13 +4232,13 @@ and parseEs6ArrowType ~attrs p =
     Parser.expect EqualGreater p;
     let returnType = parseTypExpr ~alias:false p in
     let endPos = p.prevEndPos in
-    let typ =
+    let _paramNum, typ =
       List.fold_right
-        (fun {dotted; attrs; label = argLbl; typ; startPos} t ->
+        (fun {dotted; attrs; label = argLbl; typ; startPos} (paramNum, t) ->
           let uncurried =
             if p.uncurried_by_default then not dotted else dotted
           in
-          if uncurried then
+          if uncurried && (paramNum = 1 || not p.uncurried_by_default) then
             let isUnit =
               match typ.ptyp_desc with
               | Ptyp_constr ({txt = Lident "unit"}, []) -> true
@@ -4251,17 +4251,21 @@ and parseEs6ArrowType ~attrs p =
               if isUnit && arity = 1 then (0, t)
               else (arity, Ast_helper.Typ.arrow ~loc ~attrs argLbl typ t)
             in
-            Ast_helper.Typ.constr ~loc
-              {
-                txt =
-                  Ldot (Ldot (Lident "Js", "Fn"), "arity" ^ string_of_int arity);
-                loc;
-              }
-              [tArg]
+            ( paramNum - 1,
+              Ast_helper.Typ.constr ~loc
+                {
+                  txt =
+                    Ldot
+                      (Ldot (Lident "Js", "Fn"), "arity" ^ string_of_int arity);
+                  loc;
+                }
+                [tArg] )
           else
-            Ast_helper.Typ.arrow ~loc:(mkLoc startPos endPos) ~attrs argLbl typ
-              t)
-        parameters returnType
+            ( paramNum - 1,
+              Ast_helper.Typ.arrow ~loc:(mkLoc startPos endPos) ~attrs argLbl
+                typ t ))
+        parameters
+        (List.length parameters, returnType)
     in
     {
       typ with
