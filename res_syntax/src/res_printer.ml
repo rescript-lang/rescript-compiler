@@ -1548,8 +1548,10 @@ and printLabelDeclaration ~state (ld : Parsetree.label_declaration) cmtTbl =
        ])
 
 and printTypExpr ~state (typExpr : Parsetree.core_type) cmtTbl =
-  let printArrow ~uncurried typExpr =
-    let attrsBefore, args, returnType = ParsetreeViewer.arrowType typExpr in
+  let printArrow ~uncurried ?(arity = max_int) typExpr =
+    let attrsBefore, args, returnType =
+      ParsetreeViewer.arrowType ~arity typExpr
+    in
     let dotted, attrsBefore =
       (* Converting .ml code to .res requires processing uncurried attributes *)
       let hasBs, attrs = ParsetreeViewer.processBsAttribute attrsBefore in
@@ -1654,12 +1656,16 @@ and printTypExpr ~state (typExpr : Parsetree.core_type) cmtTbl =
     | Ptyp_constr ({txt = Ldot (Ldot (Lident "Js", "Fn"), "arity0")}, [tArg]) ->
       let unitConstr = Location.mkloc (Longident.Lident "unit") tArg.ptyp_loc in
       let tUnit = Ast_helper.Typ.constr unitConstr [] in
-      printArrow ~uncurried:true
+      printArrow ~uncurried:true ~arity:1
         {tArg with ptyp_desc = Ptyp_arrow (Nolabel, tUnit, tArg)}
     | Ptyp_constr ({txt = Ldot (Ldot (Lident "Js", "Fn"), arity)}, [tArg])
       when String.length arity >= 5
            && (String.sub [@doesNotRaise]) arity 0 5 = "arity" ->
-      printArrow ~uncurried:true tArg
+      let arity =
+        int_of_string
+          ((String.sub [@doesNotRaise]) arity 5 (String.length arity - 5))
+      in
+      printArrow ~uncurried:true ~arity tArg
     | Ptyp_constr (longidentLoc, [{ptyp_desc = Ptyp_object (fields, openFlag)}])
       ->
       (* for foo<{"a": b}>, when the object is long and needs a line break, we

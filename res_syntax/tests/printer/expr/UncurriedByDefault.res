@@ -11,7 +11,7 @@ let uFun2 = (. x, y) => 3
 type cTyp = string => int
 type uTyp = (. string) => int
 type mixTyp = (string, .string, string) => (string, string, string) => (string, .string) => int
-// type bTyp = (. string) => string => int
+type bTyp = (. string) => string => int
 type cTyp2 = (string, string) => int
 type uTyp2 = (.string, string) => int
 
@@ -31,6 +31,6 @@ let cFun2Dots = (.x, .y) => 3 // redundant dot on y
 type cTyp = (. string) => int
 type uTyp = string => int
 type mixTyp = (.string) => (string, string) => (.string, string, string, string) => string => int
-// type bTyp = string => (. string) => int
+type bTyp = string => (. string) => int
 type cTyp2 = (. string, string) => int
 type uTyp2 = (string, string) => int

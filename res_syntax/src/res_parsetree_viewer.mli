@@ -2,6 +2,7 @@
    * The parsetree contains: a => b => c => d, for printing purposes
    * we restructure the tree into (a, b, c) and its returnType d *)
 val arrowType :
+  ?arity:int ->
   Parsetree.core_type ->
   Parsetree.attributes
   * (Parsetree.attributes * Asttypes.arg_label * Parsetree.core_type) list

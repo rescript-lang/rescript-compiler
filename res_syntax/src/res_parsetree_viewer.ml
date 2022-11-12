@@ -1,14 +1,15 @@
 open Parsetree
 
-let arrowType ct =
-  let rec process attrsBefore acc typ =
+let arrowType ?(arity = max_int) ct =
+  let rec process attrsBefore acc typ arity =
     match typ with
+    | typ when arity <= 0 -> (attrsBefore, List.rev acc, typ)
     | {
      ptyp_desc = Ptyp_arrow ((Nolabel as lbl), typ1, typ2);
      ptyp_attributes = [];
     } ->
       let arg = ([], lbl, typ1) in
-      process attrsBefore (arg :: acc) typ2
+      process attrsBefore (arg :: acc) typ2 (arity - 1)
     | {
      ptyp_desc = Ptyp_arrow (Nolabel, _typ1, _typ2);
      ptyp_attributes = [({txt = "bs"}, _)];
@@ -25,14 +26,14 @@ let arrowType ct =
      ptyp_attributes = attrs;
     } ->
       let arg = (attrs, lbl, typ1) in
-      process attrsBefore (arg :: acc) typ2
+      process attrsBefore (arg :: acc) typ2 (arity - 1)
     | typ -> (attrsBefore, List.rev acc, typ)
   in
   match ct with
   | {ptyp_desc = Ptyp_arrow (Nolabel, _typ1, _typ2); ptyp_attributes = attrs} as
     typ ->
-    process attrs [] {typ with ptyp_attributes = []}
-  | typ -> process [] [] typ
+    process attrs [] {typ with ptyp_attributes = []} arity
+  | typ -> process [] [] typ arity
 
 let functorType modtype =
   let rec process acc modtype =
