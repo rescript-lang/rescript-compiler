@@ -1550,10 +1550,12 @@ and printLabelDeclaration ~state (ld : Parsetree.label_declaration) cmtTbl =
 and printTypExpr ~state (typExpr : Parsetree.core_type) cmtTbl =
   let printArrow ~uncurried typExpr =
     let attrsBefore, args, returnType = ParsetreeViewer.arrowType typExpr in
-    let uncurried, attrsBefore =
+    let dotted, attrsBefore =
       (* Converting .ml code to .res requires processing uncurried attributes *)
       let hasBs, attrs = ParsetreeViewer.processBsAttribute attrsBefore in
-      (uncurried || hasBs, attrs)
+      ( (if state.State.uncurried_by_default then not uncurried else uncurried)
+        || hasBs,
+        attrs )
     in
     let returnTypeNeedsParens =
       match returnType.ptyp_desc with
@@ -1567,7 +1569,7 @@ and printTypExpr ~state (typExpr : Parsetree.core_type) cmtTbl =
     in
     match args with
     | [] -> Doc.nil
-    | [([], Nolabel, n)] when not uncurried ->
+    | [([], Nolabel, n)] when not dotted ->
       let hasAttrsBefore = not (attrsBefore = []) in
       let attrs =
         if hasAttrsBefore then
@@ -1608,8 +1610,7 @@ and printTypExpr ~state (typExpr : Parsetree.core_type) cmtTbl =
               (Doc.concat
                  [
                    Doc.softLine;
-                   (if uncurried then Doc.concat [Doc.dot; Doc.space]
-                   else Doc.nil);
+                   (if dotted then Doc.concat [Doc.dot; Doc.space] else Doc.nil);
                    Doc.join
                      ~sep:(Doc.concat [Doc.comma; Doc.line])
                      (List.map
@@ -1902,7 +1903,7 @@ and printObjectField ~state (field : Parsetree.object_field) cmtTbl =
 and printTypeParameter ~state (attrs, lbl, typ) cmtTbl =
   (* Converting .ml code to .res requires processing uncurried attributes *)
   let hasBs, attrs = ParsetreeViewer.processBsAttribute attrs in
-  let uncurried = if hasBs then Doc.concat [Doc.dot; Doc.space] else Doc.nil in
+  let dotted = if hasBs then Doc.concat [Doc.dot; Doc.space] else Doc.nil in
   let attrs = printAttributes ~state attrs cmtTbl in
   let label =
     match lbl with
@@ -1928,7 +1929,7 @@ and printTypeParameter ~state (attrs, lbl, typ) cmtTbl =
     Doc.group
       (Doc.concat
          [
-           uncurried;
+           dotted;
            attrs;
            label;
            printTypExpr ~state typ cmtTbl;
