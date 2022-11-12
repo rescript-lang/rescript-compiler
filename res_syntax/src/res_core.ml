@@ -1529,23 +1529,34 @@ and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
   in
   Parser.eatBreadcrumb p;
   let endPos = p.prevEndPos in
-  let body =
+  let bodyNeedsBraces =
+    let isFun =
+      match body.pexp_desc with
+      | Pexp_fun _ -> true
+      | _ -> false
+    in
     match parameters with
     | TermParameter {dotted} :: _
-      when (if p.uncurried_by_default then not dotted else dotted)
-           &&
-           match body.pexp_desc with
-           | Pexp_fun _ -> true
-           | _ -> false ->
+      when (if p.uncurried_by_default then not dotted else dotted) && isFun ->
+      true
+    | TermParameter _ :: rest when (not p.uncurried_by_default) && isFun ->
+      rest
+      |> List.exists (function
+           | TermParameter {dotted} -> dotted
+           | _ -> false)
+    | _ -> false
+  in
+  let body =
+    if bodyNeedsBraces then
       {
         body with
         pexp_attributes = makeBracesAttr body.pexp_loc :: body.pexp_attributes;
       }
-    | _ -> body
+    else body
   in
-  let arrowExpr, _arity =
+  let _paramNum, arrowExpr, _arity =
     List.fold_right
-      (fun parameter (expr, arity) ->
+      (fun parameter (paramNum, expr, arity) ->
         match parameter with
         | TermParameter
             {
@@ -1563,33 +1574,39 @@ and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
           let uncurried =
             if p.uncurried_by_default then not dotted else dotted
           in
-          if uncurried then
+          if uncurried && (paramNum = 1 || not p.uncurried_by_default) then
             let arirtForFn =
               match pat.ppat_desc with
               | Ppat_construct ({txt = Lident "()"}, _) when arity = 1 -> 0
               | _ -> arity
             in
-            ( Ast_helper.Exp.record ~loc
-                [
-                  ( {
-                      txt =
-                        Ldot
-                          ( Ldot (Lident "Js", "Fn"),
-                            "I" ^ string_of_int arirtForFn );
-                      loc;
-                    },
-                    funExpr );
-                ]
-                None,
+            ( paramNum - 1,
+              (if true then
+               Ast_helper.Exp.record ~loc
+                 [
+                   ( {
+                       txt =
+                         Ldot
+                           ( Ldot (Lident "Js", "Fn"),
+                             "I" ^ string_of_int arirtForFn );
+                       loc;
+                     },
+                     funExpr );
+                 ]
+                 None
+              else funExpr),
               1 )
-          else (funExpr, arity + 1)
+          else (paramNum - 1, funExpr, arity + 1)
         | TypeParameter {dotted; attrs; locs = newtypes; pos = startPos} ->
           let uncurried =
             if p.uncurried_by_default then not dotted else dotted
           in
           let attrs = if uncurried then uncurryAttr :: attrs else attrs in
-          (makeNewtypes ~attrs ~loc:(mkLoc startPos endPos) newtypes expr, arity))
-      parameters (body, 1)
+          ( paramNum - 1,
+            makeNewtypes ~attrs ~loc:(mkLoc startPos endPos) newtypes expr,
+            arity ))
+      parameters
+      (List.length parameters, body, 1)
   in
   {arrowExpr with pexp_loc = {arrowExpr.pexp_loc with loc_start = startPos}}
 

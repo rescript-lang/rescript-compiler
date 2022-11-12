@@ -7,9 +7,12 @@ let mixFun a =
     Js.Fn.I2 =
       (fun b ->
          fun c ->
-           fun d -> fun e -> fun f -> fun g -> { Js.Fn.I1 = (fun h -> 4) })
+           ((fun d -> fun e -> fun f -> fun g -> { Js.Fn.I1 = (fun h -> 4) })
+           [@ns.braces ]))
   }
 let bracesFun = { Js.Fn.I1 = (fun x -> ((fun y -> x + y)[@ns.braces ])) }
+let cFun2 x y = 3
+let uFun2 = { Js.Fn.I2 = (fun x -> fun y -> 3) }
 type nonrec cTyp = string -> int
 type nonrec uTyp = (string -> int) Js.Fn.arity1
 type nonrec mixTyp =
@@ -29,9 +32,13 @@ let mixFun a =
     Js.Fn.I2 =
       (fun b ->
          fun c ->
-           fun d -> fun e -> fun f -> fun g -> { Js.Fn.I1 = (fun h -> 4) })
+           ((fun d -> fun e -> fun f -> fun g -> { Js.Fn.I1 = (fun h -> 4) })
+           [@ns.braces ]))
   }
 let bracesFun = { Js.Fn.I1 = (fun x -> ((fun y -> x + y)[@ns.braces ])) }
+let cFun2 x y = 3
+let uFun2 = { Js.Fn.I2 = (fun x -> fun y -> 3) }
+let cFun2Dots x y = 3
 type nonrec cTyp = string -> int
 type nonrec uTyp = (string -> int) Js.Fn.arity1
 type nonrec mixTyp =
