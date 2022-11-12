@@ -9,8 +9,8 @@ type nonrec t =
 type nonrec t =
   (((float ->
        ((int)[@attr2 ]) ->
-         (((bool -> ((string)[@attr4 ]) -> unit) Js.Fn.arity2)[@attr3 ]))
-      Js.Fn.arity2)[@attr ])
+         (((bool -> ((string)[@attr4 ]) -> unit) Js.Fn.arity1)[@attr3 ]))
+      Js.Fn.arity1)[@attr ])
 type nonrec t =
   (((float)[@attr ]) ->
      ((int)[@attr2 ]) ->
