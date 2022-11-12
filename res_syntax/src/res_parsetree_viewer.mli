@@ -14,7 +14,7 @@ val functorType :
   * Parsetree.module_type
 
 (* filters @bs out of the provided attributes *)
-val processDottedAttribute : Parsetree.attributes -> bool * Parsetree.attributes
+val processBsAttribute : Parsetree.attributes -> bool * Parsetree.attributes
 
 type functionAttributesInfo = {
   async: bool;

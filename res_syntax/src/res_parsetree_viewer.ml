@@ -47,12 +47,12 @@ let functorType modtype =
   in
   process [] modtype
 
-let processDottedAttribute attrs =
-  let rec process dottedSpotted acc attrs =
+let processBsAttribute attrs =
+  let rec process bsSpotted acc attrs =
     match attrs with
-    | [] -> (dottedSpotted, List.rev acc)
+    | [] -> (bsSpotted, List.rev acc)
     | ({Location.txt = "bs"}, _) :: rest -> process true acc rest
-    | attr :: rest -> process dottedSpotted (attr :: acc) rest
+    | attr :: rest -> process bsSpotted (attr :: acc) rest
   in
   process false [] attrs
 
