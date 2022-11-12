@@ -1552,8 +1552,8 @@ and printTypExpr ~state (typExpr : Parsetree.core_type) cmtTbl =
     let attrsBefore, args, returnType = ParsetreeViewer.arrowType typExpr in
     let uncurried, attrsBefore =
       (* Converting .ml code to .res requires processing uncurried attributes *)
-      let dotted, attrs = ParsetreeViewer.processDottedAttribute attrsBefore in
-      (uncurried || dotted, attrs)
+      let hasBs, attrs = ParsetreeViewer.processBsAttribute attrsBefore in
+      (uncurried || hasBs, attrs)
     in
     let returnTypeNeedsParens =
       match returnType.ptyp_desc with
@@ -1901,8 +1901,8 @@ and printObjectField ~state (field : Parsetree.object_field) cmtTbl =
  * i.e. ~foo: string, ~bar: float *)
 and printTypeParameter ~state (attrs, lbl, typ) cmtTbl =
   (* Converting .ml code to .res requires processing uncurried attributes *)
-  let dotted, attrs = ParsetreeViewer.processDottedAttribute attrs in
-  let uncurried = if dotted then Doc.concat [Doc.dot; Doc.space] else Doc.nil in
+  let hasBs, attrs = ParsetreeViewer.processBsAttribute attrs in
+  let uncurried = if hasBs then Doc.concat [Doc.dot; Doc.space] else Doc.nil in
   let attrs = printAttributes ~state attrs cmtTbl in
   let label =
     match lbl with
@@ -3932,8 +3932,11 @@ and printPexpApply ~state expr cmtTbl =
         (fun (lbl, arg) -> (lbl, ParsetreeViewer.rewriteUnderscoreApply arg))
         args
     in
-    let dotted, attrs =
-      ParsetreeViewer.processDottedAttribute expr.pexp_attributes
+    let hasBs, attrs =
+      ParsetreeViewer.processBsAttribute expr.pexp_attributes
+    in
+    let dotted =
+      if state.State.uncurried_by_default then not hasBs else hasBs
     in
     let callExprDoc =
       let doc = printExpressionWithComments ~state callExpr cmtTbl in
@@ -3944,14 +3947,12 @@ and printPexpApply ~state expr cmtTbl =
     in
     if ParsetreeViewer.requiresSpecialCallbackPrintingFirstArg args then
       let argsDoc =
-        printArgumentsWithCallbackInFirstPosition ~uncurried:dotted ~state args
-          cmtTbl
+        printArgumentsWithCallbackInFirstPosition ~dotted ~state args cmtTbl
       in
       Doc.concat [printAttributes ~state attrs cmtTbl; callExprDoc; argsDoc]
     else if ParsetreeViewer.requiresSpecialCallbackPrintingLastArg args then
       let argsDoc =
-        printArgumentsWithCallbackInLastPosition ~state ~uncurried:dotted args
-          cmtTbl
+        printArgumentsWithCallbackInLastPosition ~state ~dotted args cmtTbl
       in
       (*
        * Fixes the following layout (the `[` and `]` should break):
@@ -3978,7 +3979,7 @@ and printPexpApply ~state expr cmtTbl =
           argsDoc;
         ]
     else
-      let argsDoc = printArguments ~state ~uncurried:dotted args cmtTbl in
+      let argsDoc = printArguments ~state ~dotted args cmtTbl in
       Doc.concat [printAttributes ~state attrs cmtTbl; callExprDoc; argsDoc]
   | _ -> assert false
 
@@ -4300,7 +4301,7 @@ and printJsxName {txt = lident} =
     let segments = flatten [] lident in
     Doc.join ~sep:Doc.dot (List.map Doc.text segments)
 
-and printArgumentsWithCallbackInFirstPosition ~uncurried ~state args cmtTbl =
+and printArgumentsWithCallbackInFirstPosition ~dotted ~state args cmtTbl =
   (* Because the same subtree gets printed twice, we need to copy the cmtTbl.
    * consumed comments need to be marked not-consumed and reprinted…
    * Cheng's different comment algorithm will solve this. *)
@@ -4341,7 +4342,7 @@ and printArgumentsWithCallbackInFirstPosition ~uncurried ~state args cmtTbl =
     lazy
       (Doc.concat
          [
-           (if uncurried then Doc.text "(. " else Doc.lparen);
+           (if dotted then Doc.text "(. " else Doc.lparen);
            Lazy.force callback;
            Doc.comma;
            Doc.line;
@@ -4357,7 +4358,7 @@ and printArgumentsWithCallbackInFirstPosition ~uncurried ~state args cmtTbl =
    *   arg3,
    * )
    *)
-  let breakAllArgs = lazy (printArguments ~state ~uncurried args cmtTblCopy) in
+  let breakAllArgs = lazy (printArguments ~state ~dotted args cmtTblCopy) in
 
   (* Sometimes one of the non-callback arguments will break.
    * There might be a single line comment in there, or a multiline string etc.
@@ -4378,7 +4379,7 @@ and printArgumentsWithCallbackInFirstPosition ~uncurried ~state args cmtTbl =
   else if Doc.willBreak (Lazy.force printedArgs) then Lazy.force breakAllArgs
   else Doc.customLayout [Lazy.force fitsOnOneLine; Lazy.force breakAllArgs]
 
-and printArgumentsWithCallbackInLastPosition ~state ~uncurried args cmtTbl =
+and printArgumentsWithCallbackInLastPosition ~state ~dotted args cmtTbl =
   (* Because the same subtree gets printed twice, we need to copy the cmtTbl.
    * consumed comments need to be marked not-consumed and reprinted…
    * Cheng's different comment algorithm will solve this. *)
@@ -4428,7 +4429,7 @@ and printArgumentsWithCallbackInLastPosition ~state ~uncurried args cmtTbl =
     lazy
       (Doc.concat
          [
-           (if uncurried then Doc.text "(." else Doc.lparen);
+           (if dotted then Doc.text "(." else Doc.lparen);
            Lazy.force printedArgs;
            Lazy.force callback;
            Doc.rparen;
@@ -4443,7 +4444,7 @@ and printArgumentsWithCallbackInLastPosition ~state ~uncurried args cmtTbl =
     lazy
       (Doc.concat
          [
-           (if uncurried then Doc.text "(." else Doc.lparen);
+           (if dotted then Doc.text "(." else Doc.lparen);
            Lazy.force printedArgs;
            Doc.breakableGroup ~forceBreak:true (Lazy.force callback2);
            Doc.rparen;
@@ -4457,7 +4458,7 @@ and printArgumentsWithCallbackInLastPosition ~state ~uncurried args cmtTbl =
    *   (param1, parm2) => doStuff(param1, parm2)
    * )
    *)
-  let breakAllArgs = lazy (printArguments ~state ~uncurried args cmtTblCopy2) in
+  let breakAllArgs = lazy (printArguments ~state ~dotted args cmtTblCopy2) in
 
   (* Sometimes one of the non-callback arguments will break.
    * There might be a single line comment in there, or a multiline string etc.
@@ -4484,7 +4485,7 @@ and printArgumentsWithCallbackInLastPosition ~state ~uncurried args cmtTbl =
         Lazy.force breakAllArgs;
       ]
 
-and printArguments ~state ~uncurried
+and printArguments ~state ~dotted
     (args : (Asttypes.arg_label * Parsetree.expression) list) cmtTbl =
   match args with
   | [
@@ -4497,7 +4498,7 @@ and printArguments ~state ~uncurried
     (* See "parseCallExpr", ghost unit expression is used the implement
      * arity zero vs arity one syntax.
      * Related: https://github.com/rescript-lang/syntax/issues/138 *)
-    match (uncurried, loc.loc_ghost) with
+    match (dotted, loc.loc_ghost) with
     | true, true -> Doc.text "(.)" (* arity zero *)
     | true, false -> Doc.text "(. ())" (* arity one *)
     | _ -> Doc.text "()")
@@ -4510,16 +4511,16 @@ and printArguments ~state ~uncurried
       | Nothing -> doc
     in
     Doc.concat
-      [(if uncurried then Doc.text "(. " else Doc.lparen); argDoc; Doc.rparen]
+      [(if dotted then Doc.text "(. " else Doc.lparen); argDoc; Doc.rparen]
   | args ->
     Doc.group
       (Doc.concat
          [
-           (if uncurried then Doc.text "(." else Doc.lparen);
+           (if dotted then Doc.text "(." else Doc.lparen);
            Doc.indent
              (Doc.concat
                 [
-                  (if uncurried then Doc.line else Doc.softLine);
+                  (if dotted then Doc.line else Doc.softLine);
                   Doc.join
                     ~sep:(Doc.concat [Doc.comma; Doc.line])
                     (List.map (fun arg -> printArgument ~state arg cmtTbl) args);
@@ -4823,9 +4824,9 @@ and printExpFunParameter ~state parameter cmtTbl =
                 lbls);
          ])
   | Parameter {attrs; lbl; defaultExpr; pat = pattern} ->
-    let dotted, attrs = ParsetreeViewer.processDottedAttribute attrs in
+    let hasBs, attrs = ParsetreeViewer.processBsAttribute attrs in
     let uncurried =
-      if dotted then Doc.concat [Doc.dot; Doc.space] else Doc.nil
+      if hasBs then Doc.concat [Doc.dot; Doc.space] else Doc.nil
     in
     let attrs = printAttributes ~state attrs cmtTbl in
     (* =defaultValue *)
