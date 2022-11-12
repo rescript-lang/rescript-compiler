@@ -4712,6 +4712,9 @@ and printCase ~state (case : Parsetree.case) cmtTbl =
 
 and printExprFunParameters ~state ~inCallback ~async ~uncurried ~hasConstraint
     parameters cmtTbl =
+  let dotted =
+    if state.State.uncurried_by_default then not uncurried else uncurried
+  in
   match parameters with
   (* let f = _ => () *)
   | [
@@ -4723,7 +4726,7 @@ and printExprFunParameters ~state ~inCallback ~async ~uncurried ~hasConstraint
        pat = {Parsetree.ppat_desc = Ppat_any; ppat_loc};
      };
   ]
-    when not uncurried ->
+    when not dotted ->
     let any =
       let doc = if hasConstraint then Doc.text "(_)" else Doc.text "_" in
       printComments doc cmtTbl ppat_loc
@@ -4743,7 +4746,7 @@ and printExprFunParameters ~state ~inCallback ~async ~uncurried ~hasConstraint
          };
      };
   ]
-    when not uncurried ->
+    when not dotted ->
     let txtDoc =
       let var = printIdentLike stringLoc.txt in
       let var =
@@ -4767,7 +4770,7 @@ and printExprFunParameters ~state ~inCallback ~async ~uncurried ~hasConstraint
          {ppat_desc = Ppat_construct ({txt = Longident.Lident "()"; loc}, None)};
      };
   ]
-    when not uncurried ->
+    when not dotted ->
     let doc =
       let lparenRparen = Doc.text "()" in
       if async then addAsync lparenRparen else lparenRparen
@@ -4781,7 +4784,7 @@ and printExprFunParameters ~state ~inCallback ~async ~uncurried ~hasConstraint
       | _ -> false
     in
     let maybeAsyncLparen =
-      let lparen = if uncurried then Doc.text "(. " else Doc.lparen in
+      let lparen = if dotted then Doc.text "(. " else Doc.lparen in
       if async then addAsync lparen else lparen
     in
     let shouldHug = ParsetreeViewer.parametersShouldHug parameters in
@@ -4825,9 +4828,7 @@ and printExpFunParameter ~state parameter cmtTbl =
          ])
   | Parameter {attrs; lbl; defaultExpr; pat = pattern} ->
     let hasBs, attrs = ParsetreeViewer.processBsAttribute attrs in
-    let uncurried =
-      if hasBs then Doc.concat [Doc.dot; Doc.space] else Doc.nil
-    in
+    let dotted = if hasBs then Doc.concat [Doc.dot; Doc.space] else Doc.nil in
     let attrs = printAttributes ~state attrs cmtTbl in
     (* =defaultValue *)
     let defaultExprDoc =
@@ -4886,11 +4887,7 @@ and printExpFunParameter ~state parameter cmtTbl =
       Doc.group
         (Doc.concat
            [
-             uncurried;
-             attrs;
-             labelWithPattern;
-             defaultExprDoc;
-             optionalLabelSuffix;
+             dotted; attrs; labelWithPattern; defaultExprDoc; optionalLabelSuffix;
            ])
     in
     let cmtLoc =
