@@ -130,6 +130,7 @@ These are only breaking changes for unformatted code.
 - Fix printing of type declarations in error message where they would be considered recursive by default
 - Fix issue where the printer would omit attributes for `->` and `|>` https://github.com/rescript-lang/syntax/pull/629
 - Fix printing of optional fields in records https://github.com/rescript-lang/rescript-compiler/issues/5654
+- Fix printing of comments inside empty blocks https://github.com/rescript-lang/syntax/pull/647
 
 #### :nail_care: Polish
 
@@ -146,13 +147,9 @@ These are only breaking changes for unformatted code.
 #### :rocket: New Feature
 
 - Experimental support for for `async`/`await` https://github.com/rescript-lang/rescript-compiler/pull/5537
-
 - Make `promise` a built-in type https://github.com/rescript-lang/rescript-compiler/pull/5650
-
 - Initial support for JSX V4 including genType, still work in progress.
-
   - :boom: when V4 is activated, at most one component is allowed for each module.
-
 - Add placeholder types for ES6 collections: `Set`, `Map`, `WeakSet`, and `WeakMap` https://github.com/rescript-lang/rescript-compiler/pull/5630
 
 #### :bug: Bug Fix
