@@ -6404,7 +6404,14 @@ and parseStandaloneAttribute p =
   let startPos = p.startPos in
   Parser.expect AtAt p;
   let attrId = parseAttributeId ~startPos p in
-  if attrId.txt = "uncurried" then p.uncurried_by_default <- true;
+  let attrId =
+    match attrId.txt with
+    | "uncurried" ->
+      p.uncurried_by_default <- true;
+      attrId
+    | "toUncurried" -> {attrId with txt = "uncurried"}
+    | _ -> attrId
+  in
   let payload = parsePayload p in
   (attrId, payload)
 
