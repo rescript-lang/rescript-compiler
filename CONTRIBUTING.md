@@ -38,15 +38,6 @@ opam install ocaml-lsp-server
 opam switch create 4.14.0 # can also create local switch with opam switch create . 4.14.0
 ```
 
-## Initialize submodules
-
-After a fresh checkout or deep clean, do:
-
-```
-git submodule init
-git submodule update
-```
-
 ## npm install
 
 Run `npm install`. This will build the ninja binary and run an initial `./scripts/ninja.js config` and `./scripts/ninja.js build` (see below).
