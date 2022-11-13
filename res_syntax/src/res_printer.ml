@@ -5264,7 +5264,16 @@ and printAttribute ?(standalone = false) ~state
         ],
       Doc.hardLine )
   | _ ->
-    if id.txt = "uncurried" then state.uncurried_by_default <- true;
+    let id =
+      match id.txt with
+      | "uncurried" ->
+        state.uncurried_by_default <- true;
+        id
+      | "toUncurried" ->
+        state.uncurried_by_default <- true;
+        {id with txt = "uncurried"}
+      | _ -> id
+    in
     ( Doc.group
         (Doc.concat
            [
