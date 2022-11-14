@@ -378,7 +378,8 @@ let buildLongident words =
 
 let makeInfixOperator p token startPos endPos =
   let stringifiedToken =
-    if token = Token.MinusGreater then "|."
+    if token = Token.MinusGreater then
+      if p.Parser.uncurried_by_default then "|.u" else "|."
     else if token = Token.PlusPlus then "^"
     else if token = Token.BangEqual then "<>"
     else if token = Token.BangEqualEqual then "!="

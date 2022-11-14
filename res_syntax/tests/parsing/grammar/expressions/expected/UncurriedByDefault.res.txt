@@ -52,3 +52,4 @@ type nonrec mixTyp =
 type nonrec bTyp = (string -> string -> int) Js.Fn.arity1
 type nonrec cTyp2 = string -> string -> int
 type nonrec uTyp2 = (string -> string -> int) Js.Fn.arity2
+let pipe1 = 3 |.u f

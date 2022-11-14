@@ -255,7 +255,7 @@ let operatorPrecedence operator =
   | "+" | "+." | "-" | "-." | "^" -> 5
   | "*" | "*." | "/" | "/." -> 6
   | "**" -> 7
-  | "#" | "##" | "|." -> 8
+  | "#" | "##" | "|." | "|.u" -> 8
   | _ -> 0
 
 let isUnaryOperator operator =
@@ -277,7 +277,7 @@ let isBinaryOperator operator =
   match operator with
   | ":=" | "||" | "&&" | "=" | "==" | "<" | ">" | "!=" | "!==" | "<=" | ">="
   | "|>" | "+" | "+." | "-" | "-." | "^" | "*" | "*." | "/" | "/." | "**" | "|."
-  | "<>" ->
+  | "|.u" | "<>" ->
     true
   | _ -> false
 
@@ -643,14 +643,14 @@ let isSinglePipeExpr expr =
   let isPipeExpr expr =
     match expr.pexp_desc with
     | Pexp_apply
-        ( {pexp_desc = Pexp_ident {txt = Longident.Lident ("|." | "|>")}},
+        ( {pexp_desc = Pexp_ident {txt = Longident.Lident ("|." | "|.u" | "|>")}},
           [(Nolabel, _operand1); (Nolabel, _operand2)] ) ->
       true
     | _ -> false
   in
   match expr.pexp_desc with
   | Pexp_apply
-      ( {pexp_desc = Pexp_ident {txt = Longident.Lident ("|." | "|>")}},
+      ( {pexp_desc = Pexp_ident {txt = Longident.Lident ("|." | "|.u" | "|>")}},
         [(Nolabel, operand1); (Nolabel, _operand2)] )
     when not (isPipeExpr operand1) ->
     true
