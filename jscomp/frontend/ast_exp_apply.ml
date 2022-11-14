@@ -95,7 +95,7 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
       Location.raise_errorf ~loc "%s expect f%sproperty arg0 arg2 form" op op
   | None -> (
       match view_as_app e infix_ops with
-      | Some { op = "|."; args = [ obj_arg; fn ]; loc } -> (
+      | Some { op = "|."; args = [ a_; f_ ]; loc } -> (
           (*
         a |. f
         a |. f b c [@bs]  --> f a b c [@bs]
@@ -103,31 +103,31 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
         a |. `Variant
         a |. (b |. f c [@bs])
       *)
-          let new_obj_arg = self.expr self obj_arg in
-          let fn = self.expr self fn in
-          match fn.pexp_desc with
+          let a = self.expr self a_ in
+          let f = self.expr self f_ in
+          match f.pexp_desc with
           | Pexp_variant (label, None) ->
               {
-                fn with
-                pexp_desc = Pexp_variant (label, Some new_obj_arg);
+                f with
+                pexp_desc = Pexp_variant (label, Some a);
                 pexp_loc = e.pexp_loc;
               }
           | Pexp_construct (ctor, None) ->
               {
-                fn with
-                pexp_desc = Pexp_construct (ctor, Some new_obj_arg);
+                f with
+                pexp_desc = Pexp_construct (ctor, Some a);
                 pexp_loc = e.pexp_loc;
               }
           | Pexp_apply (fn1, args) ->
               Bs_ast_invariant.warn_discarded_unused_attributes
                 fn1.pexp_attributes;
               {
-                pexp_desc = Pexp_apply (fn1, (Nolabel, new_obj_arg) :: args);
+                pexp_desc = Pexp_apply (fn1, (Nolabel, a) :: args);
                 pexp_loc = e.pexp_loc;
                 pexp_attributes = e.pexp_attributes;
               }
           | Pexp_tuple xs ->
-              bound new_obj_arg (fun bounded_obj_arg ->
+              bound a (fun bounded_obj_arg ->
                   {
                     pexp_desc =
                       Pexp_tuple
@@ -153,11 +153,32 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
                              | _ ->
                                  Ast_compatible.app1 ~loc:fn.pexp_loc fn
                                    bounded_obj_arg));
-                    pexp_attributes = fn.pexp_attributes;
-                    pexp_loc = fn.pexp_loc;
+                    pexp_attributes = f.pexp_attributes;
+                    pexp_loc = f.pexp_loc;
                   })
-          | _ ->
-              Ast_compatible.app1 ~loc ~attrs:e.pexp_attributes fn new_obj_arg)
+          | _ -> (
+              match
+                ( Ext_list.exclude_with_val f_.pexp_attributes
+                    Ast_attributes.is_bs,
+                  f_.pexp_desc )
+              with
+              | Some other_attributes, Pexp_apply (fn1, args) ->
+                  (* a |. f b c [@bs]
+                     Cannot process uncurried application early as the arity is wip *)
+                  let fn1 = self.expr self fn1 in
+                  let args =
+                    args |> List.map (fun (l, e) -> (l, self.expr self e))
+                  in
+                  Bs_ast_invariant.warn_discarded_unused_attributes
+                    fn1.pexp_attributes;
+                  {
+                    pexp_desc =
+                      Ast_uncurry_apply.uncurry_fn_apply e.pexp_loc self fn1
+                        ((Nolabel, a) :: args);
+                    pexp_loc = e.pexp_loc;
+                    pexp_attributes = e.pexp_attributes @ other_attributes;
+                  }
+              | _ -> Ast_compatible.app1 ~loc ~attrs:e.pexp_attributes f a))
       | Some { op = "##"; loc; args = [ obj; rest ] } -> (
           (* - obj##property
              - obj#(method a b )
