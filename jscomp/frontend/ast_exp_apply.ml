@@ -70,7 +70,7 @@ let view_as_app (fn : exp) (s : string list) : app_pattern option =
   | _ -> None
 
 let inner_ops = [ "##"; "#@" ]
-let infix_ops = [ "|."; "#="; "##" ]
+let infix_ops = [ "|."; "|.u"; "#="; "##" ]
 
 let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
     (args : Ast_compatible.args) : exp =
@@ -95,7 +95,7 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
       Location.raise_errorf ~loc "%s expect f%sproperty arg0 arg2 form" op op
   | None -> (
       match view_as_app e infix_ops with
-      | Some { op = "|."; args = [ a_; f_ ]; loc } -> (
+      | Some { op = ("|." | "|.u") as op; args = [ a_; f_ ]; loc } -> (
           (*
         a |. f
         a |. f b c [@bs]  --> f a b c [@bs]
@@ -177,6 +177,16 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
                         ((Nolabel, a) :: args);
                     pexp_loc = e.pexp_loc;
                     pexp_attributes = e.pexp_attributes @ other_attributes;
+                  }
+              | _ when op = "|.u" ->
+                  (* a |.u f
+                     Uncurried unary application *)
+                  {
+                    pexp_desc =
+                      Ast_uncurry_apply.uncurry_fn_apply e.pexp_loc self f
+                        [ (Nolabel, a) ];
+                    pexp_loc = e.pexp_loc;
+                    pexp_attributes = e.pexp_attributes;
                   }
               | _ -> Ast_compatible.app1 ~loc ~attrs:e.pexp_attributes f a))
       | Some { op = "##"; loc; args = [ obj; rest ] } -> (

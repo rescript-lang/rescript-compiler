@@ -3482,7 +3482,7 @@ and printBinaryExpression ~state (expr : Parsetree.expression) cmtTbl =
   let printBinaryOperator ~inlineRhs operator =
     let operatorTxt =
       match operator with
-      | "|." -> "->"
+      | "|." | "|.u" -> "->"
       | "^" -> "++"
       | "=" -> "=="
       | "==" -> "==="
@@ -3491,12 +3491,12 @@ and printBinaryExpression ~state (expr : Parsetree.expression) cmtTbl =
       | txt -> txt
     in
     let spacingBeforeOperator =
-      if operator = "|." then Doc.softLine
+      if operator = "|." || operator = "|.u" then Doc.softLine
       else if operator = "|>" then Doc.line
       else Doc.space
     in
     let spacingAfterOperator =
-      if operator = "|." then Doc.nil
+      if operator = "|." || operator = "|.u" then Doc.nil
       else if operator = "|>" then Doc.space
       else if inlineRhs then Doc.space
       else Doc.line
@@ -3646,7 +3646,10 @@ and printBinaryExpression ~state (expr : Parsetree.expression) cmtTbl =
   in
   match expr.pexp_desc with
   | Pexp_apply
-      ( {pexp_desc = Pexp_ident {txt = Longident.Lident (("|." | "|>") as op)}},
+      ( {
+          pexp_desc =
+            Pexp_ident {txt = Longident.Lident (("|." | "|.u" | "|>") as op)};
+        },
         [(Nolabel, lhs); (Nolabel, rhs)] )
     when not
            (ParsetreeViewer.isBinaryExpression lhs
@@ -3661,8 +3664,8 @@ and printBinaryExpression ~state (expr : Parsetree.expression) cmtTbl =
            printAttributes ~state expr.pexp_attributes cmtTbl;
            lhsDoc;
            (match (lhsHasCommentBelow, op) with
-           | true, "|." -> Doc.concat [Doc.softLine; Doc.text "->"]
-           | false, "|." -> Doc.text "->"
+           | true, ("|." | "|.u") -> Doc.concat [Doc.softLine; Doc.text "->"]
+           | false, ("|." | "|.u") -> Doc.text "->"
            | true, "|>" -> Doc.concat [Doc.line; Doc.text "|> "]
            | false, "|>" -> Doc.text " |> "
            | _ -> Doc.nil);
