@@ -31,7 +31,7 @@ These are only breaking changes for unformatted code.
 
 #### :bug: Bug Fix
 
-- Fix issue where uncurried was not supported with pipe
+- Fix issue where uncurried was not supported with pipe https://github.com/rescript-lang/rescript-compiler/pull/5803
 
 #### :nail_care: Polish
 
