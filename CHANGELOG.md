@@ -33,7 +33,7 @@ These are only breaking changes for unformatted code.
 
 - Syntax: process uncurried types explicitly in the parser/printer https://github.com/rescript-lang/rescript-compiler/pull/5784
 - Syntax: process uncurried function declarations explicitly in the parser/printer https://github.com/rescript-lang/rescript-compiler/pull/5794
-- PPX V4: allow uncurried `make` function and treat it as usual
+- PPX V4: allow uncurried `make` function and treat it like a currie one https://github.com/rescript-lang/rescript-compiler/pull/5802
 
 # 10.1.0-rc.5
 
