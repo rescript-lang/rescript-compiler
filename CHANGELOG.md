@@ -15,7 +15,6 @@
 #### :rocket: New Feature
 
 - Introduce experimental uncurried by default mode. Can be turned on mid-file by adding standalone annotation `@@uncurried`. For experimentation only. https://github.com/rescript-lang/rescript-compiler/pull/5796
-
 - Adding `@@toUncurried` to the file and reformat will convert to uncurried syntax https://github.com/rescript-lang/rescript-compiler/pull/5800
 
 #### :boom: Breaking Change
@@ -34,7 +33,7 @@ These are only breaking changes for unformatted code.
 
 - Syntax: process uncurried types explicitly in the parser/printer https://github.com/rescript-lang/rescript-compiler/pull/5784
 - Syntax: process uncurried function declarations explicitly in the parser/printer https://github.com/rescript-lang/rescript-compiler/pull/5794
-
+- PPX V4: allow uncurried `make` function and treat it as usual
 
 # 10.1.0-rc.5
 

@@ -817,6 +817,13 @@ let transformStructureItem ~config mapper item =
           React_jsx_common.raiseErrorMultipleReactComponent ~loc:pstr_loc
         else (
           config.hasReactComponent <- true;
+          let binding =
+            match binding.pvb_expr.pexp_desc with
+            | Pexp_record
+                ([({txt = Ldot (Ldot (Lident "Js", "Fn"), _)}, e)], None) ->
+              {binding with pvb_expr = e}
+            | _ -> binding
+          in
           let coreTypeOfAttr =
             React_jsx_common.coreTypeOfAttrs binding.pvb_attributes
           in
@@ -1229,6 +1236,11 @@ let transformSignatureItem ~config _mapper item =
       if config.React_jsx_common.hasReactComponent then
         React_jsx_common.raiseErrorMultipleReactComponent ~loc:psig_loc
       else config.hasReactComponent <- true;
+      let pval_type =
+        match pval_type.ptyp_desc with
+        | Ptyp_constr ({txt = Ldot (Ldot (Lident "Js", "Fn"), _)}, [t]) -> t
+        | _ -> pval_type
+      in
       check_string_int_attribute_iter.signature_item
         check_string_int_attribute_iter item;
       let hasForwardRef = ref false in

@@ -21,3 +21,24 @@ module AnotherName = {
     \"V4$AnotherName$anotherName"
   }
 }
+
+module Uncurried = {
+  type props<'x> = {
+    x: 'x,
+  }
+
+  @react.component let make = ({x, _}: props<'x>) => React.string(x)
+  let make = {
+    let \"V4$Uncurried" = (props: props<_>) => make(props)
+
+    \"V4$Uncurried"
+  }
+}
+
+module type TUncurried = {
+  type props<'x> = {
+    x: 'x,
+  }
+
+  let make: React.componentLike<props<string>, React.element>
+}

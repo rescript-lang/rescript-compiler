@@ -7,3 +7,13 @@ module AnotherName = {
   @react.component
   let anotherName = (~x) => React.string(x)
 }
+
+module Uncurried = {
+  @react.component
+  let make = (. ~x) => React.string(x)
+}
+
+module type TUncurried = {
+  @react.component
+  let make: (. ~x: string) => React.element
+}
