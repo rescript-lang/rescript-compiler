@@ -185,9 +185,10 @@ end = struct
     "\n\
      **This command line is for the repo developer's testing purpose only. DO \
      NOT use it in production**!\n\n"
-    ^ "Usage:\n  rescript <options> <file>\n\n" ^ "Examples:\n"
-    ^ "  rescript myFile.res\n" ^ "  rescript -parse ml -print res myFile.ml\n"
-    ^ "  rescript -parse res -print binary -interface myFile.resi\n\n"
+    ^ "Usage:\n  res_parser <options> <file>\n\n" ^ "Examples:\n"
+    ^ "  res_parser myFile.res\n"
+    ^ "  res_parser -parse ml -print res myFile.ml\n"
+    ^ "  res_parser -parse res -print binary -interface myFile.resi\n\n"
     ^ "Options are:"
 
   let spec =
