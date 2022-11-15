@@ -38,7 +38,6 @@
 (library
  (name jscomp)
  (flags "-w" "+26+27+32+33+39-d")
- (modules_without_implementation Lam_pass_unused_params Lam_runtime)
  (foreign_stubs
   (language c)
   (names ext_basic_hash_stubs)
