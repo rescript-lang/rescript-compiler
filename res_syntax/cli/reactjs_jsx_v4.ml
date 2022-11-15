@@ -817,12 +817,21 @@ let transformStructureItem ~config mapper item =
           React_jsx_common.raiseErrorMultipleReactComponent ~loc:pstr_loc
         else (
           config.hasReactComponent <- true;
-          let binding =
-            match binding.pvb_expr.pexp_desc with
+          let rec removeArityRecord expr =
+            match expr.pexp_desc with
             | Pexp_record
                 ([({txt = Ldot (Ldot (Lident "Js", "Fn"), _)}, e)], None) ->
-              {binding with pvb_expr = e}
-            | _ -> binding
+              e
+            | Pexp_apply (forwardRef, [(label, e)]) ->
+              {
+                expr with
+                pexp_desc =
+                  Pexp_apply (forwardRef, [(label, removeArityRecord e)]);
+              }
+            | _ -> expr
+          in
+          let binding =
+            {binding with pvb_expr = removeArityRecord binding.pvb_expr}
           in
           let coreTypeOfAttr =
             React_jsx_common.coreTypeOfAttrs binding.pvb_attributes

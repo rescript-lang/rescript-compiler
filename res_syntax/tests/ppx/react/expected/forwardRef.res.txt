@@ -124,6 +124,63 @@ module V4C = {
   }
 }
 
+module V4CUncurried = {
+  module FancyInput = {
+    type props<'className, 'children, 'ref> = {
+      className?: 'className,
+      children: 'children,
+      ref?: 'ref,
+    }
+
+    @react.component
+    let make = (
+      {?className, children, _}: props<'className, 'children, ReactRef.currentDomRef>,
+      ref: Js.Nullable.t<ReactRef.currentDomRef>,
+    ) =>
+      ReactDOM.createDOMElementVariadic(
+        "div",
+        [
+          ReactDOM.createDOMElementVariadic(
+            "input",
+            ~props={
+              type_: "text",
+              ?className,
+              ref: ?Js.Nullable.toOption(ref)->Belt.Option.map(React.Ref.domRef),
+            },
+            [],
+          ),
+          children,
+        ],
+      )
+    let make = React.forwardRef({
+      let \"ForwardRef$V4CUncurried$FancyInput" = (props: props<_>, ref) => make(props, ref)
+
+      \"ForwardRef$V4CUncurried$FancyInput"
+    })
+  }
+  type props = {}
+
+  @react.component
+  let make = (_: props) => {
+    let input = React.useRef(Js.Nullable.null)
+
+    ReactDOM.createDOMElementVariadic(
+      "div",
+      [
+        React.createElement(
+          FancyInput.make,
+          {ref: input, children: {React.string("Click to focus")}},
+        ),
+      ],
+    )
+  }
+  let make = {
+    let \"ForwardRef$V4CUncurried" = props => make(props)
+
+    \"ForwardRef$V4CUncurried"
+  }
+}
+
 @@jsxConfig({version: 4, mode: "automatic"})
 
 module V4A = {
@@ -179,5 +236,61 @@ module V4A = {
     let \"ForwardRef$V4A" = props => make(props)
 
     \"ForwardRef$V4A"
+  }
+}
+
+module V4AUncurried = {
+  module FancyInput = {
+    type props<'className, 'children, 'ref> = {
+      className?: 'className,
+      children: 'children,
+      ref?: 'ref,
+    }
+
+    @react.component
+    let make = (
+      {?className, children, _}: props<'className, 'children, ReactDOM.Ref.currentDomRef>,
+      ref,
+    ) =>
+      ReactDOM.jsxs(
+        "div",
+        {
+          children: React.array([
+            ReactDOM.jsx(
+              "input",
+              {
+                type_: "text",
+                ?className,
+                ref: ?Js.Nullable.toOption(ref)->Belt.Option.map(ReactDOM.Ref.domRef),
+              },
+            ),
+            children,
+          ]),
+        },
+      )
+    let make = React.forwardRef({
+      let \"ForwardRef$V4AUncurried$FancyInput" = (props: props<_>, ref) => make(props, ref)
+
+      \"ForwardRef$V4AUncurried$FancyInput"
+    })
+  }
+  type props = {}
+
+  @react.component
+  let make = (_: props) => {
+    let input = React.useRef(Js.Nullable.null)
+    ReactDOM.jsx(
+      "div",
+      {
+        children: ?ReactDOM.someElement(
+          React.jsx(FancyInput.make, {ref: input, children: {React.string("Click to focus")}}),
+        ),
+      },
+    )
+  }
+  let make = {
+    let \"ForwardRef$V4AUncurried" = props => make(props)
+
+    \"ForwardRef$V4AUncurried"
   }
 }
