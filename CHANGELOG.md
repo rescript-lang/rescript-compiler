@@ -38,7 +38,8 @@ These are only breaking changes for unformatted code.
 
 - Syntax: process uncurried types explicitly in the parser/printer https://github.com/rescript-lang/rescript-compiler/pull/5784
 - Syntax: process uncurried function declarations explicitly in the parser/printer https://github.com/rescript-lang/rescript-compiler/pull/5794
-- PPX V4: allow uncurried `make` function and treat it like a currie one https://github.com/rescript-lang/rescript-compiler/pull/5802
+- PPX V4: allow uncurried `make` function and treat it like a curried one https://github.com/rescript-lang/rescript-compiler/pull/5802
+- PPX V4: allow uncurried `make` function with nolabel arguments e.g. `forwardRef` component https://github.com/rescript-lang/rescript-compiler/pull/5808
 
 # 10.1.0-rc.5
 
