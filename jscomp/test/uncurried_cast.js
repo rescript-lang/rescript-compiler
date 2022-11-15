@@ -64,7 +64,7 @@ function still2Args(param, param$1) {
   return withOpts(undefined, 4, param, param$1);
 }
 
-var anInt = still2Args(3, 5);
+var anInt = Curry._1(still2Args, 3)(5);
 
 var StandardNotation = {
   testRaise: testRaise,
@@ -118,7 +118,11 @@ function still2Args$1(param, param$1) {
   return withOpts$1(undefined, 4, param, param$1);
 }
 
-var anInt$1 = still2Args$1(3, 5);
+var partial_arg$2 = 3;
+
+var anInt$1 = (function (param) {
+      return still2Args$1(partial_arg$2, param);
+    })(5);
 
 exports.Uncurried = Uncurried;
 exports.E = E;

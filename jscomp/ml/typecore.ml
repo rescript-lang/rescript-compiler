@@ -2949,12 +2949,12 @@ and type_application env funct (sargs : sargs) : targs * Types.type_expr =
     tvar || List.mem l ls
   in
   let ignored = ref [] in
-  let extract_uncurried t =
-    match t.desc with
+  let extract_uncurried_type t =
+    match (expand_head env t).desc with
     | Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),_,_),[t],_) -> t
     | _ -> t in
   let lower_uncurried_arity ~nargs t newT =
-    match t.desc with
+    match (expand_head env t).desc with
     | Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),a,_),[_],_) ->
       let arity =
         if String.sub a 0 5 = "arity"
@@ -3078,10 +3078,12 @@ and type_application env funct (sargs : sargs) : targs * Types.type_expr =
       end;
       ([Nolabel, Some exp], ty_res)
   | _ ->
-      let ty_ = funct.exp_type in
-      let ty = extract_uncurried ty_ in
+      let ty = extract_uncurried_type funct.exp_type in
       let targs, ret_t = type_args [] [] ~ty_fun:ty (instance env ty) ~sargs in
-      targs, lower_uncurried_arity ty_ ~nargs:(List.length !ignored + List.length sargs) ret_t
+      let ret_t =
+        if funct.exp_type == ty then ret_t
+        else lower_uncurried_arity funct.exp_type ~nargs:(List.length !ignored + List.length sargs) ret_t in
+      targs, ret_t
 
 and type_construct env loc lid sarg ty_expected attrs =
   let opath =
