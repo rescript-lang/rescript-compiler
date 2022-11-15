@@ -54,11 +54,26 @@ var ll = Curry._1(partial, (function (x) {
         return x + 1 | 0;
       }));
 
+function withOpts(xOpt, y, zOpt, w) {
+  var x = xOpt !== undefined ? xOpt : 3;
+  var z = zOpt !== undefined ? zOpt : 4;
+  return ((x + y | 0) + z | 0) + w | 0;
+}
+
+function still2Args(param, param$1) {
+  return withOpts(undefined, 4, param, param$1);
+}
+
+var anInt = still2Args(3, 5);
+
 var StandardNotation = {
   testRaise: testRaise,
   l: l,
   partial: partial,
-  ll: ll
+  ll: ll,
+  withOpts: withOpts,
+  still2Args: still2Args,
+  anInt: anInt
 };
 
 function testRaise$1() {
@@ -93,6 +108,18 @@ var ll$1 = partial$1(function (x) {
       return x + 1 | 0;
     });
 
+function withOpts$1(xOpt, y, zOpt, w) {
+  var x = xOpt !== undefined ? xOpt : 3;
+  var z = zOpt !== undefined ? zOpt : 4;
+  return ((x + y | 0) + z | 0) + w | 0;
+}
+
+function still2Args$1(param, param$1) {
+  return withOpts$1(undefined, 4, param, param$1);
+}
+
+var anInt$1 = still2Args$1(3, 5);
+
 exports.Uncurried = Uncurried;
 exports.E = E;
 exports.StandardNotation = StandardNotation;
@@ -100,4 +127,7 @@ exports.testRaise = testRaise$1;
 exports.l = l$1;
 exports.partial = partial$1;
 exports.ll = ll$1;
+exports.withOpts = withOpts$1;
+exports.still2Args = still2Args$1;
+exports.anInt = anInt$1;
 /* l Not a pure module */

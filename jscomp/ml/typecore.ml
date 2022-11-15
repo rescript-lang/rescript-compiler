@@ -2949,6 +2949,26 @@ and type_application env funct (sargs : sargs) : targs * Types.type_expr =
     tvar || List.mem l ls
   in
   let ignored = ref [] in
+  let extract_uncurried t =
+    match t.desc with
+    | Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),_,_),[t],_) -> t
+    | _ -> t in
+  let lower_uncurried_arity ~nargs t newT =
+    match t.desc with
+    | Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),a,_),[_],_) ->
+      let arity =
+        if String.sub a 0 5 = "arity"
+        then int_of_string (String.sub a 5 (String.length a - 5))
+        else 0 in
+      let newarity = arity - nargs in
+      if newarity > 0 then
+        let a = "arity" ^ string_of_int newarity in
+        let lid:Longident.t = Ldot (Ldot (Lident "Js", "Fn"), a) in
+        let path = Env.lookup_type lid env in
+        newconstr path [newT]
+      else newT
+    | _ -> newT
+  in
   let rec type_unknown_args (args : lazy_args) omitted ty_fun (syntax_args : sargs)
      : targs * _ = 
     match syntax_args with 
@@ -2968,7 +2988,6 @@ and type_application env funct (sargs : sargs) : targs * Types.type_expr =
                 Location.prerr_warning sarg1.pexp_loc Warnings.Unused_argument;
               unify env ty_fun (newty (Tarrow(l1,t1,t2,Clink(ref Cunknown))));
               (t1, t2)
-          | Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),_,_),[{desc=Tarrow (l,t1,t2,_)}],_)
           | Tarrow (l,t1,t2,_) when Asttypes.same_arg_label l l1
             ->
               (t1, t2)
@@ -3059,8 +3078,10 @@ and type_application env funct (sargs : sargs) : targs * Types.type_expr =
       end;
       ([Nolabel, Some exp], ty_res)
   | _ ->
-      let ty = funct.exp_type in
-      type_args [] [] ~ty_fun:ty (instance env ty) ~sargs
+      let ty_ = funct.exp_type in
+      let ty = extract_uncurried ty_ in
+      let targs, ret_t = type_args [] [] ~ty_fun:ty (instance env ty) ~sargs in
+      targs, lower_uncurried_arity ty_ ~nargs:(List.length !ignored + List.length sargs) ret_t
 
 and type_construct env loc lid sarg ty_expected attrs =
   let opath =
