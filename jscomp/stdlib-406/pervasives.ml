@@ -20,7 +20,7 @@ external __unsafe_cast : 'a -> 'b = "%identity"
 
 (* Exceptions *)
 
-external raise : exn -> 'a = "%raise"
+external raise : exn -> 'a [@bs] = "%raise"
 external raise_notrace : exn -> 'a = "%raise_notrace"
 
 let failwith s = raise(Failure s)
@@ -47,7 +47,7 @@ external __POS_OF__ : 'a -> (string * int * int * int) * 'a = "%loc_POS"
 
 (* Comparisons *)
 
-external ( = ) : 'a -> 'a -> bool = "%equal"
+external ( = ) : 'a -> 'a -> bool [@bs] = "%equal"
 external ( <> ) : 'a -> 'a -> bool = "%notequal"
 external ( < ) : 'a -> 'a -> bool = "%lessthan"
 external ( > ) : 'a -> 'a -> bool = "%greaterthan"

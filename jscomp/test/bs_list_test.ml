@@ -179,13 +179,13 @@ let succx =   (fun x -> x + 1)
 let () = 
   let (=~) = eq "REMOVEASSOQ" in 
   let eqx = fun   x y -> (x : int) = y in 
-  b __LOC__ (N.hasAssoc [1,"1";2, "2"; 3, "3"] 2 (=));
-  b __LOC__ (not (N.hasAssoc [1,"1";2, "2"; 3, "3"] 4 (=)));
+  b __LOC__ (N.hasAssoc [1,"1";2, "2"; 3, "3"] 2 (==));
+  b __LOC__ (not (N.hasAssoc [1,"1";2, "2"; 3, "3"] 4 (==)));
   b __LOC__ ( (N.hasAssoc [1,"1";2, "2"; 3, "3"] 4 (fun x y -> x + 1 = y)));
-  N.removeAssoc [1,"1";2,"2"; 3,"3"] 3 (=) =~ [1,"1";2,"2"];
-  N.removeAssoc [1,"1";2,"2"; 3,"3"] 1 (=) =~ [2,"2"; 3,"3"];
-  N.removeAssoc [1,"1";2,"2"; 3,"3"] 2 (=) =~ [1,"1"; 3,"3"];
-  N.removeAssoc [1,"1";2,"2"; 3,"3"] 0 (=) =~ [1,"1"; 2,"2"; 3,"3"];
+  N.removeAssoc [1,"1";2,"2"; 3,"3"] 3 (==) =~ [1,"1";2,"2"];
+  N.removeAssoc [1,"1";2,"2"; 3,"3"] 1 (==) =~ [2,"2"; 3,"3"];
+  N.removeAssoc [1,"1";2,"2"; 3,"3"] 2 (==) =~ [1,"1"; 3,"3"];
+  N.removeAssoc [1,"1";2,"2"; 3,"3"] 0 (==) =~ [1,"1"; 2,"2"; 3,"3"];
 
   N.removeAssoc [1,"1";2,"2"; 3,"3"] 3 eqx =~ [1,"1";2,"2"];
   N.removeAssoc [1,"1";2,"2"; 3,"3"] 1 eqx =~ [2,"2"; 3,"3"];
@@ -194,22 +194,22 @@ let () =
   let ll = [1,"1";2,"2"; 3,"3"] in 
   let ll0 = N.removeAssoc ll  0 eqx in
    b __LOC__ (ll == ll0);
-  let ll1 = N.setAssoc ll 2 "22" (=)  in 
+  let ll1 = N.setAssoc ll 2 "22" (==)  in 
   eq __LOC__ ll1  [1,"1"; 2, "22"; 3, "3"]; 
-  let ll2 = N.setAssoc ll1 22 "2" (=) in 
+  let ll2 = N.setAssoc ll1 22 "2" (==) in 
   b __LOC__ (ll2  = ((22, "2") :: ll1));
   b __LOC__ (N.tailExn ll2 == ll1);
-  b __LOC__ (N.setAssoc [1,"a"; 2, "b"; 3, "c"] 2 "x" (=) =
+  b __LOC__ (N.setAssoc [1,"a"; 2, "b"; 3, "c"] 2 "x" (==) =
       [1,"a"; 2, "x"; 3,"c"]);
-  b __LOC__ (N.setAssoc [1,"a"; 3, "c"] 2 "2" (=) = 
+  b __LOC__ (N.setAssoc [1,"a"; 3, "c"] 2 "2" (==) = 
       [2,"2"; 1,"a"; 3, "c"]);
-  eq __LOC__ (N.setAssoc [] 1 "1" (=)) [1,"1"] ;
+  eq __LOC__ (N.setAssoc [] 1 "1" (==)) [1,"1"] ;
   [%debugger];
-  eq __LOC__ (N.setAssoc [1,"2"] 1 "1" (=)) [1,"1"] ;
+  eq __LOC__ (N.setAssoc [1,"2"] 1 "1" (==)) [1,"1"] ;
 
-  eq __LOC__ (N.setAssoc [0,"0";1,"2"] 1 "1" (=)) [0,"0"; 1,"1"] ;
-  b __LOC__ (N.getAssoc [ 1, "a"; 2, "b"; 3, "c"] 2 (=) = Some "b");
-  b __LOC__ (N.getAssoc [ 1, "a"; 2, "b"; 3, "c"] 4 (=) = None)
+  eq __LOC__ (N.setAssoc [0,"0";1,"2"] 1 "1" (==)) [0,"0"; 1,"1"] ;
+  b __LOC__ (N.getAssoc [ 1, "a"; 2, "b"; 3, "c"] 2 (==) = Some "b");
+  b __LOC__ (N.getAssoc [ 1, "a"; 2, "b"; 3, "c"] 4 (==) = None)
   
 let ()   = 
 
@@ -337,7 +337,7 @@ let () =
   b __LOC__ (not @@ N.eq [1;2;3] [1;2] (fun  x y -> x = y));
   b __LOC__ (N.eq [1;2;3] [1;2;3] (fun  x y -> x = y));
   b __LOC__ (not @@ N.eq [1;2;3] [1;2;4] (fun  x y -> x = y));
-  b __LOC__ (not @@ N.eq [1;2;3] [1;2;3;4] (=))
+  b __LOC__ (not @@ N.eq [1;2;3] [1;2;3;4] (==))
 let () = 
   let u0 = N.makeBy 20 (fun  x -> x) in   
   let u1 = u0 |. N.keepMap (fun   x -> if x mod 7 = 0 then Some (x+1) else None) in 

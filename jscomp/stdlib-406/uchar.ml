@@ -53,6 +53,6 @@ let to_char u =
 
 let unsafe_to_char = Char.unsafe_chr
 
-let equal : int -> int -> bool = ( = )
+let equal : int -> int -> bool [@bs] = ( = )
 let compare : int -> int -> int = Pervasives.compare
 let hash = to_int

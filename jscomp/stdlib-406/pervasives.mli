@@ -30,7 +30,7 @@ external __unsafe_cast : 'a -> 'b = "%identity"
 
 (** {1 Exceptions} *)
 
-external raise : exn -> 'a = "%raise"
+external raise : exn -> 'a [@bs] = "%raise"
 (** Raise the given exception value *)
 
 external raise_notrace : exn -> 'a = "%raise_notrace"
@@ -51,7 +51,7 @@ exception Exit
 
 (** {1 Comparisons} *)
 
-external ( = ) : 'a -> 'a -> bool = "%equal"
+external ( = ) : 'a -> 'a -> bool [@bs] = "%equal"
 (** [e1 = e2] tests for structural equality of [e1] and [e2].
    Mutable structures (e.g. references and arrays) are equal
    if and only if their current contents are structurally equal,

@@ -104,7 +104,7 @@ let () =
 
     ] in 
   List.iter (fun (s, code) -> 
-    eq __LOC__ (true, eq_list ((=) : int -> _ -> _ ) (utf8_list s) code )
+    eq __LOC__ (true, eq_list ((==) : int -> _ -> _ ) (utf8_list s) code )
   )
   tbl
   

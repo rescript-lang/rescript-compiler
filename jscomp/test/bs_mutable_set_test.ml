@@ -81,7 +81,7 @@ let () =
   eq __LOC__ (N.get v 1_200) (Some 1_200);
   let (aa, bb), pres = N.split v 1000 in 
   b __LOC__ pres ;
-  b __LOC__ (A.eq (N.toArray aa) (I.range 500 999) (fun x y -> x = y ));
+  b __LOC__ (A.eq (N.toArray aa) (I.range 500 999) (=));
   b __LOC__ (A.eq (N.toArray bb) (I.range 1_001 2_000) (=));
   b  __LOC__ (N.subset aa v); 
   b __LOC__ (N.subset bb v) ;
@@ -224,7 +224,7 @@ let () =
   let id loc x = 
     let u = (N.fromSortedArrayUnsafe x) in
     (N.checkInvariantInternal u );
-    b loc (A.every2 (N.toArray u) x (=) )
+    b loc (A.every2 (N.toArray u) x (==) )
   in 
   id __LOC__ [||] ; 
   id __LOC__ [|0|];

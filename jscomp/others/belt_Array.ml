@@ -451,7 +451,7 @@ let eqU a b p =
   let lenb = length b in
   if lena = lenb then everyAux2 a b 0 p lena else false
 
-let eq a b p = eqU a b (fun [@bs] a b -> p a b)
+let eq = eqU
 
 let rec everyCmpAux2 arr1 arr2 i b len =
   if i = len then 0

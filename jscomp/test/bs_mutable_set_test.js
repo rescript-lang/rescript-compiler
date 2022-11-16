@@ -184,8 +184,8 @@ var aa = match$1[0];
 
 b("File \"bs_mutable_set_test.ml\", line 83, characters 4-11", match[1]);
 
-b("File \"bs_mutable_set_test.ml\", line 84, characters 4-11", Belt_Array.eq(Belt_internalAVLset.toArray(aa.data), Array_data_util.range(500, 999), (function (x, y) {
-            return x === y;
+b("File \"bs_mutable_set_test.ml\", line 84, characters 4-11", Belt_Array.eq(Belt_internalAVLset.toArray(aa.data), Array_data_util.range(500, 999), (function (prim0, prim1) {
+            return prim0 === prim1;
           })));
 
 b("File \"bs_mutable_set_test.ml\", line 85, characters 4-11", Belt_Array.eq(Belt_internalAVLset.toArray(bb.data), Array_data_util.range(1001, 2000), (function (prim0, prim1) {

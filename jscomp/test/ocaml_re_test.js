@@ -3357,362 +3357,6 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
             };
     }
   };
-  var piece = function (param) {
-    var r = atom(undefined);
-    if (accept(/* '*' */42)) {
-      return greedy_mod(repn(r, 0, undefined));
-    }
-    if (accept(/* '+' */43)) {
-      return greedy_mod(repn(r, 1, undefined));
-    }
-    if (accept(/* '?' */63)) {
-      return greedy_mod(repn(r, 0, 1));
-    }
-    if (!accept(/* '{' */123)) {
-      return r;
-    }
-    var i$1 = integer(undefined);
-    if (i$1 !== undefined) {
-      var j = accept(/* ',' */44) ? integer(undefined) : i$1;
-      if (!accept(/* '}' */125)) {
-        throw {
-              RE_EXN_ID: Parse_error,
-              Error: new Error()
-            };
-      }
-      if (j !== undefined && j < i$1) {
-        throw {
-              RE_EXN_ID: Parse_error,
-              Error: new Error()
-            };
-      }
-      return greedy_mod(repn(r, i$1, j));
-    }
-    i.contents = i.contents - 1 | 0;
-    return r;
-  };
-  var branch$p = function (_left) {
-    while(true) {
-      var left = _left;
-      if (i.contents === l || test(/* '|' */124) || test(/* ')' */41)) {
-        return seq$2(List.rev(left));
-      }
-      _left = {
-        hd: piece(undefined),
-        tl: left
-      };
-      continue ;
-    };
-  };
-  var atom = function (param) {
-    if (accept(/* '.' */46)) {
-      if (dotall) {
-        return any;
-      } else {
-        return notnl;
-      }
-    }
-    if (accept(/* '(' */40)) {
-      if (accept(/* '?' */63)) {
-        if (accept(/* ':' */58)) {
-          var r = regexp$p(branch$p(/* [] */0));
-          if (!accept(/* ')' */41)) {
-            throw {
-                  RE_EXN_ID: Parse_error,
-                  Error: new Error()
-                };
-          }
-          return r;
-        }
-        if (accept(/* '#' */35)) {
-          var _param;
-          while(true) {
-            if (accept(/* ')' */41)) {
-              return epsilon;
-            }
-            i.contents = i.contents + 1 | 0;
-            _param = undefined;
-            continue ;
-          };
-        }
-        throw {
-              RE_EXN_ID: Parse_error,
-              Error: new Error()
-            };
-      }
-      var r$1 = regexp$p(branch$p(/* [] */0));
-      if (!accept(/* ')' */41)) {
-        throw {
-              RE_EXN_ID: Parse_error,
-              Error: new Error()
-            };
-      }
-      return {
-              TAG: /* Group */6,
-              _0: r$1
-            };
-    }
-    if (accept(/* '^' */94)) {
-      if (multiline) {
-        return /* Beg_of_line */0;
-      } else {
-        return /* Beg_of_str */5;
-      }
-    }
-    if (accept(/* '$' */36)) {
-      if (multiline) {
-        return /* End_of_line */1;
-      } else if (dollar_endonly) {
-        return /* Last_end_of_line */7;
-      } else {
-        return /* End_of_str */6;
-      }
-    }
-    if (accept(/* '[' */91)) {
-      if (accept(/* '^' */94)) {
-        return compl(bracket(/* [] */0));
-      } else {
-        return alt$1(bracket(/* [] */0));
-      }
-    }
-    if (accept(/* '\\' */92)) {
-      if (i.contents === l) {
-        throw {
-              RE_EXN_ID: Parse_error,
-              Error: new Error()
-            };
-      }
-      var c = get(undefined);
-      switch (c) {
-        case 48 :
-        case 49 :
-        case 50 :
-        case 51 :
-        case 52 :
-        case 53 :
-        case 54 :
-        case 55 :
-        case 56 :
-        case 57 :
-            throw {
-                  RE_EXN_ID: Not_supported,
-                  Error: new Error()
-                };
-        case 65 :
-            return /* Beg_of_str */5;
-        case 66 :
-            return /* Not_bound */4;
-        case 68 :
-            return compl({
-                        hd: digit,
-                        tl: /* [] */0
-                      });
-        case 71 :
-            return /* Start */8;
-        case 83 :
-            return compl({
-                        hd: space,
-                        tl: /* [] */0
-                      });
-        case 87 :
-            return compl({
-                        hd: alnum,
-                        tl: {
-                          hd: {
-                            TAG: /* Set */0,
-                            _0: {
-                              hd: [
-                                /* '_' */95,
-                                /* '_' */95
-                              ],
-                              tl: /* [] */0
-                            }
-                          },
-                          tl: /* [] */0
-                        }
-                      });
-        case 90 :
-            return /* Last_end_of_line */7;
-        case 58 :
-        case 59 :
-        case 60 :
-        case 61 :
-        case 62 :
-        case 63 :
-        case 64 :
-        case 91 :
-        case 92 :
-        case 93 :
-        case 94 :
-        case 95 :
-        case 96 :
-            return {
-                    TAG: /* Set */0,
-                    _0: single(c)
-                  };
-        case 98 :
-            return alt$1({
-                        hd: /* Beg_of_word */2,
-                        tl: {
-                          hd: /* End_of_word */3,
-                          tl: /* [] */0
-                        }
-                      });
-        case 100 :
-            return digit;
-        case 115 :
-            return space;
-        case 119 :
-            return alt$1({
-                        hd: alnum,
-                        tl: {
-                          hd: {
-                            TAG: /* Set */0,
-                            _0: {
-                              hd: [
-                                /* '_' */95,
-                                /* '_' */95
-                              ],
-                              tl: /* [] */0
-                            }
-                          },
-                          tl: /* [] */0
-                        }
-                      });
-        case 67 :
-        case 69 :
-        case 70 :
-        case 72 :
-        case 73 :
-        case 74 :
-        case 75 :
-        case 76 :
-        case 77 :
-        case 78 :
-        case 79 :
-        case 80 :
-        case 81 :
-        case 82 :
-        case 84 :
-        case 85 :
-        case 86 :
-        case 88 :
-        case 89 :
-        case 97 :
-        case 99 :
-        case 101 :
-        case 102 :
-        case 103 :
-        case 104 :
-        case 105 :
-        case 106 :
-        case 107 :
-        case 108 :
-        case 109 :
-        case 110 :
-        case 111 :
-        case 112 :
-        case 113 :
-        case 114 :
-        case 116 :
-        case 117 :
-        case 118 :
-        case 120 :
-        case 121 :
-            throw {
-                  RE_EXN_ID: Parse_error,
-                  Error: new Error()
-                };
-        case 122 :
-            return /* End_of_str */6;
-        default:
-          return {
-                  TAG: /* Set */0,
-                  _0: single(c)
-                };
-      }
-    } else {
-      if (i.contents === l) {
-        throw {
-              RE_EXN_ID: Parse_error,
-              Error: new Error()
-            };
-      }
-      var c$1 = get(undefined);
-      if (c$1 >= 64) {
-        if (c$1 !== 92) {
-          if (c$1 !== 123) {
-            return {
-                    TAG: /* Set */0,
-                    _0: single(c$1)
-                  };
-          }
-          throw {
-                RE_EXN_ID: Parse_error,
-                Error: new Error()
-              };
-        }
-        throw {
-              RE_EXN_ID: Parse_error,
-              Error: new Error()
-            };
-      }
-      if (c$1 >= 44) {
-        if (c$1 >= 63) {
-          throw {
-                RE_EXN_ID: Parse_error,
-                Error: new Error()
-              };
-        }
-        return {
-                TAG: /* Set */0,
-                _0: single(c$1)
-              };
-      }
-      if (c$1 >= 42) {
-        throw {
-              RE_EXN_ID: Parse_error,
-              Error: new Error()
-            };
-      }
-      return {
-              TAG: /* Set */0,
-              _0: single(c$1)
-            };
-    }
-  };
-  var integer = function (param) {
-    if (i.contents === l) {
-      return ;
-    }
-    var d = get(undefined);
-    if (d > 57 || d < 48) {
-      i.contents = i.contents - 1 | 0;
-      return ;
-    } else {
-      var _i = d - /* '0' */48 | 0;
-      while(true) {
-        var i$1 = _i;
-        if (i.contents === l) {
-          return i$1;
-        }
-        var d$1 = get(undefined);
-        if (d$1 > 57 || d$1 < 48) {
-          i.contents = i.contents - 1 | 0;
-          return i$1;
-        }
-        var i$p = Math.imul(10, i$1) + (d$1 - /* '0' */48 | 0) | 0;
-        if (i$p < i$1) {
-          throw {
-                RE_EXN_ID: Parse_error,
-                Error: new Error()
-              };
-        }
-        _i = i$p;
-        continue ;
-      };
-    }
-  };
   var regexp$p = function (_left) {
     while(true) {
       var left = _left;
@@ -3726,6 +3370,19 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
               tl: /* [] */0
             }
           });
+      continue ;
+    };
+  };
+  var branch$p = function (_left) {
+    while(true) {
+      var left = _left;
+      if (i.contents === l || test(/* '|' */124) || test(/* ')' */41)) {
+        return seq$2(List.rev(left));
+      }
+      _left = {
+        hd: piece(undefined),
+        tl: left
+      };
       continue ;
     };
   };
@@ -4104,6 +3761,349 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
               VAL: c$2
             };
     }
+  };
+  var atom = function (param) {
+    if (accept(/* '.' */46)) {
+      if (dotall) {
+        return any;
+      } else {
+        return notnl;
+      }
+    }
+    if (accept(/* '(' */40)) {
+      if (accept(/* '?' */63)) {
+        if (accept(/* ':' */58)) {
+          var r = regexp$p(branch$p(/* [] */0));
+          if (!accept(/* ')' */41)) {
+            throw {
+                  RE_EXN_ID: Parse_error,
+                  Error: new Error()
+                };
+          }
+          return r;
+        }
+        if (accept(/* '#' */35)) {
+          var _param;
+          while(true) {
+            if (accept(/* ')' */41)) {
+              return epsilon;
+            }
+            i.contents = i.contents + 1 | 0;
+            _param = undefined;
+            continue ;
+          };
+        }
+        throw {
+              RE_EXN_ID: Parse_error,
+              Error: new Error()
+            };
+      }
+      var r$1 = regexp$p(branch$p(/* [] */0));
+      if (!accept(/* ')' */41)) {
+        throw {
+              RE_EXN_ID: Parse_error,
+              Error: new Error()
+            };
+      }
+      return {
+              TAG: /* Group */6,
+              _0: r$1
+            };
+    }
+    if (accept(/* '^' */94)) {
+      if (multiline) {
+        return /* Beg_of_line */0;
+      } else {
+        return /* Beg_of_str */5;
+      }
+    }
+    if (accept(/* '$' */36)) {
+      if (multiline) {
+        return /* End_of_line */1;
+      } else if (dollar_endonly) {
+        return /* Last_end_of_line */7;
+      } else {
+        return /* End_of_str */6;
+      }
+    }
+    if (accept(/* '[' */91)) {
+      if (accept(/* '^' */94)) {
+        return compl(bracket(/* [] */0));
+      } else {
+        return alt$1(bracket(/* [] */0));
+      }
+    }
+    if (accept(/* '\\' */92)) {
+      if (i.contents === l) {
+        throw {
+              RE_EXN_ID: Parse_error,
+              Error: new Error()
+            };
+      }
+      var c = get(undefined);
+      switch (c) {
+        case 48 :
+        case 49 :
+        case 50 :
+        case 51 :
+        case 52 :
+        case 53 :
+        case 54 :
+        case 55 :
+        case 56 :
+        case 57 :
+            throw {
+                  RE_EXN_ID: Not_supported,
+                  Error: new Error()
+                };
+        case 65 :
+            return /* Beg_of_str */5;
+        case 66 :
+            return /* Not_bound */4;
+        case 68 :
+            return compl({
+                        hd: digit,
+                        tl: /* [] */0
+                      });
+        case 71 :
+            return /* Start */8;
+        case 83 :
+            return compl({
+                        hd: space,
+                        tl: /* [] */0
+                      });
+        case 87 :
+            return compl({
+                        hd: alnum,
+                        tl: {
+                          hd: {
+                            TAG: /* Set */0,
+                            _0: {
+                              hd: [
+                                /* '_' */95,
+                                /* '_' */95
+                              ],
+                              tl: /* [] */0
+                            }
+                          },
+                          tl: /* [] */0
+                        }
+                      });
+        case 90 :
+            return /* Last_end_of_line */7;
+        case 58 :
+        case 59 :
+        case 60 :
+        case 61 :
+        case 62 :
+        case 63 :
+        case 64 :
+        case 91 :
+        case 92 :
+        case 93 :
+        case 94 :
+        case 95 :
+        case 96 :
+            return {
+                    TAG: /* Set */0,
+                    _0: single(c)
+                  };
+        case 98 :
+            return alt$1({
+                        hd: /* Beg_of_word */2,
+                        tl: {
+                          hd: /* End_of_word */3,
+                          tl: /* [] */0
+                        }
+                      });
+        case 100 :
+            return digit;
+        case 115 :
+            return space;
+        case 119 :
+            return alt$1({
+                        hd: alnum,
+                        tl: {
+                          hd: {
+                            TAG: /* Set */0,
+                            _0: {
+                              hd: [
+                                /* '_' */95,
+                                /* '_' */95
+                              ],
+                              tl: /* [] */0
+                            }
+                          },
+                          tl: /* [] */0
+                        }
+                      });
+        case 67 :
+        case 69 :
+        case 70 :
+        case 72 :
+        case 73 :
+        case 74 :
+        case 75 :
+        case 76 :
+        case 77 :
+        case 78 :
+        case 79 :
+        case 80 :
+        case 81 :
+        case 82 :
+        case 84 :
+        case 85 :
+        case 86 :
+        case 88 :
+        case 89 :
+        case 97 :
+        case 99 :
+        case 101 :
+        case 102 :
+        case 103 :
+        case 104 :
+        case 105 :
+        case 106 :
+        case 107 :
+        case 108 :
+        case 109 :
+        case 110 :
+        case 111 :
+        case 112 :
+        case 113 :
+        case 114 :
+        case 116 :
+        case 117 :
+        case 118 :
+        case 120 :
+        case 121 :
+            throw {
+                  RE_EXN_ID: Parse_error,
+                  Error: new Error()
+                };
+        case 122 :
+            return /* End_of_str */6;
+        default:
+          return {
+                  TAG: /* Set */0,
+                  _0: single(c)
+                };
+      }
+    } else {
+      if (i.contents === l) {
+        throw {
+              RE_EXN_ID: Parse_error,
+              Error: new Error()
+            };
+      }
+      var c$1 = get(undefined);
+      if (c$1 >= 64) {
+        if (c$1 !== 92) {
+          if (c$1 !== 123) {
+            return {
+                    TAG: /* Set */0,
+                    _0: single(c$1)
+                  };
+          }
+          throw {
+                RE_EXN_ID: Parse_error,
+                Error: new Error()
+              };
+        }
+        throw {
+              RE_EXN_ID: Parse_error,
+              Error: new Error()
+            };
+      }
+      if (c$1 >= 44) {
+        if (c$1 >= 63) {
+          throw {
+                RE_EXN_ID: Parse_error,
+                Error: new Error()
+              };
+        }
+        return {
+                TAG: /* Set */0,
+                _0: single(c$1)
+              };
+      }
+      if (c$1 >= 42) {
+        throw {
+              RE_EXN_ID: Parse_error,
+              Error: new Error()
+            };
+      }
+      return {
+              TAG: /* Set */0,
+              _0: single(c$1)
+            };
+    }
+  };
+  var integer = function (param) {
+    if (i.contents === l) {
+      return ;
+    }
+    var d = get(undefined);
+    if (d > 57 || d < 48) {
+      i.contents = i.contents - 1 | 0;
+      return ;
+    } else {
+      var _i = d - /* '0' */48 | 0;
+      while(true) {
+        var i$1 = _i;
+        if (i.contents === l) {
+          return i$1;
+        }
+        var d$1 = get(undefined);
+        if (d$1 > 57 || d$1 < 48) {
+          i.contents = i.contents - 1 | 0;
+          return i$1;
+        }
+        var i$p = Math.imul(10, i$1) + (d$1 - /* '0' */48 | 0) | 0;
+        if (i$p < i$1) {
+          throw {
+                RE_EXN_ID: Parse_error,
+                Error: new Error()
+              };
+        }
+        _i = i$p;
+        continue ;
+      };
+    }
+  };
+  var piece = function (param) {
+    var r = atom(undefined);
+    if (accept(/* '*' */42)) {
+      return greedy_mod(repn(r, 0, undefined));
+    }
+    if (accept(/* '+' */43)) {
+      return greedy_mod(repn(r, 1, undefined));
+    }
+    if (accept(/* '?' */63)) {
+      return greedy_mod(repn(r, 0, 1));
+    }
+    if (!accept(/* '{' */123)) {
+      return r;
+    }
+    var i$1 = integer(undefined);
+    if (i$1 !== undefined) {
+      var j = accept(/* ',' */44) ? integer(undefined) : i$1;
+      if (!accept(/* '}' */125)) {
+        throw {
+              RE_EXN_ID: Parse_error,
+              Error: new Error()
+            };
+      }
+      if (j !== undefined && j < i$1) {
+        throw {
+              RE_EXN_ID: Parse_error,
+              Error: new Error()
+            };
+      }
+      return greedy_mod(repn(r, i$1, j));
+    }
+    i.contents = i.contents - 1 | 0;
+    return r;
   };
   var res = regexp$p(branch$p(/* [] */0));
   if (i.contents !== l) {

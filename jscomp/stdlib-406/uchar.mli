@@ -88,7 +88,7 @@ val to_char : t -> char
 val unsafe_to_char : t -> char
 (**/**)
 
-val equal : t -> t -> bool
+val equal : t -> t -> bool [@bs]
 (** [equal u u'] is [u = u']. *)
 
 val compare : t -> t -> int
