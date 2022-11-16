@@ -19,6 +19,7 @@
 - Add support for unary uncurried pipe in uncurried mode https://github.com/rescript-lang/rescript-compiler/pull/5804
 - Add support for partial application of uncurried functions: with uncurried application one can provide a
 subset of the arguments, and return a curried type with the remaining ones https://github.com/rescript-lang/rescript-compiler/pull/5805
+- Add support for uncurried externals https://github.com/rescript-lang/rescript-compiler/pull/5815
 
 #### :boom: Breaking Change
 
