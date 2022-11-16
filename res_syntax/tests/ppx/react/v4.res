@@ -17,3 +17,13 @@ module type TUncurried = {
   @react.component
   let make: (. ~x: string) => React.element
 }
+
+module E = {
+  @react.component
+  external make: (~x: string) => React.element = "default"
+}
+
+module EUncurried = {
+  @react.component
+  external make: (. ~x: string) => React.element = "default"
+}
