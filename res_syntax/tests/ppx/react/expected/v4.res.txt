@@ -52,7 +52,9 @@ module E = {
 }
 
 module EUncurried = {
-  type props = {}
+  type props<'x> = {
+    x: 'x,
+  }
 
-  external make: React.componentLike<props, (. ~x: string) => React.element> = "default"
+  external make: React.componentLike<props<string>, React.element> = "default"
 }
