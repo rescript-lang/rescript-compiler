@@ -24,6 +24,8 @@ Required:
 - Reanalyze
 - OS: macOS, Linux or Windows
 
+The syntax source code is located in the directory `res_syntax`. All following commands are meant to be executed in that directory.
+
 ```sh
 opam install . --deps-only --with-test
 make # or "dune build"
