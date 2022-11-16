@@ -4,6 +4,6 @@
 rm -rf ./bootstrap
 mkdir ./bootstrap
 
-ocaml unix.cma ./scripts/bspack.ml -bs-main Res_cli -I cli -I src -o ./bootstrap/rescript.ml
-rescript ./bootstrap/rescript.ml > ./bootstrap/rescript.res
-ocamlopt.opt -w a -pp "rescript -print binary" -O2 -o rescript -I +compiler-libs ocamlcommon.cmxa -I lib -impl ./bootstrap/rescript.res
+ocaml unix.cma ./scripts/bspack.ml -bs-main Res_cli -I cli -I src -o ./bootstrap/res_parser.ml
+res_parser ./bootstrap/res_parser.ml > ./bootstrap/res_parser.res
+ocamlopt.opt -w a -pp "res_parser -print binary" -O2 -o res_parser -I +compiler-libs ocamlcommon.cmxa -I lib -impl ./bootstrap/res_parser.res

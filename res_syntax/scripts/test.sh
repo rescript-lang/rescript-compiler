@@ -22,23 +22,23 @@ mkdir temp
 # parsing
 find tests/parsing/{errors,infiniteLoops,recovery} -name "*.res" -o -name "*.resi" >temp/files.txt
 while read file; do
-  rescript -recover -print ml $file &> $(exp $file) & maybeWait
+  res_parser -recover -print ml $file &> $(exp $file) & maybeWait
 done <temp/files.txt
 find tests/parsing/{grammar,other} -name "*.res" -o -name "*.resi" >temp/files.txt
 while read file; do
-  rescript -print ml $file &> $(exp $file) & maybeWait
+  res_parser -print ml $file &> $(exp $file) & maybeWait
 done <temp/files.txt
 
 # printing
 find tests/{printer,conversion} -name "*.res" -o -name "*.resi" -o -name "*.ml" -o -name "*.mli" >temp/files.txt
 while read file; do
-  rescript $file &> $(exp $file) & maybeWait
+  res_parser $file &> $(exp $file) & maybeWait
 done <temp/files.txt
 
 # printing with ppx
 find tests/ppx/react -name "*.res" -o -name "*.resi" >temp/files.txt
 while read file; do
-  rescript -jsx-version 4 -jsx-mode "automatic" $file &> $(exp $file) & maybeWait
+  res_parser -jsx-version 4 -jsx-mode "automatic" $file &> $(exp $file) & maybeWait
 done <temp/files.txt
 
 wait
@@ -78,11 +78,11 @@ if [[ $ROUNDTRIP_TEST = 1 ]]; then
       *.resi ) class="res"; resIntf=-interface ;;
     esac
 
-    rescript $resIntf -parse $class -print sexp $file > $sexpAst1
-    rescript $resIntf -parse $class -print res $file > $rescript1
+    res_parser $resIntf -parse $class -print sexp $file > $sexpAst1
+    res_parser $resIntf -parse $class -print res $file > $rescript1
 
-    rescript $resIntf -print sexp $rescript1 > $sexpAst2
-    rescript $resIntf -print res $rescript1 > $rescript2
+    res_parser $resIntf -print sexp $rescript1 > $sexpAst2
+    res_parser $resIntf -print res $rescript1 > $rescript2
 
     diff --unified $sexpAst1 $sexpAst2
     [[ "$?" = 1 ]] && echo 1 > $roundtripTestsResult

@@ -57,11 +57,11 @@ Debug a file:
 
 ```sh
 # write code in test.res
-dune exec -- rescript test.res # test printer
-dune exec -- rescript -print ast test.res # print ast
-dune exec -- rescript -print comments test.res # print comment table
-dune exec -- rescript -print ml test.res # show ocaml code
-dune exec -- rescript -print res -width 80 test.res # test printer and change default print width
+dune exec -- res_parser test.res # test printer
+dune exec -- res_parser -print ast test.res # print ast
+dune exec -- res_parser -print comments test.res # print comment table
+dune exec -- res_parser -print ml test.res # show ocaml code
+dune exec -- res_parser -print res -width 80 test.res # test printer and change default print width
 ```
 
 Benchmark:
