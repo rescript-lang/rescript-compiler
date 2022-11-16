@@ -751,6 +751,11 @@ let transformStructureItem ~config mapper item =
         config.hasReactComponent <- true;
         check_string_int_attribute_iter.structure_item
           check_string_int_attribute_iter item;
+        let pval_type =
+          match pval_type.ptyp_desc with
+          | Ptyp_constr ({txt = Ldot (Ldot (Lident "Js", "Fn"), _)}, [t]) -> t
+          | _ -> pval_type
+        in
         let coreTypeOfAttr = React_jsx_common.coreTypeOfAttrs pval_attributes in
         let typVarsOfCoreType =
           coreTypeOfAttr
