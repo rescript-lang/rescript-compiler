@@ -130,7 +130,11 @@ let get_uncurry_arity (ty : t) =
   | Ptyp_arrow (_, _, rest) -> Some (get_uncurry_arity_aux rest 1)
   | _ -> None
 
-let get_curry_arity ty = get_uncurry_arity_aux ty 0
+let get_curry_arity (ty : t) =
+  match ty.ptyp_desc with
+  | Ptyp_constr ({ txt = Ldot (Ldot (Lident "Js", "Fn"), _) }, [ t ]) ->
+      get_uncurry_arity_aux t 0
+  | _ -> get_uncurry_arity_aux ty 0
 
 (* add hoc for bs.send.pipe *)
 let rec get_curry_labels (ty : t) acc =
@@ -139,7 +143,6 @@ let rec get_curry_labels (ty : t) acc =
   | _ -> acc
 
 let get_curry_labels ty = List.rev (get_curry_labels ty [])
-
 let is_arity_one ty = get_curry_arity ty = 1
 
 type param_type = {

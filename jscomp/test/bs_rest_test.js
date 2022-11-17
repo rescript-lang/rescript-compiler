@@ -8,7 +8,9 @@ x("3");
 
 var v = x(3);
 
-var xxx = x;
+function xxx(prim) {
+  return x(prim);
+}
 
 var u = xxx(3);
 

@@ -1576,19 +1576,13 @@ let rec parse_native_repr_attributes env core_type ty =
   | _ -> ([], Same_as_ocaml_repr)
 
 
-let parse_native_repr_attributes valdecl env core_type ty =
+let parse_native_repr_attributes env core_type ty =
   match core_type.ptyp_desc, (Ctype.repr ty).desc
   with
   | Ptyp_constr ({txt = Ldot(Ldot(Lident "Js", "Fn"),_)}, [{ptyp_desc = Ptyp_arrow (_, _, ct2)}]),
     Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),_,_),[{desc = Tarrow (_, _, t2, _)}],_) ->
-    let is_internal_primitive = match valdecl.pval_prim with
-      | [ s ] -> s <> "" && (s.[0] = '%' || s.[0] = '?')
-      | _ -> false in
     let repr_args, repr_res = parse_native_repr_attributes env ct2 t2 in
-    let native_repr_args =
-      if is_internal_primitive then
-        Same_as_ocaml_repr :: repr_args (* uncurried primitives treated like curried ones *)
-      else [] (* uncurried externals are treated specially by the back-end *) in
+    let native_repr_args = Same_as_ocaml_repr :: repr_args in
     (native_repr_args, repr_res)
   | _ -> parse_native_repr_attributes env core_type ty
 
@@ -1620,7 +1614,7 @@ let transl_value_decl env loc valdecl =
             else Primitive.Same_as_ocaml_repr :: make (n - 1)
           in 
             match scann valdecl.pval_attributes with 
-            | None ->  parse_native_repr_attributes valdecl env valdecl.pval_type ty 
+            | None ->  parse_native_repr_attributes env valdecl.pval_type ty 
             | Some x -> make x , Primitive.Same_as_ocaml_repr
       in
       let prim =
