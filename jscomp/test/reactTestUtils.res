@@ -3,7 +3,7 @@ type undefined = Js.undefined<unit>
 let undefined: undefined = Js.Undefined.empty
 
 @module("react-dom/test-utils")
-external reactAct: ((. unit) => undefined) => unit = "act"
+external reactAct: ((. ()) => undefined) => unit = "act"
 
 let act: (unit => unit) => unit = func => {
   let reactFunc = (. ()) => {
@@ -14,7 +14,7 @@ let act: (unit => unit) => unit = func => {
 }
 
 @module("react-dom/test-utils")
-external reactActAsync: ((. unit) => Js.Promise.t<'a>) => Js.Promise.t<unit> = "act"
+external reactActAsync: ((. ()) => Js.Promise.t<'a>) => Js.Promise.t<unit> = "act"
 
 let actAsync = func => {
   let reactFunc = (. ()) => func()
