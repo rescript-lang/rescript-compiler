@@ -81,7 +81,7 @@ external on: (
   @string
   [
     | #line((. string) => unit)
-    | #close((. unit) => unit)
+    | #close((. ()) => unit)
   ],
 ) => unit = "on"
 

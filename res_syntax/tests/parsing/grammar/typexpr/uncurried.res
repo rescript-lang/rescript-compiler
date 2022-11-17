@@ -9,6 +9,6 @@ type t = @attr (. float) => @attr2 int => @attr3 (. bool) => @attr4 string => un
 type t = (. (@attr float), (@attr2 int), . (@attr3 bool), (@attr4 string)) => unit
 
 @bs.val
-external setTimeout : ((. unit) => unit, int) => timerId = "setTimeout"
+external setTimeout : ((. ()) => unit, int) => timerId = "setTimeout"
 // totally different meaning
 external setTimeout : (. unit => unit, int) => timerId = "setTimeout"

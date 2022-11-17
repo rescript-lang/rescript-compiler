@@ -4250,14 +4250,15 @@ and parseEs6ArrowType ~attrs p =
             if p.uncurried_by_default then not dotted else dotted
           in
           if uncurried && (paramNum = 1 || not p.uncurried_by_default) then
-            let isUnit =
+            let isParens =
               match typ.ptyp_desc with
-              | Ptyp_constr ({txt = Lident "unit"}, []) -> true
+              | Ptyp_constr ({txt = Lident "unit"; loc}, []) ->
+                loc.loc_end.pos_cnum - loc.loc_start.pos_cnum = 2 (* () *)
               | _ -> false
             in
             let loc = mkLoc startPos endPos in
             let fnArity, tArg =
-              if isUnit && arity = 1 then (0, t)
+              if isParens && arity = 1 then (0, t)
               else (arity, Ast_helper.Typ.arrow ~loc ~attrs argLbl typ t)
             in
             ( paramNum - 1,

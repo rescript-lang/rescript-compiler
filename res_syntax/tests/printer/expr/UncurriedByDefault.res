@@ -14,6 +14,22 @@ type mixTyp = (string, .string, string) => (string, string, string) => (string, 
 type bTyp = (. string) => string => int
 type cTyp2 = (string, string) => int
 type uTyp2 = (.string, string) => int
+type cu = unit => int
+type cp = () => int
+type cuu = unit => unit => int
+type cpu = () => unit => int
+type cup = unit => () => int
+type cpp = () => () => int
+type cu2 = (unit, unit) => unit
+type cp2 = ((), ()) => unit
+type uu = (. unit) => int
+type up = (. ()) => int
+type uuu = (. unit) => (. unit) => int
+type upu = (. ()) => (. unit) => int
+type uup = (. unit) => (. ()) => int
+type upp = (. ()) => (. ()) => int
+type uu2 = (. unit, unit) => unit
+type up2 = (. (), ()) => unit
 
 let pipe = a->foo(. b, c)
 
@@ -36,5 +52,21 @@ type mixTyp = (.string) => (string, string) => (.string, string, string, string)
 type bTyp = string => (. string) => int
 type cTyp2 = (. string, string) => int
 type uTyp2 = (string, string) => int
+type cu = (. unit) => int
+type cp = (. ()) => int
+type cuu = (. unit) => (. unit) => int
+type cpu = (. ()) => (. unit) => int
+type cup = (. unit) => (. ()) => int
+type cpp = (. ()) => (. ()) => int
+type cu2 = (. unit, unit) => unit
+type cp2 = (. (), ()) => unit
+type uu = unit => int
+type up = () => int
+type uuu = unit => unit => int
+type upu = () => unit => int
+type uup = unit => () => int
+type upp = () => () => int
+type uu2 = (unit, unit) => unit
+type up2 = ((), ()) => unit
 
 let pipe = a->foo(b, c)
