@@ -31,6 +31,9 @@ type upp = (. ()) => (. ()) => int
 type uu2 = (. unit, unit) => unit
 type up2 = (. (), ()) => unit
 
+let uannpoly: (. 'a) => string = xx
+let uannint: (. int) => string = xx
+
 @@uncurried
 
 let cApp = foo(. 3)
@@ -68,3 +71,6 @@ type uu2 = (unit, unit) => unit
 type up2 = ((), ()) => unit
 
 let pipe1 = 3->f
+
+let uannpoly: 'a => string = xx
+let uannint: int => string = xx

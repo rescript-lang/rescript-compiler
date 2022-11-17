@@ -3909,7 +3909,12 @@ and parsePolyTypeExpr p =
         let typ = Ast_helper.Typ.var ~loc:var.loc var.txt in
         let returnType = parseTypExpr ~alias:false p in
         let loc = mkLoc typ.Parsetree.ptyp_loc.loc_start p.prevEndPos in
-        Ast_helper.Typ.arrow ~loc Asttypes.Nolabel typ returnType
+        let tFun = Ast_helper.Typ.arrow ~loc Asttypes.Nolabel typ returnType in
+        if p.uncurried_by_default then
+          Ast_helper.Typ.constr ~loc
+            {txt = Ldot (Ldot (Lident "Js", "Fn"), "arity1"); loc}
+            [tFun]
+        else tFun
       | _ -> Ast_helper.Typ.var ~loc:var.loc var.txt)
     | _ -> assert false)
   | _ -> parseTypExpr p
