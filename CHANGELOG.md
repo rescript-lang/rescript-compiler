@@ -32,7 +32,7 @@ subset of the arguments, and return a curried type with the remaining ones https
 - Curried after uncurried is not fused anymore: `(. x) => y => 3` is not equivalent to `(. x, y) => 3` anymore. It's instead equivalent to `(. x) => { y => 3 }`.
 Also, `(. int) => string => bool` is not equivalen to `(. int, string) => bool` anymore.
 These are only breaking changes for unformatted code.
-- Distinguish between uncurried type `(. ()) => int`, whch takes 0 arguments, and `(. unit) => int` which takes 1 argument of type `unit`.
+- Distinguish between uncurried type `(. ()) => int`, whch takes 0 arguments, and `(. unit) => int` which takes 1 argument of type `unit` https://github.com/rescript-lang/rescript-compiler/pull/5821
 
 #### :bug: Bug Fix
 
