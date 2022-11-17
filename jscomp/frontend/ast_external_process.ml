@@ -868,6 +868,15 @@ let handle_attributes (loc : Bs_loc.t) (type_annotation : Parsetree.core_type)
     Location.raise_errorf ~loc
       "%@uncurry can not be applied to the whole definition";
   let prim_name_with_source = { name = prim_name; source = External } in
+  let type_annotation, build_uncurried_type = match type_annotation.ptyp_desc with
+    | Ptyp_constr ({txt = Ldot(Ldot(Lident "Js", "Fn"), arity_);_} as lid, [t]) ->
+      t, fun ~arity x ->
+          let arity = match arity with
+            | Some arity -> "arity" ^ string_of_int arity
+            | None -> arity_ in
+          let lid = {lid with txt = Longident.Ldot(Ldot(Lident "Js", "Fn"), arity)} in
+          {x with Parsetree.ptyp_desc = Ptyp_constr (lid, [x])}
+    | _ -> type_annotation, fun ~arity:_ x -> x in
   let result_type, arg_types_ty =
     (* Note this assumes external type is syntatic (no abstraction)*)
     Ast_core_type.list_of_arrow type_annotation
@@ -885,7 +894,7 @@ let handle_attributes (loc : Bs_loc.t) (type_annotation : Parsetree.core_type)
     let new_type, spec =
       process_obj loc external_desc prim_name arg_types_ty result_type
     in
-    (new_type, spec, unused_attrs, false)
+    (build_uncurried_type ~arity:None new_type, spec, unused_attrs, false)
   else
     let splice = external_desc.splice in
     let arg_type_specs, new_arg_types_ty, arg_type_specs_length =
@@ -956,7 +965,8 @@ let handle_attributes (loc : Bs_loc.t) (type_annotation : Parsetree.core_type)
     let return_wrapper =
       check_return_wrapper loc external_desc.return_wrapper result_type
     in
-    ( Ast_core_type.mk_fn_type new_arg_types_ty result_type,
+    let fn_type = Ast_core_type.mk_fn_type new_arg_types_ty result_type in
+    ( build_uncurried_type ~arity:(Some (List.length new_arg_types_ty)) fn_type,
       External_ffi_types.ffi_bs arg_type_specs return_wrapper ffi,
       unused_attrs,
       relative )
