@@ -54,7 +54,7 @@ let free_variables (stats : idents_stats) =
       (fun self exp ->
         match exp.expression_desc with
         | Fun {env}
-        (* a optimization to avoid walking into funciton again
+        (* a optimization to avoid walking into function again
             if it's already comuted
         *) ->
             stats.used_idents <-

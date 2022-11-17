@@ -9,7 +9,7 @@ external min_int : int -> int -> int = "min" [@@bs.val] [@@bs.scope "Math"]
    ]}
    otherwise it has to be expanded as
    {[
-     var min_int = funciton(x,y){
+     var min_int = function(x,y){
        return Math.min(x,y)
      }
    ]}

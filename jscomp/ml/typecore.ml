@@ -3815,7 +3815,7 @@ let report_error env ppf = function
       fprintf ppf
         "Only variables are allowed as left-hand side of `let rec'"
   | Labels_omitted labels ->
-      fprintf ppf  "For labeled funciton, labels %s were omitted in the application of this function." 
+      fprintf ppf  "For labeled function, labels %s were omitted in the application of this function." 
       (String.concat ", " labels)  
   | Empty_record_literal ->
       fprintf ppf  "Empty record literal {} should be type annotated or used in a record context."
