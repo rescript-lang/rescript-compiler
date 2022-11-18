@@ -9,5 +9,5 @@ let comparisonResult =
 ;;((document.createElementWithOptions {js|div|js}
       (elementProps ~onClick:((fun _ -> Js.log {js|hello world|js})
          [@ns.namedArgLoc ])))[@bs ])
-;;((resolve (u))[@bs ])
+;;((resolve ())[@bs ])
 ;;((resolve (let __res_unit = () in __res_unit))[@bs ])

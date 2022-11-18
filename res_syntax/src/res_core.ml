@@ -3503,9 +3503,7 @@ and parseArgument p : argument option =
       | Rparen ->
         let unitExpr =
           Ast_helper.Exp.construct
-            (Location.mknoloc
-               (Longident.Lident
-                  (if p.uncurried_by_default then "()" else "(u)")))
+            (Location.mknoloc (Longident.Lident "()"))
             None
         in
         Some {dotted; label = Asttypes.Nolabel; expr = unitExpr}
@@ -3598,10 +3596,7 @@ and parseCallExpr p funExpr =
           label = Nolabel;
           expr =
             Ast_helper.Exp.construct ~loc
-              (Location.mkloc
-                 (Longident.Lident
-                    (if p.uncurried_by_default then "(u)" else "()"))
-                 loc)
+              (Location.mkloc (Longident.Lident "()") loc)
               None;
         };
       ]

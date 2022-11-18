@@ -173,7 +173,7 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
                     fn1.pexp_attributes;
                   {
                     pexp_desc =
-                      Ast_uncurry_apply.uncurry_fn_apply e.pexp_loc self fn1
+                      Ast_uncurry_apply.uncurry_fn_apply ~arity0:(op="|.") e.pexp_loc self fn1
                         ((Nolabel, a) :: args);
                     pexp_loc = e.pexp_loc;
                     pexp_attributes = e.pexp_attributes @ other_attributes;
@@ -183,7 +183,7 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
                      Uncurried unary application *)
                   {
                     pexp_desc =
-                      Ast_uncurry_apply.uncurry_fn_apply e.pexp_loc self f
+                      Ast_uncurry_apply.uncurry_fn_apply ~arity0:false e.pexp_loc self f
                         [ (Nolabel, a) ];
                     pexp_loc = e.pexp_loc;
                     pexp_attributes = e.pexp_attributes;
@@ -288,6 +288,6 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
               {
                 e with
                 pexp_desc =
-                  Ast_uncurry_apply.uncurry_fn_apply e.pexp_loc self fn args;
+                  Ast_uncurry_apply.uncurry_fn_apply ~arity0:true e.pexp_loc self fn args;
                 pexp_attributes;
               }))

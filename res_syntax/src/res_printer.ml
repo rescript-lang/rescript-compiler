@@ -2680,8 +2680,7 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
       printConstant ~templateLiteral:(ParsetreeViewer.isTemplateLiteral e) c
     | Pexp_construct _ when ParsetreeViewer.hasJsxAttribute e.pexp_attributes ->
       printJsxFragment ~state e cmtTbl
-    | Pexp_construct ({txt = Longident.Lident ("()" | "(u)")}, _) ->
-      Doc.text "()"
+    | Pexp_construct ({txt = Longident.Lident "()"}, _) -> Doc.text "()"
     | Pexp_construct ({txt = Longident.Lident "[]"}, _) ->
       Doc.concat
         [Doc.text "list{"; printCommentsInside cmtTbl e.pexp_loc; Doc.rbrace]
@@ -4512,7 +4511,7 @@ and printArguments ~state ~dotted
   | [
    ( Nolabel,
      {
-       pexp_desc = Pexp_construct ({txt = Longident.Lident ("()" | "(u)")}, _);
+       pexp_desc = Pexp_construct ({txt = Longident.Lident "()"}, _);
        pexp_loc = loc;
      } );
   ] -> (
