@@ -20,6 +20,8 @@
 - Add support for partial application of uncurried functions: with uncurried application one can provide a
 subset of the arguments, and return a curried type with the remaining ones https://github.com/rescript-lang/rescript-compiler/pull/5805
 - Add support for uncurried externals https://github.com/rescript-lang/rescript-compiler/pull/5815 https://github.com/rescript-lang/rescript-compiler/pull/5819
+- Unify uncurried functions of arity 0 with functions of arity 1 taking unit. They're now equivalent. https://github.com/rescript-lang/rescript-compiler/pull/5825
+
 
 #### :boom: Breaking Change
 
@@ -32,7 +34,6 @@ subset of the arguments, and return a curried type with the remaining ones https
 - Curried after uncurried is not fused anymore: `(. x) => y => 3` is not equivalent to `(. x, y) => 3` anymore. It's instead equivalent to `(. x) => { y => 3 }`.
 Also, `(. int) => string => bool` is not equivalen to `(. int, string) => bool` anymore.
 These are only breaking changes for unformatted code.
-- Distinguish between uncurried type `(. ()) => int`, whch takes 0 arguments, and `(. unit) => int` which takes 1 argument of type `unit` https://github.com/rescript-lang/rescript-compiler/pull/5821
 
 #### :bug: Bug Fix
 
