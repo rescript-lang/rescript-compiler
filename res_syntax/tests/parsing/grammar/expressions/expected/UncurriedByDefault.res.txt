@@ -40,6 +40,8 @@ type nonrec uup = (unit -> int Js.Fn.arity0) Js.Fn.arity1
 type nonrec upp = int Js.Fn.arity0 Js.Fn.arity0
 type nonrec uu2 = (unit -> unit -> unit) Js.Fn.arity2
 type nonrec up2 = (unit -> unit -> unit) Js.Fn.arity2
+type nonrec cnested = (string -> unit) -> unit
+type nonrec unested = ((string -> unit) Js.Fn.arity1 -> unit) Js.Fn.arity1
 let (uannpoly : ('a -> string) Js.Fn.arity1) = xx
 let (uannint : (int -> string) Js.Fn.arity1) = xx
 [@@@uncurried ]
@@ -86,6 +88,8 @@ type nonrec uup = (unit -> int Js.Fn.arity0) Js.Fn.arity1
 type nonrec upp = int Js.Fn.arity0 Js.Fn.arity0
 type nonrec uu2 = (unit -> unit -> unit) Js.Fn.arity2
 type nonrec up2 = (unit -> unit -> unit) Js.Fn.arity2
+type nonrec cnested = (string -> unit) -> unit
+type nonrec unested = ((string -> unit) Js.Fn.arity1 -> unit) Js.Fn.arity1
 let pipe1 = 3 |.u f
 let (uannpoly : ('a -> string) Js.Fn.arity1) = xx
 let (uannint : (int -> string) Js.Fn.arity1) = xx
