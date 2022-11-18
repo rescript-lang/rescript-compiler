@@ -100,3 +100,7 @@ let setAA = (ao: option<int>) => {aa: @ns.optional ao, bb: None}
 //     @ns.optional bb: int,
 //   }
 // }
+
+type foo = Foo({name: string, age?: int})
+
+let foo = Foo({name: "foo"}) 
