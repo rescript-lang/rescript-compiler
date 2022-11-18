@@ -31,6 +31,9 @@ type upp = (. ()) => (. ()) => int
 type uu2 = (. unit, unit) => unit
 type up2 = (. (), ()) => unit
 
+type cnested = (string => unit) => unit
+type unested = (. (. string) => unit) => unit
+
 let pipe = a->foo(. b, c)
 
 @@uncurried
@@ -68,5 +71,8 @@ type uup = unit => () => int
 type upp = () => () => int
 type uu2 = (unit, unit) => unit
 type up2 = ((), ()) => unit
+
+type cnested = (. (. string) => unit) => unit
+type unested = (string => unit) => unit
 
 let pipe = a->foo(b, c)

@@ -1549,6 +1549,7 @@ and printLabelDeclaration ~state (ld : Parsetree.label_declaration) cmtTbl =
 
 and printTypExpr ~state (typExpr : Parsetree.core_type) cmtTbl =
   let printArrow ~uncurried ?(arity = max_int) typExpr =
+    (* XXX *)
     let attrsBefore, args, returnType =
       ParsetreeViewer.arrowType ~arity typExpr
     in
@@ -1581,7 +1582,11 @@ and printTypExpr ~state (typExpr : Parsetree.core_type) cmtTbl =
       let typDoc =
         let doc = printTypExpr ~state n cmtTbl in
         match n.ptyp_desc with
-        | Ptyp_arrow _ | Ptyp_tuple _ | Ptyp_alias _ -> addParens doc
+        | Ptyp_constr
+            ( {txt = Ldot (Ldot (Lident "Js", "Fn"), _)},
+              [{ptyp_desc = Ptyp_arrow _}] )
+        | Ptyp_arrow _ | Ptyp_tuple _ | Ptyp_alias _ ->
+          addParens doc
         | _ -> doc
       in
       Doc.group
