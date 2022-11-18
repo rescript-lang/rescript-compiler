@@ -154,7 +154,7 @@ and record_representation =
   | Record_float_unused                   (* Was: all fields are floats. Now: unused *)
   | Record_unboxed of bool                (* Unboxed single-field record, inlined or not *)
   | Record_inlined of                     (* Inlined record *)
-      { tag : int ; name : string; num_nonconsts : int}
+      { tag : int ; name : string; num_nonconsts : int; optional_labels : string list}
   | Record_extension                      (* Inlined record under extension *)
   | Record_optional_labels of string list (* List of optional labels *)
 
@@ -348,10 +348,10 @@ let same_record_representation x y =
       match y with
       | Record_optional_labels lbls2 -> lbls = lbls2
       | _ -> false)
-  | Record_inlined {tag; name; num_nonconsts} -> (
+  | Record_inlined {tag; name; num_nonconsts; optional_labels} -> (
       match y with
       | Record_inlined y ->
-          tag = y.tag && name = y.name && num_nonconsts = y.num_nonconsts
+          tag = y.tag && name = y.name && num_nonconsts = y.num_nonconsts && optional_labels = y.optional_labels
       | _ -> false)
   | Record_extension -> y = Record_extension
   | Record_unboxed x -> ( match y with Record_unboxed y -> x = y | _ -> false)
