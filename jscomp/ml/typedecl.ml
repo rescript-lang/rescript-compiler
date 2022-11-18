@@ -358,6 +358,20 @@ let transl_declaration env sdecl id =
           | (_,_,loc)::_ ->
               Location.prerr_warning loc Warnings.Constraint_on_gadt
         end;
+        let has_optional attrs = Ext_list.exists attrs (fun ({txt },_) -> txt = "ns.optional") in
+        let scstrs =
+          Ext_list.map scstrs (fun ({pcd_args} as cstr) ->
+            match pcd_args with
+            | Pcstr_tuple _ -> cstr
+            | Pcstr_record lds ->
+              {cstr with pcd_args = Pcstr_record (Ext_list.map lds (fun ld ->
+                if has_optional ld.pld_attributes then
+                  let typ = ld.pld_type in
+                  let typ = {typ with ptyp_desc = Ptyp_constr ({txt = Lident "option"; loc=typ.ptyp_loc}, [typ])} in
+                  {ld with pld_type = typ}
+                else ld
+              ))}
+            ) in
         let all_constrs = ref StringSet.empty in
         List.iter
           (fun {pcd_name = {txt = name}} ->

@@ -82,7 +82,7 @@ var h10 = newrecord$3;
 
 var foo = /* Foo */{
   name: "foo",
-  age: undefined
+  age: 3
 };
 
 exports.f1 = f1;
