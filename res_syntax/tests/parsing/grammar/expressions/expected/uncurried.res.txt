@@ -30,5 +30,5 @@ let f =
          fun ((b)[@attr2 ]) ->
            { Js.Fn.I2 = (fun ((c)[@attr3 ]) -> fun ((d)[@attr4 ]) -> ()) })
   }
-;;((add 1 2)[@bs ])
-;;((((((add 2 3 4)[@bs ]) 5 6 7)[@bs ]) 8 9 10)[@bs ])
+;;((add 1 2)[@res.uapp ])
+;;((((((add 2 3 4)[@res.uapp ]) 5 6 7)[@res.uapp ]) 8 9 10)[@res.uapp ])

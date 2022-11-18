@@ -20,5 +20,5 @@ let x = a -. b
 ;;Constructor (a, b)
 ;;`Constructor (a, b)
 let _ = ((Constructor (a, b); `Constructor (a, b))[@ns.braces ])
-;;((library.getBalance account)[@bs ]) |.
+;;((library.getBalance account)[@res.uapp ]) |.
     (Promise.Js.catch (fun _ -> ((Promise.resolved None)[@ns.braces ])))

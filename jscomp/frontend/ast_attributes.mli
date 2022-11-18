@@ -72,6 +72,8 @@ val is_bs : attr -> bool
 (* val is_optional : attr -> bool
    val is_bs_as : attr -> bool *)
 
+val is_uncurried_app : attr -> bool
+
 val bs_get : attr
 
 val bs_get_index : attr

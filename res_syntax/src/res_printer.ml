@@ -3953,7 +3953,7 @@ and printPexpApply ~state expr cmtTbl =
         args
     in
     let hasBs, attrs =
-      ParsetreeViewer.processBsAttribute expr.pexp_attributes
+      ParsetreeViewer.processUncurriedAppAttribute expr.pexp_attributes
     in
     let dotted =
       if state.State.uncurried_by_default then not hasBs else hasBs

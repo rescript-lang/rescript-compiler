@@ -1,16 +1,23 @@
 let greetUser =
   ((fun userId ->
-      ((let name = ((getUserName userId)[@res.await ][@bs ]) in
+      ((let name = ((getUserName userId)[@res.await ][@res.uapp ]) in
         ({js|Hello |js} ^ name) ^ {js|!|js})
       [@ns.braces ]))
   [@res.async ])
 ;;((fun () -> 123)[@res.async ])
 let fetch =
-  (({ Js.Fn.I1 = ((fun url -> ((browserFetch url)[@bs ]))[@res.async ]) })
+  (({ Js.Fn.I1 = ((fun url -> ((browserFetch url)[@res.uapp ]))[@res.async ])
+    })
   [@ns.braces ])
 let fetch2 =
-  (({ Js.Fn.I1 = (((fun url -> ((browserFetch url)[@bs ])))[@res.async ]) };
-    { Js.Fn.I1 = (((fun url -> ((browserFetch2 url)[@bs ])))[@res.async ]) })
+  (({
+      Js.Fn.I1 = (((fun url -> ((browserFetch url)[@res.uapp ])))
+        [@res.async ])
+    };
+    {
+      Js.Fn.I1 = (((fun url -> ((browserFetch2 url)[@res.uapp ])))
+        [@res.async ])
+    })
   [@ns.braces ])
 let async =
   ((let f = async () in

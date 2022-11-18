@@ -158,8 +158,9 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
                   })
           | _ -> (
               match
-                ( Ext_list.exclude_with_val f_.pexp_attributes
-                    Ast_attributes.is_bs,
+                ( Ext_list.exclude_with_val f_.pexp_attributes (fun a ->
+                      Ast_attributes.is_bs a
+                      || Ast_attributes.is_uncurried_app a),
                   f_.pexp_desc )
               with
               | Some other_attributes, Pexp_apply (fn1, args) ->
@@ -173,8 +174,8 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
                     fn1.pexp_attributes;
                   {
                     pexp_desc =
-                      Ast_uncurry_apply.uncurry_fn_apply ~arity0:(op="|.") e.pexp_loc self fn1
-                        ((Nolabel, a) :: args);
+                      Ast_uncurry_apply.uncurry_fn_apply ~arity0:(op = "|.")
+                        e.pexp_loc self fn1 ((Nolabel, a) :: args);
                     pexp_loc = e.pexp_loc;
                     pexp_attributes = e.pexp_attributes @ other_attributes;
                   }
@@ -183,7 +184,8 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
                      Uncurried unary application *)
                   {
                     pexp_desc =
-                      Ast_uncurry_apply.uncurry_fn_apply ~arity0:false e.pexp_loc self f
+                      Ast_uncurry_apply.uncurry_fn_apply ~arity0:false
+                        e.pexp_loc self f
                         [ (Nolabel, a) ];
                     pexp_loc = e.pexp_loc;
                     pexp_attributes = e.pexp_attributes;
@@ -283,11 +285,25 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
           match
             Ext_list.exclude_with_val e.pexp_attributes Ast_attributes.is_bs
           with
-          | None -> default_expr_mapper self e
           | Some pexp_attributes ->
               {
                 e with
                 pexp_desc =
-                  Ast_uncurry_apply.uncurry_fn_apply ~arity0:true e.pexp_loc self fn args;
+                  Ast_uncurry_apply.uncurry_fn_apply ~arity0:true e.pexp_loc
+                    self fn args;
                 pexp_attributes;
-              }))
+              }
+          | None -> (
+              match
+                Ext_list.exclude_with_val e.pexp_attributes
+                  Ast_attributes.is_uncurried_app
+              with
+              | Some pexp_attributes ->
+                  {
+                    e with
+                    pexp_desc =
+                      Ast_uncurry_apply.uncurry_fn_apply ~arity0:false
+                        e.pexp_loc self fn args;
+                    pexp_attributes;
+                  }
+              | None -> default_expr_mapper self e)))
