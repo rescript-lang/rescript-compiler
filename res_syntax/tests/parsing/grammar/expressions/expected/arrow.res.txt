@@ -40,8 +40,8 @@ let f ?a:(((x : int option))[@ns.namedArgLoc ])
   ?b:(((y : int option))[@ns.namedArgLoc ])  c =
   match (x, y) with | (Some a, Some b) -> (a + b) + c | _ -> 3
 let f a b = a + b
-let f = { Js.Fn.I0 = (fun () -> ()) }
-let f = { Js.Fn.I0 = (fun () -> ()) }
+let f = { Js.Fn.I1 = (fun () -> ()) }
+let f = { Js.Fn.I1 = (fun () -> ()) }
 let f = { Js.Fn.I3 = (fun a -> fun b -> fun c -> ()) }
 let f =
   { Js.Fn.I2 = (fun a -> fun b -> { Js.Fn.I2 = (fun c -> fun d -> ()) }) }

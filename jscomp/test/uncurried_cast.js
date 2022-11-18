@@ -76,7 +76,7 @@ var StandardNotation = {
   anInt: anInt
 };
 
-function testRaise$1() {
+function testRaise$1(param) {
   return raise({
               RE_EXN_ID: E
             });

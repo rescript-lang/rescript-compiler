@@ -32,6 +32,8 @@ var te = (function (prim) {
       RE_EXN_ID: "Not_found"
     });
 
+var tcr = {};
+
 var StandardNotation = {
   dd: dd,
   h: h,
@@ -40,7 +42,8 @@ var StandardNotation = {
   mf: mf,
   tg: tg,
   tc: tc,
-  te: te
+  te: te,
+  tcr: tcr
 };
 
 function dd$1(param) {
@@ -74,6 +77,8 @@ var te$1 = (function (prim) {
       RE_EXN_ID: "Not_found"
     });
 
+var tcr$1 = {};
+
 exports.StandardNotation = StandardNotation;
 exports.dd = dd$1;
 exports.h = h$1;
@@ -83,4 +88,5 @@ exports.mf = mf$1;
 exports.tg = tg$1;
 exports.tc = tc$1;
 exports.te = te$1;
+exports.tcr = tcr$1;
 /* h Not a pure module */

@@ -1657,12 +1657,6 @@ and printTypExpr ~state (typExpr : Parsetree.core_type) cmtTbl =
     | Ptyp_object (fields, openFlag) ->
       printObject ~state ~inline:false fields openFlag cmtTbl
     | Ptyp_arrow _ -> printArrow ~uncurried:false typExpr
-    | Ptyp_constr ({txt = Lident "()"}, []) -> Doc.text "()"
-    | Ptyp_constr ({txt = Ldot (Ldot (Lident "Js", "Fn"), "arity0")}, [tArg]) ->
-      let parensConstr = Location.mkloc (Longident.Lident "()") tArg.ptyp_loc in
-      let tUnit = Ast_helper.Typ.constr parensConstr [] in
-      printArrow ~uncurried:true ~arity:1
-        {tArg with ptyp_desc = Ptyp_arrow (Nolabel, tUnit, tArg)}
     | Ptyp_constr ({txt = Ldot (Ldot (Lident "Js", "Fn"), arity)}, [tArg])
       when String.length arity >= 5
            && (String.sub [@doesNotRaise]) arity 0 5 = "arity" ->
@@ -2686,7 +2680,8 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
       printConstant ~templateLiteral:(ParsetreeViewer.isTemplateLiteral e) c
     | Pexp_construct _ when ParsetreeViewer.hasJsxAttribute e.pexp_attributes ->
       printJsxFragment ~state e cmtTbl
-    | Pexp_construct ({txt = Longident.Lident "()"}, _) -> Doc.text "()"
+    | Pexp_construct ({txt = Longident.Lident ("()" | "(u)")}, _) ->
+      Doc.text "()"
     | Pexp_construct ({txt = Longident.Lident "[]"}, _) ->
       Doc.concat
         [Doc.text "list{"; printCommentsInside cmtTbl e.pexp_loc; Doc.rbrace]
@@ -4517,7 +4512,7 @@ and printArguments ~state ~dotted
   | [
    ( Nolabel,
      {
-       pexp_desc = Pexp_construct ({txt = Longident.Lident "()"}, _);
+       pexp_desc = Pexp_construct ({txt = Longident.Lident ("()" | "(u)")}, _);
        pexp_loc = loc;
      } );
   ] -> (

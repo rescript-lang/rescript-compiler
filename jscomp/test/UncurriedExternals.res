@@ -23,6 +23,9 @@ module StandardNotation = {
 
   external toException: (. exn) => exn = "%identity"
   let te = toException(. Not_found)
+
+  @obj external ccreate : () => string = ""
+  let tcr = ccreate()
 }
 
 @@uncurried
@@ -51,3 +54,6 @@ let tc = copy("abc")
 
 external toException: exn => exn = "%identity"
 let te = toException(Not_found)
+
+@obj external ucreate : unit => string = ""
+let tcr = ucreate( (():unit))

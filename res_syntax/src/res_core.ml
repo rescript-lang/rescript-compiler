@@ -1576,11 +1576,6 @@ and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
             if p.uncurried_by_default then not dotted else dotted
           in
           if uncurried && (paramNum = 1 || not p.uncurried_by_default) then
-            let arirtForFn =
-              match pat.ppat_desc with
-              | Ppat_construct ({txt = Lident "()"}, _) when arity = 1 -> 0
-              | _ -> arity
-            in
             ( paramNum - 1,
               (if true then
                Ast_helper.Exp.record ~loc
@@ -1588,8 +1583,7 @@ and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
                    ( {
                        txt =
                          Ldot
-                           ( Ldot (Lident "Js", "Fn"),
-                             "I" ^ string_of_int arirtForFn );
+                           (Ldot (Lident "Js", "Fn"), "I" ^ string_of_int arity);
                        loc;
                      },
                      funExpr );
@@ -3509,7 +3503,9 @@ and parseArgument p : argument option =
       | Rparen ->
         let unitExpr =
           Ast_helper.Exp.construct
-            (Location.mknoloc (Longident.Lident "()"))
+            (Location.mknoloc
+               (Longident.Lident
+                  (if p.uncurried_by_default then "()" else "(u)")))
             None
         in
         Some {dotted; label = Asttypes.Nolabel; expr = unitExpr}
@@ -3602,7 +3598,10 @@ and parseCallExpr p funExpr =
           label = Nolabel;
           expr =
             Ast_helper.Exp.construct ~loc
-              (Location.mkloc (Longident.Lident "()") loc)
+              (Location.mkloc
+                 (Longident.Lident
+                    (if p.uncurried_by_default then "(u)" else "()"))
+                 loc)
               None;
         };
       ]
@@ -4260,23 +4259,14 @@ and parseEs6ArrowType ~attrs p =
             if p.uncurried_by_default then not dotted else dotted
           in
           if uncurried && (paramNum = 1 || not p.uncurried_by_default) then
-            let isParens =
-              match typ.ptyp_desc with
-              | Ptyp_constr ({txt = Lident "unit"; loc}, []) ->
-                loc.loc_end.pos_cnum - loc.loc_start.pos_cnum = 2 (* () *)
-              | _ -> false
-            in
             let loc = mkLoc startPos endPos in
-            let fnArity, tArg =
-              if isParens && arity = 1 then (0, t)
-              else (arity, Ast_helper.Typ.arrow ~loc ~attrs argLbl typ t)
-            in
+            let tArg = Ast_helper.Typ.arrow ~loc ~attrs argLbl typ t in
             ( paramNum - 1,
               Ast_helper.Typ.constr ~loc
                 {
                   txt =
                     Ldot
-                      (Ldot (Lident "Js", "Fn"), "arity" ^ string_of_int fnArity);
+                      (Ldot (Lident "Js", "Fn"), "arity" ^ string_of_int arity);
                   loc;
                 }
                 [tArg],

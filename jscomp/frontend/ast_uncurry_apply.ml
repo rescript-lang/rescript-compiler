@@ -59,6 +59,18 @@ let generic_apply loc (self : Bs_ast_mapper.mapper) (obj : Parsetree.expression)
      (Nolabel, { pexp_desc = Pexp_construct ({ txt = Lident "()" }, None) });
     ] ->
         []
+    | [
+     ( Nolabel,
+       ({ pexp_desc = Pexp_construct (({ txt = Lident "(u)" } as lid), None) }
+       as e) );
+    ] ->
+        [
+          ( Asttypes.Nolabel,
+            {
+              e with
+              pexp_desc = Pexp_construct ({ lid with txt = Lident "()" }, None);
+            } );
+        ]
     | _ -> args
   in
   let arity = List.length args in
