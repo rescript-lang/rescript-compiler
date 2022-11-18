@@ -1879,6 +1879,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
   let label_is_optional ld =
     match ld.lbl_repres with
     | Record_optional_labels lbls -> Ext_list.mem_string lbls ld.lbl_name
+    | Record_inlined {optional_labels} -> Ext_list.mem_string optional_labels ld.lbl_name
     | _ -> false in
   let process_optional_label (id, ld, e) =
     let exp_optional_attr =
