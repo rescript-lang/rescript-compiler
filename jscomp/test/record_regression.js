@@ -80,7 +80,12 @@ var h = newrecord$2;
 
 var h10 = newrecord$3;
 
-var foo = /* Foo */{
+var foo1 = /* Foo */{
+  name: "foo",
+  age: undefined
+};
+
+var foo2 = /* Foo */{
   name: "foo",
   age: 3
 };
@@ -98,5 +103,6 @@ exports.h10 = h10;
 exports.h11 = h11;
 exports.po = po;
 exports.setAA = setAA;
-exports.foo = foo;
+exports.foo1 = foo1;
+exports.foo2 = foo2;
 /*  Not a pure module */
