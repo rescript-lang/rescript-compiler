@@ -757,6 +757,20 @@ and expression_desc cxt ~(level : int) f x : cxt =
             (if !Js_config.debug then [ (name_symbol, E.str p.name) ] else [])
             (fun i -> Js_op.Lit i)
         in
+        let is_optional (names: string list) (pname: Js_op.property_name)  =
+          match pname with
+          | Lit n -> Ext_list.mem_string names n
+          | Symbol_name -> false
+        in
+        let tails =
+          match p.optional_labels with
+          | [] -> tails
+          | _ ->
+            Ext_list.filter_map tails (fun (f, x) ->
+              match x.expression_desc with
+              | Undefined when is_optional p.optional_labels f -> None
+              | _ -> Some (f, x))
+          in
         if p.num_nonconst = 1 then tails
         else
           ( Js_op.Lit L.tag,
@@ -766,14 +780,6 @@ and expression_desc cxt ~(level : int) f x : cxt =
       in
       if p.num_nonconst = 1 && not !Js_config.debug then
         pp_comment_option f (Some p.name);
-      let objs = match p.optional_labels with
-      | [] -> objs
-      | _ ->
-        Ext_list.array_list_filter_map p.fields el (fun f x ->
-          match x.expression_desc with
-          | Undefined when List.mem f p.optional_labels -> None
-          | _ -> Some (Js_op.Lit f, x))
-      in
       expression_desc cxt ~level f (Object objs)
   | Caml_block (el, _, tag, Blk_constructor p) ->
       let not_is_cons = p.name <> Literals.cons in
