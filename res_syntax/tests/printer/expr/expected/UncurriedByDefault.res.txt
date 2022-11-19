@@ -44,6 +44,11 @@ let _ = setTimeout(() => {
   resolve(1)
 }, 100)
 
+let _ = @att (. x) => 34
+let _ = @att async (. x) => 34
+let _ = preserveAttr(@att (. x) => 34)
+let _ = preserveAttr(@att async (. x) => 34)
+
 @@uncurried
 
 let cApp = foo(. 3)
@@ -92,3 +97,8 @@ let _ = setTimeout(() => {
 let _ = setTimeout(. (. ()) => {
   resolve(. 1)
 }, 100)
+
+let _ = @att x => 34
+let _ = @att async x => 34
+let _ = preserveAttr(@att x => 34)
+let _ = preserveAttr(@att async x => 34)

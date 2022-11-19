@@ -44,6 +44,10 @@ type nonrec cnested = (string -> unit) -> unit
 type nonrec unested = ((string -> unit) Js.Fn.arity1 -> unit) Js.Fn.arity1
 let (uannpoly : ('a -> string) Js.Fn.arity1) = xx
 let (uannint : (int -> string) Js.Fn.arity1) = xx
+let _ = { Js.Fn.I1 = ((fun x -> 34)[@att ]) }
+let _ = { Js.Fn.I1 = ((fun x -> 34)[@res.async ][@att ]) }
+let _ = preserveAttr { Js.Fn.I1 = ((fun x -> 34)[@att ]) }
+let _ = preserveAttr { Js.Fn.I1 = ((fun x -> 34)[@res.async ][@att ]) }
 [@@@uncurried ]
 let cApp = foo 3
 let uApp = ((foo 3)[@bs ])
@@ -93,3 +97,8 @@ type nonrec unested = ((string -> unit) Js.Fn.arity1 -> unit) Js.Fn.arity1
 let pipe1 = 3 |.u f
 let (uannpoly : ('a -> string) Js.Fn.arity1) = xx
 let (uannint : (int -> string) Js.Fn.arity1) = xx
+let _ = { Js.Fn.I1 = ((fun x -> 34)[@att ]) }
+let _ = { Js.Fn.I1 = ((fun x -> 34)[@res.async ][@att ]) }
+let _ = ((preserveAttr { Js.Fn.I1 = ((fun x -> 34)[@att ]) })[@bs ])
+let _ = ((preserveAttr { Js.Fn.I1 = ((fun x -> 34)[@res.async ][@att ]) })
+  [@bs ])

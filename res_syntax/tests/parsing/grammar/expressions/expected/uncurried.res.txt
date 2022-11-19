@@ -6,18 +6,16 @@ let f =
       (fun a -> fun b -> { Js.Fn.I2 = (fun c -> fun d -> ((a + b) + c) + d) })
   }
 let f =
-  (({
-      Js.Fn.I1 =
-        (fun a ->
-           ((fun b ->
-               (({
-                   Js.Fn.I1 =
-                     (fun c -> ((fun d -> ())[@ns.braces ][@attr4 ]))
-                 })
-               [@attr3 ]))
-           [@ns.braces ][@attr2 ]))
-    })
-  [@attr ])
+  {
+    Js.Fn.I1 =
+      ((fun a ->
+          ((fun b ->
+              {
+                Js.Fn.I1 = ((fun c -> ((fun d -> ())[@ns.braces ][@attr4 ]))
+                  [@attr3 ])
+              })
+          [@ns.braces ][@attr2 ]))[@attr ])
+  }
 let f =
   {
     Js.Fn.I2 =

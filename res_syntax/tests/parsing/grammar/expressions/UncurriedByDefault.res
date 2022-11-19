@@ -37,6 +37,11 @@ type unested = (. (. string) => unit) => unit
 let uannpoly: (. 'a) => string = xx
 let uannint: (. int) => string = xx
 
+let _ = @att (. x)  => 34
+let _ = @att async (. x)  => 34
+let _ = preserveAttr(@att (. x)  => 34)
+let _ = preserveAttr(@att async (. x)  => 34)
+
 @@uncurried
 
 let cApp = foo(. 3)
@@ -80,3 +85,8 @@ let pipe1 = 3->f
 
 let uannpoly: 'a => string = xx
 let uannint: int => string = xx
+
+let _ = @att x  => 34
+let _ = @att async x  => 34
+let _ = preserveAttr(@att x => 34)
+let _ = preserveAttr(@att async x => 34)
