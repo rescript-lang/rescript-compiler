@@ -20,7 +20,7 @@
 - Add support for partial application of uncurried functions: with uncurried application one can provide a
 subset of the arguments, and return a curried type with the remaining ones https://github.com/rescript-lang/rescript-compiler/pull/5805
 - Add support for uncurried externals https://github.com/rescript-lang/rescript-compiler/pull/5815 https://github.com/rescript-lang/rescript-compiler/pull/5819
-- Unify uncurried functions of arity 0 with functions of arity 1 taking unit. They're now equivalent. https://github.com/rescript-lang/rescript-compiler/pull/5825
+- Parser/Printer: unify uncurried functions of arity 0, and of arity 1 taking unit. There's now only arity 1 in the source language. https://github.com/rescript-lang/rescript-compiler/pull/5825
 
 
 #### :boom: Breaking Change
