@@ -90,7 +90,3 @@ let _ = @att x  => 34
 let _ = @att async x  => 34
 let _ = preserveAttr(@att x => 34)
 let _ = preserveAttr(@att async x => 34)
-
-let foo : unit =>string = () => "abc"
-
-let s = foo()

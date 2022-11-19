@@ -102,6 +102,3 @@ let _ = { Js.Fn.I1 = ((fun x -> 34)[@res.async ][@att ]) }
 let _ = ((preserveAttr { Js.Fn.I1 = ((fun x -> 34)[@att ]) })[@res.uapp ])
 let _ = ((preserveAttr { Js.Fn.I1 = ((fun x -> 34)[@res.async ][@att ]) })
   [@res.uapp ])
-let (foo : (unit -> string) Js.Fn.arity1) =
-  { Js.Fn.I1 = (fun () -> {js|abc|js}) }
-let s = ((foo ())[@res.uapp ])
