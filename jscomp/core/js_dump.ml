@@ -766,6 +766,12 @@ and expression_desc cxt ~(level : int) f x : cxt =
       in
       if p.num_nonconst = 1 && not !Js_config.debug then
         pp_comment_option f (Some p.name);
+      let objs = if List.length p.optional_labels <> 0 then
+        Ext_list.array_list_filter_map p.fields el (fun f x ->
+          match x.expression_desc with
+          | Undefined when List.mem f p.optional_labels -> None
+          | _ -> Some (Js_op.Lit f, x))
+      else objs in
       expression_desc cxt ~level f (Object objs)
   | Caml_block (el, _, tag, Blk_constructor p) ->
       let not_is_cons = p.name <> Literals.cons in

@@ -49750,7 +49750,7 @@ type record_repr =
 
 type tag_info = 
   | Blk_constructor of {name : string ; num_nonconst : int; tag : int}
-  | Blk_record_inlined of { name : string ; num_nonconst :  int ;  tag : int; fields : string array; mutable_flag : mutable_flag}   
+  | Blk_record_inlined of { name : string ; num_nonconst :  int ;  tag : int; optional_labels: string list; fields : string array; mutable_flag : mutable_flag }   
   | Blk_tuple
   | Blk_poly_var of string 
   | Blk_record of {fields : string array; mutable_flag : mutable_flag; record_repr : record_repr }
@@ -49795,6 +49795,7 @@ val blk_record_inlined :
     (Types.label_description* Typedtree.record_label_definition) array ->
     string ->
     int ->
+    string list ->
     tag:int ->    
     mutable_flag ->  
     tag_info
@@ -50145,7 +50146,7 @@ type record_repr =
 
 type tag_info = 
   | Blk_constructor of {name : string ; num_nonconst : int ; tag : int }
-  | Blk_record_inlined of { name : string ; num_nonconst :  int;  tag : int; fields : string array; mutable_flag : Asttypes.mutable_flag }   
+  | Blk_record_inlined of { name : string ; num_nonconst :  int;  tag : int;  optional_labels: string list; fields : string array; mutable_flag : Asttypes.mutable_flag }   
   | Blk_tuple
   | Blk_poly_var of string 
   | Blk_record of {fields : string array; mutable_flag : Asttypes.mutable_flag; record_repr : record_repr}  
@@ -50201,9 +50202,9 @@ let blk_record_ext =  ref (fun fields mutable_flag ->
     Blk_record_ext {fields = all_labels_info; mutable_flag }
   )
 
-let blk_record_inlined = ref (fun fields name num_nonconst ~tag mutable_flag -> 
+let blk_record_inlined = ref (fun fields name num_nonconst optional_labels ~tag mutable_flag -> 
   let fields = fields |> Array.map (fun (x,_) -> x.Types.lbl_name) in    
-  Blk_record_inlined {fields; name; num_nonconst; tag; mutable_flag}
+  Blk_record_inlined {fields; name; num_nonconst; tag; mutable_flag; optional_labels}
 ) 
 
 let ref_tag_info : tag_info = 

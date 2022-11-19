@@ -40,7 +40,7 @@ type record_repr =
 
 type tag_info = 
   | Blk_constructor of {name : string ; num_nonconst : int; tag : int}
-  | Blk_record_inlined of { name : string ; num_nonconst :  int ;  tag : int; fields : string array; mutable_flag : mutable_flag}   
+  | Blk_record_inlined of { name : string ; num_nonconst :  int ;  tag : int; optional_labels: string list; fields : string array; mutable_flag : mutable_flag }   
   | Blk_tuple
   | Blk_poly_var of string 
   | Blk_record of {fields : string array; mutable_flag : mutable_flag; record_repr : record_repr }
@@ -85,6 +85,7 @@ val blk_record_inlined :
     (Types.label_description* Typedtree.record_label_definition) array ->
     string ->
     int ->
+    string list ->
     tag:int ->    
     mutable_flag ->  
     tag_info
