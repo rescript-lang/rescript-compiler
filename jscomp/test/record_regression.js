@@ -81,8 +81,7 @@ var h = newrecord$2;
 var h10 = newrecord$3;
 
 var foo1 = /* Foo */{
-  name: "foo",
-  age: undefined
+  name: "foo"
 };
 
 var foo2 = /* Foo */{
