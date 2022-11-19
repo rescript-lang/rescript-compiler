@@ -10,6 +10,48 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
+# 11.0.0-alpha.1
+
+#### :rocket: New Feature
+
+- Introduce experimental uncurried by default mode. Can be turned on mid-file by adding standalone annotation `@@uncurried`. For experimentation only. https://github.com/rescript-lang/rescript-compiler/pull/5796
+- Adding `@@toUncurried` to the file and reformat will convert to uncurried syntax https://github.com/rescript-lang/rescript-compiler/pull/5800
+- Add support for unary uncurried pipe in uncurried mode https://github.com/rescript-lang/rescript-compiler/pull/5804
+- Add support for partial application of uncurried functions: with uncurried application one can provide a
+subset of the arguments, and return a curried type with the remaining ones https://github.com/rescript-lang/rescript-compiler/pull/5805
+- Add support for uncurried externals https://github.com/rescript-lang/rescript-compiler/pull/5815 https://github.com/rescript-lang/rescript-compiler/pull/5819
+
+#### :boom: Breaking Change
+
+- Remove support for the legacy Reason syntax. Existing Reason code can be converted to ReScript syntax using ReScript 9 as follows:
+  - `npm i -g rescript@9`
+  - `rescript convert <reason files>`
+- Remove obsolete built-in project templates and the "rescript init" functionality. This will be replaced by the create-rescript-app project that is maintained separately.
+- Parse the attributes of labelled argument to the pattern attributes of argument instead of function.
+- Made pinned dependencies transitive: if *a* is a pinned dependency of *b* and *b* is a pinned dependency of *c*, then *a* is implicitly a pinned dependency of *c*. This change is only breaking if your build process assumes non-transitivity.
+- Curried after uncurried is not fused anymore: `(. x) => y => 3` is not equivalent to `(. x, y) => 3` anymore. It's instead equivalent to `(. x) => { y => 3 }`.
+Also, `(. int) => string => bool` is not equivalen to `(. int, string) => bool` anymore.
+These are only breaking changes for unformatted code.
+- Distinguish between uncurried type `(. ()) => int`, whch takes 0 arguments, and `(. unit) => int` which takes 1 argument of type `unit` https://github.com/rescript-lang/rescript-compiler/pull/5821
+
+#### :bug: Bug Fix
+
+- Fix issue where uncurried was not supported with pipe https://github.com/rescript-lang/rescript-compiler/pull/5803
+- Fix printing of nested types in uncurried mode https://github.com/rescript-lang/rescript-compiler/pull/5826
+- Fix issue in printing uncurried callbacks https://github.com/rescript-lang/rescript-compiler/pull/5828
+
+#### :nail_care: Polish
+
+- Syntax: process uncurried types explicitly in the parser/printer https://github.com/rescript-lang/rescript-compiler/pull/5784 https://github.com/rescript-lang/rescript-compiler/pull/5822
+- Syntax: process uncurried function declarations explicitly in the parser/printer https://github.com/rescript-lang/rescript-compiler/pull/5794
+- PPX V4: allow uncurried `make` function and treat it like a curried one [#5802](https://github.com/rescript-lang/rescript-compiler/pull/5802) [#5808](https://github.com/rescript-lang/rescript-compiler/pull/5808) [#5812](https://github.com/rescript-lang/rescript-compiler/pull/5812)
+
+# 10.1.0-rc.6
+
+#### :bug: Bug Fix
+
+- Fix issue where optional field in the inlined record caused the type error https://github.com/rescript-lang/rescript-compiler/pull/5827
+
 # 10.1.0-rc.5
 
 #### :bug: Bug Fix
