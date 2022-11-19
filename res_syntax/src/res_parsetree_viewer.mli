@@ -19,7 +19,7 @@ val processBsAttribute : Parsetree.attributes -> bool * Parsetree.attributes
 
 type functionAttributesInfo = {
   async: bool;
-  uncurried: bool;
+  bs: bool;
   attributes: Parsetree.attributes;
 }
 
@@ -55,7 +55,7 @@ type funParamKind =
 
 val funExpr :
   Parsetree.expression ->
-  Parsetree.attributes * funParamKind list * Parsetree.expression
+  bool * Parsetree.attributes * funParamKind list * Parsetree.expression
 
 (* example:
    *  `makeCoordinate({
@@ -154,3 +154,5 @@ val isUnderscoreApplySugar : Parsetree.expression -> bool
 val hasIfLetAttribute : Parsetree.attributes -> bool
 
 val isRewrittenUnderscoreApplySugar : Parsetree.expression -> bool
+
+val isFunNewtype : Parsetree.expression_desc -> bool

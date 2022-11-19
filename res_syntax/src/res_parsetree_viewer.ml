@@ -59,18 +59,17 @@ let processBsAttribute attrs =
 
 type functionAttributesInfo = {
   async: bool;
-  uncurried: bool;
+  bs: bool;
   attributes: Parsetree.attributes;
 }
 
 let processFunctionAttributes attrs =
-  let rec process async uncurried acc attrs =
+  let rec process async bs acc attrs =
     match attrs with
-    | [] -> {async; uncurried; attributes = List.rev acc}
+    | [] -> {async; bs; attributes = List.rev acc}
     | ({Location.txt = "bs"}, _) :: rest -> process async true acc rest
-    | ({Location.txt = "res.async"}, _) :: rest ->
-      process true uncurried acc rest
-    | attr :: rest -> process async uncurried (attr :: acc) rest
+    | ({Location.txt = "res.async"}, _) :: rest -> process true bs acc rest
+    | attr :: rest -> process async bs (attr :: acc) rest
   in
   process false false [] attrs
 
@@ -137,7 +136,7 @@ let funExpr expr =
       collectNewTypes (stringLoc :: acc) returnExpr
     | returnExpr -> (List.rev acc, returnExpr)
   in
-  let rec collect attrsBefore acc expr =
+  let rec collect ~uncurried attrsBefore acc expr =
     match expr with
     | {
      pexp_desc =
@@ -147,29 +146,33 @@ let funExpr expr =
            {ppat_desc = Ppat_var {txt = "__x"}},
            {pexp_desc = Pexp_apply _} );
     } ->
-      (attrsBefore, List.rev acc, rewriteUnderscoreApply expr)
+      (uncurried, attrsBefore, List.rev acc, rewriteUnderscoreApply expr)
     | {pexp_desc = Pexp_newtype (stringLoc, rest); pexp_attributes = attrs} ->
       let stringLocs, returnExpr = collectNewTypes [stringLoc] rest in
       let param = NewTypes {attrs; locs = stringLocs} in
-      collect attrsBefore (param :: acc) returnExpr
+      collect ~uncurried attrsBefore (param :: acc) returnExpr
     | {
      pexp_desc = Pexp_fun (lbl, defaultExpr, pattern, returnExpr);
      pexp_attributes = [];
     } ->
       let parameter = Parameter {attrs = []; lbl; defaultExpr; pat = pattern} in
-      collect attrsBefore (parameter :: acc) returnExpr
+      collect ~uncurried attrsBefore (parameter :: acc) returnExpr
     (* If a fun has an attribute, then it stops here and makes currying.
        i.e attributes outside of (...), uncurried `(.)` and `async` make currying *)
-    | {pexp_desc = Pexp_fun _} -> (attrsBefore, List.rev acc, expr)
-    | expr -> (attrsBefore, List.rev acc, expr)
+    | {pexp_desc = Pexp_fun _} -> (uncurried, attrsBefore, List.rev acc, expr)
+    | expr -> (uncurried, attrsBefore, List.rev acc, expr)
   in
   match expr with
+  | {pexp_desc = Pexp_fun _} ->
+    collect ~uncurried:false expr.pexp_attributes []
+      {expr with pexp_attributes = []}
   | {
-      pexp_desc = Pexp_fun (_, _defaultExpr, _pattern, _returnExpr);
-      pexp_attributes = attrs;
-    } as expr ->
-    collect attrs [] {expr with pexp_attributes = []}
-  | expr -> collect [] [] expr
+   pexp_desc =
+     Pexp_record ([({txt = Ldot (Ldot (Lident "Js", "Fn"), _)}, expr)], None);
+  } ->
+    collect ~uncurried:true expr.pexp_attributes []
+      {expr with pexp_attributes = []}
+  | _ -> collect ~uncurried:false [] [] expr
 
 let processBracesAttr expr =
   match expr.pexp_attributes with
@@ -528,12 +531,19 @@ let filterPrintableAttributes attrs = List.filter isPrintableAttribute attrs
 let partitionPrintableAttributes attrs =
   List.partition isPrintableAttribute attrs
 
+let isFunNewtype = function
+  | Pexp_fun _ | Pexp_newtype _ -> true
+  | Pexp_record ([({txt = Ldot (Ldot (Lident "Js", "Fn"), name)}, _)], None)
+    when String.length name >= 1 && name.[0] = 'I' ->
+    true
+  | _ -> false
+
 let requiresSpecialCallbackPrintingLastArg args =
   let rec loop args =
     match args with
     | [] -> false
-    | [(_, {pexp_desc = Pexp_fun _ | Pexp_newtype _})] -> true
-    | (_, {pexp_desc = Pexp_fun _ | Pexp_newtype _}) :: _ -> false
+    | [(_, {pexp_desc})] when isFunNewtype pexp_desc -> true
+    | (_, {pexp_desc}) :: _ when isFunNewtype pexp_desc -> false
     | _ :: rest -> loop rest
   in
   loop args
@@ -542,12 +552,12 @@ let requiresSpecialCallbackPrintingFirstArg args =
   let rec loop args =
     match args with
     | [] -> true
-    | (_, {pexp_desc = Pexp_fun _ | Pexp_newtype _}) :: _ -> false
+    | (_, {pexp_desc}) :: _ when isFunNewtype pexp_desc -> false
     | _ :: rest -> loop rest
   in
   match args with
-  | [(_, {pexp_desc = Pexp_fun _ | Pexp_newtype _})] -> false
-  | (_, {pexp_desc = Pexp_fun _ | Pexp_newtype _}) :: rest -> loop rest
+  | [(_, {pexp_desc})] when isFunNewtype pexp_desc -> false
+  | (_, {pexp_desc}) :: rest when isFunNewtype pexp_desc -> loop rest
   | _ -> false
 
 let modExprApply modExpr =
