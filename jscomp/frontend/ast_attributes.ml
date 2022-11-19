@@ -341,7 +341,7 @@ let locg = Location.none
 let is_bs (attr : attr) =
   match attr with { Location.txt = "bs"; _ }, _ -> true | _ -> false
 
-let is_uncurried_app (attr : attr) =
+let is_res_uapp (attr : attr) =
   match attr with { Location.txt = "res.uapp"; _ }, _ -> true | _ -> false
 
 let bs_get : attr = ({ txt = "bs.get"; loc = locg }, Ast_payload.empty)

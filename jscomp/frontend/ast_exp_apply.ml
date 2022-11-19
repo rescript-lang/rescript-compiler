@@ -160,7 +160,7 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
               match
                 ( Ext_list.exclude_with_val f_.pexp_attributes (fun a ->
                       Ast_attributes.is_bs a
-                      || Ast_attributes.is_uncurried_app a),
+                      || Ast_attributes.is_res_uapp a),
                   f_.pexp_desc )
               with
               | Some other_attributes, Pexp_apply (fn1, args) ->
@@ -296,7 +296,7 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
           | None -> (
               match
                 Ext_list.exclude_with_val e.pexp_attributes
-                  Ast_attributes.is_uncurried_app
+                  Ast_attributes.is_res_uapp
               with
               | Some pexp_attributes ->
                   {

@@ -72,7 +72,8 @@ val is_bs : attr -> bool
 (* val is_optional : attr -> bool
    val is_bs_as : attr -> bool *)
 
-val is_uncurried_app : attr -> bool
+(* Attribute for uncurried application coming from the ReScript parser *)
+val is_res_uapp : attr -> bool
 
 val bs_get : attr
 
