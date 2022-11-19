@@ -23,11 +23,11 @@ type cpp = (unit, unit) => int
 type cu2 = (unit, unit) => unit
 type cp2 = (unit, unit) => unit
 type uu = (. unit) => int
-type up = (. ()) => int
+type up = (. unit) => int
 type uuu = (. unit) => (. unit) => int
-type upu = (. ()) => (. unit) => int
-type uup = (. unit) => (. ()) => int
-type upp = (. ()) => (. ()) => int
+type upu = (. unit) => (. unit) => int
+type uup = (. unit) => (. unit) => int
+type upp = (. unit) => (. unit) => int
 type uu2 = (. unit, unit) => unit
 type up2 = (. unit, unit) => unit
 
@@ -77,11 +77,11 @@ type cpp = (. unit, unit) => int
 type cu2 = (. unit, unit) => unit
 type cp2 = (. unit, unit) => unit
 type uu = unit => int
-type up = () => int
+type up = unit => int
 type uuu = unit => unit => int
-type upu = () => unit => int
-type uup = unit => () => int
-type upp = () => () => int
+type upu = unit => unit => int
+type uup = unit => unit => int
+type upp = unit => unit => int
 type uu2 = (unit, unit) => unit
 type up2 = (unit, unit) => unit
 

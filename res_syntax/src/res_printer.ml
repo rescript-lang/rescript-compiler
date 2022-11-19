@@ -1657,12 +1657,6 @@ and printTypExpr ~state (typExpr : Parsetree.core_type) cmtTbl =
     | Ptyp_object (fields, openFlag) ->
       printObject ~state ~inline:false fields openFlag cmtTbl
     | Ptyp_arrow _ -> printArrow ~uncurried:false typExpr
-    | Ptyp_constr ({txt = Lident "()"}, []) -> Doc.text "()"
-    | Ptyp_constr ({txt = Ldot (Ldot (Lident "Js", "Fn"), "arity0")}, [tArg]) ->
-      let parensConstr = Location.mkloc (Longident.Lident "()") tArg.ptyp_loc in
-      let tUnit = Ast_helper.Typ.constr parensConstr [] in
-      printArrow ~uncurried:true ~arity:1
-        {tArg with ptyp_desc = Ptyp_arrow (Nolabel, tUnit, tArg)}
     | Ptyp_constr ({txt = Ldot (Ldot (Lident "Js", "Fn"), arity)}, [tArg])
       when String.length arity >= 5
            && (String.sub [@doesNotRaise]) arity 0 5 = "arity" ->
@@ -3959,7 +3953,7 @@ and printPexpApply ~state expr cmtTbl =
         args
     in
     let hasBs, attrs =
-      ParsetreeViewer.processBsAttribute expr.pexp_attributes
+      ParsetreeViewer.processUncurriedAppAttribute expr.pexp_attributes
     in
     let dotted =
       if state.State.uncurried_by_default then not hasBs else hasBs

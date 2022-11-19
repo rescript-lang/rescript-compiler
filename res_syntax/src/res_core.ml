@@ -148,7 +148,7 @@ module ErrorMessages = struct
 end
 
 let jsxAttr = (Location.mknoloc "JSX", Parsetree.PStr [])
-let uncurryAttr = (Location.mknoloc "bs", Parsetree.PStr [])
+let uncurriedAppAttr = (Location.mknoloc "res.uapp", Parsetree.PStr [])
 let ternaryAttr = (Location.mknoloc "ns.ternary", Parsetree.PStr [])
 let ifLetAttr = (Location.mknoloc "ns.iflet", Parsetree.PStr [])
 let optionalAttr = (Location.mknoloc "ns.optional", Parsetree.PStr [])
@@ -1576,11 +1576,6 @@ and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
             if p.uncurried_by_default then not dotted else dotted
           in
           if uncurried && (paramNum = 1 || not p.uncurried_by_default) then
-            let arirtForFn =
-              match pat.ppat_desc with
-              | Ppat_construct ({txt = Lident "()"}, _) when arity = 1 -> 0
-              | _ -> arity
-            in
             ( paramNum - 1,
               (if true then
                Ast_helper.Exp.record ~loc
@@ -1588,8 +1583,7 @@ and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
                    ( {
                        txt =
                          Ldot
-                           ( Ldot (Lident "Js", "Fn"),
-                             "I" ^ string_of_int arirtForFn );
+                           (Ldot (Lident "Js", "Fn"), "I" ^ string_of_int arity);
                        loc;
                      },
                      funExpr );
@@ -1602,7 +1596,7 @@ and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
           let uncurried =
             if p.uncurried_by_default then not dotted else dotted
           in
-          let attrs = if uncurried then uncurryAttr :: attrs else attrs in
+          let attrs = if uncurried then uncurriedAppAttr :: attrs else attrs in
           ( paramNum - 1,
             makeNewtypes ~attrs ~loc:(mkLoc startPos endPos) newtypes expr,
             arity ))
@@ -3671,7 +3665,7 @@ and parseCallExpr p funExpr =
             if p.uncurried_by_default then not dotted else dotted
           in
           if uncurried then
-            let attrs = [uncurryAttr] in
+            let attrs = [uncurriedAppAttr] in
             Ast_helper.Exp.apply ~loc ~attrs callBody args
           else Ast_helper.Exp.apply ~loc callBody args
         in
@@ -4260,23 +4254,14 @@ and parseEs6ArrowType ~attrs p =
             if p.uncurried_by_default then not dotted else dotted
           in
           if uncurried && (paramNum = 1 || not p.uncurried_by_default) then
-            let isParens =
-              match typ.ptyp_desc with
-              | Ptyp_constr ({txt = Lident "unit"; loc}, []) ->
-                loc.loc_end.pos_cnum - loc.loc_start.pos_cnum = 2 (* () *)
-              | _ -> false
-            in
             let loc = mkLoc startPos endPos in
-            let fnArity, tArg =
-              if isParens && arity = 1 then (0, t)
-              else (arity, Ast_helper.Typ.arrow ~loc ~attrs argLbl typ t)
-            in
+            let tArg = Ast_helper.Typ.arrow ~loc ~attrs argLbl typ t in
             ( paramNum - 1,
               Ast_helper.Typ.constr ~loc
                 {
                   txt =
                     Ldot
-                      (Ldot (Lident "Js", "Fn"), "arity" ^ string_of_int fnArity);
+                      (Ldot (Lident "Js", "Fn"), "arity" ^ string_of_int arity);
                   loc;
                 }
                 [tArg],

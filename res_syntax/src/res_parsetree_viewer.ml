@@ -57,6 +57,21 @@ let processBsAttribute attrs =
   in
   process false [] attrs
 
+let processUncurriedAppAttribute attrs =
+  let rec process bsSpotted acc attrs =
+    match attrs with
+    | [] -> (bsSpotted, List.rev acc)
+    | ( {
+          Location.txt =
+            "bs" (* still support @bs to convert .ml files *) | "res.uapp";
+        },
+        _ )
+      :: rest ->
+      process true acc rest
+    | attr :: rest -> process bsSpotted (attr :: acc) rest
+  in
+  process false [] attrs
+
 type functionAttributesInfo = {
   async: bool;
   bs: bool;
@@ -186,7 +201,7 @@ let filterParsingAttrs attrs =
       match attr with
       | ( {
             Location.txt =
-              ( "bs" | "ns.braces" | "ns.iflet" | "ns.namedArgLoc"
+              ( "bs" | "res.uapp" | "ns.braces" | "ns.iflet" | "ns.namedArgLoc"
               | "ns.optional" | "ns.ternary" | "res.async" | "res.await"
               | "res.template" );
           },
@@ -335,8 +350,8 @@ let hasAttributes attrs =
       match attr with
       | ( {
             Location.txt =
-              ( "bs" | "ns.braces" | "ns.iflet" | "ns.ternary" | "res.async"
-              | "res.await" | "res.template" );
+              ( "bs" | "res.uapp" | "ns.braces" | "ns.iflet" | "ns.ternary"
+              | "res.async" | "res.await" | "res.template" );
           },
           _ ) ->
         false
@@ -517,8 +532,8 @@ let isPrintableAttribute attr =
   match attr with
   | ( {
         Location.txt =
-          ( "bs" | "ns.iflet" | "ns.braces" | "JSX" | "res.async" | "res.await"
-          | "res.template" | "ns.ternary" );
+          ( "bs" | "res.uapp" | "ns.iflet" | "ns.braces" | "JSX" | "res.async"
+          | "res.await" | "res.template" | "ns.ternary" );
       },
       _ ) ->
     false

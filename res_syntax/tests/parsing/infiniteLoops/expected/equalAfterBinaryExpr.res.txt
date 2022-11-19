@@ -151,6 +151,6 @@ let removeNode rbt node =
                            ((sibling.left |. castNotOption).color <- Black;
                             rotateLeft rbt successorParent))))
             done));
-    if ((isLeaf successor)[@bs ])
+    if ((isLeaf successor)[@res.uapp ])
     then (if (rbt |. root) == (Some successor) then (rbt |. root) = None))
   [@ns.braces ])

@@ -305,9 +305,12 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
                         _;
                       };
                     ]
-                  when Ast_utf8_string_interp.parse_processed_delim delim_ <> None -> (
+                  when Ast_utf8_string_interp.parse_processed_delim delim_
+                       <> None -> (
                     let delim =
-                      match Ast_utf8_string_interp.parse_processed_delim delim_ with
+                      match
+                        Ast_utf8_string_interp.parse_processed_delim delim_
+                      with
                       | None -> assert false
                       | Some delim -> delim
                     in
@@ -337,6 +340,9 @@ let locg = Location.none
 
 let is_bs (attr : attr) =
   match attr with { Location.txt = "bs"; _ }, _ -> true | _ -> false
+
+let is_res_uapp (attr : attr) =
+  match attr with { Location.txt = "res.uapp"; _ }, _ -> true | _ -> false
 
 let bs_get : attr = ({ txt = "bs.get"; loc = locg }, Ast_payload.empty)
 
