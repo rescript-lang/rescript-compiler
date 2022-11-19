@@ -2110,7 +2110,7 @@ and parseUnaryExpr p =
  * the operands of the binary expression with opeartor `+` *)
 and parseOperandExpr ~context p =
   let startPos = p.Parser.startPos in
-  let attrs = parseAttributes p in
+  let attrs = ref (parseAttributes p) in
   let expr =
     match p.Parser.token with
     | Assert ->
@@ -2126,7 +2126,9 @@ and parseOperandExpr ~context p =
     *)
       when isEs6ArrowExpression ~inTernary:(context = TernaryTrueBranchExpr) p
       ->
-      parseAsyncArrowExpression p
+      let arrowAttrs = !attrs in
+      let () = attrs := [] in
+      parseAsyncArrowExpression ~arrowAttrs p
     | Await -> parseAwaitExpression p
     | Lazy ->
       Parser.next p;
@@ -2142,13 +2144,16 @@ and parseOperandExpr ~context p =
       if
         context != WhenExpr
         && isEs6ArrowExpression ~inTernary:(context = TernaryTrueBranchExpr) p
-      then parseEs6ArrowExpression ~context p
+      then
+        let arrowAttrs = !attrs in
+        let () = attrs := [] in
+        parseEs6ArrowExpression ~arrowAttrs ~context p
       else parseUnaryExpr p
   in
   (* let endPos = p.Parser.prevEndPos in *)
   {
     expr with
-    pexp_attributes = List.concat [expr.Parsetree.pexp_attributes; attrs];
+    pexp_attributes = List.concat [expr.Parsetree.pexp_attributes; !attrs];
     (* pexp_loc = mkLoc startPos endPos *)
   }
 
@@ -3207,12 +3212,12 @@ and parseExprBlock ?first p =
   Parser.eatBreadcrumb p;
   overParseConstrainedOrCoercedOrArrowExpression p blockExpr
 
-and parseAsyncArrowExpression p =
+and parseAsyncArrowExpression ?(arrowAttrs = []) p =
   let startPos = p.Parser.startPos in
   Parser.expect (Lident "async") p;
   let asyncAttr = makeAsyncAttr (mkLoc startPos p.prevEndPos) in
-  parseEs6ArrowExpression ~arrowAttrs:[asyncAttr] ~arrowStartPos:(Some startPos)
-    p
+  parseEs6ArrowExpression ~arrowAttrs:(asyncAttr :: arrowAttrs)
+    ~arrowStartPos:(Some startPos) p
 
 and parseAwaitExpression p =
   let awaitLoc = mkLoc p.Parser.startPos p.endPos in
