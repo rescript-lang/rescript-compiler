@@ -105,3 +105,7 @@ type foo = Foo({name: string, age?: int})
 
 let foo1 = Foo({name: "foo"}) 
 let foo2 = Foo({name: "foo", age: 3})
+
+// should be type error
+// let foo3 = Foo({name: "foo", age: 3, nickname: "hasNoNickname"})
+// let foo4 = Foo({name: "foo", age: "3"})
