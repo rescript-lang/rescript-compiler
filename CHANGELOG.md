@@ -38,6 +38,7 @@ These are only breaking changes for unformatted code.
 
 - Fix issue where uncurried was not supported with pipe https://github.com/rescript-lang/rescript-compiler/pull/5803
 - Fix printing of nested types in uncurried mode https://github.com/rescript-lang/rescript-compiler/pull/5826
+- Fix issue in printing uncurried callbacks https://github.com/rescript-lang/rescript-compiler/pull/5828
 
 #### :nail_care: Polish
 

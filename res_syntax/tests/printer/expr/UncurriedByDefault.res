@@ -36,6 +36,14 @@ type unested = (. (. string) => unit) => unit
 
 let pipe = a->foo(. b, c)
 
+let _ = setTimeout(. (. ()) => {
+  resolve(. 1)
+}, 100)
+
+let _ = setTimeout(() => {
+  resolve(1)
+}, 100)
+
 @@uncurried
 
 let cApp = foo(. 3)
@@ -76,3 +84,11 @@ type cnested = (. (. string) => unit) => unit
 type unested = (string => unit) => unit
 
 let pipe = a->foo(b, c)
+
+let _ = setTimeout(() => {
+  resolve(1)
+}, 100)
+
+let _ = setTimeout(. (. ()) => {
+  resolve(. 1)
+}, 100)

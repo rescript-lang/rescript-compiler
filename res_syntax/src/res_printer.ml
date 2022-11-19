@@ -1549,7 +1549,6 @@ and printLabelDeclaration ~state (ld : Parsetree.label_declaration) cmtTbl =
 
 and printTypExpr ~state (typExpr : Parsetree.core_type) cmtTbl =
   let printArrow ~uncurried ?(arity = max_int) typExpr =
-    (* XXX *)
     let attrsBefore, args, returnType =
       ParsetreeViewer.arrowType ~arity typExpr
     in
@@ -1966,7 +1965,9 @@ and printValueBinding ~state ~recFlag (vb : Parsetree.value_binding) cmtTbl i =
      };
    pvb_expr = {pexp_desc = Pexp_newtype _} as expr;
   } -> (
-    let _attrs, parameters, returnExpr = ParsetreeViewer.funExpr expr in
+    let _uncurried, _attrs, parameters, returnExpr =
+      ParsetreeViewer.funExpr expr
+    in
     let abstractType =
       match parameters with
       | [NewTypes {locs = vars}] ->
@@ -2604,12 +2605,14 @@ and printIfChain ~state pexp_attributes ifs elseExpr cmtTbl =
   Doc.concat [printAttributes ~state attrs cmtTbl; ifDocs; elseDoc]
 
 and printExpression ~state (e : Parsetree.expression) cmtTbl =
-  let printArrow ~isUncurried e =
-    let attrsOnArrow, parameters, returnExpr = ParsetreeViewer.funExpr e in
-    let ParsetreeViewer.{async; uncurried; attributes = attrs} =
+  let printArrow e =
+    let uncurried, attrsOnArrow, parameters, returnExpr =
+      ParsetreeViewer.funExpr e
+    in
+    let ParsetreeViewer.{async; bs; attributes = attrs} =
       ParsetreeViewer.processFunctionAttributes attrsOnArrow
     in
-    let uncurried = uncurried || isUncurried in
+    let uncurried = uncurried || bs in
     let returnExpr, typConstraint =
       match returnExpr.pexp_desc with
       | Pexp_constraint (expr, typ) ->
@@ -2934,11 +2937,15 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
       printExpressionWithComments ~state
         (ParsetreeViewer.rewriteUnderscoreApply e)
         cmtTbl
-    | Pexp_fun _ | Pexp_newtype _ -> printArrow ~isUncurried:false e
+    | Pexp_fun _
     | Pexp_record
-        ([({txt = Ldot (Ldot (Lident "Js", "Fn"), name)}, funExpr)], None)
-      when String.length name >= 1 && name.[0] = 'I' ->
-      printArrow ~isUncurried:true funExpr
+        ( [
+            ( {txt = Ldot (Ldot (Lident "Js", "Fn"), _)},
+              {pexp_desc = Pexp_fun _} );
+          ],
+          None )
+    | Pexp_newtype _ ->
+      printArrow e
     | Pexp_record (rows, spreadExpr) ->
       if rows = [] then
         Doc.concat
@@ -3312,10 +3319,13 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
   | _ -> exprWithAwait
 
 and printPexpFun ~state ~inCallback e cmtTbl =
-  let attrsOnArrow, parameters, returnExpr = ParsetreeViewer.funExpr e in
-  let ParsetreeViewer.{async; uncurried; attributes = attrs} =
+  let uncurried, attrsOnArrow, parameters, returnExpr =
+    ParsetreeViewer.funExpr e
+  in
+  let ParsetreeViewer.{async; bs; attributes = attrs} =
     ParsetreeViewer.processFunctionAttributes attrsOnArrow
   in
+  let uncurried = bs || uncurried in
   let returnExpr, typConstraint =
     match returnExpr.pexp_desc with
     | Pexp_constraint (expr, typ) ->
