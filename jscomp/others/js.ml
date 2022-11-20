@@ -107,6 +107,7 @@ external toOption : 'a nullable -> 'a option = "#nullable_to_opt"
 external undefinedToOption : 'a undefined -> 'a option = "#undefined_to_opt"
 external nullToOption : 'a null -> 'a option = "#null_to_opt"
 external isNullable : 'a nullable -> bool = "#is_nullable"
+external import : 'a -> 'a promise = "#import"
 
 external testAny : 'a -> bool = "#is_nullable"
 (** The same as {!test} except that it is more permissive on the types of input *)

@@ -84,6 +84,8 @@ let is_runtime_package (x : t) = x.name = Pkg_runtime
 
 let iter (x : t) cb = Ext_list.iter x.module_systems cb
 
+let map (x : t) cb = Ext_list.map x.module_systems cb
+
 (* let equal (x : t) ({name; module_systems}) =
     x.name = name &&
     Ext_list.for_all2_no_exn

@@ -78,6 +78,8 @@ external nullToOption : 'a null -> 'a option = "#null_to_opt"
 
 external isNullable : 'a nullable -> bool = "#is_nullable"
 
+external import : 'a -> 'a promise = "#import"
+
 (** The same as {!test} except that it is more permissive on the types of input *)
 external testAny : 'a -> bool = "#is_nullable"
 
