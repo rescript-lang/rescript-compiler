@@ -60,6 +60,96 @@ function setAA(ao) {
         };
 }
 
+var ir0 = {
+  TAG: /* V0 */0,
+  x0: "v0",
+  x3: 3
+};
+
+var ir1 = {
+  TAG: /* V0 */0,
+  x0: "v0",
+  x1: "v1",
+  x3: 3
+};
+
+var ir2 = {
+  TAG: /* V0 */0,
+  x0: "v0",
+  x1: "v1",
+  x2: 2,
+  x3: 3
+};
+
+var pm0;
+
+pm0 = ir0.TAG === /* V0 */0 ? [
+    "v0",
+    3
+  ] : [
+    "v0",
+    undefined
+  ];
+
+var pm1;
+
+pm1 = ir1.TAG === /* V0 */0 ? [
+    "v0",
+    "v1",
+    3
+  ] : [
+    "v0",
+    undefined,
+    "v1"
+  ];
+
+var pm2;
+
+pm2 = ir2.TAG === /* V0 */0 ? [
+    "v0",
+    "v1",
+    2,
+    3
+  ] : [
+    "v0",
+    undefined,
+    undefined,
+    "v1"
+  ];
+
+var pm3;
+
+if (ir2.TAG === /* V0 */0) {
+  var x2 = 2;
+  var x1 = "v1";
+  var x0 = "v0";
+  pm3 = Caml_obj.equal(x1, "x1") ? [
+      x0,
+      "x1!",
+      x2,
+      3
+    ] : (
+      x1 !== undefined ? [
+          x0,
+          x1,
+          x2,
+          3
+        ] : [
+          x0,
+          "not existed",
+          x2,
+          3
+        ]
+    );
+} else {
+  pm3 = [
+    "v0",
+    "not existed",
+    undefined,
+    "v1"
+  ];
+}
+
 var f2 = {
   x: 3,
   y: 3,
@@ -104,4 +194,11 @@ exports.po = po;
 exports.setAA = setAA;
 exports.foo1 = foo1;
 exports.foo2 = foo2;
+exports.ir0 = ir0;
+exports.ir1 = ir1;
+exports.ir2 = ir2;
+exports.pm0 = pm0;
+exports.pm1 = pm1;
+exports.pm2 = pm2;
+exports.pm3 = pm3;
 /*  Not a pure module */
