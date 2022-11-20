@@ -41403,7 +41403,7 @@ and record_representation =
   | Record_float_unused                   (* Was: all fields are floats. Now: unused *)
   | Record_unboxed of bool                (* Unboxed single-field record, inlined or not *)
   | Record_inlined of                     (* Inlined record *)
-      { tag : int ; name : string; num_nonconsts : int}
+      { tag : int ; name : string; num_nonconsts : int; optional_labels : string list}
   | Record_extension                      (* Inlined record under extension *)
   | Record_optional_labels of string list (* List of optional labels *)
 
@@ -41748,7 +41748,7 @@ and record_representation =
   | Record_float_unused                   (* Was: all fields are floats. Now: unused *)
   | Record_unboxed of bool                (* Unboxed single-field record, inlined or not *)
   | Record_inlined of                     (* Inlined record *)
-      { tag : int ; name : string; num_nonconsts : int}
+      { tag : int ; name : string; num_nonconsts : int; optional_labels : string list}
   | Record_extension                      (* Inlined record under extension *)
   | Record_optional_labels of string list (* List of optional labels *)
 
@@ -41942,10 +41942,10 @@ let same_record_representation x y =
       match y with
       | Record_optional_labels lbls2 -> lbls = lbls2
       | _ -> false)
-  | Record_inlined {tag; name; num_nonconsts} -> (
+  | Record_inlined {tag; name; num_nonconsts; optional_labels} -> (
       match y with
       | Record_inlined y ->
-          tag = y.tag && name = y.name && num_nonconsts = y.num_nonconsts
+          tag = y.tag && name = y.name && num_nonconsts = y.num_nonconsts && optional_labels = y.optional_labels
       | _ -> false)
   | Record_extension -> y = Record_extension
   | Record_unboxed x -> ( match y with Record_unboxed y -> x = y | _ -> false)
@@ -43434,6 +43434,7 @@ let constructor_descrs ty_path decl cstrs =
       if cd_args = Cstr_tuple [] then incr num_consts else incr num_nonconsts;
       if cd_res = None then incr num_normal)
     cstrs;
+  let has_optional attrs = Ext_list.exists attrs (fun ({txt },_) -> txt = "ns.optional") in
   let rec describe_constructors idx_const idx_nonconst = function
       [] -> []
     | {cd_id; cd_args; cd_res; cd_loc; cd_attributes} :: rem ->
@@ -43452,11 +43453,17 @@ let constructor_descrs ty_path decl cstrs =
           | _  -> (Cstr_block idx_nonconst,
                    describe_constructors idx_const (idx_nonconst+1) rem) in
         let cstr_name = Ident.name cd_id in
+        let optional_labels = match cd_args with
+          | Cstr_tuple _ -> []
+          | Cstr_record lbls ->
+            Ext_list.filter_map lbls (fun ({ld_id;ld_attributes; _}) ->
+              if has_optional ld_attributes then Some ld_id.name else None)
+        in
         let existentials, cstr_args, cstr_inlined =
           let representation =
             if decl.type_unboxed.unboxed
             then Record_unboxed true
-            else Record_inlined {tag = idx_nonconst; name = cstr_name; num_nonconsts = !num_nonconsts}
+            else Record_inlined {tag = idx_nonconst; name = cstr_name; num_nonconsts = !num_nonconsts; optional_labels}
           in
           constructor_args decl.type_private cd_args cd_res
             (Path.Pdot (ty_path, cstr_name, Path.nopos)) representation
@@ -49742,7 +49749,7 @@ type record_repr =
 
 type tag_info = 
   | Blk_constructor of {name : string ; num_nonconst : int; tag : int}
-  | Blk_record_inlined of { name : string ; num_nonconst :  int ;  tag : int; fields : string array; mutable_flag : mutable_flag}   
+  | Blk_record_inlined of { name : string ; num_nonconst :  int ;  tag : int; optional_labels: string list; fields : string array; mutable_flag : mutable_flag }   
   | Blk_tuple
   | Blk_poly_var of string 
   | Blk_record of {fields : string array; mutable_flag : mutable_flag; record_repr : record_repr }
@@ -49787,6 +49794,7 @@ val blk_record_inlined :
     (Types.label_description* Typedtree.record_label_definition) array ->
     string ->
     int ->
+    string list ->
     tag:int ->    
     mutable_flag ->  
     tag_info
@@ -50137,7 +50145,7 @@ type record_repr =
 
 type tag_info = 
   | Blk_constructor of {name : string ; num_nonconst : int ; tag : int }
-  | Blk_record_inlined of { name : string ; num_nonconst :  int;  tag : int; fields : string array; mutable_flag : Asttypes.mutable_flag }   
+  | Blk_record_inlined of { name : string ; num_nonconst :  int;  tag : int;  optional_labels: string list; fields : string array; mutable_flag : Asttypes.mutable_flag }   
   | Blk_tuple
   | Blk_poly_var of string 
   | Blk_record of {fields : string array; mutable_flag : Asttypes.mutable_flag; record_repr : record_repr}  
@@ -50193,9 +50201,9 @@ let blk_record_ext =  ref (fun fields mutable_flag ->
     Blk_record_ext {fields = all_labels_info; mutable_flag }
   )
 
-let blk_record_inlined = ref (fun fields name num_nonconst ~tag mutable_flag -> 
+let blk_record_inlined = ref (fun fields name num_nonconst optional_labels ~tag mutable_flag -> 
   let fields = fields |> Array.map (fun (x,_) -> x.Types.lbl_name) in    
-  Blk_record_inlined {fields; name; num_nonconst; tag; mutable_flag}
+  Blk_record_inlined {fields; name; num_nonconst; tag; mutable_flag; optional_labels}
 ) 
 
 let ref_tag_info : tag_info = 

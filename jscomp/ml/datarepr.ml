@@ -113,6 +113,7 @@ let constructor_descrs ty_path decl cstrs =
       if cd_args = Cstr_tuple [] then incr num_consts else incr num_nonconsts;
       if cd_res = None then incr num_normal)
     cstrs;
+  let has_optional attrs = Ext_list.exists attrs (fun ({txt },_) -> txt = "ns.optional") in
   let rec describe_constructors idx_const idx_nonconst = function
       [] -> []
     | {cd_id; cd_args; cd_res; cd_loc; cd_attributes} :: rem ->
@@ -131,11 +132,17 @@ let constructor_descrs ty_path decl cstrs =
           | _  -> (Cstr_block idx_nonconst,
                    describe_constructors idx_const (idx_nonconst+1) rem) in
         let cstr_name = Ident.name cd_id in
+        let optional_labels = match cd_args with
+          | Cstr_tuple _ -> []
+          | Cstr_record lbls ->
+            Ext_list.filter_map lbls (fun ({ld_id;ld_attributes; _}) ->
+              if has_optional ld_attributes then Some ld_id.name else None)
+        in
         let existentials, cstr_args, cstr_inlined =
           let representation =
             if decl.type_unboxed.unboxed
             then Record_unboxed true
-            else Record_inlined {tag = idx_nonconst; name = cstr_name; num_nonconsts = !num_nonconsts}
+            else Record_inlined {tag = idx_nonconst; name = cstr_name; num_nonconsts = !num_nonconsts; optional_labels}
           in
           constructor_args decl.type_private cd_args cd_res
             (Path.Pdot (ty_path, cstr_name, Path.nopos)) representation
