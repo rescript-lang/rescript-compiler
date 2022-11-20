@@ -1153,6 +1153,7 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
       let label_is_optional ld =
         match ld.lbl_repres with
         | Record_optional_labels lbls -> Ext_list.mem_string lbls ld.lbl_name
+        | Record_inlined {optional_labels} -> Ext_list.mem_string optional_labels ld.lbl_name
         | _ -> false in
       let process_optional_label (ld, pat) =
         let exp_optional_attr =

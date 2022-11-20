@@ -99,63 +99,136 @@ pm0 = ir0.TAG === /* V0 */0 ? [
 
 var pm1;
 
-pm1 = ir1.TAG === /* V0 */0 ? [
+if (ir1.TAG === /* V0 */0) {
+  var x1 = "v1";
+  var x0 = "v0";
+  pm1 = x1 !== undefined ? [
+      x0,
+      x1,
+      3
+    ] : [
+      x0,
+      "n/a",
+      3
+    ];
+} else {
+  pm1 = [
     "v0",
-    "v1",
-    3
-  ] : [
-    "v0",
-    undefined,
+    "n/a",
     "v1"
   ];
+}
 
 var pm2;
 
-pm2 = ir2.TAG === /* V0 */0 ? [
+if (ir2.TAG === /* V0 */0) {
+  var x1$1 = "v1";
+  var x0$1 = "v0";
+  if (x1$1 !== undefined) {
+    var x2 = 2;
+    pm2 = x2 !== undefined ? [
+        x0$1,
+        x1$1,
+        x2,
+        3
+      ] : [
+        x0$1,
+        x1$1,
+        0,
+        3
+      ];
+  } else {
+    var x2$1 = 2;
+    pm2 = x2$1 !== undefined ? [
+        x0$1,
+        "n/a",
+        x2$1,
+        3
+      ] : [
+        x0$1,
+        "n/a",
+        0,
+        3
+      ];
+  }
+} else {
+  pm2 = [
     "v0",
-    "v1",
-    2,
-    3
-  ] : [
-    "v0",
-    undefined,
-    undefined,
+    "n/a",
+    0,
     "v1"
   ];
+}
 
 function inlinedRecord(ir) {
   if (ir.TAG !== /* V0 */0) {
     return [
             ir.y0,
             "n/a",
-            undefined,
+            0,
             ir.y1
           ];
   }
-  var x3 = ir.x3;
-  var x2 = ir.x2;
   var x1 = ir.x1;
   var x0 = ir.x0;
-  if (Caml_obj.equal(x1, "x1")) {
+  if (x1 !== undefined) {
+    switch (x1) {
+      case "x1" :
+          var x2 = ir.x2;
+          if (x2 !== undefined) {
+            return [
+                    x0,
+                    "x1",
+                    x2,
+                    ir.x3
+                  ];
+          }
+          break;
+      case "xx1" :
+          var x2$1 = ir.x2;
+          if (x2$1 !== undefined) {
+            return [
+                    x0,
+                    "xx1",
+                    x2$1,
+                    ir.x3
+                  ];
+          }
+          break;
+      default:
+        
+    }
+    var x2$2 = ir.x2;
+    if (x2$2 !== undefined) {
+      return [
+              x0,
+              x1,
+              x2$2,
+              ir.x3
+            ];
+    } else {
+      return [
+              x0,
+              x1,
+              0,
+              ir.x3
+            ];
+    }
+  }
+  var x2$3 = ir.x2;
+  if (x2$3 !== undefined) {
     return [
             x0,
-            "x1!",
-            x2,
-            x3
-          ];
-  } else if (x1 !== undefined) {
-    return [
-            x0,
-            x1,
-            x2,
-            x3
+            "n/a",
+            x2$3,
+            ir.x3
           ];
   } else {
     return [
             x0,
-            "not existed",
-            x2,
-            x3
+            "n/a",
+            0,
+            ir.x3
           ];
   }
 }
