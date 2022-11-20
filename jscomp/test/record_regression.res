@@ -88,29 +88,7 @@ let _ = {...po, aa: @ns.optional None}
 
 let setAA = (ao: option<int>) => {aa: @ns.optional ao, bb: None}
 
-// Trigger representation mismatch error.
-// module M: {
-//   type partiallyOptional = {
-//     @ns.optional aa: int,
-//     bb: option<int>,
-//   }
-// } = {
-//   type partiallyOptional = {
-//     @ns.optional aa: int,
-//     @ns.optional bb: int,
-//   }
-// }
-
-type foo = Foo({name: string, age?: int})
-
-let foo1 = Foo({name: "foo"}) 
-let foo2 = Foo({name: "foo", age: 3})
-
-// should be type error
-// let foo3 = Foo({name: "foo", age: 3, nickname: "hasNoNickname"})
-// let foo4 = Foo({name: "foo", age: "3"})
-
-type inlinedRecord = V0({x0: string, x1?: string, x2?: int, x3: int}) | V1({y0: string, y1: int})
+type inlinedOptional = V0({x0: string, x1?: string, x2?: int, x3: int}) | V1({y0: string, y1: int})
 
 let ir0 = V0({x0: "v0", x3: 3})
 let ir1 = V0({x0: "v0", x1: "v1", x3: 3})
