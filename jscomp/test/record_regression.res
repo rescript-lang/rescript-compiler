@@ -109,3 +109,30 @@ let foo2 = Foo({name: "foo", age: 3})
 // should be type error
 // let foo3 = Foo({name: "foo", age: 3, nickname: "hasNoNickname"})
 // let foo4 = Foo({name: "foo", age: "3"})
+
+type inlinedRecord = V0({x0: string, x1?: string, x2?: int, x3: int}) | V1({y0: string, y1: int})
+
+let ir0 = V0({x0: "v0", x3: 3})
+let ir1 = V0({x0: "v0", x1: "v1", x3: 3})
+let ir2 = V0({x0: "v0", x1: "v1", x2: 2, x3: 3})
+
+let pm0 = switch ir0 {
+  | V0({x0, x3}) => (x0, x3)
+  | V1({y0, y1}) => (y0, y1)
+}
+let pm1 = switch ir1 {
+  | V0({x0, x1, x3}) => (x0, x1, x3)
+  | V1({y0, y1}) => (y0, None, y1)
+}
+let pm2 = switch ir2 {
+  | V0({x0, x1, x2, x3}) => (x0, x1, x2, x3)
+  | V1({y0, y1}) => (y0, None, None, y1)
+}
+let pm3 = switch ir2 {
+  | V0({x0, x1, x2, x3}) if x1 == Some("x1") => (x0, "x1!", x2, x3)
+  | V0({x0, x1, x2, x3}) => switch x1 {
+    | Some(x1) => (x0, x1, x2, x3)
+    | None => (x0, "not existed", x2, x3)
+  }
+  | V1({y0, y1}) => (y0, "not existed", None, y1)
+}
