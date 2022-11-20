@@ -88,15 +88,37 @@ let _ = {...po, aa: @ns.optional None}
 
 let setAA = (ao: option<int>) => {aa: @ns.optional ao, bb: None}
 
-// Trigger representation mismatch error.
-// module M: {
-//   type partiallyOptional = {
-//     @ns.optional aa: int,
-//     bb: option<int>,
-//   }
-// } = {
-//   type partiallyOptional = {
-//     @ns.optional aa: int,
-//     @ns.optional bb: int,
-//   }
-// }
+type inlinedOptional = V0({x0: string, x1?: string, x2?: int, x3: int}) | V1({y0: string, y1: int})
+
+let ir0 = V0({x0: "v0", x3: 3})
+let ir1 = V0({x0: "v0", x1: "v1", x3: 3})
+let ir2 = V0({x0: "v0", x1: "v1", x2: 2, x3: 3})
+let ir3 = V1({y0: "v0", y1: 1})
+
+let pm0 = switch ir0 {
+  | V0({x0, x3}) => (x0, x3)
+  | V1({y0, y1}) => (y0, y1)
+}
+let pm1 = switch ir1 {
+  | V0({x0, x1, x3}) => (x0, x1, x3)
+  | V0({x0, x1: ?None, x3}) => (x0, "n/a", x3)
+  | V1({y0, y1}) => (y0, "n/a", y1)
+}
+let pm2 = switch ir2 {
+  | V0({x0, x1, x2, x3}) => (x0, x1, x2, x3)
+  | V0({x0, x1: ?None, x2, x3}) => (x0, "n/a", x2, x3)
+  | V0({x0, x1, x2: ?None, x3}) => (x0, x1, 0, x3)
+  | V0({x0, x1: ?None, x2: ?None, x3}) => (x0, "n/a", 0, x3)
+  | V1({y0, y1}) => (y0, "n/a", 0, y1)
+}
+let inlinedRecord = ir => switch ir {
+  | V0({x0, x1: ?Some("x1"), x2, x3}) => (x0, "x1", x2, x3)
+  | V0({x0, x1: "xx1", x2, x3}) => (x0, "xx1", x2, x3)
+  | V0({x0, x1, x2, x3}) => (x0, x1, x2, x3)
+  | V0({x0, x1: ?None, x2, x3}) => (x0, "n/a", x2, x3)
+  | V0({x0, x1, x2: ?None, x3}) => (x0, x1, 0, x3)
+  | V0({x0, x1: ?None, x2: ?None, x3}) => (x0, "n/a", 0, x3)
+  | V1({y0, y1}) => (y0, "n/a", 0, y1)
+}
+let pm3 = inlinedRecord(ir2)
+let pm4 = inlinedRecord(ir3)
