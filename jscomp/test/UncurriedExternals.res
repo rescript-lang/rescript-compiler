@@ -26,6 +26,12 @@ module StandardNotation = {
 
   @obj external ccreate : (. unit) => string = ""
   let tcr = ccreate(.)
+
+  type counter
+  @set external setIncrementC: (counter, @this (counter, int) => unit) => unit = "increment"
+  let tsiC = c => setIncrementC(c, @this (me, amount) => Js.log(me))
+  @set external setIncrementU: (. counter, @this (. counter, int) => unit) => unit = "increment"
+  let tsiU = c => setIncrementU(. c, @this (. me, amount) => Js.log(me))
 }
 
 @@uncurried
@@ -57,3 +63,9 @@ let te = toException(Not_found)
 
 @obj external ucreate : unit => string = ""
 let tcr = ucreate()
+
+type counter
+@set external setIncrementC: (. counter, @this (. counter, int) => unit) => unit = "increment"
+let tsiC = c => setIncrementC(. c, @this (. me, amount) => Js.log(. me))
+@set external setIncrementU: (counter, @this (counter, int) => unit) => unit = "increment"
+let tsiU = c => setIncrementU(c, @this (me, amount) => Js.log(. me))

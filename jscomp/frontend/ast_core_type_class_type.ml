@@ -122,7 +122,12 @@ let typ_mapper (self : Bs_ast_mapper.mapper) (ty : Parsetree.core_type) =
   match ty with
   | {
    ptyp_attributes;
-   ptyp_desc = Ptyp_arrow (label, args, body);
+   ptyp_desc =
+     ( Ptyp_arrow (label, args, body)
+     | Ptyp_constr
+         (* Js.Fn.xx is re-wrapped around only in case Nothing below *)
+         ( { txt = Ldot (Ldot (Lident "Js", "Fn"), _) },
+           [ { ptyp_desc = Ptyp_arrow (label, args, body) } ] ) );
    (* let it go without regard label names,
       it will report error later when the label is not empty
    *)
