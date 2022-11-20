@@ -757,9 +757,9 @@ and expression_desc cxt ~(level : int) f x : cxt =
             (if !Js_config.debug then [ (name_symbol, E.str p.name) ] else [])
             (fun i -> Js_op.Lit i)
         in
-        let is_optional (names: string list) (pname: Js_op.property_name)  =
+        let is_optional (pname: Js_op.property_name)  =
           match pname with
-          | Lit n -> Ext_list.mem_string names n
+          | Lit n -> Ext_list.mem_string p.optional_labels n
           | Symbol_name -> false
         in
         let tails =
@@ -768,7 +768,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
           | _ ->
             Ext_list.filter_map tails (fun (f, x) ->
               match x.expression_desc with
-              | Undefined when is_optional p.optional_labels f -> None
+              | Undefined when is_optional f -> None
               | _ -> Some (f, x))
           in
         if p.num_nonconst = 1 then tails
