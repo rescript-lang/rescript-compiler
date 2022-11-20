@@ -115,6 +115,17 @@ let expr_mapper ~async_context ~in_function_def (self : mapper)
       | true, pexp_attributes ->
           Ast_bs_open.convertBsErrorFunction e.pexp_loc self pexp_attributes
             cases)
+  | Pexp_record
+      ( [
+          ( { txt = Ldot (Ldot (Lident "Js", "Fn"), _) },
+            ({ pexp_desc = Pexp_fun _; pexp_attributes } as inner_exp) );
+        ],
+        None )
+    when match Ast_attributes.process_attributes_rev pexp_attributes with
+         | Meth_callback _, _ -> true
+         | _ -> false ->
+      (* Treat @this (. x, y, z) => ... just like @this (x, y, z) => ... *)
+      self.expr self inner_exp
   | Pexp_fun (label, _, pat, body) -> (
       let async = Ast_attributes.has_async_payload e.pexp_attributes <> None in
       match Ast_attributes.process_attributes_rev e.pexp_attributes with

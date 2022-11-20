@@ -34,6 +34,20 @@ var te = (function (prim) {
 
 var tcr = {};
 
+function tsiC(c) {
+  c.increment = (function (amount) {
+      var me = this ;
+      console.log(me);
+    });
+}
+
+function tsiU(c) {
+  c.increment = (function (amount) {
+      var me = this ;
+      console.log(me);
+    });
+}
+
 var StandardNotation = {
   dd: dd,
   h: h,
@@ -43,7 +57,9 @@ var StandardNotation = {
   tg: tg,
   tc: tc,
   te: te,
-  tcr: tcr
+  tcr: tcr,
+  tsiC: tsiC,
+  tsiU: tsiU
 };
 
 function dd$1(param) {
@@ -79,6 +95,20 @@ var te$1 = (function (prim) {
 
 var tcr$1 = {};
 
+function tsiC$1(c) {
+  c.increment = (function (amount) {
+      var me = this ;
+      console.log(me);
+    });
+}
+
+function tsiU$1(c) {
+  c.increment = (function (amount) {
+      var me = this ;
+      console.log(me);
+    });
+}
+
 exports.StandardNotation = StandardNotation;
 exports.dd = dd$1;
 exports.h = h$1;
@@ -89,4 +119,6 @@ exports.tg = tg$1;
 exports.tc = tc$1;
 exports.te = te$1;
 exports.tcr = tcr$1;
+exports.tsiC = tsiC$1;
+exports.tsiU = tsiU$1;
 /* h Not a pure module */
