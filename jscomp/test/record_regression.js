@@ -257,15 +257,6 @@ var h = newrecord$2;
 
 var h10 = newrecord$3;
 
-var foo1 = /* Foo */{
-  name: "foo"
-};
-
-var foo2 = /* Foo */{
-  name: "foo",
-  age: 3
-};
-
 exports.f1 = f1;
 exports.f2 = f2;
 exports.f3 = f3;
@@ -279,8 +270,6 @@ exports.h10 = h10;
 exports.h11 = h11;
 exports.po = po;
 exports.setAA = setAA;
-exports.foo1 = foo1;
-exports.foo2 = foo2;
 exports.ir0 = ir0;
 exports.ir1 = ir1;
 exports.ir2 = ir2;
