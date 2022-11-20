@@ -36,8 +36,43 @@ let ensure_value_unit (st : Lam_compile_context.continuation) e : E.t =
   | EffectCall Not_tail -> e
 (* NeedValue should return a meaningful expression*)
 
-let translate loc (cxt : Lam_compile_context.t) (prim : Lam_primitive.t)
-    (args : J.expression list) : J.expression =
+let module_of_expression = function
+  | J.Var (J.Qualified (module_id, value)) -> [ (module_id, value) ]
+  | _ -> []
+
+let get_module_system () =
+  let packages_info = Js_packages_state.get_packages_info () in
+  let module_systems =
+    Js_packages_info.map packages_info (fun { module_system } -> module_system)
+  in
+  match module_systems with
+  (* fixme: test mode where the module system is empty *)
+  | [] -> assert false
+  | module_system :: _rest -> module_system
+
+let import_of_path path =
+  E.call
+    ~info:{ arity = Full; call_info = Call_na }
+    (E.js_global "import")
+    [ E.str path ]
+
+let wrap_then import value =
+  let arg = Ident.create "m" in
+  E.call
+    ~info:{ arity = Full; call_info = Call_na }
+    (E.dot import "then")
+    [
+      E.ocaml_fun ~return_unit:false ~async:false [ arg ]
+        [
+          {
+            statement_desc = J.Return (E.dot (E.var arg) value);
+            comment = None;
+          };
+        ];
+    ]
+
+let translate output_prefix loc (cxt : Lam_compile_context.t)
+    (prim : Lam_primitive.t) (args : J.expression list) : J.expression =
   match prim with
   | Pis_not_none -> Js_of_lam_option.is_not_none (Ext_list.singleton_exn args)
   | Pcreate_extension s -> E.make_exception s
@@ -77,6 +112,27 @@ let translate loc (cxt : Lam_compile_context.t) (prim : Lam_primitive.t)
           | Var _ | Undefined | Null -> Js_of_lam_option.null_undef_to_opt e
           | _ -> E.runtime_call Js_runtime_modules.option "nullable_to_opt" args
           )
+      | _ -> assert false)
+  | Pimport -> (
+      match args with
+      | [ e ] -> (
+          let output_dir = Filename.dirname output_prefix in
+
+          let module_id, module_value =
+            match module_of_expression e.expression_desc with
+            | [ module_ ] -> module_
+            | _ -> assert false
+            (* TODO: graceful error message here *)
+          in
+
+          let path =
+            Js_name_of_module_id.string_of_module_id module_id ~output_dir
+              (get_module_system ())
+          in
+
+          match module_value with
+          | Some value -> wrap_then (import_of_path path) value
+          | None -> import_of_path path)
       | _ -> assert false)
   | Pjs_function_length -> E.function_length (Ext_list.singleton_exn args)
   | Pcaml_obj_length -> E.obj_length (Ext_list.singleton_exn args)
