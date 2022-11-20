@@ -115,6 +115,7 @@ type inlinedRecord = V0({x0: string, x1?: string, x2?: int, x3: int}) | V1({y0: 
 let ir0 = V0({x0: "v0", x3: 3})
 let ir1 = V0({x0: "v0", x1: "v1", x3: 3})
 let ir2 = V0({x0: "v0", x1: "v1", x2: 2, x3: 3})
+let ir3 = V1({y0: "v0", y1: 1})
 
 let pm0 = switch ir0 {
   | V0({x0, x3}) => (x0, x3)
@@ -128,11 +129,13 @@ let pm2 = switch ir2 {
   | V0({x0, x1, x2, x3}) => (x0, x1, x2, x3)
   | V1({y0, y1}) => (y0, None, None, y1)
 }
-let pm3 = switch ir2 {
+let inlinedRecord = ir => switch ir {
   | V0({x0, x1, x2, x3}) if x1 == Some("x1") => (x0, "x1!", x2, x3)
   | V0({x0, x1, x2, x3}) => switch x1 {
     | Some(x1) => (x0, x1, x2, x3)
     | None => (x0, "not existed", x2, x3)
   }
-  | V1({y0, y1}) => (y0, "not existed", None, y1)
+  | V1({y0, y1}) => (y0, "n/a", None, y1)
 }
+let pm3 = inlinedRecord(ir2)
+let pm4 = inlinedRecord(ir3)

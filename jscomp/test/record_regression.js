@@ -81,6 +81,12 @@ var ir2 = {
   x3: 3
 };
 
+var ir3 = {
+  TAG: /* V1 */1,
+  y0: "v0",
+  y1: 1
+};
+
 var pm0;
 
 pm0 = ir0.TAG === /* V0 */0 ? [
@@ -117,38 +123,46 @@ pm2 = ir2.TAG === /* V0 */0 ? [
     "v1"
   ];
 
-var pm3;
-
-if (ir2.TAG === /* V0 */0) {
-  var x2 = 2;
-  var x1 = "v1";
-  var x0 = "v0";
-  pm3 = Caml_obj.equal(x1, "x1") ? [
-      x0,
-      "x1!",
-      x2,
-      3
-    ] : (
-      x1 !== undefined ? [
-          x0,
-          x1,
-          x2,
-          3
-        ] : [
-          x0,
-          "not existed",
-          x2,
-          3
-        ]
-    );
-} else {
-  pm3 = [
-    "v0",
-    "not existed",
-    undefined,
-    "v1"
-  ];
+function inlinedRecord(ir) {
+  if (ir.TAG !== /* V0 */0) {
+    return [
+            ir.y0,
+            "n/a",
+            undefined,
+            ir.y1
+          ];
+  }
+  var x3 = ir.x3;
+  var x2 = ir.x2;
+  var x1 = ir.x1;
+  var x0 = ir.x0;
+  if (Caml_obj.equal(x1, "x1")) {
+    return [
+            x0,
+            "x1!",
+            x2,
+            x3
+          ];
+  } else if (x1 !== undefined) {
+    return [
+            x0,
+            x1,
+            x2,
+            x3
+          ];
+  } else {
+    return [
+            x0,
+            "not existed",
+            x2,
+            x3
+          ];
+  }
 }
+
+var pm3 = inlinedRecord(ir2);
+
+var pm4 = inlinedRecord(ir3);
 
 var f2 = {
   x: 3,
@@ -197,8 +211,11 @@ exports.foo2 = foo2;
 exports.ir0 = ir0;
 exports.ir1 = ir1;
 exports.ir2 = ir2;
+exports.ir3 = ir3;
 exports.pm0 = pm0;
 exports.pm1 = pm1;
 exports.pm2 = pm2;
+exports.inlinedRecord = inlinedRecord;
 exports.pm3 = pm3;
+exports.pm4 = pm4;
 /*  Not a pure module */
