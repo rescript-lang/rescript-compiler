@@ -14,7 +14,7 @@
 
 #### :bug: Bug Fix
 
-- Fix issue where optional field in the inlined record caused the type error https://github.com/rescript-lang/rescript-compiler/pull/5827
+- Fix issue where optional fields in inline records were not supported and would cause type errors https://github.com/rescript-lang/rescript-compiler/pull/5827
 
 # 10.1.0-rc.5
 
