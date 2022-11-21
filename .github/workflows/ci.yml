@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [master]
 
+concurrency:
+  group: ci-${{ github.ref }}-1
+  cancel-in-progress: true
+
 jobs:
   build:
     strategy:
