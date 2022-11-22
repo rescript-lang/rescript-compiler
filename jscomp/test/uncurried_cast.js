@@ -22,10 +22,9 @@ var Uncurried = {
 var E = /* @__PURE__ */Caml_exceptions.create("Uncurried_cast.E");
 
 function testRaise(param) {
-  throw {
-        RE_EXN_ID: E,
-        Error: new Error()
-      };
+  return raise({
+              RE_EXN_ID: E
+            });
 }
 
 var l = map({
@@ -50,9 +49,9 @@ function partial(param) {
   return map(partial_arg, param);
 }
 
-var ll = Curry._1(partial, (function (x) {
-        return x + 1 | 0;
-      }));
+var ll = partial(function (x) {
+      return x + 1 | 0;
+    });
 
 function withOpts(xOpt, y, zOpt, w) {
   var x = xOpt !== undefined ? xOpt : 3;

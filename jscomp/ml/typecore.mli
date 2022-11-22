@@ -109,6 +109,7 @@ type error =
   | Illegal_letrec_pat
   | Labels_omitted of string list
   | Empty_record_literal
+  | Uncurried_arity_mismatch of type_expr * int * int * bool
 exception Error of Location.t * Env.t * error
 exception Error_forward of Location.error
 

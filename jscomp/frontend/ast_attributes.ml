@@ -341,8 +341,7 @@ let locg = Location.none
 let is_bs (attr : attr) =
   match attr with { Location.txt = "bs"; _ }, _ -> true | _ -> false
 
-let is_res_uapp (attr : attr) =
-  match attr with { Location.txt = "res.uapp"; _ }, _ -> true | _ -> false
+let res_uapp : attr = ({ txt = "res.uapp"; loc = locg }, Ast_payload.empty)
 
 let bs_get : attr = ({ txt = "bs.get"; loc = locg }, Ast_payload.empty)
 

@@ -124,7 +124,7 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
               {
                 pexp_desc = Pexp_apply (fn1, (Nolabel, a) :: args);
                 pexp_loc = e.pexp_loc;
-                pexp_attributes = e.pexp_attributes;
+                pexp_attributes = e.pexp_attributes @ f.pexp_attributes;
               }
           | Pexp_tuple xs ->
               bound a (fun bounded_obj_arg ->
@@ -158,38 +158,16 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
                   })
           | _ -> (
               match
-                ( Ext_list.exclude_with_val f_.pexp_attributes (fun a ->
-                      Ast_attributes.is_bs a
-                      || Ast_attributes.is_res_uapp a),
+                ( Ext_list.exclude_with_val f_.pexp_attributes
+                    Ast_attributes.is_bs,
                   f_.pexp_desc )
               with
-              | Some other_attributes, Pexp_apply (fn1, args) ->
-                  (* a |. f b c [@bs]
-                     Cannot process uncurried application early as the arity is wip *)
-                  let fn1 = self.expr self fn1 in
-                  let args =
-                    args |> List.map (fun (l, e) -> (l, self.expr self e))
-                  in
-                  Bs_ast_invariant.warn_discarded_unused_attributes
-                    fn1.pexp_attributes;
-                  {
-                    pexp_desc =
-                      Ast_uncurry_apply.uncurry_fn_apply ~arity0:(op = "|.")
-                        e.pexp_loc self fn1 ((Nolabel, a) :: args);
-                    pexp_loc = e.pexp_loc;
-                    pexp_attributes = e.pexp_attributes @ other_attributes;
-                  }
               | _ when op = "|.u" ->
                   (* a |.u f
                      Uncurried unary application *)
-                  {
-                    pexp_desc =
-                      Ast_uncurry_apply.uncurry_fn_apply ~arity0:false
-                        e.pexp_loc self f
-                        [ (Nolabel, a) ];
-                    pexp_loc = e.pexp_loc;
-                    pexp_attributes = e.pexp_attributes;
-                  }
+                  Ast_compatible.app1 ~loc
+                    ~attrs:(Ast_attributes.res_uapp :: e.pexp_attributes)
+                    f a
               | _ -> Ast_compatible.app1 ~loc ~attrs:e.pexp_attributes f a))
       | Some { op = "##"; loc; args = [ obj; rest ] } -> (
           (* - obj##property
@@ -289,21 +267,7 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
               {
                 e with
                 pexp_desc =
-                  Ast_uncurry_apply.uncurry_fn_apply ~arity0:true e.pexp_loc
-                    self fn args;
+                  Ast_uncurry_apply.uncurry_fn_apply e.pexp_loc self fn args;
                 pexp_attributes;
               }
-          | None -> (
-              match
-                Ext_list.exclude_with_val e.pexp_attributes
-                  Ast_attributes.is_res_uapp
-              with
-              | Some pexp_attributes ->
-                  {
-                    e with
-                    pexp_desc =
-                      Ast_uncurry_apply.uncurry_fn_apply ~arity0:false
-                        e.pexp_loc self fn args;
-                    pexp_attributes;
-                  }
-              | None -> default_expr_mapper self e)))
+          | None -> default_expr_mapper self e))
