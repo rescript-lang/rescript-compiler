@@ -258,11 +258,24 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
           match
             Ext_list.exclude_with_val e.pexp_attributes Ast_attributes.is_bs
           with
-          | Some pexp_attributes ->
-              {
-                e with
-                pexp_desc =
-                  Ast_uncurry_apply.uncurry_fn_apply e.pexp_loc self fn args;
-                pexp_attributes;
-              }
+          | Some pexp_attributes -> (
+              (* syntax: {[f arg0 arg1 [@bs]]} only for legacy .ml files *)
+              let fn = self.expr self fn in
+              let args =
+                Ext_list.map args (fun (lbl, e) -> (lbl, self.expr self e))
+              in
+              let jsInternal = Ast_literal.Lid.js_internal in
+              let loc = e.pexp_loc in
+              match args with
+              | [
+               ( Nolabel,
+                 { pexp_desc = Pexp_construct ({ txt = Lident "()" }, None) } );
+              ] ->
+                  Exp.apply ~loc ~attrs:pexp_attributes
+                    (Exp.ident { txt = Ldot (jsInternal, "run"); loc })
+                    [ (Nolabel, fn) ]
+              | _ ->
+                  Exp.apply ~loc
+                    ~attrs:(Ast_attributes.res_uapp :: pexp_attributes)
+                    fn args)
           | None -> default_expr_mapper self e))
