@@ -24,14 +24,6 @@
 
 (* TODO: the interface is not reusable, it depends on too much context *)
 
-val uncurry_fn_apply :
-  Location.t ->
-  Bs_ast_mapper.mapper ->
-  Parsetree.expression ->
-  Ast_compatible.args ->
-  Parsetree.expression_desc
-(** syntax: {[f arg0 arg1 [@bs]]}*)
-
 val method_apply :
   Location.t ->
   Bs_ast_mapper.mapper ->

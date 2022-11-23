@@ -127,10 +127,6 @@ let method_apply loc (self : Bs_ast_mapper.mapper) (obj : Parsetree.expression)
                   { loc; txt = Ast_literal.Lid.hidden_field arity_s } );
             ])
          args)
-
-let uncurry_fn_apply loc self fn args =
-  generic_apply loc self fn args (fun _ obj -> obj)
-
 let property_apply loc self obj name args =
   generic_apply loc self obj args (fun loc obj ->
       Exp.send ~loc obj { txt = name; loc })
