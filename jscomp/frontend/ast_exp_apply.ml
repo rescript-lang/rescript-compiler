@@ -156,19 +156,14 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
                     pexp_attributes = f.pexp_attributes;
                     pexp_loc = f.pexp_loc;
                   })
-          | _ -> (
-              match
-                ( Ext_list.exclude_with_val f_.pexp_attributes
-                    Ast_attributes.is_bs,
-                  f_.pexp_desc )
-              with
-              | _ when op = "|.u" ->
-                  (* a |.u f
-                     Uncurried unary application *)
-                  Ast_compatible.app1 ~loc
-                    ~attrs:(Ast_attributes.res_uapp :: e.pexp_attributes)
-                    f a
-              | _ -> Ast_compatible.app1 ~loc ~attrs:e.pexp_attributes f a))
+          | _ ->
+              if op = "|.u" then
+                (* a |.u f
+                   Uncurried unary application *)
+                Ast_compatible.app1 ~loc
+                  ~attrs:(Ast_attributes.res_uapp :: e.pexp_attributes)
+                  f a
+              else Ast_compatible.app1 ~loc ~attrs:e.pexp_attributes f a)
       | Some { op = "##"; loc; args = [ obj; rest ] } -> (
           (* - obj##property
              - obj#(method a b )
