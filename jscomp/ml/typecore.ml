@@ -73,7 +73,7 @@ type error =
   | Illegal_letrec_pat
   | Labels_omitted of string list
   | Empty_record_literal
-  | Uncurried_arity_mismatch of type_expr * int * int * bool
+  | Uncurried_arity_mismatch of type_expr * int * int
 exception Error of Location.t * Env.t * error
 exception Error_forward of Location.error
 
@@ -2998,20 +2998,17 @@ and type_application uncurried env funct (sargs : sargs) : targs * Types.type_ex
     | Some (arity, t1) ->
       if List.length sargs > arity then
         raise(Error(funct.exp_loc, env,
-          Uncurried_arity_mismatch (t, arity, List.length sargs, false)));
+          Uncurried_arity_mismatch (t, arity, List.length sargs)));
       t1, arity
     | None -> t, max_int in
   let update_uncurried_arity ~nargs t newT =
     match has_uncurried_type t with
     | Some (arity, _) ->
       let newarity = arity - nargs in
-      if newarity < 0 then
-        raise(Error(funct.exp_loc, env,
-          Uncurried_arity_mismatch (t, arity, List.length sargs, true)));
       let fully_applied = newarity = 0 in
       if uncurried && not fully_applied then
         raise(Error(funct.exp_loc, env,
-          Uncurried_arity_mismatch (t, arity, List.length sargs, false)));
+          Uncurried_arity_mismatch (t, arity, List.length sargs)));
       let newT = if fully_applied then newT else mk_js_fn newarity newT in
       (fully_applied, newT)
     | _ -> (false, newT)
@@ -3038,7 +3035,6 @@ and type_application uncurried env funct (sargs : sargs) : targs * Types.type_ex
               (t1, t2)
           | Tarrow (l,t1,t2,_) when Asttypes.same_arg_label l l1 && arity_ok
             ->
-              if List.length args >= max_arity then assert false;
               (t1, t2)
           | td ->
               let ty_fun =
@@ -3871,16 +3867,11 @@ let report_error env ppf = function
       (String.concat ", " labels)  
   | Empty_record_literal ->
       fprintf ppf  "Empty record literal {} should be type annotated or used in a record context."
-  | Uncurried_arity_mismatch (typ, arity, args, false (* no partial application *)) ->
+  | Uncurried_arity_mismatch (typ, arity, args) ->
     fprintf ppf "@[<v>@[<2>This uncurried function has type@ %a@]"
     type_expr typ;
     fprintf ppf "@ @[It is applied with @{<error>%d@} argument%s but it requires @{<info>%d@}.@]@]"
       args (if args = 0 then "" else "s") arity
-  | Uncurried_arity_mismatch (typ, _, _, true (* partial application *)) ->
-    fprintf ppf "@[<v>@[<2>This uncurried function has type@ %a@]"
-    type_expr typ;
-    fprintf ppf "@ @[It is partially applied with too many arguments.@]@]"
-
 
 let super_report_error_no_wrap_printing_env = report_error
 
