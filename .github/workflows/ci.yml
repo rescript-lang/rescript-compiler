@@ -8,7 +8,8 @@ on:
 
 concurrency:
   group: ci-${{ github.ref }}-1
-  cancel-in-progress: true
+  # Cancel previous builds for pull requests only.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
