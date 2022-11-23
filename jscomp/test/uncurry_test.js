@@ -1,7 +1,7 @@
 'use strict';
 
 
-function f0() {
+function f0(param) {
   return 0;
 }
 
@@ -366,7 +366,7 @@ function f22(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a1
         ];
 }
 
-console.log(f0());
+console.log(f0(undefined));
 
 console.log(f1(0));
 
@@ -412,8 +412,9 @@ console.log(f21(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18
 
 console.log(f22(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21));
 
-function xx() {
+function xx(_param) {
   while(true) {
+    _param = undefined;
     continue ;
   };
 }
