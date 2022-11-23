@@ -25,7 +25,6 @@
 (* TODO: the interface is not reusable, it depends on too much context *)
 
 val uncurry_fn_apply :
-  arity0:bool ->
   Location.t ->
   Bs_ast_mapper.mapper ->
   Parsetree.expression ->

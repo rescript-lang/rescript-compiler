@@ -73,6 +73,7 @@ type error =
   | Illegal_letrec_pat
   | Labels_omitted of string list
   | Empty_record_literal
+  | Uncurried_arity_mismatch of type_expr * int * int
 exception Error of Location.t * Env.t * error
 exception Error_forward of Location.error
 
@@ -2015,15 +2016,35 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
       end_def ();
       wrap_trace_gadt_instances env (lower_args env []) ty;
       begin_def ();
-      let (args, ty_res) = type_application env funct sargs in
+      let uncurried = Ext_list.exists sexp.pexp_attributes (fun ({txt },_) -> txt = "res.uapp") in
+      let (args, ty_res, fully_applied) = type_application uncurried env funct sargs in
       end_def ();
       unify_var env (newvar()) funct.exp_type;
-      rue {
-        exp_desc = Texp_apply(funct, args);
-        exp_loc = loc; exp_extra = [];
-        exp_type = ty_res;
-        exp_attributes = sexp.pexp_attributes;
-        exp_env = env }
+
+      let mk_exp ?(loc=Location.none) exp_desc exp_type =
+        { exp_desc;
+          exp_loc = loc; exp_extra = [];
+          exp_type;
+          exp_attributes = [];
+          exp_env = env } in
+      let apply_internal name e =
+        let lid:Longident.t = Ldot (Ldot (Lident "Js", "Internal"), name) in
+        let (path, desc) = Env.lookup_value lid env in
+        let id = mk_exp (Texp_ident(path, {txt=lid; loc=Location.none}, desc)) desc.val_type in
+        mk_exp ~loc:e.exp_loc (Texp_apply(id, [(Nolabel, Some e)])) e.exp_type in
+        
+      let mk_apply funct args =
+        rue {
+          exp_desc = Texp_apply(funct, args);
+          exp_loc = loc; exp_extra = [];
+          exp_type = ty_res;
+          exp_attributes = sexp.pexp_attributes;
+          exp_env = env } in
+
+      if fully_applied then
+        rue (apply_internal "opaqueFullApply" (mk_apply (apply_internal "opaque" funct) args))
+      else
+        rue (mk_apply funct args)
   | Pexp_match(sarg, caselist) ->
       begin_def ();
       let arg = type_exp env sarg in
@@ -2939,7 +2960,7 @@ and type_argument ?recarg env sarg ty_expected' ty_expected =
       unify_exp env texp ty_expected;
       texp
 
-and type_application env funct (sargs : sargs) : targs * Types.type_expr =
+and type_application uncurried env funct (sargs : sargs) : targs * Types.type_expr * bool =
   (* funct.exp_type may be generic *)
   let result_type omitted ty_fun =
     List.fold_left
@@ -2951,27 +2972,48 @@ and type_application env funct (sargs : sargs) : targs * Types.type_expr =
     tvar || List.mem l ls
   in
   let ignored = ref [] in
-  let extract_uncurried_type t =
+  let mk_js_fn arity t =
+    let a = "arity" ^ string_of_int arity in
+    let lid:Longident.t = Ldot (Ldot (Lident "Js", "Fn"), a) in
+    let path = Env.lookup_type lid env in
+    newconstr path [t] in
+  let has_uncurried_type t =
     match (expand_head env t).desc with
-    | Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),_,_),[t],_) -> t
-    | _ -> t in
-  let lower_uncurried_arity ~nargs t newT =
-    match (expand_head env t).desc with
-    | Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),a,_),[_],_) ->
+    | Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),a,_),[t],_) ->
       let arity =
         if String.sub a 0 5 = "arity"
         then int_of_string (String.sub a 5 (String.length a - 5))
         else 0 in
+       Some (arity, t)
+    | _ -> None in
+  let force_uncurried_type funct =
+    match has_uncurried_type funct.exp_type with
+    | None ->
+      let arity = List.length sargs in
+      let js_fn = mk_js_fn arity (newvar()) in
+      unify_exp env funct js_fn
+    | Some _ -> () in
+  let extract_uncurried_type t =
+    match has_uncurried_type t with
+    | Some (arity, t1) ->
+      if List.length sargs > arity then
+        raise(Error(funct.exp_loc, env,
+          Uncurried_arity_mismatch (t, arity, List.length sargs)));
+      t1, arity
+    | None -> t, max_int in
+  let update_uncurried_arity ~nargs t newT =
+    match has_uncurried_type t with
+    | Some (arity, _) ->
       let newarity = arity - nargs in
-      if newarity > 0 then
-        let a = "arity" ^ string_of_int newarity in
-        let lid:Longident.t = Ldot (Ldot (Lident "Js", "Fn"), a) in
-        let path = Env.lookup_type lid env in
-        newconstr path [newT]
-      else newT
-    | _ -> newT
+      let fully_applied = newarity = 0 in
+      if uncurried && not fully_applied then
+        raise(Error(funct.exp_loc, env,
+          Uncurried_arity_mismatch (t, arity, List.length sargs)));
+      let newT = if fully_applied then newT else mk_js_fn newarity newT in
+      (fully_applied, newT)
+    | _ -> (false, newT)
   in
-  let rec type_unknown_args (args : lazy_args) omitted ty_fun (syntax_args : sargs)
+  let rec type_unknown_args max_arity (args : lazy_args) omitted ty_fun (syntax_args : sargs)
      : targs * _ = 
     match syntax_args with 
     |  [] ->
@@ -2983,14 +3025,15 @@ and type_application env funct (sargs : sargs) : targs * Types.type_expr =
     | (l1, sarg1) :: sargl ->
         let (ty1, ty2) =
           let ty_fun = expand_head env ty_fun in
+          let arity_ok = List.length args < max_arity in
           match ty_fun.desc with
-            Tvar _ ->
+            Tvar _  ->
               let t1 = newvar () and t2 = newvar () in
               if ty_fun.level >= t1.level && not_identity funct.exp_desc then
                 Location.prerr_warning sarg1.pexp_loc Warnings.Unused_argument;
               unify env ty_fun (newty (Tarrow(l1,t1,t2,Clink(ref Cunknown))));
               (t1, t2)
-          | Tarrow (l,t1,t2,_) when Asttypes.same_arg_label l l1
+          | Tarrow (l,t1,t2,_) when Asttypes.same_arg_label l l1 && arity_ok
             ->
               (t1, t2)
           | td ->
@@ -2999,6 +3042,9 @@ and type_application env funct (sargs : sargs) : targs * Types.type_expr =
               let ty_res = result_type (omitted @ !ignored) ty_fun in
               match ty_res.desc with
                 Tarrow _ ->
+                  if not arity_ok then
+                    raise (Error(sarg1.pexp_loc, env,
+                                 Apply_wrong_label(l1, funct.exp_type))) else
                   if (not (has_label l1 ty_fun)) then
                     raise (Error(sarg1.pexp_loc, env,
                                  Apply_wrong_label(l1, ty_res)))
@@ -3015,13 +3061,13 @@ and type_application env funct (sargs : sargs) : targs * Types.type_expr =
             unify_exp env arg1 (type_option(newvar()));
           arg1
         in
-        type_unknown_args ((l1, Some arg1) :: args) omitted ty2 sargl
+        type_unknown_args max_arity ((l1, Some arg1) :: args) omitted ty2 sargl
   in
-  let rec type_args args omitted ~ty_fun ty_fun0  ~(sargs : sargs)  =
+  let rec type_args max_arity args omitted ~ty_fun ty_fun0  ~(sargs : sargs)  =
     match expand_head env ty_fun, expand_head env ty_fun0 with
       {desc=Tarrow (l, ty, ty_fun, com); level=lv} ,
       {desc=Tarrow (_, ty0, ty_fun0, _)}
-      when (sargs <> [] ) && commu_repr com = Cok ->
+      when (sargs <> [] ) && commu_repr com = Cok && List.length args < max_arity ->
         let name = label_name l
         and optional = is_optional l in
         let sargs, omitted,  arg =          
@@ -3046,9 +3092,9 @@ and type_application env funct (sargs : sargs) : targs * Types.type_expr =
                                              (extract_option_type env ty)
                                              (extract_option_type env ty0))))
         in
-        type_args ((l,arg)::args) omitted ~ty_fun ty_fun0 ~sargs 
+        type_args max_arity ((l,arg)::args) omitted ~ty_fun ty_fun0 ~sargs 
     | _ ->
-        type_unknown_args args omitted ty_fun0 sargs (* This is the hot path for non-labeled function*)
+        type_unknown_args max_arity args omitted ty_fun0 sargs (* This is the hot path for non-labeled function*)
   in
   let () =  
     let ls, tvar = list_labels env funct.exp_type in
@@ -3078,14 +3124,14 @@ and type_application env funct (sargs : sargs) : targs * Types.type_expr =
           Delayed_checks.add_delayed_check (fun () -> check_application_result env false exp)
       | _ -> ()
       end;
-      ([Nolabel, Some exp], ty_res)
+      ([Nolabel, Some exp], ty_res, false)
   | _ ->
-      let ty = extract_uncurried_type funct.exp_type in
-      let targs, ret_t = type_args [] [] ~ty_fun:ty (instance env ty) ~sargs in
-      let ret_t =
-        if funct.exp_type == ty then ret_t
-        else lower_uncurried_arity funct.exp_type ~nargs:(List.length !ignored + List.length sargs) ret_t in
-      targs, ret_t
+      if uncurried then force_uncurried_type funct;
+      let ty, max_arity = extract_uncurried_type funct.exp_type in
+      let targs, ret_t = type_args max_arity [] [] ~ty_fun:ty (instance env ty) ~sargs in
+      let fully_applied, ret_t =
+        update_uncurried_arity funct.exp_type ~nargs:(List.length !ignored + List.length sargs) ret_t in
+      targs, ret_t, fully_applied
 
 and type_construct env loc lid sarg ty_expected attrs =
   let opath =
@@ -3821,6 +3867,11 @@ let report_error env ppf = function
       (String.concat ", " labels)  
   | Empty_record_literal ->
       fprintf ppf  "Empty record literal {} should be type annotated or used in a record context."
+  | Uncurried_arity_mismatch (typ, arity, args) ->
+    fprintf ppf "@[<v>@[<2>This uncurried function has type@ %a@]"
+    type_expr typ;
+    fprintf ppf "@ @[It is applied with @{<error>%d@} argument%s but it requires @{<info>%d@}.@]@]"
+      args (if args = 0 then "" else "s") arity
 
 let super_report_error_no_wrap_printing_env = report_error
 

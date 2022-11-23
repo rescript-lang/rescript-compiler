@@ -44,9 +44,8 @@ let opaque_full_apply ~loc (e : exp) : Parsetree.expression_desc =
         [ (Nolabel, e) ],
       Typ.any ~loc () )
 
-let generic_apply ~arity0 loc (self : Bs_ast_mapper.mapper)
-    (obj : Parsetree.expression) (args : Ast_compatible.args)
-    (cb : loc -> exp -> exp) =
+let generic_apply loc (self : Bs_ast_mapper.mapper) (obj : Parsetree.expression)
+    (args : Ast_compatible.args) (cb : loc -> exp -> exp) =
   let obj = self.expr self obj in
   let args =
     Ext_list.map args (fun (lbl, e) ->
@@ -58,8 +57,7 @@ let generic_apply ~arity0 loc (self : Bs_ast_mapper.mapper)
     match args with
     | [
      (Nolabel, { pexp_desc = Pexp_construct ({ txt = Lident "()" }, None) });
-    ]
-      when arity0 ->
+    ] ->
         []
     | _ -> args
   in
@@ -130,9 +128,9 @@ let method_apply loc (self : Bs_ast_mapper.mapper) (obj : Parsetree.expression)
             ])
          args)
 
-let uncurry_fn_apply ~arity0 loc self fn args =
-  generic_apply ~arity0 loc self fn args (fun _ obj -> obj)
+let uncurry_fn_apply loc self fn args =
+  generic_apply loc self fn args (fun _ obj -> obj)
 
 let property_apply loc self obj name args =
-  generic_apply ~arity0:true loc self obj args (fun loc obj ->
+  generic_apply loc self obj args (fun loc obj ->
       Exp.send ~loc obj { txt = name; loc })
