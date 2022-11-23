@@ -720,11 +720,11 @@ o test/unboxed_use_case.cmi : cc test/unboxed_use_case.mli | $bsc $stdlib runtim
 o test/uncurried_cast.cmi test/uncurried_cast.cmj : cc test/uncurried_cast.res | $bsc $stdlib runtime
 o test/uncurried_default.args.cmi test/uncurried_default.args.cmj : cc test/uncurried_default.args.res | $bsc $stdlib runtime
 o test/uncurried_pipe.cmi test/uncurried_pipe.cmj : cc test/uncurried_pipe.res | $bsc $stdlib runtime
-o test/uncurry_external_test.cmi test/uncurry_external_test.cmj : cc test/uncurry_external_test.ml | test/mt.cmj $bsc $stdlib runtime
-o test/uncurry_glob_test.cmi test/uncurry_glob_test.cmj : cc test/uncurry_glob_test.ml | $bsc $stdlib runtime
+o test/uncurry_external_test.cmi test/uncurry_external_test.cmj : cc test/uncurry_external_test.res | test/mt.cmj $bsc $stdlib runtime
+o test/uncurry_glob_test.cmi test/uncurry_glob_test.cmj : cc test/uncurry_glob_test.res | $bsc $stdlib runtime
 o test/uncurry_method.cmi test/uncurry_method.cmj : cc test/uncurry_method.ml | $bsc $stdlib runtime
-o test/uncurry_test.cmj : cc_cmi test/uncurry_test.ml | test/uncurry_test.cmi $bsc $stdlib runtime
-o test/uncurry_test.cmi : cc test/uncurry_test.mli | $bsc $stdlib runtime
+o test/uncurry_test.cmj : cc_cmi test/uncurry_test.res | test/uncurry_test.cmi $bsc $stdlib runtime
+o test/uncurry_test.cmi : cc test/uncurry_test.resi | $bsc $stdlib runtime
 o test/undef_regression2_test.cmi test/undef_regression2_test.cmj : cc test/undef_regression2_test.ml | test/mt.cmj $bsc $stdlib runtime
 o test/undef_regression_test.cmi test/undef_regression_test.cmj : cc test/undef_regression_test.ml | $bsc $stdlib runtime
 o test/undefine_conditional.cmi test/undefine_conditional.cmj : cc test/undefine_conditional.ml | $bsc $stdlib runtime
