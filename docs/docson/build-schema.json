@@ -494,10 +494,6 @@
       "$ref": "#/definitions/entries",
       "description": "(internal) Used by bsb to build to different targets: native (ocamlopt), bytecode (ocamlc) or JS (bsc)"
     },
-    "generate-merlin": {
-      "type": "boolean",
-      "description": "Whether to generate the `.merlin` file for [Merlin](https://github.com/ocaml/merlin). Default: true"
-    },
     "use-stdlib": {
       "type": "boolean",
       "description": "(Experimental) whether to use the OCaml standard library. Default: true"

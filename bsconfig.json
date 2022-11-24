@@ -3,6 +3,5 @@
   "version": "7.0.0",
   "sources": {
     "dir": "jscomp/test/"
-  },
-  "generate-merlin": true
+  }
 }

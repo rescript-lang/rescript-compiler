@@ -333,8 +333,6 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
             file_groups = groups;
             files_to_install = Queue.create ();
             built_in_dependency = built_in_package;
-            generate_merlin =
-              extract_boolean map Bsb_build_schemas.generate_merlin false;
             reason_react_jsx;
             jsx;
             generators = extract_generators map;
