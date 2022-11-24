@@ -1,8 +1,0 @@
-/node_modules
-/.merlin
-/lib/bs
-/lib/js/test
-/lib/ocaml
-npm-debug.log
-*.bs.js
-.bsb.lock

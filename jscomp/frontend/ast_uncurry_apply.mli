@@ -32,12 +32,3 @@ val method_apply :
   Ast_compatible.args ->
   Parsetree.expression_desc
 (** syntax : {[f## arg0 arg1 ]}*)
-
-val property_apply :
-  Location.t ->
-  Bs_ast_mapper.mapper ->
-  Parsetree.expression ->
-  string ->
-  Ast_compatible.args ->
-  Parsetree.expression_desc
-(** syntax {[f#@ arg0 arg1 ]}*)

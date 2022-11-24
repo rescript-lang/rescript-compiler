@@ -1,5 +1,6 @@
 'use strict';
 
+var Curry = require("../../lib/js/curry.js");
 
 function uux_this(x, y) {
   var o = this ;
@@ -38,7 +39,7 @@ function f(x) {
       var o = this ;
       console.log(o);
     });
-  return x.addEventListener("onload", (function () {
+  return Curry._2(x.addEventListener, "onload", (function () {
                 var o = this ;
                 console.log(o.response);
               }));

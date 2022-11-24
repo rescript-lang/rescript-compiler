@@ -26,12 +26,6 @@ open Ast_helper
 
 type exp = Parsetree.expression
 
-(* TODO:
-   have a final checking for property arities
-     [#=],
-*)
-let jsInternal = Ast_literal.Lid.js_internal
-
 (* we use the trick
    [( opaque e : _) ] to avoid it being inspected,
    the type constraint is avoid some syntactic transformation, e.g ` e |. (f g [@bs])`
@@ -43,47 +37,6 @@ let opaque_full_apply ~loc (e : exp) : Parsetree.expression_desc =
         (Exp.ident { txt = Ast_literal.Lid.js_internal_full_apply; loc })
         [ (Nolabel, e) ],
       Typ.any ~loc () )
-
-let generic_apply loc (self : Bs_ast_mapper.mapper) (obj : Parsetree.expression)
-    (args : Ast_compatible.args) (cb : loc -> exp -> exp) =
-  let obj = self.expr self obj in
-  let args =
-    Ext_list.map args (fun (lbl, e) ->
-        Bs_syntaxerr.optional_err loc lbl;
-        (lbl, self.expr self e))
-  in
-  let fn = cb loc obj in
-  let args =
-    match args with
-    | [
-     (Nolabel, { pexp_desc = Pexp_construct ({ txt = Lident "()" }, None) });
-    ] ->
-        []
-    | _ -> args
-  in
-  let arity = List.length args in
-  if arity = 0 then
-    Parsetree.Pexp_apply
-      (Exp.ident { txt = Ldot (jsInternal, "run"); loc }, [ (Nolabel, fn) ])
-  else
-    let arity_s = string_of_int arity in
-    opaque_full_apply ~loc
-      (Exp.apply ~loc
-         (Exp.apply ~loc
-            (Exp.ident ~loc { txt = Ast_literal.Lid.opaque; loc })
-            [
-              ( Nolabel,
-                Exp.field ~loc
-                  (Exp.constraint_ ~loc fn
-                     (Typ.constr ~loc
-                        {
-                          txt = Ldot (Ast_literal.Lid.js_fn, "arity" ^ arity_s);
-                          loc;
-                        }
-                        [ Typ.any ~loc () ]))
-                  { txt = Ast_literal.Lid.hidden_field arity_s; loc } );
-            ])
-         args)
 
 let method_apply loc (self : Bs_ast_mapper.mapper) (obj : Parsetree.expression)
     name (args : Ast_compatible.args) =
@@ -127,6 +80,3 @@ let method_apply loc (self : Bs_ast_mapper.mapper) (obj : Parsetree.expression)
                   { loc; txt = Ast_literal.Lid.hidden_field arity_s } );
             ])
          args)
-let property_apply loc self obj name args =
-  generic_apply loc self obj args (fun loc obj ->
-      Exp.send ~loc obj { txt = name; loc })

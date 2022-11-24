@@ -2,6 +2,7 @@
 
 var Caml = require("../../lib/js/caml.js");
 var List = require("../../lib/js/list.js");
+var Curry = require("../../lib/js/curry.js");
 var Random = require("../../lib/js/random.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
@@ -1425,7 +1426,7 @@ function render_bbox(sprite, param) {
   var match = sprite.params.bbox_offset;
   var match$1 = sprite.params.bbox_size;
   context.strokeStyle = "#FF0000";
-  return context.strokeRect(param[0] + match[0], param[1] + match[1], match$1[0], match$1[1]);
+  return Curry._4(context.strokeRect, param[0] + match[0], param[1] + match[1], match$1[0], match$1[1]);
 }
 
 function render(sprite, param) {
@@ -1435,7 +1436,17 @@ function render(sprite, param) {
   var sw = match$1[0];
   var match$2 = sprite.params.frame_size;
   var sx = match[0] + sprite.frame.contents * sw;
-  return context.drawImage(sprite.img, sx, match[1], sw, match$1[1], param[0], param[1], match$2[0], match$2[1]);
+  return Curry.app(context.drawImage, [
+              sprite.img,
+              sx,
+              match[1],
+              sw,
+              match$1[1],
+              param[0],
+              param[1],
+              match$2[0],
+              match$2[1]
+            ]);
 }
 
 function draw_bgd(bgd, off_x) {
@@ -1450,34 +1461,34 @@ function draw_bgd(bgd, off_x) {
 }
 
 function clear_canvas(canvas) {
-  var context = canvas.getContext("2d");
+  var context = Curry._1(canvas.getContext, "2d");
   var cwidth = canvas.width;
   var cheight = canvas.height;
-  context.clearRect(0, 0, cwidth, cheight);
+  Curry._4(context.clearRect, 0, 0, cwidth, cheight);
 }
 
 function hud(canvas, score, coins) {
   var score_string = String(score);
   var coin_string = String(coins);
-  var context = canvas.getContext("2d");
+  var context = Curry._1(canvas.getContext, "2d");
   context.font = "10px 'Press Start 2P'";
-  context.fillText("Score: " + score_string, canvas.width - 140, 18);
-  context.fillText("Coins: " + coin_string, 120, 18);
+  Curry._3(context.fillText, "Score: " + score_string, canvas.width - 140, 18);
+  Curry._3(context.fillText, "Coins: " + coin_string, 120, 18);
 }
 
 function fps(canvas, fps_val) {
   var fps_str = String(fps_val | 0);
-  var context = canvas.getContext("2d");
-  context.fillText(fps_str, 10, 18);
+  var context = Curry._1(canvas.getContext, "2d");
+  Curry._3(context.fillText, fps_str, 10, 18);
 }
 
 function game_win(ctx) {
-  ctx.rect(0, 0, 512, 512);
+  Curry._4(ctx.rect, 0, 0, 512, 512);
   ctx.fillStyle = "black";
-  ctx.fill();
+  Curry._1(ctx.fill, undefined);
   ctx.fillStyle = "white";
   ctx.font = "20px 'Press Start 2P'";
-  ctx.fillText("You win!", 180, 128);
+  Curry._3(ctx.fillText, "You win!", 180, 128);
   throw {
         RE_EXN_ID: "Failure",
         _1: "Game over.",
@@ -1486,12 +1497,12 @@ function game_win(ctx) {
 }
 
 function game_loss(ctx) {
-  ctx.rect(0, 0, 512, 512);
+  Curry._4(ctx.rect, 0, 0, 512, 512);
   ctx.fillStyle = "black";
-  ctx.fill();
+  Curry._1(ctx.fill, undefined);
   ctx.fillStyle = "white";
   ctx.font = "20px 'Press Start 2P'";
-  ctx.fillText("GAME OVER. You lose!", 60, 128);
+  Curry._3(ctx.fillText, "GAME OVER. You lose!", 60, 128);
   throw {
         RE_EXN_ID: "Failure",
         _1: "Game over.",
@@ -2158,7 +2169,7 @@ function run_update_collid(state, collid, all_collids) {
 
 function update_loop(canvas, param, map_dim) {
   var player = param[0];
-  var ctx = canvas.getContext("2d");
+  var ctx = Curry._1(canvas.getContext, "2d");
   var cwidth = canvas.width / 1;
   var cheight = canvas.height / 1;
   var viewport = make$3([
@@ -2175,7 +2186,7 @@ function update_loop(canvas, param, map_dim) {
     multiplier: 1,
     game_over: false
   };
-  state.ctx.scale(1, 1);
+  Curry._2(state.ctx.scale, 1, 1);
   var update_helper = function (time, state, player, objs, parts) {
     if (state.game_over === true) {
       return game_win(state.ctx);
@@ -3209,7 +3220,7 @@ function load(param) {
           Error: new Error()
         };
   }
-  var context = canvas.getContext("2d");
+  var context = Curry._1(canvas.getContext, "2d");
   document.addEventListener("keydown", keydown, true);
   document.addEventListener("keyup", keyup, true);
   Random.self_init(undefined);

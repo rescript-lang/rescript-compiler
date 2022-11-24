@@ -1,12 +1,13 @@
 'use strict';
 
+var Curry = require("../../lib/js/curry.js");
 
 function f(x) {
   x.case = 3;
 }
 
 function g(x) {
-  return x.item(3);
+  return Curry._1(x.item, 3);
 }
 
 exports.f = f;

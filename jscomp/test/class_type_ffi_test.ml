@@ -9,10 +9,6 @@
 let test_set x = 
   x##length__aux #= 3 
 
-let f (x : < bark : string -> unit [@bs.meth] ; fight : unit -> unit [@bs.meth] > )  =
-  x##bark "he";
-  x##fight ()
-
 (* This type is generated on the fly -- in which case
   it can not be nominal
 *)

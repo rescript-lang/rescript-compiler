@@ -18,9 +18,6 @@ let u : 'self =
       length : int >       )
   
 
-
-let u  = u#@bark u 1 2 
-
 let uux_this : < length : int >  -> int -> int -> int [@bs.this] 
   =
   fun[@bs.this] o x y -> o##length + x + y
