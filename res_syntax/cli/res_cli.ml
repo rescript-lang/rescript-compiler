@@ -196,7 +196,7 @@ end = struct
       ("-recover", Arg.Unit (fun () -> recover := true), "Emit partial ast");
       ( "-parse",
         Arg.String (fun txt -> origin := txt),
-        "Parse reasonBinary, ml or res. Default: res" );
+        "Parse ml or res. Default: res" );
       ( "-print",
         Arg.String (fun txt -> print := txt),
         "Print either binary, ml, ast, sexp, comments or res. Default: res" );
@@ -238,18 +238,15 @@ module CliArgProcessor = struct
     in
     let parsingEngine =
       match origin with
-      | "reasonBinary" -> Parser Res_driver_reason_binary.parsingEngine
       | "ml" -> Parser Res_driver_ml_parser.parsingEngine
       | "res" -> Parser Res_driver.parsingEngine
       | "" -> (
         match Filename.extension filename with
         | ".ml" | ".mli" -> Parser Res_driver_ml_parser.parsingEngine
-        | ".re" | ".rei" -> Parser Res_driver_reason_binary.parsingEngine
         | _ -> Parser Res_driver.parsingEngine)
       | origin ->
         print_endline
-          ("-parse needs to be either reasonBinary, ml or res. You provided "
-         ^ origin);
+          ("-parse needs to be either ml or res. You provided " ^ origin);
         exit 1
     in
     let printEngine =
