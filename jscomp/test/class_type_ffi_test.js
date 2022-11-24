@@ -66,27 +66,6 @@ function mk_f(param) {
   };
 }
 
-function omk_f(param) {
-  return {
-          huge_methdo: (function (a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12) {
-              return Curry.app(a0, [
-                          a1,
-                          a2,
-                          a3,
-                          a4,
-                          a5,
-                          a6,
-                          a7,
-                          a8,
-                          a9,
-                          a10,
-                          a11,
-                          a12
-                        ]);
-            })
-        };
-}
-
 exports.sum_float_array = sum_float_array;
 exports.sum_int_array = sum_int_array;
 exports.sum_poly = sum_poly;
@@ -96,5 +75,4 @@ exports.ff = ff;
 exports.ff2 = ff2;
 exports.off2 = off2;
 exports.mk_f = mk_f;
-exports.omk_f = omk_f;
 /* No side effect */
