@@ -7,10 +7,6 @@ var C$2 = require("a/b/c");
 var React = require("react");
 var ReactDom = require("react-dom");
 
-console.log("hey");
-
-doc.getElementById("haha");
-
 console.log(32);
 
 ReactDom.render(React.createClass({

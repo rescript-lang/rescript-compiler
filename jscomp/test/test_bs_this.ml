@@ -24,14 +24,8 @@ let js_obj : 'self =
 
       }
   ]
-class type x = object 
-  method onload : x  -> unit [@this] [@@bs.set]
-  method addEventListener : string -> (x  -> unit [@bs.this]) -> unit 
-  method response : string
-end
 
-
-let f (x : x ) = 
+let f x = 
   begin 
     x##onload #=  (fun [@bs.this] o -> Js.log o);
     x##addEventListener "onload" begin fun [@bs.this] o -> 

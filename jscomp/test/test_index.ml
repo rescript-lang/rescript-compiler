@@ -1,27 +1,3 @@
-
-
-class type ['a] case = object 
-  method case : int -> 'a 
-  method case__set : int -> 'a -> unit 
-end
-
-
-
-
-(* let f (x : [%bs.obj: < case : int ->  'a ;  *)
-(*             case__set : int ->  int -> unit ; *)
-(*             .. > [@bs] ] ) *)
-(*  =  *)
-(*   x ## case__set 3 2 ; *)
-(*   x ## case 3  *)
-
-
-let ff (x : int case  )
- = 
-  x##case__set 3 2 ;
-  x##case 3 
-
-
 type 'a return = int -> 'a [@bs]
 
 let h (x : 
