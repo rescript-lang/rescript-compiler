@@ -51,6 +51,7 @@ These are only breaking changes for unformatted code.
 - Remove processing of objects expressions, which don't exist in `.res` syntax (`Pexp_object`) https://github.com/rescript-lang/rescript-compiler/pull/5841
 - Remove class type processing from compiler ppx https://github.com/rescript-lang/rescript-compiler/pull/5842
 - Remove method application via operator `##`, which does not exist in `.res` syntax https://github.com/rescript-lang/rescript-compiler/pull/5844
+- Treat `@meth` annotation as making the type uncurried for backwards compatibitly with some examples https://github.com/rescript-lang/rescript-compiler/pull/5845
 
 # 10.1.0-rc.6
 

@@ -83,7 +83,9 @@ let typ_mapper (self : Bs_ast_mapper.mapper) (ty : Parsetree.core_type) =
       | Uncurry _ -> Ast_typ_uncurry.to_uncurry_type loc self label args body
       | Meth_callback _ ->
           Ast_typ_uncurry.to_method_callback_type loc self label args body
-      | Method _ -> Ast_typ_uncurry.to_method_type loc self label args body
+      | Method _ ->
+          (* Treat @meth as making the type uncurried, for backwards compatibility *)
+          Ast_typ_uncurry.to_uncurry_type loc self label args body
       | Nothing -> Bs_ast_mapper.default_mapper.typ self ty)
   | { ptyp_desc = Ptyp_object (methods, closed_flag); ptyp_loc = loc } ->
       let ( +> ) attr (typ : Parsetree.core_type) =
