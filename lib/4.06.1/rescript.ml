@@ -1735,7 +1735,6 @@ let js_post_build = "js-post-build"
 let cmd = "cmd"
 let ninja = "ninja"
 let package_specs = "package-specs"
-let generate_merlin = "generate-merlin"
 let type_ = "type"
 let dev = "dev"
 let export_all = "all"
@@ -8425,7 +8424,6 @@ type t = {
   package_specs : Bsb_package_specs.t;
   file_groups : Bsb_file_groups.t;
   files_to_install : Bsb_db.module_info Queue.t;
-  generate_merlin : bool;
   reason_react_jsx : reason_react_jsx option;
   jsx: Bsb_jsx.t;
   (* whether apply PPX transform or not*)
@@ -10856,8 +10854,6 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
             file_groups = groups;
             files_to_install = Queue.create ();
             built_in_dependency = built_in_package;
-            generate_merlin =
-              extract_boolean map Bsb_build_schemas.generate_merlin false;
             reason_react_jsx;
             jsx;
             generators = extract_generators map;
