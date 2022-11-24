@@ -35,10 +35,3 @@ val record_as_js_object :
 
 val js_property :
   Location.t -> Parsetree.expression -> string -> Parsetree.expression_desc
-
-val ocaml_obj_as_js_object :
-  Location.t ->
-  Bs_ast_mapper.mapper ->
-  Parsetree.pattern ->
-  Parsetree.class_field list ->
-  Parsetree.expression_desc

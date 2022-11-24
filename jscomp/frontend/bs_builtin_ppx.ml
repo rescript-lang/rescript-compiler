@@ -155,22 +155,6 @@ let expr_mapper ~async_context ~in_function_def (self : mapper)
             pexp_attributes;
           })
   | Pexp_apply (fn, args) -> Ast_exp_apply.app_exp_mapper e self fn args
-  | Pexp_object { pcstr_self; pcstr_fields } ->
-      let pexp_attributes =
-        match Ast_attributes.process_bs e.pexp_attributes with
-        | true, pexp_attributes ->
-            Location.prerr_warning e.pexp_loc
-              (Bs_ffi_warning "Here @bs attribute not needed any more");
-            pexp_attributes
-        | false, e -> e
-      in
-      {
-        e with
-        pexp_desc =
-          Ast_util.ocaml_obj_as_js_object e.pexp_loc self pcstr_self
-            pcstr_fields;
-        pexp_attributes;
-      }
   | Pexp_match
       ( b,
         [

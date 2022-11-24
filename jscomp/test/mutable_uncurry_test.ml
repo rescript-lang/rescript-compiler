@@ -15,16 +15,6 @@ let eq2 =fun [@bs] x {contents = y} ->  x.contents = y
 ;; eqs __LOC__ false (eq (ref 1) (ref 2) [@bs])
 ;; eqs __LOC__ true (eq (ref 2) (ref 2) [@bs])
 
-let u = object 
-  method hi {contents = x} {contents = y} =
-    (x : int) = y
-end;;
-
-
-let h = u##hi (ref 1) (ref 2)
-
-;; eqs __LOC__ h false
-
 
 let ut3 = fun [@bs] {contents = x0} {contents = x1} {contents = x2} -> 
   (x0,x1,x2)
