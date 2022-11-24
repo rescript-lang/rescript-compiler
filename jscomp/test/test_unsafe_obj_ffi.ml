@@ -5,9 +5,6 @@
 let f x = 
   x ## height + x ## width 
 
-let g x : unit  = 
-  let () = x #@ method1 3 in
-  x #@ method2 3 3
 let h x : unit  = 
   x##height #= 3 ; 
   x##width #= 3 

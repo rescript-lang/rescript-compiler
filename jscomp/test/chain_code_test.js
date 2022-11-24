@@ -1,6 +1,7 @@
 'use strict';
 
 var Mt = require("./mt.js");
+var Curry = require("../../lib/js/curry.js");
 
 var suites = {
   contents: /* [] */0
@@ -36,7 +37,7 @@ function f2(h) {
 }
 
 function f3(h, x, y) {
-  return h.paint(x, y).draw(x, y);
+  return Curry._2(Curry._2(h.paint, x, y).draw, x, y);
 }
 
 function f4(h, x, y) {

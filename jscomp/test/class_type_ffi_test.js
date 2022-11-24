@@ -6,11 +6,6 @@ function test_set(x) {
   x.length = 3;
 }
 
-function f(x) {
-  x.bark("he");
-  x.fight();
-}
-
 function ff(fn, a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11) {
   return fn(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11);
 }
@@ -20,7 +15,21 @@ function ff2(fn, a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12) {
 }
 
 function off2(o, a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12) {
-  return o.huge_method(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12);
+  return Curry.app(o.huge_method, [
+              a0,
+              a1,
+              a2,
+              a3,
+              a4,
+              a5,
+              a6,
+              a7,
+              a8,
+              a9,
+              a10,
+              a11,
+              a12
+            ]);
 }
 
 function mk_f(param) {
@@ -43,7 +52,6 @@ function mk_f(param) {
 }
 
 exports.test_set = test_set;
-exports.f = f;
 exports.ff = ff;
 exports.ff2 = ff2;
 exports.off2 = off2;
