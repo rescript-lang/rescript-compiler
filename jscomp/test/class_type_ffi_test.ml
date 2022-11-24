@@ -1,41 +1,6 @@
 
-class type ['k,'v] arrayLike = 
-  object 
-    method case : 'k -> 'v Js.Null.t 
-    method caseSet : 'k * 'v -> unit 
-    method case__unsafe : 'k -> 'v 
-    method length : int 
-  end
-
-class type floatArray = [int, float] arrayLike
-(** here we can see [@bs] is really attached to `object end` instead of `class type` *)
 
 
-
-class type intArray = [int, int] arrayLike
-
-
-let sum_float_array (arr : floatArray ) = 
-  let v = ref 0. in
-  for i = 0 to arr##length - 1 do 
-    v := !v +. arr##case__unsafe i     
-  done;
-  !v 
-
-let sum_int_array (arr : intArray ) = 
-  let v = ref 0 in
-  for i = 0 to arr##length - 1 do 
-    v := !v + arr## case__unsafe i     
-  done;
-  !v 
-
-(* TODO: warning about unprocessed attributes *)
-let sum_poly zero add (arr : _ arrayLike ) = 
-  let v = ref zero in 
-  for i = 0 to arr##length - 1 do 
-    v := add  !v  (arr##case__unsafe i ) [@bs] 
-  done;
-  !v 
 
 
 (* TODO: create a special type 

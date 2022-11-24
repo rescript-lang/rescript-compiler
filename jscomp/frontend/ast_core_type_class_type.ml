@@ -56,60 +56,6 @@ let process_getter_setter ~not_getter_setter
           pctf_attributes
         :: get_acc
 
-let handle_class_type_field self
-    ({ pctf_loc = loc } as ctf : Parsetree.class_type_field) acc =
-  match ctf.pctf_desc with
-  | Pctf_method (name, private_flag, virtual_flag, ty) ->
-      let not_getter_setter (ty : Parsetree.core_type) =
-        let ty =
-          match ty.ptyp_desc with
-          | Ptyp_arrow (label, args, body) ->
-              Ast_typ_uncurry.to_method_type ty.ptyp_loc self label args body
-          | Ptyp_poly
-              (strs, { ptyp_desc = Ptyp_arrow (label, args, body); ptyp_loc })
-            ->
-              {
-                ty with
-                ptyp_desc =
-                  Ptyp_poly
-                    ( strs,
-                      Ast_typ_uncurry.to_method_type ptyp_loc self label args
-                        body );
-              }
-          | _ -> self.typ self ty
-        in
-        {
-          ctf with
-          pctf_desc = Pctf_method (name, private_flag, virtual_flag, ty);
-        }
-      in
-      let get ty name pctf_attributes =
-        {
-          ctf with
-          pctf_desc =
-            Pctf_method (name, private_flag, virtual_flag, self.typ self ty);
-          pctf_attributes;
-        }
-      in
-      let set ty name pctf_attributes =
-        {
-          ctf with
-          pctf_desc =
-            Pctf_method
-              ( name,
-                private_flag,
-                virtual_flag,
-                Ast_typ_uncurry.to_method_type loc self Nolabel ty
-                  (Ast_literal.type_unit ~loc ()) );
-          pctf_attributes;
-        }
-      in
-      process_getter_setter ~not_getter_setter ~get ~set loc name
-        ctf.pctf_attributes ty acc
-  | Pctf_inherit _ | Pctf_val _ | Pctf_constraint _ | Pctf_attribute _
-  | Pctf_extension _ ->
-      Bs_ast_mapper.default_mapper.class_type_field self ctf :: acc
-
 let default_typ_mapper = Bs_ast_mapper.default_mapper.typ
 (*
   Attributes are very hard to attribute
@@ -191,6 +137,3 @@ let typ_mapper (self : Bs_ast_mapper.mapper) (ty : Parsetree.core_type) =
       in
       { ty with ptyp_desc = Ptyp_object (new_methods, closed_flag) }
   | _ -> default_typ_mapper self ty
-
-let handle_class_type_fields self fields =
-  Ext_list.fold_right fields [] (handle_class_type_field self)

@@ -8,8 +8,6 @@ let f x =
 let g x : unit  = 
   let () = x #@ method1 3 in
   x #@ method2 3 3
-
-class type _metric = object  method height : int [@@bs.set] method width : int [@@bs.set] end
 let h x : unit  = 
   x##height #= 3 ; 
   x##width #= 3 

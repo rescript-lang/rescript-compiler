@@ -38,10 +38,10 @@ function f(x) {
       var o = this ;
       console.log(o);
     });
-  x.addEventListener("onload", (function () {
-          var o = this ;
-          console.log(o.response);
-        }));
+  return x.addEventListener("onload", (function () {
+                var o = this ;
+                console.log(o.response);
+              }));
 }
 
 function u(x) {

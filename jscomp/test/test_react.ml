@@ -3,26 +3,6 @@
 
 type html_element 
 
-class type document = 
-  object
-    method getElementById : string -> html_element 
-  end
-
-type doc = document  
-external doc :  doc  = "doc" [@@bs.val ]
-
-class type con = 
-  object
-    method log : 'a -> unit 
-  end
-
-type console = con  
-external console : console  = "console" [@@bs.val ]
-
-let v = console##log "hey";;
-let u = console
-let v = doc##getElementById "haha"
-
 external log : 'a -> unit = "" [@@bs.val "console.log"]
 let v = log 32
 type t 

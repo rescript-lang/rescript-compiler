@@ -238,42 +238,6 @@ let expr_mapper ~async_context ~in_function_def (self : mapper)
 let typ_mapper (self : mapper) (typ : Parsetree.core_type) =
   Ast_core_type_class_type.typ_mapper self typ
 
-let class_type_mapper (self : mapper)
-    ({ pcty_attributes; pcty_loc } as ctd : Parsetree.class_type) =
-  let pcty_attributes =
-    match Ast_attributes.process_bs pcty_attributes with
-    | false, _ -> pcty_attributes
-    | true, pcty_attributes ->
-        Location.prerr_warning pcty_loc
-          (Bs_ffi_warning "Here @bs attribute is not needed any more.");
-        pcty_attributes
-  in
-  match ctd.pcty_desc with
-  | Pcty_signature { pcsig_self; pcsig_fields } ->
-      let pcsig_self = self.typ self pcsig_self in
-      {
-        ctd with
-        pcty_desc =
-          Pcty_signature
-            {
-              pcsig_self;
-              pcsig_fields =
-                Ast_core_type_class_type.handle_class_type_fields self
-                  pcsig_fields;
-            };
-        pcty_attributes;
-      }
-  | Pcty_open _ (* let open M in CT *) | Pcty_constr _ | Pcty_extension _
-  | Pcty_arrow _ ->
-      default_mapper.class_type self ctd
-(* {[class x : int -> object
-     end [@bs]
-   ]}
-           Actually this is not going to happpen as below is an invalid syntax
-   {[class type x = int -> object
-       end[@bs]]}
-*)
-
 let signature_item_mapper (self : mapper) (sigi : Parsetree.signature_item) :
     Parsetree.signature_item =
   match sigi.psig_desc with
@@ -544,7 +508,6 @@ let mapper : mapper =
     expr = expr_mapper ~async_context:(ref false) ~in_function_def:(ref false);
     pat = pat_mapper;
     typ = typ_mapper;
-    class_type = class_type_mapper;
     signature_item = signature_item_mapper;
     value_bindings = Ast_tuple_pattern_flatten.value_bindings_mapper;
     structure_item = structure_item_mapper;

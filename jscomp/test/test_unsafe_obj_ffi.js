@@ -10,12 +10,6 @@ function g(x) {
   x.method2(3, 3);
 }
 
-function h(x) {
-  x.height = 3;
-  x.width = 3;
-}
-
 exports.f = f;
 exports.g = g;
-exports.h = h;
 /* No side effect */

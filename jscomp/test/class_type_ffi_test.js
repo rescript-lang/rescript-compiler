@@ -2,30 +2,6 @@
 
 var Curry = require("../../lib/js/curry.js");
 
-function sum_float_array(arr) {
-  var v = 0;
-  for(var i = 0 ,i_finish = arr.length; i < i_finish; ++i){
-    v = v + arr.case(i);
-  }
-  return v;
-}
-
-function sum_int_array(arr) {
-  var v = 0;
-  for(var i = 0 ,i_finish = arr.length; i < i_finish; ++i){
-    v = v + arr.case(i) | 0;
-  }
-  return v;
-}
-
-function sum_poly(zero, add, arr) {
-  var v = zero;
-  for(var i = 0 ,i_finish = arr.length; i < i_finish; ++i){
-    v = add(v, arr.case(i));
-  }
-  return v;
-}
-
 function test_set(x) {
   x.length = 3;
 }
@@ -66,9 +42,6 @@ function mk_f(param) {
   };
 }
 
-exports.sum_float_array = sum_float_array;
-exports.sum_int_array = sum_int_array;
-exports.sum_poly = sum_poly;
 exports.test_set = test_set;
 exports.f = f;
 exports.ff = ff;
