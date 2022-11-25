@@ -42,6 +42,14 @@ let _ = @att async (. x)  => 34
 let _ = preserveAttr(@att (. x)  => 34)
 let _ = preserveAttr(@att async (. x)  => 34)
 
+let t0 = (type a b, l: list<a>, x: a) => list{x, ...l}
+let t1 = (. type a b, l: list<a>, x: a) => list{x, ...l}
+let t2 = (type a b, . l: list<a>, x: a) => list{x, ...l}
+let t3 = (. type a b, . l: list<a>, x: a) => list{x, ...l}
+let t4 = (. type a b) => (l: list<a>, x: a) => list{x, ...l}
+let t5 = (type a b) => (. l: list<a>, x: a) => list{x, ...l}
+let t6 = (. type a b) => (. l: list<a>, x: a) => list{x, ...l}
+
 @@uncurried
 
 let cApp = foo(. 3)
@@ -90,3 +98,8 @@ let _ = @att x  => 34
 let _ = @att async x  => 34
 let _ = preserveAttr(@att x => 34)
 let _ = preserveAttr(@att async x => 34)
+
+let t0 = (type a b, l: list<a>, x: a) => list{x, ...l}
+let t1 = (. type a b, l: list<a>, x: a) => list{x, ...l}
+let t2 = (type a b, . l: list<a>, x: a) => list{x, ...l}
+let t3 = (. type a b, . l: list<a>, x: a) => list{x, ...l}
