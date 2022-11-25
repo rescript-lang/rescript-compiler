@@ -26,3 +26,13 @@ let broken = async (someAsyncFunction) => {
 }
 
 let broken = someAsyncFunction => broken(someAsyncFunction)
+
+let curriedId = x => x
+let curriedIdAsync = async x => x
+let uncurriedId = (.x ) => x
+let uncurriedIdAsync = async (.x ) => x
+
+let tci = curriedId(3)
+let tcia = curriedIdAsync(3)
+let tui = uncurriedId(. 3)
+let tuia = uncurriedIdAsync(. 3)
