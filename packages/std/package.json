@@ -1,6 +1,6 @@
 {
   "name": "@rescript/std",
-  "version": "10.1.0-rc.5",
+  "version": "10.1.0",
   "keywords": [
     "rescript",
     "stdlib",
