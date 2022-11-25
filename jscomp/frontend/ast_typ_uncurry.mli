@@ -54,31 +54,7 @@ val to_uncurry_type : uncurry_type_gen
     {[ int -> int -> int [@bs]]}
 *)
 
-val to_method_type : uncurry_type_gen
-(** syntax
-    {[ method : int -> itn -> int ]}
-*)
-
 val to_method_callback_type : uncurry_type_gen
 (** syntax:
     {[ 'obj -> int -> int [@bs.this] ]}
 *)
-
-val generate_method_type :
-  Location.t ->
-  Bs_ast_mapper.mapper ->
-  ?alias_type:Parsetree.core_type ->
-  string ->
-  Asttypes.arg_label ->
-  Parsetree.pattern ->
-  Parsetree.expression ->
-  Parsetree.core_type
-
-val generate_arg_type :
-  Location.t ->
-  Bs_ast_mapper.mapper ->
-  string ->
-  Asttypes.arg_label ->
-  Parsetree.pattern ->
-  Parsetree.expression ->
-  Parsetree.core_type

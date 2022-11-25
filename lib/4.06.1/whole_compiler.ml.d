@@ -402,8 +402,6 @@
 ../lib/4.06.1/whole_compiler.ml: ./frontend/ast_tuple_pattern_flatten.mli
 ../lib/4.06.1/whole_compiler.ml: ./frontend/ast_typ_uncurry.ml
 ../lib/4.06.1/whole_compiler.ml: ./frontend/ast_typ_uncurry.mli
-../lib/4.06.1/whole_compiler.ml: ./frontend/ast_uncurry_apply.ml
-../lib/4.06.1/whole_compiler.ml: ./frontend/ast_uncurry_apply.mli
 ../lib/4.06.1/whole_compiler.ml: ./frontend/ast_uncurry_gen.ml
 ../lib/4.06.1/whole_compiler.ml: ./frontend/ast_uncurry_gen.mli
 ../lib/4.06.1/whole_compiler.ml: ./frontend/ast_utf8_string.ml

@@ -52,6 +52,7 @@ These are only breaking changes for unformatted code.
 - Remove class type processing from compiler ppx https://github.com/rescript-lang/rescript-compiler/pull/5842
 - Remove method application via operator `##`, which does not exist in `.res` syntax https://github.com/rescript-lang/rescript-compiler/pull/5844
 - Treat `@meth` annotation as making the type uncurried for backwards compatibitly with some examples https://github.com/rescript-lang/rescript-compiler/pull/5845
+- Process `@set` annotation for field update as generating an uncurried function https://github.com/rescript-lang/rescript-compiler/pull/5846
 
 # 10.1.0-rc.6
 
