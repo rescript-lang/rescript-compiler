@@ -22,12 +22,13 @@ var Uncurried = {
 var E = /* @__PURE__ */Caml_exceptions.create("Uncurried_cast.E");
 
 function testRaise(param) {
-  return raise({
-              RE_EXN_ID: E
-            });
+  throw {
+        RE_EXN_ID: E,
+        Error: new Error()
+      };
 }
 
-var l = map({
+var l = Belt_List.mapU({
       hd: 1,
       tl: {
         hd: 2,
@@ -76,12 +77,13 @@ var StandardNotation = {
 };
 
 function testRaise$1(param) {
-  return raise({
-              RE_EXN_ID: E
-            });
+  throw {
+        RE_EXN_ID: E,
+        Error: new Error()
+      };
 }
 
-var l$1 = map({
+var l$1 = Belt_List.mapU({
       hd: 1,
       tl: {
         hd: 2,

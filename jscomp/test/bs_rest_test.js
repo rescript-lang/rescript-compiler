@@ -12,9 +12,9 @@ function xxx(prim) {
   return x(prim);
 }
 
-var u = xxx(3);
+var u = x(3);
 
-var xx = xxx("3");
+var xx = x("3");
 
 exports.v = v;
 exports.xxx = xxx;

@@ -12,18 +12,16 @@ function f(param) {
   return 3;
 }
 
-f(undefined);
-
 function $plus$great(a, h) {
   return h(a);
 }
 
 function u(h) {
-  return $plus$great(3, h);
+  return h(3);
 }
 
 exports.M = M;
 exports.f = f;
 exports.$plus$great = $plus$great;
 exports.u = u;
-/*  Not a pure module */
+/* No side effect */

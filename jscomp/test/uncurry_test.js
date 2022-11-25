@@ -366,23 +366,65 @@ function f22(a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a1
         ];
 }
 
-console.log(f0(undefined));
+console.log(0);
 
-console.log(f1(0));
+console.log(0);
 
-console.log(f2(0, 1));
+console.log([
+      0,
+      1
+    ]);
 
-console.log(f3(0, 1, 2));
+console.log([
+      0,
+      1,
+      2
+    ]);
 
-console.log(f4(0, 1, 2, 3));
+console.log([
+      0,
+      1,
+      2,
+      3
+    ]);
 
-console.log(f5(0, 1, 2, 3, 4));
+console.log([
+      0,
+      1,
+      2,
+      3,
+      4
+    ]);
 
-console.log(f6(0, 1, 2, 3, 4, 5));
+console.log([
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ]);
 
-console.log(f7(0, 1, 2, 3, 4, 5, 6));
+console.log([
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ]);
 
-console.log(f8(0, 1, 2, 3, 4, 5, 6, 7));
+console.log([
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ]);
 
 console.log(f9(0, 1, 2, 3, 4, 5, 6, 7, 8));
 

@@ -37,7 +37,7 @@ function unary(a) {
   return a + 3 | 0;
 }
 
-var xx = unary(3);
+var xx = 6;
 
 eq("File \"ppx_apply_test.ml\", line 17, characters 5-12", u, 3);
 
