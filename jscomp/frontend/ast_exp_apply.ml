@@ -182,14 +182,16 @@ let app_exp_mapper (e : exp) (self : Bs_ast_mapper.mapper) (fn : exp)
   | Some { op = "#="; loc; args = [ obj; arg ] } -> (
       let gen_assignment obj name name_loc =
         sane_property_name_check name_loc name;
+        let obj = self.expr self obj in
+        let arg = self.expr self arg in
+        let fn =
+          Exp.send ~loc obj { txt = name ^ Literals.setter_suffix; loc }
+        in
         Exp.constraint_ ~loc
-          {
-            e with
-            pexp_desc =
-              Ast_uncurry_apply.method_apply loc self obj
-                (name ^ Literals.setter_suffix)
-                [ (Nolabel, arg) ];
-          }
+          (Exp.apply ~loc
+             ~attrs:[ Ast_attributes.res_uapp ]
+             fn
+             [ (Nolabel, arg) ])
           (Ast_literal.type_unit ~loc ())
       in
       match obj.pexp_desc with
