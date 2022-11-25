@@ -15,10 +15,6 @@ function f(param) {
 
 var c = 5;
 
-function h(a, b) {
-  return a + b | 0;
-}
-
 var h1 = 2;
 
 var h2 = h1 + 1 | 0;
@@ -39,7 +35,7 @@ console.log(h2);
 
 console.log(c);
 
-console.log(h(1, 2));
+console.log(3);
 
 function H($star) {
   return {};
