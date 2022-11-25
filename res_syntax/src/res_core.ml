@@ -1486,30 +1486,33 @@ and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
     | None -> parseParameters p
   in
   let parameters =
+    let updateAttrs attrs = arrowAttrs @ attrs in
+    let updatePos pos =
+      match arrowStartPos with
+      | Some startPos -> startPos
+      | None -> pos
+    in
     match parameters with
     | TermParameter p :: rest ->
-      TermParameter
-        {
-          p with
-          attrs = arrowAttrs @ p.attrs;
-          pos =
-            (match arrowStartPos with
-            | Some startPos -> startPos
-            | None -> p.pos);
-        }
+      TermParameter {p with attrs = updateAttrs p.attrs; pos = updatePos p.pos}
       :: rest
     | TypeParameter p :: rest ->
-      TypeParameter
-        {
-          p with
-          attrs = arrowAttrs @ p.attrs;
-          pos =
-            (match arrowStartPos with
-            | Some startPos -> startPos
-            | None -> p.pos);
-        }
+      TypeParameter {p with attrs = updateAttrs p.attrs; pos = updatePos p.pos}
       :: rest
     | [] -> parameters
+  in
+  let parameters =
+    (* Propagate any dots from type parameters to the first term *)
+    let rec loop ~dotInType params =
+      match params with
+      | (TypeParameter {dotted} as p) :: rest ->
+        p :: loop ~dotInType:(dotInType || dotted) rest
+      | TermParameter termParam :: rest ->
+        TermParameter {termParam with dotted = dotInType || termParam.dotted}
+        :: rest
+      | [] -> []
+    in
+    loop ~dotInType:false parameters
   in
   let returnType =
     match p.Parser.token with
@@ -1530,13 +1533,19 @@ and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
   in
   Parser.eatBreadcrumb p;
   let endPos = p.prevEndPos in
+  let termParameters =
+    parameters
+    |> List.filter (function
+         | TermParameter _ -> true
+         | TypeParameter _ -> false)
+  in
   let bodyNeedsBraces =
     let isFun =
       match body.pexp_desc with
       | Pexp_fun _ -> true
       | _ -> false
     in
-    match parameters with
+    match termParameters with
     | TermParameter {dotted} :: _
       when (if p.uncurried_by_default then not dotted else dotted) && isFun ->
       true
@@ -1557,7 +1566,7 @@ and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
   in
   let _paramNum, arrowExpr, _arity =
     List.fold_right
-      (fun parameter (paramNum, expr, arity) ->
+      (fun parameter (termParamNum, expr, arity) ->
         match parameter with
         | TermParameter
             {
@@ -1575,8 +1584,8 @@ and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
           let uncurried =
             if p.uncurried_by_default then not dotted else dotted
           in
-          if uncurried && (paramNum = 1 || not p.uncurried_by_default) then
-            ( paramNum - 1,
+          if uncurried && (termParamNum = 1 || not p.uncurried_by_default) then
+            ( termParamNum - 1,
               (if true then
                Ast_helper.Exp.record ~loc
                  [
@@ -1591,17 +1600,13 @@ and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
                  None
               else funExpr),
               1 )
-          else (paramNum - 1, funExpr, arity + 1)
-        | TypeParameter {dotted; attrs; locs = newtypes; pos = startPos} ->
-          let uncurried =
-            if p.uncurried_by_default then not dotted else dotted
-          in
-          let attrs = if uncurried then uncurriedAppAttr :: attrs else attrs in
-          ( paramNum - 1,
+          else (termParamNum - 1, funExpr, arity + 1)
+        | TypeParameter {dotted = _; attrs; locs = newtypes; pos = startPos} ->
+          ( termParamNum,
             makeNewtypes ~attrs ~loc:(mkLoc startPos endPos) newtypes expr,
             arity ))
       parameters
-      (List.length parameters, body, 1)
+      (List.length termParameters, body, 1)
   in
   {arrowExpr with pexp_loc = {arrowExpr.pexp_loc with loc_start = startPos}}
 
@@ -1822,6 +1827,8 @@ and parseParameters p =
         match parseParameterList p with
         | TermParameter p :: rest ->
           TermParameter {p with dotted = true; pos = startPos} :: rest
+        | TypeParameter p :: rest ->
+          TypeParameter {p with dotted = true; pos = startPos} :: rest
         | parameters -> parameters))
     | _ -> parseParameterList p)
   | token ->

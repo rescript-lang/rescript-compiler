@@ -48,6 +48,18 @@ let _ = { Js.Fn.I1 = ((fun x -> 34)[@att ]) }
 let _ = { Js.Fn.I1 = ((fun x -> 34)[@res.async ][@att ]) }
 let _ = preserveAttr { Js.Fn.I1 = ((fun x -> 34)[@att ]) }
 let _ = preserveAttr { Js.Fn.I1 = ((fun x -> 34)[@res.async ][@att ]) }
+let t0 (type a) (type b) (l : a list) (x : a) = x :: l
+let t1 (type a) (type b) =
+  { Js.Fn.I2 = (fun (l : a list) -> fun (x : a) -> x :: l) }
+let t2 (type a) (type b) =
+  { Js.Fn.I2 = (fun (l : a list) -> fun (x : a) -> x :: l) }
+let t3 (type a) (type b) =
+  { Js.Fn.I2 = (fun (l : a list) -> fun (x : a) -> x :: l) }
+let t4 (type a) (type b) (l : a list) (x : a) = x :: l
+let t5 (type a) (type b) =
+  { Js.Fn.I2 = (fun (l : a list) -> fun (x : a) -> x :: l) }
+let t6 (type a) (type b) =
+  { Js.Fn.I2 = (fun (l : a list) -> fun (x : a) -> x :: l) }
 [@@@uncurried ]
 let cApp = foo 3
 let uApp = ((foo 3)[@res.uapp ])
@@ -102,3 +114,8 @@ let _ = { Js.Fn.I1 = ((fun x -> 34)[@res.async ][@att ]) }
 let _ = ((preserveAttr { Js.Fn.I1 = ((fun x -> 34)[@att ]) })[@res.uapp ])
 let _ = ((preserveAttr { Js.Fn.I1 = ((fun x -> 34)[@res.async ][@att ]) })
   [@res.uapp ])
+let t0 (type a) (type b) =
+  { Js.Fn.I2 = (fun (l : a list) -> fun (x : a) -> x :: l) }
+let t1 (type a) (type b) (l : a list) (x : a) = x :: l
+let t2 (type a) (type b) (l : a list) (x : a) = x :: l
+let t3 (type a) (type b) (l : a list) (x : a) = x :: l

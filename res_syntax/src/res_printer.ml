@@ -4838,6 +4838,7 @@ and printExpFunParameter ~state parameter cmtTbl =
          [
            printAttributes ~state attrs cmtTbl;
            Doc.text "type ";
+           (* XX *)
            Doc.join ~sep:Doc.space
              (List.map
                 (fun lbl ->

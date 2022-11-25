@@ -42,7 +42,8 @@ These are only breaking changes for unformatted code.
 - Fix printing of nested types in uncurried mode https://github.com/rescript-lang/rescript-compiler/pull/5826
 - Fix issue in printing uncurried callbacks https://github.com/rescript-lang/rescript-compiler/pull/5828
 - Fix formatting uncurried functions with attributes https://github.com/rescript-lang/rescript-compiler/pull/5829
- 
+- Fix parsing/printing uncurried functions with type parameters https://github.com/rescript-lang/rescript-compiler/pull/5849
+
 #### :nail_care: Polish
 
 - Syntax: process uncurried types explicitly in the parser/printer https://github.com/rescript-lang/rescript-compiler/pull/5784 https://github.com/rescript-lang/rescript-compiler/pull/5822

@@ -151,7 +151,7 @@ let funExpr expr =
       collectNewTypes (stringLoc :: acc) returnExpr
     | returnExpr -> (List.rev acc, returnExpr)
   in
-  let rec collect ~uncurried attrsBefore acc expr =
+  let rec collect ~uncurried ~nFun attrsBefore acc expr =
     match expr with
     | {
      pexp_desc =
@@ -165,29 +165,36 @@ let funExpr expr =
     | {pexp_desc = Pexp_newtype (stringLoc, rest); pexp_attributes = attrs} ->
       let stringLocs, returnExpr = collectNewTypes [stringLoc] rest in
       let param = NewTypes {attrs; locs = stringLocs} in
-      collect ~uncurried attrsBefore (param :: acc) returnExpr
+      collect ~uncurried ~nFun attrsBefore (param :: acc) returnExpr
     | {
      pexp_desc = Pexp_fun (lbl, defaultExpr, pattern, returnExpr);
      pexp_attributes = [];
     } ->
       let parameter = Parameter {attrs = []; lbl; defaultExpr; pat = pattern} in
-      collect ~uncurried attrsBefore (parameter :: acc) returnExpr
+      collect ~uncurried ~nFun:(nFun + 1) attrsBefore (parameter :: acc)
+        returnExpr
     (* If a fun has an attribute, then it stops here and makes currying.
        i.e attributes outside of (...), uncurried `(.)` and `async` make currying *)
     | {pexp_desc = Pexp_fun _} -> (uncurried, attrsBefore, List.rev acc, expr)
+    | {
+     pexp_desc =
+       Pexp_record ([({txt = Ldot (Ldot (Lident "Js", "Fn"), _)}, expr)], None);
+    }
+      when nFun = 0 ->
+      collect ~uncurried:true ~nFun attrsBefore acc expr
     | expr -> (uncurried, attrsBefore, List.rev acc, expr)
   in
   match expr with
   | {pexp_desc = Pexp_fun _} ->
-    collect ~uncurried:false expr.pexp_attributes []
+    collect ~uncurried:false ~nFun:0 expr.pexp_attributes []
       {expr with pexp_attributes = []}
   | {
    pexp_desc =
      Pexp_record ([({txt = Ldot (Ldot (Lident "Js", "Fn"), _)}, expr)], None);
   } ->
-    collect ~uncurried:true expr.pexp_attributes []
+    collect ~uncurried:true ~nFun:0 expr.pexp_attributes []
       {expr with pexp_attributes = []}
-  | _ -> collect ~uncurried:false [] [] expr
+  | _ -> collect ~uncurried:false ~nFun:0 [] [] expr
 
 let processBracesAttr expr =
   match expr.pexp_attributes with
