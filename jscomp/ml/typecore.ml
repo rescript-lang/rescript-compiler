@@ -73,6 +73,7 @@ type error =
   | Illegal_letrec_pat
   | Labels_omitted of string list
   | Empty_record_literal
+  | Field_not_optional of string * type_expr
 exception Error of Location.t * Env.t * error
 exception Error_forward of Location.error
 
@@ -308,6 +309,19 @@ let extract_concrete_variant env ty =
   | (p0, p, {type_kind=Type_open}) -> (p0, p, [])
   | _ -> raise Not_found
 
+let label_is_optional ld =
+  match ld.lbl_repres with
+  | Record_optional_labels lbls -> Ext_list.mem_string lbls ld.lbl_name
+  | Record_inlined {optional_labels} -> Ext_list.mem_string optional_labels ld.lbl_name
+  | _ -> false
+
+let check_optional_attr env ld attrs loc =
+  let check_redundant () =
+    if not (label_is_optional ld) then
+      raise (Error (loc, env, Field_not_optional (ld.lbl_name, ld.lbl_res)));
+    true in 
+  Ext_list.exists attrs (fun ({txt}, _) ->
+    txt = "ns.optional" && check_redundant ())
 
 (* unification inside type_pat*)
 let unify_pat_types loc env ty ty' =
@@ -1150,15 +1164,8 @@ and type_pat_aux ~constrs ~labels ~no_existentials ~mode ~explode ~env
           Some (p0, p), expected_ty
         with Not_found -> None, newvar ()
       in
-      let label_is_optional ld =
-        match ld.lbl_repres with
-        | Record_optional_labels lbls -> Ext_list.mem_string lbls ld.lbl_name
-        | Record_inlined {optional_labels} -> Ext_list.mem_string optional_labels ld.lbl_name
-        | _ -> false in
       let process_optional_label (ld, pat) =
-        let exp_optional_attr =
-          Ext_list.exists pat.ppat_attributes (fun ({txt },_) -> txt = "ns.optional")
-        in
+        let exp_optional_attr = check_optional_attr !env ld pat.ppat_attributes pat.ppat_loc in
         let isFromPamatch = match pat.ppat_desc with
           | Ppat_construct ({txt = Lident s}, _) ->
             String.length s >= 2 && s.[0] = '#' && s.[1] = '$'
@@ -1877,15 +1884,8 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
     unify_exp env (re exp) (instance env ty_expected);
     exp
   in
-  let label_is_optional ld =
-    match ld.lbl_repres with
-    | Record_optional_labels lbls -> Ext_list.mem_string lbls ld.lbl_name
-    | Record_inlined {optional_labels} -> Ext_list.mem_string optional_labels ld.lbl_name
-    | _ -> false in
   let process_optional_label (id, ld, e) =
-    let exp_optional_attr =
-      Ext_list.exists e.pexp_attributes (fun ({txt },_) -> txt = "ns.optional")
-    in
+    let exp_optional_attr = check_optional_attr env ld e.pexp_attributes e.pexp_loc in
     if label_is_optional ld && not exp_optional_attr then
       let lid = mknoloc (Longident.(Ldot (Lident "*predef*", "Some"))) in
       let e = Ast_helper.Exp.construct ~loc:e.pexp_loc lid (Some e)
@@ -3797,6 +3797,11 @@ let report_error env ppf = function
       (String.concat ", " labels)  
   | Empty_record_literal ->
       fprintf ppf  "Empty record literal {} should be type annotated or used in a record context."
+  | Field_not_optional (name, typ) ->
+    fprintf ppf
+    "Field @{<info>%s@} is not optional in type %a. Use without ?" name
+    type_expr typ
+
 
 let super_report_error_no_wrap_printing_env = report_error
 
