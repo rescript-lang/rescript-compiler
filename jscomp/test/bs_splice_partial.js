@@ -32,7 +32,7 @@ function test_cb(x) {
 }
 
 function f(x) {
-  v(x);
+  Curry._1(v, x);
 }
 
 function testUndefined(param) {

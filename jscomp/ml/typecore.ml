@@ -2041,7 +2041,11 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
           exp_attributes = sexp.pexp_attributes;
           exp_env = env } in
 
-      if fully_applied then
+      let is_primitive = match funct.exp_desc with
+        | Texp_ident (_, _, {val_kind = Val_prim _}) -> true
+        | _ -> false in
+
+      if fully_applied && not is_primitive then
         rue (apply_internal "opaqueFullApply" (mk_apply (apply_internal "opaque" funct) args))
       else
         rue (mk_apply funct args)
