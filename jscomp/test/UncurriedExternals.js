@@ -26,11 +26,9 @@ function tg(arr) {
 
 var tc = Object.assign({}, "abc");
 
-var te = (function (prim) {
-      return prim;
-    })({
-      RE_EXN_ID: "Not_found"
-    });
+var te = {
+  RE_EXN_ID: "Not_found"
+};
 
 var tcr = {};
 
@@ -87,11 +85,9 @@ function tg$1(arr) {
 
 var tc$1 = Object.assign({}, "abc");
 
-var te$1 = (function (prim) {
-      return prim;
-    })({
-      RE_EXN_ID: "Not_found"
-    });
+var te$1 = {
+  RE_EXN_ID: "Not_found"
+};
 
 var tcr$1 = {};
 
