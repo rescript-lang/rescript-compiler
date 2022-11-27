@@ -43,6 +43,7 @@ These are only breaking changes for unformatted code.
 - Fix issue in printing uncurried callbacks https://github.com/rescript-lang/rescript-compiler/pull/5828
 - Fix formatting uncurried functions with attributes https://github.com/rescript-lang/rescript-compiler/pull/5829
 - Fix parsing/printing uncurried functions with type parameters https://github.com/rescript-lang/rescript-compiler/pull/5849
+- Fix compiler ppx issue when combining `async` and uncurried application https://github.com/rescript-lang/rescript-compiler/pull/5856
 
 #### :nail_care: Polish
 
