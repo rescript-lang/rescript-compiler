@@ -10,10 +10,11 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# 10.1.0-rc.6
+# 10.1.0
 
 #### :bug: Bug Fix
 
+- Fix issue where no error was reported when ? was used for non-optional fields. https://github.com/rescript-lang/rescript-compiler/pull/5853
 - Fix issue where optional fields in inline records were not supported and would cause type errors https://github.com/rescript-lang/rescript-compiler/pull/5827
 
 # 10.1.0-rc.5
