@@ -56,10 +56,11 @@ These are only breaking changes for unformatted code.
 - Process `@set` annotation for field update as generating an uncurried function https://github.com/rescript-lang/rescript-compiler/pull/5846
 - Treat uncurried application of primitives like curried application, which produces better output https://github.com/rescript-lang/rescript-compiler/pull/5851
 
-# 10.1.0-rc.6
+# 10.1.0
 
 #### :bug: Bug Fix
 
+- Fix issue where no error was reported when ? was used for non-optional fields. https://github.com/rescript-lang/rescript-compiler/pull/5853
 - Fix issue where optional fields in inline records were not supported and would cause type errors https://github.com/rescript-lang/rescript-compiler/pull/5827
 
 # 10.1.0-rc.5
