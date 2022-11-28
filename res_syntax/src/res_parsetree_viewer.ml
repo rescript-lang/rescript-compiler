@@ -208,7 +208,7 @@ let filterParsingAttrs attrs =
       match attr with
       | ( {
             Location.txt =
-              ( "bs" | "res.uapp" | "res.braces" | "ns.iflet" | "ns.namedArgLoc"
+              ( "bs" | "res.uapp" | "res.braces" | "res.iflet" | "ns.namedArgLoc"
               | "res.optional" | "res.ternary" | "res.async" | "res.await"
               | "res.template" );
           },
@@ -335,7 +335,7 @@ let flattenableOperators parentOperator childOperator =
 let rec hasIfLetAttribute attrs =
   match attrs with
   | [] -> false
-  | ({Location.txt = "ns.iflet"}, _) :: _ -> true
+  | ({Location.txt = "res.iflet"}, _) :: _ -> true
   | _ :: attrs -> hasIfLetAttribute attrs
 
 let isIfLetExpr expr =
@@ -357,7 +357,7 @@ let hasAttributes attrs =
       match attr with
       | ( {
             Location.txt =
-              ( "bs" | "res.uapp" | "res.braces" | "ns.iflet" | "res.ternary"
+              ( "bs" | "res.uapp" | "res.braces" | "res.iflet" | "res.ternary"
               | "res.async" | "res.await" | "res.template" );
           },
           _ ) ->
@@ -539,7 +539,7 @@ let isPrintableAttribute attr =
   match attr with
   | ( {
         Location.txt =
-          ( "bs" | "res.uapp" | "ns.iflet" | "res.braces" | "JSX" | "res.async"
+          ( "bs" | "res.uapp" | "res.iflet" | "res.braces" | "JSX" | "res.async"
           | "res.await" | "res.template" | "res.ternary" );
       },
       _ ) ->
