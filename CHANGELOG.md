@@ -10,6 +10,12 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
+# 10.1.1
+
+#### :bug: Bug Fix
+
+- Prevent inlining of async functions in additional cases https://github.com/rescript-lang/rescript-compiler/issues/5860
+
 # 10.1.0
 
 #### :bug: Bug Fix
