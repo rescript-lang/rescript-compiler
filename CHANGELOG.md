@@ -57,6 +57,12 @@ These are only breaking changes for unformatted code.
 - Process `@set` annotation for field update as generating an uncurried function https://github.com/rescript-lang/rescript-compiler/pull/5846
 - Treat uncurried application of primitives like curried application, which produces better output https://github.com/rescript-lang/rescript-compiler/pull/5851
 
+# 10.1.1
+
+#### :bug: Bug Fix
+
+- Prevent inlining of async functions in additional cases https://github.com/rescript-lang/rescript-compiler/issues/5860
+
 # 10.1.0
 
 #### :bug: Bug Fix
