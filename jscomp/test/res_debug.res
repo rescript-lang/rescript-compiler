@@ -1,13 +1,11 @@
 @@config({
-  flags: [
-    /* "-w";
-     "@A" */
-    /* "-drawlambda"; */
-    /* "-dtypedtree"; */
-    /* "-bs-diagnose"; */
-    // "-dparsetree",
-    /* "-dsource"; */
-  ],
+  flags: [/* "-w";
+   "@A" */
+  /* "-drawlambda"; */
+  /* "-dtypedtree"; */
+  /* "-bs-diagnose"; */
+  // "-dparsetree",
+  /* "-dsource"; */],
 })
 type t = {x: int, y: int}
 
@@ -23,31 +21,29 @@ let f = (window, a, b) => {
 // let h = () => {
 //   // external hi : int => int = "hi"
 //   let h = 3
-//   h 
+//   h
 
 // }
 
 type r = {
-    x: int,
-    @ns.optional y: int,
-    z : int 
+  x: int,
+  y?: int,
+  z: int,
 }
 
-let v0 = { x :  3 , z : 2 }
+let v0 = {x: 3, z: 2}
 
+let v2 = {...v0, x: 3}
 
-
-
-let v2 = { ... v0 , x : 3 }
-
-let v1 : r = { x : 3 
-  , z : 3
+let v1: r = {
+  x: 3,
+  z: 3,
 }
 
 let testMatch = v =>
   switch v {
   | {y} => y
-  | {y: @ns.optional None} => 42
+  | {y: ?None} => 42
   }
 
 let h = '😊'
