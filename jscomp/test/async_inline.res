@@ -36,3 +36,13 @@ let tci = curriedId(3)
 let tcia = curriedIdAsync(3)
 let tui = uncurriedId(. 3)
 let tuia = uncurriedIdAsync(. 3)
+
+external ignorePromise: promise<'a> => unit = "%identity"
+
+let wrapSomethingAsync = () =>
+  (
+    async () => {
+      let test = await Js.Promise.resolve("Test")
+      Js.log(test)
+    }
+  )()->ignorePromise

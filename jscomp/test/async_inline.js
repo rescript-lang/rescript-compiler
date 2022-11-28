@@ -8,13 +8,6 @@ async function willBeInlined(param) {
 
 var inlined = willBeInlined(undefined);
 
-function wrapSomethingAsync(param) {
-  ((async function (param) {
-          var test = await Promise.resolve("Test");
-          console.log(test);
-        })(777));
-}
-
 async function doSomethingAsync(someAsyncFunction) {
   return await Curry._1(someAsyncFunction, undefined);
 }
@@ -53,11 +46,17 @@ var tui = 3;
 
 var tuia = uncurriedIdAsync(3);
 
+function wrapSomethingAsync(param) {
+  ((async function (param) {
+          var test = await Promise.resolve("Test");
+          console.log(test);
+        })(undefined));
+}
+
 var tci = 3;
 
 exports.willBeInlined = willBeInlined;
 exports.inlined = inlined;
-exports.wrapSomethingAsync = wrapSomethingAsync;
 exports.M = M;
 exports.broken = broken$2;
 exports.curriedId = curriedId;
@@ -68,4 +67,5 @@ exports.tci = tci;
 exports.tcia = tcia;
 exports.tui = tui;
 exports.tuia = tuia;
+exports.wrapSomethingAsync = wrapSomethingAsync;
 /* inlined Not a pure module */
