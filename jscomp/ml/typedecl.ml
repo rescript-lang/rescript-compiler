@@ -358,7 +358,7 @@ let transl_declaration env sdecl id =
           | (_,_,loc)::_ ->
               Location.prerr_warning loc Warnings.Constraint_on_gadt
         end;
-        let has_optional attrs = Ext_list.exists attrs (fun ({txt },_) -> txt = "ns.optional") in
+        let has_optional attrs = Ext_list.exists attrs (fun ({txt },_) -> txt = "res.optional") in
         let scstrs =
           Ext_list.map scstrs (fun ({pcd_args} as cstr) ->
             match pcd_args with
@@ -409,7 +409,7 @@ let transl_declaration env sdecl id =
         let tcstrs, cstrs = List.split (List.map make_cstr scstrs) in
           Ttype_variant tcstrs, Type_variant cstrs
       | Ptype_record lbls ->
-          let has_optional attrs = Ext_list.exists attrs (fun ({txt },_) -> txt = "ns.optional") in
+          let has_optional attrs = Ext_list.exists attrs (fun ({txt },_) -> txt = "res.optional") in
           let optionalLabels =
               Ext_list.filter_map lbls
               (fun lbl -> if has_optional lbl.pld_attributes then Some lbl.pld_name.txt else None) in

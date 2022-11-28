@@ -5,4 +5,4 @@
 ;;List.map (fun x -> x + 1) myList
 ;;List.reduce (fun acc -> fun curr -> acc + curr) 0 myList
 let unitUncurried = ((apply ())[@res.uapp ])
-;;call ~a:(((((a)[@ns.namedArgLoc ]) : int))[@ns.namedArgLoc ])
+;;call ~a:(((((a)[@res.namedArgLoc ]) : int))[@res.namedArgLoc ])

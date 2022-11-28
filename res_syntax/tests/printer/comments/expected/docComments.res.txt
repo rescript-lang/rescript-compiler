@@ -5,9 +5,9 @@
 /** This is a doc ✅ comment */
 let z = 34
 
-/***And this is a ns.doc module annotation*/
+/***And this is a res.doc module annotation*/
 
-/**And this is a ns.doc ✅ annotation*/
+/**And this is a res.doc ✅ annotation*/
 let q = 11
 
 /** This

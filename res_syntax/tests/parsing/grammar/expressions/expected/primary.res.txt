@@ -18,15 +18,15 @@ let x = (arr.((x : int))).((y : int))
 ;;f (x : int)
 ;;f a b c
 ;;f a b c
-;;f ~a:((a)[@ns.namedArgLoc ]) ~b:((bArg)[@ns.namedArgLoc ]) ?c:((c)
-    [@ns.namedArgLoc ]) ?d:((expr)[@ns.namedArgLoc ])
-;;((f ~a:((a)[@ns.namedArgLoc ]) ~b:((bArg)[@ns.namedArgLoc ]) ?c:((c)
-      [@ns.namedArgLoc ]) ?d:((expr)[@ns.namedArgLoc ])) ~a:((a)
-     [@ns.namedArgLoc ]) ~b:((bArg)[@ns.namedArgLoc ]) ?c:((c)
-     [@ns.namedArgLoc ]) ?d:((expr)[@ns.namedArgLoc ])) ~a:((a)
-    [@ns.namedArgLoc ]) ~b:((bArg)[@ns.namedArgLoc ]) ?c:((c)
-    [@ns.namedArgLoc ]) ?d:((expr)[@ns.namedArgLoc ])
-;;f ~a:(((x : int))[@ns.namedArgLoc ]) ?b:(((y : int))[@ns.namedArgLoc ])
+;;f ~a:((a)[@res.namedArgLoc ]) ~b:((bArg)[@res.namedArgLoc ]) ?c:((c)
+    [@res.namedArgLoc ]) ?d:((expr)[@res.namedArgLoc ])
+;;((f ~a:((a)[@res.namedArgLoc ]) ~b:((bArg)[@res.namedArgLoc ]) ?c:((c)
+      [@res.namedArgLoc ]) ?d:((expr)[@res.namedArgLoc ])) ~a:((a)
+     [@res.namedArgLoc ]) ~b:((bArg)[@res.namedArgLoc ]) ?c:((c)
+     [@res.namedArgLoc ]) ?d:((expr)[@res.namedArgLoc ])) ~a:((a)
+    [@res.namedArgLoc ]) ~b:((bArg)[@res.namedArgLoc ]) ?c:((c)
+    [@res.namedArgLoc ]) ?d:((expr)[@res.namedArgLoc ])
+;;f ~a:(((x : int))[@res.namedArgLoc ]) ?b:(((y : int))[@res.namedArgLoc ])
 ;;connection#platformId
 ;;((connection#left)#account)#accountName
 ;;john#age #= 99

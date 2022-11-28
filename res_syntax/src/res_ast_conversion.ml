@@ -558,7 +558,7 @@ let normalize =
                 };
               ] ) ->
           let ternaryMarker =
-            (Location.mknoloc "ns.ternary", Parsetree.PStr [])
+            (Location.mknoloc "res.ternary", Parsetree.PStr [])
           in
           {
             Parsetree.pexp_loc = expr.pexp_loc;

@@ -1,13 +1,13 @@
-let foo ~a:((a)[@ns.namedArgLoc ])  =
+let foo ~a:((a)[@res.namedArgLoc ])  =
   ((a (let __res_unit = () in __res_unit))[@res.uapp ]) +. 1.
 let a = { Js.Fn.I1 = (fun () -> 2) }
-let bar = foo ~a:((a)[@ns.namedArgLoc ])
+let bar = foo ~a:((a)[@res.namedArgLoc ])
 let comparisonResult =
-  ((compare currentNode.value ~targetValue:((targetValue)[@ns.namedArgLoc ]))
+  ((compare currentNode.value ~targetValue:((targetValue)[@res.namedArgLoc ]))
   [@res.uapp ])
-;;((callback firstNode ~y:((y)[@ns.namedArgLoc ]))[@res.uapp ])
+;;((callback firstNode ~y:((y)[@res.namedArgLoc ]))[@res.uapp ])
 ;;((document.createElementWithOptions {js|div|js}
       (elementProps ~onClick:((fun _ -> Js.log {js|hello world|js})
-         [@ns.namedArgLoc ])))[@res.uapp ])
+         [@res.namedArgLoc ])))[@res.uapp ])
 ;;((resolve ())[@res.uapp ])
 ;;((resolve (let __res_unit = () in __res_unit))[@res.uapp ])

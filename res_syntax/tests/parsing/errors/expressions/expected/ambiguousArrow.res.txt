@@ -26,4 +26,4 @@
 
 let a b = ({js|hi|js} : int)
 let x = ((let a = 1 in let b = 2 in fun pattern -> ({js|test|js} : int))
-  [@ns.braces ])
+  [@res.braces ])

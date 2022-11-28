@@ -83,7 +83,7 @@ let _ = switch z {
   | {? name, x: 3} => 4242
 }
 
-type tt = {x:int, @ns.optional y: string}
+type tt = {x:int, @res.optional y: string}
 
 type ttt = {x:int, y?: string}
 

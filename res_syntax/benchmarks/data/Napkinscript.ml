@@ -3189,7 +3189,7 @@ end = struct
 
   let processBracesAttr expr =
     match expr.pexp_attributes with
-    | (({txt = "ns.braces"}, _) as attr)::attrs ->
+    | (({txt = "res.braces"}, _) as attr)::attrs ->
       (Some attr, {expr with pexp_attributes = attrs})
     | _ ->
       (None, expr)
@@ -3197,7 +3197,7 @@ end = struct
   let filterParsingAttrs attrs =
     List.filter (fun attr ->
       match attr with
-      | ({Location.txt = ("ns.ternary" | "ns.braces" | "bs" | "ns.namedArgLoc")}, _) -> false
+      | ({Location.txt = ("res.ternary" | "res.braces" | "bs" | "res.namedArgLoc")}, _) -> false
       | _ -> true
     ) attrs
 
@@ -3301,7 +3301,7 @@ end = struct
 
   let hasAttributes attrs =
     List.exists (fun attr -> match attr with
-      | ({Location.txt = "bs" | "ns.ternary" | "ns.braces"}, _) -> false
+      | ({Location.txt = "bs" | "res.ternary" | "res.braces"}, _) -> false
       | _ -> true
     ) attrs
 
@@ -3315,7 +3315,7 @@ end = struct
   let rec hasTernaryAttribute attrs =
     match attrs with
     | [] -> false
-    | ({Location.txt="ns.ternary"},_)::_ -> true
+    | ({Location.txt="res.ternary"},_)::_ -> true
     | _::attrs -> hasTernaryAttribute attrs
 
   let isTernaryExpr expr = match expr with
@@ -3346,7 +3346,7 @@ end = struct
 
   let filterTernaryAttributes attrs =
     List.filter (fun attr -> match attr with
-      |({Location.txt="ns.ternary"},_) -> false
+      |({Location.txt="res.ternary"},_) -> false
       | _ -> true
     ) attrs
 
@@ -3403,13 +3403,13 @@ end = struct
 
   let filterPrinteableAttributes attrs =
     List.filter (fun attr -> match attr with
-      | ({Location.txt="bs" | "ns.ternary"}, _) -> false
+      | ({Location.txt="bs" | "res.ternary"}, _) -> false
       | _ -> true
     ) attrs
 
   let partitionPrinteableAttributes attrs =
     List.partition (fun attr -> match attr with
-      | ({Location.txt="bs" | "ns.ternary"}, _) -> false
+      | ({Location.txt="bs" | "res.ternary"}, _) -> false
       | _ -> true
     ) attrs
 
@@ -5189,7 +5189,7 @@ module CommentTable = struct
         walkList
           ~getLoc:(fun (_argLabel, expr) ->
             let loc = match expr.Parsetree.pexp_attributes with
-            | ({Location.txt = "ns.namedArgLoc"; loc}, _)::_attrs ->
+            | ({Location.txt = "res.namedArgLoc"; loc}, _)::_attrs ->
                 {loc with loc_end = expr.pexp_loc.loc_end}
             | _ ->
                expr.pexp_loc
@@ -5207,7 +5207,7 @@ module CommentTable = struct
         ~getLoc:(fun (_attrs, _argLbl, exprOpt, pattern) ->
           let open Parsetree in
           let startPos = match pattern.ppat_attributes with
-          | ({Location.txt = "ns.namedArgLoc"; loc}, _)::_attrs ->
+          | ({Location.txt = "res.namedArgLoc"; loc}, _)::_attrs ->
               loc.loc_start
           | _ ->
              pattern.ppat_loc.loc_start
@@ -5279,7 +5279,7 @@ module CommentTable = struct
 
   and walkExprArgument (_argLabel, expr) t comments =
     match expr.Parsetree.pexp_attributes with
-    | ({Location.txt = "ns.namedArgLoc"; loc}, _)::_attrs ->
+    | ({Location.txt = "res.namedArgLoc"; loc}, _)::_attrs ->
       let (leading, trailing) = partitionLeadingTrailing comments loc in
       attach t.leading loc leading;
       let (afterLabel, rest) = partitionAdjacentTrailing loc trailing in
@@ -7706,7 +7706,7 @@ module Printer = struct
           ParsetreeViewer.isBinaryExpression expr ||
           (match vb.pvb_expr with
           | {
-              pexp_attributes = [({Location.txt="ns.ternary"}, _)];
+              pexp_attributes = [({Location.txt="res.ternary"}, _)];
               pexp_desc = Pexp_ifthenelse (ifExpr, _, _)
             }  ->
             ParsetreeViewer.isBinaryExpression ifExpr || ParsetreeViewer.hasAttributes ifExpr.pexp_attributes
@@ -9250,7 +9250,7 @@ module Printer = struct
           match Parens.binaryExpr {expr with
             pexp_attributes = List.filter (fun attr ->
               match attr with
-              | ({Location.txt = ("ns.braces")}, _) -> false
+              | ({Location.txt = ("res.braces")}, _) -> false
               | _ -> true
             ) expr.pexp_attributes
           } with
@@ -9402,7 +9402,7 @@ module Printer = struct
           ParsetreeViewer.isBinaryExpression targetExpr ||
           (match targetExpr with
           | {
-              pexp_attributes = [({Location.txt="ns.ternary"}, _)];
+              pexp_attributes = [({Location.txt="res.ternary"}, _)];
               pexp_desc = Pexp_ifthenelse (ifExpr, _, _)
             }  ->
             ParsetreeViewer.isBinaryExpression ifExpr || ParsetreeViewer.hasAttributes ifExpr.pexp_attributes
@@ -9599,7 +9599,7 @@ module Printer = struct
     | (
         (Asttypes.Labelled lblTxt | Optional lblTxt) as lbl,
         {
-          Parsetree.pexp_attributes = [({Location.txt = "ns.namedArgLoc"; loc = argLoc}, _)];
+          Parsetree.pexp_attributes = [({Location.txt = "res.namedArgLoc"; loc = argLoc}, _)];
           pexp_desc = Pexp_ident {txt = Longident.Lident ident}
         }
       ) when lblTxt = ident (* jsx punning *) ->
@@ -9631,7 +9631,7 @@ module Printer = struct
       end
     | (lbl, expr) ->
       let (argLoc, expr) = match expr.pexp_attributes with
-      | ({Location.txt = "ns.namedArgLoc"; loc}, _)::attrs ->
+      | ({Location.txt = "res.namedArgLoc"; loc}, _)::attrs ->
           (loc, {expr with pexp_attributes = attrs})
       | _ ->
         Location.none, expr
@@ -9845,11 +9845,11 @@ module Printer = struct
 		| (
 				(Asttypes.Labelled lbl),
         ({pexp_desc=Pexp_ident {txt = Longident.Lident name};
-          pexp_attributes = ([] | [({Location.txt = "ns.namedArgLoc";}, _)])
+          pexp_attributes = ([] | [({Location.txt = "res.namedArgLoc";}, _)])
          } as argExpr)
 			) when lbl = name && not (ParsetreeViewer.isBracedExpr argExpr) ->
       let loc = match arg.pexp_attributes with
-      | ({Location.txt = "ns.namedArgLoc"; loc}, _)::_ -> loc
+      | ({Location.txt = "res.namedArgLoc"; loc}, _)::_ -> loc
       | _ -> arg.pexp_loc
       in
       let doc = Doc.concat [
@@ -9866,11 +9866,11 @@ module Printer = struct
             typ
          );
          pexp_loc;
-         pexp_attributes = ([] | [({Location.txt = "ns.namedArgLoc";}, _)]) as attrs
+         pexp_attributes = ([] | [({Location.txt = "res.namedArgLoc";}, _)]) as attrs
         }
 			) when lbl = name && not (ParsetreeViewer.isBracedExpr argExpr) ->
       let loc = match attrs with
-      | ({Location.txt = "ns.namedArgLoc"; loc}, _)::_ ->
+      | ({Location.txt = "res.namedArgLoc"; loc}, _)::_ ->
         {loc with loc_end = pexp_loc.loc_end}
       | _ -> arg.pexp_loc
       in
@@ -9885,11 +9885,11 @@ module Printer = struct
 		| (
 				(Asttypes.Optional lbl),
         {pexp_desc=Pexp_ident {txt = Longident.Lident name};
-         pexp_attributes = ([] | [({Location.txt = "ns.namedArgLoc";}, _)])
+         pexp_attributes = ([] | [({Location.txt = "res.namedArgLoc";}, _)])
         }
 			) when lbl = name ->
       let loc = match arg.pexp_attributes with
-      | ({Location.txt = "ns.namedArgLoc"; loc}, _)::_ -> loc
+      | ({Location.txt = "res.namedArgLoc"; loc}, _)::_ -> loc
       | _ -> arg.pexp_loc
       in
       let doc = Doc.concat [
@@ -9900,7 +9900,7 @@ module Printer = struct
       printComments doc cmtTbl loc
 		| (_lbl, expr) ->
       let (argLoc, expr) = match expr.pexp_attributes with
-      | ({Location.txt = "ns.namedArgLoc"; loc}, _)::attrs ->
+      | ({Location.txt = "res.namedArgLoc"; loc}, _)::attrs ->
           (loc, {expr with pexp_attributes = attrs})
       | _ ->
         expr.pexp_loc, expr
@@ -10095,7 +10095,7 @@ module Printer = struct
       | (
           (Asttypes.Labelled lbl | Optional lbl),
           {ppat_desc = Ppat_var stringLoc;
-           ppat_attributes = ([] | [({Location.txt = "ns.namedArgLoc";}, _)])
+           ppat_attributes = ([] | [({Location.txt = "res.namedArgLoc";}, _)])
           }
         ) when lbl = stringLoc.txt ->
           (* ~d *)
@@ -10106,7 +10106,7 @@ module Printer = struct
       | (
           (Asttypes.Labelled lbl | Optional lbl),
            ({ppat_desc = Ppat_constraint ({ ppat_desc = Ppat_var { txt } }, typ);
-             ppat_attributes = ([] | [({Location.txt = "ns.namedArgLoc";}, _)])
+             ppat_attributes = ([] | [({Location.txt = "res.namedArgLoc";}, _)])
             })
         ) when lbl = txt ->
           (* ~d: e *)
@@ -10141,13 +10141,13 @@ module Printer = struct
       let cmtLoc = match defaultExpr with
       | None ->
         begin match pattern.ppat_attributes with
-        | ({Location.txt = "ns.namedArgLoc"; loc}, _)::_ ->
+        | ({Location.txt = "res.namedArgLoc"; loc}, _)::_ ->
           {loc with loc_end = pattern.ppat_loc.loc_end}
         | _ -> pattern.ppat_loc
         end
       | Some expr ->
         let startPos =  match pattern.ppat_attributes with
-        | ({Location.txt = "ns.namedArgLoc"; loc}, _)::_ ->
+        | ({Location.txt = "res.namedArgLoc"; loc}, _)::_ ->
             loc.loc_start
         | _ -> pattern.ppat_loc.loc_start
         in {
@@ -11991,7 +11991,7 @@ module ParsetreeCompatibility = struct
               {pc_lhs = {ppat_desc = Ppat_construct ({txt = Longident.Lident "false"}, None)}; pc_rhs = elseExpr };
             ]
           ) ->
-          let ternaryMarker = (Location.mknoloc "ns.ternary", Parsetree.PStr []) in
+          let ternaryMarker = (Location.mknoloc "res.ternary", Parsetree.PStr []) in
           Ast_helper.Exp.ifthenelse
             ~loc:expr.pexp_loc
             ~attrs:(ternaryMarker::expr.pexp_attributes)
@@ -12322,8 +12322,8 @@ end
 
   let jsxAttr = (Location.mknoloc "JSX", Parsetree.PStr [])
   let uncurryAttr = (Location.mknoloc "bs", Parsetree.PStr [])
-  let ternaryAttr = (Location.mknoloc "ns.ternary", Parsetree.PStr [])
-  let makeBracesAttr loc = (Location.mkloc "ns.braces" loc, Parsetree.PStr [])
+  let ternaryAttr = (Location.mknoloc "res.ternary", Parsetree.PStr [])
+  let makeBracesAttr loc = (Location.mkloc "res.braces" loc, Parsetree.PStr [])
 
   type typDefOrExt =
     | TypeDef of {recFlag: Asttypes.rec_flag; types: Parsetree.type_declaration list}
@@ -13769,7 +13769,7 @@ end
       | Tilde ->
         Parser.next p;
         let (lblName, loc) = parseLident p in
-        let propLocAttr = (Location.mkloc "ns.namedArgLoc" loc, Parsetree.PStr []) in
+        let propLocAttr = (Location.mkloc "res.namedArgLoc" loc, Parsetree.PStr []) in
         begin match p.Parser.token with
         | Comma | Equal | Rparen ->
           let loc = mkLoc startPos p.prevEndPos in
@@ -14760,7 +14760,7 @@ end
     | Question | Lident _ ->
       let optional = Parser.optional p Question in
       let (name, loc) = parseLident p in
-      let propLocAttr = (Location.mkloc "ns.namedArgLoc" loc, Parsetree.PStr []) in
+      let propLocAttr = (Location.mkloc "res.namedArgLoc" loc, Parsetree.PStr []) in
       (* optional punning: <foo ?a /> *)
       if optional then
         Some (
@@ -15444,7 +15444,7 @@ end
         Parser.next p;
         let endPos = p.prevEndPos in
         let loc = mkLoc startPos endPos in
-        let propLocAttr = (Location.mkloc "ns.namedArgLoc" loc, Parsetree.PStr []) in
+        let propLocAttr = (Location.mkloc "res.namedArgLoc" loc, Parsetree.PStr []) in
         let identExpr = Ast_helper.Exp.ident ~attrs:[propLocAttr] ~loc (
           Location.mkloc (Longident.Lident ident) loc
         ) in

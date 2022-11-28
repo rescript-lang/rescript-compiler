@@ -1,1 +1,1 @@
-type nonrec t = ((a:((int)[@ns.namedArgLoc ]) -> unit)[@attr ])
+type nonrec t = ((a:((int)[@res.namedArgLoc ]) -> unit)[@attr ])

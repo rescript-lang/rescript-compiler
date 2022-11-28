@@ -8,5 +8,5 @@
 
   I'm not sure what to parse here when looking at "?".
 
-external printName : name:((unit)[@ns.namedArgLoc ]) -> unit = "printName"
+external printName : name:((unit)[@res.namedArgLoc ]) -> unit = "printName"
 [@@bs.module {js|moduleName|js}]

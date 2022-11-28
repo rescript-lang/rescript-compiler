@@ -1925,7 +1925,7 @@ and printTypeParameter ~state (attrs, lbl, typ) cmtTbl =
   in
   let loc, typ =
     match typ.ptyp_attributes with
-    | ({Location.txt = "ns.namedArgLoc"; loc}, _) :: attrs ->
+    | ({Location.txt = "res.namedArgLoc"; loc}, _) :: attrs ->
       ( {loc with loc_end = typ.ptyp_loc.loc_end},
         {typ with ptyp_attributes = attrs} )
     | _ -> (typ.ptyp_loc, typ)
@@ -2068,7 +2068,7 @@ and printValueBinding ~state ~recFlag (vb : Parsetree.value_binding) cmtTbl i =
           ||
           match vb.pvb_expr with
           | {
-           pexp_attributes = [({Location.txt = "ns.ternary"}, _)];
+           pexp_attributes = [({Location.txt = "res.ternary"}, _)];
            pexp_desc = Pexp_ifthenelse (ifExpr, _, _);
           } ->
             ParsetreeViewer.isBinaryExpression ifExpr
@@ -3284,7 +3284,7 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
               pexp_attributes =
                 List.filter
                   (function
-                    | {Location.txt = "ns.braces"}, _ -> false
+                    | {Location.txt = "res.braces"}, _ -> false
                     | _ -> true)
                   e.pexp_attributes;
             }
@@ -3905,7 +3905,7 @@ and printPexpApply ~state expr cmtTbl =
         ||
         match targetExpr with
         | {
-         pexp_attributes = [({Location.txt = "ns.ternary"}, _)];
+         pexp_attributes = [({Location.txt = "res.ternary"}, _)];
          pexp_desc = Pexp_ifthenelse (ifExpr, _, _);
         } ->
           ParsetreeViewer.isBinaryExpression ifExpr
@@ -4211,7 +4211,7 @@ and printJsxProps ~state args cmtTbl : Doc.t * Parsetree.expression option =
          ] ->
       let loc =
         match expr.Parsetree.pexp_attributes with
-        | ({Location.txt = "ns.namedArgLoc"; loc}, _) :: _attrs ->
+        | ({Location.txt = "res.namedArgLoc"; loc}, _) :: _attrs ->
           {loc with loc_end = expr.pexp_loc.loc_end}
         | _ -> expr.pexp_loc
       in
@@ -4247,7 +4247,7 @@ and printJsxProp ~state arg cmtTbl =
   | ( ((Asttypes.Labelled lblTxt | Optional lblTxt) as lbl),
       {
         Parsetree.pexp_attributes =
-          [({Location.txt = "ns.namedArgLoc"; loc = argLoc}, _)];
+          [({Location.txt = "res.namedArgLoc"; loc = argLoc}, _)];
         pexp_desc = Pexp_ident {txt = Longident.Lident ident};
       } )
     when lblTxt = ident (* jsx punning *) -> (
@@ -4273,7 +4273,7 @@ and printJsxProp ~state arg cmtTbl =
   | lbl, expr ->
     let argLoc, expr =
       match expr.pexp_attributes with
-      | ({Location.txt = "ns.namedArgLoc"; loc}, _) :: attrs ->
+      | ({Location.txt = "res.namedArgLoc"; loc}, _) :: attrs ->
         (loc, {expr with pexp_attributes = attrs})
       | _ -> (Location.none, expr)
     in
@@ -4570,12 +4570,12 @@ and printArgument ~state (argLbl, arg) cmtTbl =
   | ( Asttypes.Labelled lbl,
       ({
          pexp_desc = Pexp_ident {txt = Longident.Lident name};
-         pexp_attributes = [] | [({Location.txt = "ns.namedArgLoc"}, _)];
+         pexp_attributes = [] | [({Location.txt = "res.namedArgLoc"}, _)];
        } as argExpr) )
     when lbl = name && not (ParsetreeViewer.isBracedExpr argExpr) ->
     let loc =
       match arg.pexp_attributes with
-      | ({Location.txt = "ns.namedArgLoc"; loc}, _) :: _ -> loc
+      | ({Location.txt = "res.namedArgLoc"; loc}, _) :: _ -> loc
       | _ -> arg.pexp_loc
     in
     let doc = Doc.concat [Doc.tilde; printIdentLike lbl] in
@@ -4589,12 +4589,12 @@ and printArgument ~state (argLbl, arg) cmtTbl =
               typ );
         pexp_loc;
         pexp_attributes =
-          ([] | [({Location.txt = "ns.namedArgLoc"}, _)]) as attrs;
+          ([] | [({Location.txt = "res.namedArgLoc"}, _)]) as attrs;
       } )
     when lbl = name && not (ParsetreeViewer.isBracedExpr argExpr) ->
     let loc =
       match attrs with
-      | ({Location.txt = "ns.namedArgLoc"; loc}, _) :: _ ->
+      | ({Location.txt = "res.namedArgLoc"; loc}, _) :: _ ->
         {loc with loc_end = pexp_loc.loc_end}
       | _ -> arg.pexp_loc
     in
@@ -4612,12 +4612,12 @@ and printArgument ~state (argLbl, arg) cmtTbl =
   | ( Asttypes.Optional lbl,
       {
         pexp_desc = Pexp_ident {txt = Longident.Lident name};
-        pexp_attributes = [] | [({Location.txt = "ns.namedArgLoc"}, _)];
+        pexp_attributes = [] | [({Location.txt = "res.namedArgLoc"}, _)];
       } )
     when lbl = name ->
     let loc =
       match arg.pexp_attributes with
-      | ({Location.txt = "ns.namedArgLoc"; loc}, _) :: _ -> loc
+      | ({Location.txt = "res.namedArgLoc"; loc}, _) :: _ -> loc
       | _ -> arg.pexp_loc
     in
     let doc = Doc.concat [Doc.tilde; printIdentLike lbl; Doc.question] in
@@ -4625,7 +4625,7 @@ and printArgument ~state (argLbl, arg) cmtTbl =
   | _lbl, expr ->
     let argLoc, expr =
       match expr.pexp_attributes with
-      | ({Location.txt = "ns.namedArgLoc"; loc}, _) :: attrs ->
+      | ({Location.txt = "res.namedArgLoc"; loc}, _) :: attrs ->
         (loc, {expr with pexp_attributes = attrs})
       | _ -> (expr.pexp_loc, expr)
     in
@@ -4915,13 +4915,13 @@ and printExpFunParameter ~state parameter cmtTbl =
       match defaultExpr with
       | None -> (
         match pattern.ppat_attributes with
-        | ({Location.txt = "ns.namedArgLoc"; loc}, _) :: _ ->
+        | ({Location.txt = "res.namedArgLoc"; loc}, _) :: _ ->
           {loc with loc_end = pattern.ppat_loc.loc_end}
         | _ -> pattern.ppat_loc)
       | Some expr ->
         let startPos =
           match pattern.ppat_attributes with
-          | ({Location.txt = "ns.namedArgLoc"; loc}, _) :: _ -> loc.loc_start
+          | ({Location.txt = "res.namedArgLoc"; loc}, _) :: _ -> loc.loc_start
           | _ -> pattern.ppat_loc.loc_start
         in
         {
@@ -5262,7 +5262,7 @@ and printPayload ~state (payload : Parsetree.payload) cmtTbl =
 and printAttribute ?(standalone = false) ~state
     ((id, payload) : Parsetree.attribute) cmtTbl =
   match (id, payload) with
-  | ( {txt = "ns.doc"},
+  | ( {txt = "res.doc"},
       PStr
         [
           {

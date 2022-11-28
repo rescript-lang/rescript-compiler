@@ -13,13 +13,13 @@ let steve =
   ([%obj { name = {js|Steve|js}; age = 30 }] : < user ;age: int   > )
 let steve =
   ((([%obj { name = {js|Steve|js}; age = 30 }] : < user ;age: int   > ))
-  [@ns.braces ])
+  [@res.braces ])
 let printFullUser (steve : < user ;age: int   > ) = Js.log steve
-let printFullUser ~user:(((user : < user ;age: int   > ))[@ns.namedArgLoc ]) 
-  = Js.log steve
-let printFullUser ~user:(((user : < user ;age: int   > ))[@ns.namedArgLoc ]) 
-  = Js.log steve
-let printFullUser ?user:(((user)[@ns.namedArgLoc ])=
+let printFullUser ~user:(((user : < user ;age: int   > ))[@res.namedArgLoc ])
+   = Js.log steve
+let printFullUser ~user:(((user : < user ;age: int   > ))[@res.namedArgLoc ])
+   = Js.log steve
+let printFullUser ?user:(((user)[@res.namedArgLoc ])=
   (steve : < user ;age: int   > ))  = Js.log steve
 external steve : < user ;age: int   >  = "steve"[@@val ]
 let makeCeoOf30yearsOld name =

@@ -20,7 +20,7 @@ let rec _addLoop rbt currentNode =
         if
           (((let uncle = uncleOf currentNode in
              (uncle != None) && ((uncle |. castNotOption).color == Red)))
-          [@ns.braces ])
+          [@res.braces ])
         then
           ((currentNode.parent |. castNotOption).color <- Black;
            ((uncleOf currentNode) |. castNotOption).color <- Black;
@@ -48,7 +48,7 @@ let rec _addLoop rbt currentNode =
            then
              rotateRight rbt ((grandParentOf currentNode) |. castNotOption)
            else rotateLeft rbt ((grandParentOf currentNode) |. castNotOption)))
-  [@ns.braces ])
+  [@res.braces ])
 let removeNode rbt node =
   ((if nodeToRemove.color == Black
     then
@@ -153,4 +153,4 @@ let removeNode rbt node =
             done));
     if ((isLeaf successor)[@res.uapp ])
     then (if (rbt |. root) == (Some successor) then (rbt |. root) = None))
-  [@ns.braces ])
+  [@res.braces ])

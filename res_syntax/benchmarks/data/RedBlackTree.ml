@@ -35,7 +35,7 @@ let isLeft node =
   | None -> false
   | Some parent -> (Some node) == parent.left
 let leftOrRightSet ~node  x value =
-  ((if isLeft node then x.left <- value else x.right <- value)[@ns.ternary ])
+  ((if isLeft node then x.left <- value else x.right <- value)[@res.ternary ])
 let siblingOf node =
   if isLeft node
   then (castNotOption node.parent).right
@@ -64,13 +64,13 @@ let rec peekMinNode node =
   | None -> None
   | Some node ->
       ((if node.left == None then Some node else node.left |. peekMinNode)
-      [@ns.ternary ])
+      [@res.ternary ])
 let rec peekMaxNode node =
   match node with
   | None -> None
   | Some node ->
       ((if node.right == None then Some node else node.right |. peekMaxNode)
-      [@ns.ternary ])
+      [@res.ternary ])
 let rotateLeft rbt node =
   let parent = node.parent in
   let right = node.right in
@@ -387,7 +387,7 @@ let rec firstRightParent node =
   | None -> None
   | Some parent ->
       ((if isLeft node then Some parent else parent |. firstRightParent)
-      [@ns.ternary ])
+      [@res.ternary ])
 let nextNode node =
   match node.right with
   | None -> node |. firstRightParent
@@ -397,7 +397,7 @@ let rec sumLeftSpine node ~fromRightChild  =
     match node.left with
     | None -> node.height
     | Some left -> ((if fromRightChild then node.height +. left.sum else 0.0)
-        [@ns.ternary ]) in
+        [@res.ternary ]) in
   match node.parent with
   | None -> leftSpine
   | Some parent ->
@@ -455,7 +455,7 @@ let onChangedVisible ?(anchor= None)  rbt ~oldNewVisible  ~top:top_
   oldNewVisible.new_ <- new_;
   (let anchorDelta = rbt |. (getAnchorDelta ~anchor) in
    let top = top_ -. anchorDelta in
-   let top = ((if top < 0.0 then 0.0 else top)[@ns.ternary ]) in
+   let top = ((if top < 0.0 then 0.0 else top)[@res.ternary ]) in
    let bottom = bottom_ -. anchorDelta in
    let first = firstVisibleNode rbt.root top in
    let last = lastVisibleNode rbt.root bottom in

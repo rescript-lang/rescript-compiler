@@ -198,7 +198,7 @@ let funExpr expr =
 
 let processBracesAttr expr =
   match expr.pexp_attributes with
-  | (({txt = "ns.braces"}, _) as attr) :: attrs ->
+  | (({txt = "res.braces"}, _) as attr) :: attrs ->
     (Some attr, {expr with pexp_attributes = attrs})
   | _ -> (None, expr)
 
@@ -208,9 +208,9 @@ let filterParsingAttrs attrs =
       match attr with
       | ( {
             Location.txt =
-              ( "bs" | "res.uapp" | "ns.braces" | "ns.iflet" | "ns.namedArgLoc"
-              | "ns.optional" | "ns.ternary" | "res.async" | "res.await"
-              | "res.template" );
+              ( "bs" | "res.uapp" | "res.braces" | "res.iflet"
+              | "res.namedArgLoc" | "res.optional" | "res.ternary" | "res.async"
+              | "res.await" | "res.template" );
           },
           _ ) ->
         false
@@ -335,7 +335,7 @@ let flattenableOperators parentOperator childOperator =
 let rec hasIfLetAttribute attrs =
   match attrs with
   | [] -> false
-  | ({Location.txt = "ns.iflet"}, _) :: _ -> true
+  | ({Location.txt = "res.iflet"}, _) :: _ -> true
   | _ :: attrs -> hasIfLetAttribute attrs
 
 let isIfLetExpr expr =
@@ -348,7 +348,7 @@ let isIfLetExpr expr =
 let rec hasOptionalAttribute attrs =
   match attrs with
   | [] -> false
-  | ({Location.txt = "ns.optional"}, _) :: _ -> true
+  | ({Location.txt = "res.optional"}, _) :: _ -> true
   | _ :: attrs -> hasOptionalAttribute attrs
 
 let hasAttributes attrs =
@@ -357,7 +357,7 @@ let hasAttributes attrs =
       match attr with
       | ( {
             Location.txt =
-              ( "bs" | "res.uapp" | "ns.braces" | "ns.iflet" | "ns.ternary"
+              ( "bs" | "res.uapp" | "res.braces" | "res.iflet" | "res.ternary"
               | "res.async" | "res.await" | "res.template" );
           },
           _ ) ->
@@ -426,7 +426,7 @@ let collectIfExpressions expr =
 let rec hasTernaryAttribute attrs =
   match attrs with
   | [] -> false
-  | ({Location.txt = "ns.ternary"}, _) :: _ -> true
+  | ({Location.txt = "res.ternary"}, _) :: _ -> true
   | _ :: attrs -> hasTernaryAttribute attrs
 
 let isTernaryExpr expr =
@@ -460,7 +460,7 @@ let filterTernaryAttributes attrs =
   List.filter
     (fun attr ->
       match attr with
-      | {Location.txt = "ns.ternary"}, _ -> false
+      | {Location.txt = "res.ternary"}, _ -> false
       | _ -> true)
     attrs
 
@@ -539,8 +539,8 @@ let isPrintableAttribute attr =
   match attr with
   | ( {
         Location.txt =
-          ( "bs" | "res.uapp" | "ns.iflet" | "ns.braces" | "JSX" | "res.async"
-          | "res.await" | "res.template" | "ns.ternary" );
+          ( "bs" | "res.uapp" | "res.iflet" | "res.braces" | "JSX" | "res.async"
+          | "res.await" | "res.template" | "res.ternary" );
       },
       _ ) ->
     false

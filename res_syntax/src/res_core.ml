@@ -149,9 +149,9 @@ end
 
 let jsxAttr = (Location.mknoloc "JSX", Parsetree.PStr [])
 let uncurriedAppAttr = (Location.mknoloc "res.uapp", Parsetree.PStr [])
-let ternaryAttr = (Location.mknoloc "ns.ternary", Parsetree.PStr [])
-let ifLetAttr = (Location.mknoloc "ns.iflet", Parsetree.PStr [])
-let optionalAttr = (Location.mknoloc "ns.optional", Parsetree.PStr [])
+let ternaryAttr = (Location.mknoloc "res.ternary", Parsetree.PStr [])
+let ifLetAttr = (Location.mknoloc "res.iflet", Parsetree.PStr [])
+let optionalAttr = (Location.mknoloc "res.optional", Parsetree.PStr [])
 let makeAwaitAttr loc = (Location.mkloc "res.await" loc, Parsetree.PStr [])
 let makeAsyncAttr loc = (Location.mkloc "res.async" loc, Parsetree.PStr [])
 
@@ -169,7 +169,7 @@ let suppressFragileMatchWarningAttr =
         Ast_helper.Str.eval
           (Ast_helper.Exp.constant (Pconst_string ("-4", None)));
       ] )
-let makeBracesAttr loc = (Location.mkloc "ns.braces" loc, Parsetree.PStr [])
+let makeBracesAttr loc = (Location.mkloc "res.braces" loc, Parsetree.PStr [])
 let templateLiteralAttr = (Location.mknoloc "res.template", Parsetree.PStr [])
 
 let spreadAttr = (Location.mknoloc "res.spread", Parsetree.PStr [])
@@ -1648,7 +1648,7 @@ and parseParameter p =
           Parser.next p;
           let lblName, loc = parseLident p in
           let propLocAttr =
-            (Location.mkloc "ns.namedArgLoc" loc, Parsetree.PStr [])
+            (Location.mkloc "res.namedArgLoc" loc, Parsetree.PStr [])
           in
           match p.Parser.token with
           | Comma | Equal | Rparen ->
@@ -2682,7 +2682,7 @@ and parseJsxProp p =
     let optional = Parser.optional p Question in
     let name, loc = parseLident p in
     let propLocAttr =
-      (Location.mkloc "ns.namedArgLoc" loc, Parsetree.PStr [])
+      (Location.mkloc "res.namedArgLoc" loc, Parsetree.PStr [])
     in
     (* optional punning: <foo ?a /> *)
     if optional then
@@ -2721,7 +2721,7 @@ and parseJsxProp p =
       Parser.next p;
       let loc = mkLoc p.Parser.startPos p.prevEndPos in
       let propLocAttr =
-        (Location.mkloc "ns.namedArgLoc" loc, Parsetree.PStr [])
+        (Location.mkloc "res.namedArgLoc" loc, Parsetree.PStr [])
       in
       let attrExpr =
         let e = parsePrimaryExpr ~operand:(parseAtomicExpr p) p in
@@ -3538,7 +3538,7 @@ and parseArgument2 p ~dotted : argument option =
       let endPos = p.prevEndPos in
       let loc = mkLoc startPos endPos in
       let propLocAttr =
-        (Location.mkloc "ns.namedArgLoc" loc, Parsetree.PStr [])
+        (Location.mkloc "res.namedArgLoc" loc, Parsetree.PStr [])
       in
       let identExpr =
         Ast_helper.Exp.ident ~attrs:[propLocAttr] ~loc
@@ -4143,7 +4143,7 @@ and parseTypeParameter p =
       Parser.next p;
       let name, loc = parseLident p in
       let lblLocAttr =
-        (Location.mkloc "ns.namedArgLoc" loc, Parsetree.PStr [])
+        (Location.mkloc "res.namedArgLoc" loc, Parsetree.PStr [])
       in
       Parser.expect ~grammar:Grammar.TypeExpression Colon p;
       let typ =
@@ -4221,7 +4221,9 @@ and parseEs6ArrowType ~attrs p =
   | Tilde ->
     Parser.next p;
     let name, loc = parseLident p in
-    let lblLocAttr = (Location.mkloc "ns.namedArgLoc" loc, Parsetree.PStr []) in
+    let lblLocAttr =
+      (Location.mkloc "res.namedArgLoc" loc, Parsetree.PStr [])
+    in
     Parser.expect ~grammar:Grammar.TypeExpression Colon p;
     let typ =
       let typ = parseTypExpr ~alias:false ~es6Arrow:false p in
@@ -5541,7 +5543,7 @@ and parseStructureItemRegion p =
     Parser.next p;
     Some
       (Ast_helper.Str.attribute ~loc
-         ( {txt = "ns.doc"; loc},
+         ( {txt = "res.doc"; loc},
            PStr
              [
                Ast_helper.Str.eval ~loc
@@ -6173,7 +6175,7 @@ and parseSignatureItemRegion p =
     Parser.next p;
     Some
       (Ast_helper.Sig.attribute ~loc
-         ( {txt = "ns.doc"; loc},
+         ( {txt = "res.doc"; loc},
            PStr
              [
                Ast_helper.Str.eval ~loc
@@ -6388,7 +6390,7 @@ and parseAttribute p =
   | DocComment (loc, s) ->
     Parser.next p;
     Some
-      ( {txt = "ns.doc"; loc},
+      ( {txt = "res.doc"; loc},
         PStr
           [
             Ast_helper.Str.eval ~loc

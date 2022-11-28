@@ -14,32 +14,32 @@ let r = { (make () : myRecord) with foo = bar }
 let r = { (make () : myRecord) with foo = bar }
 let r =
   {
-    x = ((None)[@ns.optional ]);
-    y = ((None)[@ns.optional ]);
-    z = (((None : tt))[@ns.optional ])
+    x = ((None)[@res.optional ]);
+    y = ((None)[@res.optional ]);
+    z = (((None : tt))[@res.optional ])
   }
-let z name = { name = ((name)[@ns.optional ]); x = 3 }
-let z name = { name = ((name)[@ns.optional ]); x = 3 }
-let z name = { name; x = ((x)[@ns.optional ]) }
-let zz name = { name; x = ((x)[@ns.optional ]) }
+let z name = { name = ((name)[@res.optional ]); x = 3 }
+let z name = { name = ((name)[@res.optional ]); x = 3 }
+let z name = { name; x = ((x)[@res.optional ]) }
+let zz name = { name; x = ((x)[@res.optional ]) }
 let _ =
   match z with
-  | { x = ((None)[@ns.optional ]); y = ((None)[@ns.optional ]);
-      z = (((None : tt))[@ns.optional ]) } -> 11
-  | { name = ((name)[@ns.optional ]); x = 3 } -> 42
-  | { name = ((name)[@ns.optional ]); x = 3 } -> 4242
-  | { x = ((None)[@ns.optional ]); y = ((None)[@ns.optional ]);
-      z = (((None : tt))[@ns.optional ]) } -> 11
-  | { name = ((name)[@ns.optional ]); x = 3 } -> 42
-  | { name = ((name)[@ns.optional ]); x = 3 } -> 4242
+  | { x = ((None)[@res.optional ]); y = ((None)[@res.optional ]);
+      z = (((None : tt))[@res.optional ]) } -> 11
+  | { name = ((name)[@res.optional ]); x = 3 } -> 42
+  | { name = ((name)[@res.optional ]); x = 3 } -> 4242
+  | { x = ((None)[@res.optional ]); y = ((None)[@res.optional ]);
+      z = (((None : tt))[@res.optional ]) } -> 11
+  | { name = ((name)[@res.optional ]); x = 3 } -> 42
+  | { name = ((name)[@res.optional ]); x = 3 } -> 4242
 type nonrec tt = {
   x: int ;
   y: string [@ns.opttinal ]}
 type nonrec ttt = {
   x: int ;
-  y: string [@ns.optional ]}
+  y: string [@res.optional ]}
 type nonrec multipleWithAttrs = {
   x: int ;
-  y: string [@ns.optional ][@attr ]}
+  y: string [@res.optional ][@attr ]}
 type nonrec singleWithAttrs = {
-  y: string [@ns.optional ][@attr ]}
+  y: string [@res.optional ][@attr ]}

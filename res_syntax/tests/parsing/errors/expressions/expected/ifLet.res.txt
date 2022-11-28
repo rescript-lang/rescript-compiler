@@ -36,11 +36,11 @@ switch result {
 }
 
 ;;((match result with | Some x -> Js.log {js|The sky is blue|js} | _ -> ())
-  [@ns.iflet ][@warning "-4"])
+  [@res.iflet ][@warning "-4"])
 ;;((match result with
     | Error x -> Js.log {js|The sky is red|js}
     | _ ->
         (((match result with
            | Ok y -> Js.log {js|The sky is blue|js}
            | _ -> ()))
-        [@ns.iflet ][@warning "-4"]))[@ns.iflet ][@warning "-4"])
+        [@res.iflet ][@warning "-4"]))[@res.iflet ][@warning "-4"])

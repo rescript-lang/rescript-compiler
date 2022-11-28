@@ -40,7 +40,7 @@ module Error2 =
       {
       observed: int ;
       onStep:
-        currentValue:((unit)[@ns.namedArgLoc ]) -> [%rescript.typehole ] }
+        currentValue:((unit)[@res.namedArgLoc ]) -> [%rescript.typehole ] }
   end
 module Error3 =
   struct
@@ -48,5 +48,5 @@ module Error3 =
       {
       observed: int ;
       onStep:
-        currentValue:((unit)[@ns.namedArgLoc ]) -> [%rescript.typehole ] }
+        currentValue:((unit)[@res.namedArgLoc ]) -> [%rescript.typehole ] }
   end

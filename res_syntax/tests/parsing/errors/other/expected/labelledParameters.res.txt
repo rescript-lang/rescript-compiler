@@ -32,6 +32,6 @@
   A labeled parameter starts with a `~`. Did you mean: `~x`?
 
 let f x ?(y= 2)  z = (x + y) + z
-let g ~x:((x)[@ns.namedArgLoc ])  ?y:(((y)[@ns.namedArgLoc ])= 2) 
-  ~z:((z)[@ns.namedArgLoc ])  = (x + y) + z
+let g ~x:((x)[@res.namedArgLoc ])  ?y:(((y)[@res.namedArgLoc ])= 2) 
+  ~z:((z)[@res.namedArgLoc ])  = (x + y) + z
 type nonrec f = x:int -> y:int -> int

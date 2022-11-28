@@ -6,5 +6,5 @@ let f : type t. t foo =
   fun sideEffect ->
     ((let module M = struct exception E of t  end in
         sideEffect (); (fun x -> M.E x))
-    [@ns.braces ])
+    [@res.braces ])
 let f : type t x u. (t * x * y) list = fun l -> f l

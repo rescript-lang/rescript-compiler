@@ -136,7 +136,7 @@ module Printer = {
     | Pstr_eval(expr, attrs) =>
       let needsParens = switch expr {
       | {
-          pexp_attributes: list(/{txt: "ns.ternary"}, _/),
+          pexp_attributes: list(/{txt: "res.ternary"}, _/),
           pexp_desc: Pexp_ifthenelse(_),
         } =>
         false
@@ -1332,7 +1332,7 @@ module Printer = {
         ParsetreeViewer.isBinaryExpression(vb.pvb_expr) ||
         switch vb.pvb_expr {
         | {
-            pexp_attributes: list(/{Location.txt: "ns.ternary"}, _/),
+            pexp_attributes: list(/{Location.txt: "res.ternary"}, _/),
             pexp_desc: Pexp_ifthenelse(ifExpr, _, _),
           } =>
           ParsetreeViewer.isBinaryExpression(ifExpr) ||

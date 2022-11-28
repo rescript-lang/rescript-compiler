@@ -1,11 +1,11 @@
 ;;foo ()
 ;;bar ()
-let () = ((foo (); bar ())[@ns.braces ])
+let () = ((foo (); bar ())[@res.braces ])
 let () =
   ((let x = 1 in
     sideEffect ();
     (let y = 2 in sideEffect2 (); (let z = 3 in sideEffect3 ())))
-  [@ns.braces ])
+  [@res.braces ])
 ;;while true do
     sideEffect1 ();
     (let x = 1 in sideEffect2 (); (let y = 2 in sideEffect3 ())) done

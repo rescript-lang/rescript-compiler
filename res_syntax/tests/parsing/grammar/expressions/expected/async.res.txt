@@ -2,13 +2,13 @@ let greetUser =
   ((fun userId ->
       ((let name = ((getUserName userId)[@res.await ][@res.uapp ]) in
         ({js|Hello |js} ^ name) ^ {js|!|js})
-      [@ns.braces ]))
+      [@res.braces ]))
   [@res.async ])
 ;;((fun () -> 123)[@res.async ])
 let fetch =
   (({ Js.Fn.I1 = ((fun url -> ((browserFetch url)[@res.uapp ]))[@res.async ])
     })
-  [@ns.braces ])
+  [@res.braces ])
 let fetch2 =
   (({
       Js.Fn.I1 = (((fun url -> ((browserFetch url)[@res.uapp ])))
@@ -18,7 +18,7 @@ let fetch2 =
       Js.Fn.I1 = (((fun url -> ((browserFetch2 url)[@res.uapp ])))
         [@res.async ])
     })
-  [@ns.braces ])
+  [@res.braces ])
 let async =
   ((let f = async () in
     () |. async;
@@ -26,15 +26,15 @@ let async =
     async.async;
     { async = (async.(async)) };
     (result |. async) |. (mapAsync (fun a -> doStuff a)))
-  [@ns.braces ])
+  [@res.braces ])
 let f =
   ((if isPositive
     then ((fun a -> fun b -> (a + b : int))[@res.async ])
     else (((fun c -> fun d -> (c - d : int)))[@res.async ]))
-  [@ns.ternary ])
-let foo = async ~a:((34)[@ns.namedArgLoc ])
-let bar = ((fun ~a:((a)[@ns.namedArgLoc ]) -> a + 1)[@res.async ])
+  [@res.ternary ])
+let foo = async ~a:((34)[@res.namedArgLoc ])
+let bar = ((fun ~a:((a)[@res.namedArgLoc ]) -> a + 1)[@res.async ])
 let ex1 = ((3)[@res.await ]) + ((4)[@res.await ])
 let ex2 = ((3)[@res.await ]) ** ((4)[@res.await ])
-let ex3 = ((foo |. (bar ~arg:((arg)[@ns.namedArgLoc ])))[@res.await ])
+let ex3 = ((foo |. (bar ~arg:((arg)[@res.namedArgLoc ])))[@res.await ])
 let ex4 = (((foo.bar).baz)[@res.await ])

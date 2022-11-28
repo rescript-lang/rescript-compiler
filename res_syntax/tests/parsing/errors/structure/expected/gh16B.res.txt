@@ -33,8 +33,8 @@ module ClientSet =
                                  let cmp a b =
                                    ((compare (a |. Client.getUniqueId)
                                        (b |. Client.getUniqueId))
-                                   [@ns.braces ])
+                                   [@res.braces ])
                                end)
-    let empty = Belt.Set.make ~id:(((module T))[@ns.namedArgLoc ])
+    let empty = Belt.Set.make ~id:(((module T))[@res.namedArgLoc ])
   end
 ;;Js.log {js|test|js}
