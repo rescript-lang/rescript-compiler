@@ -8,10 +8,12 @@ bsc
 darwin/bsb_helper.exe
 darwin/bsc.exe
 darwin/ninja.exe
+darwin/refmt.exe
 darwin/rescript.exe
 darwinarm64/bsb_helper.exe
 darwinarm64/bsc.exe
 darwinarm64/ninja.exe
+darwinarm64/refmt.exe
 darwinarm64/rescript.exe
 docs/docson/build-schema.json
 jscomp/stubs/ext_basic_hash_stubs.c
@@ -797,7 +799,7 @@ lib/ocaml/jsxDOM.cmt
 lib/ocaml/jsxDOM.res
 lib/ocaml/jsxDOMStyle.cmi
 lib/ocaml/jsxDOMStyle.cmt
-lib/ocaml/jsxDOMStyle.ml
+lib/ocaml/jsxDOMStyle.res
 lib/ocaml/jsxEvent.cmi
 lib/ocaml/jsxEvent.cmt
 lib/ocaml/jsxEvent.ml
@@ -949,6 +951,7 @@ lib/ocaml/uchar.mli
 linux/bsb_helper.exe
 linux/bsc.exe
 linux/ninja.exe
+linux/refmt.exe
 linux/rescript.exe
 ninja.COPYING
 package.json
