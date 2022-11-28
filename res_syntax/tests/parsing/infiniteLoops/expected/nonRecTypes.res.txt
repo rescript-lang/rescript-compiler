@@ -283,7 +283,7 @@ include
             | Some parent ->
                 leftOrRightSet parent ~node:((successor)[@ns.namedArgLoc ])
                   None)))
-      [@ns.braces ])
+      [@res.braces ])
     let remove rbt value =
       match _findNode rbt (rootGet rbt) value with
       | Some node ->
@@ -306,7 +306,7 @@ include
         match findThroughCallback rbt (rootGet rbt) cb with
         | None -> None
         | Some node -> Some (valueGet node))
-      [@ns.braces ])
+      [@res.braces ])
     let make ~compare:((compare)[@ns.namedArgLoc ])  =
       t ~size:((0)[@ns.namedArgLoc ]) ~root:((None)[@ns.namedArgLoc ])
         ~compare:((compare)[@ns.namedArgLoc ])
@@ -390,7 +390,7 @@ include
               (sumLeftSpine parent
                  ~fromRightChild:(((rightGet parent) == (Some node))
                  [@ns.namedArgLoc ])))
-      [@ns.braces ])
+      [@res.braces ])
     let getY node =
       (sumLeftSpine node ~fromRightChild:((true)[@ns.namedArgLoc ])) -.
         (heightGet node)
@@ -405,7 +405,7 @@ include
         match minNode (rootGet rbt) with
         | None -> None
         | Some node -> find node callback)
-      [@ns.braces ])
+      [@res.braces ])
     let rec iterate ~inclusive:((inclusive)[@ns.namedArgLoc ])  firstNode
       lastNode ~callback:((callback)[@ns.namedArgLoc ])  =
       match firstNode with

@@ -354,7 +354,7 @@ let getLoc node =
     | _ -> expr.pexp_loc)
   | Expression e -> (
     match e.pexp_attributes with
-    | ({txt = "ns.braces"; loc}, _) :: _ -> loc
+    | ({txt = "res.braces"; loc}, _) :: _ -> loc
     | _ -> e.pexp_loc)
   | ExprRecordRow (li, e) -> {li.loc with loc_end = e.pexp_loc.loc_end}
   | ExtensionConstructor ec -> ec.pext_loc

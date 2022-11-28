@@ -46,6 +46,6 @@
 
 let f a b = a + 3
 ;;b
-let f g h = ((a + 3; b)[@ns.braces ])
-let () = ((sideEffect1 (); sideEffect2 ())[@ns.braces ])
-let () = ((let open Foo in let exception End  in x ())[@ns.braces ])
+let f g h = ((a + 3; b)[@res.braces ])
+let () = ((sideEffect1 (); sideEffect2 ())[@res.braces ])
+let () = ((let open Foo in let exception End  in x ())[@res.braces ])

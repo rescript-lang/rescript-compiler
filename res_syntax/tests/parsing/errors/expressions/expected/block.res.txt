@@ -76,9 +76,9 @@ let findThreadByIdLinearScan ~threads:((threads)[@ns.namedArgLoc ])
                | Unknown { id } ->
                    (unknown.id |. Js.String.make) |. FBID.ofStringUnsafe in
              thisId == id)
-           [@ns.braces ])))
-  [@ns.braces ])
-let x = ((loop 0 (Nil |. (push doc)))[@ns.braces ])
+           [@res.braces ])))
+  [@res.braces ])
+let x = ((loop 0 (Nil |. (push doc)))[@res.braces ])
 ;;match stack with
   | Empty -> [%rescript.exprhole ]
   | Cons (doc, rest) -> ()

@@ -12,7 +12,7 @@
 
 module InstallerDownload =
   struct
-    let make () = ((div ~children:[] ())[@ns.braces ][@JSX ])[@@react.component
-                                                               ]
+    let make () = ((div ~children:[] ())[@res.braces ][@JSX ])[@@react.component
+                                                                ]
   end
 module LicenseList = struct  end

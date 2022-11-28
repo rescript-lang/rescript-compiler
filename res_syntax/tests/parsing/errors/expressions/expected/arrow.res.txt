@@ -10,4 +10,4 @@
 
 ;;(Object.keys providers).reduce
     (fun elements ->
-       fun providerId -> ((let x = 1 in let b = 2 in x + b)[@ns.braces ]))
+       fun providerId -> ((let x = 1 in let b = 2 in x + b)[@res.braces ]))

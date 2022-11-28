@@ -3189,7 +3189,7 @@ end = struct
 
   let processBracesAttr expr =
     match expr.pexp_attributes with
-    | (({txt = "ns.braces"}, _) as attr)::attrs ->
+    | (({txt = "res.braces"}, _) as attr)::attrs ->
       (Some attr, {expr with pexp_attributes = attrs})
     | _ ->
       (None, expr)
@@ -3197,7 +3197,7 @@ end = struct
   let filterParsingAttrs attrs =
     List.filter (fun attr ->
       match attr with
-      | ({Location.txt = ("res.ternary" | "ns.braces" | "bs" | "ns.namedArgLoc")}, _) -> false
+      | ({Location.txt = ("res.ternary" | "res.braces" | "bs" | "ns.namedArgLoc")}, _) -> false
       | _ -> true
     ) attrs
 
@@ -3301,7 +3301,7 @@ end = struct
 
   let hasAttributes attrs =
     List.exists (fun attr -> match attr with
-      | ({Location.txt = "bs" | "res.ternary" | "ns.braces"}, _) -> false
+      | ({Location.txt = "bs" | "res.ternary" | "res.braces"}, _) -> false
       | _ -> true
     ) attrs
 
@@ -9250,7 +9250,7 @@ module Printer = struct
           match Parens.binaryExpr {expr with
             pexp_attributes = List.filter (fun attr ->
               match attr with
-              | ({Location.txt = ("ns.braces")}, _) -> false
+              | ({Location.txt = ("res.braces")}, _) -> false
               | _ -> true
             ) expr.pexp_attributes
           } with
@@ -12323,7 +12323,7 @@ end
   let jsxAttr = (Location.mknoloc "JSX", Parsetree.PStr [])
   let uncurryAttr = (Location.mknoloc "bs", Parsetree.PStr [])
   let ternaryAttr = (Location.mknoloc "res.ternary", Parsetree.PStr [])
-  let makeBracesAttr loc = (Location.mkloc "ns.braces" loc, Parsetree.PStr [])
+  let makeBracesAttr loc = (Location.mkloc "res.braces" loc, Parsetree.PStr [])
 
   type typDefOrExt =
     | TypeDef of {recFlag: Asttypes.rec_flag; types: Parsetree.type_declaration list}

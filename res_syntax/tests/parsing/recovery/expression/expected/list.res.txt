@@ -35,8 +35,8 @@ let flags =
             | [|{js|-pp|js};_ppFlag;rest|] -> loop rest
             | [|x;rest|] -> [|x;(loop rest)|]
             | [||] -> [||])
-          [@ns.braces ]) in
+          [@res.braces ]) in
         (loop parts) |> (String.concat {js| |js}))
-      [@ns.braces ])
+      [@res.braces ])
     else flags)
   [@res.ternary ])

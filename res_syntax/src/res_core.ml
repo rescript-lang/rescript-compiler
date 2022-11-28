@@ -169,7 +169,7 @@ let suppressFragileMatchWarningAttr =
         Ast_helper.Str.eval
           (Ast_helper.Exp.constant (Pconst_string ("-4", None)));
       ] )
-let makeBracesAttr loc = (Location.mkloc "ns.braces" loc, Parsetree.PStr [])
+let makeBracesAttr loc = (Location.mkloc "res.braces" loc, Parsetree.PStr [])
 let templateLiteralAttr = (Location.mknoloc "res.template", Parsetree.PStr [])
 
 let spreadAttr = (Location.mknoloc "res.spread", Parsetree.PStr [])

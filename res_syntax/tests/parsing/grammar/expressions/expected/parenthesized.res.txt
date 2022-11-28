@@ -14,7 +14,7 @@ let aList = [1; 2]
 let anArray = [|1;2|]
 let aTuple = (1, 2)
 let aRecord = { name = {js|steve|js}; age = 30 }
-let blockExpression = ((let a = 1 in let b = 2 in a + b)[@ns.braces ])
+let blockExpression = ((let a = 1 in let b = 2 in a + b)[@res.braces ])
 let assertSmthing = assert true
 let lazyThing = lazy true
 let jsx =

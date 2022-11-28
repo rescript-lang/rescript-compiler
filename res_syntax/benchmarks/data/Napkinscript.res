@@ -3187,7 +3187,7 @@ module ParsetreeViewer: {
 
   let processBracesAttr = expr =>
     switch expr.pexp_attributes {
-    | list{({txt: "ns.braces"}, _) as attr, ...attrs} => (
+    | list{({txt: "res.braces"}, _) as attr, ...attrs} => (
         Some(attr),
         {...expr, pexp_attributes: attrs},
       )
@@ -3196,7 +3196,7 @@ module ParsetreeViewer: {
 
   let filterParsingAttrs = attrs => List.filter(attr =>
       switch attr {
-      | ({Location.txt: "res.ternary" | "ns.braces" | "bs" | "ns.namedArgLoc"}, _) => false
+      | ({Location.txt: "res.ternary" | "res.braces" | "bs" | "ns.namedArgLoc"}, _) => false
       | _ => true
       }
     , attrs)
@@ -3328,7 +3328,7 @@ module ParsetreeViewer: {
 
   let hasAttributes = attrs => List.exists(attr =>
       switch attr {
-      | ({Location.txt: "bs" | "res.ternary" | "ns.braces"}, _) => false
+      | ({Location.txt: "bs" | "res.ternary" | "res.braces"}, _) => false
       | _ => true
       }
     , attrs)
@@ -9532,7 +9532,7 @@ module Printer = {
             ...expr,
             pexp_attributes: List.filter(attr =>
               switch attr {
-              | ({Location.txt: "ns.braces"}, _) => false
+              | ({Location.txt: "res.braces"}, _) => false
               | _ => true
               }
             , expr.pexp_attributes),
@@ -12812,7 +12812,7 @@ Solution: directly use `concat`."
   let jsxAttr = (Location.mknoloc("JSX"), Parsetree.PStr(list{}))
   let uncurryAttr = (Location.mknoloc("bs"), Parsetree.PStr(list{}))
   let ternaryAttr = (Location.mknoloc("res.ternary"), Parsetree.PStr(list{}))
-  let makeBracesAttr = loc => (Location.mkloc("ns.braces", loc), Parsetree.PStr(list{}))
+  let makeBracesAttr = loc => (Location.mkloc("res.braces", loc), Parsetree.PStr(list{}))
 
   type typDefOrExt =
     | TypeDef({recFlag: Asttypes.rec_flag, types: list<Parsetree.type_declaration>})

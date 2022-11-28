@@ -4,6 +4,6 @@ let width =
 let width = (((w - innerLeft) - imageWidth) - imageRightGap) - rowInnerRight
 let width =
   ((w; -. innerLeft; -. imageWidth; -. imageRightGap; -. rowInnerRight)
-  [@ns.braces ])
+  [@res.braces ])
 let width = ((w; - innerLeft; - imageWidth; - imageRightGap; - rowInnerRight)
-  [@ns.braces ])
+  [@res.braces ])

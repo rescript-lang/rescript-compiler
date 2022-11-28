@@ -2,13 +2,13 @@ let greetUser =
   ((fun userId ->
       ((let name = ((getUserName userId)[@res.await ][@res.uapp ]) in
         ({js|Hello |js} ^ name) ^ {js|!|js})
-      [@ns.braces ]))
+      [@res.braces ]))
   [@res.async ])
 ;;((fun () -> 123)[@res.async ])
 let fetch =
   (({ Js.Fn.I1 = ((fun url -> ((browserFetch url)[@res.uapp ]))[@res.async ])
     })
-  [@ns.braces ])
+  [@res.braces ])
 let fetch2 =
   (({
       Js.Fn.I1 = (((fun url -> ((browserFetch url)[@res.uapp ])))
@@ -18,7 +18,7 @@ let fetch2 =
       Js.Fn.I1 = (((fun url -> ((browserFetch2 url)[@res.uapp ])))
         [@res.async ])
     })
-  [@ns.braces ])
+  [@res.braces ])
 let async =
   ((let f = async () in
     () |. async;
@@ -26,7 +26,7 @@ let async =
     async.async;
     { async = (async.(async)) };
     (result |. async) |. (mapAsync (fun a -> doStuff a)))
-  [@ns.braces ])
+  [@res.braces ])
 let f =
   ((if isPositive
     then ((fun a -> fun b -> (a + b : int))[@res.async ])

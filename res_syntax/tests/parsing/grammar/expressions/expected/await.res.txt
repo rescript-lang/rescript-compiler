@@ -12,7 +12,7 @@ let () =
       ((((fetch {js|comment.json|js})[@res.await ]).json ())
       [@res.await ]).(0) in
     Js.log2 users comments)
-  [@ns.braces ])
-let () = ((delay 10)[@ns.braces ][@res.await ])
+  [@res.braces ])
+let () = ((delay 10)[@res.braces ][@res.await ])
 let () = ((((delay 10)[@res.await ]); ((delay 20)[@res.await ]))
-  [@ns.braces ])
+  [@res.braces ])
