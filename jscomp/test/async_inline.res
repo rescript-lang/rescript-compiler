@@ -11,6 +11,16 @@ let wrapSomethingAsync: unit => unit = () => {
   )(777)
 }
 
+external ignorePromise: promise<'a> => unit = "%identity"
+
+let wrapSomethingAsync2 = () =>
+  (
+    async () => {
+      let test = await Js.Promise.resolve("Test")
+      Js.log(test)
+    }
+  )()->ignorePromise
+
 module M: {
   let broken: (unit => promise<'a>) => promise<'a>
 } = {

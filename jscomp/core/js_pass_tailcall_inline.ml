@@ -200,7 +200,7 @@ let subst (export_set : Set_ident.t) stats =
                    Call
                      ( {
                          expression_desc =
-                           Fun {is_method=false; params; body; env};
+                           Fun {is_method=false; params; body; env; async=false};
                        },
                        args,
                        _info );
