@@ -113,7 +113,7 @@ let constructor_descrs ty_path decl cstrs =
       if cd_args = Cstr_tuple [] then incr num_consts else incr num_nonconsts;
       if cd_res = None then incr num_normal)
     cstrs;
-  let has_optional attrs = Ext_list.exists attrs (fun ({txt },_) -> txt = "ns.optional") in
+  let has_optional attrs = Ext_list.exists attrs (fun ({txt },_) -> txt = "res.optional") in
   let rec describe_constructors idx_const idx_nonconst = function
       [] -> []
     | {cd_id; cd_args; cd_res; cd_loc; cd_attributes} :: rem ->

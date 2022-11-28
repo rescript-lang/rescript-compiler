@@ -151,7 +151,7 @@ let jsxAttr = (Location.mknoloc "JSX", Parsetree.PStr [])
 let uncurriedAppAttr = (Location.mknoloc "res.uapp", Parsetree.PStr [])
 let ternaryAttr = (Location.mknoloc "ns.ternary", Parsetree.PStr [])
 let ifLetAttr = (Location.mknoloc "ns.iflet", Parsetree.PStr [])
-let optionalAttr = (Location.mknoloc "ns.optional", Parsetree.PStr [])
+let optionalAttr = (Location.mknoloc "res.optional", Parsetree.PStr [])
 let makeAwaitAttr loc = (Location.mkloc "res.await" loc, Parsetree.PStr [])
 let makeAsyncAttr loc = (Location.mkloc "res.async" loc, Parsetree.PStr [])
 

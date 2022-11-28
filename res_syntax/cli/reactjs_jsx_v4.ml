@@ -27,7 +27,7 @@ let getLabel str =
   | Optional str | Labelled str -> str
   | Nolabel -> ""
 
-let optionalAttr = ({txt = "ns.optional"; loc = Location.none}, PStr [])
+let optionalAttr = ({txt = "res.optional"; loc = Location.none}, PStr [])
 let optionalAttrs = [optionalAttr]
 
 let constantString ~loc str =

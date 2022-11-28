@@ -209,7 +209,7 @@ let filterParsingAttrs attrs =
       | ( {
             Location.txt =
               ( "bs" | "res.uapp" | "ns.braces" | "ns.iflet" | "ns.namedArgLoc"
-              | "ns.optional" | "ns.ternary" | "res.async" | "res.await"
+              | "res.optional" | "ns.ternary" | "res.async" | "res.await"
               | "res.template" );
           },
           _ ) ->
@@ -348,7 +348,7 @@ let isIfLetExpr expr =
 let rec hasOptionalAttribute attrs =
   match attrs with
   | [] -> false
-  | ({Location.txt = "ns.optional"}, _) :: _ -> true
+  | ({Location.txt = "res.optional"}, _) :: _ -> true
   | _ :: attrs -> hasOptionalAttribute attrs
 
 let hasAttributes attrs =

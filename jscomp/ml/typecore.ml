@@ -322,7 +322,7 @@ let check_optional_attr env ld attrs loc =
       raise (Error (loc, env, Field_not_optional (ld.lbl_name, ld.lbl_res)));
     true in 
   Ext_list.exists attrs (fun ({txt}, _) ->
-    txt = "ns.optional" && check_redundant ())
+    txt = "res.optional" && check_redundant ())
 
 (* unification inside type_pat*)
 let unify_pat_types loc env ty ty' =
