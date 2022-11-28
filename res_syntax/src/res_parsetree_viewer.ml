@@ -209,7 +209,7 @@ let filterParsingAttrs attrs =
       | ( {
             Location.txt =
               ( "bs" | "res.uapp" | "ns.braces" | "ns.iflet" | "ns.namedArgLoc"
-              | "res.optional" | "ns.ternary" | "res.async" | "res.await"
+              | "res.optional" | "res.ternary" | "res.async" | "res.await"
               | "res.template" );
           },
           _ ) ->
@@ -357,7 +357,7 @@ let hasAttributes attrs =
       match attr with
       | ( {
             Location.txt =
-              ( "bs" | "res.uapp" | "ns.braces" | "ns.iflet" | "ns.ternary"
+              ( "bs" | "res.uapp" | "ns.braces" | "ns.iflet" | "res.ternary"
               | "res.async" | "res.await" | "res.template" );
           },
           _ ) ->
@@ -426,7 +426,7 @@ let collectIfExpressions expr =
 let rec hasTernaryAttribute attrs =
   match attrs with
   | [] -> false
-  | ({Location.txt = "ns.ternary"}, _) :: _ -> true
+  | ({Location.txt = "res.ternary"}, _) :: _ -> true
   | _ :: attrs -> hasTernaryAttribute attrs
 
 let isTernaryExpr expr =
@@ -460,7 +460,7 @@ let filterTernaryAttributes attrs =
   List.filter
     (fun attr ->
       match attr with
-      | {Location.txt = "ns.ternary"}, _ -> false
+      | {Location.txt = "res.ternary"}, _ -> false
       | _ -> true)
     attrs
 
@@ -540,7 +540,7 @@ let isPrintableAttribute attr =
   | ( {
         Location.txt =
           ( "bs" | "res.uapp" | "ns.iflet" | "ns.braces" | "JSX" | "res.async"
-          | "res.await" | "res.template" | "ns.ternary" );
+          | "res.await" | "res.template" | "res.ternary" );
       },
       _ ) ->
     false

@@ -3196,7 +3196,7 @@ module ParsetreeViewer: {
 
   let filterParsingAttrs = attrs => List.filter(attr =>
       switch attr {
-      | ({Location.txt: "ns.ternary" | "ns.braces" | "bs" | "ns.namedArgLoc"}, _) => false
+      | ({Location.txt: "res.ternary" | "ns.braces" | "bs" | "ns.namedArgLoc"}, _) => false
       | _ => true
       }
     , attrs)
@@ -3328,7 +3328,7 @@ module ParsetreeViewer: {
 
   let hasAttributes = attrs => List.exists(attr =>
       switch attr {
-      | ({Location.txt: "bs" | "ns.ternary" | "ns.braces"}, _) => false
+      | ({Location.txt: "bs" | "res.ternary" | "ns.braces"}, _) => false
       | _ => true
       }
     , attrs)
@@ -3345,7 +3345,7 @@ module ParsetreeViewer: {
   let rec hasTernaryAttribute = attrs =>
     switch attrs {
     | list{} => false
-    | list{({Location.txt: "ns.ternary"}, _), ..._} => true
+    | list{({Location.txt: "res.ternary"}, _), ..._} => true
     | list{_, ...attrs} => hasTernaryAttribute(attrs)
     }
 
@@ -3377,7 +3377,7 @@ module ParsetreeViewer: {
 
   let filterTernaryAttributes = attrs => List.filter(attr =>
       switch attr {
-      | ({Location.txt: "ns.ternary"}, _) => false
+      | ({Location.txt: "res.ternary"}, _) => false
       | _ => true
       }
     , attrs)
@@ -3450,14 +3450,14 @@ module ParsetreeViewer: {
 
   let filterPrinteableAttributes = attrs => List.filter(attr =>
       switch attr {
-      | ({Location.txt: "bs" | "ns.ternary"}, _) => false
+      | ({Location.txt: "bs" | "res.ternary"}, _) => false
       | _ => true
       }
     , attrs)
 
   let partitionPrinteableAttributes = attrs => List.partition(attr =>
       switch attr {
-      | ({Location.txt: "bs" | "ns.ternary"}, _) => false
+      | ({Location.txt: "bs" | "res.ternary"}, _) => false
       | _ => true
       }
     , attrs)
@@ -7972,7 +7972,7 @@ module Printer = {
           ParsetreeViewer.isBinaryExpression(expr) ||
           switch vb.pvb_expr {
           | {
-              pexp_attributes: list{({Location.txt: "ns.ternary"}, _)},
+              pexp_attributes: list{({Location.txt: "res.ternary"}, _)},
               pexp_desc: Pexp_ifthenelse(ifExpr, _, _),
             } =>
             ParsetreeViewer.isBinaryExpression(ifExpr) ||
@@ -9689,7 +9689,7 @@ module Printer = {
         ParsetreeViewer.isBinaryExpression(targetExpr) ||
         switch targetExpr {
         | {
-            pexp_attributes: list{({Location.txt: "ns.ternary"}, _)},
+            pexp_attributes: list{({Location.txt: "res.ternary"}, _)},
             pexp_desc: Pexp_ifthenelse(ifExpr, _, _),
           } =>
           ParsetreeViewer.isBinaryExpression(ifExpr) ||
@@ -12422,7 +12422,7 @@ module ParsetreeCompatibility = {
               },
             },
           ) =>
-          let ternaryMarker = (Location.mknoloc("ns.ternary"), Parsetree.PStr(list{}))
+          let ternaryMarker = (Location.mknoloc("res.ternary"), Parsetree.PStr(list{}))
           Ast_helper.Exp.ifthenelse(
             ~loc=expr.pexp_loc,
             ~attrs=list{ternaryMarker, ...expr.pexp_attributes},
@@ -12811,7 +12811,7 @@ Solution: directly use `concat`."
 
   let jsxAttr = (Location.mknoloc("JSX"), Parsetree.PStr(list{}))
   let uncurryAttr = (Location.mknoloc("bs"), Parsetree.PStr(list{}))
-  let ternaryAttr = (Location.mknoloc("ns.ternary"), Parsetree.PStr(list{}))
+  let ternaryAttr = (Location.mknoloc("res.ternary"), Parsetree.PStr(list{}))
   let makeBracesAttr = loc => (Location.mkloc("ns.braces", loc), Parsetree.PStr(list{}))
 
   type typDefOrExt =

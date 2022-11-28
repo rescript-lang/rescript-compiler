@@ -39,4 +39,4 @@ let flags =
         (loop parts) |> (String.concat {js| |js}))
       [@ns.braces ])
     else flags)
-  [@ns.ternary ])
+  [@res.ternary ])

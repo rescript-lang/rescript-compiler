@@ -166,7 +166,7 @@ let y =
                                            (State.UriNavigated
                                               currentActualPath)
                                            latestComponentBag ())
-                                       [@ns.ternary ]))
+                                       [@res.ternary ]))
                                    [@ns.braces ])) ())
       [@ns.namedArgLoc ][@ns.braces ]) ~children:[] ())
   [@JSX ])
@@ -222,7 +222,7 @@ let _ =
   ((MessengerSharedPhotosAlbumViewPhotoReact.createElement
       ?ref:((if foo#bar == baz
              then Some (foooooooooooooooooooooooo setRefChild)
-             else None)[@ns.namedArgLoc ][@ns.ternary ])
+             else None)[@ns.namedArgLoc ][@res.ternary ])
       ~key:((node#legacy_attachment_id)[@ns.namedArgLoc ]) ~children:[] ())
   [@JSX ])
 let _ = ((Foo.createElement ~bar:((bar)[@ns.namedArgLoc ]) ~children:[] ())

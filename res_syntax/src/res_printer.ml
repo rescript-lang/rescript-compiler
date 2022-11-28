@@ -2068,7 +2068,7 @@ and printValueBinding ~state ~recFlag (vb : Parsetree.value_binding) cmtTbl i =
           ||
           match vb.pvb_expr with
           | {
-           pexp_attributes = [({Location.txt = "ns.ternary"}, _)];
+           pexp_attributes = [({Location.txt = "res.ternary"}, _)];
            pexp_desc = Pexp_ifthenelse (ifExpr, _, _);
           } ->
             ParsetreeViewer.isBinaryExpression ifExpr
@@ -3905,7 +3905,7 @@ and printPexpApply ~state expr cmtTbl =
         ||
         match targetExpr with
         | {
-         pexp_attributes = [({Location.txt = "ns.ternary"}, _)];
+         pexp_attributes = [({Location.txt = "res.ternary"}, _)];
          pexp_desc = Pexp_ifthenelse (ifExpr, _, _);
         } ->
           ParsetreeViewer.isBinaryExpression ifExpr

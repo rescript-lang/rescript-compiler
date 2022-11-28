@@ -130,7 +130,7 @@ module Printer = struct
       printValueDescription valueDescription
     | Pstr_eval (expr, attrs) ->
       let needsParens = match expr with
-      | {pexp_attributes=[({txt="ns.ternary"},_)]; pexp_desc = Pexp_ifthenelse _} -> false
+      | {pexp_attributes=[({txt="res.ternary"},_)]; pexp_desc = Pexp_ifthenelse _} -> false
       | _ when ParsetreeViewer.hasAttributes expr.pexp_attributes -> true
       | _ -> false
       in
@@ -1225,7 +1225,7 @@ module Printer = struct
         ParsetreeViewer.isBinaryExpression vb.pvb_expr ||
         (match vb.pvb_expr with
         | {
-            pexp_attributes = [({Location.txt="ns.ternary"}, _)];
+            pexp_attributes = [({Location.txt="res.ternary"}, _)];
             pexp_desc = Pexp_ifthenelse (ifExpr, _, _)
           }  ->
           ParsetreeViewer.isBinaryExpression ifExpr || ParsetreeViewer.hasAttributes ifExpr.pexp_attributes

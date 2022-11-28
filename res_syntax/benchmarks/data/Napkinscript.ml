@@ -3197,7 +3197,7 @@ end = struct
   let filterParsingAttrs attrs =
     List.filter (fun attr ->
       match attr with
-      | ({Location.txt = ("ns.ternary" | "ns.braces" | "bs" | "ns.namedArgLoc")}, _) -> false
+      | ({Location.txt = ("res.ternary" | "ns.braces" | "bs" | "ns.namedArgLoc")}, _) -> false
       | _ -> true
     ) attrs
 
@@ -3301,7 +3301,7 @@ end = struct
 
   let hasAttributes attrs =
     List.exists (fun attr -> match attr with
-      | ({Location.txt = "bs" | "ns.ternary" | "ns.braces"}, _) -> false
+      | ({Location.txt = "bs" | "res.ternary" | "ns.braces"}, _) -> false
       | _ -> true
     ) attrs
 
@@ -3315,7 +3315,7 @@ end = struct
   let rec hasTernaryAttribute attrs =
     match attrs with
     | [] -> false
-    | ({Location.txt="ns.ternary"},_)::_ -> true
+    | ({Location.txt="res.ternary"},_)::_ -> true
     | _::attrs -> hasTernaryAttribute attrs
 
   let isTernaryExpr expr = match expr with
@@ -3346,7 +3346,7 @@ end = struct
 
   let filterTernaryAttributes attrs =
     List.filter (fun attr -> match attr with
-      |({Location.txt="ns.ternary"},_) -> false
+      |({Location.txt="res.ternary"},_) -> false
       | _ -> true
     ) attrs
 
@@ -3403,13 +3403,13 @@ end = struct
 
   let filterPrinteableAttributes attrs =
     List.filter (fun attr -> match attr with
-      | ({Location.txt="bs" | "ns.ternary"}, _) -> false
+      | ({Location.txt="bs" | "res.ternary"}, _) -> false
       | _ -> true
     ) attrs
 
   let partitionPrinteableAttributes attrs =
     List.partition (fun attr -> match attr with
-      | ({Location.txt="bs" | "ns.ternary"}, _) -> false
+      | ({Location.txt="bs" | "res.ternary"}, _) -> false
       | _ -> true
     ) attrs
 
@@ -7706,7 +7706,7 @@ module Printer = struct
           ParsetreeViewer.isBinaryExpression expr ||
           (match vb.pvb_expr with
           | {
-              pexp_attributes = [({Location.txt="ns.ternary"}, _)];
+              pexp_attributes = [({Location.txt="res.ternary"}, _)];
               pexp_desc = Pexp_ifthenelse (ifExpr, _, _)
             }  ->
             ParsetreeViewer.isBinaryExpression ifExpr || ParsetreeViewer.hasAttributes ifExpr.pexp_attributes
@@ -9402,7 +9402,7 @@ module Printer = struct
           ParsetreeViewer.isBinaryExpression targetExpr ||
           (match targetExpr with
           | {
-              pexp_attributes = [({Location.txt="ns.ternary"}, _)];
+              pexp_attributes = [({Location.txt="res.ternary"}, _)];
               pexp_desc = Pexp_ifthenelse (ifExpr, _, _)
             }  ->
             ParsetreeViewer.isBinaryExpression ifExpr || ParsetreeViewer.hasAttributes ifExpr.pexp_attributes
@@ -11991,7 +11991,7 @@ module ParsetreeCompatibility = struct
               {pc_lhs = {ppat_desc = Ppat_construct ({txt = Longident.Lident "false"}, None)}; pc_rhs = elseExpr };
             ]
           ) ->
-          let ternaryMarker = (Location.mknoloc "ns.ternary", Parsetree.PStr []) in
+          let ternaryMarker = (Location.mknoloc "res.ternary", Parsetree.PStr []) in
           Ast_helper.Exp.ifthenelse
             ~loc:expr.pexp_loc
             ~attrs:(ternaryMarker::expr.pexp_attributes)
@@ -12322,7 +12322,7 @@ end
 
   let jsxAttr = (Location.mknoloc "JSX", Parsetree.PStr [])
   let uncurryAttr = (Location.mknoloc "bs", Parsetree.PStr [])
-  let ternaryAttr = (Location.mknoloc "ns.ternary", Parsetree.PStr [])
+  let ternaryAttr = (Location.mknoloc "res.ternary", Parsetree.PStr [])
   let makeBracesAttr loc = (Location.mkloc "ns.braces" loc, Parsetree.PStr [])
 
   type typDefOrExt =
