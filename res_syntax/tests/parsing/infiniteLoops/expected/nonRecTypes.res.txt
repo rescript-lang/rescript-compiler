@@ -146,8 +146,8 @@ include
           | None ->
               let leaf =
                 createNode ~value:((Js.Internal.raw_expr {js|0|js})
-                  [@ns.namedArgLoc ]) ~color:((Black)[@ns.namedArgLoc ])
-                  ~height:((0.)[@ns.namedArgLoc ]) in
+                  [@res.namedArgLoc ]) ~color:((Black)[@res.namedArgLoc ])
+                  ~height:((0.)[@res.namedArgLoc ]) in
               let isLeaf = Js.Internal.fn_mk1 (fun x -> x == leaf) in
               (leaf, isLeaf)
           | Some successor ->
@@ -157,7 +157,7 @@ include
         (match nodeParent with
          | None -> ()
          | Some parent ->
-             leftOrRightSet parent ~node:((nodeToRemove)[@ns.namedArgLoc ])
+             leftOrRightSet parent ~node:((nodeToRemove)[@res.namedArgLoc ])
                (Some successor));
         updateSumRecursive rbt successor;
         if (colorGet nodeToRemove) == Black
@@ -281,7 +281,7 @@ include
            (match parentGet successor with
             | None -> ()
             | Some parent ->
-                leftOrRightSet parent ~node:((successor)[@ns.namedArgLoc ])
+                leftOrRightSet parent ~node:((successor)[@res.namedArgLoc ])
                   None)))
       [@res.braces ])
     let remove rbt value =
@@ -307,9 +307,9 @@ include
         | None -> None
         | Some node -> Some (valueGet node))
       [@res.braces ])
-    let make ~compare:((compare)[@ns.namedArgLoc ])  =
-      t ~size:((0)[@ns.namedArgLoc ]) ~root:((None)[@ns.namedArgLoc ])
-        ~compare:((compare)[@ns.namedArgLoc ])
+    let make ~compare:((compare)[@res.namedArgLoc ])  =
+      t ~size:((0)[@res.namedArgLoc ]) ~root:((None)[@res.namedArgLoc ])
+        ~compare:((compare)[@res.namedArgLoc ])
     let rec heightOfInterval rbt node lhs rhs =
       match node with
       | None -> 0.
@@ -359,7 +359,7 @@ include
       match firstVisibleNode node offset with
       | None -> maxNode node
       | first -> first
-    let firstVisible rbt ~offset:((offset)[@ns.namedArgLoc ])  =
+    let firstVisible rbt ~offset:((offset)[@res.namedArgLoc ])  =
       match firstVisibleNode (rootGet rbt) offset with
       | None -> None
       | Some node -> Some (valueGet node)
@@ -375,7 +375,7 @@ include
       | None -> firstRightParent node
       | Some right -> Some (leftmost right)
     let rec sumLeftSpine node
-      ~fromRightChild:((fromRightChild)[@ns.namedArgLoc ])  =
+      ~fromRightChild:((fromRightChild)[@res.namedArgLoc ])  =
       ((let leftSpine =
           match leftGet node with
           | None -> heightGet node
@@ -389,10 +389,10 @@ include
             leftSpine +.
               (sumLeftSpine parent
                  ~fromRightChild:(((rightGet parent) == (Some node))
-                 [@ns.namedArgLoc ])))
+                 [@res.namedArgLoc ])))
       [@res.braces ])
     let getY node =
-      (sumLeftSpine node ~fromRightChild:((true)[@ns.namedArgLoc ])) -.
+      (sumLeftSpine node ~fromRightChild:((true)[@res.namedArgLoc ])) -.
         (heightGet node)
     let linearSearch rbt callback =
       ((let rec find node callback =
@@ -406,8 +406,8 @@ include
         | None -> None
         | Some node -> find node callback)
       [@res.braces ])
-    let rec iterate ~inclusive:((inclusive)[@ns.namedArgLoc ])  firstNode
-      lastNode ~callback:((callback)[@ns.namedArgLoc ])  =
+    let rec iterate ~inclusive:((inclusive)[@res.namedArgLoc ])  firstNode
+      lastNode ~callback:((callback)[@res.namedArgLoc ])  =
       match firstNode with
       | None -> ()
       | Some node ->
@@ -415,12 +415,12 @@ include
            if firstNode != lastNode
            then
              (if not inclusive then Js.Internal.fn_run1 callback node;
-              iterate ~inclusive:((inclusive)[@ns.namedArgLoc ])
+              iterate ~inclusive:((inclusive)[@res.namedArgLoc ])
                 (nextNode node) lastNode ~callback:((callback)
-                [@ns.namedArgLoc ])))
-    let rec iterateWithY ?y:((y)[@ns.namedArgLoc ]) 
-      ~inclusive:((inclusive)[@ns.namedArgLoc ])  firstNode lastNode
-      ~callback:((callback)[@ns.namedArgLoc ])  =
+                [@res.namedArgLoc ])))
+    let rec iterateWithY ?y:((y)[@res.namedArgLoc ]) 
+      ~inclusive:((inclusive)[@res.namedArgLoc ])  firstNode lastNode
+      ~callback:((callback)[@res.namedArgLoc ])  =
       match firstNode with
       | None -> ()
       | Some node ->
@@ -429,22 +429,22 @@ include
            if firstNode != lastNode
            then
              (if not inclusive then Js.Internal.fn_run2 callback node y;
-              iterateWithY ~y:((y +. (heightGet node))[@ns.namedArgLoc ])
-                ~inclusive:((inclusive)[@ns.namedArgLoc ]) (nextNode node)
-                lastNode ~callback:((callback)[@ns.namedArgLoc ])))
-    let rec updateSum node ~delta:((delta)[@ns.namedArgLoc ])  =
+              iterateWithY ~y:((y +. (heightGet node))[@res.namedArgLoc ])
+                ~inclusive:((inclusive)[@res.namedArgLoc ]) (nextNode node)
+                lastNode ~callback:((callback)[@res.namedArgLoc ])))
+    let rec updateSum node ~delta:((delta)[@res.namedArgLoc ])  =
       match node with
       | None -> ()
       | Some node ->
           (sumSet node ((sumGet node) +. delta);
-           updateSum (parentGet node) ~delta:((delta)[@ns.namedArgLoc ]))
-    let setHeight rbt value ~height:((height)[@ns.namedArgLoc ])  =
+           updateSum (parentGet node) ~delta:((delta)[@res.namedArgLoc ]))
+    let setHeight rbt value ~height:((height)[@res.namedArgLoc ])  =
       match _findNode rbt (rootGet rbt) value with
       | None -> ()
       | Some node ->
           let delta = height -. (heightGet node) in
           (heightSet node height;
-           updateSum (Some node) ~delta:((delta)[@ns.namedArgLoc ]))
+           updateSum (Some node) ~delta:((delta)[@res.namedArgLoc ]))
     type nonrec 'value oldNewVisibleNodes =
       {
       mutable old: 'value array ;

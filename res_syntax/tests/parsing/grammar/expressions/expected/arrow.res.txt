@@ -22,22 +22,22 @@ let f (lazy x) (lazy y) = ()
 let f [] = ()
 let f (x::xs) = x + (xs |. Belt.List.length)
 let f (x : int) (y : int) = x + y
-let f ~a:((a)[@ns.namedArgLoc ])  ~b:((b)[@ns.namedArgLoc ])  = a + b
-let f ~a:((x)[@ns.namedArgLoc ])  ~b:((y)[@ns.namedArgLoc ])  = x + y
-let f ~a:(((x : int))[@ns.namedArgLoc ])  ~b:(((y : int))[@ns.namedArgLoc ]) 
-  = x + y
-let f ?a:(((a)[@ns.namedArgLoc ])= 1)  ?b:(((b)[@ns.namedArgLoc ])= 2)  c =
+let f ~a:((a)[@res.namedArgLoc ])  ~b:((b)[@res.namedArgLoc ])  = a + b
+let f ~a:((x)[@res.namedArgLoc ])  ~b:((y)[@res.namedArgLoc ])  = x + y
+let f ~a:(((x : int))[@res.namedArgLoc ]) 
+  ~b:(((y : int))[@res.namedArgLoc ])  = x + y
+let f ?a:(((a)[@res.namedArgLoc ])= 1)  ?b:(((b)[@res.namedArgLoc ])= 2)  c =
   (a + b) + c
-let f ?a:(((x)[@ns.namedArgLoc ])= 1)  ?b:(((y)[@ns.namedArgLoc ])= 2)  c =
+let f ?a:(((x)[@res.namedArgLoc ])= 1)  ?b:(((y)[@res.namedArgLoc ])= 2)  c =
   (x + y) + c
-let f ?a:((((x : int))[@ns.namedArgLoc ])= 1) 
-  ?b:((((y : int))[@ns.namedArgLoc ])= 2)  c = (x + y) + c
-let f ?a:((a)[@ns.namedArgLoc ])  ?b:((b)[@ns.namedArgLoc ])  c =
+let f ?a:((((x : int))[@res.namedArgLoc ])= 1) 
+  ?b:((((y : int))[@res.namedArgLoc ])= 2)  c = (x + y) + c
+let f ?a:((a)[@res.namedArgLoc ])  ?b:((b)[@res.namedArgLoc ])  c =
   match (a, b) with | (Some a, Some b) -> (a + b) + c | _ -> 3
-let f ?a:((x)[@ns.namedArgLoc ])  ?b:((y)[@ns.namedArgLoc ])  c =
+let f ?a:((x)[@res.namedArgLoc ])  ?b:((y)[@res.namedArgLoc ])  c =
   match (x, y) with | (Some a, Some b) -> (a + b) + c | _ -> 3
-let f ?a:(((x : int option))[@ns.namedArgLoc ]) 
-  ?b:(((y : int option))[@ns.namedArgLoc ])  c =
+let f ?a:(((x : int option))[@res.namedArgLoc ]) 
+  ?b:(((y : int option))[@res.namedArgLoc ])  c =
   match (x, y) with | (Some a, Some b) -> (a + b) + c | _ -> 3
 let f a b = a + b
 let f = { Js.Fn.I1 = (fun () -> ()) }
@@ -53,21 +53,21 @@ let f =
 let f =
   {
     Js.Fn.I2 =
-      (fun ~a:((a)[@ns.namedArgLoc ][@attr ]) ->
+      (fun ~a:((a)[@res.namedArgLoc ][@attr ]) ->
          fun b ->
            {
              Js.Fn.I2 =
-               (fun ~c:((c)[@ns.namedArgLoc ][@attr ]) -> fun d -> ())
+               (fun ~c:((c)[@res.namedArgLoc ][@attr ]) -> fun d -> ())
            })
   }
 let f =
   {
     Js.Fn.I2 =
-      (fun ~a:((a)[@ns.namedArgLoc ][@attr ]) ->
+      (fun ~a:((a)[@res.namedArgLoc ][@attr ]) ->
          fun ((b)[@attrOnB ]) ->
            {
              Js.Fn.I2 =
-               (fun ~c:((c)[@ns.namedArgLoc ][@attr ]) ->
+               (fun ~c:((c)[@res.namedArgLoc ][@attr ]) ->
                   fun ((d)[@attrOnD ]) -> ())
            })
   }

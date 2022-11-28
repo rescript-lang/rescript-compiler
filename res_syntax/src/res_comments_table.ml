@@ -349,7 +349,7 @@ let getLoc node =
   | CoreType ct -> ct.ptyp_loc
   | ExprArgument expr -> (
     match expr.Parsetree.pexp_attributes with
-    | ({Location.txt = "ns.namedArgLoc"; loc}, _) :: _attrs ->
+    | ({Location.txt = "res.namedArgLoc"; loc}, _) :: _attrs ->
       {loc with loc_end = expr.pexp_loc.loc_end}
     | _ -> expr.pexp_loc)
   | Expression e -> (
@@ -1357,7 +1357,7 @@ and walkExpression expr t comments =
           let open Parsetree in
           let startPos =
             match pattern.ppat_attributes with
-            | ({Location.txt = "ns.namedArgLoc"; loc}, _) :: _attrs ->
+            | ({Location.txt = "res.namedArgLoc"; loc}, _) :: _attrs ->
               loc.loc_start
             | _ -> pattern.ppat_loc.loc_start
           in
@@ -1416,7 +1416,7 @@ and walkExprPararameter (_attrs, _argLbl, exprOpt, pattern) t comments =
 
 and walkExprArgument expr t comments =
   match expr.Parsetree.pexp_attributes with
-  | ({Location.txt = "ns.namedArgLoc"; loc}, _) :: _attrs ->
+  | ({Location.txt = "res.namedArgLoc"; loc}, _) :: _attrs ->
     let leading, trailing = partitionLeadingTrailing comments loc in
     attach t.leading loc leading;
     let afterLabel, rest = partitionAdjacentTrailing loc trailing in
@@ -1824,7 +1824,7 @@ and walkTypeParameters typeParameters t comments =
   visitListButContinueWithRemainingComments
     ~getLoc:(fun (_, _, typexpr) ->
       match typexpr.Parsetree.ptyp_attributes with
-      | ({Location.txt = "ns.namedArgLoc"; loc}, _) :: _attrs ->
+      | ({Location.txt = "res.namedArgLoc"; loc}, _) :: _attrs ->
         {loc with loc_end = typexpr.ptyp_loc.loc_end}
       | _ -> typexpr.ptyp_loc)
     ~walkNode:walkTypeParameter ~newlineDelimited:false typeParameters t

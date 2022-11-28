@@ -76,5 +76,5 @@ let x =
 let x =
   ((Foo.bar.createElement ~children:[] ())[@JSX ]) > ([%rescript.exprhole ])
 let x =
-  ((Foo.bar.createElement ~baz:((baz)[@ns.namedArgLoc ]) ~children:[] ())
+  ((Foo.bar.createElement ~baz:((baz)[@res.namedArgLoc ]) ~children:[] ())
   [@JSX ])

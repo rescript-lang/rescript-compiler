@@ -36,8 +36,8 @@ let build_dispatch_table handlers =
       ~f:((fun (((module I)  : (module Query_handler_instance)) as instance)
              ->
              Hashtbl.set table ~key:((I.Query_handler.name)
-               [@ns.namedArgLoc ]) ~data:((instance)[@ns.namedArgLoc ]))
-      [@ns.namedArgLoc ]) table)
+               [@res.namedArgLoc ]) ~data:((instance)[@res.namedArgLoc ]))
+      [@res.namedArgLoc ]) table)
   [@res.braces ])
 ;;(module Three)
 ;;((module Three) : (module X_int))

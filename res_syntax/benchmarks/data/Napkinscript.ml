@@ -3197,7 +3197,7 @@ end = struct
   let filterParsingAttrs attrs =
     List.filter (fun attr ->
       match attr with
-      | ({Location.txt = ("res.ternary" | "res.braces" | "bs" | "ns.namedArgLoc")}, _) -> false
+      | ({Location.txt = ("res.ternary" | "res.braces" | "bs" | "res.namedArgLoc")}, _) -> false
       | _ -> true
     ) attrs
 
@@ -5189,7 +5189,7 @@ module CommentTable = struct
         walkList
           ~getLoc:(fun (_argLabel, expr) ->
             let loc = match expr.Parsetree.pexp_attributes with
-            | ({Location.txt = "ns.namedArgLoc"; loc}, _)::_attrs ->
+            | ({Location.txt = "res.namedArgLoc"; loc}, _)::_attrs ->
                 {loc with loc_end = expr.pexp_loc.loc_end}
             | _ ->
                expr.pexp_loc
@@ -5207,7 +5207,7 @@ module CommentTable = struct
         ~getLoc:(fun (_attrs, _argLbl, exprOpt, pattern) ->
           let open Parsetree in
           let startPos = match pattern.ppat_attributes with
-          | ({Location.txt = "ns.namedArgLoc"; loc}, _)::_attrs ->
+          | ({Location.txt = "res.namedArgLoc"; loc}, _)::_attrs ->
               loc.loc_start
           | _ ->
              pattern.ppat_loc.loc_start
@@ -5279,7 +5279,7 @@ module CommentTable = struct
 
   and walkExprArgument (_argLabel, expr) t comments =
     match expr.Parsetree.pexp_attributes with
-    | ({Location.txt = "ns.namedArgLoc"; loc}, _)::_attrs ->
+    | ({Location.txt = "res.namedArgLoc"; loc}, _)::_attrs ->
       let (leading, trailing) = partitionLeadingTrailing comments loc in
       attach t.leading loc leading;
       let (afterLabel, rest) = partitionAdjacentTrailing loc trailing in
@@ -9599,7 +9599,7 @@ module Printer = struct
     | (
         (Asttypes.Labelled lblTxt | Optional lblTxt) as lbl,
         {
-          Parsetree.pexp_attributes = [({Location.txt = "ns.namedArgLoc"; loc = argLoc}, _)];
+          Parsetree.pexp_attributes = [({Location.txt = "res.namedArgLoc"; loc = argLoc}, _)];
           pexp_desc = Pexp_ident {txt = Longident.Lident ident}
         }
       ) when lblTxt = ident (* jsx punning *) ->
@@ -9631,7 +9631,7 @@ module Printer = struct
       end
     | (lbl, expr) ->
       let (argLoc, expr) = match expr.pexp_attributes with
-      | ({Location.txt = "ns.namedArgLoc"; loc}, _)::attrs ->
+      | ({Location.txt = "res.namedArgLoc"; loc}, _)::attrs ->
           (loc, {expr with pexp_attributes = attrs})
       | _ ->
         Location.none, expr
@@ -9845,11 +9845,11 @@ module Printer = struct
 		| (
 				(Asttypes.Labelled lbl),
         ({pexp_desc=Pexp_ident {txt = Longident.Lident name};
-          pexp_attributes = ([] | [({Location.txt = "ns.namedArgLoc";}, _)])
+          pexp_attributes = ([] | [({Location.txt = "res.namedArgLoc";}, _)])
          } as argExpr)
 			) when lbl = name && not (ParsetreeViewer.isBracedExpr argExpr) ->
       let loc = match arg.pexp_attributes with
-      | ({Location.txt = "ns.namedArgLoc"; loc}, _)::_ -> loc
+      | ({Location.txt = "res.namedArgLoc"; loc}, _)::_ -> loc
       | _ -> arg.pexp_loc
       in
       let doc = Doc.concat [
@@ -9866,11 +9866,11 @@ module Printer = struct
             typ
          );
          pexp_loc;
-         pexp_attributes = ([] | [({Location.txt = "ns.namedArgLoc";}, _)]) as attrs
+         pexp_attributes = ([] | [({Location.txt = "res.namedArgLoc";}, _)]) as attrs
         }
 			) when lbl = name && not (ParsetreeViewer.isBracedExpr argExpr) ->
       let loc = match attrs with
-      | ({Location.txt = "ns.namedArgLoc"; loc}, _)::_ ->
+      | ({Location.txt = "res.namedArgLoc"; loc}, _)::_ ->
         {loc with loc_end = pexp_loc.loc_end}
       | _ -> arg.pexp_loc
       in
@@ -9885,11 +9885,11 @@ module Printer = struct
 		| (
 				(Asttypes.Optional lbl),
         {pexp_desc=Pexp_ident {txt = Longident.Lident name};
-         pexp_attributes = ([] | [({Location.txt = "ns.namedArgLoc";}, _)])
+         pexp_attributes = ([] | [({Location.txt = "res.namedArgLoc";}, _)])
         }
 			) when lbl = name ->
       let loc = match arg.pexp_attributes with
-      | ({Location.txt = "ns.namedArgLoc"; loc}, _)::_ -> loc
+      | ({Location.txt = "res.namedArgLoc"; loc}, _)::_ -> loc
       | _ -> arg.pexp_loc
       in
       let doc = Doc.concat [
@@ -9900,7 +9900,7 @@ module Printer = struct
       printComments doc cmtTbl loc
 		| (_lbl, expr) ->
       let (argLoc, expr) = match expr.pexp_attributes with
-      | ({Location.txt = "ns.namedArgLoc"; loc}, _)::attrs ->
+      | ({Location.txt = "res.namedArgLoc"; loc}, _)::attrs ->
           (loc, {expr with pexp_attributes = attrs})
       | _ ->
         expr.pexp_loc, expr
@@ -10095,7 +10095,7 @@ module Printer = struct
       | (
           (Asttypes.Labelled lbl | Optional lbl),
           {ppat_desc = Ppat_var stringLoc;
-           ppat_attributes = ([] | [({Location.txt = "ns.namedArgLoc";}, _)])
+           ppat_attributes = ([] | [({Location.txt = "res.namedArgLoc";}, _)])
           }
         ) when lbl = stringLoc.txt ->
           (* ~d *)
@@ -10106,7 +10106,7 @@ module Printer = struct
       | (
           (Asttypes.Labelled lbl | Optional lbl),
            ({ppat_desc = Ppat_constraint ({ ppat_desc = Ppat_var { txt } }, typ);
-             ppat_attributes = ([] | [({Location.txt = "ns.namedArgLoc";}, _)])
+             ppat_attributes = ([] | [({Location.txt = "res.namedArgLoc";}, _)])
             })
         ) when lbl = txt ->
           (* ~d: e *)
@@ -10141,13 +10141,13 @@ module Printer = struct
       let cmtLoc = match defaultExpr with
       | None ->
         begin match pattern.ppat_attributes with
-        | ({Location.txt = "ns.namedArgLoc"; loc}, _)::_ ->
+        | ({Location.txt = "res.namedArgLoc"; loc}, _)::_ ->
           {loc with loc_end = pattern.ppat_loc.loc_end}
         | _ -> pattern.ppat_loc
         end
       | Some expr ->
         let startPos =  match pattern.ppat_attributes with
-        | ({Location.txt = "ns.namedArgLoc"; loc}, _)::_ ->
+        | ({Location.txt = "res.namedArgLoc"; loc}, _)::_ ->
             loc.loc_start
         | _ -> pattern.ppat_loc.loc_start
         in {
@@ -13769,7 +13769,7 @@ end
       | Tilde ->
         Parser.next p;
         let (lblName, loc) = parseLident p in
-        let propLocAttr = (Location.mkloc "ns.namedArgLoc" loc, Parsetree.PStr []) in
+        let propLocAttr = (Location.mkloc "res.namedArgLoc" loc, Parsetree.PStr []) in
         begin match p.Parser.token with
         | Comma | Equal | Rparen ->
           let loc = mkLoc startPos p.prevEndPos in
@@ -14760,7 +14760,7 @@ end
     | Question | Lident _ ->
       let optional = Parser.optional p Question in
       let (name, loc) = parseLident p in
-      let propLocAttr = (Location.mkloc "ns.namedArgLoc" loc, Parsetree.PStr []) in
+      let propLocAttr = (Location.mkloc "res.namedArgLoc" loc, Parsetree.PStr []) in
       (* optional punning: <foo ?a /> *)
       if optional then
         Some (
@@ -15444,7 +15444,7 @@ end
         Parser.next p;
         let endPos = p.prevEndPos in
         let loc = mkLoc startPos endPos in
-        let propLocAttr = (Location.mkloc "ns.namedArgLoc" loc, Parsetree.PStr []) in
+        let propLocAttr = (Location.mkloc "res.namedArgLoc" loc, Parsetree.PStr []) in
         let identExpr = Ast_helper.Exp.ident ~attrs:[propLocAttr] ~loc (
           Location.mkloc (Longident.Lident ident) loc
         ) in

@@ -29,6 +29,6 @@
                            ({ startTime = (percent *. duration) } : Video.chapter) in
                          { a; b } |. onChange
                      | _ -> ())
-                   [@res.braces ]))[@ns.namedArgLoc ][@res.braces ])
+                   [@res.braces ]))[@res.namedArgLoc ][@res.braces ])
       ~children:[] ())[@JSX ])
 ;;if inclusions.(index) <- (uid, url) then onChange inclusions

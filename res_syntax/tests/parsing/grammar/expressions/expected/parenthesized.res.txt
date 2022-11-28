@@ -18,7 +18,7 @@ let blockExpression = ((let a = 1 in let b = 2 in a + b)[@res.braces ])
 let assertSmthing = assert true
 let lazyThing = lazy true
 let jsx =
-  ((div ~className:(({js|cx|js})[@ns.namedArgLoc ]) ~children:[foo] ())
+  ((div ~className:(({js|cx|js})[@res.namedArgLoc ]) ~children:[foo] ())
   [@JSX ])
 let ifExpr = if true then Js.log true else Js.log false
 let forExpr = for p = 0 to 10 do () done

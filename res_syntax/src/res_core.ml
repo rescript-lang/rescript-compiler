@@ -1648,7 +1648,7 @@ and parseParameter p =
           Parser.next p;
           let lblName, loc = parseLident p in
           let propLocAttr =
-            (Location.mkloc "ns.namedArgLoc" loc, Parsetree.PStr [])
+            (Location.mkloc "res.namedArgLoc" loc, Parsetree.PStr [])
           in
           match p.Parser.token with
           | Comma | Equal | Rparen ->
@@ -2682,7 +2682,7 @@ and parseJsxProp p =
     let optional = Parser.optional p Question in
     let name, loc = parseLident p in
     let propLocAttr =
-      (Location.mkloc "ns.namedArgLoc" loc, Parsetree.PStr [])
+      (Location.mkloc "res.namedArgLoc" loc, Parsetree.PStr [])
     in
     (* optional punning: <foo ?a /> *)
     if optional then
@@ -2721,7 +2721,7 @@ and parseJsxProp p =
       Parser.next p;
       let loc = mkLoc p.Parser.startPos p.prevEndPos in
       let propLocAttr =
-        (Location.mkloc "ns.namedArgLoc" loc, Parsetree.PStr [])
+        (Location.mkloc "res.namedArgLoc" loc, Parsetree.PStr [])
       in
       let attrExpr =
         let e = parsePrimaryExpr ~operand:(parseAtomicExpr p) p in
@@ -3538,7 +3538,7 @@ and parseArgument2 p ~dotted : argument option =
       let endPos = p.prevEndPos in
       let loc = mkLoc startPos endPos in
       let propLocAttr =
-        (Location.mkloc "ns.namedArgLoc" loc, Parsetree.PStr [])
+        (Location.mkloc "res.namedArgLoc" loc, Parsetree.PStr [])
       in
       let identExpr =
         Ast_helper.Exp.ident ~attrs:[propLocAttr] ~loc
@@ -4143,7 +4143,7 @@ and parseTypeParameter p =
       Parser.next p;
       let name, loc = parseLident p in
       let lblLocAttr =
-        (Location.mkloc "ns.namedArgLoc" loc, Parsetree.PStr [])
+        (Location.mkloc "res.namedArgLoc" loc, Parsetree.PStr [])
       in
       Parser.expect ~grammar:Grammar.TypeExpression Colon p;
       let typ =
@@ -4221,7 +4221,9 @@ and parseEs6ArrowType ~attrs p =
   | Tilde ->
     Parser.next p;
     let name, loc = parseLident p in
-    let lblLocAttr = (Location.mkloc "ns.namedArgLoc" loc, Parsetree.PStr []) in
+    let lblLocAttr =
+      (Location.mkloc "res.namedArgLoc" loc, Parsetree.PStr [])
+    in
     Parser.expect ~grammar:Grammar.TypeExpression Colon p;
     let typ =
       let typ = parseTypExpr ~alias:false ~es6Arrow:false p in
