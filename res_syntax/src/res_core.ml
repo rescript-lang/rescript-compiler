@@ -5543,7 +5543,7 @@ and parseStructureItemRegion p =
     Parser.next p;
     Some
       (Ast_helper.Str.attribute ~loc
-         ( {txt = "ns.doc"; loc},
+         ( {txt = "res.doc"; loc},
            PStr
              [
                Ast_helper.Str.eval ~loc
@@ -6175,7 +6175,7 @@ and parseSignatureItemRegion p =
     Parser.next p;
     Some
       (Ast_helper.Sig.attribute ~loc
-         ( {txt = "ns.doc"; loc},
+         ( {txt = "res.doc"; loc},
            PStr
              [
                Ast_helper.Str.eval ~loc
@@ -6390,7 +6390,7 @@ and parseAttribute p =
   | DocComment (loc, s) ->
     Parser.next p;
     Some
-      ( {txt = "ns.doc"; loc},
+      ( {txt = "res.doc"; loc},
         PStr
           [
             Ast_helper.Str.eval ~loc

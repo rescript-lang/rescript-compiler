@@ -1,7 +1,7 @@
 /** This is a doc ✅ comment */
 let z = 34
 
-@ns.doc("And this is a ns.doc ✅ annotation")
+@res.doc("And this is a res.doc ✅ annotation")
 let q = 11
 
 /** This

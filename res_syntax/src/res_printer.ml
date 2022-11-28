@@ -5262,7 +5262,7 @@ and printPayload ~state (payload : Parsetree.payload) cmtTbl =
 and printAttribute ?(standalone = false) ~state
     ((id, payload) : Parsetree.attribute) cmtTbl =
   match (id, payload) with
-  | ( {txt = "ns.doc"},
+  | ( {txt = "res.doc"},
       PStr
         [
           {
