@@ -1,8 +1,10 @@
 module IO = Res_io
 
+let dataDir = "res_syntax/tests"
+
 (* test printing of .res file*)
 let () =
-  let filename = "./tests/api/resSyntax.res" in
+  let filename = Filename.concat dataDir "api/resSyntax.res" in
   let prettySource = Res_multi_printer.print `res ~input:filename in
   assert (
     prettySource
@@ -17,7 +19,7 @@ if true {
 
 (* test printing of .resi file*)
 let () =
-  let filename = "./tests/api/resiSyntax.resi" in
+  let filename = Filename.concat dataDir "api/resiSyntax.resi" in
   let prettySource = Res_multi_printer.print `res ~input:filename in
   assert (prettySource = {|// test interface file
 
@@ -26,7 +28,7 @@ let x: int
 
 (* test printing of ocaml .ml file *)
 let () =
-  let filename = "./tests/api/mlSyntax.ml" in
+  let filename = Filename.concat dataDir "api/mlSyntax.ml" in
   let prettySource = Res_multi_printer.print `ml ~input:filename in
   assert (
     prettySource
@@ -41,7 +43,7 @@ let d = `Sehr Schön`
 
 (* test printing of ocaml .mli file *)
 let () =
-  let filename = "./tests/api/mliSyntax.mli" in
+  let filename = Filename.concat dataDir "api/mliSyntax.mli" in
   let prettySource = Res_multi_printer.print `ml ~input:filename in
   assert (
     prettySource
@@ -95,7 +97,7 @@ module OutcomePrinterTests = struct
    * The outcome tree is printed to a string
    * and stored in a snapshot `tests/oprint/expected/oprint.resi.txt` *)
   let run () =
-    let filename = "tests/oprint/oprint.res" in
+    let filename = Filename.concat dataDir "oprint/oprint.res" in
     let result =
       Res_driver.parsingEngine.parseImplementation ~forPrinter:false ~filename
     in
@@ -106,7 +108,8 @@ module OutcomePrinterTests = struct
         exit 1)
       else result.Res_driver.parsetree
     in
-    IO.writeFile ~filename:"tests/oprint/expected/oprint.resi.txt"
+    IO.writeFile
+      ~filename:(Filename.concat dataDir "oprint/expected/oprint.resi.txt")
       ~contents:(signatureToOutcome signature)
 end
 

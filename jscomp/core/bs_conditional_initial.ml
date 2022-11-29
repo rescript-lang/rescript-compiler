@@ -1,4 +1,3 @@
-# 1 "core/bs_conditional_initial.pp.ml"
 (* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
  * Copyright (C) 2016 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
@@ -35,11 +34,10 @@ let setup_env () =
   Clflags.dump_location := false;  
   Config.syntax_kind := `rescript;
   Parmatch.print_res_pat := Pattern_printer.print_pattern;
-  
-# 39 "core/bs_conditional_initial.pp.ml"
+#ifdef BROWSER
+#else    
   Clflags.color := Some Always;
-  
-# 41 "core/bs_conditional_initial.pp.ml"
+#endif  
   (* default true
      otherwise [bsc -I sc src/hello.ml ] will include current directory to search path
   *)
@@ -55,8 +53,7 @@ let setup_env () =
   Lambda.blk_record := Record_attributes_check.blk_record;
   Matching.names_from_construct_pattern := 
     Matching_polyfill.names_from_construct_pattern;
-    
-# 57 "core/bs_conditional_initial.pp.ml"
+#ifndef RELEASE 
     (let root_dir = 
        Filename.dirname 
          (Filename.dirname Sys.executable_name) in 
@@ -65,8 +62,7 @@ let setup_env () =
        (root_dir//"jscomp"//"others") ::
        (root_dir//"jscomp"//"stdlib-406") ::
        !Clflags.include_dirs);
-  
-# 66 "core/bs_conditional_initial.pp.ml"
+#endif
   Rescript_cpp.replace_directive_bool "BS" true;
   Rescript_cpp.replace_directive_bool "JS" true;
   Rescript_cpp.replace_directive_string "BS_VERSION"  Bs_version.version

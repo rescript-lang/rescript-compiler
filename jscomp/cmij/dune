@@ -1,0 +1,6 @@
+(executables
+ (names cmij_main cmjdump_main)
+ (public_names cmij cmjdump)
+ (flags
+  (:standard -w +a-4-9-40-42-69))
+ (libraries core))

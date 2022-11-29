@@ -4,6 +4,8 @@ const child_process = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
+const { absolutePath: platformBinDir, ninja_exe } = require("./bin_path");
+
 const platform = process.platform;
 const ninjaDir = path.join(__dirname, "..", "ninja");
 const buildCommand = "python3 configure.py --bootstrap --verbose";
@@ -19,11 +21,10 @@ if (platform === "win32") {
   child_process.execSync(`strip ninja`, { stdio: [0, 1, 2], cwd: ninjaDir });
 }
 
-const { absolutePath, ninja_exe } = require("./bin_path");
-const src = path.join(ninjaDir, `ninja${platform === "win32" ? ".exe" : ""}`);
-
-if (!fs.existsSync(absolutePath)) {
-  fs.mkdirSync(absolutePath);
+// Copy exe to platform bin dir
+if (!fs.existsSync(platformBinDir)) {
+  fs.mkdirSync(platformBinDir);
 }
 
-fs.copyFileSync(src, ninja_exe);
+const ext = process.platform === "win32" ? ".exe" : "";
+fs.copyFileSync(path.join(ninjaDir, "ninja" + ext), ninja_exe);

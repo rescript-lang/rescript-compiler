@@ -81,9 +81,3 @@ from the view of parsetree
 It is special handled due to `fn_mk0`, otherwise it will have arity 1
 
 We can `-open Js.Uncurry` to make names look pretty
-
-
-
-# bspack
-
-ocamlopt.opt -I +compiler-libs unix.cmxa ./stubs/ext_basic_hash_stubs.c stubs/bs_hash_stubs.cmx  ocamlcommon.cmxa ext.cmxa common.cmxa depends.cmxa core/bspack_main.cmx -o bspack.dev

@@ -1,7 +1,6 @@
 (executable
  (name res_cli)
  (public_name res_parser)
- (modes byte exe)
  (flags
   (-open Syntax -open Compilerlibs406)
   (:standard -w +a-4-42-40-9-48-70))

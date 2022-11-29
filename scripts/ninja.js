@@ -53,8 +53,6 @@ exports.vendorNinjaPath = vendorNinjaPath;
  * In dev mode, files generated for vendor config
  *
  * build.ninja
- * compiler.ninja
- * snapshot.ninja
  * runtime/build.ninja
  * others/build.ninja
  * $stdlib/build.ninja
@@ -102,13 +100,8 @@ var getVersionString = () => {
         .substring(output.indexOf(searcher) + searcher.length)
         .trim();
     } catch (err) {
-      //
-      console.error(`This error  probably came from that you don't have our vendored ocaml installed
-      If this is the first time you clone the repo
-      try this
-      git submodule init && git submodule update
-      node ./scripts/buildocaml.js
-      `);
+      console.error(`This error probably came from that you don't have OCaml installed.
+Make sure you have the OCaml compiler available in your path.`);
       console.error(err.message);
       process.exit(err.status);
     }
@@ -130,10 +123,6 @@ rule cc_cmi
     description = $in -> $out    
 `;
 }
-/**
- * Fixed since it is already vendored
- */
-var cppoMonoFile = `../vendor/cppo/cppo_bin.ml`;
 /**
  *
  * @param {string} name
@@ -462,16 +451,7 @@ function cppoList(cwd, xs) {
       } else {
         variables = [];
       }
-      var extraDeps = pseudoTarget(cppoFile);
-      return ninjaQuickBuild(
-        x[0],
-        x[1],
-        cppoRuleName,
-        cwd,
-        variables,
-        [],
-        extraDeps
-      );
+      return ninjaQuickBuild(x[0], x[1], cppoRuleName, cwd, variables, [], []);
     })
     .join("\n");
 }
@@ -933,11 +913,10 @@ var dTypeIdent = "TYPE_IDENT";
 var dTypePoly = "TYPE_POLY";
 
 var cppoRuleName = `cppo`;
-var cppoFile = `./bin/cppo.exe`;
 
 var cppoRule = (flags = "") => `
 rule ${cppoRuleName}
-    command = ${cppoFile} -V OCAML:${getVersionString()} ${flags} $type $in -o $out
+    command = cppo -V OCAML:${getVersionString()} ${flags} $type $in -o $out
     generator = true
 `;
 
@@ -1326,47 +1305,6 @@ function checkEffect() {
   console.log(effect);
 }
 
-/**
- *
- * @param {string[]} domain
- * @param {Map<string,Set<string>>} dependency_graph
- * @returns {string[]}
- */
-function sortFilesByDeps(domain, dependency_graph) {
-  /**
-   * @type{string[]}
-   */
-  var result = [];
-  var workList = new Set(domain);
-  /**
-   *
-   * @param {Set<string>} visiting
-   * @param {string[]} path
-   * @param {string} current
-   */
-  var visit = function (visiting, path, current) {
-    if (visiting.has(current)) {
-      throw new Error(`cycle: ${path.concat(current).join(" ")}`);
-    }
-    if (workList.has(current)) {
-      visiting.add(current);
-      var next = dependency_graph.get(current);
-      if (next !== undefined && next.size > 0) {
-        next.forEach(x => {
-          visit(visiting, path.concat(current), x);
-        });
-      }
-      visiting.delete(current);
-      workList.delete(current);
-      result.push(current);
-    }
-  };
-  while (workList.size > 0) {
-    visit(new Set(), [], workList.values().next().value);
-  }
-  return result;
-}
-
 function updateRelease() {
   runtimeNinja(false);
   stdlibNinja(false);
@@ -1377,7 +1315,6 @@ function updateDev() {
   writeFileAscii(
     path.join(jscompDir, "build.ninja"),
     `
-subninja compiler.ninja
 stdlib = stdlib-406
 ${BSC_COMPILER}
 ocamllex = ocamllex.opt
@@ -1399,7 +1336,6 @@ include body.ninja
   );
 
   preprocessorNinjaSync(); // This is needed so that ocamldep makes sense
-  nativeNinja();
   runtimeNinja();
   stdlibNinja(true);
   if (fs.existsSync(bsc_exe)) {
@@ -1439,91 +1375,11 @@ function test(dir) {
 }
 
 /**
- *
- * @param {Set<string>} xs
- * @returns {string}
- */
-function setSortedToStringAsNativeDeps(xs) {
-  var arr = Array.from(xs).sort();
-  // it relies on we have -opaque, so that .cmx is dummy file
-  return arr.join(" ").replace(/\.cmx/g, ".cmi");
-}
-
-/**
  * Built cppo.exe for dev purpose
  */
 function preprocessorNinjaSync() {
-  var napkinFiles = fs
-    .readdirSync(path.join(jscompDir, "..", "res_syntax", "src"), "ascii")
-    .filter(x => x.endsWith(".ml") || x.endsWith(".mli"));
-  var napkinCliFiles = fs
-    .readdirSync(path.join(jscompDir, "..", "res_syntax", "cli"), "ascii")
-    .filter(x => x.endsWith(".ml") || x.endsWith(".mli"));
-  var buildNapkinFiles = napkinFiles
-    .map(file => `o napkin/${file} : copy ../res_syntax/src/${file}`)
-    .join("\n");
-  var buildNapkinCliFiles = napkinCliFiles
-    .map(file => `o napkin/${file} : copy ../res_syntax/cli/${file}`)
-    .join("\n");
   var cppoNative = `
-ocamlopt = ocamlopt.opt
-ocamllex = ocamllex.opt
-ocamlc = ocamlc.opt
-ocamlmklib = ocamlmklib
-ocaml = ocaml
-ocamlyacc = ocamlyacc  
-rule link
-    command =  $ocamlopt -g   $flags $libs $in -o $out
-rule bytelink
-    command =  $ocamlc -g  $flags $libs $in -o $out
-o ${cppoFile}: link ${cppoMonoFile}
-    libs = unix.cmxa str.cmxa
-    generator = true
 ${cppoRule()}
-${cppoList("ext", [
-  ["hash_set_string.ml", "hash_set.cppo.ml", dTypeString],
-  ["hash_set_int.ml", "hash_set.cppo.ml", dTypeInt],
-  ["hash_set_ident.ml", "hash_set.cppo.ml", dTypeIdent],
-  ["hash_set.ml", "hash_set.cppo.ml", dTypeFunctor],
-  ["hash_set_poly.ml", "hash_set.cppo.ml", dTypePoly],
-  ["vec_int.ml", "vec.cppo.ml", dTypeInt],
-  ["vec.ml", "vec.cppo.ml", dTypeFunctor],
-  ["set_string.ml", "set.cppo.ml", dTypeString],
-  ["set_int.ml", "set.cppo.ml", dTypeInt],
-  ["set_ident.ml", "set.cppo.ml", dTypeIdent],
-  ["map_string.ml", "map.cppo.ml", dTypeString],
-  ["map_int.ml", "map.cppo.ml", dTypeInt],
-  ["map_ident.ml", "map.cppo.ml", dTypeIdent],
-  [
-    "ordered_hash_map_local_ident.ml",
-    "ordered_hash_map.cppo.ml",
-    dTypeLocalIdent,
-  ],
-  ["hash_string.ml", "hash.cppo.ml", dTypeString],
-  ["hash_int.ml", "hash.cppo.ml", dTypeInt],
-  ["hash_ident.ml", "hash.cppo.ml", dTypeIdent],
-  ["hash.ml", "hash.cppo.ml", dTypeFunctor],
-  ["ext_string.ml", "ext_string.pp.ml"],
-  ["ext_string.mli", "ext_string.pp.mli"],
-  ["ext_sys.ml", "ext_sys.pp.ml"],
-])}
-${cppoList("stubs", [["bs_hash_stubs.ml", "bs_hash_stubs.pp.ml"]])}
-${cppoList("ml", [
-  ["cmt_format.ml", "cmt_format.pp.ml"],
-  ["pprintast.ml", "pprintast.pp.ml"],
-])}
-${cppoList("common", [["js_config.ml", "js_config.pp.ml"]])}
-${cppoList("frontend", [["external_ffi_types.ml", "external_ffi_types.pp.ml"]])}
-${cppoList("core", [
-  ["lam_compile_main.ml", "lam_compile_main.pp.ml"],
-  ["bs_cmi_load.ml", "bs_cmi_load.pp.ml"],
-  ["bs_conditional_initial.ml", "bs_conditional_initial.pp.ml"],
-  ["js_cmj_load.ml", "js_cmj_load.pp.ml"],
-  ["js_name_of_module_id.ml", "js_name_of_module_id.pp.ml"],
-  ["js_pass_debug.ml", "js_pass_debug.pp.ml"],
-  ["lam_pass_lets_dce.ml", "lam_pass_lets_dce.pp.ml"],
-  ["lam_util.ml", "lam_util.pp.ml"],
-])}
 ${cppoList("others", [
   ["belt_HashSetString.ml", "hashset.cppo.ml", dTypeString],
   ["belt_HashSetString.mli", "hashset.cppo.mli", dTypeString],
@@ -1561,14 +1417,9 @@ ${cppoList("others", [
   ["js_typed_array2.ml", "js_typed_array2.cppo.ml", ""],
 ])}
 
-${mllRule}
-${mllList("ext", ["ext_json_parse.mll"])}
-${mllList("ml", ["lexer.mll"])}
 rule copy
   command = cp $in $out
   description = $in -> $out    
-${buildNapkinFiles}    
-${buildNapkinCliFiles}
 `;
   var cppoNinjaFile = "cppoVendor.ninja";
   writeFileSync(path.join(jscompDir, cppoNinjaFile), cppoNative);
@@ -1577,267 +1428,6 @@ ${buildNapkinCliFiles}
     stdio: [0, 1, 2],
     encoding: "utf8",
   });
-}
-
-var sourceDirs = [
-  "bsb",
-  "bsb_helper",
-  "common",
-  "core",
-  "depends",
-  "frontend",
-  "gentype",
-  "js_parser",
-  "ext",
-  "main",
-  "ml",
-  "ounit",
-  "ounit_tests",
-  "outcome_printer",
-  "napkin",
-  "stubs",
-  "super_errors",
-];
-/**
- *
- * @param {string[]} dirs
- */
-function makeLibs(dirs) {
-  return dirs.map(x => `${x}/${x}.cmxa`).join(" ");
-}
-var compiler_libs = ["ml"];
-var bsc_libs = [
-  "stubs",
-  "ext",
-  ...compiler_libs,
-  "js_parser",
-  "napkin",
-  "common",
-  "frontend",
-  "depends",
-  "gentype",
-  "super_errors",
-  "outcome_printer",
-  "core",
-];
-
-var bsb_helper_libs = ["stubs", "ext", "common", "bsb_helper"];
-
-var rescript_libs = ["stubs", "ext", "common", "bsb"];
-
-var cmjdumps_libs = [
-  "stubs",
-  ...compiler_libs,
-  "ext",
-  "common",
-  "frontend",
-  "depends",
-  "core",
-];
-
-var cmij_libs = [
-  "stubs",
-  "ext",
-  ...compiler_libs,
-  "common",
-  "frontend",
-  "depends",
-  "core",
-];
-
-var tests_libs = [
-  "stubs",
-  "ext",
-  ...compiler_libs,
-  "ounit",
-  "common",
-  "frontend",
-  "depends",
-  "bsb",
-  "bsb_helper",
-  "core",
-  "ounit_tests",
-];
-/**
- * Note don't run `ninja -t clean -g`
- * Since it will remove generated ml file which has
- * an effect on depfile
- */
-function nativeNinja() {
-  var ninjaOutput = "compiler.ninja";
-
-  var includes = sourceDirs.map(x => `-I ${x}`).join(" ");
-
-  var flags = "-w A-4-9-40..42-30-48-50-44-45";
-  var minor_version = +getVersionString().split(".")[1];
-  if (minor_version > 12) {
-    flags += "-69-70"; // we should turn -69 on except for vendored files
-  }
-  if (minor_version > 7) {
-    flags += "-3-67 -error-style short";
-  }
-  var templateNative = `
-ocamlopt = ocamlopt.opt
-ocamllex = ocamllex.opt
-ocamlc = ocamlc.opt
-ocamlmklib = ocamlmklib
-ocaml = ocaml
-ocamlyacc = ocamlyacc
-subninja cppoVendor.ninja
-
-rule optc
-    command = $ocamlopt -bin-annot -strict-sequence -safe-string  -opaque ${includes} -g -linscan ${flags} -warn-error A -absname -c $in 
-    description = $out : $in
-rule archive
-    command = $ocamlopt -a $in -o $out
-    description = arcive -> $out
-rule link
-    command =  $ocamlopt -g   $flags $libs $in -o $out 
-    description = linking -> $out
-rule mk_bsversion
-    command = node $in
-    generator = true
-rule gcc
-    command = $ocamlopt -ccopt -fPIC -ccopt -O2 -ccopt -o -ccopt $out -c $in
-o stubs/ext_basic_hash_stubs.o : gcc  stubs/ext_basic_hash_stubs.c
-rule ocamlmklib
-    command = $ocamlmklib -v $in -o $name && touch $out
-
-rule mk_keywords
-    command = $ocaml $in
-    generator = true
-o ext/js_reserved_map.ml: mk_keywords ../scripts/build_sorted.ml keywords.list
-
-o stubs/libbs_hash.a stubs/dllbs_hash.so: ocamlmklib stubs/ext_basic_hash_stubs.o
-    name = stubs/bs_hash
-rule stubslib
-    command = $ocamlopt -a $ml -o $out -cclib $clib
-o stubs/stubs.cmxa : stubslib stubs/bs_hash_stubs.cmx stubs/libbs_hash.a
-    ml = stubs/bs_hash_stubs.cmx
-    clib = stubs/libbs_hash.a
-
-o ${my_target}/bsc.exe: link  ${makeLibs(
-    bsc_libs
-  )} main/rescript_compiler_main.cmx
-  libs =  unix.cmxa str.cmxa    
-o ${my_target}/rescript.exe: link ${makeLibs(
-    rescript_libs
-  )} main/rescript_main.cmx
-      libs =  unix.cmxa str.cmxa    
-o ${my_target}/bsb_helper.exe: link ${makeLibs(
-    bsb_helper_libs
-  )} main/bsb_helper_main.cmx
-    libs =  unix.cmxa str.cmxa
-o ./bin/bspack.exe: link  ./main/bspack_main.cmx
-    libs = unix.cmxa 
-    flags = -I ./bin -w -40-30-50    
-o ./bin/cmjdump.exe: link ${makeLibs(cmjdumps_libs)} main/cmjdump_main.cmx
-    
-o ./bin/cmij.exe: link ${makeLibs(cmij_libs)} main/cmij_main.cmx
-    
-o ./bin/tests.exe: link ${makeLibs(tests_libs)} main/ounit_tests_main.cmx
-    libs = str.cmxa unix.cmxa 
-build native: phony ${my_target}/bsc.exe ${my_target}/rescript.exe ${my_target}/bsb_helper.exe ./bin/bspack.exe ./bin/cmjdump.exe ./bin/cmij.exe ./bin/tests.exe
-
-
-${mllRule}
-${mlyRule}
-
-
-${mlyList("ml", ["parser.mly"])}
-
-`;
-  /**
-   * @type { {name : string, libs: string[]}[]}
-   */
-  var libs = [];
-  sourceDirs.forEach(name => {
-    if (name !== "main" && name !== "stubs") {
-      libs.push({ name, libs: [] });
-    }
-  });
-
-  /**
-   * @type{string[]}
-   */
-  var files = [];
-  for (let dir of sourceDirs) {
-    files = files.concat(test(dir));
-  }
-
-  cp.exec(
-    `ocamldep.opt -allow-approx -one-line -native ${includes} ${files.join(
-      " "
-    )}`,
-    { cwd: jscompDir, encoding: "ascii" },
-    function (error, out) {
-      if (error !== null) {
-        throw error;
-      }
-      /**
-       * @type {Map<string,Set<string>>}
-       */
-      var map = new Map();
-
-      var pairs = out.split("\n").map(x => x.split(":").map(x => x.trim()));
-      pairs.forEach(pair => {
-        /**
-         * @type {string[]|string}
-         */
-
-        var deps;
-        var key = pair[0];
-        if (pair[1] !== undefined && (deps = pair[1].trim())) {
-          // deps = deps.replace(/.cmx/g, ".cmi");
-          deps = deps.split(" ");
-          map.set(key, new Set(deps));
-        }
-        if (key.endsWith("cmx")) {
-          libs.forEach(x => {
-            if (path.dirname(key) === x.name) {
-              x.libs.push(key);
-            }
-          });
-        }
-      });
-
-      // not ocamldep output
-      // when no mli exists no deps for cmi otherwise add cmi
-      var stmts = pairs.map(pair => {
-        if (pair[0]) {
-          var target = pair[0];
-          var y = path.parse(target);
-          /**
-           * @type {Set<string>}
-           */
-          var deps = map.get(target) || new Set();
-          if (y.ext === ".cmx") {
-            var intf = path.join(y.dir, y.name + ".cmi");
-            var ml = path.join(y.dir, y.name + ".ml");
-            return `o ${
-              deps.has(intf) ? target : [target, intf].join(" ")
-            } : optc ${ml} | ${setSortedToStringAsNativeDeps(deps)}`;
-          } else {
-            // === 'cmi'
-            var mli = path.join(y.dir, y.name + ".mli");
-            return `o ${target} : optc ${mli} | ${setSortedToStringAsNativeDeps(
-              deps
-            )}`;
-          }
-        }
-      });
-      libs.forEach(x => {
-        var output = sortFilesByDeps(x.libs, map);
-        var name = x.name;
-        stmts.push(`o ${name}/${name}.cmxa : archive ${output.join(" ")}`);
-      });
-
-      writeFileAscii(
-        path.join(jscompDir, ninjaOutput),
-        templateNative + stmts.join("\n") + "\n"
-      );
-    }
-  );
 }
 
 function main() {
@@ -1856,35 +1446,23 @@ function main() {
     switch (subcommand) {
       case "build":
         try {
-          cp.execFileSync(vendorNinjaPath, ["native", "all"], {
+          cp.execFileSync(vendorNinjaPath, ["all"], {
             encoding: "utf8",
             cwd: jscompDir,
             stdio: [0, 1, 2],
           });
           if (!isPlayground) {
-            cp.execFileSync(
-              path.join(__dirname, "..", "jscomp", "bin", "cmij.exe"),
-              {
-                encoding: "utf8",
-                cwd: jscompDir,
-                stdio: [0, 1, 2],
-              }
-            );
+            cp.execFileSync("cmij", {
+              encoding: "utf8",
+              cwd: jscompDir,
+              stdio: [0, 1, 2],
+            });
           }
-          cp.execFileSync(vendorNinjaPath, ["-f", "snapshot.ninja"], {
-            encoding: "utf8",
-            cwd: jscompDir,
-            stdio: [0, 1, 2],
-          });
         } catch (e) {
           console.log(e.message);
           console.log(`please run "./scripts/ninja.js config" first`);
           process.exit(2);
         }
-        cp.execSync(`node ${__filename} config`, {
-          cwd: __dirname,
-          stdio: [0, 1, 2],
-        });
         break;
       case "clean":
         try {

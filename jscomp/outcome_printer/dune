@@ -1,0 +1,6 @@
+(library
+ (name outcome_printer)
+ (wrapped false)
+ (flags
+  (:standard -w +a))
+ (libraries ext))

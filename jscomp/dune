@@ -1,44 +1,13 @@
-(dirs bsb bsb_helper common core depends ext frontend gentype js_parser main
-  ml napkin ounit ounit_tests stubs outcome_printer super_errors)
+(dirs bsb bsb_exe bsb_helper bsb_helper_exe bsc cmij common core depends ext
+  frontend gentype jsoo js_parser ml napkin ounit ounit_tests outcome_printer
+  super_errors)
 
-(copy_files# bsb/*.{ml,mli})
-
-(copy_files# bsb_helper/*.{ml,mli})
-
-(copy_files# common/*.{ml,mli})
-
-(copy_files# core/*.{ml,mli})
-
-(copy_files# depends/*.{ml,mli})
-
-(copy_files# ext/*.{ml,mli})
-
-(copy_files# frontend/*.{ml,mli})
-
-(copy_files# gentype/*.{ml,mli})
-
-(copy_files# js_parser/*.{ml,mli})
-
-(copy_files# main/*.{ml,mli})
-
-(copy_files# ml/*.{ml,mli})
-
-(copy_files# napkin/*.{ml,mli})
-
-(copy_files# ounit/*.{ml,mli})
-
-(copy_files# ounit_tests/*.{ml,mli})
-
-(copy_files# stubs/*.{ml,mli,c})
-
-(copy_files# outcome_printer/*.{ml,mli})
-
-(copy_files# super_errors/*.{ml,mli})
-
-(library
- (name jscomp)
- (flags "-w" "+26+27+32+33+39-d")
- (foreign_stubs
-  (language c)
-  (names ext_basic_hash_stubs)
-  (flags)))
+(env
+ (dev
+  (env-vars
+   (CPPO_FLAGS -U=RELEASE)))
+ (release
+  (env-vars
+   (CPPO_FLAGS -D=RELEASE))
+  (ocamlopt_flags
+   (:standard -O3 -unbox-closures))))

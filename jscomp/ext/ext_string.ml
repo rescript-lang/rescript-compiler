@@ -1,4 +1,3 @@
-# 1 "ext/ext_string.pp.ml"
 (* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
  * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
@@ -333,9 +332,11 @@ let replace_backward_slash (x : string)=
 
 let empty = ""
 
-# 338 "ext/ext_string.pp.ml"
+#ifdef BROWSER 
+let compare = Bs_hash_stubs.string_length_based_compare
+#else
 external compare : string -> string -> int = "caml_string_length_based_compare" [@@noalloc];;    
-# 340 "ext/ext_string.pp.ml"
+#endif
 let single_space = " "
 let single_colon = ":"
 

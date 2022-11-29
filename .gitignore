@@ -45,39 +45,12 @@ _build
 .DS_Store
 
 node_modules
-oxml
-test.json
-jscomp/pre_load.js
-boot
 *.dump
 coverage
-*.g.js
-ppx_tools/
-vendor/ocaml/stdlib/target_camlheader
-vendor/ocaml/stdlib/target_camlheaderd
-man/
-lib/ocaml
-*.tgz
-bin/*
-jscomp/bin/*.exe
-
-# for npm publish
 *.exe
 
-!bin/bspack
-!/bin/bsb
-!/bin/bsc
-
-# This is intentional
-# so that `npm install && npm intall -g .`
-# the second install would use the cached ninja.exe (instead of being ignored)
-#
-#ninja
 .ninja_log
-.ninja_deps
 .bsdeps
-.bs_dir_cache
-
 .bsbuild
 lib/prebuilt.ninja
 lib/release.ninja
@@ -96,6 +69,7 @@ jscomp/cppoVendor.ninja
 jscomp/cppoEnv.ninja
 jscomp/bin/bsb
 jscomp/bin/bsc
+lib/ocaml
 lib/bs
 lib/js/jscomp/test
 jscomp/build_tests/*/lib/
@@ -103,43 +77,12 @@ jscomp/build_tests/*/lib/
 *.goog.js
 *.jsoo.js
 *.so
-bin/ninja.exe
 tmp/
-jscomp/ext/hash_set.ml
-jscomp/ext/hash_set_poly.ml
-jscomp/ext/hash.ml
-jscomp/ext/hash_set_ident.ml
-jscomp/ext/hash_ident.ml
-jscomp/ext/map_ident.ml
-jscomp/ext/set_ident.ml
-jscomp/ext/hash_set_int.ml
-jscomp/ext/hash_int.ml
-jscomp/ext/map_int.ml
-jscomp/ext/vec_int.ml
-jscomp/ext/ordered_hash_map_local_ident.ml
-jscomp/ext/ordered_hash_set_string.ml
-jscomp/ext/vec.ml
-jscomp/ext/set_int.ml
-jscomp/ext/hash_set_string.ml
-jscomp/ext/hash_string.ml
-jscomp/ext/map_string.ml
-jscomp/ext/set_string.ml
-jscomp/ext/ext_json_parse.ml
-jscomp/syntax/reactjs_jsx_ppx_v2.ml
-jscomp/syntax/reactjs_jsx_ppx_v3.ml
-jscomp/bin/all_ounit_tests.ml
-native/
-vendor/ocaml
 jscomp/.lsp
-.vscode/launch.json
 tracing*.json
-darwin/bsc
 .nyc_output
-themes
+.vscode/launch.json
 .vscode/settings.json
-*.output # yacc output
-jscomp/ml/parser.output
-jscomp/ml/lexer.ml
 
 # opam local switch is stored in `_opam` folder
 _opam
