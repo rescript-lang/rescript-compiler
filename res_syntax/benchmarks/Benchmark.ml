@@ -237,16 +237,19 @@ end = struct
     Benchmark.report b
 
   let run () =
-    benchmark "./benchmarks/data/RedBlackTree.res" Rescript Parse;
-    benchmark "./benchmarks/data/RedBlackTree.ml" Ocaml Parse;
-    benchmark "./benchmarks/data/RedBlackTree.res" Rescript Print;
-    benchmark "./benchmarks/data/RedBlackTreeNoComments.res" Rescript Print;
-    benchmark "./benchmarks/data/Napkinscript.res" Rescript Parse;
-    benchmark "./benchmarks/data/Napkinscript.ml" Ocaml Parse;
-    benchmark "./benchmarks/data/Napkinscript.res" Rescript Print;
-    benchmark "./benchmarks/data/HeroGraphic.res" Rescript Parse;
-    benchmark "./benchmarks/data/HeroGraphic.ml" Ocaml Parse;
-    benchmark "./benchmarks/data/HeroGraphic.res" Rescript Print
+    let dataDir = "res_syntax/benchmarks/data" in
+    benchmark (Filename.concat dataDir "RedBlackTree.res") Rescript Parse;
+    benchmark (Filename.concat dataDir "RedBlackTree.ml") Ocaml Parse;
+    benchmark (Filename.concat dataDir "RedBlackTree.res") Rescript Print;
+    benchmark
+      (Filename.concat dataDir "RedBlackTreeNoComments.res")
+      Rescript Print;
+    benchmark (Filename.concat dataDir "Napkinscript.res") Rescript Parse;
+    benchmark (Filename.concat dataDir "Napkinscript.ml") Ocaml Parse;
+    benchmark (Filename.concat dataDir "Napkinscript.res") Rescript Print;
+    benchmark (Filename.concat dataDir "HeroGraphic.res") Rescript Parse;
+    benchmark (Filename.concat dataDir "HeroGraphic.ml") Ocaml Parse;
+    benchmark (Filename.concat dataDir "HeroGraphic.res") Rescript Print
 end
 
 let () = Benchmarks.run ()

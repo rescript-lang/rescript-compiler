@@ -103,9 +103,6 @@ ReScript is licensed under LGPL version 3, with relaxed rules about creating and
 
 The ReScript parser (subdirectory `res_syntax`) is licensed under the [MIT License](res_syntax/LICENSE).
 
-`vendor/ocaml.tar.gz` contains the official [OCaml](https://ocaml.org) compiler (version 4.14.0).
-Refer to its copyright and license notices for information about its licensing.
-
 The `ninja` subdirectory contains the vendored [ninja](https://github.com/ninja-build/ninja) build system.
 Refer to its copyright and license notices for information about its licensing.
 

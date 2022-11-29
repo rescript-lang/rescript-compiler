@@ -1,4 +1,4 @@
-var r = require("../../../vendor/rollup.js");
+var r = require("rollup");
 var path = require("path");
 var assert = require("assert");
 var p = require("child_process");

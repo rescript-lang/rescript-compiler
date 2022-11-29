@@ -1,4 +1,3 @@
-# 1 "frontend/external_ffi_types.pp.ml"
 (* Copyright (C) 2015 - 2016 Bloomberg Finance L.P.
  * Copyright (C) 2017 - Hongbo Zhang, Authors of ReScript
  * This program is free software: you can redistribute it and/or modify
@@ -266,11 +265,14 @@ let is_bs_primitive s =
   String.unsafe_get s 1 = '\149' 
 
 let () = Oprint.map_primitive_name := 
-      
-# 273 "frontend/external_ffi_types.pp.ml"
+#ifdef RELEASE
+      (fun s ->    
+         if is_bs_primitive s then "BS:external"
+         else s )
+#else  
       String.escaped
+#endif
 
-# 276 "frontend/external_ffi_types.pp.ml"
 (* TODO:  better error message when version mismatch *)
 let from_string s : t =
   if is_bs_primitive s  then   

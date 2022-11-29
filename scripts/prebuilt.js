@@ -1,21 +1,17 @@
 #!/usr/bin/env node
 //@ts-check
-var cp = require("child_process");
-var path = require("path");
-var { is_windows } = require("./config.js");
 
-var root = path.join(__dirname, "..");
-var root_config = { cwd: root, stdio: [0, 1, 2], encoding: "utf8" };
+const path = require("path");
+const fs = require("fs");
+const assert = require("assert");
 
-var ocamlVersion = require("./buildocaml.js").getVersionPrefix();
-var fs = require("fs");
-var package_config = require(path.join(__dirname, "..", "package.json"));
-var bsVersion = fs.readFileSync(
+const package_config = require(path.join(__dirname, "..", "package.json"));
+const bsVersion = fs.readFileSync(
   path.join(__dirname, "..", "jscomp", "common", "bs_version.ml"),
   "utf-8"
 );
+
 /**
- *
  * @param {string} bsVersion
  * @param {string} version
  */
@@ -30,70 +26,80 @@ function verifyVersion(bsVersion, version) {
       .split(".");
     let [specifiedMajor, specifiedMinor] = version.split(".");
     console.log(
-      `package.json ${specifiedMajor}.${specifiedMinor} vs ABI : ${major}.${minor}`
+      `Version check: package.json: ${specifiedMajor}.${specifiedMinor} vs ABI: ${major}.${minor}`
     );
     return major === specifiedMajor && minor === specifiedMinor;
   } catch (e) {
     return false;
   }
 }
-var assert = require("assert");
+
+/**
+ *
+ * @param {string} src
+ * @param {(file:string)=>boolean} filter
+ * @param {string} dest
+ */
+function installDirBy(src, dest, filter) {
+  fs.readdir(src, function (err, files) {
+    if (err === null) {
+      files.forEach(function (file) {
+        if (filter(file)) {
+          var x = path.join(src, file);
+          var y = path.join(dest, file);
+          // console.log(x, '----->', y )
+          fs.copyFile(x, y, err => assert.equal(err, null));
+        }
+      });
+    } else {
+      throw err;
+    }
+  });
+}
+
+function populateLibDir() {
+  const root_dir = path.join(__dirname, "..");
+  const lib_dir = path.join(root_dir, "lib");
+  const jscomp_dir = path.join(root_dir, "jscomp");
+  const runtime_dir = path.join(jscomp_dir, "runtime");
+  const others_dir = path.join(jscomp_dir, "others");
+  const ocaml_dir = path.join(lib_dir, "ocaml");
+  const stdlib_dir = path.join(jscomp_dir, "stdlib-406");
+
+  if (!fs.existsSync(ocaml_dir)) {
+    fs.mkdirSync(ocaml_dir);
+  }
+
+  // sync up with cmij_main.ml
+  installDirBy(runtime_dir, ocaml_dir, function (file) {
+    var y = path.parse(file);
+    return y.name === "js" && y.ext !== ".cmj";
+    // install js.cmi, js.mli
+  });
+
+  // for merlin or other IDE
+  var installed_suffixes = [
+    ".ml",
+    ".mli",
+    ".res",
+    ".resi",
+    ".cmi",
+    ".cmt",
+    ".cmti",
+  ];
+  installDirBy(others_dir, ocaml_dir, file => {
+    var y = path.parse(file);
+    if (y.ext === ".cmi") {
+      return !y.base.match(/Belt_internal/i);
+    }
+    return installed_suffixes.includes(y.ext);
+  });
+  installDirBy(stdlib_dir, ocaml_dir, file => {
+    var y = path.parse(file);
+    return installed_suffixes.includes(y.ext);
+  });
+}
 
 assert(verifyVersion(bsVersion, package_config.version));
 
-function isHostPlatform() {
-  return process.platform === "darwin" || process.platform === "linux";
-}
-function rebuild() {
-  cp.execSync(`node ${path.join(__dirname, "ninja.js")} cleanbuild`, {
-    cwd: __dirname,
-    stdio: [0, 1, 2],
-  });
-}
-
-var use_env_compiler = process.argv.includes("-use-env-compiler");
-var bin_path = require("./bin_path").absolutePath;
-
-function buildCompiler() {
-  var prebuilt = "prebuilt.ninja";
-  var content = require("./ninjaFactory.js").libNinja({
-    ocamlopt: use_env_compiler
-      ? `ocamlopt.opt`
-      : `../native/${ocamlVersion}/bin/ocamlopt.opt`,
-    INCL: "4.06.1",
-    isWin: is_windows,
-  });
-
-  fs.writeFileSync(path.join(root, "lib", prebuilt), content, "ascii");
-  // This is for ninja access
-  process.env.PATH = `${bin_path}${path.delimiter}${process.env.PATH}`;
-  let ninjaPath = `ninja.exe`;
-  console.log(`start build`);
-  cp.execSync(
-    `${ninjaPath} -C lib -f ${prebuilt} -v -t clean && ${ninjaPath} -v -C lib -f ${prebuilt}`,
-    root_config
-  );
-  console.log("compiler built done");
-}
-if (!is_windows) {
-  if (!process.argv.includes("-no-clean")) {
-    require("./pack").updateThemes();
-    rebuild();
-    require("./ninja.js").updateRelease();
-  }
-}
-
-function createNinjaTar() {
-  if (isHostPlatform()) {
-    require("./installUtils.js").install();
-    console.log(`status in ninja submodule:`);
-    cp.execSync(`git -C ninja status -uno`, { cwd: root, stdio: [0, 1, 2] });
-    cp.execSync(
-      `git -C ninja archive --format=tar.gz HEAD -o ../vendor/ninja.tar.gz`,
-      { cwd: root, stdio: [0, 1, 2] }
-    );
-  }
-}
-
-createNinjaTar();
-buildCompiler();
+populateLibDir();

@@ -4,7 +4,8 @@
   "devDependencies": {
     "mocha": "^7.2.0",
     "nyc": "^15.0.0",
-    "prettier": "^2.7.1"
+    "prettier": "^2.7.1",
+    "rollup": "^0.49.2"
   },
   "bin": {
     "bsc": "bsc",
@@ -13,13 +14,11 @@
   },
   "scripts": {
     "test": "node scripts/ciTest.js -all",
-    "test-theme": "node scripts/ciTest.js -theme",
     "test-bsb": "node scripts/ciTest.js -bsb",
     "test-ocaml": "node scripts/ciTest.js -ounit",
-    "postinstall": "node scripts/install.js",
+    "postinstall": "node scripts/rescript_postinstall.js",
     "format": "prettier --write .",
     "checkFormat": "prettier --check .",
-    "test-env-compiler": "RESCRIPT_FORCE_REBUILD=1 node scripts/install.js -use-env-compiler",
     "coverage": "nyc --timeout=3000 --reporter=html mocha jscomp/test/*test.js && open ./coverage/index.html"
   },
   "description": "ReScript toolchain",
@@ -31,16 +30,11 @@
     "rescript",
     "darwin",
     "darwinarm64",
-    "freebsd",
     "linux",
-    "openbsd",
     "win32",
     "docs/docson/build-schema.json",
-    "jscomp/stubs/ext_basic_hash_stubs.c",
     "lib",
-    "scripts",
-    "vendor/ninja.tar.gz",
-    "vendor/ocaml.tar.gz"
+    "scripts"
   ],
   "repository": {
     "type": "git",

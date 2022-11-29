@@ -1,4 +1,3 @@
-# 1 "common/js_config.pp.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -35,11 +34,10 @@ let diagnose = ref false
 
 let get_diagnose () =
   !diagnose
-  
-# 38 "common/js_config.pp.ml"
+#ifndef RELEASE
   || Sys.getenv_opt "RES_DEBUG_FILE" <> None
+#endif
 
-# 41 "common/js_config.pp.ml"
 (* let (//) = Filename.concat *)
 
 (* let get_packages_info () = !packages_info *)

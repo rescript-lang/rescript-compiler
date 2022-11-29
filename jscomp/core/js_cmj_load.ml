@@ -1,4 +1,3 @@
-# 1 "core/js_cmj_load.pp.ml"
 (* Copyright (C) Hongbo Zhang, Authors of ReScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -56,12 +55,13 @@ let load_unit_with_file unit_name : Js_cmj_format.cmj_load_info =
   | None -> 
     if !Js_config.no_stdlib then Bs_exception.error (Cmj_not_found unit_name)
     else 
-        
-# 61 "core/js_cmj_load.pp.ml"
+#ifdef RELEASE
+        Js_cmj_load_builtin_unit.load_builin_unit unit_name 
+#else
         Bs_exception.error (Cmj_not_found unit_name)
+#endif      
 
 
-# 65 "core/js_cmj_load.pp.ml"
 (* we can disable loading from file for troubleshooting
    Note in dev mode we still allow loading from file is to 
    make the dev build still function correct 

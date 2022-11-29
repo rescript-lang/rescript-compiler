@@ -1,6 +1,6 @@
 (executable
  (name benchmark)
- (public_name bench)
+ (public_name syntax_benchmarks)
  (enabled_if
   (or
    (= %{system} macosx)

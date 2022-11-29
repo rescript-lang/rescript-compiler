@@ -41,66 +41,9 @@ if (all) {
   formatTest = true;
 }
 
-function init() {
-  if (!require("./buildocaml.js").checkEnvCompiler()) {
-    // No compiler available on path.
-    // Assume that we built the compiler from source beforehand and add it to the path.
-    var vendorOCamlPath = path.join(
-      __dirname,
-      "..",
-      "native",
-      require("./buildocaml.js").getVersionPrefix(),
-      "bin"
-    );
-
-    process.env["PATH"] =
-      vendorOCamlPath + path.delimiter + process.env["PATH"];
-  }
-
-  var ninjaPath = require("./bin_path").ninja_exe;
-
-  if (!fs.existsSync(ninjaPath)) {
-    throw new Error("ninja could not be configured");
-  }
-}
-
 function runTests() {
-  // when binary was prebuilt, there can be no ocaml installation
-  // var output =
-  //     cp.execSync('which ocaml', { encoding: 'ascii' })
-  // console.log('OCaml:', output)
-
-  var binDir = path.join(__dirname, "..", "jscomp", "bin");
   if (ounitTest) {
-    cp.execSync(
-      `ocamlc.opt -w "-d" -warn-error -a -I . -c js_compiler.mli js_compiler.ml`,
-      {
-        cwd: path.join(__dirname, "..", "lib", "4.06.1", "unstable"),
-        stdio: [0, 1, 2],
-      }
-    );
-    // running tests for native code
-    fs.copyFileSync(
-      path.join(
-        __dirname,
-        "..",
-        "lib",
-        "4.06.1",
-        "unstable",
-        "all_ounit_tests.ml"
-      ),
-      path.join(binDir, "all_ounit_tests.ml")
-    );
-    cp.execSync(
-      `ocamlopt.opt -g -w -40-30 -w "-d" ../stubs/ext_basic_hash_stubs.c  unix.cmxa str.cmxa all_ounit_tests.ml -o test.exe`,
-      {
-        cwd: binDir,
-        stdio: [0, 1, 2],
-      }
-    );
-
-    cp.execSync(path.join(binDir, "test.exe"), {
-      cwd: binDir,
+    cp.execSync("ounit_tests", {
       stdio: [0, 1, 2],
     });
   }
@@ -162,7 +105,6 @@ function runTests() {
 
 function main() {
   try {
-    init();
     runTests();
   } catch (err) {
     console.error(err);

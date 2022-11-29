@@ -8,8 +8,8 @@ let rec unsafe_root_dir_aux cwd  =
 let project_root = unsafe_root_dir_aux (Sys.getcwd ())
 let jscomp = project_root // "jscomp"
 
-
-let bsc_exe = project_root // "bsc"
+let dune_bin_dir = project_root // "_build" // "install" // "default" // "bin"
+let bsc_exe = dune_bin_dir // "bsc"
 let runtime_dir = jscomp // "runtime"
 let others_dir = jscomp // "others"
 

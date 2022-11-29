@@ -1,5 +1,0 @@
-unstable
-*.d
-bsdep*
-bspp.ml*
-*.cm*

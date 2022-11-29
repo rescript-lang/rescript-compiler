@@ -1,12 +1,10 @@
 const fs = require("fs");
 const os = require("os");
 
-const artifactPath =
-  process.platform === "darwin" && process.arch === "arm64"
-    ? process.platform + process.arch
-    : process.platform;
-
+const artifactPath = require("../../scripts/bin_path").dirName;
 const artifactName = "binaries-" + artifactPath;
+
+console.log("Artifact path:", artifactPath);
 
 // Pass artifactPath and artifactName to subsequent GitHub actions
 fs.appendFileSync(

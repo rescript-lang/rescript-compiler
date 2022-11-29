@@ -1,0 +1,5 @@
+(library
+ (name ounit)
+ (wrapped false)
+ (flags
+  (:standard -w +a-d-70)))

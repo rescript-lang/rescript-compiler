@@ -4,7 +4,7 @@ Welcome to the ReScript compiler project!
 
 This document will give you guidance on how to get up and running to work on the ReScript compiler and toolchain.
 
-(If you want to contribute to the documentation website, check out [rescript-association/rescript-lang.org](https://github.com/reason-association/rescript-lang.org).
+(If you want to contribute to the documentation website, check out [rescript-association/rescript-lang.org](https://github.com/reason-association/rescript-lang.org).)
 
 We tried to keep the installation process as simple as possible. In case you are having issues or get stuck in the process, please let us know in the issue tracker.
 
@@ -12,77 +12,41 @@ Happy hacking!
 
 ## Setup
 
-> Most of our contributors are working on Apple machines, so all our instructions are currently MacOS / Linux centric. Contributions for Windows development welcome!
+> Most of our contributors are working on Apple machines, so all our instructions are currently macOS / Linux centric. Contributions for Windows development welcome!
 
 - [NodeJS v16](https://nodejs.org/)
 - C compiler toolchain (usually installed with `xcode` on Mac)
 - `opam` (OCaml Package Manager)
 - VSCode (+ [OCaml Platform Extension](https://marketplace.visualstudio.com/items?itemName=ocamllabs.ocaml-platform))
 
-## Install native OCaml compiler, dune, testing utilities
+## Install OCaml compiler + dependencies
 
 The ReScript compiler compiles with any recent OCaml compiler. We are using `dune` as a build system for easy workflows and proper IDE support.
 
 Make sure you have [opam](https://opam.ocaml.org/doc/Install.html) installed on your machine.
 
-```
+```sh
 opam init
-
-# Install build system
-opam install dune
-
-# Install language server for IDE support
-opam install ocaml-lsp-server
 
 # Any recent OCaml version works as a development compiler
 opam switch create 4.14.0 # can also create local switch with opam switch create . 4.14.0
+
+# Install dev dependencies from OPAM
+opam install . --deps-only
+
+# For IDE support, install the OCaml language server
+opam install ocaml-lsp-server
 ```
 
 ## npm install
 
-Run `npm install`. This will build the ninja binary and run an initial `./scripts/ninja.js config` and `./scripts/ninja.js build` (see below).
+Run `npm install --ignore-scripts`. This will install the npm dependencies required for the build scripts.
 
-## Configure and Build the Compiler (`ninja` workflow)
+## Building the Compiler
 
-> Note: These instructions allow you to do full builds of the project. In case you only want to build the project for development purposes, you can use the `dune` workflow, but you will still need to run the first step: `./scripts/ninja.js config`.
-
-The ReScript project is built with a vendored version of `ninja`. It requires build files to correctly detect, compile and link all the OCaml files within our project. The build files are generated and managed by a NodeJS script (`./scripts/ninja.js`).
+The compiler binaries themselves can be built directly with dune as follows:
 
 ```sh
-# Generate all the necessary ninja build files
-./scripts/ninja.js config
-
-# Run ninja to read and execute the generated build files
-./scripts/ninja.js build
-
-# Clean (remove) all ninja build files
-./scripts/ninja.js clean
-```
-
-Whenever you edit a file, run `./scripts/ninja.js build` to rebuild the ReScript compiler. There's also an optional watcher to auto-rebuild on file changes: `node scripts/tasks.js`.
-
-### Troubleshoot a Broken Build
-
-Usually whenever there's some issues with missing files, incompatible interfaces or stale artifacts, the easiest fix is to clean and rebuild the project:
-
-```sh
-./scripts/ninja.js clean # remove files not in version control
-npm install
-./scripts/ninja.js config
-./scripts/ninja.js build
-```
-
-If this doesn't work (rare), then:
-
-- Save your changes
-- `git clean -xdf .` to wipe all artifacts
-- Then do a clean build as instructed above
-
-## Build the Project during Development (`dune` workflow)
-
-When working on a project you may want to use `dune` to compile all the files you've been working on. This is especially important for full IDE support, including auto-completion and showing compilation errors.
-
-```
 # One off build
 dune build
 
@@ -90,33 +54,54 @@ dune build
 dune build -w
 ```
 
-> Please note that `dune` will not build the final `rescript` binaries. Use the aforementioned `ninja` workflow if you want to build, test and distribute the final product.
+For all additional operations, a Makefile is provided:
+
+```sh
+# Build the compiler using dune and copy the exes into the platform dir
+make
+
+# Build the ninja build tool
+make ninja
+
+# Build the ReScript standard library using ninja and the compiler
+make lib
+
+# Run compiler tests
+make test
+
+# Run syntax tests
+make test-syntax
+
+# Run syntax tests including roundtrip tests
+make test-syntax-roundtrip
+
+# Populate lib/ocaml and update artifact list
+make artifacts
+```
 
 ## Adding new Files to the Npm Package
 
 To make sure that no files are added to or removed from the npm package inadvertently, an artifact list is kept at `packages/artifacts.txt`. During CI build, it is verified that only the files that are listed there are actually included in the npm package.
 
-When adding a new file to the repository that should go into the npm package - e.g., a new stdlib module -, first compile and test everything locally. Then
-
-- `node scripts/install -force-lib-rebuild` to copy library files into `lib/ocaml`
-- `./scripts/makeArtifactList.js` to update the artifact list and include the updated artifact list in your commit.
+After adding a new file to the repository that should go into the npm package - e.g., a new stdlib module -, run `make artifacts`.
 
 ## Test the compiler
-
-Make sure to build the compiler first following the instructions above.
 
 ### Single file
 
 ```sh
+make lib # Build compiler and standard library
 ./bsc myTestFile.res
 ```
 
 ### Project
 
 ```sh
-node scripts/install -force-lib-rebuild ## populate lib/ocaml
+make artifacts # Build compiler and standard library and populate lib/ocaml
+npm link
 cd myProject
-npm install __path_to_this_repository__
+npm install
+npm link rescript
 ```
 
 ### Running Automatic Tests
@@ -126,7 +111,7 @@ We provide different test suites for different levels of the compiler and build 
 To run all tests:
 
 ```sh
-npm test
+make test
 ```
 
 **Run Mocha tests only (for our runtime code):**

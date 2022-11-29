@@ -22,14 +22,19 @@ Required:
 - OCaml 4.10 or later
 - OS: macOS, Linux or Windows
 
-The syntax source code is located in the directory `res_syntax`. All following commands are meant to be executed in that directory.
+In the root of the rescript-compiler repo, run
 
 ```sh
 opam install . --deps-only --with-test
+```
+
+To build the syntax sources, run
+
+```sh
 make # or "dune build"
 ```
 
-This will produce the three binaries `rescript`, `tests` and `bench` (with `.exe` extension on Windows).
+This will produce the three binaries `res_parser`, `syntax_tests` and `syntax_benchmarks` (with `.exe` extension on Windows).
 
 We only build production binaries, even in dev mode. No need for a separate dev binary when the build is fast enough. Plus, this encourages proper benchmarking of the (production) binary each diff.
 
