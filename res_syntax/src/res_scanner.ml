@@ -165,13 +165,6 @@ let digitValue ch =
   | 'A' .. 'F' -> Char.code ch + 32 - Char.code 'a' + 10
   | _ -> 16 (* larger than any legal value *)
 
-let rec skipLowerCaseChars scanner =
-  match scanner.ch with
-  | 'a' .. 'z' ->
-    next scanner;
-    skipLowerCaseChars scanner
-  | _ -> ()
-
 (* scanning helpers *)
 
 let scanIdentifier scanner =
@@ -944,42 +937,3 @@ let isBinaryOp src startCnum endCnum =
       || isWhitespace (String.unsafe_get src endCnum)
     in
     leftOk && rightOk)
-
-(* Assume `{` consumed, advances the scanner towards the ends of Reason quoted strings. (for conversion)
- * In {| foo bar |} the scanner will be advanced until after the `|}` *)
-let tryAdvanceQuotedString scanner =
-  let rec scanContents tag =
-    match scanner.ch with
-    | '|' -> (
-      next scanner;
-      match scanner.ch with
-      | 'a' .. 'z' ->
-        let startOff = scanner.offset in
-        skipLowerCaseChars scanner;
-        let suffix =
-          (String.sub [@doesNotRaise]) scanner.src startOff
-            (scanner.offset - startOff)
-        in
-        if tag = suffix then
-          if scanner.ch = '}' then next scanner else scanContents tag
-        else scanContents tag
-      | '}' -> next scanner
-      | _ -> scanContents tag)
-    | ch when ch == hackyEOFChar ->
-      (* TODO: why is this place checking EOF and not others? *)
-      ()
-    | _ ->
-      next scanner;
-      scanContents tag
-  in
-  match scanner.ch with
-  | 'a' .. 'z' ->
-    let startOff = scanner.offset in
-    skipLowerCaseChars scanner;
-    let tag =
-      (String.sub [@doesNotRaise]) scanner.src startOff
-        (scanner.offset - startOff)
-    in
-    if scanner.ch = '|' then scanContents tag
-  | '|' -> scanContents ""
-  | _ -> ()

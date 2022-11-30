@@ -77,96 +77,6 @@ let rec rewritePpatOpen longidentOpen pat =
     {pat with ppat_desc = Ppat_exception (rewritePpatOpen longidentOpen p)}
   | _ -> pat
 
-let rec rewriteReasonFastPipe expr =
-  let open Parsetree in
-  match expr.pexp_desc with
-  | Pexp_apply
-      ( {
-          pexp_desc =
-            Pexp_apply
-              ( ({pexp_desc = Pexp_ident {txt = Longident.Lident "|."}} as op),
-                [(Asttypes.Nolabel, lhs); (Nolabel, rhs)] );
-          pexp_attributes = subAttrs;
-        },
-        args ) ->
-    let rhsLoc = {rhs.pexp_loc with loc_end = expr.pexp_loc.loc_end} in
-    let newLhs =
-      let expr = rewriteReasonFastPipe lhs in
-      {expr with pexp_attributes = List.concat [lhs.pexp_attributes; subAttrs]}
-    in
-    let newRhs =
-      {
-        pexp_loc = rhsLoc;
-        pexp_attributes = [];
-        pexp_desc = Pexp_apply (rhs, args);
-      }
-    in
-    let allArgs = (Asttypes.Nolabel, newLhs) :: [(Asttypes.Nolabel, newRhs)] in
-    {expr with pexp_desc = Pexp_apply (op, allArgs)}
-  | _ -> expr
-
-let makeReasonArityMapper ~forPrinter =
-  let open Ast_mapper in
-  {
-    default_mapper with
-    expr =
-      (fun mapper expr ->
-        match expr with
-        (* Don't mind this case, Reason doesn't handle this. *)
-        (* | {pexp_desc = Pexp_variant (lbl, args); pexp_loc; pexp_attributes} -> *)
-        (* let newArgs = match args with *)
-        (* | (Some {pexp_desc = Pexp_tuple [{pexp_desc = Pexp_tuple _ } as sp]}) as args-> *)
-        (* if forPrinter then args else Some sp *)
-        (* | Some {pexp_desc = Pexp_tuple [sp]} -> Some sp *)
-        (* | _ -> args *)
-        (* in *)
-        (* default_mapper.expr mapper {pexp_desc=Pexp_variant(lbl, newArgs); pexp_loc; pexp_attributes} *)
-        | {pexp_desc = Pexp_construct (lid, args); pexp_loc; pexp_attributes} ->
-          let newArgs =
-            match args with
-            | Some {pexp_desc = Pexp_tuple [({pexp_desc = Pexp_tuple _} as sp)]}
-              as args ->
-              if forPrinter then args else Some sp
-            | Some {pexp_desc = Pexp_tuple [sp]} -> Some sp
-            | _ -> args
-          in
-          default_mapper.expr mapper
-            {
-              pexp_desc = Pexp_construct (lid, newArgs);
-              pexp_loc;
-              pexp_attributes;
-            }
-        | expr -> default_mapper.expr mapper (rewriteReasonFastPipe expr));
-    pat =
-      (fun mapper pattern ->
-        match pattern with
-        (* Don't mind this case, Reason doesn't handle this. *)
-        (* | {ppat_desc = Ppat_variant (lbl, args); ppat_loc; ppat_attributes} -> *)
-        (* let newArgs = match args with *)
-        (* | (Some {ppat_desc = Ppat_tuple [{ppat_desc = Ppat_tuple _} as sp]}) as args -> *)
-        (* if forPrinter then args else Some sp *)
-        (* | Some {ppat_desc = Ppat_tuple [sp]} -> Some sp *)
-        (* | _ -> args *)
-        (* in *)
-        (* default_mapper.pat mapper {ppat_desc = Ppat_variant (lbl, newArgs); ppat_loc; ppat_attributes;} *)
-        | {ppat_desc = Ppat_construct (lid, args); ppat_loc; ppat_attributes} ->
-          let new_args =
-            match args with
-            | Some {ppat_desc = Ppat_tuple [({ppat_desc = Ppat_tuple _} as sp)]}
-              as args ->
-              if forPrinter then args else Some sp
-            | Some {ppat_desc = Ppat_tuple [sp]} -> Some sp
-            | _ -> args
-          in
-          default_mapper.pat mapper
-            {
-              ppat_desc = Ppat_construct (lid, new_args);
-              ppat_loc;
-              ppat_attributes;
-            }
-        | x -> default_mapper.pat mapper x);
-  }
-
 let escapeTemplateLiteral s =
   let len = String.length s in
   let b = Buffer.create len in
@@ -670,14 +580,6 @@ let normalize =
           }
         | _ -> default_mapper.value_binding mapper vb);
   }
-
-let normalizeReasonArityStructure ~forPrinter s =
-  let mapper = makeReasonArityMapper ~forPrinter in
-  mapper.Ast_mapper.structure mapper s
-
-let normalizeReasonAritySignature ~forPrinter s =
-  let mapper = makeReasonArityMapper ~forPrinter in
-  mapper.Ast_mapper.signature mapper s
 
 let structure s = normalize.Ast_mapper.structure normalize s
 let signature s = normalize.Ast_mapper.signature normalize s

@@ -1661,7 +1661,7 @@ and printTypExpr ~state (typExpr : Parsetree.core_type) cmtTbl =
       when String.length arity >= 5
            && (String.sub [@doesNotRaise]) arity 0 5 = "arity" ->
       let arity =
-        int_of_string
+        (int_of_string [@doesNotRaise])
           ((String.sub [@doesNotRaise]) arity 5 (String.length arity - 5))
       in
       printArrow ~uncurried:true ~arity tArg

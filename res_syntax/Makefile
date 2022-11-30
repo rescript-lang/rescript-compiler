@@ -22,7 +22,7 @@ roundtrip-test: build
 	bash ./scripts/testok.sh
 
 reanalyze: build
-	reanalyze.exe -set-exit-code -all-cmt _build/default -suppress testrunner,compiler-libs-406 -exclude-paths compiler-libs-406 
+	(cd .. && reanalyze.exe -set-exit-code -all-cmt _build/default/res_syntax -suppress res_syntax/testrunner,res_syntax/compiler-libs-406 -exclude-paths res_syntax/compiler-libs-406)
 
 format:
 	dune build @fmt --auto-promote
