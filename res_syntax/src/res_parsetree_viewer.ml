@@ -556,7 +556,7 @@ let partitionPrintableAttributes attrs =
 let isFunNewtype = function
   | Pexp_fun _ | Pexp_newtype _ -> true
   | Pexp_record ([({txt = Ldot (Ldot (Lident "Js", "Fn"), name)}, _)], None)
-    when String.length name >= 1 && name.[0] = 'I' ->
+    when String.length name >= 1 && (name.[0] [@doesNotRaise]) = 'I' ->
     true
   | _ -> false
 

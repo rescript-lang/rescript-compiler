@@ -12,12 +12,6 @@ val replaceStringLiteralStructure :
 val replaceStringLiteralSignature :
   (string * Location.t) list -> Parsetree.signature -> Parsetree.signature
 
-(* Get rid of the explicit/implicit arity attributes *)
-val normalizeReasonArityStructure :
-  forPrinter:bool -> Parsetree.structure -> Parsetree.structure
-val normalizeReasonAritySignature :
-  forPrinter:bool -> Parsetree.signature -> Parsetree.signature
-
 (* transform parts of the parsetree into a suitable parsetree suitable
  * for printing. Example: convert reason ternaries into rescript ternaries *)
 val structure : Parsetree.structure -> Parsetree.structure
