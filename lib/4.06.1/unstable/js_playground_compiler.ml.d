@@ -603,6 +603,7 @@
 ../lib/4.06.1/unstable/js_playground_compiler.ml: ./napkin/res_scanner.mli
 ../lib/4.06.1/unstable/js_playground_compiler.ml: ./napkin/res_string.ml
 ../lib/4.06.1/unstable/js_playground_compiler.ml: ./napkin/res_token.ml
+../lib/4.06.1/unstable/js_playground_compiler.ml: ./napkin/res_uncurried.ml
 ../lib/4.06.1/unstable/js_playground_compiler.ml: ./napkin/res_utf8.ml
 ../lib/4.06.1/unstable/js_playground_compiler.ml: ./napkin/res_utf8.mli
 ../lib/4.06.1/unstable/js_playground_compiler.ml: ./outcome_printer/outcome_printer_ns.ml
