@@ -58,9 +58,9 @@ let processBsAttribute attrs =
   process false [] attrs
 
 let processUncurriedAppAttribute attrs =
-  let rec process bsSpotted acc attrs =
+  let rec process uncurriedApp acc attrs =
     match attrs with
-    | [] -> (bsSpotted, List.rev acc)
+    | [] -> (uncurriedApp, List.rev acc)
     | ( {
           Location.txt =
             "bs" (* still support @bs to convert .ml files *) | "res.uapp";
@@ -68,7 +68,7 @@ let processUncurriedAppAttribute attrs =
         _ )
       :: rest ->
       process true acc rest
-    | attr :: rest -> process bsSpotted (attr :: acc) rest
+    | attr :: rest -> process uncurriedApp (attr :: acc) rest
   in
   process false [] attrs
 

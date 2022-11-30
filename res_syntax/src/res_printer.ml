@@ -575,9 +575,9 @@ let printOptionalLabel attrs =
 module State = struct
   let customLayoutThreshold = 2
 
-  type t = {customLayout: int; mutable uncurried_by_default: bool}
+  type t = {customLayout: int; mutable res_uncurried: Res_uncurried.t}
 
-  let init = {customLayout = 0; uncurried_by_default = false}
+  let init = {customLayout = 0; res_uncurried = Res_uncurried.init}
 
   let nextCustomLayout t = {t with customLayout = t.customLayout + 1}
 
@@ -1547,17 +1547,16 @@ and printLabelDeclaration ~state (ld : Parsetree.label_declaration) cmtTbl =
          printTypExpr ~state ld.pld_type cmtTbl;
        ])
 
-and printTypExpr ~state (typExpr : Parsetree.core_type) cmtTbl =
+and printTypExpr ~(state : State.t) (typExpr : Parsetree.core_type) cmtTbl =
   let printArrow ~uncurried ?(arity = max_int) typExpr =
     let attrsBefore, args, returnType =
       ParsetreeViewer.arrowType ~arity typExpr
     in
     let dotted, attrsBefore =
+      let dotted = state.res_uncurried |> Res_uncurried.getDotted ~uncurried in
       (* Converting .ml code to .res requires processing uncurried attributes *)
       let hasBs, attrs = ParsetreeViewer.processBsAttribute attrsBefore in
-      ( (if state.State.uncurried_by_default then not uncurried else uncurried)
-        || hasBs,
-        attrs )
+      (dotted || hasBs, attrs)
     in
     let returnTypeNeedsParens =
       match returnType.ptyp_desc with
@@ -3952,12 +3951,10 @@ and printPexpApply ~state expr cmtTbl =
         (fun (lbl, arg) -> (lbl, ParsetreeViewer.rewriteUnderscoreApply arg))
         args
     in
-    let hasBs, attrs =
+    let uncurried, attrs =
       ParsetreeViewer.processUncurriedAppAttribute expr.pexp_attributes
     in
-    let dotted =
-      if state.State.uncurried_by_default then not hasBs else hasBs
-    in
+    let dotted = state.res_uncurried |> Res_uncurried.getDotted ~uncurried in
     let callExprDoc =
       let doc = printExpressionWithComments ~state callExpr cmtTbl in
       match Parens.callExpr callExpr with
@@ -4732,9 +4729,7 @@ and printCase ~state (case : Parsetree.case) cmtTbl =
 
 and printExprFunParameters ~state ~inCallback ~async ~uncurried ~hasConstraint
     parameters cmtTbl =
-  let dotted =
-    if state.State.uncurried_by_default then not uncurried else uncurried
-  in
+  let dotted = state.res_uncurried |> Res_uncurried.getDotted ~uncurried in
   match parameters with
   (* let f = _ => () *)
   | [
@@ -5281,10 +5276,10 @@ and printAttribute ?(standalone = false) ~state
     let id =
       match id.txt with
       | "uncurried" ->
-        state.uncurried_by_default <- true;
+        state.res_uncurried <- Res_uncurried.Default;
         id
       | "toUncurried" ->
-        state.uncurried_by_default <- true;
+        state.res_uncurried <- Res_uncurried.Default;
         {id with txt = "uncurried"}
       | _ -> id
     in
