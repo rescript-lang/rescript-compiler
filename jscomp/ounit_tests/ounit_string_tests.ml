@@ -235,7 +235,7 @@ let suites =
         if x_len = y_len then 
           String.compare x y 
         else 
-          Pervasives.compare x_len y_len  in 
+          Stdlib.compare x_len y_len  in 
       let same_sign x y =
         if x = 0 then y = 0 
         else if x < 0 then y < 0 
