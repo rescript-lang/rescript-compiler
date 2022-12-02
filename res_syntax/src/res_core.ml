@@ -386,7 +386,7 @@ let buildLongident words =
 let makeInfixOperator (p : Parser.t) token startPos endPos =
   let stringifiedToken =
     if token = Token.MinusGreater then
-      if p.res_uncurried |> Res_uncurried.isDefault then "|.u" else "|."
+      if p.uncurried_config |> Res_uncurried.isDefault then "|.u" else "|."
     else if token = Token.PlusPlus then "^"
     else if token = Token.BangEqual then "<>"
     else if token = Token.BangEqualEqual then "!="
@@ -1556,10 +1556,10 @@ and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
     in
     match termParameters with
     | TermParameter {dotted} :: _
-      when p.res_uncurried |> Res_uncurried.fromDotted ~dotted && isFun ->
+      when p.uncurried_config |> Res_uncurried.fromDotted ~dotted && isFun ->
       true
     | TermParameter _ :: rest
-      when (not (p.res_uncurried |> Res_uncurried.isDefault)) && isFun ->
+      when (not (p.uncurried_config |> Res_uncurried.isDefault)) && isFun ->
       rest
       |> List.exists (function
            | TermParameter {dotted} -> dotted
@@ -1591,27 +1591,15 @@ and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
           let funExpr =
             Ast_helper.Exp.fun_ ~loc ~attrs lbl defaultExpr pat expr
           in
-          let uncurried = p.res_uncurried |> Res_uncurried.fromDotted ~dotted in
+          let uncurried =
+            p.uncurried_config |> Res_uncurried.fromDotted ~dotted
+          in
           if
             uncurried
             && (termParamNum = 1
-               || not (p.res_uncurried |> Res_uncurried.isDefault))
+               || not (p.uncurried_config |> Res_uncurried.isDefault))
           then
-            ( termParamNum - 1,
-              (if true then
-               Ast_helper.Exp.record ~loc
-                 [
-                   ( {
-                       txt =
-                         Ldot
-                           (Ldot (Lident "Js", "Fn"), "I" ^ string_of_int arity);
-                       loc;
-                     },
-                     funExpr );
-                 ]
-                 None
-              else funExpr),
-              1 )
+            (termParamNum - 1, Res_uncurried.uncurriedFun ~loc ~arity funExpr, 1)
           else (termParamNum - 1, funExpr, arity + 1)
         | TypeParameter {dotted = _; attrs; locs = newtypes; pos = startPos} ->
           ( termParamNum,
@@ -3680,7 +3668,9 @@ and parseCallExpr p funExpr =
         let dotted, args = group in
         let args, wrap = processUnderscoreApplication args in
         let exp =
-          let uncurried = p.res_uncurried |> Res_uncurried.fromDotted ~dotted in
+          let uncurried =
+            p.uncurried_config |> Res_uncurried.fromDotted ~dotted
+          in
           if uncurried then
             let attrs = [uncurriedAppAttr] in
             Ast_helper.Exp.apply ~loc ~attrs callBody args
@@ -3926,10 +3916,8 @@ and parsePolyTypeExpr p =
         let returnType = parseTypExpr ~alias:false p in
         let loc = mkLoc typ.Parsetree.ptyp_loc.loc_start p.prevEndPos in
         let tFun = Ast_helper.Typ.arrow ~loc Asttypes.Nolabel typ returnType in
-        if p.res_uncurried |> Res_uncurried.isDefault then
-          Ast_helper.Typ.constr ~loc
-            {txt = Ldot (Ldot (Lident "Js", "Fn"), "arity1"); loc}
-            [tFun]
+        if p.uncurried_config |> Res_uncurried.isDefault then
+          Res_uncurried.uncurriedType ~loc ~arity:1 tFun
         else tFun
       | _ -> Ast_helper.Typ.var ~loc:var.loc var.txt)
     | _ -> assert false)
@@ -4258,7 +4246,7 @@ and parseEs6ArrowType ~attrs p =
     let endPos = p.prevEndPos in
     let returnTypeArity =
       match parameters with
-      | _ when p.res_uncurried |> Res_uncurried.isDefault -> 0
+      | _ when p.uncurried_config |> Res_uncurried.isDefault -> 0
       | _ ->
         if parameters |> List.exists (function {dotted; typ = _} -> dotted)
         then 0
@@ -4269,23 +4257,17 @@ and parseEs6ArrowType ~attrs p =
     let _paramNum, typ, _arity =
       List.fold_right
         (fun {dotted; attrs; label = argLbl; typ; startPos} (paramNum, t, arity) ->
-          let uncurried = p.res_uncurried |> Res_uncurried.fromDotted ~dotted in
+          let uncurried =
+            p.uncurried_config |> Res_uncurried.fromDotted ~dotted
+          in
           if
             uncurried
-            && (paramNum = 1 || not (p.res_uncurried |> Res_uncurried.isDefault))
+            && (paramNum = 1
+               || not (p.uncurried_config |> Res_uncurried.isDefault))
           then
             let loc = mkLoc startPos endPos in
             let tArg = Ast_helper.Typ.arrow ~loc ~attrs argLbl typ t in
-            ( paramNum - 1,
-              Ast_helper.Typ.constr ~loc
-                {
-                  txt =
-                    Ldot
-                      (Ldot (Lident "Js", "Fn"), "arity" ^ string_of_int arity);
-                  loc;
-                }
-                [tArg],
-              1 )
+            (paramNum - 1, Res_uncurried.uncurriedType ~loc ~arity tArg, 1)
           else
             ( paramNum - 1,
               Ast_helper.Typ.arrow ~loc:(mkLoc startPos endPos) ~attrs argLbl
@@ -4347,10 +4329,8 @@ and parseArrowTypeRest ~es6Arrow ~startPos typ p =
     let returnType = parseTypExpr ~alias:false p in
     let loc = mkLoc startPos p.prevEndPos in
     let arrowTyp = Ast_helper.Typ.arrow ~loc Asttypes.Nolabel typ returnType in
-    if p.res_uncurried |> Res_uncurried.isDefault then
-      Ast_helper.Typ.constr ~loc
-        {txt = Ldot (Ldot (Lident "Js", "Fn"), "arity1"); loc}
-        [arrowTyp]
+    if p.uncurried_config |> Res_uncurried.isDefault then
+      Res_uncurried.uncurriedType ~loc ~arity:1 arrowTyp
     else arrowTyp
   | _ -> typ
 
@@ -6424,7 +6404,7 @@ and parseStandaloneAttribute p =
   let attrId =
     match attrId.txt with
     | "uncurried" ->
-      p.res_uncurried <- Res_uncurried.Default;
+      p.uncurried_config <- Res_uncurried.Default;
       attrId
     | "toUncurried" -> {attrId with txt = "uncurried"}
     | _ -> attrId

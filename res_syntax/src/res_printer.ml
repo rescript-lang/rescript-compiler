@@ -575,9 +575,9 @@ let printOptionalLabel attrs =
 module State = struct
   let customLayoutThreshold = 2
 
-  type t = {customLayout: int; mutable res_uncurried: Res_uncurried.t}
+  type t = {customLayout: int; mutable uncurried_config: Res_uncurried.config}
 
-  let init = {customLayout = 0; res_uncurried = Res_uncurried.init}
+  let init = {customLayout = 0; uncurried_config = Res_uncurried.init}
 
   let nextCustomLayout t = {t with customLayout = t.customLayout + 1}
 
@@ -1553,7 +1553,9 @@ and printTypExpr ~(state : State.t) (typExpr : Parsetree.core_type) cmtTbl =
       ParsetreeViewer.arrowType ~arity typExpr
     in
     let dotted, attrsBefore =
-      let dotted = state.res_uncurried |> Res_uncurried.getDotted ~uncurried in
+      let dotted =
+        state.uncurried_config |> Res_uncurried.getDotted ~uncurried
+      in
       (* Converting .ml code to .res requires processing uncurried attributes *)
       let hasBs, attrs = ParsetreeViewer.processBsAttribute attrsBefore in
       (dotted || hasBs, attrs)
@@ -1580,11 +1582,8 @@ and printTypExpr ~(state : State.t) (typExpr : Parsetree.core_type) cmtTbl =
       let typDoc =
         let doc = printTypExpr ~state n cmtTbl in
         match n.ptyp_desc with
-        | Ptyp_constr
-            ( {txt = Ldot (Ldot (Lident "Js", "Fn"), _)},
-              [{ptyp_desc = Ptyp_arrow _}] )
-        | Ptyp_arrow _ | Ptyp_tuple _ | Ptyp_alias _ ->
-          addParens doc
+        | Ptyp_arrow _ | Ptyp_tuple _ | Ptyp_alias _ -> addParens doc
+        | _ when Res_uncurried.typeIsUncurriedFun n -> addParens doc
         | _ -> doc
       in
       Doc.group
@@ -1656,13 +1655,8 @@ and printTypExpr ~(state : State.t) (typExpr : Parsetree.core_type) cmtTbl =
     | Ptyp_object (fields, openFlag) ->
       printObject ~state ~inline:false fields openFlag cmtTbl
     | Ptyp_arrow _ -> printArrow ~uncurried:false typExpr
-    | Ptyp_constr ({txt = Ldot (Ldot (Lident "Js", "Fn"), arity)}, [tArg])
-      when String.length arity >= 5
-           && (String.sub [@doesNotRaise]) arity 0 5 = "arity" ->
-      let arity =
-        (int_of_string [@doesNotRaise])
-          ((String.sub [@doesNotRaise]) arity 5 (String.length arity - 5))
-      in
+    | Ptyp_constr _ when Res_uncurried.typeIsUncurriedFun typExpr ->
+      let arity, tArg = Res_uncurried.typeExtractUncurriedFun typExpr in
       printArrow ~uncurried:true ~arity tArg
     | Ptyp_constr (longidentLoc, [{ptyp_desc = Ptyp_object (fields, openFlag)}])
       ->
@@ -2675,6 +2669,17 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
   in
   let printedExpression =
     match e.pexp_desc with
+    | Pexp_fun
+        ( Nolabel,
+          None,
+          {ppat_desc = Ppat_var {txt = "__x"}},
+          {pexp_desc = Pexp_apply _} ) ->
+      (* (__x) => f(a, __x, c) -----> f(a, _, c)  *)
+      printExpressionWithComments ~state
+        (ParsetreeViewer.rewriteUnderscoreApply e)
+        cmtTbl
+    | _ when Res_uncurried.exprIsUncurriedFun e -> printArrow e
+    | Pexp_fun _ | Pexp_newtype _ -> printArrow e
     | Parsetree.Pexp_constant c ->
       printConstant ~templateLiteral:(ParsetreeViewer.isTemplateLiteral e) c
     | Pexp_construct _ when ParsetreeViewer.hasJsxAttribute e.pexp_attributes ->
@@ -2921,24 +2926,6 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
             ]
       in
       Doc.group (Doc.concat [variantName; args])
-    | Pexp_fun
-        ( Nolabel,
-          None,
-          {ppat_desc = Ppat_var {txt = "__x"}},
-          {pexp_desc = Pexp_apply _} ) ->
-      (* (__x) => f(a, __x, c) -----> f(a, _, c)  *)
-      printExpressionWithComments ~state
-        (ParsetreeViewer.rewriteUnderscoreApply e)
-        cmtTbl
-    | Pexp_fun _
-    | Pexp_record
-        ( [
-            ( {txt = Ldot (Ldot (Lident "Js", "Fn"), _)},
-              {pexp_desc = Pexp_fun _} );
-          ],
-          None )
-    | Pexp_newtype _ ->
-      printArrow e
     | Pexp_record (rows, spreadExpr) ->
       if rows = [] then
         Doc.concat
@@ -3954,7 +3941,7 @@ and printPexpApply ~state expr cmtTbl =
     let uncurried, attrs =
       ParsetreeViewer.processUncurriedAppAttribute expr.pexp_attributes
     in
-    let dotted = state.res_uncurried |> Res_uncurried.getDotted ~uncurried in
+    let dotted = state.uncurried_config |> Res_uncurried.getDotted ~uncurried in
     let callExprDoc =
       let doc = printExpressionWithComments ~state callExpr cmtTbl in
       match Parens.callExpr callExpr with
@@ -4729,7 +4716,7 @@ and printCase ~state (case : Parsetree.case) cmtTbl =
 
 and printExprFunParameters ~state ~inCallback ~async ~uncurried ~hasConstraint
     parameters cmtTbl =
-  let dotted = state.res_uncurried |> Res_uncurried.getDotted ~uncurried in
+  let dotted = state.uncurried_config |> Res_uncurried.getDotted ~uncurried in
   match parameters with
   (* let f = _ => () *)
   | [
@@ -5276,10 +5263,10 @@ and printAttribute ?(standalone = false) ~state
     let id =
       match id.txt with
       | "uncurried" ->
-        state.res_uncurried <- Res_uncurried.Default;
+        state.uncurried_config <- Res_uncurried.Default;
         id
       | "toUncurried" ->
-        state.res_uncurried <- Res_uncurried.Default;
+        state.uncurried_config <- Res_uncurried.Default;
         {id with txt = "uncurried"}
       | _ -> id
     in

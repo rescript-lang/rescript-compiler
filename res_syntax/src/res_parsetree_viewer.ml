@@ -176,11 +176,8 @@ let funExpr expr =
     (* If a fun has an attribute, then it stops here and makes currying.
        i.e attributes outside of (...), uncurried `(.)` and `async` make currying *)
     | {pexp_desc = Pexp_fun _} -> (uncurried, attrsBefore, List.rev acc, expr)
-    | {
-     pexp_desc =
-       Pexp_record ([({txt = Ldot (Ldot (Lident "Js", "Fn"), _)}, expr)], None);
-    }
-      when nFun = 0 ->
+    | expr when nFun = 0 && Res_uncurried.exprIsUncurriedFun expr ->
+      let expr = Res_uncurried.exprExtractUncurriedFun expr in
       collect ~uncurried:true ~nFun attrsBefore acc expr
     | expr -> (uncurried, attrsBefore, List.rev acc, expr)
   in
@@ -188,10 +185,8 @@ let funExpr expr =
   | {pexp_desc = Pexp_fun _} ->
     collect ~uncurried:false ~nFun:0 expr.pexp_attributes []
       {expr with pexp_attributes = []}
-  | {
-   pexp_desc =
-     Pexp_record ([({txt = Ldot (Ldot (Lident "Js", "Fn"), _)}, expr)], None);
-  } ->
+  | _ when Res_uncurried.exprIsUncurriedFun expr ->
+    let expr = Res_uncurried.exprExtractUncurriedFun expr in
     collect ~uncurried:true ~nFun:0 expr.pexp_attributes []
       {expr with pexp_attributes = []}
   | _ -> collect ~uncurried:false ~nFun:0 [] [] expr
@@ -553,19 +548,17 @@ let filterPrintableAttributes attrs = List.filter isPrintableAttribute attrs
 let partitionPrintableAttributes attrs =
   List.partition isPrintableAttribute attrs
 
-let isFunNewtype = function
+let isFunNewtype expr =
+  match expr.pexp_desc with
   | Pexp_fun _ | Pexp_newtype _ -> true
-  | Pexp_record ([({txt = Ldot (Ldot (Lident "Js", "Fn"), name)}, _)], None)
-    when String.length name >= 1 && (name.[0] [@doesNotRaise]) = 'I' ->
-    true
-  | _ -> false
+  | _ -> Res_uncurried.exprIsUncurriedFun expr
 
 let requiresSpecialCallbackPrintingLastArg args =
   let rec loop args =
     match args with
     | [] -> false
-    | [(_, {pexp_desc})] when isFunNewtype pexp_desc -> true
-    | (_, {pexp_desc}) :: _ when isFunNewtype pexp_desc -> false
+    | [(_, expr)] when isFunNewtype expr -> true
+    | (_, expr) :: _ when isFunNewtype expr -> false
     | _ :: rest -> loop rest
   in
   loop args
@@ -574,12 +567,12 @@ let requiresSpecialCallbackPrintingFirstArg args =
   let rec loop args =
     match args with
     | [] -> true
-    | (_, {pexp_desc}) :: _ when isFunNewtype pexp_desc -> false
+    | (_, expr) :: _ when isFunNewtype expr -> false
     | _ :: rest -> loop rest
   in
   match args with
-  | [(_, {pexp_desc})] when isFunNewtype pexp_desc -> false
-  | (_, {pexp_desc}) :: rest when isFunNewtype pexp_desc -> loop rest
+  | [(_, expr)] when isFunNewtype expr -> false
+  | (_, expr) :: rest when isFunNewtype expr -> loop rest
   | _ -> false
 
 let modExprApply modExpr =

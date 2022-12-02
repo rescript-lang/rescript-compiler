@@ -158,4 +158,4 @@ val hasIfLetAttribute : Parsetree.attributes -> bool
 
 val isRewrittenUnderscoreApplySugar : Parsetree.expression -> bool
 
-val isFunNewtype : Parsetree.expression_desc -> bool
+val isFunNewtype : Parsetree.expression -> bool

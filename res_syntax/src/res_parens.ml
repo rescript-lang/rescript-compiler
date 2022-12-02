@@ -301,7 +301,7 @@ let ternaryOperand expr =
     } ->
       Nothing
     | {pexp_desc = Pexp_constraint _} -> Parenthesized
-    | {pexp_desc} when Res_parsetree_viewer.isFunNewtype pexp_desc -> (
+    | _ when Res_parsetree_viewer.isFunNewtype expr -> (
       let _uncurried, _attrsOnArrow, _parameters, returnExpr =
         ParsetreeViewer.funExpr expr
       in
