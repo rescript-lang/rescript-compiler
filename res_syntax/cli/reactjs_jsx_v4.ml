@@ -752,9 +752,10 @@ let transformStructureItem ~config mapper item =
         check_string_int_attribute_iter.structure_item
           check_string_int_attribute_iter item;
         let pval_type =
-          match pval_type.ptyp_desc with
-          | Ptyp_constr ({txt = Ldot (Ldot (Lident "Js", "Fn"), _)}, [t]) -> t
-          | _ -> pval_type
+          if Res_uncurried.typeIsUncurriedFun pval_type then
+            let _arity, t = Res_uncurried.typeExtractUncurriedFun pval_type in
+            t
+          else pval_type
         in
         let coreTypeOfAttr = React_jsx_common.coreTypeOfAttrs pval_attributes in
         let typVarsOfCoreType =
@@ -824,9 +825,8 @@ let transformStructureItem ~config mapper item =
           config.hasReactComponent <- true;
           let rec removeArityRecord expr =
             match expr.pexp_desc with
-            | Pexp_record
-                ([({txt = Ldot (Ldot (Lident "Js", "Fn"), _)}, e)], None) ->
-              e
+            | _ when Res_uncurried.exprIsUncurriedFun expr ->
+              Res_uncurried.exprExtractUncurriedFun expr
             | Pexp_apply (forwardRef, [(label, e)]) ->
               {
                 expr with
@@ -1251,9 +1251,10 @@ let transformSignatureItem ~config _mapper item =
         React_jsx_common.raiseErrorMultipleReactComponent ~loc:psig_loc
       else config.hasReactComponent <- true;
       let pval_type =
-        match pval_type.ptyp_desc with
-        | Ptyp_constr ({txt = Ldot (Ldot (Lident "Js", "Fn"), _)}, [t]) -> t
-        | _ -> pval_type
+        if Res_uncurried.typeIsUncurriedFun pval_type then
+          let _arity, t = Res_uncurried.typeExtractUncurriedFun pval_type in
+          t
+        else pval_type
       in
       check_string_int_attribute_iter.signature_item
         check_string_int_attribute_iter item;
