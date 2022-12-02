@@ -74,6 +74,8 @@
 type 'a t = < .. > as 'a
 (** JS object type *)
 
+type ('fn, 'arity) uncurried = Uncurried of 'fn [@unboxed]
+
 (**/**)
 
 (* internal types for FFI, these types are not used by normal users

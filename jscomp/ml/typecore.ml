@@ -2977,10 +2977,17 @@ and type_application uncurried env funct (sargs : sargs) : targs * Types.type_ex
   in
   let ignored = ref [] in
   let mk_js_fn arity t =
-    let a = "arity" ^ string_of_int arity in
-    let lid:Longident.t = Ldot (Ldot (Lident "Js", "Fn"), a) in
-    let path = Env.lookup_type lid env in
-    newconstr path [t] in
+    if arity = 5 then
+      let type_unit = newty (Tconstr(Predef.path_unit,[], ref Mnil)) in
+      let typ_arity = newty (Ttuple (Array.make arity type_unit |> Array.to_list)) in
+      let lid:Longident.t = Ldot (Lident "Js", "uncurried") in
+      let path = Env.lookup_type lid env in
+      newconstr path [t; typ_arity]
+    else
+      let a = "arity" ^ string_of_int arity in
+      let lid:Longident.t = Ldot (Ldot (Lident "Js", "Fn"), a) in
+      let path = Env.lookup_type lid env in
+      newconstr path [t] in
   let has_uncurried_type t =
     match (expand_head env t).desc with
     | Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),a,_),[t],_) ->
@@ -2989,6 +2996,11 @@ and type_application uncurried env funct (sargs : sargs) : targs * Types.type_ex
         then int_of_string (String.sub a 5 (String.length a - 5))
         else 0 in
        Some (arity, t)
+    | Tconstr (Pdot(Pident {name = "Js"},"uncurried",_),[t; tArity],_) ->
+      let arity = match tArity.desc with
+        | Ttuple tl -> List.length tl
+        | _ -> assert false in
+      Some (arity, t)
     | _ -> None in
   let force_uncurried_type funct =
     match has_uncurried_type funct.exp_type with

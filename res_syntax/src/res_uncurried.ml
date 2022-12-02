@@ -17,17 +17,49 @@ let getDotted ~uncurried = function
   | Default -> not uncurried
 
 let uncurriedType ~loc ~arity tArg =
-  Ast_helper.Typ.constr ~loc
-    {txt = Ldot (Ldot (Lident "Js", "Fn"), "arity" ^ string_of_int arity); loc}
-    [tArg]
+  if arity = 5 then
+    let unit = Ast_helper.Typ.constr ~loc {txt = Lident "unit"; loc} [] in
+    let tArity =
+      Ast_helper.Typ.tuple ~loc
+        (Array.to_list (Array.make arity unit [@doesNotRaise]))
+    in
+    Ast_helper.Typ.constr ~loc
+      {txt = Ldot (Lident "Js", "uncurried"); loc}
+      [tArg; tArity]
+  else
+    Ast_helper.Typ.constr ~loc
+      {
+        txt = Ldot (Ldot (Lident "Js", "Fn"), "arity" ^ string_of_int arity);
+        loc;
+      }
+      [tArg]
 
 let uncurriedFun ~loc ~arity funExpr =
-  Ast_helper.Exp.record ~loc
-    [
-      ( {txt = Ldot (Ldot (Lident "Js", "Fn"), "I" ^ string_of_int arity); loc},
-        funExpr );
-    ]
-    None
+  if arity = 5 then
+    let unit = Ast_helper.Typ.constr ~loc {txt = Lident "unit"; loc} [] in
+    let tArity =
+      Ast_helper.Typ.tuple ~loc
+        (Array.to_list (Array.make arity unit [@doesNotRaise]))
+    in
+    let tAny = Ast_helper.Typ.any ~loc () in
+    let tUncurried =
+      Ast_helper.Typ.constr ~loc
+        {txt = Ldot (Lident "Js", "uncurried"); loc}
+        [tAny; tArity]
+    in
+    let expr =
+      Ast_helper.Exp.construct ~loc
+        {txt = Ldot (Lident "Js", "Uncurried"); loc}
+        (Some funExpr)
+    in
+    Ast_helper.Exp.constraint_ ~loc expr tUncurried
+  else
+    Ast_helper.Exp.record ~loc
+      [
+        ( {txt = Ldot (Ldot (Lident "Js", "Fn"), "I" ^ string_of_int arity); loc},
+          funExpr );
+      ]
+      None
 
 let exprIsUncurriedFun (expr : Parsetree.expression) =
   match expr with

@@ -46,6 +46,8 @@
 type 'a t = < .. > as 'a
 (**/**)
 
+type ('fn, 'arity) uncurried = Uncurried of 'fn [@unboxed]
+
 (* internal types for FFI, these types are not used by normal users 
     Absent cmi file when looking up module alias.
 *)
