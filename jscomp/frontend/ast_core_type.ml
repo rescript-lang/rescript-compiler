@@ -132,7 +132,8 @@ let get_uncurry_arity (ty : t) =
 
 let get_curry_arity (ty : t) =
   match ty.ptyp_desc with
-  | Ptyp_constr ({ txt = Ldot (Ldot (Lident "Js", "Fn"), _) }, [ t ]) ->
+  | Ptyp_constr ({ txt = Ldot (Ldot (Lident "Js", "Fn"), _) }, [ t ])
+  | Ptyp_constr ({ txt = Ldot (Lident "Js", "uncurried") }, [ t; _ ]) ->
       get_uncurry_arity_aux t 0
   | _ -> get_uncurry_arity_aux ty 0
 

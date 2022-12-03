@@ -1593,6 +1593,12 @@ let rec parse_native_repr_attributes env core_type ty =
 let parse_native_repr_attributes env core_type ty =
   match core_type.ptyp_desc, (Ctype.repr ty).desc
   with
+  | Ptyp_constr ({txt = Ldot(Lident "Js", "uncurried")}, [{ptyp_desc = Ptyp_arrow (_, _, ct2)}; _]),
+    Tconstr (Pdot(Pident {name = "Js"},"uncurried",_),[{desc = Tarrow (_, _, t2, _)}; _],_) ->
+    Printf.eprintf "XXX parse_native_repr_attributes\n";
+    let repr_args, repr_res = parse_native_repr_attributes env ct2 t2 in
+    let native_repr_args = Same_as_ocaml_repr :: repr_args in
+    (native_repr_args, repr_res)
   | Ptyp_constr ({txt = Ldot(Ldot(Lident "Js", "Fn"),_)}, [{ptyp_desc = Ptyp_arrow (_, _, ct2)}]),
     Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),_,_),[{desc = Tarrow (_, _, t2, _)}],_) ->
     let repr_args, repr_res = parse_native_repr_attributes env ct2 t2 in

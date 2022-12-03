@@ -115,6 +115,9 @@ let expr_mapper ~async_context ~in_function_def (self : mapper)
       | true, pexp_attributes ->
           Ast_bs_open.convertBsErrorFunction e.pexp_loc self pexp_attributes
             cases)
+  | Pexp_construct
+      ( { txt = Ldot (Ldot (Lident "Js", "Uncurried"), _) },
+        Some ({ pexp_desc = Pexp_fun _; pexp_attributes } as inner_exp) )
   | Pexp_record
       ( [
           ( { txt = Ldot (Ldot (Lident "Js", "Fn"), _) },
