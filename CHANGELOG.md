@@ -15,6 +15,7 @@
 #### :bug: Bug Fix
 
 - Prevent inlining of async functions in additional cases https://github.com/rescript-lang/rescript-compiler/issues/5860
+- Revert to ubuntu-18.04 in CI to support Linux versions with older glibc https://github.com/rescript-lang/rescript-compiler/issues/5868
 
 # 10.1.0
 
