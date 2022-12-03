@@ -16,13 +16,14 @@ let getDotted ~uncurried = function
   | Legacy -> uncurried
   | Default -> not uncurried
 
+let arityType ~loc arity =
+  let unit = Ast_helper.Typ.constr ~loc {txt = Lident "unit"; loc} [] in
+  Ast_helper.Typ.tuple ~loc
+    (Array.to_list (Array.make arity unit [@doesNotRaise]))
+
 let uncurriedType ~loc ~arity tArg =
   if arity = 5 then
-    let unit = Ast_helper.Typ.constr ~loc {txt = Lident "unit"; loc} [] in
-    let tArity =
-      Ast_helper.Typ.tuple ~loc
-        (Array.to_list (Array.make arity unit [@doesNotRaise]))
-    in
+    let tArity = arityType ~loc arity in
     Ast_helper.Typ.constr ~loc
       {txt = Ldot (Lident "Js", "uncurried"); loc}
       [tArg; tArity]
@@ -36,11 +37,7 @@ let uncurriedType ~loc ~arity tArg =
 
 let uncurriedFun ~loc ~arity funExpr =
   if arity = 5 then
-    let unit = Ast_helper.Typ.constr ~loc {txt = Lident "unit"; loc} [] in
-    let tArity =
-      Ast_helper.Typ.tuple ~loc
-        (Array.to_list (Array.make arity unit [@doesNotRaise]))
-    in
+    let tArity = arityType ~loc arity in
     let tAny = Ast_helper.Typ.any ~loc () in
     let tUncurried =
       Ast_helper.Typ.constr ~loc
