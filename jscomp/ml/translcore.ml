@@ -775,7 +775,7 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
       with Not_constant -> Lprim (Pmakeblock Blk_tuple, ll, e.exp_loc))
   | Texp_construct ({ txt = Lident "false" }, _, []) -> Lconst Const_false
   | Texp_construct ({ txt = Lident "true" }, _, []) -> Lconst Const_true
-  | Texp_construct ({ txt = Ldot (Lident "Js", "Uncurried")}, _, [expr]) ->
+  | Texp_construct ({ txt = Lident "Uncurried$"}, _, [expr]) ->
       (* ReScript uncurried encoding *)
       let loc = expr.exp_loc in
       let lambda = transl_exp expr in
