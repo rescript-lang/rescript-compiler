@@ -1,6 +1,6 @@
 type t = (. ~x: int, ~y: string) => int
 
-type u = Js.Fn.arity2<(~x: int, ~y: string) => int>
+type u = (. ~x: int, ~y: string) => int
 
 let f = (x: t): u => x
 

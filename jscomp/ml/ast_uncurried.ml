@@ -47,6 +47,33 @@ let uncurriedFun ~loc ~arity funExpr =
       ]
       None
 
+let exprIsUncurriedFun (expr : Parsetree.expression) =
+  match expr.pexp_desc with
+  | Pexp_record ([ ({ txt = Ldot (Ldot (Lident "Js", "Fn"), _) }, _e) ], None)
+    ->
+      true
+  | Pexp_constraint
+      ( {
+          pexp_desc =
+            Pexp_construct ({ txt = Ldot (Lident "Js", "Uncurried") }, Some _);
+        },
+        _ ) ->
+      true
+  | _ -> false
+
+let exprExtractUncurriedFun (expr : Parsetree.expression) =
+  match expr.pexp_desc with
+  | Pexp_record ([ ({ txt = Ldot (Ldot (Lident "Js", "Fn"), _) }, e) ], None) ->
+      e
+  | Pexp_constraint
+      ( {
+          pexp_desc =
+            Pexp_construct ({ txt = Ldot (Lident "Js", "Uncurried") }, Some e);
+        },
+        _ ) ->
+      e
+  | _ -> assert false
+
 (* Typed AST *)
 
 let arity_to_type arity =
@@ -73,8 +100,8 @@ let mk_js_fn ~env ~arity t =
   let path = Env.lookup_type lid env in
   Ctype.newconstr path [ t; typ_arity ]
 
-let uncurried_type_get_arity typ =
-  match (Btype.repr typ).desc with
+let uncurried_type_get_arity ~env typ =
+  match (Ctype.expand_head env typ).desc with
   | Tconstr (Pdot (Pident { name = "Js" }, "uncurried", _), [ _t; tArity ], _)
     ->
       type_to_arity tArity

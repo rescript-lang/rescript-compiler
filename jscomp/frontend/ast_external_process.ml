@@ -877,15 +877,7 @@ let handle_attributes (loc : Bs_loc.t) (type_annotation : Parsetree.core_type)
           fun ~arity x ->
             let tArity =
               match arity with
-              | Some arity ->
-                  let unit =
-                    Ast_helper.Typ.constr ~loc { txt = Lident "unit"; loc } []
-                  in
-                  let tArity =
-                    Ast_helper.Typ.tuple ~loc
-                      (Array.to_list (Array.make arity unit))
-                  in
-                  tArity
+              | Some arity -> Ast_uncurried.arityType ~loc arity
               | None -> arity_
             in
             { x with Parsetree.ptyp_desc = Ptyp_constr (lid, [ x; tArity ]) } )
