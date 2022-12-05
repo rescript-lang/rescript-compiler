@@ -97,7 +97,4 @@ let to_uncurry_fn loc (self : Bs_ast_mapper.mapper) (label : Asttypes.arg_label)
     | _ -> len
   in
   Bs_syntaxerr.err_large_arity loc arity;
-  let arity_s = string_of_int arity in
-  Pexp_record
-    ( [ ({ txt = Ldot (Ast_literal.Lid.js_fn, "I" ^ arity_s); loc }, body) ],
-      None )
+  (Ast_uncurried.uncurriedFun ~loc ~arity body).pexp_desc

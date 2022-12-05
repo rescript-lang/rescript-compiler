@@ -2977,12 +2977,8 @@ and type_application uncurried env funct (sargs : sargs) : targs * Types.type_ex
   in
   let ignored = ref [] in
   let mk_js_fn arity t =
-    if arity = 5 then
-      let type_unit = newty (Tconstr(Predef.path_unit,[], ref Mnil)) in
-      let typ_arity = newty (Ttuple (Array.make arity type_unit |> Array.to_list)) in
-      let lid:Longident.t = Ldot (Lident "Js", "uncurried") in
-      let path = Env.lookup_type lid env in
-      newconstr path [t; typ_arity]
+    if Ast_uncurried.new_representation arity then
+      Ast_uncurried.mk_js_fn ~env ~arity t
     else
       let a = "arity" ^ string_of_int arity in
       let lid:Longident.t = Ldot (Ldot (Lident "Js", "Fn"), a) in
@@ -2997,9 +2993,7 @@ and type_application uncurried env funct (sargs : sargs) : targs * Types.type_ex
         else 0 in
        Some (arity, t)
     | Tconstr (Pdot(Pident {name = "Js"},"uncurried",_),[t; tArity],_) ->
-      let arity = match tArity.desc with
-        | Ttuple tl -> List.length tl
-        | _ -> assert false in
+      let arity = Ast_uncurried.type_to_arity tArity in
       Some (arity, t)
     | _ -> None in
   let force_uncurried_type funct =

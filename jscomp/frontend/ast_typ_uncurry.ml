@@ -23,9 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type typ = Parsetree.core_type
-
 type 'a cxt = Ast_helper.loc -> Bs_ast_mapper.mapper -> 'a
-
 type uncurry_type_gen = (Asttypes.arg_label -> typ -> typ -> typ) cxt
 
 module Typ = Ast_helper.Typ
@@ -63,10 +61,6 @@ let to_uncurry_type loc (mapper : Bs_ast_mapper.mapper)
   let fn_type = Typ.arrow ~loc label first_arg typ in
   let arity = Ast_core_type.get_uncurry_arity fn_type in
   match arity with
-  | Some 0 ->
-      Typ.constr { txt = Ldot (Ast_literal.Lid.js_fn, "arity0"); loc } [ typ ]
-  | Some n ->
-      Typ.constr
-        { txt = Ldot (Ast_literal.Lid.js_fn, "arity" ^ string_of_int n); loc }
-        [ fn_type ]
+  | Some 0 -> Ast_uncurried.uncurriedType ~loc ~arity:0 typ
+  | Some arity -> Ast_uncurried.uncurriedType ~loc ~arity fn_type
   | None -> assert false

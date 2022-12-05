@@ -21,8 +21,10 @@ let arityType ~loc arity =
   Ast_helper.Typ.tuple ~loc
     (Array.to_list (Array.make arity unit [@doesNotRaise]))
 
+let new_representation arity = arity = 5
+
 let uncurriedType ~loc ~arity tArg =
-  if arity = 5 then
+  if new_representation arity then
     let tArity = arityType ~loc arity in
     Ast_helper.Typ.constr ~loc
       {txt = Ldot (Lident "Js", "uncurried"); loc}
@@ -36,7 +38,7 @@ let uncurriedType ~loc ~arity tArg =
       [tArg]
 
 let uncurriedFun ~loc ~arity funExpr =
-  if arity = 5 then
+  if new_representation arity then
     let tArity = arityType ~loc arity in
     let tAny = Ast_helper.Typ.any ~loc () in
     let tUncurried =

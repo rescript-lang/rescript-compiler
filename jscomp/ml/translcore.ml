@@ -775,6 +775,21 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
       with Not_constant -> Lprim (Pmakeblock Blk_tuple, ll, e.exp_loc))
   | Texp_construct ({ txt = Lident "false" }, _, []) -> Lconst Const_false
   | Texp_construct ({ txt = Lident "true" }, _, []) -> Lconst Const_true
+  | Texp_construct ({ txt = Ldot (Lident "Js", "Uncurried")}, _, [expr]) ->
+      (* ReScript uncurried encoding *)
+      let loc = expr.exp_loc in
+      let lambda = transl_exp expr in
+      let arity_s = Ast_uncurried.uncurried_type_get_arity e.exp_type |> string_of_int in
+      let prim =
+        Primitive.make ~name:"#fn_mk" ~alloc:true ~native_name:arity_s
+          ~native_repr_args:[ Same_as_ocaml_repr ]
+          ~native_repr_res:Same_as_ocaml_repr
+      in
+      Lprim
+        ( Pccall prim
+          (* could be replaced with Opaque in the future except arity 0*),
+          [ lambda ],
+          loc )
   | Texp_construct (lid, cstr, args) -> (
       let ll = transl_list args in
       if cstr.cstr_inlined <> None then
