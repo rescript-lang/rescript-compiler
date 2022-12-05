@@ -3,9 +3,9 @@
 let new_representation arity = arity = 5
 
 let arityType ~loc arity =
-  let unit = Ast_helper.Typ.constr ~loc { txt = Lident "unit"; loc } [] in
-  Ast_helper.Typ.tuple ~loc
-    (Array.to_list (Array.make arity unit [@doesNotRaise]))
+  Ast_helper.Typ.variant ~loc
+    [ Rtag ({ txt = string_of_int arity; loc }, [], true, []) ]
+    Closed None
 
 let uncurriedType ~loc ~arity tArg =
   if new_representation arity then
@@ -50,13 +50,22 @@ let uncurriedFun ~loc ~arity funExpr =
 (* Typed AST *)
 
 let arity_to_type arity =
-  let type_unit =
-    Ctype.newty (Tconstr (Predef.path_unit, [], ref Types.Mnil))
-  in
-  Ctype.newty (Ttuple (Array.make arity type_unit |> Array.to_list))
+  let arity_s = string_of_int arity in
+  Ctype.newty
+    (Tvariant
+       {
+         row_fields = [ (arity_s, Rpresent None) ];
+         row_more = Ctype.newty Tnil;
+         row_bound = ();
+         row_closed = true;
+         row_fixed = false;
+         row_name = None;
+       })
 
 let type_to_arity (tArity : Types.type_expr) =
-  match tArity.desc with Ttuple tl -> List.length tl | _ -> assert false
+  match tArity.desc with
+  | Tvariant { row_fields = [ (label, _) ] } -> int_of_string label
+  | _ -> assert false
 
 let mk_js_fn ~env ~arity t =
   let typ_arity = arity_to_type arity in

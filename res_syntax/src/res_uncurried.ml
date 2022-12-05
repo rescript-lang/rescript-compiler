@@ -17,9 +17,9 @@ let getDotted ~uncurried = function
   | Default -> not uncurried
 
 let arityType ~loc arity =
-  let unit = Ast_helper.Typ.constr ~loc {txt = Lident "unit"; loc} [] in
-  Ast_helper.Typ.tuple ~loc
-    (Array.to_list (Array.make arity unit [@doesNotRaise]))
+  Ast_helper.Typ.variant ~loc
+    [Rtag ({txt = string_of_int arity; loc}, [], true, [])]
+    Closed None
 
 let new_representation arity = arity = 5
 
