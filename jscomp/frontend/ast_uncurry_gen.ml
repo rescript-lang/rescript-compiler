@@ -67,8 +67,9 @@ let to_method_callback loc (self : Bs_ast_mapper.mapper) label
                [ Typ.any ~loc () ]) );
       ] )
 
-let to_uncurry_fn loc (self : Bs_ast_mapper.mapper) (label : Asttypes.arg_label)
-    pat body async : Parsetree.expression_desc =
+let to_uncurry_fn (e : Parsetree.expression) (self : Bs_ast_mapper.mapper)
+    (label : Asttypes.arg_label) pat body async : Parsetree.expression =
+  let loc = e.pexp_loc in
   Bs_syntaxerr.optional_err loc label;
   let rec aux acc (body : Parsetree.expression) =
     match Ast_attributes.process_attributes_rev body.pexp_attributes with
@@ -97,4 +98,9 @@ let to_uncurry_fn loc (self : Bs_ast_mapper.mapper) (label : Asttypes.arg_label)
     | _ -> len
   in
   Bs_syntaxerr.err_large_arity loc arity;
-  (Ast_uncurried.uncurriedFun ~loc ~arity body).pexp_desc
+  let fun_exp = Ast_uncurried.uncurriedFun ~loc ~arity body in
+  {
+    e with
+    pexp_desc = fun_exp.pexp_desc;
+    pexp_attributes = fun_exp.pexp_attributes @ e.pexp_attributes;
+  }

@@ -43,21 +43,23 @@ let uncurriedType ~loc ~arity tArg =
       }
       [tArg]
 
+let arity_to_attributes arity =
+  [
+    ( Location.mknoloc "res.arity",
+      Parsetree.PStr
+        [
+          Ast_helper.Str.eval
+            (Ast_helper.Exp.constant
+               (Pconst_integer (string_of_int arity, None)));
+        ] );
+  ]
+
 let uncurriedFun ~loc ~arity funExpr =
   if new_representation arity then
-    let tArity = arityType ~loc arity in
-    let tAny = Ast_helper.Typ.any ~loc () in
-    let tUncurried =
-      Ast_helper.Typ.constr ~loc
-        {txt = Ldot (Lident "Js", "uncurried"); loc}
-        [tAny; tArity]
-    in
-    let expr =
-      Ast_helper.Exp.construct ~loc
-        {txt = Ldot (Lident "Js", "Uncurried"); loc}
-        (Some funExpr)
-    in
-    Ast_helper.Exp.constraint_ ~loc expr tUncurried
+    Ast_helper.Exp.construct ~loc
+      ~attrs:(arity_to_attributes arity)
+      {txt = Ldot (Lident "Js", "Uncurried"); loc}
+      (Some funExpr)
   else
     Ast_helper.Exp.record ~loc
       [
@@ -70,25 +72,13 @@ let exprIsUncurriedFun (expr : Parsetree.expression) =
   match expr.pexp_desc with
   | Pexp_record ([({txt = Ldot (Ldot (Lident "Js", "Fn"), _)}, _e)], None) ->
     true
-  | Pexp_constraint
-      ( {
-          pexp_desc =
-            Pexp_construct ({txt = Ldot (Lident "Js", "Uncurried")}, Some _);
-        },
-        _ ) ->
-    true
+  | Pexp_construct ({txt = Ldot (Lident "Js", "Uncurried")}, Some _) -> true
   | _ -> false
 
 let exprExtractUncurriedFun (expr : Parsetree.expression) =
   match expr.pexp_desc with
   | Pexp_record ([({txt = Ldot (Ldot (Lident "Js", "Fn"), _)}, e)], None) -> e
-  | Pexp_constraint
-      ( {
-          pexp_desc =
-            Pexp_construct ({txt = Ldot (Lident "Js", "Uncurried")}, Some e);
-        },
-        _ ) ->
-    e
+  | Pexp_construct ({txt = Ldot (Lident "Js", "Uncurried")}, Some e) -> e
   | _ -> assert false
 
 let typeIsUncurriedFun (typ : Parsetree.core_type) =

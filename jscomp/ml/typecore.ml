@@ -2104,6 +2104,12 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
         exp_attributes = sexp.pexp_attributes;
         exp_env = env }
   | Pexp_construct(lid, sarg) ->
+      (match lid.txt with
+      | Ldot (Lident "Js", "Uncurried") ->
+        let arity = Ast_uncurried.attributes_to_arity sexp.pexp_attributes in
+        let uncurried_typ = Ast_uncurried.mk_js_fn ~env ~arity (newvar()) in
+        unify_exp_types loc env uncurried_typ ty_expected
+      | _ -> ());
       type_construct env loc lid sarg ty_expected sexp.pexp_attributes
   | Pexp_variant(l, sarg) ->
       (* Keep sharing *)

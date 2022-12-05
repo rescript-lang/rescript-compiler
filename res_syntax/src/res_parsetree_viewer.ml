@@ -203,7 +203,7 @@ let filterParsingAttrs attrs =
       match attr with
       | ( {
             Location.txt =
-              ( "bs" | "res.uapp" | "res.braces" | "res.iflet"
+              ( "bs" | "res.uapp" | "res.arity" | "res.braces" | "res.iflet"
               | "res.namedArgLoc" | "res.optional" | "res.ternary" | "res.async"
               | "res.await" | "res.template" );
           },
@@ -352,8 +352,8 @@ let hasAttributes attrs =
       match attr with
       | ( {
             Location.txt =
-              ( "bs" | "res.uapp" | "res.braces" | "res.iflet" | "res.ternary"
-              | "res.async" | "res.await" | "res.template" );
+              ( "bs" | "res.uapp" | "res.arity" | "res.braces" | "res.iflet"
+              | "res.ternary" | "res.async" | "res.await" | "res.template" );
           },
           _ ) ->
         false
@@ -534,8 +534,8 @@ let isPrintableAttribute attr =
   match attr with
   | ( {
         Location.txt =
-          ( "bs" | "res.uapp" | "res.iflet" | "res.braces" | "JSX" | "res.async"
-          | "res.await" | "res.template" | "res.ternary" );
+          ( "bs" | "res.uapp" | "res.arity" | "res.iflet" | "res.braces" | "JSX"
+          | "res.async" | "res.await" | "res.template" | "res.ternary" );
       },
       _ ) ->
     false
