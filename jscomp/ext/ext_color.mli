@@ -26,7 +26,7 @@ type color = Black | Red | Green | Yellow | Blue | Magenta | Cyan | White
 
 type style = FG of color | BG of color | Bold | Dim
 
-val ansi_of_tag : string -> string
+val ansi_of_tag : Format.stag -> string
 (** Input is the tag for example `@{<warning>@}` return escape code *)
 
 val reset_lit : string

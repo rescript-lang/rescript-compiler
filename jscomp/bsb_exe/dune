@@ -2,5 +2,5 @@
  (name rescript_main)
  (public_name rescript)
  (flags
-  (:standard -w +a-d-4-9-40-41-42-70))
+  (:standard -w +a-4-9-40-41-42-70))
  (libraries bsb common ext str unix))
