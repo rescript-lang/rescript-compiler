@@ -16,10 +16,10 @@ var jsDir = path.join(__dirname, "..", "lib", "js");
 
 var runtimeFiles = fs.readdirSync(runtimeDir, "ascii");
 var runtimeMlFiles = runtimeFiles.filter(
-  x => !x.startsWith("bs_stdlib_mini") && x.endsWith(".ml") && x !== "js.ml"
+  x => !x.startsWith("bs_stdlib_mini") && x.endsWith(".ml")
 );
 var runtimeMliFiles = runtimeFiles.filter(
-  x => !x.startsWith("bs_stdlib_mini") && x.endsWith(".mli") && x !== "js.mli"
+  x => !x.startsWith("bs_stdlib_mini") && x.endsWith(".mli")
 );
 var runtimeSourceFiles = runtimeMlFiles.concat(runtimeMliFiles);
 var runtimeJsFiles = [...new Set(runtimeSourceFiles.map(baseName))];
@@ -851,15 +851,6 @@ ${ninjaQuickBuidList([
     [],
     externalDeps,
   ],
-  [
-    ["js.cmj", "js.cmi"],
-    "js.ml",
-    "cc",
-    ninjaCwd,
-    [["bsc_flags", "$bsc_no_open_flags"]],
-    [],
-    externalDeps,
-  ],
 ])}
 `;
   /**
@@ -867,7 +858,7 @@ ${ninjaQuickBuidList([
    */
   var depsMap = new Map();
   var allTargets = collectTarget([...runtimeMliFiles, ...runtimeMlFiles]);
-  var manualDeps = ["bs_stdlib_mini.cmi", "js.cmj", "js.cmi"];
+  var manualDeps = ["bs_stdlib_mini.cmi"];
   var allFileTargetsInRuntime = scanFileTargets(allTargets, manualDeps);
   allTargets.forEach((ext, mod) => {
     switch (ext) {
