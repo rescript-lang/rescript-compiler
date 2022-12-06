@@ -223,6 +223,10 @@ let rec printOutTypeDoc (outType : Outcometree.out_type) =
     when isArityIdent ident ->
     (* Js.Fn.arity2<(int, int) => int> -> (. int, int) => int*)
     printOutArrowType ~uncurried:true arrowType
+  | Otyp_constr (Oide_ident "uncurried$", [(Otyp_arrow _ as arrowType); _arity])
+    ->
+    (* uncurried$<(int, int) => int, [#2]> -> (. int, int) => int *)
+    printOutArrowType ~uncurried:true arrowType
   | Otyp_constr (outIdent, []) -> printOutIdentDoc ~allowUident:false outIdent
   | Otyp_manifest (typ1, typ2) ->
     Doc.concat [printOutTypeDoc typ1; Doc.text " = "; printOutTypeDoc typ2]

@@ -2108,7 +2108,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
       | Lident "Uncurried$" ->
         let arity = Ast_uncurried.attributes_to_arity sexp.pexp_attributes in
         let uncurried_typ = Ast_uncurried.mk_js_fn ~env ~arity (newvar()) in
-        unify_exp_types loc env uncurried_typ ty_expected
+        unify_exp_types loc env ty_expected uncurried_typ
       | _ -> ());
       type_construct env loc lid sarg ty_expected sexp.pexp_attributes
   | Pexp_variant(l, sarg) ->
@@ -3666,16 +3666,6 @@ let report_error env ppf = function
       fprintf ppf "Variable %s must occur on both sides of this | pattern"
         (Ident.name id);
       spellcheck_idents ppf id valid_idents
-  | Expr_type_clash ( 
-    (_, {desc = Tarrow _}) ::
-    (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),_,_),_,_)}) :: _
-   ) -> 
-      fprintf ppf "This function is a curried function where an uncurried function is expected"    
-  | Expr_type_clash (
-      (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),a,_),_,_)}) ::
-      (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),b,_),_,_)}) :: _
-   ) when a <> b -> 
-      fprintf ppf "This function has %s but was expected %s" a b 
   | Expr_type_clash ( 
       (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js_OO"},"Meth",_),a,_),_,_)}) ::
       (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js_OO"},"Meth",_),b,_),_,_)}) :: _
