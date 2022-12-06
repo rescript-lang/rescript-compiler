@@ -49,15 +49,15 @@ jobs:
       - name: "Install OPAM dependencies"
         run: opam install . --deps-only
 
-      - name: "Build compiler"
-        run: |
-          opam exec -- dune build
-          ./scripts/copyExes.js
-
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 16
+
+      - name: "Build compiler"
+        run: |
+          opam exec -- dune build
+          node ./scripts/copyExes.js
 
       - name: Install npm packages
         run: npm ci --ignore-scripts
