@@ -61,6 +61,5 @@ let to_uncurry_type loc (mapper : Bs_ast_mapper.mapper)
   let fn_type = Typ.arrow ~loc label first_arg typ in
   let arity = Ast_core_type.get_uncurry_arity fn_type in
   match arity with
-  | Some 0 -> Ast_uncurried.uncurriedType ~loc ~arity:0 typ
   | Some arity -> Ast_uncurried.uncurriedType ~loc ~arity fn_type
   | None -> assert false

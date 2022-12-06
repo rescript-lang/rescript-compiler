@@ -74,8 +74,6 @@
 type 'a t = < .. > as 'a
 (** JS object type *)
 
-type ('fn, 'arity) uncurried = Uncurried of 'fn [@unboxed]
-
 (**/**)
 
 (* internal types for FFI, these types are not used by normal users
@@ -83,7 +81,6 @@ type ('fn, 'arity) uncurried = Uncurried of 'fn [@unboxed]
 *)
 
 module Fn = struct
-  type 'a arity0 = { i0 : unit -> 'a [@internal] }
   type 'a arity1 = { i1 : 'a [@internal] }
   type 'a arity2 = { i2 : 'a [@internal] }
   type 'a arity3 = { i3 : 'a [@internal] }
@@ -113,12 +110,10 @@ end
 module MapperRt = Js_mapperRt
 
 module Internal = struct
-  open Fn
-
   external opaqueFullApply : 'a -> 'a = "%uncurried_apply"
 
   (* Use opaque instead of [._n] to prevent some optimizations happening *)
-  external run : 'a arity0 -> 'a = "#run"
+  external run : (unit -> 'a [@bs]) -> 'a = "#run"
   external opaque : 'a -> 'a = "%opaque"
 end
 

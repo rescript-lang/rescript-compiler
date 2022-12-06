@@ -1,6 +1,6 @@
 (* Untyped AST *)
 
-let new_representation arity = arity = 5
+let new_representation arity = arity = 0 || arity = 5
 
 let arityType ~loc arity =
   Ast_helper.Typ.variant ~loc
