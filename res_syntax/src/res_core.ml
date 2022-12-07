@@ -2724,7 +2724,7 @@ and parseJsxProp p =
         (Location.mkloc "res.namedArgLoc" loc, Parsetree.PStr [])
       in
       let attrExpr =
-        let e = parsePrimaryExpr ~operand:(parseAtomicExpr p) p in
+        let e = parsePrimaryExpr ~operand:(parseExpr p) p in
         {e with pexp_attributes = propLocAttr :: e.pexp_attributes}
       in
       (* using label "spreadProps" to distinguish from others *)
