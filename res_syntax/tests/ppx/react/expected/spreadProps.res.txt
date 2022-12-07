@@ -1,46 +1,35 @@
-@@jsxConfig({version: 4, mode: "classic"})
-// Error: spreadProps should be first in order than other props
-// let c0 = <A x="x" {...p} />
 
-// Error: multiple spreadProps not allowed
-// let c0 = <A x="x" {...p0} {...p1} />
+  Syntax error!
+  tests/ppx/react/spreadProps.res:24:23-24
 
-// only spread props
-let c1 = React.createElement(A.make, p)
+  22 │ // both need to be parsed
+  23 │ let c6 = <A {...(params->Obj.magic)} />
+  24 │ let c7 = <A {...params->Obj.magic} />
+  25 │ 
+  26 │ @@jsxConfig({version:4, mode: "automatic"})
 
-// reversed order
-let c2 = React.createElement(A.make, {...p, x: "x"})
+  I'm not sure what to parse here when looking at "->".
 
-let c3 = ReactDOM.createDOMElementVariadic("div", ~props=p, [])
 
-let c4 = ReactDOM.createDOMElementVariadic("div", ~props={...p, x: "x", key: "k"}, [])
+  Syntax error!
+  tests/ppx/react/spreadProps.res:24:25-27
 
-let c4 = ReactDOM.createDOMElementVariadic(
-  "div",
-  ~props={...p, key: "k"},
-  [ReactDOM.createDOMElementVariadic("br", []), ReactDOM.createDOMElementVariadic("br", [])],
-)
+  22 │ // both need to be parsed
+  23 │ let c6 = <A {...(params->Obj.magic)} />
+  24 │ let c7 = <A {...params->Obj.magic} />
+  25 │ 
+  26 │ @@jsxConfig({version:4, mode: "automatic"})
 
-@@jsxConfig({version: 4, mode: "automatic"})
-// Error: spreadProps should be first in order than other props
-// let c0 = <A x="x" {...p} />
+  consecutive statements on a line must be separated by ';' or a newline
 
-// Error: multiple spreadProps not allowed
-// let c0 = <A x="x" {...p0} {...p1} />
 
-// only spread props
-let c1 = React.jsx(A.make, p)
+  Syntax error!
+  tests/ppx/react/spreadProps.res:47:23-24
 
-// reversed order
-let c2 = React.jsx(A.make, {...p, x: "x"})
+  45 │ // both need to be parsed
+  46 │ let c6 = <A {...(params->Obj.magic)} />
+  47 │ let c7 = <A {...params->Obj.magic} />
+  48 │ 
 
-let c3 = ReactDOM.jsx("div", p)
+  I'm not sure what to parse here when looking at "->".
 
-let c4 = ReactDOM.jsxKeyed("div", {...p, x: "x"}, ~key="k", ())
-
-let c5 = ReactDOM.jsxsKeyed(
-  "div",
-  {...p, children: React.array([ReactDOM.jsx("br", {}), ReactDOM.jsx("br", {})])},
-  ~key="k",
-  (),
-)
