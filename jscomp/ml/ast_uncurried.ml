@@ -14,7 +14,7 @@ let uncurriedType ~loc ~arity tArg =
   if new_representation arity then
     let tArity = arityType ~loc arity in
     Ast_helper.Typ.constr ~loc
-      { txt = Lident "uncurried$"; loc }
+      { txt = Lident "function$"; loc }
       [ tArg; tArity ]
   else
     Ast_helper.Typ.constr ~loc
@@ -55,7 +55,7 @@ let uncurriedFun ~loc ~arity funExpr =
   if new_representation arity then
     Ast_helper.Exp.construct ~loc
       ~attrs:(arity_to_attributes arity)
-      { txt = Lident "Uncurried$"; loc }
+      { txt = Lident "Function$"; loc }
       (Some funExpr)
   else
     Ast_helper.Exp.record ~loc
@@ -73,14 +73,14 @@ let exprIsUncurriedFun (expr : Parsetree.expression) =
   | Pexp_record ([ ({ txt = Ldot (Ldot (Lident "Js", "Fn"), _) }, _e) ], None)
     ->
       true
-  | Pexp_construct ({ txt = Lident "Uncurried$" }, Some _) -> true
+  | Pexp_construct ({ txt = Lident "Function$" }, Some _) -> true
   | _ -> false
 
 let exprExtractUncurriedFun (expr : Parsetree.expression) =
   match expr.pexp_desc with
   | Pexp_record ([ ({ txt = Ldot (Ldot (Lident "Js", "Fn"), _) }, e) ], None) ->
       e
-  | Pexp_construct ({ txt = Lident "Uncurried$" }, Some e) -> e
+  | Pexp_construct ({ txt = Lident "Function$" }, Some e) -> e
   | _ -> assert false
 
 (* Typed AST *)
@@ -105,12 +105,12 @@ let type_to_arity (tArity : Types.type_expr) =
 
 let mk_js_fn ~env ~arity t =
   let typ_arity = arity_to_type arity in
-  let lid : Longident.t = Lident "uncurried$" in
+  let lid : Longident.t = Lident "function$" in
   let path = Env.lookup_type lid env in
   Ctype.newconstr path [ t; typ_arity ]
 
 let uncurried_type_get_arity ~env typ =
   match (Ctype.expand_head env typ).desc with
-  | Tconstr (Pident { name = "uncurried$" }, [ _t; tArity ], _) ->
+  | Tconstr (Pident { name = "function$" }, [ _t; tArity ], _) ->
       type_to_arity tArity
   | _ -> assert false

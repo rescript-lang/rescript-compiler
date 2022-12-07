@@ -49,7 +49,7 @@ and ident_floatarray = ident_create "floatarray"
 and ident_unknown = ident_create "unknown"
 
 and ident_promise = ident_create "promise"
-and ident_uncurried = ident_create "uncurried$"
+and ident_uncurried = ident_create "function$"
 
 type test =
   | For_sure_yes
@@ -178,7 +178,7 @@ and ident_cons = ident_create "::"
 and ident_none = ident_create "None"
 and ident_some = ident_create "Some"
 and ident_ctor_unknown = ident_create "Unknown"
-and ident_ctor_uncurried = ident_create "Uncurried$"
+and ident_ctor_uncurried = ident_create "Function$"
 
 let common_initial_env add_type add_extension empty_env =
   let decl_bool =

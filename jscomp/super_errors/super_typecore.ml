@@ -183,7 +183,7 @@ let report_error env ppf = function
     )
   | Expr_type_clash ( 
     (_, {desc = Tarrow _}) ::
-    (_, {desc = Tconstr (Pident {name = "uncurried$"},_,_)}) :: _
+    (_, {desc = Tconstr (Pident {name = "function$"},_,_)}) :: _
    ) -> 
     fprintf ppf "This function is a curried function where an uncurried function is expected"
   | Expr_type_clash (
@@ -192,8 +192,8 @@ let report_error env ppf = function
     ) when arityA <> arityB ->
     reportJsFnArityMismatch ~arityA ~arityB ppf
   | Expr_type_clash (
-      (_, {desc = Tconstr (Pident {name = "uncurried$"},[_; tA],_)}) ::
-      (_, {desc = Tconstr (Pident {name = "uncurried$"},[_; tB],_)}) :: _
+      (_, {desc = Tconstr (Pident {name = "function$"},[_; tA],_)}) ::
+      (_, {desc = Tconstr (Pident {name = "function$"},[_; tB],_)}) :: _
     ) when Ast_uncurried.type_to_arity tA <> Ast_uncurried.type_to_arity tB ->
     let arityA = Ast_uncurried.type_to_arity tA |> string_of_int in
     let arityB = Ast_uncurried.type_to_arity tB |> string_of_int in

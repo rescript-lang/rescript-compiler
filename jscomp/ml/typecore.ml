@@ -2105,7 +2105,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
         exp_env = env }
   | Pexp_construct(lid, sarg) ->
       (match lid.txt with
-      | Lident "Uncurried$" ->
+      | Lident "Function$" ->
         let arity = Ast_uncurried.attributes_to_arity sexp.pexp_attributes in
         let uncurried_typ = Ast_uncurried.mk_js_fn ~env ~arity (newvar()) in
         unify_exp_types loc env ty_expected uncurried_typ
@@ -2998,7 +2998,7 @@ and type_application uncurried env funct (sargs : sargs) : targs * Types.type_ex
         then int_of_string (String.sub a 5 (String.length a - 5))
         else 0 in
        Some (arity, t)
-    | Tconstr (Pident {name = "uncurried$"},[t; tArity],_) ->
+    | Tconstr (Pident {name = "function$"},[t; tArity],_) ->
       let arity = Ast_uncurried.type_to_arity tArity in
       Some (arity, t)
     | _ -> None in

@@ -36,7 +36,7 @@ let new_representation arity = arity = 5
 let uncurriedType ~loc ~arity tArg =
   if new_representation arity then
     let tArity = arityType ~loc arity in
-    Ast_helper.Typ.constr ~loc {txt = Lident "uncurried$"; loc} [tArg; tArity]
+    Ast_helper.Typ.constr ~loc {txt = Lident "function$"; loc} [tArg; tArity]
   else
     Ast_helper.Typ.constr ~loc
       {
@@ -60,7 +60,7 @@ let uncurriedFun ~loc ~arity funExpr =
   if new_representation arity then
     Ast_helper.Exp.construct ~loc
       ~attrs:(arity_to_attributes arity)
-      {txt = Lident "Uncurried$"; loc}
+      {txt = Lident "Function$"; loc}
       (Some funExpr)
   else
     Ast_helper.Exp.record ~loc
@@ -74,13 +74,13 @@ let exprIsUncurriedFun (expr : Parsetree.expression) =
   match expr.pexp_desc with
   | Pexp_record ([({txt = Ldot (Ldot (Lident "Js", "Fn"), _)}, _e)], None) ->
     true
-  | Pexp_construct ({txt = Lident "Uncurried$"}, Some _) -> true
+  | Pexp_construct ({txt = Lident "Function$"}, Some _) -> true
   | _ -> false
 
 let exprExtractUncurriedFun (expr : Parsetree.expression) =
   match expr.pexp_desc with
   | Pexp_record ([({txt = Ldot (Ldot (Lident "Js", "Fn"), _)}, e)], None) -> e
-  | Pexp_construct ({txt = Lident "Uncurried$"}, Some e) -> e
+  | Pexp_construct ({txt = Lident "Function$"}, Some e) -> e
   | _ -> assert false
 
 let typeIsUncurriedFun (typ : Parsetree.core_type) =
@@ -89,8 +89,7 @@ let typeIsUncurriedFun (typ : Parsetree.core_type) =
       ({txt = Ldot (Ldot (Lident "Js", "Fn"), _)}, [{ptyp_desc = Ptyp_arrow _}])
     ->
     true
-  | Ptyp_constr ({txt = Lident "uncurried$"}, [{ptyp_desc = Ptyp_arrow _}; _])
-    ->
+  | Ptyp_constr ({txt = Lident "function$"}, [{ptyp_desc = Ptyp_arrow _}; _]) ->
     true
   | _ -> false
 
@@ -102,6 +101,6 @@ let typeExtractUncurriedFun (typ : Parsetree.core_type) =
         ((String.sub [@doesNotRaise]) arity 5 (String.length arity - 5))
     in
     (arity, tArg)
-  | Ptyp_constr ({txt = Lident "uncurried$"}, [tArg; tArity]) ->
+  | Ptyp_constr ({txt = Lident "function$"}, [tArg; tArity]) ->
     (arityFromType tArity, tArg)
   | _ -> assert false

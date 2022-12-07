@@ -870,7 +870,7 @@ let handle_attributes (loc : Bs_loc.t) (type_annotation : Parsetree.core_type)
   let prim_name_with_source = { name = prim_name; source = External } in
   let type_annotation, build_uncurried_type =
     match type_annotation.ptyp_desc with
-    | Ptyp_constr (({ txt = Lident "uncurried$"; _ } as lid), [ t; arity_ ]) ->
+    | Ptyp_constr (({ txt = Lident "function$"; _ } as lid), [ t; arity_ ]) ->
         ( t,
           fun ~arity x ->
             let tArity =
