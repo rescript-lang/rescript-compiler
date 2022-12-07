@@ -7,13 +7,13 @@ module C0 = {
   }
 
   @react.component
-  let make = (_: props<'priority, 'text>) => {
+  let make = ({priority: _, ?text, _}: props<'priority, 'text>) => {
     let text = switch text {
     | Some(text) => text
     | None => "Test"
     }
 
-    (~text="Test") => React.string(text)
+    React.string(text)
   }
   let make = {
     let \"AliasProps$C0" = (props: props<_>) => make(props)

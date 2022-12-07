@@ -1103,10 +1103,7 @@ let transformStructureItem ~config mapper item =
             | Pexp_fun
                 ( _arg_label,
                   _default,
-                  {
-                    ppat_desc =
-                      Ppat_construct ({txt = Lident "()"}, _) | Ppat_any;
-                  },
+                  {ppat_desc = Ppat_construct ({txt = Lident "()"}, _)},
                   expr ) ->
               (patternsWithLabel, patternsWithNolabel, expr)
             | Pexp_fun
