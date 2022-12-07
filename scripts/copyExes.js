@@ -20,10 +20,16 @@ if (!fs.existsSync(platformBinDir)) {
 }
 
 function copyExe(exe) {
+  const ext = process.platform === "win32" ? ".exe" : "";
+  const src = path.join(duneBinDir, exe + ext);
   const dest = path.join(platformBinDir, exe + ".exe");
 
-  const ext = process.platform === "win32" ? ".exe" : "";
-  fs.copyFileSync(path.join(duneBinDir, exe + ext), dest);
+  // For some reason, the copy operation fails in Windows CI if the file already exists.
+  if (process.platform === "win32" && fs.existsSync(dest)) {
+    fs.rmSync(dest);
+  }
+
+  fs.copyFileSync(src, dest);
 
   if (process.platform !== "win32") {
     child_process.execSync(`strip ${dest}`);
