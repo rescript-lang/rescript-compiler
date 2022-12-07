@@ -1,0 +1,45 @@
+@@jsxConfig({version: 4, mode: "automatic"})
+
+module C0 = {
+  type props<'priority, 'text> = {
+    priority: 'priority,
+    text?: 'text,
+  }
+
+  @react.component
+  let make = (_: props<'priority, 'text>) => {
+    let text = switch text {
+    | Some(text) => text
+    | None => "Test"
+    }
+
+    (~text="Test") => React.string(text)
+  }
+  let make = {
+    let \"AliasProps$C0" = (props: props<_>) => make(props)
+
+    \"AliasProps$C0"
+  }
+}
+
+module C1 = {
+  type props<'priority, 'text> = {
+    priority: 'priority,
+    text?: 'text,
+  }
+
+  @react.component
+  let make = ({priority: p, ?text, _}: props<'priority, 'text>) => {
+    let text = switch text {
+    | Some(text) => text
+    | None => "Test"
+    }
+
+    React.string(p ++ text)
+  }
+  let make = {
+    let \"AliasProps$C1" = (props: props<_>) => make(props)
+
+    \"AliasProps$C1"
+  }
+}
