@@ -76,7 +76,7 @@ let suites =
 type ident = { stamp : int ; name : string ; mutable flags : int}
 
 module Set_ident = Set.Make(struct type t = ident 
-    let compare = Pervasives.compare end)
+    let compare = Stdlib.compare end)
 
 let compare_ident x y = 
   let a =  compare (x.stamp : int) y.stamp in 

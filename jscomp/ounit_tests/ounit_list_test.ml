@@ -95,7 +95,7 @@ let suites =
       OUnit.assert_equal (Ext_list.assoc_by_int  [2,"x"; 3,"y"; 1, "z"] 1 None) "z"
     end;
     __LOC__ >:: begin fun _ -> 
-      OUnit.assert_raise_any
+      Ounit_tests_util.assert_raise_any
         (fun _ -> Ext_list.assoc_by_int [2,"x"; 3,"y"; 1, "z"] 11 None )
     end ;
     __LOC__ >:: begin fun _ -> 
