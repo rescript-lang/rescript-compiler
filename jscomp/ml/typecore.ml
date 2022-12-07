@@ -2982,14 +2982,6 @@ and type_application uncurried env funct (sargs : sargs) : targs * Types.type_ex
     tvar || List.mem l ls
   in
   let ignored = ref [] in
-  let mk_js_fn arity t =
-    if Ast_uncurried.new_representation arity then
-      Ast_uncurried.mk_js_fn ~env ~arity t
-    else
-      let a = "arity" ^ string_of_int arity in
-      let lid:Longident.t = Ldot (Ldot (Lident "Js", "Fn"), a) in
-      let path = Env.lookup_type lid env in
-      newconstr path [t] in
   let has_uncurried_type t =
     match (expand_head env t).desc with
     | Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),a,_),[t],_) ->
@@ -3006,7 +2998,7 @@ and type_application uncurried env funct (sargs : sargs) : targs * Types.type_ex
     match has_uncurried_type funct.exp_type with
     | None ->
       let arity = List.length sargs in
-      let js_fn = mk_js_fn arity (newvar()) in
+      let js_fn = Ast_uncurried.mk_js_fn ~env ~arity (newvar()) in
       unify_exp env funct js_fn
     | Some _ -> () in
   let extract_uncurried_type t =
@@ -3025,7 +3017,7 @@ and type_application uncurried env funct (sargs : sargs) : targs * Types.type_ex
       if uncurried && not fully_applied then
         raise(Error(funct.exp_loc, env,
           Uncurried_arity_mismatch (t, arity, List.length sargs)));
-      let newT = if fully_applied then newT else mk_js_fn newarity newT in
+      let newT = if fully_applied then newT else Ast_uncurried.mk_js_fn ~env ~arity:newarity newT in
       (fully_applied, newT)
     | _ -> (false, newT)
   in

@@ -1,29 +1,33 @@
 let cApp = foo 3
 let uApp = ((foo 3)[@res.uapp ])
 let cFun x = 3
-let uFun = { Js.Fn.I1 = (fun x -> 3) }
+let uFun = ((Function$ (fun x -> 3))[@res.arity 1])
 let mixFun a =
-  {
-    Js.Fn.I2 =
+  ((Function$
       (fun b ->
          fun c ->
-           ((fun d -> fun e -> fun f -> fun g -> { Js.Fn.I1 = (fun h -> 4) })
-           [@res.braces ]))
-  }
-let bracesFun = { Js.Fn.I1 = (fun x -> ((fun y -> x + y)[@res.braces ])) }
+           ((fun d ->
+               fun e ->
+                 fun f -> fun g -> ((Function$ (fun h -> 4))[@res.arity 1]))
+           [@res.braces ])))
+  [@res.arity 2])
+let bracesFun = ((Function$ (fun x -> ((fun y -> x + y)[@res.braces ])))
+  [@res.arity 1])
 let cFun2 x y = 3
-let uFun2 = { Js.Fn.I2 = (fun x -> fun y -> 3) }
+let uFun2 = ((Function$ (fun x -> fun y -> 3))[@res.arity 2])
 type nonrec cTyp = string -> int
-type nonrec uTyp = (string -> int) Js.Fn.arity1
+type nonrec uTyp = (string -> int, [ `Has_arity1 ]) function$
 type nonrec mixTyp =
   string ->
     (string ->
        string ->
-         string -> string -> string -> string -> (string -> int) Js.Fn.arity1)
-      Js.Fn.arity2
-type nonrec bTyp = (string -> string -> int) Js.Fn.arity1
+         string ->
+           string ->
+             string -> string -> (string -> int, [ `Has_arity1 ]) function$,
+      [ `Has_arity2 ]) function$
+type nonrec bTyp = (string -> string -> int, [ `Has_arity1 ]) function$
 type nonrec cTyp2 = string -> string -> int
-type nonrec uTyp2 = (string -> string -> int) Js.Fn.arity2
+type nonrec uTyp2 = (string -> string -> int, [ `Has_arity2 ]) function$
 type nonrec cu = unit -> int
 type nonrec cp = unit -> int
 type nonrec cuu = unit -> unit -> int
@@ -32,62 +36,78 @@ type nonrec cup = unit -> unit -> int
 type nonrec cpp = unit -> unit -> int
 type nonrec cu2 = unit -> unit -> unit
 type nonrec cp2 = unit -> unit -> unit
-type nonrec uu = (unit -> int) Js.Fn.arity1
-type nonrec up = (unit -> int) Js.Fn.arity1
-type nonrec uuu = (unit -> (unit -> int) Js.Fn.arity1) Js.Fn.arity1
-type nonrec upu = (unit -> (unit -> int) Js.Fn.arity1) Js.Fn.arity1
-type nonrec uup = (unit -> (unit -> int) Js.Fn.arity1) Js.Fn.arity1
-type nonrec upp = (unit -> (unit -> int) Js.Fn.arity1) Js.Fn.arity1
-type nonrec uu2 = (unit -> unit -> unit) Js.Fn.arity2
-type nonrec up2 = (unit -> unit -> unit) Js.Fn.arity2
+type nonrec uu = (unit -> int, [ `Has_arity1 ]) function$
+type nonrec up = (unit -> int, [ `Has_arity1 ]) function$
+type nonrec uuu =
+  (unit -> (unit -> int, [ `Has_arity1 ]) function$, [ `Has_arity1 ])
+    function$
+type nonrec upu =
+  (unit -> (unit -> int, [ `Has_arity1 ]) function$, [ `Has_arity1 ])
+    function$
+type nonrec uup =
+  (unit -> (unit -> int, [ `Has_arity1 ]) function$, [ `Has_arity1 ])
+    function$
+type nonrec upp =
+  (unit -> (unit -> int, [ `Has_arity1 ]) function$, [ `Has_arity1 ])
+    function$
+type nonrec uu2 = (unit -> unit -> unit, [ `Has_arity2 ]) function$
+type nonrec up2 = (unit -> unit -> unit, [ `Has_arity2 ]) function$
 type nonrec cnested = (string -> unit) -> unit
-type nonrec unested = ((string -> unit) Js.Fn.arity1 -> unit) Js.Fn.arity1
-let (uannpoly : ('a -> string) Js.Fn.arity1) = xx
-let (uannint : (int -> string) Js.Fn.arity1) = xx
-let _ = { Js.Fn.I1 = ((fun x -> 34)[@att ]) }
-let _ = { Js.Fn.I1 = ((fun x -> 34)[@res.async ][@att ]) }
-let _ = preserveAttr { Js.Fn.I1 = ((fun x -> 34)[@att ]) }
-let _ = preserveAttr { Js.Fn.I1 = ((fun x -> 34)[@res.async ][@att ]) }
+type nonrec unested =
+  ((string -> unit, [ `Has_arity1 ]) function$ -> unit, [ `Has_arity1 ])
+    function$
+let (uannpoly : ('a -> string, [ `Has_arity1 ]) function$) = xx
+let (uannint : (int -> string, [ `Has_arity1 ]) function$) = xx
+let _ = ((Function$ ((fun x -> 34)[@att ]))[@res.arity 1])
+let _ = ((Function$ ((fun x -> 34)[@res.async ][@att ]))[@res.arity 1])
+let _ = preserveAttr ((Function$ ((fun x -> 34)[@att ]))[@res.arity 1])
+let _ =
+  preserveAttr ((Function$ ((fun x -> 34)[@res.async ][@att ]))
+    [@res.arity 1])
 let t0 (type a) (type b) (l : a list) (x : a) = x :: l
 let t1 (type a) (type b) =
-  { Js.Fn.I2 = (fun (l : a list) -> fun (x : a) -> x :: l) }
+  ((Function$ (fun (l : a list) -> fun (x : a) -> x :: l))[@res.arity 2])
 let t2 (type a) (type b) =
-  { Js.Fn.I2 = (fun (l : a list) -> fun (x : a) -> x :: l) }
+  ((Function$ (fun (l : a list) -> fun (x : a) -> x :: l))[@res.arity 2])
 let t3 (type a) (type b) =
-  { Js.Fn.I2 = (fun (l : a list) -> fun (x : a) -> x :: l) }
+  ((Function$ (fun (l : a list) -> fun (x : a) -> x :: l))[@res.arity 2])
 let t4 (type a) (type b) (l : a list) (x : a) = x :: l
 let t5 (type a) (type b) =
-  { Js.Fn.I2 = (fun (l : a list) -> fun (x : a) -> x :: l) }
+  ((Function$ (fun (l : a list) -> fun (x : a) -> x :: l))[@res.arity 2])
 let t6 (type a) (type b) =
-  { Js.Fn.I2 = (fun (l : a list) -> fun (x : a) -> x :: l) }
+  ((Function$ (fun (l : a list) -> fun (x : a) -> x :: l))[@res.arity 2])
 [@@@uncurried ]
 let cApp = foo 3
 let uApp = ((foo 3)[@res.uapp ])
 let cFun x = 3
-let uFun = { Js.Fn.I1 = (fun x -> 3) }
+let uFun = ((Function$ (fun x -> 3))[@res.arity 1])
 let mixFun a =
-  {
-    Js.Fn.I2 =
+  ((Function$
       (fun b ->
          fun c ->
-           ((fun d -> fun e -> fun f -> fun g -> { Js.Fn.I1 = (fun h -> 4) })
-           [@res.braces ]))
-  }
-let bracesFun = { Js.Fn.I1 = (fun x -> ((fun y -> x + y)[@res.braces ])) }
+           ((fun d ->
+               fun e ->
+                 fun f -> fun g -> ((Function$ (fun h -> 4))[@res.arity 1]))
+           [@res.braces ])))
+  [@res.arity 2])
+let bracesFun = ((Function$ (fun x -> ((fun y -> x + y)[@res.braces ])))
+  [@res.arity 1])
 let cFun2 x y = 3
-let uFun2 = { Js.Fn.I2 = (fun x -> fun y -> 3) }
+let uFun2 = ((Function$ (fun x -> fun y -> 3))[@res.arity 2])
 let cFun2Dots x y = 3
 type nonrec cTyp = string -> int
-type nonrec uTyp = (string -> int) Js.Fn.arity1
+type nonrec uTyp = (string -> int, [ `Has_arity1 ]) function$
 type nonrec mixTyp =
   string ->
     (string ->
        string ->
-         string -> string -> string -> string -> (string -> int) Js.Fn.arity1)
-      Js.Fn.arity2
-type nonrec bTyp = (string -> string -> int) Js.Fn.arity1
+         string ->
+           string ->
+             string -> string -> (string -> int, [ `Has_arity1 ]) function$,
+      [ `Has_arity2 ]) function$
+type nonrec bTyp = (string -> string -> int, [ `Has_arity1 ]) function$
 type nonrec cTyp2 = string -> string -> int
-type nonrec uTyp2 = (string -> string -> int) Js.Fn.arity2
+type nonrec uTyp2 = (string -> string -> int, [ `Has_arity2 ]) function$
 type nonrec cu = unit -> int
 type nonrec cp = unit -> int
 type nonrec cuu = unit -> unit -> int
@@ -96,26 +116,39 @@ type nonrec cup = unit -> unit -> int
 type nonrec cpp = unit -> unit -> int
 type nonrec cu2 = unit -> unit -> unit
 type nonrec cp2 = unit -> unit -> unit
-type nonrec uu = (unit -> int) Js.Fn.arity1
-type nonrec up = (unit -> int) Js.Fn.arity1
-type nonrec uuu = (unit -> (unit -> int) Js.Fn.arity1) Js.Fn.arity1
-type nonrec upu = (unit -> (unit -> int) Js.Fn.arity1) Js.Fn.arity1
-type nonrec uup = (unit -> (unit -> int) Js.Fn.arity1) Js.Fn.arity1
-type nonrec upp = (unit -> (unit -> int) Js.Fn.arity1) Js.Fn.arity1
-type nonrec uu2 = (unit -> unit -> unit) Js.Fn.arity2
-type nonrec up2 = (unit -> unit -> unit) Js.Fn.arity2
+type nonrec uu = (unit -> int, [ `Has_arity1 ]) function$
+type nonrec up = (unit -> int, [ `Has_arity1 ]) function$
+type nonrec uuu =
+  (unit -> (unit -> int, [ `Has_arity1 ]) function$, [ `Has_arity1 ])
+    function$
+type nonrec upu =
+  (unit -> (unit -> int, [ `Has_arity1 ]) function$, [ `Has_arity1 ])
+    function$
+type nonrec uup =
+  (unit -> (unit -> int, [ `Has_arity1 ]) function$, [ `Has_arity1 ])
+    function$
+type nonrec upp =
+  (unit -> (unit -> int, [ `Has_arity1 ]) function$, [ `Has_arity1 ])
+    function$
+type nonrec uu2 = (unit -> unit -> unit, [ `Has_arity2 ]) function$
+type nonrec up2 = (unit -> unit -> unit, [ `Has_arity2 ]) function$
 type nonrec cnested = (string -> unit) -> unit
-type nonrec unested = ((string -> unit) Js.Fn.arity1 -> unit) Js.Fn.arity1
+type nonrec unested =
+  ((string -> unit, [ `Has_arity1 ]) function$ -> unit, [ `Has_arity1 ])
+    function$
 let pipe1 = 3 |.u f
-let (uannpoly : ('a -> string) Js.Fn.arity1) = xx
-let (uannint : (int -> string) Js.Fn.arity1) = xx
-let _ = { Js.Fn.I1 = ((fun x -> 34)[@att ]) }
-let _ = { Js.Fn.I1 = ((fun x -> 34)[@res.async ][@att ]) }
-let _ = ((preserveAttr { Js.Fn.I1 = ((fun x -> 34)[@att ]) })[@res.uapp ])
-let _ = ((preserveAttr { Js.Fn.I1 = ((fun x -> 34)[@res.async ][@att ]) })
+let (uannpoly : ('a -> string, [ `Has_arity1 ]) function$) = xx
+let (uannint : (int -> string, [ `Has_arity1 ]) function$) = xx
+let _ = ((Function$ ((fun x -> 34)[@att ]))[@res.arity 1])
+let _ = ((Function$ ((fun x -> 34)[@res.async ][@att ]))[@res.arity 1])
+let _ = ((preserveAttr ((Function$ ((fun x -> 34)[@att ]))[@res.arity 1]))
+  [@res.uapp ])
+let _ =
+  ((preserveAttr ((Function$ ((fun x -> 34)[@res.async ][@att ]))
+      [@res.arity 1]))
   [@res.uapp ])
 let t0 (type a) (type b) =
-  { Js.Fn.I2 = (fun (l : a list) -> fun (x : a) -> x :: l) }
+  ((Function$ (fun (l : a list) -> fun (x : a) -> x :: l))[@res.arity 2])
 let t1 (type a) (type b) (l : a list) (x : a) = x :: l
 let t2 (type a) (type b) (l : a list) (x : a) = x :: l
 let t3 (type a) (type b) (l : a list) (x : a) = x :: l

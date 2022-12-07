@@ -47,7 +47,7 @@ o others/js_obj.cmi others/js_obj.cmj : cc others/js_obj.ml | others/belt_intern
 o others/js_option.cmj : cc_cmi others/js_option.ml | others/belt_internals.cmi others/js.cmi others/js_exn.cmj others/js_option.cmi $bsc
 o others/js_option.cmi : cc others/js_option.mli | others/belt_internals.cmi others/js.cmi $bsc
 o others/js_promise.cmi others/js_promise.cmj : cc others/js_promise.ml | others/belt_internals.cmi others/js.cmi others/js_promise2.cmj $bsc
-o others/js_promise2.cmi others/js_promise2.cmj : cc others/js_promise2.res | others/belt_internals.cmi others/js.cmi others/js.cmj $bsc
+o others/js_promise2.cmi others/js_promise2.cmj : cc others/js_promise2.res | others/belt_internals.cmi others/js.cmi $bsc
 o others/js_re.cmi others/js_re.cmj : cc others/js_re.ml | others/belt_internals.cmi others/js.cmi others/js.cmj $bsc
 o others/js_result.cmj : cc_cmi others/js_result.ml | others/belt_internals.cmi others/js.cmi others/js_result.cmi $bsc
 o others/js_result.cmi : cc others/js_result.mli | others/belt_internals.cmi others/js.cmi $bsc

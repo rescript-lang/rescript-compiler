@@ -6,18 +6,15 @@ let greetUser =
   [@res.async ])
 ;;((fun () -> 123)[@res.async ])
 let fetch =
-  (({ Js.Fn.I1 = ((fun url -> ((browserFetch url)[@res.uapp ]))[@res.async ])
-    })
-  [@res.braces ])
+  ((Function$ ((fun url -> ((browserFetch url)[@res.uapp ]))[@res.async ]))
+  [@res.braces ][@res.arity 1])
 let fetch2 =
-  (({
-      Js.Fn.I1 = (((fun url -> ((browserFetch url)[@res.uapp ])))
-        [@res.async ])
-    };
-    {
-      Js.Fn.I1 = (((fun url -> ((browserFetch2 url)[@res.uapp ])))
-        [@res.async ])
-    })
+  ((((Function$ (((fun url -> ((browserFetch url)[@res.uapp ])))
+        [@res.async ]))
+    [@res.arity 1]);
+    ((Function$ (((fun url -> ((browserFetch2 url)[@res.uapp ])))
+        [@res.async ]))
+    [@res.arity 1]))
   [@res.braces ])
 let async =
   ((let f = async () in

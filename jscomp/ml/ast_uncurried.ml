@@ -1,6 +1,5 @@
 (* Untyped AST *)
 
-let new_representation arity = arity = 0 || arity = 5
 
 let encode_arity_string arity = "Has_arity" ^ string_of_int arity
 let decode_arity_string arity_s = int_of_string ((String.sub [@doesNotRaise]) arity_s 9 (String.length arity_s - 9))
@@ -11,18 +10,10 @@ let arityType ~loc arity =
     Closed None
 
 let uncurriedType ~loc ~arity tArg =
-  if new_representation arity then
     let tArity = arityType ~loc arity in
     Ast_helper.Typ.constr ~loc
       { txt = Lident "function$"; loc }
       [ tArg; tArity ]
-  else
-    Ast_helper.Typ.constr ~loc
-      {
-        txt = Ldot (Ldot (Lident "Js", "Fn"), "arity" ^ string_of_int arity);
-        loc;
-      }
-      [ tArg ]
 
 let arity_to_attributes arity =
   [
@@ -52,34 +43,18 @@ let rec attributes_to_arity (attrs : Parsetree.attributes) =
   | _ -> assert false
 
 let uncurriedFun ~loc ~arity funExpr =
-  if new_representation arity then
     Ast_helper.Exp.construct ~loc
       ~attrs:(arity_to_attributes arity)
       { txt = Lident "Function$"; loc }
       (Some funExpr)
-  else
-    Ast_helper.Exp.record ~loc
-      [
-        ( {
-            txt = Ldot (Ldot (Lident "Js", "Fn"), "I" ^ string_of_int arity);
-            loc;
-          },
-          funExpr );
-      ]
-      None
 
 let exprIsUncurriedFun (expr : Parsetree.expression) =
   match expr.pexp_desc with
-  | Pexp_record ([ ({ txt = Ldot (Ldot (Lident "Js", "Fn"), _) }, _e) ], None)
-    ->
-      true
   | Pexp_construct ({ txt = Lident "Function$" }, Some _) -> true
   | _ -> false
 
 let exprExtractUncurriedFun (expr : Parsetree.expression) =
   match expr.pexp_desc with
-  | Pexp_record ([ ({ txt = Ldot (Ldot (Lident "Js", "Fn"), _) }, e) ], None) ->
-      e
   | Pexp_construct ({ txt = Lident "Function$" }, Some e) -> e
   | _ -> assert false
 
