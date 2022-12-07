@@ -62,6 +62,7 @@ These are only breaking changes for unformatted code.
 #### :bug: Bug Fix
 
 - Prevent inlining of async functions in additional cases https://github.com/rescript-lang/rescript-compiler/issues/5860
+- Fix build error where aliasing arguments to `_` in the make function with JSX V4. https://github.com/rescript-lang/rescript-compiler/pull/5881
 
 # 10.1.0
 
