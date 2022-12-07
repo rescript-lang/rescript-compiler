@@ -37,17 +37,17 @@ let get_color_enabled () =
   in
   colorful
 
-let color_functions : Format.formatter_tag_functions =
+let color_functions : Format.formatter_stag_functions =
   {
-    mark_open_tag =
+    mark_open_stag =
       (fun s ->
         if get_color_enabled () then Ext_color.ansi_of_tag s
         else Ext_string.empty);
-    mark_close_tag =
+    mark_close_stag =
       (fun _ ->
         if get_color_enabled () then Ext_color.reset_lit else Ext_string.empty);
-    print_open_tag = (fun _ -> ());
-    print_close_tag = (fun _ -> ());
+    print_open_stag = (fun _ -> ());
+    print_close_stag = (fun _ -> ());
   }
 
 (* let set_color ppf =
@@ -56,8 +56,8 @@ let color_functions : Format.formatter_tag_functions =
 let setup () =
   Format.pp_set_mark_tags Format.std_formatter true;
   Format.pp_set_mark_tags Format.err_formatter true;
-  Format.pp_set_formatter_tag_functions Format.std_formatter color_functions;
-  Format.pp_set_formatter_tag_functions Format.err_formatter color_functions
+  Format.pp_set_formatter_stag_functions Format.std_formatter color_functions;
+  Format.pp_set_formatter_stag_functions Format.err_formatter color_functions
 
 type level = Debug | Info | Warn | Error
 
