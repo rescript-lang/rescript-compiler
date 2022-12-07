@@ -51,6 +51,8 @@
 - Fix issue where the JSX fragment without children build error https://github.com/rescript-lang/syntax/pull/704
 - Fix issue where async as an id cannot be used with application and labelled arguments https://github.com/rescript-lang/syntax/issues/707
 - Treat await as almost-unary operator weaker than pipe so `await foo->bar` means `await (foo->bar)` https://github.com/rescript-lang/syntax/pull/711
+- Fix build error where aliasing arguments to `_` in the make function with JSX V4. https://github.com/rescript-lang/syntax/pull/720
+- Fix parsing of spread props as an expression in JSX V4 https://github.com/rescript-lang/syntax/pull/721
 
 #### :eyeglasses: Spec Compliance
 
