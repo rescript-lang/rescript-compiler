@@ -2,9 +2,12 @@
 
 let new_representation arity = arity = 0 || arity = 5
 
+let encode_arity_string arity = "Has_arity" ^ string_of_int arity
+let decode_arity_string arity_s = int_of_string ((String.sub [@doesNotRaise]) arity_s 9 (String.length arity_s - 9))
+
 let arityType ~loc arity =
   Ast_helper.Typ.variant ~loc
-    [ Rtag ({ txt = string_of_int arity; loc }, [], true, []) ]
+    [ Rtag ({ txt = encode_arity_string arity; loc }, [], true, []) ]
     Closed None
 
 let uncurriedType ~loc ~arity tArg =
@@ -83,7 +86,7 @@ let exprExtractUncurriedFun (expr : Parsetree.expression) =
 (* Typed AST *)
 
 let arity_to_type arity =
-  let arity_s = string_of_int arity in
+  let arity_s = encode_arity_string arity in
   Ctype.newty
     (Tvariant
        {
@@ -97,10 +100,7 @@ let arity_to_type arity =
 
 let type_to_arity (tArity : Types.type_expr) =
   match tArity.desc with
-  | Tvariant { row_fields = [ (label, _) ] } -> int_of_string label
-  | Tconstr _ -> assert false
-  | Tvar _ -> assert false
-  | Tsubst _ -> assert false
+  | Tvariant { row_fields = [ (label, _) ] } -> decode_arity_string label
   | _ -> assert false
 
 let mk_js_fn ~env ~arity t =

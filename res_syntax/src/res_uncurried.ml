@@ -16,15 +16,19 @@ let getDotted ~uncurried = function
   | Legacy -> uncurried
   | Default -> not uncurried
 
+let encode_arity_string arity = "Has_arity" ^ string_of_int arity
+let decode_arity_string arity_s =
+  (int_of_string [@doesNotRaise])
+    ((String.sub [@doesNotRaise]) arity_s 9 (String.length arity_s - 9))
+
 let arityType ~loc arity =
   Ast_helper.Typ.variant ~loc
-    [Rtag ({txt = string_of_int arity; loc}, [], true, [])]
+    [Rtag ({txt = encode_arity_string arity; loc}, [], true, [])]
     Closed None
 
 let arityFromType (typ : Parsetree.core_type) =
   match typ.ptyp_desc with
-  | Ptyp_variant ([Rtag ({txt}, _, _, _)], _, _) ->
-    (int_of_string [@doesNotRaise]) txt
+  | Ptyp_variant ([Rtag ({txt}, _, _, _)], _, _) -> decode_arity_string txt
   | _ -> assert false
 
 let new_representation arity = arity = 5
