@@ -21,6 +21,16 @@ let c4 = ReactDOM.createDOMElementVariadic(
   [ReactDOM.createDOMElementVariadic("br", []), ReactDOM.createDOMElementVariadic("br", [])],
 )
 
+let c5 = ReactDOM.createDOMElementVariadic(
+  "div",
+  ~props={...p, key: "k"},
+  [ReactDOM.createDOMElementVariadic("br", []), ReactDOM.createDOMElementVariadic("br", [])],
+)
+
+// both need to be parsed
+let c6 = React.createElement(A.make, params->Obj.magic)
+let c7 = React.createElement(A.make, params->Obj.magic)
+
 @@jsxConfig({version: 4, mode: "automatic"})
 // Error: spreadProps should be first in order than other props
 // let c0 = <A x="x" {...p} />
@@ -44,3 +54,7 @@ let c5 = ReactDOM.jsxsKeyed(
   ~key="k",
   (),
 )
+
+// both need to be parsed
+let c6 = React.jsx(A.make, params->Obj.magic)
+let c7 = React.jsx(A.make, params->Obj.magic)

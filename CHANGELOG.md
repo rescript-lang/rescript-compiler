@@ -63,6 +63,7 @@ These are only breaking changes for unformatted code.
 
 - Prevent inlining of async functions in additional cases https://github.com/rescript-lang/rescript-compiler/issues/5860
 - Fix build error where aliasing arguments to `_` in the make function with JSX V4. https://github.com/rescript-lang/rescript-compiler/pull/5881
+- Fix parsing of spread props as an expression in JSX V4 https://github.com/rescript-lang/rescript-compiler/pull/5885
 
 # 10.1.0
 
