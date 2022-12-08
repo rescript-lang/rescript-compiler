@@ -95,7 +95,7 @@ let type_to_arity (tArity : Types.type_expr) =
   | Tvariant { row_fields = [ (label, _) ] } -> decode_arity_string label
   | _ -> assert false
 
-let mk_js_fn ~env ~arity t =
+let make_uncurried_type ~env ~arity t =
   let typ_arity = arity_to_type arity in
   let lid : Longident.t = Lident "function$" in
   let path = Env.lookup_type lid env in

@@ -2107,7 +2107,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
       (match lid.txt with
       | Lident "Function$" ->
         let arity = Ast_uncurried.attributes_to_arity sexp.pexp_attributes in
-        let uncurried_typ = Ast_uncurried.mk_js_fn ~env ~arity (newvar()) in
+        let uncurried_typ = Ast_uncurried.make_uncurried_type ~env ~arity (newvar()) in
         unify_exp_types loc env ty_expected uncurried_typ
       | _ -> ());
       type_construct env loc lid sarg ty_expected sexp.pexp_attributes
@@ -2992,8 +2992,14 @@ and type_application uncurried env funct (sargs : sargs) : targs * Types.type_ex
     match has_uncurried_type funct.exp_type with
     | None ->
       let arity = List.length sargs in
-      let js_fn = Ast_uncurried.mk_js_fn ~env ~arity (newvar()) in
-      unify_exp env funct js_fn
+      let uncurried_typ = Ast_uncurried.make_uncurried_type ~env ~arity (newvar()) in
+      begin
+        match (expand_head env funct.exp_type).desc with
+        | Tvar _ | Tarrow _ ->
+          unify_exp env funct uncurried_typ
+        | _ ->
+          raise(Error(funct.exp_loc, env, Apply_non_function (expand_head env funct.exp_type)))
+      end
     | Some _ -> () in
   let extract_uncurried_type t =
     match has_uncurried_type t with
@@ -3011,7 +3017,7 @@ and type_application uncurried env funct (sargs : sargs) : targs * Types.type_ex
       if uncurried && not fully_applied then
         raise(Error(funct.exp_loc, env,
           Uncurried_arity_mismatch (t, arity, List.length sargs)));
-      let newT = if fully_applied then newT else Ast_uncurried.mk_js_fn ~env ~arity:newarity newT in
+      let newT = if fully_applied then newT else Ast_uncurried.make_uncurried_type ~env ~arity:newarity newT in
       (fully_applied, newT)
     | _ -> (false, newT)
   in
