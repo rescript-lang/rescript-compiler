@@ -176,8 +176,8 @@ let funExpr expr =
     (* If a fun has an attribute, then it stops here and makes currying.
        i.e attributes outside of (...), uncurried `(.)` and `async` make currying *)
     | {pexp_desc = Pexp_fun _} -> (uncurried, attrsBefore, List.rev acc, expr)
-    | expr when nFun = 0 && Res_uncurried.exprIsUncurriedFun expr ->
-      let expr = Res_uncurried.exprExtractUncurriedFun expr in
+    | expr when nFun = 0 && Ast_uncurried.exprIsUncurriedFun expr ->
+      let expr = Ast_uncurried.exprExtractUncurriedFun expr in
       collect ~uncurried:true ~nFun attrsBefore acc expr
     | expr -> (uncurried, attrsBefore, List.rev acc, expr)
   in
@@ -185,8 +185,8 @@ let funExpr expr =
   | {pexp_desc = Pexp_fun _} ->
     collect ~uncurried:false ~nFun:0 expr.pexp_attributes []
       {expr with pexp_attributes = []}
-  | _ when Res_uncurried.exprIsUncurriedFun expr ->
-    let expr = Res_uncurried.exprExtractUncurriedFun expr in
+  | _ when Ast_uncurried.exprIsUncurriedFun expr ->
+    let expr = Ast_uncurried.exprExtractUncurriedFun expr in
     collect ~uncurried:true ~nFun:0 expr.pexp_attributes []
       {expr with pexp_attributes = []}
   | _ -> collect ~uncurried:false ~nFun:0 [] [] expr
@@ -551,7 +551,7 @@ let partitionPrintableAttributes attrs =
 let isFunNewtype expr =
   match expr.pexp_desc with
   | Pexp_fun _ | Pexp_newtype _ -> true
-  | _ -> Res_uncurried.exprIsUncurriedFun expr
+  | _ -> Ast_uncurried.exprIsUncurriedFun expr
 
 let requiresSpecialCallbackPrintingLastArg args =
   let rec loop args =

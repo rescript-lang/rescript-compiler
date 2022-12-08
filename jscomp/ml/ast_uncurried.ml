@@ -9,6 +9,11 @@ let arityType ~loc arity =
     [ Rtag ({ txt = encode_arity_string arity; loc }, [], true, []) ]
     Closed None
 
+let arityFromType (typ : Parsetree.core_type) =
+  match typ.ptyp_desc with
+  | Ptyp_variant ([Rtag ({txt}, _, _, _)], _, _) -> decode_arity_string txt
+  | _ -> assert false
+
 let uncurriedType ~loc ~arity tArg =
     let tArity = arityType ~loc arity in
     Ast_helper.Typ.constr ~loc
@@ -56,6 +61,18 @@ let exprIsUncurriedFun (expr : Parsetree.expression) =
 let exprExtractUncurriedFun (expr : Parsetree.expression) =
   match expr.pexp_desc with
   | Pexp_construct ({ txt = Lident "Function$" }, Some e) -> e
+  | _ -> assert false
+
+let typeIsUncurriedFun (typ : Parsetree.core_type) =
+  match typ.ptyp_desc with
+  | Ptyp_constr ({txt = Lident "function$"}, [{ptyp_desc = Ptyp_arrow _}; _]) ->
+    true
+  | _ -> false
+
+let typeExtractUncurriedFun (typ : Parsetree.core_type) =
+  match typ.ptyp_desc with
+  | Ptyp_constr ({txt = Lident "function$"}, [tArg; tArity]) ->
+    (arityFromType tArity, tArg)
   | _ -> assert false
 
 (* Typed AST *)

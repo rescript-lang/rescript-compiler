@@ -752,8 +752,8 @@ let transformStructureItem ~config mapper item =
         check_string_int_attribute_iter.structure_item
           check_string_int_attribute_iter item;
         let pval_type =
-          if Res_uncurried.typeIsUncurriedFun pval_type then
-            let _arity, t = Res_uncurried.typeExtractUncurriedFun pval_type in
+          if Ast_uncurried.typeIsUncurriedFun pval_type then
+            let _arity, t = Ast_uncurried.typeExtractUncurriedFun pval_type in
             t
           else pval_type
         in
@@ -825,8 +825,8 @@ let transformStructureItem ~config mapper item =
           config.hasReactComponent <- true;
           let rec removeArityRecord expr =
             match expr.pexp_desc with
-            | _ when Res_uncurried.exprIsUncurriedFun expr ->
-              Res_uncurried.exprExtractUncurriedFun expr
+            | _ when Ast_uncurried.exprIsUncurriedFun expr ->
+              Ast_uncurried.exprExtractUncurriedFun expr
             | Pexp_apply (forwardRef, [(label, e)]) ->
               {
                 expr with
@@ -1248,8 +1248,8 @@ let transformSignatureItem ~config _mapper item =
         React_jsx_common.raiseErrorMultipleReactComponent ~loc:psig_loc
       else config.hasReactComponent <- true;
       let pval_type =
-        if Res_uncurried.typeIsUncurriedFun pval_type then
-          let _arity, t = Res_uncurried.typeExtractUncurriedFun pval_type in
+        if Ast_uncurried.typeIsUncurriedFun pval_type then
+          let _arity, t = Ast_uncurried.typeExtractUncurriedFun pval_type in
           t
         else pval_type
       in

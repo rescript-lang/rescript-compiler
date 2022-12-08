@@ -1599,7 +1599,7 @@ and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
             && (termParamNum = 1
                || not (p.uncurried_config |> Res_uncurried.isDefault))
           then
-            (termParamNum - 1, Res_uncurried.uncurriedFun ~loc ~arity funExpr, 1)
+            (termParamNum - 1, Ast_uncurried.uncurriedFun ~loc ~arity funExpr, 1)
           else (termParamNum - 1, funExpr, arity + 1)
         | TypeParameter {dotted = _; attrs; locs = newtypes; pos = startPos} ->
           ( termParamNum,
@@ -3917,7 +3917,7 @@ and parsePolyTypeExpr p =
         let loc = mkLoc typ.Parsetree.ptyp_loc.loc_start p.prevEndPos in
         let tFun = Ast_helper.Typ.arrow ~loc Asttypes.Nolabel typ returnType in
         if p.uncurried_config |> Res_uncurried.isDefault then
-          Res_uncurried.uncurriedType ~loc ~arity:1 tFun
+          Ast_uncurried.uncurriedType ~loc ~arity:1 tFun
         else tFun
       | _ -> Ast_helper.Typ.var ~loc:var.loc var.txt)
     | _ -> assert false)
@@ -4267,7 +4267,7 @@ and parseEs6ArrowType ~attrs p =
           then
             let loc = mkLoc startPos endPos in
             let tArg = Ast_helper.Typ.arrow ~loc ~attrs argLbl typ t in
-            (paramNum - 1, Res_uncurried.uncurriedType ~loc ~arity tArg, 1)
+            (paramNum - 1, Ast_uncurried.uncurriedType ~loc ~arity tArg, 1)
           else
             ( paramNum - 1,
               Ast_helper.Typ.arrow ~loc:(mkLoc startPos endPos) ~attrs argLbl
@@ -4330,7 +4330,7 @@ and parseArrowTypeRest ~es6Arrow ~startPos typ p =
     let loc = mkLoc startPos p.prevEndPos in
     let arrowTyp = Ast_helper.Typ.arrow ~loc Asttypes.Nolabel typ returnType in
     if p.uncurried_config |> Res_uncurried.isDefault then
-      Res_uncurried.uncurriedType ~loc ~arity:1 arrowTyp
+      Ast_uncurried.uncurriedType ~loc ~arity:1 arrowTyp
     else arrowTyp
   | _ -> typ
 
