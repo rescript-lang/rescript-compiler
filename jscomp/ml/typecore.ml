@@ -3672,8 +3672,6 @@ let report_error env ppf = function
             type_expr typ;
           fprintf ppf "@ @[It is applied to too many arguments;@ %s@]@]"
                       "maybe you forgot a `;'."
-      | Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),_,_),_,_) ->                 
-          fprintf ppf "This function has uncurried type, it needs to be applied in ucurried style";
       | _ ->
           fprintf ppf "@[<v>@[<2>This expression has type@ %a@]@ %s@]"
             type_expr typ

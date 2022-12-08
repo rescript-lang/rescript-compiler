@@ -202,19 +202,6 @@ let report_error env ppf = function
           type_expr typ;
         fprintf ppf "@ @[It only accepts %i %s; here, it's called with more.@]@]"
           acceptsCount (if acceptsCount == 1 then "argument" else "arguments")
-      | Tconstr (
-          (Path.Pdot (((Pdot (Path.Pident {name="Js"}, "Fn", _)) ), _, _)),
-          _,
-          _
-        )
-        ->
-        fprintf
-          ppf
-          "@[<v>This is an uncurried ReScript function. @{<info>It must be applied with a dot@}.@,@,\
-           Like this: @{<info>foo(. a, b)@}@,\
-           Not like this: @{<dim>foo(a, b)@}@,@,\
-           This guarantees that your function is fully applied. More info here:@,\
-           https://rescript-lang.org/docs/manual/latest/function#uncurried-function@]"
       | _ ->
         fprintf ppf "@[<v>@[<2>This expression has type@ %a@]@ %s@]"
           type_expr typ
