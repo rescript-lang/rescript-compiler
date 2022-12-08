@@ -14,15 +14,9 @@ let rec addAnnotationsToTypes_ ~config ~(expr : Typedtree.expression)
       in
       let aName = Ident.name param in
       { aName; aType } :: nextTypes1
-  | ( Texp_record
-        { fields = [| ({ lbl_name = "I" }, Overridden (_, exprRecord)) |] },
-      Tconstr (path, _, _),
-      _ )
-    when match path |> TranslateTypeExprFromTypes.pathToList |> List.rev with
-         | [ "Js"; "Fn"; _arity ] -> true
-         | _ -> false ->
-      (* let uncurried1: Js.Fn.arity1(_) = {I: x => x |> string_of_int} *)
-      addAnnotationsToTypes_ ~config ~expr:exprRecord argTypes
+  | ( Texp_construct ({txt = Lident "Function$"}, _, [funExpr]), _, _) ->
+      (* let uncurried1: function$<_, _> = Function$(x => x |> string_of_int, [`Has_arity1]) *)
+      addAnnotationsToTypes_ ~config ~expr:funExpr argTypes
   | ( Texp_apply ({ exp_desc = Texp_ident (path, _, _) }, [ (_, Some expr1) ]),
       _,
       _ ) -> (

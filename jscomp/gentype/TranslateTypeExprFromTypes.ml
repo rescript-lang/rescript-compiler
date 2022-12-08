@@ -205,133 +205,13 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
       { paramTranslation with type_ = Nullable paramTranslation.type_ }
   | ([ "Js"; "Promise"; "t" ] | ["promise"]), [ paramTranslation ] ->
       { paramTranslation with type_ = Promise paramTranslation.type_ }
-  | ( [ "Js"; "Internal"; "fn" ],
-      [ { dependencies = argsDependencies; type_ = Tuple ts }; ret ] ) ->
-      {
-        dependencies = argsDependencies @ ret.dependencies;
-        type_ =
-          Function
-            {
-              argTypes =
-                ts |> List.map (fun type_ -> { aName = ""; aType = type_ });
-              componentName = None;
-              retType = ret.type_;
-              typeVars = [];
-              uncurried = true;
-            };
-      }
-  | ( [ "Js"; "Internal"; "fn" ],
-      [
-        {
-          dependencies = argsDependencies;
-          type_ = Variant { noPayloads = [ { label = "Arity_0" } ] };
-        };
-        ret;
-      ] ) ->
-      {
-        dependencies = argsDependencies @ ret.dependencies;
-        type_ =
-          Function
-            {
-              argTypes = [];
-              componentName = None;
-              retType = ret.type_;
-              typeVars = [];
-              uncurried = true;
-            };
-      }
-  | [ "Js"; "Fn"; "arity0" ], [ ret ] ->
-      {
-        dependencies = ret.dependencies;
-        type_ =
-          Function
-            {
-              argTypes = [];
-              componentName = None;
-              retType = ret.type_;
-              typeVars = [];
-              uncurried = true;
-            };
-      }
-  | ( [
-        ("Js" | "Js_OO");
-        ("Fn" | "Meth");
-        ( "arity1" | "arity2" | "arity3" | "arity4" | "arity5" | "arity6"
-        | "arity7" | "arity8" | "arity9" | "arity10" | "arity11" | "arity12"
-        | "arity13" | "arity14" | "arity15" | "arity16" | "arity17" | "arity18"
-        | "arity19" | "arity20" | "arity21" | "arity22" );
-      ],
-      [ arg ] ) ->
+  | ( [ "function$"], [ arg; _arity ] ) ->
       {
         dependencies = arg.dependencies;
         type_ =
           (match arg.type_ with
           | Function function_ -> Function { function_ with uncurried = true }
           | _ -> arg.type_);
-      }
-  | ( [ "Js"; "Internal"; "fn" ],
-      [ { dependencies = argsDependencies; type_ = singleT }; ret ] ) ->
-      let argTypes =
-        (match singleT with
-        | Variant { payloads = [ { t = Tuple argTypes } ] } -> argTypes
-        | Variant { payloads = [ { t = type_ } ] } -> [ type_ ]
-        | _ -> [ singleT ])
-        |> List.map (fun type_ -> { aName = ""; aType = type_ })
-      in
-      {
-        dependencies = argsDependencies @ ret.dependencies;
-        type_ =
-          Function
-            {
-              argTypes;
-              componentName = None;
-              retType = ret.type_;
-              typeVars = [];
-              uncurried = true;
-            };
-      }
-  | ( ([ "Js"; "Internal"; "meth" ] | [ "Js_internalOO"; "meth" ]),
-      [
-        {
-          dependencies = argsDependencies;
-          type_ =
-            Variant
-              { payloads = [ { case = { label = "Arity_1" }; t = type_ } ] };
-        };
-        ret;
-      ] ) ->
-      {
-        dependencies = argsDependencies @ ret.dependencies;
-        type_ =
-          Function
-            {
-              argTypes = [ { aName = ""; aType = type_ } ];
-              componentName = None;
-              retType = ret.type_;
-              typeVars = [];
-              uncurried = true;
-            };
-      }
-  | ( ([ "Js"; "Internal"; "meth" ] | [ "Js_internalOO"; "meth" ]),
-      [
-        {
-          dependencies = argsDependencies;
-          type_ = Variant { payloads = [ { t = Tuple ts } ] };
-        };
-        ret;
-      ] ) ->
-      {
-        dependencies = argsDependencies @ ret.dependencies;
-        type_ =
-          Function
-            {
-              argTypes =
-                ts |> List.map (fun type_ -> { aName = ""; aType = type_ });
-              componentName = None;
-              retType = ret.type_;
-              typeVars = [];
-              uncurried = true;
-            };
       }
   | _ -> defaultCase ()
 

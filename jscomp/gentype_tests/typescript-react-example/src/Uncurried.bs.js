@@ -2,7 +2,7 @@
 
 import * as Curry from "rescript/lib/es6/curry.js";
 
-function uncurried0() {
+function uncurried0(param) {
   return "";
 }
 
@@ -31,7 +31,7 @@ function callback2(auth) {
 }
 
 function callback2U(auth) {
-  return auth.loginU();
+  return auth.loginU(undefined);
 }
 
 function sumU(n, m) {
