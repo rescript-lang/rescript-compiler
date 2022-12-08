@@ -11,10 +11,10 @@
    (= %{system} linux_eabihf)
    (= %{system} linux_eabi)))
  (flags
-  (-open Syntax -open Compilerlibs406))
+  (:standard -w +a-4-40-42-70))
  (foreign_stubs
   (language c)
   (names time))
- (libraries syntax compilerlibs406))
+ (libraries syntax))
 
 (data_only_dirs data)
