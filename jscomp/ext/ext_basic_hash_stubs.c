@@ -71,8 +71,8 @@ CAMLprim value caml_int_array_blit(
   value a2, value ofs2,
   value n)
   {
-     memmove(&Field(a2, Long_val(ofs2)),
-            &Field(a1, Long_val(ofs1)),
+     memmove((value *)&Field(a2, Long_val(ofs2)),
+            (value *)&Field(a1, Long_val(ofs1)),
             Long_val(n) * sizeof(value));
     return Val_unit;
   }
