@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/infiniteLoops/nonRecTypes.res:4:29-36
 
   2 ┆ include (
@@ -12,7 +12,7 @@
   t<'value>
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/infiniteLoops/nonRecTypes.res:19:45-51
 
   17 ┆   ~size: int,
@@ -24,7 +24,7 @@
   consecutive statements on a line must be separated by ';' or a newline
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/infiniteLoops/nonRecTypes.res:67:26-68:3
 
   65 │         };
@@ -37,7 +37,7 @@
   I'm not sure what to parse here when looking at "let".
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/infiniteLoops/nonRecTypes.res:68:21-69:3
 
   66 │ let has = (rbt, value) => _findNode(rbt, rootGet(rbt), value) !== None;
@@ -50,7 +50,7 @@
   I'm not sure what to parse here when looking at "let".
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/infiniteLoops/nonRecTypes.res:434:31-38
 
   432 │     updateSum(Some(node), ~delta);

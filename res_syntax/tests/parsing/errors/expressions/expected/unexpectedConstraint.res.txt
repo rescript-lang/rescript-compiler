@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/unexpectedConstraint.res:4:3-13
 
   2 │   let a = 1
@@ -12,7 +12,7 @@
   (a + b: int)
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/unexpectedConstraint.res:7:9-20
 
   5 │ }

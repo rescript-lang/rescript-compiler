@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/implementation.res:7:1
 
   5 │   }

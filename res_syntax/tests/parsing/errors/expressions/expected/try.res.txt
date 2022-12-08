@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/try.res:2:37-38
 
   1 ┆ let parsedPayload =

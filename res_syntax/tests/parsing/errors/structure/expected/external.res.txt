@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/structure/external.res:2:51
 
   1 │ // missing JS value name

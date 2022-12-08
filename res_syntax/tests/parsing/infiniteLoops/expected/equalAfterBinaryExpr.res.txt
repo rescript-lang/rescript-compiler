@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/infiniteLoops/equalAfterBinaryExpr.res:169:17
 
   167 ┆ if isLeaf(. successor) {

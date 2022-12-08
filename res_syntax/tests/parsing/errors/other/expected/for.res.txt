@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/other/for.res:1:6-2:0
 
   1 │ for x

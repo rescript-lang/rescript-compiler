@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/recovery/pattern/parenthesized.res:2:5-8
 
   1 │ switch x {
@@ -10,7 +10,7 @@
   Did you forget a `)` here?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/recovery/pattern/parenthesized.res:3:9-11
 
   1 │ switch x {
@@ -22,7 +22,7 @@
   Did you forget a `]` here?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/recovery/pattern/parenthesized.res:4:12-14
 
   2 │ | (a  => ()
@@ -34,7 +34,7 @@
   Did you forget a `}` here?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/recovery/pattern/parenthesized.res:5:11-13
 
   3 │ | ([a, b => ()
@@ -46,7 +46,7 @@
   Did you forget a `}` here?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/recovery/pattern/parenthesized.res:6:9-11
 
   4 │ | ({a, ...b => ()

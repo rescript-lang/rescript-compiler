@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/scanner/nativeint.res:1:18
 
   1 │ let nativeint = 3n

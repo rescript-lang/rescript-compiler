@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/recovery/string/es6template.res:1:30-2:0
 
   1 │ let x = `this contains ${foo}, missing closing

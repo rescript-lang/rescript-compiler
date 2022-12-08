@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typexpr/arrow.res:2:22-24
 
   1 │ // notice usage of -> instead of =>
@@ -10,7 +10,7 @@
   Did you forget a `=>` here?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typexpr/arrow.res:7:27-30
 
   5 │   type observation ={
@@ -22,7 +22,7 @@
   Did you forget a `:` here? It signals the start of a type
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typexpr/arrow.res:14:26-29
 
   12 │   type observation ={

@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/id.res:1:5
 
   1 │ n.R.

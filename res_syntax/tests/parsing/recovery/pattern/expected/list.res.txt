@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/recovery/pattern/list.res:3:17-19
 
   1 │ switch x {
@@ -11,7 +11,7 @@
   Did you forget a `}` here?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/recovery/pattern/list.res:4:9-11
 
   2 │ | list{} => ()
@@ -23,7 +23,7 @@
   Did you forget a `=>` here?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/recovery/pattern/list.res:4:13
 
   2 │ | list{} => ()

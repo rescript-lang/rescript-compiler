@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typeDef/namedParameters.res:1:15-20
 
   1 │ type  draw = (stroke: pencil) => unit

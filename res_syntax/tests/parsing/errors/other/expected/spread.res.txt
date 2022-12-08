@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/other/spread.res:1:12-14
 
   1 │ let arr = [...x, ...y]
@@ -9,7 +9,7 @@
   Arrays can't use the `...` spread currently. Please use `concat` or other Array helpers.
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/other/spread.res:2:6-8
 
   1 │ let arr = [...x, ...y]
@@ -22,7 +22,7 @@ Explanation: such spread would create a subarray; out of performance concern, ou
 Solution: if it's to validate the first few elements, use a `when` clause + Array size check + `get` checks on the current pattern. If it's to obtain a subarray, use `Array.sub` or `Belt.Array.slice`.
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/other/spread.res:4:21-23
 
   2 │ let [...arr, _] = [1, 2, 3]
@@ -35,7 +35,7 @@ Solution: if it's to validate the first few elements, use a `when` clause + Arra
 Explanation: since records have a known, fixed shape, a spread like `{a, ...b}` wouldn't make sense, as `b` would override every field of `a` anyway.
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/other/spread.res:5:15-18
 
   3 │ 
@@ -49,7 +49,7 @@ Explanation: you can't collect a subset of a record's field into its own record,
 Solution: you need to pull out each field you want explicitly.
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/other/spread.res:7:13-22
 
   5 │ let {...x, ...y} = myRecord
@@ -62,7 +62,7 @@ Solution: you need to pull out each field you want explicitly.
 Explanation: a list spread at the tail is efficient, but a spread in the middle would create new lists; out of performance concern, our pattern matching currently guarantees to never create new intermediate data.
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/other/spread.res:9:11-13
 
    7 │ let list{...x, ...y} = myList
@@ -74,7 +74,7 @@ Explanation: a list spread at the tail is efficient, but a spread in the middle 
   You're using a ... spread without extra fields. This is the same type.
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/other/spread.res:10:15-17
 
    8 │ 
@@ -86,7 +86,7 @@ Explanation: a list spread at the tail is efficient, but a spread in the middle 
   You're using a ... spread without extra fields. This is the same type.
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/other/spread.res:11:23-26
 
    9 │ type t = {...a}

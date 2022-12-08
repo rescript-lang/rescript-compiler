@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typeDef/keywordOnly.res:1:5
 
   1 │ type

@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/structure/gh16A.res:6:1
 
   4 │   })

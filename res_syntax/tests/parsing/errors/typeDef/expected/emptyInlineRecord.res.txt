@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typeDef/emptyInlineRecord.res:3:10-11
 
   1 │ type node<'a> =

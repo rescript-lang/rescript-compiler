@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/scanner/oldDerefOp.res:1:50
 
   1 │ let newVelocity = velocity +. a *. secondPerFrame^;
@@ -11,7 +11,7 @@
   To concatenate strings, use `"a" ++ "b"` instead.
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/scanner/oldDerefOp.res:2:46
 
   1 │ let newVelocity = velocity +. a *. secondPerFrame^;

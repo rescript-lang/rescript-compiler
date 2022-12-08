@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/recovery/pattern/tuple.res:2:5-7
 
   1 │ switch x {
@@ -10,7 +10,7 @@
   Did you forget a `)` here?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/recovery/pattern/tuple.res:3:13-15
 
   1 │ switch x {
@@ -22,7 +22,7 @@
   Did you forget a `)` here?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/recovery/pattern/tuple.res:4:12-14
 
   2 │ | (a => ()

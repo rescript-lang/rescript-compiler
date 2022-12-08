@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/structure/attributes.res:2:3-7
 
   1 │ module MissingExpression = {
@@ -11,7 +11,7 @@
   Standalone attributes start with `@@` like: `@@attr`
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/structure/attributes.res:5:1-21
 
   3 │ }

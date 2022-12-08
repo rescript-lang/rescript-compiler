@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/recovery/pattern/constructor.res:2:14-16
 
   1 │ switch x {
@@ -10,7 +10,7 @@
   Did you forget a `)` here?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/recovery/pattern/constructor.res:3:23-25
 
   1 │ switch x {
@@ -22,7 +22,7 @@
   Did you forget a `)` here?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/recovery/pattern/constructor.res:4:22-24
 
   2 │ | Rgb(r, g, b => ()

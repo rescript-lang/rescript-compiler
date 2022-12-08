@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/infiniteLoops/jsxChildren.res:1:22
 
   1 │ type action = AddUser<string>
@@ -9,7 +9,7 @@
   consecutive statements on a line must be separated by ';' or a newline
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/infiniteLoops/jsxChildren.res:1:22-29
 
   1 │ type action = AddUser<string>

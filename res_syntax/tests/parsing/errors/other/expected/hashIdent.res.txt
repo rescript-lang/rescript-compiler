@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/other/hashIdent.res:1:10-12
 
   1 │ let x = #10s
@@ -9,7 +9,7 @@
   A numeric polymorphic variant cannot be followed by a letter. Did you mean `#10`?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/other/hashIdent.res:3:20-22
 
   1 │ let x = #10s
@@ -21,7 +21,7 @@
   A numeric polymorphic variant cannot be followed by a letter. Did you mean `#10`?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/other/hashIdent.res:6:4-6
 
   4 │ 

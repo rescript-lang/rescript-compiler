@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typeDef/record.res:4:1
 
   2 │   observed: int,

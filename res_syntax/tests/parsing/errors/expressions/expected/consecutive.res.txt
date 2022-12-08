@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/consecutive.res:1:23
 
   1 │ let f = (a,b) => a + 3b;
@@ -9,7 +9,7 @@
   consecutive statements on a line must be separated by ';' or a newline
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/consecutive.res:4:7
 
   2 │ 
@@ -21,7 +21,7 @@
   consecutive expressions on a line must be separated by ';' or a newline
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/consecutive.res:8:16-27
 
    6 │ 
@@ -33,7 +33,7 @@
   consecutive expressions on a line must be separated by ';' or a newline
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/consecutive.res:12:11-20
 
   10 │ 

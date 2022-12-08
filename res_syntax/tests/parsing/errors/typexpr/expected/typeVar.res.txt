@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typexpr/typeVar.res:1:15
 
   1 │ type x<'A> = '_
@@ -9,7 +9,7 @@
   A type variable consists of a singlequote followed by a name like `'a` or `'A`
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typexpr/typeVar.res:2:15-17
 
   1 │ type x<'A> = '_

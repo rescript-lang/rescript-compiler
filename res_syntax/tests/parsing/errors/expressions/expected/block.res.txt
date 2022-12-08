@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/block.res:14:4-15:1
 
   12 │ 
@@ -12,7 +12,7 @@
   Did you forget a `)` here?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/block.res:18:25-19:1
 
   16 │ 
@@ -25,7 +25,7 @@
   Did you forget a `)` here?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/block.res:22:11-23:1
 
   20 │ 
@@ -38,7 +38,7 @@
   Looks like there might be an expression missing here
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/block.res:26:7-27:1
 
   24 │ | Join(doc1, doc2) =>
@@ -51,7 +51,7 @@
   Did you forget a `)` here?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/block.res:30:10-31:1
 
   28 │ 

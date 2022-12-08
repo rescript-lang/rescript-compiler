@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typeDef/typeDef.res:1:15-2:3
 
   1 │ type rec stack
@@ -10,7 +10,7 @@
   Did you forget a `=` here?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typeDef/typeDef.res:5:6-12
 
   3 │ 
@@ -22,7 +22,7 @@
   A type declaration's name cannot contain a module access. Did you mean `bar`?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typeDef/typeDef.res:11:1-4
 
    9 │ 
@@ -34,7 +34,7 @@
   Missing a type here
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typeDef/typeDef.res:14:1
 
   12 │ 
@@ -46,7 +46,7 @@
   I'm not sure what to parse here when looking at ";".
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typeDef/typeDef.res:17:6-7
 
   15 │ 
@@ -58,7 +58,7 @@
   Did you mean `t1` instead of `T1`?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typeDef/typeDef.res:19:8-9
 
   17 │ type T1 = D1
@@ -70,7 +70,7 @@
   Did you mean `t2` instead of `T2`?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typeDef/typeDef.res:21:12-13
 
   19 │ type M.T2 += D2
@@ -82,7 +82,7 @@
   Did you mean `t3` instead of `T3`?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typeDef/typeDef.res:23:6-7
 
   21 │ type M1.M2.T3 += D3
@@ -94,7 +94,7 @@
   Did you mean `t3` instead of `T3`?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typeDef/typeDef.res:23:15
 
   21 │ type M1.M2.T3 += D3
@@ -106,7 +106,7 @@
   I'm not sure what to parse here when looking at ":".
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typeDef/typeDef.res:25:6-7
 
   23 │ type T3 += Tid: Tid.t<t>
@@ -118,7 +118,7 @@
   Did you mean `t4` instead of `T4`?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typeDef/typeDef.res:27:12-13
 
   25 │ type T4<_> = D4
@@ -130,7 +130,7 @@
   Did you mean `t5` instead of `T5`?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typeDef/typeDef.res:29:8
 
   27 │ type M1.M2.T5<_> += D5

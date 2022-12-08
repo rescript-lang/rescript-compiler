@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/other/oneElementTuple.res:1:19-23
 
   1 │ let faultyTuple = (a, )
@@ -9,7 +9,7 @@
   A tuple needs at least two elements
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/other/oneElementTuple.res:4:3-7
 
   2 │ 
@@ -21,7 +21,7 @@
   A tuple needs at least two elements
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/other/oneElementTuple.res:8:20-29
 
   6 │ }

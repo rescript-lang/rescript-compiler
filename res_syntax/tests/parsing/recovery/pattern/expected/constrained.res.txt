@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/recovery/pattern/constrained.res:2:17-4:1
 
   1 │ switch x {

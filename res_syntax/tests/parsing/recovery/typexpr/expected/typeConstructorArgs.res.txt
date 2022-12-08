@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/recovery/typexpr/typeConstructorArgs.res:2:28-31
 
   1 │ type node<'a> = {

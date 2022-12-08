@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/recovery/expression/list.res:6:26-28
 
   4 ┆ let rec loop = (items) => {
@@ -13,7 +13,7 @@ Explanation: such spread would create a subarray; out of performance concern, ou
 Solution: if it's to validate the first few elements, use a `when` clause + Array size check + `get` checks on the current pattern. If it's to obtain a subarray, use `Array.sub` or `Belt.Array.slice`.
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/recovery/expression/list.res:7:13-15
 
   5 ┆ switch(items) {

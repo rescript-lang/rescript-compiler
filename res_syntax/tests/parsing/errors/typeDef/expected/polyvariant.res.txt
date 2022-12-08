@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typeDef/polyvariant.res:1:13
 
   1 │ type t = [< ]
@@ -9,7 +9,7 @@
   I'm not sure what to parse here when looking at "]".
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typeDef/polyvariant.res:5:15
 
   3 │ type z = [< | #A | #B > ]

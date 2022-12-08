@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/record.res:2:10-3:7
 
   1 │ let newWrapper = {
@@ -11,7 +11,7 @@
   Did you forget a `,` here?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/record.res:8:10-18
 
    6 │ 
@@ -23,7 +23,7 @@
   Did you forget a `:` here?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/record.res:13:9-14:1
 
   11 │ 
@@ -36,7 +36,7 @@
   Missing expression
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/record.res:18:9-19:2
 
   16 │ 

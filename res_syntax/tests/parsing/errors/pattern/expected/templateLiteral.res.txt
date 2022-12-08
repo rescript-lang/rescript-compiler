@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/pattern/templateLiteral.res:4:3-27
 
   2 │ 
@@ -11,7 +11,7 @@
   String interpolation is not supported in pattern matching.
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/pattern/templateLiteral.res:5:33
 
   3 │ switch l {
@@ -23,7 +23,7 @@
   Not sure what to do with this character.
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/pattern/templateLiteral.res:5:3-46
 
   3 │ switch l {

@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/taggedTemplateLiterals.res:1:1-5
 
   1 │ foo()`null`

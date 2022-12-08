@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/structure/letBinding.res:2:18-20
 
   1 │ // missing =
@@ -10,7 +10,7 @@
   Did you forget a `=` here?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/structure/letBinding.res:8:12-13
 
    6 │ let x = {
@@ -22,7 +22,7 @@
   Did you forget a `=` here?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/structure/letBinding.res:14:19-26
 
   12 │ let t = {
@@ -34,7 +34,7 @@
   Did you forget a `=` here?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/structure/letBinding.res:18:39-20:3
 
   16 │ }
@@ -48,7 +48,7 @@
   This let-binding misses an expression
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/structure/letBinding.res:20:10-23:3
 
   18 │ let keyTable: Belt.Map.String.t<int> =
@@ -63,7 +63,7 @@
   This let-binding misses an expression
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/structure/letBinding.res:23:11-13
 
   21 │ 
@@ -75,7 +75,7 @@
   Did you forget a `=` here?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/structure/letBinding.res:26:6-8
 
   24 │ 
@@ -87,7 +87,7 @@
   Did you forget a `=` here?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/structure/letBinding.res:29:13-15
 
   27 │ 

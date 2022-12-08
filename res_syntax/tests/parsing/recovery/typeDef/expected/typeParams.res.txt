@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/recovery/typeDef/typeParams.res:1:10-13
 
   1 │ type node('a) = {

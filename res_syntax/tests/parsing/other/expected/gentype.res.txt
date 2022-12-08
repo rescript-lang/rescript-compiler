@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/other/gentype.res:1:12-2:8
 
   1 │ module M: {
@@ -10,7 +10,7 @@
   Did you forget a `}` here?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/other/gentype.res:2:9-13
 
   1 │ module M: {

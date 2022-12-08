@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/other/breadcrumbs170.res:9:1
 
    7 │   }

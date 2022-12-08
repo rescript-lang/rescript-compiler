@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/jsx.res:1:12
 
   1 │ let x = <di-v />
@@ -9,7 +9,7 @@
   I'm not sure what to parse here when looking at "-".
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/jsx.res:2:20
 
   1 │ let x = <di-v />
@@ -20,7 +20,7 @@
   Did you forget a `</` here?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/jsx.res:3:9-28
 
   1 │ let x = <di-v />
@@ -32,7 +32,7 @@
   Missing </Foo.Bar>
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/jsx.res:4:9-34
 
   2 │ let x = <Unclosed >;
@@ -44,7 +44,7 @@
   Missing </Foo.Bar.Baz>
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/jsx.res:5:9-27
 
   3 │ let x = <Foo.Bar></Free.Will>;
@@ -56,7 +56,7 @@
   Missing </Foo.bar>
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/jsx.res:6:17
 
   4 │ let x = <Foo.Bar.Baz></Foo.Bar.Boo>

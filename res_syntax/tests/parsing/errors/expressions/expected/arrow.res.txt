@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/arrow.res:1:52
 
   1 │ Object.keys(providers).reduce((elements, providerId] => {

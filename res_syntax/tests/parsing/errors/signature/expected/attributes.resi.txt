@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/signature/attributes.resi:2:3-7
 
   1 │ module type MissingItem = {
@@ -11,7 +11,7 @@
   Standalone attributes start with `@@` like: `@@attr`
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/signature/attributes.resi:5:1-16
 
   3 │ }

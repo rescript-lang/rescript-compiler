@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/other/regionMissingComma.res:2:31
 
   1 │ external make: (
@@ -10,7 +10,7 @@
   Did you forget a `,` here?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/other/regionMissingComma.res:8:11-9:11
 
    6 │ type student<'extraInfo> = {

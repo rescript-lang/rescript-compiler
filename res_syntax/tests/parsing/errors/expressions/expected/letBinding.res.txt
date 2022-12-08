@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/letBinding.res:1:10-11
 
   1 │ let foo = '2.
@@ -9,7 +9,7 @@
   This let-binding misses an expression
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/letBinding.res:3:10-11
 
   1 │ let foo = '2.
@@ -21,7 +21,7 @@
   This let-binding misses an expression
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/letBinding.res:5:10-11
 
   3 │ let foo = }true
@@ -33,7 +33,7 @@
   This let-binding misses an expression
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/letBinding.res:7:10-11
 
   5 │ let foo = )2
@@ -45,7 +45,7 @@
   This let-binding misses an expression
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/letBinding.res:9:10-11
 
    7 │ let foo = }f()
@@ -57,7 +57,7 @@
   This let-binding misses an expression
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/letBinding.res:11:10-12
 
    9 │ let foo = }}{2}
@@ -69,7 +69,7 @@
   This let-binding misses an expression
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/letBinding.res:15:12
 
   13 │ }

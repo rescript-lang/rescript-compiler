@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typeDef/typeParams.res:1:10-13
 
   1 │ type node('a) = {
@@ -10,7 +10,7 @@
   node<'a>
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typeDef/typeParams.res:5:26-28
 
   3 │ }
@@ -22,7 +22,7 @@
   `for` is a reserved keyword. Keywords need to be escaped: \"for"
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typeDef/typeParams.res:10:26
 
    8 │ }
@@ -34,7 +34,7 @@
   A type param consists of a singlequote followed by a name like `'a` or `'A`
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typeDef/typeParams.res:15:26
 
   13 │ }
@@ -46,7 +46,7 @@
   A type param consists of a singlequote followed by a name like `'a` or `'A`
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typeDef/typeParams.res:21:25-27
 
   19 │ 

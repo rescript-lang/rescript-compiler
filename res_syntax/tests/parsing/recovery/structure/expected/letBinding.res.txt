@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/recovery/structure/letBinding.res:1:8-9
 
   1 │ let x = = doStuff(y)

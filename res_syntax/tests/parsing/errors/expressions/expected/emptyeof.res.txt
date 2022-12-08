@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/emptyeof.res:1:9-2:0
 
   1 │ let x = "

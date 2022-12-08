@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/grammar/ffi/export.res:1:7-11
 
   1 │ export type callback = ReactEvent.Mouse.t => unit
@@ -9,7 +9,7 @@
   consecutive statements on a line must be separated by ';' or a newline
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/grammar/ffi/export.res:3:31-32
 
   1 │ export type callback = ReactEvent.Mouse.t => unit
@@ -21,7 +21,7 @@
   consecutive statements on a line must be separated by ';' or a newline
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/grammar/ffi/export.res:5:24-25
 
   3 │ export type t = int and export s = string
@@ -33,7 +33,7 @@
   consecutive statements on a line must be separated by ';' or a newline
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/grammar/ffi/export.res:10:40-41
 
    8 │ export callback = _ => Js.log("Clicked")
@@ -45,7 +45,7 @@
   Did you forget a `=` here?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/grammar/ffi/export.res:12:33-34
 
   10 │ export let x = "hello world" and export y = 2

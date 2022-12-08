@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/recovery/expression/jsx.res:1:14
 
   1 │ let x = <div @ @@@ />

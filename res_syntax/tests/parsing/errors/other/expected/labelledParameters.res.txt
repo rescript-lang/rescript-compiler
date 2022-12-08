@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/other/labelledParameters.res:1:13-14
 
   1 │ let f = (x, y=2, z) => x + y + z
@@ -9,7 +9,7 @@
   A labeled parameter starts with a `~`. Did you mean: `~y`?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/other/labelledParameters.res:3:11
 
   1 │ let f = (x, y=2, z) => x + y + z
@@ -21,7 +21,7 @@
   I'm expecting a lowercase name like `user or `age`
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/other/labelledParameters.res:5:11
 
   3 │ let g = (~?x, ~y=2, ~z) => x + y + z

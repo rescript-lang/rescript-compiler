@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typexpr/objectSpread.res:1:11-13
 
   1 │ type u = {...a, u: int}
@@ -9,7 +9,7 @@
   A record type declaration doesn't support the ... spread. Only an object (with quoted field names) does.
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typexpr/objectSpread.res:3:19-21
 
   1 │ type u = {...a, u: int}
@@ -21,7 +21,7 @@
   A record type declaration doesn't support the ... spread. Only an object (with quoted field names) does.
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typexpr/objectSpread.res:5:16-18
 
   3 │ type u = private {...a, u: int}
@@ -33,7 +33,7 @@
   A record type declaration doesn't support the ... spread. Only an object (with quoted field names) does.
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typexpr/objectSpread.res:7:27
 
   5 │ type x = Type({...a, u: int})
@@ -45,7 +45,7 @@
   An object type declaration needs quoted field names. Did you mean "v"?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typexpr/objectSpread.res:9:14
 
    7 │ type u = {...a, "u": int, v: int}

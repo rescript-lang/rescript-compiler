@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/other/patternMatching.res:1:14-2:1
 
   1 │ switch expr {

@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/scanner/badCharacter.res:1:5
 
   1 │ let $ = 1
@@ -7,7 +7,7 @@
   Not sure what to do with this character.
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/scanner/badCharacter.res:1:5-7
 
   1 │ let $ = 1

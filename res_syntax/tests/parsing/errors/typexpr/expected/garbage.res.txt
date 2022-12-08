@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/typexpr/garbage.res:2:28
 
   1 │ @bs.module("moduleName")

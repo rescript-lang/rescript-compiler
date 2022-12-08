@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/ambiguousArrow.res:1:9-21
 
   1 │ let a = b:int => "hi"
@@ -11,7 +11,7 @@
   2) (b: int) => "hi"
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/expressions/ambiguousArrow.res:6:3-23
 
   4 │   let a = 1

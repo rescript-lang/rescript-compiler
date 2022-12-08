@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/scanner/exoticIdent.res:1:7
 
   1 │ let \"a
@@ -9,7 +9,7 @@
   A quoted identifier can't contain line breaks.
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/scanner/exoticIdent.res:2:1
 
   1 │ let \"a
@@ -20,7 +20,7 @@
   Did you forget a `=` here?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/scanner/exoticIdent.res:3:2-4:0
 
   1 │ let \"a
@@ -31,7 +31,7 @@
   This string is missing a double quote at the end
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/scanner/exoticIdent.res:3:2-4:0
 
   1 │ let \"a

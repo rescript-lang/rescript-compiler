@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/recovery/pattern/array.res:2:8-10
 
   1 │ switch x {
@@ -10,7 +10,7 @@
   Did you forget a `]` here?
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/recovery/pattern/array.res:3:12-14
 
   1 │ switch x {

@@ -1,5 +1,5 @@
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/structure/letBindingPatternKeyword.res:1:5-8
 
   1 │ let open = 1
@@ -9,7 +9,7 @@
   `open` is a reserved keyword. Keywords need to be escaped: \"open"
 
 
-  Syntax error!
+  We've found a bug for you!
   tests/parsing/errors/structure/letBindingPatternKeyword.res:2:5-7
 
   1 │ let open = 1
