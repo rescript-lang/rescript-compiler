@@ -2993,7 +2993,13 @@ and type_application uncurried env funct (sargs : sargs) : targs * Types.type_ex
     | None ->
       let arity = List.length sargs in
       let uncurried_typ = Ast_uncurried.make_uncurried_type ~env ~arity (newvar()) in
-      unify_exp env funct uncurried_typ
+      begin
+        match (expand_head env funct.exp_type).desc with
+        | Tvar _ | Tarrow _ ->
+          unify_exp env funct uncurried_typ
+        | _ ->
+          raise(Error(funct.exp_loc, env, Apply_non_function (expand_head env funct.exp_type)))
+      end
     | Some _ -> () in
   let extract_uncurried_type t =
     match has_uncurried_type t with
