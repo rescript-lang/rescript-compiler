@@ -63,6 +63,7 @@ These are only breaking changes for unformatted code.
 
 - Prevent inlining of async functions in additional cases https://github.com/rescript-lang/rescript-compiler/issues/5860
 - Fix build error where aliasing arguments to `_` in the make function with JSX V4. https://github.com/rescript-lang/rescript-compiler/pull/5881
+- Fix parsing of spread props as an expression in JSX V4 https://github.com/rescript-lang/rescript-compiler/pull/5885
 
 # 10.1.0
 
@@ -70,7 +71,6 @@ These are only breaking changes for unformatted code.
 
 - Fix issue where no error was reported when ? was used for non-optional fields. https://github.com/rescript-lang/rescript-compiler/pull/5853
 - Fix issue where optional fields in inline records were not supported and would cause type errors https://github.com/rescript-lang/rescript-compiler/pull/5827
-- Fix parsing of spread props as an expression in JSX V4 https://github.com/rescript-lang/rescript-compiler/pull/5885
 
 # 10.1.0-rc.5
 
