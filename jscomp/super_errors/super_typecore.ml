@@ -230,7 +230,7 @@ let report_error env ppf = function
         type_expr ty
     end else begin
       match ty with
-      | {desc = Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),_,_),_,_)} ->
+      | {desc = Tconstr (Pident {name = "function$"},_,_)} ->
         fprintf ppf "This expression is expected to have an uncurried function"
       | _ ->
         fprintf ppf "@[This expression should not be a function,@ ";
