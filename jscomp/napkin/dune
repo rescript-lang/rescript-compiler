@@ -1,8 +1,0 @@
-(library
- (name napkin)
- (wrapped false)
- (flags
-  (:standard -w +a-4-42-40-9-48-70))
- (libraries ml))
-
-(copy_files# ../../res_syntax/src/*.{ml,mli})

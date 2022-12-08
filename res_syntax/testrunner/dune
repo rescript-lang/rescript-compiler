@@ -2,5 +2,5 @@
  (name res_test)
  (public_name syntax_tests)
  (flags
-  (-open Syntax -open Compilerlibs406))
- (libraries syntax compilerlibs406))
+  (:standard -w +a-40-42-70))
+ (libraries syntax core))

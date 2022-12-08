@@ -486,4 +486,4 @@ type emptyObject = {.}
 let f: (~x: 'a=?, ~y: 'b) => option<'a>
 type call = CleanStart
 let f: (~a: int=?, unit) => int
-type opt = {x: int, y?: string}
+type opt = {x: int, y?: option<string>}

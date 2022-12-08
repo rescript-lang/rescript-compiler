@@ -39,7 +39,7 @@ test-gentype: build
 test-all: test test-gentype
 
 reanalyze:
-	reanalyze.exe -set-exit-code -all-cmt _build/default/res_syntax -suppress res_syntax/testrunner,res_syntax/compiler-libs-406 -exclude-paths res_syntax/compiler-libs-406
+	reanalyze.exe -set-exit-code -all-cmt _build/default/res_syntax -suppress res_syntax/testrunner
 
 lib: build ninja/ninja
 	dune exec -- node scripts/ninja.js config

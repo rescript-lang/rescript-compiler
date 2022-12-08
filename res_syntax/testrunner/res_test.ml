@@ -61,9 +61,9 @@ module OutcomePrinterTests = struct
   let signatureToOutcome structure =
     Lazy.force Res_outcome_printer.setup;
 
-    Compmisc.init_path false;
+    Res_compmisc.init_path ();
     Clflags.nopervasives := true;
-    let env = Compmisc.initial_env () in
+    let env = Res_compmisc.initial_env () in
     try
       let _typedStructure, signature, _newenv =
         Typemod.type_toplevel_phrase env structure
