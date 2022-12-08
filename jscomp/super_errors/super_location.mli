@@ -1,3 +1,7 @@
+val super_error_reporter :
+  Format.formatter ->
+  Location.error ->
+  unit
 
 (* Needed for the online playground experience *)
 val super_warning_printer :

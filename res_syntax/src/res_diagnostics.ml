@@ -142,8 +142,7 @@ let printReport diagnostics src =
     match diagnostics with
     | [] -> ()
     | d :: rest ->
-      Res_diagnostics_printing_utils.Super_location.super_error_reporter
-        Format.err_formatter src
+      Super_location.super_error_reporter Format.err_formatter
         Location.
           {
             loc = {loc_start = d.startPos; loc_end = d.endPos; loc_ghost = false};
