@@ -34,7 +34,7 @@ test-syntax-roundtrip: build
 	bash ./scripts/testok.sh
 
 test-gentype: build
-	make -C jscomp/gentype_tests/typescript-react-example test
+	make -C jscomp/gentype_tests/typescript-react-example clean test
 
 test-all: test test-gentype
 

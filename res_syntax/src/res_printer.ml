@@ -1583,7 +1583,7 @@ and printTypExpr ~(state : State.t) (typExpr : Parsetree.core_type) cmtTbl =
         let doc = printTypExpr ~state n cmtTbl in
         match n.ptyp_desc with
         | Ptyp_arrow _ | Ptyp_tuple _ | Ptyp_alias _ -> addParens doc
-        | _ when Res_uncurried.typeIsUncurriedFun n -> addParens doc
+        | _ when Ast_uncurried.typeIsUncurriedFun n -> addParens doc
         | _ -> doc
       in
       Doc.group
@@ -1655,8 +1655,8 @@ and printTypExpr ~(state : State.t) (typExpr : Parsetree.core_type) cmtTbl =
     | Ptyp_object (fields, openFlag) ->
       printObject ~state ~inline:false fields openFlag cmtTbl
     | Ptyp_arrow _ -> printArrow ~uncurried:false typExpr
-    | Ptyp_constr _ when Res_uncurried.typeIsUncurriedFun typExpr ->
-      let arity, tArg = Res_uncurried.typeExtractUncurriedFun typExpr in
+    | Ptyp_constr _ when Ast_uncurried.typeIsUncurriedFun typExpr ->
+      let arity, tArg = Ast_uncurried.typeExtractUncurriedFun typExpr in
       printArrow ~uncurried:true ~arity tArg
     | Ptyp_constr (longidentLoc, [{ptyp_desc = Ptyp_object (fields, openFlag)}])
       ->
@@ -2678,7 +2678,7 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
       printExpressionWithComments ~state
         (ParsetreeViewer.rewriteUnderscoreApply e)
         cmtTbl
-    | _ when Res_uncurried.exprIsUncurriedFun e -> printArrow e
+    | _ when Ast_uncurried.exprIsUncurriedFun e -> printArrow e
     | Pexp_fun _ | Pexp_newtype _ -> printArrow e
     | Parsetree.Pexp_constant c ->
       printConstant ~templateLiteral:(ParsetreeViewer.isTemplateLiteral e) c

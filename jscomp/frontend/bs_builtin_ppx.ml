@@ -115,17 +115,18 @@ let expr_mapper ~async_context ~in_function_def (self : mapper)
       | true, pexp_attributes ->
           Ast_bs_open.convertBsErrorFunction e.pexp_loc self pexp_attributes
             cases)
-  | Pexp_record
-      ( [
-          ( { txt = Ldot (Ldot (Lident "Js", "Fn"), _) },
-            ({ pexp_desc = Pexp_fun _; pexp_attributes } as inner_exp) );
-        ],
-        None )
-    when match Ast_attributes.process_attributes_rev pexp_attributes with
+  | _
+    when Ast_uncurried.exprIsUncurriedFun e
+         &&
+         match
+           Ast_attributes.process_attributes_rev
+             (Ast_uncurried.exprExtractUncurriedFun e).pexp_attributes
+         with
          | Meth_callback _, _ -> true
          | _ -> false ->
       (* Treat @this (. x, y, z) => ... just like @this (x, y, z) => ... *)
-      self.expr self inner_exp
+      let fun_expr = Ast_uncurried.exprExtractUncurriedFun e in
+      self.expr self fun_expr
   | Pexp_fun (label, _, pat, body) -> (
       let async = Ast_attributes.has_async_payload e.pexp_attributes <> None in
       match Ast_attributes.process_attributes_rev e.pexp_attributes with
@@ -136,12 +137,8 @@ let expr_mapper ~async_context ~in_function_def (self : mapper)
           Ast_async.make_function_async ~async (default_expr_mapper self e)
       | Uncurry _, pexp_attributes ->
           async_context := async;
-          {
-            e with
-            pexp_desc =
-              Ast_uncurry_gen.to_uncurry_fn e.pexp_loc self label pat body async;
-            pexp_attributes;
-          }
+          Ast_uncurry_gen.to_uncurry_fn { e with pexp_attributes } self label
+            pat body async
       | Method _, _ ->
           Location.raise_errorf ~loc:e.pexp_loc
             "%@meth is not supported in function expression"

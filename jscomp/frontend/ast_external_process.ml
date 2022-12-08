@@ -868,15 +868,19 @@ let handle_attributes (loc : Bs_loc.t) (type_annotation : Parsetree.core_type)
     Location.raise_errorf ~loc
       "%@uncurry can not be applied to the whole definition";
   let prim_name_with_source = { name = prim_name; source = External } in
-  let type_annotation, build_uncurried_type = match type_annotation.ptyp_desc with
-    | Ptyp_constr ({txt = Ldot(Ldot(Lident "Js", "Fn"), arity_);_} as lid, [t]) ->
-      t, fun ~arity x ->
-          let arity = match arity with
-            | Some arity -> "arity" ^ string_of_int arity
-            | None -> arity_ in
-          let lid = {lid with txt = Longident.Ldot(Ldot(Lident "Js", "Fn"), arity)} in
-          {x with Parsetree.ptyp_desc = Ptyp_constr (lid, [x])}
-    | _ -> type_annotation, fun ~arity:_ x -> x in
+  let type_annotation, build_uncurried_type =
+    match type_annotation.ptyp_desc with
+    | Ptyp_constr (({ txt = Lident "function$"; _ } as lid), [ t; arity_ ]) ->
+        ( t,
+          fun ~arity x ->
+            let tArity =
+              match arity with
+              | Some arity -> Ast_uncurried.arityType ~loc arity
+              | None -> arity_
+            in
+            { x with Parsetree.ptyp_desc = Ptyp_constr (lid, [ x; tArity ]) } )
+    | _ -> (type_annotation, fun ~arity:_ x -> x)
+  in
   let result_type, arg_types_ty =
     (* Note this assumes external type is syntatic (no abstraction)*)
     Ast_core_type.list_of_arrow type_annotation

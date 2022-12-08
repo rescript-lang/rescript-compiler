@@ -49,6 +49,7 @@ and ident_floatarray = ident_create "floatarray"
 and ident_unknown = ident_create "unknown"
 
 and ident_promise = ident_create "promise"
+and ident_uncurried = ident_create "function$"
 
 type test =
   | For_sure_yes
@@ -176,8 +177,9 @@ and ident_nil = ident_create "[]"
 and ident_cons = ident_create "::"
 and ident_none = ident_create "None"
 and ident_some = ident_create "Some"
-
 and ident_ctor_unknown = ident_create "Unknown"
+and ident_ctor_uncurried = ident_create "Function$"
+
 let common_initial_env add_type add_extension empty_env =
   let decl_bool =
     {decl_abstr with
@@ -211,6 +213,15 @@ let common_initial_env add_type add_extension empty_env =
      type_arity = 1;
      type_kind = Type_variant([cstr ident_none []; cstr ident_some [tvar]]);
      type_variance = [Variance.covariant]}
+  and decl_uncurried =
+    let tvar1, tvar2 = newgenvar(), newgenvar() in
+    {decl_abstr with
+     type_params = [tvar1; tvar2];
+     type_arity = 2;
+     type_kind = Type_variant([cstr ident_ctor_uncurried [tvar1]]);
+     type_variance = [Variance.covariant; Variance.covariant];
+     type_unboxed = Types.unboxed_true_default_false;
+     }
   and decl_unknown = 
     let tvar = newgenvar () in 
     {decl_abstr with 
@@ -273,13 +284,14 @@ let common_initial_env add_type add_extension empty_env =
   add_type ident_unit decl_unit (
   add_type ident_bool decl_bool (
   add_type ident_float decl_abstr (
-  add_type ident_unknown decl_unknown(  
+  add_type ident_unknown decl_unknown (  
+  add_type ident_uncurried decl_uncurried (  
   add_type ident_string decl_abstr (
   add_type ident_int decl_abstr_imm (
   add_type ident_extension_constructor decl_abstr (
   add_type ident_floatarray decl_abstr (
     add_type ident_promise decl_promise (
-      empty_env))))))))))))))))))))))))
+      empty_env)))))))))))))))))))))))))
 
 let build_initial_env add_type add_exception empty_env =
   let common = common_initial_env add_type add_exception empty_env in

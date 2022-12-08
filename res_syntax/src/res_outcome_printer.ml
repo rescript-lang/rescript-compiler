@@ -34,12 +34,6 @@ let isValidNumericPolyvarNumber (x : string) =
          | _ -> false)
   else a >= 48
 
-(* checks if ident contains "arity", like in "arity1", "arity2", "arity3" etc. *)
-let isArityIdent ident =
-  if String.length ident >= 6 then
-    (String.sub [@doesNotRaise]) ident 0 5 = "arity"
-  else false
-
 type identifierStyle = ExoticIdent | NormalIdent
 
 let classifyIdentContent ~allowUident txt =
@@ -210,18 +204,18 @@ let rec printOutTypeDoc (outType : Outcometree.out_type) =
         Doc.text aliasTxt;
         Doc.rparen;
       ]
-  | Otyp_constr
-      ( Oide_dot (Oide_dot (Oide_ident "Js", "Fn"), "arity0"),
-        (* Js.Fn.arity0 *)
-        [typ] ) ->
-    (* Js.Fn.arity0<t> -> (.) => t *)
+  | Otyp_constr (Oide_dot (Oide_dot (Oide_ident "Js", "Fn"), "arity0"), [typ])
+    ->
+    (* Compatibility with compiler up to v10.x *)
     Doc.concat [Doc.text "(. ()) => "; printOutTypeDoc typ]
   | Otyp_constr
-      ( Oide_dot (Oide_dot (Oide_ident "Js", "Fn"), ident),
-        (* Js.Fn.arity2 *)
-        [(Otyp_arrow _ as arrowType)] (* (int, int) => int *) )
-    when isArityIdent ident ->
-    (* Js.Fn.arity2<(int, int) => int> -> (. int, int) => int*)
+      ( Oide_dot (Oide_dot (Oide_ident "Js", "Fn"), _),
+        [(Otyp_arrow _ as arrowType)] ) ->
+    (* Compatibility with compiler up to v10.x *)
+    printOutArrowType ~uncurried:true arrowType
+  | Otyp_constr (Oide_ident "function$", [(Otyp_arrow _ as arrowType); _arity])
+    ->
+    (* function$<(int, int) => int, [#2]> -> (. int, int) => int *)
     printOutArrowType ~uncurried:true arrowType
   | Otyp_constr (outIdent, []) -> printOutIdentDoc ~allowUident:false outIdent
   | Otyp_manifest (typ1, typ2) ->

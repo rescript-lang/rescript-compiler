@@ -71,9 +71,9 @@ let typ_mapper (self : Bs_ast_mapper.mapper) (ty : Parsetree.core_type) =
    ptyp_desc =
      ( Ptyp_arrow (label, args, body)
      | Ptyp_constr
-         (* Js.Fn.xx is re-wrapped around only in case Nothing below *)
-         ( { txt = Ldot (Ldot (Lident "Js", "Fn"), _) },
-           [ { ptyp_desc = Ptyp_arrow (label, args, body) } ] ) );
+         (* function$<...> is re-wrapped around only in case Nothing below *)
+         ( { txt = Lident "function$" },
+           [ { ptyp_desc = Ptyp_arrow (label, args, body) }; _ ] ) );
    (* let it go without regard label names,
       it will report error later when the label is not empty
    *)

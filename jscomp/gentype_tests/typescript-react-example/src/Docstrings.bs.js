@@ -61,7 +61,7 @@ function unitArgWithoutConversion(param) {
   return "abc";
 }
 
-function unitArgWithoutConversionU() {
+function unitArgWithoutConversionU(param) {
   return "abc";
 }
 
@@ -69,7 +69,7 @@ function unitArgWithConversion(param) {
   return /* A */0;
 }
 
-function unitArgWithConversionU() {
+function unitArgWithConversionU(param) {
   return /* A */0;
 }
 

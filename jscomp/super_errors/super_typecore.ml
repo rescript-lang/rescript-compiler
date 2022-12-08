@@ -119,21 +119,11 @@ let print_expr_type_clash env trace ppf = begin
     show_extra_help ppf env trace;
 end
 
-let reportJsFnArityMismatch ~arityA ~arityB ppf =
-  let extractArity s =
-    if Ext_string.starts_with s "arity" then
-      (* get the number part of e.g. arity12 *)
-      (* assumption: the module Js.Fn only contains types from arity0 to arity22 *)
-      String.sub s 5 ((String.length s) - 5)
-    else
-      raise (Invalid_argument "Unrecognized arity type name.")
-  in
-  let firstNumber = extractArity arityA in
+let reportArityMismatch ~arityA ~arityB ppf =
   fprintf ppf "This function expected @{<info>%s@} %s, but got @{<error>%s@}"
-    firstNumber
-    (if firstNumber = "1" then "argument" else "arguments")
-    (extractArity arityB)
-
+    arityA
+    (if arityA = "1" then "argument" else "arguments")
+    arityB
 
 (* Pasted from typecore.ml. Needed for some cases in report_error below *)
 (* Records *)
@@ -174,16 +164,18 @@ let report_error env ppf = function
          fprintf ppf "The variable %s on the left-hand side of this or-pattern has type" (Ident.name id))
       (function ppf ->
          fprintf ppf "but on the right-hand side it has type")
-  | Expr_type_clash (
-      (_, {desc = Tarrow _}) ::
-      (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),_,_),_,_)}) :: _
-    ) ->
+  | Expr_type_clash ( 
+    (_, {desc = Tarrow _}) ::
+    (_, {desc = Tconstr (Pident {name = "function$"},_,_)}) :: _
+   ) -> 
     fprintf ppf "This function is a curried function where an uncurried function is expected"
   | Expr_type_clash (
-      (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),arityA,_),_,_)}) ::
-      (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),arityB,_),_,_)}) :: _
-    ) when arityA <> arityB ->
-    reportJsFnArityMismatch ~arityA ~arityB ppf
+      (_, {desc = Tconstr (Pident {name = "function$"},[_; tA],_)}) ::
+      (_, {desc = Tconstr (Pident {name = "function$"},[_; tB],_)}) :: _
+    ) when Ast_uncurried.type_to_arity tA <> Ast_uncurried.type_to_arity tB ->
+    let arityA = Ast_uncurried.type_to_arity tA |> string_of_int in
+    let arityB = Ast_uncurried.type_to_arity tB |> string_of_int in
+    reportArityMismatch ~arityA ~arityB ppf
   | Expr_type_clash (
       (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js_OO"},"Meth",_),a,_),_,_)}) ::
       (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js_OO"},"Meth",_),b,_),_,_)}) :: _
@@ -287,20 +279,6 @@ let report_error env ppf = function
         name (*kind*) Printtyp.path p;
     end;
     spellcheck ppf name valid_names;
-  | Name_type_mismatch (
-      "record",
-      Ldot (Ldot ((Lident "Js"), "Fn"), _arityFieldName),
-      (
-        _,
-        (Pdot (Pdot ((Pident {name = "Js"}), "Fn", _), arityA, _))
-      ),
-      [(
-        _,
-        (Pdot (Pdot ((Pident {name = "Js"}), "Fn", _), arityB, _))
-      )]
-    ) ->
-    (* modified *)
-    reportJsFnArityMismatch ~arityA ~arityB ppf
   | anythingElse ->
     Typecore.super_report_error_no_wrap_printing_env env ppf anythingElse
 

@@ -23,13 +23,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 val to_uncurry_fn :
-  Location.t ->
+  Parsetree.expression ->
   Bs_ast_mapper.mapper ->
   Asttypes.arg_label ->
   Parsetree.pattern ->
   Parsetree.expression ->
   bool -> (* async *)
-  Parsetree.expression_desc
+  Parsetree.expression
 (** 
     [function] can only take one argument, that is the reason we did not adopt it
     syntax:

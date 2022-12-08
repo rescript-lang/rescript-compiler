@@ -2104,6 +2104,12 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
         exp_attributes = sexp.pexp_attributes;
         exp_env = env }
   | Pexp_construct(lid, sarg) ->
+      (match lid.txt with
+      | Lident "Function$" ->
+        let arity = Ast_uncurried.attributes_to_arity sexp.pexp_attributes in
+        let uncurried_typ = Ast_uncurried.mk_js_fn ~env ~arity (newvar()) in
+        unify_exp_types loc env ty_expected uncurried_typ
+      | _ -> ());
       type_construct env loc lid sarg ty_expected sexp.pexp_attributes
   | Pexp_variant(l, sarg) ->
       (* Keep sharing *)
@@ -2976,25 +2982,17 @@ and type_application uncurried env funct (sargs : sargs) : targs * Types.type_ex
     tvar || List.mem l ls
   in
   let ignored = ref [] in
-  let mk_js_fn arity t =
-    let a = "arity" ^ string_of_int arity in
-    let lid:Longident.t = Ldot (Ldot (Lident "Js", "Fn"), a) in
-    let path = Env.lookup_type lid env in
-    newconstr path [t] in
   let has_uncurried_type t =
     match (expand_head env t).desc with
-    | Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),a,_),[t],_) ->
-      let arity =
-        if String.sub a 0 5 = "arity"
-        then int_of_string (String.sub a 5 (String.length a - 5))
-        else 0 in
-       Some (arity, t)
+    | Tconstr (Pident {name = "function$"},[t; tArity],_) ->
+      let arity = Ast_uncurried.type_to_arity tArity in
+      Some (arity, t)
     | _ -> None in
   let force_uncurried_type funct =
     match has_uncurried_type funct.exp_type with
     | None ->
       let arity = List.length sargs in
-      let js_fn = mk_js_fn arity (newvar()) in
+      let js_fn = Ast_uncurried.mk_js_fn ~env ~arity (newvar()) in
       unify_exp env funct js_fn
     | Some _ -> () in
   let extract_uncurried_type t =
@@ -3013,7 +3011,7 @@ and type_application uncurried env funct (sargs : sargs) : targs * Types.type_ex
       if uncurried && not fully_applied then
         raise(Error(funct.exp_loc, env,
           Uncurried_arity_mismatch (t, arity, List.length sargs)));
-      let newT = if fully_applied then newT else mk_js_fn newarity newT in
+      let newT = if fully_applied then newT else Ast_uncurried.mk_js_fn ~env ~arity:newarity newT in
       (fully_applied, newT)
     | _ -> (false, newT)
   in
@@ -3654,16 +3652,6 @@ let report_error env ppf = function
       fprintf ppf "Variable %s must occur on both sides of this | pattern"
         (Ident.name id);
       spellcheck_idents ppf id valid_idents
-  | Expr_type_clash ( 
-    (_, {desc = Tarrow _}) ::
-    (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),_,_),_,_)}) :: _
-   ) -> 
-      fprintf ppf "This function is a curried function where an uncurried function is expected"    
-  | Expr_type_clash (
-      (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),a,_),_,_)}) ::
-      (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),b,_),_,_)}) :: _
-   ) when a <> b -> 
-      fprintf ppf "This function has %s but was expected %s" a b 
   | Expr_type_clash ( 
       (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js_OO"},"Meth",_),a,_),_,_)}) ::
       (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js_OO"},"Meth",_),b,_),_,_)}) :: _
