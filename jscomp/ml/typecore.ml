@@ -2984,12 +2984,6 @@ and type_application uncurried env funct (sargs : sargs) : targs * Types.type_ex
   let ignored = ref [] in
   let has_uncurried_type t =
     match (expand_head env t).desc with
-    | Tconstr (Pdot (Pdot(Pident {name = "Js"},"Fn",_),a,_),[t],_) ->
-      let arity =
-        if String.sub a 0 5 = "arity"
-        then int_of_string (String.sub a 5 (String.length a - 5))
-        else 0 in
-       Some (arity, t)
     | Tconstr (Pident {name = "function$"},[t; tArity],_) ->
       let arity = Ast_uncurried.type_to_arity tArity in
       Some (arity, t)
