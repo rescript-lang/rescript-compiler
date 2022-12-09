@@ -134,7 +134,9 @@ async function main(argv, rescript_exe, bsc_exe) {
     // Only -check arg
     // Require: -all or path to a file
     if (check.val && !format_project && files.length == 0) {
-      console.error("format check require path to a file or use `-all` to check the whole project");
+      console.error(
+        "format check require path to a file or use `-all` to check the whole project"
+      );
       process.exit(2);
     }
 
