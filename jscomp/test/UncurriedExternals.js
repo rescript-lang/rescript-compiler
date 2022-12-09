@@ -1,5 +1,6 @@
 'use strict';
 
+var React = require("react");
 
 function dd(param) {
   throw {
@@ -46,6 +47,14 @@ function tsiU(c) {
     });
 }
 
+var match = React.useState(function () {
+      return 3;
+    });
+
+var StandardNotation_get = match[0];
+
+var StandardNotation_set = match[1];
+
 var StandardNotation = {
   dd: dd,
   h: h,
@@ -57,7 +66,9 @@ var StandardNotation = {
   te: te,
   tcr: tcr,
   tsiC: tsiC,
-  tsiU: tsiU
+  tsiU: tsiU,
+  get: StandardNotation_get,
+  set: StandardNotation_set
 };
 
 function dd$1(param) {
@@ -105,6 +116,14 @@ function tsiU$1(c) {
     });
 }
 
+var match$1 = React.useState(function (param) {
+      return 3;
+    });
+
+var get = match$1[0];
+
+var set = match$1[1];
+
 exports.StandardNotation = StandardNotation;
 exports.dd = dd$1;
 exports.h = h$1;
@@ -117,4 +136,6 @@ exports.te = te$1;
 exports.tcr = tcr$1;
 exports.tsiC = tsiC$1;
 exports.tsiU = tsiU$1;
+exports.get = get;
+exports.set = set;
 /* h Not a pure module */
