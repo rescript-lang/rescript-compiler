@@ -131,10 +131,10 @@ let get_uncurry_arity (ty : t) =
   | _ -> None
 
 let get_curry_arity (ty : t) =
-  match ty.ptyp_desc with
-  | Ptyp_constr ({ txt = Lident "function$" }, [ t; _ ]) ->
-      get_uncurry_arity_aux t 0
-  | _ -> get_uncurry_arity_aux ty 0
+  if Ast_uncurried.typeIsUncurriedFun ty then
+    let arity, _ = Ast_uncurried.typeExtractUncurriedFun ty in
+    arity
+  else get_uncurry_arity_aux ty 0
 
 (* add hoc for bs.send.pipe *)
 let rec get_curry_labels (ty : t) acc =
