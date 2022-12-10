@@ -1,5 +1,7 @@
 SHELL = /bin/bash
 
+DUNE_BIN_DIR = ./_build/install/default/bin
+
 build:
 	dune build
 	./scripts/copyExes.js
@@ -8,10 +10,10 @@ watch:
 	dune build -w
 
 bench:
-	dune exec -- syntax_benchmarks
+	$(DUNE_BIN_DIR)/syntax_benchmarks
 
 dce:
-	opam exec reanalyze.exe -- -dce-cmt _build
+	reanalyze.exe -- -dce-cmt _build
 
 ninja/ninja:
 	./scripts/buildNinjaBinary.js
@@ -19,21 +21,19 @@ ninja/ninja:
 ninja: ninja/ninja
 
 test: lib
-	dune exec -- node scripts/ciTest.js -all
+	node scripts/ciTest.js -all
 
-test-syntax: build
-	dune exec -- syntax_tests
-	dune exec -- bash ./scripts/test_syntax.sh
+test-syntax:
+	bash ./scripts/test_syntax.sh
 	make reanalyze
 	bash ./scripts/testok.sh
 
-test-syntax-roundtrip: build
-	dune exec -- syntax_tests
-	ROUNDTRIP_TEST=1 dune exec -- bash ./scripts/test.sh
+test-syntax-roundtrip:
+	ROUNDTRIP_TEST=1 bash ./scripts/test.sh
 	make reanalyze
 	bash ./scripts/testok.sh
 
-test-gentype: build
+test-gentype:
 	make -C jscomp/gentype_tests/typescript-react-example clean test
 
 test-all: test test-gentype
@@ -41,9 +41,9 @@ test-all: test test-gentype
 reanalyze:
 	reanalyze.exe -set-exit-code -all-cmt _build/default/res_syntax -suppress res_syntax/testrunner
 
-lib: build ninja/ninja
-	dune exec -- node scripts/ninja.js config
-	dune exec -- node scripts/ninja.js build
+lib: ninja/ninja
+	node scripts/ninja.js config
+	node scripts/ninja.js build
 
 artifacts: lib
 	./scripts/prebuilt.js
