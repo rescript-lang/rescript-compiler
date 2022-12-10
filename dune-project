@@ -25,9 +25,10 @@
   (cppo
    (= 1.6.9))
   (js_of_ocaml-compiler
-   (= 4.0.0))
+   (= 5.6.0))
   (ounit2
-   (= 2.2.6))
-  (reanalyze
-   (= 2.23.0))
+   (= 2.2.7))
+  ; No OCaml 5 compatible reanalyze on OPAM yet
+  ; (reanalyze
+  ;  (= 2.23.0))
   dune))
