@@ -91,7 +91,7 @@ let arity_to_type arity =
        })
 
 let type_to_arity (tArity : Types.type_expr) =
-  match tArity.desc with
+  match (Ctype.repr tArity).desc with
   | Tvariant { row_fields = [ (label, _) ] } -> decode_arity_string label
   | _ -> assert false
 
