@@ -12,6 +12,10 @@
 
 # 10.1.1
 
+#### :rocket: New Feature
+
+- Add support for empty inlined record literal `{}` for inlined records where all fields are optional https://github.com/rescript-lang/rescript-compiler/pull/5900
+
 #### :bug: Bug Fix
 
 - Prevent inlining of async functions in additional cases https://github.com/rescript-lang/rescript-compiler/issues/5860
