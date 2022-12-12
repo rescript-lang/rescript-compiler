@@ -2169,6 +2169,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
         | [], Some (representation) when lid_sexp_list = [] ->
             let optional_labels = match representation with
             | Record_optional_labels optional_labels -> optional_labels
+            | Record_inlined {optional_labels} -> optional_labels
             | _ -> [] in
             let filter_missing (ld : Types.label_declaration) =
               let name = Ident.name ld.ld_id in
