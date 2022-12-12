@@ -257,6 +257,12 @@ var h = newrecord$2;
 
 var h10 = newrecord$3;
 
+var ir4 = /* V0 */{
+  x: 3
+};
+
+var ir5 = /* V0 */{};
+
 exports.f1 = f1;
 exports.f2 = f2;
 exports.f3 = f3;
@@ -280,4 +286,6 @@ exports.pm2 = pm2;
 exports.inlinedRecord = inlinedRecord;
 exports.pm3 = pm3;
 exports.pm4 = pm4;
+exports.ir4 = ir4;
+exports.ir5 = ir5;
 /*  Not a pure module */
