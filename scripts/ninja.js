@@ -427,7 +427,7 @@ function ninjaQuickBuild(
  * @param {BuildList[]} xs
  * @returns {string}
  */
-function ninjaQuickBuidList(xs) {
+function ninjaQuickBuildList(xs) {
   return xs
     .map(x => ninjaQuickBuild(x[0], x[1], x[2], x[3], x[4], x[5], x[6]))
     .join("\n");
@@ -841,7 +841,7 @@ async function runtimeNinja(devmode = true) {
 bsc_no_open_flags =  ${commonBsFlags} -bs-cross-module-opt -make-runtime  -nopervasives  -unsafe -w +50 -warn-error A
 bsc_flags = $bsc_no_open_flags -open Bs_stdlib_mini
 ${ruleCC(ninjaCwd)}
-${ninjaQuickBuidList([
+${ninjaQuickBuildList([
   [
     "bs_stdlib_mini.cmi",
     "bs_stdlib_mini.mli",
@@ -933,6 +933,16 @@ rule ${mlyRuleName}
     command = $ocamlyacc -v --strict $in
     generator = true
 `;
+
+/**
+ * Generates the ninja file for the `jscomp/others` directory.
+ *
+ * The `others` directory contains ReScript related stdlib modules (such as
+ * Belt*, or Js*).
+ *
+ * If `devmode` is true, the generated file will be `build.ninja`, otherwise
+ * `release.ninja`. Other than that, the `devmode` flag has no effect on the output.
+ */
 async function othersNinja(devmode = true) {
   var compilerTarget = pseudoTarget("$bsc");
   var externalDeps = [
@@ -947,10 +957,10 @@ async function othersNinja(devmode = true) {
 bsc_primitive_flags =  ${commonBsFlags} -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50 -warn-error A
 bsc_flags = $bsc_primitive_flags -open Belt_internals
 ${ruleCC(ninjaCwd)}
-${ninjaQuickBuidList([
+${ninjaQuickBuildList([
   [
     ["belt.cmj", "belt.cmi"],
-    "belt.ml",
+    "belt.res",
     "cc",
     ninjaCwd,
     [["bsc_flags", "$bsc_primitive_flags"]],
@@ -959,7 +969,7 @@ ${ninjaQuickBuidList([
   ],
   [
     ["js.cmj", "js.cmi"],
-    "js.ml",
+    "js.res",
     "cc",
     ninjaCwd,
     [["bsc_flags", "$bsc_primitive_flags"]],
@@ -997,12 +1007,12 @@ ${ninjaQuickBuidList([
       !x.includes(".cppo") &&
       !x.includes(".pp") &&
       !x.includes("#") &&
-      x !== "js.ml"
+      x !== "js.res"
   );
   var othersFiles = othersDirFiles.filter(
     x =>
       !x.startsWith("js") &&
-      x !== "belt.ml" &&
+      x !== "belt.res" &&
       x !== "belt_internals.mli" &&
       x !== "node.ml" &&
       (x.endsWith(".ml") || x.endsWith(".mli")) &&
@@ -1050,7 +1060,7 @@ ${ninjaQuickBuidList([
 /**
  *
  * @param {boolean} devmode
- * generate build.ninja/release.ninja for stdlib-402
+ * generate build.ninja/release.ninja for stdlib-406
  */
 async function stdlibNinja(devmode = true) {
   var stdlibVersion = "stdlib-406";
@@ -1070,7 +1080,7 @@ async function stdlibNinja(devmode = true) {
   var templateStdlibRules = `
 ${bsc_flags} = ${commonBsFlags} -bs-cross-module-opt -make-runtime ${warnings} -I others
 ${ruleCC(ninjaCwd)}
-${ninjaQuickBuidList([
+${ninjaQuickBuildList([
   // we make it still depends on external
   // to enjoy free ride on dev config for compiler-deps
 
