@@ -8,52 +8,48 @@ and exportModuleValue =
 
 type exportModuleItems = (string, exportModuleItem) Hashtbl.t
 
-type types = {
-  typeForValue : type_;
-  typeForType : type_;
-  needsConversion : bool;
-}
+type types = {typeForValue: type_; typeForType: type_; needsConversion: bool}
 
 type fieldInfo = {
-  fieldForValue : field;
-  fieldForType : field;
-  needsConversion : bool;
+  fieldForValue: field;
+  fieldForType: field;
+  needsConversion: bool;
 }
 
 let rec exportModuleValueToType ~config exportModuleValue =
   match exportModuleValue with
   | S (s, type_, converter) ->
-      {
-        typeForValue = ident s;
-        typeForType = type_;
-        needsConversion =
-          not (converter |> Converter.converterIsIdentity ~config ~toJS:true);
-      }
+    {
+      typeForValue = ident s;
+      typeForType = type_;
+      needsConversion =
+        not (converter |> Converter.converterIsIdentity ~config ~toJS:true);
+    }
   | M exportModuleItem ->
-      let fieldsInfo = exportModuleItem |> exportModuleItemToFields ~config in
-      let fieldsForValue =
-        fieldsInfo |> List.map (fun { fieldForValue } -> fieldForValue)
-      in
-      let fieldsForType =
-        fieldsInfo |> List.map (fun { fieldForType } -> fieldForType)
-      in
-      let needsConversion =
-        fieldsInfo
-        |> List.fold_left
-             (fun acc { needsConversion } -> acc || needsConversion)
-             false
-      in
-      {
-        typeForValue = Object (Open, fieldsForValue);
-        typeForType = Object (Open, fieldsForType);
-        needsConversion;
-      }
+    let fieldsInfo = exportModuleItem |> exportModuleItemToFields ~config in
+    let fieldsForValue =
+      fieldsInfo |> List.map (fun {fieldForValue} -> fieldForValue)
+    in
+    let fieldsForType =
+      fieldsInfo |> List.map (fun {fieldForType} -> fieldForType)
+    in
+    let needsConversion =
+      fieldsInfo
+      |> List.fold_left
+           (fun acc {needsConversion} -> acc || needsConversion)
+           false
+    in
+    {
+      typeForValue = Object (Open, fieldsForValue);
+      typeForType = Object (Open, fieldsForType);
+      needsConversion;
+    }
 
 and exportModuleItemToFields =
   (fun ~config exportModuleItem ->
      Hashtbl.fold
        (fun fieldName exportModuleValue fields ->
-         let { typeForValue; typeForType; needsConversion } =
+         let {typeForValue; typeForType; needsConversion} =
            exportModuleValue |> exportModuleValueToType ~config
          in
          let fieldForType =
@@ -65,8 +61,8 @@ and exportModuleItemToFields =
              type_ = typeForType;
            }
          in
-         let fieldForValue = { fieldForType with type_ = typeForValue } in
-         { fieldForValue; fieldForType; needsConversion } :: fields)
+         let fieldForValue = {fieldForType with type_ = typeForValue} in
+         {fieldForValue; fieldForType; needsConversion} :: fields)
        exportModuleItem []
     : config:Config.t -> exportModuleItem -> fieldInfo list)
 
@@ -74,39 +70,38 @@ let rec extendExportModuleItem x ~converter
     ~(exportModuleItem : exportModuleItem) ~type_ ~valueName =
   match x with
   | [] -> ()
-  | [ fieldName ] ->
-      Hashtbl.replace exportModuleItem fieldName
-        (S (valueName, type_, converter))
+  | [fieldName] ->
+    Hashtbl.replace exportModuleItem fieldName (S (valueName, type_, converter))
   | fieldName :: rest ->
-      let innerExportModuleItem =
-        match Hashtbl.find exportModuleItem fieldName with
-        | M innerExportModuleItem -> innerExportModuleItem
-        | S _ -> assert false
-        | exception Not_found ->
-            let innerExportModuleItem = Hashtbl.create 1 in
-            Hashtbl.replace exportModuleItem fieldName (M innerExportModuleItem);
-            innerExportModuleItem
-      in
-      rest
-      |> extendExportModuleItem ~converter
-           ~exportModuleItem:innerExportModuleItem ~valueName ~type_
+    let innerExportModuleItem =
+      match Hashtbl.find exportModuleItem fieldName with
+      | M innerExportModuleItem -> innerExportModuleItem
+      | S _ -> assert false
+      | exception Not_found ->
+        let innerExportModuleItem = Hashtbl.create 1 in
+        Hashtbl.replace exportModuleItem fieldName (M innerExportModuleItem);
+        innerExportModuleItem
+    in
+    rest
+    |> extendExportModuleItem ~converter ~exportModuleItem:innerExportModuleItem
+         ~valueName ~type_
 
 let extendExportModuleItems x ~converter
     ~(exportModuleItems : exportModuleItems) ~type_ ~valueName =
   match x with
   | [] -> assert false
-  | [ _valueName ] -> ()
+  | [_valueName] -> ()
   | moduleName :: rest ->
-      let exportModuleItem =
-        match Hashtbl.find exportModuleItems moduleName with
-        | exportModuleItem -> exportModuleItem
-        | exception Not_found ->
-            let exportModuleItem = Hashtbl.create 1 in
-            Hashtbl.replace exportModuleItems moduleName exportModuleItem;
-            exportModuleItem
-      in
-      rest
-      |> extendExportModuleItem ~converter ~exportModuleItem ~type_ ~valueName
+    let exportModuleItem =
+      match Hashtbl.find exportModuleItems moduleName with
+      | exportModuleItem -> exportModuleItem
+      | exception Not_found ->
+        let exportModuleItem = Hashtbl.create 1 in
+        Hashtbl.replace exportModuleItems moduleName exportModuleItem;
+        exportModuleItem
+    in
+    rest
+    |> extendExportModuleItem ~converter ~exportModuleItem ~type_ ~valueName
 
 let createModuleItemsEmitter =
   (fun () -> Hashtbl.create 1 : unit -> exportModuleItems)
@@ -120,7 +115,7 @@ let emitAllModuleItems ~config ~emitters ~fileName
   emitters
   |> rev_fold
        (fun moduleName exportModuleItem emitters ->
-         let { typeForType; needsConversion } =
+         let {typeForType; needsConversion} =
            M exportModuleItem |> exportModuleValueToType ~config
          in
          if !Debug.codeItems then

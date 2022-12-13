@@ -1,10 +1,10 @@
-type recordGen = { mutable unboxed : int; mutable boxed : int }
+type recordGen = {mutable unboxed: int; mutable boxed: int}
 type recordValue = int
 type moduleItem = string
 type moduleAccessPath = Root of string | Dot of moduleAccessPath * moduleItem
 
 let recordValueToString recordValue = recordValue |> string_of_int
-let recordGen () = { unboxed = 0; boxed = 0 }
+let recordGen () = {unboxed = 0; boxed = 0}
 
 let newRecordValue ~unboxed recordGen =
   if unboxed then (
@@ -22,9 +22,7 @@ let rec emitModuleAccessPath ~config moduleAccessPath =
   match moduleAccessPath with
   | Root s -> s
   | Dot (p, moduleItem) ->
-      p
-      |> emitModuleAccessPath ~config
-      |> EmitText.fieldAccess ~label:moduleItem
+    p |> emitModuleAccessPath ~config |> EmitText.fieldAccess ~label:moduleItem
 
 let emitVariantLabel ~polymorphic label =
   if polymorphic then label |> EmitText.quotes else label
@@ -33,7 +31,9 @@ module VariantsAsObjects = struct
   let polyVariantLabelName = "NAME"
 
   let label ~polymorphic =
-    match polymorphic with true -> polyVariantLabelName | false -> "TAG"
+    match polymorphic with
+    | true -> polyVariantLabelName
+    | false -> "TAG"
 
   let indexLabel i = "_" ^ string_of_int i
 end
@@ -56,25 +56,29 @@ let emitVariantGetPayload ~inlineRecord ~numArgs ~polymorphic x =
 
 let emitVariantWithPayload ~inlineRecord ~label ~polymorphic args =
   match args with
-  | [ arg ] when polymorphic ->
-      "{" ^ VariantsAsObjects.polyVariantLabelName ^ ": "
-      ^ (label |> emitVariantLabel ~polymorphic)
-      ^ ", VAL: " ^ arg ^ "}"
-  | [ arg ] when inlineRecord ->
-      (* inline records are represented as records plus a `TAG` *)
-      "Object.assign({TAG: " ^ label ^ "}, " ^ arg ^ ")"
+  | [arg] when polymorphic ->
+    "{" ^ VariantsAsObjects.polyVariantLabelName ^ ": "
+    ^ (label |> emitVariantLabel ~polymorphic)
+    ^ ", VAL: " ^ arg ^ "}"
+  | [arg] when inlineRecord ->
+    (* inline records are represented as records plus a `TAG` *)
+    "Object.assign({TAG: " ^ label ^ "}, " ^ arg ^ ")"
   | _ ->
-      "{TAG: " ^ label ^ ", "
-      ^ (args
-        |> List.mapi (fun i s -> (i |> VariantsAsObjects.indexLabel) ^ ":" ^ s)
-        |> String.concat ", ")
-      ^ "}" ^ " as any"
+    "{TAG: " ^ label ^ ", "
+    ^ (args
+      |> List.mapi (fun i s -> (i |> VariantsAsObjects.indexLabel) ^ ":" ^ s)
+      |> String.concat ", ")
+    ^ "}" ^ " as any"
 
 let jsVariantTag ~polymorphic =
-  match polymorphic with true -> "NAME" | false -> "tag"
+  match polymorphic with
+  | true -> "NAME"
+  | false -> "tag"
 
 let jsVariantValue ~polymorphic =
-  match polymorphic with true -> "VAL" | false -> "value"
+  match polymorphic with
+  | true -> "VAL"
+  | false -> "value"
 
 let emitJSVariantGetLabel ~polymorphic x =
   x |> EmitText.fieldAccess ~label:(jsVariantTag ~polymorphic)
@@ -177,7 +181,9 @@ module Mangle = struct
         String.sub x 1 (len - 1)
       else
         (* "_rec" -> "rec" *)
-        match Hashtbl.find table x with y -> y | exception Not_found -> x
+        match Hashtbl.find table x with
+        | y -> y
+        | exception Not_found -> x
     else x
 end
 

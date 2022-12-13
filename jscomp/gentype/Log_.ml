@@ -12,11 +12,11 @@ module Color = struct
 
   let style_of_stag s =
     match s with
-    | Format.String_tag "error" -> [ Bold; FG Red ]
-    | Format.String_tag "warning" -> [ Bold; FG Magenta ]
-    | Format.String_tag "info" -> [ Bold; FG Yellow ]
-    | Format.String_tag "dim" -> [ Dim ]
-    | Format.String_tag "filename" -> [ FG Cyan ]
+    | Format.String_tag "error" -> [Bold; FG Red]
+    | Format.String_tag "warning" -> [Bold; FG Magenta]
+    | Format.String_tag "info" -> [Bold; FG Yellow]
+    | Format.String_tag "dim" -> [Dim]
+    | Format.String_tag "filename" -> [FG Cyan]
     | _ -> []
 
   let ansi_of_stag s =
@@ -62,16 +62,16 @@ module Loc = struct
         | Some
             ((start_line, start_line_start_char), (end_line, end_line_end_char))
           ->
-            if start_line = end_line then
-              if start_line_start_char = end_line_end_char then
-                Format.fprintf ppf ":@{<dim>%i:%i@}" start_line
-                  start_line_start_char
-              else
-                Format.fprintf ppf ":@{<dim>%i:%i-%i@}" start_line
-                  start_line_start_char end_line_end_char
+          if start_line = end_line then
+            if start_line_start_char = end_line_end_char then
+              Format.fprintf ppf ":@{<dim>%i:%i@}" start_line
+                start_line_start_char
             else
-              Format.fprintf ppf ":@{<dim>%i:%i-%i:%i@}" start_line
-                start_line_start_char end_line end_line_end_char
+              Format.fprintf ppf ":@{<dim>%i:%i-%i@}" start_line
+                start_line_start_char end_line_end_char
+          else
+            Format.fprintf ppf ":@{<dim>%i:%i-%i:%i@}" start_line
+              start_line_start_char end_line end_line_end_char
       in
       Format.fprintf ppf "@{<filename>%a@}%a" print_filename file dim_loc
         normalizedRange

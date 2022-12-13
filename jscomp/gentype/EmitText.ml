@@ -3,11 +3,11 @@ type nameGen = (string, int) Hashtbl.t
 let name ~nameGen s =
   match Hashtbl.find nameGen s with
   | n ->
-      Hashtbl.replace nameGen s (n + 1);
-      s ^ string_of_int (n + 1)
+    Hashtbl.replace nameGen s (n + 1);
+    s ^ string_of_int (n + 1)
   | exception Not_found ->
-      Hashtbl.replace nameGen s 0;
-      s
+    Hashtbl.replace nameGen s 0;
+    s
 
 let parens xs = "(" ^ (xs |> String.concat ", ") ^ ")"
 let arg ~nameGen x = "Arg" ^ x |> name ~nameGen
@@ -19,8 +19,8 @@ let curry ~args ~numArgs name =
   match numArgs with
   | 0 | 1 -> name ^ parens args
   | (2 | 3 | 4 | 5 | 6 | 7 | 8) as n ->
-      "Curry._" ^ (n |> string_of_int) ^ parens ([ name ] @ args)
-  | _ -> "Curry.app" ^ parens [ name; args |> array ]
+    "Curry._" ^ (n |> string_of_int) ^ parens ([name] @ args)
+  | _ -> "Curry.app" ^ parens [name; args |> array]
 
 let funCall ~args ~useCurry name =
   match useCurry with
@@ -34,7 +34,9 @@ let genericsString ~typeVars =
 
 let funDef ~bodyArgs ~functionName ~funParams ~indent ~mkBody ~typeVars =
   "function "
-  ^ (match functionName with None -> "" | Some name -> name)
+  ^ (match functionName with
+    | None -> ""
+    | Some name -> name)
   ^ genericsString ~typeVars ^ (funParams |> parens) ^ " {"
   ^ (bodyArgs |> mkBody) ^ Indent.break ~indent ^ "}"
 
@@ -47,7 +49,9 @@ let newNameGen () = Hashtbl.create 1
 let quotes x = "\"" ^ x ^ "\""
 
 let quotesIfRequired x =
-  match String.length x > 0 && x.[0] = '"' with true -> x | false -> quotes x
+  match String.length x > 0 && x.[0] = '"' with
+  | true -> x
+  | false -> quotes x
 
 let resultName ~nameGen = "result" |> name ~nameGen
 

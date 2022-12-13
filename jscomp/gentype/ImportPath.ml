@@ -23,7 +23,9 @@ let toCmt ~(config : Config.t) ~outputFileRelative (dir, s) =
   concat
     (outputFileRelative |> dirname)
     (((dir, s |> chopExtensionSafe) |> dump)
-    ^ (match config.namespace with None -> "" | Some name -> "-" ^ name)
+    ^ (match config.namespace with
+      | None -> ""
+      | Some name -> "-" ^ name)
     ^ ".cmt")
 
 let emit (dir, s) = (dir, s) |> dump
