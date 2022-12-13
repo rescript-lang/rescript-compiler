@@ -155,6 +155,16 @@ let rec moduleTypeCheckAnnotation ~checkAnnotation
     ->
       false
 
+and moduleTypeDeclarationCheckAnnotation ~checkAnnotation
+    ({ mtd_type; mtd_attributes; mtd_loc = loc } :
+      Typedtree.module_type_declaration) =
+  mtd_attributes |> checkAnnotation ~loc
+  ||
+  match mtd_type with
+  | None -> false
+  | Some module_type ->
+      module_type |> moduleTypeCheckAnnotation ~checkAnnotation
+
 and moduleDeclarationCheckAnnotation ~checkAnnotation
     ({ md_attributes; md_type; md_loc = loc } : Typedtree.module_declaration) =
   md_attributes |> checkAnnotation ~loc
@@ -162,19 +172,24 @@ and moduleDeclarationCheckAnnotation ~checkAnnotation
 
 and signatureItemCheckAnnotation ~checkAnnotation
     (signatureItem : Typedtree.signature_item) =
-  match signatureItem with
-  | { Typedtree.sig_desc = Typedtree.Tsig_type (_, typeDeclarations) } ->
+  match signatureItem.sig_desc with
+  | Tsig_type (_, typeDeclarations) ->
       typeDeclarations
       |> List.exists
            (fun ({ typ_attributes; typ_loc = loc } : Typedtree.type_declaration)
            -> typ_attributes |> checkAnnotation ~loc)
-  | { sig_desc = Tsig_value { val_attributes; val_loc = loc } } ->
+  | Tsig_value { val_attributes; val_loc = loc } ->
       val_attributes |> checkAnnotation ~loc
-  | { sig_desc = Tsig_module moduleDeclaration } ->
+  | Tsig_module moduleDeclaration ->
       moduleDeclaration |> moduleDeclarationCheckAnnotation ~checkAnnotation
-  | { sig_desc = Tsig_attribute attribute; sig_loc = loc } ->
-      [ attribute ] |> checkAnnotation ~loc
-  | _ -> false
+  | Tsig_attribute attribute ->
+      [ attribute ] |> checkAnnotation ~loc:signatureItem.sig_loc
+  | Tsig_modtype moduleTypeDeclaration ->
+      moduleTypeDeclaration
+      |> moduleTypeDeclarationCheckAnnotation ~checkAnnotation
+  | Tsig_typext _ | Tsig_exception _ | Tsig_recmodule _ | Tsig_open _
+  | Tsig_include _ | Tsig_class _ | Tsig_class_type _ ->
+      false
 
 and signatureCheckAnnotation ~checkAnnotation (signature : Typedtree.signature)
     =
@@ -183,28 +198,35 @@ and signatureCheckAnnotation ~checkAnnotation (signature : Typedtree.signature)
 
 let rec structureItemCheckAnnotation ~checkAnnotation
     (structureItem : Typedtree.structure_item) =
-  match structureItem with
-  | { Typedtree.str_desc = Typedtree.Tstr_type (_, typeDeclarations) } ->
+  match structureItem.str_desc with
+  | Tstr_type (_, typeDeclarations) ->
       typeDeclarations
       |> List.exists
            (fun ({ typ_attributes; typ_loc = loc } : Typedtree.type_declaration)
            -> typ_attributes |> checkAnnotation ~loc)
-  | { str_desc = Tstr_value (_loc, valueBindings) } ->
+  | Tstr_value (_loc, valueBindings) ->
       valueBindings
       |> List.exists
            (fun ({ vb_attributes; vb_loc = loc } : Typedtree.value_binding) ->
              vb_attributes |> checkAnnotation ~loc)
-  | { str_desc = Tstr_primitive { val_attributes; val_loc = loc } } ->
+  | Tstr_primitive { val_attributes; val_loc = loc } ->
       val_attributes |> checkAnnotation ~loc
-  | { str_desc = Tstr_module moduleBinding } ->
+  | Tstr_module moduleBinding ->
       moduleBinding |> moduleBindingCheckAnnotation ~checkAnnotation
-  | { str_desc = Tstr_recmodule moduleBindings } ->
+  | Tstr_recmodule moduleBindings ->
       moduleBindings
       |> List.exists (moduleBindingCheckAnnotation ~checkAnnotation)
-  | { str_desc = Tstr_include { incl_attributes; incl_mod; incl_loc = loc } } ->
+  | Tstr_include { incl_attributes; incl_mod; incl_loc = loc } ->
       incl_attributes |> checkAnnotation ~loc
       || incl_mod |> moduleExprCheckAnnotation ~checkAnnotation
-  | _ -> false
+  | Tstr_modtype moduleTypeDeclaration ->
+      moduleTypeDeclaration
+      |> moduleTypeDeclarationCheckAnnotation ~checkAnnotation
+  | Tstr_attribute attribute ->
+      [ attribute ] |> checkAnnotation ~loc:structureItem.str_loc
+  | Tstr_eval _ | Tstr_typext _ | Tstr_exception _ | Tstr_open _ | Tstr_class _
+  | Tstr_class_type _ ->
+      false
 
 and moduleExprCheckAnnotation ~checkAnnotation
     (moduleExpr : Typedtree.module_expr) =
