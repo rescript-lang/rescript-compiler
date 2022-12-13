@@ -20,11 +20,14 @@ let c1 = React.createElement(C1.make, C1.makeProps(~_open="x", ()))
 @@jsxConfig({version: 4, mode: "classic"})
 
 module C0 = {
-  type props<'T_open> = {
-    _open: 'T_open,
+  type props<'T_open, 'T_type> = {
+    @as("open") _open: 'T_open,
+    @as("type") _type: 'T_type,
   }
 
-  @react.component let make = ({@as("open") _open, _}: props<'T_open>) => React.string(_open)
+  @react.component
+  let make = ({@as("open") _open, @as("type") _type, _}: props<'T_open, string>) =>
+    React.string(_open)
   let make = {
     let \"MangleKeyword$C0" = (props: props<_>) => make(props)
 
@@ -32,24 +35,28 @@ module C0 = {
   }
 }
 module C1 = {
-  type props<'T_open> = {
-    _open: 'T_open,
+  type props<'T_open, 'T_type> = {
+    @as("open") _open: 'T_open,
+    @as("type") _type: 'T_type,
   }
 
-  external make: @as("open") React.componentLike<props<string>, React.element> = "default"
+  external make: @as("open") React.componentLike<props<string, string>, React.element> = "default"
 }
 
-let c0 = React.createElement(C0.make, {_open: "x"})
-let c1 = React.createElement(C1.make, {_open: "x"})
+let c0 = React.createElement(C0.make, {_open: "x", _type: "t"})
+let c1 = React.createElement(C1.make, {_open: "x", _type: "t"})
 
 @@jsxConfig({version: 4, mode: "automatic"})
 
 module C0 = {
-  type props<'T_open> = {
-    _open: 'T_open,
+  type props<'T_open, 'T_type> = {
+    @as("open") _open: 'T_open,
+    @as("type") _type: 'T_type,
   }
 
-  @react.component let make = ({@as("open") _open, _}: props<'T_open>) => React.string(_open)
+  @react.component
+  let make = ({@as("open") _open, @as("type") _type, _}: props<'T_open, string>) =>
+    React.string(_open)
   let make = {
     let \"MangleKeyword$C0" = (props: props<_>) => make(props)
 
@@ -57,12 +64,13 @@ module C0 = {
   }
 }
 module C1 = {
-  type props<'T_open> = {
-    _open: 'T_open,
+  type props<'T_open, 'T_type> = {
+    @as("open") _open: 'T_open,
+    @as("type") _type: 'T_type,
   }
 
-  external make: @as("open") React.componentLike<props<string>, React.element> = "default"
+  external make: @as("open") React.componentLike<props<string, string>, React.element> = "default"
 }
 
-let c0 = React.jsx(C0.make, {_open: "x"})
-let c1 = React.jsx(C1.make, {_open: "x"})
+let c0 = React.jsx(C0.make, {_open: "x", _type: "t"})
+let c1 = React.jsx(C1.make, {_open: "x", _type: "t"})
