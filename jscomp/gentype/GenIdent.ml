@@ -6,11 +6,11 @@ end)
 
 type typeVarsGen = {
   (* Generate fresh identifiers *)
-  mutable typeNameMap : string IntMap.t;
-  mutable typeNameCounter : int;
+  mutable typeNameMap: string IntMap.t;
+  mutable typeNameCounter: int;
 }
 
-let createTypeVarsGen () = { typeNameMap = IntMap.empty; typeNameCounter = 0 }
+let createTypeVarsGen () = {typeNameMap = IntMap.empty; typeNameCounter = 0}
 
 let jsTypeNameForAnonymousTypeID ~typeVarsGen id =
   try typeVarsGen.typeNameMap |> IntMap.find id

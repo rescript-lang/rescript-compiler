@@ -58,7 +58,9 @@ let getCmtFile cmt =
 
 let getBsConfigFile ~projectRoot =
   let bsconfig = concat projectRoot Config.compilerConfigFile in
-  match bsconfig |> Sys.file_exists with true -> Some bsconfig | false -> None
+  match bsconfig |> Sys.file_exists with
+  | true -> Some bsconfig
+  | false -> None
 
 (** Find the relative path from /.../bs/lib
    e.g. /foo/bar/bs/lib/src/Hello.res --> src/Hello.res *)
@@ -68,9 +70,9 @@ let relativePathFromBsLib fileName =
     let rec pathToList path =
       let isRoot = path |> Filename.basename = path in
       match isRoot with
-      | true -> [ path ]
+      | true -> [path]
       | false ->
-          (path |> Filename.basename) :: (path |> Filename.dirname |> pathToList)
+        (path |> Filename.basename) :: (path |> Filename.dirname |> pathToList)
     in
     let rec fromLibBs ~acc reversedList =
       match reversedList with

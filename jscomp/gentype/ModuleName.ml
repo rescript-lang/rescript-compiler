@@ -6,7 +6,11 @@ let rescriptPervasives = "RescriptPervasives"
 let sanitizeId s =
   let s =
     if String.contains s '.' || String.contains s '[' || String.contains s ']'
-    then s |> String.map (function '.' | '[' | ']' -> '_' | c -> c)
+    then
+      s
+      |> String.map (function
+           | '.' | '[' | ']' -> '_'
+           | c -> c)
     else s
   in
   if s <> "" && s.[0] >= 'A' && s.[0] <= 'z' then s else "_" ^ s

@@ -1,7 +1,13 @@
 type t = string option
 
-let break ~indent = match indent with None -> "" | Some s -> "\n" ^ s
-let more indent = match indent with None -> None | Some s -> Some ("  " ^ s)
+let break ~indent =
+  match indent with
+  | None -> ""
+  | Some s -> "\n" ^ s
+let more indent =
+  match indent with
+  | None -> None
+  | Some s -> Some ("  " ^ s)
 
 let heuristicFields ~indent fields =
   let threshold = 2 in
@@ -12,4 +18,6 @@ let heuristicFields ~indent fields =
 let heuristicVariants ~indent rendered =
   let threshold = 40 in
   let break = rendered |> String.concat " " |> String.length > threshold in
-  match break && indent = None with true -> Some "  " | false -> indent
+  match break && indent = None with
+  | true -> Some "  "
+  | false -> indent

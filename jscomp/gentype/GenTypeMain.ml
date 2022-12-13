@@ -3,9 +3,9 @@ module StringSet = Set.Make (String)
 let cmtCheckAnnotations ~checkAnnotation inputCMT =
   match inputCMT.Cmt_format.cmt_annots with
   | Implementation structure ->
-      structure |> Annotation.structureCheckAnnotation ~checkAnnotation
+    structure |> Annotation.structureCheckAnnotation ~checkAnnotation
   | Interface signature ->
-      signature |> Annotation.signatureCheckAnnotation ~checkAnnotation
+    signature |> Annotation.signatureCheckAnnotation ~checkAnnotation
   | _ -> false
 
 let cmtHasTypeErrors inputCMT =
@@ -25,26 +25,26 @@ let signatureItemIsDeclaration signatureItem =
 
 let inputCmtTranslateTypeDeclarations ~config ~outputFileRelative ~resolver
     inputCMT : CodeItem.translation =
-  let { Cmt_format.cmt_annots } = inputCMT in
+  let {Cmt_format.cmt_annots} = inputCMT in
   let typeEnv = TypeEnv.root () in
   let translations =
     match cmt_annots with
     | Implementation structure ->
-        {
-          structure with
-          str_items =
-            structure.str_items |> List.filter structureItemIsDeclaration;
-        }
-        |> TranslateStructure.translateStructure ~config ~outputFileRelative
-             ~resolver ~typeEnv
+      {
+        structure with
+        str_items =
+          structure.str_items |> List.filter structureItemIsDeclaration;
+      }
+      |> TranslateStructure.translateStructure ~config ~outputFileRelative
+           ~resolver ~typeEnv
     | Interface signature ->
-        {
-          signature with
-          sig_items =
-            signature.sig_items |> List.filter signatureItemIsDeclaration;
-        }
-        |> TranslateSignature.translateSignature ~config ~outputFileRelative
-             ~resolver ~typeEnv
+      {
+        signature with
+        sig_items =
+          signature.sig_items |> List.filter signatureItemIsDeclaration;
+      }
+      |> TranslateSignature.translateSignature ~config ~outputFileRelative
+           ~resolver ~typeEnv
     | Packed _ | Partial_implementation _ | Partial_interface _ -> []
   in
   translations |> Translation.combine
@@ -52,18 +52,18 @@ let inputCmtTranslateTypeDeclarations ~config ~outputFileRelative ~resolver
 
 let translateCMT ~config ~outputFileRelative ~resolver inputCMT : Translation.t
     =
-  let { Cmt_format.cmt_annots } = inputCMT in
+  let {Cmt_format.cmt_annots} = inputCMT in
   let typeEnv = TypeEnv.root () in
   let translations =
     match cmt_annots with
     | Implementation structure ->
-        structure
-        |> TranslateStructure.translateStructure ~config ~outputFileRelative
-             ~resolver ~typeEnv
+      structure
+      |> TranslateStructure.translateStructure ~config ~outputFileRelative
+           ~resolver ~typeEnv
     | Interface signature ->
-        signature
-        |> TranslateSignature.translateSignature ~config ~outputFileRelative
-             ~resolver ~typeEnv
+      signature
+      |> TranslateSignature.translateSignature ~config ~outputFileRelative
+           ~resolver ~typeEnv
     | _ -> []
   in
   translations |> Translation.combine
@@ -104,8 +104,7 @@ let processCmtFile cmt =
     let isInterface = Filename.check_suffix cmtFile ".cmti" in
     let resolver =
       ModuleResolver.createLazyResolver ~config
-        ~extensions:[ ".res"; EmitType.shimExtension ]
-        ~excludeFile:(fun fname ->
+        ~extensions:[".res"; EmitType.shimExtension] ~excludeFile:(fun fname ->
           fname = "React.res" || fname = "ReasonReact.res")
     in
     let inputCMT, hasGenTypeAnnotations =
@@ -154,8 +153,11 @@ let processCmtFile cmt =
         match inputCMT.cmt_annots |> FindSourceFile.cmt with
         | Some sourceFile -> sourceFile
         | None -> (
-            (fileName |> ModuleName.toString)
-            ^ match isInterface with true -> ".resi" | false -> ".res")
+          (fileName |> ModuleName.toString)
+          ^
+          match isInterface with
+          | true -> ".resi"
+          | false -> ".res")
       in
       inputCMT
       |> translateCMT ~config ~outputFileRelative ~resolver

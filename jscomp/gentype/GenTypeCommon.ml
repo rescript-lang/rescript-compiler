@@ -14,11 +14,13 @@ type labelJS =
   | IntLabel of string
   | StringLabel of string
 
-type case = { label : string; labelJS : labelJS }
+type case = {label: string; labelJS: labelJS}
 
 let isJSSafePropertyName name =
   name = ""
-  || (match name.[0] with 'A' .. 'z' -> true | _ -> false)
+  || (match name.[0] with
+     | 'A' .. 'z' -> true
+     | _ -> false)
      && name
         |> String.for_all (function
              | 'A' .. 'z' | '0' .. '9' -> true
@@ -26,16 +28,22 @@ let isJSSafePropertyName name =
 
 let labelJSToString ?(alwaysQuotes = false) case =
   let addQuotes x =
-    match alwaysQuotes with true -> x |> EmitText.quotes | false -> x
+    match alwaysQuotes with
+    | true -> x |> EmitText.quotes
+    | false -> x
   in
   let isNumber s =
     let len = String.length s in
     len > 0
-    && (match len > 1 with true -> s.[0] > '0' | false -> true)
+    && (match len > 1 with
+       | true -> s.[0] > '0'
+       | false -> true)
     &&
     let res = ref true in
     for i = 0 to len - 1 do
-      match s.[i] with '0' .. '9' -> () | _ -> res := false
+      match s.[i] with
+      | '0' .. '9' -> ()
+      | _ -> res := false
     done;
     res.contents
   in
@@ -44,8 +52,8 @@ let labelJSToString ?(alwaysQuotes = false) case =
   | FloatLabel s -> s |> addQuotes
   | IntLabel i -> i |> addQuotes
   | StringLabel s ->
-      if s = case.label && isNumber s then s |> addQuotes
-      else s |> EmitText.quotes
+    if s = case.label && isNumber s then s |> addQuotes
+    else s |> EmitText.quotes
 
 type closedFlag = Open | Closed
 
@@ -65,37 +73,37 @@ type type_ =
   | Variant of variant
 
 and fields = field list
-and argType = { aName : string; aType : type_ }
+and argType = {aName: string; aType: type_}
 
 and field = {
-  mutable_ : mutable_;
-  nameJS : string;
-  nameRE : string;
-  optional : optional;
-  type_ : type_;
+  mutable_: mutable_;
+  nameJS: string;
+  nameRE: string;
+  optional: optional;
+  type_: type_;
 }
 
 and function_ = {
-  argTypes : argType list;
-  componentName : string option;
-  retType : type_;
-  typeVars : string list;
-  uncurried : bool;
+  argTypes: argType list;
+  componentName: string option;
+  retType: type_;
+  typeVars: string list;
+  uncurried: bool;
 }
 
-and ident = { builtin : bool; name : string; typeArgs : type_ list }
+and ident = {builtin: bool; name: string; typeArgs: type_ list}
 
 and variant = {
-  bsStringOrInt : bool;
-  hash : int;
-  inherits : type_ list;
-  noPayloads : case list;
-  payloads : payload list;
-  polymorphic : bool;
-  unboxed : bool;
+  bsStringOrInt: bool;
+  hash: int;
+  inherits: type_ list;
+  noPayloads: case list;
+  payloads: payload list;
+  polymorphic: bool;
+  unboxed: bool;
 }
 
-and payload = { case : case; inlineRecord : bool; numArgs : int; t : type_ }
+and payload = {case: case; inlineRecord: bool; numArgs: int; t: type_}
 
 let typeIsObject type_ =
   match type_ with
@@ -134,8 +142,8 @@ struct
         let ch = String.unsafe_get s off in
         match ch with
         | 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' ->
-            add capital ch;
-            aux false (off + 1) len
+          add capital ch;
+          aux false (off + 1) len
         | '/' | '-' -> aux true (off + 1) len
         | _ -> aux capital (off + 1) len
     in
@@ -160,7 +168,9 @@ struct
 
   (** Common-DemoSomelibrary -> Common *)
   let removeGeneratedModule s =
-    match s |> String.split_on_char '-' with [ name; _scope ] -> name | _ -> s
+    match s |> String.split_on_char '-' with
+    | [name; _scope] -> name
+    | _ -> s
 end
 
 let rec depToString dep =
@@ -183,30 +193,29 @@ let createVariant ~bsStringOrInt ~inherits ~noPayloads ~payloads ~polymorphic =
   in
   let unboxed = payloads = [] in
   Variant
-    {
-      bsStringOrInt;
-      hash;
-      inherits;
-      noPayloads;
-      payloads;
-      polymorphic;
-      unboxed;
-    }
+    {bsStringOrInt; hash; inherits; noPayloads; payloads; polymorphic; unboxed}
 
 let variantTable hash ~toJS =
-  (match toJS with true -> "$$toJS" | false -> "$$toRE") ^ string_of_int hash
+  (match toJS with
+  | true -> "$$toJS"
+  | false -> "$$toRE")
+  ^ string_of_int hash
 
 let ident ?(builtin = true) ?(typeArgs = []) name =
-  Ident { builtin; name; typeArgs }
+  Ident {builtin; name; typeArgs}
 
-let sanitizeTypeName name = name |> String.map (function '\'' -> '_' | c -> c)
+let sanitizeTypeName name =
+  name
+  |> String.map (function
+       | '\'' -> '_'
+       | c -> c)
 let unknown = ident "unknown"
 let booleanT = ident "boolean"
 let dateT = ident "Date"
 let numberT = ident "number"
 let stringT = ident "string"
 let unitT = ident "void"
-let int64T = Tuple [ numberT; numberT ]
+let int64T = Tuple [numberT; numberT]
 
 module NodeFilename = struct
   include Filename

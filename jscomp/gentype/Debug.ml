@@ -23,7 +23,9 @@ let setAll () =
 
 let setItem debugItem debugValue =
   let isOn =
-    match debugValue with Ext_json_types.True _ -> true | _ -> false
+    match debugValue with
+    | Ext_json_types.True _ -> true
+    | _ -> false
   in
   match debugItem with
   | "all" when isOn -> setAll ()

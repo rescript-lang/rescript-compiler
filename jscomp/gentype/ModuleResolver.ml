@@ -7,7 +7,11 @@ let ( +++ ) = Filename.concat
 let readBsDependenciesDirs ~root =
   let dirs = ref [] in
   let rec findSubDirs dir =
-    let absDir = match dir = "" with true -> root | false -> root +++ dir in
+    let absDir =
+      match dir = "" with
+      | true -> root
+      | false -> root +++ dir
+    in
     if Sys.file_exists absDir && Sys.is_directory absDir then (
       dirs := dir :: !dirs;
       absDir |> Sys.readdir |> Array.iter (fun d -> findSubDirs (dir +++ d)))
@@ -15,14 +19,18 @@ let readBsDependenciesDirs ~root =
   findSubDirs "";
   !dirs
 
-type pkgs = { dirs : string list; pkgs : (string, string) Hashtbl.t }
+type pkgs = {dirs: string list; pkgs: (string, string) Hashtbl.t}
 
 let readDirsFromConfig ~(config : Config.t) =
   let dirs = ref [] in
   let root = config.projectRoot in
   let ( +++ ) = Filename.concat in
   let rec processDir ~subdirs dir =
-    let absDir = match dir = "" with true -> root | false -> root +++ dir in
+    let absDir =
+      match dir = "" with
+      | true -> root
+      | false -> root +++ dir
+    in
     if Sys.file_exists absDir && Sys.is_directory absDir then (
       dirs := dir :: !dirs;
       if subdirs then
@@ -31,19 +39,19 @@ let readDirsFromConfig ~(config : Config.t) =
   in
   let rec processSourceItem (sourceItem : Ext_json_types.t) =
     match sourceItem with
-    | Str { str } -> str |> processDir ~subdirs:false
-    | Obj { map } -> (
-        match Map_string.find_opt map "dir" with
-        | Some (Str { str }) ->
-            let subdirs =
-              match Map_string.find_opt map "subdirs" with
-              | Some (True _) -> true
-              | Some (False _) -> false
-              | _ -> false
-            in
-            str |> processDir ~subdirs
-        | _ -> ())
-    | Arr { content } -> Array.iter processSourceItem content
+    | Str {str} -> str |> processDir ~subdirs:false
+    | Obj {map} -> (
+      match Map_string.find_opt map "dir" with
+      | Some (Str {str}) ->
+        let subdirs =
+          match Map_string.find_opt map "subdirs" with
+          | Some (True _) -> true
+          | Some (False _) -> false
+          | _ -> false
+        in
+        str |> processDir ~subdirs
+      | _ -> ())
+    | Arr {content} -> Array.iter processSourceItem content
     | _ -> ()
   in
   (match config.sources with
@@ -53,41 +61,39 @@ let readDirsFromConfig ~(config : Config.t) =
 
 let readSourceDirs ~(config : Config.t) =
   let sourceDirs =
-    [ "lib"; "bs"; ".sourcedirs.json" ]
+    ["lib"; "bs"; ".sourcedirs.json"]
     |> List.fold_left ( +++ ) config.bsbProjectRoot
   in
   let dirs = ref [] in
   let pkgs = Hashtbl.create 1 in
   let readDirs json =
     match json with
-    | Ext_json_types.Obj { map } -> (
-        match Map_string.find_opt map "dirs" with
-        | Some (Arr { content }) ->
-            content
-            |> Array.iter (fun x ->
-                   match x with
-                   | Ext_json_types.Str { str } -> dirs := str :: !dirs
-                   | _ -> ());
-            ()
-        | _ -> ())
+    | Ext_json_types.Obj {map} -> (
+      match Map_string.find_opt map "dirs" with
+      | Some (Arr {content}) ->
+        content
+        |> Array.iter (fun x ->
+               match x with
+               | Ext_json_types.Str {str} -> dirs := str :: !dirs
+               | _ -> ());
+        ()
+      | _ -> ())
     | _ -> ()
   in
   let readPkgs json =
     match json with
-    | Ext_json_types.Obj { map } -> (
-        match Map_string.find_opt map "pkgs" with
-        | Some (Arr { content }) ->
-            content
-            |> Array.iter (fun x ->
-                   match x with
-                   | Ext_json_types.Arr
-                       {
-                         content = [| Str { str = name }; Str { str = path } |];
-                       } ->
-                       Hashtbl.add pkgs name path
-                   | _ -> ());
-            ()
-        | _ -> ())
+    | Ext_json_types.Obj {map} -> (
+      match Map_string.find_opt map "pkgs" with
+      | Some (Arr {content}) ->
+        content
+        |> Array.iter (fun x ->
+               match x with
+               | Ext_json_types.Arr
+                   {content = [|Str {str = name}; Str {str = path}|]} ->
+                 Hashtbl.add pkgs name path
+               | _ -> ());
+        ()
+      | _ -> ())
     | _ -> ()
   in
   if sourceDirs |> Sys.file_exists then
@@ -102,7 +108,7 @@ let readSourceDirs ~(config : Config.t) =
     Log_.item "Warning: can't find source dirs: %s\n" sourceDirs;
     Log_.item "Types for cross-references will not be found by genType.\n";
     dirs := readDirsFromConfig ~config);
-  { dirs = !dirs; pkgs }
+  {dirs = !dirs; pkgs}
 
 (** Read the project's .sourcedirs.json file if it exists
    and build a map of the files with the given extension
@@ -129,7 +135,7 @@ let sourcedirsJsonToMap ~config ~extensions ~excludeFile =
                     (fname |> chopExtensions |> ModuleName.fromStringUnsafe)
                     dirEmitted)
   in
-  let { dirs; pkgs } = readSourceDirs ~config in
+  let {dirs; pkgs} = readSourceDirs ~config in
   dirs
   |> List.iter (fun dir ->
          addDir ~dirEmitted:dir
@@ -139,24 +145,24 @@ let sourcedirsJsonToMap ~config ~extensions ~excludeFile =
   |> List.iter (fun packageName ->
          match Hashtbl.find pkgs packageName with
          | path ->
-             let root = [ "lib"; "bs" ] |> List.fold_left ( +++ ) path in
-             let filter fileName =
-               [ ".cmt"; ".cmti" ]
-               |> List.exists (fun ext -> Filename.check_suffix fileName ext)
-             in
-             readBsDependenciesDirs ~root
-             |> List.iter (fun dir ->
-                    let dirOnDisk = root +++ dir in
-                    let dirEmitted = packageName +++ dir in
-                    addDir ~dirEmitted ~dirOnDisk ~filter
-                      ~map:bsDependenciesFileMap)
+           let root = ["lib"; "bs"] |> List.fold_left ( +++ ) path in
+           let filter fileName =
+             [".cmt"; ".cmti"]
+             |> List.exists (fun ext -> Filename.check_suffix fileName ext)
+           in
+           readBsDependenciesDirs ~root
+           |> List.iter (fun dir ->
+                  let dirOnDisk = root +++ dir in
+                  let dirEmitted = packageName +++ dir in
+                  addDir ~dirEmitted ~dirOnDisk ~filter
+                    ~map:bsDependenciesFileMap)
          | exception Not_found -> ());
   (!fileMap, !bsDependenciesFileMap)
 
 type case = Lowercase | Uppercase
 
 type resolver = {
-  lazyFind :
+  lazyFind:
     (useBsDependencies:bool -> ModuleName.t -> (string * case * bool) option)
     Lazy.t;
 }
@@ -171,23 +177,21 @@ let createLazyResolver ~config ~extensions ~excludeFile =
          let find ~bsDependencies ~map moduleName =
            match map |> ModuleNameMap.find moduleName with
            | resolvedModuleDir ->
-               Some (resolvedModuleDir, Uppercase, bsDependencies)
+             Some (resolvedModuleDir, Uppercase, bsDependencies)
            | exception Not_found -> (
-               match
-                 map
-                 |> ModuleNameMap.find (moduleName |> ModuleName.uncapitalize)
-               with
-               | resolvedModuleDir ->
-                   Some (resolvedModuleDir, Lowercase, bsDependencies)
-               | exception Not_found -> None)
+             match
+               map |> ModuleNameMap.find (moduleName |> ModuleName.uncapitalize)
+             with
+             | resolvedModuleDir ->
+               Some (resolvedModuleDir, Lowercase, bsDependencies)
+             | exception Not_found -> None)
          in
          fun ~useBsDependencies moduleName ->
            match
              moduleName |> find ~bsDependencies:false ~map:moduleNameMap
            with
            | None when useBsDependencies ->
-               moduleName
-               |> find ~bsDependencies:true ~map:bsDependenciesFileMap
+             moduleName |> find ~bsDependencies:true ~map:bsDependenciesFileMap
            | res -> res);
   }
 
@@ -213,39 +217,38 @@ let resolveModule ~(config : Config.t) ~importExtension ~outputFileRelative
     moduleName
     |> ImportPath.fromModule ~dir:Filename.current_dir_name ~importExtension
   in
-  if Sys.file_exists moduleNameResFile then
-    candidate
+  if Sys.file_exists moduleNameResFile then candidate
   else
     let rec pathToList path =
       let isRoot = path |> Filename.basename = path in
       match isRoot with
-      | true -> [ path ]
+      | true -> [path]
       | false ->
-          (path |> Filename.basename) :: (path |> Filename.dirname |> pathToList)
+        (path |> Filename.basename) :: (path |> Filename.dirname |> pathToList)
     in
     match moduleName |> apply ~resolver ~useBsDependencies with
     | None -> candidate
     | Some (resolvedModuleDir, case, bsDependencies) ->
-        (* e.g. "dst" in case of dst/ModuleName.res *)
-        let walkUpOutputDir =
-          outputFileRelativeDir |> pathToList
-          |> List.map (fun _ -> Filename.parent_dir_name)
-          |> fun l ->
-          match l with
-          | [] -> ""
-          | _ :: rest -> rest |> List.fold_left ( +++ ) Filename.parent_dir_name
-        in
-        let fromOutputDirToModuleDir =
-          (* e.g. "../dst" *)
-          match bsDependencies with
-          | true -> resolvedModuleDir
-          | false -> walkUpOutputDir +++ resolvedModuleDir
-        in
-        (* e.g. import "../dst/ModuleName.ext" *)
-        (match case = Uppercase with
-        | true -> moduleName
-        | false -> moduleName |> ModuleName.uncapitalize)
-        |> ImportPath.fromModule ~dir:fromOutputDirToModuleDir ~importExtension
+      (* e.g. "dst" in case of dst/ModuleName.res *)
+      let walkUpOutputDir =
+        outputFileRelativeDir |> pathToList
+        |> List.map (fun _ -> Filename.parent_dir_name)
+        |> fun l ->
+        match l with
+        | [] -> ""
+        | _ :: rest -> rest |> List.fold_left ( +++ ) Filename.parent_dir_name
+      in
+      let fromOutputDirToModuleDir =
+        (* e.g. "../dst" *)
+        match bsDependencies with
+        | true -> resolvedModuleDir
+        | false -> walkUpOutputDir +++ resolvedModuleDir
+      in
+      (* e.g. import "../dst/ModuleName.ext" *)
+      (match case = Uppercase with
+      | true -> moduleName
+      | false -> moduleName |> ModuleName.uncapitalize)
+      |> ImportPath.fromModule ~dir:fromOutputDirToModuleDir ~importExtension
 
 let resolveGeneratedModule ~config ~outputFileRelative ~resolver moduleName =
   if !Debug.moduleResolution then
@@ -267,14 +270,14 @@ let importPathForReasonModuleName ~(config : Config.t) ~outputFileRelative
     Log_.item "Resolve Reason Module: %s\n" (moduleName |> ModuleName.toString);
   match config.shimsMap |> ModuleNameMap.find moduleName with
   | shimModuleName ->
-      if !Debug.moduleResolution then
-        Log_.item "ShimModuleName: %s\n" (shimModuleName |> ModuleName.toString);
-      let importPath =
-        resolveModule ~config ~importExtension:".shim" ~outputFileRelative
-          ~resolver ~useBsDependencies:false shimModuleName
-      in
-      if !Debug.moduleResolution then
-        Log_.item "Import Path: %s\n" (importPath |> ImportPath.dump);
-      importPath
+    if !Debug.moduleResolution then
+      Log_.item "ShimModuleName: %s\n" (shimModuleName |> ModuleName.toString);
+    let importPath =
+      resolveModule ~config ~importExtension:".shim" ~outputFileRelative
+        ~resolver ~useBsDependencies:false shimModuleName
+    in
+    if !Debug.moduleResolution then
+      Log_.item "Import Path: %s\n" (importPath |> ImportPath.dump);
+    importPath
   | exception Not_found ->
-      moduleName |> resolveGeneratedModule ~config ~outputFileRelative ~resolver
+    moduleName |> resolveGeneratedModule ~config ~outputFileRelative ~resolver
