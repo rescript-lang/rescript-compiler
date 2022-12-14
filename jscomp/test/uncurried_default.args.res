@@ -17,5 +17,5 @@ let total = withOpt(~x=10, 3)(~z=4, 11)
 let foo1 = (~x=3, ~y) => x+y
 let r1 = foo1(~y=11)
 
-let foo2 = @warning("-16") (~y, ~x=3, ~z=4) => x+y+z
+let foo2 = (~y, ~x=3, ~z=4) => x+y+z
 let r2 = foo2(~y=11)

@@ -2103,13 +2103,18 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
         exp_type = newty (Ttuple (List.map (fun e -> e.exp_type) expl));
         exp_attributes = sexp.pexp_attributes;
         exp_env = env }
+  | Pexp_construct({txt = Lident "Function$"} as lid, sarg) ->
+      let state = Warnings.backup () in
+      let arity = Ast_uncurried.attributes_to_arity sexp.pexp_attributes in
+      let uncurried_typ = Ast_uncurried.make_uncurried_type ~env ~arity (newvar()) in
+      unify_exp_types loc env ty_expected uncurried_typ;
+      (* Disable Unerasable_optional_argument for uncurried functions *)
+      let unerasable_optional_argument = Warnings.number Unerasable_optional_argument in
+      Warnings.parse_options false ("-" ^ string_of_int unerasable_optional_argument);
+      let exp = type_construct env loc lid sarg ty_expected sexp.pexp_attributes in
+      Warnings.restore state;
+      exp
   | Pexp_construct(lid, sarg) ->
-      (match lid.txt with
-      | Lident "Function$" ->
-        let arity = Ast_uncurried.attributes_to_arity sexp.pexp_attributes in
-        let uncurried_typ = Ast_uncurried.make_uncurried_type ~env ~arity (newvar()) in
-        unify_exp_types loc env ty_expected uncurried_typ
-      | _ -> ());
       type_construct env loc lid sarg ty_expected sexp.pexp_attributes
   | Pexp_variant(l, sarg) ->
       (* Keep sharing *)
