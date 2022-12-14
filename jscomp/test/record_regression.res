@@ -122,3 +122,7 @@ let inlinedRecord = ir => switch ir {
 }
 let pm3 = inlinedRecord(ir2)
 let pm4 = inlinedRecord(ir3)
+
+type inlinedOptional2 = V0({x?: int})
+let ir4 = V0({x: 3})
+let ir5 = V0({})
