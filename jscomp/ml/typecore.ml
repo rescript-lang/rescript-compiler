@@ -3024,13 +3024,23 @@ and type_application uncurried env funct (sargs : sargs) : targs * Types.type_ex
   in
   let rec type_unknown_args max_arity (args : lazy_args) omitted ty_fun (syntax_args : sargs)
      : targs * _ = 
-    match syntax_args with 
-    |  [] ->
-        (List.map
-            (function l, None -> l, None
-                | l, Some f -> l, Some (f ()))
-           (List.rev args),
-         instance env (result_type omitted ty_fun))
+    match syntax_args with
+    | [] ->
+        let collect_args () =
+          (List.map
+              (function l, None -> l, None
+                  | l, Some f -> l, Some (f ()))
+            (List.rev args),
+          instance env (result_type omitted ty_fun)) in
+        if List.length args < max_arity && uncurried then
+          (match (expand_head env ty_fun).desc with
+          | Tarrow (Optional l,t1,t2,_) ->
+            ignored := (Optional l,t1,ty_fun.level) :: !ignored;
+            let arg = Optional l, Some (fun () -> option_none (instance env t1) Location.none) in
+            type_unknown_args max_arity (arg::args) omitted t2 []
+          | _ -> collect_args ())
+        else
+          collect_args ()
     | (l1, sarg1) :: sargl ->
         let (ty1, ty2) =
           let ty_fun = expand_head env ty_fun in
@@ -3082,7 +3092,7 @@ and type_application uncurried env funct (sargs : sargs) : targs * Types.type_ex
         let sargs, omitted,  arg =          
             match extract_label name sargs with 
             | None ->          
-                if optional && label_assoc Nolabel sargs
+                if optional && (uncurried || label_assoc Nolabel sargs)
                 then begin
                   ignored := (l,ty,lv) :: !ignored;
                   sargs, omitted , Some (fun () -> option_none (instance env ty) Location.none)
