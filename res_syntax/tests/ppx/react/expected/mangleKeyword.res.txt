@@ -1,25 +1,25 @@
 @@jsxConfig({version: 3})
 
-module C0 = {
+module C30 = {
   @obj external makeProps: (~_open: 'T_open, ~key: string=?, unit) => {"_open": 'T_open} = ""
 
   @react.component let make = @warning("-16") (~_open) => React.string(_open)
   let make = {
-    let \"MangleKeyword$C0" = (\"Props": {"_open": 'T_open}) => make(~_open=\"Props"["_open"])
-    \"MangleKeyword$C0"
+    let \"MangleKeyword$C30" = (\"Props": {"_open": 'T_open}) => make(~_open=\"Props"["_open"])
+    \"MangleKeyword$C30"
   }
 }
-module C1 = {
+module C31 = {
   @obj external makeProps: (~_open: string, ~key: string=?, unit) => {"_open": string} = ""
   external make: React.componentLike<{"_open": string}, React.element> = "default"
 }
 
-let c0 = React.createElement(C0.make, C0.makeProps(~_open="x", ()))
-let c1 = React.createElement(C1.make, C1.makeProps(~_open="x", ()))
+let c30 = React.createElement(C30.make, C30.makeProps(~_open="x", ()))
+let c31 = React.createElement(C31.make, C31.makeProps(~_open="x", ()))
 
 @@jsxConfig({version: 4, mode: "classic"})
 
-module C0 = {
+module C4C0 = {
   type props<'T_open, 'T_type> = {
     @as("open") _open: 'T_open,
     @as("type") _type: 'T_type,
@@ -29,12 +29,12 @@ module C0 = {
   let make = ({@as("open") _open, @as("type") _type, _}: props<'T_open, string>) =>
     React.string(_open)
   let make = {
-    let \"MangleKeyword$C0" = (props: props<_>) => make(props)
+    let \"MangleKeyword$C4C0" = (props: props<_>) => make(props)
 
-    \"MangleKeyword$C0"
+    \"MangleKeyword$C4C0"
   }
 }
-module C1 = {
+module C4C1 = {
   type props<'T_open, 'T_type> = {
     @as("open") _open: 'T_open,
     @as("type") _type: 'T_type,
@@ -43,12 +43,12 @@ module C1 = {
   external make: @as("open") React.componentLike<props<string, string>, React.element> = "default"
 }
 
-let c0 = React.createElement(C0.make, {_open: "x", _type: "t"})
-let c1 = React.createElement(C1.make, {_open: "x", _type: "t"})
+let c4c0 = React.createElement(C4C0.make, {_open: "x", _type: "t"})
+let c4c1 = React.createElement(C4C1.make, {_open: "x", _type: "t"})
 
 @@jsxConfig({version: 4, mode: "automatic"})
 
-module C0 = {
+module C4A0 = {
   type props<'T_open, 'T_type> = {
     @as("open") _open: 'T_open,
     @as("type") _type: 'T_type,
@@ -58,12 +58,12 @@ module C0 = {
   let make = ({@as("open") _open, @as("type") _type, _}: props<'T_open, string>) =>
     React.string(_open)
   let make = {
-    let \"MangleKeyword$C0" = (props: props<_>) => make(props)
+    let \"MangleKeyword$C4A0" = (props: props<_>) => make(props)
 
-    \"MangleKeyword$C0"
+    \"MangleKeyword$C4A0"
   }
 }
-module C1 = {
+module C4A1 = {
   type props<'T_open, 'T_type> = {
     @as("open") _open: 'T_open,
     @as("type") _type: 'T_type,
@@ -72,5 +72,5 @@ module C1 = {
   external make: @as("open") React.componentLike<props<string, string>, React.element> = "default"
 }
 
-let c0 = React.jsx(C0.make, {_open: "x", _type: "t"})
-let c1 = React.jsx(C1.make, {_open: "x", _type: "t"})
+let c4a0 = React.jsx(C4A0.make, {_open: "x", _type: "t"})
+let c4a1 = React.jsx(C4A1.make, {_open: "x", _type: "t"})
