@@ -3019,7 +3019,7 @@ and type_application uncurried env funct (sargs : sargs) : targs * Types.type_ex
     match has_uncurried_type t with
     | Some (arity, _) ->
       let newarity = arity - nargs in
-      let fully_applied = newarity = 0 in
+      let fully_applied = newarity <= 0 in
       if uncurried && not fully_applied then
         raise(Error(funct.exp_loc, env,
           Uncurried_arity_mismatch (t, arity, List.length sargs)));
@@ -3046,6 +3046,10 @@ and type_application uncurried env funct (sargs : sargs) : targs * Types.type_ex
           | _ -> collect_args ())
         else
           collect_args ()
+    | [(Nolabel, {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)})]
+      when uncurried && omitted = [] && List.length args = List.length !ignored ->
+      (* foo(. ) treated as empty application if all args are optional (hence ignored) *)
+        type_unknown_args max_arity args omitted ty_fun []
     | (l1, sarg1) :: sargl ->
         let (ty1, ty2) =
           let ty_fun = expand_head env ty_fun in
