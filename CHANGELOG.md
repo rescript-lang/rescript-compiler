@@ -15,6 +15,8 @@
 #### :boom: Breaking Change
 
 - Parse the attributes of labelled argument to the pattern attributes of argument instead of function. https://github.com/rescript-lang/syntax/pull/722
+- The prop names duplicated to keyword are not mangled automatically in JSX v4.
+  - Use `@as` instead
 
 #### :rocket: New Feature
 
