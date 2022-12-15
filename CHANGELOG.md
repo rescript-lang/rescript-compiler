@@ -61,6 +61,11 @@ These are only breaking changes for unformatted code.
 
 # 10.1.1
 
+#### :boom: Breaking Change
+
+- The prop names duplicated to keyword are not mangled automatically in JSX v4.
+  - Use `@as` instead
+
 #### :rocket: New Feature
 
 - Add support for empty inlined record literal `{}` for inlined records where all fields are optional https://github.com/rescript-lang/rescript-compiler/pull/5900
