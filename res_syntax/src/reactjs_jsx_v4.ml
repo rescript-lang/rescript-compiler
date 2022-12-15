@@ -289,14 +289,15 @@ let makePropsTypeParams ?(stripExplicitOption = false)
 
 let makeLabelDecls ~loc namedTypeList =
   namedTypeList
-  |> List.map (fun (isOptional, label, _, interiorType) ->
+  |> List.map (fun (isOptional, label, attrs, interiorType) ->
          if label = "key" then
-           Type.field ~loc ~attrs:optionalAttrs {txt = label; loc} interiorType
+           Type.field ~loc ~attrs:(optionalAttrs @ attrs) {txt = label; loc}
+             interiorType
          else if isOptional then
-           Type.field ~loc ~attrs:optionalAttrs {txt = label; loc}
+           Type.field ~loc ~attrs:(optionalAttrs @ attrs) {txt = label; loc}
              (Typ.var @@ safeTypeFromValue @@ Labelled label)
          else
-           Type.field ~loc {txt = label; loc}
+           Type.field ~loc ~attrs {txt = label; loc}
              (Typ.var @@ safeTypeFromValue @@ Labelled label))
 
 let makeTypeDecls propsName loc namedTypeList =
@@ -681,7 +682,9 @@ let newtypeToVar newtype type_ =
   mapper.typ mapper type_
 
 let argToType ~newtypes ~(typeConstraints : core_type option) types
-    (name, default, _noLabelName, _alias, loc, type_) =
+    ((name, default, {ppat_attributes = attrs}, _alias, loc, type_) :
+      arg_label * expression option * pattern * label * 'loc * core_type option)
+    =
   let rec getType name coreType =
     match coreType with
     | {ptyp_desc = Ptyp_arrow (arg, c1, c2)} ->
@@ -699,17 +702,18 @@ let argToType ~newtypes ~(typeConstraints : core_type option) types
   in
   match (type_, name, default) with
   | Some type_, name, _ when isOptional name ->
-    (true, getLabel name, [], {type_ with ptyp_attributes = optionalAttrs})
+    (true, getLabel name, attrs, {type_ with ptyp_attributes = optionalAttrs})
     :: types
-  | Some type_, name, _ -> (false, getLabel name, [], type_) :: types
+  | Some type_, name, _ -> (false, getLabel name, attrs, type_) :: types
   | None, name, _ when isOptional name ->
     ( true,
       getLabel name,
-      [],
+      attrs,
       Typ.var ~loc ~attrs:optionalAttrs (safeTypeFromValue name) )
     :: types
   | None, name, _ when isLabelled name ->
-    (false, getLabel name, [], Typ.var ~loc (safeTypeFromValue name)) :: types
+    (false, getLabel name, attrs, Typ.var ~loc (safeTypeFromValue name))
+    :: types
   | _ -> types
 
 let argWithDefaultValue (name, default, _, _, _, _) =
@@ -717,10 +721,10 @@ let argWithDefaultValue (name, default, _, _, _, _) =
   | Some default when isOptional name -> Some (getLabel name, default)
   | _ -> None
 
-let argToConcreteType types (name, _loc, type_) =
+let argToConcreteType types (name, attrs, _loc, type_) =
   match name with
-  | name when isLabelled name -> (false, getLabel name, [], type_) :: types
-  | name when isOptional name -> (true, getLabel name, [], type_) :: types
+  | name when isLabelled name -> (false, getLabel name, attrs, type_) :: types
+  | name when isOptional name -> (true, getLabel name, attrs, type_) :: types
   | _ -> types
 
 let check_string_int_attribute_iter =
@@ -763,15 +767,19 @@ let transformStructureItem ~config mapper item =
           |> Option.map React_jsx_common.typVarsOfCoreType
           |> Option.value ~default:[]
         in
-        let rec getPropTypes types ({ptyp_loc; ptyp_desc} as fullType) =
+        let rec getPropTypes types
+            ({ptyp_loc; ptyp_desc; ptyp_attributes} as fullType) =
           match ptyp_desc with
           | Ptyp_arrow (name, type_, ({ptyp_desc = Ptyp_arrow _} as rest))
             when isLabelled name || isOptional name ->
-            getPropTypes ((name, ptyp_loc, type_) :: types) rest
+            getPropTypes
+              ((name, ptyp_attributes, ptyp_loc, type_) :: types)
+              rest
           | Ptyp_arrow (Nolabel, _type, rest) -> getPropTypes types rest
           | Ptyp_arrow (name, type_, returnValue)
             when isLabelled name || isOptional name ->
-            (returnValue, (name, returnValue.ptyp_loc, type_) :: types)
+            ( returnValue,
+              (name, ptyp_attributes, returnValue.ptyp_loc, type_) :: types )
           | _ -> (fullType, types)
         in
         let innerType, propTypes = getPropTypes [] pval_type in
@@ -1264,9 +1272,12 @@ let transformSignatureItem ~config _mapper item =
       in
       let rec getPropTypes types ({ptyp_loc; ptyp_desc} as fullType) =
         match ptyp_desc with
-        | Ptyp_arrow (name, type_, ({ptyp_desc = Ptyp_arrow _} as rest))
+        | Ptyp_arrow
+            ( name,
+              ({ptyp_attributes = attrs} as type_),
+              ({ptyp_desc = Ptyp_arrow _} as rest) )
           when isOptional name || isLabelled name ->
-          getPropTypes ((name, ptyp_loc, type_) :: types) rest
+          getPropTypes ((name, attrs, ptyp_loc, type_) :: types) rest
         | Ptyp_arrow
             (Nolabel, {ptyp_desc = Ptyp_constr ({txt = Lident "unit"}, _)}, rest)
           ->
@@ -1274,9 +1285,9 @@ let transformSignatureItem ~config _mapper item =
         | Ptyp_arrow (Nolabel, _type, rest) ->
           hasForwardRef := true;
           getPropTypes types rest
-        | Ptyp_arrow (name, type_, returnValue)
+        | Ptyp_arrow (name, ({ptyp_attributes = attrs} as type_), returnValue)
           when isOptional name || isLabelled name ->
-          (returnValue, (name, returnValue.ptyp_loc, type_) :: types)
+          (returnValue, (name, attrs, returnValue.ptyp_loc, type_) :: types)
         | _ -> (fullType, types)
       in
       let innerType, propTypes = getPropTypes [] pval_type in

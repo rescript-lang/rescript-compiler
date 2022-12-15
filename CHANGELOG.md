@@ -62,6 +62,11 @@ These are only breaking changes for unformatted code.
 
 # 10.1.1
 
+#### :boom: Breaking Change
+
+- The prop names duplicated to keyword are not mangled automatically in JSX v4.
+  - Use `@as` instead
+
 #### :rocket: New Feature
 
 - Add support for empty inlined record literal `{}` for inlined records where all fields are optional https://github.com/rescript-lang/rescript-compiler/pull/5900
@@ -71,6 +76,7 @@ These are only breaking changes for unformatted code.
 - Prevent inlining of async functions in additional cases https://github.com/rescript-lang/rescript-compiler/issues/5860
 - Fix build error where aliasing arguments to `_` in the make function with JSX V4. https://github.com/rescript-lang/rescript-compiler/pull/5881
 - Fix parsing of spread props as an expression in JSX V4 https://github.com/rescript-lang/rescript-compiler/pull/5885
+- Fix dropping attributes from props in make function in JSX V4 https://github.com/rescript-lang/rescript-compiler/pull/5905
 
 # 10.1.0
 
