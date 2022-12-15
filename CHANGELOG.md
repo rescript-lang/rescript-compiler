@@ -12,6 +12,10 @@
 
 # 10.1.1
 
+#### :boom: Breaking Change
+
+- Parse the attributes of labelled argument to the pattern attributes of argument instead of function. https://github.com/rescript-lang/syntax/pull/722
+
 #### :rocket: New Feature
 
 - Add support for empty inlined record literal `{}` for inlined records where all fields are optional https://github.com/rescript-lang/rescript-compiler/pull/5900
@@ -22,6 +26,7 @@
 - Revert to ubuntu-18.04 in CI to support Linux versions with older glibc https://github.com/rescript-lang/rescript-compiler/issues/5868
 - Fix build error where aliasing arguments to `_` in the make function with JSX V4. https://github.com/rescript-lang/syntax/pull/720
 - Fix parsing of spread props as an expression in JSX V4 https://github.com/rescript-lang/syntax/pull/721
+- Fix dropping attributes from props in make function in JSX V4 https://github.com/rescript-lang/syntax/pull/723
 
 # 10.1.0
 

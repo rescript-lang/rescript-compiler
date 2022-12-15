@@ -13,6 +13,7 @@
 #### :boom: Breaking Change
 
 - Emit an error when a `@string` or `@int` attribute is used in a V4 component https://github.com/rescript-lang/rescript-compiler/issues/5724
+- Parse the attributes of labelled argument to the pattern attributes of argument instead of function. https://github.com/rescript-lang/syntax/pull/722
 
 #### :rocket: New Feature
 
@@ -53,6 +54,7 @@
 - Treat await as almost-unary operator weaker than pipe so `await foo->bar` means `await (foo->bar)` https://github.com/rescript-lang/syntax/pull/711
 - Fix build error where aliasing arguments to `_` in the make function with JSX V4. https://github.com/rescript-lang/syntax/pull/720
 - Fix parsing of spread props as an expression in JSX V4 https://github.com/rescript-lang/syntax/pull/721
+- Fix dropping attributes from props in make function in JSX V4 https://github.com/rescript-lang/syntax/pull/723
 
 #### :eyeglasses: Spec Compliance
 
