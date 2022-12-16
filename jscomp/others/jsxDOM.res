@@ -162,6 +162,8 @@ type domProps = {
   action?: string /* uri */,
   allowFullScreen?: bool,
   alt?: string,
+  @as("as")
+  as_?: string,
   async?: bool,
   autoComplete?: string /* has a fixed, but large-ish, set of possible values */,
   autoCapitalize?: string /* Mobile Safari specific */,
