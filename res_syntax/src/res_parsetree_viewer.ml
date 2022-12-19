@@ -95,6 +95,13 @@ let hasAwaitAttribute attrs =
       | _ -> false)
     attrs
 
+let hasReturnTypeAttribute attrs =
+  List.exists
+    (function
+      | {Location.txt = "res.returnType"}, _ -> true
+      | _ -> false)
+    attrs
+
 let collectListExpressions expr =
   let rec collect acc expr =
     match expr.pexp_desc with
@@ -205,7 +212,7 @@ let filterParsingAttrs attrs =
             Location.txt =
               ( "bs" | "res.uapp" | "res.arity" | "res.braces" | "res.iflet"
               | "res.namedArgLoc" | "res.optional" | "res.ternary" | "res.async"
-              | "res.await" | "res.template" );
+              | "res.await" | "res.template" | "res.returnType" );
           },
           _ ) ->
         false
@@ -353,7 +360,8 @@ let hasAttributes attrs =
       | ( {
             Location.txt =
               ( "bs" | "res.uapp" | "res.arity" | "res.braces" | "res.iflet"
-              | "res.ternary" | "res.async" | "res.await" | "res.template" );
+              | "res.ternary" | "res.async" | "res.await" | "res.template"
+              | "res.returnType" );
           },
           _ ) ->
         false
@@ -535,7 +543,8 @@ let isPrintableAttribute attr =
   | ( {
         Location.txt =
           ( "bs" | "res.uapp" | "res.arity" | "res.iflet" | "res.braces" | "JSX"
-          | "res.async" | "res.await" | "res.template" | "res.ternary" );
+          | "res.async" | "res.await" | "res.template" | "res.ternary"
+          | "res.returnType" );
       },
       _ ) ->
     false

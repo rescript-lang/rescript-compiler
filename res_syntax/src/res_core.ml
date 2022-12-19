@@ -1477,8 +1477,8 @@ and parseTernaryExpr leftOperand p =
       (Some falseBranch)
   | _ -> leftOperand
 
-and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
-    ?parameters p =
+and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ~async
+    ?context ?parameters p =
   let startPos = p.Parser.startPos in
   Parser.leaveBreadcrumb p Grammar.Es6ArrowExpr;
   (* Parsing function parameters and attributes:
@@ -1535,9 +1535,12 @@ and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
     let expr = parseExpr ?context p in
     match returnType with
     | Some typ ->
-      Ast_helper.Exp.constraint_
-        ~loc:(mkLoc expr.pexp_loc.loc_start typ.Parsetree.ptyp_loc.loc_end)
-        expr typ
+      let loc = mkLoc expr.pexp_loc.loc_start typ.Parsetree.ptyp_loc.loc_end in
+      let attrs =
+        if async then [(Location.mkloc "res.returnType" loc, Parsetree.PStr [])]
+        else []
+      in
+      Ast_helper.Exp.constraint_ ~attrs ~loc expr typ
     | None -> expr
   in
   Parser.eatBreadcrumb p;
@@ -2148,7 +2151,7 @@ and parseOperandExpr ~context p =
       then
         let arrowAttrs = !attrs in
         let () = attrs := [] in
-        parseEs6ArrowExpression ~arrowAttrs ~context p
+        parseEs6ArrowExpression ~arrowAttrs ~async:false ~context p
       else parseUnaryExpr p
   in
   (* let endPos = p.Parser.prevEndPos in *)
@@ -2924,7 +2927,7 @@ and parseBracedOrRecordExpr p =
         let loc = mkLoc startPos identEndPos in
         let ident = Location.mkloc (Longident.last pathIdent.txt) loc in
         let a =
-          parseEs6ArrowExpression
+          parseEs6ArrowExpression ~async:false
             ~parameters:
               [
                 TermParameter
@@ -3218,7 +3221,7 @@ and parseAsyncArrowExpression ?(arrowAttrs = []) p =
   Parser.expect (Lident "async") p;
   let asyncAttr = makeAsyncAttr (mkLoc startPos p.prevEndPos) in
   parseEs6ArrowExpression ~arrowAttrs:(asyncAttr :: arrowAttrs)
-    ~arrowStartPos:(Some startPos) p
+    ~arrowStartPos:(Some startPos) ~async:true p
 
 and parseAwaitExpression p =
   let awaitLoc = mkLoc p.Parser.startPos p.endPos in

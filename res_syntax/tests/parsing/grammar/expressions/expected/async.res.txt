@@ -26,8 +26,10 @@ let async =
   [@res.braces ])
 let f =
   ((if isPositive
-    then ((fun a -> fun b -> (a + b : int))[@res.async ])
-    else (((fun c -> fun d -> (c - d : int)))[@res.async ]))
+    then ((fun a -> fun b -> (((a + b : int))[@res.returnType ]))
+      [@res.async ])
+    else (((fun c -> fun d -> (((c - d : int))[@res.returnType ])))
+      [@res.async ]))
   [@res.ternary ])
 let foo = async ~a:((34)[@res.namedArgLoc ])
 let bar = ((fun ~a:((a)[@res.namedArgLoc ]) -> a + 1)[@res.async ])

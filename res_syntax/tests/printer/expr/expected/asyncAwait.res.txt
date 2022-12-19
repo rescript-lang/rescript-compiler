@@ -142,3 +142,10 @@ let c3 = (. x) => {@foo y => x + y}
 
 type t1 = (. int) => string => bool
 type t2 = (. int, string) => bool
+
+let ann1 = async () => (3: int)
+let ann2 = async (): promise<int> => 3
+let ann3 = async (): promise<int> => (3: int)
+let ann4 = foo(async () => (3: int))
+let ann5 = foo(async (): promise<int> => 3)
+let ann6 = foo(async (): promise<int> => (3: int))

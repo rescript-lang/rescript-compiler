@@ -2602,7 +2602,10 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
     let uncurried = uncurried || bs in
     let returnExpr, typConstraint =
       match returnExpr.pexp_desc with
-      | Pexp_constraint (expr, typ) ->
+      | Pexp_constraint (expr, typ)
+        when (not async)
+             || Res_parsetree_viewer.hasReturnTypeAttribute
+                  returnExpr.pexp_attributes ->
         ( {
             expr with
             pexp_attributes =
@@ -3308,7 +3311,10 @@ and printPexpFun ~state ~inCallback e cmtTbl =
   let uncurried = bs || uncurried in
   let returnExpr, typConstraint =
     match returnExpr.pexp_desc with
-    | Pexp_constraint (expr, typ) ->
+    | Pexp_constraint (expr, typ)
+      when (not async)
+           || Res_parsetree_viewer.hasReturnTypeAttribute
+                returnExpr.pexp_attributes ->
       ( {
           expr with
           pexp_attributes =

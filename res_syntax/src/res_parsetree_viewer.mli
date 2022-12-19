@@ -31,6 +31,8 @@ val processFunctionAttributes : Parsetree.attributes -> functionAttributesInfo
 
 val hasAwaitAttribute : Parsetree.attributes -> bool
 
+val hasReturnTypeAttribute : Parsetree.attributes -> bool
+
 type ifConditionKind =
   | If of Parsetree.expression
   | IfLet of Parsetree.pattern * Parsetree.expression
