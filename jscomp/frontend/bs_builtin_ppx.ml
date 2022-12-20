@@ -224,9 +224,15 @@ let expr_mapper ~async_context ~in_function_def (self : mapper)
   match Ast_attributes.has_await_payload e.pexp_attributes with
   | None -> result
   | Some _ ->
-      (* if !async_context = false then
+      (if !async_context = false then
+        let isJsImport (e : Parsetree.expression) =
+          match e with
+          | { pexp_desc = Pexp_apply ({ pexp_desc = Pexp_ident { txt = Ldot ( Lident "Js", "import") } }, _) } -> true
+          | _ -> false
+        in
+        if not (isJsImport e) then
          Location.raise_errorf ~loc:e.pexp_loc
-           "Await on expression not in an async context"; *)
+           "Await on expression not in an async context");
       Ast_await.create_await_expression result
 
 let typ_mapper (self : mapper) (typ : Parsetree.core_type) =

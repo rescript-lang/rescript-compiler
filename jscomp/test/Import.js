@@ -44,7 +44,7 @@ eachIntAsync({
         console.log("async", n);
       }));
 
-var beltAsModule = import("../../lib/js/belt_List.js");
+var beltAsModule = await import("../../lib/js/belt_List.js");
 
 var M = await import("../../lib/js/belt_List.js");
 
