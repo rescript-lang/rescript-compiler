@@ -13,14 +13,7 @@ var othersDir = path.join(jscompDir, "others");
 var testDir = path.join(jscompDir, "test");
 
 var jsDir = path.join(__dirname, "..", "lib", "js");
-var duneBinDir = path.join(
-  __dirname,
-  "..",
-  "_build",
-  "install",
-  "default",
-  "bin"
-);
+var duneBinDir = require("./dune").duneBinDir;
 
 var runtimeFiles = fs.readdirSync(runtimeDir, "ascii");
 var runtimeMlFiles = runtimeFiles.filter(

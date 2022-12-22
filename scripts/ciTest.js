@@ -3,14 +3,7 @@ var cp = require("child_process");
 var path = require("path");
 var fs = require("fs");
 
-var duneBinDir = path.join(
-  __dirname,
-  "..",
-  "_build",
-  "install",
-  "default",
-  "bin"
-);
+var duneBinDir = require("./dune").duneBinDir;
 
 var ounitTest = false;
 var mochaTest = false;

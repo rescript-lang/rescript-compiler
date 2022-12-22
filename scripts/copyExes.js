@@ -4,17 +4,10 @@
 const path = require("path");
 const fs = require("fs");
 const child_process = require("child_process");
+const { duneBinDir } = require("./dune");
+const { absolutePath: platformBinDir } = require("./bin_path");
 
-const { absolutePath: platformBinDir, ninja_exe } = require("./bin_path");
 const ninjaDir = path.join(__dirname, "..", "ninja");
-const duneBinDir = path.join(
-  __dirname,
-  "..",
-  "_build",
-  "install",
-  "default",
-  "bin"
-);
 
 if (!fs.existsSync(platformBinDir)) {
   fs.mkdirSync(platformBinDir);
