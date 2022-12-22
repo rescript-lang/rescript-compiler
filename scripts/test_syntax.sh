@@ -5,6 +5,11 @@
 # 2. macOS still has bash 3 and therefore no globstar ("**") support.
 #    Therefore we need to use find + temp files for the file lists.
 
+scriptDir=`dirname $0`
+DUNE_BIN_DIR=`realpath $scriptDir/../_build/install/default/bin`
+
+$DUNE_BIN_DIR/syntax_tests
+
 function exp {
   echo "$(dirname $1)/expected/$(basename $1).txt"
 }
@@ -24,23 +29,23 @@ mkdir temp
 # parsing
 find tests/parsing/{errors,infiniteLoops,recovery} -name "*.res" -o -name "*.resi" >temp/files.txt
 while read file; do
-  res_parser -recover -print ml $file &> $(exp $file) & maybeWait
+  $DUNE_BIN_DIR/res_parser -recover -print ml $file &> $(exp $file) & maybeWait
 done <temp/files.txt
 find tests/parsing/{grammar,other} -name "*.res" -o -name "*.resi" >temp/files.txt
 while read file; do
-  res_parser -print ml $file &> $(exp $file) & maybeWait
+  $DUNE_BIN_DIR/res_parser -print ml $file &> $(exp $file) & maybeWait
 done <temp/files.txt
 
 # printing
 find tests/{printer,conversion} -name "*.res" -o -name "*.resi" -o -name "*.ml" -o -name "*.mli" >temp/files.txt
 while read file; do
-  res_parser $file &> $(exp $file) & maybeWait
+  $DUNE_BIN_DIR/res_parser $file &> $(exp $file) & maybeWait
 done <temp/files.txt
 
 # printing with ppx
 find tests/ppx/react -name "*.res" -o -name "*.resi" >temp/files.txt
 while read file; do
-  res_parser -jsx-version 4 -jsx-mode "automatic" $file &> $(exp $file) & maybeWait
+  $DUNE_BIN_DIR/res_parser -jsx-version 4 -jsx-mode "automatic" $file &> $(exp $file) & maybeWait
 done <temp/files.txt
 
 wait
@@ -80,11 +85,11 @@ if [[ $ROUNDTRIP_TEST = 1 ]]; then
       *.resi ) class="res"; resIntf=-interface ;;
     esac
 
-    res_parser $resIntf -parse $class -print sexp $file > $sexpAst1
-    res_parser $resIntf -parse $class -print res $file > $rescript1
+    $DUNE_BIN_DIR/res_parser $resIntf -parse $class -print sexp $file > $sexpAst1
+    $DUNE_BIN_DIR/res_parser $resIntf -parse $class -print res $file > $rescript1
 
-    res_parser $resIntf -print sexp $rescript1 > $sexpAst2
-    res_parser $resIntf -print res $rescript1 > $rescript2
+    $DUNE_BIN_DIR/res_parser $resIntf -print sexp $rescript1 > $sexpAst2
+    $DUNE_BIN_DIR/res_parser $resIntf -print res $rescript1 > $rescript2
 
     diff --unified $sexpAst1 $sexpAst2
     [[ "$?" = 1 ]] && echo 1 > $roundtripTestsResult
@@ -113,7 +118,7 @@ popd
 case "$(uname -s)" in
   Darwin|Linux)
     echo "Checking code formatting..."
-    if dune build @fmt; then
+    if opam exec -- dune build @fmt; then
       printf "${successGreen}✅ Code formatting ok.${reset}\n"
     else
       printf "${warningYellow}⚠️ Code formatting failed.${reset}\n"

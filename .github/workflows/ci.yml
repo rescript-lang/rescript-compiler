@@ -11,14 +11,53 @@ concurrency:
   # Cancel previous builds for pull requests only.
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+env:
+  OCAMLRUNPARAM: b
+  DUNE_PROFILE: release
+
 jobs:
+  # Build statically linked Linux binaries in an Alpine-based Docker container
+  # See https://ocamlpro.com/blog/2021_09_02_generating_static_and_portable_executables_with_ocaml
+  # for more info.
+  # The container already comes with all required tools pre-installed
+  # (see https://github.com/rescript-lang/docker-rescript-ci-build/blob/main/Dockerfile).
+  static-binaries-linux:
+    runs-on: ubuntu-latest
+
+    container:
+      image: ghcr.io/rescript-lang/rescript-ci-build
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Apply static linking patch
+        run: git apply scripts/dune-static-linking.patch
+
+      - name: Build compiler binaries
+        run: opam exec -- dune build
+
+      - name: Build ninja binary
+        working-directory: ninja
+        env:
+          LDFLAGS: -static
+        run: python3 configure.py --bootstrap --verbose
+
+      - name: "Upload artifacts"
+        uses: actions/upload-artifact@v3
+        with:
+          name: static-binaries-linux
+          path: |
+            _build/install/default/bin
+            ninja/ninja
+
   build:
+    needs: static-binaries-linux
+
     strategy:
       fail-fast: false
       matrix:
-        # Stay on the oldest Ubuntu version that's still supported by Github Actions
-        # to avoid glibc incompatibilities as far as possible.
-        os: [macos-latest, ubuntu-20.04, windows-latest, macos-arm]
+        os: [macos-latest, ubuntu-latest, windows-latest, macos-arm]
         ocaml_compiler: [4.14.0]
 
     runs-on: ${{matrix.os}}
@@ -39,6 +78,18 @@ jobs:
         with:
           fetch-depth: 2 # to be able to check for changes in subfolder res_syntax later
 
+      - name: Download static linux binaries
+        if: runner.os == 'Linux'
+        uses: actions/download-artifact@v3
+        with:
+          name: static-binaries-linux
+
+      - name: Make static linux binaries executable
+        if: runner.os == 'Linux'
+        run: |
+          chmod +x ninja/ninja
+          chmod +x _build/install/default/bin/*
+
       - name: Use OCaml ${{matrix.ocaml_compiler}}
         uses: ocaml/setup-ocaml@v2
         with:
@@ -49,18 +100,30 @@ jobs:
       - name: "Install OPAM dependencies"
         run: opam install . --deps-only
 
+      - name: "Build compiler"
+        if: runner.os != 'Linux'
+        run: opam exec -- dune build
+
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 16
 
-      - name: "Build compiler"
-        run: |
-          opam exec -- dune build
-          node ./scripts/copyExes.js
-
       - name: Install npm packages
         run: npm ci --ignore-scripts
+
+      - name: "Windows: Use MSVC for ninja build"
+        if: runner.os == 'Windows'
+        uses: TheMrMilchmann/setup-msvc-dev@v2
+        with:
+          arch: x64
+
+      - name: Build ninja
+        if: runner.os != 'Linux'
+        run: node scripts/buildNinjaBinary.js
+
+      - name: Copy exes to platform bin dirs
+        run: node ./scripts/copyExes.js
 
       - name: "Check if syntax subfolder has changed"
         id: syntax-diff
@@ -74,38 +137,28 @@ jobs:
 
       - name: "Syntax: Run roundtrip tests"
         if: ${{ env.syntax_status == 'changed' && runner.os != 'Windows' }}
-        run: opam exec -- make test-syntax-roundtrip
+        run: make test-syntax-roundtrip
 
       - name: "Syntax: Run tests (Windows)"
         if: ${{ env.syntax_status == 'changed' && runner.os == 'Windows' }}
-        run: opam exec -- make test-syntax
-
-      # Required for ninja build
-      - name: "Windows: Use MSVC"
-        if: runner.os == 'Windows'
-        uses: TheMrMilchmann/setup-msvc-dev@v2
-        with:
-          arch: x64
-
-      - name: Build ninja
-        run: node scripts/buildNinjaBinary.js
+        run: make test-syntax
 
       - name: Build runtime/stdlib
         if: runner.os != 'Windows'
         run: |
-          opam exec -- dune exec -- node ./scripts/ninja.js config
-          opam exec -- dune exec -- node ./scripts/ninja.js build
+          opam exec -- node ./scripts/ninja.js config
+          opam exec -- node ./scripts/ninja.js build
 
       - name: Check for changes in lib folder
         run: git diff --exit-code lib/js lib/es6
 
       - name: Run tests
         if: runner.os != 'Windows'
-        run: opam exec -- dune exec -- node scripts/ciTest.js -all
+        run: node scripts/ciTest.js -all
 
       - name: Run tests (Windows)
         if: runner.os == 'Windows'
-        run: opam exec -- dune exec -- node scripts/ciTest.js -mocha -theme -format
+        run: node scripts/ciTest.js -mocha -theme -format
 
       - name: Prepare artifact upload
         run: |
@@ -216,30 +269,3 @@ jobs:
         run: npx rescript -h && npx rescript build && cat src/Test.bs.js
         shell: bash
         working-directory: packages/test
-
-  # The following job tests installation from source on FreeBSD via cross-platform-actions.
-  # Disabled by default, as it takes ~11m.
-  # Can be enabled temporarily in a PR to verify that installation from source
-  # on an "exotic" platform still works.
-  #
-  # installationTestFreeBSD:
-  #   needs: package
-  #   runs-on: macos-latest
-  #
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
-  #
-  #     - name: Download artifacts
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: npm-packages
-  #         path: packages/test
-  #
-  #     - name: Test installation on FreeBSD
-  #       uses: cross-platform-actions/action@v0.6.2
-  #       with:
-  #         operating_system: freebsd
-  #         version: "13.0"
-  #         shell: bash
-  #         run: cd packages/test && ./test_freebsd.sh

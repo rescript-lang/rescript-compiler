@@ -3,6 +3,8 @@ var cp = require("child_process");
 var path = require("path");
 var fs = require("fs");
 
+var duneBinDir = require("./dune").duneBinDir;
+
 var ounitTest = false;
 var mochaTest = false;
 var themeTest = false;
@@ -43,7 +45,7 @@ if (all) {
 
 function runTests() {
   if (ounitTest) {
-    cp.execSync("ounit_tests", {
+    cp.execSync(path.join(duneBinDir, "ounit_tests"), {
       stdio: [0, 1, 2],
     });
   }

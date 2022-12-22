@@ -36,7 +36,6 @@ _build
 *.rawlambda
 *.lambda
 *.zip
-*.patch
 *.mlast
 *.mliast
 # special file

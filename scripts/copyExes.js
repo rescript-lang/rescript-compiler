@@ -4,24 +4,18 @@
 const path = require("path");
 const fs = require("fs");
 const child_process = require("child_process");
+const { duneBinDir } = require("./dune");
+const { absolutePath: platformBinDir } = require("./bin_path");
 
-const platformBinDir = require("./bin_path").absolutePath;
-const duneBinDir = path.join(
-  __dirname,
-  "..",
-  "_build",
-  "install",
-  "default",
-  "bin"
-);
+const ninjaDir = path.join(__dirname, "..", "ninja");
 
 if (!fs.existsSync(platformBinDir)) {
   fs.mkdirSync(platformBinDir);
 }
 
-function copyExe(exe) {
+function copyExe(dir, exe) {
   const ext = process.platform === "win32" ? ".exe" : "";
-  const src = path.join(duneBinDir, exe + ext);
+  const src = path.join(dir, exe + ext);
   const dest = path.join(platformBinDir, exe + ".exe");
 
   // For some reason, the copy operation fails in Windows CI if the file already exists.
@@ -36,6 +30,7 @@ function copyExe(exe) {
   }
 }
 
-copyExe("rescript");
-copyExe("bsc");
-copyExe("bsb_helper");
+copyExe(duneBinDir, "rescript");
+copyExe(duneBinDir, "bsc");
+copyExe(duneBinDir, "bsb_helper");
+copyExe(ninjaDir, "ninja");

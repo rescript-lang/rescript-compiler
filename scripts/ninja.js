@@ -13,6 +13,7 @@ var othersDir = path.join(jscompDir, "others");
 var testDir = path.join(jscompDir, "test");
 
 var jsDir = path.join(__dirname, "..", "lib", "js");
+var duneBinDir = require("./dune").duneBinDir;
 
 var runtimeFiles = fs.readdirSync(runtimeDir, "ascii");
 var runtimeMlFiles = runtimeFiles.filter(
@@ -1452,7 +1453,7 @@ function main() {
             stdio: [0, 1, 2],
           });
           if (!isPlayground) {
-            cp.execFileSync("cmij", {
+            cp.execFileSync(path.join(duneBinDir, "cmij"), {
               encoding: "utf8",
               cwd: jscompDir,
               stdio: [0, 1, 2],
