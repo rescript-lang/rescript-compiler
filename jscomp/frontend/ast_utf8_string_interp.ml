@@ -325,7 +325,7 @@ let to_string_ident : Longident.t = Ldot (Ldot (Lident "Js", "String2"), "make")
 
 module Delim = struct
   let parse_processed = function
-    | None -> Some J.DNone
+    | None -> Some External_arg_spec.DNone
     | Some "json" -> Some DJson
     | Some "*j" -> Some DStarJ
     | _ -> None

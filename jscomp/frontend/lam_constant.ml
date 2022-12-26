@@ -47,7 +47,7 @@ type t =
   | Const_float of string
   | Const_int64 of int64
   | Const_pointer of string
-  | Const_block of int * Lam_tag_info.t * t list
+  | Const_block of int * Lambda.tag_info * t list
   | Const_float_array of string list
   | Const_some of t
   | Const_module_alias

@@ -22,9 +22,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type delim = | DNone | DStarJ | DJson
+
 type cst = private
   | Arg_int_lit of int
-  | Arg_string_lit of string * J.delim
+  | Arg_string_lit of string * delim
 
 type attr =
   | Poly_var_string of { descr : (string * string) list }
@@ -56,7 +58,7 @@ type params = param list
 
 val cst_int : int -> cst
 
-val cst_string : string -> J.delim -> cst
+val cst_string : string -> delim -> cst
 
 val empty_label : label
 
