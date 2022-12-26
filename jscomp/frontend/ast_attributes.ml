@@ -278,7 +278,7 @@ let iter_process_bs_int_as (attrs : t) =
       | _ -> ());
   !st
 
-type as_const_payload = Int of int | Str of string * J.delim
+type as_const_payload = Int of int | Str of string * External_arg_spec.delim
 
 let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
   let st = ref None in
