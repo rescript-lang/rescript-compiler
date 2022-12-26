@@ -434,8 +434,8 @@ let local_module_type_name =
   let v = ref 0 in
   fun ({ txt } : Longident.t Location.loc) ->
     incr v;
-    (Longident.flatten txt |> List.fold_left (fun ll l -> ll ^ l) "")
-    ^ string_of_int !v
+    "__" ^ (Longident.flatten txt |> List.fold_left (fun ll l -> ll ^ l) "")
+    ^ string_of_int !v ^ "__"
 
 let expand_reverse (stru : Ast_structure.t) (acc : Ast_structure.t) :
     Ast_structure.t =
@@ -515,7 +515,7 @@ let rec structure_mapper (self : mapper) (stru : Ast_structure.t) =
                 { txt = safe_module_type_name; loc }
                 ~typ:(Mty.typeof_ ~loc me))
         in
-        (* module BeltList0 = module type of Belt.List *)
+        (* module __BeltList1__ = module type of Belt.List *)
         module_type_decl
         :: {
               item with
