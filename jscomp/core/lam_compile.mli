@@ -25,6 +25,6 @@
 (** Compile single lambda IR to JS IR  *)
 
 val compile_recursive_lets :
-  string -> Lam_compile_context.t -> (Ident.t * Lam.t) list -> Js_output.t
+  string -> Js_packages_info.module_system -> Lam_compile_context.t -> (Ident.t * Lam.t) list -> Js_output.t
 
-val compile_lambda : string -> Lam_compile_context.t -> Lam.t -> Js_output.t
+val compile_lambda : string -> Js_packages_info.module_system -> Lam_compile_context.t -> Lam.t -> Js_output.t
