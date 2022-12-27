@@ -40,16 +40,6 @@ let module_of_expression = function
   | J.Var (J.Qualified (module_id, value)) -> [ (module_id, value) ]
   | _ -> []
 
-let get_module_system () =
-  let packages_info = Js_packages_state.get_packages_info () in
-  let module_systems =
-    Js_packages_info.map packages_info (fun { module_system } -> module_system)
-  in
-  match module_systems with
-  (* fixme: test mode where the module system is empty *)
-  | [] -> assert false
-  | module_system :: _rest -> module_system
-
 let import_of_path path =
   E.call
     ~info:{ arity = Full; call_info = Call_na }
@@ -71,7 +61,7 @@ let wrap_then import value =
         ];
     ]
 
-let translate output_prefix loc (cxt : Lam_compile_context.t)
+let translate output_prefix module_system loc (cxt : Lam_compile_context.t)
     (prim : Lam_primitive.t) (args : J.expression list) : J.expression =
   match prim with
   | Pis_not_none -> Js_of_lam_option.is_not_none (Ext_list.singleton_exn args)
@@ -127,7 +117,7 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
 
           let path =
             Js_name_of_module_id.string_of_module_id module_id ~output_dir
-              (get_module_system ())
+              module_system
           in
 
           match module_value with
