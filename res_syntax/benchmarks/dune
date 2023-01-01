@@ -1,3 +1,8 @@
+(env
+ (static
+  (flags
+   (:standard -ccopt -static))))
+
 (executable
  (name benchmark)
  (public_name syntax_benchmarks)

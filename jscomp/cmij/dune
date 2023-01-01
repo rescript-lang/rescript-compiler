@@ -1,3 +1,8 @@
+(env
+ (static
+  (flags
+   (:standard -ccopt -static))))
+
 (executables
  (names cmij_main cmjdump_main)
  (public_names cmij cmjdump)

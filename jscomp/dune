@@ -10,4 +10,9 @@
   (env-vars
    (CPPO_FLAGS -D=RELEASE))
   (ocamlopt_flags
+   (:standard -O3 -unbox-closures)))
+ (static
+  (env-vars
+   (CPPO_FLAGS -D=RELEASE))
+  (ocamlopt_flags
    (:standard -O3 -unbox-closures))))
