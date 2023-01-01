@@ -1,3 +1,8 @@
+(env
+ (static
+  (flags
+   (:standard -ccopt -static))))
+
 (executable
  (name res_cli)
  (public_name res_parser)

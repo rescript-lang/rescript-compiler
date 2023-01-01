@@ -1,3 +1,8 @@
+(env
+ (static
+  (flags
+   (:standard -ccopt -static))))
+
 (executable
  (name rescript_compiler_main)
  (public_name bsc)

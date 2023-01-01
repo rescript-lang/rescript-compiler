@@ -1,3 +1,8 @@
+(env
+ (static
+  (flags
+   (:standard -ccopt -static))))
+
 (executable
  (name rescript_main)
  (public_name rescript)
