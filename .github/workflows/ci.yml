@@ -137,11 +137,11 @@ jobs:
 
       - name: "Syntax: Run roundtrip tests"
         if: ${{ env.syntax_status == 'changed' && runner.os != 'Windows' }}
-        run: make test-syntax-roundtrip
+        run: opam exec -- make test-syntax-roundtrip
 
       - name: "Syntax: Run tests (Windows)"
         if: ${{ env.syntax_status == 'changed' && runner.os == 'Windows' }}
-        run: make test-syntax
+        run: opam exec -- make test-syntax
 
       - name: Build runtime/stdlib
         if: runner.os != 'Windows'
