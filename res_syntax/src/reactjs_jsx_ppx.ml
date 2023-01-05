@@ -28,7 +28,8 @@ let getJsxConfigByKey ~key ~type_ recordFields =
           Some value
         | ( String,
             {txt = Lident k},
-            {pexp_desc = Pexp_constant (Pconst_string (value, None))} )
+            (* accept both normal strings and "js" strings *)
+            {pexp_desc = Pexp_constant (Pconst_string (value, _))} )
           when k = key ->
           Some value
         | _ -> None)
