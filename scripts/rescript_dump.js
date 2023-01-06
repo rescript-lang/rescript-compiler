@@ -5,6 +5,9 @@ var dump_usage = `Usage: rescript dump <options> [target]
 `;
 var child_process = require("child_process");
 var path = require("path");
+/**
+ * @type {arg.specs}
+ */
 var specs = [];
 
 /**
