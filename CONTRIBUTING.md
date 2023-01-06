@@ -19,6 +19,18 @@ Happy hacking!
 - `opam` (OCaml Package Manager)
 - VSCode (+ [OCaml Platform Extension](https://marketplace.visualstudio.com/items?itemName=ocamllabs.ocaml-platform))
 
+## Cloning the Git Repo
+
+The rescript-compiler git repo is very large because, prior to tooling improvements made for ReScript 11 development, build artifacts were checked in to the repo ("snapshotted"). Therefore, cloning the repo in full will consume a lot of bandwidth and disk space (> 2GB).
+
+If you are only interested in the latest master commit, you can perform a shallow clone instead as follows:
+
+```sh
+git clone --depth 1 https://github.com/rescript-lang/rescript-compiler.git
+```
+
+This will only consume less than 50MB.
+
 ## Install OCaml compiler + dependencies
 
 The ReScript compiler compiles with any recent OCaml compiler. We are using `dune` as a build system for easy workflows and proper IDE support.
