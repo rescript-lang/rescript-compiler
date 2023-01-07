@@ -97,7 +97,7 @@ jobs:
 
       - name: "Build compiler"
         if: runner.os != 'Linux'
-        run: opam exec -- dune build --profile release
+        run: opam exec -- dune build --display quiet --profile release
 
       - name: Use Node.js
         uses: actions/setup-node@v3
