@@ -4,11 +4,13 @@ var path = require("path");
 
 /**
  * @type{string}
+ *
+ * For compatibility reasons, if the architecture is x64, omit it from the bin directory name.
+ * So we'll have "darwin", "linux" and "win32" for x64 arch,
+ * but "darwinarm64" and "linuxarm64" for arm64 arch.
  */
 var binDirName =
-  process.platform === "darwin" && process.arch === "arm64"
-    ? process.platform + process.arch
-    : process.platform;
+  process.arch === "x64" ? process.platform : process.platform + process.arch;
 
 /**
  *

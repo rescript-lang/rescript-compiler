@@ -2,18 +2,12 @@
 "use strict";
 
 var child_process = require("child_process");
-var path = require("path");
-var exe = path.join(
-  __dirname,
-  process.platform === "darwin" && process.arch === "arm64"
-    ? process.platform + process.arch
-    : process.platform,
-  "bsc.exe"
-);
+var bsc_exe = require("./scripts/bin_path").bsc_exe;
+
 var delegate_args = process.argv.slice(2);
 
 try {
-  child_process.execFileSync(exe, delegate_args, { stdio: "inherit" });
+  child_process.execFileSync(bsc_exe, delegate_args, { stdio: "inherit" });
 } catch (e) {
   if (e.code === "ENOENT") {
     console.error(String(e));
