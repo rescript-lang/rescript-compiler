@@ -31,7 +31,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build compiler binaries
-        run: opam exec -- dune build --profile static
+        run: opam exec -- dune build --display quiet --profile static
 
       - name: Build ninja binary
         working-directory: ninja
@@ -97,7 +97,7 @@ jobs:
 
       - name: "Build compiler"
         if: runner.os != 'Linux'
-        run: opam exec -- dune build
+        run: opam exec -- dune build --display quiet
 
       - name: Use Node.js
         uses: actions/setup-node@v3
