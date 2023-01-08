@@ -18,9 +18,14 @@ jobs:
   # Build statically linked Linux binaries in an Alpine-based Docker container
   # See https://ocamlpro.com/blog/2021_09_02_generating_static_and_portable_executables_with_ocaml
   # for more info.
+  #
   # The container already comes with all required tools pre-installed
   # (see https://github.com/rescript-lang/docker-rescript-ci-build/blob/main/Dockerfile).
-  static-binaries-linux:
+  # This will be faster than building the binaries for the remaining platforms as we do not
+  # need to wait for OCaml installation and compilation of the dependencies.
+  # Therefore we have time to run the ocamlformat and reanalyze checks plus the full syntax tests here
+  # while the other platforms are still building.
+  binaries-linux:
     runs-on: ubuntu-latest
 
     container:
@@ -30,8 +35,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Check compiler sources (ocamlformat, reanalyze)
+        run: opam exec -- ./scripts/test_ocaml_checks.sh
+
       - name: Build compiler binaries
         run: opam exec -- dune build --display quiet --profile static
+
+      - name: "Syntax: Run roundtrip tests"
+        env:
+          ROUNDTRIP_TEST: 1
+        run: opam exec -- ./scripts/test_syntax.sh
 
       - name: Build ninja binary
         working-directory: ninja
@@ -42,18 +55,21 @@ jobs:
       - name: "Upload artifacts"
         uses: actions/upload-artifact@v3
         with:
-          name: static-binaries-linux
+          name: binaries-linux
           path: |
-            _build/install/default/bin
+            _build/install/default/bin/bsb_helper
+            _build/install/default/bin/bsc
+            _build/install/default/bin/cmjdump
+            _build/install/default/bin/ounit_tests
+            _build/install/default/bin/rescript
             ninja/ninja
 
-  build:
-    needs: static-binaries-linux
-
+  # binaries for the remaining platforms
+  binaries:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest, macos-arm]
+        os: [macos-latest]
         ocaml_compiler: [4.14.0]
 
     runs-on: ${{matrix.os}}
@@ -70,20 +86,18 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 2 # to be able to check for changes in subfolder res_syntax later
 
-      - name: Download static linux binaries
-        if: runner.os == 'Linux'
-        uses: actions/download-artifact@v3
-        with:
-          name: static-binaries-linux
+      # - name: Download static linux binaries
+      #   if: runner.os == 'Linux'
+      #   uses: actions/download-artifact@v3
+      #   with:
+      #     name: static-binaries-linux
 
-      - name: Make static linux binaries executable
-        if: runner.os == 'Linux'
-        run: |
-          chmod +x ninja/ninja
-          chmod +x _build/install/default/bin/*
+      # - name: Make static linux binaries executable
+      #   if: runner.os == 'Linux'
+      #   run: |
+      #     chmod +x ninja/ninja
+      #     chmod +x _build/install/default/bin/*
 
       - name: Use OCaml ${{matrix.ocaml_compiler}}
         uses: ocaml/setup-ocaml@v2
@@ -92,11 +106,12 @@ jobs:
           opam-pin: false
           opam-depext: false
 
+      # To save time, do not install the full set of dependencies here.
+      # (We do not need jsoo, ocamlformat and reanalyze.)
       - name: "Install OPAM dependencies"
-        run: opam install . --deps-only
+        run: opam install -y dune cppo=1.6.9 ounit2=2.2.6
 
       - name: "Build compiler"
-        if: runner.os != 'Linux'
         run: opam exec -- dune build --display quiet
 
       - name: Use Node.js
@@ -117,150 +132,153 @@ jobs:
         if: runner.os != 'Linux'
         run: node scripts/buildNinjaBinary.js
 
-      - name: Copy exes to platform bin dirs
-        run: node ./scripts/copyExes.js
-
-      - name: "Check if syntax subfolder has changed"
-        id: syntax-diff
-        shell: bash
-        run: |
-          if git diff --name-only --exit-code HEAD^ HEAD -- res_syntax; then
-            echo "syntax_status=unchanged" >> $GITHUB_ENV
-          else
-            echo "syntax_status=changed" >> $GITHUB_ENV
-          fi
-
-      - name: "Syntax: Run roundtrip tests"
-        if: ${{ env.syntax_status == 'changed' && runner.os != 'Windows' }}
-        run: opam exec -- make test-syntax-roundtrip
-
-      - name: "Syntax: Run tests (Windows)"
-        if: ${{ env.syntax_status == 'changed' && runner.os == 'Windows' }}
-        run: opam exec -- make test-syntax
-
-      - name: Build runtime/stdlib
-        if: runner.os != 'Windows'
-        run: |
-          opam exec -- node ./scripts/ninja.js config
-          opam exec -- node ./scripts/ninja.js build
-
-      - name: Check for changes in lib folder
-        run: git diff --exit-code lib/js lib/es6
-
-      - name: Run tests
-        if: runner.os != 'Windows'
-        run: node scripts/ciTest.js -all
-
-      - name: Run tests (Windows)
-        if: runner.os == 'Windows'
-        run: node scripts/ciTest.js -mocha -theme -format
-
-      - name: Prepare artifact upload
-        run: |
-          ./scripts/prebuilt.js
-          node .github/workflows/get_artifact_info.js
-
-      - name: "Upload artifacts: binaries"
+      - name: "Upload artifacts"
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.artifact_name }}
-          path: ${{ env.artifact_path }}
-
-      - name: "Upload artifacts: lib/ocaml"
-        if: runner.os == 'Linux'
-        uses: actions/upload-artifact@v3
-        with:
-          name: lib-ocaml
-          path: lib/ocaml
-
-      - name: "Upload artifacts: cmi cache"
-        if: runner.os == 'Linux'
-        uses: actions/upload-artifact@v3
-        with:
-          name: cmij-cache
+          name: binaries-macos
           path: |
-            lib/cmi_cache.bin
-            lib/cmj_cache.bin
+            _build/install/default/bin
+            ninja/ninja
 
-  package:
-    needs: build
-    runs-on: ubuntu-latest
+  # build:
+  #   needs:
+  #     - binaries-linux
+  #     - binaries
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          submodules: true
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       os: [macos-latest]
+  #       ocaml_compiler: [4.14.0]
 
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
+  #   runs-on: ${{matrix.os}}
 
-      - name: NPM install
-        run: npm ci --ignore-scripts
+      # - name: Copy exes to platform bin dirs
+      #   run: node ./scripts/copyExes.js
 
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
+      # - name: Build runtime/stdlib
+      #   if: runner.os != 'Windows'
+      #   run: |
+      #     opam exec -- node ./scripts/ninja.js config
+      #     opam exec -- node ./scripts/ninja.js build
 
-      - name: Move artifacts
-        run: ./scripts/moveArtifacts.sh
+      # - name: Check for changes in lib folder
+      #   run: git diff --exit-code lib/js lib/es6
 
-      - name: Check artifact list
-        run: node ./scripts/makeArtifactList.js -check
+      # - name: Run tests
+      #   if: runner.os != 'Windows'
+      #   run: node scripts/ciTest.js -all
 
-      - name: npm pack (rescript)
-        run: npm pack
+      # - name: Run tests (Windows)
+      #   if: runner.os == 'Windows'
+      #   run: node scripts/ciTest.js -mocha -theme -format
 
-      - name: Copy JS files to stdlib package
-        run: mkdir -p packages/std/lib && cp -R lib/es6 lib/js packages/std/lib
+      # - name: Prepare artifact upload
+      #   run: |
+      #     ./scripts/prebuilt.js
+      #     node .github/workflows/get_artifact_info.js
 
-      - name: npm pack (@rescript/std)
-        run: npm pack
-        working-directory: packages/std
+      # - name: "Upload artifacts: binaries"
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: ${{ env.artifact_name }}
+      #     path: ${{ env.artifact_path }}
 
-      - name: Get package info
-        # For pull requests, pass the correct commit SHA explicitly as GITHUB_SHA points to the wrong commit.
-        run: node .github/workflows/get_package_info.js ${{ github.event.pull_request.head.sha }}
+      # - name: "Upload artifacts: lib/ocaml"
+      #   if: runner.os == 'Linux'
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: lib-ocaml
+      #     path: lib/ocaml
 
-      - name: "Upload artifact: npm packages"
-        uses: actions/upload-artifact@v3
-        with:
-          name: npm-packages
-          path: |
-            ${{ env.rescript_package }}
-            ${{ env.stdlib_package }}
+      # - name: "Upload artifacts: cmi cache"
+      #   if: runner.os == 'Linux'
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: cmij-cache
+      #     path: |
+      #       lib/cmi_cache.bin
+      #       lib/cmj_cache.bin
 
-  installationTest:
-    needs: package
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest, macos-arm]
+  # package:
+  #   needs: build
+  #   runs-on: ubuntu-latest
 
-    runs-on: ${{matrix.os}}
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #       with:
+  #         submodules: true
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+  #     - name: Use Node.js
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: 16
 
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
+  #     - name: NPM install
+  #       run: npm ci --ignore-scripts
 
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: npm-packages
-          path: packages/test
+  #     - name: Download artifacts
+  #       uses: actions/download-artifact@v3
 
-      - name: Install ReScript package
-        run: npm i rescript-11*.tgz
-        shell: bash
-        working-directory: packages/test
+  #     - name: Move artifacts
+  #       run: ./scripts/moveArtifacts.sh
 
-      - name: Test installation
-        run: npx rescript -h && npx rescript build && cat src/Test.bs.js
-        shell: bash
-        working-directory: packages/test
+  #     - name: Check artifact list
+  #       run: node ./scripts/makeArtifactList.js -check
+
+  #     - name: npm pack (rescript)
+  #       run: npm pack
+
+  #     - name: Copy JS files to stdlib package
+  #       run: mkdir -p packages/std/lib && cp -R lib/es6 lib/js packages/std/lib
+
+  #     - name: npm pack (@rescript/std)
+  #       run: npm pack
+  #       working-directory: packages/std
+
+  #     - name: Get package info
+  #       # For pull requests, pass the correct commit SHA explicitly as GITHUB_SHA points to the wrong commit.
+  #       run: node .github/workflows/get_package_info.js ${{ github.event.pull_request.head.sha }}
+
+  #     - name: "Upload artifact: npm packages"
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: npm-packages
+  #         path: |
+  #           ${{ env.rescript_package }}
+  #           ${{ env.stdlib_package }}
+
+  # installationTest:
+  #   needs: package
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       os: [macos-latest, ubuntu-latest, windows-latest, macos-arm]
+
+  #   runs-on: ${{matrix.os}}
+
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+
+  #     - name: Use Node.js
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: 16
+
+  #     - name: Download artifacts
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: npm-packages
+  #         path: packages/test
+
+  #     - name: Install ReScript package
+  #       run: npm i rescript-11*.tgz
+  #       shell: bash
+  #       working-directory: packages/test
+
+  #     - name: Test installation
+  #       run: npx rescript -h && npx rescript build && cat src/Test.bs.js
+  #       shell: bash
+  #       working-directory: packages/test

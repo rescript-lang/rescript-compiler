@@ -113,16 +113,3 @@ fi
 
 rm -r temp/
 popd
-
-# Check format (does not work on Windows)
-case "$(uname -s)" in
-  Darwin|Linux)
-    echo "Checking code formatting..."
-    if opam exec -- dune build @fmt; then
-      printf "${successGreen}✅ Code formatting ok.${reset}\n"
-    else
-      printf "${warningYellow}⚠️ Code formatting failed.${reset}\n"
-      exit 1
-    fi
-    ;;
-esac
