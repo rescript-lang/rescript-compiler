@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: ghcr.io/rescript-lang/rescript-ci-build
+      image: ghcr.io/rescript-lang/rescript-ci-build:v1.0.0
 
     steps:
       - name: Checkout
