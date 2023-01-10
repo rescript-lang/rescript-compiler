@@ -1,7 +1,4 @@
-type props<'x, 'y> = { // Component with type constraint
-  x: 'x,
-  y: 'y,
-}
+type props<'x, 'y> = {x: 'x, y: 'y} // Component with type constraint
 @react.component let make = ({x, y, _}: props<string, string>) => React.string(x ++ y)
 let make = {
   let \"V4" = (props: props<_>) => make(props)
@@ -10,9 +7,7 @@ let make = {
 
 module AnotherName = {
   type // Component with another name than "make"
-  props<'x> = {
-    x: 'x,
-  }
+  props<'x> = {x: 'x}
 
   @react.component let anotherName = ({x, _}: props<'x>) => React.string(x)
   let anotherName = {
@@ -23,9 +18,7 @@ module AnotherName = {
 }
 
 module Uncurried = {
-  type props<'x> = {
-    x: 'x,
-  }
+  type props<'x> = {x: 'x}
 
   @react.component let make = ({x, _}: props<'x>) => React.string(x)
   let make = {
@@ -36,25 +29,19 @@ module Uncurried = {
 }
 
 module type TUncurried = {
-  type props<'x> = {
-    x: 'x,
-  }
+  type props<'x> = {x: 'x}
 
   let make: React.componentLike<props<string>, React.element>
 }
 
 module E = {
-  type props<'x> = {
-    x: 'x,
-  }
+  type props<'x> = {x: 'x}
 
   external make: React.componentLike<props<string>, React.element> = "default"
 }
 
 module EUncurried = {
-  type props<'x> = {
-    x: 'x,
-  }
+  type props<'x> = {x: 'x}
 
   external make: React.componentLike<props<string>, React.element> = "default"
 }
