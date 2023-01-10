@@ -29,7 +29,7 @@ test-syntax:
 	bash ./scripts/testok.sh
 
 test-syntax-roundtrip:
-	ROUNDTRIP_TEST=1 bash ./scripts/test.sh
+	ROUNDTRIP_TEST=1 bash ./scripts/test_syntax.sh
 	make reanalyze
 	bash ./scripts/testok.sh
 
