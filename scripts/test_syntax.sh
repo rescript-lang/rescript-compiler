@@ -6,7 +6,9 @@
 #    Therefore we need to use find + temp files for the file lists.
 
 scriptDir=`dirname $0`
-DUNE_BIN_DIR=`realpath $scriptDir/../_build/install/default/bin`
+# macOS 12 does not have the realpath utility,
+# so let's use this workaround instead.
+DUNE_BIN_DIR=`cd "$scriptDir/../_build/install/default/bin"; pwd -P`
 
 $DUNE_BIN_DIR/syntax_tests
 
