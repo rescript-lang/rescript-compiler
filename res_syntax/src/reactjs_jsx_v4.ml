@@ -288,17 +288,35 @@ let makePropsTypeParams ?(stripExplicitOption = false)
          else Some interiorType)
 
 let makeLabelDecls namedTypeList =
-  namedTypeList
-  |> List.map (fun (isOptional, label, attrs, loc, interiorType) ->
-         if label = "key" then
-           Type.field ~loc ~attrs:(optionalAttrs @ attrs) {txt = label; loc}
-             interiorType
-         else if isOptional then
-           Type.field ~loc ~attrs:(optionalAttrs @ attrs) {txt = label; loc}
-             (Typ.var @@ safeTypeFromValue @@ Labelled label)
-         else
-           Type.field ~loc ~attrs {txt = label; loc}
-             (Typ.var @@ safeTypeFromValue @@ Labelled label))
+  let rec mem_fst x = function
+    | [] -> false
+    | (a, _) :: l -> compare a (fst x) = 0 || mem_fst x l
+  in
+  let rec duplicated = function
+    | [] -> None
+    | hd :: tl -> if mem_fst hd tl then Some hd else duplicated tl
+  in
+  let duplicatedProp =
+    (* Find the duplicated prop from the back *)
+    namedTypeList |> List.rev
+    |> List.map (fun (_, label, _, loc, _) -> (label, loc))
+    |> duplicated
+  in
+  match duplicatedProp with
+  | Some (label, loc) ->
+    React_jsx_common.raiseError ~loc "JSX: Duplicated prop %s" label
+  | None ->
+    namedTypeList
+    |> List.map (fun (isOptional, label, attrs, loc, interiorType) ->
+           if label = "key" then
+             Type.field ~loc ~attrs:(optionalAttrs @ attrs) {txt = label; loc}
+               interiorType
+           else if isOptional then
+             Type.field ~loc ~attrs:(optionalAttrs @ attrs) {txt = label; loc}
+               (Typ.var @@ safeTypeFromValue @@ Labelled label)
+           else
+             Type.field ~loc ~attrs {txt = label; loc}
+               (Typ.var @@ safeTypeFromValue @@ Labelled label))
 
 let makeTypeDecls propsName loc namedTypeList =
   let labelDeclList = makeLabelDecls namedTypeList in
