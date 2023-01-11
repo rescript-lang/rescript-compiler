@@ -304,7 +304,7 @@ let makeLabelDecls namedTypeList =
   in
   match duplicatedProp with
   | Some (label, loc) ->
-    React_jsx_common.raiseError ~loc "JSX: Duplicated prop %s" label
+    React_jsx_common.raiseError ~loc "JSX: found the duplicated prop `%s`" label
   | None ->
     namedTypeList
     |> List.map (fun (isOptional, label, attrs, loc, interiorType) ->
