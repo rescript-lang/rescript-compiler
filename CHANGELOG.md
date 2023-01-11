@@ -23,6 +23,7 @@ subset of the arguments, and return a curried type with the remaining ones https
 - Parser/Printer: unify uncurried functions of arity 0, and of arity 1 taking unit. There's now only arity 1 in the source language. https://github.com/rescript-lang/rescript-compiler/pull/5825
 - Add support for default arguments in uncurried functions https://github.com/rescript-lang/rescript-compiler/pull/5835
 - Inline uncurried application when it is safe https://github.com/rescript-lang/rescript-compiler/pull/5847
+- Add support for toplevel `await` https://github.com/rescript-lang/rescript-compiler/pull/5940
 
 #### :boom: Breaking Change
 
