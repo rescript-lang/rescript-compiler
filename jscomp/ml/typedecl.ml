@@ -1844,7 +1844,7 @@ let tys_of_constr_args = function
 
 let report_error ppf = function
   | Repeated_parameter ->
-      fprintf ppf "A type parameter occurs several times. If this is a component, check duplicated props."
+      fprintf ppf "A type parameter occurs several times. If this is a component, check for duplicated props."
   | Duplicate_constructor s ->
       fprintf ppf "Two constructors are named %s" s
   | Duplicate_label s ->
