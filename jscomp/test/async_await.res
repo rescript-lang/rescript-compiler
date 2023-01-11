@@ -8,5 +8,11 @@ module type Impl = {
 }
 
 module Make = (I: Impl) => {
-  let get = async key => await I.get(key)
+  let get = async (key) => await I.get(key)
 }
+
+let topFoo = async () => 1
+let arr = [1, 2, 3]
+
+let toplevelAwait = await topFoo()
+let toplevelAwait2 = arr[await topFoo()]
