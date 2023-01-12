@@ -288,23 +288,28 @@ let makePropsTypeParams ?(stripExplicitOption = false)
          else Some interiorType)
 
 let makeLabelDecls namedTypeList =
-  let rec mem_fst x = function
+  let rec mem_label ((_, la, _, _, _) as x) = function
     | [] -> false
-    | (a, _) :: l -> compare a (fst x) = 0 || mem_fst x l
+    | (_, lb, _, _, _) :: l -> compare lb la = 0 || mem_label x l
   in
   let rec duplicated = function
     | [] -> None
-    | hd :: tl -> if mem_fst hd tl then Some hd else duplicated tl
+    | hd :: tl -> if mem_label hd tl then Some hd else duplicated tl
   in
-  let duplicatedProp =
-    (* Find the duplicated prop from the back *)
-    namedTypeList |> List.rev
-    |> List.map (fun (_, label, _, loc, _) -> (label, loc))
-    |> duplicated
-  in
+  (* Check if there are duplicated props in the namedTypeList without making list relocation. *)
+  let duplicatedProp = namedTypeList |> duplicated in
   match duplicatedProp with
-  | Some (label, loc) ->
-    React_jsx_common.raiseError ~loc "JSX: found the duplicated prop `%s`" label
+  | Some _ -> (
+    (* If there are duplicated props, then find the one from the last. *)
+    let duplicatedPropAtLast = namedTypeList |> List.rev |> duplicated in
+    match duplicatedPropAtLast with
+    | Some (_, label, _, loc, _) ->
+      React_jsx_common.raiseError ~loc "JSX: found the duplicated prop `%s`"
+        label
+    | None ->
+      (* Never reach here *)
+      React_jsx_common.raiseError ~loc:Location.none
+        "JSX: found the duplicated prop")
   | None ->
     namedTypeList
     |> List.map (fun (isOptional, label, attrs, loc, interiorType) ->
