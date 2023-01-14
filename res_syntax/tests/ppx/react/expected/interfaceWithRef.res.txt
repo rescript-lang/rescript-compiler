@@ -1,7 +1,4 @@
-type props<'x, 'ref> = {
-  x: 'x,
-  ref?: 'ref,
-}
+type props<'x, 'ref> = {x: 'x, ref?: 'ref}
 @react.component
 let make = (
   {x, _}: props<string, ReactDOM.Ref.currentDomRef>,

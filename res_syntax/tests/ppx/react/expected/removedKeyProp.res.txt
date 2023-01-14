@@ -1,10 +1,7 @@
 @@jsxConfig({version: 4, mode: "classic"})
 
 module Foo = {
-  type props<'x, 'y> = {
-    x: 'x,
-    y: 'y,
-  }
+  type props<'x, 'y> = {x: 'x, y: 'y}
 
   @react.component let make = ({x, y, _}: props<'x, 'y>) => React.string(x ++ y)
   let make = {
@@ -15,9 +12,7 @@ module Foo = {
 }
 
 module HasChildren = {
-  type props<'children> = {
-    children: 'children,
-  }
+  type props<'children> = {children: 'children}
 
   @react.component
   let make = ({children, _}: props<'children>) => ReactDOM.createElement(React.fragment, [children])

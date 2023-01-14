@@ -4,9 +4,7 @@ module User = {
   type t = {firstName: string, lastName: string}
 
   let format = user => "Dr." ++ user.lastName
-  type props<'doctor> = {
-    doctor: 'doctor,
-  }
+  type props<'doctor> = {doctor: 'doctor}
 
   @react.component
   let make = ({doctor, _}: props<'doctor>) => {

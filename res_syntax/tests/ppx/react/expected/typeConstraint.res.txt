@@ -17,10 +17,7 @@ module V3 = {
 @@jsxConfig({version: 4, mode: "classic"})
 
 module V4C = {
-  type props<'a, 'b> = {
-    a: 'a,
-    b: 'b,
-  }
+  type props<'a, 'b> = {a: 'a, b: 'b}
 
   @react.component
   let make = ({a, b, _}: props<'\"type-a", '\"type-a">) =>
@@ -35,10 +32,7 @@ module V4C = {
 @@jsxConfig({version: 4, mode: "automatic"})
 
 module V4A = {
-  type props<'a, 'b> = {
-    a: 'a,
-    b: 'b,
-  }
+  type props<'a, 'b> = {a: 'a, b: 'b}
 
   @react.component let make = ({a, b, _}: props<'\"type-a", '\"type-a">) => ReactDOM.jsx("div", {})
   let make = {

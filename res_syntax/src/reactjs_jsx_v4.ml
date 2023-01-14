@@ -242,9 +242,9 @@ let recordFromProps ~loc ~removeKey callArguments =
 (* let make = ({id, name, children}: props<'id, 'name, 'children>) *)
 let makePropsTypeParamsTvar namedTypeList =
   namedTypeList
-  |> List.filter_map (fun (_isOptional, label, _, _interiorType) ->
+  |> List.filter_map (fun (_isOptional, label, _, loc, _interiorType) ->
          if label = "key" then None
-         else Some (Typ.var @@ safeTypeFromValue (Labelled label)))
+         else Some (Typ.var ~loc @@ safeTypeFromValue (Labelled label)))
 
 let stripOption coreType =
   match coreType with
@@ -268,7 +268,7 @@ let stripJsNullable coreType =
 let makePropsTypeParams ?(stripExplicitOption = false)
     ?(stripExplicitJsNullableOfRef = false) namedTypeList =
   namedTypeList
-  |> List.filter_map (fun (isOptional, label, _, interiorType) ->
+  |> List.filter_map (fun (isOptional, label, _, loc, interiorType) ->
          if label = "key" then None
            (* TODO: Worth thinking how about "ref_" or "_ref" usages *)
          else if label = "ref" then
@@ -277,7 +277,7 @@ let makePropsTypeParams ?(stripExplicitOption = false)
                 For example, if JSX ppx is used for React Native, type would be different.
              *)
            match interiorType with
-           | {ptyp_desc = Ptyp_var "ref"} -> Some (refType Location.none)
+           | {ptyp_desc = Ptyp_var "ref"} -> Some (refType loc)
            | _ ->
              (* Strip explicit Js.Nullable.t in case of forwardRef *)
              if stripExplicitJsNullableOfRef then stripJsNullable interiorType
@@ -287,9 +287,25 @@ let makePropsTypeParams ?(stripExplicitOption = false)
          else if isOptional && stripExplicitOption then stripOption interiorType
          else Some interiorType)
 
-let makeLabelDecls ~loc namedTypeList =
+let makeLabelDecls namedTypeList =
+  let rec checkDuplicatedLabel l =
+    let rec mem_label ((_, (la : string), _, _, _) as x) = function
+      | [] -> false
+      | (_, (lb : string), _, _, _) :: l -> lb = la || mem_label x l
+    in
+    match l with
+    | [] -> ()
+    | hd :: tl ->
+      if mem_label hd tl then
+        let _, label, _, loc, _ = hd in
+        React_jsx_common.raiseError ~loc "JSX: found the duplicated prop `%s`"
+          label
+      else checkDuplicatedLabel tl
+  in
+  let () = namedTypeList |> List.rev |> checkDuplicatedLabel in
+
   namedTypeList
-  |> List.map (fun (isOptional, label, attrs, interiorType) ->
+  |> List.map (fun (isOptional, label, attrs, loc, interiorType) ->
          if label = "key" then
            Type.field ~loc ~attrs:(optionalAttrs @ attrs) {txt = label; loc}
              interiorType
@@ -301,7 +317,7 @@ let makeLabelDecls ~loc namedTypeList =
              (Typ.var @@ safeTypeFromValue @@ Labelled label))
 
 let makeTypeDecls propsName loc namedTypeList =
-  let labelDeclList = makeLabelDecls ~loc namedTypeList in
+  let labelDeclList = makeLabelDecls namedTypeList in
   (* 'id, 'className, ... *)
   let params =
     makePropsTypeParamsTvar namedTypeList
@@ -702,17 +718,22 @@ let argToType ~newtypes ~(typeConstraints : core_type option) types
   in
   match (type_, name, default) with
   | Some type_, name, _ when isOptional name ->
-    (true, getLabel name, attrs, {type_ with ptyp_attributes = optionalAttrs})
+    ( true,
+      getLabel name,
+      attrs,
+      loc,
+      {type_ with ptyp_attributes = optionalAttrs} )
     :: types
-  | Some type_, name, _ -> (false, getLabel name, attrs, type_) :: types
+  | Some type_, name, _ -> (false, getLabel name, attrs, loc, type_) :: types
   | None, name, _ when isOptional name ->
     ( true,
       getLabel name,
       attrs,
+      loc,
       Typ.var ~loc ~attrs:optionalAttrs (safeTypeFromValue name) )
     :: types
   | None, name, _ when isLabelled name ->
-    (false, getLabel name, attrs, Typ.var ~loc (safeTypeFromValue name))
+    (false, getLabel name, attrs, loc, Typ.var ~loc (safeTypeFromValue name))
     :: types
   | _ -> types
 
@@ -721,10 +742,12 @@ let argWithDefaultValue (name, default, _, _, _, _) =
   | Some default when isOptional name -> Some (getLabel name, default)
   | _ -> None
 
-let argToConcreteType types (name, attrs, _loc, type_) =
+let argToConcreteType types (name, attrs, loc, type_) =
   match name with
-  | name when isLabelled name -> (false, getLabel name, attrs, type_) :: types
-  | name when isOptional name -> (true, getLabel name, attrs, type_) :: types
+  | name when isLabelled name ->
+    (false, getLabel name, attrs, loc, type_) :: types
+  | name when isOptional name ->
+    (true, getLabel name, attrs, loc, type_) :: types
   | _ -> types
 
 let check_string_int_attribute_iter =
@@ -1306,7 +1329,8 @@ let transformSignatureItem ~config _mapper item =
         makePropsRecordTypeSig ~coreTypeOfAttr ~typVarsOfCoreType "props"
           psig_loc
           ((* If there is Nolabel arg, regard the type as ref in forwardRef *)
-           (if !hasForwardRef then [(true, "ref", [], refType Location.none)]
+           (if !hasForwardRef then
+            [(true, "ref", [], Location.none, refType Location.none)]
            else [])
           @ namedTypeList)
       in

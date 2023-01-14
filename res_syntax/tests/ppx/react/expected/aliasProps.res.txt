@@ -1,10 +1,7 @@
 @@jsxConfig({version: 4, mode: "automatic"})
 
 module C0 = {
-  type props<'priority, 'text> = {
-    priority: 'priority,
-    text?: 'text,
-  }
+  type props<'priority, 'text> = {priority: 'priority, text?: 'text}
 
   @react.component
   let make = ({priority: _, ?text, _}: props<'priority, 'text>) => {
@@ -23,10 +20,7 @@ module C0 = {
 }
 
 module C1 = {
-  type props<'priority, 'text> = {
-    priority: 'priority,
-    text?: 'text,
-  }
+  type props<'priority, 'text> = {priority: 'priority, text?: 'text}
 
   @react.component
   let make = ({priority: p, ?text, _}: props<'priority, 'text>) => {
