@@ -1844,11 +1844,11 @@ let tys_of_constr_args = function
 
 let report_error ppf = function
   | Repeated_parameter ->
-      fprintf ppf "A type parameter occurs several times. If this is a component, check for duplicated props."
+      fprintf ppf "A type parameter occurs several times"
   | Duplicate_constructor s ->
       fprintf ppf "Two constructors are named %s" s
   | Duplicate_label s ->
-      fprintf ppf "Two labels are named %s. If this is a component, check for duplicated props." s
+      fprintf ppf "Two labels are named %s" s
   | Recursive_abbrev s ->
       fprintf ppf "The type abbreviation %s is cyclic" s
   | Cycle_in_def (s, ty) ->
