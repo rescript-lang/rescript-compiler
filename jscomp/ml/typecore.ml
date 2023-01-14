@@ -2103,13 +2103,18 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
         exp_type = newty (Ttuple (List.map (fun e -> e.exp_type) expl));
         exp_attributes = sexp.pexp_attributes;
         exp_env = env }
+  | Pexp_construct({txt = Lident "Function$"} as lid, sarg) ->
+      let state = Warnings.backup () in
+      let arity = Ast_uncurried.attributes_to_arity sexp.pexp_attributes in
+      let uncurried_typ = Ast_uncurried.make_uncurried_type ~env ~arity (newvar()) in
+      unify_exp_types loc env ty_expected uncurried_typ;
+      (* Disable Unerasable_optional_argument for uncurried functions *)
+      let unerasable_optional_argument = Warnings.number Unerasable_optional_argument in
+      Warnings.parse_options false ("-" ^ string_of_int unerasable_optional_argument);
+      let exp = type_construct env loc lid sarg ty_expected sexp.pexp_attributes in
+      Warnings.restore state;
+      exp
   | Pexp_construct(lid, sarg) ->
-      (match lid.txt with
-      | Lident "Function$" ->
-        let arity = Ast_uncurried.attributes_to_arity sexp.pexp_attributes in
-        let uncurried_typ = Ast_uncurried.make_uncurried_type ~env ~arity (newvar()) in
-        unify_exp_types loc env ty_expected uncurried_typ
-      | _ -> ());
       type_construct env loc lid sarg ty_expected sexp.pexp_attributes
   | Pexp_variant(l, sarg) ->
       (* Keep sharing *)
@@ -3014,7 +3019,7 @@ and type_application uncurried env funct (sargs : sargs) : targs * Types.type_ex
     match has_uncurried_type t with
     | Some (arity, _) ->
       let newarity = arity - nargs in
-      let fully_applied = newarity = 0 in
+      let fully_applied = newarity <= 0 in
       if uncurried && not fully_applied then
         raise(Error(funct.exp_loc, env,
           Uncurried_arity_mismatch (t, arity, List.length sargs)));
@@ -3024,13 +3029,27 @@ and type_application uncurried env funct (sargs : sargs) : targs * Types.type_ex
   in
   let rec type_unknown_args max_arity (args : lazy_args) omitted ty_fun (syntax_args : sargs)
      : targs * _ = 
-    match syntax_args with 
-    |  [] ->
-        (List.map
-            (function l, None -> l, None
-                | l, Some f -> l, Some (f ()))
-           (List.rev args),
-         instance env (result_type omitted ty_fun))
+    match syntax_args with
+    | [] ->
+        let collect_args () =
+          (List.map
+              (function l, None -> l, None
+                  | l, Some f -> l, Some (f ()))
+            (List.rev args),
+          instance env (result_type omitted ty_fun)) in
+        if List.length args < max_arity && uncurried then
+          (match (expand_head env ty_fun).desc with
+          | Tarrow (Optional l,t1,t2,_) ->
+            ignored := (Optional l,t1,ty_fun.level) :: !ignored;
+            let arg = Optional l, Some (fun () -> option_none (instance env t1) Location.none) in
+            type_unknown_args max_arity (arg::args) omitted t2 []
+          | _ -> collect_args ())
+        else
+          collect_args ()
+    | [(Nolabel, {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)})]
+      when uncurried && omitted = [] && List.length args = List.length !ignored ->
+      (* foo(. ) treated as empty application if all args are optional (hence ignored) *)
+        type_unknown_args max_arity args omitted ty_fun []
     | (l1, sarg1) :: sargl ->
         let (ty1, ty2) =
           let ty_fun = expand_head env ty_fun in
@@ -3082,7 +3101,7 @@ and type_application uncurried env funct (sargs : sargs) : targs * Types.type_ex
         let sargs, omitted,  arg =          
             match extract_label name sargs with 
             | None ->          
-                if optional && label_assoc Nolabel sargs
+                if optional && (uncurried || label_assoc Nolabel sargs)
                 then begin
                   ignored := (l,ty,lv) :: !ignored;
                   sargs, omitted , Some (fun () -> option_none (instance env ty) Location.none)
