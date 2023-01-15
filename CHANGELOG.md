@@ -79,6 +79,7 @@ These are only breaking changes for unformatted code.
 - Fix build error where aliasing arguments to `_` in the make function with JSX V4. https://github.com/rescript-lang/rescript-compiler/pull/5881
 - Fix parsing of spread props as an expression in JSX V4 https://github.com/rescript-lang/rescript-compiler/pull/5885
 - Fix dropping attributes from props in make function in JSX V4 https://github.com/rescript-lang/rescript-compiler/pull/5905
+- Fix an issue where error messages related to duplicate props were displayed without a loc and were unclear https://github.com/rescript-lang/rescript-compiler/pull/5937
 
 # 10.1.0
 
