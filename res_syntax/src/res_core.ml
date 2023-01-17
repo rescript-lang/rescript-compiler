@@ -1976,7 +1976,6 @@ and parseFirstClassModuleExpr ~startPos p =
 
 and parseBracketAccess p expr startPos =
   Parser.leaveBreadcrumb p Grammar.ExprArrayAccess;
-  let lbracket = p.startPos in
   Parser.expect Lbracket p;
   let stringStart = p.startPos in
   match p.Parser.token with
@@ -2009,20 +2008,18 @@ and parseBracketAccess p expr startPos =
     let accessExpr = parseConstrainedOrCoercedExpr p in
     Parser.expect Rbracket p;
     Parser.eatBreadcrumb p;
-    let rbracket = p.prevEndPos in
-    let arrayLoc = mkLoc lbracket rbracket in
     match p.token with
     | Equal ->
       Parser.leaveBreadcrumb p ExprArrayMutation;
       Parser.next p;
       let rhsExpr = parseExpr p in
       let arraySet =
-        Location.mkloc (Longident.Ldot (Lident "Array", "set")) arrayLoc
+        Location.mknoloc (Longident.Ldot (Lident "Array", "set"))
       in
       let endPos = p.prevEndPos in
       let arraySet =
         Ast_helper.Exp.apply ~loc:(mkLoc startPos endPos)
-          (Ast_helper.Exp.ident ~loc:arrayLoc arraySet)
+          (Ast_helper.Exp.ident arraySet)
           [(Nolabel, expr); (Nolabel, accessExpr); (Nolabel, rhsExpr)]
       in
       Parser.eatBreadcrumb p;
@@ -2031,8 +2028,8 @@ and parseBracketAccess p expr startPos =
       let endPos = p.prevEndPos in
       let e =
         Ast_helper.Exp.apply ~loc:(mkLoc startPos endPos)
-          (Ast_helper.Exp.ident ~loc:arrayLoc
-             (Location.mkloc (Longident.Ldot (Lident "Array", "get")) arrayLoc))
+          (Ast_helper.Exp.ident
+             (Location.mknoloc (Longident.Ldot (Lident "Array", "get"))))
           [(Nolabel, expr); (Nolabel, accessExpr)]
       in
       parsePrimaryExpr ~operand:e p)
