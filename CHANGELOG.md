@@ -48,6 +48,7 @@ These are only breaking changes for unformatted code.
 - Fix compiler ppx issue when combining `async` and uncurried application https://github.com/rescript-lang/rescript-compiler/pull/5856
 - Fix issue where the internal representation of uncurried types would leak when a non-function is applied in a curried way https://github.com/rescript-lang/rescript-compiler/pull/5892
 - In GenType, check annotations also in module types to decide whether to produce the `.gen.tsx` file https://github.com/rescript-lang/rescript-compiler/pull/5903
+- Fix some comments disappearing in array access expressions https://github.com/rescript-lang/rescript-compiler/pull/5947
 
 #### :nail_care: Polish
 
