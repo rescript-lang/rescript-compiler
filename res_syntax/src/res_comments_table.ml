@@ -1297,6 +1297,17 @@ and walkExpression expr t comments =
     walkExpression operand2 t inside;
     (* (List.concat [inside; after]); *)
     attach t.trailing operand2.pexp_loc after
+  | Pexp_apply
+      ( {pexp_desc = Pexp_ident {txt = Longident.Ldot (Lident "Array", "get")}},
+        [(Nolabel, parentExpr); (Nolabel, memberExpr)] ) ->
+    walkList [Expression parentExpr; Expression memberExpr] t comments
+  | Pexp_apply
+      ( {pexp_desc = Pexp_ident {txt = Longident.Ldot (Lident "Array", "set")}},
+        [(Nolabel, parentExpr); (Nolabel, memberExpr); (Nolabel, targetExpr)] )
+    ->
+    walkList
+      [Expression parentExpr; Expression memberExpr; Expression targetExpr]
+      t comments
   | Pexp_apply (callExpr, arguments) ->
     let before, inside, after = partitionByLoc comments callExpr.pexp_loc in
     let after =
