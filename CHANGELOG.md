@@ -49,6 +49,7 @@ These are only breaking changes for unformatted code.
 - Fix issue where the internal representation of uncurried types would leak when a non-function is applied in a curried way https://github.com/rescript-lang/rescript-compiler/pull/5892
 - In GenType, check annotations also in module types to decide whether to produce the `.gen.tsx` file https://github.com/rescript-lang/rescript-compiler/pull/5903
 - Fix some comments disappearing in array access expressions https://github.com/rescript-lang/rescript-compiler/pull/5947
+- Parser: fix location of variable when function definition `{v => ...}` is enclosed in braces https://github.com/rescript-lang/rescript-compiler/pull/5949
 
 #### :nail_care: Polish
 
