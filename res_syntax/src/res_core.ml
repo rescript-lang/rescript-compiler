@@ -2933,7 +2933,7 @@ and parseBracedOrRecordExpr p =
                     attrs = [];
                     label = Asttypes.Nolabel;
                     expr = None;
-                    pat = Ast_helper.Pat.var ident;
+                    pat = Ast_helper.Pat.var ~loc:ident.loc ident;
                     pos = startPos;
                   };
               ]
