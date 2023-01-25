@@ -213,6 +213,7 @@ type t = {
   flexWrap?: string,
   justifyContent?: string,
   order?: string,
+  gap?: string,
   textDecorationColor?: string,
   /* Text Decoration Level 3 - CR */
   /* textDecoration - already defined by CSS2Properties */
