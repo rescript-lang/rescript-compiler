@@ -394,6 +394,8 @@
   [@ns.optional];
   order: string
   [@ns.optional];
+  gap: string
+  [@ns.optional];
   textDecorationColor: string
   [@ns.optional];
   (* Text Decoration Level 3 - CR *)
