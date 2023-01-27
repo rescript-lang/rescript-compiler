@@ -2200,7 +2200,11 @@ and parseBinaryExpr ?(context = OrdinaryExpr) ?a p prec =
       let startPos = p.startPos in
       Parser.next p;
       let endPos = p.prevEndPos in
-      let b = parseBinaryExpr ~context p (tokenPrec + 1) in
+      let tokenPrec =
+        (* exponentiation operator is right-associative *)
+        if token = Exponentiation then tokenPrec else tokenPrec + 1
+      in
+      let b = parseBinaryExpr ~context p tokenPrec in
       let loc = mkLoc a.Parsetree.pexp_loc.loc_start b.pexp_loc.loc_end in
       let expr =
         Ast_helper.Exp.apply ~loc
