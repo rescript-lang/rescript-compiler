@@ -223,6 +223,7 @@ module V4A = {
   @react.component
   let make = (_: props) => {
     let input = React.useRef(Js.Nullable.null)
+
     ReactDOM.jsx(
       "div",
       {
@@ -279,6 +280,7 @@ module V4AUncurried = {
   @react.component
   let make = (_: props) => {
     let input = React.useRef(Js.Nullable.null)
+
     ReactDOM.jsx(
       "div",
       {

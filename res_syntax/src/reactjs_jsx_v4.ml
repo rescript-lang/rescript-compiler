@@ -437,11 +437,12 @@ let transformUppercaseCall3 ~config modulePath mapper jsxExprLoc callExprLoc
         ( Exp.ident {loc = Location.none; txt = Ldot (Lident "React", "jsxs")},
           [] )
     in
-    Exp.apply ~attrs jsxExpr ([(nolabel, makeID); (nolabel, props)] @ keyAndUnit)
+    Exp.apply ~loc:jsxExprLoc ~attrs jsxExpr
+      ([(nolabel, makeID); (nolabel, props)] @ keyAndUnit)
   | _ -> (
     match (!childrenArg, keyProp) with
     | None, key :: _ ->
-      Exp.apply ~attrs
+      Exp.apply ~loc:jsxExprLoc ~attrs
         (Exp.ident
            {
              loc = Location.none;
@@ -449,12 +450,12 @@ let transformUppercaseCall3 ~config modulePath mapper jsxExprLoc callExprLoc
            })
         [key; (nolabel, makeID); (nolabel, props)]
     | None, [] ->
-      Exp.apply ~attrs
+      Exp.apply ~loc:jsxExprLoc ~attrs
         (Exp.ident
            {loc = Location.none; txt = Ldot (Lident "React", "createElement")})
         [(nolabel, makeID); (nolabel, props)]
     | Some children, key :: _ ->
-      Exp.apply ~attrs
+      Exp.apply ~loc:jsxExprLoc ~attrs
         (Exp.ident
            {
              loc = Location.none;
@@ -463,7 +464,7 @@ let transformUppercaseCall3 ~config modulePath mapper jsxExprLoc callExprLoc
            })
         [key; (nolabel, makeID); (nolabel, props); (nolabel, children)]
     | Some children, [] ->
-      Exp.apply ~attrs
+      Exp.apply ~loc:jsxExprLoc ~attrs
         (Exp.ident
            {
              loc = Location.none;
@@ -544,7 +545,7 @@ let transformLowercaseCall3 ~config mapper jsxExprLoc callExprLoc attrs
         ( Exp.ident {loc = Location.none; txt = Ldot (Lident "ReactDOM", "jsxs")},
           [] )
     in
-    Exp.apply ~attrs jsxExpr
+    Exp.apply ~loc:jsxExprLoc ~attrs jsxExpr
       ([(nolabel, componentNameExpr); (nolabel, props)] @ keyAndUnit)
   | _ ->
     let children, nonChildrenProps =
