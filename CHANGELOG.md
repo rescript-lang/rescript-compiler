@@ -50,7 +50,7 @@ These are only breaking changes for unformatted code.
 - In GenType, check annotations also in module types to decide whether to produce the `.gen.tsx` file https://github.com/rescript-lang/rescript-compiler/pull/5903
 - Fix some comments disappearing in array access expressions https://github.com/rescript-lang/rescript-compiler/pull/5947
 - Parser: fix location of variable when function definition `{v => ...}` is enclosed in braces https://github.com/rescript-lang/rescript-compiler/pull/5949
-- Fixed an issue where error messages related to non-existent props were displayed without location information https://github.com/rescript-lang/rescript-compiler/pull/5960
+- Fix an issue where error messages related to non-existent props were displayed without location information https://github.com/rescript-lang/rescript-compiler/pull/5960
 
 #### :nail_care: Polish
 
