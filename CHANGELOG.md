@@ -37,6 +37,7 @@ subset of the arguments, and return a curried type with the remaining ones https
 - Curried after uncurried is not fused anymore: `(. x) => y => 3` is not equivalent to `(. x, y) => 3` anymore. It's instead equivalent to `(. x) => { y => 3 }`.
 Also, `(. int) => string => bool` is not equivalen to `(. int, string) => bool` anymore.
 These are only breaking changes for unformatted code.
+- Exponentiation operator `**` is now right-associative. `2. ** 3. ** 2.` now compile to `Math.pow(2, Math.pow(3, 2))` and not anymore `Math.pow(Math.pow(2, 3), 2)`. Parentheses can be used to change precedence.
 
 #### :bug: Bug Fix
 
