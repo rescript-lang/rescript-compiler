@@ -108,6 +108,11 @@ let x =
   longIdentifier && longIdentifier ||
   (longIdentifier && longIdentifier)
 
+// exponentiation is right associative
+let x = 2. ** 3. ** 2.
+let x = (2. ** 3.) ** 2.
+let x = 2. ** 3. ** 2.
+
 if (
   successorParent.color === Black &&
     (sibling === None ||
