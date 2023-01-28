@@ -77,7 +77,7 @@ val operatorPrecedence : string -> int
 val isUnaryExpression : Parsetree.expression -> bool
 val isBinaryOperator : string -> bool
 val isBinaryExpression : Parsetree.expression -> bool
-val isRhsBinaryOperator: string -> bool
+val isRhsBinaryOperator : string -> bool
 
 val flattenableOperators : string -> string -> bool
 
