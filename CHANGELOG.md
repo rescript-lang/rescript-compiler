@@ -10,6 +10,18 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
+# 10.1.3
+
+#### :nail_care: Polish
+
+- Add the gap property to jsxDOMStyle https://github.com/rescript-lang/rescript-compiler/pull/5956
+
+# 10.1.2
+
+#### :bug: Bug Fix
+
+- Fix an issue where error messages related to duplicate props were displayed without a loc and were unclear https://github.com/rescript-lang/syntax/pull/728
+
 # 10.1.1
 
 #### :boom: Breaking Change
