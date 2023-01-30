@@ -320,6 +320,11 @@ let isEqualityOperator operator =
   | "=" | "==" | "<>" | "!=" -> true
   | _ -> false
 
+let isRhsBinaryOperator operator =
+  match operator with
+  | "**" -> true
+  | _ -> false
+
 let flattenableOperators parentOperator childOperator =
   let precParent = operatorPrecedence parentOperator in
   let precChild = operatorPrecedence childOperator in

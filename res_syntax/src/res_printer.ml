@@ -3672,7 +3672,11 @@ and printBinaryExpression ~state (expr : Parsetree.expression) cmtTbl =
         [(Nolabel, lhs); (Nolabel, rhs)] ) ->
     let right =
       let operatorWithRhs =
-        let rhsDoc = printOperand ~isLhs:false rhs operator in
+        let rhsDoc =
+          printOperand
+            ~isLhs:(ParsetreeViewer.isRhsBinaryOperator operator)
+            rhs operator
+        in
         Doc.concat
           [
             printBinaryOperator
@@ -3686,7 +3690,14 @@ and printBinaryExpression ~state (expr : Parsetree.expression) cmtTbl =
       else operatorWithRhs
     in
     let doc =
-      Doc.group (Doc.concat [printOperand ~isLhs:true lhs operator; right])
+      Doc.group
+        (Doc.concat
+           [
+             printOperand
+               ~isLhs:(not @@ ParsetreeViewer.isRhsBinaryOperator operator)
+               lhs operator;
+             right;
+           ])
     in
     Doc.group
       (Doc.concat
