@@ -15,6 +15,7 @@
 #### :nail_care: Polish
 
 - Add the gap property to jsxDOMStyle https://github.com/rescript-lang/rescript-compiler/pull/5956
+- Fix issue where error messages related to non-existent props were displayed without location information https://github.com/rescript-lang/syntax/pull/730
 
 # 10.1.2
 
