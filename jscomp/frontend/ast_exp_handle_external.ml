@@ -69,12 +69,16 @@ let handle_debugger loc (payload : Ast_payload.t) =
       Ast_external_mk.local_external_apply loc ~pval_prim:[ "#debugger" ]
         ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Ast_literal.type_unit ()))
         [ Ast_literal.val_unit ~loc () ]
-  | _ -> Location.raise_errorf ~loc "bs.debugger does not accept payload"
+  | _ -> Location.raise_errorf ~loc "%%debugger extension does not accept payload"
 
 let handle_raw ~kind loc payload =
   let is_function = ref false in
   match Ast_payload.raw_as_string_exp_exn ~kind ~is_function payload with
-  | None -> Location.raise_errorf ~loc "bs.raw can only be applied to a string"
+  | None ->
+    (match kind with
+    | Raw_re -> Location.raise_errorf ~loc "%%re extension can only be applied to a string"
+    | Raw_exp -> Location.raise_errorf ~loc "%%raw extension can only be applied to a string"
+    | Raw_program -> Location.raise_errorf ~loc "%%%%raw extension can only be applied to a string")
   | Some exp ->
       {
         exp with
@@ -99,4 +103,4 @@ let handle_raw_structure loc payload =
               ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Typ.any ()))
               [ exp ];
         }
-  | None -> Location.raise_errorf ~loc "bs.raw can only be applied to a string"
+  | None -> Location.raise_errorf ~loc "%%%%raw extension can only be applied to a string"
