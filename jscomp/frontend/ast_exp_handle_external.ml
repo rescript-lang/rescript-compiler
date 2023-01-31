@@ -69,7 +69,7 @@ let handle_debugger loc (payload : Ast_payload.t) =
       Ast_external_mk.local_external_apply loc ~pval_prim:[ "#debugger" ]
         ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Ast_literal.type_unit ()))
         [ Ast_literal.val_unit ~loc () ]
-  | _ -> Location.raise_errorf ~loc "%%debugger extension does not accept payload"
+  | _ -> Location.raise_errorf ~loc "%%debugger extension don't accept arguments"
 
 let handle_raw ~kind loc payload =
   let is_function = ref false in
