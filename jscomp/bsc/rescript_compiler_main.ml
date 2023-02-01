@@ -24,7 +24,7 @@ let setup_compiler_printer (syntax_kind : [ syntax_kind | `default])=
   (match syntax_kind with 
    | `default -> ()  
    | #syntax_kind as k -> Config.syntax_kind := k);   
-  let syntax_kind = !Config.syntax_kind in 
+  let syntax_kind = !Config.syntax_kind in
   if syntax_kind = `rescript then begin 
     Lazy.force Super_main.setup;  
     Lazy.force Res_outcome_printer.setup  
@@ -245,20 +245,17 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
 
     "-bs-jsx", string_call (fun i -> 
       (if i <> "3" && i <> "4" then Bsc_args.bad_arg (" Not supported jsx version : " ^  i));
-      let open Js_config in
-      jsx_version := jsx_version_of_int @@ int_of_string i),
+      Js_config.jsx_version := Js_config.jsx_version_of_int @@ int_of_string i),
     "*internal* Set jsx version";
 
     "-bs-jsx-module", string_call (fun i ->
       (if i <> "react" then Bsc_args.bad_arg (" Not supported jsx-module : " ^ i));
-      let open Js_config in
-      Js_config.jsx_module := jsx_module_of_string i),
+      Js_config.jsx_module := Js_config.jsx_module_of_string i),
     "*internal* Set jsx module";
 
     "-bs-jsx-mode", string_call (fun i ->
       (if i <> "classic" && i <> "automatic" then Bsc_args.bad_arg (" Not supported jsx-mode : " ^ i));
-      let open Js_config in
-      Js_config.jsx_mode := jsx_mode_of_string i),
+      Js_config.jsx_mode := Js_config.jsx_mode_of_string i),
     "*internal* Set jsx mode";
 
     "-bs-package-output", string_call Js_packages_state.update_npm_package_path, 
@@ -409,8 +406,14 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
 
     "-nopervasives", set Clflags.nopervasives, 
     "*internal*";
-    "-bs-uncurry", set Config.default_uncurry,
-    "*internal" ;
+    "-uncurried", string_call (fun i ->
+      match i with
+      | "default" -> Res_uncurried.init := Default
+      | "always" -> Res_uncurried.init := Always
+      | "legacy" -> Res_uncurried.init := Legacy
+      | _ -> Bsc_args.bad_arg (" Not supported -uncurried option : " ^ i)
+  ),
+    "*internal* Set jsx module";
     "-v", unit_call print_version_string,
     "Print compiler version and location of standard library and exit";  
 

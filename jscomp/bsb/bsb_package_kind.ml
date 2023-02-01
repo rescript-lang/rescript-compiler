@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type dep_payload = { package_specs : Bsb_package_specs.t; jsx : Bsb_jsx.t }
+type dep_payload = { package_specs : Bsb_package_specs.t; jsx : Bsb_jsx.t; uncurried : Res_uncurried.config }
 
 type t =
   | Toplevel
