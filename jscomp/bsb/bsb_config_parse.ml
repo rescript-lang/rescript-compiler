@@ -95,6 +95,15 @@ let extract_gentype_config (map : json_map) : Bsb_config_types.gentype_config =
   | Some config ->
       Bsb_exception.config_error config "gentypeconfig expect an object"
 
+let extract_uncurried (map : json_map) : Res_uncurried.config =
+  match map.?(Bsb_build_schemas.uncurried) with
+  | None -> Legacy
+  | Some (Str { str = "legacy" }) -> Legacy
+  | Some (Str { str = "default" }) -> Default
+  | Some (Str { str = "always" }) -> Always
+  | Some config ->
+      Bsb_exception.config_error config "uncurried expects one of: \"legacy\", \"default\", \"always\"."
+
 let extract_string (map : json_map) (field : string) cb =
   match map.?(field) with
   | None -> None
@@ -337,6 +346,10 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
             jsx;
             generators = extract_generators map;
             cut_generators;
+            uncurried =
+            (match package_kind with
+            | Toplevel -> extract_uncurried map
+            | Pinned_dependency x | Dependency x -> x.uncurried);
           }
       | None ->
           Bsb_exception.invalid_spec "no sources specified in bsconfig.json")
@@ -348,5 +361,6 @@ let deps_from_bsconfig () =
   | Obj { map } ->
       ( Bsb_package_specs.from_map ~cwd:Bsb_global_paths.cwd map,
         Bsb_jsx.from_map map,
+        extract_uncurried map,
         Bsb_build_util.extract_pinned_dependencies map )
   | _ -> assert false

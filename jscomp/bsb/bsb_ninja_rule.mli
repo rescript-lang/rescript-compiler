@@ -72,6 +72,7 @@ val make_custom_rules :
   has_builtin:bool ->
   reason_react_jsx:Bsb_config_types.reason_react_jsx option ->
   jsx:Bsb_jsx.t ->
+  uncurried:Res_uncurried.config ->
   digest:string ->
   package_specs:Bsb_package_specs.t ->
   namespace:string option ->

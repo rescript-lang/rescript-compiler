@@ -577,7 +577,7 @@ module State = struct
 
   type t = {customLayout: int; mutable uncurried_config: Res_uncurried.config}
 
-  let init = {customLayout = 0; uncurried_config = Res_uncurried.init}
+  let init () = {customLayout = 0; uncurried_config = !Res_uncurried.init}
 
   let nextCustomLayout t = {t with customLayout = t.customLayout + 1}
 
@@ -5279,6 +5279,9 @@ and printAttribute ?(standalone = false) ~state
       | "uncurried" ->
         state.uncurried_config <- Res_uncurried.Default;
         id
+      | "uncurriedAlways" ->
+        state.uncurried_config <- Res_uncurried.Always;
+        id
       | "toUncurried" ->
         state.uncurried_config <- Res_uncurried.Default;
         {id with txt = "uncurried"}
@@ -5557,22 +5560,22 @@ and printExtensionConstructor ~state (constr : Parsetree.extension_constructor)
   in
   Doc.concat [bar; Doc.group (Doc.concat [attrs; name; kind])]
 
-let printTypeParams = printTypeParams ~state:State.init
-let printTypExpr = printTypExpr ~state:State.init
-let printExpression = printExpression ~state:State.init
-let printPattern = printPattern ~state:State.init
+let printTypeParams params = printTypeParams ~state:(State.init ()) params
+let printTypExpr t = printTypExpr ~state:(State.init ()) t
+let printExpression e = printExpression ~state:(State.init ()) e
+let printPattern p = printPattern ~state:(State.init ()) p
 
 let printImplementation ~width (s : Parsetree.structure) ~comments =
   let cmtTbl = CommentTable.make () in
   CommentTable.walkStructure s cmtTbl comments;
   (* CommentTable.log cmtTbl; *)
-  let doc = printStructure ~state:State.init s cmtTbl in
+  let doc = printStructure ~state:(State.init ()) s cmtTbl in
   (* Doc.debug doc; *)
   Doc.toString ~width doc ^ "\n"
 
 let printInterface ~width (s : Parsetree.signature) ~comments =
   let cmtTbl = CommentTable.make () in
   CommentTable.walkSignature s cmtTbl comments;
-  Doc.toString ~width (printSignature ~state:State.init s cmtTbl) ^ "\n"
+  Doc.toString ~width (printSignature ~state:(State.init ()) s cmtTbl) ^ "\n"
 
-let printStructure = printStructure ~state:State.init
+let printStructure = printStructure ~state:(State.init ())

@@ -91,7 +91,7 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
     ~(has_postbuild : string option) ~(pp_file : string option)
     ~(has_builtin : bool)
     ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
-    ~(jsx : Bsb_jsx.t) ~(digest : string) ~(package_specs : Bsb_package_specs.t)
+    ~(jsx : Bsb_jsx.t) ~(uncurried: Res_uncurried.config)  ~(digest : string) ~(package_specs : Bsb_package_specs.t)
     ~(namespace : string option) ~package_name ~warnings
     ~(ppx_files : Bsb_config_types.ppx list) ~bsc_flags ~(dpkg_incls : string)
     ~(lib_incls : string) ~(dev_incls : string) ~bs_dependencies
@@ -171,6 +171,10 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
     | None -> ()
     | Some Classic -> Ext_buffer.add_string buf " -bs-jsx-mode classic"
     | Some Automatic -> Ext_buffer.add_string buf " -bs-jsx-mode automatic");
+    (match uncurried with
+    | Legacy -> ()
+    | Default -> Ext_buffer.add_string buf " -uncurried default"
+    | Always -> Ext_buffer.add_string buf " -uncurried always");
 
     Ext_buffer.add_char_string buf ' ' bsc_flags;
     Ext_buffer.add_string buf " -absname -bs-ast -o $out $i";

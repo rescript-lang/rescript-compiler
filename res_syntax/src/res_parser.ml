@@ -122,7 +122,7 @@ let make ?(mode = ParseForTypeChecker) src filename =
       diagnostics = [];
       comments = [];
       regions = [ref Report];
-      uncurried_config = Res_uncurried.init;
+      uncurried_config = !Res_uncurried.init;
     }
   in
   parserState.scanner.err <-

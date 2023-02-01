@@ -29,8 +29,6 @@ let interface_suffix = ref ".mli"
    separately because it can differ when we're in the middle of a
    bootstrapping phase. *)
 
-let default_uncurry = ref false
-
 let print_config oc =
   let p name valu = Printf.fprintf oc "%s: %s\n" name valu in
   p "version" version;

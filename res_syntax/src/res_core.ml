@@ -6412,6 +6412,9 @@ and parseStandaloneAttribute p =
     | "uncurried" ->
       p.uncurried_config <- Res_uncurried.Default;
       attrId
+    | "uncurriedAlways" ->
+      p.uncurried_config <- Res_uncurried.Always;
+      attrId
     | "toUncurried" -> {attrId with txt = "uncurried"}
     | _ -> attrId
   in
