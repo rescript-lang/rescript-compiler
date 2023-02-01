@@ -65,6 +65,7 @@ These are only breaking changes for unformatted code.
 - Process `@set` annotation for field update as generating an uncurried function https://github.com/rescript-lang/rescript-compiler/pull/5846
 - Treat uncurried application of primitives like curried application, which produces better output https://github.com/rescript-lang/rescript-compiler/pull/5851
 - New internal representation for uncurried functions using built-in type `function$<fun_type, arity>` this avoids having to declare all the possible arities ahead of time https://github.com/rescript-lang/rescript-compiler/pull/5870
+- Better error message for extension point https://github.com/rescript-lang/rescript-compiler/pull/5965
 
 # 10.1.1
 
