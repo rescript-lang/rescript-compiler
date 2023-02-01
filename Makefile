@@ -2,7 +2,7 @@ SHELL = /bin/bash
 
 DUNE_BIN_DIR = ./_build/install/default/bin
 
-build:
+build: ninja
 	dune build
 	./scripts/copyExes.js
 
@@ -19,6 +19,9 @@ ninja/ninja:
 	./scripts/buildNinjaBinary.js
 
 ninja: ninja/ninja
+
+node_modules/.bin/semver:
+	npm install
 
 test: lib
 	node scripts/ciTest.js -all
@@ -41,7 +44,7 @@ test-all: test test-gentype
 reanalyze:
 	reanalyze.exe -set-exit-code -all-cmt _build/default/res_syntax -suppress res_syntax/testrunner
 
-lib: ninja/ninja
+lib: build node_modules/.bin/semver
 	node scripts/ninja.js config
 	node scripts/ninja.js build
 
