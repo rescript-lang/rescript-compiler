@@ -9,3 +9,5 @@ let b = bar(3, 4)
 let w = 3->foo(4)
 
 let a = 3->foo(. 4)
+
+Js.log(a) // Test automatic uncurried applicatin

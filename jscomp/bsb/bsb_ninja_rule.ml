@@ -102,6 +102,10 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
       since the default is already good -- it does not*)
   let buf = Ext_buffer.create 100 in
   let ns_flag = match namespace with None -> "" | Some n -> " -bs-ns " ^ n in
+  let add_uncurried_flag = function
+    | Res_uncurried.Legacy -> ()
+    | Default -> Ext_buffer.add_string buf " -uncurried default"
+    | Always -> Ext_buffer.add_string buf " -uncurried always" in
   let mk_ml_cmj_cmd ~(read_cmi : [ `yes | `is_cmi | `no ]) ~is_dev ~postbuild :
       string =
     Ext_buffer.clear buf;
@@ -121,6 +125,7 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
     (match gentype_config with
     | false -> ()
     | true -> Ext_buffer.add_string buf " -bs-gentype");
+    add_uncurried_flag uncurried;
     if read_cmi <> `is_cmi then (
       Ext_buffer.add_string buf " -bs-package-name ";
       Ext_buffer.add_string buf (Ext_filename.maybe_quote package_name);
@@ -171,10 +176,7 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
     | None -> ()
     | Some Classic -> Ext_buffer.add_string buf " -bs-jsx-mode classic"
     | Some Automatic -> Ext_buffer.add_string buf " -bs-jsx-mode automatic");
-    (match uncurried with
-    | Legacy -> ()
-    | Default -> Ext_buffer.add_string buf " -uncurried default"
-    | Always -> Ext_buffer.add_string buf " -uncurried always");
+    add_uncurried_flag uncurried;
 
     Ext_buffer.add_char_string buf ' ' bsc_flags;
     Ext_buffer.add_string buf " -absname -bs-ast -o $out $i";

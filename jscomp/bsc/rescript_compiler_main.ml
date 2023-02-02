@@ -409,7 +409,7 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-uncurried", string_call (fun i ->
       match i with
       | "default" -> Res_uncurried.init := Default
-      | "always" -> Res_uncurried.init := Always
+      | "always" -> Res_uncurried.init := Always; Config.use_automatic_curried_application := true
       | "legacy" -> Res_uncurried.init := Legacy
       | _ -> Bsc_args.bad_arg (" Not supported -uncurried option : " ^ i)
   ),
