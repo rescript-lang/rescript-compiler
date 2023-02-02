@@ -13,6 +13,8 @@ let bs_only = ref true
 
 let unsafe_empty_array = ref false
 
+let use_automatic_curried_application = ref false
+
 and cmi_magic_number = "Caml1999I022"
 
 and ast_impl_magic_number = "Caml1999M022"

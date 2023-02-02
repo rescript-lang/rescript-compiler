@@ -2016,7 +2016,9 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
       end_def ();
       wrap_trace_gadt_instances env (lower_args env []) ty;
       begin_def ();
-      let uncurried = Ext_list.exists sexp.pexp_attributes (fun ({txt },_) -> txt = "res.uapp") in
+      let uncurried =
+        Ext_list.exists sexp.pexp_attributes (fun ({txt },_) -> txt = "res.uapp")
+        && not (is_automatic_curried_application env funct) in
       let (args, ty_res, fully_applied) = type_application uncurried env funct sargs in
       end_def ();
       unify_var env (newvar()) funct.exp_type;
@@ -2975,7 +2977,12 @@ and type_argument ?recarg env sarg ty_expected' ty_expected =
       let texp = type_expect ?recarg env sarg ty_expected' in
       unify_exp env texp ty_expected;
       texp
-
+and is_automatic_curried_application env funct =
+  (* When a curried function is used with uncurried application, treat it as a curried application *)
+  !Config.use_automatic_curried_application &&
+  match (expand_head env funct.exp_type).desc with
+  | Tarrow _ -> true
+  | _ -> false
 and type_application uncurried env funct (sargs : sargs) : targs * Types.type_expr * bool =
   (* funct.exp_type may be generic *)
   let result_type omitted ty_fun =
