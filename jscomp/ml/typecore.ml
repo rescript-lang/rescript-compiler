@@ -2016,9 +2016,12 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
       end_def ();
       wrap_trace_gadt_instances env (lower_args env []) ty;
       begin_def ();
-      let uncurried =
-        Ext_list.exists sexp.pexp_attributes (fun ({txt },_) -> txt = "res.uapp")
-        && not (is_automatic_curried_application env funct) in
+      let uncurried, funct =
+        if Ext_list.exists sexp.pexp_attributes (fun ({txt },_) -> txt = "res.uapp")
+        then match is_automatic_curried_application env funct with
+          | Some funct -> false, funct
+          | None -> true, funct
+        else false, funct in
       let (args, ty_res, fully_applied) = type_application uncurried env funct sargs in
       end_def ();
       unify_var env (newvar()) funct.exp_type;
@@ -2979,10 +2982,25 @@ and type_argument ?recarg env sarg ty_expected' ty_expected =
       texp
 and is_automatic_curried_application env funct =
   (* When a curried function is used with uncurried application, treat it as a curried application *)
-  !Config.use_automatic_curried_application &&
-  match (expand_head env funct.exp_type).desc with
-  | Tarrow _ -> true
-  | _ -> false
+
+  let rec fun_arity texp = match texp.desc with
+    | Tarrow(_, _, t2, _) -> 1 + fun_arity t2
+    | _ -> 0 in
+
+  let rec make_callbacks_uncurried texp = match texp.desc with
+    | Tarrow (lbl, t1, t2, comm) ->
+      let a1 = fun_arity t1 in
+      let t1 = if a1 = 0 then t1 else Ast_uncurried.make_uncurried_type ~env ~arity:a1 t1 in
+      let t2 = make_callbacks_uncurried t2 in
+      {texp with desc = Tarrow (lbl, t1, t2, comm)}
+    | _ -> texp in
+
+  let expanded = expand_head env funct.exp_type in
+  match expanded.desc with
+  | Tarrow _ when !Config.use_automatic_curried_application ->
+    let texp = make_callbacks_uncurried expanded in
+    Some {funct with exp_type = texp}
+  | _ -> None
 and type_application uncurried env funct (sargs : sargs) : targs * Types.type_expr * bool =
   (* funct.exp_type may be generic *)
   let result_type omitted ty_fun =
