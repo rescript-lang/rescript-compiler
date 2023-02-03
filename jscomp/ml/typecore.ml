@@ -3047,7 +3047,7 @@ and type_application uncurried env funct (sargs : sargs) : targs * Types.type_ex
         else
           collect_args ()
     | [(Nolabel, {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)})]
-      when uncurried && omitted = [] && List.length args = List.length !ignored ->
+      when uncurried && omitted = [] && args <> [] && List.length args = List.length !ignored ->
       (* foo(. ) treated as empty application if all args are optional (hence ignored) *)
         type_unknown_args max_arity args omitted ty_fun []
     | (l1, sarg1) :: sargl ->

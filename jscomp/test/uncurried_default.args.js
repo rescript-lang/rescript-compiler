@@ -101,6 +101,14 @@ function foo3$1(xOpt, yOpt) {
 
 var r3$1 = foo3$1(undefined, undefined);
 
+function foo(func) {
+  return func(undefined) + 1 | 0;
+}
+
+var M = {
+  foo: foo
+};
+
 exports.StandardNotation = StandardNotation;
 exports.withOpt = withOpt$1;
 exports.testWithOpt = testWithOpt$1;
@@ -112,4 +120,5 @@ exports.foo2 = foo2$1;
 exports.r2 = r2$1;
 exports.foo3 = foo3$1;
 exports.r3 = r3$1;
+exports.M = M;
 /* testWithOpt Not a pure module */
