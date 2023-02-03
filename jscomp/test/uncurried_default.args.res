@@ -31,3 +31,9 @@ let r2 = foo2(~y=11)
 
 let foo3 = (~x=3, ~y=4) => x+y
 let r3 = foo3()
+
+module M: {
+  let foo: (unit => int) => int
+} = {
+  let foo = func => func() + 1
+}
