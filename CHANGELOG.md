@@ -16,6 +16,7 @@
 
 - Add the gap property to jsxDOMStyle https://github.com/rescript-lang/rescript-compiler/pull/5956
 - Fix issue where error messages related to non-existent props were displayed without location information https://github.com/rescript-lang/syntax/pull/730
+- Fix issue where uncurried functions were incorrectly converting the type of a prop given as a default value to curried https://github.com/rescript-lang/syntax/pull/731
 
 # 10.1.2
 
