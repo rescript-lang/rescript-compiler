@@ -719,19 +719,10 @@ let argToType ~newtypes ~(typeConstraints : core_type option) types
   in
   match (type_, name, default) with
   | Some type_, name, _ when isOptional name ->
-    ( true,
-      getLabel name,
-      attrs,
-      loc,
-      {type_ with ptyp_attributes = optionalAttrs} )
-    :: types
+    (true, getLabel name, attrs, loc, type_) :: types
   | Some type_, name, _ -> (false, getLabel name, attrs, loc, type_) :: types
   | None, name, _ when isOptional name ->
-    ( true,
-      getLabel name,
-      attrs,
-      loc,
-      Typ.var ~loc ~attrs:optionalAttrs (safeTypeFromValue name) )
+    (true, getLabel name, attrs, loc, Typ.var ~loc (safeTypeFromValue name))
     :: types
   | None, name, _ when isLabelled name ->
     (false, getLabel name, attrs, loc, Typ.var ~loc (safeTypeFromValue name))
