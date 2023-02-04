@@ -2341,6 +2341,9 @@ let rec unify (env:Env.t ref) t1 t2 =
         with Cannot_expand ->
           unify2 env t1 t2
         end
+    | (Tconstr (Pident {name="function$"}, [tFun; _], _), Tarrow _) when !Config.use_automatic_curried_application ->
+        (* subtype: an uncurried function is cast to a curried one *)
+        unify2 env tFun t2
     | _ ->
         unify2 env t1 t2
     end;
