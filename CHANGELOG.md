@@ -54,6 +54,7 @@ These are only breaking changes for unformatted code.
 - Fix issue where error messages related to non-existent props were displayed without location information https://github.com/rescript-lang/rescript-compiler/pull/5960
 - Fix type inference issue with uncurried functions applied to a single unit argument. The issue was introduced in https://github.com/rescript-lang/rescript-compiler/pull/5907 when adding support to `foo()` when `foo` has only optional arguments. https://github.com/rescript-lang/rescript-compiler/pull/5970
 - Fix issue where uncurried functions were incorrectly converting the type of a prop given as a default value to curried https://github.com/rescript-lang/rescript-compiler/pull/5971
+- Fix issue with error messages for uncurried functions where expected and given type were swapped https://github.com/rescript-lang/rescript-compiler/pull/5973
 
 #### :nail_care: Polish
 

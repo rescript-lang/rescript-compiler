@@ -121,9 +121,9 @@ end
 
 let reportArityMismatch ~arityA ~arityB ppf =
   fprintf ppf "This function expected @{<info>%s@} %s, but got @{<error>%s@}"
-    arityA
-    (if arityA = "1" then "argument" else "arguments")
     arityB
+    (if arityB = "1" then "argument" else "arguments")
+    arityA
 
 (* Pasted from typecore.ml. Needed for some cases in report_error below *)
 (* Records *)
@@ -169,6 +169,11 @@ let report_error env ppf = function
     (_, {desc = Tconstr (Pident {name = "function$"},_,_)}) :: _
    ) -> 
     fprintf ppf "This function is a curried function where an uncurried function is expected"
+  | Expr_type_clash ( 
+    (_, {desc = Tconstr (Pident {name = "function$"}, [{desc=Tvar _}; _],_)}) ::
+    (_, {desc = Tarrow _}) :: _
+   ) -> 
+    fprintf ppf "This function is an uncurried function where a curried function is expected"
   | Expr_type_clash (
       (_, {desc = Tconstr (Pident {name = "function$"},[_; tA],_)}) ::
       (_, {desc = Tconstr (Pident {name = "function$"},[_; tB],_)}) :: _
