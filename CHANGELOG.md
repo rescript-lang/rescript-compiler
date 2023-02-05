@@ -56,6 +56,7 @@ These are only breaking changes for unformatted code.
 - Fix issue where uncurried functions were incorrectly converting the type of a prop given as a default value to curried https://github.com/rescript-lang/rescript-compiler/pull/5971
 - Fix issue with error messages for uncurried functions where expected and given type were swapped https://github.com/rescript-lang/rescript-compiler/pull/5973
 - Fix issue with nested async functions, where the inner function would be emitted without `async` https://github.com/rescript-lang/rescript-compiler/pull/5983
+- Fix issue with async context check, and printer, for async functions with locally abstract type https://github.com/rescript-lang/rescript-compiler/pull/5982
 
 #### :nail_care: Polish
 

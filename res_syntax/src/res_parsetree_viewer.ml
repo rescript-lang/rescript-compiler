@@ -182,7 +182,7 @@ let funExpr expr =
     | expr -> (uncurried, attrsBefore, List.rev acc, expr)
   in
   match expr with
-  | {pexp_desc = Pexp_fun _} ->
+  | {pexp_desc = Pexp_fun _ | Pexp_newtype _} ->
     collect ~uncurried:false ~nFun:0 expr.pexp_attributes []
       {expr with pexp_attributes = []}
   | _ when Ast_uncurried.exprIsUncurriedFun expr ->
