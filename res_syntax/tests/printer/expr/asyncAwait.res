@@ -120,3 +120,7 @@ let c3 = (. x) => @foo y => x+y
 
 type t1 = (. int) => string => bool
 type t2 = (. int, string) => bool
+
+let f = async (type a, ()) => {
+  await Js.Promise.resolve(())
+}
