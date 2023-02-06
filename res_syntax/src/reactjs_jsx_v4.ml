@@ -1064,7 +1064,12 @@ let transformStructureItem ~config mapper item =
           in
           let innerExpression =
             Exp.apply
-              (Exp.ident (Location.mknoloc @@ Lident fnName))
+              (Exp.ident
+                 (Location.mknoloc
+                 @@ Lident
+                      (match recFlag with
+                      | Recursive -> internalFnName
+                      | Nonrecursive -> fnName)))
               ([(Nolabel, Exp.ident (Location.mknoloc @@ Lident "props"))]
               @
               match hasForwardRef with

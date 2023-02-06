@@ -7,3 +7,13 @@
 */
 @react.component
 let rec make = (~foo, ()) => React.createElement(make, makeProps(~foo, ()))
+
+@@jsxConfig({version:4})
+
+module Rec = {
+  @react.component
+  let rec make = () => {
+    mm(({}: props))
+  }
+  and mm = (x) => make(x)
+}

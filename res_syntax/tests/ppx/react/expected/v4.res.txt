@@ -45,3 +45,20 @@ module EUncurried = {
 
   external make: React.componentLike<props<string>, React.element> = "default"
 }
+
+module Rec = {
+  type props = {}
+
+  let rec make = {
+    @merlin.focus
+    let rec \"make$Internal" = (_: props) => {
+      make(({}: props))
+    }
+    and make = {
+      let \"V4$Rec" = props => \"make$Internal"(props)
+
+      \"V4$Rec"
+    }
+    make
+  }
+}
