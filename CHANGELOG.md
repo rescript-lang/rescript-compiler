@@ -20,6 +20,8 @@
 - Fix issue where error messages related to non-existent props were displayed without location information https://github.com/rescript-lang/syntax/pull/730
 - Fix issue where uncurried functions were incorrectly converting the type of a prop given as a default value to curried https://github.com/rescript-lang/syntax/pull/731
 - Fix issue with nested async functions, where the inner function would be emitted without `async` https://github.com/rescript-lang/rescript-compiler/pull/5984
+- Fix issue with printing async functions with locally abstract types https://github.com/rescript-lang/syntax/pull/732
+- Fix issue with async context and locally abstract types https://github.com/rescript-lang/rescript-compiler/pull/5985
 
 # 10.1.2
 
