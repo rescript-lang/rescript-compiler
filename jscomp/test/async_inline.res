@@ -46,3 +46,7 @@ let tci = curriedId(3)
 let tcia = curriedIdAsync(3)
 let tui = uncurriedId(. 3)
 let tuia = uncurriedIdAsync(. 3)
+
+let nested1 = () => async (y) => await y
+
+let nested2 = async () => async (y) => await y
