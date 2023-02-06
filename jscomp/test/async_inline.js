@@ -60,6 +60,18 @@ var tui = 3;
 
 var tuia = uncurriedIdAsync(3);
 
+function nested1(param) {
+  return async function (y) {
+    return await y;
+  };
+}
+
+async function nested2(param) {
+  return async function (y) {
+    return await y;
+  };
+}
+
 var tci = 3;
 
 exports.willBeInlined = willBeInlined;
@@ -76,4 +88,6 @@ exports.tci = tci;
 exports.tcia = tcia;
 exports.tui = tui;
 exports.tuia = tuia;
+exports.nested1 = nested1;
+exports.nested2 = nested2;
 /* inlined Not a pure module */
