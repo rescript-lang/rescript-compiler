@@ -58,6 +58,7 @@
 - Fix an issue where error messages related to duplicate props were displayed without a loc and were unclear https://github.com/rescript-lang/syntax/pull/728
 - Fix issue where error messages related to non-existent props were displayed without location information https://github.com/rescript-lang/syntax/pull/730
 - Fix issue where uncurried functions were incorrectly converting the type of a prop given as a default value to curried https://github.com/rescript-lang/syntax/pull/731
+- Fix issue with printing async functions with locally abstract types https://github.com/rescript-lang/syntax/pull/732
 
 #### :eyeglasses: Spec Compliance
 

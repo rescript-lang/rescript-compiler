@@ -115,6 +115,11 @@ let expr_mapper ~async_context ~in_function_def (self : mapper)
       | true, pexp_attributes ->
           Ast_bs_open.convertBsErrorFunction e.pexp_loc self pexp_attributes
             cases)
+  | Pexp_newtype (s, body) ->
+     let async = Ast_attributes.has_async_payload e.pexp_attributes <> None in
+     let body = Ast_async.add_async_attribute ~async body in
+     let res = self.expr self body in
+     {e with pexp_desc = Pexp_newtype(s, res)}
   | Pexp_fun (label, _, pat, body) -> (
       let async = Ast_attributes.has_async_payload e.pexp_attributes <> None in
       match Ast_attributes.process_attributes_rev e.pexp_attributes with
