@@ -1064,7 +1064,12 @@ let transformStructureItem ~config mapper item =
           in
           let innerExpression =
             Exp.apply
-              (Exp.ident (Location.mknoloc @@ Lident fnName))
+              (Exp.ident
+                 (Location.mknoloc
+                 @@ Lident
+                      (match recFlag with
+                      | Recursive -> internalFnName
+                      | Nonrecursive -> fnName)))
               ([(Nolabel, Exp.ident (Location.mknoloc @@ Lident "props"))]
               @
               match hasForwardRef with
@@ -1206,14 +1211,15 @@ let transformStructureItem ~config mapper item =
             | Recursive ->
               ( [
                   bindingWrapper
-                    (Exp.let_ ~loc:emptyLoc Recursive
-                       [
-                         makeNewBinding binding expression internalFnName;
-                         Vb.mk
-                           (Pat.var {loc = emptyLoc; txt = fnName})
-                           fullExpression;
-                       ]
-                       (Exp.ident {loc = emptyLoc; txt = Lident fnName}));
+                    (Exp.let_ ~loc:emptyLoc Nonrecursive
+                       [makeNewBinding binding expression internalFnName]
+                       (Exp.let_ ~loc:emptyLoc Nonrecursive
+                          [
+                            Vb.mk
+                              (Pat.var {loc = emptyLoc; txt = fnName})
+                              fullExpression;
+                          ]
+                          (Exp.ident {loc = emptyLoc; txt = Lident fnName})));
                 ],
                 None )
             | Nonrecursive ->

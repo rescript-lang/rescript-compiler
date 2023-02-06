@@ -27,3 +27,26 @@ module EUncurried = {
   @react.component
   external make: (. ~x: string) => React.element = "default"
 }
+
+module Rec = {
+  @react.component
+  let rec make = () => {
+   make({}:props)
+  }
+}
+
+module Rec1 = {
+  @react.component
+  let rec make = () => {
+    React.null
+  }
+}
+
+module Rec2 = {
+  @react.component
+  let rec make = () => {
+    mm(({}: props))
+  }
+  and mm = (x) => make(x)
+}
+

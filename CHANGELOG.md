@@ -57,6 +57,7 @@ These are only breaking changes for unformatted code.
 - Fix issue with error messages for uncurried functions where expected and given type were swapped https://github.com/rescript-lang/rescript-compiler/pull/5973
 - Fix issue with nested async functions, where the inner function would be emitted without `async` https://github.com/rescript-lang/rescript-compiler/pull/5983
 - Fix issue with async context check, and printer, for async functions with locally abstract type https://github.com/rescript-lang/rescript-compiler/pull/5982
+- Fix support for recursive components in JSX V4 https://github.com/rescript-lang/rescript-compiler/pull/5986
 
 #### :nail_care: Polish
 
