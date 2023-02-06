@@ -36,3 +36,7 @@ let broken = async (someAsyncFunction) => {
 }
 
 let broken = someAsyncFunction => broken(someAsyncFunction)
+
+let nested1 = () => async (y) => await y
+
+let nested2 = async () => async (y) => await y

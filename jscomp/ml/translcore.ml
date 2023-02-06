@@ -681,6 +681,8 @@ let rec cut n l =
 
 let try_ids = Hashtbl.create 8
 
+let has_async_attribute exp = exp.exp_attributes |> List.exists (fun ({txt}, _payload) -> txt = "res.async")
+
 let rec transl_exp e =
   List.iter (Translattribute.check_attribute e) e.exp_attributes;
   transl_exp0 e
@@ -695,7 +697,7 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
   | Texp_let (rec_flag, pat_expr_list, body) ->
       transl_let rec_flag pat_expr_list (transl_exp body)
   | Texp_function { arg_label = _; param; cases; partial } ->
-      let async = e.exp_attributes |> List.exists (fun ({txt}, _payload) -> txt = "res.async") in
+      let async = has_async_attribute e in
       let params, body, return_unit =
         let pl = push_defaults e.exp_loc [] cases partial in
         transl_function e.exp_loc partial param pl
@@ -1021,7 +1023,7 @@ and transl_function loc partial param cases =
        } as exp;
    };
   ]
-    when Parmatch.inactive ~partial pat ->
+    when Parmatch.inactive ~partial pat && not (exp |> has_async_attribute) ->
       let params, body, return_unit =
         transl_function exp.exp_loc partial' param' cases
       in

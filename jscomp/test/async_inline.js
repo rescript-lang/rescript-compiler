@@ -38,10 +38,24 @@ async function broken$1(someAsyncFunction) {
 
 var broken$2 = broken$1;
 
+function nested1(param) {
+  return async function (y) {
+    return await y;
+  };
+}
+
+async function nested2(param) {
+  return async function (y) {
+    return await y;
+  };
+}
+
 exports.willBeInlined = willBeInlined;
 exports.inlined = inlined;
 exports.wrapSomethingAsync = wrapSomethingAsync;
 exports.wrapSomethingAsync2 = wrapSomethingAsync2;
 exports.M = M;
 exports.broken = broken$2;
+exports.nested1 = nested1;
+exports.nested2 = nested2;
 /* inlined Not a pure module */
