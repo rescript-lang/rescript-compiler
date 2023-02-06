@@ -1211,14 +1211,15 @@ let transformStructureItem ~config mapper item =
             | Recursive ->
               ( [
                   bindingWrapper
-                    (Exp.let_ ~loc:emptyLoc Recursive
-                       [
-                         makeNewBinding binding expression internalFnName;
-                         Vb.mk
-                           (Pat.var {loc = emptyLoc; txt = fnName})
-                           fullExpression;
-                       ]
-                       (Exp.ident {loc = emptyLoc; txt = Lident fnName}));
+                    (Exp.let_ ~loc:emptyLoc Nonrecursive
+                       [makeNewBinding binding expression internalFnName]
+                       (Exp.let_ ~loc:emptyLoc Nonrecursive
+                          [
+                            Vb.mk
+                              (Pat.var {loc = emptyLoc; txt = fnName})
+                              fullExpression;
+                          ]
+                          (Exp.ident {loc = emptyLoc; txt = Lident fnName})));
                 ],
                 None )
             | Nonrecursive ->

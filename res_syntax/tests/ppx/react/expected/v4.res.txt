@@ -51,14 +51,49 @@ module Rec = {
 
   let rec make = {
     @merlin.focus
-    let rec \"make$Internal" = (_: props) => {
+    let \"make$Internal" = (_: props) => {
       make(({}: props))
     }
-    and make = {
+    let make = {
       let \"V4$Rec" = props => \"make$Internal"(props)
 
       \"V4$Rec"
     }
     make
   }
+}
+
+module Rec1 = {
+  type props = {}
+
+  let rec make = {
+    @merlin.focus
+    let \"make$Internal" = (_: props) => {
+      React.null
+    }
+    let make = {
+      let \"V4$Rec1" = props => \"make$Internal"(props)
+
+      \"V4$Rec1"
+    }
+    make
+  }
+}
+
+module Rec2 = {
+  type props = {}
+
+  let rec make = {
+    @merlin.focus
+    let \"make$Internal" = (_: props) => {
+      mm(({}: props))
+    }
+    let make = {
+      let \"V4$Rec2" = props => \"make$Internal"(props)
+
+      \"V4$Rec2"
+    }
+    make
+  }
+  and mm = x => make(x)
 }
