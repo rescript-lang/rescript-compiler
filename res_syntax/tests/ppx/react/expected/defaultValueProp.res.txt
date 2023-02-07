@@ -1,0 +1,39 @@
+module C0 = {
+  type props<'a, 'b> = {a?: 'a, b?: 'b}
+  @react.component
+  let make = ({?a, ?b, _}: props<'a, 'b>) => {
+    let b = switch b {
+    | Some(b) => b
+    | None => a * 2
+    }
+    and a = switch a {
+    | Some(a) => a
+    | None => 2
+    }
+
+    ReactDOM.jsx("div", {})
+  }
+  let make = {
+    let \"DefaultValueProp$C0" = (props: props<_>) => make(props)
+    \"DefaultValueProp$C0"
+  }
+}
+
+module C1 = {
+  type props<'a, 'b> = {a?: 'a, b: 'b}
+
+  @react.component
+  let make = ({?a, b, _}: props<'a, 'b>) => {
+    let a = switch a {
+    | Some(a) => a
+    | None => 2
+    }
+
+    ReactDOM.jsx("div", {})
+  }
+  let make = {
+    let \"DefaultValueProp$C1" = (props: props<_>) => make(props)
+
+    \"DefaultValueProp$C1"
+  }
+}

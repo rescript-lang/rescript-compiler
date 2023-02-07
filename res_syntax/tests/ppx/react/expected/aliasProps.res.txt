@@ -37,3 +37,22 @@ module C1 = {
     \"AliasProps$C1"
   }
 }
+
+module C2 = {
+  type props<'foo> = {foo?: 'foo}
+
+  @react.component
+  let make = ({foo: ?bar, _}: props<'foo>) => {
+    let foo = switch foo {
+    | Some(foo) => foo
+    | None => ""
+    }
+
+    ReactDOM.jsx("div", {})
+  }
+  let make = {
+    let \"AliasProps$C2" = (props: props<_>) => make(props)
+
+    \"AliasProps$C2"
+  }
+}
