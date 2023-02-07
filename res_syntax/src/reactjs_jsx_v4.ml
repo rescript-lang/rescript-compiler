@@ -729,10 +729,10 @@ let argToType ~newtypes ~(typeConstraints : core_type option) types
     :: types
   | _ -> types
 
-let argWithDefaultValue (name, default, _, _, _, _) =
-  match default with
-  | Some default when isOptional name -> Some (getLabel name, default)
-  | _ -> None
+let hasDefaultValue nameArgList =
+  nameArgList
+  |> List.exists (fun (name, default, _, _, _, _) ->
+         Option.is_some default && isOptional name)
 
 let argToConcreteType types (name, attrs, loc, type_) =
   match name with
@@ -1037,26 +1037,34 @@ let transformStructureItem ~config mapper item =
               (argToType ~newtypes ~typeConstraints)
               [] namedArgList
           in
-          let namedArgWithDefaultValueList =
-            List.filter_map argWithDefaultValue namedArgList
+          let vbMatch (name, default, _, alias, loc, _) =
+            let label = getLabel name in
+            match default with
+            | Some default ->
+              Vb.mk
+                (Pat.var (Location.mkloc alias loc))
+                (Exp.match_
+                   (Exp.ident
+                      {txt = Ldot (Lident "props", label); loc = Location.none})
+                   [
+                     Exp.case
+                       (Pat.construct
+                          (Location.mknoloc @@ Lident "Some")
+                          (Some (Pat.var (Location.mknoloc label))))
+                       (Exp.ident (Location.mknoloc @@ Lident label));
+                     Exp.case
+                       (Pat.construct (Location.mknoloc @@ Lident "None") None)
+                       default;
+                   ])
+            | None ->
+              Vb.mk
+                (Pat.var (Location.mkloc alias loc))
+                (Exp.ident @@ Location.mknoloc @@ Ldot (Lident "props", label))
           in
-          let vbMatch (label, default) =
-            Vb.mk
-              (Pat.var (Location.mknoloc label))
-              (Exp.match_
-                 (Exp.ident {txt = Lident label; loc = Location.none})
-                 [
-                   Exp.case
-                     (Pat.construct
-                        (Location.mknoloc @@ Lident "Some")
-                        (Some (Pat.var (Location.mknoloc label))))
-                     (Exp.ident (Location.mknoloc @@ Lident label));
-                   Exp.case
-                     (Pat.construct (Location.mknoloc @@ Lident "None") None)
-                     default;
-                 ])
+          let vbMatchList =
+            if hasDefaultValue namedArgList then List.map vbMatch namedArgList
+            else []
           in
-          let vbMatchList = List.map vbMatch namedArgWithDefaultValueList in
           (* type props = { ... } *)
           let propsRecordType =
             makePropsRecordType ~coreTypeOfAttr ~typVarsOfCoreType "props"
@@ -1184,10 +1192,16 @@ let transformStructureItem ~config mapper item =
               (fun expr (_, pattern) -> Exp.fun_ Nolabel None pattern expr)
               expression patternsWithNolabel
           in
+          (* ({a, b, _}: props<'a, 'b>) *)
           let recordPattern =
             match patternsWithLabel with
             | [] -> Pat.any ()
             | _ -> Pat.record (List.rev patternsWithLabel) Open
+          in
+          let recordPattern =
+            if hasDefaultValue namedArgList then
+              Pat.var {txt = "props"; loc = emptyLoc}
+            else recordPattern
           in
           let expression =
             Exp.fun_ Nolabel None
