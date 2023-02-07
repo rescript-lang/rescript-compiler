@@ -22,6 +22,7 @@
 - Fix issue with nested async functions, where the inner function would be emitted without `async` https://github.com/rescript-lang/rescript-compiler/pull/5984
 - Fix issue with printing async functions with locally abstract types https://github.com/rescript-lang/syntax/pull/732
 - Fix issue with async context and locally abstract types https://github.com/rescript-lang/rescript-compiler/pull/5985
+- Fix support for recursive components in JSX V4 https://github.com/rescript-lang/syntax/pull/733
 
 # 10.1.2
 

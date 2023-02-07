@@ -59,6 +59,7 @@
 - Fix issue where error messages related to non-existent props were displayed without location information https://github.com/rescript-lang/syntax/pull/730
 - Fix issue where uncurried functions were incorrectly converting the type of a prop given as a default value to curried https://github.com/rescript-lang/syntax/pull/731
 - Fix issue with printing async functions with locally abstract types https://github.com/rescript-lang/syntax/pull/732
+- Fix support for recursive components in JSX V4 https://github.com/rescript-lang/syntax/pull/733
 
 #### :eyeglasses: Spec Compliance
 
