@@ -11,8 +11,11 @@ function make(Props) {
             });
 }
 
-function make$1(props) {
-  return Curry._1(make$1, {});
+function make$1(_props) {
+  while(true) {
+    _props = {};
+    continue ;
+  };
 }
 
 var mm = Curry.__1(make$1);

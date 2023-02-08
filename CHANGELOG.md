@@ -58,6 +58,8 @@ These are only breaking changes for unformatted code.
 - Fix issue with nested async functions, where the inner function would be emitted without `async` https://github.com/rescript-lang/rescript-compiler/pull/5983
 - Fix issue with async context check, and printer, for async functions with locally abstract type https://github.com/rescript-lang/rescript-compiler/pull/5982
 - Fix support for recursive components in JSX V4 https://github.com/rescript-lang/rescript-compiler/pull/5986
+- Fix issue with overlapping labelled argument with default value https://github.com/rescript-lang/rescript-compiler/pull/5989
+- Fix issue with using alias and default value together https://github.com/rescript-lang/rescript-compiler/pull/5989
 
 #### :nail_care: Polish
 

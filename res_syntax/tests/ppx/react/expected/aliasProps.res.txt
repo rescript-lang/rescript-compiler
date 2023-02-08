@@ -4,8 +4,9 @@ module C0 = {
   type props<'priority, 'text> = {priority: 'priority, text?: 'text}
 
   @react.component
-  let make = ({priority: _, ?text, _}: props<'priority, 'text>) => {
-    let text = switch text {
+  let make = (props: props<'priority, 'text>) => {
+    let _ = props.priority
+    let text = switch props.text {
     | Some(text) => text
     | None => "Test"
     }
@@ -23,8 +24,9 @@ module C1 = {
   type props<'priority, 'text> = {priority: 'priority, text?: 'text}
 
   @react.component
-  let make = ({priority: p, ?text, _}: props<'priority, 'text>) => {
-    let text = switch text {
+  let make = (props: props<'priority, 'text>) => {
+    let p = props.priority
+    let text = switch props.text {
     | Some(text) => text
     | None => "Test"
     }
@@ -35,5 +37,24 @@ module C1 = {
     let \"AliasProps$C1" = (props: props<_>) => make(props)
 
     \"AliasProps$C1"
+  }
+}
+
+module C2 = {
+  type props<'foo> = {foo?: 'foo}
+
+  @react.component
+  let make = (props: props<'foo>) => {
+    let bar = switch props.foo {
+    | Some(foo) => foo
+    | None => ""
+    }
+
+    React.string(bar)
+  }
+  let make = {
+    let \"AliasProps$C2" = (props: props<_>) => make(props)
+
+    \"AliasProps$C2"
   }
 }
