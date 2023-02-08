@@ -1,18 +1,18 @@
-@@jsxConfig({version: 4})
+@@bs.config({
+  flags: ["-bs-jsx", "4"],
+})
 
 module C0 = {
   let a = 1
   @react.component
   let make = (~a=2, ~b=a * 2) => {
-    let _ = a + b
-    React.null
+    React.int(a + b)
   }
 }
 
 module C1 = {
   @react.component
   let make = (~foo as bar="") => {
-    let _ = bar
-    React.null
+    React.string(bar)
   }
 }
