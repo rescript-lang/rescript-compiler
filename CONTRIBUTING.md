@@ -414,9 +414,7 @@ To reproduce issues, it can be helpful to the team to install a specific version
 1. In your repository run:
 
 ```console
-npm i \
-  <path_to_download>npm-packages/rescript-*.tgz \
-  <path_to_download>npm-packages/rescript-std-*.tgz
+npm i <path_to_download>npm-packages/rescript-*.tgz
 ```
 
 1. Then attempt to rebuild your project as you would normally.
