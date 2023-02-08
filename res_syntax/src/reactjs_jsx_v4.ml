@@ -1044,8 +1044,9 @@ let transformStructureItem ~config mapper item =
               Vb.mk
                 (Pat.var (Location.mkloc alias loc))
                 (Exp.match_
-                   (Exp.ident
-                      {txt = Ldot (Lident "props", label); loc = Location.none})
+                   (Exp.field
+                      (Exp.ident {txt = Lident "props"; loc = Location.none})
+                      (Location.mknoloc @@ Lident label))
                    [
                      Exp.case
                        (Pat.construct
@@ -1059,7 +1060,9 @@ let transformStructureItem ~config mapper item =
             | None ->
               Vb.mk
                 (Pat.var (Location.mkloc alias loc))
-                (Exp.ident @@ Location.mknoloc @@ Ldot (Lident "props", label))
+                (Exp.field
+                   (Exp.ident {txt = Lident "props"; loc = Location.none})
+                   (Location.mknoloc @@ Lident label))
           in
           let vbMatchList =
             if hasDefaultValue namedArgList then List.map vbMatch namedArgList
