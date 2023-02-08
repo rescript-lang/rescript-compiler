@@ -12,8 +12,8 @@ let rec make = (~foo, ()) => React.createElement(make, makeProps(~foo, ()))
 
 module Rec = {
   @react.component
-  let rec make = () => {
-    mm(({}: props))
+  let rec make = (~b) => {
+    mm({b:b})
   }
-  and mm = (x) => make(x)
+  and mm = (x) => make({b: ! x.b})
 }

@@ -11,14 +11,17 @@ function make(Props) {
             });
 }
 
-function make$1(_props) {
-  while(true) {
-    _props = {};
-    continue ;
-  };
+function mm(x) {
+  return Curry._1(make$1, {
+              b: !x.b
+            });
 }
 
-var mm = Curry.__1(make$1);
+function make$1(props) {
+  return mm({
+              b: props.b
+            });
+}
 
 var Rec = {
   make: make$1,
