@@ -1,7 +1,5 @@
 module C0 = {
-  let a = 1
   type props<'a, 'b> = {a?: 'a, b?: 'b}
-
   @react.component
   let make = (props: props<'a, 'b>) => {
     let a = switch props.a {
@@ -17,7 +15,6 @@ module C0 = {
   }
   let make = {
     let \"DefaultValueProp$C0" = (props: props<_>) => make(props)
-
     \"DefaultValueProp$C0"
   }
 }
