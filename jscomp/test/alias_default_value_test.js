@@ -10,7 +10,6 @@ function Alias_default_value_test$C0(props) {
 }
 
 var C0 = {
-  a: 1,
   make: Alias_default_value_test$C0
 };
 
