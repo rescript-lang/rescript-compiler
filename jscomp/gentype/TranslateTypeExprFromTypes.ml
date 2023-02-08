@@ -67,7 +67,10 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
           type_ = Ident { builtin = false; name = dep |> depToString; typeArgs };
         }
   in
-  match (path |> pathToList |> List.rev, paramsTranslation) with
+  let patchReactV3 path =
+    match path with "ReactV3" :: rest -> rest | _ -> path
+  in
+  match (path |> pathToList |> List.rev |> patchReactV3, paramsTranslation) with
   | ([ "FB"; "bool" ] | [ "bool" ]), [] ->
       { dependencies = []; type_ = booleanT }
   | ([ "FB"; "int" ] | [ "int" ]), [] -> { dependencies = []; type_ = numberT }
@@ -203,7 +206,7 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
       | [ "Js"; "null_undefined" ] ),
       [ paramTranslation ] ) ->
       { paramTranslation with type_ = Nullable paramTranslation.type_ }
-  | ([ "Js"; "Promise"; "t" ] | ["promise"]), [ paramTranslation ] ->
+  | ([ "Js"; "Promise"; "t" ] | [ "promise" ]), [ paramTranslation ] ->
       { paramTranslation with type_ = Promise paramTranslation.type_ }
   | ( [ "Js"; "Internal"; "fn" ],
       [ { dependencies = argsDependencies; type_ = Tuple ts }; ret ] ) ->
