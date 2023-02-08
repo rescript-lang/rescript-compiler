@@ -4,4 +4,4 @@ Thank you for filing! Check list:
 - [ ] Concise, focused, friendly issue title & description.
 - [ ] A [minimal, reproducible example](http://sscce.org).
 - [ ] OS and browser versions, if relevant.
-- [ ] Is it already fixed in master?
+- [ ] Is it already fixed in master? [Instructions](https://github.com/rescript-lang/rescript-compiler/blob/master/CONTRIBUTING.md#debugging-issues-from-ci-builds)
