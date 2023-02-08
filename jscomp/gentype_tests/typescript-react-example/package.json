@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "@rescript/react": "^0.11.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "scripts": {
     "start": "rescript build -w",
@@ -13,7 +14,6 @@
     "tsc": "tsc -p tsconfig.json"
   },
   "devDependencies": {
-    "@rescript/react": "^0.10.3",
     "@types/node": "^13.13.4",
     "@types/react-dom": "^16.9.7",
     "rescript": "file:../../..",

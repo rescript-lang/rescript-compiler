@@ -60,6 +60,7 @@ These are only breaking changes for unformatted code.
 - Fix support for recursive components in JSX V4 https://github.com/rescript-lang/rescript-compiler/pull/5986
 - Fix issue with overlapping labelled argument with default value https://github.com/rescript-lang/rescript-compiler/pull/5989
 - Fix issue with using alias and default value together https://github.com/rescript-lang/rescript-compiler/pull/5989
+- GenType: fix issue with V3 compatibility mode (see https://github.com/rescript-lang/rescript-compiler/issues/5990) https://github.com/rescript-lang/rescript-compiler/pull/5991
 
 #### :nail_care: Polish
 
