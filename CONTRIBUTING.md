@@ -403,6 +403,22 @@ To build a new version and release it on NPM, follow these steps:
 1. Create a release entry for that tag on the [Github Releases page](https://github.com/rescript-lang/rescript-compiler/releases), copying the changes from `CHANGELOG.md`.
 1. Coordinate any forum/blog posts with [@ryyppy](https://github.com/ryyppy).
 
+## Debugging issues from CI builds
+
+To reproduce issues, it can be helpful to the team to install a specific version of the compiler. To do so:
+
+1. Go to [Actions CI for master](https://github.com/rescript-lang/rescript-compiler/actions/workflows/ci.yml?query=branch%3Amaster)
+   - If you need a specific branch, select a different one to filter to in the GitHub UI.
+1. Select a specific run (likely the latest)
+1. Under "Artifacts", download the `npm-packages` artifact and extract it to a folder.
+1. In your repository run:
+
+```console
+npm i <path_to_download>npm-packages/rescript-*.tgz
+```
+
+1. Then attempt to rebuild your project as you would normally.
+
 ## Contribution Licensing
 
 Since ReScript is distributed under the terms of the [LGPL Version 3](LICENSE), contributions that you make are licensed under the same terms. In order for us to be able to accept your contributions, we will need explicit confirmation from you that you are able and willing to provide them under these terms, and the mechanism we use to do this is called a Developer's Certificate of Origin [DCO](DCO.md). This is very similar to the process used by the Linux(R) kernel, Samba, and many other major open source projects.
