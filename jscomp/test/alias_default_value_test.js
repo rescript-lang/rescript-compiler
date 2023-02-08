@@ -2,10 +2,10 @@
 
 
 function Alias_default_value_test$C0(props) {
-  var b = props.b;
-  var b$1 = b !== undefined ? b : 2;
   var a = props.a;
   var a$1 = a !== undefined ? a : 2;
+  var b = props.b;
+  var b$1 = b !== undefined ? b : (a$1 << 1);
   return a$1 + b$1 | 0;
 }
 

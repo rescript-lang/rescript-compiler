@@ -1064,9 +1064,15 @@ let transformStructureItem ~config mapper item =
                    (Exp.ident {txt = Lident "props"; loc = Location.none})
                    (Location.mknoloc @@ Lident label))
           in
-          let vbMatchList =
-            if hasDefaultValue namedArgList then List.map vbMatch namedArgList
-            else []
+          let vbMatchExpr namedArgList expr =
+            let rec aux namedArgList =
+              match namedArgList with
+              | [] -> expr
+              | [namedArg] -> Exp.let_ Nonrecursive [vbMatch namedArg] expr
+              | namedArg :: rest ->
+                Exp.let_ Nonrecursive [vbMatch namedArg] (aux rest)
+            in
+            aux (List.rev namedArgList)
           in
           (* type props = { ... } *)
           let propsRecordType =
@@ -1186,8 +1192,9 @@ let transformStructureItem ~config mapper item =
           in
           (* add pattern matching for optional prop value *)
           let expression =
-            if List.length vbMatchList = 0 then expression
-            else Exp.let_ Nonrecursive vbMatchList expression
+            if hasDefaultValue namedArgList then
+              vbMatchExpr namedArgList expression
+            else expression
           in
           (* (ref) => expr *)
           let expression =

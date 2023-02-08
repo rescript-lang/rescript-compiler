@@ -5,11 +5,11 @@ module C0 = {
 
   @react.component
   let make = (props: props<'priority, 'text>) => {
+    let _ = props.priority
     let text = switch props.text {
     | Some(text) => text
     | None => "Test"
     }
-    and _ = props.priority
 
     React.string(text)
   }
@@ -25,11 +25,11 @@ module C1 = {
 
   @react.component
   let make = (props: props<'priority, 'text>) => {
+    let p = props.priority
     let text = switch props.text {
     | Some(text) => text
     | None => "Test"
     }
-    and p = props.priority
 
     React.string(p ++ text)
   }
