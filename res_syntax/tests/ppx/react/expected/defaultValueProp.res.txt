@@ -1,5 +1,7 @@
 module C0 = {
+  let a = 1
   type props<'a, 'b> = {a?: 'a, b?: 'b}
+
   @react.component
   let make = (props: props<'a, 'b>) => {
     let b = switch props.b {
@@ -11,10 +13,11 @@ module C0 = {
     | None => 2
     }
 
-    ReactDOM.jsx("div", {})
+    React.int(a + b)
   }
   let make = {
     let \"DefaultValueProp$C0" = (props: props<_>) => make(props)
+
     \"DefaultValueProp$C0"
   }
 }
@@ -30,7 +33,7 @@ module C1 = {
     | None => 2
     }
 
-    ReactDOM.jsx("div", {})
+    React.int(a + b)
   }
   let make = {
     let \"DefaultValueProp$C1" = (props: props<_>) => make(props)

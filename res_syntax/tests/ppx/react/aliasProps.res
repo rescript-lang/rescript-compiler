@@ -12,5 +12,5 @@ module C1 = {
 
 module C2 = {
   @react.component
-  let make = (~foo as bar="") => <div />
+  let make = (~foo as bar="") => React.string(bar)
 }
