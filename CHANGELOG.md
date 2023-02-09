@@ -24,6 +24,8 @@
 - Fix issue with async context and locally abstract types https://github.com/rescript-lang/rescript-compiler/pull/5985
 - Fix support for recursive components in JSX V4 https://github.com/rescript-lang/syntax/pull/733
 - GenType: fix issue with V3 compatibility mode (see https://github.com/rescript-lang/rescript-compiler/issues/5990) https://github.com/rescript-lang/rescript-compiler/pull/5992
+- Fix issue with overlapping labelled argument with default value https://github.com/rescript-lang/syntax/pull/734
+- Fix issue with using alias and default value together https://github.com/rescript-lang/syntax/pull/734
 
 # 10.1.2
 
