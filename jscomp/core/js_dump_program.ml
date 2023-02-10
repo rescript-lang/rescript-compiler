@@ -105,6 +105,10 @@ let pp_deps_program ~(output_prefix : string)
   if not !Js_config.no_version_header then (
     P.string f Bs_version.header;
     P.newline f);
+  !Js_config.directives |> List.iter (fun prim ->
+    P.string f prim;
+    P.newline f);
+
   if deps_program_is_empty program then P.string f empty_explanation
     (* This is empty module, it won't be referred anywhere *)
   else
