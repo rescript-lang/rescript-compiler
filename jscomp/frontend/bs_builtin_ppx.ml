@@ -431,6 +431,10 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) :
                   [ { pvb_pat; pvb_expr; pvb_attributes; pvb_loc } ] );
           })
   | Pstr_attribute ({ txt = "bs.config" | "config" }, _) -> str
+  | Pstr_attribute ({ txt = "directive" },
+     PStr [ { pstr_desc = Pstr_eval ({ pexp_desc = Pexp_constant (Pconst_string (d, _)) }, _) } ]) ->
+      Js_config.directives := d :: !Js_config.directives;
+      str
   | _ -> default_mapper.structure_item self str
 
 let local_module_name =
