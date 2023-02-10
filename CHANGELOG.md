@@ -25,6 +25,7 @@ subset of the arguments, and return a curried type with the remaining ones https
 - Inline uncurried application when it is safe https://github.com/rescript-lang/rescript-compiler/pull/5847
 - Add support for toplevel `await` https://github.com/rescript-lang/rescript-compiler/pull/5940
 - Support optional named arguments without a final unit in uncurried functions https://github.com/rescript-lang/rescript-compiler/pull/5907
+- Add experimental suppport for directives. An annotation such as `@@directive("use client;")` emits `use client;` verbatim before imports https://github.com/rescript-lang/rescript-compiler/pull/5998
 
 #### :boom: Breaking Change
 

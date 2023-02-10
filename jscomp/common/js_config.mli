@@ -32,6 +32,9 @@ type jsx_mode = Classic | Automatic
 val no_version_header : bool ref
 (** set/get header *)
 
+val directives : string list ref
+(** directives printed verbatims just after the version header *)
+
 (** return [package_name] and [path] 
     when in script mode: 
 *)
