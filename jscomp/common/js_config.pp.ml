@@ -29,6 +29,7 @@ type jsx_module = React
 type jsx_mode = Classic | Automatic
 
 let no_version_header = ref false
+let directives = ref []
 let cross_module_inline = ref false
 let diagnose = ref false
 
