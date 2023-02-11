@@ -336,13 +336,12 @@ let makeTypeDeclsWithCoreType propsName loc coreType typVars =
   ]
 
 (* type props<'x, 'y, ...> = { x: 'x, y?: 'y, ... } *)
-let makePropsRecordType ~coreTypeOfAttr ~typVarsOfCoreType propsName loc
+let makePropsRecordTypeDecls ~coreTypeOfAttr ~typVarsOfCoreType propsName loc
     namedTypeList =
-  Str.type_ Nonrecursive
-    (match coreTypeOfAttr with
-    | None -> makeTypeDecls propsName loc namedTypeList
-    | Some coreType ->
-      makeTypeDeclsWithCoreType propsName loc coreType typVarsOfCoreType)
+  match coreTypeOfAttr with
+  | None -> makeTypeDecls propsName loc namedTypeList
+  | Some coreType ->
+    makeTypeDeclsWithCoreType propsName loc coreType typVarsOfCoreType
 
 (* type props<'x, 'y, ...> = { x: 'x, y?: 'y, ... } *)
 let makePropsRecordTypeSig ~coreTypeOfAttr ~typVarsOfCoreType propsName loc
@@ -698,7 +697,7 @@ let newtypeToVar newtype type_ =
   let mapper = {Ast_mapper.default_mapper with typ} in
   mapper.typ mapper type_
 
-let argToType ~newtypes ~(typeConstraints : core_type option) types
+let argToType ~(typeConstraints : core_type option) types
     ((name, default, {ppat_attributes = attrs}, _alias, loc, type_) :
       arg_label * expression option * pattern * label * 'loc * core_type option)
     =
@@ -710,13 +709,11 @@ let argToType ~newtypes ~(typeConstraints : core_type option) types
   in
   let typeConst = Option.bind typeConstraints (getType name) in
   let type_ =
-    List.fold_left
-      (fun type_ newtype ->
-        match (type_, typeConst) with
-        | _, Some typ | Some typ, None -> Some (newtypeToVar newtype.txt typ)
-        | _ -> None)
-      type_ newtypes
+    match (type_, typeConst) with
+    | _, Some typ | Some typ, None -> Some typ
+    | _ -> None
   in
+
   match (type_, name, default) with
   | Some type_, name, _ when isOptional name ->
     (true, getLabel name, attrs, loc, type_) :: types
@@ -811,8 +808,9 @@ let transformStructureItem ~config mapper item =
         in
         (* type props<'x, 'y> = { x: 'x, y?: 'y, ... } *)
         let propsRecordType =
-          makePropsRecordType ~coreTypeOfAttr ~typVarsOfCoreType "props"
-            pstr_loc namedTypeList
+          Str.type_ Nonrecursive
+            (makePropsRecordTypeDecls ~coreTypeOfAttr ~typVarsOfCoreType "props"
+               pstr_loc namedTypeList)
         in
         (* can't be an arrow because it will defensively uncurry *)
         let newExternalType =
@@ -1033,9 +1031,7 @@ let transformStructureItem ~config mapper item =
               [] [] None
           in
           let namedTypeList =
-            List.fold_left
-              (argToType ~newtypes ~typeConstraints)
-              [] namedArgList
+            List.fold_left (argToType ~typeConstraints) [] namedArgList
           in
           let vbMatch (name, default, _, alias, loc, _) =
             let label = getLabel name in
@@ -1076,8 +1072,10 @@ let transformStructureItem ~config mapper item =
           in
           (* type props = { ... } *)
           let propsRecordType =
-            makePropsRecordType ~coreTypeOfAttr ~typVarsOfCoreType "props"
-              pstr_loc namedTypeList
+            Str.type_ Nonrecursive
+              (List.map (fun label -> Type.mk label) newtypes
+              @ makePropsRecordTypeDecls ~coreTypeOfAttr ~typVarsOfCoreType
+                  "props" pstr_loc namedTypeList)
           in
           let innerExpression =
             Exp.apply
