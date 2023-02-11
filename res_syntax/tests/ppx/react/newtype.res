@@ -18,3 +18,28 @@ module V4A = {
   @react.component
   let make = (type a, ~a: a, ~b: array<option<[#Foo(a)]>>, ~c: 'a, _) => <div />
 }
+
+module V4A2 = {
+  @react.component
+  let make = (type a b, ~a:a, ~b:array<b>, ~c:'a) => <div />
+}
+
+module type T = {
+  type t
+}
+
+module V4A1 = {
+  @react.component
+  let make = (type a, ~foo: module(T with type t = a)) => {
+    module T = unpack(foo)
+    <div />
+  }
+}
+
+module V4A2 = {
+  @react.component
+  let make = (type a, ~foo) => {
+    module T = unpack(foo: T with type t = a)
+    foo
+  }
+}
