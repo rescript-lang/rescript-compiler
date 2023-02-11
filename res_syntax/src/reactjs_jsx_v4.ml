@@ -686,17 +686,6 @@ let rec recursivelyTransformNamedArgsForMake mapper expr args newtypes coreType
       (Some coreType)
   | _ -> (args, newtypes, coreType)
 
-let newtypeToVar newtype type_ =
-  let var_desc = Ptyp_var ("type-" ^ newtype) in
-  let typ (mapper : Ast_mapper.mapper) typ =
-    match typ.ptyp_desc with
-    | Ptyp_constr ({txt = Lident name}, _) when name = newtype ->
-      {typ with ptyp_desc = var_desc}
-    | _ -> Ast_mapper.default_mapper.typ mapper typ
-  in
-  let mapper = {Ast_mapper.default_mapper with typ} in
-  mapper.typ mapper type_
-
 let argToType ~(typeConstraints : core_type option) types
     ((name, default, {ppat_attributes = attrs}, _alias, loc, type_) :
       arg_label * expression option * pattern * label * 'loc * core_type option)
