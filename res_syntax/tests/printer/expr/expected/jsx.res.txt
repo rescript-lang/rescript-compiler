@@ -410,6 +410,7 @@ let v =
   </A>
 
 let x = <A x="y" {...str} />
+
 // https://github.com/rescript-lang/rescript-compiler/issues/6002
 let x = props =>
   <A
