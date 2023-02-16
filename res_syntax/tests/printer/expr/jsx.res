@@ -403,3 +403,10 @@ let v =
   </A>
 
 let x = <A x="y" {...str} />
+
+// https://github.com/rescript-lang/rescript-compiler/issues/6002
+let x = props =>
+  <A
+    {...props}
+    className="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight"
+  />

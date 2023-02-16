@@ -63,6 +63,7 @@ These are only breaking changes for unformatted code.
 - Fix issue with using alias and default value together https://github.com/rescript-lang/rescript-compiler/pull/5989
 - GenType: fix issue with V3 compatibility mode (see https://github.com/rescript-lang/rescript-compiler/issues/5990) https://github.com/rescript-lang/rescript-compiler/pull/5991
 - Fix issue in `Js.Promise2` where `then` and `catch` were returning `undefined` https://github.com/rescript-lang/rescript-compiler/pull/5997
+- Fix formatting of props spread for multiline JSX expression https://github.com/rescript-lang/rescript-compiler/pull/6006
 
 #### :nail_care: Polish
 
