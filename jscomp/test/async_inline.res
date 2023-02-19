@@ -50,3 +50,13 @@ let tuia = uncurriedIdAsync(. 3)
 let nested1 = () => async (y) => await y
 
 let nested2 = async () => async (y) => await y
+
+type callback<'input, 'output> = 'input => 'output
+
+@module("react")
+external useCallback: (@uncurry ('input => 'output)) => callback<'input, 'output> = "useCallback"
+
+let onSubmit = () =>
+  useCallback(async (_a, b) => {
+    await b
+  })

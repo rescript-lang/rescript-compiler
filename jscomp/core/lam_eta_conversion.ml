@@ -113,13 +113,16 @@ let unsafe_adjust_to_arity loc ~(to_ : int) ?(from : int option) (fn : Lam.t) :
   let ap_info : Lam.ap_info =
     { ap_loc = loc; ap_inlined = Default_inline; ap_status = App_na }
   in
+  let is_async_fn = match fn with
+    | Lfunction { attr = {async}} -> async 
+    | _ -> false in
   match (from, fn) with
   | Some from, _ | None, Lfunction { arity = from } -> (
-      if from = to_ then fn
+      if from = to_ || is_async_fn then fn
       else if to_ = 0 then
         match fn with
-        | Lfunction { params = [ param ]; body; attr = {async} } ->
-            Lam.function_ ~arity:0 ~attr:{Lambda.default_function_attribute with async}
+        | Lfunction { params = [ param ]; body } ->
+            Lam.function_ ~arity:0 ~attr:Lambda.default_function_attribute
               ~params:[]
               ~body:(Lam.let_ Alias param Lam.unit body)
             (* could be only introduced by
