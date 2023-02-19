@@ -64,6 +64,7 @@ These are only breaking changes for unformatted code.
 - GenType: fix issue with V3 compatibility mode (see https://github.com/rescript-lang/rescript-compiler/issues/5990) https://github.com/rescript-lang/rescript-compiler/pull/5991
 - Fix issue in `Js.Promise2` where `then` and `catch` were returning `undefined` https://github.com/rescript-lang/rescript-compiler/pull/5997
 - Fix formatting of props spread for multiline JSX expression https://github.com/rescript-lang/rescript-compiler/pull/6006
+- Fix issue in the compiler back-end where async functions passed to an `@uncurry` external would be inlined and transformed in a way that loses async https://github.com/rescript-lang/rescript-compiler/pull/6010
 
 #### :nail_care: Polish
 

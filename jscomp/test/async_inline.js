@@ -1,6 +1,7 @@
 'use strict';
 
 var Curry = require("../../lib/js/curry.js");
+var React = require("react");
 
 async function willBeInlined(param) {
   return 3;
@@ -72,6 +73,12 @@ async function nested2(param) {
   };
 }
 
+function onSubmit(param) {
+  return React.useCallback(async function (_a, b) {
+              return await b;
+            });
+}
+
 var tci = 3;
 
 exports.willBeInlined = willBeInlined;
@@ -90,4 +97,5 @@ exports.tui = tui;
 exports.tuia = tuia;
 exports.nested1 = nested1;
 exports.nested2 = nested2;
+exports.onSubmit = onSubmit;
 /* inlined Not a pure module */
