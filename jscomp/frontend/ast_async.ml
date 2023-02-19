@@ -1,13 +1,10 @@
-let add_promise_type ~async (result : Parsetree.expression) =
+let add_promise_type ?(loc=Location.none) ~async (result : Parsetree.expression) =
   if async then
-    let txt =
-      Longident.Ldot (Longident.Ldot (Lident "Js", "Promise"), "unsafe_async")
+    let unsafe_async =
+      Ast_helper.Exp.ident ~loc
+        { txt = Ldot (Ldot (Lident "Js", "Promise"), "unsafe_async"); loc }
     in
-    let pexp_desc = Parsetree.Pexp_ident { txt; loc = result.pexp_loc } in
-    {
-      result with
-      pexp_desc = Pexp_apply ({ result with pexp_desc }, [ (Nolabel, result) ]);
-    }
+    Ast_helper.Exp.apply ~loc unsafe_async [ (Nolabel, result) ]
   else result
 
 let add_async_attribute ~async (body : Parsetree.expression) =
@@ -20,16 +17,16 @@ let add_async_attribute ~async (body : Parsetree.expression) =
     }
   else body
 
-let rec add_promise_to_result (e : Parsetree.expression) =
+let rec add_promise_to_result ~loc (e : Parsetree.expression) =
   match e.pexp_desc with
   | Pexp_fun (label, eo, pat, body) ->
-      let body = add_promise_to_result body in
+      let body = add_promise_to_result ~loc body in
       { e with pexp_desc = Pexp_fun (label, eo, pat, body) }
-  | _ -> add_promise_type ~async:true e
+  | _ -> add_promise_type ~loc ~async:true e
 
 let make_function_async ~async (e : Parsetree.expression) =
   if async then
     match e.pexp_desc with
-    | Pexp_fun _ -> add_async_attribute ~async (add_promise_to_result e)
+    | Pexp_fun (_, _, {ppat_loc}, _) -> add_promise_to_result ~loc:ppat_loc e
     | _ -> assert false
   else e
