@@ -49,3 +49,11 @@ switch route {
     <div> {React.string("Second B div")} </div>
   </>
 }
+
+switch x {
+| A => {
+    let _ = 1
+    let _ = 2
+  } // no blank line below
+| B => ()
+}
