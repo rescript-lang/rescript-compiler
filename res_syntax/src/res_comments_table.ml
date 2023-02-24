@@ -345,7 +345,13 @@ let getLoc node =
   let open Parsetree in
   match node with
   | Case case ->
-    {case.pc_lhs.ppat_loc with loc_end = case.pc_rhs.pexp_loc.loc_end}
+    {
+      case.pc_lhs.ppat_loc with
+      loc_end =
+        (match ParsetreeViewer.processBracesAttr case.pc_rhs with
+        | None, _ -> case.pc_rhs.pexp_loc.loc_end
+        | Some ({loc}, _), _ -> loc.Location.loc_end);
+    }
   | CoreType ct -> ct.ptyp_loc
   | ExprArgument expr -> (
     match expr.Parsetree.pexp_attributes with
