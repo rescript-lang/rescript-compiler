@@ -62,6 +62,8 @@
 - Fix support for recursive components in JSX V4 https://github.com/rescript-lang/syntax/pull/733
 - Fix issue with overlapping labelled argument with default value https://github.com/rescript-lang/syntax/pull/734
 - Fix issue with using alias and default value together https://github.com/rescript-lang/syntax/pull/734
+- Fix formatting of `switch` expressions that contain braced `cases` inside https://github.com/rescript-lang/syntax/pull/735
+- Fix formatting of props spread for multiline JSX expression https://github.com/rescript-lang/syntax/pull/736
 
 #### :eyeglasses: Spec Compliance
 
