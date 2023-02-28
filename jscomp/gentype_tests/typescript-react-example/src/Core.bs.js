@@ -41,6 +41,14 @@ function promise1(x) {
   return x;
 }
 
+function date0(x) {
+  return x;
+}
+
+function date1(x) {
+  return x;
+}
+
 export {
   null0 ,
   null1 ,
@@ -52,5 +60,7 @@ export {
   dict1 ,
   promise0 ,
   promise1 ,
+  date0 ,
+  date1 ,
 }
 /* No side effect */

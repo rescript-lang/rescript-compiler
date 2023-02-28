@@ -80,7 +80,8 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
       | ["Js"; ("String" | "String2"); "t"] ),
       [] ) ->
     {dependencies = []; type_ = stringT}
-  | ["Js"; "Date"; "t"], [] -> {dependencies = []; type_ = dateT}
+  | (["Js"; "Date"; "t"] | ["Date"; "t"]), [] ->
+    {dependencies = []; type_ = dateT}
   | (["FB"; "unit"] | ["unit"]), [] -> {dependencies = []; type_ = unitT}
   | ( (["FB"; "array"] | ["array"] | ["Js"; ("Array" | "Array2"); "t"]),
       [paramTranslation] ) ->

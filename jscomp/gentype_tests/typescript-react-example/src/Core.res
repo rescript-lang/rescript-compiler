@@ -27,3 +27,9 @@ let promise0 = (x: promise<string>) => x
 
 @genType
 let promise1 = (x: Promise.t<string>) => x
+
+@genType
+let date0 = (x: Js.Date.t) => x
+
+@genType
+let date1 = (x: Date.t) => x

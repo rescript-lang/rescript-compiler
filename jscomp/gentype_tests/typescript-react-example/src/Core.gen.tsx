@@ -31,3 +31,7 @@ export const dict1: (x:{[id: string]: string}) => {[id: string]: string} = CoreB
 export const promise0: (x:Promise<string>) => Promise<string> = CoreBS.promise0;
 
 export const promise1: (x:Promise<string>) => Promise<string> = CoreBS.promise1;
+
+export const date0: (x:Date) => Date = CoreBS.date0;
+
+export const date1: (x:Date) => Date = CoreBS.date1;
