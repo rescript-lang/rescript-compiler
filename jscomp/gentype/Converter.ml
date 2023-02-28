@@ -250,7 +250,7 @@ let typeGetConverterNormalized ~config ~inline ~lookupId ~typeNameIsInterface
     | TypeVar _ -> (IdentC, normalized_)
     | Undefined t ->
       let tConverter, tNormalized = t |> visit ~visited in
-      (OptionC tConverter, Undefined tNormalized)
+      (NullableC tConverter, Undefined tNormalized)
     | Variant variant ->
       let allowUnboxed = not variant.polymorphic in
       let withPayloads, normalized, unboxed =

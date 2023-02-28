@@ -14,15 +14,9 @@ export const nullable0: (x:(null | undefined | number)) => (null | undefined | n
 
 export const nullable1: (x:(null | undefined | number)) => (null | undefined | number) = CoreBS.nullable1;
 
-export const undefined0: (x:(undefined | number)) => (undefined | number) = function (Arg1: any) {
-  const result = CoreBS.undefined0((Arg1 == null ? undefined : Arg1));
-  return result
-};
+export const undefined0: (x:(undefined | number)) => (undefined | number) = CoreBS.undefined0;
 
-export const undefined1: (x:(undefined | number)) => (undefined | number) = function (Arg1: any) {
-  const result = CoreBS.undefined1((Arg1 == null ? undefined : Arg1));
-  return result
-};
+export const undefined1: (x:(undefined | number)) => (undefined | number) = CoreBS.undefined1;
 
 export const dict0: (x:{[id: string]: string}) => {[id: string]: string} = CoreBS.dict0;
 
