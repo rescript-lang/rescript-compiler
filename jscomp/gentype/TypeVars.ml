@@ -67,6 +67,7 @@ let rec substitute ~f type0 =
     match f s with
     | None -> type0
     | Some type1 -> type1)
+  | Undefined type_ -> Undefined (type_ |> substitute ~f)
   | Variant variant ->
     Variant
       {
@@ -94,7 +95,7 @@ let rec free_ type0 : StringSet.t =
     |> List.fold_left
          (fun s typeArg -> StringSet.union s (typeArg |> free_))
          StringSet.empty
-  | Null type_ | Nullable type_ -> type_ |> free_
+  | Null type_ | Nullable type_ | Undefined type_ -> type_ |> free_
   | Option type_ | Promise type_ -> type_ |> free_
   | Tuple innerTypes ->
     innerTypes

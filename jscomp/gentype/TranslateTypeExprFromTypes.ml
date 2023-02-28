@@ -201,9 +201,14 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
     {dependencies = []; type_ = EmitType.typeReactElement}
   | (["FB"; "option"] | ["option"]), [paramTranslation] ->
     {paramTranslation with type_ = Option paramTranslation.type_}
-  | (["Js"; "Null"; "t"] | ["Js"; "null"]), [paramTranslation] ->
+  | ( (["Js"; "Undefined"; "t"] | ["Undefined"; "t"] | ["Js"; "undefined"]),
+      [paramTranslation] ) ->
+    {paramTranslation with type_ = Undefined paramTranslation.type_}
+  | (["Js"; "Null"; "t"] | ["Null"; "t"] | ["Js"; "null"]), [paramTranslation]
+    ->
     {paramTranslation with type_ = Null paramTranslation.type_}
   | ( ( ["Js"; "Nullable"; "t"]
+      | ["Nullable"; "t"]
       | ["Js"; "nullable"]
       | ["Js"; "Null_undefined"; "t"]
       | ["Js"; "null_undefined"] ),

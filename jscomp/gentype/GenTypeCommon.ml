@@ -70,6 +70,7 @@ type type_ =
   | Record of fields
   | Tuple of type_ list
   | TypeVar of string
+  | Undefined of type_
   | Variant of variant
 
 and fields = field list
@@ -119,6 +120,7 @@ let typeIsObject type_ =
   | Record _ -> true
   | Tuple _ -> true
   | TypeVar _ -> false
+  | Undefined _ -> false
   | Variant _ -> false
 
 type label = Nolabel | Label of string | OptLabel of string

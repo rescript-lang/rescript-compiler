@@ -157,6 +157,10 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
       |> String.concat ", ")
     ^ "]"
   | TypeVar s -> s
+  | Undefined type_ ->
+    "(undefined | "
+    ^ (type_ |> renderType ~config ~indent ~typeNameIsInterface ~inFunType)
+    ^ ")"
   | Variant {inherits; noPayloads; payloads; polymorphic; unboxed} ->
     let inheritsRendered =
       inherits
