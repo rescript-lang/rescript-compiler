@@ -220,9 +220,11 @@ let dateT = ident "Date"
 let mapT (x,y) = ident ~typeArgs:[x;y] "Map"
 let numberT = ident "number"
 let regexpT = ident "RegExp"
+let setT (x) = ident ~typeArgs:[x] "Set"
 let stringT = ident "string"
 let unitT = ident "void"
 let weakmapT (x,y) = ident ~typeArgs:[x;y] "WeakMap"
+let weaksetT (x) = ident ~typeArgs:[x] "WeakSet"
 let int64T = Tuple [numberT; numberT]
 
 module NodeFilename = struct

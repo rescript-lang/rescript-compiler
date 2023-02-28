@@ -47,3 +47,7 @@ export const regexp1: (x:RegExp) => RegExp = CoreBS.regexp1;
 export const map1: (x:Map<string,number>) => Map<string,number> = CoreBS.map1;
 
 export const weakmap1: (x:WeakMap<number[],number>) => WeakMap<number[],number> = CoreBS.weakmap1;
+
+export const set1: (x:Set<string>) => Set<string> = CoreBS.set1;
+
+export const weakset1: (x:WeakSet<number[]>) => WeakSet<number[]> = CoreBS.weakset1;

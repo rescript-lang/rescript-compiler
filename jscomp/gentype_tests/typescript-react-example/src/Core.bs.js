@@ -73,7 +73,17 @@ function weakmap1(x) {
   return x;
 }
 
+function set1(x) {
+  return x;
+}
+
+function weakset1(x) {
+  return x;
+}
+
 var $$Map;
+
+var $$Set;
 
 export {
   null0 ,
@@ -93,7 +103,10 @@ export {
   regexp0 ,
   regexp1 ,
   $$Map ,
+  $$Set ,
   map1 ,
   weakmap1 ,
+  set1 ,
+  weakset1 ,
 }
 /* No side effect */

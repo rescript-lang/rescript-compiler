@@ -47,9 +47,16 @@ let regexp0 = (x: Js.Re.t) => x
 let regexp1 = (x: RegExp.t) => x
 
 module Map = Map_
+module Set = Set_
 
 @genType
 let map1 = (x: Map.t<string, int>) => x
 
 @genType
 let weakmap1 = (x: WeakMap.t<array<int>, int>) => x
+
+@genType
+let set1 = (x: Set.t<string>) => x
+
+@genType
+let weakset1 = (x: WeakSet.t<array<int>>) => x

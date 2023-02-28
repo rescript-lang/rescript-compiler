@@ -96,6 +96,16 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
         paramTranslation1.dependencies @ paramTranslation2.dependencies;
       type_ = weakmapT (paramTranslation1.type_, paramTranslation2.type_);
     }
+  | ["Set"; "t"], [paramTranslation] ->
+    {
+      dependencies = paramTranslation.dependencies;
+      type_ = setT paramTranslation.type_;
+    }
+  | ["WeakSet"; "t"], [paramTranslation] ->
+    {
+      dependencies = paramTranslation.dependencies;
+      type_ = weaksetT paramTranslation.type_;
+    }
   | (["Js"; "Re"; "t"] | ["RegExp"; "t"]), [] ->
     {dependencies = []; type_ = regexpT}
   | (["FB"; "unit"] | ["unit"]), [] -> {dependencies = []; type_ = unitT}
