@@ -217,10 +217,12 @@ let unknown = ident "unknown"
 let bigintT = ident "BigInt"
 let booleanT = ident "boolean"
 let dateT = ident "Date"
+let mapT (x,y) = ident ~typeArgs:[x;y] "Map"
 let numberT = ident "number"
 let regexpT = ident "RegExp"
 let stringT = ident "string"
 let unitT = ident "void"
+let weakmapT (x,y) = ident ~typeArgs:[x;y] "WeakMap"
 let int64T = Tuple [numberT; numberT]
 
 module NodeFilename = struct

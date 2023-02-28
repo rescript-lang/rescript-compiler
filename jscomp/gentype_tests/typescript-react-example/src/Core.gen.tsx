@@ -43,3 +43,7 @@ export const bigint1: (x:BigInt) => BigInt = CoreBS.bigint1;
 export const regexp0: (x:RegExp) => RegExp = CoreBS.regexp0;
 
 export const regexp1: (x:RegExp) => RegExp = CoreBS.regexp1;
+
+export const map1: (x:Map<string,number>) => Map<string,number> = CoreBS.map1;
+
+export const weakmap1: (x:WeakMap<number[],number>) => WeakMap<number[],number> = CoreBS.weakmap1;

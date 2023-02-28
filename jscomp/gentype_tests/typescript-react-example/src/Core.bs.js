@@ -65,6 +65,16 @@ function regexp1(x) {
   return x;
 }
 
+function map1(x) {
+  return x;
+}
+
+function weakmap1(x) {
+  return x;
+}
+
+var $$Map;
+
 export {
   null0 ,
   null1 ,
@@ -82,5 +92,8 @@ export {
   bigint1 ,
   regexp0 ,
   regexp1 ,
+  $$Map ,
+  map1 ,
+  weakmap1 ,
 }
 /* No side effect */

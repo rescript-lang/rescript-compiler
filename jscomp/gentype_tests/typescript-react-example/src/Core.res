@@ -45,3 +45,11 @@ let regexp0 = (x: Js.Re.t) => x
 
 @genType
 let regexp1 = (x: RegExp.t) => x
+
+module Map = Map_
+
+@genType
+let map1 = (x: Map.t<string, int>) => x
+
+@genType
+let weakmap1 = (x: WeakMap.t<array<int>, int>) => x
