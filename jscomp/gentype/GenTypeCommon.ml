@@ -214,6 +214,8 @@ let sanitizeTypeName name =
        | '\'' -> '_'
        | c -> c)
 let unknown = ident "unknown"
+let bigintT = ident "BigInt"
+
 let booleanT = ident "boolean"
 let dateT = ident "Date"
 let numberT = ident "number"

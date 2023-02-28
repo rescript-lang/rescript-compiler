@@ -35,3 +35,7 @@ export const promise1: (x:Promise<string>) => Promise<string> = CoreBS.promise1;
 export const date0: (x:Date) => Date = CoreBS.date0;
 
 export const date1: (x:Date) => Date = CoreBS.date1;
+
+export const bigint0: (x:BigInt) => BigInt = CoreBS.bigint0;
+
+export const bigint1: (x:BigInt) => BigInt = CoreBS.bigint1;

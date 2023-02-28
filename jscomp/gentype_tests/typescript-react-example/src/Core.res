@@ -33,3 +33,9 @@ let date0 = (x: Js.Date.t) => x
 
 @genType
 let date1 = (x: Date.t) => x
+
+@genType
+let bigint0 = (x: Js.Types.bigint_val) => x
+
+@genType
+let bigint1 = (x: BigInt.t) => x

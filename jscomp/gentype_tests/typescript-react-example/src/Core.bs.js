@@ -49,6 +49,14 @@ function date1(x) {
   return x;
 }
 
+function bigint0(x) {
+  return x;
+}
+
+function bigint1(x) {
+  return x;
+}
+
 export {
   null0 ,
   null1 ,
@@ -62,5 +70,7 @@ export {
   promise1 ,
   date0 ,
   date1 ,
+  bigint0 ,
+  bigint1 ,
 }
 /* No side effect */
