@@ -33,6 +33,14 @@ function dict1(x) {
   return x;
 }
 
+function promise0(x) {
+  return x;
+}
+
+function promise1(x) {
+  return x;
+}
+
 export {
   null0 ,
   null1 ,
@@ -42,5 +50,7 @@ export {
   undefined1 ,
   dict0 ,
   dict1 ,
+  promise0 ,
+  promise1 ,
 }
 /* No side effect */

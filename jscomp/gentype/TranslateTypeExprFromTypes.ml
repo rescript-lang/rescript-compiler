@@ -214,7 +214,8 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
       | ["Js"; "null_undefined"] ),
       [paramTranslation] ) ->
     {paramTranslation with type_ = Nullable paramTranslation.type_}
-  | (["Js"; "Promise"; "t"] | ["promise"]), [paramTranslation] ->
+  | ( (["Js"; "Promise"; "t"] | ["Promise"; "t"] | ["promise"]),
+      [paramTranslation] ) ->
     {paramTranslation with type_ = Promise paramTranslation.type_}
   | (["Js"; "Dict"; "t"] | ["Dict"; "t"]), [paramTranslation] ->
     {paramTranslation with type_ = Dict paramTranslation.type_}

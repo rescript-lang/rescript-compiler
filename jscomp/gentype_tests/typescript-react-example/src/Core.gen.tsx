@@ -27,3 +27,7 @@ export const undefined1: (x:(undefined | number)) => (undefined | number) = func
 export const dict0: (x:{[id: string]: string}) => {[id: string]: string} = CoreBS.dict0;
 
 export const dict1: (x:{[id: string]: string}) => {[id: string]: string} = CoreBS.dict1;
+
+export const promise0: (x:Promise<string>) => Promise<string> = CoreBS.promise0;
+
+export const promise1: (x:Promise<string>) => Promise<string> = CoreBS.promise1;

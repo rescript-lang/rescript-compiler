@@ -21,3 +21,9 @@ let dict0 = (x: Js.Dict.t<string>) => x
 
 @genType
 let dict1 = (x: Dict.t<string>) => x
+
+@genType
+let promise0 = (x: promise<string>) => x
+
+@genType
+let promise1 = (x: Promise.t<string>) => x
