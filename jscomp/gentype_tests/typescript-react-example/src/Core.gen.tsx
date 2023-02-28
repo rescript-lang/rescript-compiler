@@ -39,3 +39,7 @@ export const date1: (x:Date) => Date = CoreBS.date1;
 export const bigint0: (x:BigInt) => BigInt = CoreBS.bigint0;
 
 export const bigint1: (x:BigInt) => BigInt = CoreBS.bigint1;
+
+export const regexp0: (x:RegExp) => RegExp = CoreBS.regexp0;
+
+export const regexp1: (x:RegExp) => RegExp = CoreBS.regexp1;

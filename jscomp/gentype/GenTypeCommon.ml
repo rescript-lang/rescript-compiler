@@ -215,10 +215,10 @@ let sanitizeTypeName name =
        | c -> c)
 let unknown = ident "unknown"
 let bigintT = ident "BigInt"
-
 let booleanT = ident "boolean"
 let dateT = ident "Date"
 let numberT = ident "number"
+let regexpT = ident "RegExp"
 let stringT = ident "string"
 let unitT = ident "void"
 let int64T = Tuple [numberT; numberT]

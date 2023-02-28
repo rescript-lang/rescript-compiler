@@ -57,6 +57,14 @@ function bigint1(x) {
   return x;
 }
 
+function regexp0(x) {
+  return x;
+}
+
+function regexp1(x) {
+  return x;
+}
+
 export {
   null0 ,
   null1 ,
@@ -72,5 +80,7 @@ export {
   date1 ,
   bigint0 ,
   bigint1 ,
+  regexp0 ,
+  regexp1 ,
 }
 /* No side effect */

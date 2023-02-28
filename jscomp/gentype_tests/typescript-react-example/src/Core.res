@@ -39,3 +39,9 @@ let bigint0 = (x: Js.Types.bigint_val) => x
 
 @genType
 let bigint1 = (x: BigInt.t) => x
+
+@genType
+let regexp0 = (x: Js.Re.t) => x
+
+@genType
+let regexp1 = (x: RegExp.t) => x
