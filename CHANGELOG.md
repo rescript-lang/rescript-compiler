@@ -29,6 +29,8 @@
 - Fix issue in `Js.Promise2` where `then` and `catch` were returning `undefined` https://github.com/rescript-lang/rescript-compiler/pull/5996
 - Fix issue in the compiler back-end where async functions passed to an `@uncurry` external would be inlined and transformed in a way that loses async https://github.com/rescript-lang/rescript-compiler/pull/6011
 - Fix location issue for the treatment of `async` functions where hovering on the body with a type error would show `'a => promise<'a>` everywhere https://github.com/rescript-lang/rescript-compiler/pull/6014
+- Fix formatting of `switch` expressions that contain braced `cases` inside https://github.com/rescript-lang/syntax/pull/735
+- Fix formatting of props spread for multiline JSX expression https://github.com/rescript-lang/syntax/pull/736
 
 #### :rocket: New Feature
 
