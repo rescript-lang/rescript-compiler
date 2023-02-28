@@ -620,7 +620,7 @@ let propagateAnnotationToSubTypes ~codeItems (typeMap : CodeItem.exportTypeMap)
             type1 |> visit
           | exception Not_found ->
             annotatedSet := !annotatedSet |> StringSet.add typeName)
-      | Array (t, _) -> t |> visit
+      | Array (t, _) | Dict t -> t |> visit
       | Function {argTypes; retType} ->
         argTypes |> List.iter (fun {aType} -> visit aType);
         retType |> visit

@@ -25,6 +25,14 @@ function undefined1(x) {
   return x;
 }
 
+function dict0(x) {
+  return x;
+}
+
+function dict1(x) {
+  return x;
+}
+
 export {
   null0 ,
   null1 ,
@@ -32,5 +40,7 @@ export {
   nullable1 ,
   undefined0 ,
   undefined1 ,
+  dict0 ,
+  dict1 ,
 }
 /* No side effect */

@@ -30,6 +30,7 @@ let extractFromCoreType typeParams =
 let rec substitute ~f type0 =
   match type0 with
   | Array (t, arrayKind) -> Array (t |> substitute ~f, arrayKind)
+  | Dict type_ -> Dict (type_ |> substitute ~f)
   | Function function_ ->
     Function
       {
@@ -95,7 +96,7 @@ let rec free_ type0 : StringSet.t =
     |> List.fold_left
          (fun s typeArg -> StringSet.union s (typeArg |> free_))
          StringSet.empty
-  | Null type_ | Nullable type_ | Undefined type_ -> type_ |> free_
+  | Dict type_ | Null type_ | Nullable type_ | Undefined type_ -> type_ |> free_
   | Option type_ | Promise type_ -> type_ |> free_
   | Tuple innerTypes ->
     innerTypes

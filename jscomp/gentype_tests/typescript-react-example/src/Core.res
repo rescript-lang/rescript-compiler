@@ -15,3 +15,9 @@ let undefined0 = (x: Js.undefined<int>) => x
 
 @genType
 let undefined1 = (x: Undefined.t<int>) => x
+
+@genType
+let dict0 = (x: Js.Dict.t<string>) => x
+
+@genType
+let dict1 = (x: Dict.t<string>) => x

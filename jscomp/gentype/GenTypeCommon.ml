@@ -59,6 +59,7 @@ type closedFlag = Open | Closed
 
 type type_ =
   | Array of type_ * mutable_
+  | Dict of type_
   | Function of function_
   | GroupOfLabeledArgs of fields
   | Ident of ident
@@ -109,6 +110,7 @@ and payload = {case: case; inlineRecord: bool; numArgs: int; t: type_}
 let typeIsObject type_ =
   match type_ with
   | Array _ -> true
+  | Dict _ -> true
   | Function _ -> false
   | GroupOfLabeledArgs _ -> false
   | Ident _ -> false

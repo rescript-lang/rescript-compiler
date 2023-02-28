@@ -23,3 +23,7 @@ export const undefined1: (x:(undefined | number)) => (undefined | number) = func
   const result = CoreBS.undefined1((Arg1 == null ? undefined : Arg1));
   return result
 };
+
+export const dict0: (x:{[id: string]: string}) => {[id: string]: string} = CoreBS.dict0;
+
+export const dict1: (x:{[id: string]: string}) => {[id: string]: string} = CoreBS.dict1;

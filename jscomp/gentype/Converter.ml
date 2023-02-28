@@ -120,6 +120,8 @@ let typeGetConverterNormalized ~config ~inline ~lookupId ~typeNameIsInterface
     | Array (t, mutable_) ->
       let tConverter, tNormalized = t |> visit ~visited in
       (ArrayC tConverter, Array (tNormalized, mutable_))
+    | Dict _ ->
+      (IdentC, normalized_)
     | Function
         ({argTypes; componentName; retType; typeVars; uncurried} as function_)
       ->

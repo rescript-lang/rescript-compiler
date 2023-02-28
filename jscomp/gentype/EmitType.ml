@@ -95,6 +95,10 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
       arrayName ^ "<"
       ^ (t |> renderType ~config ~indent ~typeNameIsInterface ~inFunType)
       ^ ">"
+  | Dict type_ ->
+    "{[id: string]: "
+    ^ (type_ |> renderType ~config ~indent ~typeNameIsInterface ~inFunType)
+    ^ "}"
   | Function
       {argTypes = [{aType = Object (closedFlag, fields)}]; retType; typeVars}
     when retType |> isTypeFunctionComponent ~fields ->

@@ -10,8 +10,6 @@ const Curry: any = Curry__Es6Import;
 import * as TypesBS__Es6Import from './Types.bs';
 const TypesBS: any = TypesBS__Es6Import;
 
-import type {Dict_t as Js_Dict_t} from '../../src/shims/Js.shim';
-
 import type {Json_t as Js_Json_t} from '../../src/shims/Js.shim';
 
 import type {M_t__ as TypeNameSanitize_M_t__} from '../../src/TypeNameSanitize.gen';
@@ -57,7 +55,7 @@ export type twice<a> = [a, a];
 export type genTypeMispelled = number;
 
 // tslint:disable-next-line:interface-over-type-literal
-export type dictString = Js_Dict_t<string>;
+export type dictString = {[id: string]: string};
 
 // tslint:disable-next-line:interface-over-type-literal
 export type nullOrString = (null | string);
