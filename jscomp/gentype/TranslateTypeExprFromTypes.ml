@@ -230,7 +230,7 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
     {paramTranslation with type_ = Option paramTranslation.type_}
   | ( (["Js"; "Undefined"; "t"] | ["Undefined"; "t"] | ["Js"; "undefined"]),
       [paramTranslation] ) ->
-    {paramTranslation with type_ = Undefined paramTranslation.type_}
+    {paramTranslation with type_ = Option paramTranslation.type_}
   | (["Js"; "Null"; "t"] | ["Null"; "t"] | ["Js"; "null"]), [paramTranslation]
     ->
     {paramTranslation with type_ = Null paramTranslation.type_}

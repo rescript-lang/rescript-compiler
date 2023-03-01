@@ -140,13 +140,23 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
     "(null | "
     ^ (type_ |> renderType ~config ~indent ~typeNameIsInterface ~inFunType)
     ^ ")"
-  | Nullable type_ | Option type_ ->
+  | Nullable type_ ->
     let useParens x =
       match type_ with
       | Function _ | Variant _ -> EmitText.parens [x]
       | _ -> x
     in
     "(null | undefined | "
+    ^ useParens
+        (type_ |> renderType ~config ~indent ~typeNameIsInterface ~inFunType)
+    ^ ")"
+  | Option type_ ->
+    let useParens x =
+      match type_ with
+      | Function _ | Variant _ -> EmitText.parens [x]
+      | _ -> x
+    in
+    "(undefined | "
     ^ useParens
         (type_ |> renderType ~config ~indent ~typeNameIsInterface ~inFunType)
     ^ ")"
@@ -161,10 +171,6 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
       |> String.concat ", ")
     ^ "]"
   | TypeVar s -> s
-  | Undefined type_ ->
-    "(undefined | "
-    ^ (type_ |> renderType ~config ~indent ~typeNameIsInterface ~inFunType)
-    ^ ")"
   | Variant {inherits; noPayloads; payloads; polymorphic; unboxed} ->
     let inheritsRendered =
       inherits
