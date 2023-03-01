@@ -31,6 +31,7 @@
 - Fix location issue for the treatment of `async` functions where hovering on the body with a type error would show `'a => promise<'a>` everywhere https://github.com/rescript-lang/rescript-compiler/pull/6014
 - Fix formatting of `switch` expressions that contain braced `cases` inside https://github.com/rescript-lang/syntax/pull/735
 - Fix formatting of props spread for multiline JSX expression https://github.com/rescript-lang/syntax/pull/736
+- Support `@gentype.import` as an alias to `@genType.import` in the compiler https://github.com/rescript-lang/rescript-compiler/pull/6021
 
 #### :rocket: New Feature
 
