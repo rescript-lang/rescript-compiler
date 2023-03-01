@@ -13,6 +13,12 @@ const CoreBS: any = CoreBS__Es6Import;
 // tslint:disable-next-line:interface-over-type-literal
 export type variant = "A" | { tag: "B"; value: string };
 
+// tslint:disable-next-line:interface-over-type-literal
+export type t1 = { readonly x?: string };
+
+// tslint:disable-next-line:interface-over-type-literal
+export type t2 = { readonly x: (undefined | string) };
+
 export const null0: (x:(null | number)) => (null | number) = CoreBS.null0;
 
 export const null1: (x:(null | number)) => (null | number) = CoreBS.null1;
