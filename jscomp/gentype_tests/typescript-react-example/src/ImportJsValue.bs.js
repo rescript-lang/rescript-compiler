@@ -7,6 +7,10 @@ function round(prim) {
   return ImportJsValueGen$1.round(prim);
 }
 
+function round2(prim) {
+  return ImportJsValueGen$1.round2(prim);
+}
+
 function area(prim) {
   return ImportJsValueGen$1.area(prim);
 }
@@ -62,6 +66,7 @@ var $$default = ImportJsValueGen;
 
 export {
   round ,
+  round2 ,
   area ,
   returnMixedArray ,
   roundedNumber ,

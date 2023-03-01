@@ -230,7 +230,7 @@ let parse_external_attributes (no_arguments : bool) (prim_name_check : string)
 
   Ext_list.fold_left prim_attributes ([], init_st)
     (fun (attrs, st) (({ txt; loc }, payload) as attr) ->
-      if txt = Literals.gentype_import then
+      if txt = Literals.gentype_import1 || txt = Literals.gentype_import2 then
         let bundle =
           "./"
           ^ Ext_filename.new_extension

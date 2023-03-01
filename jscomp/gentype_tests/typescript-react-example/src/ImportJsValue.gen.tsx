@@ -4,6 +4,8 @@
 
 import {round as roundNotChecked} from './MyMath';
 
+import {round2 as round2NotChecked} from './MyMath';
+
 import {area as areaNotChecked} from './MyMath';
 
 import {returnMixedArray as returnMixedArrayNotChecked} from './MyMath';
@@ -27,6 +29,12 @@ export const roundTypeChecked: (_1:number) => number = roundNotChecked;
 
 // Export 'round' early to allow circular import from the '.bs.js' file.
 export const round: unknown = roundTypeChecked as (_1:number) => number;
+
+// In case of type error, check the type of 'round2' in 'ImportJsValue.re' and './MyMath'.
+export const round2TypeChecked: (_1:number) => number = round2NotChecked;
+
+// Export 'round2' early to allow circular import from the '.bs.js' file.
+export const round2: unknown = round2TypeChecked as (_1:number) => number;
 
 // In case of type error, check the type of 'area' in 'ImportJsValue.re' and './MyMath'.
 export const areaTypeChecked: (_1:point) => number = areaNotChecked;

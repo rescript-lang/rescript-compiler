@@ -5618,7 +5618,8 @@ let node_parent = ".."
 
 let node_current = "."
 
-let gentype_import = "genType.import"
+let gentype_import1 = "genType.import"
+let gentype_import2 = "gentype.import"
 
 let bsbuild_cache = ".bsbuild"
 

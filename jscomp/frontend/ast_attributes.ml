@@ -119,7 +119,8 @@ let external_attrs =
     "send";
     "new";
     "set_index";
-    Literals.gentype_import;
+    Literals.gentype_import1;
+    Literals.gentype_import2;
   |]
 
 let first_char_special (x : string) =
