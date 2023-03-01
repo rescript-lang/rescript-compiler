@@ -67,6 +67,7 @@ These are only breaking changes for unformatted code.
 - Fix issue in the compiler back-end where async functions passed to an `@uncurry` external would be inlined and transformed in a way that loses async https://github.com/rescript-lang/rescript-compiler/pull/6010
 - Fix location issue for the treatment of `async` functions where hovering on the body with a type error would show `'a => promise<'a>` everywhere https://github.com/rescript-lang/rescript-compiler/pull/6012
 - Fix formatting of `switch` expressions that contain brace `cases` inside https://github.com/rescript-lang/rescript-compiler/pull/6015
+- Support `@gentype.import` as an alias to `@genType.import` in the compiler https://github.com/rescript-lang/rescript-compiler/pull/6020
 
 #### :nail_care: Polish
 
