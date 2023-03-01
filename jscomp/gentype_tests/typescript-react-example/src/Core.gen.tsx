@@ -2,13 +2,28 @@
 /* eslint-disable import/first */
 
 
+import {someFunWithNullThenOptionalArgs as someFunWithNullThenOptionalArgsNotChecked} from './CoreTS';
+
+import {someFunWithNullUndefinedArg as someFunWithNullUndefinedArgNotChecked} from './CoreTS';
+
 const $$toJS552311971: { [key: string]: any } = {"0": "A"};
 
 const $$toRE552311971: { [key: string]: any } = {"A": 0};
 
-// @ts-ignore: Implicit any on import
-import * as CoreBS__Es6Import from './Core.bs';
-const CoreBS: any = CoreBS__Es6Import;
+// In case of type error, check the type of 'someFunWithNullThenOptionalArgs' in 'Core.res' and './CoreTS'.
+export const someFunWithNullThenOptionalArgsTypeChecked: (_1:(null | string), _2:(undefined | string)) => string = someFunWithNullThenOptionalArgsNotChecked;
+
+// Export 'someFunWithNullThenOptionalArgs' early to allow circular import from the '.bs.js' file.
+export const someFunWithNullThenOptionalArgs: unknown = someFunWithNullThenOptionalArgsTypeChecked as (_1:(null | string), _2:(undefined | string)) => string;
+
+// In case of type error, check the type of 'someFunWithNullUndefinedArg' in 'Core.res' and './CoreTS'.
+export const someFunWithNullUndefinedArgTypeChecked: (_1:(null | undefined | string), _2:number) => string = someFunWithNullUndefinedArgNotChecked;
+
+// Export 'someFunWithNullUndefinedArg' early to allow circular import from the '.bs.js' file.
+export const someFunWithNullUndefinedArg: unknown = someFunWithNullUndefinedArgTypeChecked as (_1:(null | undefined | string), _2:number) => string;
+
+// tslint:disable-next-line:no-var-requires
+const CoreBS = require('./Core.bs');
 
 // tslint:disable-next-line:interface-over-type-literal
 export type variant = "A" | { tag: "B"; value: string };

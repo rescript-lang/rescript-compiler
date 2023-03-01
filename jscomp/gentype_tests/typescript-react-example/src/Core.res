@@ -74,3 +74,15 @@ type t1 = {x?: string}
 
 @genType
 type t2 = {x: Js.undefined<string>}
+
+@genType.import("./CoreTS")
+external someFunWithNullThenOptionalArgs: (
+  Null.t<string> /* Cannot be Nullable.t or option */,
+  option<string> /* Cannot be Null.t or Nullable.t */,
+) => string = "someFunWithNullThenOptionalArgs"
+
+@genType.import("./CoreTS")
+external someFunWithNullUndefinedArg: (
+  Nullable.t<string> /* Can also be Null.t or option as they are subtypes */,
+  int,
+) => string = "someFunWithNullUndefinedArg"
