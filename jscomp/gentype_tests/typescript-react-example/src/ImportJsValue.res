@@ -6,6 +6,11 @@ external /* This is the module to import from. */
 /* Name and type of the JS value to bind to. */
 round: float => float = "round"
 
+@gentype.import("./MyMath")
+external round2: float => float = "round2"
+
+let _ = round2
+
 @genType
 type point = {
   x: int,
