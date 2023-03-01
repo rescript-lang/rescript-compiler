@@ -2,9 +2,16 @@
 /* eslint-disable import/first */
 
 
+const $$toJS552311971: { [key: string]: any } = {"0": "A"};
+
+const $$toRE552311971: { [key: string]: any } = {"A": 0};
+
 // @ts-ignore: Implicit any on import
 import * as CoreBS__Es6Import from './Core.bs';
 const CoreBS: any = CoreBS__Es6Import;
+
+// tslint:disable-next-line:interface-over-type-literal
+export type variant = "A" | { tag: "B"; value: string };
 
 export const null0: (x:(null | number)) => (null | number) = CoreBS.null0;
 
@@ -45,3 +52,14 @@ export const weakmap1: (x:WeakMap<number[],number>) => WeakMap<number[],number> 
 export const set1: (x:Set<string>) => Set<string> = CoreBS.set1;
 
 export const weakset1: (x:WeakSet<number[]>) => WeakSet<number[]> = CoreBS.weakset1;
+
+export const option0: (x:(undefined | string)) => (undefined | string) = CoreBS.option0;
+
+export const option1: (x:(undefined | variant)) => (undefined | variant) = function (Arg1: any) {
+  const result = CoreBS.option1((Arg1 == null ? Arg1 : typeof(Arg1) === 'object'
+    ? {TAG: 0, _0:Arg1.value} as any
+    : $$toRE552311971[Arg1]));
+  return (result == null ? result : typeof(result) === 'object'
+    ? {tag:"B", value:result._0}
+    : $$toJS552311971[result])
+};

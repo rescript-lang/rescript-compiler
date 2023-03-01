@@ -81,6 +81,14 @@ function weakset1(x) {
   return x;
 }
 
+function option0(x) {
+  return x;
+}
+
+function option1(x) {
+  return x;
+}
+
 var $$Map;
 
 var $$Set;
@@ -108,5 +116,7 @@ export {
   weakmap1 ,
   set1 ,
   weakset1 ,
+  option0 ,
+  option1 ,
 }
 /* No side effect */

@@ -21,7 +21,7 @@ export type toPayload = { readonly result: string };
 
 export const convert: (_1:Promise<fromPayload>) => Promise<toPayload> = TestPromiseBS.convert;
 
-export const barx: (_1:{ readonly x?: Promise<(null | undefined | string)> }, _2:void) => boolean = function (Arg1: any, Arg2: any) {
-  const result = Curry._2(TestPromiseBS.barx, (Arg1.x == null ? undefined : Arg1.x.then(function _element($promise: any) { return ($promise == null ? undefined : $promise)})), Arg2);
+export const barx: (_1:{ readonly x?: Promise<(undefined | string)> }, _2:void) => boolean = function (Arg1: any, Arg2: any) {
+  const result = Curry._2(TestPromiseBS.barx, Arg1.x, Arg2);
   return result
 };

@@ -60,3 +60,11 @@ let set1 = (x: Set.t<string>) => x
 
 @genType
 let weakset1 = (x: WeakSet.t<array<int>>) => x
+
+type variant = A | B(string)
+
+@genType
+let option0 = (x: option<string>) => x
+
+@genType
+let option1 = (x: option<variant>) => x
