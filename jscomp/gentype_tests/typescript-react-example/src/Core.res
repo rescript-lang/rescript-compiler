@@ -68,3 +68,9 @@ let option0 = (x: option<string>) => x
 
 @genType
 let option1 = (x: option<variant>) => x
+
+@genType
+type t1 = {x?: string}
+
+@genType
+type t2 = {x: Js.undefined<string>}

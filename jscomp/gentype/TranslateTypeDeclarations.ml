@@ -1,7 +1,8 @@
 open GenTypeCommon
 
 type declarationKind =
-  | RecordDeclarationFromTypes of Types.label_declaration list
+  | RecordDeclarationFromTypes of
+      Types.label_declaration list * Types.record_representation
   | GeneralDeclaration of Typedtree.core_type option
   | GeneralDeclarationFromTypes of Types.type_expr option
       (** As the above, but from Types not Typedtree *)
@@ -78,7 +79,12 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
     in
     {CodeItem.importTypes; exportFromTypeDeclaration}
   in
-  let translateLabelDeclarations labelDeclarations =
+  let translateLabelDeclarations ~recordRepresentation labelDeclarations =
+    let isOptional l =
+      match recordRepresentation with
+      | Types.Record_optional_labels lbls -> List.mem l lbls
+      | _ -> false
+    in
     let fieldTranslations =
       labelDeclarations
       |> List.map (fun {Types.ld_id; ld_mutable; ld_type; ld_attributes} ->
@@ -111,7 +117,7 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
            ->
              let optional, type1 =
                match type_ with
-               | Option type1 -> (Optional, type1)
+               | Option type1 when isOptional nameRE -> (Optional, type1)
                | _ -> (Mandatory, type_)
              in
              {mutable_; nameJS; nameRE; optional; type_ = type1})
@@ -196,9 +202,10 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
     in
     {translation with type_} |> handleGeneralDeclaration
     |> returnTypeDeclaration
-  | RecordDeclarationFromTypes labelDeclarations, None ->
+  | RecordDeclarationFromTypes (labelDeclarations, recordRepresentation), None
+    ->
     let {TranslateTypeExprFromTypes.dependencies; type_} =
-      labelDeclarations |> translateLabelDeclarations
+      labelDeclarations |> translateLabelDeclarations ~recordRepresentation
     in
     let importTypes =
       dependencies
@@ -227,7 +234,11 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
                  |> TranslateTypeExprFromTypes.translateTypeExprsFromTypes
                       ~config ~typeEnv
                | Cstr_record labelDeclarations ->
-                 [labelDeclarations |> translateLabelDeclarations]
+                 [
+                   labelDeclarations
+                   |> translateLabelDeclarations
+                        ~recordRepresentation:Types.Record_regular;
+                 ]
              in
              let inlineRecord =
                match constructorArgs with
@@ -342,8 +353,8 @@ let translateTypeDeclaration ~config ~outputFileRelative ~recursive ~resolver
   in
   let declarationKind =
     match typ_type.type_kind with
-    | Type_record (labelDeclarations, _) ->
-      RecordDeclarationFromTypes labelDeclarations
+    | Type_record (labelDeclarations, recordRepresentation) ->
+      RecordDeclarationFromTypes (labelDeclarations, recordRepresentation)
     | Type_variant constructorDeclarations ->
       VariantDeclarationFromTypes constructorDeclarations
     | Type_abstract -> GeneralDeclaration typ_manifest
