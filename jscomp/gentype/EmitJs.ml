@@ -101,7 +101,7 @@ let typeNameIsInterface ~(exportTypeMap : CodeItem.exportTypeMap)
     ~(exportTypeMapFromOtherFiles : CodeItem.exportTypeMap) typeName =
   let typeIsInterface type_ =
     match type_ with
-    | Object _ | Record _ -> true
+    | Object _ -> true
     | _ -> false
   in
   match exportTypeMap |> StringMap.find typeName with
@@ -624,7 +624,7 @@ let propagateAnnotationToSubTypes ~codeItems (typeMap : CodeItem.exportTypeMap)
       | Function {argTypes; retType} ->
         argTypes |> List.iter (fun {aType} -> visit aType);
         retType |> visit
-      | GroupOfLabeledArgs fields | Object (_, fields) | Record fields ->
+      | GroupOfLabeledArgs fields | Object (_, fields) ->
         fields |> List.iter (fun {type_} -> type_ |> visit)
       | Option t | Null t | Nullable t | Promise t | Undefined t -> t |> visit
       | Tuple innerTypes -> innerTypes |> List.iter visit

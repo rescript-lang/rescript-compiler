@@ -68,7 +68,6 @@ type type_ =
   | Object of closedFlag * fields
   | Option of type_
   | Promise of type_
-  | Record of fields
   | Tuple of type_ list
   | TypeVar of string
   | Undefined of type_
@@ -119,7 +118,6 @@ let typeIsObject type_ =
   | Object _ -> true
   | Option _ -> false
   | Promise _ -> true
-  | Record _ -> true
   | Tuple _ -> true
   | TypeVar _ -> false
   | Undefined _ -> false

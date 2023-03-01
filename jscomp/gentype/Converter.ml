@@ -9,7 +9,6 @@ type t =
   | ObjectC of fieldsC
   | OptionC of t
   | PromiseC of t
-  | RecordC of fieldsC
   | TupleC of t list
   | VariantC of variantC
 
@@ -69,7 +68,7 @@ let rec toString converter =
     ^ " -> " ^ toString retConverter ^ ")"
   | IdentC -> "id"
   | NullableC c -> "nullable(" ^ toString c ^ ")"
-  | ObjectC fieldsC | RecordC fieldsC ->
+  | ObjectC fieldsC ->
     let dot =
       match converter with
       | ObjectC _ -> ". "
@@ -222,26 +221,6 @@ let typeGetConverterNormalized ~config ~inline ~lookupId ~typeNameIsInterface
     | Promise t ->
       let tConverter, tNormalized = t |> visit ~visited in
       (PromiseC tConverter, Promise tNormalized)
-    | Record fields ->
-      let fieldsConverted =
-        fields
-        |> List.map (fun ({type_} as field) -> (field, type_ |> visit ~visited))
-      in
-      ( RecordC
-          (fieldsConverted
-          |> List.map (fun ({nameJS; nameRE; optional}, (converter, _)) ->
-                 {
-                   lblJS = nameJS;
-                   lblRE = nameRE;
-                   c =
-                     (match optional = Mandatory with
-                     | true -> converter
-                     | false -> OptionC converter);
-                 })),
-        Record
-          (fieldsConverted
-          |> List.map (fun (field, (_, tNormalized)) ->
-                 {field with type_ = tNormalized})) )
     | Tuple innerTypes ->
       let innerConversions, normalizedList =
         innerTypes |> List.map (visit ~visited) |> List.split
@@ -395,7 +374,6 @@ let rec converterIsIdentity ~config ~toJS converter =
            | _ -> c |> converterIsIdentity ~config ~toJS)
   | OptionC c -> if toJS then c |> converterIsIdentity ~config ~toJS else false
   | PromiseC c -> c |> converterIsIdentity ~config ~toJS
-  | RecordC _ -> false
   | TupleC innerTypesC ->
     innerTypesC |> List.for_all (converterIsIdentity ~config ~toJS)
   | VariantC {withPayloads; useVariantTables} ->
@@ -581,39 +559,6 @@ let rec apply ~config ~converter ~indent ~nameGen ~toJS ~variantTables value =
     ^ ") { return "
     ^ (x |> apply ~config ~converter:c ~indent ~nameGen ~toJS ~variantTables)
     ^ "})"
-  | RecordC fieldsC ->
-    let simplifyFieldConverted fieldConverter =
-      match fieldConverter with
-      | OptionC converter1 when converter1 |> converterIsIdentity ~config ~toJS
-        ->
-        IdentC
-      | _ -> fieldConverter
-    in
-    if toJS then
-      let fieldValues =
-        fieldsC
-        |> List.mapi (fun index {lblJS; c = fieldConverter} ->
-               lblJS ^ ":"
-               ^ (value
-                 |> EmitText.arrayAccess ~index
-                 |> apply ~config
-                      ~converter:(fieldConverter |> simplifyFieldConverted)
-                      ~indent ~nameGen ~toJS ~variantTables))
-        |> String.concat ", "
-      in
-      "{" ^ fieldValues ^ "}"
-    else
-      let fieldValues =
-        fieldsC
-        |> List.map (fun {lblJS; c = fieldConverter} ->
-               value
-               |> EmitText.fieldAccess ~label:lblJS
-               |> apply ~config
-                    ~converter:(fieldConverter |> simplifyFieldConverted)
-                    ~indent ~nameGen ~toJS ~variantTables)
-        |> String.concat ", "
-      in
-      "[" ^ fieldValues ^ "]"
   | TupleC innerTypesC ->
     "["
     ^ (innerTypesC

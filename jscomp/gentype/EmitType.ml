@@ -120,7 +120,7 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
   | Function {argTypes; retType; typeVars} ->
     renderFunType ~config ~indent ~inFunType ~typeNameIsInterface ~typeVars
       argTypes retType
-  | GroupOfLabeledArgs fields | Object (_, fields) | Record fields ->
+  | GroupOfLabeledArgs fields | Object (_, fields) ->
     let indent1 = fields |> Indent.heuristicFields ~indent in
     fields
     |> renderFields ~config ~indent:indent1 ~inFunType ~typeNameIsInterface
