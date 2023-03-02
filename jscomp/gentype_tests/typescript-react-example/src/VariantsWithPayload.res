@@ -1,6 +1,6 @@
 type payload = {
   x: int,
-  y: option<string>,
+  y?: string,
 }
 
 type withPayload = [

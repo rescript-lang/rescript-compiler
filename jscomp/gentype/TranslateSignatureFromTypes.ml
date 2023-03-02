@@ -12,8 +12,9 @@ let translateTypeDeclarationFromTypes ~config ~outputFileRelative ~resolver
     Log_.item "Translate Types.type_declaration %s\n" typeName;
   let declarationKind =
     match type_kind with
-    | Type_record (labelDeclarations, _) ->
-      TranslateTypeDeclarations.RecordDeclarationFromTypes labelDeclarations
+    | Type_record (labelDeclarations, recordRepresentation) ->
+      TranslateTypeDeclarations.RecordDeclarationFromTypes
+        (labelDeclarations, recordRepresentation)
     | Type_variant constructorDeclarations
       when not
              (TranslateTypeDeclarations.hasSomeGADTLeaf constructorDeclarations)

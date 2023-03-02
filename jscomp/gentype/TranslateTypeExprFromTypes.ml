@@ -80,7 +80,34 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
       | ["Js"; ("String" | "String2"); "t"] ),
       [] ) ->
     {dependencies = []; type_ = stringT}
-  | ["Js"; "Date"; "t"], [] -> {dependencies = []; type_ = dateT}
+  | (["Js"; "Types"; "bigint_val"] | ["BigInt"; "t"]), [] ->
+    {dependencies = []; type_ = bigintT}
+  | (["Js"; "Date"; "t"] | ["Date"; "t"]), [] ->
+    {dependencies = []; type_ = dateT}
+  | ["Map"; "t"], [paramTranslation1; paramTranslation2] ->
+    {
+      dependencies =
+        paramTranslation1.dependencies @ paramTranslation2.dependencies;
+      type_ = mapT (paramTranslation1.type_, paramTranslation2.type_);
+    }
+  | ["WeakMap"; "t"], [paramTranslation1; paramTranslation2] ->
+    {
+      dependencies =
+        paramTranslation1.dependencies @ paramTranslation2.dependencies;
+      type_ = weakmapT (paramTranslation1.type_, paramTranslation2.type_);
+    }
+  | ["Set"; "t"], [paramTranslation] ->
+    {
+      dependencies = paramTranslation.dependencies;
+      type_ = setT paramTranslation.type_;
+    }
+  | ["WeakSet"; "t"], [paramTranslation] ->
+    {
+      dependencies = paramTranslation.dependencies;
+      type_ = weaksetT paramTranslation.type_;
+    }
+  | (["Js"; "Re"; "t"] | ["RegExp"; "t"]), [] ->
+    {dependencies = []; type_ = regexpT}
   | (["FB"; "unit"] | ["unit"]), [] -> {dependencies = []; type_ = unitT}
   | ( (["FB"; "array"] | ["array"] | ["Js"; ("Array" | "Array2"); "t"]),
       [paramTranslation] ) ->
@@ -201,16 +228,24 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
     {dependencies = []; type_ = EmitType.typeReactElement}
   | (["FB"; "option"] | ["option"]), [paramTranslation] ->
     {paramTranslation with type_ = Option paramTranslation.type_}
-  | (["Js"; "Null"; "t"] | ["Js"; "null"]), [paramTranslation] ->
+  | ( (["Js"; "Undefined"; "t"] | ["Undefined"; "t"] | ["Js"; "undefined"]),
+      [paramTranslation] ) ->
+    {paramTranslation with type_ = Option paramTranslation.type_}
+  | (["Js"; "Null"; "t"] | ["Null"; "t"] | ["Js"; "null"]), [paramTranslation]
+    ->
     {paramTranslation with type_ = Null paramTranslation.type_}
   | ( ( ["Js"; "Nullable"; "t"]
+      | ["Nullable"; "t"]
       | ["Js"; "nullable"]
       | ["Js"; "Null_undefined"; "t"]
       | ["Js"; "null_undefined"] ),
       [paramTranslation] ) ->
     {paramTranslation with type_ = Nullable paramTranslation.type_}
-  | (["Js"; "Promise"; "t"] | ["promise"]), [paramTranslation] ->
+  | ( (["Js"; "Promise"; "t"] | ["Promise"; "t"] | ["promise"]),
+      [paramTranslation] ) ->
     {paramTranslation with type_ = Promise paramTranslation.type_}
+  | (["Js"; "Dict"; "t"] | ["Dict"; "t"]), [paramTranslation] ->
+    {paramTranslation with type_ = Dict paramTranslation.type_}
   | ["function$"], [arg; _arity] ->
     {
       dependencies = arg.dependencies;

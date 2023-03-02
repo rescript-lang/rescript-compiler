@@ -95,6 +95,10 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
       arrayName ^ "<"
       ^ (t |> renderType ~config ~indent ~typeNameIsInterface ~inFunType)
       ^ ">"
+  | Dict type_ ->
+    "{[id: string]: "
+    ^ (type_ |> renderType ~config ~indent ~typeNameIsInterface ~inFunType)
+    ^ "}"
   | Function
       {argTypes = [{aType = Object (closedFlag, fields)}]; retType; typeVars}
     when retType |> isTypeFunctionComponent ~fields ->
@@ -116,7 +120,7 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
   | Function {argTypes; retType; typeVars} ->
     renderFunType ~config ~indent ~inFunType ~typeNameIsInterface ~typeVars
       argTypes retType
-  | GroupOfLabeledArgs fields | Object (_, fields) | Record fields ->
+  | GroupOfLabeledArgs fields | Object (_, fields) ->
     let indent1 = fields |> Indent.heuristicFields ~indent in
     fields
     |> renderFields ~config ~indent:indent1 ~inFunType ~typeNameIsInterface
@@ -136,13 +140,23 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
     "(null | "
     ^ (type_ |> renderType ~config ~indent ~typeNameIsInterface ~inFunType)
     ^ ")"
-  | Nullable type_ | Option type_ ->
+  | Nullable type_ ->
     let useParens x =
       match type_ with
       | Function _ | Variant _ -> EmitText.parens [x]
       | _ -> x
     in
     "(null | undefined | "
+    ^ useParens
+        (type_ |> renderType ~config ~indent ~typeNameIsInterface ~inFunType)
+    ^ ")"
+  | Option type_ ->
+    let useParens x =
+      match type_ with
+      | Function _ | Variant _ -> EmitText.parens [x]
+      | _ -> x
+    in
+    "(undefined | "
     ^ useParens
         (type_ |> renderType ~config ~indent ~typeNameIsInterface ~inFunType)
     ^ ")"

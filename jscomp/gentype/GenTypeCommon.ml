@@ -59,6 +59,7 @@ type closedFlag = Open | Closed
 
 type type_ =
   | Array of type_ * mutable_
+  | Dict of type_
   | Function of function_
   | GroupOfLabeledArgs of fields
   | Ident of ident
@@ -67,7 +68,6 @@ type type_ =
   | Object of closedFlag * fields
   | Option of type_
   | Promise of type_
-  | Record of fields
   | Tuple of type_ list
   | TypeVar of string
   | Variant of variant
@@ -108,6 +108,7 @@ and payload = {case: case; inlineRecord: bool; numArgs: int; t: type_}
 let typeIsObject type_ =
   match type_ with
   | Array _ -> true
+  | Dict _ -> true
   | Function _ -> false
   | GroupOfLabeledArgs _ -> false
   | Ident _ -> false
@@ -116,7 +117,6 @@ let typeIsObject type_ =
   | Object _ -> true
   | Option _ -> false
   | Promise _ -> true
-  | Record _ -> true
   | Tuple _ -> true
   | TypeVar _ -> false
   | Variant _ -> false
@@ -210,11 +210,17 @@ let sanitizeTypeName name =
        | '\'' -> '_'
        | c -> c)
 let unknown = ident "unknown"
+let bigintT = ident "BigInt"
 let booleanT = ident "boolean"
 let dateT = ident "Date"
+let mapT (x,y) = ident ~typeArgs:[x;y] "Map"
 let numberT = ident "number"
+let regexpT = ident "RegExp"
+let setT (x) = ident ~typeArgs:[x] "Set"
 let stringT = ident "string"
 let unitT = ident "void"
+let weakmapT (x,y) = ident ~typeArgs:[x;y] "WeakMap"
+let weaksetT (x) = ident ~typeArgs:[x] "WeakSet"
 let int64T = Tuple [numberT; numberT]
 
 module NodeFilename = struct

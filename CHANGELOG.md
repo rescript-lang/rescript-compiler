@@ -26,6 +26,7 @@ subset of the arguments, and return a curried type with the remaining ones https
 - Add support for toplevel `await` https://github.com/rescript-lang/rescript-compiler/pull/5940
 - Support optional named arguments without a final unit in uncurried functions https://github.com/rescript-lang/rescript-compiler/pull/5907
 - Add experimental suppport for directives. An annotation such as `@@directive("use client;")` emits `use client;` verbatim before imports https://github.com/rescript-lang/rescript-compiler/pull/5998
+- `genType`: add `Core` standard library support for the following builtin types: `Null.t`, `Nullable.t`, `Undefined.t`, `Dict.t<_>`, `Promise.t<_>`, `Date.t`, `BigInt.t`, `RegExp.t`, `Map.t<_, _>`, `WeakMap.t<_, _>`, `Set<_>`, `WeakSet<_>` https://github.com/rescript-lang/rescript-compiler/pull/6019
 
 #### :boom: Breaking Change
 
@@ -39,6 +40,9 @@ subset of the arguments, and return a curried type with the remaining ones https
 Also, `(. int) => string => bool` is not equivalen to `(. int, string) => bool` anymore.
 These are only breaking changes for unformatted code.
 - Exponentiation operator `**` is now right-associative. `2. ** 3. ** 2.` now compile to `Math.pow(2, Math.pow(3, 2))` and not anymore `Math.pow(Math.pow(2, 3), 2)`. Parentheses can be used to change precedence.
+- `genType`: streamline the treatment of optionals as undefined https://github.com/rescript-lang/rescript-compiler/pull/6022
+  - Represent `option<t>` as `undefined | t` instead of `null | undefined | t`. This is more permissive when importing functions taking optional values (allows to use option types), but stricter when e.g. exporting ReScript functions taking arguments of option type. Fallback: use `Js.undefined<_>` instead.
+  - Represent `{x:option<string>}` as `{x:(undefined | string)}` instead of `{x?: string}`. This is more in line with TS's behaviour. Fallback: use `{x?:string}`.
 
 #### :bug: Bug Fix
 
