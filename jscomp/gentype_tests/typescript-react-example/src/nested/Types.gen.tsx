@@ -10,8 +10,6 @@ const Curry: any = Curry__Es6Import;
 import * as TypesBS__Es6Import from './Types.bs';
 const TypesBS: any = TypesBS__Es6Import;
 
-import type {Dict_t as Js_Dict_t} from '../../src/shims/Js.shim';
-
 import type {Json_t as Js_Json_t} from '../../src/shims/Js.shim';
 
 import type {M_t__ as TypeNameSanitize_M_t__} from '../../src/TypeNameSanitize.gen';
@@ -57,7 +55,7 @@ export type twice<a> = [a, a];
 export type genTypeMispelled = number;
 
 // tslint:disable-next-line:interface-over-type-literal
-export type dictString = Js_Dict_t<string>;
+export type dictString = {[id: string]: string};
 
 // tslint:disable-next-line:interface-over-type-literal
 export type nullOrString = (null | string);
@@ -128,8 +126,8 @@ export const selfRecursiveConverter: (param:selfRecursive) => selfRecursive = Ty
 
 export const mutuallyRecursiveConverter: (param:mutuallyRecursiveA) => mutuallyRecursiveB = TypesBS.mutuallyRecursiveConverter;
 
-export const testFunctionOnOptionsAsArgument: <T1,a>(a:(null | undefined | a), foo:((_1:(null | undefined | a)) => T1)) => T1 = function <T1,a>(Arg1: any, Arg2: any) {
-  const result = Curry._2(TypesBS.testFunctionOnOptionsAsArgument, (Arg1 == null ? undefined : Arg1), Arg2);
+export const testFunctionOnOptionsAsArgument: <T1,a>(a:(undefined | a), foo:((_1:(undefined | a)) => T1)) => T1 = function <T1,a>(Arg1: any, Arg2: any) {
+  const result = Curry._2(TypesBS.testFunctionOnOptionsAsArgument, Arg1, Arg2);
   return result
 };
 
@@ -155,4 +153,4 @@ export const currentTime: Date = TypesBS.currentTime;
 
 export const i64Const: i64B = TypesBS.i64Const;
 
-export const optFunction: (null | undefined | (() => number)) = TypesBS.optFunction;
+export const optFunction: (undefined | (() => number)) = TypesBS.optFunction;

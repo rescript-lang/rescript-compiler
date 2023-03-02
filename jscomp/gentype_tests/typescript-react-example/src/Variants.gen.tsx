@@ -112,7 +112,7 @@ export const id2: (x:x2) => x2 = function (Arg1: any) {
   return $$toJS1061900109[result]
 };
 
-export const polyWithOpt: (foo:string) => (null | undefined | (
+export const polyWithOpt: (foo:string) => (undefined | (
     { NAME: "One"; VAL: string }
   | { NAME: "Two"; VAL: number })) = VariantsBS.polyWithOpt;
 

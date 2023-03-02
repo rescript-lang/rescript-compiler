@@ -30,6 +30,7 @@ let extractFromCoreType typeParams =
 let rec substitute ~f type0 =
   match type0 with
   | Array (t, arrayKind) -> Array (t |> substitute ~f, arrayKind)
+  | Dict type_ -> Dict (type_ |> substitute ~f)
   | Function function_ ->
       Function
         {
@@ -57,11 +58,6 @@ let rec substitute ~f type0 =
                  { field with type_ = field.type_ |> substitute ~f }) )
   | Option type_ -> Option (type_ |> substitute ~f)
   | Promise type_ -> Promise (type_ |> substitute ~f)
-  | Record fields ->
-      Record
-        (fields
-        |> List.map (fun field ->
-               { field with type_ = field.type_ |> substitute ~f }))
   | Tuple innerTypes -> Tuple (innerTypes |> List.map (substitute ~f))
   | TypeVar s -> ( match f s with None -> type0 | Some type1 -> type1)
   | Variant variant ->
@@ -81,7 +77,7 @@ let rec free_ type0 : StringSet.t =
       StringSet.diff
         ((argTypes |> freeOfList_) +++ (retType |> free_))
         (typeVars |> StringSet.of_list)
-  | GroupOfLabeledArgs fields | Object (_, fields) | Record fields ->
+  | GroupOfLabeledArgs fields | Object (_, fields) ->
       fields
       |> List.fold_left
            (fun s { type_ } -> StringSet.union s (type_ |> free_))
@@ -91,7 +87,7 @@ let rec free_ type0 : StringSet.t =
       |> List.fold_left
            (fun s typeArg -> StringSet.union s (typeArg |> free_))
            StringSet.empty
-  | Null type_ | Nullable type_ -> type_ |> free_
+  | Dict type_ | Null type_ | Nullable type_ -> type_ |> free_
   | Option type_ | Promise type_ -> type_ |> free_
   | Tuple innerTypes ->
       innerTypes

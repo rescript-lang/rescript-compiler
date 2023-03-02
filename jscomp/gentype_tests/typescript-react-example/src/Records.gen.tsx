@@ -16,21 +16,21 @@ import type {list} from '../src/shims/RescriptPervasives.shim';
 export type coord = {
   readonly x: number; 
   readonly y: number; 
-  readonly z?: number
+  readonly z: (undefined | number)
 };
 
 // tslint:disable-next-line:interface-over-type-literal
 export type person = {
   readonly name: string; 
   readonly age: number; 
-  readonly address?: string
+  readonly address: (undefined | string)
 };
 
 // tslint:disable-next-line:interface-over-type-literal
 export type business = {
   readonly name: string; 
-  readonly owner?: person; 
-  readonly address?: string
+  readonly owner: (undefined | person); 
+  readonly address: (undefined | string)
 };
 
 // tslint:disable-next-line:interface-over-type-literal
