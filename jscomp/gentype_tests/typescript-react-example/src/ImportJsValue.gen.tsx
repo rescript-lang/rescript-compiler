@@ -107,7 +107,7 @@ import type {polyType as $$polyType} from './MyMath';
 import type {stringFunction as $$stringFunction} from './MyMath';
 
 // tslint:disable-next-line:interface-over-type-literal
-export type point = { readonly x: number; readonly y?: number };
+export type point = { readonly x: number; readonly y: (undefined | number) };
 
 // tslint:disable-next-line:interface-over-type-literal
 export type numberOrString = $$numberOrString;
