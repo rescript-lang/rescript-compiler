@@ -3,7 +3,7 @@
 module Foo = {
   type props<'x, 'y> = {x: 'x, y: 'y}
 
-  @react.component let make = ({x, y, _}: props<'x, 'y>) => React.string(x ++ y)
+  @react.component let make = ({x, y, _}: props<_, _>) => React.string(x ++ y)
   let make = {
     let \"RemovedKeyProp$Foo" = (props: props<_>) => make(props)
 
@@ -15,7 +15,7 @@ module HasChildren = {
   type props<'children> = {children: 'children}
 
   @react.component
-  let make = ({children, _}: props<'children>) => ReactDOM.createElement(React.fragment, [children])
+  let make = ({children, _}: props<_>) => ReactDOM.createElement(React.fragment, [children])
   let make = {
     let \"RemovedKeyProp$HasChildren" = (props: props<_>) => make(props)
 

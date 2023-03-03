@@ -77,7 +77,7 @@ module V4C = {
 
     @react.component
     let make = (
-      {?className, children, _}: props<'className, 'children, ReactRef.currentDomRef>,
+      {?className, children, _}: props<_, _, ReactRef.currentDomRef>,
       ref: Js.Nullable.t<ReactRef.currentDomRef>,
     ) =>
       ReactDOM.createDOMElementVariadic(
@@ -134,7 +134,7 @@ module V4CUncurried = {
 
     @react.component
     let make = (
-      {?className, children, _}: props<'className, 'children, ReactRef.currentDomRef>,
+      {?className, children, _}: props<_, _, ReactRef.currentDomRef>,
       ref: Js.Nullable.t<ReactRef.currentDomRef>,
     ) =>
       ReactDOM.createDOMElementVariadic(
@@ -192,10 +192,7 @@ module V4A = {
     }
 
     @react.component
-    let make = (
-      {?className, children, _}: props<'className, 'children, ReactDOM.Ref.currentDomRef>,
-      ref,
-    ) =>
+    let make = ({?className, children, _}: props<_, _, ReactDOM.Ref.currentDomRef>, ref) =>
       ReactDOM.jsxs(
         "div",
         {
@@ -249,10 +246,7 @@ module V4AUncurried = {
     }
 
     @react.component
-    let make = (
-      {?className, children, _}: props<'className, 'children, ReactDOM.Ref.currentDomRef>,
-      ref,
-    ) =>
+    let make = ({?className, children, _}: props<_, _, ReactDOM.Ref.currentDomRef>, ref) =>
       ReactDOM.jsxs(
         "div",
         {

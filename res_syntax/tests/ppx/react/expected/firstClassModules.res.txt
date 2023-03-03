@@ -66,11 +66,12 @@ module Select = {
 
   @react.component
   let make = (
+    type a key,
     {model, selected, onChange, items, _}: props<
-      module(T with type t = '\"type-a" and type key = '\"type-key"),
-      option<'\"type-key">,
-      option<'\"type-key"> => unit,
-      array<'\"type-a">,
+      module(T with type t = a and type key = key),
+      option<key>,
+      option<key> => unit,
+      array<a>,
     >,
   ) => {
     let _ = (model, selected, onChange, items)
