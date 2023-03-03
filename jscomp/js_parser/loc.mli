@@ -12,7 +12,7 @@ type position = {
 [@@deriving_inline equal]
 include
   sig
-    [@@@ocaml.warning "-32"]
+    [@@@warning "-32"]
     val equal_position : position -> position -> bool
   end[@@ocaml.doc "@inline"]
 [@@@end]

@@ -1,6 +1,6 @@
 
 
-(* [@@@ocaml.warning "-101"] *)
+(* [@@@warning "-101"] *)
 
 external mk : int -> 
   (

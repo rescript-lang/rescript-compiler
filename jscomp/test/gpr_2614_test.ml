@@ -1,5 +1,5 @@
 
-[@@@ocaml.warning "-a"]
+[@@@warning "-a"]
 
 type t = {
 
