@@ -74,6 +74,7 @@ These are only breaking changes for unformatted code.
 - Support `@gentype.import` as an alias to `@genType.import` in the compiler https://github.com/rescript-lang/rescript-compiler/pull/6020
 - Fix issue with integer overflow check https://github.com/rescript-lang/rescript-compiler/pull/6028
 - Fix issue with JSX V4 and newtype https://github.com/rescript-lang/rescript-compiler/pull/6029
+- Fix issue with JSX V4 when components are nested https://github.com/rescript-lang/rescript-compiler/pull/6031
 
 #### :nail_care: Polish
 

@@ -598,9 +598,7 @@ let transformLowercaseCall3 ~config mapper jsxExprLoc callExprLoc attrs
          })
       args
 
-let rec recursivelyTransformNamedArgsForMake mapper expr args newtypes coreType
-    =
-  let expr = mapper.expr mapper expr in
+let rec recursivelyTransformNamedArgsForMake expr args newtypes coreType =
   match expr.pexp_desc with
   (* TODO: make this show up with a loc. *)
   | Pexp_fun (Labelled "key", _, _, _) | Pexp_fun (Optional "key", _, _, _) ->
@@ -647,7 +645,7 @@ let rec recursivelyTransformNamedArgsForMake mapper expr args newtypes coreType
       | _ -> None
     in
 
-    recursivelyTransformNamedArgsForMake mapper expression
+    recursivelyTransformNamedArgsForMake expression
       ((arg, default, pattern, alias, pattern.ppat_loc, type_) :: args)
       newtypes coreType
   | Pexp_fun
@@ -680,10 +678,10 @@ let rec recursivelyTransformNamedArgsForMake mapper expr args newtypes coreType
       "React: react.component refs only support plain arguments and type \
        annotations."
   | Pexp_newtype (label, expression) ->
-    recursivelyTransformNamedArgsForMake mapper expression args
-      (label :: newtypes) coreType
+    recursivelyTransformNamedArgsForMake expression args (label :: newtypes)
+      coreType
   | Pexp_constraint (expression, coreType) ->
-    recursivelyTransformNamedArgsForMake mapper expression args newtypes
+    recursivelyTransformNamedArgsForMake expression args newtypes
       (Some coreType)
   | _ -> (args, newtypes, coreType)
 
@@ -724,7 +722,7 @@ let check_string_int_attribute_iter =
 
   {Ast_iterator.default_iterator with attribute}
 
-let transformStructureItem ~config mapper item =
+let transformStructureItem ~config item =
   match item with
   (* external *)
   | {
@@ -848,6 +846,8 @@ let transformStructureItem ~config mapper item =
               binding with
               pvb_pat = {binding.pvb_pat with ppat_loc = emptyLoc};
               pvb_loc = emptyLoc;
+              pvb_attributes =
+                binding.pvb_attributes |> List.filter otherAttrsPure;
             }
           in
           let fnName = getFnName binding.pvb_pat in
@@ -891,8 +891,7 @@ let transformStructureItem ~config mapper item =
           let modifiedBinding binding =
             let hasApplication = ref false in
             let wrapExpressionWithBinding expressionFn expression =
-              Vb.mk ~loc:bindingLoc
-                ~attrs:(List.filter otherAttrsPure binding.pvb_attributes)
+              Vb.mk ~loc:bindingLoc ~attrs:binding.pvb_attributes
                 (Pat.var ~loc:bindingPatLoc {loc = bindingPatLoc; txt = fnName})
                 (expressionFn expression)
             in
@@ -1000,7 +999,7 @@ let transformStructureItem ~config mapper item =
           in
           (* do stuff here! *)
           let namedArgList, newtypes, _typeConstraints =
-            recursivelyTransformNamedArgsForMake mapper
+            recursivelyTransformNamedArgsForMake
               (modifiedBindingOld binding)
               [] [] None
           in

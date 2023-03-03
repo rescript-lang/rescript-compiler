@@ -1,6 +1,5 @@
 type props<'msg> = {msg: 'msg} // test React JSX file
 
-@react.component
 let make = ({msg, _}: props<_>) => {
   ReactDOM.jsx("div", {children: ?ReactDOM.someElement({msg->React.string})})
 }

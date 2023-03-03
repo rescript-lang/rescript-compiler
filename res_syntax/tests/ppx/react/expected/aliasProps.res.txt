@@ -3,7 +3,6 @@
 module C0 = {
   type props<'priority, 'text> = {priority: 'priority, text?: 'text}
 
-  @react.component
   let make = (props: props<_, _>) => {
     let _ = props.priority
     let text = switch props.text {
@@ -23,7 +22,6 @@ module C0 = {
 module C1 = {
   type props<'priority, 'text> = {priority: 'priority, text?: 'text}
 
-  @react.component
   let make = (props: props<_, _>) => {
     let p = props.priority
     let text = switch props.text {
@@ -43,7 +41,6 @@ module C1 = {
 module C2 = {
   type props<'foo> = {foo?: 'foo}
 
-  @react.component
   let make = (props: props<_>) => {
     let bar = switch props.foo {
     | Some(foo) => foo
