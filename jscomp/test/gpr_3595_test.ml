@@ -3,7 +3,7 @@ let test_id = ref 0
 let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y 
 
 
-[@@@ocaml.warning "-a"]
+[@@@warning "-a"]
 
 
 (* let [|a|] = [|1|] *)

@@ -49,7 +49,7 @@ module Make (H: Hashtbl.HashedType) : (Hash_set_gen.S with type key = H.t) = str
   type t = key Hash_set_gen.t
 
 #elif defined TYPE_POLY
-  [@@@ocaml.warning "-3"]
+  [@@@warning "-3"]
   (* we used cppo the mixture does not work*)
   external seeded_hash_param :
     int -> int -> int -> 'a -> int = "caml_hash" "noalloc"
