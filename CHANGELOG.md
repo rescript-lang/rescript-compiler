@@ -72,6 +72,7 @@ These are only breaking changes for unformatted code.
 - Fix location issue for the treatment of `async` functions where hovering on the body with a type error would show `'a => promise<'a>` everywhere https://github.com/rescript-lang/rescript-compiler/pull/6012
 - Fix formatting of `switch` expressions that contain brace `cases` inside https://github.com/rescript-lang/rescript-compiler/pull/6015
 - Support `@gentype.import` as an alias to `@genType.import` in the compiler https://github.com/rescript-lang/rescript-compiler/pull/6020
+- Fix issue with integer overflow check https://github.com/rescript-lang/rescript-compiler/pull/6028
 
 #### :nail_care: Polish
 
