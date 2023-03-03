@@ -21,7 +21,7 @@ module V4C = {
   type props<'msg> = {msg: 'msg}
 
   @react.component
-  let make = ({msg, _}: props<'msg>) => {
+  let make = ({msg, _}: props<_>) => {
     ReactDOM.createDOMElementVariadic("div", [{msg->React.string}])
   }
   let make = {
@@ -37,7 +37,7 @@ module V4A = {
   type props<'msg> = {msg: 'msg}
 
   @react.component
-  let make = ({msg, _}: props<'msg>) => {
+  let make = ({msg, _}: props<_>) => {
     ReactDOM.jsx("div", {children: ?ReactDOM.someElement({msg->React.string})})
   }
   let make = {

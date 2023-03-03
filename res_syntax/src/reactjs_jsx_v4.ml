@@ -277,7 +277,7 @@ let makePropsTypeParams ?(stripExplicitOption = false)
                 For example, if JSX ppx is used for React Native, type would be different.
              *)
            match interiorType with
-           | {ptyp_desc = Ptyp_var "ref"} -> Some (refType loc)
+           | {ptyp_desc = Ptyp_any} -> Some (refType loc)
            | _ ->
              (* Strip explicit Js.Nullable.t in case of forwardRef *)
              if stripExplicitJsNullableOfRef then stripJsNullable interiorType
@@ -687,46 +687,18 @@ let rec recursivelyTransformNamedArgsForMake mapper expr args newtypes coreType
       (Some coreType)
   | _ -> (args, newtypes, coreType)
 
-let newtypeToVar newtype type_ =
-  let var_desc = Ptyp_var ("type-" ^ newtype) in
-  let typ (mapper : Ast_mapper.mapper) typ =
-    match typ.ptyp_desc with
-    | Ptyp_constr ({txt = Lident name}, _) when name = newtype ->
-      {typ with ptyp_desc = var_desc}
-    | _ -> Ast_mapper.default_mapper.typ mapper typ
-  in
-  let mapper = {Ast_mapper.default_mapper with typ} in
-  mapper.typ mapper type_
-
-let argToType ~newtypes ~(typeConstraints : core_type option) types
+let argToType types
     ((name, default, {ppat_attributes = attrs}, _alias, loc, type_) :
       arg_label * expression option * pattern * label * 'loc * core_type option)
     =
-  let rec getType name coreType =
-    match coreType with
-    | {ptyp_desc = Ptyp_arrow (arg, c1, c2)} ->
-      if name = arg then Some c1 else getType name c2
-    | _ -> None
-  in
-  let typeConst = Option.bind typeConstraints (getType name) in
-  let type_ =
-    List.fold_left
-      (fun type_ newtype ->
-        match (type_, typeConst) with
-        | _, Some typ | Some typ, None -> Some (newtypeToVar newtype.txt typ)
-        | _ -> None)
-      type_ newtypes
-  in
   match (type_, name, default) with
   | Some type_, name, _ when isOptional name ->
     (true, getLabel name, attrs, loc, type_) :: types
   | Some type_, name, _ -> (false, getLabel name, attrs, loc, type_) :: types
   | None, name, _ when isOptional name ->
-    (true, getLabel name, attrs, loc, Typ.var ~loc (safeTypeFromValue name))
-    :: types
+    (true, getLabel name, attrs, loc, Typ.any ~loc ()) :: types
   | None, name, _ when isLabelled name ->
-    (false, getLabel name, attrs, loc, Typ.var ~loc (safeTypeFromValue name))
-    :: types
+    (false, getLabel name, attrs, loc, Typ.any ~loc ()) :: types
   | _ -> types
 
 let hasDefaultValue nameArgList =
@@ -1027,16 +999,12 @@ let transformStructureItem ~config mapper item =
             modifiedBinding binding
           in
           (* do stuff here! *)
-          let namedArgList, newtypes, typeConstraints =
+          let namedArgList, newtypes, _typeConstraints =
             recursivelyTransformNamedArgsForMake mapper
               (modifiedBindingOld binding)
               [] [] None
           in
-          let namedTypeList =
-            List.fold_left
-              (argToType ~newtypes ~typeConstraints)
-              [] namedArgList
-          in
+          let namedTypeList = List.fold_left argToType [] namedArgList in
           let vbMatch (name, default, _, alias, loc, _) =
             let label = getLabel name in
             match default with
@@ -1228,6 +1196,13 @@ let transformStructureItem ~config mapper item =
                       | [] -> []
                       | _ -> [Typ.any ()]))))
               expression
+          in
+          let expression =
+            (* Add new tupes (type a,b,c) to make's definition *)
+            newtypes
+            |> List.fold_left
+                 (fun e newtype -> Exp.newtype newtype e)
+                 expression
           in
           (* let make = ({id, name, ...}: props<'id, 'name, ...>) => { ... } *)
           let bindings, newBinding =
