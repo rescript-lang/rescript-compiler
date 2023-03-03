@@ -89,9 +89,7 @@ let check_constant loc kind (const : Parsetree.constant) =
          affect int ranges
       *)
       try
-        ignore
-          (if String.length s = 0 || s.[0] = '-' then Int32.of_string s
-          else Int32.of_string ("-" ^ s))
+        ignore @@ Int32.of_string s
       with _ -> Bs_warnings.warn_literal_overflow loc)
   | Pconst_integer (_, Some 'n') ->
       Location.raise_errorf ~loc "literal with `n` suffix is not supported"
