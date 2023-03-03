@@ -38,6 +38,7 @@
 - Fix formatting of `switch` expressions that contain braced `cases` inside https://github.com/rescript-lang/syntax/pull/735
 - Fix formatting of props spread for multiline JSX expression https://github.com/rescript-lang/syntax/pull/736
 - Support `@gentype.import` as an alias to `@genType.import` in the compiler https://github.com/rescript-lang/rescript-compiler/pull/6021
+- In GenType, check annotations also in module types to decide whether to produce the `.gen.tsx` file https://github.com/rescript-lang/rescript-compiler/pull/5903
 
 #### :rocket: New Feature
 
