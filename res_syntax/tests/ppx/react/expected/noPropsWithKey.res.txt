@@ -3,7 +3,7 @@
 module V4CA = {
   type props = {}
 
-  @react.component let make = (_: props) => ReactDOM.createDOMElementVariadic("div", [])
+  let make = (_: props) => ReactDOM.createDOMElementVariadic("div", [])
   let make = {
     let \"NoPropsWithKey$V4CA" = props => make(props)
 
@@ -21,7 +21,6 @@ module V4CB = {
 module V4C = {
   type props = {}
 
-  @react.component
   let make = (_: props) =>
     ReactDOM.createElement(
       React.fragment,
@@ -42,7 +41,7 @@ module V4C = {
 module V4CA = {
   type props = {}
 
-  @react.component let make = (_: props) => ReactDOM.jsx("div", {})
+  let make = (_: props) => ReactDOM.jsx("div", {})
   let make = {
     let \"NoPropsWithKey$V4CA" = props => make(props)
 
@@ -60,7 +59,6 @@ module V4CB = {
 module V4C = {
   type props = {}
 
-  @react.component
   let make = (_: props) =>
     React.jsxs(
       React.jsxFragment,

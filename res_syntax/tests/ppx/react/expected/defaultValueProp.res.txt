@@ -1,6 +1,5 @@
 module C0 = {
   type props<'a, 'b> = {a?: 'a, b?: 'b}
-  @react.component
   let make = (props: props<_, _>) => {
     let a = switch props.a {
     | Some(a) => a
@@ -22,7 +21,6 @@ module C0 = {
 module C1 = {
   type props<'a, 'b> = {a?: 'a, b: 'b}
 
-  @react.component
   let make = (props: props<_, _>) => {
     let a = switch props.a {
     | Some(a) => a

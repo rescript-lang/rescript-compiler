@@ -64,7 +64,6 @@ module Select = {
     items: 'items,
   }
 
-  @react.component
   let make = (
     type a key,
     {model, selected, onChange, items, _}: props<

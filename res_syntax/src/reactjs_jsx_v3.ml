@@ -446,8 +446,7 @@ let jsxMapper ~config =
       args
   in
 
-  let rec recursivelyTransformNamedArgsForMake mapper expr args newtypes =
-    let expr = mapper.expr mapper expr in
+  let rec recursivelyTransformNamedArgsForMake expr args newtypes =
     match expr.pexp_desc with
     (* TODO: make this show up with a loc. *)
     | Pexp_fun (Labelled "key", _, _, _) | Pexp_fun (Optional "key", _, _, _) ->
@@ -494,7 +493,7 @@ let jsxMapper ~config =
         | _ -> None
       in
 
-      recursivelyTransformNamedArgsForMake mapper expression
+      recursivelyTransformNamedArgsForMake expression
         ((arg, default, pattern, alias, pattern.ppat_loc, type_) :: args)
         newtypes
     | Pexp_fun
@@ -517,10 +516,9 @@ let jsxMapper ~config =
         "React: react.component refs only support plain arguments and type \
          annotations."
     | Pexp_newtype (label, expression) ->
-      recursivelyTransformNamedArgsForMake mapper expression args
-        (label :: newtypes)
+      recursivelyTransformNamedArgsForMake expression args (label :: newtypes)
     | Pexp_constraint (expression, _typ) ->
-      recursivelyTransformNamedArgsForMake mapper expression args newtypes
+      recursivelyTransformNamedArgsForMake expression args newtypes
     | _ -> (args, newtypes, None)
   in
 
@@ -586,7 +584,7 @@ let jsxMapper ~config =
   in
 
   let nestedModules = ref [] in
-  let transformStructureItem mapper item =
+  let transformStructureItem item =
     match item with
     (* external *)
     | {
@@ -825,7 +823,7 @@ let jsxMapper ~config =
           let props = getPropsAttr payload in
           (* do stuff here! *)
           let namedArgList, newtypes, forwardRef =
-            recursivelyTransformNamedArgsForMake mapper
+            recursivelyTransformNamedArgsForMake
               (modifiedBindingOld binding)
               [] []
           in

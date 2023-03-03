@@ -24,7 +24,6 @@ module V3 = {
 module V4C = {
   type props<'a, 'b> = {a: 'a, b: 'b}
 
-  @react.component
   let make = ({a, b, _}: props<_, _>) => {
     Js.log("This function should be named 'TopLevel.react'")
     ReactDOM.createDOMElementVariadic("div", [])
@@ -41,7 +40,6 @@ module V4C = {
 module V4A = {
   type props<'a, 'b> = {a: 'a, b: 'b}
 
-  @react.component
   let make = ({a, b, _}: props<_, _>) => {
     Js.log("This function should be named 'TopLevel.react'")
     ReactDOM.jsx("div", {})

@@ -22,7 +22,6 @@ let c31 = React.createElement(C31.make, C31.makeProps(~_open="x", ()))
 module C4C0 = {
   type props<'T_open, 'T_type> = {@as("open") _open: 'T_open, @as("type") _type: 'T_type}
 
-  @react.component
   let make = ({@as("open") _open, @as("type") _type, _}: props<_, string>) => React.string(_open)
   let make = {
     let \"MangleKeyword$C4C0" = (props: props<_>) => make(props)
@@ -44,7 +43,6 @@ let c4c1 = React.createElement(C4C1.make, {_open: "x", _type: "t"})
 module C4A0 = {
   type props<'T_open, 'T_type> = {@as("open") _open: 'T_open, @as("type") _type: 'T_type}
 
-  @react.component
   let make = ({@as("open") _open, @as("type") _type, _}: props<_, string>) => React.string(_open)
   let make = {
     let \"MangleKeyword$C4A0" = (props: props<_>) => make(props)
