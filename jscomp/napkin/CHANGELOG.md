@@ -65,6 +65,7 @@
 - Fix formatting of `switch` expressions that contain braced `cases` inside https://github.com/rescript-lang/syntax/pull/735
 - Fix formatting of props spread for multiline JSX expression https://github.com/rescript-lang/syntax/pull/736
 - Fix issue with JSX V4 and newtype https://github.com/rescript-lang/syntax/pull/737
+- Fix issue with JSX V4 when components are nested https://github.com/rescript-lang/syntax/pull/738
 
 #### :eyeglasses: Spec Compliance
 
