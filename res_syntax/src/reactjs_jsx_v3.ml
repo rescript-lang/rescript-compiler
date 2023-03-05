@@ -1019,7 +1019,7 @@ let jsxMapper ~config =
     | _ -> [item]
   in
 
-  let transformSignatureItem _mapper item =
+  let transformSignatureItem item =
     match item with
     | {
         psig_loc;

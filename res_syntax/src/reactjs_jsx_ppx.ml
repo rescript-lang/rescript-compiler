@@ -108,8 +108,8 @@ let getMapper ~config =
           | Psig_attribute attr -> processConfigAttribute attr config
           | _ -> ());
           let item = default_mapper.signature_item mapper item in
-          if config.version = 3 then transformSignatureItem3 mapper item
-          else if config.version = 4 then transformSignatureItem4 mapper item
+          if config.version = 3 then transformSignatureItem3 item
+          else if config.version = 4 then transformSignatureItem4 item
           else [item])
         items
       |> List.flatten

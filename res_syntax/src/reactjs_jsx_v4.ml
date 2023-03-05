@@ -1241,7 +1241,7 @@ let transformStructureItem ~config item =
       [{pstr_loc = emptyLoc; pstr_desc = Pstr_value (recFlag, newBindings)}])
   | _ -> [item]
 
-let transformSignatureItem ~config _mapper item =
+let transformSignatureItem ~config item =
   match item with
   | {
       psig_loc;
