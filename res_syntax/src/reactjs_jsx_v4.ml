@@ -1205,9 +1205,8 @@ let transformStructureItem ~config item =
       else (None, [binding], None)
     in
     (* END of mapBinding fn *)
-    let structuresAndBinding = List.map mapBinding valueBindings in
-    let otherStructures (newItem, binding, newBinding)
-        (newItems, bindings, newBindings) =
+    let processBinding binding (newItems, bindings, newBindings) =
+      let newItem, binding, newBinding = mapBinding binding in
       let newItems =
         match newItem with
         | Some item -> item :: newItems
@@ -1221,7 +1220,7 @@ let transformStructureItem ~config item =
       (newItems, binding @ bindings, newBindings)
     in
     let newItems, bindings, newBindings =
-      List.fold_right otherStructures structuresAndBinding ([], [], [])
+      List.fold_right processBinding valueBindings ([], [], [])
     in
     newItems
     @ [{pstr_loc; pstr_desc = Pstr_value (recFlag, bindings)}]
