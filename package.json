@@ -2,10 +2,10 @@
   "name": "rescript",
   "version": "11.0.0-alpha.1",
   "devDependencies": {
-    "mocha": "^10.1.0",
-    "nyc": "^15.0.0",
-    "prettier": "^2.7.1",
-    "rollup": "^0.49.2"
+    "mocha": "10.1.0",
+    "nyc": "15.0.0",
+    "prettier": "2.7.1",
+    "rollup": "0.49.2"
   },
   "bin": {
     "bsc": "bsc",
