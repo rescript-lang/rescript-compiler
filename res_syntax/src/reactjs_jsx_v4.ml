@@ -1206,24 +1206,24 @@ let transformStructureItem ~config item =
     in
     (* END of mapBinding fn *)
     let structuresAndBinding = List.map mapBinding valueBindings in
-    let otherStructures (type_, binding, newBinding)
-        (types, bindings, newBindings) =
-      let types =
-        match type_ with
-        | Some type_ -> type_ :: types
-        | None -> types
+    let otherStructures (newItem, binding, newBinding)
+        (newItems, bindings, newBindings) =
+      let newItems =
+        match newItem with
+        | Some item -> item :: newItems
+        | None -> newItems
       in
       let newBindings =
         match newBinding with
         | Some newBinding -> newBinding :: newBindings
         | None -> newBindings
       in
-      (types, binding @ bindings, newBindings)
+      (newItems, binding @ bindings, newBindings)
     in
-    let types, bindings, newBindings =
+    let newItems, bindings, newBindings =
       List.fold_right otherStructures structuresAndBinding ([], [], [])
     in
-    types
+    newItems
     @ [{pstr_loc; pstr_desc = Pstr_value (recFlag, bindings)}]
     @
     match newBindings with
