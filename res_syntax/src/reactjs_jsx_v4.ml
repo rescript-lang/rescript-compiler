@@ -879,6 +879,225 @@ let vbMatchExpr namedArgList expr =
   in
   aux (List.rev namedArgList)
 
+let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
+  if React_jsx_common.hasAttrOnBinding binding then (
+    checkMultipleReactComponents ~config ~loc:pstr_loc;
+    let binding = React_jsx_common.removeArity binding in
+    let coreTypeOfAttr =
+      React_jsx_common.coreTypeOfAttrs binding.pvb_attributes
+    in
+    let typVarsOfCoreType =
+      coreTypeOfAttr
+      |> Option.map React_jsx_common.typVarsOfCoreType
+      |> Option.value ~default:[]
+    in
+    let bindingLoc = binding.pvb_loc in
+    let bindingPatLoc = binding.pvb_pat.ppat_loc in
+    let binding =
+      {
+        binding with
+        pvb_pat = {binding.pvb_pat with ppat_loc = emptyLoc};
+        pvb_loc = emptyLoc;
+        pvb_attributes = binding.pvb_attributes |> List.filter otherAttrsPure;
+      }
+    in
+    let fnName = getFnName binding.pvb_pat in
+    let internalFnName = fnName ^ "$Internal" in
+    let fullModuleName = makeModuleName fileName config.nestedModules fnName in
+    let bindingWrapper, hasForwardRef, expression =
+      modifiedBinding ~bindingLoc ~bindingPatLoc ~fnName binding
+    in
+    (* do stuff here! *)
+    let namedArgList, newtypes, _typeConstraints =
+      recursivelyTransformNamedArgsForMake
+        (modifiedBindingOld binding)
+        [] [] None
+    in
+    let namedTypeList = List.fold_left argToType [] namedArgList in
+    (* type props = { ... } *)
+    let propsRecordType =
+      makePropsRecordType ~coreTypeOfAttr ~typVarsOfCoreType "props" pstr_loc
+        namedTypeList
+    in
+    let innerExpression =
+      Exp.apply
+        (Exp.ident
+           (Location.mknoloc
+           @@ Lident
+                (match recFlag with
+                | Recursive -> internalFnName
+                | Nonrecursive -> fnName)))
+        ([(Nolabel, Exp.ident (Location.mknoloc @@ Lident "props"))]
+        @
+        match hasForwardRef with
+        | true -> [(Nolabel, Exp.ident (Location.mknoloc @@ Lident "ref"))]
+        | false -> [])
+    in
+    let makePropsPattern = function
+      | [] -> Pat.var @@ Location.mknoloc "props"
+      | _ ->
+        Pat.constraint_
+          (Pat.var @@ Location.mknoloc "props")
+          (Typ.constr (Location.mknoloc @@ Lident "props") [Typ.any ()])
+    in
+    let fullExpression =
+      (* React component name should start with uppercase letter *)
+      (* let make = { let \"App" = props => make(props); \"App" } *)
+      (* let make = React.forwardRef({
+           let \"App" = (props, ref) => make({...props, ref: @optional (Js.Nullabel.toOption(ref))})
+         })*)
+      Exp.fun_ nolabel None
+        (match coreTypeOfAttr with
+        | None -> makePropsPattern namedTypeList
+        | Some _ -> makePropsPattern typVarsOfCoreType)
+        (if hasForwardRef then
+         Exp.fun_ nolabel None
+           (Pat.var @@ Location.mknoloc "ref")
+           innerExpression
+        else innerExpression)
+    in
+    let fullExpression =
+      match fullModuleName with
+      | "" -> fullExpression
+      | txt ->
+        Exp.let_ Nonrecursive
+          [
+            Vb.mk ~loc:emptyLoc
+              (Pat.var ~loc:emptyLoc {loc = emptyLoc; txt})
+              fullExpression;
+          ]
+          (Exp.ident ~loc:pstr_loc {loc = emptyLoc; txt = Lident txt})
+    in
+    let rec stripConstraintUnpack ~label pattern =
+      match pattern with
+      | {ppat_desc = Ppat_constraint (pattern, _)} ->
+        stripConstraintUnpack ~label pattern
+      | {ppat_desc = Ppat_unpack _; ppat_loc} ->
+        (* remove unpack e.g. model: module(T) *)
+        Pat.var ~loc:ppat_loc {txt = label; loc = ppat_loc}
+      | _ -> pattern
+    in
+    let rec returnedExpression patternsWithLabel patternsWithNolabel
+        ({pexp_desc} as expr) =
+      match pexp_desc with
+      | Pexp_newtype (_, expr) ->
+        returnedExpression patternsWithLabel patternsWithNolabel expr
+      | Pexp_constraint (expr, _) ->
+        returnedExpression patternsWithLabel patternsWithNolabel expr
+      | Pexp_fun
+          ( _arg_label,
+            _default,
+            {ppat_desc = Ppat_construct ({txt = Lident "()"}, _)},
+            expr ) ->
+        (patternsWithLabel, patternsWithNolabel, expr)
+      | Pexp_fun (arg_label, _default, ({ppat_loc; ppat_desc} as pattern), expr)
+        -> (
+        let patternWithoutConstraint =
+          stripConstraintUnpack ~label:(getLabel arg_label) pattern
+        in
+        if isLabelled arg_label || isOptional arg_label then
+          returnedExpression
+            (( {loc = ppat_loc; txt = Lident (getLabel arg_label)},
+               {
+                 patternWithoutConstraint with
+                 ppat_attributes =
+                   (if isOptional arg_label then optionalAttrs else [])
+                   @ pattern.ppat_attributes;
+               } )
+            :: patternsWithLabel)
+            patternsWithNolabel expr
+        else
+          (* Special case of nolabel arg "ref" in forwardRef fn *)
+          (* let make = React.forwardRef(ref => body) *)
+          match ppat_desc with
+          | Ppat_var {txt} | Ppat_constraint ({ppat_desc = Ppat_var {txt}}, _)
+            ->
+            returnedExpression patternsWithLabel
+              (( {loc = ppat_loc; txt = Lident txt},
+                 {
+                   pattern with
+                   ppat_attributes = optionalAttrs @ pattern.ppat_attributes;
+                 } )
+              :: patternsWithNolabel)
+              expr
+          | _ -> returnedExpression patternsWithLabel patternsWithNolabel expr)
+      | _ -> (patternsWithLabel, patternsWithNolabel, expr)
+    in
+    let patternsWithLabel, patternsWithNolabel, expression =
+      returnedExpression [] [] expression
+    in
+    (* add pattern matching for optional prop value *)
+    let expression =
+      if hasDefaultValue namedArgList then vbMatchExpr namedArgList expression
+      else expression
+    in
+    (* (ref) => expr *)
+    let expression =
+      List.fold_left
+        (fun expr (_, pattern) -> Exp.fun_ Nolabel None pattern expr)
+        expression patternsWithNolabel
+    in
+    (* ({a, b, _}: props<'a, 'b>) *)
+    let recordPattern =
+      match patternsWithLabel with
+      | [] -> Pat.any ()
+      | _ -> Pat.record (List.rev patternsWithLabel) Open
+    in
+    let recordPattern =
+      if hasDefaultValue namedArgList then
+        Pat.var {txt = "props"; loc = emptyLoc}
+      else recordPattern
+    in
+    let expression =
+      Exp.fun_ Nolabel None
+        (Pat.constraint_ recordPattern
+           (Typ.constr ~loc:emptyLoc
+              {txt = Lident "props"; loc = emptyLoc}
+              (match coreTypeOfAttr with
+              | None ->
+                makePropsTypeParams ~stripExplicitOption:true
+                  ~stripExplicitJsNullableOfRef:hasForwardRef namedTypeList
+              | Some _ -> (
+                match typVarsOfCoreType with
+                | [] -> []
+                | _ -> [Typ.any ()]))))
+        expression
+    in
+    let expression =
+      (* Add new tupes (type a,b,c) to make's definition *)
+      newtypes
+      |> List.fold_left (fun e newtype -> Exp.newtype newtype e) expression
+    in
+    (* let make = ({id, name, ...}: props<'id, 'name, ...>) => { ... } *)
+    let bindings, newBinding =
+      match recFlag with
+      | Recursive ->
+        ( [
+            bindingWrapper
+              (Exp.let_ ~loc:emptyLoc Nonrecursive
+                 [makeNewBinding binding expression internalFnName]
+                 (Exp.let_ ~loc:emptyLoc Nonrecursive
+                    [
+                      Vb.mk
+                        (Pat.var {loc = emptyLoc; txt = fnName})
+                        fullExpression;
+                    ]
+                    (Exp.ident {loc = emptyLoc; txt = Lident fnName})));
+          ],
+          None )
+      | Nonrecursive ->
+        ( [
+            {
+              binding with
+              pvb_expr = expression;
+              pvb_pat = Pat.var {txt = fnName; loc = Location.none};
+            };
+          ],
+          Some (bindingWrapper fullExpression) )
+    in
+    (Some propsRecordType, bindings, newBinding))
+  else (None, [binding], None)
+
 let transformStructureItem ~config item =
   match item with
   (* external *)
@@ -956,234 +1175,10 @@ let transformStructureItem ~config item =
   | {pstr_loc; pstr_desc = Pstr_value (recFlag, valueBindings)} -> (
     let fileName = filenameFromLoc pstr_loc in
     let emptyLoc = Location.in_file fileName in
-    let mapBinding binding =
-      if React_jsx_common.hasAttrOnBinding binding then (
-        checkMultipleReactComponents ~config ~loc:pstr_loc;
-        let binding = React_jsx_common.removeArity binding in
-        let coreTypeOfAttr =
-          React_jsx_common.coreTypeOfAttrs binding.pvb_attributes
-        in
-        let typVarsOfCoreType =
-          coreTypeOfAttr
-          |> Option.map React_jsx_common.typVarsOfCoreType
-          |> Option.value ~default:[]
-        in
-        let bindingLoc = binding.pvb_loc in
-        let bindingPatLoc = binding.pvb_pat.ppat_loc in
-        let binding =
-          {
-            binding with
-            pvb_pat = {binding.pvb_pat with ppat_loc = emptyLoc};
-            pvb_loc = emptyLoc;
-            pvb_attributes =
-              binding.pvb_attributes |> List.filter otherAttrsPure;
-          }
-        in
-        let fnName = getFnName binding.pvb_pat in
-        let internalFnName = fnName ^ "$Internal" in
-        let fullModuleName =
-          makeModuleName fileName config.nestedModules fnName
-        in
-        let bindingWrapper, hasForwardRef, expression =
-          modifiedBinding ~bindingLoc ~bindingPatLoc ~fnName binding
-        in
-        (* do stuff here! *)
-        let namedArgList, newtypes, _typeConstraints =
-          recursivelyTransformNamedArgsForMake
-            (modifiedBindingOld binding)
-            [] [] None
-        in
-        let namedTypeList = List.fold_left argToType [] namedArgList in
-        (* type props = { ... } *)
-        let propsRecordType =
-          makePropsRecordType ~coreTypeOfAttr ~typVarsOfCoreType "props"
-            pstr_loc namedTypeList
-        in
-        let innerExpression =
-          Exp.apply
-            (Exp.ident
-               (Location.mknoloc
-               @@ Lident
-                    (match recFlag with
-                    | Recursive -> internalFnName
-                    | Nonrecursive -> fnName)))
-            ([(Nolabel, Exp.ident (Location.mknoloc @@ Lident "props"))]
-            @
-            match hasForwardRef with
-            | true -> [(Nolabel, Exp.ident (Location.mknoloc @@ Lident "ref"))]
-            | false -> [])
-        in
-        let makePropsPattern = function
-          | [] -> Pat.var @@ Location.mknoloc "props"
-          | _ ->
-            Pat.constraint_
-              (Pat.var @@ Location.mknoloc "props")
-              (Typ.constr (Location.mknoloc @@ Lident "props") [Typ.any ()])
-        in
-        let fullExpression =
-          (* React component name should start with uppercase letter *)
-          (* let make = { let \"App" = props => make(props); \"App" } *)
-          (* let make = React.forwardRef({
-               let \"App" = (props, ref) => make({...props, ref: @optional (Js.Nullabel.toOption(ref))})
-             })*)
-          Exp.fun_ nolabel None
-            (match coreTypeOfAttr with
-            | None -> makePropsPattern namedTypeList
-            | Some _ -> makePropsPattern typVarsOfCoreType)
-            (if hasForwardRef then
-             Exp.fun_ nolabel None
-               (Pat.var @@ Location.mknoloc "ref")
-               innerExpression
-            else innerExpression)
-        in
-        let fullExpression =
-          match fullModuleName with
-          | "" -> fullExpression
-          | txt ->
-            Exp.let_ Nonrecursive
-              [
-                Vb.mk ~loc:emptyLoc
-                  (Pat.var ~loc:emptyLoc {loc = emptyLoc; txt})
-                  fullExpression;
-              ]
-              (Exp.ident ~loc:pstr_loc {loc = emptyLoc; txt = Lident txt})
-        in
-        let rec stripConstraintUnpack ~label pattern =
-          match pattern with
-          | {ppat_desc = Ppat_constraint (pattern, _)} ->
-            stripConstraintUnpack ~label pattern
-          | {ppat_desc = Ppat_unpack _; ppat_loc} ->
-            (* remove unpack e.g. model: module(T) *)
-            Pat.var ~loc:ppat_loc {txt = label; loc = ppat_loc}
-          | _ -> pattern
-        in
-        let rec returnedExpression patternsWithLabel patternsWithNolabel
-            ({pexp_desc} as expr) =
-          match pexp_desc with
-          | Pexp_newtype (_, expr) ->
-            returnedExpression patternsWithLabel patternsWithNolabel expr
-          | Pexp_constraint (expr, _) ->
-            returnedExpression patternsWithLabel patternsWithNolabel expr
-          | Pexp_fun
-              ( _arg_label,
-                _default,
-                {ppat_desc = Ppat_construct ({txt = Lident "()"}, _)},
-                expr ) ->
-            (patternsWithLabel, patternsWithNolabel, expr)
-          | Pexp_fun
-              (arg_label, _default, ({ppat_loc; ppat_desc} as pattern), expr)
-            -> (
-            let patternWithoutConstraint =
-              stripConstraintUnpack ~label:(getLabel arg_label) pattern
-            in
-            if isLabelled arg_label || isOptional arg_label then
-              returnedExpression
-                (( {loc = ppat_loc; txt = Lident (getLabel arg_label)},
-                   {
-                     patternWithoutConstraint with
-                     ppat_attributes =
-                       (if isOptional arg_label then optionalAttrs else [])
-                       @ pattern.ppat_attributes;
-                   } )
-                :: patternsWithLabel)
-                patternsWithNolabel expr
-            else
-              (* Special case of nolabel arg "ref" in forwardRef fn *)
-              (* let make = React.forwardRef(ref => body) *)
-              match ppat_desc with
-              | Ppat_var {txt}
-              | Ppat_constraint ({ppat_desc = Ppat_var {txt}}, _) ->
-                returnedExpression patternsWithLabel
-                  (( {loc = ppat_loc; txt = Lident txt},
-                     {
-                       pattern with
-                       ppat_attributes = optionalAttrs @ pattern.ppat_attributes;
-                     } )
-                  :: patternsWithNolabel)
-                  expr
-              | _ ->
-                returnedExpression patternsWithLabel patternsWithNolabel expr)
-          | _ -> (patternsWithLabel, patternsWithNolabel, expr)
-        in
-        let patternsWithLabel, patternsWithNolabel, expression =
-          returnedExpression [] [] expression
-        in
-        (* add pattern matching for optional prop value *)
-        let expression =
-          if hasDefaultValue namedArgList then
-            vbMatchExpr namedArgList expression
-          else expression
-        in
-        (* (ref) => expr *)
-        let expression =
-          List.fold_left
-            (fun expr (_, pattern) -> Exp.fun_ Nolabel None pattern expr)
-            expression patternsWithNolabel
-        in
-        (* ({a, b, _}: props<'a, 'b>) *)
-        let recordPattern =
-          match patternsWithLabel with
-          | [] -> Pat.any ()
-          | _ -> Pat.record (List.rev patternsWithLabel) Open
-        in
-        let recordPattern =
-          if hasDefaultValue namedArgList then
-            Pat.var {txt = "props"; loc = emptyLoc}
-          else recordPattern
-        in
-        let expression =
-          Exp.fun_ Nolabel None
-            (Pat.constraint_ recordPattern
-               (Typ.constr ~loc:emptyLoc
-                  {txt = Lident "props"; loc = emptyLoc}
-                  (match coreTypeOfAttr with
-                  | None ->
-                    makePropsTypeParams ~stripExplicitOption:true
-                      ~stripExplicitJsNullableOfRef:hasForwardRef namedTypeList
-                  | Some _ -> (
-                    match typVarsOfCoreType with
-                    | [] -> []
-                    | _ -> [Typ.any ()]))))
-            expression
-        in
-        let expression =
-          (* Add new tupes (type a,b,c) to make's definition *)
-          newtypes
-          |> List.fold_left (fun e newtype -> Exp.newtype newtype e) expression
-        in
-        (* let make = ({id, name, ...}: props<'id, 'name, ...>) => { ... } *)
-        let bindings, newBinding =
-          match recFlag with
-          | Recursive ->
-            ( [
-                bindingWrapper
-                  (Exp.let_ ~loc:emptyLoc Nonrecursive
-                     [makeNewBinding binding expression internalFnName]
-                     (Exp.let_ ~loc:emptyLoc Nonrecursive
-                        [
-                          Vb.mk
-                            (Pat.var {loc = emptyLoc; txt = fnName})
-                            fullExpression;
-                        ]
-                        (Exp.ident {loc = emptyLoc; txt = Lident fnName})));
-              ],
-              None )
-          | Nonrecursive ->
-            ( [
-                {
-                  binding with
-                  pvb_expr = expression;
-                  pvb_pat = Pat.var {txt = fnName; loc = Location.none};
-                };
-              ],
-              Some (bindingWrapper fullExpression) )
-        in
-        (Some propsRecordType, bindings, newBinding))
-      else (None, [binding], None)
-    in
-    (* END of mapBinding fn *)
     let processBinding binding (newItems, bindings, newBindings) =
-      let newItem, binding, newBinding = mapBinding binding in
+      let newItem, binding, newBinding =
+        mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding
+      in
       let newItems =
         match newItem with
         | Some item -> item :: newItems
