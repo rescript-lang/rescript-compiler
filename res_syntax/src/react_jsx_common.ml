@@ -41,3 +41,25 @@ let raiseErrorMultipleReactComponent ~loc =
   raiseError ~loc
     "Only one component definition is allowed for each module. Move to a \
      submodule or other file if necessary."
+
+let optionalAttr = ({txt = "res.optional"; loc = Location.none}, PStr [])
+
+let extractUncurried typ =
+  if Ast_uncurried.typeIsUncurriedFun typ then
+    let _arity, t = Ast_uncurried.typeExtractUncurriedFun typ in
+    t
+  else typ
+
+let removeArity binding =
+  let rec removeArityRecord expr =
+    match expr.pexp_desc with
+    | _ when Ast_uncurried.exprIsUncurriedFun expr ->
+      Ast_uncurried.exprExtractUncurriedFun expr
+    | Pexp_apply (forwardRef, [(label, e)]) ->
+      {
+        expr with
+        pexp_desc = Pexp_apply (forwardRef, [(label, removeArityRecord e)]);
+      }
+    | _ -> expr
+  in
+  {binding with pvb_expr = removeArityRecord binding.pvb_expr}

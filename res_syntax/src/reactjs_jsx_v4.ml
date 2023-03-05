@@ -27,8 +27,7 @@ let getLabel str =
   | Optional str | Labelled str -> str
   | Nolabel -> ""
 
-let optionalAttr = ({txt = "res.optional"; loc = Location.none}, PStr [])
-let optionalAttrs = [optionalAttr]
+let optionalAttrs = [React_jsx_common.optionalAttr]
 
 let constantString ~loc str =
   Ast_helper.Exp.constant ~loc (Pconst_string (str, None))
@@ -740,12 +739,7 @@ let transformStructureItem ~config item =
         config.hasReactComponent <- true;
         check_string_int_attribute_iter.structure_item
           check_string_int_attribute_iter item;
-        let pval_type =
-          if Ast_uncurried.typeIsUncurriedFun pval_type then
-            let _arity, t = Ast_uncurried.typeExtractUncurriedFun pval_type in
-            t
-          else pval_type
-        in
+        let pval_type = React_jsx_common.extractUncurried pval_type in
         let coreTypeOfAttr = React_jsx_common.coreTypeOfAttrs pval_attributes in
         let typVarsOfCoreType =
           coreTypeOfAttr
@@ -816,21 +810,7 @@ let transformStructureItem ~config item =
           React_jsx_common.raiseErrorMultipleReactComponent ~loc:pstr_loc
         else (
           config.hasReactComponent <- true;
-          let rec removeArityRecord expr =
-            match expr.pexp_desc with
-            | _ when Ast_uncurried.exprIsUncurriedFun expr ->
-              Ast_uncurried.exprExtractUncurriedFun expr
-            | Pexp_apply (forwardRef, [(label, e)]) ->
-              {
-                expr with
-                pexp_desc =
-                  Pexp_apply (forwardRef, [(label, removeArityRecord e)]);
-              }
-            | _ -> expr
-          in
-          let binding =
-            {binding with pvb_expr = removeArityRecord binding.pvb_expr}
-          in
+          let binding = React_jsx_common.removeArity binding in
           let coreTypeOfAttr =
             React_jsx_common.coreTypeOfAttrs binding.pvb_attributes
           in
@@ -1274,12 +1254,7 @@ let transformSignatureItem ~config _mapper item =
       if config.React_jsx_common.hasReactComponent then
         React_jsx_common.raiseErrorMultipleReactComponent ~loc:psig_loc
       else config.hasReactComponent <- true;
-      let pval_type =
-        if Ast_uncurried.typeIsUncurriedFun pval_type then
-          let _arity, t = Ast_uncurried.typeExtractUncurriedFun pval_type in
-          t
-        else pval_type
-      in
+      let pval_type = React_jsx_common.extractUncurried pval_type in
       check_string_int_attribute_iter.signature_item
         check_string_int_attribute_iter item;
       let hasForwardRef = ref false in
