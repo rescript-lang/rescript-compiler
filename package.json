@@ -60,5 +60,8 @@
   "bugs": {
     "url": "https://github.com/rescript-lang/rescript-compiler/issues"
   },
-  "homepage": "http://rescript-lang.org"
+  "homepage": "http://rescript-lang.org",
+  "engines": {
+    "node": "^14.0.0 || >=15.0.1"
+  }
 }
