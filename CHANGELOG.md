@@ -12,6 +12,11 @@
 
 # 10.1.3
 
+#### :rocket: New Feature
+
+- Add experimental suppport for directives. An annotation such as `@@directive("use client;")` emits `use client;` verbatim before imports https://github.com/rescript-lang/rescript-compiler/pull/5999
+- `genType`: add `Core` standard library support for the following builtin types: `Null.t`, `Nullable.t`, `Undefined.t`, `Dict.t<_>`, `Promise.t<_>`, `Date.t`, `BigInt.t`, `RegExp.t`, `Map.t<_, _>`, `WeakMap.t<_, _>`, `Set<_>`, `WeakSet<_>` https://github.com/rescript-lang/rescript-compiler/pull/6024
+
 #### :boom: Breaking Change
 
 - `genType`: streamline the treatment of optionals as undefined https://github.com/rescript-lang/rescript-compiler/pull/6024
@@ -41,11 +46,6 @@
 - In GenType, check annotations also in module types to decide whether to produce the `.gen.tsx` file https://github.com/rescript-lang/rescript-compiler/pull/5903
 - Fix issue with JSX V4 and newtype https://github.com/rescript-lang/syntax/pull/737
 - Fix issue with JSX V4 when components are nested https://github.com/rescript-lang/syntax/pull/738
-
-#### :rocket: New Feature
-
-- Add experimental suppport for directives. An annotation such as `@@directive("use client;")` emits `use client;` verbatim before imports https://github.com/rescript-lang/rescript-compiler/pull/5999
-- `genType`: add `Core` standard library support for the following builtin types: `Null.t`, `Nullable.t`, `Undefined.t`, `Dict.t<_>`, `Promise.t<_>`, `Date.t`, `BigInt.t`, `RegExp.t`, `Map.t<_, _>`, `WeakMap.t<_, _>`, `Set<_>`, `WeakSet<_>` https://github.com/rescript-lang/rescript-compiler/pull/6024
 
 # 10.1.2
 
