@@ -843,6 +843,42 @@ let modifiedBinding ~bindingLoc ~bindingPatLoc ~fnName binding =
   in
   (wrapExpressionWithBinding wrapExpression, hasForwardRef, expression)
 
+let vbMatch (name, default, _, alias, loc, _) =
+  let label = getLabel name in
+  match default with
+  | Some default ->
+    Vb.mk
+      (Pat.var (Location.mkloc alias loc))
+      (Exp.match_
+         (Exp.field
+            (Exp.ident {txt = Lident "props"; loc = Location.none})
+            (Location.mknoloc @@ Lident label))
+         [
+           Exp.case
+             (Pat.construct
+                (Location.mknoloc @@ Lident "Some")
+                (Some (Pat.var (Location.mknoloc label))))
+             (Exp.ident (Location.mknoloc @@ Lident label));
+           Exp.case
+             (Pat.construct (Location.mknoloc @@ Lident "None") None)
+             default;
+         ])
+  | None ->
+    Vb.mk
+      (Pat.var (Location.mkloc alias loc))
+      (Exp.field
+         (Exp.ident {txt = Lident "props"; loc = Location.none})
+         (Location.mknoloc @@ Lident label))
+
+let vbMatchExpr namedArgList expr =
+  let rec aux namedArgList =
+    match namedArgList with
+    | [] -> expr
+    | [namedArg] -> Exp.let_ Nonrecursive [vbMatch namedArg] expr
+    | namedArg :: rest -> Exp.let_ Nonrecursive [vbMatch namedArg] (aux rest)
+  in
+  aux (List.rev namedArgList)
+
 let transformStructureItem ~config item =
   match item with
   (* external *)
@@ -958,43 +994,6 @@ let transformStructureItem ~config item =
             [] [] None
         in
         let namedTypeList = List.fold_left argToType [] namedArgList in
-        let vbMatch (name, default, _, alias, loc, _) =
-          let label = getLabel name in
-          match default with
-          | Some default ->
-            Vb.mk
-              (Pat.var (Location.mkloc alias loc))
-              (Exp.match_
-                 (Exp.field
-                    (Exp.ident {txt = Lident "props"; loc = Location.none})
-                    (Location.mknoloc @@ Lident label))
-                 [
-                   Exp.case
-                     (Pat.construct
-                        (Location.mknoloc @@ Lident "Some")
-                        (Some (Pat.var (Location.mknoloc label))))
-                     (Exp.ident (Location.mknoloc @@ Lident label));
-                   Exp.case
-                     (Pat.construct (Location.mknoloc @@ Lident "None") None)
-                     default;
-                 ])
-          | None ->
-            Vb.mk
-              (Pat.var (Location.mkloc alias loc))
-              (Exp.field
-                 (Exp.ident {txt = Lident "props"; loc = Location.none})
-                 (Location.mknoloc @@ Lident label))
-        in
-        let vbMatchExpr namedArgList expr =
-          let rec aux namedArgList =
-            match namedArgList with
-            | [] -> expr
-            | [namedArg] -> Exp.let_ Nonrecursive [vbMatch namedArg] expr
-            | namedArg :: rest ->
-              Exp.let_ Nonrecursive [vbMatch namedArg] (aux rest)
-          in
-          aux (List.rev namedArgList)
-        in
         (* type props = { ... } *)
         let propsRecordType =
           makePropsRecordType ~coreTypeOfAttr ~typVarsOfCoreType "props"
