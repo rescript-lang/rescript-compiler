@@ -35,7 +35,7 @@ jobs:
           submodules: true
 
       - name: Use OCaml ${{matrix.ocaml_compiler}}
-        uses: ocaml/setup-ocaml@v2
+        uses: ocaml/setup-ocaml@v2.0.10
         with:
           ocaml-compiler: ${{matrix.ocaml_compiler}}
           opam-pin: false
