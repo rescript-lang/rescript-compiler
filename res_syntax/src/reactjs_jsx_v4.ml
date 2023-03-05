@@ -1069,34 +1069,28 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
       |> List.fold_left (fun e newtype -> Exp.newtype newtype e) expression
     in
     (* let make = ({id, name, ...}: props<'id, 'name, ...>) => { ... } *)
-    let bindings, newBinding =
+    let binding, newBinding =
       match recFlag with
       | Recursive ->
-        ( [
-            bindingWrapper
-              (Exp.let_ ~loc:emptyLoc Nonrecursive
-                 [makeNewBinding binding expression internalFnName]
-                 (Exp.let_ ~loc:emptyLoc Nonrecursive
-                    [
-                      Vb.mk
-                        (Pat.var {loc = emptyLoc; txt = fnName})
-                        fullExpression;
-                    ]
-                    (Exp.ident {loc = emptyLoc; txt = Lident fnName})));
-          ],
+        ( bindingWrapper
+            (Exp.let_ ~loc:emptyLoc Nonrecursive
+               [makeNewBinding binding expression internalFnName]
+               (Exp.let_ ~loc:emptyLoc Nonrecursive
+                  [
+                    Vb.mk (Pat.var {loc = emptyLoc; txt = fnName}) fullExpression;
+                  ]
+                  (Exp.ident {loc = emptyLoc; txt = Lident fnName}))),
           None )
       | Nonrecursive ->
-        ( [
-            {
-              binding with
-              pvb_expr = expression;
-              pvb_pat = Pat.var {txt = fnName; loc = Location.none};
-            };
-          ],
+        ( {
+            binding with
+            pvb_expr = expression;
+            pvb_pat = Pat.var {txt = fnName; loc = Location.none};
+          },
           Some (bindingWrapper fullExpression) )
     in
-    (Some propsRecordType, bindings, newBinding))
-  else (None, [binding], None)
+    (Some propsRecordType, binding, newBinding))
+  else (None, binding, None)
 
 let transformStructureItem ~config item =
   match item with
@@ -1189,7 +1183,7 @@ let transformStructureItem ~config item =
         | Some newBinding -> newBinding :: newBindings
         | None -> newBindings
       in
-      (newItems, binding @ bindings, newBindings)
+      (newItems, binding :: bindings, newBindings)
     in
     let newItems, bindings, newBindings =
       List.fold_right processBinding valueBindings ([], [], [])
