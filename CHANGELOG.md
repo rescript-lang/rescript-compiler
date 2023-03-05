@@ -40,6 +40,7 @@
 - Support `@gentype.import` as an alias to `@genType.import` in the compiler https://github.com/rescript-lang/rescript-compiler/pull/6021
 - In GenType, check annotations also in module types to decide whether to produce the `.gen.tsx` file https://github.com/rescript-lang/rescript-compiler/pull/5903
 - Fix issue with JSX V4 and newtype https://github.com/rescript-lang/syntax/pull/737
+- Fix issue with JSX V4 when components are nested https://github.com/rescript-lang/syntax/pull/738
 
 #### :rocket: New Feature
 
