@@ -727,6 +727,122 @@ let checkMultipleReactComponents ~config ~loc =
     React_jsx_common.raiseErrorMultipleReactComponent ~loc
   else config.hasReactComponent <- true
 
+let modifiedBindingOld binding =
+  let expression = binding.pvb_expr in
+  (* TODO: there is a long-tail of unsupported features inside of blocks - Pexp_letmodule , Pexp_letexception , Pexp_ifthenelse *)
+  let rec spelunkForFunExpression expression =
+    match expression with
+    (* let make = (~prop) => ... *)
+    | {pexp_desc = Pexp_fun _} | {pexp_desc = Pexp_newtype _} -> expression
+    (* let make = {let foo = bar in (~prop) => ...} *)
+    | {pexp_desc = Pexp_let (_recursive, _vbs, returnExpression)} ->
+      (* here's where we spelunk! *)
+      spelunkForFunExpression returnExpression
+    (* let make = React.forwardRef((~prop) => ...) *)
+    | {
+     pexp_desc =
+       Pexp_apply (_wrapperExpression, [(Nolabel, innerFunctionExpression)]);
+    } ->
+      spelunkForFunExpression innerFunctionExpression
+    | {pexp_desc = Pexp_sequence (_wrapperExpression, innerFunctionExpression)}
+      ->
+      spelunkForFunExpression innerFunctionExpression
+    | {pexp_desc = Pexp_constraint (innerFunctionExpression, _typ)} ->
+      spelunkForFunExpression innerFunctionExpression
+    | {pexp_loc} ->
+      React_jsx_common.raiseError ~loc:pexp_loc
+        "react.component calls can only be on function definitions or \
+         component wrappers (forwardRef, memo)."
+  in
+  spelunkForFunExpression expression
+
+let modifiedBinding ~bindingLoc ~bindingPatLoc ~fnName binding =
+  let hasApplication = ref false in
+  let wrapExpressionWithBinding expressionFn expression =
+    Vb.mk ~loc:bindingLoc ~attrs:binding.pvb_attributes
+      (Pat.var ~loc:bindingPatLoc {loc = bindingPatLoc; txt = fnName})
+      (expressionFn expression)
+  in
+  let expression = binding.pvb_expr in
+  (* TODO: there is a long-tail of unsupported features inside of blocks - Pexp_letmodule , Pexp_letexception , Pexp_ifthenelse *)
+  let rec spelunkForFunExpression expression =
+    match expression with
+    (* let make = (~prop) => ... with no final unit *)
+    | {
+     pexp_desc =
+       Pexp_fun
+         ( ((Labelled _ | Optional _) as label),
+           default,
+           pattern,
+           ({pexp_desc = Pexp_fun _} as internalExpression) );
+    } ->
+      let wrap, hasForwardRef, exp =
+        spelunkForFunExpression internalExpression
+      in
+      ( wrap,
+        hasForwardRef,
+        {expression with pexp_desc = Pexp_fun (label, default, pattern, exp)} )
+    (* let make = (()) => ... *)
+    (* let make = (_) => ... *)
+    | {
+     pexp_desc =
+       Pexp_fun
+         ( Nolabel,
+           _default,
+           {ppat_desc = Ppat_construct ({txt = Lident "()"}, _) | Ppat_any},
+           _internalExpression );
+    } ->
+      ((fun a -> a), false, expression)
+    (* let make = (~prop) => ... *)
+    | {
+     pexp_desc =
+       Pexp_fun
+         ((Labelled _ | Optional _), _default, _pattern, _internalExpression);
+    } ->
+      ((fun a -> a), false, expression)
+    (* let make = (prop) => ... *)
+    | {pexp_desc = Pexp_fun (_nolabel, _default, pattern, _internalExpression)}
+      ->
+      if !hasApplication then ((fun a -> a), false, expression)
+      else
+        Location.raise_errorf ~loc:pattern.ppat_loc
+          "React: props need to be labelled arguments.\n\
+          \  If you are working with refs be sure to wrap with React.forwardRef.\n\
+          \  If your component doesn't have any props use () or _ instead of a \
+           name."
+    (* let make = {let foo = bar in (~prop) => ...} *)
+    | {pexp_desc = Pexp_let (recursive, vbs, internalExpression)} ->
+      (* here's where we spelunk! *)
+      let wrap, hasForwardRef, exp =
+        spelunkForFunExpression internalExpression
+      in
+      ( wrap,
+        hasForwardRef,
+        {expression with pexp_desc = Pexp_let (recursive, vbs, exp)} )
+    (* let make = React.forwardRef((~prop) => ...) *)
+    | {
+     pexp_desc = Pexp_apply (wrapperExpression, [(Nolabel, internalExpression)]);
+    } ->
+      let () = hasApplication := true in
+      let _, _, exp = spelunkForFunExpression internalExpression in
+      let hasForwardRef = isForwardRef wrapperExpression in
+      ( (fun exp -> Exp.apply wrapperExpression [(nolabel, exp)]),
+        hasForwardRef,
+        exp )
+    | {pexp_desc = Pexp_sequence (wrapperExpression, internalExpression)} ->
+      let wrap, hasForwardRef, exp =
+        spelunkForFunExpression internalExpression
+      in
+      ( wrap,
+        hasForwardRef,
+        {expression with pexp_desc = Pexp_sequence (wrapperExpression, exp)} )
+    | e -> ((fun a -> a), false, e)
+  in
+  let wrapExpression, hasForwardRef, expression =
+    spelunkForFunExpression expression
+  in
+  (wrapExpressionWithBinding wrapExpression, hasForwardRef, expression)
+
 let transformStructureItem ~config item =
   match item with
   (* external *)
@@ -832,146 +948,8 @@ let transformStructureItem ~config item =
         let fullModuleName =
           makeModuleName fileName config.nestedModules fnName
         in
-        let modifiedBindingOld binding =
-          let expression = binding.pvb_expr in
-          (* TODO: there is a long-tail of unsupported features inside of blocks - Pexp_letmodule , Pexp_letexception , Pexp_ifthenelse *)
-          let rec spelunkForFunExpression expression =
-            match expression with
-            (* let make = (~prop) => ... *)
-            | {pexp_desc = Pexp_fun _} | {pexp_desc = Pexp_newtype _} ->
-              expression
-            (* let make = {let foo = bar in (~prop) => ...} *)
-            | {pexp_desc = Pexp_let (_recursive, _vbs, returnExpression)} ->
-              (* here's where we spelunk! *)
-              spelunkForFunExpression returnExpression
-            (* let make = React.forwardRef((~prop) => ...) *)
-            | {
-             pexp_desc =
-               Pexp_apply
-                 (_wrapperExpression, [(Nolabel, innerFunctionExpression)]);
-            } ->
-              spelunkForFunExpression innerFunctionExpression
-            | {
-             pexp_desc =
-               Pexp_sequence (_wrapperExpression, innerFunctionExpression);
-            } ->
-              spelunkForFunExpression innerFunctionExpression
-            | {pexp_desc = Pexp_constraint (innerFunctionExpression, _typ)} ->
-              spelunkForFunExpression innerFunctionExpression
-            | {pexp_loc} ->
-              React_jsx_common.raiseError ~loc:pexp_loc
-                "react.component calls can only be on function definitions or \
-                 component wrappers (forwardRef, memo)."
-          in
-          spelunkForFunExpression expression
-        in
-        let modifiedBinding binding =
-          let hasApplication = ref false in
-          let wrapExpressionWithBinding expressionFn expression =
-            Vb.mk ~loc:bindingLoc ~attrs:binding.pvb_attributes
-              (Pat.var ~loc:bindingPatLoc {loc = bindingPatLoc; txt = fnName})
-              (expressionFn expression)
-          in
-          let expression = binding.pvb_expr in
-          (* TODO: there is a long-tail of unsupported features inside of blocks - Pexp_letmodule , Pexp_letexception , Pexp_ifthenelse *)
-          let rec spelunkForFunExpression expression =
-            match expression with
-            (* let make = (~prop) => ... with no final unit *)
-            | {
-             pexp_desc =
-               Pexp_fun
-                 ( ((Labelled _ | Optional _) as label),
-                   default,
-                   pattern,
-                   ({pexp_desc = Pexp_fun _} as internalExpression) );
-            } ->
-              let wrap, hasForwardRef, exp =
-                spelunkForFunExpression internalExpression
-              in
-              ( wrap,
-                hasForwardRef,
-                {
-                  expression with
-                  pexp_desc = Pexp_fun (label, default, pattern, exp);
-                } )
-            (* let make = (()) => ... *)
-            (* let make = (_) => ... *)
-            | {
-             pexp_desc =
-               Pexp_fun
-                 ( Nolabel,
-                   _default,
-                   {
-                     ppat_desc =
-                       Ppat_construct ({txt = Lident "()"}, _) | Ppat_any;
-                   },
-                   _internalExpression );
-            } ->
-              ((fun a -> a), false, expression)
-            (* let make = (~prop) => ... *)
-            | {
-             pexp_desc =
-               Pexp_fun
-                 ( (Labelled _ | Optional _),
-                   _default,
-                   _pattern,
-                   _internalExpression );
-            } ->
-              ((fun a -> a), false, expression)
-            (* let make = (prop) => ... *)
-            | {
-             pexp_desc =
-               Pexp_fun (_nolabel, _default, pattern, _internalExpression);
-            } ->
-              if !hasApplication then ((fun a -> a), false, expression)
-              else
-                Location.raise_errorf ~loc:pattern.ppat_loc
-                  "React: props need to be labelled arguments.\n\
-                  \  If you are working with refs be sure to wrap with \
-                   React.forwardRef.\n\
-                  \  If your component doesn't have any props use () or _ \
-                   instead of a name."
-            (* let make = {let foo = bar in (~prop) => ...} *)
-            | {pexp_desc = Pexp_let (recursive, vbs, internalExpression)} ->
-              (* here's where we spelunk! *)
-              let wrap, hasForwardRef, exp =
-                spelunkForFunExpression internalExpression
-              in
-              ( wrap,
-                hasForwardRef,
-                {expression with pexp_desc = Pexp_let (recursive, vbs, exp)} )
-            (* let make = React.forwardRef((~prop) => ...) *)
-            | {
-             pexp_desc =
-               Pexp_apply (wrapperExpression, [(Nolabel, internalExpression)]);
-            } ->
-              let () = hasApplication := true in
-              let _, _, exp = spelunkForFunExpression internalExpression in
-              let hasForwardRef = isForwardRef wrapperExpression in
-              ( (fun exp -> Exp.apply wrapperExpression [(nolabel, exp)]),
-                hasForwardRef,
-                exp )
-            | {
-             pexp_desc = Pexp_sequence (wrapperExpression, internalExpression);
-            } ->
-              let wrap, hasForwardRef, exp =
-                spelunkForFunExpression internalExpression
-              in
-              ( wrap,
-                hasForwardRef,
-                {
-                  expression with
-                  pexp_desc = Pexp_sequence (wrapperExpression, exp);
-                } )
-            | e -> ((fun a -> a), false, e)
-          in
-          let wrapExpression, hasForwardRef, expression =
-            spelunkForFunExpression expression
-          in
-          (wrapExpressionWithBinding wrapExpression, hasForwardRef, expression)
-        in
         let bindingWrapper, hasForwardRef, expression =
-          modifiedBinding binding
+          modifiedBinding ~bindingLoc ~bindingPatLoc ~fnName binding
         in
         (* do stuff here! *)
         let namedArgList, newtypes, _typeConstraints =
