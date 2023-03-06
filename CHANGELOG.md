@@ -75,6 +75,7 @@ These are only breaking changes for unformatted code.
 - Fix issue with integer overflow check https://github.com/rescript-lang/rescript-compiler/pull/6028
 - Fix issue with JSX V4 and newtype https://github.com/rescript-lang/rescript-compiler/pull/6029
 - Fix issue with JSX V4 when components are nested https://github.com/rescript-lang/rescript-compiler/pull/6031
+- Fix issue where generic compare on `float` values would be different from the compare for type `float` https://github.com/rescript-lang/rescript-compiler/pull/6042
 
 #### :nail_care: Polish
 
