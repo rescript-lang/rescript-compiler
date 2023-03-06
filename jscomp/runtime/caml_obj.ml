@@ -22,22 +22,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-type t = Obj.t 
+type t = Obj.t
 
 module O = struct
   external isArray : 'a -> bool = "Array.isArray" [@@bs.val]
   type key = string
-  let for_in : (Obj.t -> (key -> unit) -> unit)  = 
-    [%raw{|function(o,foo){
+  let for_in : Obj.t -> (key -> unit) -> unit =
+    [%raw {|function(o,foo){
         for (var x in o) { foo(x) }}
       |}]
-  
+
+  external hasOwnProperty : t -> key -> bool = "call"
+    [@@bs.scope "Object", "prototype", "hasOwnProperty"] [@@bs.val]
   (** 
      JS objects are not guaranteed to have `Object` in their prototype
      chain so calling `some_obj.hasOwnProperty(key)` can sometimes throw
@@ -45,14 +41,9 @@ module O = struct
      objects are created via `Object.create(null)`. The only safe way
      to call this function is directly, e.g. `Object.prototype.hasOwnProperty.call(some_obj, key)`.
   *)
-  external hasOwnProperty :    
-    t -> key -> bool = "call" [@@bs.scope ("Object", "prototype", "hasOwnProperty")] [@@bs.val] 
-  external get_value : Obj.t -> key -> Obj.t = ""[@@bs.get_index]
 
+  external get_value : Obj.t -> key -> Obj.t = "" [@@bs.get_index]
 end
-
-
-
 
 (**
    Since now we change it back to use
@@ -81,7 +72,9 @@ end
    `obj_dup` is a superset of `array_dup`
 *)
 
-let obj_dup : Obj.t -> Obj.t = [%raw{|function(x){
+let obj_dup : Obj.t -> Obj.t =
+  [%raw
+    {|function(x){
   if(Array.isArray(x)){
     var len = x.length  
     var v = new Array(len)
@@ -96,10 +89,6 @@ let obj_dup : Obj.t -> Obj.t = [%raw{|function(x){
   return Object.assign({},x)    
 }|}]
 
-
-
-
-
 (** 
    For the empty dummy object, whether it's 
    [[]] or [{}] depends on how 
@@ -108,7 +97,9 @@ let obj_dup : Obj.t -> Obj.t = [%raw{|function(x){
    In most cases, rec value comes from record/modules, 
    whose tag is 0, we optimize that case
 *)
-let update_dummy : _ -> _ -> unit= [%raw{|function(x,y){
+let update_dummy : _ -> _ -> unit =
+  [%raw
+    {|function(x,y){
   var k  
   if(Array.isArray(y)){
     for(k = 0; k < y.length ; ++k){
@@ -124,10 +115,6 @@ let update_dummy : _ -> _ -> unit= [%raw{|function(x,y){
   }
 }
 |}]
-
-
-
-
 
 (** TODO: investigate total
     [compare x y] returns [0] if [x] is equal to [y],
@@ -147,121 +134,144 @@ let update_dummy : _ -> _ -> unit= [%raw{|function(x,y){
     as well as the [List.sort] and [Array.sort] functions.
 *)
 let rec compare (a : Obj.t) (b : Obj.t) : int =
-  if a == b then 0 else
+  if a == b then 0
+  else
     (*front and formoest, we do not compare function values*)
-    let a_type = Js.typeof a in 
-    let b_type = Js.typeof b in 
-    match a_type, b_type with 
-    | "undefined", _ -> - 1
-    | _, "undefined" -> 1 
+    let a_type = Js.typeof a in
+    let b_type = Js.typeof b in
+    match (a_type, b_type) with
+    | "undefined", _ -> -1
+    | _, "undefined" -> 1
     (* [a] is of type string, b can not be None,
         [a] could be (Some (Some x)) in that case [b] could be [Some None] or [null]
-         so [b] has to be of type string or null *)       
-    | "string", "string" ->   
-      Pervasives.compare (Obj.magic a : string) (Obj.magic b )
-    | "string", _ -> 
+         so [b] has to be of type string or null *)
+    | "string", "string" ->
+      Pervasives.compare (Obj.magic a : string) (Obj.magic b)
+    | "string", _ ->
       (* [b] could be [Some None] or [null] *)
-      1 
-    |  _, "string" -> -1  
-    | "boolean", "boolean" ->       
+      1
+    | _, "string" -> -1
+    | "boolean", "boolean" ->
       Pervasives.compare (Obj.magic a : bool) (Obj.magic b)
-    | "boolean", _ -> 1     
+    | "boolean", _ -> 1
     | _, "boolean" -> -1
-    | "function", "function" -> 
+    | "function", "function" ->
       raise (Invalid_argument "compare: functional value")
     | "function", _ -> 1
-    | _, "function" -> -1 
-    | "number", "number" -> 
-      Pervasives.compare (Obj.magic a : int) (Obj.magic b : int)
-    | "number", _ ->        
-      if b == Obj.repr Js.null || Caml_option.isNested b  then 1 (* Some (Some ..) < x *)
-      else 
-        -1 (* Integer < Block in OCaml runtime GPR #1195, except Some.. *)
-    | _, "number" -> 
-      if a == Obj.repr Js.null || Caml_option.isNested a then -1
-      else 1
-    | _ ->        
-      if a == Obj.repr Js.null then 
+    | _, "function" -> -1
+    | "number", "number" ->
+      Pervasives.compare (Obj.magic a : float) (Obj.magic b : float)
+    | "number", _ ->
+      if b == Obj.repr Js.null || Caml_option.isNested b then 1
+        (* Some (Some ..) < x *)
+      else -1 (* Integer < Block in OCaml runtime GPR #1195, except Some.. *)
+    | _, "number" ->
+      if a == Obj.repr Js.null || Caml_option.isNested a then -1 else 1
+    | _ ->
+      if a == Obj.repr Js.null then
         (* [b] could not be null otherwise would equal *)
-        if Caml_option.isNested b  then 1 else -1
-      else if b == Obj.repr Js.null then 
-        if Caml_option.isNested a  then -1 else 1    
-      else    
-        (* double_array_tag: 254
+        if Caml_option.isNested b then 1 else -1
+      else if b == Obj.repr Js.null then
+        if Caml_option.isNested a then -1 else 1
+      else if (* double_array_tag: 254
         *)
-      if Caml_option.isNested a  then   
-        if Caml_option.isNested b then 
-          aux_obj_compare a b
+              Caml_option.isNested a then
+        if Caml_option.isNested b then aux_obj_compare a b
           (* Some None < Some (Some None)) *)
-        else  (* b could not be undefined/None *)
-          (* Some None < Some ..*) 
-          -1 
-      else 
+        else
+          (* b could not be undefined/None *)
+          (* Some None < Some ..*)
+          -1
+      else
         let tag_a = Obj.tag a in
         let tag_b = Obj.tag b in
-        if tag_a = 248 (* object/exception *)  then
-          Pervasives.compare (Obj.magic (Obj.field a 1) : int) (Obj.magic (Obj.field b 1 ))
+        if tag_a = 248 (* object/exception *) then
+          Pervasives.compare
+            (Obj.magic (Obj.field a 1) : int)
+            (Obj.magic (Obj.field b 1))
         else if tag_a = 251 (* abstract_tag *) then
           raise (Invalid_argument "equal: abstract value")
-        else if tag_a <> tag_b then
-          if tag_a < tag_b then (-1) else  1
+        else if tag_a <> tag_b then if tag_a < tag_b then -1 else 1
         else
           let len_a = Obj.size a in
           let len_b = Obj.size b in
           if len_a = len_b then
-            if O.isArray a
-            then aux_same_length (Obj.magic a  : Obj.t array ) (Obj.magic b : Obj.t array) 0 len_a
-            else if [%raw{|a instanceof Date && b instanceof Date|}] then 
-              [%raw{|a - b|}]
+            if O.isArray a then
+              aux_same_length
+                (Obj.magic a : Obj.t array)
+                (Obj.magic b : Obj.t array)
+                0 len_a
+            else if [%raw {|a instanceof Date && b instanceof Date|}] then
+              [%raw {|a - b|}]
             else aux_obj_compare a b
           else if len_a < len_b then
             (* at least one is not zero, so it is an array block*)
-            aux_length_a_short (Obj.magic a : Obj.t array) (Obj.magic b : Obj.t array) 0 len_a
+            aux_length_a_short
+              (Obj.magic a : Obj.t array)
+              (Obj.magic b : Obj.t array)
+              0 len_a
           else
-            aux_length_b_short (Obj.magic a : Obj.t array) (Obj.magic b : Obj.t array) 0 len_b
-and aux_same_length  (a : Obj.t array) (b : Obj.t array) i same_length =
-  if i = same_length then
-    0
+            aux_length_b_short
+              (Obj.magic a : Obj.t array)
+              (Obj.magic b : Obj.t array)
+              0 len_b
+
+and aux_same_length (a : Obj.t array) (b : Obj.t array) i same_length =
+  if i = same_length then 0
   else
-    let res = compare (Caml_array_extern.unsafe_get  a i) (Caml_array_extern.unsafe_get b i) in
-    if res <> 0 then res
-    else aux_same_length  a b (i + 1) same_length
-and aux_length_a_short (a : Obj.t array)  (b : Obj.t array)  i short_length    =
+    let res =
+      compare
+        (Caml_array_extern.unsafe_get a i)
+        (Caml_array_extern.unsafe_get b i)
+    in
+    if res <> 0 then res else aux_same_length a b (i + 1) same_length
+
+and aux_length_a_short (a : Obj.t array) (b : Obj.t array) i short_length =
   if i = short_length then -1
   else
-    let res = compare (Caml_array_extern.unsafe_get a i) (Caml_array_extern.unsafe_get b i) in
-    if res <> 0 then res
-    else aux_length_a_short a b (i+1) short_length
+    let res =
+      compare
+        (Caml_array_extern.unsafe_get a i)
+        (Caml_array_extern.unsafe_get b i)
+    in
+    if res <> 0 then res else aux_length_a_short a b (i + 1) short_length
+
 and aux_length_b_short (a : Obj.t array) (b : Obj.t array) i short_length =
   if i = short_length then 1
   else
-    let res = compare (Caml_array_extern.unsafe_get a i) (Caml_array_extern.unsafe_get b i) in
-    if res <> 0 then res
-    else aux_length_b_short a b (i+1) short_length
-and aux_obj_compare (a: Obj.t) (b: Obj.t) =
+    let res =
+      compare
+        (Caml_array_extern.unsafe_get a i)
+        (Caml_array_extern.unsafe_get b i)
+    in
+    if res <> 0 then res else aux_length_b_short a b (i + 1) short_length
+
+and aux_obj_compare (a : Obj.t) (b : Obj.t) =
   let min_key_lhs = ref None in
   let min_key_rhs = ref None in
   let do_key (a, b, min_key) key =
-    if not (O.hasOwnProperty b key) ||
-       compare (O.get_value a key) (O.get_value b key) > 0
+    if
+      (not (O.hasOwnProperty b key))
+      || compare (O.get_value a key) (O.get_value b key) > 0
     then
       match min_key.contents with
-      | None -> min_key .contents<- Some key
-      | Some mk ->
-        if key < mk then min_key .contents<- Some key in
+      | None -> min_key.contents <- Some key
+      | Some mk -> if key < mk then min_key.contents <- Some key
+  in
   let do_key_a = do_key (a, b, min_key_rhs) in
   let do_key_b = do_key (b, a, min_key_lhs) in
   O.for_in a do_key_a;
   O.for_in b do_key_b;
-  let res = match min_key_lhs.contents, min_key_rhs.contents with
+  let res =
+    match (min_key_lhs.contents, min_key_rhs.contents) with
     | None, None -> 0
-    | (Some _), None -> -1
-    | None, (Some _) -> 1
-    | (Some x), (Some y) -> Pervasives.compare x y in
+    | Some _, None -> -1
+    | None, Some _ -> 1
+    | Some x, Some y -> Pervasives.compare x y
+  in
   res
 
 type eq = Obj.t -> Obj.t -> bool
-
 
 (** It is easier to do equality check than comparision, since as long as its
     basic type is not the same, it will not equal 
@@ -269,90 +279,106 @@ type eq = Obj.t -> Obj.t -> bool
 let rec equal (a : Obj.t) (b : Obj.t) : bool =
   (*front and formoest, we do not compare function values*)
   if a == b then true
-  else 
-    let a_type = Js.typeof a in 
-    if a_type = "string"
-    ||  a_type = "number"
-    ||  a_type = "boolean"
-    ||  a_type = "undefined"
-    ||  a == [%raw {|null|}]
+  else
+    let a_type = Js.typeof a in
+    if
+      a_type = "string" || a_type = "number" || a_type = "boolean"
+      || a_type = "undefined"
+      || a == [%raw {|null|}]
     then false
-    else 
-      let b_type = Js.typeof b in 
-      if a_type = "function" || b_type = "function"
-      then raise (Invalid_argument "equal: functional value")
-      (* first, check using reference equality *)
-      else (* a_type = "object" || "symbol" *)
-      if b_type = "number" || b_type = "undefined" || b == [%raw{|null|}] then false 
-      else 
+    else
+      let b_type = Js.typeof b in
+      if a_type = "function" || b_type = "function" then
+        raise (Invalid_argument "equal: functional value")
+        (* first, check using reference equality *)
+      else if
+        (* a_type = "object" || "symbol" *)
+        b_type = "number" || b_type = "undefined" || b == [%raw {|null|}]
+      then false
+      else
         (* [a] [b] could not be null, so it can not raise *)
         let tag_a = Obj.tag a in
         let tag_b = Obj.tag b in
-        if tag_a = 248 (* object/exception *)  then
-          (Obj.magic  (Obj.field a 1)) ==  (Obj.magic (Obj.field b 1 ))
+        if tag_a = 248 (* object/exception *) then
+          Obj.magic (Obj.field a 1) == Obj.magic (Obj.field b 1)
         else if tag_a = 251 (* abstract_tag *) then
           raise (Invalid_argument "equal: abstract value")
-        else if tag_a <> tag_b then
-          false
-        else 
+        else if tag_a <> tag_b then false
+        else
           let len_a = Obj.size a in
           let len_b = Obj.size b in
           if len_a = len_b then
-            if O.isArray a
-            then aux_equal_length (Obj.magic a : Obj.t array) (Obj.magic b : Obj.t array) 0 len_a
-            else if [%raw{|a instanceof Date && b instanceof Date|}] then
-              not (Js.unsafe_gt a  b || Js.unsafe_lt a  b)
+            if O.isArray a then
+              aux_equal_length
+                (Obj.magic a : Obj.t array)
+                (Obj.magic b : Obj.t array)
+                0 len_a
+            else if [%raw {|a instanceof Date && b instanceof Date|}] then
+              not (Js.unsafe_gt a b || Js.unsafe_lt a b)
             else aux_obj_equal a b
           else false
-and aux_equal_length  (a : Obj.t array) (b : Obj.t array) i same_length =
-  if i = same_length then
-    true
+
+and aux_equal_length (a : Obj.t array) (b : Obj.t array) i same_length =
+  if i = same_length then true
   else
     equal (Caml_array_extern.unsafe_get a i) (Caml_array_extern.unsafe_get b i)
-    && aux_equal_length  a b (i + 1) same_length
-and aux_obj_equal (a: Obj.t) (b: Obj.t) =
+    && aux_equal_length a b (i + 1) same_length
+
+and aux_obj_equal (a : Obj.t) (b : Obj.t) =
   let result = ref true in
   let do_key_a key =
-    if not (O.hasOwnProperty b key)
-    then result .contents<- false in
+    if not (O.hasOwnProperty b key) then result.contents <- false
+  in
   let do_key_b key =
-    if not (O.hasOwnProperty a key) ||
-       not (equal (O.get_value b key) (O.get_value a key))
-    then result .contents<- false in
-  O.for_in a do_key_a ;
+    if
+      (not (O.hasOwnProperty a key))
+      || not (equal (O.get_value b key) (O.get_value a key))
+    then result.contents <- false
+  in
+  O.for_in a do_key_a;
   if result.contents then O.for_in b do_key_b;
   result.contents
 
-let equal_null (x : Obj.t) (y : Obj.t Js.null) = 
-  match Js.nullToOption y with    
-  | None -> x == (Obj.magic y)
-  | Some y -> equal x y 
-
-let equal_undefined (x : Obj.t) (y : Obj.t Js.undefined) =    
-  match Js.undefinedToOption y with 
-  | None -> x == (Obj.magic y)
-  | Some y -> equal x y 
-
-let equal_nullable ( x: Obj.t) (y : Obj.t Js.nullable) =    
-  match Js.toOption  y with 
-  | None -> x == (Obj.magic y)
+let equal_null (x : Obj.t) (y : Obj.t Js.null) =
+  match Js.nullToOption y with
+  | None -> x == Obj.magic y
   | Some y -> equal x y
 
-let notequal a  b =  not (equal a  b)
+let equal_undefined (x : Obj.t) (y : Obj.t Js.undefined) =
+  match Js.undefinedToOption y with
+  | None -> x == Obj.magic y
+  | Some y -> equal x y
 
-let greaterequal a b = compare a b >= 0
+let equal_nullable (x : Obj.t) (y : Obj.t Js.nullable) =
+  match Js.toOption y with
+  | None -> x == Obj.magic y
+  | Some y -> equal x y
 
-let greaterthan a b = compare a b > 0
+let notequal a b =
+  if Js.typeof a = "number" && Js.typeof b = "number" then
+    (Obj.magic a : float) <> (Obj.magic b : float)
+  else not (equal a b)
 
-let lessequal a b = compare a b <= 0
+let greaterequal a b =
+  if Js.typeof a = "number" && Js.typeof b = "number" then
+    (Obj.magic a : float) >= (Obj.magic b : float)
+  else compare a b >= 0
 
-let lessthan a b = compare a b < 0
+let greaterthan a b =
+  if Js.typeof a = "number" && Js.typeof b = "number" then
+    (Obj.magic a : float) > (Obj.magic b : float)
+  else compare a b > 0
 
-let min (x : Obj.t) y =   
-  if compare  x y <= 0 then x else y 
+let lessequal a b =
+  if Js.typeof a = "number" && Js.typeof b = "number" then
+    (Obj.magic a : float) <= (Obj.magic b : float)
+  else compare a b <= 0
 
-let max (x : Obj.t) y =    
-  if compare x y >= 0 then x else y 
+let lessthan a b =
+  if Js.typeof a = "number" && Js.typeof b = "number" then
+    (Obj.magic a : float) < (Obj.magic b : float)
+  else compare a b < 0
 
+let min (x : Obj.t) y = if compare x y <= 0 then x else y
 
-
+let max (x : Obj.t) y = if compare x y >= 0 then x else y
