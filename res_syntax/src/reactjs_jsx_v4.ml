@@ -850,9 +850,7 @@ let vbMatch (name, default, _, alias, loc, _) =
     Vb.mk
       (Pat.var (Location.mkloc alias loc))
       (Exp.match_
-         (Exp.field
-            (Exp.ident {txt = Lident "props"; loc = Location.none})
-            (Location.mknoloc @@ Lident label))
+         (Exp.ident {txt = Lident alias; loc = Location.none})
          [
            Exp.case
              (Pat.construct
@@ -866,9 +864,7 @@ let vbMatch (name, default, _, alias, loc, _) =
   | None ->
     Vb.mk
       (Pat.var (Location.mkloc alias loc))
-      (Exp.field
-         (Exp.ident {txt = Lident "props"; loc = Location.none})
-         (Location.mknoloc @@ Lident label))
+      (Exp.ident {txt = Lident label; loc = Location.none})
 
 let vbMatchExpr namedArgList expr =
   let rec aux namedArgList =
@@ -1042,11 +1038,6 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
       match patternsWithLabel with
       | [] -> Pat.any ()
       | _ -> Pat.record (List.rev patternsWithLabel) Open
-    in
-    let recordPattern =
-      if hasDefaultValue namedArgList then
-        Pat.var {txt = "props"; loc = emptyLoc}
-      else recordPattern
     in
     let expression =
       Exp.fun_ Nolabel None

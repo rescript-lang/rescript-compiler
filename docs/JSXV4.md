@@ -264,7 +264,7 @@ let make = React.forwardRef({
 ### Transformation for Component Definition
 
 ```rescript
-@react.component (~x, ~y=3+x, ?z) => body
+@react.component (~x, ~y=3+x, ~z=?) => body
 ```
 
 is transformed to
@@ -272,11 +272,13 @@ is transformed to
 ```rescript
 type props<'x, 'y, 'z> = {x: 'x, y?: 'y, z?: 'z}
 
-({x, y, z}: props<_>) => {
-  let y = switch props.y {
+({x, ?y, ?z}: props<_, _, _>) => {
+  let x = x
+  let y = switch y {
   | None => 3 + x
   | Some(y) => y
   }
+  let z = z
   body
 }
 ```

@@ -15,3 +15,10 @@ module C1 = {
     React.string(bar)
   }
 }
+
+module C2 = {
+  @react.component
+  let make = (~foo as bar="", ~a=bar, ~b) => {
+    React.string(bar ++ a ++ b)
+  }
+}

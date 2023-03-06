@@ -1,8 +1,8 @@
 @@jsxConfig({version: 4})
 type props<'a> = {a?: 'a}
 
-let make = (props: props<(. unit) => unit>) => {
-  let a = switch props.a {
+let make = ({?a, _}: props<(. unit) => unit>) => {
+  let a = switch a {
   | Some(a) => a
   | None => (. ()) => ()
   }
@@ -28,8 +28,8 @@ func(~callback=(. str, a, b) => {
 module Foo = {
   type props<'callback> = {callback?: 'callback}
 
-  let make = (props: props<(. string, bool, bool) => unit>) => {
-    let callback = switch props.callback {
+  let make = ({?callback, _}: props<(. string, bool, bool) => unit>) => {
+    let callback = switch callback {
     | Some(callback) => callback
     | None => (. _, _, _) => ()
     }

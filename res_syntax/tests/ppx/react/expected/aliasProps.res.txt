@@ -3,9 +3,9 @@
 module C0 = {
   type props<'priority, 'text> = {priority: 'priority, text?: 'text}
 
-  let make = (props: props<_, _>) => {
-    let _ = props.priority
-    let text = switch props.text {
+  let make = ({priority: _, ?text, _}: props<_, _>) => {
+    let _ = priority
+    let text = switch text {
     | Some(text) => text
     | None => "Test"
     }
@@ -22,9 +22,9 @@ module C0 = {
 module C1 = {
   type props<'priority, 'text> = {priority: 'priority, text?: 'text}
 
-  let make = (props: props<_, _>) => {
-    let p = props.priority
-    let text = switch props.text {
+  let make = ({priority: p, ?text, _}: props<_, _>) => {
+    let p = priority
+    let text = switch text {
     | Some(text) => text
     | None => "Test"
     }
@@ -41,8 +41,8 @@ module C1 = {
 module C2 = {
   type props<'foo> = {foo?: 'foo}
 
-  let make = (props: props<_>) => {
-    let bar = switch props.foo {
+  let make = ({foo: ?bar, _}: props<_>) => {
+    let bar = switch bar {
     | Some(foo) => foo
     | None => ""
     }
@@ -53,5 +53,30 @@ module C2 = {
     let \"AliasProps$C2" = (props: props<_>) => make(props)
 
     \"AliasProps$C2"
+  }
+}
+
+module C3 = {
+  type props<'foo, 'a, 'b> = {foo?: 'foo, a?: 'a, b: 'b}
+
+  let make = ({foo: ?bar, ?a, b, _}: props<_, _, _>) => {
+    let bar = switch bar {
+    | Some(foo) => foo
+    | None => ""
+    }
+    let a = switch a {
+    | Some(a) => a
+    | None => bar
+    }
+    let b = b
+
+    {
+      React.string(bar ++ a ++ b)
+    }
+  }
+  let make = {
+    let \"AliasProps$C3" = (props: props<_>) => make(props)
+
+    \"AliasProps$C3"
   }
 }

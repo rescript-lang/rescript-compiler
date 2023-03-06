@@ -76,6 +76,7 @@ These are only breaking changes for unformatted code.
 - Fix issue with JSX V4 and newtype https://github.com/rescript-lang/rescript-compiler/pull/6029
 - Fix issue with JSX V4 when components are nested https://github.com/rescript-lang/rescript-compiler/pull/6031
 - Fix issue where generic compare on `float` values would be different from the compare for type `float` https://github.com/rescript-lang/rescript-compiler/pull/6042
+- Improve code generated for default arguments in JSX V4 https://github.com/rescript-lang/rescript-compiler/pull/6041
 
 #### :nail_care: Polish
 
