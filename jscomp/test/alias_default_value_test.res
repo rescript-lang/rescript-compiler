@@ -15,3 +15,31 @@ module C1 = {
     React.string(bar)
   }
 }
+
+module C2 = {
+  @react.component
+  let make = (~foo as bar="", ~a=bar, ~b) => {
+    React.string(bar ++ a ++ b)
+  }
+}
+
+module C3 = {
+  @react.component
+  let make = (~priority as _, ~text="Test") => React.string(text)
+}
+
+module C4 = {
+  @react.component
+  let make = (~a as b, ~x=true) => b
+}
+
+module C6 = {
+  module type Comp = {
+    let xx : int
+    @react.component
+    let make: unit => React.element
+  }
+
+  @react.component
+  let make = (~comp as module(Comp: Comp), ~x as (a, b)) => Comp.xx
+}

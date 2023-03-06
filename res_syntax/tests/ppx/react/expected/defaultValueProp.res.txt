@@ -1,11 +1,11 @@
 module C0 = {
   type props<'a, 'b> = {a?: 'a, b?: 'b}
-  let make = (props: props<_, _>) => {
-    let a = switch props.a {
+  let make = ({?a, ?b, _}: props<_, _>) => {
+    let a = switch a {
     | Some(a) => a
     | None => 2
     }
-    let b = switch props.b {
+    let b = switch b {
     | Some(b) => b
     | None => a * 2
     }
@@ -21,12 +21,11 @@ module C0 = {
 module C1 = {
   type props<'a, 'b> = {a?: 'a, b: 'b}
 
-  let make = (props: props<_, _>) => {
-    let a = switch props.a {
+  let make = ({?a, b, _}: props<_, _>) => {
+    let a = switch a {
     | Some(a) => a
     | None => 2
     }
-    let b = props.b
 
     React.int(a + b)
   }

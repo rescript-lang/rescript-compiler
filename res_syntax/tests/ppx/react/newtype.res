@@ -43,3 +43,6 @@ module V4A3 = {
     foo
   }
 }
+
+@react.component
+let make =(~x : ('a,'b), ~q:'a ) => [fst(x), q]

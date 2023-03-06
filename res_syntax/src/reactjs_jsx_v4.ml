@@ -640,6 +640,7 @@ let rec recursivelyTransformNamedArgsForMake expr args newtypes coreType =
     in
     let type_ =
       match pattern with
+      | {ppat_desc = Ppat_constraint (_, {ptyp_desc = Ptyp_package _})} -> None
       | {ppat_desc = Ppat_constraint (_, type_)} -> Some type_
       | _ -> None
     in
@@ -843,39 +844,34 @@ let modifiedBinding ~bindingLoc ~bindingPatLoc ~fnName binding =
   in
   (wrapExpressionWithBinding wrapExpression, hasForwardRef, expression)
 
-let vbMatch (name, default, _, alias, loc, _) =
+let vbMatch ~expr (name, default, _, alias, loc, _) =
   let label = getLabel name in
   match default with
   | Some default ->
-    Vb.mk
-      (Pat.var (Location.mkloc alias loc))
-      (Exp.match_
-         (Exp.field
-            (Exp.ident {txt = Lident "props"; loc = Location.none})
-            (Location.mknoloc @@ Lident label))
-         [
-           Exp.case
-             (Pat.construct
-                (Location.mknoloc @@ Lident "Some")
-                (Some (Pat.var (Location.mknoloc label))))
-             (Exp.ident (Location.mknoloc @@ Lident label));
-           Exp.case
-             (Pat.construct (Location.mknoloc @@ Lident "None") None)
-             default;
-         ])
-  | None ->
-    Vb.mk
-      (Pat.var (Location.mkloc alias loc))
-      (Exp.field
-         (Exp.ident {txt = Lident "props"; loc = Location.none})
-         (Location.mknoloc @@ Lident label))
+    let value_binding =
+      Vb.mk
+        (Pat.var (Location.mkloc alias loc))
+        (Exp.match_
+           (Exp.ident {txt = Lident alias; loc = Location.none})
+           [
+             Exp.case
+               (Pat.construct
+                  (Location.mknoloc @@ Lident "Some")
+                  (Some (Pat.var (Location.mknoloc label))))
+               (Exp.ident (Location.mknoloc @@ Lident label));
+             Exp.case
+               (Pat.construct (Location.mknoloc @@ Lident "None") None)
+               default;
+           ])
+    in
+    Exp.let_ Nonrecursive [value_binding] expr
+  | None -> expr
 
 let vbMatchExpr namedArgList expr =
   let rec aux namedArgList =
     match namedArgList with
     | [] -> expr
-    | [namedArg] -> Exp.let_ Nonrecursive [vbMatch namedArg] expr
-    | namedArg :: rest -> Exp.let_ Nonrecursive [vbMatch namedArg] (aux rest)
+    | namedArg :: rest -> vbMatch namedArg ~expr:(aux rest)
   in
   aux (List.rev namedArgList)
 
@@ -970,11 +966,10 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
     in
     let rec stripConstraintUnpack ~label pattern =
       match pattern with
+      | {ppat_desc = Ppat_constraint (_, {ptyp_desc = Ptyp_package _})} ->
+        pattern
       | {ppat_desc = Ppat_constraint (pattern, _)} ->
         stripConstraintUnpack ~label pattern
-      | {ppat_desc = Ppat_unpack _; ppat_loc} ->
-        (* remove unpack e.g. model: module(T) *)
-        Pat.var ~loc:ppat_loc {txt = label; loc = ppat_loc}
       | _ -> pattern
     in
     let rec returnedExpression patternsWithLabel patternsWithNolabel
@@ -1042,11 +1037,6 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
       match patternsWithLabel with
       | [] -> Pat.any ()
       | _ -> Pat.record (List.rev patternsWithLabel) Open
-    in
-    let recordPattern =
-      if hasDefaultValue namedArgList then
-        Pat.var {txt = "props"; loc = emptyLoc}
-      else recordPattern
     in
     let expression =
       Exp.fun_ Nolabel None
