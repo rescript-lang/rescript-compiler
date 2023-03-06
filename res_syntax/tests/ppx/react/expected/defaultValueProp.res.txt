@@ -26,7 +26,6 @@ module C1 = {
     | Some(a) => a
     | None => 2
     }
-    let b = b
 
     React.int(a + b)
   }

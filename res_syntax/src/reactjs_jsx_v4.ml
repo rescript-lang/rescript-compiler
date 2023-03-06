@@ -843,35 +843,34 @@ let modifiedBinding ~bindingLoc ~bindingPatLoc ~fnName binding =
   in
   (wrapExpressionWithBinding wrapExpression, hasForwardRef, expression)
 
-let vbMatch (name, default, _, alias, loc, _) =
+let vbMatch ~expr (name, default, _, alias, loc, _) =
   let label = getLabel name in
   match default with
   | Some default ->
-    Vb.mk
-      (Pat.var (Location.mkloc alias loc))
-      (Exp.match_
-         (Exp.ident {txt = Lident alias; loc = Location.none})
-         [
-           Exp.case
-             (Pat.construct
-                (Location.mknoloc @@ Lident "Some")
-                (Some (Pat.var (Location.mknoloc label))))
-             (Exp.ident (Location.mknoloc @@ Lident label));
-           Exp.case
-             (Pat.construct (Location.mknoloc @@ Lident "None") None)
-             default;
-         ])
-  | None ->
-    Vb.mk
-      (Pat.var (Location.mkloc alias loc))
-      (Exp.ident {txt = Lident label; loc = Location.none})
+    let value_binding =
+      Vb.mk
+        (Pat.var (Location.mkloc alias loc))
+        (Exp.match_
+           (Exp.ident {txt = Lident alias; loc = Location.none})
+           [
+             Exp.case
+               (Pat.construct
+                  (Location.mknoloc @@ Lident "Some")
+                  (Some (Pat.var (Location.mknoloc label))))
+               (Exp.ident (Location.mknoloc @@ Lident label));
+             Exp.case
+               (Pat.construct (Location.mknoloc @@ Lident "None") None)
+               default;
+           ])
+    in
+    Exp.let_ Nonrecursive [value_binding] expr
+  | None -> expr
 
 let vbMatchExpr namedArgList expr =
   let rec aux namedArgList =
     match namedArgList with
     | [] -> expr
-    | [namedArg] -> Exp.let_ Nonrecursive [vbMatch namedArg] expr
-    | namedArg :: rest -> Exp.let_ Nonrecursive [vbMatch namedArg] (aux rest)
+    | namedArg :: rest -> vbMatch namedArg ~expr:(aux rest)
   in
   aux (List.rev namedArgList)
 

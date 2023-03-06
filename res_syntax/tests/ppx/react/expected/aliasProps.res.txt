@@ -4,7 +4,6 @@ module C0 = {
   type props<'priority, 'text> = {priority: 'priority, text?: 'text}
 
   let make = ({priority: _, ?text, _}: props<_, _>) => {
-    let _ = priority
     let text = switch text {
     | Some(text) => text
     | None => "Test"
@@ -23,7 +22,6 @@ module C1 = {
   type props<'priority, 'text> = {priority: 'priority, text?: 'text}
 
   let make = ({priority: p, ?text, _}: props<_, _>) => {
-    let p = priority
     let text = switch text {
     | Some(text) => text
     | None => "Test"
@@ -68,7 +66,6 @@ module C3 = {
     | Some(a) => a
     | None => bar
     }
-    let b = b
 
     {
       React.string(bar ++ a ++ b)
@@ -78,5 +75,41 @@ module C3 = {
     let \"AliasProps$C3" = (props: props<_>) => make(props)
 
     \"AliasProps$C3"
+  }
+}
+
+module C4 = {
+  type props<'a, 'x> = {a: 'a, x?: 'x}
+
+  let make = ({a: b, ?x, _}: props<_, _>) => {
+    let x = switch x {
+    | Some(x) => x
+    | None => true
+    }
+
+    ReactDOM.jsx("div", {children: ?ReactDOM.someElement(b)})
+  }
+  let make = {
+    let \"AliasProps$C4" = (props: props<_>) => make(props)
+
+    \"AliasProps$C4"
+  }
+}
+
+module C5 = {
+  type props<'a, 'z> = {a: 'a, z?: 'z}
+
+  let make = ({a: (x, y), ?z, _}: props<_, _>) => {
+    let z = switch z {
+    | Some(z) => z
+    | None => 3
+    }
+
+    x + y + z
+  }
+  let make = {
+    let \"AliasProps$C5" = (props: props<_>) => make(props)
+
+    \"AliasProps$C5"
   }
 }

@@ -21,3 +21,15 @@ module C3 = {
     React.string(bar ++ a ++ b)
   }
 }
+
+module C4 = {
+  @react.component
+  let make = (~a as b, ~x=true) => <div> b </div>
+}
+
+module C5 = {
+  @react.component
+  let make = (~a as (x,y), ~z=3) => x+y+z
+}
+
+

@@ -22,3 +22,13 @@ module C2 = {
     React.string(bar ++ a ++ b)
   }
 }
+
+module C3 = {
+  @react.component
+  let make = (~priority as _, ~text="Test") => React.string(text)
+}
+
+module C4 = {
+  @react.component
+  let make = (~a as b, ~x=true) => b
+}

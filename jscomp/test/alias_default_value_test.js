@@ -38,7 +38,30 @@ var C2 = {
   make: Alias_default_value_test$C2
 };
 
+function Alias_default_value_test$C3(props) {
+  var text = props.text;
+  if (text !== undefined) {
+    return text;
+  } else {
+    return "Test";
+  }
+}
+
+var C3 = {
+  make: Alias_default_value_test$C3
+};
+
+function Alias_default_value_test$C4(props) {
+  return props.a;
+}
+
+var C4 = {
+  make: Alias_default_value_test$C4
+};
+
 exports.C0 = C0;
 exports.C1 = C1;
 exports.C2 = C2;
+exports.C3 = C3;
+exports.C4 = C4;
 /* No side effect */

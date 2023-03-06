@@ -273,12 +273,10 @@ is transformed to
 type props<'x, 'y, 'z> = {x: 'x, y?: 'y, z?: 'z}
 
 ({x, ?y, ?z}: props<_, _, _>) => {
-  let x = x
   let y = switch y {
   | None => 3 + x
   | Some(y) => y
   }
-  let z = z
   body
 }
 ```
