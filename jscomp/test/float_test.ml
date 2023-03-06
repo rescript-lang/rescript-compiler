@@ -45,6 +45,8 @@ let float_compare (x : float) y = Pervasives.compare x y
 let generic_compare = Pervasives.compare
 let float_equal (x : float) y = x = y
 let generic_equal = (=)
+let float_notequal (x : float) y = x <> y
+let generic_notequal = (<>)
 let float_lessthan (x: float) y = x < y
 let generic_lessthan = (<)
 let float_greaterthan (x: float) y = x > y
@@ -82,6 +84,12 @@ let () =
   eq __LOC__ (generic_equal 4.2 Js.Float._NaN) false;
   eq __LOC__ (float_equal Js.Float._NaN 4.2) false;
   eq __LOC__ (generic_equal Js.Float._NaN 4.2) false;
+  eq __LOC__ (float_notequal Js.Float._NaN Js.Float._NaN) false;
+  eq __LOC__ (generic_notequal Js.Float._NaN Js.Float._NaN) false;
+  eq __LOC__ (float_notequal 4.2 Js.Float._NaN) false;
+  eq __LOC__ (generic_notequal 4.2 Js.Float._NaN) false;
+  eq __LOC__ (float_notequal Js.Float._NaN 4.2) false;
+  eq __LOC__ (generic_notequal Js.Float._NaN 4.2) false;
   eq __LOC__ (float_lessthan Js.Float._NaN Js.Float._NaN) false;
   eq __LOC__ (generic_lessthan Js.Float._NaN Js.Float._NaN) false;
   eq __LOC__ (float_lessthan 4.2 Js.Float._NaN) false;
