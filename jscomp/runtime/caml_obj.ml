@@ -172,7 +172,7 @@ let rec compare (a : Obj.t) (b : Obj.t) : int =
     | "function", _ -> 1
     | _, "function" -> -1 
     | "number", "number" -> 
-      Pervasives.compare (Obj.magic a : int) (Obj.magic b : int)
+      Pervasives.compare (Obj.magic a : float) (Obj.magic b : float)
     | "number", _ ->        
       if b == Obj.repr Js.null || Caml_option.isNested b  then 1 (* Some (Some ..) < x *)
       else 

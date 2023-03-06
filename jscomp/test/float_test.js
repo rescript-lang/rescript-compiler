@@ -3,6 +3,7 @@
 var Mt = require("./mt.js");
 var Caml = require("../../lib/js/caml.js");
 var $$Array = require("../../lib/js/array.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
 var Mt_global = require("./mt_global.js");
 var Caml_float = require("../../lib/js/caml_float.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
@@ -138,16 +139,24 @@ function from_pairs(ps) {
 
 var float_compare = Caml.float_compare;
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 47, characters 5-12", Pervasives.classify_float(3), /* FP_normal */0);
+var generic_compare = Caml_obj.compare;
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 48, characters 5-12", Caml_float.modf_float(-3.125), [
+function float_equal(x, y) {
+  return x === y;
+}
+
+var generic_equal = Caml_obj.equal;
+
+Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 50, characters 5-12", Pervasives.classify_float(3), /* FP_normal */0);
+
+Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 51, characters 5-12", Caml_float.modf_float(-3.125), [
       -0.125,
       -3
     ]);
 
 var match$3 = Caml_float.modf_float(Number.NaN);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 49, characters 5-12", [
+Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 52, characters 5-12", [
       Number.isNaN(match$3[0]),
       Number.isNaN(match$3[1])
     ], [
@@ -155,7 +164,7 @@ Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 49, characte
       true
     ]);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 52, characters 5-12", $$Array.map((function (x) {
+Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 55, characters 5-12", $$Array.map((function (x) {
             if (x > 0) {
               return 1;
             } else if (x < 0) {
@@ -184,17 +193,33 @@ Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 52, characte
       1
     ]);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 56, characters 5-12", Caml_float.copysign_float(-3, 0), 3);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 59, characters 5-12", Caml_float.copysign_float(-3, 0), 3);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 57, characters 5-12", Caml_float.copysign_float(3, 0), 3);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 60, characters 5-12", Caml_float.copysign_float(3, 0), 3);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 58, characters 5-12", Math.log10(10), 1);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 61, characters 5-12", Math.log10(10), 1);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 59, characters 5-12", Caml_float.expm1_float(0), 0);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 62, characters 5-12", Caml_float.expm1_float(0), 0);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 60, characters 5-12", Number("3.0"), 3.0);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 63, characters 5-12", Number("3.0"), 3.0);
 
-Mt_global.collect_approx(test_id, suites, "File \"float_test.ml\", line 61, characters 9-16", Caml_float.expm1_float(2), 6.38905609893065);
+Mt_global.collect_approx(test_id, suites, "File \"float_test.ml\", line 64, characters 9-16", Caml_float.expm1_float(2), 6.38905609893065);
+
+Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 65, characters 5-12", Caml.float_compare(NaN, NaN), 0);
+
+Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 66, characters 5-12", Caml_obj.compare(NaN, NaN), 0);
+
+Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 67, characters 5-12", Caml.float_compare(NaN, Pervasives.neg_infinity), -1);
+
+Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 68, characters 5-12", Caml_obj.compare(NaN, Pervasives.neg_infinity), -1);
+
+Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 69, characters 5-12", Caml.float_compare(Pervasives.neg_infinity, NaN), 1);
+
+Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 70, characters 5-12", Caml_obj.compare(Pervasives.neg_infinity, NaN), 1);
+
+Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 71, characters 5-12", NaN === NaN, false);
+
+Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 72, characters 5-12", Caml_obj.equal(NaN, NaN), false);
 
 var match$4 = Caml_float.modf_float(32.3);
 
@@ -260,4 +285,7 @@ exports.epsilon_float = epsilon_float;
 exports.results = results;
 exports.from_pairs = from_pairs;
 exports.float_compare = float_compare;
+exports.generic_compare = generic_compare;
+exports.float_equal = float_equal;
+exports.generic_equal = generic_equal;
 /* results Not a pure module */

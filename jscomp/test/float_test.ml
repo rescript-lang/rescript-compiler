@@ -41,8 +41,11 @@ let from_pairs ps =
   |> Array.to_list
 
 ;;
-let float_compare (x : float) y = Pervasives.compare x y 
- 
+let float_compare (x : float) y = Pervasives.compare x y
+let generic_compare = Pervasives.compare
+let float_equal (x : float) y = x = y
+let generic_equal = (=)
+
 let () = 
   eq __LOC__ (classify_float 3. ) FP_normal;
   eq __LOC__ (modf (-3.125)) (-0.125, -3.);
@@ -58,7 +61,15 @@ let () =
   eq __LOC__ (log10 10.) 1.;
   eq __LOC__ (expm1 0.) 0. ;
   eq __LOC__ (Js.Float.fromString "3.0") 3.0;
-  approx __LOC__ (expm1 2.) 6.38905609893065
+  approx __LOC__ (expm1 2.) 6.38905609893065;
+  eq __LOC__ (float_compare Js.Float._NaN Js.Float._NaN) 0;
+  eq __LOC__ (generic_compare Js.Float._NaN Js.Float._NaN) 0;
+  eq __LOC__ (float_compare Js.Float._NaN neg_infinity) (-1);
+  eq __LOC__ (generic_compare Js.Float._NaN neg_infinity) (-1);
+  eq __LOC__ (float_compare neg_infinity Js.Float._NaN) 1;
+  eq __LOC__ (generic_compare neg_infinity Js.Float._NaN) 1;
+  eq __LOC__ (float_equal Js.Float._NaN Js.Float._NaN) false;
+  eq __LOC__ (generic_equal Js.Float._NaN Js.Float._NaN) false;
 ;;
 
 
