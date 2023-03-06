@@ -8857,17 +8857,17 @@ module Printer = struct
       in
       Doc.concat [Doc.lparen; docExpr; ofType; Doc.text " :> "; docTyp; Doc.rparen]
     | Pexp_send _ ->
-      Doc.text "Pexp_send not impemented in printer"
+      Doc.text "Pexp_send not implemented in printer"
     | Pexp_new _ ->
-      Doc.text "Pexp_new not impemented in printer"
+      Doc.text "Pexp_new not implemented in printer"
     | Pexp_setinstvar _ ->
-      Doc.text "Pexp_setinstvar not impemented in printer"
+      Doc.text "Pexp_setinstvar not implemented in printer"
     | Pexp_override _ ->
-      Doc.text "Pexp_override not impemented in printer"
+      Doc.text "Pexp_override not implemented in printer"
     | Pexp_poly _ ->
-      Doc.text "Pexp_poly not impemented in printer"
+      Doc.text "Pexp_poly not implemented in printer"
     | Pexp_object _ ->
-      Doc.text "Pexp_object not impemented in printer"
+      Doc.text "Pexp_object not implemented in printer"
     in
     let shouldPrintItsOwnAttributes = match e.pexp_desc with
     | Pexp_apply _
