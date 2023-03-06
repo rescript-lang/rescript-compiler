@@ -3254,11 +3254,11 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
         Doc.concat [Doc.text "\""; memberDoc; Doc.text "\""]
       in
       Doc.group (Doc.concat [parentDoc; Doc.lbracket; member; Doc.rbracket])
-    | Pexp_new _ -> Doc.text "Pexp_new not impemented in printer"
-    | Pexp_setinstvar _ -> Doc.text "Pexp_setinstvar not impemented in printer"
-    | Pexp_override _ -> Doc.text "Pexp_override not impemented in printer"
-    | Pexp_poly _ -> Doc.text "Pexp_poly not impemented in printer"
-    | Pexp_object _ -> Doc.text "Pexp_object not impemented in printer"
+    | Pexp_new _ -> Doc.text "Pexp_new not implemented in printer"
+    | Pexp_setinstvar _ -> Doc.text "Pexp_setinstvar not implemented in printer"
+    | Pexp_override _ -> Doc.text "Pexp_override not implemented in printer"
+    | Pexp_poly _ -> Doc.text "Pexp_poly not implemented in printer"
+    | Pexp_object _ -> Doc.text "Pexp_object not implemented in printer"
   in
   let exprWithAwait =
     if ParsetreeViewer.hasAwaitAttribute e.pexp_attributes then
