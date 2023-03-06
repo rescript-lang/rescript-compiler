@@ -66,8 +66,8 @@ module Select = {
 
   let make = (
     type a key,
-    {model, selected, onChange, items, _}: props<
-      module(T with type t = a and type key = key),
+    {model: module(T: T with type t = a and type key = key), selected, onChange, items, _}: props<
+      _,
       option<key>,
       option<key> => unit,
       array<a>,

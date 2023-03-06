@@ -67,7 +67,7 @@ module type T = {
 module V4A2 = {
   type props<'foo> = {foo: 'foo}
 
-  let make = (type a, {foo, _}: props<module(T with type t = a)>) => {
+  let make = (type a, {foo: (foo: module(T with type t = a)), _}: props<_>) => {
     module T = unpack(foo)
     ReactDOM.jsx("div", {})
   }
@@ -90,4 +90,12 @@ module V4A3 = {
 
     \"Newtype$V4A3"
   }
+}
+type props<'x, 'q> = {x: 'x, q: 'q}
+
+let make = ({x, q, _}: props<('a, 'b), 'a>) => [fst(x), q]
+let make = {
+  let \"Newtype" = (props: props<_>) => make(props)
+
+  \"Newtype"
 }

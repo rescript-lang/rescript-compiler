@@ -640,6 +640,7 @@ let rec recursivelyTransformNamedArgsForMake expr args newtypes coreType =
     in
     let type_ =
       match pattern with
+      | {ppat_desc = Ppat_constraint (_, {ptyp_desc = Ptyp_package _})} -> None
       | {ppat_desc = Ppat_constraint (_, type_)} -> Some type_
       | _ -> None
     in
@@ -965,11 +966,10 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
     in
     let rec stripConstraintUnpack ~label pattern =
       match pattern with
+      | {ppat_desc = Ppat_constraint (_, {ptyp_desc = Ptyp_package _})} ->
+        pattern
       | {ppat_desc = Ppat_constraint (pattern, _)} ->
         stripConstraintUnpack ~label pattern
-      | {ppat_desc = Ppat_unpack _; ppat_loc} ->
-        (* remove unpack e.g. model: module(T) *)
-        Pat.var ~loc:ppat_loc {txt = label; loc = ppat_loc}
       | _ -> pattern
     in
     let rec returnedExpression patternsWithLabel patternsWithNolabel

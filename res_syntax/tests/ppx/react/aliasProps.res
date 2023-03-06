@@ -29,7 +29,15 @@ module C4 = {
 
 module C5 = {
   @react.component
-  let make = (~a as (x,y), ~z=3) => x+y+z
+  let make = (~a as (x, y), ~z=3) => x + y + z
 }
 
+module C6 = {
+  module type Comp = {
+    @react.component
+    let make: unit => React.element
+  }
 
+  @react.component
+  let make = (~comp as module(Comp: Comp), ~x as (a, b)) => <Comp />
+}

@@ -113,3 +113,19 @@ module C5 = {
     \"AliasProps$C5"
   }
 }
+
+module C6 = {
+  module type Comp = {
+    type props = {}
+
+    let make: React.componentLike<props, React.element>
+  }
+  type props<'comp, 'x> = {comp: 'comp, x: 'x}
+
+  let make = ({comp: module(Comp: Comp), x: (a, b), _}: props<_, _>) => React.jsx(Comp.make, {})
+  let make = {
+    let \"AliasProps$C6" = (props: props<_>) => make(props)
+
+    \"AliasProps$C6"
+  }
+}

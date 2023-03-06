@@ -59,9 +59,18 @@ var C4 = {
   make: Alias_default_value_test$C4
 };
 
+function Alias_default_value_test$C6(props) {
+  return props.comp.xx;
+}
+
+var C6 = {
+  make: Alias_default_value_test$C6
+};
+
 exports.C0 = C0;
 exports.C1 = C1;
 exports.C2 = C2;
 exports.C3 = C3;
 exports.C4 = C4;
+exports.C6 = C6;
 /* No side effect */
