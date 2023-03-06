@@ -66,6 +66,8 @@
 - Fix formatting of props spread for multiline JSX expression https://github.com/rescript-lang/syntax/pull/736
 - Fix issue with JSX V4 and newtype https://github.com/rescript-lang/syntax/pull/737
 - Fix issue with JSX V4 when components are nested https://github.com/rescript-lang/syntax/pull/738
+- Improve code generated for default arguments in JSX V4 https://github.com/rescript-lang/syntax/pull/739
+- Fix issue with JSX V4 props of the form `~p as module(...)` https://github.com/rescript-lang/syntax/pull/739
 
 #### :eyeglasses: Spec Compliance
 
