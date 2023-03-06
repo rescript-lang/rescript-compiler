@@ -259,17 +259,17 @@ Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 85, characte
 
 Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 86, characters 5-12", Caml_obj.equal(NaN, 4.2), false);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 87, characters 5-12", NaN !== NaN, false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 87, characters 5-12", NaN !== NaN, true);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 88, characters 5-12", Caml_obj.notequal(NaN, NaN), false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 88, characters 5-12", Caml_obj.notequal(NaN, NaN), true);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 89, characters 5-12", 4.2 !== NaN, false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 89, characters 5-12", 4.2 !== NaN, true);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 90, characters 5-12", Caml_obj.notequal(4.2, NaN), false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 90, characters 5-12", Caml_obj.notequal(4.2, NaN), true);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 91, characters 5-12", NaN !== 4.2, false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 91, characters 5-12", NaN !== 4.2, true);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 92, characters 5-12", Caml_obj.notequal(NaN, 4.2), false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 92, characters 5-12", Caml_obj.notequal(NaN, 4.2), true);
 
 Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 93, characters 5-12", NaN < NaN, false);
 

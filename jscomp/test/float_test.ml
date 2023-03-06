@@ -84,12 +84,12 @@ let () =
   eq __LOC__ (generic_equal 4.2 Js.Float._NaN) false;
   eq __LOC__ (float_equal Js.Float._NaN 4.2) false;
   eq __LOC__ (generic_equal Js.Float._NaN 4.2) false;
-  eq __LOC__ (float_notequal Js.Float._NaN Js.Float._NaN) false;
-  eq __LOC__ (generic_notequal Js.Float._NaN Js.Float._NaN) false;
-  eq __LOC__ (float_notequal 4.2 Js.Float._NaN) false;
-  eq __LOC__ (generic_notequal 4.2 Js.Float._NaN) false;
-  eq __LOC__ (float_notequal Js.Float._NaN 4.2) false;
-  eq __LOC__ (generic_notequal Js.Float._NaN 4.2) false;
+  eq __LOC__ (float_notequal Js.Float._NaN Js.Float._NaN) true;
+  eq __LOC__ (generic_notequal Js.Float._NaN Js.Float._NaN) true;
+  eq __LOC__ (float_notequal 4.2 Js.Float._NaN) true;
+  eq __LOC__ (generic_notequal 4.2 Js.Float._NaN) true;
+  eq __LOC__ (float_notequal Js.Float._NaN 4.2) true;
+  eq __LOC__ (generic_notequal Js.Float._NaN 4.2) true;
   eq __LOC__ (float_lessthan Js.Float._NaN Js.Float._NaN) false;
   eq __LOC__ (generic_lessthan Js.Float._NaN Js.Float._NaN) false;
   eq __LOC__ (float_lessthan 4.2 Js.Float._NaN) false;
