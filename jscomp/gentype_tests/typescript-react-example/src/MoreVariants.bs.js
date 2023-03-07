@@ -9,7 +9,7 @@ function testWithoutRenaming(x) {
   return x;
 }
 
-export {
+export default {
   testWithRenaming ,
   testWithoutRenaming ,
 }

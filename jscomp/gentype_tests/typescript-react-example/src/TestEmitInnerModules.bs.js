@@ -18,7 +18,7 @@ var Outer = {
   Medium: Medium
 };
 
-export {
+export default {
   Inner ,
   Outer ,
 }

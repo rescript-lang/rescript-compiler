@@ -9,7 +9,7 @@ function r2Test(x) {
   return x;
 }
 
-export {
+export default {
   testV1 ,
   r2Test ,
 }

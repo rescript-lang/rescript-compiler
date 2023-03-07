@@ -3,7 +3,7 @@
 
 var M = {};
 
-export {
+export default {
   M ,
 }
 /* No side effect */

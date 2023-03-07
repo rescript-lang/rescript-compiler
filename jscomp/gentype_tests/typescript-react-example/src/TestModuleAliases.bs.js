@@ -29,7 +29,7 @@ var Outer2;
 
 var Inner2;
 
-export {
+export default {
   OtherFile ,
   OtherFileAlias ,
   OuterAlias ,

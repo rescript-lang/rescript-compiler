@@ -5,7 +5,7 @@ var Universe = {
   theAnswer: 42
 };
 
-export {
+export default {
   Universe ,
 }
 /* No side effect */

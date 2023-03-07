@@ -7,7 +7,7 @@ function ExportWithRename(Props) {
 
 var make = ExportWithRename;
 
-export {
+export default {
   make ,
 }
 /* No side effect */

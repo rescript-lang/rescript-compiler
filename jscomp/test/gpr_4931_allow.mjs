@@ -8,7 +8,7 @@ if(import.meta.hot) {
 }
 ;
 
-export {
+export default {
   
 }
 /*  Not a pure module */

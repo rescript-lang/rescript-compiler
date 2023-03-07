@@ -9,7 +9,7 @@ function convertAlias(x) {
   return x;
 }
 
-export {
+export default {
   convert ,
   convertAlias ,
 }

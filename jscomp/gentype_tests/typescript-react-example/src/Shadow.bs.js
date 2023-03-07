@@ -13,7 +13,7 @@ var M = {
   test: test$1
 };
 
-export {
+export default {
   test ,
   M ,
 }

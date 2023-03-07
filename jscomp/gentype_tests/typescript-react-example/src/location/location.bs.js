@@ -3,7 +3,7 @@
 
 var x = 42;
 
-export {
+export default {
   x ,
 }
 /* No side effect */

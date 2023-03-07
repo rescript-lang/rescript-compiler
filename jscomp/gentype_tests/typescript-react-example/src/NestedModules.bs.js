@@ -35,7 +35,7 @@ var Universe = {
 
 var notNested = 1;
 
-export {
+export default {
   notNested ,
   Universe ,
 }

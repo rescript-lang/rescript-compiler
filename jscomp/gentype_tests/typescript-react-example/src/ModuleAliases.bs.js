@@ -35,7 +35,7 @@ var Outer2Alias;
 
 var InnerNestedAlias;
 
-export {
+export default {
   Outer ,
   Outer2 ,
   Outer2Alias ,

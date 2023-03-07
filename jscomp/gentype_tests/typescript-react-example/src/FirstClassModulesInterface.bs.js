@@ -6,7 +6,7 @@ var r = {
   y: "hello"
 };
 
-export {
+export default {
   r ,
 }
 /* No side effect */

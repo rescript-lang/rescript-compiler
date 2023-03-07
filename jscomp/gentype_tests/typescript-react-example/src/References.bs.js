@@ -43,7 +43,7 @@ function preserveRefIdentity(x) {
   return x;
 }
 
-export {
+export default {
   create ,
   access ,
   update ,

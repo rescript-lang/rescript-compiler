@@ -4,7 +4,7 @@ import ImportIndexGen from "./ImportIndex.gen";
 
 var make = ImportIndexGen;
 
-export {
+export default {
   make ,
 }
 /* make Not a pure module */

@@ -58,7 +58,7 @@ function someFunctorAsFunction(x) {
         };
 }
 
-export {
+export default {
   M ,
   firstClassModule ,
   testConvert ,

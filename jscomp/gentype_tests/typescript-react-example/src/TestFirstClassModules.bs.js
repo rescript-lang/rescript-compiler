@@ -17,7 +17,7 @@ function convertFirstClassModuleWithTypeEquations(x) {
   return x;
 }
 
-export {
+export default {
   convert ,
   convertInterface ,
   convertRecord ,

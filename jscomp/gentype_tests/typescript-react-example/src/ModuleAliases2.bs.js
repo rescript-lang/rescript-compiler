@@ -13,7 +13,7 @@ var InnerAlias;
 
 var q = 42;
 
-export {
+export default {
   Outer ,
   OuterAlias ,
   InnerAlias ,

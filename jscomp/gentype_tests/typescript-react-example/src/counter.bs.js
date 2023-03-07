@@ -5,7 +5,7 @@ var b = /* A */{
   _0: 12
 };
 
-export {
+export default {
   b ,
 }
 /* No side effect */

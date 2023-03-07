@@ -9,7 +9,7 @@ function useTypeImportedInOtherModule(x) {
   return x;
 }
 
-export {
+export default {
   useGetProp ,
   useTypeImportedInOtherModule ,
 }

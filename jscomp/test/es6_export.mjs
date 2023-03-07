@@ -3,8 +3,8 @@
 
 var $$default = 3;
 
-export {
+export default {
   $$default ,
-  $$default as default,
+  $$default ,
 }
 /* No side effect */

@@ -130,7 +130,7 @@ function testInline(x) {
   }
 }
 
-export {
+export default {
   makeVariant ,
   makeABC ,
   makeBC ,

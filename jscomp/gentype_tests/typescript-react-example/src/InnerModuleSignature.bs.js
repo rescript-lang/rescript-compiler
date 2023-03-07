@@ -9,7 +9,7 @@ var InnerModule = {
   make: make
 };
 
-export {
+export default {
   InnerModule ,
 }
 /* No side effect */

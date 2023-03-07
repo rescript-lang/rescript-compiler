@@ -9,7 +9,7 @@ function testConvertNestedRecordFromOtherFile(x) {
   return x;
 }
 
-export {
+export default {
   noConversion ,
   testConvertNestedRecordFromOtherFile ,
 }

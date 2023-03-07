@@ -11,7 +11,7 @@ var st2 = {
   "fp-z": undefined
 };
 
-export {
+export default {
   st ,
   st2 ,
 }

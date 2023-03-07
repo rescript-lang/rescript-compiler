@@ -4,7 +4,7 @@ import MyInputGen from "./MyInput.gen";
 
 var make = MyInputGen;
 
-export {
+export default {
   make ,
 }
 /* make Not a pure module */

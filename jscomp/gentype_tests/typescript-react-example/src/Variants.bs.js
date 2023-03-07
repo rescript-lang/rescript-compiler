@@ -83,7 +83,7 @@ var fortytwoOK = "fortytwo";
 
 var fortytwoBAD = "fortytwo";
 
-export {
+export default {
   isWeekend ,
   monday ,
   saturday ,

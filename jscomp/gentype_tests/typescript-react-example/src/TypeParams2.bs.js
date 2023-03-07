@@ -3,7 +3,7 @@
 
 var exportSomething = 10;
 
-export {
+export default {
   exportSomething ,
 }
 /* No side effect */

@@ -83,16 +83,23 @@ let es6_export cxt f (idents : Ident.t list) =
   P.at_least_two_lines f;
   P.string f L.export;
   P.space f;
+  P.string f L.default;
+  P.space f;
   P.brace_vgroup f 1 (fun _ ->
       rev_iter_inter reversed_list
         (fun (s, export) ->
           P.group f 0 (fun _ ->
-              P.string f export;
+              (* P.string f export; *)
+              if not @@ Ext_string.equal s L.default then (
+                P.string f s;
+              ) else (
+                P.string f export;
+              );
               P.space f;
-              if not @@ Ext_string.equal export s then (
-                P.string f L.as_;
-                P.space f;
-                P.string f s);
+              (* if not @@ Ext_string.equal export s then ( *)
+              (*   P.string f L.as_; *)
+              (*   P.space f; *)
+              (*   P.string f s); *)
               P.string f L.comma))
         (fun _ -> P.newline f));
   outer_cxt
@@ -132,23 +139,28 @@ let imports cxt f (modules : (Ident.t * string * bool) list) =
   Ext_list.rev_iter reversed_list (fun (s, file, default) ->
       P.string f L.import;
       P.space f;
-      if default then (
-        P.string f s;
+      (* if default then ( *)
+      (*   P.string f s; *)
+      (*   P.space f; *)
+      (*   P.string f L.from; *)
+      (*   P.space f; *)
+      (*   Js_dump_string.pp_string f file) *)
+      (* else ( *)
+      (*   P.string f L.star; *)
+      (*   P.space f; *)
+      (*   (* import * as xx from 'xx'*) *)
+      (*   P.string f L.as_; *)
+      (*   P.space f; *)
+      (*   P.string f s; *)
+      (*   P.space f; *)
+      (*   P.string f L.from; *)
+      (*   P.space f; *)
+      (*   Js_dump_string.pp_string f file); *)
+      P.string f s;
         P.space f;
         P.string f L.from;
         P.space f;
-        Js_dump_string.pp_string f file)
-      else (
-        P.string f L.star;
-        P.space f;
-        (* import * as xx from 'xx'*)
-        P.string f L.as_;
-        P.space f;
-        P.string f s;
-        P.space f;
-        P.string f L.from;
-        P.space f;
-        Js_dump_string.pp_string f file);
+        Js_dump_string.pp_string f file;
       P.string f L.semi;
       P.newline f);
   outer_cxt

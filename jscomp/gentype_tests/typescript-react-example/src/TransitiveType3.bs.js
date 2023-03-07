@@ -5,7 +5,7 @@ function convertT3(x) {
   return x;
 }
 
-export {
+export default {
   convertT3 ,
 }
 /* No side effect */

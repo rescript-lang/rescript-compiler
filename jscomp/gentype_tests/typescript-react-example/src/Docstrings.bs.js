@@ -75,7 +75,7 @@ function unitArgWithConversionU(param) {
 
 var flat = 34;
 
-export {
+export default {
   flat ,
   signMessage ,
   one ,

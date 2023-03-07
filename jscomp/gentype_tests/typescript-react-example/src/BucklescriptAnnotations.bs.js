@@ -6,7 +6,7 @@ function bar(x) {
   return f(3, "a");
 }
 
-export {
+export default {
   bar ,
 }
 /* No side effect */

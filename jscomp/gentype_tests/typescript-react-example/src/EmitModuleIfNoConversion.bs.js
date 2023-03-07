@@ -18,7 +18,7 @@ var Y = {
   x: ""
 };
 
-export {
+export default {
   X ,
   Y ,
 }

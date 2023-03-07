@@ -7,7 +7,7 @@ function DynamicallyLoadedComponent(Props) {
 
 var make = DynamicallyLoadedComponent;
 
-export {
+export default {
   make ,
 }
 /* No side effect */

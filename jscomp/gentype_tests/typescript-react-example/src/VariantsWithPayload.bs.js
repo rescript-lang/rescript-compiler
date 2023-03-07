@@ -82,7 +82,7 @@ function testVariant1Object(x) {
   return x;
 }
 
-export {
+export default {
   testWithPayload ,
   printVariantWithPayload ,
   testManyPayloads ,
