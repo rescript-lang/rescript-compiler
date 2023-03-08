@@ -26,6 +26,6 @@ val add_structure : string -> (Parsetree.expression option -> unit) -> unit
 
 val add_signature : string -> (Parsetree.expression option -> unit) -> unit
 
-val iter_on_bs_config_stru : Parsetree.structure -> unit
+val process_str : Parsetree.structure -> unit
 
-val iter_on_bs_config_sigi : Parsetree.signature -> unit
+val process_sig : Parsetree.signature -> unit

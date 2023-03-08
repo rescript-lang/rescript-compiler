@@ -26,7 +26,7 @@ let unsafe_mapper = Bs_builtin_ppx.mapper
 
 let rewrite_signature (ast : Parsetree.signature) : Parsetree.signature =
   Bs_ast_invariant.iter_warnings_on_sigi ast;
-  Ast_config.iter_on_bs_config_sigi ast;
+  Ast_config.process_sig ast;
   let ast =
     match !Js_config.jsx_version with
     | None -> ast
@@ -46,7 +46,7 @@ let rewrite_signature (ast : Parsetree.signature) : Parsetree.signature =
 
 let rewrite_implementation (ast : Parsetree.structure) : Parsetree.structure =
   Bs_ast_invariant.iter_warnings_on_stru ast;
-  Ast_config.iter_on_bs_config_stru ast;
+  Ast_config.process_str ast;
   let ast =
     match !Js_config.jsx_version with
     | None -> ast
