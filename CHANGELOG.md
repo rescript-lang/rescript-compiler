@@ -10,7 +10,7 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# 11.0.0-alpha.1
+# 11.0.0-alpha.1 (unreleased)
 
 #### :rocket: New Feature
 
@@ -25,8 +25,6 @@ subset of the arguments, and return a curried type with the remaining ones https
 - Inline uncurried application when it is safe https://github.com/rescript-lang/rescript-compiler/pull/5847
 - Add support for toplevel `await` https://github.com/rescript-lang/rescript-compiler/pull/5940
 - Support optional named arguments without a final unit in uncurried functions https://github.com/rescript-lang/rescript-compiler/pull/5907
-- Add experimental suppport for directives. An annotation such as `@@directive("use client;")` emits `use client;` verbatim before imports https://github.com/rescript-lang/rescript-compiler/pull/5998
-- `genType`: add `Core` standard library support for the following builtin types: `Null.t`, `Nullable.t`, `Undefined.t`, `Dict.t<_>`, `Promise.t<_>`, `Date.t`, `BigInt.t`, `RegExp.t`, `Map.t<_, _>`, `WeakMap.t<_, _>`, `Set<_>`, `WeakSet<_>` https://github.com/rescript-lang/rescript-compiler/pull/6019
 
 #### :boom: Breaking Change
 
@@ -34,15 +32,11 @@ subset of the arguments, and return a curried type with the remaining ones https
   - `npm i -g rescript@9`
   - `rescript convert <reason files>`
 - Remove obsolete built-in project templates and the "rescript init" functionality. This will be replaced by the create-rescript-app project that is maintained separately.
-- Parse the attributes of labelled argument to the pattern attributes of argument instead of function.
 - Made pinned dependencies transitive: if *a* is a pinned dependency of *b* and *b* is a pinned dependency of *c*, then *a* is implicitly a pinned dependency of *c*. This change is only breaking if your build process assumes non-transitivity.
 - Curried after uncurried is not fused anymore: `(. x) => y => 3` is not equivalent to `(. x, y) => 3` anymore. It's instead equivalent to `(. x) => { y => 3 }`.
 Also, `(. int) => string => bool` is not equivalen to `(. int, string) => bool` anymore.
 These are only breaking changes for unformatted code.
 - Exponentiation operator `**` is now right-associative. `2. ** 3. ** 2.` now compile to `Math.pow(2, Math.pow(3, 2))` and not anymore `Math.pow(Math.pow(2, 3), 2)`. Parentheses can be used to change precedence.
-- `genType`: streamline the treatment of optionals as undefined https://github.com/rescript-lang/rescript-compiler/pull/6022
-  - Represent `option<t>` as `undefined | t` instead of `null | undefined | t`. This is more permissive when importing functions taking optional values (allows to use option types), but stricter when e.g. exporting ReScript functions taking arguments of option type. Fallback: use `Js.undefined<_>` instead.
-  - Represent `{x:option<string>}` as `{x:(undefined | string)}` instead of `{x?: string}`. This is more in line with TS's behaviour. Fallback: use `{x?:string}`.
 
 #### :bug: Bug Fix
 
@@ -53,31 +47,10 @@ These are only breaking changes for unformatted code.
 - Fix parsing/printing uncurried functions with type parameters https://github.com/rescript-lang/rescript-compiler/pull/5849
 - Fix compiler ppx issue when combining `async` and uncurried application https://github.com/rescript-lang/rescript-compiler/pull/5856
 - Fix issue where the internal representation of uncurried types would leak when a non-function is applied in a curried way https://github.com/rescript-lang/rescript-compiler/pull/5892
-- In GenType, check annotations also in module types to decide whether to produce the `.gen.tsx` file https://github.com/rescript-lang/rescript-compiler/pull/5903
 - Fix some comments disappearing in array access expressions https://github.com/rescript-lang/rescript-compiler/pull/5947
 - Parser: fix location of variable when function definition `{v => ...}` is enclosed in braces https://github.com/rescript-lang/rescript-compiler/pull/5949
-- Fix issue where error messages related to non-existent props were displayed without location information https://github.com/rescript-lang/rescript-compiler/pull/5960
-- Fix type inference issue with uncurried functions applied to a single unit argument. The issue was introduced in https://github.com/rescript-lang/rescript-compiler/pull/5907 when adding support to `foo()` when `foo` has only optional arguments. https://github.com/rescript-lang/rescript-compiler/pull/5970
-- Fix issue where uncurried functions were incorrectly converting the type of a prop given as a default value to curried https://github.com/rescript-lang/rescript-compiler/pull/5971
 - Fix issue with error messages for uncurried functions where expected and given type were swapped https://github.com/rescript-lang/rescript-compiler/pull/5973
-- Fix issue with nested async functions, where the inner function would be emitted without `async` https://github.com/rescript-lang/rescript-compiler/pull/5983
-- Fix issue with async context check, and printer, for async functions with locally abstract type https://github.com/rescript-lang/rescript-compiler/pull/5982
-- Fix support for recursive components in JSX V4 https://github.com/rescript-lang/rescript-compiler/pull/5986
-- Fix issue with overlapping labelled argument with default value https://github.com/rescript-lang/rescript-compiler/pull/5989
-- Fix issue with using alias and default value together https://github.com/rescript-lang/rescript-compiler/pull/5989
-- GenType: fix issue with V3 compatibility mode (see https://github.com/rescript-lang/rescript-compiler/issues/5990) https://github.com/rescript-lang/rescript-compiler/pull/5991
-- Fix issue in `Js.Promise2` where `then` and `catch` were returning `undefined` https://github.com/rescript-lang/rescript-compiler/pull/5997
-- Fix formatting of props spread for multiline JSX expression https://github.com/rescript-lang/rescript-compiler/pull/6006
-- Fix issue in the compiler back-end where async functions passed to an `@uncurry` external would be inlined and transformed in a way that loses async https://github.com/rescript-lang/rescript-compiler/pull/6010
-- Fix location issue for the treatment of `async` functions where hovering on the body with a type error would show `'a => promise<'a>` everywhere https://github.com/rescript-lang/rescript-compiler/pull/6012
-- Fix formatting of `switch` expressions that contain brace `cases` inside https://github.com/rescript-lang/rescript-compiler/pull/6015
-- Support `@gentype.import` as an alias to `@genType.import` in the compiler https://github.com/rescript-lang/rescript-compiler/pull/6020
 - Fix issue with integer overflow check https://github.com/rescript-lang/rescript-compiler/pull/6028
-- Fix issue with JSX V4 and newtype https://github.com/rescript-lang/rescript-compiler/pull/6029
-- Fix issue with JSX V4 when components are nested https://github.com/rescript-lang/rescript-compiler/pull/6031
-- Fix issue where generic compare on `float` values would be different from the compare for type `float` https://github.com/rescript-lang/rescript-compiler/pull/6042
-- Improve code generated for default arguments in JSX V4 https://github.com/rescript-lang/rescript-compiler/pull/6041
-- Fix issue with JSX V4 props of the form `~p as module(...)` https://github.com/rescript-lang/rescript-compiler/pull/6041
 
 #### :nail_care: Polish
 
@@ -93,10 +66,58 @@ These are only breaking changes for unformatted code.
 - New internal representation for uncurried functions using built-in type `function$<fun_type, arity>` this avoids having to declare all the possible arities ahead of time https://github.com/rescript-lang/rescript-compiler/pull/5870
 - Better error message for extension point https://github.com/rescript-lang/rescript-compiler/pull/5965
 
+# 10.1.3
+
+#### :rocket: New Feature
+
+- Add experimental suppport for directives. An annotation such as `@@directive("use client;")` emits `use client;` verbatim before imports https://github.com/rescript-lang/rescript-compiler/pull/5999
+- `genType`: add `Core` standard library support for the following builtin types: `Null.t`, `Nullable.t`, `Undefined.t`, `Dict.t<_>`, `Promise.t<_>`, `Date.t`, `BigInt.t`, `RegExp.t`, `Map.t<_, _>`, `WeakMap.t<_, _>`, `Set<_>`, `WeakSet<_>` https://github.com/rescript-lang/rescript-compiler/pull/6024
+
+#### :boom: Breaking Change
+
+- `genType`: streamline the treatment of optionals as undefined https://github.com/rescript-lang/rescript-compiler/pull/6024
+  - Represent `option<t>` as `undefined | t` instead of `null | undefined | t`. This is more permissive when importing functions taking optional values (allows to use option types), but stricter when e.g. exporting ReScript functions taking arguments of option type. Fallback: use `Js.undefined<_>` instead.
+  - Represent `{x:option<string>}` as `{x:(undefined | string)}` instead of `{x?: string}`. This is more in line with TS's behaviour. Fallback: use `{x?:string}`.
+
+#### :nail_care: Polish
+
+- Add the gap property to jsxDOMStyle https://github.com/rescript-lang/rescript-compiler/pull/5956
+
+#### :bug: Bug Fix
+
+- Fix issue where error messages related to non-existent props were displayed without location information https://github.com/rescript-lang/syntax/pull/730
+- Fix issue where uncurried functions were incorrectly converting the type of a prop given as a default value to curried https://github.com/rescript-lang/syntax/pull/731
+- Fix issue with nested async functions, where the inner function would be emitted without `async` https://github.com/rescript-lang/rescript-compiler/pull/5984
+- Fix issue with printing async functions with locally abstract types https://github.com/rescript-lang/syntax/pull/732
+- Fix issue with async context and locally abstract types https://github.com/rescript-lang/rescript-compiler/pull/5985
+- Fix support for recursive components in JSX V4 https://github.com/rescript-lang/syntax/pull/733
+- GenType: fix issue with V3 compatibility mode (see https://github.com/rescript-lang/rescript-compiler/issues/5990) https://github.com/rescript-lang/rescript-compiler/pull/5992
+- Fix issue with overlapping labelled argument with default value https://github.com/rescript-lang/syntax/pull/734
+- Fix issue with using alias and default value together https://github.com/rescript-lang/syntax/pull/734
+- Fix issue in `Js.Promise2` where `then` and `catch` were returning `undefined` https://github.com/rescript-lang/rescript-compiler/pull/5996
+- Fix issue in the compiler back-end where async functions passed to an `@uncurry` external would be inlined and transformed in a way that loses async https://github.com/rescript-lang/rescript-compiler/pull/6011
+- Fix location issue for the treatment of `async` functions where hovering on the body with a type error would show `'a => promise<'a>` everywhere https://github.com/rescript-lang/rescript-compiler/pull/6014
+- Fix formatting of `switch` expressions that contain braced `cases` inside https://github.com/rescript-lang/syntax/pull/735
+- Fix formatting of props spread for multiline JSX expression https://github.com/rescript-lang/syntax/pull/736
+- Support `@gentype.import` as an alias to `@genType.import` in the compiler https://github.com/rescript-lang/rescript-compiler/pull/6021
+- In GenType, check annotations also in module types to decide whether to produce the `.gen.tsx` file https://github.com/rescript-lang/rescript-compiler/pull/5903
+- Fix issue with JSX V4 and newtype https://github.com/rescript-lang/syntax/pull/737
+- Fix issue with JSX V4 when components are nested https://github.com/rescript-lang/syntax/pull/738
+- Fix issue where generic compare on `float` values would be different from the compare for type `float` https://github.com/rescript-lang/rescript-compiler/pull/6043
+- Improve code generated for default arguments in JSX V4 https://github.com/rescript-lang/syntax/pull/739
+- Fix issue with JSX V4 props of the form `~p as module(...)` https://github.com/rescript-lang/syntax/pull/739
+
+# 10.1.2
+
+#### :bug: Bug Fix
+
+- Fix an issue where error messages related to duplicate props were displayed without a loc and were unclear https://github.com/rescript-lang/syntax/pull/728
+
 # 10.1.1
 
 #### :boom: Breaking Change
 
+- Parse the attributes of labelled argument to the pattern attributes of argument instead of function. https://github.com/rescript-lang/syntax/pull/722
 - The prop names duplicated to keyword are not mangled automatically in JSX v4.
   - Use `@as` instead
 
@@ -110,7 +131,6 @@ These are only breaking changes for unformatted code.
 - Fix build error where aliasing arguments to `_` in the make function with JSX V4. https://github.com/rescript-lang/rescript-compiler/pull/5881
 - Fix parsing of spread props as an expression in JSX V4 https://github.com/rescript-lang/rescript-compiler/pull/5885
 - Fix dropping attributes from props in make function in JSX V4 https://github.com/rescript-lang/rescript-compiler/pull/5905
-- Fix an issue where error messages related to duplicate props were displayed without a loc and were unclear https://github.com/rescript-lang/rescript-compiler/pull/5937
 
 # 10.1.0
 
