@@ -127,7 +127,15 @@ let no_export (rest : Parsetree.structure) : Parsetree.structure =
         ]
   | _ -> rest
 
+let process_attributes items =
+  items |> List.iter(fun (item : Parsetree.structure_item) -> match item.pstr_desc with
+  | Pstr_attribute ({ txt = "directive" },
+     PStr [ { pstr_desc = Pstr_eval ({ pexp_desc = Pexp_constant (Pconst_string (d, _)) }, _) } ]) ->
+      Js_config.directives := !Js_config.directives @ [d]
+  | _ -> ())
+
 let after_parsing_impl ppf outputprefix (ast : Parsetree.structure) =
+  process_attributes ast;
   if !Clflags.only_parse = false then (
     Js_config.all_module_aliases :=
       !Clflags.assume_no_mli = Mli_non_exists && all_module_alias ast;

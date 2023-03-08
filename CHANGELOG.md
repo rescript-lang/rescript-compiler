@@ -12,6 +12,9 @@
 
 # 10.1.4
 
+#### :bug: Bug Fix
+- Fix implementation of directives
+
 # 10.1.3
 
 #### :rocket: New Feature
