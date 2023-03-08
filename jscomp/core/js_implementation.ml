@@ -46,7 +46,7 @@ let process_with_gentype cmt_file =
 
 let after_parsing_sig ppf outputprefix ast =
   if !Clflags.only_parse = false then (
-    Ast_config.iter_on_bs_config_sigi ast;
+    Ast_config.process_sig ast;
     if !Js_config.modules then
       output_deps_set !Location.input_name
         (Ast_extract.read_parse_and_extract Mli ast);
@@ -131,7 +131,7 @@ let after_parsing_impl ppf outputprefix (ast : Parsetree.structure) =
   if !Clflags.only_parse = false then (
     Js_config.all_module_aliases :=
       !Clflags.assume_no_mli = Mli_non_exists && all_module_alias ast;
-    Ast_config.iter_on_bs_config_stru ast;
+    Ast_config.process_str ast;
     let ast = if !Js_config.no_export then no_export ast else ast in
     if !Js_config.modules then
       output_deps_set !Location.input_name

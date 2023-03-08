@@ -66,6 +66,12 @@ These are only breaking changes for unformatted code.
 - New internal representation for uncurried functions using built-in type `function$<fun_type, arity>` this avoids having to declare all the possible arities ahead of time https://github.com/rescript-lang/rescript-compiler/pull/5870
 - Better error message for extension point https://github.com/rescript-lang/rescript-compiler/pull/5965
 
+# 10.1.4
+
+#### :bug: Bug Fix
+
+- Fix implementation of directives https://github.com/rescript-lang/rescript-compiler/pull/6052
+
 # 10.1.3
 
 #### :rocket: New Feature
