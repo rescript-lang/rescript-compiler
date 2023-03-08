@@ -13,7 +13,7 @@
 # 10.1.4
 
 #### :bug: Bug Fix
-- Fix implementation of directives
+- Fix implementation of directives https://github.com/rescript-lang/rescript-compiler/pull/6052
 
 # 10.1.3
 

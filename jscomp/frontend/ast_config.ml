@@ -38,7 +38,15 @@ let signature_config_table : action_table ref = ref Map_string.empty
 let add_signature k v =
   signature_config_table := Map_string.add !signature_config_table k v
 
-let rec iter_on_bs_config_stru (x : Parsetree.structure) =
+let process_directives str =
+  Js_config.directives := []; (* Restt: multiple calls possible e.g. with bsc from the command-line *)
+  str |> List.iter(fun (item : Parsetree.structure_item) -> match item.pstr_desc with
+  | Pstr_attribute ({ txt = "directive" },
+      PStr [ { pstr_desc = Pstr_eval ({ pexp_desc = Pexp_constant (Pconst_string (d, _)) }, _) } ]) ->
+      Js_config.directives := !Js_config.directives @ [d]
+  | _ -> ())
+  
+let rec iter_on_bs_config_str (x : Parsetree.structure) =
   match x with
   | [] -> ()
   | {
@@ -51,10 +59,14 @@ let rec iter_on_bs_config_stru (x : Parsetree.structure) =
       Ext_list.iter
         (Ast_payload.ident_or_record_as_config loc payload)
         (Ast_payload.table_dispatch !structural_config_table)
-  | { pstr_desc = Pstr_attribute _ } :: rest -> iter_on_bs_config_stru rest
+  | { pstr_desc = Pstr_attribute _ } :: rest -> iter_on_bs_config_str rest
   | _ :: _ -> ()
 
-let rec iter_on_bs_config_sigi (x : Parsetree.signature) =
+let process_str str =
+  iter_on_bs_config_str str;
+  process_directives str
+
+let rec iter_on_bs_config_sig (x : Parsetree.signature) =
   match x with
   | [] -> ()
   | {
@@ -67,5 +79,7 @@ let rec iter_on_bs_config_sigi (x : Parsetree.signature) =
       Ext_list.iter
         (Ast_payload.ident_or_record_as_config loc payload)
         (Ast_payload.table_dispatch !signature_config_table)
-  | { psig_desc = Psig_attribute _ } :: rest -> iter_on_bs_config_sigi rest
+  | { psig_desc = Psig_attribute _ } :: rest -> iter_on_bs_config_sig rest
   | _ :: _ -> ()
+
+let process_sig s = iter_on_bs_config_sig s
