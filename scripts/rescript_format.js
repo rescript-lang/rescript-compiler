@@ -43,7 +43,7 @@ the formatted code to stdout in ReScript syntax`,
   [
     "-check",
     { kind: "Unit", data: { kind: "Unit_set", data: check } },
-    "Check formatting only",
+    "Check formatting for file or the whole project. Use `-all` to check the whole project",
   ],
 ];
 var formattedStdExtensions = [".res", ".resi", ".ml", ".mli"];
@@ -130,6 +130,16 @@ async function main(argv, rescript_exe, bsc_exe) {
 
     var format_project = format.val;
     var use_stdin = stdin.val;
+
+    // Only -check arg
+    // Require: -all or path to a file
+    if (check.val && !format_project && files.length == 0) {
+      console.error(
+        "format check require path to a file or use `-all` to check the whole project"
+      );
+      process.exit(2);
+    }
+
     if (format_project) {
       if (use_stdin || files.length !== 0) {
         console.error("format -all can not be in use with other flags");
