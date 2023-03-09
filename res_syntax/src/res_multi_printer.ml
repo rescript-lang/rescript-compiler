@@ -29,7 +29,7 @@ let getUncurriedAlwaysFromBsconfig ~filename =
     | None ->
       (* The editor calls format on a temporary file. So bsconfig can't be found.
          This looks outside the node_modules containing the bsc binary *)
-      let dir = Filename.dirname Sys.argv.(0) in
+      let dir = (Filename.dirname Sys.argv.(0) [@doesNotRaise]) in
       findFromNodeModules ~dir
     | x -> x
   in
