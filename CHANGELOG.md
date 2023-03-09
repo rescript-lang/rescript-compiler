@@ -16,6 +16,9 @@
 - Fix implementation of directives https://github.com/rescript-lang/rescript-compiler/pull/6052
 - Fix issue if the `lib` dir is included in the sources of bsconfig.json
 
+#### :rocket: New Feature
+- Add support for toplevel `await` https://github.com/rescript-lang/rescript-compiler/pull/6054
+
 # 10.1.3
 
 #### :rocket: New Feature
