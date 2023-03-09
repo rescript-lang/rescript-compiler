@@ -2018,6 +2018,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
       begin_def ();
       let uncurried =
         Ext_list.exists sexp.pexp_attributes (fun ({txt },_) -> txt = "res.uapp")
+        && not @@ Ext_list.exists sexp.pexp_attributes (fun ({txt },_) -> txt = "res.partial")
         && not @@ is_automatic_curried_application env funct in
       let (args, ty_res, fully_applied) = type_application uncurried env funct sargs in
       end_def ();

@@ -15,3 +15,5 @@ let a = 3->foo(. 4)
 Js.log(a) // Test automatic uncurried application
 
 let _ = Js.Array2.map([1], (. x) => x+1)
+
+let ptl = @res.partial foo(10) // force partial application
