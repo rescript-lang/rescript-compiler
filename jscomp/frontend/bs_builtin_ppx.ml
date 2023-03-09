@@ -551,7 +551,7 @@ let rec structure_mapper (self : mapper) (stru : Ast_structure.t) =
 let mapper : mapper =
   {
     default_mapper with
-    expr = expr_mapper ~async_context:(ref false) ~in_function_def:(ref false);
+    expr = expr_mapper ~async_context:(ref true) ~in_function_def:(ref false);
     pat = pat_mapper;
     typ = typ_mapper;
     class_type = class_type_mapper;
