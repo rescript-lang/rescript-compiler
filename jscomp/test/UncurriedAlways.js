@@ -23,10 +23,15 @@ console.log(a);
       return x + 1 | 0;
     });
 
+function ptl(param) {
+  return foo(10, param);
+}
+
 exports.foo = foo;
 exports.z = z;
 exports.bar = bar;
 exports.b = b;
 exports.w = w;
 exports.a = a;
+exports.ptl = ptl;
 /*  Not a pure module */

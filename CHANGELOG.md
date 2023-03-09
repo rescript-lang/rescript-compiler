@@ -24,7 +24,9 @@ subset of the arguments, and return a curried type with the remaining ones https
 - Add support for default arguments in uncurried functions https://github.com/rescript-lang/rescript-compiler/pull/5835
 - Inline uncurried application when it is safe https://github.com/rescript-lang/rescript-compiler/pull/5847
 - Support optional named arguments without a final unit in uncurried functions https://github.com/rescript-lang/rescript-compiler/pull/5907
-- Add support for uncurried-always: a mode where everything is considered uncurried, whether with or without the `.`. This can be turned on with `@@uncurriedAlways` locally in a file. Added a project config `"uncurried"`, which propagates to dependencies, and takes the values: `"legacy"` which changes nothing, or `"default"` for uncurried by default, or `"always"` for uncurried-always. https://github.com/rescript-lang/rescript-compiler/pull/5968
+- Add support for uncurried-always: a mode where everything is considered uncurried, whether with or without the `.`. This can be turned on with `@@uncurriedAlways` locally in a file. Added a project config `"uncurried"`, which propagates to dependencies, and takes the values: `"legacy"` which changes nothing, or `"default"` for uncurried by default, or `"always"` for uncurried-always.
+Since there's no syntax for partial application in this new mode, introduce `@res.partial foo(x)` to express partial application. This is temporary and will later have some surface syntax.
+https://github.com/rescript-lang/rescript-compiler/pull/5968
 
 #### :boom: Breaking Change
 
