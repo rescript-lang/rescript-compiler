@@ -3270,7 +3270,7 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
               pexp_attributes =
                 List.filter
                   (function
-                    | {Location.txt = "res.braces"}, _ -> false
+                    | {Location.txt = "res.braces" | "ns.braces"}, _ -> false
                     | _ -> true)
                   e.pexp_attributes;
             }
