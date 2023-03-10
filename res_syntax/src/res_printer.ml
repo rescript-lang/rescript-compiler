@@ -3169,19 +3169,12 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
     | Pexp_letexception (_extensionConstructor, _expr) ->
       printExpressionBlock ~state ~braces:true e cmtTbl
     | Pexp_assert expr ->
-      (* let rhs = *)
-      (*   let doc = printExpressionWithComments ~state expr cmtTbl in *)
-      (*   match Parens.lazyOrAssertOrAwaitExprRhs expr with *)
-      (*   | Parens.Parenthesized -> addParens doc *)
-      (*   | Braced braces -> printBraces doc expr braces *)
-      (*   | Nothing -> doc *)
-      (* in *)
       let exp = printExpression ~state expr cmtTbl in
       Doc.concat [Doc.text "assert("; exp; Doc.text ")"]
     | Pexp_lazy expr ->
       let rhs =
         let doc = printExpressionWithComments ~state expr cmtTbl in
-        match Parens.lazyOrAssertOrAwaitExprRhs expr with
+        match Parens.lazyOrAwaitExprRhs expr with
         | Parens.Parenthesized -> addParens doc
         | Braced braces -> printBraces doc expr braces
         | Nothing -> doc
@@ -3265,7 +3258,7 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
     if ParsetreeViewer.hasAwaitAttribute e.pexp_attributes then
       let rhs =
         match
-          Parens.lazyOrAssertOrAwaitExprRhs ~inAwait:true
+          Parens.lazyOrAwaitExprRhs ~inAwait:true
             {
               e with
               pexp_attributes =

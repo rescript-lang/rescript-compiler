@@ -2117,8 +2117,6 @@ and parseOperandExpr ~context p =
     | Assert ->
       Parser.next p;
       Parser.expect Lparen p;
-      (* Parser.next p; *)
-      (* let expr = parseUnaryExpr p in *)
       let expr = parseExpr p in
       let loc = mkLoc startPos p.prevEndPos in
       Parser.expect Rparen p;
