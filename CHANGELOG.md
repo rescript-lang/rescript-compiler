@@ -23,6 +23,7 @@
 #### :nail_care: Polish
 
 - Better error message for extension point https://github.com/rescript-lang/rescript-compiler/pull/6057
+- Improve format check help https://github.com/rescript-lang/rescript-compiler/pull/6056
 
 # 10.1.3
 
