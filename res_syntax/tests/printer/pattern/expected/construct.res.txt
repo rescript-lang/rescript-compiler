@@ -1,27 +1,24 @@
-let () = 1
 
-let Constructor = 1
+  Syntax error!
+  tests/printer/pattern/construct.res:19:17-22
 
-let Foo() = 1
-let Foo() = 1
+  17 │ 
+  18 │ switch sphere->intersect(~ray) {
+  19 │ | None => assert false
+  20 │ | Some((x, y)) => assert true
+  21 │ }
 
-let Rgb(r, g, b) = 1
+  Did you forget a `(` here?
 
-let Rgb(rrrrrrrrrrrrrrrrrrrrrrrrr, ggggggggggggggggggggggggg, bbbbbbbbbbbbbbbbbbbbbbbbb) = 1
-let Units((), (), ()) = 1
 
-switch truth {
-| true => Js.log("true")
-| false => Js.log("false")
-}
+  Syntax error!
+  tests/printer/pattern/construct.res:20:25-29
 
-switch sphere->intersect(~ray) {
-| None => assert false
-| Some((x, y)) => assert true
-}
+  18 │ switch sphere->intersect(~ray) {
+  19 │ | None => assert false
+  20 │ | Some((x, y)) => assert true
+  21 │ }
+  22 │ 
 
-// huggable patterns
-let Foo({superLongIdent: x, superLongIdent2: y, superLongIdent3: z, superLongIdent4: a}) = x
-let Foo((superLongIdent, superLongIdent2, superLongIdent, superLongIdent4, superLongIdent5)) = x
-let Foo([superLongIdent, superLongIdent2, superLongIdent, superLongIdent4, superLongIdent5]) = x
-let Foo(list{superLongIdent, superLongIdent2, superLongIdent, superLongIdent4, superLongIdent5}) = x
+  Did you forget a `(` here?
+

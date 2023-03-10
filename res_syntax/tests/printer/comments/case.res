@@ -26,5 +26,5 @@ let rec mergeU = (s1, s2, f) =>
     }
     let (l1, d1, r1) = split(v2, s1)
     N.concatOrJoin(mergeU(l1, l2, f), v2, f(. v2, d1, Some(d2)), mergeU(r1, r2, f))
-  | _ => assert false
+  | _ => assert(false)
   }

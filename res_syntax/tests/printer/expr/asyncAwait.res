@@ -64,7 +64,7 @@ let _ = await (while true { infiniteLoop() })
 let _ = await (try ok() catch { | _  =>  logError() })
 let _ = await (for i in 0 to 10 { sideEffect()})
 let _ = await (lazy x)
-let _ = await (assert x)
+let _ = await (assert(x))
 let _ = await promises[0]
 let _ = await promises["resolved"]
 let _ = await (promises["resolved"] = sideEffect())

@@ -3169,14 +3169,15 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
     | Pexp_letexception (_extensionConstructor, _expr) ->
       printExpressionBlock ~state ~braces:true e cmtTbl
     | Pexp_assert expr ->
-      let rhs =
-        let doc = printExpressionWithComments ~state expr cmtTbl in
-        match Parens.lazyOrAssertOrAwaitExprRhs expr with
-        | Parens.Parenthesized -> addParens doc
-        | Braced braces -> printBraces doc expr braces
-        | Nothing -> doc
-      in
-      Doc.concat [Doc.text "assert "; rhs]
+      (* let rhs = *)
+      (*   let doc = printExpressionWithComments ~state expr cmtTbl in *)
+      (*   match Parens.lazyOrAssertOrAwaitExprRhs expr with *)
+      (*   | Parens.Parenthesized -> addParens doc *)
+      (*   | Braced braces -> printBraces doc expr braces *)
+      (*   | Nothing -> doc *)
+      (* in *)
+      let exp = printExpression ~state expr cmtTbl in
+      Doc.concat [Doc.text "assert("; exp; Doc.text ")"]
     | Pexp_lazy expr ->
       let rhs =
         let doc = printExpressionWithComments ~state expr cmtTbl in
