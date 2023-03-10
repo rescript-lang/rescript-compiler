@@ -1197,7 +1197,8 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
       let cxt = P.paren_group f 1 (fun _ -> expression ~level:0 cxt f e) in
       P.space f;
       P.brace_vgroup f 1 (fun _ ->
-          let cxt = loop_case_clauses cxt f Js_dump_string.pp_string cc in
+          let pp_string f txt = ignore @@ expression_desc cxt ~level:0 f (Str {txt; delim=DStarJ}) in
+          let cxt = loop_case_clauses cxt f pp_string cc in
           match def with
           | None -> cxt
           | Some def ->

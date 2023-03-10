@@ -330,10 +330,14 @@ module Delim = struct
     | Some "*j" -> Some DStarJ
     | _ -> None
 
+  type interpolation =
+    | Js (* string interpolation *)
+    | J (* old unsafe interpolation *)
+    | Unrecognized (* no interpolation: delimiter not recognized *)
   let parse_unprocessed = function
-    | "js" -> `string_interpolation
-    | "j" -> `old_unsafe_interpolation
-    | _ -> `no_interpolation
+    | "js" -> Js
+    | "j" -> J
+    | _ -> Unrecognized
 
   let escaped_j_delimiter = "*j" (* not user level syntax allowed *)
   let unescaped_j_delimiter = "j"
@@ -397,16 +401,28 @@ let transform_interp loc s =
   with Error (start, pos, error) ->
     Location.raise_errorf ~loc:(update border start pos loc) "%a" pp_error error
 
-let transform (e : Parsetree.expression) s delim : Parsetree.expression =
+let transform_exp (e : Parsetree.expression) s delim : Parsetree.expression =
   match Delim.parse_unprocessed delim with
-  | `string_interpolation ->
+  | Js ->
       let js_str = Ast_utf8_string.transform e.pexp_loc s in
       {
         e with
         pexp_desc = Pexp_constant (Pconst_string (js_str, Delim.escaped));
       }
-  | `old_unsafe_interpolation -> transform_interp e.pexp_loc s
-  | `no_interpolation -> e
+  | J -> transform_interp e.pexp_loc s
+  | Unrecognized -> e
+
+
+let transform_pat (p : Parsetree.pattern) s delim : Parsetree.pattern =
+  match Delim.parse_unprocessed delim with
+  | Js ->
+      let js_str = Ast_utf8_string.transform p.ppat_loc s in
+      {
+        p with
+        ppat_desc = Ppat_constant (Pconst_string (js_str, Delim.escaped));
+      }
+  | J (* No j interpolation on patterns *)
+  | Unrecognized -> p
 
 let is_unicode_string opt = Ext_string.equal opt Delim.escaped_j_delimiter
 
