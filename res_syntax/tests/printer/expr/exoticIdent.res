@@ -43,7 +43,7 @@ let () = {
 
 let x = (\"type" : \"module")
 
-assert \"let"
+assert(\"let")
 
 lazy \"let"
 

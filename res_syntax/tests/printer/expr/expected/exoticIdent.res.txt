@@ -1,12 +1,68 @@
+let x = \"type"
+let x = Extension.Type.\"type"
 
-  Syntax error!
-  tests/printer/expr/exoticIdent.res:46:7-13
+let \"+++" = (a, b) => a + b
 
-  44 │ let x = (\"type" : \"module")
-  45 │ 
-  46 │ assert \"let"
-  47 │ 
-  48 │ lazy \"let"
+\"+++"(~a=\"let", \"module", ~\"type")
 
-  Did you forget a `(` here?
+switch \"type" {
+| () => ()
+}
 
+try \"type" catch {
+| () => ()
+}
+
+for pat in \"type" to \"let" {
+  ()
+}
+
+if \"let" {
+  ()
+} else if \"module\" {
+  ()
+}
+
+while \"let" {
+  ()
+}
+
+let x = (\"type", \"module")
+let x = [\"type", \"module"]
+let x = list{\"type", \"module"}
+let x = list{\"type", \"module", ...\"let"}
+
+Color(\"let", \"module")
+
+let importType = {
+  ...\"let",
+  \"type": \"module",
+}
+
+let userType = user.\"type"
+let m = user.\"type".\"module"
+
+user.\"type" = \"module"
+
+let () = {
+  \"let"()
+  \"module"
+}
+
+let x = (\"type": \"module")
+
+assert(\"let")
+
+lazy \"let"
+
+%let
+%let(`console.log`)
+
+@let
+let x = 1
+
+let x =
+  <div \"aria-foo"=\"type">
+    \"module"
+    \"let"
+  </div>
