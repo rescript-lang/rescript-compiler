@@ -39,7 +39,7 @@ let x = lazy (while i < 10 {
   print_int(i)
 })
 
-let x = lazy (assert(false))
+let x = lazy assert(false)
 let x = lazy (try sideEffect() catch {| Exit => ()})
 
 let x = lazy (@attr expr)
