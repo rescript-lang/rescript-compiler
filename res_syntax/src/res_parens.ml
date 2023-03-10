@@ -218,7 +218,7 @@ let lazyOrAwaitExprRhs ?(inAwait = false) expr =
       Nothing
     | {
      pexp_desc =
-       ( Pexp_lazy _ | Pexp_fun _ | Pexp_newtype _
+       ( Pexp_lazy _ | Pexp_assert _ | Pexp_fun _ | Pexp_newtype _
        | Pexp_function _ | Pexp_constraint _ | Pexp_setfield _ | Pexp_match _
        | Pexp_try _ | Pexp_while _ | Pexp_for _ | Pexp_ifthenelse _ );
     } ->
