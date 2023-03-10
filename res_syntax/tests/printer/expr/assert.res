@@ -4,7 +4,7 @@ assert(truth)
 
 let x = assert(true)
 let x = assert(12)
-// let x = assert((12: int))
+let x = assert(12: int)
 let x = assert(12)
 let x = assert(list{1, 2, ...x})
 let x = assert(module(Foo: Bar))
