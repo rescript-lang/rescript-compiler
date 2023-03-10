@@ -70,19 +70,12 @@ type iterator = Ast_iterator.iterator
 
 let super = Ast_iterator.default_iterator
 
-let check_constant loc kind (const : Parsetree.constant) =
+let check_constant loc (const : Parsetree.constant) =
   match const with
-  | Pconst_string (_, Some s) -> (
-      match kind with
-      | `expr ->
-          if Ast_utf8_string_interp.is_unescaped s then
-            Bs_warnings.error_unescaped_delimiter loc s
-      | `pat ->
-          if Ast_utf8_string_interp.parse_processed_delim (Some s) = Some DStarJ
-          then
-            Location.raise_errorf ~loc
-              "Unicode string is not allowed in pattern match")
-  | Pconst_integer (s, None) -> (
+  | Pconst_string (_, Some s) ->
+      if Ast_utf8_string_interp.is_unescaped s then
+        Bs_warnings.error_unescaped_delimiter loc s
+| Pconst_integer (s, None) -> (
       (* range check using int32
          It is better to give a warning instead of error to avoid make people unhappy.
          It also has restrictions in which platform bsc is running on since it will
@@ -126,7 +119,7 @@ let emit_external_warnings : iterator =
     expr =
       (fun self ({ pexp_loc = loc } as a) ->
         match a.pexp_desc with
-        | Pexp_constant const -> check_constant loc `expr const
+        | Pexp_constant const -> check_constant loc const
         | Pexp_object _ | Pexp_new _ ->
             Location.raise_errorf ~loc "OCaml style objects are not supported"
         | Pexp_variant (s, None) when Ext_string.is_valid_hash_number s -> (
@@ -174,7 +167,7 @@ let emit_external_warnings : iterator =
     pat =
       (fun self (pat : Parsetree.pattern) ->
         match pat.ppat_desc with
-        | Ppat_constant constant -> check_constant pat.ppat_loc `pat constant
+        | Ppat_constant constant -> check_constant pat.ppat_loc constant
         | Ppat_record ([], _) ->
             Location.raise_errorf ~loc:pat.ppat_loc
               "Empty record pattern is not supported"
