@@ -2118,8 +2118,8 @@ and parseOperandExpr ~context p =
       Parser.next p;
       Parser.expect Lparen p;
       let expr = parseExpr p in
-      let loc = mkLoc startPos p.prevEndPos in
       Parser.expect Rparen p;
+      let loc = mkLoc startPos p.prevEndPos in
       Ast_helper.Exp.assert_ ~loc expr
     | Lident "async"
     (* we need to be careful when we're in a ternary true branch:

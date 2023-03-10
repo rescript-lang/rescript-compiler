@@ -189,7 +189,7 @@ let binaryOperatorInsideAwaitNeedsParens operator =
   ParsetreeViewer.operatorPrecedence operator
   < ParsetreeViewer.operatorPrecedence "|."
 
-let lazyOrAwaitExprRhs ?(inAwait = false) expr =
+let lazyOrAssertOrAwaitExprRhs ?(inAwait = false) expr =
   let optBraces, _ = ParsetreeViewer.processBracesAttr expr in
   match optBraces with
   | Some ({Location.loc = bracesLoc}, _) -> Braced bracesLoc

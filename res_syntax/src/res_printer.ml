@@ -3169,12 +3169,23 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
     | Pexp_letexception (_extensionConstructor, _expr) ->
       printExpressionBlock ~state ~braces:true e cmtTbl
     | Pexp_assert expr ->
-      let exp = printExpression ~state expr cmtTbl in
-      Doc.concat [Doc.text "assert("; exp; Doc.text ")"]
+      let doc = printExpressionWithComments ~state expr cmtTbl in
+      (* let expr = match expr with *)
+      (* | { pexp_desc = Pexp_constraint _; } -> addParens doc *)
+      (* | _ -> doc in *)
+      (* let rhs = *)
+      (*   let doc = printExpressionWithComments ~state expr cmtTbl in *)
+      (*   match Parens.lazyOrAssertOrAwaitExprRhs expr with *)
+      (*   | Parens.Parenthesized -> addParens doc *)
+      (*   | Braced _ -> printExpression ~state expr cmtTbl *)
+      (*   | Nothing -> doc *)
+      (* in *)
+      (* let rhs = printExpression ~state expr cmtTbl in *)
+      Doc.concat [Doc.text "assert("; doc; Doc.text ")"]
     | Pexp_lazy expr ->
       let rhs =
         let doc = printExpressionWithComments ~state expr cmtTbl in
-        match Parens.lazyOrAwaitExprRhs expr with
+        match Parens.lazyOrAssertOrAwaitExprRhs expr with
         | Parens.Parenthesized -> addParens doc
         | Braced braces -> printBraces doc expr braces
         | Nothing -> doc
@@ -3258,7 +3269,7 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
     if ParsetreeViewer.hasAwaitAttribute e.pexp_attributes then
       let rhs =
         match
-          Parens.lazyOrAwaitExprRhs ~inAwait:true
+          Parens.lazyOrAssertOrAwaitExprRhs ~inAwait:true
             {
               e with
               pexp_attributes =

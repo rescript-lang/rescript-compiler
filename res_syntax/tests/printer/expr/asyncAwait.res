@@ -23,7 +23,7 @@ let maybeSomeValue = switch await fetchData(url) {
 await 1 + await 2
 
 lazy (await f())
-assert (await f())
+assert(await f())
 
 (await f).json()
 
