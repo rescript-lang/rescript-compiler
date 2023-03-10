@@ -10333,6 +10333,9 @@ and parsing_single_source ({ package_kind; is_dev; cwd } as cxt)
           let dir =
             match map.?(Bsb_build_schemas.dir) with
             | Some (Str { str }) ->
+                if str = Literals.library_file then
+                    Bsb_exception.config_error x (Printf.sprintf "dir field should be different from `%s`" Literals.library_file)
+                else
                 Ext_path.simple_convert_node_path_to_os_path str
             | Some x ->
                 Bsb_exception.config_error x "dir expected to be a string"
