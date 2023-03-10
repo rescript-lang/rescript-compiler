@@ -18,6 +18,10 @@
 #### :rocket: New Feature
 - Add support for toplevel `await` https://github.com/rescript-lang/rescript-compiler/pull/6054
 
+#### :nail_care: Polish
+
+- Better error message for extension point https://github.com/rescript-lang/rescript-compiler/pull/6057
+
 # 10.1.3
 
 #### :rocket: New Feature
