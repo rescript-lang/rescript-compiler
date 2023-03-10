@@ -14,6 +14,15 @@
 
 #### :bug: Bug Fix
 - Fix implementation of directives https://github.com/rescript-lang/rescript-compiler/pull/6052
+- Fix issue if the `lib` dir is included in the sources of bsconfig.json https://github.com/rescript-lang/rescript-compiler/pull/6055
+- Fix issue with string escape in pattern match https://github.com/rescript-lang/rescript-compiler/pull/6062
+
+#### :rocket: New Feature
+- Add support for toplevel `await` https://github.com/rescript-lang/rescript-compiler/pull/6054
+
+#### :nail_care: Polish
+
+- Better error message for extension point https://github.com/rescript-lang/rescript-compiler/pull/6057
 
 # 10.1.3
 

@@ -651,7 +651,7 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
 and compile_string_cases cxt switch_exp table default =
   compile_general_cases
     (fun _ -> None)
-    E.str E.string_equal cxt
+    (fun str -> E.str str ~delim:DStarJ) E.string_equal cxt
     (fun ?default ?declaration e clauses ->
       S.string_switch ?default ?declaration e clauses)
     switch_exp table default

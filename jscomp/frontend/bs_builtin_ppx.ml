@@ -64,11 +64,13 @@ let default_mapper = Bs_ast_mapper.default_mapper
 let default_expr_mapper = Bs_ast_mapper.default_mapper.expr
 let default_pat_mapper = Bs_ast_mapper.default_mapper.pat
 
-let pat_mapper (self : mapper) (e : Parsetree.pattern) =
-  match e.ppat_desc with
+let pat_mapper (self : mapper) (p : Parsetree.pattern) =
+  match p.ppat_desc with
   | Ppat_constant (Pconst_integer (s, Some 'l')) ->
-      { e with ppat_desc = Ppat_constant (Pconst_integer (s, None)) }
-  | _ -> default_pat_mapper self e
+      { p with ppat_desc = Ppat_constant (Pconst_integer (s, None)) }
+  | Ppat_constant (Pconst_string (s, Some delim)) ->
+      Ast_utf8_string_interp.transform_pat p s delim
+  | _ -> default_pat_mapper self p
 
 let expr_mapper ~async_context ~in_function_def (self : mapper)
     (e : Parsetree.expression) =
@@ -98,7 +100,7 @@ let expr_mapper ~async_context ~in_function_def (self : mapper)
              (Nolabel, expr);
            ])
   | Pexp_constant (Pconst_string (s, Some delim)) ->
-      Ast_utf8_string_interp.transform e s delim
+      Ast_utf8_string_interp.transform_exp e s delim
   | Pexp_constant (Pconst_integer (s, Some 'l')) ->
       { e with pexp_desc = Pexp_constant (Pconst_integer (s, None)) }
   (* End rewriting *)
@@ -551,7 +553,7 @@ let rec structure_mapper (self : mapper) (stru : Ast_structure.t) =
 let mapper : mapper =
   {
     default_mapper with
-    expr = expr_mapper ~async_context:(ref false) ~in_function_def:(ref false);
+    expr = expr_mapper ~async_context:(ref true) ~in_function_def:(ref false);
     pat = pat_mapper;
     typ = typ_mapper;
     class_type = class_type_mapper;
