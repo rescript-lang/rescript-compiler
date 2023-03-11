@@ -36,10 +36,6 @@ let h4 = H0
 exception H4 = Invalid_argument 
 
 let h5 = H4 "xx"
-;; Printexc.register_printer (function 
-    | A s -> Some "A"
-    | _ -> None
-)
 
 let p e = 
   match e with 
