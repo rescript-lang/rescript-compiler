@@ -578,10 +578,13 @@ function ocamlDepForBscAsync(files, dir, depsMap) {
         }
         try {
           const mlfile = path.join(tmpdir, mlname);
-          cp.execSync(`${bsc_exe} -dsource -only-parse ${f} 2>${mlfile}`, {
-            cwd: dir,
-            encoding: "ascii",
-          });
+          cp.execSync(
+            `${bsc_exe} -dsource -only-parse -bs-no-builtin-ppx ${f} 2>${mlfile}`,
+            {
+              cwd: dir,
+              encoding: "ascii",
+            }
+          );
           mlfiles.push(mlfile);
         } catch (err) {
           console.log(err);
@@ -1098,7 +1101,11 @@ ${ninjaQuickBuidList([
   var stdlibDirFiles = fs.readdirSync(stdlibDir, "ascii");
   var sources = stdlibDirFiles.filter(x => {
     return (
-      !x.startsWith("pervasives") && (x.endsWith(".ml") || x.endsWith(".mli"))
+      !x.startsWith("pervasives") &&
+      (x.endsWith(".ml") ||
+        x.endsWith(".mli") ||
+        x.endsWith(".res") ||
+        x.endsWith(".resi"))
     );
   });
   let depsMap = new Map();
