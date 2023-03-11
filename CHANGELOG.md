@@ -16,6 +16,7 @@
 - Fix implementation of directives https://github.com/rescript-lang/rescript-compiler/pull/6052
 - Fix issue if the `lib` dir is included in the sources of bsconfig.json https://github.com/rescript-lang/rescript-compiler/pull/6055
 - Fix issue with string escape in pattern match https://github.com/rescript-lang/rescript-compiler/pull/6062
+- Fix issue with literal comparison of string constants https://github.com/rescript-lang/rescript-compiler/pull/6065
 
 #### :rocket: New Feature
 - Add support for toplevel `await` https://github.com/rescript-lang/rescript-compiler/pull/6054

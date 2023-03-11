@@ -24,6 +24,8 @@
 
 (** type definitions for arguments to a function declared external *)
 
+type delim = J.delim
+
 type cst =
   | Arg_int_lit of int
   | Arg_string_lit of string * J.delim
