@@ -39458,6 +39458,8 @@ val transform_test : string -> string
 
 val transform : Location.t -> string -> string
 
+(* Check if the string is only == to itself (no unicode or escape tricks) *)
+val simple_comparison : string -> bool
 end = struct
 #1 "ast_utf8_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -39658,6 +39660,17 @@ let transform loc s =
   with Error (offset, error) ->
     Location.raise_errorf ~loc "Offset: %d, %a" offset pp_error error
 
+let rec check_no_escapes_or_unicode (s : string) (byte_offset : int) (s_len : int) =
+  if byte_offset = s_len then true
+  else
+    let current_char = s.[byte_offset] in
+    match Ext_utf8.classify current_char with
+    | Single 92 (* '\\' *) -> false
+    | Single _ -> check_no_escapes_or_unicode s (byte_offset + 1) s_len
+    | Invalid | Cont _ | Leading _ -> false
+
+let simple_comparison s =
+  check_no_escapes_or_unicode s 0 (String.length s)
 end
 module Ast_compatible : sig 
 #1 "ast_compatible.mli"
