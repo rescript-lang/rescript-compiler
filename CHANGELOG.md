@@ -79,6 +79,7 @@ These are only breaking changes for unformatted code.
 
 - Better error message for extension point https://github.com/rescript-lang/rescript-compiler/pull/6057
 - Improve format check help https://github.com/rescript-lang/rescript-compiler/pull/6056
+- Deprecate unsafe ``` j`$(a)$(b)` ``` interpolation: use string templates ``` `${a}${b}` ``` instead https://github.com/rescript-lang/rescript-compiler/pull/6067
 
 # 10.1.3
 

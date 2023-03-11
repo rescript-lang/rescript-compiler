@@ -81,9 +81,9 @@ let print_spec buf (key, spec, doc) =
     match spec with
     | Symbol (l, _) ->
         let sym = make_symlist "{" "|" "}" l in 
-        Buffer.add_string buf {j|  $(key) $(sym)$(doc)\n|j}
+        Buffer.add_string buf ((((("  " ^ key) ^ " ") ^ sym) ^ doc) ^ "\n")
     | _ ->
-        Buffer.add_string buf {j|  $(key) $(doc)\n|j}
+        Buffer.add_string buf (((("  " ^ key) ^ " ") ^ doc) ^ "\n")
 
 
 
