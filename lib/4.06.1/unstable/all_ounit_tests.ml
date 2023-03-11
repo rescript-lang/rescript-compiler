@@ -52179,7 +52179,11 @@ let transform_exp (e : Parsetree.expression) s delim : Parsetree.expression =
         e with
         pexp_desc = Pexp_constant (Pconst_string (js_str, Delim.escaped));
       }
-  | J -> transform_interp e.pexp_loc s
+  | J ->
+    Location.prerr_warning e.pexp_loc
+    (Warnings.Deprecated
+       ("The unsafe j`$(a)$(b)` interpolation is deprecated, use string template `${a}${b}` instead.", e.pexp_loc, e.pexp_loc));
+    transform_interp e.pexp_loc s
   | Unrecognized -> e
 
 
