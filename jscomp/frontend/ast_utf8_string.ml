@@ -195,3 +195,15 @@ let transform loc s =
     Buffer.contents buf
   with Error (offset, error) ->
     Location.raise_errorf ~loc "Offset: %d, %a" offset pp_error error
+
+let rec check_no_escapes_or_unicode (s : string) (byte_offset : int) (s_len : int) =
+  if byte_offset = s_len then true
+  else
+    let current_char = s.[byte_offset] in
+    match Ext_utf8.classify current_char with
+    | Single 92 (* '\\' *) -> false
+    | Single _ -> check_no_escapes_or_unicode s (byte_offset + 1) s_len
+    | Invalid | Cont _ | Leading _ -> false
+
+let simple_comparison s =
+  check_no_escapes_or_unicode s 0 (String.length s)

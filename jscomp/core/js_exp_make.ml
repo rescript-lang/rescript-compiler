@@ -556,6 +556,15 @@ let zero_float_lit : t =
 let float_mod ?comment e1 e2 : J.expression =
   { comment; expression_desc = Bin (Mod, e1, e2) }
 
+
+let str_equal (txt0:string) (delim0:External_arg_spec.delim) txt1 delim1 =
+  if delim0 = delim1 then
+    if Ext_string.equal txt0 txt1 then Some true
+    else if Ast_utf8_string.simple_comparison txt0 && Ast_utf8_string.simple_comparison txt1
+    then Some false
+    else None
+  else None
+
 let rec triple_equal ?comment (e0 : t) (e1 : t) : t =
   match (e0.expression_desc, e1.expression_desc) with
   | ( (Null | Undefined),
@@ -566,9 +575,6 @@ let rec triple_equal ?comment (e0 : t) (e1 : t) : t =
       (Null | Undefined) )
     when no_side_effect e0 ->
       false_
-  | Str { txt = x }, Str { txt = y } ->
-      (* CF*)
-      bool (Ext_string.equal x y)
   | Number (Int { i = i0; _ }), Number (Int { i = i1; _ }) -> bool (i0 = i1)
   | Optional_block (a, _), Optional_block (b, _) -> triple_equal ?comment a b
   | Undefined, Optional_block _
@@ -743,9 +749,13 @@ let rec float_equal ?comment (e0 : t) (e1 : t) : t =
 let int_equal = float_equal
 
 let string_equal ?comment (e0 : t) (e1 : t) : t =
+  let default () : t = { expression_desc = Bin (EqEqEq, e0, e1); comment } in
   match (e0.expression_desc, e1.expression_desc) with
-  | Str { txt = a0 }, Str { txt = b0 } -> bool (Ext_string.equal a0 b0)
-  | _, _ -> { expression_desc = Bin (EqEqEq, e0, e1); comment }
+  | Str { txt = a0; delim = d0 }, Str { txt = a1; delim = d1 } when d0 = d1 ->
+    (match str_equal a0 d0 a1 d1 with
+    | Some b -> bool b
+    | None -> default ())
+  | _, _ -> default ()
 
 let is_type_number ?comment (e : t) : t =
   string_equal ?comment (typeof e) (str "number")
@@ -827,11 +837,12 @@ let uint32 ?comment n : J.expression =
 
 let string_comp (cmp : J.binop) ?comment (e0 : t) (e1 : t) =
   match (e0.expression_desc, e1.expression_desc) with
-  | Str { txt = a0 }, Str { txt = b0 } -> (
-      match cmp with
-      | EqEqEq -> bool (a0 = b0)
-      | NotEqEq -> bool (a0 <> b0)
-      | _ -> bin ?comment cmp e0 e1)
+  | Str { txt = a0; delim = d0 }, Str { txt = a1; delim = d1 } -> (
+    match cmp, str_equal a0 d0 a1 d1 with
+      | EqEqEq, Some b -> bool b
+      | NotEqEq, Some b -> bool (b = false)
+      | _ ->
+        bin ?comment cmp e0 e1)
   | _ -> bin ?comment cmp e0 e1
 
 let obj_length ?comment e : t =
