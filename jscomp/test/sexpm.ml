@@ -105,7 +105,7 @@ module MakeDecode(M : MONAD) = struct
   (* return an error *)
   let _error {line;col} (msg : string) =
     let b = Buffer.create 32 in
-    Buffer.add_string b {j|at $(line), $(col): |j} ;
+    Buffer.add_string b ("at " ^ (__unsafe_cast line) ^ ", " ^ (__unsafe_cast col) ^ ": ") ;
     Buffer.add_string b msg;
     let msg' = Buffer.contents b in
     M.return (`Error msg')
@@ -196,19 +196,19 @@ module MakeDecode(M : MONAD) = struct
       | '"' -> k '"'
       | c when _is_digit c ->
         read2int (_digit2i c) (fun n -> k (Char.chr n)) t
-      | c -> _error t {j|unexpected escaped char '$(c)'|j} 
+      | c -> _error t ("unexpected escaped char '"  ^ (__unsafe_cast c) ^ "'") 
 
   and read2int i k t =
     if t.i = t.len then _refill t (read2int i k) _error_eof
     else match _get t with
       | c when _is_digit c -> read1int (10 * i + _digit2i c) k t
-      | c -> _error t {j|unexpected char '$(c)' when reading byte|j}
+      | c -> _error t ("unexpected escaped char '"  ^ (__unsafe_cast c) ^ "' when reading byte")
 
   and read1int i k t =
     if t.i = t.len then _refill t (read1int i k) _error_eof
     else match _get t with
       | c when _is_digit c -> k (10 * i + _digit2i c)
-      | c -> _error t {j|unexpected char '$(c)' when reading byte|j}
+      | c -> _error t ("unexpected escaped char '"  ^ (__unsafe_cast c) ^ "' when reading byte")
 
   (* skip until end of line, then call next() *)
   and skip_comment k t =

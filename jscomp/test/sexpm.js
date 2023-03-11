@@ -182,7 +182,7 @@ function _error(param) {
   var col = param.col;
   return function (msg) {
     var b = $$Buffer.create(32);
-    $$Buffer.add_string(b, "at " + line + ", " + col + ": ");
+    $$Buffer.add_string(b, "at " + (line + (", " + (col + ": "))));
     $$Buffer.add_string(b, msg);
     var msg$p = $$Buffer.contents(b);
     return {
@@ -461,7 +461,7 @@ function escaped(k, t) {
                   return Curry._1(k, Char.chr(n));
                 }), t);
   } else {
-    return _error(t)("unexpected escaped char '" + c + "'");
+    return _error(t)("unexpected escaped char '" + (c + "'"));
   }
 }
 
@@ -475,7 +475,7 @@ function read2int(i, k, t) {
   if (_is_digit(c)) {
     return read1int(Math.imul(10, i) + (c - /* '0' */48 | 0) | 0, k, t);
   } else {
-    return _error(t)("unexpected char '" + c + "' when reading byte");
+    return _error(t)("unexpected escaped char '" + (c + "' when reading byte"));
   }
 }
 
@@ -489,7 +489,7 @@ function read1int(i, k, t) {
   if (_is_digit(c)) {
     return Curry._1(k, Math.imul(10, i) + (c - /* '0' */48 | 0) | 0);
   } else {
-    return _error(t)("unexpected char '" + c + "' when reading byte");
+    return _error(t)("unexpected escaped char '" + (c + "' when reading byte"));
   }
 }
 

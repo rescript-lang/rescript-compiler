@@ -14,7 +14,7 @@ exception AAA = Exception_def.A
 
 ;; Printexc.register_printer (function 
     | Hi  -> Some "hey"
-    | A s -> Some ({j|A($(s))|j} )
+    | A s -> Some (("A(" ^ (__unsafe_cast s)) ^ ")")
     | _ -> None
 )
 

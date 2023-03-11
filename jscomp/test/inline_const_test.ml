@@ -28,9 +28,9 @@ let f ,
 let () =   
   eq __LOC__ f "hello";
   eq __LOC__ f1 "a";
-  eq __LOC__ f2 {j|中文|j};
-  eq __LOC__ f3 {j|中文|j};
-  eq __LOC__ f4 {j|中文|j};
+  eq __LOC__ f2 {js|中文|js};
+  eq __LOC__ f3 {js|中文|js};
+  eq __LOC__ f4 {js|中文|js};
   eq __LOC__ f5 true;
   eq __LOC__ f6 1 ;
   eq __LOC__ f7 0.000003

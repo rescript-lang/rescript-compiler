@@ -297,13 +297,12 @@ var args2 = [
 ];
 
 function error(s) {
-  console.log("error (%s)");
+  console.log("error (" + (s + ")"));
 }
 
 function check(r, v, msg) {
   if (Caml_obj.notequal(r.contents, v)) {
-    console.log("error (%s)");
-    return ;
+    return error(msg);
   }
   
 }

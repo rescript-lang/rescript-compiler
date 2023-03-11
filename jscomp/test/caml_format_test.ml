@@ -23,7 +23,7 @@ let from_float_of_string xs =
 let from_of_string xs = 
   of_string 
   |>  Array.mapi (fun i (a,b) -> 
-      ({j|of_string $i|j} ), fun _ -> Mt.Eq(int_of_string b,a ))
+      (("of_string " ^ (__unsafe_cast i))), fun _ -> Mt.Eq(int_of_string b,a ))
   |> Array.to_list 
 
 
@@ -47,7 +47,7 @@ let suites :  Mt.pair_suites =
    pairs 
    |> Array.mapi 
      (fun i (a,b) ->
-        ({j|infinity_of_string $i|j}  ),
+        ("infinity_of_string " ^ (__unsafe_cast i)),
         (fun _ -> Mt.Eq(a,
                         classify_float @@ float_of_string b))) 
    |> Array.to_list ) @ 
@@ -64,7 +64,7 @@ let suites :  Mt.pair_suites =
    pairs 
    |> Array.mapi 
      (fun i (a,b) ->
-        ({j|normal_float_of_string $i|j}  ),
+        ("normal_float_of_string " ^ (__unsafe_cast i)),
         (fun _ -> Mt.Eq(a,
                         float_of_string b))) 
    |> Array.to_list ) 
@@ -134,13 +134,13 @@ let () =
   suites @
 
 
-  (Array.mapi (fun i (fmt, f,str_result) -> ({j|loat_format $i|j}  ) , (fun _ -> Mt.Eq(format_float fmt f, str_result))) float_data |> Array.to_list) @
+  (Array.mapi (fun i (fmt, f,str_result) -> ("loat_format " ^ (__unsafe_cast i)) , (fun _ -> Mt.Eq(format_float fmt f, str_result))) float_data |> Array.to_list) @
   
   int64_suites @
   (of_string_data
    |>
    Array.mapi (fun i (a,b) ->
-       (({j|int64_of_string $i |j}),  fun _ -> Mt.Eq(Int64.of_string b, a) )      
+       ((("int64_of_string " ^ (__unsafe_cast i)) ^ " "),  fun _ -> Mt.Eq(Int64.of_string b, a) )      
      ) 
    |> Array.to_list  )
 

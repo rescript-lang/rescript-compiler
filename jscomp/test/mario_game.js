@@ -3213,7 +3213,7 @@ function load(param) {
   if (el !== null) {
     canvas = el;
   } else {
-    console.log("cant find canvas " + canvas_id + " ");
+    console.log("cant find canvas canvas");
     throw {
           RE_EXN_ID: "Failure",
           _1: "fail",

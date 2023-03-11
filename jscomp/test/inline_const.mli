@@ -4,20 +4,20 @@ val f : string [@@bs.inline "hello"]
 
 val f1 : 
   string 
-[@@bs.inline {j|a|j}]
+[@@bs.inline {js|a|js}]
 
 val f2 :   
   string 
-[@@bs.inline {j|中文|j}]
+[@@bs.inline {js|中文|js}]
 
 module N : sig   
-  val f3 : string [@@bs.inline {j|中文|j} ]
+  val f3 : string [@@bs.inline {js|中文|js} ]
 end 
 
 
 module N1 : functor () -> sig 
   val f4 : string 
-  [@@bs.inline {j|中文|j}]
+  [@@bs.inline {js|中文|js}]
   val xx : float [@@bs.inline 3e-6]
 end 
 

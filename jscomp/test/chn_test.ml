@@ -73,7 +73,7 @@ let () =
     ({js|\uD83D\uDE80\0|js}.[0] :> int)
     (*TODO: Char.code need normalization? *)
     128640;
-   eq __LOC__ ({j|🚀|j}.[0] :> int) 128640;
+   eq __LOC__ ({js|🚀|js}.[0] :> int) 128640;
       
   (* "\uD83D\uDE80".charCodeAt(0) & 255
   61   *)

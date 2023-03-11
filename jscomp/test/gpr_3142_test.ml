@@ -6,7 +6,7 @@ let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y
 type t = 
   [ `a [@bs.as "x"] 
   | `u [@bs.as "hi"]
-  | `b [@bs.as {j|你|j} ]
+  | `b [@bs.as {js|你|js} ]
   | `c [@bs.as {js|我|js}]
   ]
   [@@bs.deriving jsConverter]
@@ -24,12 +24,12 @@ type t0 =
 
 ;; eq __LOC__ (v `a) "x"
 ;; eq __LOC__ (v `u) "hi"
-;; eq __LOC__ (v `b) {j|你|j}
+;; eq __LOC__ (v `b) {js|你|js}
 ;; eq __LOC__ (v `c) {js|我|js}
 
 ;; eq __LOC__ (u "x")  (Some `a)
 ;; eq __LOC__ (u "hi") (Some `u)
-;; eq __LOC__ (u {j|你|j}) (Some `b)
+;; eq __LOC__ (u {js|你|js}) (Some `b)
 ;; eq __LOC__ (u {js|我|js}) (Some `c)
 ;; eq __LOC__ (u "xx") None
 

@@ -50,17 +50,17 @@ end = struct
   external f : int -> int = "%identity"
 end
 
-;; Js.log {j| hei $v |j}
+;; Js.log2 "hei" v
 
 let a, c =  (1,2,2,4,3) , [|1;2;3;4;5|]
-;; Js.log {j|  $a $c |j}
+;; Js.log2 a c
 
 let%private i = 3
 let%private a = 
-  {j||j},{j|a|j},{j|$i|j}, {j|$i$i|j} ,{j|$i$i$i|j}, {j| $i|j} 
+  {js||js},{js|a|js} 
 ;;
 
 
-eq __LOC__ a ("","a","3","33","333"," 3")
+eq __LOC__ a ("","a")
 ;;
 Mt.from_pair_suites __FILE__ !suites

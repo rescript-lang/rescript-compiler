@@ -4,21 +4,21 @@ let x = true [@@bs.inline]
 
 let f = "hello" [@@bs.inline]
 
-let f1 = {j|a|j} [@@bs.inline]
+let f1 = {js|a|js} [@@bs.inline]
 
-let f2  = {j|中文|j} [@@bs.inline]
+let f2  = {js|中文|js} [@@bs.inline]
 (* Do we need fix 
   let f2 : string = blabla
 *)
 
 module N : sig 
-  val f3 : string [@@bs.inline {j|中文|j} ]
+  val f3 : string [@@bs.inline {js|中文|js} ]
 end = struct 
-  let f3 = {j|中文|j} [@@bs.inline]
+  let f3 = {js|中文|js} [@@bs.inline]
 end 
 
 module N1 = functor () -> struct 
-  let f4 = {j|中文|j} [@@bs.inline]
+  let f4 = {js|中文|js} [@@bs.inline]
   let xx = 3e-6 [@@bs.inline]
   let xx0 = 3e-6
 end 

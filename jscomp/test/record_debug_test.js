@@ -65,7 +65,7 @@ var N0 = {
   f: N0_f
 };
 
-console.log(" hei " + v + " ");
+console.log("hei", v);
 
 var a = [
   1,
@@ -83,32 +83,14 @@ var c = [
   5
 ];
 
-console.log("  " + a + " " + c + " ");
+console.log(a, c);
 
-var a_2 = "" + 3;
-
-var a_3 = "" + 3 + 3;
-
-var a_4 = "" + 3 + 3 + 3;
-
-var a_5 = " " + 3;
-
-var a$1 = [
-  "",
-  "a",
-  a_2,
-  a_3,
-  a_4,
-  a_5
-];
-
-eq("File \"record_debug_test.ml\", line 64, characters 3-10", a$1, [
+eq("File \"record_debug_test.ml\", line 64, characters 3-10", [
       "",
-      "a",
-      "3",
-      "33",
-      "333",
-      " 3"
+      "a"
+    ], [
+      "",
+      "a"
     ]);
 
 Mt.from_pair_suites("record_debug_test.ml", suites.contents);
