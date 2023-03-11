@@ -29,28 +29,28 @@ var f3 = "中文";
 
 var f4 = "中文";
 
-eq("File \"inline_const_test.ml\", line 29, characters 5-12", f, "hello");
+eq("File \"inline_const_test.res\", line 13, characters 5-12", f, "hello");
 
-eq("File \"inline_const_test.ml\", line 30, characters 5-12", f1, "a");
+eq("File \"inline_const_test.res\", line 14, characters 5-12", f1, "a");
 
-eq("File \"inline_const_test.ml\", line 31, characters 5-12", f2, "中文");
+eq("File \"inline_const_test.res\", line 15, characters 5-12", f2, "中文");
 
-eq("File \"inline_const_test.ml\", line 32, characters 5-12", f3, "中文");
+eq("File \"inline_const_test.res\", line 16, characters 5-12", f3, "中文");
 
-eq("File \"inline_const_test.ml\", line 33, characters 5-12", f4, "中文");
+eq("File \"inline_const_test.res\", line 17, characters 5-12", f4, "中文");
 
-eq("File \"inline_const_test.ml\", line 34, characters 5-12", true, true);
+eq("File \"inline_const_test.res\", line 18, characters 5-12", true, true);
 
-eq("File \"inline_const_test.ml\", line 35, characters 5-12", 1, 1);
+eq("File \"inline_const_test.res\", line 19, characters 5-12", 1, 1);
 
-eq("File \"inline_const_test.ml\", line 36, characters 5-12", 3e-6, 0.000003);
+eq("File \"inline_const_test.res\", line 20, characters 5-12", 3e-6, 0.000003);
 
 var h = Caml_int64.add(Caml_int64.add([
           0,
           100
         ], Int64.one), Caml_int64.one);
 
-Mt.from_pair_suites("File \"inline_const_test.ml\", line 43, characters 22-29", suites.contents);
+Mt.from_pair_suites("File \"inline_const_test.res\", line 28, characters 29-36", suites.contents);
 
 var f5 = true;
 
