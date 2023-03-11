@@ -83,8 +83,8 @@ let print_spec = (buf, (key, spec, doc)) =>
     switch spec {
     | Symbol(l, _) =>
       let sym = make_symlist("{", "|", "}", l)
-      Buffer.add_string(buf, "  " ++ key ++ " " ++ sym ++ doc ++ "\n")
-    | _ => Buffer.add_string(buf, "  " ++ key ++ " " ++ doc ++ "\n")
+      Buffer.add_string(buf, `  ${key} ${sym}${doc}\n`)
+    | _ => Buffer.add_string(buf, `  ${key} ${doc}\n`)
     }
   }
 
@@ -108,7 +108,7 @@ let add_help = speclist => {
 }
 
 let usage_b = (buf, speclist, errmsg) => {
-  Buffer.add_string(buf, "" ++ errmsg ++ "\n")
+  Buffer.add_string(buf, `${errmsg}\n`)
   List.iter(print_spec(buf), add_help(speclist))
 }
 
@@ -160,24 +160,16 @@ let parse_and_expand_argv_dynamic_aux = (
     switch error {
     | Unknown("-help") => ()
     | Unknown("--help") => ()
-    | Unknown(s) => Buffer.add_string(b, "" ++ progname ++ ": unknown option '" ++ s ++ "'.\n")
-    | Missing(s) =>
-      Buffer.add_string(b, "" ++ progname ++ ": option '" ++ s ++ "' needs an argument.\n")
+    | Unknown(s) => Buffer.add_string(b, `${progname}: unknown option '${s}'.\n`)
+    | Missing(s) => Buffer.add_string(b, `${progname}: option '${s}' needs an argument.\n`)
     | Wrong(opt, arg, expected) =>
       Buffer.add_string(
         b,
-        "" ++
-        progname ++
-        ": wrong argument '" ++
-        arg ++
-        "'; option '" ++
-        opt ++
-        "' expects " ++
-        expected ++ ".\n",
+        `${progname}: wrong argument '${arg}'; option '${opt}' expects ${expected}.\n`,
       )
     | Message(s) =>
       /* user error message */
-      Buffer.add_string(b, "" ++ progname ++ ": " ++ s ++ ".\n")
+      Buffer.add_string(b, `${progname}: ${s}.\n`)
     }
     usage_b(b, speclist.contents, errmsg)
     if error == Unknown("-help") || error == Unknown("--help") {
