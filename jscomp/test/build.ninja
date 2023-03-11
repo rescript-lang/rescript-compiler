@@ -431,7 +431,7 @@ o test/loop_suites_test.cmi test/loop_suites_test.cmj : cc test/loop_suites_test
 o test/map_find_test.cmi test/map_find_test.cmj : cc test/map_find_test.ml | test/mt.cmj $bsc $stdlib runtime
 o test/map_test.cmj : cc_cmi test/map_test.ml | test/map_test.cmi test/mt.cmj $bsc $stdlib runtime
 o test/map_test.cmi : cc test/map_test.mli | $bsc $stdlib runtime
-o test/mario_game.cmi test/mario_game.cmj : cc test/mario_game.ml | $bsc $stdlib runtime
+o test/mario_game.cmi test/mario_game.cmj : cc test/mario_game.res | $bsc $stdlib runtime
 o test/marshal.cmi test/marshal.cmj : cc test/marshal.ml | $bsc $stdlib runtime
 o test/meth_annotation.cmi test/meth_annotation.cmj : cc test/meth_annotation.res | $bsc $stdlib runtime
 o test/method_name_test.cmi test/method_name_test.cmj : cc test/method_name_test.ml | test/mt.cmj $bsc $stdlib runtime
