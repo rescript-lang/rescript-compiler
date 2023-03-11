@@ -354,8 +354,8 @@ o test/include_side_effect_free.cmi test/include_side_effect_free.cmj : cc test/
 o test/incomplete_toplevel_test.cmi test/incomplete_toplevel_test.cmj : cc test/incomplete_toplevel_test.ml | $bsc $stdlib runtime
 o test/infer_type_test.cmj : cc_cmi test/infer_type_test.ml | test/infer_type_test.cmi $bsc $stdlib runtime
 o test/infer_type_test.cmi : cc test/infer_type_test.mli | $bsc $stdlib runtime
-o test/inline_const.cmj : cc_cmi test/inline_const.ml | test/inline_const.cmi $bsc $stdlib runtime
-o test/inline_const.cmi : cc test/inline_const.mli | $bsc $stdlib runtime
+o test/inline_const.cmj : cc_cmi test/inline_const.res | test/inline_const.cmi $bsc $stdlib runtime
+o test/inline_const.cmi : cc test/inline_const.resi | $bsc $stdlib runtime
 o test/inline_const_test.cmi test/inline_const_test.cmj : cc test/inline_const_test.ml | test/inline_const.cmj test/mt.cmj $bsc $stdlib runtime
 o test/inline_edge_cases.cmj : cc_cmi test/inline_edge_cases.ml | test/inline_edge_cases.cmi $bsc $stdlib runtime
 o test/inline_edge_cases.cmi : cc test/inline_edge_cases.mli | $bsc $stdlib runtime
