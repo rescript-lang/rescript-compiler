@@ -26,23 +26,23 @@ function tFromJs(param) {
   return _revMap[param];
 }
 
-eq("File \"gpr_3142_test.ml\", line 25, characters 6-13", tToJs("a"), "x");
+eq("File \"gpr_3142_test.res\", line 17, characters 3-10", tToJs("a"), "x");
 
-eq("File \"gpr_3142_test.ml\", line 26, characters 6-13", tToJs("u"), "hi");
+eq("File \"gpr_3142_test.res\", line 18, characters 3-10", tToJs("u"), "hi");
 
-eq("File \"gpr_3142_test.ml\", line 27, characters 6-13", tToJs("b"), "你");
+eq("File \"gpr_3142_test.res\", line 19, characters 3-10", tToJs("b"), "你");
 
-eq("File \"gpr_3142_test.ml\", line 28, characters 6-13", tToJs("c"), "我");
+eq("File \"gpr_3142_test.res\", line 20, characters 3-10", tToJs("c"), "我");
 
-eq("File \"gpr_3142_test.ml\", line 30, characters 6-13", tFromJs("x"), "a");
+eq("File \"gpr_3142_test.res\", line 22, characters 3-10", tFromJs("x"), "a");
 
-eq("File \"gpr_3142_test.ml\", line 31, characters 6-13", tFromJs("hi"), "u");
+eq("File \"gpr_3142_test.res\", line 23, characters 3-10", tFromJs("hi"), "u");
 
-eq("File \"gpr_3142_test.ml\", line 32, characters 6-13", tFromJs("你"), "b");
+eq("File \"gpr_3142_test.res\", line 24, characters 3-10", tFromJs("你"), "b");
 
-eq("File \"gpr_3142_test.ml\", line 33, characters 6-13", tFromJs("我"), "c");
+eq("File \"gpr_3142_test.res\", line 25, characters 3-10", tFromJs("我"), "c");
 
-eq("File \"gpr_3142_test.ml\", line 34, characters 6-13", tFromJs("xx"), undefined);
+eq("File \"gpr_3142_test.res\", line 26, characters 3-10", tFromJs("xx"), undefined);
 
 Mt.from_pair_suites("Gpr_3142_test", suites.contents);
 

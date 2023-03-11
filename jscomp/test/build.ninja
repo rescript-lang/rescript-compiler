@@ -272,7 +272,7 @@ o test/gpr_2700_test.cmi test/gpr_2700_test.cmj : cc test/gpr_2700_test.ml | $bs
 o test/gpr_2731_test.cmi test/gpr_2731_test.cmj : cc test/gpr_2731_test.ml | $bsc $stdlib runtime
 o test/gpr_2789_test.cmi test/gpr_2789_test.cmj : cc test/gpr_2789_test.ml | test/mt.cmj $bsc $stdlib runtime
 o test/gpr_2931_test.cmi test/gpr_2931_test.cmj : cc test/gpr_2931_test.ml | test/mt.cmj $bsc $stdlib runtime
-o test/gpr_3142_test.cmi test/gpr_3142_test.cmj : cc test/gpr_3142_test.ml | test/mt.cmj $bsc $stdlib runtime
+o test/gpr_3142_test.cmi test/gpr_3142_test.cmj : cc test/gpr_3142_test.res | test/mt.cmj $bsc $stdlib runtime
 o test/gpr_3154_test.cmi test/gpr_3154_test.cmj : cc test/gpr_3154_test.ml | test/mt.cmj $bsc $stdlib runtime
 o test/gpr_3209_test.cmi test/gpr_3209_test.cmj : cc test/gpr_3209_test.ml | $bsc $stdlib runtime
 o test/gpr_3492_test.cmi test/gpr_3492_test.cmj : cc test/gpr_3492_test.ml | test/mt.cmj $bsc $stdlib runtime
