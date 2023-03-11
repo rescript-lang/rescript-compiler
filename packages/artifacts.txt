@@ -348,8 +348,8 @@ lib/minisocket.js
 lib/ocaml/arg.cmi
 lib/ocaml/arg.cmt
 lib/ocaml/arg.cmti
-lib/ocaml/arg.ml
-lib/ocaml/arg.mli
+lib/ocaml/arg.res
+lib/ocaml/arg.resi
 lib/ocaml/array.cmi
 lib/ocaml/array.cmt
 lib/ocaml/array.cmti
@@ -874,11 +874,6 @@ lib/ocaml/pervasives.cmt
 lib/ocaml/pervasives.cmti
 lib/ocaml/pervasives.ml
 lib/ocaml/pervasives.mli
-lib/ocaml/printexc.cmi
-lib/ocaml/printexc.cmt
-lib/ocaml/printexc.cmti
-lib/ocaml/printexc.ml
-lib/ocaml/printexc.mli
 lib/ocaml/queue.cmi
 lib/ocaml/queue.cmt
 lib/ocaml/queue.cmti
