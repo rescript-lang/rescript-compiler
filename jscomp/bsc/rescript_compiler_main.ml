@@ -72,13 +72,13 @@ let process_file sourcefile ?(kind ) ppf =
     let sourcefile = set_abs_input_name  sourcefile in     
     setup_compiler_printer `rescript;
     Js_implementation.implementation 
-      ~parser:Res_driver.parse_implementation
+      ~parser:(Res_driver.parse_implementation ~ignoreParseErrors:!Clflags.ignore_parse_errors)
       ppf sourcefile 
   | Resi ->   
     let sourcefile = set_abs_input_name  sourcefile in 
     setup_compiler_printer `rescript;
     Js_implementation.interface 
-      ~parser:Res_driver.parse_interface
+      ~parser:(Res_driver.parse_interface ~ignoreParseErrors:!Clflags.ignore_parse_errors)
       ppf sourcefile      
   | Intf_ast 
     ->     
@@ -153,7 +153,7 @@ let format_file input =
     | Ml | Mli -> `ml
     | Res | Resi -> `res 
     | _ -> Bsc_args.bad_arg ("don't know what to do with " ^ input) in   
-  let formatted =   Res_multi_printer.print syntax ~input in 
+  let formatted = Res_multi_printer.print ~ignoreParseErrors:!Clflags.ignore_parse_errors syntax ~input in 
   match !Clflags.output_name with 
   | None ->
     output_string stdout formatted
@@ -391,6 +391,9 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
 
     "-only-parse", set Clflags.only_parse, 
     "*internal* stop after parsing";
+
+    "-ignore-parse-errors", set Clflags.ignore_parse_errors, 
+    "*internal* continue after parse errors";
 
     "-where", unit_call print_standard_library, 
     "*internal* Print location of standard library and exit";
