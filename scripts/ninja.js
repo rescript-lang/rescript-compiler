@@ -814,16 +814,16 @@ function generateNinja(depsMap, allTargets, cwd, extraDeps = []) {
         break;
       case "HAS_BOTH_RES":
         mk([ouptput_cmj], [input_res], "cc_cmi");
-        mk([output_cmi], [input_resi], "cc");
+        mk([output_cmi], [input_resi]);
         break;
       case "HAS_RES":
-        mk([output_cmi, ouptput_cmj], [input_res], "cc");
+        mk([output_cmi, ouptput_cmj], [input_res]);
         break;
       case "HAS_ML":
         mk([output_cmi, ouptput_cmj], [input_ml]);
         break;
       case "HAS_RESI":
-        mk([output_cmi], [input_resi], "cc");
+        mk([output_cmi], [input_resi]);
         break;
       case "HAS_MLI":
         mk([output_cmi], [input_mli]);
