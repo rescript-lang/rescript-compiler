@@ -131,24 +131,31 @@ let printEngine =
         print_string (Res_printer.printInterface ~width signature ~comments));
   }
 
-let parse_implementation sourcefile =
+let parse_implementation ?(ignoreParseErrors = false) sourcefile =
   Location.input_name := sourcefile;
   let parseResult =
     parsingEngine.parseImplementation ~forPrinter:false ~filename:sourcefile
   in
   if parseResult.invalid then (
     Res_diagnostics.printReport parseResult.diagnostics parseResult.source;
-    exit 1);
+    if not ignoreParseErrors then exit 1);
   parseResult.parsetree
   [@@raises exit]
 
-let parse_interface sourcefile =
+let parse_interface ?(ignoreParseErrors = false) sourcefile =
   Location.input_name := sourcefile;
   let parseResult =
     parsingEngine.parseInterface ~forPrinter:false ~filename:sourcefile
   in
   if parseResult.invalid then (
     Res_diagnostics.printReport parseResult.diagnostics parseResult.source;
-    exit 1);
+    if not ignoreParseErrors then exit 1);
   parseResult.parsetree
   [@@raises exit]
+
+(* suppress unused optional arg *)
+let _ =
+ fun s ->
+  ( parse_implementation ~ignoreParseErrors:false s,
+    parse_interface ~ignoreParseErrors:false s )
+ [@@raises exit]

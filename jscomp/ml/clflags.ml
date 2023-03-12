@@ -25,7 +25,8 @@ let dump_parsetree = ref false          (* -dparsetree *)
 and dump_typedtree = ref false          (* -dtypedtree *)
 and dump_rawlambda = ref false          (* -drawlambda *)
 and dump_lambda = ref false             (* -dlambda *)
-and only_parse = ref false             (* -only-parse *)
+and only_parse = ref false              (* -only-parse *)
+and ignore_parse_errors = ref false     (* -ignore-parse-errors *)
 
 let dont_write_files = ref false        (* set to true under ocamldoc *)
 
