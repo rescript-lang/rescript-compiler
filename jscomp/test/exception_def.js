@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Printexc = require("../../lib/js/printexc.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 var suites = {
@@ -74,13 +73,6 @@ var h5 = {
   _1: "xx"
 };
 
-Printexc.register_printer(function (s) {
-      if (s.RE_EXN_ID === A) {
-        return "A";
-      }
-      
-    });
-
 function p(e) {
   if (e.RE_EXN_ID === H4) {
     return 0;
@@ -97,25 +89,25 @@ function p(e) {
   }
 }
 
-eq("File \"exception_def.ml\", line 54, characters 6-13", p(h5), 0);
+eq("File \"exception_def.ml\", line 50, characters 6-13", p(h5), 0);
 
-eq("File \"exception_def.ml\", line 55, characters 6-13", p({
+eq("File \"exception_def.ml\", line 51, characters 6-13", p({
           RE_EXN_ID: "Not_found"
         }), 4);
 
-eq("File \"exception_def.ml\", line 56, characters 6-13", p({
+eq("File \"exception_def.ml\", line 52, characters 6-13", p({
           RE_EXN_ID: H0
         }), 4);
 
-eq("File \"exception_def.ml\", line 57, characters 6-13", p({
+eq("File \"exception_def.ml\", line 53, characters 6-13", p({
           RE_EXN_ID: H2
         }), 1);
 
-eq("File \"exception_def.ml\", line 58, characters 6-13", p({
+eq("File \"exception_def.ml\", line 54, characters 6-13", p({
           RE_EXN_ID: H2
         }), 1);
 
-eq("File \"exception_def.ml\", line 59, characters 6-13", p({
+eq("File \"exception_def.ml\", line 55, characters 6-13", p({
           RE_EXN_ID: "Invalid_argument",
           _1: ""
         }), 0);

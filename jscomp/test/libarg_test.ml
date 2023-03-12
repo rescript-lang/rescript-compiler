@@ -7,18 +7,18 @@ let record fmt (* args *) =
 ;;
 
 let f_unit () = record "unit()";;
-let f_bool b = record {j|bool($b)|j};;
+let f_bool b = record (("bool(" ^ (__unsafe_cast b)) ^ ")");;
 let r_set = ref false;;
 let r_clear = ref true;;
-let f_string s = record {j|string($s)|j};;
+let f_string s = record (("string(" ^ s) ^ ")");;
 let r_string = ref "";;
-let f_int i = record {j|int($i)|j} ;;
+let f_int i = record (("int(" ^ (__unsafe_cast i)) ^ ")") ;;
 let r_int = ref 0;;
-let f_float f = record {j|float($f)|j};;
+let f_float f = record (("float(" ^ (__unsafe_cast f)) ^ ")");;
 let r_float = ref 0.0;;
-let f_symbol s = record {j|symbol($s)|j} ;;
-let f_rest s = record {j|rest($s)|j} ;;
-let f_anon s = record {j|anon($s)|j} ;;
+let f_symbol s = record (("symbol(" ^ s) ^ ")") ;;
+let f_rest s = record (("rest(" ^ s) ^ ")") ;;
+let f_anon s = record (("anon(" ^ s) ^ ")") ;;
 
 let spec = Arg.[
   "-u", Unit f_unit, "Unit (0)";
@@ -78,7 +78,7 @@ let args2 = [|
   "-rest"; "r1"; "r2";
 |];;
 
-let error s = Js.log {j|error (%s)|j} 
+let error s = Js.log ("error (" ^ s ^ ")") 
 let check r v msg = if !r <> v then error msg;;
 
 let test argv =

@@ -168,7 +168,6 @@ lib/es6/obj.js
 lib/es6/package.json
 lib/es6/parsing.js
 lib/es6/pervasives.js
-lib/es6/printexc.js
 lib/es6/queue.js
 lib/es6/random.js
 lib/es6/set.js
@@ -331,7 +330,6 @@ lib/js/node_process.js
 lib/js/obj.js
 lib/js/parsing.js
 lib/js/pervasives.js
-lib/js/printexc.js
 lib/js/queue.js
 lib/js/random.js
 lib/js/set.js
@@ -348,8 +346,8 @@ lib/minisocket.js
 lib/ocaml/arg.cmi
 lib/ocaml/arg.cmt
 lib/ocaml/arg.cmti
-lib/ocaml/arg.ml
-lib/ocaml/arg.mli
+lib/ocaml/arg.res
+lib/ocaml/arg.resi
 lib/ocaml/array.cmi
 lib/ocaml/array.cmt
 lib/ocaml/array.cmti
@@ -874,11 +872,6 @@ lib/ocaml/pervasives.cmt
 lib/ocaml/pervasives.cmti
 lib/ocaml/pervasives.ml
 lib/ocaml/pervasives.mli
-lib/ocaml/printexc.cmi
-lib/ocaml/printexc.cmt
-lib/ocaml/printexc.cmti
-lib/ocaml/printexc.ml
-lib/ocaml/printexc.mli
 lib/ocaml/queue.cmi
 lib/ocaml/queue.cmt
 lib/ocaml/queue.cmti

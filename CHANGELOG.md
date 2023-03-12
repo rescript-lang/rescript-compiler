@@ -36,6 +36,8 @@ subset of the arguments, and return a curried type with the remaining ones https
 Also, `(. int) => string => bool` is not equivalen to `(. int, string) => bool` anymore.
 These are only breaking changes for unformatted code.
 - Exponentiation operator `**` is now right-associative. `2. ** 3. ** 2.` now compile to `Math.pow(2, Math.pow(3, 2))` and not anymore `Math.pow(Math.pow(2, 3), 2)`. Parentheses can be used to change precedence.
+- Remove unsafe ``` j`$(a)$(b)` ``` interpolation deprecated in compiler version 10 https://github.com/rescript-lang/rescript-compiler/pull/6068
+- Remove deprecated module `Printexc`
 
 #### :bug: Bug Fix
 
@@ -79,6 +81,7 @@ These are only breaking changes for unformatted code.
 
 - Better error message for extension point https://github.com/rescript-lang/rescript-compiler/pull/6057
 - Improve format check help https://github.com/rescript-lang/rescript-compiler/pull/6056
+- Deprecate unsafe ``` j`$(a)$(b)` ``` interpolation: use string templates ``` `${a}${b}` ``` instead https://github.com/rescript-lang/rescript-compiler/pull/6067
 
 # 10.1.3
 

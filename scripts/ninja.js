@@ -578,10 +578,13 @@ function ocamlDepForBscAsync(files, dir, depsMap) {
         }
         try {
           const mlfile = path.join(tmpdir, mlname);
-          cp.execSync(`${bsc_exe} -dsource -only-parse ${f} 2>${mlfile}`, {
-            cwd: dir,
-            encoding: "ascii",
-          });
+          cp.execSync(
+            `${bsc_exe} -dsource -only-parse -bs-no-builtin-ppx ${f} 2>${mlfile}`,
+            {
+              cwd: dir,
+              encoding: "ascii",
+            }
+          );
           mlfiles.push(mlfile);
         } catch (err) {
           console.log(err);
@@ -811,16 +814,16 @@ function generateNinja(depsMap, allTargets, cwd, extraDeps = []) {
         break;
       case "HAS_BOTH_RES":
         mk([ouptput_cmj], [input_res], "cc_cmi");
-        mk([output_cmi], [input_resi], "cc");
+        mk([output_cmi], [input_resi]);
         break;
       case "HAS_RES":
-        mk([output_cmi, ouptput_cmj], [input_res], "cc");
+        mk([output_cmi, ouptput_cmj], [input_res]);
         break;
       case "HAS_ML":
         mk([output_cmi, ouptput_cmj], [input_ml]);
         break;
       case "HAS_RESI":
-        mk([output_cmi], [input_resi], "cc");
+        mk([output_cmi], [input_resi]);
         break;
       case "HAS_MLI":
         mk([output_cmi], [input_mli]);
@@ -1098,7 +1101,11 @@ ${ninjaQuickBuidList([
   var stdlibDirFiles = fs.readdirSync(stdlibDir, "ascii");
   var sources = stdlibDirFiles.filter(x => {
     return (
-      !x.startsWith("pervasives") && (x.endsWith(".ml") || x.endsWith(".mli"))
+      !x.startsWith("pervasives") &&
+      (x.endsWith(".ml") ||
+        x.endsWith(".mli") ||
+        x.endsWith(".res") ||
+        x.endsWith(".resi"))
     );
   });
   let depsMap = new Map();
@@ -1112,9 +1119,12 @@ ${ninjaQuickBuidList([
     switch (ext) {
       case "HAS_MLI":
       case "HAS_BOTH":
+      case "HAS_RESI":
+      case "HAS_BOTH_RES":
         updateDepsKVByFile(mod + ".cmi", "pervasives.cmj", depsMap);
         break;
       case "HAS_ML":
+      case "HAS_RES":
         updateDepsKVByFile(mod + ".cmj", "pervasives.cmj", depsMap);
         break;
     }

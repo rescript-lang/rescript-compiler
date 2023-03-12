@@ -149,8 +149,8 @@ function make_enemy(param) {
   }
 }
 
-function make_particle(param) {
-  switch (param) {
+function make_particle(x) {
+  switch (x) {
     case /* GoombaSquish */0 :
         return setup_sprite(undefined, undefined, undefined, "enemies.png", 1, 0, [
                     16,
@@ -504,8 +504,8 @@ function make_type(typ, dir) {
                     dir
                   ]);
     case /* SItem */2 :
-        var param = typ._0;
-        switch (param) {
+        var x = typ._0;
+        switch (x) {
           case /* Mushroom */0 :
               return setup_sprite(undefined, [
                           2,
@@ -553,8 +553,8 @@ function make_type(typ, dir) {
           
         }
     case /* SBlock */3 :
-        var param$1 = typ._0;
-        if (typeof param$1 !== "number") {
+        var x$1 = typ._0;
+        if (typeof x$1 !== "number") {
           return setup_sprite(undefined, undefined, undefined, "blocks.png", 4, 15, [
                       16,
                       16
@@ -563,7 +563,7 @@ function make_type(typ, dir) {
                       16
                     ]);
         }
-        switch (param$1) {
+        switch (x$1) {
           case /* QBlockUsed */0 :
               return setup_sprite(undefined, undefined, undefined, "blocks.png", 1, 0, [
                           16,
@@ -808,20 +808,20 @@ function set_vel_to_speed(obj) {
   }
 }
 
-function make_type$2(t) {
-  switch (t.TAG | 0) {
+function make_type$2(x) {
+  switch (x.TAG | 0) {
     case /* SPlayer */0 :
         return setup_obj(undefined, 2.8, undefined);
     case /* SEnemy */1 :
-        var param = t._0;
-        if (param >= 3) {
+        var x$1 = x._0;
+        if (x$1 >= 3) {
           return setup_obj(undefined, 3, undefined);
         } else {
           return setup_obj(undefined, undefined, undefined);
         }
     case /* SItem */2 :
-        var param$1 = t._0;
-        if (param$1 >= 3) {
+        var x$2 = x._0;
+        if (x$2 >= 3) {
           return setup_obj(false, undefined, undefined);
         } else {
           return setup_obj(undefined, undefined, undefined);
@@ -910,24 +910,24 @@ function spawn(spawnable, context, param) {
   }
 }
 
-function get_sprite(param) {
-  return param._1;
+function get_sprite(x) {
+  return x._1;
 }
 
-function get_obj(param) {
-  return param._2;
+function get_obj(x) {
+  return x._2;
 }
 
-function is_player(param) {
-  if (param.TAG === /* Player */0) {
+function is_player(x) {
+  if (x.TAG === /* Player */0) {
     return true;
   } else {
     return false;
   }
 }
 
-function is_enemy(param) {
-  if (param.TAG === /* Enemy */1) {
+function is_enemy(x) {
+  if (x.TAG === /* Enemy */1) {
     return true;
   } else {
     return false;
@@ -3213,7 +3213,7 @@ function load(param) {
   if (el !== null) {
     canvas = el;
   } else {
-    console.log("cant find canvas " + canvas_id + " ");
+    console.log("cant find canvas " + canvas_id + "");
     throw {
           RE_EXN_ID: "Failure",
           _1: "fail",

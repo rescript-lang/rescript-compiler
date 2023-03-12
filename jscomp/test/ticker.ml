@@ -56,7 +56,7 @@ and ticker = {
 let string_of_rank = function
   | Uninitialized -> "Uninitialized"
   | Visited       -> "Visited"
-  | Ranked i      -> {j|Ranked($i)|j}
+  | Ranked i      -> ("Ranked(" ^ (__unsafe_cast i)) ^ ")"
 
 let find_ticker_by_name all_tickers ticker = 
   List.find (fun {ticker_name;_ } -> ticker_name = ticker) all_tickers 

@@ -82,7 +82,7 @@ let chop_extension ?(loc="") name =
   try Filename.chop_extension name 
   with Invalid_argument _ -> 
     invalid_arg
-      {j|Filename.chop_extension ( $(loc) : $(name) )|j}
+      (((("Filename.chop_extension ( " ^ loc) ^ " : ") ^ name) ^ " )")
 
 let chop_extension_if_any fname =
   try Filename.chop_extension fname with Invalid_argument _ -> fname
@@ -159,7 +159,7 @@ let node_relative_path node_modules_shorten (file1 : t)
     
     let rec skip  i =       
       if i >= len then
-        failwith  {j|invalid path: $(file2)|j}  
+        failwith ("invalid path: " ^ file2)  
       else 
         (* https://en.wikipedia.org/wiki/Path_(computing))
            most path separator are a single char 
@@ -202,7 +202,7 @@ let rec find_root_filename ~cwd filename   =
       find_root_filename ~cwd:cwd'  filename 
     else 
       failwith        
-        {j|$(filename) not found from $(cwd)|j}
+        ((("" ^ filename) ^ " not found from ") ^ cwd)
 
 
 let find_package_json_dir cwd  = 
