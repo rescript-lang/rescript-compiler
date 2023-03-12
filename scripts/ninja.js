@@ -1119,9 +1119,12 @@ ${ninjaQuickBuidList([
     switch (ext) {
       case "HAS_MLI":
       case "HAS_BOTH":
+      case "HAS_RESI":
+      case "HAS_BOTH_RES":
         updateDepsKVByFile(mod + ".cmi", "pervasives.cmj", depsMap);
         break;
       case "HAS_ML":
+      case "HAS_RES":
         updateDepsKVByFile(mod + ".cmj", "pervasives.cmj", depsMap);
         break;
     }
