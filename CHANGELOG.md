@@ -52,6 +52,7 @@ These are only breaking changes for unformatted code.
 - Parser: fix location of variable when function definition `{v => ...}` is enclosed in braces https://github.com/rescript-lang/rescript-compiler/pull/5949
 - Fix issue with error messages for uncurried functions where expected and given type were swapped https://github.com/rescript-lang/rescript-compiler/pull/5973
 - Fix issue with integer overflow check https://github.com/rescript-lang/rescript-compiler/pull/6028
+- Make internal encoding of locations aware of unicode https://github.com/rescript-lang/rescript-compiler/pull/6073
 
 #### :nail_care: Polish
 

@@ -159,6 +159,7 @@ let lookahead p callback =
   let err = p.scanner.err in
   let ch = p.scanner.ch in
   let offset = p.scanner.offset in
+  let offset16 = p.scanner.offset16 in
   let lineOffset = p.scanner.lineOffset in
   let lnum = p.scanner.lnum in
   let mode = p.scanner.mode in
@@ -177,6 +178,7 @@ let lookahead p callback =
   p.scanner.err <- err;
   p.scanner.ch <- ch;
   p.scanner.offset <- offset;
+  p.scanner.offset16 <- offset16;
   p.scanner.lineOffset <- lineOffset;
   p.scanner.lnum <- lnum;
   p.scanner.mode <- mode;
