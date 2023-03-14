@@ -5279,7 +5279,7 @@ and printAttribute ?(standalone = false) ~state
       | "toUncurried" ->
         state.uncurried_config <- Res_uncurried.Default;
         {id with txt = "uncurried"}
-      | "infix" -> (
+      | "infix" | "infix.add" | "infix.remove" -> (
         match payload with
         | PStr
             [
@@ -5303,9 +5303,13 @@ and printAttribute ?(standalone = false) ~state
                       _ );
               };
             ] ->
-          state.customInfix <-
-            state.customInfix |> Res_custom_infix.addSymbol ~name ~alias;
-          id
+          if id.txt = "infix.remove" then
+            state.customInfix <-
+              state.customInfix |> Res_custom_infix.removeName ~name
+          else
+            state.customInfix <-
+              state.customInfix |> Res_custom_infix.addSymbol ~name ~alias;
+          if id.txt = "infix.add" then {id with txt = "infix"} else id
         | _ -> (* should never happpen *) id)
       | _ -> id
     in

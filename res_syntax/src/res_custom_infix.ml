@@ -7,6 +7,8 @@ let addSymbol ~name ~alias x =
 
 let findAlias ~alias x = x |> List.find_opt (fun (_, a) -> alias = a)
 
+let removeName ~name x = x |> List.filter (fun (n, _) -> n <> name)
+
 let lookupName ~name ~src ~srcLen ~offset =
   let nameLen = String.length name in
   let restLen = srcLen - offset in
