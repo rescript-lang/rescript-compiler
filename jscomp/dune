@@ -15,4 +15,9 @@
   (env-vars
    (CPPO_FLAGS -D=RELEASE))
   (ocamlopt_flags
+   (:standard -O3 -unbox-closures)))
+ (browser
+  (env-vars
+   (CPPO_FLAGS -D=BROWSER))
+  (ocamlopt_flags
    (:standard -O3 -unbox-closures))))
