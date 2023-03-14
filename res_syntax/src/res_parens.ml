@@ -25,7 +25,7 @@ let exprRecordRowRhs e =
     | _ -> kind)
   | _ -> kind
 
-let callExpr expr =
+let callExpr ~state expr =
   let optBraces, _ = ParsetreeViewer.processBracesAttr expr in
   match optBraces with
   | Some ({Location.loc = bracesLoc}, _) -> Braced bracesLoc
@@ -38,7 +38,7 @@ let callExpr expr =
       Parenthesized
     | _
       when ParsetreeViewer.isUnaryExpression expr
-           || ParsetreeViewer.isBinaryExpression expr ->
+           || ParsetreeViewer.isBinaryExpression ~state expr ->
       Parenthesized
     | {
      Parsetree.pexp_desc =
@@ -77,7 +77,7 @@ let structureExpr expr =
     | {pexp_desc = Pexp_constraint _} -> Parenthesized
     | _ -> Nothing)
 
-let unaryExprOperand expr =
+let unaryExprOperand ~state expr =
   let optBraces, _ = ParsetreeViewer.processBracesAttr expr in
   match optBraces with
   | Some ({Location.loc = bracesLoc}, _) -> Braced bracesLoc
@@ -90,7 +90,7 @@ let unaryExprOperand expr =
       Parenthesized
     | expr
       when ParsetreeViewer.isUnaryExpression expr
-           || ParsetreeViewer.isBinaryExpression expr ->
+           || ParsetreeViewer.isBinaryExpression ~state expr ->
       Parenthesized
     | {
      pexp_desc =
@@ -112,7 +112,7 @@ let unaryExprOperand expr =
       Parenthesized
     | _ -> Nothing)
 
-let binaryExprOperand ~isLhs expr =
+let binaryExprOperand ~isLhs ~state expr =
   let optBraces, _ = ParsetreeViewer.processBracesAttr expr in
   match optBraces with
   | Some ({Location.loc = bracesLoc}, _) -> Braced bracesLoc
@@ -131,7 +131,7 @@ let binaryExprOperand ~isLhs expr =
        Pexp_constraint _ | Pexp_fun _ | Pexp_function _ | Pexp_newtype _;
     } ->
       Parenthesized
-    | expr when ParsetreeViewer.isBinaryExpression expr -> Parenthesized
+    | expr when ParsetreeViewer.isBinaryExpression ~state expr -> Parenthesized
     | expr when ParsetreeViewer.isTernaryExpr expr -> Parenthesized
     | {pexp_desc = Pexp_lazy _ | Pexp_assert _} when isLhs -> Parenthesized
     | _ when ParsetreeViewer.hasAwaitAttribute expr.pexp_attributes ->
@@ -149,7 +149,7 @@ let subBinaryExprOperand parentOperator childOperator =
   || (* a && b || c, add parens to (a && b) for readability, who knows the difference by heart… *)
   (parentOperator = "||" && childOperator = "&&")
 
-let rhsBinaryExprOperand parentOperator rhs =
+let rhsBinaryExprOperand ~state parentOperator rhs =
   match rhs.Parsetree.pexp_desc with
   | Parsetree.Pexp_apply
       ( {
@@ -158,14 +158,14 @@ let rhsBinaryExprOperand parentOperator rhs =
             Pexp_ident {txt = Longident.Lident operator; loc = operatorLoc};
         },
         [(_, _left); (_, _right)] )
-    when ParsetreeViewer.isBinaryOperator operator
+    when ParsetreeViewer.isBinaryOperator ~state operator
          && not (operatorLoc.loc_ghost && operator = "^") ->
     let precParent = ParsetreeViewer.operatorPrecedence parentOperator in
     let precChild = ParsetreeViewer.operatorPrecedence operator in
     precParent == precChild
   | _ -> false
 
-let flattenOperandRhs parentOperator rhs =
+let flattenOperandRhs ~state parentOperator rhs =
   match rhs.Parsetree.pexp_desc with
   | Parsetree.Pexp_apply
       ( {
@@ -173,7 +173,7 @@ let flattenOperandRhs parentOperator rhs =
             Pexp_ident {txt = Longident.Lident operator; loc = operatorLoc};
         },
         [(_, _left); (_, _right)] )
-    when ParsetreeViewer.isBinaryOperator operator
+    when ParsetreeViewer.isBinaryOperator ~state operator
          && not (operatorLoc.loc_ghost && operator = "^") ->
     let precParent = ParsetreeViewer.operatorPrecedence parentOperator in
     let precChild = ParsetreeViewer.operatorPrecedence operator in
@@ -189,7 +189,7 @@ let binaryOperatorInsideAwaitNeedsParens operator =
   ParsetreeViewer.operatorPrecedence operator
   < ParsetreeViewer.operatorPrecedence "|."
 
-let lazyOrAssertOrAwaitExprRhs ?(inAwait = false) expr =
+let lazyOrAssertOrAwaitExprRhs ?(inAwait = false) ~state expr =
   let optBraces, _ = ParsetreeViewer.processBracesAttr expr in
   match optBraces with
   | Some ({Location.loc = bracesLoc}, _) -> Braced bracesLoc
@@ -204,7 +204,7 @@ let lazyOrAssertOrAwaitExprRhs ?(inAwait = false) expr =
      pexp_desc =
        Pexp_apply ({pexp_desc = Pexp_ident {txt = Longident.Lident operator}}, _);
     }
-      when ParsetreeViewer.isBinaryExpression expr ->
+      when ParsetreeViewer.isBinaryExpression ~state expr ->
       if inAwait && not (binaryOperatorInsideAwaitNeedsParens operator) then
         Nothing
       else Parenthesized
@@ -238,7 +238,7 @@ let isNegativeConstant constant =
   | (Parsetree.Pconst_integer (i, _) | Pconst_float (i, _)) when isNeg i -> true
   | _ -> false
 
-let fieldExpr expr =
+let fieldExpr ~state expr =
   let optBraces, _ = ParsetreeViewer.processBracesAttr expr in
   match optBraces with
   | Some ({Location.loc = bracesLoc}, _) -> Braced bracesLoc
@@ -250,7 +250,7 @@ let fieldExpr expr =
            | [] -> false ->
       Parenthesized
     | expr
-      when ParsetreeViewer.isBinaryExpression expr
+      when ParsetreeViewer.isBinaryExpression ~state expr
            || ParsetreeViewer.isUnaryExpression expr ->
       Parenthesized
     | {
@@ -394,14 +394,14 @@ let jsxChildExpr expr =
       | expr when ParsetreeViewer.isJsxExpression expr -> Nothing
       | _ -> Parenthesized))
 
-let binaryExpr expr =
+let binaryExpr ~state expr =
   let optBraces, _ = ParsetreeViewer.processBracesAttr expr in
   match optBraces with
   | Some ({Location.loc = bracesLoc}, _) -> Braced bracesLoc
   | None -> (
     match expr with
     | {Parsetree.pexp_attributes = _ :: _} as expr
-      when ParsetreeViewer.isBinaryExpression expr ->
+      when ParsetreeViewer.isBinaryExpression ~state expr ->
       Parenthesized
     | _ -> Nothing)
 

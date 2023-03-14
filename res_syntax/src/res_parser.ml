@@ -161,6 +161,7 @@ let lookahead p callback =
   let offset = p.scanner.offset in
   let offset16 = p.scanner.offset16 in
   let lineOffset = p.scanner.lineOffset in
+  let customInfix = p.scanner.customInfix in
   let lnum = p.scanner.lnum in
   let mode = p.scanner.mode in
   let token = p.token in
@@ -182,6 +183,7 @@ let lookahead p callback =
   p.scanner.lineOffset <- lineOffset;
   p.scanner.lnum <- lnum;
   p.scanner.mode <- mode;
+  p.scanner.customInfix <- customInfix;
   p.token <- token;
   p.startPos <- startPos;
   p.endPos <- endPos;

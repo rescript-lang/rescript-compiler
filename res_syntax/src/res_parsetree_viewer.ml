@@ -293,15 +293,17 @@ let isUnaryExpression expr =
   | _ -> false
 
 (* TODO: tweak this to check for ghost ^ as template literal *)
-let isBinaryOperator operator =
+let isBinaryOperator ~(state : Res_printer_state.t) operator =
   match operator with
   | ":=" | "||" | "&&" | "=" | "==" | "<" | ">" | "!=" | "!==" | "<=" | ">="
   | "|>" | "+" | "+." | "-" | "-." | "^" | "*" | "*." | "/" | "/." | "**" | "|."
   | "|.u" | "<>" ->
     true
-  | _ -> false
+  | _ ->
+    state.customInfix <> []
+    && state.customInfix |> Res_custom_infix.findAlias ~alias:operator <> None
 
-let isBinaryExpression expr =
+let isBinaryExpression ~state expr =
   match expr.pexp_desc with
   | Pexp_apply
       ( {
@@ -309,7 +311,7 @@ let isBinaryExpression expr =
             Pexp_ident {txt = Longident.Lident operator; loc = operatorLoc};
         },
         [(Nolabel, _operand1); (Nolabel, _operand2)] )
-    when isBinaryOperator operator
+    when isBinaryOperator ~state operator
          && not (operatorLoc.loc_ghost && operator = "^")
          (* template literal *) ->
     true
@@ -502,7 +504,7 @@ let hasJsxAttribute attributes =
   in
   loop attributes
 
-let shouldIndentBinaryExpr expr =
+let shouldIndentBinaryExpr ~state expr =
   let samePrecedenceSubExpression operator subExpression =
     match subExpression with
     | {
@@ -511,7 +513,7 @@ let shouldIndentBinaryExpr expr =
          ( {pexp_desc = Pexp_ident {txt = Longident.Lident subOperator}},
            [(Nolabel, _lhs); (Nolabel, _rhs)] );
     }
-      when isBinaryOperator subOperator ->
+      when isBinaryOperator ~state subOperator ->
       flattenableOperators operator subOperator
     | _ -> true
   in
@@ -522,7 +524,7 @@ let shouldIndentBinaryExpr expr =
        ( {pexp_desc = Pexp_ident {txt = Longident.Lident operator}},
          [(Nolabel, lhs); (Nolabel, _rhs)] );
   }
-    when isBinaryOperator operator ->
+    when isBinaryOperator ~state operator ->
     isEqualityOperator operator
     || (not (samePrecedenceSubExpression operator lhs))
     || operator = ":="

@@ -75,8 +75,9 @@ val isHuggableRhs : Parsetree.expression -> bool
 val operatorPrecedence : string -> int
 
 val isUnaryExpression : Parsetree.expression -> bool
-val isBinaryOperator : string -> bool
-val isBinaryExpression : Parsetree.expression -> bool
+val isBinaryOperator : state:Res_printer_state.t -> string -> bool
+val isBinaryExpression :
+  state:Res_printer_state.t -> Parsetree.expression -> bool
 val isRhsBinaryOperator : string -> bool
 
 val flattenableOperators : string -> string -> bool
@@ -100,7 +101,8 @@ val isJsxExpression : Parsetree.expression -> bool
 val hasJsxAttribute : Parsetree.attributes -> bool
 val hasOptionalAttribute : Parsetree.attributes -> bool
 
-val shouldIndentBinaryExpr : Parsetree.expression -> bool
+val shouldIndentBinaryExpr :
+  state:Res_printer_state.t -> Parsetree.expression -> bool
 val shouldInlineRhsBinaryExpr : Parsetree.expression -> bool
 val hasPrintableAttributes : Parsetree.attributes -> bool
 val filterPrintableAttributes : Parsetree.attributes -> Parsetree.attributes

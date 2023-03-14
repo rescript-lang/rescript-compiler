@@ -96,6 +96,7 @@ type t =
   | Try
   | DocComment of Location.t * string
   | ModuleComment of Location.t * string
+  | CustomInfix of string
 
 let precedence = function
   | HashEqual | ColonEqual -> 1
@@ -104,7 +105,7 @@ let precedence = function
   | Equal | EqualEqual | EqualEqualEqual | LessThan | GreaterThan | BangEqual
   | BangEqualEqual | LessEqual | GreaterEqual | BarGreater ->
     4
-  | Plus | PlusDot | Minus | MinusDot | PlusPlus -> 5
+  | Plus | PlusDot | Minus | MinusDot | PlusPlus | CustomInfix _ -> 5
   | Asterisk | AsteriskDot | Forwardslash | ForwardslashDot -> 6
   | Exponentiation -> 7
   | MinusGreater -> 8
@@ -207,6 +208,7 @@ let toString = function
   | Try -> "try"
   | DocComment (_loc, s) -> "DocComment " ^ s
   | ModuleComment (_loc, s) -> "ModuleComment " ^ s
+  | CustomInfix s -> s
 
 let keywordTable = function
   | "and" -> And

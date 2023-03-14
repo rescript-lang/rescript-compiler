@@ -3,17 +3,21 @@ type kind = Parenthesized | Braced of Location.t | Nothing
 val expr : Parsetree.expression -> kind
 val structureExpr : Parsetree.expression -> kind
 
-val unaryExprOperand : Parsetree.expression -> kind
+val unaryExprOperand : state:Res_printer_state.t -> Parsetree.expression -> kind
 
-val binaryExprOperand : isLhs:bool -> Parsetree.expression -> kind
+val binaryExprOperand :
+  isLhs:bool -> state:Res_printer_state.t -> Parsetree.expression -> kind
 val subBinaryExprOperand : string -> string -> bool
-val rhsBinaryExprOperand : string -> Parsetree.expression -> bool
-val flattenOperandRhs : string -> Parsetree.expression -> bool
+val rhsBinaryExprOperand :
+  state:Res_printer_state.t -> string -> Parsetree.expression -> bool
+val flattenOperandRhs :
+  state:Res_printer_state.t -> string -> Parsetree.expression -> bool
 
 val binaryOperatorInsideAwaitNeedsParens : string -> bool
-val lazyOrAssertOrAwaitExprRhs : ?inAwait:bool -> Parsetree.expression -> kind
+val lazyOrAssertOrAwaitExprRhs :
+  ?inAwait:bool -> state:Res_printer_state.t -> Parsetree.expression -> kind
 
-val fieldExpr : Parsetree.expression -> kind
+val fieldExpr : state:Res_printer_state.t -> Parsetree.expression -> kind
 
 val setFieldExprRhs : Parsetree.expression -> kind
 
@@ -22,13 +26,13 @@ val ternaryOperand : Parsetree.expression -> kind
 val jsxPropExpr : Parsetree.expression -> kind
 val jsxChildExpr : Parsetree.expression -> kind
 
-val binaryExpr : Parsetree.expression -> kind
+val binaryExpr : state:Res_printer_state.t -> Parsetree.expression -> kind
 val modTypeFunctorReturn : Parsetree.module_type -> bool
 val modTypeWithOperand : Parsetree.module_type -> bool
 val modExprFunctorConstraint : Parsetree.module_type -> bool
 
 val bracedExpr : Parsetree.expression -> bool
-val callExpr : Parsetree.expression -> kind
+val callExpr : state:Res_printer_state.t -> Parsetree.expression -> kind
 
 val includeModExpr : Parsetree.module_expr -> bool
 
