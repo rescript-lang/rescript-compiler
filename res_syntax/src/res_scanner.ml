@@ -13,6 +13,7 @@ type charEncoding = Char.t
 type t = {
   filename: string;
   src: string;
+  srcLen: int;
   mutable err:
     startPos:Lexing.position ->
     endPos:Lexing.position ->
@@ -25,6 +26,7 @@ type t = {
   mutable lineOffset: int; (* current line offset *)
   mutable lnum: int; (* current line number *)
   mutable mode: mode list;
+  mutable customInfix: Res_custom_infix.t;
 }
 
 let setDiamondMode scanner = scanner.mode <- Diamond :: scanner.mode
@@ -113,11 +115,11 @@ let next scanner =
     scanner.offset16 <- 0;
     scanner.lnum <- scanner.lnum + 1)
   else scanner.offset16 <- scanner.offset16 + utf16len;
-  if nextOffset < String.length scanner.src then (
+  if nextOffset < scanner.srcLen then (
     scanner.offset <- nextOffset;
     scanner.ch <- String.unsafe_get scanner.src nextOffset)
   else (
-    scanner.offset <- String.length scanner.src;
+    scanner.offset <- scanner.srcLen;
     scanner.offset16 <- scanner.offset - scanner.lineOffset;
     scanner.ch <- hackyEOFChar)
 
@@ -131,17 +133,17 @@ let next3 scanner =
   next scanner
 
 let peek scanner =
-  if scanner.offset + 1 < String.length scanner.src then
+  if scanner.offset + 1 < scanner.srcLen then
     String.unsafe_get scanner.src (scanner.offset + 1)
   else hackyEOFChar
 
 let peek2 scanner =
-  if scanner.offset + 2 < String.length scanner.src then
+  if scanner.offset + 2 < scanner.srcLen then
     String.unsafe_get scanner.src (scanner.offset + 2)
   else hackyEOFChar
 
 let peek3 scanner =
-  if scanner.offset + 3 < String.length scanner.src then
+  if scanner.offset + 3 < scanner.srcLen then
     String.unsafe_get scanner.src (scanner.offset + 3)
   else hackyEOFChar
 
@@ -149,6 +151,7 @@ let make ~filename src =
   {
     filename;
     src;
+    srcLen = String.length src;
     err = (fun ~startPos:_ ~endPos:_ _ -> ());
     ch = (if src = "" then hackyEOFChar else String.unsafe_get src 0);
     offset = 0;
@@ -156,6 +159,7 @@ let make ~filename src =
     lineOffset = 0;
     lnum = 1;
     mode = [];
+    customInfix = [];
   }
 
 (* generic helpers *)
@@ -636,13 +640,31 @@ let scanTemplateLiteralToken scanner =
   let endPos = position scanner in
   (startPos, endPos, token)
 
+let scanCustomInfix scanner =
+  match
+    scanner.customInfix
+    |> List.find_opt (fun (name, _) ->
+           Res_custom_infix.lookupName ~name ~src:scanner.src
+             ~srcLen:scanner.srcLen ~offset:scanner.offset)
+  with
+  | Some (name, alias) ->
+    for _ = 1 to String.length name do
+      next scanner
+    done;
+    Some (Token.CustomInfix alias)
+  | _ -> None
+
 let rec scan scanner =
   skipWhitespace scanner;
   let startPos = position scanner in
-
+  let customInfixToken =
+    (* Called for each token: get a fast path out of here *)
+    if scanner.customInfix <> [] then scanCustomInfix scanner else None
+  in
   let token =
     match scanner.ch with
     (* peeking 0 char *)
+    | _ when customInfixToken <> None -> Option.get customInfixToken
     | 'A' .. 'Z' | 'a' .. 'z' -> scanIdentifier scanner
     | '0' .. '9' -> scanNumber scanner
     | '`' ->

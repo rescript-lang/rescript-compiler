@@ -4,6 +4,7 @@ module Comment = Res_comment
 module Token = Res_token
 module Parens = Res_parens
 module ParsetreeViewer = Res_parsetree_viewer
+module State = Res_printer_state
 
 type callbackStyle =
   (* regular arrow function, example: `let f = x => x + 1` *)
@@ -572,22 +573,11 @@ let printOptionalLabel attrs =
   if Res_parsetree_viewer.hasOptionalAttribute attrs then Doc.text "?"
   else Doc.nil
 
-module State = struct
-  let customLayoutThreshold = 2
-
-  type t = {customLayout: int; mutable uncurried_config: Res_uncurried.config}
-
-  let init = {customLayout = 0; uncurried_config = Res_uncurried.init}
-
-  let nextCustomLayout t = {t with customLayout = t.customLayout + 1}
-
-  let shouldBreakCallback t = t.customLayout > customLayoutThreshold
-end
-
 let rec printStructure ~state (s : Parsetree.structure) t =
   match s with
   | [] -> printCommentsInsideFile t
   | structure ->
+    let state = State.copy state in
     printList
       ~getLoc:(fun s -> s.Parsetree.pstr_loc)
       ~nodes:structure
@@ -946,6 +936,7 @@ and printSignature ~state signature cmtTbl =
   match signature with
   | [] -> printCommentsInsideFile cmtTbl
   | signature ->
+    let state = State.copy state in
     printList
       ~getLoc:(fun s -> s.Parsetree.psig_loc)
       ~nodes:signature
@@ -2057,14 +2048,14 @@ and printValueBinding ~state ~recFlag (vb : Parsetree.value_binding) cmtTbl i =
         match optBraces with
         | Some _ -> false
         | _ -> (
-          ParsetreeViewer.isBinaryExpression expr
+          ParsetreeViewer.isBinaryExpression ~state expr
           ||
           match vb.pvb_expr with
           | {
            pexp_attributes = [({Location.txt = "res.ternary"}, _)];
            pexp_desc = Pexp_ifthenelse (ifExpr, _, _);
           } ->
-            ParsetreeViewer.isBinaryExpression ifExpr
+            ParsetreeViewer.isBinaryExpression ~state ifExpr
             || ParsetreeViewer.hasAttributes ifExpr.pexp_attributes
           | {pexp_desc = Pexp_newtype _} -> false
           | e ->
@@ -3026,14 +3017,14 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
         printUnaryExpression ~state e cmtTbl
       else if ParsetreeViewer.isTemplateLiteral e then
         printTemplateLiteral ~state e cmtTbl
-      else if ParsetreeViewer.isBinaryExpression e then
+      else if ParsetreeViewer.isBinaryExpression ~state e then
         printBinaryExpression ~state e cmtTbl
       else printPexpApply ~state e cmtTbl
     | Pexp_unreachable -> Doc.dot
     | Pexp_field (expr, longidentLoc) ->
       let lhs =
         let doc = printExpressionWithComments ~state expr cmtTbl in
-        match Parens.fieldExpr expr with
+        match Parens.fieldExpr ~state expr with
         | Parens.Parenthesized -> addParens doc
         | Braced braces -> printBraces doc expr braces
         | Nothing -> doc
@@ -3171,7 +3162,7 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
     | Pexp_assert expr ->
       let rhs =
         let doc = printExpressionWithComments ~state expr cmtTbl in
-        match Parens.lazyOrAssertOrAwaitExprRhs expr with
+        match Parens.lazyOrAssertOrAwaitExprRhs ~state expr with
         | Parens.Parenthesized -> addParens doc
         | Braced braces -> printBraces doc expr braces
         | Nothing -> doc
@@ -3180,7 +3171,7 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
     | Pexp_lazy expr ->
       let rhs =
         let doc = printExpressionWithComments ~state expr cmtTbl in
-        match Parens.lazyOrAssertOrAwaitExprRhs expr with
+        match Parens.lazyOrAssertOrAwaitExprRhs ~state expr with
         | Parens.Parenthesized -> addParens doc
         | Braced braces -> printBraces doc expr braces
         | Nothing -> doc
@@ -3244,7 +3235,7 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
     | Pexp_send (parentExpr, label) ->
       let parentDoc =
         let doc = printExpressionWithComments ~state parentExpr cmtTbl in
-        match Parens.unaryExprOperand parentExpr with
+        match Parens.unaryExprOperand ~state parentExpr with
         | Parens.Parenthesized -> addParens doc
         | Braced braces -> printBraces doc parentExpr braces
         | Nothing -> doc
@@ -3264,7 +3255,7 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
     if ParsetreeViewer.hasAwaitAttribute e.pexp_attributes then
       let rhs =
         match
-          Parens.lazyOrAssertOrAwaitExprRhs ~inAwait:true
+          Parens.lazyOrAssertOrAwaitExprRhs ~inAwait:true ~state
             {
               e with
               pexp_attributes =
@@ -3395,12 +3386,12 @@ and printSetFieldExpr ~state attrs lhs longidentLoc rhs loc cmtTbl =
   in
   let lhsDoc =
     let doc = printExpressionWithComments ~state lhs cmtTbl in
-    match Parens.fieldExpr lhs with
+    match Parens.fieldExpr ~state lhs with
     | Parens.Parenthesized -> addParens doc
     | Braced braces -> printBraces doc lhs braces
     | Nothing -> doc
   in
-  let shouldIndent = ParsetreeViewer.isBinaryExpression rhs in
+  let shouldIndent = ParsetreeViewer.isBinaryExpression ~state rhs in
   let doc =
     Doc.group
       (Doc.concat
@@ -3465,7 +3456,7 @@ and printUnaryExpression ~state expr cmtTbl =
         [(Nolabel, operand)] ) ->
     let printedOperand =
       let doc = printExpressionWithComments ~state operand cmtTbl in
-      match Parens.unaryExprOperand operand with
+      match Parens.unaryExprOperand ~state operand with
       | Parens.Parenthesized -> addParens doc
       | Braced braces -> printBraces doc operand braces
       | Nothing -> doc
@@ -3474,7 +3465,8 @@ and printUnaryExpression ~state expr cmtTbl =
     printComments doc cmtTbl expr.pexp_loc
   | _ -> assert false
 
-and printBinaryExpression ~state (expr : Parsetree.expression) cmtTbl =
+and printBinaryExpression ~(state : State.t) (expr : Parsetree.expression)
+    cmtTbl =
   let printBinaryOperator ~inlineRhs operator =
     let operatorTxt =
       match operator with
@@ -3484,7 +3476,12 @@ and printBinaryExpression ~state (expr : Parsetree.expression) cmtTbl =
       | "==" -> "==="
       | "<>" -> "!="
       | "!=" -> "!=="
-      | txt -> txt
+      | txt ->
+        if state.customInfix <> [] then
+          match state.customInfix |> Res_custom_infix.findAlias ~alias:txt with
+          | Some (name, _) -> name
+          | None -> txt
+        else txt
     in
     let spacingBeforeOperator =
       if operator = "|." || operator = "|.u" then Doc.softLine
@@ -3502,7 +3499,7 @@ and printBinaryExpression ~state (expr : Parsetree.expression) cmtTbl =
   in
   let printOperand ~isLhs expr parentOperator =
     let rec flatten ~isLhs expr parentOperator =
-      if ParsetreeViewer.isBinaryExpression expr then
+      if ParsetreeViewer.isBinaryExpression ~state expr then
         match expr with
         | {
          pexp_desc =
@@ -3526,7 +3523,7 @@ and printBinaryExpression ~state (expr : Parsetree.expression) cmtTbl =
                   cmtTbl
               in
               let doc =
-                if Parens.flattenOperandRhs parentOperator right then
+                if Parens.flattenOperandRhs parentOperator ~state right then
                   Doc.concat [Doc.lparen; doc; Doc.rparen]
                 else doc
               in
@@ -3567,8 +3564,8 @@ and printBinaryExpression ~state (expr : Parsetree.expression) cmtTbl =
             in
 
             let doc =
-              if (not isLhs) && Parens.rhsBinaryExprOperand operator expr then
-                Doc.concat [Doc.lparen; doc; Doc.rparen]
+              if (not isLhs) && Parens.rhsBinaryExprOperand ~state operator expr
+              then Doc.concat [Doc.lparen; doc; Doc.rparen]
               else doc
             in
             printComments doc cmtTbl expr.pexp_loc
@@ -3585,7 +3582,7 @@ and printBinaryExpression ~state (expr : Parsetree.expression) cmtTbl =
               if
                 Parens.subBinaryExprOperand parentOperator operator
                 || printeableAttrs <> []
-                   && (ParsetreeViewer.isBinaryExpression expr
+                   && (ParsetreeViewer.isBinaryExpression ~state expr
                       || ParsetreeViewer.isTernaryExpr expr)
               then Doc.concat [Doc.lparen; doc; Doc.rparen]
               else doc
@@ -3612,7 +3609,7 @@ and printBinaryExpression ~state (expr : Parsetree.expression) cmtTbl =
           let rhsDoc = printExpressionWithComments ~state rhs cmtTbl in
           let lhsDoc = printExpressionWithComments ~state lhs cmtTbl in
           (* TODO: unify indentation of "=" *)
-          let shouldIndent = ParsetreeViewer.isBinaryExpression rhs in
+          let shouldIndent = ParsetreeViewer.isBinaryExpression ~state rhs in
           let doc =
             Doc.group
               (Doc.concat
@@ -3633,7 +3630,7 @@ and printBinaryExpression ~state (expr : Parsetree.expression) cmtTbl =
           if isLhs then addParens doc else doc
         | _ -> (
           let doc = printExpressionWithComments ~state expr cmtTbl in
-          match Parens.binaryExprOperand ~isLhs expr with
+          match Parens.binaryExprOperand ~isLhs ~state expr with
           | Parens.Parenthesized -> addParens doc
           | Braced braces -> printBraces doc expr braces
           | Nothing -> doc)
@@ -3648,8 +3645,8 @@ and printBinaryExpression ~state (expr : Parsetree.expression) cmtTbl =
         },
         [(Nolabel, lhs); (Nolabel, rhs)] )
     when not
-           (ParsetreeViewer.isBinaryExpression lhs
-           || ParsetreeViewer.isBinaryExpression rhs
+           (ParsetreeViewer.isBinaryExpression ~state lhs
+           || ParsetreeViewer.isBinaryExpression ~state rhs
            || printAttributes ~state expr.pexp_attributes cmtTbl <> Doc.nil) ->
     let lhsHasCommentBelow = hasCommentBelow cmtTbl lhs.pexp_loc in
     let lhsDoc = printOperand ~isLhs:true lhs op in
@@ -3685,7 +3682,7 @@ and printBinaryExpression ~state (expr : Parsetree.expression) cmtTbl =
             rhsDoc;
           ]
       in
-      if ParsetreeViewer.shouldIndentBinaryExpr expr then
+      if ParsetreeViewer.shouldIndentBinaryExpr ~state expr then
         Doc.group (Doc.indent operatorWithRhs)
       else operatorWithRhs
     in
@@ -3704,7 +3701,7 @@ and printBinaryExpression ~state (expr : Parsetree.expression) cmtTbl =
          [
            printAttributes ~state expr.pexp_attributes cmtTbl;
            (match
-              Parens.binaryExpr
+              Parens.binaryExpr ~state
                 {
                   expr with
                   pexp_attributes =
@@ -3781,7 +3778,7 @@ and printPexpApply ~state expr cmtTbl =
         [(Nolabel, parentExpr); (Nolabel, memberExpr)] ) ->
     let parentDoc =
       let doc = printExpressionWithComments ~state parentExpr cmtTbl in
-      match Parens.unaryExprOperand parentExpr with
+      match Parens.unaryExprOperand ~state parentExpr with
       | Parens.Parenthesized -> addParens doc
       | Braced braces -> printBraces doc parentExpr braces
       | Nothing -> doc
@@ -3817,7 +3814,7 @@ and printPexpApply ~state expr cmtTbl =
     (* TODO: unify indentation of "=" *)
     let shouldIndent =
       (not (ParsetreeViewer.isBracedExpr rhs))
-      && ParsetreeViewer.isBinaryExpression rhs
+      && ParsetreeViewer.isBinaryExpression ~state rhs
     in
     let doc =
       Doc.group
@@ -3859,7 +3856,7 @@ and printPexpApply ~state expr cmtTbl =
     in
     let parentDoc =
       let doc = printExpressionWithComments ~state parentExpr cmtTbl in
-      match Parens.unaryExprOperand parentExpr with
+      match Parens.unaryExprOperand ~state parentExpr with
       | Parens.Parenthesized -> addParens doc
       | Braced braces -> printBraces doc parentExpr braces
       | Nothing -> doc
@@ -3898,14 +3895,14 @@ and printPexpApply ~state expr cmtTbl =
     let shouldIndentTargetExpr =
       if ParsetreeViewer.isBracedExpr targetExpr then false
       else
-        ParsetreeViewer.isBinaryExpression targetExpr
+        ParsetreeViewer.isBinaryExpression ~state targetExpr
         ||
         match targetExpr with
         | {
          pexp_attributes = [({Location.txt = "res.ternary"}, _)];
          pexp_desc = Pexp_ifthenelse (ifExpr, _, _);
         } ->
-          ParsetreeViewer.isBinaryExpression ifExpr
+          ParsetreeViewer.isBinaryExpression ~state ifExpr
           || ParsetreeViewer.hasAttributes ifExpr.pexp_attributes
         | {pexp_desc = Pexp_newtype _} -> false
         | e ->
@@ -3921,7 +3918,7 @@ and printPexpApply ~state expr cmtTbl =
     in
     let parentDoc =
       let doc = printExpressionWithComments ~state parentExpr cmtTbl in
-      match Parens.unaryExprOperand parentExpr with
+      match Parens.unaryExprOperand ~state parentExpr with
       | Parens.Parenthesized -> addParens doc
       | Braced braces -> printBraces doc parentExpr braces
       | Nothing -> doc
@@ -3955,7 +3952,7 @@ and printPexpApply ~state expr cmtTbl =
     let dotted = state.uncurried_config |> Res_uncurried.getDotted ~uncurried in
     let callExprDoc =
       let doc = printExpressionWithComments ~state callExpr cmtTbl in
-      match Parens.callExpr callExpr with
+      match Parens.callExpr ~state callExpr with
       | Parens.Parenthesized -> addParens doc
       | Braced braces -> printBraces doc callExpr braces
       | Nothing -> doc
@@ -5282,6 +5279,34 @@ and printAttribute ?(standalone = false) ~state
       | "toUncurried" ->
         state.uncurried_config <- Res_uncurried.Default;
         {id with txt = "uncurried"}
+      | "infix" -> (
+        match payload with
+        | PStr
+            [
+              {
+                pstr_desc =
+                  Pstr_eval
+                    ( {
+                        pexp_desc =
+                          Pexp_tuple
+                            [
+                              {
+                                pexp_desc =
+                                  Pexp_constant (Pconst_string (name, _));
+                              };
+                              {
+                                pexp_desc =
+                                  Pexp_constant (Pconst_string (alias, _));
+                              };
+                            ];
+                      },
+                      _ );
+              };
+            ] ->
+          state.customInfix <-
+            state.customInfix |> Res_custom_infix.addSymbol ~name ~alias;
+          id
+        | _ -> (* should never happpen *) id)
       | _ -> id
     in
     ( Doc.group

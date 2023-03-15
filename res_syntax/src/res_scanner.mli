@@ -5,6 +5,7 @@ type charEncoding
 type t = {
   filename: string;
   src: string;
+  srcLen: int;
   mutable err:
     startPos:Lexing.position ->
     endPos:Lexing.position ->
@@ -17,6 +18,7 @@ type t = {
   mutable lineOffset: int; (* current line offset *)
   mutable lnum: int; (* current line number *)
   mutable mode: mode list;
+  mutable customInfix: Res_custom_infix.t;
 }
 
 val make : filename:string -> string -> t

@@ -2473,6 +2473,7 @@ and parseAttributesAndBinding (p : Parser.t) =
   let lineOffset = p.scanner.lineOffset in
   let lnum = p.scanner.lnum in
   let mode = p.scanner.mode in
+  let customInfix = p.scanner.customInfix in
   let token = p.token in
   let startPos = p.startPos in
   let endPos = p.endPos in
@@ -2495,6 +2496,7 @@ and parseAttributesAndBinding (p : Parser.t) =
       p.scanner.lineOffset <- lineOffset;
       p.scanner.lnum <- lnum;
       p.scanner.mode <- mode;
+      p.scanner.customInfix <- customInfix;
       p.token <- token;
       p.startPos <- startPos;
       p.endPos <- endPos;
@@ -5591,11 +5593,13 @@ and parseAtomicModuleExpr p =
     Ast_helper.Mod.ident ~loc:longident.loc longident
   | Lbrace ->
     Parser.next p;
+    let customInfix = p.scanner.customInfix in
     let structure =
       Ast_helper.Mod.structure
         (parseDelimitedRegion ~grammar:Grammar.Structure ~closing:Rbrace
            ~f:parseStructureItemRegion p)
     in
+    p.scanner.customInfix <- customInfix;
     Parser.expect Rbrace p;
     let endPos = p.prevEndPos in
     {structure with pmod_loc = mkLoc startPos endPos}
@@ -6366,10 +6370,12 @@ and parsePayload p =
       Parser.eatBreadcrumb p;
       Parsetree.PPat (pattern, expr)
     | _ ->
+      let customInfix = p.scanner.customInfix in
       let items =
         parseDelimitedRegion ~grammar:Grammar.Structure ~closing:Rparen
           ~f:parseStructureItemRegion p
       in
+      p.scanner.customInfix <- customInfix;
       Parser.expect Rparen p;
       Parser.eatBreadcrumb p;
       Parsetree.PStr items)
@@ -6407,15 +6413,44 @@ and parseStandaloneAttribute p =
   let startPos = p.startPos in
   Parser.expect AtAt p;
   let attrId = parseAttributeId ~startPos p in
+  let payload = parsePayload p in
   let attrId =
     match attrId.txt with
     | "uncurried" ->
       p.uncurried_config <- Res_uncurried.Default;
       attrId
     | "toUncurried" -> {attrId with txt = "uncurried"}
+    | "infix" -> (
+      match payload with
+      | PStr
+          [
+            {
+              pstr_desc =
+                Pstr_eval
+                  ( {
+                      pexp_desc =
+                        Pexp_tuple
+                          [
+                            {pexp_desc = Pexp_constant (Pconst_string (name, _))};
+                            {
+                              pexp_desc =
+                                Pexp_constant (Pconst_string (alias, _));
+                            };
+                          ];
+                    },
+                    _ );
+            };
+          ] ->
+        p.scanner.customInfix <-
+          p.scanner.customInfix |> Res_custom_infix.addSymbol ~name ~alias;
+        attrId
+      | _ ->
+        Parser.err ~startPos ~endPos:p.startPos p
+          (Diagnostics.message
+             ("Use the form @@" ^ attrId.txt ^ "((\"operator\", \"alias\"))"));
+        attrId)
     | _ -> attrId
   in
-  let payload = parsePayload p in
   (attrId, payload)
 
 (* extension	::=	% attr-id  attr-payload
