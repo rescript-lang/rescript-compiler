@@ -6420,7 +6420,7 @@ and parseStandaloneAttribute p =
       p.uncurried_config <- Res_uncurried.Default;
       attrId
     | "toUncurried" -> {attrId with txt = "uncurried"}
-    | "infix" -> (
+    | "infix" | "infix.add" | "infix.remove" -> (
       match payload with
       | PStr
           [
@@ -6441,9 +6441,12 @@ and parseStandaloneAttribute p =
                     _ );
             };
           ] ->
-        p.scanner.customInfix <-
-          p.scanner.customInfix |> Res_custom_infix.addSymbol ~name ~alias;
-        attrId
+        if attrId.txt <> "infix.add" then
+          p.scanner.customInfix <-
+            p.scanner.customInfix |> Res_custom_infix.addSymbol ~name ~alias;
+
+        if attrId.txt = "infix.remove" then attrId
+        else {attrId with txt = "infix"}
       | _ ->
         Parser.err ~startPos ~endPos:p.startPos p
           (Diagnostics.message
