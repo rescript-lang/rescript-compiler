@@ -6414,7 +6414,6 @@ and parseStandaloneAttribute p =
     | "uncurriedAlways" ->
       p.uncurried_config <- Res_uncurried.Always;
       attrId
-    | "toUncurried" -> {attrId with txt = "uncurried.swap"}
     | _ -> attrId
   in
   let payload = parsePayload p in

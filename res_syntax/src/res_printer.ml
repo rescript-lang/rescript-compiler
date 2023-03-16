@@ -5282,9 +5282,6 @@ and printAttribute ?(standalone = false) ~state
       | "uncurriedAlways" ->
         state.uncurried_config <- Res_uncurried.Always;
         id
-      | "toUncurried" ->
-        state.uncurried_config <- Res_uncurried.Swap;
-        {id with txt = "uncurried.swap"}
       | _ -> id
     in
     ( Doc.group
