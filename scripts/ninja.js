@@ -1101,7 +1101,7 @@ ${ninjaQuickBuidList([
   var stdlibDirFiles = fs.readdirSync(stdlibDir, "ascii");
   var sources = stdlibDirFiles.filter(x => {
     return (
-      !x.startsWith("pervasives") &&
+      !x.startsWith("pervasives.") &&
       (x.endsWith(".ml") ||
         x.endsWith(".mli") ||
         x.endsWith(".res") ||
