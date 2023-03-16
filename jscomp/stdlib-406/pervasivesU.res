@@ -13,7 +13,7 @@
 /*  */
 /* ************************************************************************ */
 
-@@uncurriedAlways
+@@uncurried
 
 /* Internal */
 external __unsafe_cast: 'a => 'b = "%identity"

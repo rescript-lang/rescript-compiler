@@ -1,4 +1,4 @@
-[@@@uncurriedAlways ]
+[@@@uncurried ]
 let foo = ((Function$ (fun x -> fun y -> x + y))[@res.arity 2])
 let z = ((foo 3 4)[@res.uapp ])
 let bar = ((Function$ (fun x -> fun y -> x + y))[@res.arity 2])

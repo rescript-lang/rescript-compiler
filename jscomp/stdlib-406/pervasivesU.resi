@@ -13,7 +13,7 @@
 /*  */
 /* ************************************************************************ */
 
-@@uncurriedAlways
+@@uncurried
 
 " The initially opened module.
 

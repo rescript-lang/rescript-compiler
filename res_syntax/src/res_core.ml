@@ -6411,8 +6411,8 @@ and parseStandaloneAttribute p =
     | "uncurried.swap" ->
       p.uncurried_config <- Res_uncurried.Swap;
       attrId
-    | "uncurriedAlways" ->
-      p.uncurried_config <- Res_uncurried.Always;
+    | "uncurried" ->
+      p.uncurried_config <- Res_uncurried.Uncurried;
       attrId
     | _ -> attrId
   in

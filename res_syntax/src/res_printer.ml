@@ -5279,8 +5279,8 @@ and printAttribute ?(standalone = false) ~state
       | "uncurried.swap" ->
         state.uncurried_config <- Res_uncurried.Swap;
         id
-      | "uncurriedAlways" ->
-        state.uncurried_config <- Res_uncurried.Always;
+      | "uncurried" ->
+        state.uncurried_config <- Res_uncurried.Uncurried;
         id
       | _ -> id
     in
