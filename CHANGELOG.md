@@ -27,7 +27,7 @@ subset of the arguments, and return a curried type with the remaining ones https
 - Add support for uncurried mode: a mode where everything is considered uncurried, whether with or without the `.`. This can be turned on with `@@uncurried` locally in a file. For project-level configuration in `bsconfig.json`, there's a boolean config `"uncurried"`, which propagates to dependencies, to turn on uncurried mode.
 Since there's no syntax for partial application in this new mode, introduce `@res.partial foo(x)` to express partial application. This is temporary and will later have some surface syntax.
 Use best effort to determine the config when formatting a file.
-https://github.com/rescript-lang/rescript-compiler/pull/5968
+https://github.com/rescript-lang/rescript-compiler/pull/5968 https://github.com/rescript-lang/rescript-compiler/pull/6080
 
 #### :boom: Breaking Change
 
