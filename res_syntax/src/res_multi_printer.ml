@@ -45,7 +45,7 @@ let getUncurriedFromBsconfig ~filename =
              words |> List.exists (fun word -> word = "uncurried")
              && words |> List.exists (fun word -> word = "true"))
     in
-    if uncurried then Res_uncurried.init := Uncurried
+    if uncurried then Config.uncurried := Uncurried
 
 (* print res files to res syntax *)
 let printRes ~ignoreParseErrors ~isInterface ~filename =

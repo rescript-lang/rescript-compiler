@@ -51,11 +51,12 @@ let process_file sourcefile ?(kind ) ppf =
      The {!Location.input_name} relies on that we write the binary ast 
      properly
   *)
+  let uncurried = !Config.uncurried in
   let kind =
     match kind with 
     | None -> Ext_file_extensions.classify_input (Ext_filename.get_extension_maybe sourcefile)  
     | Some kind -> kind in 
-  match kind with 
+  let res = match kind with 
   | Ml ->
     let sourcefile = set_abs_input_name  sourcefile in     
     setup_compiler_printer `ml;
@@ -103,6 +104,9 @@ let process_file sourcefile ?(kind ) ppf =
     Format.pp_print_newline Format.std_formatter ()      
   | Unknown -> 
     Bsc_args.bad_arg ("don't know what to do with " ^ sourcefile)
+  in
+  Config.uncurried := uncurried;
+  res
 let usage = "Usage: bsc <options> <files>\nOptions are:"
 
 let ppf = Format.err_formatter
@@ -406,7 +410,7 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
 
     "-nopervasives", set Clflags.nopervasives, 
     "*internal*";
-    "-uncurried", unit_call (fun () -> Res_uncurried.init := Swap; Config.use_automatic_curried_application := true),
+    "-uncurried", unit_call (fun () -> Config.uncurried := Uncurried),
     "*internal* Set jsx module";
     "-v", unit_call print_version_string,
     "Print compiler version and location of standard library and exit";  

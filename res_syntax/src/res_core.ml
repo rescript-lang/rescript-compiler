@@ -6409,10 +6409,10 @@ and parseStandaloneAttribute p =
   let attrId =
     match attrId.txt with
     | "uncurried.swap" ->
-      p.uncurried_config <- Res_uncurried.Swap;
+      p.uncurried_config <- Config.Swap;
       attrId
     | "uncurried" ->
-      p.uncurried_config <- Res_uncurried.Uncurried;
+      p.uncurried_config <- Config.Uncurried;
       attrId
     | _ -> attrId
   in

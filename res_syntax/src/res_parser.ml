@@ -22,7 +22,7 @@ type t = {
   mutable diagnostics: Diagnostics.t list;
   mutable comments: Comment.t list;
   mutable regions: regionStatus ref list;
-  mutable uncurried_config: Res_uncurried.config;
+  mutable uncurried_config: Config.uncurried;
 }
 
 let err ?startPos ?endPos p error =
@@ -122,7 +122,7 @@ let make ?(mode = ParseForTypeChecker) src filename =
       diagnostics = [];
       comments = [];
       regions = [ref Report];
-      uncurried_config = !Res_uncurried.init;
+      uncurried_config = !Config.uncurried;
     }
   in
   parserState.scanner.err <-

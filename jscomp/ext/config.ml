@@ -13,7 +13,8 @@ let bs_only = ref true
 
 let unsafe_empty_array = ref false
 
-let use_automatic_curried_application = ref false
+type uncurried = Legacy | Uncurried | Swap
+let uncurried = ref Legacy
 
 and cmi_magic_number = "Caml1999I022"
 
