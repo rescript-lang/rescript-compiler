@@ -1080,7 +1080,7 @@ ${ninjaQuickBuidList([
 
   [
     "pervasives.cmj",
-    "pervasives.ml",
+    "pervasives.res",
     "cc_cmi",
     ninjaCwd,
     bsc_builtin_overrides,
@@ -1089,7 +1089,7 @@ ${ninjaQuickBuidList([
   ],
   [
     "pervasives.cmi",
-    "pervasives.mli",
+    "pervasives.resi",
     "cc",
     ninjaCwd,
     bsc_builtin_overrides,

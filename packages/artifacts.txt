@@ -870,8 +870,8 @@ lib/ocaml/parsing.mli
 lib/ocaml/pervasives.cmi
 lib/ocaml/pervasives.cmt
 lib/ocaml/pervasives.cmti
-lib/ocaml/pervasives.ml
-lib/ocaml/pervasives.mli
+lib/ocaml/pervasives.res
+lib/ocaml/pervasives.resi
 lib/ocaml/queue.cmi
 lib/ocaml/queue.cmt
 lib/ocaml/queue.cmti
