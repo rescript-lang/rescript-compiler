@@ -15,7 +15,7 @@ type bTyp = (. string) => string => int
 type cTyp2 = (string, string) => int
 type uTyp2 = (. string, string) => int
 
-@@uncurried
+@@uncurried.swap
 
 let cApp = foo(. 3)
 let uApp = foo(3)

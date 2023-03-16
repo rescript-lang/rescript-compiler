@@ -43,7 +43,7 @@ let getUncurriedAlwaysFromBsconfig ~filename =
       |> List.exists (fun line ->
              let words = line |> String.split_on_char '\"' in
              words |> List.exists (fun word -> word = "uncurried")
-             && words |> List.exists (fun word -> word = "always"))
+             && words |> List.exists (fun word -> word = "true"))
     in
     if uncurriedAlways then Res_uncurried.init := Always
 

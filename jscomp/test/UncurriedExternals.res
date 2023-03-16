@@ -39,7 +39,7 @@ module StandardNotation = {
   let (get, set) = useState(() => 3)
 }
 
-@@uncurried
+@@uncurried.swap
 
 external raise: exn => 'a = "%raise"
 let dd = (. ()) => raise(Not_found)

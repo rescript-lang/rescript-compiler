@@ -386,7 +386,7 @@ let buildLongident words =
 let makeInfixOperator (p : Parser.t) token startPos endPos =
   let stringifiedToken =
     if token = Token.MinusGreater then
-      if p.uncurried_config |> Res_uncurried.isDefault then "|.u" else "|."
+      if p.uncurried_config |> Res_uncurried.isSwap then "|.u" else "|."
     else if token = Token.PlusPlus then "^"
     else if token = Token.BangEqual then "<>"
     else if token = Token.BangEqualEqual then "!="
@@ -1559,7 +1559,7 @@ and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
       when p.uncurried_config |> Res_uncurried.fromDotted ~dotted && isFun ->
       true
     | TermParameter _ :: rest
-      when (not (p.uncurried_config |> Res_uncurried.isDefault)) && isFun ->
+      when (not (p.uncurried_config |> Res_uncurried.isSwap)) && isFun ->
       rest
       |> List.exists (function
            | TermParameter {dotted} -> dotted
@@ -1597,7 +1597,7 @@ and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
           if
             uncurried
             && (termParamNum = 1
-               || not (p.uncurried_config |> Res_uncurried.isDefault))
+               || not (p.uncurried_config |> Res_uncurried.isSwap))
           then
             (termParamNum - 1, Ast_uncurried.uncurriedFun ~loc ~arity funExpr, 1)
           else (termParamNum - 1, funExpr, arity + 1)
@@ -3922,7 +3922,7 @@ and parsePolyTypeExpr p =
         let returnType = parseTypExpr ~alias:false p in
         let loc = mkLoc typ.Parsetree.ptyp_loc.loc_start p.prevEndPos in
         let tFun = Ast_helper.Typ.arrow ~loc Asttypes.Nolabel typ returnType in
-        if p.uncurried_config |> Res_uncurried.isDefault then
+        if p.uncurried_config |> Res_uncurried.isSwap then
           Ast_uncurried.uncurriedType ~loc ~arity:1 tFun
         else tFun
       | _ -> Ast_helper.Typ.var ~loc:var.loc var.txt)
@@ -4252,7 +4252,7 @@ and parseEs6ArrowType ~attrs p =
     let endPos = p.prevEndPos in
     let returnTypeArity =
       match parameters with
-      | _ when p.uncurried_config |> Res_uncurried.isDefault -> 0
+      | _ when p.uncurried_config |> Res_uncurried.isSwap -> 0
       | _ ->
         if parameters |> List.exists (function {dotted; typ = _} -> dotted)
         then 0
@@ -4268,8 +4268,7 @@ and parseEs6ArrowType ~attrs p =
           in
           if
             uncurried
-            && (paramNum = 1
-               || not (p.uncurried_config |> Res_uncurried.isDefault))
+            && (paramNum = 1 || not (p.uncurried_config |> Res_uncurried.isSwap))
           then
             let loc = mkLoc startPos endPos in
             let tArg = Ast_helper.Typ.arrow ~loc ~attrs argLbl typ t in
@@ -4335,7 +4334,7 @@ and parseArrowTypeRest ~es6Arrow ~startPos typ p =
     let returnType = parseTypExpr ~alias:false p in
     let loc = mkLoc startPos p.prevEndPos in
     let arrowTyp = Ast_helper.Typ.arrow ~loc Asttypes.Nolabel typ returnType in
-    if p.uncurried_config |> Res_uncurried.isDefault then
+    if p.uncurried_config |> Res_uncurried.isSwap then
       Ast_uncurried.uncurriedType ~loc ~arity:1 arrowTyp
     else arrowTyp
   | _ -> typ
@@ -6409,13 +6408,13 @@ and parseStandaloneAttribute p =
   let attrId = parseAttributeId ~startPos p in
   let attrId =
     match attrId.txt with
-    | "uncurried" ->
-      p.uncurried_config <- Res_uncurried.Default;
+    | "uncurried.swap" ->
+      p.uncurried_config <- Res_uncurried.Swap;
       attrId
     | "uncurriedAlways" ->
       p.uncurried_config <- Res_uncurried.Always;
       attrId
-    | "toUncurried" -> {attrId with txt = "uncurried"}
+    | "toUncurried" -> {attrId with txt = "uncurried.swap"}
     | _ -> attrId
   in
   let payload = parsePayload p in

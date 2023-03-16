@@ -1,20 +1,20 @@
-type config = Legacy | Default | Always
+type config = Legacy | Swap | Always
 
 let init = ref Legacy
 
-let isDefault = function
+let isSwap = function
   | Legacy -> false
-  | Default -> true
+  | Swap -> true
   | Always -> true
 
 (* For parsing *)
 let fromDotted ~dotted = function
   | Legacy -> dotted
-  | Default -> not dotted
+  | Swap -> not dotted
   | Always -> true
 
 (* For printing *)
 let getDotted ~uncurried = function
   | Legacy -> uncurried
-  | Default -> not uncurried
+  | Swap -> not uncurried
   | Always -> false

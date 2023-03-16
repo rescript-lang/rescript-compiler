@@ -57,7 +57,7 @@ let t4 = (. type a b) => (l: list<a>, x: a) => list{x, ...l}
 let t5 = (type a b) => (. l: list<a>, x: a) => list{x, ...l}
 let t6 = (. type a b) => (. l: list<a>, x: a) => list{x, ...l}
 
-@@uncurried
+@@uncurried.swap
 
 let cApp = foo(. 3)
 let uApp = foo(3)

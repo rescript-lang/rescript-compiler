@@ -91,7 +91,7 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
     ~(has_postbuild : string option) ~(pp_file : string option)
     ~(has_builtin : bool)
     ~(reason_react_jsx : Bsb_config_types.reason_react_jsx option)
-    ~(jsx : Bsb_jsx.t) ~(uncurried: Res_uncurried.config)  ~(digest : string) ~(package_specs : Bsb_package_specs.t)
+    ~(jsx : Bsb_jsx.t) ~(uncurried: bool)  ~(digest : string) ~(package_specs : Bsb_package_specs.t)
     ~(namespace : string option) ~package_name ~warnings
     ~(ppx_files : Bsb_config_types.ppx list) ~bsc_flags ~(dpkg_incls : string)
     ~(lib_incls : string) ~(dev_incls : string) ~bs_dependencies
@@ -102,10 +102,8 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
       since the default is already good -- it does not*)
   let buf = Ext_buffer.create 100 in
   let ns_flag = match namespace with None -> "" | Some n -> " -bs-ns " ^ n in
-  let add_uncurried_flag = function
-    | Res_uncurried.Legacy -> ()
-    | Default -> Ext_buffer.add_string buf " -uncurried default"
-    | Always -> Ext_buffer.add_string buf " -uncurried always" in
+  let add_uncurried_flag b =
+    if b then Ext_buffer.add_string buf " -uncurried" in
   let mk_ml_cmj_cmd ~(read_cmi : [ `yes | `is_cmi | `no ]) ~is_dev ~postbuild :
       string =
     Ext_buffer.clear buf;

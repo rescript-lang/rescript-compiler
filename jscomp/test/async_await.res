@@ -1,4 +1,4 @@
-@@uncurried
+@@uncurried.swap
 
 let next = n => n + 1
 let useNext = async () => next(3)

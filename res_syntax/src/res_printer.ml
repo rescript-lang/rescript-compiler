@@ -5276,15 +5276,15 @@ and printAttribute ?(standalone = false) ~state
   | _ ->
     let id =
       match id.txt with
-      | "uncurried" ->
-        state.uncurried_config <- Res_uncurried.Default;
+      | "uncurried.swap" ->
+        state.uncurried_config <- Res_uncurried.Swap;
         id
       | "uncurriedAlways" ->
         state.uncurried_config <- Res_uncurried.Always;
         id
       | "toUncurried" ->
-        state.uncurried_config <- Res_uncurried.Default;
-        {id with txt = "uncurried"}
+        state.uncurried_config <- Res_uncurried.Swap;
+        {id with txt = "uncurried.swap"}
       | _ -> id
     in
     ( Doc.group
