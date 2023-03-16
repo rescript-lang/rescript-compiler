@@ -39,7 +39,7 @@ let add_signature k v =
   signature_config_table := Map_string.add !signature_config_table k v
 
 let process_directives str =
-  Js_config.directives := []; (* Restt: multiple calls possible e.g. with bsc from the command-line *)
+  Js_config.directives := []; (* Reset: multiple calls possible e.g. with bsc from the command-line *)
   str |> List.iter(fun (item : Parsetree.structure_item) -> match item.pstr_desc with
   | Pstr_attribute ({ txt = "directive" },
       PStr [ { pstr_desc = Pstr_eval ({ pexp_desc = Pexp_constant (Pconst_string (d, _)) }, _) } ]) ->
