@@ -57,6 +57,7 @@ These are only breaking changes for unformatted code.
 - Fix issue with error messages for uncurried functions where expected and given type were swapped https://github.com/rescript-lang/rescript-compiler/pull/5973
 - Fix issue with integer overflow check https://github.com/rescript-lang/rescript-compiler/pull/6028
 - Make internal encoding of locations aware of unicode https://github.com/rescript-lang/rescript-compiler/pull/6073
+- Fix issue where `foo(x,_)` in uncurried mode would generate a curried function https://github.com/rescript-lang/rescript-compiler/pull/6082
 
 #### :nail_care: Polish
 

@@ -27,6 +27,22 @@ function ptl(param) {
   return foo(10, param);
 }
 
+function foo2(x, y) {
+  return x + y | 0;
+}
+
+function bar2(__x) {
+  return __x + 3 | 0;
+}
+
+function foo3(x, y, z) {
+  return (x + y | 0) + z | 0;
+}
+
+function bar3(__x) {
+  return foo3(__x, 3, 4);
+}
+
 exports.foo = foo;
 exports.z = z;
 exports.bar = bar;
@@ -34,4 +50,8 @@ exports.b = b;
 exports.w = w;
 exports.a = a;
 exports.ptl = ptl;
+exports.foo2 = foo2;
+exports.bar2 = bar2;
+exports.foo3 = foo3;
+exports.bar3 = bar3;
 /*  Not a pure module */

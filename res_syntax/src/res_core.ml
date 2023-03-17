@@ -516,7 +516,7 @@ let wrapTypeAnnotation ~loc newtypes core_type body =
   * return a wrapping function that wraps ((__x) => ...) around an expression
   * e.g. foo(_, 3) becomes (__x) => foo(__x, 3)
   *)
-let processUnderscoreApplication args =
+let processUnderscoreApplication (p : Parser.t) args =
   let exp_question = ref None in
   let hidden_var = "__x" in
   let check_arg ((lab, exp) as arg) =
@@ -537,7 +537,9 @@ let processUnderscoreApplication args =
           (Ppat_var (Location.mkloc hidden_var loc))
           ~loc:Location.none
       in
-      Ast_helper.Exp.mk (Pexp_fun (Nolabel, None, pattern, exp_apply)) ~loc
+      let funExpr = Ast_helper.Exp.fun_ ~loc Nolabel None pattern exp_apply in
+      if p.uncurried_config = Legacy then funExpr
+      else Ast_uncurried.uncurriedFun ~loc ~arity:1 funExpr
     | None -> exp_apply
   in
   (args, wrap)
@@ -3667,7 +3669,7 @@ and parseCallExpr p funExpr =
     List.fold_left
       (fun callBody group ->
         let dotted, args = group in
-        let args, wrap = processUnderscoreApplication args in
+        let args, wrap = processUnderscoreApplication p args in
         let exp =
           let uncurried =
             p.uncurried_config |> Res_uncurried.fromDotted ~dotted
