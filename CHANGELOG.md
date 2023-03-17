@@ -14,8 +14,8 @@
 
 #### :rocket: New Feature
 
-- Introduce experimental uncurried by default mode. Can be turned on mid-file by adding standalone annotation `@@uncurried`. For experimentation only. https://github.com/rescript-lang/rescript-compiler/pull/5796
-- Adding `@@toUncurried` to the file and reformat will convert to uncurried syntax https://github.com/rescript-lang/rescript-compiler/pull/5800
+- Introduce experimental uncurried by default mode. Can be turned on mid-file by adding standalone annotation `@@uncurried.swap`. For experimentation only. https://github.com/rescript-lang/rescript-compiler/pull/5796
+- ~Adding `@@toUncurried` to the file and reformat will convert to uncurried syntax https://github.com/rescript-lang/rescript-compiler/pull/5800~
 - Add support for unary uncurried pipe in uncurried mode https://github.com/rescript-lang/rescript-compiler/pull/5804
 - Add support for partial application of uncurried functions: with uncurried application one can provide a
 subset of the arguments, and return a curried type with the remaining ones https://github.com/rescript-lang/rescript-compiler/pull/5805
@@ -24,10 +24,10 @@ subset of the arguments, and return a curried type with the remaining ones https
 - Add support for default arguments in uncurried functions https://github.com/rescript-lang/rescript-compiler/pull/5835
 - Inline uncurried application when it is safe https://github.com/rescript-lang/rescript-compiler/pull/5847
 - Support optional named arguments without a final unit in uncurried functions https://github.com/rescript-lang/rescript-compiler/pull/5907
-- Add support for uncurried-always: a mode where everything is considered uncurried, whether with or without the `.`. This can be turned on with `@@uncurriedAlways` locally in a file. Added a project config `"uncurried"`, which propagates to dependencies, and takes the values: `"legacy"` which changes nothing, or `"default"` for uncurried by default, or `"always"` for uncurried-always.
+- Add support for uncurried mode: a mode where everything is considered uncurried, whether with or without the `.`. This can be turned on with `@@uncurried` locally in a file. For project-level configuration in `bsconfig.json`, there's a boolean config `"uncurried"`, which propagates to dependencies, to turn on uncurried mode.
 Since there's no syntax for partial application in this new mode, introduce `@res.partial foo(x)` to express partial application. This is temporary and will later have some surface syntax.
 Use best effort to determine the config when formatting a file.
-https://github.com/rescript-lang/rescript-compiler/pull/5968
+https://github.com/rescript-lang/rescript-compiler/pull/5968 https://github.com/rescript-lang/rescript-compiler/pull/6080
 
 #### :boom: Breaking Change
 

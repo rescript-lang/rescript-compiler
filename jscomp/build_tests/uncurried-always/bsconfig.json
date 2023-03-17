@@ -5,5 +5,5 @@
     "dir" : "src",
     "subdirs" : true
   },
-  "uncurried": "always"
+  "uncurried": true
 }

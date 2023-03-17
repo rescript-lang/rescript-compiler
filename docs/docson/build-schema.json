@@ -359,10 +359,6 @@
       "additionalProperties": false,
       "required": ["version"]
     },
-    "uncurried-specs": {
-      "type": "string",
-      "enum": ["legacy", "default", "always"]
-    },
     "bsc-flags": {
       "oneOf": [
         {
@@ -445,7 +441,7 @@
       "description": "Configuration for the JSX transformation."
     },
     "uncurried": {
-      "$ref": "#/definitions/uncurried-specs",
+      "type": "boolean",
       "description": "Configuration for the uncurried mode."
     },
     "reason": {

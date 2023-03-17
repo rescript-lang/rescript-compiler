@@ -95,14 +95,13 @@ let extract_gentype_config (map : json_map) : Bsb_config_types.gentype_config =
   | Some config ->
       Bsb_exception.config_error config "gentypeconfig expect an object"
 
-let extract_uncurried (map : json_map) : Res_uncurried.config =
+let extract_uncurried (map : json_map) : bool =
   match map.?(Bsb_build_schemas.uncurried) with
-  | None -> Legacy
-  | Some (Str { str = "legacy" }) -> Legacy
-  | Some (Str { str = "default" }) -> Default
-  | Some (Str { str = "always" }) -> Always
+  | None -> false
+  | Some (True _) -> true
+  | Some (False _) -> false
   | Some config ->
-      Bsb_exception.config_error config "uncurried expects one of: \"legacy\", \"default\", \"always\"."
+      Bsb_exception.config_error config "uncurried expects one of: true, false."
 
 let extract_string (map : json_map) (field : string) cb =
   match map.?(field) with

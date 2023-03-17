@@ -1,8 +1,8 @@
 let defaultPrintWidth = 100
 
-(* Determine if the file is in uncurried-always mode by looking for
-   the fist ancestor .bsconfig and see if it contains "uncurry": "default" *)
-let getUncurriedAlwaysFromBsconfig ~filename =
+(* Determine if the file is in uncurried mode by looking for
+   the fist ancestor .bsconfig and see if it contains "uncurried": "true" *)
+let getUncurriedFromBsconfig ~filename =
   let rec findBsconfig ~dir =
     let bsconfig = Filename.concat dir "bsconfig.json" in
     if Sys.file_exists bsconfig then Some (Res_io.readFile ~filename:bsconfig)
@@ -38,18 +38,18 @@ let getUncurriedAlwaysFromBsconfig ~filename =
   | None -> ()
   | Some bsconfig ->
     let lines = bsconfig |> String.split_on_char '\n' in
-    let uncurriedAlways =
+    let uncurried =
       lines
       |> List.exists (fun line ->
              let words = line |> String.split_on_char '\"' in
              words |> List.exists (fun word -> word = "uncurried")
-             && words |> List.exists (fun word -> word = "always"))
+             && words |> List.exists (fun word -> word = "true"))
     in
-    if uncurriedAlways then Res_uncurried.init := Always
+    if uncurried then Config.uncurried := Uncurried
 
 (* print res files to res syntax *)
 let printRes ~ignoreParseErrors ~isInterface ~filename =
-  getUncurriedAlwaysFromBsconfig ~filename;
+  getUncurriedFromBsconfig ~filename;
   if isInterface then (
     let parseResult =
       Res_driver.parsingEngine.parseInterface ~forPrinter:true ~filename

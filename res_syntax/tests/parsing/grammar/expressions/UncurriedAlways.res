@@ -1,4 +1,4 @@
-@@uncurriedAlways
+@@uncurried
 
 let foo = (x, y) => x + y
 

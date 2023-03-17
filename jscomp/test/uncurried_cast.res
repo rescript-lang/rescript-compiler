@@ -23,7 +23,7 @@ module StandardNotation = {
   let anInt = still2Args(~z=3)(. 5)
 }
 
-@@uncurried
+@@uncurried.swap
 
 open Uncurried
 

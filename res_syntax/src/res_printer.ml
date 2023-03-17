@@ -575,9 +575,9 @@ let printOptionalLabel attrs =
 module State = struct
   let customLayoutThreshold = 2
 
-  type t = {customLayout: int; mutable uncurried_config: Res_uncurried.config}
+  type t = {customLayout: int; mutable uncurried_config: Config.uncurried}
 
-  let init () = {customLayout = 0; uncurried_config = !Res_uncurried.init}
+  let init () = {customLayout = 0; uncurried_config = !Config.uncurried}
 
   let nextCustomLayout t = {t with customLayout = t.customLayout + 1}
 
@@ -5276,15 +5276,12 @@ and printAttribute ?(standalone = false) ~state
   | _ ->
     let id =
       match id.txt with
+      | "uncurried.swap" ->
+        state.uncurried_config <- Config.Swap;
+        id
       | "uncurried" ->
-        state.uncurried_config <- Res_uncurried.Default;
+        state.uncurried_config <- Config.Uncurried;
         id
-      | "uncurriedAlways" ->
-        state.uncurried_config <- Res_uncurried.Always;
-        id
-      | "toUncurried" ->
-        state.uncurried_config <- Res_uncurried.Default;
-        {id with txt = "uncurried"}
       | _ -> id
     in
     ( Doc.group

@@ -44,7 +44,7 @@ let process_directives str =
   | Pstr_attribute ({ txt = "directive" },
       PStr [ { pstr_desc = Pstr_eval ({ pexp_desc = Pexp_constant (Pconst_string (d, _)) }, _) } ]) ->
       Js_config.directives := !Js_config.directives @ [d]
-  | Pstr_attribute ({txt = "uncurriedAlways"}, _) -> Config.use_automatic_curried_application := true
+  | Pstr_attribute ({txt = "uncurried"}, _) -> Config.uncurried := Uncurried
   | _ -> ())
   
 let rec iter_on_bs_config_str (x : Parsetree.structure) =

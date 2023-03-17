@@ -10,7 +10,7 @@ module StandardNotation = {
   let unary = (. x) => x + 1
 }
 
-@@uncurried
+@@uncurried.swap
 
 open StandardNotation
 

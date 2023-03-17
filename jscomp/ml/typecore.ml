@@ -2980,7 +2980,7 @@ and type_argument ?recarg env sarg ty_expected' ty_expected =
       texp
 and is_automatic_curried_application env funct =
   (* When a curried function is used with uncurried application, treat it as a curried application *)
-  !Config.use_automatic_curried_application &&
+  !Config.uncurried = Uncurried &&
   match (expand_head env funct.exp_type).desc with
   | Tarrow _ -> true
   | _ -> false
