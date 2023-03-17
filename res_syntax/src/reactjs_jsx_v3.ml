@@ -597,6 +597,7 @@ let jsxMapper ~config =
       match List.filter React_jsx_common.hasAttr pval_attributes with
       | [] -> [item]
       | [_] ->
+        let pval_type = React_jsx_common.extractUncurried pval_type in
         let rec getPropTypes types ({ptyp_loc; ptyp_desc} as fullType) =
           match ptyp_desc with
           | Ptyp_arrow (name, type_, ({ptyp_desc = Ptyp_arrow _} as rest))
@@ -648,6 +649,7 @@ let jsxMapper ~config =
       let emptyLoc = Location.in_file fileName in
       let mapBinding binding =
         if React_jsx_common.hasAttrOnBinding binding then
+          let binding = React_jsx_common.removeArity binding in
           let bindingLoc = binding.pvb_loc in
           let bindingPatLoc = binding.pvb_pat.ppat_loc in
           let binding =
@@ -1031,6 +1033,7 @@ let jsxMapper ~config =
       match List.filter React_jsx_common.hasAttr pval_attributes with
       | [] -> [item]
       | [_] ->
+        let pval_type = React_jsx_common.extractUncurried pval_type in
         let rec getPropTypes types ({ptyp_loc; ptyp_desc} as fullType) =
           match ptyp_desc with
           | Ptyp_arrow (name, type_, ({ptyp_desc = Ptyp_arrow _} as rest))
