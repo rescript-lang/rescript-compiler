@@ -55,6 +55,7 @@ let callExpr expr =
        | Pexp_try _ | Pexp_while _ | Pexp_for _ | Pexp_ifthenelse _ );
     } ->
       Parenthesized
+    | _ when Ast_uncurried.exprIsUncurriedFun expr -> Parenthesized
     | _ when ParsetreeViewer.hasAwaitAttribute expr.pexp_attributes ->
       Parenthesized
     | _ -> Nothing)
