@@ -1,8 +1,3 @@
-let isSwap = function
-  | Config.Legacy -> false
-  | Swap -> true
-  | Uncurried -> true
-
 (* For parsing *)
 let fromDotted ~dotted = function
   | Config.Legacy -> dotted

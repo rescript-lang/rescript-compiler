@@ -386,7 +386,7 @@ let buildLongident words =
 let makeInfixOperator (p : Parser.t) token startPos endPos =
   let stringifiedToken =
     if token = Token.MinusGreater then
-      if p.uncurried_config |> Res_uncurried.isSwap then "|.u" else "|."
+      if p.uncurried_config = Legacy then "|." else "|.u"
     else if token = Token.PlusPlus then "^"
     else if token = Token.BangEqual then "<>"
     else if token = Token.BangEqualEqual then "!="
@@ -1558,8 +1558,7 @@ and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
     | TermParameter {dotted} :: _
       when p.uncurried_config |> Res_uncurried.fromDotted ~dotted && isFun ->
       true
-    | TermParameter _ :: rest
-      when (not (p.uncurried_config |> Res_uncurried.isSwap)) && isFun ->
+    | TermParameter _ :: rest when p.uncurried_config = Legacy && isFun ->
       rest
       |> List.exists (function
            | TermParameter {dotted} -> dotted
@@ -1594,11 +1593,7 @@ and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
           let uncurried =
             p.uncurried_config |> Res_uncurried.fromDotted ~dotted
           in
-          if
-            uncurried
-            && (termParamNum = 1
-               || not (p.uncurried_config |> Res_uncurried.isSwap))
-          then
+          if uncurried && (termParamNum = 1 || p.uncurried_config = Legacy) then
             (termParamNum - 1, Ast_uncurried.uncurriedFun ~loc ~arity funExpr, 1)
           else (termParamNum - 1, funExpr, arity + 1)
         | TypeParameter {dotted = _; attrs; locs = newtypes; pos = startPos} ->
@@ -3922,9 +3917,8 @@ and parsePolyTypeExpr p =
         let returnType = parseTypExpr ~alias:false p in
         let loc = mkLoc typ.Parsetree.ptyp_loc.loc_start p.prevEndPos in
         let tFun = Ast_helper.Typ.arrow ~loc Asttypes.Nolabel typ returnType in
-        if p.uncurried_config |> Res_uncurried.isSwap then
-          Ast_uncurried.uncurriedType ~loc ~arity:1 tFun
-        else tFun
+        if p.uncurried_config = Legacy then tFun
+        else Ast_uncurried.uncurriedType ~loc ~arity:1 tFun
       | _ -> Ast_helper.Typ.var ~loc:var.loc var.txt)
     | _ -> assert false)
   | _ -> parseTypExpr p
@@ -4252,7 +4246,7 @@ and parseEs6ArrowType ~attrs p =
     let endPos = p.prevEndPos in
     let returnTypeArity =
       match parameters with
-      | _ when p.uncurried_config |> Res_uncurried.isSwap -> 0
+      | _ when p.uncurried_config <> Legacy -> 0
       | _ ->
         if parameters |> List.exists (function {dotted; typ = _} -> dotted)
         then 0
@@ -4266,10 +4260,7 @@ and parseEs6ArrowType ~attrs p =
           let uncurried =
             p.uncurried_config |> Res_uncurried.fromDotted ~dotted
           in
-          if
-            uncurried
-            && (paramNum = 1 || not (p.uncurried_config |> Res_uncurried.isSwap))
-          then
+          if uncurried && (paramNum = 1 || p.uncurried_config = Legacy) then
             let loc = mkLoc startPos endPos in
             let tArg = Ast_helper.Typ.arrow ~loc ~attrs argLbl typ t in
             (paramNum - 1, Ast_uncurried.uncurriedType ~loc ~arity tArg, 1)
@@ -4334,9 +4325,8 @@ and parseArrowTypeRest ~es6Arrow ~startPos typ p =
     let returnType = parseTypExpr ~alias:false p in
     let loc = mkLoc startPos p.prevEndPos in
     let arrowTyp = Ast_helper.Typ.arrow ~loc Asttypes.Nolabel typ returnType in
-    if p.uncurried_config |> Res_uncurried.isSwap then
-      Ast_uncurried.uncurriedType ~loc ~arity:1 arrowTyp
-    else arrowTyp
+    if p.uncurried_config = Legacy then arrowTyp
+    else Ast_uncurried.uncurriedType ~loc ~arity:1 arrowTyp
   | _ -> typ
 
 and parseTypExprRegion p =
