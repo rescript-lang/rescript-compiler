@@ -1,0 +1,7 @@
+@@uncurried
+
+let add3 = (x, y, z) => x + y + z
+
+let triangle = add3(4, 5, add3(1, 2, 3))
+
+let () = ignore(3)

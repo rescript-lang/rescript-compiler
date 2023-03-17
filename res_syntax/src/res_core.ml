@@ -2204,9 +2204,16 @@ and parseBinaryExpr ?(context = OrdinaryExpr) ?a p prec =
       let b = parseBinaryExpr ~context p tokenPrec in
       let loc = mkLoc a.Parsetree.pexp_loc.loc_start b.pexp_loc.loc_end in
       let expr =
-        Ast_helper.Exp.apply ~loc
-          (makeInfixOperator p token startPos endPos)
-          [(Nolabel, a); (Nolabel, b)]
+        match (token, b.pexp_desc) with
+        | BarGreater, Pexp_apply (funExpr, args)
+          when p.uncurried_config = Uncurried ->
+          {b with pexp_desc = Pexp_apply (funExpr, args @ [(Nolabel, a)])}
+        | BarGreater, _ when p.uncurried_config = Uncurried ->
+          Ast_helper.Exp.apply ~loc b [(Nolabel, a)]
+        | _ ->
+          Ast_helper.Exp.apply ~loc
+            (makeInfixOperator p token startPos endPos)
+            [(Nolabel, a); (Nolabel, b)]
       in
       Parser.eatBreadcrumb p;
       loop expr)
