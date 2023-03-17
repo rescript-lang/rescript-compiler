@@ -57,6 +57,9 @@ let t4 = (. type a b) => (l: list<a>, x: a) => list{x, ...l}
 let t5 = (type a b) => (. l: list<a>, x: a) => list{x, ...l}
 let t6 = (. type a b) => (. l: list<a>, x: a) => list{x, ...l}
 
+let () = (x => ignore(x))(3)
+let () = ((. x) => ignore(x))(. 3)
+
 @@uncurried.swap
 
 let cApp = foo(. 3)
@@ -115,3 +118,6 @@ let t0 = (type a b, l: list<a>, x: a) => list{x, ...l}
 let t1 = (. type a b, l: list<a>, x: a) => list{x, ...l}
 let t2 = (type a b, . l: list<a>, x: a) => list{x, ...l}
 let t3 = (. type a b, . l: list<a>, x: a) => list{x, ...l}
+
+let () = (x => ignore(x))(3)
+let () = ((. x) => ignore(x))(. 3)
