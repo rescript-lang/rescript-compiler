@@ -1,7 +1,7 @@
 let defaultPrintWidth = 100
 
 (* Determine if the file is in uncurried mode by looking for
-   the fist ancestor .bsconfig and see if it contains "uncurried": "true" *)
+   the fist ancestor .bsconfig and see if it contains "uncurried": true *)
 let getUncurriedFromBsconfig ~filename =
   let rec findBsconfig ~dir =
     let bsconfig = Filename.concat dir "bsconfig.json" in
@@ -41,9 +41,19 @@ let getUncurriedFromBsconfig ~filename =
     let uncurried =
       lines
       |> List.exists (fun line ->
-             let words = line |> String.split_on_char '\"' in
-             words |> List.exists (fun word -> word = "uncurried")
-             && words |> List.exists (fun word -> word = "true"))
+             let uncurried = ref false in
+             let true_ = ref false in
+             let words = line |> String.split_on_char ' ' in
+             words
+             |> List.iter (fun word ->
+                    match word with
+                    | "\"uncurried\"" | "\"uncurried\":" -> uncurried := true
+                    | "\"uncurried\":true" | "\"uncurried\":true," ->
+                      uncurried := true;
+                      true_ := true
+                    | "true" | ":true" | "true," | ":true," -> true_ := true
+                    | _ -> ());
+             !uncurried && !true_)
     in
     if uncurried then Config.uncurried := Uncurried
 
