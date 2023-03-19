@@ -83,14 +83,15 @@ var v1 = /* A0 */{
 };
 
 function get_x0(x) {
-  if (x) {
+  if (/* tag */typeof x === "number") {
+    return ;
+  } else {
     return x.x0;
   }
-  
 }
 
 function f1(x) {
-  if (!x) {
+  if (/* tag */typeof x === "number") {
     return /* A1 */0;
   }
   var newrecord = Caml_obj.obj_dup(x);

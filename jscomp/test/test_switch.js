@@ -3,7 +3,7 @@
 var Curry = require("../../lib/js/curry.js");
 
 function f(param) {
-  if (typeof param === "number") {
+  if (/* tag */typeof param === "number") {
     if (param === /* G */0) {
       return 4;
     } else {

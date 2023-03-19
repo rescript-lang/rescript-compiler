@@ -77,6 +77,7 @@ These are only breaking changes for unformatted code.
 - New internal representation for uncurried functions using built-in type `function$<fun_type, arity>` this avoids having to declare all the possible arities ahead of time https://github.com/rescript-lang/rescript-compiler/pull/5870
 - PPX V3: allow uncurried `make` function and treat it like a curried one https://github.com/rescript-lang/rescript-compiler/pull/6081
 - Add support for `|>` in uncurried mode by desugaring it https://github.com/rescript-lang/rescript-compiler/pull/6083
+- Change the compilation of pattern matching for variants so it does not depends on variats being integers https://github.com/rescript-lang/rescript-compiler/pull/6085
 
 # 10.1.4
 

@@ -6,7 +6,7 @@ var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function foo(n) {
-  if (typeof n === "number") {
+  if (/* tag */typeof n === "number") {
     if (n === /* A1 */0) {
       return 1;
     } else {
@@ -26,7 +26,7 @@ function foo(n) {
 }
 
 function fooA1(param) {
-  if (param === 0) {
+  if (/* tag */typeof param === "number" && param === /* A1 */0) {
     return 1;
   } else {
     return 42;
@@ -34,7 +34,7 @@ function fooA1(param) {
 }
 
 function fooC(param) {
-  if (typeof param === "number" || param.TAG !== /* C */1) {
+  if (/* tag */typeof param === "number" || param.TAG !== /* C */1) {
     return 42;
   } else {
     return param._0 + param._1 | 0;

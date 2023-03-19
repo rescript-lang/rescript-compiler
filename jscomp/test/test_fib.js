@@ -42,21 +42,21 @@ function cons(x, y) {
 }
 
 function length(x) {
-  if (x) {
-    return 1 + length(x._1) | 0;
-  } else {
+  if (/* tag */typeof x === "number") {
     return 0;
+  } else {
+    return 1 + length(x._1) | 0;
   }
 }
 
 function map(f, x) {
-  if (x) {
+  if (/* tag */typeof x === "number") {
+    return /* Nil */0;
+  } else {
     return /* Cons */{
             _0: Curry._1(f, x._0),
             _1: map(f, x._1)
           };
-  } else {
-    return /* Nil */0;
   }
 }
 

@@ -7,7 +7,7 @@ var $$String = require("../../lib/js/string.js");
 var Set_gen = require("./set_gen.js");
 
 function split(x, tree) {
-  if (!tree) {
+  if (/* tag */typeof tree === "number") {
     return [
             /* Empty */0,
             false,
@@ -42,7 +42,7 @@ function split(x, tree) {
 }
 
 function add(x, tree) {
-  if (!tree) {
+  if (/* tag */typeof tree === "number") {
     return /* Node */{
             _0: /* Empty */0,
             _1: x,
@@ -64,16 +64,16 @@ function add(x, tree) {
 }
 
 function union(s1, s2) {
-  if (!s1) {
+  if (/* tag */typeof s1 === "number") {
     return s2;
   }
-  if (!s2) {
+  var h1 = s1._3;
+  var v1 = s1._1;
+  if (/* tag */typeof s2 === "number") {
     return s1;
   }
   var h2 = s2._3;
   var v2 = s2._1;
-  var h1 = s1._3;
-  var v1 = s1._1;
   if (h1 >= h2) {
     if (h2 === 1) {
       return add(v2, s1);
@@ -89,10 +89,10 @@ function union(s1, s2) {
 }
 
 function inter(s1, s2) {
-  if (!s1) {
+  if (/* tag */typeof s1 === "number") {
     return /* Empty */0;
   }
-  if (!s2) {
+  if (/* tag */typeof s2 === "number") {
     return /* Empty */0;
   }
   var r1 = s1._2;
@@ -108,10 +108,10 @@ function inter(s1, s2) {
 }
 
 function diff(s1, s2) {
-  if (!s1) {
+  if (/* tag */typeof s1 === "number") {
     return /* Empty */0;
   }
-  if (!s2) {
+  if (/* tag */typeof s2 === "number") {
     return s1;
   }
   var r1 = s1._2;
@@ -129,7 +129,7 @@ function diff(s1, s2) {
 function mem(x, _tree) {
   while(true) {
     var tree = _tree;
-    if (!tree) {
+    if (/* tag */typeof tree === "number") {
       return false;
     }
     var c = Caml.string_compare(x, tree._1);
@@ -142,7 +142,7 @@ function mem(x, _tree) {
 }
 
 function remove(x, tree) {
-  if (!tree) {
+  if (/* tag */typeof tree === "number") {
     return /* Empty */0;
   }
   var r = tree._2;
@@ -170,17 +170,17 @@ function subset(_s1, _s2) {
   while(true) {
     var s2 = _s2;
     var s1 = _s1;
-    if (!s1) {
+    if (/* tag */typeof s1 === "number") {
       return true;
     }
-    if (!s2) {
+    var r1 = s1._2;
+    var v1 = s1._1;
+    var l1 = s1._0;
+    if (/* tag */typeof s2 === "number") {
       return false;
     }
     var r2 = s2._2;
     var l2 = s2._0;
-    var r1 = s1._2;
-    var v1 = s1._1;
-    var l1 = s1._0;
     var c = Caml.string_compare(v1, s2._1);
     if (c === 0) {
       if (!subset(l1, l2)) {
@@ -218,19 +218,19 @@ function subset(_s1, _s2) {
 function find(x, _tree) {
   while(true) {
     var tree = _tree;
-    if (tree) {
-      var v = tree._1;
-      var c = Caml.string_compare(x, v);
-      if (c === 0) {
-        return v;
-      }
-      _tree = c < 0 ? tree._0 : tree._2;
-      continue ;
+    if (/* tag */typeof tree === "number") {
+      throw {
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
+          };
     }
-    throw {
-          RE_EXN_ID: "Not_found",
-          Error: new Error()
-        };
+    var v = tree._1;
+    var c = Caml.string_compare(x, v);
+    if (c === 0) {
+      return v;
+    }
+    _tree = c < 0 ? tree._0 : tree._2;
+    continue ;
   };
 }
 

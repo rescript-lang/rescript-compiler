@@ -2,7 +2,7 @@
 
 
 function f9(param) {
-  if (typeof param === "number") {
+  if (/* tag */typeof param === "number") {
     switch (param) {
       case /* T60 */0 :
       case /* T61 */1 :

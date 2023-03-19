@@ -9,7 +9,7 @@ function cons_enum(_s, _e) {
   while(true) {
     var e = _e;
     var s = _s;
-    if (!s) {
+    if (/* tag */typeof s === "number") {
       return e;
     }
     _e = /* More */{
@@ -23,54 +23,54 @@ function cons_enum(_s, _e) {
 }
 
 function height(param) {
-  if (param) {
-    return param._3;
-  } else {
+  if (/* tag */typeof param === "number") {
     return 0;
+  } else {
+    return param._3;
   }
 }
 
 function min_elt(_param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var l = param._0;
-      if (!l) {
-        return param._1;
-      }
-      _param = l;
-      continue ;
+    if (/* tag */typeof param === "number") {
+      throw {
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
+          };
     }
-    throw {
-          RE_EXN_ID: "Not_found",
-          Error: new Error()
-        };
+    var l = param._0;
+    if (/* tag */typeof l === "number") {
+      return param._1;
+    }
+    _param = l;
+    continue ;
   };
 }
 
 function max_elt(_param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var r = param._2;
-      if (!r) {
-        return param._1;
-      }
-      _param = r;
-      continue ;
+    if (/* tag */typeof param === "number") {
+      throw {
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
+          };
     }
-    throw {
-          RE_EXN_ID: "Not_found",
-          Error: new Error()
-        };
+    var r = param._2;
+    if (/* tag */typeof r === "number") {
+      return param._1;
+    }
+    _param = r;
+    continue ;
   };
 }
 
 function is_empty(param) {
-  if (param) {
-    return false;
-  } else {
+  if (/* tag */typeof param === "number") {
     return true;
+  } else {
+    return false;
   }
 }
 
@@ -78,7 +78,7 @@ function cardinal_aux(_acc, _param) {
   while(true) {
     var param = _param;
     var acc = _acc;
-    if (!param) {
+    if (/* tag */typeof param === "number") {
       return acc;
     }
     _param = param._0;
@@ -95,7 +95,7 @@ function elements_aux(_accu, _param) {
   while(true) {
     var param = _param;
     var accu = _accu;
-    if (!param) {
+    if (/* tag */typeof param === "number") {
       return accu;
     }
     _param = param._0;
@@ -114,7 +114,7 @@ function elements(s) {
 function iter(f, _param) {
   while(true) {
     var param = _param;
-    if (!param) {
+    if (/* tag */typeof param === "number") {
       return ;
     }
     iter(f, param._0);
@@ -128,7 +128,7 @@ function fold(f, _s, _accu) {
   while(true) {
     var accu = _accu;
     var s = _s;
-    if (!s) {
+    if (/* tag */typeof s === "number") {
       return accu;
     }
     _accu = Curry._2(f, s._1, fold(f, s._0, accu));
@@ -140,7 +140,7 @@ function fold(f, _s, _accu) {
 function for_all(p, _param) {
   while(true) {
     var param = _param;
-    if (!param) {
+    if (/* tag */typeof param === "number") {
       return true;
     }
     if (!Curry._1(p, param._1)) {
@@ -157,7 +157,7 @@ function for_all(p, _param) {
 function exists(p, _param) {
   while(true) {
     var param = _param;
-    if (!param) {
+    if (/* tag */typeof param === "number") {
       return false;
     }
     if (Curry._1(p, param._1)) {
@@ -198,7 +198,7 @@ var Height_invariant_broken = /* @__PURE__ */Caml_exceptions.create("Set_gen.Hei
 var Height_diff_borken = /* @__PURE__ */Caml_exceptions.create("Set_gen.Height_diff_borken");
 
 function check_height_and_diff(param) {
-  if (!param) {
+  if (/* tag */typeof param === "number") {
     return 0;
   }
   var h = param._3;
@@ -225,8 +225,10 @@ function check(tree) {
 }
 
 function create(l, v, r) {
-  var hl = l ? l._3 : 0;
-  var hr = r ? r._3 : 0;
+  var hl;
+  hl = /* tag */typeof l === "number" ? 0 : l._3;
+  var hr;
+  hr = /* tag */typeof r === "number" ? 0 : r._3;
   return /* Node */{
           _0: l,
           _1: v,
@@ -236,35 +238,37 @@ function create(l, v, r) {
 }
 
 function internal_bal(l, v, r) {
-  var hl = l ? l._3 : 0;
-  var hr = r ? r._3 : 0;
+  var hl;
+  hl = /* tag */typeof l === "number" ? 0 : l._3;
+  var hr;
+  hr = /* tag */typeof r === "number" ? 0 : r._3;
   if (hl > (hr + 2 | 0)) {
-    if (l) {
-      var lr = l._2;
-      var lv = l._1;
-      var ll = l._0;
-      if (height(ll) >= height(lr)) {
-        return create(ll, lv, create(lr, v, r));
-      }
-      if (lr) {
-        return create(create(ll, lv, lr._0), lr._1, create(lr._2, v, r));
-      }
+    if (/* tag */typeof l === "number") {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
               "set_gen.ml",
-              235,
-              19
+              225,
+              15
             ],
             Error: new Error()
           };
+    }
+    var lr = l._2;
+    var lv = l._1;
+    var ll = l._0;
+    if (height(ll) >= height(lr)) {
+      return create(ll, lv, create(lr, v, r));
+    }
+    if (/* tag */typeof lr !== "number") {
+      return create(create(ll, lv, lr._0), lr._1, create(lr._2, v, r));
     }
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
             "set_gen.ml",
-            225,
-            15
+            235,
+            19
           ],
           Error: new Error()
         };
@@ -277,51 +281,51 @@ function internal_bal(l, v, r) {
             _3: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
-  if (r) {
-    var rr = r._2;
-    var rv = r._1;
-    var rl = r._0;
-    if (height(rr) >= height(rl)) {
-      return create(create(l, v, rl), rv, rr);
-    }
-    if (rl) {
-      return create(create(l, v, rl._0), rl._1, create(rl._2, rv, rr));
-    }
+  if (/* tag */typeof r === "number") {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
             "set_gen.ml",
-            251,
-            19
+            245,
+            15
           ],
           Error: new Error()
         };
+  }
+  var rr = r._2;
+  var rv = r._1;
+  var rl = r._0;
+  if (height(rr) >= height(rl)) {
+    return create(create(l, v, rl), rv, rr);
+  }
+  if (/* tag */typeof rl !== "number") {
+    return create(create(l, v, rl._0), rl._1, create(rl._2, rv, rr));
   }
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
           "set_gen.ml",
-          245,
-          15
+          251,
+          19
         ],
         Error: new Error()
       };
 }
 
 function remove_min_elt(param) {
-  if (param) {
-    var l = param._0;
-    if (l) {
-      return internal_bal(remove_min_elt(l), param._1, param._2);
-    } else {
-      return param._2;
-    }
+  if (/* tag */typeof param === "number") {
+    throw {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Set.remove_min_elt",
+          Error: new Error()
+        };
   }
-  throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Set.remove_min_elt",
-        Error: new Error()
-      };
+  var l = param._0;
+  if (/* tag */typeof l === "number") {
+    return param._2;
+  } else {
+    return internal_bal(remove_min_elt(l), param._1, param._2);
+  }
 }
 
 function singleton(x) {
@@ -334,42 +338,40 @@ function singleton(x) {
 }
 
 function internal_merge(l, r) {
-  if (l) {
-    if (r) {
-      return internal_bal(l, min_elt(r), remove_min_elt(r));
-    } else {
-      return l;
-    }
-  } else {
+  if (/* tag */typeof l === "number") {
     return r;
+  } else if (/* tag */typeof r === "number") {
+    return l;
+  } else {
+    return internal_bal(l, min_elt(r), remove_min_elt(r));
   }
 }
 
 function add_min_element(v, param) {
-  if (param) {
-    return internal_bal(add_min_element(v, param._0), param._1, param._2);
-  } else {
+  if (/* tag */typeof param === "number") {
     return singleton(v);
+  } else {
+    return internal_bal(add_min_element(v, param._0), param._1, param._2);
   }
 }
 
 function add_max_element(v, param) {
-  if (param) {
-    return internal_bal(param._0, param._1, add_max_element(v, param._2));
-  } else {
+  if (/* tag */typeof param === "number") {
     return singleton(v);
+  } else {
+    return internal_bal(param._0, param._1, add_max_element(v, param._2));
   }
 }
 
 function internal_join(l, v, r) {
-  if (!l) {
+  if (/* tag */typeof l === "number") {
     return add_min_element(v, r);
   }
-  if (!r) {
+  var lh = l._3;
+  if (/* tag */typeof r === "number") {
     return add_max_element(v, l);
   }
   var rh = r._3;
-  var lh = l._3;
   if (lh > (rh + 2 | 0)) {
     return internal_bal(l._0, l._1, internal_join(l._2, v, r));
   } else if (rh > (lh + 2 | 0)) {
@@ -380,19 +382,17 @@ function internal_join(l, v, r) {
 }
 
 function internal_concat(t1, t2) {
-  if (t1) {
-    if (t2) {
-      return internal_join(t1, min_elt(t2), remove_min_elt(t2));
-    } else {
-      return t1;
-    }
-  } else {
+  if (/* tag */typeof t1 === "number") {
     return t2;
+  } else if (/* tag */typeof t2 === "number") {
+    return t1;
+  } else {
+    return internal_join(t1, min_elt(t2), remove_min_elt(t2));
   }
 }
 
 function filter(p, param) {
-  if (!param) {
+  if (/* tag */typeof param === "number") {
     return /* Empty */0;
   }
   var v = param._1;
@@ -407,7 +407,7 @@ function filter(p, param) {
 }
 
 function partition(p, param) {
-  if (!param) {
+  if (/* tag */typeof param === "number") {
     return [
             /* Empty */0,
             /* Empty */0
@@ -596,7 +596,7 @@ function of_sorted_array(l) {
 
 function is_ordered(cmp, tree) {
   var is_ordered_min_max = function (tree) {
-    if (!tree) {
+    if (/* tag */typeof tree === "number") {
       return "Empty";
     }
     var r = tree._2;
@@ -675,14 +675,14 @@ function compare_aux(cmp, _e1, _e2) {
   while(true) {
     var e2 = _e2;
     var e1 = _e1;
-    if (!e1) {
-      if (e2) {
-        return -1;
-      } else {
+    if (/* tag */typeof e1 === "number") {
+      if (/* tag */typeof e2 === "number") {
         return 0;
+      } else {
+        return -1;
       }
     }
-    if (!e2) {
+    if (/* tag */typeof e2 === "number") {
       return 1;
     }
     var c = Curry._2(cmp, e1._0, e2._0);

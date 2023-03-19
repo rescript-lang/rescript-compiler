@@ -5,8 +5,10 @@ var a = /* Color */{
   _0: "#ffff"
 };
 
-var c = "white";
+var c;
+
+c = /* tag */typeof a === "number" ? "orange" : "white";
 
 exports.a = a;
 exports.c = c;
-/* No side effect */
+/* c Not a pure module */

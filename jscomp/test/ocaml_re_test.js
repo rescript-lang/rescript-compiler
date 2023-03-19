@@ -293,10 +293,10 @@ function compare(param, param$1) {
 }
 
 function height(param) {
-  if (param) {
-    return param.h;
-  } else {
+  if (/* tag */typeof param === "number") {
     return 0;
+  } else {
+    return param.h;
   }
 }
 
@@ -313,25 +313,27 @@ function create(l, x, d, r) {
 }
 
 function bal(l, x, d, r) {
-  var hl = l ? l.h : 0;
-  var hr = r ? r.h : 0;
+  var hl;
+  hl = /* tag */typeof l === "number" ? 0 : l.h;
+  var hr;
+  hr = /* tag */typeof r === "number" ? 0 : r.h;
   if (hl > (hr + 2 | 0)) {
-    if (l) {
-      var lr = l.r;
-      var ld = l.d;
-      var lv = l.v;
-      var ll = l.l;
-      if (height(ll) >= height(lr)) {
-        return create(ll, lv, ld, create(lr, x, d, r));
-      }
-      if (lr) {
-        return create(create(ll, lv, ld, lr.l), lr.v, lr.d, create(lr.r, x, d, r));
-      }
+    if (/* tag */typeof l === "number") {
       throw {
             RE_EXN_ID: "Invalid_argument",
             _1: "Map.bal",
             Error: new Error()
           };
+    }
+    var lr = l.r;
+    var ld = l.d;
+    var lv = l.v;
+    var ll = l.l;
+    if (height(ll) >= height(lr)) {
+      return create(ll, lv, ld, create(lr, x, d, r));
+    }
+    if (/* tag */typeof lr !== "number") {
+      return create(create(ll, lv, ld, lr.l), lr.v, lr.d, create(lr.r, x, d, r));
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
@@ -348,22 +350,22 @@ function bal(l, x, d, r) {
             h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
-  if (r) {
-    var rr = r.r;
-    var rd = r.d;
-    var rv = r.v;
-    var rl = r.l;
-    if (height(rr) >= height(rl)) {
-      return create(create(l, x, d, rl), rv, rd, rr);
-    }
-    if (rl) {
-      return create(create(l, x, d, rl.l), rl.v, rl.d, create(rl.r, rv, rd, rr));
-    }
+  if (/* tag */typeof r === "number") {
     throw {
           RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal",
           Error: new Error()
         };
+  }
+  var rr = r.r;
+  var rd = r.d;
+  var rv = r.v;
+  var rl = r.l;
+  if (height(rr) >= height(rl)) {
+    return create(create(l, x, d, rl), rv, rd, rr);
+  }
+  if (/* tag */typeof rl !== "number") {
+    return create(create(l, x, d, rl.l), rl.v, rl.d, create(rl.r, rv, rd, rr));
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
@@ -373,7 +375,7 @@ function bal(l, x, d, r) {
 }
 
 function add(x, data, m) {
-  if (!m) {
+  if (/* tag */typeof m === "number") {
     return /* Node */{
             l: /* Empty */0,
             v: x,
@@ -483,16 +485,18 @@ function from_char(param) {
 }
 
 function height$1(param) {
-  if (param) {
-    return param.h;
-  } else {
+  if (/* tag */typeof param === "number") {
     return 0;
+  } else {
+    return param.h;
   }
 }
 
 function create$1(l, v, r) {
-  var hl = l ? l.h : 0;
-  var hr = r ? r.h : 0;
+  var hl;
+  hl = /* tag */typeof l === "number" ? 0 : l.h;
+  var hr;
+  hr = /* tag */typeof r === "number" ? 0 : r.h;
   return /* Node */{
           l: l,
           v: v,
@@ -502,24 +506,26 @@ function create$1(l, v, r) {
 }
 
 function bal$1(l, v, r) {
-  var hl = l ? l.h : 0;
-  var hr = r ? r.h : 0;
+  var hl;
+  hl = /* tag */typeof l === "number" ? 0 : l.h;
+  var hr;
+  hr = /* tag */typeof r === "number" ? 0 : r.h;
   if (hl > (hr + 2 | 0)) {
-    if (l) {
-      var lr = l.r;
-      var lv = l.v;
-      var ll = l.l;
-      if (height$1(ll) >= height$1(lr)) {
-        return create$1(ll, lv, create$1(lr, v, r));
-      }
-      if (lr) {
-        return create$1(create$1(ll, lv, lr.l), lr.v, create$1(lr.r, v, r));
-      }
+    if (/* tag */typeof l === "number") {
       throw {
             RE_EXN_ID: "Invalid_argument",
             _1: "Set.bal",
             Error: new Error()
           };
+    }
+    var lr = l.r;
+    var lv = l.v;
+    var ll = l.l;
+    if (height$1(ll) >= height$1(lr)) {
+      return create$1(ll, lv, create$1(lr, v, r));
+    }
+    if (/* tag */typeof lr !== "number") {
+      return create$1(create$1(ll, lv, lr.l), lr.v, create$1(lr.r, v, r));
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
@@ -535,21 +541,21 @@ function bal$1(l, v, r) {
             h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
-  if (r) {
-    var rr = r.r;
-    var rv = r.v;
-    var rl = r.l;
-    if (height$1(rr) >= height$1(rl)) {
-      return create$1(create$1(l, v, rl), rv, rr);
-    }
-    if (rl) {
-      return create$1(create$1(l, v, rl.l), rl.v, create$1(rl.r, rv, rr));
-    }
+  if (/* tag */typeof r === "number") {
     throw {
           RE_EXN_ID: "Invalid_argument",
           _1: "Set.bal",
           Error: new Error()
         };
+  }
+  var rr = r.r;
+  var rv = r.v;
+  var rl = r.l;
+  if (height$1(rr) >= height$1(rl)) {
+    return create$1(create$1(l, v, rl), rv, rr);
+  }
+  if (/* tag */typeof rl !== "number") {
+    return create$1(create$1(l, v, rl.l), rl.v, create$1(rl.r, rv, rr));
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
@@ -559,7 +565,7 @@ function bal$1(l, v, r) {
 }
 
 function add$1(x, t) {
-  if (!t) {
+  if (/* tag */typeof t === "number") {
     return /* Node */{
             l: /* Empty */0,
             v: x,
@@ -704,7 +710,7 @@ function seq$1(ids, kind, x, y) {
   var match = x.def;
   var match$1 = y.def;
   var exit = 0;
-  if (typeof match === "number") {
+  if (/* tag */typeof match === "number") {
     return y;
   }
   if (match.TAG === /* Alt */1) {
@@ -716,7 +722,7 @@ function seq$1(ids, kind, x, y) {
     exit = 2;
   }
   if (exit === 2) {
-    if (typeof match$1 === "number") {
+    if (/* tag */typeof match$1 === "number") {
       if (kind === "First") {
         return x;
       }
@@ -736,7 +742,7 @@ function seq$1(ids, kind, x, y) {
 
 function is_eps(expr) {
   var match = expr.def;
-  if (typeof match === "number") {
+  if (/* tag */typeof match === "number") {
     return true;
   } else {
     return false;
@@ -762,7 +768,7 @@ function erase(ids, m, m$p) {
 
 function rename(ids, x) {
   var l = x.def;
-  if (typeof l === "number") {
+  if (/* tag */typeof l === "number") {
     return mk_expr(ids, x.def);
   }
   switch (l.TAG | 0) {
@@ -903,7 +909,8 @@ function tseq(kind, x, y, rem) {
   var match = x.hd;
   switch (match.TAG | 0) {
     case /* TExp */1 :
-        if (typeof match._1.def === "number" && !x.tl) {
+        var tmp = match._1.def;
+        if (/* tag */typeof tmp === "number" && !x.tl) {
           return {
                   hd: {
                     TAG: /* TExp */1,
@@ -1097,7 +1104,8 @@ function remove_duplicates(prev, _l, y) {
                 ];
       case /* TExp */1 :
           var x$2 = x._1;
-          if (typeof x$2.def === "number") {
+          var tmp = x$2.def;
+          if (/* tag */typeof tmp === "number") {
             var r = l.tl;
             if (List.memq(y.id, prev)) {
               _l = r;
@@ -1197,7 +1205,7 @@ function filter_marks(b, e, marks) {
 
 function delta_1(marks, c, next_cat, prev_cat, x, rem) {
   var s = x.def;
-  if (typeof s === "number") {
+  if (/* tag */typeof s === "number") {
     return {
             hd: {
               TAG: /* TMatch */2,
@@ -1490,7 +1498,8 @@ var unknown_state = {
 
 function mk_state(ncol, desc) {
   var match = status(desc);
-  var break_state = typeof match === "number" ? match === 0 : true;
+  var break_state;
+  break_state = /* tag */typeof match === "number" && match !== /* Failed */0 ? false : true;
   return {
           idx: break_state ? -3 : desc.idx,
           real_idx: desc.idx,
@@ -1715,18 +1724,18 @@ function trans_set(cache, cm, s) {
     var _param = cache.contents;
     while(true) {
       var param = _param;
-      if (param) {
-        var c = compare(v, param.v);
-        if (c === 0) {
-          return param.d;
-        }
-        _param = c < 0 ? param.l : param.r;
-        continue ;
+      if (/* tag */typeof param === "number") {
+        throw {
+              RE_EXN_ID: "Not_found",
+              Error: new Error()
+            };
       }
-      throw {
-            RE_EXN_ID: "Not_found",
-            Error: new Error()
-          };
+      var c = compare(v, param.v);
+      if (c === 0) {
+        return param.d;
+      }
+      _param = c < 0 ? param.l : param.r;
+      continue ;
     };
   }
   catch (raw_exn){
@@ -1745,7 +1754,7 @@ function trans_set(cache, cm, s) {
 function is_charset(_param) {
   while(true) {
     var param = _param;
-    if (typeof param === "number") {
+    if (/* tag */typeof param === "number") {
       return false;
     }
     switch (param.TAG | 0) {
@@ -1834,7 +1843,7 @@ function colorize(c, regexp) {
   var colorize$1 = function (_regexp) {
     while(true) {
       var regexp = _regexp;
-      if (typeof regexp === "number") {
+      if (/* tag */typeof regexp === "number") {
         switch (regexp) {
           case /* Beg_of_line */0 :
           case /* End_of_line */1 :
@@ -1919,29 +1928,65 @@ function equal$2(_x1, _x2) {
   while(true) {
     var x2 = _x2;
     var x1 = _x1;
-    if (typeof x1 === "number") {
+    if (/* tag */typeof x1 === "number") {
       switch (x1) {
         case /* Beg_of_line */0 :
-            return x2 === 0;
+            if (/* tag */typeof x2 === "number" && x2 === /* Beg_of_line */0) {
+              return true;
+            } else {
+              return false;
+            }
         case /* End_of_line */1 :
-            return x2 === 1;
+            if (/* tag */typeof x2 === "number" && x2 === /* End_of_line */1) {
+              return true;
+            } else {
+              return false;
+            }
         case /* Beg_of_word */2 :
-            return x2 === 2;
+            if (/* tag */typeof x2 === "number" && x2 === /* Beg_of_word */2) {
+              return true;
+            } else {
+              return false;
+            }
         case /* End_of_word */3 :
-            return x2 === 3;
+            if (/* tag */typeof x2 === "number" && x2 === /* End_of_word */3) {
+              return true;
+            } else {
+              return false;
+            }
         case /* Not_bound */4 :
-            return x2 === 4;
+            if (/* tag */typeof x2 === "number" && x2 === /* Not_bound */4) {
+              return true;
+            } else {
+              return false;
+            }
         case /* Beg_of_str */5 :
-            return x2 === 5;
+            if (/* tag */typeof x2 === "number" && x2 === /* Beg_of_str */5) {
+              return true;
+            } else {
+              return false;
+            }
         case /* End_of_str */6 :
-            return x2 === 6;
+            if (/* tag */typeof x2 === "number" && x2 === /* End_of_str */6) {
+              return true;
+            } else {
+              return false;
+            }
         case /* Last_end_of_line */7 :
-            return x2 === 7;
+            if (/* tag */typeof x2 === "number" && x2 === /* Last_end_of_line */7) {
+              return true;
+            } else {
+              return false;
+            }
         case /* Start */8 :
-            return x2 === 8;
+            if (/* tag */typeof x2 === "number" && x2 === /* Start */8) {
+              return true;
+            } else {
+              return false;
+            }
         case /* Stop */9 :
-            if (typeof x2 === "number") {
-              return x2 >= 9;
+            if (/* tag */typeof x2 === "number" && x2 === /* Stop */9) {
+              return true;
             } else {
               return false;
             }
@@ -1950,25 +1995,25 @@ function equal$2(_x1, _x2) {
     } else {
       switch (x1.TAG | 0) {
         case /* Set */0 :
-            if (typeof x2 === "number" || x2.TAG !== /* Set */0) {
+            if (/* tag */typeof x2 === "number" || x2.TAG !== /* Set */0) {
               return false;
             } else {
               return Caml_obj.equal(x1._0, x2._0);
             }
         case /* Sequence */1 :
-            if (typeof x2 === "number" || x2.TAG !== /* Sequence */1) {
+            if (/* tag */typeof x2 === "number" || x2.TAG !== /* Sequence */1) {
               return false;
             } else {
               return eq_list(x1._0, x2._0);
             }
         case /* Alternative */2 :
-            if (typeof x2 === "number" || x2.TAG !== /* Alternative */2) {
+            if (/* tag */typeof x2 === "number" || x2.TAG !== /* Alternative */2) {
               return false;
             } else {
               return eq_list(x1._0, x2._0);
             }
         case /* Repeat */3 :
-            if (typeof x2 === "number") {
+            if (/* tag */typeof x2 === "number") {
               return false;
             }
             if (x2.TAG !== /* Repeat */3) {
@@ -1984,7 +2029,7 @@ function equal$2(_x1, _x2) {
             _x1 = x1._0;
             continue ;
         case /* Sem */4 :
-            if (typeof x2 === "number") {
+            if (/* tag */typeof x2 === "number") {
               return false;
             }
             if (x2.TAG !== /* Sem */4) {
@@ -1997,7 +2042,7 @@ function equal$2(_x1, _x2) {
             _x1 = x1._1;
             continue ;
         case /* Sem_greedy */5 :
-            if (typeof x2 === "number") {
+            if (/* tag */typeof x2 === "number") {
               return false;
             }
             if (x2.TAG !== /* Sem_greedy */5) {
@@ -2012,7 +2057,7 @@ function equal$2(_x1, _x2) {
         case /* Group */6 :
             return false;
         case /* No_group */7 :
-            if (typeof x2 === "number") {
+            if (/* tag */typeof x2 === "number") {
               return false;
             }
             if (x2.TAG !== /* No_group */7) {
@@ -2022,7 +2067,7 @@ function equal$2(_x1, _x2) {
             _x1 = x1._0;
             continue ;
         case /* Nest */8 :
-            if (typeof x2 === "number") {
+            if (/* tag */typeof x2 === "number") {
               return false;
             }
             if (x2.TAG !== /* Nest */8) {
@@ -2032,7 +2077,7 @@ function equal$2(_x1, _x2) {
             _x1 = x1._0;
             continue ;
         case /* Case */9 :
-            if (typeof x2 === "number") {
+            if (/* tag */typeof x2 === "number") {
               return false;
             }
             if (x2.TAG !== /* Case */9) {
@@ -2042,7 +2087,7 @@ function equal$2(_x1, _x2) {
             _x1 = x1._0;
             continue ;
         case /* No_case */10 :
-            if (typeof x2 === "number") {
+            if (/* tag */typeof x2 === "number") {
               return false;
             }
             if (x2.TAG !== /* No_case */10) {
@@ -2052,19 +2097,19 @@ function equal$2(_x1, _x2) {
             _x1 = x1._0;
             continue ;
         case /* Intersection */11 :
-            if (typeof x2 === "number" || x2.TAG !== /* Intersection */11) {
+            if (/* tag */typeof x2 === "number" || x2.TAG !== /* Intersection */11) {
               return false;
             } else {
               return eq_list(x1._0, x2._0);
             }
         case /* Complement */12 :
-            if (typeof x2 === "number" || x2.TAG !== /* Complement */12) {
+            if (/* tag */typeof x2 === "number" || x2.TAG !== /* Complement */12) {
               return false;
             } else {
               return eq_list(x1._0, x2._0);
             }
         case /* Difference */13 :
-            if (typeof x2 === "number") {
+            if (/* tag */typeof x2 === "number") {
               return false;
             }
             if (x2.TAG !== /* Difference */13) {
@@ -2077,7 +2122,7 @@ function equal$2(_x1, _x2) {
             _x1 = x1._1;
             continue ;
         case /* Pmark */14 :
-            if (typeof x2 === "number") {
+            if (/* tag */typeof x2 === "number") {
               return false;
             }
             if (x2.TAG !== /* Pmark */14) {
@@ -2136,7 +2181,7 @@ function merge_sequences(_param) {
       return /* [] */0;
     }
     var l$p = param.hd;
-    if (typeof l$p !== "number") {
+    if (/* tag */typeof l$p !== "number") {
       switch (l$p.TAG | 0) {
         case /* Sequence */1 :
             var match = l$p._0;
@@ -2147,7 +2192,7 @@ function merge_sequences(_param) {
               var exit = 0;
               if (r$p) {
                 var match$1 = r$p.hd;
-                if (typeof match$1 === "number" || match$1.TAG !== /* Sequence */1) {
+                if (/* tag */typeof match$1 === "number" || match$1.TAG !== /* Sequence */1) {
                   exit = 2;
                 } else {
                   var match$2 = match$1._0;
@@ -2226,7 +2271,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
     var s = _s;
     var greedy = _greedy;
     var ign_group = _ign_group;
-    if (typeof s === "number") {
+    if (/* tag */typeof s === "number") {
       switch (s) {
         case /* Beg_of_line */0 :
             var c$1 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.newline);
@@ -2511,7 +2556,7 @@ function case_insens(s) {
 }
 
 function as_set(s) {
-  if (typeof s === "number") {
+  if (/* tag */typeof s === "number") {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
@@ -2540,7 +2585,7 @@ function handle_case(_ign_case, _s) {
   while(true) {
     var s = _s;
     var ign_case = _ign_case;
-    if (typeof s === "number") {
+    if (/* tag */typeof s === "number") {
       return s;
     }
     switch (s.TAG | 0) {
@@ -2686,7 +2731,7 @@ function handle_case(_ign_case, _s) {
 function anchored(_l) {
   while(true) {
     var l = _l;
-    if (typeof l === "number") {
+    if (/* tag */typeof l === "number") {
       switch (l) {
         case /* Beg_of_str */5 :
         case /* Start */8 :
@@ -3196,11 +3241,11 @@ function exec_internal(name, posOpt, lenOpt, groups, re, s) {
     }
     res = match[1];
   }
-  if (typeof res === "number") {
-    if (res !== 0) {
-      return /* Running */1;
-    } else {
+  if (/* tag */typeof res === "number") {
+    if (res === /* Failed */0) {
       return /* Failed */0;
+    } else {
+      return /* Running */1;
     }
   } else {
     return /* Match */{
@@ -4149,13 +4194,19 @@ function re(flagsOpt, pat) {
 function exec(rex, pos, s) {
   var len;
   var substr = exec_internal("Re.exec", pos, len, true, rex, s);
-  if (typeof substr === "number") {
+  if (/* tag */typeof substr !== "number") {
+    return substr._0;
+  }
+  if (substr === /* Failed */0) {
     throw {
           RE_EXN_ID: "Not_found",
           Error: new Error()
         };
   }
-  return substr._0;
+  throw {
+        RE_EXN_ID: "Not_found",
+        Error: new Error()
+      };
 }
 
 var s = "a".repeat(1048575) + "b";

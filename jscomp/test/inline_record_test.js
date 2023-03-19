@@ -181,13 +181,13 @@ if (v6.RE_EXN_ID === A4) {
 eq("File \"inline_record_test.ml\", line 87, characters 6-13", tmp$3, 11);
 
 function ff1(x) {
-  if (x) {
+  if (/* tag */typeof x === "number") {
+    return /* A1 */0;
+  } else {
     return /* A0 */{
             lbl: x.lbl + 1 | 0,
             more: x.more
           };
-  } else {
-    return /* A1 */0;
   }
 }
 

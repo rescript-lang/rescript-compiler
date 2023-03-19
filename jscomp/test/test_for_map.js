@@ -5,10 +5,10 @@ var Curry = require("../../lib/js/curry.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
 function height(param) {
-  if (param) {
-    return param.h;
-  } else {
+  if (/* tag */typeof param === "number") {
     return 0;
+  } else {
+    return param.h;
   }
 }
 
@@ -35,25 +35,27 @@ function singleton(x, d) {
 }
 
 function bal(l, x, d, r) {
-  var hl = l ? l.h : 0;
-  var hr = r ? r.h : 0;
+  var hl;
+  hl = /* tag */typeof l === "number" ? 0 : l.h;
+  var hr;
+  hr = /* tag */typeof r === "number" ? 0 : r.h;
   if (hl > (hr + 2 | 0)) {
-    if (l) {
-      var lr = l.r;
-      var ld = l.d;
-      var lv = l.v;
-      var ll = l.l;
-      if (height(ll) >= height(lr)) {
-        return create(ll, lv, ld, create(lr, x, d, r));
-      }
-      if (lr) {
-        return create(create(ll, lv, ld, lr.l), lr.v, lr.d, create(lr.r, x, d, r));
-      }
+    if (/* tag */typeof l === "number") {
       throw {
             RE_EXN_ID: "Invalid_argument",
             _1: "Map.bal",
             Error: new Error()
           };
+    }
+    var lr = l.r;
+    var ld = l.d;
+    var lv = l.v;
+    var ll = l.l;
+    if (height(ll) >= height(lr)) {
+      return create(ll, lv, ld, create(lr, x, d, r));
+    }
+    if (/* tag */typeof lr !== "number") {
+      return create(create(ll, lv, ld, lr.l), lr.v, lr.d, create(lr.r, x, d, r));
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
@@ -70,22 +72,22 @@ function bal(l, x, d, r) {
             h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
-  if (r) {
-    var rr = r.r;
-    var rd = r.d;
-    var rv = r.v;
-    var rl = r.l;
-    if (height(rr) >= height(rl)) {
-      return create(create(l, x, d, rl), rv, rd, rr);
-    }
-    if (rl) {
-      return create(create(l, x, d, rl.l), rl.v, rl.d, create(rl.r, rv, rd, rr));
-    }
+  if (/* tag */typeof r === "number") {
     throw {
           RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal",
           Error: new Error()
         };
+  }
+  var rr = r.r;
+  var rd = r.d;
+  var rv = r.v;
+  var rl = r.l;
+  if (height(rr) >= height(rl)) {
+    return create(create(l, x, d, rl), rv, rd, rr);
+  }
+  if (/* tag */typeof rl !== "number") {
+    return create(create(l, x, d, rl.l), rl.v, rl.d, create(rl.r, rv, rd, rr));
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
@@ -95,15 +97,15 @@ function bal(l, x, d, r) {
 }
 
 function is_empty(param) {
-  if (param) {
-    return false;
-  } else {
+  if (/* tag */typeof param === "number") {
     return true;
+  } else {
+    return false;
   }
 }
 
 function add(x, data, m) {
-  if (!m) {
+  if (/* tag */typeof m === "number") {
     return /* Node */{
             l: /* Empty */0,
             v: x,
@@ -149,65 +151,65 @@ function add(x, data, m) {
 function find(x, _param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var c = Caml.int_compare(x, param.v);
-      if (c === 0) {
-        return param.d;
-      }
-      _param = c < 0 ? param.l : param.r;
-      continue ;
+    if (/* tag */typeof param === "number") {
+      throw {
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
+          };
     }
-    throw {
-          RE_EXN_ID: "Not_found",
-          Error: new Error()
-        };
+    var c = Caml.int_compare(x, param.v);
+    if (c === 0) {
+      return param.d;
+    }
+    _param = c < 0 ? param.l : param.r;
+    continue ;
   };
 }
 
 function find_first(f, _param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var v = param.v;
-      if (Curry._1(f, v)) {
-        var _v0 = v;
-        var _d0 = param.d;
-        var _param$1 = param.l;
-        while(true) {
-          var param$1 = _param$1;
-          var d0 = _d0;
-          var v0 = _v0;
-          if (!param$1) {
-            return [
-                    v0,
-                    d0
-                  ];
-          }
-          var v$1 = param$1.v;
-          if (Curry._1(f, v$1)) {
-            _param$1 = param$1.l;
-            _d0 = param$1.d;
-            _v0 = v$1;
-            continue ;
-          }
-          _param$1 = param$1.r;
-          continue ;
-        };
-      }
-      _param = param.r;
-      continue ;
+    if (/* tag */typeof param === "number") {
+      throw {
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
+          };
     }
-    throw {
-          RE_EXN_ID: "Not_found",
-          Error: new Error()
-        };
+    var v = param.v;
+    if (Curry._1(f, v)) {
+      var _v0 = v;
+      var _d0 = param.d;
+      var _param$1 = param.l;
+      while(true) {
+        var param$1 = _param$1;
+        var d0 = _d0;
+        var v0 = _v0;
+        if (/* tag */typeof param$1 === "number") {
+          return [
+                  v0,
+                  d0
+                ];
+        }
+        var v$1 = param$1.v;
+        if (Curry._1(f, v$1)) {
+          _param$1 = param$1.l;
+          _d0 = param$1.d;
+          _v0 = v$1;
+          continue ;
+        }
+        _param$1 = param$1.r;
+        continue ;
+      };
+    }
+    _param = param.r;
+    continue ;
   };
 }
 
 function find_first_opt(f, _param) {
   while(true) {
     var param = _param;
-    if (!param) {
+    if (/* tag */typeof param === "number") {
       return ;
     }
     var v = param.v;
@@ -219,7 +221,7 @@ function find_first_opt(f, _param) {
         var param$1 = _param$1;
         var d0 = _d0;
         var v0 = _v0;
-        if (!param$1) {
+        if (/* tag */typeof param$1 === "number") {
           return [
                   v0,
                   d0
@@ -244,47 +246,47 @@ function find_first_opt(f, _param) {
 function find_last(f, _param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var v = param.v;
-      if (Curry._1(f, v)) {
-        var _v0 = v;
-        var _d0 = param.d;
-        var _param$1 = param.r;
-        while(true) {
-          var param$1 = _param$1;
-          var d0 = _d0;
-          var v0 = _v0;
-          if (!param$1) {
-            return [
-                    v0,
-                    d0
-                  ];
-          }
-          var v$1 = param$1.v;
-          if (Curry._1(f, v$1)) {
-            _param$1 = param$1.r;
-            _d0 = param$1.d;
-            _v0 = v$1;
-            continue ;
-          }
-          _param$1 = param$1.l;
-          continue ;
-        };
-      }
-      _param = param.l;
-      continue ;
+    if (/* tag */typeof param === "number") {
+      throw {
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
+          };
     }
-    throw {
-          RE_EXN_ID: "Not_found",
-          Error: new Error()
-        };
+    var v = param.v;
+    if (Curry._1(f, v)) {
+      var _v0 = v;
+      var _d0 = param.d;
+      var _param$1 = param.r;
+      while(true) {
+        var param$1 = _param$1;
+        var d0 = _d0;
+        var v0 = _v0;
+        if (/* tag */typeof param$1 === "number") {
+          return [
+                  v0,
+                  d0
+                ];
+        }
+        var v$1 = param$1.v;
+        if (Curry._1(f, v$1)) {
+          _param$1 = param$1.r;
+          _d0 = param$1.d;
+          _v0 = v$1;
+          continue ;
+        }
+        _param$1 = param$1.l;
+        continue ;
+      };
+    }
+    _param = param.l;
+    continue ;
   };
 }
 
 function find_last_opt(f, _param) {
   while(true) {
     var param = _param;
-    if (!param) {
+    if (/* tag */typeof param === "number") {
       return ;
     }
     var v = param.v;
@@ -296,7 +298,7 @@ function find_last_opt(f, _param) {
         var param$1 = _param$1;
         var d0 = _d0;
         var v0 = _v0;
-        if (!param$1) {
+        if (/* tag */typeof param$1 === "number") {
           return [
                   v0,
                   d0
@@ -321,7 +323,7 @@ function find_last_opt(f, _param) {
 function find_opt(x, _param) {
   while(true) {
     var param = _param;
-    if (!param) {
+    if (/* tag */typeof param === "number") {
       return ;
     }
     var c = Caml.int_compare(x, param.v);
@@ -336,7 +338,7 @@ function find_opt(x, _param) {
 function mem(x, _param) {
   while(true) {
     var param = _param;
-    if (!param) {
+    if (/* tag */typeof param === "number") {
       return false;
     }
     var c = Caml.int_compare(x, param.v);
@@ -351,32 +353,32 @@ function mem(x, _param) {
 function min_binding(_param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var l = param.l;
-      if (!l) {
-        return [
-                param.v,
-                param.d
-              ];
-      }
-      _param = l;
-      continue ;
+    if (/* tag */typeof param === "number") {
+      throw {
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
+          };
     }
-    throw {
-          RE_EXN_ID: "Not_found",
-          Error: new Error()
-        };
+    var l = param.l;
+    if (/* tag */typeof l === "number") {
+      return [
+              param.v,
+              param.d
+            ];
+    }
+    _param = l;
+    continue ;
   };
 }
 
 function min_binding_opt(_param) {
   while(true) {
     var param = _param;
-    if (!param) {
+    if (/* tag */typeof param === "number") {
       return ;
     }
     var l = param.l;
-    if (!l) {
+    if (/* tag */typeof l === "number") {
       return [
               param.v,
               param.d
@@ -390,32 +392,32 @@ function min_binding_opt(_param) {
 function max_binding(_param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var r = param.r;
-      if (!r) {
-        return [
-                param.v,
-                param.d
-              ];
-      }
-      _param = r;
-      continue ;
+    if (/* tag */typeof param === "number") {
+      throw {
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
+          };
     }
-    throw {
-          RE_EXN_ID: "Not_found",
-          Error: new Error()
-        };
+    var r = param.r;
+    if (/* tag */typeof r === "number") {
+      return [
+              param.v,
+              param.d
+            ];
+    }
+    _param = r;
+    continue ;
   };
 }
 
 function max_binding_opt(_param) {
   while(true) {
     var param = _param;
-    if (!param) {
+    if (/* tag */typeof param === "number") {
       return ;
     }
     var r = param.r;
-    if (!r) {
+    if (/* tag */typeof r === "number") {
       return [
               param.v,
               param.d
@@ -427,26 +429,26 @@ function max_binding_opt(_param) {
 }
 
 function remove_min_binding(param) {
-  if (param) {
-    var l = param.l;
-    if (l) {
-      return bal(remove_min_binding(l), param.v, param.d, param.r);
-    } else {
-      return param.r;
-    }
+  if (/* tag */typeof param === "number") {
+    throw {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Map.remove_min_elt",
+          Error: new Error()
+        };
   }
-  throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Map.remove_min_elt",
-        Error: new Error()
-      };
+  var l = param.l;
+  if (/* tag */typeof l === "number") {
+    return param.r;
+  } else {
+    return bal(remove_min_binding(l), param.v, param.d, param.r);
+  }
 }
 
 function merge(t1, t2) {
-  if (!t1) {
+  if (/* tag */typeof t1 === "number") {
     return t2;
   }
-  if (!t2) {
+  if (/* tag */typeof t2 === "number") {
     return t1;
   }
   var match = min_binding(t2);
@@ -454,7 +456,7 @@ function merge(t1, t2) {
 }
 
 function remove(x, m) {
-  if (!m) {
+  if (/* tag */typeof m === "number") {
     return /* Empty */0;
   }
   var r = m.r;
@@ -482,63 +484,63 @@ function remove(x, m) {
 }
 
 function update(x, f, m) {
-  if (m) {
-    var r = m.r;
-    var d = m.d;
-    var v = m.v;
-    var l = m.l;
-    var c = Caml.int_compare(x, v);
-    if (c === 0) {
-      var data = Curry._1(f, Caml_option.some(d));
-      if (data === undefined) {
-        return merge(l, r);
-      }
-      var data$1 = Caml_option.valFromOption(data);
-      if (d === data$1) {
-        return m;
-      } else {
-        return /* Node */{
-                l: l,
-                v: x,
-                d: data$1,
-                r: r,
-                h: m.h
-              };
-      }
-    }
-    if (c < 0) {
-      var ll = update(x, f, l);
-      if (l === ll) {
-        return m;
-      } else {
-        return bal(ll, v, d, r);
-      }
-    }
-    var rr = update(x, f, r);
-    if (r === rr) {
-      return m;
+  if (/* tag */typeof m === "number") {
+    var data = Curry._1(f, undefined);
+    if (data !== undefined) {
+      return /* Node */{
+              l: /* Empty */0,
+              v: x,
+              d: Caml_option.valFromOption(data),
+              r: /* Empty */0,
+              h: 1
+            };
     } else {
-      return bal(l, v, d, rr);
+      return /* Empty */0;
     }
   }
-  var data$2 = Curry._1(f, undefined);
-  if (data$2 !== undefined) {
-    return /* Node */{
-            l: /* Empty */0,
-            v: x,
-            d: Caml_option.valFromOption(data$2),
-            r: /* Empty */0,
-            h: 1
-          };
+  var r = m.r;
+  var d = m.d;
+  var v = m.v;
+  var l = m.l;
+  var c = Caml.int_compare(x, v);
+  if (c === 0) {
+    var data$1 = Curry._1(f, Caml_option.some(d));
+    if (data$1 === undefined) {
+      return merge(l, r);
+    }
+    var data$2 = Caml_option.valFromOption(data$1);
+    if (d === data$2) {
+      return m;
+    } else {
+      return /* Node */{
+              l: l,
+              v: x,
+              d: data$2,
+              r: r,
+              h: m.h
+            };
+    }
+  }
+  if (c < 0) {
+    var ll = update(x, f, l);
+    if (l === ll) {
+      return m;
+    } else {
+      return bal(ll, v, d, r);
+    }
+  }
+  var rr = update(x, f, r);
+  if (r === rr) {
+    return m;
   } else {
-    return /* Empty */0;
+    return bal(l, v, d, rr);
   }
 }
 
 function iter(f, _param) {
   while(true) {
     var param = _param;
-    if (!param) {
+    if (/* tag */typeof param === "number") {
       return ;
     }
     iter(f, param.l);
@@ -549,7 +551,7 @@ function iter(f, _param) {
 }
 
 function map(f, param) {
-  if (!param) {
+  if (/* tag */typeof param === "number") {
     return /* Empty */0;
   }
   var l$p = map(f, param.l);
@@ -565,7 +567,7 @@ function map(f, param) {
 }
 
 function mapi(f, param) {
-  if (!param) {
+  if (/* tag */typeof param === "number") {
     return /* Empty */0;
   }
   var v = param.v;
@@ -585,7 +587,7 @@ function fold(f, _m, _accu) {
   while(true) {
     var accu = _accu;
     var m = _m;
-    if (!m) {
+    if (/* tag */typeof m === "number") {
       return accu;
     }
     _accu = Curry._3(f, m.v, m.d, fold(f, m.l, accu));
@@ -597,7 +599,7 @@ function fold(f, _m, _accu) {
 function for_all(p, _param) {
   while(true) {
     var param = _param;
-    if (!param) {
+    if (/* tag */typeof param === "number") {
       return true;
     }
     if (!Curry._2(p, param.v, param.d)) {
@@ -614,7 +616,7 @@ function for_all(p, _param) {
 function exists(p, _param) {
   while(true) {
     var param = _param;
-    if (!param) {
+    if (/* tag */typeof param === "number") {
       return false;
     }
     if (Curry._2(p, param.v, param.d)) {
@@ -629,30 +631,30 @@ function exists(p, _param) {
 }
 
 function add_min_binding(k, x, param) {
-  if (param) {
-    return bal(add_min_binding(k, x, param.l), param.v, param.d, param.r);
-  } else {
+  if (/* tag */typeof param === "number") {
     return singleton(k, x);
+  } else {
+    return bal(add_min_binding(k, x, param.l), param.v, param.d, param.r);
   }
 }
 
 function add_max_binding(k, x, param) {
-  if (param) {
-    return bal(param.l, param.v, param.d, add_max_binding(k, x, param.r));
-  } else {
+  if (/* tag */typeof param === "number") {
     return singleton(k, x);
+  } else {
+    return bal(param.l, param.v, param.d, add_max_binding(k, x, param.r));
   }
 }
 
 function join(l, v, d, r) {
-  if (!l) {
+  if (/* tag */typeof l === "number") {
     return add_min_binding(v, d, r);
   }
-  if (!r) {
+  var lh = l.h;
+  if (/* tag */typeof r === "number") {
     return add_max_binding(v, d, l);
   }
   var rh = r.h;
-  var lh = l.h;
   if (lh > (rh + 2 | 0)) {
     return bal(l.l, l.v, l.d, join(l.r, v, d, r));
   } else if (rh > (lh + 2 | 0)) {
@@ -663,10 +665,10 @@ function join(l, v, d, r) {
 }
 
 function concat(t1, t2) {
-  if (!t1) {
+  if (/* tag */typeof t1 === "number") {
     return t2;
   }
-  if (!t2) {
+  if (/* tag */typeof t2 === "number") {
     return t1;
   }
   var match = min_binding(t2);
@@ -682,7 +684,7 @@ function concat_or_join(t1, v, d, t2) {
 }
 
 function split(x, param) {
-  if (!param) {
+  if (/* tag */typeof param === "number") {
     return [
             /* Empty */0,
             undefined,
@@ -718,43 +720,46 @@ function split(x, param) {
 }
 
 function merge$1(f, s1, s2) {
-  if (s1) {
+  if (/* tag */typeof s1 === "number") {
+    if (/* tag */typeof s2 === "number") {
+      return /* Empty */0;
+    }
+    
+  } else {
     var v1 = s1.v;
     if (s1.h >= height(s2)) {
       var match = split(v1, s2);
       return concat_or_join(merge$1(f, s1.l, match[0]), v1, Curry._3(f, v1, Caml_option.some(s1.d), match[1]), merge$1(f, s1.r, match[2]));
     }
     
-  } else if (!s2) {
-    return /* Empty */0;
   }
-  if (s2) {
-    var v2 = s2.v;
-    var match$1 = split(v2, s1);
-    return concat_or_join(merge$1(f, match$1[0], s2.l), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2.d)), merge$1(f, match$1[2], s2.r));
+  if (/* tag */typeof s2 === "number") {
+    throw {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "map.ml",
+            393,
+            10
+          ],
+          Error: new Error()
+        };
   }
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "map.ml",
-          393,
-          10
-        ],
-        Error: new Error()
-      };
+  var v2 = s2.v;
+  var match$1 = split(v2, s1);
+  return concat_or_join(merge$1(f, match$1[0], s2.l), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2.d)), merge$1(f, match$1[2], s2.r));
 }
 
 function union(f, s1, s2) {
-  if (!s1) {
+  if (/* tag */typeof s1 === "number") {
     return s2;
   }
-  if (!s2) {
+  var d1 = s1.d;
+  var v1 = s1.v;
+  if (/* tag */typeof s2 === "number") {
     return s1;
   }
   var d2 = s2.d;
   var v2 = s2.v;
-  var d1 = s1.d;
-  var v1 = s1.v;
   if (s1.h >= s2.h) {
     var match = split(v1, s2);
     var d2$1 = match[1];
@@ -778,7 +783,7 @@ function union(f, s1, s2) {
 }
 
 function filter(p, m) {
-  if (!m) {
+  if (/* tag */typeof m === "number") {
     return /* Empty */0;
   }
   var r = m.r;
@@ -800,7 +805,7 @@ function filter(p, m) {
 }
 
 function partition(p, param) {
-  if (!param) {
+  if (/* tag */typeof param === "number") {
     return [
             /* Empty */0,
             /* Empty */0
@@ -832,7 +837,7 @@ function cons_enum(_m, _e) {
   while(true) {
     var e = _e;
     var m = _m;
-    if (!m) {
+    if (/* tag */typeof m === "number") {
       return e;
     }
     _e = /* More */{
@@ -852,14 +857,14 @@ function compare(cmp, m1, m2) {
   while(true) {
     var e2 = _e2;
     var e1 = _e1;
-    if (!e1) {
-      if (e2) {
-        return -1;
-      } else {
+    if (/* tag */typeof e1 === "number") {
+      if (/* tag */typeof e2 === "number") {
         return 0;
+      } else {
+        return -1;
       }
     }
-    if (!e2) {
+    if (/* tag */typeof e2 === "number") {
       return 1;
     }
     var c = Caml.int_compare(e1._0, e2._0);
@@ -882,14 +887,14 @@ function equal(cmp, m1, m2) {
   while(true) {
     var e2 = _e2;
     var e1 = _e1;
-    if (!e1) {
-      if (e2) {
-        return false;
-      } else {
+    if (/* tag */typeof e1 === "number") {
+      if (/* tag */typeof e2 === "number") {
         return true;
+      } else {
+        return false;
       }
     }
-    if (!e2) {
+    if (/* tag */typeof e2 === "number") {
       return false;
     }
     if (e1._0 !== e2._0) {
@@ -905,10 +910,10 @@ function equal(cmp, m1, m2) {
 }
 
 function cardinal(param) {
-  if (param) {
-    return (cardinal(param.l) + 1 | 0) + cardinal(param.r) | 0;
-  } else {
+  if (/* tag */typeof param === "number") {
     return 0;
+  } else {
+    return (cardinal(param.l) + 1 | 0) + cardinal(param.r) | 0;
   }
 }
 
@@ -916,7 +921,7 @@ function bindings_aux(_accu, _param) {
   while(true) {
     var param = _param;
     var accu = _accu;
-    if (!param) {
+    if (/* tag */typeof param === "number") {
       return accu;
     }
     _param = param.l;

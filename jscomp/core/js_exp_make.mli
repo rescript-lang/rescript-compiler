@@ -199,6 +199,7 @@ val eq_null_undefined_boolean : ?comment:string -> t -> t -> t
 val neq_null_undefined_boolean : ?comment:string -> t -> t -> t
 
 val is_type_number : ?comment:string -> t -> t
+val is_tag : t -> t
 
 val is_type_string : ?comment:string -> t -> t
 
