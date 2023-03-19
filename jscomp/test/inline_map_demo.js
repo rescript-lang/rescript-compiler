@@ -5,10 +5,10 @@ var Caml = require("../../lib/js/caml.js");
 var List = require("../../lib/js/list.js");
 
 function height(x) {
-  if (x) {
-    return x._4;
-  } else {
+  if (/* tag */typeof x === "number") {
     return 0;
+  } else {
+    return x._4;
   }
 }
 
@@ -25,36 +25,38 @@ function create(l, x, d, r) {
 }
 
 function bal(l, x, d, r) {
-  var hl = l ? l._4 : 0;
-  var hr = r ? r._4 : 0;
+  var hl;
+  hl = /* tag */typeof l === "number" ? 0 : l._4;
+  var hr;
+  hr = /* tag */typeof r === "number" ? 0 : r._4;
   if (hl > (hr + 2 | 0)) {
-    if (l) {
-      var lr = l._3;
-      var ld = l._2;
-      var lv = l._1;
-      var ll = l._0;
-      if (height(ll) >= height(lr)) {
-        return create(ll, lv, ld, create(lr, x, d, r));
-      }
-      if (lr) {
-        return create(create(ll, lv, ld, lr._0), lr._1, lr._2, create(lr._3, x, d, r));
-      }
+    if (/* tag */typeof l === "number") {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
               "inline_map_demo.res",
-              47,
-              19
+              41,
+              15
             ],
             Error: new Error()
           };
+    }
+    var lr = l._3;
+    var ld = l._2;
+    var lv = l._1;
+    var ll = l._0;
+    if (height(ll) >= height(lr)) {
+      return create(ll, lv, ld, create(lr, x, d, r));
+    }
+    if (/* tag */typeof lr !== "number") {
+      return create(create(ll, lv, ld, lr._0), lr._1, lr._2, create(lr._3, x, d, r));
     }
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
             "inline_map_demo.res",
-            41,
-            15
+            47,
+            19
           ],
           Error: new Error()
         };
@@ -68,40 +70,40 @@ function bal(l, x, d, r) {
             _4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
-  if (r) {
-    var rr = r._3;
-    var rd = r._2;
-    var rv = r._1;
-    var rl = r._0;
-    if (height(rr) >= height(rl)) {
-      return create(create(l, x, d, rl), rv, rd, rr);
-    }
-    if (rl) {
-      return create(create(l, x, d, rl._0), rl._1, rl._2, create(rl._3, rv, rd, rr));
-    }
+  if (/* tag */typeof r === "number") {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
             "inline_map_demo.res",
-            61,
-            19
+            55,
+            15
           ],
           Error: new Error()
         };
+  }
+  var rr = r._3;
+  var rd = r._2;
+  var rv = r._1;
+  var rl = r._0;
+  if (height(rr) >= height(rl)) {
+    return create(create(l, x, d, rl), rv, rd, rr);
+  }
+  if (/* tag */typeof rl !== "number") {
+    return create(create(l, x, d, rl._0), rl._1, rl._2, create(rl._3, rv, rd, rr));
   }
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
           "inline_map_demo.res",
-          55,
-          15
+          61,
+          19
         ],
         Error: new Error()
       };
 }
 
 function add(x, data, tree) {
-  if (!tree) {
+  if (/* tag */typeof tree === "number") {
     return /* Node */{
             _0: /* Empty */0,
             _1: x,
@@ -161,18 +163,18 @@ var m = List.fold_left((function (acc, param) {
 function find(px, _x) {
   while(true) {
     var x = _x;
-    if (x) {
-      var c = Caml.int_compare(px, x._1);
-      if (c === 0) {
-        return x._2;
-      }
-      _x = c < 0 ? x._0 : x._3;
-      continue ;
+    if (/* tag */typeof x === "number") {
+      throw {
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
+          };
     }
-    throw {
-          RE_EXN_ID: "Not_found",
-          Error: new Error()
-        };
+    var c = Caml.int_compare(px, x._1);
+    if (c === 0) {
+      return x._2;
+    }
+    _x = c < 0 ? x._0 : x._3;
+    continue ;
   };
 }
 

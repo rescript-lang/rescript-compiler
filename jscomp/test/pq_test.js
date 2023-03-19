@@ -3,7 +3,7 @@
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 function insert(queue, prio, elt) {
-  if (!queue) {
+  if (/* tag */typeof queue === "number") {
     return /* Node */{
             _0: prio,
             _1: elt,
@@ -35,41 +35,42 @@ function insert(queue, prio, elt) {
 var Queue_is_empty = /* @__PURE__ */Caml_exceptions.create("Pq_test.PrioQueue.Queue_is_empty");
 
 function remove_top(param) {
-  if (param) {
-    var left = param._2;
-    if (!param._3) {
-      return left;
-    }
-    if (!left) {
-      return param._3;
-    }
-    var right = param._3;
-    var rprio = right._0;
-    var lprio = left._0;
-    if (lprio <= rprio) {
-      return /* Node */{
-              _0: lprio,
-              _1: left._1,
-              _2: remove_top(left),
-              _3: right
-            };
-    } else {
-      return /* Node */{
-              _0: rprio,
-              _1: right._1,
-              _2: left,
-              _3: remove_top(right)
-            };
-    }
+  if (/* tag */typeof param === "number") {
+    throw {
+          RE_EXN_ID: Queue_is_empty,
+          Error: new Error()
+        };
   }
-  throw {
-        RE_EXN_ID: Queue_is_empty,
-        Error: new Error()
-      };
+  var left = param._2;
+  var tmp = param._3;
+  if (/* tag */typeof tmp === "number") {
+    return left;
+  }
+  if (/* tag */typeof left === "number") {
+    return param._3;
+  }
+  var right = param._3;
+  var rprio = right._0;
+  var lprio = left._0;
+  if (lprio <= rprio) {
+    return /* Node */{
+            _0: lprio,
+            _1: left._1,
+            _2: remove_top(left),
+            _3: right
+          };
+  } else {
+    return /* Node */{
+            _0: rprio,
+            _1: right._1,
+            _2: left,
+            _3: remove_top(right)
+          };
+  }
 }
 
 function extract(queue) {
-  if (queue) {
+  if (/* tag */typeof queue !== "number") {
     return [
             queue._0,
             queue._1,

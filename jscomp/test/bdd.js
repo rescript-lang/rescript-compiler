@@ -5,8 +5,12 @@ var Caml_array = require("../../lib/js/caml_array.js");
 function $$eval(_bdd, vars) {
   while(true) {
     var bdd = _bdd;
-    if (typeof bdd === "number") {
-      return bdd === 0;
+    if (/* tag */typeof bdd === "number") {
+      if (bdd === /* One */0) {
+        return true;
+      } else {
+        return false;
+      }
     }
     if (Caml_array.get(vars, bdd._1)) {
       _bdd = bdd._3;
@@ -18,11 +22,11 @@ function $$eval(_bdd, vars) {
 }
 
 function getId(bdd) {
-  if (typeof bdd === "number") {
-    if (bdd !== 0) {
-      return 0;
-    } else {
+  if (/* tag */typeof bdd === "number") {
+    if (bdd === /* One */0) {
       return 1;
+    } else {
+      return 0;
     }
   } else {
     return bdd._2;
@@ -60,7 +64,18 @@ function resize(newSize) {
         return ;
       }
       var n = bucket.hd;
-      if (typeof n === "number") {
+      if (/* tag */typeof n === "number") {
+        if (n === /* One */0) {
+          throw {
+                RE_EXN_ID: "Assert_failure",
+                _1: [
+                  "bdd.ml",
+                  54,
+                  27
+                ],
+                Error: new Error()
+              };
+        }
         throw {
               RE_EXN_ID: "Assert_failure",
               _1: [
@@ -70,14 +85,15 @@ function resize(newSize) {
               ],
               Error: new Error()
             };
+      } else {
+        var ind = hashVal(getId(n._0), getId(n._3), n._1) & newSz_1;
+        Caml_array.set(newArr, ind, {
+              hd: n,
+              tl: Caml_array.get(newArr, ind)
+            });
+        _bucket = bucket.tl;
+        continue ;
       }
-      var ind = hashVal(getId(n._0), getId(n._3), n._1) & newSz_1;
-      Caml_array.set(newArr, ind, {
-            hd: n,
-            tl: Caml_array.get(newArr, ind)
-          });
-      _bucket = bucket.tl;
-      continue ;
     };
   };
   for(var n = 0 ,n_finish = sz_1.contents; n <= n_finish; ++n){
@@ -124,7 +140,18 @@ function mkNode(low, v, high) {
     var b = _b;
     if (b) {
       var n = b.hd;
-      if (typeof n === "number") {
+      if (/* tag */typeof n === "number") {
+        if (n === /* One */0) {
+          throw {
+                RE_EXN_ID: "Assert_failure",
+                _1: [
+                  "bdd.ml",
+                  99,
+                  31
+                ],
+                Error: new Error()
+              };
+        }
         throw {
               RE_EXN_ID: "Assert_failure",
               _1: [
@@ -134,22 +161,24 @@ function mkNode(low, v, high) {
               ],
               Error: new Error()
             };
+      } else {
+        if (v === n._1 && idl === getId(n._0) && idh === getId(n._3)) {
+          return n;
+        }
+        _b = b.tl;
+        continue ;
       }
-      if (v === n._1 && idl === getId(n._0) && idh === getId(n._3)) {
-        return n;
-      }
-      _b = b.tl;
-      continue ;
+    } else {
+      var n_2 = (nodeC.contents = nodeC.contents + 1 | 0, nodeC.contents);
+      var n$1 = /* Node */{
+        _0: low,
+        _1: v,
+        _2: n_2,
+        _3: high
+      };
+      insert(getId(low), getId(high), v, ind, bucket, n$1);
+      return n$1;
     }
-    var n_2 = (nodeC.contents = nodeC.contents + 1 | 0, nodeC.contents);
-    var n$1 = /* Node */{
-      _0: low,
-      _1: v,
-      _2: n_2,
-      _3: high
-    };
-    insert(getId(low), getId(high), v, ind, bucket, n$1);
-    return n$1;
   };
 }
 
@@ -188,11 +217,11 @@ function hash(x, y) {
 }
 
 function not(n) {
-  if (typeof n === "number") {
-    if (n !== 0) {
-      return /* One */0;
-    } else {
+  if (/* tag */typeof n === "number") {
+    if (n === /* One */0) {
       return /* Zero */1;
+    } else {
+      return /* One */0;
     }
   }
   var id = n._2;
@@ -207,22 +236,22 @@ function not(n) {
 }
 
 function and2(n1, n2) {
-  if (typeof n1 === "number") {
-    if (n1 !== 0) {
-      return /* Zero */1;
-    } else {
+  if (/* tag */typeof n1 === "number") {
+    if (n1 === /* One */0) {
       return n2;
+    } else {
+      return /* Zero */1;
     }
   }
   var r1 = n1._3;
   var i1 = n1._2;
   var v1 = n1._1;
   var l1 = n1._0;
-  if (typeof n2 === "number") {
-    if (n2 !== 0) {
-      return /* Zero */1;
-    } else {
+  if (/* tag */typeof n2 === "number") {
+    if (n2 === /* One */0) {
       return n1;
+    } else {
+      return /* Zero */1;
     }
   }
   var r2 = n2._3;
@@ -254,22 +283,22 @@ function and2(n1, n2) {
 }
 
 function xor(n1, n2) {
-  if (typeof n1 === "number") {
-    if (n1 !== 0) {
-      return n2;
-    } else {
+  if (/* tag */typeof n1 === "number") {
+    if (n1 === /* One */0) {
       return not(n2);
+    } else {
+      return n2;
     }
   }
   var r1 = n1._3;
   var i1 = n1._2;
   var v1 = n1._1;
   var l1 = n1._0;
-  if (typeof n2 === "number") {
-    if (n2 !== 0) {
-      return n1;
-    } else {
+  if (/* tag */typeof n2 === "number") {
+    if (n2 === /* One */0) {
       return not(n1);
+    } else {
+      return n1;
     }
   }
   var r2 = n2._3;

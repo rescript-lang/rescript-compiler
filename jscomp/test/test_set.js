@@ -5,15 +5,17 @@ var Curry = require("../../lib/js/curry.js");
 
 function Make(Ord) {
   var height = function (param) {
-    if (param) {
-      return param._3;
-    } else {
+    if (/* tag */typeof param === "number") {
       return 0;
+    } else {
+      return param._3;
     }
   };
   var create = function (l, v, r) {
-    var hl = l ? l._3 : 0;
-    var hr = r ? r._3 : 0;
+    var hl;
+    hl = /* tag */typeof l === "number" ? 0 : l._3;
+    var hr;
+    hr = /* tag */typeof r === "number" ? 0 : r._3;
     return /* Node */{
             _0: l,
             _1: v,
@@ -22,24 +24,26 @@ function Make(Ord) {
           };
   };
   var bal = function (l, v, r) {
-    var hl = l ? l._3 : 0;
-    var hr = r ? r._3 : 0;
+    var hl;
+    hl = /* tag */typeof l === "number" ? 0 : l._3;
+    var hr;
+    hr = /* tag */typeof r === "number" ? 0 : r._3;
     if (hl > (hr + 2 | 0)) {
-      if (l) {
-        var lr = l._2;
-        var lv = l._1;
-        var ll = l._0;
-        if (height(ll) >= height(lr)) {
-          return create(ll, lv, create(lr, v, r));
-        }
-        if (lr) {
-          return create(create(ll, lv, lr._0), lr._1, create(lr._2, v, r));
-        }
+      if (/* tag */typeof l === "number") {
         throw {
               RE_EXN_ID: "Invalid_argument",
               _1: "Set.bal",
               Error: new Error()
             };
+      }
+      var lr = l._2;
+      var lv = l._1;
+      var ll = l._0;
+      if (height(ll) >= height(lr)) {
+        return create(ll, lv, create(lr, v, r));
+      }
+      if (/* tag */typeof lr !== "number") {
+        return create(create(ll, lv, lr._0), lr._1, create(lr._2, v, r));
       }
       throw {
             RE_EXN_ID: "Invalid_argument",
@@ -55,21 +59,21 @@ function Make(Ord) {
               _3: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
             };
     }
-    if (r) {
-      var rr = r._2;
-      var rv = r._1;
-      var rl = r._0;
-      if (height(rr) >= height(rl)) {
-        return create(create(l, v, rl), rv, rr);
-      }
-      if (rl) {
-        return create(create(l, v, rl._0), rl._1, create(rl._2, rv, rr));
-      }
+    if (/* tag */typeof r === "number") {
       throw {
             RE_EXN_ID: "Invalid_argument",
             _1: "Set.bal",
             Error: new Error()
           };
+    }
+    var rr = r._2;
+    var rv = r._1;
+    var rl = r._0;
+    if (height(rr) >= height(rl)) {
+      return create(create(l, v, rl), rv, rr);
+    }
+    if (/* tag */typeof rl !== "number") {
+      return create(create(l, v, rl._0), rl._1, create(rl._2, rv, rr));
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
@@ -78,7 +82,7 @@ function Make(Ord) {
         };
   };
   var add = function (x, t) {
-    if (!t) {
+    if (/* tag */typeof t === "number") {
       return /* Node */{
               _0: /* Empty */0,
               _1: x,
@@ -107,28 +111,28 @@ function Make(Ord) {
           };
   };
   var add_min_element = function (v, param) {
-    if (param) {
-      return bal(add_min_element(v, param._0), param._1, param._2);
-    } else {
+    if (/* tag */typeof param === "number") {
       return singleton(v);
+    } else {
+      return bal(add_min_element(v, param._0), param._1, param._2);
     }
   };
   var add_max_element = function (v, param) {
-    if (param) {
-      return bal(param._0, param._1, add_max_element(v, param._2));
-    } else {
+    if (/* tag */typeof param === "number") {
       return singleton(v);
+    } else {
+      return bal(param._0, param._1, add_max_element(v, param._2));
     }
   };
   var join = function (l, v, r) {
-    if (!l) {
+    if (/* tag */typeof l === "number") {
       return add_min_element(v, r);
     }
-    if (!r) {
+    var lh = l._3;
+    if (/* tag */typeof r === "number") {
       return add_max_element(v, l);
     }
     var rh = r._3;
-    var lh = l._3;
     if (lh > (rh + 2 | 0)) {
       return bal(l._0, l._1, join(l._2, v, r));
     } else if (rh > (lh + 2 | 0)) {
@@ -140,76 +144,72 @@ function Make(Ord) {
   var min_elt = function (_param) {
     while(true) {
       var param = _param;
-      if (param) {
-        var l = param._0;
-        if (!l) {
-          return param._1;
-        }
-        _param = l;
-        continue ;
+      if (/* tag */typeof param === "number") {
+        throw {
+              RE_EXN_ID: "Not_found",
+              Error: new Error()
+            };
       }
-      throw {
-            RE_EXN_ID: "Not_found",
-            Error: new Error()
-          };
+      var l = param._0;
+      if (/* tag */typeof l === "number") {
+        return param._1;
+      }
+      _param = l;
+      continue ;
     };
   };
   var max_elt = function (_param) {
     while(true) {
       var param = _param;
-      if (param) {
-        var r = param._2;
-        if (!r) {
-          return param._1;
-        }
-        _param = r;
-        continue ;
+      if (/* tag */typeof param === "number") {
+        throw {
+              RE_EXN_ID: "Not_found",
+              Error: new Error()
+            };
       }
-      throw {
-            RE_EXN_ID: "Not_found",
-            Error: new Error()
-          };
+      var r = param._2;
+      if (/* tag */typeof r === "number") {
+        return param._1;
+      }
+      _param = r;
+      continue ;
     };
   };
   var remove_min_elt = function (param) {
-    if (param) {
-      var l = param._0;
-      if (l) {
-        return bal(remove_min_elt(l), param._1, param._2);
-      } else {
-        return param._2;
-      }
+    if (/* tag */typeof param === "number") {
+      throw {
+            RE_EXN_ID: "Invalid_argument",
+            _1: "Set.remove_min_elt",
+            Error: new Error()
+          };
     }
-    throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Set.remove_min_elt",
-          Error: new Error()
-        };
+    var l = param._0;
+    if (/* tag */typeof l === "number") {
+      return param._2;
+    } else {
+      return bal(remove_min_elt(l), param._1, param._2);
+    }
   };
   var merge = function (t1, t2) {
-    if (t1) {
-      if (t2) {
-        return bal(t1, min_elt(t2), remove_min_elt(t2));
-      } else {
-        return t1;
-      }
-    } else {
+    if (/* tag */typeof t1 === "number") {
       return t2;
+    } else if (/* tag */typeof t2 === "number") {
+      return t1;
+    } else {
+      return bal(t1, min_elt(t2), remove_min_elt(t2));
     }
   };
   var concat = function (t1, t2) {
-    if (t1) {
-      if (t2) {
-        return join(t1, min_elt(t2), remove_min_elt(t2));
-      } else {
-        return t1;
-      }
-    } else {
+    if (/* tag */typeof t1 === "number") {
       return t2;
+    } else if (/* tag */typeof t2 === "number") {
+      return t1;
+    } else {
+      return join(t1, min_elt(t2), remove_min_elt(t2));
     }
   };
   var split = function (x, param) {
-    if (!param) {
+    if (/* tag */typeof param === "number") {
       return [
               /* Empty */0,
               false,
@@ -243,16 +243,16 @@ function Make(Ord) {
           ];
   };
   var is_empty = function (param) {
-    if (param) {
-      return false;
-    } else {
+    if (/* tag */typeof param === "number") {
       return true;
+    } else {
+      return false;
     }
   };
   var mem = function (x, _param) {
     while(true) {
       var param = _param;
-      if (!param) {
+      if (/* tag */typeof param === "number") {
         return false;
       }
       var c = Curry._2(Ord.compare, x, param._1);
@@ -264,7 +264,7 @@ function Make(Ord) {
     };
   };
   var remove = function (x, param) {
-    if (!param) {
+    if (/* tag */typeof param === "number") {
       return /* Empty */0;
     }
     var r = param._2;
@@ -280,16 +280,16 @@ function Make(Ord) {
     }
   };
   var union = function (s1, s2) {
-    if (!s1) {
+    if (/* tag */typeof s1 === "number") {
       return s2;
     }
-    if (!s2) {
+    var h1 = s1._3;
+    var v1 = s1._1;
+    if (/* tag */typeof s2 === "number") {
       return s1;
     }
     var h2 = s2._3;
     var v2 = s2._1;
-    var h1 = s1._3;
-    var v1 = s1._1;
     if (h1 >= h2) {
       if (h2 === 1) {
         return add(v2, s1);
@@ -304,10 +304,10 @@ function Make(Ord) {
     return join(union(match$1[0], s2._0), v2, union(match$1[2], s2._2));
   };
   var inter = function (s1, s2) {
-    if (!s1) {
+    if (/* tag */typeof s1 === "number") {
       return /* Empty */0;
     }
-    if (!s2) {
+    if (/* tag */typeof s2 === "number") {
       return /* Empty */0;
     }
     var r1 = s1._2;
@@ -322,10 +322,10 @@ function Make(Ord) {
     }
   };
   var diff = function (s1, s2) {
-    if (!s1) {
+    if (/* tag */typeof s1 === "number") {
       return /* Empty */0;
     }
-    if (!s2) {
+    if (/* tag */typeof s2 === "number") {
       return s1;
     }
     var r1 = s1._2;
@@ -343,7 +343,7 @@ function Make(Ord) {
     while(true) {
       var e = _e;
       var s = _s;
-      if (!s) {
+      if (/* tag */typeof s === "number") {
         return e;
       }
       _e = /* More */{
@@ -359,14 +359,14 @@ function Make(Ord) {
     while(true) {
       var e2 = _e2;
       var e1 = _e1;
-      if (!e1) {
-        if (e2) {
-          return -1;
-        } else {
+      if (/* tag */typeof e1 === "number") {
+        if (/* tag */typeof e2 === "number") {
           return 0;
+        } else {
+          return -1;
         }
       }
-      if (!e2) {
+      if (/* tag */typeof e2 === "number") {
         return 1;
       }
       var c = Curry._2(Ord.compare, e1._0, e2._0);
@@ -388,17 +388,17 @@ function Make(Ord) {
     while(true) {
       var s2 = _s2;
       var s1 = _s1;
-      if (!s1) {
+      if (/* tag */typeof s1 === "number") {
         return true;
       }
-      if (!s2) {
+      var r1 = s1._2;
+      var v1 = s1._1;
+      var l1 = s1._0;
+      if (/* tag */typeof s2 === "number") {
         return false;
       }
       var r2 = s2._2;
       var l2 = s2._0;
-      var r1 = s1._2;
-      var v1 = s1._1;
-      var l1 = s1._0;
       var c = Curry._2(Ord.compare, v1, s2._1);
       if (c === 0) {
         if (!subset(l1, l2)) {
@@ -435,7 +435,7 @@ function Make(Ord) {
   var iter = function (f, _param) {
     while(true) {
       var param = _param;
-      if (!param) {
+      if (/* tag */typeof param === "number") {
         return ;
       }
       iter(f, param._0);
@@ -448,7 +448,7 @@ function Make(Ord) {
     while(true) {
       var accu = _accu;
       var s = _s;
-      if (!s) {
+      if (/* tag */typeof s === "number") {
         return accu;
       }
       _accu = Curry._2(f, s._1, fold(f, s._0, accu));
@@ -459,7 +459,7 @@ function Make(Ord) {
   var for_all = function (p, _param) {
     while(true) {
       var param = _param;
-      if (!param) {
+      if (/* tag */typeof param === "number") {
         return true;
       }
       if (!Curry._1(p, param._1)) {
@@ -475,7 +475,7 @@ function Make(Ord) {
   var exists = function (p, _param) {
     while(true) {
       var param = _param;
-      if (!param) {
+      if (/* tag */typeof param === "number") {
         return false;
       }
       if (Curry._1(p, param._1)) {
@@ -489,7 +489,7 @@ function Make(Ord) {
     };
   };
   var filter = function (p, param) {
-    if (!param) {
+    if (/* tag */typeof param === "number") {
       return /* Empty */0;
     }
     var v = param._1;
@@ -503,7 +503,7 @@ function Make(Ord) {
     }
   };
   var partition = function (p, param) {
-    if (!param) {
+    if (/* tag */typeof param === "number") {
       return [
               /* Empty */0,
               /* Empty */0
@@ -530,17 +530,17 @@ function Make(Ord) {
     }
   };
   var cardinal = function (param) {
-    if (param) {
-      return (cardinal(param._0) + 1 | 0) + cardinal(param._2) | 0;
-    } else {
+    if (/* tag */typeof param === "number") {
       return 0;
+    } else {
+      return (cardinal(param._0) + 1 | 0) + cardinal(param._2) | 0;
     }
   };
   var elements_aux = function (_accu, _param) {
     while(true) {
       var param = _param;
       var accu = _accu;
-      if (!param) {
+      if (/* tag */typeof param === "number") {
         return accu;
       }
       _param = param._0;
@@ -557,19 +557,19 @@ function Make(Ord) {
   var find = function (x, _param) {
     while(true) {
       var param = _param;
-      if (param) {
-        var v = param._1;
-        var c = Curry._2(Ord.compare, x, v);
-        if (c === 0) {
-          return v;
-        }
-        _param = c < 0 ? param._0 : param._2;
-        continue ;
+      if (/* tag */typeof param === "number") {
+        throw {
+              RE_EXN_ID: "Not_found",
+              Error: new Error()
+            };
       }
-      throw {
-            RE_EXN_ID: "Not_found",
-            Error: new Error()
-          };
+      var v = param._1;
+      var c = Curry._2(Ord.compare, x, v);
+      if (c === 0) {
+        return v;
+      }
+      _param = c < 0 ? param._0 : param._2;
+      continue ;
     };
   };
   var of_sorted_list = function (l) {

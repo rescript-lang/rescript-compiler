@@ -26,7 +26,7 @@ function f4(param) {
 }
 
 function f5(param) {
-  if (typeof param === "number") {
+  if (/* tag */typeof param === "number") {
     switch (param) {
       case /* A */0 :
           return 1;
@@ -49,19 +49,21 @@ function f5(param) {
 }
 
 function f6(param) {
-  if (typeof param === "number") {
-    if (param >= 2) {
-      return 2;
-    } else {
-      return 0;
-    }
-  } else {
+  if (/* tag */typeof param !== "number") {
     return 1;
+  }
+  switch (param) {
+    case /* A */0 :
+    case /* B */1 :
+        return 0;
+    case /* F */2 :
+        return 2;
+    
   }
 }
 
 function f7(param) {
-  if (typeof param === "number") {
+  if (/* tag */typeof param === "number") {
     switch (param) {
       case /* A */0 :
           return 1;
@@ -85,7 +87,7 @@ function f7(param) {
 }
 
 function f8(param) {
-  if (typeof param === "number") {
+  if (/* tag */typeof param === "number") {
     switch (param) {
       case /* T60 */0 :
       case /* T61 */1 :
@@ -105,7 +107,7 @@ function f8(param) {
 }
 
 function f9(param) {
-  if (typeof param === "number") {
+  if (/* tag */typeof param === "number") {
     if (param === /* T63 */3) {
       return 3;
     } else {
@@ -124,7 +126,7 @@ function f9(param) {
 }
 
 function f10(param) {
-  if (typeof param === "number") {
+  if (/* tag */typeof param === "number") {
     switch (param) {
       case /* T60 */0 :
           return 0;
@@ -150,7 +152,7 @@ function f10(param) {
 }
 
 function f11(x) {
-  if (typeof x === "number") {
+  if (/* tag */typeof x === "number") {
     return 2;
   }
   if (x.TAG === /* D */0) {

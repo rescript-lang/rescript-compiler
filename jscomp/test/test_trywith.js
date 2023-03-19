@@ -123,7 +123,7 @@ function u(param) {
 }
 
 function f(x) {
-  if (typeof x === "number") {
+  if (/* tag */typeof x === "number") {
     return 2;
   }
   if (x.TAG === /* D */0) {

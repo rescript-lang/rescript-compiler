@@ -2,7 +2,12 @@
 
 
 function blackify(s) {
-  if (s && s._0) {
+  if (/* tag */typeof s === "number" || !s._0) {
+    return [
+            s,
+            true
+          ];
+  } else {
     return [
             /* Node */{
               _0: /* Black */0,
@@ -12,26 +17,21 @@ function blackify(s) {
             },
             false
           ];
-  } else {
-    return [
-            s,
-            true
-          ];
   }
 }
 
 function is_empty(param) {
-  if (param) {
-    return false;
-  } else {
+  if (/* tag */typeof param === "number") {
     return true;
+  } else {
+    return false;
   }
 }
 
 function mem(x, _param) {
   while(true) {
     var param = _param;
-    if (!param) {
+    if (/* tag */typeof param === "number") {
       return false;
     }
     var y = param._2;
@@ -56,10 +56,14 @@ function balance_left(l, x, r) {
   var c;
   var z;
   var d;
-  if (l && l._0) {
+  if (/* tag */typeof l === "number" || !l._0) {
+    exit = 1;
+  } else {
     var a$1 = l._1;
     var exit$1 = 0;
-    if (a$1 && a$1._0) {
+    if (/* tag */typeof a$1 === "number" || !a$1._0) {
+      exit$1 = 3;
+    } else {
       a = a$1._1;
       x$1 = a$1._2;
       b = a$1._3;
@@ -68,12 +72,12 @@ function balance_left(l, x, r) {
       z = x;
       d = r;
       exit = 2;
-    } else {
-      exit$1 = 3;
     }
     if (exit$1 === 3) {
       var match = l._3;
-      if (match && match._0) {
+      if (/* tag */typeof match === "number" || !match._0) {
+        exit = 1;
+      } else {
         a = a$1;
         x$1 = l._2;
         b = match._1;
@@ -82,13 +86,9 @@ function balance_left(l, x, r) {
         z = x;
         d = r;
         exit = 2;
-      } else {
-        exit = 1;
       }
     }
     
-  } else {
-    exit = 1;
   }
   switch (exit) {
     case 1 :
@@ -128,10 +128,14 @@ function balance_right(l, x, r) {
   var c;
   var z;
   var d;
-  if (r && r._0) {
+  if (/* tag */typeof r === "number" || !r._0) {
+    exit = 1;
+  } else {
     var b$1 = r._1;
     var exit$1 = 0;
-    if (b$1 && b$1._0) {
+    if (/* tag */typeof b$1 === "number" || !b$1._0) {
+      exit$1 = 3;
+    } else {
       a = l;
       x$1 = x;
       b = b$1._1;
@@ -140,12 +144,12 @@ function balance_right(l, x, r) {
       z = r._2;
       d = r._3;
       exit = 2;
-    } else {
-      exit$1 = 3;
     }
     if (exit$1 === 3) {
       var match = r._3;
-      if (match && match._0) {
+      if (/* tag */typeof match === "number" || !match._0) {
+        exit = 1;
+      } else {
         a = l;
         x$1 = x;
         b = b$1;
@@ -154,13 +158,9 @@ function balance_right(l, x, r) {
         z = match._2;
         d = match._3;
         exit = 2;
-      } else {
-        exit = 1;
       }
     }
     
-  } else {
-    exit = 1;
   }
   switch (exit) {
     case 1 :
@@ -201,10 +201,10 @@ function singleton(x) {
 }
 
 function unbalanced_left(param) {
-  if (param) {
+  if (/* tag */typeof param !== "number") {
     if (param._0) {
       var match = param._1;
-      if (match && !match._0) {
+      if (/* tag */typeof match !== "number" && !match._0) {
         return [
                 balance_left(/* Node */{
                       _0: /* Red */1,
@@ -218,7 +218,7 @@ function unbalanced_left(param) {
       
     } else {
       var match$1 = param._1;
-      if (match$1) {
+      if (/* tag */typeof match$1 !== "number") {
         if (!match$1._0) {
           return [
                   balance_left(/* Node */{
@@ -231,7 +231,7 @@ function unbalanced_left(param) {
                 ];
         }
         var match$2 = match$1._3;
-        if (match$2 && !match$2._0) {
+        if (/* tag */typeof match$2 !== "number" && !match$2._0) {
           return [
                   /* Node */{
                     _0: /* Black */0,
@@ -264,10 +264,10 @@ function unbalanced_left(param) {
 }
 
 function unbalanced_right(param) {
-  if (param) {
+  if (/* tag */typeof param !== "number") {
     if (param._0) {
       var match = param._3;
-      if (match && !match._0) {
+      if (/* tag */typeof match !== "number" && !match._0) {
         return [
                 balance_right(param._1, param._2, /* Node */{
                       _0: /* Red */1,
@@ -281,9 +281,9 @@ function unbalanced_right(param) {
       
     } else {
       var match$1 = param._3;
-      if (match$1) {
-        var x = param._2;
-        var a = param._1;
+      var x = param._2;
+      var a = param._1;
+      if (/* tag */typeof match$1 !== "number") {
         if (!match$1._0) {
           return [
                   balance_right(a, x, /* Node */{
@@ -296,7 +296,7 @@ function unbalanced_right(param) {
                 ];
         }
         var match$2 = match$1._1;
-        if (match$2 && !match$2._0) {
+        if (/* tag */typeof match$2 !== "number" && !match$2._0) {
           return [
                   /* Node */{
                     _0: /* Black */0,
@@ -329,7 +329,7 @@ function unbalanced_right(param) {
 }
 
 function lbalance(x1, x2, x3) {
-  if (!x1) {
+  if (/* tag */typeof x1 === "number") {
     return /* Node */{
             _0: /* Black */0,
             _1: x1,
@@ -347,7 +347,7 @@ function lbalance(x1, x2, x3) {
   }
   var r = x1._3;
   var l = x1._1;
-  if (l && l._0) {
+  if (/* tag */typeof l !== "number" && l._0) {
     return /* Node */{
             _0: /* Red */1,
             _1: /* Node */{
@@ -365,7 +365,7 @@ function lbalance(x1, x2, x3) {
             }
           };
   }
-  if (!r) {
+  if (/* tag */typeof r === "number") {
     return /* Node */{
             _0: /* Black */0,
             _1: x1,
@@ -401,10 +401,12 @@ function lbalance(x1, x2, x3) {
 }
 
 function rbalance(x1, x2, x3) {
-  if (x3 && x3._0) {
+  if (/* tag */typeof x3 !== "number" && x3._0) {
     var b = x3._1;
     var exit = 0;
-    if (b) {
+    if (/* tag */typeof b === "number") {
+      exit = 2;
+    } else {
       if (b._0) {
         return /* Node */{
                 _0: /* Red */1,
@@ -424,12 +426,10 @@ function rbalance(x1, x2, x3) {
               };
       }
       exit = 2;
-    } else {
-      exit = 2;
     }
     if (exit === 2) {
       var match = x3._3;
-      if (match && match._0) {
+      if (/* tag */typeof match !== "number" && match._0) {
         return /* Node */{
                 _0: /* Red */1,
                 _1: /* Node */{
@@ -460,7 +460,7 @@ function rbalance(x1, x2, x3) {
 }
 
 function ins(x, s) {
-  if (!s) {
+  if (/* tag */typeof s === "number") {
     return /* Node */{
             _0: /* Red */1,
             _1: /* Empty */0,
@@ -506,34 +506,47 @@ function ins(x, s) {
 
 function add(x, s) {
   var s$1 = ins(x, s);
-  if (s$1 && s$1._0) {
+  if (/* tag */typeof s$1 === "number" || !s$1._0) {
+    return s$1;
+  } else {
     return /* Node */{
             _0: /* Black */0,
             _1: s$1._1,
             _2: s$1._2,
             _3: s$1._3
           };
-  } else {
-    return s$1;
   }
 }
 
 function remove_min(param) {
-  if (param) {
-    var c = param._0;
-    if (c) {
-      if (!param._1) {
-        return [
-                param._3,
-                param._2,
-                false
-              ];
-      }
-      
-    } else if (!param._1) {
+  if (/* tag */typeof param === "number") {
+    throw {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "rbset.ml",
+            115,
+            4
+          ],
+          Error: new Error()
+        };
+  }
+  var c = param._0;
+  if (c) {
+    var tmp = param._1;
+    if (/* tag */typeof tmp === "number") {
+      return [
+              param._3,
+              param._2,
+              false
+            ];
+    }
+    
+  } else {
+    var tmp$1 = param._1;
+    if (/* tag */typeof tmp$1 === "number") {
       var match = param._3;
       var x = param._2;
-      if (!match) {
+      if (/* tag */typeof match === "number") {
         return [
                 /* Empty */0,
                 x,
@@ -562,44 +575,36 @@ function remove_min(param) {
             Error: new Error()
           };
     }
-    var match$1 = remove_min(param._1);
-    var y = match$1[1];
-    var s_1 = match$1[0];
-    var s_2 = param._2;
-    var s_3 = param._3;
-    var s = /* Node */{
-      _0: c,
-      _1: s_1,
-      _2: s_2,
-      _3: s_3
-    };
-    if (!match$1[2]) {
-      return [
-              s,
-              y,
-              false
-            ];
-    }
-    var match$2 = unbalanced_right(s);
+    
+  }
+  var match$1 = remove_min(param._1);
+  var y = match$1[1];
+  var s_1 = match$1[0];
+  var s_2 = param._2;
+  var s_3 = param._3;
+  var s = /* Node */{
+    _0: c,
+    _1: s_1,
+    _2: s_2,
+    _3: s_3
+  };
+  if (!match$1[2]) {
     return [
-            match$2[0],
+            s,
             y,
-            match$2[1]
+            false
           ];
   }
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "rbset.ml",
-          115,
-          4
-        ],
-        Error: new Error()
-      };
+  var match$2 = unbalanced_right(s);
+  return [
+          match$2[0],
+          y,
+          match$2[1]
+        ];
 }
 
 function remove_aux(x, n) {
-  if (!n) {
+  if (/* tag */typeof n === "number") {
     return [
             /* Empty */0,
             false
@@ -610,7 +615,7 @@ function remove_aux(x, n) {
   var l = n._1;
   var c = n._0;
   if (x === y) {
-    if (!r) {
+    if (/* tag */typeof r === "number") {
       if (c === /* Red */1) {
         return [
                 l,
@@ -679,10 +684,10 @@ function remove(x, s) {
 }
 
 function cardinal(param) {
-  if (param) {
-    return (1 + cardinal(param._1) | 0) + cardinal(param._3) | 0;
-  } else {
+  if (/* tag */typeof param === "number") {
     return 0;
+  } else {
+    return (1 + cardinal(param._1) | 0) + cardinal(param._3) | 0;
   }
 }
 

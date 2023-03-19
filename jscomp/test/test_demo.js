@@ -19,13 +19,13 @@ function cons(x, y) {
 }
 
 function map(f, param) {
-  if (param) {
+  if (/* tag */typeof param === "number") {
+    return /* Nil */0;
+  } else {
     return /* Cons */{
             _0: Curry._1(f, param._0),
             _1: map(f, param._1)
           };
-  } else {
-    return /* Nil */0;
   }
 }
 

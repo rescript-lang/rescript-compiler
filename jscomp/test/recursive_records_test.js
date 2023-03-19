@@ -55,15 +55,15 @@ function f2(x) {
 }
 
 function hd(x) {
-  if (x) {
-    return x.content;
-  } else {
+  if (/* tag */typeof x === "number") {
     return 0;
+  } else {
+    return x.content;
   }
 }
 
 function tl_exn(x) {
-  if (x) {
+  if (/* tag */typeof x !== "number") {
     return x.next;
   }
   throw {

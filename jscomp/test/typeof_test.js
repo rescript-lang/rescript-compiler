@@ -5,7 +5,7 @@ var Js_types = require("../../lib/js/js_types.js");
 
 function string_or_number(x) {
   var ty = Js_types.classify(x);
-  if (typeof ty === "number") {
+  if (/* tag */typeof ty === "number") {
     switch (ty) {
       case /* JSFalse */0 :
       case /* JSTrue */1 :
