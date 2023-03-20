@@ -15,6 +15,25 @@
 
 @@uncurried
 
+module Jsx = {
+  type element
+  type ref
+
+  @val external null: element = "null"
+
+  external float: float => element = "%identity"
+  external int: int => element = "%identity"
+  external string: string => element = "%identity"
+
+  external array: array<element> => element = "%identity"
+
+  type componentLike<'props, 'return> = 'props => 'return
+  type component<'props> = componentLike<'props, element>
+
+  /* this function exists to prepare for making `component` abstract */
+  external component: componentLike<'props, element> => component<'props> = "%identity"
+}
+
 /* Internal */
 external __unsafe_cast: 'a => 'b = "%identity"
 
@@ -301,12 +320,10 @@ let exit_function = ref(ignore)
 let at_exit = f => {
   let g = exit_function.contents
   exit_function :=
-    (
-      () => {
-        f()
-        g()
-      }
-    )
+    () => {
+      f()
+      g()
+    }
 }
 
 let do_at_exit = () => exit_function.contents()

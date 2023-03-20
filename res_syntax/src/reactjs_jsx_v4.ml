@@ -953,6 +953,12 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
         else innerExpression)
     in
     let fullExpression =
+      if !Config.uncurried = Uncurried then
+        fullExpression
+        |> Ast_uncurried.uncurriedFun ~loc:fullExpression.pexp_loc ~arity:1
+      else fullExpression
+    in
+    let fullExpression =
       match fullModuleName with
       | "" -> fullExpression
       | txt ->
