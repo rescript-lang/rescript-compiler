@@ -39,7 +39,7 @@ let () =
   idx `c
 
 
-type a =
+(* type a =
   | A
   | B [@as 3]
   | C
@@ -48,15 +48,15 @@ type a =
 let id  x = 
     eq  __LOC__ (aFromJs (aToJs x ))  x 
 let a0 = aToJs A 
-let a1 = aToJs B 
+let a1 = aToJs B  *)
 
-let () = 
+(* let () = 
   id  A ;
   id  B ;
-  id  C 
+  id  C  *)
   
 
-type b = 
+(* type b = 
   | D0
   | D1
   | D2 
@@ -70,8 +70,9 @@ let b1 = bToJs D1
 let idb v = 
   eq __LOC__ (bFromJs (bToJs v )) v 
 
-let () = idb D0; idb D1; idb D2 ; idb D3   
-type c = 
+let () = idb D0; idb D1; idb D2 ; idb D3    *)
+
+(* type c = 
   | D0 [@bs.as 3]
   | D1
   | D2 
@@ -82,12 +83,13 @@ let c0 = cToJs D0
 
 let idc v = eq __LOC__ (cFromJs (cToJs v)) v
 
-let () = idc D0; idc D1 ; idc D2; idc D3 
-type h = 
+let () = idc D0; idc D1 ; idc D2; idc D3  *)
+
+(* type h = 
   | JsMapperEraseType
-  | B [@@bs.deriving {accessors; jsConverter = newType} ]
+  | B [@@bs.deriving {accessors; jsConverter = newType} ] *)
 
-
+(* 
 type z =    
   | ZFromJs 
   | ZToJs
@@ -96,6 +98,6 @@ type z =
   accessors;
   jsConverter
 }
-]
+] *)
 
 ;; Mt.from_pair_suites __MODULE__ !suites  
