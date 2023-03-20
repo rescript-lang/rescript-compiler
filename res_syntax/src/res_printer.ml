@@ -1644,6 +1644,7 @@ and printTypExpr ~(state : State.t) (typExpr : Parsetree.core_type) cmtTbl =
         let needsParens =
           match typ.ptyp_desc with
           | Ptyp_arrow _ -> true
+          | _ when Ast_uncurried.typeIsUncurriedFun typ -> true
           | _ -> false
         in
         let doc = printTypExpr ~state typ cmtTbl in
