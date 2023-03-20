@@ -56,8 +56,7 @@ eq("File \"large_record_duplication_test.ml\", line 74, characters 6-13", Caml_o
           y: ""
         }), false);
 
-var v1 = {
-  TAG: "A0",
+var v1 = /* A0 */{
   x0: 9,
   x1: 9,
   x2: 9,
@@ -84,7 +83,7 @@ var v1 = {
 };
 
 function get_x0(x) {
-  if (typeof x !== "object") {
+  if (typeof x === "string") {
     return ;
   } else {
     return x.x0;
@@ -92,7 +91,7 @@ function get_x0(x) {
 }
 
 function f1(x) {
-  if (typeof x !== "object") {
+  if (typeof x === "string") {
     return "A1";
   }
   var newrecord = Caml_obj.obj_dup(x);
@@ -103,7 +102,7 @@ function f1(x) {
 eq("File \"large_record_duplication_test.ml\", line 140, characters 6-13", get_x0(f1(v1)), 1);
 
 var v2 = {
-  TAG: "A0",
+  TAG: /* A0 */0,
   x0: 9,
   x1: 9,
   x2: 9,

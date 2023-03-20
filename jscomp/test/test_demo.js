@@ -12,19 +12,17 @@ function fib(n) {
 }
 
 function cons(x, y) {
-  return {
-          TAG: "Cons",
+  return /* Cons */{
           _0: x,
           _1: y
         };
 }
 
 function map(f, param) {
-  if (typeof param !== "object") {
+  if (typeof param === "string") {
     return "Nil";
   } else {
-    return {
-            TAG: "Cons",
+    return /* Cons */{
             _0: Curry._1(f, param._0),
             _1: map(f, param._1)
           };

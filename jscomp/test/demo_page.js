@@ -21,11 +21,10 @@ function sum(n) {
 }
 
 function map(f, param) {
-  if (typeof param !== "object") {
+  if (typeof param === "string") {
     return "Nil";
   } else {
-    return {
-            TAG: "Cons",
+    return /* Cons */{
             _0: Curry._1(f, param._0),
             _1: map(f, param._1)
           };

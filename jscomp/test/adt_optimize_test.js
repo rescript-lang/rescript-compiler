@@ -61,7 +61,7 @@ function f4(param) {
 }
 
 function f5(param) {
-  if (typeof param !== "object") {
+  if (typeof param === "string") {
     switch (param) {
       case "A" :
           return 1;
@@ -84,7 +84,7 @@ function f5(param) {
 }
 
 function f6(param) {
-  if (typeof param === "object") {
+  if (typeof param !== "string") {
     return 1;
   }
   switch (param) {
@@ -98,7 +98,7 @@ function f6(param) {
 }
 
 function f7(param) {
-  if (typeof param !== "object") {
+  if (typeof param === "string") {
     switch (param) {
       case "A" :
           return 1;
@@ -122,7 +122,7 @@ function f7(param) {
 }
 
 function f8(param) {
-  if (typeof param !== "object") {
+  if (typeof param === "string") {
     switch (param) {
       case "T60" :
       case "T61" :
@@ -142,7 +142,7 @@ function f8(param) {
 }
 
 function f9(param) {
-  if (typeof param !== "object") {
+  if (typeof param === "string") {
     if (param === "T63") {
       return 3;
     } else {
@@ -161,7 +161,7 @@ function f9(param) {
 }
 
 function f10(param) {
-  if (typeof param !== "object") {
+  if (typeof param === "string") {
     switch (param) {
       case "T60" :
           return 0;
@@ -187,7 +187,7 @@ function f10(param) {
 }
 
 function f11(x) {
-  if (typeof x !== "object") {
+  if (typeof x === "string") {
     return 2;
   }
   if (x.TAG === "D") {

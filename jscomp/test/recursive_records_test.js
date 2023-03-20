@@ -47,8 +47,7 @@ rec_cell2.next = rec_cell2;
 
 function f2(x) {
   var rec_cell2 = {};
-  Caml_obj.update_dummy(rec_cell2, {
-        TAG: "Cons",
+  Caml_obj.update_dummy(rec_cell2, /* Cons */{
         content: Math.imul(x, x) - 6 | 0,
         next: rec_cell2
       });
@@ -56,7 +55,7 @@ function f2(x) {
 }
 
 function hd(x) {
-  if (typeof x !== "object") {
+  if (typeof x === "string") {
     return 0;
   } else {
     return x.content;
@@ -64,7 +63,7 @@ function hd(x) {
 }
 
 function tl_exn(x) {
-  if (typeof x === "object") {
+  if (typeof x !== "string") {
     return x.next;
   }
   throw {

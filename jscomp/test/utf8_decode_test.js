@@ -60,7 +60,7 @@ function utf8_decode(strm) {
               }
               Stream.junk(strm);
               var c = classify(chr);
-              if (typeof c !== "object") {
+              if (typeof c === "string") {
                 throw {
                       RE_EXN_ID: Stream.$$Error,
                       _1: "Invalid byte",
@@ -85,7 +85,7 @@ function utf8_decode(strm) {
                           return c;
                         }
                         var cc = classify(Stream.next(strm));
-                        if (typeof cc !== "object") {
+                        if (typeof cc === "string") {
                           throw {
                                 RE_EXN_ID: Stream.$$Error,
                                 _1: "Continuation byte expected",
@@ -129,7 +129,7 @@ function utf8_list(s) {
 
 function decode(bytes, offset) {
   var c = classify(Caml_bytes.get(bytes, offset));
-  if (typeof c !== "object") {
+  if (typeof c === "string") {
     throw {
           RE_EXN_ID: "Invalid_argument",
           _1: "decode",
@@ -163,7 +163,7 @@ function decode(bytes, offset) {
                   ];
           }
           var cc = classify(Caml_bytes.get(bytes, offset$1));
-          if (typeof cc !== "object") {
+          if (typeof cc === "string") {
             throw {
                   RE_EXN_ID: "Invalid_argument",
                   _1: "decode",

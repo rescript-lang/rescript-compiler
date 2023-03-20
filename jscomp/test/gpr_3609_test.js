@@ -2,7 +2,7 @@
 
 
 function func(state) {
-  if (typeof state !== "object") {
+  if (typeof state === "string") {
     return 0;
   } else {
     return 0 + state._0 | 0;

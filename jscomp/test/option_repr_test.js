@@ -31,7 +31,7 @@ function f0(x) {
 }
 
 function f1(u) {
-  if (typeof u !== "object") {
+  if (typeof u === "string") {
     return 1;
   } else {
     return 0;

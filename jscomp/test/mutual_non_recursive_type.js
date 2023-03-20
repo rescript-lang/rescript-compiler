@@ -9,8 +9,7 @@ var U = {
   f: f
 };
 
-var v = {
-  TAG: "H",
+var v = /* H */{
   _0: "OT"
 };
 
