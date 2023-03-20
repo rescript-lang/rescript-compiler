@@ -297,7 +297,7 @@ function ptl(l) {
 var y00 = {};
 
 Caml_obj.update_dummy(y00, {
-      TAG: /* C1 */1,
+      TAG: "C1",
       hd: 1,
       tail: y00
     });

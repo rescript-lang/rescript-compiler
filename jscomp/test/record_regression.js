@@ -61,20 +61,20 @@ function setAA(ao) {
 }
 
 var ir0 = {
-  TAG: /* V0 */0,
+  TAG: "V0",
   x0: "v0",
   x3: 3
 };
 
 var ir1 = {
-  TAG: /* V0 */0,
+  TAG: "V0",
   x0: "v0",
   x1: "v1",
   x3: 3
 };
 
 var ir2 = {
-  TAG: /* V0 */0,
+  TAG: "V0",
   x0: "v0",
   x1: "v1",
   x2: 2,
@@ -82,7 +82,7 @@ var ir2 = {
 };
 
 var ir3 = {
-  TAG: /* V1 */1,
+  TAG: "V1",
   y0: "v0",
   y1: 1
 };

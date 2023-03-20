@@ -48,7 +48,7 @@ function f2_with(x) {
     return x;
   } else {
     return {
-            TAG: /* C */0,
+            TAG: "C",
             x: 0,
             y: x.y
           };
