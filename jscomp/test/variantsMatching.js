@@ -2,7 +2,19 @@
 
 
 function toEnum(x) {
-  return x;
+  switch (x) {
+    case /* A */0 :
+        return 0;
+    case /* B */1 :
+        return 1;
+    case /* C */2 :
+        return 2;
+    case /* D */3 :
+        return 3;
+    case /* E */4 :
+        return 4;
+    
+  }
 }
 
 function toString(x) {
@@ -32,15 +44,19 @@ function bar(x) {
 }
 
 function and_(x, y) {
-  if (x === /* True */0) {
-    return y;
+  if (x === /* True */0 && y === /* True */0) {
+    return /* True */0;
   } else {
     return /* False */1;
   }
 }
 
 function id(x) {
-  return x;
+  if (x === /* True */0) {
+    return /* True */0;
+  } else {
+    return /* False */1;
+  }
 }
 
 function not_(x) {

@@ -2,23 +2,58 @@
 
 
 function f(x) {
-  return x + 1 | 0;
+  switch (x) {
+    case /* A */0 :
+        return 1;
+    case /* B */1 :
+        return 2;
+    case /* C */2 :
+        return 3;
+    
+  }
 }
 
 function f_0(x) {
-  return x - 1 | 0;
+  switch (x) {
+    case /* A */0 :
+        return -1;
+    case /* B */1 :
+        return 0;
+    case /* C */2 :
+        return 1;
+    
+  }
 }
 
 function f2(param) {
   if (param >= 3) {
     return /* T003 */3;
-  } else {
-    return param;
+  }
+  switch (param) {
+    case 0 :
+        return /* T000 */0;
+    case 1 :
+        return /* T001 */1;
+    case 2 :
+        return /* T002 */2;
+    
   }
 }
 
 function f3(param) {
-  return param;
+  switch (param) {
+    case /* X0 */0 :
+        return /* Y0 */0;
+    case /* X1 */1 :
+        return /* Y1 */1;
+    case /* X2 */2 :
+        return /* Y2 */2;
+    case /* X3 */3 :
+        return /* Y3 */3;
+    case /* X4 */4 :
+        return /* Y4 */4;
+    
+  }
 }
 
 function f4(param) {
