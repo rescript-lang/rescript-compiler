@@ -1114,10 +1114,10 @@ function collide_block(check_xOpt, dir, obj) {
 }
 
 function opposite_dir(dir) {
-  if (dir === /* Right */1) {
-    return /* Left */0;
-  } else {
+  if (dir === /* Left */0) {
     return /* Right */1;
+  } else {
+    return /* Left */0;
   }
 }
 

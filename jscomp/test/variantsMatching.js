@@ -28,26 +28,22 @@ function bar(x) {
 }
 
 function and_(x, y) {
-  if (x || y === /* True */0) {
-    return /* False */1;
+  if (x === /* True */0) {
+    return y;
   } else {
-    return /* True */0;
+    return /* False */1;
   }
 }
 
 function id(x) {
+  return x;
+}
+
+function not_(x) {
   if (x === /* True */0) {
     return /* False */1;
   } else {
     return /* True */0;
-  }
-}
-
-function not_(x) {
-  if (x === /* False */1) {
-    return /* True */0;
-  } else {
-    return /* False */1;
   }
 }
 
