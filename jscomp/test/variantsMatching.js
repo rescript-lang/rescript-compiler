@@ -1,7 +1,11 @@
 'use strict';
 
 
-function foo(x) {
+function toEnum(x) {
+  return x;
+}
+
+function toString(x) {
   switch (x) {
     case /* A */0 :
         return "A";
@@ -114,7 +118,8 @@ function third2(l) {
   }
 }
 
-exports.foo = foo;
+exports.toEnum = toEnum;
+exports.toString = toString;
 exports.bar = bar;
 exports.and_ = and_;
 exports.id = id;

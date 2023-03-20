@@ -1,6 +1,15 @@
 type t = A | B | C | D | E
 
-let foo = x =>
+let toEnum = x =>
+  switch x {
+  | A => 0
+  | B => 1
+  | C => 2
+  | D => 3
+  | E => 4
+  }
+
+let toString = x =>
   switch x {
   | A => "A"
   | B => "B"
