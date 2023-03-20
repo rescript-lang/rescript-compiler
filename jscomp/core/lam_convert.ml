@@ -119,16 +119,16 @@ let lam_is_var (x : Lam.t) (y : Ident.t) =
 (** Make sure no int range overflow happens
     also we only check [int]
 *)
-let happens_to_be_diff (sw_consts : (int * Lambda.lambda) list) : int option =
+let happens_to_be_diff (sw_consts : (int * Lambda.lambda) list) sw_names : int option =
   match sw_consts with
   | ( a,
-      Lconst (Const_pointer (a0, Pt_constructor _) | Const_base (Const_int a0))
+      Lconst (Const_base (Const_int a0))
     )
     :: ( b,
          Lconst
-           (Const_pointer (b0, Pt_constructor _) | Const_base (Const_int b0)) )
+           (Const_base (Const_int b0)) )
     :: rest
-    when no_over_flow a && no_over_flow a0 && no_over_flow b && no_over_flow b0
+    when sw_names = None && no_over_flow a && no_over_flow a0 && no_over_flow b && no_over_flow b0
     ->
       let diff = a0 - a in
       if b0 - b = diff then
@@ -136,8 +136,7 @@ let happens_to_be_diff (sw_consts : (int * Lambda.lambda) list) : int option =
           Ext_list.for_all rest (fun (x, lam) ->
               match lam with
               | Lconst
-                  ( Const_pointer (x0, Pt_constructor _)
-                  | Const_base (Const_int x0) )
+                  ( Const_base (Const_int x0) )
                 when no_over_flow x0 && no_over_flow x ->
                   x0 - x = diff
               | _ -> false)
@@ -701,8 +700,9 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
      sw_numblocks = 0;
      sw_consts;
      sw_numconsts;
+     sw_names;
     } -> (
-        match happens_to_be_diff sw_consts with
+        match happens_to_be_diff sw_consts sw_names with
         | Some 0 -> e
         | Some i ->
             prim ~primitive:Paddint
@@ -712,7 +712,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
                   Lam.const (Const_int { i = Int32.of_int i; comment = None });
                 ]
               Location.none
-        | None ->
+        | _ ->
             Lam.switch e
               {
                 sw_failaction = None;
