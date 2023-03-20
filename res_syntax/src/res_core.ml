@@ -4269,15 +4269,11 @@ and parseEs6ArrowType ~attrs p =
           let uncurried =
             p.uncurried_config |> Res_uncurried.fromDotted ~dotted
           in
+          let loc = mkLoc startPos endPos in
+          let tArg = Ast_helper.Typ.arrow ~loc ~attrs argLbl typ t in
           if uncurried && (paramNum = 1 || p.uncurried_config = Legacy) then
-            let loc = mkLoc startPos endPos in
-            let tArg = Ast_helper.Typ.arrow ~loc ~attrs argLbl typ t in
             (paramNum - 1, Ast_uncurried.uncurriedType ~loc ~arity tArg, 1)
-          else
-            ( paramNum - 1,
-              Ast_helper.Typ.arrow ~loc:(mkLoc startPos endPos) ~attrs argLbl
-                typ t,
-              arity + 1 ))
+          else (paramNum - 1, tArg, arity + 1))
         parameters
         (List.length parameters, returnType, returnTypeArity + 1)
     in
@@ -4918,6 +4914,11 @@ and parseTypeEquationOrConstrDecl p =
         let loc = mkLoc uidentStartPos p.prevEndPos in
         let arrowType =
           Ast_helper.Typ.arrow ~loc Asttypes.Nolabel typ returnType
+        in
+        let uncurried = p.uncurried_config <> Legacy in
+        let arrowType =
+          if uncurried then Ast_uncurried.uncurriedType ~loc ~arity:1 arrowType
+          else arrowType
         in
         let typ = parseTypeAlias p arrowType in
         (Some typ, Asttypes.Public, Parsetree.Ptype_abstract)

@@ -50,6 +50,14 @@ let t4 = (. type a b) => (l: list<a>, x: a) => list{x, ...l}
 let t5 = (type a b) => (. l: list<a>, x: a) => list{x, ...l}
 let t6 = (. type a b) => (. l: list<a>, x: a) => list{x, ...l}
 
+type arrowPath1 = (. int) => string
+type arrowPath2 = (. I.t) => string
+type arrowPath3 = int => string
+type arrowPath4 = I.t => string
+type callback1 = (. ReactEvent.Mouse.t) => unit as 'callback
+type callback2 = (. ReactEvent.Mouse.t) => (unit as 'u)
+type callback3 = ((. ReactEvent.Mouse.t) => unit) as 'callback
+
 @@uncurried.swap
 
 let cApp = foo(. 3)
@@ -103,3 +111,11 @@ let t0 = (type a b, l: list<a>, x: a) => list{x, ...l}
 let t1 = (. type a b, l: list<a>, x: a) => list{x, ...l}
 let t2 = (type a b, . l: list<a>, x: a) => list{x, ...l}
 let t3 = (. type a b, . l: list<a>, x: a) => list{x, ...l}
+
+type arrowPath1 = int => string
+type arrowPath2 = I.t => string
+type arrowPath3 = (. int) => string
+type arrowPath4 = (. I.t) => string
+type callback1 = ReactEvent.Mouse.t => unit as 'callback
+type callback2 = ReactEvent.Mouse.t => (unit as 'u)
+type callback3 = (ReactEvent.Mouse.t => unit) as 'callback
