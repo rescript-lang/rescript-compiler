@@ -7,7 +7,7 @@ var $$String = require("../../lib/js/string.js");
 var Set_gen = require("./set_gen.js");
 
 function split(x, tree) {
-  if (typeof tree !== "object") {
+  if (typeof tree === "string") {
     return [
             "Empty",
             false,
@@ -42,9 +42,8 @@ function split(x, tree) {
 }
 
 function add(x, tree) {
-  if (typeof tree !== "object") {
-    return {
-            TAG: "Node",
+  if (typeof tree === "string") {
+    return /* Node */{
             _0: "Empty",
             _1: x,
             _2: "Empty",
@@ -65,12 +64,12 @@ function add(x, tree) {
 }
 
 function union(s1, s2) {
-  if (typeof s1 !== "object") {
+  if (typeof s1 === "string") {
     return s2;
   }
   var h1 = s1._3;
   var v1 = s1._1;
-  if (typeof s2 !== "object") {
+  if (typeof s2 === "string") {
     return s1;
   }
   var h2 = s2._3;
@@ -90,10 +89,10 @@ function union(s1, s2) {
 }
 
 function inter(s1, s2) {
-  if (typeof s1 !== "object") {
+  if (typeof s1 === "string") {
     return "Empty";
   }
-  if (typeof s2 !== "object") {
+  if (typeof s2 === "string") {
     return "Empty";
   }
   var r1 = s1._2;
@@ -109,10 +108,10 @@ function inter(s1, s2) {
 }
 
 function diff(s1, s2) {
-  if (typeof s1 !== "object") {
+  if (typeof s1 === "string") {
     return "Empty";
   }
-  if (typeof s2 !== "object") {
+  if (typeof s2 === "string") {
     return s1;
   }
   var r1 = s1._2;
@@ -130,7 +129,7 @@ function diff(s1, s2) {
 function mem(x, _tree) {
   while(true) {
     var tree = _tree;
-    if (typeof tree !== "object") {
+    if (typeof tree === "string") {
       return false;
     }
     var c = Caml.string_compare(x, tree._1);
@@ -143,7 +142,7 @@ function mem(x, _tree) {
 }
 
 function remove(x, tree) {
-  if (typeof tree !== "object") {
+  if (typeof tree === "string") {
     return "Empty";
   }
   var r = tree._2;
@@ -171,13 +170,13 @@ function subset(_s1, _s2) {
   while(true) {
     var s2 = _s2;
     var s1 = _s1;
-    if (typeof s1 !== "object") {
+    if (typeof s1 === "string") {
       return true;
     }
     var r1 = s1._2;
     var v1 = s1._1;
     var l1 = s1._0;
-    if (typeof s2 !== "object") {
+    if (typeof s2 === "string") {
       return false;
     }
     var r2 = s2._2;
@@ -192,8 +191,7 @@ function subset(_s1, _s2) {
       continue ;
     }
     if (c < 0) {
-      if (!subset({
-              TAG: "Node",
+      if (!subset(/* Node */{
               _0: l1,
               _1: v1,
               _2: "Empty",
@@ -204,8 +202,7 @@ function subset(_s1, _s2) {
       _s1 = r1;
       continue ;
     }
-    if (!subset({
-            TAG: "Node",
+    if (!subset(/* Node */{
             _0: "Empty",
             _1: v1,
             _2: r1,
@@ -221,7 +218,7 @@ function subset(_s1, _s2) {
 function find(x, _tree) {
   while(true) {
     var tree = _tree;
-    if (typeof tree !== "object") {
+    if (typeof tree === "string") {
       throw {
             RE_EXN_ID: "Not_found",
             Error: new Error()

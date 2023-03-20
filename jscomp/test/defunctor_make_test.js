@@ -16,7 +16,7 @@ var Comparable = {
 };
 
 function height(param) {
-  if (typeof param !== "object") {
+  if (typeof param === "string") {
     return 0;
   } else {
     return param._4;
@@ -26,8 +26,7 @@ function height(param) {
 function create(l, x, d, r) {
   var hl = height(l);
   var hr = height(r);
-  return {
-          TAG: "Node",
+  return /* Node */{
           _0: l,
           _1: x,
           _2: d,
@@ -38,11 +37,11 @@ function create(l, x, d, r) {
 
 function bal(l, x, d, r) {
   var hl;
-  hl = typeof l !== "object" ? 0 : l._4;
+  hl = typeof l === "string" ? 0 : l._4;
   var hr;
-  hr = typeof r !== "object" ? 0 : r._4;
+  hr = typeof r === "string" ? 0 : r._4;
   if (hl > (hr + 2 | 0)) {
-    if (typeof l !== "object") {
+    if (typeof l === "string") {
       throw {
             RE_EXN_ID: "Invalid_argument",
             _1: "Map.bal",
@@ -56,7 +55,7 @@ function bal(l, x, d, r) {
     if (height(ll) >= height(lr)) {
       return create(ll, lv, ld, create(lr, x, d, r));
     }
-    if (typeof lr === "object") {
+    if (typeof lr !== "string") {
       return create(create(ll, lv, ld, lr._0), lr._1, lr._2, create(lr._3, x, d, r));
     }
     throw {
@@ -66,8 +65,7 @@ function bal(l, x, d, r) {
         };
   }
   if (hr <= (hl + 2 | 0)) {
-    return {
-            TAG: "Node",
+    return /* Node */{
             _0: l,
             _1: x,
             _2: d,
@@ -75,7 +73,7 @@ function bal(l, x, d, r) {
             _4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
-  if (typeof r !== "object") {
+  if (typeof r === "string") {
     throw {
           RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal",
@@ -89,7 +87,7 @@ function bal(l, x, d, r) {
   if (height(rr) >= height(rl)) {
     return create(create(l, x, d, rl), rv, rd, rr);
   }
-  if (typeof rl === "object") {
+  if (typeof rl !== "string") {
     return create(create(l, x, d, rl._0), rl._1, rl._2, create(rl._3, rv, rd, rr));
   }
   throw {
@@ -100,9 +98,8 @@ function bal(l, x, d, r) {
 }
 
 function add(x, data, compare, param) {
-  if (typeof param !== "object") {
-    return {
-            TAG: "Node",
+  if (typeof param === "string") {
+    return /* Node */{
             _0: "Empty",
             _1: x,
             _2: data,
@@ -116,8 +113,7 @@ function add(x, data, compare, param) {
   var l = param._0;
   var c = compare(x, v);
   if (c === 0) {
-    return {
-            TAG: "Node",
+    return /* Node */{
             _0: l,
             _1: x,
             _2: data,

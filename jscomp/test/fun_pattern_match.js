@@ -15,10 +15,10 @@ function f3(param) {
   var lhs = param.rank;
   return function (param) {
     var rhs = param.rank;
-    if (typeof lhs !== "object") {
+    if (typeof lhs === "string") {
       lhs === "Uninitialized";
     } else {
-      if (typeof rhs === "object") {
+      if (typeof rhs !== "string") {
         return Caml.int_compare(lhs._0, rhs._0);
       }
       rhs === "Uninitialized";
@@ -39,10 +39,10 @@ function f4(param) {
   var lhs = param.rank;
   return function (param) {
     var rhs = param.rank;
-    if (typeof lhs !== "object") {
+    if (typeof lhs === "string") {
       lhs === "Uninitialized";
     } else {
-      if (typeof rhs === "object") {
+      if (typeof rhs !== "string") {
         return Caml.int_compare(lhs._0, rhs._0);
       }
       rhs === "Uninitialized";

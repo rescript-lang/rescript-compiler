@@ -123,7 +123,7 @@ function u(param) {
 }
 
 function f(x) {
-  if (typeof x !== "object") {
+  if (typeof x === "string") {
     return 2;
   }
   if (x.TAG === "D") {

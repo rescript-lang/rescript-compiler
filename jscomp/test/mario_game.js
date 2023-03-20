@@ -58,21 +58,7 @@ function make_enemy(param) {
                     128
                   ]);
     case "GKoopa" :
-        if (dir === "Left") {
-          return setup_sprite(undefined, [
-                      4,
-                      10
-                    ], [
-                      11,
-                      16
-                    ], "enemies.png", 2, 10, [
-                      16,
-                      27
-                    ], [
-                      0,
-                      69
-                    ]);
-        } else {
+        if (dir) {
           return setup_sprite(undefined, [
                       1,
                       10
@@ -84,25 +70,25 @@ function make_enemy(param) {
                       27
                     ], [
                       32,
+                      69
+                    ]);
+        } else {
+          return setup_sprite(undefined, [
+                      4,
+                      10
+                    ], [
+                      11,
+                      16
+                    ], "enemies.png", 2, 10, [
+                      16,
+                      27
+                    ], [
+                      0,
                       69
                     ]);
         }
     case "RKoopa" :
-        if (dir === "Left") {
-          return setup_sprite(undefined, [
-                      4,
-                      10
-                    ], [
-                      11,
-                      16
-                    ], "enemies.png", 2, 10, [
-                      16,
-                      27
-                    ], [
-                      0,
-                      5
-                    ]);
-        } else {
+        if (dir) {
           return setup_sprite(undefined, [
                       1,
                       10
@@ -114,6 +100,20 @@ function make_enemy(param) {
                       27
                     ], [
                       32,
+                      5
+                    ]);
+        } else {
+          return setup_sprite(undefined, [
+                      4,
+                      10
+                    ], [
+                      11,
+                      16
+                    ], "enemies.png", 2, 10, [
+                      16,
+                      27
+                    ], [
+                      0,
                       5
                     ]);
         }
@@ -251,133 +251,70 @@ function make_type(typ, dir) {
           typ._1,
           dir
         ];
-        if (pt === "BigM") {
+        if (pt) {
           var typ$1 = spr_type[0];
-          if (spr_type[1] === "Left") {
-            switch (typ$1) {
-              case "Standing" :
-                  return setup_sprite(undefined, [
-                              2,
-                              1
-                            ], [
-                              13,
-                              25
-                            ], "mario-big.png", 1, 0, [
-                              16,
-                              27
-                            ], [
-                              16,
-                              5
-                            ]);
-              case "Jumping" :
-                  return setup_sprite(undefined, [
-                              2,
-                              1
-                            ], [
-                              12,
-                              25
-                            ], "mario-big.png", 1, 0, [
-                              16,
-                              26
-                            ], [
-                              48,
-                              6
-                            ]);
-              case "Running" :
-                  return setup_sprite(undefined, [
-                              2,
-                              1
-                            ], [
-                              13,
-                              25
-                            ], "mario-big.png", 4, 10, [
-                              16,
-                              27
-                            ], [
-                              0,
-                              37
-                            ]);
-              case "Crouching" :
-                  return setup_sprite(undefined, [
-                              2,
-                              10
-                            ], [
-                              13,
-                              17
-                            ], "mario-big.png", 1, 0, [
-                              16,
-                              27
-                            ], [
-                              32,
-                              5
-                            ]);
-              
-            }
-          } else {
+          if (spr_type[1]) {
             switch (typ$1) {
               case "Standing" :
                   return setup_sprite(undefined, [
                               1,
                               1
                             ], [
-                              13,
-                              25
-                            ], "mario-big.png", 1, 0, [
+                              11,
+                              15
+                            ], "mario-small.png", 1, 0, [
                               16,
-                              26
+                              16
                             ], [
-                              16,
-                              69
+                              0,
+                              32
                             ]);
               case "Jumping" :
                   return setup_sprite(undefined, [
                               2,
                               1
                             ], [
-                              12,
-                              25
-                            ], "mario-big.png", 1, 0, [
+                              13,
+                              15
+                            ], "mario-small.png", 2, 10, [
                               16,
-                              26
+                              16
                             ], [
-                              48,
-                              70
+                              16,
+                              48
                             ]);
               case "Running" :
                   return setup_sprite(undefined, [
                               2,
                               1
                             ], [
-                              13,
-                              25
-                            ], "mario-big.png", 4, 10, [
+                              12,
+                              15
+                            ], "mario-small.png", 3, 5, [
                               16,
-                              27
+                              16
                             ], [
-                              0,
-                              101
+                              16,
+                              32
                             ]);
               case "Crouching" :
                   return setup_sprite(undefined, [
-                              2,
+                              1,
+                              5
+                            ], [
+                              14,
                               10
-                            ], [
-                              13,
-                              17
-                            ], "mario-big.png", 1, 0, [
+                            ], "mario-small.png", 1, 0, [
                               16,
-                              27
+                              16
                             ], [
-                              32,
-                              69
+                              0,
+                              64
                             ]);
               
             }
-          }
-        } else {
-          var typ$2 = spr_type[0];
-          if (spr_type[1] === "Left") {
-            switch (typ$2) {
+          } else {
+            switch (typ$1) {
               case "Standing" :
                   return setup_sprite(undefined, [
                               3,
@@ -436,63 +373,126 @@ function make_type(typ, dir) {
                             ]);
               
             }
-          } else {
+          }
+        } else {
+          var typ$2 = spr_type[0];
+          if (spr_type[1]) {
             switch (typ$2) {
               case "Standing" :
                   return setup_sprite(undefined, [
                               1,
                               1
                             ], [
-                              11,
-                              15
-                            ], "mario-small.png", 1, 0, [
+                              13,
+                              25
+                            ], "mario-big.png", 1, 0, [
                               16,
-                              16
+                              26
                             ], [
-                              0,
-                              32
+                              16,
+                              69
                             ]);
               case "Jumping" :
                   return setup_sprite(undefined, [
                               2,
                               1
                             ], [
-                              13,
-                              15
-                            ], "mario-small.png", 2, 10, [
+                              12,
+                              25
+                            ], "mario-big.png", 1, 0, [
                               16,
-                              16
+                              26
                             ], [
-                              16,
-                              48
+                              48,
+                              70
                             ]);
               case "Running" :
                   return setup_sprite(undefined, [
                               2,
                               1
                             ], [
-                              12,
-                              15
-                            ], "mario-small.png", 3, 5, [
+                              13,
+                              25
+                            ], "mario-big.png", 4, 10, [
                               16,
-                              16
+                              27
                             ], [
-                              16,
-                              32
+                              0,
+                              101
                             ]);
               case "Crouching" :
                   return setup_sprite(undefined, [
-                              1,
-                              5
-                            ], [
-                              14,
+                              2,
                               10
-                            ], "mario-small.png", 1, 0, [
+                            ], [
+                              13,
+                              17
+                            ], "mario-big.png", 1, 0, [
                               16,
-                              16
+                              27
+                            ], [
+                              32,
+                              69
+                            ]);
+              
+            }
+          } else {
+            switch (typ$2) {
+              case "Standing" :
+                  return setup_sprite(undefined, [
+                              2,
+                              1
+                            ], [
+                              13,
+                              25
+                            ], "mario-big.png", 1, 0, [
+                              16,
+                              27
+                            ], [
+                              16,
+                              5
+                            ]);
+              case "Jumping" :
+                  return setup_sprite(undefined, [
+                              2,
+                              1
+                            ], [
+                              12,
+                              25
+                            ], "mario-big.png", 1, 0, [
+                              16,
+                              26
+                            ], [
+                              48,
+                              6
+                            ]);
+              case "Running" :
+                  return setup_sprite(undefined, [
+                              2,
+                              1
+                            ], [
+                              13,
+                              25
+                            ], "mario-big.png", 4, 10, [
+                              16,
+                              27
                             ], [
                               0,
-                              64
+                              37
+                            ]);
+              case "Crouching" :
+                  return setup_sprite(undefined, [
+                              2,
+                              10
+                            ], [
+                              13,
+                              17
+                            ], "mario-big.png", 1, 0, [
+                              16,
+                              27
+                            ], [
+                              32,
+                              5
                             ]);
               
             }
@@ -554,7 +554,7 @@ function make_type(typ, dir) {
         }
     case "SBlock" :
         var x$1 = typ._0;
-        if (typeof x$1 === "object") {
+        if (typeof x$1 !== "string") {
           return setup_sprite(undefined, undefined, undefined, "blocks.png", 4, 15, [
                       16,
                       16
@@ -803,10 +803,10 @@ function setup_obj(has_gravityOpt, speedOpt, param) {
 function set_vel_to_speed(obj) {
   var speed = obj.params.speed;
   var match = obj.dir;
-  if (match === "Left") {
-    obj.vel.x = - speed;
-  } else {
+  if (match) {
     obj.vel.x = speed;
+  } else {
+    obj.vel.x = - speed;
   }
 }
 
@@ -1358,7 +1358,7 @@ function kill(collid, ctx) {
     case "Block" :
         var o$2 = collid._2;
         var tmp = collid._0;
-        if (typeof tmp === "object") {
+        if (typeof tmp !== "string") {
           return /* [] */0;
         }
         if (tmp !== "Brick") {
@@ -1695,7 +1695,7 @@ function process_collision(dir, c1, c2, state) {
               var o2$4 = c2._2;
               var t = c2._0;
               if (dir === "North") {
-                if (typeof t !== "object") {
+                if (typeof t === "string") {
                   switch (t) {
                     case "Brick" :
                         if (c1._0 === "BigM") {
@@ -1736,7 +1736,7 @@ function process_collision(dir, c1, c2, state) {
                 }
               } else {
                 var exit$1 = 0;
-                if (typeof t !== "object") {
+                if (typeof t === "string") {
                   if (t === "Panel") {
                     game_win(state.ctx);
                     return [
@@ -1917,7 +1917,7 @@ function process_collision(dir, c1, c2, state) {
                 var typ$2;
                 switch (t1) {
                   case "GKoopaShell" :
-                      if (typeof t2$3 !== "object") {
+                      if (typeof t2$3 === "string") {
                         if (t2$3 === "Brick") {
                           dec_health(o2$6);
                           reverse_left_right(o1$4);
@@ -1933,7 +1933,7 @@ function process_collision(dir, c1, c2, state) {
                       }
                       break;
                   case "RKoopaShell" :
-                      if (typeof t2$3 !== "object") {
+                      if (typeof t2$3 === "string") {
                         if (t2$3 === "Brick") {
                           dec_health(o2$6);
                           reverse_left_right(o1$4);
@@ -2538,8 +2538,7 @@ function choose_sblock_typ(typ) {
     case 2 :
         return "Cloud";
     case 3 :
-        return {
-                TAG: "QBlock",
+        return /* QBlock */{
                 _0: "Mushroom"
               };
     case 4 :

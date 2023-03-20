@@ -293,7 +293,7 @@ function compare(param, param$1) {
 }
 
 function height(param) {
-  if (typeof param !== "object") {
+  if (typeof param === "string") {
     return 0;
   } else {
     return param.h;
@@ -303,8 +303,7 @@ function height(param) {
 function create(l, x, d, r) {
   var hl = height(l);
   var hr = height(r);
-  return {
-          TAG: "Node",
+  return /* Node */{
           l: l,
           v: x,
           d: d,
@@ -315,11 +314,11 @@ function create(l, x, d, r) {
 
 function bal(l, x, d, r) {
   var hl;
-  hl = typeof l !== "object" ? 0 : l.h;
+  hl = typeof l === "string" ? 0 : l.h;
   var hr;
-  hr = typeof r !== "object" ? 0 : r.h;
+  hr = typeof r === "string" ? 0 : r.h;
   if (hl > (hr + 2 | 0)) {
-    if (typeof l !== "object") {
+    if (typeof l === "string") {
       throw {
             RE_EXN_ID: "Invalid_argument",
             _1: "Map.bal",
@@ -333,7 +332,7 @@ function bal(l, x, d, r) {
     if (height(ll) >= height(lr)) {
       return create(ll, lv, ld, create(lr, x, d, r));
     }
-    if (typeof lr === "object") {
+    if (typeof lr !== "string") {
       return create(create(ll, lv, ld, lr.l), lr.v, lr.d, create(lr.r, x, d, r));
     }
     throw {
@@ -343,8 +342,7 @@ function bal(l, x, d, r) {
         };
   }
   if (hr <= (hl + 2 | 0)) {
-    return {
-            TAG: "Node",
+    return /* Node */{
             l: l,
             v: x,
             d: d,
@@ -352,7 +350,7 @@ function bal(l, x, d, r) {
             h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
-  if (typeof r !== "object") {
+  if (typeof r === "string") {
     throw {
           RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal",
@@ -366,7 +364,7 @@ function bal(l, x, d, r) {
   if (height(rr) >= height(rl)) {
     return create(create(l, x, d, rl), rv, rd, rr);
   }
-  if (typeof rl === "object") {
+  if (typeof rl !== "string") {
     return create(create(l, x, d, rl.l), rl.v, rl.d, create(rl.r, rv, rd, rr));
   }
   throw {
@@ -377,9 +375,8 @@ function bal(l, x, d, r) {
 }
 
 function add(x, data, m) {
-  if (typeof m !== "object") {
-    return {
-            TAG: "Node",
+  if (typeof m === "string") {
+    return /* Node */{
             l: "Empty",
             v: x,
             d: data,
@@ -396,8 +393,7 @@ function add(x, data, m) {
     if (d === data) {
       return m;
     } else {
-      return {
-              TAG: "Node",
+      return /* Node */{
               l: l,
               v: x,
               d: data,
@@ -489,7 +485,7 @@ function from_char(param) {
 }
 
 function height$1(param) {
-  if (typeof param !== "object") {
+  if (typeof param === "string") {
     return 0;
   } else {
     return param.h;
@@ -498,11 +494,10 @@ function height$1(param) {
 
 function create$1(l, v, r) {
   var hl;
-  hl = typeof l !== "object" ? 0 : l.h;
+  hl = typeof l === "string" ? 0 : l.h;
   var hr;
-  hr = typeof r !== "object" ? 0 : r.h;
-  return {
-          TAG: "Node",
+  hr = typeof r === "string" ? 0 : r.h;
+  return /* Node */{
           l: l,
           v: v,
           r: r,
@@ -512,11 +507,11 @@ function create$1(l, v, r) {
 
 function bal$1(l, v, r) {
   var hl;
-  hl = typeof l !== "object" ? 0 : l.h;
+  hl = typeof l === "string" ? 0 : l.h;
   var hr;
-  hr = typeof r !== "object" ? 0 : r.h;
+  hr = typeof r === "string" ? 0 : r.h;
   if (hl > (hr + 2 | 0)) {
-    if (typeof l !== "object") {
+    if (typeof l === "string") {
       throw {
             RE_EXN_ID: "Invalid_argument",
             _1: "Set.bal",
@@ -529,7 +524,7 @@ function bal$1(l, v, r) {
     if (height$1(ll) >= height$1(lr)) {
       return create$1(ll, lv, create$1(lr, v, r));
     }
-    if (typeof lr === "object") {
+    if (typeof lr !== "string") {
       return create$1(create$1(ll, lv, lr.l), lr.v, create$1(lr.r, v, r));
     }
     throw {
@@ -539,15 +534,14 @@ function bal$1(l, v, r) {
         };
   }
   if (hr <= (hl + 2 | 0)) {
-    return {
-            TAG: "Node",
+    return /* Node */{
             l: l,
             v: v,
             r: r,
             h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
-  if (typeof r !== "object") {
+  if (typeof r === "string") {
     throw {
           RE_EXN_ID: "Invalid_argument",
           _1: "Set.bal",
@@ -560,7 +554,7 @@ function bal$1(l, v, r) {
   if (height$1(rr) >= height$1(rl)) {
     return create$1(create$1(l, v, rl), rv, rr);
   }
-  if (typeof rl === "object") {
+  if (typeof rl !== "string") {
     return create$1(create$1(l, v, rl.l), rl.v, create$1(rl.r, rv, rr));
   }
   throw {
@@ -571,9 +565,8 @@ function bal$1(l, v, r) {
 }
 
 function add$1(x, t) {
-  if (typeof t !== "object") {
-    return {
-            TAG: "Node",
+  if (typeof t === "string") {
+    return /* Node */{
             l: "Empty",
             v: x,
             r: "Empty",
@@ -717,7 +710,7 @@ function seq$1(ids, kind, x, y) {
   var match = x.def;
   var match$1 = y.def;
   var exit = 0;
-  if (typeof match !== "object") {
+  if (typeof match === "string") {
     return y;
   }
   if (match.TAG === "Alt") {
@@ -729,7 +722,7 @@ function seq$1(ids, kind, x, y) {
     exit = 2;
   }
   if (exit === 2) {
-    if (typeof match$1 !== "object") {
+    if (typeof match$1 === "string") {
       if (kind === "First") {
         return x;
       }
@@ -749,7 +742,7 @@ function seq$1(ids, kind, x, y) {
 
 function is_eps(expr) {
   var match = expr.def;
-  if (typeof match !== "object") {
+  if (typeof match === "string") {
     return true;
   } else {
     return false;
@@ -775,7 +768,7 @@ function erase(ids, m, m$p) {
 
 function rename(ids, x) {
   var l = x.def;
-  if (typeof l !== "object") {
+  if (typeof l === "string") {
     return mk_expr(ids, x.def);
   }
   switch (l.TAG) {
@@ -917,7 +910,7 @@ function tseq(kind, x, y, rem) {
   switch (match.TAG) {
     case "TExp" :
         var tmp = match._1.def;
-        if (typeof tmp !== "object" && !x.tl) {
+        if (typeof tmp === "string" && !x.tl) {
           return {
                   hd: {
                     TAG: "TExp",
@@ -1112,7 +1105,7 @@ function remove_duplicates(prev, _l, y) {
       case "TExp" :
           var x$2 = x._1;
           var tmp = x$2.def;
-          if (typeof tmp !== "object") {
+          if (typeof tmp === "string") {
             var r = l.tl;
             if (List.memq(y.id, prev)) {
               _l = r;
@@ -1212,7 +1205,7 @@ function filter_marks(b, e, marks) {
 
 function delta_1(marks, c, next_cat, prev_cat, x, rem) {
   var s = x.def;
-  if (typeof s !== "object") {
+  if (typeof s === "string") {
     return {
             hd: {
               TAG: "TMatch",
@@ -1439,8 +1432,7 @@ function status(s) {
           break;
       case "TMatch" :
           var m$1 = m._0;
-          st$1 = {
-            TAG: "Match",
+          st$1 = /* Match */{
             _0: flatten_match(m$1.marks),
             _1: m$1.pmarks
           };
@@ -1507,7 +1499,7 @@ var unknown_state = {
 function mk_state(ncol, desc) {
   var match = status(desc);
   var break_state;
-  break_state = typeof match !== "object" && match !== "Failed" ? false : true;
+  break_state = typeof match === "string" && match !== "Failed" ? false : true;
   return {
           idx: break_state ? -3 : desc.idx,
           real_idx: desc.idx,
@@ -1732,7 +1724,7 @@ function trans_set(cache, cm, s) {
     var _param = cache.contents;
     while(true) {
       var param = _param;
-      if (typeof param !== "object") {
+      if (typeof param === "string") {
         throw {
               RE_EXN_ID: "Not_found",
               Error: new Error()
@@ -1762,7 +1754,7 @@ function trans_set(cache, cm, s) {
 function is_charset(_param) {
   while(true) {
     var param = _param;
-    if (typeof param !== "object") {
+    if (typeof param === "string") {
       return false;
     }
     switch (param.TAG) {
@@ -1851,7 +1843,7 @@ function colorize(c, regexp) {
   var colorize$1 = function (_regexp) {
     while(true) {
       var regexp = _regexp;
-      if (typeof regexp !== "object") {
+      if (typeof regexp === "string") {
         switch (regexp) {
           case "Beg_of_line" :
           case "End_of_line" :
@@ -1936,64 +1928,64 @@ function equal$2(_x1, _x2) {
   while(true) {
     var x2 = _x2;
     var x1 = _x1;
-    if (typeof x1 !== "object") {
+    if (typeof x1 === "string") {
       switch (x1) {
         case "Beg_of_line" :
-            if (typeof x2 !== "object" && x2 === "Beg_of_line") {
+            if (typeof x2 === "string" && x2 === "Beg_of_line") {
               return true;
             } else {
               return false;
             }
         case "End_of_line" :
-            if (typeof x2 !== "object" && x2 === "End_of_line") {
+            if (typeof x2 === "string" && x2 === "End_of_line") {
               return true;
             } else {
               return false;
             }
         case "Beg_of_word" :
-            if (typeof x2 !== "object" && x2 === "Beg_of_word") {
+            if (typeof x2 === "string" && x2 === "Beg_of_word") {
               return true;
             } else {
               return false;
             }
         case "End_of_word" :
-            if (typeof x2 !== "object" && x2 === "End_of_word") {
+            if (typeof x2 === "string" && x2 === "End_of_word") {
               return true;
             } else {
               return false;
             }
         case "Not_bound" :
-            if (typeof x2 !== "object" && x2 === "Not_bound") {
+            if (typeof x2 === "string" && x2 === "Not_bound") {
               return true;
             } else {
               return false;
             }
         case "Beg_of_str" :
-            if (typeof x2 !== "object" && x2 === "Beg_of_str") {
+            if (typeof x2 === "string" && x2 === "Beg_of_str") {
               return true;
             } else {
               return false;
             }
         case "End_of_str" :
-            if (typeof x2 !== "object" && x2 === "End_of_str") {
+            if (typeof x2 === "string" && x2 === "End_of_str") {
               return true;
             } else {
               return false;
             }
         case "Last_end_of_line" :
-            if (typeof x2 !== "object" && x2 === "Last_end_of_line") {
+            if (typeof x2 === "string" && x2 === "Last_end_of_line") {
               return true;
             } else {
               return false;
             }
         case "Start" :
-            if (typeof x2 !== "object" && x2 === "Start") {
+            if (typeof x2 === "string" && x2 === "Start") {
               return true;
             } else {
               return false;
             }
         case "Stop" :
-            if (typeof x2 !== "object" && x2 === "Stop") {
+            if (typeof x2 === "string" && x2 === "Stop") {
               return true;
             } else {
               return false;
@@ -2003,25 +1995,25 @@ function equal$2(_x1, _x2) {
     } else {
       switch (x1.TAG) {
         case "Set" :
-            if (typeof x2 !== "object" || x2.TAG !== "Set") {
+            if (typeof x2 === "string" || x2.TAG !== "Set") {
               return false;
             } else {
               return Caml_obj.equal(x1._0, x2._0);
             }
         case "Sequence" :
-            if (typeof x2 !== "object" || x2.TAG !== "Sequence") {
+            if (typeof x2 === "string" || x2.TAG !== "Sequence") {
               return false;
             } else {
               return eq_list(x1._0, x2._0);
             }
         case "Alternative" :
-            if (typeof x2 !== "object" || x2.TAG !== "Alternative") {
+            if (typeof x2 === "string" || x2.TAG !== "Alternative") {
               return false;
             } else {
               return eq_list(x1._0, x2._0);
             }
         case "Repeat" :
-            if (typeof x2 !== "object") {
+            if (typeof x2 === "string") {
               return false;
             }
             if (x2.TAG !== "Repeat") {
@@ -2037,7 +2029,7 @@ function equal$2(_x1, _x2) {
             _x1 = x1._0;
             continue ;
         case "Sem" :
-            if (typeof x2 !== "object") {
+            if (typeof x2 === "string") {
               return false;
             }
             if (x2.TAG !== "Sem") {
@@ -2050,7 +2042,7 @@ function equal$2(_x1, _x2) {
             _x1 = x1._1;
             continue ;
         case "Sem_greedy" :
-            if (typeof x2 !== "object") {
+            if (typeof x2 === "string") {
               return false;
             }
             if (x2.TAG !== "Sem_greedy") {
@@ -2065,7 +2057,7 @@ function equal$2(_x1, _x2) {
         case "Group" :
             return false;
         case "No_group" :
-            if (typeof x2 !== "object") {
+            if (typeof x2 === "string") {
               return false;
             }
             if (x2.TAG !== "No_group") {
@@ -2075,7 +2067,7 @@ function equal$2(_x1, _x2) {
             _x1 = x1._0;
             continue ;
         case "Nest" :
-            if (typeof x2 !== "object") {
+            if (typeof x2 === "string") {
               return false;
             }
             if (x2.TAG !== "Nest") {
@@ -2085,7 +2077,7 @@ function equal$2(_x1, _x2) {
             _x1 = x1._0;
             continue ;
         case "Case" :
-            if (typeof x2 !== "object") {
+            if (typeof x2 === "string") {
               return false;
             }
             if (x2.TAG !== "Case") {
@@ -2095,7 +2087,7 @@ function equal$2(_x1, _x2) {
             _x1 = x1._0;
             continue ;
         case "No_case" :
-            if (typeof x2 !== "object") {
+            if (typeof x2 === "string") {
               return false;
             }
             if (x2.TAG !== "No_case") {
@@ -2105,19 +2097,19 @@ function equal$2(_x1, _x2) {
             _x1 = x1._0;
             continue ;
         case "Intersection" :
-            if (typeof x2 !== "object" || x2.TAG !== "Intersection") {
+            if (typeof x2 === "string" || x2.TAG !== "Intersection") {
               return false;
             } else {
               return eq_list(x1._0, x2._0);
             }
         case "Complement" :
-            if (typeof x2 !== "object" || x2.TAG !== "Complement") {
+            if (typeof x2 === "string" || x2.TAG !== "Complement") {
               return false;
             } else {
               return eq_list(x1._0, x2._0);
             }
         case "Difference" :
-            if (typeof x2 !== "object") {
+            if (typeof x2 === "string") {
               return false;
             }
             if (x2.TAG !== "Difference") {
@@ -2130,7 +2122,7 @@ function equal$2(_x1, _x2) {
             _x1 = x1._1;
             continue ;
         case "Pmark" :
-            if (typeof x2 !== "object") {
+            if (typeof x2 === "string") {
               return false;
             }
             if (x2.TAG !== "Pmark") {
@@ -2189,7 +2181,7 @@ function merge_sequences(_param) {
       return /* [] */0;
     }
     var l$p = param.hd;
-    if (typeof l$p === "object") {
+    if (typeof l$p !== "string") {
       switch (l$p.TAG) {
         case "Sequence" :
             var match = l$p._0;
@@ -2200,7 +2192,7 @@ function merge_sequences(_param) {
               var exit = 0;
               if (r$p) {
                 var match$1 = r$p.hd;
-                if (typeof match$1 !== "object" || match$1.TAG !== "Sequence") {
+                if (typeof match$1 === "string" || match$1.TAG !== "Sequence") {
                   exit = 2;
                 } else {
                   var match$2 = match$1._0;
@@ -2279,7 +2271,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
     var s = _s;
     var greedy = _greedy;
     var ign_group = _ign_group;
-    if (typeof s !== "object") {
+    if (typeof s === "string") {
       switch (s) {
         case "Beg_of_line" :
             var c$1 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.newline);
@@ -2564,7 +2556,7 @@ function case_insens(s) {
 }
 
 function as_set(s) {
-  if (typeof s !== "object") {
+  if (typeof s === "string") {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
@@ -2593,7 +2585,7 @@ function handle_case(_ign_case, _s) {
   while(true) {
     var s = _s;
     var ign_case = _ign_case;
-    if (typeof s !== "object") {
+    if (typeof s === "string") {
       return s;
     }
     switch (s.TAG) {
@@ -2739,7 +2731,7 @@ function handle_case(_ign_case, _s) {
 function anchored(_l) {
   while(true) {
     var l = _l;
-    if (typeof l !== "object") {
+    if (typeof l === "string") {
       switch (l) {
         case "Beg_of_str" :
         case "Start" :
@@ -3249,15 +3241,14 @@ function exec_internal(name, posOpt, lenOpt, groups, re, s) {
     }
     res = match[1];
   }
-  if (typeof res !== "object") {
+  if (typeof res === "string") {
     if (res === "Failed") {
       return "Failed";
     } else {
       return "Running";
     }
   } else {
-    return {
-            TAG: "Match",
+    return /* Match */{
             _0: {
               s: s,
               marks: res._0,
@@ -3411,6 +3402,362 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
             };
     }
   };
+  var piece = function (param) {
+    var r = atom(undefined);
+    if (accept(/* '*' */42)) {
+      return greedy_mod(repn(r, 0, undefined));
+    }
+    if (accept(/* '+' */43)) {
+      return greedy_mod(repn(r, 1, undefined));
+    }
+    if (accept(/* '?' */63)) {
+      return greedy_mod(repn(r, 0, 1));
+    }
+    if (!accept(/* '{' */123)) {
+      return r;
+    }
+    var i$1 = integer(undefined);
+    if (i$1 !== undefined) {
+      var j = accept(/* ',' */44) ? integer(undefined) : i$1;
+      if (!accept(/* '}' */125)) {
+        throw {
+              RE_EXN_ID: Parse_error,
+              Error: new Error()
+            };
+      }
+      if (j !== undefined && j < i$1) {
+        throw {
+              RE_EXN_ID: Parse_error,
+              Error: new Error()
+            };
+      }
+      return greedy_mod(repn(r, i$1, j));
+    }
+    i.contents = i.contents - 1 | 0;
+    return r;
+  };
+  var branch$p = function (_left) {
+    while(true) {
+      var left = _left;
+      if (i.contents === l || test(/* '|' */124) || test(/* ')' */41)) {
+        return seq$2(List.rev(left));
+      }
+      _left = {
+        hd: piece(undefined),
+        tl: left
+      };
+      continue ;
+    };
+  };
+  var atom = function (param) {
+    if (accept(/* '.' */46)) {
+      if (dotall) {
+        return any;
+      } else {
+        return notnl;
+      }
+    }
+    if (accept(/* '(' */40)) {
+      if (accept(/* '?' */63)) {
+        if (accept(/* ':' */58)) {
+          var r = regexp$p(branch$p(/* [] */0));
+          if (!accept(/* ')' */41)) {
+            throw {
+                  RE_EXN_ID: Parse_error,
+                  Error: new Error()
+                };
+          }
+          return r;
+        }
+        if (accept(/* '#' */35)) {
+          var _param;
+          while(true) {
+            if (accept(/* ')' */41)) {
+              return epsilon;
+            }
+            i.contents = i.contents + 1 | 0;
+            _param = undefined;
+            continue ;
+          };
+        }
+        throw {
+              RE_EXN_ID: Parse_error,
+              Error: new Error()
+            };
+      }
+      var r$1 = regexp$p(branch$p(/* [] */0));
+      if (!accept(/* ')' */41)) {
+        throw {
+              RE_EXN_ID: Parse_error,
+              Error: new Error()
+            };
+      }
+      return {
+              TAG: "Group",
+              _0: r$1
+            };
+    }
+    if (accept(/* '^' */94)) {
+      if (multiline) {
+        return "Beg_of_line";
+      } else {
+        return "Beg_of_str";
+      }
+    }
+    if (accept(/* '$' */36)) {
+      if (multiline) {
+        return "End_of_line";
+      } else if (dollar_endonly) {
+        return "Last_end_of_line";
+      } else {
+        return "End_of_str";
+      }
+    }
+    if (accept(/* '[' */91)) {
+      if (accept(/* '^' */94)) {
+        return compl(bracket(/* [] */0));
+      } else {
+        return alt$1(bracket(/* [] */0));
+      }
+    }
+    if (accept(/* '\\' */92)) {
+      if (i.contents === l) {
+        throw {
+              RE_EXN_ID: Parse_error,
+              Error: new Error()
+            };
+      }
+      var c = get(undefined);
+      switch (c) {
+        case 48 :
+        case 49 :
+        case 50 :
+        case 51 :
+        case 52 :
+        case 53 :
+        case 54 :
+        case 55 :
+        case 56 :
+        case 57 :
+            throw {
+                  RE_EXN_ID: Not_supported,
+                  Error: new Error()
+                };
+        case 65 :
+            return "Beg_of_str";
+        case 66 :
+            return "Not_bound";
+        case 68 :
+            return compl({
+                        hd: digit,
+                        tl: /* [] */0
+                      });
+        case 71 :
+            return "Start";
+        case 83 :
+            return compl({
+                        hd: space,
+                        tl: /* [] */0
+                      });
+        case 87 :
+            return compl({
+                        hd: alnum,
+                        tl: {
+                          hd: {
+                            TAG: "Set",
+                            _0: {
+                              hd: [
+                                /* '_' */95,
+                                /* '_' */95
+                              ],
+                              tl: /* [] */0
+                            }
+                          },
+                          tl: /* [] */0
+                        }
+                      });
+        case 90 :
+            return "Last_end_of_line";
+        case 58 :
+        case 59 :
+        case 60 :
+        case 61 :
+        case 62 :
+        case 63 :
+        case 64 :
+        case 91 :
+        case 92 :
+        case 93 :
+        case 94 :
+        case 95 :
+        case 96 :
+            return {
+                    TAG: "Set",
+                    _0: single(c)
+                  };
+        case 98 :
+            return alt$1({
+                        hd: "Beg_of_word",
+                        tl: {
+                          hd: "End_of_word",
+                          tl: /* [] */0
+                        }
+                      });
+        case 100 :
+            return digit;
+        case 115 :
+            return space;
+        case 119 :
+            return alt$1({
+                        hd: alnum,
+                        tl: {
+                          hd: {
+                            TAG: "Set",
+                            _0: {
+                              hd: [
+                                /* '_' */95,
+                                /* '_' */95
+                              ],
+                              tl: /* [] */0
+                            }
+                          },
+                          tl: /* [] */0
+                        }
+                      });
+        case 67 :
+        case 69 :
+        case 70 :
+        case 72 :
+        case 73 :
+        case 74 :
+        case 75 :
+        case 76 :
+        case 77 :
+        case 78 :
+        case 79 :
+        case 80 :
+        case 81 :
+        case 82 :
+        case 84 :
+        case 85 :
+        case 86 :
+        case 88 :
+        case 89 :
+        case 97 :
+        case 99 :
+        case 101 :
+        case 102 :
+        case 103 :
+        case 104 :
+        case 105 :
+        case 106 :
+        case 107 :
+        case 108 :
+        case 109 :
+        case 110 :
+        case 111 :
+        case 112 :
+        case 113 :
+        case 114 :
+        case 116 :
+        case 117 :
+        case 118 :
+        case 120 :
+        case 121 :
+            throw {
+                  RE_EXN_ID: Parse_error,
+                  Error: new Error()
+                };
+        case 122 :
+            return "End_of_str";
+        default:
+          return {
+                  TAG: "Set",
+                  _0: single(c)
+                };
+      }
+    } else {
+      if (i.contents === l) {
+        throw {
+              RE_EXN_ID: Parse_error,
+              Error: new Error()
+            };
+      }
+      var c$1 = get(undefined);
+      if (c$1 >= 64) {
+        if (c$1 !== 92) {
+          if (c$1 !== 123) {
+            return {
+                    TAG: "Set",
+                    _0: single(c$1)
+                  };
+          }
+          throw {
+                RE_EXN_ID: Parse_error,
+                Error: new Error()
+              };
+        }
+        throw {
+              RE_EXN_ID: Parse_error,
+              Error: new Error()
+            };
+      }
+      if (c$1 >= 44) {
+        if (c$1 >= 63) {
+          throw {
+                RE_EXN_ID: Parse_error,
+                Error: new Error()
+              };
+        }
+        return {
+                TAG: "Set",
+                _0: single(c$1)
+              };
+      }
+      if (c$1 >= 42) {
+        throw {
+              RE_EXN_ID: Parse_error,
+              Error: new Error()
+            };
+      }
+      return {
+              TAG: "Set",
+              _0: single(c$1)
+            };
+    }
+  };
+  var integer = function (param) {
+    if (i.contents === l) {
+      return ;
+    }
+    var d = get(undefined);
+    if (d > 57 || d < 48) {
+      i.contents = i.contents - 1 | 0;
+      return ;
+    } else {
+      var _i = d - /* '0' */48 | 0;
+      while(true) {
+        var i$1 = _i;
+        if (i.contents === l) {
+          return i$1;
+        }
+        var d$1 = get(undefined);
+        if (d$1 > 57 || d$1 < 48) {
+          i.contents = i.contents - 1 | 0;
+          return i$1;
+        }
+        var i$p = Math.imul(10, i$1) + (d$1 - /* '0' */48 | 0) | 0;
+        if (i$p < i$1) {
+          throw {
+                RE_EXN_ID: Parse_error,
+                Error: new Error()
+              };
+        }
+        _i = i$p;
+        continue ;
+      };
+    }
+  };
   var regexp$p = function (_left) {
     while(true) {
       var left = _left;
@@ -3427,15 +3774,83 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       continue ;
     };
   };
-  var branch$p = function (_left) {
+  var bracket = function (_s) {
     while(true) {
-      var left = _left;
-      if (i.contents === l || test(/* '|' */124) || test(/* ')' */41)) {
-        return seq$2(List.rev(left));
+      var s = _s;
+      if (s !== /* [] */0 && accept(/* ']' */93)) {
+        return s;
       }
-      _left = {
-        hd: piece(undefined),
-        tl: left
+      var match = $$char(undefined);
+      if (match.NAME === "Char") {
+        var c = match.VAL;
+        if (accept(/* '-' */45)) {
+          if (accept(/* ']' */93)) {
+            return {
+                    hd: {
+                      TAG: "Set",
+                      _0: single(c)
+                    },
+                    tl: {
+                      hd: {
+                        TAG: "Set",
+                        _0: {
+                          hd: [
+                            /* '-' */45,
+                            /* '-' */45
+                          ],
+                          tl: /* [] */0
+                        }
+                      },
+                      tl: s
+                    }
+                  };
+          }
+          var match$1 = $$char(undefined);
+          if (match$1.NAME !== "Char") {
+            return {
+                    hd: {
+                      TAG: "Set",
+                      _0: single(c)
+                    },
+                    tl: {
+                      hd: {
+                        TAG: "Set",
+                        _0: {
+                          hd: [
+                            /* '-' */45,
+                            /* '-' */45
+                          ],
+                          tl: /* [] */0
+                        }
+                      },
+                      tl: {
+                        hd: match$1.VAL,
+                        tl: s
+                      }
+                    }
+                  };
+          }
+          _s = {
+            hd: {
+              TAG: "Set",
+              _0: seq(c, match$1.VAL)
+            },
+            tl: s
+          };
+          continue ;
+        }
+        _s = {
+          hd: {
+            TAG: "Set",
+            _0: single(c)
+          },
+          tl: s
+        };
+        continue ;
+      }
+      _s = {
+        hd: match.VAL,
+        tl: s
       };
       continue ;
     };
@@ -3735,430 +4150,6 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
             };
     }
   };
-  var bracket = function (_s) {
-    while(true) {
-      var s = _s;
-      if (s !== /* [] */0 && accept(/* ']' */93)) {
-        return s;
-      }
-      var match = $$char(undefined);
-      if (match.NAME === "Char") {
-        var c = match.VAL;
-        if (accept(/* '-' */45)) {
-          if (accept(/* ']' */93)) {
-            return {
-                    hd: {
-                      TAG: "Set",
-                      _0: single(c)
-                    },
-                    tl: {
-                      hd: {
-                        TAG: "Set",
-                        _0: {
-                          hd: [
-                            /* '-' */45,
-                            /* '-' */45
-                          ],
-                          tl: /* [] */0
-                        }
-                      },
-                      tl: s
-                    }
-                  };
-          }
-          var match$1 = $$char(undefined);
-          if (match$1.NAME !== "Char") {
-            return {
-                    hd: {
-                      TAG: "Set",
-                      _0: single(c)
-                    },
-                    tl: {
-                      hd: {
-                        TAG: "Set",
-                        _0: {
-                          hd: [
-                            /* '-' */45,
-                            /* '-' */45
-                          ],
-                          tl: /* [] */0
-                        }
-                      },
-                      tl: {
-                        hd: match$1.VAL,
-                        tl: s
-                      }
-                    }
-                  };
-          }
-          _s = {
-            hd: {
-              TAG: "Set",
-              _0: seq(c, match$1.VAL)
-            },
-            tl: s
-          };
-          continue ;
-        }
-        _s = {
-          hd: {
-            TAG: "Set",
-            _0: single(c)
-          },
-          tl: s
-        };
-        continue ;
-      }
-      _s = {
-        hd: match.VAL,
-        tl: s
-      };
-      continue ;
-    };
-  };
-  var piece = function (param) {
-    var r = atom(undefined);
-    if (accept(/* '*' */42)) {
-      return greedy_mod(repn(r, 0, undefined));
-    }
-    if (accept(/* '+' */43)) {
-      return greedy_mod(repn(r, 1, undefined));
-    }
-    if (accept(/* '?' */63)) {
-      return greedy_mod(repn(r, 0, 1));
-    }
-    if (!accept(/* '{' */123)) {
-      return r;
-    }
-    var i$1 = integer(undefined);
-    if (i$1 !== undefined) {
-      var j = accept(/* ',' */44) ? integer(undefined) : i$1;
-      if (!accept(/* '}' */125)) {
-        throw {
-              RE_EXN_ID: Parse_error,
-              Error: new Error()
-            };
-      }
-      if (j !== undefined && j < i$1) {
-        throw {
-              RE_EXN_ID: Parse_error,
-              Error: new Error()
-            };
-      }
-      return greedy_mod(repn(r, i$1, j));
-    }
-    i.contents = i.contents - 1 | 0;
-    return r;
-  };
-  var integer = function (param) {
-    if (i.contents === l) {
-      return ;
-    }
-    var d = get(undefined);
-    if (d > 57 || d < 48) {
-      i.contents = i.contents - 1 | 0;
-      return ;
-    } else {
-      var _i = d - /* '0' */48 | 0;
-      while(true) {
-        var i$1 = _i;
-        if (i.contents === l) {
-          return i$1;
-        }
-        var d$1 = get(undefined);
-        if (d$1 > 57 || d$1 < 48) {
-          i.contents = i.contents - 1 | 0;
-          return i$1;
-        }
-        var i$p = Math.imul(10, i$1) + (d$1 - /* '0' */48 | 0) | 0;
-        if (i$p < i$1) {
-          throw {
-                RE_EXN_ID: Parse_error,
-                Error: new Error()
-              };
-        }
-        _i = i$p;
-        continue ;
-      };
-    }
-  };
-  var atom = function (param) {
-    if (accept(/* '.' */46)) {
-      if (dotall) {
-        return any;
-      } else {
-        return notnl;
-      }
-    }
-    if (accept(/* '(' */40)) {
-      if (accept(/* '?' */63)) {
-        if (accept(/* ':' */58)) {
-          var r = regexp$p(branch$p(/* [] */0));
-          if (!accept(/* ')' */41)) {
-            throw {
-                  RE_EXN_ID: Parse_error,
-                  Error: new Error()
-                };
-          }
-          return r;
-        }
-        if (accept(/* '#' */35)) {
-          var _param;
-          while(true) {
-            if (accept(/* ')' */41)) {
-              return epsilon;
-            }
-            i.contents = i.contents + 1 | 0;
-            _param = undefined;
-            continue ;
-          };
-        }
-        throw {
-              RE_EXN_ID: Parse_error,
-              Error: new Error()
-            };
-      }
-      var r$1 = regexp$p(branch$p(/* [] */0));
-      if (!accept(/* ')' */41)) {
-        throw {
-              RE_EXN_ID: Parse_error,
-              Error: new Error()
-            };
-      }
-      return {
-              TAG: "Group",
-              _0: r$1
-            };
-    }
-    if (accept(/* '^' */94)) {
-      if (multiline) {
-        return "Beg_of_line";
-      } else {
-        return "Beg_of_str";
-      }
-    }
-    if (accept(/* '$' */36)) {
-      if (multiline) {
-        return "End_of_line";
-      } else if (dollar_endonly) {
-        return "Last_end_of_line";
-      } else {
-        return "End_of_str";
-      }
-    }
-    if (accept(/* '[' */91)) {
-      if (accept(/* '^' */94)) {
-        return compl(bracket(/* [] */0));
-      } else {
-        return alt$1(bracket(/* [] */0));
-      }
-    }
-    if (accept(/* '\\' */92)) {
-      if (i.contents === l) {
-        throw {
-              RE_EXN_ID: Parse_error,
-              Error: new Error()
-            };
-      }
-      var c = get(undefined);
-      switch (c) {
-        case 48 :
-        case 49 :
-        case 50 :
-        case 51 :
-        case 52 :
-        case 53 :
-        case 54 :
-        case 55 :
-        case 56 :
-        case 57 :
-            throw {
-                  RE_EXN_ID: Not_supported,
-                  Error: new Error()
-                };
-        case 65 :
-            return "Beg_of_str";
-        case 66 :
-            return "Not_bound";
-        case 68 :
-            return compl({
-                        hd: digit,
-                        tl: /* [] */0
-                      });
-        case 71 :
-            return "Start";
-        case 83 :
-            return compl({
-                        hd: space,
-                        tl: /* [] */0
-                      });
-        case 87 :
-            return compl({
-                        hd: alnum,
-                        tl: {
-                          hd: {
-                            TAG: "Set",
-                            _0: {
-                              hd: [
-                                /* '_' */95,
-                                /* '_' */95
-                              ],
-                              tl: /* [] */0
-                            }
-                          },
-                          tl: /* [] */0
-                        }
-                      });
-        case 90 :
-            return "Last_end_of_line";
-        case 58 :
-        case 59 :
-        case 60 :
-        case 61 :
-        case 62 :
-        case 63 :
-        case 64 :
-        case 91 :
-        case 92 :
-        case 93 :
-        case 94 :
-        case 95 :
-        case 96 :
-            return {
-                    TAG: "Set",
-                    _0: single(c)
-                  };
-        case 98 :
-            return alt$1({
-                        hd: "Beg_of_word",
-                        tl: {
-                          hd: "End_of_word",
-                          tl: /* [] */0
-                        }
-                      });
-        case 100 :
-            return digit;
-        case 115 :
-            return space;
-        case 119 :
-            return alt$1({
-                        hd: alnum,
-                        tl: {
-                          hd: {
-                            TAG: "Set",
-                            _0: {
-                              hd: [
-                                /* '_' */95,
-                                /* '_' */95
-                              ],
-                              tl: /* [] */0
-                            }
-                          },
-                          tl: /* [] */0
-                        }
-                      });
-        case 67 :
-        case 69 :
-        case 70 :
-        case 72 :
-        case 73 :
-        case 74 :
-        case 75 :
-        case 76 :
-        case 77 :
-        case 78 :
-        case 79 :
-        case 80 :
-        case 81 :
-        case 82 :
-        case 84 :
-        case 85 :
-        case 86 :
-        case 88 :
-        case 89 :
-        case 97 :
-        case 99 :
-        case 101 :
-        case 102 :
-        case 103 :
-        case 104 :
-        case 105 :
-        case 106 :
-        case 107 :
-        case 108 :
-        case 109 :
-        case 110 :
-        case 111 :
-        case 112 :
-        case 113 :
-        case 114 :
-        case 116 :
-        case 117 :
-        case 118 :
-        case 120 :
-        case 121 :
-            throw {
-                  RE_EXN_ID: Parse_error,
-                  Error: new Error()
-                };
-        case 122 :
-            return "End_of_str";
-        default:
-          return {
-                  TAG: "Set",
-                  _0: single(c)
-                };
-      }
-    } else {
-      if (i.contents === l) {
-        throw {
-              RE_EXN_ID: Parse_error,
-              Error: new Error()
-            };
-      }
-      var c$1 = get(undefined);
-      if (c$1 >= 64) {
-        if (c$1 !== 92) {
-          if (c$1 !== 123) {
-            return {
-                    TAG: "Set",
-                    _0: single(c$1)
-                  };
-          }
-          throw {
-                RE_EXN_ID: Parse_error,
-                Error: new Error()
-              };
-        }
-        throw {
-              RE_EXN_ID: Parse_error,
-              Error: new Error()
-            };
-      }
-      if (c$1 >= 44) {
-        if (c$1 >= 63) {
-          throw {
-                RE_EXN_ID: Parse_error,
-                Error: new Error()
-              };
-        }
-        return {
-                TAG: "Set",
-                _0: single(c$1)
-              };
-      }
-      if (c$1 >= 42) {
-        throw {
-              RE_EXN_ID: Parse_error,
-              Error: new Error()
-            };
-      }
-      return {
-              TAG: "Set",
-              _0: single(c$1)
-            };
-    }
-  };
   var res = regexp$p(branch$p(/* [] */0));
   if (i.contents !== l) {
     throw {
@@ -4203,7 +4194,7 @@ function re(flagsOpt, pat) {
 function exec(rex, pos, s) {
   var len;
   var substr = exec_internal("Re.exec", pos, len, true, rex, s);
-  if (typeof substr === "object") {
+  if (typeof substr !== "string") {
     return substr._0;
   }
   if (substr === "Failed") {

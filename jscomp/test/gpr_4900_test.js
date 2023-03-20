@@ -11,7 +11,7 @@ var test_id = {
 };
 
 function showToJs(x) {
-  if (typeof x !== "object" && x === "No") {
+  if (typeof x === "string" && x === "No") {
     return false;
   } else {
     return true;

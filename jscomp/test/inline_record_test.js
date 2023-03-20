@@ -17,13 +17,13 @@ function eq(loc, x, y) {
 }
 
 var v = {
-  TAG: "A0",
+  TAG: /* A0 */0,
   lbl: 3,
   more: /* [] */0
 };
 
 var v1 = {
-  TAG: "A1",
+  TAG: /* A1 */1,
   more: {
     hd: 1,
     tl: {
@@ -88,14 +88,14 @@ function ff(x) {
 }
 
 var v4 = {
-  TAG: "A0",
+  TAG: /* A0 */0,
   x: 0,
   y: 0,
   z: 0
 };
 
 var v5 = {
-  TAG: "A1",
+  TAG: /* A1 */1,
   z: 0
 };
 
@@ -181,11 +181,10 @@ if (v6.RE_EXN_ID === A4) {
 eq("File \"inline_record_test.ml\", line 87, characters 6-13", tmp$3, 11);
 
 function ff1(x) {
-  if (typeof x !== "object") {
+  if (typeof x === "string") {
     return "A1";
   } else {
-    return {
-            TAG: "A0",
+    return /* A0 */{
             lbl: x.lbl + 1 | 0,
             more: x.more
           };
@@ -194,14 +193,12 @@ function ff1(x) {
 
 Mt.from_pair_suites("Inline_record_test", suites.contents);
 
-var v2 = {
-  TAG: "A0",
+var v2 = /* A0 */{
   lbl: 3,
   more: /* [] */0
 };
 
-var vvv = {
-  TAG: "A0",
+var vvv = /* A0 */{
   lbl: 3,
   more: /* [] */0
 };

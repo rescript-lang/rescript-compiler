@@ -5,7 +5,7 @@ var Caml_array = require("../../lib/js/caml_array.js");
 function $$eval(_bdd, vars) {
   while(true) {
     var bdd = _bdd;
-    if (typeof bdd !== "object") {
+    if (typeof bdd === "string") {
       if (bdd === "One") {
         return true;
       } else {
@@ -22,7 +22,7 @@ function $$eval(_bdd, vars) {
 }
 
 function getId(bdd) {
-  if (typeof bdd !== "object") {
+  if (typeof bdd === "string") {
     if (bdd === "One") {
       return 1;
     } else {
@@ -64,7 +64,7 @@ function resize(newSize) {
         return ;
       }
       var n = bucket.hd;
-      if (typeof n !== "object") {
+      if (typeof n === "string") {
         if (n === "One") {
           throw {
                 RE_EXN_ID: "Assert_failure",
@@ -140,7 +140,7 @@ function mkNode(low, v, high) {
     var b = _b;
     if (b) {
       var n = b.hd;
-      if (typeof n !== "object") {
+      if (typeof n === "string") {
         if (n === "One") {
           throw {
                 RE_EXN_ID: "Assert_failure",
@@ -170,8 +170,7 @@ function mkNode(low, v, high) {
       }
     } else {
       var n_2 = (nodeC.contents = nodeC.contents + 1 | 0, nodeC.contents);
-      var n$1 = {
-        TAG: "Node",
+      var n$1 = /* Node */{
         _0: low,
         _1: v,
         _2: n_2,
@@ -218,7 +217,7 @@ function hash(x, y) {
 }
 
 function not(n) {
-  if (typeof n !== "object") {
+  if (typeof n === "string") {
     if (n === "One") {
       return "Zero";
     } else {
@@ -237,7 +236,7 @@ function not(n) {
 }
 
 function and2(n1, n2) {
-  if (typeof n1 !== "object") {
+  if (typeof n1 === "string") {
     if (n1 === "One") {
       return n2;
     } else {
@@ -248,7 +247,7 @@ function and2(n1, n2) {
   var i1 = n1._2;
   var v1 = n1._1;
   var l1 = n1._0;
-  if (typeof n2 !== "object") {
+  if (typeof n2 === "string") {
     if (n2 === "One") {
       return n1;
     } else {
@@ -284,7 +283,7 @@ function and2(n1, n2) {
 }
 
 function xor(n1, n2) {
-  if (typeof n1 !== "object") {
+  if (typeof n1 === "string") {
     if (n1 === "One") {
       return not(n2);
     } else {
@@ -295,7 +294,7 @@ function xor(n1, n2) {
   var i1 = n1._2;
   var v1 = n1._1;
   var l1 = n1._0;
-  if (typeof n2 !== "object") {
+  if (typeof n2 === "string") {
     if (n2 === "One") {
       return not(n1);
     } else {
