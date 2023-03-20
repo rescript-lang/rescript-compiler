@@ -43,6 +43,10 @@ function bar3(__x) {
   return foo3(__x, 3, 4);
 }
 
+function q(param) {
+  return null;
+}
+
 exports.foo = foo;
 exports.z = z;
 exports.bar = bar;
@@ -54,4 +58,5 @@ exports.foo2 = foo2;
 exports.bar2 = bar2;
 exports.foo3 = foo3;
 exports.bar3 = bar3;
+exports.q = q;
 /*  Not a pure module */
