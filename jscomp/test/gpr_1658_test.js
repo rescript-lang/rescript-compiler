@@ -18,7 +18,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -32,13 +32,13 @@ eq("File \"gpr_1658_test.ml\", line 11, characters 7-14", null, null);
 
 var match = Js_types.classify(null);
 
-if (/* tag */typeof match === "number" && match === /* JSNull */2) {
+if (typeof match === "string" && match === "JSNull") {
   eq("File \"gpr_1658_test.ml\", line 14, characters 11-18", true, true);
 } else {
   eq("File \"gpr_1658_test.ml\", line 16, characters 11-18", true, false);
 }
 
-eq("File \"gpr_1658_test.ml\", line 17, characters 7-14", true, Js_types.test(null, /* Null */1));
+eq("File \"gpr_1658_test.ml\", line 17, characters 7-14", true, Js_types.test(null, "Null"));
 
 Mt.from_pair_suites("File \"gpr_1658_test.ml\", line 19, characters 22-29", suites.contents);
 

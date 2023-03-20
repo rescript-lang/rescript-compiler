@@ -30,15 +30,6 @@ module E = Js_exp_make
 let make_block mutable_flag (tag_info : Lam_tag_info.t) tag args =
   match tag_info with _ -> E.make_block tag tag_info args mutable_flag
 
-(* | _, (  Tuple | Variant _ ) -> (\** TODO: check with inline record *\) *)
-(*     E.arr Immutable *)
-(*       (E.small_int  ?comment:(Lam_compile_util.comment_of_tag_info tag_info) tag   *)
-(*        :: args) *)
-(* | _, _  ->  *)
-(*     E.arr mutable_flag *)
-(*       (E.int  ?comment:(Lam_compile_util.comment_of_tag_info tag_info) tag   *)
-(*        :: args) *)
-
 let field (field_info : Lam_compat.field_dbg_info) e (i : int32) =
   match field_info with
   | Fld_tuple | Fld_array ->

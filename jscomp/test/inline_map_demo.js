@@ -5,7 +5,7 @@ var Caml = require("../../lib/js/caml.js");
 var List = require("../../lib/js/list.js");
 
 function height(x) {
-  if (/* tag */typeof x === "number") {
+  if (typeof x === "string") {
     return 0;
   } else {
     return x._4;
@@ -26,11 +26,11 @@ function create(l, x, d, r) {
 
 function bal(l, x, d, r) {
   var hl;
-  hl = /* tag */typeof l === "number" ? 0 : l._4;
+  hl = typeof l === "string" ? 0 : l._4;
   var hr;
-  hr = /* tag */typeof r === "number" ? 0 : r._4;
+  hr = typeof r === "string" ? 0 : r._4;
   if (hl > (hr + 2 | 0)) {
-    if (/* tag */typeof l === "number") {
+    if (typeof l === "string") {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
@@ -48,7 +48,7 @@ function bal(l, x, d, r) {
     if (height(ll) >= height(lr)) {
       return create(ll, lv, ld, create(lr, x, d, r));
     }
-    if (/* tag */typeof lr !== "number") {
+    if (typeof lr !== "string") {
       return create(create(ll, lv, ld, lr._0), lr._1, lr._2, create(lr._3, x, d, r));
     }
     throw {
@@ -70,7 +70,7 @@ function bal(l, x, d, r) {
             _4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
-  if (/* tag */typeof r === "number") {
+  if (typeof r === "string") {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
@@ -88,7 +88,7 @@ function bal(l, x, d, r) {
   if (height(rr) >= height(rl)) {
     return create(create(l, x, d, rl), rv, rd, rr);
   }
-  if (/* tag */typeof rl !== "number") {
+  if (typeof rl !== "string") {
     return create(create(l, x, d, rl._0), rl._1, rl._2, create(rl._3, rv, rd, rr));
   }
   throw {
@@ -103,12 +103,12 @@ function bal(l, x, d, r) {
 }
 
 function add(x, data, tree) {
-  if (/* tag */typeof tree === "number") {
+  if (typeof tree === "string") {
     return /* Node */{
-            _0: /* Empty */0,
+            _0: "Empty",
             _1: x,
             _2: data,
-            _3: /* Empty */0,
+            _3: "Empty",
             _4: 1
           };
   }
@@ -134,7 +134,7 @@ function add(x, data, tree) {
 
 var m = List.fold_left((function (acc, param) {
         return add(param[0], param[1], acc);
-      }), /* Empty */0, {
+      }), "Empty", {
       hd: [
         10,
         /* 'a' */97
@@ -163,7 +163,7 @@ var m = List.fold_left((function (acc, param) {
 function find(px, _x) {
   while(true) {
     var x = _x;
-    if (/* tag */typeof x === "number") {
+    if (typeof x === "string") {
       throw {
             RE_EXN_ID: "Not_found",
             Error: new Error()
@@ -183,7 +183,7 @@ Mt.from_pair_suites("Inline_map_demo", {
         "find",
         (function (param) {
             return {
-                    TAG: /* Eq */0,
+                    TAG: "Eq",
                     _0: find(10, m),
                     _1: /* 'a' */97
                   };

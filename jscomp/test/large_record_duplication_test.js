@@ -83,7 +83,7 @@ var v1 = /* A0 */{
 };
 
 function get_x0(x) {
-  if (/* tag */typeof x === "number") {
+  if (typeof x === "string") {
     return ;
   } else {
     return x.x0;
@@ -91,8 +91,8 @@ function get_x0(x) {
 }
 
 function f1(x) {
-  if (/* tag */typeof x === "number") {
-    return /* A1 */0;
+  if (typeof x === "string") {
+    return "A1";
   }
   var newrecord = Caml_obj.obj_dup(x);
   newrecord.x0 = 1;
@@ -129,14 +129,14 @@ var v2 = {
 };
 
 function get_x0$1(x) {
-  if (x.TAG === /* A0 */0) {
+  if (x.TAG === "A0") {
     return x.x0;
   }
   
 }
 
 function f2(x) {
-  if (x.TAG !== /* A0 */0) {
+  if (x.TAG !== "A0") {
     return x;
   }
   var newrecord = Caml_obj.obj_dup(x);

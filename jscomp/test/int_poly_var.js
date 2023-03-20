@@ -11,7 +11,7 @@ var suites = {
 };
 
 function nest(x) {
-  if (x.TAG === /* A */0) {
+  if (x.TAG === "A") {
     var match = x._0;
     if (match === 0) {
       return 0;
@@ -70,52 +70,52 @@ var hihi = f3(3, 0);
 var hh10 = "3" === 3;
 
 var tuple_0 = nest({
-      TAG: /* A */0,
+      TAG: "A",
       _0: 0
     });
 
 var tuple_1 = nest({
-      TAG: /* A */0,
+      TAG: "A",
       _0: 1
     });
 
 var tuple_2 = nest({
-      TAG: /* A */0,
+      TAG: "A",
       _0: 2
     });
 
 var tuple_3 = nest({
-      TAG: /* B */1,
+      TAG: "B",
       _0: 1,
       _1: 0
     });
 
 var tuple_4 = nest({
-      TAG: /* B */1,
+      TAG: "B",
       _0: 1,
       _1: 1
     });
 
 var tuple_5 = nest({
-      TAG: /* B */1,
+      TAG: "B",
       _0: 2,
       _1: 1
     });
 
 var tuple_6 = nest({
-      TAG: /* B */1,
+      TAG: "B",
       _0: 2,
       _1: 2
     });
 
 var tuple_7 = nest({
-      TAG: /* B */1,
+      TAG: "B",
       _0: 0,
       _1: 0
     });
 
 var tuple_8 = nest({
-      TAG: /* B */1,
+      TAG: "B",
       _0: 0,
       _1: 1
     });

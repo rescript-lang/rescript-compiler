@@ -3,12 +3,12 @@
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 function insert(queue, prio, elt) {
-  if (/* tag */typeof queue === "number") {
+  if (typeof queue === "string") {
     return /* Node */{
             _0: prio,
             _1: elt,
-            _2: /* Empty */0,
-            _3: /* Empty */0
+            _2: "Empty",
+            _3: "Empty"
           };
   }
   var right = queue._3;
@@ -35,7 +35,7 @@ function insert(queue, prio, elt) {
 var Queue_is_empty = /* @__PURE__ */Caml_exceptions.create("Pq_test.PrioQueue.Queue_is_empty");
 
 function remove_top(param) {
-  if (/* tag */typeof param === "number") {
+  if (typeof param === "string") {
     throw {
           RE_EXN_ID: Queue_is_empty,
           Error: new Error()
@@ -43,10 +43,10 @@ function remove_top(param) {
   }
   var left = param._2;
   var tmp = param._3;
-  if (/* tag */typeof tmp === "number") {
+  if (typeof tmp === "string") {
     return left;
   }
-  if (/* tag */typeof left === "number") {
+  if (typeof left === "string") {
     return param._3;
   }
   var right = param._3;
@@ -70,7 +70,7 @@ function remove_top(param) {
 }
 
 function extract(queue) {
-  if (/* tag */typeof queue !== "number") {
+  if (typeof queue !== "string") {
     return [
             queue._0,
             queue._1,
@@ -84,7 +84,7 @@ function extract(queue) {
 }
 
 var PrioQueue = {
-  empty: /* Empty */0,
+  empty: "Empty",
   insert: insert,
   Queue_is_empty: Queue_is_empty,
   remove_top: remove_top,

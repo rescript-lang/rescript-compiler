@@ -61,7 +61,7 @@ var suites_0 = [
   "simple",
   (function (param) {
       return {
-              TAG: /* Eq */0,
+              TAG: "Eq",
               _0: {
                 hd: [
                   1,
@@ -85,7 +85,7 @@ var suites_1 = {
     "more_iterations",
     (function (param) {
         return {
-                TAG: /* Eq */0,
+                TAG: "Eq",
                 _0: $$Array.init(1001, (function (i) {
                         return [
                                 (i << 1),

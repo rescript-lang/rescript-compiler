@@ -8,7 +8,7 @@ Mt.from_pair_suites("Closure", {
         "partial",
         (function (param) {
             return {
-                    TAG: /* Eq */0,
+                    TAG: "Eq",
                     _0: [
                       Test_google_closure.a,
                       Test_google_closure.b,

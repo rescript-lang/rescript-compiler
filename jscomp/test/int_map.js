@@ -5,7 +5,7 @@ var Curry = require("../../lib/js/curry.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
 function height(param) {
-  if (/* tag */typeof param === "number") {
+  if (typeof param === "string") {
     return 0;
   } else {
     return param.h;
@@ -26,21 +26,21 @@ function create(l, x, d, r) {
 
 function singleton(x, d) {
   return /* Node */{
-          l: /* Empty */0,
+          l: "Empty",
           v: x,
           d: d,
-          r: /* Empty */0,
+          r: "Empty",
           h: 1
         };
 }
 
 function bal(l, x, d, r) {
   var hl;
-  hl = /* tag */typeof l === "number" ? 0 : l.h;
+  hl = typeof l === "string" ? 0 : l.h;
   var hr;
-  hr = /* tag */typeof r === "number" ? 0 : r.h;
+  hr = typeof r === "string" ? 0 : r.h;
   if (hl > (hr + 2 | 0)) {
-    if (/* tag */typeof l === "number") {
+    if (typeof l === "string") {
       throw {
             RE_EXN_ID: "Invalid_argument",
             _1: "Map.bal",
@@ -54,7 +54,7 @@ function bal(l, x, d, r) {
     if (height(ll) >= height(lr)) {
       return create(ll, lv, ld, create(lr, x, d, r));
     }
-    if (/* tag */typeof lr !== "number") {
+    if (typeof lr !== "string") {
       return create(create(ll, lv, ld, lr.l), lr.v, lr.d, create(lr.r, x, d, r));
     }
     throw {
@@ -72,7 +72,7 @@ function bal(l, x, d, r) {
             h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
-  if (/* tag */typeof r === "number") {
+  if (typeof r === "string") {
     throw {
           RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal",
@@ -86,7 +86,7 @@ function bal(l, x, d, r) {
   if (height(rr) >= height(rl)) {
     return create(create(l, x, d, rl), rv, rd, rr);
   }
-  if (/* tag */typeof rl !== "number") {
+  if (typeof rl !== "string") {
     return create(create(l, x, d, rl.l), rl.v, rl.d, create(rl.r, rv, rd, rr));
   }
   throw {
@@ -97,7 +97,7 @@ function bal(l, x, d, r) {
 }
 
 function is_empty(param) {
-  if (/* tag */typeof param === "number") {
+  if (typeof param === "string") {
     return true;
   } else {
     return false;
@@ -105,12 +105,12 @@ function is_empty(param) {
 }
 
 function add(x, data, m) {
-  if (/* tag */typeof m === "number") {
+  if (typeof m === "string") {
     return /* Node */{
-            l: /* Empty */0,
+            l: "Empty",
             v: x,
             d: data,
-            r: /* Empty */0,
+            r: "Empty",
             h: 1
           };
   }
@@ -151,7 +151,7 @@ function add(x, data, m) {
 function find(x, _param) {
   while(true) {
     var param = _param;
-    if (/* tag */typeof param === "number") {
+    if (typeof param === "string") {
       throw {
             RE_EXN_ID: "Not_found",
             Error: new Error()
@@ -169,7 +169,7 @@ function find(x, _param) {
 function find_first(f, _param) {
   while(true) {
     var param = _param;
-    if (/* tag */typeof param === "number") {
+    if (typeof param === "string") {
       throw {
             RE_EXN_ID: "Not_found",
             Error: new Error()
@@ -184,7 +184,7 @@ function find_first(f, _param) {
         var param$1 = _param$1;
         var d0 = _d0;
         var v0 = _v0;
-        if (/* tag */typeof param$1 === "number") {
+        if (typeof param$1 === "string") {
           return [
                   v0,
                   d0
@@ -209,7 +209,7 @@ function find_first(f, _param) {
 function find_first_opt(f, _param) {
   while(true) {
     var param = _param;
-    if (/* tag */typeof param === "number") {
+    if (typeof param === "string") {
       return ;
     }
     var v = param.v;
@@ -221,7 +221,7 @@ function find_first_opt(f, _param) {
         var param$1 = _param$1;
         var d0 = _d0;
         var v0 = _v0;
-        if (/* tag */typeof param$1 === "number") {
+        if (typeof param$1 === "string") {
           return [
                   v0,
                   d0
@@ -246,7 +246,7 @@ function find_first_opt(f, _param) {
 function find_last(f, _param) {
   while(true) {
     var param = _param;
-    if (/* tag */typeof param === "number") {
+    if (typeof param === "string") {
       throw {
             RE_EXN_ID: "Not_found",
             Error: new Error()
@@ -261,7 +261,7 @@ function find_last(f, _param) {
         var param$1 = _param$1;
         var d0 = _d0;
         var v0 = _v0;
-        if (/* tag */typeof param$1 === "number") {
+        if (typeof param$1 === "string") {
           return [
                   v0,
                   d0
@@ -286,7 +286,7 @@ function find_last(f, _param) {
 function find_last_opt(f, _param) {
   while(true) {
     var param = _param;
-    if (/* tag */typeof param === "number") {
+    if (typeof param === "string") {
       return ;
     }
     var v = param.v;
@@ -298,7 +298,7 @@ function find_last_opt(f, _param) {
         var param$1 = _param$1;
         var d0 = _d0;
         var v0 = _v0;
-        if (/* tag */typeof param$1 === "number") {
+        if (typeof param$1 === "string") {
           return [
                   v0,
                   d0
@@ -323,7 +323,7 @@ function find_last_opt(f, _param) {
 function find_opt(x, _param) {
   while(true) {
     var param = _param;
-    if (/* tag */typeof param === "number") {
+    if (typeof param === "string") {
       return ;
     }
     var c = Caml.int_compare(x, param.v);
@@ -338,7 +338,7 @@ function find_opt(x, _param) {
 function mem(x, _param) {
   while(true) {
     var param = _param;
-    if (/* tag */typeof param === "number") {
+    if (typeof param === "string") {
       return false;
     }
     var c = Caml.int_compare(x, param.v);
@@ -353,14 +353,14 @@ function mem(x, _param) {
 function min_binding(_param) {
   while(true) {
     var param = _param;
-    if (/* tag */typeof param === "number") {
+    if (typeof param === "string") {
       throw {
             RE_EXN_ID: "Not_found",
             Error: new Error()
           };
     }
     var l = param.l;
-    if (/* tag */typeof l === "number") {
+    if (typeof l === "string") {
       return [
               param.v,
               param.d
@@ -374,11 +374,11 @@ function min_binding(_param) {
 function min_binding_opt(_param) {
   while(true) {
     var param = _param;
-    if (/* tag */typeof param === "number") {
+    if (typeof param === "string") {
       return ;
     }
     var l = param.l;
-    if (/* tag */typeof l === "number") {
+    if (typeof l === "string") {
       return [
               param.v,
               param.d
@@ -392,14 +392,14 @@ function min_binding_opt(_param) {
 function max_binding(_param) {
   while(true) {
     var param = _param;
-    if (/* tag */typeof param === "number") {
+    if (typeof param === "string") {
       throw {
             RE_EXN_ID: "Not_found",
             Error: new Error()
           };
     }
     var r = param.r;
-    if (/* tag */typeof r === "number") {
+    if (typeof r === "string") {
       return [
               param.v,
               param.d
@@ -413,11 +413,11 @@ function max_binding(_param) {
 function max_binding_opt(_param) {
   while(true) {
     var param = _param;
-    if (/* tag */typeof param === "number") {
+    if (typeof param === "string") {
       return ;
     }
     var r = param.r;
-    if (/* tag */typeof r === "number") {
+    if (typeof r === "string") {
       return [
               param.v,
               param.d
@@ -429,7 +429,7 @@ function max_binding_opt(_param) {
 }
 
 function remove_min_binding(param) {
-  if (/* tag */typeof param === "number") {
+  if (typeof param === "string") {
     throw {
           RE_EXN_ID: "Invalid_argument",
           _1: "Map.remove_min_elt",
@@ -437,7 +437,7 @@ function remove_min_binding(param) {
         };
   }
   var l = param.l;
-  if (/* tag */typeof l === "number") {
+  if (typeof l === "string") {
     return param.r;
   } else {
     return bal(remove_min_binding(l), param.v, param.d, param.r);
@@ -445,10 +445,10 @@ function remove_min_binding(param) {
 }
 
 function merge(t1, t2) {
-  if (/* tag */typeof t1 === "number") {
+  if (typeof t1 === "string") {
     return t2;
   }
-  if (/* tag */typeof t2 === "number") {
+  if (typeof t2 === "string") {
     return t1;
   }
   var match = min_binding(t2);
@@ -456,8 +456,8 @@ function merge(t1, t2) {
 }
 
 function remove(x, m) {
-  if (/* tag */typeof m === "number") {
-    return /* Empty */0;
+  if (typeof m === "string") {
+    return "Empty";
   }
   var r = m.r;
   var d = m.d;
@@ -484,18 +484,18 @@ function remove(x, m) {
 }
 
 function update(x, f, m) {
-  if (/* tag */typeof m === "number") {
+  if (typeof m === "string") {
     var data = Curry._1(f, undefined);
     if (data !== undefined) {
       return /* Node */{
-              l: /* Empty */0,
+              l: "Empty",
               v: x,
               d: Caml_option.valFromOption(data),
-              r: /* Empty */0,
+              r: "Empty",
               h: 1
             };
     } else {
-      return /* Empty */0;
+      return "Empty";
     }
   }
   var r = m.r;
@@ -540,7 +540,7 @@ function update(x, f, m) {
 function iter(f, _param) {
   while(true) {
     var param = _param;
-    if (/* tag */typeof param === "number") {
+    if (typeof param === "string") {
       return ;
     }
     iter(f, param.l);
@@ -551,8 +551,8 @@ function iter(f, _param) {
 }
 
 function map(f, param) {
-  if (/* tag */typeof param === "number") {
-    return /* Empty */0;
+  if (typeof param === "string") {
+    return "Empty";
   }
   var l$p = map(f, param.l);
   var d$p = Curry._1(f, param.d);
@@ -567,8 +567,8 @@ function map(f, param) {
 }
 
 function mapi(f, param) {
-  if (/* tag */typeof param === "number") {
-    return /* Empty */0;
+  if (typeof param === "string") {
+    return "Empty";
   }
   var v = param.v;
   var l$p = mapi(f, param.l);
@@ -587,7 +587,7 @@ function fold(f, _m, _accu) {
   while(true) {
     var accu = _accu;
     var m = _m;
-    if (/* tag */typeof m === "number") {
+    if (typeof m === "string") {
       return accu;
     }
     _accu = Curry._3(f, m.v, m.d, fold(f, m.l, accu));
@@ -599,7 +599,7 @@ function fold(f, _m, _accu) {
 function for_all(p, _param) {
   while(true) {
     var param = _param;
-    if (/* tag */typeof param === "number") {
+    if (typeof param === "string") {
       return true;
     }
     if (!Curry._2(p, param.v, param.d)) {
@@ -616,7 +616,7 @@ function for_all(p, _param) {
 function exists(p, _param) {
   while(true) {
     var param = _param;
-    if (/* tag */typeof param === "number") {
+    if (typeof param === "string") {
       return false;
     }
     if (Curry._2(p, param.v, param.d)) {
@@ -631,7 +631,7 @@ function exists(p, _param) {
 }
 
 function add_min_binding(k, x, param) {
-  if (/* tag */typeof param === "number") {
+  if (typeof param === "string") {
     return singleton(k, x);
   } else {
     return bal(add_min_binding(k, x, param.l), param.v, param.d, param.r);
@@ -639,7 +639,7 @@ function add_min_binding(k, x, param) {
 }
 
 function add_max_binding(k, x, param) {
-  if (/* tag */typeof param === "number") {
+  if (typeof param === "string") {
     return singleton(k, x);
   } else {
     return bal(param.l, param.v, param.d, add_max_binding(k, x, param.r));
@@ -647,11 +647,11 @@ function add_max_binding(k, x, param) {
 }
 
 function join(l, v, d, r) {
-  if (/* tag */typeof l === "number") {
+  if (typeof l === "string") {
     return add_min_binding(v, d, r);
   }
   var lh = l.h;
-  if (/* tag */typeof r === "number") {
+  if (typeof r === "string") {
     return add_max_binding(v, d, l);
   }
   var rh = r.h;
@@ -665,10 +665,10 @@ function join(l, v, d, r) {
 }
 
 function concat(t1, t2) {
-  if (/* tag */typeof t1 === "number") {
+  if (typeof t1 === "string") {
     return t2;
   }
-  if (/* tag */typeof t2 === "number") {
+  if (typeof t2 === "string") {
     return t1;
   }
   var match = min_binding(t2);
@@ -684,11 +684,11 @@ function concat_or_join(t1, v, d, t2) {
 }
 
 function split(x, param) {
-  if (/* tag */typeof param === "number") {
+  if (typeof param === "string") {
     return [
-            /* Empty */0,
+            "Empty",
             undefined,
-            /* Empty */0
+            "Empty"
           ];
   }
   var r = param.r;
@@ -720,9 +720,9 @@ function split(x, param) {
 }
 
 function merge$1(f, s1, s2) {
-  if (/* tag */typeof s1 === "number") {
-    if (/* tag */typeof s2 === "number") {
-      return /* Empty */0;
+  if (typeof s1 === "string") {
+    if (typeof s2 === "string") {
+      return "Empty";
     }
     
   } else {
@@ -733,7 +733,7 @@ function merge$1(f, s1, s2) {
     }
     
   }
-  if (/* tag */typeof s2 === "number") {
+  if (typeof s2 === "string") {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
@@ -750,12 +750,12 @@ function merge$1(f, s1, s2) {
 }
 
 function union(f, s1, s2) {
-  if (/* tag */typeof s1 === "number") {
+  if (typeof s1 === "string") {
     return s2;
   }
   var d1 = s1.d;
   var v1 = s1.v;
-  if (/* tag */typeof s2 === "number") {
+  if (typeof s2 === "string") {
     return s1;
   }
   var d2 = s2.d;
@@ -783,8 +783,8 @@ function union(f, s1, s2) {
 }
 
 function filter(p, m) {
-  if (/* tag */typeof m === "number") {
-    return /* Empty */0;
+  if (typeof m === "string") {
+    return "Empty";
   }
   var r = m.r;
   var d = m.d;
@@ -805,10 +805,10 @@ function filter(p, m) {
 }
 
 function partition(p, param) {
-  if (/* tag */typeof param === "number") {
+  if (typeof param === "string") {
     return [
-            /* Empty */0,
-            /* Empty */0
+            "Empty",
+            "Empty"
           ];
   }
   var d = param.d;
@@ -837,7 +837,7 @@ function cons_enum(_m, _e) {
   while(true) {
     var e = _e;
     var m = _m;
-    if (/* tag */typeof m === "number") {
+    if (typeof m === "string") {
       return e;
     }
     _e = /* More */{
@@ -852,19 +852,19 @@ function cons_enum(_m, _e) {
 }
 
 function compare(cmp, m1, m2) {
-  var _e1 = cons_enum(m1, /* End */0);
-  var _e2 = cons_enum(m2, /* End */0);
+  var _e1 = cons_enum(m1, "End");
+  var _e2 = cons_enum(m2, "End");
   while(true) {
     var e2 = _e2;
     var e1 = _e1;
-    if (/* tag */typeof e1 === "number") {
-      if (/* tag */typeof e2 === "number") {
+    if (typeof e1 === "string") {
+      if (typeof e2 === "string") {
         return 0;
       } else {
         return -1;
       }
     }
-    if (/* tag */typeof e2 === "number") {
+    if (typeof e2 === "string") {
       return 1;
     }
     var c = Caml.int_compare(e1._0, e2._0);
@@ -882,19 +882,19 @@ function compare(cmp, m1, m2) {
 }
 
 function equal(cmp, m1, m2) {
-  var _e1 = cons_enum(m1, /* End */0);
-  var _e2 = cons_enum(m2, /* End */0);
+  var _e1 = cons_enum(m1, "End");
+  var _e2 = cons_enum(m2, "End");
   while(true) {
     var e2 = _e2;
     var e1 = _e1;
-    if (/* tag */typeof e1 === "number") {
-      if (/* tag */typeof e2 === "number") {
+    if (typeof e1 === "string") {
+      if (typeof e2 === "string") {
         return true;
       } else {
         return false;
       }
     }
-    if (/* tag */typeof e2 === "number") {
+    if (typeof e2 === "string") {
       return false;
     }
     if (e1._0 !== e2._0) {
@@ -910,7 +910,7 @@ function equal(cmp, m1, m2) {
 }
 
 function cardinal(param) {
-  if (/* tag */typeof param === "number") {
+  if (typeof param === "string") {
     return 0;
   } else {
     return (cardinal(param.l) + 1 | 0) + cardinal(param.r) | 0;
@@ -921,7 +921,7 @@ function bindings_aux(_accu, _param) {
   while(true) {
     var param = _param;
     var accu = _accu;
-    if (/* tag */typeof param === "number") {
+    if (typeof param === "string") {
       return accu;
     }
     _param = param.l;
@@ -940,7 +940,7 @@ function bindings(s) {
   return bindings_aux(/* [] */0, s);
 }
 
-var empty = /* Empty */0;
+var empty = "Empty";
 
 var choose = min_binding;
 

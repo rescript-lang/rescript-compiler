@@ -32,7 +32,7 @@ function initialStateDefault(param) {
 }
 
 function reducerDefault(_action, _state) {
-  return /* NoUpdate */0;
+  return "NoUpdate";
 }
 
 function basicComponent(debugName) {

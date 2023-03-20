@@ -56,14 +56,14 @@ var yyact = [
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
       return {
-              TAG: /* Numeral */0,
+              TAG: "Numeral",
               _0: _1
             };
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
       return {
-              TAG: /* Variable */6,
+              TAG: "Variable",
               _0: _1
             };
     }),
@@ -71,7 +71,7 @@ var yyact = [
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return {
-              TAG: /* Plus */1,
+              TAG: "Plus",
               _0: _1,
               _1: _3
             };
@@ -80,7 +80,7 @@ var yyact = [
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return {
-              TAG: /* Minus */2,
+              TAG: "Minus",
               _0: _1,
               _1: _3
             };
@@ -89,7 +89,7 @@ var yyact = [
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return {
-              TAG: /* Times */3,
+              TAG: "Times",
               _0: _1,
               _1: _3
             };
@@ -98,7 +98,7 @@ var yyact = [
       var _1 = Parsing.peek_val(__caml_parser_env, 2);
       var _3 = Parsing.peek_val(__caml_parser_env, 0);
       return {
-              TAG: /* Divide */4,
+              TAG: "Divide",
               _0: _1,
               _1: _3
             };
@@ -106,7 +106,7 @@ var yyact = [
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 0);
       return {
-              TAG: /* Negate */5,
+              TAG: "Negate",
               _0: _2
             };
     }),

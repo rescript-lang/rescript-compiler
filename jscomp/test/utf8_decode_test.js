@@ -9,46 +9,46 @@ var Caml_bytes = require("../../lib/js/caml_bytes.js");
 function classify(chr) {
   if ((chr & 128) === 0) {
     return {
-            TAG: /* Single */0,
+            TAG: "Single",
             _0: chr
           };
   } else if ((chr & 64) === 0) {
     return {
-            TAG: /* Cont */1,
+            TAG: "Cont",
             _0: chr & 63
           };
   } else if ((chr & 32) === 0) {
     return {
-            TAG: /* Leading */2,
+            TAG: "Leading",
             _0: 1,
             _1: chr & 31
           };
   } else if ((chr & 16) === 0) {
     return {
-            TAG: /* Leading */2,
+            TAG: "Leading",
             _0: 2,
             _1: chr & 15
           };
   } else if ((chr & 8) === 0) {
     return {
-            TAG: /* Leading */2,
+            TAG: "Leading",
             _0: 3,
             _1: chr & 7
           };
   } else if ((chr & 4) === 0) {
     return {
-            TAG: /* Leading */2,
+            TAG: "Leading",
             _0: 4,
             _1: chr & 3
           };
   } else if ((chr & 2) === 0) {
     return {
-            TAG: /* Leading */2,
+            TAG: "Leading",
             _0: 5,
             _1: chr & 1
           };
   } else {
-    return /* Invalid */0;
+    return "Invalid";
   }
 }
 
@@ -60,23 +60,23 @@ function utf8_decode(strm) {
               }
               Stream.junk(strm);
               var c = classify(chr);
-              if (/* tag */typeof c === "number") {
+              if (typeof c === "string") {
                 throw {
                       RE_EXN_ID: Stream.$$Error,
                       _1: "Invalid byte",
                       Error: new Error()
                     };
               }
-              switch (c.TAG | 0) {
-                case /* Single */0 :
+              switch (c.TAG) {
+                case "Single" :
                     return Stream.icons(c._0, utf8_decode(strm));
-                case /* Cont */1 :
+                case "Cont" :
                     throw {
                           RE_EXN_ID: Stream.$$Error,
                           _1: "Unexpected continuation byte",
                           Error: new Error()
                         };
-                case /* Leading */2 :
+                case "Leading" :
                     var follow = function (strm, _n, _c) {
                       while(true) {
                         var c = _c;
@@ -85,14 +85,14 @@ function utf8_decode(strm) {
                           return c;
                         }
                         var cc = classify(Stream.next(strm));
-                        if (/* tag */typeof cc === "number") {
+                        if (typeof cc === "string") {
                           throw {
                                 RE_EXN_ID: Stream.$$Error,
                                 _1: "Continuation byte expected",
                                 Error: new Error()
                               };
                         }
-                        if (cc.TAG === /* Cont */1) {
+                        if (cc.TAG === "Cont") {
                           _c = (c << 6) | cc._0 & 63;
                           _n = n - 1 | 0;
                           continue ;
@@ -129,26 +129,26 @@ function utf8_list(s) {
 
 function decode(bytes, offset) {
   var c = classify(Caml_bytes.get(bytes, offset));
-  if (/* tag */typeof c === "number") {
+  if (typeof c === "string") {
     throw {
           RE_EXN_ID: "Invalid_argument",
           _1: "decode",
           Error: new Error()
         };
   }
-  switch (c.TAG | 0) {
-    case /* Single */0 :
+  switch (c.TAG) {
+    case "Single" :
         return [
                 c._0,
                 offset + 1 | 0
               ];
-    case /* Cont */1 :
+    case "Cont" :
         throw {
               RE_EXN_ID: "Invalid_argument",
               _1: "decode",
               Error: new Error()
             };
-    case /* Leading */2 :
+    case "Leading" :
         var _n = c._0;
         var _c = c._1;
         var _offset = offset + 1 | 0;
@@ -163,14 +163,14 @@ function decode(bytes, offset) {
                   ];
           }
           var cc = classify(Caml_bytes.get(bytes, offset$1));
-          if (/* tag */typeof cc === "number") {
+          if (typeof cc === "string") {
             throw {
                   RE_EXN_ID: "Invalid_argument",
                   _1: "decode",
                   Error: new Error()
                 };
           }
-          if (cc.TAG === /* Cont */1) {
+          if (cc.TAG === "Cont") {
             _offset = offset$1 + 1 | 0;
             _c = (c$1 << 6) | cc._0 & 63;
             _n = n - 1 | 0;
@@ -230,7 +230,7 @@ function eq(loc, param) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };

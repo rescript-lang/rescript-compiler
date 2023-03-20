@@ -41,8 +41,8 @@ function to_array(q) {
 function queue_1(x) {
   var q = {
     length: 0,
-    first: /* Nil */0,
-    last: /* Nil */0
+    first: "Nil",
+    last: "Nil"
   };
   $$Array.iter((function (x) {
           Queue.add(x, q);
@@ -90,7 +90,7 @@ var suites_0 = [
         2
       ];
       return {
-              TAG: /* Eq */0,
+              TAG: "Eq",
               _0: x,
               _1: queue_1(x)
             };
@@ -108,7 +108,7 @@ var suites_1 = {
           2
         ];
         return {
-                TAG: /* Eq */0,
+                TAG: "Eq",
                 _0: x,
                 _1: queue_1$1(x)
               };

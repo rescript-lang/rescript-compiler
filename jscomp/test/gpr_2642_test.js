@@ -4,13 +4,13 @@
 function isfree(id, _id$p) {
   while(true) {
     var id$p = _id$p;
-    switch (id$p.TAG | 0) {
-      case /* Pident */0 :
+    switch (id$p.TAG) {
+      case "Pident" :
           return id === id$p._0;
-      case /* Pdot */1 :
+      case "Pdot" :
           _id$p = id$p._0;
           continue ;
-      case /* Papply */2 :
+      case "Papply" :
           if (isfree(id, id$p._0)) {
             return true;
           }

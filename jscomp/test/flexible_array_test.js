@@ -9,7 +9,7 @@ function sub(_tr, _k) {
   while(true) {
     var k = _k;
     var tr = _tr;
-    if (/* tag */typeof tr === "number") {
+    if (typeof tr === "string") {
       throw {
             RE_EXN_ID: "Not_found",
             Error: new Error()
@@ -30,12 +30,12 @@ function sub(_tr, _k) {
 }
 
 function update(tr, k, w) {
-  if (/* tag */typeof tr === "number") {
+  if (typeof tr === "string") {
     if (k === 1) {
       return /* Br */{
               _0: w,
-              _1: /* Lf */0,
-              _2: /* Lf */0
+              _1: "Lf",
+              _2: "Lf"
             };
     }
     throw {
@@ -69,14 +69,14 @@ function update(tr, k, w) {
 }
 
 function $$delete(tr, n) {
-  if (/* tag */typeof tr === "number") {
+  if (typeof tr === "string") {
     throw {
           RE_EXN_ID: "Not_found",
           Error: new Error()
         };
   }
   if (n === 1) {
-    return /* Lf */0;
+    return "Lf";
   }
   var r = tr._2;
   var l = tr._1;
@@ -97,11 +97,11 @@ function $$delete(tr, n) {
 }
 
 function loext(tr, w) {
-  if (/* tag */typeof tr === "number") {
+  if (typeof tr === "string") {
     return /* Br */{
             _0: w,
-            _1: /* Lf */0,
-            _2: /* Lf */0
+            _1: "Lf",
+            _2: "Lf"
           };
   } else {
     return /* Br */{
@@ -113,14 +113,14 @@ function loext(tr, w) {
 }
 
 function lorem(tr) {
-  if (/* tag */typeof tr === "number") {
+  if (typeof tr === "string") {
     throw {
           RE_EXN_ID: "Not_found",
           Error: new Error()
         };
   }
   var l = tr._1;
-  if (/* tag */typeof l !== "number") {
+  if (typeof l !== "string") {
     return /* Br */{
             _0: l._0,
             _1: tr._2,
@@ -128,8 +128,8 @@ function lorem(tr) {
           };
   }
   var tmp = tr._2;
-  if (/* tag */typeof tmp === "number") {
-    return /* Lf */0;
+  if (typeof tmp === "string") {
+    return "Lf";
   }
   throw {
         RE_EXN_ID: "Assert_failure",
@@ -143,7 +143,7 @@ function lorem(tr) {
 }
 
 var empty = [
-  /* Lf */0,
+  "Lf",
   0
 ];
 

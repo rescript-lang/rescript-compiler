@@ -157,7 +157,7 @@ var suites = {
           "File \"int32_test.ml\", line 31, characters 2-9",
           (function (param) {
               return {
-                      TAG: /* Eq */0,
+                      TAG: "Eq",
                       _0: 1,
                       _1: 1
                     };
@@ -168,7 +168,7 @@ var suites = {
             "File \"int32_test.ml\", line 32, characters 2-9",
             (function (param) {
                 return {
-                        TAG: /* Eq */0,
+                        TAG: "Eq",
                         _0: -2147483647,
                         _1: -2147483647
                       };
@@ -181,7 +181,7 @@ var suites = {
                               "shift_right_logical_cases " + i,
                               (function (param) {
                                   return {
-                                          TAG: /* Eq */0,
+                                          TAG: "Eq",
                                           _0: a,
                                           _1: b
                                         };
@@ -192,7 +192,7 @@ var suites = {
                                   "shift_right_cases " + i,
                                   (function (param) {
                                       return {
-                                              TAG: /* Eq */0,
+                                              TAG: "Eq",
                                               _0: a,
                                               _1: b
                                             };
@@ -203,7 +203,7 @@ var suites = {
                                   "shift_left_cases " + i,
                                   (function (param) {
                                       return {
-                                              TAG: /* Eq */0,
+                                              TAG: "Eq",
                                               _0: a,
                                               _1: b
                                             };

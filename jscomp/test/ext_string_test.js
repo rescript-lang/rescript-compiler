@@ -505,12 +505,12 @@ function is_valid_source_name(name) {
       });
   if (x !== undefined) {
     if (is_valid_module_file(x)) {
-      return /* Good */0;
+      return "Good";
     } else {
-      return /* Invalid_module_name */1;
+      return "Invalid_module_name";
     }
   } else {
-    return /* Suffix_mismatch */2;
+    return "Suffix_mismatch";
   }
 }
 

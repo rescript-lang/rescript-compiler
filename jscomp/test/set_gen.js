@@ -9,7 +9,7 @@ function cons_enum(_s, _e) {
   while(true) {
     var e = _e;
     var s = _s;
-    if (/* tag */typeof s === "number") {
+    if (typeof s === "string") {
       return e;
     }
     _e = /* More */{
@@ -23,7 +23,7 @@ function cons_enum(_s, _e) {
 }
 
 function height(param) {
-  if (/* tag */typeof param === "number") {
+  if (typeof param === "string") {
     return 0;
   } else {
     return param._3;
@@ -33,14 +33,14 @@ function height(param) {
 function min_elt(_param) {
   while(true) {
     var param = _param;
-    if (/* tag */typeof param === "number") {
+    if (typeof param === "string") {
       throw {
             RE_EXN_ID: "Not_found",
             Error: new Error()
           };
     }
     var l = param._0;
-    if (/* tag */typeof l === "number") {
+    if (typeof l === "string") {
       return param._1;
     }
     _param = l;
@@ -51,14 +51,14 @@ function min_elt(_param) {
 function max_elt(_param) {
   while(true) {
     var param = _param;
-    if (/* tag */typeof param === "number") {
+    if (typeof param === "string") {
       throw {
             RE_EXN_ID: "Not_found",
             Error: new Error()
           };
     }
     var r = param._2;
-    if (/* tag */typeof r === "number") {
+    if (typeof r === "string") {
       return param._1;
     }
     _param = r;
@@ -67,7 +67,7 @@ function max_elt(_param) {
 }
 
 function is_empty(param) {
-  if (/* tag */typeof param === "number") {
+  if (typeof param === "string") {
     return true;
   } else {
     return false;
@@ -78,7 +78,7 @@ function cardinal_aux(_acc, _param) {
   while(true) {
     var param = _param;
     var acc = _acc;
-    if (/* tag */typeof param === "number") {
+    if (typeof param === "string") {
       return acc;
     }
     _param = param._0;
@@ -95,7 +95,7 @@ function elements_aux(_accu, _param) {
   while(true) {
     var param = _param;
     var accu = _accu;
-    if (/* tag */typeof param === "number") {
+    if (typeof param === "string") {
       return accu;
     }
     _param = param._0;
@@ -114,7 +114,7 @@ function elements(s) {
 function iter(f, _param) {
   while(true) {
     var param = _param;
-    if (/* tag */typeof param === "number") {
+    if (typeof param === "string") {
       return ;
     }
     iter(f, param._0);
@@ -128,7 +128,7 @@ function fold(f, _s, _accu) {
   while(true) {
     var accu = _accu;
     var s = _s;
-    if (/* tag */typeof s === "number") {
+    if (typeof s === "string") {
       return accu;
     }
     _accu = Curry._2(f, s._1, fold(f, s._0, accu));
@@ -140,7 +140,7 @@ function fold(f, _s, _accu) {
 function for_all(p, _param) {
   while(true) {
     var param = _param;
-    if (/* tag */typeof param === "number") {
+    if (typeof param === "string") {
       return true;
     }
     if (!Curry._1(p, param._1)) {
@@ -157,7 +157,7 @@ function for_all(p, _param) {
 function exists(p, _param) {
   while(true) {
     var param = _param;
-    if (/* tag */typeof param === "number") {
+    if (typeof param === "string") {
       return false;
     }
     if (Curry._1(p, param._1)) {
@@ -198,7 +198,7 @@ var Height_invariant_broken = /* @__PURE__ */Caml_exceptions.create("Set_gen.Hei
 var Height_diff_borken = /* @__PURE__ */Caml_exceptions.create("Set_gen.Height_diff_borken");
 
 function check_height_and_diff(param) {
-  if (/* tag */typeof param === "number") {
+  if (typeof param === "string") {
     return 0;
   }
   var h = param._3;
@@ -226,9 +226,9 @@ function check(tree) {
 
 function create(l, v, r) {
   var hl;
-  hl = /* tag */typeof l === "number" ? 0 : l._3;
+  hl = typeof l === "string" ? 0 : l._3;
   var hr;
-  hr = /* tag */typeof r === "number" ? 0 : r._3;
+  hr = typeof r === "string" ? 0 : r._3;
   return /* Node */{
           _0: l,
           _1: v,
@@ -239,11 +239,11 @@ function create(l, v, r) {
 
 function internal_bal(l, v, r) {
   var hl;
-  hl = /* tag */typeof l === "number" ? 0 : l._3;
+  hl = typeof l === "string" ? 0 : l._3;
   var hr;
-  hr = /* tag */typeof r === "number" ? 0 : r._3;
+  hr = typeof r === "string" ? 0 : r._3;
   if (hl > (hr + 2 | 0)) {
-    if (/* tag */typeof l === "number") {
+    if (typeof l === "string") {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
@@ -260,7 +260,7 @@ function internal_bal(l, v, r) {
     if (height(ll) >= height(lr)) {
       return create(ll, lv, create(lr, v, r));
     }
-    if (/* tag */typeof lr !== "number") {
+    if (typeof lr !== "string") {
       return create(create(ll, lv, lr._0), lr._1, create(lr._2, v, r));
     }
     throw {
@@ -281,7 +281,7 @@ function internal_bal(l, v, r) {
             _3: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
-  if (/* tag */typeof r === "number") {
+  if (typeof r === "string") {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
@@ -298,7 +298,7 @@ function internal_bal(l, v, r) {
   if (height(rr) >= height(rl)) {
     return create(create(l, v, rl), rv, rr);
   }
-  if (/* tag */typeof rl !== "number") {
+  if (typeof rl !== "string") {
     return create(create(l, v, rl._0), rl._1, create(rl._2, rv, rr));
   }
   throw {
@@ -313,7 +313,7 @@ function internal_bal(l, v, r) {
 }
 
 function remove_min_elt(param) {
-  if (/* tag */typeof param === "number") {
+  if (typeof param === "string") {
     throw {
           RE_EXN_ID: "Invalid_argument",
           _1: "Set.remove_min_elt",
@@ -321,7 +321,7 @@ function remove_min_elt(param) {
         };
   }
   var l = param._0;
-  if (/* tag */typeof l === "number") {
+  if (typeof l === "string") {
     return param._2;
   } else {
     return internal_bal(remove_min_elt(l), param._1, param._2);
@@ -330,17 +330,17 @@ function remove_min_elt(param) {
 
 function singleton(x) {
   return /* Node */{
-          _0: /* Empty */0,
+          _0: "Empty",
           _1: x,
-          _2: /* Empty */0,
+          _2: "Empty",
           _3: 1
         };
 }
 
 function internal_merge(l, r) {
-  if (/* tag */typeof l === "number") {
+  if (typeof l === "string") {
     return r;
-  } else if (/* tag */typeof r === "number") {
+  } else if (typeof r === "string") {
     return l;
   } else {
     return internal_bal(l, min_elt(r), remove_min_elt(r));
@@ -348,7 +348,7 @@ function internal_merge(l, r) {
 }
 
 function add_min_element(v, param) {
-  if (/* tag */typeof param === "number") {
+  if (typeof param === "string") {
     return singleton(v);
   } else {
     return internal_bal(add_min_element(v, param._0), param._1, param._2);
@@ -356,7 +356,7 @@ function add_min_element(v, param) {
 }
 
 function add_max_element(v, param) {
-  if (/* tag */typeof param === "number") {
+  if (typeof param === "string") {
     return singleton(v);
   } else {
     return internal_bal(param._0, param._1, add_max_element(v, param._2));
@@ -364,11 +364,11 @@ function add_max_element(v, param) {
 }
 
 function internal_join(l, v, r) {
-  if (/* tag */typeof l === "number") {
+  if (typeof l === "string") {
     return add_min_element(v, r);
   }
   var lh = l._3;
-  if (/* tag */typeof r === "number") {
+  if (typeof r === "string") {
     return add_max_element(v, l);
   }
   var rh = r._3;
@@ -382,9 +382,9 @@ function internal_join(l, v, r) {
 }
 
 function internal_concat(t1, t2) {
-  if (/* tag */typeof t1 === "number") {
+  if (typeof t1 === "string") {
     return t2;
-  } else if (/* tag */typeof t2 === "number") {
+  } else if (typeof t2 === "string") {
     return t1;
   } else {
     return internal_join(t1, min_elt(t2), remove_min_elt(t2));
@@ -392,8 +392,8 @@ function internal_concat(t1, t2) {
 }
 
 function filter(p, param) {
-  if (/* tag */typeof param === "number") {
-    return /* Empty */0;
+  if (typeof param === "string") {
+    return "Empty";
   }
   var v = param._1;
   var l$p = filter(p, param._0);
@@ -407,10 +407,10 @@ function filter(p, param) {
 }
 
 function partition(p, param) {
-  if (/* tag */typeof param === "number") {
+  if (typeof param === "string") {
     return [
-            /* Empty */0,
-            /* Empty */0
+            "Empty",
+            "Empty"
           ];
   }
   var v = param._1;
@@ -439,16 +439,16 @@ function of_sorted_list(l) {
     switch (n) {
       case 0 :
           return [
-                  /* Empty */0,
+                  "Empty",
                   l
                 ];
       case 1 :
           if (l) {
             return [
                     /* Node */{
-                      _0: /* Empty */0,
+                      _0: "Empty",
                       _1: l.hd,
-                      _2: /* Empty */0,
+                      _2: "Empty",
                       _3: 1
                     },
                     l.tl
@@ -462,13 +462,13 @@ function of_sorted_list(l) {
               return [
                       /* Node */{
                         _0: /* Node */{
-                          _0: /* Empty */0,
+                          _0: "Empty",
                           _1: l.hd,
-                          _2: /* Empty */0,
+                          _2: "Empty",
                           _3: 1
                         },
                         _1: match.hd,
-                        _2: /* Empty */0,
+                        _2: "Empty",
                         _3: 2
                       },
                       match.tl
@@ -486,16 +486,16 @@ function of_sorted_list(l) {
                 return [
                         /* Node */{
                           _0: /* Node */{
-                            _0: /* Empty */0,
+                            _0: "Empty",
                             _1: l.hd,
-                            _2: /* Empty */0,
+                            _2: "Empty",
                             _3: 1
                           },
                           _1: match$1.hd,
                           _2: /* Node */{
-                            _0: /* Empty */0,
+                            _0: "Empty",
                             _1: match$2.hd,
-                            _2: /* Empty */0,
+                            _2: "Empty",
                             _3: 1
                           },
                           _3: 2
@@ -537,14 +537,14 @@ function of_sorted_list(l) {
 function of_sorted_array(l) {
   var sub = function (start, n, l) {
     if (n === 0) {
-      return /* Empty */0;
+      return "Empty";
     }
     if (n === 1) {
       var x0 = l[start];
       return /* Node */{
-              _0: /* Empty */0,
+              _0: "Empty",
               _1: x0,
-              _2: /* Empty */0,
+              _2: "Empty",
               _3: 1
             };
     }
@@ -553,13 +553,13 @@ function of_sorted_array(l) {
       var x1 = l[start + 1 | 0];
       return /* Node */{
               _0: /* Node */{
-                _0: /* Empty */0,
+                _0: "Empty",
                 _1: x0$1,
-                _2: /* Empty */0,
+                _2: "Empty",
                 _3: 1
               },
               _1: x1,
-              _2: /* Empty */0,
+              _2: "Empty",
               _3: 2
             };
     }
@@ -569,16 +569,16 @@ function of_sorted_array(l) {
       var x2 = l[start + 2 | 0];
       return /* Node */{
               _0: /* Node */{
-                _0: /* Empty */0,
+                _0: "Empty",
                 _1: x0$2,
-                _2: /* Empty */0,
+                _2: "Empty",
                 _3: 1
               },
               _1: x1$1,
               _2: /* Node */{
-                _0: /* Empty */0,
+                _0: "Empty",
                 _1: x2,
-                _2: /* Empty */0,
+                _2: "Empty",
                 _3: 1
               },
               _3: 2
@@ -596,7 +596,7 @@ function of_sorted_array(l) {
 
 function is_ordered(cmp, tree) {
   var is_ordered_min_max = function (tree) {
-    if (/* tag */typeof tree === "number") {
+    if (typeof tree === "string") {
       return "Empty";
     }
     var r = tree._2;
@@ -675,14 +675,14 @@ function compare_aux(cmp, _e1, _e2) {
   while(true) {
     var e2 = _e2;
     var e1 = _e1;
-    if (/* tag */typeof e1 === "number") {
-      if (/* tag */typeof e2 === "number") {
+    if (typeof e1 === "string") {
+      if (typeof e2 === "string") {
         return 0;
       } else {
         return -1;
       }
     }
-    if (/* tag */typeof e2 === "number") {
+    if (typeof e2 === "string") {
       return 1;
     }
     var c = Curry._2(cmp, e1._0, e2._0);
@@ -696,10 +696,10 @@ function compare_aux(cmp, _e1, _e2) {
 }
 
 function compare(cmp, s1, s2) {
-  return compare_aux(cmp, cons_enum(s1, /* End */0), cons_enum(s2, /* End */0));
+  return compare_aux(cmp, cons_enum(s1, "End"), cons_enum(s2, "End"));
 }
 
-var empty = /* Empty */0;
+var empty = "Empty";
 
 var choose = min_elt;
 

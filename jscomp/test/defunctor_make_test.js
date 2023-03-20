@@ -16,7 +16,7 @@ var Comparable = {
 };
 
 function height(param) {
-  if (/* tag */typeof param === "number") {
+  if (typeof param === "string") {
     return 0;
   } else {
     return param._4;
@@ -37,11 +37,11 @@ function create(l, x, d, r) {
 
 function bal(l, x, d, r) {
   var hl;
-  hl = /* tag */typeof l === "number" ? 0 : l._4;
+  hl = typeof l === "string" ? 0 : l._4;
   var hr;
-  hr = /* tag */typeof r === "number" ? 0 : r._4;
+  hr = typeof r === "string" ? 0 : r._4;
   if (hl > (hr + 2 | 0)) {
-    if (/* tag */typeof l === "number") {
+    if (typeof l === "string") {
       throw {
             RE_EXN_ID: "Invalid_argument",
             _1: "Map.bal",
@@ -55,7 +55,7 @@ function bal(l, x, d, r) {
     if (height(ll) >= height(lr)) {
       return create(ll, lv, ld, create(lr, x, d, r));
     }
-    if (/* tag */typeof lr !== "number") {
+    if (typeof lr !== "string") {
       return create(create(ll, lv, ld, lr._0), lr._1, lr._2, create(lr._3, x, d, r));
     }
     throw {
@@ -73,7 +73,7 @@ function bal(l, x, d, r) {
             _4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
-  if (/* tag */typeof r === "number") {
+  if (typeof r === "string") {
     throw {
           RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal",
@@ -87,7 +87,7 @@ function bal(l, x, d, r) {
   if (height(rr) >= height(rl)) {
     return create(create(l, x, d, rl), rv, rd, rr);
   }
-  if (/* tag */typeof rl !== "number") {
+  if (typeof rl !== "string") {
     return create(create(l, x, d, rl._0), rl._1, rl._2, create(rl._3, rv, rd, rr));
   }
   throw {
@@ -98,12 +98,12 @@ function bal(l, x, d, r) {
 }
 
 function add(x, data, compare, param) {
-  if (/* tag */typeof param === "number") {
+  if (typeof param === "string") {
     return /* Node */{
-            _0: /* Empty */0,
+            _0: "Empty",
             _1: x,
             _2: data,
-            _3: /* Empty */0,
+            _3: "Empty",
             _4: 1
           };
   }
@@ -138,7 +138,7 @@ function add$1(x, data, v) {
 function empty(v) {
   return {
           compare: v,
-          data: /* Empty */0
+          data: "Empty"
         };
 }
 
@@ -156,12 +156,12 @@ var V1 = {
 
 var v0 = {
   compare: V0,
-  data: /* Empty */0
+  data: "Empty"
 };
 
 var v1 = {
   compare: V1,
-  data: /* Empty */0
+  data: "Empty"
 };
 
 var v3 = add$1(3, "a", v0);

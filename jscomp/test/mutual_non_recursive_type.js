@@ -10,7 +10,7 @@ var U = {
 };
 
 var v = /* H */{
-  _0: /* OT */0
+  _0: "OT"
 };
 
 exports.U = U;

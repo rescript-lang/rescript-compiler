@@ -7,7 +7,7 @@ var suites_0 = [
   "string_of_float_1",
   (function (param) {
       return {
-              TAG: /* Eq */0,
+              TAG: "Eq",
               _0: "10.",
               _1: Pervasives.string_of_float(10)
             };
@@ -19,7 +19,7 @@ var suites_1 = {
     "string_of_int",
     (function (param) {
         return {
-                TAG: /* Eq */0,
+                TAG: "Eq",
                 _0: "10",
                 _1: String(10)
               };
@@ -30,7 +30,7 @@ var suites_1 = {
       "valid_float_lexem",
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: "10.",
                   _1: Pervasives.valid_float_lexem("10")
                 };

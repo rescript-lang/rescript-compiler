@@ -2,17 +2,17 @@
 
 
 function f(param) {
-  switch (param.TAG | 0) {
-    case /* A */0 :
+  switch (param.TAG) {
+    case "A" :
         var a = param._0;
-        if (a.TAG === /* P */0) {
+        if (a.TAG === "P") {
           var a$1 = a._0;
           return a$1 + a$1 | 0;
         }
         var a$2 = a._0;
         return a$2 - a$2 | 0;
-    case /* B */1 :
-    case /* C */2 :
+    case "B" :
+    case "C" :
         break;
     
   }

@@ -19,14 +19,14 @@ function nextFor(x) {
     if (x) {
       return ;
     } else {
-      return /* Optional */1;
+      return "Optional";
     }
   } else {
-    return /* Required */0;
+    return "Required";
   }
 }
 
-eq("File \"gpr_4519_test.ml\", line 17, characters 6-13", /* Optional */1, /* Optional */1);
+eq("File \"gpr_4519_test.ml\", line 17, characters 6-13", "Optional", "Optional");
 
 Mt.from_pair_suites("Gpr_4519_test", suites.contents);
 

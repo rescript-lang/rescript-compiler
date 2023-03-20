@@ -21,7 +21,7 @@ var suites_0 = [
   "const",
   (function (param) {
       return {
-              TAG: /* Eq */0,
+              TAG: "Eq",
               _0: 1,
               _1: 1
             };
@@ -33,7 +33,7 @@ var suites_1 = {
     "other",
     (function (param) {
         return {
-                TAG: /* Eq */0,
+                TAG: "Eq",
                 _0: 3,
                 _1: 3
               };

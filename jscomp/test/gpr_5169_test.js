@@ -23,13 +23,13 @@ var g;
 
 var h = 1;
 
-var i = /* None */0;
+var i = "None";
 
 var j = /* Some */{
   _0: 1
 };
 
-var k = /* None */0;
+var k = "None";
 
 var l = /* Some */{
   _0: 1

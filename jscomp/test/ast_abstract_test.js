@@ -18,7 +18,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -94,15 +94,15 @@ function id(x) {
   eq("File \"ast_abstract_test.ml\", line 49, characters 8-15", aFromJs(aToJs(x)), x);
 }
 
-var a0 = aToJs(/* A */0);
+var a0 = aToJs("A");
 
-var a1 = aToJs(/* B */1);
+var a1 = aToJs("B");
 
-id(/* A */0);
+id("A");
 
-id(/* B */1);
+id("B");
 
-id(/* C */2);
+id("C");
 
 function bToJs(param) {
   return param + 0 | 0;
@@ -127,13 +127,13 @@ function idb(v) {
   eq("File \"ast_abstract_test.ml\", line 71, characters 5-12", bFromJs(v + 0 | 0), v);
 }
 
-idb(/* D0 */0);
+idb("D0");
 
-idb(/* D1 */1);
+idb("D1");
 
-idb(/* D2 */2);
+idb("D2");
 
-idb(/* D3 */3);
+idb("D3");
 
 function cToJs(param) {
   return param + 3 | 0;
@@ -158,13 +158,13 @@ function idc(v) {
   eq("File \"ast_abstract_test.ml\", line 83, characters 15-22", cFromJs(v + 3 | 0), v);
 }
 
-idc(/* D0 */0);
+idc("D0");
 
-idc(/* D1 */1);
+idc("D1");
 
-idc(/* D2 */2);
+idc("D2");
 
-idc(/* D3 */3);
+idc("D3");
 
 function hToJs(param) {
   return param + 0 | 0;
@@ -208,11 +208,11 @@ var b1 = 1;
 
 var c0 = 3;
 
-var jsMapperEraseType = /* JsMapperEraseType */0;
+var jsMapperEraseType = "JsMapperEraseType";
 
-var b = /* B */1;
+var b = "B";
 
-var zXx = /* ZXx */2;
+var zXx = "ZXx";
 
 exports.suites = suites;
 exports.test_id = test_id;

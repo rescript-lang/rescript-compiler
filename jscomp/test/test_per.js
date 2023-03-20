@@ -185,13 +185,13 @@ function open_out_gen(mode, perm, name) {
 
 function open_out(name) {
   return open_out_gen({
-              hd: /* Open_wronly */1,
+              hd: "Open_wronly",
               tl: {
-                hd: /* Open_creat */3,
+                hd: "Open_creat",
                 tl: {
-                  hd: /* Open_trunc */4,
+                  hd: "Open_trunc",
                   tl: {
-                    hd: /* Open_text */7,
+                    hd: "Open_text",
                     tl: /* [] */0
                   }
                 }
@@ -201,13 +201,13 @@ function open_out(name) {
 
 function open_out_bin(name) {
   return open_out_gen({
-              hd: /* Open_wronly */1,
+              hd: "Open_wronly",
               tl: {
-                hd: /* Open_creat */3,
+                hd: "Open_creat",
                 tl: {
-                  hd: /* Open_trunc */4,
+                  hd: "Open_trunc",
                   tl: {
-                    hd: /* Open_binary */6,
+                    hd: "Open_binary",
                     tl: /* [] */0
                   }
                 }
@@ -293,9 +293,9 @@ function open_in_gen(mode, perm, name) {
 
 function open_in(name) {
   return open_in_gen({
-              hd: /* Open_rdonly */0,
+              hd: "Open_rdonly",
               tl: {
-                hd: /* Open_text */7,
+                hd: "Open_text",
                 tl: /* [] */0
               }
             }, 0, name);
@@ -303,9 +303,9 @@ function open_in(name) {
 
 function open_in_bin(name) {
   return open_in_gen({
-              hd: /* Open_rdonly */0,
+              hd: "Open_rdonly",
               tl: {
-                hd: /* Open_binary */6,
+                hd: "Open_binary",
                 tl: /* [] */0
               }
             }, 0, name);

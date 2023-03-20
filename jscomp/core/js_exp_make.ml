@@ -763,7 +763,7 @@ let is_type_number ?comment (e : t) : t =
   string_equal ?comment (typeof e) (str "number")
 
 let is_tag (e : t) : t =
-  string_equal ~comment:"tag" (typeof e) (str "number")
+  string_equal (typeof e) (str "string")
 
 let is_type_string ?comment (e : t) : t =
   string_equal ?comment (typeof e) (str "string")
@@ -776,12 +776,7 @@ let is_type_object (e : t) : t = string_equal (typeof e) (str "object")
 *)
 
 let tag ?comment e : t =
-  {
-    expression_desc =
-      Bin
-        (Bor, { expression_desc = Caml_block_tag e; comment }, zero_int_literal);
-    comment = None;
-  }
+  { expression_desc = Caml_block_tag e; comment }
 
 (* according to the compiler, [Btype.hash_variant],
    it's reduced to 31 bits for hash

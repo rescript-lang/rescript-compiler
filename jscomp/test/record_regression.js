@@ -89,7 +89,7 @@ var ir3 = {
 
 var pm0;
 
-pm0 = ir0.TAG === /* V0 */0 ? [
+pm0 = ir0.TAG === "V0" ? [
     "v0",
     3
   ] : [
@@ -99,7 +99,7 @@ pm0 = ir0.TAG === /* V0 */0 ? [
 
 var pm1;
 
-if (ir1.TAG === /* V0 */0) {
+if (ir1.TAG === "V0") {
   var x1 = "v1";
   var x0 = "v0";
   pm1 = x1 !== undefined ? [
@@ -121,7 +121,7 @@ if (ir1.TAG === /* V0 */0) {
 
 var pm2;
 
-if (ir2.TAG === /* V0 */0) {
+if (ir2.TAG === "V0") {
   var x1$1 = "v1";
   var x0$1 = "v0";
   if (x1$1 !== undefined) {
@@ -161,7 +161,7 @@ if (ir2.TAG === /* V0 */0) {
 }
 
 function inlinedRecord(ir) {
-  if (ir.TAG !== /* V0 */0) {
+  if (ir.TAG !== "V0") {
     return [
             ir.y0,
             "n/a",

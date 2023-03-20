@@ -19,8 +19,8 @@ function cons(x, y) {
 }
 
 function map(f, param) {
-  if (/* tag */typeof param === "number") {
-    return /* Nil */0;
+  if (typeof param === "string") {
+    return "Nil";
   } else {
     return /* Cons */{
             _0: Curry._1(f, param._0),
@@ -65,7 +65,7 @@ function v(param) {
   return (6 + param | 0) + u$1 | 0;
 }
 
-var nil = /* Nil */0;
+var nil = "Nil";
 
 var len = List.length;
 

@@ -5,23 +5,23 @@ var Js_types = require("../../lib/js/js_types.js");
 
 function string_or_number(x) {
   var ty = Js_types.classify(x);
-  if (/* tag */typeof ty === "number") {
+  if (typeof ty === "string") {
     switch (ty) {
-      case /* JSFalse */0 :
-      case /* JSTrue */1 :
+      case "JSFalse" :
+      case "JSTrue" :
           return false;
       default:
         return false;
     }
   } else {
-    switch (ty.TAG | 0) {
-      case /* JSNumber */0 :
+    switch (ty.TAG) {
+      case "JSNumber" :
           console.log(ty._0 + 3);
           return true;
-      case /* JSString */1 :
+      case "JSString" :
           console.log(ty._0 + "hei");
           return true;
-      case /* JSFunction */2 :
+      case "JSFunction" :
           console.log("Function");
           return false;
       default:
@@ -34,7 +34,7 @@ var suites_0 = [
   "int_type",
   (function (param) {
       return {
-              TAG: /* Eq */0,
+              TAG: "Eq",
               _0: "number",
               _1: "number"
             };
@@ -46,7 +46,7 @@ var suites_1 = {
     "string_type",
     (function (param) {
         return {
-                TAG: /* Eq */0,
+                TAG: "Eq",
                 _0: "string",
                 _1: "string"
               };
@@ -57,8 +57,8 @@ var suites_1 = {
       "number_gadt_test",
       (function (param) {
           return {
-                  TAG: /* Eq */0,
-                  _0: Js_types.test(3, /* Number */3),
+                  TAG: "Eq",
+                  _0: Js_types.test(3, "Number"),
                   _1: true
                 };
         })
@@ -68,8 +68,8 @@ var suites_1 = {
         "boolean_gadt_test",
         (function (param) {
             return {
-                    TAG: /* Eq */0,
-                    _0: Js_types.test(true, /* Boolean */2),
+                    TAG: "Eq",
+                    _0: Js_types.test(true, "Boolean"),
                     _1: true
                   };
           })
@@ -79,8 +79,8 @@ var suites_1 = {
           "undefined_gadt_test",
           (function (param) {
               return {
-                      TAG: /* Eq */0,
-                      _0: Js_types.test(undefined, /* Undefined */0),
+                      TAG: "Eq",
+                      _0: Js_types.test(undefined, "Undefined"),
                       _1: true
                     };
             })
@@ -90,7 +90,7 @@ var suites_1 = {
             "string_on_number1",
             (function (param) {
                 return {
-                        TAG: /* Eq */0,
+                        TAG: "Eq",
                         _0: string_or_number("xx"),
                         _1: true
                       };
@@ -101,7 +101,7 @@ var suites_1 = {
               "string_on_number2",
               (function (param) {
                   return {
-                          TAG: /* Eq */0,
+                          TAG: "Eq",
                           _0: string_or_number(3.02),
                           _1: true
                         };
@@ -112,7 +112,7 @@ var suites_1 = {
                 "string_on_number3",
                 (function (param) {
                     return {
-                            TAG: /* Eq */0,
+                            TAG: "Eq",
                             _0: string_or_number(function (x) {
                                   return x;
                                 }),
@@ -125,8 +125,8 @@ var suites_1 = {
                   "string_gadt_test",
                   (function (param) {
                       return {
-                              TAG: /* Eq */0,
-                              _0: Js_types.test("3", /* String */4),
+                              TAG: "Eq",
+                              _0: Js_types.test("3", "String"),
                               _1: true
                             };
                     })
@@ -136,8 +136,8 @@ var suites_1 = {
                     "string_gadt_test_neg",
                     (function (param) {
                         return {
-                                TAG: /* Eq */0,
-                                _0: Js_types.test(3, /* String */4),
+                                TAG: "Eq",
+                                _0: Js_types.test(3, "String"),
                                 _1: false
                               };
                       })
@@ -147,10 +147,10 @@ var suites_1 = {
                       "function_gadt_test",
                       (function (param) {
                           return {
-                                  TAG: /* Eq */0,
+                                  TAG: "Eq",
                                   _0: Js_types.test((function (x) {
                                           return x;
-                                        }), /* Function */5),
+                                        }), "Function"),
                                   _1: true
                                 };
                         })
@@ -160,10 +160,10 @@ var suites_1 = {
                         "object_gadt_test",
                         (function (param) {
                             return {
-                                    TAG: /* Eq */0,
+                                    TAG: "Eq",
                                     _0: Js_types.test({
                                           x: 3
-                                        }, /* Object */6),
+                                        }, "Object"),
                                     _1: true
                                   };
                           })

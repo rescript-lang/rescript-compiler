@@ -13,8 +13,8 @@ var Parse_error = /* @__PURE__ */Caml_exceptions.create("Stream_parser_test.Pars
 function parse(token) {
   var look_ahead = {
     length: 0,
-    first: /* Nil */0,
-    last: /* Nil */0
+    first: "Nil",
+    last: "Nil"
   };
   var token$1 = function (param) {
     if (look_ahead.length !== 0) {
@@ -25,19 +25,19 @@ function parse(token) {
     }
     catch (exn){
       return {
-              TAG: /* Kwd */0,
+              TAG: "Kwd",
               _0: "=="
             };
     }
   };
   var parse_atom = function (param) {
     var n = token$1(undefined);
-    switch (n.TAG | 0) {
-      case /* Kwd */0 :
+    switch (n.TAG) {
+      case "Kwd" :
           if (n._0 === "(") {
             var v = parse_expr_aux(parse_term_aux(parse_atom(undefined)));
             var match = token$1(undefined);
-            if (match.TAG === /* Kwd */0) {
+            if (match.TAG === "Kwd") {
               if (match._0 === ")") {
                 return v;
               }
@@ -59,7 +59,7 @@ function parse(token) {
                 _1: "unexpected token",
                 Error: new Error()
               };
-      case /* Int */2 :
+      case "Int" :
           return n._0;
       default:
         Queue.push(n, look_ahead);
@@ -72,7 +72,7 @@ function parse(token) {
   };
   var parse_term_aux = function (e1) {
     var e = token$1(undefined);
-    if (e.TAG === /* Kwd */0) {
+    if (e.TAG === "Kwd") {
       switch (e._0) {
         case "*" :
             return Math.imul(e1, parse_term_aux(parse_atom(undefined)));
@@ -89,7 +89,7 @@ function parse(token) {
   };
   var parse_expr_aux = function (e1) {
     var e = token$1(undefined);
-    if (e.TAG === /* Kwd */0) {
+    if (e.TAG === "Kwd") {
       switch (e._0) {
         case "+" :
             return e1 + parse_expr_aux(parse_term_aux(parse_atom(undefined))) | 0;
@@ -146,8 +146,8 @@ function token(chars) {
 function l_parse(token) {
   var look_ahead = {
     length: 0,
-    first: /* Nil */0,
-    last: /* Nil */0
+    first: "Nil",
+    last: "Nil"
   };
   var token$1 = function (param) {
     if (look_ahead.length !== 0) {
@@ -158,7 +158,7 @@ function l_parse(token) {
     }
     catch (exn){
       return {
-              TAG: /* Kwd */0,
+              TAG: "Kwd",
               _0: "=="
             };
     }
@@ -167,7 +167,7 @@ function l_parse(token) {
     while(true) {
       var a = _a;
       var t = token$1(undefined);
-      if (t.TAG === /* Kwd */0) {
+      if (t.TAG === "Kwd") {
         switch (t._0) {
           case "*" :
               _a = Math.imul(a, parse_f(undefined));
@@ -187,12 +187,12 @@ function l_parse(token) {
   };
   var parse_f = function (param) {
     var i = token$1(undefined);
-    switch (i.TAG | 0) {
-      case /* Kwd */0 :
+    switch (i.TAG) {
+      case "Kwd" :
           if (i._0 === "(") {
             var v = parse_t_aux(parse_f_aux(parse_f(undefined)));
             var t = token$1(undefined);
-            if (t.TAG === /* Kwd */0) {
+            if (t.TAG === "Kwd") {
               if (t._0 === ")") {
                 return v;
               }
@@ -213,7 +213,7 @@ function l_parse(token) {
                 _1: "Unexpected token",
                 Error: new Error()
               };
-      case /* Int */2 :
+      case "Int" :
           return i._0;
       default:
         throw {
@@ -227,7 +227,7 @@ function l_parse(token) {
     while(true) {
       var a = _a;
       var t = token$1(undefined);
-      if (t.TAG === /* Kwd */0) {
+      if (t.TAG === "Kwd") {
         switch (t._0) {
           case "+" :
               _a = a + parse_f_aux(parse_f(undefined)) | 0;
@@ -272,7 +272,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -291,7 +291,7 @@ eq("File \"stream_parser_test.ml\", line 132, characters 5-12", [
       10,
       {
         hd: {
-          TAG: /* Ident */1,
+          TAG: "Ident",
           _0: "a"
         },
         tl: /* [] */0
@@ -302,7 +302,7 @@ eq("File \"stream_parser_test.ml\", line 133, characters 5-12", [
       2,
       {
         hd: {
-          TAG: /* Kwd */0,
+          TAG: "Kwd",
           _0: "=="
         },
         tl: /* [] */0
@@ -313,7 +313,7 @@ eq("File \"stream_parser_test.ml\", line 134, characters 5-12", [
       0,
       {
         hd: {
-          TAG: /* Kwd */0,
+          TAG: "Kwd",
           _0: "=="
         },
         tl: /* [] */0

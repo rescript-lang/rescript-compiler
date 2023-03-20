@@ -28,7 +28,7 @@ function eq(loc, param) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -94,7 +94,7 @@ var u = {
   contents: 3
 };
 
-var side_effect_config = (u.contents = u.contents + 1 | 0, {
+var side_effect_config = (u.contents = u.contents + 1 | 0, "Int", {
     hi: 3,
     low: 32
   });

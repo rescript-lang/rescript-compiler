@@ -50,13 +50,13 @@ function f22(x) {
 function f33(x) {
   var match = Curry._1(x, undefined);
   switch (match) {
-    case /* A */0 :
+    case "A" :
         return /* 'a' */97;
-    case /* B */1 :
+    case "B" :
         return /* 'b' */98;
-    case /* C */2 :
+    case "C" :
         return /* 'c' */99;
-    case /* D */3 :
+    case "D" :
         return /* 'x' */120;
     
   }

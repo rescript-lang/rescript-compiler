@@ -19,7 +19,7 @@ Mt.from_pair_suites("Jsoo_400_test", {
         "File \"jsoo_400_test.ml\", line 8, characters 3-10",
         (function (param) {
             return {
-                    TAG: /* ThrowAny */7,
+                    TAG: "ThrowAny",
                     _0: (function (param) {
                         u(undefined);
                       })

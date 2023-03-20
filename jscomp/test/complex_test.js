@@ -7,7 +7,7 @@ var suites_0 = [
   "basic_add",
   (function (param) {
       return {
-              TAG: /* Eq */0,
+              TAG: "Eq",
               _0: {
                 re: 2,
                 im: 2

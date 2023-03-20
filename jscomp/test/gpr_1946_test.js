@@ -49,7 +49,7 @@ eq("File \"gpr_1946_test.ml\", line 30, characters 6-13", [
 
 console.log(({
           "5": 3
-        }).TAG | 0);
+        }).TAG);
 
 Mt.from_pair_suites("File \"gpr_1946_test.ml\", line 33, characters 23-30", suites.contents);
 

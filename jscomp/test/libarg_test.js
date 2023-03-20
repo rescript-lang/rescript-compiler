@@ -75,7 +75,7 @@ function f_anon(s) {
 var spec_0 = [
   "-u",
   {
-    TAG: /* Unit */0,
+    TAG: "Unit",
     _0: f_unit
   },
   "Unit (0)"
@@ -85,7 +85,7 @@ var spec_1 = {
   hd: [
     "-b",
     {
-      TAG: /* Bool */1,
+      TAG: "Bool",
       _0: f_bool
     },
     "Bool (1)"
@@ -94,7 +94,7 @@ var spec_1 = {
     hd: [
       "-s",
       {
-        TAG: /* Set */2,
+        TAG: "Set",
         _0: r_set
       },
       "Set (0)"
@@ -103,7 +103,7 @@ var spec_1 = {
       hd: [
         "-c",
         {
-          TAG: /* Clear */3,
+          TAG: "Clear",
           _0: r_clear
         },
         "Clear (0)"
@@ -112,7 +112,7 @@ var spec_1 = {
         hd: [
           "-str",
           {
-            TAG: /* String */4,
+            TAG: "String",
             _0: f_string
           },
           "String (1)"
@@ -121,7 +121,7 @@ var spec_1 = {
           hd: [
             "-sstr",
             {
-              TAG: /* Set_string */5,
+              TAG: "Set_string",
               _0: r_string
             },
             "Set_string (1)"
@@ -130,7 +130,7 @@ var spec_1 = {
             hd: [
               "-i",
               {
-                TAG: /* Int */6,
+                TAG: "Int",
                 _0: f_int
               },
               "Int (1)"
@@ -139,7 +139,7 @@ var spec_1 = {
               hd: [
                 "-si",
                 {
-                  TAG: /* Set_int */7,
+                  TAG: "Set_int",
                   _0: r_int
                 },
                 "Set_int (1)"
@@ -148,7 +148,7 @@ var spec_1 = {
                 hd: [
                   "-f",
                   {
-                    TAG: /* Float */8,
+                    TAG: "Float",
                     _0: f_float
                   },
                   "Float (1)"
@@ -157,7 +157,7 @@ var spec_1 = {
                   hd: [
                     "-sf",
                     {
-                      TAG: /* Set_float */9,
+                      TAG: "Set_float",
                       _0: r_float
                     },
                     "Set_float (1)"
@@ -166,20 +166,20 @@ var spec_1 = {
                     hd: [
                       "-t",
                       {
-                        TAG: /* Tuple */10,
+                        TAG: "Tuple",
                         _0: {
                           hd: {
-                            TAG: /* Bool */1,
+                            TAG: "Bool",
                             _0: f_bool
                           },
                           tl: {
                             hd: {
-                              TAG: /* String */4,
+                              TAG: "String",
                               _0: f_string
                             },
                             tl: {
                               hd: {
-                                TAG: /* Int */6,
+                                TAG: "Int",
                                 _0: f_int
                               },
                               tl: /* [] */0
@@ -193,7 +193,7 @@ var spec_1 = {
                       hd: [
                         "-sym",
                         {
-                          TAG: /* Symbol */11,
+                          TAG: "Symbol",
                           _0: {
                             hd: "a",
                             tl: {
@@ -212,7 +212,7 @@ var spec_1 = {
                         hd: [
                           "-rest",
                           {
-                            TAG: /* Rest */12,
+                            TAG: "Rest",
                             _0: f_rest
                           },
                           "Rest (*)"

@@ -128,7 +128,7 @@ function from_pairs(ps) {
                             "pair " + i,
                             (function (param) {
                                 return {
-                                        TAG: /* Approx */5,
+                                        TAG: "Approx",
                                         _0: a,
                                         _1: b
                                       };
@@ -177,7 +177,7 @@ function float_greaterequal(x, y) {
 
 var generic_greaterequal = Caml_obj.greaterequal;
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 60, characters 5-12", Pervasives.classify_float(3), /* FP_normal */0);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 60, characters 5-12", Pervasives.classify_float(3), "FP_normal");
 
 Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 61, characters 5-12", Caml_float.modf_float(-3.125), [
       -0.125,
@@ -330,7 +330,7 @@ Mt.from_pair_suites("Float_test", Pervasives.$at({
             "mod_float",
             (function (param) {
                 return {
-                        TAG: /* Approx */5,
+                        TAG: "Approx",
                         _0: 3.2 % 0.5,
                         _1: 0.200000000000000178
                       };
@@ -341,7 +341,7 @@ Mt.from_pair_suites("Float_test", Pervasives.$at({
               "modf_float1",
               (function (param) {
                   return {
-                          TAG: /* Approx */5,
+                          TAG: "Approx",
                           _0: a,
                           _1: 0.299999999999997158
                         };
@@ -352,7 +352,7 @@ Mt.from_pair_suites("Float_test", Pervasives.$at({
                 "modf_float2",
                 (function (param) {
                     return {
-                            TAG: /* Approx */5,
+                            TAG: "Approx",
                             _0: b,
                             _1: 32
                           };
@@ -363,7 +363,7 @@ Mt.from_pair_suites("Float_test", Pervasives.$at({
                   "int_of_float",
                   (function (param) {
                       return {
-                              TAG: /* Eq */0,
+                              TAG: "Eq",
                               _0: 3,
                               _1: 3
                             };
