@@ -2341,9 +2341,6 @@ let rec unify (env:Env.t ref) t1 t2 =
         with Cannot_expand ->
           unify2 env t1 t2
         end
-    | (Tconstr (Pident {name="function$"}, [tFun; _], _), Tarrow _) when !Config.uncurried = Uncurried ->
-        (* subtype: an uncurried function is cast to a curried one *)
-        unify2 env tFun t2
     | _ ->
         unify2 env t1 t2
     end;
@@ -2399,6 +2396,9 @@ and unify3 env t1 t1' t2 t2' =
       link_type t2' t1;
   | (Tfield _, Tfield _) -> (* special case for GADTs *)
       unify_fields env t1' t2'
+  | (Tconstr (Pident {name="function$"}, [tFun; _], _), Tarrow _) when !Config.uncurried = Uncurried ->
+      (* subtype: an uncurried function is cast to a curried one *)
+      unify2 env tFun t2
   | _ ->
     begin match !umode with
     | Expression ->
