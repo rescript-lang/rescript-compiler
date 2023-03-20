@@ -31,17 +31,17 @@ var Int3 = Caml_module.init_mod([
       27,
       6
     ], {
-      TAG: /* Module */0,
+      TAG: "Module",
       _0: [[
-          /* Function */0,
+          "Function",
           "u"
         ]]
     });
 
 Caml_module.update_mod({
-      TAG: /* Module */0,
+      TAG: "Module",
       _0: [[
-          /* Function */0,
+          "Function",
           "u"
         ]]
     }, Int3, Int3);
@@ -51,9 +51,9 @@ var Inta = Caml_module.init_mod([
       31,
       6
     ], {
-      TAG: /* Module */0,
+      TAG: "Module",
       _0: [[
-          /* Lazy */1,
+          "Lazy",
           "a"
         ]]
     });
@@ -63,9 +63,9 @@ var Intb = Caml_module.init_mod([
       36,
       6
     ], {
-      TAG: /* Module */0,
+      TAG: "Module",
       _0: [[
-          /* Lazy */1,
+          "Lazy",
           "a"
         ]]
     });
@@ -78,9 +78,9 @@ var a = {
 };
 
 Caml_module.update_mod({
-      TAG: /* Module */0,
+      TAG: "Module",
       _0: [[
-          /* Lazy */1,
+          "Lazy",
           "a"
         ]]
     }, Inta, {
@@ -95,9 +95,9 @@ var a$1 = {
 };
 
 Caml_module.update_mod({
-      TAG: /* Module */0,
+      TAG: "Module",
       _0: [[
-          /* Lazy */1,
+          "Lazy",
           "a"
         ]]
     }, Intb, {
@@ -125,9 +125,9 @@ var Inta$1 = Caml_module.init_mod([
       48,
       8
     ], {
-      TAG: /* Module */0,
+      TAG: "Module",
       _0: [[
-          /* Lazy */1,
+          "Lazy",
           "a"
         ]]
     });
@@ -137,9 +137,9 @@ var Intb$1 = Caml_module.init_mod([
       53,
       8
     ], {
-      TAG: /* Module */0,
+      TAG: "Module",
       _0: [[
-          /* Lazy */1,
+          "Lazy",
           "a"
         ]]
     });
@@ -152,9 +152,9 @@ var a$2 = {
 };
 
 Caml_module.update_mod({
-      TAG: /* Module */0,
+      TAG: "Module",
       _0: [[
-          /* Lazy */1,
+          "Lazy",
           "a"
         ]]
     }, Inta$1, {
@@ -167,9 +167,9 @@ var a$3 = {
 };
 
 Caml_module.update_mod({
-      TAG: /* Module */0,
+      TAG: "Module",
       _0: [[
-          /* Lazy */1,
+          "Lazy",
           "a"
         ]]
     }, Intb$1, {

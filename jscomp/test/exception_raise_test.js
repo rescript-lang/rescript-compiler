@@ -135,7 +135,7 @@ var suites = {
       "File \"exception_raise_test.ml\", line 114, characters 4-11",
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: [
                     f,
                     ff,
@@ -157,7 +157,7 @@ var suites = {
         (function (param) {
             if (a1.RE_EXN_ID === Js_exn.$$Error) {
               return {
-                      TAG: /* Eq */0,
+                      TAG: "Eq",
                       _0: a1._1,
                       _1: 2
                     };

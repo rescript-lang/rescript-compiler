@@ -3,20 +3,20 @@
 var Pervasives = require("../../lib/js/pervasives.js");
 
 function str(e) {
-  switch (e.TAG | 0) {
-    case /* Numeral */0 :
+  switch (e.TAG) {
+    case "Numeral" :
         return Pervasives.string_of_float(e._0);
-    case /* Plus */1 :
+    case "Plus" :
         return str(e._0) + ("+" + str(e._1));
-    case /* Minus */2 :
+    case "Minus" :
         return str(e._0) + ("-" + str(e._1));
-    case /* Times */3 :
+    case "Times" :
         return str(e._0) + ("*" + str(e._1));
-    case /* Divide */4 :
+    case "Divide" :
         return str(e._0) + ("/" + str(e._1));
-    case /* Negate */5 :
+    case "Negate" :
         return "-" + str(e._0);
-    case /* Variable */6 :
+    case "Variable" :
         return e._0;
     
   }

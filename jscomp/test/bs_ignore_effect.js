@@ -17,7 +17,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -41,7 +41,7 @@ var h = (v.contents = v.contents + 1 | 0, {
     lo: 0
   });
 
-var z = (v.contents = v.contents + 1 | 0, add(3.0, 2.0));
+var z = (v.contents = v.contents + 1 | 0, "Float", add(3.0, 2.0));
 
 eq("File \"bs_ignore_effect.ml\", line 26, characters 5-12", v.contents, 2);
 

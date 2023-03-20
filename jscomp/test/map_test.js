@@ -6,7 +6,7 @@ var List = require("../../lib/js/list.js");
 var Curry = require("../../lib/js/curry.js");
 
 function height(param) {
-  if (/* tag */typeof param === "number") {
+  if (typeof param === "string") {
     return 0;
   } else {
     return param.h;
@@ -27,11 +27,11 @@ function create(l, x, d, r) {
 
 function bal(l, x, d, r) {
   var hl;
-  hl = /* tag */typeof l === "number" ? 0 : l.h;
+  hl = typeof l === "string" ? 0 : l.h;
   var hr;
-  hr = /* tag */typeof r === "number" ? 0 : r.h;
+  hr = typeof r === "string" ? 0 : r.h;
   if (hl > (hr + 2 | 0)) {
-    if (/* tag */typeof l === "number") {
+    if (typeof l === "string") {
       throw {
             RE_EXN_ID: "Invalid_argument",
             _1: "Map.bal",
@@ -45,7 +45,7 @@ function bal(l, x, d, r) {
     if (height(ll) >= height(lr)) {
       return create(ll, lv, ld, create(lr, x, d, r));
     }
-    if (/* tag */typeof lr !== "number") {
+    if (typeof lr !== "string") {
       return create(create(ll, lv, ld, lr.l), lr.v, lr.d, create(lr.r, x, d, r));
     }
     throw {
@@ -63,7 +63,7 @@ function bal(l, x, d, r) {
             h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
-  if (/* tag */typeof r === "number") {
+  if (typeof r === "string") {
     throw {
           RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal",
@@ -77,7 +77,7 @@ function bal(l, x, d, r) {
   if (height(rr) >= height(rl)) {
     return create(create(l, x, d, rl), rv, rd, rr);
   }
-  if (/* tag */typeof rl !== "number") {
+  if (typeof rl !== "string") {
     return create(create(l, x, d, rl.l), rl.v, rl.d, create(rl.r, rv, rd, rr));
   }
   throw {
@@ -88,12 +88,12 @@ function bal(l, x, d, r) {
 }
 
 function add(x, data, m) {
-  if (/* tag */typeof m === "number") {
+  if (typeof m === "string") {
     return /* Node */{
-            l: /* Empty */0,
+            l: "Empty",
             v: x,
             d: data,
-            r: /* Empty */0,
+            r: "Empty",
             h: 1
           };
   }
@@ -135,7 +135,7 @@ function cons_enum(_m, _e) {
   while(true) {
     var e = _e;
     var m = _m;
-    if (/* tag */typeof m === "number") {
+    if (typeof m === "string") {
       return e;
     }
     _e = /* More */{
@@ -150,19 +150,19 @@ function cons_enum(_m, _e) {
 }
 
 function compare(cmp, m1, m2) {
-  var _e1 = cons_enum(m1, /* End */0);
-  var _e2 = cons_enum(m2, /* End */0);
+  var _e1 = cons_enum(m1, "End");
+  var _e2 = cons_enum(m2, "End");
   while(true) {
     var e2 = _e2;
     var e1 = _e1;
-    if (/* tag */typeof e1 === "number") {
-      if (/* tag */typeof e2 === "number") {
+    if (typeof e1 === "string") {
+      if (typeof e2 === "string") {
         return 0;
       } else {
         return -1;
       }
     }
-    if (/* tag */typeof e2 === "number") {
+    if (typeof e2 === "string") {
       return 1;
     }
     var c = Caml.int_compare(e1._0, e2._0);
@@ -180,19 +180,19 @@ function compare(cmp, m1, m2) {
 }
 
 function equal(cmp, m1, m2) {
-  var _e1 = cons_enum(m1, /* End */0);
-  var _e2 = cons_enum(m2, /* End */0);
+  var _e1 = cons_enum(m1, "End");
+  var _e2 = cons_enum(m2, "End");
   while(true) {
     var e2 = _e2;
     var e1 = _e1;
-    if (/* tag */typeof e1 === "number") {
-      if (/* tag */typeof e2 === "number") {
+    if (typeof e1 === "string") {
+      if (typeof e2 === "string") {
         return true;
       } else {
         return false;
       }
     }
-    if (/* tag */typeof e2 === "number") {
+    if (typeof e2 === "string") {
       return false;
     }
     if (e1._0 !== e2._0) {
@@ -208,7 +208,7 @@ function equal(cmp, m1, m2) {
 }
 
 function cardinal(param) {
-  if (/* tag */typeof param === "number") {
+  if (typeof param === "string") {
     return 0;
   } else {
     return (cardinal(param.l) + 1 | 0) + cardinal(param.r) | 0;
@@ -216,7 +216,7 @@ function cardinal(param) {
 }
 
 function height$1(param) {
-  if (/* tag */typeof param === "number") {
+  if (typeof param === "string") {
     return 0;
   } else {
     return param.h;
@@ -237,11 +237,11 @@ function create$1(l, x, d, r) {
 
 function bal$1(l, x, d, r) {
   var hl;
-  hl = /* tag */typeof l === "number" ? 0 : l.h;
+  hl = typeof l === "string" ? 0 : l.h;
   var hr;
-  hr = /* tag */typeof r === "number" ? 0 : r.h;
+  hr = typeof r === "string" ? 0 : r.h;
   if (hl > (hr + 2 | 0)) {
-    if (/* tag */typeof l === "number") {
+    if (typeof l === "string") {
       throw {
             RE_EXN_ID: "Invalid_argument",
             _1: "Map.bal",
@@ -255,7 +255,7 @@ function bal$1(l, x, d, r) {
     if (height$1(ll) >= height$1(lr)) {
       return create$1(ll, lv, ld, create$1(lr, x, d, r));
     }
-    if (/* tag */typeof lr !== "number") {
+    if (typeof lr !== "string") {
       return create$1(create$1(ll, lv, ld, lr.l), lr.v, lr.d, create$1(lr.r, x, d, r));
     }
     throw {
@@ -273,7 +273,7 @@ function bal$1(l, x, d, r) {
             h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
-  if (/* tag */typeof r === "number") {
+  if (typeof r === "string") {
     throw {
           RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal",
@@ -287,7 +287,7 @@ function bal$1(l, x, d, r) {
   if (height$1(rr) >= height$1(rl)) {
     return create$1(create$1(l, x, d, rl), rv, rd, rr);
   }
-  if (/* tag */typeof rl !== "number") {
+  if (typeof rl !== "string") {
     return create$1(create$1(l, x, d, rl.l), rl.v, rl.d, create$1(rl.r, rv, rd, rr));
   }
   throw {
@@ -298,12 +298,12 @@ function bal$1(l, x, d, r) {
 }
 
 function add$1(x, data, m) {
-  if (/* tag */typeof m === "number") {
+  if (typeof m === "string") {
     return /* Node */{
-            l: /* Empty */0,
+            l: "Empty",
             v: x,
             d: data,
-            r: /* Empty */0,
+            r: "Empty",
             h: 1
           };
   }
@@ -344,7 +344,7 @@ function add$1(x, data, m) {
 function find(x, _param) {
   while(true) {
     var param = _param;
-    if (/* tag */typeof param === "number") {
+    if (typeof param === "string") {
       throw {
             RE_EXN_ID: "Not_found",
             Error: new Error()
@@ -362,7 +362,7 @@ function find(x, _param) {
 function of_list(kvs) {
   return List.fold_left((function (acc, param) {
                 return add(param[0], param[1], acc);
-              }), /* Empty */0, kvs);
+              }), "Empty", kvs);
 }
 
 var int_map_suites_0 = [
@@ -388,7 +388,7 @@ var int_map_suites_0 = [
             }
           });
       return {
-              TAG: /* Eq */0,
+              TAG: "Eq",
               _0: cardinal(v),
               _1: 3
             };
@@ -438,7 +438,7 @@ var int_map_suites_1 = {
               }
             });
         return {
-                TAG: /* Eq */0,
+                TAG: "Eq",
                 _0: compare(Caml.int_compare, u, v),
                 _1: 0
               };
@@ -487,7 +487,7 @@ var int_map_suites_1 = {
                 }
               });
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: true,
                   _1: equal((function (x, y) {
                           return x === y;
@@ -499,7 +499,7 @@ var int_map_suites_1 = {
       hd: [
         "iteration",
         (function (param) {
-            var m = /* Empty */0;
+            var m = "Empty";
             for(var i = 0; i <= 10000; ++i){
               m = add$1(String(i), String(i), m);
             }
@@ -511,7 +511,7 @@ var int_map_suites_1 = {
               
             }
             return {
-                    TAG: /* Eq */0,
+                    TAG: "Eq",
                     _0: v,
                     _1: -1
                   };

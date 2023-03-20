@@ -3,15 +3,15 @@
 
 function toEnum(x) {
   switch (x) {
-    case /* A */0 :
+    case "A" :
         return 0;
-    case /* B */1 :
+    case "B" :
         return 1;
-    case /* C */2 :
+    case "C" :
         return 2;
-    case /* D */3 :
+    case "D" :
         return 3;
-    case /* E */4 :
+    case "E" :
         return 4;
     
   }
@@ -19,15 +19,15 @@ function toEnum(x) {
 
 function toString(x) {
   switch (x) {
-    case /* A */0 :
+    case "A" :
         return "A";
-    case /* B */1 :
+    case "B" :
         return "B";
-    case /* C */2 :
+    case "C" :
         return "C";
-    case /* D */3 :
+    case "D" :
         return "D";
-    case /* E */4 :
+    case "E" :
         return "E";
     
   }
@@ -35,8 +35,8 @@ function toString(x) {
 
 function bar(x) {
   switch (x) {
-    case /* A */0 :
-    case /* E */4 :
+    case "A" :
+    case "E" :
         return 10;
     default:
       return 0;
@@ -44,31 +44,31 @@ function bar(x) {
 }
 
 function and_(x, y) {
-  if (x === /* True */0 && y === /* True */0) {
-    return /* True */0;
+  if (x === "True" && y === "True") {
+    return "True";
   } else {
-    return /* False */1;
+    return "False";
   }
 }
 
 function id(x) {
-  if (x === /* True */0) {
-    return /* True */0;
+  if (x === "True") {
+    return "True";
   } else {
-    return /* False */1;
+    return "False";
   }
 }
 
 function not_(x) {
-  if (x === /* True */0) {
-    return /* False */1;
+  if (x === "True") {
+    return "False";
   } else {
-    return /* True */0;
+    return "True";
   }
 }
 
 function st(state) {
-  if (/* tag */typeof state === "number") {
+  if (typeof state === "string") {
     return 0;
   } else {
     return 23;
@@ -76,7 +76,7 @@ function st(state) {
 }
 
 function showToJs(x) {
-  if (/* tag */typeof x === "number" && x === /* No */0) {
+  if (typeof x === "string" && x === "No") {
     return false;
   } else {
     return true;
@@ -106,28 +106,28 @@ function third(l) {
 }
 
 function third2(l) {
-  if (/* tag */typeof l === "number") {
+  if (typeof l === "string") {
     return false;
   }
   if (l._0 !== 1) {
     return false;
   }
   var match = l._1;
-  if (/* tag */typeof match === "number") {
+  if (typeof match === "string") {
     return false;
   }
   if (match._0 !== 2) {
     return false;
   }
   var match$1 = match._1;
-  if (/* tag */typeof match$1 === "number") {
+  if (typeof match$1 === "string") {
     return false;
   }
   if (match$1._0 !== 3) {
     return false;
   }
   var tmp = match$1._1;
-  if (/* tag */typeof tmp === "number") {
+  if (typeof tmp === "string") {
     return true;
   } else {
     return false;

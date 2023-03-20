@@ -4,20 +4,20 @@
 function is_number(_expr) {
   while(true) {
     var expr = _expr;
-    switch (expr.TAG | 0) {
-      case /* Val */0 :
-          if (expr._0.TAG === /* Natural */0) {
+    switch (expr.TAG) {
+      case "Val" :
+          if (expr._0.TAG === "Natural") {
             return true;
           } else {
             return false;
           }
-      case /* Neg */1 :
+      case "Neg" :
           _expr = expr._0;
           continue ;
-      case /* Sum */2 :
-      case /* Pow */3 :
-      case /* Frac */4 :
-      case /* Gcd */5 :
+      case "Sum" :
+      case "Pow" :
+      case "Frac" :
+      case "Gcd" :
           return false;
       
     }
@@ -36,18 +36,18 @@ function compare(context, state, _a, _b) {
     var exit$1 = 0;
     var exit$2 = 0;
     var exit$3 = 0;
-    switch (a.TAG | 0) {
-      case /* Val */0 :
-          switch (b.TAG | 0) {
-            case /* Val */0 :
+    switch (a.TAG) {
+      case "Val" :
+          switch (b.TAG) {
+            case "Val" :
                 return 111;
-            case /* Neg */1 :
+            case "Neg" :
                 exit$3 = 5;
                 break;
-            case /* Sum */2 :
+            case "Sum" :
                 exit$2 = 4;
                 break;
-            case /* Frac */4 :
+            case "Frac" :
                 throw {
                       RE_EXN_ID: "Assert_failure",
                       _1: [
@@ -57,23 +57,23 @@ function compare(context, state, _a, _b) {
                       ],
                       Error: new Error()
                     };
-            case /* Pow */3 :
-            case /* Gcd */5 :
+            case "Pow" :
+            case "Gcd" :
                 exit = 1;
                 break;
             
           }
           break;
-      case /* Neg */1 :
+      case "Neg" :
           _a = a._0;
           continue ;
-      case /* Sum */2 :
-      case /* Pow */3 :
+      case "Sum" :
+      case "Pow" :
           exit$3 = 5;
           break;
-      case /* Frac */4 :
-          switch (b.TAG | 0) {
-            case /* Val */0 :
+      case "Frac" :
+          switch (b.TAG) {
+            case "Val" :
                 throw {
                       RE_EXN_ID: "Assert_failure",
                       _1: [
@@ -83,35 +83,35 @@ function compare(context, state, _a, _b) {
                       ],
                       Error: new Error()
                     };
-            case /* Neg */1 :
+            case "Neg" :
                 exit$3 = 5;
                 break;
-            case /* Sum */2 :
+            case "Sum" :
                 exit$2 = 4;
                 break;
-            case /* Frac */4 :
+            case "Frac" :
                 na = a._0;
                 da = a._1;
                 nb = b._0;
                 db = b._1;
                 exit = 2;
                 break;
-            case /* Pow */3 :
-            case /* Gcd */5 :
+            case "Pow" :
+            case "Gcd" :
                 exit = 1;
                 break;
             
           }
           break;
-      case /* Gcd */5 :
-          switch (b.TAG | 0) {
-            case /* Neg */1 :
+      case "Gcd" :
+          switch (b.TAG) {
+            case "Neg" :
                 exit$3 = 5;
                 break;
-            case /* Sum */2 :
+            case "Sum" :
                 exit$2 = 4;
                 break;
-            case /* Gcd */5 :
+            case "Gcd" :
                 na = a._0;
                 da = a._1;
                 nb = b._0;
@@ -125,11 +125,11 @@ function compare(context, state, _a, _b) {
       
     }
     if (exit$3 === 5) {
-      if (b.TAG === /* Neg */1) {
+      if (b.TAG === "Neg") {
         _b = b._0;
         continue ;
       }
-      if (a.TAG === /* Sum */2) {
+      if (a.TAG === "Sum") {
         if (is_number(b)) {
           return 1;
         }
@@ -139,7 +139,7 @@ function compare(context, state, _a, _b) {
       }
     }
     if (exit$2 === 4) {
-      if (b.TAG === /* Sum */2) {
+      if (b.TAG === "Sum") {
         if (is_number(a)) {
           return -1;
         }
@@ -149,25 +149,25 @@ function compare(context, state, _a, _b) {
       }
     }
     if (exit$1 === 3) {
-      switch (a.TAG | 0) {
-        case /* Sum */2 :
+      switch (a.TAG) {
+        case "Sum" :
             exit = 1;
             break;
-        case /* Pow */3 :
+        case "Pow" :
             return -1;
-        case /* Val */0 :
-        case /* Frac */4 :
-        case /* Gcd */5 :
+        case "Val" :
+        case "Frac" :
+        case "Gcd" :
             return 1;
         
       }
     }
     switch (exit) {
       case 1 :
-          switch (b.TAG | 0) {
-            case /* Pow */3 :
+          switch (b.TAG) {
+            case "Pow" :
                 return 1;
-            case /* Gcd */5 :
+            case "Gcd" :
                 return -1;
             default:
               return -1;
@@ -186,20 +186,20 @@ function compare(context, state, _a, _b) {
 }
 
 var a = {
-  TAG: /* Sum */2,
+  TAG: "Sum",
   _0: {
     hd: {
-      TAG: /* Val */0,
+      TAG: "Val",
       _0: {
-        TAG: /* Symbol */1,
+        TAG: "Symbol",
         _0: "a"
       }
     },
     tl: {
       hd: {
-        TAG: /* Val */0,
+        TAG: "Val",
         _0: {
-          TAG: /* Natural */0,
+          TAG: "Natural",
           _0: 2
         }
       },
@@ -209,14 +209,14 @@ var a = {
 };
 
 var b = {
-  TAG: /* Val */0,
+  TAG: "Val",
   _0: {
-    TAG: /* Symbol */1,
+    TAG: "Symbol",
     _0: "x"
   }
 };
 
-console.log(compare(/* InSum */0, {
+console.log(compare("InSum", {
           complex: true
         }, a, b));
 

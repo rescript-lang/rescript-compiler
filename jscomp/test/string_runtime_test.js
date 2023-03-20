@@ -10,7 +10,7 @@ var suites_0 = [
   "?is_printable",
   (function (param) {
       return {
-              TAG: /* Eq */0,
+              TAG: "Eq",
               _0: Test_char.caml_is_printable(/* 'a' */97),
               _1: true
             };
@@ -53,7 +53,7 @@ var suites_1 = {
                   }
                 }));
         return {
-                TAG: /* Eq */0,
+                TAG: "Eq",
                 _0: match[0],
                 _1: match[1]
               };

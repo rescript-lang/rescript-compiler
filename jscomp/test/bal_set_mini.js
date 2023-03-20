@@ -2,7 +2,7 @@
 
 
 function height(param) {
-  if (/* tag */typeof param === "number") {
+  if (typeof param === "string") {
     return 0;
   } else {
     return param._3;
@@ -24,16 +24,16 @@ function bal(l, v, r) {
   var hl = height(l);
   var hr = height(r);
   if (hl > (hr + 2 | 0)) {
-    if (/* tag */typeof l === "number") {
-      return /* Empty */0;
+    if (typeof l === "string") {
+      return "Empty";
     }
     var lr = l._2;
     var lv = l._1;
     var ll = l._0;
     if (height(ll) >= height(lr)) {
       return create(ll, lv, create(lr, v, r));
-    } else if (/* tag */typeof lr === "number") {
-      return /* Empty */0;
+    } else if (typeof lr === "string") {
+      return "Empty";
     } else {
       return create(create(ll, lv, lr._0), lr._1, create(lr._2, v, r));
     }
@@ -46,16 +46,16 @@ function bal(l, v, r) {
             _3: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
-  if (/* tag */typeof r === "number") {
-    return /* Empty */0;
+  if (typeof r === "string") {
+    return "Empty";
   }
   var rr = r._2;
   var rv = r._1;
   var rl = r._0;
   if (height(rr) >= height(rl)) {
     return create(create(l, v, rl), rv, rr);
-  } else if (/* tag */typeof rl === "number") {
-    return /* Empty */0;
+  } else if (typeof rl === "string") {
+    return "Empty";
   } else {
     return create(create(l, v, rl._0), rl._1, create(rl._2, rv, rr));
   }
@@ -72,11 +72,11 @@ function compare_int(x, y) {
 }
 
 function add(x, t) {
-  if (/* tag */typeof t === "number") {
+  if (typeof t === "string") {
     return /* Node */{
-            _0: /* Empty */0,
+            _0: "Empty",
             _1: x,
-            _2: /* Empty */0,
+            _2: "Empty",
             _3: 1
           };
   }
@@ -97,11 +97,11 @@ function min_elt(_def, _param) {
   while(true) {
     var param = _param;
     var def = _def;
-    if (/* tag */typeof param === "number") {
+    if (typeof param === "string") {
       return def;
     }
     var l = param._0;
-    if (/* tag */typeof l === "number") {
+    if (typeof l === "string") {
       return param._1;
     }
     _param = l;
@@ -111,7 +111,7 @@ function min_elt(_def, _param) {
 }
 
 function remove_min_elt(l, v, r) {
-  if (/* tag */typeof l === "number") {
+  if (typeof l === "string") {
     return r;
   } else {
     return bal(remove_min_elt(l._0, l._1, l._2), v, r);
@@ -119,10 +119,10 @@ function remove_min_elt(l, v, r) {
 }
 
 function internal_merge(l, r) {
-  if (/* tag */typeof l === "number") {
+  if (typeof l === "string") {
     return r;
   }
-  if (/* tag */typeof r === "number") {
+  if (typeof r === "string") {
     return l;
   }
   var rv = r._1;
@@ -130,8 +130,8 @@ function internal_merge(l, r) {
 }
 
 function remove(x, tree) {
-  if (/* tag */typeof tree === "number") {
-    return /* Empty */0;
+  if (typeof tree === "string") {
+    return "Empty";
   }
   var r = tree._2;
   var v = tree._1;
@@ -149,7 +149,7 @@ function remove(x, tree) {
 function mem(x, _param) {
   while(true) {
     var param = _param;
-    if (/* tag */typeof param === "number") {
+    if (typeof param === "string") {
       return false;
     }
     var c = compare_int(x, param._1);
@@ -161,7 +161,7 @@ function mem(x, _param) {
   };
 }
 
-var v = /* Empty */0;
+var v = "Empty";
 
 for(var i = 0; i <= 100000; ++i){
   v = add(i, v);
@@ -180,7 +180,7 @@ for(var i$2 = 0; i$2 <= 100000; ++i$2){
 
 var match = v;
 
-if (/* tag */typeof match !== "number") {
+if (typeof match !== "string") {
   console.log("impossible");
 }
 

@@ -123,10 +123,10 @@ function u(param) {
 }
 
 function f(x) {
-  if (/* tag */typeof x === "number") {
+  if (typeof x === "string") {
     return 2;
   }
-  if (x.TAG === /* D */0) {
+  if (x.TAG === "D") {
     return 1;
   }
   throw {

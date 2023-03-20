@@ -3,7 +3,7 @@
 var Rbset = require("./rbset.js");
 
 function bench(param) {
-  var data = /* Empty */0;
+  var data = "Empty";
   console.time("bs_rbset_int_bench.ml 7");
   for(var i = 0; i <= 1000000; ++i){
     data = Rbset.add(i, data);

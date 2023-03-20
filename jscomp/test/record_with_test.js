@@ -40,7 +40,7 @@ var suites_0 = [
   "eq_with",
   (function (param) {
       return {
-              TAG: /* Eq */0,
+              TAG: "Eq",
               _0: v,
               _1: u_v
             };

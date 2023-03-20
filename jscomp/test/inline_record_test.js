@@ -34,7 +34,7 @@ var v1 = {
 };
 
 function f(x) {
-  if (x.TAG === /* A0 */0) {
+  if (x.TAG === "A0") {
     return List.fold_left((function (prim0, prim1) {
                   return prim0 + prim1 | 0;
                 }), x.lbl, x.more);
@@ -80,7 +80,7 @@ if (A0 === A0) {
 eq("File \"inline_record_test.ml\", line 51, characters 6-13", tmp, 3);
 
 function ff(x) {
-  if (x.TAG === /* A0 */0) {
+  if (x.TAG === "A0") {
     x.x = x.x + 1 | 0;
   } else {
     x.z = x.z + 2 | 0;
@@ -106,7 +106,7 @@ for(var i = 0; i <= 10; ++i){
 
 var tmp$1;
 
-if (v4.TAG === /* A0 */0) {
+if (v4.TAG === "A0") {
   tmp$1 = v4.x;
 } else {
   throw {
@@ -124,7 +124,7 @@ eq("File \"inline_record_test.ml\", line 69, characters 6-13", tmp$1, 11);
 
 var tmp$2;
 
-if (v5.TAG === /* A0 */0) {
+if (v5.TAG === "A0") {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
@@ -181,8 +181,8 @@ if (v6.RE_EXN_ID === A4) {
 eq("File \"inline_record_test.ml\", line 87, characters 6-13", tmp$3, 11);
 
 function ff1(x) {
-  if (/* tag */typeof x === "number") {
-    return /* A1 */0;
+  if (typeof x === "string") {
+    return "A1";
   } else {
     return /* A0 */{
             lbl: x.lbl + 1 | 0,

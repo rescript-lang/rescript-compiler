@@ -223,7 +223,7 @@ var suites_0 = [
   "for_loop_test_3",
   (function (param) {
       return {
-              TAG: /* Eq */0,
+              TAG: "Eq",
               _0: 90,
               _1: for_3(Caml_array.make(10, 2))
             };
@@ -235,7 +235,7 @@ var suites_1 = {
     "for_loop_test_4",
     (function (param) {
         return {
-                TAG: /* Eq */0,
+                TAG: "Eq",
                 _0: 180,
                 _1: for_4(Caml_array.make(10, 2))
               };
@@ -246,7 +246,7 @@ var suites_1 = {
       "for_loop_test_5",
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: 2420,
                   _1: for_5(Caml_array.make(10, 2), 11)
                 };
@@ -257,7 +257,7 @@ var suites_1 = {
         "for_loop_test_6",
         (function (param) {
             return {
-                    TAG: /* Eq */0,
+                    TAG: "Eq",
                     _0: [
                       30,
                       1,
@@ -273,7 +273,7 @@ var suites_1 = {
           "for_loop_test_7",
           (function (param) {
               return {
-                      TAG: /* Eq */0,
+                      TAG: "Eq",
                       _0: 84,
                       _1: for_7(undefined)
                     };
@@ -284,7 +284,7 @@ var suites_1 = {
             "for_loop_test_8",
             (function (param) {
                 return {
-                        TAG: /* Eq */0,
+                        TAG: "Eq",
                         _0: 294,
                         _1: for_8(undefined)
                       };
@@ -295,7 +295,7 @@ var suites_1 = {
               "for_loop_test_9",
               (function (param) {
                   return {
-                          TAG: /* Eq */0,
+                          TAG: "Eq",
                           _0: [[
                               10,
                               [

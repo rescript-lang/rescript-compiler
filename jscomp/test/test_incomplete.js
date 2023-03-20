@@ -25,12 +25,12 @@ function f2(x) {
 }
 
 function f3(x) {
-  switch (x.TAG | 0) {
-    case /* A */0 :
-    case /* C */2 :
+  switch (x.TAG) {
+    case "A" :
+    case "C" :
         return x._0 + 1 | 0;
-    case /* B */1 :
-    case /* D */3 :
+    case "B" :
+    case "D" :
         return x._0 + 2 | 0;
     
   }

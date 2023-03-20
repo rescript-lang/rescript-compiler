@@ -28,7 +28,7 @@ var suites_0 = [
   "acc",
   (function (param) {
       return {
-              TAG: /* Eq */0,
+              TAG: "Eq",
               _0: f(undefined),
               _1: [
                 0,
@@ -51,7 +51,7 @@ var suites_1 = {
     "array_to_list",
     (function (param) {
         return {
-                TAG: /* Eq */0,
+                TAG: "Eq",
                 _0: {
                   hd: 1,
                   tl: {

@@ -5,13 +5,13 @@ var Caml = require("../../lib/js/caml.js");
 var Curry = require("../../lib/js/curry.js");
 
 function compare(t1, t2) {
-  if (t1.TAG === /* Leaf */0) {
-    if (t2.TAG === /* Leaf */0) {
+  if (t1.TAG === "Leaf") {
+    if (t2.TAG === "Leaf") {
       return Caml.string_compare(t1._0, t2._0);
     } else {
       return 1;
     }
-  } else if (t2.TAG === /* Leaf */0) {
+  } else if (t2.TAG === "Leaf") {
     return -1;
   } else {
     return Curry._2(ASet.compare, t1._0, t2._0);

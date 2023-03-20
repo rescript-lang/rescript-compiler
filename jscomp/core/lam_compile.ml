@@ -568,8 +568,17 @@ and compile_general_cases :
           [ switch ?default ?declaration switch_exp body ])
 
 and compile_cases cxt (switch_exp : E.t) table default get_name =
+  let string_table = table |> List.filter_map (fun (i, lam) -> match get_name i
+        with None -> None
+        | Some n -> Some (n, lam)) in
+  if List.length string_table = List.length table
+  then
+    compile_string_cases cxt switch_exp string_table default
+  else
   compile_general_cases get_name
-    (fun i -> { (E.small_int i) with comment = get_name i })
+    (fun i -> match get_name i with
+      | None ->  E.small_int i
+      | Some name -> E.str name)
     E.int_equal cxt
     (fun ?default ?declaration e clauses ->
       S.int_switch ?default ?declaration e clauses)

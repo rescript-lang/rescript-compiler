@@ -15,13 +15,13 @@ function f3(param) {
   var lhs = param.rank;
   return function (param) {
     var rhs = param.rank;
-    if (/* tag */typeof lhs === "number") {
-      lhs === /* Uninitialized */0;
+    if (typeof lhs === "string") {
+      lhs === "Uninitialized";
     } else {
-      if (/* tag */typeof rhs !== "number") {
+      if (typeof rhs !== "string") {
         return Caml.int_compare(lhs._0, rhs._0);
       }
-      rhs === /* Uninitialized */0;
+      rhs === "Uninitialized";
     }
     throw {
           RE_EXN_ID: "Assert_failure",
@@ -39,13 +39,13 @@ function f4(param) {
   var lhs = param.rank;
   return function (param) {
     var rhs = param.rank;
-    if (/* tag */typeof lhs === "number") {
-      lhs === /* Uninitialized */0;
+    if (typeof lhs === "string") {
+      lhs === "Uninitialized";
     } else {
-      if (/* tag */typeof rhs !== "number") {
+      if (typeof rhs !== "string") {
         return Caml.int_compare(lhs._0, rhs._0);
       }
-      rhs === /* Uninitialized */0;
+      rhs === "Uninitialized";
     }
     throw {
           RE_EXN_ID: "Assert_failure",

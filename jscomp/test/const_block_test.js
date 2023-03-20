@@ -36,7 +36,7 @@ function h(param) {
 function g(param) {
   f(undefined);
   return {
-          TAG: /* Eq */0,
+          TAG: "Eq",
           _0: [
             Caml_array.get(a, 0),
             Caml_array.get(b, 0)
@@ -60,7 +60,7 @@ var suites_1 = {
         Caml_array.set(c, 0, 3);
         Caml_array.set(c, 1, 4);
         return {
-                TAG: /* Eq */0,
+                TAG: "Eq",
                 _0: [
                   3,
                   4,

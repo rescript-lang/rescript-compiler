@@ -21,8 +21,8 @@ function sum(n) {
 }
 
 function map(f, param) {
-  if (/* tag */typeof param === "number") {
-    return /* Nil */0;
+  if (typeof param === "string") {
+    return "Nil";
   } else {
     return /* Cons */{
             _0: Curry._1(f, param._0),

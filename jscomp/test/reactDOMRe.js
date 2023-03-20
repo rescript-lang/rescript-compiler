@@ -25,12 +25,12 @@ function createRootWithClassName(className) {
   var elements = document.getElementsByClassName(className);
   if (elements.length !== 0) {
     return {
-            TAG: /* Ok */0,
+            TAG: "Ok",
             _0: ReactDom.createRoot(elements[0])
           };
   } else {
     return {
-            TAG: /* Error */1,
+            TAG: "Error",
             _0: "ReactDOMRe.Unstable.createRootWithClassName: no element of class " + (className + " found in the HTML.")
           };
   }
@@ -40,12 +40,12 @@ function createRootWithId(id) {
   var element = document.getElementById(id);
   if (element == null) {
     return {
-            TAG: /* Error */1,
+            TAG: "Error",
             _0: "ReactDOMRe.Unstable.createRootWithId: no element of id " + (id + " found in the HTML.")
           };
   } else {
     return {
-            TAG: /* Ok */0,
+            TAG: "Ok",
             _0: ReactDom.createRoot(element)
           };
   }

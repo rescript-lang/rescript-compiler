@@ -32,7 +32,7 @@ function from_pairs(pair) {
                                   "int32_float_of_bits " + i,
                                   (function (param) {
                                       return {
-                                              TAG: /* Eq */0,
+                                              TAG: "Eq",
                                               _0: Caml_float.int_float_of_bits(i32),
                                               _1: f
                                             };
@@ -43,7 +43,7 @@ function from_pairs(pair) {
                                     "int32_bits_of_float " + i,
                                     (function (param) {
                                         return {
-                                                TAG: /* Eq */0,
+                                                TAG: "Eq",
                                                 _0: Caml_float.int_bits_of_float(f),
                                                 _1: i32
                                               };
@@ -60,7 +60,7 @@ var suites = Pervasives.$at({
         "one",
         (function (param) {
             return {
-                    TAG: /* Eq */0,
+                    TAG: "Eq",
                     _0: Caml_int64.bits_of_float(1.0),
                     _1: one_float
                   };
@@ -71,7 +71,7 @@ var suites = Pervasives.$at({
           "two",
           (function (param) {
               return {
-                      TAG: /* Eq */0,
+                      TAG: "Eq",
                       _0: Caml_int64.float_of_bits(one_float),
                       _1: 1.0
                     };

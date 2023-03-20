@@ -42,7 +42,7 @@ function cons(x, y) {
 }
 
 function length(x) {
-  if (/* tag */typeof x === "number") {
+  if (typeof x === "string") {
     return 0;
   } else {
     return 1 + length(x._1) | 0;
@@ -50,8 +50,8 @@ function length(x) {
 }
 
 function map(f, x) {
-  if (/* tag */typeof x === "number") {
-    return /* Nil */0;
+  if (typeof x === "string") {
+    return "Nil";
   } else {
     return /* Cons */{
             _0: Curry._1(f, x._0),

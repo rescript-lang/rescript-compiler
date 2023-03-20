@@ -12,7 +12,7 @@ Mt.from_pair_suites("Es6_module_test", {
         "list_length",
         (function (param) {
             return {
-                    TAG: /* Eq */0,
+                    TAG: "Eq",
                     _0: List.length({
                           hd: 1,
                           tl: {
@@ -29,7 +29,7 @@ Mt.from_pair_suites("Es6_module_test", {
           "length",
           (function (param) {
               return {
-                      TAG: /* Eq */0,
+                      TAG: "Eq",
                       _0: 3,
                       _1: 3
                     };

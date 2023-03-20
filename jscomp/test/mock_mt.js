@@ -11,8 +11,8 @@ function from_pair_suites(name, suites) {
   List.iter((function (param) {
           var name = param[0];
           var fn = Curry._1(param[1], undefined);
-          switch (fn.TAG | 0) {
-            case /* Eq */0 :
+          switch (fn.TAG) {
+            case "Eq" :
                 console.log([
                       name,
                       fn._0,
@@ -20,7 +20,7 @@ function from_pair_suites(name, suites) {
                       fn._1
                     ]);
                 return ;
-            case /* Neq */1 :
+            case "Neq" :
                 console.log([
                       name,
                       fn._0,
@@ -28,7 +28,7 @@ function from_pair_suites(name, suites) {
                       fn._1
                     ]);
                 return ;
-            case /* StrictEq */2 :
+            case "StrictEq" :
                 console.log([
                       name,
                       fn._0,
@@ -36,7 +36,7 @@ function from_pair_suites(name, suites) {
                       fn._1
                     ]);
                 return ;
-            case /* StrictNeq */3 :
+            case "StrictNeq" :
                 console.log([
                       name,
                       fn._0,
@@ -44,14 +44,14 @@ function from_pair_suites(name, suites) {
                       fn._1
                     ]);
                 return ;
-            case /* Ok */4 :
+            case "Ok" :
                 console.log([
                       name,
                       fn._0,
                       "ok?"
                     ]);
                 return ;
-            case /* Approx */5 :
+            case "Approx" :
                 console.log([
                       name,
                       fn._0,
@@ -59,7 +59,7 @@ function from_pair_suites(name, suites) {
                       fn._1
                     ]);
                 return ;
-            case /* ApproxThreshold */6 :
+            case "ApproxThreshold" :
                 console.log([
                       name,
                       fn._1,
@@ -70,12 +70,12 @@ function from_pair_suites(name, suites) {
                       ")"
                     ]);
                 return ;
-            case /* ThrowAny */7 :
+            case "ThrowAny" :
                 return ;
-            case /* Fail */8 :
+            case "Fail" :
                 console.log("failed");
                 return ;
-            case /* FailWith */9 :
+            case "FailWith" :
                 console.log("failed: " + fn._0);
                 return ;
             

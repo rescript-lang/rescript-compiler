@@ -799,7 +799,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
         if p.num_nonconst = 1 then tails
         else
           ( Js_op.Lit L.tag,
-            if !Js_config.debug then tag else { tag with comment = Some p.name }
+            E.str p.name
           )
           :: tails
       in

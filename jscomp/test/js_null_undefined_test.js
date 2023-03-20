@@ -8,7 +8,7 @@ var suites_0 = [
   "toOption - null",
   (function (param) {
       return {
-              TAG: /* Eq */0,
+              TAG: "Eq",
               _0: undefined,
               _1: undefined
             };
@@ -20,7 +20,7 @@ var suites_1 = {
     "toOption - undefined",
     (function (param) {
         return {
-                TAG: /* Eq */0,
+                TAG: "Eq",
                 _0: undefined,
                 _1: undefined
               };
@@ -31,7 +31,7 @@ var suites_1 = {
       "toOption - empty",
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: undefined,
                   _1: undefined
                 };
@@ -42,7 +42,7 @@ var suites_1 = {
         "File \"js_null_undefined_test.ml\", line 7, characters 2-9",
         (function (param) {
             return {
-                    TAG: /* Eq */0,
+                    TAG: "Eq",
                     _0: "foo",
                     _1: Caml_option.nullable_to_opt("foo")
                   };
@@ -53,7 +53,7 @@ var suites_1 = {
           "return",
           (function (param) {
               return {
-                      TAG: /* Eq */0,
+                      TAG: "Eq",
                       _0: "something",
                       _1: Caml_option.nullable_to_opt("something")
                     };
@@ -64,7 +64,7 @@ var suites_1 = {
             "test - null",
             (function (param) {
                 return {
-                        TAG: /* Eq */0,
+                        TAG: "Eq",
                         _0: true,
                         _1: true
                       };
@@ -75,7 +75,7 @@ var suites_1 = {
               "test - undefined",
               (function (param) {
                   return {
-                          TAG: /* Eq */0,
+                          TAG: "Eq",
                           _0: true,
                           _1: true
                         };
@@ -86,7 +86,7 @@ var suites_1 = {
                 "test - empty",
                 (function (param) {
                     return {
-                            TAG: /* Eq */0,
+                            TAG: "Eq",
                             _0: true,
                             _1: true
                           };
@@ -97,7 +97,7 @@ var suites_1 = {
                   "File \"js_null_undefined_test.ml\", line 12, characters 2-9",
                   (function (param) {
                       return {
-                              TAG: /* Eq */0,
+                              TAG: "Eq",
                               _0: true,
                               _1: true
                             };
@@ -108,7 +108,7 @@ var suites_1 = {
                     "bind - null",
                     (function (param) {
                         return {
-                                TAG: /* StrictEq */2,
+                                TAG: "StrictEq",
                                 _0: null,
                                 _1: Js_null_undefined.bind(null, (function (v) {
                                         return v;
@@ -121,7 +121,7 @@ var suites_1 = {
                       "bind - undefined",
                       (function (param) {
                           return {
-                                  TAG: /* StrictEq */2,
+                                  TAG: "StrictEq",
                                   _0: undefined,
                                   _1: Js_null_undefined.bind(undefined, (function (v) {
                                           return v;
@@ -134,7 +134,7 @@ var suites_1 = {
                         "bind - empty",
                         (function (param) {
                             return {
-                                    TAG: /* StrictEq */2,
+                                    TAG: "StrictEq",
                                     _0: undefined,
                                     _1: Js_null_undefined.bind(undefined, (function (v) {
                                             return v;
@@ -147,7 +147,7 @@ var suites_1 = {
                           "bind - 'a",
                           (function (param) {
                               return {
-                                      TAG: /* Eq */0,
+                                      TAG: "Eq",
                                       _0: 4,
                                       _1: Js_null_undefined.bind(2, (function (n) {
                                               return (n << 1);
@@ -166,7 +166,7 @@ var suites_1 = {
                                         hit.contents = true;
                                       }));
                                 return {
-                                        TAG: /* Eq */0,
+                                        TAG: "Eq",
                                         _0: false,
                                         _1: hit.contents
                                       };
@@ -183,7 +183,7 @@ var suites_1 = {
                                           hit.contents = true;
                                         }));
                                   return {
-                                          TAG: /* Eq */0,
+                                          TAG: "Eq",
                                           _0: false,
                                           _1: hit.contents
                                         };
@@ -200,7 +200,7 @@ var suites_1 = {
                                             hit.contents = true;
                                           }));
                                     return {
-                                            TAG: /* Eq */0,
+                                            TAG: "Eq",
                                             _0: false,
                                             _1: hit.contents
                                           };
@@ -217,7 +217,7 @@ var suites_1 = {
                                               hit.contents = v;
                                             }));
                                       return {
-                                              TAG: /* Eq */0,
+                                              TAG: "Eq",
                                               _0: 2,
                                               _1: hit.contents
                                             };
@@ -228,7 +228,7 @@ var suites_1 = {
                                     "fromOption - None",
                                     (function (param) {
                                         return {
-                                                TAG: /* Eq */0,
+                                                TAG: "Eq",
                                                 _0: undefined,
                                                 _1: Js_null_undefined.fromOption(undefined)
                                               };
@@ -239,7 +239,7 @@ var suites_1 = {
                                       "fromOption - Some",
                                       (function (param) {
                                           return {
-                                                  TAG: /* Eq */0,
+                                                  TAG: "Eq",
                                                   _0: 2,
                                                   _1: Js_null_undefined.fromOption(2)
                                                 };
@@ -250,7 +250,7 @@ var suites_1 = {
                                         "null <> undefined",
                                         (function (param) {
                                             return {
-                                                    TAG: /* Ok */4,
+                                                    TAG: "Ok",
                                                     _0: true
                                                   };
                                           })
@@ -260,7 +260,7 @@ var suites_1 = {
                                           "null <> empty",
                                           (function (param) {
                                               return {
-                                                      TAG: /* Ok */4,
+                                                      TAG: "Ok",
                                                       _0: true
                                                     };
                                             })
@@ -270,7 +270,7 @@ var suites_1 = {
                                             "undefined = empty",
                                             (function (param) {
                                                 return {
-                                                        TAG: /* Ok */4,
+                                                        TAG: "Ok",
                                                         _0: true
                                                       };
                                               })
@@ -280,7 +280,7 @@ var suites_1 = {
                                               "File \"js_null_undefined_test.ml\", line 42, characters 2-9",
                                               (function (param) {
                                                   return {
-                                                          TAG: /* Ok */4,
+                                                          TAG: "Ok",
                                                           _0: true
                                                         };
                                                 })

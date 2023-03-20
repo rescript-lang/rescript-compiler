@@ -55,7 +55,7 @@ function f2(x) {
 }
 
 function hd(x) {
-  if (/* tag */typeof x === "number") {
+  if (typeof x === "string") {
     return 0;
   } else {
     return x.content;
@@ -63,7 +63,7 @@ function hd(x) {
 }
 
 function tl_exn(x) {
-  if (/* tag */typeof x !== "number") {
+  if (typeof x !== "string") {
     return x.next;
   }
   throw {

@@ -19,7 +19,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -41,17 +41,17 @@ var Int3 = Caml_module.init_mod([
       13,
       6
     ], {
-      TAG: /* Module */0,
+      TAG: "Module",
       _0: [[
-          /* Function */0,
+          "Function",
           "u"
         ]]
     });
 
 Caml_module.update_mod({
-      TAG: /* Module */0,
+      TAG: "Module",
       _0: [[
-          /* Function */0,
+          "Function",
           "u"
         ]]
     }, Int3, Int3);
@@ -81,7 +81,7 @@ add([
       "File \"recursive_module_test.ml\", line 34, characters 7-14",
       (function (param) {
           return {
-                  TAG: /* ThrowAny */7,
+                  TAG: "ThrowAny",
                   _0: (function (param) {
                       Curry._1(Int3.u, 3);
                     })

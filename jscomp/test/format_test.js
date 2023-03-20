@@ -21,7 +21,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -49,9 +49,9 @@ eq3("File \"format_test.ml\", line 36, characters 6-13", -Infinity, Number.NEGAT
 
 eq3("File \"format_test.ml\", line 37, characters 6-13", Pervasives.max_float, 1.79769313486231571e+308, Number.MAX_VALUE);
 
-eq("File \"format_test.ml\", line 38, characters 5-12", Pervasives.classify_float(Infinity), /* FP_infinite */3);
+eq("File \"format_test.ml\", line 38, characters 5-12", Pervasives.classify_float(Infinity), "FP_infinite");
 
-eq("File \"format_test.ml\", line 39, characters 5-12", Pervasives.classify_float(Infinity), /* FP_infinite */3);
+eq("File \"format_test.ml\", line 39, characters 5-12", Pervasives.classify_float(Infinity), "FP_infinite");
 
 eq("File \"format_test.ml\", line 42, characters 5-12", Pervasives.min_float, 2.22507385850720138e-308);
 
@@ -63,7 +63,7 @@ eq("File \"format_test.ml\", line 45, characters 5-12", 1.00000000000000022 - 1,
 
 eq("File \"format_test.ml\", line 47, characters 5-12", 1.11253692925360069e-308 / 2.22507385850720138e-308, 0.5);
 
-eq("File \"format_test.ml\", line 49, characters 5-12", Pervasives.classify_float(1.11253692925360069e-308), /* FP_subnormal */1);
+eq("File \"format_test.ml\", line 49, characters 5-12", Pervasives.classify_float(1.11253692925360069e-308), "FP_subnormal");
 
 eq("File \"format_test.ml\", line 50, characters 5-12", 1.11253692925360069e-308, 1.11253692925360069e-308);
 
