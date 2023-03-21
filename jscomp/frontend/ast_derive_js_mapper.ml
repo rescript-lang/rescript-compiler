@@ -127,48 +127,16 @@ let app1 = Ast_compatible.app1
 
 let app2 = Ast_compatible.app2
 
-let app3 = Ast_compatible.app3
-
-let ( <=~ ) a b = app2 (Exp.ident { loc = noloc; txt = Lident "<=" }) a b
-
-let ( -~ ) a b =
-  app2 (Exp.ident { loc = noloc; txt = Ldot (Lident "Pervasives", "-") }) a b
-
-let ( +~ ) a b =
-  app2 (Exp.ident { loc = noloc; txt = Ldot (Lident "Pervasives", "+") }) a b
-
-let ( &&~ ) a b =
-  app2 (Exp.ident { loc = noloc; txt = Ldot (Lident "Pervasives", "&&") }) a b
-
 let ( ->~ ) a b = Ast_compatible.arrow a b
 
 let jsMapperRt = Longident.Ldot (Lident "Js", "MapperRt")
-
-let fromInt len array exp =
-  app3
-    (Exp.ident { loc = noloc; txt = Longident.Ldot (jsMapperRt, "fromInt") })
-    len array exp
-
-let fromIntAssert len array exp =
-  app3
-    (Exp.ident
-       { loc = noloc; txt = Longident.Ldot (jsMapperRt, "fromIntAssert") })
-    len array exp
 
 let raiseWhenNotFound x =
   app1
     (Exp.ident
        { loc = noloc; txt = Longident.Ldot (jsMapperRt, "raiseWhenNotFound") })
     x
-
-let assertExp e = Exp.assert_ e
-
 let derivingName = "jsConverter"
-
-(* let notApplicable loc =
-   Location.prerr_warning
-    loc
-    (Warnings.Bs_derive_warning ( derivingName ^ " not applicable to this type")) *)
 
 let init () =
   Ast_derive.register derivingName (fun (x : Parsetree.expression option) ->
@@ -182,7 +150,6 @@ let init () =
               let name = tdcl.ptype_name.txt in
               let toJs = name ^ "ToJs" in
               let fromJs = name ^ "FromJs" in
-              let constantArray = "jsMapperConstantArray" in
               let loc = tdcl.ptype_loc in
               let patToJs = { Asttypes.loc; txt = toJs } in
               let patFromJs = { Asttypes.loc; txt = fromJs } in
@@ -302,95 +269,9 @@ let init () =
                   | None ->
                       U.notApplicable tdcl.Parsetree.ptype_loc derivingName;
                       [])
-              | Ptype_variant ctors ->
-                  if Ast_polyvar.is_enum_constructors ctors then
-                    let xs =
-                      Ast_polyvar.map_constructor_declarations_into_ints ctors
-                    in
-                    match xs with
-                    | `New xs ->
-                        let constantArrayExp =
-                          Exp.ident { loc; txt = Lident constantArray }
-                        in
-                        let exp_len =
-                          Ast_compatible.const_exp_int (List.length ctors)
-                        in
-                        let v =
-                          [
-                            unsafeIndexGet;
-                            eraseTypeStr;
-                            Ast_comb.single_non_rec_value
-                              { loc; txt = constantArray }
-                              (Ast_compatible.const_exp_int_list_as_array xs);
-                            toJsBody
-                              (app2 unsafeIndexGetExp constantArrayExp exp_param);
-                            Ast_comb.single_non_rec_value patFromJs
-                              (Ast_compatible.fun_ (Pat.var pat_param)
-                                 (if createType then
-                                  fromIntAssert exp_len constantArrayExp
-                                    (exp_param +: newType)
-                                  +> core_type
-                                 else
-                                   fromInt exp_len constantArrayExp exp_param
-                                   +> Ast_core_type.lift_option_type core_type));
-                          ]
-                        in
-                        if createType then newTypeStr :: v else v
-                    | `Offset offset ->
-                        let v =
-                          [
-                            eraseTypeStr;
-                            toJsBody
-                              (coerceResultToNewType
-                                 (eraseType exp_param
-                                 +~ Ast_compatible.const_exp_int offset));
-                            (let len = List.length ctors in
-                             let range_low =
-                               Ast_compatible.const_exp_int (offset + 0)
-                             in
-                             let range_upper =
-                               Ast_compatible.const_exp_int (offset + len - 1)
-                             in
-
-                             Ast_comb.single_non_rec_value { loc; txt = fromJs }
-                               (Ast_compatible.fun_ (Pat.var pat_param)
-                                  (if createType then
-                                   Exp.let_ Nonrecursive
-                                     [
-                                       Vb.mk (Pat.var pat_param)
-                                         (exp_param +: newType);
-                                     ]
-                                     (Exp.sequence
-                                        (assertExp
-                                           (exp_param <=~ range_upper
-                                          &&~ (range_low <=~ exp_param)))
-                                        (exp_param
-                                        -~ Ast_compatible.const_exp_int offset))
-                                   +> core_type
-                                  else
-                                    Exp.ifthenelse
-                                      (exp_param <=~ range_upper
-                                     &&~ (range_low <=~ exp_param))
-                                      (Exp.construct
-                                         { loc; txt = Ast_literal.predef_some }
-                                         (Some
-                                            (exp_param
-                                            -~ Ast_compatible.const_exp_int
-                                                 offset)))
-                                      (Some
-                                         (Exp.construct
-                                            {
-                                              loc;
-                                              txt = Ast_literal.predef_none;
-                                            }
-                                            None))
-                                    +> Ast_core_type.lift_option_type core_type)));
-                          ]
-                        in
-                        if createType then newTypeStr :: v else v
-                  else (
-                    U.notApplicable tdcl.Parsetree.ptype_loc derivingName;
-                    [])
+              | Ptype_variant _ ->
+                  U.notApplicable tdcl.Parsetree.ptype_loc derivingName;
+                  []
               | Ptype_open ->
                   U.notApplicable tdcl.Parsetree.ptype_loc derivingName;
                   []
@@ -452,23 +333,9 @@ let init () =
                   | None ->
                       U.notApplicable tdcl.Parsetree.ptype_loc derivingName;
                       [])
-              | Ptype_variant ctors ->
-                  if Ast_polyvar.is_enum_constructors ctors then
-                    let ty1 =
-                      if createType then newType else Ast_literal.type_int ()
-                    in
-                    let ty2 =
-                      if createType then core_type
-                      else Ast_core_type.lift_option_type core_type
-                    in
-                    newTypeStr
-                    +? [
-                         toJsType ty1;
-                         Ast_comb.single_non_rec_val patFromJs (ty1 ->~ ty2);
-                       ]
-                  else (
-                    U.notApplicable tdcl.Parsetree.ptype_loc derivingName;
-                    [])
+              | Ptype_variant _ ->
+                  U.notApplicable tdcl.Parsetree.ptype_loc derivingName;
+                  []
               | Ptype_open ->
                   U.notApplicable tdcl.Parsetree.ptype_loc derivingName;
                   []

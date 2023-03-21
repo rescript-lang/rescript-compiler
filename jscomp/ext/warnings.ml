@@ -480,7 +480,7 @@ let message = function
   | Bs_polymorphic_comparison ->
       "Polymorphic comparison introduced (maybe unsafe)"
   | Bs_ffi_warning s -> "FFI warning: " ^ s
-  | Bs_derive_warning s -> "bs.deriving warning: " ^ s
+  | Bs_derive_warning s -> "@deriving warning: " ^ s
   | Bs_fragile_external s ->
       s
       ^ " : using an empty string as a shorthand to infer the external's name \
