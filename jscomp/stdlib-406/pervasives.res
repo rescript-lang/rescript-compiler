@@ -13,7 +13,16 @@
 /*  */
 /* ************************************************************************ */
 
-/* type 'a option = None | Some of 'a */
+module Jsx = JsxC
+module JsxEvent = JsxEventC
+module JsxDOM = JsxDOMC
+module JsxPPXReactSupport = JsxPPXReactSupportC
+
+module JsxModules = {
+  module Jsx = JsxC
+  module JsxEvent = JsxEventC
+  module JsxDOM = JsxDOMC
+}
 
 /* Internal */
 external __unsafe_cast: 'a => 'b = "%identity"
