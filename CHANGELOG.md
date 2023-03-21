@@ -79,6 +79,7 @@ These are only breaking changes for unformatted code.
 - Add support for `|>` in uncurried mode by desugaring it https://github.com/rescript-lang/rescript-compiler/pull/6083
 - Change the compilation of pattern matching for variants so it does not depends on variats being integers https://github.com/rescript-lang/rescript-compiler/pull/6085
 - Improve code generated for string templates https://github.com/rescript-lang/rescript-compiler/pull/6090
+- Move Jsx and JsxDOM and JsxEvent and JsxPPXReactSupport inside Pervasives and build them separately for curried and uncurried mode https://github.com/rescript-lang/rescript-compiler/pull/6091
 
 # 10.1.4
 
