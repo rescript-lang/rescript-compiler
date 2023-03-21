@@ -7,7 +7,7 @@ var a = /* Color */{
 
 var c;
 
-c = typeof a === "string" ? "orange" : "white";
+c = typeof a !== "object" ? "orange" : "white";
 
 exports.a = a;
 exports.c = c;

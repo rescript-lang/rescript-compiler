@@ -68,7 +68,7 @@ function not_(x) {
 }
 
 function st(state) {
-  if (typeof state === "string") {
+  if (typeof state !== "object") {
     return 0;
   } else {
     return 23;
@@ -76,7 +76,7 @@ function st(state) {
 }
 
 function showToJs(x) {
-  if (typeof x === "string" && x === "No") {
+  if (typeof x !== "object" && x === "No") {
     return false;
   } else {
     return true;
@@ -106,28 +106,28 @@ function third(l) {
 }
 
 function third2(l) {
-  if (typeof l === "string") {
+  if (typeof l !== "object") {
     return false;
   }
   if (l._0 !== 1) {
     return false;
   }
   var match = l._1;
-  if (typeof match === "string") {
+  if (typeof match !== "object") {
     return false;
   }
   if (match._0 !== 2) {
     return false;
   }
   var match$1 = match._1;
-  if (typeof match$1 === "string") {
+  if (typeof match$1 !== "object") {
     return false;
   }
   if (match$1._0 !== 3) {
     return false;
   }
   var tmp = match$1._1;
-  if (typeof tmp === "string") {
+  if (typeof tmp !== "object") {
     return true;
   } else {
     return false;

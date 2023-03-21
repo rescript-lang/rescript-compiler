@@ -5,7 +5,7 @@ var Caml = require("../../lib/js/caml.js");
 var List = require("../../lib/js/list.js");
 
 function height(param) {
-  if (typeof param === "string") {
+  if (typeof param !== "object") {
     return 0;
   } else {
     return param.h;
@@ -26,11 +26,11 @@ function create(l, x, d, r) {
 
 function bal(l, x, d, r) {
   var hl;
-  hl = typeof l === "string" ? 0 : l.h;
+  hl = typeof l !== "object" ? 0 : l.h;
   var hr;
-  hr = typeof r === "string" ? 0 : r.h;
+  hr = typeof r !== "object" ? 0 : r.h;
   if (hl > (hr + 2 | 0)) {
-    if (typeof l === "string") {
+    if (typeof l !== "object") {
       throw {
             RE_EXN_ID: "Invalid_argument",
             _1: "Map.bal",
@@ -44,7 +44,7 @@ function bal(l, x, d, r) {
     if (height(ll) >= height(lr)) {
       return create(ll, lv, ld, create(lr, x, d, r));
     }
-    if (typeof lr !== "string") {
+    if (typeof lr === "object") {
       return create(create(ll, lv, ld, lr.l), lr.v, lr.d, create(lr.r, x, d, r));
     }
     throw {
@@ -62,7 +62,7 @@ function bal(l, x, d, r) {
             h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
-  if (typeof r === "string") {
+  if (typeof r !== "object") {
     throw {
           RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal",
@@ -76,7 +76,7 @@ function bal(l, x, d, r) {
   if (height(rr) >= height(rl)) {
     return create(create(l, x, d, rl), rv, rd, rr);
   }
-  if (typeof rl !== "string") {
+  if (typeof rl === "object") {
     return create(create(l, x, d, rl.l), rl.v, rl.d, create(rl.r, rv, rd, rr));
   }
   throw {
@@ -87,7 +87,7 @@ function bal(l, x, d, r) {
 }
 
 function add(x, data, m) {
-  if (typeof m === "string") {
+  if (typeof m !== "object") {
     return /* Node */{
             l: "Empty",
             v: x,
@@ -133,7 +133,7 @@ function add(x, data, m) {
 function find(x, _param) {
   while(true) {
     var param = _param;
-    if (typeof param === "string") {
+    if (typeof param !== "object") {
       throw {
             RE_EXN_ID: "Not_found",
             Error: new Error()
@@ -177,7 +177,7 @@ var m = List.fold_left((function (acc, param) {
     });
 
 function height$1(param) {
-  if (typeof param === "string") {
+  if (typeof param !== "object") {
     return 0;
   } else {
     return param.h;
@@ -198,11 +198,11 @@ function create$1(l, x, d, r) {
 
 function bal$1(l, x, d, r) {
   var hl;
-  hl = typeof l === "string" ? 0 : l.h;
+  hl = typeof l !== "object" ? 0 : l.h;
   var hr;
-  hr = typeof r === "string" ? 0 : r.h;
+  hr = typeof r !== "object" ? 0 : r.h;
   if (hl > (hr + 2 | 0)) {
-    if (typeof l === "string") {
+    if (typeof l !== "object") {
       throw {
             RE_EXN_ID: "Invalid_argument",
             _1: "Map.bal",
@@ -216,7 +216,7 @@ function bal$1(l, x, d, r) {
     if (height$1(ll) >= height$1(lr)) {
       return create$1(ll, lv, ld, create$1(lr, x, d, r));
     }
-    if (typeof lr !== "string") {
+    if (typeof lr === "object") {
       return create$1(create$1(ll, lv, ld, lr.l), lr.v, lr.d, create$1(lr.r, x, d, r));
     }
     throw {
@@ -234,7 +234,7 @@ function bal$1(l, x, d, r) {
             h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
-  if (typeof r === "string") {
+  if (typeof r !== "object") {
     throw {
           RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal",
@@ -248,7 +248,7 @@ function bal$1(l, x, d, r) {
   if (height$1(rr) >= height$1(rl)) {
     return create$1(create$1(l, x, d, rl), rv, rd, rr);
   }
-  if (typeof rl !== "string") {
+  if (typeof rl === "object") {
     return create$1(create$1(l, x, d, rl.l), rl.v, rl.d, create$1(rl.r, rv, rd, rr));
   }
   throw {
@@ -259,7 +259,7 @@ function bal$1(l, x, d, r) {
 }
 
 function add$1(x, data, m) {
-  if (typeof m === "string") {
+  if (typeof m !== "object") {
     return /* Node */{
             l: "Empty",
             v: x,
@@ -305,7 +305,7 @@ function add$1(x, data, m) {
 function find$1(x, _param) {
   while(true) {
     var param = _param;
-    if (typeof param === "string") {
+    if (typeof param !== "object") {
       throw {
             RE_EXN_ID: "Not_found",
             Error: new Error()

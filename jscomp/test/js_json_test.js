@@ -61,7 +61,7 @@ var v = JSON.parse(" { \"x\" : [1, 2, 3 ] } ");
 
 add_test("File \"js_json_test.ml\", line 24, characters 11-18", (function (param) {
         var ty = Js_json.classify(v);
-        if (typeof ty === "string") {
+        if (typeof ty !== "object") {
           return {
                   TAG: "Ok",
                   _0: false
@@ -81,7 +81,7 @@ add_test("File \"js_json_test.ml\", line 24, characters 11-18", (function (param
                 };
         }
         var ty2 = Js_json.classify(Caml_option.valFromOption(v$1));
-        if (typeof ty2 === "string") {
+        if (typeof ty2 !== "object") {
           return {
                   TAG: "Ok",
                   _0: false
@@ -95,7 +95,7 @@ add_test("File \"js_json_test.ml\", line 24, characters 11-18", (function (param
         }
         ty2._0.forEach(function (x) {
               var ty3 = Js_json.classify(x);
-              if (typeof ty3 === "string") {
+              if (typeof ty3 !== "object") {
                 throw {
                       RE_EXN_ID: "Assert_failure",
                       _1: [
@@ -131,7 +131,7 @@ var json = JSON.parse(JSON.stringify(null));
 
 var ty = Js_json.classify(json);
 
-if (typeof ty === "string") {
+if (typeof ty !== "object") {
   if (ty === "JSONNull") {
     add_test("File \"js_json_test.ml\", line 55, characters 24-31", (function (param) {
             return {
@@ -162,7 +162,7 @@ var json$1 = JSON.parse(JSON.stringify("test string"));
 
 var ty$1 = Js_json.classify(json$1);
 
-if (typeof ty$1 === "string") {
+if (typeof ty$1 !== "object") {
   add_test("File \"js_json_test.ml\", line 66, characters 16-23", (function (param) {
           return {
                   TAG: "Ok",
@@ -186,7 +186,7 @@ var ty$2 = Js_json.classify(json$2);
 
 var exit = 0;
 
-if (typeof ty$2 === "string" || ty$2.TAG !== "JSONNumber") {
+if (typeof ty$2 !== "object" || ty$2.TAG !== "JSONNumber") {
   exit = 1;
 } else {
   eq("File \"js_json_test.ml\", line 75, characters 25-32", ty$2._0, 1.23456789);
@@ -207,7 +207,7 @@ var ty$3 = Js_json.classify(json$3);
 
 var exit$1 = 0;
 
-if (typeof ty$3 === "string" || ty$3.TAG !== "JSONNumber") {
+if (typeof ty$3 !== "object" || ty$3.TAG !== "JSONNumber") {
   exit$1 = 1;
 } else {
   eq("File \"js_json_test.ml\", line 85, characters 25-32", ty$3._0 | 0, -1347440721);
@@ -225,7 +225,7 @@ if (exit$1 === 1) {
 function test(v) {
   var json = JSON.parse(JSON.stringify(v));
   var ty = Js_json.classify(json);
-  if (typeof ty !== "string") {
+  if (typeof ty === "object") {
     return add_test("File \"js_json_test.ml\", line 97, characters 18-25", (function (param) {
                   return {
                           TAG: "Ok",
@@ -277,7 +277,7 @@ var json$4 = JSON.parse(JSON.stringify(dict));
 
 var ty$4 = Js_json.classify(json$4);
 
-if (typeof ty$4 === "string") {
+if (typeof ty$4 !== "object") {
   add_test("File \"js_json_test.ml\", line 135, characters 16-23", (function (param) {
           return {
                   TAG: "Ok",
@@ -287,7 +287,7 @@ if (typeof ty$4 === "string") {
 } else if (ty$4.TAG === "JSONObject") {
   var x = ty$4._0;
   var ta = Js_json.classify(option_get(Js_dict.get(x, "a")));
-  if (typeof ta === "string") {
+  if (typeof ta !== "object") {
     add_test("File \"js_json_test.ml\", line 133, characters 18-25", (function (param) {
             return {
                     TAG: "Ok",
@@ -304,7 +304,7 @@ if (typeof ty$4 === "string") {
             }));
     } else {
       var ty$5 = Js_json.classify(option_get(Js_dict.get(x, "b")));
-      if (typeof ty$5 === "string") {
+      if (typeof ty$5 !== "object") {
         add_test("File \"js_json_test.ml\", line 131, characters 22-29", (function (param) {
                 return {
                         TAG: "Ok",
@@ -348,7 +348,7 @@ if (typeof ty$4 === "string") {
 
 function eq_at_i(loc, json, i, kind, expected) {
   var ty = Js_json.classify(json);
-  if (typeof ty === "string") {
+  if (typeof ty !== "object") {
     return add_test(loc, (function (param) {
                   return {
                           TAG: "Ok",
@@ -367,7 +367,7 @@ function eq_at_i(loc, json, i, kind, expected) {
   var ty$1 = Js_json.classify(Caml_array.get(ty._0, i));
   switch (kind) {
     case "String" :
-        if (typeof ty$1 === "string") {
+        if (typeof ty$1 !== "object") {
           return add_test(loc, (function (param) {
                         return {
                                 TAG: "Ok",
@@ -385,7 +385,7 @@ function eq_at_i(loc, json, i, kind, expected) {
                       }));
         }
     case "Number" :
-        if (typeof ty$1 === "string") {
+        if (typeof ty$1 !== "object") {
           return add_test(loc, (function (param) {
                         return {
                                 TAG: "Ok",
@@ -403,7 +403,7 @@ function eq_at_i(loc, json, i, kind, expected) {
                       }));
         }
     case "Object" :
-        if (typeof ty$1 === "string") {
+        if (typeof ty$1 !== "object") {
           return add_test(loc, (function (param) {
                         return {
                                 TAG: "Ok",
@@ -421,7 +421,7 @@ function eq_at_i(loc, json, i, kind, expected) {
                       }));
         }
     case "Array" :
-        if (typeof ty$1 === "string") {
+        if (typeof ty$1 !== "object") {
           return add_test(loc, (function (param) {
                         return {
                                 TAG: "Ok",
@@ -439,7 +439,7 @@ function eq_at_i(loc, json, i, kind, expected) {
                       }));
         }
     case "Boolean" :
-        if (typeof ty$1 !== "string") {
+        if (typeof ty$1 === "object") {
           return add_test(loc, (function (param) {
                         return {
                                 TAG: "Ok",
@@ -461,7 +461,7 @@ function eq_at_i(loc, json, i, kind, expected) {
                         }));
         }
     case "Null" :
-        if (typeof ty$1 === "string") {
+        if (typeof ty$1 !== "object") {
           if (ty$1 === "JSONNull") {
             return add_test(loc, (function (param) {
                           return {
@@ -575,7 +575,7 @@ var json$10 = JSON.parse(JSON.stringify(a$3));
 
 var ty$6 = Js_json.classify(json$10);
 
-if (typeof ty$6 === "string") {
+if (typeof ty$6 !== "object") {
   add_test("File \"js_json_test.ml\", line 283, characters 16-23", (function (param) {
           return {
                   TAG: "Ok",
@@ -584,7 +584,7 @@ if (typeof ty$6 === "string") {
         }));
 } else if (ty$6.TAG === "JSONArray") {
   var ty$7 = Js_json.classify(Caml_array.get(ty$6._0, 1));
-  if (typeof ty$7 === "string") {
+  if (typeof ty$7 !== "object") {
     add_test("File \"js_json_test.ml\", line 281, characters 18-25", (function (param) {
             return {
                     TAG: "Ok",
@@ -593,7 +593,7 @@ if (typeof ty$6 === "string") {
           }));
   } else if (ty$7.TAG === "JSONObject") {
     var ty$8 = Js_json.classify(option_get(Js_dict.get(ty$7._0, "a")));
-    if (typeof ty$8 === "string") {
+    if (typeof ty$8 !== "object") {
       add_test("File \"js_json_test.ml\", line 279, characters 20-27", (function (param) {
               return {
                       TAG: "Ok",
