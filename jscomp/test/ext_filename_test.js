@@ -181,7 +181,7 @@ function find_root_filename(_cwd, filename) {
       _cwd = cwd$p;
       continue ;
     }
-    var s = "" + filename + " not found from " + cwd;
+    var s = filename + " not found from " + cwd;
     throw {
           RE_EXN_ID: "Failure",
           _1: s,

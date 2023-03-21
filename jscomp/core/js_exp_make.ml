@@ -515,6 +515,8 @@ let rec string_append ?comment (e : t) (el : t) : t =
     { e with expression_desc = Str { txt = a ^ b; delim } }
   in
   match (e.expression_desc, el.expression_desc) with
+  | Str { txt = ""}, _ -> el
+  | _, Str { txt = ""} -> e
   | ( Str { txt = a; delim },
       String_append ({ expression_desc = Str { txt = b; delim = delim_ } }, c) )
     when delim = delim_ ->
