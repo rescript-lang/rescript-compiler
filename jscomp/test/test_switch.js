@@ -3,7 +3,7 @@
 var Curry = require("../../lib/js/curry.js");
 
 function f(param) {
-  if (typeof param === "string") {
+  if (typeof param !== "object") {
     if (param === "G") {
       return 4;
     } else {

@@ -554,7 +554,7 @@ function make_type(typ, dir) {
         }
     case "SBlock" :
         var x$1 = typ._0;
-        if (typeof x$1 !== "string") {
+        if (typeof x$1 === "object") {
           return setup_sprite(undefined, undefined, undefined, "blocks.png", 4, 15, [
                       16,
                       16
@@ -1358,7 +1358,7 @@ function kill(collid, ctx) {
     case "Block" :
         var o$2 = collid._2;
         var tmp = collid._0;
-        if (typeof tmp !== "string") {
+        if (typeof tmp === "object") {
           return /* [] */0;
         }
         if (tmp !== "Brick") {
@@ -1695,7 +1695,7 @@ function process_collision(dir, c1, c2, state) {
               var o2$4 = c2._2;
               var t = c2._0;
               if (dir === "North") {
-                if (typeof t === "string") {
+                if (typeof t !== "object") {
                   switch (t) {
                     case "Brick" :
                         if (c1._0 === "BigM") {
@@ -1736,7 +1736,7 @@ function process_collision(dir, c1, c2, state) {
                 }
               } else {
                 var exit$1 = 0;
-                if (typeof t === "string") {
+                if (typeof t !== "object") {
                   if (t === "Panel") {
                     game_win(state.ctx);
                     return [
@@ -1917,7 +1917,7 @@ function process_collision(dir, c1, c2, state) {
                 var typ$2;
                 switch (t1) {
                   case "GKoopaShell" :
-                      if (typeof t2$3 === "string") {
+                      if (typeof t2$3 !== "object") {
                         if (t2$3 === "Brick") {
                           dec_health(o2$6);
                           reverse_left_right(o1$4);
@@ -1933,7 +1933,7 @@ function process_collision(dir, c1, c2, state) {
                       }
                       break;
                   case "RKoopaShell" :
-                      if (typeof t2$3 === "string") {
+                      if (typeof t2$3 !== "object") {
                         if (t2$3 === "Brick") {
                           dec_health(o2$6);
                           reverse_left_right(o1$4);

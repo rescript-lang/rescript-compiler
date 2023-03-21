@@ -9,7 +9,7 @@ function sub(_tr, _k) {
   while(true) {
     var k = _k;
     var tr = _tr;
-    if (typeof tr === "string") {
+    if (typeof tr !== "object") {
       throw {
             RE_EXN_ID: "Not_found",
             Error: new Error()
@@ -30,7 +30,7 @@ function sub(_tr, _k) {
 }
 
 function update(tr, k, w) {
-  if (typeof tr === "string") {
+  if (typeof tr !== "object") {
     if (k === 1) {
       return /* Br */{
               _0: w,
@@ -69,7 +69,7 @@ function update(tr, k, w) {
 }
 
 function $$delete(tr, n) {
-  if (typeof tr === "string") {
+  if (typeof tr !== "object") {
     throw {
           RE_EXN_ID: "Not_found",
           Error: new Error()
@@ -97,7 +97,7 @@ function $$delete(tr, n) {
 }
 
 function loext(tr, w) {
-  if (typeof tr === "string") {
+  if (typeof tr !== "object") {
     return /* Br */{
             _0: w,
             _1: "Lf",
@@ -113,14 +113,14 @@ function loext(tr, w) {
 }
 
 function lorem(tr) {
-  if (typeof tr === "string") {
+  if (typeof tr !== "object") {
     throw {
           RE_EXN_ID: "Not_found",
           Error: new Error()
         };
   }
   var l = tr._1;
-  if (typeof l !== "string") {
+  if (typeof l === "object") {
     return /* Br */{
             _0: l._0,
             _1: tr._2,
@@ -128,7 +128,7 @@ function lorem(tr) {
           };
   }
   var tmp = tr._2;
-  if (typeof tmp === "string") {
+  if (typeof tmp !== "object") {
     return "Lf";
   }
   throw {
