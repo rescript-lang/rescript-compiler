@@ -5,7 +5,7 @@ var Curry = require("../../lib/js/curry.js");
 
 function Make(Ord) {
   var height = function (param) {
-    if (typeof param === "string") {
+    if (typeof param !== "object") {
       return 0;
     } else {
       return param._3;
@@ -13,9 +13,9 @@ function Make(Ord) {
   };
   var create = function (l, v, r) {
     var hl;
-    hl = typeof l === "string" ? 0 : l._3;
+    hl = typeof l !== "object" ? 0 : l._3;
     var hr;
-    hr = typeof r === "string" ? 0 : r._3;
+    hr = typeof r !== "object" ? 0 : r._3;
     return /* Node */{
             _0: l,
             _1: v,
@@ -25,11 +25,11 @@ function Make(Ord) {
   };
   var bal = function (l, v, r) {
     var hl;
-    hl = typeof l === "string" ? 0 : l._3;
+    hl = typeof l !== "object" ? 0 : l._3;
     var hr;
-    hr = typeof r === "string" ? 0 : r._3;
+    hr = typeof r !== "object" ? 0 : r._3;
     if (hl > (hr + 2 | 0)) {
-      if (typeof l === "string") {
+      if (typeof l !== "object") {
         throw {
               RE_EXN_ID: "Invalid_argument",
               _1: "Set.bal",
@@ -42,7 +42,7 @@ function Make(Ord) {
       if (height(ll) >= height(lr)) {
         return create(ll, lv, create(lr, v, r));
       }
-      if (typeof lr !== "string") {
+      if (typeof lr === "object") {
         return create(create(ll, lv, lr._0), lr._1, create(lr._2, v, r));
       }
       throw {
@@ -59,7 +59,7 @@ function Make(Ord) {
               _3: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
             };
     }
-    if (typeof r === "string") {
+    if (typeof r !== "object") {
       throw {
             RE_EXN_ID: "Invalid_argument",
             _1: "Set.bal",
@@ -72,7 +72,7 @@ function Make(Ord) {
     if (height(rr) >= height(rl)) {
       return create(create(l, v, rl), rv, rr);
     }
-    if (typeof rl !== "string") {
+    if (typeof rl === "object") {
       return create(create(l, v, rl._0), rl._1, create(rl._2, rv, rr));
     }
     throw {
@@ -82,7 +82,7 @@ function Make(Ord) {
         };
   };
   var add = function (x, t) {
-    if (typeof t === "string") {
+    if (typeof t !== "object") {
       return /* Node */{
               _0: "Empty",
               _1: x,
@@ -111,25 +111,25 @@ function Make(Ord) {
           };
   };
   var add_min_element = function (v, param) {
-    if (typeof param === "string") {
+    if (typeof param !== "object") {
       return singleton(v);
     } else {
       return bal(add_min_element(v, param._0), param._1, param._2);
     }
   };
   var add_max_element = function (v, param) {
-    if (typeof param === "string") {
+    if (typeof param !== "object") {
       return singleton(v);
     } else {
       return bal(param._0, param._1, add_max_element(v, param._2));
     }
   };
   var join = function (l, v, r) {
-    if (typeof l === "string") {
+    if (typeof l !== "object") {
       return add_min_element(v, r);
     }
     var lh = l._3;
-    if (typeof r === "string") {
+    if (typeof r !== "object") {
       return add_max_element(v, l);
     }
     var rh = r._3;
@@ -144,14 +144,14 @@ function Make(Ord) {
   var min_elt = function (_param) {
     while(true) {
       var param = _param;
-      if (typeof param === "string") {
+      if (typeof param !== "object") {
         throw {
               RE_EXN_ID: "Not_found",
               Error: new Error()
             };
       }
       var l = param._0;
-      if (typeof l === "string") {
+      if (typeof l !== "object") {
         return param._1;
       }
       _param = l;
@@ -161,14 +161,14 @@ function Make(Ord) {
   var max_elt = function (_param) {
     while(true) {
       var param = _param;
-      if (typeof param === "string") {
+      if (typeof param !== "object") {
         throw {
               RE_EXN_ID: "Not_found",
               Error: new Error()
             };
       }
       var r = param._2;
-      if (typeof r === "string") {
+      if (typeof r !== "object") {
         return param._1;
       }
       _param = r;
@@ -176,7 +176,7 @@ function Make(Ord) {
     };
   };
   var remove_min_elt = function (param) {
-    if (typeof param === "string") {
+    if (typeof param !== "object") {
       throw {
             RE_EXN_ID: "Invalid_argument",
             _1: "Set.remove_min_elt",
@@ -184,32 +184,32 @@ function Make(Ord) {
           };
     }
     var l = param._0;
-    if (typeof l === "string") {
+    if (typeof l !== "object") {
       return param._2;
     } else {
       return bal(remove_min_elt(l), param._1, param._2);
     }
   };
   var merge = function (t1, t2) {
-    if (typeof t1 === "string") {
+    if (typeof t1 !== "object") {
       return t2;
-    } else if (typeof t2 === "string") {
+    } else if (typeof t2 !== "object") {
       return t1;
     } else {
       return bal(t1, min_elt(t2), remove_min_elt(t2));
     }
   };
   var concat = function (t1, t2) {
-    if (typeof t1 === "string") {
+    if (typeof t1 !== "object") {
       return t2;
-    } else if (typeof t2 === "string") {
+    } else if (typeof t2 !== "object") {
       return t1;
     } else {
       return join(t1, min_elt(t2), remove_min_elt(t2));
     }
   };
   var split = function (x, param) {
-    if (typeof param === "string") {
+    if (typeof param !== "object") {
       return [
               "Empty",
               false,
@@ -243,7 +243,7 @@ function Make(Ord) {
           ];
   };
   var is_empty = function (param) {
-    if (typeof param === "string") {
+    if (typeof param !== "object") {
       return true;
     } else {
       return false;
@@ -252,7 +252,7 @@ function Make(Ord) {
   var mem = function (x, _param) {
     while(true) {
       var param = _param;
-      if (typeof param === "string") {
+      if (typeof param !== "object") {
         return false;
       }
       var c = Curry._2(Ord.compare, x, param._1);
@@ -264,7 +264,7 @@ function Make(Ord) {
     };
   };
   var remove = function (x, param) {
-    if (typeof param === "string") {
+    if (typeof param !== "object") {
       return "Empty";
     }
     var r = param._2;
@@ -280,12 +280,12 @@ function Make(Ord) {
     }
   };
   var union = function (s1, s2) {
-    if (typeof s1 === "string") {
+    if (typeof s1 !== "object") {
       return s2;
     }
     var h1 = s1._3;
     var v1 = s1._1;
-    if (typeof s2 === "string") {
+    if (typeof s2 !== "object") {
       return s1;
     }
     var h2 = s2._3;
@@ -304,10 +304,10 @@ function Make(Ord) {
     return join(union(match$1[0], s2._0), v2, union(match$1[2], s2._2));
   };
   var inter = function (s1, s2) {
-    if (typeof s1 === "string") {
+    if (typeof s1 !== "object") {
       return "Empty";
     }
-    if (typeof s2 === "string") {
+    if (typeof s2 !== "object") {
       return "Empty";
     }
     var r1 = s1._2;
@@ -322,10 +322,10 @@ function Make(Ord) {
     }
   };
   var diff = function (s1, s2) {
-    if (typeof s1 === "string") {
+    if (typeof s1 !== "object") {
       return "Empty";
     }
-    if (typeof s2 === "string") {
+    if (typeof s2 !== "object") {
       return s1;
     }
     var r1 = s1._2;
@@ -343,7 +343,7 @@ function Make(Ord) {
     while(true) {
       var e = _e;
       var s = _s;
-      if (typeof s === "string") {
+      if (typeof s !== "object") {
         return e;
       }
       _e = /* More */{
@@ -359,14 +359,14 @@ function Make(Ord) {
     while(true) {
       var e2 = _e2;
       var e1 = _e1;
-      if (typeof e1 === "string") {
-        if (typeof e2 === "string") {
+      if (typeof e1 !== "object") {
+        if (typeof e2 !== "object") {
           return 0;
         } else {
           return -1;
         }
       }
-      if (typeof e2 === "string") {
+      if (typeof e2 !== "object") {
         return 1;
       }
       var c = Curry._2(Ord.compare, e1._0, e2._0);
@@ -388,13 +388,13 @@ function Make(Ord) {
     while(true) {
       var s2 = _s2;
       var s1 = _s1;
-      if (typeof s1 === "string") {
+      if (typeof s1 !== "object") {
         return true;
       }
       var r1 = s1._2;
       var v1 = s1._1;
       var l1 = s1._0;
-      if (typeof s2 === "string") {
+      if (typeof s2 !== "object") {
         return false;
       }
       var r2 = s2._2;
@@ -435,7 +435,7 @@ function Make(Ord) {
   var iter = function (f, _param) {
     while(true) {
       var param = _param;
-      if (typeof param === "string") {
+      if (typeof param !== "object") {
         return ;
       }
       iter(f, param._0);
@@ -448,7 +448,7 @@ function Make(Ord) {
     while(true) {
       var accu = _accu;
       var s = _s;
-      if (typeof s === "string") {
+      if (typeof s !== "object") {
         return accu;
       }
       _accu = Curry._2(f, s._1, fold(f, s._0, accu));
@@ -459,7 +459,7 @@ function Make(Ord) {
   var for_all = function (p, _param) {
     while(true) {
       var param = _param;
-      if (typeof param === "string") {
+      if (typeof param !== "object") {
         return true;
       }
       if (!Curry._1(p, param._1)) {
@@ -475,7 +475,7 @@ function Make(Ord) {
   var exists = function (p, _param) {
     while(true) {
       var param = _param;
-      if (typeof param === "string") {
+      if (typeof param !== "object") {
         return false;
       }
       if (Curry._1(p, param._1)) {
@@ -489,7 +489,7 @@ function Make(Ord) {
     };
   };
   var filter = function (p, param) {
-    if (typeof param === "string") {
+    if (typeof param !== "object") {
       return "Empty";
     }
     var v = param._1;
@@ -503,7 +503,7 @@ function Make(Ord) {
     }
   };
   var partition = function (p, param) {
-    if (typeof param === "string") {
+    if (typeof param !== "object") {
       return [
               "Empty",
               "Empty"
@@ -530,7 +530,7 @@ function Make(Ord) {
     }
   };
   var cardinal = function (param) {
-    if (typeof param === "string") {
+    if (typeof param !== "object") {
       return 0;
     } else {
       return (cardinal(param._0) + 1 | 0) + cardinal(param._2) | 0;
@@ -540,7 +540,7 @@ function Make(Ord) {
     while(true) {
       var param = _param;
       var accu = _accu;
-      if (typeof param === "string") {
+      if (typeof param !== "object") {
         return accu;
       }
       _param = param._0;
@@ -557,7 +557,7 @@ function Make(Ord) {
   var find = function (x, _param) {
     while(true) {
       var param = _param;
-      if (typeof param === "string") {
+      if (typeof param !== "object") {
         throw {
               RE_EXN_ID: "Not_found",
               Error: new Error()

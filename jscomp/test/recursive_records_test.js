@@ -55,7 +55,7 @@ function f2(x) {
 }
 
 function hd(x) {
-  if (typeof x === "string") {
+  if (typeof x !== "object") {
     return 0;
   } else {
     return x.content;
@@ -63,7 +63,7 @@ function hd(x) {
 }
 
 function tl_exn(x) {
-  if (typeof x !== "string") {
+  if (typeof x === "object") {
     return x.next;
   }
   throw {

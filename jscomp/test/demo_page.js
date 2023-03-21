@@ -21,7 +21,7 @@ function sum(n) {
 }
 
 function map(f, param) {
-  if (typeof param === "string") {
+  if (typeof param !== "object") {
     return "Nil";
   } else {
     return /* Cons */{

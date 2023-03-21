@@ -763,7 +763,7 @@ let is_type_number ?comment (e : t) : t =
   string_equal ?comment (typeof e) (str "number")
 
 let is_tag (e : t) : t =
-  string_equal (typeof e) (str "string")
+  { expression_desc = Bin (NotEqEq, typeof e, str "object"); comment=None }
 
 let is_type_string ?comment (e : t) : t =
   string_equal ?comment (typeof e) (str "string")
