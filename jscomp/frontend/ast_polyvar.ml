@@ -115,16 +115,3 @@ let is_enum_polyvar (ty : Parsetree.type_declaration) =
     when is_enum row_fields ->
       Some row_fields
   | _ -> None
-
-let is_enum_constructors (constructors : Parsetree.constructor_declaration list)
-    =
-  List.for_all
-    (fun (x : Parsetree.constructor_declaration) ->
-      match x with
-      | {
-       pcd_args =
-         Pcstr_tuple [] (* Note the enum is encoded using [Pcstr_tuple []]*);
-      } ->
-          true
-      | _ -> false)
-    constructors

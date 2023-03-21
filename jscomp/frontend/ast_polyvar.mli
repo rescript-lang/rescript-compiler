@@ -38,5 +38,3 @@ val map_row_fields_into_strings :
 
 val is_enum_polyvar :
   Parsetree.type_declaration -> Parsetree.row_field list option
-
-val is_enum_constructors : Parsetree.constructor_declaration list -> bool

@@ -43,28 +43,6 @@ let new_type_of_type_declaration (tdcl : Parsetree.type_declaration) newName =
           ptype_private = Public;
           ptype_manifest = None;
         } )
-
-(* let mk_fun ~loc (typ : Parsetree.core_type)
-    (value : string) body
-   : Parsetree.expression =
-   Ast_compatible.fun_
-    (Pat.constraint_ (Pat.var {txt = value ; loc}) typ)
-    body
-
-   let destruct_label_declarations ~loc
-    (arg_name : string)
-    (labels : Parsetree.label_declaration list) :
-   (Parsetree.core_type * Parsetree.expression) list * string list
-   =
-   Ext_list.fold_right labels ([], [])
-    (fun {pld_name = {txt}; pld_type}
-      (core_type_exps, labels) ->
-      ((pld_type,
-        Exp.field (Exp.ident {txt = Lident arg_name ; loc})
-          {txt = Lident txt ; loc}) :: core_type_exps),
-      txt :: labels
-    ) *)
-
 let notApplicable loc derivingName =
   Location.prerr_warning loc
     (Warnings.Bs_derive_warning (derivingName ^ " not applicable to this type"))
