@@ -310,7 +310,7 @@ function from_pairs(prefix, pairs) {
                     var a = param[1];
                     var result = param[0];
                     return [
-                            "" + prefix + "_" + i,
+                            prefix + "_" + i,
                             (function (param) {
                                 return commutative_mul(result, a, b);
                               })

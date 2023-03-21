@@ -88,7 +88,7 @@ function from_of_string(xs) {
                     var b = param[1];
                     var a = param[0];
                     return [
-                            "of_string " + String(i) + "",
+                            "of_string " + String(i),
                             (function (param) {
                                 return {
                                         TAG: /* Eq */0,
@@ -156,7 +156,7 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at({
                         var b = param[1];
                         var a = param[0];
                         return [
-                                "infinity_of_string " + String(i) + "",
+                                "infinity_of_string " + String(i),
                                 (function (param) {
                                     return {
                                             TAG: /* Eq */0,
@@ -194,7 +194,7 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at({
                             var b = param[1];
                             var a = param[0];
                             return [
-                                    "normal_float_of_string " + String(i) + "",
+                                    "normal_float_of_string " + String(i),
                                     (function (param) {
                                         return {
                                                 TAG: /* Eq */0,
@@ -427,7 +427,7 @@ Mt.from_pair_suites("Caml_format_test", Pervasives.$at(suites, Pervasives.$at($$
                         var f = param[1];
                         var fmt = param[0];
                         return [
-                                "loat_format " + String(i) + "",
+                                "loat_format " + String(i),
                                 (function (param) {
                                     return {
                                             TAG: /* Eq */0,
