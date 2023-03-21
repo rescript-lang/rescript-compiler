@@ -84,7 +84,7 @@ function btwn_exclusive(loc1, loc2) {
 }
 
 function string_of_filename(param) {
-  if (typeof param === "string") {
+  if (typeof param !== "object") {
     return "(global)";
   } else {
     return param._0;
@@ -92,7 +92,7 @@ function string_of_filename(param) {
 }
 
 function order_of_filename(param) {
-  if (typeof param === "string") {
+  if (typeof param !== "object") {
     return 1;
   }
   switch (param.TAG) {
@@ -1500,7 +1500,7 @@ Caml_module.update_mod({
     }, Class, Class);
 
 function token_to_string(param) {
-  if (typeof param === "string") {
+  if (typeof param !== "object") {
     switch (param) {
       case "T_IDENTIFIER" :
           return "T_IDENTIFIER";
@@ -1824,7 +1824,7 @@ function get_result_and_clear_state(param) {
   var env = match[0];
   var match$1;
   var exit = 0;
-  if (typeof lex_token === "string") {
+  if (typeof lex_token !== "object") {
     exit = 2;
   } else {
     switch (lex_token.TAG) {
@@ -5271,7 +5271,7 @@ function token$1(env) {
 }
 
 function height(param) {
-  if (typeof param === "string") {
+  if (typeof param !== "object") {
     return 0;
   } else {
     return param.h;
@@ -5280,9 +5280,9 @@ function height(param) {
 
 function create(l, v, r) {
   var hl;
-  hl = typeof l === "string" ? 0 : l.h;
+  hl = typeof l !== "object" ? 0 : l.h;
   var hr;
-  hr = typeof r === "string" ? 0 : r.h;
+  hr = typeof r !== "object" ? 0 : r.h;
   return /* Node */{
           l: l,
           v: v,
@@ -5293,11 +5293,11 @@ function create(l, v, r) {
 
 function bal(l, v, r) {
   var hl;
-  hl = typeof l === "string" ? 0 : l.h;
+  hl = typeof l !== "object" ? 0 : l.h;
   var hr;
-  hr = typeof r === "string" ? 0 : r.h;
+  hr = typeof r !== "object" ? 0 : r.h;
   if (hl > (hr + 2 | 0)) {
-    if (typeof l === "string") {
+    if (typeof l !== "object") {
       throw {
             RE_EXN_ID: "Invalid_argument",
             _1: "Set.bal",
@@ -5310,7 +5310,7 @@ function bal(l, v, r) {
     if (height(ll) >= height(lr)) {
       return create(ll, lv, create(lr, v, r));
     }
-    if (typeof lr !== "string") {
+    if (typeof lr === "object") {
       return create(create(ll, lv, lr.l), lr.v, create(lr.r, v, r));
     }
     throw {
@@ -5327,7 +5327,7 @@ function bal(l, v, r) {
             h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
-  if (typeof r === "string") {
+  if (typeof r !== "object") {
     throw {
           RE_EXN_ID: "Invalid_argument",
           _1: "Set.bal",
@@ -5340,7 +5340,7 @@ function bal(l, v, r) {
   if (height(rr) >= height(rl)) {
     return create(create(l, v, rl), rv, rr);
   }
-  if (typeof rl !== "string") {
+  if (typeof rl === "object") {
     return create(create(l, v, rl.l), rl.v, create(rl.r, rv, rr));
   }
   throw {
@@ -5351,7 +5351,7 @@ function bal(l, v, r) {
 }
 
 function add(x, t) {
-  if (typeof t === "string") {
+  if (typeof t !== "object") {
     return /* Node */{
             l: "Empty",
             v: x,
@@ -5385,7 +5385,7 @@ function add(x, t) {
 function mem(x, _param) {
   while(true) {
     var param = _param;
-    if (typeof param === "string") {
+    if (typeof param !== "object") {
       return false;
     }
     var c = Caml.string_compare(x, param.v);
@@ -5520,7 +5520,7 @@ function init_env(token_sinkOpt, parse_optionsOpt, source, content) {
   var token_sink = token_sinkOpt !== undefined ? Caml_option.valFromOption(token_sinkOpt) : undefined;
   var parse_options = parse_optionsOpt !== undefined ? Caml_option.valFromOption(parse_optionsOpt) : undefined;
   var lb = Lexing.from_string(content);
-  if (source !== undefined && typeof source !== "string") {
+  if (source !== undefined && typeof source === "object") {
     var init = lb.lex_curr_p;
     lb.lex_curr_p = {
       pos_fname: source._0,
@@ -5823,7 +5823,7 @@ function is_line_terminator(env) {
 
 function is_implicit_semicolon(env) {
   var match = token$2(undefined, env);
-  if (typeof match !== "string") {
+  if (typeof match === "object") {
     return is_line_terminator(env);
   }
   switch (match) {
@@ -5852,7 +5852,7 @@ function is_identifier(iOpt, env) {
   if (is_strict_reserved(name) || is_restricted(name) || is_future_reserved(name)) {
     return true;
   }
-  if (typeof match !== "string") {
+  if (typeof match === "object") {
     return false;
   }
   switch (match) {
@@ -5883,7 +5883,7 @@ function is_function(iOpt, env) {
 function is_class(iOpt, env) {
   var i = iOpt !== undefined ? iOpt : 0;
   var match = token$2(i, env);
-  if (typeof match !== "string") {
+  if (typeof match === "object") {
     return false;
   }
   switch (match) {
@@ -5905,7 +5905,7 @@ function error(env, e) {
 
 function get_unexpected_error(param) {
   var tmp = param[0];
-  if (typeof tmp === "string") {
+  if (typeof tmp !== "object") {
     switch (tmp) {
       case "T_IDENTIFIER" :
           return "UnexpectedIdentifier";
@@ -6171,7 +6171,7 @@ var Parser_env_Try = {
 };
 
 function height$1(param) {
-  if (typeof param === "string") {
+  if (typeof param !== "object") {
     return 0;
   } else {
     return param.h;
@@ -6180,9 +6180,9 @@ function height$1(param) {
 
 function create$2(l, v, r) {
   var hl;
-  hl = typeof l === "string" ? 0 : l.h;
+  hl = typeof l !== "object" ? 0 : l.h;
   var hr;
-  hr = typeof r === "string" ? 0 : r.h;
+  hr = typeof r !== "object" ? 0 : r.h;
   return /* Node */{
           l: l,
           v: v,
@@ -6193,11 +6193,11 @@ function create$2(l, v, r) {
 
 function bal$1(l, v, r) {
   var hl;
-  hl = typeof l === "string" ? 0 : l.h;
+  hl = typeof l !== "object" ? 0 : l.h;
   var hr;
-  hr = typeof r === "string" ? 0 : r.h;
+  hr = typeof r !== "object" ? 0 : r.h;
   if (hl > (hr + 2 | 0)) {
-    if (typeof l === "string") {
+    if (typeof l !== "object") {
       throw {
             RE_EXN_ID: "Invalid_argument",
             _1: "Set.bal",
@@ -6210,7 +6210,7 @@ function bal$1(l, v, r) {
     if (height$1(ll) >= height$1(lr)) {
       return create$2(ll, lv, create$2(lr, v, r));
     }
-    if (typeof lr !== "string") {
+    if (typeof lr === "object") {
       return create$2(create$2(ll, lv, lr.l), lr.v, create$2(lr.r, v, r));
     }
     throw {
@@ -6227,7 +6227,7 @@ function bal$1(l, v, r) {
             h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
-  if (typeof r === "string") {
+  if (typeof r !== "object") {
     throw {
           RE_EXN_ID: "Invalid_argument",
           _1: "Set.bal",
@@ -6240,7 +6240,7 @@ function bal$1(l, v, r) {
   if (height$1(rr) >= height$1(rl)) {
     return create$2(create$2(l, v, rl), rv, rr);
   }
-  if (typeof rl !== "string") {
+  if (typeof rl === "object") {
     return create$2(create$2(l, v, rl.l), rl.v, create$2(rl.r, rv, rr));
   }
   throw {
@@ -6251,7 +6251,7 @@ function bal$1(l, v, r) {
 }
 
 function add$1(x, t) {
-  if (typeof t === "string") {
+  if (typeof t !== "object") {
     return /* Node */{
             l: "Empty",
             v: x,
@@ -6285,7 +6285,7 @@ function add$1(x, t) {
 function mem$1(x, _param) {
   while(true) {
     var param = _param;
-    if (typeof param === "string") {
+    if (typeof param !== "object") {
       return false;
     }
     var c = Caml.string_compare(x, param.v);
@@ -6298,7 +6298,7 @@ function mem$1(x, _param) {
 }
 
 function height$2(param) {
-  if (typeof param === "string") {
+  if (typeof param !== "object") {
     return 0;
   } else {
     return param.h;
@@ -6319,11 +6319,11 @@ function create$3(l, x, d, r) {
 
 function bal$2(l, x, d, r) {
   var hl;
-  hl = typeof l === "string" ? 0 : l.h;
+  hl = typeof l !== "object" ? 0 : l.h;
   var hr;
-  hr = typeof r === "string" ? 0 : r.h;
+  hr = typeof r !== "object" ? 0 : r.h;
   if (hl > (hr + 2 | 0)) {
-    if (typeof l === "string") {
+    if (typeof l !== "object") {
       throw {
             RE_EXN_ID: "Invalid_argument",
             _1: "Map.bal",
@@ -6337,7 +6337,7 @@ function bal$2(l, x, d, r) {
     if (height$2(ll) >= height$2(lr)) {
       return create$3(ll, lv, ld, create$3(lr, x, d, r));
     }
-    if (typeof lr !== "string") {
+    if (typeof lr === "object") {
       return create$3(create$3(ll, lv, ld, lr.l), lr.v, lr.d, create$3(lr.r, x, d, r));
     }
     throw {
@@ -6355,7 +6355,7 @@ function bal$2(l, x, d, r) {
             h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
-  if (typeof r === "string") {
+  if (typeof r !== "object") {
     throw {
           RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal",
@@ -6369,7 +6369,7 @@ function bal$2(l, x, d, r) {
   if (height$2(rr) >= height$2(rl)) {
     return create$3(create$3(l, x, d, rl), rv, rd, rr);
   }
-  if (typeof rl !== "string") {
+  if (typeof rl === "object") {
     return create$3(create$3(l, x, d, rl.l), rl.v, rl.d, create$3(rl.r, rv, rd, rr));
   }
   throw {
@@ -6380,7 +6380,7 @@ function bal$2(l, x, d, r) {
 }
 
 function add$2(x, data, m) {
-  if (typeof m === "string") {
+  if (typeof m !== "object") {
     return /* Node */{
             l: "Empty",
             v: x,
@@ -6426,7 +6426,7 @@ function add$2(x, data, m) {
 function find(x, _param) {
   while(true) {
     var param = _param;
-    if (typeof param === "string") {
+    if (typeof param !== "object") {
       throw {
             RE_EXN_ID: "Not_found",
             Error: new Error()
@@ -6451,7 +6451,7 @@ function compare$1(param, param$1) {
 }
 
 function height$3(param) {
-  if (typeof param === "string") {
+  if (typeof param !== "object") {
     return 0;
   } else {
     return param.h;
@@ -6460,9 +6460,9 @@ function height$3(param) {
 
 function create$4(l, v, r) {
   var hl;
-  hl = typeof l === "string" ? 0 : l.h;
+  hl = typeof l !== "object" ? 0 : l.h;
   var hr;
-  hr = typeof r === "string" ? 0 : r.h;
+  hr = typeof r !== "object" ? 0 : r.h;
   return /* Node */{
           l: l,
           v: v,
@@ -6473,11 +6473,11 @@ function create$4(l, v, r) {
 
 function bal$3(l, v, r) {
   var hl;
-  hl = typeof l === "string" ? 0 : l.h;
+  hl = typeof l !== "object" ? 0 : l.h;
   var hr;
-  hr = typeof r === "string" ? 0 : r.h;
+  hr = typeof r !== "object" ? 0 : r.h;
   if (hl > (hr + 2 | 0)) {
-    if (typeof l === "string") {
+    if (typeof l !== "object") {
       throw {
             RE_EXN_ID: "Invalid_argument",
             _1: "Set.bal",
@@ -6490,7 +6490,7 @@ function bal$3(l, v, r) {
     if (height$3(ll) >= height$3(lr)) {
       return create$4(ll, lv, create$4(lr, v, r));
     }
-    if (typeof lr !== "string") {
+    if (typeof lr === "object") {
       return create$4(create$4(ll, lv, lr.l), lr.v, create$4(lr.r, v, r));
     }
     throw {
@@ -6507,7 +6507,7 @@ function bal$3(l, v, r) {
             h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
-  if (typeof r === "string") {
+  if (typeof r !== "object") {
     throw {
           RE_EXN_ID: "Invalid_argument",
           _1: "Set.bal",
@@ -6520,7 +6520,7 @@ function bal$3(l, v, r) {
   if (height$3(rr) >= height$3(rl)) {
     return create$4(create$4(l, v, rl), rv, rr);
   }
-  if (typeof rl !== "string") {
+  if (typeof rl === "object") {
     return create$4(create$4(l, v, rl.l), rl.v, create$4(rl.r, rv, rr));
   }
   throw {
@@ -6531,7 +6531,7 @@ function bal$3(l, v, r) {
 }
 
 function add$3(x, t) {
-  if (typeof t === "string") {
+  if (typeof t !== "object") {
     return /* Node */{
             l: "Empty",
             v: x,
@@ -6565,7 +6565,7 @@ function add$3(x, t) {
 function mem$2(x, _param) {
   while(true) {
     var param = _param;
-    if (typeof param === "string") {
+    if (typeof param !== "object") {
       return false;
     }
     var c = compare$1(x, param.v);
@@ -6730,7 +6730,7 @@ function param_list_or_type(env) {
   var token$5 = Curry._2(Parser_env_Peek.token, undefined, env);
   var ret;
   var exit = 0;
-  if (typeof token$5 === "string") {
+  if (typeof token$5 !== "object") {
     switch (token$5) {
       case "T_IDENTIFIER" :
           ret = function_param_or_generic_type(env);
@@ -6762,7 +6762,7 @@ function param_list_or_type(env) {
     if (match !== undefined) {
       var match$1 = Curry._2(Parser_env_Peek.token, 1, env);
       var exit$1 = 0;
-      if (typeof match$1 === "string") {
+      if (typeof match$1 !== "object") {
         switch (match$1) {
           case "T_PLING" :
           case "T_COLON" :
@@ -6831,7 +6831,7 @@ function function_param_list(env) {
 
 function prefix(env) {
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof match !== "string") {
+  if (typeof match === "object") {
     return postfix(env);
   }
   if (match !== "T_PLING") {
@@ -6947,7 +6947,7 @@ function postfix_with(env, _t) {
 }
 
 function primitive(param) {
-  if (typeof param !== "string") {
+  if (typeof param === "object") {
     return ;
   }
   switch (param) {
@@ -6972,7 +6972,7 @@ function function_param_or_generic_type(env) {
   var id = Curry._2(Parse.identifier, undefined, env);
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
   var exit = 0;
-  if (typeof match === "string") {
+  if (typeof match !== "object") {
     switch (match) {
       case "T_PLING" :
       case "T_COLON" :
@@ -7008,7 +7008,7 @@ function primary(env) {
   var loc = Curry._2(Parser_env_Peek.loc, undefined, env);
   var token$5 = Curry._2(Parser_env_Peek.token, undefined, env);
   var exit = 0;
-  if (typeof token$5 === "string") {
+  if (typeof token$5 !== "object") {
     switch (token$5) {
       case "T_IDENTIFIER" :
           var match = generic(env);
@@ -7261,7 +7261,7 @@ function params(env, allow_default, _require_default, _acc) {
     var require_default = _require_default;
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
     var variance;
-    if (typeof match === "string") {
+    if (typeof match !== "object") {
       switch (match) {
         case "T_PLUS" :
             token$3(env);
@@ -7284,7 +7284,7 @@ function params(env, allow_default, _require_default, _acc) {
     var match$3;
     if (allow_default) {
       var exit = 0;
-      if (typeof match$2 === "string" && match$2 === "T_ASSIGN") {
+      if (typeof match$2 !== "object" && match$2 === "T_ASSIGN") {
         token$3(env);
         match$3 = [
           union(env),
@@ -7327,7 +7327,7 @@ function params(env, allow_default, _require_default, _acc) {
       tl: acc
     };
     var match$4 = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match$4 === "string") {
+    if (typeof match$4 !== "object") {
       switch (match$4) {
         case "T_GREATER_THAN" :
         case "T_EOF" :
@@ -7375,7 +7375,7 @@ function union_with(env, left) {
     while(true) {
       var acc = _acc;
       var match = Curry._2(Parser_env_Peek.token, undefined, env);
-      if (typeof match === "string" && match === "T_BIT_OR") {
+      if (typeof match !== "object" && match === "T_BIT_OR") {
         token$4(env, "T_BIT_OR");
         _acc = {
           hd: intersection(env),
@@ -7409,7 +7409,7 @@ function function_param_list_without_parens(env) {
       var acc = _acc;
       var t = Curry._2(Parser_env_Peek.token, undefined, env);
       var exit = 0;
-      if (typeof t === "string") {
+      if (typeof t !== "object") {
         switch (t) {
           case "T_RPAREN" :
           case "T_ELLIPSIS" :
@@ -7455,7 +7455,7 @@ function intersection_with(env, left) {
     while(true) {
       var acc = _acc;
       var match = Curry._2(Parser_env_Peek.token, undefined, env);
-      if (typeof match === "string" && match === "T_BIT_AND") {
+      if (typeof match !== "object" && match === "T_BIT_AND") {
         token$4(env, "T_BIT_AND");
         _acc = {
           hd: prefix(env),
@@ -7481,7 +7481,7 @@ function types(env, _acc) {
   while(true) {
     var acc = _acc;
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match === "string") {
+    if (typeof match !== "object") {
       switch (match) {
         case "T_RBRACKET" :
         case "T_EOF" :
@@ -7594,7 +7594,7 @@ function indexer_property(env, start_loc, $$static) {
 
 function semicolon$1(env) {
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof match !== "string") {
+  if (typeof match === "object") {
     return error_unexpected(env);
   }
   switch (match) {
@@ -7618,7 +7618,7 @@ function properties(allow_static, env, _param) {
     var $$static = allow_static && maybe(env, "T_STATIC");
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
     var exit = 0;
-    if (typeof match === "string") {
+    if (typeof match !== "object") {
       switch (match) {
         case "T_LBRACKET" :
             var indexer = indexer_property(env, start_loc, $$static);
@@ -7651,7 +7651,7 @@ function properties(allow_static, env, _param) {
           var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
           var match$2;
           var exit$1 = 0;
-          if ($$static && typeof match$1 === "string" && match$1 === "T_COLON") {
+          if ($$static && typeof match$1 !== "object" && match$1 === "T_COLON") {
             strict_error_at(env, [
                   start_loc,
                   "StrictReservedWord"
@@ -7691,7 +7691,7 @@ function properties(allow_static, env, _param) {
           var $$static$1 = match$2[0];
           var match$3 = Curry._2(Parser_env_Peek.token, undefined, env);
           var property$1;
-          if (typeof match$3 === "string") {
+          if (typeof match$3 !== "object") {
             switch (match$3) {
               case "T_LPAREN" :
               case "T_LESS_THAN" :
@@ -7761,7 +7761,7 @@ function params$1(env, _acc) {
   while(true) {
     var acc = _acc;
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match === "string") {
+    if (typeof match !== "object") {
       switch (match) {
         case "T_GREATER_THAN" :
         case "T_EOF" :
@@ -7832,7 +7832,7 @@ function annotation(env) {
 
 function annotation_opt(env) {
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof match === "string" && match === "T_COLON") {
+  if (typeof match !== "object" && match === "T_COLON") {
     return annotation(env);
   }
   
@@ -8013,7 +8013,7 @@ function param_list(env, _param) {
     var params = param$2[0];
     var t = Curry._2(Parser_env_Peek.token, undefined, env);
     var exit = 0;
-    if (typeof t === "string") {
+    if (typeof t !== "object") {
       switch (t) {
         case "T_RPAREN" :
         case "T_ELLIPSIS" :
@@ -8128,7 +8128,7 @@ function _function(env) {
   var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
   var match$2;
   var exit = 0;
-  if (match && typeof match$1 === "string") {
+  if (match && typeof match$1 !== "object") {
     switch (match$1) {
       case "T_LPAREN" :
           match$2 = [
@@ -8315,7 +8315,7 @@ function variable(env) {
   var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
   var match$1;
-  if (typeof match === "string") {
+  if (typeof match !== "object") {
     switch (match) {
       case "T_VAR" :
           match$1 = declarations("T_VAR", "Var", env);
@@ -8355,7 +8355,7 @@ function is_tighter(a, b) {
 
 function is_lhs(param) {
   var tmp = param[1];
-  if (typeof tmp === "string") {
+  if (typeof tmp !== "object") {
     return false;
   }
   switch (tmp.TAG) {
@@ -8369,7 +8369,7 @@ function is_lhs(param) {
 
 function is_assignable_lhs(param) {
   var tmp = param[1];
-  if (typeof tmp === "string") {
+  if (typeof tmp !== "object") {
     return false;
   }
   switch (tmp.TAG) {
@@ -8386,7 +8386,7 @@ function is_assignable_lhs(param) {
 function assignment_op(env) {
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
   var op;
-  if (typeof match === "string") {
+  if (typeof match !== "object") {
     switch (match) {
       case "T_RSHIFT3_ASSIGN" :
           op = "RShift3Assign";
@@ -8466,7 +8466,7 @@ function conditional(env) {
 
 function peek_unary_op(env) {
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof match !== "string") {
+  if (typeof match === "object") {
     return ;
   }
   switch (match) {
@@ -8504,7 +8504,7 @@ function unary(env) {
     var loc = btwn(begin_loc, argument[0]);
     if (op === "Delete") {
       var tmp = argument[1];
-      if (typeof tmp !== "string" && tmp.TAG === "Identifier") {
+      if (typeof tmp === "object" && tmp.TAG === "Identifier") {
         strict_error_at(env, [
               loc,
               "StrictDelete"
@@ -8526,7 +8526,7 @@ function unary(env) {
   }
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
   var op$1;
-  if (typeof match === "string") {
+  if (typeof match !== "object") {
     switch (match) {
       case "T_INCR" :
           op$1 = "Increment";
@@ -8547,7 +8547,7 @@ function unary(env) {
     }
     var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
     var op$2;
-    if (typeof match$1 === "string") {
+    if (typeof match$1 !== "object") {
       switch (match$1) {
         case "T_INCR" :
             op$2 = "Increment";
@@ -8571,7 +8571,7 @@ function unary(env) {
           ]);
     }
     var match$2 = argument$1[1];
-    if (typeof match$2 !== "string" && match$2.TAG === "Identifier") {
+    if (typeof match$2 === "object" && match$2.TAG === "Identifier") {
       if (is_restricted(match$2._0[1].name)) {
         strict_error(env, "StrictLHSPostfix");
       }
@@ -8600,7 +8600,7 @@ function unary(env) {
         ]);
   }
   var match$3 = argument$2[1];
-  if (typeof match$3 !== "string" && match$3.TAG === "Identifier") {
+  if (typeof match$3 === "object" && match$3.TAG === "Identifier") {
     if (is_restricted(match$3._0[1].name)) {
       strict_error(env, "StrictLHSPrefix");
     }
@@ -8623,7 +8623,7 @@ function left_hand_side(env) {
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
   var expr;
   var exit = 0;
-  if (typeof match === "string" && match === "T_NEW") {
+  if (typeof match !== "object" && match === "T_NEW") {
     expr = _new(env, (function (new_expr, _args) {
             return new_expr;
           }));
@@ -8635,7 +8635,7 @@ function left_hand_side(env) {
   }
   var expr$1 = member(env, expr);
   var part = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof part === "string") {
+  if (typeof part !== "object") {
     if (part === "T_LPAREN") {
       return call(env, expr$1);
     } else {
@@ -8652,7 +8652,7 @@ function call(env, _left) {
   while(true) {
     var left = _left;
     var part = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof part !== "string") {
+    if (typeof part === "object") {
       if (part.TAG === "T_TEMPLATE_PART") {
         return tagged_template(env, left, part._0);
       } else {
@@ -8726,7 +8726,7 @@ function _new(env, _finish_fn) {
   while(true) {
     var finish_fn = _finish_fn;
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match === "string" && match === "T_NEW") {
+    if (typeof match !== "object" && match === "T_NEW") {
       var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
       token$4(env, "T_NEW");
       var finish_fn$p = (function(finish_fn,start_loc){
@@ -8761,17 +8761,17 @@ function _new(env, _finish_fn) {
     var callee = member(with_no_call(true, env), expr);
     var part = Curry._2(Parser_env_Peek.token, undefined, env);
     var callee$1;
-    callee$1 = typeof part === "string" || part.TAG !== "T_TEMPLATE_PART" ? callee : tagged_template(env, callee, part._0);
+    callee$1 = typeof part !== "object" || part.TAG !== "T_TEMPLATE_PART" ? callee : tagged_template(env, callee, part._0);
     var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
     var args;
-    args = typeof match$1 === "string" && match$1 === "T_LPAREN" ? Curry._1($$arguments, env) : undefined;
+    args = typeof match$1 !== "object" && match$1 === "T_LPAREN" ? Curry._1($$arguments, env) : undefined;
     return Curry._2(finish_fn, callee$1, args);
   };
 }
 
 function member(env, left) {
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof match !== "string") {
+  if (typeof match === "object") {
     return left;
   }
   switch (match) {
@@ -8831,7 +8831,7 @@ function _function$1(env) {
   } else {
     var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
     var id;
-    id = typeof match$1 === "string" && match$1 === "T_LESS_THAN" ? undefined : Curry._2(Parse.identifier, "StrictFunctionName", env);
+    id = typeof match$1 !== "object" && match$1 === "T_LESS_THAN" ? undefined : Curry._2(Parse.identifier, "StrictFunctionName", env);
     match = [
       id,
       Curry._1(type_parameter_declaration$1, env)
@@ -8909,7 +8909,7 @@ function primary$1(env) {
   var loc = Curry._2(Parser_env_Peek.loc, undefined, env);
   var number_type = Curry._2(Parser_env_Peek.token, undefined, env);
   var exit = 0;
-  if (typeof number_type === "string") {
+  if (typeof number_type !== "object") {
     switch (number_type) {
       case "T_LCURLY" :
           var match = Curry._1(Parse.object_initializer, env);
@@ -8925,7 +8925,7 @@ function primary$1(env) {
           var expression = Curry._1(assignment, env);
           var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
           var ret;
-          if (typeof match$1 === "string") {
+          if (typeof match$1 !== "object") {
             switch (match$1) {
               case "T_COMMA" :
                   ret = sequence(env, {
@@ -9022,7 +9022,7 @@ function primary$1(env) {
           var loc$2 = Curry._2(Parser_env_Peek.loc, undefined, env);
           var match$4 = Curry._2(Parser_env_Peek.token, undefined, env);
           var match$5;
-          if (typeof match$4 === "string") {
+          if (typeof match$4 !== "object") {
             throw {
                   RE_EXN_ID: "Assert_failure",
                   _1: [
@@ -9235,7 +9235,7 @@ function sequence(env, _acc) {
   while(true) {
     var acc = _acc;
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match === "string" && match === "T_COMMA") {
+    if (typeof match !== "object" && match === "T_COMMA") {
       token$4(env, "T_COMMA");
       var expr = Curry._1(assignment, env);
       _acc = {
@@ -9264,7 +9264,7 @@ function identifier_or_reserved_keyword(env) {
   var lex_value = Curry._2(Parser_env_Peek.value, undefined, env);
   var lex_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
   var exit = 0;
-  if (typeof lex_token === "string") {
+  if (typeof lex_token !== "object") {
     switch (lex_token) {
       case "T_IDENTIFIER" :
       case "T_DECLARE" :
@@ -9283,7 +9283,7 @@ function identifier_or_reserved_keyword(env) {
     case 1 :
         var err;
         var exit$1 = 0;
-        if (typeof lex_token === "string") {
+        if (typeof lex_token !== "object") {
           switch (lex_token) {
             case "T_FUNCTION" :
             case "T_IF" :
@@ -9389,7 +9389,7 @@ function assignment_but_not_arrow_function(env) {
         ]);
   }
   var match = expr[1];
-  if (typeof match !== "string" && match.TAG === "Identifier") {
+  if (typeof match === "object" && match.TAG === "Identifier") {
     if (is_restricted(match._0[1].name)) {
       strict_error_at(env, [
             expr[0],
@@ -9425,7 +9425,7 @@ function try_assignment_but_not_arrow_function(env) {
   var env$1 = with_error_callback(error_callback, env);
   var ret = assignment_but_not_arrow_function(env$1);
   var match = Curry._2(Parser_env_Peek.token, undefined, env$1);
-  if (typeof match === "string") {
+  if (typeof match !== "object") {
     switch (match) {
       case "T_ARROW" :
       case "T_COLON" :
@@ -9447,7 +9447,7 @@ function try_assignment_but_not_arrow_function(env) {
         };
   }
   var match$1 = ret[1];
-  if (typeof match$1 === "string") {
+  if (typeof match$1 !== "object") {
     return ret;
   }
   if (match$1.TAG !== "Identifier") {
@@ -9469,7 +9469,7 @@ function assignment(env) {
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
   var match$1 = Curry._2(Parser_env_Peek.is_identifier, undefined, env);
   var exit = 0;
-  if (typeof match === "string") {
+  if (typeof match !== "object") {
     switch (match) {
       case "T_YIELD" :
           if (env.allow_yield) {
@@ -9516,11 +9516,11 @@ function assignment(env) {
     return assignment_but_not_arrow_function(env);
   }
   var expr = Curry._2(Parser_env_Try.to_parse, env, try_assignment_but_not_arrow_function);
-  if (typeof expr !== "string") {
+  if (typeof expr === "object") {
     return expr._0;
   }
   var expr$1 = Curry._2(Parser_env_Try.to_parse, env, try_arrow_function);
-  if (typeof expr$1 === "string") {
+  if (typeof expr$1 !== "object") {
     return assignment_but_not_arrow_function(env);
   } else {
     return expr$1._0;
@@ -9546,7 +9546,7 @@ function logical_and(env, _left, _lloc) {
     var lloc = _lloc;
     var left = _left;
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match !== "string") {
+    if (typeof match === "object") {
       return [
               lloc,
               left
@@ -9572,7 +9572,7 @@ function logical_or(env, _left, _lloc) {
     var lloc = _lloc;
     var left = _left;
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match !== "string") {
+    if (typeof match === "object") {
       return [
               lloc,
               left
@@ -9603,7 +9603,7 @@ function logical(env) {
 function binary_op(env) {
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
   var ret;
-  if (typeof match === "string") {
+  if (typeof match !== "object") {
     switch (match) {
       case "T_IN" :
           ret = env.no_in ? undefined : [
@@ -9880,7 +9880,7 @@ function binary(env) {
     var right_loc = btwn(start_loc, end_loc);
     if (Curry._2(Parser_env_Peek.token, undefined, env) === "T_LESS_THAN") {
       var tmp = right[1];
-      if (typeof tmp !== "string" && tmp.TAG === "JSXElement") {
+      if (typeof tmp === "object" && tmp.TAG === "JSXElement") {
         error(env, "AdjacentJSXElements");
       }
       
@@ -9922,7 +9922,7 @@ function binary(env) {
 
 function argument(env) {
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof match !== "string") {
+  if (typeof match === "object") {
     return {
             TAG: "Expression",
             _0: Curry._1(assignment, env)
@@ -9953,7 +9953,7 @@ function arguments$p(env, _acc) {
   while(true) {
     var acc = _acc;
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match === "string") {
+    if (typeof match !== "object") {
       switch (match) {
         case "T_RPAREN" :
         case "T_EOF" :
@@ -9997,11 +9997,11 @@ function template_parts(env, _quasis, _expressions) {
       tl: expressions
     };
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match === "string" && match === "T_RCURLY") {
+    if (typeof match !== "object" && match === "T_RCURLY") {
       push_lex_mode(env, "TEMPLATE");
       var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
       var match$2;
-      if (typeof match$1 === "string") {
+      if (typeof match$1 !== "object") {
         throw {
               RE_EXN_ID: "Assert_failure",
               _1: [
@@ -10128,7 +10128,7 @@ function elements(env, _acc) {
   while(true) {
     var acc = _acc;
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match === "string") {
+    if (typeof match !== "object") {
       switch (match) {
         case "T_COMMA" :
             token$4(env, "T_COMMA");
@@ -10193,7 +10193,7 @@ function array_initializer(env) {
 }
 
 function error_callback$1(param, param$1) {
-  if (typeof param$1 === "string") {
+  if (typeof param$1 !== "object") {
     switch (param$1) {
       case "StrictParamName" :
       case "NewlineBeforeArrow" :
@@ -10262,7 +10262,7 @@ function try_arrow_function(env) {
           var generator = false;
           var env = with_in_function(true, param);
           var match = Curry._2(Parser_env_Peek.token, undefined, env);
-          if (typeof match === "string" && match === "T_LCURLY") {
+          if (typeof match !== "object" && match === "T_LCURLY") {
             var match$1 = function_body(env, async, generator);
             return [
                     match$1[1],
@@ -10311,7 +10311,7 @@ function decorator_list_helper(env, _decorators) {
   while(true) {
     var decorators = _decorators;
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match !== "string") {
+    if (typeof match === "object") {
       return decorators;
     }
     if (match !== "T_AT") {
@@ -10336,7 +10336,7 @@ function decorator_list(env) {
 
 function key(env) {
   var number_type = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof number_type === "string") {
+  if (typeof number_type !== "object") {
     if (number_type === "T_LBRACKET") {
       var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
       token$4(env, "T_LBRACKET");
@@ -10538,7 +10538,7 @@ function property$1(env) {
             case "get" :
                 var match$2 = Curry._2(Parser_env_Peek.token, undefined, env);
                 var exit$1 = 0;
-                if (typeof match$2 === "string") {
+                if (typeof match$2 !== "object") {
                   switch (match$2) {
                     case "T_LPAREN" :
                     case "T_COLON" :
@@ -10558,7 +10558,7 @@ function property$1(env) {
             case "set" :
                 var match$3 = Curry._2(Parser_env_Peek.token, undefined, env);
                 var exit$2 = 0;
-                if (typeof match$3 === "string") {
+                if (typeof match$3 !== "object") {
                   switch (match$3) {
                     case "T_LPAREN" :
                     case "T_COLON" :
@@ -10647,7 +10647,7 @@ function init(env, start_loc, key, async, generator) {
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
   var match$1;
   var exit = 0;
-  if (typeof match === "string") {
+  if (typeof match !== "object") {
     switch (match) {
       case "T_RCURLY" :
       case "T_COMMA" :
@@ -10790,7 +10790,7 @@ function check_property(env, prop_map, prop) {
     switch (match$1.TAG) {
       case "Literal" :
           var s = match$1._0[1].value;
-          if (typeof s === "string") {
+          if (typeof s !== "object") {
             key = "null";
           } else {
             switch (s.TAG) {
@@ -10902,7 +10902,7 @@ function properties$1(env, _param) {
     var param = _param;
     var acc = param[1];
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match === "string") {
+    if (typeof match !== "object") {
       switch (match) {
         case "T_RCURLY" :
         case "T_EOF" :
@@ -10963,7 +10963,7 @@ function class_implements(env, _acc) {
       tl: acc
     };
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match !== "string") {
+    if (typeof match === "object") {
       return List.rev(acc$1);
     }
     if (match !== "T_COMMA") {
@@ -11014,7 +11014,7 @@ function set$1(env, start_loc, decorators, $$static) {
 function init$1(env, start_loc, decorators, key, async, generator, $$static) {
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
   var exit = 0;
-  if (typeof match === "string") {
+  if (typeof match !== "object") {
     switch (match) {
       case "T_SEMICOLON" :
       case "T_ASSIGN" :
@@ -11089,7 +11089,7 @@ function init$1(env, start_loc, decorators, key, async, generator, $$static) {
   switch (key.TAG) {
     case "Literal" :
         var match$4 = key._0[1].value;
-        kind = typeof match$4 === "string" || !(match$4.TAG === "String" && match$4._0 === "constructor") ? "Method" : "Constructor";
+        kind = typeof match$4 !== "object" || !(match$4.TAG === "String" && match$4._0 === "constructor") ? "Method" : "Constructor";
         break;
     case "Identifier" :
         kind = key._0[1].name === "constructor" ? "Constructor" : "Method";
@@ -11129,7 +11129,7 @@ function class_element(env) {
             case "get" :
                 var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
                 var exit = 0;
-                if (typeof match$1 !== "string") {
+                if (typeof match$1 === "object") {
                   return get$1(env, start_loc, decorators, $$static);
                 }
                 switch (match$1) {
@@ -11150,7 +11150,7 @@ function class_element(env) {
             case "set" :
                 var match$2 = Curry._2(Parser_env_Peek.token, undefined, env);
                 var exit$1 = 0;
-                if (typeof match$2 !== "string") {
+                if (typeof match$2 === "object") {
                   return set$1(env, start_loc, decorators, $$static);
                 }
                 switch (match$2) {
@@ -11185,7 +11185,7 @@ function elements$1(env, _acc) {
   while(true) {
     var acc = _acc;
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match === "string") {
+    if (typeof match !== "object") {
       switch (match) {
         case "T_SEMICOLON" :
             token$4(env, "T_SEMICOLON");
@@ -11287,7 +11287,7 @@ function class_expression(env) {
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
   var match$1;
   var exit = 0;
-  if (typeof match === "string") {
+  if (typeof match !== "object") {
     switch (match) {
       case "T_LCURLY" :
       case "T_EXTENDS" :
@@ -11388,7 +11388,7 @@ function export_specifiers_and_errs(env, _specifiers, _errs) {
     var errs = _errs;
     var specifiers = _specifiers;
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match === "string") {
+    if (typeof match !== "object") {
       switch (match) {
         case "T_RCURLY" :
         case "T_EOF" :
@@ -11472,7 +11472,7 @@ function declare_var(env, start_loc) {
 function export_source(env) {
   contextual(env, "from");
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof match !== "string" && match.TAG === "T_STRING") {
+  if (typeof match === "object" && match.TAG === "T_STRING") {
     var match$1 = match._0;
     var octal = match$1[3];
     var raw = match$1[2];
@@ -11552,7 +11552,7 @@ function declare(in_moduleOpt, env) {
   }
   var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
   var match = Curry._2(Parser_env_Peek.token, 1, env);
-  if (typeof match === "string") {
+  if (typeof match !== "object") {
     switch (match) {
       case "T_IDENTIFIER" :
           if (Curry._2(Parser_env_Peek.value, 1, env) === "module") {
@@ -11576,7 +11576,7 @@ function declare(in_moduleOpt, env) {
             } else {
               var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
               var id;
-              if (typeof match$1 === "string" || match$1.TAG !== "T_STRING") {
+              if (typeof match$1 !== "object" || match$1.TAG !== "T_STRING") {
                 id = {
                   TAG: "Identifier",
                   _0: Curry._2(Parse.identifier, undefined, env)
@@ -11768,14 +11768,14 @@ function declare_export_declaration(allow_export_typeOpt, env) {
   token$4(env$1, "T_EXPORT");
   var match = Curry._2(Parser_env_Peek.token, undefined, env$1);
   var exit = 0;
-  if (typeof match === "string") {
+  if (typeof match !== "object") {
     switch (match) {
       case "T_DEFAULT" :
           token$4(env$1, "T_DEFAULT");
           var match$1 = Curry._2(Parser_env_Peek.token, undefined, env$1);
           var match$2;
           var exit$1 = 0;
-          if (typeof match$1 === "string") {
+          if (typeof match$1 !== "object") {
             switch (match$1) {
               case "T_FUNCTION" :
                   var fn = declare_function(env$1, start_loc);
@@ -11923,7 +11923,7 @@ function declare_export_declaration(allow_export_typeOpt, env) {
   switch (exit) {
     case 1 :
         var match$5 = Curry._2(Parser_env_Peek.token, undefined, env$1);
-        if (typeof match$5 === "string") {
+        if (typeof match$5 !== "object") {
           switch (match$5) {
             case "T_INTERFACE" :
                 error(env$1, "DeclareExportInterface");
@@ -11967,7 +11967,7 @@ function declare_export_declaration(allow_export_typeOpt, env) {
         var token$5 = Curry._2(Parser_env_Peek.token, undefined, env$1);
         var match$7;
         var exit$2 = 0;
-        if (typeof token$5 === "string") {
+        if (typeof token$5 !== "object") {
           switch (token$5) {
             case "T_FUNCTION" :
                 var fn$1 = declare_function(env$1, start_loc);
@@ -12017,7 +12017,7 @@ function declare_export_declaration(allow_export_typeOpt, env) {
               };
         }
         if (exit$2 === 3) {
-          if (typeof token$5 === "string") {
+          if (typeof token$5 !== "object") {
             switch (token$5) {
               case "T_CONST" :
                   error(env$1, "DeclareExportConst");
@@ -12067,7 +12067,7 @@ function supers(env, _acc) {
       tl: acc
     };
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match !== "string") {
+    if (typeof match === "object") {
       return List.rev(acc$1);
     }
     if (match !== "T_COMMA") {
@@ -12109,7 +12109,7 @@ function supers$1(env, _acc) {
       tl: acc
     };
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match !== "string") {
+    if (typeof match === "object") {
       return List.rev(acc$1);
     }
     if (match !== "T_COMMA") {
@@ -12149,7 +12149,7 @@ function module_items(env, _module_kind, _acc) {
     var acc = _acc;
     var module_kind = _module_kind;
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match === "string") {
+    if (typeof match !== "object") {
       switch (match) {
         case "T_RCURLY" :
         case "T_EOF" :
@@ -12167,7 +12167,7 @@ function module_items(env, _module_kind, _acc) {
     var module_kind$1;
     if (module_kind !== undefined) {
       if (module_kind.TAG === "CommonJS") {
-        if (typeof stmt$1 === "string") {
+        if (typeof stmt$1 !== "object") {
           module_kind$1 = module_kind;
         } else {
           switch (stmt$1.TAG) {
@@ -12194,13 +12194,13 @@ function module_items(env, _module_kind, _acc) {
               module_kind$1 = module_kind;
           }
         }
-      } else if (typeof stmt$1 === "string" || stmt$1.TAG !== "DeclareModuleExports") {
+      } else if (typeof stmt$1 !== "object" || stmt$1.TAG !== "DeclareModuleExports") {
         module_kind$1 = module_kind;
       } else {
         error(env, "AmbiguousDeclareModuleKind");
         module_kind$1 = module_kind;
       }
-    } else if (typeof stmt$1 === "string") {
+    } else if (typeof stmt$1 !== "object") {
       module_kind$1 = module_kind;
     } else {
       switch (stmt$1.TAG) {
@@ -12350,7 +12350,7 @@ function case_list(env, _param) {
     var acc = param[1];
     var seen_default = param[0];
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match === "string") {
+    if (typeof match !== "object") {
       switch (match) {
         case "T_RCURLY" :
         case "T_EOF" :
@@ -12362,7 +12362,7 @@ function case_list(env, _param) {
     var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
     var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
     var test;
-    if (typeof match$1 === "string" && match$1 === "T_DEFAULT") {
+    if (typeof match$1 !== "object" && match$1 === "T_DEFAULT") {
       if (seen_default) {
         error(env, "MultipleDefaultsInSwitch");
       }
@@ -12376,7 +12376,7 @@ function case_list(env, _param) {
     var end_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
     token$4(env, "T_COLON");
     var term_fn = function (param) {
-      if (typeof param !== "string") {
+      if (typeof param === "object") {
         return false;
       }
       switch (param) {
@@ -12429,7 +12429,7 @@ function var_or_const(env) {
 function source(env) {
   contextual(env, "from");
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof match !== "string" && match.TAG === "T_STRING") {
+  if (typeof match === "object" && match.TAG === "T_STRING") {
     var match$1 = match._0;
     var octal = match$1[3];
     var raw = match$1[2];
@@ -12481,7 +12481,7 @@ function specifier_list(env, _acc) {
   while(true) {
     var acc = _acc;
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match === "string") {
+    if (typeof match !== "object") {
       switch (match) {
         case "T_RCURLY" :
         case "T_EOF" :
@@ -12530,7 +12530,7 @@ function specifier_list(env, _acc) {
 function named_or_namespace_specifier(env) {
   var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof match === "string" && match === "T_MULT") {
+  if (typeof match !== "object" && match === "T_MULT") {
     token$4(env, "T_MULT");
     contextual(env, "as");
     var id = Curry._2(Parse.identifier, undefined, env);
@@ -12554,7 +12554,7 @@ function named_or_namespace_specifier(env) {
 function from_expr(env, param) {
   var expr = param[1];
   var loc = param[0];
-  if (typeof expr !== "string") {
+  if (typeof expr === "object") {
     switch (expr.TAG) {
       case "Array" :
           var param$1 = [
@@ -12746,7 +12746,7 @@ function _object$2(restricted_error) {
     var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
     var prop;
     var exit = 0;
-    if (typeof match$1 === "string" && match$1 === "T_COLON") {
+    if (typeof match$1 !== "object" && match$1 === "T_COLON") {
       token$4(env, "T_COLON");
       prop = [
         pattern$1(env, restricted_error),
@@ -12787,7 +12787,7 @@ function _object$2(restricted_error) {
     var pattern$3 = prop[0];
     var match$2 = Curry._2(Parser_env_Peek.token, undefined, env);
     var pattern$4;
-    if (typeof match$2 === "string" && match$2 === "T_ASSIGN") {
+    if (typeof match$2 !== "object" && match$2 === "T_ASSIGN") {
       token$4(env, "T_ASSIGN");
       var $$default = Curry._1(Parse.assignment, env);
       var loc$1 = btwn(pattern$3[0], $$default[0]);
@@ -12821,7 +12821,7 @@ function _object$2(restricted_error) {
     while(true) {
       var acc = _acc;
       var match = Curry._2(Parser_env_Peek.token, undefined, env);
-      if (typeof match === "string") {
+      if (typeof match !== "object") {
         switch (match) {
           case "T_RCURLY" :
           case "T_EOF" :
@@ -12881,7 +12881,7 @@ function _array(restricted_error) {
     while(true) {
       var acc = _acc;
       var match = Curry._2(Parser_env_Peek.token, undefined, env);
-      if (typeof match === "string") {
+      if (typeof match !== "object") {
         switch (match) {
           case "T_COMMA" :
               token$4(env, "T_COMMA");
@@ -12919,7 +12919,7 @@ function _array(restricted_error) {
       var pattern$2 = pattern$1(env, restricted_error);
       var match$1 = Curry._2(Parser_env_Peek.token, undefined, env);
       var pattern$3;
-      if (typeof match$1 === "string" && match$1 === "T_ASSIGN") {
+      if (typeof match$1 !== "object" && match$1 === "T_ASSIGN") {
         token$4(env, "T_ASSIGN");
         var $$default = Curry._1(Parse.expression, env);
         var loc$1 = btwn(pattern$2[0], $$default[0]);
@@ -12984,7 +12984,7 @@ function _array(restricted_error) {
 
 function pattern$1(env, restricted_error) {
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof match === "string") {
+  if (typeof match !== "object") {
     switch (match) {
       case "T_LCURLY" :
           return _object$2(restricted_error)(env);
@@ -13065,7 +13065,7 @@ function member_expression(env, _member) {
   while(true) {
     var member = _member;
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match !== "string") {
+    if (typeof match === "object") {
       return member;
     }
     if (match !== "T_PERIOD") {
@@ -13094,7 +13094,7 @@ function member_expression(env, _member) {
 function name(env) {
   var name$1 = identifier$1(env);
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof match !== "string") {
+  if (typeof match === "object") {
     return {
             TAG: "Identifier",
             _0: name$1
@@ -13178,7 +13178,7 @@ function attribute(env) {
     token$4(env, "T_ASSIGN");
     var token$5 = Curry._2(Parser_env_Peek.token, undefined, env);
     var exit = 0;
-    if (typeof token$5 === "string") {
+    if (typeof token$5 !== "object") {
       if (token$5 === "T_LCURLY") {
         var match$2 = expression_container(env);
         var expression_container$1 = match$2[1];
@@ -13258,7 +13258,7 @@ function attributes(env, _acc) {
   while(true) {
     var acc = _acc;
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match === "string") {
+    if (typeof match !== "object") {
       switch (match) {
         case "T_LCURLY" :
             var attribute$1 = {
@@ -13326,7 +13326,7 @@ function closing_element_without_lt(env, start_loc) {
 
 function child(env) {
   var token$5 = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof token$5 === "string") {
+  if (typeof token$5 !== "object") {
     if (token$5 === "T_LCURLY") {
       var expression_container$1 = expression_container(env);
       return [
@@ -13374,7 +13374,7 @@ function element_or_closing(env) {
   var start_loc = Curry._2(Parser_env_Peek.loc, undefined, env);
   token$4(env, "T_LESS_THAN");
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof match !== "string") {
+  if (typeof match === "object") {
     return {
             TAG: "ChildElement",
             _0: Curry._2(element_without_lt, env, start_loc)
@@ -13399,7 +13399,7 @@ function children_and_closing(env, _acc) {
   while(true) {
     var acc = _acc;
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof match === "string") {
+    if (typeof match !== "object") {
       switch (match) {
         case "T_LESS_THAN" :
             var closingElement = element_or_closing(env);
@@ -13501,7 +13501,7 @@ function statement(env) {
   while(true) {
     var match = Curry._2(Parser_env_Peek.token, undefined, env);
     var exit = 0;
-    if (typeof match === "string") {
+    if (typeof match !== "object") {
       switch (match) {
         case "T_LCURLY" :
             var match$1 = Curry._1(Parse.block_body, env);
@@ -13594,7 +13594,7 @@ function statement(env) {
             var block = Curry._1(Parse.block_body, env);
             var match$2 = Curry._2(Parser_env_Peek.token, undefined, env);
             var handler;
-            if (typeof match$2 === "string" && match$2 === "T_CATCH") {
+            if (typeof match$2 !== "object" && match$2 === "T_CATCH") {
               var start_loc$4 = Curry._2(Parser_env_Peek.loc, undefined, env);
               token$4(env, "T_CATCH");
               token$4(env, "T_LPAREN");
@@ -13624,7 +13624,7 @@ function statement(env) {
             }
             var match$3 = Curry._2(Parser_env_Peek.token, undefined, env);
             var finalizer;
-            if (typeof match$3 === "string" && match$3 === "T_FINALLY") {
+            if (typeof match$3 !== "object" && match$3 === "T_FINALLY") {
               token$4(env, "T_FINALLY");
               finalizer = Curry._1(Parse.block_body, env);
             } else {
@@ -13796,7 +13796,7 @@ function statement(env) {
             var match$4 = Curry._2(Parser_env_Peek.token, undefined, env);
             var match$5;
             var exit$1 = 0;
-            if (typeof match$4 === "string") {
+            if (typeof match$4 !== "object") {
               switch (match$4) {
                 case "T_SEMICOLON" :
                     match$5 = [
@@ -13852,7 +13852,7 @@ function statement(env) {
             }
             var init = match$5[0];
             var match$9 = Curry._2(Parser_env_Peek.token, undefined, env);
-            if (typeof match$9 === "string") {
+            if (typeof match$9 !== "object") {
               switch (match$9) {
                 case "T_IN" :
                     assert_can_be_forin_or_forof(env, "InvalidLHSInForIn", init);
@@ -13939,11 +13939,11 @@ function statement(env) {
             token$4(env, "T_SEMICOLON");
             var match$10 = Curry._2(Parser_env_Peek.token, undefined, env);
             var test$2;
-            test$2 = typeof match$10 === "string" && match$10 === "T_SEMICOLON" ? undefined : Curry._1(Parse.expression, env);
+            test$2 = typeof match$10 !== "object" && match$10 === "T_SEMICOLON" ? undefined : Curry._1(Parse.expression, env);
             token$4(env, "T_SEMICOLON");
             var match$11 = Curry._2(Parser_env_Peek.token, undefined, env);
             var update;
-            update = typeof match$11 === "string" && match$11 === "T_RPAREN" ? undefined : Curry._1(Parse.expression, env);
+            update = typeof match$11 !== "object" && match$11 === "T_RPAREN" ? undefined : Curry._1(Parse.expression, env);
             token$4(env, "T_RPAREN");
             var body$6 = Curry._1(Parse.statement, with_in_loop(true, env));
             return [
@@ -13986,7 +13986,7 @@ function statement(env) {
         var match$12 = Curry._2(Parser_env_Peek.token, undefined, env);
         var label$4 = expr$1[1];
         var loc$11 = expr$1[0];
-        if (typeof label$4 !== "string" && label$4.TAG === "Identifier" && typeof match$12 === "string" && match$12 === "T_COLON") {
+        if (typeof label$4 === "object" && label$4.TAG === "Identifier" && typeof match$12 !== "object" && match$12 === "T_COLON") {
           var label$5 = label$4._0;
           var match$13 = label$5[1];
           var name$2 = match$13.name;
@@ -14027,7 +14027,7 @@ function statement(env) {
                 }
               ];
       }
-      if (typeof match !== "string") {
+      if (typeof match === "object") {
         return expression(env);
       }
       switch (match) {
@@ -14065,7 +14065,7 @@ function statement(env) {
 function module_item(env) {
   var decorators = decorator_list(env);
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof match !== "string") {
+  if (typeof match === "object") {
     return statement_list_item(decorators, env);
   }
   switch (match) {
@@ -14075,7 +14075,7 @@ function module_item(env) {
         token$4(env$1, "T_EXPORT");
         var match$1 = Curry._2(Parser_env_Peek.token, undefined, env$1);
         var exit = 0;
-        if (typeof match$1 === "string") {
+        if (typeof match$1 !== "object") {
           switch (match$1) {
             case "T_DEFAULT" :
                 token$4(env$1, "T_DEFAULT");
@@ -14086,7 +14086,7 @@ function module_item(env) {
                 var match$2 = Curry._2(Parser_env_Peek.token, undefined, env$1);
                 var match$3;
                 var exit$1 = 0;
-                if (typeof match$2 === "string" && match$2 === "T_FUNCTION") {
+                if (typeof match$2 !== "object" && match$2 === "T_FUNCTION") {
                   var fn = _function(env$1);
                   match$3 = [
                     fn[0],
@@ -14141,7 +14141,7 @@ function module_item(env) {
                 }
                 var $$interface$1 = $$interface(env$1);
                 var match$4 = $$interface$1[1];
-                if (typeof match$4 === "string") {
+                if (typeof match$4 !== "object") {
                   throw {
                         RE_EXN_ID: "Failure",
                         _1: "Internal Flow Error! Parsed `export interface` into something other than an interface declaration!",
@@ -14184,7 +14184,7 @@ function module_item(env) {
                   }
                   var type_alias$1 = type_alias(env$1);
                   var match$5 = type_alias$1[1];
-                  if (typeof match$5 === "string") {
+                  if (typeof match$5 !== "object") {
                     throw {
                           RE_EXN_ID: "Failure",
                           _1: "Internal Flow Error! Parsed `export type` into something other than a type alias!",
@@ -14270,7 +14270,7 @@ function module_item(env) {
           case 1 :
               var match$6 = Curry._2(Parser_env_Peek.token, undefined, env$1);
               var exportKind;
-              if (typeof match$6 === "string" && match$6 === "T_TYPE") {
+              if (typeof match$6 !== "object" && match$6 === "T_TYPE") {
                 token$3(env$1);
                 exportKind = "ExportType";
               } else {
@@ -14310,7 +14310,7 @@ function module_item(env) {
               var match$8 = stmt[1];
               var loc$4 = stmt[0];
               var names;
-              if (typeof match$8 === "string") {
+              if (typeof match$8 !== "object") {
                 throw {
                       RE_EXN_ID: "Failure",
                       _1: "Internal Flow Error! Unexpected export statement declaration!",
@@ -14400,7 +14400,7 @@ function module_item(env) {
         token$4(env$2, "T_IMPORT");
         var match$9 = Curry._2(Parser_env_Peek.token, undefined, env$2);
         var match$10;
-        if (typeof match$9 === "string") {
+        if (typeof match$9 !== "object") {
           switch (match$9) {
             case "T_TYPEOF" :
                 if (!env$2.parse_options.types) {
@@ -14439,7 +14439,7 @@ function module_item(env) {
         var match$12 = Curry._2(Parser_env_Peek.is_identifier, undefined, env$2);
         var exit$2 = 0;
         var exit$3 = 0;
-        if (typeof match$11 === "string") {
+        if (typeof match$11 !== "object") {
           if (match$11 === "T_COMMA") {
             exit$2 = 1;
           } else {
@@ -14522,7 +14522,7 @@ function module_item(env) {
           var match$15 = Curry._2(Parser_env_Peek.value, undefined, env$2);
           var match$16;
           var exit$4 = 0;
-          if (type_ident !== undefined && typeof match$14 === "string") {
+          if (type_ident !== undefined && typeof match$14 !== "object") {
             switch (match$14) {
               case "T_IDENTIFIER" :
                   if (match$15 === "from") {
@@ -14563,7 +14563,7 @@ function module_item(env) {
           }
           var match$17 = Curry._2(Parser_env_Peek.token, undefined, env$2);
           var additional_specifiers;
-          if (typeof match$17 === "string" && match$17 === "T_COMMA") {
+          if (typeof match$17 !== "object" && match$17 === "T_COMMA") {
             token$4(env$2, "T_COMMA");
             additional_specifiers = named_or_namespace_specifier(env$2);
           } else {
@@ -14606,7 +14606,7 @@ function statement_list_item(decoratorsOpt, env) {
     error_on_decorators(env)(decorators);
   }
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof match === "string") {
+  if (typeof match !== "object") {
     switch (match) {
       case "T_CONST" :
           return var_or_const(env);
@@ -14670,7 +14670,7 @@ function statement_list_item(decoratorsOpt, env) {
   if (Curry._2(Parser_env_Peek.is_class, undefined, env)) {
     return class_declaration$1(env, decorators);
   }
-  if (typeof match !== "string") {
+  if (typeof match === "object") {
     return statement(env);
   }
   switch (match) {
@@ -14694,7 +14694,7 @@ function statement_list(_env, term_fn, item_fn, _param) {
     var stmts = param[1];
     var string_tokens = param[0];
     var t = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof t === "string" && t === "T_EOF") {
+    if (typeof t !== "object" && t === "T_EOF") {
       return [
               env,
               string_tokens,
@@ -14720,7 +14720,7 @@ function statement_list(_env, term_fn, item_fn, _param) {
       tl: stmts
     };
     var match = possible_directive[1];
-    if (typeof match === "string") {
+    if (typeof match !== "object") {
       return [
               env,
               string_tokens,
@@ -14736,7 +14736,7 @@ function statement_list(_env, term_fn, item_fn, _param) {
     }
     var match$1 = match._0.expression;
     var match$2 = match$1[1];
-    if (typeof match$2 === "string") {
+    if (typeof match$2 !== "object") {
       return [
               env,
               string_tokens,
@@ -14751,7 +14751,7 @@ function statement_list(_env, term_fn, item_fn, _param) {
             ];
     }
     var str = match$2._0.value;
-    if (typeof str === "string") {
+    if (typeof str !== "object") {
       return [
               env,
               string_tokens,
@@ -14789,7 +14789,7 @@ function directives(env, term_fn, item_fn) {
   var env$1 = match[0];
   List.iter((function (param) {
           var token = param[1];
-          if (typeof token !== "string" && token.TAG === "T_STRING") {
+          if (typeof token === "object" && token.TAG === "T_STRING") {
             if (token._0[3]) {
               return strict_error_at(env$1, [
                           param[0],
@@ -14817,7 +14817,7 @@ function module_body(term_fn, env) {
   while(true) {
     var acc = _acc;
     var t = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof t === "string" && t === "T_EOF") {
+    if (typeof t !== "object" && t === "T_EOF") {
       return List.rev(acc);
     }
     if (Curry._1(term_fn, t)) {
@@ -14836,7 +14836,7 @@ function statement_list$1(term_fn, env) {
   while(true) {
     var acc = _acc;
     var t = Curry._2(Parser_env_Peek.token, undefined, env);
-    if (typeof t === "string" && t === "T_EOF") {
+    if (typeof t !== "object" && t === "T_EOF") {
       return List.rev(acc);
     }
     if (Curry._1(term_fn, t)) {
@@ -14884,7 +14884,7 @@ function identifier$2(restricted_error, env) {
   var name = Curry._2(Parser_env_Peek.value, undefined, env);
   var t = Curry._2(Parser_env_Peek.token, undefined, env);
   var exit = 0;
-  if (typeof t === "string" && t === "T_LET") {
+  if (typeof t !== "object" && t === "T_LET") {
     if (env.in_strict_mode) {
       strict_error(env, "StrictReservedWord");
     } else if (env.no_let) {
@@ -14901,7 +14901,7 @@ function identifier$2(restricted_error, env) {
     if (is_strict_reserved(name)) {
       strict_error(env, "StrictReservedWord");
       token$3(env);
-    } else if (typeof t === "string") {
+    } else if (typeof t !== "object") {
       switch (t) {
         case "T_DECLARE" :
         case "T_TYPE" :
@@ -14951,7 +14951,7 @@ function program(env) {
 function expression$1(env) {
   var expr = Curry._1(assignment, env);
   var match = Curry._2(Parser_env_Peek.token, undefined, env);
-  if (typeof match === "string" && match === "T_COMMA") {
+  if (typeof match !== "object" && match === "T_COMMA") {
     return sequence(env, {
                 hd: expr,
                 tl: /* [] */0
@@ -15275,7 +15275,7 @@ function parse(content, options) {
     var loc = function ($$location) {
       var match = $$location.source;
       var source = match !== undefined ? (
-          typeof match === "string" ? string("(global)") : string(match._0)
+          typeof match !== "object" ? string("(global)") : string(match._0)
         ) : $$null;
       return obj([
                   [
@@ -15332,7 +15332,7 @@ function parse(content, options) {
     var _type = function (param) {
       var t = param[1];
       var loc = param[0];
-      if (typeof t === "string") {
+      if (typeof t !== "object") {
         switch (t) {
           case "Any" :
               return node("AnyTypeAnnotation", loc, []);
@@ -15562,7 +15562,7 @@ function parse(content, options) {
     var expression = function (param) {
       var arr = param[1];
       var loc = param[0];
-      if (typeof arr === "string") {
+      if (typeof arr !== "object") {
         return node("ThisExpression", loc, []);
       }
       switch (arr.TAG) {
@@ -16202,7 +16202,7 @@ function parse(content, options) {
     var statement = function (param) {
       var b = param[1];
       var loc = param[0];
-      if (typeof b === "string") {
+      if (typeof b !== "object") {
         if (b === "Empty") {
           return node("EmptyStatement", loc, []);
         } else {
@@ -16846,7 +16846,7 @@ function parse(content, options) {
       var value = lit.value;
       var loc = param[0];
       var value_;
-      if (typeof value === "string") {
+      if (typeof value !== "object") {
         value_ = $$null;
       } else {
         switch (value.TAG) {
@@ -16868,7 +16868,7 @@ function parse(content, options) {
       }
       var props;
       var exit = 0;
-      if (typeof value === "string" || value.TAG !== "RegExp") {
+      if (typeof value !== "object" || value.TAG !== "RegExp") {
         exit = 1;
       } else {
         var match$1 = value._0;

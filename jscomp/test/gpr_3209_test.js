@@ -2,7 +2,7 @@
 
 
 function f9(param) {
-  if (typeof param === "string") {
+  if (typeof param !== "object") {
     switch (param) {
       case "T60" :
       case "T61" :

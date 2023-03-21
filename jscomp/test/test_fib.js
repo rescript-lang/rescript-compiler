@@ -42,7 +42,7 @@ function cons(x, y) {
 }
 
 function length(x) {
-  if (typeof x === "string") {
+  if (typeof x !== "object") {
     return 0;
   } else {
     return 1 + length(x._1) | 0;
@@ -50,7 +50,7 @@ function length(x) {
 }
 
 function map(f, x) {
-  if (typeof x === "string") {
+  if (typeof x !== "object") {
     return "Nil";
   } else {
     return /* Cons */{

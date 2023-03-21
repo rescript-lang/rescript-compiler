@@ -11,7 +11,7 @@ var test_id = {
 };
 
 function u(b) {
-  if (typeof b === "string" && b === "A") {
+  if (typeof b !== "object" && b === "A") {
     return 0;
   } else {
     return 1;
@@ -19,7 +19,7 @@ function u(b) {
 }
 
 function u1(b) {
-  if (typeof b === "string" && b === "A") {
+  if (typeof b !== "object" && b === "A") {
     return true;
   } else {
     return false;
@@ -27,7 +27,7 @@ function u1(b) {
 }
 
 function u2(b) {
-  if (typeof b === "string" && b === "A") {
+  if (typeof b !== "object" && b === "A") {
     return false;
   } else {
     return true;
@@ -41,7 +41,7 @@ Mt.eq_suites(test_id, suites, "File \"gpr_4924_test.ml\", line 26, characters 30
 Mt.eq_suites(test_id, suites, "File \"gpr_4924_test.ml\", line 27, characters 30-37", true, true);
 
 function u3(b) {
-  if (typeof b === "string" && b === "A") {
+  if (typeof b !== "object" && b === "A") {
     return 3;
   } else {
     return 4;
@@ -49,7 +49,7 @@ function u3(b) {
 }
 
 function u4(b) {
-  if (typeof b === "string" && b === "A") {
+  if (typeof b !== "object" && b === "A") {
     return 3;
   } else {
     return 4;
@@ -57,7 +57,7 @@ function u4(b) {
 }
 
 function u5(b) {
-  if (typeof b === "string" && b === "A") {
+  if (typeof b !== "object" && b === "A") {
     return false;
   } else {
     return true;
@@ -65,7 +65,7 @@ function u5(b) {
 }
 
 function u6(b) {
-  if (typeof b === "string" && b === "A") {
+  if (typeof b !== "object" && b === "A") {
     return true;
   } else {
     return false;

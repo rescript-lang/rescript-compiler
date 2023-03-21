@@ -181,7 +181,7 @@ if (v6.RE_EXN_ID === A4) {
 eq("File \"inline_record_test.ml\", line 87, characters 6-13", tmp$3, 11);
 
 function ff1(x) {
-  if (typeof x === "string") {
+  if (typeof x !== "object") {
     return "A1";
   } else {
     return /* A0 */{

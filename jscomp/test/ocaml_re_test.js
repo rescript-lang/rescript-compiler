@@ -293,7 +293,7 @@ function compare(param, param$1) {
 }
 
 function height(param) {
-  if (typeof param === "string") {
+  if (typeof param !== "object") {
     return 0;
   } else {
     return param.h;
@@ -314,11 +314,11 @@ function create(l, x, d, r) {
 
 function bal(l, x, d, r) {
   var hl;
-  hl = typeof l === "string" ? 0 : l.h;
+  hl = typeof l !== "object" ? 0 : l.h;
   var hr;
-  hr = typeof r === "string" ? 0 : r.h;
+  hr = typeof r !== "object" ? 0 : r.h;
   if (hl > (hr + 2 | 0)) {
-    if (typeof l === "string") {
+    if (typeof l !== "object") {
       throw {
             RE_EXN_ID: "Invalid_argument",
             _1: "Map.bal",
@@ -332,7 +332,7 @@ function bal(l, x, d, r) {
     if (height(ll) >= height(lr)) {
       return create(ll, lv, ld, create(lr, x, d, r));
     }
-    if (typeof lr !== "string") {
+    if (typeof lr === "object") {
       return create(create(ll, lv, ld, lr.l), lr.v, lr.d, create(lr.r, x, d, r));
     }
     throw {
@@ -350,7 +350,7 @@ function bal(l, x, d, r) {
             h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
-  if (typeof r === "string") {
+  if (typeof r !== "object") {
     throw {
           RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal",
@@ -364,7 +364,7 @@ function bal(l, x, d, r) {
   if (height(rr) >= height(rl)) {
     return create(create(l, x, d, rl), rv, rd, rr);
   }
-  if (typeof rl !== "string") {
+  if (typeof rl === "object") {
     return create(create(l, x, d, rl.l), rl.v, rl.d, create(rl.r, rv, rd, rr));
   }
   throw {
@@ -375,7 +375,7 @@ function bal(l, x, d, r) {
 }
 
 function add(x, data, m) {
-  if (typeof m === "string") {
+  if (typeof m !== "object") {
     return /* Node */{
             l: "Empty",
             v: x,
@@ -485,7 +485,7 @@ function from_char(param) {
 }
 
 function height$1(param) {
-  if (typeof param === "string") {
+  if (typeof param !== "object") {
     return 0;
   } else {
     return param.h;
@@ -494,9 +494,9 @@ function height$1(param) {
 
 function create$1(l, v, r) {
   var hl;
-  hl = typeof l === "string" ? 0 : l.h;
+  hl = typeof l !== "object" ? 0 : l.h;
   var hr;
-  hr = typeof r === "string" ? 0 : r.h;
+  hr = typeof r !== "object" ? 0 : r.h;
   return /* Node */{
           l: l,
           v: v,
@@ -507,11 +507,11 @@ function create$1(l, v, r) {
 
 function bal$1(l, v, r) {
   var hl;
-  hl = typeof l === "string" ? 0 : l.h;
+  hl = typeof l !== "object" ? 0 : l.h;
   var hr;
-  hr = typeof r === "string" ? 0 : r.h;
+  hr = typeof r !== "object" ? 0 : r.h;
   if (hl > (hr + 2 | 0)) {
-    if (typeof l === "string") {
+    if (typeof l !== "object") {
       throw {
             RE_EXN_ID: "Invalid_argument",
             _1: "Set.bal",
@@ -524,7 +524,7 @@ function bal$1(l, v, r) {
     if (height$1(ll) >= height$1(lr)) {
       return create$1(ll, lv, create$1(lr, v, r));
     }
-    if (typeof lr !== "string") {
+    if (typeof lr === "object") {
       return create$1(create$1(ll, lv, lr.l), lr.v, create$1(lr.r, v, r));
     }
     throw {
@@ -541,7 +541,7 @@ function bal$1(l, v, r) {
             h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
-  if (typeof r === "string") {
+  if (typeof r !== "object") {
     throw {
           RE_EXN_ID: "Invalid_argument",
           _1: "Set.bal",
@@ -554,7 +554,7 @@ function bal$1(l, v, r) {
   if (height$1(rr) >= height$1(rl)) {
     return create$1(create$1(l, v, rl), rv, rr);
   }
-  if (typeof rl !== "string") {
+  if (typeof rl === "object") {
     return create$1(create$1(l, v, rl.l), rl.v, create$1(rl.r, rv, rr));
   }
   throw {
@@ -565,7 +565,7 @@ function bal$1(l, v, r) {
 }
 
 function add$1(x, t) {
-  if (typeof t === "string") {
+  if (typeof t !== "object") {
     return /* Node */{
             l: "Empty",
             v: x,
@@ -710,7 +710,7 @@ function seq$1(ids, kind, x, y) {
   var match = x.def;
   var match$1 = y.def;
   var exit = 0;
-  if (typeof match === "string") {
+  if (typeof match !== "object") {
     return y;
   }
   if (match.TAG === "Alt") {
@@ -722,7 +722,7 @@ function seq$1(ids, kind, x, y) {
     exit = 2;
   }
   if (exit === 2) {
-    if (typeof match$1 === "string") {
+    if (typeof match$1 !== "object") {
       if (kind === "First") {
         return x;
       }
@@ -742,7 +742,7 @@ function seq$1(ids, kind, x, y) {
 
 function is_eps(expr) {
   var match = expr.def;
-  if (typeof match === "string") {
+  if (typeof match !== "object") {
     return true;
   } else {
     return false;
@@ -768,7 +768,7 @@ function erase(ids, m, m$p) {
 
 function rename(ids, x) {
   var l = x.def;
-  if (typeof l === "string") {
+  if (typeof l !== "object") {
     return mk_expr(ids, x.def);
   }
   switch (l.TAG) {
@@ -910,7 +910,7 @@ function tseq(kind, x, y, rem) {
   switch (match.TAG) {
     case "TExp" :
         var tmp = match._1.def;
-        if (typeof tmp === "string" && !x.tl) {
+        if (typeof tmp !== "object" && !x.tl) {
           return {
                   hd: {
                     TAG: "TExp",
@@ -1105,7 +1105,7 @@ function remove_duplicates(prev, _l, y) {
       case "TExp" :
           var x$2 = x._1;
           var tmp = x$2.def;
-          if (typeof tmp === "string") {
+          if (typeof tmp !== "object") {
             var r = l.tl;
             if (List.memq(y.id, prev)) {
               _l = r;
@@ -1205,7 +1205,7 @@ function filter_marks(b, e, marks) {
 
 function delta_1(marks, c, next_cat, prev_cat, x, rem) {
   var s = x.def;
-  if (typeof s === "string") {
+  if (typeof s !== "object") {
     return {
             hd: {
               TAG: "TMatch",
@@ -1499,7 +1499,7 @@ var unknown_state = {
 function mk_state(ncol, desc) {
   var match = status(desc);
   var break_state;
-  break_state = typeof match === "string" && match !== "Failed" ? false : true;
+  break_state = typeof match !== "object" && match !== "Failed" ? false : true;
   return {
           idx: break_state ? -3 : desc.idx,
           real_idx: desc.idx,
@@ -1724,7 +1724,7 @@ function trans_set(cache, cm, s) {
     var _param = cache.contents;
     while(true) {
       var param = _param;
-      if (typeof param === "string") {
+      if (typeof param !== "object") {
         throw {
               RE_EXN_ID: "Not_found",
               Error: new Error()
@@ -1754,7 +1754,7 @@ function trans_set(cache, cm, s) {
 function is_charset(_param) {
   while(true) {
     var param = _param;
-    if (typeof param === "string") {
+    if (typeof param !== "object") {
       return false;
     }
     switch (param.TAG) {
@@ -1843,7 +1843,7 @@ function colorize(c, regexp) {
   var colorize$1 = function (_regexp) {
     while(true) {
       var regexp = _regexp;
-      if (typeof regexp === "string") {
+      if (typeof regexp !== "object") {
         switch (regexp) {
           case "Beg_of_line" :
           case "End_of_line" :
@@ -1928,64 +1928,64 @@ function equal$2(_x1, _x2) {
   while(true) {
     var x2 = _x2;
     var x1 = _x1;
-    if (typeof x1 === "string") {
+    if (typeof x1 !== "object") {
       switch (x1) {
         case "Beg_of_line" :
-            if (typeof x2 === "string" && x2 === "Beg_of_line") {
+            if (typeof x2 !== "object" && x2 === "Beg_of_line") {
               return true;
             } else {
               return false;
             }
         case "End_of_line" :
-            if (typeof x2 === "string" && x2 === "End_of_line") {
+            if (typeof x2 !== "object" && x2 === "End_of_line") {
               return true;
             } else {
               return false;
             }
         case "Beg_of_word" :
-            if (typeof x2 === "string" && x2 === "Beg_of_word") {
+            if (typeof x2 !== "object" && x2 === "Beg_of_word") {
               return true;
             } else {
               return false;
             }
         case "End_of_word" :
-            if (typeof x2 === "string" && x2 === "End_of_word") {
+            if (typeof x2 !== "object" && x2 === "End_of_word") {
               return true;
             } else {
               return false;
             }
         case "Not_bound" :
-            if (typeof x2 === "string" && x2 === "Not_bound") {
+            if (typeof x2 !== "object" && x2 === "Not_bound") {
               return true;
             } else {
               return false;
             }
         case "Beg_of_str" :
-            if (typeof x2 === "string" && x2 === "Beg_of_str") {
+            if (typeof x2 !== "object" && x2 === "Beg_of_str") {
               return true;
             } else {
               return false;
             }
         case "End_of_str" :
-            if (typeof x2 === "string" && x2 === "End_of_str") {
+            if (typeof x2 !== "object" && x2 === "End_of_str") {
               return true;
             } else {
               return false;
             }
         case "Last_end_of_line" :
-            if (typeof x2 === "string" && x2 === "Last_end_of_line") {
+            if (typeof x2 !== "object" && x2 === "Last_end_of_line") {
               return true;
             } else {
               return false;
             }
         case "Start" :
-            if (typeof x2 === "string" && x2 === "Start") {
+            if (typeof x2 !== "object" && x2 === "Start") {
               return true;
             } else {
               return false;
             }
         case "Stop" :
-            if (typeof x2 === "string" && x2 === "Stop") {
+            if (typeof x2 !== "object" && x2 === "Stop") {
               return true;
             } else {
               return false;
@@ -1995,25 +1995,25 @@ function equal$2(_x1, _x2) {
     } else {
       switch (x1.TAG) {
         case "Set" :
-            if (typeof x2 === "string" || x2.TAG !== "Set") {
+            if (typeof x2 !== "object" || x2.TAG !== "Set") {
               return false;
             } else {
               return Caml_obj.equal(x1._0, x2._0);
             }
         case "Sequence" :
-            if (typeof x2 === "string" || x2.TAG !== "Sequence") {
+            if (typeof x2 !== "object" || x2.TAG !== "Sequence") {
               return false;
             } else {
               return eq_list(x1._0, x2._0);
             }
         case "Alternative" :
-            if (typeof x2 === "string" || x2.TAG !== "Alternative") {
+            if (typeof x2 !== "object" || x2.TAG !== "Alternative") {
               return false;
             } else {
               return eq_list(x1._0, x2._0);
             }
         case "Repeat" :
-            if (typeof x2 === "string") {
+            if (typeof x2 !== "object") {
               return false;
             }
             if (x2.TAG !== "Repeat") {
@@ -2029,7 +2029,7 @@ function equal$2(_x1, _x2) {
             _x1 = x1._0;
             continue ;
         case "Sem" :
-            if (typeof x2 === "string") {
+            if (typeof x2 !== "object") {
               return false;
             }
             if (x2.TAG !== "Sem") {
@@ -2042,7 +2042,7 @@ function equal$2(_x1, _x2) {
             _x1 = x1._1;
             continue ;
         case "Sem_greedy" :
-            if (typeof x2 === "string") {
+            if (typeof x2 !== "object") {
               return false;
             }
             if (x2.TAG !== "Sem_greedy") {
@@ -2057,7 +2057,7 @@ function equal$2(_x1, _x2) {
         case "Group" :
             return false;
         case "No_group" :
-            if (typeof x2 === "string") {
+            if (typeof x2 !== "object") {
               return false;
             }
             if (x2.TAG !== "No_group") {
@@ -2067,7 +2067,7 @@ function equal$2(_x1, _x2) {
             _x1 = x1._0;
             continue ;
         case "Nest" :
-            if (typeof x2 === "string") {
+            if (typeof x2 !== "object") {
               return false;
             }
             if (x2.TAG !== "Nest") {
@@ -2077,7 +2077,7 @@ function equal$2(_x1, _x2) {
             _x1 = x1._0;
             continue ;
         case "Case" :
-            if (typeof x2 === "string") {
+            if (typeof x2 !== "object") {
               return false;
             }
             if (x2.TAG !== "Case") {
@@ -2087,7 +2087,7 @@ function equal$2(_x1, _x2) {
             _x1 = x1._0;
             continue ;
         case "No_case" :
-            if (typeof x2 === "string") {
+            if (typeof x2 !== "object") {
               return false;
             }
             if (x2.TAG !== "No_case") {
@@ -2097,19 +2097,19 @@ function equal$2(_x1, _x2) {
             _x1 = x1._0;
             continue ;
         case "Intersection" :
-            if (typeof x2 === "string" || x2.TAG !== "Intersection") {
+            if (typeof x2 !== "object" || x2.TAG !== "Intersection") {
               return false;
             } else {
               return eq_list(x1._0, x2._0);
             }
         case "Complement" :
-            if (typeof x2 === "string" || x2.TAG !== "Complement") {
+            if (typeof x2 !== "object" || x2.TAG !== "Complement") {
               return false;
             } else {
               return eq_list(x1._0, x2._0);
             }
         case "Difference" :
-            if (typeof x2 === "string") {
+            if (typeof x2 !== "object") {
               return false;
             }
             if (x2.TAG !== "Difference") {
@@ -2122,7 +2122,7 @@ function equal$2(_x1, _x2) {
             _x1 = x1._1;
             continue ;
         case "Pmark" :
-            if (typeof x2 === "string") {
+            if (typeof x2 !== "object") {
               return false;
             }
             if (x2.TAG !== "Pmark") {
@@ -2181,7 +2181,7 @@ function merge_sequences(_param) {
       return /* [] */0;
     }
     var l$p = param.hd;
-    if (typeof l$p !== "string") {
+    if (typeof l$p === "object") {
       switch (l$p.TAG) {
         case "Sequence" :
             var match = l$p._0;
@@ -2192,7 +2192,7 @@ function merge_sequences(_param) {
               var exit = 0;
               if (r$p) {
                 var match$1 = r$p.hd;
-                if (typeof match$1 === "string" || match$1.TAG !== "Sequence") {
+                if (typeof match$1 !== "object" || match$1.TAG !== "Sequence") {
                   exit = 2;
                 } else {
                   var match$2 = match$1._0;
@@ -2271,7 +2271,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _s) 
     var s = _s;
     var greedy = _greedy;
     var ign_group = _ign_group;
-    if (typeof s === "string") {
+    if (typeof s !== "object") {
       switch (s) {
         case "Beg_of_line" :
             var c$1 = Curry._2(Re_automata_Category.$plus$plus, Re_automata_Category.inexistant, Re_automata_Category.newline);
@@ -2556,7 +2556,7 @@ function case_insens(s) {
 }
 
 function as_set(s) {
-  if (typeof s === "string") {
+  if (typeof s !== "object") {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
@@ -2585,7 +2585,7 @@ function handle_case(_ign_case, _s) {
   while(true) {
     var s = _s;
     var ign_case = _ign_case;
-    if (typeof s === "string") {
+    if (typeof s !== "object") {
       return s;
     }
     switch (s.TAG) {
@@ -2731,7 +2731,7 @@ function handle_case(_ign_case, _s) {
 function anchored(_l) {
   while(true) {
     var l = _l;
-    if (typeof l === "string") {
+    if (typeof l !== "object") {
       switch (l) {
         case "Beg_of_str" :
         case "Start" :
@@ -3241,7 +3241,7 @@ function exec_internal(name, posOpt, lenOpt, groups, re, s) {
     }
     res = match[1];
   }
-  if (typeof res === "string") {
+  if (typeof res !== "object") {
     if (res === "Failed") {
       return "Failed";
     } else {
@@ -4194,7 +4194,7 @@ function re(flagsOpt, pat) {
 function exec(rex, pos, s) {
   var len;
   var substr = exec_internal("Re.exec", pos, len, true, rex, s);
-  if (typeof substr !== "string") {
+  if (typeof substr === "object") {
     return substr._0;
   }
   if (substr === "Failed") {
