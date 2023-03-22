@@ -771,15 +771,8 @@ and expression_desc cxt ~(level : int) f x : cxt =
               | Undefined when is_optional f -> None
               | _ -> Some (f, x))
           in
-        if p.num_nonconst = 1 then tails
-        else
-          ( Js_op.Lit L.tag,
-            E.str p.name
-          )
-          :: tails
+        (Js_op.Lit L.tag, E.str p.name) :: tails
       in
-      if p.num_nonconst = 1 && not !Js_config.debug then
-        pp_comment_option f (Some p.name);
       expression_desc cxt ~level f (Object objs)
   | Caml_block (el, _, tag, Blk_constructor p) ->
       let not_is_cons = p.name <> Literals.cons in
@@ -796,15 +789,13 @@ and expression_desc cxt ~(level : int) f x : cxt =
              [ (name_symbol, E.str p.name) ]
             else [])
         in
-        if p.num_nonconst = 1 then tails
+        if not_is_cons = false && p.num_nonconst = 1 then tails
         else
           ( Js_op.Lit L.tag,
             E.str p.name
           )
           :: tails
       in
-      if p.num_nonconst = 1 && (not !Js_config.debug) && not_is_cons then
-        pp_comment_option f (Some p.name);
       expression_desc cxt ~level f (Object objs)
   | Caml_block
       ( _,

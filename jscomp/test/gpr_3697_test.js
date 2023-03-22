@@ -3,7 +3,8 @@
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 
 function fix(param) {
-  return /* Fix */{
+  return {
+          TAG: "Fix",
           _0: {
             LAZY_DONE: false,
             VAL: (function () {

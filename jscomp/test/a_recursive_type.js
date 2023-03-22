@@ -6,11 +6,13 @@ function g(x) {
   return Curry._1(x._0, x);
 }
 
-var loop = g(/* A */{
+var loop = g({
+      TAG: "A",
       _0: g
     });
 
-var x = /* A */{
+var x = {
+  TAG: "A",
   _0: g
 };
 

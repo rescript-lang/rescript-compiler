@@ -56,7 +56,8 @@ eq("File \"large_record_duplication_test.ml\", line 74, characters 6-13", Caml_o
           y: ""
         }), false);
 
-var v1 = /* A0 */{
+var v1 = {
+  TAG: "A0",
   x0: 9,
   x1: 9,
   x2: 9,

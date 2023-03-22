@@ -4,7 +4,8 @@ var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 function insert(queue, prio, elt) {
   if (typeof queue !== "object") {
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: prio,
             _1: elt,
             _2: "Empty",
@@ -16,14 +17,16 @@ function insert(queue, prio, elt) {
   var e = queue._1;
   var p = queue._0;
   if (prio <= p) {
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: prio,
             _1: elt,
             _2: insert(right, p, e),
             _3: left
           };
   } else {
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: p,
             _1: e,
             _2: insert(right, prio, elt),
@@ -53,14 +56,16 @@ function remove_top(param) {
   var rprio = right._0;
   var lprio = left._0;
   if (lprio <= rprio) {
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: lprio,
             _1: left._1,
             _2: remove_top(left),
             _3: right
           };
   } else {
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: rprio,
             _1: right._1,
             _2: left,

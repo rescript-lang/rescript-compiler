@@ -2,7 +2,8 @@
 
 
 function t_error3(param_0) {
-  return /* T_error3 */{
+  return {
+          TAG: "T_error3",
           _0: param_0
         };
 }

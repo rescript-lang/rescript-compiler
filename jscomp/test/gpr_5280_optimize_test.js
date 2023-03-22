@@ -1,7 +1,8 @@
 'use strict';
 
 
-var a = /* Color */{
+var a = {
+  TAG: "Color",
   _0: "#ffff"
 };
 

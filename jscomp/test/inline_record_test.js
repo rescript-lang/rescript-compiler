@@ -184,7 +184,8 @@ function ff1(x) {
   if (typeof x !== "object") {
     return "A1";
   } else {
-    return /* A0 */{
+    return {
+            TAG: "A0",
             lbl: x.lbl + 1 | 0,
             more: x.more
           };
@@ -193,12 +194,14 @@ function ff1(x) {
 
 Mt.from_pair_suites("Inline_record_test", suites.contents);
 
-var v2 = /* A0 */{
+var v2 = {
+  TAG: "A0",
   lbl: 3,
   more: /* [] */0
 };
 
-var vvv = /* A0 */{
+var vvv = {
+  TAG: "A0",
   lbl: 3,
   more: /* [] */0
 };

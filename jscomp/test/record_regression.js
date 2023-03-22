@@ -257,11 +257,14 @@ var h = newrecord$2;
 
 var h10 = newrecord$3;
 
-var ir4 = /* V0 */{
+var ir4 = {
+  TAG: "V0",
   x: 3
 };
 
-var ir5 = /* V0 */{};
+var ir5 = {
+  TAG: "V0"
+};
 
 exports.f1 = f1;
 exports.f2 = f2;

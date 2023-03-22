@@ -2538,7 +2538,8 @@ function choose_sblock_typ(typ) {
     case 2 :
         return "Cloud";
     case 3 :
-        return /* QBlock */{
+        return {
+                TAG: "QBlock",
                 _0: "Mushroom"
               };
     case 4 :

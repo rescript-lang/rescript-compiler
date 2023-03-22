@@ -32,7 +32,8 @@ function sub(_tr, _k) {
 function update(tr, k, w) {
   if (typeof tr !== "object") {
     if (k === 1) {
-      return /* Br */{
+      return {
+              TAG: "Br",
               _0: w,
               _1: "Lf",
               _2: "Lf"
@@ -46,7 +47,8 @@ function update(tr, k, w) {
   var r = tr._2;
   var l = tr._1;
   if (k === 1) {
-    return /* Br */{
+    return {
+            TAG: "Br",
             _0: w,
             _1: l,
             _2: r
@@ -54,13 +56,15 @@ function update(tr, k, w) {
   }
   var v = tr._0;
   if (k % 2 === 0) {
-    return /* Br */{
+    return {
+            TAG: "Br",
             _0: v,
             _1: update(l, k / 2 | 0, w),
             _2: r
           };
   } else {
-    return /* Br */{
+    return {
+            TAG: "Br",
             _0: v,
             _1: l,
             _2: update(r, k / 2 | 0, w)
@@ -82,13 +86,15 @@ function $$delete(tr, n) {
   var l = tr._1;
   var v = tr._0;
   if (n % 2 === 0) {
-    return /* Br */{
+    return {
+            TAG: "Br",
             _0: v,
             _1: $$delete(l, n / 2 | 0),
             _2: r
           };
   } else {
-    return /* Br */{
+    return {
+            TAG: "Br",
             _0: v,
             _1: l,
             _2: $$delete(r, n / 2 | 0)
@@ -98,13 +104,15 @@ function $$delete(tr, n) {
 
 function loext(tr, w) {
   if (typeof tr !== "object") {
-    return /* Br */{
+    return {
+            TAG: "Br",
             _0: w,
             _1: "Lf",
             _2: "Lf"
           };
   } else {
-    return /* Br */{
+    return {
+            TAG: "Br",
             _0: w,
             _1: loext(tr._2, tr._0),
             _2: tr._1
@@ -121,7 +129,8 @@ function lorem(tr) {
   }
   var l = tr._1;
   if (typeof l === "object") {
-    return /* Br */{
+    return {
+            TAG: "Br",
             _0: l._0,
             _1: tr._2,
             _2: lorem(l)

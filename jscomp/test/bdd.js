@@ -170,7 +170,8 @@ function mkNode(low, v, high) {
       }
     } else {
       var n_2 = (nodeC.contents = nodeC.contents + 1 | 0, nodeC.contents);
-      var n$1 = /* Node */{
+      var n$1 = {
+        TAG: "Node",
         _0: low,
         _1: v,
         _2: n_2,
