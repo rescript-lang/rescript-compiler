@@ -9,7 +9,8 @@ function blackify(s) {
           ];
   } else {
     return [
-            /* Node */{
+            {
+              TAG: "Node",
               _0: "Black",
               _1: s._1,
               _2: s._2,
@@ -92,23 +93,27 @@ function balance_left(l, x, r) {
   }
   switch (exit) {
     case 1 :
-        return /* Node */{
+        return {
+                TAG: "Node",
                 _0: "Black",
                 _1: l,
                 _2: x,
                 _3: r
               };
     case 2 :
-        return /* Node */{
+        return {
+                TAG: "Node",
                 _0: "Red",
-                _1: /* Node */{
+                _1: {
+                  TAG: "Node",
                   _0: "Black",
                   _1: a,
                   _2: x$1,
                   _3: b
                 },
                 _2: y,
-                _3: /* Node */{
+                _3: {
+                  TAG: "Node",
                   _0: "Black",
                   _1: c,
                   _2: z,
@@ -164,23 +169,27 @@ function balance_right(l, x, r) {
   }
   switch (exit) {
     case 1 :
-        return /* Node */{
+        return {
+                TAG: "Node",
                 _0: "Black",
                 _1: l,
                 _2: x,
                 _3: r
               };
     case 2 :
-        return /* Node */{
+        return {
+                TAG: "Node",
                 _0: "Red",
-                _1: /* Node */{
+                _1: {
+                  TAG: "Node",
                   _0: "Black",
                   _1: a,
                   _2: x$1,
                   _3: b
                 },
                 _2: y,
-                _3: /* Node */{
+                _3: {
+                  TAG: "Node",
                   _0: "Black",
                   _1: c,
                   _2: z,
@@ -192,7 +201,8 @@ function balance_right(l, x, r) {
 }
 
 function singleton(x) {
-  return /* Node */{
+  return {
+          TAG: "Node",
           _0: "Black",
           _1: "Empty",
           _2: x,
@@ -206,7 +216,8 @@ function unbalanced_left(param) {
       var match = param._1;
       if (typeof match === "object" && !match._0) {
         return [
-                balance_left(/* Node */{
+                balance_left({
+                      TAG: "Node",
                       _0: "Red",
                       _1: match._1,
                       _2: match._2,
@@ -221,7 +232,8 @@ function unbalanced_left(param) {
       if (typeof match$1 === "object") {
         if (!match$1._0) {
           return [
-                  balance_left(/* Node */{
+                  balance_left({
+                        TAG: "Node",
                         _0: "Red",
                         _1: match$1._1,
                         _2: match$1._2,
@@ -233,11 +245,13 @@ function unbalanced_left(param) {
         var match$2 = match$1._3;
         if (typeof match$2 === "object" && !match$2._0) {
           return [
-                  /* Node */{
+                  {
+                    TAG: "Node",
                     _0: "Black",
                     _1: match$1._1,
                     _2: match$1._2,
-                    _3: balance_left(/* Node */{
+                    _3: balance_left({
+                          TAG: "Node",
                           _0: "Red",
                           _1: match$2._1,
                           _2: match$2._2,
@@ -269,7 +283,8 @@ function unbalanced_right(param) {
       var match = param._3;
       if (typeof match === "object" && !match._0) {
         return [
-                balance_right(param._1, param._2, /* Node */{
+                balance_right(param._1, param._2, {
+                      TAG: "Node",
                       _0: "Red",
                       _1: match._1,
                       _2: match._2,
@@ -286,7 +301,8 @@ function unbalanced_right(param) {
       if (typeof match$1 === "object") {
         if (!match$1._0) {
           return [
-                  balance_right(a, x, /* Node */{
+                  balance_right(a, x, {
+                        TAG: "Node",
                         _0: "Red",
                         _1: match$1._1,
                         _2: match$1._2,
@@ -298,9 +314,11 @@ function unbalanced_right(param) {
         var match$2 = match$1._1;
         if (typeof match$2 === "object" && !match$2._0) {
           return [
-                  /* Node */{
+                  {
+                    TAG: "Node",
                     _0: "Black",
-                    _1: balance_right(a, x, /* Node */{
+                    _1: balance_right(a, x, {
+                          TAG: "Node",
                           _0: "Red",
                           _1: match$2._1,
                           _2: match$2._2,
@@ -330,7 +348,8 @@ function unbalanced_right(param) {
 
 function lbalance(x1, x2, x3) {
   if (typeof x1 !== "object") {
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: "Black",
             _1: x1,
             _2: x2,
@@ -338,7 +357,8 @@ function lbalance(x1, x2, x3) {
           };
   }
   if (!x1._0) {
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: "Black",
             _1: x1,
             _2: x2,
@@ -348,16 +368,19 @@ function lbalance(x1, x2, x3) {
   var r = x1._3;
   var l = x1._1;
   if (typeof l === "object" && l._0) {
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: "Red",
-            _1: /* Node */{
+            _1: {
+              TAG: "Node",
               _0: "Black",
               _1: l._1,
               _2: l._2,
               _3: l._3
             },
             _2: x1._2,
-            _3: /* Node */{
+            _3: {
+              TAG: "Node",
               _0: "Black",
               _1: r,
               _2: x2,
@@ -366,7 +389,8 @@ function lbalance(x1, x2, x3) {
           };
   }
   if (typeof r !== "object") {
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: "Black",
             _1: x1,
             _2: x2,
@@ -374,7 +398,8 @@ function lbalance(x1, x2, x3) {
           };
   }
   if (!r._0) {
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: "Black",
             _1: x1,
             _2: x2,
@@ -382,16 +407,19 @@ function lbalance(x1, x2, x3) {
           };
   }
   var y = r._2;
-  return /* Node */{
+  return {
+          TAG: "Node",
           _0: "Red",
-          _1: /* Node */{
+          _1: {
+            TAG: "Node",
             _0: "Black",
             _1: l,
             _2: y,
             _3: r._1
           },
           _2: y,
-          _3: /* Node */{
+          _3: {
+            TAG: "Node",
             _0: "Black",
             _1: r._3,
             _2: x2,
@@ -408,16 +436,19 @@ function rbalance(x1, x2, x3) {
       exit = 2;
     } else {
       if (b._0) {
-        return /* Node */{
+        return {
+                TAG: "Node",
                 _0: "Red",
-                _1: /* Node */{
+                _1: {
+                  TAG: "Node",
                   _0: "Black",
                   _1: x1,
                   _2: x2,
                   _3: b._1
                 },
                 _2: b._2,
-                _3: /* Node */{
+                _3: {
+                  TAG: "Node",
                   _0: "Black",
                   _1: b._3,
                   _2: x3._2,
@@ -430,16 +461,19 @@ function rbalance(x1, x2, x3) {
     if (exit === 2) {
       var match = x3._3;
       if (typeof match === "object" && match._0) {
-        return /* Node */{
+        return {
+                TAG: "Node",
                 _0: "Red",
-                _1: /* Node */{
+                _1: {
+                  TAG: "Node",
                   _0: "Black",
                   _1: x1,
                   _2: x2,
                   _3: b
                 },
                 _2: x3._2,
-                _3: /* Node */{
+                _3: {
+                  TAG: "Node",
                   _0: "Black",
                   _1: match._1,
                   _2: match._2,
@@ -451,7 +485,8 @@ function rbalance(x1, x2, x3) {
     }
     
   }
-  return /* Node */{
+  return {
+          TAG: "Node",
           _0: "Black",
           _1: x1,
           _2: x2,
@@ -461,7 +496,8 @@ function rbalance(x1, x2, x3) {
 
 function ins(x, s) {
   if (typeof s !== "object") {
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: "Red",
             _1: "Empty",
             _2: x,
@@ -476,14 +512,16 @@ function ins(x, s) {
     var b = s._3;
     var a = s._1;
     if (x < y) {
-      return /* Node */{
+      return {
+              TAG: "Node",
               _0: "Red",
               _1: ins(x, a),
               _2: y,
               _3: b
             };
     } else {
-      return /* Node */{
+      return {
+              TAG: "Node",
               _0: "Red",
               _1: a,
               _2: y,
@@ -509,7 +547,8 @@ function add(x, s) {
   if (typeof s$1 !== "object" || !s$1._0) {
     return s$1;
   } else {
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: "Black",
             _1: s$1._1,
             _2: s$1._2,
@@ -555,7 +594,8 @@ function remove_min(param) {
       }
       if (match._0) {
         return [
-                /* Node */{
+                {
+                  TAG: "Node",
                   _0: "Black",
                   _1: match._1,
                   _2: match._2,
@@ -582,7 +622,8 @@ function remove_min(param) {
   var s_1 = match$1[0];
   var s_2 = param._2;
   var s_3 = param._3;
-  var s = /* Node */{
+  var s = {
+    TAG: "Node",
     _0: c,
     _1: s_1,
     _2: s_2,
@@ -628,7 +669,8 @@ function remove_aux(x, n) {
     var match = remove_min(r);
     var n_2 = match[1];
     var n_3 = match[0];
-    var n$1 = /* Node */{
+    var n$1 = {
+      TAG: "Node",
       _0: c,
       _1: l,
       _2: n_2,
@@ -646,7 +688,8 @@ function remove_aux(x, n) {
   if (x < y) {
     var match$1 = remove_aux(x, l);
     var n_1 = match$1[0];
-    var n$2 = /* Node */{
+    var n$2 = {
+      TAG: "Node",
       _0: c,
       _1: n_1,
       _2: y,
@@ -663,7 +706,8 @@ function remove_aux(x, n) {
   }
   var match$2 = remove_aux(x, r);
   var n_3$1 = match$2[0];
-  var n$3 = /* Node */{
+  var n$3 = {
+    TAG: "Node",
     _0: c,
     _1: l,
     _2: y,

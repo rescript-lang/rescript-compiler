@@ -107,7 +107,8 @@ function create(l, v, r) {
   hl = typeof l !== "object" ? 0 : l.h;
   var hr;
   hr = typeof r !== "object" ? 0 : r.h;
-  return /* Node */{
+  return {
+          TAG: "Node",
           l: l,
           v: v,
           r: r,
@@ -144,7 +145,8 @@ function bal(l, v, r) {
         };
   }
   if (hr <= (hl + 2 | 0)) {
-    return /* Node */{
+    return {
+            TAG: "Node",
             l: l,
             v: v,
             r: r,
@@ -176,7 +178,8 @@ function bal(l, v, r) {
 
 function add(x, t) {
   if (typeof t !== "object") {
-    return /* Node */{
+    return {
+            TAG: "Node",
             l: "Empty",
             v: x,
             r: "Empty",
@@ -207,7 +210,8 @@ function add(x, t) {
 }
 
 function singleton(x) {
-  return /* Node */{
+  return {
+          TAG: "Node",
           l: "Empty",
           v: x,
           r: "Empty",
@@ -502,7 +506,8 @@ function cons_enum(_s, _e) {
     if (typeof s !== "object") {
       return e;
     }
-    _e = /* More */{
+    _e = {
+      TAG: "More",
       _0: s.v,
       _1: s.r,
       _2: e
@@ -567,7 +572,8 @@ function subset(_s1, _s2) {
       continue ;
     }
     if (c < 0) {
-      if (!subset(/* Node */{
+      if (!subset({
+              TAG: "Node",
               l: l1,
               v: v1,
               r: "Empty",
@@ -578,7 +584,8 @@ function subset(_s1, _s2) {
       _s1 = r1;
       continue ;
     }
-    if (!subset(/* Node */{
+    if (!subset({
+            TAG: "Node",
             l: "Empty",
             v: v1,
             r: r1,
@@ -946,7 +953,8 @@ function of_list(l) {
           case 1 :
               if (l) {
                 return [
-                        /* Node */{
+                        {
+                          TAG: "Node",
                           l: "Empty",
                           v: l.hd,
                           r: "Empty",
@@ -961,8 +969,10 @@ function of_list(l) {
                 var match = l.tl;
                 if (match) {
                   return [
-                          /* Node */{
-                            l: /* Node */{
+                          {
+                            TAG: "Node",
+                            l: {
+                              TAG: "Node",
                               l: "Empty",
                               v: l.hd,
                               r: "Empty",
@@ -985,15 +995,18 @@ function of_list(l) {
                   var match$2 = match$1.tl;
                   if (match$2) {
                     return [
-                            /* Node */{
-                              l: /* Node */{
+                            {
+                              TAG: "Node",
+                              l: {
+                                TAG: "Node",
                                 l: "Empty",
                                 v: l.hd,
                                 r: "Empty",
                                 h: 1
                               },
                               v: match$1.hd,
-                              r: /* Node */{
+                              r: {
+                                TAG: "Node",
                                 l: "Empty",
                                 v: match$2.hd,
                                 r: "Empty",

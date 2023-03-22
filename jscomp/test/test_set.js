@@ -16,7 +16,8 @@ function Make(Ord) {
     hl = typeof l !== "object" ? 0 : l._3;
     var hr;
     hr = typeof r !== "object" ? 0 : r._3;
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: l,
             _1: v,
             _2: r,
@@ -52,7 +53,8 @@ function Make(Ord) {
           };
     }
     if (hr <= (hl + 2 | 0)) {
-      return /* Node */{
+      return {
+              TAG: "Node",
               _0: l,
               _1: v,
               _2: r,
@@ -83,7 +85,8 @@ function Make(Ord) {
   };
   var add = function (x, t) {
     if (typeof t !== "object") {
-      return /* Node */{
+      return {
+              TAG: "Node",
               _0: "Empty",
               _1: x,
               _2: "Empty",
@@ -103,7 +106,8 @@ function Make(Ord) {
     }
   };
   var singleton = function (x) {
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: "Empty",
             _1: x,
             _2: "Empty",
@@ -346,7 +350,8 @@ function Make(Ord) {
       if (typeof s !== "object") {
         return e;
       }
-      _e = /* More */{
+      _e = {
+        TAG: "More",
         _0: s._1,
         _1: s._2,
         _2: e
@@ -409,7 +414,8 @@ function Make(Ord) {
         continue ;
       }
       if (c < 0) {
-        if (!subset(/* Node */{
+        if (!subset({
+                TAG: "Node",
                 _0: l1,
                 _1: v1,
                 _2: "Empty",
@@ -420,7 +426,8 @@ function Make(Ord) {
         _s1 = r1;
         continue ;
       }
-      if (!subset(/* Node */{
+      if (!subset({
+              TAG: "Node",
               _0: "Empty",
               _1: v1,
               _2: r1,
@@ -583,7 +590,8 @@ function Make(Ord) {
         case 1 :
             if (l) {
               return [
-                      /* Node */{
+                      {
+                        TAG: "Node",
                         _0: "Empty",
                         _1: l.hd,
                         _2: "Empty",
@@ -598,8 +606,10 @@ function Make(Ord) {
               var match = l.tl;
               if (match) {
                 return [
-                        /* Node */{
-                          _0: /* Node */{
+                        {
+                          TAG: "Node",
+                          _0: {
+                            TAG: "Node",
                             _0: "Empty",
                             _1: l.hd,
                             _2: "Empty",
@@ -622,15 +632,18 @@ function Make(Ord) {
                 var match$2 = match$1.tl;
                 if (match$2) {
                   return [
-                          /* Node */{
-                            _0: /* Node */{
+                          {
+                            TAG: "Node",
+                            _0: {
+                              TAG: "Node",
                               _0: "Empty",
                               _1: l.hd,
                               _2: "Empty",
                               _3: 1
                             },
                             _1: match$1.hd,
-                            _2: /* Node */{
+                            _2: {
+                              TAG: "Node",
                               _0: "Empty",
                               _1: match$2.hd,
                               _2: "Empty",

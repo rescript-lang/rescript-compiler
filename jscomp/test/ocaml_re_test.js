@@ -303,7 +303,8 @@ function height(param) {
 function create(l, x, d, r) {
   var hl = height(l);
   var hr = height(r);
-  return /* Node */{
+  return {
+          TAG: "Node",
           l: l,
           v: x,
           d: d,
@@ -342,7 +343,8 @@ function bal(l, x, d, r) {
         };
   }
   if (hr <= (hl + 2 | 0)) {
-    return /* Node */{
+    return {
+            TAG: "Node",
             l: l,
             v: x,
             d: d,
@@ -376,7 +378,8 @@ function bal(l, x, d, r) {
 
 function add(x, data, m) {
   if (typeof m !== "object") {
-    return /* Node */{
+    return {
+            TAG: "Node",
             l: "Empty",
             v: x,
             d: data,
@@ -393,7 +396,8 @@ function add(x, data, m) {
     if (d === data) {
       return m;
     } else {
-      return /* Node */{
+      return {
+              TAG: "Node",
               l: l,
               v: x,
               d: data,
@@ -497,7 +501,8 @@ function create$1(l, v, r) {
   hl = typeof l !== "object" ? 0 : l.h;
   var hr;
   hr = typeof r !== "object" ? 0 : r.h;
-  return /* Node */{
+  return {
+          TAG: "Node",
           l: l,
           v: v,
           r: r,
@@ -534,7 +539,8 @@ function bal$1(l, v, r) {
         };
   }
   if (hr <= (hl + 2 | 0)) {
-    return /* Node */{
+    return {
+            TAG: "Node",
             l: l,
             v: v,
             r: r,
@@ -566,7 +572,8 @@ function bal$1(l, v, r) {
 
 function add$1(x, t) {
   if (typeof t !== "object") {
-    return /* Node */{
+    return {
+            TAG: "Node",
             l: "Empty",
             v: x,
             r: "Empty",
@@ -1432,7 +1439,8 @@ function status(s) {
           break;
       case "TMatch" :
           var m$1 = m._0;
-          st$1 = /* Match */{
+          st$1 = {
+            TAG: "Match",
             _0: flatten_match(m$1.marks),
             _1: m$1.pmarks
           };
@@ -3248,7 +3256,8 @@ function exec_internal(name, posOpt, lenOpt, groups, re, s) {
       return "Running";
     }
   } else {
-    return /* Match */{
+    return {
+            TAG: "Match",
             _0: {
               s: s,
               marks: res._0,

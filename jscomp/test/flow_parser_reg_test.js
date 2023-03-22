@@ -5283,7 +5283,8 @@ function create(l, v, r) {
   hl = typeof l !== "object" ? 0 : l.h;
   var hr;
   hr = typeof r !== "object" ? 0 : r.h;
-  return /* Node */{
+  return {
+          TAG: "Node",
           l: l,
           v: v,
           r: r,
@@ -5320,7 +5321,8 @@ function bal(l, v, r) {
         };
   }
   if (hr <= (hl + 2 | 0)) {
-    return /* Node */{
+    return {
+            TAG: "Node",
             l: l,
             v: v,
             r: r,
@@ -5352,7 +5354,8 @@ function bal(l, v, r) {
 
 function add(x, t) {
   if (typeof t !== "object") {
-    return /* Node */{
+    return {
+            TAG: "Node",
             l: "Empty",
             v: x,
             r: "Empty",
@@ -6131,7 +6134,8 @@ function to_parse(env, parse) {
   try {
     var result = Curry._1(parse, env);
     reset_token_sink(true, env, saved_state.token_buffer);
-    return /* ParsedSuccessfully */{
+    return {
+            TAG: "ParsedSuccessfully",
             _0: result
           };
   }
@@ -6183,7 +6187,8 @@ function create$2(l, v, r) {
   hl = typeof l !== "object" ? 0 : l.h;
   var hr;
   hr = typeof r !== "object" ? 0 : r.h;
-  return /* Node */{
+  return {
+          TAG: "Node",
           l: l,
           v: v,
           r: r,
@@ -6220,7 +6225,8 @@ function bal$1(l, v, r) {
         };
   }
   if (hr <= (hl + 2 | 0)) {
-    return /* Node */{
+    return {
+            TAG: "Node",
             l: l,
             v: v,
             r: r,
@@ -6252,7 +6258,8 @@ function bal$1(l, v, r) {
 
 function add$1(x, t) {
   if (typeof t !== "object") {
-    return /* Node */{
+    return {
+            TAG: "Node",
             l: "Empty",
             v: x,
             r: "Empty",
@@ -6308,7 +6315,8 @@ function height$2(param) {
 function create$3(l, x, d, r) {
   var hl = height$2(l);
   var hr = height$2(r);
-  return /* Node */{
+  return {
+          TAG: "Node",
           l: l,
           v: x,
           d: d,
@@ -6347,7 +6355,8 @@ function bal$2(l, x, d, r) {
         };
   }
   if (hr <= (hl + 2 | 0)) {
-    return /* Node */{
+    return {
+            TAG: "Node",
             l: l,
             v: x,
             d: d,
@@ -6381,7 +6390,8 @@ function bal$2(l, x, d, r) {
 
 function add$2(x, data, m) {
   if (typeof m !== "object") {
-    return /* Node */{
+    return {
+            TAG: "Node",
             l: "Empty",
             v: x,
             d: data,
@@ -6398,7 +6408,8 @@ function add$2(x, data, m) {
     if (d === data) {
       return m;
     } else {
-      return /* Node */{
+      return {
+              TAG: "Node",
               l: l,
               v: x,
               d: data,
@@ -6463,7 +6474,8 @@ function create$4(l, v, r) {
   hl = typeof l !== "object" ? 0 : l.h;
   var hr;
   hr = typeof r !== "object" ? 0 : r.h;
-  return /* Node */{
+  return {
+          TAG: "Node",
           l: l,
           v: v,
           r: r,
@@ -6500,7 +6512,8 @@ function bal$3(l, v, r) {
         };
   }
   if (hr <= (hl + 2 | 0)) {
-    return /* Node */{
+    return {
+            TAG: "Node",
             l: l,
             v: v,
             r: r,
@@ -6532,7 +6545,8 @@ function bal$3(l, v, r) {
 
 function add$3(x, t) {
   if (typeof t !== "object") {
-    return /* Node */{
+    return {
+            TAG: "Node",
             l: "Empty",
             v: x,
             r: "Empty",
@@ -15060,7 +15074,8 @@ function predicate(env) {
   var loc = btwn(checks_loc, rparen_loc);
   return [
           loc,
-          /* Declared */{
+          {
+            TAG: "Declared",
             _0: exp
           }
         ];

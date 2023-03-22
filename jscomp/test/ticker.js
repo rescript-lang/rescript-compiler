@@ -105,7 +105,8 @@ function height(param) {
 function create(l, x, d, r) {
   var hl = height(l);
   var hr = height(r);
-  return /* Node */{
+  return {
+          TAG: "Node",
           l: l,
           v: x,
           d: d,
@@ -115,7 +116,8 @@ function create(l, x, d, r) {
 }
 
 function singleton(x, d) {
-  return /* Node */{
+  return {
+          TAG: "Node",
           l: "Empty",
           v: x,
           d: d,
@@ -154,7 +156,8 @@ function bal(l, x, d, r) {
         };
   }
   if (hr <= (hl + 2 | 0)) {
-    return /* Node */{
+    return {
+            TAG: "Node",
             l: l,
             v: x,
             d: d,
@@ -196,7 +199,8 @@ function is_empty(param) {
 
 function add(x, data, m) {
   if (typeof m !== "object") {
-    return /* Node */{
+    return {
+            TAG: "Node",
             l: "Empty",
             v: x,
             d: data,
@@ -213,7 +217,8 @@ function add(x, data, m) {
     if (d === data) {
       return m;
     } else {
-      return /* Node */{
+      return {
+              TAG: "Node",
               l: l,
               v: x,
               d: data,
@@ -577,7 +582,8 @@ function update(x, f, m) {
   if (typeof m !== "object") {
     var data = Curry._1(f, undefined);
     if (data !== undefined) {
-      return /* Node */{
+      return {
+              TAG: "Node",
               l: "Empty",
               v: x,
               d: Caml_option.valFromOption(data),
@@ -602,7 +608,8 @@ function update(x, f, m) {
     if (d === data$2) {
       return m;
     } else {
-      return /* Node */{
+      return {
+              TAG: "Node",
               l: l,
               v: x,
               d: data$2,
@@ -647,7 +654,8 @@ function map(f, param) {
   var l$p = map(f, param.l);
   var d$p = Curry._1(f, param.d);
   var r$p = map(f, param.r);
-  return /* Node */{
+  return {
+          TAG: "Node",
           l: l$p,
           v: param.v,
           d: d$p,
@@ -664,7 +672,8 @@ function mapi(f, param) {
   var l$p = mapi(f, param.l);
   var d$p = Curry._2(f, v, param.d);
   var r$p = mapi(f, param.r);
-  return /* Node */{
+  return {
+          TAG: "Node",
           l: l$p,
           v: v,
           d: d$p,
@@ -930,7 +939,8 @@ function cons_enum(_m, _e) {
     if (typeof m !== "object") {
       return e;
     }
-    _e = /* More */{
+    _e = {
+      TAG: "More",
       _0: m.v,
       _1: m.d,
       _2: m.r,
@@ -1081,7 +1091,8 @@ function compute_update_sequences(all_tickers) {
             var match = ticker.type_;
             if (typeof match !== "object") {
               var counter$1 = counter + 1 | 0;
-              ticker.rank = /* Ranked */{
+              ticker.rank = {
+                TAG: "Ranked",
                 _0: counter$1
               };
               return counter$1;
@@ -1090,7 +1101,8 @@ function compute_update_sequences(all_tickers) {
             var counter$2 = loop(counter, match$1.lhs);
             var counter$3 = loop(counter$2, match$1.rhs);
             var counter$4 = counter$3 + 1 | 0;
-            ticker.rank = /* Ranked */{
+            ticker.rank = {
+              TAG: "Ranked",
               _0: counter$4
             };
             return counter$4;
@@ -1204,7 +1216,8 @@ function process_input_line(ticker_map, all_tickers, line) {
             value: undefined,
             rank: "Uninitialized",
             ticker_name: ticker_name,
-            type_: /* Binary_op */{
+            type_: {
+              TAG: "Binary_op",
               _0: {
                 op: op,
                 rhs: rhs$1,
