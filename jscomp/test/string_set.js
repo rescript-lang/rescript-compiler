@@ -43,7 +43,8 @@ function split(x, tree) {
 
 function add(x, tree) {
   if (typeof tree !== "object") {
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: "Empty",
             _1: x,
             _2: "Empty",
@@ -191,7 +192,8 @@ function subset(_s1, _s2) {
       continue ;
     }
     if (c < 0) {
-      if (!subset(/* Node */{
+      if (!subset({
+              TAG: "Node",
               _0: l1,
               _1: v1,
               _2: "Empty",
@@ -202,7 +204,8 @@ function subset(_s1, _s2) {
       _s1 = r1;
       continue ;
     }
-    if (!subset(/* Node */{
+    if (!subset({
+            TAG: "Node",
             _0: "Empty",
             _1: v1,
             _2: r1,

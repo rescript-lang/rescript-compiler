@@ -47,7 +47,8 @@ rec_cell2.next = rec_cell2;
 
 function f2(x) {
   var rec_cell2 = {};
-  Caml_obj.update_dummy(rec_cell2, /* Cons */{
+  Caml_obj.update_dummy(rec_cell2, {
+        TAG: "Cons",
         content: Math.imul(x, x) - 6 | 0,
         next: rec_cell2
       });

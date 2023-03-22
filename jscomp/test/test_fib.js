@@ -35,7 +35,8 @@ for(var i$1 = 10; i$1 >= 0; --i$1){
 var sumdown = v$1;
 
 function cons(x, y) {
-  return /* Cons */{
+  return {
+          TAG: "Cons",
           _0: x,
           _1: y
         };
@@ -53,7 +54,8 @@ function map(f, x) {
   if (typeof x !== "object") {
     return "Nil";
   } else {
-    return /* Cons */{
+    return {
+            TAG: "Cons",
             _0: Curry._1(f, x._0),
             _1: map(f, x._1)
           };

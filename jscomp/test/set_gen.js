@@ -12,7 +12,8 @@ function cons_enum(_s, _e) {
     if (typeof s !== "object") {
       return e;
     }
-    _e = /* More */{
+    _e = {
+      TAG: "More",
       _0: s._1,
       _1: s._2,
       _2: e
@@ -229,7 +230,8 @@ function create(l, v, r) {
   hl = typeof l !== "object" ? 0 : l._3;
   var hr;
   hr = typeof r !== "object" ? 0 : r._3;
-  return /* Node */{
+  return {
+          TAG: "Node",
           _0: l,
           _1: v,
           _2: r,
@@ -274,7 +276,8 @@ function internal_bal(l, v, r) {
         };
   }
   if (hr <= (hl + 2 | 0)) {
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: l,
             _1: v,
             _2: r,
@@ -329,7 +332,8 @@ function remove_min_elt(param) {
 }
 
 function singleton(x) {
-  return /* Node */{
+  return {
+          TAG: "Node",
           _0: "Empty",
           _1: x,
           _2: "Empty",
@@ -445,7 +449,8 @@ function of_sorted_list(l) {
       case 1 :
           if (l) {
             return [
-                    /* Node */{
+                    {
+                      TAG: "Node",
                       _0: "Empty",
                       _1: l.hd,
                       _2: "Empty",
@@ -460,8 +465,10 @@ function of_sorted_list(l) {
             var match = l.tl;
             if (match) {
               return [
-                      /* Node */{
-                        _0: /* Node */{
+                      {
+                        TAG: "Node",
+                        _0: {
+                          TAG: "Node",
                           _0: "Empty",
                           _1: l.hd,
                           _2: "Empty",
@@ -484,15 +491,18 @@ function of_sorted_list(l) {
               var match$2 = match$1.tl;
               if (match$2) {
                 return [
-                        /* Node */{
-                          _0: /* Node */{
+                        {
+                          TAG: "Node",
+                          _0: {
+                            TAG: "Node",
                             _0: "Empty",
                             _1: l.hd,
                             _2: "Empty",
                             _3: 1
                           },
                           _1: match$1.hd,
-                          _2: /* Node */{
+                          _2: {
+                            TAG: "Node",
                             _0: "Empty",
                             _1: match$2.hd,
                             _2: "Empty",
@@ -541,7 +551,8 @@ function of_sorted_array(l) {
     }
     if (n === 1) {
       var x0 = l[start];
-      return /* Node */{
+      return {
+              TAG: "Node",
               _0: "Empty",
               _1: x0,
               _2: "Empty",
@@ -551,8 +562,10 @@ function of_sorted_array(l) {
     if (n === 2) {
       var x0$1 = l[start];
       var x1 = l[start + 1 | 0];
-      return /* Node */{
-              _0: /* Node */{
+      return {
+              TAG: "Node",
+              _0: {
+                TAG: "Node",
                 _0: "Empty",
                 _1: x0$1,
                 _2: "Empty",
@@ -567,15 +580,18 @@ function of_sorted_array(l) {
       var x0$2 = l[start];
       var x1$1 = l[start + 1 | 0];
       var x2 = l[start + 2 | 0];
-      return /* Node */{
-              _0: /* Node */{
+      return {
+              TAG: "Node",
+              _0: {
+                TAG: "Node",
                 _0: "Empty",
                 _1: x0$2,
                 _2: "Empty",
                 _3: 1
               },
               _1: x1$1,
-              _2: /* Node */{
+              _2: {
+                TAG: "Node",
                 _0: "Empty",
                 _1: x2,
                 _2: "Empty",

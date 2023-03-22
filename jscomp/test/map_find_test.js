@@ -15,7 +15,8 @@ function height(param) {
 function create(l, x, d, r) {
   var hl = height(l);
   var hr = height(r);
-  return /* Node */{
+  return {
+          TAG: "Node",
           l: l,
           v: x,
           d: d,
@@ -54,7 +55,8 @@ function bal(l, x, d, r) {
         };
   }
   if (hr <= (hl + 2 | 0)) {
-    return /* Node */{
+    return {
+            TAG: "Node",
             l: l,
             v: x,
             d: d,
@@ -88,7 +90,8 @@ function bal(l, x, d, r) {
 
 function add(x, data, m) {
   if (typeof m !== "object") {
-    return /* Node */{
+    return {
+            TAG: "Node",
             l: "Empty",
             v: x,
             d: data,
@@ -105,7 +108,8 @@ function add(x, data, m) {
     if (d === data) {
       return m;
     } else {
-      return /* Node */{
+      return {
+              TAG: "Node",
               l: l,
               v: x,
               d: data,
@@ -187,7 +191,8 @@ function height$1(param) {
 function create$1(l, x, d, r) {
   var hl = height$1(l);
   var hr = height$1(r);
-  return /* Node */{
+  return {
+          TAG: "Node",
           l: l,
           v: x,
           d: d,
@@ -226,7 +231,8 @@ function bal$1(l, x, d, r) {
         };
   }
   if (hr <= (hl + 2 | 0)) {
-    return /* Node */{
+    return {
+            TAG: "Node",
             l: l,
             v: x,
             d: d,
@@ -260,7 +266,8 @@ function bal$1(l, x, d, r) {
 
 function add$1(x, data, m) {
   if (typeof m !== "object") {
-    return /* Node */{
+    return {
+            TAG: "Node",
             l: "Empty",
             v: x,
             d: data,
@@ -277,7 +284,8 @@ function add$1(x, data, m) {
     if (d === data) {
       return m;
     } else {
-      return /* Node */{
+      return {
+              TAG: "Node",
               l: l,
               v: x,
               d: data,

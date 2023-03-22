@@ -15,7 +15,8 @@ function height(x) {
 function create(l, x, d, r) {
   var hl = height(l);
   var hr = height(r);
-  return /* Node */{
+  return {
+          TAG: "Node",
           _0: l,
           _1: x,
           _2: d,
@@ -62,7 +63,8 @@ function bal(l, x, d, r) {
         };
   }
   if (hr <= (hl + 2 | 0)) {
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: l,
             _1: x,
             _2: d,
@@ -104,7 +106,8 @@ function bal(l, x, d, r) {
 
 function add(x, data, tree) {
   if (typeof tree !== "object") {
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: "Empty",
             _1: x,
             _2: data,
@@ -118,7 +121,8 @@ function add(x, data, tree) {
   var l = tree._0;
   var c = Caml.int_compare(x, v);
   if (c === 0) {
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: l,
             _1: x,
             _2: data,
