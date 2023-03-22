@@ -12,7 +12,8 @@ function height(param) {
 function create(l, v, r) {
   var hl = height(l);
   var hr = height(r);
-  return /* Node */{
+  return {
+          TAG: "Node",
           _0: l,
           _1: v,
           _2: r,
@@ -39,7 +40,8 @@ function bal(l, v, r) {
     }
   }
   if (hr <= (hl + 2 | 0)) {
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: l,
             _1: v,
             _2: r,
@@ -73,7 +75,8 @@ function compare_int(x, y) {
 
 function add(x, t) {
   if (typeof t !== "object") {
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: "Empty",
             _1: x,
             _2: "Empty",

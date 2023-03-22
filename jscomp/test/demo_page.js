@@ -24,7 +24,8 @@ function map(f, param) {
   if (typeof param !== "object") {
     return "Nil";
   } else {
-    return /* Cons */{
+    return {
+            TAG: "Cons",
             _0: Curry._1(f, param._0),
             _1: map(f, param._1)
           };

@@ -15,7 +15,8 @@ function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-var non_debug_u = /* A */{
+var non_debug_u = {
+  TAG: "A",
   _0: 1,
   _1: 2
 };

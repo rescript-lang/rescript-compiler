@@ -110,7 +110,8 @@ function map(f, l) {
           LAZY_DONE: false,
           VAL: (function () {
               var match = CamlinternalLazy.force(l);
-              return /* Cons */{
+              return {
+                      TAG: "Cons",
                       _0: Curry._1(f, match._0),
                       _1: map(f, match._1)
                     };
@@ -130,17 +131,20 @@ function merge(cmp, l1, l2) {
               var x1 = match._0;
               var c = Curry._2(cmp, x1, x2);
               if (c === 0) {
-                return /* Cons */{
+                return {
+                        TAG: "Cons",
                         _0: x1,
                         _1: merge(cmp, ll1, ll2)
                       };
               } else if (c < 0) {
-                return /* Cons */{
+                return {
+                        TAG: "Cons",
                         _0: x1,
                         _1: merge(cmp, ll1, l2)
                       };
               } else {
-                return /* Cons */{
+                return {
+                        TAG: "Cons",
                         _0: x2,
                         _1: merge(cmp, l1, ll2)
                       };
@@ -174,7 +178,8 @@ function iter_interval(f, _l, _param) {
 var hamming = {
   LAZY_DONE: false,
   VAL: (function () {
-      return /* Cons */{
+      return {
+              TAG: "Cons",
               _0: nn1,
               _1: merge(cmp, ham2, merge(cmp, ham3, ham5))
             };

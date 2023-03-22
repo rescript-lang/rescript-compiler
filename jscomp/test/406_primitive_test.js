@@ -18,11 +18,13 @@ function eq(loc, x, y) {
 
 eq("File \"406_primitive_test.ml\", line 18, characters 6-13", 32, 32);
 
-var backend_type = /* Other */{
+var backend_type = {
+  TAG: "Other",
   _0: "BS"
 };
 
-eq("File \"406_primitive_test.ml\", line 29, characters 6-13", backend_type, /* Other */{
+eq("File \"406_primitive_test.ml\", line 29, characters 6-13", backend_type, {
+      TAG: "Other",
       _0: "BS"
     });
 

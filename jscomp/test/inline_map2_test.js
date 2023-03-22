@@ -17,7 +17,8 @@ function Make(Ord) {
   var create = function (l, x, d, r) {
     var hl = height(l);
     var hr = height(r);
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: l,
             _1: x,
             _2: d,
@@ -26,7 +27,8 @@ function Make(Ord) {
           };
   };
   var singleton = function (x, d) {
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: "Empty",
             _1: x,
             _2: d,
@@ -64,7 +66,8 @@ function Make(Ord) {
           };
     }
     if (hr <= (hl + 2 | 0)) {
-      return /* Node */{
+      return {
+              TAG: "Node",
               _0: l,
               _1: x,
               _2: d,
@@ -104,7 +107,8 @@ function Make(Ord) {
   };
   var add = function (x, data, param) {
     if (typeof param !== "object") {
-      return /* Node */{
+      return {
+              TAG: "Node",
               _0: "Empty",
               _1: x,
               _2: data,
@@ -118,7 +122,8 @@ function Make(Ord) {
     var l = param._0;
     var c = Curry._2(Ord.compare, x, v);
     if (c === 0) {
-      return /* Node */{
+      return {
+              TAG: "Node",
               _0: l,
               _1: x,
               _2: data,
@@ -260,7 +265,8 @@ function Make(Ord) {
     var l$p = map(f, param._0);
     var d$p = Curry._1(f, param._2);
     var r$p = map(f, param._3);
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: l$p,
             _1: param._1,
             _2: d$p,
@@ -276,7 +282,8 @@ function Make(Ord) {
     var l$p = mapi(f, param._0);
     var d$p = Curry._2(f, v, param._2);
     var r$p = mapi(f, param._3);
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: l$p,
             _1: v,
             _2: d$p,
@@ -490,7 +497,8 @@ function Make(Ord) {
       if (typeof m !== "object") {
         return e;
       }
-      _e = /* More */{
+      _e = {
+        TAG: "More",
         _0: m._1,
         _1: m._2,
         _2: m._3,
@@ -634,7 +642,8 @@ function height(param) {
 function create(l, x, d, r) {
   var hl = height(l);
   var hr = height(r);
-  return /* Node */{
+  return {
+          TAG: "Node",
           _0: l,
           _1: x,
           _2: d,
@@ -644,7 +653,8 @@ function create(l, x, d, r) {
 }
 
 function singleton(x, d) {
-  return /* Node */{
+  return {
+          TAG: "Node",
           _0: "Empty",
           _1: x,
           _2: d,
@@ -683,7 +693,8 @@ function bal(l, x, d, r) {
         };
   }
   if (hr <= (hl + 2 | 0)) {
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: l,
             _1: x,
             _2: d,
@@ -725,7 +736,8 @@ function is_empty(param) {
 
 function add(x, data, param) {
   if (typeof param !== "object") {
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: "Empty",
             _1: x,
             _2: data,
@@ -739,7 +751,8 @@ function add(x, data, param) {
   var l = param._0;
   var c = Caml.int_compare(x, v);
   if (c === 0) {
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: l,
             _1: x,
             _2: data,
@@ -889,7 +902,8 @@ function map(f, param) {
   var l$p = map(f, param._0);
   var d$p = Curry._1(f, param._2);
   var r$p = map(f, param._3);
-  return /* Node */{
+  return {
+          TAG: "Node",
           _0: l$p,
           _1: param._1,
           _2: d$p,
@@ -906,7 +920,8 @@ function mapi(f, param) {
   var l$p = mapi(f, param._0);
   var d$p = Curry._2(f, v, param._2);
   var r$p = mapi(f, param._3);
-  return /* Node */{
+  return {
+          TAG: "Node",
           _0: l$p,
           _1: v,
           _2: d$p,
@@ -1133,7 +1148,8 @@ function cons_enum(_m, _e) {
     if (typeof m !== "object") {
       return e;
     }
-    _e = /* More */{
+    _e = {
+      TAG: "More",
       _0: m._1,
       _1: m._2,
       _2: m._3,
@@ -1310,7 +1326,8 @@ function height$1(param) {
 function create$1(l, x, d, r) {
   var hl = height$1(l);
   var hr = height$1(r);
-  return /* Node */{
+  return {
+          TAG: "Node",
           _0: l,
           _1: x,
           _2: d,
@@ -1320,7 +1337,8 @@ function create$1(l, x, d, r) {
 }
 
 function singleton$1(x, d) {
-  return /* Node */{
+  return {
+          TAG: "Node",
           _0: "Empty",
           _1: x,
           _2: d,
@@ -1359,7 +1377,8 @@ function bal$1(l, x, d, r) {
         };
   }
   if (hr <= (hl + 2 | 0)) {
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: l,
             _1: x,
             _2: d,
@@ -1401,7 +1420,8 @@ function is_empty$1(param) {
 
 function add$1(x, data, param) {
   if (typeof param !== "object") {
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: "Empty",
             _1: x,
             _2: data,
@@ -1415,7 +1435,8 @@ function add$1(x, data, param) {
   var l = param._0;
   var c = Caml.string_compare(x, v);
   if (c === 0) {
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: l,
             _1: x,
             _2: data,
@@ -1565,7 +1586,8 @@ function map$1(f, param) {
   var l$p = map$1(f, param._0);
   var d$p = Curry._1(f, param._2);
   var r$p = map$1(f, param._3);
-  return /* Node */{
+  return {
+          TAG: "Node",
           _0: l$p,
           _1: param._1,
           _2: d$p,
@@ -1582,7 +1604,8 @@ function mapi$1(f, param) {
   var l$p = mapi$1(f, param._0);
   var d$p = Curry._2(f, v, param._2);
   var r$p = mapi$1(f, param._3);
-  return /* Node */{
+  return {
+          TAG: "Node",
           _0: l$p,
           _1: v,
           _2: d$p,
@@ -1809,7 +1832,8 @@ function cons_enum$1(_m, _e) {
     if (typeof m !== "object") {
       return e;
     }
-    _e = /* More */{
+    _e = {
+      TAG: "More",
       _0: m._1,
       _1: m._2,
       _2: m._3,

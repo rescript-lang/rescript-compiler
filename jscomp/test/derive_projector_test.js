@@ -91,13 +91,15 @@ var h = {
 };
 
 function xx(param_0) {
-  return /* Xx */{
+  return {
+          TAG: "Xx",
           _0: param_0
         };
 }
 
 function a(param_0) {
-  return /* A */{
+  return {
+          TAG: "A",
           _0: param_0
         };
 }
