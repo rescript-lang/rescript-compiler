@@ -1202,7 +1202,7 @@ function process_quote(ticker_map, new_ticker, new_value) {
           var match$2 = match$1.lhs.value;
           var match$3 = match$1.rhs.value;
           var value = match$2 !== undefined && match$3 !== undefined ? (
-              match$1.op ? match$2 - match$3 : match$2 + match$3
+              match$1.op === "PLUS" ? match$2 + match$3 : match$2 - match$3
             ) : undefined;
           ticker.value = value;
         }), update_sequence);
