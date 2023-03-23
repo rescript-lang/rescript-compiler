@@ -570,26 +570,27 @@ and compile_general_cases :
 
           [ switch ?default ?declaration switch_exp body ])
 
+and all_cases_have_name table get_name =
+  List.fold_right (fun (i, lam) acc ->
+    match get_name i, acc with
+    | Some {Lambda.as_value= Some (AsString s)}, Some string_table -> Some ((s, lam) :: string_table)
+    | Some {name; as_value = None}, Some string_table -> Some ((name, lam) :: string_table)
+    | _, _ -> None
+  ) table (Some [])
 and compile_cases cxt (switch_exp : E.t) table default get_name =
-  let string_table = table |> List.filter_map (fun (i, lam) -> match get_name i
-        with
-        | None -> None
-        | Some {Lambda.as_value= Some (AsString s)} -> Some (s, lam)
-        | Some {name; as_value = None} -> Some (name, lam)) in
-  if List.length string_table = List.length table
-  then
-    compile_string_cases cxt switch_exp string_table default
-  else
-  compile_general_cases get_name
-    (fun i -> match get_name i with
-      | None -> E.small_int i
-      | Some {as_value = Some(AsString s)} -> E.str s
-      | Some {name} -> E.str name)
-    E.int_equal cxt
-    (fun ?default ?declaration e clauses ->
-      S.int_switch ?default ?declaration e clauses)
-    switch_exp table default
-
+    match all_cases_have_name table get_name with
+    | Some string_table -> compile_string_cases cxt switch_exp string_table default
+    | None ->
+      compile_general_cases get_name
+        (fun i -> match get_name i with
+          | None -> E.small_int i
+          | Some {as_value = Some(AsString s)} -> E.str s
+          | Some {name} -> E.str name)
+        E.int_equal cxt
+        (fun ?default ?declaration e clauses ->
+          S.int_switch ?default ?declaration e clauses)
+        switch_exp table default
+  
 and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
     (lambda_cxt : Lam_compile_context.t) =
   (* TODO: if default is None, we can do some optimizations
