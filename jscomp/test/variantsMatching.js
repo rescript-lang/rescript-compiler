@@ -135,21 +135,26 @@ function third2(l) {
 }
 
 function foo(x) {
-  if (typeof x === "object") {
-    if (x.TAG === "qq") {
-      return 4;
-    } else {
-      return 5;
+  if (typeof x !== "object") {
+    switch (x) {
+      case "dd" :
+          return 1;
+      case 12 :
+          return 2;
+      case "C" :
+          return 3;
+      
     }
-  }
-  switch (x) {
-    case "dd" :
-        return 1;
-    case "B" :
-        return 2;
-    case "C" :
-        return 3;
-    
+  } else {
+    switch (x.TAG) {
+      case "qq" :
+          return 4;
+      case 42 :
+          return 5;
+      case "F" :
+          return 6;
+      
+    }
   }
 }
 
@@ -158,12 +163,18 @@ var CustomizeTags_d = {
   _0: 42
 };
 
+var CustomizeTags_e = {
+  TAG: 42,
+  _0: 0
+};
+
 var CustomizeTags = {
   foo: foo,
   a: "dd",
-  b: "B",
+  b: 12,
   c: "C",
-  d: CustomizeTags_d
+  d: CustomizeTags_d,
+  e: CustomizeTags_e
 };
 
 exports.toEnum = toEnum;

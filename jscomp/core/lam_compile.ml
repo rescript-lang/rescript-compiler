@@ -573,8 +573,8 @@ and compile_general_cases :
 and all_cases_have_name table get_name =
   List.fold_right (fun (i, lam) acc ->
     match get_name i, acc with
-    | Some {Lambda.as_value= Some (AsString s)}, Some string_table -> Some ((s, lam) :: string_table)
-    | Some {name; as_value = None}, Some string_table -> Some ((name, lam) :: string_table)
+    | Some {Lambda.as_value= Some as_value}, Some string_table -> Some ((as_value, lam) :: string_table)
+    | Some {name; as_value = None}, Some string_table -> Some ((AsString name, lam) :: string_table)
     | _, _ -> None
   ) table (Some [])
 and compile_cases cxt (switch_exp : E.t) table default get_name =
@@ -667,7 +667,10 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
 and compile_string_cases cxt switch_exp table default =
   compile_general_cases
     (fun _ -> None)
-    (fun str -> E.str str ~delim:DStarJ) E.string_equal cxt
+    (fun (as_value: Lambda.as_value) -> match as_value with
+      | AsString s -> E.str s ~delim:DStarJ
+      | AsInt i -> E.small_int i)
+    E.string_equal cxt
     (fun ?default ?declaration e clauses ->
       S.string_switch ?default ?declaration e clauses)
     switch_exp table default
@@ -679,6 +682,7 @@ and compile_stringswitch l cases default (lambda_cxt : Lam_compile_context.t) =
       Be careful: we should avoid multiple evaluation of l,
       The [gen] can be elimiated when number of [cases] is less than 3
   *)
+  let cases = cases |> List.map (fun (s,l) -> Lambda.AsString s, l) in
   match
     compile_lambda { lambda_cxt with continuation = NeedValue Not_tail } l
   with

@@ -81,7 +81,7 @@ let third2 = l =>
   }
 
 module CustomizeTags = {
-  type t = | @as("dd") A | B | C | @as("qq") D(int) | E(int)
+  type t = | @as("dd") A | @as(12) B | C | @as("qq") D(int) | @as(42) E(int) | F(string)
 
   let foo = x =>
     switch x {
@@ -90,10 +90,12 @@ module CustomizeTags = {
     | C => 3
     | D(_) => 4
     | E(_) => 5
+    | F(_) => 6
     }
 
   let a = A
   let b = B
   let c = C
   let d = D(42)
+  let e = E(0)
 }

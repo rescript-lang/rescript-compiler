@@ -255,12 +255,6 @@ let iter_process_bs_string_as (attrs : t) : string option =
           else Bs_syntaxerr.err loc Duplicated_bs_as
       | _ -> ());
   !st
-
-let process_as_value attrs : Lambda.as_value option =
-  match iter_process_bs_string_as attrs with
-  | None -> None
-  | Some s -> Some (AsString s)
-
 let has_bs_optional (attrs : t) : bool =
   Ext_list.exists attrs (fun (({ txt }, _) as attr) ->
       match txt with
@@ -339,6 +333,13 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
           else Bs_syntaxerr.err loc Duplicated_bs_as
       | _ -> ());
   !st
+
+let process_as_value attrs : Lambda.as_value option =
+  match iter_process_bs_string_or_int_as attrs with
+  | None -> None
+  | Some (Str (s, _)) -> Some (AsString s)
+  | Some (Int i) -> Some (AsInt i)
+
 
 let locg = Location.none
 (* let bs : attr

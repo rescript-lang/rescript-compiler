@@ -254,7 +254,7 @@ and case_clause = {
   comment : string option;
 }
 
-and string_clause = string * case_clause
+and string_clause = Lambda.as_value * case_clause
 and int_clause = int * case_clause
 
 and statement_desc =

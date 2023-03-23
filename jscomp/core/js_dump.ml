@@ -774,7 +774,8 @@ and expression_desc cxt ~(level : int) f x : cxt =
         ( Js_op.Lit L.tag,
           match Ast_attributes.process_as_value p.attrs with
           | None -> E.str p.name
-          | Some (AsString s) -> E.str s )
+          | Some (AsString s) -> E.str s
+          | Some (AsInt i) -> E.small_int i )
         :: tails
       in
       expression_desc cxt ~level f (Object objs)
@@ -798,7 +799,8 @@ and expression_desc cxt ~(level : int) f x : cxt =
           ( Js_op.Lit L.tag,
             match Ast_attributes.process_as_value p.attrs with
             | None -> E.str p.name
-            | Some (AsString s) -> E.str s )
+            | Some (AsString s) -> E.str s
+            | Some (AsInt i) -> E.small_int i )
           :: tails
       in
       expression_desc cxt ~level f (Object objs)
@@ -1193,7 +1195,11 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
       let cxt = P.paren_group f 1 (fun _ -> expression ~level:0 cxt f e) in
       P.space f;
       P.brace_vgroup f 1 (fun _ ->
-          let pp_string f txt = ignore @@ expression_desc cxt ~level:0 f (Str {txt; delim=DStarJ}) in
+          let pp_string f (as_value: Lambda.as_value) =
+            let e = match as_value with
+              | AsString txt -> E.str txt ~delim:DStarJ
+              | AsInt i -> E.small_int i in
+            ignore @@ expression_desc cxt ~level:0 f e.expression_desc in
           let cxt = loop_case_clauses cxt f pp_string cc in
           match def with
           | None -> cxt
