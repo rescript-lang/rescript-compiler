@@ -144,6 +144,18 @@ let get_const_name i (sw_names : Lambda.switch_names option) =
 let get_block_name i (sw_names : Lambda.switch_names option) =
   match sw_names with None -> None | Some { blocks } -> Some blocks.(i)
 
+
+let has_null_undefined_other (sw_names : Lambda.switch_names option) =
+  let (null, undefined, other) = (ref false, ref false, ref false) in
+  (match sw_names with
+  | None -> ()
+  | Some { consts } ->
+    Ext_array.iter consts (fun x -> match x.as_value with
+      | Some AsUndefined -> undefined := true
+      | Some AsNull -> null := true
+      | _ -> other := true));
+  (!null, !undefined, !other)
+
 let no_effects_const = lazy true
 (* let has_effects_const = lazy false *)
 
@@ -632,7 +644,7 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
         else
           (* [e] will be used twice  *)
           let dispatch e =
-            S.if_ (E.is_tag e)
+            S.if_ (E.is_tag ~has_null_undefined_other:(has_null_undefined_other sw_names) e)
               (compile_cases cxt e sw_consts sw_num_default get_const_name)
               (* default still needed, could simplified*)
               ~else_:
@@ -667,9 +679,7 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
 and compile_string_cases cxt switch_exp table default =
   compile_general_cases
     (fun _ -> None)
-    (fun (as_value: Lambda.as_value) -> match as_value with
-      | AsString s -> E.str s ~delim:DStarJ
-      | AsInt i -> E.small_int i)
+    E.as_value
     E.string_equal cxt
     (fun ?default ?declaration e clauses ->
       S.string_switch ?default ?declaration e clauses)

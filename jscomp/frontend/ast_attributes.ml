@@ -334,12 +334,39 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
       | _ -> ());
   !st
 
-let process_as_value attrs : Lambda.as_value option =
-  match iter_process_bs_string_or_int_as attrs with
-  | None -> None
-  | Some (Str (s, _)) -> Some (AsString s)
-  | Some (Int i) -> Some (AsInt i)
-
+let process_as_value (attrs : t) =
+  let st : Lambda.as_value option ref = ref None in
+  Ext_list.iter attrs (fun (({ txt; loc }, payload) as attr) ->
+      match txt with
+      | "bs.as" | "as" ->
+          if !st = None then (
+            (match Ast_payload.is_single_string payload with
+            | None -> ()
+            | Some (s, _dec) ->
+                Bs_ast_invariant.mark_used_bs_attribute attr;
+                st := Some (AsString s));
+            (match Ast_payload.is_single_int payload with
+            | None -> ()
+            | Some i ->
+                Bs_ast_invariant.mark_used_bs_attribute attr;
+                st := Some (AsInt i));
+            (match Ast_payload.is_single_ident payload with
+            | None -> ()
+            | Some Lident "null" ->
+                Bs_ast_invariant.mark_used_bs_attribute attr;
+                st := Some AsNull
+            | Some Lident "undefined" ->
+                Bs_ast_invariant.mark_used_bs_attribute attr;
+                st := Some AsUndefined
+            | Some Lident "unboxed" ->
+                Bs_ast_invariant.mark_used_bs_attribute attr;
+                st := Some AsUnboxed
+            |  Some _ -> Bs_syntaxerr.err loc InvalidVariantAsAnnotation);
+            if !st = None then Bs_syntaxerr.err loc InvalidVariantAsAnnotation
+          )
+          else Bs_syntaxerr.err loc Duplicated_bs_as
+      | _ -> ());
+  !st
 
 let locg = Location.none
 (* let bs : attr

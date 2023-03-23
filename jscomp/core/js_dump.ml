@@ -774,13 +774,13 @@ and expression_desc cxt ~(level : int) f x : cxt =
         ( Js_op.Lit L.tag,
           match Ast_attributes.process_as_value p.attrs with
           | None -> E.str p.name
-          | Some (AsString s) -> E.str s
-          | Some (AsInt i) -> E.small_int i )
+          | Some as_value -> E.as_value as_value )
         :: tails
       in
       expression_desc cxt ~level f (Object objs)
   | Caml_block (el, _, tag, Blk_constructor p) ->
       let not_is_cons = p.name <> Literals.cons in
+      let as_value = Ast_attributes.process_as_value p.attrs in
       let objs =
         let tails =
           Ext_list.mapi_append el
@@ -794,16 +794,19 @@ and expression_desc cxt ~(level : int) f x : cxt =
              [ (name_symbol, E.str p.name) ]
             else [])
         in
-        if not_is_cons = false && p.num_nonconst = 1 then tails
+        if (as_value = Some AsUnboxed || not_is_cons = false) && p.num_nonconst = 1 then tails
         else
           ( Js_op.Lit L.tag,
-            match Ast_attributes.process_as_value p.attrs with
+            match as_value with
             | None -> E.str p.name
-            | Some (AsString s) -> E.str s
-            | Some (AsInt i) -> E.small_int i )
+            | Some as_value -> E.as_value as_value )
           :: tails
       in
-      expression_desc cxt ~level f (Object objs)
+      let exp = match objs with
+        | [(_, e)] when as_value = Some AsUnboxed -> e.expression_desc
+        | _ when as_value = Some AsUnboxed -> assert false (* should not happen *)
+        | _ -> J.Object objs in
+      expression_desc cxt ~level f exp
   | Caml_block
       ( _,
         _,
@@ -1195,12 +1198,10 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
       let cxt = P.paren_group f 1 (fun _ -> expression ~level:0 cxt f e) in
       P.space f;
       P.brace_vgroup f 1 (fun _ ->
-          let pp_string f (as_value: Lambda.as_value) =
-            let e = match as_value with
-              | AsString txt -> E.str txt ~delim:DStarJ
-              | AsInt i -> E.small_int i in
+          let pp_as_value f (as_value: Lambda.as_value) =
+            let e = E.as_value as_value in
             ignore @@ expression_desc cxt ~level:0 f e.expression_desc in
-          let cxt = loop_case_clauses cxt f pp_string cc in
+          let cxt = loop_case_clauses cxt f pp_as_value cc in
           match def with
           | None -> cxt
           | Some def ->

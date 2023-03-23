@@ -38,7 +38,7 @@ type record_repr =
   | Record_regular
   | Record_optional
 
-type as_value = AsString of string | AsInt of int
+type as_value = AsString of string | AsInt of int | AsNull | AsUndefined | AsUnboxed
 type cstr_name = {name: string; as_value: as_value option}
 
 type tag_info = 

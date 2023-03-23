@@ -316,6 +316,13 @@ let small_int i : t =
   | 248 -> obj_int_tag_literal
   | i -> int (Int32.of_int i)
 
+let as_value = function
+  | Lambda.AsString s -> str s ~delim:DStarJ
+  | AsInt i -> small_int i
+  | AsNull -> nil
+  | AsUndefined -> undefined
+  | AsUnboxed -> assert false (* Should not emit tags for unboxed *)
+
 let array_index ?comment (e0 : t) (e1 : t) : t =
   match (e0.expression_desc, e1.expression_desc) with
   | Array (l, _), Number (Int { i; _ })
@@ -762,8 +769,26 @@ let string_equal ?comment (e0 : t) (e1 : t) : t =
 let is_type_number ?comment (e : t) : t =
   string_equal ?comment (typeof e) (str "number")
 
-let is_tag (e : t) : t =
-  { expression_desc = Bin (NotEqEq, typeof e, str "object"); comment=None }
+let is_tag ?(has_null_undefined_other=(false, false, false)) (e : t) : t =
+  let (has_null, has_undefined, has_other) = has_null_undefined_other in
+  if has_null && (has_undefined = false) && (has_other = false) then (* null *)
+    { expression_desc = Bin (EqEqEq, e, nil); comment=None }
+  else if has_null && has_undefined && has_other=false then (* null + undefined *)
+    { J.expression_desc = Bin
+      (Or,
+        { expression_desc = Bin (EqEqEq, e, nil); comment=None },
+        { expression_desc = Bin (EqEqEq, e, undefined); comment=None }
+      ); comment=None }
+  else if has_null=false && has_undefined && has_other=false then (* undefined *)
+    { expression_desc = Bin (EqEqEq, e, undefined); comment=None }
+  else if has_null then (* (null + undefined + other) || (null + other) *)
+    { J.expression_desc = Bin
+      (Or,
+        { expression_desc = Bin (EqEqEq, e, nil); comment=None },
+        { expression_desc = Bin (NotEqEq, typeof e, str "object"); comment=None }
+      ); comment=None }
+  else (* (undefiled + other) || other *)
+    { expression_desc = Bin (NotEqEq, typeof e, str "object"); comment=None }
 
 let is_type_string ?comment (e : t) : t =
   string_equal ?comment (typeof e) (str "string")

@@ -50,9 +50,7 @@ and translate (x : Lam_constant.t) : J.expression =
   | Const_int { i; comment = Pt_constructor {cstr_name={name; as_value=None}}} when name <> "[]" ->
       E.str name
   | Const_int { i; comment = Pt_constructor {cstr_name={as_value = Some as_value}}}  ->
-    ( match as_value with
-      | AsString s -> E.str s
-      | AsInt i -> E.small_int i)
+      E.as_value as_value
   | Const_int { i; comment } ->
       E.int i ?comment:(Lam_constant.string_of_pointer_info comment)
   | Const_char i -> Js_of_lam_string.const_char i

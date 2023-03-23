@@ -138,7 +138,7 @@ let string_switch ?(comment : string option)
             match switch_case with
             | AsString s ->
               if s = txt then Some x.switch_body else None
-            | AsInt _ -> None)
+            | AsInt _ | AsNull | AsUnboxed | AsUndefined -> None)
         with
         | Some case -> case
         | None -> ( match default with Some x -> x | None -> assert false)
