@@ -134,6 +134,38 @@ function third2(l) {
   }
 }
 
+function foo(x) {
+  if (typeof x === "object") {
+    if (x.TAG === "qq") {
+      return 4;
+    } else {
+      return 5;
+    }
+  }
+  switch (x) {
+    case "dd" :
+        return 1;
+    case "B" :
+        return 2;
+    case "C" :
+        return 3;
+    
+  }
+}
+
+var CustomizeTags_d = {
+  TAG: "qq",
+  _0: 42
+};
+
+var CustomizeTags = {
+  foo: foo,
+  a: "dd",
+  b: "B",
+  c: "C",
+  d: CustomizeTags_d
+};
+
 exports.toEnum = toEnum;
 exports.toString = toString;
 exports.bar = bar;
@@ -144,4 +176,5 @@ exports.st = st;
 exports.showToJs = showToJs;
 exports.third = third;
 exports.third2 = third2;
+exports.CustomizeTags = CustomizeTags;
 /* No side effect */

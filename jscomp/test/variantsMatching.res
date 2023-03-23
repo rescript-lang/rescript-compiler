@@ -79,3 +79,21 @@ let third2 = l =>
   | Cons(1, Cons(2, Cons(3, Empty))) => true
   | _ => false
   }
+
+module CustomizeTags = {
+  type t = | @as("dd") A | B | C | @as("qq") D(int) | E(int)
+
+  let foo = x =>
+    switch x {
+    | A => 1
+    | B => 2
+    | C => 3
+    | D(_) => 4
+    | E(_) => 5
+    }
+
+  let a = A
+  let b = B
+  let c = C
+  let d = D(42)
+}

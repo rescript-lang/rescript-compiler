@@ -91,3 +91,5 @@ val internal_expansive : attr
 val rs_externals : t -> string list -> bool
 
 val process_send_pipe : t -> (Parsetree.core_type * t) option
+
+val process_as_value : t -> Lambda.as_value option

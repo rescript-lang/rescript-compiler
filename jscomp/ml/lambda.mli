@@ -38,9 +38,12 @@ type record_repr =
   | Record_regular 
   | Record_optional
 
+type as_value = AsString of string
+type cstr_name = {name:string; as_value: as_value option}
+
 type tag_info = 
-  | Blk_constructor of {name : string ; num_nonconst : int; tag : int}
-  | Blk_record_inlined of { name : string ; num_nonconst :  int ;  tag : int; optional_labels: string list; fields : string array; mutable_flag : mutable_flag }   
+  | Blk_constructor of { name : string ; num_nonconst : int; tag : int; attrs : Parsetree.attributes }
+  | Blk_record_inlined of { name : string ; num_nonconst :  int ;  tag : int; optional_labels: string list; fields : string array; mutable_flag : mutable_flag; attrs : Parsetree.attributes }   
   | Blk_tuple
   | Blk_poly_var of string 
   | Blk_record of {fields : string array; mutable_flag : mutable_flag; record_repr : record_repr }
@@ -86,7 +89,7 @@ val blk_record_inlined :
     string ->
     int ->
     string list ->
-    tag:int ->    
+    tag:int ->
     mutable_flag ->  
     tag_info
   ) ref
@@ -134,14 +137,12 @@ type is_safe =
   | Safe
   | Unsafe
 
-type pointer_info = 
-  | Pt_constructor of {name : string; const : int ; non_const :  int} 
-  | Pt_variant of {name : string}
-  | Pt_module_alias 
-  | Pt_shape_none   
+type pointer_info =
+  | Pt_constructor of {name: string; const: int; non_const: int; attrs: Parsetree.attributes}
+  | Pt_variant of {name: string}
+  | Pt_module_alias
+  | Pt_shape_none
   | Pt_assertfalse
-
-
 
 type primitive =
   | Pidentity
@@ -274,7 +275,7 @@ type function_attribute = {
   async : bool;
 }
 
-type switch_names = {consts: string array; blocks: string array}
+type switch_names = {consts: cstr_name array; blocks: cstr_name array}
 
 type lambda =
     Lvar of Ident.t

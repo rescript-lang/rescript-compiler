@@ -256,6 +256,11 @@ let iter_process_bs_string_as (attrs : t) : string option =
       | _ -> ());
   !st
 
+let process_as_value attrs : Lambda.as_value option =
+  match iter_process_bs_string_as attrs with
+  | None -> None
+  | Some s -> Some (AsString s)
+
 let has_bs_optional (attrs : t) : bool =
   Ext_list.exists attrs (fun (({ txt }, _) as attr) ->
       match txt with

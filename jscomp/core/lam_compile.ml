@@ -453,8 +453,8 @@ and compile_recursive_lets cxt id_args : Js_output.t =
               Js_output.append_output acc (compile_recursive_lets_aux cxt x)))
 
 and compile_general_cases :
-      'a.
-      ('a -> string option) ->
+      'a .
+      ('a -> Lambda.cstr_name option) ->
       ('a -> J.expression) ->
       (J.expression -> J.expression -> J.expression) ->
       Lam_compile_context.t ->
@@ -467,7 +467,7 @@ and compile_general_cases :
       ('a * Lam.t) list ->
       default_case ->
       J.block =
- fun (make_comment : _ -> string option) (make_exp : _ -> J.expression)
+ fun (get_cstr_name : _ -> Lambda.cstr_name option) (make_exp : _ -> J.expression)
      (eq_exp : J.expression -> J.expression -> J.expression)
      (cxt : Lam_compile_context.t)
      (switch :
@@ -531,6 +531,9 @@ and compile_general_cases :
             | Default lam ->
                 Some (Js_output.output_as_block (compile_lambda cxt lam))
           in
+          let make_comment i = match get_cstr_name i with
+            | None -> None
+            | Some {name} -> Some name  in
           let body =
             group_apply cases (fun last (switch_case, lam) ->
                 if last then
@@ -569,16 +572,19 @@ and compile_general_cases :
 
 and compile_cases cxt (switch_exp : E.t) table default get_name =
   let string_table = table |> List.filter_map (fun (i, lam) -> match get_name i
-        with None -> None
-        | Some n -> Some (n, lam)) in
+        with
+        | None -> None
+        | Some {Lambda.as_value= Some (AsString s)} -> Some (s, lam)
+        | Some {name; as_value = None} -> Some (name, lam)) in
   if List.length string_table = List.length table
   then
     compile_string_cases cxt switch_exp string_table default
   else
   compile_general_cases get_name
     (fun i -> match get_name i with
-      | None ->  E.small_int i
-      | Some name -> E.str name)
+      | None -> E.small_int i
+      | Some {as_value = Some(AsString s)} -> E.str s
+      | Some {name} -> E.str name)
     E.int_equal cxt
     (fun ?default ?declaration e clauses ->
       S.int_switch ?default ?declaration e clauses)

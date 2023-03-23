@@ -771,7 +771,11 @@ and expression_desc cxt ~(level : int) f x : cxt =
               | Undefined when is_optional f -> None
               | _ -> Some (f, x))
           in
-        (Js_op.Lit L.tag, E.str p.name) :: tails
+        ( Js_op.Lit L.tag,
+          match Ast_attributes.process_as_value p.attrs with
+          | None -> E.str p.name
+          | Some (AsString s) -> E.str s )
+        :: tails
       in
       expression_desc cxt ~level f (Object objs)
   | Caml_block (el, _, tag, Blk_constructor p) ->
@@ -792,8 +796,9 @@ and expression_desc cxt ~(level : int) f x : cxt =
         if not_is_cons = false && p.num_nonconst = 1 then tails
         else
           ( Js_op.Lit L.tag,
-            E.str p.name
-          )
+            match Ast_attributes.process_as_value p.attrs with
+            | None -> E.str p.name
+            | Some (AsString s) -> E.str s )
           :: tails
       in
       expression_desc cxt ~level f (Object objs)

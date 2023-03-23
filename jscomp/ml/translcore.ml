@@ -816,6 +816,7 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
                              name = cstr.cstr_name;
                              const = cstr.cstr_consts;
                              non_const = cstr.cstr_nonconsts;
+                             attrs = cstr.cstr_attributes;
                            } ))
         | Cstr_unboxed -> ( match ll with [ v ] -> v | _ -> assert false)
         | Cstr_block n -> (
@@ -834,6 +835,7 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
                     name = cstr.cstr_name;
                     num_nonconst = cstr.cstr_nonconsts;
                     tag = n;
+                    attrs = cstr.cstr_attributes;
                   }
             in
             try Lconst (Const_block (tag_info, List.map extract_constant ll))

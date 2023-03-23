@@ -27,11 +27,14 @@ let is_nullary_variant (x : Types.constructor_arguments) =
 
 let names_from_construct_pattern (pat : Typedtree.pattern) =
   let names_from_type_variant (cstrs : Types.constructor_declaration list) =
+    let get_cstr_name (cstr: Types.constructor_declaration) =
+      { Lambda.name = Ident.name cstr.cd_id;
+        as_value = Ast_attributes.process_as_value cstr.cd_attributes } in
     let consts, blocks =
       Ext_list.fold_left cstrs ([], []) (fun (consts, blocks) cstr ->
           if is_nullary_variant cstr.cd_args then
-            (Ident.name cstr.cd_id :: consts, blocks)
-          else (consts, Ident.name cstr.cd_id :: blocks))
+            (get_cstr_name cstr :: consts, blocks)
+          else (consts, get_cstr_name cstr :: blocks))
     in
     Some
       {
