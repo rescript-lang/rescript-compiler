@@ -2359,11 +2359,7 @@ let combine_constructor sw_names loc arg ex_pat cstr partial ctx def
                 else arg
               in 
                 Lifthenelse(arg, act2, act1)
-          | (2,0, [(i1,act1); (_,act2)],[]) when
-            (match act1, act2 with
-            | Lconst (Const_pointer (_, Pt_constructor _ )), _ -> false
-            | _, Lconst (Const_pointer (_, Pt_constructor _ )) -> false
-            | _ -> true) ->
+          | (2,0, [(i1,act1); (_,act2)],[]) when cstr.cstr_name = "true" || cstr.cstr_name = "false" ->
               if i1 = 0 then Lifthenelse(arg, act2, act1)
               else Lifthenelse (arg, act1, act2)                
           | (n,0,_,[]) when false (* relies on tag being an int *) -> (* The type defines constant constructors only *)

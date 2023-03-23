@@ -2,7 +2,7 @@
 
 
 function blackify(s) {
-  if (typeof s !== "object" || !s._0) {
+  if (typeof s !== "object" || s._0 === "Black") {
     return [
             s,
             true
@@ -57,12 +57,12 @@ function balance_left(l, x, r) {
   var c;
   var z;
   var d;
-  if (typeof l !== "object" || !l._0) {
+  if (typeof l !== "object" || l._0 === "Black") {
     exit = 1;
   } else {
     var a$1 = l._1;
     var exit$1 = 0;
-    if (typeof a$1 !== "object" || !a$1._0) {
+    if (typeof a$1 !== "object" || a$1._0 === "Black") {
       exit$1 = 3;
     } else {
       a = a$1._1;
@@ -76,7 +76,7 @@ function balance_left(l, x, r) {
     }
     if (exit$1 === 3) {
       var match = l._3;
-      if (typeof match !== "object" || !match._0) {
+      if (typeof match !== "object" || match._0 === "Black") {
         exit = 1;
       } else {
         a = a$1;
@@ -133,12 +133,12 @@ function balance_right(l, x, r) {
   var c;
   var z;
   var d;
-  if (typeof r !== "object" || !r._0) {
+  if (typeof r !== "object" || r._0 === "Black") {
     exit = 1;
   } else {
     var b$1 = r._1;
     var exit$1 = 0;
-    if (typeof b$1 !== "object" || !b$1._0) {
+    if (typeof b$1 !== "object" || b$1._0 === "Black") {
       exit$1 = 3;
     } else {
       a = l;
@@ -152,7 +152,7 @@ function balance_right(l, x, r) {
     }
     if (exit$1 === 3) {
       var match = r._3;
-      if (typeof match !== "object" || !match._0) {
+      if (typeof match !== "object" || match._0 === "Black") {
         exit = 1;
       } else {
         a = l;
@@ -212,56 +212,56 @@ function singleton(x) {
 
 function unbalanced_left(param) {
   if (typeof param === "object") {
-    if (param._0) {
+    if (param._0 === "Black") {
       var match = param._1;
-      if (typeof match === "object" && !match._0) {
-        return [
-                balance_left({
-                      TAG: "Node",
-                      _0: "Red",
-                      _1: match._1,
-                      _2: match._2,
-                      _3: match._3
-                    }, param._2, param._3),
-                false
-              ];
-      }
-      
-    } else {
-      var match$1 = param._1;
-      if (typeof match$1 === "object") {
-        if (!match$1._0) {
+      if (typeof match === "object") {
+        if (match._0 === "Black") {
           return [
                   balance_left({
                         TAG: "Node",
                         _0: "Red",
-                        _1: match$1._1,
-                        _2: match$1._2,
-                        _3: match$1._3
+                        _1: match._1,
+                        _2: match._2,
+                        _3: match._3
                       }, param._2, param._3),
                   true
                 ];
         }
-        var match$2 = match$1._3;
-        if (typeof match$2 === "object" && !match$2._0) {
+        var match$1 = match._3;
+        if (typeof match$1 === "object" && match$1._0 === "Black") {
           return [
                   {
                     TAG: "Node",
                     _0: "Black",
-                    _1: match$1._1,
-                    _2: match$1._2,
+                    _1: match._1,
+                    _2: match._2,
                     _3: balance_left({
                           TAG: "Node",
                           _0: "Red",
-                          _1: match$2._1,
-                          _2: match$2._2,
-                          _3: match$2._3
+                          _1: match$1._1,
+                          _2: match$1._2,
+                          _3: match$1._3
                         }, param._2, param._3)
                   },
                   false
                 ];
         }
         
+      }
+      
+    } else {
+      var match$2 = param._1;
+      if (typeof match$2 === "object" && match$2._0 === "Black") {
+        return [
+                balance_left({
+                      TAG: "Node",
+                      _0: "Red",
+                      _1: match$2._1,
+                      _2: match$2._2,
+                      _3: match$2._3
+                    }, param._2, param._3),
+                false
+              ];
       }
       
     }
@@ -279,40 +279,25 @@ function unbalanced_left(param) {
 
 function unbalanced_right(param) {
   if (typeof param === "object") {
-    if (param._0) {
+    if (param._0 === "Black") {
       var match = param._3;
-      if (typeof match === "object" && !match._0) {
-        return [
-                balance_right(param._1, param._2, {
-                      TAG: "Node",
-                      _0: "Red",
-                      _1: match._1,
-                      _2: match._2,
-                      _3: match._3
-                    }),
-                false
-              ];
-      }
-      
-    } else {
-      var match$1 = param._3;
       var x = param._2;
       var a = param._1;
-      if (typeof match$1 === "object") {
-        if (!match$1._0) {
+      if (typeof match === "object") {
+        if (match._0 === "Black") {
           return [
                   balance_right(a, x, {
                         TAG: "Node",
                         _0: "Red",
-                        _1: match$1._1,
-                        _2: match$1._2,
-                        _3: match$1._3
+                        _1: match._1,
+                        _2: match._2,
+                        _3: match._3
                       }),
                   true
                 ];
         }
-        var match$2 = match$1._1;
-        if (typeof match$2 === "object" && !match$2._0) {
+        var match$1 = match._1;
+        if (typeof match$1 === "object" && match$1._0 === "Black") {
           return [
                   {
                     TAG: "Node",
@@ -320,17 +305,32 @@ function unbalanced_right(param) {
                     _1: balance_right(a, x, {
                           TAG: "Node",
                           _0: "Red",
-                          _1: match$2._1,
-                          _2: match$2._2,
-                          _3: match$2._3
+                          _1: match$1._1,
+                          _2: match$1._2,
+                          _3: match$1._3
                         }),
-                    _2: match$1._2,
-                    _3: match$1._3
+                    _2: match._2,
+                    _3: match._3
                   },
                   false
                 ];
         }
         
+      }
+      
+    } else {
+      var match$2 = param._3;
+      if (typeof match$2 === "object" && match$2._0 === "Black") {
+        return [
+                balance_right(param._1, param._2, {
+                      TAG: "Node",
+                      _0: "Red",
+                      _1: match$2._1,
+                      _2: match$2._2,
+                      _3: match$2._3
+                    }),
+                false
+              ];
       }
       
     }
@@ -356,7 +356,7 @@ function lbalance(x1, x2, x3) {
             _3: x3
           };
   }
-  if (!x1._0) {
+  if (x1._0 === "Black") {
     return {
             TAG: "Node",
             _0: "Black",
@@ -367,7 +367,7 @@ function lbalance(x1, x2, x3) {
   }
   var r = x1._3;
   var l = x1._1;
-  if (typeof l === "object" && l._0) {
+  if (typeof l === "object" && l._0 !== "Black") {
     return {
             TAG: "Node",
             _0: "Red",
@@ -397,7 +397,7 @@ function lbalance(x1, x2, x3) {
             _3: x3
           };
   }
-  if (!r._0) {
+  if (r._0 === "Black") {
     return {
             TAG: "Node",
             _0: "Black",
@@ -429,13 +429,13 @@ function lbalance(x1, x2, x3) {
 }
 
 function rbalance(x1, x2, x3) {
-  if (typeof x3 === "object" && x3._0) {
+  if (typeof x3 === "object" && x3._0 !== "Black") {
     var b = x3._1;
     var exit = 0;
     if (typeof b !== "object") {
       exit = 2;
     } else {
-      if (b._0) {
+      if (b._0 !== "Black") {
         return {
                 TAG: "Node",
                 _0: "Red",
@@ -460,7 +460,7 @@ function rbalance(x1, x2, x3) {
     }
     if (exit === 2) {
       var match = x3._3;
-      if (typeof match === "object" && match._0) {
+      if (typeof match === "object" && match._0 !== "Black") {
         return {
                 TAG: "Node",
                 _0: "Red",
@@ -504,7 +504,7 @@ function ins(x, s) {
             _3: "Empty"
           };
   }
-  if (s._0) {
+  if (s._0 === "Black") {
     var y = s._2;
     if (x === y) {
       return s;
@@ -512,21 +512,9 @@ function ins(x, s) {
     var b = s._3;
     var a = s._1;
     if (x < y) {
-      return {
-              TAG: "Node",
-              _0: "Red",
-              _1: ins(x, a),
-              _2: y,
-              _3: b
-            };
+      return lbalance(ins(x, a), y, b);
     } else {
-      return {
-              TAG: "Node",
-              _0: "Red",
-              _1: a,
-              _2: y,
-              _3: ins(x, b)
-            };
+      return rbalance(a, y, ins(x, b));
     }
   }
   var y$1 = s._2;
@@ -536,15 +524,27 @@ function ins(x, s) {
   var b$1 = s._3;
   var a$1 = s._1;
   if (x < y$1) {
-    return lbalance(ins(x, a$1), y$1, b$1);
+    return {
+            TAG: "Node",
+            _0: "Red",
+            _1: ins(x, a$1),
+            _2: y$1,
+            _3: b$1
+          };
   } else {
-    return rbalance(a$1, y$1, ins(x, b$1));
+    return {
+            TAG: "Node",
+            _0: "Red",
+            _1: a$1,
+            _2: y$1,
+            _3: ins(x, b$1)
+          };
   }
 }
 
 function add(x, s) {
   var s$1 = ins(x, s);
-  if (typeof s$1 !== "object" || !s$1._0) {
+  if (typeof s$1 !== "object" || s$1._0 === "Black") {
     return s$1;
   } else {
     return {
@@ -570,19 +570,9 @@ function remove_min(param) {
         };
   }
   var c = param._0;
-  if (c) {
+  if (c === "Black") {
     var tmp = param._1;
     if (typeof tmp !== "object") {
-      return [
-              param._3,
-              param._2,
-              false
-            ];
-    }
-    
-  } else {
-    var tmp$1 = param._1;
-    if (typeof tmp$1 !== "object") {
       var match = param._3;
       var x = param._2;
       if (typeof match !== "object") {
@@ -592,7 +582,7 @@ function remove_min(param) {
                 true
               ];
       }
-      if (match._0) {
+      if (match._0 !== "Black") {
         return [
                 {
                   TAG: "Node",
@@ -614,6 +604,16 @@ function remove_min(param) {
             ],
             Error: new Error()
           };
+    }
+    
+  } else {
+    var tmp$1 = param._1;
+    if (typeof tmp$1 !== "object") {
+      return [
+              param._3,
+              param._2,
+              false
+            ];
     }
     
   }
