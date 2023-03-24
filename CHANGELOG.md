@@ -45,6 +45,7 @@ These are only breaking changes for unformatted code.
 - Remove unsafe ``` j`$(a)$(b)` ``` interpolation deprecated in compiler version 10 https://github.com/rescript-lang/rescript-compiler/pull/6068
 - Remove deprecated module `Printexc`
 - `@deriving(jsConverter)` not supported anymore for variant types https://github.com/rescript-lang/rescript-compiler/pull/6088
+- New representation for variants, where the tag is a string instead of a number. https://github.com/rescript-lang/rescript-compiler/pull/6088
 
 #### :bug: Bug Fix
 
