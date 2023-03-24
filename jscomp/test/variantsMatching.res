@@ -204,3 +204,65 @@ module MyNullableExtended = {
   let expectSeven = plus(Present({x: 4., y: 3.}), Present({x: 3., y: 4.}))
   Js.log2("expect {x:7, y:7}:", expectSeven)
 }
+module TaggedUnions = {
+  /*
+  type Circle = {
+    kind: 1; // Number literal
+    radius: number;
+  };
+
+  type Square = {
+    kind: "square"; // String literal
+    sideLength: number;
+  };
+
+  type Rectangle = {
+    kind: "rectangle"; // String literal
+    width: number;
+    height: number;
+  };
+
+  type Shape = Circle | Square | Rectangle;
+
+  function area(shape: Shape): number {
+    switch (shape.kind) {
+      case 1: // Circle
+        return Math.PI * shape.radius ** 2;
+      case "square": // Square
+        return shape.sideLength ** 2;
+      case "rectangle": // Rectangle
+        return shape.width * shape.height;
+      default:
+        throw new Error("Invalid shape kind");
+    }
+  }
+*/
+  type circle = {
+    kind: string,
+    radius: float,
+  }
+
+  type square = {
+    kind: string,
+    sideLength: float,
+  }
+
+  type rectangle = {
+    kind: string,
+    width: float,
+    height: float,
+  }
+
+  type shape =
+    | Circle(circle)
+    | Square(square)
+    | Rectangle(rectangle)
+
+  let area = (shape: shape): float => {
+    switch shape {
+    | Circle({radius}) => Js.Math._PI *. radius ** 2.
+    | Square({sideLength}) => sideLength ** 2.
+    | Rectangle({width, height}) => width *. height
+    }
+  }
+}

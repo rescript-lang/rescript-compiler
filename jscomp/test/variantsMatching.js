@@ -345,6 +345,23 @@ var MyNullableExtended = {
   expectSeven: expectSeven$1
 };
 
+function area(shape) {
+  switch (shape.TAG) {
+    case "Circle" :
+        return Math.PI * Math.pow(shape._0.radius, 2);
+    case "Square" :
+        return Math.pow(shape._0.sideLength, 2);
+    case "Rectangle" :
+        var match = shape._0;
+        return match.width * match.height;
+    
+  }
+}
+
+var TaggedUnions = {
+  area: area
+};
+
 exports.toEnum = toEnum;
 exports.toString = toString;
 exports.bar = bar;
@@ -360,4 +377,5 @@ exports.MyUndefined = MyUndefined;
 exports.MyNull = MyNull;
 exports.MyNullable = MyNullable;
 exports.MyNullableExtended = MyNullableExtended;
+exports.TaggedUnions = TaggedUnions;
 /* expectSeven Not a pure module */
