@@ -17,13 +17,13 @@ function eq(loc, x, y) {
 }
 
 var v = {
-  TAG: /* A0 */0,
+  TAG: "A0",
   lbl: 3,
   more: /* [] */0
 };
 
 var v1 = {
-  TAG: /* A1 */1,
+  TAG: "A1",
   more: {
     hd: 1,
     tl: {
@@ -88,14 +88,14 @@ function ff(x) {
 }
 
 var v4 = {
-  TAG: /* A0 */0,
+  TAG: "A0",
   x: 0,
   y: 0,
   z: 0
 };
 
 var v5 = {
-  TAG: /* A1 */1,
+  TAG: "A1",
   z: 0
 };
 
