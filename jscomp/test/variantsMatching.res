@@ -237,26 +237,10 @@ module TaggedUnions = {
     }
   }
 */
-  type circle = {
-    kind: string,
-    radius: float,
-  }
-
-  type square = {
-    kind: string,
-    sideLength: float,
-  }
-
-  type rectangle = {
-    kind: string,
-    width: float,
-    height: float,
-  }
-
   type shape =
-    | Circle(circle)
-    | Square(square)
-    | Rectangle(rectangle)
+    | @as(1) Circle({kind: string, radius: float})
+    | @as("square") Square({kind: string, sideLength: float})
+    | @as("rectangle") Rectangle({kind: string, width: float, height: float})
 
   let area = (shape: shape): float => {
     switch shape {

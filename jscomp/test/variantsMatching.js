@@ -347,13 +347,12 @@ var MyNullableExtended = {
 
 function area(shape) {
   switch (shape.TAG) {
-    case "Circle" :
-        return Math.PI * Math.pow(shape._0.radius, 2);
-    case "Square" :
-        return Math.pow(shape._0.sideLength, 2);
-    case "Rectangle" :
-        var match = shape._0;
-        return match.width * match.height;
+    case 1 :
+        return Math.PI * Math.pow(shape.radius, 2);
+    case "square" :
+        return Math.pow(shape.sideLength, 2);
+    case "rectangle" :
+        return shape.width * shape.height;
     
   }
 }
