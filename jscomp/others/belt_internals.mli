@@ -58,8 +58,6 @@ module Obj : sig
   external field : t -> int -> t = "%obj_field" 
   external set_field : t -> int -> t -> unit = "%obj_set_field"
   external tag : t -> int = "?obj_tag" 
-  (* The compiler ensures (|0) operation *)
-  external set_tag : t -> int -> unit = "TAG" [@@bs.set]  
   external repr : 'a -> t = "%identity"
   external obj : t -> 'a = "%identity"
   external magic : 'a -> 'b = "%identity"  

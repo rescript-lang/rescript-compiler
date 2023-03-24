@@ -104,7 +104,6 @@ let rec no_side_effect_expression_desc (x : J.expression_desc) =
   | Length (e, _) | Caml_block_tag e | Typeof e -> no_side_effect e
   | Bin (op, a, b) -> op <> Eq && no_side_effect a && no_side_effect b
   | Js_not _ | Cond _ | FlatCall _ | Call _ | New _ | Raw_js_code _
-  (* | Caml_block_set_tag _  *)
   (* actually true? *) ->
       false
   | Await _ -> false

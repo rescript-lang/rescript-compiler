@@ -42,12 +42,7 @@ external field : t -> int -> t = "%obj_field"
 
     [set_field] MUST NOT be called on immutable blocks.  (Blocks allocated
     in C stubs, or with [new_block] below, are always considered mutable.)
-
-    The same goes for [set_double_field] and [set_tag].  However, for
-    [set_tag], in the case of immutable blocks where the middle-end optimizers
-    never see code that discriminates on their tag (for example records), the
-    operation should be safe.  Such uses are nonetheless discouraged.
-
+    
     For experts only:
     [set_field] et al can be made safe by first wrapping the block in
     {!Sys.opaque_identity}, so any information about its contents will not
