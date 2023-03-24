@@ -90,6 +90,7 @@ val blk_record_inlined :
     int ->
     string list ->
     tag:int ->
+    attrs:Parsetree.attributes ->
     mutable_flag ->  
     tag_info
   ) ref
@@ -275,7 +276,8 @@ type function_attribute = {
   async : bool;
 }
 
-type switch_names = {consts: cstr_name array; blocks: cstr_name array}
+type block = {cstr_name: cstr_name; tag_name: string option}
+type switch_names = {consts: cstr_name array; blocks: block array}
 
 type lambda =
     Lvar of Ident.t

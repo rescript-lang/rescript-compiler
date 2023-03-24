@@ -379,6 +379,9 @@ let transl_declaration env sdecl id =
               raise(Error(sdecl.ptype_loc, Duplicate_constructor name));
             all_constrs := StringSet.add name !all_constrs)
           scstrs;
+        let copy_tag_attr_from_decl attr =
+          let tag_attr = Ext_list.filter sdecl.ptype_attributes (fun ({txt}, _) -> txt = "tag") in
+          if tag_attr = [] then attr else tag_attr @ attr in
         let make_cstr scstr =
           let name = Ident.create scstr.pcd_name.txt in
           let targs, tret_type, args, ret_type, _cstr_params =
@@ -391,14 +394,14 @@ let transl_declaration env sdecl id =
               cd_args = targs;
               cd_res = tret_type;
               cd_loc = scstr.pcd_loc;
-              cd_attributes = scstr.pcd_attributes }
+              cd_attributes = scstr.pcd_attributes |> copy_tag_attr_from_decl }
           in
           let cstr =
             { Types.cd_id = name;
               cd_args = args;
               cd_res = ret_type;
               cd_loc = scstr.pcd_loc;
-              cd_attributes = scstr.pcd_attributes }
+              cd_attributes = scstr.pcd_attributes |> copy_tag_attr_from_decl }
           in
             tcstr, cstr
         in

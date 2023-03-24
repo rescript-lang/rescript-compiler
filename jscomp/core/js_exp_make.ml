@@ -800,8 +800,8 @@ let is_type_object (e : t) : t = string_equal (typeof e) (str "object")
    call plain [dot]
 *)
 
-let tag ?comment e : t =
-  { expression_desc = Caml_block_tag e; comment }
+let tag ?comment ?(name=Js_dump_lit.tag) e : t =
+  { expression_desc = Caml_block_tag (e, name); comment }
 
 (* according to the compiler, [Btype.hash_variant],
    it's reduced to 31 bits for hash

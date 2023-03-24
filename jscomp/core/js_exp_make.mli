@@ -307,7 +307,7 @@ val unit : t
 
 val undefined : t
 
-val tag : ?comment:string -> J.expression -> t
+val tag : ?comment:string -> ?name:string -> J.expression -> t
 
 (** Note that this is coupled with how we encode block, if we use the 
     `Object.defineProperty(..)` since the array already hold the length,

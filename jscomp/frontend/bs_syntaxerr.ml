@@ -52,6 +52,7 @@ type error =
   | Bs_this_simple_pattern
   | Bs_uncurried_arity_too_large
   | InvalidVariantAsAnnotation
+  | InvalidVariantTagAnnotation
 
 let pp_error fmt err =
   Format.pp_print_string fmt
@@ -100,6 +101,8 @@ let pp_error fmt err =
         "%@this expect its pattern variable to be simple form"
     | InvalidVariantAsAnnotation ->
       "A variant case annotation @as(...) must be a string or integer or null"
+    | InvalidVariantTagAnnotation ->
+      "A variant tag annotation @tag(...) must be a string"
     )
 
 type exn += Error of Location.t * error

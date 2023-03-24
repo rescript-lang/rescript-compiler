@@ -30,11 +30,15 @@ let names_from_construct_pattern (pat : Typedtree.pattern) =
     let get_cstr_name (cstr: Types.constructor_declaration) =
       { Lambda.name = Ident.name cstr.cd_id;
         as_value = Ast_attributes.process_as_value cstr.cd_attributes } in
+    let get_tag_name (cstr: Types.constructor_declaration) =
+      Ast_attributes.process_tag_name cstr.cd_attributes in
+    let get_block cstr : Lambda.block =
+      {cstr_name = get_cstr_name cstr; tag_name = get_tag_name cstr} in
     let consts, blocks =
       Ext_list.fold_left cstrs ([], []) (fun (consts, blocks) cstr ->
           if is_nullary_variant cstr.cd_args then
             (get_cstr_name cstr :: consts, blocks)
-          else (consts, get_cstr_name cstr :: blocks))
+          else (consts, get_block cstr :: blocks))
     in
     Some
       {
@@ -48,7 +52,6 @@ let names_from_construct_pattern (pat : Typedtree.pattern) =
     | { type_kind = Type_abstract; type_manifest = Some t; _ } -> (
         match (Ctype.unalias t).desc with
         | Tconstr (pathn, _, _) ->
-            (* Format.eprintf "XXX path%d:%s path%d:%s@." n (Path.name path) (n+1) (Path.name pathn); *)
             resolve_path (n + 1) pathn
         | _ -> None)
     | { type_kind = Type_abstract; type_manifest = None; _ } -> None

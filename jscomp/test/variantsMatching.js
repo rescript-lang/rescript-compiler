@@ -346,7 +346,7 @@ var MyNullableExtended = {
 };
 
 function area(shape) {
-  switch (shape.TAG) {
+  switch (shape.kind) {
     case 1 :
         return Math.PI * Math.pow(shape.radius, 2);
     case "square" :
@@ -357,8 +357,35 @@ function area(shape) {
   }
 }
 
+var TaggedUnions_circle = {
+  kind: 1,
+  radius: 10
+};
+
+var TaggedUnions_square = {
+  kind: "square",
+  sideLength: 10
+};
+
 var TaggedUnions = {
-  area: area
+  area: area,
+  circle: TaggedUnions_circle,
+  square: TaggedUnions_square
+};
+
+var CustomTagNotInline_a = {
+  "custom-tag": "A",
+  _0: 10
+};
+
+var CustomTagNotInline_b = {
+  "custom-tag": "B",
+  _0: 20
+};
+
+var CustomTagNotInline = {
+  a: CustomTagNotInline_a,
+  b: CustomTagNotInline_b
 };
 
 exports.toEnum = toEnum;
@@ -377,4 +404,5 @@ exports.MyNull = MyNull;
 exports.MyNullable = MyNullable;
 exports.MyNullableExtended = MyNullableExtended;
 exports.TaggedUnions = TaggedUnions;
+exports.CustomTagNotInline = CustomTagNotInline;
 /* expectSeven Not a pure module */

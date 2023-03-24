@@ -99,9 +99,9 @@ let blk_record_ext =  ref (fun fields mutable_flag ->
     Blk_record_ext {fields = all_labels_info; mutable_flag }
   )
 
-let blk_record_inlined = ref (fun fields name num_nonconst optional_labels ~tag mutable_flag -> 
+let blk_record_inlined = ref (fun fields name num_nonconst optional_labels ~tag ~attrs mutable_flag -> 
   let fields = fields |> Array.map (fun (x,_) -> x.Types.lbl_name) in    
-  Blk_record_inlined {fields; name; num_nonconst; tag; mutable_flag; optional_labels; attrs = []}
+  Blk_record_inlined {fields; name; num_nonconst; tag; mutable_flag; optional_labels; attrs }
 ) 
 
 let ref_tag_info : tag_info = 
@@ -273,7 +273,8 @@ type function_attribute = {
   return_unit : bool;
   async : bool;
 }
-type switch_names = {consts: cstr_name array; blocks: cstr_name array}
+type block = {cstr_name: cstr_name; tag_name: string option}
+type switch_names = {consts: cstr_name array; blocks: block array}
 
 type lambda =
     Lvar of Ident.t

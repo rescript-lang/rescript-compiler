@@ -762,6 +762,9 @@ and expression_desc cxt ~(level : int) f x : cxt =
           | Lit n -> Ext_list.mem_string p.optional_labels n
           | Symbol_name -> false
         in
+        let tag_name = match Ast_attributes.process_tag_name p.attrs with
+        | None -> L.tag
+        | Some s -> s in
         let tails =
           match p.optional_labels with
           | [] -> tails
@@ -771,7 +774,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
               | Undefined when is_optional f -> None
               | _ -> Some (f, x))
           in
-        ( Js_op.Lit L.tag,
+        ( Js_op.Lit tag_name, (* TAG:xx for inline records *)
           match Ast_attributes.process_as_value p.attrs with
           | None -> E.str p.name
           | Some as_value -> E.as_value as_value )
@@ -781,6 +784,9 @@ and expression_desc cxt ~(level : int) f x : cxt =
   | Caml_block (el, _, tag, Blk_constructor p) ->
       let not_is_cons = p.name <> Literals.cons in
       let as_value = Ast_attributes.process_as_value p.attrs in
+      let tag_name = match Ast_attributes.process_tag_name p.attrs with
+        | None -> L.tag
+        | Some s -> s in
       let objs =
         let tails =
           Ext_list.mapi_append el
@@ -796,7 +802,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
         in
         if (as_value = Some AsUnboxed || not_is_cons = false) && p.num_nonconst = 1 then tails
         else
-          ( Js_op.Lit L.tag,
+          ( Js_op.Lit tag_name, (* TAG:xx *) 
             match as_value with
             | None -> E.str p.name
             | Some as_value -> E.as_value as_value )
@@ -816,11 +822,11 @@ and expression_desc cxt ~(level : int) f x : cxt =
       assert false
   | Caml_block (el, mutable_flag, _tag, Blk_tuple) ->
       expression_desc cxt ~level f (Array (el, mutable_flag))
-  | Caml_block_tag e ->
+  | Caml_block_tag (e, tag) ->
       P.group f 1 (fun _ ->
           let cxt = expression ~level:15 cxt f e in
           P.string f L.dot;
-          P.string f L.tag;
+          P.string f tag;
           cxt)
   | Array_index (e, p) ->
       P.cond_paren_group f (level > 15) 1 (fun _ ->

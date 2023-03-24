@@ -52,6 +52,7 @@ type error =
   | Bs_this_simple_pattern
   | Bs_uncurried_arity_too_large
   | InvalidVariantAsAnnotation
+  | InvalidVariantTagAnnotation
 
 val err : Location.t -> error -> 'a
 

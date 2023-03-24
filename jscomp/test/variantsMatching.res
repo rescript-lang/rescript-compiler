@@ -204,6 +204,7 @@ module MyNullableExtended = {
   let expectSeven = plus(Present({x: 4., y: 3.}), Present({x: 3., y: 4.}))
   Js.log2("expect {x:7, y:7}:", expectSeven)
 }
+
 module TaggedUnions = {
   /*
   type Circle = {
@@ -237,10 +238,11 @@ module TaggedUnions = {
     }
   }
 */
+  @tag("kind")
   type shape =
-    | @as(1) Circle({kind: string, radius: float})
-    | @as("square") Square({kind: string, sideLength: float})
-    | @as("rectangle") Rectangle({kind: string, width: float, height: float})
+    | @as(1) Circle({radius: float})
+    | @as("square") Square({sideLength: float})
+    | @as("rectangle") Rectangle({width: float, height: float})
 
   let area = (shape: shape): float => {
     switch shape {
@@ -249,4 +251,14 @@ module TaggedUnions = {
     | Rectangle({width, height}) => width *. height
     }
   }
+
+  let circle = Circle({radius: 10.})
+  let square = Square({sideLength: 10.})
+}
+
+module CustomTagNotInline = {
+  @tag("custom-tag")
+  type t = A(int) | B(int)
+  let a = A(10)
+  let b = B(20)
 }
