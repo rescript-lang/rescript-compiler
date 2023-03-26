@@ -1,5 +1,4 @@
 external bigint : string -> float = "BigInt" [@@bs.val]
-
 let isLessThan title small big =
   [
     ("compare: " ^ title, fun _ -> Mt.Eq (true, compare big small > 0));
@@ -14,6 +13,10 @@ let isLessThan title small big =
     ("max: " ^ title, fun _ -> Mt.Eq (big, max small big));
     ("!= operator: " ^ title, fun _ -> Mt.Eq (true, big != small));
     ("!= operator: " ^ title, fun _ -> Mt.Eq (true, small != big));
+    ("<> operator: " ^ title, fun _ -> Mt.Eq (true, big <> small));
+    ("<> operator: " ^ title, fun _ -> Mt.Eq (true, small <> big));
+    ("= operator: " ^ title, fun _ -> Mt.Eq (false, big = small));
+    ("= operator: " ^ title, fun _ -> Mt.Eq (false, small = big));
     ("== operator: " ^ title, fun _ -> Mt.Eq (false, big == small));
     ("== operator: " ^ title, fun _ -> Mt.Eq (false, small == big));
   ]
@@ -30,6 +33,10 @@ let isEqual title num1 num2 =
     ("compare: " ^ title, fun _ -> Mt.Eq (0, compare num2 num1));
     ("!= operator: " ^ title, fun _ -> Mt.Eq (false, num1 != num2));
     ("!= operator: " ^ title, fun _ -> Mt.Eq (false, num2 != num1));
+    ("<> operator: " ^ title, fun _ -> Mt.Eq (false, num1 <> num2));
+    ("<> operator: " ^ title, fun _ -> Mt.Eq (false, num2 <> num1));
+    ("= operator: " ^ title, fun _ -> Mt.Eq (true, num1 = num2));
+    ("= operator: " ^ title, fun _ -> Mt.Eq (true, num2 = num1));
     ("== operator: " ^ title, fun _ -> Mt.Eq (true, num1 == num2));
     ("== operator: " ^ title, fun _ -> Mt.Eq (true, num2 == num1));
   ]

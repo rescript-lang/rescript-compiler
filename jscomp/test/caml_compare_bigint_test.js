@@ -139,27 +139,75 @@ function isLessThan(title, small, big) {
                                 ],
                                 tl: {
                                   hd: [
-                                    "== operator: " + title,
+                                    "<> operator: " + title,
                                     (function (param) {
                                         return {
                                                 TAG: "Eq",
-                                                _0: false,
-                                                _1: big === small
+                                                _0: true,
+                                                _1: Caml_obj.notequal(big, small)
                                               };
                                       })
                                   ],
                                   tl: {
                                     hd: [
-                                      "== operator: " + title,
+                                      "<> operator: " + title,
                                       (function (param) {
                                           return {
                                                   TAG: "Eq",
-                                                  _0: false,
-                                                  _1: small === big
+                                                  _0: true,
+                                                  _1: Caml_obj.notequal(small, big)
                                                 };
                                         })
                                     ],
-                                    tl: /* [] */0
+                                    tl: {
+                                      hd: [
+                                        "= operator: " + title,
+                                        (function (param) {
+                                            return {
+                                                    TAG: "Eq",
+                                                    _0: false,
+                                                    _1: Caml_obj.equal(big, small)
+                                                  };
+                                          })
+                                      ],
+                                      tl: {
+                                        hd: [
+                                          "= operator: " + title,
+                                          (function (param) {
+                                              return {
+                                                      TAG: "Eq",
+                                                      _0: false,
+                                                      _1: Caml_obj.equal(small, big)
+                                                    };
+                                            })
+                                        ],
+                                        tl: {
+                                          hd: [
+                                            "== operator: " + title,
+                                            (function (param) {
+                                                return {
+                                                        TAG: "Eq",
+                                                        _0: false,
+                                                        _1: big === small
+                                                      };
+                                              })
+                                          ],
+                                          tl: {
+                                            hd: [
+                                              "== operator: " + title,
+                                              (function (param) {
+                                                  return {
+                                                          TAG: "Eq",
+                                                          _0: false,
+                                                          _1: small === big
+                                                        };
+                                                })
+                                            ],
+                                            tl: /* [] */0
+                                          }
+                                        }
+                                      }
+                                    }
                                   }
                                 }
                               }
@@ -289,27 +337,75 @@ function isEqual(title, num1, num2) {
                             ],
                             tl: {
                               hd: [
-                                "== operator: " + title,
+                                "<> operator: " + title,
                                 (function (param) {
                                     return {
                                             TAG: "Eq",
-                                            _0: true,
-                                            _1: num1 === num2
+                                            _0: false,
+                                            _1: Caml_obj.notequal(num1, num2)
                                           };
                                   })
                               ],
                               tl: {
                                 hd: [
-                                  "== operator: " + title,
+                                  "<> operator: " + title,
                                   (function (param) {
                                       return {
                                               TAG: "Eq",
-                                              _0: true,
-                                              _1: num2 === num1
+                                              _0: false,
+                                              _1: Caml_obj.notequal(num2, num1)
                                             };
                                     })
                                 ],
-                                tl: /* [] */0
+                                tl: {
+                                  hd: [
+                                    "= operator: " + title,
+                                    (function (param) {
+                                        return {
+                                                TAG: "Eq",
+                                                _0: true,
+                                                _1: Caml_obj.equal(num1, num2)
+                                              };
+                                      })
+                                  ],
+                                  tl: {
+                                    hd: [
+                                      "= operator: " + title,
+                                      (function (param) {
+                                          return {
+                                                  TAG: "Eq",
+                                                  _0: true,
+                                                  _1: Caml_obj.equal(num2, num1)
+                                                };
+                                        })
+                                    ],
+                                    tl: {
+                                      hd: [
+                                        "== operator: " + title,
+                                        (function (param) {
+                                            return {
+                                                    TAG: "Eq",
+                                                    _0: true,
+                                                    _1: num1 === num2
+                                                  };
+                                          })
+                                      ],
+                                      tl: {
+                                        hd: [
+                                          "== operator: " + title,
+                                          (function (param) {
+                                              return {
+                                                      TAG: "Eq",
+                                                      _0: true,
+                                                      _1: num2 === num1
+                                                    };
+                                            })
+                                        ],
+                                        tl: /* [] */0
+                                      }
+                                    }
+                                  }
+                                }
                               }
                             }
                           }
