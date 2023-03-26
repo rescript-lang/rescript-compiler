@@ -159,7 +159,10 @@ let rec compare (a : Obj.t) (b : Obj.t) : int =
       raise (Invalid_argument "compare: functional value")
     | "function", _ -> 1
     | _, "function" -> -1
-    | "number", "number" ->
+    | "bigint", "bigint"
+    | "number", "number"
+    | "number", "bigint"
+    | "bigint", "number" ->
       Pervasives.compare (Obj.magic a : float) (Obj.magic b : float)
     | "number", _ ->
       if b == Obj.repr Js.null || Caml_option.isNested b then 1
@@ -282,8 +285,8 @@ let rec equal (a : Obj.t) (b : Obj.t) : bool =
   else
     let a_type = Js.typeof a in
     if
-      a_type = "string" || a_type = "number" || a_type = "boolean"
-      || a_type = "undefined"
+      a_type = "string" || a_type = "number" || a_type = "bigint"
+      || a_type = "boolean" || a_type = "undefined"
       || a == [%raw {|null|}]
     then false
     else
@@ -293,7 +296,8 @@ let rec equal (a : Obj.t) (b : Obj.t) : bool =
         (* first, check using reference equality *)
       else if
         (* a_type = "object" || "symbol" *)
-        b_type = "number" || b_type = "undefined" || b == [%raw {|null|}]
+        b_type = "number" || b_type = "bigint" || b_type = "undefined"
+        || b == [%raw {|null|}]
       then false
       else
         (* [a] [b] could not be null, so it can not raise *)
@@ -354,29 +358,28 @@ let equal_nullable (x : Obj.t) (y : Obj.t Js.nullable) =
   | None -> x == Obj.magic y
   | Some y -> equal x y
 
+let isNumberOrBigInt a = Js.typeof a = "number" || Js.typeof a = "bigint"
+
+let canNumericCompare a b = isNumberOrBigInt a && isNumberOrBigInt b
+
 let notequal a b =
-  if Js.typeof a = "number" && Js.typeof b = "number" then
-    (Obj.magic a : float) <> (Obj.magic b : float)
+  if canNumericCompare a b then (Obj.magic a : float) <> (Obj.magic b : float)
   else not (equal a b)
 
 let greaterequal a b =
-  if Js.typeof a = "number" && Js.typeof b = "number" then
-    (Obj.magic a : float) >= (Obj.magic b : float)
+  if canNumericCompare a b then (Obj.magic a : float) >= (Obj.magic b : float)
   else compare a b >= 0
 
 let greaterthan a b =
-  if Js.typeof a = "number" && Js.typeof b = "number" then
-    (Obj.magic a : float) > (Obj.magic b : float)
+  if canNumericCompare a b then (Obj.magic a : float) > (Obj.magic b : float)
   else compare a b > 0
 
 let lessequal a b =
-  if Js.typeof a = "number" && Js.typeof b = "number" then
-    (Obj.magic a : float) <= (Obj.magic b : float)
+  if canNumericCompare a b then (Obj.magic a : float) <= (Obj.magic b : float)
   else compare a b <= 0
 
 let lessthan a b =
-  if Js.typeof a = "number" && Js.typeof b = "number" then
-    (Obj.magic a : float) < (Obj.magic b : float)
+  if canNumericCompare a b then (Obj.magic a : float) < (Obj.magic b : float)
   else compare a b < 0
 
 let min (x : Obj.t) y = if compare x y <= 0 then x else y
