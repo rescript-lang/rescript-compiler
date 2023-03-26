@@ -1,5 +1,5 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+/* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,46 +17,32 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
+type t = Obj.t
 
+let obj_dup: Obj.t => Obj.t
 
+let update_dummy: (Obj.t, Obj.t) => unit
 
+let compare: (Obj.t, Obj.t) => int
 
-type t = Obj.t 
+type eq = (Obj.t, Obj.t) => bool
 
+let equal: eq
 
+let equal_null: (Obj.t, Js.null<Obj.t>) => bool
+let equal_undefined: (Obj.t, Js.undefined<Obj.t>) => bool
+let equal_nullable: (Obj.t, Js.nullable<Obj.t>) => bool
 
-val obj_dup : Obj.t -> Obj.t
+let notequal: eq
+let greaterequal: eq
+let greaterthan: eq
+let lessthan: eq
+let lessequal: eq
 
-
-val update_dummy : Obj.t -> Obj.t -> unit
-
-
-val compare : Obj.t -> Obj.t  -> int
-
-type eq = Obj.t -> Obj.t -> bool
-
-val equal : eq
-
-val equal_null : Obj.t -> Obj.t Js.null -> bool 
-val equal_undefined : Obj.t -> Obj.t Js.undefined -> bool 
-val equal_nullable : Obj.t -> Obj.t Js.nullable -> bool 
-
-val notequal : eq
-val greaterequal : eq
-val greaterthan : eq
-val lessthan : eq
-val lessequal : eq
-
-
-
-
-val min : 
-  t -> t -> t 
-val max : 
-  t -> t -> t 
-
+let min: (t, t) => t
+let max: (t, t) => t
