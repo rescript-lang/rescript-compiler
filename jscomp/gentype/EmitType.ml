@@ -60,7 +60,6 @@ let typeReactRef ~type_ =
         {
           mutable_ = Mutable;
           nameJS = reactRefCurrent;
-          nameRE = reactRefCurrent;
           optional = Mandatory;
           type_ = Null type_;
         };
@@ -68,8 +67,8 @@ let typeReactRef ~type_ =
 
 let isTypeReactRef ~fields =
   match fields with
-  | [{mutable_ = Mutable; nameJS; nameRE; optional = Mandatory}] ->
-    nameJS == reactRefCurrent && nameJS == nameRE
+  | [{mutable_ = Mutable; nameJS; optional = Mandatory}] ->
+    nameJS == reactRefCurrent
   | _ -> false
 
 let isTypeFunctionComponent ~fields type_ =
@@ -182,7 +181,6 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
       {
         mutable_ = Mutable;
         nameJS = name;
-        nameRE = name;
         optional = Mandatory;
         type_ = TypeVar value;
       }

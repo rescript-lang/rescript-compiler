@@ -66,20 +66,11 @@ export const makeVariant: () => typeL = function () {
 export const makeABC: () => typeA<typeB> = function () {
   const result = NestedVariantsBS.makeABC();
   return result.TAG===0
-    ? {tag:"A", value:[{c:result._0.c.TAG===0
-    ? {tag:"C", value:result._0.c._0}
-    : {tag:"D", value:result._0.c._0}}, result._1]}
-    : {tag:"B", value:[{c:result._0.c.TAG===0
-    ? {tag:"C", value:result._0.c._0}
-    : {tag:"D", value:result._0.c._0}}, result._1]}
+    ? {tag:"A", value:[result._0, result._1]}
+    : {tag:"B", value:[result._0, result._1]}
 };
 
-export const makeBC: () => typeB = function () {
-  const result = NestedVariantsBS.makeBC();
-  return {c:result.c.TAG===0
-    ? {tag:"C", value:result.c._0}
-    : {tag:"D", value:result.c._0}}
-};
+export const makeBC: () => typeB = NestedVariantsBS.makeBC;
 
 export const makeAC: () => typeA<typeC> = function () {
   const result = NestedVariantsBS.makeAC();

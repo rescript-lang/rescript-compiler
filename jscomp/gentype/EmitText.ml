@@ -49,7 +49,7 @@ let newNameGen () = Hashtbl.create 1
 let quotes x = "\"" ^ x ^ "\""
 
 let quotesIfRequired x =
-  match String.length x > 0 && x.[0] = '"' with
+  match String.length x > 0 && (x.[0] [@doesNotRaise]) = '"' with
   | true -> x
   | false -> quotes x
 

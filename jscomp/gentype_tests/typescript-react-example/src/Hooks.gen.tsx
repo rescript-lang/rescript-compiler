@@ -98,14 +98,7 @@ export const WithRename_componentWithRenamedArgs: React.ComponentType<{
   readonly Type: vehicle; 
   readonly to: vehicle; 
   readonly cb: cb
-}> = function Hooks_WithRename_componentWithRenamedArgs(Arg1: any) {
-  const $props = {Type:Arg1.Type, to:Arg1.to, cb:function (Argto: any) {
-      const result1 = Arg1.cb({to:Argto});
-      return result1
-    }};
-  const result = React.createElement(HooksBS.WithRename.componentWithRenamedArgs, $props);
-  return result
-};
+}> = HooksBS.WithRename.componentWithRenamedArgs;
 
 export const WithRef_makeWithRef: (_1:{ readonly vehicle: vehicle }, _2:(null | undefined | any)) => JSX.Element = function (Arg1: any, Arg2: any) {
   const result = Curry._2(HooksBS.WithRef.makeWithRef, Arg1, Arg2);
@@ -171,6 +164,12 @@ export const Inner: {
 } = HooksBS.Inner
 
 export const RenderPropRequiresConversion: { make: React.ComponentType<{ readonly renderVehicle: React.ComponentType<{ readonly number: number; readonly vehicle: vehicle }> }> } = HooksBS.RenderPropRequiresConversion
+
+export const WithRename: { componentWithRenamedArgs: React.ComponentType<{
+  readonly Type: vehicle; 
+  readonly to: vehicle; 
+  readonly cb: cb
+}> } = HooksBS.WithRename
 
 export const ForwardRef: { input: React.ComponentType<{ readonly r: r }> } = HooksBS.ForwardRef
 

@@ -93,12 +93,7 @@ let rec translateArrowType ~config ~typeVarsGen ~noFunctionReturnDependencies
       |> translateArrowType ~config ~typeVarsGen ~noFunctionReturnDependencies
            ~typeEnv ~revArgDeps:nextRevDeps
            ~revArgs:
-             (( OptLabel
-                  (match asLabel = "" with
-                  | true -> lbl |> Runtime.mangleObjectField
-                  | false -> asLabel),
-                type1 )
-             :: revArgs))
+             ((OptLabel (lbl |> Runtime.mangleObjectField), type1) :: revArgs))
   | _ ->
     let {dependencies; type_ = retType} =
       coreType |> translateCoreType_ ~config ~typeVarsGen ~typeEnv

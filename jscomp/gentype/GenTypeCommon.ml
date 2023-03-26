@@ -18,7 +18,7 @@ type case = {label: string; labelJS: labelJS}
 
 let isJSSafePropertyName name =
   name = ""
-  || (match name.[0] with
+  || (match name.[0] [@doesNotRaise] with
      | 'A' .. 'z' -> true
      | _ -> false)
      && name
@@ -36,12 +36,12 @@ let labelJSToString ?(alwaysQuotes = false) case =
     let len = String.length s in
     len > 0
     && (match len > 1 with
-       | true -> s.[0] > '0'
+       | true -> (s.[0] [@doesNotRaise]) > '0'
        | false -> true)
     &&
     let res = ref true in
     for i = 0 to len - 1 do
-      match s.[i] with
+      match s.[i] [@doesNotRaise] with
       | '0' .. '9' -> ()
       | _ -> res := false
     done;
@@ -78,7 +78,6 @@ and argType = {aName: string; aType: type_}
 and field = {
   mutable_: mutable_;
   nameJS: string;
-  nameRE: string;
   optional: optional;
   type_: type_;
 }
@@ -248,7 +247,7 @@ module NodeFilename = struct
 
     let concat dirname filename =
       let isDirSep s i =
-        let c = s.[i] in
+        let c = (s.[i] [@doesNotRaise]) in
         c = '/' || c = '\\' || c = ':'
       in
       let l = length dirname in

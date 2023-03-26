@@ -113,15 +113,9 @@ export const computeArea4: (o:{
   readonly z?: number
 }) => number = RecordsBS.computeArea4;
 
-export const testMyRec: (x:myRec) => string = function (Arg1: any) {
-  const result = RecordsBS.testMyRec({type_:Arg1.type});
-  return result
-};
+export const testMyRec: (x:myRec) => string = RecordsBS.testMyRec;
 
-export const testMyRec2: (x:myRec) => myRec = function (Arg1: any) {
-  const result = RecordsBS.testMyRec2({type_:Arg1.type});
-  return {type:result.type_}
-};
+export const testMyRec2: (x:myRec) => myRec = RecordsBS.testMyRec2;
 
 export const testMyObj: (x:myObj) => string = RecordsBS.testMyObj;
 

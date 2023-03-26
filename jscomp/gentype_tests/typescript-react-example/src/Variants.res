@@ -31,9 +31,9 @@ let swap = x =>
 
 @genType
 type testGenTypeAs = [
-  | @genType.as("type") #type_
-  | @genType.as("module") #module_
-  | @genType.as("42") #fortytwo
+  | #type_
+  | #module_
+  | #fortytwo
 ]
 
 @genType let testConvert = (x: testGenTypeAs) => x
@@ -45,9 +45,9 @@ type testGenTypeAs = [
 
 @genType
 type testGenTypeAs2 = [
-  | @genType.as("type") #type_
-  | @genType.as("module") #module_
-  | @genType.as("42") #fortytwo
+  | #type_
+  | #module_
+  | #fortytwo
 ]
 
 /* Since testGenTypeAs2 is the same type as testGenTypeAs1,
@@ -56,9 +56,9 @@ type testGenTypeAs2 = [
 
 @genType
 type testGenTypeAs3 = [
-  | @genType.as("type") #type_
-  | @genType.as("module") #module_
-  | @genType.as("XXX THIS IS DIFFERENT") #fortytwo
+  |  #type_
+  |  #module_
+  | #fortytwo
 ]
 
 /* Since testGenTypeAs3 has a different representation:

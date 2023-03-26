@@ -13,7 +13,9 @@ let sanitizeId s =
            | c -> c)
     else s
   in
-  if s <> "" && s.[0] >= 'A' && s.[0] <= 'z' then s else "_" ^ s
+  if s <> "" && (s.[0] [@doesNotRaise]) >= 'A' && (s.[0] [@doesNotRaise]) <= 'z'
+  then s
+  else "_" ^ s
 
 let forBsFile s = sanitizeId s ^ "BS"
 

@@ -92,7 +92,8 @@ let emitJSVariantWithPayload ~label ~polymorphic x =
   ^ ":" ^ x ^ "}"
 
 let isMutableObjectField name =
-  String.length name >= 2 && String.sub name (String.length name - 2) 2 = "#="
+  String.length name >= 2
+  && (String.sub name (String.length name - 2) 2 [@doesNotRaise]) = "#="
 
 (** Mutable fields, i.e. fields annotated "[@bs.set]"
    are represented as extra fields called "fieldName#="
@@ -173,12 +174,15 @@ module Mangle = struct
   *)
   let translate x =
     let len = x |> String.length in
-    if len > 2 && x.[len - 1] = '_' && x.[len - 2] = '_' then
-      (* "foo__" -> "foo" *) String.sub x 0 (len - 2)
-    else if len > 1 && x.[0] = '_' then
-      if x.[1] >= 'A' && x.[1] <= 'Z' then
+    if
+      len > 2
+      && (x.[len - 1] [@doesNotRaise]) = '_'
+      && (x.[len - 2] [@doesNotRaise]) = '_'
+    then (* "foo__" -> "foo" *) String.sub x 0 (len - 2) [@doesNotRaise]
+    else if len > 1 && (x.[0] [@doesNotRaise]) = '_' then
+      if (x.[1] [@doesNotRaise]) >= 'A' && (x.[1] [@doesNotRaise]) <= 'Z' then
         (* "_Uppercase" => "Uppercase"s *)
-        String.sub x 1 (len - 1)
+        String.sub x 1 (len - 1) [@doesNotRaise]
       else
         (* "_rec" -> "rec" *)
         match Hashtbl.find table x with

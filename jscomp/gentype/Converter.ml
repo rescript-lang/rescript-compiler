@@ -198,10 +198,10 @@ let typeGetConverterNormalized ~config ~inline ~lookupId ~typeNameIsInterface
       in
       ( ObjectC
           (fieldsConverted
-          |> List.map (fun ({nameJS; nameRE; optional}, (converter, _)) ->
+          |> List.map (fun ({nameJS; optional}, (converter, _)) ->
                  {
                    lblJS = nameJS;
-                   lblRE = nameRE;
+                   lblRE = nameJS;
                    c =
                      (match optional = Mandatory with
                      | true -> converter
@@ -357,14 +357,7 @@ let rec converterIsIdentity ~config ~toJS converter =
                 argConverter |> converterIsIdentity ~config ~toJS:(not toJS)
               | GroupConverter _ -> false)
   | IdentC -> true
-  | ObjectC fieldsC ->
-    fieldsC
-    |> List.for_all (fun {lblJS; lblRE; c} ->
-           lblJS = lblRE
-           &&
-           match c with
-           | OptionC c1 -> c1 |> converterIsIdentity ~config ~toJS
-           | _ -> c |> converterIsIdentity ~config ~toJS)
+  | ObjectC _ -> true
   | OptionC c -> c |> converterIsIdentity ~config ~toJS
   | PromiseC c -> c |> converterIsIdentity ~config ~toJS
   | TupleC innerTypesC ->
@@ -456,7 +449,7 @@ let rec apply ~config ~converter ~indent ~nameGen ~toJS ~variantTables value =
             groupConverters
             |> List.mapi (fun i (s, _optional, argConverter) ->
                    s ^ ":"
-                   ^ (varNamesArr.(i)
+                   ^ ((varNamesArr.(i) [@doesNotRaise])
                      |> apply ~config ~converter:argConverter ~indent:indent2
                           ~nameGen ~toJS:notToJS ~variantTables))
             |> String.concat ", "

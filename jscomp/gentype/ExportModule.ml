@@ -56,7 +56,6 @@ and exportModuleItemToFields =
            {
              mutable_ = Mutable;
              nameJS = fieldName;
-             nameRE = fieldName;
              optional = Mandatory;
              type_ = typeForType;
            }

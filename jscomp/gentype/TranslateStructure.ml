@@ -20,7 +20,8 @@ let rec addAnnotationsToTypes_ ~config ~(expr : Typedtree.expression)
     match path |> TranslateTypeExprFromTypes.pathToList |> List.rev with
     | ["Js"; "Internal"; fn_mk]
       when (* Uncurried function definition uses Js.Internal.fn_mkX(...) *)
-           String.length fn_mk >= 5 && String.sub fn_mk 0 5 = "fn_mk" ->
+           String.length fn_mk >= 5
+           && (String.sub fn_mk 0 5 [@doesNotRaise]) = "fn_mk" ->
       argTypes |> addAnnotationsToTypes_ ~config ~expr:expr1
     | _ -> argTypes)
   | _ -> argTypes
@@ -44,11 +45,11 @@ and addAnnotationsToFields ~config (expr : Typedtree.expression)
     let nextFields1, types1 =
       addAnnotationsToFields ~config c_rhs nextFields argTypes
     in
-    let nameJS, nameRE =
+    let name =
       TranslateTypeDeclarations.renameRecordField
-        ~attributes:expr.exp_attributes ~nameRE:field.nameRE
+        ~attributes:expr.exp_attributes ~name:field.nameJS
     in
-    ({field with nameJS; nameRE} :: nextFields1, types1)
+    ({field with nameJS = name} :: nextFields1, types1)
   | _ -> (fields, argTypes)
 
 (** Recover from expr the renaming annotations on named arguments. *)

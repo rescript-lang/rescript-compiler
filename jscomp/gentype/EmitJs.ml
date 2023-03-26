@@ -513,7 +513,9 @@ let rec readCmtFilesRecursively ~config ~env ~inputCmtTranslateTypeDeclarations
       let exportTypeMapFromCmt =
         typeDeclarations
         |> createExportTypeMap ~config ~fromCmtReadRecursively:true
-             ~file:(cmtFile |> Filename.basename |> Filename.chop_extension)
+             ~file:
+               (cmtFile |> Filename.basename
+              |> (Filename.chop_extension [@doesNotRaise]))
       in
       let cmtToExportTypeMap =
         env.cmtToExportTypeMap |> StringMap.add cmtFile exportTypeMapFromCmt

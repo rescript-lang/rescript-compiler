@@ -126,7 +126,9 @@ let processCmtFile cmt =
         inputCMT |> cmtCheckAnnotations ~checkAnnotation
       in
       if isInterface then
-        let cmtFileImpl = (cmtFile |> Filename.chop_extension) ^ ".cmt" in
+        let cmtFileImpl =
+          (cmtFile |> (Filename.chop_extension [@doesNotRaise])) ^ ".cmt"
+        in
         let inputCMTImpl = readCmt cmtFileImpl in
         let hasGenTypeAnnotationsImpl =
           inputCMTImpl
@@ -168,3 +170,4 @@ let processCmtFile cmt =
     else (
       outputFile |> GeneratedFiles.logFileAction NoMatch;
       if Sys.file_exists outputFile then Sys.remove outputFile)
+  [@@live]
