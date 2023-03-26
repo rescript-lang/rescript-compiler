@@ -17,10 +17,16 @@ var duneBinDir = require("./dune").duneBinDir;
 
 var runtimeFiles = fs.readdirSync(runtimeDir, "ascii");
 var runtimeMlFiles = runtimeFiles.filter(
-  x => !x.startsWith("bs_stdlib_mini") && x.endsWith(".ml") && x !== "js.ml"
+  x =>
+    !x.startsWith("bs_stdlib_mini") &&
+    (x.endsWith(".ml") || x.endsWith(".res")) &&
+    x !== "js.ml"
 );
 var runtimeMliFiles = runtimeFiles.filter(
-  x => !x.startsWith("bs_stdlib_mini") && x.endsWith(".mli") && x !== "js.mli"
+  x =>
+    !x.startsWith("bs_stdlib_mini") &&
+    (x.endsWith(".mli") || x.endsWith(".resi")) &&
+    x !== "js.mli"
 );
 var runtimeSourceFiles = runtimeMlFiles.concat(runtimeMliFiles);
 var runtimeJsFiles = [...new Set(runtimeSourceFiles.map(baseName))];
