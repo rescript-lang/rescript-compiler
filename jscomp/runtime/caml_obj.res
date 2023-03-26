@@ -152,8 +152,9 @@ let rec compare = (a: Obj.t, b: Obj.t): int =>
     | ("function", "function") => raise(Invalid_argument("compare: functional value"))
     | ("function", _) => 1
     | (_, "function") => -1
-    | ("bigint", "bigint") => Pervasives.compare((Obj.magic(a): float), (Obj.magic(b): float))
-    | ("number", "number") => Pervasives.compare((Obj.magic(a): float), (Obj.magic(b): float))
+    | ("bigint", "bigint")
+    | ("number", "number") =>
+      Pervasives.compare((Obj.magic(a): float), (Obj.magic(b): float))
     | ("bigint", _) | ("number", _) =>
       if b === Obj.repr(Js.null) || Caml_option.isNested(b) {
         1
