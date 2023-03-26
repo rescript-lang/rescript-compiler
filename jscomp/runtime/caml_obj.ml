@@ -159,16 +159,15 @@ let rec compare (a : Obj.t) (b : Obj.t) : int =
       raise (Invalid_argument "compare: functional value")
     | "function", _ -> 1
     | _, "function" -> -1
-    | "bigint", "bigint"
-    | "number", "number"
-    | "number", "bigint"
-    | "bigint", "number" ->
+    | "bigint", "bigint" ->
+      Pervasives.compare (Obj.magic a : float) (Obj.magic b : float)
+    | "number", "number" ->
       Pervasives.compare (Obj.magic a : float) (Obj.magic b : float)
     | "bigint", _ | "number", _ ->
       if b == Obj.repr Js.null || Caml_option.isNested b then 1
         (* Some (Some ..) < x *)
       else -1 (* Integer < Block in OCaml runtime GPR #1195, except Some.. *)
-    | _, "number" | _, "bigint" ->
+    | _, "bigint" | _, "number" ->
       if a == Obj.repr Js.null || Caml_option.isNested a then -1 else 1
     | _ ->
       if a == Obj.repr Js.null then
