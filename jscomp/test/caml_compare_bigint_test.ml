@@ -1,21 +1,21 @@
-external big : string -> float = "BigInt" [@@bs.val]
+external bigint : string -> float = "BigInt" [@@bs.val]
 
-let isLessThan title smaller bigger =
+let isLessThan title small big =
   [
-    ("compare: " ^ title, fun _ -> Mt.Eq (true, compare bigger smaller > 0));
-    ("compare: " ^ title, fun _ -> Mt.Eq (true, compare smaller bigger < 0));
-    ("< operator: " ^ title, fun _ -> Mt.Eq (true, smaller < bigger));
-    ("<= operator: " ^ title, fun _ -> Mt.Eq (true, smaller <= bigger));
-    ("> operator: " ^ title, fun _ -> Mt.Eq (true, bigger > smaller));
-    (">= operator: " ^ title, fun _ -> Mt.Eq (true, bigger >= smaller));
-    ("min: " ^ title, fun _ -> Mt.Eq (smaller, min bigger smaller));
-    ("min: " ^ title, fun _ -> Mt.Eq (smaller, min smaller bigger));
-    ("max: " ^ title, fun _ -> Mt.Eq (bigger, max bigger smaller));
-    ("max: " ^ title, fun _ -> Mt.Eq (bigger, max smaller bigger));
-    ("!= operator: " ^ title, fun _ -> Mt.Eq (true, bigger != smaller));
-    ("!= operator: " ^ title, fun _ -> Mt.Eq (true, smaller != bigger));
-    ("== operator: " ^ title, fun _ -> Mt.Eq (false, bigger == smaller));
-    ("== operator: " ^ title, fun _ -> Mt.Eq (false, smaller == bigger));
+    ("compare: " ^ title, fun _ -> Mt.Eq (true, compare big small > 0));
+    ("compare: " ^ title, fun _ -> Mt.Eq (true, compare small big < 0));
+    ("< operator: " ^ title, fun _ -> Mt.Eq (true, small < big));
+    ("<= operator: " ^ title, fun _ -> Mt.Eq (true, small <= big));
+    ("> operator: " ^ title, fun _ -> Mt.Eq (true, big > small));
+    (">= operator: " ^ title, fun _ -> Mt.Eq (true, big >= small));
+    ("min: " ^ title, fun _ -> Mt.Eq (small, min big small));
+    ("min: " ^ title, fun _ -> Mt.Eq (small, min small big));
+    ("max: " ^ title, fun _ -> Mt.Eq (big, max big small));
+    ("max: " ^ title, fun _ -> Mt.Eq (big, max small big));
+    ("!= operator: " ^ title, fun _ -> Mt.Eq (true, big != small));
+    ("!= operator: " ^ title, fun _ -> Mt.Eq (true, small != big));
+    ("== operator: " ^ title, fun _ -> Mt.Eq (false, big == small));
+    ("== operator: " ^ title, fun _ -> Mt.Eq (false, small == big));
   ]
 
 let isEqual title num1 num2 =
@@ -34,12 +34,12 @@ let isEqual title num1 num2 =
     ("== operator: " ^ title, fun _ -> Mt.Eq (true, num2 == num1));
   ]
 
-let fiveBigInt = big "5"
+let five = bigint "5"
 
 (** Not comparing floats and Bigint; not sure this is correct since works in JavaScript*)
 let suites : Mt.pair_suites =
-  isLessThan "123 and 555555" (big "123") (big "555555")
-  @ isEqual "98765 and 98765" (big "98765") (big "98765")
-  @ isEqual "same instance" fiveBigInt fiveBigInt
+  isLessThan "123 and 555555" (bigint "123") (bigint "555555")
+  @ isEqual "98765 and 98765" (bigint "98765") (bigint "98765")
+  @ isEqual "same instance" five five
 
 let () = Mt.from_pair_suites __FILE__ suites
