@@ -87,14 +87,14 @@ let obj_dup: Obj.t => Obj.t = %raw(`function(x){
   return Object.assign({},x)    
 }`)
 
-@res.doc(" 
+/** 
    For the empty dummy object, whether it's 
    [[]] or [{}] depends on how 
    runtime encoding works, and will affect 
    js polymorphic comparison(Js.(=)) (fine with caml polymoprhic comparison (Pervasives.equal))
    In most cases, rec value comes from record/modules, 
    whose tag is 0, we optimize that case
-")
+*/
 let update_dummy: (_, _) => unit = %raw(`function(x,y){
   var k  
   if(Array.isArray(y)){
@@ -401,8 +401,10 @@ let equal_nullable = (x: Obj.t, y: Js.nullable<Obj.t>) =>
   | Some(y) => equal(x, y)
   }
 
+@inline
 let isNumberOrBigInt = a => Js.typeof(a) == "number" || Js.typeof(a) == "bigint"
 
+@inline
 let canNumericCompare = (a, b) => isNumberOrBigInt(a) && isNumberOrBigInt(b)
 
 let notequal = (a, b) =>
