@@ -3,49 +3,57 @@ external fromString : string -> float = "BigInt" [@@bs.val]
 let sml = fromString "123"
 let big = fromString "3944949939394"
 
-let suites : Mt.pair_suites =
+let sameTypes a b = Js.typeof a == Js.typeof b
+
+let assertLessThan title smaller bigger =
   [
-    (* compare bigint and bigint *)
-    ("compare bigint and bigint", fun _ -> Eq (true, compare big sml > 0));
-    ("compare bigint and bigint", fun _ -> Eq (true, compare sml big < 0));
-    ("compare bigint and bigint", fun _ -> Eq (true, compare sml sml == 0));
-    (* compare bigint and float *)
-    ("compare bigint and float", fun _ -> Eq (true, compare big 1.1 > 0));
-    ("compare bigint and float", fun _ -> Eq (true, compare 1.1 big < 0));
-    ( "compare bigint and float",
-      fun _ -> Eq (true, compare (fromString "3") (fromString "3") == 0) );
-    (* < operator *)
-    ("< operator", fun _ -> Eq (true, sml < big));
-    ("< operator", fun _ -> Eq (false, big < sml));
-    ("< operator", fun _ -> Eq (false, big < big));
-    (* < operator with float *)
-    ("< operator with float", fun _ -> Eq (true, 1.1 < big));
-    ("< operator with float", fun _ -> Eq (false, big < 1.1));
-    (* <= operator *)
-    ("<= operator", fun _ -> Eq (true, sml <= big));
-    ("<= operator", fun _ -> Eq (false, big <= sml));
-    ("<= operator", fun _ -> Eq (true, big <= big));
-    (* > operator *)
-    ("> operator", fun _ -> Eq (false, sml > big));
-    ("> operator", fun _ -> Eq (true, big > sml));
-    ("> operator", fun _ -> Eq (false, big > big));
-    (* >= operator *)
-    (">= operator", fun _ -> Eq (false, sml >= big));
-    (">= operator", fun _ -> Eq (true, big >= sml));
-    (">= operator", fun _ -> Eq (true, big >= big));
-    (* == operator *)
-    ("== operator", fun _ -> Eq (false, sml == big));
-    ("== operator", fun _ -> Eq (true, big == big));
-    (* == operator with float *)
-    (* ("== operator with float", fun _ -> Eq (true, fromString "3" == 3.0));
-       ("== operator with float", fun _ -> Eq (true, 3.0 == fromString "3"));
-       ("== operator with float", fun _ -> Eq (false, 3.0 == big)); *)
-    (* != operator *)
-    ("!= operator", fun _ -> Eq (true, sml != big));
-    ("!= operator", fun _ -> Eq (true, big == big));
-    (* != operator with float *)
-    (* ("!= operator with float", fun _ -> Eq (false, fromString "3" != 3.0));
-       ("!= operator with float", fun _ -> Eq (false, 3.0 != fromString "3"));
-       ("!= operator with float", fun _ -> Eq (true, 3.0 != big)); *)
+    ("compare: " ^ title, fun _ -> Mt.Eq (true, compare bigger smaller > 0));
+    ("compare: " ^ title, fun _ -> Mt.Eq (true, compare smaller bigger < 0));
+    ("< operator: " ^ title, fun _ -> Mt.Eq (true, smaller < bigger));
+    ("<= operator: " ^ title, fun _ -> Mt.Eq (true, smaller <= bigger));
+    ("> operator: " ^ title, fun _ -> Mt.Eq (true, bigger > smaller));
+    (">= operator: " ^ title, fun _ -> Mt.Eq (true, bigger >= smaller));
+    ("min: " ^ title, fun _ -> Mt.Eq (smaller, min bigger smaller));
+    ("min: " ^ title, fun _ -> Mt.Eq (smaller, min smaller bigger));
+    ("max: " ^ title, fun _ -> Mt.Eq (bigger, max bigger smaller));
+    ("max: " ^ title, fun _ -> Mt.Eq (bigger, max smaller bigger));
   ]
+  @ ([
+       ("!= operator: " ^ title, fun _ -> Mt.Eq (true, bigger != smaller));
+       ("!= operator: " ^ title, fun _ -> Mt.Eq (true, smaller != bigger));
+       ("== operator: " ^ title, fun _ -> Mt.Eq (false, bigger == smaller));
+       ("== operator: " ^ title, fun _ -> Mt.Eq (false, smaller == bigger));
+     ]
+    |> List.filter (fun _ -> sameTypes smaller bigger))
+
+let assertEqual title num1 num2 =
+  [
+    ("compare: " ^ title, fun _ -> Mt.Eq (0, compare num1 num2));
+    ("compare: " ^ title, fun _ -> Mt.Eq (0, compare num2 num1));
+    ("< operator: " ^ title, fun _ -> Mt.Eq (false, num2 < num1));
+    ("<= operator: " ^ title, fun _ -> Mt.Eq (true, num2 <= num1));
+    ("> operator: " ^ title, fun _ -> Mt.Eq (false, num1 > num2));
+    (">= operator: " ^ title, fun _ -> Mt.Eq (true, num1 >= num2));
+    ("min: " ^ title, fun _ -> Mt.Eq (num1, min num1 num2));
+    ("max: " ^ title, fun _ -> Mt.Eq (num1, max num1 num2));
+  ]
+  @ ([
+       ("!= operator: " ^ title, fun _ -> Mt.Eq (false, num1 != num2));
+       ("!= operator: " ^ title, fun _ -> Mt.Eq (false, num2 != num1));
+       ("== operator: " ^ title, fun _ -> Mt.Eq (true, num1 == num2));
+       ("== operator: " ^ title, fun _ -> Mt.Eq (true, num2 == num1));
+     ]
+    |> List.filter (fun _ -> sameTypes num1 num2))
+
+let fiveBigInt = fromString "5"
+
+let suites : Mt.pair_suites =
+  assertLessThan "123 bigint and 555555 bigint" (fromString "123")
+    (fromString "555555")
+  @ assertLessThan "123 bigint and float 9999.99" (fromString "123") 9999.99
+  @ assertEqual "98765 bigint and 98765 bigint" (fromString "98765")
+      (fromString "98765")
+  @ assertEqual "same instance" fiveBigInt fiveBigInt
+  @ assertEqual "5 bigint and 5 float" fiveBigInt 5.0
+
 let () = Mt.from_pair_suites __FILE__ suites
