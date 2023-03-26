@@ -155,14 +155,14 @@ let rec compare = (a: Obj.t, b: Obj.t): int =>
     | ("bigint", "bigint")
     | ("number", "number") =>
       Pervasives.compare((Obj.magic(a): float), (Obj.magic(b): float))
-    | ("bigint", _) | ("number", _) =>
+    | ("number", _) =>
       if b === Obj.repr(Js.null) || Caml_option.isNested(b) {
         1
       } else {
         /* Some (Some ..) < x */
         -1
       } /* Integer < Block in OCaml runtime GPR #1195, except Some.. */
-    | (_, "bigint") | (_, "number") =>
+    | (_, "number") =>
       if a === Obj.repr(Js.null) || Caml_option.isNested(a) {
         -1
       } else {
