@@ -21,7 +21,7 @@ catch (raw_exn){
 var suites = {
   contents: {
     hd: [
-      "File \"caml_compare_test.ml\", line 9, characters 4-11",
+      "File \"caml_compare_test.res\", line 12, characters 5-12",
       (function (param) {
           return {
                   TAG: "Eq",
@@ -43,7 +43,7 @@ var suites = {
       ],
       tl: {
         hd: [
-          "File \"caml_compare_test.ml\", line 11, characters 4-11",
+          "File \"caml_compare_test.res\", line 14, characters 5-12",
           (function (param) {
               return {
                       TAG: "Eq",
@@ -204,7 +204,7 @@ var suites = {
                   ],
                   tl: {
                     hd: [
-                      "File \"caml_compare_test.ml\", line 17, characters 4-11",
+                      "File \"caml_compare_test.res\", line 20, characters 5-12",
                       (function (param) {
                           return {
                                   TAG: "Eq",
@@ -215,7 +215,7 @@ var suites = {
                     ],
                     tl: {
                       hd: [
-                        "File \"caml_compare_test.ml\", line 28, characters 4-11",
+                        "File \"caml_compare_test.res\", line 21, characters 5-12",
                         (function (param) {
                             return {
                                     TAG: "Eq",
@@ -229,7 +229,7 @@ var suites = {
                       ],
                       tl: {
                         hd: [
-                          "File \"caml_compare_test.ml\", line 31, characters 4-11",
+                          "File \"caml_compare_test.res\", line 22, characters 5-12",
                           (function (param) {
                               return {
                                       TAG: "Eq",
@@ -243,7 +243,7 @@ var suites = {
                         ],
                         tl: {
                           hd: [
-                            "File \"caml_compare_test.ml\", line 34, characters 4-11",
+                            "File \"caml_compare_test.res\", line 24, characters 6-13",
                             (function (param) {
                                 return {
                                         TAG: "Eq",
@@ -311,7 +311,7 @@ var suites = {
                           ],
                           tl: {
                             hd: [
-                              "File \"caml_compare_test.ml\", line 37, characters 4-11",
+                              "File \"caml_compare_test.res\", line 27, characters 5-12",
                               (function (param) {
                                   return {
                                           TAG: "Eq",
@@ -331,7 +331,7 @@ var suites = {
                             ],
                             tl: {
                               hd: [
-                                "File \"caml_compare_test.ml\", line 40, characters 4-11",
+                                "File \"caml_compare_test.res\", line 28, characters 5-12",
                                 (function (param) {
                                     return {
                                             TAG: "Eq",
@@ -345,7 +345,7 @@ var suites = {
                               ],
                               tl: {
                                 hd: [
-                                  "File \"caml_compare_test.ml\", line 43, characters 4-11",
+                                  "File \"caml_compare_test.res\", line 30, characters 6-13",
                                   (function (param) {
                                       return {
                                               TAG: "Eq",
@@ -413,7 +413,7 @@ var suites = {
                                 ],
                                 tl: {
                                   hd: [
-                                    "File \"caml_compare_test.ml\", line 47, characters 4-11",
+                                    "File \"caml_compare_test.res\", line 33, characters 5-12",
                                     (function (param) {
                                         return {
                                                 TAG: "Eq",
@@ -424,7 +424,7 @@ var suites = {
                                   ],
                                   tl: {
                                     hd: [
-                                      "File \"caml_compare_test.ml\", line 50, characters 4-11",
+                                      "File \"caml_compare_test.res\", line 34, characters 5-12",
                                       (function (param) {
                                           return {
                                                   TAG: "Eq",
@@ -435,7 +435,7 @@ var suites = {
                                     ],
                                     tl: {
                                       hd: [
-                                        "File \"caml_compare_test.ml\", line 53, characters 4-11",
+                                        "File \"caml_compare_test.res\", line 36, characters 6-13",
                                         (function (param) {
                                             return {
                                                     TAG: "Eq",
@@ -503,7 +503,7 @@ var suites = {
                                       ],
                                       tl: {
                                         hd: [
-                                          "File \"caml_compare_test.ml\", line 56, characters 4-11",
+                                          "File \"caml_compare_test.res\", line 40, characters 6-13",
                                           (function (param) {
                                               return {
                                                       TAG: "Eq",
@@ -998,7 +998,7 @@ var suites = {
                                                                                               ],
                                                                                               tl: {
                                                                                                 hd: [
-                                                                                                  "File \"caml_compare_test.ml\", line 88, characters 4-11",
+                                                                                                  "File \"caml_compare_test.res\", line 76, characters 5-12",
                                                                                                   (function (param) {
                                                                                                       return {
                                                                                                               TAG: "Eq",
@@ -1012,7 +1012,7 @@ var suites = {
                                                                                                 ],
                                                                                                 tl: {
                                                                                                   hd: [
-                                                                                                    "File \"caml_compare_test.ml\", line 91, characters 4-11",
+                                                                                                    "File \"caml_compare_test.res\", line 77, characters 5-12",
                                                                                                     (function (param) {
                                                                                                         return {
                                                                                                                 TAG: "Eq",
@@ -1026,7 +1026,7 @@ var suites = {
                                                                                                   ],
                                                                                                   tl: {
                                                                                                     hd: [
-                                                                                                      "File \"caml_compare_test.ml\", line 94, characters 4-11",
+                                                                                                      "File \"caml_compare_test.res\", line 78, characters 5-12",
                                                                                                       (function (param) {
                                                                                                           return {
                                                                                                                   TAG: "Eq",
@@ -1037,7 +1037,7 @@ var suites = {
                                                                                                     ],
                                                                                                     tl: {
                                                                                                       hd: [
-                                                                                                        "File \"caml_compare_test.ml\", line 97, characters 4-11",
+                                                                                                        "File \"caml_compare_test.res\", line 79, characters 5-12",
                                                                                                         (function (param) {
                                                                                                             return {
                                                                                                                     TAG: "Eq",
@@ -1048,7 +1048,7 @@ var suites = {
                                                                                                       ],
                                                                                                       tl: {
                                                                                                         hd: [
-                                                                                                          "File \"caml_compare_test.ml\", line 100, characters 4-11",
+                                                                                                          "File \"caml_compare_test.res\", line 80, characters 5-12",
                                                                                                           (function (param) {
                                                                                                               return {
                                                                                                                       TAG: "Eq",
@@ -1059,7 +1059,7 @@ var suites = {
                                                                                                         ],
                                                                                                         tl: {
                                                                                                           hd: [
-                                                                                                            "File \"caml_compare_test.ml\", line 103, characters 4-11",
+                                                                                                            "File \"caml_compare_test.res\", line 81, characters 5-12",
                                                                                                             (function (param) {
                                                                                                                 return {
                                                                                                                         TAG: "Eq",
@@ -1131,21 +1131,21 @@ function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-eq("File \"caml_compare_test.ml\", line 113, characters 6-13", true, Caml_obj.greaterthan(1, undefined));
+eq("File \"caml_compare_test.res\", line 88, characters 3-10", true, Caml_obj.greaterthan(1, undefined));
 
-eq("File \"caml_compare_test.ml\", line 114, characters 6-13", true, Caml_obj.lessthan(/* [] */0, {
+eq("File \"caml_compare_test.res\", line 89, characters 3-10", true, Caml_obj.lessthan(/* [] */0, {
           hd: 1,
           tl: /* [] */0
         }));
 
-eq("File \"caml_compare_test.ml\", line 115, characters 6-13", false, Caml_obj.greaterthan(undefined, 1));
+eq("File \"caml_compare_test.res\", line 90, characters 3-10", false, Caml_obj.greaterthan(undefined, 1));
 
-eq("File \"caml_compare_test.ml\", line 116, characters 6-13", false, Caml_obj.greaterthan(undefined, [
+eq("File \"caml_compare_test.res\", line 91, characters 3-10", false, Caml_obj.greaterthan(undefined, [
           1,
           30
         ]));
 
-eq("File \"caml_compare_test.ml\", line 117, characters 6-13", false, Caml_obj.lessthan([
+eq("File \"caml_compare_test.res\", line 92, characters 3-10", false, Caml_obj.lessthan([
           1,
           30
         ], undefined));
