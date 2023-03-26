@@ -164,11 +164,11 @@ let rec compare (a : Obj.t) (b : Obj.t) : int =
     | "number", "bigint"
     | "bigint", "number" ->
       Pervasives.compare (Obj.magic a : float) (Obj.magic b : float)
-    | "number", _ ->
+    | "bigint", _ | "number", _ ->
       if b == Obj.repr Js.null || Caml_option.isNested b then 1
         (* Some (Some ..) < x *)
       else -1 (* Integer < Block in OCaml runtime GPR #1195, except Some.. *)
-    | _, "number" ->
+    | _, "number" | _, "bigint" ->
       if a == Obj.repr Js.null || Caml_option.isNested a then -1 else 1
     | _ ->
       if a == Obj.repr Js.null then
