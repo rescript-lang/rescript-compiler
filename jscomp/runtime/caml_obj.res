@@ -87,7 +87,7 @@ let obj_dup: Obj.t => Obj.t = %raw(`function(x){
   return Object.assign({},x)    
 }`)
 
-@ocaml.doc(" 
+@res.doc(" 
    For the empty dummy object, whether it's 
    [[]] or [{}] depends on how 
    runtime encoding works, and will affect 
