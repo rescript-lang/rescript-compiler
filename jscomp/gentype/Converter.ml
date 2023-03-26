@@ -5,7 +5,6 @@ type t =
   | CircularC of string * t
   | FunctionC of functionC
   | IdentC
-  | ObjectC of fieldsC
   | OptionC of t
   | PromiseC of t
   | TupleC of t list
@@ -14,9 +13,6 @@ type t =
 and groupedArgConverter =
   | ArgConverter of t
   | GroupConverter of (string * optional * t) list
-
-and fieldC = {lblJS: string; lblRE: string; c: t}
-and fieldsC = fieldC list
 
 and functionC = {
   funArgConverters: groupedArgConverter list;
@@ -66,21 +62,6 @@ let rec toString converter =
       |> String.concat ", ")
     ^ " -> " ^ toString retConverter ^ ")"
   | IdentC -> "id"
-  | ObjectC fieldsC ->
-    let dot =
-      match converter with
-      | ObjectC _ -> ". "
-      | _ -> ""
-    in
-    "{" ^ dot
-    ^ (fieldsC
-      |> List.map (fun {lblJS; lblRE; c} ->
-             (match lblJS = lblRE with
-             | true -> lblJS
-             | false -> "(" ^ lblJS ^ "/" ^ lblRE ^ ")")
-             ^ ":" ^ (c |> toString))
-      |> String.concat ", ")
-    ^ "}"
   | OptionC c -> "option(" ^ toString c ^ ")"
   | PromiseC c -> "promise(" ^ toString c ^ ")"
   | TupleC innerTypesC ->
@@ -191,27 +172,7 @@ let typeGetConverterNormalized ~config ~inline ~lookupId ~typeNameIsInterface
     | Nullable t ->
       let tConverter, tNormalized = t |> visit ~visited in
       (OptionC tConverter, Nullable tNormalized)
-    | Object (closedFlag, fields) ->
-      let fieldsConverted =
-        fields
-        |> List.map (fun ({type_} as field) -> (field, type_ |> visit ~visited))
-      in
-      ( ObjectC
-          (fieldsConverted
-          |> List.map (fun ({nameJS; optional}, (converter, _)) ->
-                 {
-                   lblJS = nameJS;
-                   lblRE = nameJS;
-                   c =
-                     (match optional = Mandatory with
-                     | true -> converter
-                     | false -> OptionC converter);
-                 })),
-        Object
-          ( closedFlag,
-            fieldsConverted
-            |> List.map (fun (field, (_, tNormalized)) ->
-                   {field with type_ = tNormalized}) ) )
+    | Object _ -> (IdentC, normalized_)
     | Option t ->
       let tConverter, tNormalized = t |> visit ~visited in
       (OptionC tConverter, Option tNormalized)
@@ -357,7 +318,6 @@ let rec converterIsIdentity ~config ~toJS converter =
                 argConverter |> converterIsIdentity ~config ~toJS:(not toJS)
               | GroupConverter _ -> false)
   | IdentC -> true
-  | ObjectC _ -> true
   | OptionC c -> c |> converterIsIdentity ~config ~toJS
   | PromiseC c -> c |> converterIsIdentity ~config ~toJS
   | TupleC innerTypesC ->
@@ -487,33 +447,6 @@ let rec apply ~config ~converter ~indent ~nameGen ~toJS ~variantTables value =
     EmitText.funDef ~bodyArgs ~functionName:componentName ~funParams ~indent
       ~mkBody ~typeVars
   | IdentC -> value
-  | ObjectC fieldsC ->
-    let simplifyFieldConverted fieldConverter =
-      match fieldConverter with
-      | OptionC converter1 when converter1 |> converterIsIdentity ~config ~toJS
-        ->
-        IdentC
-      | _ -> fieldConverter
-    in
-    let fieldValues =
-      fieldsC
-      |> List.map (fun {lblJS; lblRE; c = fieldConverter} ->
-             (match toJS with
-             | true -> lblJS
-             | false -> lblRE)
-             ^ ":"
-             ^ (value
-               |> EmitText.fieldAccess
-                    ~label:
-                      (match toJS with
-                      | true -> lblRE
-                      | false -> lblJS)
-               |> apply ~config
-                    ~converter:(fieldConverter |> simplifyFieldConverted)
-                    ~indent ~nameGen ~toJS ~variantTables))
-      |> String.concat ", "
-    in
-    "{" ^ fieldValues ^ "}"
   | OptionC c ->
     EmitText.parens
       [
