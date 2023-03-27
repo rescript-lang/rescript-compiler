@@ -811,6 +811,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
       let exp = match objs with
         | [(_, e)] when as_value = Some AsUnboxed -> e.expression_desc
         | _ when as_value = Some AsUnboxed -> assert false (* should not happen *)
+        (* TODO: put restriction on the variant definitions allowed, to make sure this never happens. *)
         | _ -> J.Object objs in
       expression_desc cxt ~level f exp
   | Caml_block
