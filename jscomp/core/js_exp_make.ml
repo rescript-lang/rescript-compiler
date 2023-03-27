@@ -316,9 +316,14 @@ let small_int i : t =
   | 248 -> obj_int_tag_literal
   | i -> int (Int32.of_int i)
 
+let true_ : t = { comment = None; expression_desc = Bool true }
+let false_ : t = { comment = None; expression_desc = Bool false }
+let bool v = if v then true_ else false_
+
 let as_value = function
   | Lambda.AsString s -> str s ~delim:DStarJ
   | AsInt i -> small_int i
+  | AsBool b -> bool b
   | AsNull -> nil
   | AsUndefined -> undefined
   | AsUnboxed -> assert false (* Should not emit tags for unboxed *)
@@ -547,13 +552,6 @@ let obj ?comment properties : t =
 
 (* currently only in method call, no dependency introduced
 *)
-
-(* Static_index .....................**)
-
-(* var (Jident.create_js "true") *)
-let true_ : t = { comment = None; expression_desc = Bool true }
-let false_ : t = { comment = None; expression_desc = Bool false }
-let bool v = if v then true_ else false_
 
 (** Arith operators *)
 (* Static_index .....................**)

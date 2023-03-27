@@ -100,7 +100,7 @@ let pp_error fmt err =
     | Bs_this_simple_pattern ->
         "%@this expect its pattern variable to be simple form"
     | InvalidVariantAsAnnotation ->
-      "A variant case annotation @as(...) must be a string or integer or null"
+      "A variant case annotation @as(...) must be a string or integer, boolean, null, undefined"
     | InvalidVariantTagAnnotation ->
       "A variant tag annotation @tag(...) must be a string"
     )

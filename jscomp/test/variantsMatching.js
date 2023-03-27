@@ -141,7 +141,7 @@ function foo(x) {
           return 1;
       case 12 :
           return 2;
-      case "C" :
+      case false :
           return 3;
       
     }
@@ -172,7 +172,7 @@ var CustomizeTags = {
   foo: foo,
   a: "dd",
   b: 12,
-  c: "C",
+  c: false,
   d: CustomizeTags_d,
   e: CustomizeTags_e
 };

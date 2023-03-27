@@ -81,7 +81,7 @@ let third2 = l =>
   }
 
 module CustomizeTags = {
-  type t = | @as("dd") A | @as(12) B | C | @as("qq") D(int) | @as(42) E(int) | F(string)
+  type t = | @as("dd") A | @as(12) B | @as(false) C | @as("qq") D(int) | @as(42) E(int) | F(string)
 
   let foo = x =>
     switch x {

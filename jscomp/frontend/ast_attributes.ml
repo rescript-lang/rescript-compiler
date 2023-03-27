@@ -350,6 +350,11 @@ let process_as_value (attrs : t) =
             | Some i ->
                 Bs_ast_invariant.mark_used_bs_attribute attr;
                 st := Some (AsInt i));
+            (match Ast_payload.is_single_bool payload with
+            | None -> ()
+            | Some b ->
+                Bs_ast_invariant.mark_used_bs_attribute attr;
+                st := Some (AsBool b));
             (match Ast_payload.is_single_ident payload with
             | None -> ()
             | Some Lident "null" ->
