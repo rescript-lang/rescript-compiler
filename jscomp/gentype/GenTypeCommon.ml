@@ -26,12 +26,7 @@ let isJSSafePropertyName name =
              | 'A' .. 'z' | '0' .. '9' -> true
              | _ -> false)
 
-let labelJSToString ?(alwaysQuotes = false) case =
-  let addQuotes x =
-    match alwaysQuotes with
-    | true -> x |> EmitText.quotes
-    | false -> x
-  in
+let labelJSToString case =
   let isNumber s =
     let len = String.length s in
     len > 0
@@ -48,12 +43,11 @@ let labelJSToString ?(alwaysQuotes = false) case =
     res.contents
   in
   match case.labelJS with
-  | BoolLabel b -> b |> string_of_bool |> addQuotes
-  | FloatLabel s -> s |> addQuotes
-  | IntLabel i -> i |> addQuotes
+  | BoolLabel b -> b |> string_of_bool
+  | FloatLabel s -> s
+  | IntLabel i -> i
   | StringLabel s ->
-    if s = case.label && isNumber s then s |> addQuotes
-    else s |> EmitText.quotes
+    if s = case.label && isNumber s then s else s |> EmitText.quotes
 
 type closedFlag = Open | Closed
 
@@ -94,7 +88,6 @@ and ident = {builtin: bool; name: string; typeArgs: type_ list}
 
 and variant = {
   bsStringOrInt: bool;
-  hash: int;
   inherits: type_ list;
   noPayloads: case list;
   payloads: payload list;
@@ -185,20 +178,8 @@ let rec depToResolvedName (dep : dep) =
   | Dot (p, s) -> ResolvedName.dot s (p |> depToResolvedName)
 
 let createVariant ~bsStringOrInt ~inherits ~noPayloads ~payloads ~polymorphic =
-  let hash =
-    noPayloads
-    |> List.map (fun case -> (case.label, case.labelJS))
-    |> Array.of_list |> Hashtbl.hash
-  in
   let unboxed = payloads = [] in
-  Variant
-    {bsStringOrInt; hash; inherits; noPayloads; payloads; polymorphic; unboxed}
-
-let variantTable hash ~toJS =
-  (match toJS with
-  | true -> "$$toJS"
-  | false -> "$$toRE")
-  ^ string_of_int hash
+  Variant {bsStringOrInt; inherits; noPayloads; payloads; polymorphic; unboxed}
 
 let ident ?(builtin = true) ?(typeArgs = []) name =
   Ident {builtin; name; typeArgs}

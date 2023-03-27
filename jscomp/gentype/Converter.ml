@@ -8,7 +8,6 @@ type t =
   | OptionC of t
   | PromiseC of t
   | TupleC of t list
-  | VariantC of variantC
 
 and groupedArgConverter =
   | ArgConverter of t
@@ -22,17 +21,6 @@ and functionC = {
   typeVars: string list;
   uncurried: bool;
 }
-
-and variantC = {
-  hash: int;
-  noPayloads: case list;
-  withPayloads: withPayload list;
-  polymorphic: bool;
-  unboxed: bool;
-  useVariantTables: bool;
-}
-
-and withPayload = {case: case; inlineRecord: bool; argConverters: t list}
 
 let rec toString converter =
   match converter with
@@ -66,20 +54,6 @@ let rec toString converter =
   | PromiseC c -> "promise(" ^ toString c ^ ")"
   | TupleC innerTypesC ->
     "[" ^ (innerTypesC |> List.map toString |> String.concat ", ") ^ "]"
-  | VariantC {noPayloads; withPayloads} ->
-    "variant("
-    ^ ((noPayloads |> List.map labelJSToString)
-       @ (withPayloads
-         |> List.map (fun {case; inlineRecord; argConverters} ->
-                (case |> labelJSToString)
-                ^ (match inlineRecord with
-                  | true -> " inlineRecord "
-                  | false -> "")
-                ^ ":" ^ "{"
-                ^ (argConverters |> List.map toString |> String.concat ", ")
-                ^ "}"))
-      |> String.concat ", ")
-    ^ ")"
 
 let typeGetConverterNormalized ~config ~inline ~lookupId ~typeNameIsInterface
     type0 =
@@ -186,77 +160,33 @@ let typeGetConverterNormalized ~config ~inline ~lookupId ~typeNameIsInterface
       (TupleC innerConversions, Tuple normalizedList)
     | TypeVar _ -> (IdentC, normalized_)
     | Variant variant ->
-      let allowUnboxed = not variant.polymorphic in
-      let withPayloads, normalized, unboxed =
-        match
-          variant.payloads
-          |> List.map (fun {case; inlineRecord; numArgs; t} ->
-                 (case, inlineRecord, numArgs, t |> visit ~visited))
-        with
-        | [] when allowUnboxed -> ([], normalized_, variant.unboxed)
-        | [(case, inlineRecord, numArgs, (converter, tNormalized))]
-          when allowUnboxed ->
-          let unboxed = tNormalized |> expandOneLevel |> typeIsObject in
+      let ordinaryVariant = not variant.polymorphic in
+      let withPayloadConverted =
+        variant.payloads
+        |> List.map (fun (payload : payload) ->
+               {payload with t = snd (payload.t |> visit ~visited)})
+      in
+      let normalized =
+        match withPayloadConverted with
+        | [] when ordinaryVariant -> normalized_
+        | [payload] when ordinaryVariant ->
+          let unboxed = payload.t |> expandOneLevel |> typeIsObject in
           let normalized =
             Variant
               {
                 variant with
-                payloads = [{case; inlineRecord; numArgs; t = tNormalized}];
+                payloads = [payload];
                 unboxed =
                   (match unboxed with
                   | true -> true
                   | false -> variant.unboxed);
               }
           in
-          let argConverters =
-            match converter with
-            | TupleC converters when numArgs > 1 -> converters
-            | _ -> [converter]
-          in
-          ([{argConverters; case; inlineRecord}], normalized, unboxed)
+          normalized
         | withPayloadConverted ->
-          let withPayloadNormalized =
-            withPayloadConverted
-            |> List.map (fun (case, inlineRecord, numArgs, (_, tNormalized)) ->
-                   {case; inlineRecord; numArgs; t = tNormalized})
-          in
-          let normalized =
-            Variant {variant with payloads = withPayloadNormalized}
-          in
-          ( withPayloadConverted
-            |> List.map (fun (case, inlineRecord, numArgs, (converter, _)) ->
-                   let argConverters =
-                     match converter with
-                     | TupleC converters when numArgs > 1 -> converters
-                     | _ -> [converter]
-                   in
-                   {argConverters; case; inlineRecord}),
-            normalized,
-            variant.unboxed )
+          Variant {variant with payloads = withPayloadConverted}
       in
-      let noPayloads = variant.noPayloads in
-      let useVariantTables =
-        if variant.bsStringOrInt then false
-        else if variant.polymorphic then
-          noPayloads
-          |> List.exists (fun {label; labelJS} -> labelJS <> StringLabel label)
-          || withPayloads
-             |> List.exists (fun {case = {label; labelJS}} ->
-                    labelJS <> StringLabel label)
-        else true
-      in
-      let converter =
-        VariantC
-          {
-            hash = variant.hash;
-            noPayloads;
-            withPayloads;
-            polymorphic = variant.polymorphic;
-            unboxed;
-            useVariantTables;
-          }
-      in
-      (converter, normalized)
+      (IdentC, normalized)
   and argTypeToGroupedArgConverter ~visited {aName; aType} =
     match aType with
     | GroupOfLabeledArgs fields ->
@@ -322,13 +252,6 @@ let rec converterIsIdentity ~config ~toJS converter =
   | PromiseC c -> c |> converterIsIdentity ~config ~toJS
   | TupleC innerTypesC ->
     innerTypesC |> List.for_all (converterIsIdentity ~config ~toJS)
-  | VariantC {withPayloads; useVariantTables} ->
-    if not useVariantTables then
-      withPayloads
-      |> List.for_all (fun {argConverters} ->
-             argConverters
-             |> List.for_all (fun c -> c |> converterIsIdentity ~config ~toJS))
-    else false
 
 let rec apply ~config ~converter ~indent ~nameGen ~toJS ~variantTables value =
   match converter with
@@ -470,120 +393,6 @@ let rec apply ~config ~converter ~indent ~nameGen ~toJS ~variantTables value =
              |> apply ~config ~converter:c ~indent ~nameGen ~toJS ~variantTables)
       |> String.concat ", ")
     ^ "]"
-  | VariantC {noPayloads = [case]; withPayloads = []; polymorphic} -> (
-    match toJS with
-    | true -> case |> labelJSToString
-    | false -> case.label |> Runtime.emitVariantLabel ~polymorphic)
-  | VariantC variantC -> (
-    if variantC.noPayloads <> [] && variantC.useVariantTables then
-      Hashtbl.replace variantTables (variantC.hash, toJS) variantC;
-    let convertToString =
-      match
-        (not toJS)
-        && variantC.noPayloads
-           |> List.exists (fun {labelJS} ->
-                  labelJS = BoolLabel true || labelJS = BoolLabel false)
-      with
-      | true -> ".toString()"
-      | false -> ""
-    in
-    let table = variantC.hash |> variantTable ~toJS in
-    let accessTable v =
-      match not variantC.useVariantTables with
-      | true -> v
-      | false -> table ^ EmitText.array [v ^ convertToString]
-    in
-    let convertVariantPayloadToJS ~indent ~argConverters x =
-      match argConverters with
-      | [converter] ->
-        x |> apply ~config ~converter ~indent ~nameGen ~toJS ~variantTables
-      | _ ->
-        argConverters
-        |> List.mapi (fun i converter ->
-               x
-               |> Runtime.accessVariant ~index:i
-               |> apply ~config ~converter ~indent ~nameGen ~toJS ~variantTables)
-        |> EmitText.array
-    in
-    let convertVariantPayloadToRE ~indent ~argConverters x =
-      match argConverters with
-      | [converter] ->
-        [x |> apply ~config ~converter ~indent ~nameGen ~toJS ~variantTables]
-      | _ ->
-        argConverters
-        |> List.mapi (fun i converter ->
-               x
-               |> EmitText.arrayAccess ~index:i
-               |> apply ~config ~converter ~indent ~nameGen ~toJS ~variantTables)
-    in
-    match variantC.withPayloads with
-    | [] -> value |> accessTable
-    | [{case; inlineRecord; argConverters}] when variantC.unboxed -> (
-      let casesWithPayload ~indent =
-        if toJS then
-          value
-          |> Runtime.emitVariantGetPayload ~inlineRecord
-               ~numArgs:(argConverters |> List.length)
-               ~polymorphic:variantC.polymorphic
-          |> convertVariantPayloadToJS ~argConverters ~indent
-        else
-          value
-          |> convertVariantPayloadToRE ~argConverters ~indent
-          |> Runtime.emitVariantWithPayload ~inlineRecord ~label:case.label
-               ~polymorphic:variantC.polymorphic
-      in
-      match variantC.noPayloads = [] with
-      | true -> casesWithPayload ~indent
-      | false ->
-        EmitText.ifThenElse ~indent
-          (fun ~indent:_ -> value |> EmitText.typeOfObject)
-          casesWithPayload
-          (fun ~indent:_ -> value |> accessTable))
-    | _ :: _ -> (
-      let convertCaseWithPayload ~indent ~inlineRecord ~argConverters case =
-        if toJS then
-          value
-          |> Runtime.emitVariantGetPayload ~inlineRecord
-               ~numArgs:(argConverters |> List.length)
-               ~polymorphic:variantC.polymorphic
-          |> convertVariantPayloadToJS ~argConverters ~indent
-          |> Runtime.emitJSVariantWithPayload ~label:(case |> labelJSToString)
-               ~polymorphic:variantC.polymorphic
-        else
-          value
-          |> Runtime.emitJSVariantGetPayload ~polymorphic:variantC.polymorphic
-          |> convertVariantPayloadToRE ~argConverters ~indent
-          |> Runtime.emitVariantWithPayload ~inlineRecord ~label:case.label
-               ~polymorphic:variantC.polymorphic
-      in
-      let switchCases ~indent =
-        variantC.withPayloads
-        |> List.map (fun {case; inlineRecord; argConverters} ->
-               ( (match toJS with
-                 | true ->
-                   case.label
-                   |> Runtime.emitVariantLabel ~polymorphic:variantC.polymorphic
-                 | false -> case |> labelJSToString),
-                 case
-                 |> convertCaseWithPayload ~indent ~inlineRecord ~argConverters
-               ))
-      in
-      let casesWithPayload ~indent =
-        value
-        |> (let open Runtime in
-           (match toJS with
-           | true -> emitVariantGetLabel
-           | false -> emitJSVariantGetLabel)
-             ~polymorphic:variantC.polymorphic)
-        |> EmitText.switch ~indent ~cases:(switchCases ~indent)
-      in
-      match variantC.noPayloads = [] with
-      | true -> casesWithPayload ~indent
-      | false ->
-        EmitText.ifThenElse ~indent
-          (fun ~indent:_ -> value |> EmitText.typeOfObject)
-          casesWithPayload
-          (fun ~indent:_ -> value |> accessTable)))
 
 let toJS ~config ~converter ~indent ~nameGen ~variantTables value =
   value |> apply ~config ~converter ~indent ~nameGen ~variantTables ~toJS:true

@@ -2,8 +2,6 @@
 /* eslint-disable import/first */
 
 
-const $$toJS453167283: { [key: string]: any } = {"0": "A", "1": "B"};
-
 // @ts-ignore: Implicit any on import
 import * as Curry__Es6Import from 'rescript/lib/es6/curry.js';
 const Curry: any = Curry__Es6Import;
@@ -63,12 +61,6 @@ export const unitArgWithoutConversion: () => string = DocstringsBS.unitArgWithou
 
 export const unitArgWithoutConversionU: () => string = DocstringsBS.unitArgWithoutConversionU;
 
-export const unitArgWithConversion: () => t = function () {
-  const result = DocstringsBS.unitArgWithConversion();
-  return $$toJS453167283[result]
-};
+export const unitArgWithConversion: () => t = DocstringsBS.unitArgWithConversion;
 
-export const unitArgWithConversionU: () => t = function () {
-  const result = DocstringsBS.unitArgWithConversionU();
-  return $$toJS453167283[result]
-};
+export const unitArgWithConversionU: () => t = DocstringsBS.unitArgWithConversionU;

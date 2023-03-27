@@ -70,14 +70,7 @@ export const higherOrder: unknown = function (Arg1: any) {
 export const convertVariantTypeChecked: (_1:variant) => variant = convertVariantNotChecked;
 
 // Export 'convertVariant' early to allow circular import from the '.bs.js' file.
-export const convertVariant: unknown = function (Arg1: any) {
-  const result = convertVariantTypeChecked(Arg1.TAG===0
-    ? {tag:"I", value:Arg1._0}
-    : {tag:"S", value:Arg1._0});
-  return result.tag==="I"
-    ? {TAG: 0, _0:result.value} as any
-    : {TAG: 1, _0:result.value} as any
-} as (_1:variant) => variant;
+export const convertVariant: unknown = convertVariantTypeChecked as (_1:variant) => variant;
 
 // In case of type error, check the type of 'polymorphic' in 'ImportJsValue.res' and './MyMath'.
 export const polymorphicTypeChecked: <a>(_1:a) => a = polymorphicNotChecked;

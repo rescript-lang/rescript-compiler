@@ -433,40 +433,6 @@ let emitRequires ~importedValueOrComponent ~early ~config ~requires emitters =
            ~moduleName)
     requires emitters
 
-let emitVariantTables ~emitters variantTables =
-  let typeAnnotation = ": { [key: string]: any }" in
-  let emitTable ~table ~toJS (variantC : Converter.variantC) =
-    "const " ^ table ^ typeAnnotation ^ " = {"
-    ^ (variantC.noPayloads
-      |> List.map (fun case ->
-             let js = case |> labelJSToString ~alwaysQuotes:(not toJS) in
-             let re =
-               case.label
-               |> Runtime.emitVariantLabel ~polymorphic:variantC.polymorphic
-             in
-             match toJS with
-             | true -> (re |> EmitText.quotesIfRequired) ^ ": " ^ js
-             | false -> js ^ ": " ^ re)
-      |> String.concat ", ")
-    ^ "};"
-  in
-  Hashtbl.fold
-    (fun (_, toJS) variantC l -> (variantC, toJS) :: l)
-    variantTables []
-  |> List.sort (fun (variantC1, toJS1) (variantC2, toJS2) ->
-         let n = compare variantC1.Converter.hash variantC2.hash in
-         match n <> 0 with
-         | true -> n
-         | false -> compare toJS2 toJS1)
-  |> List.fold_left
-       (fun emitters (variantC, toJS) ->
-         variantC
-         |> emitTable
-              ~table:(variantC.Converter.hash |> variantTable ~toJS)
-              ~toJS
-         |> Emitters.requireEarly ~emitters)
-       emitters
-
 let typeGetInlined ~config ~exportTypeMap type_ =
   type_
   |> Converter.typeGetNormalized ~config ~inline:true
@@ -762,7 +728,6 @@ let emitTranslationAsString ~config ~fileName ~inputCmtTranslateTypeDeclarations
     | false -> env
   in
   let finalEnv = env in
-  let emitters = variantTables |> emitVariantTables ~emitters in
   let emitters =
     moduleItemsEmitter
     |> ExportModule.emitAllModuleItems ~config ~emitters ~fileName

@@ -24,52 +24,6 @@ let rec emitModuleAccessPath ~config moduleAccessPath =
   | Dot (p, moduleItem) ->
     p |> emitModuleAccessPath ~config |> EmitText.fieldAccess ~label:moduleItem
 
-let emitVariantLabel ~polymorphic label =
-  if polymorphic then label |> EmitText.quotes else label
-
-module VariantsAsObjects = struct
-  let polyVariantLabelName = "NAME"
-
-  let label ~polymorphic =
-    match polymorphic with
-    | true -> polyVariantLabelName
-    | false -> "TAG"
-
-  let indexLabel i = "_" ^ string_of_int i
-end
-
-let emitVariantGetLabel ~polymorphic x =
-  x |> EmitText.fieldAccess ~label:(VariantsAsObjects.label ~polymorphic)
-
-let accessVariant ~index x =
-  x |> EmitText.fieldAccess ~label:(index |> VariantsAsObjects.indexLabel)
-
-let emitVariantGetPayload ~inlineRecord ~numArgs ~polymorphic x =
-  if polymorphic then x |> EmitText.fieldAccess ~label:"VAL"
-  else if numArgs = 1 then
-    if inlineRecord then
-      (* inline record is repressented as record plus a tag:
-         here pass it unchanged as if it was just a record (the payload)
-      *) x
-    else x |> accessVariant ~index:0
-  else (* payload items extracted later when numArgs != 1 *) x
-
-let emitVariantWithPayload ~inlineRecord ~label ~polymorphic args =
-  match args with
-  | [arg] when polymorphic ->
-    "{" ^ VariantsAsObjects.polyVariantLabelName ^ ": "
-    ^ (label |> emitVariantLabel ~polymorphic)
-    ^ ", VAL: " ^ arg ^ "}"
-  | [arg] when inlineRecord ->
-    (* inline records are represented as records plus a `TAG` *)
-    "Object.assign({TAG: " ^ label ^ "}, " ^ arg ^ ")"
-  | _ ->
-    "{TAG: " ^ label ^ ", "
-    ^ (args
-      |> List.mapi (fun i s -> (i |> VariantsAsObjects.indexLabel) ^ ":" ^ s)
-      |> String.concat ", ")
-    ^ "}" ^ " as any"
-
 let jsVariantTag ~polymorphic =
   match polymorphic with
   | true -> "NAME"
@@ -79,17 +33,6 @@ let jsVariantValue ~polymorphic =
   match polymorphic with
   | true -> "VAL"
   | false -> "value"
-
-let emitJSVariantGetLabel ~polymorphic x =
-  x |> EmitText.fieldAccess ~label:(jsVariantTag ~polymorphic)
-
-let emitJSVariantGetPayload ~polymorphic x =
-  x |> EmitText.fieldAccess ~label:(jsVariantValue ~polymorphic)
-
-let emitJSVariantWithPayload ~label ~polymorphic x =
-  "{" ^ jsVariantTag ~polymorphic ^ ":" ^ label ^ ", "
-  ^ jsVariantValue ~polymorphic
-  ^ ":" ^ x ^ "}"
 
 let isMutableObjectField name =
   String.length name >= 2

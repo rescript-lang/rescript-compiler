@@ -40,32 +40,11 @@ let funDef ~bodyArgs ~functionName ~funParams ~indent ~mkBody ~typeVars =
   ^ genericsString ~typeVars ^ (funParams |> parens) ^ " {"
   ^ (bodyArgs |> mkBody) ^ Indent.break ~indent ^ "}"
 
-let ifThenElse ~indent if_ then_ else_ =
-  let indent1 = indent |> Indent.more in
-  if_ ~indent:indent1 ^ Indent.break ~indent ^ "? " ^ then_ ~indent:indent1
-  ^ Indent.break ~indent ^ ": " ^ else_ ~indent:indent1
-
 let newNameGen () = Hashtbl.create 1
 let quotes x = "\"" ^ x ^ "\""
 
-let quotesIfRequired x =
-  match String.length x > 0 && (x.[0] [@doesNotRaise]) = '"' with
-  | true -> x
-  | false -> quotes x
-
 let resultName ~nameGen = "result" |> name ~nameGen
 
-let switch ~indent ~cases expr =
-  let lastCase = (cases |> List.length) - 1 in
-  cases
-  |> List.mapi (fun i (label, code) ->
-         if i = lastCase then code
-         else
-           expr ^ "===" ^ label ^ Indent.break ~indent ^ "? " ^ code
-           ^ Indent.break ~indent ^ ": ")
-  |> String.concat ""
-
-let typeOfObject x = "typeof(" ^ x ^ ")" ^ " === " ^ "'object'"
 let addComment ~comment x = "\n/* " ^ comment ^ " */\n  " ^ x
 let arrayAccess ~index value = value ^ "[" ^ string_of_int index ^ "]"
 let fieldAccess ~label value = value ^ "." ^ label
