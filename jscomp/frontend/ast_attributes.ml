@@ -255,7 +255,6 @@ let iter_process_bs_string_as (attrs : t) : string option =
           else Bs_syntaxerr.err loc Duplicated_bs_as
       | _ -> ());
   !st
-
 let has_bs_optional (attrs : t) : bool =
   Ext_list.exists attrs (fun (({ txt }, _) as attr) ->
       match txt with
@@ -331,6 +330,62 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
                 | _ -> Bs_syntaxerr.err loc Expect_int_or_string_or_json_literal
                 )
             | Some v -> st := Some (Int v))
+          else Bs_syntaxerr.err loc Duplicated_bs_as
+      | _ -> ());
+  !st
+
+let process_as_value (attrs : t) =
+  let st : Lambda.as_value option ref = ref None in
+  Ext_list.iter attrs (fun (({ txt; loc }, payload) as attr) ->
+      match txt with
+      | "bs.as" | "as" ->
+          if !st = None then (
+            (match Ast_payload.is_single_string payload with
+            | None -> ()
+            | Some (s, _dec) ->
+                Bs_ast_invariant.mark_used_bs_attribute attr;
+                st := Some (AsString s));
+            (match Ast_payload.is_single_int payload with
+            | None -> ()
+            | Some i ->
+                Bs_ast_invariant.mark_used_bs_attribute attr;
+                st := Some (AsInt i));
+            (match Ast_payload.is_single_bool payload with
+            | None -> ()
+            | Some b ->
+                Bs_ast_invariant.mark_used_bs_attribute attr;
+                st := Some (AsBool b));
+            (match Ast_payload.is_single_ident payload with
+            | None -> ()
+            | Some Lident "null" ->
+                Bs_ast_invariant.mark_used_bs_attribute attr;
+                st := Some AsNull
+            | Some Lident "undefined" ->
+                Bs_ast_invariant.mark_used_bs_attribute attr;
+                st := Some AsUndefined
+            | Some Lident "unboxed" ->
+                Bs_ast_invariant.mark_used_bs_attribute attr;
+                st := Some AsUnboxed
+            |  Some _ -> Bs_syntaxerr.err loc InvalidVariantAsAnnotation);
+            if !st = None then Bs_syntaxerr.err loc InvalidVariantAsAnnotation
+          )
+          else Bs_syntaxerr.err loc Duplicated_bs_as
+      | _ -> ());
+  !st
+
+let process_tag_name (attrs : t) =
+  let st = ref None in
+  Ext_list.iter attrs (fun (({ txt; loc }, payload) as attr) ->
+      match txt with
+      | "tag" ->
+          if !st = None then (
+            (match Ast_payload.is_single_string payload with
+            | None -> ()
+            | Some (s, _dec) ->
+                Bs_ast_invariant.mark_used_bs_attribute attr;
+                st := Some s);
+            if !st = None then Bs_syntaxerr.err loc InvalidVariantTagAnnotation
+          )
           else Bs_syntaxerr.err loc Duplicated_bs_as
       | _ -> ());
   !st

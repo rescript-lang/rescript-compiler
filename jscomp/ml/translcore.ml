@@ -816,6 +816,7 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
                              name = cstr.cstr_name;
                              const = cstr.cstr_consts;
                              non_const = cstr.cstr_nonconsts;
+                             attrs = cstr.cstr_attributes;
                            } ))
         | Cstr_unboxed -> ( match ll with [ v ] -> v | _ -> assert false)
         | Cstr_block n -> (
@@ -834,6 +835,7 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
                     name = cstr.cstr_name;
                     num_nonconst = cstr.cstr_nonconsts;
                     tag = n;
+                    attrs = cstr.cstr_attributes;
                   }
             in
             try Lconst (Const_block (tag_info, List.map extract_constant ll))
@@ -1155,10 +1157,10 @@ and transl_record loc env fields repres opt_init_expr =
             | Record_optional_labels _ ->
                 Lconst
                   (Const_block (!Lambda.blk_record fields mut Record_optional, cl))
-            | Record_inlined { tag; name; num_nonconsts; optional_labels } ->
+            | Record_inlined { tag; name; num_nonconsts; optional_labels; attrs } ->
                 Lconst
                   (Const_block
-                     ( !Lambda.blk_record_inlined fields name num_nonconsts optional_labels ~tag
+                     ( !Lambda.blk_record_inlined fields name num_nonconsts optional_labels ~tag ~attrs
                          mut,
                        cl ))
             | Record_unboxed _ ->
@@ -1177,10 +1179,10 @@ and transl_record loc env fields repres opt_init_expr =
                     ll,
                     loc )
             | Record_float_unused -> assert false
-            | Record_inlined { tag; name; num_nonconsts; optional_labels } ->
+            | Record_inlined { tag; name; num_nonconsts; optional_labels; attrs } ->
                 Lprim
                   ( Pmakeblock
-                      (!Lambda.blk_record_inlined fields name num_nonconsts optional_labels ~tag
+                      (!Lambda.blk_record_inlined fields name num_nonconsts optional_labels ~tag ~attrs
                          mut),
                     ll,
                     loc )

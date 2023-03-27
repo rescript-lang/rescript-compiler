@@ -31,10 +31,10 @@ let init_shape modl =
       (Blk_tuple, [ x; Const_base (Const_string (Ident.name id, None)) ])
   in
   let module_tag_info : Lambda.tag_info =
-    Blk_constructor { name = "Module"; num_nonconst = 2; tag = 0 }
+    Blk_constructor { name="Module"; num_nonconst = 2; tag = 0; attrs = [] }
   in
   let value_tag_info : Lambda.tag_info =
-    Blk_constructor { name = "value"; num_nonconst = 2; tag = 1 }
+    Blk_constructor { name = "value"; num_nonconst = 2; tag = 1; attrs = [] }
   in
   let rec init_shape_mod env mty =
     match Mtype.scrape env mty with
@@ -61,6 +61,7 @@ let init_shape modl =
                       name = "Function";
                       const = cstr_const;
                       non_const = cstr_non_const;
+                      attrs = [];
                     } )
           | { desc = Tconstr (p, _, _) } when Path.same p Predef.path_lazy_t ->
               Const_pointer
@@ -70,6 +71,7 @@ let init_shape modl =
                       name = "Lazy";
                       const = cstr_const;
                       non_const = cstr_non_const;
+                      attrs = [];
                     } )
           | _ -> raise Not_found
         in

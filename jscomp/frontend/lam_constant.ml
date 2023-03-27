@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type constructor_tag = { name : string; const : int; non_const : int }
+type constructor_tag = { cstr_name : Lambda.cstr_name; const : int; non_const : int }
 
 type pointer_info =
   | None
@@ -32,7 +32,7 @@ type pointer_info =
 
 let string_of_pointer_info (x : pointer_info) : string option =
   match x with
-  | Some name | Pt_constructor { name; _ } -> Some name
+  | Some name | Pt_constructor { cstr_name={name}; _ } -> Some name
   | Pt_assertfalse -> Some "assert_false"
   | None -> None
 

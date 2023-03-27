@@ -141,8 +141,28 @@ let default_action ~saturated failaction =
 let get_const_name i (sw_names : Lambda.switch_names option) =
   match sw_names with None -> None | Some { consts } -> Some consts.(i)
 
-let get_block_name i (sw_names : Lambda.switch_names option) =
+let get_block i (sw_names : Lambda.switch_names option) =
   match sw_names with None -> None | Some { blocks } -> Some blocks.(i)
+
+let get_tag_name (sw_names : Lambda.switch_names option) =
+  match sw_names with
+  | None -> Js_dump_lit.tag
+  | Some { blocks } ->
+    (match Array.find_opt (fun {Lambda.tag_name} -> tag_name <> None) blocks with
+    | Some {tag_name = Some s} -> s
+    | _ -> Js_dump_lit.tag
+    )
+
+let has_null_undefined_other (sw_names : Lambda.switch_names option) =
+  let (null, undefined, other) = (ref false, ref false, ref false) in
+  (match sw_names with
+  | None -> ()
+  | Some { consts } ->
+    Ext_array.iter consts (fun x -> match x.as_value with
+      | Some AsUndefined -> undefined := true
+      | Some AsNull -> null := true
+      | _ -> other := true));
+  (!null, !undefined, !other)
 
 let no_effects_const = lazy true
 (* let has_effects_const = lazy false *)
@@ -453,8 +473,8 @@ and compile_recursive_lets cxt id_args : Js_output.t =
               Js_output.append_output acc (compile_recursive_lets_aux cxt x)))
 
 and compile_general_cases :
-      'a.
-      ('a -> string option) ->
+      'a .
+      ('a -> Lambda.cstr_name option) ->
       ('a -> J.expression) ->
       (J.expression -> J.expression -> J.expression) ->
       Lam_compile_context.t ->
@@ -467,7 +487,7 @@ and compile_general_cases :
       ('a * Lam.t) list ->
       default_case ->
       J.block =
- fun (make_comment : _ -> string option) (make_exp : _ -> J.expression)
+ fun (get_cstr_name : _ -> Lambda.cstr_name option) (make_exp : _ -> J.expression)
      (eq_exp : J.expression -> J.expression -> J.expression)
      (cxt : Lam_compile_context.t)
      (switch :
@@ -531,6 +551,9 @@ and compile_general_cases :
             | Default lam ->
                 Some (Js_output.output_as_block (compile_lambda cxt lam))
           in
+          let make_comment i = match get_cstr_name i with
+            | None -> None
+            | Some {name} -> Some name  in
           let body =
             group_apply cases (fun last (switch_case, lam) ->
                 if last then
@@ -567,23 +590,27 @@ and compile_general_cases :
 
           [ switch ?default ?declaration switch_exp body ])
 
+and all_cases_have_name table get_name =
+  List.fold_right (fun (i, lam) acc ->
+    match get_name i, acc with
+    | Some {Lambda.as_value= Some as_value}, Some string_table -> Some ((as_value, lam) :: string_table)
+    | Some {name; as_value = None}, Some string_table -> Some ((AsString name, lam) :: string_table)
+    | _, _ -> None
+  ) table (Some [])
 and compile_cases cxt (switch_exp : E.t) table default get_name =
-  let string_table = table |> List.filter_map (fun (i, lam) -> match get_name i
-        with None -> None
-        | Some n -> Some (n, lam)) in
-  if List.length string_table = List.length table
-  then
-    compile_string_cases cxt switch_exp string_table default
-  else
-  compile_general_cases get_name
-    (fun i -> match get_name i with
-      | None ->  E.small_int i
-      | Some name -> E.str name)
-    E.int_equal cxt
-    (fun ?default ?declaration e clauses ->
-      S.int_switch ?default ?declaration e clauses)
-    switch_exp table default
-
+    match all_cases_have_name table get_name with
+    | Some string_table -> compile_string_cases cxt switch_exp string_table default
+    | None ->
+      compile_general_cases get_name
+        (fun i -> match get_name i with
+          | None -> E.small_int i
+          | Some {as_value = Some(AsString s)} -> E.str s
+          | Some {name} -> E.str name)
+        E.int_equal cxt
+        (fun ?default ?declaration e clauses ->
+          S.int_switch ?default ?declaration e clauses)
+        switch_exp table default
+  
 and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
     (lambda_cxt : Lam_compile_context.t) =
   (* TODO: if default is None, we can do some optimizations
@@ -609,7 +636,11 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
     default_action ~saturated:sw_blocks_full sw_failaction
   in
   let get_const_name i = get_const_name i sw_names in
-  let get_block_name i = get_block_name i sw_names in
+  let get_block i = get_block i sw_names in
+  let get_block_name i = match get_block i with
+    | None -> None
+    | Some {cstr_name} -> Some cstr_name in
+  let tag_name = get_tag_name sw_names in
   let compile_whole (cxt : Lam_compile_context.t) =
     match
       compile_lambda { cxt with continuation = NeedValue Not_tail } switch_arg
@@ -619,17 +650,17 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
         block
         @
         if sw_consts_full && sw_consts = [] then
-          compile_cases cxt (E.tag e) sw_blocks sw_blocks_default get_block_name
+          compile_cases cxt (E.tag ~name:tag_name e) sw_blocks sw_blocks_default get_block_name
         else if sw_blocks_full && sw_blocks = [] then
           compile_cases cxt e sw_consts sw_num_default get_const_name
         else
           (* [e] will be used twice  *)
           let dispatch e =
-            S.if_ (E.is_tag e)
+            S.if_ (E.is_tag ~has_null_undefined_other:(has_null_undefined_other sw_names) e)
               (compile_cases cxt e sw_consts sw_num_default get_const_name)
               (* default still needed, could simplified*)
               ~else_:
-                (compile_cases cxt (E.tag e) sw_blocks sw_blocks_default
+                (compile_cases cxt (E.tag ~name:tag_name e) sw_blocks sw_blocks_default
                    get_block_name)
           in
           match e.expression_desc with
@@ -660,7 +691,8 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
 and compile_string_cases cxt switch_exp table default =
   compile_general_cases
     (fun _ -> None)
-    (fun str -> E.str str ~delim:DStarJ) E.string_equal cxt
+    E.as_value
+    E.string_equal cxt
     (fun ?default ?declaration e clauses ->
       S.string_switch ?default ?declaration e clauses)
     switch_exp table default
@@ -672,6 +704,7 @@ and compile_stringswitch l cases default (lambda_cxt : Lam_compile_context.t) =
       Be careful: we should avoid multiple evaluation of l,
       The [gen] can be elimiated when number of [cases] is less than 3
   *)
+  let cases = cases |> List.map (fun (s,l) -> Lambda.AsString s, l) in
   match
     compile_lambda { lambda_cxt with continuation = NeedValue Not_tail } l
   with

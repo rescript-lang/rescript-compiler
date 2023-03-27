@@ -316,6 +316,19 @@ let small_int i : t =
   | 248 -> obj_int_tag_literal
   | i -> int (Int32.of_int i)
 
+let true_ : t = { comment = None; expression_desc = Bool true }
+let false_ : t = { comment = None; expression_desc = Bool false }
+let bool v = if v then true_ else false_
+
+let as_value = function
+  | Lambda.AsString s -> str s ~delim:DStarJ
+  | AsInt i -> small_int i
+  | AsBool b -> bool b
+  | AsNull -> nil
+  | AsUndefined -> undefined
+  | AsUnboxed -> assert false (* Should not emit tags for unboxed *)
+  (* TODO: put restriction on the variant definitions allowed, to make sure this never happens. *)
+
 let array_index ?comment (e0 : t) (e1 : t) : t =
   match (e0.expression_desc, e1.expression_desc) with
   | Array (l, _), Number (Int { i; _ })
@@ -540,13 +553,6 @@ let obj ?comment properties : t =
 (* currently only in method call, no dependency introduced
 *)
 
-(* Static_index .....................**)
-
-(* var (Jident.create_js "true") *)
-let true_ : t = { comment = None; expression_desc = Bool true }
-let false_ : t = { comment = None; expression_desc = Bool false }
-let bool v = if v then true_ else false_
-
 (** Arith operators *)
 (* Static_index .....................**)
 
@@ -762,8 +768,26 @@ let string_equal ?comment (e0 : t) (e1 : t) : t =
 let is_type_number ?comment (e : t) : t =
   string_equal ?comment (typeof e) (str "number")
 
-let is_tag (e : t) : t =
-  { expression_desc = Bin (NotEqEq, typeof e, str "object"); comment=None }
+let is_tag ?(has_null_undefined_other=(false, false, false)) (e : t) : t =
+  let (has_null, has_undefined, has_other) = has_null_undefined_other in
+  if has_null && (has_undefined = false) && (has_other = false) then (* null *)
+    { expression_desc = Bin (EqEqEq, e, nil); comment=None }
+  else if has_null && has_undefined && has_other=false then (* null + undefined *)
+    { J.expression_desc = Bin
+      (Or,
+        { expression_desc = Bin (EqEqEq, e, nil); comment=None },
+        { expression_desc = Bin (EqEqEq, e, undefined); comment=None }
+      ); comment=None }
+  else if has_null=false && has_undefined && has_other=false then (* undefined *)
+    { expression_desc = Bin (EqEqEq, e, undefined); comment=None }
+  else if has_null then (* (null + undefined + other) || (null + other) *)
+    { J.expression_desc = Bin
+      (Or,
+        { expression_desc = Bin (EqEqEq, e, nil); comment=None },
+        { expression_desc = Bin (NotEqEq, typeof e, str "object"); comment=None }
+      ); comment=None }
+  else (* (undefiled + other) || other *)
+    { expression_desc = Bin (NotEqEq, typeof e, str "object"); comment=None }
 
 let is_type_string ?comment (e : t) : t =
   string_equal ?comment (typeof e) (str "string")
@@ -775,8 +799,8 @@ let is_type_object (e : t) : t = string_equal (typeof e) (str "object")
    call plain [dot]
 *)
 
-let tag ?comment e : t =
-  { expression_desc = Caml_block_tag e; comment }
+let tag ?comment ?(name=Js_dump_lit.tag) e : t =
+  { expression_desc = Caml_block_tag (e, name); comment }
 
 (* according to the compiler, [Btype.hash_variant],
    it's reduced to 31 bits for hash

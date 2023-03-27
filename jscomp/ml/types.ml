@@ -154,7 +154,7 @@ and record_representation =
   | Record_float_unused                   (* Was: all fields are floats. Now: unused *)
   | Record_unboxed of bool                (* Unboxed single-field record, inlined or not *)
   | Record_inlined of                     (* Inlined record *)
-      { tag : int ; name : string; num_nonconsts : int; optional_labels : string list}
+      { tag : int ; name : string; num_nonconsts : int; optional_labels : string list; attrs: Parsetree.attributes}
   | Record_extension                      (* Inlined record under extension *)
   | Record_optional_labels of string list (* List of optional labels *)
 

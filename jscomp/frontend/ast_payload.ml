@@ -69,6 +69,34 @@ let is_single_int (x : t) : int option =
       Some (int_of_string name)
   | _ -> None
 
+let is_single_bool (x : t) : bool option =
+  match x with
+  | PStr
+      [
+        {
+          pstr_desc =
+            Pstr_eval
+              ({ pexp_desc = Pexp_construct ({ txt = Lident ("true" | "false" as b)}, _); _ }, _);
+          _;
+        };
+      ] ->
+      Some (b = "true")
+  | _ -> None  
+
+let is_single_ident (x : t) = match x with
+  | PStr
+      [
+        {
+          pstr_desc =
+            Pstr_eval
+              ({ pexp_desc = Pexp_ident lid }, _);
+          _;
+        };
+      ] ->
+      Some lid.txt
+  | _ -> None
+
+
 let raw_as_string_exp_exn ~(kind : Js_raw_info.raw_kind) ?is_function (x : t) :
     Parsetree.expression option =
   match x with

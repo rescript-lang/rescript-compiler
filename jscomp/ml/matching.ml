@@ -1330,7 +1330,11 @@ let make_constr_matching p def ctx = function
   | ((arg, _mut) :: argl) ->
       let cstr = pat_as_constr p in
       let newargs =
-        if cstr.cstr_inlined <> None then
+        if cstr.cstr_inlined <> None ||
+          Ext_list.exists cstr.cstr_attributes (function
+            | ({txt="as"}, PStr [{pstr_desc = Pstr_eval
+                ({pexp_desc = Pexp_ident {txt= Lident "unboxed"}}, _)}]) -> true
+            | _ -> false) then
           (arg, Alias) :: argl
         else match cstr.cstr_tag with
         | Cstr_block _ when

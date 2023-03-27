@@ -185,6 +185,8 @@ val assign_by_exp : t -> t -> t -> t
 
 val assign : ?comment:string -> t -> t -> t
 
+val as_value : Lambda.as_value -> t
+
 val triple_equal : ?comment:string -> t -> t -> t
 (* TODO: reduce [triple_equal] use *)
 
@@ -199,7 +201,8 @@ val eq_null_undefined_boolean : ?comment:string -> t -> t -> t
 val neq_null_undefined_boolean : ?comment:string -> t -> t -> t
 
 val is_type_number : ?comment:string -> t -> t
-val is_tag : t -> t
+
+val is_tag : ?has_null_undefined_other:(bool * bool * bool) -> t -> t
 
 val is_type_string : ?comment:string -> t -> t
 
@@ -304,7 +307,7 @@ val unit : t
 
 val undefined : t
 
-val tag : ?comment:string -> J.expression -> t
+val tag : ?comment:string -> ?name:string -> J.expression -> t
 
 (** Note that this is coupled with how we encode block, if we use the 
     `Object.defineProperty(..)` since the array already hold the length,

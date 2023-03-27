@@ -39,6 +39,10 @@ val is_single_string_as_ast : t -> Parsetree.expression option
 
 val is_single_int : t -> int option
 
+val is_single_bool : t -> bool option
+
+val is_single_ident : t -> Longident.t option
+
 val raw_as_string_exp_exn :
   kind:Js_raw_info.raw_kind ->
   ?is_function:bool ref ->

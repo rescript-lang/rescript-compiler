@@ -473,7 +473,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
           | "#makemutablelist" ->
               Pmakeblock
                 ( 0,
-                  Blk_constructor { name = "::"; num_nonconst = 1; tag = 0 },
+                  Blk_constructor { name = "::"; num_nonconst = 1; tag = 0; attrs = [] },
                   Mutable )
           | "#undefined_to_opt" -> Pundefined_to_opt
           | "#nullable_to_opt" -> Pnull_undefined_to_opt
