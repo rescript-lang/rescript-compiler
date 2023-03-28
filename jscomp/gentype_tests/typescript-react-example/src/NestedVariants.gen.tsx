@@ -7,7 +7,8 @@ import * as NestedVariantsBS__Es6Import from './NestedVariants.bs';
 const NestedVariantsBS: any = NestedVariantsBS__Es6Import;
 
 // tslint:disable-next-line:interface-over-type-literal
-export type typeL = [number, number];
+export type typeL = 
+    { TAG: "NonUnary"; _0: number; _1: number };
 
 // tslint:disable-next-line:interface-over-type-literal
 export type typeC = 
@@ -37,10 +38,10 @@ export type typeH =
   | { TAG: "I"; _0: typeD; _1: number };
 
 // tslint:disable-next-line:interface-over-type-literal
-export type typeJ = [typeD, typeD];
+export type typeJ = { TAG: "J"; _0: typeD; _1: typeD };
 
 // tslint:disable-next-line:interface-over-type-literal
-export type typeK = [typeD, typeD];
+export type typeK = { TAG: "K"; _0: typeD; _1: typeD };
 
 // tslint:disable-next-line:interface-over-type-literal
 export type boxedBinary = 
@@ -48,7 +49,7 @@ export type boxedBinary =
   | { TAG: "Z"; _0: number };
 
 // tslint:disable-next-line:interface-over-type-literal
-export type unboxedBinary = [typeD, number];
+export type unboxedBinary = { TAG: "UB"; _0: typeD; _1: number };
 
 // tslint:disable-next-line:interface-over-type-literal
 export type inline = 

@@ -170,18 +170,8 @@ let typeGetConverterNormalized ~config ~inline ~lookupId ~typeNameIsInterface
         match withPayloadConverted with
         | [] when ordinaryVariant -> normalized_
         | [payload] when ordinaryVariant ->
-          let unboxed = payload.t |> expandOneLevel |> typeIsObject in
-          let normalized =
-            Variant
-              {
-                variant with
-                payloads = [payload];
-                unboxed =
-                  (match unboxed with
-                  | true -> true
-                  | false -> variant.unboxed);
-              }
-          in
+          let _unboxed = payload.t |> expandOneLevel |> typeIsObject in
+          let normalized = Variant {variant with payloads = [payload]} in
           normalized
         | withPayloadConverted ->
           Variant {variant with payloads = withPayloadConverted}

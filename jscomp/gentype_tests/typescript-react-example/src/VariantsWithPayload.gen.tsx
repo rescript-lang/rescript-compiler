@@ -39,7 +39,7 @@ export type variantWithPayloads =
 export type variant1Int = { TAG: "R"; _0: number };
 
 // tslint:disable-next-line:interface-over-type-literal
-export type variant1Object = payload;
+export type variant1Object = { TAG: "R"; _0: payload };
 
 export const testWithPayload: (x:withPayload) => withPayload = VariantsWithPayloadBS.testWithPayload;
 
