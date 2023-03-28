@@ -130,14 +130,12 @@ let emitExportFromTypeDeclarations ~config ~emitters ~env ~typeGetNormalized
 
 let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
     ~outputFileRelative ~resolver ~typeGetConverter ~inlineOneLevel
-    ~typeGetNormalized ~typeNameIsInterface ~variantTables codeItem =
+    ~typeGetNormalized ~typeNameIsInterface codeItem =
   if !Debug.codeItems then
     Log_.item "Code Item: %s\n"
       (codeItem |> codeItemToString ~config ~typeNameIsInterface);
-  let indent = Some "" in
   match codeItem with
   | ImportValue {asPath; importAnnotation; type_; valueName} ->
-    let nameGen = EmitText.newNameGen () in
     let importPath = importAnnotation.importPath in
     let importFile = importAnnotation.name in
     let firstNameInPath, restOfPath =
@@ -220,7 +218,6 @@ let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
         | _ -> type_)
       | _ -> type_
     in
-    let converter = type_ |> typeGetConverter in
     let valueNameTypeChecked = valueName ^ "TypeChecked" in
     let emitters =
       (importedAsName ^ restOfPath) ^ ";"
@@ -242,7 +239,6 @@ let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
     in
     let emitters =
       (valueNameTypeChecked
-      |> Converter.toReason ~config ~converter ~indent ~nameGen ~variantTables
       |> EmitType.emitTypeCast ~config ~type_ ~typeNameIsInterface)
       ^ ";"
       |> EmitType.emitExportConst
@@ -261,7 +257,6 @@ let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
   | ExportValue {docString; moduleAccessPath; originalName; resolvedName; type_}
     ->
     let resolvedNameStr = ResolvedName.toString resolvedName in
-    let nameGen = EmitText.newNameGen () in
     let importPath =
       fileName
       |> ModuleResolver.resolveModule ~config ~importExtension:config.suffix
@@ -400,9 +395,8 @@ let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
     in
     let emitters =
       ((fileNameBs |> ModuleName.toString)
-       ^ "."
-       ^ (moduleAccessPath |> Runtime.emitModuleAccessPath ~config)
-      |> Converter.toJS ~config ~converter ~indent ~nameGen ~variantTables)
+      ^ "."
+      ^ (moduleAccessPath |> Runtime.emitModuleAccessPath ~config))
       ^ ";"
       |> EmitType.emitExportConst ~config ~docString ~early:false ~emitters
            ~name ~type_ ~typeNameIsInterface
@@ -416,13 +410,13 @@ let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
 
 let emitCodeItems ~config ~outputFileRelative ~emitters ~moduleItemsEmitter ~env
     ~fileName ~resolver ~typeNameIsInterface ~typeGetConverter ~inlineOneLevel
-    ~typeGetNormalized ~variantTables codeItems =
+    ~typeGetNormalized codeItems =
   codeItems
   |> List.fold_left
        (fun (env, emitters) ->
          emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
            ~outputFileRelative ~resolver ~typeGetConverter ~inlineOneLevel
-           ~typeGetNormalized ~typeNameIsInterface ~variantTables)
+           ~typeGetNormalized ~typeNameIsInterface)
        (env, emitters)
 
 let emitRequires ~importedValueOrComponent ~early ~config ~requires emitters =
@@ -630,7 +624,6 @@ let emitTranslationAsString ~config ~fileName ~inputCmtTranslateTypeDeclarations
       importedValueOrComponent = false;
     }
   in
-  let variantTables = Hashtbl.create 1 in
   let exportTypeMap, annotatedSet =
     translation.typeDeclarations
     |> createExportTypeMap ~config
@@ -712,7 +705,7 @@ let emitTranslationAsString ~config ~fileName ~inputCmtTranslateTypeDeclarations
          ~outputFileRelative ~resolver ~inlineOneLevel
          ~typeGetNormalized:(typeGetNormalized_ ~env)
          ~typeGetConverter:(typeGetConverter_ ~env)
-         ~typeNameIsInterface:(typeNameIsInterface ~env) ~variantTables
+         ~typeNameIsInterface:(typeNameIsInterface ~env)
   in
   let emitters =
     match config.emitImportReact with

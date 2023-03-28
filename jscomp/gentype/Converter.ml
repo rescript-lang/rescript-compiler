@@ -1,17 +1,14 @@
 open GenTypeCommon
 
-type t = IdentC | PromiseC of t | TupleC of t list
+type t = IdentC
 
 and groupedArgConverter =
   | ArgConverter of t
   | GroupConverter of (string * optional * t) list
 
-let rec toString converter =
+let toString converter =
   match converter with
   | IdentC -> "id"
-  | PromiseC c -> "promise(" ^ toString c ^ ")"
-  | TupleC innerTypesC ->
-    "[" ^ (innerTypesC |> List.map toString |> String.concat ", ") ^ "]"
 
 let typeGetConverterNormalized ~config ~inline ~lookupId ~typeNameIsInterface
     type0 =
@@ -84,13 +81,13 @@ let typeGetConverterNormalized ~config ~inline ~lookupId ~typeNameIsInterface
       let _, tNormalized = t |> visit ~visited in
       (IdentC, Option tNormalized)
     | Promise t ->
-      let tConverter, tNormalized = t |> visit ~visited in
-      (PromiseC tConverter, Promise tNormalized)
+      let _, tNormalized = t |> visit ~visited in
+      (IdentC, Promise tNormalized)
     | Tuple innerTypes ->
-      let innerConversions, normalizedList =
+      let _, normalizedList =
         innerTypes |> List.map (visit ~visited) |> List.split
       in
-      (TupleC innerConversions, Tuple normalizedList)
+      (IdentC, Tuple normalizedList)
     | TypeVar _ -> (IdentC, normalized_)
     | Variant variant ->
       let ordinaryVariant = not variant.polymorphic in
@@ -150,38 +147,3 @@ let typeGetNormalized ~config ~inline ~lookupId ~typeNameIsInterface type_ =
   type_
   |> typeGetConverterNormalized ~config ~inline ~lookupId ~typeNameIsInterface
   |> snd
-
-let rec converterIsIdentity ~config ~toJS converter =
-  match converter with
-  | IdentC -> true
-  | PromiseC c -> c |> converterIsIdentity ~config ~toJS
-  | TupleC innerTypesC ->
-    innerTypesC |> List.for_all (converterIsIdentity ~config ~toJS)
-
-let rec apply ~(config : Config.t) ~converter ~indent ~nameGen ~toJS
-    ~variantTables value =
-  match converter with
-  | _ when converter |> converterIsIdentity ~config ~toJS -> value
-  | IdentC -> value
-  | PromiseC c ->
-    let x = "$promise" |> EmitText.name ~nameGen in
-    value ^ ".then(function _element("
-    ^ (x |> EmitType.ofTypeAny ~config)
-    ^ ") { return "
-    ^ (x |> apply ~config ~converter:c ~indent ~nameGen ~toJS ~variantTables)
-    ^ "})"
-  | TupleC innerTypesC ->
-    "["
-    ^ (innerTypesC
-      |> List.mapi (fun index c ->
-             value
-             |> EmitText.arrayAccess ~index
-             |> apply ~config ~converter:c ~indent ~nameGen ~toJS ~variantTables)
-      |> String.concat ", ")
-    ^ "]"
-
-let toJS ~config ~converter ~indent ~nameGen ~variantTables value =
-  value |> apply ~config ~converter ~indent ~nameGen ~variantTables ~toJS:true
-
-let toReason ~config ~converter ~indent ~nameGen ~variantTables value =
-  value |> apply ~config ~converter ~indent ~nameGen ~toJS:false ~variantTables
