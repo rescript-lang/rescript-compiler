@@ -58,14 +58,6 @@ let rec toString converter =
 let typeGetConverterNormalized ~config ~inline ~lookupId ~typeNameIsInterface
     type0 =
   let circular = ref "" in
-  let expandOneLevel type_ =
-    match type_ with
-    | Ident {builtin = false; name} -> (
-      match name |> lookupId with
-      | (t : CodeItem.exportTypeItem) -> t.type_
-      | exception Not_found -> type_)
-    | _ -> type_
-  in
   let rec visit ~(visited : StringSet.t) type_ =
     let normalized_ = type_ in
     match type_ with
@@ -111,9 +103,8 @@ let typeGetConverterNormalized ~config ~inline ~lookupId ~typeNameIsInterface
         circular := name;
         (IdentC, normalized_))
       else
-        let visited = visited |> StringSet.add name in
         match name |> lookupId with
-        | {annotation = GenTypeOpaque} -> (IdentC, normalized_)
+        | {CodeItem.annotation = GenTypeOpaque} -> (IdentC, normalized_)
         | {annotation = NoGenType} -> (IdentC, normalized_)
         | {typeVars; type_} -> (
           let pairs =
@@ -170,7 +161,6 @@ let typeGetConverterNormalized ~config ~inline ~lookupId ~typeNameIsInterface
         match withPayloadConverted with
         | [] when ordinaryVariant -> normalized_
         | [payload] when ordinaryVariant ->
-          let _unboxed = payload.t |> expandOneLevel |> typeIsObject in
           let normalized = Variant {variant with payloads = [payload]} in
           normalized
         | withPayloadConverted ->
