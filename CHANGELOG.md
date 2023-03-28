@@ -47,7 +47,7 @@ These are only breaking changes for unformatted code.
 - Remove deprecated module `Printexc`
 - `@deriving(jsConverter)` not supported anymore for variant types https://github.com/rescript-lang/rescript-compiler/pull/6088
 - New representation for variants, where the tag is a string instead of a number. https://github.com/rescript-lang/rescript-compiler/pull/6088
-- GenType: removed support for `@genType.as` for records and variants which has become unnecessary. Use the language's `@as` instead to channge the runtime representation without requiring any runtime conversion during FFI.
+- GenType: removed support for `@genType.as` for records and variants which has become unnecessary. Use the language's `@as` instead to channge the runtime representation without requiring any runtime conversion during FFI. https://github.com/rescript-lang/rescript-compiler/pull/6099 https://github.com/rescript-lang/rescript-compiler/pull/6101
 
 #### :bug: Bug Fix
 

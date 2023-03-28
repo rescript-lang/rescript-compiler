@@ -1,4 +1,10 @@
-type t = A | B | C | D | E
+@@config({flags: ["-bs-gentype"]})
+
+@genType
+type t = | @as("thisIsA") A | @as(42) B | @as(null) C | D | @as(3.14) Pi
+
+@genType
+type tNU = | @as(null) N | @as(undefined) U
 
 let toEnum = x =>
   switch x {
@@ -6,7 +12,7 @@ let toEnum = x =>
   | B => 1
   | C => 2
   | D => 3
-  | E => 4
+  | Pi => 5
   }
 
 let toString = x =>
@@ -15,14 +21,14 @@ let toString = x =>
   | B => "B"
   | C => "C"
   | D => "D"
-  | E => "E"
+  | Pi => "Pi"
   }
 
 let bar = x =>
   switch x {
   | A => 10
   | B | C | D => 0
-  | E => 10
+  | Pi => 10
   }
 
 type b = True | False

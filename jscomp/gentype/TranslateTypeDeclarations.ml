@@ -20,14 +20,20 @@ let createExportTypeFromTypeDeclaration ~annotation ~loc ~nameAs ~opaque ~type_
   }
 
 let createCase (label, attributes) =
-  match
-    attributes |> Annotation.getAttributePayload Annotation.tagIsGenTypeAs
-  with
-  | Some (_, BoolPayload b) -> {label; labelJS = BoolLabel b}
-  | Some (_, FloatPayload s) -> {label; labelJS = FloatLabel s}
-  | Some (_, IntPayload i) -> {label; labelJS = IntLabel i}
-  | Some (_, StringPayload asLabel) -> {label; labelJS = StringLabel asLabel}
-  | _ -> {label; labelJS = StringLabel label}
+  {
+    label;
+    labelJS =
+      (match
+         attributes |> Annotation.getAttributePayload Annotation.tagIsAs
+       with
+       | Some (_, IdentPayload (Lident "null")) -> NullLabel
+       | Some (_, IdentPayload (Lident "undefined")) -> UndefinedLabel
+       | Some (_, BoolPayload b) -> BoolLabel b
+      | Some (_, FloatPayload s) -> FloatLabel s
+      | Some (_, IntPayload i) -> IntLabel i
+      | Some (_, StringPayload asLabel) -> StringLabel asLabel
+      | _ -> StringLabel label);
+  }
 
 (**
  * Rename record fields.
@@ -37,10 +43,8 @@ let createCase (label, attributes) =
 *)
 let renameRecordField ~attributes ~name =
   attributes |> Annotation.checkUnsupportedGenTypeAsRenaming;
-  match attributes |> Annotation.getBsAsRenaming with
-  | Some nameBS ->
-    let escapedName = nameBS |> String.escaped in
-    escapedName
+  match attributes |> Annotation.getAsString with
+  | Some s -> s |> String.escaped
   | None -> name
 
 let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
@@ -221,8 +225,8 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
       constructorDeclarations
       |> List.map (fun constructorDeclaration ->
              let constructorArgs = constructorDeclaration.Types.cd_args in
-             let name = constructorDeclaration.Types.cd_id |> Ident.name in
-             let attributes = constructorDeclaration.Types.cd_attributes in
+             let attributes = constructorDeclaration.cd_attributes in
+             let name = constructorDeclaration.cd_id |> Ident.name in
              let argsTranslation =
                match constructorArgs with
                | Cstr_tuple typeExprs ->

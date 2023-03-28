@@ -3,40 +3,40 @@
 
 function toEnum(x) {
   switch (x) {
-    case "A" :
+    case "thisIsA" :
         return 0;
-    case "B" :
+    case 42 :
         return 1;
-    case "C" :
+    case null :
         return 2;
     case "D" :
         return 3;
-    case "E" :
-        return 4;
+    case 3.14 :
+        return 5;
     
   }
 }
 
 function toString(x) {
   switch (x) {
-    case "A" :
+    case "thisIsA" :
         return "A";
-    case "B" :
+    case 42 :
         return "B";
-    case "C" :
+    case null :
         return "C";
     case "D" :
         return "D";
-    case "E" :
-        return "E";
+    case 3.14 :
+        return "Pi";
     
   }
 }
 
 function bar(x) {
   switch (x) {
-    case "A" :
-    case "E" :
+    case "thisIsA" :
+    case 3.14 :
         return 10;
     default:
       return 0;
