@@ -80,6 +80,12 @@ type testGenTypeAs3 = [
 type type_ = | @genType.as("type") Type
 
 @genType
+type rec myList = E | C(int, myList)
+
+@genType
+type builtinList = list<int>
+
+@genType
 let polyWithOpt = foo =>
   foo === "bar"
     ? None

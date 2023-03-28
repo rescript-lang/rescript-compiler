@@ -1,11 +1,6 @@
 open GenTypeCommon
 
-type t =
-  | CircularC of string * t
-  | IdentC
-  | OptionC of t
-  | PromiseC of t
-  | TupleC of t list
+type t = IdentC | OptionC of t | PromiseC of t | TupleC of t list
 
 and groupedArgConverter =
   | ArgConverter of t
@@ -13,7 +8,6 @@ and groupedArgConverter =
 
 let rec toString converter =
   match converter with
-  | CircularC (s, c) -> "circular(" ^ s ^ " " ^ toString c ^ ")"
   | IdentC -> "id"
   | OptionC c -> "option(" ^ toString c ^ ")"
   | PromiseC c -> "promise(" ^ toString c ^ ")"
@@ -51,6 +45,7 @@ let typeGetConverterNormalized ~config ~inline ~lookupId ~typeNameIsInterface
         circular := name;
         (IdentC, normalized_))
       else
+        let visited = visited |> StringSet.add name in
         match name |> lookupId with
         | {CodeItem.annotation = GenTypeOpaque} -> (IdentC, normalized_)
         | {annotation = NoGenType} -> (IdentC, normalized_)
@@ -140,16 +135,11 @@ let typeGetConverterNormalized ~config ~inline ~lookupId ~typeNameIsInterface
       (converter, {aName; aType = tNormalized})
   in
   let converter, normalized = type0 |> visit ~visited:StringSet.empty in
-  let finalConverter =
-    match !circular <> "" with
-    | true -> CircularC (!circular, converter)
-    | false -> converter
-  in
   if !Debug.converter then
     Log_.item "Converter type0:%s converter:%s\n"
       (type0 |> EmitType.typeToString ~config ~typeNameIsInterface)
-      (finalConverter |> toString);
-  (finalConverter, normalized)
+      (converter |> toString);
+  (converter, normalized)
 
 let typeGetConverter ~config ~lookupId ~typeNameIsInterface type_ =
   type_
@@ -164,7 +154,6 @@ let typeGetNormalized ~config ~inline ~lookupId ~typeNameIsInterface type_ =
 
 let rec converterIsIdentity ~config ~toJS converter =
   match converter with
-  | CircularC (_, c) -> c |> converterIsIdentity ~config ~toJS
   | IdentC -> true
   | OptionC c -> c |> converterIsIdentity ~config ~toJS
   | PromiseC c -> c |> converterIsIdentity ~config ~toJS
@@ -175,12 +164,6 @@ let rec apply ~(config : Config.t) ~converter ~indent ~nameGen ~toJS
     ~variantTables value =
   match converter with
   | _ when converter |> converterIsIdentity ~config ~toJS -> value
-  | CircularC (s, c) ->
-    value
-    |> EmitText.addComment
-         ~comment:
-           ("WARNING: circular type " ^ s ^ ". Only shallow converter applied.")
-    |> apply ~config ~converter:c ~indent ~nameGen ~toJS ~variantTables
   | IdentC -> value
   | OptionC c ->
     EmitText.parens

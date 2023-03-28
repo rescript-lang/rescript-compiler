@@ -6,6 +6,8 @@
 import * as VariantsBS__Es6Import from './Variants.bs';
 const VariantsBS: any = VariantsBS__Es6Import;
 
+import type {list} from '../src/shims/RescriptPervasives.shim';
+
 // tslint:disable-next-line:interface-over-type-literal
 export type weekday = 
     "monday"
@@ -34,6 +36,12 @@ export type x2 = "x" | "same";
 // tslint:disable-next-line:interface-over-type-literal
 export type type_ = "type";
 export type type = type_;
+
+// tslint:disable-next-line:interface-over-type-literal
+export type myList = "E" | { TAG: "C"; _0: number; _1: myList };
+
+// tslint:disable-next-line:interface-over-type-literal
+export type builtinList = list<number>;
 
 // tslint:disable-next-line:interface-over-type-literal
 export type result1<a,b> = 

@@ -85,6 +85,7 @@ These are only breaking changes for unformatted code.
 - Change the compilation of pattern matching for variants so it does not depends on variats being integers https://github.com/rescript-lang/rescript-compiler/pull/6085
 - Improve code generated for string templates https://github.com/rescript-lang/rescript-compiler/pull/6090
 - Move Jsx and JsxDOM and JsxEvent and JsxPPXReactSupport inside Pervasives and build them separately for curried and uncurried mode https://github.com/rescript-lang/rescript-compiler/pull/6091
+- Gentype: allow recursive data types https://github.com/rescript-association/genType/issues/585
 
 # 10.1.4
 
