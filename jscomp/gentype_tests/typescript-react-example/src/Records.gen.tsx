@@ -3,10 +3,6 @@
 
 
 // @ts-ignore: Implicit any on import
-import * as Curry__Es6Import from 'rescript/lib/es6/curry.js';
-const Curry: any = Curry__Es6Import;
-
-// @ts-ignore: Implicit any on import
 import * as RecordsBS__Es6Import from './Records.bs';
 const RecordsBS: any = RecordsBS__Es6Import;
 
@@ -76,10 +72,7 @@ export const origin: coord = RecordsBS.origin;
 
 export const computeArea: (param:coord) => number = RecordsBS.computeArea;
 
-export const coord2d: (x:number, y:number) => coord = function (Arg1: any, Arg2: any) {
-  const result = Curry._2(RecordsBS.coord2d, Arg1, Arg2);
-  return result
-};
+export const coord2d: (x:number, y:number) => coord = RecordsBS.coord2d;
 
 export const findAddress: (business:business) => list<string> = RecordsBS.findAddress;
 

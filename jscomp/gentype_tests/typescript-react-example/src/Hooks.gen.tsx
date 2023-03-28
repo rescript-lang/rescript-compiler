@@ -5,10 +5,6 @@
 import * as React from 'react';
 
 // @ts-ignore: Implicit any on import
-import * as Curry__Es6Import from 'rescript/lib/es6/curry.js';
-const Curry: any = Curry__Es6Import;
-
-// @ts-ignore: Implicit any on import
 import * as HooksBS__Es6Import from './Hooks.bs';
 const HooksBS: any = HooksBS__Es6Import;
 
@@ -79,13 +75,7 @@ export const functionWithRenamedArgs: (_1:{
   readonly to: vehicle; 
   readonly Type: vehicle; 
   readonly cb: cb
-}) => string = function (Arg1: any) {
-  const result = Curry._3(HooksBS.functionWithRenamedArgs, Arg1.to, Arg1.Type, function (Argto: any) {
-      const result1 = Arg1.cb({to:Argto});
-      return result1
-    });
-  return result
-};
+}) => string = HooksBS.functionWithRenamedArgs;
 
 // tslint:disable-next-line:interface-over-type-literal
 export type WithRename_componentWithRenamedArgs_Props = {
@@ -100,10 +90,7 @@ export const WithRename_componentWithRenamedArgs: React.ComponentType<{
   readonly cb: cb
 }> = HooksBS.WithRename.componentWithRenamedArgs;
 
-export const WithRef_makeWithRef: (_1:{ readonly vehicle: vehicle }, _2:(null | undefined | any)) => JSX.Element = function (Arg1: any, Arg2: any) {
-  const result = Curry._2(HooksBS.WithRef.makeWithRef, Arg1, Arg2);
-  return result
-};
+export const WithRef_makeWithRef: (_1:{ readonly vehicle: vehicle }, _2:(null | undefined | any)) => JSX.Element = HooksBS.WithRef.makeWithRef;
 
 // tslint:disable-next-line:interface-over-type-literal
 export type testForwardRef_Props = { readonly vehicle: vehicle };
@@ -174,6 +161,8 @@ export const WithRename: { componentWithRenamedArgs: React.ComponentType<{
 export const ForwardRef: { input: React.ComponentType<{ readonly r: r }> } = HooksBS.ForwardRef
 
 export const Fun: { functionReturningReactElement: React.ComponentType<{ readonly name: string }> } = HooksBS.Fun
+
+export const WithRef: { makeWithRef: (_1:{ readonly vehicle: vehicle }, _2:(null | undefined | any)) => JSX.Element } = HooksBS.WithRef
 
 export const WithChildren: { aComponentWithChildren: React.ComponentType<{ readonly children: React.ReactNode; readonly vehicle: vehicle }> } = HooksBS.WithChildren
 

@@ -2,7 +2,6 @@ open GenTypeCommon
 
 type t =
   | CircularC of string * t
-  | FunctionC of functionC
   | IdentC
   | OptionC of t
   | PromiseC of t
@@ -12,41 +11,9 @@ and groupedArgConverter =
   | ArgConverter of t
   | GroupConverter of (string * optional * t) list
 
-and functionC = {
-  funArgConverters: groupedArgConverter list;
-  componentName: string option;
-  isHook: bool;
-  retConverter: t;
-  typeVars: string list;
-  uncurried: bool;
-}
-
 let rec toString converter =
   match converter with
   | CircularC (s, c) -> "circular(" ^ s ^ " " ^ toString c ^ ")"
-  | FunctionC {funArgConverters; retConverter; uncurried} ->
-    "fn"
-    ^ (match uncurried with
-      | true -> "Uncurried"
-      | false -> "")
-    ^ "("
-    ^ (funArgConverters
-      |> List.map (fun groupedArgConverter ->
-             match groupedArgConverter with
-             | ArgConverter conv -> "(" ^ "_" ^ ":" ^ toString conv ^ ")"
-             | GroupConverter groupConverters ->
-               "{|"
-               ^ (groupConverters
-                 |> List.map (fun (s, optional, argConverter) ->
-                        s
-                        ^ (match optional = Optional with
-                          | true -> "?"
-                          | false -> "")
-                        ^ ":" ^ toString argConverter)
-                 |> String.concat ", ")
-               ^ "|}")
-      |> String.concat ", ")
-    ^ " -> " ^ toString retConverter ^ ")"
   | IdentC -> "id"
   | OptionC c -> "option(" ^ toString c ^ ")"
   | PromiseC c -> "promise(" ^ toString c ^ ")"
@@ -63,29 +30,12 @@ let typeGetConverterNormalized ~config ~inline ~lookupId ~typeNameIsInterface
       let _, tNormalized = t |> visit ~visited in
       (IdentC, Array (tNormalized, mutable_))
     | Dict _ -> (IdentC, normalized_)
-    | Function
-        ({argTypes; componentName; retType; typeVars; uncurried} as function_)
-      ->
+    | Function ({argTypes; retType} as function_) ->
       let argConverted =
         argTypes |> List.map (argTypeToGroupedArgConverter ~visited)
       in
-      let funArgConverters = argConverted |> List.map fst in
-      let retConverter, retNormalized = retType |> visit ~visited in
-      let isHook =
-        match argTypes with
-        | [{aType = Object (_, fields)}] ->
-          retType |> EmitType.isTypeFunctionComponent ~fields
-        | _ -> false
-      in
-      ( FunctionC
-          {
-            funArgConverters;
-            componentName;
-            isHook;
-            retConverter;
-            typeVars;
-            uncurried;
-          },
+      let _, retNormalized = retType |> visit ~visited in
+      ( IdentC,
         Function
           {
             function_ with
@@ -215,15 +165,6 @@ let typeGetNormalized ~config ~inline ~lookupId ~typeNameIsInterface type_ =
 let rec converterIsIdentity ~config ~toJS converter =
   match converter with
   | CircularC (_, c) -> c |> converterIsIdentity ~config ~toJS
-  | FunctionC {funArgConverters; retConverter; uncurried} ->
-    retConverter |> converterIsIdentity ~config ~toJS
-    && ((not toJS) || uncurried || funArgConverters |> List.length <= 1)
-    && funArgConverters
-       |> List.for_all (fun groupedArgConverter ->
-              match groupedArgConverter with
-              | ArgConverter argConverter ->
-                argConverter |> converterIsIdentity ~config ~toJS:(not toJS)
-              | GroupConverter _ -> false)
   | IdentC -> true
   | OptionC c -> c |> converterIsIdentity ~config ~toJS
   | PromiseC c -> c |> converterIsIdentity ~config ~toJS
@@ -240,106 +181,6 @@ let rec apply ~(config : Config.t) ~converter ~indent ~nameGen ~toJS
          ~comment:
            ("WARNING: circular type " ^ s ^ ". Only shallow converter applied.")
     |> apply ~config ~converter:c ~indent ~nameGen ~toJS ~variantTables
-  | FunctionC
-      {
-        funArgConverters;
-        componentName;
-        isHook;
-        retConverter;
-        typeVars;
-        uncurried;
-      } ->
-    let resultName = EmitText.resultName ~nameGen in
-    let indent1 = indent |> Indent.more in
-    let indent2 = indent1 |> Indent.more in
-    let mkReturn x =
-      "const " ^ resultName ^ " = " ^ x ^ ";"
-      ^ Indent.break ~indent:indent1
-      ^ "return "
-      ^ (resultName
-        |> apply ~config ~converter:retConverter ~indent:indent2 ~nameGen ~toJS
-             ~variantTables)
-    in
-    let convertArg i groupedArgConverter =
-      match groupedArgConverter with
-      | ArgConverter argConverter ->
-        let varName = i + 1 |> EmitText.argi ~nameGen in
-        let notToJS = not toJS in
-        ( [varName],
-          [
-            varName
-            |> apply ~config ~converter:argConverter ~indent:indent2 ~nameGen
-                 ~toJS:notToJS ~variantTables;
-          ] )
-      | GroupConverter groupConverters ->
-        let notToJS = not toJS in
-        if toJS then
-          let varName = i + 1 |> EmitText.argi ~nameGen in
-          ( [varName],
-            groupConverters
-            |> List.map (fun (label, optional, argConverter) ->
-                   varName
-                   |> EmitText.fieldAccess ~label
-                   |> apply ~config
-                        ~converter:
-                          (match
-                             optional = Optional
-                             && not
-                                  (argConverter
-                                  |> converterIsIdentity ~config ~toJS:notToJS)
-                           with
-                          | true -> OptionC argConverter
-                          | false -> argConverter)
-                        ~indent:indent2 ~nameGen ~toJS:notToJS ~variantTables)
-          )
-        else
-          let varNames =
-            groupConverters
-            |> List.map (fun (s, _optional, _argConverter) ->
-                   s |> EmitText.arg ~nameGen)
-          in
-          let varNamesArr = varNames |> Array.of_list in
-          let fieldValues =
-            groupConverters
-            |> List.mapi (fun i (s, _optional, argConverter) ->
-                   s ^ ":"
-                   ^ ((varNamesArr.(i) [@doesNotRaise])
-                     |> apply ~config ~converter:argConverter ~indent:indent2
-                          ~nameGen ~toJS:notToJS ~variantTables))
-            |> String.concat ", "
-          in
-          (varNames, ["{" ^ fieldValues ^ "}"])
-    in
-    let mkBody bodyArgs =
-      let useCurry = (not uncurried) && toJS && List.length bodyArgs > 1 in
-      config.emitImportCurry <- config.emitImportCurry || useCurry;
-      let functionName =
-        match isHook with
-        | true -> "React.createElement"
-        | false -> value
-      in
-      if isHook then config.emitImportReact <- true;
-      let declareProps, args =
-        match bodyArgs with
-        | [props] when isHook ->
-          let propsName = "$props" |> EmitText.name ~nameGen in
-          ( Indent.break ~indent:indent1
-            ^ "const " ^ propsName ^ " = " ^ props ^ ";",
-            [value; propsName] )
-        | _ -> ("", bodyArgs)
-      in
-      declareProps
-      ^ Indent.break ~indent:indent1
-      ^ (functionName |> EmitText.funCall ~args ~useCurry |> mkReturn)
-    in
-    let convertedArgs = funArgConverters |> List.mapi convertArg in
-    let args = convertedArgs |> List.map fst |> List.concat in
-    let funParams =
-      args |> List.map (fun v -> v |> EmitType.ofTypeAny ~config)
-    in
-    let bodyArgs = convertedArgs |> List.map snd |> List.concat in
-    EmitText.funDef ~bodyArgs ~functionName:componentName ~funParams ~indent
-      ~mkBody ~typeVars
   | IdentC -> value
   | OptionC c ->
     EmitText.parens

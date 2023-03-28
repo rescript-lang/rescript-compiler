@@ -20,10 +20,6 @@ import {polymorphic as polymorphicNotChecked} from './MyMath';
 
 import {default as defaultNotChecked} from './MyMath';
 
-// @ts-ignore: Implicit any on import
-import * as Curry__Es6Import from 'rescript/lib/es6/curry.js';
-const Curry: any = Curry__Es6Import;
-
 // In case of type error, check the type of 'round' in 'ImportJsValue.res' and './MyMath'.
 export const roundTypeChecked: (_1:number) => number = roundNotChecked;
 
@@ -58,13 +54,7 @@ export const useColor: unknown = useColorTypeChecked as (_1:color) => number;
 export const higherOrderTypeChecked: (_1:((_1:number, _2:number) => number)) => number = higherOrderNotChecked;
 
 // Export 'higherOrder' early to allow circular import from the '.bs.js' file.
-export const higherOrder: unknown = function (Arg1: any) {
-  const result = higherOrderTypeChecked(function (Arg11: any, Arg2: any) {
-      const result1 = Curry._2(Arg1, Arg11, Arg2);
-      return result1
-    });
-  return result
-} as (_1:((_1:number, _2:number) => number)) => number;
+export const higherOrder: unknown = higherOrderTypeChecked as (_1:((_1:number, _2:number) => number)) => number;
 
 // In case of type error, check the type of 'convertVariant' in 'ImportJsValue.res' and './MyMath'.
 export const convertVariantTypeChecked: (_1:variant) => variant = convertVariantNotChecked;

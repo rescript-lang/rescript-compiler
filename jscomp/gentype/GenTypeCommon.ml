@@ -97,22 +97,6 @@ and variant = {
 
 and payload = {case: case; inlineRecord: bool; numArgs: int; t: type_}
 
-let typeIsObject type_ =
-  match type_ with
-  | Array _ -> true
-  | Dict _ -> true
-  | Function _ -> false
-  | GroupOfLabeledArgs _ -> false
-  | Ident _ -> false
-  | Null _ -> false
-  | Nullable _ -> false
-  | Object _ -> true
-  | Option _ -> false
-  | Promise _ -> true
-  | Tuple _ -> true
-  | TypeVar _ -> false
-  | Variant _ -> false
-
 type label = Nolabel | Label of string | OptLabel of string
 
 type dep =

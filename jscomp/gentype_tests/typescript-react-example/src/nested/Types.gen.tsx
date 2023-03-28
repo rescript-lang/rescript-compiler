@@ -3,10 +3,6 @@
 
 
 // @ts-ignore: Implicit any on import
-import * as Curry__Es6Import from 'rescript/lib/es6/curry.js';
-const Curry: any = Curry__Es6Import;
-
-// @ts-ignore: Implicit any on import
 import * as TypesBS__Es6Import from './Types.bs';
 const TypesBS: any = TypesBS__Es6Import;
 
@@ -115,10 +111,7 @@ export type tPrimed = [TypeNameSanitize_t_, TypeNameSanitize_M_t__];
 
 export const someIntList: list<number> = TypesBS.someIntList;
 
-export const map: <T1,T2>(_1:((_1:T1) => T2), _2:list<T1>) => list<T2> = function <T1,T2>(Arg1: any, Arg2: any) {
-  const result = Curry._2(TypesBS.map, Arg1, Arg2);
-  return result
-};
+export const map: <T1,T2>(_1:((_1:T1) => T2), _2:list<T1>) => list<T2> = TypesBS.map;
 
 export const swap: (tree:tree) => tree = TypesBS.swap;
 
@@ -126,10 +119,7 @@ export const selfRecursiveConverter: (param:selfRecursive) => selfRecursive = Ty
 
 export const mutuallyRecursiveConverter: (param:mutuallyRecursiveA) => mutuallyRecursiveB = TypesBS.mutuallyRecursiveConverter;
 
-export const testFunctionOnOptionsAsArgument: <T1,a>(a:(undefined | a), foo:((_1:(undefined | a)) => T1)) => T1 = function <T1,a>(Arg1: any, Arg2: any) {
-  const result = Curry._2(TypesBS.testFunctionOnOptionsAsArgument, Arg1, Arg2);
-  return result
-};
+export const testFunctionOnOptionsAsArgument: <T1,a>(a:(undefined | a), foo:((_1:(undefined | a)) => T1)) => T1 = TypesBS.testFunctionOnOptionsAsArgument;
 
 export const stringT: string = TypesBS.stringT;
 

@@ -3,10 +3,6 @@
 
 
 // @ts-ignore: Implicit any on import
-import * as Curry__Es6Import from 'rescript/lib/es6/curry.js';
-const Curry: any = Curry__Es6Import;
-
-// @ts-ignore: Implicit any on import
 import * as TuplesBS__Es6Import from './Tuples.bs';
 const TuplesBS: any = TuplesBS__Es6Import;
 
@@ -32,16 +28,10 @@ export const computeAreaWithIdent: (param:coord) => number = TuplesBS.computeAre
 
 export const computeAreaNoConverters: (param:[number, number]) => number = TuplesBS.computeAreaNoConverters;
 
-export const coord2d: <T1,T2,T3>(x:T1, y:T2) => [T1, T2, (undefined | T3)] = function <T1,T2,T3>(Arg1: any, Arg2: any) {
-  const result = Curry._2(TuplesBS.coord2d, Arg1, Arg2);
-  return result
-};
+export const coord2d: <T1,T2,T3>(x:T1, y:T2) => [T1, T2, (undefined | T3)] = TuplesBS.coord2d;
 
 export const getFirstName: (param:couple) => string = TuplesBS.getFirstName;
 
-export const marry: (first:person, second:person) => couple = function (Arg1: any, Arg2: any) {
-  const result = Curry._2(TuplesBS.marry, Arg1, Arg2);
-  return result
-};
+export const marry: (first:person, second:person) => couple = TuplesBS.marry;
 
 export const changeSecondAge: (param:couple) => couple = TuplesBS.changeSecondAge;
