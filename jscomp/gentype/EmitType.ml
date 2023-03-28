@@ -307,7 +307,7 @@ and renderFunType ~config ~indent ~inFunType ~typeNameIsInterface ~typeVars
 let typeToString ~config ~typeNameIsInterface type_ =
   type_ |> renderType ~config ~typeNameIsInterface ~inFunType:false
 
-let ofType ~config ?(typeNameIsInterface = fun _ -> false) ~type_ s =
+let ofType ~config ~typeNameIsInterface ~type_ s =
   s ^ ": " ^ (type_ |> typeToString ~config ~typeNameIsInterface)
 
 let emitExportConst ~early ?(comment = "") ~config ?(docString = "") ~emitters
@@ -443,8 +443,6 @@ let emitImportTypeAs ~emitters ~config ~typeName ~asTypeName
     | None -> "")
   ^ "} from '" ^ importPathString ^ "';"
   |> Emitters.import ~emitters
-
-let ofTypeAny ~config s = s |> ofType ~config ~type_:typeAny
 
 let emitTypeCast ~config ~type_ ~typeNameIsInterface s =
   s ^ " as " ^ (type_ |> typeToString ~config ~typeNameIsInterface)
