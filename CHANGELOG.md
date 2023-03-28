@@ -47,6 +47,7 @@ These are only breaking changes for unformatted code.
 - Remove deprecated module `Printexc`
 - `@deriving(jsConverter)` not supported anymore for variant types https://github.com/rescript-lang/rescript-compiler/pull/6088
 - New representation for variants, where the tag is a string instead of a number. https://github.com/rescript-lang/rescript-compiler/pull/6088
+- GenType: removed support for `@genType.as` for records and variants which has become unnecessary. Use the language's `@as` instead to channge the runtime representation without requiring any runtime conversion during FFI.
 
 #### :bug: Bug Fix
 
@@ -84,6 +85,7 @@ These are only breaking changes for unformatted code.
 - Change the compilation of pattern matching for variants so it does not depends on variats being integers https://github.com/rescript-lang/rescript-compiler/pull/6085
 - Improve code generated for string templates https://github.com/rescript-lang/rescript-compiler/pull/6090
 - Move Jsx and JsxDOM and JsxEvent and JsxPPXReactSupport inside Pervasives and build them separately for curried and uncurried mode https://github.com/rescript-lang/rescript-compiler/pull/6091
+- Gentype: allow recursive data types https://github.com/rescript-association/genType/issues/585
 
 # 10.1.4
 

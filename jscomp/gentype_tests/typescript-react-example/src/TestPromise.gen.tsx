@@ -3,10 +3,6 @@
 
 
 // @ts-ignore: Implicit any on import
-import * as Curry__Es6Import from 'rescript/lib/es6/curry.js';
-const Curry: any = Curry__Es6Import;
-
-// @ts-ignore: Implicit any on import
 import * as TestPromiseBS__Es6Import from './TestPromise.bs';
 const TestPromiseBS: any = TestPromiseBS__Es6Import;
 
@@ -21,7 +17,4 @@ export type toPayload = { readonly result: string };
 
 export const convert: (_1:Promise<fromPayload>) => Promise<toPayload> = TestPromiseBS.convert;
 
-export const barx: (_1:{ readonly x?: Promise<(undefined | string)> }, _2:void) => boolean = function (Arg1: any, Arg2: any) {
-  const result = Curry._2(TestPromiseBS.barx, Arg1.x, Arg2);
-  return result
-};
+export const barx: (_1:{ readonly x?: Promise<(undefined | string)> }, _2:void) => boolean = TestPromiseBS.barx;

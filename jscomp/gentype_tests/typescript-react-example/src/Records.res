@@ -108,7 +108,7 @@ let computeArea4 = (o: {"x": int, "y": int, "z": option<int>}) =>
 
 @genType
 type myRec = {
-  @genType.as("type")
+  @as("type")
   type_: string,
 }
 

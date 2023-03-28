@@ -5,25 +5,28 @@ let concat = Filename.concat
 let handleNamespace cmt =
   let cutAfterDash s =
     match String.index s '-' with
-    | n -> String.sub s 0 n
+    | n -> String.sub s 0 n [@doesNotRaise]
     | exception Not_found -> s
   in
   let noDir = Filename.basename cmt = cmt in
-  if noDir then cmt |> Filename.chop_extension |> cutAfterDash
+  if noDir then cmt |> (Filename.chop_extension [@doesNotRaise]) |> cutAfterDash
   else
     let dir = cmt |> Filename.dirname in
     let base =
-      cmt |> Filename.basename |> Filename.chop_extension |> cutAfterDash
+      cmt |> Filename.basename |> (Filename.chop_extension [@doesNotRaise])
+      |> cutAfterDash
     in
     Filename.concat dir base
 
 let findNameSpace cmt =
   let keepAfterDash s =
     match String.index s '-' with
-    | n -> Some (String.sub s (n + 1) (String.length s - n - 1))
+    | n ->
+      Some ((String.sub s (n + 1) [@doesNotRaise]) (String.length s - n - 1))
     | exception Not_found -> None
   in
-  cmt |> Filename.basename |> Filename.chop_extension |> keepAfterDash
+  cmt |> Filename.basename |> (Filename.chop_extension [@doesNotRaise])
+  |> keepAfterDash
 
 let getOutputFileRelative ~config cmt =
   (cmt |> handleNamespace) ^ EmitType.outputFileSuffix ~config
@@ -43,9 +46,11 @@ let getCmtFile cmt =
         let baseName = pathCmt |> Filename.basename in
         Filename.concat dirName (baseName |> String.uncapitalize_ascii)
       in
-      let pathCmti = Filename.chop_extension pathCmt ^ ".cmti" in
+      let pathCmti =
+        (Filename.chop_extension pathCmt [@doesNotRaise]) ^ ".cmti"
+      in
       let pathCmtiLowerCase =
-        Filename.chop_extension pathCmtLowerCase ^ ".cmti"
+        (Filename.chop_extension pathCmtLowerCase [@doesNotRaise]) ^ ".cmti"
       in
       if Sys.file_exists pathCmtiLowerCase then pathCmtiLowerCase
       else if Sys.file_exists pathCmti then pathCmti
@@ -61,28 +66,5 @@ let getBsConfigFile ~projectRoot =
   match bsconfig |> Sys.file_exists with
   | true -> Some bsconfig
   | false -> None
-
-(** Find the relative path from /.../bs/lib
-   e.g. /foo/bar/bs/lib/src/Hello.res --> src/Hello.res *)
-let relativePathFromBsLib fileName =
-  if Filename.is_relative fileName then fileName
-  else
-    let rec pathToList path =
-      let isRoot = path |> Filename.basename = path in
-      match isRoot with
-      | true -> [path]
-      | false ->
-        (path |> Filename.basename) :: (path |> Filename.dirname |> pathToList)
-    in
-    let rec fromLibBs ~acc reversedList =
-      match reversedList with
-      | "bs" :: "lib" :: _ -> acc
-      | dir :: dirs -> fromLibBs ~acc:(dir :: acc) dirs
-      | [] -> []
-    in
-    fileName |> pathToList |> fromLibBs ~acc:[] |> fun l ->
-    match l with
-    | [] -> fileName
-    | root :: dirs -> dirs |> List.fold_left concat root
 
 let readConfig ~namespace = Config.readConfig ~getBsConfigFile ~namespace

@@ -3,10 +3,6 @@
 
 
 // @ts-ignore: Implicit any on import
-import * as Curry__Es6Import from 'rescript/lib/es6/curry.js';
-const Curry: any = Curry__Es6Import;
-
-// @ts-ignore: Implicit any on import
 import * as UncurriedBS__Es6Import from './Uncurried.bs';
 const UncurriedBS: any = UncurriedBS__Es6Import;
 
@@ -36,10 +32,7 @@ export const uncurried2: (x:number, y:string) => string = UncurriedBS.uncurried2
 
 export const uncurried3: (x:number, y:string, z:number) => string = UncurriedBS.uncurried3;
 
-export const curried3: (x:number, y:string, z:number) => string = function (Arg1: any, Arg2: any, Arg3: any) {
-  const result = Curry._3(UncurriedBS.curried3, Arg1, Arg2, Arg3);
-  return result
-};
+export const curried3: (x:number, y:string, z:number) => string = UncurriedBS.curried3;
 
 export const callback: (cb:(() => number)) => string = UncurriedBS.callback;
 
@@ -51,12 +44,6 @@ export const sumU: (n:number, m:number) => void = UncurriedBS.sumU;
 
 export const sumU2: (n:number) => (_1:number) => void = UncurriedBS.sumU2;
 
-export const sumCurried: (n:number, _2:number) => void = function (Arg1: any, Arg2: any) {
-  const result = Curry._2(UncurriedBS.sumCurried, Arg1, Arg2);
-  return result
-};
+export const sumCurried: (n:number, _2:number) => void = UncurriedBS.sumCurried;
 
-export const sumLblCurried: (s:string, _2:{ readonly n: number; readonly m: number }) => void = function (Arg1: any, Arg2: any) {
-  const result = Curry._3(UncurriedBS.sumLblCurried, Arg1, Arg2.n, Arg2.m);
-  return result
-};
+export const sumLblCurried: (s:string, _2:{ readonly n: number; readonly m: number }) => void = UncurriedBS.sumLblCurried;

@@ -76,7 +76,9 @@ let getShims map =
            | Ext_json_types.Str {str} ->
              let fromTo = str |> String.split_on_char '=' |> Array.of_list in
              assert (Array.length fromTo == 2);
-             shims := (fromTo.(0), fromTo.(1)) :: !shims
+             shims :=
+               ((fromTo.(0) [@doesNotRaise]), (fromTo.(1) [@doesNotRaise]))
+               :: !shims
            | _ -> ())
   | _ -> ());
   !shims

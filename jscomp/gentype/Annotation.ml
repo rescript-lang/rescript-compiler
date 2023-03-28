@@ -64,46 +64,68 @@ let rec getAttributePayload checkText (attributes : Typedtree.attributes) =
   in
   match attributes with
   | [] -> None
-  | ({Asttypes.txt}, payload) :: _tl when checkText txt -> (
+  | ({txt; loc}, payload) :: _tl when checkText txt -> (
+    let payload =
+      match payload with
+      | PStr [] -> Some UnrecognizedPayload
+      | PStr ({pstr_desc = Pstr_eval (expr, _)} :: _) -> expr |> fromExpr
+      | PStr ({pstr_desc = Pstr_extension _} :: _) -> Some UnrecognizedPayload
+      | PStr ({pstr_desc = Pstr_value _} :: _) -> Some UnrecognizedPayload
+      | PStr ({pstr_desc = Pstr_primitive _} :: _) -> Some UnrecognizedPayload
+      | PStr ({pstr_desc = Pstr_type _} :: _) -> Some UnrecognizedPayload
+      | PStr ({pstr_desc = Pstr_typext _} :: _) -> Some UnrecognizedPayload
+      | PStr ({pstr_desc = Pstr_exception _} :: _) -> Some UnrecognizedPayload
+      | PStr ({pstr_desc = Pstr_module _} :: _) -> Some UnrecognizedPayload
+      | PStr ({pstr_desc = Pstr_recmodule _} :: _) -> Some UnrecognizedPayload
+      | PStr ({pstr_desc = Pstr_modtype _} :: _) -> Some UnrecognizedPayload
+      | PStr ({pstr_desc = Pstr_open _} :: _) -> Some UnrecognizedPayload
+      | PStr ({pstr_desc = Pstr_class _} :: _) -> Some UnrecognizedPayload
+      | PStr ({pstr_desc = Pstr_class_type _} :: _) -> Some UnrecognizedPayload
+      | PStr ({pstr_desc = Pstr_include _} :: _) -> Some UnrecognizedPayload
+      | PStr ({pstr_desc = Pstr_attribute _} :: _) -> Some UnrecognizedPayload
+      | PPat _ -> Some UnrecognizedPayload
+      | PSig _ -> Some UnrecognizedPayload
+      | PTyp _ -> Some UnrecognizedPayload
+    in
     match payload with
-    | PStr [] -> Some UnrecognizedPayload
-    | PStr ({pstr_desc = Pstr_eval (expr, _)} :: _) -> expr |> fromExpr
-    | PStr ({pstr_desc = Pstr_extension _} :: _) -> Some UnrecognizedPayload
-    | PStr ({pstr_desc = Pstr_value _} :: _) -> Some UnrecognizedPayload
-    | PStr ({pstr_desc = Pstr_primitive _} :: _) -> Some UnrecognizedPayload
-    | PStr ({pstr_desc = Pstr_type _} :: _) -> Some UnrecognizedPayload
-    | PStr ({pstr_desc = Pstr_typext _} :: _) -> Some UnrecognizedPayload
-    | PStr ({pstr_desc = Pstr_exception _} :: _) -> Some UnrecognizedPayload
-    | PStr ({pstr_desc = Pstr_module _} :: _) -> Some UnrecognizedPayload
-    | PStr ({pstr_desc = Pstr_recmodule _} :: _) -> Some UnrecognizedPayload
-    | PStr ({pstr_desc = Pstr_modtype _} :: _) -> Some UnrecognizedPayload
-    | PStr ({pstr_desc = Pstr_open _} :: _) -> Some UnrecognizedPayload
-    | PStr ({pstr_desc = Pstr_class _} :: _) -> Some UnrecognizedPayload
-    | PStr ({pstr_desc = Pstr_class_type _} :: _) -> Some UnrecognizedPayload
-    | PStr ({pstr_desc = Pstr_include _} :: _) -> Some UnrecognizedPayload
-    | PStr ({pstr_desc = Pstr_attribute _} :: _) -> Some UnrecognizedPayload
-    | PPat _ -> Some UnrecognizedPayload
-    | PSig _ -> Some UnrecognizedPayload
-    | PTyp _ -> Some UnrecognizedPayload)
+    | None -> None
+    | Some payload -> Some (loc, payload))
   | _hd :: tl -> getAttributePayload checkText tl
 
 let getGenTypeAsRenaming attributes =
   match attributes |> getAttributePayload tagIsGenTypeAs with
-  | Some (StringPayload s) -> Some s
+  | Some (_, StringPayload s) -> Some s
   | None -> (
     match attributes |> getAttributePayload tagIsGenType with
-    | Some (StringPayload s) -> Some s
+    | Some (_, StringPayload s) -> Some s
     | _ -> None)
   | _ -> None
 
+(* This is not supported anymore: only use to give a warning *)
+let checkUnsupportedGenTypeAsRenaming attributes =
+  let error ~loc =
+    Log_.Color.setup ();
+    Log_.info ~loc ~name:"Warning genType" (fun ppf () ->
+        Format.fprintf ppf
+          "@\n\
+           @genType.as is not supported anymore in type definitions. Use @as \
+           from the language.")
+  in
+  match attributes |> getAttributePayload tagIsGenTypeAs with
+  | Some (loc, _) -> error ~loc
+  | None -> (
+    match attributes |> getAttributePayload tagIsGenType with
+    | Some (loc, _) -> error ~loc
+    | None -> ())
+
 let getBsAsRenaming attributes =
   match attributes |> getAttributePayload tagIsBsAs with
-  | Some (StringPayload s) -> Some s
+  | Some (_, StringPayload s) -> Some s
   | _ -> None
 
 let getBsAsInt attributes =
   match attributes |> getAttributePayload tagIsBsAs with
-  | Some (IntPayload s) -> (
+  | Some (_, IntPayload s) -> (
     try Some (int_of_string s) with Failure _ -> None)
   | _ -> None
 
@@ -111,10 +133,12 @@ let getAttributeImportRenaming attributes =
   let attributeImport = attributes |> getAttributePayload tagIsGenTypeImport in
   let genTypeAsRenaming = attributes |> getGenTypeAsRenaming in
   match (attributeImport, genTypeAsRenaming) with
-  | Some (StringPayload importString), _ ->
+  | Some (_, StringPayload importString), _ ->
     (Some importString, genTypeAsRenaming)
   | ( Some
-        (TuplePayload [StringPayload importString; StringPayload renameString]),
+        ( _,
+          TuplePayload [StringPayload importString; StringPayload renameString]
+        ),
       _ ) ->
     (Some importString, Some renameString)
   | _ -> (None, genTypeAsRenaming)
@@ -122,7 +146,7 @@ let getAttributeImportRenaming attributes =
 let getDocString attributes =
   let docPayload = attributes |> getAttributePayload tagIsOcamlDoc in
   match docPayload with
-  | Some (StringPayload docString) -> "/** " ^ docString ^ " */\n"
+  | Some (_, StringPayload docString) -> "/** " ^ docString ^ " */\n"
   | _ -> ""
 
 let hasAttribute checkText (attributes : Typedtree.attributes) =
@@ -133,7 +157,7 @@ let fromAttributes ~loc (attributes : Typedtree.attributes) =
   else if hasAttribute (fun s -> tagIsGenType s || tagIsGenTypeAs s) attributes
   then (
     (match attributes |> getAttributePayload tagIsGenType with
-    | Some UnrecognizedPayload -> ()
+    | Some (_, UnrecognizedPayload) -> ()
     | Some _ ->
       Log_.Color.setup ();
       Log_.info ~loc ~name:"Warning genType" (fun ppf () ->

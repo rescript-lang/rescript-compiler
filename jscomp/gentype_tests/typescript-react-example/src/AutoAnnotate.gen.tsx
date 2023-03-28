@@ -3,7 +3,7 @@
 
 
 // tslint:disable-next-line:interface-over-type-literal
-export type variant = { tag: "R"; value: number };
+export type variant = { TAG: "R"; _0: number };
 
 // tslint:disable-next-line:interface-over-type-literal
 export type record = { readonly variant: variant };
@@ -19,5 +19,5 @@ export type r4 = { readonly r4: number };
 
 // tslint:disable-next-line:interface-over-type-literal
 export type annotatedVariant = 
-    { tag: "R2"; value: [r2, r3] }
-  | { tag: "R4"; value: r4 };
+    { TAG: "R2"; _0: r2; _1: r3 }
+  | { TAG: "R4"; _0: r4 };

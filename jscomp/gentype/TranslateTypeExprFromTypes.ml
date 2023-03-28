@@ -45,7 +45,7 @@ let translateObjType closedFlag fieldsTranslations =
              | _ -> (Mandatory, t)
            in
            let name = name |> Runtime.mangleObjectField in
-           {mutable_; nameJS = name; nameRE = name; optional; type_})
+           {mutable_; nameJS = name; optional; type_})
   in
   let type_ = Object (closedFlag, fields) in
   {dependencies; type_}
@@ -124,7 +124,6 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
               {
                 mutable_ = Mutable;
                 nameJS = "contents";
-                nameRE = "contents";
                 optional = Mandatory;
                 type_ = paramTranslation.type_;
               };
@@ -453,7 +452,7 @@ and translateTypeExprFromTypes_ ~config ~typeVarsGen ~typeEnv
     match typeEnv |> TypeEnv.lookupModuleTypeSignature ~path with
     | Some (signature, typeEnv) ->
       let typeEquationsTranslation =
-        List.combine ids types
+        (List.combine ids types [@doesNotRaise])
         |> List.map (fun (x, t) ->
                ( x,
                  t |> translateTypeExprFromTypes_ ~config ~typeVarsGen ~typeEnv
@@ -503,7 +502,6 @@ and signatureToModuleRuntimeRepresentation ~config ~typeVarsGen ~typeEnv
                {
                  mutable_ = Immutable;
                  nameJS = id |> Ident.name;
-                 nameRE = id |> Ident.name;
                  optional = Mandatory;
                  type_;
                }
@@ -527,7 +525,6 @@ and signatureToModuleRuntimeRepresentation ~config ~typeVarsGen ~typeEnv
                {
                  mutable_ = Immutable;
                  nameJS = id |> Ident.name;
-                 nameRE = id |> Ident.name;
                  optional = Mandatory;
                  type_;
                }

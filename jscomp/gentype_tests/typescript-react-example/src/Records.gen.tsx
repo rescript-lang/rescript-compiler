@@ -3,10 +3,6 @@
 
 
 // @ts-ignore: Implicit any on import
-import * as Curry__Es6Import from 'rescript/lib/es6/curry.js';
-const Curry: any = Curry__Es6Import;
-
-// @ts-ignore: Implicit any on import
 import * as RecordsBS__Es6Import from './Records.bs';
 const RecordsBS: any = RecordsBS__Es6Import;
 
@@ -76,10 +72,7 @@ export const origin: coord = RecordsBS.origin;
 
 export const computeArea: (param:coord) => number = RecordsBS.computeArea;
 
-export const coord2d: (x:number, y:number) => coord = function (Arg1: any, Arg2: any) {
-  const result = Curry._2(RecordsBS.coord2d, Arg1, Arg2);
-  return result
-};
+export const coord2d: (x:number, y:number) => coord = RecordsBS.coord2d;
 
 export const findAddress: (business:business) => list<string> = RecordsBS.findAddress;
 
@@ -113,15 +106,9 @@ export const computeArea4: (o:{
   readonly z?: number
 }) => number = RecordsBS.computeArea4;
 
-export const testMyRec: (x:myRec) => string = function (Arg1: any) {
-  const result = RecordsBS.testMyRec({type_:Arg1.type});
-  return result
-};
+export const testMyRec: (x:myRec) => string = RecordsBS.testMyRec;
 
-export const testMyRec2: (x:myRec) => myRec = function (Arg1: any) {
-  const result = RecordsBS.testMyRec2({type_:Arg1.type});
-  return {type:result.type_}
-};
+export const testMyRec2: (x:myRec) => myRec = RecordsBS.testMyRec2;
 
 export const testMyObj: (x:myObj) => string = RecordsBS.testMyObj;
 

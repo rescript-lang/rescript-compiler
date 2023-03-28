@@ -2,7 +2,8 @@
 
 
 function makeVariant(param) {
-  return /* NonUnary */{
+  return {
+          TAG: "NonUnary",
           _0: 5,
           _1: 3
         };
@@ -10,10 +11,10 @@ function makeVariant(param) {
 
 function makeABC(param) {
   return {
-          TAG: /* A */0,
+          TAG: "A",
           _0: {
             c: {
-              TAG: /* C */0,
+              TAG: "C",
               _0: "a string"
             }
           },
@@ -24,7 +25,7 @@ function makeABC(param) {
 function makeBC(param) {
   return {
           c: {
-            TAG: /* C */0,
+            TAG: "C",
             _0: "a string"
           }
         };
@@ -32,9 +33,9 @@ function makeBC(param) {
 
 function makeAC(param) {
   return {
-          TAG: /* A */0,
+          TAG: "A",
           _0: {
-            TAG: /* C */0,
+            TAG: "C",
             _0: "a string"
           },
           _1: 5
@@ -43,8 +44,9 @@ function makeAC(param) {
 
 function makeAD(param) {
   return {
-          TAG: /* A */0,
-          _0: /* Int */{
+          TAG: "A",
+          _0: {
+            TAG: "Int",
             _0: 3
           },
           _1: 5
@@ -53,7 +55,7 @@ function makeAD(param) {
 
 function makeAE(param) {
   return {
-          TAG: /* A */0,
+          TAG: "A",
           _0: 3,
           _1: 5
         };
@@ -61,8 +63,9 @@ function makeAE(param) {
 
 function makeFD(param) {
   return {
-          TAG: /* F */0,
-          _0: /* Int */{
+          TAG: "F",
+          _0: {
+            TAG: "Int",
             _0: 3
           }
         };
@@ -70,8 +73,9 @@ function makeFD(param) {
 
 function makeHD(param) {
   return {
-          TAG: /* H */0,
-          _0: /* Int */{
+          TAG: "H",
+          _0: {
+            TAG: "Int",
             _0: 5
           },
           _1: 5
@@ -79,23 +83,29 @@ function makeHD(param) {
 }
 
 function makeJ(param) {
-  return /* J */{
-          _0: /* Int */{
+  return {
+          TAG: "J",
+          _0: {
+            TAG: "Int",
             _0: 5
           },
-          _1: /* Int */{
+          _1: {
+            TAG: "Int",
             _0: 3
           }
         };
 }
 
 function makeK(param) {
-  return /* K */{
+  return {
+          TAG: "K",
           _0: [
-            /* Int */{
+            {
+              TAG: "Int",
               _0: 5
             },
-            /* Int */{
+            {
+              TAG: "Int",
               _0: 3
             }
           ]
@@ -111,18 +121,18 @@ function testUnboxedBinary(param) {
 }
 
 function testInline(x) {
-  switch (x.TAG | 0) {
-    case /* I */0 :
+  switch (x.TAG) {
+    case "I" :
         return {
-                TAG: /* I */0,
+                TAG: "I",
                 i: x.i,
                 j: x.j
               };
-    case /* J */1 :
+    case "J" :
         return x;
-    case /* K */2 :
+    case "K" :
         return {
-                TAG: /* K */2,
+                TAG: "K",
                 _0: x._1,
                 _1: x._0
               };

@@ -2,11 +2,11 @@
 
 
 function foo(t) {
-  if (t) {
-    console.log("B" + t.name);
-  } else {
+  if (typeof t !== "object") {
     console.log("A");
+    return ;
   }
+  console.log("B" + t.name);
 }
 
 var X = {

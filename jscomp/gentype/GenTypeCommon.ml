@@ -18,7 +18,7 @@ type case = {label: string; labelJS: labelJS}
 
 let isJSSafePropertyName name =
   name = ""
-  || (match name.[0] with
+  || (match name.[0] [@doesNotRaise] with
      | 'A' .. 'z' -> true
      | _ -> false)
      && name
@@ -26,34 +26,28 @@ let isJSSafePropertyName name =
              | 'A' .. 'z' | '0' .. '9' -> true
              | _ -> false)
 
-let labelJSToString ?(alwaysQuotes = false) case =
-  let addQuotes x =
-    match alwaysQuotes with
-    | true -> x |> EmitText.quotes
-    | false -> x
-  in
+let labelJSToString case =
   let isNumber s =
     let len = String.length s in
     len > 0
     && (match len > 1 with
-       | true -> s.[0] > '0'
+       | true -> (s.[0] [@doesNotRaise]) > '0'
        | false -> true)
     &&
     let res = ref true in
     for i = 0 to len - 1 do
-      match s.[i] with
+      match s.[i] [@doesNotRaise] with
       | '0' .. '9' -> ()
       | _ -> res := false
     done;
     res.contents
   in
   match case.labelJS with
-  | BoolLabel b -> b |> string_of_bool |> addQuotes
-  | FloatLabel s -> s |> addQuotes
-  | IntLabel i -> i |> addQuotes
+  | BoolLabel b -> b |> string_of_bool
+  | FloatLabel s -> s
+  | IntLabel i -> i
   | StringLabel s ->
-    if s = case.label && isNumber s then s |> addQuotes
-    else s |> EmitText.quotes
+    if s = case.label && isNumber s then s else s |> EmitText.quotes
 
 type closedFlag = Open | Closed
 
@@ -78,7 +72,6 @@ and argType = {aName: string; aType: type_}
 and field = {
   mutable_: mutable_;
   nameJS: string;
-  nameRE: string;
   optional: optional;
   type_: type_;
 }
@@ -95,7 +88,6 @@ and ident = {builtin: bool; name: string; typeArgs: type_ list}
 
 and variant = {
   bsStringOrInt: bool;
-  hash: int;
   inherits: type_ list;
   noPayloads: case list;
   payloads: payload list;
@@ -104,22 +96,6 @@ and variant = {
 }
 
 and payload = {case: case; inlineRecord: bool; numArgs: int; t: type_}
-
-let typeIsObject type_ =
-  match type_ with
-  | Array _ -> true
-  | Dict _ -> true
-  | Function _ -> false
-  | GroupOfLabeledArgs _ -> false
-  | Ident _ -> false
-  | Null _ -> false
-  | Nullable _ -> false
-  | Object _ -> true
-  | Option _ -> false
-  | Promise _ -> true
-  | Tuple _ -> true
-  | TypeVar _ -> false
-  | Variant _ -> false
 
 type label = Nolabel | Label of string | OptLabel of string
 
@@ -186,20 +162,8 @@ let rec depToResolvedName (dep : dep) =
   | Dot (p, s) -> ResolvedName.dot s (p |> depToResolvedName)
 
 let createVariant ~bsStringOrInt ~inherits ~noPayloads ~payloads ~polymorphic =
-  let hash =
-    noPayloads
-    |> List.map (fun case -> (case.label, case.labelJS))
-    |> Array.of_list |> Hashtbl.hash
-  in
   let unboxed = payloads = [] in
-  Variant
-    {bsStringOrInt; hash; inherits; noPayloads; payloads; polymorphic; unboxed}
-
-let variantTable hash ~toJS =
-  (match toJS with
-  | true -> "$$toJS"
-  | false -> "$$toRE")
-  ^ string_of_int hash
+  Variant {bsStringOrInt; inherits; noPayloads; payloads; polymorphic; unboxed}
 
 let ident ?(builtin = true) ?(typeArgs = []) name =
   Ident {builtin; name; typeArgs}
@@ -248,7 +212,7 @@ module NodeFilename = struct
 
     let concat dirname filename =
       let isDirSep s i =
-        let c = s.[i] in
+        let c = (s.[i] [@doesNotRaise]) in
         c = '/' || c = '\\' || c = ':'
       in
       let l = length dirname in

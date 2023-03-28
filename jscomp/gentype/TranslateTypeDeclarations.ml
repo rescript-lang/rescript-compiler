@@ -23,10 +23,10 @@ let createCase (label, attributes) =
   match
     attributes |> Annotation.getAttributePayload Annotation.tagIsGenTypeAs
   with
-  | Some (BoolPayload b) -> {label; labelJS = BoolLabel b}
-  | Some (FloatPayload s) -> {label; labelJS = FloatLabel s}
-  | Some (IntPayload i) -> {label; labelJS = IntLabel i}
-  | Some (StringPayload asLabel) -> {label; labelJS = StringLabel asLabel}
+  | Some (_, BoolPayload b) -> {label; labelJS = BoolLabel b}
+  | Some (_, FloatPayload s) -> {label; labelJS = FloatLabel s}
+  | Some (_, IntPayload i) -> {label; labelJS = IntLabel i}
+  | Some (_, StringPayload asLabel) -> {label; labelJS = StringLabel asLabel}
   | _ -> {label; labelJS = StringLabel label}
 
 (**
@@ -35,15 +35,13 @@ let createCase (label, attributes) =
  * If @bs.as is used (with records-as-objects active), escape and quote if
  * the identifier contains characters which are invalid as JS property names.
 *)
-let renameRecordField ~attributes ~nameRE =
-  match attributes |> Annotation.getGenTypeAsRenaming with
-  | Some nameJS -> (nameJS, nameRE)
-  | None -> (
-    match attributes |> Annotation.getBsAsRenaming with
-    | Some nameBS ->
-      let escapedName = nameBS |> String.escaped in
-      (escapedName, escapedName)
-    | None -> (nameRE, nameRE))
+let renameRecordField ~attributes ~name =
+  attributes |> Annotation.checkUnsupportedGenTypeAsRenaming;
+  match attributes |> Annotation.getBsAsRenaming with
+  | Some nameBS ->
+    let escapedName = nameBS |> String.escaped in
+    escapedName
+  | None -> name
 
 let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
     ~typeAttributes ~typeEnv ~typeName ~typeVars declarationKind :
@@ -88,17 +86,16 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
     let fieldTranslations =
       labelDeclarations
       |> List.map (fun {Types.ld_id; ld_mutable; ld_type; ld_attributes} ->
-             let nameJS, nameRE =
+             let name =
                renameRecordField ~attributes:ld_attributes
-                 ~nameRE:(ld_id |> Ident.name)
+                 ~name:(ld_id |> Ident.name)
              in
              let mutability =
                match ld_mutable = Mutable with
                | true -> Mutable
                | false -> Immutable
              in
-             ( nameJS,
-               nameRE,
+             ( name,
                mutability,
                ld_type
                |> TranslateTypeExprFromTypes.translateTypeExprFromTypes ~config
@@ -106,21 +103,19 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
     in
     let dependencies =
       fieldTranslations
-      |> List.map (fun (_, _, _, {TranslateTypeExprFromTypes.dependencies}) ->
+      |> List.map (fun (_, _, {TranslateTypeExprFromTypes.dependencies}) ->
              dependencies)
       |> List.concat
     in
     let fields =
       fieldTranslations
-      |> List.map
-           (fun (nameJS, nameRE, mutable_, {TranslateTypeExprFromTypes.type_})
-           ->
+      |> List.map (fun (name, mutable_, {TranslateTypeExprFromTypes.type_}) ->
              let optional, type1 =
                match type_ with
-               | Option type1 when isOptional nameRE -> (Optional, type1)
+               | Option type1 when isOptional name -> (Optional, type1)
                | _ -> (Mandatory, type_)
              in
-             {mutable_; nameJS; nameRE; optional; type_ = type1})
+             {mutable_; nameJS = name; optional; type_ = type1})
     in
     let type_ =
       match fields with
@@ -190,7 +185,8 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
             variant.payloads |> List.length
             = (rowFieldsVariants.payloads |> List.length)
           then
-            List.combine variant.payloads rowFieldsVariants.payloads
+            (List.combine variant.payloads rowFieldsVariants.payloads
+             [@doesNotRaise])
             |> List.map (fun (payload, (label, attributes, _)) ->
                    let case = (label, attributes) |> createCase in
                    {payload with case})
