@@ -1,6 +1,6 @@
 open GenTypeCommon
 
-type t = IdentC | OptionC of t | PromiseC of t | TupleC of t list
+type t = IdentC | PromiseC of t | TupleC of t list
 
 and groupedArgConverter =
   | ArgConverter of t
@@ -9,7 +9,6 @@ and groupedArgConverter =
 let rec toString converter =
   match converter with
   | IdentC -> "id"
-  | OptionC c -> "option(" ^ toString c ^ ")"
   | PromiseC c -> "promise(" ^ toString c ^ ")"
   | TupleC innerTypesC ->
     "[" ^ (innerTypesC |> List.map toString |> String.concat ", ") ^ "]"
@@ -75,15 +74,15 @@ let typeGetConverterNormalized ~config ~inline ~lookupId ~typeNameIsInterface
             (IdentC, Ident {builtin = false; name; typeArgs})
           else (IdentC, normalized_))
     | Null t ->
-      let tConverter, tNormalized = t |> visit ~visited in
-      (OptionC tConverter, Null tNormalized)
+      let _, tNormalized = t |> visit ~visited in
+      (IdentC, Null tNormalized)
     | Nullable t ->
-      let tConverter, tNormalized = t |> visit ~visited in
-      (OptionC tConverter, Nullable tNormalized)
+      let _, tNormalized = t |> visit ~visited in
+      (IdentC, Nullable tNormalized)
     | Object _ -> (IdentC, normalized_)
     | Option t ->
-      let tConverter, tNormalized = t |> visit ~visited in
-      (OptionC tConverter, Option tNormalized)
+      let _, tNormalized = t |> visit ~visited in
+      (IdentC, Option tNormalized)
     | Promise t ->
       let tConverter, tNormalized = t |> visit ~visited in
       (PromiseC tConverter, Promise tNormalized)
@@ -155,7 +154,6 @@ let typeGetNormalized ~config ~inline ~lookupId ~typeNameIsInterface type_ =
 let rec converterIsIdentity ~config ~toJS converter =
   match converter with
   | IdentC -> true
-  | OptionC c -> c |> converterIsIdentity ~config ~toJS
   | PromiseC c -> c |> converterIsIdentity ~config ~toJS
   | TupleC innerTypesC ->
     innerTypesC |> List.for_all (converterIsIdentity ~config ~toJS)
@@ -165,13 +163,6 @@ let rec apply ~(config : Config.t) ~converter ~indent ~nameGen ~toJS
   match converter with
   | _ when converter |> converterIsIdentity ~config ~toJS -> value
   | IdentC -> value
-  | OptionC c ->
-    EmitText.parens
-      [
-        value ^ " == null ? " ^ value ^ " : "
-        ^ (value
-          |> apply ~config ~converter:c ~indent ~nameGen ~toJS ~variantTables);
-      ]
   | PromiseC c ->
     let x = "$promise" |> EmitText.name ~nameGen in
     value ^ ".then(function _element("
