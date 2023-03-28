@@ -129,8 +129,8 @@ let emitExportFromTypeDeclarations ~config ~emitters ~env ~typeGetNormalized
        (env, emitters)
 
 let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
-    ~outputFileRelative ~resolver ~typeGetConverter ~inlineOneLevel
-    ~typeGetNormalized ~typeNameIsInterface codeItem =
+    ~outputFileRelative ~resolver ~inlineOneLevel ~typeGetNormalized
+    ~typeNameIsInterface codeItem =
   if !Debug.codeItems then
     Log_.item "Code Item: %s\n"
       (codeItem |> codeItemToString ~config ~typeNameIsInterface);
@@ -370,9 +370,7 @@ let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
       | _ -> (type_, None)
     in
 
-    let converter = type_ |> typeGetConverter in
-    resolvedName
-    |> ExportModule.extendExportModules ~converter ~moduleItemsEmitter ~type_;
+    resolvedName |> ExportModule.extendExportModules ~moduleItemsEmitter ~type_;
     let emitters =
       match hookType with
       | Some {propsType; resolvedTypeName; typeVars} ->
@@ -409,14 +407,14 @@ let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
     (envWithRequires, emitters)
 
 let emitCodeItems ~config ~outputFileRelative ~emitters ~moduleItemsEmitter ~env
-    ~fileName ~resolver ~typeNameIsInterface ~typeGetConverter ~inlineOneLevel
-    ~typeGetNormalized codeItems =
+    ~fileName ~resolver ~typeNameIsInterface ~inlineOneLevel ~typeGetNormalized
+    codeItems =
   codeItems
   |> List.fold_left
        (fun (env, emitters) ->
          emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
-           ~outputFileRelative ~resolver ~typeGetConverter ~inlineOneLevel
-           ~typeGetNormalized ~typeNameIsInterface)
+           ~outputFileRelative ~resolver ~inlineOneLevel ~typeGetNormalized
+           ~typeNameIsInterface)
        (env, emitters)
 
 let emitRequires ~importedValueOrComponent ~early ~config ~requires emitters =
@@ -659,11 +657,6 @@ let emitTranslationAsString ~config ~fileName ~inputCmtTranslateTypeDeclarations
          ~typeNameIsInterface:(typeNameIsInterface ~env)
   in
   let typeGetNormalized_ = typeGetNormalized__ ~inline:false in
-  let typeGetConverter_ ~env type_ =
-    type_
-    |> Converter.typeGetConverter ~config ~lookupId:(lookupId_ ~env)
-         ~typeNameIsInterface:(typeNameIsInterface ~env)
-  in
   let emitters = Emitters.initial
   and moduleItemsEmitter = ExportModule.createModuleItemsEmitter ()
   and env = initialEnv in
@@ -704,7 +697,6 @@ let emitTranslationAsString ~config ~fileName ~inputCmtTranslateTypeDeclarations
     |> emitCodeItems ~config ~emitters ~moduleItemsEmitter ~env ~fileName
          ~outputFileRelative ~resolver ~inlineOneLevel
          ~typeGetNormalized:(typeGetNormalized_ ~env)
-         ~typeGetConverter:(typeGetConverter_ ~env)
          ~typeNameIsInterface:(typeNameIsInterface ~env)
   in
   let emitters =

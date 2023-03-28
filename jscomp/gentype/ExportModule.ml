@@ -2,9 +2,7 @@ open GenTypeCommon
 
 type exportModuleItem = (string, exportModuleValue) Hashtbl.t
 
-and exportModuleValue =
-  | S of string * type_ * Converter.t
-  | M of exportModuleItem
+and exportModuleValue = S of string * type_ | M of exportModuleItem
 
 type exportModuleItems = (string, exportModuleItem) Hashtbl.t
 
@@ -14,7 +12,7 @@ type fieldInfo = {fieldForValue: field; fieldForType: field}
 
 let rec exportModuleValueToType ~config exportModuleValue =
   match exportModuleValue with
-  | S (s, type_, _converter) -> {typeForValue = ident s; typeForType = type_}
+  | S (s, type_) -> {typeForValue = ident s; typeForType = type_}
   | M exportModuleItem ->
     let fieldsInfo = exportModuleItem |> exportModuleItemToFields ~config in
     let fieldsForValue =
@@ -48,12 +46,12 @@ and exportModuleItemToFields =
        exportModuleItem []
     : config:Config.t -> exportModuleItem -> fieldInfo list)
 
-let rec extendExportModuleItem x ~converter
-    ~(exportModuleItem : exportModuleItem) ~type_ ~valueName =
+let rec extendExportModuleItem x ~(exportModuleItem : exportModuleItem) ~type_
+    ~valueName =
   match x with
   | [] -> ()
   | [fieldName] ->
-    Hashtbl.replace exportModuleItem fieldName (S (valueName, type_, converter))
+    Hashtbl.replace exportModuleItem fieldName (S (valueName, type_))
   | fieldName :: rest ->
     let innerExportModuleItem =
       match Hashtbl.find exportModuleItem fieldName with
@@ -65,11 +63,11 @@ let rec extendExportModuleItem x ~converter
         innerExportModuleItem
     in
     rest
-    |> extendExportModuleItem ~converter ~exportModuleItem:innerExportModuleItem
-         ~valueName ~type_
+    |> extendExportModuleItem ~exportModuleItem:innerExportModuleItem ~valueName
+         ~type_
 
-let extendExportModuleItems x ~converter
-    ~(exportModuleItems : exportModuleItems) ~type_ ~valueName =
+let extendExportModuleItems x ~(exportModuleItems : exportModuleItems) ~type_
+    ~valueName =
   match x with
   | [] -> assert false
   | [_valueName] -> ()
@@ -82,8 +80,7 @@ let extendExportModuleItems x ~converter
         Hashtbl.replace exportModuleItems moduleName exportModuleItem;
         exportModuleItem
     in
-    rest
-    |> extendExportModuleItem ~converter ~exportModuleItem ~type_ ~valueName
+    rest |> extendExportModuleItem ~exportModuleItem ~type_ ~valueName
 
 let createModuleItemsEmitter =
   (fun () -> Hashtbl.create 1 : unit -> exportModuleItems)
@@ -101,19 +98,18 @@ let emitAllModuleItems ~config ~emitters ~fileName
            M exportModuleItem |> exportModuleValueToType ~config
          in
          if !Debug.codeItems then Log_.item "EmitModule %s @." moduleName;
-           let emittedModuleItem =
-             ModuleName.forInnerModule ~fileName ~innerModuleName:moduleName
-             |> ModuleName.toString
-           in
-           emittedModuleItem
-           |> EmitType.emitExportConst ~early:false ~config ~emitters
-                ~name:moduleName ~type_:typeForType
-                ~typeNameIsInterface:(fun _ -> false))
+         let emittedModuleItem =
+           ModuleName.forInnerModule ~fileName ~innerModuleName:moduleName
+           |> ModuleName.toString
+         in
+         emittedModuleItem
+         |> EmitType.emitExportConst ~early:false ~config ~emitters
+              ~name:moduleName ~type_:typeForType ~typeNameIsInterface:(fun _ ->
+                false))
        exportModuleItems
 
-let extendExportModules ~converter ~(moduleItemsEmitter : exportModuleItems)
-    ~type_ resolvedName =
+let extendExportModules ~(moduleItemsEmitter : exportModuleItems) ~type_
+    resolvedName =
   resolvedName |> ResolvedName.toList
-  |> extendExportModuleItems ~converter ~exportModuleItems:moduleItemsEmitter
-       ~type_
+  |> extendExportModuleItems ~exportModuleItems:moduleItemsEmitter ~type_
        ~valueName:(resolvedName |> ResolvedName.toString)
