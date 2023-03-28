@@ -1,7 +1,6 @@
 open GenTypeCommon
 
-let typeGetConverterNormalized ~config ~inline ~lookupId ~typeNameIsInterface
-    type0 =
+let typeGetInlined ~config ~lookupId ~typeNameIsInterface type0 =
   let circular = ref "" in
   let rec visit ~(visited : StringSet.t) type_ =
     let normalized_ = type_ in
@@ -11,9 +10,7 @@ let typeGetConverterNormalized ~config ~inline ~lookupId ~typeNameIsInterface
       Array (tNormalized, mutable_)
     | Dict _ -> normalized_
     | Function ({argTypes; retType} as function_) ->
-      let argConverted =
-        argTypes |> List.map (argTypeToGroupedArgConverter ~visited)
-      in
+      let argConverted = argTypes |> List.map (argTypeToGroupedArg ~visited) in
       let retNormalized = retType |> visit ~visited in
       Function {function_ with argTypes = argConverted; retType = retNormalized}
     | GroupOfLabeledArgs _ ->
@@ -29,7 +26,7 @@ let typeGetConverterNormalized ~config ~inline ~lookupId ~typeNameIsInterface
         match name |> lookupId with
         | {CodeItem.annotation = GenTypeOpaque} -> normalized_
         | {annotation = NoGenType} -> normalized_
-        | {typeVars; type_} -> (
+        | {typeVars; type_} ->
           let pairs =
             try List.combine typeVars typeArgs with Invalid_argument _ -> []
           in
@@ -41,16 +38,10 @@ let typeGetConverterNormalized ~config ~inline ~lookupId ~typeNameIsInterface
             | exception Not_found -> None
           in
           let inlined = type_ |> TypeVars.substitute ~f |> visit ~visited in
-          match inline with
-          | true -> inlined
-          | false -> normalized_)
+          inlined
         | exception Not_found ->
-          if inline then
-            let typeArgs =
-              typeArgs |> List.map (fun t -> t |> visit ~visited)
-            in
-            Ident {builtin = false; name; typeArgs}
-          else normalized_)
+          let typeArgs = typeArgs |> List.map (fun t -> t |> visit ~visited) in
+          Ident {builtin = false; name; typeArgs})
     | Null t ->
       let tNormalized = t |> visit ~visited in
       Null tNormalized
@@ -85,7 +76,7 @@ let typeGetConverterNormalized ~config ~inline ~lookupId ~typeNameIsInterface
           Variant {variant with payloads = withPayloadConverted}
       in
       normalized
-  and argTypeToGroupedArgConverter ~visited {aName; aType} =
+  and argTypeToGroupedArg ~visited {aName; aType} =
     match aType with
     | GroupOfLabeledArgs fields ->
       let fieldsConverted =
@@ -107,7 +98,3 @@ let typeGetConverterNormalized ~config ~inline ~lookupId ~typeNameIsInterface
     Log_.item "type0:%s \n"
       (type0 |> EmitType.typeToString ~config ~typeNameIsInterface);
   normalized
-
-let typeGetNormalized ~config ~inline ~lookupId ~typeNameIsInterface type_ =
-  type_
-  |> typeGetConverterNormalized ~config ~inline ~lookupId ~typeNameIsInterface

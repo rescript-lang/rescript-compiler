@@ -68,7 +68,7 @@ let codeItemToString ~config ~typeNameIsInterface (codeItem : CodeItem.t) =
   | ImportValue {importAnnotation} ->
     "ImportValue " ^ (importAnnotation.importPath |> ImportPath.dump)
 
-let emitExportType ~emitters ~config ~typeGetNormalized ~typeNameIsInterface
+let emitExportType ~emitters ~config ~typeNameIsInterface
     {CodeItem.loc; nameAs; opaque; type_; typeVars; resolvedTypeName} =
   let freeTypeVars = TypeVars.free type_ in
   let isGADT =
@@ -86,12 +86,10 @@ let emitExportType ~emitters ~config ~typeGetNormalized ~typeNameIsInterface
       Some true
     | _ -> opaque
   in
-  let opaque, type_ =
+  let opaque =
     match opaque with
-    | Some opaque -> (opaque, type_)
-    | None ->
-      let normalized = type_ |> typeGetNormalized in
-      (false, normalized)
+    | Some opaque -> opaque
+    | None -> false
   in
   resolvedTypeName |> ResolvedName.toString
   |> EmitType.emitExportType ~config ~emitters ~nameAs ~opaque ~type_
@@ -111,26 +109,24 @@ let typeNameIsInterface ~(exportTypeMap : CodeItem.exportTypeMap)
     | {type_} -> type_ |> typeIsInterface
     | exception Not_found -> false)
 
-let emitExportFromTypeDeclaration ~config ~emitters ~typeGetNormalized ~env
-    ~typeNameIsInterface
+let emitExportFromTypeDeclaration ~config ~emitters ~env ~typeNameIsInterface
     (exportFromTypeDeclaration : CodeItem.exportFromTypeDeclaration) =
   ( env,
     exportFromTypeDeclaration.exportType
-    |> emitExportType ~emitters ~config ~typeGetNormalized ~typeNameIsInterface
-  )
+    |> emitExportType ~emitters ~config ~typeNameIsInterface )
 
-let emitExportFromTypeDeclarations ~config ~emitters ~env ~typeGetNormalized
-    ~typeNameIsInterface exportFromTypeDeclarations =
+let emitExportFromTypeDeclarations ~config ~emitters ~env ~typeNameIsInterface
+    exportFromTypeDeclarations =
   exportFromTypeDeclarations
   |> List.fold_left
        (fun (env, emitters) ->
-         emitExportFromTypeDeclaration ~config ~emitters ~env ~typeGetNormalized
+         emitExportFromTypeDeclaration ~config ~emitters ~env
            ~typeNameIsInterface)
        (env, emitters)
 
 let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
-    ~outputFileRelative ~resolver ~inlineOneLevel ~typeGetNormalized
-    ~typeNameIsInterface codeItem =
+    ~outputFileRelative ~resolver ~inlineOneLevel ~typeNameIsInterface codeItem
+    =
   if !Debug.codeItems then
     Log_.item "Code Item: %s\n"
       (codeItem |> codeItemToString ~config ~typeNameIsInterface);
@@ -387,8 +383,7 @@ let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
         in
         (* For doc gen (https://github.com/cristianoc/genType/issues/342) *)
         config.emitImportReact <- true;
-        emitExportType ~emitters ~config ~typeGetNormalized ~typeNameIsInterface
-          exportType
+        emitExportType ~emitters ~config ~typeNameIsInterface exportType
       | _ -> emitters
     in
     let emitters =
@@ -407,14 +402,12 @@ let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
     (envWithRequires, emitters)
 
 let emitCodeItems ~config ~outputFileRelative ~emitters ~moduleItemsEmitter ~env
-    ~fileName ~resolver ~typeNameIsInterface ~inlineOneLevel ~typeGetNormalized
-    codeItems =
+    ~fileName ~resolver ~typeNameIsInterface ~inlineOneLevel codeItems =
   codeItems
   |> List.fold_left
        (fun (env, emitters) ->
          emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
-           ~outputFileRelative ~resolver ~inlineOneLevel ~typeGetNormalized
-           ~typeNameIsInterface)
+           ~outputFileRelative ~resolver ~inlineOneLevel ~typeNameIsInterface)
        (env, emitters)
 
 let emitRequires ~importedValueOrComponent ~early ~config ~requires emitters =
@@ -427,7 +420,7 @@ let emitRequires ~importedValueOrComponent ~early ~config ~requires emitters =
 
 let typeGetInlined ~config ~exportTypeMap type_ =
   type_
-  |> Converter.typeGetNormalized ~config ~inline:true
+  |> Converter.typeGetInlined ~config
        ~lookupId:(fun s -> exportTypeMap |> StringMap.find s)
        ~typeNameIsInterface:(fun _ -> false)
 
@@ -651,12 +644,6 @@ let emitTranslationAsString ~config ~fileName ~inputCmtTranslateTypeDeclarations
     try exportTypeMap |> StringMap.find s
     with Not_found -> env.exportTypeMapFromOtherFiles |> StringMap.find s
   in
-  let typeGetNormalized__ ~inline ~env type_ =
-    type_
-    |> Converter.typeGetNormalized ~config ~inline ~lookupId:(lookupId_ ~env)
-         ~typeNameIsInterface:(typeNameIsInterface ~env)
-  in
-  let typeGetNormalized_ = typeGetNormalized__ ~inline:false in
   let emitters = Emitters.initial
   and moduleItemsEmitter = ExportModule.createModuleItemsEmitter ()
   and env = initialEnv in
@@ -669,8 +656,7 @@ let emitTranslationAsString ~config ~fileName ~inputCmtTranslateTypeDeclarations
   in
   let env, emitters =
     exportFromTypeDeclarations
-    |> emitExportFromTypeDeclarations ~config ~emitters
-         ~typeGetNormalized:(typeGetNormalized_ ~env) ~env
+    |> emitExportFromTypeDeclarations ~config ~emitters ~env
          ~typeNameIsInterface:(typeNameIsInterface ~env)
   in
   let inlineOneLevel type_ =
@@ -696,7 +682,6 @@ let emitTranslationAsString ~config ~fileName ~inputCmtTranslateTypeDeclarations
     translation.codeItems
     |> emitCodeItems ~config ~emitters ~moduleItemsEmitter ~env ~fileName
          ~outputFileRelative ~resolver ~inlineOneLevel
-         ~typeGetNormalized:(typeGetNormalized_ ~env)
          ~typeNameIsInterface:(typeNameIsInterface ~env)
   in
   let emitters =
