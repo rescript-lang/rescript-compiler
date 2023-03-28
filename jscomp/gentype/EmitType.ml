@@ -191,20 +191,41 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
     let payloadsRendered =
       payloads
       |> List.map (fun {case; t = type_} ->
-             let typeRendered =
-               type_
-               |> renderType ~config ~indent ~typeNameIsInterface ~inFunType
+             let render t =
+               t |> renderType ~config ~indent ~typeNameIsInterface ~inFunType
              in
-             match unboxed with
-             | true -> typeRendered
-             | false ->
+             let tagField =
+               case |> labelJSToString
+               |> field ~name:(Runtime.jsVariantTag ~polymorphic:false)
+             in
+             match (unboxed, type_) with
+             | true, type_ -> type_ |> render
+             | false, type_ when polymorphic ->
+               (* poly variant *)
                [
                  case |> labelJSToString
                  |> field ~name:(Runtime.jsVariantTag ~polymorphic);
-                 typeRendered
+                 type_ |> render
                  |> field ~name:(Runtime.jsVariantValue ~polymorphic);
                ]
-               |> fields)
+               |> fields
+             | false, Object (_, flds) ->
+               (* inlined record *)
+               tagField :: flds |> fields
+             | false, type_ ->
+               (* ordinary variant *)
+               let payloads =
+                 match type_ with
+                 | Tuple ts -> ts
+                 | _ -> [type_]
+               in
+               let flds =
+                 tagField
+                 :: Ext_list.mapi payloads (fun n t ->
+                        t |> render
+                        |> field ~name:(Runtime.jsVariantPayloadTag ~n))
+               in
+               flds |> fields)
     in
     let rendered = inheritsRendered @ noPayloadsRendered @ payloadsRendered in
     let indent1 = rendered |> Indent.heuristicVariants ~indent in

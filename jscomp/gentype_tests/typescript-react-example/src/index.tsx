@@ -90,8 +90,8 @@ consoleLog(
   Variants.testConvert2to3('module')
 );
 consoleLog(
-  "Variants: testConvert3to2('42') =",
-  Variants.testConvert2to3('42')
+  "Variants: testConvert3to2(42) =",
+  Variants.testConvert2to3(42)
 );
 
 const absoluteValueInstance = new MyMath.AbsoluteValue();
@@ -114,12 +114,12 @@ printManyPayloads({ NAME: "one", VAL: 34 });
 printManyPayloads({ NAME: "two", VAL: ["hello", "world"] });
 printManyPayloads(testManyPayloads({ NAME: "three", VAL: { x: 15 } }));
 
-printVariantWithPayloads(testVariantWithPayloads("ARenamed"));
-printVariantWithPayloads(testVariantWithPayloads({ tag: "B", value: 4 }));
-printVariantWithPayloads(testVariantWithPayloads({ tag: "C", value: [1, 2] }));
-printVariantWithPayloads(testVariantWithPayloads({ tag: "D", value: [1, 2] }));
+printVariantWithPayloads(testVariantWithPayloads("A"));
+printVariantWithPayloads(testVariantWithPayloads({ TAG: "B", _0: 4 }));
+printVariantWithPayloads(testVariantWithPayloads({ TAG: "C", _0:1, _1:2 }));
+printVariantWithPayloads(testVariantWithPayloads({ TAG: "D", _0:1, _1:2 }));
 printVariantWithPayloads(
-  testVariantWithPayloads({ tag: "E", value: [1, "hello", 2] })
+  testVariantWithPayloads({ TAG: "E", _0:1, _1:"hello", _2:2 })
 );
 
 TestPromise.convert(Promise.resolve({ x: 3, s: "hello" })).then((x) =>

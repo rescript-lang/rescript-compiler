@@ -27,7 +27,9 @@ let rec emitModuleAccessPath ~config moduleAccessPath =
 let jsVariantTag ~polymorphic =
   match polymorphic with
   | true -> "NAME"
-  | false -> "tag"
+  | false -> "TAG"
+
+let jsVariantPayloadTag ~n = "_" ^ string_of_int n
 
 let jsVariantValue ~polymorphic =
   match polymorphic with

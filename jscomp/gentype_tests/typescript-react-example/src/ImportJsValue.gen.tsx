@@ -116,8 +116,8 @@ export type color = "tomato" | "gray";
 
 // tslint:disable-next-line:interface-over-type-literal
 export type variant = 
-    { tag: "I"; value: number }
-  | { tag: "S"; value: string };
+    { TAG: "I"; _0: number }
+  | { TAG: "S"; _0: string };
 
 // tslint:disable-next-line:interface-over-type-literal
 export type num = $$num;

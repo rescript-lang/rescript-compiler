@@ -11,32 +11,30 @@ export type typeL = [number, number];
 
 // tslint:disable-next-line:interface-over-type-literal
 export type typeC = 
-    { tag: "C"; value: string }
-  | { tag: "D"; value: string };
+    { TAG: "C"; _0: string }
+  | { TAG: "D"; _0: string };
 
 // tslint:disable-next-line:interface-over-type-literal
 export type typeB = { readonly c: typeC };
 
 // tslint:disable-next-line:interface-over-type-literal
-export type typeD = { tag: "Int"; value: number };
+export type typeD = { TAG: "Int"; _0: number };
 
 // tslint:disable-next-line:interface-over-type-literal
 export type typeE = number;
 
 // tslint:disable-next-line:interface-over-type-literal
 export type typeA<a> = 
-    { tag: "A"; value: [a, number] }
-  | { tag: "B"; value: [a, number] };
+    { TAG: "A"; _0: a; _1: number }
+  | { TAG: "B"; _0: a; _1: number };
 
 // tslint:disable-next-line:interface-over-type-literal
-export type typeF<a> = 
-    { tag: "F"; value: a }
-  | { tag: "G"; value: a };
+export type typeF<a> = { TAG: "F"; _0: a } | { TAG: "G"; _0: a };
 
 // tslint:disable-next-line:interface-over-type-literal
 export type typeH = 
-    { tag: "H"; value: [typeD, number] }
-  | { tag: "I"; value: [typeD, number] };
+    { TAG: "H"; _0: typeD; _1: number }
+  | { TAG: "I"; _0: typeD; _1: number };
 
 // tslint:disable-next-line:interface-over-type-literal
 export type typeJ = [typeD, typeD];
@@ -46,17 +44,17 @@ export type typeK = [typeD, typeD];
 
 // tslint:disable-next-line:interface-over-type-literal
 export type boxedBinary = 
-    { tag: "BB"; value: [typeD, number] }
-  | { tag: "Z"; value: number };
+    { TAG: "BB"; _0: typeD; _1: number }
+  | { TAG: "Z"; _0: number };
 
 // tslint:disable-next-line:interface-over-type-literal
 export type unboxedBinary = [typeD, number];
 
 // tslint:disable-next-line:interface-over-type-literal
 export type inline = 
-    { tag: "I"; value: { readonly i: number; readonly j: number } }
-  | { tag: "J"; value: { readonly i: number; readonly j: number } }
-  | { tag: "K"; value: [number, number] };
+    { TAG: "I"; readonly i: number; readonly j: number }
+  | { TAG: "J"; readonly i: number; readonly j: number }
+  | { TAG: "K"; _0: number; _1: number };
 
 export const makeVariant: () => typeL = NestedVariantsBS.makeVariant;
 

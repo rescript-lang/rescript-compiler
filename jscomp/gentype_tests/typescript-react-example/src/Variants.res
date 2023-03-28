@@ -46,8 +46,8 @@ type testGenTypeAs = [
 @genType
 type testGenTypeAs2 = [
   | #type_
-  | #module_
-  | #fortytwo
+  | #\"module"
+  | #42
 ]
 
 /* Since testGenTypeAs2 is the same type as testGenTypeAs1,
@@ -57,8 +57,8 @@ type testGenTypeAs2 = [
 @genType
 type testGenTypeAs3 = [
   |  #type_
-  |  #module_
-  | #fortytwo
+  |  #\"module"
+  | #42
 ]
 
 /* Since testGenTypeAs3 has a different representation:

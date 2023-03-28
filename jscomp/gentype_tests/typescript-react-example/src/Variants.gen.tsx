@@ -20,10 +20,10 @@ export type weekday =
 export type testGenTypeAs = "type_" | "module_" | "fortytwo";
 
 // tslint:disable-next-line:interface-over-type-literal
-export type testGenTypeAs2 = "type_" | "module_" | "fortytwo";
+export type testGenTypeAs2 = "type_" | "module" | 42;
 
 // tslint:disable-next-line:interface-over-type-literal
-export type testGenTypeAs3 = "type_" | "module_" | "fortytwo";
+export type testGenTypeAs3 = "type_" | "module" | 42;
 
 // tslint:disable-next-line:interface-over-type-literal
 export type x1 = "x" | "same";
@@ -37,18 +37,18 @@ export type type = type_;
 
 // tslint:disable-next-line:interface-over-type-literal
 export type result1<a,b> = 
-    { tag: "Ok"; value: a }
-  | { tag: "Error"; value: b };
+    { TAG: "Ok"; _0: a }
+  | { TAG: "Error"; _0: b };
 
 // tslint:disable-next-line:interface-over-type-literal
 export type result2<a,b> = 
-    { tag: "Ok"; value: a }
-  | { tag: "Error"; value: b };
+    { TAG: "Ok"; _0: a }
+  | { TAG: "Error"; _0: b };
 
 // tslint:disable-next-line:interface-over-type-literal
 export type result3<a,b> = 
-    { tag: "Ok"; value: a }
-  | { tag: "Error"; value: b };
+    { TAG: "Ok"; _0: a }
+  | { TAG: "Error"; _0: b };
 
 export const isWeekend: (x:weekday) => boolean = VariantsBS.isWeekend;
 

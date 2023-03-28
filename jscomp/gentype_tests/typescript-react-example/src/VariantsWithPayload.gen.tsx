@@ -30,13 +30,13 @@ export type simpleVariant = "A" | "B" | "C";
 // tslint:disable-next-line:interface-over-type-literal
 export type variantWithPayloads = 
     "A"
-  | { tag: "B"; value: number }
-  | { tag: "C"; value: [number, number] }
-  | { tag: "D"; value: [number, number] }
-  | { tag: "E"; value: [number, string, number] };
+  | { TAG: "B"; _0: number }
+  | { TAG: "C"; _0: number; _1: number }
+  | { TAG: "D"; _0: number; _1: number }
+  | { TAG: "E"; _0: number; _1: string; _2: number };
 
 // tslint:disable-next-line:interface-over-type-literal
-export type variant1Int = { tag: "R"; value: number };
+export type variant1Int = { TAG: "R"; _0: number };
 
 // tslint:disable-next-line:interface-over-type-literal
 export type variant1Object = payload;

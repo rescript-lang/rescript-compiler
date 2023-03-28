@@ -22,7 +22,7 @@ export const someFunWithNullUndefinedArg: unknown = someFunWithNullUndefinedArgT
 const CoreBS = require('./Core.bs');
 
 // tslint:disable-next-line:interface-over-type-literal
-export type variant = "A" | { tag: "B"; value: string };
+export type variant = "A" | { TAG: "B"; _0: string };
 
 // tslint:disable-next-line:interface-over-type-literal
 export type t1 = { readonly x?: string };
