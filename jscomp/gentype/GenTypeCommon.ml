@@ -9,6 +9,8 @@ type optional = Mandatory | Optional
 type mutable_ = Immutable | Mutable
 
 type labelJS =
+  | NullLabel
+  | UndefinedLabel
   | BoolLabel of bool
   | FloatLabel of string
   | IntLabel of string
@@ -43,6 +45,8 @@ let labelJSToString case =
     res.contents
   in
   match case.labelJS with
+  | NullLabel -> "null"
+  | UndefinedLabel -> "undefined"
   | BoolLabel b -> b |> string_of_bool
   | FloatLabel s -> s
   | IntLabel i -> i

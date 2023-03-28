@@ -7,7 +7,7 @@ import * as MoreVariantsBS__Es6Import from './MoreVariants.bs';
 const MoreVariantsBS: any = MoreVariantsBS__Es6Import;
 
 // tslint:disable-next-line:interface-over-type-literal
-export type withRenaming = "type" | "b";
+export type withRenaming = "type_" | "b";
 
 // tslint:disable-next-line:interface-over-type-literal
 export type withoutRenaming = "type_" | "b";

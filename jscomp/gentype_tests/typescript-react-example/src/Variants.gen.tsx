@@ -28,13 +28,13 @@ export type testGenTypeAs2 = "type_" | "module" | 42;
 export type testGenTypeAs3 = "type_" | "module" | 42;
 
 // tslint:disable-next-line:interface-over-type-literal
-export type x1 = "x" | "same";
+export type x1 = "x" | "x1";
 
 // tslint:disable-next-line:interface-over-type-literal
-export type x2 = "x" | "same";
+export type x2 = "x" | "x2";
 
 // tslint:disable-next-line:interface-over-type-literal
-export type type_ = "type";
+export type type_ = "Type";
 export type type = type_;
 
 // tslint:disable-next-line:interface-over-type-literal

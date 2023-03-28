@@ -320,9 +320,18 @@ let true_ : t = { comment = None; expression_desc = Bool true }
 let false_ : t = { comment = None; expression_desc = Bool false }
 let bool v = if v then true_ else false_
 
+let float ?comment f : t = { expression_desc = Number (Float { f }); comment }
+
+let zero_float_lit : t =
+  { expression_desc = Number (Float { f = "0." }); comment = None }
+
+let float_mod ?comment e1 e2 : J.expression =
+  { comment; expression_desc = Bin (Mod, e1, e2) }
+
 let as_value = function
   | Lambda.AsString s -> str s ~delim:DStarJ
   | AsInt i -> small_int i
+  | AsFloat f -> float f
   | AsBool b -> bool b
   | AsNull -> nil
   | AsUndefined -> undefined
@@ -549,21 +558,6 @@ let rec string_append ?comment (e : t) (el : t) : t =
 
 let obj ?comment properties : t =
   { expression_desc = Object properties; comment }
-
-(* currently only in method call, no dependency introduced
-*)
-
-(** Arith operators *)
-(* Static_index .....................**)
-
-let float ?comment f : t = { expression_desc = Number (Float { f }); comment }
-
-let zero_float_lit : t =
-  { expression_desc = Number (Float { f = "0." }); comment = None }
-
-let float_mod ?comment e1 e2 : J.expression =
-  { comment; expression_desc = Bin (Mod, e1, e2) }
-
 
 let str_equal (txt0:string) (delim0:External_arg_spec.delim) txt1 delim1 =
   if delim0 = delim1 then

@@ -173,25 +173,25 @@ and translateCoreType_ ~config ~typeVarsGen
   | Ttyp_variant (rowFields, _, _) -> (
     match rowFields |> processVariant with
     | {noPayloads; payloads; inherits} ->
-      let bsString =
+      let asString =
         coreType.ctyp_attributes
-        |> Annotation.hasAttribute Annotation.tagIsBsString
+        |> Annotation.hasAttribute Annotation.tagIsString
       in
-      let bsInt =
+      let asInt =
         coreType.ctyp_attributes
-        |> Annotation.hasAttribute Annotation.tagIsBsInt
+        |> Annotation.hasAttribute Annotation.tagIsInt
       in
       let lastBsInt = ref (-1) in
       let noPayloads =
         noPayloads
         |> List.map (fun (label, attributes) ->
                let labelJS =
-                 if bsString then
-                   match attributes |> Annotation.getBsAsRenaming with
+                 if asString then
+                   match attributes |> Annotation.getAsString with
                    | Some labelRenamed -> StringLabel labelRenamed
                    | None -> StringLabel label
-                 else if bsInt then (
-                   match attributes |> Annotation.getBsAsInt with
+                 else if asInt then (
+                   match attributes |> Annotation.getAsInt with
                    | Some n ->
                      lastBsInt := n;
                      IntLabel (string_of_int n)
@@ -224,7 +224,7 @@ and translateCoreType_ ~config ~typeVarsGen
       in
       let inherits = inheritsTranslations |> List.map (fun {type_} -> type_) in
       let type_ =
-        createVariant ~bsStringOrInt:(bsString || bsInt) ~noPayloads ~payloads
+        createVariant ~bsStringOrInt:(asString || asInt) ~noPayloads ~payloads
           ~inherits ~polymorphic:true
       in
       let dependencies =

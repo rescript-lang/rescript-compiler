@@ -54,7 +54,6 @@ let is_single_string_as_ast (x : t) : Parsetree.expression option =
       Some e
   | _ -> None
 
-(** TODO also need detect empty phrase case *)
 let is_single_int (x : t) : int option =
   match x with
   | PStr
@@ -67,6 +66,20 @@ let is_single_int (x : t) : int option =
         };
       ] ->
       Some (int_of_string name)
+  | _ -> None
+
+let is_single_float (x : t) : string option =
+  match x with
+  | PStr
+      [
+        {
+          pstr_desc =
+            Pstr_eval
+              ({ pexp_desc = Pexp_constant (Pconst_float (name, _)); _ }, _);
+          _;
+        };
+      ] ->
+      Some name
   | _ -> None
 
 let is_single_bool (x : t) : bool option =
