@@ -1,7 +1,6 @@
 open GenTypeCommon
 
 type t =
-  | ArrayC of t
   | CircularC of string * t
   | FunctionC of functionC
   | IdentC
@@ -24,7 +23,6 @@ and functionC = {
 
 let rec toString converter =
   match converter with
-  | ArrayC c -> "array(" ^ toString c ^ ")"
   | CircularC (s, c) -> "circular(" ^ s ^ " " ^ toString c ^ ")"
   | FunctionC {funArgConverters; retConverter; uncurried} ->
     "fn"
@@ -62,8 +60,8 @@ let typeGetConverterNormalized ~config ~inline ~lookupId ~typeNameIsInterface
     let normalized_ = type_ in
     match type_ with
     | Array (t, mutable_) ->
-      let tConverter, tNormalized = t |> visit ~visited in
-      (ArrayC tConverter, Array (tNormalized, mutable_))
+      let _, tNormalized = t |> visit ~visited in
+      (IdentC, Array (tNormalized, mutable_))
     | Dict _ -> (IdentC, normalized_)
     | Function
         ({argTypes; componentName; retType; typeVars; uncurried} as function_)
@@ -216,7 +214,6 @@ let typeGetNormalized ~config ~inline ~lookupId ~typeNameIsInterface type_ =
 
 let rec converterIsIdentity ~config ~toJS converter =
   match converter with
-  | ArrayC c -> c |> converterIsIdentity ~config ~toJS
   | CircularC (_, c) -> c |> converterIsIdentity ~config ~toJS
   | FunctionC {funArgConverters; retConverter; uncurried} ->
     retConverter |> converterIsIdentity ~config ~toJS
@@ -233,16 +230,10 @@ let rec converterIsIdentity ~config ~toJS converter =
   | TupleC innerTypesC ->
     innerTypesC |> List.for_all (converterIsIdentity ~config ~toJS)
 
-let rec apply ~config ~converter ~indent ~nameGen ~toJS ~variantTables value =
+let rec apply ~(config : Config.t) ~converter ~indent ~nameGen ~toJS
+    ~variantTables value =
   match converter with
   | _ when converter |> converterIsIdentity ~config ~toJS -> value
-  | ArrayC c ->
-    let x = "ArrayItem" |> EmitText.name ~nameGen in
-    value ^ ".map(function _element("
-    ^ (x |> EmitType.ofTypeAny ~config)
-    ^ ") { return "
-    ^ (x |> apply ~config ~converter:c ~indent ~nameGen ~toJS ~variantTables)
-    ^ "})"
   | CircularC (s, c) ->
     value
     |> EmitText.addComment
