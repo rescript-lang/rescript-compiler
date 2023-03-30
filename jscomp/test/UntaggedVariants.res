@@ -64,3 +64,15 @@ module Truthy = {
     | Obj({flag}) => flag
     }
 }
+
+module TwoObjects = {
+  @unwrapped
+  type t = | @as(null) Null | Object({name: string}) | @as(undefined) Undefined
+
+  let classify = x =>
+    switch x {
+    | Null => "null"
+    | Object({name}) => "object" ++ name
+    | Undefined => "undefined"
+    }
+}

@@ -75,6 +75,22 @@ var Truthy = {
   isTrue: isTrue
 };
 
+function classify$1(x) {
+  if (x === null || x === undefined) {
+    if (x === null) {
+      return "null";
+    } else {
+      return "undefined";
+    }
+  } else {
+    return "object" + x.name;
+  }
+}
+
+var TwoObjects = {
+  classify: classify$1
+};
+
 var i = 42;
 
 var i2 = 42.5;
@@ -102,4 +118,5 @@ exports.tuplesToObjects = tuplesToObjects;
 exports.l1 = l1;
 exports.l2 = l2;
 exports.Truthy = Truthy;
+exports.TwoObjects = TwoObjects;
 /* l2 Not a pure module */
