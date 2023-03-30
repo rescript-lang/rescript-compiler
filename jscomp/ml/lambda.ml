@@ -38,12 +38,6 @@ type record_repr =
   | Record_regular
   | Record_optional
 
-type as_untagged =
-  | IntType | StringType
-type as_value =
-  | AsString of string | AsInt of int | AsFloat of string | AsBool of bool | AsNull | AsUndefined
-  | AsUntagged of as_untagged
-type cstr_name = {name: string; as_value: as_value option}
 
 type tag_info = 
   | Blk_constructor of {name : string ; num_nonconst : int ; tag : int; attrs : Parsetree.attributes }
@@ -278,8 +272,14 @@ type function_attribute = {
   async : bool;
 }
 
-type untagged = Unothing | Uint | Ustring
-type block = {cstr_name: cstr_name; tag_name: string option; cstr_untagged : untagged}
+type as_untagged =
+  | IntType | StringType
+type as_value =
+  | AsString of string | AsInt of int | AsFloat of string | AsBool of bool | AsNull | AsUndefined
+  | AsUntagged of as_untagged
+type cstr_name = {name: string; as_value: as_value option}
+type cstr_untagged = Unothing | Uint | Ustring
+type block = {cstr_name: cstr_name; tag_name: string option; cstr_untagged : cstr_untagged}
 type switch_names = {consts: cstr_name array; blocks: block array}
 
 type lambda =

@@ -763,7 +763,7 @@ let is_type_number ?comment (e : t) : t =
   string_equal ?comment (typeof e) (str "number")
 
 let rec is_not_untagged ~untagged_cases (e:t) : t =
-  let is_case (c:Lambda.untagged) : t = match c with
+  let is_case (c:Lambda.cstr_untagged) : t = match c with
   | Unothing -> assert false
   | Ustring -> { expression_desc = Bin (NotEqEq, typeof e, str "string"); comment=None }
   | Uint -> { expression_desc = Bin (NotEqEq, typeof e, str "number"); comment=None }
