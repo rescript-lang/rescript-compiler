@@ -17,12 +17,10 @@ function test(param) {
       if (n === 0) {
         return Curry._1(acc, undefined);
       }
-      _acc = (function(n,acc){
-      return function (param) {
+      _acc = (function (param) {
         v.contents = v.contents + n | 0;
         return Curry._1(acc, undefined);
-      }
-      }(n,acc));
+      });
       _n = n - 1 | 0;
       continue ;
     };
@@ -41,11 +39,9 @@ function test_closure(param) {
     return x;
   }));
   for(let i = 0; i <= 5; ++i){
-    Caml_array.set(arr, i, (function(i){
-    return function (param) {
+    Caml_array.set(arr, i, (function (param) {
       return i;
-    }
-    }(i)));
+    }));
   }
   $$Array.iter((function (i) {
     v.contents = v.contents + Curry._1(i, 0) | 0;
@@ -62,11 +58,9 @@ function test_closure2(param) {
   }));
   for(let i = 0; i <= 5; ++i){
     let j = i + i | 0;
-    Caml_array.set(arr, i, (function(j){
-    return function (param) {
+    Caml_array.set(arr, i, (function (param) {
       return j;
-    }
-    }(j)));
+    }));
   }
   $$Array.iter((function (i) {
     v.contents = v.contents + Curry._1(i, 0) | 0;

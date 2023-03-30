@@ -173,10 +173,6 @@ let record_scope_pass =
                due to the recursive thing
             *)
             Js_fun_env.set_unbounded env closured_idents';
-            let lexical_scopes =
-              Set_ident.(inter closured_idents' state.loop_mutable_values)
-            in
-            Js_fun_env.set_lexical_scope env lexical_scopes;
             (* tailcall , note that these varibles are used in another pass *)
             {
               state with
@@ -242,7 +238,7 @@ let record_scope_pass =
     statement =
       (fun self state x ->
         match x.statement_desc with
-        | ForRange (_, _, loop_id, _, _, a_env) ->
+        | ForRange (_, _, loop_id, _, _) ->
             (* TODO: simplify definition of For *)
             let {
               defined_idents = defined_idents';
@@ -274,8 +270,6 @@ let record_scope_pass =
                   (diff closured_idents' defined_idents')
                   state.loop_mutable_values)
             in
-            let () = Js_closure.set_lexical_scope a_env lexical_scope in
-            (* set scope *)
             {
               state with
               used_idents = Set_ident.union state.used_idents used_idents';
@@ -293,7 +287,7 @@ let record_scope_pass =
               closured_idents =
                 Set_ident.union state.closured_idents lexical_scope;
             }
-        | While (_label, pred, body, _env) ->
+        | While (_label, pred, body) ->
             with_in_loop
               (self.block self
                  (with_in_loop (self.expression self state pred) true)

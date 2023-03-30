@@ -223,12 +223,12 @@ let statement_desc : 'a. ('a, statement_desc) fn =
       let st = _self.block _self st _x1 in
       let st = _self.block _self st _x2 in
       st
-  | While (_x0, _x1, _x2, _x3) ->
+  | While (_x0, _x1, _x2) ->
       let st = option label _self st _x0 in
       let st = _self.expression _self st _x1 in
       let st = _self.block _self st _x2 in
       st
-  | ForRange (_x0, _x1, _x2, _x3, _x4, _x5) ->
+  | ForRange (_x0, _x1, _x2, _x3, _x4) ->
       let st = option for_ident_expression _self st _x0 in
       let st = finish_ident_expression _self st _x1 in
       let st = _self.for_ident _self st _x2 in

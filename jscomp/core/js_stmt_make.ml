@@ -318,17 +318,15 @@ let if_ ?comment ?declaration ?else_ (e : J.expression) (then_ : J.block) : t =
 let assign ?comment id e : t =
   { statement_desc = J.Exp (E.assign (E.var id) e); comment }
 
-let while_ ?comment ?label ?env (e : E.t) (st : J.block) : t =
-  let env = match env with None -> Js_closure.empty () | Some x -> x in
-  { statement_desc = While (label, e, st, env); comment }
+let while_ ?comment ?label (e : E.t) (st : J.block) : t =
+  { statement_desc = While (label, e, st); comment }
 
-let for_ ?comment ?env for_ident_expression finish_ident_expression id direction
+let for_ ?comment for_ident_expression finish_ident_expression id direction
     (b : J.block) : t =
-  let env = match env with None -> Js_closure.empty () | Some x -> x in
   {
     statement_desc =
       ForRange
-        (for_ident_expression, finish_ident_expression, id, direction, b, env);
+        (for_ident_expression, finish_ident_expression, id, direction, b);
     comment;
   }
 

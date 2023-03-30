@@ -14,11 +14,9 @@ function f(param) {
     
   }));
   for(let i = 0; i <= 9; ++i){
-    Caml_array.set(arr, i, (function(i){
-    return function (param) {
+    Caml_array.set(arr, i, (function (param) {
       v.contents = v.contents + i | 0;
-    }
-    }(i)));
+    }));
   }
   return arr;
 }

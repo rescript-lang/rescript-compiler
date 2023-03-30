@@ -164,14 +164,6 @@ let exp_need_paren (e : J.expression) =
   | Await _ -> false
   | Tagged_template _ -> false
 
-let comma_idents (cxt : cxt) f ls = iter_lst cxt f ls Ext_pp_scope.ident comma
-
-let pp_paren_params (inner_cxt : cxt) (f : Ext_pp.t) (lexical : Ident.t list) :
-    unit =
-  P.string f L.lparen;
-  let (_ : cxt) = comma_idents inner_cxt f lexical in
-  P.string f L.rparen
-
 (** Print as underscore for unused vars, may not be 
     needed in the future *)
 (* let ipp_ident cxt f id (un_used : bool) =
@@ -381,10 +373,9 @@ and pp_function ~return_unit ~async ~is_method cxt (f : P.t) ~fn_state
           P.space f;
           P.brace_vgroup f 1 (fun _ -> function_body ~return_unit cxt f b)
       in
-      let lexical : Set_ident.t = Js_fun_env.get_lexical_scope env in
-      let enclose lexical =
-        let handle lexical =
-          if Set_ident.is_empty lexical then (
+      let enclose () =
+        let handle () =
+          (
             match fn_state with
             | Is_return ->
                 return_sp f;
@@ -408,46 +399,10 @@ and pp_function ~return_unit ~async ~is_method cxt (f : P.t) ~fn_state
                 P.space f;
                 ignore (Ext_pp_scope.ident inner_cxt f x : cxt);
                 param_body ())
-          else
-            (* print our closure as
-               {[(function(x,y){ return function(..){...}} (x,y))]}
-               Maybe changed to `let` in the future
-            *)
-            let lexical = Set_ident.elements lexical in
-            (match fn_state with
-            | Is_return -> return_sp f
-            | No_name _ -> ()
-            | Name_non_top name | Name_top name ->
-                ignore (pp_var_assign inner_cxt f name : cxt));
-            if async then P.string f L.await;
-            P.string f L.lparen;
-            P.string f (L.function_async ~async);
-            pp_paren_params inner_cxt f lexical;
-            P.brace_vgroup f 0 (fun _ ->
-                return_sp f;
-                P.string f (L.function_async ~async);
-                P.space f;
-                (match fn_state with
-                | Is_return | No_name _ -> ()
-                | Name_non_top x | Name_top x ->
-                    ignore (Ext_pp_scope.ident inner_cxt f x));
-                param_body ());
-            pp_paren_params inner_cxt f lexical;
-            P.string f L.rparen;
-            match fn_state with
-            | Is_return | No_name _ -> () (* expression *)
-            | _ -> semi f
-          (* has binding, a statement *)
         in
-        handle
-          (match fn_state with
-          | (Name_top name | Name_non_top name) when Set_ident.mem lexical name
-            ->
-              (*TODO: when calculating lexical we should not include itself *)
-              Set_ident.remove lexical name
-          | _ -> lexical)
+        handle ()
       in
-      enclose lexical;
+      enclose ();
       outer_cxt
 
 (* Assume the cond would not change the context,
@@ -1065,7 +1020,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
           P.string f L.else_;
           P.space f;
           brace_block cxt f s2)
-  | While (label, e, s, _env) ->
+  | While (label, e, s) ->
       (*  FIXME: print scope as well *)
       (match label with
       | Some i ->
@@ -1093,7 +1048,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
       let cxt = brace_block cxt f s in
       semi f;
       cxt
-  | ForRange (for_ident_expression, finish, id, direction, s, env) ->
+  | ForRange (for_ident_expression, finish, id, direction, s) ->
       let action cxt =
         P.vgroup f 0 (fun _ ->
             let cxt =
@@ -1164,24 +1119,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
             in
             brace_block cxt f s)
       in
-      let lexical = Js_closure.get_lexical_scope env in
-      if Set_ident.is_empty lexical then action cxt
-      else
-        (* unlike function,
-           [print for loop] has side effect,
-           we should take it out
-        *)
-        let inner_cxt = Ext_pp_scope.merge cxt lexical in
-        let lexical = Set_ident.elements lexical in
-        P.vgroup f 0 (fun _ ->
-            P.string f L.lparen;
-            P.string f L.function_;
-            pp_paren_params inner_cxt f lexical;
-            let cxt = P.brace_vgroup f 0 (fun _ -> action inner_cxt) in
-            pp_paren_params inner_cxt f lexical;
-            P.string f L.rparen;
-            semi f;
-            cxt)
+      action cxt
   | Continue s ->
       continue f s;
       cxt
