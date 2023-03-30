@@ -2,16 +2,16 @@
 'use strict';
 
 
-var u = {
+let u = {
   y: 3
 };
 
-var v_ice_cream3_0 = {
+let v_ice_cream3_0 = {
   flavor: "vanilla",
   num: 3
 };
 
-var v_ice_cream3_1 = {
+let v_ice_cream3_1 = {
   hd: {
     flavor: "x",
     num: 3
@@ -25,17 +25,17 @@ var v_ice_cream3_1 = {
   }
 };
 
-var v_ice_cream3 = {
+let v_ice_cream3 = {
   hd: v_ice_cream3_0,
   tl: v_ice_cream3_1
 };
 
-var v_ice_cream4_0 = {
+let v_ice_cream4_0 = {
   flavor: "vanilla",
   num: 3
 };
 
-var v_ice_cream4_1 = {
+let v_ice_cream4_1 = {
   hd: {
     flavor: "x",
     num: 3
@@ -43,26 +43,26 @@ var v_ice_cream4_1 = {
   tl: /* [] */0
 };
 
-var v_ice_cream4 = {
+let v_ice_cream4 = {
   hd: v_ice_cream4_0,
   tl: v_ice_cream4_1
 };
 
-var vv = {
+let vv = {
   x__ignore: 3
 };
 
-var int_expect = {
+let int_expect = {
   x__ignore: 0
 };
 
-var int_expect2 = {
+let int_expect2 = {
   x__ignore: 0
 };
 
-var int_expects_0 = {};
+let int_expects_0 = {};
 
-var int_expects_1 = {
+let int_expects_1 = {
   hd: {
     x__ignore: 2
   },
@@ -74,52 +74,52 @@ var int_expects_1 = {
   }
 };
 
-var int_expects = {
+let int_expects = {
   hd: int_expects_0,
   tl: int_expects_1
 };
 
-var mk_ice = {
+let mk_ice = {
   flavour: "vanilla",
   num: 3
 };
 
-var my_ice2 = {
+let my_ice2 = {
   flavour: "vanilla",
   num: 1
 };
 
-var my_ice3 = {
+let my_ice3 = {
   num: 2
 };
 
-var v_mk4 = {
+let v_mk4 = {
   y: 3
 };
 
-var v_mk5 = {
+let v_mk5 = {
   x: undefined,
   y: 3
 };
 
-var v_mk6 = {
+let v_mk6 = {
   y: 3
 };
 
-var v_mk6_1 = {
+let v_mk6_1 = {
   x: undefined,
   y: 3
 };
 
-var mk_u = {
+let mk_u = {
   x__ignore: 0
 };
 
-var v_mk7_0 = {
+let v_mk7_0 = {
   y: 3
 };
 
-var v_mk7_1 = {
+let v_mk7_1 = {
   hd: {
     y: 2
   },
@@ -131,7 +131,7 @@ var v_mk7_1 = {
   }
 };
 
-var v_mk7 = {
+let v_mk7 = {
   hd: v_mk7_0,
   tl: v_mk7_1
 };
@@ -150,7 +150,7 @@ again3(3);
 
 again3(2);
 
-var side_effect = {
+let side_effect = {
   contents: 0
 };
 

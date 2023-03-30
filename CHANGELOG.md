@@ -31,6 +31,7 @@
 - Remove empty export blocks in generated js code. https://github.com/rescript-lang/rescript-compiler/pull/6744
 - Fix indent for returned/thrown/wrapped in parentheses objects in generated js code. https://github.com/rescript-lang/rescript-compiler/pull/6746
 - Fix indent in generated js code. https://github.com/rescript-lang/rescript-compiler/pull/6747
+- In generated code, use `let` instead of `var`. https://github.com/rescript-lang/rescript-compiler/pull/6102
 
 # 11.1.0
 

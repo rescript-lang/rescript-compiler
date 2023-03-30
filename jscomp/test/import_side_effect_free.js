@@ -2,7 +2,7 @@
 'use strict';
 
 
-var a = await import("./side_effect_free.js").then(function (m) {
+let a = await import("./side_effect_free.js").then(function (m) {
   return m.a;
 });
 

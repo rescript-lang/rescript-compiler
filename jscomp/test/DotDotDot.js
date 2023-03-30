@@ -2,20 +2,20 @@
 'use strict';
 
 
-var MultipleDotDotDots = {
+let MultipleDotDotDots = {
   x: {
     x: 10,
     y: "abc"
   }
 };
 
-var v = {
+let v = {
   x: 10,
   y: "",
   z: ""
 };
 
-var v2 = {
+let v2 = {
   x: 10,
   y: "",
   z: "",
@@ -23,7 +23,7 @@ var v2 = {
   w: 2.0
 };
 
-var x = {
+let x = {
   name: "test",
   x: "test"
 };

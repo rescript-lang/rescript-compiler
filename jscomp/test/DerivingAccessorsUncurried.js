@@ -25,22 +25,22 @@ function compose(a, accessor) {
   return accessor(a);
 }
 
-var _composedMyField = 1;
+let _composedMyField = 1;
 
-var _composedNum = {
+let _composedNum = {
   TAG: "Num",
   _0: 1
 };
 
-var noParam = "NoParam";
+let noParam = "NoParam";
 
-var _myFieldAlias = myField;
+let _myFieldAlias = myField;
 
-var _noParamAlias = "NoParam";
+let _noParamAlias = "NoParam";
 
-var _numAlias = num;
+let _numAlias = num;
 
-var _doubleNumAlias = doubleNum;
+let _doubleNumAlias = doubleNum;
 
 exports.myField = myField;
 exports.noParam = noParam;

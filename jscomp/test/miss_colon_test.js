@@ -4,10 +4,10 @@
 
 function $plus$colon(_f, _g) {
   while(true) {
-    var g = _g;
-    var f = _f;
+    let g = _g;
+    let f = _f;
     if (f.TAG === "Int") {
-      var n = f._0;
+      let n = f._0;
       if (g.TAG === "Int") {
         return {
           TAG: "Int",
@@ -48,12 +48,12 @@ function $plus$colon(_f, _g) {
 
 function $star$colon(_f, _g) {
   while(true) {
-    var g = _g;
-    var f = _f;
-    var exit = 0;
-    var exit$1 = 0;
+    let g = _g;
+    let f = _f;
+    let exit = 0;
+    let exit$1 = 0;
     if (f.TAG === "Int") {
-      var n = f._0;
+      let n = f._0;
       if (g.TAG === "Int") {
         return {
           TAG: "Int",

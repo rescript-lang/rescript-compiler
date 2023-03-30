@@ -4,7 +4,7 @@
 
 function even(_n) {
   while(true) {
-    var n = _n;
+    let n = _n;
     if (n === 0) {
       return true;
     }
@@ -17,7 +17,7 @@ function even2(n) {
   if (n === 0) {
     return true;
   } else {
-    var n$1 = n - 1 | 0;
+    let n$1 = n - 1 | 0;
     if (n$1 === 1) {
       return true;
     } else {
@@ -26,7 +26,7 @@ function even2(n) {
   }
 }
 
-var v = {
+let v = {
   contents: 0
 };
 
@@ -38,7 +38,7 @@ function obj_set(i) {
   v.contents = i;
 }
 
-var obj = {
+let obj = {
   get: obj_get,
   set: obj_set
 };

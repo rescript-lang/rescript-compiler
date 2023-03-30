@@ -7,15 +7,15 @@ function x(v){return [v]}
 
 x("3");
 
-var v = x(3);
+let v = x(3);
 
 function xxx(prim) {
   return x(prim);
 }
 
-var u = x(3);
+let u = x(3);
 
-var xx = x("3");
+let xx = x("3");
 
 exports.v = v;
 exports.xxx = xxx;

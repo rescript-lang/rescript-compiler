@@ -2,7 +2,7 @@
 'use strict';
 
 
-var bla2 = "";
+let bla2 = "";
 
 function concat(param) {
   return "\n    display:\r flex;\n   " + bla2;

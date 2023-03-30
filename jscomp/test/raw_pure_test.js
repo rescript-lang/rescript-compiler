@@ -5,13 +5,13 @@
 // hello
 'use strict';
 
-var List = require("../../lib/js/list.js");
+let List = require("../../lib/js/list.js");
 
-var x0 = null;
+let x0 = null;
 
-var x2 = "荷兰";
+let x2 = "荷兰";
 
-var x3 = /ghoghos/;
+let x3 = /ghoghos/;
 
 /**
  * copyright
@@ -23,7 +23,7 @@ function f(x) {
   return x;
 }
 
-var hh = List.length;
+let hh = List.length;
 
 exports.x0 = x0;
 exports.x2 = x2;

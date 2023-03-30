@@ -2,11 +2,11 @@
 'use strict';
 
 
-var r = 0;
+let r = 0;
 
-for(var k = 1; k <= 10; ++k){
-  for(var i = 1; i <= 10; ++i){
-    var match = i % 2 === 0 ? [
+for(let k = 1; k <= 10; ++k){
+  for(let i = 1; i <= 10; ++i){
+    let match = i % 2 === 0 ? [
         1,
         (i << 1)
       ] : [

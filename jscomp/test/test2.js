@@ -2,9 +2,9 @@
 'use strict';
 
 
-var H = {};
+let H = {};
 
-var U = {
+let U = {
   H: H
 };
 

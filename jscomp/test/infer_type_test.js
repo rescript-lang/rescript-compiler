@@ -2,25 +2,25 @@
 'use strict';
 
 
-var hh = {
+let hh = {
   hi: 30,
   lo: 20
 };
 
-var v = {
+let v = {
   hi: 32,
   lo: 3
 };
 
-var vv = {
+let vv = {
   hi: 3,
   lo: 3,
   width: 3
 };
 
-var u = v.hi;
+let u = v.hi;
 
-var uu = v.width;
+let uu = v.width;
 
 exports.hh = hh;
 exports.v = v;

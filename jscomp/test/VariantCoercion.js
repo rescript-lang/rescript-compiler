@@ -2,23 +2,23 @@
 'use strict';
 
 
-var x = {
+let x = {
   kind: "One",
   age: 1
 };
 
-var CoerceVariants = {
+let CoerceVariants = {
   a: 1.1,
   b: 1.1,
   x: x,
   y: x
 };
 
-var a = "hello";
+let a = "hello";
 
-var c = 100;
+let c = 100;
 
-var CoerceWithPayload = {
+let CoerceWithPayload = {
   a: a,
   aa: "First",
   b: a,
@@ -29,13 +29,13 @@ var CoerceWithPayload = {
   dd: 2
 };
 
-var a$1 = "hello";
+let a$1 = "hello";
 
-var aa = "First";
+let aa = "First";
 
-var c$1 = "Hi";
+let c$1 = "Hi";
 
-var CoerceFromStringToVariant = {
+let CoerceFromStringToVariant = {
   a: a$1,
   aa: aa,
   b: a$1,
@@ -44,7 +44,7 @@ var CoerceFromStringToVariant = {
   cc: c$1
 };
 
-var CoerceFromIntToVariant = {
+let CoerceFromIntToVariant = {
   a: 100,
   aa: 1,
   b: 100,
@@ -53,7 +53,7 @@ var CoerceFromIntToVariant = {
   cc: 120
 };
 
-var CoerceFromFloatToVariant = {
+let CoerceFromFloatToVariant = {
   a: 100,
   aa: 1,
   b: 100,
@@ -62,7 +62,7 @@ var CoerceFromFloatToVariant = {
   cc: 120
 };
 
-var CoerceFromBigintToVariant = {
+let CoerceFromBigintToVariant = {
   a: 100n,
   aa: 1n,
   b: 100n,
@@ -71,17 +71,17 @@ var CoerceFromBigintToVariant = {
   cc: 120n
 };
 
-var a$2 = "Three";
+let a$2 = "Three";
 
-var b = "Three";
+let b = "Three";
 
-var i = 1;
+let i = 1;
 
-var d = 1;
+let d = 1;
 
-var ii = 1.1;
+let ii = 1.1;
 
-var dd = 1.1;
+let dd = 1.1;
 
 exports.a = a$2;
 exports.b = b;
