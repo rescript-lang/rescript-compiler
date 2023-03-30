@@ -718,7 +718,8 @@ and compile_string_cases cxt switch_exp table default =
   in
   let add_runtime_type_check (as_value: Lambda.as_value) x = match as_value with
   | AsUntagged IntType
-  | AsUntagged StringType -> E.typeof x
+  | AsUntagged StringType
+  | AsUntagged FloatType -> E.typeof x
   | AsBool _ | AsFloat _ | AsInt _ | AsString _ | AsNull | AsUndefined -> x in
   let mk_eq (i : Lambda.as_value option) x j y = match i, j with
     | Some as_value, _ ->

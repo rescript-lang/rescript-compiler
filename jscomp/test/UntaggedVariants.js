@@ -11,6 +11,14 @@ function classify(x) {
   }
 }
 
+function classify2(x) {
+  if (typeof x === "string") {
+    return "A string" + x;
+  } else {
+    return "A float";
+  }
+}
+
 function cls(x) {
   if (typeof x !== "object") {
     if (x === "One") {
@@ -69,7 +77,11 @@ var Truthy = {
 
 var i = 42;
 
+var i2 = 42.5;
+
 var s = "abc";
+
+var s2 = "abc";
 
 var w = {
   x: 10,
@@ -77,8 +89,11 @@ var w = {
 };
 
 exports.i = i;
+exports.i2 = i2;
 exports.s = s;
+exports.s2 = s2;
 exports.classify = classify;
+exports.classify2 = classify2;
 exports.w = w;
 exports.cls = cls;
 exports.ListWithTuples = ListWithTuples;

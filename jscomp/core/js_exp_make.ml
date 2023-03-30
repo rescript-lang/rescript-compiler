@@ -336,6 +336,7 @@ let as_value = function
   | AsNull -> nil
   | AsUndefined -> undefined
   | AsUntagged IntType -> str "number"
+  | AsUntagged FloatType -> str "number"
   | AsUntagged StringType -> str "string"
 
 let array_index ?comment (e0 : t) (e1 : t) : t =
@@ -766,6 +767,7 @@ let rec is_not_untagged ~untagged_cases (e:t) : t =
   let is_case (c:Lambda.as_untagged) : t = match c with
   | Lambda.StringType -> { expression_desc = Bin (NotEqEq, typeof e, str "string"); comment=None }
   | IntType -> { expression_desc = Bin (NotEqEq, typeof e, str "number"); comment=None }
+  | FloatType -> { expression_desc = Bin (NotEqEq, typeof e, str "number"); comment=None }
   in
   match untagged_cases with
   | [c] -> is_case c

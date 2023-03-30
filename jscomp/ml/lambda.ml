@@ -273,7 +273,7 @@ type function_attribute = {
 }
 
 type as_untagged =
-  | IntType | StringType
+  | IntType | StringType | FloatType
 type as_value =
   | AsString of string | AsInt of int | AsFloat of string | AsBool of bool | AsNull | AsUndefined
   | AsUntagged of as_untagged

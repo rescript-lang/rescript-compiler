@@ -37,7 +37,8 @@ let names_from_construct_pattern (pat : Typedtree.pattern) =
       | false, _ -> None
       | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path.same path Predef.path_string -> Some Lambda.StringType
       | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path.same path Predef.path_int -> Some IntType
-      | true, _ -> None
+      | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path.same path Predef.path_float -> Some FloatType
+      | true, _ -> None (* TODO: add restrictions here *)
     in
     let get_block cstr : Lambda.block =
       {cstr_name = get_cstr_name cstr; tag_name = get_tag_name cstr; cstr_untagged = get_untagged cstr} in

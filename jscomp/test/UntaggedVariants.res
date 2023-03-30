@@ -1,14 +1,24 @@
 @unboxed
 type t = A | I(int) | S(string)
+@unboxed
+type t2 = S2(string) | I2(float)
 
 let i = I(42)
+let i2 = I2(42.5)
 let s = S("abc")
+let s2 = S2("abc")
 
 let classify = x =>
   switch x {
   | I(_) => "An integer"
   | S(s) => "A string" ++ s
   | A => "A"
+  }
+
+let classify2 = x =>
+  switch x {
+  | I2(_) => "A float"
+  | S2(s) => "A string" ++ s
   }
 
 @unboxed

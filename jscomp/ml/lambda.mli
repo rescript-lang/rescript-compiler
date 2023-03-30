@@ -273,7 +273,7 @@ type function_attribute = {
   async : bool;
 }
 
-type as_untagged = IntType | StringType
+type as_untagged = IntType | StringType | FloatType
 type as_value =
   | AsString of string | AsInt of int | AsFloat of string | AsBool of bool | AsNull | AsUndefined
   | AsUntagged of as_untagged
