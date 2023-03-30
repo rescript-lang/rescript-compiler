@@ -273,14 +273,12 @@ type function_attribute = {
   async : bool;
 }
 
-type as_untagged =
-  | IntType | StringType
+type as_untagged = IntType | StringType
 type as_value =
   | AsString of string | AsInt of int | AsFloat of string | AsBool of bool | AsNull | AsUndefined
   | AsUntagged of as_untagged
 type cstr_name = {name:string; as_value: as_value option}
-type cstr_untagged = Unothing | Uint | Ustring
-type block = {cstr_name: cstr_name; tag_name: string option; cstr_untagged : cstr_untagged}
+type block = {cstr_name: cstr_name; tag_name: string option; cstr_untagged : as_untagged option}
 type switch_names = {consts: cstr_name array; blocks: block array}
 
 type lambda =

@@ -204,7 +204,7 @@ val is_type_number : ?comment:string -> t -> t
 
 val is_tag : ?has_null_undefined_other:(bool * bool * bool) -> t -> t
 
-val is_not_untagged : untagged_cases:Lambda.cstr_untagged list -> t -> t
+val is_not_untagged : untagged_cases:Lambda.as_untagged list -> t -> t
 
 val is_type_string : ?comment:string -> t -> t
 

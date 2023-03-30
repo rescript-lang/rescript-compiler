@@ -158,9 +158,10 @@ let get_untagged_cases (sw_names : Lambda.switch_names option) =
   (match sw_names with
   | None -> res := []
   | Some { blocks } ->
-    Array.iter (fun {Lambda.cstr_untagged} ->
-      if  cstr_untagged <> Unothing
-      then res := cstr_untagged :: !res) blocks
+    Array.iter (function
+    | {Lambda.cstr_untagged = Some cstr_untagged} -> res := cstr_untagged :: !res
+    | {Lambda.cstr_untagged = None} -> ()
+    ) blocks
   );
   !res
 
@@ -654,11 +655,9 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
   let untagged_cases = get_untagged_cases sw_names in
   let get_block_name i = match get_block i with
     | None -> None
-    | Some ({cstr_untagged = Uint} as block) ->
-      Some {block.cstr_name with as_value = Some (AsUntagged IntType)}
-    | Some ({cstr_untagged = Ustring} as block) ->
-      Some {block.cstr_name with as_value = Some (AsUntagged StringType)}
-    | Some ({cstr_untagged = Unothing; cstr_name}) ->
+    | Some ({cstr_untagged = Some as_untagged} as block) ->
+      Some {block.cstr_name with as_value = Some (AsUntagged as_untagged)}
+    | Some ({cstr_untagged = None; cstr_name}) ->
       Some cstr_name in
   let tag_name = get_tag_name sw_names in
   let compile_whole (cxt : Lam_compile_context.t) =
