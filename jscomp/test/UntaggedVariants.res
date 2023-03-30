@@ -43,3 +43,14 @@ let l1 = ListWithTuples.Cons((1, Cons((2, Cons((3, Empty))))))
 let l2 = tuplesToObjects(l1)
 Js.log2("l1", l1)
 Js.log2("l2", l2)
+
+module Truthy = {
+  @unboxed
+  type t = | @as(true) True | Obj({flag: bool})
+
+  let isTrue = x =>
+    switch x {
+    | True => true
+    | Obj({flag}) => flag
+    }
+}

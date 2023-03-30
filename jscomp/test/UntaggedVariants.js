@@ -55,6 +55,18 @@ console.log("l1", l1);
 
 console.log("l2", l2);
 
+function isTrue(x) {
+  if (typeof x !== "object") {
+    return true;
+  } else {
+    return x.flag;
+  }
+}
+
+var Truthy = {
+  isTrue: isTrue
+};
+
 var i = 42;
 
 var s = "abc";
@@ -74,4 +86,5 @@ exports.ListWithObjects = ListWithObjects;
 exports.tuplesToObjects = tuplesToObjects;
 exports.l1 = l1;
 exports.l2 = l2;
+exports.Truthy = Truthy;
 /* l2 Not a pure module */
