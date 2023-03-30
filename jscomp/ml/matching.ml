@@ -1332,6 +1332,7 @@ let make_constr_matching p def ctx = function
       let newargs =
         if cstr.cstr_inlined <> None ||
           Ext_list.exists cstr.cstr_attributes (function
+            | ({txt="unboxed"}, _)
             | ({txt="as"}, PStr [{pstr_desc = Pstr_eval
                 ({pexp_desc = Pexp_ident {txt= Lident "unboxed"}}, _)}]) -> true
             | _ -> false) then

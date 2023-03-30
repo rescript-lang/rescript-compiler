@@ -38,7 +38,12 @@ type record_repr =
   | Record_regular 
   | Record_optional
 
-type as_value = AsString of string | AsInt of int | AsFloat of string | AsBool of bool | AsNull | AsUndefined | AsUnboxed
+type as_untagged =
+  | IntType | StringType
+type as_value =
+  | AsString of string | AsInt of int | AsFloat of string | AsBool of bool | AsNull | AsUndefined
+  | AsUnboxed
+  | AsUntagged of as_untagged
 type cstr_name = {name:string; as_value: as_value option}
 
 type tag_info = 
@@ -276,7 +281,8 @@ type function_attribute = {
   async : bool;
 }
 
-type block = {cstr_name: cstr_name; tag_name: string option}
+type untagged = Unothing | Uint | Ustring
+type block = {cstr_name: cstr_name; tag_name: string option; cstr_untagged : untagged}
 type switch_names = {consts: cstr_name array; blocks: block array}
 
 type lambda =

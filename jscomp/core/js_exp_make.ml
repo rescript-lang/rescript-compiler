@@ -335,6 +335,8 @@ let as_value = function
   | AsBool b -> bool b
   | AsNull -> nil
   | AsUndefined -> undefined
+  | AsUntagged IntType -> str "number"
+  | AsUntagged StringType -> str "string"
   | AsUnboxed -> assert false (* Should not emit tags for unboxed *)
   (* TODO: put restriction on the variant definitions allowed, to make sure this never happens. *)
 
@@ -761,6 +763,18 @@ let string_equal ?comment (e0 : t) (e1 : t) : t =
 
 let is_type_number ?comment (e : t) : t =
   string_equal ?comment (typeof e) (str "number")
+
+let rec is_not_untagged ~untagged_cases (e:t) : t =
+  let is_case (c:Lambda.untagged) : t = match c with
+  | Unothing -> assert false
+  | Ustring -> { expression_desc = Bin (NotEqEq, typeof e, str "string"); comment=None }
+  | Uint -> { expression_desc = Bin (NotEqEq, typeof e, str "number"); comment=None }
+  in
+  match untagged_cases with
+  | [c] -> is_case c
+  | c1 :: (_::_ as rest) ->
+    { J.expression_desc = Bin (And, is_case c1, is_not_untagged ~untagged_cases:rest e ); comment = None }
+  | [] -> assert false
 
 let is_tag ?(has_null_undefined_other=(false, false, false)) (e : t) : t =
   let (has_null, has_undefined, has_other) = has_null_undefined_other in

@@ -32,8 +32,15 @@ let names_from_construct_pattern (pat : Typedtree.pattern) =
         as_value = Ast_attributes.process_as_value cstr.cd_attributes } in
     let get_tag_name (cstr: Types.constructor_declaration) =
       Ast_attributes.process_tag_name cstr.cd_attributes in
+    let get_untagged (cstr: Types.constructor_declaration) =
+      match Ast_attributes.process_untagged cstr.cd_attributes, cstr.cd_args with
+      | false, _ -> Lambda.Unothing
+      | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path.same path Predef.path_string -> Ustring
+      | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path.same path Predef.path_int -> Uint
+      | true, _ -> Unothing
+    in
     let get_block cstr : Lambda.block =
-      {cstr_name = get_cstr_name cstr; tag_name = get_tag_name cstr} in
+      {cstr_name = get_cstr_name cstr; tag_name = get_tag_name cstr; cstr_untagged = get_untagged cstr} in
     let consts, blocks =
       Ext_list.fold_left cstrs ([], []) (fun (consts, blocks) cstr ->
           if is_nullary_variant cstr.cd_args then

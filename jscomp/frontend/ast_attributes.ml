@@ -395,6 +395,15 @@ let process_tag_name (attrs : t) =
       | _ -> ());
   !st
 
+let process_untagged (attrs : t) =
+  let st = ref false in
+  Ext_list.iter attrs (fun (({ txt }, _)) ->
+      match txt with
+      | "unboxed" -> st := true
+      | _ -> ());
+  !st
+
+
 let locg = Location.none
 (* let bs : attr
    =  {txt = "bs" ; loc = locg}, Ast_payload.empty *)
