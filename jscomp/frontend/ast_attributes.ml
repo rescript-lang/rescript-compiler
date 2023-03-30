@@ -368,9 +368,6 @@ let process_as_value (attrs : t) =
             | Some Lident "undefined" ->
                 Bs_ast_invariant.mark_used_bs_attribute attr;
                 st := Some AsUndefined
-            | Some Lident "unboxed" ->
-                Bs_ast_invariant.mark_used_bs_attribute attr;
-                st := Some AsUnboxed
             |  Some _ -> Bs_syntaxerr.err loc InvalidVariantAsAnnotation);
             if !st = None then Bs_syntaxerr.err loc InvalidVariantAsAnnotation
           )

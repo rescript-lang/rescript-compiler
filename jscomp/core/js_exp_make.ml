@@ -337,8 +337,6 @@ let as_value = function
   | AsUndefined -> undefined
   | AsUntagged IntType -> str "number"
   | AsUntagged StringType -> str "string"
-  | AsUnboxed -> assert false (* Should not emit tags for unboxed *)
-  (* TODO: put restriction on the variant definitions allowed, to make sure this never happens. *)
 
 let array_index ?comment (e0 : t) (e1 : t) : t =
   match (e0.expression_desc, e1.expression_desc) with

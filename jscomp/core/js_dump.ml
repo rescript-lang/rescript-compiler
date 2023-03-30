@@ -805,7 +805,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
              [ (name_symbol, E.str p.name) ]
             else [])
         in
-        if untagged || (as_value = Some AsUnboxed || not_is_cons = false) && p.num_nonconst = 1 then tails
+        if untagged || (not_is_cons = false) && p.num_nonconst = 1 then tails
         else
           ( Js_op.Lit tag_name, (* TAG:xx *) 
             match as_value with
@@ -814,8 +814,8 @@ and expression_desc cxt ~(level : int) f x : cxt =
           :: tails
       in
       let exp = match objs with
-        | [(_, e)] when untagged || as_value = Some AsUnboxed -> e.expression_desc
-        | _ when untagged || as_value = Some AsUnboxed -> assert false (* should not happen *)
+        | [(_, e)] when untagged -> e.expression_desc
+        | _ when untagged -> assert false (* should not happen *)
         (* TODO: put restriction on the variant definitions allowed, to make sure this never happens. *)
         | _ -> J.Object objs in
       expression_desc cxt ~level f exp

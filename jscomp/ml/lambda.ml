@@ -42,7 +42,6 @@ type as_untagged =
   | IntType | StringType
 type as_value =
   | AsString of string | AsInt of int | AsFloat of string | AsBool of bool | AsNull | AsUndefined
-  | AsUnboxed
   | AsUntagged of as_untagged
 type cstr_name = {name: string; as_value: as_value option}
 
