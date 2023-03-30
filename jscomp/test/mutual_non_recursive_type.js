@@ -6,11 +6,11 @@ function f(x) {
   return x;
 }
 
-var U = {
+let U = {
   f: f
 };
 
-var v = {
+let v = {
   TAG: "H",
   _0: "OT"
 };

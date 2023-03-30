@@ -29,7 +29,7 @@ let function_ = "function"
 
 let function_async ~async = if async then "async function" else "function"
 
-let var = "var" (* should be able to switch to [let] easily*)
+let var = "let" (* should be able to switch to [let] easily*)
 
 let return = "return"
 

@@ -3,8 +3,8 @@
 
 
 function f(x) {
-  var v = x;
-  var sum = 0;
+  let v = x;
+  let sum = 0;
   while(v > 0) {
     sum = sum + v | 0;
     v = v - 1 | 0;

@@ -6,17 +6,17 @@ function f(x) {
   return x + 1 | 0;
 }
 
-var a = f(1);
+let a = f(1);
 
-var b = f(2);
+let b = f(2);
 
 function g(param) {
   return 1;
 }
 
-var c = g();
+let c = g();
 
-var d = g();
+let d = g();
 
 exports.f = f;
 exports.a = a;

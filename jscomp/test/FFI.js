@@ -2,11 +2,11 @@
 'use strict';
 
 
-var canUseCanvas = (function canUseCanvas() {
+let canUseCanvas = (function canUseCanvas() {
     return !!document.createElement('canvas').getContext;
   });
 
-var add = ((x,y)=>x+y);
+let add = ((x,y)=>x+y);
 
 exports.canUseCanvas = canUseCanvas;
 exports.add = add;

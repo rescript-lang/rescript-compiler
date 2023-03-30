@@ -6,29 +6,29 @@ function u(param) {
   return xx(3);
 }
 
-var Textarea = {};
+let Textarea = {};
 
-var $$Int32Array = {};
+let $$Int32Array = {};
 
 function v(param) {
-  var u = new TextArea();
+  let u = new TextArea();
   u.minHeight = 3;
   return u.minHeight;
 }
 
 function f(param) {
-  var v = new Int32Array(32);
+  let v = new Int32Array(32);
   v[0] = 3;
   return v[0];
 }
 
-var a = true;
+let a = true;
 
-var b = false;
+let b = false;
 
-var c = null;
+let c = null;
 
-var d;
+let d;
 
 exports.u = u;
 exports.a = a;

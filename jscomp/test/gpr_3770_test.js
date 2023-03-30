@@ -3,7 +3,7 @@
 
 
 function show(x) {
-  var a = x._0;
+  let a = x._0;
   if (a === 0 && x._1 === 0 && x._2 === 0) {
     return "zeroes";
   }

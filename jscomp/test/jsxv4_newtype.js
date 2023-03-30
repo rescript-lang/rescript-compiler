@@ -6,7 +6,7 @@ function Jsxv4_newtype$V4A(props) {
   return null;
 }
 
-var V4A = {
+let V4A = {
   make: Jsxv4_newtype$V4A
 };
 
@@ -14,7 +14,7 @@ function Jsxv4_newtype$V4A1(props) {
   return null;
 }
 
-var V4A1 = {
+let V4A1 = {
   make: Jsxv4_newtype$V4A1
 };
 
@@ -22,7 +22,7 @@ function Jsxv4_newtype$V4A2(props) {
   return null;
 }
 
-var V4A2 = {
+let V4A2 = {
   make: Jsxv4_newtype$V4A2
 };
 
@@ -30,7 +30,7 @@ function Jsxv4_newtype$V4A3(props) {
   return props.foo;
 }
 
-var V4A3 = {
+let V4A3 = {
   make: Jsxv4_newtype$V4A3
 };
 

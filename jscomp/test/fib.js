@@ -11,13 +11,13 @@ function fib(x) {
 }
 
 function fib2(n) {
-  var _a = 1;
-  var _b = 1;
-  var _i = 0;
+  let _a = 1;
+  let _b = 1;
+  let _i = 0;
   while(true) {
-    var i = _i;
-    var b = _b;
-    var a = _a;
+    let i = _i;
+    let b = _b;
+    let a = _a;
     if (n === i) {
       return a;
     }
@@ -29,10 +29,10 @@ function fib2(n) {
 }
 
 function fib3(n) {
-  var a = 1;
-  var b = 1;
-  for(var i = 1; i <= n; ++i){
-    var tmp = a;
+  let a = 1;
+  let b = 1;
+  for(let i = 1; i <= n; ++i){
+    let tmp = a;
     a = b;
     b = b + tmp | 0;
   }

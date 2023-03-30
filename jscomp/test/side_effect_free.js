@@ -2,7 +2,7 @@
 'use strict';
 
 
-var a = 3;
+let a = 3;
 
 exports.a = a;
 /* No side effect */

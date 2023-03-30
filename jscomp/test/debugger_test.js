@@ -21,7 +21,7 @@ function g(param) {
 function exterme_g(param) {
   f(1, 2);
   debugger;
-  var v;
+  let v;
   console.log(v);
   f(1, 2);
   debugger;

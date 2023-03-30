@@ -2,11 +2,11 @@
 'use strict';
 
 
-var direct = {
+let direct = {
   contents: /* [] */0
 };
 
-var indirect = {
+let indirect = {
   contents: /* [] */0
 };
 
