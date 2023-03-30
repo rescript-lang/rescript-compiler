@@ -303,7 +303,13 @@ let transl_declaration env sdecl id =
     sdecl.ptype_cstrs
   in
   let raw_status = get_unboxed_from_attributes sdecl in
-  if raw_status.unboxed && not raw_status.default then begin
+
+  let checkUntaggedVariant = match sdecl.ptype_kind with
+  | Ptype_variant _ -> true
+  | _ -> false
+  in
+
+  if raw_status.unboxed && not raw_status.default && not checkUntaggedVariant then begin
     match sdecl.ptype_kind with
     | Ptype_abstract ->
         raise(Error(sdecl.ptype_loc, Bad_unboxed_attribute
