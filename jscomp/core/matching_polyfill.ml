@@ -25,6 +25,23 @@
 let is_nullary_variant (x : Types.constructor_arguments) =
   match x with Types.Cstr_tuple [] -> true | _ -> false
 
+let checkUntaggedVariant ~(blocks : (Location.t * Lambda.block) list) =
+  let objects = ref 0 in
+  let unknowns = ref 0 in
+  let invariant loc =
+    if !unknowns <> 0 && !objects <> 0
+      then Bs_syntaxerr.err loc InvalidUntaggedVariantDefinition;
+      if !unknowns + !objects > 1
+        then Bs_syntaxerr.err loc InvalidUntaggedVariantDefinition in
+  Ext_list.rev_iter blocks (fun (loc, block) -> match block.block_type with
+    | Some Unknown ->
+      incr unknowns;
+      invariant loc
+    | Some Object ->
+      incr objects;
+      invariant loc
+    | _ -> ())
+  
 let names_from_construct_pattern (pat : Typedtree.pattern) =
   let names_from_type_variant (cstrs : Types.constructor_declaration list) =
     let get_cstr_name (cstr: Types.constructor_declaration) =
@@ -48,7 +65,7 @@ let names_from_construct_pattern (pat : Typedtree.pattern) =
           (* inline record is an object *)
           Some Object
       | true, Cstr_tuple [_] ->
-          (* Evert other single payload is unknown *)
+          (* Every other single payload is unknown *)
           Some Unknown
       | true, _ -> None (* TODO: add restrictions here *)
     in
@@ -58,13 +75,13 @@ let names_from_construct_pattern (pat : Typedtree.pattern) =
       Ext_list.fold_left cstrs ([], []) (fun (consts, blocks) cstr ->
           if is_nullary_variant cstr.cd_args then
             (get_cstr_name cstr :: consts, blocks)
-          else (consts, get_block cstr :: blocks))
+          else (consts, (cstr.cd_loc, get_block cstr) :: blocks))
     in
-    Some
-      {
-        Lambda.consts = Ext_array.reverse_of_list consts;
-        blocks = Ext_array.reverse_of_list blocks;
-      }
+    checkUntaggedVariant ~blocks;
+    let blocks = blocks |> List.map snd in
+    let consts = Ext_array.reverse_of_list consts in
+    let blocks = Ext_array.reverse_of_list blocks in
+    Some { Lambda.consts; blocks }
   in
   let rec resolve_path n (path : Path.t) =
     match Env.find_type path pat.pat_env with

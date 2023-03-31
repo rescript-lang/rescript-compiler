@@ -53,6 +53,7 @@ type error =
   | Bs_uncurried_arity_too_large
   | InvalidVariantAsAnnotation
   | InvalidVariantTagAnnotation
+  | InvalidUntaggedVariantDefinition
 
 let pp_error fmt err =
   Format.pp_print_string fmt
@@ -103,6 +104,8 @@ let pp_error fmt err =
       "A variant case annotation @as(...) must be a string or integer, boolean, null, undefined"
     | InvalidVariantTagAnnotation ->
       "A variant tag annotation @tag(...) must be a string"
+    | InvalidUntaggedVariantDefinition ->
+      "This untagged variant definition is invalid. But since I'm still work in progress I am not able to tell you why."
     )
 
 type exn += Error of Location.t * error
