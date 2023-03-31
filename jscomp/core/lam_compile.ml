@@ -690,7 +690,7 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
           let dispatch e =
             let is_tag =
               if block_cases <> []
-              then E.is_not_untagged ~literal_cases:(get_literal_cases sw_names) ~block_cases e
+              then E.is_a_literal_case ~literal_cases:(get_literal_cases sw_names) ~block_cases e
               else
                E.is_tag ~has_null_undefined_other:(has_null_undefined_other sw_names) e in 
             S.if_ is_tag

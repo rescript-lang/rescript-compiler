@@ -182,9 +182,9 @@ function isUndefined(x) {
 }
 
 function plus(x, y) {
-  if (typeof x = "???not_a_literal???") {
+  if (x === undefined) {
     return y;
-  } else if (typeof y = "???not_a_literal???") {
+  } else if (y === undefined) {
     return x;
   } else {
     return x + y | 0;
@@ -202,9 +202,9 @@ function isNull(x) {
 }
 
 function plus$1(x, y) {
-  if (typeof x = "???not_a_literal???") {
+  if (x === null) {
     return y;
-  } else if (typeof y = "???not_a_literal???") {
+  } else if (y === null) {
     return x;
   } else {
     return x + y | 0;
@@ -228,9 +228,9 @@ function isUndefined$1(x) {
 }
 
 function plus$2(x, y) {
-  if (typeof x = "???not_a_literal???") {
+  if (x === null || x === undefined) {
     return y;
-  } else if (typeof y = "???not_a_literal???") {
+  } else if (y === null || y === undefined) {
     return x;
   } else {
     return x + y | 0;
@@ -238,7 +238,7 @@ function plus$2(x, y) {
 }
 
 function kind(x) {
-  if (typeof x = "???not_a_literal???") {
+  if (x === null || x === undefined) {
     if (x === null) {
       return "null";
     } else {
@@ -278,7 +278,7 @@ function isWhyNot(x) {
 }
 
 function plus$3(x, y) {
-  if (typeof x = "???not_a_literal???") {
+  if (x === null || x === undefined) {
     switch (x) {
       case null :
       case undefined :
@@ -287,13 +287,13 @@ function plus$3(x, y) {
           break;
       
     }
-  } else if (!(typeof y = "???not_a_literal???")) {
+  } else if (!(y === null || y === undefined)) {
     return {
             x: x.x + y.x,
             y: x.y + y.y
           };
   }
-  if (!(typeof y = "???not_a_literal???")) {
+  if (!(y === null || y === undefined)) {
     return "WhyNotAnotherOne";
   }
   switch (y) {
@@ -307,7 +307,7 @@ function plus$3(x, y) {
 }
 
 function kind$1(x) {
-  if (!(typeof x = "???not_a_literal???")) {
+  if (!(x === null || x === undefined)) {
     return "present";
   }
   switch (x) {

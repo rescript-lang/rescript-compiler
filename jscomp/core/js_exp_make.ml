@@ -766,7 +766,10 @@ let string_equal ?comment (e0 : t) (e1 : t) : t =
 let is_type_number ?comment (e : t) : t =
   string_equal ?comment (typeof e) (str "number")
 
-let rec is_not_untagged ~(literal_cases : Lambda.literal list) ~block_cases (e:t) : t =
+let rec is_a_literal_case ~(literal_cases : Lambda.literal list) ~block_cases (e:t) : t =
+  let is_literal (l:Lambda.literal) : t =
+    { expression_desc = Bin (EqEqEq, e, literal l); comment=None }
+     in
   let is_case (c:Lambda.block_type) : t = match c with
   | Lambda.StringType -> { expression_desc = Bin (NotEqEq, typeof e, str "string"); comment=None }
   | IntType -> { expression_desc = Bin (NotEqEq, typeof e, str "number"); comment=None }
@@ -774,12 +777,19 @@ let rec is_not_untagged ~(literal_cases : Lambda.literal list) ~block_cases (e:t
   | Unknown ->
     (* We don't know the type of unknown, so we need to express:
        this is not one of the literals *)
-     { expression_desc = Bin (Eq, typeof e, str "???not_a_literal???"); comment=None }
+    (match literal_cases with
+      | [] -> { expression_desc = Bool true; comment=None}
+      | l1 :: others ->
+        let eq1 = is_literal l1 in
+        Ext_list.fold_right others eq1 (fun l eq ->
+          { J.expression_desc = Bin (Or, is_literal l, eq); comment = None }
+        )
+    )
   in
   match block_cases with
   | [c] -> is_case c
   | c1 :: (_::_ as rest) ->
-    { J.expression_desc = Bin (And, is_case c1, is_not_untagged ~literal_cases ~block_cases:rest e ); comment = None }
+    { J.expression_desc = Bin (And, is_case c1, is_a_literal_case ~literal_cases ~block_cases:rest e ); comment = None }
   | [] -> assert false
 
 let is_tag ?(has_null_undefined_other=(false, false, false)) (e : t) : t =

@@ -92,15 +92,11 @@ var TwoObjects = {
 };
 
 function classify$2(x) {
-  if (typeof x = "???not_a_literal???") {
-    if (x === "A") {
-      return "a";
-    } else {
-      return "b";
-    }
+  if (x === "A") {
+    return "a";
+  } else {
+    return "b";
   }
-  console.log(x);
-  return "Unknown";
 }
 
 var Unknown = {
