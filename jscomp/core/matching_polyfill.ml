@@ -29,10 +29,10 @@ let checkUntaggedVariant ~(blocks : (Location.t * Lambda.block) list) =
   let objects = ref 0 in
   let unknowns = ref 0 in
   let invariant loc =
-    if !unknowns <> 0 && !objects <> 0
+    if !unknowns <> 0 && (List.length blocks <> 1)
       then Bs_syntaxerr.err loc InvalidUntaggedVariantDefinition;
-      if !unknowns + !objects > 1
-        then Bs_syntaxerr.err loc InvalidUntaggedVariantDefinition in
+    if !unknowns + !objects > 1
+      then Bs_syntaxerr.err loc InvalidUntaggedVariantDefinition in
   Ext_list.rev_iter blocks (fun (loc, block) -> match block.block_type with
     | Some Unknown ->
       incr unknowns;
