@@ -49,11 +49,11 @@ let rec convert_constant (const : Lambda.structured_constant) : Lam_constant.t =
       | Pt_assertfalse ->
           Const_int { i = Int32.of_int i; comment = Pt_assertfalse }
       | Pt_constructor { name; const; non_const; attrs } ->
-          let as_value = Ast_attributes.process_as_value attrs in
+          let literal = Ast_attributes.process_as_value attrs in
           Const_int
             {
               i = Int32.of_int i;
-              comment = Pt_constructor { cstr_name={name; as_value}; const; non_const };
+              comment = Pt_constructor { cstr_name={name; literal}; const; non_const };
             }
       | Pt_variant { name } ->
           if Ext_string.is_valid_hash_number name then

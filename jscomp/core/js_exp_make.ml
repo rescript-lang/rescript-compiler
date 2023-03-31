@@ -328,7 +328,7 @@ let zero_float_lit : t =
 let float_mod ?comment e1 e2 : J.expression =
   { comment; expression_desc = Bin (Mod, e1, e2) }
 
-let as_value = function
+let literal = function
   | Lambda.AsString s -> str s ~delim:DStarJ
   | AsInt i -> small_int i
   | AsFloat f -> float f

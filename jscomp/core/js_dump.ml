@@ -781,13 +781,13 @@ and expression_desc cxt ~(level : int) f x : cxt =
           (Js_op.Lit tag_name, (* TAG:xx for inline records *)
             match Ast_attributes.process_as_value p.attrs with
             | None -> E.str p.name
-            | Some as_value -> E.as_value as_value )
+            | Some literal -> E.literal literal )
           :: tails
       in
       expression_desc cxt ~level f (Object objs)
   | Caml_block (el, _, tag, Blk_constructor p) ->
       let not_is_cons = p.name <> Literals.cons in
-      let as_value = Ast_attributes.process_as_value p.attrs in
+      let literal = Ast_attributes.process_as_value p.attrs in
       let untagged = Ast_attributes.process_untagged p.attrs in
       let tag_name = match Ast_attributes.process_tag_name p.attrs with
         | None -> L.tag
@@ -808,9 +808,9 @@ and expression_desc cxt ~(level : int) f x : cxt =
         if untagged || (not_is_cons = false) && p.num_nonconst = 1 then tails
         else
           ( Js_op.Lit tag_name, (* TAG:xx *) 
-            match as_value with
+            match literal with
             | None -> E.str p.name
-            | Some as_value -> E.as_value as_value )
+            | Some literal -> E.literal literal )
           :: tails
       in
       let exp = match objs with
@@ -1210,8 +1210,8 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
       let cxt = P.paren_group f 1 (fun _ -> expression ~level:0 cxt f e) in
       P.space f;
       P.brace_vgroup f 1 (fun _ ->
-          let pp_as_value f (as_value: Lambda.literal) =
-            let e = E.as_value as_value in
+          let pp_as_value f (literal: Lambda.literal) =
+            let e = E.literal literal in
             ignore @@ expression_desc cxt ~level:0 f e.expression_desc in
           let cxt = loop_case_clauses cxt f pp_as_value cc in
           match def with

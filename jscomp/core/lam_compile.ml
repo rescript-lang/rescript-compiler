@@ -171,8 +171,8 @@ let get_literal_cases (sw_names : Lambda.switch_names option) =
   | None -> res := []
   | Some { consts  } ->
     Ext_array.iter consts (function
-    | {as_value = Some as_value} -> res := as_value :: !res
-    | {as_value = None} -> ()
+    | {literal = Some literal} -> res := literal :: !res
+    | {literal = None} -> ()
     )
   );
   !res
@@ -183,7 +183,7 @@ let has_null_undefined_other (sw_names : Lambda.switch_names option) =
   (match sw_names with
   | None -> ()
   | Some { consts; blocks } ->
-    Ext_array.iter consts (fun x -> match x.as_value with
+    Ext_array.iter consts (fun x -> match x.literal with
       | Some AsUndefined -> undefined := true
       | Some AsNull -> null := true
       | _ -> other := true);
@@ -619,9 +619,9 @@ and compile_general_cases :
 and use_compile_string_cases table get_name =
   List.fold_right (fun (i, lam) acc ->
     match get_name i, acc with
-    | Some {Lambda.as_value = Some as_value}, Some string_table ->
-       Some ((as_value, lam) :: string_table)
-    | Some {name; as_value = None}, Some string_table -> Some ((AsString name, lam) :: string_table)
+    | Some {Lambda.literal = Some literal}, Some string_table ->
+       Some ((literal, lam) :: string_table)
+    | Some {name; literal = None}, Some string_table -> Some ((AsString name, lam) :: string_table)
     | _, _ -> None
   ) table (Some [])
 and compile_cases cxt (switch_exp : E.t) table default get_name =
@@ -632,7 +632,7 @@ and compile_cases cxt (switch_exp : E.t) table default get_name =
       compile_general_cases get_name
         (fun i -> match get_name i with
           | None -> E.small_int i
-          | Some {as_value = Some(AsString s)} -> E.str s
+          | Some {literal = Some(AsString s)} -> E.str s
           | Some {name} -> E.str name)
         (fun _ x _ y -> E.int_equal x y) cxt
         (fun ?default ?declaration e clauses ->
@@ -669,7 +669,7 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
   let get_block_name i = match get_block i with
     | None -> None
     | Some ({cstr_untagged = Some as_untagged} as block) ->
-      Some {block.cstr_name with as_value = Some (AsUntagged as_untagged)}
+      Some {block.cstr_name with literal = Some (AsUntagged as_untagged)}
     | Some ({cstr_untagged = None; cstr_name}) ->
       Some cstr_name in
   let tag_name = get_tag_name sw_names in
@@ -726,10 +726,10 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
   | EffectCall _ | Assign _ -> Js_output.make (compile_whole lambda_cxt)
 
 and compile_string_cases cxt switch_exp table default =
-  let value = function
-    | as_value -> E.as_value as_value
+  let literal = function
+    | literal -> E.literal literal
   in
-  let add_runtime_type_check (as_value: Lambda.literal) x = match as_value with
+  let add_runtime_type_check (literal: Lambda.literal) x = match literal with
   | AsUntagged IntType
   | AsUntagged StringType
   | AsUntagged FloatType -> E.typeof x
@@ -746,7 +746,7 @@ and compile_string_cases cxt switch_exp table default =
   in
   compile_general_cases
     (fun _ -> None)
-    value mk_eq
+    literal mk_eq
     cxt
     (fun ?default ?declaration e clauses ->
       S.string_switch ?default ?declaration e clauses)
