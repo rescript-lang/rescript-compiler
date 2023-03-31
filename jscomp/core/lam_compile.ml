@@ -732,7 +732,8 @@ and compile_string_cases cxt switch_exp table default =
   let add_runtime_type_check (literal: Lambda.literal) x = match literal with
   | Block IntType
   | Block StringType
-  | Block FloatType -> E.typeof x
+  | Block FloatType
+  | Block Object -> E.typeof x
   | Block Unknown ->
     (* This should not happen because unknown must be the only non-literal case *)
     assert false 

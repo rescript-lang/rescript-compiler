@@ -38,6 +38,8 @@ let names_from_construct_pattern (pat : Typedtree.pattern) =
       | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path.same path Predef.path_string -> Some Lambda.StringType
       | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path.same path Predef.path_int -> Some IntType
       | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path.same path Predef.path_float -> Some FloatType
+      | true, Cstr_tuple (_ :: _ :: _) -> Some Object
+      | true, Cstr_record _ -> Some Object
       | true, Cstr_tuple [{desc = Tvar _ | Tlink ({desc = Tvar _})}] -> Some Unknown
       | true, _ -> None (* TODO: add restrictions here *)
     in

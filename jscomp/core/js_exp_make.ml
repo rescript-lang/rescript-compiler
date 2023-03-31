@@ -338,6 +338,7 @@ let literal = function
   | Block IntType -> str "number"
   | Block FloatType -> str "number"
   | Block StringType -> str "string"
+  | Block Object -> str "object"
   | Block Unknown ->
     (* TODO: clean up pattern mathing algo whih confuses literal with blocks *)
     assert false
@@ -774,6 +775,7 @@ let rec is_a_literal_case ~(literal_cases : Lambda.literal list) ~block_cases (e
   | Lambda.StringType -> { expression_desc = Bin (NotEqEq, typeof e, str "string"); comment=None }
   | IntType -> { expression_desc = Bin (NotEqEq, typeof e, str "number"); comment=None }
   | FloatType -> { expression_desc = Bin (NotEqEq, typeof e, str "number"); comment=None }
+  | Object ->  { expression_desc = Bin (NotEqEq, typeof e, str "object"); comment=None }
   | Unknown ->
     (* We don't know the type of unknown, so we need to express:
        this is not one of the literals *)

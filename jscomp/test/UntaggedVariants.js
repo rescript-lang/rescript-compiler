@@ -76,7 +76,7 @@ var Truthy = {
 };
 
 function classify$1(x) {
-  if (x === null || x === undefined) {
+  if (typeof x !== "object") {
     if (x === null) {
       return "null";
     } else {
@@ -104,7 +104,7 @@ var Unknown = {
 };
 
 function classify$3(x) {
-  if (typeof x !== "number" && typeof x !== "string") {
+  if (typeof x !== "object" && typeof x !== "number" && typeof x !== "string") {
     switch (x) {
       case "A" :
           return "a";
@@ -122,7 +122,7 @@ function classify$3(x) {
           return "string";
       case "number" :
           return "int";
-      case "Object" :
+      case "object" :
           return "Object" + x.name;
       
     }
