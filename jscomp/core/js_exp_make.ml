@@ -771,7 +771,7 @@ let rec is_a_literal_case ~(literal_cases : Lambda.literal list) ~block_cases (e
   let is_literal (l:Lambda.literal) : t =
     { expression_desc = Bin (EqEqEq, e, literal l); comment=None }
      in
-  let is_case (c:Lambda.block_type) : t = match c with
+  let is_block_case (c:Lambda.block_type) : t = match c with
   | Lambda.StringType -> { expression_desc = Bin (NotEqEq, typeof e, str "string"); comment=None }
   | IntType -> { expression_desc = Bin (NotEqEq, typeof e, str "number"); comment=None }
   | FloatType -> { expression_desc = Bin (NotEqEq, typeof e, str "number"); comment=None }
@@ -789,9 +789,9 @@ let rec is_a_literal_case ~(literal_cases : Lambda.literal list) ~block_cases (e
     )
   in
   match block_cases with
-  | [c] -> is_case c
+  | [c] -> is_block_case c
   | c1 :: (_::_ as rest) ->
-    { J.expression_desc = Bin (And, is_case c1, is_a_literal_case ~literal_cases ~block_cases:rest e ); comment = None }
+    { J.expression_desc = Bin (And, is_block_case c1, is_a_literal_case ~literal_cases ~block_cases:rest e ); comment = None }
   | [] -> assert false
 
 let is_tag ?(has_null_undefined_other=(false, false, false)) (e : t) : t =
