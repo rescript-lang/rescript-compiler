@@ -274,10 +274,10 @@ type function_attribute = {
 
 type as_untagged =
   | IntType | StringType | FloatType | Unknown
-type as_value =
+type literal =
   | AsString of string | AsInt of int | AsFloat of string | AsBool of bool | AsNull | AsUndefined
   | AsUntagged of as_untagged
-type cstr_name = {name: string; as_value: as_value option}
+type cstr_name = {name: string; as_value: literal option}
 type block = {cstr_name: cstr_name; tag_name: string option; cstr_untagged : as_untagged option}
 type switch_names = {consts: cstr_name array; blocks: block array}
 

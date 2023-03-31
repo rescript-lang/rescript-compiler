@@ -153,17 +153,30 @@ let get_tag_name (sw_names : Lambda.switch_names option) =
     | _ -> Js_dump_lit.tag
     )
 
-let get_untagged_cases (sw_names : Lambda.switch_names option) =
+let get_block_cases (sw_names : Lambda.switch_names option) =
   let res = ref [] in
   (match sw_names with
   | None -> res := []
   | Some { blocks } ->
-    Array.iter (function
-    | {Lambda.cstr_untagged = Some cstr_untagged} -> res := cstr_untagged :: !res
-    | {Lambda.cstr_untagged = None} -> ()
-    ) blocks
+    Ext_array.iter blocks (function
+    | {cstr_untagged = Some cstr_untagged} -> res := cstr_untagged :: !res
+    | {cstr_untagged = None} -> ()
+    ) 
   );
   !res
+
+let get_literal_cases (sw_names : Lambda.switch_names option) =
+  let res = ref [] in
+  (match sw_names with
+  | None -> res := []
+  | Some { consts  } ->
+    Ext_array.iter consts (function
+    | {as_value = Some as_value} -> res := as_value :: !res
+    | {as_value = None} -> ()
+    )
+  );
+  !res
+
 
 let has_null_undefined_other (sw_names : Lambda.switch_names option) =
   let (null, undefined, other) = (ref false, ref false, ref false) in
@@ -652,7 +665,7 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
   in
   let get_const_name i = get_const_name i sw_names in
   let get_block i = get_block i sw_names in
-  let untagged_cases = get_untagged_cases sw_names in
+  let block_cases = get_block_cases sw_names in
   let get_block_name i = match get_block i with
     | None -> None
     | Some ({cstr_untagged = Some as_untagged} as block) ->
@@ -669,22 +682,22 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
         block
         @
         if sw_consts_full && sw_consts = [] then
-          compile_cases cxt (if untagged_cases <> [] then e else E.tag ~name:tag_name e) sw_blocks sw_blocks_default get_block_name
+          compile_cases cxt (if block_cases <> [] then e else E.tag ~name:tag_name e) sw_blocks sw_blocks_default get_block_name
         else if sw_blocks_full && sw_blocks = [] then
           compile_cases cxt e sw_consts sw_num_default get_const_name
         else
           (* [e] will be used twice  *)
           let dispatch e =
             let is_tag =
-              if untagged_cases <> []
-              then E.is_not_untagged ~untagged_cases:untagged_cases e
+              if block_cases <> []
+              then E.is_not_untagged ~literal_cases:(get_literal_cases sw_names) ~block_cases e
               else
                E.is_tag ~has_null_undefined_other:(has_null_undefined_other sw_names) e in 
             S.if_ is_tag
               (compile_cases cxt e sw_consts sw_num_default get_const_name)
               (* default still needed, could simplified*)
               ~else_:
-                (compile_cases cxt (if untagged_cases <> [] then e else E.tag ~name:tag_name e) sw_blocks sw_blocks_default
+                (compile_cases cxt (if block_cases <> [] then e else E.tag ~name:tag_name e) sw_blocks sw_blocks_default
                    get_block_name)
           in
           match e.expression_desc with
@@ -716,7 +729,7 @@ and compile_string_cases cxt switch_exp table default =
   let value = function
     | as_value -> E.as_value as_value
   in
-  let add_runtime_type_check (as_value: Lambda.as_value) x = match as_value with
+  let add_runtime_type_check (as_value: Lambda.literal) x = match as_value with
   | AsUntagged IntType
   | AsUntagged StringType
   | AsUntagged FloatType -> E.typeof x
@@ -724,7 +737,7 @@ and compile_string_cases cxt switch_exp table default =
     (* This should not happen because unknown must be the only non-literal case *)
     assert false 
   | AsBool _ | AsFloat _ | AsInt _ | AsString _ | AsNull | AsUndefined -> x in
-  let mk_eq (i : Lambda.as_value option) x j y = match i, j with
+  let mk_eq (i : Lambda.literal option) x j y = match i, j with
     | Some as_value, _ ->
       E.string_equal x (add_runtime_type_check as_value y)
     | _, Some as_value ->

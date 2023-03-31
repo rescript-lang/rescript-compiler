@@ -335,7 +335,7 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
   !st
 
 let process_as_value (attrs : t) =
-  let st : Lambda.as_value option ref = ref None in
+  let st : Lambda.literal option ref = ref None in
   Ext_list.iter attrs (fun (({ txt; loc }, payload) as attr) ->
       match txt with
       | "bs.as" | "as" ->

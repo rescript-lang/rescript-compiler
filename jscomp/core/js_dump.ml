@@ -1210,7 +1210,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
       let cxt = P.paren_group f 1 (fun _ -> expression ~level:0 cxt f e) in
       P.space f;
       P.brace_vgroup f 1 (fun _ ->
-          let pp_as_value f (as_value: Lambda.as_value) =
+          let pp_as_value f (as_value: Lambda.literal) =
             let e = E.as_value as_value in
             ignore @@ expression_desc cxt ~level:0 f e.expression_desc in
           let cxt = loop_case_clauses cxt f pp_as_value cc in
