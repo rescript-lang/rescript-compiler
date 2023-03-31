@@ -272,13 +272,13 @@ type function_attribute = {
   async : bool;
 }
 
-type as_untagged =
+type block_type =
   | IntType | StringType | FloatType | Unknown
 type literal =
-  | AsString of string | AsInt of int | AsFloat of string | AsBool of bool | AsNull | AsUndefined
-  | AsUntagged of as_untagged
+  | String of string | Int of int | Float of string | Bool of bool | Null | Undefined
+  | Untagged of block_type
 type cstr_name = {name: string; literal: literal option}
-type block = {cstr_name: cstr_name; tag_name: string option; cstr_untagged : as_untagged option}
+type block = {cstr_name: cstr_name; tag_name: string option; cstr_untagged : block_type option}
 type switch_names = {consts: cstr_name array; blocks: block array}
 
 type lambda =

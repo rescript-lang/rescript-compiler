@@ -184,8 +184,8 @@ let has_null_undefined_other (sw_names : Lambda.switch_names option) =
   | None -> ()
   | Some { consts; blocks } ->
     Ext_array.iter consts (fun x -> match x.literal with
-      | Some AsUndefined -> undefined := true
-      | Some AsNull -> null := true
+      | Some Undefined -> undefined := true
+      | Some Null -> null := true
       | _ -> other := true);
   );
   (!null, !undefined, !other)
@@ -621,7 +621,7 @@ and use_compile_string_cases table get_name =
     match get_name i, acc with
     | Some {Lambda.literal = Some literal}, Some string_table ->
        Some ((literal, lam) :: string_table)
-    | Some {name; literal = None}, Some string_table -> Some ((AsString name, lam) :: string_table)
+    | Some {name; literal = None}, Some string_table -> Some ((String name, lam) :: string_table)
     | _, _ -> None
   ) table (Some [])
 and compile_cases cxt (switch_exp : E.t) table default get_name =
@@ -632,7 +632,7 @@ and compile_cases cxt (switch_exp : E.t) table default get_name =
       compile_general_cases get_name
         (fun i -> match get_name i with
           | None -> E.small_int i
-          | Some {literal = Some(AsString s)} -> E.str s
+          | Some {literal = Some(String s)} -> E.str s
           | Some {name} -> E.str name)
         (fun _ x _ y -> E.int_equal x y) cxt
         (fun ?default ?declaration e clauses ->
@@ -669,7 +669,7 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
   let get_block_name i = match get_block i with
     | None -> None
     | Some ({cstr_untagged = Some as_untagged} as block) ->
-      Some {block.cstr_name with literal = Some (AsUntagged as_untagged)}
+      Some {block.cstr_name with literal = Some (Untagged as_untagged)}
     | Some ({cstr_untagged = None; cstr_name}) ->
       Some cstr_name in
   let tag_name = get_tag_name sw_names in
@@ -730,13 +730,13 @@ and compile_string_cases cxt switch_exp table default =
     | literal -> E.literal literal
   in
   let add_runtime_type_check (literal: Lambda.literal) x = match literal with
-  | AsUntagged IntType
-  | AsUntagged StringType
-  | AsUntagged FloatType -> E.typeof x
-  | AsUntagged Unknown ->
+  | Untagged IntType
+  | Untagged StringType
+  | Untagged FloatType -> E.typeof x
+  | Untagged Unknown ->
     (* This should not happen because unknown must be the only non-literal case *)
     assert false 
-  | AsBool _ | AsFloat _ | AsInt _ | AsString _ | AsNull | AsUndefined -> x in
+  | Bool _ | Float _ | Int _ | String _ | Null | Undefined -> x in
   let mk_eq (i : Lambda.literal option) x j y = match i, j with
     | Some as_value, _ ->
       E.string_equal x (add_runtime_type_check as_value y)
@@ -759,7 +759,7 @@ and compile_stringswitch l cases default (lambda_cxt : Lam_compile_context.t) =
       Be careful: we should avoid multiple evaluation of l,
       The [gen] can be elimiated when number of [cases] is less than 3
   *)
-  let cases = cases |> List.map (fun (s,l) -> Lambda.AsString s, l) in
+  let cases = cases |> List.map (fun (s,l) -> Lambda.String s, l) in
   match
     compile_lambda { lambda_cxt with continuation = NeedValue Not_tail } l
   with

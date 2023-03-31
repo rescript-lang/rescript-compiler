@@ -329,16 +329,16 @@ let float_mod ?comment e1 e2 : J.expression =
   { comment; expression_desc = Bin (Mod, e1, e2) }
 
 let literal = function
-  | Lambda.AsString s -> str s ~delim:DStarJ
-  | AsInt i -> small_int i
-  | AsFloat f -> float f
-  | AsBool b -> bool b
-  | AsNull -> nil
-  | AsUndefined -> undefined
-  | AsUntagged IntType -> str "number"
-  | AsUntagged FloatType -> str "number"
-  | AsUntagged StringType -> str "string"
-  | AsUntagged Unknown ->
+  | Lambda.String s -> str s ~delim:DStarJ
+  | Int i -> small_int i
+  | Float f -> float f
+  | Bool b -> bool b
+  | Null -> nil
+  | Undefined -> undefined
+  | Untagged IntType -> str "number"
+  | Untagged FloatType -> str "number"
+  | Untagged StringType -> str "string"
+  | Untagged Unknown ->
     (* TODO: clean up pattern mathing algo whih confuses literal with blocks *)
     assert false
 
@@ -767,7 +767,7 @@ let is_type_number ?comment (e : t) : t =
   string_equal ?comment (typeof e) (str "number")
 
 let rec is_not_untagged ~(literal_cases : Lambda.literal list) ~block_cases (e:t) : t =
-  let is_case (c:Lambda.as_untagged) : t = match c with
+  let is_case (c:Lambda.block_type) : t = match c with
   | Lambda.StringType -> { expression_desc = Bin (NotEqEq, typeof e, str "string"); comment=None }
   | IntType -> { expression_desc = Bin (NotEqEq, typeof e, str "number"); comment=None }
   | FloatType -> { expression_desc = Bin (NotEqEq, typeof e, str "number"); comment=None }

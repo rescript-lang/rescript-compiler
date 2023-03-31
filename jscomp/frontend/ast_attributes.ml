@@ -344,30 +344,30 @@ let process_as_value (attrs : t) =
             | None -> ()
             | Some (s, _dec) ->
                 Bs_ast_invariant.mark_used_bs_attribute attr;
-                st := Some (AsString s));
+                st := Some (String s));
             (match Ast_payload.is_single_int payload with
             | None -> ()
             | Some i ->
                 Bs_ast_invariant.mark_used_bs_attribute attr;
-                st := Some (AsInt i));
+                st := Some (Int i));
             (match Ast_payload.is_single_float payload with
             | None -> ()
             | Some f ->
                 Bs_ast_invariant.mark_used_bs_attribute attr;
-                st := Some (AsFloat f));
+                st := Some (Float f));
             (match Ast_payload.is_single_bool payload with
             | None -> ()
             | Some b ->
                 Bs_ast_invariant.mark_used_bs_attribute attr;
-                st := Some (AsBool b));
+                st := Some (Bool b));
             (match Ast_payload.is_single_ident payload with
             | None -> ()
             | Some Lident "null" ->
                 Bs_ast_invariant.mark_used_bs_attribute attr;
-                st := Some AsNull
+                st := Some Null
             | Some Lident "undefined" ->
                 Bs_ast_invariant.mark_used_bs_attribute attr;
-                st := Some AsUndefined
+                st := Some Undefined
             |  Some _ -> Bs_syntaxerr.err loc InvalidVariantAsAnnotation);
             if !st = None then Bs_syntaxerr.err loc InvalidVariantAsAnnotation
           )

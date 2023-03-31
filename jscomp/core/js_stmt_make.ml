@@ -136,11 +136,11 @@ let string_switch ?(comment : string option)
         match
           Ext_list.find_opt clauses (fun (switch_case, x) ->
             match switch_case with
-            | AsString s ->
+            | String s ->
               if s = txt then Some x.switch_body else None
-            | AsInt _  | AsFloat _| AsBool _ | AsNull
-            | AsUndefined
-            | AsUntagged _ -> None)
+            | Int _  | Float _| Bool _ | Null
+            | Undefined
+            | Untagged _ -> None)
         with
         | Some case -> case
         | None -> ( match default with Some x -> x | None -> assert false)
