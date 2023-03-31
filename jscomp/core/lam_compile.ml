@@ -624,10 +624,10 @@ and use_compile_string_cases table get_name =
     | Some {name; literal = None}, Some string_table -> Some ((String name, lam) :: string_table)
     | _, _ -> None
   ) table (Some [])
-and compile_cases cxt (switch_exp : E.t) table default get_name =
+and compile_cases ?(add_typeof=false) cxt (switch_exp : E.t) table default get_name =
     match use_compile_string_cases table get_name with
     | Some string_table ->
-      compile_string_cases cxt switch_exp string_table default
+      compile_string_cases ~add_typeof cxt switch_exp string_table default
     | None ->
       compile_general_cases get_name
         (fun i -> match get_name i with
@@ -692,12 +692,12 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
               if block_cases <> []
               then E.is_a_literal_case ~literal_cases:(get_literal_cases sw_names) ~block_cases e
               else
-               E.is_tag ~has_null_undefined_other:(has_null_undefined_other sw_names) e in 
+               E.is_tag ~has_null_undefined_other:(has_null_undefined_other sw_names) e in
             S.if_ is_tag
               (compile_cases cxt e sw_consts sw_num_default get_const_name)
               (* default still needed, could simplified*)
               ~else_:
-                (compile_cases cxt (if block_cases <> [] then e else E.tag ~name:tag_name e) sw_blocks sw_blocks_default
+                (compile_cases ~add_typeof:(block_cases <> []) cxt (if block_cases <> [] then e else E.tag ~name:tag_name e) sw_blocks sw_blocks_default
                    get_block_name)
           in
           match e.expression_desc with
@@ -725,7 +725,7 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
         :: compile_whole { lambda_cxt with continuation = Assign id })
   | EffectCall _ | Assign _ -> Js_output.make (compile_whole lambda_cxt)
 
-and compile_string_cases cxt switch_exp table default =
+and compile_string_cases ?(add_typeof=false) cxt switch_exp table default =
   let literal = function
     | literal -> E.literal literal
   in
@@ -747,10 +747,12 @@ and compile_string_cases cxt switch_exp table default =
   in
   compile_general_cases
     (fun _ -> None)
-    literal mk_eq
+    literal
+    mk_eq
     cxt
     (fun ?default ?declaration e clauses ->
-      S.string_switch ?default ?declaration e clauses)
+      S.string_switch ?default ?declaration
+        (if add_typeof then E.typeof e else e) clauses)
     switch_exp table default
 (* TODO: optional arguments are not good
    for high order currying *)

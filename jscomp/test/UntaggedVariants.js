@@ -117,7 +117,7 @@ function classify$3(x) {
       
     }
   } else {
-    switch (x) {
+    switch (typeof x) {
       case "string" :
           return "string";
       case "number" :
