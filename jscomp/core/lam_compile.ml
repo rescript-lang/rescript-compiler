@@ -159,8 +159,8 @@ let get_block_cases (sw_names : Lambda.switch_names option) =
   | None -> res := []
   | Some { blocks } ->
     Ext_array.iter blocks (function
-    | {cstr_untagged = Some cstr_untagged} -> res := cstr_untagged :: !res
-    | {cstr_untagged = None} -> ()
+    | {block_type = Some block_type} -> res := block_type :: !res
+    | {block_type = None} -> ()
     ) 
   );
   !res
@@ -668,9 +668,9 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
   let block_cases = get_block_cases sw_names in
   let get_block_name i = match get_block i with
     | None -> None
-    | Some ({cstr_untagged = Some as_untagged} as block) ->
-      Some {block.cstr_name with literal = Some (Untagged as_untagged)}
-    | Some ({cstr_untagged = None; cstr_name}) ->
+    | Some ({block_type = Some block_type} as block) ->
+      Some {block.cstr_name with literal = Some (Block block_type)}
+    | Some ({block_type = None; cstr_name}) ->
       Some cstr_name in
   let tag_name = get_tag_name sw_names in
   let compile_whole (cxt : Lam_compile_context.t) =
@@ -730,10 +730,10 @@ and compile_string_cases cxt switch_exp table default =
     | literal -> E.literal literal
   in
   let add_runtime_type_check (literal: Lambda.literal) x = match literal with
-  | Untagged IntType
-  | Untagged StringType
-  | Untagged FloatType -> E.typeof x
-  | Untagged Unknown ->
+  | Block IntType
+  | Block StringType
+  | Block FloatType -> E.typeof x
+  | Block Unknown ->
     (* This should not happen because unknown must be the only non-literal case *)
     assert false 
   | Bool _ | Float _ | Int _ | String _ | Null | Undefined -> x in

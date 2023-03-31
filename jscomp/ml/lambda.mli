@@ -276,9 +276,9 @@ type function_attribute = {
 type block_type = IntType | StringType | FloatType | Unknown
 type literal =
   | String of string | Int of int | Float of string | Bool of bool | Null | Undefined
-  | Untagged of block_type
+  | Block of block_type
 type cstr_name = {name:string; literal: literal option}
-type block = {cstr_name: cstr_name; tag_name: string option; cstr_untagged : block_type option}
+type block = {cstr_name: cstr_name; tag_name: string option; block_type : block_type option}
 type switch_names = {consts: cstr_name array; blocks: block array}
 
 type lambda =

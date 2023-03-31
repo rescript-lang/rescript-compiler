@@ -335,10 +335,10 @@ let literal = function
   | Bool b -> bool b
   | Null -> nil
   | Undefined -> undefined
-  | Untagged IntType -> str "number"
-  | Untagged FloatType -> str "number"
-  | Untagged StringType -> str "string"
-  | Untagged Unknown ->
+  | Block IntType -> str "number"
+  | Block FloatType -> str "number"
+  | Block StringType -> str "string"
+  | Block Unknown ->
     (* TODO: clean up pattern mathing algo whih confuses literal with blocks *)
     assert false
 
