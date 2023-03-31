@@ -768,7 +768,7 @@ let is_type_number ?comment (e : t) : t =
   string_equal ?comment (typeof e) (str "number")
 
 let rec is_a_literal_case ~(literal_cases : Lambda.literal list) ~block_cases (e:t) : t =
-  let is_literal (l:Lambda.literal) : t =
+  let is_literal_case (l:Lambda.literal) : t =
     { expression_desc = Bin (EqEqEq, e, literal l); comment=None }
      in
   let is_block_case (c:Lambda.block_type) : t = match c with
@@ -782,9 +782,9 @@ let rec is_a_literal_case ~(literal_cases : Lambda.literal list) ~block_cases (e
     (match literal_cases with
       | [] -> { expression_desc = Bool true; comment=None}
       | l1 :: others ->
-        let eq1 = is_literal l1 in
-        Ext_list.fold_right others eq1 (fun l eq ->
-          { J.expression_desc = Bin (Or, is_literal l, eq); comment = None }
+        let is_litera_1 = is_literal_case l1 in
+        Ext_list.fold_right others is_litera_1 (fun literal_n acc ->
+          { J.expression_desc = Bin (Or, is_literal_case literal_n, acc); comment = None }
         )
     )
   in
