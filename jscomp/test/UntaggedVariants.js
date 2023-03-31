@@ -91,6 +91,52 @@ var TwoObjects = {
   classify: classify$1
 };
 
+function classify$2(x) {
+  if (typeof x !== "???typ") {
+    if (x === "A") {
+      return "a";
+    } else {
+      return "b";
+    }
+  }
+  console.log(x);
+  return "Unknown";
+}
+
+var Unknown = {
+  classify: classify$2
+};
+
+function classify$3(x) {
+  if (typeof x !== "number" && typeof x !== "string") {
+    switch (x) {
+      case "A" :
+          return "a";
+      case "B" :
+          return "b";
+      case "C" :
+          return "c";
+      case "D" :
+          return "d";
+      
+    }
+  } else {
+    switch (x) {
+      case "string" :
+          return "string";
+      case "number" :
+          return "int";
+      case "Object" :
+          return "Object" + x.name;
+      
+    }
+  }
+}
+
+var MultipleBlocks = {
+  classify: classify$3
+};
+
 var i = 42;
 
 var i2 = 42.5;
@@ -119,4 +165,6 @@ exports.l1 = l1;
 exports.l2 = l2;
 exports.Truthy = Truthy;
 exports.TwoObjects = TwoObjects;
+exports.Unknown = Unknown;
+exports.MultipleBlocks = MultipleBlocks;
 /* l2 Not a pure module */

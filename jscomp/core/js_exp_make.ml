@@ -338,6 +338,9 @@ let as_value = function
   | AsUntagged IntType -> str "number"
   | AsUntagged FloatType -> str "number"
   | AsUntagged StringType -> str "string"
+  | AsUntagged Unknown ->
+    (* TODO: clean up pattern mathing algo whih confuses literal with blocks *)
+    assert false
 
 let array_index ?comment (e0 : t) (e1 : t) : t =
   match (e0.expression_desc, e1.expression_desc) with
@@ -768,6 +771,7 @@ let rec is_not_untagged ~untagged_cases (e:t) : t =
   | Lambda.StringType -> { expression_desc = Bin (NotEqEq, typeof e, str "string"); comment=None }
   | IntType -> { expression_desc = Bin (NotEqEq, typeof e, str "number"); comment=None }
   | FloatType -> { expression_desc = Bin (NotEqEq, typeof e, str "number"); comment=None }
+  | Unknown -> { expression_desc = Bin (NotEqEq, typeof e, str "???typ"); comment=None }
   in
   match untagged_cases with
   | [c] -> is_case c

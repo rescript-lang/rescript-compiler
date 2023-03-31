@@ -66,7 +66,7 @@ module Truthy = {
 }
 
 module TwoObjects = {
-  @unwrapped
+  @unboxed
   type t = | @as(null) Null | Object({name: string}) | @as(undefined) Undefined
 
   let classify = x =>
@@ -74,5 +74,36 @@ module TwoObjects = {
     | Null => "null"
     | Object({name}) => "object" ++ name
     | Undefined => "undefined"
+    }
+}
+
+module Unknown = {
+  @unboxed
+  type t<'a> = A | B | Unknown('a)
+
+  let classify = x =>
+    switch x {
+    | A => "a"
+    | B => "b"
+    | Unknown(v) => {
+        Js.log(x)
+        "Unknown"
+      }
+    }
+}
+
+module MultipleBlocks = {
+  @unboxed
+  type t<'a> = A | B | C | D | String(string) | Int(int) | Object({name: string})
+
+  let classify = x =>
+    switch x {
+    | A => "a"
+    | B => "b"
+    | C => "c"
+    | D => "d"
+    | String(_) => "string"
+    | Int(_) => "int"
+    | Object({name}) => "Object" ++ name
     }
 }

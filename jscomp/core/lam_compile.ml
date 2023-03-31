@@ -720,6 +720,9 @@ and compile_string_cases cxt switch_exp table default =
   | AsUntagged IntType
   | AsUntagged StringType
   | AsUntagged FloatType -> E.typeof x
+  | AsUntagged Unknown ->
+    (* This should not happen because unknown must be the only non-literal case *)
+    assert false 
   | AsBool _ | AsFloat _ | AsInt _ | AsString _ | AsNull | AsUndefined -> x in
   let mk_eq (i : Lambda.as_value option) x j y = match i, j with
     | Some as_value, _ ->
