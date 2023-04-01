@@ -54,26 +54,33 @@ let names_from_construct_pattern (pat : Typedtree.pattern) =
         literal = Ast_attributes.process_as_value cstr.cd_attributes } in
     let get_tag_name (cstr: Types.constructor_declaration) =
       Ast_attributes.process_tag_name cstr.cd_attributes in
-    let get_untagged (cstr: Types.constructor_declaration) =
+    let get_untagged (cstr: Types.constructor_declaration) : Lambda.block_type option =
       match Ast_attributes.process_untagged cstr.cd_attributes, cstr.cd_args with
       | false, _ -> None
       | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path.same path Predef.path_string ->
-          Some Lambda.StringType
+          Some StringType
       | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path.same path Predef.path_int ->
           Some IntType
       | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path.same path Predef.path_float ->
           Some FloatType
       | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path.same path Predef.path_array ->
           Some Array
+      | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path. same path Predef.path_string ->
+          Some StringType
+      | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] ->
+        (match Path.name path with
+        | "Js.Dict.t"
+        | "Js_dict.t" -> Some Object
+        | _ -> Some Unknown)
       | true, Cstr_tuple (_ :: _ :: _) ->
           (* C(_, _) with at least 2 args is an object *)
-          Some Object
-      | true, Cstr_record _ ->
-          (* inline record is an object *)
           Some Object
       | true, Cstr_tuple [_] ->
           (* Every other single payload is unknown *)
           Some Unknown
+      | true, Cstr_record _ ->
+          (* inline record is an object *)
+          Some Object
       | true, _ -> None (* TODO: add restrictions here *)
     in
     let get_block cstr : Lambda.block =

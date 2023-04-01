@@ -168,6 +168,49 @@ var WithArray = {
   classify: classify$5
 };
 
+function classify$6(x) {
+  if (!(x instanceof Array) && typeof x !== "object" && typeof x !== "number" && typeof x !== "string") {
+    switch (x) {
+      case false :
+          return "JSONFalse";
+      case true :
+          return "JSONTrue";
+      case null :
+          return "JSONNull";
+      
+    }
+  } else {
+    if (x instanceof Array) {
+      return {
+              TAG: "JSONArray",
+              _0: x
+            };
+    }
+    switch (typeof x) {
+      case "string" :
+          return {
+                  TAG: "JSONString",
+                  _0: x
+                };
+      case "number" :
+          return {
+                  TAG: "JSONNumber",
+                  _0: x
+                };
+      case "object" :
+          return {
+                  TAG: "JSONObject",
+                  _0: x
+                };
+      
+    }
+  }
+}
+
+var Json = {
+  classify: classify$6
+};
+
 var i = 42;
 
 var i2 = 42.5;
@@ -200,4 +243,5 @@ exports.Unknown = Unknown;
 exports.MultipleBlocks = MultipleBlocks;
 exports.OnlyBlocks = OnlyBlocks;
 exports.WithArray = WithArray;
+exports.Json = Json;
 /* l2 Not a pure module */

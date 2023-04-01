@@ -772,14 +772,12 @@ let is_type_number ?comment (e : t) : t =
   string_equal ?comment (typeof e) (str "number")
 
 let rec is_a_literal_case ~(literal_cases : Lambda.literal list) ~block_cases (e:t) : t =
-  let is_literal_case (l:Lambda.literal) : t =
-    { expression_desc = Bin (EqEqEq, e, literal l); comment=None }
-     in
+  let is_literal_case (l:Lambda.literal) : t = bin EqEqEq e (literal l) in
   let is_block_case (c:Lambda.block_type) : t = match c with
-  | Lambda.StringType -> { expression_desc = Bin (NotEqEq, typeof e, str "string"); comment=None }
-  | IntType -> { expression_desc = Bin (NotEqEq, typeof e, str "number"); comment=None }
-  | FloatType -> { expression_desc = Bin (NotEqEq, typeof e, str "number"); comment=None }
-  | Array ->  { expression_desc = Bin (InstanceOf, e, str "object"); comment=None }
+  | StringType -> bin NotEqEq (typeof e) (str "string")
+  | IntType -> bin NotEqEq (typeof e) (str "number")
+  | FloatType -> bin NotEqEq (typeof e) (str "number")
+  | Array ->  not (bin InstanceOf e (str "Array" ~delim:DNoQuotes))
   | Object ->  { expression_desc = Bin (NotEqEq, typeof e, str "object"); comment=None }
   | Unknown ->
     (* We don't know the type of unknown, so we need to express:
@@ -787,16 +785,16 @@ let rec is_a_literal_case ~(literal_cases : Lambda.literal list) ~block_cases (e
     (match literal_cases with
       | [] -> { expression_desc = Bool true; comment=None}
       | l1 :: others ->
-        let is_litera_1 = is_literal_case l1 in
-        Ext_list.fold_right others is_litera_1 (fun literal_n acc ->
-          { J.expression_desc = Bin (Or, is_literal_case literal_n, acc); comment = None }
+        let is_literal_1 = is_literal_case l1 in
+        Ext_list.fold_right others is_literal_1 (fun literal_n acc ->
+          bin Or (is_literal_case literal_n) acc
         )
     )
   in
   match block_cases with
   | [c] -> is_block_case c
   | c1 :: (_::_ as rest) ->
-    { J.expression_desc = Bin (And, is_block_case c1, is_a_literal_case ~literal_cases ~block_cases:rest e ); comment = None }
+    bin And (is_block_case c1) (is_a_literal_case ~literal_cases ~block_cases:rest e)
   | [] -> assert false
 
 let is_tag ?(has_null_undefined_other=(false, false, false)) (e : t) : t =

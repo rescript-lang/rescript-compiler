@@ -122,14 +122,64 @@ module OnlyBlocks = {
 
 module WithArray = {
   @unboxed
-  type t<'a> = String(string) | Float(float) | Array(array<string>)| Object({name: string}) 
+  type t<'a> = String(string) | Float(float) | Array(array<string>) | Object({name: string})
 
   let classify = x =>
     switch x {
     | String(_) => "string"
     | Float(_) => "int"
-    | Array(_) when true => "array"
+    | Array(_) if true => "array"
     | Array(_) => "array"
     | Object({name}) => "Object" ++ name
     }
+}
+
+module Json = {
+  @unboxed
+  type rec t =
+    | @as(false) False
+    | @as(true) True
+    | @as(null) Null
+    | String(string)
+    | Number(float)
+    | Object(Js.Dict.t<t>)
+    | Array(array<t>)
+
+  type tagged_t =
+    | JSONFalse
+    | JSONTrue
+    | JSONNull
+    | JSONString(string)
+    | JSONNumber(float)
+    | JSONObject(Js.Dict.t<t>)
+    | JSONArray(array<t>)
+
+  let classify = (x: t) =>
+    switch x {
+    | False => JSONFalse
+    | True => JSONTrue
+    | Null => JSONNull
+    | String(s) => JSONString(s)
+    | Number(n) => JSONNumber(n)
+    | Object(o) => JSONObject(o)
+    | Array(a) => JSONArray(a)
+    }
+
+  /* from js_json.ml
+let classify  (x : t) : tagged_t =
+  let ty = Js.typeof x in
+  if ty = "string" then
+    JSONString (Obj.magic x)
+  else if ty = "number" then
+    JSONNumber (Obj.magic x )
+  else if ty = "boolean" then
+    if (Obj.magic x) = true then JSONTrue
+    else JSONFalse
+  else if (Obj.magic x) == Js.null then
+    JSONNull
+  else if Js_array2.isArray x  then
+    JSONArray (Obj.magic x)
+  else
+    JSONObject (Obj.magic x)  
+ */
 }
