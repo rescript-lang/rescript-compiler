@@ -173,6 +173,9 @@ let typeof ?comment (e : t) : t =
   | Bool _ -> str ?comment L.js_type_boolean
   | _ -> { expression_desc = Typeof e; comment }
 
+let instanceof ?comment (e0 : t) (e1: t) : t =
+  { expression_desc = Bin (InstanceOf, e0, e1); comment }
+
 let new_ ?comment e0 args : t =
   { expression_desc = New (e0, Some args); comment }
 
@@ -338,6 +341,7 @@ let literal = function
   | Block IntType -> str "number"
   | Block FloatType -> str "number"
   | Block StringType -> str "string"
+  | Block Array -> str "Array" ~delim:DNoQuotes
   | Block Object -> str "object"
   | Block Unknown ->
     (* TODO: clean up pattern mathing algo whih confuses literal with blocks *)
@@ -775,6 +779,7 @@ let rec is_a_literal_case ~(literal_cases : Lambda.literal list) ~block_cases (e
   | Lambda.StringType -> { expression_desc = Bin (NotEqEq, typeof e, str "string"); comment=None }
   | IntType -> { expression_desc = Bin (NotEqEq, typeof e, str "number"); comment=None }
   | FloatType -> { expression_desc = Bin (NotEqEq, typeof e, str "number"); comment=None }
+  | Array ->  { expression_desc = Bin (InstanceOf, e, str "object"); comment=None }
   | Object ->  { expression_desc = Bin (NotEqEq, typeof e, str "object"); comment=None }
   | Unknown ->
     (* We don't know the type of unknown, so we need to express:

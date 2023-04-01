@@ -749,25 +749,36 @@ and compile_untagged_cases cxt switch_exp table default =
   | Block StringType
   | Block FloatType
   | Block Object -> E.typeof x
+  | Block Array -> assert false
   | Block Unknown ->
     (* This should not happen because unknown must be the only non-literal case *)
     assert false 
   | Bool _ | Float _ | Int _ | String _ | Null | Undefined -> x in
   let mk_eq (i : Lambda.literal option) x j y = match i, j with
-    | Some as_value, _ ->
-      E.string_equal x (add_runtime_type_check as_value y)
-    | _, Some as_value ->
-      E.string_equal (add_runtime_type_check as_value x) y
+    | Some literal, _ ->
+      E.string_equal x (add_runtime_type_check literal y)
+    | _, Some literal ->
+      E.string_equal (add_runtime_type_check literal x) y
     | _ -> E.string_equal x y
   in
+  let is_array (l, _) = l = Lambda.Block Array in
+  let body ?default ?declaration e clauses =
+    let array_clauses = Ext_list.filter clauses is_array in
+    match array_clauses with
+    | [(l, {J.switch_body})] when List.length clauses > 1 ->
+      let rest = Ext_list.filter clauses (fun c -> not (is_array c)) in
+      S.if_ (E.instanceof e (E.literal l))
+        (switch_body)
+        ~else_:([S.string_switch ?default ?declaration (E.typeof e) rest])
+    | _ :: _ :: _ -> assert false (* at most 1 array case *)
+    | _ ->
+      S.string_switch ?default ?declaration (E.typeof e) clauses in
   compile_general_cases
     (fun _ -> None)
     literal
     mk_eq
     cxt
-    (fun ?default ?declaration e clauses ->
-      S.string_switch ?default ?declaration
-        (E.typeof e) clauses)
+    body
     switch_exp table default
 
 and compile_stringswitch l cases default (lambda_cxt : Lam_compile_context.t) =

@@ -273,7 +273,7 @@ type function_attribute = {
 }
 
 type block_type =
-  | IntType | StringType | FloatType | Object | Unknown
+  | IntType | StringType | FloatType | Array | Object | Unknown
 type literal =
   | String of string | Int of int | Float of string | Bool of bool | Null | Undefined
   | Block of block_type

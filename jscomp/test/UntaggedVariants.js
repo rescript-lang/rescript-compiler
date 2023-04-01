@@ -149,6 +149,25 @@ var OnlyBlocks = {
   classify: classify$4
 };
 
+function classify$5(x) {
+  if (x instanceof Array) {
+    return "array";
+  }
+  switch (typeof x) {
+    case "string" :
+        return "string";
+    case "number" :
+        return "int";
+    case "object" :
+        return "Object" + x.name;
+    
+  }
+}
+
+var WithArray = {
+  classify: classify$5
+};
+
 var i = 42;
 
 var i2 = 42.5;
@@ -180,4 +199,5 @@ exports.TwoObjects = TwoObjects;
 exports.Unknown = Unknown;
 exports.MultipleBlocks = MultipleBlocks;
 exports.OnlyBlocks = OnlyBlocks;
+exports.WithArray = WithArray;
 /* l2 Not a pure module */

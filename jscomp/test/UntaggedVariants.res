@@ -119,3 +119,17 @@ module OnlyBlocks = {
     | Object({name}) => "Object" ++ name
     }
 }
+
+module WithArray = {
+  @unboxed
+  type t<'a> = String(string) | Float(float) | Array(array<string>)| Object({name: string}) 
+
+  let classify = x =>
+    switch x {
+    | String(_) => "string"
+    | Float(_) => "int"
+    | Array(_) when true => "array"
+    | Array(_) => "array"
+    | Object({name}) => "Object" ++ name
+    }
+}

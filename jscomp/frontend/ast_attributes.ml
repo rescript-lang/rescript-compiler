@@ -315,7 +315,7 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
                       | Some delim -> delim
                     in
                     st := Some (Str (s, delim));
-                    if delim = DJson then
+                    if delim = DNoQuotes then
                       (* check that it is a valid object literal *)
                       match
                         Classify_function.classify

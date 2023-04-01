@@ -211,6 +211,7 @@ val is_type_string : ?comment:string -> t -> t
 val is_type_object : t -> t
 
 val typeof : ?comment:string -> t -> t
+val instanceof : ?comment:string -> t -> t -> t
 
 val to_int32 : ?comment:string -> t -> t
 

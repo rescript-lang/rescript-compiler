@@ -273,7 +273,7 @@ type function_attribute = {
   async : bool;
 }
 
-type block_type = IntType | StringType | FloatType | Object | Unknown
+type block_type = IntType | StringType | FloatType | Array | Object | Unknown
 type literal =
   | String of string | Int of int | Float of string | Bool of bool | Null | Undefined
   | Block of block_type

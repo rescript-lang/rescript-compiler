@@ -26,19 +26,26 @@ let is_nullary_variant (x : Types.constructor_arguments) =
   match x with Types.Cstr_tuple [] -> true | _ -> false
 
 let checkUntaggedVariant ~(blocks : (Location.t * Lambda.block) list) =
+  let arrays = ref 0 in
   let objects = ref 0 in
   let unknowns = ref 0 in
   let invariant loc =
     if !unknowns <> 0 && (List.length blocks <> 1)
       then Bs_syntaxerr.err loc InvalidUntaggedVariantDefinition;
-    if !unknowns + !objects > 1
-      then Bs_syntaxerr.err loc InvalidUntaggedVariantDefinition in
+    if !unknowns = 1 && !objects + !arrays > 0
+      then Bs_syntaxerr.err loc InvalidUntaggedVariantDefinition;
+    if !objects > 1 || !arrays > 1
+      then Bs_syntaxerr.err loc InvalidUntaggedVariantDefinition;
+    () in
   Ext_list.rev_iter blocks (fun (loc, block) -> match block.block_type with
     | Some Unknown ->
       incr unknowns;
       invariant loc
     | Some Object ->
       incr objects;
+      invariant loc
+    | Some Array ->
+      incr arrays;
       invariant loc
     | _ -> ())
   
@@ -58,6 +65,8 @@ let names_from_construct_pattern (pat : Typedtree.pattern) =
           Some IntType
       | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path.same path Predef.path_float ->
           Some FloatType
+      | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path.same path Predef.path_array ->
+          Some Array
       | true, Cstr_tuple (_ :: _ :: _) ->
           (* C(_, _) with at least 2 args is an object *)
           Some Object
