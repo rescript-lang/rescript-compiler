@@ -32,8 +32,6 @@ let checkUntaggedVariant ~(blocks : (Location.t * Lambda.block) list) =
   let invariant loc =
     if !unknowns <> 0 && (List.length blocks <> 1)
       then Bs_syntaxerr.err loc InvalidUntaggedVariantDefinition;
-    if !unknowns = 1 && !objects + !arrays > 0
-      then Bs_syntaxerr.err loc InvalidUntaggedVariantDefinition;
     if !objects > 1 || !arrays > 1
       then Bs_syntaxerr.err loc InvalidUntaggedVariantDefinition;
     () in
