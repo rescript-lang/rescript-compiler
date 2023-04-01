@@ -749,7 +749,7 @@ and compile_untagged_cases cxt switch_exp table default =
   | Block StringType
   | Block FloatType
   | Block Object -> E.string_equal (E.typeof y) x 
-  | Block Array -> E.instanceof x y
+  | Block Array -> E.instanceof y x
   | Block Unknown ->
     (* This should not happen because unknown must be the only non-literal case *)
     assert false 
