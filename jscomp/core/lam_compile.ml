@@ -744,21 +744,21 @@ and compile_untagged_cases cxt switch_exp table default =
   let literal = function
     | literal -> E.literal literal
   in
-  let add_runtime_type_check (literal: Lambda.literal) x = match literal with
+  let add_runtime_type_check (literal: Lambda.literal) x y = match literal with
   | Block IntType
   | Block StringType
   | Block FloatType
-  | Block Object -> E.typeof x
-  | Block Array -> assert false
+  | Block Object -> E.string_equal (E.typeof y) x 
+  | Block Array -> E.instanceof x y
   | Block Unknown ->
     (* This should not happen because unknown must be the only non-literal case *)
     assert false 
   | Bool _ | Float _ | Int _ | String _ | Null | Undefined -> x in
   let mk_eq (i : Lambda.literal option) x j y = match i, j with
-    | Some literal, _ ->
-      E.string_equal x (add_runtime_type_check literal y)
+    | Some literal, _ -> (* XX *)
+      add_runtime_type_check literal x y
     | _, Some literal ->
-      E.string_equal (add_runtime_type_check literal x) y
+      add_runtime_type_check literal y x
     | _ -> E.string_equal x y
   in
   let is_array (l, _) = l = Lambda.Block Array in
