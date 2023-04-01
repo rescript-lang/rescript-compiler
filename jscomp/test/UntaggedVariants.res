@@ -107,3 +107,15 @@ module MultipleBlocks = {
     | Object({name}) => "Object" ++ name
     }
 }
+
+module OnlyBlocks = {
+  @unboxed
+  type t<'a> = String(string) | Int(int) | Object({name: string})
+
+  let classify = x =>
+    switch x {
+    | String(_) => "string"
+    | Int(_) => "int"
+    | Object({name}) => "Object" ++ name
+    }
+}

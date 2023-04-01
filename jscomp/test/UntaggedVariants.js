@@ -133,6 +133,22 @@ var MultipleBlocks = {
   classify: classify$3
 };
 
+function classify$4(x) {
+  switch (typeof x) {
+    case "string" :
+        return "string";
+    case "number" :
+        return "int";
+    case "object" :
+        return "Object" + x.name;
+    
+  }
+}
+
+var OnlyBlocks = {
+  classify: classify$4
+};
+
 var i = 42;
 
 var i2 = 42.5;
@@ -163,4 +179,5 @@ exports.Truthy = Truthy;
 exports.TwoObjects = TwoObjects;
 exports.Unknown = Unknown;
 exports.MultipleBlocks = MultipleBlocks;
+exports.OnlyBlocks = OnlyBlocks;
 /* l2 Not a pure module */
