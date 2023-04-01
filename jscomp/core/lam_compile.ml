@@ -616,7 +616,7 @@ and compile_general_cases :
 
           [ switch ?default ?declaration switch_exp body ])
 
-and use_compile_string_cases table get_name =
+and use_compile_literal_cases table get_name =
   List.fold_right (fun (i, lam) acc ->
     match get_name i, acc with
     | Some {Lambda.literal = Some literal}, Some string_table ->
@@ -624,10 +624,12 @@ and use_compile_string_cases table get_name =
     | Some {name; literal = None}, Some string_table -> Some ((String name, lam) :: string_table)
     | _, _ -> None
   ) table (Some [])
-and compile_cases ?(add_typeof=false) cxt (switch_exp : E.t) table default get_name =
-    match use_compile_string_cases table get_name with
+and compile_cases ?(untagged=false) cxt (switch_exp : E.t) table default get_name =
+    match use_compile_literal_cases table get_name with
     | Some string_table ->
-      compile_string_cases ~add_typeof cxt switch_exp string_table default
+      if untagged
+      then compile_untagged_cases cxt switch_exp string_table default
+      else compile_string_cases cxt switch_exp string_table default
     | None ->
       compile_general_cases get_name
         (fun i -> match get_name i with
@@ -673,6 +675,7 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
     | Some ({block_type = None; cstr_name}) ->
       Some cstr_name in
   let tag_name = get_tag_name sw_names in
+  let untagged = block_cases <> [] in
   let compile_whole (cxt : Lam_compile_context.t) =
     match
       compile_lambda { cxt with continuation = NeedValue Not_tail } switch_arg
@@ -682,7 +685,7 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
         block
         @
         if sw_consts_full && sw_consts = [] then
-          compile_cases cxt (if block_cases <> [] then e else E.tag ~name:tag_name e) sw_blocks sw_blocks_default get_block_name
+          compile_cases ~untagged cxt (if untagged then e else E.tag ~name:tag_name e) sw_blocks sw_blocks_default get_block_name
         else if sw_blocks_full && sw_blocks = [] then
           compile_cases cxt e sw_consts sw_num_default get_const_name
         else
@@ -697,7 +700,7 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
               (compile_cases cxt e sw_consts sw_num_default get_const_name)
               (* default still needed, could simplified*)
               ~else_:
-                (compile_cases ~add_typeof:(block_cases <> []) cxt (if block_cases <> [] then e else E.tag ~name:tag_name e) sw_blocks sw_blocks_default
+                (compile_cases ~untagged cxt (if untagged then e else E.tag ~name:tag_name e) sw_blocks sw_blocks_default
                    get_block_name)
           in
           match e.expression_desc with
@@ -725,7 +728,19 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
         :: compile_whole { lambda_cxt with continuation = Assign id })
   | EffectCall _ | Assign _ -> Js_output.make (compile_whole lambda_cxt)
 
-and compile_string_cases ?(add_typeof=false) cxt switch_exp table default =
+and compile_string_cases cxt switch_exp table default =
+  let literal = function
+    | literal -> E.literal literal
+  in
+  compile_general_cases
+    (fun _ -> None)
+    literal
+    (fun _ x _ y -> E.string_equal x y)
+    cxt
+    (fun ?default ?declaration e clauses ->
+      S.string_switch ?default ?declaration e clauses)
+    switch_exp table default
+and compile_untagged_cases cxt switch_exp table default =
   let literal = function
     | literal -> E.literal literal
   in
@@ -752,10 +767,8 @@ and compile_string_cases ?(add_typeof=false) cxt switch_exp table default =
     cxt
     (fun ?default ?declaration e clauses ->
       S.string_switch ?default ?declaration
-        (if add_typeof then E.typeof e else e) clauses)
+        (E.typeof e) clauses)
     switch_exp table default
-(* TODO: optional arguments are not good
-   for high order currying *)
 
 and compile_stringswitch l cases default (lambda_cxt : Lam_compile_context.t) =
   (* TODO might better optimization according to the number of cases
