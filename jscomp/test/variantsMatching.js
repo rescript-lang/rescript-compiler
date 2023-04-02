@@ -278,7 +278,7 @@ function isWhyNot(x) {
 }
 
 function plus$3(x, y) {
-  if (x === null || x === undefined) {
+  if (x === undefined || x === null || x === "WhyNotAnotherOne") {
     switch (x) {
       case null :
       case undefined :
@@ -287,13 +287,13 @@ function plus$3(x, y) {
           break;
       
     }
-  } else if (!(y === null || y === undefined)) {
+  } else if (!(y === undefined || y === null || y === "WhyNotAnotherOne")) {
     return {
             x: x.x + y.x,
             y: x.y + y.y
           };
   }
-  if (!(y === null || y === undefined)) {
+  if (!(y === undefined || y === null || y === "WhyNotAnotherOne")) {
     return "WhyNotAnotherOne";
   }
   switch (y) {
@@ -307,7 +307,7 @@ function plus$3(x, y) {
 }
 
 function kind$1(x) {
-  if (!(x === null || x === undefined)) {
+  if (!(x === undefined || x === null || x === "WhyNotAnotherOne")) {
     return "present";
   }
   switch (x) {

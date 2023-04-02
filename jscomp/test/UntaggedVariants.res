@@ -183,3 +183,16 @@ let classify  (x : t) : tagged_t =
     JSONObject (Obj.magic x)  
  */
 }
+
+module TrickyNested = {
+  @unboxed
+  type rec t =
+    | A((t, t))
+    | B
+
+  let check = (s, y) =>
+    switch s {
+    | A((A(x), B)) if x !== y => 41
+    | _ => 42
+    }
+}

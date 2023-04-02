@@ -172,7 +172,7 @@ let get_literal_cases (sw_names : Lambda.switch_names option) =
   | Some { consts  } ->
     Ext_array.iter consts (function
     | {literal = Some literal} -> res := literal :: !res
-    | {literal = None} -> ()
+    | {name; literal = None} -> res := String name :: !res
     )
   );
   !res
@@ -691,14 +691,14 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
         else
           (* [e] will be used twice  *)
           let dispatch e =
-            let is_tag =
+            let is_a_literal_case =
               if block_cases <> []
-              then E.is_a_literal_case ~literal_cases:(get_literal_cases sw_names) ~block_cases e
+              then
+                E.is_a_literal_case ~literal_cases:(get_literal_cases sw_names) ~block_cases e
               else
-               E.is_tag ~has_null_undefined_other:(has_null_undefined_other sw_names) e in
-            S.if_ is_tag
+               E.is_int_tag ~has_null_undefined_other:(has_null_undefined_other sw_names) e in
+            S.if_ is_a_literal_case
               (compile_cases cxt e sw_consts sw_num_default get_const_name)
-              (* default still needed, could simplified*)
               ~else_:
                 (compile_cases ~untagged cxt (if untagged then e else E.tag ~name:tag_name e) sw_blocks sw_blocks_default
                    get_block_name)

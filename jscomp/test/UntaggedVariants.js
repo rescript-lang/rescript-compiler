@@ -92,11 +92,15 @@ var TwoObjects = {
 };
 
 function classify$2(x) {
-  if (x === "A") {
-    return "a";
-  } else {
-    return "b";
+  if (x === "A" || x === "B") {
+    if (x === "A") {
+      return "a";
+    } else {
+      return "b";
+    }
   }
+  console.log(x);
+  return "Unknown";
 }
 
 var Unknown = {
@@ -211,6 +215,26 @@ var Json = {
   classify: classify$6
 };
 
+function check(s, y) {
+  if (s === "B") {
+    return 42;
+  }
+  var x = s[0];
+  if (x === "B") {
+    return 42;
+  }
+  var tmp = s[1];
+  if (tmp === "B" && x !== y) {
+    return 41;
+  } else {
+    return 42;
+  }
+}
+
+var TrickyNested = {
+  check: check
+};
+
 var i = 42;
 
 var i2 = 42.5;
@@ -244,4 +268,5 @@ exports.MultipleBlocks = MultipleBlocks;
 exports.OnlyBlocks = OnlyBlocks;
 exports.WithArray = WithArray;
 exports.Json = Json;
+exports.TrickyNested = TrickyNested;
 /* l2 Not a pure module */

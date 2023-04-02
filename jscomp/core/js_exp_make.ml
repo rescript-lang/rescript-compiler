@@ -783,7 +783,9 @@ let rec is_a_literal_case ~(literal_cases : Lambda.literal list) ~block_cases (e
     (* We don't know the type of unknown, so we need to express:
        this is not one of the literals *)
     (match literal_cases with
-      | [] -> { expression_desc = Bool true; comment=None}
+      | [] ->
+        (* this should not happen *)
+        assert false
       | l1 :: others ->
         let is_literal_1 = is_literal_case l1 in
         Ext_list.fold_right others is_literal_1 (fun literal_n acc ->
@@ -797,7 +799,7 @@ let rec is_a_literal_case ~(literal_cases : Lambda.literal list) ~block_cases (e
     bin And (is_block_case c1) (is_a_literal_case ~literal_cases ~block_cases:rest e)
   | [] -> assert false
 
-let is_tag ?(has_null_undefined_other=(false, false, false)) (e : t) : t =
+let is_int_tag ?(has_null_undefined_other=(false, false, false)) (e : t) : t =
   let (has_null, has_undefined, has_other) = has_null_undefined_other in
   if has_null && (has_undefined = false) && (has_other = false) then (* null *)
     { expression_desc = Bin (EqEqEq, e, nil); comment=None }
