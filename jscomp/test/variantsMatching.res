@@ -107,7 +107,7 @@ module CustomizeTags = {
 }
 
 module MyUndefined = {
-  @unboxed
+  @genType @unboxed
   type t<'a> = | @as(undefined) Undefined | Present('a)
   // Note: 'a must not have undefined as value
   // There can be only one with payload, with 1 argument, to use unboxed
@@ -125,7 +125,7 @@ module MyUndefined = {
 }
 
 module MyNull = {
-  @unboxed
+  @genType @unboxed
   type t<'a> = | @as(null) Null | Present('a)
   // Note: 'a must not have null as value
   // There can be only one with payload, with 1 argument, to use unboxed
@@ -143,7 +143,7 @@ module MyNull = {
 }
 
 module MyNullable = {
-  @unboxed
+  @genType @unboxed
   type t<'a> =
     | @as(null) Null
     | @as(undefined) Undefined
@@ -176,7 +176,7 @@ module MyNullable = {
 }
 
 module MyNullableExtended = {
-  @unboxed
+  @genType @unboxed
   type t<'a> =
     | @as(null) Null
     | @as(undefined) Undefined

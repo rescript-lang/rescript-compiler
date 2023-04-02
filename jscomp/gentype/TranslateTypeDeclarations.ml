@@ -26,9 +26,9 @@ let createCase (label, attributes) =
       (match
          attributes |> Annotation.getAttributePayload Annotation.tagIsAs
        with
-       | Some (_, IdentPayload (Lident "null")) -> NullLabel
-       | Some (_, IdentPayload (Lident "undefined")) -> UndefinedLabel
-       | Some (_, BoolPayload b) -> BoolLabel b
+      | Some (_, IdentPayload (Lident "null")) -> NullLabel
+      | Some (_, IdentPayload (Lident "undefined")) -> UndefinedLabel
+      | Some (_, BoolPayload b) -> BoolLabel b
       | Some (_, FloatPayload s) -> FloatLabel s
       | Some (_, IntPayload i) -> IntLabel i
       | Some (_, StringPayload asLabel) -> StringLabel asLabel
@@ -197,7 +197,7 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
           else variant.payloads
         in
         createVariant ~bsStringOrInt:false ~inherits:variant.inherits
-          ~noPayloads ~payloads ~polymorphic:true
+          ~noPayloads ~payloads ~polymorphic:true ~unboxed:false
       | _ -> translation.type_
     in
     {translation with type_} |> handleGeneralDeclaration
@@ -311,11 +311,8 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
              })
     in
     let variantTyp =
-      match (noPayloads, payloads) with
-      | [], [{t = type_}] when unboxedAnnotation -> type_
-      | _ ->
-        createVariant ~bsStringOrInt:false ~inherits:[] ~noPayloads ~payloads
-          ~polymorphic:false
+      createVariant ~bsStringOrInt:false ~inherits:[] ~noPayloads ~payloads
+        ~polymorphic:false ~unboxed:unboxedAnnotation
     in
     let resolvedTypeName = typeName |> TypeEnv.addModulePath ~typeEnv in
     let exportFromTypeDeclaration =

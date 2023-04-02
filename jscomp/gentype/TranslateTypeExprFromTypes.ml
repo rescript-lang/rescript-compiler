@@ -146,7 +146,7 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
             case 0 "Ok" paramTranslation1.type_;
             case 1 "Error" paramTranslation2.type_;
           ]
-        ~polymorphic:false
+        ~polymorphic:false ~unboxed:false
     in
     {
       dependencies =
@@ -408,7 +408,7 @@ and translateTypeExprFromTypes_ ~config ~typeVarsGen ~typeEnv
       in
       let type_ =
         createVariant ~bsStringOrInt:false ~inherits:[] ~noPayloads ~payloads:[]
-          ~polymorphic:true
+          ~polymorphic:true ~unboxed:false
       in
       {dependencies = []; type_}
     | {noPayloads = []; payloads = [(_label, t)]; unknowns = []} ->
@@ -439,7 +439,7 @@ and translateTypeExprFromTypes_ ~config ~typeVarsGen ~typeEnv
       in
       let type_ =
         createVariant ~bsStringOrInt:false ~inherits:[] ~noPayloads ~payloads
-          ~polymorphic:true
+          ~polymorphic:true ~unboxed:false
       in
       let dependencies =
         payloadTranslations
