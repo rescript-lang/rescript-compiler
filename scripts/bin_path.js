@@ -12,6 +12,11 @@ var path = require("path");
 var binDirName =
   process.arch === "x64" ? process.platform : process.platform + process.arch;
 
+// Deactivate support for macos-arm for now
+if (binDirName === "darwinarm64") {
+  binDirName = "darwin";
+}
+
 /**
  *
  * @type{string}
