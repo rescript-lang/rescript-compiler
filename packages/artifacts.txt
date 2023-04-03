@@ -9,10 +9,6 @@ darwin/bsb_helper.exe
 darwin/bsc.exe
 darwin/ninja.exe
 darwin/rescript.exe
-darwinarm64/bsb_helper.exe
-darwinarm64/bsc.exe
-darwinarm64/ninja.exe
-darwinarm64/rescript.exe
 docs/docson/build-schema.json
 lib/bstracing
 lib/cmi_cache.bin

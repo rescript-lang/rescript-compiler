@@ -29,7 +29,6 @@
     "bsc",
     "rescript",
     "darwin",
-    "darwinarm64",
     "linux",
     "linuxarm64",
     "win32",
