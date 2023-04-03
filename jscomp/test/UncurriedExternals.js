@@ -71,6 +71,13 @@ var StandardNotation = {
   set: StandardNotation_set
 };
 
+function methodWithAsync(param) {
+  var $$this = this ;
+  return (async function (arg) {
+              return $$this + arg | 0;
+            })(param);
+}
+
 function dd$1(param) {
   throw {
         RE_EXN_ID: "Not_found",
@@ -120,11 +127,19 @@ var match$1 = React.useState(function (param) {
       return 3;
     });
 
+function methodWithAsyncU() {
+  var $$this = this ;
+  return async function (arg) {
+    return $$this + arg | 0;
+  };
+}
+
 var get = match$1[0];
 
 var set = match$1[1];
 
 exports.StandardNotation = StandardNotation;
+exports.methodWithAsync = methodWithAsync;
 exports.dd = dd$1;
 exports.h = h$1;
 exports.M = M$1;
@@ -138,4 +153,5 @@ exports.tsiC = tsiC$1;
 exports.tsiU = tsiU$1;
 exports.get = get;
 exports.set = set;
+exports.methodWithAsyncU = methodWithAsyncU;
 /* h Not a pure module */

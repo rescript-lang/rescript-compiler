@@ -34,18 +34,18 @@ let to_method_callback loc (self : Bs_ast_mapper.mapper) label
   Bs_syntaxerr.optional_err loc label;
   let rec aux acc (body : Parsetree.expression) =
     match Ast_attributes.process_attributes_rev body.pexp_attributes with
-    | Nothing, _ -> (
+    | Nothing, attrs -> (
         match body.pexp_desc with
         | Pexp_fun (arg_label, _, arg, body) ->
             Bs_syntaxerr.optional_err loc arg_label;
-            aux ((arg_label, self.pat self arg) :: acc) body
+            aux ((arg_label, self.pat self arg, attrs) :: acc) body
         | _ -> (self.expr self body, acc))
     | _, _ -> (self.expr self body, acc)
   in
-  let result, rev_extra_args = aux [ (label, self_pat) ] body in
+  let result, rev_extra_args = aux [ (label, self_pat, []) ] body in
   let body =
-    Ext_list.fold_left rev_extra_args result (fun e (label, p) ->
-        Ast_helper.Exp.fun_ ~loc label None p e)
+    Ext_list.fold_left rev_extra_args result (fun e (label, p, attrs) ->
+        Ast_helper.Exp.fun_ ~loc ~attrs label None p e)
   in
   let arity = List.length rev_extra_args in
   let arity_s = string_of_int arity in
