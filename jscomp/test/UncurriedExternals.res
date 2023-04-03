@@ -39,6 +39,8 @@ module StandardNotation = {
   let (get, set) = useState(() => 3)
 }
 
+let methodWithAsync = @this this => async arg => this + arg
+
 @@uncurried.swap
 
 external raise: exn => 'a = "%raise"
@@ -78,3 +80,5 @@ let tsiU = c => setIncrementU(c, @this (me, amount) => Js.log(. me))
 @module("react")
 external useState: (@uncurry (unit => 'state)) => ('state, ('state => 'state) => unit) = "useState"
 let (get, set) = useState(() => 3)
+
+let methodWithAsyncU = @this this => async arg => this + arg
