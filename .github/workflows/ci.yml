@@ -104,8 +104,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # os: [macos-latest, ubuntu-latest, windows-latest, macos-arm]
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [macos-latest, ubuntu-latest, windows-latest, macos-arm]
         ocaml_compiler: [4.14.0]
 
     runs-on: ${{matrix.os}}
@@ -288,9 +287,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [
+        os:
+          [
             macos-latest,
-            # macos-arm,
+            macos-arm,
             ubuntu-latest,
             buildjet-2vcpu-ubuntu-2204-arm,
             windows-latest,

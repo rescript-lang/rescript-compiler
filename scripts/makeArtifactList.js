@@ -46,8 +46,7 @@ if (isCheckMode) {
 }
 
 function getFilesAddedByCI() {
-  // const platforms = ["darwin", "darwinarm64", "linux", "win32"];
-  const platforms = ["darwin", "linux", "win32"];
+  const platforms = ["darwin", "darwinarm64", "linux", "win32"];
   const exes = ["bsb_helper.exe", "bsc.exe", "ninja.exe", "rescript.exe"];
 
   const files = ["ninja.COPYING"];
