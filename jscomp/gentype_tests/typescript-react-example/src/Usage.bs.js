@@ -2,16 +2,11 @@
 
 import * as MyModule from "./MyModule.bs.js";
 
-var Wrapper = {
-  MyModuleAlias: undefined
-};
-
 var b = MyModule.add(5, 3);
 
 var a = 5;
 
 export {
-  Wrapper ,
   a ,
   b ,
 }
