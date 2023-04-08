@@ -6,4 +6,6 @@
 import * as UsageBS__Es6Import from './Usage.bs';
 const UsageBS: any = UsageBS__Es6Import;
 
-export const b: Wrapper_MyModuleAlias_t = UsageBS.b;
+import type {t as MyModule_t} from './MyModule.gen';
+
+export const b: MyModule_t = UsageBS.b;

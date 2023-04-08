@@ -11,19 +11,30 @@ let rec fromPath1 ~config ~typeEnv (path : Path.t) =
   | Pident id -> (
     let name = id |> Ident.name in
     match typeEnv |> TypeEnv.lookup ~name with
-    | None -> External name
+    | None -> (typeEnv, External name)
     | Some typeEnv1 -> (
+      let typeEnv2 =
+        match typeEnv |> TypeEnv.getModule ~name with
+        | Some typeEnv2 -> typeEnv2
+        | None -> typeEnv1
+      in
       match typeEnv1 |> TypeEnv.expandAliasToExternalModule ~name with
-      | Some dep -> dep
+      | Some dep -> (typeEnv2, dep)
       | None ->
         let resolvedName = name |> TypeEnv.addModulePath ~typeEnv:typeEnv1 in
-        Internal resolvedName))
+        (typeEnv2, Internal resolvedName)))
   | Pdot (Pident id, s, _pos) when id |> ScopedPackage.isGeneratedModule ~config
     ->
-    External (s |> ScopedPackage.addGeneratedModule ~generatedModule:id)
-  | Pdot (p, s, _pos) -> Dot (p |> fromPath1 ~config ~typeEnv, s)
+    ( typeEnv,
+      External (s |> ScopedPackage.addGeneratedModule ~generatedModule:id) )
+  | Pdot (p, s, _pos) -> (
+    let typeEnvFromP, dep = p |> fromPath1 ~config ~typeEnv in
+    match typeEnvFromP |> TypeEnv.expandAliasToExternalModule ~name:s with
+    | Some dep -> (typeEnvFromP, dep)
+    | None -> (typeEnvFromP, Dot (dep, s)))
   | Papply _ ->
-    Internal ("__Papply_unsupported_genType__" |> ResolvedName.fromString)
+    ( typeEnv,
+      Internal ("__Papply_unsupported_genType__" |> ResolvedName.fromString) )
 
 let rec isInternal dep =
   match dep with
@@ -32,7 +43,7 @@ let rec isInternal dep =
   | Dot (d, _) -> d |> isInternal
 
 let fromPath ~config ~typeEnv path =
-  let dep = path |> fromPath1 ~config ~typeEnv in
+  let _, dep = path |> fromPath1 ~config ~typeEnv in
   if !Debug.typeResolution then
     Log_.item "fromPath path:%s typeEnv:%s %s resolved:%s\n" (path |> Path.name)
       (typeEnv |> TypeEnv.toString)
