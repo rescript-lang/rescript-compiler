@@ -32,6 +32,7 @@ Use best effort to determine the config when formatting a file.
 https://github.com/rescript-lang/rescript-compiler/pull/5968 https://github.com/rescript-lang/rescript-compiler/pull/6080 https://github.com/rescript-lang/rescript-compiler/pull/6086 https://github.com/rescript-lang/rescript-compiler/pull/6087
 - Customization of runtime representation of variants. This is work in progress. E.g. some restrictions on the input. See comments of the form "TODO: put restriction on the variant definitions allowed, to make sure this never happens". https://github.com/rescript-lang/rescript-compiler/pull/6095
 - Introduce untagged variants https://github.com/rescript-lang/rescript-compiler/pull/6103
+- GenType: add the option to use the `@genType` annotation at the module level, meaning that all the items in the module should be exported. https://github.com/rescript-lang/rescript-compiler/pull/6113
 
 #### :boom: Breaking Change
 

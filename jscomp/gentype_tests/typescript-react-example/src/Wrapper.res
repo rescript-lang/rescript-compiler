@@ -1,1 +1,2 @@
-module MyModuleAlias = MyModule
+@genType
+module MyModuleAlias = {include MyModule}

@@ -94,7 +94,7 @@ let translateValueBinding ~config ~outputFileRelative ~resolver ~typeEnv
     if !Debug.translation then Log_.item "Translate Value Binding %s\n" name;
     let moduleItem = Runtime.newModuleItem ~name in
     typeEnv |> TypeEnv.updateModuleItem ~moduleItem;
-    if vb_attributes |> Annotation.fromAttributes ~loc:vb_pat.pat_loc = GenType
+    if vb_attributes |> Annotation.fromAttributes ~config ~loc:vb_pat.pat_loc = GenType
     then
       id |> Ident.name
       |> Translation.translateValue ~attributes:vb_attributes ~config
@@ -137,12 +137,14 @@ let rec removeDuplicateValueBindings
     (boundInRest, structureItem :: filteredRest)
   | [] -> (StringSet.empty, [])
 
-let rec translateModuleBinding ~config ~outputFileRelative ~resolver ~typeEnv
+let rec translateModuleBinding ~(config : GenTypeConfig.t) ~outputFileRelative
+    ~resolver ~typeEnv
     ({mb_id; mb_expr; mb_attributes} : Typedtree.module_binding) : Translation.t
     =
   let name = mb_id |> Ident.name in
   if !Debug.translation then Log_.item "Translate Module Binding %s\n" name;
   let moduleItem = Runtime.newModuleItem ~name in
+  let config = mb_attributes |> Annotation.updateConfigForModule ~config in
   typeEnv |> TypeEnv.updateModuleItem ~moduleItem;
   let typeEnv = typeEnv |> TypeEnv.newModule ~name in
   match mb_expr.mod_desc with
@@ -240,9 +242,9 @@ let rec translateModuleBinding ~config ~outputFileRelative ~resolver ~typeEnv
     Translation.empty
 
 and translateStructureItem ~config ~outputFileRelative ~resolver ~typeEnv
-    structItem : Translation.t =
+    (structItem : Typedtree.structure_item) : Translation.t =
   match structItem with
-  | {Typedtree.str_desc = Typedtree.Tstr_type (recFlag, typeDeclarations)} ->
+  | {str_desc = Tstr_type (recFlag, typeDeclarations)} ->
     {
       importTypes = [];
       codeItems = [];
@@ -252,30 +254,30 @@ and translateStructureItem ~config ~outputFileRelative ~resolver ~typeEnv
              ~outputFileRelative ~recursive:(recFlag = Recursive) ~resolver
              ~typeEnv;
     }
-  | {Typedtree.str_desc = Tstr_value (_loc, valueBindings)} ->
+  | {str_desc = Tstr_value (_loc, valueBindings)} ->
     valueBindings
     |> List.map
          (translateValueBinding ~config ~outputFileRelative ~resolver ~typeEnv)
     |> Translation.combine
-  | {Typedtree.str_desc = Tstr_primitive valueDescription} ->
+  | {str_desc = Tstr_primitive valueDescription} ->
     (* external declaration *)
     valueDescription
     |> Translation.translatePrimitive ~config ~outputFileRelative ~resolver
          ~typeEnv
-  | {Typedtree.str_desc = Tstr_module moduleBinding} ->
+  | {str_desc = Tstr_module moduleBinding} ->
     moduleBinding
     |> translateModuleBinding ~config ~outputFileRelative ~resolver ~typeEnv
-  | {Typedtree.str_desc = Tstr_modtype moduleTypeDeclaration} ->
+  | {str_desc = Tstr_modtype moduleTypeDeclaration} ->
     moduleTypeDeclaration
     |> TranslateSignature.translateModuleTypeDeclaration ~config
          ~outputFileRelative ~resolver ~typeEnv
-  | {Typedtree.str_desc = Tstr_recmodule moduleBindings} ->
+  | {str_desc = Tstr_recmodule moduleBindings} ->
     moduleBindings
     |> List.map
          (translateModuleBinding ~config ~outputFileRelative ~resolver ~typeEnv)
     |> Translation.combine
   | {
-   Typedtree.str_desc =
+   str_desc =
      (* Bucklescript's encoding of bs.module: include with constraint. *)
      Tstr_include
        {
@@ -301,30 +303,30 @@ and translateStructureItem ~config ~outputFileRelative ~resolver ~typeEnv
   } ->
     structItem1
     |> translateStructureItem ~config ~outputFileRelative ~resolver ~typeEnv
-  | {Typedtree.str_desc = Tstr_include {incl_type = signature}} ->
+  | {str_desc = Tstr_include {incl_type = signature}} ->
     signature
     |> TranslateSignatureFromTypes.translateSignatureFromTypes ~config
          ~outputFileRelative ~resolver ~typeEnv
     |> Translation.combine
-  | {Typedtree.str_desc = Tstr_eval _} ->
+  | {str_desc = Tstr_eval _} ->
     logNotImplemented ("Tstr_eval " ^ __LOC__);
     Translation.empty
-  | {Typedtree.str_desc = Tstr_typext _} ->
+  | {str_desc = Tstr_typext _} ->
     logNotImplemented ("Tstr_typext " ^ __LOC__);
     Translation.empty
-  | {Typedtree.str_desc = Tstr_exception _} ->
+  | {str_desc = Tstr_exception _} ->
     logNotImplemented ("Tstr_exception " ^ __LOC__);
     Translation.empty
-  | {Typedtree.str_desc = Tstr_open _} ->
+  | {str_desc = Tstr_open _} ->
     logNotImplemented ("Tstr_open " ^ __LOC__);
     Translation.empty
-  | {Typedtree.str_desc = Tstr_class _} ->
+  | {str_desc = Tstr_class _} ->
     logNotImplemented ("Tstr_class " ^ __LOC__);
     Translation.empty
-  | {Typedtree.str_desc = Tstr_class_type _} ->
+  | {str_desc = Tstr_class_type _} ->
     logNotImplemented ("Tstr_class_type " ^ __LOC__);
     Translation.empty
-  | {Typedtree.str_desc = Tstr_attribute _} ->
+  | {str_desc = Tstr_attribute _} ->
     logNotImplemented ("Tstr_attribute " ^ __LOC__);
     Translation.empty
 

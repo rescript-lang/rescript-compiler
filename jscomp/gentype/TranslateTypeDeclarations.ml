@@ -50,7 +50,7 @@ let renameRecordField ~attributes ~name =
 let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
     ~typeAttributes ~typeEnv ~typeName ~typeVars declarationKind :
     CodeItem.typeDeclaration list =
-  let annotation = typeAttributes |> Annotation.fromAttributes ~loc in
+  let annotation = typeAttributes |> Annotation.fromAttributes ~config ~loc in
   let opaque =
     match annotation = Annotation.GenTypeOpaque with
     | true -> Some true
