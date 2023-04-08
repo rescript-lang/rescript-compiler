@@ -25,26 +25,77 @@
 let is_nullary_variant (x : Types.constructor_arguments) =
   match x with Types.Cstr_tuple [] -> true | _ -> false
 
+let checkUntaggedVariant ~(blocks : (Location.t * Lambda.block) list) =
+  let arrays = ref 0 in
+  let objects = ref 0 in
+  let unknowns = ref 0 in
+  let invariant loc =
+    if !unknowns <> 0 && (List.length blocks <> 1)
+      then Bs_syntaxerr.err loc InvalidUntaggedVariantDefinition;
+    if !objects > 1 || !arrays > 1
+      then Bs_syntaxerr.err loc InvalidUntaggedVariantDefinition;
+    () in
+  Ext_list.rev_iter blocks (fun (loc, block) -> match block.block_type with
+    | Some Unknown ->
+      incr unknowns;
+      invariant loc
+    | Some Object ->
+      incr objects;
+      invariant loc
+    | Some Array ->
+      incr arrays;
+      invariant loc
+    | _ -> ())
+  
 let names_from_construct_pattern (pat : Typedtree.pattern) =
   let names_from_type_variant (cstrs : Types.constructor_declaration list) =
     let get_cstr_name (cstr: Types.constructor_declaration) =
       { Lambda.name = Ident.name cstr.cd_id;
-        as_value = Ast_attributes.process_as_value cstr.cd_attributes } in
+        literal = Ast_attributes.process_as_value cstr.cd_attributes } in
     let get_tag_name (cstr: Types.constructor_declaration) =
       Ast_attributes.process_tag_name cstr.cd_attributes in
+    let get_untagged (cstr: Types.constructor_declaration) : Lambda.block_type option =
+      match Ast_attributes.process_untagged cstr.cd_attributes, cstr.cd_args with
+      | false, _ -> None
+      | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path.same path Predef.path_string ->
+          Some StringType
+      | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path.same path Predef.path_int ->
+          Some IntType
+      | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path.same path Predef.path_float ->
+          Some FloatType
+      | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path.same path Predef.path_array ->
+          Some Array
+      | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path. same path Predef.path_string ->
+          Some StringType
+      | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] ->
+        (match Path.name path with
+        | "Js.Dict.t"
+        | "Js_dict.t" -> Some Object
+        | _ -> Some Unknown)
+      | true, Cstr_tuple (_ :: _ :: _) ->
+          (* C(_, _) with at least 2 args is an object *)
+          Some Object
+      | true, Cstr_tuple [_] ->
+          (* Every other single payload is unknown *)
+          Some Unknown
+      | true, Cstr_record _ ->
+          (* inline record is an object *)
+          Some Object
+      | true, _ -> None (* TODO: add restrictions here *)
+    in
     let get_block cstr : Lambda.block =
-      {cstr_name = get_cstr_name cstr; tag_name = get_tag_name cstr} in
+      {cstr_name = get_cstr_name cstr; tag_name = get_tag_name cstr; block_type = get_untagged cstr} in
     let consts, blocks =
       Ext_list.fold_left cstrs ([], []) (fun (consts, blocks) cstr ->
           if is_nullary_variant cstr.cd_args then
             (get_cstr_name cstr :: consts, blocks)
-          else (consts, get_block cstr :: blocks))
+          else (consts, (cstr.cd_loc, get_block cstr) :: blocks))
     in
-    Some
-      {
-        Lambda.consts = Ext_array.reverse_of_list consts;
-        blocks = Ext_array.reverse_of_list blocks;
-      }
+    checkUntaggedVariant ~blocks;
+    let blocks = blocks |> List.map snd in
+    let consts = Ext_array.reverse_of_list consts in
+    let blocks = Ext_array.reverse_of_list blocks in
+    Some { Lambda.consts; blocks }
   in
   let rec resolve_path n (path : Path.t) =
     match Env.find_type path pat.pat_env with

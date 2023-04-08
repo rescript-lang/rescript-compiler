@@ -53,6 +53,7 @@ type error =
   | Bs_uncurried_arity_too_large
   | InvalidVariantAsAnnotation
   | InvalidVariantTagAnnotation
+  | InvalidUntaggedVariantDefinition
 
 val err : Location.t -> error -> 'a
 

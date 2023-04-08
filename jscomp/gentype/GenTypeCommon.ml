@@ -68,7 +68,7 @@ type type_ =
   | Promise of type_
   | Tuple of type_ list
   | TypeVar of string
-  | Variant of variant
+  | Variant of variant (* ordinary and polymorphic variants *)
 
 and fields = field list
 and argType = {aName: string; aType: type_}
@@ -95,7 +95,7 @@ and variant = {
   inherits: type_ list;
   noPayloads: case list;
   payloads: payload list;
-  polymorphic: bool;
+  polymorphic: bool; (* If true, this is a polymorphic variant *)
   unboxed: bool;
 }
 
@@ -165,8 +165,8 @@ let rec depToResolvedName (dep : dep) =
   | Internal resolvedName -> resolvedName
   | Dot (p, s) -> ResolvedName.dot s (p |> depToResolvedName)
 
-let createVariant ~bsStringOrInt ~inherits ~noPayloads ~payloads ~polymorphic =
-  let unboxed = payloads = [] in
+let createVariant ~bsStringOrInt ~inherits ~noPayloads ~payloads ~polymorphic
+    ~unboxed =
   Variant {bsStringOrInt; inherits; noPayloads; payloads; polymorphic; unboxed}
 
 let ident ?(builtin = true) ?(typeArgs = []) name =

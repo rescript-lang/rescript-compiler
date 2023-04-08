@@ -185,7 +185,7 @@ val assign_by_exp : t -> t -> t -> t
 
 val assign : ?comment:string -> t -> t -> t
 
-val as_value : Lambda.as_value -> t
+val literal : Lambda.literal -> t
 
 val triple_equal : ?comment:string -> t -> t -> t
 (* TODO: reduce [triple_equal] use *)
@@ -202,13 +202,16 @@ val neq_null_undefined_boolean : ?comment:string -> t -> t -> t
 
 val is_type_number : ?comment:string -> t -> t
 
-val is_tag : ?has_null_undefined_other:(bool * bool * bool) -> t -> t
+val is_int_tag : ?has_null_undefined_other:(bool * bool * bool) -> t -> t
+
+val is_a_literal_case : literal_cases:Lambda.literal list -> block_cases:Lambda.block_type list -> t -> t
 
 val is_type_string : ?comment:string -> t -> t
 
 val is_type_object : t -> t
 
 val typeof : ?comment:string -> t -> t
+val instanceof : ?comment:string -> t -> t -> t
 
 val to_int32 : ?comment:string -> t -> t
 

@@ -303,7 +303,18 @@ let transl_declaration env sdecl id =
     sdecl.ptype_cstrs
   in
   let raw_status = get_unboxed_from_attributes sdecl in
-  if raw_status.unboxed && not raw_status.default then begin
+
+  let checkUntaggedVariant = match sdecl.ptype_kind with
+  | Ptype_variant cds -> Ext_list.for_all cds (function
+      | {pcd_args = Pcstr_tuple ([] | [_])} ->
+        (* at most one payload allowed for untagged  variants *)
+        true
+      | {pcd_args = Pcstr_record _} -> true
+      | _ -> false )
+  | _ -> false
+  in
+
+  if raw_status.unboxed && not raw_status.default && not checkUntaggedVariant then begin
     match sdecl.ptype_kind with
     | Ptype_abstract ->
         raise(Error(sdecl.ptype_loc, Bad_unboxed_attribute
@@ -338,7 +349,7 @@ let transl_declaration env sdecl id =
   end;
   let unboxed_status =
     match sdecl.ptype_kind with
-    | Ptype_variant [{pcd_args = Pcstr_tuple [_]; _}]
+    | Ptype_variant [{pcd_args = Pcstr_tuple _; _}]
       | Ptype_variant [{pcd_args = Pcstr_record
                           [{pld_mutable = Immutable; _}]; _}]
       | Ptype_record [{pld_mutable = Immutable; _}] ->
@@ -380,8 +391,8 @@ let transl_declaration env sdecl id =
             all_constrs := StringSet.add name !all_constrs)
           scstrs;
         let copy_tag_attr_from_decl attr =
-          let tag_attr = Ext_list.filter sdecl.ptype_attributes (fun ({txt}, _) -> txt = "tag") in
-          if tag_attr = [] then attr else tag_attr @ attr in
+          let tag_attrs = Ext_list.filter sdecl.ptype_attributes (fun ({txt}, _) -> txt = "tag" || txt = "unboxed") in
+          if tag_attrs = [] then attr else tag_attrs @ attr in
         let make_cstr scstr =
           let name = Ident.create scstr.pcd_name.txt in
           let targs, tret_type, args, ret_type, _cstr_params =

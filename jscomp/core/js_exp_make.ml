@@ -173,6 +173,9 @@ let typeof ?comment (e : t) : t =
   | Bool _ -> str ?comment L.js_type_boolean
   | _ -> { expression_desc = Typeof e; comment }
 
+let instanceof ?comment (e0 : t) (e1: t) : t =
+  { expression_desc = Bin (InstanceOf, e0, e1); comment }
+
 let new_ ?comment e0 args : t =
   { expression_desc = New (e0, Some args); comment }
 
@@ -328,15 +331,21 @@ let zero_float_lit : t =
 let float_mod ?comment e1 e2 : J.expression =
   { comment; expression_desc = Bin (Mod, e1, e2) }
 
-let as_value = function
-  | Lambda.AsString s -> str s ~delim:DStarJ
-  | AsInt i -> small_int i
-  | AsFloat f -> float f
-  | AsBool b -> bool b
-  | AsNull -> nil
-  | AsUndefined -> undefined
-  | AsUnboxed -> assert false (* Should not emit tags for unboxed *)
-  (* TODO: put restriction on the variant definitions allowed, to make sure this never happens. *)
+let literal = function
+  | Lambda.String s -> str s ~delim:DStarJ
+  | Int i -> small_int i
+  | Float f -> float f
+  | Bool b -> bool b
+  | Null -> nil
+  | Undefined -> undefined
+  | Block IntType -> str "number"
+  | Block FloatType -> str "number"
+  | Block StringType -> str "string"
+  | Block Array -> str "Array" ~delim:DNoQuotes
+  | Block Object -> str "object"
+  | Block Unknown ->
+    (* TODO: clean up pattern mathing algo whih confuses literal with blocks *)
+    assert false
 
 let array_index ?comment (e0 : t) (e1 : t) : t =
   match (e0.expression_desc, e1.expression_desc) with
@@ -762,7 +771,35 @@ let string_equal ?comment (e0 : t) (e1 : t) : t =
 let is_type_number ?comment (e : t) : t =
   string_equal ?comment (typeof e) (str "number")
 
-let is_tag ?(has_null_undefined_other=(false, false, false)) (e : t) : t =
+let rec is_a_literal_case ~(literal_cases : Lambda.literal list) ~block_cases (e:t) : t =
+  let is_literal_case (l:Lambda.literal) : t = bin EqEqEq e (literal l) in
+  let is_block_case (c:Lambda.block_type) : t = match c with
+  | StringType -> bin NotEqEq (typeof e) (str "string")
+  | IntType -> bin NotEqEq (typeof e) (str "number")
+  | FloatType -> bin NotEqEq (typeof e) (str "number")
+  | Array ->  not (bin InstanceOf e (str "Array" ~delim:DNoQuotes))
+  | Object ->  { expression_desc = Bin (NotEqEq, typeof e, str "object"); comment=None }
+  | Unknown ->
+    (* We don't know the type of unknown, so we need to express:
+       this is not one of the literals *)
+    (match literal_cases with
+      | [] ->
+        (* this should not happen *)
+        assert false
+      | l1 :: others ->
+        let is_literal_1 = is_literal_case l1 in
+        Ext_list.fold_right others is_literal_1 (fun literal_n acc ->
+          bin Or (is_literal_case literal_n) acc
+        )
+    )
+  in
+  match block_cases with
+  | [c] -> is_block_case c
+  | c1 :: (_::_ as rest) ->
+    bin And (is_block_case c1) (is_a_literal_case ~literal_cases ~block_cases:rest e)
+  | [] -> assert false
+
+let is_int_tag ?(has_null_undefined_other=(false, false, false)) (e : t) : t =
   let (has_null, has_undefined, has_other) = has_null_undefined_other in
   if has_null && (has_undefined = false) && (has_other = false) then (* null *)
     { expression_desc = Bin (EqEqEq, e, nil); comment=None }

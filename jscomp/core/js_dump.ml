@@ -600,7 +600,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
       let () =
         match delim with
         | DStarJ -> P.string f ("\"" ^ txt ^ "\"")
-        | DJson -> P.string f txt
+        | DNoQuotes -> P.string f txt
         | DNone -> Js_dump_string.pp_string f txt
       in
       cxt
@@ -751,6 +751,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
   | Caml_block (el, _, _, ((Blk_extension | Blk_record_ext _) as ext)) ->
       expression_desc cxt ~level f (exn_block_as_obj ~stack:false el ext)
   | Caml_block (el, _, tag, Blk_record_inlined p) ->
+      let untagged = Ast_attributes.process_untagged p.attrs in
       let objs =
         let tails =
           Ext_list.combine_array_append p.fields el
@@ -774,16 +775,20 @@ and expression_desc cxt ~(level : int) f x : cxt =
               | Undefined when is_optional f -> None
               | _ -> Some (f, x))
           in
-        ( Js_op.Lit tag_name, (* TAG:xx for inline records *)
-          match Ast_attributes.process_as_value p.attrs with
-          | None -> E.str p.name
-          | Some as_value -> E.as_value as_value )
-        :: tails
+        if untagged then
+          tails
+        else
+          (Js_op.Lit tag_name, (* TAG:xx for inline records *)
+            match Ast_attributes.process_as_value p.attrs with
+            | None -> E.str p.name
+            | Some literal -> E.literal literal )
+          :: tails
       in
       expression_desc cxt ~level f (Object objs)
   | Caml_block (el, _, tag, Blk_constructor p) ->
       let not_is_cons = p.name <> Literals.cons in
-      let as_value = Ast_attributes.process_as_value p.attrs in
+      let literal = Ast_attributes.process_as_value p.attrs in
+      let untagged = Ast_attributes.process_untagged p.attrs in
       let tag_name = match Ast_attributes.process_tag_name p.attrs with
         | None -> L.tag
         | Some s -> s in
@@ -800,17 +805,17 @@ and expression_desc cxt ~(level : int) f x : cxt =
              [ (name_symbol, E.str p.name) ]
             else [])
         in
-        if (as_value = Some AsUnboxed || not_is_cons = false) && p.num_nonconst = 1 then tails
+        if untagged || (not_is_cons = false) && p.num_nonconst = 1 then tails
         else
           ( Js_op.Lit tag_name, (* TAG:xx *) 
-            match as_value with
+            match literal with
             | None -> E.str p.name
-            | Some as_value -> E.as_value as_value )
+            | Some literal -> E.literal literal )
           :: tails
       in
       let exp = match objs with
-        | [(_, e)] when as_value = Some AsUnboxed -> e.expression_desc
-        | _ when as_value = Some AsUnboxed -> assert false (* should not happen *)
+        | [(_, e)] when untagged -> e.expression_desc
+        | _ when untagged -> assert false (* should not happen *)
         (* TODO: put restriction on the variant definitions allowed, to make sure this never happens. *)
         | _ -> J.Object objs in
       expression_desc cxt ~level f exp
@@ -1205,8 +1210,8 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
       let cxt = P.paren_group f 1 (fun _ -> expression ~level:0 cxt f e) in
       P.space f;
       P.brace_vgroup f 1 (fun _ ->
-          let pp_as_value f (as_value: Lambda.as_value) =
-            let e = E.as_value as_value in
+          let pp_as_value f (literal: Lambda.literal) =
+            let e = E.literal literal in
             ignore @@ expression_desc cxt ~level:0 f e.expression_desc in
           let cxt = loop_case_clauses cxt f pp_as_value cc in
           match def with

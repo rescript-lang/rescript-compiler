@@ -225,7 +225,7 @@ and translateCoreType_ ~config ~typeVarsGen
       let inherits = inheritsTranslations |> List.map (fun {type_} -> type_) in
       let type_ =
         createVariant ~bsStringOrInt:(asString || asInt) ~noPayloads ~payloads
-          ~inherits ~polymorphic:true
+          ~inherits ~polymorphic:true ~unboxed:false
       in
       let dependencies =
         (inheritsTranslations

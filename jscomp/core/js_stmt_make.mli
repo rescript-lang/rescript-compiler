@@ -77,7 +77,7 @@ val string_switch :
   ?declaration:Lam_compat.let_kind * Ident.t ->
   ?default:J.block ->
   J.expression ->
-  (Lambda.as_value * J.case_clause) list ->
+  (Lambda.literal * J.case_clause) list ->
   t
 
 val declare_variable :
