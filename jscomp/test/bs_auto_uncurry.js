@@ -36,28 +36,30 @@ var xs = Array.prototype.map.call([
       }));
 
 function f_0(param) {
-  return hi(function () {
+  return hi(function (param) {
               
             });
 }
 
 function f_01(param) {
-  return hi(function () {
-              console.log("x");
+  return hi(function (x) {
+              if (x === undefined) {
+                console.log("x");
+                return ;
+              }
+              
             });
 }
 
 function f_02(xs) {
-  return hi(function () {
-              xs.contents = undefined;
+  return hi(function (x) {
+              xs.contents = x;
               console.log("x");
             });
 }
 
 function f_03(xs, u) {
-  return hi(function () {
-              return Curry._1(u, undefined);
-            });
+  return hi(Curry.__1(u));
 }
 
 function fishy(x, y, z) {

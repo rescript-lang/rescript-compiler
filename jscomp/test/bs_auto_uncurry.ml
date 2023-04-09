@@ -52,7 +52,7 @@ external ff2 :
     = "ff2" [@@bs.val]
 
 external
- hi: (unit -> unit [@bs.uncurry 0]) -> int = "hi" [@@bs.val]
+ hi: (unit -> unit [@bs.uncurry 1]) -> int = "hi" [@@bs.val]
 
 (** 
 fun (_){

@@ -37,16 +37,16 @@ var xs = {
   contents: /* [] */0
 };
 
-hi(function () {
+hi(function (x) {
       xs.contents = {
-        hd: undefined,
+        hd: x,
         tl: xs.contents
       };
     });
 
-hi(function () {
+hi(function (x) {
       xs.contents = {
-        hd: undefined,
+        hd: x,
         tl: xs.contents
       };
     });

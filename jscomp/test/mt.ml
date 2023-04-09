@@ -61,14 +61,25 @@ let is_mocha () =
   | _ -> false
 (* assert -- raises an AssertionError which mocha handls better
 *)
-let from_suites name (suite :  (string * ('a -> unit)) list) =
-  match Array.to_list Node.Process.process##argv with
-  | cmd :: _ ->
-    if is_mocha () then
-      describe name (fun [@bs] () ->
-          List.iter (fun (name, code) -> it name code) suite)
 
-  | _ -> ()
+let from_suites =
+[%bs.raw {|
+function from_suites(name, suite) {
+  var match = $$Array.to_list(Process.argv);
+  if (match && is_mocha(undefined)) {
+    describe(name, (function () {
+            return List.iter((function (param) {
+                          var partial_arg = param[1];
+                          it(param[0], (function () {
+                                  return Curry._1(partial_arg, undefined);
+                                }));
+                        }), suite);
+          }));
+    return ;
+  }
+  
+}
+|}]
 
 type eq =
   | Eq :  'a *'a  -> eq
@@ -120,22 +131,139 @@ let handleCode spec =
   | Fail _ -> assert_fail "failed"
   | FailWith msg -> assert_fail msg
 
-let from_pair_suites name (suites :  pair_suites) =
-  match Array.to_list Node.Process.process##argv with
-  | cmd :: _ ->
-    if is_mocha () then
-      describe name (fun [@bs] () ->
-          suites |>
-          List.iter (fun (name, code) ->
-              it name (fun _ ->
-                  handleCode (code ())
-                )
-            )
-        )
-    else node_from_pair_suites name suites
-  | _ -> ()
+let force_curry x =
+  let _ = List.hd [3] in
+  let _ = Array.copy [| 5 |] in
+  x ()
+let from_pair_suites =
+[%bs.raw {|
+function from_pair_suites(name, suites) {
+  var match = $$Array.to_list(Process.argv);
+  if (match) {
+    if (is_mocha(undefined)) {
+      describe(name, (function () {
+              return List.iter((function (param) {
+                            var code = param[1];
+                            it(param[0], (function () {
+                                    return handleCode(Curry._1(code, undefined));
+                                  }));
+                          }), suites);
+            }));
+      return ;
+    } else {
+      console.log([
+            name,
+            "testing"
+          ]);
+      return List.iter((function (param) {
+                    var name = param[0];
+                    var fn = Curry._1(param[1], undefined);
+                    switch (fn.TAG) {
+                      case "Eq" :
+                          console.log([
+                                name,
+                                fn._0,
+                                "eq?",
+                                fn._1
+                              ]);
+                          return ;
+                      case "Neq" :
+                          console.log([
+                                name,
+                                fn._0,
+                                "neq?",
+                                fn._1
+                              ]);
+                          return ;
+                      case "StrictEq" :
+                          console.log([
+                                name,
+                                fn._0,
+                                "strict_eq?",
+                                fn._1
+                              ]);
+                          return ;
+                      case "StrictNeq" :
+                          console.log([
+                                name,
+                                fn._0,
+                                "strict_neq?",
+                                fn._1
+                              ]);
+                          return ;
+                      case "Ok" :
+                          console.log([
+                                name,
+                                fn._0,
+                                "ok?"
+                              ]);
+                          return ;
+                      case "Approx" :
+                          console.log([
+                                name,
+                                fn._0,
+                                "~",
+                                fn._1
+                              ]);
+                          return ;
+                      case "ApproxThreshold" :
+                          console.log([
+                                name,
+                                fn._1,
+                                "~",
+                                fn._2,
+                                " (",
+                                fn._0,
+                                ")"
+                              ]);
+                          return ;
+                      case "ThrowAny" :
+                          return ;
+                      case "Fail" :
+                          console.log("failed");
+                          return ;
+                      case "FailWith" :
+                          console.log("failed: " + fn._0);
+                          return ;
+                      
+                    }
+                  }), suites);
+    }
+  }
+  
+}
+|}]
 let val_unit = Js.Promise.resolve ()
-let from_promise_suites name (suites : (string * _ Js.Promise.t ) list) =
+
+let from_promise_suites =
+[%bs.raw {|
+
+function from_promise_suites(name, suites) {
+  var match = $$Array.to_list(Process.argv);
+  if (match) {
+    if (is_mocha(undefined)) {
+      describe(name, (function () {
+              return List.iter((function (param) {
+                            var code = param[1];
+                            it(param[0], (function () {
+                                    var arg1 = function (x) {
+                                      handleCode(x);
+                                      return val_unit;
+                                    };
+                                    return code.then(arg1);
+                                  }));
+                          }), suites);
+            }));
+    } else {
+      console.log("promise suites");
+    }
+    return ;
+  }
+  
+}
+|}]
+
+let old_from_promise_suites_donotuse name (suites : (string * _ Js.Promise.t ) list) =
   match Array.to_list Node.Process.process##argv with
   | cmd :: _ ->
     if is_mocha () then

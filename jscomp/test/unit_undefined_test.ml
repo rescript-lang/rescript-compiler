@@ -12,7 +12,7 @@ let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y
 
 
 external
- hi: (unit -> unit [@bs.uncurry 0]) -> int = "hi" [@@bs.val]
+ hi: (unit -> unit [@bs.uncurry 1]) -> int = "hi" [@@bs.val]
 
 let f_01 () = hi (fun (() as x) -> if x = () then Js.log "x" ) (* FIXME: not inlined *)
 
