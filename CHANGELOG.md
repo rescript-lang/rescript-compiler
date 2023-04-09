@@ -33,6 +33,7 @@ https://github.com/rescript-lang/rescript-compiler/pull/5968 https://github.com/
 - Customization of runtime representation of variants. This is work in progress. E.g. some restrictions on the input. See comments of the form "TODO: put restriction on the variant definitions allowed, to make sure this never happens". https://github.com/rescript-lang/rescript-compiler/pull/6095
 - Introduce untagged variants https://github.com/rescript-lang/rescript-compiler/pull/6103
 - GenType: add the option to use the `@genType` annotation at the module level, meaning that all the items in the module should be exported. https://github.com/rescript-lang/rescript-compiler/pull/6113
+- GenType: add support for `@genType` annotations on module definitions. https://github.com/rescript-lang/rescript-compiler/pull/6113
 
 #### :boom: Breaking Change
 
@@ -70,6 +71,7 @@ These are only breaking changes for unformatted code.
 - Fix parsing uncurried type starting with path https://github.com/rescript-lang/rescript-compiler/pull/6089
 - Fix bigInt comparison https://github.com/rescript-lang/rescript-compiler/pull/6097
 - Fixed a bug where the async attribute was not preserved when using the `@this` decorator in ReScript functions. This fix allows proper handling of async functions with the `@this` decorator. Issue: https://github.com/rescript-lang/rescript-compiler/issues/6100
+- Fix issue with GenType and module aliases https://github.com/rescript-lang/rescript-compiler/issues/6112
 
 #### :nail_care: Polish
 
