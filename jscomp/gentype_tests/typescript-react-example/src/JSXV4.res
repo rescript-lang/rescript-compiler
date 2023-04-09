@@ -1,14 +1,16 @@
 @@jsxConfig({version: 4})
 
+@genType
 module CompV4 = {
-  @genType @react.component
+  @react.component
   let make = (~x, ~y) => React.string(x ++ y)
 }
 
 @@jsxConfig({version: 3})
 
+@genType
 module CompV3 = {
-  @genType @react.component
+  @react.component
   let make = (~x, ~y) => React.string(x ++ y)
 }
 

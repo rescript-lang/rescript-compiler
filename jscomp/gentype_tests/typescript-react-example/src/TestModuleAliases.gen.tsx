@@ -15,6 +15,9 @@ import type {Outer_outer as ModuleAliases2_Outer_outer} from './ModuleAliases2.g
 import type {record as ModuleAliases2_record} from './ModuleAliases2.gen';
 
 // tslint:disable-next-line:interface-over-type-literal
+export type OtherFile_record = { readonly x: number; readonly y: string };
+
+// tslint:disable-next-line:interface-over-type-literal
 export type record = ModuleAliases2_record;
 
 // tslint:disable-next-line:interface-over-type-literal

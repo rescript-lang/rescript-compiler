@@ -9,6 +9,7 @@ type t = {
   mutable emitImportCurry: bool;
   mutable emitImportReact: bool;
   mutable emitTypePropDone: bool;
+  mutable everything: bool;
   exportInterfaces: bool;
   generatedFileExtension: string option;
   module_: module_;
@@ -27,6 +28,7 @@ let default =
     emitImportCurry = false;
     emitImportReact = false;
     emitTypePropDone = false;
+    everything = false;
     exportInterfaces = false;
     generatedFileExtension = None;
     module_ = ES6;
@@ -190,6 +192,7 @@ let readConfig ~getBsConfigFile ~namespace =
       | Some sourceItem -> Some sourceItem
       | _ -> default.sources
     in
+    let everything = false in
     {
       bsbProjectRoot;
       bsDependencies;
@@ -197,6 +200,7 @@ let readConfig ~getBsConfigFile ~namespace =
       emitImportCurry = false;
       emitImportReact = false;
       emitTypePropDone = false;
+      everything;
       exportInterfaces;
       generatedFileExtension;
       module_;

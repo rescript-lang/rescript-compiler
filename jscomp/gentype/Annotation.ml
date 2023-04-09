@@ -154,7 +154,9 @@ let getDocString attributes =
 let hasAttribute checkText (attributes : Typedtree.attributes) =
   getAttributePayload checkText attributes <> None
 
-let fromAttributes ~loc (attributes : Typedtree.attributes) =
+let fromAttributes ~(config : GenTypeConfig.t) ~loc
+    (attributes : Typedtree.attributes) =
+  let default = if config.everything then GenType else NoGenType in
   if hasAttribute tagIsGenTypeOpaque attributes then GenTypeOpaque
   else if hasAttribute (fun s -> tagIsGenType s || tagIsGenTypeAs s) attributes
   then (
@@ -166,7 +168,7 @@ let fromAttributes ~loc (attributes : Typedtree.attributes) =
           Format.fprintf ppf "Annotation payload is ignored")
     | _ -> ());
     GenType)
-  else NoGenType
+  else default
 
 let rec moduleTypeCheckAnnotation ~checkAnnotation
     ({mty_desc} : Typedtree.module_type) =
@@ -289,3 +291,8 @@ let importFromString importString : import =
   in
   let importPath = ImportPath.fromStringUnsafe importString in
   {name; importPath}
+
+let updateConfigForModule ~(config : GenTypeConfig.t) attributes =
+  if attributes |> hasAttribute tagIsGenType then
+    {config with everything = true}
+  else config
