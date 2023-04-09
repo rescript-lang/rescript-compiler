@@ -178,8 +178,7 @@ and translateCoreType_ ~config ~typeVarsGen
         |> Annotation.hasAttribute Annotation.tagIsString
       in
       let asInt =
-        coreType.ctyp_attributes
-        |> Annotation.hasAttribute Annotation.tagIsInt
+        coreType.ctyp_attributes |> Annotation.hasAttribute Annotation.tagIsInt
       in
       let lastBsInt = ref (-1) in
       let noPayloads =

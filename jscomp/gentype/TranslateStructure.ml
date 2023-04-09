@@ -94,7 +94,10 @@ let translateValueBinding ~config ~outputFileRelative ~resolver ~typeEnv
     if !Debug.translation then Log_.item "Translate Value Binding %s\n" name;
     let moduleItem = Runtime.newModuleItem ~name in
     typeEnv |> TypeEnv.updateModuleItem ~moduleItem;
-    if vb_attributes |> Annotation.fromAttributes ~config ~loc:vb_pat.pat_loc = GenType
+    if
+      vb_attributes
+      |> Annotation.fromAttributes ~config ~loc:vb_pat.pat_loc
+      = GenType
     then
       id |> Ident.name
       |> Translation.translateValue ~attributes:vb_attributes ~config
@@ -148,6 +151,18 @@ let rec translateModuleBinding ~(config : GenTypeConfig.t) ~outputFileRelative
   typeEnv |> TypeEnv.updateModuleItem ~moduleItem;
   let typeEnv = typeEnv |> TypeEnv.newModule ~name in
   match mb_expr.mod_desc with
+  | Tmod_ident (path, _) -> (
+    let dep = path |> Dependencies.fromPath ~config ~typeEnv in
+    let internal = dep |> Dependencies.isInternal in
+    typeEnv |> TypeEnv.addModuleEquation ~dep ~internal;
+    match Env.scrape_alias mb_expr.mod_env mb_expr.mod_type with
+    | Mty_signature signature ->
+      (* Treat module M = N as include N *)
+      signature
+      |> TranslateSignatureFromTypes.translateSignatureFromTypes ~config
+           ~outputFileRelative ~resolver ~typeEnv
+      |> Translation.combine
+    | Mty_alias _ | Mty_ident _ | Mty_functor _ -> Translation.empty)
   | Tmod_structure structure ->
     let isLetPrivate =
       mb_attributes |> Annotation.hasAttribute Annotation.tagIsInternLocal
@@ -195,11 +210,6 @@ let rec translateModuleBinding ~(config : GenTypeConfig.t) ~outputFileRelative
     | Mty_alias _ ->
       logNotImplemented ("Mty_alias " ^ __LOC__);
       Translation.empty)
-  | Tmod_ident (path, _) ->
-    let dep = path |> Dependencies.fromPath ~config ~typeEnv in
-    let internal = dep |> Dependencies.isInternal in
-    typeEnv |> TypeEnv.addModuleEquation ~dep ~internal;
-    Translation.empty
   | Tmod_functor _ ->
     logNotImplemented ("Tmod_functor " ^ __LOC__);
     Translation.empty
