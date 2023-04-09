@@ -91,12 +91,7 @@ let to_uncurry_fn (e : Parsetree.expression) (self : Bs_ast_mapper.mapper)
   in
   let body = Ast_async.add_async_attribute ~async body in
 
-  let len = List.length rev_extra_args in
-  let arity =
-    match rev_extra_args with
-    | [ (_, p) ] -> Ast_pat.is_unit_cont ~yes:0 ~no:len p
-    | _ -> len
-  in
+  let arity = List.length rev_extra_args in
   Bs_syntaxerr.err_large_arity loc arity;
   let fun_exp = Ast_uncurried.uncurriedFun ~loc ~arity body in
   {

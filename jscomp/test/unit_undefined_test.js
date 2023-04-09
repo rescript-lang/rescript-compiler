@@ -16,8 +16,12 @@ function eq(loc, x, y) {
 }
 
 function f_01(param) {
-  return hi(function () {
-              console.log("x");
+  return hi(function (x) {
+              if (x === undefined) {
+                console.log("x");
+                return ;
+              }
+              
             });
 }
 

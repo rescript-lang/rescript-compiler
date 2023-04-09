@@ -21,6 +21,11 @@ val from_promise_suites :
   promise_suites ->
   unit
 
+val old_from_promise_suites_donotuse :
+  string ->
+  promise_suites ->
+  unit
+
 val eq_suites :
   test_id:int ref ->
   suites:pair_suites ref -> string -> 'b -> 'b -> unit
@@ -32,3 +37,5 @@ val bool_suites :
 val throw_suites :
   test_id:int ref ->
   suites: pair_suites ref -> string -> (unit -> unit) -> unit
+
+val force_curry : (unit -> unit) -> unit

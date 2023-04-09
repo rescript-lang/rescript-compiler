@@ -158,7 +158,7 @@ function unwatchUrl(watcherID) {
 }
 
 function useUrl(serverUrl, param) {
-  var match = React.useState(function () {
+  var match = React.useState(function (param) {
         if (serverUrl !== undefined) {
           return serverUrl;
         } else {
@@ -167,7 +167,7 @@ function useUrl(serverUrl, param) {
       });
   var setUrl = match[1];
   var url$1 = match[0];
-  React.useEffect((function () {
+  React.useEffect((function (param) {
           var watcherId = watchUrl(function (url) {
                 Curry._1(setUrl, (function (param) {
                         return url;

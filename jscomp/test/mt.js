@@ -28,7 +28,7 @@ function is_mocha(param) {
   }
 }
 
-function from_suites(name, suite) {
+var from_suites = (function from_suites(name, suite) {
   var match = $$Array.to_list(Process.argv);
   if (match && is_mocha(undefined)) {
     describe(name, (function () {
@@ -42,7 +42,7 @@ function from_suites(name, suite) {
     return ;
   }
   
-}
+});
 
 function close_enough(thresholdOpt, a, b) {
   var threshold = thresholdOpt !== undefined ? thresholdOpt : 0.0000001;
@@ -95,7 +95,16 @@ function handleCode(spec) {
   }
 }
 
-function from_pair_suites(name, suites) {
+function force_curry(x) {
+  List.hd({
+        hd: 3,
+        tl: /* [] */0
+      });
+  $$Array.copy([5]);
+  return Curry._1(x, undefined);
+}
+
+var from_pair_suites = (function from_pair_suites(name, suites) {
   var match = $$Array.to_list(Process.argv);
   if (match) {
     if (is_mocha(undefined)) {
@@ -189,11 +198,11 @@ function from_pair_suites(name, suites) {
     }
   }
   
-}
+});
 
 var val_unit = Promise.resolve(undefined);
 
-function from_promise_suites(name, suites) {
+var from_promise_suites = (function from_promise_suites(name, suites) {
   var match = $$Array.to_list(Process.argv);
   if (match) {
     if (is_mocha(undefined)) {
@@ -208,6 +217,30 @@ function from_promise_suites(name, suites) {
                                     return code.then(arg1);
                                   }));
                           }), suites);
+            }));
+    } else {
+      console.log("promise suites");
+    }
+    return ;
+  }
+  
+});
+
+function old_from_promise_suites_donotuse(name, suites) {
+  var match = $$Array.to_list(Process.argv);
+  if (match) {
+    if (is_mocha(undefined)) {
+      describe(name, (function (param) {
+              List.iter((function (param) {
+                      var code = param[1];
+                      it(param[0], (function (param) {
+                              var arg1 = function (x) {
+                                handleCode(x);
+                                return val_unit;
+                              };
+                              return code.then(arg1);
+                            }));
+                    }), suites);
             }));
     } else {
       console.log("promise suites");
@@ -269,7 +302,9 @@ function throw_suites(test_id, suites, loc, x) {
 exports.from_suites = from_suites;
 exports.from_pair_suites = from_pair_suites;
 exports.from_promise_suites = from_promise_suites;
+exports.old_from_promise_suites_donotuse = old_from_promise_suites_donotuse;
 exports.eq_suites = eq_suites;
 exports.bool_suites = bool_suites;
 exports.throw_suites = throw_suites;
+exports.force_curry = force_curry;
 /* val_unit Not a pure module */

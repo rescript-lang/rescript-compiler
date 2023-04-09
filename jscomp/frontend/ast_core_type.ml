@@ -115,18 +115,12 @@ let rec get_uncurry_arity_aux (ty : t) acc =
   | _ -> acc
 
 (**
-   {[ unit -> 'b ]} return arity 0
+   {[ unit -> 'b ]} return arity 1
    {[ unit -> 'a1 -> a2']} arity 2
    {[ 'a1 -> 'a2 -> ... 'aN -> 'b ]} return arity N
 *)
 let get_uncurry_arity (ty : t) =
   match ty.ptyp_desc with
-  | Ptyp_arrow
-      (Nolabel, { ptyp_desc = Ptyp_constr ({ txt = Lident "unit" }, []) }, rest)
-    -> (
-      match rest with
-      | { ptyp_desc = Ptyp_arrow _ } -> Some (get_uncurry_arity_aux rest 1)
-      | _ -> Some 0)
   | Ptyp_arrow (_, _, rest) -> Some (get_uncurry_arity_aux rest 1)
   | _ -> None
 
