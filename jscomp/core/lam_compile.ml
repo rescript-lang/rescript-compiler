@@ -749,7 +749,7 @@ and compile_untagged_cases cxt switch_exp table default =
   | Block StringType
   | Block FloatType
   | Block Object -> E.string_equal (E.typeof y) x 
-  | Block Array -> E.instanceof y x
+  | Block Array -> E.is_array y
   | Block Unknown ->
     (* This should not happen because unknown must be the only non-literal case *)
     assert false 
@@ -767,7 +767,7 @@ and compile_untagged_cases cxt switch_exp table default =
     match array_clauses with
     | [(l, {J.switch_body})] when List.length clauses > 1 ->
       let rest = Ext_list.filter clauses (fun c -> not (is_array c)) in
-      S.if_ (E.instanceof e (E.literal l))
+      S.if_ (E.is_array e)
         (switch_body)
         ~else_:([S.string_switch ?default ?declaration (E.typeof e) rest])
     | _ :: _ :: _ -> assert false (* at most 1 array case *)

@@ -176,6 +176,10 @@ let typeof ?comment (e : t) : t =
 let instanceof ?comment (e0 : t) (e1: t) : t =
   { expression_desc = Bin (InstanceOf, e0, e1); comment }
 
+let is_array  (e0 : t) : t =
+  let f = str "Array.isArray" ~delim:DNoQuotes in
+  { expression_desc = Call (f, [e0], Js_call_info.ml_full_call); comment=None }
+  
 let new_ ?comment e0 args : t =
   { expression_desc = New (e0, Some args); comment }
 
