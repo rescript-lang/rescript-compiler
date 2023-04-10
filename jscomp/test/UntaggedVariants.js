@@ -250,8 +250,27 @@ function checkEnum(e) {
   }
 }
 
-var Overlap = {
+var OverlapString = {
   checkEnum: checkEnum
+};
+
+function checkEnum$1(e) {
+  if (!(e === "Two" || e === 1.0 || e === "Three")) {
+    return "Something else...";
+  }
+  switch (e) {
+    case 1.0 :
+        return "One!";
+    case "Two" :
+        return "Two";
+    case "Three" :
+        return "Threeeee";
+    
+  }
+}
+
+var OverlapNumber = {
+  checkEnum: checkEnum$1
 };
 
 var i = 42;
@@ -288,5 +307,6 @@ exports.OnlyBlocks = OnlyBlocks;
 exports.WithArray = WithArray;
 exports.Json = Json;
 exports.TrickyNested = TrickyNested;
-exports.Overlap = Overlap;
+exports.OverlapString = OverlapString;
+exports.OverlapNumber = OverlapNumber;
 /* l2 Not a pure module */
