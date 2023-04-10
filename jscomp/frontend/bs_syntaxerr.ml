@@ -22,7 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type error =
+ type untaggedVariant = | OnlyOneUnknown | AtMostOneObject | AtMostOneArray
+
+ type error =
   | Unsupported_predicates
   | Conflict_bs_bs_this_bs_meth
   | Duplicated_bs_deriving
@@ -53,7 +55,7 @@ type error =
   | Bs_uncurried_arity_too_large
   | InvalidVariantAsAnnotation
   | InvalidVariantTagAnnotation
-  | InvalidUntaggedVariantDefinition
+  | InvalidUntaggedVariantDefinition of untaggedVariant
 
 let pp_error fmt err =
   Format.pp_print_string fmt
@@ -104,8 +106,13 @@ let pp_error fmt err =
       "A variant case annotation @as(...) must be a string or integer, boolean, null, undefined"
     | InvalidVariantTagAnnotation ->
       "A variant tag annotation @tag(...) must be a string"
-    | InvalidUntaggedVariantDefinition ->
-      "This untagged variant definition is invalid. But since I'm still work in progress I am not able to tell you why."
+    | InvalidUntaggedVariantDefinition untaggedVariant ->
+      "This untagged variant definition is invalid: " ^
+      (match untaggedVariant with 
+      | OnlyOneUnknown -> "An unknown case must be the only case with payloads."
+      | AtMostOneObject -> "At most one case can be an object type."
+      | AtMostOneArray -> "At most one case can be an array type."
+      )
     )
 
 type exn += Error of Location.t * error

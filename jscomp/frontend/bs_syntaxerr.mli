@@ -22,6 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type untaggedVariant = | OnlyOneUnknown | AtMostOneObject | AtMostOneArray
+
 type error =
   | Unsupported_predicates
   | Conflict_bs_bs_this_bs_meth
@@ -53,7 +55,7 @@ type error =
   | Bs_uncurried_arity_too_large
   | InvalidVariantAsAnnotation
   | InvalidVariantTagAnnotation
-  | InvalidUntaggedVariantDefinition
+  | InvalidUntaggedVariantDefinition of untaggedVariant
 
 val err : Location.t -> error -> 'a
 
