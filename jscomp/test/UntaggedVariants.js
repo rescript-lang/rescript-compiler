@@ -273,6 +273,25 @@ var OverlapNumber = {
   checkEnum: checkEnum$1
 };
 
+function checkEnum$2(e) {
+  if (typeof e === "object") {
+    return "Object...";
+  }
+  switch (e) {
+    case null :
+        return "One!";
+    case "Two" :
+        return "Two";
+    case "Three" :
+        return "Threeeee";
+    
+  }
+}
+
+var OverlapObject = {
+  checkEnum: checkEnum$2
+};
+
 var i = 42;
 
 var i2 = 42.5;
@@ -309,4 +328,5 @@ exports.Json = Json;
 exports.TrickyNested = TrickyNested;
 exports.OverlapString = OverlapString;
 exports.OverlapNumber = OverlapNumber;
+exports.OverlapObject = OverlapObject;
 /* l2 Not a pure module */

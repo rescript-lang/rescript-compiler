@@ -222,3 +222,16 @@ module OverlapNumber = {
     | FutureAddedValue(_) => "Something else..."
     }
 }
+
+module OverlapObject = {
+  @unboxed
+  type enum = | @as(null) One | Two | Three | Object({x: int})
+
+  let checkEnum = e =>
+    switch e {
+    | One => "One!"
+    | Two => "Two"
+    | Three => "Threeeee"
+    | Object(_) => "Object..."
+    }
+}
