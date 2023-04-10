@@ -784,6 +784,10 @@ let rec is_a_literal_case ~(literal_cases : Lambda.literal list) ~block_cases (e
     Ext_list.exists literal_cases (function
       | Int _ | Float _ -> true
       | l -> false ) in
+  let literals_overlaps_with_object () = 
+    Ext_list.exists literal_cases (function
+      | Null -> true
+      | l -> false ) in
   let is_literal_case (l:Lambda.literal) : t = bin EqEqEq e (literal l) in
   let is_block_case (c:Lambda.block_type) : t = match c with
   | StringType when literals_overlaps_with_string () = false  (* No overlap *) -> 
@@ -794,11 +798,12 @@ let rec is_a_literal_case ~(literal_cases : Lambda.literal list) ~block_cases (e
     bin NotEqEq (typeof e) (str "number")
   | Array -> 
     not (bin InstanceOf e (str "Array" ~delim:DNoQuotes))
-  | Object ->
+  | Object when literals_overlaps_with_object () = false ->
     { expression_desc = Bin (NotEqEq, typeof e, str "object"); comment=None }
   | StringType (* overlap *)
   | IntType (* overlap *)
-  | FloatType (* overlap*)
+  | FloatType (* overlap *)
+  | Object (* overlap *)
   | Unknown ->
     (* We don't know the type of unknown, so we need to express:
        this is not one of the literals *)

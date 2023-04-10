@@ -76,7 +76,7 @@ var Truthy = {
 };
 
 function classify$1(x) {
-  if (typeof x !== "object") {
+  if (x === null || x === undefined) {
     if (x === null) {
       return "null";
     } else {
@@ -173,7 +173,7 @@ var WithArray = {
 };
 
 function classify$6(x) {
-  if (!(x instanceof Array) && typeof x !== "object" && typeof x !== "number" && typeof x !== "string") {
+  if (!(x instanceof Array) && (x === true || x === false || x === null) && typeof x !== "number" && typeof x !== "string") {
     switch (x) {
       case false :
           return "JSONFalse";
@@ -274,7 +274,7 @@ var OverlapNumber = {
 };
 
 function checkEnum$2(e) {
-  if (typeof e === "object") {
+  if (!(e === "Two" || e === null || e === "Three")) {
     return "Object...";
   }
   switch (e) {
