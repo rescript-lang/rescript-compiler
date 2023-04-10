@@ -52,9 +52,9 @@ if (compile.contents !== true) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "argv_test.ml",
-          20,
-          0
+          "argv_test.res",
+          14,
+          2
         ],
         Error: new Error()
       };
@@ -64,9 +64,9 @@ if (test.contents !== false) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "argv_test.ml",
-          21,
-          0
+          "argv_test.res",
+          15,
+          2
         ],
         Error: new Error()
       };

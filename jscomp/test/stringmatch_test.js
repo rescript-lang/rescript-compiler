@@ -13,32 +13,32 @@ if (tst01("") !== 0) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          20,
-          2
-        ],
-        Error: new Error()
-      };
-}
-
-if (tst01("\0\0\0\x03") !== 1) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.ml",
-          21,
-          2
-        ],
-        Error: new Error()
-      };
-}
-
-if (tst01("\0\0\0\0\0\0\0\x07") !== 1) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "stringmatch_test.ml",
+          "stringmatch_test.res",
           22,
+          2
+        ],
+        Error: new Error()
+      };
+}
+
+if (tst01("\x00\x00\x00\x03") !== 1) {
+  throw {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "stringmatch_test.res",
+          23,
+          2
+        ],
+        Error: new Error()
+      };
+}
+
+if (tst01("\x00\x00\x00\x00\x00\x00\x00\x07") !== 1) {
+  throw {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "stringmatch_test.res",
+          24,
           2
         ],
         Error: new Error()
@@ -54,9 +54,9 @@ function tst02(s) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "stringmatch_test.ml",
-            30,
-            23
+            "stringmatch_test.res",
+            33,
+            21
           ],
           Error: new Error()
         };
@@ -65,9 +65,9 @@ function tst02(s) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "stringmatch_test.ml",
-            32,
-            22
+            "stringmatch_test.res",
+            35,
+            21
           ],
           Error: new Error()
         };
@@ -83,8 +83,8 @@ if (tst02("") !== 1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          37,
+          "stringmatch_test.res",
+          42,
           2
         ],
         Error: new Error()
@@ -95,8 +95,8 @@ if (tst02("A") !== 2) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          38,
+          "stringmatch_test.res",
+          43,
           2
         ],
         Error: new Error()
@@ -107,32 +107,32 @@ if (tst02("B") !== 3) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          39,
+          "stringmatch_test.res",
+          44,
           2
         ],
         Error: new Error()
       };
 }
 
-if (tst02("\0\0\0\0\0\0\0\x07") !== 3) {
+if (tst02("\x00\x00\x00\x00\x00\x00\x00\x07") !== 3) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          40,
+          "stringmatch_test.res",
+          45,
           2
         ],
         Error: new Error()
       };
 }
 
-if (tst02("\0\0\0\x03") !== 3) {
+if (tst02("\x00\x00\x00\x03") !== 3) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          41,
+          "stringmatch_test.res",
+          46,
           2
         ],
         Error: new Error()
@@ -198,8 +198,8 @@ if (tst03("get_const") !== 0) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          123,
+          "stringmatch_test.res",
+          131,
           2
         ],
         Error: new Error()
@@ -210,8 +210,8 @@ if (tst03("set_congt") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          124,
+          "stringmatch_test.res",
+          132,
           2
         ],
         Error: new Error()
@@ -222,8 +222,8 @@ if (tst03("get_var") !== 1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          125,
+          "stringmatch_test.res",
+          133,
           2
         ],
         Error: new Error()
@@ -234,8 +234,8 @@ if (tst03("gat_ver") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          126,
+          "stringmatch_test.res",
+          134,
           2
         ],
         Error: new Error()
@@ -246,8 +246,8 @@ if (tst03("get_env") !== 2) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          127,
+          "stringmatch_test.res",
+          135,
           2
         ],
         Error: new Error()
@@ -258,8 +258,8 @@ if (tst03("get_env") !== 2) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          128,
+          "stringmatch_test.res",
+          136,
           2
         ],
         Error: new Error()
@@ -270,8 +270,8 @@ if (tst03("get_meth") !== 3) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          129,
+          "stringmatch_test.res",
+          137,
           2
         ],
         Error: new Error()
@@ -282,8 +282,8 @@ if (tst03("met_geth") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          130,
+          "stringmatch_test.res",
+          138,
           2
         ],
         Error: new Error()
@@ -294,8 +294,8 @@ if (tst03("set_var") !== 4) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          131,
+          "stringmatch_test.res",
+          139,
           2
         ],
         Error: new Error()
@@ -306,8 +306,8 @@ if (tst03("sev_tar") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          132,
+          "stringmatch_test.res",
+          140,
           2
         ],
         Error: new Error()
@@ -318,8 +318,8 @@ if (tst03("app_const") !== 5) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          133,
+          "stringmatch_test.res",
+          141,
           2
         ],
         Error: new Error()
@@ -330,8 +330,8 @@ if (tst03("ppa_const") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          134,
+          "stringmatch_test.res",
+          142,
           2
         ],
         Error: new Error()
@@ -342,8 +342,8 @@ if (tst03("app_var") !== 6) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          135,
+          "stringmatch_test.res",
+          143,
           2
         ],
         Error: new Error()
@@ -354,8 +354,8 @@ if (tst03("app_var") !== 6) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          136,
+          "stringmatch_test.res",
+          144,
           2
         ],
         Error: new Error()
@@ -366,8 +366,8 @@ if (tst03("app_env") !== 7) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          137,
+          "stringmatch_test.res",
+          145,
           2
         ],
         Error: new Error()
@@ -378,8 +378,8 @@ if (tst03("epp_anv") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          138,
+          "stringmatch_test.res",
+          146,
           2
         ],
         Error: new Error()
@@ -390,8 +390,8 @@ if (tst03("app_meth") !== 8) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          139,
+          "stringmatch_test.res",
+          147,
           2
         ],
         Error: new Error()
@@ -402,8 +402,8 @@ if (tst03("atp_meph") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          140,
+          "stringmatch_test.res",
+          148,
           2
         ],
         Error: new Error()
@@ -414,8 +414,8 @@ if (tst03("app_const_const") !== 9) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          141,
+          "stringmatch_test.res",
+          149,
           2
         ],
         Error: new Error()
@@ -426,8 +426,8 @@ if (tst03("app_const_const") !== 9) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          142,
+          "stringmatch_test.res",
+          150,
           2
         ],
         Error: new Error()
@@ -438,8 +438,8 @@ if (tst03("app_const_var") !== 10) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          143,
+          "stringmatch_test.res",
+          151,
           2
         ],
         Error: new Error()
@@ -450,8 +450,8 @@ if (tst03("atp_consp_var") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          144,
+          "stringmatch_test.res",
+          152,
           2
         ],
         Error: new Error()
@@ -462,8 +462,8 @@ if (tst03("app_const_env") !== 11) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          145,
+          "stringmatch_test.res",
+          153,
           2
         ],
         Error: new Error()
@@ -474,8 +474,8 @@ if (tst03("app_constne_v") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          146,
+          "stringmatch_test.res",
+          154,
           2
         ],
         Error: new Error()
@@ -486,8 +486,8 @@ if (tst03("app_const_meth") !== 12) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          147,
+          "stringmatch_test.res",
+          155,
           2
         ],
         Error: new Error()
@@ -498,8 +498,8 @@ if (tst03("spp_conat_meth") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          148,
+          "stringmatch_test.res",
+          156,
           2
         ],
         Error: new Error()
@@ -510,8 +510,8 @@ if (tst03("app_var_const") !== 13) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          149,
+          "stringmatch_test.res",
+          157,
           2
         ],
         Error: new Error()
@@ -522,8 +522,8 @@ if (tst03("app_va_rconst") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          150,
+          "stringmatch_test.res",
+          158,
           2
         ],
         Error: new Error()
@@ -534,8 +534,8 @@ if (tst03("app_env_const") !== 14) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          151,
+          "stringmatch_test.res",
+          159,
           2
         ],
         Error: new Error()
@@ -546,8 +546,8 @@ if (tst03("app_env_const") !== 14) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          152,
+          "stringmatch_test.res",
+          160,
           2
         ],
         Error: new Error()
@@ -558,8 +558,8 @@ if (tst03("app_meth_const") !== 15) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          153,
+          "stringmatch_test.res",
+          161,
           2
         ],
         Error: new Error()
@@ -570,8 +570,8 @@ if (tst03("app_teth_consm") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          154,
+          "stringmatch_test.res",
+          162,
           2
         ],
         Error: new Error()
@@ -582,8 +582,8 @@ if (tst03("meth_app_const") !== 16) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          155,
+          "stringmatch_test.res",
+          163,
           2
         ],
         Error: new Error()
@@ -594,8 +594,8 @@ if (tst03("math_epp_const") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          156,
+          "stringmatch_test.res",
+          164,
           2
         ],
         Error: new Error()
@@ -606,8 +606,8 @@ if (tst03("meth_app_var") !== 17) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          157,
+          "stringmatch_test.res",
+          165,
           2
         ],
         Error: new Error()
@@ -618,8 +618,8 @@ if (tst03("meth_app_var") !== 17) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          158,
+          "stringmatch_test.res",
+          166,
           2
         ],
         Error: new Error()
@@ -630,8 +630,8 @@ if (tst03("meth_app_env") !== 18) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          159,
+          "stringmatch_test.res",
+          167,
           2
         ],
         Error: new Error()
@@ -642,8 +642,8 @@ if (tst03("eeth_app_mnv") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          160,
+          "stringmatch_test.res",
+          168,
           2
         ],
         Error: new Error()
@@ -654,8 +654,8 @@ if (tst03("meth_app_meth") !== 19) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          161,
+          "stringmatch_test.res",
+          169,
           2
         ],
         Error: new Error()
@@ -666,8 +666,8 @@ if (tst03("meth_apt_meph") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          162,
+          "stringmatch_test.res",
+          170,
           2
         ],
         Error: new Error()
@@ -678,8 +678,8 @@ if (tst03("send_const") !== 20) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          163,
+          "stringmatch_test.res",
+          171,
           2
         ],
         Error: new Error()
@@ -690,8 +690,8 @@ if (tst03("tend_conss") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          164,
+          "stringmatch_test.res",
+          172,
           2
         ],
         Error: new Error()
@@ -702,8 +702,8 @@ if (tst03("send_var") !== 21) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          165,
+          "stringmatch_test.res",
+          173,
           2
         ],
         Error: new Error()
@@ -714,8 +714,8 @@ if (tst03("serd_van") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          166,
+          "stringmatch_test.res",
+          174,
           2
         ],
         Error: new Error()
@@ -726,8 +726,8 @@ if (tst03("send_env") !== 22) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          167,
+          "stringmatch_test.res",
+          175,
           2
         ],
         Error: new Error()
@@ -738,8 +738,8 @@ if (tst03("sen_denv") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          168,
+          "stringmatch_test.res",
+          176,
           2
         ],
         Error: new Error()
@@ -750,8 +750,8 @@ if (tst03("send_meth") !== 23) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          169,
+          "stringmatch_test.res",
+          177,
           2
         ],
         Error: new Error()
@@ -762,8 +762,8 @@ if (tst03("tend_mesh") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          170,
+          "stringmatch_test.res",
+          178,
           2
         ],
         Error: new Error()
@@ -805,8 +805,8 @@ if (tst04("AAAAAAAA") !== 0) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          204,
+          "stringmatch_test.res",
+          215,
           2
         ],
         Error: new Error()
@@ -817,8 +817,8 @@ if (tst04("AAAAAAAAAAAAAAAA") !== 1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          205,
+          "stringmatch_test.res",
+          216,
           2
         ],
         Error: new Error()
@@ -829,8 +829,8 @@ if (tst04("AAAAAAAAAAAAAAAAAAAAAAAA") !== 2) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          206,
+          "stringmatch_test.res",
+          217,
           2
         ],
         Error: new Error()
@@ -841,8 +841,8 @@ if (tst04("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA") !== 3) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          207,
+          "stringmatch_test.res",
+          218,
           2
         ],
         Error: new Error()
@@ -853,8 +853,8 @@ if (tst04("BBBBBBBB") !== 4) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          208,
+          "stringmatch_test.res",
+          219,
           2
         ],
         Error: new Error()
@@ -865,8 +865,8 @@ if (tst04("BBBBBBBBBBBBBBBB") !== 5) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          209,
+          "stringmatch_test.res",
+          220,
           2
         ],
         Error: new Error()
@@ -877,8 +877,8 @@ if (tst04("BBBBBBBBBBBBBBBBBBBBBBBB") !== 6) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          210,
+          "stringmatch_test.res",
+          221,
           2
         ],
         Error: new Error()
@@ -889,8 +889,8 @@ if (tst04("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB") !== 7) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          211,
+          "stringmatch_test.res",
+          222,
           2
         ],
         Error: new Error()
@@ -901,8 +901,8 @@ if (tst04("CCCCCCCC") !== 8) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          212,
+          "stringmatch_test.res",
+          223,
           2
         ],
         Error: new Error()
@@ -913,8 +913,8 @@ if (tst04("CCCCCCCCCCCCCCCC") !== 9) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          213,
+          "stringmatch_test.res",
+          224,
           2
         ],
         Error: new Error()
@@ -925,8 +925,8 @@ if (tst04("CCCCCCCCCCCCCCCCCCCCCCCC") !== 10) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          214,
+          "stringmatch_test.res",
+          225,
           2
         ],
         Error: new Error()
@@ -937,8 +937,8 @@ if (tst04("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC") !== 11) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          215,
+          "stringmatch_test.res",
+          226,
           2
         ],
         Error: new Error()
@@ -949,8 +949,8 @@ if (tst04("") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          216,
+          "stringmatch_test.res",
+          227,
           2
         ],
         Error: new Error()
@@ -961,8 +961,8 @@ if (tst04("DDD") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          217,
+          "stringmatch_test.res",
+          228,
           2
         ],
         Error: new Error()
@@ -973,8 +973,8 @@ if (tst04("DDDDDDD") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          218,
+          "stringmatch_test.res",
+          229,
           2
         ],
         Error: new Error()
@@ -985,8 +985,8 @@ if (tst04("AAADDDD") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          219,
+          "stringmatch_test.res",
+          230,
           2
         ],
         Error: new Error()
@@ -997,8 +997,8 @@ if (tst04("AAAAAAADDDDDDDD") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          220,
+          "stringmatch_test.res",
+          231,
           2
         ],
         Error: new Error()
@@ -1009,8 +1009,8 @@ if (tst04("AAAAAAADDDD") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          221,
+          "stringmatch_test.res",
+          232,
           2
         ],
         Error: new Error()
@@ -1021,8 +1021,8 @@ if (tst04("AAAAAAAAAAAAAAADDDD") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          222,
+          "stringmatch_test.res",
+          233,
           2
         ],
         Error: new Error()
@@ -1066,8 +1066,8 @@ if (tst05("AAA") !== 0) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          258,
+          "stringmatch_test.res",
+          272,
           2
         ],
         Error: new Error()
@@ -1078,8 +1078,8 @@ if (tst05("AAAA") !== 1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          259,
+          "stringmatch_test.res",
+          273,
           2
         ],
         Error: new Error()
@@ -1090,8 +1090,8 @@ if (tst05("AAAAA") !== 2) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          260,
+          "stringmatch_test.res",
+          274,
           2
         ],
         Error: new Error()
@@ -1102,8 +1102,8 @@ if (tst05("AAAAAA") !== 3) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          261,
+          "stringmatch_test.res",
+          275,
           2
         ],
         Error: new Error()
@@ -1114,8 +1114,8 @@ if (tst05("AAAAAAA") !== 4) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          262,
+          "stringmatch_test.res",
+          276,
           2
         ],
         Error: new Error()
@@ -1126,8 +1126,8 @@ if (tst05("AAAAAAAAAAAA") !== 5) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          263,
+          "stringmatch_test.res",
+          277,
           2
         ],
         Error: new Error()
@@ -1138,8 +1138,8 @@ if (tst05("AAAAAAAAAAAAAAAA") !== 6) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          264,
+          "stringmatch_test.res",
+          278,
           2
         ],
         Error: new Error()
@@ -1150,8 +1150,8 @@ if (tst05("AAAAAAAAAAAAAAAAAAAA") !== 7) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          265,
+          "stringmatch_test.res",
+          279,
           2
         ],
         Error: new Error()
@@ -1162,8 +1162,8 @@ if (tst05("BBB") !== 8) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          266,
+          "stringmatch_test.res",
+          280,
           2
         ],
         Error: new Error()
@@ -1174,8 +1174,8 @@ if (tst05("BBBB") !== 9) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          267,
+          "stringmatch_test.res",
+          281,
           2
         ],
         Error: new Error()
@@ -1186,8 +1186,8 @@ if (tst05("BBBBB") !== 10) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          268,
+          "stringmatch_test.res",
+          282,
           2
         ],
         Error: new Error()
@@ -1198,8 +1198,8 @@ if (tst05("BBBBBB") !== 11) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          269,
+          "stringmatch_test.res",
+          283,
           2
         ],
         Error: new Error()
@@ -1210,8 +1210,8 @@ if (tst05("BBBBBBB") !== 12) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          270,
+          "stringmatch_test.res",
+          284,
           2
         ],
         Error: new Error()
@@ -1222,8 +1222,8 @@ if (tst05("") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          271,
+          "stringmatch_test.res",
+          285,
           2
         ],
         Error: new Error()
@@ -1234,8 +1234,8 @@ if (tst05("AAD") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          272,
+          "stringmatch_test.res",
+          286,
           2
         ],
         Error: new Error()
@@ -1246,8 +1246,8 @@ if (tst05("AAAD") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          273,
+          "stringmatch_test.res",
+          287,
           2
         ],
         Error: new Error()
@@ -1258,8 +1258,8 @@ if (tst05("AAAAAAD") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          274,
+          "stringmatch_test.res",
+          288,
           2
         ],
         Error: new Error()
@@ -1270,8 +1270,8 @@ if (tst05("AAAAAAAD") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          275,
+          "stringmatch_test.res",
+          289,
           2
         ],
         Error: new Error()
@@ -1282,8 +1282,8 @@ if (tst05("BBD") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          276,
+          "stringmatch_test.res",
+          290,
           2
         ],
         Error: new Error()
@@ -1294,8 +1294,8 @@ if (tst05("BBBD") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          277,
+          "stringmatch_test.res",
+          291,
           2
         ],
         Error: new Error()
@@ -1306,8 +1306,8 @@ if (tst05("BBBBBBD") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          278,
+          "stringmatch_test.res",
+          292,
           2
         ],
         Error: new Error()
@@ -1318,8 +1318,8 @@ if (tst05("BBBBBBBD") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          279,
+          "stringmatch_test.res",
+          293,
           2
         ],
         Error: new Error()
@@ -1889,8 +1889,8 @@ if (tst06(s00) !== 0) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          565,
+          "stringmatch_test.res",
+          582,
           2
         ],
         Error: new Error()
@@ -1901,8 +1901,8 @@ if (tst06(t00) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          566,
+          "stringmatch_test.res",
+          583,
           2
         ],
         Error: new Error()
@@ -1913,8 +1913,8 @@ if (tst06(s01) !== 1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          567,
+          "stringmatch_test.res",
+          584,
           2
         ],
         Error: new Error()
@@ -1925,8 +1925,8 @@ if (tst06(t01) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          568,
+          "stringmatch_test.res",
+          585,
           2
         ],
         Error: new Error()
@@ -1937,8 +1937,8 @@ if (tst06(s02) !== 2) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          569,
+          "stringmatch_test.res",
+          586,
           2
         ],
         Error: new Error()
@@ -1949,8 +1949,8 @@ if (tst06(t02) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          570,
+          "stringmatch_test.res",
+          587,
           2
         ],
         Error: new Error()
@@ -1961,8 +1961,8 @@ if (tst06(s03) !== 3) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          571,
+          "stringmatch_test.res",
+          588,
           2
         ],
         Error: new Error()
@@ -1973,8 +1973,8 @@ if (tst06(t03) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          572,
+          "stringmatch_test.res",
+          589,
           2
         ],
         Error: new Error()
@@ -1985,8 +1985,8 @@ if (tst06(s04) !== 4) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          573,
+          "stringmatch_test.res",
+          590,
           2
         ],
         Error: new Error()
@@ -1997,8 +1997,8 @@ if (tst06(t04) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          574,
+          "stringmatch_test.res",
+          591,
           2
         ],
         Error: new Error()
@@ -2009,8 +2009,8 @@ if (tst06(s05) !== 5) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          575,
+          "stringmatch_test.res",
+          592,
           2
         ],
         Error: new Error()
@@ -2021,8 +2021,8 @@ if (tst06(t05) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          576,
+          "stringmatch_test.res",
+          593,
           2
         ],
         Error: new Error()
@@ -2033,8 +2033,8 @@ if (tst06(s06) !== 6) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          577,
+          "stringmatch_test.res",
+          594,
           2
         ],
         Error: new Error()
@@ -2045,8 +2045,8 @@ if (tst06(t06) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          578,
+          "stringmatch_test.res",
+          595,
           2
         ],
         Error: new Error()
@@ -2057,8 +2057,8 @@ if (tst06(s07) !== 7) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          579,
+          "stringmatch_test.res",
+          596,
           2
         ],
         Error: new Error()
@@ -2069,8 +2069,8 @@ if (tst06(t07) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          580,
+          "stringmatch_test.res",
+          597,
           2
         ],
         Error: new Error()
@@ -2081,8 +2081,8 @@ if (tst06(s08) !== 8) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          581,
+          "stringmatch_test.res",
+          598,
           2
         ],
         Error: new Error()
@@ -2093,8 +2093,8 @@ if (tst06(t08) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          582,
+          "stringmatch_test.res",
+          599,
           2
         ],
         Error: new Error()
@@ -2105,8 +2105,8 @@ if (tst06(s09) !== 9) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          583,
+          "stringmatch_test.res",
+          600,
           2
         ],
         Error: new Error()
@@ -2117,8 +2117,8 @@ if (tst06(t09) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          584,
+          "stringmatch_test.res",
+          601,
           2
         ],
         Error: new Error()
@@ -2129,8 +2129,8 @@ if (tst06(s10) !== 10) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          585,
+          "stringmatch_test.res",
+          602,
           2
         ],
         Error: new Error()
@@ -2141,8 +2141,8 @@ if (tst06(t10) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          586,
+          "stringmatch_test.res",
+          603,
           2
         ],
         Error: new Error()
@@ -2153,8 +2153,8 @@ if (tst06(s11) !== 11) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          587,
+          "stringmatch_test.res",
+          604,
           2
         ],
         Error: new Error()
@@ -2165,8 +2165,8 @@ if (tst06(t11) !== 11) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          588,
+          "stringmatch_test.res",
+          605,
           2
         ],
         Error: new Error()
@@ -2177,8 +2177,8 @@ if (tst06(s12) !== 12) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          589,
+          "stringmatch_test.res",
+          606,
           2
         ],
         Error: new Error()
@@ -2189,8 +2189,8 @@ if (tst06(t12) !== 12) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          590,
+          "stringmatch_test.res",
+          607,
           2
         ],
         Error: new Error()
@@ -2201,8 +2201,8 @@ if (tst06(s13) !== 13) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          591,
+          "stringmatch_test.res",
+          608,
           2
         ],
         Error: new Error()
@@ -2213,8 +2213,8 @@ if (tst06(t13) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          592,
+          "stringmatch_test.res",
+          609,
           2
         ],
         Error: new Error()
@@ -2225,8 +2225,8 @@ if (tst06(s14) !== 14) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          593,
+          "stringmatch_test.res",
+          610,
           2
         ],
         Error: new Error()
@@ -2237,8 +2237,8 @@ if (tst06(t14) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          594,
+          "stringmatch_test.res",
+          611,
           2
         ],
         Error: new Error()
@@ -2249,8 +2249,8 @@ if (tst06(s15) !== 15) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          595,
+          "stringmatch_test.res",
+          612,
           2
         ],
         Error: new Error()
@@ -2261,8 +2261,8 @@ if (tst06(t15) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          596,
+          "stringmatch_test.res",
+          613,
           2
         ],
         Error: new Error()
@@ -2273,8 +2273,8 @@ if (tst06(s16) !== 16) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          597,
+          "stringmatch_test.res",
+          614,
           2
         ],
         Error: new Error()
@@ -2285,8 +2285,8 @@ if (tst06(t16) !== 16) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          598,
+          "stringmatch_test.res",
+          615,
           2
         ],
         Error: new Error()
@@ -2297,8 +2297,8 @@ if (tst06(s17) !== 17) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          599,
+          "stringmatch_test.res",
+          616,
           2
         ],
         Error: new Error()
@@ -2309,8 +2309,8 @@ if (tst06(t17) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          600,
+          "stringmatch_test.res",
+          617,
           2
         ],
         Error: new Error()
@@ -2321,8 +2321,8 @@ if (tst06(s18) !== 18) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          601,
+          "stringmatch_test.res",
+          618,
           2
         ],
         Error: new Error()
@@ -2333,8 +2333,8 @@ if (tst06(t18) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          602,
+          "stringmatch_test.res",
+          619,
           2
         ],
         Error: new Error()
@@ -2345,8 +2345,8 @@ if (tst06(s19) !== 19) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          603,
+          "stringmatch_test.res",
+          620,
           2
         ],
         Error: new Error()
@@ -2357,8 +2357,8 @@ if (tst06(t19) !== 19) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          604,
+          "stringmatch_test.res",
+          621,
           2
         ],
         Error: new Error()
@@ -2369,8 +2369,8 @@ if (tst06(s20) !== 20) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          605,
+          "stringmatch_test.res",
+          622,
           2
         ],
         Error: new Error()
@@ -2381,8 +2381,8 @@ if (tst06(t20) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          606,
+          "stringmatch_test.res",
+          623,
           2
         ],
         Error: new Error()
@@ -2393,8 +2393,8 @@ if (tst06(s21) !== 21) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          607,
+          "stringmatch_test.res",
+          624,
           2
         ],
         Error: new Error()
@@ -2405,8 +2405,8 @@ if (tst06(t21) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          608,
+          "stringmatch_test.res",
+          625,
           2
         ],
         Error: new Error()
@@ -2417,8 +2417,8 @@ if (tst06(s22) !== 22) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          609,
+          "stringmatch_test.res",
+          626,
           2
         ],
         Error: new Error()
@@ -2429,8 +2429,8 @@ if (tst06(t22) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          610,
+          "stringmatch_test.res",
+          627,
           2
         ],
         Error: new Error()
@@ -2441,8 +2441,8 @@ if (tst06(s23) !== 23) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          611,
+          "stringmatch_test.res",
+          628,
           2
         ],
         Error: new Error()
@@ -2453,8 +2453,8 @@ if (tst06(t23) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          612,
+          "stringmatch_test.res",
+          629,
           2
         ],
         Error: new Error()
@@ -2465,8 +2465,8 @@ if (tst06(s24) !== 24) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          613,
+          "stringmatch_test.res",
+          630,
           2
         ],
         Error: new Error()
@@ -2477,8 +2477,8 @@ if (tst06(t24) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          614,
+          "stringmatch_test.res",
+          631,
           2
         ],
         Error: new Error()
@@ -2489,8 +2489,8 @@ if (tst06(s25) !== 25) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          615,
+          "stringmatch_test.res",
+          632,
           2
         ],
         Error: new Error()
@@ -2501,8 +2501,8 @@ if (tst06(t25) !== 25) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          616,
+          "stringmatch_test.res",
+          633,
           2
         ],
         Error: new Error()
@@ -2513,8 +2513,8 @@ if (tst06(s26) !== 26) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          617,
+          "stringmatch_test.res",
+          634,
           2
         ],
         Error: new Error()
@@ -2525,8 +2525,8 @@ if (tst06(t26) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          618,
+          "stringmatch_test.res",
+          635,
           2
         ],
         Error: new Error()
@@ -2537,8 +2537,8 @@ if (tst06(s27) !== 27) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          619,
+          "stringmatch_test.res",
+          636,
           2
         ],
         Error: new Error()
@@ -2549,8 +2549,8 @@ if (tst06(t27) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          620,
+          "stringmatch_test.res",
+          637,
           2
         ],
         Error: new Error()
@@ -2561,8 +2561,8 @@ if (tst06(s28) !== 28) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          621,
+          "stringmatch_test.res",
+          638,
           2
         ],
         Error: new Error()
@@ -2573,8 +2573,8 @@ if (tst06(t28) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          622,
+          "stringmatch_test.res",
+          639,
           2
         ],
         Error: new Error()
@@ -2585,8 +2585,8 @@ if (tst06(s29) !== 29) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          623,
+          "stringmatch_test.res",
+          640,
           2
         ],
         Error: new Error()
@@ -2597,8 +2597,8 @@ if (tst06(t29) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          624,
+          "stringmatch_test.res",
+          641,
           2
         ],
         Error: new Error()
@@ -2609,8 +2609,8 @@ if (tst06(s30) !== 30) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          625,
+          "stringmatch_test.res",
+          642,
           2
         ],
         Error: new Error()
@@ -2621,8 +2621,8 @@ if (tst06(t30) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          626,
+          "stringmatch_test.res",
+          643,
           2
         ],
         Error: new Error()
@@ -2633,8 +2633,8 @@ if (tst06(s31) !== 31) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          627,
+          "stringmatch_test.res",
+          644,
           2
         ],
         Error: new Error()
@@ -2645,8 +2645,8 @@ if (tst06(t31) !== 31) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          628,
+          "stringmatch_test.res",
+          645,
           2
         ],
         Error: new Error()
@@ -2657,8 +2657,8 @@ if (tst06(s32) !== 32) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          629,
+          "stringmatch_test.res",
+          646,
           2
         ],
         Error: new Error()
@@ -2669,8 +2669,8 @@ if (tst06(t32) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          630,
+          "stringmatch_test.res",
+          647,
           2
         ],
         Error: new Error()
@@ -2681,8 +2681,8 @@ if (tst06(s33) !== 33) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          631,
+          "stringmatch_test.res",
+          648,
           2
         ],
         Error: new Error()
@@ -2693,8 +2693,8 @@ if (tst06(t33) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          632,
+          "stringmatch_test.res",
+          649,
           2
         ],
         Error: new Error()
@@ -2705,8 +2705,8 @@ if (tst06(s34) !== 34) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          633,
+          "stringmatch_test.res",
+          650,
           2
         ],
         Error: new Error()
@@ -2717,8 +2717,8 @@ if (tst06(t34) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          634,
+          "stringmatch_test.res",
+          651,
           2
         ],
         Error: new Error()
@@ -2729,8 +2729,8 @@ if (tst06(s35) !== 35) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          635,
+          "stringmatch_test.res",
+          652,
           2
         ],
         Error: new Error()
@@ -2741,8 +2741,8 @@ if (tst06(t35) !== 35) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          636,
+          "stringmatch_test.res",
+          653,
           2
         ],
         Error: new Error()
@@ -2753,8 +2753,8 @@ if (tst06(s36) !== 36) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          637,
+          "stringmatch_test.res",
+          654,
           2
         ],
         Error: new Error()
@@ -2765,8 +2765,8 @@ if (tst06(t36) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          638,
+          "stringmatch_test.res",
+          655,
           2
         ],
         Error: new Error()
@@ -2777,8 +2777,8 @@ if (tst06(s37) !== 37) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          639,
+          "stringmatch_test.res",
+          656,
           2
         ],
         Error: new Error()
@@ -2789,8 +2789,8 @@ if (tst06(t37) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          640,
+          "stringmatch_test.res",
+          657,
           2
         ],
         Error: new Error()
@@ -2801,8 +2801,8 @@ if (tst06(s38) !== 38) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          641,
+          "stringmatch_test.res",
+          658,
           2
         ],
         Error: new Error()
@@ -2813,8 +2813,8 @@ if (tst06(t38) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          642,
+          "stringmatch_test.res",
+          659,
           2
         ],
         Error: new Error()
@@ -2825,8 +2825,8 @@ if (tst06(s39) !== 39) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          643,
+          "stringmatch_test.res",
+          660,
           2
         ],
         Error: new Error()
@@ -2837,8 +2837,8 @@ if (tst06(t39) !== 39) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          644,
+          "stringmatch_test.res",
+          661,
           2
         ],
         Error: new Error()
@@ -2849,8 +2849,8 @@ if (tst06(s40) !== 40) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          645,
+          "stringmatch_test.res",
+          662,
           2
         ],
         Error: new Error()
@@ -2861,8 +2861,8 @@ if (tst06(t40) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          646,
+          "stringmatch_test.res",
+          663,
           2
         ],
         Error: new Error()
@@ -2873,8 +2873,8 @@ if (tst06(s41) !== 41) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          647,
+          "stringmatch_test.res",
+          664,
           2
         ],
         Error: new Error()
@@ -2885,8 +2885,8 @@ if (tst06(t41) !== 41) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          648,
+          "stringmatch_test.res",
+          665,
           2
         ],
         Error: new Error()
@@ -2897,8 +2897,8 @@ if (tst06(s42) !== 42) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          649,
+          "stringmatch_test.res",
+          666,
           2
         ],
         Error: new Error()
@@ -2909,8 +2909,8 @@ if (tst06(t42) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          650,
+          "stringmatch_test.res",
+          667,
           2
         ],
         Error: new Error()
@@ -2921,8 +2921,8 @@ if (tst06(s43) !== 43) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          651,
+          "stringmatch_test.res",
+          668,
           2
         ],
         Error: new Error()
@@ -2933,8 +2933,8 @@ if (tst06(t43) !== 43) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          652,
+          "stringmatch_test.res",
+          669,
           2
         ],
         Error: new Error()
@@ -2945,8 +2945,8 @@ if (tst06(s44) !== 44) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          653,
+          "stringmatch_test.res",
+          670,
           2
         ],
         Error: new Error()
@@ -2957,8 +2957,8 @@ if (tst06(t44) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          654,
+          "stringmatch_test.res",
+          671,
           2
         ],
         Error: new Error()
@@ -2969,8 +2969,8 @@ if (tst06(s45) !== 45) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          655,
+          "stringmatch_test.res",
+          672,
           2
         ],
         Error: new Error()
@@ -2981,8 +2981,8 @@ if (tst06(t45) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          656,
+          "stringmatch_test.res",
+          673,
           2
         ],
         Error: new Error()
@@ -2993,8 +2993,8 @@ if (tst06(s46) !== 46) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          657,
+          "stringmatch_test.res",
+          674,
           2
         ],
         Error: new Error()
@@ -3005,8 +3005,8 @@ if (tst06(t46) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          658,
+          "stringmatch_test.res",
+          675,
           2
         ],
         Error: new Error()
@@ -3017,8 +3017,8 @@ if (tst06(s47) !== 47) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          659,
+          "stringmatch_test.res",
+          676,
           2
         ],
         Error: new Error()
@@ -3029,8 +3029,8 @@ if (tst06(t47) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          660,
+          "stringmatch_test.res",
+          677,
           2
         ],
         Error: new Error()
@@ -3041,8 +3041,8 @@ if (tst06(s48) !== 48) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          661,
+          "stringmatch_test.res",
+          678,
           2
         ],
         Error: new Error()
@@ -3053,8 +3053,8 @@ if (tst06(t48) !== 48) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          662,
+          "stringmatch_test.res",
+          679,
           2
         ],
         Error: new Error()
@@ -3065,8 +3065,8 @@ if (tst06(s49) !== 49) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          663,
+          "stringmatch_test.res",
+          680,
           2
         ],
         Error: new Error()
@@ -3077,8 +3077,8 @@ if (tst06(t49) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          664,
+          "stringmatch_test.res",
+          681,
           2
         ],
         Error: new Error()
@@ -3089,8 +3089,8 @@ if (tst06(s50) !== 50) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          665,
+          "stringmatch_test.res",
+          682,
           2
         ],
         Error: new Error()
@@ -3101,8 +3101,8 @@ if (tst06(t50) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          666,
+          "stringmatch_test.res",
+          683,
           2
         ],
         Error: new Error()
@@ -3113,8 +3113,8 @@ if (tst06(s51) !== 51) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          667,
+          "stringmatch_test.res",
+          684,
           2
         ],
         Error: new Error()
@@ -3125,8 +3125,8 @@ if (tst06(t51) !== 51) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          668,
+          "stringmatch_test.res",
+          685,
           2
         ],
         Error: new Error()
@@ -3137,8 +3137,8 @@ if (tst06(s52) !== 52) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          669,
+          "stringmatch_test.res",
+          686,
           2
         ],
         Error: new Error()
@@ -3149,8 +3149,8 @@ if (tst06(t52) !== 52) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          670,
+          "stringmatch_test.res",
+          687,
           2
         ],
         Error: new Error()
@@ -3161,8 +3161,8 @@ if (tst06(s53) !== 53) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          671,
+          "stringmatch_test.res",
+          688,
           2
         ],
         Error: new Error()
@@ -3173,8 +3173,8 @@ if (tst06(t53) !== 53) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          672,
+          "stringmatch_test.res",
+          689,
           2
         ],
         Error: new Error()
@@ -3185,8 +3185,8 @@ if (tst06(s54) !== 54) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          673,
+          "stringmatch_test.res",
+          690,
           2
         ],
         Error: new Error()
@@ -3197,8 +3197,8 @@ if (tst06(t54) !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          674,
+          "stringmatch_test.res",
+          691,
           2
         ],
         Error: new Error()
@@ -3209,8 +3209,8 @@ if (tst06(s55) !== 55) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          675,
+          "stringmatch_test.res",
+          692,
           2
         ],
         Error: new Error()
@@ -3221,8 +3221,8 @@ if (tst06(t55) !== 55) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          676,
+          "stringmatch_test.res",
+          693,
           2
         ],
         Error: new Error()
@@ -3233,8 +3233,8 @@ if (tst06(s56) !== 56) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          677,
+          "stringmatch_test.res",
+          694,
           2
         ],
         Error: new Error()
@@ -3245,8 +3245,8 @@ if (tst06(t56) !== 56) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          678,
+          "stringmatch_test.res",
+          695,
           2
         ],
         Error: new Error()
@@ -3257,8 +3257,8 @@ if (tst06(s57) !== 57) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          679,
+          "stringmatch_test.res",
+          696,
           2
         ],
         Error: new Error()
@@ -3269,8 +3269,8 @@ if (tst06(t57) !== 57) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          680,
+          "stringmatch_test.res",
+          697,
           2
         ],
         Error: new Error()
@@ -3281,8 +3281,8 @@ if (tst06(s58) !== 58) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          681,
+          "stringmatch_test.res",
+          698,
           2
         ],
         Error: new Error()
@@ -3293,8 +3293,8 @@ if (tst06(t58) !== 58) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          682,
+          "stringmatch_test.res",
+          699,
           2
         ],
         Error: new Error()
@@ -3305,8 +3305,8 @@ if (tst06(s59) !== 59) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          683,
+          "stringmatch_test.res",
+          700,
           2
         ],
         Error: new Error()
@@ -3317,8 +3317,8 @@ if (tst06(t59) !== 59) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          684,
+          "stringmatch_test.res",
+          701,
           2
         ],
         Error: new Error()
@@ -3329,8 +3329,8 @@ if (tst06(s60) !== 60) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          685,
+          "stringmatch_test.res",
+          702,
           2
         ],
         Error: new Error()
@@ -3341,8 +3341,8 @@ if (tst06(t60) !== 60) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          686,
+          "stringmatch_test.res",
+          703,
           2
         ],
         Error: new Error()
@@ -3353,8 +3353,8 @@ if (tst06(s61) !== 61) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          687,
+          "stringmatch_test.res",
+          704,
           2
         ],
         Error: new Error()
@@ -3365,8 +3365,8 @@ if (tst06(t61) !== 61) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          688,
+          "stringmatch_test.res",
+          705,
           2
         ],
         Error: new Error()
@@ -3377,8 +3377,8 @@ if (tst06(s62) !== 62) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          689,
+          "stringmatch_test.res",
+          706,
           2
         ],
         Error: new Error()
@@ -3389,8 +3389,8 @@ if (tst06(t62) !== 62) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          690,
+          "stringmatch_test.res",
+          707,
           2
         ],
         Error: new Error()
@@ -3401,8 +3401,8 @@ if (tst06(s63) !== 63) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          691,
+          "stringmatch_test.res",
+          708,
           2
         ],
         Error: new Error()
@@ -3413,8 +3413,8 @@ if (tst06(t63) !== 63) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          692,
+          "stringmatch_test.res",
+          709,
           2
         ],
         Error: new Error()
@@ -3425,8 +3425,8 @@ if (tst06(s64) !== 64) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          693,
+          "stringmatch_test.res",
+          710,
           2
         ],
         Error: new Error()
@@ -3437,8 +3437,8 @@ if (tst06(t64) !== 64) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          694,
+          "stringmatch_test.res",
+          711,
           2
         ],
         Error: new Error()
@@ -3449,8 +3449,8 @@ if (tst06(s65) !== 65) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          695,
+          "stringmatch_test.res",
+          712,
           2
         ],
         Error: new Error()
@@ -3461,8 +3461,8 @@ if (tst06(t65) !== 65) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          696,
+          "stringmatch_test.res",
+          713,
           2
         ],
         Error: new Error()
@@ -3473,8 +3473,8 @@ if (tst06(s66) !== 66) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          697,
+          "stringmatch_test.res",
+          714,
           2
         ],
         Error: new Error()
@@ -3485,8 +3485,8 @@ if (tst06(t66) !== 66) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          698,
+          "stringmatch_test.res",
+          715,
           2
         ],
         Error: new Error()
@@ -3497,8 +3497,8 @@ if (tst06(s67) !== 67) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          699,
+          "stringmatch_test.res",
+          716,
           2
         ],
         Error: new Error()
@@ -3509,8 +3509,8 @@ if (tst06(t67) !== 67) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          700,
+          "stringmatch_test.res",
+          717,
           2
         ],
         Error: new Error()
@@ -3521,8 +3521,8 @@ if (tst06(s68) !== 68) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          701,
+          "stringmatch_test.res",
+          718,
           2
         ],
         Error: new Error()
@@ -3533,8 +3533,8 @@ if (tst06(t68) !== 68) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          702,
+          "stringmatch_test.res",
+          719,
           2
         ],
         Error: new Error()
@@ -3545,8 +3545,8 @@ if (tst06(s69) !== 69) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          703,
+          "stringmatch_test.res",
+          720,
           2
         ],
         Error: new Error()
@@ -3557,8 +3557,8 @@ if (tst06(t69) !== 69) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          704,
+          "stringmatch_test.res",
+          721,
           2
         ],
         Error: new Error()
@@ -3569,8 +3569,8 @@ if (tst06(s70) !== 70) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          705,
+          "stringmatch_test.res",
+          722,
           2
         ],
         Error: new Error()
@@ -3581,8 +3581,8 @@ if (tst06(t70) !== 70) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          706,
+          "stringmatch_test.res",
+          723,
           2
         ],
         Error: new Error()
@@ -3593,8 +3593,8 @@ if (tst06(s71) !== 71) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          707,
+          "stringmatch_test.res",
+          724,
           2
         ],
         Error: new Error()
@@ -3605,8 +3605,8 @@ if (tst06(t71) !== 71) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          708,
+          "stringmatch_test.res",
+          725,
           2
         ],
         Error: new Error()
@@ -3617,8 +3617,8 @@ if (tst06(s72) !== 72) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          709,
+          "stringmatch_test.res",
+          726,
           2
         ],
         Error: new Error()
@@ -3629,8 +3629,8 @@ if (tst06(t72) !== 72) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          710,
+          "stringmatch_test.res",
+          727,
           2
         ],
         Error: new Error()
@@ -3641,8 +3641,8 @@ if (tst06(s73) !== 73) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          711,
+          "stringmatch_test.res",
+          728,
           2
         ],
         Error: new Error()
@@ -3653,8 +3653,8 @@ if (tst06(t73) !== 73) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          712,
+          "stringmatch_test.res",
+          729,
           2
         ],
         Error: new Error()
@@ -3665,8 +3665,8 @@ if (tst06(s74) !== 74) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          713,
+          "stringmatch_test.res",
+          730,
           2
         ],
         Error: new Error()
@@ -3677,8 +3677,8 @@ if (tst06(t74) !== 74) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          714,
+          "stringmatch_test.res",
+          731,
           2
         ],
         Error: new Error()
@@ -3689,8 +3689,8 @@ if (tst06(s75) !== 75) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          715,
+          "stringmatch_test.res",
+          732,
           2
         ],
         Error: new Error()
@@ -3701,8 +3701,8 @@ if (tst06(t75) !== 75) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          716,
+          "stringmatch_test.res",
+          733,
           2
         ],
         Error: new Error()
@@ -3713,8 +3713,8 @@ if (tst06(s76) !== 76) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          717,
+          "stringmatch_test.res",
+          734,
           2
         ],
         Error: new Error()
@@ -3725,8 +3725,8 @@ if (tst06(t76) !== 76) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          718,
+          "stringmatch_test.res",
+          735,
           2
         ],
         Error: new Error()
@@ -3737,8 +3737,8 @@ if (tst06(s77) !== 77) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          719,
+          "stringmatch_test.res",
+          736,
           2
         ],
         Error: new Error()
@@ -3749,8 +3749,8 @@ if (tst06(t77) !== 77) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          720,
+          "stringmatch_test.res",
+          737,
           2
         ],
         Error: new Error()
@@ -3761,8 +3761,8 @@ if (tst06(s78) !== 78) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          721,
+          "stringmatch_test.res",
+          738,
           2
         ],
         Error: new Error()
@@ -3773,8 +3773,8 @@ if (tst06(t78) !== 78) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          722,
+          "stringmatch_test.res",
+          739,
           2
         ],
         Error: new Error()
@@ -3785,8 +3785,8 @@ if (tst06(s79) !== 79) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          723,
+          "stringmatch_test.res",
+          740,
           2
         ],
         Error: new Error()
@@ -3797,8 +3797,8 @@ if (tst06(t79) !== 79) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          724,
+          "stringmatch_test.res",
+          741,
           2
         ],
         Error: new Error()
@@ -3809,8 +3809,8 @@ if (tst06(s80) !== 80) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          725,
+          "stringmatch_test.res",
+          742,
           2
         ],
         Error: new Error()
@@ -3821,8 +3821,8 @@ if (tst06(t80) !== 80) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          726,
+          "stringmatch_test.res",
+          743,
           2
         ],
         Error: new Error()
@@ -3833,8 +3833,8 @@ if (tst06(s81) !== 81) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          727,
+          "stringmatch_test.res",
+          744,
           2
         ],
         Error: new Error()
@@ -3845,8 +3845,8 @@ if (tst06(t81) !== 81) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          728,
+          "stringmatch_test.res",
+          745,
           2
         ],
         Error: new Error()
@@ -3857,8 +3857,8 @@ if (tst06(s82) !== 82) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          729,
+          "stringmatch_test.res",
+          746,
           2
         ],
         Error: new Error()
@@ -3869,8 +3869,8 @@ if (tst06(t82) !== 82) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          730,
+          "stringmatch_test.res",
+          747,
           2
         ],
         Error: new Error()
@@ -3881,8 +3881,8 @@ if (tst06(s83) !== 83) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          731,
+          "stringmatch_test.res",
+          748,
           2
         ],
         Error: new Error()
@@ -3893,8 +3893,8 @@ if (tst06(t83) !== 83) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          732,
+          "stringmatch_test.res",
+          749,
           2
         ],
         Error: new Error()
@@ -3905,8 +3905,8 @@ if (tst06(s84) !== 84) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          733,
+          "stringmatch_test.res",
+          750,
           2
         ],
         Error: new Error()
@@ -3917,8 +3917,8 @@ if (tst06(t84) !== 84) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          734,
+          "stringmatch_test.res",
+          751,
           2
         ],
         Error: new Error()
@@ -3929,8 +3929,8 @@ if (tst06(s85) !== 85) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          735,
+          "stringmatch_test.res",
+          752,
           2
         ],
         Error: new Error()
@@ -3941,8 +3941,8 @@ if (tst06(t85) !== 85) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          736,
+          "stringmatch_test.res",
+          753,
           2
         ],
         Error: new Error()
@@ -3953,8 +3953,8 @@ if (tst06(s86) !== 86) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          737,
+          "stringmatch_test.res",
+          754,
           2
         ],
         Error: new Error()
@@ -3965,8 +3965,8 @@ if (tst06(t86) !== 86) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          738,
+          "stringmatch_test.res",
+          755,
           2
         ],
         Error: new Error()
@@ -3977,8 +3977,8 @@ if (tst06(s87) !== 87) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          739,
+          "stringmatch_test.res",
+          756,
           2
         ],
         Error: new Error()
@@ -3989,8 +3989,8 @@ if (tst06(t87) !== 87) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          740,
+          "stringmatch_test.res",
+          757,
           2
         ],
         Error: new Error()
@@ -4001,8 +4001,8 @@ if (tst06(s88) !== 88) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          741,
+          "stringmatch_test.res",
+          758,
           2
         ],
         Error: new Error()
@@ -4013,8 +4013,8 @@ if (tst06(t88) !== 88) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          742,
+          "stringmatch_test.res",
+          759,
           2
         ],
         Error: new Error()
@@ -4025,8 +4025,8 @@ if (tst06(s89) !== 89) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          743,
+          "stringmatch_test.res",
+          760,
           2
         ],
         Error: new Error()
@@ -4037,8 +4037,8 @@ if (tst06(t89) !== 89) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          744,
+          "stringmatch_test.res",
+          761,
           2
         ],
         Error: new Error()
@@ -4049,8 +4049,8 @@ if (tst06(s90) !== 90) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          745,
+          "stringmatch_test.res",
+          762,
           2
         ],
         Error: new Error()
@@ -4061,8 +4061,8 @@ if (tst06(t90) !== 90) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          746,
+          "stringmatch_test.res",
+          763,
           2
         ],
         Error: new Error()
@@ -4073,8 +4073,8 @@ if (tst06(s91) !== 91) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          747,
+          "stringmatch_test.res",
+          764,
           2
         ],
         Error: new Error()
@@ -4085,8 +4085,8 @@ if (tst06(t91) !== 91) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          748,
+          "stringmatch_test.res",
+          765,
           2
         ],
         Error: new Error()
@@ -4097,8 +4097,8 @@ if (tst06("") !== -1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "stringmatch_test.ml",
-          749,
+          "stringmatch_test.res",
+          766,
           2
         ],
         Error: new Error()

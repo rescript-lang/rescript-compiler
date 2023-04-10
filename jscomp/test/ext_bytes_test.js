@@ -158,13 +158,13 @@ var a = Bytes.init(100, Char.chr);
 
 Bytes.blit(a, 5, a, 10, 10);
 
-eq("File \"ext_bytes_test.ml\", line 96, characters 7-14", a, Bytes.of_string("\0\x01\x02\x03\x04\x05\x06\x07\b\t\x05\x06\x07\b\t\n\x0b\f\r\x0e\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abc"));
+eq("File \"ext_bytes_test.res\", line 116, characters 4-11", a, Bytes.of_string("\x00\x01\x02\x03\x04\x05\x06\x07\b\t\x05\x06\x07\b\t\n\x0b\x0c\r\x0e\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abc"));
 
 var a$1 = Bytes.init(100, Char.chr);
 
 Bytes.blit(a$1, 10, a$1, 5, 10);
 
-eq("File \"ext_bytes_test.ml\", line 102, characters 7-14", a$1, Bytes.of_string("\0\x01\x02\x03\x04\n\x0b\f\r\x0e\x0f\x10\x11\x12\x13\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abc"));
+eq("File \"ext_bytes_test.res\", line 128, characters 4-11", a$1, Bytes.of_string("\x00\x01\x02\x03\x04\n\x0b\x0c\r\x0e\x0f\x10\x11\x12\x13\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abc"));
 
 var f = Char.chr;
 
@@ -176,7 +176,7 @@ var b = Bytes.init(100, (function (i) {
 
 Bytes.blit_string(a$2, 10, b, 5, 10);
 
-eq("File \"ext_bytes_test.ml\", line 109, characters 7-14", b, Bytes.of_string("\0\0\0\0\0\n\x0b\f\r\x0e\x0f\x10\x11\x12\x13\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"));
+eq("File \"ext_bytes_test.res\", line 141, characters 4-11", b, Bytes.of_string("\x00\x00\x00\x00\x00\n\x0b\x0c\r\x0e\x0f\x10\x11\x12\x13\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"));
 
 var s = Bytes.init(50000, (function (i) {
         return Char.chr(i % 137);
@@ -186,7 +186,7 @@ var s1 = Bytes.to_string(s);
 
 var s2 = Bytes.of_string(s1);
 
-eq("File \"ext_bytes_test.ml\", line 115, characters 7-14", s, s2);
+eq("File \"ext_bytes_test.res\", line 153, characters 5-12", s, s2);
 
 function f$1(a, b) {
   return [

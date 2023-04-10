@@ -1663,7 +1663,7 @@ Mt.from_pair_suites("Int64_mul_div_test", Pervasives.$at(from_pairs("random", pa
                                     ],
                                     tl: {
                                       hd: [
-                                        "File \"int64_mul_div_test.ml\", line 214, characters 5-12",
+                                        "File \"int64_mul_div_test.res\", line 263, characters 19-26",
                                         (function (param) {
                                             return {
                                                     TAG: "Eq",

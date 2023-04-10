@@ -35,9 +35,9 @@ function a0(x) {
   return (x.content + x.next.content | 0) + x.next.next.content | 0;
 }
 
-eq("File \"recursive_records_test.ml\", line 29, characters 5-12", a0(rec_cell), 9);
+eq("File \"recursive_records_test.res\", line 26, characters 5-12", a0(rec_cell), 9);
 
-eq("File \"recursive_records_test.ml\", line 30, characters 5-12", a0(f0(3)), 9);
+eq("File \"recursive_records_test.res\", line 27, characters 5-12", a0(f0(3)), 9);
 
 var rec_cell2 = {};
 
@@ -70,19 +70,19 @@ function tl_exn(x) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "recursive_records_test.ml",
-          52,
+          "recursive_records_test.res",
+          49,
           11
         ],
         Error: new Error()
       };
 }
 
-eq("File \"recursive_records_test.ml\", line 56, characters 6-13", (hd(rec_cell2) + hd(tl_exn(rec_cell2)) | 0) + hd(tl_exn(tl_exn(rec_cell2))) | 0, 9);
+eq("File \"recursive_records_test.res\", line 54, characters 5-12", (hd(rec_cell2) + hd(tl_exn(rec_cell2)) | 0) + hd(tl_exn(tl_exn(rec_cell2))) | 0, 9);
 
 var rec_cell2$1 = f2(3);
 
-eq("File \"recursive_records_test.ml\", line 60, characters 5-12", (hd(rec_cell2$1) + hd(tl_exn(rec_cell2$1)) | 0) + hd(tl_exn(tl_exn(rec_cell2$1))) | 0, 9);
+eq("File \"recursive_records_test.res\", line 56, characters 5-12", (hd(rec_cell2$1) + hd(tl_exn(rec_cell2$1)) | 0) + hd(tl_exn(tl_exn(rec_cell2$1))) | 0, 9);
 
 var rec_cell3 = {};
 
@@ -99,13 +99,13 @@ function f3(x) {
   return rec_cell3;
 }
 
-eq("File \"recursive_records_test.ml\", line 74, characters 5-12", (List.hd(rec_cell3) + List.hd(List.tl(rec_cell3)) | 0) + List.hd(List.tl(List.tl(rec_cell3))) | 0, 9);
+eq("File \"recursive_records_test.res\", line 68, characters 4-11", (List.hd(rec_cell3) + List.hd(List.tl(rec_cell3)) | 0) + List.hd(List.tl(List.tl(rec_cell3))) | 0, 9);
 
 var rec_cell3$1 = f3(3);
 
-eq("File \"recursive_records_test.ml\", line 77, characters 5-12", (List.hd(rec_cell3$1) + List.hd(List.tl(rec_cell3$1)) | 0) + List.hd(List.tl(List.tl(rec_cell3$1))) | 0, 9);
+eq("File \"recursive_records_test.res\", line 77, characters 4-11", (List.hd(rec_cell3$1) + List.hd(List.tl(rec_cell3$1)) | 0) + List.hd(List.tl(List.tl(rec_cell3$1))) | 0, 9);
 
-Mt.from_pair_suites("recursive_records_test.ml", suites.contents);
+Mt.from_pair_suites("recursive_records_test.res", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

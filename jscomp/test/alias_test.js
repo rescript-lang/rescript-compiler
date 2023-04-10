@@ -1,14 +1,19 @@
 'use strict';
 
+var Caml_string = require("../../lib/js/caml_string.js");
 
 var a10 = "hello world";
 
-var v = 1;
+var a20 = a10 + "not";
 
-var a21 = "hello worldnothello worldnot";
+var v = Caml_string.get(a20, 0) === /* 'h' */104 ? 1 : 2;
+
+var a21 = a20 + a20;
+
+var a22 = "test " + (a21 + "hello");
 
 function ff(param) {
-  return "cool test hello worldnothello worldnothello";
+  return "cool " + a22;
 }
 
 var a23 = ff(undefined);

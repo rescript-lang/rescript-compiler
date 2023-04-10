@@ -9,9 +9,9 @@ if (match !== undefined) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "gpr_3980_test.ml",
-            16,
-            10
+            "gpr_3980_test.res",
+            15,
+            7
           ],
           Error: new Error()
         };
@@ -22,9 +22,9 @@ if (match !== undefined) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "gpr_3980_test.ml",
-              14,
-              12
+              "gpr_3980_test.res",
+              13,
+              9
             ],
             Error: new Error()
           };
@@ -36,9 +36,9 @@ if (match !== undefined) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "gpr_3980_test.ml",
-          16,
-          10
+          "gpr_3980_test.res",
+          15,
+          7
         ],
         Error: new Error()
       };

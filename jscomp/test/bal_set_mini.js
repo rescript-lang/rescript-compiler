@@ -1,11 +1,11 @@
 'use strict';
 
 
-function height(param) {
-  if (typeof param !== "object") {
+function height(x) {
+  if (typeof x !== "object") {
     return 0;
   } else {
-    return param._3;
+    return x._3;
   }
 }
 
@@ -73,8 +73,8 @@ function compare_int(x, y) {
   }
 }
 
-function add(x, t) {
-  if (typeof t !== "object") {
+function add(x, x_) {
+  if (typeof x_ !== "object") {
     return {
             TAG: "Node",
             _0: "Empty",
@@ -83,12 +83,12 @@ function add(x, t) {
             _3: 1
           };
   }
-  var r = t._2;
-  var v = t._1;
-  var l = t._0;
+  var r = x_._2;
+  var v = x_._1;
+  var l = x_._0;
   var c = compare_int(x, v);
   if (c === 0) {
-    return t;
+    return x_;
   } else if (c < 0) {
     return bal(add(x, l), v, r);
   } else {
@@ -96,19 +96,19 @@ function add(x, t) {
   }
 }
 
-function min_elt(_def, _param) {
+function min_elt(_def, _x) {
   while(true) {
-    var param = _param;
+    var x = _x;
     var def = _def;
-    if (typeof param !== "object") {
+    if (typeof x !== "object") {
       return def;
     }
-    var l = param._0;
+    var l = x._0;
     if (typeof l !== "object") {
-      return param._1;
+      return x._1;
     }
-    _param = l;
-    _def = param._1;
+    _x = l;
+    _def = x._1;
     continue ;
   };
 }
@@ -149,17 +149,17 @@ function remove(x, tree) {
   }
 }
 
-function mem(x, _param) {
+function mem(x, _x_) {
   while(true) {
-    var param = _param;
-    if (typeof param !== "object") {
+    var x_ = _x_;
+    if (typeof x_ !== "object") {
       return false;
     }
-    var c = compare_int(x, param._1);
+    var c = compare_int(x, x_._1);
     if (c === 0) {
       return true;
     }
-    _param = c < 0 ? param._0 : param._2;
+    _x_ = c < 0 ? x_._0 : x_._2;
     continue ;
   };
 }

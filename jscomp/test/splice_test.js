@@ -28,7 +28,7 @@ var a = [];
 
 a.push(1, 2, 3, 4);
 
-eq("File \"splice_test.ml\", line 29, characters 5-12", a, [
+eq("File \"splice_test.res\", line 23, characters 5-12", a, [
       1,
       2,
       3,
@@ -41,7 +41,7 @@ function dynamic(arr) {
         1,
         arr
       ]);
-  eq("File \"splice_test.ml\", line 34, characters 5-12", a, Caml_array.concat({
+  eq("File \"splice_test.res\", line 29, characters 5-12", a, Caml_array.concat({
             hd: [1],
             tl: {
               hd: arr,
@@ -66,7 +66,7 @@ dynamic([
 
 var a$1 = new Array(1, 2, 3, 4);
 
-eq("File \"splice_test.ml\", line 49, characters 5-12", a$1, [
+eq("File \"splice_test.res\", line 44, characters 5-12", a$1, [
       1,
       2,
       3,
@@ -79,7 +79,7 @@ function dynamicNew(arr) {
         2,
         arr
       ]);
-  eq("File \"splice_test.ml\", line 53, characters 5-12", a, Caml_array.concat({
+  eq("File \"splice_test.res\", line 49, characters 5-12", a, Caml_array.concat({
             hd: [
               1,
               2
@@ -112,7 +112,7 @@ class Foo {
 
 var f = new Foo("a", "b", "c");
 
-eq("File \"splice_test.ml\", line 74, characters 5-12", f.names, [
+eq("File \"splice_test.res\", line 71, characters 5-12", f.names, [
       "a",
       "b",
       "c"
@@ -120,7 +120,7 @@ eq("File \"splice_test.ml\", line 74, characters 5-12", f.names, [
 
 function dynamicFoo(arr) {
   var f = Caml_splice_call.spliceNewApply(Foo, [arr]);
-  eq("File \"splice_test.ml\", line 78, characters 5-12", f.names, arr);
+  eq("File \"splice_test.res\", line 76, characters 5-12", f.names, arr);
 }
 
 dynamicFoo([]);
@@ -137,7 +137,7 @@ var a$2 = [];
 
 a$2.push(1, 2, 3, 4);
 
-eq("File \"splice_test.ml\", line 95, characters 7-14", a$2, [
+eq("File \"splice_test.res\", line 93, characters 7-14", a$2, [
       1,
       2,
       3,
@@ -150,7 +150,7 @@ function dynamic$1(arr) {
         1,
         arr
       ]);
-  eq("File \"splice_test.ml\", line 100, characters 7-14", a, Caml_array.concat({
+  eq("File \"splice_test.res\", line 99, characters 7-14", a, Caml_array.concat({
             hd: [1],
             tl: {
               hd: arr,
@@ -184,13 +184,13 @@ function f1(c) {
             ]);
 }
 
-eq("File \"splice_test.ml\", line 111, characters 6-13", Math.max(1, 2, 3), 3);
+eq("File \"splice_test.res\", line 109, characters 3-10", Math.max(1, 2, 3), 3);
 
-eq("File \"splice_test.ml\", line 112, characters 6-13", Math.max(1), 1);
+eq("File \"splice_test.res\", line 110, characters 3-10", Math.max(1), 1);
 
-eq("File \"splice_test.ml\", line 113, characters 6-13", Math.max(1, 1, 2, 3, 4, 5, 2, 3), 5);
+eq("File \"splice_test.res\", line 111, characters 3-10", Math.max(1, 1, 2, 3, 4, 5, 2, 3), 5);
 
-Mt.from_pair_suites("splice_test.ml", suites.contents);
+Mt.from_pair_suites("splice_test.res", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

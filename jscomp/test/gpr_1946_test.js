@@ -35,11 +35,11 @@ function f(id) {
   return id;
 }
 
-eq("File \"gpr_1946_test.ml\", line 29, characters 6-13", ({
+eq("File \"gpr_1946_test.res\", line 24, characters 3-10", ({
         "5": 3
       })[5], 3);
 
-eq("File \"gpr_1946_test.ml\", line 30, characters 6-13", [
+eq("File \"gpr_1946_test.res\", line 25, characters 3-10", [
       2,
       3
     ], [
@@ -51,7 +51,7 @@ console.log(({
           "5": 3
         }).TAG);
 
-Mt.from_pair_suites("File \"gpr_1946_test.ml\", line 33, characters 23-30", suites.contents);
+Mt.from_pair_suites("File \"gpr_1946_test.res\", line 28, characters 20-27", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

@@ -21,9 +21,9 @@ function xx(obj, a0, a1, a2, a3, a4, a5) {
   return (Curry._2(a4, Curry._2(a2, Curry._2(a0, obj, a1), a3), a5) - 1 | 0) - 3 | 0;
 }
 
-eq("File \"gpr_3536_test.ml\", line 29, characters 12-19", 5, 5);
+eq("File \"gpr_3536_test.res\", line 18, characters 12-19", 5, 5);
 
-eq("File \"gpr_3536_test.ml\", line 32, characters 6-13", xx(3, (function (prim0, prim1) {
+eq("File \"gpr_3536_test.res\", line 20, characters 12-19", xx(3, (function (prim0, prim1) {
             return prim0 - prim1 | 0;
           }), 2, (function (prim0, prim1) {
             return prim0 + prim1 | 0;

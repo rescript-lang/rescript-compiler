@@ -50,7 +50,7 @@ function f(param) {
   return List;
 }
 
-eq("File \"global_module_alias_test.ml\", line 51, characters 5-12", List.length({
+eq("File \"global_module_alias_test.res\", line 48, characters 12-19", List.length({
           hd: 1,
           tl: {
             hd: 2,
@@ -84,7 +84,7 @@ v.contents = v.contents + 1 | 0;
 
 var H = List;
 
-eq("File \"global_module_alias_test.ml\", line 57, characters 5-12", v.contents, 12);
+eq("File \"global_module_alias_test.res\", line 52, characters 12-19", v.contents, 12);
 
 function g(param) {
   return List.length({
@@ -109,11 +109,11 @@ function xx(param) {
   return List;
 }
 
-eq("File \"global_module_alias_test.ml\", line 86, characters 5-12", g(undefined), 4);
+eq("File \"global_module_alias_test.res\", line 80, characters 12-19", g(undefined), 4);
 
 var V = xx(undefined);
 
-eq("File \"global_module_alias_test.ml\", line 92, characters 5-12", Curry._1(V.length, {
+eq("File \"global_module_alias_test.res\", line 84, characters 5-12", Curry._1(V.length, {
           hd: 1,
           tl: {
             hd: 2,
@@ -124,11 +124,11 @@ eq("File \"global_module_alias_test.ml\", line 92, characters 5-12", Curry._1(V.
           }
         }), 3);
 
-eq("File \"global_module_alias_test.ml\", line 93, characters 5-12", v.contents, 15);
+eq("File \"global_module_alias_test.res\", line 85, characters 5-12", v.contents, 15);
 
 var H$1 = f(undefined);
 
-eq("File \"global_module_alias_test.ml\", line 95, characters 5-12", Curry._1(H$1.length, {
+eq("File \"global_module_alias_test.res\", line 87, characters 5-12", Curry._1(H$1.length, {
           hd: 1,
           tl: {
             hd: 2,
@@ -136,7 +136,7 @@ eq("File \"global_module_alias_test.ml\", line 95, characters 5-12", Curry._1(H$
           }
         }), 2);
 
-eq("File \"global_module_alias_test.ml\", line 96, characters 5-12", v.contents, 21);
+eq("File \"global_module_alias_test.res\", line 88, characters 5-12", v.contents, 21);
 
 Mt.from_pair_suites("Global_module_alias_test", suites.contents);
 

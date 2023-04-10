@@ -49,15 +49,15 @@ function f3(x) {
   };
 }
 
-eq("File \"arity_deopt.ml\", line 45, characters 7-14", 6, 6);
+eq("File \"arity_deopt.res\", line 47, characters 11-18", 6, 6);
 
-eq("File \"arity_deopt.ml\", line 46, characters 11-18", 6, (function (y, z) {
+eq("File \"arity_deopt.res\", line 48, characters 11-18", 6, (function (y, z) {
           return (1 + y | 0) + z | 0;
         })(2, 3));
 
-eq("File \"arity_deopt.ml\", line 47, characters 15-22", 6, 6);
+eq("File \"arity_deopt.res\", line 49, characters 11-18", 6, 6);
 
-eq("File \"arity_deopt.ml\", line 48, characters 15-22", 6, (function (y, z) {
+eq("File \"arity_deopt.res\", line 50, characters 11-18", 6, (function (y, z) {
           return (1 + y | 0) + z | 0;
         })(2, 3));
 

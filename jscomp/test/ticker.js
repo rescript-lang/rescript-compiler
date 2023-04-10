@@ -14,28 +14,28 @@ function split(delim, s) {
   var len = s.length;
   if (len !== 0) {
     var _l = /* [] */0;
-    var _i = len;
+    var _x = len;
     while(true) {
-      var i = _i;
+      var x = _x;
       var l = _l;
-      if (i === 0) {
+      if (x === 0) {
         return l;
       }
       var i$p;
       try {
-        i$p = $$String.rindex_from(s, i - 1 | 0, delim);
+        i$p = $$String.rindex_from(s, x - 1 | 0, delim);
       }
       catch (raw_exn){
         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
         if (exn.RE_EXN_ID === "Not_found") {
           return {
-                  hd: $$String.sub(s, 0, i),
+                  hd: $$String.sub(s, 0, x),
                   tl: l
                 };
         }
         throw exn;
       }
-      var l_0 = $$String.sub(s, i$p + 1 | 0, (i - i$p | 0) - 1 | 0);
+      var l_0 = $$String.sub(s, i$p + 1 | 0, (x - i$p | 0) - 1 | 0);
       var l$1 = {
         hd: l_0,
         tl: l
@@ -44,7 +44,7 @@ function split(delim, s) {
             hd: "",
             tl: l$1
           }) : l$1;
-      _i = i$p;
+      _x = i$p;
       _l = l$2;
       continue ;
     };
@@ -66,15 +66,15 @@ var Util = {
   string_of_float_option: string_of_float_option
 };
 
-function string_of_rank(i) {
-  if (typeof i !== "object") {
-    if (i === "Uninitialized") {
+function string_of_rank(x) {
+  if (typeof x !== "object") {
+    if (x === "Uninitialized") {
       return "Uninitialized";
     } else {
       return "Visited";
     }
   } else {
-    return "Ranked(" + i._0 + ")";
+    return "Ranked(" + x._0 + ")";
   }
 }
 
@@ -85,12 +85,12 @@ function find_ticker_by_name(all_tickers, ticker) {
 }
 
 function print_all_composite(all_tickers) {
-  List.iter((function (param) {
-          var tmp = param.type_;
+  List.iter((function (x) {
+          var tmp = x.type_;
           if (typeof tmp !== "object") {
             return ;
           }
-          console.log(param.ticker_name);
+          console.log(x.ticker_name);
         }), all_tickers);
 }
 

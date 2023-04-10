@@ -25,11 +25,11 @@ function f_0(x) {
   }
 }
 
-function f2(param) {
-  if (param >= 3) {
+function f2(x) {
+  if (x >= 3) {
     return "T003";
   }
-  switch (param) {
+  switch (x) {
     case 0 :
         return "T000";
     case 1 :
@@ -40,8 +40,8 @@ function f2(param) {
   }
 }
 
-function f3(param) {
-  switch (param) {
+function f3(x) {
+  switch (x) {
     case "X0" :
         return "Y0";
     case "X1" :
@@ -56,13 +56,13 @@ function f3(param) {
   }
 }
 
-function f4(param) {
+function f4(x) {
   return 3;
 }
 
-function f5(param) {
-  if (typeof param !== "object") {
-    switch (param) {
+function f5(x) {
+  if (typeof x !== "object") {
+    switch (x) {
       case "A" :
           return 1;
       case "B" :
@@ -72,7 +72,7 @@ function f5(param) {
       
     }
   } else {
-    switch (param.TAG) {
+    switch (x.TAG) {
       case "C" :
       case "D" :
           return 1;
@@ -83,11 +83,11 @@ function f5(param) {
   }
 }
 
-function f6(param) {
-  if (typeof param === "object") {
+function f6(x) {
+  if (typeof x === "object") {
     return 1;
   }
-  switch (param) {
+  switch (x) {
     case "A" :
     case "B" :
         return 0;
@@ -97,9 +97,9 @@ function f6(param) {
   }
 }
 
-function f7(param) {
-  if (typeof param !== "object") {
-    switch (param) {
+function f7(x) {
+  if (typeof x !== "object") {
+    switch (x) {
       case "A" :
           return 1;
       case "B" :
@@ -109,7 +109,7 @@ function f7(param) {
       
     }
   } else {
-    switch (param.TAG) {
+    switch (x.TAG) {
       case "C" :
           return 3;
       case "D" :
@@ -121,9 +121,9 @@ function f7(param) {
   }
 }
 
-function f8(param) {
-  if (typeof param !== "object") {
-    switch (param) {
+function f8(x) {
+  if (typeof x !== "object") {
+    switch (x) {
       case "T60" :
       case "T61" :
           return 1;
@@ -131,7 +131,7 @@ function f8(param) {
         return 3;
     }
   } else {
-    switch (param.TAG) {
+    switch (x.TAG) {
       case "T64" :
       case "T65" :
           return 2;
@@ -141,15 +141,15 @@ function f8(param) {
   }
 }
 
-function f9(param) {
-  if (typeof param !== "object") {
-    if (param === "T63") {
+function f9(x) {
+  if (typeof x !== "object") {
+    if (x === "T63") {
       return 3;
     } else {
       return 1;
     }
   }
-  switch (param.TAG) {
+  switch (x.TAG) {
     case "T64" :
     case "T65" :
         return 2;
@@ -160,9 +160,9 @@ function f9(param) {
   }
 }
 
-function f10(param) {
-  if (typeof param !== "object") {
-    switch (param) {
+function f10(x) {
+  if (typeof x !== "object") {
+    switch (x) {
       case "T60" :
           return 0;
       case "T61" :
@@ -174,7 +174,7 @@ function f10(param) {
       
     }
   } else {
-    switch (param.TAG) {
+    switch (x.TAG) {
       case "T64" :
       case "T65" :
           return 2;
@@ -196,8 +196,8 @@ function f11(x) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "adt_optimize_test.ml",
-          191,
+          "adt_optimize_test.res",
+          202,
           9
         ],
         Error: new Error()

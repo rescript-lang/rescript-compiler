@@ -17,7 +17,7 @@ var suites_0 = [
 
 var suites_1 = {
   hd: [
-    "File \"js_undefined_test.ml\", line 5, characters 2-9",
+    "File \"js_undefined_test.res\", line 7, characters 5-12",
     (function (param) {
         return {
                 TAG: "Eq",
@@ -50,7 +50,7 @@ var suites_1 = {
       ],
       tl: {
         hd: [
-          "File \"js_undefined_test.ml\", line 8, characters 2-9",
+          "File \"js_undefined_test.res\", line 10, characters 5-12",
           (function (param) {
               return {
                       TAG: "Eq",

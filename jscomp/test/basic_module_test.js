@@ -27,7 +27,7 @@ function eq(f, a, b) {
   Mt_global.collect_eq(test_id, suites, f, a, b);
 }
 
-eq("File \"basic_module_test.ml\", line 39, characters 12-19", count.contents, 1);
+eq("File \"basic_module_test.res\", line 40, characters 12-19", count.contents, 1);
 
 Mt.from_pair_suites("Basic_module_test", suites.contents);
 

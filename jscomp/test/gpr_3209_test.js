@@ -1,9 +1,9 @@
 'use strict';
 
 
-function f9(param) {
-  if (typeof param !== "object") {
-    switch (param) {
+function f9(x) {
+  if (typeof x !== "object") {
+    switch (x) {
       case "T60" :
       case "T61" :
       case "T62" :
@@ -12,7 +12,7 @@ function f9(param) {
         return 3;
     }
   } else {
-    switch (param.TAG) {
+    switch (x.TAG) {
       case "T64" :
       case "T65" :
           return 2;

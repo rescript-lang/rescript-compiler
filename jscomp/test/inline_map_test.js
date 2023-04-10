@@ -4,11 +4,11 @@ var Mt = require("./mt.js");
 var Caml = require("../../lib/js/caml.js");
 var List = require("../../lib/js/list.js");
 
-function height(param) {
-  if (typeof param !== "object") {
+function height(x) {
+  if (typeof x !== "object") {
     return 0;
   } else {
-    return param._4;
+    return x._4;
   }
 }
 
@@ -88,8 +88,8 @@ function bal(l, x, d, r) {
       };
 }
 
-function add(x, data, param) {
-  if (typeof param !== "object") {
+function add(x, data, x_) {
+  if (typeof x_ !== "object") {
     return {
             TAG: "Node",
             _0: "Empty",
@@ -99,10 +99,10 @@ function add(x, data, param) {
             _4: 1
           };
   }
-  var r = param._3;
-  var d = param._2;
-  var v = param._1;
-  var l = param._0;
+  var r = x_._3;
+  var d = x_._2;
+  var v = x_._1;
+  var l = x_._0;
   var c = Caml.int_compare(x, v);
   if (c === 0) {
     return {
@@ -111,7 +111,7 @@ function add(x, data, param) {
             _1: x,
             _2: data,
             _3: r,
-            _4: param._4
+            _4: x_._4
           };
   } else if (c < 0) {
     return bal(add(x, data, l), v, d, r);
@@ -120,20 +120,20 @@ function add(x, data, param) {
   }
 }
 
-function find(x, _param) {
+function find(x, _x_) {
   while(true) {
-    var param = _param;
-    if (typeof param !== "object") {
+    var x_ = _x_;
+    if (typeof x_ !== "object") {
       throw {
             RE_EXN_ID: "Not_found",
             Error: new Error()
           };
     }
-    var c = Caml.int_compare(x, param._1);
+    var c = Caml.int_compare(x, x_._1);
     if (c === 0) {
-      return param._2;
+      return x_._2;
     }
-    _param = c < 0 ? param._0 : param._3;
+    _x_ = c < 0 ? x_._0 : x_._3;
     continue ;
   };
 }

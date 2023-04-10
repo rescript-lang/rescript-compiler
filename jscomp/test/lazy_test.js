@@ -26,23 +26,23 @@ function lazy_test(param) {
         ];
 }
 
-function f(param) {
-  CamlinternalLazy.force(param[0]);
-  var match = param[2].contents;
+function f(x) {
+  CamlinternalLazy.force(x[0]);
+  var match = x[2].contents;
   if (match === undefined) {
     return 0;
   }
-  CamlinternalLazy.force(param[1]);
-  var x = param[2].contents;
-  if (x !== undefined) {
+  CamlinternalLazy.force(x[1]);
+  var x$1 = x[2].contents;
+  if (x$1 !== undefined) {
     return 1;
   }
   throw {
         RE_EXN_ID: "Match_failure",
         _1: [
-          "lazy_test.ml",
-          11,
-          8
+          "lazy_test.res",
+          14,
+          2
         ],
         Error: new Error()
       };
@@ -276,7 +276,7 @@ Mt.from_pair_suites("Lazy_test", {
                   ],
                   tl: {
                     hd: [
-                      "lazy_test.ml",
+                      "lazy_test.res",
                       (function (param) {
                           return {
                                   TAG: "Eq",
@@ -287,7 +287,7 @@ Mt.from_pair_suites("Lazy_test", {
                     ],
                     tl: {
                       hd: [
-                        "lazy_test.ml",
+                        "lazy_test.res",
                         (function (param) {
                             return {
                                     TAG: "Eq",
@@ -298,7 +298,7 @@ Mt.from_pair_suites("Lazy_test", {
                       ],
                       tl: {
                         hd: [
-                          "lazy_test.ml",
+                          "lazy_test.res",
                           (function (param) {
                               return {
                                       TAG: "Eq",
@@ -309,7 +309,7 @@ Mt.from_pair_suites("Lazy_test", {
                         ],
                         tl: {
                           hd: [
-                            "File \"lazy_test.ml\", line 78, characters 0-7",
+                            "File \"lazy_test.res\", line 98, characters 7-14",
                             (function (param) {
                                 return {
                                         TAG: "Ok",
@@ -322,7 +322,7 @@ Mt.from_pair_suites("Lazy_test", {
                           ],
                           tl: {
                             hd: [
-                              "File \"lazy_test.ml\", line 79, characters 0-7",
+                              "File \"lazy_test.res\", line 99, characters 7-14",
                               (function (param) {
                                   return {
                                           TAG: "Ok",

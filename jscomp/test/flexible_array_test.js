@@ -143,8 +143,8 @@ function lorem(tr) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "flexible_array_test.ml",
-          66,
+          "flexible_array_test.res",
+          80,
           9
         ],
         Error: new Error()
@@ -319,9 +319,9 @@ if (!Caml_obj.equal(x, of_array([
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "flexible_array_test.ml",
-          157,
-          4
+          "flexible_array_test.res",
+          184,
+          2
         ],
         Error: new Error()
       };

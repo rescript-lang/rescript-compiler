@@ -3,7 +3,7 @@
 var Curry = require("../../lib/js/curry.js");
 
 function test(g) {
-  g.xx(22, 3, "xxx", 1, 2, 3);
+  g.xx(10, 3, "xxx", 1, 2, 3);
 }
 
 function test_hi(x) {

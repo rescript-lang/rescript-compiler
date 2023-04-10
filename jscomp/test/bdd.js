@@ -69,9 +69,9 @@ function resize(newSize) {
           throw {
                 RE_EXN_ID: "Assert_failure",
                 _1: [
-                  "bdd.ml",
-                  54,
-                  27
+                  "bdd.res",
+                  60,
+                  13
                 ],
                 Error: new Error()
               };
@@ -79,9 +79,9 @@ function resize(newSize) {
         throw {
               RE_EXN_ID: "Assert_failure",
               _1: [
-                "bdd.ml",
-                54,
-                27
+                "bdd.res",
+                60,
+                13
               ],
               Error: new Error()
             };
@@ -145,9 +145,9 @@ function mkNode(low, v, high) {
           throw {
                 RE_EXN_ID: "Assert_failure",
                 _1: [
-                  "bdd.ml",
-                  99,
-                  31
+                  "bdd.res",
+                  121,
+                  15
                 ],
                 Error: new Error()
               };
@@ -155,9 +155,9 @@ function mkNode(low, v, high) {
         throw {
               RE_EXN_ID: "Assert_failure",
               _1: [
-                "bdd.ml",
-                99,
-                31
+                "bdd.res",
+                121,
+                15
               ],
               Error: new Error()
             };
@@ -402,8 +402,8 @@ function main(param) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bdd.ml",
-          233,
+          "bdd.res",
+          301,
           2
         ],
         Error: new Error()

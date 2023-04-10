@@ -146,7 +146,7 @@ var ref = [
 
 Mt.from_pair_suites("Digest_test", Pervasives.$at({
           hd: [
-            "File \"digest_test.ml\", line 6, characters 4-11",
+            "File \"digest_test.res\", line 9, characters 9-16",
             (function (param) {
                 return {
                         TAG: "Eq",
@@ -157,7 +157,7 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at({
           ],
           tl: {
             hd: [
-              "File \"digest_test.ml\", line 7, characters 4-11",
+              "File \"digest_test.res\", line 11, characters 10-17",
               (function (param) {
                   return {
                           TAG: "Eq",
@@ -168,7 +168,7 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at({
             ],
             tl: {
               hd: [
-                "File \"digest_test.ml\", line 9, characters 4-11",
+                "File \"digest_test.res\", line 18, characters 10-17",
                 (function (param) {
                     return {
                             TAG: "Eq",
@@ -179,7 +179,7 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at({
               ],
               tl: {
                 hd: [
-                  "File \"digest_test.ml\", line 11, characters 4-11",
+                  "File \"digest_test.res\", line 24, characters 9-16",
                   (function (param) {
                       return {
                               TAG: "Eq",
@@ -190,7 +190,7 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at({
                 ],
                 tl: {
                   hd: [
-                    "File \"digest_test.ml\", line 12, characters 4-11",
+                    "File \"digest_test.res\", line 26, characters 10-17",
                     (function (param) {
                         return {
                                 TAG: "Eq",
@@ -201,7 +201,7 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at({
                   ],
                   tl: {
                     hd: [
-                      "File \"digest_test.ml\", line 13, characters 4-11",
+                      "File \"digest_test.res\", line 45, characters 10-17",
                       (function (param) {
                           return {
                                   TAG: "Eq",

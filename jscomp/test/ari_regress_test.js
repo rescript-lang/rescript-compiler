@@ -62,7 +62,7 @@ var suites_1 = {
     ],
     tl: {
       hd: [
-        "File \"ari_regress_test.ml\", line 20, characters 4-11",
+        "File \"ari_regress_test.res\", line 35, characters 5-12",
         (function (param) {
             return {
                     TAG: "Eq",

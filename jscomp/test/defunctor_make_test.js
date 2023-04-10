@@ -15,11 +15,11 @@ var Comparable = {
   Make: Make
 };
 
-function height(param) {
-  if (typeof param !== "object") {
+function height(x) {
+  if (typeof x !== "object") {
     return 0;
   } else {
-    return param._4;
+    return x._4;
   }
 }
 
@@ -99,8 +99,8 @@ function bal(l, x, d, r) {
       };
 }
 
-function add(x, data, compare, param) {
-  if (typeof param !== "object") {
+function add(x, data, compare, x_) {
+  if (typeof x_ !== "object") {
     return {
             TAG: "Node",
             _0: "Empty",
@@ -110,10 +110,10 @@ function add(x, data, compare, param) {
             _4: 1
           };
   }
-  var r = param._3;
-  var d = param._2;
-  var v = param._1;
-  var l = param._0;
+  var r = x_._3;
+  var d = x_._2;
+  var v = x_._1;
+  var l = x_._0;
   var c = compare(x, v);
   if (c === 0) {
     return {
@@ -122,7 +122,7 @@ function add(x, data, compare, param) {
             _1: x,
             _2: data,
             _3: r,
-            _4: param._4
+            _4: x_._4
           };
   } else if (c < 0) {
     return bal(add(x, data, compare, l), v, d, r);

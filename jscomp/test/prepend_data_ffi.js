@@ -30,19 +30,19 @@ process.on((function (i) {
 xx(3, 3, "xxx", "a", "b");
 
 function f(x) {
-  x.xx(114, [
+  x.xx(72, [
         1,
         2,
         3
       ]);
-  x.xx(115, 3, "xxx", [
+  x.xx(73, 3, "xxx", [
         1,
         2,
         3
       ]);
-  x.xx(116, 3, "xxx", 1, 2, 3);
-  x.xx(117, 3, "xxx", 0, "b", 1, 2, 3, 4, 5);
-  x.xx(118, 3, true, false, "你好",  ["你好",1,2,3] ,  [{ "arr" : ["你好",1,2,3], "encoding" : "utf8"}] ,  [{ "arr" : ["你好",1,2,3], "encoding" : "utf8"}] , "xxx", 0, "yyy", "b", 1, 2, 3, 4, 5);
+  x.xx(74, 3, "xxx", 1, 2, 3);
+  x.xx(75, 3, "xxx", 0, "b", 1, 2, 3, 4, 5);
+  x.xx(76, 3, true, false, "你好",  ["你好",1,2,3] ,  [{ "arr" : ["你好",1,2,3], "encoding" : "utf8"}] ,  [{ "arr" : ["你好",1,2,3], "encoding" : "utf8"}] , "xxx", 0, "yyy", "b", 1, 2, 3, 4, 5);
 }
 
 process.on("exit", (function (exit_code) {

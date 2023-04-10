@@ -27,7 +27,7 @@ function eq(loc, x, y) {
   };
 }
 
-eq("File \"gpr_1667_test.ml\", line 18, characters 7-14", 0, 0);
+eq("File \"gpr_1667_test.res\", line 24, characters 5-12", 0, 0);
 
 Mt.from_pair_suites("Gpr_1667_test", suites.contents);
 

@@ -4,6 +4,7 @@ var Mt = require("./mt.js");
 var Bytes = require("../../lib/js/bytes.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
+var Caml_string = require("../../lib/js/caml_string.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
@@ -14,9 +15,9 @@ function is_equal(param) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "equal_exception_test.ml",
-            9,
-            4
+            "equal_exception_test.res",
+            4,
+            2
           ],
           Error: new Error()
         };
@@ -25,9 +26,9 @@ function is_equal(param) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "equal_exception_test.ml",
-            10,
-            4
+            "equal_exception_test.res",
+            5,
+            2
           ],
           Error: new Error()
         };
@@ -38,14 +39,25 @@ function is_equal(param) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "equal_exception_test.ml",
-            13,
-            4
+            "equal_exception_test.res",
+            8,
+            2
           ],
           Error: new Error()
         };
   }
-  
+  if (Caml_string.get(v, 0) === /* 'g' */103) {
+    return ;
+  }
+  throw {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "equal_exception_test.res",
+          9,
+          2
+        ],
+        Error: new Error()
+      };
 }
 
 function is_exception(param) {
@@ -132,8 +144,8 @@ var e = {
   RE_EXN_ID: "Not_found"
 };
 
-function eq(param) {
-  return param.RE_EXN_ID === "Not_found";
+function eq(x) {
+  return x.RE_EXN_ID === "Not_found";
 }
 
 var Not_found = /* @__PURE__ */Caml_exceptions.create("Equal_exception_test.Not_found");
@@ -144,9 +156,9 @@ if (Caml_obj.equal(e, {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "equal_exception_test.ml",
+          "equal_exception_test.res",
           50,
-          3
+          0
         ],
         Error: new Error()
       };
@@ -156,9 +168,9 @@ if (Not_found === "Not_found" !== false) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "equal_exception_test.ml",
+          "equal_exception_test.res",
           51,
-          3
+          0
         ],
         Error: new Error()
       };

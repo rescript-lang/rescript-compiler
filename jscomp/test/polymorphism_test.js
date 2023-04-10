@@ -1,14 +1,14 @@
 'use strict';
 
 
-function map(f, param) {
-  if (!param) {
+function map(f, x) {
+  if (!x) {
     return /* [] */0;
   }
-  var r = f(param.hd);
+  var r = f(x.hd);
   return {
           hd: r,
-          tl: map(f, param.tl)
+          tl: map(f, x.tl)
         };
 }
 

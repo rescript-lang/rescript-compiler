@@ -27,13 +27,13 @@ function eq2(x, param) {
   return Caml_obj.equal(x.contents, y);
 }
 
-eqs("File \"mutable_uncurry_test.ml\", line 15, characters 7-14", false, eq({
+eqs("File \"mutable_uncurry_test.res\", line 15, characters 4-11", false, eq({
           contents: 1
         }, {
           contents: 2
         }));
 
-eqs("File \"mutable_uncurry_test.ml\", line 16, characters 7-14", true, eq({
+eqs("File \"mutable_uncurry_test.res\", line 16, characters 4-11", true, eq({
           contents: 2
         }, {
           contents: 2
@@ -179,7 +179,7 @@ function nested1(param) {
   };
 }
 
-eqs("File \"mutable_uncurry_test.ml\", line 46, characters 9-16", ut3({
+eqs("File \"mutable_uncurry_test.res\", line 51, characters 4-11", ut3({
           contents: 1
         }, {
           contents: 2
@@ -191,7 +191,7 @@ eqs("File \"mutable_uncurry_test.ml\", line 46, characters 9-16", ut3({
       3
     ]);
 
-eqs("File \"mutable_uncurry_test.ml\", line 47, characters 7-14", Curry._1(t3({
+eqs("File \"mutable_uncurry_test.res\", line 52, characters 4-11", Curry._1(t3({
                 contents: 1
               })({
               contents: 2
@@ -203,7 +203,7 @@ eqs("File \"mutable_uncurry_test.ml\", line 47, characters 7-14", Curry._1(t3({
       3
     ]);
 
-eqs("File \"mutable_uncurry_test.ml\", line 49, characters 7-14", ut5({
+eqs("File \"mutable_uncurry_test.res\", line 54, characters 4-11", ut5({
           contents: 1
         }, {
           contents: 2
@@ -221,7 +221,7 @@ eqs("File \"mutable_uncurry_test.ml\", line 49, characters 7-14", ut5({
       1
     ]);
 
-Mt.from_pair_suites("mutable_uncurry_test.ml", suites.contents);
+Mt.from_pair_suites("mutable_uncurry_test.res", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

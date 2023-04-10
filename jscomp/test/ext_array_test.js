@@ -33,22 +33,22 @@ function reverse(a) {
   return b;
 }
 
-function reverse_of_list(l) {
-  if (!l) {
+function reverse_of_list(x) {
+  if (!x) {
     return [];
   }
-  var len = List.length(l);
-  var a = Caml_array.make(len, l.hd);
+  var len = List.length(x);
+  var a = Caml_array.make(len, x.hd);
   var _i = 0;
-  var _param = l.tl;
+  var _x = x.tl;
   while(true) {
-    var param = _param;
+    var x$1 = _x;
     var i = _i;
-    if (!param) {
+    if (!x$1) {
       return a;
     }
-    a[(len - i | 0) - 2 | 0] = param.hd;
-    _param = param.tl;
+    a[(len - i | 0) - 2 | 0] = x$1.hd;
+    _x = x$1.tl;
     _i = i + 1 | 0;
     continue ;
   };
@@ -165,15 +165,15 @@ function of_list_map(f, a) {
   var len = List.length(tl) + 1 | 0;
   var arr = Caml_array.make(len, hd);
   var _i = 1;
-  var _param = tl;
+  var _x = tl;
   while(true) {
-    var param = _param;
+    var x = _x;
     var i = _i;
-    if (!param) {
+    if (!x) {
       return arr;
     }
-    arr[i] = Curry._1(f, param.hd);
-    _param = param.tl;
+    arr[i] = Curry._1(f, x.hd);
+    _x = x.tl;
     _i = i + 1 | 0;
     continue ;
   };

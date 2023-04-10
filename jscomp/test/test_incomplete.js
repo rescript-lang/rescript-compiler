@@ -8,7 +8,7 @@ function f(x) {
   throw {
         RE_EXN_ID: "Match_failure",
         _1: [
-          "test_incomplete.ml",
+          "test_incomplete.res",
           3,
           2
         ],

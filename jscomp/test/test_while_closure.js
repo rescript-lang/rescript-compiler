@@ -37,9 +37,9 @@ if (v.contents !== 45) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "test_while_closure.ml",
-          63,
-          4
+          "test_while_closure.res",
+          55,
+          2
         ],
         Error: new Error()
       };

@@ -5,9 +5,9 @@ var Curry = require("../../lib/js/curry.js");
 var Caml_module = require("../../lib/js/caml_module.js");
 
 var PA = Caml_module.init_mod([
-      "gpr_3931_test.ml",
+      "gpr_3931_test.res",
       3,
-      6
+      4
     ], {
       TAG: "Module",
       _0: [[
@@ -17,9 +17,9 @@ var PA = Caml_module.init_mod([
     });
 
 var P = Caml_module.init_mod([
-      "gpr_3931_test.ml",
-      11,
-      6
+      "gpr_3931_test.res",
+      12,
+      4
     ], {
       TAG: "Module",
       _0: [[

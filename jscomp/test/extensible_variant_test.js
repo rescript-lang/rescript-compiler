@@ -26,7 +26,7 @@ function to_int(x) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "extensible_variant_test.ml",
+          "extensible_variant_test.res",
           16,
           9
         ],

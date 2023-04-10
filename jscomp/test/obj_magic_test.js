@@ -12,7 +12,7 @@ var suites_0 = [
       return {
               TAG: "Eq",
               _0: false,
-              _1: false
+              _1: "number" !== "number"
             };
     })
 ];
@@ -38,7 +38,7 @@ var suites_1 = {
           return {
                   TAG: "Eq",
                   _0: true,
-                  _1: true
+                  _1: "string" !== "number"
                 };
         })
     ],
@@ -49,7 +49,7 @@ var suites_1 = {
             return {
                     TAG: "Eq",
                     _0: false,
-                    _1: false
+                    _1: "number" !== "number"
                   };
           })
       ],

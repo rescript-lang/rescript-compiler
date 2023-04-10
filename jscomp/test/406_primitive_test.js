@@ -16,14 +16,14 @@ function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-eq("File \"406_primitive_test.ml\", line 18, characters 6-13", 32, 32);
+eq("File \"406_primitive_test.res\", line 13, characters 3-10", 32, 32);
 
 var backend_type = {
   TAG: "Other",
   _0: "BS"
 };
 
-eq("File \"406_primitive_test.ml\", line 29, characters 6-13", backend_type, {
+eq("File \"406_primitive_test.res\", line 23, characters 3-10", backend_type, {
       TAG: "Other",
       _0: "BS"
     });

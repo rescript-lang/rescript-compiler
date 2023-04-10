@@ -5,44 +5,44 @@ var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
-function foo(n) {
-  if (typeof n !== "object") {
-    if (n === "A1") {
+function foo(x) {
+  if (typeof x !== "object") {
+    if (x === "A1") {
       return 1;
     } else {
       return 2;
     }
   }
-  switch (n.TAG) {
+  switch (x.TAG) {
     case "B" :
-        return n._0;
+        return x._0;
     case "C" :
-        return n._0 + n._1 | 0;
+        return x._0 + x._1 | 0;
     case "D" :
-        var match = n._0;
+        var match = x._0;
         return match[0] + match[1] | 0;
     
   }
 }
 
-function fooA1(param) {
-  if (typeof param !== "object" && param === "A1") {
+function fooA1(x) {
+  if (typeof x !== "object" && x === "A1") {
     return 1;
   } else {
     return 42;
   }
 }
 
-function fooC(param) {
-  if (typeof param !== "object" || param.TAG !== "C") {
+function fooC(x) {
+  if (typeof x !== "object" || x.TAG !== "C") {
     return 42;
   } else {
-    return param._0 + param._1 | 0;
+    return x._0 + x._1 | 0;
   }
 }
 
-function switchNum(param) {
-  switch (param) {
+function switchNum(x) {
+  switch (x) {
     case 0 :
         return "0";
     case 1 :

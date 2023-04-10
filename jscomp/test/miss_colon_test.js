@@ -112,15 +112,15 @@ function $star$colon(_f, _g) {
   };
 }
 
-function simplify(f) {
-  switch (f.TAG) {
+function simplify(x) {
+  switch (x.TAG) {
     case "Int" :
     case "Var" :
-        return f;
+        return x;
     case "Add" :
-        return $plus$colon(simplify(f._0), simplify(f._1));
+        return $plus$colon(simplify(x._0), simplify(x._1));
     case "Mul" :
-        return $star$colon(simplify(f._0), simplify(f._1));
+        return $star$colon(simplify(x._0), simplify(x._1));
     
   }
 }

@@ -2,15 +2,15 @@
 
 var Curry = require("../../lib/js/curry.js");
 
-function f(param) {
-  if (typeof param !== "object") {
-    if (param === "G") {
+function f(x) {
+  if (typeof x !== "object") {
+    if (x === "G") {
       return 4;
     } else {
       return 5;
     }
   }
-  switch (param.TAG) {
+  switch (x.TAG) {
     case "A" :
         return 0;
     case "B" :

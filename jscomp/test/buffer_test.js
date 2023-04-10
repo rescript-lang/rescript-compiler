@@ -4,6 +4,7 @@ var Mt = require("./mt.js");
 var Bytes = require("../../lib/js/bytes.js");
 var $$Buffer = require("../../lib/js/buffer.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
+var Caml_string = require("../../lib/js/caml_string.js");
 
 var v = "gso";
 
@@ -34,7 +35,7 @@ var suites_1 = {
                 TAG: "Eq",
                 _0: [
                   u[0],
-                  /* 'g' */103
+                  Caml_string.get(v, 0)
                 ],
                 _1: [
                   /* 'b' */98,

@@ -39,8 +39,8 @@ function Make(funarg) {
         throw {
               RE_EXN_ID: "Assert_failure",
               _1: [
-                "gpr_405_test.ml",
-                43,
+                "gpr_405_test.res",
+                40,
                 6
               ],
               Error: new Error()
@@ -50,8 +50,8 @@ function Make(funarg) {
         throw {
               RE_EXN_ID: "Assert_failure",
               _1: [
-                "gpr_405_test.ml",
-                44,
+                "gpr_405_test.res",
+                41,
                 6
               ],
               Error: new Error()

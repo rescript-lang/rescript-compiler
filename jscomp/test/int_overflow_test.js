@@ -29,11 +29,11 @@ function hash_variant2(s) {
   }
 }
 
-function fib(n) {
-  if (n === 0 || n === 1) {
+function fib(x) {
+  if (x === 0 || x === 1) {
     return 1;
   } else {
-    return fib(n - 1 | 0) + fib(n - 2 | 0) | 0;
+    return fib(x - 1 | 0) + fib(x - 2 | 0) | 0;
   }
 }
 
@@ -105,7 +105,7 @@ Mt.from_pair_suites("Int_overflow_test", {
                 ],
                 tl: {
                   hd: [
-                    "File \"int_overflow_test.ml\", line 37, characters 2-9",
+                    "File \"int_overflow_test.res\", line 88, characters 5-12",
                     (function (param) {
                         return {
                                 TAG: "Eq",
@@ -116,7 +116,7 @@ Mt.from_pair_suites("Int_overflow_test", {
                   ],
                   tl: {
                     hd: [
-                      "File \"int_overflow_test.ml\", line 38, characters 2-9",
+                      "File \"int_overflow_test.res\", line 89, characters 5-12",
                       (function (param) {
                           return {
                                   TAG: "Eq",
@@ -171,7 +171,7 @@ Mt.from_pair_suites("Int_overflow_test", {
                             ],
                             tl: {
                               hd: [
-                                "File \"int_overflow_test.ml\", line 44, characters 3-10",
+                                "File \"int_overflow_test.res\", line 94, characters 5-12",
                                 (function (param) {
                                     return {
                                             TAG: "Eq",
@@ -182,7 +182,7 @@ Mt.from_pair_suites("Int_overflow_test", {
                               ],
                               tl: {
                                 hd: [
-                                  "File \"int_overflow_test.ml\", line 46, characters 3-10",
+                                  "File \"int_overflow_test.res\", line 96, characters 5-12",
                                   (function (param) {
                                       return {
                                               TAG: "Eq",

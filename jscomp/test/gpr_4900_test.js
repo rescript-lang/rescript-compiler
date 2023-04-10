@@ -18,13 +18,13 @@ function showToJs(x) {
   }
 }
 
-Mt.eq_suites(test_id, suites, "File \"gpr_4900_test.ml\", line 15, characters 30-37", true, true);
+Mt.eq_suites(test_id, suites, "File \"gpr_4900_test.res\", line 13, characters 29-36", true, true);
 
-Mt.eq_suites(test_id, suites, "File \"gpr_4900_test.ml\", line 16, characters 30-37", false, false);
+Mt.eq_suites(test_id, suites, "File \"gpr_4900_test.res\", line 14, characters 29-36", false, false);
 
-Mt.eq_suites(test_id, suites, "File \"gpr_4900_test.ml\", line 17, characters 30-37", true, true);
+Mt.eq_suites(test_id, suites, "File \"gpr_4900_test.res\", line 15, characters 29-36", true, true);
 
-Mt.from_pair_suites("File \"gpr_4900_test.ml\", line 19, characters 20-27", suites.contents);
+Mt.from_pair_suites("File \"gpr_4900_test.res\", line 17, characters 17-24", suites.contents);
 
 var from_pair_suites = Mt.from_pair_suites;
 

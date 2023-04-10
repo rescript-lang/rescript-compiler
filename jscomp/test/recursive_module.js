@@ -27,9 +27,9 @@ var Xx = {
 };
 
 var Int3 = Caml_module.init_mod([
-      "recursive_module.ml",
-      27,
-      6
+      "recursive_module.res",
+      25,
+      4
     ], {
       TAG: "Module",
       _0: [[
@@ -47,9 +47,9 @@ Caml_module.update_mod({
     }, Int3, Int3);
 
 var Inta = Caml_module.init_mod([
-      "recursive_module.ml",
-      31,
-      6
+      "recursive_module.res",
+      29,
+      4
     ], {
       TAG: "Module",
       _0: [[
@@ -59,9 +59,9 @@ var Inta = Caml_module.init_mod([
     });
 
 var Intb = Caml_module.init_mod([
-      "recursive_module.ml",
-      36,
-      6
+      "recursive_module.res",
+      34,
+      4
     ], {
       TAG: "Module",
       _0: [[
@@ -118,12 +118,12 @@ catch (raw_exn){
   }
 }
 
-eq("File \"recursive_module.ml\", line 41, characters 3-10", -1, tmp);
+eq("File \"recursive_module.res\", line 39, characters 2-9", -1, tmp);
 
 var Inta$1 = Caml_module.init_mod([
-      "recursive_module.ml",
-      48,
-      8
+      "recursive_module.res",
+      49,
+      6
     ], {
       TAG: "Module",
       _0: [[
@@ -133,9 +133,9 @@ var Inta$1 = Caml_module.init_mod([
     });
 
 var Intb$1 = Caml_module.init_mod([
-      "recursive_module.ml",
-      53,
-      8
+      "recursive_module.res",
+      54,
+      6
     ], {
       TAG: "Module",
       _0: [[
@@ -181,7 +181,7 @@ var A = {
   Intb: Intb$1
 };
 
-eq("File \"recursive_module.ml\", line 58, characters 6-13", CamlinternalLazy.force(Inta$1.a), 3);
+eq("File \"recursive_module.res\", line 59, characters 3-10", CamlinternalLazy.force(Inta$1.a), 3);
 
 var tmp$1;
 
@@ -198,7 +198,7 @@ catch (raw_exn$1){
   }
 }
 
-eq("File \"recursive_module.ml\", line 60, characters 6-13", 4, tmp$1);
+eq("File \"recursive_module.res\", line 62, characters 2-9", 4, tmp$1);
 
 Mt.from_pair_suites("Recursive_module", suites.contents);
 

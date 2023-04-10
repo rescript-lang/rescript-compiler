@@ -1,9 +1,9 @@
 'use strict';
 
 
-var node_modules = "node_modules";
+var node_modules_length = "node_modules".length;
 
-var node_modules_length = 12;
+var node_modules = "node_modules";
 
 var bsconfig_json = "bsconfig.json";
 

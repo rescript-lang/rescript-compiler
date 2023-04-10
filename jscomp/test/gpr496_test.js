@@ -62,15 +62,15 @@ var u = [
   0
 ];
 
-eq("File \"gpr496_test.ml\", line 42, characters 12-19", expected, u);
+eq("File \"gpr496_test.res\", line 32, characters 12-19", expected, u);
 
-eq("File \"gpr496_test.ml\", line 44, characters 12-19", expected, expected2);
+eq("File \"gpr496_test.res\", line 34, characters 12-19", expected, expected2);
 
 function ff(x, y) {
   return Caml.bool_min(x, Curry._1(y, undefined));
 }
 
-eq("File \"gpr496_test.ml\", line 48, characters 5-12", true < false ? true : false, false);
+eq("File \"gpr496_test.res\", line 37, characters 12-19", true < false ? true : false, false);
 
 Mt.from_pair_suites("Gpr496_test", suites.contents);
 

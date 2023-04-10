@@ -22,9 +22,9 @@ function fn(param) {
   return 1;
 }
 
-eq("File \"gpr_3492_test.ml\", line 14, characters 6-13", foo(fn), 1);
+eq("File \"gpr_3492_test.res\", line 13, characters 12-19", foo(fn), 1);
 
-Mt.from_pair_suites("gpr_3492_test.ml", suites.contents);
+Mt.from_pair_suites("gpr_3492_test.res", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

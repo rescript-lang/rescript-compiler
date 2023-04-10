@@ -44,7 +44,7 @@ function iter(_bounce) {
     if (bounce.TAG === "Continue") {
       return bounce._0;
     }
-    _bounce = bounce._0();
+    _bounce = bounce._0(undefined);
     continue ;
   };
 }
@@ -90,11 +90,11 @@ function isOdd(n) {
   }
 }
 
-eq("File \"tramp_fib.ml\", line 56, characters 6-13", iter(u), 89);
+eq("File \"tramp_fib.res\", line 57, characters 3-10", iter(u), 89);
 
-eq("File \"tramp_fib.ml\", line 58, characters 6-13", iter(isEven(20000)), true);
+eq("File \"tramp_fib.res\", line 59, characters 3-10", iter(isEven(20000)), true);
 
-Mt.from_pair_suites("File \"tramp_fib.ml\", line 60, characters 23-30", suites.contents);
+Mt.from_pair_suites("File \"tramp_fib.res\", line 61, characters 20-27", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

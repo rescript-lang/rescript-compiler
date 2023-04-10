@@ -23,9 +23,9 @@ if (a !== "good response") {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "gpr_3877_test.ml",
-          14,
-          3
+          "gpr_3877_test.res",
+          26,
+          0
         ],
         Error: new Error()
       };
@@ -35,9 +35,9 @@ if (b !== "bad response") {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "gpr_3877_test.ml",
-          15,
-          3
+          "gpr_3877_test.res",
+          27,
+          0
         ],
         Error: new Error()
       };

@@ -23,11 +23,11 @@ function f(xOpt, y) {
 
 console.log(f(undefined, 2));
 
-eq("File \"test_case_opt_collision.ml\", line 15, characters 6-13", f(undefined, 2), 7);
+eq("File \"test_case_opt_collision.res\", line 13, characters 3-10", f(undefined, 2), 7);
 
-eq("File \"test_case_opt_collision.ml\", line 17, characters 6-13", f(4, 2), 8);
+eq("File \"test_case_opt_collision.res\", line 15, characters 3-10", f(4, 2), 8);
 
-Mt.from_pair_suites("test_case_opt_collision.ml", suites.contents);
+Mt.from_pair_suites("test_case_opt_collision.res", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

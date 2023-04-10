@@ -44,7 +44,7 @@ function is_inifite(x) {
   return x.b.a === x;
 }
 
-eq("File \"gpr_1716_test.ml\", line 26, characters 6-13", true, is_inifite(a));
+eq("File \"gpr_1716_test.res\", line 16, characters 3-10", true, is_inifite(a));
 
 Mt.from_pair_suites("Gpr_1716_test", suites.contents);
 
