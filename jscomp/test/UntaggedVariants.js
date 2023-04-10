@@ -154,7 +154,7 @@ var OnlyBlocks = {
 };
 
 function classify$5(x) {
-  if (x instanceof Array) {
+  if (Array.isArray(x)) {
     return "array";
   }
   switch (typeof x) {
@@ -184,7 +184,7 @@ function classify$6(x) {
       
     }
   } else {
-    if (x instanceof Array) {
+    if (Array.isArray(x)) {
       return {
               TAG: "JSONArray",
               _0: x
