@@ -797,7 +797,7 @@ let rec is_a_literal_case ~(literal_cases : Lambda.literal list) ~block_cases (e
   | FloatType when literals_overlaps_with_number () = false ->
     bin NotEqEq (typeof e) (str "number")
   | Array -> 
-    not (bin InstanceOf e (str "Array" ~delim:DNoQuotes))
+    not (is_array e)
   | Object when literals_overlaps_with_object () = false ->
     { expression_desc = Bin (NotEqEq, typeof e, str "object"); comment=None }
   | StringType (* overlap *)

@@ -173,7 +173,7 @@ var WithArray = {
 };
 
 function classify$6(x) {
-  if (!(x instanceof Array) && (x === true || x === false || x === null) && typeof x !== "number" && typeof x !== "string") {
+  if (!Array.isArray(x) && (x === true || x === false || x === null) && typeof x !== "number" && typeof x !== "string") {
     switch (x) {
       case false :
           return "JSONFalse";
