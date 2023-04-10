@@ -62,9 +62,9 @@ compilerBug("x", undefined, true, (function (param) {
         return true;
       }));
 
-eq("File \"gpr_3875_test.ml\", line 36, characters 5-12", result.contents, "Some x, f returns true");
+eq("File \"gpr_3875_test.res\", line 35, characters 5-12", result.contents, "Some x, f returns true");
 
-Mt.from_pair_suites("gpr_3875_test.ml", suites.contents);
+Mt.from_pair_suites("gpr_3875_test.res", suites.contents);
 
 exports.result = result;
 exports.Xx = Xx;

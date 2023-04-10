@@ -5,14 +5,14 @@ var Curry = require("../../lib/js/curry.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 
-function length_aux(_len, _param) {
+function length_aux(_len, _x) {
   while(true) {
-    var param = _param;
+    var x = _x;
     var len = _len;
-    if (!param) {
+    if (!x) {
       return len;
     }
-    _param = param.tl;
+    _x = x.tl;
     _len = len + 1 | 0;
     continue ;
   };
@@ -22,9 +22,9 @@ function length(l) {
   return length_aux(0, l);
 }
 
-function hd(param) {
-  if (param) {
-    return param.hd;
+function hd(x) {
+  if (x) {
+    return x.hd;
   }
   throw {
         RE_EXN_ID: "Failure",
@@ -33,9 +33,9 @@ function hd(param) {
       };
 }
 
-function tl(param) {
-  if (param) {
-    return param.tl;
+function tl(x) {
+  if (x) {
+    return x.tl;
   }
   throw {
         RE_EXN_ID: "Failure",
@@ -93,33 +93,33 @@ function rev(l) {
   return rev_append(l, /* [] */0);
 }
 
-function flatten(param) {
-  if (param) {
-    return Pervasives.$at(param.hd, flatten(param.tl));
+function flatten(x) {
+  if (x) {
+    return Pervasives.$at(x.hd, flatten(x.tl));
   } else {
     return /* [] */0;
   }
 }
 
-function map(f, param) {
-  if (!param) {
+function map(f, x) {
+  if (!x) {
     return /* [] */0;
   }
-  var r = Curry._1(f, param.hd);
+  var r = Curry._1(f, x.hd);
   return {
           hd: r,
-          tl: map(f, param.tl)
+          tl: map(f, x.tl)
         };
 }
 
-function mapi(i, f, param) {
-  if (!param) {
+function mapi(i, f, x) {
+  if (!x) {
     return /* [] */0;
   }
-  var r = Curry._2(f, i, param.hd);
+  var r = Curry._2(f, i, x.hd);
   return {
           hd: r,
-          tl: mapi(i + 1 | 0, f, param.tl)
+          tl: mapi(i + 1 | 0, f, x.tl)
         };
 }
 
@@ -129,45 +129,45 @@ function mapi$1(f, l) {
 
 function rev_map(f, l) {
   var _accu = /* [] */0;
-  var _param = l;
+  var _x = l;
   while(true) {
-    var param = _param;
+    var x = _x;
     var accu = _accu;
-    if (!param) {
+    if (!x) {
       return accu;
     }
-    _param = param.tl;
+    _x = x.tl;
     _accu = {
-      hd: Curry._1(f, param.hd),
+      hd: Curry._1(f, x.hd),
       tl: accu
     };
     continue ;
   };
 }
 
-function iter(f, _param) {
+function iter(f, _x) {
   while(true) {
-    var param = _param;
-    if (!param) {
+    var x = _x;
+    if (!x) {
       return ;
     }
-    Curry._1(f, param.hd);
-    _param = param.tl;
+    Curry._1(f, x.hd);
+    _x = x.tl;
     continue ;
   };
 }
 
 function iteri(f, l) {
   var _i = 0;
-  var _param = l;
+  var _x = l;
   while(true) {
-    var param = _param;
+    var x = _x;
     var i = _i;
-    if (!param) {
+    if (!x) {
       return ;
     }
-    Curry._2(f, i, param.hd);
-    _param = param.tl;
+    Curry._2(f, i, x.hd);
+    _x = x.tl;
     _i = i + 1 | 0;
     continue ;
   };
@@ -332,30 +332,30 @@ function fold_right2(f, l1, l2, accu) {
   return accu;
 }
 
-function for_all(p, _param) {
+function for_all(p, _x) {
   while(true) {
-    var param = _param;
-    if (!param) {
+    var x = _x;
+    if (!x) {
       return true;
     }
-    if (!Curry._1(p, param.hd)) {
+    if (!Curry._1(p, x.hd)) {
       return false;
     }
-    _param = param.tl;
+    _x = x.tl;
     continue ;
   };
 }
 
-function exists(p, _param) {
+function exists(p, _x) {
   while(true) {
-    var param = _param;
-    if (!param) {
+    var x = _x;
+    if (!x) {
       return false;
     }
-    if (Curry._1(p, param.hd)) {
+    if (Curry._1(p, x.hd)) {
       return true;
     }
-    _param = param.tl;
+    _x = x.tl;
     continue ;
   };
 }
@@ -420,43 +420,43 @@ function exists2(p, _l1, _l2) {
   };
 }
 
-function mem(x, _param) {
+function mem(x, _x_) {
   while(true) {
-    var param = _param;
-    if (!param) {
+    var x_ = _x_;
+    if (!x_) {
       return false;
     }
-    if (Caml_obj.equal(param.hd, x)) {
+    if (Caml_obj.equal(x_.hd, x)) {
       return true;
     }
-    _param = param.tl;
+    _x_ = x_.tl;
     continue ;
   };
 }
 
-function memq(x, _param) {
+function memq(x, _x_) {
   while(true) {
-    var param = _param;
-    if (!param) {
+    var x_ = _x_;
+    if (!x_) {
       return false;
     }
-    if (param.hd === x) {
+    if (x_.hd === x) {
       return true;
     }
-    _param = param.tl;
+    _x_ = x_.tl;
     continue ;
   };
 }
 
-function assoc(x, _param) {
+function assoc(x, _x_) {
   while(true) {
-    var param = _param;
-    if (param) {
-      var match = param.hd;
+    var x_ = _x_;
+    if (x_) {
+      var match = x_.hd;
       if (Caml_obj.equal(match[0], x)) {
         return match[1];
       }
-      _param = param.tl;
+      _x_ = x_.tl;
       continue ;
     }
     throw {
@@ -466,15 +466,15 @@ function assoc(x, _param) {
   };
 }
 
-function assq(x, _param) {
+function assq(x, _x_) {
   while(true) {
-    var param = _param;
-    if (param) {
-      var match = param.hd;
+    var x_ = _x_;
+    if (x_) {
+      var match = x_.hd;
       if (match[0] === x) {
         return match[1];
       }
-      _param = param.tl;
+      _x_ = x_.tl;
       continue ;
     }
     throw {
@@ -484,40 +484,40 @@ function assq(x, _param) {
   };
 }
 
-function mem_assoc(x, _param) {
+function mem_assoc(x, _x_) {
   while(true) {
-    var param = _param;
-    if (!param) {
+    var x_ = _x_;
+    if (!x_) {
       return false;
     }
-    if (Caml_obj.equal(param.hd[0], x)) {
+    if (Caml_obj.equal(x_.hd[0], x)) {
       return true;
     }
-    _param = param.tl;
+    _x_ = x_.tl;
     continue ;
   };
 }
 
-function mem_assq(x, _param) {
+function mem_assq(x, _x_) {
   while(true) {
-    var param = _param;
-    if (!param) {
+    var x_ = _x_;
+    if (!x_) {
       return false;
     }
-    if (param.hd[0] === x) {
+    if (x_.hd[0] === x) {
       return true;
     }
-    _param = param.tl;
+    _x_ = x_.tl;
     continue ;
   };
 }
 
-function remove_assoc(x, param) {
-  if (!param) {
+function remove_assoc(x, x_) {
+  if (!x_) {
     return /* [] */0;
   }
-  var l = param.tl;
-  var pair = param.hd;
+  var l = x_.tl;
+  var pair = x_.hd;
   if (Caml_obj.equal(pair[0], x)) {
     return l;
   } else {
@@ -528,12 +528,12 @@ function remove_assoc(x, param) {
   }
 }
 
-function remove_assq(x, param) {
-  if (!param) {
+function remove_assq(x, x_) {
+  if (!x_) {
     return /* [] */0;
   }
-  var l = param.tl;
-  var pair = param.hd;
+  var l = x_.tl;
+  var pair = x_.hd;
   if (pair[0] === x) {
     return l;
   } else {
@@ -544,15 +544,15 @@ function remove_assq(x, param) {
   }
 }
 
-function find(p, _param) {
+function find(p, _x) {
   while(true) {
-    var param = _param;
-    if (param) {
-      var x = param.hd;
-      if (Curry._1(p, x)) {
-        return x;
+    var x = _x;
+    if (x) {
+      var x$1 = x.hd;
+      if (Curry._1(p, x$1)) {
+        return x$1;
       }
-      _param = param.tl;
+      _x = x.tl;
       continue ;
     }
     throw {
@@ -565,24 +565,24 @@ function find(p, _param) {
 function find_all(p) {
   return function (param) {
     var _accu = /* [] */0;
-    var _param = param;
+    var _x = param;
     while(true) {
-      var param$1 = _param;
+      var x = _x;
       var accu = _accu;
-      if (!param$1) {
+      if (!x) {
         return rev_append(accu, /* [] */0);
       }
-      var l = param$1.tl;
-      var x = param$1.hd;
-      if (Curry._1(p, x)) {
-        _param = l;
+      var l = x.tl;
+      var x$1 = x.hd;
+      if (Curry._1(p, x$1)) {
+        _x = l;
         _accu = {
-          hd: x,
+          hd: x$1,
           tl: accu
         };
         continue ;
       }
-      _param = l;
+      _x = l;
       continue ;
     };
   };
@@ -591,45 +591,45 @@ function find_all(p) {
 function partition(p, l) {
   var _yes = /* [] */0;
   var _no = /* [] */0;
-  var _param = l;
+  var _x = l;
   while(true) {
-    var param = _param;
+    var x = _x;
     var no = _no;
     var yes = _yes;
-    if (!param) {
+    if (!x) {
       return [
               rev_append(yes, /* [] */0),
               rev_append(no, /* [] */0)
             ];
     }
-    var l$1 = param.tl;
-    var x = param.hd;
-    if (Curry._1(p, x)) {
-      _param = l$1;
+    var l$1 = x.tl;
+    var x$1 = x.hd;
+    if (Curry._1(p, x$1)) {
+      _x = l$1;
       _yes = {
-        hd: x,
+        hd: x$1,
         tl: yes
       };
       continue ;
     }
-    _param = l$1;
+    _x = l$1;
     _no = {
-      hd: x,
+      hd: x$1,
       tl: no
     };
     continue ;
   };
 }
 
-function split(param) {
-  if (!param) {
+function split(x) {
+  if (!x) {
     return [
             /* [] */0,
             /* [] */0
           ];
   }
-  var match = param.hd;
-  var match$1 = split(param.tl);
+  var match = x.hd;
+  var match$1 = split(x.tl);
   return [
           {
             hd: match[0],
@@ -706,8 +706,8 @@ function chop(_k, _l) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "test_list.ml",
-            224,
+            "test_list.res",
+            343,
             11
           ],
           Error: new Error()

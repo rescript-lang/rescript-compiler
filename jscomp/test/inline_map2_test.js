@@ -7,11 +7,11 @@ var Curry = require("../../lib/js/curry.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
 function Make(Ord) {
-  var height = function (param) {
-    if (typeof param !== "object") {
+  var height = function (x) {
+    if (typeof x !== "object") {
       return 0;
     } else {
-      return param._4;
+      return x._4;
     }
   };
   var create = function (l, x, d, r) {
@@ -98,15 +98,15 @@ function Make(Ord) {
           Error: new Error()
         };
   };
-  var is_empty = function (param) {
-    if (typeof param !== "object") {
+  var is_empty = function (x) {
+    if (typeof x !== "object") {
       return true;
     } else {
       return false;
     }
   };
-  var add = function (x, data, param) {
-    if (typeof param !== "object") {
+  var add = function (x, data, x_) {
+    if (typeof x_ !== "object") {
       return {
               TAG: "Node",
               _0: "Empty",
@@ -116,10 +116,10 @@ function Make(Ord) {
               _4: 1
             };
     }
-    var r = param._3;
-    var d = param._2;
-    var v = param._1;
-    var l = param._0;
+    var r = x_._3;
+    var d = x_._2;
+    var v = x_._1;
+    var l = x_._0;
     var c = Curry._2(Ord.compare, x, v);
     if (c === 0) {
       return {
@@ -128,7 +128,7 @@ function Make(Ord) {
               _1: x,
               _2: data,
               _3: r,
-              _4: param._4
+              _4: x_._4
             };
     } else if (c < 0) {
       return bal(add(x, data, l), v, d, r);
@@ -136,100 +136,100 @@ function Make(Ord) {
       return bal(l, v, d, add(x, data, r));
     }
   };
-  var find = function (x, _param) {
+  var find = function (x, _x_) {
     while(true) {
-      var param = _param;
-      if (typeof param !== "object") {
+      var x_ = _x_;
+      if (typeof x_ !== "object") {
         throw {
               RE_EXN_ID: "Not_found",
               Error: new Error()
             };
       }
-      var c = Curry._2(Ord.compare, x, param._1);
+      var c = Curry._2(Ord.compare, x, x_._1);
       if (c === 0) {
-        return param._2;
+        return x_._2;
       }
-      _param = c < 0 ? param._0 : param._3;
+      _x_ = c < 0 ? x_._0 : x_._3;
       continue ;
     };
   };
-  var mem = function (x, _param) {
+  var mem = function (x, _x_) {
     while(true) {
-      var param = _param;
-      if (typeof param !== "object") {
+      var x_ = _x_;
+      if (typeof x_ !== "object") {
         return false;
       }
-      var c = Curry._2(Ord.compare, x, param._1);
+      var c = Curry._2(Ord.compare, x, x_._1);
       if (c === 0) {
         return true;
       }
-      _param = c < 0 ? param._0 : param._3;
+      _x_ = c < 0 ? x_._0 : x_._3;
       continue ;
     };
   };
-  var min_binding = function (_param) {
+  var min_binding = function (_x) {
     while(true) {
-      var param = _param;
-      if (typeof param !== "object") {
+      var x = _x;
+      if (typeof x !== "object") {
         throw {
               RE_EXN_ID: "Not_found",
               Error: new Error()
             };
       }
-      var l = param._0;
+      var l = x._0;
       if (typeof l !== "object") {
         return [
-                param._1,
-                param._2
+                x._1,
+                x._2
               ];
       }
-      _param = l;
+      _x = l;
       continue ;
     };
   };
-  var max_binding = function (_param) {
+  var max_binding = function (_x) {
     while(true) {
-      var param = _param;
-      if (typeof param !== "object") {
+      var x = _x;
+      if (typeof x !== "object") {
         throw {
               RE_EXN_ID: "Not_found",
               Error: new Error()
             };
       }
-      var r = param._3;
+      var r = x._3;
       if (typeof r !== "object") {
         return [
-                param._1,
-                param._2
+                x._1,
+                x._2
               ];
       }
-      _param = r;
+      _x = r;
       continue ;
     };
   };
-  var remove_min_binding = function (param) {
-    if (typeof param !== "object") {
+  var remove_min_binding = function (x) {
+    if (typeof x !== "object") {
       throw {
             RE_EXN_ID: "Invalid_argument",
             _1: "Map.remove_min_elt",
             Error: new Error()
           };
     }
-    var l = param._0;
+    var l = x._0;
     if (typeof l !== "object") {
-      return param._3;
+      return x._3;
     } else {
-      return bal(remove_min_binding(l), param._1, param._2, param._3);
+      return bal(remove_min_binding(l), x._1, x._2, x._3);
     }
   };
-  var remove = function (x, param) {
-    if (typeof param !== "object") {
+  var remove = function (x, x_) {
+    if (typeof x_ !== "object") {
       return "Empty";
     }
-    var r = param._3;
-    var d = param._2;
-    var v = param._1;
-    var l = param._0;
+    var r = x_._3;
+    var d = x_._2;
+    var v = x_._1;
+    var l = x_._0;
     var c = Curry._2(Ord.compare, x, v);
     if (c === 0) {
       if (typeof l !== "object") {
@@ -246,49 +246,49 @@ function Make(Ord) {
       return bal(l, v, d, remove(x, r));
     }
   };
-  var iter = function (f, _param) {
+  var iter = function (f, _x) {
     while(true) {
-      var param = _param;
-      if (typeof param !== "object") {
+      var x = _x;
+      if (typeof x !== "object") {
         return ;
       }
-      iter(f, param._0);
-      Curry._2(f, param._1, param._2);
-      _param = param._3;
+      iter(f, x._0);
+      Curry._2(f, x._1, x._2);
+      _x = x._3;
       continue ;
     };
   };
-  var map = function (f, param) {
-    if (typeof param !== "object") {
+  var map = function (f, x) {
+    if (typeof x !== "object") {
       return "Empty";
     }
-    var l$p = map(f, param._0);
-    var d$p = Curry._1(f, param._2);
-    var r$p = map(f, param._3);
+    var l$p = map(f, x._0);
+    var d$p = Curry._1(f, x._2);
+    var r$p = map(f, x._3);
     return {
             TAG: "Node",
             _0: l$p,
-            _1: param._1,
+            _1: x._1,
             _2: d$p,
             _3: r$p,
-            _4: param._4
+            _4: x._4
           };
   };
-  var mapi = function (f, param) {
-    if (typeof param !== "object") {
+  var mapi = function (f, x) {
+    if (typeof x !== "object") {
       return "Empty";
     }
-    var v = param._1;
-    var l$p = mapi(f, param._0);
-    var d$p = Curry._2(f, v, param._2);
-    var r$p = mapi(f, param._3);
+    var v = x._1;
+    var l$p = mapi(f, x._0);
+    var d$p = Curry._2(f, v, x._2);
+    var r$p = mapi(f, x._3);
     return {
             TAG: "Node",
             _0: l$p,
             _1: v,
             _2: d$p,
             _3: r$p,
-            _4: param._4
+            _4: x._4
           };
   };
   var fold = function (f, _m, _accu) {
@@ -303,50 +303,50 @@ function Make(Ord) {
       continue ;
     };
   };
-  var for_all = function (p, _param) {
+  var for_all = function (p, _x) {
     while(true) {
-      var param = _param;
-      if (typeof param !== "object") {
+      var x = _x;
+      if (typeof x !== "object") {
         return true;
       }
-      if (!Curry._2(p, param._1, param._2)) {
+      if (!Curry._2(p, x._1, x._2)) {
         return false;
       }
-      if (!for_all(p, param._0)) {
+      if (!for_all(p, x._0)) {
         return false;
       }
-      _param = param._3;
+      _x = x._3;
       continue ;
     };
   };
-  var exists = function (p, _param) {
+  var exists = function (p, _x) {
     while(true) {
-      var param = _param;
-      if (typeof param !== "object") {
+      var x = _x;
+      if (typeof x !== "object") {
         return false;
       }
-      if (Curry._2(p, param._1, param._2)) {
+      if (Curry._2(p, x._1, x._2)) {
         return true;
       }
-      if (exists(p, param._0)) {
+      if (exists(p, x._0)) {
         return true;
       }
-      _param = param._3;
+      _x = x._3;
       continue ;
     };
   };
-  var add_min_binding = function (k, v, param) {
-    if (typeof param !== "object") {
+  var add_min_binding = function (k, v, x) {
+    if (typeof x !== "object") {
       return singleton(k, v);
     } else {
-      return bal(add_min_binding(k, v, param._0), param._1, param._2, param._3);
+      return bal(add_min_binding(k, v, x._0), x._1, x._2, x._3);
     }
   };
-  var add_max_binding = function (k, v, param) {
-    if (typeof param !== "object") {
+  var add_max_binding = function (k, v, x) {
+    if (typeof x !== "object") {
       return singleton(k, v);
     } else {
-      return bal(param._0, param._1, param._2, add_max_binding(k, v, param._3));
+      return bal(x._0, x._1, x._2, add_max_binding(k, v, x._3));
     }
   };
   var join = function (l, v, d, r) {
@@ -383,18 +383,18 @@ function Make(Ord) {
       return concat(t1, t2);
     }
   };
-  var split = function (x, param) {
-    if (typeof param !== "object") {
+  var split = function (x, x_) {
+    if (typeof x_ !== "object") {
       return [
               "Empty",
               undefined,
               "Empty"
             ];
     }
-    var r = param._3;
-    var d = param._2;
-    var v = param._1;
-    var l = param._0;
+    var r = x_._3;
+    var d = x_._2;
+    var v = x_._1;
+    var l = x_._0;
     var c = Curry._2(Ord.compare, x, v);
     if (c === 0) {
       return [
@@ -436,9 +436,9 @@ function Make(Ord) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "inline_map2_test.ml",
-              270,
-              10
+              "inline_map2_test.res",
+              359,
+              11
             ],
             Error: new Error()
           };
@@ -447,35 +447,35 @@ function Make(Ord) {
     var match$1 = split(v2, s1);
     return concat_or_join(merge(f, match$1[0], s2._0), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2._2)), merge(f, match$1[2], s2._3));
   };
-  var filter = function (p, param) {
-    if (typeof param !== "object") {
+  var filter = function (p, x) {
+    if (typeof x !== "object") {
       return "Empty";
     }
-    var d = param._2;
-    var v = param._1;
-    var l$p = filter(p, param._0);
+    var d = x._2;
+    var v = x._1;
+    var l$p = filter(p, x._0);
     var pvd = Curry._2(p, v, d);
-    var r$p = filter(p, param._3);
+    var r$p = filter(p, x._3);
     if (pvd) {
       return join(l$p, v, d, r$p);
     } else {
       return concat(l$p, r$p);
     }
   };
-  var partition = function (p, param) {
-    if (typeof param !== "object") {
+  var partition = function (p, x) {
+    if (typeof x !== "object") {
       return [
               "Empty",
               "Empty"
             ];
     }
-    var d = param._2;
-    var v = param._1;
-    var match = partition(p, param._0);
+    var d = x._2;
+    var v = x._1;
+    var match = partition(p, x._0);
     var lf = match[1];
     var lt = match[0];
     var pvd = Curry._2(p, v, d);
-    var match$1 = partition(p, param._3);
+    var match$1 = partition(p, x._3);
     var rf = match$1[1];
     var rt = match$1[0];
     if (pvd) {
@@ -564,27 +564,27 @@ function Make(Ord) {
       continue ;
     };
   };
-  var cardinal = function (param) {
-    if (typeof param !== "object") {
+  var cardinal = function (x) {
+    if (typeof x !== "object") {
       return 0;
     } else {
-      return (cardinal(param._0) + 1 | 0) + cardinal(param._3) | 0;
+      return (cardinal(x._0) + 1 | 0) + cardinal(x._3) | 0;
     }
   };
-  var bindings_aux = function (_accu, _param) {
+  var bindings_aux = function (_accu, _x) {
     while(true) {
-      var param = _param;
+      var x = _x;
       var accu = _accu;
-      if (typeof param !== "object") {
+      if (typeof x !== "object") {
         return accu;
       }
-      _param = param._0;
+      _x = x._0;
       _accu = {
         hd: [
-          param._1,
-          param._2
+          x._1,
+          x._2
         ],
-        tl: bindings_aux(accu, param._3)
+        tl: bindings_aux(accu, x._3)
       };
       continue ;
     };
@@ -631,11 +631,11 @@ function Make(Ord) {
         };
 }
 
-function height(param) {
-  if (typeof param !== "object") {
+function height(x) {
+  if (typeof x !== "object") {
     return 0;
   } else {
-    return param._4;
+    return x._4;
   }
 }
 
@@ -726,16 +726,16 @@ function bal(l, x, d, r) {
       };
 }
 
-function is_empty(param) {
-  if (typeof param !== "object") {
+function is_empty(x) {
+  if (typeof x !== "object") {
     return true;
   } else {
     return false;
   }
 }
 
-function add(x, data, param) {
-  if (typeof param !== "object") {
+function add(x, data, x_) {
+  if (typeof x_ !== "object") {
     return {
             TAG: "Node",
             _0: "Empty",
@@ -745,10 +745,10 @@ function add(x, data, param) {
             _4: 1
           };
   }
-  var r = param._3;
-  var d = param._2;
-  var v = param._1;
-  var l = param._0;
+  var r = x_._3;
+  var d = x_._2;
+  var v = x_._1;
+  var l = x_._0;
   var c = Caml.int_compare(x, v);
   if (c === 0) {
     return {
@@ -757,7 +757,7 @@ function add(x, data, param) {
             _1: x,
             _2: data,
             _3: r,
-            _4: param._4
+            _4: x_._4
           };
   } else if (c < 0) {
     return bal(add(x, data, l), v, d, r);
@@ -766,105 +766,105 @@ function add(x, data, param) {
   }
 }
 
-function find(x, _param) {
+function find(x, _x_) {
   while(true) {
-    var param = _param;
-    if (typeof param !== "object") {
+    var x_ = _x_;
+    if (typeof x_ !== "object") {
       throw {
             RE_EXN_ID: "Not_found",
             Error: new Error()
           };
     }
-    var c = Caml.int_compare(x, param._1);
+    var c = Caml.int_compare(x, x_._1);
     if (c === 0) {
-      return param._2;
+      return x_._2;
     }
-    _param = c < 0 ? param._0 : param._3;
+    _x_ = c < 0 ? x_._0 : x_._3;
     continue ;
   };
 }
 
-function mem(x, _param) {
+function mem(x, _x_) {
   while(true) {
-    var param = _param;
-    if (typeof param !== "object") {
+    var x_ = _x_;
+    if (typeof x_ !== "object") {
       return false;
     }
-    var c = Caml.int_compare(x, param._1);
+    var c = Caml.int_compare(x, x_._1);
     if (c === 0) {
       return true;
     }
-    _param = c < 0 ? param._0 : param._3;
+    _x_ = c < 0 ? x_._0 : x_._3;
     continue ;
   };
 }
 
-function min_binding(_param) {
+function min_binding(_x) {
   while(true) {
-    var param = _param;
-    if (typeof param !== "object") {
+    var x = _x;
+    if (typeof x !== "object") {
       throw {
             RE_EXN_ID: "Not_found",
             Error: new Error()
           };
     }
-    var l = param._0;
+    var l = x._0;
     if (typeof l !== "object") {
       return [
-              param._1,
-              param._2
+              x._1,
+              x._2
             ];
     }
-    _param = l;
+    _x = l;
     continue ;
   };
 }
 
-function max_binding(_param) {
+function max_binding(_x) {
   while(true) {
-    var param = _param;
-    if (typeof param !== "object") {
+    var x = _x;
+    if (typeof x !== "object") {
       throw {
             RE_EXN_ID: "Not_found",
             Error: new Error()
           };
     }
-    var r = param._3;
+    var r = x._3;
     if (typeof r !== "object") {
       return [
-              param._1,
-              param._2
+              x._1,
+              x._2
             ];
     }
-    _param = r;
+    _x = r;
     continue ;
   };
 }
 
-function remove_min_binding(param) {
-  if (typeof param !== "object") {
+function remove_min_binding(x) {
+  if (typeof x !== "object") {
     throw {
           RE_EXN_ID: "Invalid_argument",
           _1: "Map.remove_min_elt",
           Error: new Error()
         };
   }
-  var l = param._0;
+  var l = x._0;
   if (typeof l !== "object") {
-    return param._3;
+    return x._3;
   } else {
-    return bal(remove_min_binding(l), param._1, param._2, param._3);
+    return bal(remove_min_binding(l), x._1, x._2, x._3);
   }
 }
 
-function remove(x, param) {
-  if (typeof param !== "object") {
+function remove(x, x_) {
+  if (typeof x_ !== "object") {
     return "Empty";
   }
-  var r = param._3;
-  var d = param._2;
-  var v = param._1;
-  var l = param._0;
+  var r = x_._3;
+  var d = x_._2;
+  var v = x_._1;
+  var l = x_._0;
   var c = Caml.int_compare(x, v);
   if (c === 0) {
     if (typeof l !== "object") {
@@ -882,51 +882,51 @@ function remove(x, param) {
   }
 }
 
-function iter(f, _param) {
+function iter(f, _x) {
   while(true) {
-    var param = _param;
-    if (typeof param !== "object") {
+    var x = _x;
+    if (typeof x !== "object") {
       return ;
     }
-    iter(f, param._0);
-    Curry._2(f, param._1, param._2);
-    _param = param._3;
+    iter(f, x._0);
+    Curry._2(f, x._1, x._2);
+    _x = x._3;
     continue ;
   };
 }
 
-function map(f, param) {
-  if (typeof param !== "object") {
+function map(f, x) {
+  if (typeof x !== "object") {
     return "Empty";
   }
-  var l$p = map(f, param._0);
-  var d$p = Curry._1(f, param._2);
-  var r$p = map(f, param._3);
+  var l$p = map(f, x._0);
+  var d$p = Curry._1(f, x._2);
+  var r$p = map(f, x._3);
   return {
           TAG: "Node",
           _0: l$p,
-          _1: param._1,
+          _1: x._1,
           _2: d$p,
           _3: r$p,
-          _4: param._4
+          _4: x._4
         };
 }
 
-function mapi(f, param) {
-  if (typeof param !== "object") {
+function mapi(f, x) {
+  if (typeof x !== "object") {
     return "Empty";
   }
-  var v = param._1;
-  var l$p = mapi(f, param._0);
-  var d$p = Curry._2(f, v, param._2);
-  var r$p = mapi(f, param._3);
+  var v = x._1;
+  var l$p = mapi(f, x._0);
+  var d$p = Curry._2(f, v, x._2);
+  var r$p = mapi(f, x._3);
   return {
           TAG: "Node",
           _0: l$p,
           _1: v,
           _2: d$p,
           _3: r$p,
-          _4: param._4
+          _4: x._4
         };
 }
 
@@ -943,53 +943,53 @@ function fold(f, _m, _accu) {
   };
 }
 
-function for_all(p, _param) {
+function for_all(p, _x) {
   while(true) {
-    var param = _param;
-    if (typeof param !== "object") {
+    var x = _x;
+    if (typeof x !== "object") {
       return true;
     }
-    if (!Curry._2(p, param._1, param._2)) {
+    if (!Curry._2(p, x._1, x._2)) {
       return false;
     }
-    if (!for_all(p, param._0)) {
+    if (!for_all(p, x._0)) {
       return false;
     }
-    _param = param._3;
+    _x = x._3;
     continue ;
   };
 }
 
-function exists(p, _param) {
+function exists(p, _x) {
   while(true) {
-    var param = _param;
-    if (typeof param !== "object") {
+    var x = _x;
+    if (typeof x !== "object") {
       return false;
     }
-    if (Curry._2(p, param._1, param._2)) {
+    if (Curry._2(p, x._1, x._2)) {
       return true;
     }
-    if (exists(p, param._0)) {
+    if (exists(p, x._0)) {
       return true;
     }
-    _param = param._3;
+    _x = x._3;
     continue ;
   };
 }
 
-function add_min_binding(k, v, param) {
-  if (typeof param !== "object") {
+function add_min_binding(k, v, x) {
+  if (typeof x !== "object") {
     return singleton(k, v);
   } else {
-    return bal(add_min_binding(k, v, param._0), param._1, param._2, param._3);
+    return bal(add_min_binding(k, v, x._0), x._1, x._2, x._3);
   }
 }
 
-function add_max_binding(k, v, param) {
-  if (typeof param !== "object") {
+function add_max_binding(k, v, x) {
+  if (typeof x !== "object") {
     return singleton(k, v);
   } else {
-    return bal(param._0, param._1, param._2, add_max_binding(k, v, param._3));
+    return bal(x._0, x._1, x._2, add_max_binding(k, v, x._3));
   }
 }
 
@@ -1030,18 +1030,18 @@ function concat_or_join(t1, v, d, t2) {
   }
 }
 
-function split(x, param) {
-  if (typeof param !== "object") {
+function split(x, x_) {
+  if (typeof x_ !== "object") {
     return [
             "Empty",
             undefined,
             "Empty"
           ];
   }
-  var r = param._3;
-  var d = param._2;
-  var v = param._1;
-  var l = param._0;
+  var r = x_._3;
+  var d = x_._2;
+  var v = x_._1;
+  var l = x_._0;
   var c = Caml.int_compare(x, v);
   if (c === 0) {
     return [
@@ -1084,9 +1084,9 @@ function merge(f, s1, s2) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "inline_map2_test.ml",
-            270,
-            10
+            "inline_map2_test.res",
+            359,
+            11
           ],
           Error: new Error()
         };
@@ -1096,15 +1096,15 @@ function merge(f, s1, s2) {
   return concat_or_join(merge(f, match$1[0], s2._0), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2._2)), merge(f, match$1[2], s2._3));
 }
 
-function filter(p, param) {
-  if (typeof param !== "object") {
+function filter(p, x) {
+  if (typeof x !== "object") {
     return "Empty";
   }
-  var d = param._2;
-  var v = param._1;
-  var l$p = filter(p, param._0);
+  var d = x._2;
+  var v = x._1;
+  var l$p = filter(p, x._0);
   var pvd = Curry._2(p, v, d);
-  var r$p = filter(p, param._3);
+  var r$p = filter(p, x._3);
   if (pvd) {
     return join(l$p, v, d, r$p);
   } else {
@@ -1112,20 +1112,20 @@ function filter(p, param) {
   }
 }
 
-function partition(p, param) {
-  if (typeof param !== "object") {
+function partition(p, x) {
+  if (typeof x !== "object") {
     return [
             "Empty",
             "Empty"
           ];
   }
-  var d = param._2;
-  var v = param._1;
-  var match = partition(p, param._0);
+  var d = x._2;
+  var v = x._1;
+  var match = partition(p, x._0);
   var lf = match[1];
   var lt = match[0];
   var pvd = Curry._2(p, v, d);
-  var match$1 = partition(p, param._3);
+  var match$1 = partition(p, x._3);
   var rf = match$1[1];
   var rt = match$1[0];
   if (pvd) {
@@ -1218,28 +1218,28 @@ function equal(cmp, m1, m2) {
   };
 }
 
-function cardinal(param) {
-  if (typeof param !== "object") {
+function cardinal(x) {
+  if (typeof x !== "object") {
     return 0;
   } else {
-    return (cardinal(param._0) + 1 | 0) + cardinal(param._3) | 0;
+    return (cardinal(x._0) + 1 | 0) + cardinal(x._3) | 0;
   }
 }
 
-function bindings_aux(_accu, _param) {
+function bindings_aux(_accu, _x) {
   while(true) {
-    var param = _param;
+    var x = _x;
     var accu = _accu;
-    if (typeof param !== "object") {
+    if (typeof x !== "object") {
       return accu;
     }
-    _param = param._0;
+    _x = x._0;
     _accu = {
       hd: [
-        param._1,
-        param._2
+        x._1,
+        x._2
       ],
-      tl: bindings_aux(accu, param._3)
+      tl: bindings_aux(accu, x._3)
     };
     continue ;
   };
@@ -1315,11 +1315,11 @@ var m = List.fold_left((function (acc, param) {
       }
     });
 
-function height$1(param) {
-  if (typeof param !== "object") {
+function height$1(x) {
+  if (typeof x !== "object") {
     return 0;
   } else {
-    return param._4;
+    return x._4;
   }
 }
 
@@ -1410,16 +1410,16 @@ function bal$1(l, x, d, r) {
       };
 }
 
-function is_empty$1(param) {
-  if (typeof param !== "object") {
+function is_empty$1(x) {
+  if (typeof x !== "object") {
     return true;
   } else {
     return false;
   }
 }
 
-function add$1(x, data, param) {
-  if (typeof param !== "object") {
+function add$1(x, data, x_) {
+  if (typeof x_ !== "object") {
     return {
             TAG: "Node",
             _0: "Empty",
@@ -1429,10 +1429,10 @@ function add$1(x, data, param) {
             _4: 1
           };
   }
-  var r = param._3;
-  var d = param._2;
-  var v = param._1;
-  var l = param._0;
+  var r = x_._3;
+  var d = x_._2;
+  var v = x_._1;
+  var l = x_._0;
   var c = Caml.string_compare(x, v);
   if (c === 0) {
     return {
@@ -1441,7 +1441,7 @@ function add$1(x, data, param) {
             _1: x,
             _2: data,
             _3: r,
-            _4: param._4
+            _4: x_._4
           };
   } else if (c < 0) {
     return bal$1(add$1(x, data, l), v, d, r);
@@ -1450,105 +1450,105 @@ function add$1(x, data, param) {
   }
 }
 
-function find$1(x, _param) {
+function find$1(x, _x_) {
   while(true) {
-    var param = _param;
-    if (typeof param !== "object") {
+    var x_ = _x_;
+    if (typeof x_ !== "object") {
       throw {
             RE_EXN_ID: "Not_found",
             Error: new Error()
           };
     }
-    var c = Caml.string_compare(x, param._1);
+    var c = Caml.string_compare(x, x_._1);
     if (c === 0) {
-      return param._2;
+      return x_._2;
     }
-    _param = c < 0 ? param._0 : param._3;
+    _x_ = c < 0 ? x_._0 : x_._3;
     continue ;
   };
 }
 
-function mem$1(x, _param) {
+function mem$1(x, _x_) {
   while(true) {
-    var param = _param;
-    if (typeof param !== "object") {
+    var x_ = _x_;
+    if (typeof x_ !== "object") {
       return false;
     }
-    var c = Caml.string_compare(x, param._1);
+    var c = Caml.string_compare(x, x_._1);
     if (c === 0) {
       return true;
     }
-    _param = c < 0 ? param._0 : param._3;
+    _x_ = c < 0 ? x_._0 : x_._3;
     continue ;
   };
 }
 
-function min_binding$1(_param) {
+function min_binding$1(_x) {
   while(true) {
-    var param = _param;
-    if (typeof param !== "object") {
+    var x = _x;
+    if (typeof x !== "object") {
       throw {
             RE_EXN_ID: "Not_found",
             Error: new Error()
           };
     }
-    var l = param._0;
+    var l = x._0;
     if (typeof l !== "object") {
       return [
-              param._1,
-              param._2
+              x._1,
+              x._2
             ];
     }
-    _param = l;
+    _x = l;
     continue ;
   };
 }
 
-function max_binding$1(_param) {
+function max_binding$1(_x) {
   while(true) {
-    var param = _param;
-    if (typeof param !== "object") {
+    var x = _x;
+    if (typeof x !== "object") {
       throw {
             RE_EXN_ID: "Not_found",
             Error: new Error()
           };
     }
-    var r = param._3;
+    var r = x._3;
     if (typeof r !== "object") {
       return [
-              param._1,
-              param._2
+              x._1,
+              x._2
             ];
     }
-    _param = r;
+    _x = r;
     continue ;
   };
 }
 
-function remove_min_binding$1(param) {
-  if (typeof param !== "object") {
+function remove_min_binding$1(x) {
+  if (typeof x !== "object") {
     throw {
           RE_EXN_ID: "Invalid_argument",
           _1: "Map.remove_min_elt",
           Error: new Error()
         };
   }
-  var l = param._0;
+  var l = x._0;
   if (typeof l !== "object") {
-    return param._3;
+    return x._3;
   } else {
-    return bal$1(remove_min_binding$1(l), param._1, param._2, param._3);
+    return bal$1(remove_min_binding$1(l), x._1, x._2, x._3);
   }
 }
 
-function remove$1(x, param) {
-  if (typeof param !== "object") {
+function remove$1(x, x_) {
+  if (typeof x_ !== "object") {
     return "Empty";
   }
-  var r = param._3;
-  var d = param._2;
-  var v = param._1;
-  var l = param._0;
+  var r = x_._3;
+  var d = x_._2;
+  var v = x_._1;
+  var l = x_._0;
   var c = Caml.string_compare(x, v);
   if (c === 0) {
     if (typeof l !== "object") {
@@ -1566,51 +1566,51 @@ function remove$1(x, param) {
   }
 }
 
-function iter$1(f, _param) {
+function iter$1(f, _x) {
   while(true) {
-    var param = _param;
-    if (typeof param !== "object") {
+    var x = _x;
+    if (typeof x !== "object") {
       return ;
     }
-    iter$1(f, param._0);
-    Curry._2(f, param._1, param._2);
-    _param = param._3;
+    iter$1(f, x._0);
+    Curry._2(f, x._1, x._2);
+    _x = x._3;
     continue ;
   };
 }
 
-function map$1(f, param) {
-  if (typeof param !== "object") {
+function map$1(f, x) {
+  if (typeof x !== "object") {
     return "Empty";
   }
-  var l$p = map$1(f, param._0);
-  var d$p = Curry._1(f, param._2);
-  var r$p = map$1(f, param._3);
+  var l$p = map$1(f, x._0);
+  var d$p = Curry._1(f, x._2);
+  var r$p = map$1(f, x._3);
   return {
           TAG: "Node",
           _0: l$p,
-          _1: param._1,
+          _1: x._1,
           _2: d$p,
           _3: r$p,
-          _4: param._4
+          _4: x._4
         };
 }
 
-function mapi$1(f, param) {
-  if (typeof param !== "object") {
+function mapi$1(f, x) {
+  if (typeof x !== "object") {
     return "Empty";
   }
-  var v = param._1;
-  var l$p = mapi$1(f, param._0);
-  var d$p = Curry._2(f, v, param._2);
-  var r$p = mapi$1(f, param._3);
+  var v = x._1;
+  var l$p = mapi$1(f, x._0);
+  var d$p = Curry._2(f, v, x._2);
+  var r$p = mapi$1(f, x._3);
   return {
           TAG: "Node",
           _0: l$p,
           _1: v,
           _2: d$p,
           _3: r$p,
-          _4: param._4
+          _4: x._4
         };
 }
 
@@ -1627,53 +1627,53 @@ function fold$1(f, _m, _accu) {
   };
 }
 
-function for_all$1(p, _param) {
+function for_all$1(p, _x) {
   while(true) {
-    var param = _param;
-    if (typeof param !== "object") {
+    var x = _x;
+    if (typeof x !== "object") {
       return true;
     }
-    if (!Curry._2(p, param._1, param._2)) {
+    if (!Curry._2(p, x._1, x._2)) {
       return false;
     }
-    if (!for_all$1(p, param._0)) {
+    if (!for_all$1(p, x._0)) {
       return false;
     }
-    _param = param._3;
+    _x = x._3;
     continue ;
   };
 }
 
-function exists$1(p, _param) {
+function exists$1(p, _x) {
   while(true) {
-    var param = _param;
-    if (typeof param !== "object") {
+    var x = _x;
+    if (typeof x !== "object") {
       return false;
     }
-    if (Curry._2(p, param._1, param._2)) {
+    if (Curry._2(p, x._1, x._2)) {
       return true;
     }
-    if (exists$1(p, param._0)) {
+    if (exists$1(p, x._0)) {
       return true;
     }
-    _param = param._3;
+    _x = x._3;
     continue ;
   };
 }
 
-function add_min_binding$1(k, v, param) {
-  if (typeof param !== "object") {
+function add_min_binding$1(k, v, x) {
+  if (typeof x !== "object") {
     return singleton$1(k, v);
   } else {
-    return bal$1(add_min_binding$1(k, v, param._0), param._1, param._2, param._3);
+    return bal$1(add_min_binding$1(k, v, x._0), x._1, x._2, x._3);
   }
 }
 
-function add_max_binding$1(k, v, param) {
-  if (typeof param !== "object") {
+function add_max_binding$1(k, v, x) {
+  if (typeof x !== "object") {
     return singleton$1(k, v);
   } else {
-    return bal$1(param._0, param._1, param._2, add_max_binding$1(k, v, param._3));
+    return bal$1(x._0, x._1, x._2, add_max_binding$1(k, v, x._3));
   }
 }
 
@@ -1714,18 +1714,18 @@ function concat_or_join$1(t1, v, d, t2) {
   }
 }
 
-function split$1(x, param) {
-  if (typeof param !== "object") {
+function split$1(x, x_) {
+  if (typeof x_ !== "object") {
     return [
             "Empty",
             undefined,
             "Empty"
           ];
   }
-  var r = param._3;
-  var d = param._2;
-  var v = param._1;
-  var l = param._0;
+  var r = x_._3;
+  var d = x_._2;
+  var v = x_._1;
+  var l = x_._0;
   var c = Caml.string_compare(x, v);
   if (c === 0) {
     return [
@@ -1768,9 +1768,9 @@ function merge$1(f, s1, s2) {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "inline_map2_test.ml",
-            270,
-            10
+            "inline_map2_test.res",
+            359,
+            11
           ],
           Error: new Error()
         };
@@ -1780,15 +1780,15 @@ function merge$1(f, s1, s2) {
   return concat_or_join$1(merge$1(f, match$1[0], s2._0), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2._2)), merge$1(f, match$1[2], s2._3));
 }
 
-function filter$1(p, param) {
-  if (typeof param !== "object") {
+function filter$1(p, x) {
+  if (typeof x !== "object") {
     return "Empty";
   }
-  var d = param._2;
-  var v = param._1;
-  var l$p = filter$1(p, param._0);
+  var d = x._2;
+  var v = x._1;
+  var l$p = filter$1(p, x._0);
   var pvd = Curry._2(p, v, d);
-  var r$p = filter$1(p, param._3);
+  var r$p = filter$1(p, x._3);
   if (pvd) {
     return join$1(l$p, v, d, r$p);
   } else {
@@ -1796,20 +1796,20 @@ function filter$1(p, param) {
   }
 }
 
-function partition$1(p, param) {
-  if (typeof param !== "object") {
+function partition$1(p, x) {
+  if (typeof x !== "object") {
     return [
             "Empty",
             "Empty"
           ];
   }
-  var d = param._2;
-  var v = param._1;
-  var match = partition$1(p, param._0);
+  var d = x._2;
+  var v = x._1;
+  var match = partition$1(p, x._0);
   var lf = match[1];
   var lt = match[0];
   var pvd = Curry._2(p, v, d);
-  var match$1 = partition$1(p, param._3);
+  var match$1 = partition$1(p, x._3);
   var rf = match$1[1];
   var rt = match$1[0];
   if (pvd) {
@@ -1902,28 +1902,28 @@ function equal$1(cmp, m1, m2) {
   };
 }
 
-function cardinal$1(param) {
-  if (typeof param !== "object") {
+function cardinal$1(x) {
+  if (typeof x !== "object") {
     return 0;
   } else {
-    return (cardinal$1(param._0) + 1 | 0) + cardinal$1(param._3) | 0;
+    return (cardinal$1(x._0) + 1 | 0) + cardinal$1(x._3) | 0;
   }
 }
 
-function bindings_aux$1(_accu, _param) {
+function bindings_aux$1(_accu, _x) {
   while(true) {
-    var param = _param;
+    var x = _x;
     var accu = _accu;
-    if (typeof param !== "object") {
+    if (typeof x !== "object") {
       return accu;
     }
-    _param = param._0;
+    _x = x._0;
     _accu = {
       hd: [
-        param._1,
-        param._2
+        x._1,
+        x._2
       ],
-      tl: bindings_aux$1(accu, param._3)
+      tl: bindings_aux$1(accu, x._3)
     };
     continue ;
   };

@@ -37,22 +37,22 @@ function insert(queue, prio, elt) {
 
 var Queue_is_empty = /* @__PURE__ */Caml_exceptions.create("Pq_test.PrioQueue.Queue_is_empty");
 
-function remove_top(param) {
-  if (typeof param !== "object") {
+function remove_top(x) {
+  if (typeof x !== "object") {
     throw {
           RE_EXN_ID: Queue_is_empty,
           Error: new Error()
         };
   }
-  var left = param._2;
-  var tmp = param._3;
+  var left = x._2;
+  var tmp = x._3;
   if (typeof tmp !== "object") {
     return left;
   }
   if (typeof left !== "object") {
-    return param._3;
+    return x._3;
   }
-  var right = param._3;
+  var right = x._3;
   var rprio = right._0;
   var lprio = left._0;
   if (lprio <= rprio) {
@@ -74,12 +74,12 @@ function remove_top(param) {
   }
 }
 
-function extract(queue) {
-  if (typeof queue === "object") {
+function extract(x) {
+  if (typeof x === "object") {
     return [
-            queue._0,
-            queue._1,
-            remove_top(queue)
+            x._0,
+            x._1,
+            remove_top(x)
           ];
   }
   throw {

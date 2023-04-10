@@ -68,13 +68,13 @@ function caml_hash(x) {
   return Hashtbl.hash(x) & 1073741823;
 }
 
-Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 18, characters 5-12", $$Array.map(caml_hash, test_strings), test_strings_hash_results);
+Mt_global.collect_eq(test_id, suites, "File \"hash_test.res\", line 44, characters 12-19", $$Array.map(caml_hash, test_strings), test_strings_hash_results);
 
-Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 24, characters 5-12", Hashtbl.hash(0) & 1073741823, 129913994);
+Mt_global.collect_eq(test_id, suites, "File \"hash_test.res\", line 46, characters 12-19", Hashtbl.hash(0) & 1073741823, 129913994);
 
-Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 27, characters 5-12", Hashtbl.hash("x") & 1073741823, 780510073);
+Mt_global.collect_eq(test_id, suites, "File \"hash_test.res\", line 48, characters 12-19", Hashtbl.hash("x") & 1073741823, 780510073);
 
-Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 30, characters 5-12", Hashtbl.hash("xy") & 1073741823, 194127723);
+Mt_global.collect_eq(test_id, suites, "File \"hash_test.res\", line 50, characters 12-19", Hashtbl.hash("xy") & 1073741823, 194127723);
 
 Mt.from_pair_suites("Hash_test", suites.contents);
 

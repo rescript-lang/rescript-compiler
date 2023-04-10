@@ -124,8 +124,8 @@ if (!Caml_obj.equal(dfs1({
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "topsort_test.ml",
-          29,
+          "topsort_test.res",
+          35,
           2
         ],
         Error: new Error()
@@ -162,8 +162,8 @@ if (!Caml_obj.equal(dfs1({
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "topsort_test.ml",
-          32,
+          "topsort_test.res",
+          38,
           2
         ],
         Error: new Error()
@@ -223,8 +223,8 @@ if (!Caml_obj.equal(dfs2({
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "topsort_test.ml",
-          47,
+          "topsort_test.res",
+          57,
           2
         ],
         Error: new Error()
@@ -259,8 +259,8 @@ if (!Caml_obj.equal(dfs2({
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "topsort_test.ml",
-          48,
+          "topsort_test.res",
+          58,
           2
         ],
         Error: new Error()
@@ -317,8 +317,8 @@ if (!Caml_obj.equal(dfs3({
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "topsort_test.ml",
-          65,
+          "topsort_test.res",
+          74,
           2
         ],
         Error: new Error()
@@ -353,8 +353,8 @@ if (!Caml_obj.equal(dfs3({
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "topsort_test.ml",
-          66,
+          "topsort_test.res",
+          75,
           2
         ],
         Error: new Error()
@@ -442,9 +442,9 @@ if (!Caml_obj.equal(unsafe_topsort(grwork), {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "topsort_test.ml",
-          110,
-          2
+          "topsort_test.res",
+          112,
+          9
         ],
         Error: new Error()
       };
@@ -1523,9 +1523,9 @@ if (!Caml_obj.equal(pathsort(grwork), {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "topsort_test.ml",
-          150,
-          4
+          "topsort_test.res",
+          144,
+          9
         ],
         Error: new Error()
       };
@@ -1542,9 +1542,9 @@ try {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "topsort_test.ml",
-          156,
-          8
+          "topsort_test.res",
+          148,
+          2
         ],
         Error: new Error()
       };
@@ -1580,9 +1580,9 @@ catch (raw_exn){
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "topsort_test.ml",
-            159,
-            11
+            "topsort_test.res",
+            151,
+            7
           ],
           Error: new Error()
         };

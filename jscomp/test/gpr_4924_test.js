@@ -34,11 +34,11 @@ function u2(b) {
   }
 }
 
-Mt.eq_suites(test_id, suites, "File \"gpr_4924_test.ml\", line 25, characters 30-37", false, false);
+Mt.eq_suites(test_id, suites, "File \"gpr_4924_test.res\", line 27, characters 29-36", false, false);
 
-Mt.eq_suites(test_id, suites, "File \"gpr_4924_test.ml\", line 26, characters 30-37", true, true);
+Mt.eq_suites(test_id, suites, "File \"gpr_4924_test.res\", line 28, characters 29-36", true, true);
 
-Mt.eq_suites(test_id, suites, "File \"gpr_4924_test.ml\", line 27, characters 30-37", true, true);
+Mt.eq_suites(test_id, suites, "File \"gpr_4924_test.res\", line 29, characters 29-36", true, true);
 
 function u3(b) {
   if (typeof b !== "object" && b === "A") {
@@ -72,7 +72,7 @@ function u6(b) {
   }
 }
 
-Mt.from_pair_suites("File \"gpr_4924_test.ml\", line 49, characters 20-27", suites.contents);
+Mt.from_pair_suites("File \"gpr_4924_test.res\", line 54, characters 17-24", suites.contents);
 
 var from_pair_suites = Mt.from_pair_suites;
 

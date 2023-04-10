@@ -39,9 +39,9 @@ Belt_MutableMapInt.remove(mockMap, 1726);
 
 var n1 = Belt_internalMapInt.getExn(mockMap.data, 6667);
 
-eq("File \"gpr_4265_test.ml\", line 17, characters 6-13", n, n1);
+eq("File \"gpr_4265_test.res\", line 18, characters 3-10", n, n1);
 
-Mt.from_pair_suites("gpr_4265_test.ml", suites.contents);
+Mt.from_pair_suites("gpr_4265_test.res", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

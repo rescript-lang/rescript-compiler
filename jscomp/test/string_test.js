@@ -87,28 +87,28 @@ function xsplit(delim, s) {
   var len = s.length;
   if (len !== 0) {
     var _l = /* [] */0;
-    var _i = len;
+    var _x = len;
     while(true) {
-      var i = _i;
+      var x = _x;
       var l = _l;
-      if (i === 0) {
+      if (x === 0) {
         return l;
       }
       var i$p;
       try {
-        i$p = $$String.rindex_from(s, i - 1 | 0, delim);
+        i$p = $$String.rindex_from(s, x - 1 | 0, delim);
       }
       catch (raw_exn){
         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
         if (exn.RE_EXN_ID === "Not_found") {
           return {
-                  hd: $$String.sub(s, 0, i),
+                  hd: $$String.sub(s, 0, x),
                   tl: l
                 };
         }
         throw exn;
       }
-      var l_0 = $$String.sub(s, i$p + 1 | 0, (i - i$p | 0) - 1 | 0);
+      var l_0 = $$String.sub(s, i$p + 1 | 0, (x - i$p | 0) - 1 | 0);
       var l$1 = {
         hd: l_0,
         tl: l
@@ -117,7 +117,7 @@ function xsplit(delim, s) {
             hd: "",
             tl: l$1
           }) : l$1;
-      _i = i$p;
+      _x = i$p;
       _l = l$2;
       continue ;
     };
@@ -210,7 +210,7 @@ Mt.from_pair_suites("String_test", {
                 ],
                 tl: {
                   hd: [
-                    "File \"string_test.ml\", line 74, characters 2-9",
+                    "File \"string_test.res\", line 86, characters 5-12",
                     (function (param) {
                         return {
                                 TAG: "Eq",

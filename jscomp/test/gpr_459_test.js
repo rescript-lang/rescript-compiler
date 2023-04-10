@@ -39,9 +39,9 @@ var uu2 = {
 
 var hh = uu["'x"];
 
-eq("File \"gpr_459_test.ml\", line 25, characters 12-19", hh, 3);
+eq("File \"gpr_459_test.res\", line 23, characters 12-19", hh, 3);
 
-eq("File \"gpr_459_test.ml\", line 28, characters 5-12", [
+eq("File \"gpr_459_test.res\", line 25, characters 12-19", [
       1,
       2,
       3

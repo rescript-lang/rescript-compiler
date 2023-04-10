@@ -85,21 +85,21 @@ function fn(authState, route) {
   return 0;
 }
 
-eq("File \"gpr_4280_test.ml\", line 46, characters 6-13", fn("Unauthenticated", "Invite"), 1);
+eq("File \"gpr_4280_test.res\", line 42, characters 3-10", fn("Unauthenticated", "Invite"), 1);
 
-eq("File \"gpr_4280_test.ml\", line 47, characters 6-13", fn("Unauthenticated", {
+eq("File \"gpr_4280_test.res\", line 43, characters 3-10", fn("Unauthenticated", {
           NAME: "Onboarding",
           VAL: 0
         }), 0);
 
-eq("File \"gpr_4280_test.ml\", line 48, characters 6-13", fn({
+eq("File \"gpr_4280_test.res\", line 44, characters 3-10", fn({
           NAME: "Unverified",
           VAL: 0
         }, "Invite"), 2);
 
-eq("File \"gpr_4280_test.ml\", line 49, characters 6-13", fn("Unauthenticated", "xx"), 3);
+eq("File \"gpr_4280_test.res\", line 45, characters 3-10", fn("Unauthenticated", "xx"), 3);
 
-Mt.from_pair_suites("gpr_4280_test.ml", suites.contents);
+Mt.from_pair_suites("gpr_4280_test.res", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

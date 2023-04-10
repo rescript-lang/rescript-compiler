@@ -1,11 +1,11 @@
 'use strict';
 
 
-function fib(n) {
-  if (n === 0 || n === 1) {
+function fib(x) {
+  if (x === 0 || x === 1) {
     return 1;
   } else {
-    return fib(n - 1 | 0) + fib(n - 2 | 0) | 0;
+    return fib(x - 1 | 0) + fib(x - 2 | 0) | 0;
   }
 }
 

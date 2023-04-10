@@ -101,7 +101,7 @@ var list_suites_1 = {
       ],
       tl: {
         hd: [
-          "File \"list_test.ml\", line 20, characters 2-9",
+          "File \"list_test.res\", line 20, characters 5-12",
           (function (param) {
               return {
                       TAG: "Eq",
@@ -121,7 +121,7 @@ var list_suites_1 = {
         ],
         tl: {
           hd: [
-            "File \"list_test.ml\", line 23, characters 2-9",
+            "File \"list_test.res\", line 21, characters 5-12",
             (function (param) {
                 return {
                         TAG: "Eq",
@@ -141,7 +141,7 @@ var list_suites_1 = {
           ],
           tl: {
             hd: [
-              "File \"list_test.ml\", line 26, characters 2-9",
+              "File \"list_test.res\", line 22, characters 5-12",
               (function (param) {
                   return {
                           TAG: "Eq",

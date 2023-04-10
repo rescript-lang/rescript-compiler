@@ -1,10 +1,10 @@
 'use strict';
 
 
-function blackify(s) {
-  if (typeof s !== "object" || s._0 === "Black") {
+function blackify(x) {
+  if (typeof x !== "object" || x._0 === "Black") {
     return [
-            s,
+            x,
             true
           ];
   } else {
@@ -12,38 +12,38 @@ function blackify(s) {
             {
               TAG: "Node",
               _0: "Black",
-              _1: s._1,
-              _2: s._2,
-              _3: s._3
+              _1: x._1,
+              _2: x._2,
+              _3: x._3
             },
             false
           ];
   }
 }
 
-function is_empty(param) {
-  if (typeof param !== "object") {
+function is_empty(x) {
+  if (typeof x !== "object") {
     return true;
   } else {
     return false;
   }
 }
 
-function mem(x, _param) {
+function mem(x, _x_) {
   while(true) {
-    var param = _param;
-    if (typeof param !== "object") {
+    var x_ = _x_;
+    if (typeof x_ !== "object") {
       return false;
     }
-    var y = param._2;
+    var y = x_._2;
     if (x === y) {
       return true;
     }
     if (x < y) {
-      _param = param._1;
+      _x_ = x_._1;
       continue ;
     }
-    _param = param._3;
+    _x_ = x_._3;
     continue ;
   };
 }
@@ -210,10 +210,10 @@ function singleton(x) {
         };
 }
 
-function unbalanced_left(param) {
-  if (typeof param === "object") {
-    if (param._0 === "Black") {
-      var match = param._1;
+function unbalanced_left(x) {
+  if (typeof x === "object") {
+    if (x._0 === "Black") {
+      var match = x._1;
       if (typeof match === "object") {
         if (match._0 === "Black") {
           return [
@@ -223,7 +223,7 @@ function unbalanced_left(param) {
                         _1: match._1,
                         _2: match._2,
                         _3: match._3
-                      }, param._2, param._3),
+                      }, x._2, x._3),
                   true
                 ];
         }
@@ -241,7 +241,7 @@ function unbalanced_left(param) {
                           _1: match$1._1,
                           _2: match$1._2,
                           _3: match$1._3
-                        }, param._2, param._3)
+                        }, x._2, x._3)
                   },
                   false
                 ];
@@ -250,7 +250,7 @@ function unbalanced_left(param) {
       }
       
     } else {
-      var match$2 = param._1;
+      var match$2 = x._1;
       if (typeof match$2 === "object" && match$2._0 === "Black") {
         return [
                 balance_left({
@@ -259,7 +259,7 @@ function unbalanced_left(param) {
                       _1: match$2._1,
                       _2: match$2._2,
                       _3: match$2._3
-                    }, param._2, param._3),
+                    }, x._2, x._3),
                 false
               ];
       }
@@ -269,24 +269,24 @@ function unbalanced_left(param) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "rbset.ml",
-          57,
+          "rbset.res",
+          64,
           9
         ],
         Error: new Error()
       };
 }
 
-function unbalanced_right(param) {
-  if (typeof param === "object") {
-    if (param._0 === "Black") {
-      var match = param._3;
-      var x = param._2;
-      var a = param._1;
+function unbalanced_right(x) {
+  if (typeof x === "object") {
+    if (x._0 === "Black") {
+      var match = x._3;
+      var x$1 = x._2;
+      var a = x._1;
       if (typeof match === "object") {
         if (match._0 === "Black") {
           return [
-                  balance_right(a, x, {
+                  balance_right(a, x$1, {
                         TAG: "Node",
                         _0: "Red",
                         _1: match._1,
@@ -302,7 +302,7 @@ function unbalanced_right(param) {
                   {
                     TAG: "Node",
                     _0: "Black",
-                    _1: balance_right(a, x, {
+                    _1: balance_right(a, x$1, {
                           TAG: "Node",
                           _0: "Red",
                           _1: match$1._1,
@@ -319,10 +319,10 @@ function unbalanced_right(param) {
       }
       
     } else {
-      var match$2 = param._3;
+      var match$2 = x._3;
       if (typeof match$2 === "object" && match$2._0 === "Black") {
         return [
-                balance_right(param._1, param._2, {
+                balance_right(x._1, x._2, {
                       TAG: "Node",
                       _0: "Red",
                       _1: match$2._1,
@@ -338,8 +338,8 @@ function unbalanced_right(param) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "rbset.ml",
-          63,
+          "rbset.res",
+          75,
           9
         ],
         Error: new Error()
@@ -494,8 +494,8 @@ function rbalance(x1, x2, x3) {
         };
 }
 
-function ins(x, s) {
-  if (typeof s !== "object") {
+function ins(x, x_) {
+  if (typeof x_ !== "object") {
     return {
             TAG: "Node",
             _0: "Red",
@@ -504,25 +504,25 @@ function ins(x, s) {
             _3: "Empty"
           };
   }
-  if (s._0 === "Black") {
-    var y = s._2;
+  if (x_._0 === "Black") {
+    var y = x_._2;
     if (x === y) {
-      return s;
+      return x_;
     }
-    var b = s._3;
-    var a = s._1;
+    var b = x_._3;
+    var a = x_._1;
     if (x < y) {
       return lbalance(ins(x, a), y, b);
     } else {
       return rbalance(a, y, ins(x, b));
     }
   }
-  var y$1 = s._2;
+  var y$1 = x_._2;
   if (x === y$1) {
-    return s;
+    return x_;
   }
-  var b$1 = s._3;
-  var a$1 = s._1;
+  var b$1 = x_._3;
+  var a$1 = x_._1;
   if (x < y$1) {
     return {
             TAG: "Node",
@@ -557,28 +557,28 @@ function add(x, s) {
   }
 }
 
-function remove_min(param) {
-  if (typeof param !== "object") {
+function remove_min(x) {
+  if (typeof x !== "object") {
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "rbset.ml",
-            115,
+            "rbset.res",
+            138,
             4
           ],
           Error: new Error()
         };
   }
-  var c = param._0;
+  var c = x._0;
   if (c === "Black") {
-    var tmp = param._1;
+    var tmp = x._1;
     if (typeof tmp !== "object") {
-      var match = param._3;
-      var x = param._2;
+      var match = x._3;
+      var x$1 = x._2;
       if (typeof match !== "object") {
         return [
                 "Empty",
-                x,
+                x$1,
                 true
               ];
       }
@@ -591,15 +591,15 @@ function remove_min(param) {
                   _2: match._2,
                   _3: match._3
                 },
-                x,
+                x$1,
                 false
               ];
       }
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "rbset.ml",
-              115,
+              "rbset.res",
+              138,
               4
             ],
             Error: new Error()
@@ -607,21 +607,21 @@ function remove_min(param) {
     }
     
   } else {
-    var tmp$1 = param._1;
+    var tmp$1 = x._1;
     if (typeof tmp$1 !== "object") {
       return [
-              param._3,
-              param._2,
+              x._3,
+              x._2,
               false
             ];
     }
     
   }
-  var match$1 = remove_min(param._1);
+  var match$1 = remove_min(x._1);
   var y = match$1[1];
   var s_1 = match$1[0];
-  var s_2 = param._2;
-  var s_3 = param._3;
+  var s_2 = x._2;
+  var s_3 = x._3;
   var s = {
     TAG: "Node",
     _0: c,
@@ -727,11 +727,11 @@ function remove(x, s) {
   return remove_aux(x, s)[0];
 }
 
-function cardinal(param) {
-  if (typeof param !== "object") {
+function cardinal(x) {
+  if (typeof x !== "object") {
     return 0;
   } else {
-    return (1 + cardinal(param._1) | 0) + cardinal(param._3) | 0;
+    return (1 + cardinal(x._1) | 0) + cardinal(x._3) | 0;
   }
 }
 

@@ -132,8 +132,8 @@ function f(x) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "test_trywith.ml",
-          55,
+          "test_trywith.res",
+          59,
           9
         ],
         Error: new Error()

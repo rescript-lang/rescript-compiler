@@ -48,7 +48,7 @@ var string_config = {
   low: "32"
 };
 
-eq("File \"ffi_js_test.ml\", line 32, characters 5-12", [
+eq("File \"ffi_js_test.res\", line 30, characters 12-19", [
       6,
       $$higher_order(1)(2, 3)
     ]);
@@ -80,12 +80,12 @@ var same_type = [
   same_type_1
 ];
 
-eq("File \"ffi_js_test.ml\", line 41, characters 5-12", [
+eq("File \"ffi_js_test.res\", line 38, characters 5-12", [
       Object.keys(int_config).length,
       2
     ]);
 
-eq("File \"ffi_js_test.ml\", line 42, characters 5-12", [
+eq("File \"ffi_js_test.res\", line 39, characters 5-12", [
       Object.keys(string_config).length,
       2
     ]);
@@ -99,7 +99,7 @@ var side_effect_config = (u.contents = u.contents + 1 | 0, "Int", {
     low: 32
   });
 
-eq("File \"ffi_js_test.ml\", line 49, characters 5-12", [
+eq("File \"ffi_js_test.res\", line 53, characters 12-19", [
       u.contents,
       4
     ]);

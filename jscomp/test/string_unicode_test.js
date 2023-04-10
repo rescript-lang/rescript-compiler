@@ -27,7 +27,7 @@ function eq(loc, x, y) {
   };
 }
 
-console.log("\xe4\xbd\xa0\xe5\xa5\xbd");
+console.log("你好");
 
 console.log("你好");
 
@@ -45,13 +45,13 @@ function f(x) {
   }
 }
 
-eq("File \"string_unicode_test.ml\", line 27, characters 7-14", f(/* '{' */123), 0);
+eq("File \"string_unicode_test.res\", line 23, characters 5-12", f(/* '{' */123), 0);
 
-eq("File \"string_unicode_test.ml\", line 28, characters 7-14", f(/* 'ō' */333), 2);
+eq("File \"string_unicode_test.res\", line 24, characters 5-12", f(/* 'ō' */333), 2);
 
-eq("File \"string_unicode_test.ml\", line 29, characters 7-14", f(/* 'Ƽ' */444), 3);
+eq("File \"string_unicode_test.res\", line 25, characters 5-12", f(/* 'Ƽ' */444), 3);
 
-Mt.from_pair_suites("string_unicode_test.ml", suites.contents);
+Mt.from_pair_suites("string_unicode_test.res", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

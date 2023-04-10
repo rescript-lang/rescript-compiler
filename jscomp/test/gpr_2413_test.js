@@ -1,10 +1,10 @@
 'use strict';
 
 
-function f(param) {
-  switch (param.TAG) {
+function f(x) {
+  switch (x.TAG) {
     case "A" :
-        var a = param._0;
+        var a = x._0;
         if (a.TAG === "P") {
           var a$1 = a._0;
           return a$1 + a$1 | 0;
@@ -16,7 +16,7 @@ function f(param) {
         break;
     
   }
-  var a$3 = param._0._0;
+  var a$3 = x._0._0;
   return Math.imul(a$3, a$3);
 }
 

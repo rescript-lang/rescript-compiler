@@ -4,11 +4,11 @@ var List = require("../../lib/js/list.js");
 var Curry = require("../../lib/js/curry.js");
 
 function h0(x) {
-  return x();
+  return x(undefined);
 }
 
 function h00(x) {
-  return x();
+  return x(undefined);
 }
 
 function h1(x, y) {

@@ -11,7 +11,7 @@ function f(v) {
 
 Mt.from_pair_suites("To_string_test", {
       hd: [
-        "File \"to_string_test.ml\", line 7, characters 2-9",
+        "File \"to_string_test.res\", line 6, characters 8-15",
         (function (param) {
             return {
                     TAG: "Eq",
@@ -22,7 +22,7 @@ Mt.from_pair_suites("To_string_test", {
       ],
       tl: {
         hd: [
-          "File \"to_string_test.ml\", line 8, characters 1-8",
+          "File \"to_string_test.res\", line 6, characters 49-56",
           (function (param) {
               return {
                       TAG: "Eq",

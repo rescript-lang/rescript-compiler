@@ -124,7 +124,7 @@ var test2 = n(Caml_option.some(n(Caml_option.some(n(Caml_option.some(n(Caml_opti
 
 var test3 = n(Caml_option.some(n(Caml_option.some(n(Caml_option.some(n(undefined, undefined, 4)), undefined, 2)), undefined, 5)), Caml_option.some(n(undefined, undefined, 3)), 1);
 
-eq("File \"bs_stack_test.ml\", line 137, characters 6-13", inOrder(test1), [
+eq("File \"bs_stack_test.res\", line 98, characters 3-10", inOrder(test1), [
       4,
       2,
       5,
@@ -132,7 +132,7 @@ eq("File \"bs_stack_test.ml\", line 137, characters 6-13", inOrder(test1), [
       3
     ]);
 
-eq("File \"bs_stack_test.ml\", line 140, characters 6-13", inOrder3(test1), [
+eq("File \"bs_stack_test.res\", line 99, characters 3-10", inOrder3(test1), [
       4,
       2,
       5,
@@ -140,7 +140,7 @@ eq("File \"bs_stack_test.ml\", line 140, characters 6-13", inOrder3(test1), [
       3
     ]);
 
-Mt.from_pair_suites("bs_stack_test.ml", suites.contents);
+Mt.from_pair_suites("bs_stack_test.res", suites.contents);
 
 var S;
 

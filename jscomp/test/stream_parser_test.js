@@ -284,7 +284,7 @@ function eq(loc, x, y) {
 
 var match = parse(token(Stream.of_string("1 + 2 + (3  - 2) * 3 * 3  - 2 a")));
 
-eq("File \"stream_parser_test.ml\", line 132, characters 5-12", [
+eq("File \"stream_parser_test.res\", line 141, characters 5-12", [
       match[0],
       match[1]
     ], [
@@ -298,7 +298,7 @@ eq("File \"stream_parser_test.ml\", line 132, characters 5-12", [
       }
     ]);
 
-eq("File \"stream_parser_test.ml\", line 133, characters 5-12", [
+eq("File \"stream_parser_test.res\", line 142, characters 5-12", [
       2,
       {
         hd: {
@@ -309,7 +309,7 @@ eq("File \"stream_parser_test.ml\", line 133, characters 5-12", [
       }
     ], parse(token(Stream.of_string("3 - 2  - 1"))));
 
-eq("File \"stream_parser_test.ml\", line 134, characters 5-12", [
+eq("File \"stream_parser_test.res\", line 143, characters 5-12", [
       0,
       {
         hd: {

@@ -5,7 +5,7 @@ var Js_vector = require("../../lib/js/js_vector.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
 var suites_0 = [
-  "File \"js_array_test.ml\", line 3, characters 4-11",
+  "File \"js_array_test.res\", line 5, characters 6-13",
   (function (param) {
       var x = [
         1,
@@ -29,7 +29,7 @@ var suites_0 = [
 
 var suites_1 = {
   hd: [
-    "File \"js_array_test.ml\", line 11, characters 4-11",
+    "File \"js_array_test.res\", line 16, characters 6-13",
     (function (param) {
         var x = [
           1,

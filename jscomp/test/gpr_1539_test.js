@@ -3,9 +3,9 @@
 var Caml_module = require("../../lib/js/caml_module.js");
 
 var Point = Caml_module.init_mod([
-      "gpr_1539_test.ml",
-      10,
-      6
+      "gpr_1539_test.res",
+      11,
+      4
     ], {
       TAG: "Module",
       _0: [[

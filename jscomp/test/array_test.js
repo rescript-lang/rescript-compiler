@@ -216,7 +216,7 @@ var array_suites_1 = {
           ],
           tl: {
             hd: [
-              "File \"array_test.ml\", line 63, characters 2-9",
+              "File \"array_test.res\", line 75, characters 8-15",
               (function (param) {
                   var a0 = $$Array.init(100, (function (i) {
                           return (i << 0);
@@ -258,7 +258,7 @@ var array_suites_1 = {
             ],
             tl: {
               hd: [
-                "File \"array_test.ml\", line 72, characters 2-9",
+                "File \"array_test.res\", line 118, characters 8-15",
                 (function (param) {
                     var a0 = $$Array.init(100, (function (i) {
                             return (i << 0);

@@ -33,11 +33,11 @@ var a = f(3);
 
 var b = f("3");
 
-eq("File \"polymorphic_raw_test.ml\", line 22, characters 6-13", a, "number");
+eq("File \"polymorphic_raw_test.res\", line 18, characters 3-10", a, "number");
 
-eq("File \"polymorphic_raw_test.ml\", line 23, characters 6-13", b, "string");
+eq("File \"polymorphic_raw_test.res\", line 19, characters 3-10", b, "string");
 
-Mt.from_pair_suites("polymorphic_raw_test.ml", suites.contents);
+Mt.from_pair_suites("polymorphic_raw_test.res", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

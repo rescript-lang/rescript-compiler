@@ -39,7 +39,7 @@ function unary(a) {
 
 var xx = 6;
 
-eq("File \"ppx_apply_test.ml\", line 17, characters 5-12", u, 3);
+eq("File \"ppx_apply_test.res\", line 16, characters 12-19", u, 3);
 
 function h(a) {
   return xx(a);

@@ -1,12 +1,12 @@
 'use strict';
 
 
-function show(param) {
-  var a = param._0;
-  if (a === 0 && param._1 === 0 && param._2 === 0) {
+function show(x) {
+  var a = x._0;
+  if (a === 0 && x._1 === 0 && x._2 === 0) {
     return "zeroes";
   }
-  return String(a) + String(param._1);
+  return String(a) + String(x._1);
 }
 
 exports.show = show;

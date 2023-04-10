@@ -22,7 +22,7 @@ require('../../lib/js/caml_external_polyfill.js').register("fancy_add", function
 
 var h = Caml_external_polyfill.resolve("fancy_add")(1, 2);
 
-eq("File \"external_polyfill_test.ml\", line 19, characters 5-12", h, 12);
+eq("File \"external_polyfill_test.res\", line 15, characters 12-19", h, 12);
 
 Mt.from_pair_suites("External_polyfill_test", suites.contents);
 

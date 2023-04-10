@@ -137,7 +137,7 @@ var suites_1 = {
                       ],
                       tl: {
                         hd: [
-                          "File \"js_float_test.ml\", line 31, characters 3-10",
+                          "File \"js_float_test.res\", line 27, characters 5-12",
                           (function (param) {
                               return {
                                       TAG: "ThrowAny",
@@ -295,7 +295,7 @@ var suites_1 = {
                                                   ],
                                                   tl: {
                                                     hd: [
-                                                      "File \"js_float_test.ml\", line 61, characters 3-10",
+                                                      "File \"js_float_test.res\", line 68, characters 5-12",
                                                       (function (param) {
                                                           return {
                                                                   TAG: "ThrowAny",

@@ -37,9 +37,9 @@ function add(suite) {
 }
 
 var Int3 = Caml_module.init_mod([
-      "recursive_module_test.ml",
-      13,
-      6
+      "recursive_module_test.res",
+      12,
+      4
     ], {
       TAG: "Module",
       _0: [[
@@ -75,10 +75,10 @@ var Fact = {
   fact: fact$1
 };
 
-eq("File \"recursive_module_test.ml\", line 30, characters 5-12", 120, Curry._1(fact$1, 5));
+eq("File \"recursive_module_test.res\", line 29, characters 12-19", 120, Curry._1(fact$1, 5));
 
 add([
-      "File \"recursive_module_test.ml\", line 34, characters 7-14",
+      "File \"recursive_module_test.res\", line 31, characters 14-21",
       (function (param) {
           return {
                   TAG: "ThrowAny",

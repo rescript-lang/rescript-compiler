@@ -47,8 +47,8 @@ if (!(Caml_obj.equal(Belt_MutableQueue.toArray(q), []) && q.length === 0)) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          21,
+          "bs_queue_test.res",
+          25,
           2
         ],
         Error: new Error()
@@ -59,8 +59,8 @@ if (!(Caml_obj.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 1), q))
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          22,
+          "bs_queue_test.res",
+          26,
           2
         ],
         Error: new Error()
@@ -74,8 +74,8 @@ if (!(Caml_obj.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 2), q))
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          23,
+          "bs_queue_test.res",
+          27,
           2
         ],
         Error: new Error()
@@ -90,8 +90,8 @@ if (!(Caml_obj.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 3), q))
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          24,
+          "bs_queue_test.res",
+          28,
           2
         ],
         Error: new Error()
@@ -107,8 +107,8 @@ if (!(Caml_obj.equal(Belt_MutableQueue.toArray((Belt_MutableQueue.add(q, 4), q))
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          25,
+          "bs_queue_test.res",
+          29,
           2
         ],
         Error: new Error()
@@ -119,8 +119,8 @@ if (Belt_MutableQueue.popExn(q) !== 1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          26,
+          "bs_queue_test.res",
+          30,
           2
         ],
         Error: new Error()
@@ -135,9 +135,9 @@ if (!(Caml_obj.equal(Belt_MutableQueue.toArray(q), [
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          26,
-          27
+          "bs_queue_test.res",
+          31,
+          2
         ],
         Error: new Error()
       };
@@ -147,8 +147,8 @@ if (Belt_MutableQueue.popExn(q) !== 2) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          27,
+          "bs_queue_test.res",
+          32,
           2
         ],
         Error: new Error()
@@ -162,9 +162,9 @@ if (!(Caml_obj.equal(Belt_MutableQueue.toArray(q), [
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          27,
-          27
+          "bs_queue_test.res",
+          33,
+          2
         ],
         Error: new Error()
       };
@@ -174,8 +174,8 @@ if (Belt_MutableQueue.popExn(q) !== 3) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          28,
+          "bs_queue_test.res",
+          34,
           2
         ],
         Error: new Error()
@@ -186,9 +186,9 @@ if (!(Caml_obj.equal(Belt_MutableQueue.toArray(q), [4]) && q.length === 1)) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          28,
-          27
+          "bs_queue_test.res",
+          35,
+          2
         ],
         Error: new Error()
       };
@@ -198,8 +198,8 @@ if (Belt_MutableQueue.popExn(q) !== 4) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          29,
+          "bs_queue_test.res",
+          36,
           2
         ],
         Error: new Error()
@@ -210,9 +210,9 @@ if (!(Caml_obj.equal(Belt_MutableQueue.toArray(q), []) && q.length === 0)) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          29,
-          27
+          "bs_queue_test.res",
+          37,
+          2
         ],
         Error: new Error()
       };
@@ -222,8 +222,8 @@ if (!does_raise(Belt_MutableQueue.popExn, q)) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          30,
+          "bs_queue_test.res",
+          38,
           2
         ],
         Error: new Error()
@@ -240,8 +240,8 @@ if (Belt_MutableQueue.popExn((Belt_MutableQueue.add(q$1, 1), q$1)) !== 1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          35,
+          "bs_queue_test.res",
+          43,
           2
         ],
         Error: new Error()
@@ -252,9 +252,9 @@ if (!does_raise(Belt_MutableQueue.popExn, q$1)) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          35,
-          34
+          "bs_queue_test.res",
+          44,
+          2
         ],
         Error: new Error()
       };
@@ -264,8 +264,8 @@ if (Belt_MutableQueue.popExn((Belt_MutableQueue.add(q$1, 2), q$1)) !== 2) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          36,
+          "bs_queue_test.res",
+          45,
           2
         ],
         Error: new Error()
@@ -276,9 +276,9 @@ if (!does_raise(Belt_MutableQueue.popExn, q$1)) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          36,
-          34
+          "bs_queue_test.res",
+          46,
+          2
         ],
         Error: new Error()
       };
@@ -288,8 +288,8 @@ if (q$1.length !== 0) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          37,
+          "bs_queue_test.res",
+          47,
           2
         ],
         Error: new Error()
@@ -306,8 +306,8 @@ if (Belt_MutableQueue.peekExn((Belt_MutableQueue.add(q$2, 1), q$2)) !== 1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          42,
+          "bs_queue_test.res",
+          52,
           2
         ],
         Error: new Error()
@@ -318,8 +318,8 @@ if (Belt_MutableQueue.peekExn((Belt_MutableQueue.add(q$2, 2), q$2)) !== 1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          43,
+          "bs_queue_test.res",
+          53,
           2
         ],
         Error: new Error()
@@ -330,8 +330,8 @@ if (Belt_MutableQueue.peekExn((Belt_MutableQueue.add(q$2, 3), q$2)) !== 1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          44,
+          "bs_queue_test.res",
+          54,
           2
         ],
         Error: new Error()
@@ -342,8 +342,8 @@ if (Belt_MutableQueue.peekExn(q$2) !== 1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          45,
+          "bs_queue_test.res",
+          55,
           2
         ],
         Error: new Error()
@@ -354,9 +354,9 @@ if (Belt_MutableQueue.popExn(q$2) !== 1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          45,
-          28
+          "bs_queue_test.res",
+          56,
+          2
         ],
         Error: new Error()
       };
@@ -366,8 +366,8 @@ if (Belt_MutableQueue.peekExn(q$2) !== 2) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          46,
+          "bs_queue_test.res",
+          57,
           2
         ],
         Error: new Error()
@@ -378,9 +378,9 @@ if (Belt_MutableQueue.popExn(q$2) !== 2) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          46,
-          28
+          "bs_queue_test.res",
+          58,
+          2
         ],
         Error: new Error()
       };
@@ -390,8 +390,8 @@ if (Belt_MutableQueue.peekExn(q$2) !== 3) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          47,
+          "bs_queue_test.res",
+          59,
           2
         ],
         Error: new Error()
@@ -402,20 +402,8 @@ if (Belt_MutableQueue.popExn(q$2) !== 3) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          47,
-          28
-        ],
-        Error: new Error()
-      };
-}
-
-if (!does_raise(Belt_MutableQueue.peekExn, q$2)) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "bs_queue_test.ml",
-          48,
+          "bs_queue_test.res",
+          60,
           2
         ],
         Error: new Error()
@@ -426,8 +414,20 @@ if (!does_raise(Belt_MutableQueue.peekExn, q$2)) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          49,
+          "bs_queue_test.res",
+          61,
+          2
+        ],
+        Error: new Error()
+      };
+}
+
+if (!does_raise(Belt_MutableQueue.peekExn, q$2)) {
+  throw {
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "bs_queue_test.res",
+          62,
           2
         ],
         Error: new Error()
@@ -450,8 +450,8 @@ if (q$3.length !== 0) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          56,
+          "bs_queue_test.res",
+          71,
           2
         ],
         Error: new Error()
@@ -462,8 +462,8 @@ if (!does_raise(Belt_MutableQueue.popExn, q$3)) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          57,
+          "bs_queue_test.res",
+          72,
           2
         ],
         Error: new Error()
@@ -478,8 +478,8 @@ if (!Caml_obj.equal(q$3, {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          58,
+          "bs_queue_test.res",
+          73,
           2
         ],
         Error: new Error()
@@ -492,8 +492,8 @@ if (Belt_MutableQueue.popExn(q$3) !== 42) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          60,
+          "bs_queue_test.res",
+          75,
           2
         ],
         Error: new Error()
@@ -527,8 +527,8 @@ if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1), [
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          67,
+          "bs_queue_test.res",
+          84,
           2
         ],
         Error: new Error()
@@ -550,8 +550,8 @@ if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2), [
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          68,
+          "bs_queue_test.res",
+          85,
           2
         ],
         Error: new Error()
@@ -562,8 +562,8 @@ if (q1.length !== 10) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          69,
+          "bs_queue_test.res",
+          86,
           2
         ],
         Error: new Error()
@@ -574,8 +574,8 @@ if (q2.length !== 10) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          70,
+          "bs_queue_test.res",
+          87,
           2
         ],
         Error: new Error()
@@ -587,8 +587,8 @@ for(var i$2 = 1; i$2 <= 10; ++i$2){
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "bs_queue_test.ml",
-            72,
+            "bs_queue_test.res",
+            89,
             4
           ],
           Error: new Error()
@@ -602,8 +602,8 @@ for(var i$3 = 1; i$3 <= 10; ++i$3){
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "bs_queue_test.ml",
-            75,
+            "bs_queue_test.res",
+            92,
             4
           ],
           Error: new Error()
@@ -622,8 +622,8 @@ if (q$4.length !== 0) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          81,
+          "bs_queue_test.res",
+          98,
           2
         ],
         Error: new Error()
@@ -636,8 +636,8 @@ for(var i$4 = 1; i$4 <= 10; ++i$4){
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "bs_queue_test.ml",
-            84,
+            "bs_queue_test.res",
+            101,
             4
           ],
           Error: new Error()
@@ -647,8 +647,8 @@ for(var i$4 = 1; i$4 <= 10; ++i$4){
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "bs_queue_test.ml",
-            85,
+            "bs_queue_test.res",
+            102,
             4
           ],
           Error: new Error()
@@ -662,8 +662,8 @@ for(var i$5 = 10; i$5 >= 1; --i$5){
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "bs_queue_test.ml",
-            88,
+            "bs_queue_test.res",
+            105,
             4
           ],
           Error: new Error()
@@ -673,8 +673,8 @@ for(var i$5 = 10; i$5 >= 1; --i$5){
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "bs_queue_test.ml",
-            89,
+            "bs_queue_test.res",
+            106,
             4
           ],
           Error: new Error()
@@ -687,8 +687,8 @@ if (q$4.length !== 0) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          92,
+          "bs_queue_test.res",
+          109,
           2
         ],
         Error: new Error()
@@ -699,8 +699,8 @@ if (q$4.length !== 0) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          93,
+          "bs_queue_test.res",
+          110,
           2
         ],
         Error: new Error()
@@ -726,9 +726,9 @@ Belt_MutableQueue.forEach(q$5, (function (j) {
           throw {
                 RE_EXN_ID: "Assert_failure",
                 _1: [
-                  "bs_queue_test.ml",
-                  100,
-                  24
+                  "bs_queue_test.res",
+                  120,
+                  4
                 ],
                 Error: new Error()
               };
@@ -752,8 +752,8 @@ if (q1$1.length !== 0) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          105,
+          "bs_queue_test.res",
+          127,
           2
         ],
         Error: new Error()
@@ -764,9 +764,9 @@ if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1$1), [])) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          105,
-          26
+          "bs_queue_test.res",
+          128,
+          2
         ],
         Error: new Error()
       };
@@ -776,8 +776,8 @@ if (q2$1.length !== 0) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          106,
+          "bs_queue_test.res",
+          129,
           2
         ],
         Error: new Error()
@@ -788,9 +788,9 @@ if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$1), [])) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          106,
-          26
+          "bs_queue_test.res",
+          130,
+          2
         ],
         Error: new Error()
       };
@@ -802,8 +802,8 @@ if (q1$1.length !== 0) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          108,
+          "bs_queue_test.res",
+          132,
           2
         ],
         Error: new Error()
@@ -814,9 +814,9 @@ if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1$1), [])) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          108,
-          26
+          "bs_queue_test.res",
+          133,
+          2
         ],
         Error: new Error()
       };
@@ -826,8 +826,8 @@ if (q2$1.length !== 0) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          109,
+          "bs_queue_test.res",
+          134,
           2
         ],
         Error: new Error()
@@ -838,9 +838,9 @@ if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$1), [])) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          109,
-          26
+          "bs_queue_test.res",
+          135,
+          2
         ],
         Error: new Error()
       };
@@ -866,8 +866,8 @@ if (q1$2.length !== 4) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          115,
+          "bs_queue_test.res",
+          143,
           2
         ],
         Error: new Error()
@@ -883,9 +883,9 @@ if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1$2), [
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          115,
-          26
+          "bs_queue_test.res",
+          144,
+          2
         ],
         Error: new Error()
       };
@@ -895,8 +895,8 @@ if (q2$2.length !== 0) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          116,
+          "bs_queue_test.res",
+          145,
           2
         ],
         Error: new Error()
@@ -907,9 +907,9 @@ if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$2), [])) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          116,
-          26
+          "bs_queue_test.res",
+          146,
+          2
         ],
         Error: new Error()
       };
@@ -921,8 +921,8 @@ if (q1$2.length !== 0) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          118,
+          "bs_queue_test.res",
+          148,
           2
         ],
         Error: new Error()
@@ -933,9 +933,9 @@ if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1$2), [])) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          118,
-          26
+          "bs_queue_test.res",
+          149,
+          2
         ],
         Error: new Error()
       };
@@ -945,8 +945,8 @@ if (q2$2.length !== 4) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          119,
+          "bs_queue_test.res",
+          150,
           2
         ],
         Error: new Error()
@@ -962,9 +962,9 @@ if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$2), [
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          119,
-          26
+          "bs_queue_test.res",
+          151,
+          2
         ],
         Error: new Error()
       };
@@ -990,8 +990,8 @@ if (q1$3.length !== 0) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          125,
+          "bs_queue_test.res",
+          159,
           2
         ],
         Error: new Error()
@@ -1002,9 +1002,9 @@ if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1$3), [])) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          125,
-          26
+          "bs_queue_test.res",
+          160,
+          2
         ],
         Error: new Error()
       };
@@ -1014,8 +1014,8 @@ if (q2$3.length !== 4) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          126,
+          "bs_queue_test.res",
+          161,
           2
         ],
         Error: new Error()
@@ -1031,9 +1031,9 @@ if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$3), [
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          126,
-          26
+          "bs_queue_test.res",
+          162,
+          2
         ],
         Error: new Error()
       };
@@ -1045,8 +1045,8 @@ if (q1$3.length !== 0) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          128,
+          "bs_queue_test.res",
+          164,
           2
         ],
         Error: new Error()
@@ -1057,9 +1057,9 @@ if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1$3), [])) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          128,
-          26
+          "bs_queue_test.res",
+          165,
+          2
         ],
         Error: new Error()
       };
@@ -1069,8 +1069,8 @@ if (q2$3.length !== 4) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          129,
+          "bs_queue_test.res",
+          166,
           2
         ],
         Error: new Error()
@@ -1086,9 +1086,9 @@ if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$3), [
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          129,
-          26
+          "bs_queue_test.res",
+          167,
+          2
         ],
         Error: new Error()
       };
@@ -1118,8 +1118,8 @@ if (q1$4.length !== 4) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          136,
+          "bs_queue_test.res",
+          178,
           2
         ],
         Error: new Error()
@@ -1135,9 +1135,9 @@ if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1$4), [
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          136,
-          26
+          "bs_queue_test.res",
+          179,
+          2
         ],
         Error: new Error()
       };
@@ -1147,8 +1147,8 @@ if (q2$4.length !== 4) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          137,
+          "bs_queue_test.res",
+          180,
           2
         ],
         Error: new Error()
@@ -1164,9 +1164,9 @@ if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$4), [
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          137,
-          26
+          "bs_queue_test.res",
+          181,
+          2
         ],
         Error: new Error()
       };
@@ -1178,8 +1178,8 @@ if (q1$4.length !== 0) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          139,
+          "bs_queue_test.res",
+          183,
           2
         ],
         Error: new Error()
@@ -1190,9 +1190,9 @@ if (!Caml_obj.equal(Belt_MutableQueue.toArray(q1$4), [])) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          139,
-          26
+          "bs_queue_test.res",
+          184,
+          2
         ],
         Error: new Error()
       };
@@ -1213,8 +1213,8 @@ if (q2$4.length !== 8) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          141,
+          "bs_queue_test.res",
+          186,
           2
         ],
         Error: new Error()
@@ -1225,9 +1225,9 @@ if (!Caml_obj.equal(Belt_MutableQueue.toArray(q2$4), v)) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          141,
-          26
+          "bs_queue_test.res",
+          187,
+          2
         ],
         Error: new Error()
       };
@@ -1241,8 +1241,8 @@ if (Belt_MutableQueue.reduce(q2$4, 0, (function (x, y) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_queue_test.ml",
-          143,
+          "bs_queue_test.res",
+          189,
           2
         ],
         Error: new Error()
@@ -1262,7 +1262,7 @@ var q1$5 = Belt_MutableQueue.map(q$6, (function (x) {
         return x - 1 | 0;
       }));
 
-eq("File \"bs_queue_test.ml\", line 154, characters 5-12", Belt_MutableQueue.toArray(q1$5), [
+eq("File \"bs_queue_test.res\", line 197, characters 5-12", Belt_MutableQueue.toArray(q1$5), [
       0,
       1,
       2,
@@ -1271,13 +1271,13 @@ eq("File \"bs_queue_test.ml\", line 154, characters 5-12", Belt_MutableQueue.toA
 
 var q$7 = Belt_MutableQueue.fromArray([]);
 
-b("File \"bs_queue_test.ml\", line 155, characters 4-11", q$7.length === 0);
+b("File \"bs_queue_test.res\", line 198, characters 4-11", q$7.length === 0);
 
 var q$8 = Belt_MutableQueue.map(Belt_MutableQueue.fromArray([]), (function (x) {
         return x + 1 | 0;
       }));
 
-b("File \"bs_queue_test.ml\", line 156, characters 4-11", q$8.length === 0);
+b("File \"bs_queue_test.res\", line 199, characters 4-11", q$8.length === 0);
 
 Mt.from_pair_suites("Bs_queue_test", suites.contents);
 

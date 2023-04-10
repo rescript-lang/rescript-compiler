@@ -10,7 +10,7 @@ function mk(fn) {
 
 console.log((function (param) {
           return 1;
-        })());
+        })(undefined));
 
 exports.mk = mk;
 /*  Not a pure module */

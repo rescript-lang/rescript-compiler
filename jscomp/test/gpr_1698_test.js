@@ -51,9 +51,9 @@ function compare(context, state, _a, _b) {
                 throw {
                       RE_EXN_ID: "Assert_failure",
                       _1: [
-                        "gpr_1698_test.ml",
-                        45,
-                        10
+                        "gpr_1698_test.res",
+                        41,
+                        9
                       ],
                       Error: new Error()
                     };
@@ -77,9 +77,9 @@ function compare(context, state, _a, _b) {
                 throw {
                       RE_EXN_ID: "Assert_failure",
                       _1: [
-                        "gpr_1698_test.ml",
-                        45,
-                        10
+                        "gpr_1698_test.res",
+                        41,
+                        9
                       ],
                       Error: new Error()
                     };

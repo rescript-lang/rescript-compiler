@@ -1,8 +1,8 @@
 'use strict';
 
 
-function to_enum(param) {
-  switch (param) {
+function to_enum(x) {
+  switch (x) {
     case "A0" :
         return 0;
     case "A1" :
@@ -607,8 +607,8 @@ function to_enum(param) {
   }
 }
 
-function to_string(param) {
-  switch (param) {
+function to_string(x) {
+  switch (x) {
     case "A0" :
         return "A0";
     case "A1" :

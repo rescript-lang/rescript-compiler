@@ -53,8 +53,8 @@ function bench(param) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "bs_hashtbl_string_test.ml",
-              50,
+              "bs_hashtbl_string_test.res",
+              37,
               4
             ],
             Error: new Error()
@@ -75,8 +75,8 @@ function bench2(m) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "bs_hashtbl_string_test.ml",
-              76,
+              "bs_hashtbl_string_test.res",
+              61,
               4
             ],
             Error: new Error()
@@ -93,8 +93,8 @@ function bench2(m) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_hashtbl_string_test.ml",
-          82,
+          "bs_hashtbl_string_test.res",
+          66,
           2
         ],
         Error: new Error()
@@ -113,8 +113,8 @@ function bench3(m) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "bs_hashtbl_string_test.ml",
-              98,
+              "bs_hashtbl_string_test.res",
+              81,
               4
             ],
             Error: new Error()
@@ -131,8 +131,8 @@ function bench3(m) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_hashtbl_string_test.ml",
-          105,
+          "bs_hashtbl_string_test.res",
+          86,
           2
         ],
         Error: new Error()
@@ -151,8 +151,8 @@ function bench4(param) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "bs_hashtbl_string_test.ml",
-              118,
+              "bs_hashtbl_string_test.res",
+              98,
               4
             ],
             Error: new Error()
@@ -169,8 +169,8 @@ function bench4(param) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_hashtbl_string_test.ml",
-          124,
+          "bs_hashtbl_string_test.res",
+          103,
           2
         ],
         Error: new Error()
@@ -179,19 +179,19 @@ function bench4(param) {
 
 function bench5(param) {
   var table = Belt_internalBucketsType.make(Int.hash, Int.eq, 1000000);
-  console.time("bs_hashtbl_string_test.ml 133");
+  console.time("bs_hashtbl_string_test.res 112");
   for(var i = 0; i <= 1000000; ++i){
     Belt_HashMap.set(table, i, i);
   }
-  console.timeEnd("bs_hashtbl_string_test.ml 133");
-  console.time("bs_hashtbl_string_test.ml 137");
+  console.timeEnd("bs_hashtbl_string_test.res 112");
+  console.time("bs_hashtbl_string_test.res 117");
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Belt_HashMap.has(table, i$1)) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "bs_hashtbl_string_test.ml",
-              138,
+              "bs_hashtbl_string_test.res",
+              119,
               6
             ],
             Error: new Error()
@@ -199,20 +199,20 @@ function bench5(param) {
     }
     
   }
-  console.timeEnd("bs_hashtbl_string_test.ml 137");
-  console.time("bs_hashtbl_string_test.ml 141");
+  console.timeEnd("bs_hashtbl_string_test.res 117");
+  console.time("bs_hashtbl_string_test.res 122");
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
     Belt_HashMap.remove(table, i$2);
   }
-  console.timeEnd("bs_hashtbl_string_test.ml 141");
+  console.timeEnd("bs_hashtbl_string_test.res 122");
   if (Belt_HashMap.isEmpty(table)) {
     return ;
   }
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_hashtbl_string_test.ml",
-          144,
+          "bs_hashtbl_string_test.res",
+          127,
           2
         ],
         Error: new Error()
@@ -229,8 +229,8 @@ function bench6(param) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "bs_hashtbl_string_test.ml",
-              156,
+              "bs_hashtbl_string_test.res",
+              138,
               4
             ],
             Error: new Error()
@@ -247,8 +247,8 @@ function bench6(param) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_hashtbl_string_test.ml",
-          162,
+          "bs_hashtbl_string_test.res",
+          143,
           2
         ],
         Error: new Error()
@@ -265,8 +265,8 @@ function bench7(param) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "bs_hashtbl_string_test.ml",
-              181,
+              "bs_hashtbl_string_test.res",
+              160,
               4
             ],
             Error: new Error()
@@ -283,19 +283,19 @@ function bench7(param) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bs_hashtbl_string_test.ml",
-          192,
+          "bs_hashtbl_string_test.res",
+          170,
           2
         ],
         Error: new Error()
       };
 }
 
-console.time("bs_hashtbl_string_test.ml 203");
+console.time("bs_hashtbl_string_test.res 181");
 
 bench7(undefined);
 
-console.timeEnd("bs_hashtbl_string_test.ml 203");
+console.timeEnd("bs_hashtbl_string_test.res 181");
 
 var N;
 

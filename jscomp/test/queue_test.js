@@ -81,7 +81,7 @@ var T2 = {
 };
 
 var suites_0 = [
-  "File \"queue_test.ml\", line 26, characters 2-9",
+  "File \"queue_test.res\", line 34, characters 6-13",
   (function (param) {
       var x = [
         3,
@@ -99,7 +99,7 @@ var suites_0 = [
 
 var suites_1 = {
   hd: [
-    "File \"queue_test.ml\", line 29, characters 2-9",
+    "File \"queue_test.res\", line 41, characters 6-13",
     (function (param) {
         var x = [
           3,

@@ -85,7 +85,7 @@ var c = [
 
 console.log(a, c);
 
-eq("File \"record_debug_test.ml\", line 64, characters 3-10", [
+eq("File \"record_debug_test.res\", line 58, characters 3-10", [
       "",
       "a"
     ], [
@@ -93,7 +93,7 @@ eq("File \"record_debug_test.ml\", line 64, characters 3-10", [
       "a"
     ]);
 
-Mt.from_pair_suites("record_debug_test.ml", suites.contents);
+Mt.from_pair_suites("record_debug_test.res", suites.contents);
 
 var h = {
   hd: 1,
