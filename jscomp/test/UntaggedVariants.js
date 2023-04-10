@@ -2,7 +2,7 @@
 
 
 function classify(x) {
-  if (typeof x !== "string" && typeof x !== "number") {
+  if (x === "A" && typeof x !== "number") {
     return "A";
   } else if (typeof x === "number") {
     return "An integer";
@@ -108,7 +108,7 @@ var Unknown = {
 };
 
 function classify$3(x) {
-  if (typeof x !== "object" && typeof x !== "number" && typeof x !== "string") {
+  if (typeof x !== "object" && typeof x !== "number" && (x === "C" || x === "B" || x === "A" || x === "D")) {
     switch (x) {
       case "A" :
           return "a";
@@ -235,6 +235,25 @@ var TrickyNested = {
   check: check
 };
 
+function checkEnum(e) {
+  if (!(e === "Two" || e === "One" || e === "Three")) {
+    return "Something else..." + e;
+  }
+  switch (e) {
+    case "One" :
+        return "One!";
+    case "Two" :
+        return "Two";
+    case "Three" :
+        return "Threeeee";
+    
+  }
+}
+
+var Overlap = {
+  checkEnum: checkEnum
+};
+
 var i = 42;
 
 var i2 = 42.5;
@@ -269,4 +288,5 @@ exports.OnlyBlocks = OnlyBlocks;
 exports.WithArray = WithArray;
 exports.Json = Json;
 exports.TrickyNested = TrickyNested;
+exports.Overlap = Overlap;
 /* l2 Not a pure module */

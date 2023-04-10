@@ -196,3 +196,16 @@ module TrickyNested = {
     | _ => 42
     }
 }
+
+module Overlap = {
+  @unboxed
+  type enum = One | Two | Three | FutureAddedValue(string)
+
+  let checkEnum = e =>
+    switch e {
+    | One => "One!"
+    | Two => "Two"
+    | Three => "Threeeee"
+    | FutureAddedValue(s) => "Something else..." ++ s
+    }
+}

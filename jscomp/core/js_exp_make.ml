@@ -776,13 +776,19 @@ let is_type_number ?comment (e : t) : t =
   string_equal ?comment (typeof e) (str "number")
 
 let rec is_a_literal_case ~(literal_cases : Lambda.literal list) ~block_cases (e:t) : t =
+  let literals_overlaps_with_string () = 
+    Ext_list.exists literal_cases (function
+      | String _ -> true
+      | l -> false ) in
   let is_literal_case (l:Lambda.literal) : t = bin EqEqEq e (literal l) in
   let is_block_case (c:Lambda.block_type) : t = match c with
-  | StringType -> bin NotEqEq (typeof e) (str "string")
+  | StringType when literals_overlaps_with_string () = false  (* No overlap *) -> 
+    bin NotEqEq (typeof e) (str "string")
   | IntType -> bin NotEqEq (typeof e) (str "number")
   | FloatType -> bin NotEqEq (typeof e) (str "number")
   | Array ->  not (bin InstanceOf e (str "Array" ~delim:DNoQuotes))
   | Object ->  { expression_desc = Bin (NotEqEq, typeof e, str "object"); comment=None }
+  | StringType
   | Unknown ->
     (* We don't know the type of unknown, so we need to express:
        this is not one of the literals *)
