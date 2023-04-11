@@ -48,12 +48,12 @@ let checkUntaggedVariant ~(blocks : (Location.t * Lambda.block) list) =
       incr arrays;
       invariant loc
     | _ -> ())
-  
+
 let names_from_construct_pattern (pat : Typedtree.pattern) =
   let names_from_type_variant (cstrs : Types.constructor_declaration list) =
     let get_cstr_name (cstr: Types.constructor_declaration) =
       { Lambda.name = Ident.name cstr.cd_id;
-        literal = Ast_untagged_variants.process_as_value cstr.cd_attributes } in
+        literal = Ast_untagged_variants.process_literal cstr.cd_attributes } in
     let get_tag_name (cstr: Types.constructor_declaration) =
       Ast_attributes.process_tag_name cstr.cd_attributes in
     let get_untagged (cstr: Types.constructor_declaration) : Lambda.block_type option =

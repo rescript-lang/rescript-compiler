@@ -14,7 +14,7 @@ let process_untagged (attrs : Parsetree.attributes) =
 type error = InvalidVariantAsAnnotation | Duplicated_bs_as
 exception Error of Location.t * error
 
-let process_as_value (attrs : Parsetree.attributes) =
+let process_literal (attrs : Parsetree.attributes) =
   let st : Lambda.literal option ref = ref None in
   Ext_list.iter attrs (fun (({txt; loc}, payload)) ->
       match txt with
