@@ -38,7 +38,7 @@ function ocaml_run(b, c) {
   return (x + b | 0) + c | 0;
 }
 
-function a0() {
+function a0(param) {
   console.log("hi");
 }
 

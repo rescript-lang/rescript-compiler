@@ -1,7 +1,7 @@
 'use strict';
 
 
-function f0() {
+function f0(param) {
   return 0;
 }
 
@@ -25,7 +25,7 @@ console.log([
       1
     ]);
 
-function xx() {
+function xx(param) {
   return xx(undefined);
 }
 
