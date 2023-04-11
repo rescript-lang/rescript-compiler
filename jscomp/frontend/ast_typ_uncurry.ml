@@ -37,13 +37,12 @@ let to_method_callback_type loc (mapper : Bs_ast_mapper.mapper)
   let arity = Ast_core_type.get_uncurry_arity meth_type in
   match arity with
   | Some n ->
-      Typ.constr
-        {
-          txt =
-            Ldot (Ast_literal.Lid.js_meth_callback, "arity" ^ string_of_int n);
-          loc;
-        }
-        [ meth_type ]
+    Typ.constr
+      {
+        txt = Ldot (Ast_literal.Lid.js_meth_callback, "arity" ^ string_of_int n);
+        loc;
+      }
+      [meth_type]
   | None -> assert false
 
 let to_uncurry_type loc (mapper : Bs_ast_mapper.mapper)

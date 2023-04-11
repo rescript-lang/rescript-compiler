@@ -40,7 +40,7 @@ let tuple_type_pair ?loc kind arity =
     match kind with
     | `Run -> (ty, [], ty)
     | `Make ->
-        (Ast_compatible.arrow ?loc (Ast_literal.type_unit ?loc ()) ty, [], ty)
+      (Ast_compatible.arrow ?loc (Ast_literal.type_unit ?loc ()) ty, [], ty)
   else
     let number = arity + 1 in
     let tys =
@@ -49,20 +49,20 @@ let tuple_type_pair ?loc kind arity =
     in
     match tys with
     | result :: rest ->
-        ( Ext_list.reduce_from_left tys (fun r arg ->
-              Ast_compatible.arrow ?loc arg r),
-          List.rev rest,
-          result )
+      ( Ext_list.reduce_from_left tys (fun r arg ->
+            Ast_compatible.arrow ?loc arg r),
+        List.rev rest,
+        result )
     | [] -> assert false
 
 let re_id = Ast_literal.Lid.js_re_id
 
-let to_js_re_type loc = Typ.constr ~loc { txt = re_id; loc } []
+let to_js_re_type loc = Typ.constr ~loc {txt = re_id; loc} []
 
 let to_undefined_type loc x =
-  Typ.constr ~loc { txt = Ast_literal.Lid.js_undefined; loc } [ x ]
+  Typ.constr ~loc {txt = Ast_literal.Lid.js_undefined; loc} [x]
 
 let single_non_rec_value name exp =
-  Str.value Nonrecursive [ Vb.mk (Pat.var name) exp ]
+  Str.value Nonrecursive [Vb.mk (Pat.var name) exp]
 
 let single_non_rec_val name ty = Sig.value (Val.mk name ty)

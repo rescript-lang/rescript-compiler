@@ -28,7 +28,8 @@ val to_uncurry_fn :
   Asttypes.arg_label ->
   Parsetree.pattern ->
   Parsetree.expression ->
-  bool -> (* async *)
+  bool ->
+  (* async *)
   Parsetree.expression
 (** 
     [function] can only take one argument, that is the reason we did not adopt it

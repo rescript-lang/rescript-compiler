@@ -30,42 +30,41 @@ let handleExternalInSig (self : Bs_ast_mapper.mapper)
   let pval_attributes = self.attributes self prim.pval_attributes in
   match Ast_attributes.process_send_pipe pval_attributes with
   | Some (obj, _) ->
-      (*has bs.send.pipe: best effort *)
-      {
-        sigi with
-        psig_desc =
-          Psig_value
-            {
-              prim with
-              pval_type = Ast_core_type.add_last_obj pval_type obj;
-              pval_prim = [];
-              pval_attributes = [];
-            };
-      }
+    (*has bs.send.pipe: best effort *)
+    {
+      sigi with
+      psig_desc =
+        Psig_value
+          {
+            prim with
+            pval_type = Ast_core_type.add_last_obj pval_type obj;
+            pval_prim = [];
+            pval_attributes = [];
+          };
+    }
   | None -> (
-      match prim.pval_prim with
-      | [] -> Location.raise_errorf ~loc "empty primitive string"
-      | a :: b :: _ ->
-          Location.raise_errorf ~loc
-            "only a single string is allowed in bs external %S %S" a b
-      | [ v ] -> (
-          match
-            Ast_external_process.encode_attributes_as_string loc pval_type
-              pval_attributes v
-          with
-          | { pval_type; pval_prim; pval_attributes; no_inline_cross_module } ->
+    match prim.pval_prim with
+    | [] -> Location.raise_errorf ~loc "empty primitive string"
+    | a :: b :: _ ->
+      Location.raise_errorf ~loc
+        "only a single string is allowed in bs external %S %S" a b
+    | [v] -> (
+      match
+        Ast_external_process.encode_attributes_as_string loc pval_type
+          pval_attributes v
+      with
+      | {pval_type; pval_prim; pval_attributes; no_inline_cross_module} ->
+        {
+          sigi with
+          psig_desc =
+            Psig_value
               {
-                sigi with
-                psig_desc =
-                  Psig_value
-                    {
-                      prim with
-                      pval_type;
-                      pval_prim =
-                        (if no_inline_cross_module then [] else pval_prim);
-                      pval_attributes;
-                    };
-              }))
+                prim with
+                pval_type;
+                pval_prim = (if no_inline_cross_module then [] else pval_prim);
+                pval_attributes;
+              };
+        }))
 
 let handleExternalInStru (self : Bs_ast_mapper.mapper)
     (prim : Parsetree.value_description) (str : Parsetree.structure_item) :
@@ -77,114 +76,108 @@ let handleExternalInStru (self : Bs_ast_mapper.mapper)
   let pval_type, pval_attributes =
     match Ast_attributes.process_send_pipe pval_attributes with
     | Some (obj, attrs) ->
-        send_pipe := true;
-        (Ast_helper.Typ.arrow ~loc Nolabel obj pval_type, attrs)
+      send_pipe := true;
+      (Ast_helper.Typ.arrow ~loc Nolabel obj pval_type, attrs)
     | None -> (pval_type, pval_attributes)
   in
   match prim.pval_prim with
   | [] -> Location.raise_errorf ~loc "empty primitive string"
   | a :: b :: _ ->
-      Location.raise_errorf ~loc
-        "only a single string is allowed in bs external %S : %S" a b
-  | [ v ] -> (
-      match
-        Ast_external_process.encode_attributes_as_string loc pval_type
-          pval_attributes v
-      with
-      | { pval_type; pval_prim; pval_attributes; no_inline_cross_module } ->
-          let external_result =
-            {
-              str with
-              pstr_desc =
-                Pstr_primitive
-                  { prim with pval_type; pval_prim; pval_attributes };
-            }
-          in
-          let normal () =
-            if not no_inline_cross_module then external_result
-            else
-              let open Ast_helper in
-              Str.include_ ~loc
-                (Incl.mk ~loc
-                   (Mod.constraint_ ~loc
-                      (Mod.structure ~loc [ external_result ])
-                      (Mty.signature ~loc
-                         [
-                           {
-                             psig_desc =
-                               Psig_value
-                                 {
-                                   prim with
-                                   pval_type;
-                                   pval_prim = [];
-                                   pval_attributes;
-                                 };
-                             psig_loc = loc;
-                           };
-                         ])))
-          in
-          if !send_pipe then
-            let[@warning "-8"] (_ :: params as args) =
-              Ast_core_type.get_curry_labels pval_type
-            in
-            let arity = List.length args in
-            if arity = 1 then normal ()
-            else
-              let open Ast_helper in
-              Str.include_ ~loc
-                (Incl.mk ~loc
-                   (Mod.structure ~loc
+    Location.raise_errorf ~loc
+      "only a single string is allowed in bs external %S : %S" a b
+  | [v] -> (
+    match
+      Ast_external_process.encode_attributes_as_string loc pval_type
+        pval_attributes v
+    with
+    | {pval_type; pval_prim; pval_attributes; no_inline_cross_module} ->
+      let external_result =
+        {
+          str with
+          pstr_desc =
+            Pstr_primitive {prim with pval_type; pval_prim; pval_attributes};
+        }
+      in
+      let normal () =
+        if not no_inline_cross_module then external_result
+        else
+          let open Ast_helper in
+          Str.include_ ~loc
+            (Incl.mk ~loc
+               (Mod.constraint_ ~loc
+                  (Mod.structure ~loc [external_result])
+                  (Mty.signature ~loc
+                     [
+                       {
+                         psig_desc =
+                           Psig_value
+                             {
+                               prim with
+                               pval_type;
+                               pval_prim = [];
+                               pval_attributes;
+                             };
+                         psig_loc = loc;
+                       };
+                     ])))
+      in
+      if !send_pipe then
+        let[@warning "-8"] (_ :: params as args) =
+          Ast_core_type.get_curry_labels pval_type
+        in
+        let arity = List.length args in
+        if arity = 1 then normal ()
+        else
+          let open Ast_helper in
+          Str.include_ ~loc
+            (Incl.mk ~loc
+               (Mod.structure ~loc
+                  [
+                    external_result;
+                    Str.value ~loc Nonrecursive
                       [
-                        external_result;
-                        Str.value ~loc Nonrecursive
-                          [
-                            Vb.mk ~loc
-                              (Pat.var ~loc prim.pval_name)
-                              (let body =
-                                 Exp.apply ~loc
-                                   (Exp.ident ~loc
-                                      { txt = Lident prim.pval_name.txt; loc })
-                                   (( Asttypes.Nolabel,
-                                      Exp.ident ~loc { txt = Lident "obj"; loc }
-                                    )
-                                   :: Ext_list.mapi params (fun i x ->
-                                          ( x,
-                                            match x with
-                                            | Asttypes.Nolabel ->
-                                                Exp.ident
-                                                  {
-                                                    txt =
-                                                      Lident
-                                                        ("arg"
-                                                        ^ string_of_int (i + 1)
-                                                        );
-                                                    loc;
-                                                  }
-                                            | Labelled s | Optional s ->
-                                                Exp.ident
-                                                  { txt = Lident s; loc } )))
-                               in
-                               snd
-                               @@ Ext_list.fold_right params
-                                    ( 0,
-                                      Exp.fun_ Nolabel None
-                                        (Pat.var ~loc { txt = "obj"; loc })
-                                        body )
-                                    (fun arg (i, obj) ->
-                                      ( i + 1,
-                                        Exp.fun_ arg None
-                                          (Pat.var ~loc
-                                             {
-                                               txt =
-                                                 (match arg with
-                                                 | Labelled s | Optional s -> s
-                                                 | Nolabel ->
-                                                     "arg"
-                                                     ^ string_of_int
-                                                         (arity - i - 1));
-                                               loc;
-                                             })
-                                          obj )));
-                          ];
-                      ]))
-          else normal ())
+                        Vb.mk ~loc
+                          (Pat.var ~loc prim.pval_name)
+                          (let body =
+                             Exp.apply ~loc
+                               (Exp.ident ~loc
+                                  {txt = Lident prim.pval_name.txt; loc})
+                               (( Asttypes.Nolabel,
+                                  Exp.ident ~loc {txt = Lident "obj"; loc} )
+                               :: Ext_list.mapi params (fun i x ->
+                                      ( x,
+                                        match x with
+                                        | Asttypes.Nolabel ->
+                                          Exp.ident
+                                            {
+                                              txt =
+                                                Lident
+                                                  ("arg" ^ string_of_int (i + 1));
+                                              loc;
+                                            }
+                                        | Labelled s | Optional s ->
+                                          Exp.ident {txt = Lident s; loc} )))
+                           in
+                           snd
+                           @@ Ext_list.fold_right params
+                                ( 0,
+                                  Exp.fun_ Nolabel None
+                                    (Pat.var ~loc {txt = "obj"; loc})
+                                    body )
+                                (fun arg (i, obj) ->
+                                  ( i + 1,
+                                    Exp.fun_ arg None
+                                      (Pat.var ~loc
+                                         {
+                                           txt =
+                                             (match arg with
+                                             | Labelled s | Optional s -> s
+                                             | Nolabel ->
+                                               "arg"
+                                               ^ string_of_int (arity - i - 1));
+                                           loc;
+                                         })
+                                      obj )));
+                      ];
+                  ]))
+      else normal ())

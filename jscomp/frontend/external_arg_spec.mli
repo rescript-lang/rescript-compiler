@@ -22,18 +22,17 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type delim = | DNone | DStarJ | DNoQuotes
+type delim = DNone | DStarJ | DNoQuotes
 
-type cst = private
-  | Arg_int_lit of int
-  | Arg_string_lit of string * delim
+type cst = private Arg_int_lit of int | Arg_string_lit of string * delim
 
 type attr =
-  | Poly_var_string of { descr : (string * string) list }
-  | Poly_var of { descr : (string * string) list option }
+  | Poly_var_string of {descr: (string * string) list}
+  | Poly_var of {descr: (string * string) list option}
   | Int of (string * int) list (* ([`a | `b ] [@bs.int])*)
   | Arg_cst of cst
-  | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
+  | Fn_uncurry_arity of
+      int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
   (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
   | Extern_unit
   | Nothing
@@ -44,13 +43,13 @@ type label_noname = Arg_label | Arg_empty | Arg_optional
 
 type label = private
   | Obj_empty
-  | Obj_label of { name : string }
-  | Obj_optional of { name : string; for_sure_no_nested_option : bool }
+  | Obj_label of {name: string}
+  | Obj_optional of {name: string; for_sure_no_nested_option: bool}
 (* it will be ignored , side effect will be recorded *)
 
-type obj_param = { obj_arg_type : attr; obj_arg_label : label }
+type obj_param = {obj_arg_type: attr; obj_arg_label: label}
 
-type param = { arg_type : attr; arg_label : label_noname }
+type param = {arg_type: attr; arg_label: label_noname}
 
 type obj_params = obj_param list
 

@@ -38,7 +38,7 @@ let pp_error fmt err =
   | Invalid_hex_escape -> "Invalid \\x escape"
   | Invalid_unicode_escape -> "Invalid \\u escape"
   | Invalid_unicode_codepoint_escape ->
-      "Invalid \\u{…} codepoint escape sequence"
+    "Invalid \\u{…} codepoint escape sequence"
 
 type exn += Error of int (* offset *) * error
 
@@ -62,28 +62,28 @@ let rec check_and_transform (loc : int) (buf : Buffer.t) (s : string)
     let current_char = s.[byte_offset] in
     match Ext_utf8.classify current_char with
     | Single 92 (* '\\' *) ->
-        escape_code (loc + 1) buf s (byte_offset + 1) s_len
+      escape_code (loc + 1) buf s (byte_offset + 1) s_len
     | Single 34 ->
-        Buffer.add_string buf "\\\"";
-        check_and_transform (loc + 1) buf s (byte_offset + 1) s_len
+      Buffer.add_string buf "\\\"";
+      check_and_transform (loc + 1) buf s (byte_offset + 1) s_len
     | Single 10 ->
-        Buffer.add_string buf "\\n";
-        check_and_transform (loc + 1) buf s (byte_offset + 1) s_len
+      Buffer.add_string buf "\\n";
+      check_and_transform (loc + 1) buf s (byte_offset + 1) s_len
     | Single 13 ->
-        Buffer.add_string buf "\\r";
-        check_and_transform (loc + 1) buf s (byte_offset + 1) s_len
+      Buffer.add_string buf "\\r";
+      check_and_transform (loc + 1) buf s (byte_offset + 1) s_len
     | Single _ ->
-        Buffer.add_char buf current_char;
-        check_and_transform (loc + 1) buf s (byte_offset + 1) s_len
+      Buffer.add_char buf current_char;
+      check_and_transform (loc + 1) buf s (byte_offset + 1) s_len
     | Invalid | Cont _ -> error ~loc Invalid_code_point
     | Leading (n, _) ->
-        let i' = Ext_utf8.next s ~remaining:n byte_offset in
-        if i' < 0 then error ~loc Invalid_code_point
-        else (
-          for k = byte_offset to i' do
-            Buffer.add_char buf s.[k]
-          done;
-          check_and_transform (loc + 1) buf s (i' + 1) s_len)
+      let i' = Ext_utf8.next s ~remaining:n byte_offset in
+      if i' < 0 then error ~loc Invalid_code_point
+      else (
+        for k = byte_offset to i' do
+          Buffer.add_char buf s.[k]
+        done;
+        check_and_transform (loc + 1) buf s (i' + 1) s_len)
 
 (* we share the same escape sequence with js *)
 and escape_code loc buf s offset s_len =
@@ -92,26 +92,26 @@ and escape_code loc buf s offset s_len =
   let cur_char = s.[offset] in
   match cur_char with
   | '\\' | 'b' | 't' | 'n' | 'v' | 'f' | 'r' | '0' | '$' ->
-      Buffer.add_char buf cur_char;
-      check_and_transform (loc + 1) buf s (offset + 1) s_len
+    Buffer.add_char buf cur_char;
+    check_and_transform (loc + 1) buf s (offset + 1) s_len
   | 'u' ->
-      if offset + 1 >= s_len then error ~loc Invalid_unicode_escape
-      else (
-        Buffer.add_char buf cur_char;
-        let next_char = s.[offset + 1] in
-        match next_char with
-        | '{' ->
-            Buffer.add_char buf next_char;
-            unicode_codepoint_escape (loc + 2) buf s (offset + 2) s_len
-        | _ -> unicode (loc + 1) buf s (offset + 1) s_len)
+    if offset + 1 >= s_len then error ~loc Invalid_unicode_escape
+    else (
+      Buffer.add_char buf cur_char;
+      let next_char = s.[offset + 1] in
+      match next_char with
+      | '{' ->
+        Buffer.add_char buf next_char;
+        unicode_codepoint_escape (loc + 2) buf s (offset + 2) s_len
+      | _ -> unicode (loc + 1) buf s (offset + 1) s_len)
   | 'x' ->
-      Buffer.add_char buf cur_char;
-      two_hex (loc + 1) buf s (offset + 1) s_len
+    Buffer.add_char buf cur_char;
+    two_hex (loc + 1) buf s (offset + 1) s_len
   | _ ->
-      (* Regular characters, like `a` in `\a`,
-       * are valid escape sequences *)
-      Buffer.add_char buf cur_char;
-      check_and_transform (loc + 1) buf s (offset + 1) s_len
+    (* Regular characters, like `a` in `\a`,
+     * are valid escape sequences *)
+    Buffer.add_char buf cur_char;
+    check_and_transform (loc + 1) buf s (offset + 1) s_len
 
 and two_hex loc buf s offset s_len =
   if offset + 1 >= s_len then error ~loc Invalid_hex_escape;
@@ -156,30 +156,30 @@ and unicode_codepoint_escape loc buf s offset s_len =
     let cur_char = s.[offset] in
     match cur_char with
     | '}' ->
-        Buffer.add_char buf cur_char;
-        let x = ref 0 in
-        for ix = loc to offset - 1 do
-          let c = s.[ix] in
-          let value =
-            match c with
-            | '0' .. '9' -> Char.code c - 48
-            | 'a' .. 'f' -> Char.code c - Char.code 'a' + 10
-            | 'A' .. 'F' -> Char.code c + 32 - Char.code 'a' + 10
-            | _ -> 16
-            (* larger than any legal value, unicode_codepoint_escape only makes progress if we have valid hex symbols *)
-          in
-          (* too long escape sequence will result in an overflow, perform an upperbound check *)
-          if !x > 0x10FFFF then error ~loc Invalid_unicode_codepoint_escape
-          else x := (!x * 16) + value
-        done;
-        if Uchar.is_valid !x then
-          check_and_transform (offset + 1) buf s (offset + 1) s_len
-        else error ~loc Invalid_unicode_codepoint_escape
+      Buffer.add_char buf cur_char;
+      let x = ref 0 in
+      for ix = loc to offset - 1 do
+        let c = s.[ix] in
+        let value =
+          match c with
+          | '0' .. '9' -> Char.code c - 48
+          | 'a' .. 'f' -> Char.code c - Char.code 'a' + 10
+          | 'A' .. 'F' -> Char.code c + 32 - Char.code 'a' + 10
+          | _ -> 16
+          (* larger than any legal value, unicode_codepoint_escape only makes progress if we have valid hex symbols *)
+        in
+        (* too long escape sequence will result in an overflow, perform an upperbound check *)
+        if !x > 0x10FFFF then error ~loc Invalid_unicode_codepoint_escape
+        else x := (!x * 16) + value
+      done;
+      if Uchar.is_valid !x then
+        check_and_transform (offset + 1) buf s (offset + 1) s_len
+      else error ~loc Invalid_unicode_codepoint_escape
     | _ ->
-        if Ext_char.valid_hex cur_char then (
-          Buffer.add_char buf cur_char;
-          unicode_codepoint_escape loc buf s (offset + 1) s_len)
-        else error ~loc Invalid_unicode_codepoint_escape
+      if Ext_char.valid_hex cur_char then (
+        Buffer.add_char buf cur_char;
+        unicode_codepoint_escape loc buf s (offset + 1) s_len)
+      else error ~loc Invalid_unicode_codepoint_escape
 
 let transform_test s =
   let s_len = String.length s in
@@ -196,7 +196,8 @@ let transform loc s =
   with Error (offset, error) ->
     Location.raise_errorf ~loc "Offset: %d, %a" offset pp_error error
 
-let rec check_no_escapes_or_unicode (s : string) (byte_offset : int) (s_len : int) =
+let rec check_no_escapes_or_unicode (s : string) (byte_offset : int)
+    (s_len : int) =
   if byte_offset = s_len then true
   else
     let current_char = s.[byte_offset] in
@@ -205,5 +206,4 @@ let rec check_no_escapes_or_unicode (s : string) (byte_offset : int) (s_len : in
     | Single _ -> check_no_escapes_or_unicode s (byte_offset + 1) s_len
     | Invalid | Cont _ | Leading _ -> false
 
-let simple_comparison s =
-  check_no_escapes_or_unicode s 0 (String.length s)
+let simple_comparison s = check_no_escapes_or_unicode s 0 (String.length s)

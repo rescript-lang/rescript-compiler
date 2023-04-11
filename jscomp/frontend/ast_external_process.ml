@@ -28,7 +28,7 @@
 let rec variant_can_unwrap_aux (row_fields : Parsetree.row_field list) : bool =
   match row_fields with
   | [] -> true
-  | Rtag (_, _, false, [ _ ]) :: rest -> variant_can_unwrap_aux rest
+  | Rtag (_, _, false, [_]) :: rest -> variant_can_unwrap_aux rest
   | _ :: _ -> false
 
 let variant_unwrap (row_fields : Parsetree.row_field list) : bool =
@@ -47,45 +47,45 @@ let spec_of_ptyp (nolabel : bool) (ptyp : Parsetree.core_type) :
       ptyp.ptyp_attributes
   with
   | `String -> (
-      match ptyp_desc with
-      | Ptyp_variant (row_fields, Closed, None) ->
-          Ast_polyvar.map_row_fields_into_strings ptyp.ptyp_loc row_fields
-      | _ -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_string_type)
+    match ptyp_desc with
+    | Ptyp_variant (row_fields, Closed, None) ->
+      Ast_polyvar.map_row_fields_into_strings ptyp.ptyp_loc row_fields
+    | _ -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_string_type)
   | `Ignore -> Ignore
   | `Int -> (
-      match ptyp_desc with
-      | Ptyp_variant (row_fields, Closed, None) ->
-          let int_lists =
-            Ast_polyvar.map_row_fields_into_ints ptyp.ptyp_loc row_fields
-          in
-          Int int_lists
-      | _ -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_int_type)
+    match ptyp_desc with
+    | Ptyp_variant (row_fields, Closed, None) ->
+      let int_lists =
+        Ast_polyvar.map_row_fields_into_ints ptyp.ptyp_loc row_fields
+      in
+      Int int_lists
+    | _ -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_int_type)
   | `Unwrap -> (
-      match ptyp_desc with
-      | Ptyp_variant (row_fields, Closed, _) when variant_unwrap row_fields ->
-          Unwrap
-      (* Unwrap attribute can only be attached to things like `[a of a0 | b of b0]` *)
-      | _ -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_unwrap_type)
+    match ptyp_desc with
+    | Ptyp_variant (row_fields, Closed, _) when variant_unwrap row_fields ->
+      Unwrap
+    (* Unwrap attribute can only be attached to things like `[a of a0 | b of b0]` *)
+    | _ -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_unwrap_type)
   | `Uncurry opt_arity -> (
-      let real_arity =
-        if Ast_uncurried.typeIsUncurriedFun ptyp then
-          let arity, _ = Ast_uncurried.typeExtractUncurriedFun ptyp in
-          Some arity
-        else
-          Ast_core_type.get_uncurry_arity ptyp in
-      match (opt_arity, real_arity) with
-      | Some arity, None -> Fn_uncurry_arity arity
-      | None, None -> Bs_syntaxerr.err ptyp.ptyp_loc Canot_infer_arity_by_syntax
-      | None, Some arity -> Fn_uncurry_arity arity
-      | Some arity, Some n ->
-          if n <> arity then
-            Bs_syntaxerr.err ptyp.ptyp_loc (Inconsistent_arity (arity, n))
-          else Fn_uncurry_arity arity)
+    let real_arity =
+      if Ast_uncurried.typeIsUncurriedFun ptyp then
+        let arity, _ = Ast_uncurried.typeExtractUncurriedFun ptyp in
+        Some arity
+      else Ast_core_type.get_uncurry_arity ptyp
+    in
+    match (opt_arity, real_arity) with
+    | Some arity, None -> Fn_uncurry_arity arity
+    | None, None -> Bs_syntaxerr.err ptyp.ptyp_loc Canot_infer_arity_by_syntax
+    | None, Some arity -> Fn_uncurry_arity arity
+    | Some arity, Some n ->
+      if n <> arity then
+        Bs_syntaxerr.err ptyp.ptyp_loc (Inconsistent_arity (arity, n))
+      else Fn_uncurry_arity arity)
   | `Nothing -> (
-      match ptyp_desc with
-      | Ptyp_constr ({ txt = Lident "unit"; _ }, []) ->
-          if nolabel then Extern_unit else Nothing
-      | _ -> Nothing)
+    match ptyp_desc with
+    | Ptyp_constr ({txt = Lident "unit"; _}, []) ->
+      if nolabel then Extern_unit else Nothing
+    | _ -> Nothing)
 
 (* is_optional = false 
 *)
@@ -97,17 +97,17 @@ let refine_arg_type ~(nolabel : bool) (ptyp : Ast_core_type.t) :
     match payload with
     | None -> spec_of_ptyp nolabel ptyp
     | Some cst -> (
-        (* (_[@as ])*)
-        (* when ppx start dropping attributes
-           we should warn, there is a trade off whether
-           we should warn dropped non bs attribute or not
-        *)
-        Bs_ast_invariant.warn_discarded_unused_attributes ptyp_attrs;
-        match cst with
-        | Int i ->
-            (* This type is used in obj only to construct obj type*)
-            Arg_cst (External_arg_spec.cst_int i)
-        | Str (i, delim) -> Arg_cst (External_arg_spec.cst_string i delim))
+      (* (_[@as ])*)
+      (* when ppx start dropping attributes
+         we should warn, there is a trade off whether
+         we should warn dropped non bs attribute or not
+      *)
+      Bs_ast_invariant.warn_discarded_unused_attributes ptyp_attrs;
+      match cst with
+      | Int i ->
+        (* This type is used in obj only to construct obj type*)
+        Arg_cst (External_arg_spec.cst_int i)
+      | Str (i, delim) -> Arg_cst (External_arg_spec.cst_string i delim))
   else (* ([`a|`b] [@string]) *)
     spec_of_ptyp nolabel ptyp
 
@@ -124,12 +124,12 @@ let refine_obj_arg_type ~(nolabel : bool) (ptyp : Ast_core_type.t) :
     match payload with
     | None -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
     | Some (Int i) ->
-        (* @as(24) *)
-        (* This type is used in obj only to construct obj type *)
-        Arg_cst (External_arg_spec.cst_int i)
+      (* @as(24) *)
+      (* This type is used in obj only to construct obj type *)
+      Arg_cst (External_arg_spec.cst_int i)
     | Some (Str (s, delim)) ->
-        (* @as("foo") *)
-        Arg_cst (External_arg_spec.cst_string s delim))
+      (* @as("foo") *)
+      Arg_cst (External_arg_spec.cst_string s delim))
   else (* ([`a|`b] [@string]) *)
     spec_of_ptyp nolabel ptyp
 
@@ -165,25 +165,25 @@ let get_opt_arg_type ~(nolabel : bool) (ptyp : Ast_core_type.t) :
 *)
 type source = Payload | External
 
-type bundle_source = { name : string; source : source }
+type bundle_source = {name: string; source: source}
 
 type external_desc = {
-  val_name : bundle_source option;
-  external_module_name : External_ffi_types.external_module_name option;
-  module_as_val : External_ffi_types.external_module_name option;
-  val_send : bundle_source option;
-  splice : bool;
+  val_name: bundle_source option;
+  external_module_name: External_ffi_types.external_module_name option;
+  module_as_val: External_ffi_types.external_module_name option;
+  val_send: bundle_source option;
+  splice: bool;
   (* mutable *)
-  scopes : string list;
-  set_index : bool;
+  scopes: string list;
+  set_index: bool;
   (* mutable *)
-  get_index : bool;
-  new_name : bundle_source option;
-  call_name : bundle_source option;
-  set_name : bundle_source option;
-  get_name : bundle_source option;
-  mk_obj : bool;
-  return_wrapper : External_ffi_types.return_wrapper;
+  get_index: bool;
+  new_name: bundle_source option;
+  call_name: bundle_source option;
+  set_name: bundle_source option;
+  get_name: bundle_source option;
+  mk_obj: bool;
+  return_wrapper: External_ffi_types.return_wrapper;
 }
 
 let init_st =
@@ -228,13 +228,13 @@ let parse_external_attributes (no_arguments : bool) (prim_name_check : string)
     | PStr [] -> prim_name_or_pval_prim
     (* It is okay to have [@@val] without payload *)
     | _ -> (
-        match Ast_payload.is_single_string payload with
-        | Some (val_name, _) -> { name = val_name; source = Payload }
-        | None -> Location.raise_errorf ~loc "Invalid payload")
+      match Ast_payload.is_single_string payload with
+      | Some (val_name, _) -> {name = val_name; source = Payload}
+      | None -> Location.raise_errorf ~loc "Invalid payload")
   in
 
   Ext_list.fold_left prim_attributes ([], init_st)
-    (fun (attrs, st) (({ txt; loc }, payload) as attr) ->
+    (fun (attrs, st) (({txt; loc}, payload) as attr) ->
       if txt = Literals.gentype_import1 || txt = Literals.gentype_import2 then
         let bundle =
           "./"
@@ -246,102 +246,86 @@ let parse_external_attributes (no_arguments : bool) (prim_name_check : string)
           {
             st with
             external_module_name =
-              Some { bundle; module_bind_name = Phint_nothing };
+              Some {bundle; module_bind_name = Phint_nothing};
           } )
       else
         let action () =
           match txt with
           | "bs.val" | "val" ->
-              if no_arguments then
-                {
-                  st with
-                  val_name = Some (name_from_payload_or_prim ~loc payload);
-                }
-              else
-                {
-                  st with
-                  call_name = Some (name_from_payload_or_prim ~loc payload);
-                }
+            if no_arguments then
+              {st with val_name = Some (name_from_payload_or_prim ~loc payload)}
+            else
+              {
+                st with
+                call_name = Some (name_from_payload_or_prim ~loc payload);
+              }
           | "bs.module" | "module" -> (
-              match Ast_payload.assert_strings loc payload with
-              | [ bundle ] ->
-                  {
-                    st with
-                    external_module_name =
-                      Some { bundle; module_bind_name = Phint_nothing };
-                  }
-              | [ bundle; bind_name ] ->
-                  {
-                    st with
-                    external_module_name =
-                      Some { bundle; module_bind_name = Phint_name bind_name };
-                  }
-              | [] ->
-                  {
-                    st with
-                    module_as_val =
-                      Some
-                        {
-                          bundle = prim_name_or_pval_prim.name;
-                          module_bind_name = Phint_nothing;
-                        };
-                  }
-              | _ -> Bs_syntaxerr.err loc Illegal_attribute)
+            match Ast_payload.assert_strings loc payload with
+            | [bundle] ->
+              {
+                st with
+                external_module_name =
+                  Some {bundle; module_bind_name = Phint_nothing};
+              }
+            | [bundle; bind_name] ->
+              {
+                st with
+                external_module_name =
+                  Some {bundle; module_bind_name = Phint_name bind_name};
+              }
+            | [] ->
+              {
+                st with
+                module_as_val =
+                  Some
+                    {
+                      bundle = prim_name_or_pval_prim.name;
+                      module_bind_name = Phint_nothing;
+                    };
+              }
+            | _ -> Bs_syntaxerr.err loc Illegal_attribute)
           | "bs.scope" | "scope" -> (
-              match Ast_payload.assert_strings loc payload with
-              | [] -> Bs_syntaxerr.err loc Illegal_attribute
-              (* We need err on empty scope, so we can tell the difference
-                 between unset/set
-              *)
-              | scopes -> { st with scopes })
-          | "bs.splice" | "bs.variadic" | "variadic" ->
-              { st with splice = true }
+            match Ast_payload.assert_strings loc payload with
+            | [] -> Bs_syntaxerr.err loc Illegal_attribute
+            (* We need err on empty scope, so we can tell the difference
+               between unset/set
+            *)
+            | scopes -> {st with scopes})
+          | "bs.splice" | "bs.variadic" | "variadic" -> {st with splice = true}
           | "bs.send" | "send" ->
-              {
-                st with
-                val_send = Some (name_from_payload_or_prim ~loc payload);
-              }
+            {st with val_send = Some (name_from_payload_or_prim ~loc payload)}
           | "bs.set" | "set" ->
-              {
-                st with
-                set_name = Some (name_from_payload_or_prim ~loc payload);
-              }
+            {st with set_name = Some (name_from_payload_or_prim ~loc payload)}
           | "bs.get" | "get" ->
-              {
-                st with
-                get_name = Some (name_from_payload_or_prim ~loc payload);
-              }
+            {st with get_name = Some (name_from_payload_or_prim ~loc payload)}
           | "bs.new" | "new" ->
-              {
-                st with
-                new_name = Some (name_from_payload_or_prim ~loc payload);
-              }
+            {st with new_name = Some (name_from_payload_or_prim ~loc payload)}
           | "bs.set_index" | "set_index" ->
-              if String.length prim_name_check <> 0 then
-                Location.raise_errorf ~loc
-                  "%@set_index this particular external's name needs to be a \
-                   placeholder empty string";
-              { st with set_index = true }
+            if String.length prim_name_check <> 0 then
+              Location.raise_errorf ~loc
+                "%@set_index this particular external's name needs to be a \
+                 placeholder empty string";
+            {st with set_index = true}
           | "bs.get_index" | "get_index" ->
-              if String.length prim_name_check <> 0 then
-                Location.raise_errorf ~loc
-                  "%@get_index this particular external's name needs to be a \
-                   placeholder empty string";
-              { st with get_index = true }
-          | "bs.obj" | "obj" -> { st with mk_obj = true }
+            if String.length prim_name_check <> 0 then
+              Location.raise_errorf ~loc
+                "%@get_index this particular external's name needs to be a \
+                 placeholder empty string";
+            {st with get_index = true}
+          | "bs.obj" | "obj" -> {st with mk_obj = true}
           | "bs.return" | "return" -> (
-              let actions = Ast_payload.ident_or_record_as_config loc payload in
-              match actions with
-              | [ ({ txt; _ }, None) ] ->
-                  { st with return_wrapper = return_wrapper loc txt }
-              | _ -> Bs_syntaxerr.err loc Not_supported_directive_in_bs_return)
+            let actions = Ast_payload.ident_or_record_as_config loc payload in
+            match actions with
+            | [({txt; _}, None)] ->
+              {st with return_wrapper = return_wrapper loc txt}
+            | _ -> Bs_syntaxerr.err loc Not_supported_directive_in_bs_return)
           | _ -> raise_notrace Not_handled_external_attribute
         in
         try (attrs, action ())
         with Not_handled_external_attribute -> (attr :: attrs, st))
 
 let has_bs_uncurry (attrs : Ast_attributes.t) =
-  Ext_list.exists_fst attrs (fun { txt; loc = _ } ->
+  Ext_list.exists_fst attrs (fun {txt; loc = _} ->
       txt = "bs.uncurry" || txt = "uncurry")
 
 let check_return_wrapper loc (wrapper : External_ffi_types.return_wrapper)
@@ -349,20 +333,20 @@ let check_return_wrapper loc (wrapper : External_ffi_types.return_wrapper)
   match wrapper with
   | Return_identity -> wrapper
   | Return_unset ->
-      if Ast_core_type.is_unit result_type then Return_replaced_with_unit
-      else wrapper
+    if Ast_core_type.is_unit result_type then Return_replaced_with_unit
+    else wrapper
   | Return_undefined_to_opt | Return_null_to_opt | Return_null_undefined_to_opt
     ->
-      if Ast_core_type.is_user_option result_type then wrapper
-      else Bs_syntaxerr.err loc Expect_opt_in_bs_return_to_opt
+    if Ast_core_type.is_user_option result_type then wrapper
+    else Bs_syntaxerr.err loc Expect_opt_in_bs_return_to_opt
   | Return_replaced_with_unit -> assert false
 (* Not going to happen from user input*)
 
 type response = {
-  pval_type : Parsetree.core_type;
-  pval_prim : string list;
-  pval_attributes : Parsetree.attributes;
-  no_inline_cross_module : bool;
+  pval_type: Parsetree.core_type;
+  pval_prim: string list;
+  pval_attributes: Parsetree.attributes;
+  no_inline_cross_module: bool;
 }
 
 let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
@@ -389,174 +373,156 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
      (* wrapper does not work with @obj
         TODO: better error message *);
   } ->
-      if String.length prim_name <> 0 then
-        Location.raise_errorf ~loc
-          "%@obj expect external names to be empty string";
-      let ( arg_kinds,
-            new_arg_types_ty,
-            (result_types : Parsetree.object_field list) ) =
-        Ext_list.fold_right arg_types_ty ([], [], [])
-          (fun
-            param_type
-            ( arg_labels,
-              (arg_types : Ast_core_type.param_type list),
-              result_types )
-          ->
-            let arg_label = param_type.label in
-            let loc = param_type.loc in
-            let ty = param_type.ty in
-            let new_arg_label, new_arg_types, output_tys =
-              match arg_label with
-              | Nolabel -> (
+    if String.length prim_name <> 0 then
+      Location.raise_errorf ~loc
+        "%@obj expect external names to be empty string";
+    let ( arg_kinds,
+          new_arg_types_ty,
+          (result_types : Parsetree.object_field list) ) =
+      Ext_list.fold_right arg_types_ty ([], [], [])
+        (fun
+          param_type
+          (arg_labels, (arg_types : Ast_core_type.param_type list), result_types)
+        ->
+          let arg_label = param_type.label in
+          let loc = param_type.loc in
+          let ty = param_type.ty in
+          let new_arg_label, new_arg_types, output_tys =
+            match arg_label with
+            | Nolabel -> (
+              match ty.ptyp_desc with
+              | Ptyp_constr ({txt = Lident "unit"; _}, []) ->
+                ( External_arg_spec.empty_kind Extern_unit,
+                  param_type :: arg_types,
+                  result_types )
+              | _ ->
+                Location.raise_errorf ~loc
+                  "expect label, optional, or unit here")
+            | Labelled name -> (
+              let obj_arg_type = refine_obj_arg_type ~nolabel:false ty in
+              match obj_arg_type with
+              | Ignore ->
+                ( External_arg_spec.empty_kind obj_arg_type,
+                  param_type :: arg_types,
+                  result_types )
+              | Arg_cst _ ->
+                let s = Lam_methname.translate name in
+                ( {obj_arg_label = External_arg_spec.obj_label s; obj_arg_type},
+                  arg_types,
+                  (* ignored in [arg_types], reserved in [result_types] *)
+                  result_types )
+              | Nothing ->
+                let s = Lam_methname.translate name in
+                ( {obj_arg_label = External_arg_spec.obj_label s; obj_arg_type},
+                  param_type :: arg_types,
+                  Parsetree.Otag ({Asttypes.txt = name; loc}, [], ty)
+                  :: result_types )
+              | Int _ ->
+                let s = Lam_methname.translate name in
+                ( {obj_arg_label = External_arg_spec.obj_label s; obj_arg_type},
+                  param_type :: arg_types,
+                  Otag
+                    ( {Asttypes.txt = name; loc},
+                      [],
+                      Ast_literal.type_int ~loc () )
+                  :: result_types )
+              | Poly_var_string _ ->
+                let s = Lam_methname.translate name in
+                ( {obj_arg_label = External_arg_spec.obj_label s; obj_arg_type},
+                  param_type :: arg_types,
+                  Otag
+                    ( {Asttypes.txt = name; loc},
+                      [],
+                      Ast_literal.type_string ~loc () )
+                  :: result_types )
+              | Fn_uncurry_arity _ ->
+                Location.raise_errorf ~loc
+                  "The combination of %@obj, %@uncurry is not supported yet"
+              | Extern_unit -> assert false
+              | Poly_var _ ->
+                Location.raise_errorf ~loc
+                  "%@obj label %s does not support such arg type" name
+              | Unwrap ->
+                Location.raise_errorf ~loc
+                  "%@obj label %s does not support %@unwrap arguments" name)
+            | Optional name -> (
+              let obj_arg_type = get_opt_arg_type ~nolabel:false ty in
+              match obj_arg_type with
+              | Ignore ->
+                ( External_arg_spec.empty_kind obj_arg_type,
+                  param_type :: arg_types,
+                  result_types )
+              | Nothing ->
+                let s = Lam_methname.translate name in
+                let for_sure_not_nested =
                   match ty.ptyp_desc with
-                  | Ptyp_constr ({ txt = Lident "unit"; _ }, []) ->
-                      ( External_arg_spec.empty_kind Extern_unit,
-                        param_type :: arg_types,
-                        result_types )
-                  | _ ->
-                      Location.raise_errorf ~loc
-                        "expect label, optional, or unit here")
-              | Labelled name -> (
-                  let obj_arg_type = refine_obj_arg_type ~nolabel:false ty in
-                  match obj_arg_type with
-                  | Ignore ->
-                      ( External_arg_spec.empty_kind obj_arg_type,
-                        param_type :: arg_types,
-                        result_types )
-                  | Arg_cst _ ->
-                      let s = Lam_methname.translate name in
-                      ( {
-                          obj_arg_label = External_arg_spec.obj_label s;
-                          obj_arg_type;
-                        },
-                        arg_types,
-                        (* ignored in [arg_types], reserved in [result_types] *)
-                        result_types )
-                  | Nothing ->
-                      let s = Lam_methname.translate name in
-                      ( {
-                          obj_arg_label = External_arg_spec.obj_label s;
-                          obj_arg_type;
-                        },
-                        param_type :: arg_types,
-                        Parsetree.Otag ({ Asttypes.txt = name; loc }, [], ty)
-                        :: result_types )
-                  | Int _ ->
-                      let s = Lam_methname.translate name in
-                      ( {
-                          obj_arg_label = External_arg_spec.obj_label s;
-                          obj_arg_type;
-                        },
-                        param_type :: arg_types,
-                        Otag
-                          ( { Asttypes.txt = name; loc },
-                            [],
-                            Ast_literal.type_int ~loc () )
-                        :: result_types )
-                  | Poly_var_string _ ->
-                      let s = Lam_methname.translate name in
-                      ( {
-                          obj_arg_label = External_arg_spec.obj_label s;
-                          obj_arg_type;
-                        },
-                        param_type :: arg_types,
-                        Otag
-                          ( { Asttypes.txt = name; loc },
-                            [],
-                            Ast_literal.type_string ~loc () )
-                        :: result_types )
-                  | Fn_uncurry_arity _ ->
-                      Location.raise_errorf ~loc
-                        "The combination of %@obj, %@uncurry is not supported \
-                         yet"
-                  | Extern_unit -> assert false
-                  | Poly_var _ ->
-                      Location.raise_errorf ~loc
-                        "%@obj label %s does not support such arg type" name
-                  | Unwrap ->
-                      Location.raise_errorf ~loc
-                        "%@obj label %s does not support %@unwrap arguments"
-                        name)
-              | Optional name -> (
-                  let obj_arg_type = get_opt_arg_type ~nolabel:false ty in
-                  match obj_arg_type with
-                  | Ignore ->
-                      ( External_arg_spec.empty_kind obj_arg_type,
-                        param_type :: arg_types,
-                        result_types )
-                  | Nothing ->
-                      let s = Lam_methname.translate name in
-                      let for_sure_not_nested =
-                        match ty.ptyp_desc with
-                        | Ptyp_constr ({ txt = Lident txt; _ }, []) ->
-                            Ast_core_type.is_builtin_rank0_type txt
-                        | _ -> false
-                      in
-                      ( {
-                          obj_arg_label =
-                            External_arg_spec.optional for_sure_not_nested s;
-                          obj_arg_type;
-                        },
-                        param_type :: arg_types,
-                        Parsetree.Otag
-                          ( { Asttypes.txt = name; loc },
-                            [],
-                            Ast_comb.to_undefined_type loc ty )
-                        :: result_types )
-                  | Int _ ->
-                      let s = Lam_methname.translate name in
-                      ( {
-                          obj_arg_label = External_arg_spec.optional true s;
-                          obj_arg_type;
-                        },
-                        param_type :: arg_types,
-                        Otag
-                          ( { Asttypes.txt = name; loc },
-                            [],
-                            Ast_comb.to_undefined_type loc
-                            @@ Ast_literal.type_int ~loc () )
-                        :: result_types )
-                  | Poly_var_string _ ->
-                      let s = Lam_methname.translate name in
-                      ( {
-                          obj_arg_label = External_arg_spec.optional true s;
-                          obj_arg_type;
-                        },
-                        param_type :: arg_types,
-                        Otag
-                          ( { Asttypes.txt = name; loc },
-                            [],
-                            Ast_comb.to_undefined_type loc
-                            @@ Ast_literal.type_string ~loc () )
-                        :: result_types )
-                  | Arg_cst _ ->
-                      Location.raise_errorf ~loc
-                        "%@as is not supported with optional yet"
-                  | Fn_uncurry_arity _ ->
-                      Location.raise_errorf ~loc
-                        "The combination of %@obj, %@uncurry is not supported \
-                         yet"
-                  | Extern_unit -> assert false
-                  | Poly_var _ ->
-                      Location.raise_errorf ~loc
-                        "%@obj label %s does not support such arg type" name
-                  | Unwrap ->
-                      Location.raise_errorf ~loc
-                        "%@obj label %s does not support %@unwrap arguments"
-                        name)
-            in
-            (new_arg_label :: arg_labels, new_arg_types, output_tys))
-      in
+                  | Ptyp_constr ({txt = Lident txt; _}, []) ->
+                    Ast_core_type.is_builtin_rank0_type txt
+                  | _ -> false
+                in
+                ( {
+                    obj_arg_label =
+                      External_arg_spec.optional for_sure_not_nested s;
+                    obj_arg_type;
+                  },
+                  param_type :: arg_types,
+                  Parsetree.Otag
+                    ( {Asttypes.txt = name; loc},
+                      [],
+                      Ast_comb.to_undefined_type loc ty )
+                  :: result_types )
+              | Int _ ->
+                let s = Lam_methname.translate name in
+                ( {
+                    obj_arg_label = External_arg_spec.optional true s;
+                    obj_arg_type;
+                  },
+                  param_type :: arg_types,
+                  Otag
+                    ( {Asttypes.txt = name; loc},
+                      [],
+                      Ast_comb.to_undefined_type loc
+                      @@ Ast_literal.type_int ~loc () )
+                  :: result_types )
+              | Poly_var_string _ ->
+                let s = Lam_methname.translate name in
+                ( {
+                    obj_arg_label = External_arg_spec.optional true s;
+                    obj_arg_type;
+                  },
+                  param_type :: arg_types,
+                  Otag
+                    ( {Asttypes.txt = name; loc},
+                      [],
+                      Ast_comb.to_undefined_type loc
+                      @@ Ast_literal.type_string ~loc () )
+                  :: result_types )
+              | Arg_cst _ ->
+                Location.raise_errorf ~loc
+                  "%@as is not supported with optional yet"
+              | Fn_uncurry_arity _ ->
+                Location.raise_errorf ~loc
+                  "The combination of %@obj, %@uncurry is not supported yet"
+              | Extern_unit -> assert false
+              | Poly_var _ ->
+                Location.raise_errorf ~loc
+                  "%@obj label %s does not support such arg type" name
+              | Unwrap ->
+                Location.raise_errorf ~loc
+                  "%@obj label %s does not support %@unwrap arguments" name)
+          in
+          (new_arg_label :: arg_labels, new_arg_types, output_tys))
+    in
 
-      let result =
-        if result_type.ptyp_desc = Ptyp_any then
-          Ast_core_type.make_obj ~loc result_types
-        else result_type
-        (* TODO: do we need do some error checking here *)
-        (* result type can not be labeled *)
-      in
-      ( Ast_core_type.mk_fn_type new_arg_types_ty result,
-        External_ffi_types.ffi_obj_create arg_kinds )
+    let result =
+      if result_type.ptyp_desc = Ptyp_any then
+        Ast_core_type.make_obj ~loc result_types
+      else result_type
+      (* TODO: do we need do some error checking here *)
+      (* result type can not be labeled *)
+    in
+    ( Ast_core_type.mk_fn_type new_arg_types_ty result,
+      External_ffi_types.ffi_obj_create arg_kinds )
   | _ -> Location.raise_errorf ~loc "Attribute found that conflicts with %@obj"
 
 let external_desc_of_non_obj (loc : Location.t) (st : external_desc)
@@ -580,15 +546,14 @@ let external_desc_of_non_obj (loc : Location.t) (st : external_desc)
    return_wrapper = _;
    mk_obj = _;
   } ->
-      if arg_type_specs_length = 3 then
-        Js_set_index { js_set_index_scopes = scopes }
-      else
-        Location.raise_errorf ~loc
-          "Ill defined attribute %@set_index (arity of 3)"
-  | { set_index = true; _ } ->
-      Bs_syntaxerr.err loc
-        (Conflict_ffi_attribute
-           "Attribute found that conflicts with %@set_index")
+    if arg_type_specs_length = 3 then
+      Js_set_index {js_set_index_scopes = scopes}
+    else
+      Location.raise_errorf ~loc
+        "Ill defined attribute %@set_index (arity of 3)"
+  | {set_index = true; _} ->
+    Bs_syntaxerr.err loc
+      (Conflict_ffi_attribute "Attribute found that conflicts with %@set_index")
   | {
    get_index = true;
    val_name = None;
@@ -605,16 +570,15 @@ let external_desc_of_non_obj (loc : Location.t) (st : external_desc)
    mk_obj = _;
    return_wrapper = _;
   } ->
-      if arg_type_specs_length = 2 then
-        Js_get_index { js_get_index_scopes = scopes }
-      else
-        Location.raise_errorf ~loc
-          "Ill defined attribute %@get_index (arity expected 2 : while %d)"
-          arg_type_specs_length
-  | { get_index = true; _ } ->
-      Bs_syntaxerr.err loc
-        (Conflict_ffi_attribute
-           "Attribute found that conflicts with %@get_index")
+    if arg_type_specs_length = 2 then
+      Js_get_index {js_get_index_scopes = scopes}
+    else
+      Location.raise_errorf ~loc
+        "Ill defined attribute %@get_index (arity expected 2 : while %d)"
+        arg_type_specs_length
+  | {get_index = true; _} ->
+    Bs_syntaxerr.err loc
+      (Conflict_ffi_attribute "Attribute found that conflicts with %@get_index")
   | {
    module_as_val = Some external_module_name;
    get_index = false;
@@ -632,31 +596,30 @@ let external_desc_of_non_obj (loc : Location.t) (st : external_desc)
    return_wrapper = _;
    mk_obj = _;
   } -> (
-      match (arg_types_ty, new_name, val_name) with
-      | [], None, _ -> Js_module_as_var external_module_name
-      | _, None, _ -> Js_module_as_fn { splice; external_module_name }
-      | _, Some _, Some _ ->
-          Bs_syntaxerr.err loc
-            (Conflict_ffi_attribute
-               "Attribute found that conflicts with @module.")
-      | _, Some { source = External; name = _ }, None ->
-          Js_module_as_class external_module_name
-      | _, Some { source = Payload; name = _ }, None ->
-          Location.raise_errorf ~loc
-            "Incorrect FFI attribute found: (%@new should not carry a payload \
-             here)")
-  | { module_as_val = Some _; get_index; val_send; _ } ->
-      let reason =
-        match (get_index, val_send) with
-        | true, _ ->
-            "@module is for imports from a module, @get_index does not need \
-             import a module "
-        | _, Some _ ->
-            "@module is for imports from a module, @send does not need import \
-             a module "
-        | _ -> "Attribute found that conflicts with @module."
-      in
-      Bs_syntaxerr.err loc (Conflict_ffi_attribute reason)
+    match (arg_types_ty, new_name, val_name) with
+    | [], None, _ -> Js_module_as_var external_module_name
+    | _, None, _ -> Js_module_as_fn {splice; external_module_name}
+    | _, Some _, Some _ ->
+      Bs_syntaxerr.err loc
+        (Conflict_ffi_attribute "Attribute found that conflicts with @module.")
+    | _, Some {source = External; name = _}, None ->
+      Js_module_as_class external_module_name
+    | _, Some {source = Payload; name = _}, None ->
+      Location.raise_errorf ~loc
+        "Incorrect FFI attribute found: (%@new should not carry a payload here)"
+    )
+  | {module_as_val = Some _; get_index; val_send; _} ->
+    let reason =
+      match (get_index, val_send) with
+      | true, _ ->
+        "@module is for imports from a module, @get_index does not need import \
+         a module "
+      | _, Some _ ->
+        "@module is for imports from a module, @send does not need import a \
+         module "
+      | _ -> "Attribute found that conflicts with @module."
+    in
+    Bs_syntaxerr.err loc (Conflict_ffi_attribute reason)
   | {
    get_name = None;
    val_name = None;
@@ -674,18 +637,18 @@ let external_desc_of_non_obj (loc : Location.t) (st : external_desc)
    (* mk_obj is always false *)
    return_wrapper = _;
   } ->
-      let name = prim_name_or_pval_prim.name in
-      if arg_type_specs_length = 0 then
-        (*
+    let name = prim_name_or_pval_prim.name in
+    if arg_type_specs_length = 0 then
+      (*
          {[
            external ff : int -> int [@bs] = "" [@@module "xx"]
          ]}
          FIXME: splice is not supported here 
       *)
-        Js_var { name; external_module_name = None; scopes }
-      else Js_call { splice; name; external_module_name = None; scopes }
+      Js_var {name; external_module_name = None; scopes}
+    else Js_call {splice; name; external_module_name = None; scopes}
   | {
-   call_name = Some { name; source = _ };
+   call_name = Some {name; source = _};
    splice;
    scopes;
    external_module_name;
@@ -700,20 +663,20 @@ let external_desc_of_non_obj (loc : Location.t) (st : external_desc)
    mk_obj = _;
    return_wrapper = _;
   } ->
-      if arg_type_specs_length = 0 then
-        (*
+    if arg_type_specs_length = 0 then
+      (*
            {[
              external ff : int -> int = "" [@@module "xx"]
            ]}
         *)
-        Js_var { name; external_module_name; scopes }
-        (*FIXME: splice is not supported here *)
-      else Js_call { splice; name; external_module_name; scopes }
-  | { call_name = Some _; _ } ->
-      Bs_syntaxerr.err loc
-        (Conflict_ffi_attribute "Attribute found that conflicts with %@val")
+      Js_var {name; external_module_name; scopes}
+      (*FIXME: splice is not supported here *)
+    else Js_call {splice; name; external_module_name; scopes}
+  | {call_name = Some _; _} ->
+    Bs_syntaxerr.err loc
+      (Conflict_ffi_attribute "Attribute found that conflicts with %@val")
   | {
-   val_name = Some { name; source = _ };
+   val_name = Some {name; source = _};
    external_module_name;
    call_name = None;
    module_as_val = None;
@@ -728,16 +691,16 @@ let external_desc_of_non_obj (loc : Location.t) (st : external_desc)
    splice = false;
    scopes;
   } ->
-      (*
+    (*
          if no_arguments -->
                {[
                  external ff : int = "" [@@val]
                ]}
       *)
-      Js_var { name; external_module_name; scopes }
-  | { val_name = Some _; _ } ->
-      Bs_syntaxerr.err loc
-        (Conflict_ffi_attribute "Attribute found that conflicts with %@val")
+    Js_var {name; external_module_name; scopes}
+  | {val_name = Some _; _} ->
+    Bs_syntaxerr.err loc
+      (Conflict_ffi_attribute "Attribute found that conflicts with %@val")
   | {
    splice;
    scopes;
@@ -754,17 +717,17 @@ let external_desc_of_non_obj (loc : Location.t) (st : external_desc)
    mk_obj = _;
    return_wrapper = _;
   } ->
-      let name = prim_name_or_pval_prim.name in
-      if arg_type_specs_length = 0 then
-        (*
+    let name = prim_name_or_pval_prim.name in
+    if arg_type_specs_length = 0 then
+      (*
          {[
            external ff : int = "" [@@module "xx"]
          ]}
       *)
-        Js_var { name; external_module_name; scopes }
-      else Js_call { splice; name; external_module_name; scopes }
+      Js_var {name; external_module_name; scopes}
+    else Js_call {splice; name; external_module_name; scopes}
   | {
-   val_send = Some { name; source = _ };
+   val_send = Some {name; source = _};
    splice;
    scopes;
    val_name = None;
@@ -779,23 +742,23 @@ let external_desc_of_non_obj (loc : Location.t) (st : external_desc)
    mk_obj = _;
    return_wrapper = _;
   } -> (
-      (* PR #2162 - since when we assemble arguments the first argument in
-         [@@send] is ignored
-      *)
-      match arg_type_specs with
-      | [] ->
-          Location.raise_errorf ~loc
-            "Ill defined attribute %@send(the external needs to be a regular \
-             function call with at least one argument)"
-      | { arg_type = Arg_cst _; arg_label = _ } :: _ ->
-          Location.raise_errorf ~loc
-            "Ill defined attribute %@send(first argument can't be const)"
-      | _ :: _ -> Js_send { splice; name; js_send_scopes = scopes })
-  | { val_send = Some _; _ } ->
+    (* PR #2162 - since when we assemble arguments the first argument in
+       [@@send] is ignored
+    *)
+    match arg_type_specs with
+    | [] ->
       Location.raise_errorf ~loc
-        "You used a FFI attribute that can't be used with %@send"
+        "Ill defined attribute %@send(the external needs to be a regular \
+         function call with at least one argument)"
+    | {arg_type = Arg_cst _; arg_label = _} :: _ ->
+      Location.raise_errorf ~loc
+        "Ill defined attribute %@send(first argument can't be const)"
+    | _ :: _ -> Js_send {splice; name; js_send_scopes = scopes})
+  | {val_send = Some _; _} ->
+    Location.raise_errorf ~loc
+      "You used a FFI attribute that can't be used with %@send"
   | {
-   new_name = Some { name; source = _ };
+   new_name = Some {name; source = _};
    external_module_name;
    val_name = None;
    call_name = None;
@@ -810,12 +773,12 @@ let external_desc_of_non_obj (loc : Location.t) (st : external_desc)
    mk_obj = _;
    return_wrapper = _;
   } ->
-      Js_new { name; external_module_name; splice; scopes }
-  | { new_name = Some _; _ } ->
-      Bs_syntaxerr.err loc
-        (Conflict_ffi_attribute "Attribute found that conflicts with %@new")
+    Js_new {name; external_module_name; splice; scopes}
+  | {new_name = Some _; _} ->
+    Bs_syntaxerr.err loc
+      (Conflict_ffi_attribute "Attribute found that conflicts with %@new")
   | {
-   set_name = Some { name; source = _ };
+   set_name = Some {name; source = _};
    val_name = None;
    call_name = None;
    module_as_val = None;
@@ -830,15 +793,15 @@ let external_desc_of_non_obj (loc : Location.t) (st : external_desc)
    return_wrapper = _;
    scopes;
   } ->
-      if arg_type_specs_length = 2 then
-        Js_set { js_set_scopes = scopes; js_set_name = name }
-      else
-        Location.raise_errorf ~loc
-          "Ill defined attribute %@set (two args required)"
-  | { set_name = Some _; _ } ->
-      Location.raise_errorf ~loc "conflict attributes found with %@set"
+    if arg_type_specs_length = 2 then
+      Js_set {js_set_scopes = scopes; js_set_name = name}
+    else
+      Location.raise_errorf ~loc
+        "Ill defined attribute %@set (two args required)"
+  | {set_name = Some _; _} ->
+    Location.raise_errorf ~loc "conflict attributes found with %@set"
   | {
-   get_name = Some { name; source = _ };
+   get_name = Some {name; source = _};
    val_name = None;
    call_name = None;
    module_as_val = None;
@@ -853,13 +816,13 @@ let external_desc_of_non_obj (loc : Location.t) (st : external_desc)
    return_wrapper = _;
    scopes;
   } ->
-      if arg_type_specs_length = 1 then
-        Js_get { js_get_name = name; js_get_scopes = scopes }
-      else
-        Location.raise_errorf ~loc
-          "Ill defined attribute %@bs.get (only one argument)"
-  | { get_name = Some _; _ } ->
-      Location.raise_errorf ~loc "Attribute found that conflicts with %@bs.get"
+    if arg_type_specs_length = 1 then
+      Js_get {js_get_name = name; js_get_scopes = scopes}
+    else
+      Location.raise_errorf ~loc
+        "Ill defined attribute %@bs.get (only one argument)"
+  | {get_name = Some _; _} ->
+    Location.raise_errorf ~loc "Attribute found that conflicts with %@bs.get"
 
 (** Note that the passed [type_annotation] is already processed by visitor pattern before*)
 let handle_attributes (loc : Bs_loc.t) (type_annotation : Parsetree.core_type)
@@ -872,18 +835,18 @@ let handle_attributes (loc : Bs_loc.t) (type_annotation : Parsetree.core_type)
   if has_bs_uncurry type_annotation.ptyp_attributes then
     Location.raise_errorf ~loc
       "%@uncurry can not be applied to the whole definition";
-  let prim_name_with_source = { name = prim_name; source = External } in
+  let prim_name_with_source = {name = prim_name; source = External} in
   let type_annotation, build_uncurried_type =
     match type_annotation.ptyp_desc with
-    | Ptyp_constr (({ txt = Lident "function$"; _ } as lid), [ t; arity_ ]) ->
-        ( t,
-          fun ~arity x ->
-            let tArity =
-              match arity with
-              | Some arity -> Ast_uncurried.arityType ~loc arity
-              | None -> arity_
-            in
-            { x with Parsetree.ptyp_desc = Ptyp_constr (lid, [ x; tArity ]) } )
+    | Ptyp_constr (({txt = Lident "function$"; _} as lid), [t; arity_]) ->
+      ( t,
+        fun ~arity x ->
+          let tArity =
+            match arity with
+            | Some arity -> Ast_uncurried.arityType ~loc arity
+            | None -> arity_
+          in
+          {x with Parsetree.ptyp_desc = Ptyp_constr (lid, [x; tArity])} )
     | _ -> (type_annotation, fun ~arity:_ x -> x)
   in
   let result_type, arg_types_ty =
@@ -916,50 +879,50 @@ let handle_attributes (loc : Bs_loc.t) (type_annotation : Parsetree.core_type)
           (if i = 0 && splice then
            match arg_label with
            | Optional _ ->
-               Location.raise_errorf ~loc
-                 "%@variadic expect the last type to be a non optional"
+             Location.raise_errorf ~loc
+               "%@variadic expect the last type to be a non optional"
            | Labelled _ | Nolabel -> (
-               if ty.ptyp_desc = Ptyp_any then
-                 Location.raise_errorf ~loc
-                   "%@variadic expect the last type to be an array";
-               if spec_of_ptyp true ty <> Nothing then
-                 Location.raise_errorf ~loc
-                   "%@variadic expect the last type to be an array";
-               match ty.ptyp_desc with
-               | Ptyp_constr ({ txt = Lident "array"; _ }, [ _ ]) -> ()
-               | _ ->
-                   Location.raise_errorf ~loc
-                     "%@variadic expect the last type to be an array"));
+             if ty.ptyp_desc = Ptyp_any then
+               Location.raise_errorf ~loc
+                 "%@variadic expect the last type to be an array";
+             if spec_of_ptyp true ty <> Nothing then
+               Location.raise_errorf ~loc
+                 "%@variadic expect the last type to be an array";
+             match ty.ptyp_desc with
+             | Ptyp_constr ({txt = Lident "array"; _}, [_]) -> ()
+             | _ ->
+               Location.raise_errorf ~loc
+                 "%@variadic expect the last type to be an array"));
           let ( (arg_label : External_arg_spec.label_noname),
                 arg_type,
                 new_arg_types ) =
             match arg_label with
             | Optional s -> (
-                let arg_type = get_opt_arg_type ~nolabel:false ty in
-                match arg_type with
-                | Poly_var _ ->
-                    (* ?x:([`x of int ] [@string]) does not make sense *)
-                    Location.raise_errorf ~loc
-                      "%@string does not work with optional when it has \
-                       arities in label %s"
-                      s
-                | _ -> (Arg_optional, arg_type, param_type :: arg_types))
+              let arg_type = get_opt_arg_type ~nolabel:false ty in
+              match arg_type with
+              | Poly_var _ ->
+                (* ?x:([`x of int ] [@string]) does not make sense *)
+                Location.raise_errorf ~loc
+                  "%@string does not work with optional when it has arities in \
+                   label %s"
+                  s
+              | _ -> (Arg_optional, arg_type, param_type :: arg_types))
             | Labelled _ -> (
-                let arg_type = refine_arg_type ~nolabel:false ty in
-                ( Arg_label,
-                  arg_type,
-                  match arg_type with
-                  | Arg_cst _ -> arg_types
-                  | _ -> param_type :: arg_types ))
+              let arg_type = refine_arg_type ~nolabel:false ty in
+              ( Arg_label,
+                arg_type,
+                match arg_type with
+                | Arg_cst _ -> arg_types
+                | _ -> param_type :: arg_types ))
             | Nolabel -> (
-                let arg_type = refine_arg_type ~nolabel:true ty in
-                ( Arg_empty,
-                  arg_type,
-                  match arg_type with
-                  | Arg_cst _ -> arg_types
-                  | _ -> param_type :: arg_types ))
+              let arg_type = refine_arg_type ~nolabel:true ty in
+              ( Arg_empty,
+                arg_type,
+                match arg_type with
+                | Arg_cst _ -> arg_types
+                | _ -> param_type :: arg_types ))
           in
-          ( { arg_label; arg_type } :: arg_type_specs,
+          ( {arg_label; arg_type} :: arg_type_specs,
             new_arg_types,
             if arg_type = Ignore then i else i + 1 ))
     in
@@ -987,7 +950,7 @@ let encode_attributes_as_string (pval_loc : Location.t) (typ : Ast_core_type.t)
   in
   {
     pval_type;
-    pval_prim = [ prim_name; External_ffi_types.to_string ffi ];
+    pval_prim = [prim_name; External_ffi_types.to_string ffi];
     pval_attributes;
     no_inline_cross_module;
   }
@@ -1000,7 +963,7 @@ let pval_prim_of_labels (labels : string Asttypes.loc list) =
         let obj_arg_label =
           External_arg_spec.obj_label (Lam_methname.translate p.txt)
         in
-        { obj_arg_type = Nothing; obj_arg_label } :: arg_kinds)
+        {obj_arg_type = Nothing; obj_arg_label} :: arg_kinds)
   in
   External_ffi_types.ffi_obj_as_prims arg_kinds
 
@@ -1008,7 +971,7 @@ let pval_prim_of_option_labels (labels : (bool * string Asttypes.loc) list)
     (ends_with_unit : bool) =
   let arg_kinds =
     Ext_list.fold_right labels
-      (if ends_with_unit then [ External_arg_spec.empty_kind Extern_unit ]
+      (if ends_with_unit then [External_arg_spec.empty_kind Extern_unit]
       else [])
       (fun (is_option, p) arg_kinds ->
         let label_name = Lam_methname.translate p.txt in
@@ -1016,6 +979,6 @@ let pval_prim_of_option_labels (labels : (bool * string Asttypes.loc) list)
           if is_option then External_arg_spec.optional false label_name
           else External_arg_spec.obj_label label_name
         in
-        { obj_arg_type = Nothing; obj_arg_label } :: arg_kinds)
+        {obj_arg_type = Nothing; obj_arg_label} :: arg_kinds)
   in
   External_ffi_types.ffi_obj_as_prims arg_kinds

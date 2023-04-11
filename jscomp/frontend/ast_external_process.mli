@@ -23,10 +23,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type response = {
-  pval_type : Parsetree.core_type;
-  pval_prim : string list;
-  pval_attributes : Parsetree.attributes;
-  no_inline_cross_module : bool;
+  pval_type: Parsetree.core_type;
+  pval_prim: string list;
+  pval_attributes: Parsetree.attributes;
+  no_inline_cross_module: bool;
 }
 
 val encode_attributes_as_string :

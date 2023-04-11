@@ -27,10 +27,7 @@ type module_bind_name =
   (* explicit hint name *)
   | Phint_nothing
 
-type external_module_name = {
-  bundle : string;
-  module_bind_name : module_bind_name;
-}
+type external_module_name = {bundle: string; module_bind_name: module_bind_name}
 
 type arg_type = External_arg_spec.attr
 
@@ -38,33 +35,34 @@ type arg_label = External_arg_spec.label
 
 type external_spec =
   | Js_var of {
-      name : string;
-      external_module_name : external_module_name option;
-      scopes : string list;
+      name: string;
+      external_module_name: external_module_name option;
+      scopes: string list;
     }
   | Js_module_as_var of external_module_name
   | Js_module_as_fn of {
-      external_module_name : external_module_name;
-      splice : bool;
+      external_module_name: external_module_name;
+      splice: bool;
     }
   | Js_module_as_class of external_module_name
   | Js_call of {
-      name : string;
-      external_module_name : external_module_name option;
-      splice : bool;
-      scopes : string list;
+      name: string;
+      external_module_name: external_module_name option;
+      splice: bool;
+      scopes: string list;
     }
-  | Js_send of { name : string; splice : bool; js_send_scopes : string list } (* we know it is a js send, but what will happen if you pass an ocaml objct *)
+  | Js_send of {name: string; splice: bool; js_send_scopes: string list}
+    (* we know it is a js send, but what will happen if you pass an ocaml objct *)
   | Js_new of {
-      name : string;
-      external_module_name : external_module_name option;
-      splice : bool;
-      scopes : string list;
+      name: string;
+      external_module_name: external_module_name option;
+      splice: bool;
+      scopes: string list;
     }
-  | Js_set of { js_set_name : string; js_set_scopes : string list }
-  | Js_get of { js_get_name : string; js_get_scopes : string list }
-  | Js_get_index of { js_get_index_scopes : string list }
-  | Js_set_index of { js_set_index_scopes : string list }
+  | Js_set of {js_set_name: string; js_set_scopes: string list}
+  | Js_get of {js_get_name: string; js_get_scopes: string list}
+  | Js_get_index of {js_get_index_scopes: string list}
+  | Js_set_index of {js_set_index_scopes: string list}
 
 type return_wrapper =
   | Return_unset
