@@ -1,4 +1,0 @@
-
-
-module Foo = struct 
-end
