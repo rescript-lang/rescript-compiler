@@ -15,7 +15,7 @@
 ## :rocket: Main New Features
 
 - Introduce experimental uncurried mode. For experimentation only. [PR #5796](https://github.com/rescript-lang/rescript-compiler/pull/5796)
-- Introduce untagged variants [PR #6103](https://github.com/rescript-lang/rescript-compiler/pull/6103)
+- Customization of runtime representation of variants and introduction of untagged variants [PR #6095](https://github.com/rescript-lang/rescript-compiler/pull/6095), [PR #6103](https://github.com/rescript-lang/rescript-compiler/pull/6103)
 
 #### :rocket: New Feature
 
