@@ -29,7 +29,6 @@ type error =
   | Conflict_bs_bs_this_bs_meth
   | Duplicated_bs_deriving
   | Conflict_attributes
-  | Duplicated_bs_as
   | Expect_int_literal
   | Expect_string_literal
   | Expect_int_or_string_or_json_literal
@@ -53,9 +52,6 @@ type error =
   | Optional_in_uncurried_bs_attribute
   | Bs_this_simple_pattern
   | Bs_uncurried_arity_too_large
-  | InvalidVariantAsAnnotation
-  | InvalidVariantTagAnnotation
-  | InvalidUntaggedVariantDefinition of untaggedVariant
 
 val err : Location.t -> error -> 'a
 

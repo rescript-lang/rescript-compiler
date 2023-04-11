@@ -95,7 +95,7 @@ let make_test_sequence_variant_constant (fail : lam option) (arg : lam)
 
 let call_switcher_variant_constant (_loc : Location.t) (fail : lam option)
     (arg : lam) (int_lambda_list : (int * (string * lam)) list)
-    (_names : Lambda.switch_names option) =
+    (_names : Ast_untagged_variants.switch_names option) =
   let int_lambda_list = convert int_lambda_list in
   match (int_lambda_list, fail) with
   | (_, act) :: rest, None | rest, Some act ->
@@ -105,7 +105,7 @@ let call_switcher_variant_constant (_loc : Location.t) (fail : lam option)
   | [], None -> assert false
 
 let call_switcher_variant_constr (loc : Location.t) (fail : lam option)
-    (arg : lam) int_lambda_list (names : Lambda.switch_names option) : lam =
+    (arg : lam) int_lambda_list (names : Ast_untagged_variants.switch_names option) : lam =
   let v = Ident.create "variant" in
   Llet
     ( Alias,

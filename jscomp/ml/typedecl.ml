@@ -391,7 +391,7 @@ let transl_declaration env sdecl id =
             all_constrs := StringSet.add name !all_constrs)
           scstrs;
         let copy_tag_attr_from_decl attr =
-          let tag_attrs = Ext_list.filter sdecl.ptype_attributes (fun ({txt}, _) -> txt = "tag" || txt = "unboxed") in
+          let tag_attrs = Ext_list.filter sdecl.ptype_attributes (fun ({txt}, _) -> txt = "tag" || txt = Ast_untagged_variants.untagged) in
           if tag_attrs = [] then attr else tag_attrs @ attr in
         let make_cstr scstr =
           let name = Ident.create scstr.pcd_name.txt in
@@ -421,7 +421,9 @@ let transl_declaration env sdecl id =
             (fun () -> make_cstr scstr)
         in
         let tcstrs, cstrs = List.split (List.map make_cstr scstrs) in
-          Ttype_variant tcstrs, Type_variant cstrs
+        let isUntaggedDef = Ast_untagged_variants.has_untagged sdecl.ptype_attributes in
+        Ast_untagged_variants.check_well_formed ~isUntaggedDef cstrs;
+        Ttype_variant tcstrs, Type_variant cstrs
       | Ptype_record lbls ->
           let has_optional attrs = Ext_list.exists attrs (fun ({txt },_) -> txt = "res.optional") in
           let optionalLabels =

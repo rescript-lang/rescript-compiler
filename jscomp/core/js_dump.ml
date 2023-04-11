@@ -751,7 +751,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
   | Caml_block (el, _, _, ((Blk_extension | Blk_record_ext _) as ext)) ->
       expression_desc cxt ~level f (exn_block_as_obj ~stack:false el ext)
   | Caml_block (el, _, tag, Blk_record_inlined p) ->
-      let untagged = Ast_attributes.process_untagged p.attrs in
+      let untagged = Ast_untagged_variants.process_untagged p.attrs in
       let objs =
         let tails =
           Ext_list.combine_array_append p.fields el
@@ -763,7 +763,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
           | Lit n -> Ext_list.mem_string p.optional_labels n
           | Symbol_name -> false
         in
-        let tag_name = match Ast_attributes.process_tag_name p.attrs with
+        let tag_name = match Ast_untagged_variants.process_tag_name p.attrs with
         | None -> L.tag
         | Some s -> s in
         let tails =
@@ -779,7 +779,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
           tails
         else
           (Js_op.Lit tag_name, (* TAG:xx for inline records *)
-            match Ast_attributes.process_as_value p.attrs with
+            match Ast_untagged_variants.process_literal_type p.attrs with
             | None -> E.str p.name
             | Some literal -> E.literal literal )
           :: tails
@@ -787,9 +787,9 @@ and expression_desc cxt ~(level : int) f x : cxt =
       expression_desc cxt ~level f (Object objs)
   | Caml_block (el, _, tag, Blk_constructor p) ->
       let not_is_cons = p.name <> Literals.cons in
-      let literal = Ast_attributes.process_as_value p.attrs in
-      let untagged = Ast_attributes.process_untagged p.attrs in
-      let tag_name = match Ast_attributes.process_tag_name p.attrs with
+      let literal = Ast_untagged_variants.process_literal_type p.attrs in
+      let untagged = Ast_untagged_variants.process_untagged p.attrs in
+      let tag_name = match Ast_untagged_variants.process_tag_name p.attrs with
         | None -> L.tag
         | Some s -> s in
       let objs =
@@ -1210,7 +1210,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
       let cxt = P.paren_group f 1 (fun _ -> expression ~level:0 cxt f e) in
       P.space f;
       P.brace_vgroup f 1 (fun _ ->
-          let pp_as_value f (literal: Lambda.literal) =
+          let pp_as_value f (literal: Ast_untagged_variants.literal_type) =
             let e = E.literal literal in
             ignore @@ expression_desc cxt ~level:0 f e.expression_desc in
           let cxt = loop_case_clauses cxt f pp_as_value cc in

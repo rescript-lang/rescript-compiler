@@ -23,7 +23,7 @@ val call_switcher_variant_constant :
    Lambda.lambda option ->
    Lambda.lambda ->
    (int * (string * Lambda.lambda)) list -> 
-   Lambda.switch_names option -> 
+   Ast_untagged_variants.switch_names option -> 
    Lambda.lambda)
     ref
 
@@ -32,7 +32,7 @@ val call_switcher_variant_constr :
    Lambda.lambda option ->
    Lambda.lambda ->
    (int * (string * Lambda.lambda)) list -> 
-   Lambda.switch_names option -> 
+   Ast_untagged_variants.switch_names option -> 
    Lambda.lambda)
     ref
 
@@ -70,4 +70,4 @@ val expand_stringswitch:
 val inline_lazy_force : lambda -> Location.t -> lambda
 
 (* To be set by Lam_compile *)
-val names_from_construct_pattern : (pattern -> switch_names option) ref
+val names_from_construct_pattern : (pattern -> Ast_untagged_variants.switch_names option) ref

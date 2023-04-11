@@ -29,7 +29,6 @@ type error =
   | Conflict_bs_bs_this_bs_meth
   | Duplicated_bs_deriving
   | Conflict_attributes
-  | Duplicated_bs_as
   | Expect_int_literal
   | Expect_string_literal
   | Expect_int_or_string_or_json_literal
@@ -53,9 +52,6 @@ type error =
   | Optional_in_uncurried_bs_attribute
   | Bs_this_simple_pattern
   | Bs_uncurried_arity_too_large
-  | InvalidVariantAsAnnotation
-  | InvalidVariantTagAnnotation
-  | InvalidUntaggedVariantDefinition of untaggedVariant
 
 let pp_error fmt err =
   Format.pp_print_string fmt
@@ -85,7 +81,6 @@ let pp_error fmt err =
     | Duplicated_bs_deriving -> "duplicate bs.deriving attribute"
     | Conflict_attributes -> "conflicting attributes "
     | Expect_string_literal -> "expect string literal "
-    | Duplicated_bs_as -> "duplicate @as "
     | Expect_int_literal -> "expect int literal "
     | Expect_int_or_string_or_json_literal ->
       "expect int, string literal or json literal {json|text here|json} "
@@ -101,19 +96,7 @@ let pp_error fmt err =
        each constructor must have an argument."
     | Conflict_ffi_attribute str -> "Conflicting attributes: " ^ str
     | Bs_this_simple_pattern ->
-      "%@this expect its pattern variable to be simple form"
-    | InvalidVariantAsAnnotation ->
-      "A variant case annotation @as(...) must be a string or integer, \
-       boolean, null, undefined"
-    | InvalidVariantTagAnnotation ->
-      "A variant tag annotation @tag(...) must be a string"
-    | InvalidUntaggedVariantDefinition untaggedVariant -> (
-      "This untagged variant definition is invalid: "
-      ^
-      match untaggedVariant with
-      | OnlyOneUnknown -> "An unknown case must be the only case with payloads."
-      | AtMostOneObject -> "At most one case can be an object type."
-      | AtMostOneArray -> "At most one case can be an array type."))
+      "%@this expect its pattern variable to be simple form")
 
 type exn += Error of Location.t * error
 
