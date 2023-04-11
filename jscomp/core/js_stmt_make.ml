@@ -129,7 +129,7 @@ let int_switch ?(comment : string option)
 
 let string_switch ?(comment : string option)
     ?(declaration : (J.property * Ident.t) option) ?(default : J.block option)
-    (e : J.expression) (clauses : (Ast_untagged_variants.literal * J.case_clause) list) : t =
+    (e : J.expression) (clauses : (Ast_untagged_variants.literal_type * J.case_clause) list) : t =
   match e.expression_desc with
   | Str {txt} -> (
       let continuation =

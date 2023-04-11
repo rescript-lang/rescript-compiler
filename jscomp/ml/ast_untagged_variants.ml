@@ -25,11 +25,11 @@ let report_error ppf =
 
 type block_type =
   | IntType | StringType | FloatType | Array | Object | Unknown
-type literal =
+type literal_type =
   | String of string | Int of int | Float of string | Bool of bool | Null | Undefined
   | Block of block_type
-  type cstr_name = {name: string; literal: literal option}
-  type block = {cstr_name: cstr_name; tag_name: string option; block_type : block_type option}
+type cstr_name = {name: string; literal_type: literal_type option}
+type block = {cstr_name: cstr_name; tag_name: string option; block_type : block_type option}
 type switch_names = {consts: cstr_name array; blocks: block array}
 
 let untagged = "unboxed"
@@ -45,8 +45,8 @@ let process_untagged (attrs : Parsetree.attributes) =
       | _ -> ());
   !st
 
-let process_literal (attrs : Parsetree.attributes) =
-  let st : literal option ref = ref None in
+let process_literal_type (attrs : Parsetree.attributes) =
+  let st : literal_type option ref = ref None in
   Ext_list.iter attrs (fun (({txt; loc}, payload)) ->
       match txt with
       | "bs.as" | "as" ->
@@ -167,7 +167,7 @@ let checkInvariant ~(blocks : (Location.t * block) list) =
 let names_from_type_variant (cstrs : Types.constructor_declaration list) =
   let get_cstr_name (cstr: Types.constructor_declaration) =
     { name = Ident.name cstr.cd_id;
-      literal = process_literal cstr.cd_attributes } in
+    literal_type = process_literal_type cstr.cd_attributes } in
   let get_block cstr : block =
     {cstr_name = get_cstr_name cstr; tag_name = get_tag_name cstr; block_type = get_untagged cstr} in
   let consts, blocks =

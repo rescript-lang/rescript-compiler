@@ -47,9 +47,9 @@ and translate (x : Lam_constant.t) : J.expression =
   | Const_js_false -> E.bool false
   | Const_js_null -> E.nil
   | Const_js_undefined -> E.undefined
-  | Const_int { i; comment = Pt_constructor {cstr_name={name; literal=None}}} when name <> "[]" ->
+  | Const_int { i; comment = Pt_constructor {cstr_name={name; literal_type=None}}} when name <> "[]" ->
       E.str name
-  | Const_int { i; comment = Pt_constructor {cstr_name={literal = Some literal}}}  ->
+  | Const_int { i; comment = Pt_constructor {cstr_name={literal_type = Some literal}}}  ->
       E.literal literal
   | Const_int { i; comment } ->
       E.int i ?comment:(Lam_constant.string_of_pointer_info comment)

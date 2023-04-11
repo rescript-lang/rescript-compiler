@@ -171,8 +171,8 @@ let get_literal_cases (sw_names : Ast_untagged_variants.switch_names option) =
   | None -> res := []
   | Some { consts  } ->
     Ext_array.iter consts (function
-    | {literal = Some literal} -> res := literal :: !res
-    | {name; literal = None} -> res := String name :: !res
+    | {literal_type = Some literal} -> res := literal :: !res
+    | {name; literal_type = None} -> res := String name :: !res
     )
   );
   !res
@@ -183,7 +183,7 @@ let has_null_undefined_other (sw_names : Ast_untagged_variants.switch_names opti
   (match sw_names with
   | None -> ()
   | Some { consts; blocks } ->
-    Ext_array.iter consts (fun x -> match x.literal with
+    Ext_array.iter consts (fun x -> match x.literal_type with
       | Some Undefined -> undefined := true
       | Some Null -> null := true
       | _ -> other := true);
@@ -619,9 +619,9 @@ and compile_general_cases :
 and use_compile_literal_cases table get_name =
   List.fold_right (fun (i, lam) acc ->
     match get_name i, acc with
-    | Some {Ast_untagged_variants.literal = Some literal}, Some string_table ->
+    | Some {Ast_untagged_variants.literal_type = Some literal}, Some string_table ->
        Some ((literal, lam) :: string_table)
-    | Some {name; literal = None}, Some string_table -> Some ((String name, lam) :: string_table)
+    | Some {name; literal_type = None}, Some string_table -> Some ((String name, lam) :: string_table)
     | _, _ -> None
   ) table (Some [])
 and compile_cases ?(untagged=false) cxt (switch_exp : E.t) table default get_name =
@@ -634,7 +634,7 @@ and compile_cases ?(untagged=false) cxt (switch_exp : E.t) table default get_nam
       compile_general_cases get_name
         (fun i -> match get_name i with
           | None -> E.small_int i
-          | Some {literal = Some(String s)} -> E.str s
+          | Some {literal_type = Some(String s)} -> E.str s
           | Some {name} -> E.str name)
         (fun _ x _ y -> E.int_equal x y) cxt
         (fun ?default ?declaration e clauses ->
@@ -671,7 +671,7 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
   let get_block_name i = match get_block i with
     | None -> None
     | Some ({block_type = Some block_type} as block) ->
-      Some {block.cstr_name with literal = Some (Block block_type)}
+      Some {block.cstr_name with literal_type = Some (Block block_type)}
     | Some ({block_type = None; cstr_name}) ->
       Some cstr_name in
   let tag_name = get_tag_name sw_names in
@@ -744,7 +744,7 @@ and compile_untagged_cases cxt switch_exp table default =
   let literal = function
     | literal -> E.literal literal
   in
-  let add_runtime_type_check (literal: Ast_untagged_variants.literal) x y = match literal with
+  let add_runtime_type_check (literal: Ast_untagged_variants.literal_type) x y = match literal with
   | Block IntType
   | Block StringType
   | Block FloatType
@@ -754,7 +754,7 @@ and compile_untagged_cases cxt switch_exp table default =
     (* This should not happen because unknown must be the only non-literal case *)
     assert false 
   | Bool _ | Float _ | Int _ | String _ | Null | Undefined -> x in
-  let mk_eq (i : Ast_untagged_variants.literal option) x j y = match i, j with
+  let mk_eq (i : Ast_untagged_variants.literal_type option) x j y = match i, j with
     | Some literal, _ -> (* XX *)
       add_runtime_type_check literal x y
     | _, Some literal ->
