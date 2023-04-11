@@ -1,4 +1,4 @@
-type untaggedError = OnlyOneUnknown | AtMostOneObject | AtMostOneArray
+type untaggedError = OnlyOneUnknown | AtMostOneObject | AtMostOneArray | DuplicateLiteral of string
 type error =
   | InvalidVariantAsAnnotation
   | Duplicated_bs_as
@@ -21,7 +21,9 @@ let report_error ppf =
     (match untaggedVariant with
     | OnlyOneUnknown -> "An unknown case must be the only case with payloads."
     | AtMostOneObject -> "At most one case can be an object type."
-    | AtMostOneArray -> "At most one case can be an array type.")
+    | AtMostOneArray -> "At most one case can be an array type."
+    | DuplicateLiteral s -> "Duplicate literal " ^ s ^ "."
+    )
 
 type block_type =
   | IntType | StringType | FloatType | Array | Object | Unknown
@@ -140,10 +142,21 @@ let get_tag_name (cstr: Types.constructor_declaration) =
 let is_nullary_variant (x : Types.constructor_arguments) =
   match x with Types.Cstr_tuple [] -> true | _ -> false
 
-let checkInvariant ~(blocks : (Location.t * block) list) =
+let checkInvariant ~(consts : (Location.t * literal) list) ~(blocks : (Location.t * block) list) =
+  let module StringSet = Set.Make(String) in
+  let string_literals = ref StringSet.empty in
+  let nonstring_literals = ref StringSet.empty in
   let arrays = ref 0 in
   let objects = ref 0 in
   let unknowns = ref 0 in
+  let addStringLiteral ~loc s = 
+    if StringSet.mem s !string_literals then
+      raise (Error (loc, InvalidUntaggedVariantDefinition (DuplicateLiteral s)));
+    string_literals := StringSet.add s !string_literals in
+  let addNonstringLiteral ~loc s = 
+    if StringSet.mem s !nonstring_literals then
+      raise (Error (loc, InvalidUntaggedVariantDefinition (DuplicateLiteral s)));
+      nonstring_literals := StringSet.add s !nonstring_literals in
   let invariant loc =
     if !unknowns <> 0 && (List.length blocks <> 1)
       then raise (Error (loc, InvalidUntaggedVariantDefinition OnlyOneUnknown));
@@ -152,6 +165,23 @@ let checkInvariant ~(blocks : (Location.t * block) list) =
     if !arrays > 1
       then raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneArray));
     () in
+  Ext_list.rev_iter consts (fun (loc, literal) -> match literal.literal_type with
+    | Some (String s) ->
+      addStringLiteral ~loc s
+    | Some (Int i) ->
+      addNonstringLiteral ~loc (string_of_int i)
+    | Some (Float f) ->
+      addNonstringLiteral ~loc f
+    | Some Null ->
+      addNonstringLiteral ~loc "null"
+    | Some Undefined ->
+      addNonstringLiteral ~loc "undefined"
+    | Some (Bool b) ->
+      addNonstringLiteral ~loc (if b then "true" else "false")
+    | Some (Block _) -> ()
+    | None ->
+      addStringLiteral ~loc literal.name
+    );
   Ext_list.rev_iter blocks (fun (loc, block) -> match block.block_type with
     | Some Unknown ->
       incr unknowns;
@@ -166,18 +196,20 @@ let checkInvariant ~(blocks : (Location.t * block) list) =
 
 let names_from_type_variant (cstrs : Types.constructor_declaration list) =
   let get_cstr_name (cstr: Types.constructor_declaration) =
-    { name = Ident.name cstr.cd_id;
-    literal_type = process_literal_type cstr.cd_attributes } in
+    (cstr.cd_loc,
+      { name = Ident.name cstr.cd_id;
+        literal_type = process_literal_type cstr.cd_attributes }) in
   let get_block cstr : block =
-    {literal = get_cstr_name cstr; tag_name = get_tag_name cstr; block_type = get_untagged cstr} in
+    {literal = snd (get_cstr_name cstr); tag_name = get_tag_name cstr; block_type = get_untagged cstr} in
   let consts, blocks =
     Ext_list.fold_left cstrs ([], []) (fun (consts, blocks) cstr ->
         if is_nullary_variant cstr.cd_args then
           (get_cstr_name cstr :: consts, blocks)
         else (consts, (cstr.cd_loc, get_block cstr) :: blocks))
   in
-  checkInvariant ~blocks;
+  checkInvariant ~consts ~blocks;
   let blocks = blocks |> List.map snd in
+  let consts = consts |> List.map snd in
   let consts = Ext_array.reverse_of_list consts in
   let blocks = Ext_array.reverse_of_list blocks in
   Some { consts; blocks }
