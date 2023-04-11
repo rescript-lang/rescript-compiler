@@ -793,7 +793,7 @@ let rec is_a_literal_case ~(literal_cases : Lambda.literal list) ~block_cases (e
   let (||) x y = bin Or x y in
   let (&&) x y = bin And x y in
   let is_literal_case (l:Lambda.literal) : t =  e == (literal l) in
-  let is_block_case (c:Lambda.block_type) : t = match c with
+  let is_not_block_case (c:Lambda.block_type) : t = match c with
   | StringType when literals_overlaps_with_string () = false  (* No overlap *) -> 
     (typeof e) != (str "string")
   | IntType when literals_overlaps_with_number () = false ->
@@ -824,9 +824,9 @@ let rec is_a_literal_case ~(literal_cases : Lambda.literal list) ~block_cases (e
     )
   in
   match block_cases with
-  | [c] -> is_block_case c
+  | [c] -> is_not_block_case c
   | c1 :: (_::_ as rest) ->
-    (is_block_case c1) && (is_a_literal_case ~literal_cases ~block_cases:rest e)
+    (is_not_block_case c1) && (is_a_literal_case ~literal_cases ~block_cases:rest e)
   | [] -> assert false
 
 let is_int_tag ?(has_null_undefined_other=(false, false, false)) (e : t) : t =
