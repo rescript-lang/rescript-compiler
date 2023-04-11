@@ -2,7 +2,7 @@
 
 
 function classify(x) {
-  if (typeof x !== "string" && typeof x !== "number") {
+  if (x === "A" && typeof x !== "number") {
     return "A";
   } else if (typeof x === "number") {
     return "An integer";
@@ -76,7 +76,7 @@ var Truthy = {
 };
 
 function classify$1(x) {
-  if (typeof x !== "object") {
+  if (x === null || typeof x !== "object") {
     if (x === null) {
       return "null";
     } else {
@@ -108,7 +108,7 @@ var Unknown = {
 };
 
 function classify$3(x) {
-  if (typeof x !== "object" && typeof x !== "number" && typeof x !== "string") {
+  if (typeof x !== "object" && typeof x !== "number" && (x === "C" || x === "B" || x === "A" || x === "D")) {
     switch (x) {
       case "A" :
           return "a";
@@ -173,7 +173,7 @@ var WithArray = {
 };
 
 function classify$6(x) {
-  if (!(x instanceof Array) && typeof x !== "object" && typeof x !== "number" && typeof x !== "string") {
+  if (!Array.isArray(x) && (x === null || typeof x !== "object") && typeof x !== "number" && typeof x !== "string") {
     switch (x) {
       case false :
           return "JSONFalse";
@@ -235,6 +235,63 @@ var TrickyNested = {
   check: check
 };
 
+function checkEnum(e) {
+  if (!(e === "Two" || e === "One" || e === "Three")) {
+    return "Something else..." + e;
+  }
+  switch (e) {
+    case "One" :
+        return "One!";
+    case "Two" :
+        return "Two";
+    case "Three" :
+        return "Threeeee";
+    
+  }
+}
+
+var OverlapString = {
+  checkEnum: checkEnum
+};
+
+function checkEnum$1(e) {
+  if (!(e === "Two" || e === 1.0 || e === "Three")) {
+    return "Something else...";
+  }
+  switch (e) {
+    case 1.0 :
+        return "One!";
+    case "Two" :
+        return "Two";
+    case "Three" :
+        return "Threeeee";
+    
+  }
+}
+
+var OverlapNumber = {
+  checkEnum: checkEnum$1
+};
+
+function checkEnum$2(e) {
+  if (!(e === null || typeof e !== "object")) {
+    return "Object...";
+  }
+  switch (e) {
+    case null :
+        return "One!";
+    case "Two" :
+        return "Two";
+    case "Three" :
+        return "Threeeee";
+    
+  }
+}
+
+var OverlapObject = {
+  checkEnum: checkEnum$2
+};
+
 var i = 42;
 
 var i2 = 42.5;
@@ -269,4 +326,7 @@ exports.OnlyBlocks = OnlyBlocks;
 exports.WithArray = WithArray;
 exports.Json = Json;
 exports.TrickyNested = TrickyNested;
+exports.OverlapString = OverlapString;
+exports.OverlapNumber = OverlapNumber;
+exports.OverlapObject = OverlapObject;
 /* l2 Not a pure module */
