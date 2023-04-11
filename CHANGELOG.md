@@ -12,18 +12,13 @@
 
 # 11.0.0-alpha.1 (unreleased)
 
+## :rocket: Main New Features
+
+- Introduce experimental uncurried mode. For experimentation only. [PR #5796](https://github.com/rescript-lang/rescript-compiler/pull/5796)
+- Introduce untagged variants [PR #6103](https://github.com/rescript-lang/rescript-compiler/pull/6103)
+
 #### :rocket: New Feature
 
-- Introduce experimental uncurried by default mode. Can be turned on mid-file by adding standalone annotation `@@uncurried.swap`. For experimentation only. https://github.com/rescript-lang/rescript-compiler/pull/5796
-- ~Adding `@@toUncurried` to the file and reformat will convert to uncurried syntax https://github.com/rescript-lang/rescript-compiler/pull/5800~
-- Add support for unary uncurried pipe in uncurried mode https://github.com/rescript-lang/rescript-compiler/pull/5804
-- Add support for partial application of uncurried functions: with uncurried application one can provide a
-subset of the arguments, and return a curried type with the remaining ones https://github.com/rescript-lang/rescript-compiler/pull/5805
-- Add support for uncurried externals https://github.com/rescript-lang/rescript-compiler/pull/5815 https://github.com/rescript-lang/rescript-compiler/pull/5819 https://github.com/rescript-lang/rescript-compiler/pull/5830 https://github.com/rescript-lang/rescript-compiler/pull/5894
-- Parser/Printer: unify uncurried functions of arity 0, and of arity 1 taking unit. There's now only arity 1 in the source language. https://github.com/rescript-lang/rescript-compiler/pull/5825
-- Add support for default arguments in uncurried functions https://github.com/rescript-lang/rescript-compiler/pull/5835
-- Inline uncurried application when it is safe https://github.com/rescript-lang/rescript-compiler/pull/5847
-- Support optional named arguments without a final unit in uncurried functions https://github.com/rescript-lang/rescript-compiler/pull/5907
 - Add support for uncurried mode: a mode where everything is considered uncurried, whether with or without the `.`. This can be turned on with `@@uncurried` locally in a file. For project-level configuration in `bsconfig.json`, there's a boolean config `"uncurried"`, which propagates to dependencies, to turn on uncurried mode.
 Since there's no syntax for partial application in this new mode, introduce `@res.partial foo(x)` to express partial application. This is temporary and will later have some surface syntax.
 Make uncurried functions a subtype of curried functions, and allow application for uncurried functions.
@@ -32,6 +27,14 @@ Use best effort to determine the config when formatting a file.
 https://github.com/rescript-lang/rescript-compiler/pull/5968 https://github.com/rescript-lang/rescript-compiler/pull/6080 https://github.com/rescript-lang/rescript-compiler/pull/6086 https://github.com/rescript-lang/rescript-compiler/pull/6087
 - Customization of runtime representation of variants. This is work in progress. E.g. some restrictions on the input. See comments of the form "TODO: put restriction on the variant definitions allowed, to make sure this never happens". https://github.com/rescript-lang/rescript-compiler/pull/6095
 - Introduce untagged variants https://github.com/rescript-lang/rescript-compiler/pull/6103
+- Add support for unary uncurried pipe in uncurried mode https://github.com/rescript-lang/rescript-compiler/pull/5804
+- Add support for partial application of uncurried functions: with uncurried application one can provide a
+subset of the arguments, and return a curried type with the remaining ones https://github.com/rescript-lang/rescript-compiler/pull/5805
+- Add support for uncurried externals https://github.com/rescript-lang/rescript-compiler/pull/5815 https://github.com/rescript-lang/rescript-compiler/pull/5819 https://github.com/rescript-lang/rescript-compiler/pull/5830 https://github.com/rescript-lang/rescript-compiler/pull/5894
+- Parser/Printer: unify uncurried functions of arity 0, and of arity 1 taking unit. There's now only arity 1 in the source language. https://github.com/rescript-lang/rescript-compiler/pull/5825
+- Add support for default arguments in uncurried functions https://github.com/rescript-lang/rescript-compiler/pull/5835
+- Inline uncurried application when it is safe https://github.com/rescript-lang/rescript-compiler/pull/5847
+- Support optional named arguments without a final unit in uncurried functions https://github.com/rescript-lang/rescript-compiler/pull/5907
 - GenType: add the option to use the `@genType` annotation at the module level, meaning that all the items in the module should be exported. https://github.com/rescript-lang/rescript-compiler/pull/6113
 - GenType: add support for `@genType` annotations on module definitions. https://github.com/rescript-lang/rescript-compiler/pull/6113
 
