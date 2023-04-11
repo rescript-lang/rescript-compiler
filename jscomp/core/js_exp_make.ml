@@ -788,18 +788,22 @@ let rec is_a_literal_case ~(literal_cases : Lambda.literal list) ~block_cases (e
     Ext_list.exists literal_cases (function
       | Null -> true
       | l -> false ) in
-  let is_literal_case (l:Lambda.literal) : t = bin EqEqEq e (literal l) in
+  let (==) x y = bin EqEqEq x y in
+  let (!=) x y = bin NotEqEq x y in
+  let (||) x y = bin Or x y in
+  let (&&) x y = bin And x y in
+  let is_literal_case (l:Lambda.literal) : t =  e == (literal l) in
   let is_block_case (c:Lambda.block_type) : t = match c with
   | StringType when literals_overlaps_with_string () = false  (* No overlap *) -> 
-    bin NotEqEq (typeof e) (str "string")
+    (typeof e) != (str "string")
   | IntType when literals_overlaps_with_number () = false ->
-    bin NotEqEq (typeof e) (str "number")
+    (typeof e) != (str "number")
   | FloatType when literals_overlaps_with_number () = false ->
-    bin NotEqEq (typeof e) (str "number")
+    (typeof e) != (str "number")
   | Array -> 
     not (is_array e)
   | Object when literals_overlaps_with_object () = false ->
-    { expression_desc = Bin (NotEqEq, typeof e, str "object"); comment=None }
+    (typeof e) != (str "object")
   | StringType (* overlap *)
   | IntType (* overlap *)
   | FloatType (* overlap *)
@@ -814,14 +818,14 @@ let rec is_a_literal_case ~(literal_cases : Lambda.literal list) ~block_cases (e
       | l1 :: others ->
         let is_literal_1 = is_literal_case l1 in
         Ext_list.fold_right others is_literal_1 (fun literal_n acc ->
-          bin Or (is_literal_case literal_n) acc
+          (is_literal_case literal_n) || acc
         )
     )
   in
   match block_cases with
   | [c] -> is_block_case c
   | c1 :: (_::_ as rest) ->
-    bin And (is_block_case c1) (is_a_literal_case ~literal_cases ~block_cases:rest e)
+    (is_block_case c1) && (is_a_literal_case ~literal_cases ~block_cases:rest e)
   | [] -> assert false
 
 let is_int_tag ?(has_null_undefined_other=(false, false, false)) (e : t) : t =
