@@ -142,7 +142,7 @@ let get_tag_name (cstr: Types.constructor_declaration) =
 let is_nullary_variant (x : Types.constructor_arguments) =
   match x with Types.Cstr_tuple [] -> true | _ -> false
 
-let checkInvariant ~(consts : (Location.t * literal) list) ~(blocks : (Location.t * block) list) =
+let checkInvariant ~isUntaggedDef ~(consts : (Location.t * literal) list) ~(blocks : (Location.t * block) list) =
   let module StringSet = Set.Make(String) in
   let string_literals = ref StringSet.empty in
   let nonstring_literals = ref StringSet.empty in
@@ -182,7 +182,8 @@ let checkInvariant ~(consts : (Location.t * literal) list) ~(blocks : (Location.
     | None ->
       addStringLiteral ~loc literal.name
     );
-  Ext_list.rev_iter blocks (fun (loc, block) -> match block.block_type with
+  if isUntaggedDef then
+    Ext_list.rev_iter blocks (fun (loc, block) -> match block.block_type with
     | Some Unknown ->
       incr unknowns;
       invariant loc
@@ -194,7 +195,7 @@ let checkInvariant ~(consts : (Location.t * literal) list) ~(blocks : (Location.
       invariant loc
     | _ -> ())
 
-let names_from_type_variant (cstrs : Types.constructor_declaration list) =
+let names_from_type_variant ?(isUntaggedDef=false) (cstrs : Types.constructor_declaration list) =
   let get_cstr_name (cstr: Types.constructor_declaration) =
     (cstr.cd_loc,
       { name = Ident.name cstr.cd_id;
@@ -207,13 +208,13 @@ let names_from_type_variant (cstrs : Types.constructor_declaration list) =
           (get_cstr_name cstr :: consts, blocks)
         else (consts, (cstr.cd_loc, get_block cstr) :: blocks))
   in
-  checkInvariant ~consts ~blocks;
+  checkInvariant ~isUntaggedDef ~consts ~blocks;
   let blocks = blocks |> List.map snd in
   let consts = consts |> List.map snd in
   let consts = Ext_array.reverse_of_list consts in
   let blocks = Ext_array.reverse_of_list blocks in
   Some { consts; blocks }
 
-let check_well_formed (cstrs: Types.constructor_declaration list) =
-  ignore (names_from_type_variant cstrs)
+let check_well_formed ~isUntaggedDef (cstrs: Types.constructor_declaration list) =
+  ignore (names_from_type_variant ~isUntaggedDef cstrs)
 
