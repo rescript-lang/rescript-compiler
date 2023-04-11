@@ -593,8 +593,6 @@ lib/ocaml/camlinternalLazy.cmt
 lib/ocaml/camlinternalLazy.cmti
 lib/ocaml/camlinternalLazy.ml
 lib/ocaml/camlinternalLazy.mli
-lib/ocaml/camlinternalLazy.res
-lib/ocaml/camlinternalLazy.resi
 lib/ocaml/camlinternalMod.cmi
 lib/ocaml/camlinternalMod.cmt
 lib/ocaml/camlinternalMod.cmti
