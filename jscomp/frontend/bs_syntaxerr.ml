@@ -52,7 +52,6 @@ type error =
   | Optional_in_uncurried_bs_attribute
   | Bs_this_simple_pattern
   | Bs_uncurried_arity_too_large
-  | InvalidVariantTagAnnotation
   | InvalidUntaggedVariantDefinition of untaggedVariant
 
 let pp_error fmt err =
@@ -99,8 +98,6 @@ let pp_error fmt err =
     | Conflict_ffi_attribute str -> "Conflicting attributes: " ^ str
     | Bs_this_simple_pattern ->
       "%@this expect its pattern variable to be simple form"
-    | InvalidVariantTagAnnotation ->
-      "A variant tag annotation @tag(...) must be a string"
     | InvalidUntaggedVariantDefinition untaggedVariant -> (
       "This untagged variant definition is invalid: "
       ^

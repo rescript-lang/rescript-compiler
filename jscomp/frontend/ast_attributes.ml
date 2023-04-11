@@ -333,23 +333,6 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
   !st
 
 
-let process_tag_name (attrs : t) =
-  let st = ref None in
-  Ext_list.iter attrs (fun (({txt; loc}, payload) as attr) ->
-      match txt with
-      | "tag" ->
-        if !st = None then (
-          (match Ast_payload.is_single_string payload with
-          | None -> ()
-          | Some (s, _dec) ->
-            Bs_ast_invariant.mark_used_bs_attribute attr;
-            st := Some s);
-          if !st = None then Bs_syntaxerr.err loc InvalidVariantTagAnnotation)
-        else raise (Ast_untagged_variants.Error (loc, Duplicated_bs_as))
-      | _ -> ());
-  !st
-
-
 let locg = Location.none
 (* let bs : attr
    =  {txt = "bs" ; loc = locg}, Ast_payload.empty *)

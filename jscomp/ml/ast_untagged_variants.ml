@@ -11,7 +11,7 @@ let process_untagged (attrs : Parsetree.attributes) =
       | _ -> ());
   !st
 
-type error = InvalidVariantAsAnnotation | Duplicated_bs_as
+type error = InvalidVariantAsAnnotation | Duplicated_bs_as | InvalidVariantTagAnnotation
 exception Error of Location.t * error
 
 let process_literal (attrs : Parsetree.attributes) =
@@ -55,8 +55,11 @@ let report_error ppf =
   | InvalidVariantAsAnnotation ->
     fprintf ppf "A variant case annotation @as(...) must be a string or integer, \
      boolean, null, undefined"
-| Duplicated_bs_as ->
+  | Duplicated_bs_as ->
     fprintf ppf "duplicate @as "
+  | InvalidVariantTagAnnotation ->
+    fprintf ppf "A variant tag annotation @tag(...) must be a string"
+
 
 
 let () =
@@ -70,3 +73,23 @@ let () =
 
 let check_well_formed (_cstrs: Parsetree.constructor_declaration list) =
   ()
+
+
+let process_tag_name (attrs : Parsetree.attributes) =
+  let st = ref None in
+  Ext_list.iter attrs (fun (({txt; loc}, payload)) ->
+      match txt with
+      | "tag" ->
+        if !st = None then (
+          (match Ast_payload.is_single_string payload with
+          | None -> ()
+          | Some (s, _dec) ->
+            st := Some s);
+          if !st = None then raise (Error(loc, InvalidVariantTagAnnotation)))
+        else raise (Error (loc, Duplicated_bs_as))
+      | _ -> ());
+  !st
+
+
+let get_tag_name (cstr: Types.constructor_declaration) =
+  process_tag_name cstr.cd_attributes

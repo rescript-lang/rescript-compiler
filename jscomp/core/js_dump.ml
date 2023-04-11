@@ -763,7 +763,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
           | Lit n -> Ext_list.mem_string p.optional_labels n
           | Symbol_name -> false
         in
-        let tag_name = match Ast_attributes.process_tag_name p.attrs with
+        let tag_name = match Ast_untagged_variants.process_tag_name p.attrs with
         | None -> L.tag
         | Some s -> s in
         let tails =
@@ -789,7 +789,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
       let not_is_cons = p.name <> Literals.cons in
       let literal = Ast_untagged_variants.process_literal p.attrs in
       let untagged = Ast_untagged_variants.process_untagged p.attrs in
-      let tag_name = match Ast_attributes.process_tag_name p.attrs with
+      let tag_name = match Ast_untagged_variants.process_tag_name p.attrs with
         | None -> L.tag
         | Some s -> s in
       let objs =
