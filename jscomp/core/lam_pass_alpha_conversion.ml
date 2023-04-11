@@ -69,15 +69,8 @@ let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
             let arg = simpl arg in
             Lam_eta_conversion.unsafe_adjust_to_arity loc ~to_:len ~from:x arg
         | None -> Lam.prim ~primitive ~args:[ simpl arg ] loc)
-    | Lprim { primitive = Pjs_fn_make_unit as primitive; args = [ arg ]; loc }
-      -> (
-        match
-          Lam_arity.get_first_arity (Lam_arity_analysis.get_arity meta arg)
-        with
-        | Some x ->
-            let arg = simpl arg in
-            Lam_eta_conversion.unsafe_adjust_to_arity loc ~to_:1 ~from:x arg
-        | None -> Lam.prim ~primitive ~args:[ simpl arg ] loc)
+    | Lprim { primitive = Pjs_fn_make_unit; args = [ arg ]; loc }
+      -> simpl arg
     | Lprim { primitive; args; loc } ->
         Lam.prim ~primitive ~args:(Ext_list.map args simpl) loc
     | Lfunction { arity; params; body; attr } ->
