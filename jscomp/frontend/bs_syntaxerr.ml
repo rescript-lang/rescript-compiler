@@ -52,7 +52,6 @@ type error =
   | Optional_in_uncurried_bs_attribute
   | Bs_this_simple_pattern
   | Bs_uncurried_arity_too_large
-  | InvalidUntaggedVariantDefinition of untaggedVariant
 
 let pp_error fmt err =
   Format.pp_print_string fmt
@@ -97,14 +96,7 @@ let pp_error fmt err =
        each constructor must have an argument."
     | Conflict_ffi_attribute str -> "Conflicting attributes: " ^ str
     | Bs_this_simple_pattern ->
-      "%@this expect its pattern variable to be simple form"
-    | InvalidUntaggedVariantDefinition untaggedVariant -> (
-      "This untagged variant definition is invalid: "
-      ^
-      match untaggedVariant with
-      | OnlyOneUnknown -> "An unknown case must be the only case with payloads."
-      | AtMostOneObject -> "At most one case can be an object type."
-      | AtMostOneArray -> "At most one case can be an array type."))
+      "%@this expect its pattern variable to be simple form")
 
 type exn += Error of Location.t * error
 

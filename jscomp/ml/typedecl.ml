@@ -363,8 +363,6 @@ let transl_declaration env sdecl id =
       | Ptype_abstract -> Ttype_abstract, Type_abstract
       | Ptype_variant scstrs ->
         assert (scstrs <> []);
-        if Ast_untagged_variants.has_untagged sdecl.ptype_attributes
-        then Ast_untagged_variants.check_well_formed scstrs;
         if List.exists (fun cstr -> cstr.pcd_res <> None) scstrs then begin
           match cstrs with
             [] -> ()
@@ -423,7 +421,9 @@ let transl_declaration env sdecl id =
             (fun () -> make_cstr scstr)
         in
         let tcstrs, cstrs = List.split (List.map make_cstr scstrs) in
-          Ttype_variant tcstrs, Type_variant cstrs
+        if Ast_untagged_variants.has_untagged sdecl.ptype_attributes
+          then Ast_untagged_variants.check_well_formed cstrs;
+        Ttype_variant tcstrs, Type_variant cstrs
       | Ptype_record lbls ->
           let has_optional attrs = Ext_list.exists attrs (fun ({txt },_) -> txt = "res.optional") in
           let optionalLabels =

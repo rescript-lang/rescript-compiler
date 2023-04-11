@@ -1,3 +1,28 @@
+type untaggedError = OnlyOneUnknown | AtMostOneObject | AtMostOneArray
+type error =
+  | InvalidVariantAsAnnotation
+  | Duplicated_bs_as
+  | InvalidVariantTagAnnotation
+  | InvalidUntaggedVariantDefinition of untaggedError
+exception Error of Location.t * error
+
+let report_error ppf =
+  let open Format in
+  function
+  | InvalidVariantAsAnnotation ->
+    fprintf ppf "A variant case annotation @as(...) must be a string or integer, \
+     boolean, null, undefined"
+  | Duplicated_bs_as ->
+    fprintf ppf "duplicate @as "
+  | InvalidVariantTagAnnotation ->
+    fprintf ppf "A variant tag annotation @tag(...) must be a string"
+  | InvalidUntaggedVariantDefinition untaggedVariant ->
+    fprintf ppf "This untagged variant definition is invalid: %s"
+    (match untaggedVariant with
+    | OnlyOneUnknown -> "An unknown case must be the only case with payloads."
+    | AtMostOneObject -> "At most one case can be an object type."
+    | AtMostOneArray -> "At most one case can be an array type.")
+
 let untagged = "unboxed"
 
 let has_untagged (attrs: Parsetree.attributes) =
@@ -10,9 +35,6 @@ let process_untagged (attrs : Parsetree.attributes) =
       | "unboxed" -> st := true
       | _ -> ());
   !st
-
-type error = InvalidVariantAsAnnotation | Duplicated_bs_as | InvalidVariantTagAnnotation
-exception Error of Location.t * error
 
 let process_literal (attrs : Parsetree.attributes) =
   let st : Lambda.literal option ref = ref None in
@@ -48,20 +70,6 @@ let process_literal (attrs : Parsetree.attributes) =
       | _ -> ());
   !st
 
-
-let report_error ppf =
-  let open Format in
-  function
-  | InvalidVariantAsAnnotation ->
-    fprintf ppf "A variant case annotation @as(...) must be a string or integer, \
-     boolean, null, undefined"
-  | Duplicated_bs_as ->
-    fprintf ppf "duplicate @as "
-  | InvalidVariantTagAnnotation ->
-    fprintf ppf "A variant tag annotation @tag(...) must be a string"
-
-
-
 let () =
   Location.register_error_of_exn
     (function
@@ -71,8 +79,34 @@ let () =
         None
     )
 
-let check_well_formed (_cstrs: Parsetree.constructor_declaration list) =
-  ()
+let get_untagged (cstr: Types.constructor_declaration) : Lambda.block_type option =
+  match process_untagged cstr.cd_attributes, cstr.cd_args with
+  | false, _ -> None
+  | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path.same path Predef.path_string ->
+      Some StringType
+  | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path.same path Predef.path_int ->
+      Some IntType
+  | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path.same path Predef.path_float ->
+      Some FloatType
+  | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path.same path Predef.path_array ->
+      Some Array
+  | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path. same path Predef.path_string ->
+      Some StringType
+  | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] ->
+    (match Path.name path with
+    | "Js.Dict.t"
+    | "Js_dict.t" -> Some Object
+    | _ -> Some Unknown)
+  | true, Cstr_tuple (_ :: _ :: _) ->
+      (* C(_, _) with at least 2 args is an object *)
+      Some Object
+  | true, Cstr_tuple [_] ->
+      (* Every other single payload is unknown *)
+      Some Unknown
+  | true, Cstr_record _ ->
+      (* inline record is an object *)
+      Some Object
+  | true, _ -> None (* TODO: add restrictions here *)
 
 
 let process_tag_name (attrs : Parsetree.attributes) =
@@ -89,7 +123,55 @@ let process_tag_name (attrs : Parsetree.attributes) =
         else raise (Error (loc, Duplicated_bs_as))
       | _ -> ());
   !st
-
-
+  
+  
 let get_tag_name (cstr: Types.constructor_declaration) =
   process_tag_name cstr.cd_attributes
+
+let is_nullary_variant (x : Types.constructor_arguments) =
+  match x with Types.Cstr_tuple [] -> true | _ -> false
+
+let checkUntaggedVariant ~(blocks : (Location.t * Lambda.block) list) =
+  let arrays = ref 0 in
+  let objects = ref 0 in
+  let unknowns = ref 0 in
+  let invariant loc =
+    if !unknowns <> 0 && (List.length blocks <> 1)
+      then raise (Error (loc, InvalidUntaggedVariantDefinition OnlyOneUnknown));
+    if !objects > 1
+      then raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneObject));
+    if !arrays > 1
+      then raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneArray));
+    () in
+  Ext_list.rev_iter blocks (fun (loc, block) -> match block.block_type with
+    | Some Unknown ->
+      incr unknowns;
+      invariant loc
+    | Some Object ->
+      incr objects;
+      invariant loc
+    | Some Array ->
+      incr arrays;
+      invariant loc
+    | _ -> ())
+
+let names_from_type_variant (cstrs : Types.constructor_declaration list) =
+  let get_cstr_name (cstr: Types.constructor_declaration) =
+    { Lambda.name = Ident.name cstr.cd_id;
+      literal = process_literal cstr.cd_attributes } in
+  let get_block cstr : Lambda.block =
+    {cstr_name = get_cstr_name cstr; tag_name = get_tag_name cstr; block_type = get_untagged cstr} in
+  let consts, blocks =
+    Ext_list.fold_left cstrs ([], []) (fun (consts, blocks) cstr ->
+        if is_nullary_variant cstr.cd_args then
+          (get_cstr_name cstr :: consts, blocks)
+        else (consts, (cstr.cd_loc, get_block cstr) :: blocks))
+  in
+  checkUntaggedVariant ~blocks;
+  let blocks = blocks |> List.map snd in
+  let consts = Ext_array.reverse_of_list consts in
+  let blocks = Ext_array.reverse_of_list blocks in
+  Some { Lambda.consts; blocks }
+
+let check_well_formed (cstrs: Types.constructor_declaration list) =
+  ignore (names_from_type_variant cstrs)
