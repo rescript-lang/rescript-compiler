@@ -29,7 +29,7 @@ function eq(loc, x, y) {
 
 var u = 3;
 
-function nullary(param) {
+function nullary() {
   return 3;
 }
 

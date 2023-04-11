@@ -230,17 +230,17 @@ function old_from_promise_suites_donotuse(name, suites) {
   var match = $$Array.to_list(Process.argv);
   if (match) {
     if (is_mocha(undefined)) {
-      describe(name, (function (param) {
-              List.iter((function (param) {
-                      var code = param[1];
-                      it(param[0], (function (param) {
-                              var arg1 = function (x) {
-                                handleCode(x);
-                                return val_unit;
-                              };
-                              return code.then(arg1);
-                            }));
-                    }), suites);
+      describe(name, (function () {
+              return List.iter((function (param) {
+                            var code = param[1];
+                            it(param[0], (function (param) {
+                                    var arg1 = function (x) {
+                                      handleCode(x);
+                                      return val_unit;
+                                    };
+                                    return code.then(arg1);
+                                  }));
+                          }), suites);
             }));
     } else {
       console.log("promise suites");

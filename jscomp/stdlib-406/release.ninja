@@ -26,8 +26,8 @@ o stdlib-406/bytesLabels.cmj : cc_cmi stdlib-406/bytesLabels.ml | stdlib-406/byt
 o stdlib-406/bytesLabels.cmi : cc stdlib-406/bytesLabels.mli | stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/callback.cmj : cc_cmi stdlib-406/callback.ml | stdlib-406/callback.cmi $bsc others
 o stdlib-406/callback.cmi : cc stdlib-406/callback.mli | stdlib-406/pervasives.cmj $bsc others
-o stdlib-406/camlinternalLazy.cmj : cc_cmi stdlib-406/camlinternalLazy.ml | stdlib-406/camlinternalLazy.cmi $bsc others
-o stdlib-406/camlinternalLazy.cmi : cc stdlib-406/camlinternalLazy.mli | stdlib-406/pervasives.cmj $bsc others
+o stdlib-406/camlinternalLazy.cmj : cc_cmi stdlib-406/camlinternalLazy.res | stdlib-406/camlinternalLazy.cmi $bsc others
+o stdlib-406/camlinternalLazy.cmi : cc stdlib-406/camlinternalLazy.resi | stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/camlinternalMod.cmj : cc_cmi stdlib-406/camlinternalMod.ml | stdlib-406/camlinternalMod.cmi stdlib-406/obj.cmj $bsc others
 o stdlib-406/camlinternalMod.cmi : cc stdlib-406/camlinternalMod.mli | stdlib-406/obj.cmi stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/char.cmj : cc_cmi stdlib-406/char.ml | stdlib-406/char.cmi $bsc others

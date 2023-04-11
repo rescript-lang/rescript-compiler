@@ -39,7 +39,7 @@ var hh = [
       return parseInt(x);
     });
 
-function u(param) {
+function u() {
   return 3;
 }
 
@@ -53,8 +53,8 @@ function fff(param) {
   vvv.contents = vvv.contents + 1 | 0;
 }
 
-function g(param) {
-  fff(undefined);
+function g() {
+  return fff(undefined);
 }
 
 function abc(x, y, z) {
@@ -65,7 +65,7 @@ function abc(x, y, z) {
 
 var abc_u = abc;
 
-fff(undefined);
+g(undefined);
 
 Mt.from_pair_suites("Ffi_arity_test", {
       hd: [

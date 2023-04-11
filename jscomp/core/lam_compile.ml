@@ -1458,6 +1458,7 @@ and compile_apply (appinfo : Lam.apply) (lambda_cxt : Lam_compile_context.t) =
             *)
           (* TODO: use [fold]*)
           let _, assigned_params, new_params =
+            let args = if ret.params = [] then [] else args in
             Ext_list.fold_left2 ret.params args (0, [], Map_ident.empty)
               (fun param arg (i, assigns, new_params) ->
                 match arg with
