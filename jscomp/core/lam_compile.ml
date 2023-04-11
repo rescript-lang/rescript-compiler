@@ -500,7 +500,7 @@ and compile_recursive_lets cxt id_args : Js_output.t =
 
 and compile_general_cases :
       'a .
-      ('a -> Ast_untagged_variants.cstr_name option) ->
+      ('a -> Ast_untagged_variants.literal option) ->
       ('a -> J.expression) ->
       ('a option -> J.expression -> 'a option -> J.expression -> J.expression) ->
       Lam_compile_context.t ->
@@ -513,7 +513,7 @@ and compile_general_cases :
       ('a * Lam.t) list ->
       default_case ->
       J.block =
- fun (get_cstr_name : _ -> Ast_untagged_variants.cstr_name option) (make_exp : _ -> J.expression)
+ fun (get_cstr_name : _ -> Ast_untagged_variants.literal option) (make_exp : _ -> J.expression)
      (eq_exp : 'a option -> J.expression -> 'a option -> J.expression -> J.expression)
      (cxt : Lam_compile_context.t)
      (switch :
@@ -671,9 +671,9 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
   let get_block_name i = match get_block i with
     | None -> None
     | Some ({block_type = Some block_type} as block) ->
-      Some {block.cstr_name with literal_type = Some (Block block_type)}
-    | Some ({block_type = None; cstr_name}) ->
-      Some cstr_name in
+      Some {block.literal with literal_type = Some (Block block_type)}
+    | Some ({block_type = None; literal}) ->
+      Some literal in
   let tag_name = get_tag_name sw_names in
   let untagged = block_cases <> [] in
   let compile_whole (cxt : Lam_compile_context.t) =
