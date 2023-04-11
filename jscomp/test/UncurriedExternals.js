@@ -123,7 +123,7 @@ function tsiU$1(c) {
     });
 }
 
-var match$1 = React.useState(function (param) {
+var match$1 = React.useState(function () {
       return 3;
     });
 

@@ -230,7 +230,7 @@ function old_from_promise_suites_donotuse(name, suites) {
   var match = $$Array.to_list(Process.argv);
   if (match) {
     if (is_mocha(undefined)) {
-      describe(name, (function (param) {
+      describe(name, (function () {
               List.iter((function (param) {
                       var code = param[1];
                       it(param[0], (function (param) {

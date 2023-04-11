@@ -8,7 +8,7 @@ function mk(fn) {
 
 (((_)=> console.log('should works'))(undefined));
 
-console.log((function (param) {
+console.log((function () {
           return 1;
         })(undefined));
 

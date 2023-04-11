@@ -4,7 +4,7 @@
 function u(rl) {
   return rl.on("line", (function (x) {
                   console.log(x);
-                })).on("close", (function (param) {
+                })).on("close", (function () {
                 console.log("finished");
               }));
 }

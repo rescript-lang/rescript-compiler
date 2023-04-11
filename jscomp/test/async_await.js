@@ -6,7 +6,7 @@ function next(n) {
   return n + 1 | 0;
 }
 
-async function useNext(param) {
+async function useNext() {
   return 4;
 }
 
@@ -19,7 +19,7 @@ function Make(I) {
         };
 }
 
-async function topFoo(param) {
+async function topFoo() {
   return 1;
 }
 
