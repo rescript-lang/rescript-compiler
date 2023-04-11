@@ -10,7 +10,7 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# 11.0.0-alpha.1 (unreleased)
+# 11.0.0-alpha.1
 
 ## :rocket: Main New Features
 
@@ -37,13 +37,20 @@ subset of the arguments, and return a curried type with the remaining ones https
 - Support optional named arguments without a final unit in uncurried functions https://github.com/rescript-lang/rescript-compiler/pull/5907
 - GenType: add the option to use the `@genType` annotation at the module level, meaning that all the items in the module should be exported. https://github.com/rescript-lang/rescript-compiler/pull/6113
 - GenType: add support for `@genType` annotations on module definitions. https://github.com/rescript-lang/rescript-compiler/pull/6113
+- Prebuilt binaries are now provided for all major platforms:
+  - macOS x64
+  - macOS ARM
+  - Linux x64 (statically linked)
+  - Linux ARM (statically linked)
+  - Windows x64
 
 #### :boom: Breaking Change
 
 - Remove support for the legacy Reason syntax. Existing Reason code can be converted to ReScript syntax using ReScript 9 as follows:
   - `npm i -g rescript@9`
   - `rescript convert <reason files>`
-- Remove obsolete built-in project templates and the "rescript init" functionality. This will be replaced by the create-rescript-app project that is maintained separately.
+- Remove obsolete built-in project templates and the "rescript init" functionality. This is replaced by [create-rescript-app](https://github.com/rescript-lang/create-rescript-app) which is maintained separately.
+- Do not attempt to build ReScript from source on npm postinstall for platforms without prebuilt binaries anymore.
 - Made pinned dependencies transitive: if *a* is a pinned dependency of *b* and *b* is a pinned dependency of *c*, then *a* is implicitly a pinned dependency of *c*. This change is only breaking if your build process assumes non-transitivity.
 - Curried after uncurried is not fused anymore: `(. x) => y => 3` is not equivalent to `(. x, y) => 3` anymore. It's instead equivalent to `(. x) => { y => 3 }`.
 Also, `(. int) => string => bool` is not equivalen to `(. int, string) => bool` anymore.
