@@ -16,7 +16,7 @@ function f2(a0, a1) {
         ];
 }
 
-console.log(f0(undefined));
+console.log(0);
 
 console.log(0);
 
@@ -25,8 +25,11 @@ console.log([
       1
     ]);
 
-function xx(param) {
-  return xx(undefined);
+function xx(_param) {
+  while(true) {
+    _param = undefined;
+    continue ;
+  };
 }
 
 function log2(logger, message, obj) {

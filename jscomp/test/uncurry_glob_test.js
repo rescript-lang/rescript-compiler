@@ -12,8 +12,6 @@ function f(param) {
   return 3;
 }
 
-f(undefined);
-
 function $plus$great(a, h) {
   return h(a);
 }
@@ -26,4 +24,4 @@ exports.M = M;
 exports.f = f;
 exports.$plus$great = $plus$great;
 exports.u = u;
-/*  Not a pure module */
+/* No side effect */

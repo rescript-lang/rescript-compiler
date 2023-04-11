@@ -1629,8 +1629,8 @@ and compile_prim (prim_info : Lam.prim_info)
       compile_lambda lambda_cxt
         (Lam_eta_conversion.unsafe_adjust_to_arity loc ~to_:arity ?from:None fn)
   | { primitive = Pjs_fn_make_unit; args = [ fn ]; loc } ->
-      let fn = fn in
-      compile_lambda lambda_cxt fn
+    compile_lambda lambda_cxt
+         (Lam_eta_conversion.unsafe_adjust_to_arity loc ~to_:1 ?from:None fn)
   | { primitive = Pjs_fn_make _; args = [] | _ :: _ :: _ } -> assert false
   | { primitive = Pjs_object_create labels; args } ->
       let args_block, args_expr =
