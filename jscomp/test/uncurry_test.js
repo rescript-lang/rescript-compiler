@@ -26,9 +26,7 @@ console.log([
     ]);
 
 function xx() {
-  while(true) {
-    continue ;
-  };
+  return xx(undefined);
 }
 
 function log2(logger, message, obj) {

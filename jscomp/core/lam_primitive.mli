@@ -121,6 +121,7 @@ type t =
   | Pupdate_mod
   | Praw_js_code of Js_raw_info.t
   | Pjs_fn_make of int
+  | Pjs_fn_make_unit
   | Pvoid_run
   | Pfull_apply
   | Pjs_fn_method

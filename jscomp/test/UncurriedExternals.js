@@ -124,9 +124,11 @@ function tsiU$1(c) {
     });
 }
 
-var match$1 = React.useState(function (param) {
-      return Curry._1(3, param);
-    });
+function partial_arg() {
+  return 3;
+}
+
+var match$1 = React.useState(Curry.__1(partial_arg));
 
 function methodWithAsyncU() {
   var $$this = this ;
