@@ -54,7 +54,7 @@ function fff(param) {
 }
 
 function g() {
-  return fff(undefined);
+  fff(undefined);
 }
 
 function abc(x, y, z) {

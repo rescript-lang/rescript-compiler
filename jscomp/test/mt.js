@@ -231,16 +231,16 @@ function old_from_promise_suites_donotuse(name, suites) {
   if (match) {
     if (is_mocha(undefined)) {
       describe(name, (function () {
-              return List.iter((function (param) {
-                            var code = param[1];
-                            it(param[0], (function (param) {
-                                    var arg1 = function (x) {
-                                      handleCode(x);
-                                      return val_unit;
-                                    };
-                                    return code.then(arg1);
-                                  }));
-                          }), suites);
+              List.iter((function (param) {
+                      var code = param[1];
+                      it(param[0], (function (param) {
+                              var arg1 = function (x) {
+                                handleCode(x);
+                                return val_unit;
+                              };
+                              return code.then(arg1);
+                            }));
+                    }), suites);
             }));
     } else {
       console.log("promise suites");

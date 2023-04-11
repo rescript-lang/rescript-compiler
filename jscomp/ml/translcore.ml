@@ -782,16 +782,16 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
       let loc = expr.exp_loc in
       let lambda = transl_exp expr in
       let arity = Ast_uncurried.uncurried_type_get_arity ~env:e.exp_env e.exp_type in
-      let arity_s = match (Ctype.expand_head expr.exp_env expr.exp_type).desc with
+      let arity_s = arity |> string_of_int in
+      let name = match (Ctype.expand_head expr.exp_env expr.exp_type).desc with
       | Tarrow (Nolabel, t, _, _) -> (
         match (Ctype.expand_head expr.exp_env t).desc with
-        | Tconstr (Pident {name= "unit"}, [], _) -> "0"
-        | _ -> arity |> string_of_int
+        | Tconstr (Pident {name= "unit"}, [], _) -> "#fn_mk_unit"
+        | _ -> "#fn_mk"
       )
-      | _ ->
-         arity |> string_of_int in
+      | _ -> "#fn_mk" in
       let prim =
-        Primitive.make ~name:"#fn_mk" ~alloc:true ~native_name:arity_s
+        Primitive.make ~name ~alloc:true ~native_name:arity_s
           ~native_repr_args:[ Same_as_ocaml_repr ]
           ~native_repr_res:Same_as_ocaml_repr
       in
