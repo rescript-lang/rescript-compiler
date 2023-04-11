@@ -1329,8 +1329,7 @@ let make_constr_matching p def ctx = function
     [] -> fatal_error "Matching.make_constr_matching"
   | ((arg, _mut) :: argl) ->
       let cstr = pat_as_constr p in
-      let untagged =
-        Ext_list.exists cstr.cstr_attributes (function ({txt}, _) -> txt = "unboxed") in
+      let untagged = Ast_untagged_variants.has_untagged cstr.cstr_attributes in
       let newargs =
         if cstr.cstr_inlined <> None || (untagged && cstr.cstr_args <> []) then
           (arg, Alias) :: argl

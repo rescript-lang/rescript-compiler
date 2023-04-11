@@ -363,6 +363,8 @@ let transl_declaration env sdecl id =
       | Ptype_abstract -> Ttype_abstract, Type_abstract
       | Ptype_variant scstrs ->
         assert (scstrs <> []);
+        if Ast_untagged_variants.has_untagged sdecl.ptype_attributes
+        then Ast_untagged_variants.check_well_formed scstrs;
         if List.exists (fun cstr -> cstr.pcd_res <> None) scstrs then begin
           match cstrs with
             [] -> ()
@@ -391,7 +393,7 @@ let transl_declaration env sdecl id =
             all_constrs := StringSet.add name !all_constrs)
           scstrs;
         let copy_tag_attr_from_decl attr =
-          let tag_attrs = Ext_list.filter sdecl.ptype_attributes (fun ({txt}, _) -> txt = "tag" || txt = "unboxed") in
+          let tag_attrs = Ext_list.filter sdecl.ptype_attributes (fun ({txt}, _) -> txt = "tag" || txt = Ast_untagged_variants.untagged) in
           if tag_attrs = [] then attr else tag_attrs @ attr in
         let make_cstr scstr =
           let name = Ident.create scstr.pcd_name.txt in

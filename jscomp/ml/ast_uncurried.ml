@@ -1,4 +1,4 @@
-(* Untyped AST *)
+(* Uncurried AST *)
 
 
 let encode_arity_string arity = "Has_arity" ^ string_of_int arity
