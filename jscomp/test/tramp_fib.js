@@ -20,7 +20,7 @@ function fib(n, k) {
   } else {
     return {
             TAG: "Suspend",
-            _0: (function () {
+            _0: (function (param) {
                 return fib(n - 1 | 0, (function (v0) {
                               return fib(n - 2 | 0, (function (v1) {
                                             return k(v0 + v1 | 0);
@@ -54,7 +54,7 @@ function isEven(n) {
     if (n !== 1) {
       return {
               TAG: "Suspend",
-              _0: (function () {
+              _0: (function (param) {
                   return isOdd(n - 1 | 0);
                 })
             };

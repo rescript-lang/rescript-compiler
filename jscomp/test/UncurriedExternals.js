@@ -1,6 +1,5 @@
 'use strict';
 
-var Curry = require("../../lib/js/curry.js");
 var React = require("react");
 
 function dd(param) {
@@ -124,11 +123,9 @@ function tsiU$1(c) {
     });
 }
 
-function partial_arg() {
-  return 3;
-}
-
-var match$1 = React.useState(Curry.__1(partial_arg));
+var match$1 = React.useState(function (param) {
+      return 3;
+    });
 
 function methodWithAsyncU() {
   var $$this = this ;
