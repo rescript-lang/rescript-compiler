@@ -28,7 +28,9 @@ let structural_config_table : action_table ref =
   ref
     (Map_string.singleton "no_export" (fun x ->
          Js_config.no_export :=
-           match x with Some e -> Ast_payload.assert_bool_lit e | None -> true))
+           match x with
+           | Some e -> Ast_payload.assert_bool_lit e
+           | None -> true))
 
 let add_structure k v =
   structural_config_table := Map_string.add !structural_config_table k v
@@ -39,28 +41,39 @@ let add_signature k v =
   signature_config_table := Map_string.add !signature_config_table k v
 
 let process_directives str =
-  Js_config.directives := []; (* Reset: multiple calls possible e.g. with bsc from the command-line *)
-  str |> List.iter(fun (item : Parsetree.structure_item) -> match item.pstr_desc with
-  | Pstr_attribute ({ txt = "directive" },
-      PStr [ { pstr_desc = Pstr_eval ({ pexp_desc = Pexp_constant (Pconst_string (d, _)) }, _) } ]) ->
-      Js_config.directives := !Js_config.directives @ [d]
-  | Pstr_attribute ({txt = "uncurried"}, _) -> Config.uncurried := Uncurried
-  | _ -> ())
-  
+  Js_config.directives := [];
+  (* Reset: multiple calls possible e.g. with bsc from the command-line *)
+  str
+  |> List.iter (fun (item : Parsetree.structure_item) ->
+         match item.pstr_desc with
+         | Pstr_attribute
+             ( {txt = "directive"},
+               PStr
+                 [
+                   {
+                     pstr_desc =
+                       Pstr_eval
+                         ({pexp_desc = Pexp_constant (Pconst_string (d, _))}, _);
+                   };
+                 ] ) ->
+           Js_config.directives := !Js_config.directives @ [d]
+         | Pstr_attribute ({txt = "uncurried"}, _) ->
+           Config.uncurried := Uncurried
+         | _ -> ())
+
 let rec iter_on_bs_config_str (x : Parsetree.structure) =
   match x with
   | [] -> ()
   | {
       pstr_desc =
-        Pstr_attribute
-          (({ txt = "bs.config" | "config"; loc }, payload) as attr);
+        Pstr_attribute (({txt = "bs.config" | "config"; loc}, payload) as attr);
     }
     :: _ ->
-      Bs_ast_invariant.mark_used_bs_attribute attr;
-      Ext_list.iter
-        (Ast_payload.ident_or_record_as_config loc payload)
-        (Ast_payload.table_dispatch !structural_config_table)
-  | { pstr_desc = Pstr_attribute _ } :: rest -> iter_on_bs_config_str rest
+    Bs_ast_invariant.mark_used_bs_attribute attr;
+    Ext_list.iter
+      (Ast_payload.ident_or_record_as_config loc payload)
+      (Ast_payload.table_dispatch !structural_config_table)
+  | {pstr_desc = Pstr_attribute _} :: rest -> iter_on_bs_config_str rest
   | _ :: _ -> ()
 
 let process_str str =
@@ -72,15 +85,14 @@ let rec iter_on_bs_config_sig (x : Parsetree.signature) =
   | [] -> ()
   | {
       psig_desc =
-        Psig_attribute
-          (({ txt = "bs.config" | "config"; loc }, payload) as attr);
+        Psig_attribute (({txt = "bs.config" | "config"; loc}, payload) as attr);
     }
     :: _ ->
-      Bs_ast_invariant.mark_used_bs_attribute attr;
-      Ext_list.iter
-        (Ast_payload.ident_or_record_as_config loc payload)
-        (Ast_payload.table_dispatch !signature_config_table)
-  | { psig_desc = Psig_attribute _ } :: rest -> iter_on_bs_config_sig rest
+    Bs_ast_invariant.mark_used_bs_attribute attr;
+    Ext_list.iter
+      (Ast_payload.ident_or_record_as_config loc payload)
+      (Ast_payload.table_dispatch !signature_config_table)
+  | {psig_desc = Psig_attribute _} :: rest -> iter_on_bs_config_sig rest
   | _ :: _ -> ()
 
 let process_sig s = iter_on_bs_config_sig s

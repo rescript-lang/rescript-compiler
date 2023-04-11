@@ -25,10 +25,9 @@ type attr = Parsetree.attribute
 
 type t = attr list
 
-type ('a, 'b) st = { get : 'a option; set : 'b option }
+type ('a, 'b) st = {get: 'a option; set: 'b option}
 
-val process_method_attributes_rev :
-  t -> (bool * bool, [ `Get | `No_get ]) st * t
+val process_method_attributes_rev : t -> (bool * bool, [`Get | `No_get]) st * t
 
 type attr_kind =
   | Nothing
@@ -47,10 +46,10 @@ val has_inline_payload : t -> attr option
 val has_await_payload : t -> attr option
 val has_async_payload : t -> attr option
 
-type derive_attr = { bs_deriving : Ast_payload.action list option } [@@unboxed]
+type derive_attr = {bs_deriving: Ast_payload.action list option} [@@unboxed]
 
 val iter_process_bs_string_int_unwrap_uncurry :
-  t -> [ `Nothing | `String | `Int | `Ignore | `Unwrap | `Uncurry of int option ]
+  t -> [`Nothing | `String | `Int | `Ignore | `Unwrap | `Uncurry of int option]
 
 val iter_process_bs_string_as : t -> string option
 

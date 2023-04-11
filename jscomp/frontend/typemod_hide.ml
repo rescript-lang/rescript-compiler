@@ -23,28 +23,25 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 let attrs : Parsetree.attributes =
-  [ ({ txt = "internal.local"; loc = Location.none }, PStr []) ]
+  [({txt = "internal.local"; loc = Location.none}, PStr [])]
 
 let no_type_defined (x : Parsetree.structure_item) =
   match x.pstr_desc with
   | Pstr_eval _ | Pstr_value _ | Pstr_primitive _ | Pstr_typext _
   | Pstr_exception _
   (* | Pstr_module {pmb_expr = {pmod_desc = Pmod_ident _} }  *) ->
-      true
+    true
   | Pstr_include
       {
         pincl_mod =
           {
             pmod_desc =
               Pmod_constraint
-                ( {
-                    pmod_desc =
-                      Pmod_structure [ { pstr_desc = Pstr_primitive _ } ];
-                  },
+                ( {pmod_desc = Pmod_structure [{pstr_desc = Pstr_primitive _}]},
                   _ );
           };
       } ->
-      true
+    true
   (* FIX #4881
      generated code from:
      {[

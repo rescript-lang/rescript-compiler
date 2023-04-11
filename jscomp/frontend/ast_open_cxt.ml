@@ -43,8 +43,8 @@ let rec destruct_open_tuple (e : Parsetree.expression) (acc : t) :
     (t * destruct_output * _) option =
   match e.pexp_desc with
   | Pexp_open (flag, lid, cont) ->
-      destruct_open_tuple cont
-        (Let_open (flag, lid, e.pexp_loc, e.pexp_attributes) :: acc)
+    destruct_open_tuple cont
+      (Let_open (flag, lid, e.pexp_loc, e.pexp_attributes) :: acc)
   | Pexp_tuple es -> Some (acc, es, e.pexp_attributes)
   | _ -> None
 
@@ -53,9 +53,9 @@ let restore_exp (xs : Parsetree.expression) (qualifiers : t) :
   Ext_list.fold_left qualifiers xs (fun x hole ->
       match hole with
       | Let_open (flag, lid, loc, attrs) ->
-          ({
-             pexp_desc = Pexp_open (flag, lid, x);
-             pexp_attributes = attrs;
-             pexp_loc = loc;
-           }
-            : Parsetree.expression))
+        ({
+           pexp_desc = Pexp_open (flag, lid, x);
+           pexp_attributes = attrs;
+           pexp_loc = loc;
+         }
+          : Parsetree.expression))

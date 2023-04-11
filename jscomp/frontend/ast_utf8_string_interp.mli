@@ -34,28 +34,29 @@ type error = private
   | Unmatched_paren
   | Invalid_syntax_of_var of string
 
-type pos = { lnum : int; offset : int; byte_bol : int }
+type pos = {lnum: int; offset: int; byte_bol: int}
 (** Note the position is about code point *)
 
-type segment = { start : pos; finish : pos; kind : kind; content : string }
+type segment = {start: pos; finish: pos; kind: kind; content: string}
 type segments = segment list
 
 type cxt = {
-  mutable segment_start : pos;
-  buf : Buffer.t;
-  s_len : int;
-  mutable segments : segments;
-  mutable pos_bol : int;
+  mutable segment_start: pos;
+  buf: Buffer.t;
+  s_len: int;
+  mutable segments: segments;
+  mutable pos_bol: int;
   (* record the abs position of current beginning line *)
-  mutable byte_bol : int;
-  mutable pos_lnum : int; (* record the line number *)
+  mutable byte_bol: int;
+  mutable pos_lnum: int; (* record the line number *)
 }
 
 type exn += Error of pos * pos * error
 
 val empty_segment : segment -> bool
 val transform_test : string -> segment list
-val transform_exp : Parsetree.expression -> string -> string -> Parsetree.expression
+val transform_exp :
+  Parsetree.expression -> string -> string -> Parsetree.expression
 val transform_pat : Parsetree.pattern -> string -> string -> Parsetree.pattern
 val is_unicode_string : string -> bool
 val is_unescaped : string -> bool

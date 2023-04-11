@@ -75,26 +75,25 @@ end
 module No_loc = struct
   let loc = Location.none
 
-  let val_unit = Ast_helper.Exp.construct { txt = Lid.val_unit; loc } None
+  let val_unit = Ast_helper.Exp.construct {txt = Lid.val_unit; loc} None
 
   let type_unit =
-    Ast_helper.Typ.mk (Ptyp_constr ({ txt = Lid.type_unit; loc }, []))
+    Ast_helper.Typ.mk (Ptyp_constr ({txt = Lid.type_unit; loc}, []))
 
   let type_exn =
-    Ast_helper.Typ.mk (Ptyp_constr ({ txt = Lid.type_unit; loc }, []))
+    Ast_helper.Typ.mk (Ptyp_constr ({txt = Lid.type_unit; loc}, []))
 
-  let type_int =
-    Ast_helper.Typ.mk (Ptyp_constr ({ txt = Lid.type_int; loc }, []))
+  let type_int = Ast_helper.Typ.mk (Ptyp_constr ({txt = Lid.type_int; loc}, []))
 
   let type_string =
-    Ast_helper.Typ.mk (Ptyp_constr ({ txt = Lid.type_string; loc }, []))
+    Ast_helper.Typ.mk (Ptyp_constr ({txt = Lid.type_string; loc}, []))
 
   let type_bool =
-    Ast_helper.Typ.mk (Ptyp_constr ({ txt = Lid.type_bool; loc }, []))
+    Ast_helper.Typ.mk (Ptyp_constr ({txt = Lid.type_bool; loc}, []))
 
   let type_any = Ast_helper.Typ.any ()
 
-  let pat_unit = Pat.construct { txt = Lid.val_unit; loc } None
+  let pat_unit = Pat.construct {txt = Lid.val_unit; loc} None
 end
 
 type 'a lit = ?loc:Location.t -> unit -> 'a
@@ -108,45 +107,45 @@ type pattern_lit = Parsetree.pattern lit
 let val_unit ?loc () =
   match loc with
   | None -> No_loc.val_unit
-  | Some loc -> Ast_helper.Exp.construct { txt = Lid.val_unit; loc } None
+  | Some loc -> Ast_helper.Exp.construct {txt = Lid.val_unit; loc} None
 
 let type_unit ?loc () =
   match loc with
   | None -> No_loc.type_unit
   | Some loc ->
-      Ast_helper.Typ.mk ~loc (Ptyp_constr ({ txt = Lid.type_unit; loc }, []))
+    Ast_helper.Typ.mk ~loc (Ptyp_constr ({txt = Lid.type_unit; loc}, []))
 
 let type_exn ?loc () =
   match loc with
   | None -> No_loc.type_exn
   | Some loc ->
-      Ast_helper.Typ.mk ~loc (Ptyp_constr ({ txt = Lid.type_exn; loc }, []))
+    Ast_helper.Typ.mk ~loc (Ptyp_constr ({txt = Lid.type_exn; loc}, []))
 
 let type_string ?loc () =
   match loc with
   | None -> No_loc.type_string
   | Some loc ->
-      Ast_helper.Typ.mk ~loc (Ptyp_constr ({ txt = Lid.type_string; loc }, []))
+    Ast_helper.Typ.mk ~loc (Ptyp_constr ({txt = Lid.type_string; loc}, []))
 
 let type_bool ?loc () =
   match loc with
   | None -> No_loc.type_bool
   | Some loc ->
-      Ast_helper.Typ.mk ~loc (Ptyp_constr ({ txt = Lid.type_bool; loc }, []))
+    Ast_helper.Typ.mk ~loc (Ptyp_constr ({txt = Lid.type_bool; loc}, []))
 
 let type_int ?loc () =
   match loc with
   | None -> No_loc.type_int
   | Some loc ->
-      Ast_helper.Typ.mk ~loc (Ptyp_constr ({ txt = Lid.type_int; loc }, []))
+    Ast_helper.Typ.mk ~loc (Ptyp_constr ({txt = Lid.type_int; loc}, []))
 
 let type_int64 =
   Ast_helper.Typ.mk
-    (Ptyp_constr ({ txt = Lident "int64"; loc = Location.none }, []))
+    (Ptyp_constr ({txt = Lident "int64"; loc = Location.none}, []))
 
 let type_float =
   Ast_helper.Typ.mk
-    (Ptyp_constr ({ txt = Lident "float"; loc = Location.none }, []))
+    (Ptyp_constr ({txt = Lident "float"; loc = Location.none}, []))
 
 let type_any ?loc () =
   match loc with
@@ -156,4 +155,4 @@ let type_any ?loc () =
 let pat_unit ?loc () =
   match loc with
   | None -> No_loc.pat_unit
-  | Some loc -> Pat.construct ~loc { txt = Lid.val_unit; loc } None
+  | Some loc -> Pat.construct ~loc {txt = Lid.val_unit; loc} None

@@ -26,23 +26,23 @@ open Ast_helper
 
 let core_type_of_type_declaration (tdcl : Parsetree.type_declaration) =
   match tdcl with
-  | { ptype_name = { txt; loc }; ptype_params } ->
-      Typ.constr { txt = Lident txt; loc } (Ext_list.map ptype_params fst)
+  | {ptype_name = {txt; loc}; ptype_params} ->
+    Typ.constr {txt = Lident txt; loc} (Ext_list.map ptype_params fst)
 
 let new_type_of_type_declaration (tdcl : Parsetree.type_declaration) newName =
   match tdcl with
-  | { ptype_name = { loc }; ptype_params } ->
-      ( Typ.constr { txt = Lident newName; loc } (Ext_list.map ptype_params fst),
-        {
-          Parsetree.ptype_params = tdcl.ptype_params;
-          ptype_name = { txt = newName; loc };
-          ptype_kind = Ptype_abstract;
-          ptype_attributes = [];
-          ptype_loc = tdcl.ptype_loc;
-          ptype_cstrs = [];
-          ptype_private = Public;
-          ptype_manifest = None;
-        } )
+  | {ptype_name = {loc}; ptype_params} ->
+    ( Typ.constr {txt = Lident newName; loc} (Ext_list.map ptype_params fst),
+      {
+        Parsetree.ptype_params = tdcl.ptype_params;
+        ptype_name = {txt = newName; loc};
+        ptype_kind = Ptype_abstract;
+        ptype_attributes = [];
+        ptype_loc = tdcl.ptype_loc;
+        ptype_cstrs = [];
+        ptype_private = Public;
+        ptype_manifest = None;
+      } )
 let notApplicable loc derivingName =
   Location.prerr_warning loc
     (Warnings.Bs_derive_warning (derivingName ^ " not applicable to this type"))
