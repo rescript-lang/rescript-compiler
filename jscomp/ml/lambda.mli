@@ -273,14 +273,6 @@ type function_attribute = {
   async : bool;
 }
 
-type block_type = IntType | StringType | FloatType | Array | Object | Unknown
-type literal =
-  | String of string | Int of int | Float of string | Bool of bool | Null | Undefined
-  | Block of block_type
-type cstr_name = {name:string; literal: literal option}
-type block = {cstr_name: cstr_name; tag_name: string option; block_type : block_type option}
-type switch_names = {consts: cstr_name array; blocks: block array}
-
 type lambda =
     Lvar of Ident.t
   | Lconst of structured_constant
@@ -324,7 +316,7 @@ and lambda_switch =
     sw_numblocks: int;                  (* Number of tag block cases *)
     sw_blocks: (int * lambda) list;     (* Tag block cases *)
     sw_failaction : lambda option;      (* Action to take if failure *)
-    sw_names: switch_names option }
+    sw_names: Ast_untagged_variants.switch_names option }
 
 
 

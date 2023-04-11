@@ -23,6 +23,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 val names_from_construct_pattern :
-  Typedtree.pattern -> Lambda.switch_names option
+  Typedtree.pattern -> Ast_untagged_variants.switch_names option
 
 val variant_is_subtype : Env.t -> Types.row_desc -> Types.type_expr -> bool

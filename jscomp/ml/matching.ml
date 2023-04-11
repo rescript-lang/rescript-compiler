@@ -2416,7 +2416,7 @@ let call_switcher_variant_constant :
    Lambda.lambda option ->
    Lambda.lambda ->
    (int * (string * Lambda.lambda)) list -> 
-   Lambda.switch_names option -> 
+    Ast_untagged_variants.switch_names option -> 
    Lambda.lambda)
     ref= ref call_switcher_variant_constant
 
@@ -2425,7 +2425,7 @@ let call_switcher_variant_constr :
    Lambda.lambda option ->
    Lambda.lambda ->
    (int * (string * Lambda.lambda)) list -> 
-   Lambda.switch_names option -> 
+    Ast_untagged_variants.switch_names option -> 
    Lambda.lambda)
     ref
   = ref call_switcher_variant_constr
@@ -2694,7 +2694,7 @@ let arg_to_var arg cls = match arg with
     v,Lvar v
 
 (* To be set by Lam_compile *)
-let names_from_construct_pattern : (pattern -> switch_names option) ref =
+let names_from_construct_pattern : (pattern -> Ast_untagged_variants.switch_names option) ref =
   ref (fun _ -> None)
 
 (*

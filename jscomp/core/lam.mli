@@ -38,7 +38,7 @@ type lambda_switch = {
   sw_blocks_full : bool;
   sw_blocks : (int * t) list;
   sw_failaction : t option;
-  sw_names : Lambda.switch_names option;
+  sw_names : Ast_untagged_variants.switch_names option;
 }
 
 and apply = private { ap_func : t; ap_args : t list; ap_info : ap_info }

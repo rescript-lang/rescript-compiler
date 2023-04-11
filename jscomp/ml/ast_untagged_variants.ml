@@ -23,6 +23,15 @@ let report_error ppf =
     | AtMostOneObject -> "At most one case can be an object type."
     | AtMostOneArray -> "At most one case can be an array type.")
 
+type block_type =
+  | IntType | StringType | FloatType | Array | Object | Unknown
+type literal =
+  | String of string | Int of int | Float of string | Bool of bool | Null | Undefined
+  | Block of block_type
+  type cstr_name = {name: string; literal: literal option}
+  type block = {cstr_name: cstr_name; tag_name: string option; block_type : block_type option}
+type switch_names = {consts: cstr_name array; blocks: block array}
+
 let untagged = "unboxed"
 
 let has_untagged (attrs: Parsetree.attributes) =
@@ -37,7 +46,7 @@ let process_untagged (attrs : Parsetree.attributes) =
   !st
 
 let process_literal (attrs : Parsetree.attributes) =
-  let st : Lambda.literal option ref = ref None in
+  let st : literal option ref = ref None in
   Ext_list.iter attrs (fun (({txt; loc}, payload)) ->
       match txt with
       | "bs.as" | "as" ->
@@ -79,7 +88,7 @@ let () =
         None
     )
 
-let get_untagged (cstr: Types.constructor_declaration) : Lambda.block_type option =
+let get_untagged (cstr: Types.constructor_declaration) : block_type option =
   match process_untagged cstr.cd_attributes, cstr.cd_args with
   | false, _ -> None
   | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path.same path Predef.path_string ->
@@ -131,7 +140,7 @@ let get_tag_name (cstr: Types.constructor_declaration) =
 let is_nullary_variant (x : Types.constructor_arguments) =
   match x with Types.Cstr_tuple [] -> true | _ -> false
 
-let checkUntaggedVariant ~(blocks : (Location.t * Lambda.block) list) =
+let checkInvariant ~(blocks : (Location.t * block) list) =
   let arrays = ref 0 in
   let objects = ref 0 in
   let unknowns = ref 0 in
@@ -157,9 +166,9 @@ let checkUntaggedVariant ~(blocks : (Location.t * Lambda.block) list) =
 
 let names_from_type_variant (cstrs : Types.constructor_declaration list) =
   let get_cstr_name (cstr: Types.constructor_declaration) =
-    { Lambda.name = Ident.name cstr.cd_id;
+    { name = Ident.name cstr.cd_id;
       literal = process_literal cstr.cd_attributes } in
-  let get_block cstr : Lambda.block =
+  let get_block cstr : block =
     {cstr_name = get_cstr_name cstr; tag_name = get_tag_name cstr; block_type = get_untagged cstr} in
   let consts, blocks =
     Ext_list.fold_left cstrs ([], []) (fun (consts, blocks) cstr ->
@@ -167,11 +176,12 @@ let names_from_type_variant (cstrs : Types.constructor_declaration list) =
           (get_cstr_name cstr :: consts, blocks)
         else (consts, (cstr.cd_loc, get_block cstr) :: blocks))
   in
-  checkUntaggedVariant ~blocks;
+  checkInvariant ~blocks;
   let blocks = blocks |> List.map snd in
   let consts = Ext_array.reverse_of_list consts in
   let blocks = Ext_array.reverse_of_list blocks in
-  Some { Lambda.consts; blocks }
+  Some { consts; blocks }
 
 let check_well_formed (cstrs: Types.constructor_declaration list) =
   ignore (names_from_type_variant cstrs)
+
