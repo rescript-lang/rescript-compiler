@@ -804,10 +804,11 @@ let rec is_a_literal_case ~(literal_cases : Lambda.literal list) ~block_cases (e
     not (is_array e)
   | Object when literals_overlaps_with_object () = false ->
     (typeof e) != (str "object")
+  | Object (* overlap *) ->
+    e == nil || (typeof e) != (str "object")
   | StringType (* overlap *)
   | IntType (* overlap *)
   | FloatType (* overlap *)
-  | Object (* overlap *)
   | Unknown ->
     (* We don't know the type of unknown, so we need to express:
        this is not one of the literals *)
