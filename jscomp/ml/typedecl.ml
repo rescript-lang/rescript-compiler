@@ -577,7 +577,7 @@ module SMap = Map.Make(String)
 
 let check_constraints_labels env visited l pl =
   let rec get_loc name = function
-      [] -> assert false
+      [] -> Location.none
     | pld :: tl ->
         if name = pld.pld_name.txt then pld.pld_type.ptyp_loc
         else get_loc name tl
@@ -630,8 +630,7 @@ let check_constraints env sdecl (_, decl) =
         | Ptype_variant _ | Ptype_abstract | Ptype_open -> assert false
       in
       let pl = find_pl sdecl.ptype_kind in
-      let todoFIXTHIS = false in
-      if todoFIXTHIS then check_constraints_labels env visited l pl
+      check_constraints_labels env visited l pl
   | Type_open -> ()
   end;
   begin match decl.type_manifest with
