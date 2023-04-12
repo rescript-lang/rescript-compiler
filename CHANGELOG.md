@@ -15,6 +15,10 @@
 #### :bug: Bug Fix
 - Special case generation of uncurried functions with 1 argument of unit type so they don't take a parameter. https://github.com/rescript-lang/rescript-compiler/pull/6131
 
+## :rocket: Main New Features
+
+- Add support for type coercion `:>` for records. https://github.com/rescript-lang/rescript-compiler/pull/5721
+
 # 11.0.0-alpha.1
 
 ## :rocket: Main New Features
