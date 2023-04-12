@@ -10,18 +10,22 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
+# 11.0.0-alpha.3 (Unreleased)
+
 # 11.0.0-alpha.2
 
-#### :bug: Bug Fix
-- Special case generation of uncurried functions with 1 argument of unit type so they don't take a parameter. https://github.com/rescript-lang/rescript-compiler/pull/6131
-
-## :rocket: Main New Features
+#### :rocket: Main New Feature
 
 - Add support for type coercion `:>` for records. https://github.com/rescript-lang/rescript-compiler/pull/5721
 
+#### :bug: Bug Fix
+
+- Special case generation of uncurried functions with 1 argument of unit type so they don't take a parameter. https://github.com/rescript-lang/rescript-compiler/pull/6131
+
+
 # 11.0.0-alpha.1
 
-## :rocket: Main New Features
+#### :rocket: Main New Feature
 
 - Introduce experimental uncurried mode. For experimentation only. [PR #5796](https://github.com/rescript-lang/rescript-compiler/pull/5796)
 - Customization of runtime representation of variants and introduction of untagged variants [PR #6095](https://github.com/rescript-lang/rescript-compiler/pull/6095), [PR #6103](https://github.com/rescript-lang/rescript-compiler/pull/6103)
