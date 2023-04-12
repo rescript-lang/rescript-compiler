@@ -1,6 +1,13 @@
 'use strict';
 
 
+var MultipleDotDotDots = {
+  x: {
+    x: 10,
+    y: "abc"
+  }
+};
+
 var v = {
   x: 10,
   y: "",
@@ -17,4 +24,5 @@ var v2 = {
 
 exports.v = v;
 exports.v2 = v2;
+exports.MultipleDotDotDots = MultipleDotDotDots;
 /* No side effect */
