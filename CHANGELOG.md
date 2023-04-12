@@ -10,7 +10,7 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# 11.0.0-alpha.2 (Unreleased)
+# 11.0.0-alpha.2
 
 #### :bug: Bug Fix
 - Special case generation of uncurried functions with 1 argument of unit type so they don't take a parameter. https://github.com/rescript-lang/rescript-compiler/pull/6131
