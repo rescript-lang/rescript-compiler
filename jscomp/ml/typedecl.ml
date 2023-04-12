@@ -447,7 +447,7 @@ let transl_declaration env sdecl id =
               else Record_regular
           in
           let lbls, lbls' = match lbls, lbls' with
-            | {ld_name = {txt = "dotdotdot"}; ld_type} :: _, _ :: _ ->
+            | {ld_name = {txt = "..."}; ld_type} :: _, _ :: _ ->
               let rec extract t = match t.desc with
                 | Tpoly(t, []) -> extract t
                 | _ -> Ctype.repr t in
@@ -459,7 +459,7 @@ let transl_declaration env sdecl id =
                   ld_loc = l.ld_loc;
                   ld_attributes = l.ld_attributes; } in
               let rec process_lbls acc lbls lbls' = match lbls, lbls' with
-                | {ld_name = {txt = "dotdotdot"}; ld_type} :: rest, _ :: rest' ->
+                | {ld_name = {txt = "..."}; ld_type} :: rest, _ :: rest' ->
                   (match Ctype.extract_concrete_typedecl env (extract ld_type.ctyp_type) with
                     (_p0, _p, {type_kind=Type_record (fields, _repr)}) ->
                       process_lbls (fst acc @ (fields |> List.map mkLbl), snd acc @ fields) rest rest'
@@ -1214,7 +1214,7 @@ let check_duplicates sdecl_list =
           (fun {pld_name=cname;pld_loc=loc} ->
             try
               let name' = Hashtbl.find labels cname.txt in
-              if cname.txt <> "dotdotdot" then
+              if cname.txt <> "..." then
               Location.prerr_warning loc
                 (Warnings.Duplicate_definitions
                    ("label", cname.txt, name', sdecl.ptype_name.txt))
