@@ -89,6 +89,7 @@ val ocaml_fun :
   ?immutable_mask:bool array ->
   return_unit:bool ->
   async:bool ->
+  oneUnitArg:bool ->
   J.ident list ->
   J.block ->
   t

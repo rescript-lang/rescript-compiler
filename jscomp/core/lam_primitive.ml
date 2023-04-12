@@ -129,6 +129,7 @@ type t =
   | Pupdate_mod
   | Praw_js_code of Js_raw_info.t
   | Pjs_fn_make of int
+  | Pjs_fn_make_unit
   | Pvoid_run
   | Pfull_apply
   (* we wrap it when do the conversion to prevent
@@ -307,6 +308,7 @@ let eq_primitive_approx (lhs : t) (rhs : t) =
       | Pjs_unsafe_downgrade rhs -> name = rhs.name && setter = rhs.setter
       | _ -> false)
   | Pjs_fn_make i -> ( match rhs with Pjs_fn_make i1 -> i = i1 | _ -> false)
+  | Pjs_fn_make_unit -> rhs = Pjs_fn_make_unit
   | Pvoid_run -> rhs = Pvoid_run
   | Pfull_apply -> rhs = Pfull_apply
   | Pjs_fn_method -> rhs = Pjs_fn_method

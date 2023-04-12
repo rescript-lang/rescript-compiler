@@ -493,6 +493,8 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
           | "#run" -> Pvoid_run
           | "#fn_mk" ->
               Pjs_fn_make (Ext_pervasives.nat_of_string_exn p.prim_native_name)
+          | "#fn_mk_unit" ->
+              Pjs_fn_make_unit
           | "#fn_method" -> Pjs_fn_method
           | "#unsafe_downgrade" ->
               Pjs_unsafe_downgrade { name = Ext_string.empty; setter = false }

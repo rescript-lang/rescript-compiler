@@ -7,14 +7,14 @@ var Caml_option = require("../../lib/js/caml_option.js");
 var TestUtils = require("react-dom/test-utils");
 
 function act(func) {
-  var reactFunc = function (param) {
+  var reactFunc = function () {
     Curry._1(func, undefined);
   };
   TestUtils.act(reactFunc);
 }
 
 function actAsync(func) {
-  return TestUtils.act(function (param) {
+  return TestUtils.act(function () {
               return Curry._1(func, undefined);
             });
 }

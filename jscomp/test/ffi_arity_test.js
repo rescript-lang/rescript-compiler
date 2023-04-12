@@ -39,7 +39,7 @@ var hh = [
       return parseInt(x);
     });
 
-function u(param) {
+function u() {
   return 3;
 }
 
@@ -53,7 +53,7 @@ function fff(param) {
   vvv.contents = vvv.contents + 1 | 0;
 }
 
-function g(param) {
+function g() {
   fff(undefined);
 }
 

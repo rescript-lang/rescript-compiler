@@ -8,7 +8,7 @@ function M(U) {
         };
 }
 
-function f(param) {
+function f() {
   return 3;
 }
 
