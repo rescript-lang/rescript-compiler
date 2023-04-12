@@ -270,6 +270,7 @@ type function_attribute = {
   stub: bool;
   return_unit : bool;
   async : bool;
+  oneUnitArg : bool;
 }
 
 type lambda =
@@ -298,7 +299,8 @@ and lfunction =
     params: Ident.t list;
     body: lambda;
     attr: function_attribute; (* specified with [@inline] attribute *)
-    loc: Location.t; }
+    loc: Location.t;
+ }
 
 and lambda_apply =
   { ap_func : lambda;
@@ -338,6 +340,7 @@ let default_function_attribute = {
   stub = false;
   return_unit = false;
   async = false;
+  oneUnitArg = false;
 }
 
 let default_stub_attribute =

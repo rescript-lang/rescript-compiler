@@ -16,7 +16,7 @@ function f2(a0, a1) {
         ];
 }
 
-console.log(f0(undefined));
+console.log(0);
 
 console.log(0);
 
@@ -27,6 +27,7 @@ console.log([
 
 function xx() {
   while(true) {
+    _param = undefined;
     continue ;
   };
 }
