@@ -470,6 +470,13 @@ let transl_declaration env sdecl id =
               in
               process_lbls ([], []) lbls lbls'
             | _ -> lbls, lbls' in
+          let rec check_duplicates (lbls : Typedtree.label_declaration list) seen = match lbls with
+          | [] -> ()
+          | lbl::rest ->
+            let name = lbl.ld_id.name in
+            if StringSet.mem name seen then raise(Error(lbl.ld_loc, Duplicate_label name));
+            check_duplicates rest (StringSet.add name seen) in
+          check_duplicates lbls StringSet.empty;
           Ttype_record lbls, Type_record(lbls', rep)
       | Ptype_open -> Ttype_open, Type_open
       in
