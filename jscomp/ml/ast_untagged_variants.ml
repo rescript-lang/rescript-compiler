@@ -1,4 +1,4 @@
-type untaggedError = OnlyOneUnknown | AtMostOneObject | AtMostOneArray | DuplicateLiteral of string
+type untaggedError = OnlyOneUnknown | AtMostOneObject | AtMostOneArray | AtMostOneString | AtMostOneNumber | DuplicateLiteral of string
 type error =
   | InvalidVariantAsAnnotation
   | Duplicated_bs_as
@@ -22,6 +22,8 @@ let report_error ppf =
     | OnlyOneUnknown -> "An unknown case must be the only case with payloads."
     | AtMostOneObject -> "At most one case can be an object type."
     | AtMostOneArray -> "At most one case can be an array type."
+    | AtMostOneString -> "At most one case can be a string type."
+    | AtMostOneNumber -> "At most one case can be a number type (int or float)."
     | DuplicateLiteral s -> "Duplicate literal " ^ s ^ "."
     )
 
@@ -146,9 +148,11 @@ let checkInvariant ~isUntaggedDef ~(consts : (Location.t * literal) list) ~(bloc
   let module StringSet = Set.Make(String) in
   let string_literals = ref StringSet.empty in
   let nonstring_literals = ref StringSet.empty in
-  let arrays = ref 0 in
-  let objects = ref 0 in
-  let unknowns = ref 0 in
+  let arrayTypes = ref 0 in
+  let objectTypes = ref 0 in
+  let stringTypes = ref 0 in
+  let numberTypes = ref 0 in
+  let unknownTypes = ref 0 in
   let addStringLiteral ~loc s = 
     if StringSet.mem s !string_literals then
       raise (Error (loc, InvalidUntaggedVariantDefinition (DuplicateLiteral s)));
@@ -158,12 +162,16 @@ let checkInvariant ~isUntaggedDef ~(consts : (Location.t * literal) list) ~(bloc
       raise (Error (loc, InvalidUntaggedVariantDefinition (DuplicateLiteral s)));
       nonstring_literals := StringSet.add s !nonstring_literals in
   let invariant loc =
-    if !unknowns <> 0 && (List.length blocks <> 1)
+    if !unknownTypes <> 0 && (List.length blocks <> 1)
       then raise (Error (loc, InvalidUntaggedVariantDefinition OnlyOneUnknown));
-    if !objects > 1
+    if !objectTypes > 1
       then raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneObject));
-    if !arrays > 1
+    if !arrayTypes > 1
       then raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneArray));
+    if !stringTypes > 1
+      then raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneString));
+    if !numberTypes > 1
+      then raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneNumber));
     () in
   Ext_list.rev_iter consts (fun (loc, literal) -> match literal.literal_type with
     | Some (String s) ->
@@ -185,15 +193,21 @@ let checkInvariant ~isUntaggedDef ~(consts : (Location.t * literal) list) ~(bloc
   if isUntaggedDef then
     Ext_list.rev_iter blocks (fun (loc, block) -> match block.block_type with
     | Some Unknown ->
-      incr unknowns;
+      incr unknownTypes;
       invariant loc
     | Some Object ->
-      incr objects;
+      incr objectTypes;
       invariant loc
     | Some Array ->
-      incr arrays;
+      incr arrayTypes;
       invariant loc
-    | _ -> ())
+    | Some (IntType | FloatType) ->
+      incr numberTypes;
+      invariant loc
+    | Some StringType ->
+      incr stringTypes;
+      invariant loc      
+    | None -> ())
 
 let names_from_type_variant ?(isUntaggedDef=false) (cstrs : Types.constructor_declaration list) =
   let get_cstr_name (cstr: Types.constructor_declaration) =
