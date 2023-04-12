@@ -34,3 +34,10 @@ type svgProps = {
   x?: string,
   y?: string,
 }
+
+module MultipleDotDotDots = {
+  type t1 = {x: int}
+  type t2 = {y: string}
+  type t = {dotdotdot: t1, dotdotdot: t2}
+  let x: t = {x: 10, y: "abc"}
+}
