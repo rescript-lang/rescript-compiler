@@ -1214,6 +1214,7 @@ let check_duplicates sdecl_list =
           (fun {pld_name=cname;pld_loc=loc} ->
             try
               let name' = Hashtbl.find labels cname.txt in
+              if cname.txt <> "dotdotdot" then
               Location.prerr_warning loc
                 (Warnings.Duplicate_definitions
                    ("label", cname.txt, name', sdecl.ptype_name.txt))
