@@ -107,14 +107,7 @@ let rec translateArrowType ~config ~typeVarsGen ~noFunctionReturnDependencies
     let labeledConvertableTypes = revArgs |> List.rev in
     let argTypes = labeledConvertableTypes |> NamedArgs.group in
     let functionType =
-      Function
-        {
-          argTypes;
-          componentName = None;
-          retType;
-          typeVars = [];
-          uncurried = false;
-        }
+      Function {argTypes; retType; typeVars = []; uncurried = false}
     in
     {dependencies = allDeps; type_ = functionType}
 

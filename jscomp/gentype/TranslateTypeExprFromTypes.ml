@@ -161,7 +161,6 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
         Function
           {
             argTypes = [{aName = ""; aType = fromTranslation.type_}];
-            componentName = None;
             retType = toTranslation.type_;
             typeVars = [];
             uncurried = false;
@@ -175,7 +174,6 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
         Function
           {
             argTypes = [{aName = ""; aType = propsTranslation.type_}];
-            componentName = None;
             retType = retTranslation.type_;
             typeVars = [];
             uncurried = false;
@@ -189,7 +187,6 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
         Function
           {
             argTypes = [{aName = ""; aType = propsTranslation.type_}];
-            componentName = None;
             retType = EmitType.typeReactElement;
             typeVars = [];
             uncurried = false;
@@ -328,14 +325,7 @@ let rec translateArrowType ~config ~typeVarsGen ~typeEnv ~revArgDeps ~revArgs
     let labeledConvertableTypes = revArgs |> List.rev in
     let argTypes = labeledConvertableTypes |> NamedArgs.group in
     let functionType =
-      Function
-        {
-          argTypes;
-          componentName = None;
-          retType;
-          typeVars = [];
-          uncurried = false;
-        }
+      Function {argTypes; retType; typeVars = []; uncurried = false}
     in
     {dependencies = allDeps; type_ = functionType}
 
