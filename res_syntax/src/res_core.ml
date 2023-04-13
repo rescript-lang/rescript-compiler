@@ -4453,7 +4453,7 @@ and parseFieldDeclaration p =
   let loc = mkLoc startPos typ.ptyp_loc.loc_end in
   (optional, Ast_helper.Type.field ~attrs ~loc ~mut name typ)
 
-and parseFieldDeclarationRegion p =
+and parseFieldDeclarationRegion ?foundObjectField p =
   let startPos = p.Parser.startPos in
   let attrs = parseAttributes p in
   let mut =
@@ -4461,6 +4461,20 @@ and parseFieldDeclarationRegion p =
     else Asttypes.Immutable
   in
   match p.token with
+  | DotDotDot ->
+    Parser.next p;
+    let name = Location.mkloc "..." (mkLoc startPos p.prevEndPos) in
+    let typ = parsePolyTypeExpr p in
+    let loc = mkLoc startPos typ.ptyp_loc.loc_end in
+    Some (Ast_helper.Type.field ~attrs ~loc ~mut name typ)
+  | String s when foundObjectField <> None ->
+    Option.get foundObjectField := true;
+    Parser.next p;
+    let name = Location.mkloc s (mkLoc startPos p.prevEndPos) in
+    Parser.expect Colon p;
+    let typ = parsePolyTypeExpr p in
+    let loc = mkLoc startPos typ.ptyp_loc.loc_end in
+    Some (Ast_helper.Type.field ~attrs ~loc ~mut name typ)
   | Lident _ ->
     let lident, loc = parseLident p in
     let name = Location.mkloc lident loc in
@@ -4969,7 +4983,7 @@ and parseRecordOrObjectDecl p =
     in
     let typ = parseArrowTypeRest ~es6Arrow:true ~startPos typ p in
     (Some typ, Asttypes.Public, Parsetree.Ptype_abstract)
-  | DotDotDot ->
+  | DotDotDot -> (
     let dotdotdotStart = p.startPos in
     let dotdotdotEnd = p.endPos in
     (* start of object type spreading, e.g. `type u = {...a, "u": int}` *)
@@ -4984,25 +4998,36 @@ and parseRecordOrObjectDecl p =
         Parser.next p
       | _ -> Parser.expect Comma p
     in
-    let () =
-      match p.token with
-      | Lident _ ->
-        Parser.err ~startPos:dotdotdotStart ~endPos:dotdotdotEnd p
-          (Diagnostics.message ErrorMessages.spreadInRecordDeclaration)
-      | _ -> ()
-    in
-    let fields =
-      Parsetree.Oinherit typ
-      :: parseCommaDelimitedRegion ~grammar:Grammar.StringFieldDeclarations
-           ~closing:Rbrace ~f:parseStringFieldDeclaration p
-    in
-    Parser.expect Rbrace p;
-    let loc = mkLoc startPos p.prevEndPos in
-    let typ =
-      Ast_helper.Typ.object_ ~loc fields Asttypes.Closed |> parseTypeAlias p
-    in
-    let typ = parseArrowTypeRest ~es6Arrow:true ~startPos typ p in
-    (Some typ, Asttypes.Public, Parsetree.Ptype_abstract)
+    match p.token with
+    | _ ->
+      let loc = mkLoc startPos p.prevEndPos in
+      let dotField =
+        Ast_helper.Type.field ~loc
+          {txt = "..."; loc = mkLoc dotdotdotStart dotdotdotEnd}
+          typ
+      in
+      let foundObjectField = ref false in
+      let fields =
+        parseCommaDelimitedRegion ~grammar:Grammar.RecordDecl ~closing:Rbrace
+          ~f:(parseFieldDeclarationRegion ~foundObjectField)
+          p
+      in
+      Parser.expect Rbrace p;
+      if !foundObjectField then
+        let fields =
+          Ext_list.map fields (fun ld ->
+              match ld.pld_name.txt with
+              | "..." -> Parsetree.Oinherit ld.pld_type
+              | _ -> Otag (ld.pld_name, ld.pld_attributes, ld.pld_type))
+        in
+        let dotField = Parsetree.Oinherit typ in
+        let typ_obj = Ast_helper.Typ.object_ (dotField :: fields) Closed in
+        let typ_obj = parseTypeAlias p typ_obj in
+        let typ_obj = parseArrowTypeRest ~es6Arrow:true ~startPos typ_obj p in
+        (Some typ_obj, Public, Ptype_abstract)
+      else
+        let kind = Parsetree.Ptype_record (dotField :: fields) in
+        (None, Public, kind))
   | _ -> (
     let attrs = parseAttributes p in
     match p.Parser.token with
