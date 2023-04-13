@@ -195,8 +195,7 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
                t |> renderType ~config ~indent ~typeNameIsInterface ~inFunType
              in
              let tagField =
-               case |> labelJSToString
-               |> field ~name:(Runtime.jsVariantTag ~polymorphic:false)
+               case |> labelJSToString |> field ~name:Runtime.jsVariantTag
              in
              match (unboxed, type_) with
              | true, type_ -> type_ |> render
@@ -204,7 +203,7 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
                (* poly variant *)
                [
                  case |> labelJSToString
-                 |> field ~name:(Runtime.jsVariantTag ~polymorphic);
+                 |> field ~name:Runtime.jsPolymorphicVariantTag;
                  type_ |> render
                  |> field ~name:(Runtime.jsVariantValue ~polymorphic);
                ]
