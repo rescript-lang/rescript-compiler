@@ -118,8 +118,6 @@ let checkUnsupportedGenTypeAsRenaming attributes =
     | Some (loc, _) -> error ~loc
     | None -> ())
 
-let getAs attributes = attributes |> getAttributePayload tagIsAs
-
 let getAsString attributes =
   match attributes |> getAttributePayload tagIsAs with
   | Some (_, StringPayload s) -> Some s
