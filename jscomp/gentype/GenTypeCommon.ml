@@ -82,7 +82,6 @@ and field = {
 
 and function_ = {
   argTypes: argType list;
-  componentName: string option; [@live]
   retType: type_;
   typeVars: string list;
   uncurried: bool; [@live]
@@ -169,8 +168,7 @@ let rec depToResolvedName (dep : dep) =
   | Internal resolvedName -> resolvedName
   | Dot (p, s) -> ResolvedName.dot s (p |> depToResolvedName)
 
-let createVariant ~inherits ~noPayloads ~payloads ~polymorphic
-    ~unboxed =
+let createVariant ~inherits ~noPayloads ~payloads ~polymorphic ~unboxed =
   Variant {inherits; noPayloads; payloads; polymorphic; unboxed}
 
 let ident ?(builtin = true) ?(typeArgs = []) name =

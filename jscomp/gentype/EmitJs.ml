@@ -133,7 +133,6 @@ let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
   match codeItem with
   | ImportValue {asPath; importAnnotation; type_; valueName} ->
     let importPath = importAnnotation.importPath in
-    let importFile = importAnnotation.name in
     let firstNameInPath, restOfPath =
       match valueName = asPath with
       | true -> (valueName, "")
@@ -159,11 +158,6 @@ let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
           as function_)
         when retType |> EmitType.isTypeFunctionComponent ~fields ->
         (* JSX V3 *)
-        let componentName =
-          match importFile with
-          | "." | ".." -> None
-          | _ -> Some importFile
-        in
         let fields =
           fields
           |> List.map (fun (field : field) ->
@@ -180,7 +174,7 @@ let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
             argTypes = [{aType = Object (closedFlag, fields); aName}];
           }
         in
-        Function {function_ with componentName}
+        Function function_
       | Function
           ({argTypes = [{aType = Ident {name} as propsType; aName}]; retType} as
           function_)
@@ -189,11 +183,6 @@ let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
         match inlineOneLevel propsType with
         | Object (closedFlags, fields) ->
           (* JSX V3 *)
-          let componentName =
-            match importFile with
-            | "." | ".." -> None
-            | _ -> Some importFile
-          in
           let fields =
             Ext_list.filter_map fields (fun (field : field) ->
                 match field.nameJS with
@@ -210,7 +199,7 @@ let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
               argTypes = [{aType = Object (closedFlags, fields); aName}];
             }
           in
-          Function {function_ with componentName}
+          Function function_
         | _ -> type_)
       | _ -> type_
     in
@@ -276,26 +265,6 @@ let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
         typeVars: string list;
       }
     end in
-    let getHookName () =
-      let chopSuffix suffix =
-        match resolvedNameStr = suffix with
-        | true -> ""
-        | false -> (
-          match Filename.check_suffix resolvedNameStr ("_" ^ suffix) with
-          | true -> Filename.chop_suffix resolvedNameStr ("_" ^ suffix)
-          | false -> resolvedNameStr)
-      in
-      let suffix =
-        if originalName = default then chopSuffix default
-        else if originalName = make then chopSuffix make
-        else resolvedNameStr
-      in
-      (fileName |> ModuleName.toString)
-      ^
-      match suffix = "" with
-      | true -> suffix
-      | false -> "_" ^ suffix
-    in
     let type_, hookType =
       match type_ with
       | Function
@@ -331,7 +300,7 @@ let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
             ResolvedName.fromString "Props")
           else ResolvedName.fromString name |> ResolvedName.dot "Props"
         in
-        ( Function {function_ with componentName = Some (getHookName ())},
+        ( Function function_,
           Some {HookType.propsType; resolvedTypeName; typeVars} )
       | Function
           ({argTypes = [{aType = Ident {name} as propsType}]; retType} as
@@ -359,7 +328,7 @@ let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
             let function_ =
               {function_ with argTypes = [{aName = ""; aType = propsType}]}
             in
-            Function {function_ with componentName = Some (getHookName ())}
+            Function function_
           | _ -> type_
         in
         (compType, None)
