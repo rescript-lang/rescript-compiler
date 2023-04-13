@@ -1,4 +1,4 @@
-type import = {name: string; importPath: ImportPath.t}
+type import = {importPath: ImportPath.t}
 
 type attributePayload =
   | BoolPayload of bool
@@ -282,13 +282,8 @@ let sanitizeVariableName name =
        | c -> c)
 
 let importFromString importString : import =
-  let name =
-    let base = importString |> Filename.basename in
-    (try base |> Filename.chop_extension with Invalid_argument _ -> base)
-    |> sanitizeVariableName
-  in
   let importPath = ImportPath.fromStringUnsafe importString in
-  {name; importPath}
+  {importPath}
 
 let updateConfigForModule ~(config : GenTypeConfig.t) attributes =
   if attributes |> hasAttribute tagIsGenType then
