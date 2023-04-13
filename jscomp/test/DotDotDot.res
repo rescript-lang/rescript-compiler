@@ -1,14 +1,14 @@
 type a = {x: int}
 
-type b = {\"...": a, y: string}
+type b = {...a, y: string}
 
-type c = {\"...": b, z: string}
+type c = {...b, z: string}
 
 let v: c = {x: 10, y: "", z: ""}
 
 type vw = {v: float, w: float}
 
-type cvw = {\"...": c, \"...": vw}
+type cvw = {...c, ...vw}
 
 let v2: cvw = {x: 10, y: "", z: "", v: 1.0, w: 2.0}
 
@@ -30,7 +30,7 @@ type anchorProps = {
 type divProps = {\"...": globalProps}
 
 type svgProps = {
-  \"...": globalProps,
+  ...globalProps,
   x?: string,
   y?: string,
 }
@@ -38,6 +38,6 @@ type svgProps = {
 module MultipleDotDotDots = {
   type t1 = {x: int}
   type t2 = {y: string}
-  type t = {\"...": t1, \"...": t2}
+  type t = {...t1, ...t2}
   let x: t = {x: 10, y: "abc"}
 }
