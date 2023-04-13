@@ -99,7 +99,12 @@ and variant = {
   unboxed: bool;
 }
 
-and payload = {case: case; inlineRecord: bool [@live]; numArgs: int; [@live] t: type_}
+and payload = {
+  case: case;
+  inlineRecord: bool; [@live]
+  numArgs: int; [@live]
+  t: type_;
+}
 
 type label = Nolabel | Label of string | OptLabel of string
 
