@@ -163,7 +163,6 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
             argTypes = [{aName = ""; aType = fromTranslation.type_}];
             retType = toTranslation.type_;
             typeVars = [];
-            uncurried = false;
           };
     }
   | ( (["React"; "componentLike"] | ["ReactV3"; "React"; "componentLike"]),
@@ -176,7 +175,6 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
             argTypes = [{aName = ""; aType = propsTranslation.type_}];
             retType = retTranslation.type_;
             typeVars = [];
-            uncurried = false;
           };
     }
   | ( (["React"; "component"] | ["ReactV3"; "React"; "component"]),
@@ -189,7 +187,6 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
             argTypes = [{aName = ""; aType = propsTranslation.type_}];
             retType = EmitType.typeReactElement;
             typeVars = [];
-            uncurried = false;
           };
     }
   | ( (["React"; "Context"; "t"] | ["ReactV3"; "React"; "Context"; "t"]),
@@ -243,13 +240,7 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
   | (["Js"; "Dict"; "t"] | ["Dict"; "t"]), [paramTranslation] ->
     {paramTranslation with type_ = Dict paramTranslation.type_}
   | ["function$"], [arg; _arity] ->
-    {
-      dependencies = arg.dependencies;
-      type_ =
-        (match arg.type_ with
-        | Function function_ -> Function {function_ with uncurried = true}
-        | _ -> arg.type_);
-    }
+    {dependencies = arg.dependencies; type_ = arg.type_}
   | _ -> defaultCase ()
 
 type processVariant = {
@@ -324,9 +315,7 @@ let rec translateArrowType ~config ~typeVarsGen ~typeEnv ~revArgDeps ~revArgs
     let allDeps = List.rev_append revArgDeps dependencies in
     let labeledConvertableTypes = revArgs |> List.rev in
     let argTypes = labeledConvertableTypes |> NamedArgs.group in
-    let functionType =
-      Function {argTypes; retType; typeVars = []; uncurried = false}
-    in
+    let functionType = Function {argTypes; retType; typeVars = []} in
     {dependencies = allDeps; type_ = functionType}
 
 and translateTypeExprFromTypes_ ~config ~typeVarsGen ~typeEnv
