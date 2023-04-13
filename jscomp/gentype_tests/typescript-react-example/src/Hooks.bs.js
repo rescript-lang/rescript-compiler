@@ -7,7 +7,7 @@ import * as ImportHookDefault from "./ImportHookDefault.bs.js";
 
 function Hooks(Props) {
   var vehicle = Props.vehicle;
-  var match = React.useState(function () {
+  var match = React.useState(function (param) {
         return 0;
       });
   var setCount = match[1];

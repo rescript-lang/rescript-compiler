@@ -91,7 +91,6 @@ and function_ = {
 and ident = {builtin: bool; name: string; typeArgs: type_ list}
 
 and variant = {
-  bsStringOrInt: bool; [@live]
   inherits: type_ list;
   noPayloads: case list;
   payloads: payload list;
@@ -170,9 +169,9 @@ let rec depToResolvedName (dep : dep) =
   | Internal resolvedName -> resolvedName
   | Dot (p, s) -> ResolvedName.dot s (p |> depToResolvedName)
 
-let createVariant ~bsStringOrInt ~inherits ~noPayloads ~payloads ~polymorphic
+let createVariant ~inherits ~noPayloads ~payloads ~polymorphic
     ~unboxed =
-  Variant {bsStringOrInt; inherits; noPayloads; payloads; polymorphic; unboxed}
+  Variant {inherits; noPayloads; payloads; polymorphic; unboxed}
 
 let ident ?(builtin = true) ?(typeArgs = []) name =
   Ident {builtin; name; typeArgs}
