@@ -240,11 +240,6 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
                         ~recordRepresentation:Types.Record_regular;
                  ]
              in
-             let inlineRecord =
-               match constructorArgs with
-               | Cstr_tuple _ -> false
-               | Cstr_record _ -> true
-             in
              let argTypes =
                argsTranslation
                |> List.map (fun {TranslateTypeExprFromTypes.type_} -> type_)
@@ -266,36 +261,21 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
                attributes,
                argTypes,
                importTypes,
-               inlineRecord,
                recordValue |> Runtime.recordValueToString ))
     in
     let variantsNoPayload, variantsWithPayload =
-      variants
-      |> List.partition (fun (_, _, argTypes, _, _, _) -> argTypes = [])
+      variants |> List.partition (fun (_, _, argTypes, _, _) -> argTypes = [])
     in
     let noPayloads =
       variantsNoPayload
       |> List.map
-           (fun
-             ( name,
-               attributes,
-               _argTypes,
-               _importTypes,
-               _inlineRecord,
-               recordValue )
-           -> {((name, attributes) |> createCase) with label = recordValue})
+           (fun (name, attributes, _argTypes, _importTypes, recordValue) ->
+             {((name, attributes) |> createCase) with label = recordValue})
     in
     let payloads =
       variantsWithPayload
       |> List.map
-           (fun
-             ( name,
-               attributes,
-               argTypes,
-               _importTypes,
-               inlineRecord,
-               recordValue )
-           ->
+           (fun (name, attributes, argTypes, _importTypes, recordValue) ->
              let type_ =
                match argTypes with
                | [type_] -> type_
@@ -305,7 +285,6 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
              {
                case =
                  {((name, attributes) |> createCase) with label = recordValue};
-               inlineRecord;
                numArgs;
                t = type_;
              })
@@ -324,7 +303,7 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
     in
     let importTypes =
       variants
-      |> List.map (fun (_, _, _, importTypes, _, _) -> importTypes)
+      |> List.map (fun (_, _, _, importTypes, _) -> importTypes)
       |> List.concat
     in
     {CodeItem.exportFromTypeDeclaration; importTypes} |> returnTypeDeclaration
