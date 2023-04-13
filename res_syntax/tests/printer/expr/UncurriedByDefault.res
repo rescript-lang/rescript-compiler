@@ -76,6 +76,9 @@ let fn = (_x): ((. unit) => unit) => foo
 let fooC = () => ()
 let fnC = (_x): ((unit) => unit) => fooC
 
+let a = ((. ()) => "foo")->Ok
+let aC = (() => "foo")->Ok
+
 @@uncurried.swap
 
 let cApp = foo(. 3)
