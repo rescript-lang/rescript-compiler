@@ -170,7 +170,7 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
       |> String.concat ", ")
     ^ "]"
   | TypeVar s -> s
-  | Variant {inherits; noPayloads; payloads; polymorphic; unboxed} ->
+  | Variant {inherits; noPayloads; payloads; polymorphic; unboxed; customTag} ->
     let inheritsRendered =
       inherits
       |> List.map (fun type_ ->
@@ -195,7 +195,8 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
                t |> renderType ~config ~indent ~typeNameIsInterface ~inFunType
              in
              let tagField =
-               case |> labelJSToString |> field ~name:Runtime.jsVariantTag
+               case |> labelJSToString
+               |> field ~name:(Runtime.jsVariantTag ~customTag)
              in
              match (unboxed, type_) with
              | true, type_ -> type_ |> render

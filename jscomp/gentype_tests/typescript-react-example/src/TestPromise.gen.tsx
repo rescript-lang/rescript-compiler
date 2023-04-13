@@ -17,8 +17,8 @@ export type toPayload = { readonly result: string };
 
 // tslint:disable-next-line:interface-over-type-literal
 export type settledResult<a> = 
-    { TAG: "fulfilled"; readonly value: a }
-  | { TAG: "rejected"; readonly reason: unknown };
+    { status: "fulfilled"; readonly value: a }
+  | { status: "rejected"; readonly reason: unknown };
 
 // tslint:disable-next-line:interface-over-type-literal
 export type settled = settledResult<string>;

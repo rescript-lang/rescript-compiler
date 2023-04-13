@@ -63,6 +63,7 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
   let unboxedAnnotation =
     typeAttributes |> Annotation.hasAttribute Annotation.tagIsUnboxed
   in
+  let customTag = typeAttributes |> Annotation.getTag in
   let returnTypeDeclaration (typeDeclaration : CodeItem.typeDeclaration) =
     match opaque = Some true with
     | true -> [{typeDeclaration with importTypes = []}]
@@ -197,7 +198,7 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
           else variant.payloads
         in
         createVariant ~inherits:variant.inherits ~noPayloads ~payloads
-          ~polymorphic:true ~unboxed:false
+          ~polymorphic:true ~unboxed:false ~customTag:None
       | _ -> translation.type_
     in
     {translation with type_} |> handleGeneralDeclaration
@@ -289,7 +290,7 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
     in
     let variantTyp =
       createVariant ~inherits:[] ~noPayloads ~payloads ~polymorphic:false
-        ~unboxed:unboxedAnnotation
+        ~unboxed:unboxedAnnotation ~customTag
     in
     let resolvedTypeName = typeName |> TypeEnv.addModulePath ~typeEnv in
     let exportFromTypeDeclaration =

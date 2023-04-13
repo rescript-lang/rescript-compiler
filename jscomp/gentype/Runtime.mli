@@ -15,7 +15,7 @@ val newModuleItem : name:string -> moduleItem
 val newRecordValue : unboxed:bool -> recordGen -> recordValue
 val recordGen : unit -> recordGen
 val recordValueToString : recordValue -> string
-val jsVariantTag : string
+val jsVariantTag : customTag:string option -> string
 val jsPolymorphicVariantTag : string
 val jsVariantPayloadTag : n:int -> string
 val jsVariantValue : polymorphic:bool -> string

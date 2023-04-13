@@ -24,7 +24,10 @@ let rec emitModuleAccessPath ~config moduleAccessPath =
   | Dot (p, moduleItem) ->
     p |> emitModuleAccessPath ~config |> EmitText.fieldAccess ~label:moduleItem
 
-let jsVariantTag = "TAG"
+let jsVariantTag ~customTag =
+  match customTag with
+  | None -> "TAG"
+  | Some tag -> tag
 let jsPolymorphicVariantTag = "NAME"
 
 let jsVariantPayloadTag ~n = "_" ^ string_of_int n

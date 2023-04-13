@@ -12,6 +12,9 @@
 
 # 11.0.0-alpha.5 (Unreleased)
 
+#### :bug: Bug Fix
+- GenType: add support for custom `@tag` in variant type declaration. https://github.com/rescript-lang/rescript-compiler/pull/6137/files
+
 # 11.0.0-alpha.4
 
 #### :rocket: Main New Feature
