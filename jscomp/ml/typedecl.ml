@@ -290,7 +290,7 @@ let make_constructor env type_path type_params sargs sret_type =
 *)
 
 
-let transl_declaration ~foundObject env sdecl id =
+let transl_declaration ~typeRecordAsObject env sdecl id =
   (* Bind type parameters *)
   reset_type_variables();
   Ctype.begin_def ();
@@ -481,8 +481,8 @@ let transl_declaration ~foundObject env sdecl id =
             check_duplicates lbls StringSet.empty;
             Ttype_record lbls, Type_record(lbls', rep), sdecl
           | None ->
-             (* Could not fine type decl for ...t: assume t is an object type and this is syntax ambiguity *)
-             foundObject := true;
+             (* Could not find record type decl for ...t: assume t is an object type and this is syntax ambiguity *)
+             typeRecordAsObject := true;
              let fields = Ext_list.map lbls_ (fun ld ->
               match ld.pld_name.txt with
               | "..." -> Parsetree.Oinherit ld.pld_type
@@ -602,7 +602,7 @@ let check_constraints_labels env visited l pl =
        check_constraints_rec env (get_loc (Ident.name name) pl) visited ty)
     l
 
-let check_constraints ~foundObject env sdecl (_, decl) =
+let check_constraints ~typeRecordAsObject env sdecl (_, decl) =
   let visited = ref TypeSet.empty in
   begin match decl.type_kind with
   | Type_abstract -> ()
@@ -651,7 +651,7 @@ let check_constraints ~foundObject env sdecl (_, decl) =
   begin match decl.type_manifest with
   | None -> ()
   | Some ty ->
-    if not !foundObject then 
+    if not !typeRecordAsObject then 
       let sty =
         match sdecl.ptype_manifest with Some sty -> sty | _ -> assert false
       in
@@ -1311,15 +1311,15 @@ let transl_type_decl env rec_flag sdecl_list =
     | Asttypes.Recursive | Asttypes.Nonrecursive ->
         id, None
   in
-  let foundObject = ref false in
+  let typeRecordAsObject = ref false in
   let transl_declaration name_sdecl (id, slot) =
     current_slot := slot;
     Builtin_attributes.warning_scope
       name_sdecl.ptype_attributes
-      (fun () -> transl_declaration temp_env name_sdecl id)
+      (fun () -> transl_declaration ~typeRecordAsObject temp_env name_sdecl id)
   in
   let tdecls =
-    List.map2 (transl_declaration ~foundObject) sdecl_list (List.map id_slots id_list) in
+    List.map2 transl_declaration sdecl_list (List.map id_slots id_list) in
   let decls =
     List.map (fun tdecl -> (tdecl.typ_id, tdecl.typ_type)) tdecls in
   current_slot := None;
@@ -1367,7 +1367,7 @@ let transl_type_decl env rec_flag sdecl_list =
        | None   -> ())
     sdecl_list tdecls;
   (* Check that constraints are enforced *)
-  List.iter2 (check_constraints ~foundObject newenv) sdecl_list decls;
+  List.iter2 (check_constraints ~typeRecordAsObject newenv) sdecl_list decls;
   (* Name recursion *)
   let decls =
     List.map2 (fun sdecl (id, decl) -> id, name_recursion sdecl id decl)
