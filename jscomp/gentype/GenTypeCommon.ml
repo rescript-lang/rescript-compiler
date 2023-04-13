@@ -80,12 +80,7 @@ and field = {
   type_: type_;
 }
 
-and function_ = {
-  argTypes: argType list;
-  retType: type_;
-  typeVars: string list;
-  uncurried: bool; [@live]
-}
+and function_ = {argTypes: argType list; retType: type_; typeVars: string list}
 
 and ident = {builtin: bool; name: string; typeArgs: type_ list}
 
