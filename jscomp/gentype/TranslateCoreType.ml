@@ -204,7 +204,6 @@ and translateCoreType_ ~config ~typeVarsGen
         |> List.map (fun (label, _attributes, translation) ->
                {
                  case = {label; labelJS = StringLabel label};
-                 inlineRecord = false;
                  numArgs = 1;
                  t = translation.type_;
                })

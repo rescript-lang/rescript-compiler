@@ -134,7 +134,6 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
     let case n name type_ =
       {
         case = {label = string_of_int n; labelJS = StringLabel name};
-        inlineRecord = false;
         numArgs = 1;
         t = type_;
       }
@@ -411,7 +410,6 @@ and translateTypeExprFromTypes_ ~config ~typeVarsGen ~typeEnv
         |> List.map (fun (label, translation) ->
                {
                  case = {label; labelJS = StringLabel label};
-                 inlineRecord = false;
                  numArgs = 1;
                  t = translation.type_;
                })
