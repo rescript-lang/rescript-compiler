@@ -16,6 +16,10 @@
 
 - Add support for extensible records (e.g. `type t = {...t1, x:int, ...t2}`) https://github.com/rescript-lang/rescript-compiler/pull/5715
 
+#### :bug: Bug Fix
+
+- Fix formatting and parentheses placement in uncurried functions with constraints. https://github.com/rescript-lang/rescript-compiler/pull/6143
+
 # 11.0.0-alpha.2
 
 #### :rocket: Main New Feature

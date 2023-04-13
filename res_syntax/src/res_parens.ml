@@ -132,6 +132,7 @@ let binaryExprOperand ~isLhs expr =
        Pexp_constraint _ | Pexp_fun _ | Pexp_function _ | Pexp_newtype _;
     } ->
       Parenthesized
+    | _ when Ast_uncurried.exprIsUncurriedFun expr -> Parenthesized
     | expr when ParsetreeViewer.isBinaryExpression expr -> Parenthesized
     | expr when ParsetreeViewer.isTernaryExpr expr -> Parenthesized
     | {pexp_desc = Pexp_lazy _ | Pexp_assert _} when isLhs -> Parenthesized
@@ -441,6 +442,7 @@ let includeModExpr modExpr =
 let arrowReturnTypExpr typExpr =
   match typExpr.Parsetree.ptyp_desc with
   | Parsetree.Ptyp_arrow _ -> true
+  | _ when Ast_uncurried.typeIsUncurriedFun typExpr -> true
   | _ -> false
 
 let patternRecordRowRhs (pattern : Parsetree.pattern) =
