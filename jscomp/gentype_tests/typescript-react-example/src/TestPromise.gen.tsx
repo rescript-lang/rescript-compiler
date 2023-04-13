@@ -15,6 +15,14 @@ export type fromPayload = { readonly x: number; readonly s: string };
 // tslint:disable-next-line:interface-over-type-literal
 export type toPayload = { readonly result: string };
 
+// tslint:disable-next-line:interface-over-type-literal
+export type settledResult<a> = 
+    { TAG: "fulfilled"; readonly value: a }
+  | { TAG: "rejected"; readonly reason: unknown };
+
+// tslint:disable-next-line:interface-over-type-literal
+export type settled = settledResult<string>;
+
 export const convert: (_1:Promise<fromPayload>) => Promise<toPayload> = TestPromiseBS.convert;
 
 export const barx: (_1:{ readonly x?: Promise<(undefined | string)> }, _2:void) => boolean = TestPromiseBS.barx;
