@@ -17,6 +17,7 @@
 #### :rocket: Main New Feature
 
 - Add support for type coercion `:>` for records. https://github.com/rescript-lang/rescript-compiler/pull/5721
+- Add support for extensible records (e.g. `type t = {...t1, x:int, ...t2}`) https://github.com/rescript-lang/rescript-compiler/pull/5715
 
 #### :bug: Bug Fix
 
