@@ -1531,9 +1531,12 @@ and printLabelDeclaration ~state (ld : Parsetree.label_declaration) cmtTbl =
     | Mutable -> Doc.text "mutable "
     | Immutable -> Doc.nil
   in
-  let name =
-    let doc = printIdentLike ld.pld_name.txt in
-    printComments doc cmtTbl ld.pld_name.loc
+  let name, isDot =
+    let doc, isDot =
+      if ld.pld_name.txt = "..." then (Doc.text ld.pld_name.txt, true)
+      else (printIdentLike ld.pld_name.txt, false)
+    in
+    (printComments doc cmtTbl ld.pld_name.loc, isDot)
   in
   let optional = printOptionalLabel ld.pld_attributes in
   Doc.group
@@ -1543,7 +1546,7 @@ and printLabelDeclaration ~state (ld : Parsetree.label_declaration) cmtTbl =
          mutableFlag;
          name;
          optional;
-         Doc.text ": ";
+         (if isDot then Doc.nil else Doc.text ": ");
          printTypExpr ~state ld.pld_type cmtTbl;
        ])
 

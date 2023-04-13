@@ -22,7 +22,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type constructor_tag = {cstr_name: Ast_untagged_variants.literal; const: int; non_const: int}
+type constructor_tag = {
+  cstr_name: Ast_untagged_variants.literal;
+  const: int;
+  non_const: int;
+}
 
 type pointer_info =
   | None

@@ -101,7 +101,8 @@ let [|arr;_|] = [|1;2;3|]
 let record = { x with y }
 let { x; y } = myRecord
 let x::y = myList
-type nonrec t = < a  > 
+type nonrec t = {
+  ...: a }
 type nonrec t =
   | Foo of < a  >  
 type nonrec t = (foo, < x  > ) option

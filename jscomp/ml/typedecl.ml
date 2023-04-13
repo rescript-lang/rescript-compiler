@@ -290,7 +290,7 @@ let make_constructor env type_path type_params sargs sret_type =
 *)
 
 
-let transl_declaration env sdecl id =
+let transl_declaration ~foundObject env sdecl id =
   (* Bind type parameters *)
   reset_type_variables();
   Ctype.begin_def ();
@@ -358,9 +358,9 @@ let transl_declaration env sdecl id =
       unboxed_false_default_false
   in
   let unbox = unboxed_status.unboxed in
-  let (tkind, kind) =
+  let (tkind, kind, sdecl) =
     match sdecl.ptype_kind with
-      | Ptype_abstract -> Ttype_abstract, Type_abstract
+      | Ptype_abstract -> Ttype_abstract, Type_abstract, sdecl
       | Ptype_variant scstrs ->
         assert (scstrs <> []);
         if List.exists (fun cstr -> cstr.pcd_res <> None) scstrs then begin
@@ -423,15 +423,15 @@ let transl_declaration env sdecl id =
         let tcstrs, cstrs = List.split (List.map make_cstr scstrs) in
         let isUntaggedDef = Ast_untagged_variants.has_untagged sdecl.ptype_attributes in
         Ast_untagged_variants.check_well_formed ~isUntaggedDef cstrs;
-        Ttype_variant tcstrs, Type_variant cstrs
-      | Ptype_record lbls ->
+        Ttype_variant tcstrs, Type_variant cstrs, sdecl
+      | Ptype_record lbls_ ->
           let has_optional attrs = Ext_list.exists attrs (fun ({txt },_) -> txt = "res.optional") in
           let optionalLabels =
-              Ext_list.filter_map lbls
+              Ext_list.filter_map lbls_
               (fun lbl -> if has_optional lbl.pld_attributes then Some lbl.pld_name.txt else None) in
           let lbls =
-            if optionalLabels = [] then lbls
-            else Ext_list.map lbls (fun lbl ->
+            if optionalLabels = [] then lbls_
+            else Ext_list.map lbls_ (fun lbl ->
               let typ = lbl.pld_type in
               let typ =
                 if has_optional lbl.pld_attributes then
@@ -446,7 +446,7 @@ let transl_declaration env sdecl id =
               then Record_optional_labels optionalLabels
               else Record_regular
           in
-          let lbls, lbls' = match lbls, lbls' with
+          let lbls_opt = match lbls, lbls' with
             | {ld_name = {txt = "..."}; ld_type} :: _, _ :: _ ->
               let rec extract t = match t.desc with
                 | Tpoly(t, []) -> extract t
@@ -464,21 +464,36 @@ let transl_declaration env sdecl id =
                     (_p0, _p, {type_kind=Type_record (fields, _repr)}) ->
                       process_lbls (fst acc @ (fields |> List.map mkLbl), snd acc @ fields) rest rest'
                     | _ -> assert false
-                    | exception _ -> assert false)
+                    | exception _ -> None)
                 | lbl::rest, lbl'::rest' -> process_lbls (fst acc @ [lbl], snd acc @ [lbl']) rest rest'
-                | _ -> acc
+                | _ -> Some acc
               in
               process_lbls ([], []) lbls lbls'
-            | _ -> lbls, lbls' in
+            | _ -> Some (lbls, lbls') in
           let rec check_duplicates (lbls : Typedtree.label_declaration list) seen = match lbls with
           | [] -> ()
           | lbl::rest ->
             let name = lbl.ld_id.name in
             if StringSet.mem name seen then raise(Error(lbl.ld_loc, Duplicate_label name));
             check_duplicates rest (StringSet.add name seen) in
-          check_duplicates lbls StringSet.empty;
-          Ttype_record lbls, Type_record(lbls', rep)
-      | Ptype_open -> Ttype_open, Type_open
+          (match lbls_opt with
+          | Some (lbls, lbls') ->
+            check_duplicates lbls StringSet.empty;
+            Ttype_record lbls, Type_record(lbls', rep), sdecl
+          | None ->
+             (* Could not fine type decl for ...t: assume t is an object type and this is syntax ambiguity *)
+             foundObject := true;
+             let fields = Ext_list.map lbls_ (fun ld ->
+              match ld.pld_name.txt with
+              | "..." -> Parsetree.Oinherit ld.pld_type
+              | _ -> Otag (ld.pld_name, ld.pld_attributes, ld.pld_type)) in
+             let sdecl =
+              {sdecl with
+               ptype_kind = Ptype_abstract;
+               ptype_manifest = Some (Ast_helper.Typ.object_ ~loc:sdecl.ptype_loc fields Closed);
+              } in
+             (Ttype_abstract, Type_abstract, sdecl))
+      | Ptype_open -> Ttype_open, Type_open, sdecl
       in
     let (tman, man) = match sdecl.ptype_manifest with
         None -> None, None
@@ -587,7 +602,7 @@ let check_constraints_labels env visited l pl =
        check_constraints_rec env (get_loc (Ident.name name) pl) visited ty)
     l
 
-let check_constraints env sdecl (_, decl) =
+let check_constraints ~foundObject env sdecl (_, decl) =
   let visited = ref TypeSet.empty in
   begin match decl.type_kind with
   | Type_abstract -> ()
@@ -636,10 +651,12 @@ let check_constraints env sdecl (_, decl) =
   begin match decl.type_manifest with
   | None -> ()
   | Some ty ->
+    if not !foundObject then 
       let sty =
         match sdecl.ptype_manifest with Some sty -> sty | _ -> assert false
       in
       check_constraints_rec env sty.ptyp_loc visited ty
+  
   end
 
 (*
@@ -1294,6 +1311,7 @@ let transl_type_decl env rec_flag sdecl_list =
     | Asttypes.Recursive | Asttypes.Nonrecursive ->
         id, None
   in
+  let foundObject = ref false in
   let transl_declaration name_sdecl (id, slot) =
     current_slot := slot;
     Builtin_attributes.warning_scope
@@ -1301,7 +1319,7 @@ let transl_type_decl env rec_flag sdecl_list =
       (fun () -> transl_declaration temp_env name_sdecl id)
   in
   let tdecls =
-    List.map2 transl_declaration sdecl_list (List.map id_slots id_list) in
+    List.map2 (transl_declaration ~foundObject) sdecl_list (List.map id_slots id_list) in
   let decls =
     List.map (fun tdecl -> (tdecl.typ_id, tdecl.typ_type)) tdecls in
   current_slot := None;
@@ -1349,7 +1367,7 @@ let transl_type_decl env rec_flag sdecl_list =
        | None   -> ())
     sdecl_list tdecls;
   (* Check that constraints are enforced *)
-  List.iter2 (check_constraints newenv) sdecl_list decls;
+  List.iter2 (check_constraints ~foundObject newenv) sdecl_list decls;
   (* Name recursion *)
   let decls =
     List.map2 (fun sdecl (id, decl) -> id, name_recursion sdecl id decl)

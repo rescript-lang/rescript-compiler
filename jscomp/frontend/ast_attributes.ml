@@ -332,7 +332,6 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
       | _ -> ());
   !st
 
-
 let locg = Location.none
 (* let bs : attr
    =  {txt = "bs" ; loc = locg}, Ast_payload.empty *)
