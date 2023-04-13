@@ -71,6 +71,11 @@ type callback4 = ((. ReactEvent.Mouse.t) => unit) as 'callback
 type callback5 = (. ReactEvent.Mouse.t) => (unit as 'u)
 type callback6 = ((. ReactEvent.Mouse.t) => unit) as 'callback
 
+let foo = (. ()) => ()
+let fn = (_x): ((. unit) => unit) => foo
+let fooC = () => ()
+let fnC = (_x): (unit => unit) => fooC
+
 @@uncurried.swap
 
 let cApp = foo(. 3)
