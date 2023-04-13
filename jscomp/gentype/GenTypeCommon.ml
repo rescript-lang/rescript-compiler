@@ -82,16 +82,16 @@ and field = {
 
 and function_ = {
   argTypes: argType list;
-  componentName: string option;
+  componentName: string option; [@live]
   retType: type_;
   typeVars: string list;
-  uncurried: bool;
+  uncurried: bool; [@live]
 }
 
 and ident = {builtin: bool; name: string; typeArgs: type_ list}
 
 and variant = {
-  bsStringOrInt: bool;
+  bsStringOrInt: bool; [@live]
   inherits: type_ list;
   noPayloads: case list;
   payloads: payload list;
@@ -99,7 +99,7 @@ and variant = {
   unboxed: bool;
 }
 
-and payload = {case: case; inlineRecord: bool; numArgs: int; t: type_}
+and payload = {case: case; inlineRecord: bool [@live]; numArgs: int; [@live] t: type_}
 
 type label = Nolabel | Label of string | OptLabel of string
 
