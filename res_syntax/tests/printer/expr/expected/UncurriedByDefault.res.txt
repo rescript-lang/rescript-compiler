@@ -151,3 +151,7 @@ type callback3 = ((. ReactEvent.Mouse.t) => unit) as 'callback
 type callback4 = (ReactEvent.Mouse.t => unit) as 'callback
 type callback5 = ReactEvent.Mouse.t => (unit as 'u)
 type callback6 = (ReactEvent.Mouse.t => unit) as 'callback
+
+let fooU = () => ()
+let fnU = (_x): (unit => unit) => fooC
+let aU = (() => "foo")->Ok
