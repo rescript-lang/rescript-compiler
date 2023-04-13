@@ -132,11 +132,7 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
   | ( (["Pervasives"; "result"] | ["Belt"; "Result"; "t"]),
       [paramTranslation1; paramTranslation2] ) ->
     let case n name type_ =
-      {
-        case = {label = string_of_int n; labelJS = StringLabel name};
-        numArgs = 1;
-        t = type_;
-      }
+      {case = {label = string_of_int n; labelJS = StringLabel name}; t = type_}
     in
     let variant =
       createVariant ~inherits:[] ~noPayloads:[]
@@ -410,7 +406,6 @@ and translateTypeExprFromTypes_ ~config ~typeVarsGen ~typeEnv
         |> List.map (fun (label, translation) ->
                {
                  case = {label; labelJS = StringLabel label};
-                 numArgs = 1;
                  t = translation.type_;
                })
       in

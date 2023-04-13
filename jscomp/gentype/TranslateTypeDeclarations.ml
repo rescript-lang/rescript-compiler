@@ -281,11 +281,9 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
                | [type_] -> type_
                | _ -> Tuple argTypes
              in
-             let numArgs = argTypes |> List.length in
              {
                case =
                  {((name, attributes) |> createCase) with label = recordValue};
-               numArgs;
                t = type_;
              })
     in
