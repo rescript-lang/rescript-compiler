@@ -15,6 +15,7 @@
 #### :bug: Bug Fix
 
 - Fix broken formatting in uncurried mode for functions with _ placeholder args. https://github.com/rescript-lang/rescript-compiler/pull/6148
+- Disable warning on `@inline` attibute on uncurried functions. https://github.com/rescript-lang/rescript-compiler/pull/6152
 
 # 11.0.0-alpha.3
 

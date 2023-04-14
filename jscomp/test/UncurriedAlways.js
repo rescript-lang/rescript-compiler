@@ -47,6 +47,14 @@ function q(param) {
   return null;
 }
 
+function inl() {
+  
+}
+
+function inl2(x, y) {
+  return x + y | 0;
+}
+
 exports.foo = foo;
 exports.z = z;
 exports.bar = bar;
@@ -59,4 +67,6 @@ exports.bar2 = bar2;
 exports.foo3 = foo3;
 exports.bar3 = bar3;
 exports.q = q;
+exports.inl = inl;
+exports.inl2 = inl2;
 /*  Not a pure module */
