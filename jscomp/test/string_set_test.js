@@ -18,7 +18,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -34,7 +34,7 @@ for(var i = 0; i <= 99999; ++i){
   s = String_set.add(String(i), s);
 }
 
-eq("File \"string_set_test.ml\", line 16, characters 5-12", String_set.cardinal(s), 100000);
+eq("File \"string_set_test.res\", line 15, characters 5-12", String_set.cardinal(s), 100000);
 
 Mt.from_pair_suites("String_set_test", suites.contents);
 

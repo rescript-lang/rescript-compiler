@@ -23,7 +23,7 @@ var T0 = {
 throw {
       RE_EXN_ID: "Match_failure",
       _1: [
-        "gpr_4632.ml",
+        "gpr_4632.res",
         12,
         6
       ],

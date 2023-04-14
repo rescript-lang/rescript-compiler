@@ -84,7 +84,7 @@ let translate loc (cxt : Lam_compile_context.t) (prim : Lam_primitive.t)
   | Pis_undefined -> E.is_undef (Ext_list.singleton_exn args)
   | Pis_null_undefined -> E.is_null_undefined (Ext_list.singleton_exn args)
   | Pjs_typeof -> E.typeof (Ext_list.singleton_exn args)
-  | Pjs_unsafe_downgrade _ | Pdebugger | Pvoid_run | Pfull_apply | Pjs_fn_make _
+  | Pjs_unsafe_downgrade _ | Pdebugger | Pvoid_run | Pfull_apply | Pjs_fn_make _ | Pjs_fn_make_unit
     ->
       assert false (* already handled by {!Lam_compile} *)
   | Pjs_fn_method -> assert false
@@ -300,7 +300,7 @@ let translate loc (cxt : Lam_compile_context.t) (prim : Lam_primitive.t)
       (* 2 ^ 32 - 1*)
       | Backend_type ->
           E.make_block E.zero_int_literal
-            (Blk_constructor { name = "Other"; num_nonconst = 1; tag = 0 })
+            (Blk_constructor { name = "Other"; num_nonconst = 1; tag = 0; attrs = [] })
             [ E.str "BS" ] Immutable)
   | Pduprecord -> Lam_dispatch_primitive.translate loc "?obj_dup" args
   | Plazyforce

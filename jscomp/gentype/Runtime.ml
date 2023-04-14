@@ -24,75 +24,21 @@ let rec emitModuleAccessPath ~config moduleAccessPath =
   | Dot (p, moduleItem) ->
     p |> emitModuleAccessPath ~config |> EmitText.fieldAccess ~label:moduleItem
 
-let emitVariantLabel ~polymorphic label =
-  if polymorphic then label |> EmitText.quotes else label
-
-module VariantsAsObjects = struct
-  let polyVariantLabelName = "NAME"
-
-  let label ~polymorphic =
-    match polymorphic with
-    | true -> polyVariantLabelName
-    | false -> "TAG"
-
-  let indexLabel i = "_" ^ string_of_int i
-end
-
-let emitVariantGetLabel ~polymorphic x =
-  x |> EmitText.fieldAccess ~label:(VariantsAsObjects.label ~polymorphic)
-
-let accessVariant ~index x =
-  x |> EmitText.fieldAccess ~label:(index |> VariantsAsObjects.indexLabel)
-
-let emitVariantGetPayload ~inlineRecord ~numArgs ~polymorphic x =
-  if polymorphic then x |> EmitText.fieldAccess ~label:"VAL"
-  else if numArgs = 1 then
-    if inlineRecord then
-      (* inline record is repressented as record plus a tag:
-         here pass it unchanged as if it was just a record (the payload)
-      *) x
-    else x |> accessVariant ~index:0
-  else (* payload items extracted later when numArgs != 1 *) x
-
-let emitVariantWithPayload ~inlineRecord ~label ~polymorphic args =
-  match args with
-  | [arg] when polymorphic ->
-    "{" ^ VariantsAsObjects.polyVariantLabelName ^ ": "
-    ^ (label |> emitVariantLabel ~polymorphic)
-    ^ ", VAL: " ^ arg ^ "}"
-  | [arg] when inlineRecord ->
-    (* inline records are represented as records plus a `TAG` *)
-    "Object.assign({TAG: " ^ label ^ "}, " ^ arg ^ ")"
-  | _ ->
-    "{TAG: " ^ label ^ ", "
-    ^ (args
-      |> List.mapi (fun i s -> (i |> VariantsAsObjects.indexLabel) ^ ":" ^ s)
-      |> String.concat ", ")
-    ^ "}" ^ " as any"
-
 let jsVariantTag ~polymorphic =
   match polymorphic with
   | true -> "NAME"
-  | false -> "tag"
+  | false -> "TAG"
+
+let jsVariantPayloadTag ~n = "_" ^ string_of_int n
 
 let jsVariantValue ~polymorphic =
   match polymorphic with
   | true -> "VAL"
   | false -> "value"
 
-let emitJSVariantGetLabel ~polymorphic x =
-  x |> EmitText.fieldAccess ~label:(jsVariantTag ~polymorphic)
-
-let emitJSVariantGetPayload ~polymorphic x =
-  x |> EmitText.fieldAccess ~label:(jsVariantValue ~polymorphic)
-
-let emitJSVariantWithPayload ~label ~polymorphic x =
-  "{" ^ jsVariantTag ~polymorphic ^ ":" ^ label ^ ", "
-  ^ jsVariantValue ~polymorphic
-  ^ ":" ^ x ^ "}"
-
 let isMutableObjectField name =
-  String.length name >= 2 && String.sub name (String.length name - 2) 2 = "#="
+  String.length name >= 2
+  && (String.sub name (String.length name - 2) 2 [@doesNotRaise]) = "#="
 
 (** Mutable fields, i.e. fields annotated "[@bs.set]"
    are represented as extra fields called "fieldName#="
@@ -173,12 +119,15 @@ module Mangle = struct
   *)
   let translate x =
     let len = x |> String.length in
-    if len > 2 && x.[len - 1] = '_' && x.[len - 2] = '_' then
-      (* "foo__" -> "foo" *) String.sub x 0 (len - 2)
-    else if len > 1 && x.[0] = '_' then
-      if x.[1] >= 'A' && x.[1] <= 'Z' then
+    if
+      len > 2
+      && (x.[len - 1] [@doesNotRaise]) = '_'
+      && (x.[len - 2] [@doesNotRaise]) = '_'
+    then (* "foo__" -> "foo" *) String.sub x 0 (len - 2) [@doesNotRaise]
+    else if len > 1 && (x.[0] [@doesNotRaise]) = '_' then
+      if (x.[1] [@doesNotRaise]) >= 'A' && (x.[1] [@doesNotRaise]) <= 'Z' then
         (* "_Uppercase" => "Uppercase"s *)
-        String.sub x 1 (len - 1)
+        String.sub x 1 (len - 1) [@doesNotRaise]
       else
         (* "_rec" -> "rec" *)
         match Hashtbl.find table x with

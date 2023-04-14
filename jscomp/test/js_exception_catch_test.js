@@ -29,7 +29,7 @@ function add_test(loc, test) {
 function eq(loc, x, y) {
   add_test(loc, (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -39,7 +39,7 @@ function eq(loc, x, y) {
 function false_(loc) {
   add_test(loc, (function (param) {
           return {
-                  TAG: /* Ok */4,
+                  TAG: "Ok",
                   _0: false
                 };
         }));
@@ -48,7 +48,7 @@ function false_(loc) {
 function true_(loc) {
   add_test(loc, (function (param) {
           return {
-                  TAG: /* Ok */4,
+                  TAG: "Ok",
                   _0: true
                 };
         }));
@@ -65,9 +65,9 @@ try {
 catch (raw_x){
   var x = Caml_js_exceptions.internalToOCamlException(raw_x);
   if (x.RE_EXN_ID === Js_exn.$$Error) {
-    add_test("File \"js_exception_catch_test.ml\", line 21, characters 10-17", (function (param) {
+    add_test("File \"js_exception_catch_test.res\", line 18, characters 37-44", (function (param) {
             return {
-                    TAG: /* Ok */4,
+                    TAG: "Ok",
                     _0: true
                   };
           }));
@@ -77,9 +77,9 @@ catch (raw_x){
 }
 
 if (exit === 1) {
-  add_test("File \"js_exception_catch_test.ml\", line 22, characters 16-23", (function (param) {
+  add_test("File \"js_exception_catch_test.res\", line 19, characters 14-21", (function (param) {
           return {
-                  TAG: /* Ok */4,
+                  TAG: "Ok",
                   _0: false
                 };
         }));
@@ -128,18 +128,18 @@ function test(f) {
   }
 }
 
-eq("File \"js_exception_catch_test.ml\", line 43, characters 5-12", test(function (param) {
+eq("File \"js_exception_catch_test.res\", line 44, characters 5-12", test(function (param) {
           
         }), "No_error");
 
-eq("File \"js_exception_catch_test.ml\", line 44, characters 5-12", test(function (param) {
+eq("File \"js_exception_catch_test.res\", line 45, characters 5-12", test(function (param) {
           throw {
                 RE_EXN_ID: "Not_found",
                 Error: new Error()
               };
         }), "Not_found");
 
-eq("File \"js_exception_catch_test.ml\", line 45, characters 5-12", test(function (param) {
+eq("File \"js_exception_catch_test.res\", line 46, characters 5-12", test(function (param) {
           throw {
                 RE_EXN_ID: "Invalid_argument",
                 _1: "x",
@@ -147,7 +147,7 @@ eq("File \"js_exception_catch_test.ml\", line 45, characters 5-12", test(functio
               };
         }), "Invalid_argument");
 
-eq("File \"js_exception_catch_test.ml\", line 46, characters 5-12", test(function (param) {
+eq("File \"js_exception_catch_test.res\", line 47, characters 5-12", test(function (param) {
           throw {
                 RE_EXN_ID: "Invalid_argument",
                 _1: "",
@@ -155,7 +155,7 @@ eq("File \"js_exception_catch_test.ml\", line 46, characters 5-12", test(functio
               };
         }), "Invalid_any");
 
-eq("File \"js_exception_catch_test.ml\", line 47, characters 5-12", test(function (param) {
+eq("File \"js_exception_catch_test.res\", line 48, characters 5-12", test(function (param) {
           throw {
                 RE_EXN_ID: A,
                 _1: 2,
@@ -163,7 +163,7 @@ eq("File \"js_exception_catch_test.ml\", line 47, characters 5-12", test(functio
               };
         }), "A2");
 
-eq("File \"js_exception_catch_test.ml\", line 48, characters 5-12", test(function (param) {
+eq("File \"js_exception_catch_test.res\", line 49, characters 5-12", test(function (param) {
           throw {
                 RE_EXN_ID: A,
                 _1: 3,
@@ -171,14 +171,14 @@ eq("File \"js_exception_catch_test.ml\", line 48, characters 5-12", test(functio
               };
         }), "A_any");
 
-eq("File \"js_exception_catch_test.ml\", line 49, characters 5-12", test(function (param) {
+eq("File \"js_exception_catch_test.res\", line 50, characters 5-12", test(function (param) {
           throw {
                 RE_EXN_ID: B,
                 Error: new Error()
               };
         }), "B");
 
-eq("File \"js_exception_catch_test.ml\", line 50, characters 5-12", test(function (param) {
+eq("File \"js_exception_catch_test.res\", line 51, characters 5-12", test(function (param) {
           throw {
                 RE_EXN_ID: C,
                 _1: 1,
@@ -187,7 +187,7 @@ eq("File \"js_exception_catch_test.ml\", line 50, characters 5-12", test(functio
               };
         }), "C");
 
-eq("File \"js_exception_catch_test.ml\", line 51, characters 5-12", test(function (param) {
+eq("File \"js_exception_catch_test.res\", line 52, characters 5-12", test(function (param) {
           throw {
                 RE_EXN_ID: C,
                 _1: 0,
@@ -196,11 +196,11 @@ eq("File \"js_exception_catch_test.ml\", line 51, characters 5-12", test(functio
               };
         }), "C_any");
 
-eq("File \"js_exception_catch_test.ml\", line 52, characters 5-12", test(function (param) {
+eq("File \"js_exception_catch_test.res\", line 53, characters 5-12", test(function (param) {
           throw new Error("x");
         }), "Js_error");
 
-eq("File \"js_exception_catch_test.ml\", line 53, characters 5-12", test(function (param) {
+eq("File \"js_exception_catch_test.res\", line 54, characters 5-12", test(function (param) {
           throw {
                 RE_EXN_ID: "Failure",
                 _1: "x",

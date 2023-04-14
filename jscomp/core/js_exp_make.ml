@@ -173,6 +173,13 @@ let typeof ?comment (e : t) : t =
   | Bool _ -> str ?comment L.js_type_boolean
   | _ -> { expression_desc = Typeof e; comment }
 
+let instanceof ?comment (e0 : t) (e1: t) : t =
+  { expression_desc = Bin (InstanceOf, e0, e1); comment }
+
+let is_array  (e0 : t) : t =
+  let f = str "Array.isArray" ~delim:DNoQuotes in
+  { expression_desc = Call (f, [e0], Js_call_info.ml_full_call); comment=None }
+  
 let new_ ?comment e0 args : t =
   { expression_desc = New (e0, Some args); comment }
 
@@ -197,7 +204,8 @@ let unit : t = { expression_desc = Undefined; comment = None }
    [Js_fun_env.empty] is a mutable state ..
 *)
 
-let ocaml_fun ?comment ?immutable_mask ~return_unit ~async params body : t =
+let ocaml_fun ?comment ?immutable_mask ~return_unit ~async ~oneUnitArg params body : t =
+  let params = if oneUnitArg then [] else params in
   let len = List.length params in
   {
     expression_desc =
@@ -315,6 +323,34 @@ let small_int i : t =
   | 9 -> nine_int_literal
   | 248 -> obj_int_tag_literal
   | i -> int (Int32.of_int i)
+
+let true_ : t = { comment = None; expression_desc = Bool true }
+let false_ : t = { comment = None; expression_desc = Bool false }
+let bool v = if v then true_ else false_
+
+let float ?comment f : t = { expression_desc = Number (Float { f }); comment }
+
+let zero_float_lit : t =
+  { expression_desc = Number (Float { f = "0." }); comment = None }
+
+let float_mod ?comment e1 e2 : J.expression =
+  { comment; expression_desc = Bin (Mod, e1, e2) }
+
+let literal = function
+  | Ast_untagged_variants.String s -> str s ~delim:DStarJ
+  | Int i -> small_int i
+  | Float f -> float f
+  | Bool b -> bool b
+  | Null -> nil
+  | Undefined -> undefined
+  | Block IntType -> str "number"
+  | Block FloatType -> str "number"
+  | Block StringType -> str "string"
+  | Block Array -> str "Array" ~delim:DNoQuotes
+  | Block Object -> str "object"
+  | Block Unknown ->
+    (* TODO: clean up pattern mathing algo whih confuses literal with blocks *)
+    assert false
 
 let array_index ?comment (e0 : t) (e1 : t) : t =
   match (e0.expression_desc, e1.expression_desc) with
@@ -515,6 +551,8 @@ let rec string_append ?comment (e : t) (el : t) : t =
     { e with expression_desc = Str { txt = a ^ b; delim } }
   in
   match (e.expression_desc, el.expression_desc) with
+  | Str { txt = ""}, _ -> el
+  | _, Str { txt = ""} -> e
   | ( Str { txt = a; delim },
       String_append ({ expression_desc = Str { txt = b; delim = delim_ } }, c) )
     when delim = delim_ ->
@@ -535,26 +573,13 @@ let rec string_append ?comment (e : t) (el : t) : t =
 let obj ?comment properties : t =
   { expression_desc = Object properties; comment }
 
-(* currently only in method call, no dependency introduced
-*)
-
-(* Static_index .....................**)
-
-(* var (Jident.create_js "true") *)
-let true_ : t = { comment = None; expression_desc = Bool true }
-let false_ : t = { comment = None; expression_desc = Bool false }
-let bool v = if v then true_ else false_
-
-(** Arith operators *)
-(* Static_index .....................**)
-
-let float ?comment f : t = { expression_desc = Number (Float { f }); comment }
-
-let zero_float_lit : t =
-  { expression_desc = Number (Float { f = "0." }); comment = None }
-
-let float_mod ?comment e1 e2 : J.expression =
-  { comment; expression_desc = Bin (Mod, e1, e2) }
+let str_equal (txt0:string) (delim0:External_arg_spec.delim) txt1 delim1 =
+  if delim0 = delim1 then
+    if Ext_string.equal txt0 txt1 then Some true
+    else if Ast_utf8_string.simple_comparison txt0 && Ast_utf8_string.simple_comparison txt1
+    then Some false
+    else None
+  else None
 
 let rec triple_equal ?comment (e0 : t) (e1 : t) : t =
   match (e0.expression_desc, e1.expression_desc) with
@@ -566,9 +591,6 @@ let rec triple_equal ?comment (e0 : t) (e1 : t) : t =
       (Null | Undefined) )
     when no_side_effect e0 ->
       false_
-  | Str { txt = x }, Str { txt = y } ->
-      (* CF*)
-      bool (Ext_string.equal x y)
   | Number (Int { i = i0; _ }), Number (Int { i = i1; _ }) -> bool (i0 = i1)
   | Optional_block (a, _), Optional_block (b, _) -> triple_equal ?comment a b
   | Undefined, Optional_block _
@@ -743,12 +765,91 @@ let rec float_equal ?comment (e0 : t) (e1 : t) : t =
 let int_equal = float_equal
 
 let string_equal ?comment (e0 : t) (e1 : t) : t =
+  let default () : t = { expression_desc = Bin (EqEqEq, e0, e1); comment } in
   match (e0.expression_desc, e1.expression_desc) with
-  | Str { txt = a0 }, Str { txt = b0 } -> bool (Ext_string.equal a0 b0)
-  | _, _ -> { expression_desc = Bin (EqEqEq, e0, e1); comment }
+  | Str { txt = a0; delim = d0 }, Str { txt = a1; delim = d1 } when d0 = d1 ->
+    (match str_equal a0 d0 a1 d1 with
+    | Some b -> bool b
+    | None -> default ())
+  | _, _ -> default ()
 
 let is_type_number ?comment (e : t) : t =
   string_equal ?comment (typeof e) (str "number")
+
+let rec is_a_literal_case ~(literal_cases : Ast_untagged_variants.literal_type list) ~block_cases (e:t) : t =
+  let literals_overlaps_with_string () = 
+    Ext_list.exists literal_cases (function
+      | String _ -> true
+      | l -> false ) in
+  let literals_overlaps_with_number () = 
+    Ext_list.exists literal_cases (function
+      | Int _ | Float _ -> true
+      | l -> false ) in
+  let literals_overlaps_with_object () = 
+    Ext_list.exists literal_cases (function
+      | Null -> true
+      | l -> false ) in
+  let (==) x y = bin EqEqEq x y in
+  let (!=) x y = bin NotEqEq x y in
+  let (||) x y = bin Or x y in
+  let (&&) x y = bin And x y in
+  let is_literal_case (l:Ast_untagged_variants.literal_type) : t =  e == (literal l) in
+  let is_not_block_case (c:Ast_untagged_variants.block_type) : t = match c with
+  | StringType when literals_overlaps_with_string () = false  (* No overlap *) -> 
+    (typeof e) != (str "string")
+  | IntType when literals_overlaps_with_number () = false ->
+    (typeof e) != (str "number")
+  | FloatType when literals_overlaps_with_number () = false ->
+    (typeof e) != (str "number")
+  | Array -> 
+    not (is_array e)
+  | Object when literals_overlaps_with_object () = false ->
+    (typeof e) != (str "object")
+  | Object (* overlap *) ->
+    e == nil || (typeof e) != (str "object")
+  | StringType (* overlap *)
+  | IntType (* overlap *)
+  | FloatType (* overlap *)
+  | Unknown ->
+    (* We don't know the type of unknown, so we need to express:
+       this is not one of the literals *)
+    (match literal_cases with
+      | [] ->
+        (* this should not happen *)
+        assert false
+      | l1 :: others ->
+        let is_literal_1 = is_literal_case l1 in
+        Ext_list.fold_right others is_literal_1 (fun literal_n acc ->
+          (is_literal_case literal_n) || acc
+        )
+    )
+  in
+  match block_cases with
+  | [c] -> is_not_block_case c
+  | c1 :: (_::_ as rest) ->
+    (is_not_block_case c1) && (is_a_literal_case ~literal_cases ~block_cases:rest e)
+  | [] -> assert false
+
+let is_int_tag ?(has_null_undefined_other=(false, false, false)) (e : t) : t =
+  let (has_null, has_undefined, has_other) = has_null_undefined_other in
+  if has_null && (has_undefined = false) && (has_other = false) then (* null *)
+    { expression_desc = Bin (EqEqEq, e, nil); comment=None }
+  else if has_null && has_undefined && has_other=false then (* null + undefined *)
+    { J.expression_desc = Bin
+      (Or,
+        { expression_desc = Bin (EqEqEq, e, nil); comment=None },
+        { expression_desc = Bin (EqEqEq, e, undefined); comment=None }
+      ); comment=None }
+  else if has_null=false && has_undefined && has_other=false then (* undefined *)
+    { expression_desc = Bin (EqEqEq, e, undefined); comment=None }
+  else if has_null then (* (null + undefined + other) || (null + other) *)
+    { J.expression_desc = Bin
+      (Or,
+        { expression_desc = Bin (EqEqEq, e, nil); comment=None },
+        { expression_desc = Bin (NotEqEq, typeof e, str "object"); comment=None }
+      ); comment=None }
+  else (* (undefiled + other) || other *)
+    { expression_desc = Bin (NotEqEq, typeof e, str "object"); comment=None }
 
 let is_type_string ?comment (e : t) : t =
   string_equal ?comment (typeof e) (str "string")
@@ -760,13 +861,8 @@ let is_type_object (e : t) : t = string_equal (typeof e) (str "object")
    call plain [dot]
 *)
 
-let tag ?comment e : t =
-  {
-    expression_desc =
-      Bin
-        (Bor, { expression_desc = Caml_block_tag e; comment }, zero_int_literal);
-    comment = None;
-  }
+let tag ?comment ?(name=Js_dump_lit.tag) e : t =
+  { expression_desc = Caml_block_tag (e, name); comment }
 
 (* according to the compiler, [Btype.hash_variant],
    it's reduced to 31 bits for hash
@@ -827,11 +923,12 @@ let uint32 ?comment n : J.expression =
 
 let string_comp (cmp : J.binop) ?comment (e0 : t) (e1 : t) =
   match (e0.expression_desc, e1.expression_desc) with
-  | Str { txt = a0 }, Str { txt = b0 } -> (
-      match cmp with
-      | EqEqEq -> bool (a0 = b0)
-      | NotEqEq -> bool (a0 <> b0)
-      | _ -> bin ?comment cmp e0 e1)
+  | Str { txt = a0; delim = d0 }, Str { txt = a1; delim = d1 } -> (
+    match cmp, str_equal a0 d0 a1 d1 with
+      | EqEqEq, Some b -> bool b
+      | NotEqEq, Some b -> bool (b = false)
+      | _ ->
+        bin ?comment cmp e0 e1)
   | _ -> bin ?comment cmp e0 e1
 
 let obj_length ?comment e : t =

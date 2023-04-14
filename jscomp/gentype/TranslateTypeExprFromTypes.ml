@@ -45,7 +45,7 @@ let translateObjType closedFlag fieldsTranslations =
              | _ -> (Mandatory, t)
            in
            let name = name |> Runtime.mangleObjectField in
-           {mutable_; nameJS = name; nameRE = name; optional; type_})
+           {mutable_; nameJS = name; optional; type_})
   in
   let type_ = Object (closedFlag, fields) in
   {dependencies; type_}
@@ -124,7 +124,6 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
               {
                 mutable_ = Mutable;
                 nameJS = "contents";
-                nameRE = "contents";
                 optional = Mandatory;
                 type_ = paramTranslation.type_;
               };
@@ -133,21 +132,16 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
   | ( (["Pervasives"; "result"] | ["Belt"; "Result"; "t"]),
       [paramTranslation1; paramTranslation2] ) ->
     let case n name type_ =
-      {
-        case = {label = string_of_int n; labelJS = StringLabel name};
-        inlineRecord = false;
-        numArgs = 1;
-        t = type_;
-      }
+      {case = {label = string_of_int n; labelJS = StringLabel name}; t = type_}
     in
     let variant =
-      createVariant ~bsStringOrInt:false ~inherits:[] ~noPayloads:[]
+      createVariant ~inherits:[] ~noPayloads:[]
         ~payloads:
           [
             case 0 "Ok" paramTranslation1.type_;
             case 1 "Error" paramTranslation2.type_;
           ]
-        ~polymorphic:false
+        ~polymorphic:false ~unboxed:false
     in
     {
       dependencies =
@@ -162,10 +156,8 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
         Function
           {
             argTypes = [{aName = ""; aType = fromTranslation.type_}];
-            componentName = None;
             retType = toTranslation.type_;
             typeVars = [];
-            uncurried = false;
           };
     }
   | ( (["React"; "componentLike"] | ["ReactV3"; "React"; "componentLike"]),
@@ -176,10 +168,8 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
         Function
           {
             argTypes = [{aName = ""; aType = propsTranslation.type_}];
-            componentName = None;
             retType = retTranslation.type_;
             typeVars = [];
-            uncurried = false;
           };
     }
   | ( (["React"; "component"] | ["ReactV3"; "React"; "component"]),
@@ -190,10 +180,8 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
         Function
           {
             argTypes = [{aName = ""; aType = propsTranslation.type_}];
-            componentName = None;
             retType = EmitType.typeReactElement;
             typeVars = [];
-            uncurried = false;
           };
     }
   | ( (["React"; "Context"; "t"] | ["ReactV3"; "React"; "Context"; "t"]),
@@ -247,13 +235,7 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
   | (["Js"; "Dict"; "t"] | ["Dict"; "t"]), [paramTranslation] ->
     {paramTranslation with type_ = Dict paramTranslation.type_}
   | ["function$"], [arg; _arity] ->
-    {
-      dependencies = arg.dependencies;
-      type_ =
-        (match arg.type_ with
-        | Function function_ -> Function {function_ with uncurried = true}
-        | _ -> arg.type_);
-    }
+    {dependencies = arg.dependencies; type_ = arg.type_}
   | _ -> defaultCase ()
 
 type processVariant = {
@@ -328,16 +310,7 @@ let rec translateArrowType ~config ~typeVarsGen ~typeEnv ~revArgDeps ~revArgs
     let allDeps = List.rev_append revArgDeps dependencies in
     let labeledConvertableTypes = revArgs |> List.rev in
     let argTypes = labeledConvertableTypes |> NamedArgs.group in
-    let functionType =
-      Function
-        {
-          argTypes;
-          componentName = None;
-          retType;
-          typeVars = [];
-          uncurried = false;
-        }
-    in
+    let functionType = Function {argTypes; retType; typeVars = []} in
     {dependencies = allDeps; type_ = functionType}
 
 and translateTypeExprFromTypes_ ~config ~typeVarsGen ~typeEnv
@@ -408,8 +381,8 @@ and translateTypeExprFromTypes_ ~config ~typeVarsGen ~typeEnv
         |> List.map (fun label -> {label; labelJS = StringLabel label})
       in
       let type_ =
-        createVariant ~bsStringOrInt:false ~inherits:[] ~noPayloads ~payloads:[]
-          ~polymorphic:true
+        createVariant ~inherits:[] ~noPayloads ~payloads:[] ~polymorphic:true
+          ~unboxed:false
       in
       {dependencies = []; type_}
     | {noPayloads = []; payloads = [(_label, t)]; unknowns = []} ->
@@ -433,14 +406,12 @@ and translateTypeExprFromTypes_ ~config ~typeVarsGen ~typeEnv
         |> List.map (fun (label, translation) ->
                {
                  case = {label; labelJS = StringLabel label};
-                 inlineRecord = false;
-                 numArgs = 1;
                  t = translation.type_;
                })
       in
       let type_ =
-        createVariant ~bsStringOrInt:false ~inherits:[] ~noPayloads ~payloads
-          ~polymorphic:true
+        createVariant ~inherits:[] ~noPayloads ~payloads ~polymorphic:true
+          ~unboxed:false
       in
       let dependencies =
         payloadTranslations
@@ -453,7 +424,7 @@ and translateTypeExprFromTypes_ ~config ~typeVarsGen ~typeEnv
     match typeEnv |> TypeEnv.lookupModuleTypeSignature ~path with
     | Some (signature, typeEnv) ->
       let typeEquationsTranslation =
-        List.combine ids types
+        (List.combine ids types [@doesNotRaise])
         |> List.map (fun (x, t) ->
                ( x,
                  t |> translateTypeExprFromTypes_ ~config ~typeVarsGen ~typeEnv
@@ -503,7 +474,6 @@ and signatureToModuleRuntimeRepresentation ~config ~typeVarsGen ~typeEnv
                {
                  mutable_ = Immutable;
                  nameJS = id |> Ident.name;
-                 nameRE = id |> Ident.name;
                  optional = Mandatory;
                  type_;
                }
@@ -527,7 +497,6 @@ and signatureToModuleRuntimeRepresentation ~config ~typeVarsGen ~typeEnv
                {
                  mutable_ = Immutable;
                  nameJS = id |> Ident.name;
-                 nameRE = id |> Ident.name;
                  optional = Mandatory;
                  type_;
                }

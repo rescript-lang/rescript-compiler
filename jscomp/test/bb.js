@@ -23,8 +23,8 @@ function ff(x) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "bb.ml",
-              17,
+              "bb.res",
+              13,
               9
             ],
             Error: new Error()
@@ -48,9 +48,9 @@ function test(x) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "bb.ml",
-              26,
-              13
+              "bb.res",
+              21,
+              9
             ],
             Error: new Error()
           };

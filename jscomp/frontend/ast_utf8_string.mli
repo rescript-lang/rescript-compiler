@@ -35,3 +35,6 @@ val pp_error : Format.formatter -> error -> unit
 val transform_test : string -> string
 
 val transform : Location.t -> string -> string
+
+(* Check if the string is only == to itself (no unicode or escape tricks) *)
+val simple_comparison : string -> bool

@@ -39,8 +39,8 @@ type record_repr =
   | Record_optional
 
 type tag_info = 
-  | Blk_constructor of {name : string ; num_nonconst : int; tag : int}
-  | Blk_record_inlined of { name : string ; num_nonconst :  int ;  tag : int; optional_labels: string list; fields : string array; mutable_flag : mutable_flag }   
+  | Blk_constructor of { name : string ; num_nonconst : int; tag : int; attrs : Parsetree.attributes }
+  | Blk_record_inlined of { name : string ; num_nonconst :  int ;  tag : int; optional_labels: string list; fields : string array; mutable_flag : mutable_flag; attrs : Parsetree.attributes }   
   | Blk_tuple
   | Blk_poly_var of string 
   | Blk_record of {fields : string array; mutable_flag : mutable_flag; record_repr : record_repr }
@@ -86,7 +86,8 @@ val blk_record_inlined :
     string ->
     int ->
     string list ->
-    tag:int ->    
+    tag:int ->
+    attrs:Parsetree.attributes ->
     mutable_flag ->  
     tag_info
   ) ref
@@ -134,14 +135,12 @@ type is_safe =
   | Safe
   | Unsafe
 
-type pointer_info = 
-  | Pt_constructor of {name : string; const : int ; non_const :  int} 
-  | Pt_variant of {name : string}
-  | Pt_module_alias 
-  | Pt_shape_none   
+type pointer_info =
+  | Pt_constructor of {name: string; const: int; non_const: int; attrs: Parsetree.attributes}
+  | Pt_variant of {name: string}
+  | Pt_module_alias
+  | Pt_shape_none
   | Pt_assertfalse
-
-
 
 type primitive =
   | Pidentity
@@ -272,9 +271,8 @@ type function_attribute = {
   stub: bool;
   return_unit : bool;
   async : bool;
+  oneUnitArg : bool;
 }
-
-type switch_names = {consts: string array; blocks: string array}
 
 type lambda =
     Lvar of Ident.t
@@ -319,7 +317,7 @@ and lambda_switch =
     sw_numblocks: int;                  (* Number of tag block cases *)
     sw_blocks: (int * lambda) list;     (* Tag block cases *)
     sw_failaction : lambda option;      (* Action to take if failure *)
-    sw_names: switch_names option }
+    sw_names: Ast_untagged_variants.switch_names option }
 
 
 

@@ -5,44 +5,44 @@ var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
-function foo(n) {
-  if (typeof n === "number") {
-    if (n === /* A1 */0) {
+function foo(x) {
+  if (typeof x !== "object") {
+    if (x === "A1") {
       return 1;
     } else {
       return 2;
     }
   }
-  switch (n.TAG | 0) {
-    case /* B */0 :
-        return n._0;
-    case /* C */1 :
-        return n._0 + n._1 | 0;
-    case /* D */2 :
-        var match = n._0;
+  switch (x.TAG) {
+    case "B" :
+        return x._0;
+    case "C" :
+        return x._0 + x._1 | 0;
+    case "D" :
+        var match = x._0;
         return match[0] + match[1] | 0;
     
   }
 }
 
-function fooA1(param) {
-  if (param === 0) {
+function fooA1(x) {
+  if (typeof x !== "object" && x === "A1") {
     return 1;
   } else {
     return 42;
   }
 }
 
-function fooC(param) {
-  if (typeof param === "number" || param.TAG !== /* C */1) {
+function fooC(x) {
+  if (typeof x !== "object" || x.TAG !== "C") {
     return 42;
   } else {
-    return param._0 + param._1 | 0;
+    return x._0 + x._1 | 0;
   }
 }
 
-function switchNum(param) {
-  switch (param) {
+function switchNum(x) {
+  switch (x) {
     case 0 :
         return "0";
     case 1 :
@@ -87,11 +87,11 @@ function rollback_path(subst, p) {
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
     if (exn.RE_EXN_ID === "Not_found") {
-      switch (p.TAG | 0) {
-        case /* Pdot */1 :
+      switch (p.TAG) {
+        case "Pdot" :
             return "Pdot";
-        case /* Pident */0 :
-        case /* Papply */2 :
+        case "Pident" :
+        case "Papply" :
             return "Pident | Papply";
         
       }
@@ -137,23 +137,23 @@ function fooExn(f) {
   }
 }
 
-var a1 = /* A1 */0;
+var a1 = "A1";
 
-var a2 = /* A2 */1;
+var a2 = "A2";
 
 var b = {
-  TAG: /* B */0,
+  TAG: "B",
   _0: 34
 };
 
 var c = {
-  TAG: /* C */1,
+  TAG: "C",
   _0: 4,
   _1: 2
 };
 
 var d = {
-  TAG: /* D */2,
+  TAG: "D",
   _0: [
     4,
     2

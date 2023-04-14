@@ -21,7 +21,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -35,13 +35,13 @@ Node_process.putEnvVar("Caml_sys_poly_fill_test", "X");
 
 var v = Caml_sys.sys_getenv("Caml_sys_poly_fill_test");
 
-eq("File \"caml_sys_poly_fill_test.ml\", line 11, characters 5-12", "X", (Node_process.deleteEnvVar("Caml_sys_poly_fill_test"), v));
+eq("File \"caml_sys_poly_fill_test.res\", line 11, characters 4-11", "X", (Node_process.deleteEnvVar("Caml_sys_poly_fill_test"), v));
 
 Node_process.putEnvVar("Caml_sys_poly_fill_test", "Y");
 
 var v$1 = Caml_sys.sys_getenv("Caml_sys_poly_fill_test");
 
-eq("File \"caml_sys_poly_fill_test.ml\", line 17, characters 5-12", "Y", (Node_process.deleteEnvVar("Caml_sys_poly_fill_test"), v$1));
+eq("File \"caml_sys_poly_fill_test.res\", line 21, characters 4-11", "Y", (Node_process.deleteEnvVar("Caml_sys_poly_fill_test"), v$1));
 
 Node_process.deleteEnvVar("Caml_sys_poly_fill_test");
 
@@ -59,7 +59,7 @@ catch (raw_exn){
   }
 }
 
-eq("File \"caml_sys_poly_fill_test.ml\", line 23, characters 5-12", "Z", tmp);
+eq("File \"caml_sys_poly_fill_test.res\", line 31, characters 4-11", "Z", tmp);
 
 console.log([
       Caml_sys.sys_getcwd(undefined),

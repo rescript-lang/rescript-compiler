@@ -22,12 +22,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type untaggedVariant = OnlyOneUnknown | AtMostOneObject | AtMostOneArray
+
 type error =
   | Unsupported_predicates
   | Conflict_bs_bs_this_bs_meth
   | Duplicated_bs_deriving
   | Conflict_attributes
-  | Duplicated_bs_as
   | Expect_int_literal
   | Expect_string_literal
   | Expect_int_or_string_or_json_literal

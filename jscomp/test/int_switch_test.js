@@ -50,35 +50,35 @@ function f22(x) {
 function f33(x) {
   var match = Curry._1(x, undefined);
   switch (match) {
-    case /* A */0 :
+    case "A" :
         return /* 'a' */97;
-    case /* B */1 :
+    case "B" :
         return /* 'b' */98;
-    case /* C */2 :
+    case "C" :
         return /* 'c' */99;
-    case /* D */3 :
+    case "D" :
         return /* 'x' */120;
     
   }
 }
 
-eq("File \"int_switch_test.ml\", line 35, characters 6-13", f(function (param) {
+eq("File \"int_switch_test.res\", line 32, characters 3-10", f(function (param) {
           return 1;
         }), /* 'a' */97);
 
-eq("File \"int_switch_test.ml\", line 36, characters 6-13", f(function (param) {
+eq("File \"int_switch_test.res\", line 33, characters 3-10", f(function (param) {
           return 2;
         }), /* 'b' */98);
 
-eq("File \"int_switch_test.ml\", line 37, characters 6-13", f(function (param) {
+eq("File \"int_switch_test.res\", line 34, characters 3-10", f(function (param) {
           return 3;
         }), /* 'c' */99);
 
-eq("File \"int_switch_test.ml\", line 38, characters 6-13", f(function (param) {
+eq("File \"int_switch_test.res\", line 35, characters 3-10", f(function (param) {
           return 0;
         }), /* 'x' */120);
 
-eq("File \"int_switch_test.ml\", line 39, characters 6-13", f(function (param) {
+eq("File \"int_switch_test.res\", line 36, characters 3-10", f(function (param) {
           return -1;
         }), /* 'x' */120);
 

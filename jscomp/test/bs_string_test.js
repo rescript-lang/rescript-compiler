@@ -17,7 +17,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -27,7 +27,7 @@ function eq(loc, x, y) {
   };
 }
 
-eq("File \"bs_string_test.ml\", line 11, characters 5-12", "ghso ghso g".split(" ").reduce((function (x, y) {
+eq("File \"bs_string_test.res\", line 10, characters 2-9", "ghso ghso g".split(" ").reduce((function (x, y) {
             return x + ("-" + y);
           }), ""), "-ghso-ghso-g");
 

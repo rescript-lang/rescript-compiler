@@ -9,7 +9,9 @@ let translateSignatureValue ~config ~outputFileRelative ~resolver ~typeEnv
     Log_.item "Translate Signature Value %s\n" (val_id |> Ident.name);
   let typeExpr = val_desc.ctyp_type in
   let addAnnotationsToFunction type_ = type_ in
-  match (val_id, val_attributes |> Annotation.fromAttributes ~loc:val_loc) with
+  match
+    (val_id, val_attributes |> Annotation.fromAttributes ~config ~loc:val_loc)
+  with
   | id, GenType ->
     id |> Ident.name
     |> Translation.translateValue ~attributes:val_attributes ~config
@@ -117,6 +119,10 @@ and translateSignatureItem ~config ~outputFileRelative ~resolver ~typeEnv
   | {Typedtree.sig_desc = Typedtree.Tsig_modtype moduleTypeDeclaration} ->
     let moduleItem =
       Runtime.newModuleItem ~name:(moduleTypeDeclaration.mtd_id |> Ident.name)
+    in
+    let config =
+      moduleTypeDeclaration.mtd_attributes
+      |> Annotation.updateConfigForModule ~config
     in
     typeEnv |> TypeEnv.updateModuleItem ~moduleItem;
     moduleTypeDeclaration

@@ -123,17 +123,17 @@ function u(param) {
 }
 
 function f(x) {
-  if (typeof x === "number") {
+  if (typeof x !== "object") {
     return 2;
   }
-  if (x.TAG === /* D */0) {
+  if (x.TAG === "D") {
     return 1;
   }
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "test_trywith.ml",
-          55,
+          "test_trywith.res",
+          59,
           9
         ],
         Error: new Error()

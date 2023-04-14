@@ -30,7 +30,7 @@ var suites_0 = [
   "push_test",
   (function (param) {
       return {
-              TAG: /* Eq */0,
+              TAG: "Eq",
               _0: {
                 hd: 1,
                 tl: {

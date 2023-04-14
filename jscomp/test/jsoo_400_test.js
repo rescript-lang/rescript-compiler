@@ -6,7 +6,7 @@ var Caml_int32 = require("../../lib/js/caml_int32.js");
 function u(param) {
   var n;
   try {
-    n = 3;
+    n = "123".length;
   }
   catch (exn){
     return 42;
@@ -16,10 +16,10 @@ function u(param) {
 
 Mt.from_pair_suites("Jsoo_400_test", {
       hd: [
-        "File \"jsoo_400_test.ml\", line 8, characters 3-10",
+        "File \"jsoo_400_test.res\", line 7, characters 38-45",
         (function (param) {
             return {
-                    TAG: /* ThrowAny */7,
+                    TAG: "ThrowAny",
                     _0: (function (param) {
                         u(undefined);
                       })

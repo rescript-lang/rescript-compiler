@@ -63,19 +63,20 @@ Explanation: a list spread at the tail is efficient, but a spread in the middle 
 
 
   Syntax error!
-  tests/parsing/errors/other/spread.res:9:11-13
+  tests/parsing/errors/other/spread.res:9:16-10:4
 
    7 │ let list{...x, ...y} = myList
    8 │ 
    9 │ type t = {...a}
   10 │ type t = Foo({...a})
   11 │ type t = option<foo, {...x}>
+  12 │ 
 
-  You're using a ... spread without extra fields. This is the same type.
+  Did you forget a `}` here?
 
 
   Syntax error!
-  tests/parsing/errors/other/spread.res:10:15-17
+  tests/parsing/errors/other/spread.res:10:20
 
    8 │ 
    9 │ type t = {...a}
@@ -83,25 +84,15 @@ Explanation: a list spread at the tail is efficient, but a spread in the middle 
   11 │ type t = option<foo, {...x}>
   12 │ 
 
-  You're using a ... spread without extra fields. This is the same type.
-
-
-  Syntax error!
-  tests/parsing/errors/other/spread.res:11:23-26
-
-   9 │ type t = {...a}
-  10 │ type t = Foo({...a})
-  11 │ type t = option<foo, {...x}>
-  12 │ 
-
-  You're using a ... spread without extra fields. This is the same type.
+  I'm not sure what to parse here when looking at ")".
 
 let arr = [|x;y|]
 let [|arr;_|] = [|1;2;3|]
 let record = { x with y }
 let { x; y } = myRecord
 let x::y = myList
-type nonrec t = < a  > 
+type nonrec t = {
+  ...: a }
 type nonrec t =
   | Foo of < a  >  
 type nonrec t = (foo, < x  > ) option

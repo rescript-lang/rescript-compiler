@@ -10,12 +10,12 @@ var delayed = {
 
 for(var i = 1; i <= 2; ++i){
   var f = (function(i){
-  return function f(n, j) {
-    if (j !== 0) {
+  return function f(n, x) {
+    if (x !== 0) {
       var prev = delayed.contents;
       delayed.contents = (function (param) {
           Curry._1(prev, undefined);
-          f(((n + 1 | 0) + i | 0) - i | 0, j - 1 | 0);
+          f(((n + 1 | 0) + i | 0) - i | 0, x - 1 | 0);
         });
       return ;
     }
@@ -25,7 +25,7 @@ for(var i = 1; i <= 2; ++i){
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "gpr_858_unit2_test.ml",
+            "gpr_858_unit2_test.res",
             6,
             13
           ],

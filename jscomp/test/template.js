@@ -4,7 +4,7 @@
 var bla2 = "";
 
 function concat(param) {
-  return "\n    display:\r flex;\n   " + bla2 + "";
+  return "\n    display:\r flex;\n   " + bla2;
 }
 
 exports.bla2 = bla2;

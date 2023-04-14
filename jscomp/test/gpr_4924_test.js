@@ -11,7 +11,7 @@ var test_id = {
 };
 
 function u(b) {
-  if (b === 0) {
+  if (typeof b !== "object" && b === "A") {
     return 0;
   } else {
     return 1;
@@ -19,23 +19,29 @@ function u(b) {
 }
 
 function u1(b) {
-  return b === 0;
+  if (typeof b !== "object" && b === "A") {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 function u2(b) {
-  return b !== 0;
+  if (typeof b !== "object" && b === "A") {
+    return false;
+  } else {
+    return true;
+  }
 }
 
-Mt.eq_suites(test_id, suites, "File \"gpr_4924_test.ml\", line 25, characters 30-37", u2(/* A */0), false);
+Mt.eq_suites(test_id, suites, "File \"gpr_4924_test.res\", line 27, characters 29-36", false, false);
 
-Mt.eq_suites(test_id, suites, "File \"gpr_4924_test.ml\", line 26, characters 30-37", u2(/* B */1), true);
+Mt.eq_suites(test_id, suites, "File \"gpr_4924_test.res\", line 28, characters 29-36", true, true);
 
-Mt.eq_suites(test_id, suites, "File \"gpr_4924_test.ml\", line 27, characters 30-37", u2(/* C */{
-          _0: 2
-        }), true);
+Mt.eq_suites(test_id, suites, "File \"gpr_4924_test.res\", line 29, characters 29-36", true, true);
 
 function u3(b) {
-  if (b === 0) {
+  if (typeof b !== "object" && b === "A") {
     return 3;
   } else {
     return 4;
@@ -43,7 +49,7 @@ function u3(b) {
 }
 
 function u4(b) {
-  if (b === 0) {
+  if (typeof b !== "object" && b === "A") {
     return 3;
   } else {
     return 4;
@@ -51,14 +57,22 @@ function u4(b) {
 }
 
 function u5(b) {
-  return b !== 0;
+  if (typeof b !== "object" && b === "A") {
+    return false;
+  } else {
+    return true;
+  }
 }
 
 function u6(b) {
-  return b === 0;
+  if (typeof b !== "object" && b === "A") {
+    return true;
+  } else {
+    return false;
+  }
 }
 
-Mt.from_pair_suites("File \"gpr_4924_test.ml\", line 49, characters 20-27", suites.contents);
+Mt.from_pair_suites("File \"gpr_4924_test.res\", line 54, characters 17-24", suites.contents);
 
 var from_pair_suites = Mt.from_pair_suites;
 

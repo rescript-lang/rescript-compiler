@@ -102,9 +102,9 @@ catch (raw_x$3){
     throw {
           RE_EXN_ID: "Assert_failure",
           _1: [
-            "exception_raise_test.ml",
-            102,
-            9
+            "exception_raise_test.res",
+            104,
+            7
           ],
           Error: new Error()
         };
@@ -132,10 +132,10 @@ catch (raw_e$1){
 var suites = {
   contents: {
     hd: [
-      "File \"exception_raise_test.ml\", line 114, characters 4-11",
+      "File \"exception_raise_test.res\", line 120, characters 5-12",
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: [
                     f,
                     ff,
@@ -153,11 +153,11 @@ var suites = {
     ],
     tl: {
       hd: [
-        "File \"exception_raise_test.ml\", line 116, characters 4-11",
+        "File \"exception_raise_test.res\", line 123, characters 6-13",
         (function (param) {
             if (a1.RE_EXN_ID === Js_exn.$$Error) {
               return {
-                      TAG: /* Eq */0,
+                      TAG: "Eq",
                       _0: a1._1,
                       _1: 2
                     };
@@ -165,8 +165,8 @@ var suites = {
             throw {
                   RE_EXN_ID: "Assert_failure",
                   _1: [
-                    "exception_raise_test.ml",
-                    119,
+                    "exception_raise_test.res",
+                    127,
                     15
                   ],
                   Error: new Error()
@@ -187,11 +187,11 @@ function eq(loc, x, y) {
 }
 
 try {
-  ((()=>{throw 2})());
+  ((()=>{throw 2})(undefined));
 }
 catch (raw_e$2){
   var e = Caml_js_exceptions.internalToOCamlException(raw_e$2);
-  eq("File \"exception_raise_test.ml\", line 131, characters 7-14", Caml_js_exceptions.as_js_exn(e) !== undefined, true);
+  eq("File \"exception_raise_test.res\", line 137, characters 10-17", Caml_js_exceptions.as_js_exn(e) !== undefined, true);
 }
 
 try {
@@ -202,7 +202,7 @@ try {
 }
 catch (raw_e$3){
   var e$1 = Caml_js_exceptions.internalToOCamlException(raw_e$3);
-  eq("File \"exception_raise_test.ml\", line 138, characters 7-14", Caml_js_exceptions.as_js_exn(e$1) !== undefined, false);
+  eq("File \"exception_raise_test.res\", line 141, characters 10-17", Caml_js_exceptions.as_js_exn(e$1) !== undefined, false);
 }
 
 function fff0(x, g) {
@@ -234,7 +234,7 @@ function input_lines(ic, _acc) {
   };
 }
 
-eq("File \"exception_raise_test.ml\", line 151, characters 5-12", ((a,b,c,_) => a + b + c)(1, 2, 3, 4), 6);
+eq("File \"exception_raise_test.res\", line 157, characters 12-19", ((a,b,c,_) => a + b + c)(1, 2, 3, 4), 6);
 
 Mt.from_pair_suites("Exception_raise_test", suites.contents);
 

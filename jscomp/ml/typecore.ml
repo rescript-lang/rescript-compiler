@@ -2016,7 +2016,10 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
       end_def ();
       wrap_trace_gadt_instances env (lower_args env []) ty;
       begin_def ();
-      let uncurried = Ext_list.exists sexp.pexp_attributes (fun ({txt },_) -> txt = "res.uapp") in
+      let uncurried =
+        Ext_list.exists sexp.pexp_attributes (fun ({txt },_) -> txt = "res.uapp")
+        && not @@ Ext_list.exists sexp.pexp_attributes (fun ({txt },_) -> txt = "res.partial")
+        && not @@ is_automatic_curried_application env funct in
       let (args, ty_res, fully_applied) = type_application uncurried env funct sargs in
       end_def ();
       unify_var env (newvar()) funct.exp_type;
@@ -2111,7 +2114,7 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
       (* Disable Unerasable_optional_argument for uncurried functions *)
       let unerasable_optional_argument = Warnings.number Unerasable_optional_argument in
       Warnings.parse_options false ("-" ^ string_of_int unerasable_optional_argument);
-      let exp = type_construct env loc lid sarg ty_expected sexp.pexp_attributes in
+      let exp = type_construct env loc lid sarg uncurried_typ sexp.pexp_attributes in
       Warnings.restore state;
       exp
   | Pexp_construct(lid, sarg) ->
@@ -2975,7 +2978,12 @@ and type_argument ?recarg env sarg ty_expected' ty_expected =
       let texp = type_expect ?recarg env sarg ty_expected' in
       unify_exp env texp ty_expected;
       texp
-
+and is_automatic_curried_application env funct =
+  (* When a curried function is used with uncurried application, treat it as a curried application *)
+  !Config.uncurried = Uncurried &&
+  match (expand_head env funct.exp_type).desc with
+  | Tarrow _ -> true
+  | _ -> false
 and type_application uncurried env funct (sargs : sargs) : targs * Types.type_expr * bool =
   (* funct.exp_type may be generic *)
   let result_type omitted ty_fun =

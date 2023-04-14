@@ -25,9 +25,9 @@
 type tdcls = Parsetree.type_declaration list
 
 type gen = {
-  structure_gen : tdcls -> Asttypes.rec_flag -> Ast_structure.t;
-  signature_gen : tdcls -> Asttypes.rec_flag -> Ast_signature.t;
-  expression_gen : (Parsetree.core_type -> Parsetree.expression) option;
+  structure_gen: tdcls -> Asttypes.rec_flag -> Ast_structure.t;
+  signature_gen: tdcls -> Asttypes.rec_flag -> Ast_signature.t;
+  expression_gen: (Parsetree.core_type -> Parsetree.expression) option;
 }
 
 (* the first argument is [config] payload

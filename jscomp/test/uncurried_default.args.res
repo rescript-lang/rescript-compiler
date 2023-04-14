@@ -14,7 +14,7 @@ module StandardNotation = {
   let r3 = foo3(. )
 }
 
-@@uncurried
+@@uncurried.swap
 
 open StandardNotation
 

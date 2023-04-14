@@ -1,0 +1,7 @@
+[@@@uncurried ]
+let foo = ((Function$ (fun x -> fun y -> x + y))[@res.arity 2])
+let z = ((foo 3 4)[@res.uapp ])
+let bar = ((Function$ (fun x -> fun y -> x + y))[@res.arity 2])
+let b = ((bar 3 4)[@res.uapp ])
+let w = 3 |.u ((foo 4)[@res.uapp ])
+let a = 3 |.u ((foo 4)[@res.uapp ])

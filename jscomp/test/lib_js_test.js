@@ -19,7 +19,7 @@ var suites_0 = [
   "anything_to_string",
   (function (param) {
       return {
-              TAG: /* Eq */0,
+              TAG: "Eq",
               _0: "3",
               _1: String(3)
             };

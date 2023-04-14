@@ -57,7 +57,29 @@ let t4 = (. type a b) => (l: list<a>, x: a) => list{x, ...l}
 let t5 = (type a b) => (. l: list<a>, x: a) => list{x, ...l}
 let t6 = (. type a b) => (. l: list<a>, x: a) => list{x, ...l}
 
-@@uncurried
+let () = (x => ignore(x))(3)
+let () = ((. x) => ignore(x))(. 3)
+
+type arrowPath1 = (. int) => string
+type arrowPath2 = (. I.t) => string
+type arrowPath3 = int => string
+type arrowPath4 = I.t => string
+type callback1 = ReactEvent.Mouse.t => unit as 'callback
+type callback2 = ReactEvent.Mouse.t => (unit as 'u)
+type callback3 = (ReactEvent.Mouse.t => unit) as 'callback
+type callback4 = (. ReactEvent.Mouse.t) => unit as 'callback
+type callback5 = (. ReactEvent.Mouse.t) => (unit as 'u)
+type callback6 = ((. ReactEvent.Mouse.t) => unit) as 'callback
+
+let foo = (. ()) => ()
+let fn = (_x): ((. unit) => unit) => foo
+let fooC = () => ()
+let fnC = (_x): ((unit) => unit) => fooC
+
+let a = ((. ()) => "foo")->Ok
+let aC = (() => "foo")->Ok
+
+@@uncurried.swap
 
 let cApp = foo(. 3)
 let uApp = foo(3)
@@ -115,3 +137,21 @@ let t0 = (type a b, l: list<a>, x: a) => list{x, ...l}
 let t1 = (. type a b, l: list<a>, x: a) => list{x, ...l}
 let t2 = (type a b, . l: list<a>, x: a) => list{x, ...l}
 let t3 = (. type a b, . l: list<a>, x: a) => list{x, ...l}
+
+let () = (x => ignore(x))(3)
+let () = ((. x) => ignore(x))(. 3)
+
+type arrowPath1 = (. int) => string
+type arrowPath2 = (. I.t) => string
+type arrowPath3 = int => string
+type arrowPath4 = I.t => string
+type callback1 = (. ReactEvent.Mouse.t) => unit as 'callback
+type callback2 = (. ReactEvent.Mouse.t) => (unit as 'u)
+type callback3 = ((. ReactEvent.Mouse.t) => unit) as 'callback
+type callback4 = ReactEvent.Mouse.t => unit as 'callback
+type callback5 = ReactEvent.Mouse.t => (unit as 'u)
+type callback6 = (ReactEvent.Mouse.t => unit) as 'callback
+
+let fooU = () => ()
+let fnU = (_x): ((unit) => unit) => fooC
+let aU = (() => "foo")->Ok

@@ -9,8 +9,9 @@ var U = {
   f: f
 };
 
-var v = /* H */{
-  _0: /* OT */0
+var v = {
+  TAG: "H",
+  _0: "OT"
 };
 
 exports.U = U;

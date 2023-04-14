@@ -6,9 +6,9 @@ function peek_queue(param) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "format_regression.ml",
+          "format_regression.res",
           10,
-          19
+          22
         ],
         Error: new Error()
       };
@@ -18,9 +18,9 @@ function int_of_size(param) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "format_regression.ml",
+          "format_regression.res",
           11,
-          20
+          23
         ],
         Error: new Error()
       };
@@ -30,9 +30,9 @@ function take_queue(param) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "format_regression.ml",
+          "format_regression.res",
           12,
-          19
+          22
         ],
         Error: new Error()
       };
@@ -42,9 +42,9 @@ function format_pp_token(param, param$1) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "format_regression.ml",
+          "format_regression.res",
           13,
-          26
+          32
         ],
         Error: new Error()
       };

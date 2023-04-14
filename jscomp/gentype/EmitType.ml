@@ -60,7 +60,6 @@ let typeReactRef ~type_ =
         {
           mutable_ = Mutable;
           nameJS = reactRefCurrent;
-          nameRE = reactRefCurrent;
           optional = Mandatory;
           type_ = Null type_;
         };
@@ -68,8 +67,8 @@ let typeReactRef ~type_ =
 
 let isTypeReactRef ~fields =
   match fields with
-  | [{mutable_ = Mutable; nameJS; nameRE; optional = Mandatory}] ->
-    nameJS == reactRefCurrent && nameJS == nameRE
+  | [{mutable_ = Mutable; nameJS; optional = Mandatory}] ->
+    nameJS == reactRefCurrent
   | _ -> false
 
 let isTypeFunctionComponent ~fields type_ =
@@ -182,7 +181,6 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
       {
         mutable_ = Mutable;
         nameJS = name;
-        nameRE = name;
         optional = Mandatory;
         type_ = TypeVar value;
       }
@@ -193,20 +191,41 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
     let payloadsRendered =
       payloads
       |> List.map (fun {case; t = type_} ->
-             let typeRendered =
-               type_
-               |> renderType ~config ~indent ~typeNameIsInterface ~inFunType
+             let render t =
+               t |> renderType ~config ~indent ~typeNameIsInterface ~inFunType
              in
-             match unboxed with
-             | true -> typeRendered
-             | false ->
+             let tagField =
+               case |> labelJSToString
+               |> field ~name:(Runtime.jsVariantTag ~polymorphic:false)
+             in
+             match (unboxed, type_) with
+             | true, type_ -> type_ |> render
+             | false, type_ when polymorphic ->
+               (* poly variant *)
                [
                  case |> labelJSToString
                  |> field ~name:(Runtime.jsVariantTag ~polymorphic);
-                 typeRendered
+                 type_ |> render
                  |> field ~name:(Runtime.jsVariantValue ~polymorphic);
                ]
-               |> fields)
+               |> fields
+             | false, Object (_, flds) ->
+               (* inlined record *)
+               tagField :: flds |> fields
+             | false, type_ ->
+               (* ordinary variant *)
+               let payloads =
+                 match type_ with
+                 | Tuple ts -> ts
+                 | _ -> [type_]
+               in
+               let flds =
+                 tagField
+                 :: Ext_list.mapi payloads (fun n t ->
+                        t |> render
+                        |> field ~name:(Runtime.jsVariantPayloadTag ~n))
+               in
+               flds |> fields)
     in
     let rendered = inheritsRendered @ noPayloadsRendered @ payloadsRendered in
     let indent1 = rendered |> Indent.heuristicVariants ~indent in
@@ -288,7 +307,7 @@ and renderFunType ~config ~indent ~inFunType ~typeNameIsInterface ~typeVars
 let typeToString ~config ~typeNameIsInterface type_ =
   type_ |> renderType ~config ~typeNameIsInterface ~inFunType:false
 
-let ofType ~config ?(typeNameIsInterface = fun _ -> false) ~type_ s =
+let ofType ~config ~typeNameIsInterface ~type_ s =
   s ^ ": " ^ (type_ |> typeToString ~config ~typeNameIsInterface)
 
 let emitExportConst ~early ?(comment = "") ~config ?(docString = "") ~emitters
@@ -424,8 +443,6 @@ let emitImportTypeAs ~emitters ~config ~typeName ~asTypeName
     | None -> "")
   ^ "} from '" ^ importPathString ^ "';"
   |> Emitters.import ~emitters
-
-let ofTypeAny ~config s = s |> ofType ~config ~type_:typeAny
 
 let emitTypeCast ~config ~type_ ~typeNameIsInterface s =
   s ^ " as " ^ (type_ |> typeToString ~config ~typeNameIsInterface)

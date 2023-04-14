@@ -19,7 +19,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -48,7 +48,7 @@ var a = Curry._1(h.length, {
       }
     });
 
-eq("File \"module_alias_test.ml\", line 30, characters 6-13", a, 3);
+eq("File \"module_alias_test.res\", line 30, characters 3-10", a, 3);
 
 Mt.from_pair_suites("Module_alias_test", suites.contents);
 

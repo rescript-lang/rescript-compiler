@@ -56,15 +56,15 @@ function makeWrapper4(foo, param) {
   return tmp;
 }
 
-b("File \"gpr_2503_test.ml\", line 31, characters 5-12", "a" === makeWrapper3("a", undefined).foo);
+b("File \"gpr_2503_test.res\", line 39, characters 2-9", "a" === makeWrapper3("a", undefined).foo);
 
-b("File \"gpr_2503_test.ml\", line 34, characters 5-12", undefined === makeWrapper3(undefined, undefined).foo);
+b("File \"gpr_2503_test.res\", line 41, characters 2-9", undefined === makeWrapper3(undefined, undefined).foo);
 
-b("File \"gpr_2503_test.ml\", line 37, characters 5-12", "a" === makeWrapper4(1, undefined).foo);
+b("File \"gpr_2503_test.res\", line 43, characters 2-9", "a" === makeWrapper4(1, undefined).foo);
 
-b("File \"gpr_2503_test.ml\", line 40, characters 5-12", "b" === makeWrapper4(11, undefined).foo);
+b("File \"gpr_2503_test.res\", line 45, characters 2-9", "b" === makeWrapper4(11, undefined).foo);
 
-b("File \"gpr_2503_test.ml\", line 43, characters 5-12", undefined === makeWrapper4(111, undefined).foo);
+b("File \"gpr_2503_test.res\", line 47, characters 2-9", undefined === makeWrapper4(111, undefined).foo);
 
 Mt.from_pair_suites("Gpr_2503_test", suites.contents);
 

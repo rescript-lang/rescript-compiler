@@ -3,29 +3,31 @@
 var List = require("../../lib/js/list.js");
 var Curry = require("../../lib/js/curry.js");
 
-function fib(n) {
-  if (n === 2 || n === 1) {
+function fib(x) {
+  if (x === 2 || x === 1) {
     return 1;
   } else {
-    return fib(n - 1 | 0) + fib(n - 2 | 0) | 0;
+    return fib(x - 1 | 0) + fib(x - 2 | 0) | 0;
   }
 }
 
 function cons(x, y) {
-  return /* Cons */{
+  return {
+          TAG: "Cons",
           _0: x,
           _1: y
         };
 }
 
-function map(f, param) {
-  if (param) {
-    return /* Cons */{
-            _0: Curry._1(f, param._0),
-            _1: map(f, param._1)
-          };
+function map(f, x) {
+  if (typeof x !== "object") {
+    return "Nil";
   } else {
-    return /* Nil */0;
+    return {
+            TAG: "Cons",
+            _0: Curry._1(f, x._0),
+            _1: map(f, x._1)
+          };
   }
 }
 
@@ -65,7 +67,7 @@ function v(param) {
   return (6 + param | 0) + u$1 | 0;
 }
 
-var nil = /* Nil */0;
+var nil = "Nil";
 
 var len = List.length;
 

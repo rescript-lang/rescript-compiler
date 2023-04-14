@@ -1,9 +1,6 @@
 (library
  (name frontend)
  (wrapped false)
- (preprocess
-  (action
-   (run %{bin:cppo} %{env:CPPO_FLAGS=} %{input-file})))
  (flags
   (:standard -w +a-4-9-40-42-70))
- (libraries common js_parser ml))
+ (libraries common ml))

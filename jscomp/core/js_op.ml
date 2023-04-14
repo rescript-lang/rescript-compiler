@@ -48,6 +48,7 @@ type binop =
   | Mul
   | Div
   | Mod
+  | InstanceOf
 
 (**
    note that we don't need raise [Div_by_zero] in ReScript

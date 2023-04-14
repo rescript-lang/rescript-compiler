@@ -20,7 +20,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -34,13 +34,13 @@ var Y0 = Functor_def.Make(Functor_inst);
 
 var Y1 = Functor_def.Make(Functor_inst);
 
-eq("File \"functor_app_test.ml\", line 23, characters 6-13", Curry._2(Y0.h, 1, 2), 4);
+eq("File \"functor_app_test.res\", line 15, characters 3-10", Curry._2(Y0.h, 1, 2), 4);
 
-eq("File \"functor_app_test.ml\", line 24, characters 6-13", Curry._2(Y1.h, 2, 3), 6);
+eq("File \"functor_app_test.res\", line 16, characters 3-10", Curry._2(Y1.h, 2, 3), 6);
 
 var v = Functor_def.$$return(undefined);
 
-eq("File \"functor_app_test.ml\", line 29, characters 6-13", v, 2);
+eq("File \"functor_app_test.res\", line 20, characters 3-10", v, 2);
 
 Mt.from_pair_suites("Functor_app_test", suites.contents);
 

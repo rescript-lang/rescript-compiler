@@ -18,7 +18,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -48,7 +48,7 @@ var a0 = match[0];
 
 console.log(a0, a1);
 
-eq("File \"gpr_1817_test.ml\", line 19, characters 6-13", a2, true);
+eq("File \"gpr_1817_test.res\", line 20, characters 3-10", a2, true);
 
 Mt.from_pair_suites("Gpr_1817_test", suites.contents);
 

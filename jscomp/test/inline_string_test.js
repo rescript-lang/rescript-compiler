@@ -5,8 +5,8 @@ console.log("list");
 
 console.log("list");
 
-function f(param) {
-  if (param !== undefined) {
+function f(x) {
+  if (x !== undefined) {
     return "Some";
   } else {
     return "None";

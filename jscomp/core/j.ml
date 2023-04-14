@@ -76,7 +76,7 @@ and for_ident = ident
 and for_direction = Js_op.direction_flag
 and property_map = (property_name * expression) list
 and length_object = Js_op.length_object
-and delim = External_arg_spec.delim = | DNone | DStarJ | DJson
+and delim = External_arg_spec.delim = | DNone | DStarJ | DNoQuotes
 
 and expression_desc =
   | Length of expression * length_object
@@ -151,17 +151,7 @@ and expression_desc =
   (* | Caml_uninitialized_obj of expression * expression *)
   (* [tag] and [size] tailed  for [Obj.new_block] *)
 
-  (* For setter, it still return the value of expression,
-     we can not use
-     {[
-       type 'a access = Get | Set of 'a
-     ]}
-     in another module, since it will break our code generator
-     [Caml_block_tag] can return [undefined],
-     you have to use [E.tag] in a safe way
-  *)
-  | Caml_block_tag of expression
-  (* | Caml_block_set_tag of expression * expression *)
+  | Caml_block_tag of expression * string (* e.tag *)
   (* | Caml_block_set_length of expression * expression *)
   (* It will just fetch tag, to make it safe, when creating it,
      we need apply "|0", we don't do it in the
@@ -254,7 +244,7 @@ and case_clause = {
   comment : string option;
 }
 
-and string_clause = string * case_clause
+and string_clause = Ast_untagged_variants.literal_type * case_clause
 and int_clause = int * case_clause
 
 and statement_desc =

@@ -46,7 +46,6 @@ exception Undefined
 
 let%private forward_with_closure (type a ) (blk : a t) (closure : unit -> a [@bs]) : a = 
   let result = closure () [@bs] in
-  (* do set_field BEFORE set_tag *)
   blk.value <- result;
   blk.tag<- true;
   result

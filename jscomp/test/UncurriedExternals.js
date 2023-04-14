@@ -47,7 +47,7 @@ function tsiU(c) {
     });
 }
 
-var match = React.useState(function () {
+var match = React.useState(function (param) {
       return 3;
     });
 
@@ -70,6 +70,13 @@ var StandardNotation = {
   get: StandardNotation_get,
   set: StandardNotation_set
 };
+
+function methodWithAsync(param) {
+  var $$this = this ;
+  return (async function (arg) {
+              return $$this + arg | 0;
+            })(param);
+}
 
 function dd$1(param) {
   throw {
@@ -116,15 +123,23 @@ function tsiU$1(c) {
     });
 }
 
-var match$1 = React.useState(function (param) {
+var match$1 = React.useState(function () {
       return 3;
     });
+
+function methodWithAsyncU() {
+  var $$this = this ;
+  return async function (arg) {
+    return $$this + arg | 0;
+  };
+}
 
 var get = match$1[0];
 
 var set = match$1[1];
 
 exports.StandardNotation = StandardNotation;
+exports.methodWithAsync = methodWithAsync;
 exports.dd = dd$1;
 exports.h = h$1;
 exports.M = M$1;
@@ -138,4 +153,5 @@ exports.tsiC = tsiC$1;
 exports.tsiU = tsiU$1;
 exports.get = get;
 exports.set = set;
+exports.methodWithAsyncU = methodWithAsyncU;
 /* h Not a pure module */

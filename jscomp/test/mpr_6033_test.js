@@ -18,7 +18,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -42,7 +42,7 @@ CamlinternalLazy.force(x);
 
 var u = f(x);
 
-eq("File \"mpr_6033_test.ml\", line 20, characters 6-13", u, "defabc");
+eq("File \"mpr_6033_test.res\", line 20, characters 3-10", u, "defabc");
 
 Mt.from_pair_suites("Mpr_6033_test", suites.contents);
 

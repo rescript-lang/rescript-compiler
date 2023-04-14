@@ -64,6 +64,10 @@ and translateSignatureItemFromTypes ~config ~outputFileRelative ~resolver
     }
   | Types.Sig_module (id, moduleDeclaration, _) ->
     let moduleItem = Runtime.newModuleItem ~name:(id |> Ident.name) in
+    let config =
+      moduleDeclaration.md_attributes
+      |> Annotation.updateConfigForModule ~config
+    in
     typeEnv |> TypeEnv.updateModuleItem ~moduleItem;
     moduleDeclaration
     |> translateModuleDeclarationFromTypes ~config ~outputFileRelative ~resolver
@@ -73,7 +77,9 @@ and translateSignatureItemFromTypes ~config ~outputFileRelative ~resolver
     if !Debug.translation then Log_.item "Translate Sig Value %s\n" name;
     let moduleItem = Runtime.newModuleItem ~name in
     typeEnv |> TypeEnv.updateModuleItem ~moduleItem;
-    if val_attributes |> Annotation.fromAttributes ~loc:val_loc = GenType then
+    if
+      val_attributes |> Annotation.fromAttributes ~config ~loc:val_loc = GenType
+    then
       name
       |> Translation.translateValue ~attributes:val_attributes ~config
            ~docString:(Annotation.getDocString val_attributes)

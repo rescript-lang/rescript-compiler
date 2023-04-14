@@ -192,7 +192,7 @@ let isFieldDeclStart = function
   | _ -> false
 
 let isRecordDeclStart = function
-  | Token.At | Mutable | Lident _ -> true
+  | Token.At | Mutable | Lident _ | DotDotDot | String _ -> true
   | _ -> false
 
 let isTypExprStart = function

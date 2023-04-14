@@ -2,7 +2,7 @@
 
 import * as Curry from "rescript/lib/es6/curry.js";
 
-function uncurried0(param) {
+function uncurried0() {
   return "";
 }
 

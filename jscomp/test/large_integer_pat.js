@@ -1,8 +1,8 @@
 'use strict';
 
 
-function ff(param) {
-  if (param >= 123 || param < 0) {
+function ff(x) {
+  if (x >= 123 || x < 0) {
     return 2;
   } else {
     return 1;

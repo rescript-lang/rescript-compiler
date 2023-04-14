@@ -47,7 +47,7 @@ var suites_0 = [
   "basename",
   (function (param) {
       return {
-              TAG: /* Eq */0,
+              TAG: "Eq",
               _0: basename("b/c/a.b"),
               _1: "a.b"
             };

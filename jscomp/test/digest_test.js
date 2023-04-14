@@ -146,10 +146,10 @@ var ref = [
 
 Mt.from_pair_suites("Digest_test", Pervasives.$at({
           hd: [
-            "File \"digest_test.ml\", line 6, characters 4-11",
+            "File \"digest_test.res\", line 9, characters 9-16",
             (function (param) {
                 return {
-                        TAG: /* Eq */0,
+                        TAG: "Eq",
                         _0: Digest.to_hex(Digest.string("value")),
                         _1: "2063c1608d6e0baf80249c42e2be5804"
                       };
@@ -157,10 +157,10 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at({
           ],
           tl: {
             hd: [
-              "File \"digest_test.ml\", line 7, characters 4-11",
+              "File \"digest_test.res\", line 11, characters 10-17",
               (function (param) {
                   return {
-                          TAG: /* Eq */0,
+                          TAG: "Eq",
                           _0: Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog")),
                           _1: "9e107d9d372bb6826bd81d3542a419d6"
                         };
@@ -168,10 +168,10 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at({
             ],
             tl: {
               hd: [
-                "File \"digest_test.ml\", line 9, characters 4-11",
+                "File \"digest_test.res\", line 18, characters 10-17",
                 (function (param) {
                     return {
-                            TAG: /* Eq */0,
+                            TAG: "Eq",
                             _0: Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog.")),
                             _1: "e4d909c290d0fb1ca068ffaddf22cbd0"
                           };
@@ -179,10 +179,10 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at({
               ],
               tl: {
                 hd: [
-                  "File \"digest_test.ml\", line 11, characters 4-11",
+                  "File \"digest_test.res\", line 24, characters 9-16",
                   (function (param) {
                       return {
-                              TAG: /* Eq */0,
+                              TAG: "Eq",
                               _0: Digest.to_hex(Digest.string("")),
                               _1: "d41d8cd98f00b204e9800998ecf8427e"
                             };
@@ -190,10 +190,10 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at({
                 ],
                 tl: {
                   hd: [
-                    "File \"digest_test.ml\", line 12, characters 4-11",
+                    "File \"digest_test.res\", line 26, characters 10-17",
                     (function (param) {
                         return {
-                                TAG: /* Eq */0,
+                                TAG: "Eq",
                                 _0: Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.")),
                                 _1: "7065cc36bba1d155fb09f9d02f22e8bf"
                               };
@@ -201,10 +201,10 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at({
                   ],
                   tl: {
                     hd: [
-                      "File \"digest_test.ml\", line 13, characters 4-11",
+                      "File \"digest_test.res\", line 45, characters 10-17",
                       (function (param) {
                           return {
-                                  TAG: /* Eq */0,
+                                  TAG: "Eq",
                                   _0: Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.")),
                                   _1: "b9193d1df4b7a8f0a25ffdd1005c5b2b"
                                 };
@@ -221,7 +221,7 @@ Mt.from_pair_suites("Digest_test", Pervasives.$at({
                             String(i),
                             (function (param) {
                                 return {
-                                        TAG: /* Eq */0,
+                                        TAG: "Eq",
                                         _0: Digest.to_hex(Digest.string("a".repeat(i))),
                                         _1: Caml_array.get(ref, i)
                                       };

@@ -15,18 +15,19 @@ var Comparable = {
   Make: Make
 };
 
-function height(param) {
-  if (param) {
-    return param._4;
-  } else {
+function height(x) {
+  if (typeof x !== "object") {
     return 0;
+  } else {
+    return x._4;
   }
 }
 
 function create(l, x, d, r) {
   var hl = height(l);
   var hr = height(r);
-  return /* Node */{
+  return {
+          TAG: "Node",
           _0: l,
           _1: x,
           _2: d,
@@ -36,25 +37,27 @@ function create(l, x, d, r) {
 }
 
 function bal(l, x, d, r) {
-  var hl = l ? l._4 : 0;
-  var hr = r ? r._4 : 0;
+  var hl;
+  hl = typeof l !== "object" ? 0 : l._4;
+  var hr;
+  hr = typeof r !== "object" ? 0 : r._4;
   if (hl > (hr + 2 | 0)) {
-    if (l) {
-      var lr = l._3;
-      var ld = l._2;
-      var lv = l._1;
-      var ll = l._0;
-      if (height(ll) >= height(lr)) {
-        return create(ll, lv, ld, create(lr, x, d, r));
-      }
-      if (lr) {
-        return create(create(ll, lv, ld, lr._0), lr._1, lr._2, create(lr._3, x, d, r));
-      }
+    if (typeof l !== "object") {
       throw {
             RE_EXN_ID: "Invalid_argument",
             _1: "Map.bal",
             Error: new Error()
           };
+    }
+    var lr = l._3;
+    var ld = l._2;
+    var lv = l._1;
+    var ll = l._0;
+    if (height(ll) >= height(lr)) {
+      return create(ll, lv, ld, create(lr, x, d, r));
+    }
+    if (typeof lr === "object") {
+      return create(create(ll, lv, ld, lr._0), lr._1, lr._2, create(lr._3, x, d, r));
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
@@ -63,7 +66,8 @@ function bal(l, x, d, r) {
         };
   }
   if (hr <= (hl + 2 | 0)) {
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: l,
             _1: x,
             _2: d,
@@ -71,22 +75,22 @@ function bal(l, x, d, r) {
             _4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
-  if (r) {
-    var rr = r._3;
-    var rd = r._2;
-    var rv = r._1;
-    var rl = r._0;
-    if (height(rr) >= height(rl)) {
-      return create(create(l, x, d, rl), rv, rd, rr);
-    }
-    if (rl) {
-      return create(create(l, x, d, rl._0), rl._1, rl._2, create(rl._3, rv, rd, rr));
-    }
+  if (typeof r !== "object") {
     throw {
           RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal",
           Error: new Error()
         };
+  }
+  var rr = r._3;
+  var rd = r._2;
+  var rv = r._1;
+  var rl = r._0;
+  if (height(rr) >= height(rl)) {
+    return create(create(l, x, d, rl), rv, rd, rr);
+  }
+  if (typeof rl === "object") {
+    return create(create(l, x, d, rl._0), rl._1, rl._2, create(rl._3, rv, rd, rr));
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
@@ -95,28 +99,30 @@ function bal(l, x, d, r) {
       };
 }
 
-function add(x, data, compare, param) {
-  if (!param) {
-    return /* Node */{
-            _0: /* Empty */0,
+function add(x, data, compare, x_) {
+  if (typeof x_ !== "object") {
+    return {
+            TAG: "Node",
+            _0: "Empty",
             _1: x,
             _2: data,
-            _3: /* Empty */0,
+            _3: "Empty",
             _4: 1
           };
   }
-  var r = param._3;
-  var d = param._2;
-  var v = param._1;
-  var l = param._0;
+  var r = x_._3;
+  var d = x_._2;
+  var v = x_._1;
+  var l = x_._0;
   var c = compare(x, v);
   if (c === 0) {
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: l,
             _1: x,
             _2: data,
             _3: r,
-            _4: param._4
+            _4: x_._4
           };
   } else if (c < 0) {
     return bal(add(x, data, compare, l), v, d, r);
@@ -136,7 +142,7 @@ function add$1(x, data, v) {
 function empty(v) {
   return {
           compare: v,
-          data: /* Empty */0
+          data: "Empty"
         };
 }
 
@@ -154,12 +160,12 @@ var V1 = {
 
 var v0 = {
   compare: V0,
-  data: /* Empty */0
+  data: "Empty"
 };
 
 var v1 = {
   compare: V1,
-  data: /* Empty */0
+  data: "Empty"
 };
 
 var v3 = add$1(3, "a", v0);

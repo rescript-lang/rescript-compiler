@@ -24,12 +24,12 @@ function f0(x) {
 
 var Small = /* @__PURE__ */Caml_exceptions.create("Large_record_duplication_test.Small");
 
-function f_small(u) {
-  if (u.RE_EXN_ID === Small) {
+function f_small(x) {
+  if (x.RE_EXN_ID === Small) {
     return {
             RE_EXN_ID: Small,
             x: 2,
-            y: u.y
+            y: x.y
           };
   } else {
     return {
@@ -44,19 +44,20 @@ var h = {
   y: ""
 };
 
-eq("File \"large_record_duplication_test.ml\", line 72, characters 6-13", f_small(h), {
+eq("File \"large_record_duplication_test.res\", line 70, characters 3-10", f_small(h), {
       RE_EXN_ID: Small,
       x: 2,
       y: ""
     });
 
-eq("File \"large_record_duplication_test.ml\", line 74, characters 6-13", Caml_obj.equal(h, {
+eq("File \"large_record_duplication_test.res\", line 72, characters 3-10", Caml_obj.equal(h, {
           RE_EXN_ID: Small,
           x: 2,
           y: ""
         }), false);
 
-var v1 = /* A0 */{
+var v1 = {
+  TAG: "A0",
   x0: 9,
   x1: 9,
   x2: 9,
@@ -83,25 +84,26 @@ var v1 = /* A0 */{
 };
 
 function get_x0(x) {
-  if (x) {
+  if (typeof x !== "object") {
+    return ;
+  } else {
     return x.x0;
   }
-  
 }
 
 function f1(x) {
-  if (!x) {
-    return /* A1 */0;
+  if (typeof x !== "object") {
+    return "A1";
   }
   var newrecord = Caml_obj.obj_dup(x);
   newrecord.x0 = 1;
   return newrecord;
 }
 
-eq("File \"large_record_duplication_test.ml\", line 140, characters 6-13", get_x0(f1(v1)), 1);
+eq("File \"large_record_duplication_test.res\", line 140, characters 3-10", get_x0(f1(v1)), 1);
 
 var v2 = {
-  TAG: /* A0 */0,
+  TAG: "A0",
   x0: 9,
   x1: 9,
   x2: 9,
@@ -128,14 +130,14 @@ var v2 = {
 };
 
 function get_x0$1(x) {
-  if (x.TAG === /* A0 */0) {
+  if (x.TAG === "A0") {
     return x.x0;
   }
   
 }
 
 function f2(x) {
-  if (x.TAG !== /* A0 */0) {
+  if (x.TAG !== "A0") {
     return x;
   }
   var newrecord = Caml_obj.obj_dup(x);
@@ -143,7 +145,7 @@ function f2(x) {
   return newrecord;
 }
 
-eq("File \"large_record_duplication_test.ml\", line 205, characters 6-13", get_x0$1(f2(v2)), 1);
+eq("File \"large_record_duplication_test.res\", line 208, characters 3-10", get_x0$1(f2(v2)), 1);
 
 var A0 = /* @__PURE__ */Caml_exceptions.create("Large_record_duplication_test.A0");
 
@@ -190,11 +192,11 @@ var v3 = {
   x22: 9
 };
 
-eq("File \"large_record_duplication_test.ml\", line 271, characters 6-13", get_x0$2(f3(v3)), 1);
+eq("File \"large_record_duplication_test.res\", line 275, characters 3-10", get_x0$2(f3(v3)), 1);
 
-eq("File \"large_record_duplication_test.ml\", line 272, characters 6-13", get_x0$2(v3), 9);
+eq("File \"large_record_duplication_test.res\", line 276, characters 3-10", get_x0$2(v3), 9);
 
-eq("File \"large_record_duplication_test.ml\", line 273, characters 6-13", get_x0$2({
+eq("File \"large_record_duplication_test.res\", line 277, characters 3-10", get_x0$2({
           RE_EXN_ID: "Not_found"
         }), undefined);
 

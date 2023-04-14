@@ -19,7 +19,9 @@ type t = {
     Diagnostics.category ->
     unit;
   mutable ch: charEncoding; (* current character *)
-  mutable offset: int; (* character offset *)
+  mutable offset: int; (* current byte offset *)
+  mutable offset16: int;
+      (* current number of utf16 code units since line start *)
   mutable lineOffset: int; (* current line offset *)
   mutable lnum: int; (* current line number *)
   mutable mode: mode list;
@@ -51,12 +53,11 @@ let position scanner =
       (* line number *)
       pos_lnum = scanner.lnum;
       (* offset of the beginning of the line (number
-         of characters between the beginning of the scanner and the beginning
+         of bytes between the beginning of the scanner and the beginning
          of the line) *)
       pos_bol = scanner.lineOffset;
-      (* [pos_cnum] is the offset of the position (number of
-         characters between the beginning of the scanner and the position). *)
-      pos_cnum = scanner.offset;
+      (* [pos_cnum - pos_bol]  is the number of utf16 code units since line start *)
+      pos_cnum = scanner.lineOffset + scanner.offset16;
     }
 
 (* Small debugging util
@@ -95,19 +96,29 @@ let _printDebug ~startPos ~endPos scanner token =
 
 let next scanner =
   let nextOffset = scanner.offset + 1 in
-  (match scanner.ch with
-  | '\n' ->
-    scanner.lineOffset <- nextOffset;
-    scanner.lnum <- scanner.lnum + 1
+  let utf16len =
+    match Ext_utf8.classify scanner.ch with
+    | Single _ | Invalid -> 1
+    | Leading (n, _) -> ( (((n + 1) / 2) [@doesNotRaise]))
+    | Cont _ -> 0
+  in
+  let newline =
+    scanner.ch = '\n'
     (* What about CRLF (\r + \n) on windows?
-     * \r\n will always be terminated by a \n
-     * -> we can just bump the line count on \n *)
-  | _ -> ());
+       \r\n will always be terminated by a \n
+       -> we can just bump the line count on \n *)
+  in
+  if newline then (
+    scanner.lineOffset <- nextOffset;
+    scanner.offset16 <- 0;
+    scanner.lnum <- scanner.lnum + 1)
+  else scanner.offset16 <- scanner.offset16 + utf16len;
   if nextOffset < String.length scanner.src then (
     scanner.offset <- nextOffset;
-    scanner.ch <- String.unsafe_get scanner.src scanner.offset)
+    scanner.ch <- String.unsafe_get scanner.src nextOffset)
   else (
     scanner.offset <- String.length scanner.src;
+    scanner.offset16 <- scanner.offset - scanner.lineOffset;
     scanner.ch <- hackyEOFChar)
 
 let next2 scanner =
@@ -141,6 +152,7 @@ let make ~filename src =
     err = (fun ~startPos:_ ~endPos:_ _ -> ());
     ch = (if src = "" then hackyEOFChar else String.unsafe_get src 0);
     offset = 0;
+    offset16 = 0;
     lineOffset = 0;
     lnum = 1;
     mode = [];
@@ -847,6 +859,7 @@ let rec scan scanner =
       | ch, _ ->
         next scanner;
         let offset = scanner.offset in
+        let offset16 = scanner.offset16 in
         let codepoint, length =
           Res_utf8.decodeCodePoint scanner.offset scanner.src
             (String.length scanner.src)
@@ -863,6 +876,7 @@ let rec scan scanner =
         else (
           scanner.ch <- ch;
           scanner.offset <- offset;
+          scanner.offset16 <- offset16;
           SingleQuote))
     | '!' -> (
       match (peek scanner, peek2 scanner) with

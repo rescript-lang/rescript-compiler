@@ -21,7 +21,7 @@ function eq(loc, param) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -52,7 +52,7 @@ if (module_ !== undefined) {
         module_.id,
         module_.paths
       ]);
-  eq("File \"fs_test.ml\", line 45, characters 7-14", [
+  eq("File \"fs_test.res\", line 43, characters 7-14", [
         pathobj.name,
         "test"
       ]);

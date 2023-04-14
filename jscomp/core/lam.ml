@@ -39,7 +39,7 @@ module Types = struct
     sw_blocks_full : bool;
     sw_blocks : (int * t) list;
     sw_failaction : t option;
-    sw_names : Lambda.switch_names option;
+    sw_names : Ast_untagged_variants.switch_names option;
   }
 
   and lfunction = {
@@ -116,7 +116,7 @@ module X = struct
     sw_blocks_full : bool;
     sw_blocks : (int * t) list;
     sw_failaction : t option;
-    sw_names : Lambda.switch_names option;
+    sw_names : Ast_untagged_variants.switch_names option;
   }
 
   and prim_info = Types.prim_info = {
@@ -273,7 +273,7 @@ let rec is_eta_conversion_exn params inner_args outer_args : t list =
   | x :: xs, Lvar y :: ys, r :: rest when Ident.same x y ->
       r :: is_eta_conversion_exn xs ys rest
   | ( x :: xs,
-      Lprim ({ primitive = Pjs_fn_make _; args = [ Lvar y ] } as p) :: ys,
+      Lprim ({ primitive = Pjs_fn_make _ | Pjs_fn_make_unit; args = [ Lvar y ] } as p) :: ys,
       r :: rest )
     when Ident.same x y ->
       Lprim { p with args = [ r ] } :: is_eta_conversion_exn xs ys rest

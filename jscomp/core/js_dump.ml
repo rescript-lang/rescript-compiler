@@ -600,7 +600,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
       let () =
         match delim with
         | DStarJ -> P.string f ("\"" ^ txt ^ "\"")
-        | DJson -> P.string f txt
+        | DNoQuotes -> P.string f txt
         | DNone -> Js_dump_string.pp_string f txt
       in
       cxt
@@ -751,6 +751,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
   | Caml_block (el, _, _, ((Blk_extension | Blk_record_ext _) as ext)) ->
       expression_desc cxt ~level f (exn_block_as_obj ~stack:false el ext)
   | Caml_block (el, _, tag, Blk_record_inlined p) ->
+      let untagged = Ast_untagged_variants.process_untagged p.attrs in
       let objs =
         let tails =
           Ext_list.combine_array_append p.fields el
@@ -762,6 +763,9 @@ and expression_desc cxt ~(level : int) f x : cxt =
           | Lit n -> Ext_list.mem_string p.optional_labels n
           | Symbol_name -> false
         in
+        let tag_name = match Ast_untagged_variants.process_tag_name p.attrs with
+        | None -> L.tag
+        | Some s -> s in
         let tails =
           match p.optional_labels with
           | [] -> tails
@@ -771,18 +775,23 @@ and expression_desc cxt ~(level : int) f x : cxt =
               | Undefined when is_optional f -> None
               | _ -> Some (f, x))
           in
-        if p.num_nonconst = 1 then tails
+        if untagged then
+          tails
         else
-          ( Js_op.Lit L.tag,
-            if !Js_config.debug then tag else { tag with comment = Some p.name }
-          )
+          (Js_op.Lit tag_name, (* TAG:xx for inline records *)
+            match Ast_untagged_variants.process_literal_type p.attrs with
+            | None -> E.str p.name
+            | Some literal -> E.literal literal )
           :: tails
       in
-      if p.num_nonconst = 1 && not !Js_config.debug then
-        pp_comment_option f (Some p.name);
       expression_desc cxt ~level f (Object objs)
   | Caml_block (el, _, tag, Blk_constructor p) ->
       let not_is_cons = p.name <> Literals.cons in
+      let literal = Ast_untagged_variants.process_literal_type p.attrs in
+      let untagged = Ast_untagged_variants.process_untagged p.attrs in
+      let tag_name = match Ast_untagged_variants.process_tag_name p.attrs with
+        | None -> L.tag
+        | Some s -> s in
       let objs =
         let tails =
           Ext_list.mapi_append el
@@ -796,16 +805,20 @@ and expression_desc cxt ~(level : int) f x : cxt =
              [ (name_symbol, E.str p.name) ]
             else [])
         in
-        if p.num_nonconst = 1 then tails
+        if untagged || (not_is_cons = false) && p.num_nonconst = 1 then tails
         else
-          ( Js_op.Lit L.tag,
-            if !Js_config.debug then tag else { tag with comment = Some p.name }
-          )
+          ( Js_op.Lit tag_name, (* TAG:xx *) 
+            match literal with
+            | None -> E.str p.name
+            | Some literal -> E.literal literal )
           :: tails
       in
-      if p.num_nonconst = 1 && (not !Js_config.debug) && not_is_cons then
-        pp_comment_option f (Some p.name);
-      expression_desc cxt ~level f (Object objs)
+      let exp = match objs with
+        | [(_, e)] when untagged -> e.expression_desc
+        | _ when untagged -> assert false (* should not happen *)
+        (* TODO: put restriction on the variant definitions allowed, to make sure this never happens. *)
+        | _ -> J.Object objs in
+      expression_desc cxt ~level f exp
   | Caml_block
       ( _,
         _,
@@ -815,11 +828,11 @@ and expression_desc cxt ~(level : int) f x : cxt =
       assert false
   | Caml_block (el, mutable_flag, _tag, Blk_tuple) ->
       expression_desc cxt ~level f (Array (el, mutable_flag))
-  | Caml_block_tag e ->
+  | Caml_block_tag (e, tag) ->
       P.group f 1 (fun _ ->
           let cxt = expression ~level:15 cxt f e in
           P.string f L.dot;
-          P.string f L.tag;
+          P.string f tag;
           cxt)
   | Array_index (e, p) ->
       P.cond_paren_group f (level > 15) 1 (fun _ ->
@@ -1197,7 +1210,10 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
       let cxt = P.paren_group f 1 (fun _ -> expression ~level:0 cxt f e) in
       P.space f;
       P.brace_vgroup f 1 (fun _ ->
-          let cxt = loop_case_clauses cxt f Js_dump_string.pp_string cc in
+          let pp_as_value f (literal: Ast_untagged_variants.literal_type) =
+            let e = E.literal literal in
+            ignore @@ expression_desc cxt ~level:0 f e.expression_desc in
+          let cxt = loop_case_clauses cxt f pp_as_value cc in
           match def with
           | None -> cxt
           | Some def ->

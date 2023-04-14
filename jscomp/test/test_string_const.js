@@ -3,6 +3,8 @@
 var Caml_string = require("../../lib/js/caml_string.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
+var f = Caml_string.get("ghsogh", 3);
+
 var hh;
 
 try {
@@ -17,8 +19,6 @@ catch (raw_e){
     throw e;
   }
 }
-
-var f = /* 'o' */111;
 
 exports.f = f;
 exports.hh = hh;

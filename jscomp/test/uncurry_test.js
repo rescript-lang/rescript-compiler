@@ -1,7 +1,7 @@
 'use strict';
 
 
-function f0(param) {
+function f0() {
   return 0;
 }
 
@@ -25,7 +25,7 @@ console.log([
       1
     ]);
 
-function xx(_param) {
+function xx() {
   while(true) {
     _param = undefined;
     continue ;

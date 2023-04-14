@@ -17,7 +17,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -47,12 +47,12 @@ function f(check) {
   }
 }
 
-eq("File \"gpr_904_test.ml\", line 23, characters 5-12", f({
+eq("File \"gpr_904_test.res\", line 16, characters 12-19", f({
           x: true,
           y: false
         }), false);
 
-eq("File \"gpr_904_test.ml\", line 26, characters 5-12", check_healty({
+eq("File \"gpr_904_test.res\", line 18, characters 12-19", check_healty({
           a: false,
           b: false,
           c: true

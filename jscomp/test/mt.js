@@ -28,7 +28,7 @@ function is_mocha(param) {
   }
 }
 
-function from_suites(name, suite) {
+var from_suites = (function from_suites(name, suite) {
   var match = $$Array.to_list(Process.argv);
   if (match && is_mocha(undefined)) {
     describe(name, (function () {
@@ -42,7 +42,7 @@ function from_suites(name, suite) {
     return ;
   }
   
-}
+});
 
 function close_enough(thresholdOpt, a, b) {
   var threshold = thresholdOpt !== undefined ? thresholdOpt : 0.0000001;
@@ -50,23 +50,23 @@ function close_enough(thresholdOpt, a, b) {
 }
 
 function handleCode(spec) {
-  switch (spec.TAG | 0) {
-    case /* Eq */0 :
+  switch (spec.TAG) {
+    case "Eq" :
         Assert.deepEqual(spec._0, spec._1);
         return ;
-    case /* Neq */1 :
+    case "Neq" :
         Assert.notDeepEqual(spec._0, spec._1);
         return ;
-    case /* StrictEq */2 :
+    case "StrictEq" :
         Assert.strictEqual(spec._0, spec._1);
         return ;
-    case /* StrictNeq */3 :
+    case "StrictNeq" :
         Assert.notStrictEqual(spec._0, spec._1);
         return ;
-    case /* Ok */4 :
+    case "Ok" :
         Assert.ok(spec._0);
         return ;
-    case /* Approx */5 :
+    case "Approx" :
         var b = spec._1;
         var a = spec._0;
         if (!close_enough(undefined, a, b)) {
@@ -75,7 +75,7 @@ function handleCode(spec) {
         } else {
           return ;
         }
-    case /* ApproxThreshold */6 :
+    case "ApproxThreshold" :
         var b$1 = spec._2;
         var a$1 = spec._1;
         if (!close_enough(spec._0, a$1, b$1)) {
@@ -84,18 +84,27 @@ function handleCode(spec) {
         } else {
           return ;
         }
-    case /* ThrowAny */7 :
+    case "ThrowAny" :
         Assert.throws(spec._0);
         return ;
-    case /* Fail */8 :
+    case "Fail" :
         return assert_fail("failed");
-    case /* FailWith */9 :
+    case "FailWith" :
         return assert_fail(spec._0);
     
   }
 }
 
-function from_pair_suites(name, suites) {
+function force_curry(x) {
+  List.hd({
+        hd: 3,
+        tl: /* [] */0
+      });
+  $$Array.copy([5]);
+  return Curry._1(x, undefined);
+}
+
+var from_pair_suites = (function from_pair_suites(name, suites) {
   var match = $$Array.to_list(Process.argv);
   if (match) {
     if (is_mocha(undefined)) {
@@ -116,8 +125,8 @@ function from_pair_suites(name, suites) {
       return List.iter((function (param) {
                     var name = param[0];
                     var fn = Curry._1(param[1], undefined);
-                    switch (fn.TAG | 0) {
-                      case /* Eq */0 :
+                    switch (fn.TAG) {
+                      case "Eq" :
                           console.log([
                                 name,
                                 fn._0,
@@ -125,7 +134,7 @@ function from_pair_suites(name, suites) {
                                 fn._1
                               ]);
                           return ;
-                      case /* Neq */1 :
+                      case "Neq" :
                           console.log([
                                 name,
                                 fn._0,
@@ -133,7 +142,7 @@ function from_pair_suites(name, suites) {
                                 fn._1
                               ]);
                           return ;
-                      case /* StrictEq */2 :
+                      case "StrictEq" :
                           console.log([
                                 name,
                                 fn._0,
@@ -141,7 +150,7 @@ function from_pair_suites(name, suites) {
                                 fn._1
                               ]);
                           return ;
-                      case /* StrictNeq */3 :
+                      case "StrictNeq" :
                           console.log([
                                 name,
                                 fn._0,
@@ -149,14 +158,14 @@ function from_pair_suites(name, suites) {
                                 fn._1
                               ]);
                           return ;
-                      case /* Ok */4 :
+                      case "Ok" :
                           console.log([
                                 name,
                                 fn._0,
                                 "ok?"
                               ]);
                           return ;
-                      case /* Approx */5 :
+                      case "Approx" :
                           console.log([
                                 name,
                                 fn._0,
@@ -164,7 +173,7 @@ function from_pair_suites(name, suites) {
                                 fn._1
                               ]);
                           return ;
-                      case /* ApproxThreshold */6 :
+                      case "ApproxThreshold" :
                           console.log([
                                 name,
                                 fn._1,
@@ -175,12 +184,12 @@ function from_pair_suites(name, suites) {
                                 ")"
                               ]);
                           return ;
-                      case /* ThrowAny */7 :
+                      case "ThrowAny" :
                           return ;
-                      case /* Fail */8 :
+                      case "Fail" :
                           console.log("failed");
                           return ;
-                      case /* FailWith */9 :
+                      case "FailWith" :
                           console.log("failed: " + fn._0);
                           return ;
                       
@@ -189,11 +198,11 @@ function from_pair_suites(name, suites) {
     }
   }
   
-}
+});
 
 var val_unit = Promise.resolve(undefined);
 
-function from_promise_suites(name, suites) {
+var from_promise_suites = (function from_promise_suites(name, suites) {
   var match = $$Array.to_list(Process.argv);
   if (match) {
     if (is_mocha(undefined)) {
@@ -215,6 +224,30 @@ function from_promise_suites(name, suites) {
     return ;
   }
   
+});
+
+function old_from_promise_suites_donotuse(name, suites) {
+  var match = $$Array.to_list(Process.argv);
+  if (match) {
+    if (is_mocha(undefined)) {
+      describe(name, (function () {
+              List.iter((function (param) {
+                      var code = param[1];
+                      it(param[0], (function (param) {
+                              var arg1 = function (x) {
+                                handleCode(x);
+                                return val_unit;
+                              };
+                              return code.then(arg1);
+                            }));
+                    }), suites);
+            }));
+    } else {
+      console.log("promise suites");
+    }
+    return ;
+  }
+  
 }
 
 function eq_suites(test_id, suites, loc, x, y) {
@@ -224,7 +257,7 @@ function eq_suites(test_id, suites, loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -241,7 +274,7 @@ function bool_suites(test_id, suites, loc, x) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Ok */4,
+                  TAG: "Ok",
                   _0: x
                 };
         })
@@ -257,7 +290,7 @@ function throw_suites(test_id, suites, loc, x) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* ThrowAny */7,
+                  TAG: "ThrowAny",
                   _0: x
                 };
         })
@@ -269,7 +302,9 @@ function throw_suites(test_id, suites, loc, x) {
 exports.from_suites = from_suites;
 exports.from_pair_suites = from_pair_suites;
 exports.from_promise_suites = from_promise_suites;
+exports.old_from_promise_suites_donotuse = old_from_promise_suites_donotuse;
 exports.eq_suites = eq_suites;
 exports.bool_suites = bool_suites;
 exports.throw_suites = throw_suites;
+exports.force_curry = force_curry;
 /* val_unit Not a pure module */

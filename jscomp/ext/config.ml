@@ -13,6 +13,9 @@ let bs_only = ref true
 
 let unsafe_empty_array = ref false
 
+type uncurried = Legacy | Uncurried | Swap
+let uncurried = ref Legacy
+
 and cmi_magic_number = "Caml1999I022"
 
 and ast_impl_magic_number = "Caml1999M022"
@@ -28,8 +31,6 @@ let interface_suffix = ref ".mli"
 (* This is normally the same as in obj.ml, but we have to define it
    separately because it can differ when we're in the middle of a
    bootstrapping phase. *)
-
-let default_uncurry = ref false
 
 let print_config oc =
   let p name valu = Printf.fprintf oc "%s: %s\n" name valu in

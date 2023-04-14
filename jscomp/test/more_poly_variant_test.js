@@ -1,11 +1,11 @@
 'use strict';
 
 
-function map(f, param) {
-  if (typeof param !== "object") {
+function map(f, x) {
+  if (typeof x !== "object") {
     return "Nil";
   }
-  var match = param.VAL;
+  var match = x.VAL;
   return {
           NAME: "Cons",
           VAL: [
@@ -29,16 +29,16 @@ function split_cases(x) {
   }
 }
 
-function f(param) {
-  if (typeof param === "object") {
+function f(x) {
+  if (typeof x === "object") {
     return "myvariant";
   } else {
     return "Tag3";
   }
 }
 
-function g1(param) {
-  if (param.NAME === "Tag2") {
+function g1(x) {
+  if (x.NAME === "Tag2") {
     return "Tag2";
   } else {
     return "Tag1";
@@ -53,8 +53,8 @@ function g(x) {
   }
 }
 
-function f1(param) {
-  if (param === "As") {
+function f1(x) {
+  if (x === "As") {
     return "A";
   } else {
     return "other";

@@ -20,7 +20,8 @@ let rec addAnnotationsToTypes_ ~config ~(expr : Typedtree.expression)
     match path |> TranslateTypeExprFromTypes.pathToList |> List.rev with
     | ["Js"; "Internal"; fn_mk]
       when (* Uncurried function definition uses Js.Internal.fn_mkX(...) *)
-           String.length fn_mk >= 5 && String.sub fn_mk 0 5 = "fn_mk" ->
+           String.length fn_mk >= 5
+           && (String.sub fn_mk 0 5 [@doesNotRaise]) = "fn_mk" ->
       argTypes |> addAnnotationsToTypes_ ~config ~expr:expr1
     | _ -> argTypes)
   | _ -> argTypes
@@ -44,11 +45,11 @@ and addAnnotationsToFields ~config (expr : Typedtree.expression)
     let nextFields1, types1 =
       addAnnotationsToFields ~config c_rhs nextFields argTypes
     in
-    let nameJS, nameRE =
+    let name =
       TranslateTypeDeclarations.renameRecordField
-        ~attributes:expr.exp_attributes ~nameRE:field.nameRE
+        ~attributes:expr.exp_attributes ~name:field.nameJS
     in
-    ({field with nameJS; nameRE} :: nextFields1, types1)
+    ({field with nameJS = name} :: nextFields1, types1)
   | _ -> (fields, argTypes)
 
 (** Recover from expr the renaming annotations on named arguments. *)
@@ -93,7 +94,10 @@ let translateValueBinding ~config ~outputFileRelative ~resolver ~typeEnv
     if !Debug.translation then Log_.item "Translate Value Binding %s\n" name;
     let moduleItem = Runtime.newModuleItem ~name in
     typeEnv |> TypeEnv.updateModuleItem ~moduleItem;
-    if vb_attributes |> Annotation.fromAttributes ~loc:vb_pat.pat_loc = GenType
+    if
+      vb_attributes
+      |> Annotation.fromAttributes ~config ~loc:vb_pat.pat_loc
+      = GenType
     then
       id |> Ident.name
       |> Translation.translateValue ~attributes:vb_attributes ~config
@@ -136,15 +140,29 @@ let rec removeDuplicateValueBindings
     (boundInRest, structureItem :: filteredRest)
   | [] -> (StringSet.empty, [])
 
-let rec translateModuleBinding ~config ~outputFileRelative ~resolver ~typeEnv
+let rec translateModuleBinding ~(config : GenTypeConfig.t) ~outputFileRelative
+    ~resolver ~typeEnv
     ({mb_id; mb_expr; mb_attributes} : Typedtree.module_binding) : Translation.t
     =
   let name = mb_id |> Ident.name in
   if !Debug.translation then Log_.item "Translate Module Binding %s\n" name;
   let moduleItem = Runtime.newModuleItem ~name in
+  let config = mb_attributes |> Annotation.updateConfigForModule ~config in
   typeEnv |> TypeEnv.updateModuleItem ~moduleItem;
   let typeEnv = typeEnv |> TypeEnv.newModule ~name in
   match mb_expr.mod_desc with
+  | Tmod_ident (path, _) -> (
+    let dep = path |> Dependencies.fromPath ~config ~typeEnv in
+    let internal = dep |> Dependencies.isInternal in
+    typeEnv |> TypeEnv.addModuleEquation ~dep ~internal;
+    match Env.scrape_alias mb_expr.mod_env mb_expr.mod_type with
+    | Mty_signature signature ->
+      (* Treat module M = N as include N *)
+      signature
+      |> TranslateSignatureFromTypes.translateSignatureFromTypes ~config
+           ~outputFileRelative ~resolver ~typeEnv
+      |> Translation.combine
+    | Mty_alias _ | Mty_ident _ | Mty_functor _ -> Translation.empty)
   | Tmod_structure structure ->
     let isLetPrivate =
       mb_attributes |> Annotation.hasAttribute Annotation.tagIsInternLocal
@@ -192,11 +210,6 @@ let rec translateModuleBinding ~config ~outputFileRelative ~resolver ~typeEnv
     | Mty_alias _ ->
       logNotImplemented ("Mty_alias " ^ __LOC__);
       Translation.empty)
-  | Tmod_ident (path, _) ->
-    let dep = path |> Dependencies.fromPath ~config ~typeEnv in
-    let internal = dep |> Dependencies.isInternal in
-    typeEnv |> TypeEnv.addModuleEquation ~dep ~internal;
-    Translation.empty
   | Tmod_functor _ ->
     logNotImplemented ("Tmod_functor " ^ __LOC__);
     Translation.empty
@@ -239,9 +252,9 @@ let rec translateModuleBinding ~config ~outputFileRelative ~resolver ~typeEnv
     Translation.empty
 
 and translateStructureItem ~config ~outputFileRelative ~resolver ~typeEnv
-    structItem : Translation.t =
+    (structItem : Typedtree.structure_item) : Translation.t =
   match structItem with
-  | {Typedtree.str_desc = Typedtree.Tstr_type (recFlag, typeDeclarations)} ->
+  | {str_desc = Tstr_type (recFlag, typeDeclarations)} ->
     {
       importTypes = [];
       codeItems = [];
@@ -251,30 +264,30 @@ and translateStructureItem ~config ~outputFileRelative ~resolver ~typeEnv
              ~outputFileRelative ~recursive:(recFlag = Recursive) ~resolver
              ~typeEnv;
     }
-  | {Typedtree.str_desc = Tstr_value (_loc, valueBindings)} ->
+  | {str_desc = Tstr_value (_loc, valueBindings)} ->
     valueBindings
     |> List.map
          (translateValueBinding ~config ~outputFileRelative ~resolver ~typeEnv)
     |> Translation.combine
-  | {Typedtree.str_desc = Tstr_primitive valueDescription} ->
+  | {str_desc = Tstr_primitive valueDescription} ->
     (* external declaration *)
     valueDescription
     |> Translation.translatePrimitive ~config ~outputFileRelative ~resolver
          ~typeEnv
-  | {Typedtree.str_desc = Tstr_module moduleBinding} ->
+  | {str_desc = Tstr_module moduleBinding} ->
     moduleBinding
     |> translateModuleBinding ~config ~outputFileRelative ~resolver ~typeEnv
-  | {Typedtree.str_desc = Tstr_modtype moduleTypeDeclaration} ->
+  | {str_desc = Tstr_modtype moduleTypeDeclaration} ->
     moduleTypeDeclaration
     |> TranslateSignature.translateModuleTypeDeclaration ~config
          ~outputFileRelative ~resolver ~typeEnv
-  | {Typedtree.str_desc = Tstr_recmodule moduleBindings} ->
+  | {str_desc = Tstr_recmodule moduleBindings} ->
     moduleBindings
     |> List.map
          (translateModuleBinding ~config ~outputFileRelative ~resolver ~typeEnv)
     |> Translation.combine
   | {
-   Typedtree.str_desc =
+   str_desc =
      (* Bucklescript's encoding of bs.module: include with constraint. *)
      Tstr_include
        {
@@ -300,30 +313,30 @@ and translateStructureItem ~config ~outputFileRelative ~resolver ~typeEnv
   } ->
     structItem1
     |> translateStructureItem ~config ~outputFileRelative ~resolver ~typeEnv
-  | {Typedtree.str_desc = Tstr_include {incl_type = signature}} ->
+  | {str_desc = Tstr_include {incl_type = signature}} ->
     signature
     |> TranslateSignatureFromTypes.translateSignatureFromTypes ~config
          ~outputFileRelative ~resolver ~typeEnv
     |> Translation.combine
-  | {Typedtree.str_desc = Tstr_eval _} ->
+  | {str_desc = Tstr_eval _} ->
     logNotImplemented ("Tstr_eval " ^ __LOC__);
     Translation.empty
-  | {Typedtree.str_desc = Tstr_typext _} ->
+  | {str_desc = Tstr_typext _} ->
     logNotImplemented ("Tstr_typext " ^ __LOC__);
     Translation.empty
-  | {Typedtree.str_desc = Tstr_exception _} ->
+  | {str_desc = Tstr_exception _} ->
     logNotImplemented ("Tstr_exception " ^ __LOC__);
     Translation.empty
-  | {Typedtree.str_desc = Tstr_open _} ->
+  | {str_desc = Tstr_open _} ->
     logNotImplemented ("Tstr_open " ^ __LOC__);
     Translation.empty
-  | {Typedtree.str_desc = Tstr_class _} ->
+  | {str_desc = Tstr_class _} ->
     logNotImplemented ("Tstr_class " ^ __LOC__);
     Translation.empty
-  | {Typedtree.str_desc = Tstr_class_type _} ->
+  | {str_desc = Tstr_class_type _} ->
     logNotImplemented ("Tstr_class_type " ^ __LOC__);
     Translation.empty
-  | {Typedtree.str_desc = Tstr_attribute _} ->
+  | {str_desc = Tstr_attribute _} ->
     logNotImplemented ("Tstr_attribute " ^ __LOC__);
     Translation.empty
 

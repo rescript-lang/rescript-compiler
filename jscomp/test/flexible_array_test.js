@@ -9,140 +9,150 @@ function sub(_tr, _k) {
   while(true) {
     var k = _k;
     var tr = _tr;
-    if (tr) {
-      if (k === 1) {
-        return tr._0;
-      }
-      if (k % 2 === 0) {
-        _k = k / 2 | 0;
-        _tr = tr._1;
-        continue ;
-      }
+    if (typeof tr !== "object") {
+      throw {
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
+          };
+    }
+    if (k === 1) {
+      return tr._0;
+    }
+    if (k % 2 === 0) {
       _k = k / 2 | 0;
-      _tr = tr._2;
+      _tr = tr._1;
       continue ;
+    }
+    _k = k / 2 | 0;
+    _tr = tr._2;
+    continue ;
+  };
+}
+
+function update(tr, k, w) {
+  if (typeof tr !== "object") {
+    if (k === 1) {
+      return {
+              TAG: "Br",
+              _0: w,
+              _1: "Lf",
+              _2: "Lf"
+            };
     }
     throw {
           RE_EXN_ID: "Not_found",
           Error: new Error()
         };
-  };
-}
-
-function update(tr, k, w) {
-  if (tr) {
-    var r = tr._2;
-    var l = tr._1;
-    if (k === 1) {
-      return /* Br */{
-              _0: w,
-              _1: l,
-              _2: r
-            };
-    }
-    var v = tr._0;
-    if (k % 2 === 0) {
-      return /* Br */{
-              _0: v,
-              _1: update(l, k / 2 | 0, w),
-              _2: r
-            };
-    } else {
-      return /* Br */{
-              _0: v,
-              _1: l,
-              _2: update(r, k / 2 | 0, w)
-            };
-    }
   }
+  var r = tr._2;
+  var l = tr._1;
   if (k === 1) {
-    return /* Br */{
+    return {
+            TAG: "Br",
             _0: w,
-            _1: /* Lf */0,
-            _2: /* Lf */0
+            _1: l,
+            _2: r
           };
   }
-  throw {
-        RE_EXN_ID: "Not_found",
-        Error: new Error()
-      };
+  var v = tr._0;
+  if (k % 2 === 0) {
+    return {
+            TAG: "Br",
+            _0: v,
+            _1: update(l, k / 2 | 0, w),
+            _2: r
+          };
+  } else {
+    return {
+            TAG: "Br",
+            _0: v,
+            _1: l,
+            _2: update(r, k / 2 | 0, w)
+          };
+  }
 }
 
 function $$delete(tr, n) {
-  if (tr) {
-    if (n === 1) {
-      return /* Lf */0;
-    }
-    var r = tr._2;
-    var l = tr._1;
-    var v = tr._0;
-    if (n % 2 === 0) {
-      return /* Br */{
-              _0: v,
-              _1: $$delete(l, n / 2 | 0),
-              _2: r
-            };
-    } else {
-      return /* Br */{
-              _0: v,
-              _1: l,
-              _2: $$delete(r, n / 2 | 0)
-            };
-    }
+  if (typeof tr !== "object") {
+    throw {
+          RE_EXN_ID: "Not_found",
+          Error: new Error()
+        };
   }
-  throw {
-        RE_EXN_ID: "Not_found",
-        Error: new Error()
-      };
+  if (n === 1) {
+    return "Lf";
+  }
+  var r = tr._2;
+  var l = tr._1;
+  var v = tr._0;
+  if (n % 2 === 0) {
+    return {
+            TAG: "Br",
+            _0: v,
+            _1: $$delete(l, n / 2 | 0),
+            _2: r
+          };
+  } else {
+    return {
+            TAG: "Br",
+            _0: v,
+            _1: l,
+            _2: $$delete(r, n / 2 | 0)
+          };
+  }
 }
 
 function loext(tr, w) {
-  if (tr) {
-    return /* Br */{
+  if (typeof tr !== "object") {
+    return {
+            TAG: "Br",
+            _0: w,
+            _1: "Lf",
+            _2: "Lf"
+          };
+  } else {
+    return {
+            TAG: "Br",
             _0: w,
             _1: loext(tr._2, tr._0),
             _2: tr._1
-          };
-  } else {
-    return /* Br */{
-            _0: w,
-            _1: /* Lf */0,
-            _2: /* Lf */0
           };
   }
 }
 
 function lorem(tr) {
-  if (tr) {
-    var l = tr._1;
-    if (l) {
-      return /* Br */{
-              _0: l._0,
-              _1: tr._2,
-              _2: lorem(l)
-            };
-    }
-    if (!tr._2) {
-      return /* Lf */0;
-    }
+  if (typeof tr !== "object") {
     throw {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "flexible_array_test.ml",
-            66,
-            9
-          ],
+          RE_EXN_ID: "Not_found",
           Error: new Error()
         };
   }
+  var l = tr._1;
+  if (typeof l === "object") {
+    return {
+            TAG: "Br",
+            _0: l._0,
+            _1: tr._2,
+            _2: lorem(l)
+          };
+  }
+  var tmp = tr._2;
+  if (typeof tmp !== "object") {
+    return "Lf";
+  }
   throw {
-        RE_EXN_ID: "Not_found",
+        RE_EXN_ID: "Assert_failure",
+        _1: [
+          "flexible_array_test.res",
+          80,
+          9
+        ],
         Error: new Error()
       };
 }
 
 var empty = [
-  /* Lf */0,
+  "Lf",
   0
 ];
 
@@ -309,9 +319,9 @@ if (!Caml_obj.equal(x, of_array([
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "flexible_array_test.ml",
-          157,
-          4
+          "flexible_array_test.res",
+          184,
+          2
         ],
         Error: new Error()
       };

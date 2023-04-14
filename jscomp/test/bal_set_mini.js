@@ -1,18 +1,19 @@
 'use strict';
 
 
-function height(param) {
-  if (param) {
-    return param._3;
-  } else {
+function height(x) {
+  if (typeof x !== "object") {
     return 0;
+  } else {
+    return x._3;
   }
 }
 
 function create(l, v, r) {
   var hl = height(l);
   var hr = height(r);
-  return /* Node */{
+  return {
+          TAG: "Node",
           _0: l,
           _1: v,
           _2: r,
@@ -24,40 +25,41 @@ function bal(l, v, r) {
   var hl = height(l);
   var hr = height(r);
   if (hl > (hr + 2 | 0)) {
-    if (!l) {
-      return /* Empty */0;
+    if (typeof l !== "object") {
+      return "Empty";
     }
     var lr = l._2;
     var lv = l._1;
     var ll = l._0;
     if (height(ll) >= height(lr)) {
       return create(ll, lv, create(lr, v, r));
-    } else if (lr) {
-      return create(create(ll, lv, lr._0), lr._1, create(lr._2, v, r));
+    } else if (typeof lr !== "object") {
+      return "Empty";
     } else {
-      return /* Empty */0;
+      return create(create(ll, lv, lr._0), lr._1, create(lr._2, v, r));
     }
   }
   if (hr <= (hl + 2 | 0)) {
-    return /* Node */{
+    return {
+            TAG: "Node",
             _0: l,
             _1: v,
             _2: r,
             _3: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
-  if (!r) {
-    return /* Empty */0;
+  if (typeof r !== "object") {
+    return "Empty";
   }
   var rr = r._2;
   var rv = r._1;
   var rl = r._0;
   if (height(rr) >= height(rl)) {
     return create(create(l, v, rl), rv, rr);
-  } else if (rl) {
-    return create(create(l, v, rl._0), rl._1, create(rl._2, rv, rr));
+  } else if (typeof rl !== "object") {
+    return "Empty";
   } else {
-    return /* Empty */0;
+    return create(create(l, v, rl._0), rl._1, create(rl._2, rv, rr));
   }
 }
 
@@ -71,21 +73,22 @@ function compare_int(x, y) {
   }
 }
 
-function add(x, t) {
-  if (!t) {
-    return /* Node */{
-            _0: /* Empty */0,
+function add(x, x_) {
+  if (typeof x_ !== "object") {
+    return {
+            TAG: "Node",
+            _0: "Empty",
             _1: x,
-            _2: /* Empty */0,
+            _2: "Empty",
             _3: 1
           };
   }
-  var r = t._2;
-  var v = t._1;
-  var l = t._0;
+  var r = x_._2;
+  var v = x_._1;
+  var l = x_._0;
   var c = compare_int(x, v);
   if (c === 0) {
-    return t;
+    return x_;
   } else if (c < 0) {
     return bal(add(x, l), v, r);
   } else {
@@ -93,36 +96,36 @@ function add(x, t) {
   }
 }
 
-function min_elt(_def, _param) {
+function min_elt(_def, _x) {
   while(true) {
-    var param = _param;
+    var x = _x;
     var def = _def;
-    if (!param) {
+    if (typeof x !== "object") {
       return def;
     }
-    var l = param._0;
-    if (!l) {
-      return param._1;
+    var l = x._0;
+    if (typeof l !== "object") {
+      return x._1;
     }
-    _param = l;
-    _def = param._1;
+    _x = l;
+    _def = x._1;
     continue ;
   };
 }
 
 function remove_min_elt(l, v, r) {
-  if (l) {
-    return bal(remove_min_elt(l._0, l._1, l._2), v, r);
-  } else {
+  if (typeof l !== "object") {
     return r;
+  } else {
+    return bal(remove_min_elt(l._0, l._1, l._2), v, r);
   }
 }
 
 function internal_merge(l, r) {
-  if (!l) {
+  if (typeof l !== "object") {
     return r;
   }
-  if (!r) {
+  if (typeof r !== "object") {
     return l;
   }
   var rv = r._1;
@@ -130,8 +133,8 @@ function internal_merge(l, r) {
 }
 
 function remove(x, tree) {
-  if (!tree) {
-    return /* Empty */0;
+  if (typeof tree !== "object") {
+    return "Empty";
   }
   var r = tree._2;
   var v = tree._1;
@@ -146,22 +149,22 @@ function remove(x, tree) {
   }
 }
 
-function mem(x, _param) {
+function mem(x, _x_) {
   while(true) {
-    var param = _param;
-    if (!param) {
+    var x_ = _x_;
+    if (typeof x_ !== "object") {
       return false;
     }
-    var c = compare_int(x, param._1);
+    var c = compare_int(x, x_._1);
     if (c === 0) {
       return true;
     }
-    _param = c < 0 ? param._0 : param._2;
+    _x_ = c < 0 ? x_._0 : x_._2;
     continue ;
   };
 }
 
-var v = /* Empty */0;
+var v = "Empty";
 
 for(var i = 0; i <= 100000; ++i){
   v = add(i, v);
@@ -180,7 +183,7 @@ for(var i$2 = 0; i$2 <= 100000; ++i$2){
 
 var match = v;
 
-if (match) {
+if (typeof match === "object") {
   console.log("impossible");
 }
 

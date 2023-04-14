@@ -21,7 +21,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -39,41 +39,41 @@ function eq3(loc, a, b, c) {
 
 var M = {};
 
-eq("File \"format_test.ml\", line 28, characters 5-12", 7.875, 7.875);
+eq("File \"format_test.res\", line 23, characters 5-12", 7.875, 7.875);
 
-eq("File \"format_test.ml\", line 31, characters 5-12", -7.875, -7.875);
+eq("File \"format_test.res\", line 25, characters 5-12", -7.875, -7.875);
 
-eq3("File \"format_test.ml\", line 35, characters 6-13", Infinity, Number.POSITIVE_INFINITY, Pervasives.infinity);
+eq3("File \"format_test.res\", line 29, characters 6-13", Infinity, Number.POSITIVE_INFINITY, Pervasives.infinity);
 
-eq3("File \"format_test.ml\", line 36, characters 6-13", -Infinity, Number.NEGATIVE_INFINITY, Pervasives.neg_infinity);
+eq3("File \"format_test.res\", line 30, characters 6-13", -Infinity, Number.NEGATIVE_INFINITY, Pervasives.neg_infinity);
 
-eq3("File \"format_test.ml\", line 37, characters 6-13", Pervasives.max_float, 1.79769313486231571e+308, Number.MAX_VALUE);
+eq3("File \"format_test.res\", line 31, characters 6-13", Pervasives.max_float, 1.79769313486231571e+308, Number.MAX_VALUE);
 
-eq("File \"format_test.ml\", line 38, characters 5-12", Pervasives.classify_float(Infinity), /* FP_infinite */3);
+eq("File \"format_test.res\", line 32, characters 5-12", Pervasives.classify_float(Infinity), "FP_infinite");
 
-eq("File \"format_test.ml\", line 39, characters 5-12", Pervasives.classify_float(Infinity), /* FP_infinite */3);
+eq("File \"format_test.res\", line 33, characters 5-12", Pervasives.classify_float(Infinity), "FP_infinite");
 
-eq("File \"format_test.ml\", line 42, characters 5-12", Pervasives.min_float, 2.22507385850720138e-308);
+eq("File \"format_test.res\", line 35, characters 5-12", Pervasives.min_float, 2.22507385850720138e-308);
 
-eq("File \"format_test.ml\", line 43, characters 5-12", Pervasives.epsilon_float, 2.22044604925031308e-16);
+eq("File \"format_test.res\", line 36, characters 5-12", Pervasives.epsilon_float, 2.22044604925031308e-16);
 
-eq("File \"format_test.ml\", line 44, characters 5-12", 4.94065645841e-324, 5e-324);
+eq("File \"format_test.res\", line 37, characters 5-12", 4.94065645841e-324, 5e-324);
 
-eq("File \"format_test.ml\", line 45, characters 5-12", 1.00000000000000022 - 1, Pervasives.epsilon_float);
+eq("File \"format_test.res\", line 38, characters 5-12", 1.00000000000000022 - 1, Pervasives.epsilon_float);
 
-eq("File \"format_test.ml\", line 47, characters 5-12", 1.11253692925360069e-308 / 2.22507385850720138e-308, 0.5);
+eq("File \"format_test.res\", line 39, characters 5-12", 1.11253692925360069e-308 / 2.22507385850720138e-308, 0.5);
 
-eq("File \"format_test.ml\", line 49, characters 5-12", Pervasives.classify_float(1.11253692925360069e-308), /* FP_subnormal */1);
+eq("File \"format_test.res\", line 40, characters 5-12", Pervasives.classify_float(1.11253692925360069e-308), "FP_subnormal");
 
-eq("File \"format_test.ml\", line 50, characters 5-12", 1.11253692925360069e-308, 1.11253692925360069e-308);
+eq("File \"format_test.res\", line 41, characters 5-12", 1.11253692925360069e-308, 1.11253692925360069e-308);
 
-eq("File \"format_test.ml\", line 52, characters 5-12", 2.22507385850720138e-308, 2.22507385850720138e-308);
+eq("File \"format_test.res\", line 42, characters 5-12", 2.22507385850720138e-308, 2.22507385850720138e-308);
 
-eq("File \"format_test.ml\", line 56, characters 5-12", (1 + 255 / 256) * 8, 15.96875);
+eq("File \"format_test.res\", line 44, characters 5-12", (1 + 255 / 256) * 8, 15.96875);
 
-eq("File \"format_test.ml\", line 59, characters 5-12", (1 + 4095 / 4096) * 8, 15.998046875);
+eq("File \"format_test.res\", line 45, characters 5-12", (1 + 4095 / 4096) * 8, 15.998046875);
 
-eq("File \"format_test.ml\", line 62, characters 5-12", (1 + 65535 / 65536) * 8, 15.9998779296875);
+eq("File \"format_test.res\", line 46, characters 5-12", (1 + 65535 / 65536) * 8, 15.9998779296875);
 
 function f(loc, ls) {
   List.iter((function (param) {
@@ -81,7 +81,7 @@ function f(loc, ls) {
         }), ls);
 }
 
-f("File \"format_test.ml\", line 75, characters 6-13", {
+f("File \"format_test.res\", line 53, characters 11-18", {
       hd: [
         "0x3.fp+1",
         7.875
@@ -171,27 +171,27 @@ var literals = {
   tl: literals_1
 };
 
-aux_list("File \"format_test.ml\", line 109, characters 11-18", literals);
+aux_list("File \"format_test.res\", line 72, characters 18-25", literals);
 
 var s = Caml_format.hexstring_of_float(7.875, -1, /* '-' */45);
 
-eq("File \"format_test.ml\", line 112, characters 5-12", Bytes.unsafe_to_string(Bytes.uppercase_ascii(Bytes.unsafe_of_string(s))), "0X1.F8P+2");
+eq("File \"format_test.res\", line 74, characters 12-19", Bytes.unsafe_to_string(Bytes.uppercase_ascii(Bytes.unsafe_of_string(s))), "0X1.F8P+2");
 
 function scan_float(loc, s, expect) {
   eq(loc, Caml_format.float_of_string(s), expect);
 }
 
-scan_float("File \"format_test.ml\", line 119, characters 13-20", "0x3f.p1", 126);
+scan_float("File \"format_test.res\", line 80, characters 13-20", "0x3f.p1", 126);
 
-scan_float("File \"format_test.ml\", line 120, characters 13-20", "0x1.3333333333333p-2", 0.3);
+scan_float("File \"format_test.res\", line 81, characters 13-20", "0x1.3333333333333p-2", 0.3);
 
 List.iter((function (param) {
-        scan_float("File \"format_test.ml\", line 122, characters 13-20", param[1], param[0]);
+        scan_float("File \"format_test.res\", line 82, characters 35-42", param[1], param[0]);
       }), literals);
 
 var f1 = - -9.9;
 
-eq("File \"format_test.ml\", line 128, characters 5-12", f1, 9.9);
+eq("File \"format_test.res\", line 88, characters 5-12", f1, 9.9);
 
 Mt.from_pair_suites("Format_test", suites.contents);
 

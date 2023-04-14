@@ -27,7 +27,7 @@ let readLines (file : string) : string list =
       done;
       []
     with End_of_file ->
-      close_in chan;
+      close_in chan [@doesNotRaise];
       !lines |> List.rev
   in
   finished_lines
@@ -37,7 +37,7 @@ let readFile (file : string) : string = String.concat "\n" (readLines file)
 let writeFile (filePath : string) (contents : string) =
   let outFile = open_out filePath in
   output_string outFile contents;
-  close_out outFile
+  close_out outFile [@doesNotRaise]
 
 let writeFileIfRequired ~outputFile ~fileContents =
   if Sys.file_exists outputFile then

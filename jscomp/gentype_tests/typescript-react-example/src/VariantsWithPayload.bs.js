@@ -52,22 +52,22 @@ function testVariantWithPayloads(x) {
 }
 
 function printVariantWithPayloads(x) {
-  if (typeof x === "number") {
+  if (typeof x !== "object") {
     console.log("printVariantWithPayloads", "A");
     return ;
   }
-  switch (x.TAG | 0) {
-    case /* B */0 :
+  switch (x.TAG) {
+    case "B" :
         console.log("printVariantWithPayloads", "B(" + (String(x._0) + ")"));
         return ;
-    case /* C */1 :
+    case "C" :
         console.log("printVariantWithPayloads", "C(" + (String(x._0) + (", " + (String(x._1) + ")"))));
         return ;
-    case /* D */2 :
+    case "D" :
         var match = x._0;
         console.log("printVariantWithPayloads", "D((" + (String(match[0]) + (", " + (String(match[1]) + "))"))));
         return ;
-    case /* E */3 :
+    case "E" :
         console.log("printVariantWithPayloads", "E(" + (String(x._0) + (", " + (x._1 + (", " + (String(x._2) + ")"))))));
         return ;
     

@@ -7,11 +7,11 @@ var $$String = require("../../lib/js/string.js");
 var Set_gen = require("./set_gen.js");
 
 function split(x, tree) {
-  if (!tree) {
+  if (typeof tree !== "object") {
     return [
-            /* Empty */0,
+            "Empty",
             false,
-            /* Empty */0
+            "Empty"
           ];
   }
   var r = tree._2;
@@ -42,11 +42,12 @@ function split(x, tree) {
 }
 
 function add(x, tree) {
-  if (!tree) {
-    return /* Node */{
-            _0: /* Empty */0,
+  if (typeof tree !== "object") {
+    return {
+            TAG: "Node",
+            _0: "Empty",
             _1: x,
-            _2: /* Empty */0,
+            _2: "Empty",
             _3: 1
           };
   }
@@ -64,16 +65,16 @@ function add(x, tree) {
 }
 
 function union(s1, s2) {
-  if (!s1) {
+  if (typeof s1 !== "object") {
     return s2;
   }
-  if (!s2) {
+  var h1 = s1._3;
+  var v1 = s1._1;
+  if (typeof s2 !== "object") {
     return s1;
   }
   var h2 = s2._3;
   var v2 = s2._1;
-  var h1 = s1._3;
-  var v1 = s1._1;
   if (h1 >= h2) {
     if (h2 === 1) {
       return add(v2, s1);
@@ -89,11 +90,11 @@ function union(s1, s2) {
 }
 
 function inter(s1, s2) {
-  if (!s1) {
-    return /* Empty */0;
+  if (typeof s1 !== "object") {
+    return "Empty";
   }
-  if (!s2) {
-    return /* Empty */0;
+  if (typeof s2 !== "object") {
+    return "Empty";
   }
   var r1 = s1._2;
   var v1 = s1._1;
@@ -108,10 +109,10 @@ function inter(s1, s2) {
 }
 
 function diff(s1, s2) {
-  if (!s1) {
-    return /* Empty */0;
+  if (typeof s1 !== "object") {
+    return "Empty";
   }
-  if (!s2) {
+  if (typeof s2 !== "object") {
     return s1;
   }
   var r1 = s1._2;
@@ -129,7 +130,7 @@ function diff(s1, s2) {
 function mem(x, _tree) {
   while(true) {
     var tree = _tree;
-    if (!tree) {
+    if (typeof tree !== "object") {
       return false;
     }
     var c = Caml.string_compare(x, tree._1);
@@ -142,8 +143,8 @@ function mem(x, _tree) {
 }
 
 function remove(x, tree) {
-  if (!tree) {
-    return /* Empty */0;
+  if (typeof tree !== "object") {
+    return "Empty";
   }
   var r = tree._2;
   var v = tree._1;
@@ -170,17 +171,17 @@ function subset(_s1, _s2) {
   while(true) {
     var s2 = _s2;
     var s1 = _s1;
-    if (!s1) {
+    if (typeof s1 !== "object") {
       return true;
     }
-    if (!s2) {
+    var r1 = s1._2;
+    var v1 = s1._1;
+    var l1 = s1._0;
+    if (typeof s2 !== "object") {
       return false;
     }
     var r2 = s2._2;
     var l2 = s2._0;
-    var r1 = s1._2;
-    var v1 = s1._1;
-    var l1 = s1._0;
     var c = Caml.string_compare(v1, s2._1);
     if (c === 0) {
       if (!subset(l1, l2)) {
@@ -191,10 +192,11 @@ function subset(_s1, _s2) {
       continue ;
     }
     if (c < 0) {
-      if (!subset(/* Node */{
+      if (!subset({
+              TAG: "Node",
               _0: l1,
               _1: v1,
-              _2: /* Empty */0,
+              _2: "Empty",
               _3: 0
             }, l2)) {
         return false;
@@ -202,8 +204,9 @@ function subset(_s1, _s2) {
       _s1 = r1;
       continue ;
     }
-    if (!subset(/* Node */{
-            _0: /* Empty */0,
+    if (!subset({
+            TAG: "Node",
+            _0: "Empty",
             _1: v1,
             _2: r1,
             _3: 0
@@ -218,25 +221,25 @@ function subset(_s1, _s2) {
 function find(x, _tree) {
   while(true) {
     var tree = _tree;
-    if (tree) {
-      var v = tree._1;
-      var c = Caml.string_compare(x, v);
-      if (c === 0) {
-        return v;
-      }
-      _tree = c < 0 ? tree._0 : tree._2;
-      continue ;
+    if (typeof tree !== "object") {
+      throw {
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
+          };
     }
-    throw {
-          RE_EXN_ID: "Not_found",
-          Error: new Error()
-        };
+    var v = tree._1;
+    var c = Caml.string_compare(x, v);
+    if (c === 0) {
+      return v;
+    }
+    _tree = c < 0 ? tree._0 : tree._2;
+    continue ;
   };
 }
 
 function of_list(l) {
   if (!l) {
-    return /* Empty */0;
+    return "Empty";
   }
   var match = l.tl;
   var x0 = l.hd;
@@ -269,7 +272,7 @@ function of_list(l) {
 function of_array(l) {
   return $$Array.fold_left((function (acc, x) {
                 return add(x, acc);
-              }), /* Empty */0, l);
+              }), "Empty", l);
 }
 
 function invariant(t) {
@@ -279,7 +282,7 @@ function invariant(t) {
 
 var compare_elt = $$String.compare;
 
-var empty = /* Empty */0;
+var empty = "Empty";
 
 var is_empty = Set_gen.is_empty;
 

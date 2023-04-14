@@ -15,29 +15,23 @@ function f3(param) {
   var lhs = param.rank;
   return function (param) {
     var rhs = param.rank;
-    if (typeof lhs === "number") {
-      throw {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "fun_pattern_match.ml",
-              44,
-              9
-            ],
-            Error: new Error()
-          };
+    if (typeof lhs !== "object") {
+      lhs === "Uninitialized";
+    } else {
+      if (typeof rhs === "object") {
+        return Caml.int_compare(lhs._0, rhs._0);
+      }
+      rhs === "Uninitialized";
     }
-    if (typeof rhs === "number") {
-      throw {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "fun_pattern_match.ml",
-              44,
-              9
-            ],
-            Error: new Error()
-          };
-    }
-    return Caml.int_compare(lhs._0, rhs._0);
+    throw {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "fun_pattern_match.res",
+            33,
+            9
+          ],
+          Error: new Error()
+        };
   };
 }
 
@@ -45,29 +39,23 @@ function f4(param) {
   var lhs = param.rank;
   return function (param) {
     var rhs = param.rank;
-    if (typeof lhs === "number") {
-      throw {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "fun_pattern_match.ml",
-              52,
-              9
-            ],
-            Error: new Error()
-          };
+    if (typeof lhs !== "object") {
+      lhs === "Uninitialized";
+    } else {
+      if (typeof rhs === "object") {
+        return Caml.int_compare(lhs._0, rhs._0);
+      }
+      rhs === "Uninitialized";
     }
-    if (typeof rhs === "number") {
-      throw {
-            RE_EXN_ID: "Assert_failure",
-            _1: [
-              "fun_pattern_match.ml",
-              52,
-              9
-            ],
-            Error: new Error()
-          };
-    }
-    return Caml.int_compare(lhs._0, rhs._0);
+    throw {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "fun_pattern_match.res",
+            39,
+            9
+          ],
+          Error: new Error()
+        };
   };
 }
 

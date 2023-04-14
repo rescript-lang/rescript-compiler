@@ -20,14 +20,20 @@ let createExportTypeFromTypeDeclaration ~annotation ~loc ~nameAs ~opaque ~type_
   }
 
 let createCase (label, attributes) =
-  match
-    attributes |> Annotation.getAttributePayload Annotation.tagIsGenTypeAs
-  with
-  | Some (BoolPayload b) -> {label; labelJS = BoolLabel b}
-  | Some (FloatPayload s) -> {label; labelJS = FloatLabel s}
-  | Some (IntPayload i) -> {label; labelJS = IntLabel i}
-  | Some (StringPayload asLabel) -> {label; labelJS = StringLabel asLabel}
-  | _ -> {label; labelJS = StringLabel label}
+  {
+    label;
+    labelJS =
+      (match
+         attributes |> Annotation.getAttributePayload Annotation.tagIsAs
+       with
+      | Some (_, IdentPayload (Lident "null")) -> NullLabel
+      | Some (_, IdentPayload (Lident "undefined")) -> UndefinedLabel
+      | Some (_, BoolPayload b) -> BoolLabel b
+      | Some (_, FloatPayload s) -> FloatLabel s
+      | Some (_, IntPayload i) -> IntLabel i
+      | Some (_, StringPayload asLabel) -> StringLabel asLabel
+      | _ -> StringLabel label);
+  }
 
 (**
  * Rename record fields.
@@ -35,20 +41,16 @@ let createCase (label, attributes) =
  * If @bs.as is used (with records-as-objects active), escape and quote if
  * the identifier contains characters which are invalid as JS property names.
 *)
-let renameRecordField ~attributes ~nameRE =
-  match attributes |> Annotation.getGenTypeAsRenaming with
-  | Some nameJS -> (nameJS, nameRE)
-  | None -> (
-    match attributes |> Annotation.getBsAsRenaming with
-    | Some nameBS ->
-      let escapedName = nameBS |> String.escaped in
-      (escapedName, escapedName)
-    | None -> (nameRE, nameRE))
+let renameRecordField ~attributes ~name =
+  attributes |> Annotation.checkUnsupportedGenTypeAsRenaming;
+  match attributes |> Annotation.getAsString with
+  | Some s -> s |> String.escaped
+  | None -> name
 
 let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
     ~typeAttributes ~typeEnv ~typeName ~typeVars declarationKind :
     CodeItem.typeDeclaration list =
-  let annotation = typeAttributes |> Annotation.fromAttributes ~loc in
+  let annotation = typeAttributes |> Annotation.fromAttributes ~config ~loc in
   let opaque =
     match annotation = Annotation.GenTypeOpaque with
     | true -> Some true
@@ -88,17 +90,16 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
     let fieldTranslations =
       labelDeclarations
       |> List.map (fun {Types.ld_id; ld_mutable; ld_type; ld_attributes} ->
-             let nameJS, nameRE =
+             let name =
                renameRecordField ~attributes:ld_attributes
-                 ~nameRE:(ld_id |> Ident.name)
+                 ~name:(ld_id |> Ident.name)
              in
              let mutability =
                match ld_mutable = Mutable with
                | true -> Mutable
                | false -> Immutable
              in
-             ( nameJS,
-               nameRE,
+             ( name,
                mutability,
                ld_type
                |> TranslateTypeExprFromTypes.translateTypeExprFromTypes ~config
@@ -106,21 +107,19 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
     in
     let dependencies =
       fieldTranslations
-      |> List.map (fun (_, _, _, {TranslateTypeExprFromTypes.dependencies}) ->
+      |> List.map (fun (_, _, {TranslateTypeExprFromTypes.dependencies}) ->
              dependencies)
       |> List.concat
     in
     let fields =
       fieldTranslations
-      |> List.map
-           (fun (nameJS, nameRE, mutable_, {TranslateTypeExprFromTypes.type_})
-           ->
+      |> List.map (fun (name, mutable_, {TranslateTypeExprFromTypes.type_}) ->
              let optional, type1 =
                match type_ with
-               | Option type1 when isOptional nameRE -> (Optional, type1)
+               | Option type1 when isOptional name -> (Optional, type1)
                | _ -> (Mandatory, type_)
              in
-             {mutable_; nameJS; nameRE; optional; type_ = type1})
+             {mutable_; nameJS = name; optional; type_ = type1})
     in
     let type_ =
       match fields with
@@ -190,14 +189,15 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
             variant.payloads |> List.length
             = (rowFieldsVariants.payloads |> List.length)
           then
-            List.combine variant.payloads rowFieldsVariants.payloads
+            (List.combine variant.payloads rowFieldsVariants.payloads
+             [@doesNotRaise])
             |> List.map (fun (payload, (label, attributes, _)) ->
                    let case = (label, attributes) |> createCase in
                    {payload with case})
           else variant.payloads
         in
-        createVariant ~bsStringOrInt:false ~inherits:variant.inherits
-          ~noPayloads ~payloads ~polymorphic:true
+        createVariant ~inherits:variant.inherits ~noPayloads ~payloads
+          ~polymorphic:true ~unboxed:false
       | _ -> translation.type_
     in
     {translation with type_} |> handleGeneralDeclaration
@@ -225,8 +225,8 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
       constructorDeclarations
       |> List.map (fun constructorDeclaration ->
              let constructorArgs = constructorDeclaration.Types.cd_args in
-             let name = constructorDeclaration.Types.cd_id |> Ident.name in
-             let attributes = constructorDeclaration.Types.cd_attributes in
+             let attributes = constructorDeclaration.cd_attributes in
+             let name = constructorDeclaration.cd_id |> Ident.name in
              let argsTranslation =
                match constructorArgs with
                | Cstr_tuple typeExprs ->
@@ -239,11 +239,6 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
                    |> translateLabelDeclarations
                         ~recordRepresentation:Types.Record_regular;
                  ]
-             in
-             let inlineRecord =
-               match constructorArgs with
-               | Cstr_tuple _ -> false
-               | Cstr_record _ -> true
              in
              let argTypes =
                argsTranslation
@@ -266,56 +261,35 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
                attributes,
                argTypes,
                importTypes,
-               inlineRecord,
                recordValue |> Runtime.recordValueToString ))
     in
     let variantsNoPayload, variantsWithPayload =
-      variants
-      |> List.partition (fun (_, _, argTypes, _, _, _) -> argTypes = [])
+      variants |> List.partition (fun (_, _, argTypes, _, _) -> argTypes = [])
     in
     let noPayloads =
       variantsNoPayload
       |> List.map
-           (fun
-             ( name,
-               attributes,
-               _argTypes,
-               _importTypes,
-               _inlineRecord,
-               recordValue )
-           -> {((name, attributes) |> createCase) with label = recordValue})
+           (fun (name, attributes, _argTypes, _importTypes, recordValue) ->
+             {((name, attributes) |> createCase) with label = recordValue})
     in
     let payloads =
       variantsWithPayload
       |> List.map
-           (fun
-             ( name,
-               attributes,
-               argTypes,
-               _importTypes,
-               inlineRecord,
-               recordValue )
-           ->
+           (fun (name, attributes, argTypes, _importTypes, recordValue) ->
              let type_ =
                match argTypes with
                | [type_] -> type_
                | _ -> Tuple argTypes
              in
-             let numArgs = argTypes |> List.length in
              {
                case =
                  {((name, attributes) |> createCase) with label = recordValue};
-               inlineRecord;
-               numArgs;
                t = type_;
              })
     in
     let variantTyp =
-      match (noPayloads, payloads) with
-      | [], [{t = type_}] when unboxedAnnotation -> type_
-      | _ ->
-        createVariant ~bsStringOrInt:false ~inherits:[] ~noPayloads ~payloads
-          ~polymorphic:false
+      createVariant ~inherits:[] ~noPayloads ~payloads ~polymorphic:false
+        ~unboxed:unboxedAnnotation
     in
     let resolvedTypeName = typeName |> TypeEnv.addModulePath ~typeEnv in
     let exportFromTypeDeclaration =
@@ -327,7 +301,7 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
     in
     let importTypes =
       variants
-      |> List.map (fun (_, _, _, importTypes, _, _) -> importTypes)
+      |> List.map (fun (_, _, _, importTypes, _) -> importTypes)
       |> List.concat
     in
     {CodeItem.exportFromTypeDeclaration; importTypes} |> returnTypeDeclaration

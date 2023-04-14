@@ -31,7 +31,7 @@ var suites_0 = [
   "curry",
   (function (param) {
       return {
-              TAG: /* Eq */0,
+              TAG: "Eq",
               _0: g,
               _1: 7
             };
@@ -43,7 +43,7 @@ var suites_1 = {
     "curry2",
     (function (param) {
         return {
-                TAG: /* Eq */0,
+                TAG: "Eq",
                 _0: 14,
                 _1: (Curry._1(v, 1), Curry._1(v, 1))
               };
@@ -54,7 +54,7 @@ var suites_1 = {
       "curry3",
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: 14
                 };
@@ -62,10 +62,10 @@ var suites_1 = {
     ],
     tl: {
       hd: [
-        "File \"ari_regress_test.ml\", line 20, characters 4-11",
+        "File \"ari_regress_test.res\", line 35, characters 5-12",
         (function (param) {
             return {
-                    TAG: /* Eq */0,
+                    TAG: "Eq",
                     _0: h.contents,
                     _1: 1
                   };

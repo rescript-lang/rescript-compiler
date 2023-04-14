@@ -58,7 +58,7 @@ var array_suites_0 = [
   "init",
   (function (param) {
       return {
-              TAG: /* Eq */0,
+              TAG: "Eq",
               _0: $$Array.init(5, (function (x) {
                       return x;
                     })),
@@ -96,7 +96,7 @@ var array_suites_1 = {
                   tl: /* [] */0
                 }));
         return {
-                TAG: /* Eq */0,
+                TAG: "Eq",
                 _0: match[0],
                 _1: match[1]
               };
@@ -107,7 +107,7 @@ var array_suites_1 = {
       "concat",
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: [
                     0,
                     1,
@@ -144,7 +144,7 @@ var array_suites_1 = {
         "make",
         (function (param) {
             return {
-                    TAG: /* Eq */0,
+                    TAG: "Eq",
                     _0: [
                       Caml_array.make(100, /* 'a' */97),
                       Caml_array.make_float(100)
@@ -165,7 +165,7 @@ var array_suites_1 = {
           "sub",
           (function (param) {
               return {
-                      TAG: /* Eq */0,
+                      TAG: "Eq",
                       _0: $$Array.sub([
                             0,
                             1,
@@ -194,7 +194,7 @@ var array_suites_1 = {
                       }));
                 $$Array.blit(v, 1, u, 1, 2);
                 return {
-                        TAG: /* Eq */0,
+                        TAG: "Eq",
                         _0: [
                           [
                             0,
@@ -216,14 +216,14 @@ var array_suites_1 = {
           ],
           tl: {
             hd: [
-              "File \"array_test.ml\", line 63, characters 2-9",
+              "File \"array_test.res\", line 75, characters 8-15",
               (function (param) {
                   var a0 = $$Array.init(100, (function (i) {
                           return (i << 0);
                         }));
                   $$Array.blit(a0, 10, a0, 5, 20);
                   return {
-                          TAG: /* Eq */0,
+                          TAG: "Eq",
                           _0: true,
                           _1: starts_with(a0, [
                                 0,
@@ -258,14 +258,14 @@ var array_suites_1 = {
             ],
             tl: {
               hd: [
-                "File \"array_test.ml\", line 72, characters 2-9",
+                "File \"array_test.res\", line 118, characters 8-15",
                 (function (param) {
                     var a0 = $$Array.init(100, (function (i) {
                             return (i << 0);
                           }));
                     $$Array.blit(a0, 5, a0, 10, 20);
                     return {
-                            TAG: /* Eq */0,
+                            TAG: "Eq",
                             _0: true,
                             _1: starts_with(a0, [
                                   0,
@@ -305,7 +305,7 @@ var array_suites_1 = {
                   "make",
                   (function (param) {
                       return {
-                              TAG: /* Eq */0,
+                              TAG: "Eq",
                               _0: Caml_array.make(2, 1),
                               _1: [
                                 1,
@@ -325,7 +325,7 @@ var array_suites_1 = {
                         ];
                         $$Array.sort(Caml.int_compare, u);
                         return {
-                                TAG: /* Eq */0,
+                                TAG: "Eq",
                                 _0: Caml_obj.equal([
                                       0,
                                       1,
@@ -344,7 +344,7 @@ var array_suites_1 = {
                                 }));
                           $$Array.sort(Caml.int_compare, v);
                           return {
-                                  TAG: /* Eq */0,
+                                  TAG: "Eq",
                                   _0: true,
                                   _1: is_sorted(v)
                                 };

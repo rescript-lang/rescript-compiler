@@ -39,45 +39,33 @@ type kind = String | Var of int * int
 *)
 
 type pos = {
-  lnum : int;
-  offset : int;
-  byte_bol : int;
+  lnum: int;
+  offset: int;
+  byte_bol: int;
       (* Note it actually needs to be in sync with OCaml's lexing semantics *)
 }
 (** Note the position is about code point *)
 
-type segment = { start : pos; finish : pos; kind : kind; content : string }
+type segment = {start: pos; finish: pos; kind: kind; content: string}
 type segments = segment list
 
 type cxt = {
-  mutable segment_start : pos;
-  buf : Buffer.t;
-  s_len : int;
-  mutable segments : segments;
-  mutable pos_bol : int;
+  mutable segment_start: pos;
+  buf: Buffer.t;
+  s_len: int;
+  mutable segments: segments;
+  mutable pos_bol: int;
   (* record the abs position of current beginning line *)
-  mutable byte_bol : int;
-  mutable pos_lnum : int; (* record the line number *)
+  mutable byte_bol: int;
+  mutable pos_lnum: int; (* record the line number *)
 }
 
 type exn += Error of pos * pos * error
 
-let pp_error fmt err =
-  Format.pp_print_string fmt
-  @@
-  match err with
-  | Invalid_code_point -> "Invalid code point"
-  | Unterminated_backslash -> "\\ ended unexpectedly"
-  | Invalid_escape_code c -> "Invalid escape code: " ^ String.make 1 c
-  | Invalid_hex_escape -> "Invalid \\x escape"
-  | Invalid_unicode_escape -> "Invalid \\u escape"
-  | Unterminated_variable -> "$ unterminated"
-  | Unmatched_paren -> "Unmatched paren"
-  | Invalid_syntax_of_var s ->
-      "`" ^ s ^ "' is not a valid syntax of interpolated identifer"
-
 let valid_lead_identifier_char x =
-  match x with 'a' .. 'z' | '_' -> true | _ -> false
+  match x with
+  | 'a' .. 'z' | '_' -> true
+  | _ -> false
 
 (** Invariant: [valid_lead_identifier] has to be [valid_identifier] *)
 let valid_identifier_char x =
@@ -97,34 +85,8 @@ let valid_identifier s =
    | ' ' | '\n' | '\t' -> true
    | _ -> false *)
 
-(**
-   FIXME: multiple line offset
-   if there is no line offset. Note {|{j||} border will never trigger a new line
-*)
-let update_position border ({ lnum; offset; byte_bol } : pos)
-    (pos : Lexing.position) =
-  if lnum = 0 then { pos with pos_cnum = pos.pos_cnum + border + offset }
-    (* When no newline, the column number is [border + offset] *)
-  else
-    {
-      pos with
-      pos_lnum = pos.pos_lnum + lnum;
-      pos_bol = pos.pos_cnum + border + byte_bol;
-      pos_cnum =
-        pos.pos_cnum + border + byte_bol + offset
-        (* when newline, the column number is [offset] *);
-    }
-
-let update border (start : pos) (finish : pos) (loc : Location.t) : Location.t =
-  let start_pos = loc.loc_start in
-  {
-    loc with
-    loc_start = update_position border start start_pos;
-    loc_end = update_position border finish start_pos;
-  }
-
 (** Note [Var] kind can not be mpty  *)
-let empty_segment { content } = Ext_string.is_empty content
+let empty_segment {content} = Ext_string.is_empty content
 
 let update_newline ~byte_bol loc cxt =
   cxt.pos_lnum <- cxt.pos_lnum + 1;
@@ -146,7 +108,7 @@ let add_var_segment cxt loc loffset roffset =
   let content = Buffer.contents cxt.buf in
   Buffer.clear cxt.buf;
   let next_loc =
-    { lnum = cxt.pos_lnum; offset = loc - cxt.pos_bol; byte_bol = cxt.byte_bol }
+    {lnum = cxt.pos_lnum; offset = loc - cxt.pos_bol; byte_bol = cxt.byte_bol}
   in
   if valid_identifier content then (
     cxt.segments <-
@@ -164,60 +126,60 @@ let add_str_segment cxt loc =
   let content = Buffer.contents cxt.buf in
   Buffer.clear cxt.buf;
   let next_loc =
-    { lnum = cxt.pos_lnum; offset = loc - cxt.pos_bol; byte_bol = cxt.byte_bol }
+    {lnum = cxt.pos_lnum; offset = loc - cxt.pos_bol; byte_bol = cxt.byte_bol}
   in
   cxt.segments <-
-    { start = cxt.segment_start; finish = next_loc; kind = String; content }
+    {start = cxt.segment_start; finish = next_loc; kind = String; content}
     :: cxt.segments;
   cxt.segment_start <- next_loc
 
 let rec check_and_transform (loc : int) s byte_offset
-    ({ s_len; buf } as cxt : cxt) =
+    ({s_len; buf} as cxt : cxt) =
   if byte_offset = s_len then add_str_segment cxt loc
   else
     let current_char = s.[byte_offset] in
     match Ext_utf8.classify current_char with
     | Single 92 (* '\\' *) -> escape_code (loc + 1) s (byte_offset + 1) cxt
     | Single 34 ->
-        Buffer.add_string buf "\\\"";
-        check_and_transform (loc + 1) s (byte_offset + 1) cxt
+      Buffer.add_string buf "\\\"";
+      check_and_transform (loc + 1) s (byte_offset + 1) cxt
     | Single 10 ->
-        Buffer.add_string buf "\\n";
-        let loc = loc + 1 in
-        let byte_offset = byte_offset + 1 in
-        update_newline ~byte_bol:byte_offset loc cxt;
-        (* Note variable could not have new-line *)
-        check_and_transform loc s byte_offset cxt
+      Buffer.add_string buf "\\n";
+      let loc = loc + 1 in
+      let byte_offset = byte_offset + 1 in
+      update_newline ~byte_bol:byte_offset loc cxt;
+      (* Note variable could not have new-line *)
+      check_and_transform loc s byte_offset cxt
     | Single 13 ->
-        Buffer.add_string buf "\\r";
-        check_and_transform (loc + 1) s (byte_offset + 1) cxt
+      Buffer.add_string buf "\\r";
+      check_and_transform (loc + 1) s (byte_offset + 1) cxt
     | Single 36 ->
-        (* $ *)
-        add_str_segment cxt loc;
-        let offset = byte_offset + 1 in
-        if offset >= s_len then pos_error ~loc cxt Unterminated_variable
-        else
-          let cur_char = s.[offset] in
-          if cur_char = '(' then expect_var_paren (loc + 2) s (offset + 1) cxt
-          else expect_simple_var (loc + 1) s offset cxt
+      (* $ *)
+      add_str_segment cxt loc;
+      let offset = byte_offset + 1 in
+      if offset >= s_len then pos_error ~loc cxt Unterminated_variable
+      else
+        let cur_char = s.[offset] in
+        if cur_char = '(' then expect_var_paren (loc + 2) s (offset + 1) cxt
+        else expect_simple_var (loc + 1) s offset cxt
     | Single _ ->
-        Buffer.add_char buf current_char;
-        check_and_transform (loc + 1) s (byte_offset + 1) cxt
+      Buffer.add_char buf current_char;
+      check_and_transform (loc + 1) s (byte_offset + 1) cxt
     | Invalid | Cont _ -> pos_error ~loc cxt Invalid_code_point
     | Leading (n, _) ->
-        let i' = Ext_utf8.next s ~remaining:n byte_offset in
-        if i' < 0 then pos_error cxt ~loc Invalid_code_point
-        else (
-          for k = byte_offset to i' do
-            Buffer.add_char buf s.[k]
-          done;
-          check_and_transform (loc + 1) s (i' + 1) cxt)
+      let i' = Ext_utf8.next s ~remaining:n byte_offset in
+      if i' < 0 then pos_error cxt ~loc Invalid_code_point
+      else (
+        for k = byte_offset to i' do
+          Buffer.add_char buf s.[k]
+        done;
+        check_and_transform (loc + 1) s (i' + 1) cxt)
 
 (* Lets keep identifier simple, so that we could generating a function easier in the future
    for example
    let f = [%fn{| $x + $y = $x_add_y |}]
 *)
-and expect_simple_var loc s offset ({ buf; s_len } as cxt) =
+and expect_simple_var loc s offset ({buf; s_len} as cxt) =
   let v = ref offset in
   (* prerr_endline @@ Ext_pervasives.dump (s, has_paren, (is_space s.[!v]), !v); *)
   if not (offset < s_len && valid_lead_identifier_char s.[offset]) then
@@ -234,7 +196,7 @@ and expect_simple_var loc s offset ({ buf; s_len } as cxt) =
     add_var_segment cxt loc 1 0;
     check_and_transform loc s (added_length + offset) cxt)
 
-and expect_var_paren loc s offset ({ buf; s_len } as cxt) =
+and expect_var_paren loc s offset ({buf; s_len} as cxt) =
   let v = ref offset in
   (* prerr_endline @@ Ext_pervasives.dump (s, has_paren, (is_space s.[!v]), !v); *)
   while !v < s_len && s.[!v] <> ')' do
@@ -250,23 +212,23 @@ and expect_var_paren loc s offset ({ buf; s_len } as cxt) =
   else pos_error cxt ~loc Unmatched_paren
 
 (* we share the same escape sequence with js *)
-and escape_code loc s offset ({ buf; s_len } as cxt) =
+and escape_code loc s offset ({buf; s_len} as cxt) =
   if offset >= s_len then pos_error cxt ~loc Unterminated_backslash
   else Buffer.add_char buf '\\';
   let cur_char = s.[offset] in
   match cur_char with
   | '\\' | 'b' | 't' | 'n' | 'v' | 'f' | 'r' | '0' | '$' ->
-      Buffer.add_char buf cur_char;
-      check_and_transform (loc + 1) s (offset + 1) cxt
+    Buffer.add_char buf cur_char;
+    check_and_transform (loc + 1) s (offset + 1) cxt
   | 'u' ->
-      Buffer.add_char buf cur_char;
-      unicode (loc + 1) s (offset + 1) cxt
+    Buffer.add_char buf cur_char;
+    unicode (loc + 1) s (offset + 1) cxt
   | 'x' ->
-      Buffer.add_char buf cur_char;
-      two_hex (loc + 1) s (offset + 1) cxt
+    Buffer.add_char buf cur_char;
+    two_hex (loc + 1) s (offset + 1) cxt
   | _ -> pos_error cxt ~loc (Invalid_escape_code cur_char)
 
-and two_hex loc s offset ({ buf; s_len } as cxt) =
+and two_hex loc s offset ({buf; s_len} as cxt) =
   if offset + 1 >= s_len then pos_error cxt ~loc Invalid_hex_escape;
   let a, b = (s.[offset], s.[offset + 1]) in
   if Ext_char.valid_hex a && Ext_char.valid_hex b then (
@@ -275,7 +237,7 @@ and two_hex loc s offset ({ buf; s_len } as cxt) =
     check_and_transform (loc + 2) s (offset + 2) cxt)
   else pos_error cxt ~loc Invalid_hex_escape
 
-and unicode loc s offset ({ buf; s_len } as cxt) =
+and unicode loc s offset ({buf; s_len} as cxt) =
   if offset + 3 >= s_len then pos_error cxt ~loc Invalid_unicode_escape;
   let a0, a1, a2, a3 =
     (s.[offset], s.[offset + 1], s.[offset + 2], s.[offset + 3])
@@ -296,7 +258,7 @@ let transform_test s =
   let buf = Buffer.create (s_len * 2) in
   let cxt =
     {
-      segment_start = { lnum = 0; offset = 0; byte_bol = 0 };
+      segment_start = {lnum = 0; offset = 0; byte_bol = 0};
       buf;
       s_len;
       segments = [];
@@ -308,110 +270,45 @@ let transform_test s =
   check_and_transform 0 s 0 cxt;
   List.rev cxt.segments
 
-(** TODO: test empty var $() $ failure,
-    Allow identifers x.A.y *)
-
-open Ast_helper
-
-(** Longident.parse "Pervasives.^" *)
-let concat_ident : Longident.t = Ldot (Lident "Pervasives", "^")
-(* FIXME: remove deps on `Pervasives` *)
-
-(* JS string concatMany *)
-(* Ldot (Ldot (Lident "Js", "String2"), "concat") *)
-
-(* Longident.parse "Js.String.make"     *)
-let to_string_ident : Longident.t = Ldot (Ldot (Lident "Js", "String2"), "make")
-
 module Delim = struct
   let parse_processed = function
     | None -> Some External_arg_spec.DNone
-    | Some "json" -> Some DJson
+    | Some "json" -> Some DNoQuotes
     | Some "*j" -> Some DStarJ
     | _ -> None
 
-  let parse_unprocessed = function
-    | "js" -> `string_interpolation
-    | "j" -> `old_unsafe_interpolation
-    | _ -> `no_interpolation
+  type interpolation =
+    | Js (* string interpolation *)
+    | Unrecognized (* no interpolation: delimiter not recognized *)
+  let parse_unprocessed loc = function
+    | "js" -> Js
+    | "j" ->
+      Location.raise_errorf ~loc
+        "The unsafe j`$(a)$(b)` interpolation was removed, use string template \
+         `${a}${b}` instead."
+    | _ -> Unrecognized
 
   let escaped_j_delimiter = "*j" (* not user level syntax allowed *)
-  let unescaped_j_delimiter = "j"
   let unescaped_js_delimiter = "js"
   let escaped = Some escaped_j_delimiter
 end
 
-let border = String.length "{j|"
+let transform_exp (e : Parsetree.expression) s delim : Parsetree.expression =
+  match Delim.parse_unprocessed e.pexp_loc delim with
+  | Js ->
+    let js_str = Ast_utf8_string.transform e.pexp_loc s in
+    {e with pexp_desc = Pexp_constant (Pconst_string (js_str, Delim.escaped))}
+  | Unrecognized -> e
 
-let aux loc (segment : segment) ~to_string_ident : Parsetree.expression =
-  match segment with
-  | { start; finish; kind; content } -> (
-      match kind with
-      | String ->
-          let loc = update border start finish loc in
-          Ast_compatible.const_exp_string content ?delimiter:Delim.escaped ~loc
-      | Var (soffset, foffset) ->
-          let loc =
-            {
-              loc with
-              loc_start = update_position (soffset + border) start loc.loc_start;
-              loc_end = update_position (foffset + border) finish loc.loc_start;
-            }
-          in
-          Ast_compatible.apply_simple ~loc
-            (Exp.ident ~loc { loc; txt = to_string_ident })
-            [ Exp.ident ~loc { loc; txt = Lident content } ])
-
-let concat_exp a_loc x ~(lhs : Parsetree.expression) : Parsetree.expression =
-  let loc = Bs_loc.merge a_loc lhs.pexp_loc in
-  Ast_compatible.apply_simple ~loc
-    (Exp.ident { txt = concat_ident; loc })
-    [ lhs; aux loc x ~to_string_ident:(Longident.Lident "__unsafe_cast") ]
-
-(* Invariant: the [lhs] is always of type string *)
-let rec handle_segments loc (rev_segments : segment list) =
-  match rev_segments with
-  | [] -> Ast_compatible.const_exp_string ~loc "" ?delimiter:Delim.escaped
-  | [ segment ] -> aux loc segment ~to_string_ident (* string literal *)
-  | { content = "" } :: rest -> handle_segments loc rest
-  | a :: rest -> concat_exp loc a ~lhs:(handle_segments loc rest)
-
-let transform_interp loc s =
-  let s_len = String.length s in
-  let buf = Buffer.create (s_len * 2) in
-  try
-    let cxt : cxt =
-      {
-        segment_start = { lnum = 0; offset = 0; byte_bol = 0 };
-        buf;
-        s_len;
-        segments = [];
-        pos_lnum = 0;
-        byte_bol = 0;
-        pos_bol = 0;
-      }
-    in
-
-    check_and_transform 0 s 0 cxt;
-    handle_segments loc cxt.segments
-  with Error (start, pos, error) ->
-    Location.raise_errorf ~loc:(update border start pos loc) "%a" pp_error error
-
-let transform (e : Parsetree.expression) s delim : Parsetree.expression =
-  match Delim.parse_unprocessed delim with
-  | `string_interpolation ->
-      let js_str = Ast_utf8_string.transform e.pexp_loc s in
-      {
-        e with
-        pexp_desc = Pexp_constant (Pconst_string (js_str, Delim.escaped));
-      }
-  | `old_unsafe_interpolation -> transform_interp e.pexp_loc s
-  | `no_interpolation -> e
+let transform_pat (p : Parsetree.pattern) s delim : Parsetree.pattern =
+  match Delim.parse_unprocessed p.ppat_loc delim with
+  | Js ->
+    let js_str = Ast_utf8_string.transform p.ppat_loc s in
+    {p with ppat_desc = Ppat_constant (Pconst_string (js_str, Delim.escaped))}
+  | Unrecognized -> p
 
 let is_unicode_string opt = Ext_string.equal opt Delim.escaped_j_delimiter
 
-let is_unescaped s =
-  Ext_string.equal s Delim.unescaped_j_delimiter
-  || Ext_string.equal s Delim.unescaped_js_delimiter
+let is_unescaped s = Ext_string.equal s Delim.unescaped_js_delimiter
 
 let parse_processed_delim = Delim.parse_processed

@@ -19,10 +19,10 @@ function eq(loc, x, y) {
 
 var v = Caml_int64.to_string(Int64.max_int);
 
-eq("File \"int64_string_test.ml\", line 9, characters 6-13", v, "9223372036854775807");
+eq("File \"int64_string_test.res\", line 6, characters 3-10", v, "9223372036854775807");
 
 function f(a, b) {
-  eq("File \"int64_string_test.ml\", line 11, characters 5-12", Caml_int64.to_string(a), b);
+  eq("File \"int64_string_test.res\", line 7, characters 21-28", Caml_int64.to_string(a), b);
 }
 
 var hh = Caml_int64.add(Int64.min_int, [
@@ -30,7 +30,7 @@ var hh = Caml_int64.add(Int64.min_int, [
       100
     ]);
 
-eq("File \"int64_string_test.ml\", line 15, characters 6-13", hh, [
+eq("File \"int64_string_test.res\", line 14, characters 3-10", hh, [
       -2147483648,
       100
     ]);
@@ -55,15 +55,15 @@ f([
     ], "1000000000000000");
 
 for(var i = 0; i <= 8; ++i){
-  eq("File \"int64_string_test.ml\", line 25, characters 5-12", Caml_int64.to_string(Caml_int64.add(Int64.min_int, Caml_int64.of_int32(i))), "-922337203685477580" + String(8 - i | 0));
+  eq("File \"int64_string_test.res\", line 22, characters 4-11", Caml_int64.to_string(Caml_int64.add(Int64.min_int, Caml_int64.of_int32(i))), "-922337203685477580" + String(8 - i | 0));
 }
 
 for(var i$1 = 0; i$1 <= 8; ++i$1){
-  eq("File \"int64_string_test.ml\", line 29, characters 5-12", Caml_int64.to_string(Caml_int64.add(Int64.min_int, Caml_int64.of_int32(100 + i$1 | 0))), "-922337203685477570" + String(8 - i$1 | 0));
+  eq("File \"int64_string_test.res\", line 32, characters 4-11", Caml_int64.to_string(Caml_int64.add(Int64.min_int, Caml_int64.of_int32(100 + i$1 | 0))), "-922337203685477570" + String(8 - i$1 | 0));
 }
 
 for(var i$2 = 0; i$2 <= 8; ++i$2){
-  eq("File \"int64_string_test.ml\", line 33, characters 5-12", Caml_int64.to_string(Caml_int64.add(Int64.min_int, Caml_int64.of_int32(1000000 + i$2 | 0))), "-922337203685377580" + String(8 - i$2 | 0));
+  eq("File \"int64_string_test.res\", line 42, characters 4-11", Caml_int64.to_string(Caml_int64.add(Int64.min_int, Caml_int64.of_int32(1000000 + i$2 | 0))), "-922337203685377580" + String(8 - i$2 | 0));
 }
 
 var u = [
@@ -72,7 +72,7 @@ var u = [
 ];
 
 for(var i$3 = 0; i$3 <= 6; ++i$3){
-  eq("File \"int64_string_test.ml\", line 42, characters 5-12", Caml_int64.to_string(Caml_int64.add(u, Caml_int64.of_int32(Math.imul(i$3, 10000)))), "90071992547" + (String(3 + i$3 | 0) + "0991"));
+  eq("File \"int64_string_test.res\", line 56, characters 4-11", Caml_int64.to_string(Caml_int64.add(u, Caml_int64.of_int32(Math.imul(i$3, 10000)))), "90071992547" + (String(3 + i$3 | 0) + "0991"));
 }
 
 var v$1 = [
@@ -81,25 +81,25 @@ var v$1 = [
 ];
 
 for(var i$4 = 0; i$4 <= 9; ++i$4){
-  eq("File \"int64_string_test.ml\", line 49, characters 5-12", Caml_int64.to_string(Caml_int64.add(v$1, Caml_int64.of_int32(Math.imul(i$4, 10000)))), "-90071992547" + (String(9 - i$4 | 0) + "0991"));
+  eq("File \"int64_string_test.res\", line 67, characters 4-11", Caml_int64.to_string(Caml_int64.add(v$1, Caml_int64.of_int32(Math.imul(i$4, 10000)))), "-90071992547" + (String(9 - i$4 | 0) + "0991"));
 }
 
-eq("File \"int64_string_test.ml\", line 52, characters 6-13", Caml_int64.to_string([
+eq("File \"int64_string_test.res\", line 73, characters 3-10", Caml_int64.to_string([
           2097151,
           4294967295
         ]), "9007199254740991");
 
-eq("File \"int64_string_test.ml\", line 53, characters 6-13", Caml_int64.to_string([
+eq("File \"int64_string_test.res\", line 74, characters 3-10", Caml_int64.to_string([
           -2097152,
           1
         ]), "-9007199254740991");
 
-eq("File \"int64_string_test.ml\", line 54, characters 6-13", Caml_int64.to_string([
+eq("File \"int64_string_test.res\", line 75, characters 3-10", Caml_int64.to_string([
           -1,
           4294967063
         ]), "-233");
 
-eq("File \"int64_string_test.ml\", line 55, characters 6-13", Caml_int64.to_string(Caml_int64.max_int), "9223372036854775807");
+eq("File \"int64_string_test.res\", line 77, characters 2-9", Caml_int64.to_string(Caml_int64.max_int), "9223372036854775807");
 
 var random_data = {
   hd: {
@@ -1309,38 +1309,38 @@ Belt_List.forEach(random_data, (function (u) {
             throw {
                   RE_EXN_ID: "Assert_failure",
                   _1: [
-                    "int64_string_test.ml",
-                    161,
+                    "int64_string_test.res",
+                    191,
                     9
                   ],
                   Error: new Error()
                 };
           }
           var match = u.hd;
-          return eq("File \"int64_string_test.ml\", line 160, characters 21-28", Caml_int64.to_string(match[0]), match[1]);
+          return eq("File \"int64_string_test.res\", line 190, characters 25-32", Caml_int64.to_string(match[0]), match[1]);
         }
         throw {
               RE_EXN_ID: "Assert_failure",
               _1: [
-                "int64_string_test.ml",
-                161,
+                "int64_string_test.res",
+                191,
                 9
               ],
               Error: new Error()
             };
       }));
 
-eq("File \"int64_string_test.ml\", line 164, characters 7-14", Caml_int64.to_string([
+eq("File \"int64_string_test.res\", line 195, characters 3-10", Caml_int64.to_string([
           -2097152,
           1
         ]), "-9007199254740991");
 
-eq("File \"int64_string_test.ml\", line 165, characters 7-14", Caml_int64.to_string([
+eq("File \"int64_string_test.res\", line 196, characters 3-10", Caml_int64.to_string([
           -2097152,
           0
         ]), "-9007199254740992");
 
-Mt.from_pair_suites("File \"int64_string_test.ml\", line 166, characters 23-30", suites.contents);
+Mt.from_pair_suites("File \"int64_string_test.res\", line 197, characters 20-27", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

@@ -24,10 +24,10 @@
 
 type t = Parsetree.core_type
 
-let lift_option_type ({ ptyp_loc } as ty : t) : t =
+let lift_option_type ({ptyp_loc} as ty : t) : t =
   {
     ptyp_desc =
-      Ptyp_constr ({ txt = Ast_literal.predef_option; loc = ptyp_loc }, [ ty ]);
+      Ptyp_constr ({txt = Ast_literal.predef_option; loc = ptyp_loc}, [ty]);
     ptyp_loc;
     ptyp_attributes = [];
   }
@@ -49,12 +49,12 @@ let is_builtin_rank0_type txt =
   match txt with
   | "int" | "char" | "bytes" | "float" | "bool" | "unit" | "exn" | "int64"
   | "string" ->
-      true
+    true
   | _ -> false
 
 let is_unit (ty : t) =
   match ty.ptyp_desc with
-  | Ptyp_constr ({ txt = Lident "unit" }, []) -> true
+  | Ptyp_constr ({txt = Lident "unit"}, []) -> true
   | _ -> false
 
 (* let is_array (ty : t) =
@@ -65,8 +65,8 @@ let is_unit (ty : t) =
 let is_user_option (ty : t) =
   match ty.ptyp_desc with
   | Ptyp_constr
-      ({ txt = Lident "option" | Ldot (Lident "*predef*", "option") }, [ _ ]) ->
-      true
+      ({txt = Lident "option" | Ldot (Lident "*predef*", "option")}, [_]) ->
+    true
   | _ -> false
 
 (* let is_user_bool (ty : t) =
@@ -115,18 +115,12 @@ let rec get_uncurry_arity_aux (ty : t) acc =
   | _ -> acc
 
 (**
-   {[ unit -> 'b ]} return arity 0
+   {[ unit -> 'b ]} return arity 1
    {[ unit -> 'a1 -> a2']} arity 2
    {[ 'a1 -> 'a2 -> ... 'aN -> 'b ]} return arity N
 *)
 let get_uncurry_arity (ty : t) =
   match ty.ptyp_desc with
-  | Ptyp_arrow
-      (Nolabel, { ptyp_desc = Ptyp_constr ({ txt = Lident "unit" }, []) }, rest)
-    -> (
-      match rest with
-      | { ptyp_desc = Ptyp_arrow _ } -> Some (get_uncurry_arity_aux rest 1)
-      | _ -> Some 0)
   | Ptyp_arrow (_, _, rest) -> Some (get_uncurry_arity_aux rest 1)
   | _ -> None
 
@@ -146,15 +140,14 @@ let get_curry_labels ty = List.rev (get_curry_labels ty [])
 let is_arity_one ty = get_curry_arity ty = 1
 
 type param_type = {
-  label : Asttypes.arg_label;
-  ty : Parsetree.core_type;
-  attr : Parsetree.attributes;
-  loc : loc;
+  label: Asttypes.arg_label;
+  ty: Parsetree.core_type;
+  attr: Parsetree.attributes;
+  loc: loc;
 }
 
 let mk_fn_type (new_arg_types_ty : param_type list) (result : t) : t =
-  Ext_list.fold_right new_arg_types_ty result
-    (fun { label; ty; attr; loc } acc ->
+  Ext_list.fold_right new_arg_types_ty result (fun {label; ty; attr; loc} acc ->
       {
         ptyp_desc = Ptyp_arrow (label, ty, acc);
         ptyp_loc = loc;
@@ -165,13 +158,13 @@ let list_of_arrow (ty : t) : t * param_type list =
   let rec aux (ty : t) acc =
     match ty.ptyp_desc with
     | Ptyp_arrow (label, t1, t2) ->
-        aux t2
-          (({ label; ty = t1; attr = ty.ptyp_attributes; loc = ty.ptyp_loc }
-             : param_type)
-          :: acc)
+      aux t2
+        (({label; ty = t1; attr = ty.ptyp_attributes; loc = ty.ptyp_loc}
+           : param_type)
+        :: acc)
     | Ptyp_poly (_, ty) ->
-        (* should not happen? *)
-        Bs_syntaxerr.err ty.ptyp_loc Unhandled_poly_type
+      (* should not happen? *)
+      Bs_syntaxerr.err ty.ptyp_loc Unhandled_poly_type
     | _ -> (ty, List.rev acc)
   in
   aux ty []
@@ -179,5 +172,5 @@ let list_of_arrow (ty : t) : t * param_type list =
 let add_last_obj (ty : t) (obj : t) =
   let result, params = list_of_arrow ty in
   mk_fn_type
-    (params @ [ { label = Nolabel; ty = obj; attr = []; loc = obj.ptyp_loc } ])
+    (params @ [{label = Nolabel; ty = obj; attr = []; loc = obj.ptyp_loc}])
     result

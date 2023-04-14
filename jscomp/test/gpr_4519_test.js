@@ -16,17 +16,17 @@ function eq(loc, x, y) {
 
 function nextFor(x) {
   if (x !== undefined) {
-    if (x) {
-      return ;
+    if (x === "Required") {
+      return "Optional";
     } else {
-      return /* Optional */1;
+      return ;
     }
   } else {
-    return /* Required */0;
+    return "Required";
   }
 }
 
-eq("File \"gpr_4519_test.ml\", line 17, characters 6-13", /* Optional */1, /* Optional */1);
+eq("File \"gpr_4519_test.res\", line 16, characters 3-10", nextFor("Required"), "Optional");
 
 Mt.from_pair_suites("Gpr_4519_test", suites.contents);
 

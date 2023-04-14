@@ -54,7 +54,7 @@ function fff(param) {
 }
 
 function g() {
-  return fff(undefined);
+  fff(undefined);
 }
 
 function abc(x, y, z) {
@@ -65,14 +65,14 @@ function abc(x, y, z) {
 
 var abc_u = abc;
 
-g();
+fff(undefined);
 
 Mt.from_pair_suites("Ffi_arity_test", {
       hd: [
-        "File \"ffi_arity_test.ml\", line 45, characters 4-11",
+        "File \"ffi_arity_test.res\", line 51, characters 7-14",
         (function (param) {
             return {
-                    TAG: /* Eq */0,
+                    TAG: "Eq",
                     _0: v,
                     _1: [
                       0,
@@ -84,10 +84,10 @@ Mt.from_pair_suites("Ffi_arity_test", {
       ],
       tl: {
         hd: [
-          "File \"ffi_arity_test.ml\", line 46, characters 4-11",
+          "File \"ffi_arity_test.res\", line 52, characters 7-14",
           (function (param) {
               return {
-                      TAG: /* Eq */0,
+                      TAG: "Eq",
                       _0: vv,
                       _1: [
                         1,
@@ -99,10 +99,10 @@ Mt.from_pair_suites("Ffi_arity_test", {
         ],
         tl: {
           hd: [
-            "File \"ffi_arity_test.ml\", line 47, characters 4-11",
+            "File \"ffi_arity_test.res\", line 53, characters 7-14",
             (function (param) {
                 return {
-                        TAG: /* Eq */0,
+                        TAG: "Eq",
                         _0: hh,
                         _1: [
                           1,

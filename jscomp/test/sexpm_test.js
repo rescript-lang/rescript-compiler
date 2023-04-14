@@ -20,7 +20,7 @@ function eq(loc, param) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -40,7 +40,7 @@ function print_or_error(x) {
 
 var a = Sexpm.parse_string("(x x gh 3 3)");
 
-eq("File \"sexpm_test.ml\", line 17, characters 7-14", [
+eq("File \"sexpm_test.res\", line 17, characters 5-12", [
       {
         NAME: "Ok",
         VAL: {
@@ -81,7 +81,7 @@ eq("File \"sexpm_test.ml\", line 17, characters 7-14", [
       a
     ]);
 
-eq("File \"sexpm_test.ml\", line 21, characters 7-14", [
+eq("File \"sexpm_test.res\", line 18, characters 5-12", [
       print_or_error(a).trim(),
       "Ok:(x x gh 3 3)\n".trim()
     ]);

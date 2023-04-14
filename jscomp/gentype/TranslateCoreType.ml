@@ -93,12 +93,7 @@ let rec translateArrowType ~config ~typeVarsGen ~noFunctionReturnDependencies
       |> translateArrowType ~config ~typeVarsGen ~noFunctionReturnDependencies
            ~typeEnv ~revArgDeps:nextRevDeps
            ~revArgs:
-             (( OptLabel
-                  (match asLabel = "" with
-                  | true -> lbl |> Runtime.mangleObjectField
-                  | false -> asLabel),
-                type1 )
-             :: revArgs))
+             ((OptLabel (lbl |> Runtime.mangleObjectField), type1) :: revArgs))
   | _ ->
     let {dependencies; type_ = retType} =
       coreType |> translateCoreType_ ~config ~typeVarsGen ~typeEnv
@@ -111,16 +106,7 @@ let rec translateArrowType ~config ~typeVarsGen ~noFunctionReturnDependencies
     in
     let labeledConvertableTypes = revArgs |> List.rev in
     let argTypes = labeledConvertableTypes |> NamedArgs.group in
-    let functionType =
-      Function
-        {
-          argTypes;
-          componentName = None;
-          retType;
-          typeVars = [];
-          uncurried = false;
-        }
-    in
+    let functionType = Function {argTypes; retType; typeVars = []} in
     {dependencies = allDeps; type_ = functionType}
 
 and translateCoreType_ ~config ~typeVarsGen
@@ -178,25 +164,24 @@ and translateCoreType_ ~config ~typeVarsGen
   | Ttyp_variant (rowFields, _, _) -> (
     match rowFields |> processVariant with
     | {noPayloads; payloads; inherits} ->
-      let bsString =
+      let asString =
         coreType.ctyp_attributes
-        |> Annotation.hasAttribute Annotation.tagIsBsString
+        |> Annotation.hasAttribute Annotation.tagIsString
       in
-      let bsInt =
-        coreType.ctyp_attributes
-        |> Annotation.hasAttribute Annotation.tagIsBsInt
+      let asInt =
+        coreType.ctyp_attributes |> Annotation.hasAttribute Annotation.tagIsInt
       in
       let lastBsInt = ref (-1) in
       let noPayloads =
         noPayloads
         |> List.map (fun (label, attributes) ->
                let labelJS =
-                 if bsString then
-                   match attributes |> Annotation.getBsAsRenaming with
+                 if asString then
+                   match attributes |> Annotation.getAsString with
                    | Some labelRenamed -> StringLabel labelRenamed
                    | None -> StringLabel label
-                 else if bsInt then (
-                   match attributes |> Annotation.getBsAsInt with
+                 else if asInt then (
+                   match attributes |> Annotation.getAsInt with
                    | Some n ->
                      lastBsInt := n;
                      IntLabel (string_of_int n)
@@ -219,8 +204,6 @@ and translateCoreType_ ~config ~typeVarsGen
         |> List.map (fun (label, _attributes, translation) ->
                {
                  case = {label; labelJS = StringLabel label};
-                 inlineRecord = false;
-                 numArgs = 1;
                  t = translation.type_;
                })
       in
@@ -229,8 +212,8 @@ and translateCoreType_ ~config ~typeVarsGen
       in
       let inherits = inheritsTranslations |> List.map (fun {type_} -> type_) in
       let type_ =
-        createVariant ~bsStringOrInt:(bsString || bsInt) ~noPayloads ~payloads
-          ~inherits ~polymorphic:true
+        createVariant ~noPayloads ~payloads ~inherits ~polymorphic:true
+          ~unboxed:false
       in
       let dependencies =
         (inheritsTranslations

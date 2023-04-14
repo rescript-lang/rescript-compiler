@@ -9,7 +9,7 @@ var list_suites_0 = [
   "length",
   (function (param) {
       return {
-              TAG: /* Eq */0,
+              TAG: "Eq",
               _0: 1,
               _1: List.length({
                     hd: [
@@ -30,7 +30,7 @@ var list_suites_1 = {
     "length2",
     (function (param) {
         return {
-                TAG: /* Eq */0,
+                TAG: "Eq",
                 _0: 5,
                 _1: List.length({
                       hd: 0,
@@ -56,7 +56,7 @@ var list_suites_1 = {
       "long_length",
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: 30000,
                   _1: List.length($$Array.to_list($$Array.init(30000, (function (param) {
                                   return 0;
@@ -69,7 +69,7 @@ var list_suites_1 = {
         "sort",
         (function (param) {
             return {
-                    TAG: /* Eq */0,
+                    TAG: "Eq",
                     _0: List.sort(Caml.int_compare, {
                           hd: 4,
                           tl: {
@@ -101,10 +101,10 @@ var list_suites_1 = {
       ],
       tl: {
         hd: [
-          "File \"list_test.ml\", line 20, characters 2-9",
+          "File \"list_test.res\", line 20, characters 5-12",
           (function (param) {
               return {
-                      TAG: /* Eq */0,
+                      TAG: "Eq",
                       _0: true,
                       _1: List.mem(3, {
                             hd: 1,
@@ -121,10 +121,10 @@ var list_suites_1 = {
         ],
         tl: {
           hd: [
-            "File \"list_test.ml\", line 23, characters 2-9",
+            "File \"list_test.res\", line 21, characters 5-12",
             (function (param) {
                 return {
-                        TAG: /* Eq */0,
+                        TAG: "Eq",
                         _0: false,
                         _1: List.mem(4, {
                               hd: 1,
@@ -141,10 +141,10 @@ var list_suites_1 = {
           ],
           tl: {
             hd: [
-              "File \"list_test.ml\", line 26, characters 2-9",
+              "File \"list_test.res\", line 22, characters 5-12",
               (function (param) {
                   return {
-                          TAG: /* Eq */0,
+                          TAG: "Eq",
                           _0: 9,
                           _1: List.assoc(4, {
                                 hd: [

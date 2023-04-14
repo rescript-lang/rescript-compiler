@@ -8,7 +8,7 @@ var suites_0 = [
   "make",
   (function (param) {
       return {
-              TAG: /* Eq */0,
+              TAG: "Eq",
               _0: "null",
               _1: String(null).concat("")
             };
@@ -20,7 +20,7 @@ var suites_1 = {
     "fromCharCode",
     (function (param) {
         return {
-                TAG: /* Eq */0,
+                TAG: "Eq",
                 _0: "a",
                 _1: String.fromCharCode(97)
               };
@@ -31,7 +31,7 @@ var suites_1 = {
       "fromCharCodeMany",
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: "az",
                   _1: String.fromCharCode(97, 122)
                 };
@@ -42,7 +42,7 @@ var suites_1 = {
         "fromCodePoint",
         (function (param) {
             return {
-                    TAG: /* Eq */0,
+                    TAG: "Eq",
                     _0: "a",
                     _1: String.fromCodePoint(97)
                   };
@@ -53,7 +53,7 @@ var suites_1 = {
           "fromCodePointMany",
           (function (param) {
               return {
-                      TAG: /* Eq */0,
+                      TAG: "Eq",
                       _0: "az",
                       _1: String.fromCodePoint(97, 122)
                     };
@@ -64,7 +64,7 @@ var suites_1 = {
             "length",
             (function (param) {
                 return {
-                        TAG: /* Eq */0,
+                        TAG: "Eq",
                         _0: 3,
                         _1: "foo".length
                       };
@@ -75,7 +75,7 @@ var suites_1 = {
               "get",
               (function (param) {
                   return {
-                          TAG: /* Eq */0,
+                          TAG: "Eq",
                           _0: "a",
                           _1: "foobar"[4]
                         };
@@ -86,7 +86,7 @@ var suites_1 = {
                 "charAt",
                 (function (param) {
                     return {
-                            TAG: /* Eq */0,
+                            TAG: "Eq",
                             _0: "a",
                             _1: "foobar".charAt(4)
                           };
@@ -97,7 +97,7 @@ var suites_1 = {
                   "charCodeAt",
                   (function (param) {
                       return {
-                              TAG: /* Eq */0,
+                              TAG: "Eq",
                               _0: 97,
                               _1: "foobar".charCodeAt(4)
                             };
@@ -108,7 +108,7 @@ var suites_1 = {
                     "codePointAt",
                     (function (param) {
                         return {
-                                TAG: /* Eq */0,
+                                TAG: "Eq",
                                 _0: 97,
                                 _1: "foobar".codePointAt(4)
                               };
@@ -119,7 +119,7 @@ var suites_1 = {
                       "codePointAt - out of bounds",
                       (function (param) {
                           return {
-                                  TAG: /* Eq */0,
+                                  TAG: "Eq",
                                   _0: undefined,
                                   _1: "foobar".codePointAt(98)
                                 };
@@ -130,7 +130,7 @@ var suites_1 = {
                         "concat",
                         (function (param) {
                             return {
-                                    TAG: /* Eq */0,
+                                    TAG: "Eq",
                                     _0: "foobar",
                                     _1: "foo".concat("bar")
                                   };
@@ -141,7 +141,7 @@ var suites_1 = {
                           "concatMany",
                           (function (param) {
                               return {
-                                      TAG: /* Eq */0,
+                                      TAG: "Eq",
                                       _0: "foobarbaz",
                                       _1: "foo".concat("bar", "baz")
                                     };
@@ -152,7 +152,7 @@ var suites_1 = {
                             "endsWith",
                             (function (param) {
                                 return {
-                                        TAG: /* Eq */0,
+                                        TAG: "Eq",
                                         _0: true,
                                         _1: "foobar".endsWith("bar")
                                       };
@@ -163,7 +163,7 @@ var suites_1 = {
                               "endsWithFrom",
                               (function (param) {
                                   return {
-                                          TAG: /* Eq */0,
+                                          TAG: "Eq",
                                           _0: false,
                                           _1: "foobar".endsWith("bar", 1)
                                         };
@@ -174,7 +174,7 @@ var suites_1 = {
                                 "includes",
                                 (function (param) {
                                     return {
-                                            TAG: /* Eq */0,
+                                            TAG: "Eq",
                                             _0: true,
                                             _1: "foobarbaz".includes("bar")
                                           };
@@ -185,7 +185,7 @@ var suites_1 = {
                                   "includesFrom",
                                   (function (param) {
                                       return {
-                                              TAG: /* Eq */0,
+                                              TAG: "Eq",
                                               _0: false,
                                               _1: "foobarbaz".includes("bar", 4)
                                             };
@@ -196,7 +196,7 @@ var suites_1 = {
                                     "indexOf",
                                     (function (param) {
                                         return {
-                                                TAG: /* Eq */0,
+                                                TAG: "Eq",
                                                 _0: 3,
                                                 _1: "foobarbaz".indexOf("bar")
                                               };
@@ -207,7 +207,7 @@ var suites_1 = {
                                       "indexOfFrom",
                                       (function (param) {
                                           return {
-                                                  TAG: /* Eq */0,
+                                                  TAG: "Eq",
                                                   _0: -1,
                                                   _1: "foobarbaz".indexOf("bar", 4)
                                                 };
@@ -218,7 +218,7 @@ var suites_1 = {
                                         "lastIndexOf",
                                         (function (param) {
                                             return {
-                                                    TAG: /* Eq */0,
+                                                    TAG: "Eq",
                                                     _0: 3,
                                                     _1: "foobarbaz".lastIndexOf("bar")
                                                   };
@@ -229,7 +229,7 @@ var suites_1 = {
                                           "lastIndexOfFrom",
                                           (function (param) {
                                               return {
-                                                      TAG: /* Eq */0,
+                                                      TAG: "Eq",
                                                       _0: 3,
                                                       _1: "foobarbaz".lastIndexOf("bar", 4)
                                                     };
@@ -240,7 +240,7 @@ var suites_1 = {
                                             "localeCompare",
                                             (function (param) {
                                                 return {
-                                                        TAG: /* Eq */0,
+                                                        TAG: "Eq",
                                                         _0: 0,
                                                         _1: "foo".localeCompare("foo")
                                                       };
@@ -251,7 +251,7 @@ var suites_1 = {
                                               "match",
                                               (function (param) {
                                                   return {
-                                                          TAG: /* Eq */0,
+                                                          TAG: "Eq",
                                                           _0: [
                                                             "na",
                                                             "na"
@@ -265,7 +265,7 @@ var suites_1 = {
                                                 "match - no match",
                                                 (function (param) {
                                                     return {
-                                                            TAG: /* Eq */0,
+                                                            TAG: "Eq",
                                                             _0: undefined,
                                                             _1: Caml_option.null_to_opt("banana".match(/nanana+/g))
                                                           };
@@ -276,7 +276,7 @@ var suites_1 = {
                                                   "match - not found capture groups",
                                                   (function (param) {
                                                       return {
-                                                              TAG: /* Eq */0,
+                                                              TAG: "Eq",
                                                               _0: [
                                                                 "hello ",
                                                                 undefined
@@ -292,7 +292,7 @@ var suites_1 = {
                                                     "normalize",
                                                     (function (param) {
                                                         return {
-                                                                TAG: /* Eq */0,
+                                                                TAG: "Eq",
                                                                 _0: "foo",
                                                                 _1: "foo".normalize()
                                                               };
@@ -303,7 +303,7 @@ var suites_1 = {
                                                       "normalizeByForm",
                                                       (function (param) {
                                                           return {
-                                                                  TAG: /* Eq */0,
+                                                                  TAG: "Eq",
                                                                   _0: "foo",
                                                                   _1: "foo".normalize("NFKD")
                                                                 };
@@ -314,7 +314,7 @@ var suites_1 = {
                                                         "repeat",
                                                         (function (param) {
                                                             return {
-                                                                    TAG: /* Eq */0,
+                                                                    TAG: "Eq",
                                                                     _0: "foofoofoo",
                                                                     _1: "foo".repeat(3)
                                                                   };
@@ -325,7 +325,7 @@ var suites_1 = {
                                                           "replace",
                                                           (function (param) {
                                                               return {
-                                                                      TAG: /* Eq */0,
+                                                                      TAG: "Eq",
                                                                       _0: "fooBORKbaz",
                                                                       _1: "foobarbaz".replace("bar", "BORK")
                                                                     };
@@ -336,7 +336,7 @@ var suites_1 = {
                                                             "replaceByRe",
                                                             (function (param) {
                                                                 return {
-                                                                        TAG: /* Eq */0,
+                                                                        TAG: "Eq",
                                                                         _0: "fooBORKBORK",
                                                                         _1: "foobarbaz".replace(/ba./g, "BORK")
                                                                       };
@@ -354,7 +354,7 @@ var suites_1 = {
                                                                     }
                                                                   };
                                                                   return {
-                                                                          TAG: /* Eq */0,
+                                                                          TAG: "Eq",
                                                                           _0: "fooBORKDORK",
                                                                           _1: "foobarbaz".replace(/ba./g, replace)
                                                                         };
@@ -372,7 +372,7 @@ var suites_1 = {
                                                                       }
                                                                     };
                                                                     return {
-                                                                            TAG: /* Eq */0,
+                                                                            TAG: "Eq",
                                                                             _0: "fooBORKDORK",
                                                                             _1: "foobarbaz".replace(/ba./g, replace)
                                                                           };
@@ -390,7 +390,7 @@ var suites_1 = {
                                                                         }
                                                                       };
                                                                       return {
-                                                                              TAG: /* Eq */0,
+                                                                              TAG: "Eq",
                                                                               _0: "fooBORKDORK",
                                                                               _1: "foobarbaz".replace(/ba./g, replace)
                                                                             };
@@ -408,7 +408,7 @@ var suites_1 = {
                                                                           }
                                                                         };
                                                                         return {
-                                                                                TAG: /* Eq */0,
+                                                                                TAG: "Eq",
                                                                                 _0: "fooBORKDORK",
                                                                                 _1: "foobarbaz".replace(/ba./g, replace)
                                                                               };
@@ -419,7 +419,7 @@ var suites_1 = {
                                                                       "search",
                                                                       (function (param) {
                                                                           return {
-                                                                                  TAG: /* Eq */0,
+                                                                                  TAG: "Eq",
                                                                                   _0: 3,
                                                                                   _1: "foobarbaz".search(/ba./g)
                                                                                 };
@@ -430,7 +430,7 @@ var suites_1 = {
                                                                         "slice",
                                                                         (function (param) {
                                                                             return {
-                                                                                    TAG: /* Eq */0,
+                                                                                    TAG: "Eq",
                                                                                     _0: "bar",
                                                                                     _1: "foobarbaz".slice(3, 6)
                                                                                   };
@@ -441,7 +441,7 @@ var suites_1 = {
                                                                           "sliceToEnd",
                                                                           (function (param) {
                                                                               return {
-                                                                                      TAG: /* Eq */0,
+                                                                                      TAG: "Eq",
                                                                                       _0: "barbaz",
                                                                                       _1: "foobarbaz".slice(3)
                                                                                     };
@@ -452,7 +452,7 @@ var suites_1 = {
                                                                             "split",
                                                                             (function (param) {
                                                                                 return {
-                                                                                        TAG: /* Eq */0,
+                                                                                        TAG: "Eq",
                                                                                         _0: [
                                                                                           "foo",
                                                                                           "bar",
@@ -467,7 +467,7 @@ var suites_1 = {
                                                                               "splitAtMost",
                                                                               (function (param) {
                                                                                   return {
-                                                                                          TAG: /* Eq */0,
+                                                                                          TAG: "Eq",
                                                                                           _0: [
                                                                                             "foo",
                                                                                             "bar"
@@ -481,7 +481,7 @@ var suites_1 = {
                                                                                 "splitByRe",
                                                                                 (function (param) {
                                                                                     return {
-                                                                                            TAG: /* Eq */0,
+                                                                                            TAG: "Eq",
                                                                                             _0: [
                                                                                               "a",
                                                                                               "#",
@@ -500,7 +500,7 @@ var suites_1 = {
                                                                                   "splitByReAtMost",
                                                                                   (function (param) {
                                                                                       return {
-                                                                                              TAG: /* Eq */0,
+                                                                                              TAG: "Eq",
                                                                                               _0: [
                                                                                                 "a",
                                                                                                 "#",
@@ -515,7 +515,7 @@ var suites_1 = {
                                                                                     "startsWith",
                                                                                     (function (param) {
                                                                                         return {
-                                                                                                TAG: /* Eq */0,
+                                                                                                TAG: "Eq",
                                                                                                 _0: true,
                                                                                                 _1: "foobarbaz".startsWith("foo")
                                                                                               };
@@ -526,7 +526,7 @@ var suites_1 = {
                                                                                       "startsWithFrom",
                                                                                       (function (param) {
                                                                                           return {
-                                                                                                  TAG: /* Eq */0,
+                                                                                                  TAG: "Eq",
                                                                                                   _0: false,
                                                                                                   _1: "foobarbaz".startsWith("foo", 1)
                                                                                                 };
@@ -537,7 +537,7 @@ var suites_1 = {
                                                                                         "substr",
                                                                                         (function (param) {
                                                                                             return {
-                                                                                                    TAG: /* Eq */0,
+                                                                                                    TAG: "Eq",
                                                                                                     _0: "barbaz",
                                                                                                     _1: "foobarbaz".substr(3)
                                                                                                   };
@@ -548,7 +548,7 @@ var suites_1 = {
                                                                                           "substrAtMost",
                                                                                           (function (param) {
                                                                                               return {
-                                                                                                      TAG: /* Eq */0,
+                                                                                                      TAG: "Eq",
                                                                                                       _0: "bar",
                                                                                                       _1: "foobarbaz".substr(3, 3)
                                                                                                     };
@@ -559,7 +559,7 @@ var suites_1 = {
                                                                                             "substring",
                                                                                             (function (param) {
                                                                                                 return {
-                                                                                                        TAG: /* Eq */0,
+                                                                                                        TAG: "Eq",
                                                                                                         _0: "bar",
                                                                                                         _1: "foobarbaz".substring(3, 6)
                                                                                                       };
@@ -570,7 +570,7 @@ var suites_1 = {
                                                                                               "substringToEnd",
                                                                                               (function (param) {
                                                                                                   return {
-                                                                                                          TAG: /* Eq */0,
+                                                                                                          TAG: "Eq",
                                                                                                           _0: "barbaz",
                                                                                                           _1: "foobarbaz".substring(3)
                                                                                                         };
@@ -581,7 +581,7 @@ var suites_1 = {
                                                                                                 "toLowerCase",
                                                                                                 (function (param) {
                                                                                                     return {
-                                                                                                            TAG: /* Eq */0,
+                                                                                                            TAG: "Eq",
                                                                                                             _0: "bork",
                                                                                                             _1: "BORK".toLowerCase()
                                                                                                           };
@@ -592,7 +592,7 @@ var suites_1 = {
                                                                                                   "toLocaleLowerCase",
                                                                                                   (function (param) {
                                                                                                       return {
-                                                                                                              TAG: /* Eq */0,
+                                                                                                              TAG: "Eq",
                                                                                                               _0: "bork",
                                                                                                               _1: "BORK".toLocaleLowerCase()
                                                                                                             };
@@ -603,7 +603,7 @@ var suites_1 = {
                                                                                                     "toUpperCase",
                                                                                                     (function (param) {
                                                                                                         return {
-                                                                                                                TAG: /* Eq */0,
+                                                                                                                TAG: "Eq",
                                                                                                                 _0: "FUBAR",
                                                                                                                 _1: "fubar".toUpperCase()
                                                                                                               };
@@ -614,7 +614,7 @@ var suites_1 = {
                                                                                                       "toLocaleUpperCase",
                                                                                                       (function (param) {
                                                                                                           return {
-                                                                                                                  TAG: /* Eq */0,
+                                                                                                                  TAG: "Eq",
                                                                                                                   _0: "FUBAR",
                                                                                                                   _1: "fubar".toLocaleUpperCase()
                                                                                                                 };
@@ -625,7 +625,7 @@ var suites_1 = {
                                                                                                         "trim",
                                                                                                         (function (param) {
                                                                                                             return {
-                                                                                                                    TAG: /* Eq */0,
+                                                                                                                    TAG: "Eq",
                                                                                                                     _0: "foo",
                                                                                                                     _1: "  foo  ".trim()
                                                                                                                   };
@@ -636,7 +636,7 @@ var suites_1 = {
                                                                                                           "anchor",
                                                                                                           (function (param) {
                                                                                                               return {
-                                                                                                                      TAG: /* Eq */0,
+                                                                                                                      TAG: "Eq",
                                                                                                                       _0: "<a name=\"bar\">foo</a>",
                                                                                                                       _1: "foo".anchor("bar")
                                                                                                                     };
@@ -647,7 +647,7 @@ var suites_1 = {
                                                                                                             "link",
                                                                                                             (function (param) {
                                                                                                                 return {
-                                                                                                                        TAG: /* Eq */0,
+                                                                                                                        TAG: "Eq",
                                                                                                                         _0: "<a href=\"https://reason.ml\">foo</a>",
                                                                                                                         _1: "foo".link("https://reason.ml")
                                                                                                                       };
@@ -655,10 +655,10 @@ var suites_1 = {
                                                                                                           ],
                                                                                                           tl: {
                                                                                                             hd: [
-                                                                                                              "File \"js_string_test.ml\", line 214, characters 4-11",
+                                                                                                              "File \"js_string_test.res\", line 138, characters 5-12",
                                                                                                               (function (param) {
                                                                                                                   return {
-                                                                                                                          TAG: /* Ok */4,
+                                                                                                                          TAG: "Ok",
                                                                                                                           _0: "ab".includes("a")
                                                                                                                         };
                                                                                                                 })

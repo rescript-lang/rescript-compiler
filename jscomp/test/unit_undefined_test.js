@@ -16,8 +16,12 @@ function eq(loc, x, y) {
 }
 
 function f_01(param) {
-  return hi(function () {
-              console.log("x");
+  return hi(function (x) {
+              if (x === undefined) {
+                console.log("x");
+                return ;
+              }
+              
             });
 }
 
@@ -49,17 +53,17 @@ function u2(x) {
 
 var u3 = Caml_option.some(undefined);
 
-eq("File \"unit_undefined_test.ml\", line 39, characters 6-13", Caml_option.some(undefined), Caml_option.some(undefined));
+eq("File \"unit_undefined_test.res\", line 41, characters 3-10", Caml_option.some(undefined), Caml_option.some(undefined));
 
-eq("File \"unit_undefined_test.ml\", line 40, characters 6-13", u1, Caml_option.some(undefined));
+eq("File \"unit_undefined_test.res\", line 42, characters 3-10", u1, Caml_option.some(undefined));
 
-eq("File \"unit_undefined_test.ml\", line 41, characters 6-13", Caml_option.some(undefined), Caml_option.some(undefined));
+eq("File \"unit_undefined_test.res\", line 43, characters 3-10", Caml_option.some(undefined), Caml_option.some(undefined));
 
-eq("File \"unit_undefined_test.ml\", line 42, characters 6-13", u3, Caml_option.some(undefined));
+eq("File \"unit_undefined_test.res\", line 44, characters 3-10", u3, Caml_option.some(undefined));
 
-eq("File \"unit_undefined_test.ml\", line 43, characters 6-13", undefined, undefined);
+eq("File \"unit_undefined_test.res\", line 45, characters 3-10", undefined, undefined);
 
-Mt.from_pair_suites("unit_undefined_test.ml", suites.contents);
+Mt.from_pair_suites("unit_undefined_test.res", suites.contents);
 
 var u4;
 

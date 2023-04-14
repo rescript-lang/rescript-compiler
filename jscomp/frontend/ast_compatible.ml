@@ -45,14 +45,14 @@ let app1 ?(loc = default_loc) ?(attrs = []) fn arg1 : expression =
   {
     pexp_loc = loc;
     pexp_attributes = attrs;
-    pexp_desc = Pexp_apply (fn, [ (Nolabel, arg1) ]);
+    pexp_desc = Pexp_apply (fn, [(Nolabel, arg1)]);
   }
 
 let app2 ?(loc = default_loc) ?(attrs = []) fn arg1 arg2 : expression =
   {
     pexp_loc = loc;
     pexp_attributes = attrs;
-    pexp_desc = Pexp_apply (fn, [ (Nolabel, arg1); (Nolabel, arg2) ]);
+    pexp_desc = Pexp_apply (fn, [(Nolabel, arg1); (Nolabel, arg2)]);
   }
 
 let app3 ?(loc = default_loc) ?(attrs = []) fn arg1 arg2 arg3 : expression =
@@ -60,7 +60,7 @@ let app3 ?(loc = default_loc) ?(attrs = []) fn arg1 arg2 arg3 : expression =
     pexp_loc = loc;
     pexp_attributes = attrs;
     pexp_desc =
-      Pexp_apply (fn, [ (Nolabel, arg1); (Nolabel, arg2); (Nolabel, arg3) ]);
+      Pexp_apply (fn, [(Nolabel, arg1); (Nolabel, arg2); (Nolabel, arg3)]);
   }
 
 let fun_ ?(loc = default_loc) ?(attrs = []) pat exp =
@@ -109,10 +109,10 @@ let opt_arrow ?(loc = default_loc) ?(attrs = []) s a b : core_type =
   }
 
 let rec_type_str ?(loc = default_loc) rf tds : structure_item =
-  { pstr_loc = loc; pstr_desc = Pstr_type (rf, tds) }
+  {pstr_loc = loc; pstr_desc = Pstr_type (rf, tds)}
 
 let rec_type_sig ?(loc = default_loc) rf tds : signature_item =
-  { psig_loc = loc; psig_desc = Psig_type (rf, tds) }
+  {psig_loc = loc; psig_desc = Psig_type (rf, tds)}
 
 (* FIXME: need address migration of `[@nonrec]` attributes in older ocaml *)
 (* let nonrec_type_sig ?(loc=default_loc)  tds : signature_item =
@@ -129,8 +129,6 @@ let const_exp_int_list_as_array xs =
 (* let const_exp_string_list_as_array xs =
    Ast_helper.Exp.array
    (Ext_list.map xs (fun x -> const_exp_string x ) ) *)
-
-
 
 type object_field = Parsetree.object_field
 

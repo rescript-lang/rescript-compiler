@@ -2,18 +2,19 @@
 
 var Curry = require("../../lib/js/curry.js");
 var Caml_array = require("../../lib/js/caml_array.js");
+var Caml_string = require("../../lib/js/caml_string.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 
 function a4(prim) {
   return [
-          "File \"test_primitive.ml\", line 30, characters 9-19",
+          "File \"test_primitive.res\", line 29, characters 9-19",
           prim
         ];
 }
 
 function a5(prim) {
   return [
-          31,
+          30,
           prim
         ];
 }
@@ -21,8 +22,8 @@ function a5(prim) {
 function a6(prim) {
   return [
           [
-            "test_primitive.ml",
-            32,
+            "test_primitive.res",
+            31,
             9,
             19
           ],
@@ -41,7 +42,7 @@ var v = [
 
 var xxx = "a";
 
-var a = /* 'a' */97;
+var a = Caml_string.get(xxx, 0);
 
 function u(b) {
   if (b) {
@@ -82,11 +83,11 @@ function fib(n) {
   return (fib1 + fib2 | 0) + 3 | 0;
 }
 
-var a0 = "File \"test_primitive.ml\", line 26, characters 9-16";
+var a0 = "File \"test_primitive.res\", line 25, characters 9-16";
 
 var a1 = "Test_primitive";
 
-var a2 = 28;
+var a2 = 27;
 
 var a3 = "Test_primitive";
 

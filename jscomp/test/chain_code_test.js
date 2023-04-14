@@ -18,7 +18,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -51,7 +51,7 @@ function f4(h, x, y) {
   ];
 }
 
-eq("File \"chain_code_test.ml\", line 28, characters 5-12", 32, ({
+eq("File \"chain_code_test.res\", line 24, characters 12-19", 32, ({
         x: {
           y: {
             z: 32

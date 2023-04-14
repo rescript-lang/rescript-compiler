@@ -14,28 +14,28 @@ function split(delim, s) {
   var len = s.length;
   if (len !== 0) {
     var _l = /* [] */0;
-    var _i = len;
+    var _x = len;
     while(true) {
-      var i = _i;
+      var x = _x;
       var l = _l;
-      if (i === 0) {
+      if (x === 0) {
         return l;
       }
       var i$p;
       try {
-        i$p = $$String.rindex_from(s, i - 1 | 0, delim);
+        i$p = $$String.rindex_from(s, x - 1 | 0, delim);
       }
       catch (raw_exn){
         var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);
         if (exn.RE_EXN_ID === "Not_found") {
           return {
-                  hd: $$String.sub(s, 0, i),
+                  hd: $$String.sub(s, 0, x),
                   tl: l
                 };
         }
         throw exn;
       }
-      var l_0 = $$String.sub(s, i$p + 1 | 0, (i - i$p | 0) - 1 | 0);
+      var l_0 = $$String.sub(s, i$p + 1 | 0, (x - i$p | 0) - 1 | 0);
       var l$1 = {
         hd: l_0,
         tl: l
@@ -44,7 +44,7 @@ function split(delim, s) {
             hd: "",
             tl: l$1
           }) : l$1;
-      _i = i$p;
+      _x = i$p;
       _l = l$2;
       continue ;
     };
@@ -66,15 +66,15 @@ var Util = {
   string_of_float_option: string_of_float_option
 };
 
-function string_of_rank(i) {
-  if (typeof i === "number") {
-    if (i !== 0) {
-      return "Visited";
-    } else {
+function string_of_rank(x) {
+  if (typeof x !== "object") {
+    if (x === "Uninitialized") {
       return "Uninitialized";
+    } else {
+      return "Visited";
     }
   } else {
-    return "Ranked(" + i._0 + ")";
+    return "Ranked(" + x._0 + ")";
   }
 }
 
@@ -85,27 +85,28 @@ function find_ticker_by_name(all_tickers, ticker) {
 }
 
 function print_all_composite(all_tickers) {
-  List.iter((function (param) {
-          if (param.type_) {
-            console.log(param.ticker_name);
+  List.iter((function (x) {
+          var tmp = x.type_;
+          if (typeof tmp !== "object") {
             return ;
           }
-          
+          console.log(x.ticker_name);
         }), all_tickers);
 }
 
 function height(param) {
-  if (param) {
-    return param.h;
-  } else {
+  if (typeof param !== "object") {
     return 0;
+  } else {
+    return param.h;
   }
 }
 
 function create(l, x, d, r) {
   var hl = height(l);
   var hr = height(r);
-  return /* Node */{
+  return {
+          TAG: "Node",
           l: l,
           v: x,
           d: d,
@@ -115,35 +116,38 @@ function create(l, x, d, r) {
 }
 
 function singleton(x, d) {
-  return /* Node */{
-          l: /* Empty */0,
+  return {
+          TAG: "Node",
+          l: "Empty",
           v: x,
           d: d,
-          r: /* Empty */0,
+          r: "Empty",
           h: 1
         };
 }
 
 function bal(l, x, d, r) {
-  var hl = l ? l.h : 0;
-  var hr = r ? r.h : 0;
+  var hl;
+  hl = typeof l !== "object" ? 0 : l.h;
+  var hr;
+  hr = typeof r !== "object" ? 0 : r.h;
   if (hl > (hr + 2 | 0)) {
-    if (l) {
-      var lr = l.r;
-      var ld = l.d;
-      var lv = l.v;
-      var ll = l.l;
-      if (height(ll) >= height(lr)) {
-        return create(ll, lv, ld, create(lr, x, d, r));
-      }
-      if (lr) {
-        return create(create(ll, lv, ld, lr.l), lr.v, lr.d, create(lr.r, x, d, r));
-      }
+    if (typeof l !== "object") {
       throw {
             RE_EXN_ID: "Invalid_argument",
             _1: "Map.bal",
             Error: new Error()
           };
+    }
+    var lr = l.r;
+    var ld = l.d;
+    var lv = l.v;
+    var ll = l.l;
+    if (height(ll) >= height(lr)) {
+      return create(ll, lv, ld, create(lr, x, d, r));
+    }
+    if (typeof lr === "object") {
+      return create(create(ll, lv, ld, lr.l), lr.v, lr.d, create(lr.r, x, d, r));
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
@@ -152,7 +156,8 @@ function bal(l, x, d, r) {
         };
   }
   if (hr <= (hl + 2 | 0)) {
-    return /* Node */{
+    return {
+            TAG: "Node",
             l: l,
             v: x,
             d: d,
@@ -160,22 +165,22 @@ function bal(l, x, d, r) {
             h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
-  if (r) {
-    var rr = r.r;
-    var rd = r.d;
-    var rv = r.v;
-    var rl = r.l;
-    if (height(rr) >= height(rl)) {
-      return create(create(l, x, d, rl), rv, rd, rr);
-    }
-    if (rl) {
-      return create(create(l, x, d, rl.l), rl.v, rl.d, create(rl.r, rv, rd, rr));
-    }
+  if (typeof r !== "object") {
     throw {
           RE_EXN_ID: "Invalid_argument",
           _1: "Map.bal",
           Error: new Error()
         };
+  }
+  var rr = r.r;
+  var rd = r.d;
+  var rv = r.v;
+  var rl = r.l;
+  if (height(rr) >= height(rl)) {
+    return create(create(l, x, d, rl), rv, rd, rr);
+  }
+  if (typeof rl === "object") {
+    return create(create(l, x, d, rl.l), rl.v, rl.d, create(rl.r, rv, rd, rr));
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
@@ -185,20 +190,21 @@ function bal(l, x, d, r) {
 }
 
 function is_empty(param) {
-  if (param) {
-    return false;
-  } else {
+  if (typeof param !== "object") {
     return true;
+  } else {
+    return false;
   }
 }
 
 function add(x, data, m) {
-  if (!m) {
-    return /* Node */{
-            l: /* Empty */0,
+  if (typeof m !== "object") {
+    return {
+            TAG: "Node",
+            l: "Empty",
             v: x,
             d: data,
-            r: /* Empty */0,
+            r: "Empty",
             h: 1
           };
   }
@@ -211,7 +217,8 @@ function add(x, data, m) {
     if (d === data) {
       return m;
     } else {
-      return /* Node */{
+      return {
+              TAG: "Node",
               l: l,
               v: x,
               d: data,
@@ -239,65 +246,65 @@ function add(x, data, m) {
 function find(x, _param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var c = Caml_obj.compare(x, param.v);
-      if (c === 0) {
-        return param.d;
-      }
-      _param = c < 0 ? param.l : param.r;
-      continue ;
+    if (typeof param !== "object") {
+      throw {
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
+          };
     }
-    throw {
-          RE_EXN_ID: "Not_found",
-          Error: new Error()
-        };
+    var c = Caml_obj.compare(x, param.v);
+    if (c === 0) {
+      return param.d;
+    }
+    _param = c < 0 ? param.l : param.r;
+    continue ;
   };
 }
 
 function find_first(f, _param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var v = param.v;
-      if (Curry._1(f, v)) {
-        var _v0 = v;
-        var _d0 = param.d;
-        var _param$1 = param.l;
-        while(true) {
-          var param$1 = _param$1;
-          var d0 = _d0;
-          var v0 = _v0;
-          if (!param$1) {
-            return [
-                    v0,
-                    d0
-                  ];
-          }
-          var v$1 = param$1.v;
-          if (Curry._1(f, v$1)) {
-            _param$1 = param$1.l;
-            _d0 = param$1.d;
-            _v0 = v$1;
-            continue ;
-          }
-          _param$1 = param$1.r;
-          continue ;
-        };
-      }
-      _param = param.r;
-      continue ;
+    if (typeof param !== "object") {
+      throw {
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
+          };
     }
-    throw {
-          RE_EXN_ID: "Not_found",
-          Error: new Error()
-        };
+    var v = param.v;
+    if (Curry._1(f, v)) {
+      var _v0 = v;
+      var _d0 = param.d;
+      var _param$1 = param.l;
+      while(true) {
+        var param$1 = _param$1;
+        var d0 = _d0;
+        var v0 = _v0;
+        if (typeof param$1 !== "object") {
+          return [
+                  v0,
+                  d0
+                ];
+        }
+        var v$1 = param$1.v;
+        if (Curry._1(f, v$1)) {
+          _param$1 = param$1.l;
+          _d0 = param$1.d;
+          _v0 = v$1;
+          continue ;
+        }
+        _param$1 = param$1.r;
+        continue ;
+      };
+    }
+    _param = param.r;
+    continue ;
   };
 }
 
 function find_first_opt(f, _param) {
   while(true) {
     var param = _param;
-    if (!param) {
+    if (typeof param !== "object") {
       return ;
     }
     var v = param.v;
@@ -309,7 +316,7 @@ function find_first_opt(f, _param) {
         var param$1 = _param$1;
         var d0 = _d0;
         var v0 = _v0;
-        if (!param$1) {
+        if (typeof param$1 !== "object") {
           return [
                   v0,
                   d0
@@ -334,47 +341,47 @@ function find_first_opt(f, _param) {
 function find_last(f, _param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var v = param.v;
-      if (Curry._1(f, v)) {
-        var _v0 = v;
-        var _d0 = param.d;
-        var _param$1 = param.r;
-        while(true) {
-          var param$1 = _param$1;
-          var d0 = _d0;
-          var v0 = _v0;
-          if (!param$1) {
-            return [
-                    v0,
-                    d0
-                  ];
-          }
-          var v$1 = param$1.v;
-          if (Curry._1(f, v$1)) {
-            _param$1 = param$1.r;
-            _d0 = param$1.d;
-            _v0 = v$1;
-            continue ;
-          }
-          _param$1 = param$1.l;
-          continue ;
-        };
-      }
-      _param = param.l;
-      continue ;
+    if (typeof param !== "object") {
+      throw {
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
+          };
     }
-    throw {
-          RE_EXN_ID: "Not_found",
-          Error: new Error()
-        };
+    var v = param.v;
+    if (Curry._1(f, v)) {
+      var _v0 = v;
+      var _d0 = param.d;
+      var _param$1 = param.r;
+      while(true) {
+        var param$1 = _param$1;
+        var d0 = _d0;
+        var v0 = _v0;
+        if (typeof param$1 !== "object") {
+          return [
+                  v0,
+                  d0
+                ];
+        }
+        var v$1 = param$1.v;
+        if (Curry._1(f, v$1)) {
+          _param$1 = param$1.r;
+          _d0 = param$1.d;
+          _v0 = v$1;
+          continue ;
+        }
+        _param$1 = param$1.l;
+        continue ;
+      };
+    }
+    _param = param.l;
+    continue ;
   };
 }
 
 function find_last_opt(f, _param) {
   while(true) {
     var param = _param;
-    if (!param) {
+    if (typeof param !== "object") {
       return ;
     }
     var v = param.v;
@@ -386,7 +393,7 @@ function find_last_opt(f, _param) {
         var param$1 = _param$1;
         var d0 = _d0;
         var v0 = _v0;
-        if (!param$1) {
+        if (typeof param$1 !== "object") {
           return [
                   v0,
                   d0
@@ -411,7 +418,7 @@ function find_last_opt(f, _param) {
 function find_opt(x, _param) {
   while(true) {
     var param = _param;
-    if (!param) {
+    if (typeof param !== "object") {
       return ;
     }
     var c = Caml_obj.compare(x, param.v);
@@ -426,7 +433,7 @@ function find_opt(x, _param) {
 function mem(x, _param) {
   while(true) {
     var param = _param;
-    if (!param) {
+    if (typeof param !== "object") {
       return false;
     }
     var c = Caml_obj.compare(x, param.v);
@@ -441,32 +448,32 @@ function mem(x, _param) {
 function min_binding(_param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var l = param.l;
-      if (!l) {
-        return [
-                param.v,
-                param.d
-              ];
-      }
-      _param = l;
-      continue ;
+    if (typeof param !== "object") {
+      throw {
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
+          };
     }
-    throw {
-          RE_EXN_ID: "Not_found",
-          Error: new Error()
-        };
+    var l = param.l;
+    if (typeof l !== "object") {
+      return [
+              param.v,
+              param.d
+            ];
+    }
+    _param = l;
+    continue ;
   };
 }
 
 function min_binding_opt(_param) {
   while(true) {
     var param = _param;
-    if (!param) {
+    if (typeof param !== "object") {
       return ;
     }
     var l = param.l;
-    if (!l) {
+    if (typeof l !== "object") {
       return [
               param.v,
               param.d
@@ -480,32 +487,32 @@ function min_binding_opt(_param) {
 function max_binding(_param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var r = param.r;
-      if (!r) {
-        return [
-                param.v,
-                param.d
-              ];
-      }
-      _param = r;
-      continue ;
+    if (typeof param !== "object") {
+      throw {
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
+          };
     }
-    throw {
-          RE_EXN_ID: "Not_found",
-          Error: new Error()
-        };
+    var r = param.r;
+    if (typeof r !== "object") {
+      return [
+              param.v,
+              param.d
+            ];
+    }
+    _param = r;
+    continue ;
   };
 }
 
 function max_binding_opt(_param) {
   while(true) {
     var param = _param;
-    if (!param) {
+    if (typeof param !== "object") {
       return ;
     }
     var r = param.r;
-    if (!r) {
+    if (typeof r !== "object") {
       return [
               param.v,
               param.d
@@ -517,26 +524,26 @@ function max_binding_opt(_param) {
 }
 
 function remove_min_binding(param) {
-  if (param) {
-    var l = param.l;
-    if (l) {
-      return bal(remove_min_binding(l), param.v, param.d, param.r);
-    } else {
-      return param.r;
-    }
+  if (typeof param !== "object") {
+    throw {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Map.remove_min_elt",
+          Error: new Error()
+        };
   }
-  throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Map.remove_min_elt",
-        Error: new Error()
-      };
+  var l = param.l;
+  if (typeof l !== "object") {
+    return param.r;
+  } else {
+    return bal(remove_min_binding(l), param.v, param.d, param.r);
+  }
 }
 
 function merge(t1, t2) {
-  if (!t1) {
+  if (typeof t1 !== "object") {
     return t2;
   }
-  if (!t2) {
+  if (typeof t2 !== "object") {
     return t1;
   }
   var match = min_binding(t2);
@@ -544,8 +551,8 @@ function merge(t1, t2) {
 }
 
 function remove(x, m) {
-  if (!m) {
-    return /* Empty */0;
+  if (typeof m !== "object") {
+    return "Empty";
   }
   var r = m.r;
   var d = m.d;
@@ -572,63 +579,65 @@ function remove(x, m) {
 }
 
 function update(x, f, m) {
-  if (m) {
-    var r = m.r;
-    var d = m.d;
-    var v = m.v;
-    var l = m.l;
-    var c = Caml_obj.compare(x, v);
-    if (c === 0) {
-      var data = Curry._1(f, Caml_option.some(d));
-      if (data === undefined) {
-        return merge(l, r);
-      }
-      var data$1 = Caml_option.valFromOption(data);
-      if (d === data$1) {
-        return m;
-      } else {
-        return /* Node */{
-                l: l,
-                v: x,
-                d: data$1,
-                r: r,
-                h: m.h
-              };
-      }
-    }
-    if (c < 0) {
-      var ll = update(x, f, l);
-      if (l === ll) {
-        return m;
-      } else {
-        return bal(ll, v, d, r);
-      }
-    }
-    var rr = update(x, f, r);
-    if (r === rr) {
-      return m;
+  if (typeof m !== "object") {
+    var data = Curry._1(f, undefined);
+    if (data !== undefined) {
+      return {
+              TAG: "Node",
+              l: "Empty",
+              v: x,
+              d: Caml_option.valFromOption(data),
+              r: "Empty",
+              h: 1
+            };
     } else {
-      return bal(l, v, d, rr);
+      return "Empty";
     }
   }
-  var data$2 = Curry._1(f, undefined);
-  if (data$2 !== undefined) {
-    return /* Node */{
-            l: /* Empty */0,
-            v: x,
-            d: Caml_option.valFromOption(data$2),
-            r: /* Empty */0,
-            h: 1
-          };
+  var r = m.r;
+  var d = m.d;
+  var v = m.v;
+  var l = m.l;
+  var c = Caml_obj.compare(x, v);
+  if (c === 0) {
+    var data$1 = Curry._1(f, Caml_option.some(d));
+    if (data$1 === undefined) {
+      return merge(l, r);
+    }
+    var data$2 = Caml_option.valFromOption(data$1);
+    if (d === data$2) {
+      return m;
+    } else {
+      return {
+              TAG: "Node",
+              l: l,
+              v: x,
+              d: data$2,
+              r: r,
+              h: m.h
+            };
+    }
+  }
+  if (c < 0) {
+    var ll = update(x, f, l);
+    if (l === ll) {
+      return m;
+    } else {
+      return bal(ll, v, d, r);
+    }
+  }
+  var rr = update(x, f, r);
+  if (r === rr) {
+    return m;
   } else {
-    return /* Empty */0;
+    return bal(l, v, d, rr);
   }
 }
 
 function iter(f, _param) {
   while(true) {
     var param = _param;
-    if (!param) {
+    if (typeof param !== "object") {
       return ;
     }
     iter(f, param.l);
@@ -639,13 +648,14 @@ function iter(f, _param) {
 }
 
 function map(f, param) {
-  if (!param) {
-    return /* Empty */0;
+  if (typeof param !== "object") {
+    return "Empty";
   }
   var l$p = map(f, param.l);
   var d$p = Curry._1(f, param.d);
   var r$p = map(f, param.r);
-  return /* Node */{
+  return {
+          TAG: "Node",
           l: l$p,
           v: param.v,
           d: d$p,
@@ -655,14 +665,15 @@ function map(f, param) {
 }
 
 function mapi(f, param) {
-  if (!param) {
-    return /* Empty */0;
+  if (typeof param !== "object") {
+    return "Empty";
   }
   var v = param.v;
   var l$p = mapi(f, param.l);
   var d$p = Curry._2(f, v, param.d);
   var r$p = mapi(f, param.r);
-  return /* Node */{
+  return {
+          TAG: "Node",
           l: l$p,
           v: v,
           d: d$p,
@@ -675,7 +686,7 @@ function fold(f, _m, _accu) {
   while(true) {
     var accu = _accu;
     var m = _m;
-    if (!m) {
+    if (typeof m !== "object") {
       return accu;
     }
     _accu = Curry._3(f, m.v, m.d, fold(f, m.l, accu));
@@ -687,7 +698,7 @@ function fold(f, _m, _accu) {
 function for_all(p, _param) {
   while(true) {
     var param = _param;
-    if (!param) {
+    if (typeof param !== "object") {
       return true;
     }
     if (!Curry._2(p, param.v, param.d)) {
@@ -704,7 +715,7 @@ function for_all(p, _param) {
 function exists(p, _param) {
   while(true) {
     var param = _param;
-    if (!param) {
+    if (typeof param !== "object") {
       return false;
     }
     if (Curry._2(p, param.v, param.d)) {
@@ -719,30 +730,30 @@ function exists(p, _param) {
 }
 
 function add_min_binding(k, x, param) {
-  if (param) {
-    return bal(add_min_binding(k, x, param.l), param.v, param.d, param.r);
-  } else {
+  if (typeof param !== "object") {
     return singleton(k, x);
+  } else {
+    return bal(add_min_binding(k, x, param.l), param.v, param.d, param.r);
   }
 }
 
 function add_max_binding(k, x, param) {
-  if (param) {
-    return bal(param.l, param.v, param.d, add_max_binding(k, x, param.r));
-  } else {
+  if (typeof param !== "object") {
     return singleton(k, x);
+  } else {
+    return bal(param.l, param.v, param.d, add_max_binding(k, x, param.r));
   }
 }
 
 function join(l, v, d, r) {
-  if (!l) {
+  if (typeof l !== "object") {
     return add_min_binding(v, d, r);
   }
-  if (!r) {
+  var lh = l.h;
+  if (typeof r !== "object") {
     return add_max_binding(v, d, l);
   }
   var rh = r.h;
-  var lh = l.h;
   if (lh > (rh + 2 | 0)) {
     return bal(l.l, l.v, l.d, join(l.r, v, d, r));
   } else if (rh > (lh + 2 | 0)) {
@@ -753,10 +764,10 @@ function join(l, v, d, r) {
 }
 
 function concat(t1, t2) {
-  if (!t1) {
+  if (typeof t1 !== "object") {
     return t2;
   }
-  if (!t2) {
+  if (typeof t2 !== "object") {
     return t1;
   }
   var match = min_binding(t2);
@@ -772,11 +783,11 @@ function concat_or_join(t1, v, d, t2) {
 }
 
 function split$1(x, param) {
-  if (!param) {
+  if (typeof param !== "object") {
     return [
-            /* Empty */0,
+            "Empty",
             undefined,
-            /* Empty */0
+            "Empty"
           ];
   }
   var r = param.r;
@@ -808,43 +819,46 @@ function split$1(x, param) {
 }
 
 function merge$1(f, s1, s2) {
-  if (s1) {
+  if (typeof s1 !== "object") {
+    if (typeof s2 !== "object") {
+      return "Empty";
+    }
+    
+  } else {
     var v1 = s1.v;
     if (s1.h >= height(s2)) {
       var match = split$1(v1, s2);
       return concat_or_join(merge$1(f, s1.l, match[0]), v1, Curry._3(f, v1, Caml_option.some(s1.d), match[1]), merge$1(f, s1.r, match[2]));
     }
     
-  } else if (!s2) {
-    return /* Empty */0;
   }
-  if (s2) {
-    var v2 = s2.v;
-    var match$1 = split$1(v2, s1);
-    return concat_or_join(merge$1(f, match$1[0], s2.l), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2.d)), merge$1(f, match$1[2], s2.r));
+  if (typeof s2 !== "object") {
+    throw {
+          RE_EXN_ID: "Assert_failure",
+          _1: [
+            "map.ml",
+            393,
+            10
+          ],
+          Error: new Error()
+        };
   }
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "map.ml",
-          393,
-          10
-        ],
-        Error: new Error()
-      };
+  var v2 = s2.v;
+  var match$1 = split$1(v2, s1);
+  return concat_or_join(merge$1(f, match$1[0], s2.l), v2, Curry._3(f, v2, match$1[1], Caml_option.some(s2.d)), merge$1(f, match$1[2], s2.r));
 }
 
 function union(f, s1, s2) {
-  if (!s1) {
+  if (typeof s1 !== "object") {
     return s2;
   }
-  if (!s2) {
+  var d1 = s1.d;
+  var v1 = s1.v;
+  if (typeof s2 !== "object") {
     return s1;
   }
   var d2 = s2.d;
   var v2 = s2.v;
-  var d1 = s1.d;
-  var v1 = s1.v;
   if (s1.h >= s2.h) {
     var match = split$1(v1, s2);
     var d2$1 = match[1];
@@ -868,8 +882,8 @@ function union(f, s1, s2) {
 }
 
 function filter(p, m) {
-  if (!m) {
-    return /* Empty */0;
+  if (typeof m !== "object") {
+    return "Empty";
   }
   var r = m.r;
   var d = m.d;
@@ -890,10 +904,10 @@ function filter(p, m) {
 }
 
 function partition(p, param) {
-  if (!param) {
+  if (typeof param !== "object") {
     return [
-            /* Empty */0,
-            /* Empty */0
+            "Empty",
+            "Empty"
           ];
   }
   var d = param.d;
@@ -922,10 +936,11 @@ function cons_enum(_m, _e) {
   while(true) {
     var e = _e;
     var m = _m;
-    if (!m) {
+    if (typeof m !== "object") {
       return e;
     }
-    _e = /* More */{
+    _e = {
+      TAG: "More",
       _0: m.v,
       _1: m.d,
       _2: m.r,
@@ -937,19 +952,19 @@ function cons_enum(_m, _e) {
 }
 
 function compare(cmp, m1, m2) {
-  var _e1 = cons_enum(m1, /* End */0);
-  var _e2 = cons_enum(m2, /* End */0);
+  var _e1 = cons_enum(m1, "End");
+  var _e2 = cons_enum(m2, "End");
   while(true) {
     var e2 = _e2;
     var e1 = _e1;
-    if (!e1) {
-      if (e2) {
-        return -1;
-      } else {
+    if (typeof e1 !== "object") {
+      if (typeof e2 !== "object") {
         return 0;
+      } else {
+        return -1;
       }
     }
-    if (!e2) {
+    if (typeof e2 !== "object") {
       return 1;
     }
     var c = Caml_obj.compare(e1._0, e2._0);
@@ -967,19 +982,19 @@ function compare(cmp, m1, m2) {
 }
 
 function equal(cmp, m1, m2) {
-  var _e1 = cons_enum(m1, /* End */0);
-  var _e2 = cons_enum(m2, /* End */0);
+  var _e1 = cons_enum(m1, "End");
+  var _e2 = cons_enum(m2, "End");
   while(true) {
     var e2 = _e2;
     var e1 = _e1;
-    if (!e1) {
-      if (e2) {
-        return false;
-      } else {
+    if (typeof e1 !== "object") {
+      if (typeof e2 !== "object") {
         return true;
+      } else {
+        return false;
       }
     }
-    if (!e2) {
+    if (typeof e2 !== "object") {
       return false;
     }
     if (!Caml_obj.equal(e1._0, e2._0)) {
@@ -995,10 +1010,10 @@ function equal(cmp, m1, m2) {
 }
 
 function cardinal(param) {
-  if (param) {
-    return (cardinal(param.l) + 1 | 0) + cardinal(param.r) | 0;
-  } else {
+  if (typeof param !== "object") {
     return 0;
+  } else {
+    return (cardinal(param.l) + 1 | 0) + cardinal(param.r) | 0;
   }
 }
 
@@ -1006,7 +1021,7 @@ function bindings_aux(_accu, _param) {
   while(true) {
     var param = _param;
     var accu = _accu;
-    if (!param) {
+    if (typeof param !== "object") {
       return accu;
     }
     _param = param.l;
@@ -1026,7 +1041,7 @@ function bindings(s) {
 }
 
 var Ticker_map = {
-  empty: /* Empty */0,
+  empty: "Empty",
   is_empty: is_empty,
   mem: mem,
   add: add,
@@ -1066,23 +1081,28 @@ function compute_update_sequences(all_tickers) {
   List.fold_left((function (counter, ticker) {
           var loop = function (counter, ticker) {
             var rank = ticker.rank;
-            if (rank !== 0) {
+            if (typeof rank === "object") {
               return counter;
             }
-            ticker.rank = /* Visited */1;
-            var match = ticker.type_;
-            if (match) {
-              var match$1 = match._0;
-              var counter$1 = loop(counter, match$1.lhs);
-              var counter$2 = loop(counter$1, match$1.rhs);
-              var counter$3 = counter$2 + 1 | 0;
-              ticker.rank = /* Ranked */{
-                _0: counter$3
-              };
-              return counter$3;
+            if (rank !== "Uninitialized") {
+              return counter;
             }
-            var counter$4 = counter + 1 | 0;
-            ticker.rank = /* Ranked */{
+            ticker.rank = "Visited";
+            var match = ticker.type_;
+            if (typeof match !== "object") {
+              var counter$1 = counter + 1 | 0;
+              ticker.rank = {
+                TAG: "Ranked",
+                _0: counter$1
+              };
+              return counter$1;
+            }
+            var match$1 = match._0;
+            var counter$2 = loop(counter, match$1.lhs);
+            var counter$3 = loop(counter$2, match$1.rhs);
+            var counter$4 = counter$3 + 1 | 0;
+            ticker.rank = {
+              TAG: "Ranked",
               _0: counter$4
             };
             return counter$4;
@@ -1090,7 +1110,8 @@ function compute_update_sequences(all_tickers) {
           return loop(counter, ticker);
         }), 0, all_tickers);
   var map = List.fold_left((function (map, ticker) {
-          if (!ticker.type_) {
+          var tmp = ticker.type_;
+          if (typeof tmp !== "object") {
             return add(ticker.ticker_name, {
                         hd: ticker,
                         tl: /* [] */0
@@ -1103,45 +1124,60 @@ function compute_update_sequences(all_tickers) {
               var up = _up;
               var type_ = ticker.type_;
               var ticker_name = ticker.ticker_name;
-              if (type_) {
-                var match = type_._0;
-                var map$1 = loop({
-                      hd: ticker,
-                      tl: up
-                    }, map, match.lhs);
-                _ticker = match.rhs;
-                _map = map$1;
-                _up = {
-                  hd: ticker,
-                  tl: up
-                };
-                continue ;
+              if (typeof type_ !== "object") {
+                var l = find(ticker_name, map);
+                return add(ticker_name, Pervasives.$at(up, l), map);
               }
-              var l = find(ticker_name, map);
-              return add(ticker_name, Pervasives.$at(up, l), map);
+              var match = type_._0;
+              var map$1 = loop({
+                    hd: ticker,
+                    tl: up
+                  }, map, match.lhs);
+              _ticker = match.rhs;
+              _map = map$1;
+              _up = {
+                hd: ticker,
+                tl: up
+              };
+              continue ;
             };
           };
           return loop(/* [] */0, map, ticker);
-        }), /* Empty */0, List.rev(all_tickers));
+        }), "Empty", List.rev(all_tickers));
   return fold((function (k, l, map) {
                 var l$1 = List.sort_uniq((function (lhs, rhs) {
                         var x = lhs.rank;
-                        if (typeof x === "number") {
+                        if (typeof x !== "object") {
+                          if (x === "Uninitialized") {
+                            throw {
+                                  RE_EXN_ID: "Failure",
+                                  _1: "All nodes should be ranked",
+                                  Error: new Error()
+                                };
+                          }
+                          throw {
+                                RE_EXN_ID: "Failure",
+                                _1: "All nodes should be ranked",
+                                Error: new Error()
+                              };
+                        } else {
+                          var y = rhs.rank;
+                          if (typeof y === "object") {
+                            return Caml.int_compare(x._0, y._0);
+                          }
+                          if (y === "Uninitialized") {
+                            throw {
+                                  RE_EXN_ID: "Failure",
+                                  _1: "All nodes should be ranked",
+                                  Error: new Error()
+                                };
+                          }
                           throw {
                                 RE_EXN_ID: "Failure",
                                 _1: "All nodes should be ranked",
                                 Error: new Error()
                               };
                         }
-                        var y = rhs.rank;
-                        if (typeof y === "number") {
-                          throw {
-                                RE_EXN_ID: "Failure",
-                                _1: "All nodes should be ranked",
-                                Error: new Error()
-                              };
-                        }
-                        return Caml.int_compare(x._0, y._0);
                       }), l);
                 return add(k, l$1, map);
               }), map, map);
@@ -1151,25 +1187,24 @@ function process_quote(ticker_map, new_ticker, new_value) {
   var update_sequence = find(new_ticker, ticker_map);
   List.iter((function (ticker) {
           var match = ticker.type_;
-          if (match) {
-            var match$1 = match._0;
-            var match$2 = match$1.lhs.value;
-            var match$3 = match$1.rhs.value;
-            var value = match$2 !== undefined && match$3 !== undefined ? (
-                match$1.op ? match$2 - match$3 : match$2 + match$3
-              ) : undefined;
-            ticker.value = value;
-            return ;
+          if (typeof match !== "object") {
+            if (ticker.ticker_name === new_ticker) {
+              ticker.value = new_value;
+              return ;
+            }
+            throw {
+                  RE_EXN_ID: "Failure",
+                  _1: "Only single Market ticker should be udpated upon a new quote",
+                  Error: new Error()
+                };
           }
-          if (ticker.ticker_name === new_ticker) {
-            ticker.value = new_value;
-            return ;
-          }
-          throw {
-                RE_EXN_ID: "Failure",
-                _1: "Only single Market ticker should be udpated upon a new quote",
-                Error: new Error()
-              };
+          var match$1 = match._0;
+          var match$2 = match$1.lhs.value;
+          var match$3 = match$1.rhs.value;
+          var value = match$2 !== undefined && match$3 !== undefined ? (
+              match$1.op === "PLUS" ? match$2 + match$3 : match$2 - match$3
+            ) : undefined;
+          ticker.value = value;
         }), update_sequence);
 }
 
@@ -1179,9 +1214,10 @@ function process_input_line(ticker_map, all_tickers, line) {
     var rhs$1 = find_ticker_by_name(all_tickers, rhs);
     return {
             value: undefined,
-            rank: /* Uninitialized */0,
+            rank: "Uninitialized",
             ticker_name: ticker_name,
-            type_: /* Binary_op */{
+            type_: {
+              TAG: "Binary_op",
               _0: {
                 op: op,
                 rhs: rhs$1,
@@ -1245,7 +1281,7 @@ function process_input_line(ticker_map, all_tickers, line) {
                         }
                         return [
                                 {
-                                  hd: make_binary_op(ticker_name, match$4.hd, match$5.hd, /* PLUS */0),
+                                  hd: make_binary_op(ticker_name, match$4.hd, match$5.hd, "PLUS"),
                                   tl: all_tickers
                                 },
                                 ticker_map
@@ -1276,7 +1312,7 @@ function process_input_line(ticker_map, all_tickers, line) {
                         }
                         return [
                                 {
-                                  hd: make_binary_op(ticker_name, match$6.hd, match$7.hd, /* MINUS */1),
+                                  hd: make_binary_op(ticker_name, match$6.hd, match$7.hd, "MINUS"),
                                   tl: all_tickers
                                 },
                                 ticker_map
@@ -1305,9 +1341,9 @@ function process_input_line(ticker_map, all_tickers, line) {
                             {
                               hd: {
                                 value: undefined,
-                                rank: /* Uninitialized */0,
+                                rank: "Uninitialized",
                                 ticker_name: ticker_name,
-                                type_: /* Market */0
+                                type_: "Market"
                               },
                               tl: all_tickers
                             },

@@ -128,7 +128,7 @@ function from_pairs(ps) {
                             "pair " + i,
                             (function (param) {
                                 return {
-                                        TAG: /* Approx */5,
+                                        TAG: "Approx",
                                         _0: a,
                                         _1: b
                                       };
@@ -177,16 +177,16 @@ function float_greaterequal(x, y) {
 
 var generic_greaterequal = Caml_obj.greaterequal;
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 60, characters 5-12", Pervasives.classify_float(3), /* FP_normal */0);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 59, characters 5-12", Pervasives.classify_float(3), "FP_normal");
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 61, characters 5-12", Caml_float.modf_float(-3.125), [
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 60, characters 5-12", Caml_float.modf_float(-3.125), [
       -0.125,
       -3
     ]);
 
 var match$3 = Caml_float.modf_float(Number.NaN);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 62, characters 5-12", [
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 62, characters 4-11", [
       Number.isNaN(match$3[0]),
       Number.isNaN(match$3[1])
     ], [
@@ -194,7 +194,7 @@ Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 62, characte
       true
     ]);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 65, characters 5-12", $$Array.map((function (x) {
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 71, characters 4-11", $$Array.map((function (x) {
             if (x > 0) {
               return 1;
             } else if (x < 0) {
@@ -223,101 +223,101 @@ Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 65, characte
       1
     ]);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 69, characters 5-12", Caml_float.copysign_float(-3, 0), 3);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 83, characters 5-12", Caml_float.copysign_float(-3, 0), 3);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 70, characters 5-12", Caml_float.copysign_float(3, 0), 3);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 84, characters 5-12", Caml_float.copysign_float(3, 0), 3);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 71, characters 5-12", Math.log10(10), 1);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 85, characters 5-12", Math.log10(10), 1);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 72, characters 5-12", Caml_float.expm1_float(0), 0);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 86, characters 5-12", Caml_float.expm1_float(0), 0);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 73, characters 5-12", Number("3.0"), 3.0);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 87, characters 5-12", Number("3.0"), 3.0);
 
-Mt_global.collect_approx(test_id, suites, "File \"float_test.ml\", line 74, characters 9-16", Caml_float.expm1_float(2), 6.38905609893065);
+Mt_global.collect_approx(test_id, suites, "File \"float_test.res\", line 88, characters 9-16", Caml_float.expm1_float(2), 6.38905609893065);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 75, characters 5-12", Caml.float_compare(NaN, NaN), 0);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 89, characters 5-12", Caml.float_compare(NaN, NaN), 0);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 76, characters 5-12", Caml_obj.compare(NaN, NaN), 0);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 90, characters 5-12", Caml_obj.compare(NaN, NaN), 0);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 77, characters 5-12", Caml.float_compare(NaN, Pervasives.neg_infinity), -1);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 91, characters 5-12", Caml.float_compare(NaN, Pervasives.neg_infinity), -1);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 78, characters 5-12", Caml_obj.compare(NaN, Pervasives.neg_infinity), -1);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 92, characters 5-12", Caml_obj.compare(NaN, Pervasives.neg_infinity), -1);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 79, characters 5-12", Caml.float_compare(Pervasives.neg_infinity, NaN), 1);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 93, characters 5-12", Caml.float_compare(Pervasives.neg_infinity, NaN), 1);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 80, characters 5-12", Caml_obj.compare(Pervasives.neg_infinity, NaN), 1);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 94, characters 5-12", Caml_obj.compare(Pervasives.neg_infinity, NaN), 1);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 81, characters 5-12", NaN === NaN, false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 95, characters 5-12", NaN === NaN, false);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 82, characters 5-12", Caml_obj.equal(NaN, NaN), false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 96, characters 5-12", Caml_obj.equal(NaN, NaN), false);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 83, characters 5-12", 4.2 === NaN, false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 97, characters 5-12", 4.2 === NaN, false);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 84, characters 5-12", Caml_obj.equal(4.2, NaN), false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 98, characters 5-12", Caml_obj.equal(4.2, NaN), false);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 85, characters 5-12", NaN === 4.2, false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 99, characters 5-12", NaN === 4.2, false);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 86, characters 5-12", Caml_obj.equal(NaN, 4.2), false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 100, characters 5-12", Caml_obj.equal(NaN, 4.2), false);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 87, characters 5-12", NaN !== NaN, true);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 101, characters 5-12", NaN !== NaN, true);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 88, characters 5-12", Caml_obj.notequal(NaN, NaN), true);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 102, characters 5-12", Caml_obj.notequal(NaN, NaN), true);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 89, characters 5-12", 4.2 !== NaN, true);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 103, characters 5-12", 4.2 !== NaN, true);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 90, characters 5-12", Caml_obj.notequal(4.2, NaN), true);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 104, characters 5-12", Caml_obj.notequal(4.2, NaN), true);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 91, characters 5-12", NaN !== 4.2, true);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 105, characters 5-12", NaN !== 4.2, true);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 92, characters 5-12", Caml_obj.notequal(NaN, 4.2), true);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 106, characters 5-12", Caml_obj.notequal(NaN, 4.2), true);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 93, characters 5-12", NaN < NaN, false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 107, characters 5-12", NaN < NaN, false);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 94, characters 5-12", Caml_obj.lessthan(NaN, NaN), false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 108, characters 5-12", Caml_obj.lessthan(NaN, NaN), false);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 95, characters 5-12", 4.2 < NaN, false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 109, characters 5-12", 4.2 < NaN, false);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 96, characters 5-12", Caml_obj.lessthan(4.2, NaN), false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 110, characters 5-12", Caml_obj.lessthan(4.2, NaN), false);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 97, characters 5-12", NaN < 4.2, false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 111, characters 5-12", NaN < 4.2, false);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 98, characters 5-12", Caml_obj.lessthan(NaN, 4.2), false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 112, characters 5-12", Caml_obj.lessthan(NaN, 4.2), false);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 99, characters 5-12", NaN > NaN, false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 113, characters 5-12", NaN > NaN, false);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 100, characters 5-12", Caml_obj.greaterthan(NaN, NaN), false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 114, characters 5-12", Caml_obj.greaterthan(NaN, NaN), false);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 101, characters 5-12", 4.2 > NaN, false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 115, characters 5-12", 4.2 > NaN, false);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 102, characters 5-12", Caml_obj.greaterthan(4.2, NaN), false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 116, characters 5-12", Caml_obj.greaterthan(4.2, NaN), false);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 103, characters 5-12", NaN > 4.2, false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 117, characters 5-12", NaN > 4.2, false);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 104, characters 5-12", Caml_obj.greaterthan(NaN, 4.2), false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 118, characters 5-12", Caml_obj.greaterthan(NaN, 4.2), false);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 105, characters 5-12", NaN <= NaN, false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 119, characters 5-12", NaN <= NaN, false);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 106, characters 5-12", Caml_obj.lessequal(NaN, NaN), false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 120, characters 5-12", Caml_obj.lessequal(NaN, NaN), false);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 107, characters 5-12", 4.2 <= NaN, false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 121, characters 5-12", 4.2 <= NaN, false);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 108, characters 5-12", Caml_obj.lessequal(4.2, NaN), false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 122, characters 5-12", Caml_obj.lessequal(4.2, NaN), false);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 109, characters 5-12", NaN <= 4.2, false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 123, characters 5-12", NaN <= 4.2, false);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 110, characters 5-12", Caml_obj.lessequal(NaN, 4.2), false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 124, characters 5-12", Caml_obj.lessequal(NaN, 4.2), false);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 111, characters 5-12", NaN >= NaN, false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 125, characters 5-12", NaN >= NaN, false);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 112, characters 5-12", Caml_obj.greaterequal(NaN, NaN), false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 126, characters 5-12", Caml_obj.greaterequal(NaN, NaN), false);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 113, characters 5-12", 4.2 >= NaN, false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 127, characters 5-12", 4.2 >= NaN, false);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 114, characters 5-12", Caml_obj.greaterequal(4.2, NaN), false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 128, characters 5-12", Caml_obj.greaterequal(4.2, NaN), false);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 115, characters 5-12", NaN >= 4.2, false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 129, characters 5-12", NaN >= 4.2, false);
 
-Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 116, characters 5-12", Caml_obj.greaterequal(NaN, 4.2), false);
+Mt_global.collect_eq(test_id, suites, "File \"float_test.res\", line 130, characters 5-12", Caml_obj.greaterequal(NaN, 4.2), false);
 
 var match$4 = Caml_float.modf_float(32.3);
 
@@ -330,7 +330,7 @@ Mt.from_pair_suites("Float_test", Pervasives.$at({
             "mod_float",
             (function (param) {
                 return {
-                        TAG: /* Approx */5,
+                        TAG: "Approx",
                         _0: 3.2 % 0.5,
                         _1: 0.200000000000000178
                       };
@@ -341,7 +341,7 @@ Mt.from_pair_suites("Float_test", Pervasives.$at({
               "modf_float1",
               (function (param) {
                   return {
-                          TAG: /* Approx */5,
+                          TAG: "Approx",
                           _0: a,
                           _1: 0.299999999999997158
                         };
@@ -352,7 +352,7 @@ Mt.from_pair_suites("Float_test", Pervasives.$at({
                 "modf_float2",
                 (function (param) {
                     return {
-                            TAG: /* Approx */5,
+                            TAG: "Approx",
                             _0: b,
                             _1: 32
                           };
@@ -363,7 +363,7 @@ Mt.from_pair_suites("Float_test", Pervasives.$at({
                   "int_of_float",
                   (function (param) {
                       return {
-                              TAG: /* Eq */0,
+                              TAG: "Eq",
                               _0: 3,
                               _1: 3
                             };

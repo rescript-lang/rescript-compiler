@@ -2,19 +2,19 @@
 
 var Curry = require("../../lib/js/curry.js");
 
-function fib(n) {
-  if (n === 0 || n === 1) {
+function fib(x) {
+  if (x === 0 || x === 1) {
     return 1;
   } else {
-    return fib(n - 1 | 0) + fib(n - 2 | 0) | 0;
+    return fib(x - 1 | 0) + fib(x - 2 | 0) | 0;
   }
 }
 
-function fib2(n) {
-  if (n === 2 || n === 1) {
+function fib2(x) {
+  if (x === 2 || x === 1) {
     return 1;
   } else {
-    return fib2(n - 1 | 0) + fib2(n - 2 | 0) | 0;
+    return fib2(x - 1 | 0) + fib2(x - 2 | 0) | 0;
   }
 }
 
@@ -35,28 +35,30 @@ for(var i$1 = 10; i$1 >= 0; --i$1){
 var sumdown = v$1;
 
 function cons(x, y) {
-  return /* Cons */{
+  return {
+          TAG: "Cons",
           _0: x,
           _1: y
         };
 }
 
 function length(x) {
-  if (x) {
-    return 1 + length(x._1) | 0;
-  } else {
+  if (typeof x !== "object") {
     return 0;
+  } else {
+    return 1 + length(x._1) | 0;
   }
 }
 
 function map(f, x) {
-  if (x) {
-    return /* Cons */{
+  if (typeof x !== "object") {
+    return "Nil";
+  } else {
+    return {
+            TAG: "Cons",
             _0: Curry._1(f, x._0),
             _1: map(f, x._1)
           };
-  } else {
-    return /* Nil */0;
   }
 }
 

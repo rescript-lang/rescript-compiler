@@ -26,13 +26,13 @@ let map_row_fields_into_ints ptyp_loc (row_fields : Parsetree.row_field list) =
   let _, acc =
     Ext_list.fold_left row_fields (0, []) (fun (i, acc) rtag ->
         match rtag with
-        | Rtag ({ txt }, attrs, true, []) ->
-            let i =
-              match Ast_attributes.iter_process_bs_int_as attrs with
-              | Some i -> i
-              | None -> i
-            in
-            (i + 1, (txt, i) :: acc)
+        | Rtag ({txt}, attrs, true, []) ->
+          let i =
+            match Ast_attributes.iter_process_bs_int_as attrs with
+            | Some i -> i
+            | None -> i
+          in
+          (i + 1, (txt, i) :: acc)
         | _ -> Bs_syntaxerr.err ptyp_loc Invalid_bs_int_type)
   in
   List.rev acc
@@ -49,8 +49,8 @@ let map_constructor_declarations_into_ints
         let attrs = rtag.pcd_attributes in
         match Ast_attributes.iter_process_bs_int_as attrs with
         | Some j ->
-            if j <> i then if i = 0 then mark := `offset j else mark := `complex;
-            (j + 1, j :: acc)
+          if j <> i then if i = 0 then mark := `offset j else mark := `complex;
+          (j + 1, j :: acc)
         | None -> (i + 1, i :: acc))
   in
   match !mark with
@@ -65,66 +65,52 @@ let map_row_fields_into_strings ptyp_loc (row_fields : Parsetree.row_field list)
     : External_arg_spec.attr =
   let has_bs_as = ref false in
   let case, result =
-    Ext_list.fold_right row_fields
-      (`Nothing, [])
-      (fun tag (nullary, acc) ->
+    Ext_list.fold_right row_fields (`Nothing, []) (fun tag (nullary, acc) ->
         match (nullary, tag) with
-        | (`Nothing | `Null), Rtag ({ txt }, attrs, true, []) ->
-            let name =
-              match Ast_attributes.iter_process_bs_string_as attrs with
-              | Some name ->
-                  has_bs_as := true;
-                  name
-              | None -> txt
-            in
-            (`Null, (txt, name) :: acc)
-        | (`Nothing | `NonNull), Rtag ({ txt }, attrs, false, [ _ ]) ->
-            let name =
-              match Ast_attributes.iter_process_bs_string_as attrs with
-              | Some name ->
-                  has_bs_as := true;
-                  name
-              | None -> txt
-            in
-            (`NonNull, (txt, name) :: acc)
+        | (`Nothing | `Null), Rtag ({txt}, attrs, true, []) ->
+          let name =
+            match Ast_attributes.iter_process_bs_string_as attrs with
+            | Some name ->
+              has_bs_as := true;
+              name
+            | None -> txt
+          in
+          (`Null, (txt, name) :: acc)
+        | (`Nothing | `NonNull), Rtag ({txt}, attrs, false, [_]) ->
+          let name =
+            match Ast_attributes.iter_process_bs_string_as attrs with
+            | Some name ->
+              has_bs_as := true;
+              name
+            | None -> txt
+          in
+          (`NonNull, (txt, name) :: acc)
         | _ -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type)
   in
   match case with
   | `Nothing -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
   | `Null | `NonNull -> (
-      let has_payload = case = `NonNull in
-      let descr = if !has_bs_as then Some result else None in
-      match (has_payload, descr) with
-      | false, None ->
-          Location.prerr_warning ptyp_loc
-            (Bs_ffi_warning
-               "@string is redundant here, you can safely remove it");
-          Nothing
-      | false, Some descr -> External_arg_spec.Poly_var_string { descr }
-      | true, _ -> External_arg_spec.Poly_var { descr })
+    let has_payload = case = `NonNull in
+    let descr = if !has_bs_as then Some result else None in
+    match (has_payload, descr) with
+    | false, None ->
+      Location.prerr_warning ptyp_loc
+        (Bs_ffi_warning "@string is redundant here, you can safely remove it");
+      Nothing
+    | false, Some descr -> External_arg_spec.Poly_var_string {descr}
+    | true, _ -> External_arg_spec.Poly_var {descr})
 
 let is_enum row_fields =
   List.for_all
     (fun (x : Parsetree.row_field) ->
-      match x with Rtag (_label, _attrs, true, []) -> true | _ -> false)
+      match x with
+      | Rtag (_label, _attrs, true, []) -> true
+      | _ -> false)
     row_fields
 
 let is_enum_polyvar (ty : Parsetree.type_declaration) =
   match ty.ptype_manifest with
-  | Some { ptyp_desc = Ptyp_variant (row_fields, Closed, None) }
+  | Some {ptyp_desc = Ptyp_variant (row_fields, Closed, None)}
     when is_enum row_fields ->
-      Some row_fields
+    Some row_fields
   | _ -> None
-
-let is_enum_constructors (constructors : Parsetree.constructor_declaration list)
-    =
-  List.for_all
-    (fun (x : Parsetree.constructor_declaration) ->
-      match x with
-      | {
-       pcd_args =
-         Pcstr_tuple [] (* Note the enum is encoded using [Pcstr_tuple []]*);
-      } ->
-          true
-      | _ -> false)
-    constructors

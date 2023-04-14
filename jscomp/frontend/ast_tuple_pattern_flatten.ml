@@ -49,37 +49,37 @@ let flattern_tuple_pattern_vb (self : Bs_ast_mapper.mapper)
   let pvb_attributes = self.attributes self vb.pvb_attributes in
   match (pvb_pat.ppat_desc, pvb_expr.pexp_desc) with
   | Ppat_tuple xs, _ when List.for_all is_simple_pattern xs -> (
-      match Ast_open_cxt.destruct_open_tuple pvb_expr [] with
-      | Some (wholes, es, tuple_attributes)
-        when Ext_list.for_all xs is_simple_pattern && Ext_list.same_length es xs
-        ->
-          Bs_ast_invariant.warn_discarded_unused_attributes tuple_attributes;
-          (* will be dropped*)
-          Ext_list.fold_right2 xs es acc (fun pat exp acc ->
-              {
-                pvb_pat = pat;
-                pvb_expr = Ast_open_cxt.restore_exp exp wholes;
-                pvb_attributes;
-                pvb_loc = vb.pvb_loc;
-              }
-              :: acc)
-      | _ -> { pvb_pat; pvb_expr; pvb_loc = vb.pvb_loc; pvb_attributes } :: acc)
-  | Ppat_record (lid_pats, _), Pexp_pack { pmod_desc = Pmod_ident id } ->
-      Ext_list.map_append lid_pats acc (fun (lid, pat) ->
-          match lid.txt with
-          | Lident s ->
-              {
-                pvb_pat = pat;
-                pvb_expr =
-                  Ast_helper.Exp.ident ~loc:lid.loc
-                    { lid with txt = Ldot (id.txt, s) };
-                pvb_attributes = [];
-                pvb_loc = pat.ppat_loc;
-              }
-          | _ ->
-              Location.raise_errorf ~loc:lid.loc
-                "Not supported pattern match on modules")
-  | _ -> { pvb_pat; pvb_expr; pvb_loc = vb.pvb_loc; pvb_attributes } :: acc
+    match Ast_open_cxt.destruct_open_tuple pvb_expr [] with
+    | Some (wholes, es, tuple_attributes)
+      when Ext_list.for_all xs is_simple_pattern && Ext_list.same_length es xs
+      ->
+      Bs_ast_invariant.warn_discarded_unused_attributes tuple_attributes;
+      (* will be dropped*)
+      Ext_list.fold_right2 xs es acc (fun pat exp acc ->
+          {
+            pvb_pat = pat;
+            pvb_expr = Ast_open_cxt.restore_exp exp wholes;
+            pvb_attributes;
+            pvb_loc = vb.pvb_loc;
+          }
+          :: acc)
+    | _ -> {pvb_pat; pvb_expr; pvb_loc = vb.pvb_loc; pvb_attributes} :: acc)
+  | Ppat_record (lid_pats, _), Pexp_pack {pmod_desc = Pmod_ident id} ->
+    Ext_list.map_append lid_pats acc (fun (lid, pat) ->
+        match lid.txt with
+        | Lident s ->
+          {
+            pvb_pat = pat;
+            pvb_expr =
+              Ast_helper.Exp.ident ~loc:lid.loc
+                {lid with txt = Ldot (id.txt, s)};
+            pvb_attributes = [];
+            pvb_loc = pat.ppat_loc;
+          }
+        | _ ->
+          Location.raise_errorf ~loc:lid.loc
+            "Not supported pattern match on modules")
+  | _ -> {pvb_pat; pvb_expr; pvb_loc = vb.pvb_loc; pvb_attributes} :: acc
 
 let value_bindings_mapper (self : Bs_ast_mapper.mapper)
     (vbs : Parsetree.value_binding list) =

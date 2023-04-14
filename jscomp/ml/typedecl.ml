@@ -290,7 +290,7 @@ let make_constructor env type_path type_params sargs sret_type =
 *)
 
 
-let transl_declaration env sdecl id =
+let transl_declaration ~typeRecordAsObject env sdecl id =
   (* Bind type parameters *)
   reset_type_variables();
   Ctype.begin_def ();
@@ -303,7 +303,18 @@ let transl_declaration env sdecl id =
     sdecl.ptype_cstrs
   in
   let raw_status = get_unboxed_from_attributes sdecl in
-  if raw_status.unboxed && not raw_status.default then begin
+
+  let checkUntaggedVariant = match sdecl.ptype_kind with
+  | Ptype_variant cds -> Ext_list.for_all cds (function
+      | {pcd_args = Pcstr_tuple ([] | [_])} ->
+        (* at most one payload allowed for untagged  variants *)
+        true
+      | {pcd_args = Pcstr_record _} -> true
+      | _ -> false )
+  | _ -> false
+  in
+
+  if raw_status.unboxed && not raw_status.default && not checkUntaggedVariant then begin
     match sdecl.ptype_kind with
     | Ptype_abstract ->
         raise(Error(sdecl.ptype_loc, Bad_unboxed_attribute
@@ -338,7 +349,7 @@ let transl_declaration env sdecl id =
   end;
   let unboxed_status =
     match sdecl.ptype_kind with
-    | Ptype_variant [{pcd_args = Pcstr_tuple [_]; _}]
+    | Ptype_variant [{pcd_args = Pcstr_tuple _; _}]
       | Ptype_variant [{pcd_args = Pcstr_record
                           [{pld_mutable = Immutable; _}]; _}]
       | Ptype_record [{pld_mutable = Immutable; _}] ->
@@ -347,9 +358,9 @@ let transl_declaration env sdecl id =
       unboxed_false_default_false
   in
   let unbox = unboxed_status.unboxed in
-  let (tkind, kind) =
+  let (tkind, kind, sdecl) =
     match sdecl.ptype_kind with
-      | Ptype_abstract -> Ttype_abstract, Type_abstract
+      | Ptype_abstract -> Ttype_abstract, Type_abstract, sdecl
       | Ptype_variant scstrs ->
         assert (scstrs <> []);
         if List.exists (fun cstr -> cstr.pcd_res <> None) scstrs then begin
@@ -379,6 +390,9 @@ let transl_declaration env sdecl id =
               raise(Error(sdecl.ptype_loc, Duplicate_constructor name));
             all_constrs := StringSet.add name !all_constrs)
           scstrs;
+        let copy_tag_attr_from_decl attr =
+          let tag_attrs = Ext_list.filter sdecl.ptype_attributes (fun ({txt}, _) -> txt = "tag" || txt = Ast_untagged_variants.untagged) in
+          if tag_attrs = [] then attr else tag_attrs @ attr in
         let make_cstr scstr =
           let name = Ident.create scstr.pcd_name.txt in
           let targs, tret_type, args, ret_type, _cstr_params =
@@ -391,14 +405,14 @@ let transl_declaration env sdecl id =
               cd_args = targs;
               cd_res = tret_type;
               cd_loc = scstr.pcd_loc;
-              cd_attributes = scstr.pcd_attributes }
+              cd_attributes = scstr.pcd_attributes |> copy_tag_attr_from_decl }
           in
           let cstr =
             { Types.cd_id = name;
               cd_args = args;
               cd_res = ret_type;
               cd_loc = scstr.pcd_loc;
-              cd_attributes = scstr.pcd_attributes }
+              cd_attributes = scstr.pcd_attributes |> copy_tag_attr_from_decl }
           in
             tcstr, cstr
         in
@@ -407,15 +421,17 @@ let transl_declaration env sdecl id =
             (fun () -> make_cstr scstr)
         in
         let tcstrs, cstrs = List.split (List.map make_cstr scstrs) in
-          Ttype_variant tcstrs, Type_variant cstrs
-      | Ptype_record lbls ->
+        let isUntaggedDef = Ast_untagged_variants.has_untagged sdecl.ptype_attributes in
+        Ast_untagged_variants.check_well_formed ~isUntaggedDef cstrs;
+        Ttype_variant tcstrs, Type_variant cstrs, sdecl
+      | Ptype_record lbls_ ->
           let has_optional attrs = Ext_list.exists attrs (fun ({txt },_) -> txt = "res.optional") in
           let optionalLabels =
-              Ext_list.filter_map lbls
+              Ext_list.filter_map lbls_
               (fun lbl -> if has_optional lbl.pld_attributes then Some lbl.pld_name.txt else None) in
           let lbls =
-            if optionalLabels = [] then lbls
-            else Ext_list.map lbls (fun lbl ->
+            if optionalLabels = [] then lbls_
+            else Ext_list.map lbls_ (fun lbl ->
               let typ = lbl.pld_type in
               let typ =
                 if has_optional lbl.pld_attributes then
@@ -430,8 +446,54 @@ let transl_declaration env sdecl id =
               then Record_optional_labels optionalLabels
               else Record_regular
           in
-          Ttype_record lbls, Type_record(lbls', rep)
-      | Ptype_open -> Ttype_open, Type_open
+          let lbls_opt = match lbls, lbls' with
+            | {ld_name = {txt = "..."}; ld_type} :: _, _ :: _ ->
+              let rec extract t = match t.desc with
+                | Tpoly(t, []) -> extract t
+                | _ -> Ctype.repr t in
+              let mkLbl (l: Types.label_declaration) : Typedtree.label_declaration =
+                { ld_id = l.ld_id;
+                  ld_name = {txt = Ident.name l.ld_id; loc = l.ld_loc};
+                  ld_mutable = l.ld_mutable;
+                  ld_type = {ld_type with ctyp_type = l.ld_type};
+                  ld_loc = l.ld_loc;
+                  ld_attributes = l.ld_attributes; } in
+              let rec process_lbls acc lbls lbls' = match lbls, lbls' with
+                | {ld_name = {txt = "..."}; ld_type} :: rest, _ :: rest' ->
+                  (match Ctype.extract_concrete_typedecl env (extract ld_type.ctyp_type) with
+                    (_p0, _p, {type_kind=Type_record (fields, _repr)}) ->
+                      process_lbls (fst acc @ (fields |> List.map mkLbl), snd acc @ fields) rest rest'
+                    | _ -> assert false
+                    | exception _ -> None)
+                | lbl::rest, lbl'::rest' -> process_lbls (fst acc @ [lbl], snd acc @ [lbl']) rest rest'
+                | _ -> Some acc
+              in
+              process_lbls ([], []) lbls lbls'
+            | _ -> Some (lbls, lbls') in
+          let rec check_duplicates (lbls : Typedtree.label_declaration list) seen = match lbls with
+          | [] -> ()
+          | lbl::rest ->
+            let name = lbl.ld_id.name in
+            if StringSet.mem name seen then raise(Error(lbl.ld_loc, Duplicate_label name));
+            check_duplicates rest (StringSet.add name seen) in
+          (match lbls_opt with
+          | Some (lbls, lbls') ->
+            check_duplicates lbls StringSet.empty;
+            Ttype_record lbls, Type_record(lbls', rep), sdecl
+          | None ->
+             (* Could not find record type decl for ...t: assume t is an object type and this is syntax ambiguity *)
+             typeRecordAsObject := true;
+             let fields = Ext_list.map lbls_ (fun ld ->
+              match ld.pld_name.txt with
+              | "..." -> Parsetree.Oinherit ld.pld_type
+              | _ -> Otag (ld.pld_name, ld.pld_attributes, ld.pld_type)) in
+             let sdecl =
+              {sdecl with
+               ptype_kind = Ptype_abstract;
+               ptype_manifest = Some (Ast_helper.Typ.object_ ~loc:sdecl.ptype_loc fields Closed);
+              } in
+             (Ttype_abstract, Type_abstract, sdecl))
+      | Ptype_open -> Ttype_open, Type_open, sdecl
       in
     let (tman, man) = match sdecl.ptype_manifest with
         None -> None, None
@@ -530,7 +592,7 @@ module SMap = Map.Make(String)
 
 let check_constraints_labels env visited l pl =
   let rec get_loc name = function
-      [] -> assert false
+      [] -> Location.none
     | pld :: tl ->
         if name = pld.pld_name.txt then pld.pld_type.ptyp_loc
         else get_loc name tl
@@ -540,7 +602,7 @@ let check_constraints_labels env visited l pl =
        check_constraints_rec env (get_loc (Ident.name name) pl) visited ty)
     l
 
-let check_constraints env sdecl (_, decl) =
+let check_constraints ~typeRecordAsObject env sdecl (_, decl) =
   let visited = ref TypeSet.empty in
   begin match decl.type_kind with
   | Type_abstract -> ()
@@ -589,10 +651,12 @@ let check_constraints env sdecl (_, decl) =
   begin match decl.type_manifest with
   | None -> ()
   | Some ty ->
+    if not !typeRecordAsObject then 
       let sty =
         match sdecl.ptype_manifest with Some sty -> sty | _ -> assert false
       in
       check_constraints_rec env sty.ptyp_loc visited ty
+  
   end
 
 (*
@@ -1167,6 +1231,7 @@ let check_duplicates sdecl_list =
           (fun {pld_name=cname;pld_loc=loc} ->
             try
               let name' = Hashtbl.find labels cname.txt in
+              if cname.txt <> "..." then
               Location.prerr_warning loc
                 (Warnings.Duplicate_definitions
                    ("label", cname.txt, name', sdecl.ptype_name.txt))
@@ -1246,11 +1311,12 @@ let transl_type_decl env rec_flag sdecl_list =
     | Asttypes.Recursive | Asttypes.Nonrecursive ->
         id, None
   in
+  let typeRecordAsObject = ref false in
   let transl_declaration name_sdecl (id, slot) =
     current_slot := slot;
     Builtin_attributes.warning_scope
       name_sdecl.ptype_attributes
-      (fun () -> transl_declaration temp_env name_sdecl id)
+      (fun () -> transl_declaration ~typeRecordAsObject temp_env name_sdecl id)
   in
   let tdecls =
     List.map2 transl_declaration sdecl_list (List.map id_slots id_list) in
@@ -1301,7 +1367,7 @@ let transl_type_decl env rec_flag sdecl_list =
        | None   -> ())
     sdecl_list tdecls;
   (* Check that constraints are enforced *)
-  List.iter2 (check_constraints newenv) sdecl_list decls;
+  List.iter2 (check_constraints ~typeRecordAsObject newenv) sdecl_list decls;
   (* Name recursion *)
   let decls =
     List.map2 (fun sdecl (id, decl) -> id, name_recursion sdecl id decl)

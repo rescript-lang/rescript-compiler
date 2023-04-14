@@ -3,21 +3,21 @@
 var Caml_module = require("../../lib/js/caml_module.js");
 
 var Point = Caml_module.init_mod([
-      "gpr_1539_test.ml",
-      10,
-      6
+      "gpr_1539_test.res",
+      11,
+      4
     ], {
-      TAG: /* Module */0,
+      TAG: "Module",
       _0: [[
-          /* Function */0,
+          "Function",
           "add"
         ]]
     });
 
 Caml_module.update_mod({
-      TAG: /* Module */0,
+      TAG: "Module",
       _0: [[
-          /* Function */0,
+          "Function",
           "add"
         ]]
     }, Point, {

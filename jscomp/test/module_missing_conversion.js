@@ -42,9 +42,9 @@ var XX = {
 
 var u = [$$String];
 
-var ghh = MoreLabels.Hashtbl.create(undefined, 30);
+var hh = "x".length;
 
-var hh = 1;
+var ghh = MoreLabels.Hashtbl.create(undefined, 30);
 
 exports.XX = XX;
 exports.u = u;

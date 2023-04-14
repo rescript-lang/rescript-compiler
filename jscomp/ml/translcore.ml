@@ -781,9 +781,17 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
       (* ReScript uncurried encoding *)
       let loc = expr.exp_loc in
       let lambda = transl_exp expr in
-      let arity_s = Ast_uncurried.uncurried_type_get_arity ~env:e.exp_env e.exp_type |> string_of_int in
+      let arity = Ast_uncurried.uncurried_type_get_arity ~env:e.exp_env e.exp_type in
+      let arity_s = arity |> string_of_int in
+      let name = match (Ctype.expand_head expr.exp_env expr.exp_type).desc with
+      | Tarrow (Nolabel, t, _, _) -> (
+        match (Ctype.expand_head expr.exp_env t).desc with
+        | Tconstr (Pident {name= "unit"}, [], _) -> "#fn_mk_unit"
+        | _ -> "#fn_mk"
+      )
+      | _ -> "#fn_mk" in
       let prim =
-        Primitive.make ~name:"#fn_mk" ~alloc:true ~native_name:arity_s
+        Primitive.make ~name ~alloc:true ~native_name:arity_s
           ~native_repr_args:[ Same_as_ocaml_repr ]
           ~native_repr_res:Same_as_ocaml_repr
       in
@@ -816,6 +824,7 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
                              name = cstr.cstr_name;
                              const = cstr.cstr_consts;
                              non_const = cstr.cstr_nonconsts;
+                             attrs = cstr.cstr_attributes;
                            } ))
         | Cstr_unboxed -> ( match ll with [ v ] -> v | _ -> assert false)
         | Cstr_block n -> (
@@ -834,6 +843,7 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
                     name = cstr.cstr_name;
                     num_nonconst = cstr.cstr_nonconsts;
                     tag = n;
+                    attrs = cstr.cstr_attributes;
                   }
             in
             try Lconst (Const_block (tag_info, List.map extract_constant ll))
@@ -1155,10 +1165,10 @@ and transl_record loc env fields repres opt_init_expr =
             | Record_optional_labels _ ->
                 Lconst
                   (Const_block (!Lambda.blk_record fields mut Record_optional, cl))
-            | Record_inlined { tag; name; num_nonconsts; optional_labels } ->
+            | Record_inlined { tag; name; num_nonconsts; optional_labels; attrs } ->
                 Lconst
                   (Const_block
-                     ( !Lambda.blk_record_inlined fields name num_nonconsts optional_labels ~tag
+                     ( !Lambda.blk_record_inlined fields name num_nonconsts optional_labels ~tag ~attrs
                          mut,
                        cl ))
             | Record_unboxed _ ->
@@ -1177,10 +1187,10 @@ and transl_record loc env fields repres opt_init_expr =
                     ll,
                     loc )
             | Record_float_unused -> assert false
-            | Record_inlined { tag; name; num_nonconsts; optional_labels } ->
+            | Record_inlined { tag; name; num_nonconsts; optional_labels; attrs } ->
                 Lprim
                   ( Pmakeblock
-                      (!Lambda.blk_record_inlined fields name num_nonconsts optional_labels ~tag
+                      (!Lambda.blk_record_inlined fields name num_nonconsts optional_labels ~tag ~attrs
                          mut),
                     ll,
                     loc )

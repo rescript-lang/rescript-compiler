@@ -37,8 +37,8 @@ o runtime/caml_md5.cmj : cc_cmi runtime/caml_md5.ml | runtime/caml_array_extern.
 o runtime/caml_md5.cmi : cc runtime/caml_md5.mli | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj
 o runtime/caml_module.cmj : cc_cmi runtime/caml_module.ml | runtime/caml_array_extern.cmj runtime/caml_module.cmi runtime/caml_obj.cmj
 o runtime/caml_module.cmi : cc runtime/caml_module.mli | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj
-o runtime/caml_obj.cmj : cc_cmi runtime/caml_obj.ml | runtime/caml.cmj runtime/caml_array_extern.cmj runtime/caml_obj.cmi runtime/caml_option.cmj runtime/js.cmj
-o runtime/caml_obj.cmi : cc runtime/caml_obj.mli | runtime/bs_stdlib_mini.cmi runtime/js.cmi runtime/js.cmj
+o runtime/caml_obj.cmj : cc_cmi runtime/caml_obj.res | runtime/caml.cmj runtime/caml_array_extern.cmj runtime/caml_obj.cmi runtime/caml_option.cmj runtime/js.cmj
+o runtime/caml_obj.cmi : cc runtime/caml_obj.resi | runtime/js.cmj
 o runtime/caml_option.cmj : cc_cmi runtime/caml_option.ml | runtime/caml_option.cmi runtime/caml_undefined_extern.cmj runtime/js.cmj
 o runtime/caml_option.cmi : cc runtime/caml_option.mli | runtime/bs_stdlib_mini.cmi runtime/caml_undefined_extern.cmj runtime/js.cmi runtime/js.cmj
 o runtime/caml_parser.cmj : cc_cmi runtime/caml_parser.ml | runtime/caml_parser.cmi

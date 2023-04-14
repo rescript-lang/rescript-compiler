@@ -26,7 +26,7 @@ type t = Parsetree.pattern
 
 let is_unit_cont ~yes ~no (p : t) =
   match p with
-  | { ppat_desc = Ppat_construct ({ txt = Lident "()" }, None) } -> yes
+  | {ppat_desc = Ppat_construct ({txt = Lident "()"}, None)} -> yes
   | _ -> no
 
 (** [arity_of_fun pat e] tells the arity of 
@@ -53,9 +53,9 @@ let rec is_single_variable_pattern_conservative (p : t) =
   | Parsetree.Ppat_any -> Some ""
   | Parsetree.Ppat_var s -> Some s.txt
   | Parsetree.Ppat_alias (p, s) ->
-      (* Check more complex patterns is needed or not*)
-      if is_single_variable_pattern_conservative p <> None then Some s.txt
-      else None
+    (* Check more complex patterns is needed or not*)
+    if is_single_variable_pattern_conservative p <> None then Some s.txt
+    else None
   | Parsetree.Ppat_constraint (p, _) ->
-      is_single_variable_pattern_conservative p
+    is_single_variable_pattern_conservative p
   | _ -> None

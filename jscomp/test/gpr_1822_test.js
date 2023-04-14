@@ -17,7 +17,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -28,15 +28,15 @@ function eq(loc, x, y) {
 }
 
 var myShape = {
-  TAG: /* Circle */0,
+  TAG: "Circle",
   _0: 10
 };
 
 var area;
 
-area = myShape.TAG === /* Circle */0 ? 100 * 3.14 : Math.imul(10, myShape._1);
+area = myShape.TAG === "Circle" ? 100 * 3.14 : Math.imul(10, myShape._1);
 
-eq("File \"gpr_1822_test.ml\", line 21, characters 6-13", area, 314);
+eq("File \"gpr_1822_test.res\", line 20, characters 3-10", area, 314);
 
 Mt.from_pair_suites("Gpr_1822_test", suites.contents);
 

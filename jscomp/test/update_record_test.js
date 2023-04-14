@@ -22,7 +22,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -44,7 +44,7 @@ function f(x) {
         };
 }
 
-eq("File \"update_record_test.ml\", line 30, characters 5-12", 1, f({
+eq("File \"update_record_test.res\", line 28, characters 5-12", 1, f({
           a0: 0,
           a1: 0,
           a2: 0,
@@ -67,9 +67,9 @@ function fff(x) {
 
 var val1 = fff(val0);
 
-eq("File \"update_record_test.ml\", line 42, characters 5-12", 3, 3);
+eq("File \"update_record_test.res\", line 41, characters 5-12", 3, 3);
 
-eq("File \"update_record_test.ml\", line 43, characters 5-12", val1["invalid_js_id'"], 5);
+eq("File \"update_record_test.res\", line 42, characters 5-12", val1["invalid_js_id'"], 5);
 
 Mt.from_pair_suites("Update_record_test", suites.contents);
 

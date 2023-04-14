@@ -154,10 +154,10 @@ function $star$tilde(prim0, prim1) {
 var suites = {
   contents: Pervasives.$at({
         hd: [
-          "File \"int32_test.ml\", line 31, characters 2-9",
+          "File \"int32_test.res\", line 131, characters 9-16",
           (function (param) {
               return {
-                      TAG: /* Eq */0,
+                      TAG: "Eq",
                       _0: 1,
                       _1: 1
                     };
@@ -165,10 +165,10 @@ var suites = {
         ],
         tl: {
           hd: [
-            "File \"int32_test.ml\", line 32, characters 2-9",
+            "File \"int32_test.res\", line 132, characters 9-16",
             (function (param) {
                 return {
-                        TAG: /* Eq */0,
+                        TAG: "Eq",
                         _0: -2147483647,
                         _1: -2147483647
                       };
@@ -181,7 +181,7 @@ var suites = {
                               "shift_right_logical_cases " + i,
                               (function (param) {
                                   return {
-                                          TAG: /* Eq */0,
+                                          TAG: "Eq",
                                           _0: a,
                                           _1: b
                                         };
@@ -192,7 +192,7 @@ var suites = {
                                   "shift_right_cases " + i,
                                   (function (param) {
                                       return {
-                                              TAG: /* Eq */0,
+                                              TAG: "Eq",
                                               _0: a,
                                               _1: b
                                             };
@@ -203,7 +203,7 @@ var suites = {
                                   "shift_left_cases " + i,
                                   (function (param) {
                                       return {
-                                              TAG: /* Eq */0,
+                                              TAG: "Eq",
                                               _0: a,
                                               _1: b
                                             };
@@ -220,9 +220,9 @@ function eq(loc, x, y) {
   Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
-eq("File \"int32_test.ml\", line 47, characters 5-12", Caml_float.int_bits_of_float(0.3), 1050253722);
+eq("File \"int32_test.res\", line 170, characters 5-12", Caml_float.int_bits_of_float(0.3), 1050253722);
 
-eq("File \"int32_test.ml\", line 48, characters 5-12", Caml_float.int_float_of_bits(1050253722), 0.300000011920928955);
+eq("File \"int32_test.res\", line 171, characters 5-12", Caml_float.int_float_of_bits(1050253722), 0.300000011920928955);
 
 Mt.from_pair_suites("Int32_test", suites.contents);
 

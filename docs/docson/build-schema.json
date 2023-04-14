@@ -440,6 +440,10 @@
       "$ref": "#/definitions/jsx-specs",
       "description": "Configuration for the JSX transformation."
     },
+    "uncurried": {
+      "type": "boolean",
+      "description": "Configuration for the uncurried mode."
+    },
     "reason": {
       "$ref": "#/definitions/reason-specs",
       "description": "ReScript comes with [Reason](http://reasonml.github.io/) by default. Specific configurations here."

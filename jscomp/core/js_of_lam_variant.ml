@@ -39,8 +39,8 @@ let eval (arg : J.expression) (dispatches : (string * string) list) : E.t =
         E.of_block
           [
             S.string_switch arg
-              (Ext_list.map dispatches (fun (i, r) ->
-                   ( i,
+              (Ext_list.map dispatches (fun (s, r) ->
+                   ( Ast_untagged_variants.String s,
                      J.
                        {
                          switch_body = [ S.return_stmt (E.str r) ];
@@ -79,8 +79,8 @@ let eval_as_event (arg : J.expression)
                 [
                   S.string_switch
                     (E.poly_var_tag_access arg)
-                    (Ext_list.map dispatches (fun (i, r) ->
-                         ( i,
+                    (Ext_list.map dispatches (fun (s, r) ->
+                         ( Ast_untagged_variants.String s,
                            J.
                              {
                                switch_body = [ S.return_stmt (E.str r) ];
@@ -107,8 +107,8 @@ let eval_as_int (arg : J.expression) (dispatches : (string * int) list) : E.t =
         E.of_block
           [
             S.string_switch arg
-              (Ext_list.map dispatches (fun (i, r) ->
-                   ( i,
+              (Ext_list.map dispatches (fun (s, r) ->
+                   ( Ast_untagged_variants.String s,
                      J.
                        {
                          switch_body =

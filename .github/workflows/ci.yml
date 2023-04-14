@@ -21,17 +21,27 @@ jobs:
   # The container already comes with all required tools pre-installed
   # (see https://github.com/rescript-lang/docker-rescript-ci-build/blob/main/Dockerfile).
   static-binaries-linux:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, buildjet-2vcpu-ubuntu-2204-arm]
+
+    runs-on: ${{matrix.os}}
 
     container:
-      image: ghcr.io/rescript-lang/rescript-ci-build:v1.0.0
+      image: ghcr.io/rescript-lang/rescript-ci-build:v1.1.0
 
     steps:
+      # See https://github.com/actions/runner/issues/801#issuecomment-1374967227.
+      - name: Workaround for Github actions runner on Alpine arm64
+        if: runner.arch	== 'ARM64'
+        run: sed -i "s:ID=alpine:ID=NotpineForGHA:" /etc/os-release
+
       - name: Checkout
         uses: actions/checkout@v3
 
       - name: Build compiler binaries
-        run: opam exec -- dune build --profile static
+        run: opam exec -- dune build --display quiet --profile static
 
       - name: Build ninja binary
         working-directory: ninja
@@ -42,10 +52,51 @@ jobs:
       - name: "Upload artifacts"
         uses: actions/upload-artifact@v3
         with:
-          name: static-binaries-linux
+          name: static-binaries-linux-${{runner.arch}}
           path: |
             _build/install/default/bin
             ninja/ninja
+
+  # The full build including tests does not work on Linux ARM because setup-ocaml fails.
+  # Therefore, only upload the binaries from the static build
+  upload-linux-arm64-binaries:
+    needs:
+      - static-binaries-linux
+
+    runs-on: buildjet-2vcpu-ubuntu-2204-arm
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Download static linux binaries
+        if: runner.os == 'Linux'
+        uses: actions/download-artifact@v3
+        with:
+          name: static-binaries-linux-${{ runner.arch }}
+
+      - name: Make static linux binaries executable
+        if: runner.os == 'Linux'
+        run: |
+          chmod +x ninja/ninja
+          chmod +x _build/install/default/bin/*
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Copy exes to platform bin dirs
+        run: node ./scripts/copyExes.js
+
+      - name: Prepare artifact upload
+        run: node .github/workflows/get_artifact_info.js
+
+      - name: "Upload artifacts: binaries"
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.artifact_name }}
+          path: ${{ env.artifact_path }}
 
   build:
     needs: static-binaries-linux
@@ -77,7 +128,7 @@ jobs:
         if: runner.os == 'Linux'
         uses: actions/download-artifact@v3
         with:
-          name: static-binaries-linux
+          name: static-binaries-linux-${{ runner.arch }}
 
       - name: Make static linux binaries executable
         if: runner.os == 'Linux'
@@ -86,7 +137,7 @@ jobs:
           chmod +x _build/install/default/bin/*
 
       - name: Use OCaml ${{matrix.ocaml_compiler}}
-        uses: ocaml/setup-ocaml@v2.0.10
+        uses: ocaml/setup-ocaml@v2
         with:
           ocaml-compiler: ${{matrix.ocaml_compiler}}
           opam-pin: false
@@ -97,7 +148,7 @@ jobs:
 
       - name: "Build compiler"
         if: runner.os != 'Linux'
-        run: opam exec -- dune build
+        run: opam exec -- dune build --display quiet --profile release
 
       - name: Use Node.js
         uses: actions/setup-node@v3
@@ -236,7 +287,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest, macos-arm]
+        os:
+          [
+            macos-latest,
+            macos-arm,
+            ubuntu-latest,
+            buildjet-2vcpu-ubuntu-2204-arm,
+            windows-latest,
+          ]
 
     runs-on: ${{matrix.os}}
 

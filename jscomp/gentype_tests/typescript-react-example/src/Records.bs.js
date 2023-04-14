@@ -106,7 +106,7 @@ function computeArea4(o) {
 }
 
 function testMyRec(x) {
-  return x.type_;
+  return x.type;
 }
 
 function testMyRec2(x) {

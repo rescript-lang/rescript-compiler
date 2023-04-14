@@ -25,7 +25,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -35,9 +35,9 @@ function eq(loc, x, y) {
   };
 }
 
-eq("File \"condition_compilation_test.ml\", line 98, characters 5-12", 3, 3);
+eq("File \"condition_compilation_test.res\", line 60, characters 5-12", 3, 3);
 
-eq("File \"condition_compilation_test.ml\", line 99, characters 5-12", v.contents, 2);
+eq("File \"condition_compilation_test.res\", line 61, characters 5-12", v.contents, 2);
 
 Mt.from_pair_suites("Condition_compilation_test", suites.contents);
 

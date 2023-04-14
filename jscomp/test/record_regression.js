@@ -61,20 +61,20 @@ function setAA(ao) {
 }
 
 var ir0 = {
-  TAG: /* V0 */0,
+  TAG: "V0",
   x0: "v0",
   x3: 3
 };
 
 var ir1 = {
-  TAG: /* V0 */0,
+  TAG: "V0",
   x0: "v0",
   x1: "v1",
   x3: 3
 };
 
 var ir2 = {
-  TAG: /* V0 */0,
+  TAG: "V0",
   x0: "v0",
   x1: "v1",
   x2: 2,
@@ -82,14 +82,14 @@ var ir2 = {
 };
 
 var ir3 = {
-  TAG: /* V1 */1,
+  TAG: "V1",
   y0: "v0",
   y1: 1
 };
 
 var pm0;
 
-pm0 = ir0.TAG === /* V0 */0 ? [
+pm0 = ir0.TAG === "V0" ? [
     "v0",
     3
   ] : [
@@ -99,7 +99,7 @@ pm0 = ir0.TAG === /* V0 */0 ? [
 
 var pm1;
 
-if (ir1.TAG === /* V0 */0) {
+if (ir1.TAG === "V0") {
   var x1 = "v1";
   var x0 = "v0";
   pm1 = x1 !== undefined ? [
@@ -121,7 +121,7 @@ if (ir1.TAG === /* V0 */0) {
 
 var pm2;
 
-if (ir2.TAG === /* V0 */0) {
+if (ir2.TAG === "V0") {
   var x1$1 = "v1";
   var x0$1 = "v0";
   if (x1$1 !== undefined) {
@@ -161,7 +161,7 @@ if (ir2.TAG === /* V0 */0) {
 }
 
 function inlinedRecord(ir) {
-  if (ir.TAG !== /* V0 */0) {
+  if (ir.TAG !== "V0") {
     return [
             ir.y0,
             "n/a",
@@ -257,11 +257,14 @@ var h = newrecord$2;
 
 var h10 = newrecord$3;
 
-var ir4 = /* V0 */{
+var ir4 = {
+  TAG: "V0",
   x: 3
 };
 
-var ir5 = /* V0 */{};
+var ir5 = {
+  TAG: "V0"
+};
 
 exports.f1 = f1;
 exports.f2 = f2;

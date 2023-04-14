@@ -10,9 +10,9 @@ var suites_0 = [
   "is_block_test1",
   (function (param) {
       return {
-              TAG: /* Eq */0,
+              TAG: "Eq",
               _0: false,
-              _1: false
+              _1: "number" !== "number"
             };
     })
 ];
@@ -22,7 +22,7 @@ var suites_1 = {
     "is_block_test2",
     (function (param) {
         return {
-                TAG: /* Eq */0,
+                TAG: "Eq",
                 _0: true,
                 _1: typeof ({
                     hd: 3,
@@ -36,9 +36,9 @@ var suites_1 = {
       "is_block_test3",
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: true,
-                  _1: true
+                  _1: "string" !== "number"
                 };
         })
     ],
@@ -47,9 +47,9 @@ var suites_1 = {
         "is_block_test4",
         (function (param) {
             return {
-                    TAG: /* Eq */0,
+                    TAG: "Eq",
                     _0: false,
-                    _1: false
+                    _1: "number" !== "number"
                   };
           })
       ],

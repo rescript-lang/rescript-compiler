@@ -30,7 +30,7 @@ function neq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Neq */1,
+                  TAG: "Neq",
                   _0: x,
                   _1: y
                 };
@@ -40,51 +40,51 @@ function neq(loc, x, y) {
   };
 }
 
-eq("File \"bs_float_test.ml\", line 14, characters 5-12", 1, 1.0);
+eq("File \"bs_float_test.res\", line 18, characters 5-12", 1, 1.0);
 
-eq("File \"bs_float_test.ml\", line 15, characters 5-12", -1, -1.0);
+eq("File \"bs_float_test.res\", line 19, characters 5-12", -1, -1.0);
 
-eq("File \"bs_float_test.ml\", line 18, characters 5-12", 1, 1);
+eq("File \"bs_float_test.res\", line 23, characters 5-12", 1, 1);
 
-eq("File \"bs_float_test.ml\", line 19, characters 5-12", 1, 1);
+eq("File \"bs_float_test.res\", line 24, characters 5-12", 1, 1);
 
-eq("File \"bs_float_test.ml\", line 20, characters 5-12", 1, 1);
+eq("File \"bs_float_test.res\", line 25, characters 5-12", 1, 1);
 
-eq("File \"bs_float_test.ml\", line 21, characters 5-12", -1, -1);
+eq("File \"bs_float_test.res\", line 26, characters 5-12", -1, -1);
 
-eq("File \"bs_float_test.ml\", line 22, characters 5-12", -1, -1);
+eq("File \"bs_float_test.res\", line 27, characters 5-12", -1, -1);
 
-eq("File \"bs_float_test.ml\", line 23, characters 5-12", -1, -1);
+eq("File \"bs_float_test.res\", line 28, characters 5-12", -1, -1);
 
-eq("File \"bs_float_test.ml\", line 26, characters 5-12", Belt_Float.fromString("1"), 1.0);
+eq("File \"bs_float_test.res\", line 32, characters 5-12", Belt_Float.fromString("1"), 1.0);
 
-eq("File \"bs_float_test.ml\", line 27, characters 5-12", Belt_Float.fromString("-1"), -1.0);
+eq("File \"bs_float_test.res\", line 33, characters 5-12", Belt_Float.fromString("-1"), -1.0);
 
-eq("File \"bs_float_test.ml\", line 28, characters 5-12", Belt_Float.fromString("1.7"), 1.7);
+eq("File \"bs_float_test.res\", line 34, characters 5-12", Belt_Float.fromString("1.7"), 1.7);
 
-eq("File \"bs_float_test.ml\", line 29, characters 5-12", Belt_Float.fromString("-1.0"), -1.0);
+eq("File \"bs_float_test.res\", line 35, characters 5-12", Belt_Float.fromString("-1.0"), -1.0);
 
-eq("File \"bs_float_test.ml\", line 30, characters 5-12", Belt_Float.fromString("-1.5"), -1.5);
+eq("File \"bs_float_test.res\", line 36, characters 5-12", Belt_Float.fromString("-1.5"), -1.5);
 
-eq("File \"bs_float_test.ml\", line 31, characters 5-12", Belt_Float.fromString("-1.7"), -1.7);
+eq("File \"bs_float_test.res\", line 37, characters 5-12", Belt_Float.fromString("-1.7"), -1.7);
 
-eq("File \"bs_float_test.ml\", line 32, characters 5-12", Belt_Float.fromString("not a float"), undefined);
+eq("File \"bs_float_test.res\", line 38, characters 5-12", Belt_Float.fromString("not a float"), undefined);
 
-eq("File \"bs_float_test.ml\", line 35, characters 5-12", String(1.0), "1");
+eq("File \"bs_float_test.res\", line 42, characters 5-12", String(1.0), "1");
 
-eq("File \"bs_float_test.ml\", line 36, characters 5-12", String(-1.0), "-1");
+eq("File \"bs_float_test.res\", line 43, characters 5-12", String(-1.0), "-1");
 
-eq("File \"bs_float_test.ml\", line 37, characters 5-12", String(-1.5), "-1.5");
+eq("File \"bs_float_test.res\", line 44, characters 5-12", String(-1.5), "-1.5");
 
-eq("File \"bs_float_test.ml\", line 41, characters 5-12", 2.0 + 3.0, 5.0);
+eq("File \"bs_float_test.res\", line 49, characters 5-12", 2.0 + 3.0, 5.0);
 
-eq("File \"bs_float_test.ml\", line 42, characters 5-12", 2.0 - 3.0, -1.0);
+eq("File \"bs_float_test.res\", line 50, characters 5-12", 2.0 - 3.0, -1.0);
 
-eq("File \"bs_float_test.ml\", line 43, characters 5-12", 2.0 * 3.0, 6.0);
+eq("File \"bs_float_test.res\", line 51, characters 5-12", 2.0 * 3.0, 6.0);
 
-eq("File \"bs_float_test.ml\", line 44, characters 5-12", 3.0 / 2.0, 1.5);
+eq("File \"bs_float_test.res\", line 52, characters 5-12", 3.0 / 2.0, 1.5);
 
-Mt.from_pair_suites("File \"bs_float_test.ml\", line 46, characters 23-30", suites.contents);
+Mt.from_pair_suites("File \"bs_float_test.res\", line 55, characters 20-27", suites.contents);
 
 var F;
 

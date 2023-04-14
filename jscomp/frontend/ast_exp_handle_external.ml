@@ -40,25 +40,24 @@ let handle_external loc (x : string) : Parsetree.expression =
     {
       str_exp with
       pexp_desc =
-        Ast_external_mk.local_external_apply loc ~pval_prim:[ "#raw_expr" ]
+        Ast_external_mk.local_external_apply loc ~pval_prim:["#raw_expr"]
           ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Typ.any ()))
-          [ str_exp ];
+          [str_exp];
     }
   in
   let empty =
     (* FIXME: the empty delimiter does not make sense*)
-    Exp.ident ~loc
-      { txt = Ldot (Ldot (Lident "Js", "Undefined"), "empty"); loc }
+    Exp.ident ~loc {txt = Ldot (Ldot (Lident "Js", "Undefined"), "empty"); loc}
   in
   let undefined_typeof =
-    Exp.ident { loc; txt = Ldot (Lident "Js", "undefinedToOption") }
+    Exp.ident {loc; txt = Ldot (Lident "Js", "undefinedToOption")}
   in
-  let typeof = Exp.ident { loc; txt = Ldot (Lident "Js", "typeof") } in
+  let typeof = Exp.ident {loc; txt = Ldot (Lident "Js", "typeof")} in
 
   Ast_compatible.app1 ~loc undefined_typeof
     (Exp.ifthenelse ~loc
        (Ast_compatible.app2 ~loc
-          (Exp.ident ~loc { loc; txt = Ldot (Lident "Pervasives", "=") })
+          (Exp.ident ~loc {loc; txt = Ldot (Lident "Pervasives", "=")})
           (Ast_compatible.app1 ~loc typeof raw_exp)
           (Ast_compatible.const_exp_string ~loc "undefined"))
        empty (Some raw_exp))
@@ -66,41 +65,50 @@ let handle_external loc (x : string) : Parsetree.expression =
 let handle_debugger loc (payload : Ast_payload.t) =
   match payload with
   | PStr [] ->
-      Ast_external_mk.local_external_apply loc ~pval_prim:[ "#debugger" ]
-        ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Ast_literal.type_unit ()))
-        [ Ast_literal.val_unit ~loc () ]
-  | _ -> Location.raise_errorf ~loc "%%debugger extension doesn't accept arguments"
+    Ast_external_mk.local_external_apply loc ~pval_prim:["#debugger"]
+      ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Ast_literal.type_unit ()))
+      [Ast_literal.val_unit ~loc ()]
+  | _ ->
+    Location.raise_errorf ~loc "%%debugger extension doesn't accept arguments"
 
 let handle_raw ~kind loc payload =
   let is_function = ref false in
   match Ast_payload.raw_as_string_exp_exn ~kind ~is_function payload with
-  | None ->
-    (match kind with
-    | Raw_re -> Location.raise_errorf ~loc "%%re extension can only be applied to a string"
-    | Raw_exp -> Location.raise_errorf ~loc "%%raw extension can only be applied to a string"
-    | Raw_program -> Location.raise_errorf ~loc "%%%%raw extension can only be applied to a string")
+  | None -> (
+    match kind with
+    | Raw_re ->
+      Location.raise_errorf ~loc
+        "%%re extension can only be applied to a string"
+    | Raw_exp ->
+      Location.raise_errorf ~loc
+        "%%raw extension can only be applied to a string"
+    | Raw_program ->
+      Location.raise_errorf ~loc
+        "%%%%raw extension can only be applied to a string")
   | Some exp ->
-      {
-        exp with
-        pexp_desc =
-          Ast_external_mk.local_external_apply loc ~pval_prim:[ "#raw_expr" ]
-            ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Typ.any ()))
-            [ exp ];
-        pexp_attributes =
-          (if !is_function then
-           Ast_attributes.internal_expansive :: exp.pexp_attributes
-          else exp.pexp_attributes);
-      }
+    {
+      exp with
+      pexp_desc =
+        Ast_external_mk.local_external_apply loc ~pval_prim:["#raw_expr"]
+          ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Typ.any ()))
+          [exp];
+      pexp_attributes =
+        (if !is_function then
+         Ast_attributes.internal_expansive :: exp.pexp_attributes
+        else exp.pexp_attributes);
+    }
 
 let handle_raw_structure loc payload =
   match Ast_payload.raw_as_string_exp_exn ~kind:Raw_program payload with
   | Some exp ->
-      Ast_helper.Str.eval
-        {
-          exp with
-          pexp_desc =
-            Ast_external_mk.local_external_apply loc ~pval_prim:[ "#raw_stmt" ]
-              ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Typ.any ()))
-              [ exp ];
-        }
-  | None -> Location.raise_errorf ~loc "%%%%raw extension can only be applied to a string"
+    Ast_helper.Str.eval
+      {
+        exp with
+        pexp_desc =
+          Ast_external_mk.local_external_apply loc ~pval_prim:["#raw_stmt"]
+            ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Typ.any ()))
+            [exp];
+      }
+  | None ->
+    Location.raise_errorf ~loc
+      "%%%%raw extension can only be applied to a string"

@@ -121,8 +121,8 @@ function string_of_bool(b) {
   }
 }
 
-function bool_of_string(param) {
-  switch (param) {
+function bool_of_string(x) {
+  switch (x) {
     case "false" :
         return false;
     case "true" :
@@ -185,13 +185,13 @@ function open_out_gen(mode, perm, name) {
 
 function open_out(name) {
   return open_out_gen({
-              hd: /* Open_wronly */1,
+              hd: "Open_wronly",
               tl: {
-                hd: /* Open_creat */3,
+                hd: "Open_creat",
                 tl: {
-                  hd: /* Open_trunc */4,
+                  hd: "Open_trunc",
                   tl: {
-                    hd: /* Open_text */7,
+                    hd: "Open_text",
                     tl: /* [] */0
                   }
                 }
@@ -201,13 +201,13 @@ function open_out(name) {
 
 function open_out_bin(name) {
   return open_out_gen({
-              hd: /* Open_wronly */1,
+              hd: "Open_wronly",
               tl: {
-                hd: /* Open_creat */3,
+                hd: "Open_creat",
                 tl: {
-                  hd: /* Open_trunc */4,
+                  hd: "Open_trunc",
                   tl: {
-                    hd: /* Open_binary */6,
+                    hd: "Open_binary",
                     tl: /* [] */0
                   }
                 }
@@ -216,19 +216,19 @@ function open_out_bin(name) {
 }
 
 function flush_all(param) {
-  var _param = Caml_external_polyfill.resolve("ml_out_channels_list")(undefined);
+  var _x = Caml_external_polyfill.resolve("ml_out_channels_list")(undefined);
   while(true) {
-    var param$1 = _param;
-    if (!param$1) {
+    var x = _x;
+    if (!x) {
       return ;
     }
     try {
-      Caml_external_polyfill.resolve("ml_flush")(param$1.hd);
+      Caml_external_polyfill.resolve("ml_flush")(x.hd);
     }
     catch (exn){
       
     }
-    _param = param$1.tl;
+    _x = x.tl;
     continue ;
   };
 }
@@ -293,9 +293,9 @@ function open_in_gen(mode, perm, name) {
 
 function open_in(name) {
   return open_in_gen({
-              hd: /* Open_rdonly */0,
+              hd: "Open_rdonly",
               tl: {
-                hd: /* Open_text */7,
+                hd: "Open_text",
                 tl: /* [] */0
               }
             }, 0, name);
@@ -303,9 +303,9 @@ function open_in(name) {
 
 function open_in_bin(name) {
   return open_in_gen({
-              hd: /* Open_rdonly */0,
+              hd: "Open_rdonly",
               tl: {
-                hd: /* Open_binary */6,
+                hd: "Open_binary",
                 tl: /* [] */0
               }
             }, 0, name);
@@ -360,17 +360,17 @@ function really_input_string(ic, len) {
 }
 
 function input_line(chan) {
-  var build_result = function (buf, _pos, _param) {
+  var build_result = function (buf, _pos, _x) {
     while(true) {
-      var param = _param;
+      var x = _x;
       var pos = _pos;
-      if (!param) {
+      if (!x) {
         return buf;
       }
-      var hd = param.hd;
+      var hd = x.hd;
       var len = hd.length;
       Caml_external_polyfill.resolve("blit_string")(hd, 0, buf, pos - len | 0, len);
-      _param = param.tl;
+      _x = x.tl;
       _pos = pos - len | 0;
       continue ;
     };

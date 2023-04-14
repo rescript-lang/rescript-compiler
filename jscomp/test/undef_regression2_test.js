@@ -18,7 +18,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -35,7 +35,7 @@ function ok(loc, x) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Ok */4,
+                  TAG: "Ok",
                   _0: x
                 };
         })
@@ -78,9 +78,9 @@ function f(x) {
   return x === undefined;
 }
 
-ok("File \"undef_regression2_test.ml\", line 44, characters 5-12", a > 0);
+ok("File \"undef_regression2_test.res\", line 40, characters 5-12", a > 0);
 
-eq("File \"undef_regression2_test.ml\", line 45, characters 5-12", a, 1);
+eq("File \"undef_regression2_test.res\", line 41, characters 5-12", a, 1);
 
 Mt.from_pair_suites("Undef_regression2_test", suites.contents);
 

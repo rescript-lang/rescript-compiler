@@ -19,7 +19,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -37,10 +37,10 @@ function add(suite) {
 }
 
 add([
-      "File \"div_by_zero_test.ml\", line 14, characters 7-14",
+      "File \"div_by_zero_test.res\", line 11, characters 7-14",
       (function (param) {
           return {
-                  TAG: /* ThrowAny */7,
+                  TAG: "ThrowAny",
                   _0: (function (param) {
                       Caml_int32.div(3, 0);
                     })
@@ -49,10 +49,10 @@ add([
     ]);
 
 add([
-      "File \"div_by_zero_test.ml\", line 15, characters 7-14",
+      "File \"div_by_zero_test.res\", line 12, characters 7-14",
       (function (param) {
           return {
-                  TAG: /* ThrowAny */7,
+                  TAG: "ThrowAny",
                   _0: (function (param) {
                       Caml_int32.mod_(3, 0);
                     })
@@ -61,10 +61,10 @@ add([
     ]);
 
 add([
-      "File \"div_by_zero_test.ml\", line 16, characters 7-14",
+      "File \"div_by_zero_test.res\", line 13, characters 7-14",
       (function (param) {
           return {
-                  TAG: /* ThrowAny */7,
+                  TAG: "ThrowAny",
                   _0: (function (param) {
                       Caml_int32.div(3, 0);
                     })
@@ -73,10 +73,10 @@ add([
     ]);
 
 add([
-      "File \"div_by_zero_test.ml\", line 17, characters 7-14",
+      "File \"div_by_zero_test.res\", line 14, characters 7-14",
       (function (param) {
           return {
-                  TAG: /* ThrowAny */7,
+                  TAG: "ThrowAny",
                   _0: (function (param) {
                       Caml_int32.mod_(3, 0);
                     })
@@ -85,10 +85,10 @@ add([
     ]);
 
 add([
-      "File \"div_by_zero_test.ml\", line 18, characters 7-14",
+      "File \"div_by_zero_test.res\", line 15, characters 7-14",
       (function (param) {
           return {
-                  TAG: /* ThrowAny */7,
+                  TAG: "ThrowAny",
                   _0: (function (param) {
                       Caml_int64.div([
                             0,
@@ -100,10 +100,10 @@ add([
     ]);
 
 add([
-      "File \"div_by_zero_test.ml\", line 19, characters 7-14",
+      "File \"div_by_zero_test.res\", line 16, characters 7-14",
       (function (param) {
           return {
-                  TAG: /* ThrowAny */7,
+                  TAG: "ThrowAny",
                   _0: (function (param) {
                       Caml_int64.mod_([
                             0,

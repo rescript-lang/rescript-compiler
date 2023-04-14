@@ -382,7 +382,6 @@ To build a new version and release it on NPM, follow these steps:
 
 1. Increment the version number in `package.json`.
 1. Run `node scripts/setVersion.js` to take that version number over into other files.
-1. Snapshot (run `make` to regenerate `whole_compiler.ml` etc.).
 1. Update `CHANGELOG.md`.
 1. Create a PR.
 1. Once that PR is merged, download the `npm-packages.zip` artifact for that commit from the Github Actions page.

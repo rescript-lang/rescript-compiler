@@ -5,8 +5,12 @@ var Caml_array = require("../../lib/js/caml_array.js");
 function $$eval(_bdd, vars) {
   while(true) {
     var bdd = _bdd;
-    if (typeof bdd === "number") {
-      return bdd === 0;
+    if (typeof bdd !== "object") {
+      if (bdd === "One") {
+        return true;
+      } else {
+        return false;
+      }
     }
     if (Caml_array.get(vars, bdd._1)) {
       _bdd = bdd._3;
@@ -18,11 +22,11 @@ function $$eval(_bdd, vars) {
 }
 
 function getId(bdd) {
-  if (typeof bdd === "number") {
-    if (bdd !== 0) {
-      return 0;
-    } else {
+  if (typeof bdd !== "object") {
+    if (bdd === "One") {
       return 1;
+    } else {
+      return 0;
     }
   } else {
     return bdd._2;
@@ -60,24 +64,36 @@ function resize(newSize) {
         return ;
       }
       var n = bucket.hd;
-      if (typeof n === "number") {
+      if (typeof n !== "object") {
+        if (n === "One") {
+          throw {
+                RE_EXN_ID: "Assert_failure",
+                _1: [
+                  "bdd.res",
+                  60,
+                  13
+                ],
+                Error: new Error()
+              };
+        }
         throw {
               RE_EXN_ID: "Assert_failure",
               _1: [
-                "bdd.ml",
-                54,
-                27
+                "bdd.res",
+                60,
+                13
               ],
               Error: new Error()
             };
+      } else {
+        var ind = hashVal(getId(n._0), getId(n._3), n._1) & newSz_1;
+        Caml_array.set(newArr, ind, {
+              hd: n,
+              tl: Caml_array.get(newArr, ind)
+            });
+        _bucket = bucket.tl;
+        continue ;
       }
-      var ind = hashVal(getId(n._0), getId(n._3), n._1) & newSz_1;
-      Caml_array.set(newArr, ind, {
-            hd: n,
-            tl: Caml_array.get(newArr, ind)
-          });
-      _bucket = bucket.tl;
-      continue ;
     };
   };
   for(var n = 0 ,n_finish = sz_1.contents; n <= n_finish; ++n){
@@ -124,75 +140,89 @@ function mkNode(low, v, high) {
     var b = _b;
     if (b) {
       var n = b.hd;
-      if (typeof n === "number") {
+      if (typeof n !== "object") {
+        if (n === "One") {
+          throw {
+                RE_EXN_ID: "Assert_failure",
+                _1: [
+                  "bdd.res",
+                  121,
+                  15
+                ],
+                Error: new Error()
+              };
+        }
         throw {
               RE_EXN_ID: "Assert_failure",
               _1: [
-                "bdd.ml",
-                99,
-                31
+                "bdd.res",
+                121,
+                15
               ],
               Error: new Error()
             };
+      } else {
+        if (v === n._1 && idl === getId(n._0) && idh === getId(n._3)) {
+          return n;
+        }
+        _b = b.tl;
+        continue ;
       }
-      if (v === n._1 && idl === getId(n._0) && idh === getId(n._3)) {
-        return n;
-      }
-      _b = b.tl;
-      continue ;
+    } else {
+      var n_2 = (nodeC.contents = nodeC.contents + 1 | 0, nodeC.contents);
+      var n$1 = {
+        TAG: "Node",
+        _0: low,
+        _1: v,
+        _2: n_2,
+        _3: high
+      };
+      insert(getId(low), getId(high), v, ind, bucket, n$1);
+      return n$1;
     }
-    var n_2 = (nodeC.contents = nodeC.contents + 1 | 0, nodeC.contents);
-    var n$1 = /* Node */{
-      _0: low,
-      _1: v,
-      _2: n_2,
-      _3: high
-    };
-    insert(getId(low), getId(high), v, ind, bucket, n$1);
-    return n$1;
   };
 }
 
 function cmpVar(x, y) {
   if (x < y) {
-    return /* LESS */0;
+    return "LESS";
   } else if (x > y) {
-    return /* GREATER */2;
+    return "GREATER";
   } else {
-    return /* EQUAL */1;
+    return "EQUAL";
   }
 }
 
 function mkVar(x) {
-  return mkNode(/* Zero */1, x, /* One */0);
+  return mkNode("Zero", x, "One");
 }
 
 var andslot1 = Caml_array.make(1999, 0);
 
 var andslot2 = Caml_array.make(1999, 0);
 
-var andslot3 = Caml_array.make(1999, /* Zero */1);
+var andslot3 = Caml_array.make(1999, "Zero");
 
 var xorslot1 = Caml_array.make(1999, 0);
 
 var xorslot2 = Caml_array.make(1999, 0);
 
-var xorslot3 = Caml_array.make(1999, /* Zero */1);
+var xorslot3 = Caml_array.make(1999, "Zero");
 
 var notslot1 = Caml_array.make(1999, 0);
 
-var notslot2 = Caml_array.make(1999, /* One */0);
+var notslot2 = Caml_array.make(1999, "One");
 
 function hash(x, y) {
   return ((x << 1) + y | 0) % 1999;
 }
 
 function not(n) {
-  if (typeof n === "number") {
-    if (n !== 0) {
-      return /* One */0;
+  if (typeof n !== "object") {
+    if (n === "One") {
+      return "Zero";
     } else {
-      return /* Zero */1;
+      return "One";
     }
   }
   var id = n._2;
@@ -207,22 +237,22 @@ function not(n) {
 }
 
 function and2(n1, n2) {
-  if (typeof n1 === "number") {
-    if (n1 !== 0) {
-      return /* Zero */1;
-    } else {
+  if (typeof n1 !== "object") {
+    if (n1 === "One") {
       return n2;
+    } else {
+      return "Zero";
     }
   }
   var r1 = n1._3;
   var i1 = n1._2;
   var v1 = n1._1;
   var l1 = n1._0;
-  if (typeof n2 === "number") {
-    if (n2 !== 0) {
-      return /* Zero */1;
-    } else {
+  if (typeof n2 !== "object") {
+    if (n2 === "One") {
       return n1;
+    } else {
+      return "Zero";
     }
   }
   var r2 = n2._3;
@@ -236,13 +266,13 @@ function and2(n1, n2) {
   var match = cmpVar(v1, v2);
   var f;
   switch (match) {
-    case /* LESS */0 :
+    case "LESS" :
         f = mkNode(and2(l1, n2), v1, and2(r1, n2));
         break;
-    case /* EQUAL */1 :
+    case "EQUAL" :
         f = mkNode(and2(l1, l2), v1, and2(r1, r2));
         break;
-    case /* GREATER */2 :
+    case "GREATER" :
         f = mkNode(and2(n1, l2), v2, and2(n1, r2));
         break;
     
@@ -254,22 +284,22 @@ function and2(n1, n2) {
 }
 
 function xor(n1, n2) {
-  if (typeof n1 === "number") {
-    if (n1 !== 0) {
-      return n2;
-    } else {
+  if (typeof n1 !== "object") {
+    if (n1 === "One") {
       return not(n2);
+    } else {
+      return n2;
     }
   }
   var r1 = n1._3;
   var i1 = n1._2;
   var v1 = n1._1;
   var l1 = n1._0;
-  if (typeof n2 === "number") {
-    if (n2 !== 0) {
-      return n1;
-    } else {
+  if (typeof n2 !== "object") {
+    if (n2 === "One") {
       return not(n1);
+    } else {
+      return n1;
     }
   }
   var r2 = n2._3;
@@ -283,13 +313,13 @@ function xor(n1, n2) {
   var match = cmpVar(v1, v2);
   var f;
   switch (match) {
-    case /* LESS */0 :
+    case "LESS" :
         f = mkNode(xor(l1, n2), v1, xor(r1, n2));
         break;
-    case /* EQUAL */1 :
+    case "EQUAL" :
         f = mkNode(xor(l1, l2), v1, xor(r1, r2));
         break;
-    case /* GREATER */2 :
+    case "GREATER" :
         f = mkNode(xor(n1, l2), v2, xor(n1, r2));
         break;
     
@@ -303,16 +333,16 @@ function xor(n1, n2) {
 function hwb(n) {
   var h = function (i, j) {
     if (i === j) {
-      return mkNode(/* Zero */1, i, /* One */0);
+      return mkNode("Zero", i, "One");
     } else {
-      return xor(and2(not(mkNode(/* Zero */1, j, /* One */0)), h(i, j - 1 | 0)), and2(mkNode(/* Zero */1, j, /* One */0), g(i, j - 1 | 0)));
+      return xor(and2(not(mkNode("Zero", j, "One")), h(i, j - 1 | 0)), and2(mkNode("Zero", j, "One"), g(i, j - 1 | 0)));
     }
   };
   var g = function (i, j) {
     if (i === j) {
-      return mkNode(/* Zero */1, i, /* One */0);
+      return mkNode("Zero", i, "One");
     } else {
-      return xor(and2(not(mkNode(/* Zero */1, i, /* One */0)), h(i + 1 | 0, j)), and2(mkNode(/* Zero */1, i, /* One */0), g(i + 1 | 0, j)));
+      return xor(and2(not(mkNode("Zero", i, "One")), h(i + 1 | 0, j)), and2(mkNode("Zero", i, "One"), g(i + 1 | 0, j)));
     }
   };
   return h(0, n - 1 | 0);
@@ -372,8 +402,8 @@ function main(param) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "bdd.ml",
-          233,
+          "bdd.res",
+          301,
           2
         ],
         Error: new Error()
@@ -384,9 +414,9 @@ main(undefined);
 
 var initSize_1 = 8191;
 
-var zero = /* Zero */1;
+var zero = "Zero";
 
-var one = /* One */0;
+var one = "One";
 
 var cacheSize = 1999;
 

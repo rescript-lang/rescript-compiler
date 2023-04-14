@@ -17,13 +17,13 @@ function eq(loc, x, y) {
 }
 
 var v = {
-  TAG: /* A0 */0,
+  TAG: "A0",
   lbl: 3,
   more: /* [] */0
 };
 
 var v1 = {
-  TAG: /* A1 */1,
+  TAG: "A1",
   more: {
     hd: 1,
     tl: {
@@ -34,7 +34,7 @@ var v1 = {
 };
 
 function f(x) {
-  if (x.TAG === /* A0 */0) {
+  if (x.TAG === "A0") {
     return List.fold_left((function (prim0, prim1) {
                   return prim0 + prim1 | 0;
                 }), x.lbl, x.more);
@@ -45,9 +45,9 @@ function f(x) {
   }
 }
 
-eq("File \"inline_record_test.ml\", line 25, characters 6-13", f(v), 3);
+eq("File \"inline_record_test.res\", line 19, characters 3-10", f(v), 3);
 
-eq("File \"inline_record_test.ml\", line 26, characters 6-13", f(v1), 3);
+eq("File \"inline_record_test.res\", line 20, characters 3-10", f(v1), 3);
 
 console.log(f(v));
 
@@ -69,18 +69,18 @@ if (A0 === A0) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "inline_record_test.ml",
-          51,
-          52
+          "inline_record_test.res",
+          47,
+          9
         ],
         Error: new Error()
       };
 }
 
-eq("File \"inline_record_test.ml\", line 51, characters 6-13", tmp, 3);
+eq("File \"inline_record_test.res\", line 44, characters 2-9", tmp, 3);
 
 function ff(x) {
-  if (x.TAG === /* A0 */0) {
+  if (x.TAG === "A0") {
     x.x = x.x + 1 | 0;
   } else {
     x.z = x.z + 2 | 0;
@@ -88,14 +88,14 @@ function ff(x) {
 }
 
 var v4 = {
-  TAG: /* A0 */0,
+  TAG: "A0",
   x: 0,
   y: 0,
   z: 0
 };
 
 var v5 = {
-  TAG: /* A1 */1,
+  TAG: "A1",
   z: 0
 };
 
@@ -106,31 +106,31 @@ for(var i = 0; i <= 10; ++i){
 
 var tmp$1;
 
-if (v4.TAG === /* A0 */0) {
+if (v4.TAG === "A0") {
   tmp$1 = v4.x;
 } else {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "inline_record_test.ml",
-          69,
-          48
+          "inline_record_test.res",
+          74,
+          9
         ],
         Error: new Error()
       };
 }
 
-eq("File \"inline_record_test.ml\", line 69, characters 6-13", tmp$1, 11);
+eq("File \"inline_record_test.res\", line 71, characters 2-9", tmp$1, 11);
 
 var tmp$2;
 
-if (v5.TAG === /* A0 */0) {
+if (v5.TAG === "A0") {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "inline_record_test.ml",
-          71,
-          48
+          "inline_record_test.res",
+          83,
+          9
         ],
         Error: new Error()
       };
@@ -138,7 +138,7 @@ if (v5.TAG === /* A0 */0) {
 
 tmp$2 = v5.z;
 
-eq("File \"inline_record_test.ml\", line 71, characters 6-13", tmp$2, 22);
+eq("File \"inline_record_test.res\", line 80, characters 2-9", tmp$2, 22);
 
 var A4 = /* @__PURE__ */Caml_exceptions.create("Inline_record_test.A4");
 
@@ -170,35 +170,38 @@ if (v6.RE_EXN_ID === A4) {
   throw {
         RE_EXN_ID: "Assert_failure",
         _1: [
-          "inline_record_test.ml",
-          87,
-          49
+          "inline_record_test.res",
+          108,
+          9
         ],
         Error: new Error()
       };
 }
 
-eq("File \"inline_record_test.ml\", line 87, characters 6-13", tmp$3, 11);
+eq("File \"inline_record_test.res\", line 105, characters 2-9", tmp$3, 11);
 
 function ff1(x) {
-  if (x) {
-    return /* A0 */{
+  if (typeof x !== "object") {
+    return "A1";
+  } else {
+    return {
+            TAG: "A0",
             lbl: x.lbl + 1 | 0,
             more: x.more
           };
-  } else {
-    return /* A1 */0;
   }
 }
 
 Mt.from_pair_suites("Inline_record_test", suites.contents);
 
-var v2 = /* A0 */{
+var v2 = {
+  TAG: "A0",
   lbl: 3,
   more: /* [] */0
 };
 
-var vvv = /* A0 */{
+var vvv = {
+  TAG: "A0",
   lbl: 3,
   more: /* [] */0
 };

@@ -5,25 +5,25 @@ var Curry = require("../../lib/js/curry.js");
 var Caml_module = require("../../lib/js/caml_module.js");
 
 var PA = Caml_module.init_mod([
-      "gpr_3931_test.ml",
+      "gpr_3931_test.res",
       3,
-      6
+      4
     ], {
-      TAG: /* Module */0,
+      TAG: "Module",
       _0: [[
-          /* Function */0,
+          "Function",
           "print"
         ]]
     });
 
 var P = Caml_module.init_mod([
-      "gpr_3931_test.ml",
-      11,
-      6
+      "gpr_3931_test.res",
+      12,
+      4
     ], {
-      TAG: /* Module */0,
+      TAG: "Module",
       _0: [[
-          /* Function */0,
+          "Function",
           "print"
         ]]
     });
@@ -33,9 +33,9 @@ function print(a) {
 }
 
 Caml_module.update_mod({
-      TAG: /* Module */0,
+      TAG: "Module",
       _0: [[
-          /* Function */0,
+          "Function",
           "print"
         ]]
     }, PA, {
@@ -47,9 +47,9 @@ function print$1(i) {
 }
 
 Caml_module.update_mod({
-      TAG: /* Module */0,
+      TAG: "Module",
       _0: [[
-          /* Function */0,
+          "Function",
           "print"
         ]]
     }, P, {

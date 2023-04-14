@@ -1329,8 +1329,9 @@ let make_constr_matching p def ctx = function
     [] -> fatal_error "Matching.make_constr_matching"
   | ((arg, _mut) :: argl) ->
       let cstr = pat_as_constr p in
+      let untagged = Ast_untagged_variants.has_untagged cstr.cstr_attributes in
       let newargs =
-        if cstr.cstr_inlined <> None then
+        if cstr.cstr_inlined <> None || (untagged && cstr.cstr_args <> []) then
           (arg, Alias) :: argl
         else match cstr.cstr_tag with
         | Cstr_block _ when
@@ -2348,19 +2349,21 @@ let combine_constructor sw_names loc arg ex_pat cstr partial ctx def
           match
             (cstr.cstr_consts, cstr.cstr_nonconsts, consts, nonconsts)
           with
-          | (1, 1, [0, act1], [0, act2]) ->
-           (* Typically, match on lists, will avoid isint primitive in that
-              case *)
+          | (1, 1, [0, act1], [0, act2])
+            when cstr.cstr_name = "::" || cstr.cstr_name = "[]" || Datarepr.constructor_has_optional_shape cstr
+           ->
+              (* Typically, match on lists, will avoid isint primitive in that
+                case *)
               let arg = 
                 if !Config.bs_only && Datarepr.constructor_has_optional_shape cstr then
                   Lprim(is_not_none_bs_primitve , [arg], loc)
                 else arg
               in 
                 Lifthenelse(arg, act2, act1)
-          | (2,0, [(i1,act1); (_,act2)],[]) ->
-            if i1 = 0 then Lifthenelse(arg, act2, act1)
-            else Lifthenelse (arg,act1,act2)                
-          | (n,0,_,[])  -> (* The type defines constant constructors only *)
+          | (2,0, [(i1,act1); (_,act2)],[]) when cstr.cstr_name = "true" || cstr.cstr_name = "false" ->
+              if i1 = 0 then Lifthenelse(arg, act2, act1)
+              else Lifthenelse (arg, act1, act2)                
+          | (n,0,_,[]) when false (* relies on tag being an int *) -> (* The type defines constant constructors only *)
               call_switcher loc fail_opt arg 0 (n-1) consts sw_names
           | (n, _, _, _) ->
               let act0  =
@@ -2373,7 +2376,7 @@ let combine_constructor sw_names loc arg ex_pat cstr partial ctx def
                     else None
                 | None,_ -> same_actions nonconsts in
               match act0 with
-              | Some act ->
+              | Some act when false (* relies on tag being an int *) ->
                   Lifthenelse
                     (Lprim (Pisint, [arg], loc),
                      call_switcher loc
@@ -2381,7 +2384,7 @@ let combine_constructor sw_names loc arg ex_pat cstr partial ctx def
                        0 (n-1) consts sw_names,
                      act)
 (* Emit a switch, as bytecode implements this sophisticated instruction *)
-              | None ->
+              | _ ->
                   let sw =
                     {sw_numconsts = cstr.cstr_consts; sw_consts = consts;
                      sw_numblocks = cstr.cstr_nonconsts; sw_blocks = nonconsts;
@@ -2413,7 +2416,7 @@ let call_switcher_variant_constant :
    Lambda.lambda option ->
    Lambda.lambda ->
    (int * (string * Lambda.lambda)) list -> 
-   Lambda.switch_names option -> 
+    Ast_untagged_variants.switch_names option -> 
    Lambda.lambda)
     ref= ref call_switcher_variant_constant
 
@@ -2422,7 +2425,7 @@ let call_switcher_variant_constr :
    Lambda.lambda option ->
    Lambda.lambda ->
    (int * (string * Lambda.lambda)) list -> 
-   Lambda.switch_names option -> 
+    Ast_untagged_variants.switch_names option -> 
    Lambda.lambda)
     ref
   = ref call_switcher_variant_constr
@@ -2691,7 +2694,7 @@ let arg_to_var arg cls = match arg with
     v,Lvar v
 
 (* To be set by Lam_compile *)
-let names_from_construct_pattern : (pattern -> switch_names option) ref =
+let names_from_construct_pattern : (pattern -> Ast_untagged_variants.switch_names option) ref =
   ref (fun _ -> None)
 
 (*

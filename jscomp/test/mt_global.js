@@ -8,7 +8,7 @@ function collect_eq(test_id, suites, loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -25,7 +25,7 @@ function collect_neq(test_id, suites, loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Neq */1,
+                  TAG: "Neq",
                   _0: x,
                   _1: y
                 };
@@ -42,7 +42,7 @@ function collect_approx(test_id, suites, loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Approx */5,
+                  TAG: "Approx",
                   _0: x,
                   _1: y
                 };

@@ -19,7 +19,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -43,7 +43,7 @@ function foo2(f) {
   return Curry._2(f, "a1", undefined);
 }
 
-eq("File \"gpr_1423_app_test.ml\", line 18, characters 7-14", "a1a2", "a1a2");
+eq("File \"gpr_1423_app_test.res\", line 15, characters 12-19", "a1a2", "a1a2");
 
 Mt.from_pair_suites("Gpr_1423_app_test", suites.contents);
 

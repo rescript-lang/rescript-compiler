@@ -25,7 +25,8 @@ let make = (~vehicle) => {
   </div>
 }
 
-@genType let default = make
+@genType
+let default = make
 
 module Another = {
   @genType @react.component

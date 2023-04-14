@@ -41,8 +41,8 @@ function to_array(q) {
 function queue_1(x) {
   var q = {
     length: 0,
-    first: /* Nil */0,
-    last: /* Nil */0
+    first: "Nil",
+    last: "Nil"
   };
   $$Array.iter((function (x) {
           Queue.add(x, q);
@@ -81,7 +81,7 @@ var T2 = {
 };
 
 var suites_0 = [
-  "File \"queue_test.ml\", line 26, characters 2-9",
+  "File \"queue_test.res\", line 34, characters 6-13",
   (function (param) {
       var x = [
         3,
@@ -90,7 +90,7 @@ var suites_0 = [
         2
       ];
       return {
-              TAG: /* Eq */0,
+              TAG: "Eq",
               _0: x,
               _1: queue_1(x)
             };
@@ -99,7 +99,7 @@ var suites_0 = [
 
 var suites_1 = {
   hd: [
-    "File \"queue_test.ml\", line 29, characters 2-9",
+    "File \"queue_test.res\", line 41, characters 6-13",
     (function (param) {
         var x = [
           3,
@@ -108,7 +108,7 @@ var suites_1 = {
           2
         ];
         return {
-                TAG: /* Eq */0,
+                TAG: "Eq",
                 _0: x,
                 _1: queue_1$1(x)
               };

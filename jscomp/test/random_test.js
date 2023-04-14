@@ -32,7 +32,7 @@ function approx(f) {
   };
 }
 
-Mt_global.collect_neq(id, suites, "File \"random_test.ml\", line 12, characters 6-13", (Random.self_init(undefined), Random.$$int(10000)), (Random.self_init(undefined), Random.$$int(1000)));
+Mt_global.collect_neq(id, suites, "File \"random_test.res\", line 9, characters 2-9", (Random.self_init(undefined), Random.$$int(10000)), (Random.self_init(undefined), Random.$$int(1000)));
 
 Random.init(0);
 
@@ -42,7 +42,7 @@ for(var i = 0; i <= 9; ++i){
   Caml_array.set(v, i, Random.bool(undefined));
 }
 
-Mt_global.collect_eq(id, suites, "File \"random_test.ml\", line 26, characters 5-12", v, [
+Mt_global.collect_eq(id, suites, "File \"random_test.res\", line 28, characters 12-19", v, [
       true,
       true,
       true,

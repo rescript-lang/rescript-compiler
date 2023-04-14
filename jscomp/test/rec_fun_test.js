@@ -19,7 +19,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -64,7 +64,7 @@ Caml_obj.update_dummy(y, {
       tl: x
     });
 
-eq("File \"rec_fun_test.ml\", line 27, characters 6-13", called.contents, 2);
+eq("File \"rec_fun_test.res\", line 29, characters 3-10", called.contents, 2);
 
 Mt.from_pair_suites("Rec_fun_test", suites.contents);
 

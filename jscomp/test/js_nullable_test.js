@@ -17,7 +17,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -42,13 +42,13 @@ function f(x, y) {
   return x + y | 0;
 }
 
-eq("File \"js_nullable_test.ml\", line 26, characters 7-14", false, false);
+eq("File \"js_nullable_test.res\", line 28, characters 3-10", false, false);
 
-eq("File \"js_nullable_test.ml\", line 28, characters 7-14", (f(1, 2) == null), false);
+eq("File \"js_nullable_test.res\", line 30, characters 3-10", (f(1, 2) == null), false);
 
-eq("File \"js_nullable_test.ml\", line 30, characters 6-13", (null == null), true);
+eq("File \"js_nullable_test.res\", line 32, characters 3-10", (null == null), true);
 
-eq("File \"js_nullable_test.ml\", line 34, characters 3-10", false, false);
+eq("File \"js_nullable_test.res\", line 37, characters 5-12", false, false);
 
 Mt.from_pair_suites("Js_nullable_test", suites.contents);
 

@@ -24,31 +24,29 @@
 
 (** type definitions for arguments to a function declared external *)
 
-type delim = | DNone | DStarJ | DJson
+type delim = DNone | DStarJ | DNoQuotes
 
-type cst =
-  | Arg_int_lit of int
-  | Arg_string_lit of string * delim
+type cst = Arg_int_lit of int | Arg_string_lit of string * delim
 
 type label_noname = Arg_label | Arg_empty | Arg_optional
 
 type label =
   | Obj_empty
-  | Obj_label of { name : string }
-  | Obj_optional of { name : string; for_sure_no_nested_option : bool }
+  | Obj_label of {name: string}
+  | Obj_optional of {name: string; for_sure_no_nested_option: bool}
 
 (* it will be ignored , side effect will be recorded *)
 
 (* This type is used to give some meta info on each argument *)
 type attr =
   | Poly_var_string of {
-      descr : (string * string) list;
+      descr: (string * string) list;
           (* introduced by attributes @string
              and @as
           *)
     }
   | Poly_var of {
-      descr : (string * string) list option;
+      descr: (string * string) list option;
           (* introduced by attributes @string
              and @as
           *)
@@ -63,9 +61,9 @@ type attr =
   | Ignore
   | Unwrap
 
-type param = { arg_type : attr; arg_label : label_noname }
+type param = {arg_type: attr; arg_label: label_noname}
 
-type obj_param = { obj_arg_type : attr; obj_arg_label : label }
+type obj_param = {obj_arg_type: attr; obj_arg_label: label}
 
 type obj_params = obj_param list
 
@@ -77,11 +75,11 @@ let cst_string s delim = Arg_string_lit (s, delim)
 
 let empty_label = Obj_empty
 
-let obj_label name = Obj_label { name }
+let obj_label name = Obj_label {name}
 
 let optional for_sure_no_nested_option name =
-  Obj_optional { name; for_sure_no_nested_option }
+  Obj_optional {name; for_sure_no_nested_option}
 
-let empty_kind obj_arg_type = { obj_arg_label = empty_label; obj_arg_type }
+let empty_kind obj_arg_type = {obj_arg_label = empty_label; obj_arg_type}
 
-let dummy = { arg_type = Nothing; arg_label = Arg_empty }
+let dummy = {arg_type = Nothing; arg_label = Arg_empty}

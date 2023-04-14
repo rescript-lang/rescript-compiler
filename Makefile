@@ -13,7 +13,7 @@ bench:
 	$(DUNE_BIN_DIR)/syntax_benchmarks
 
 dce:
-	reanalyze.exe -- -dce-cmt _build
+	reanalyze.exe -dce-cmt _build/default/jscomp
 
 ninja/ninja:
 	./scripts/buildNinjaBinary.js
@@ -43,6 +43,7 @@ test-all: test test-gentype
 
 reanalyze:
 	reanalyze.exe -set-exit-code -all-cmt _build/default/res_syntax -suppress res_syntax/testrunner
+	reanalyze.exe -set-exit-code -all-cmt _build/default/jscomp -suppress res_syntax/testrunner -exclude-paths jscomp/super_errors,jscomp/outcome_printer,jscomp/ounit_tests,jscomp/ml,jscomp/js_parser,jscomp/frontend,jscomp/ext,jscomp/depends,jscomp/core,jscomp/common,jscomp/cmij,jscomp/bsb_helper,jscomp/bsb
 
 lib: build node_modules/.bin/semver
 	node scripts/ninja.js config

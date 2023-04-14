@@ -13,6 +13,8 @@ var N = {
   s: s
 };
 
+var v0 = "x".length;
+
 function v(x) {
   return x.length;
 }
@@ -21,9 +23,9 @@ var suites_0 = [
   "const",
   (function (param) {
       return {
-              TAG: /* Eq */0,
+              TAG: "Eq",
               _0: 1,
-              _1: 1
+              _1: v0
             };
     })
 ];
@@ -33,9 +35,9 @@ var suites_1 = {
     "other",
     (function (param) {
         return {
-                TAG: /* Eq */0,
+                TAG: "Eq",
                 _0: 3,
-                _1: 3
+                _1: "abc".length
               };
       })
   ],
@@ -48,8 +50,6 @@ var suites = {
 };
 
 Mt.from_pair_suites("Module_parameter_test", suites);
-
-var v0 = 1;
 
 exports.u = u;
 exports.N = N;

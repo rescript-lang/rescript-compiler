@@ -10,10 +10,10 @@ function f(h, param) {
 
 Mt.from_pair_suites("Print_alpha_test", {
       hd: [
-        "File \"print_alpha_test.ml\", line 15, characters 4-11",
+        "File \"print_alpha_test.res\", line 16, characters 10-17",
         (function (param) {
             return {
-                    TAG: /* Eq */0,
+                    TAG: "Eq",
                     _0: f((function (prim0, prim1) {
                               return prim0 + prim1 | 0;
                             }), undefined)(1, 2),

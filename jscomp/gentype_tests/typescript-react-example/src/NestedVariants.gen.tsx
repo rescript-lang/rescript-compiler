@@ -7,150 +7,78 @@ import * as NestedVariantsBS__Es6Import from './NestedVariants.bs';
 const NestedVariantsBS: any = NestedVariantsBS__Es6Import;
 
 // tslint:disable-next-line:interface-over-type-literal
-export type typeL = [number, number];
+export type typeL = 
+    { TAG: "NonUnary"; _0: number; _1: number };
 
 // tslint:disable-next-line:interface-over-type-literal
 export type typeC = 
-    { tag: "C"; value: string }
-  | { tag: "D"; value: string };
+    { TAG: "C"; _0: string }
+  | { TAG: "D"; _0: string };
 
 // tslint:disable-next-line:interface-over-type-literal
 export type typeB = { readonly c: typeC };
 
 // tslint:disable-next-line:interface-over-type-literal
-export type typeD = { tag: "Int"; value: number };
+export type typeD = { TAG: "Int"; _0: number };
 
 // tslint:disable-next-line:interface-over-type-literal
 export type typeE = number;
 
 // tslint:disable-next-line:interface-over-type-literal
 export type typeA<a> = 
-    { tag: "A"; value: [a, number] }
-  | { tag: "B"; value: [a, number] };
+    { TAG: "A"; _0: a; _1: number }
+  | { TAG: "B"; _0: a; _1: number };
 
 // tslint:disable-next-line:interface-over-type-literal
-export type typeF<a> = 
-    { tag: "F"; value: a }
-  | { tag: "G"; value: a };
+export type typeF<a> = { TAG: "F"; _0: a } | { TAG: "G"; _0: a };
 
 // tslint:disable-next-line:interface-over-type-literal
 export type typeH = 
-    { tag: "H"; value: [typeD, number] }
-  | { tag: "I"; value: [typeD, number] };
+    { TAG: "H"; _0: typeD; _1: number }
+  | { TAG: "I"; _0: typeD; _1: number };
 
 // tslint:disable-next-line:interface-over-type-literal
-export type typeJ = [typeD, typeD];
+export type typeJ = { TAG: "J"; _0: typeD; _1: typeD };
 
 // tslint:disable-next-line:interface-over-type-literal
-export type typeK = [typeD, typeD];
+export type typeK = { TAG: "K"; _0: typeD; _1: typeD };
 
 // tslint:disable-next-line:interface-over-type-literal
 export type boxedBinary = 
-    { tag: "BB"; value: [typeD, number] }
-  | { tag: "Z"; value: number };
+    { TAG: "BB"; _0: typeD; _1: number }
+  | { TAG: "Z"; _0: number };
 
 // tslint:disable-next-line:interface-over-type-literal
-export type unboxedBinary = [typeD, number];
+export type unboxedBinary = { TAG: "UB"; _0: typeD; _1: number };
 
 // tslint:disable-next-line:interface-over-type-literal
 export type inline = 
-    { tag: "I"; value: { readonly i: number; readonly j: number } }
-  | { tag: "J"; value: { readonly i: number; readonly j: number } }
-  | { tag: "K"; value: [number, number] };
+    { TAG: "I"; readonly i: number; readonly j: number }
+  | { TAG: "J"; readonly i: number; readonly j: number }
+  | { TAG: "K"; _0: number; _1: number };
 
-export const makeVariant: () => typeL = function () {
-  const result = NestedVariantsBS.makeVariant();
-  return [result._0, result._1]
-};
+export const makeVariant: () => typeL = NestedVariantsBS.makeVariant;
 
-export const makeABC: () => typeA<typeB> = function () {
-  const result = NestedVariantsBS.makeABC();
-  return result.TAG===0
-    ? {tag:"A", value:[{c:result._0.c.TAG===0
-    ? {tag:"C", value:result._0.c._0}
-    : {tag:"D", value:result._0.c._0}}, result._1]}
-    : {tag:"B", value:[{c:result._0.c.TAG===0
-    ? {tag:"C", value:result._0.c._0}
-    : {tag:"D", value:result._0.c._0}}, result._1]}
-};
+export const makeABC: () => typeA<typeB> = NestedVariantsBS.makeABC;
 
-export const makeBC: () => typeB = function () {
-  const result = NestedVariantsBS.makeBC();
-  return {c:result.c.TAG===0
-    ? {tag:"C", value:result.c._0}
-    : {tag:"D", value:result.c._0}}
-};
+export const makeBC: () => typeB = NestedVariantsBS.makeBC;
 
-export const makeAC: () => typeA<typeC> = function () {
-  const result = NestedVariantsBS.makeAC();
-  return result.TAG===0
-    ? {tag:"A", value:[result._0.TAG===0
-    ? {tag:"C", value:result._0._0}
-    : {tag:"D", value:result._0._0}, result._1]}
-    : {tag:"B", value:[result._0.TAG===0
-    ? {tag:"C", value:result._0._0}
-    : {tag:"D", value:result._0._0}, result._1]}
-};
+export const makeAC: () => typeA<typeC> = NestedVariantsBS.makeAC;
 
-export const makeAD: () => typeA<typeD> = function () {
-  const result = NestedVariantsBS.makeAD();
-  return result.TAG===0
-    ? {tag:"A", value:[{tag:"Int", value:result._0._0}, result._1]}
-    : {tag:"B", value:[{tag:"Int", value:result._0._0}, result._1]}
-};
+export const makeAD: () => typeA<typeD> = NestedVariantsBS.makeAD;
 
-export const makeAE: () => typeA<typeE> = function () {
-  const result = NestedVariantsBS.makeAE();
-  return result.TAG===0
-    ? {tag:"A", value:[result._0, result._1]}
-    : {tag:"B", value:[result._0, result._1]}
-};
+export const makeAE: () => typeA<typeE> = NestedVariantsBS.makeAE;
 
-export const makeFD: () => typeF<typeD> = function () {
-  const result = NestedVariantsBS.makeFD();
-  return result.TAG===0
-    ? {tag:"F", value:{tag:"Int", value:result._0._0}}
-    : {tag:"G", value:{tag:"Int", value:result._0._0}}
-};
+export const makeFD: () => typeF<typeD> = NestedVariantsBS.makeFD;
 
-export const makeHD: () => typeH = function () {
-  const result = NestedVariantsBS.makeHD();
-  return result.TAG===0
-    ? {tag:"H", value:[{tag:"Int", value:result._0._0}, result._1]}
-    : {tag:"I", value:[{tag:"Int", value:result._0._0}, result._1]}
-};
+export const makeHD: () => typeH = NestedVariantsBS.makeHD;
 
-export const makeJ: () => typeJ = function () {
-  const result = NestedVariantsBS.makeJ();
-  return [{tag:"Int", value:result._0._0}, {tag:"Int", value:result._1._0}]
-};
+export const makeJ: () => typeJ = NestedVariantsBS.makeJ;
 
-export const makeK: () => typeK = function () {
-  const result = NestedVariantsBS.makeK();
-  return [{tag:"Int", value:result._0[0]._0}, {tag:"Int", value:result._0[1]._0}]
-};
+export const makeK: () => typeK = NestedVariantsBS.makeK;
 
-export const testBoxedBinary: (param:boxedBinary) => number = function (Arg1: any) {
-  const result = NestedVariantsBS.testBoxedBinary(Arg1.tag==="BB"
-    ? {TAG: 0, _0:{TAG: 0, _0:Arg1.value[0].value} as any, _1:Arg1.value[1]} as any
-    : {TAG: 1, _0:Arg1.value} as any);
-  return result
-};
+export const testBoxedBinary: (param:boxedBinary) => number = NestedVariantsBS.testBoxedBinary;
 
-export const testUnboxedBinary: (param:unboxedBinary) => number = function (Arg1: any) {
-  const result = NestedVariantsBS.testUnboxedBinary({TAG: 0, _0:{TAG: 0, _0:Arg1[0].value} as any, _1:Arg1[1]} as any);
-  return result
-};
+export const testUnboxedBinary: (param:unboxedBinary) => number = NestedVariantsBS.testUnboxedBinary;
 
-export const testInline: (x:inline) => inline = function (Arg1: any) {
-  const result = NestedVariantsBS.testInline(Arg1.tag==="I"
-    ? Object.assign({TAG: 0}, Arg1.value)
-    : Arg1.tag==="J"
-    ? Object.assign({TAG: 1}, Arg1.value)
-    : {TAG: 2, _0:Arg1.value[0], _1:Arg1.value[1]} as any);
-  return result.TAG===0
-    ? {tag:"I", value:result}
-    : result.TAG===1
-    ? {tag:"J", value:result}
-    : {tag:"K", value:[result._0, result._1]}
-};
+export const testInline: (x:inline) => inline = NestedVariantsBS.testInline;

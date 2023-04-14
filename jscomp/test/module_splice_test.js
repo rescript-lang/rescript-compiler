@@ -21,7 +21,7 @@ function eq(loc, param) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -44,7 +44,7 @@ var pair = [
 
 console.log(pair);
 
-eq("File \"module_splice_test.ml\", line 21, characters 5-12", pair);
+eq("File \"module_splice_test.res\", line 16, characters 5-12", pair);
 
 Mt.from_pair_suites("Module_splice_test", suites.contents);
 

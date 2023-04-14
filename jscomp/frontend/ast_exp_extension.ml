@@ -24,109 +24,101 @@
 open Ast_helper
 
 let handle_extension e (self : Bs_ast_mapper.mapper)
-    (({ txt; loc }, payload) : Parsetree.extension) =
+    (({txt; loc}, payload) : Parsetree.extension) =
   match txt with
   | "bs.raw" | "raw" ->
-      Ast_exp_handle_external.handle_raw ~kind:Raw_exp loc payload
+    Ast_exp_handle_external.handle_raw ~kind:Raw_exp loc payload
   | "bs.re" | "re" ->
-      Exp.constraint_ ~loc
-        (Ast_exp_handle_external.handle_raw ~kind:Raw_re loc payload)
-        (Ast_comb.to_js_re_type loc)
+    Exp.constraint_ ~loc
+      (Ast_exp_handle_external.handle_raw ~kind:Raw_re loc payload)
+      (Ast_comb.to_js_re_type loc)
   | "bs.external" | "external" -> (
-      match Ast_payload.as_ident payload with
-      | Some { txt = Lident x } ->
-          Ast_exp_handle_external.handle_external loc x
-          (* do we need support [%external gg.xx ]
+    match Ast_payload.as_ident payload with
+    | Some {txt = Lident x} ->
+      Ast_exp_handle_external.handle_external loc x
+      (* do we need support [%external gg.xx ]
 
-             {[ Js.Undefined.to_opt (if Js.typeof x == "undefined" then x else Js.Undefined.empty ) ]}
-          *)
-      | None | Some _ ->
-          Location.raise_errorf ~loc "external expects a single identifier")
+         {[ Js.Undefined.to_opt (if Js.typeof x == "undefined" then x else Js.Undefined.empty ) ]}
+      *)
+    | None | Some _ ->
+      Location.raise_errorf ~loc "external expects a single identifier")
   | "bs.time" | "time" -> (
-      match payload with
-      | PStr [ { pstr_desc = Pstr_eval (e, _) } ] ->
-          let locString =
-            if loc.loc_ghost then "GHOST LOC"
-            else
-              let loc_start = loc.loc_start in
-              let file, lnum, __ = Location.get_pos_info loc_start in
-              Printf.sprintf "%s %d" (Filename.basename file) lnum
-          in
-          let e = self.expr self e in
-          Exp.sequence ~loc
-            (Ast_compatible.app1 ~loc
-               (Exp.ident ~loc
-                  {
-                    loc;
-                    txt = Ldot (Ldot (Lident "Js", "Console"), "timeStart");
-                  })
-               (Ast_compatible.const_exp_string ~loc locString))
-            (Exp.let_ ~loc Nonrecursive
-               [ Vb.mk ~loc (Pat.var ~loc { loc; txt = "timed" }) e ]
-               (Exp.sequence ~loc
-                  (Ast_compatible.app1 ~loc
-                     (Exp.ident ~loc
-                        {
-                          loc;
-                          txt = Ldot (Ldot (Lident "Js", "Console"), "timeEnd");
-                        })
-                     (Ast_compatible.const_exp_string ~loc locString))
-                  (Exp.ident ~loc { loc; txt = Lident "timed" })))
-      | _ ->
-          Location.raise_errorf ~loc
-            "expect a boolean expression in the payload")
+    match payload with
+    | PStr [{pstr_desc = Pstr_eval (e, _)}] ->
+      let locString =
+        if loc.loc_ghost then "GHOST LOC"
+        else
+          let loc_start = loc.loc_start in
+          let file, lnum, __ = Location.get_pos_info loc_start in
+          Printf.sprintf "%s %d" (Filename.basename file) lnum
+      in
+      let e = self.expr self e in
+      Exp.sequence ~loc
+        (Ast_compatible.app1 ~loc
+           (Exp.ident ~loc
+              {loc; txt = Ldot (Ldot (Lident "Js", "Console"), "timeStart")})
+           (Ast_compatible.const_exp_string ~loc locString))
+        (Exp.let_ ~loc Nonrecursive
+           [Vb.mk ~loc (Pat.var ~loc {loc; txt = "timed"}) e]
+           (Exp.sequence ~loc
+              (Ast_compatible.app1 ~loc
+                 (Exp.ident ~loc
+                    {loc; txt = Ldot (Ldot (Lident "Js", "Console"), "timeEnd")})
+                 (Ast_compatible.const_exp_string ~loc locString))
+              (Exp.ident ~loc {loc; txt = Lident "timed"})))
+    | _ ->
+      Location.raise_errorf ~loc "expect a boolean expression in the payload")
   | "bs.node" | "node" -> (
-      let strip s = match s with "_module" -> "module" | x -> x in
-      match Ast_payload.as_ident payload with
-      | Some
-          {
-            txt =
-              Lident
-                (("__filename" | "__dirname" | "_module" | "require") as name);
-            loc;
-          } ->
-          let exp = Ast_exp_handle_external.handle_external loc (strip name) in
-          let typ =
-            Ast_core_type.lift_option_type
-              (if name = "_module" then
-               Typ.constr ~loc
-                 { txt = Ldot (Lident "Node", "node_module"); loc }
-                 []
-              else if name = "require" then
-                Typ.constr ~loc
-                  { txt = Ldot (Lident "Node", "node_require"); loc }
-                  []
-              else Ast_literal.type_string ~loc ())
-          in
-          Exp.constraint_ ~loc exp typ
-      | Some _ | None -> (
-          match payload with
-          | PTyp _ ->
-              Location.raise_errorf ~loc
-                "Illegal payload, expect an expression payload instead of type \
-                 payload"
-          | PPat _ ->
-              Location.raise_errorf ~loc
-                "Illegal payload, expect an expression payload instead of \
-                 pattern  payload"
-          | _ -> Location.raise_errorf ~loc "Illegal payload"))
-  | "bs.debugger" | "debugger" ->
-      { e with pexp_desc = Ast_exp_handle_external.handle_debugger loc payload }
-  | "bs.obj" | "obj" -> (
+    let strip s =
+      match s with
+      | "_module" -> "module"
+      | x -> x
+    in
+    match Ast_payload.as_ident payload with
+    | Some
+        {
+          txt =
+            Lident
+              (("__filename" | "__dirname" | "_module" | "require") as name);
+          loc;
+        } ->
+      let exp = Ast_exp_handle_external.handle_external loc (strip name) in
+      let typ =
+        Ast_core_type.lift_option_type
+          (if name = "_module" then
+           Typ.constr ~loc {txt = Ldot (Lident "Node", "node_module"); loc} []
+          else if name = "require" then
+            Typ.constr ~loc {txt = Ldot (Lident "Node", "node_require"); loc} []
+          else Ast_literal.type_string ~loc ())
+      in
+      Exp.constraint_ ~loc exp typ
+    | Some _ | None -> (
       match payload with
-      | PStr
-          [
-            {
-              pstr_desc =
-                Pstr_eval
-                  (({ pexp_desc = Pexp_record (label_exprs, None) } as e), _);
-            };
-          ] ->
+      | PTyp _ ->
+        Location.raise_errorf ~loc
+          "Illegal payload, expect an expression payload instead of type \
+           payload"
+      | PPat _ ->
+        Location.raise_errorf ~loc
+          "Illegal payload, expect an expression payload instead of pattern  \
+           payload"
+      | _ -> Location.raise_errorf ~loc "Illegal payload"))
+  | "bs.debugger" | "debugger" ->
+    {e with pexp_desc = Ast_exp_handle_external.handle_debugger loc payload}
+  | "bs.obj" | "obj" -> (
+    match payload with
+    | PStr
+        [
           {
-            e with
-            pexp_desc = Ast_util.record_as_js_object e.pexp_loc self label_exprs;
-          }
-      | _ -> Location.raise_errorf ~loc "Expect a record expression here")
+            pstr_desc =
+              Pstr_eval (({pexp_desc = Pexp_record (label_exprs, None)} as e), _);
+          };
+        ] ->
+      {
+        e with
+        pexp_desc = Ast_util.record_as_js_object e.pexp_loc self label_exprs;
+      }
+    | _ -> Location.raise_errorf ~loc "Expect a record expression here")
   | _ -> e
 (* For an unknown extension, we don't really need to process further*)
 (* Exp.extension ~loc ~attrs:e.pexp_attributes (

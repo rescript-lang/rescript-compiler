@@ -11,4 +11,4 @@ const ExportWithRenameBS: any = ExportWithRenameBS__Es6Import;
 // tslint:disable-next-line:interface-over-type-literal
 export type Props = { readonly s: string };
 
-export const ExportWithRename: React.ComponentType<{ readonly s: string }> = ExportWithRenameBS.make;
+export const make: React.ComponentType<{ readonly s: string }> = ExportWithRenameBS.ExportWithRename;

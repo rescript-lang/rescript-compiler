@@ -17,7 +17,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -49,7 +49,7 @@ var v = f({
       "x'": 6
     });
 
-eq("File \"gpr_1943_test.ml\", line 30, characters 6-13", [
+eq("File \"gpr_1943_test.res\", line 23, characters 3-10", [
       0,
       1,
       2,

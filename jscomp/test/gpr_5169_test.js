@@ -23,15 +23,17 @@ var g;
 
 var h = 1;
 
-var i = /* None */0;
+var i = "None";
 
-var j = /* Some */{
+var j = {
+  TAG: "Some",
   _0: 1
 };
 
-var k = /* None */0;
+var k = "None";
 
-var l = /* Some */{
+var l = {
+  TAG: "Some",
   _0: 1
 };
 

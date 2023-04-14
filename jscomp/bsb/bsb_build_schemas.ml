@@ -79,3 +79,5 @@ let gentypeconfig = "gentypeconfig"
 let language = "language"
 let path = "path"
 let ignored_dirs = "ignored-dirs"
+
+let uncurried = "uncurried"

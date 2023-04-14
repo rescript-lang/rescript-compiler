@@ -33,10 +33,10 @@ var v0 = {
   y: "4"
 };
 
-eq("File \"record_extension_test.ml\", line 19, characters 6-13", f(v0), 7);
+eq("File \"record_extension_test.res\", line 18, characters 3-10", f(v0), 7);
 
 function f2(x) {
-  if (typeof x === "number" || x.TAG !== /* C */0) {
+  if (typeof x !== "object" || x.TAG !== "C") {
     return 0;
   } else {
     return x.x;
@@ -44,11 +44,11 @@ function f2(x) {
 }
 
 function f2_with(x) {
-  if (typeof x === "number" || x.TAG !== /* C */0) {
+  if (typeof x !== "object" || x.TAG !== "C") {
     return x;
   } else {
     return {
-            TAG: /* C */0,
+            TAG: "C",
             x: 0,
             y: x.y
           };
@@ -79,7 +79,7 @@ function u(f) {
   }
 }
 
-Mt.from_pair_suites("File \"record_extension_test.ml\", line 56, characters 22-29", suites.contents);
+Mt.from_pair_suites("File \"record_extension_test.res\", line 55, characters 29-36", suites.contents);
 
 exports.suites = suites;
 exports.test_id = test_id;

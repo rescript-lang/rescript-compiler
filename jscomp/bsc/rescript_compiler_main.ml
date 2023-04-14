@@ -24,7 +24,7 @@ let setup_compiler_printer (syntax_kind : [ syntax_kind | `default])=
   (match syntax_kind with 
    | `default -> ()  
    | #syntax_kind as k -> Config.syntax_kind := k);   
-  let syntax_kind = !Config.syntax_kind in 
+  let syntax_kind = !Config.syntax_kind in
   if syntax_kind = `rescript then begin 
     Lazy.force Super_main.setup;  
     Lazy.force Res_outcome_printer.setup  
@@ -51,11 +51,12 @@ let process_file sourcefile ?(kind ) ppf =
      The {!Location.input_name} relies on that we write the binary ast 
      properly
   *)
+  let uncurried = !Config.uncurried in
   let kind =
     match kind with 
     | None -> Ext_file_extensions.classify_input (Ext_filename.get_extension_maybe sourcefile)  
     | Some kind -> kind in 
-  match kind with 
+  let res = match kind with 
   | Ml ->
     let sourcefile = set_abs_input_name  sourcefile in     
     setup_compiler_printer `ml;
@@ -72,13 +73,13 @@ let process_file sourcefile ?(kind ) ppf =
     let sourcefile = set_abs_input_name  sourcefile in     
     setup_compiler_printer `rescript;
     Js_implementation.implementation 
-      ~parser:Res_driver.parse_implementation
+      ~parser:(Res_driver.parse_implementation ~ignoreParseErrors:!Clflags.ignore_parse_errors)
       ppf sourcefile 
   | Resi ->   
     let sourcefile = set_abs_input_name  sourcefile in 
     setup_compiler_printer `rescript;
     Js_implementation.interface 
-      ~parser:Res_driver.parse_interface
+      ~parser:(Res_driver.parse_interface ~ignoreParseErrors:!Clflags.ignore_parse_errors)
       ppf sourcefile      
   | Intf_ast 
     ->     
@@ -103,6 +104,9 @@ let process_file sourcefile ?(kind ) ppf =
     Format.pp_print_newline Format.std_formatter ()      
   | Unknown -> 
     Bsc_args.bad_arg ("don't know what to do with " ^ sourcefile)
+  in
+  Config.uncurried := uncurried;
+  res
 let usage = "Usage: bsc <options> <files>\nOptions are:"
 
 let ppf = Format.err_formatter
@@ -153,7 +157,7 @@ let format_file input =
     | Ml | Mli -> `ml
     | Res | Resi -> `res 
     | _ -> Bsc_args.bad_arg ("don't know what to do with " ^ input) in   
-  let formatted =   Res_multi_printer.print syntax ~input in 
+  let formatted = Res_multi_printer.print ~ignoreParseErrors:!Clflags.ignore_parse_errors syntax ~input in 
   match !Clflags.output_name with 
   | None ->
     output_string stdout formatted
@@ -245,20 +249,17 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
 
     "-bs-jsx", string_call (fun i -> 
       (if i <> "3" && i <> "4" then Bsc_args.bad_arg (" Not supported jsx version : " ^  i));
-      let open Js_config in
-      jsx_version := jsx_version_of_int @@ int_of_string i),
+      Js_config.jsx_version := Js_config.jsx_version_of_int @@ int_of_string i),
     "*internal* Set jsx version";
 
     "-bs-jsx-module", string_call (fun i ->
       (if i <> "react" then Bsc_args.bad_arg (" Not supported jsx-module : " ^ i));
-      let open Js_config in
-      Js_config.jsx_module := jsx_module_of_string i),
+      Js_config.jsx_module := Js_config.jsx_module_of_string i),
     "*internal* Set jsx module";
 
     "-bs-jsx-mode", string_call (fun i ->
       (if i <> "classic" && i <> "automatic" then Bsc_args.bad_arg (" Not supported jsx-mode : " ^ i));
-      let open Js_config in
-      Js_config.jsx_mode := jsx_mode_of_string i),
+      Js_config.jsx_mode := Js_config.jsx_mode_of_string i),
     "*internal* Set jsx mode";
 
     "-bs-package-output", string_call Js_packages_state.update_npm_package_path, 
@@ -392,6 +393,9 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "-only-parse", set Clflags.only_parse, 
     "*internal* stop after parsing";
 
+    "-ignore-parse-errors", set Clflags.ignore_parse_errors, 
+    "*internal* continue after parse errors";
+
     "-where", unit_call print_standard_library, 
     "*internal* Print location of standard library and exit";
 
@@ -406,8 +410,8 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
 
     "-nopervasives", set Clflags.nopervasives, 
     "*internal*";
-    "-bs-uncurry", set Config.default_uncurry,
-    "*internal" ;
+    "-uncurried", unit_call (fun () -> Config.uncurried := Uncurried),
+    "*internal* Set jsx module";
     "-v", unit_call print_version_string,
     "Print compiler version and location of standard library and exit";  
 

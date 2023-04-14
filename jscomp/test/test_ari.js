@@ -31,14 +31,14 @@ function ff(param) {
 
 var fff = VV.test_primit2(3);
 
-function length_aux(_len, _param) {
+function length_aux(_len, _x) {
   while(true) {
-    var param = _param;
+    var x = _x;
     var len = _len;
-    if (!param) {
+    if (!x) {
       return len;
     }
-    _param = param.tl;
+    _x = x.tl;
     _len = len + 1 | 0;
     continue ;
   };

@@ -6,10 +6,6 @@ import {someFunWithNullThenOptionalArgs as someFunWithNullThenOptionalArgsNotChe
 
 import {someFunWithNullUndefinedArg as someFunWithNullUndefinedArgNotChecked} from './CoreTS';
 
-const $$toJS552311971: { [key: string]: any } = {"0": "A"};
-
-const $$toRE552311971: { [key: string]: any } = {"A": 0};
-
 // In case of type error, check the type of 'someFunWithNullThenOptionalArgs' in 'Core.res' and './CoreTS'.
 export const someFunWithNullThenOptionalArgsTypeChecked: (_1:(null | string), _2:(undefined | string)) => string = someFunWithNullThenOptionalArgsNotChecked;
 
@@ -26,7 +22,7 @@ export const someFunWithNullUndefinedArg: unknown = someFunWithNullUndefinedArgT
 const CoreBS = require('./Core.bs');
 
 // tslint:disable-next-line:interface-over-type-literal
-export type variant = "A" | { tag: "B"; value: string };
+export type variant = "A" | { TAG: "B"; _0: string };
 
 // tslint:disable-next-line:interface-over-type-literal
 export type t1 = { readonly x?: string };
@@ -76,11 +72,4 @@ export const weakset1: (x:WeakSet<number[]>) => WeakSet<number[]> = CoreBS.weaks
 
 export const option0: (x:(undefined | string)) => (undefined | string) = CoreBS.option0;
 
-export const option1: (x:(undefined | variant)) => (undefined | variant) = function (Arg1: any) {
-  const result = CoreBS.option1((Arg1 == null ? Arg1 : typeof(Arg1) === 'object'
-    ? {TAG: 0, _0:Arg1.value} as any
-    : $$toRE552311971[Arg1]));
-  return (result == null ? result : typeof(result) === 'object'
-    ? {tag:"B", value:result._0}
-    : $$toJS552311971[result])
-};
+export const option1: (x:(undefined | variant)) => (undefined | variant) = CoreBS.option1;

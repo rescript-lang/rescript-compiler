@@ -17,7 +17,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -55,7 +55,7 @@ var v = new Make(1, 2, 3, 4);
 
 var u = v.sum();
 
-eq("File \"ffi_splice_test.ml\", line 61, characters 12-19", u, 10);
+eq("File \"ffi_splice_test.res\", line 56, characters 12-19", u, 10);
 
 Mt.from_pair_suites("Ffi_splice_test", suites.contents);
 

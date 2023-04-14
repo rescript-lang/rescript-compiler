@@ -17,7 +17,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -39,7 +39,7 @@ function unary(a) {
 
 var xx = 6;
 
-eq("File \"ppx_apply_test.ml\", line 17, characters 5-12", u, 3);
+eq("File \"ppx_apply_test.res\", line 16, characters 12-19", u, 3);
 
 function h(a) {
   return xx(a);

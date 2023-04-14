@@ -1,12 +1,15 @@
 'use strict';
 
 
-var a = /* Color */{
+var a = {
+  TAG: "Color",
   _0: "#ffff"
 };
 
-var c = "white";
+var c;
+
+c = typeof a !== "object" ? "orange" : "white";
 
 exports.a = a;
 exports.c = c;
-/* No side effect */
+/* c Not a pure module */

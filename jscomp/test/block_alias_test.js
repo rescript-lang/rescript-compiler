@@ -23,7 +23,7 @@ function b(loc, x) {
 var Block = {};
 
 var v0 = {
-  TAG: /* A */1,
+  TAG: "A",
   _0: 0,
   _1: 1
 };
@@ -31,7 +31,7 @@ var v0 = {
 var Block$1 = {};
 
 var v1 = {
-  TAG: /* A */1,
+  TAG: "A",
   _0: 0,
   _1: 1
 };
@@ -51,7 +51,7 @@ var V = {
 
 var f = Caml_obj.equal;
 
-eq("File \"block_alias_test.ml\", line 32, characters 6-13", List.length({
+eq("File \"block_alias_test.res\", line 27, characters 3-10", List.length({
           hd: 1,
           tl: {
             hd: 2,
@@ -59,13 +59,13 @@ eq("File \"block_alias_test.ml\", line 32, characters 6-13", List.length({
           }
         }), 2);
 
-b("File \"block_alias_test.ml\", line 33, characters 5-12", Caml_obj.equal(v0, {
-          TAG: /* A */1,
+b("File \"block_alias_test.res\", line 28, characters 2-9", Caml_obj.equal(v0, {
+          TAG: "A",
           _0: 0,
           _1: 1
         }));
 
-eq("File \"block_alias_test.ml\", line 34, characters 6-13", v0, v1);
+eq("File \"block_alias_test.res\", line 29, characters 3-10", v0, v1);
 
 Mt.from_pair_suites("Block_alias_test", suites.contents);
 

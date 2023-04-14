@@ -62,15 +62,15 @@ type mapper = {
   class_signature: mapper -> class_signature -> class_signature;
   class_structure: mapper -> class_structure -> class_structure;
   class_type: mapper -> class_type -> class_type;
-  class_type_declaration: mapper -> class_type_declaration
-    -> class_type_declaration;
+  class_type_declaration:
+    mapper -> class_type_declaration -> class_type_declaration;
   class_type_field: mapper -> class_type_field -> class_type_field;
-  constructor_declaration: mapper -> constructor_declaration
-    -> constructor_declaration;
+  constructor_declaration:
+    mapper -> constructor_declaration -> constructor_declaration;
   expr: mapper -> expression -> expression;
   extension: mapper -> extension -> extension;
-  extension_constructor: mapper -> extension_constructor
-    -> extension_constructor;
+  extension_constructor:
+    mapper -> extension_constructor -> extension_constructor;
   include_declaration: mapper -> include_declaration -> include_declaration;
   include_description: mapper -> include_description -> include_description;
   label_declaration: mapper -> label_declaration -> label_declaration;
@@ -79,8 +79,8 @@ type mapper = {
   module_declaration: mapper -> module_declaration -> module_declaration;
   module_expr: mapper -> module_expr -> module_expr;
   module_type: mapper -> module_type -> module_type;
-  module_type_declaration: mapper -> module_type_declaration
-    -> module_type_declaration;
+  module_type_declaration:
+    mapper -> module_type_declaration -> module_type_declaration;
   open_description: mapper -> open_description -> open_description;
   pat: mapper -> pattern -> pattern;
   payload: mapper -> payload -> payload;
@@ -90,11 +90,12 @@ type mapper = {
   structure_item: mapper -> structure_item -> structure_item;
   typ: mapper -> core_type -> core_type;
   type_declaration: mapper -> type_declaration -> type_declaration;
-  type_declaration_list: mapper -> type_declaration list -> type_declaration list;  
+  type_declaration_list:
+    mapper -> type_declaration list -> type_declaration list;
   type_extension: mapper -> type_extension -> type_extension;
   type_kind: mapper -> type_kind -> type_kind;
   value_binding: mapper -> value_binding -> value_binding;
-  value_bindings_rec: mapper -> value_binding list -> value_binding list;  
+  value_bindings_rec: mapper -> value_binding list -> value_binding list;
   value_bindings: mapper -> value_binding list -> value_binding list;
   value_description: mapper -> value_description -> value_description;
   with_constraint: mapper -> with_constraint -> with_constraint;
@@ -104,5 +105,5 @@ type mapper = {
     argument the mapper to be applied to children in the syntax
     tree. *)
 
-val default_mapper: mapper
+val default_mapper : mapper
 (** A default mapper, which implements a "deep identity" mapping. *)

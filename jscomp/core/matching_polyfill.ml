@@ -22,30 +22,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let is_nullary_variant (x : Types.constructor_arguments) =
-  match x with Types.Cstr_tuple [] -> true | _ -> false
-
 let names_from_construct_pattern (pat : Typedtree.pattern) =
-  let names_from_type_variant (cstrs : Types.constructor_declaration list) =
-    let consts, blocks =
-      Ext_list.fold_left cstrs ([], []) (fun (consts, blocks) cstr ->
-          if is_nullary_variant cstr.cd_args then
-            (Ident.name cstr.cd_id :: consts, blocks)
-          else (consts, Ident.name cstr.cd_id :: blocks))
-    in
-    Some
-      {
-        Lambda.consts = Ext_array.reverse_of_list consts;
-        blocks = Ext_array.reverse_of_list blocks;
-      }
-  in
   let rec resolve_path n (path : Path.t) =
     match Env.find_type path pat.pat_env with
-    | { type_kind = Type_variant cstrs; _ } -> names_from_type_variant cstrs
+    | { type_kind = Type_variant cstrs; _ } -> Ast_untagged_variants.names_from_type_variant cstrs
     | { type_kind = Type_abstract; type_manifest = Some t; _ } -> (
         match (Ctype.unalias t).desc with
         | Tconstr (pathn, _, _) ->
-            (* Format.eprintf "XXX path%d:%s path%d:%s@." n (Path.name path) (n+1) (Path.name pathn); *)
             resolve_path (n + 1) pathn
         | _ -> None)
     | { type_kind = Type_abstract; type_manifest = None; _ } -> None

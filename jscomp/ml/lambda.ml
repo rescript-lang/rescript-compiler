@@ -38,9 +38,10 @@ type record_repr =
   | Record_regular
   | Record_optional
 
+
 type tag_info = 
-  | Blk_constructor of {name : string ; num_nonconst : int ; tag : int }
-  | Blk_record_inlined of { name : string ; num_nonconst :  int;  tag : int;  optional_labels: string list; fields : string array; mutable_flag : Asttypes.mutable_flag }   
+  | Blk_constructor of {name : string ; num_nonconst : int ; tag : int; attrs : Parsetree.attributes }
+  | Blk_record_inlined of { name : string ; num_nonconst :  int;  tag : int;  optional_labels: string list; fields : string array; mutable_flag : Asttypes.mutable_flag; attrs : Parsetree.attributes }   
   | Blk_tuple
   | Blk_poly_var of string 
   | Blk_record of {fields : string array; mutable_flag : Asttypes.mutable_flag; record_repr : record_repr}  
@@ -96,9 +97,9 @@ let blk_record_ext =  ref (fun fields mutable_flag ->
     Blk_record_ext {fields = all_labels_info; mutable_flag }
   )
 
-let blk_record_inlined = ref (fun fields name num_nonconst optional_labels ~tag mutable_flag -> 
+let blk_record_inlined = ref (fun fields name num_nonconst optional_labels ~tag ~attrs mutable_flag -> 
   let fields = fields |> Array.map (fun (x,_) -> x.Types.lbl_name) in    
-  Blk_record_inlined {fields; name; num_nonconst; tag; mutable_flag; optional_labels}
+  Blk_record_inlined {fields; name; num_nonconst; tag; mutable_flag; optional_labels; attrs }
 ) 
 
 let ref_tag_info : tag_info = 
@@ -233,12 +234,11 @@ and raise_kind =
   | Raise_reraise
   | Raise_notrace
 
-type pointer_info = 
-  | Pt_constructor of {name : string; const : int ; non_const : int }
-  | Pt_variant of {name : string}
-  | Pt_module_alias 
-
-  | Pt_shape_none   
+type pointer_info =
+  | Pt_constructor of {name: string; const: int; non_const: int; attrs: Parsetree.attributes}
+  | Pt_variant of {name: string}
+  | Pt_module_alias
+  | Pt_shape_none
   | Pt_assertfalse
 
 
@@ -270,8 +270,8 @@ type function_attribute = {
   stub: bool;
   return_unit : bool;
   async : bool;
+  oneUnitArg : bool;
 }
-type switch_names = {consts: string array; blocks: string array}
 
 type lambda =
     Lvar of Ident.t
@@ -299,7 +299,8 @@ and lfunction =
     params: Ident.t list;
     body: lambda;
     attr: function_attribute; (* specified with [@inline] attribute *)
-    loc: Location.t; }
+    loc: Location.t;
+ }
 
 and lambda_apply =
   { ap_func : lambda;
@@ -314,7 +315,7 @@ and lambda_switch =
     sw_numblocks: int;
     sw_blocks: (int * lambda) list;
     sw_failaction : lambda option;
-    sw_names: switch_names option }
+    sw_names: Ast_untagged_variants.switch_names option }
 
 
 
@@ -323,7 +324,9 @@ and lambda_switch =
     not necessary "()", it can be used as a place holder for module 
     alias etc.
 *)
-let const_unit = Const_pointer(0, Pt_constructor{name = "()"; const = 1; non_const = 0})
+let const_unit =
+  Const_pointer
+    (0, Pt_constructor {name = "()"; const = 1; non_const = 0; attrs = []})
 
 let lambda_assert_false = Lconst (Const_pointer(0, Pt_assertfalse))  
 
@@ -337,6 +340,7 @@ let default_function_attribute = {
   stub = false;
   return_unit = false;
   async = false;
+  oneUnitArg = false;
 }
 
 let default_stub_attribute =

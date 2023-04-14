@@ -92,7 +92,7 @@ Mt.from_pair_suites("Pr_regression_test", {
         "partial",
         (function (param) {
             return {
-                    TAG: /* Eq */0,
+                    TAG: "Eq",
                     _0: [
                       5,
                       5,

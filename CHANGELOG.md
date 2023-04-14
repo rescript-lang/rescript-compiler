@@ -10,12 +10,44 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# 11.0.0-alpha.1 (unreleased)
+# 11.0.0-alpha.3 (Unreleased)
+
+#### :rocket: Main New Feature
+
+- Add support for extensible records (e.g. `type t = {...t1, x:int, ...t2}`) https://github.com/rescript-lang/rescript-compiler/pull/5715
+
+#### :bug: Bug Fix
+
+- Fix formatting and parentheses placement in uncurried functions with constraints. https://github.com/rescript-lang/rescript-compiler/pull/6143
+
+# 11.0.0-alpha.2
+
+#### :rocket: Main New Feature
+
+- Add support for type coercion `:>` for records. https://github.com/rescript-lang/rescript-compiler/pull/5721
+
+#### :bug: Bug Fix
+
+- Special case generation of uncurried functions with 1 argument of unit type so they don't take a parameter. https://github.com/rescript-lang/rescript-compiler/pull/6131
+
+
+# 11.0.0-alpha.1
+
+#### :rocket: Main New Feature
+
+- Introduce experimental uncurried mode. For experimentation only. [PR #5796](https://github.com/rescript-lang/rescript-compiler/pull/5796)
+- Customization of runtime representation of variants and introduction of untagged variants [PR #6095](https://github.com/rescript-lang/rescript-compiler/pull/6095), [PR #6103](https://github.com/rescript-lang/rescript-compiler/pull/6103)
 
 #### :rocket: New Feature
 
-- Introduce experimental uncurried by default mode. Can be turned on mid-file by adding standalone annotation `@@uncurried`. For experimentation only. https://github.com/rescript-lang/rescript-compiler/pull/5796
-- Adding `@@toUncurried` to the file and reformat will convert to uncurried syntax https://github.com/rescript-lang/rescript-compiler/pull/5800
+- Add support for uncurried mode: a mode where everything is considered uncurried, whether with or without the `.`. This can be turned on with `@@uncurried` locally in a file. For project-level configuration in `bsconfig.json`, there's a boolean config `"uncurried"`, which propagates to dependencies, to turn on uncurried mode.
+Since there's no syntax for partial application in this new mode, introduce `@res.partial foo(x)` to express partial application. This is temporary and will later have some surface syntax.
+Make uncurried functions a subtype of curried functions, and allow application for uncurried functions.
+The `make` function of components is generated as an uncurried function.
+Use best effort to determine the config when formatting a file.
+https://github.com/rescript-lang/rescript-compiler/pull/5968 https://github.com/rescript-lang/rescript-compiler/pull/6080 https://github.com/rescript-lang/rescript-compiler/pull/6086 https://github.com/rescript-lang/rescript-compiler/pull/6087
+- Customization of runtime representation of variants. This is work in progress. E.g. some restrictions on the input. See comments of the form "TODO: put restriction on the variant definitions allowed, to make sure this never happens". https://github.com/rescript-lang/rescript-compiler/pull/6095
+- Introduce untagged variants https://github.com/rescript-lang/rescript-compiler/pull/6103
 - Add support for unary uncurried pipe in uncurried mode https://github.com/rescript-lang/rescript-compiler/pull/5804
 - Add support for partial application of uncurried functions: with uncurried application one can provide a
 subset of the arguments, and return a curried type with the remaining ones https://github.com/rescript-lang/rescript-compiler/pull/5805
@@ -24,18 +56,32 @@ subset of the arguments, and return a curried type with the remaining ones https
 - Add support for default arguments in uncurried functions https://github.com/rescript-lang/rescript-compiler/pull/5835
 - Inline uncurried application when it is safe https://github.com/rescript-lang/rescript-compiler/pull/5847
 - Support optional named arguments without a final unit in uncurried functions https://github.com/rescript-lang/rescript-compiler/pull/5907
+- GenType: add the option to use the `@genType` annotation at the module level, meaning that all the items in the module should be exported. https://github.com/rescript-lang/rescript-compiler/pull/6113
+- GenType: add support for `@genType` annotations on module definitions. https://github.com/rescript-lang/rescript-compiler/pull/6113
+- Prebuilt binaries are now provided for all major platforms:
+  - macOS x64
+  - macOS ARM
+  - Linux x64 (statically linked)
+  - Linux ARM (statically linked)
+  - Windows x64
 
 #### :boom: Breaking Change
 
 - Remove support for the legacy Reason syntax. Existing Reason code can be converted to ReScript syntax using ReScript 9 as follows:
   - `npm i -g rescript@9`
   - `rescript convert <reason files>`
-- Remove obsolete built-in project templates and the "rescript init" functionality. This will be replaced by the create-rescript-app project that is maintained separately.
+- Remove obsolete built-in project templates and the "rescript init" functionality. This is replaced by [create-rescript-app](https://github.com/rescript-lang/create-rescript-app) which is maintained separately.
+- Do not attempt to build ReScript from source on npm postinstall for platforms without prebuilt binaries anymore.
 - Made pinned dependencies transitive: if *a* is a pinned dependency of *b* and *b* is a pinned dependency of *c*, then *a* is implicitly a pinned dependency of *c*. This change is only breaking if your build process assumes non-transitivity.
 - Curried after uncurried is not fused anymore: `(. x) => y => 3` is not equivalent to `(. x, y) => 3` anymore. It's instead equivalent to `(. x) => { y => 3 }`.
 Also, `(. int) => string => bool` is not equivalen to `(. int, string) => bool` anymore.
 These are only breaking changes for unformatted code.
 - Exponentiation operator `**` is now right-associative. `2. ** 3. ** 2.` now compile to `Math.pow(2, Math.pow(3, 2))` and not anymore `Math.pow(Math.pow(2, 3), 2)`. Parentheses can be used to change precedence.
+- Remove unsafe ``` j`$(a)$(b)` ``` interpolation deprecated in compiler version 10 https://github.com/rescript-lang/rescript-compiler/pull/6068
+- Remove deprecated module `Printexc`
+- `@deriving(jsConverter)` not supported anymore for variant types https://github.com/rescript-lang/rescript-compiler/pull/6088
+- New representation for variants, where the tag is a string instead of a number. https://github.com/rescript-lang/rescript-compiler/pull/6088
+- GenType: removed support for `@genType.as` for records and variants which has become unnecessary. Use the language's `@as` instead to channge the runtime representation without requiring any runtime conversion during FFI. https://github.com/rescript-lang/rescript-compiler/pull/6099 https://github.com/rescript-lang/rescript-compiler/pull/6101
 
 #### :bug: Bug Fix
 
@@ -50,6 +96,13 @@ These are only breaking changes for unformatted code.
 - Parser: fix location of variable when function definition `{v => ...}` is enclosed in braces https://github.com/rescript-lang/rescript-compiler/pull/5949
 - Fix issue with error messages for uncurried functions where expected and given type were swapped https://github.com/rescript-lang/rescript-compiler/pull/5973
 - Fix issue with integer overflow check https://github.com/rescript-lang/rescript-compiler/pull/6028
+- Make internal encoding of locations aware of unicode https://github.com/rescript-lang/rescript-compiler/pull/6073
+- Fix issue where `foo(x,_)` in uncurried mode would generate a curried function https://github.com/rescript-lang/rescript-compiler/pull/6082
+- Fix printing of uncurried application when the lhs is a function definition https://github.com/rescript-lang/rescript-compiler/pull/6084
+- Fix parsing uncurried type starting with path https://github.com/rescript-lang/rescript-compiler/pull/6089
+- Fix bigInt comparison https://github.com/rescript-lang/rescript-compiler/pull/6097
+- Fixed a bug where the async attribute was not preserved when using the `@this` decorator in ReScript functions. This fix allows proper handling of async functions with the `@this` decorator. Issue: https://github.com/rescript-lang/rescript-compiler/issues/6100
+- Fix issue with GenType and module aliases https://github.com/rescript-lang/rescript-compiler/issues/6112
 
 #### :nail_care: Polish
 
@@ -63,15 +116,29 @@ These are only breaking changes for unformatted code.
 - Process `@set` annotation for field update as generating an uncurried function https://github.com/rescript-lang/rescript-compiler/pull/5846
 - Treat uncurried application of primitives like curried application, which produces better output https://github.com/rescript-lang/rescript-compiler/pull/5851
 - New internal representation for uncurried functions using built-in type `function$<fun_type, arity>` this avoids having to declare all the possible arities ahead of time https://github.com/rescript-lang/rescript-compiler/pull/5870
-- Better error message for extension point https://github.com/rescript-lang/rescript-compiler/pull/5965
+- PPX V3: allow uncurried `make` function and treat it like a curried one https://github.com/rescript-lang/rescript-compiler/pull/6081
+- Add support for `|>` in uncurried mode by desugaring it https://github.com/rescript-lang/rescript-compiler/pull/6083
+- Change the compilation of pattern matching for variants so it does not depends on variats being integers https://github.com/rescript-lang/rescript-compiler/pull/6085
+- Improve code generated for string templates https://github.com/rescript-lang/rescript-compiler/pull/6090
+- Move Jsx and JsxDOM and JsxEvent and JsxPPXReactSupport inside Pervasives and build them separately for curried and uncurried mode https://github.com/rescript-lang/rescript-compiler/pull/6091
+- Gentype: allow recursive data types https://github.com/rescript-association/genType/issues/585
 
 # 10.1.4
 
 #### :bug: Bug Fix
 - Fix implementation of directives https://github.com/rescript-lang/rescript-compiler/pull/6052
+- Fix issue if the `lib` dir is included in the sources of bsconfig.json https://github.com/rescript-lang/rescript-compiler/pull/6055
+- Fix issue with string escape in pattern match https://github.com/rescript-lang/rescript-compiler/pull/6062
+- Fix issue with literal comparison of string constants https://github.com/rescript-lang/rescript-compiler/pull/6065
 
 #### :rocket: New Feature
 - Add support for toplevel `await` https://github.com/rescript-lang/rescript-compiler/pull/6054
+
+#### :nail_care: Polish
+
+- Better error message for extension point https://github.com/rescript-lang/rescript-compiler/pull/6057
+- Improve format check help https://github.com/rescript-lang/rescript-compiler/pull/6056
+- Deprecate unsafe ``` j`$(a)$(b)` ``` interpolation: use string templates ``` `${a}${b}` ``` instead https://github.com/rescript-lang/rescript-compiler/pull/6067
 
 # 10.1.3
 

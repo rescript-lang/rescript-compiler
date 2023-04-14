@@ -1,3 +1,0 @@
-
-(** *)
-(* val assertions : unit -> unit  *)

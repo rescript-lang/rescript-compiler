@@ -53,9 +53,10 @@ val parsingEngine : Res_diagnostics.t list parsingEngine
 val printEngine : printEngine
 
 (* ReScript implementation parsing compatible with ocaml pparse driver. Used by the compiler. *)
-val parse_implementation : string -> Parsetree.structure
+val parse_implementation :
+  ?ignoreParseErrors:bool -> string -> Parsetree.structure
   [@@live] [@@raises Location.Error]
 
 (* ReScript interface parsing compatible with ocaml pparse driver. Used by the compiler *)
-val parse_interface : string -> Parsetree.signature
+val parse_interface : ?ignoreParseErrors:bool -> string -> Parsetree.signature
   [@@live] [@@raises Location.Error]

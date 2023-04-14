@@ -3,24 +3,45 @@
 
 function compare(x, y) {
   switch (x) {
-    case /* A */0 :
-        return y === /* A */0;
-    case /* B */1 :
-        return y === /* B */1;
-    case /* C */2 :
-        return y === /* C */2;
+    case "A" :
+        return y === "A";
+    case "B" :
+        return y === "B";
+    case "C" :
+        return y === "C";
     
   }
 }
 
 function compare2(x, y) {
   switch (x) {
-    case /* A */0 :
-        return y === 0;
-    case /* B */1 :
-        return y === 1;
-    case /* C */2 :
-        return y >= 2;
+    case "A" :
+        switch (y) {
+          case "A" :
+              return true;
+          case "B" :
+          case "C" :
+              return false;
+          
+        }
+    case "B" :
+        switch (y) {
+          case "B" :
+              return true;
+          case "A" :
+          case "C" :
+              return false;
+          
+        }
+    case "C" :
+        switch (y) {
+          case "A" :
+          case "B" :
+              return false;
+          case "C" :
+              return true;
+          
+        }
     
   }
 }

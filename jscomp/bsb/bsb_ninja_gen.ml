@@ -159,6 +159,7 @@ let output_ninja_and_namespace_map ~per_proj_dir ~package_kind
        built_in_dependency;
        reason_react_jsx;
        jsx;
+       uncurried;
        generators;
        namespace;
        warning;
@@ -205,7 +206,7 @@ let output_ninja_and_namespace_map ~per_proj_dir ~package_kind
   let rules : Bsb_ninja_rule.builtin =
     Bsb_ninja_rule.make_custom_rules ~gentype_config
       ~has_postbuild:js_post_build_cmd ~pp_file ~has_builtin:built_in_dependency
-      ~reason_react_jsx ~jsx ~package_specs ~namespace ~digest ~package_name
+      ~reason_react_jsx ~jsx ~uncurried ~package_specs ~namespace ~digest ~package_name
       ~warnings ~ppx_files ~bsc_flags ~dpkg_incls (* dev dependencies *)
       ~lib_incls (* its own libs *)
       ~dev_incls (* its own devs *)

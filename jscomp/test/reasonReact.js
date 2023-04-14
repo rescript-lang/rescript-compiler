@@ -32,7 +32,7 @@ function initialStateDefault(param) {
 }
 
 function reducerDefault(_action, _state) {
-  return /* NoUpdate */0;
+  return "NoUpdate";
 }
 
 function basicComponent(debugName) {
@@ -67,7 +67,8 @@ var reducerComponentWithRetainedProps = basicComponent;
 function element(keyOpt, refOpt, component) {
   var key = keyOpt !== undefined ? keyOpt : undefined;
   var ref = refOpt !== undefined ? refOpt : undefined;
-  var element$1 = /* Element */{
+  var element$1 = {
+    TAG: "Element",
     _0: component
   };
   var jsElementWrapped = component.jsElementWrapped;

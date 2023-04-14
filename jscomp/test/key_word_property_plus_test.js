@@ -18,7 +18,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -28,7 +28,7 @@ function eq(loc, x, y) {
   };
 }
 
-eq("File \"key_word_property_plus_test.ml\", line 10, characters 5-12", [
+eq("File \"key_word_property_plus_test.res\", line 10, characters 2-9", [
         1,
         2,
         3,

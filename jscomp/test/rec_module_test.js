@@ -77,13 +77,13 @@ var Even = {};
 var Odd = {};
 
 function compare(t1, t2) {
-  if (t1.TAG === /* Leaf */0) {
-    if (t2.TAG === /* Leaf */0) {
+  if (t1.TAG === "Leaf") {
+    if (t2.TAG === "Leaf") {
       return Caml.string_compare(t1._0, t2._0);
     } else {
       return 1;
     }
-  } else if (t2.TAG === /* Leaf */0) {
+  } else if (t2.TAG === "Leaf") {
     return -1;
   } else {
     return Curry._2(ASet.compare, t1._0, t2._0);
@@ -95,17 +95,20 @@ var AAA = {
 };
 
 function height(param) {
-  if (param) {
-    return param.h;
-  } else {
+  if (typeof param !== "object") {
     return 0;
+  } else {
+    return param.h;
   }
 }
 
 function create(l, v, r) {
-  var hl = l ? l.h : 0;
-  var hr = r ? r.h : 0;
-  return /* Node */{
+  var hl;
+  hl = typeof l !== "object" ? 0 : l.h;
+  var hr;
+  hr = typeof r !== "object" ? 0 : r.h;
+  return {
+          TAG: "Node",
           l: l,
           v: v,
           r: r,
@@ -114,24 +117,26 @@ function create(l, v, r) {
 }
 
 function bal(l, v, r) {
-  var hl = l ? l.h : 0;
-  var hr = r ? r.h : 0;
+  var hl;
+  hl = typeof l !== "object" ? 0 : l.h;
+  var hr;
+  hr = typeof r !== "object" ? 0 : r.h;
   if (hl > (hr + 2 | 0)) {
-    if (l) {
-      var lr = l.r;
-      var lv = l.v;
-      var ll = l.l;
-      if (height(ll) >= height(lr)) {
-        return create(ll, lv, create(lr, v, r));
-      }
-      if (lr) {
-        return create(create(ll, lv, lr.l), lr.v, create(lr.r, v, r));
-      }
+    if (typeof l !== "object") {
       throw {
             RE_EXN_ID: "Invalid_argument",
             _1: "Set.bal",
             Error: new Error()
           };
+    }
+    var lr = l.r;
+    var lv = l.v;
+    var ll = l.l;
+    if (height(ll) >= height(lr)) {
+      return create(ll, lv, create(lr, v, r));
+    }
+    if (typeof lr === "object") {
+      return create(create(ll, lv, lr.l), lr.v, create(lr.r, v, r));
     }
     throw {
           RE_EXN_ID: "Invalid_argument",
@@ -140,28 +145,29 @@ function bal(l, v, r) {
         };
   }
   if (hr <= (hl + 2 | 0)) {
-    return /* Node */{
+    return {
+            TAG: "Node",
             l: l,
             v: v,
             r: r,
             h: hl >= hr ? hl + 1 | 0 : hr + 1 | 0
           };
   }
-  if (r) {
-    var rr = r.r;
-    var rv = r.v;
-    var rl = r.l;
-    if (height(rr) >= height(rl)) {
-      return create(create(l, v, rl), rv, rr);
-    }
-    if (rl) {
-      return create(create(l, v, rl.l), rl.v, create(rl.r, rv, rr));
-    }
+  if (typeof r !== "object") {
     throw {
           RE_EXN_ID: "Invalid_argument",
           _1: "Set.bal",
           Error: new Error()
         };
+  }
+  var rr = r.r;
+  var rv = r.v;
+  var rl = r.l;
+  if (height(rr) >= height(rl)) {
+    return create(create(l, v, rl), rv, rr);
+  }
+  if (typeof rl === "object") {
+    return create(create(l, v, rl.l), rl.v, create(rl.r, rv, rr));
   }
   throw {
         RE_EXN_ID: "Invalid_argument",
@@ -171,11 +177,12 @@ function bal(l, v, r) {
 }
 
 function add(x, t) {
-  if (!t) {
-    return /* Node */{
-            l: /* Empty */0,
+  if (typeof t !== "object") {
+    return {
+            TAG: "Node",
+            l: "Empty",
             v: x,
-            r: /* Empty */0,
+            r: "Empty",
             h: 1
           };
   }
@@ -203,39 +210,40 @@ function add(x, t) {
 }
 
 function singleton(x) {
-  return /* Node */{
-          l: /* Empty */0,
+  return {
+          TAG: "Node",
+          l: "Empty",
           v: x,
-          r: /* Empty */0,
+          r: "Empty",
           h: 1
         };
 }
 
 function add_min_element(x, param) {
-  if (param) {
-    return bal(add_min_element(x, param.l), param.v, param.r);
-  } else {
+  if (typeof param !== "object") {
     return singleton(x);
+  } else {
+    return bal(add_min_element(x, param.l), param.v, param.r);
   }
 }
 
 function add_max_element(x, param) {
-  if (param) {
-    return bal(param.l, param.v, add_max_element(x, param.r));
-  } else {
+  if (typeof param !== "object") {
     return singleton(x);
+  } else {
+    return bal(param.l, param.v, add_max_element(x, param.r));
   }
 }
 
 function join(l, v, r) {
-  if (!l) {
+  if (typeof l !== "object") {
     return add_min_element(v, r);
   }
-  if (!r) {
+  var lh = l.h;
+  if (typeof r !== "object") {
     return add_max_element(v, l);
   }
   var rh = r.h;
-  var lh = l.h;
   if (lh > (rh + 2 | 0)) {
     return bal(l.l, l.v, join(l.r, v, r));
   } else if (rh > (lh + 2 | 0)) {
@@ -248,29 +256,29 @@ function join(l, v, r) {
 function min_elt(_param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var l = param.l;
-      if (!l) {
-        return param.v;
-      }
-      _param = l;
-      continue ;
+    if (typeof param !== "object") {
+      throw {
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
+          };
     }
-    throw {
-          RE_EXN_ID: "Not_found",
-          Error: new Error()
-        };
+    var l = param.l;
+    if (typeof l !== "object") {
+      return param.v;
+    }
+    _param = l;
+    continue ;
   };
 }
 
 function min_elt_opt(_param) {
   while(true) {
     var param = _param;
-    if (!param) {
+    if (typeof param !== "object") {
       return ;
     }
     var l = param.l;
-    if (!l) {
+    if (typeof l !== "object") {
       return Caml_option.some(param.v);
     }
     _param = l;
@@ -281,29 +289,29 @@ function min_elt_opt(_param) {
 function max_elt(_param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var r = param.r;
-      if (!r) {
-        return param.v;
-      }
-      _param = r;
-      continue ;
+    if (typeof param !== "object") {
+      throw {
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
+          };
     }
-    throw {
-          RE_EXN_ID: "Not_found",
-          Error: new Error()
-        };
+    var r = param.r;
+    if (typeof r !== "object") {
+      return param.v;
+    }
+    _param = r;
+    continue ;
   };
 }
 
 function max_elt_opt(_param) {
   while(true) {
     var param = _param;
-    if (!param) {
+    if (typeof param !== "object") {
       return ;
     }
     var r = param.r;
-    if (!r) {
+    if (typeof r !== "object") {
       return Caml_option.some(param.v);
     }
     _param = r;
@@ -312,39 +320,37 @@ function max_elt_opt(_param) {
 }
 
 function remove_min_elt(param) {
-  if (param) {
-    var l = param.l;
-    if (l) {
-      return bal(remove_min_elt(l), param.v, param.r);
-    } else {
-      return param.r;
-    }
+  if (typeof param !== "object") {
+    throw {
+          RE_EXN_ID: "Invalid_argument",
+          _1: "Set.remove_min_elt",
+          Error: new Error()
+        };
   }
-  throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Set.remove_min_elt",
-        Error: new Error()
-      };
+  var l = param.l;
+  if (typeof l !== "object") {
+    return param.r;
+  } else {
+    return bal(remove_min_elt(l), param.v, param.r);
+  }
 }
 
 function concat(t1, t2) {
-  if (t1) {
-    if (t2) {
-      return join(t1, min_elt(t2), remove_min_elt(t2));
-    } else {
-      return t1;
-    }
-  } else {
+  if (typeof t1 !== "object") {
     return t2;
+  } else if (typeof t2 !== "object") {
+    return t1;
+  } else {
+    return join(t1, min_elt(t2), remove_min_elt(t2));
   }
 }
 
 function split(x, param) {
-  if (!param) {
+  if (typeof param !== "object") {
     return [
-            /* Empty */0,
+            "Empty",
             false,
-            /* Empty */0
+            "Empty"
           ];
   }
   var r = param.r;
@@ -375,17 +381,17 @@ function split(x, param) {
 }
 
 function is_empty(param) {
-  if (param) {
-    return false;
-  } else {
+  if (typeof param !== "object") {
     return true;
+  } else {
+    return false;
   }
 }
 
 function mem(x, _param) {
   while(true) {
     var param = _param;
-    if (!param) {
+    if (typeof param !== "object") {
       return false;
     }
     var c = Curry._2(AAA.compare, x, param.v);
@@ -398,22 +404,20 @@ function mem(x, _param) {
 }
 
 function remove(x, t) {
-  if (!t) {
-    return /* Empty */0;
+  if (typeof t !== "object") {
+    return "Empty";
   }
   var r = t.r;
   var v = t.v;
   var l = t.l;
   var c = Curry._2(AAA.compare, x, v);
   if (c === 0) {
-    if (l) {
-      if (r) {
-        return bal(l, min_elt(r), remove_min_elt(r));
-      } else {
-        return l;
-      }
-    } else {
+    if (typeof l !== "object") {
       return r;
+    } else if (typeof r !== "object") {
+      return l;
+    } else {
+      return bal(l, min_elt(r), remove_min_elt(r));
     }
   }
   if (c < 0) {
@@ -433,16 +437,16 @@ function remove(x, t) {
 }
 
 function union(s1, s2) {
-  if (!s1) {
+  if (typeof s1 !== "object") {
     return s2;
   }
-  if (!s2) {
+  var h1 = s1.h;
+  var v1 = s1.v;
+  if (typeof s2 !== "object") {
     return s1;
   }
   var h2 = s2.h;
   var v2 = s2.v;
-  var h1 = s1.h;
-  var v1 = s1.v;
   if (h1 >= h2) {
     if (h2 === 1) {
       return add(v2, s1);
@@ -458,11 +462,11 @@ function union(s1, s2) {
 }
 
 function inter(s1, s2) {
-  if (!s1) {
-    return /* Empty */0;
+  if (typeof s1 !== "object") {
+    return "Empty";
   }
-  if (!s2) {
-    return /* Empty */0;
+  if (typeof s2 !== "object") {
+    return "Empty";
   }
   var r1 = s1.r;
   var v1 = s1.v;
@@ -477,10 +481,10 @@ function inter(s1, s2) {
 }
 
 function diff(s1, s2) {
-  if (!s1) {
-    return /* Empty */0;
+  if (typeof s1 !== "object") {
+    return "Empty";
   }
-  if (!s2) {
+  if (typeof s2 !== "object") {
     return s1;
   }
   var r1 = s1.r;
@@ -499,10 +503,11 @@ function cons_enum(_s, _e) {
   while(true) {
     var e = _e;
     var s = _s;
-    if (!s) {
+    if (typeof s !== "object") {
       return e;
     }
-    _e = /* More */{
+    _e = {
+      TAG: "More",
       _0: s.v,
       _1: s.r,
       _2: e
@@ -513,19 +518,19 @@ function cons_enum(_s, _e) {
 }
 
 function compare$1(s1, s2) {
-  var _e1 = cons_enum(s1, /* End */0);
-  var _e2 = cons_enum(s2, /* End */0);
+  var _e1 = cons_enum(s1, "End");
+  var _e2 = cons_enum(s2, "End");
   while(true) {
     var e2 = _e2;
     var e1 = _e1;
-    if (!e1) {
-      if (e2) {
-        return -1;
-      } else {
+    if (typeof e1 !== "object") {
+      if (typeof e2 !== "object") {
         return 0;
+      } else {
+        return -1;
       }
     }
-    if (!e2) {
+    if (typeof e2 !== "object") {
       return 1;
     }
     var c = Curry._2(AAA.compare, e1._0, e2._0);
@@ -546,17 +551,17 @@ function subset(_s1, _s2) {
   while(true) {
     var s2 = _s2;
     var s1 = _s1;
-    if (!s1) {
+    if (typeof s1 !== "object") {
       return true;
     }
-    if (!s2) {
+    var r1 = s1.r;
+    var v1 = s1.v;
+    var l1 = s1.l;
+    if (typeof s2 !== "object") {
       return false;
     }
     var r2 = s2.r;
     var l2 = s2.l;
-    var r1 = s1.r;
-    var v1 = s1.v;
-    var l1 = s1.l;
     var c = Curry._2(AAA.compare, v1, s2.v);
     if (c === 0) {
       if (!subset(l1, l2)) {
@@ -567,10 +572,11 @@ function subset(_s1, _s2) {
       continue ;
     }
     if (c < 0) {
-      if (!subset(/* Node */{
+      if (!subset({
+              TAG: "Node",
               l: l1,
               v: v1,
-              r: /* Empty */0,
+              r: "Empty",
               h: 0
             }, l2)) {
         return false;
@@ -578,8 +584,9 @@ function subset(_s1, _s2) {
       _s1 = r1;
       continue ;
     }
-    if (!subset(/* Node */{
-            l: /* Empty */0,
+    if (!subset({
+            TAG: "Node",
+            l: "Empty",
             v: v1,
             r: r1,
             h: 0
@@ -594,7 +601,7 @@ function subset(_s1, _s2) {
 function iter(f, _param) {
   while(true) {
     var param = _param;
-    if (!param) {
+    if (typeof param !== "object") {
       return ;
     }
     iter(f, param.l);
@@ -608,7 +615,7 @@ function fold(f, _s, _accu) {
   while(true) {
     var accu = _accu;
     var s = _s;
-    if (!s) {
+    if (typeof s !== "object") {
       return accu;
     }
     _accu = Curry._2(f, s.v, fold(f, s.l, accu));
@@ -620,7 +627,7 @@ function fold(f, _s, _accu) {
 function for_all(p, _param) {
   while(true) {
     var param = _param;
-    if (!param) {
+    if (typeof param !== "object") {
       return true;
     }
     if (!Curry._1(p, param.v)) {
@@ -637,7 +644,7 @@ function for_all(p, _param) {
 function exists(p, _param) {
   while(true) {
     var param = _param;
-    if (!param) {
+    if (typeof param !== "object") {
       return false;
     }
     if (Curry._1(p, param.v)) {
@@ -652,8 +659,8 @@ function exists(p, _param) {
 }
 
 function filter(p, t) {
-  if (!t) {
-    return /* Empty */0;
+  if (typeof t !== "object") {
+    return "Empty";
   }
   var r = t.r;
   var v = t.v;
@@ -673,10 +680,10 @@ function filter(p, t) {
 }
 
 function partition(p, param) {
-  if (!param) {
+  if (typeof param !== "object") {
     return [
-            /* Empty */0,
-            /* Empty */0
+            "Empty",
+            "Empty"
           ];
   }
   var v = param.v;
@@ -701,10 +708,10 @@ function partition(p, param) {
 }
 
 function cardinal(param) {
-  if (param) {
-    return (cardinal(param.l) + 1 | 0) + cardinal(param.r) | 0;
-  } else {
+  if (typeof param !== "object") {
     return 0;
+  } else {
+    return (cardinal(param.l) + 1 | 0) + cardinal(param.r) | 0;
   }
 }
 
@@ -712,7 +719,7 @@ function elements_aux(_accu, _param) {
   while(true) {
     var param = _param;
     var accu = _accu;
-    if (!param) {
+    if (typeof param !== "object") {
       return accu;
     }
     _param = param.l;
@@ -731,60 +738,60 @@ function elements(s) {
 function find(x, _param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var v = param.v;
-      var c = Curry._2(AAA.compare, x, v);
-      if (c === 0) {
-        return v;
-      }
-      _param = c < 0 ? param.l : param.r;
-      continue ;
+    if (typeof param !== "object") {
+      throw {
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
+          };
     }
-    throw {
-          RE_EXN_ID: "Not_found",
-          Error: new Error()
-        };
+    var v = param.v;
+    var c = Curry._2(AAA.compare, x, v);
+    if (c === 0) {
+      return v;
+    }
+    _param = c < 0 ? param.l : param.r;
+    continue ;
   };
 }
 
 function find_first(f, _param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var v = param.v;
-      if (Curry._1(f, v)) {
-        var _v0 = v;
-        var _param$1 = param.l;
-        while(true) {
-          var param$1 = _param$1;
-          var v0 = _v0;
-          if (!param$1) {
-            return v0;
-          }
-          var v$1 = param$1.v;
-          if (Curry._1(f, v$1)) {
-            _param$1 = param$1.l;
-            _v0 = v$1;
-            continue ;
-          }
-          _param$1 = param$1.r;
-          continue ;
-        };
-      }
-      _param = param.r;
-      continue ;
+    if (typeof param !== "object") {
+      throw {
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
+          };
     }
-    throw {
-          RE_EXN_ID: "Not_found",
-          Error: new Error()
-        };
+    var v = param.v;
+    if (Curry._1(f, v)) {
+      var _v0 = v;
+      var _param$1 = param.l;
+      while(true) {
+        var param$1 = _param$1;
+        var v0 = _v0;
+        if (typeof param$1 !== "object") {
+          return v0;
+        }
+        var v$1 = param$1.v;
+        if (Curry._1(f, v$1)) {
+          _param$1 = param$1.l;
+          _v0 = v$1;
+          continue ;
+        }
+        _param$1 = param$1.r;
+        continue ;
+      };
+    }
+    _param = param.r;
+    continue ;
   };
 }
 
 function find_first_opt(f, _param) {
   while(true) {
     var param = _param;
-    if (!param) {
+    if (typeof param !== "object") {
       return ;
     }
     var v = param.v;
@@ -794,7 +801,7 @@ function find_first_opt(f, _param) {
       while(true) {
         var param$1 = _param$1;
         var v0 = _v0;
-        if (!param$1) {
+        if (typeof param$1 !== "object") {
           return Caml_option.some(v0);
         }
         var v$1 = param$1.v;
@@ -815,41 +822,41 @@ function find_first_opt(f, _param) {
 function find_last(f, _param) {
   while(true) {
     var param = _param;
-    if (param) {
-      var v = param.v;
-      if (Curry._1(f, v)) {
-        var _v0 = v;
-        var _param$1 = param.r;
-        while(true) {
-          var param$1 = _param$1;
-          var v0 = _v0;
-          if (!param$1) {
-            return v0;
-          }
-          var v$1 = param$1.v;
-          if (Curry._1(f, v$1)) {
-            _param$1 = param$1.r;
-            _v0 = v$1;
-            continue ;
-          }
-          _param$1 = param$1.l;
-          continue ;
-        };
-      }
-      _param = param.l;
-      continue ;
+    if (typeof param !== "object") {
+      throw {
+            RE_EXN_ID: "Not_found",
+            Error: new Error()
+          };
     }
-    throw {
-          RE_EXN_ID: "Not_found",
-          Error: new Error()
-        };
+    var v = param.v;
+    if (Curry._1(f, v)) {
+      var _v0 = v;
+      var _param$1 = param.r;
+      while(true) {
+        var param$1 = _param$1;
+        var v0 = _v0;
+        if (typeof param$1 !== "object") {
+          return v0;
+        }
+        var v$1 = param$1.v;
+        if (Curry._1(f, v$1)) {
+          _param$1 = param$1.r;
+          _v0 = v$1;
+          continue ;
+        }
+        _param$1 = param$1.l;
+        continue ;
+      };
+    }
+    _param = param.l;
+    continue ;
   };
 }
 
 function find_last_opt(f, _param) {
   while(true) {
     var param = _param;
-    if (!param) {
+    if (typeof param !== "object") {
       return ;
     }
     var v = param.v;
@@ -859,7 +866,7 @@ function find_last_opt(f, _param) {
       while(true) {
         var param$1 = _param$1;
         var v0 = _v0;
-        if (!param$1) {
+        if (typeof param$1 !== "object") {
           return Caml_option.some(v0);
         }
         var v$1 = param$1.v;
@@ -880,7 +887,7 @@ function find_last_opt(f, _param) {
 function find_opt(x, _param) {
   while(true) {
     var param = _param;
-    if (!param) {
+    if (typeof param !== "object") {
       return ;
     }
     var v = param.v;
@@ -894,8 +901,8 @@ function find_opt(x, _param) {
 }
 
 function map(f, t) {
-  if (!t) {
-    return /* Empty */0;
+  if (typeof t !== "object") {
+    return "Empty";
   }
   var r = t.r;
   var v = t.v;
@@ -905,7 +912,7 @@ function map(f, t) {
   var r$p = map(f, r);
   if (l === l$p && v === v$p && r === r$p) {
     return t;
-  } else if ((l$p === /* Empty */0 || Curry._2(AAA.compare, max_elt(l$p), v$p) < 0) && (r$p === /* Empty */0 || Curry._2(AAA.compare, v$p, min_elt(r$p)) < 0)) {
+  } else if ((l$p === "Empty" || Curry._2(AAA.compare, max_elt(l$p), v$p) < 0) && (r$p === "Empty" || Curry._2(AAA.compare, v$p, min_elt(r$p)) < 0)) {
     return join(l$p, v$p, r$p);
   } else {
     return union(l$p, add(v$p, r$p));
@@ -914,7 +921,7 @@ function map(f, t) {
 
 function of_list(l) {
   if (!l) {
-    return /* Empty */0;
+    return "Empty";
   }
   var match = l.tl;
   var x0 = l.hd;
@@ -940,16 +947,17 @@ function of_list(l) {
         switch (n) {
           case 0 :
               return [
-                      /* Empty */0,
+                      "Empty",
                       l
                     ];
           case 1 :
               if (l) {
                 return [
-                        /* Node */{
-                          l: /* Empty */0,
+                        {
+                          TAG: "Node",
+                          l: "Empty",
                           v: l.hd,
-                          r: /* Empty */0,
+                          r: "Empty",
                           h: 1
                         },
                         l.tl
@@ -961,15 +969,17 @@ function of_list(l) {
                 var match = l.tl;
                 if (match) {
                   return [
-                          /* Node */{
-                            l: /* Node */{
-                              l: /* Empty */0,
+                          {
+                            TAG: "Node",
+                            l: {
+                              TAG: "Node",
+                              l: "Empty",
                               v: l.hd,
-                              r: /* Empty */0,
+                              r: "Empty",
                               h: 1
                             },
                             v: match.hd,
-                            r: /* Empty */0,
+                            r: "Empty",
                             h: 2
                           },
                           match.tl
@@ -985,18 +995,21 @@ function of_list(l) {
                   var match$2 = match$1.tl;
                   if (match$2) {
                     return [
-                            /* Node */{
-                              l: /* Node */{
-                                l: /* Empty */0,
+                            {
+                              TAG: "Node",
+                              l: {
+                                TAG: "Node",
+                                l: "Empty",
                                 v: l.hd,
-                                r: /* Empty */0,
+                                r: "Empty",
                                 h: 1
                               },
                               v: match$1.hd,
-                              r: /* Node */{
-                                l: /* Empty */0,
+                              r: {
+                                TAG: "Node",
+                                l: "Empty",
                                 v: match$2.hd,
-                                r: /* Empty */0,
+                                r: "Empty",
                                 h: 1
                               },
                               h: 2
@@ -1042,7 +1055,7 @@ function of_list(l) {
 }
 
 var ASet = {
-  empty: /* Empty */0,
+  empty: "Empty",
   is_empty: is_empty,
   mem: mem,
   add: add,
@@ -1083,7 +1096,7 @@ var suites_0 = [
   "test1",
   (function (param) {
       return {
-              TAG: /* Eq */0,
+              TAG: "Eq",
               _0: [
                 true,
                 true,
@@ -1105,7 +1118,7 @@ var suites_1 = {
     "test2",
     (function (param) {
         return {
-                TAG: /* Eq */0,
+                TAG: "Eq",
                 _0: Curry._1(y, undefined),
                 _1: 32
               };
@@ -1116,7 +1129,7 @@ var suites_1 = {
       "test3",
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: Curry._1(x, undefined),
                   _1: 35
                 };
@@ -1127,7 +1140,7 @@ var suites_1 = {
         "test4",
         (function (param) {
             return {
-                    TAG: /* Eq */0,
+                    TAG: "Eq",
                     _0: true,
                     _1: Curry._1(A.even, 2)
                   };
@@ -1138,7 +1151,7 @@ var suites_1 = {
           "test4",
           (function (param) {
               return {
-                      TAG: /* Eq */0,
+                      TAG: "Eq",
                       _0: true,
                       _1: Curry._1(even$1, 4)
                     };
@@ -1149,7 +1162,7 @@ var suites_1 = {
             "test5",
             (function (param) {
                 return {
-                        TAG: /* Eq */0,
+                        TAG: "Eq",
                         _0: false,
                         _1: Curry._1(B.odd, 2)
                       };
@@ -1160,21 +1173,21 @@ var suites_1 = {
               "test6",
               (function (param) {
                   return {
-                          TAG: /* Eq */0,
+                          TAG: "Eq",
                           _0: 2,
                           _1: Curry._1(cardinal, Curry._1(of_list, {
                                     hd: {
-                                      TAG: /* Leaf */0,
+                                      TAG: "Leaf",
                                       _0: "a"
                                     },
                                     tl: {
                                       hd: {
-                                        TAG: /* Leaf */0,
+                                        TAG: "Leaf",
                                         _0: "b"
                                       },
                                       tl: {
                                         hd: {
-                                          TAG: /* Leaf */0,
+                                          TAG: "Leaf",
                                           _0: "a"
                                         },
                                         tl: /* [] */0

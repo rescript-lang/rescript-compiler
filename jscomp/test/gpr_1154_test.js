@@ -19,7 +19,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -53,7 +53,7 @@ function g2(x) {
 
 var a = Caml_int64.or_(Int64.one, (v.contents = v.contents + 1 | 0, Int64.one));
 
-eq("File \"gpr_1154_test.ml\", line 27, characters 12-19", v.contents, 1);
+eq("File \"gpr_1154_test.res\", line 28, characters 12-19", v.contents, 1);
 
 Mt.from_pair_suites("Gpr_1154_test", suites.contents);
 

@@ -61,16 +61,16 @@ function unitArgWithoutConversion(param) {
   return "abc";
 }
 
-function unitArgWithoutConversionU(param) {
+function unitArgWithoutConversionU() {
   return "abc";
 }
 
 function unitArgWithConversion(param) {
-  return /* A */0;
+  return "A";
 }
 
-function unitArgWithConversionU(param) {
-  return /* A */0;
+function unitArgWithConversionU() {
+  return "A";
 }
 
 var flat = 34;

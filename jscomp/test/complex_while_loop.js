@@ -4,11 +4,11 @@
 function f(param) {
   var n = 0;
   while((function () {
-          var fib = function (n) {
-            if (n === 0 || n === 1) {
+          var fib = function (x) {
+            if (x === 0 || x === 1) {
               return 1;
             } else {
-              return fib(n - 1 | 0) + fib(n - 2 | 0) | 0;
+              return fib(x - 1 | 0) + fib(x - 2 | 0) | 0;
             }
           };
           return fib(n) > 10;

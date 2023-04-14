@@ -30,18 +30,3 @@ let jsop_of_comp (cmp : Lam_compat.comparison) : Js_op.binop =
   | Cgt -> Gt
   | Cle -> Le
   | Cge -> Ge
-
-let comment_of_tag_info (x : Lam_tag_info.t) =
-  match x with
-  | Blk_constructor { name = n } -> Some n
-  | Blk_tuple -> Some "tuple"
-  | Blk_poly_var _ -> None
-  | Blk_record _ -> None
-  | Blk_record_inlined { name = ctor } -> Some ctor
-  | Blk_record_ext _ -> None
-  | Blk_module_export _ | Blk_module _ ->
-      (* Turn it on next time to save some noise diff*)
-      None
-  | Blk_extension (* TODO: enhance it later *) -> None
-  | Blk_some | Blk_some_not_nested | Blk_lazy_general -> assert false
-(* let module_alias = Some "alias"   *)

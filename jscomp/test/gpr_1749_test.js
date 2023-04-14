@@ -17,7 +17,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -27,7 +27,7 @@ function eq(loc, x, y) {
   };
 }
 
-eq("File \"gpr_1749_test.ml\", line 18, characters 6-13", 0, 0);
+eq("File \"gpr_1749_test.res\", line 15, characters 3-10", 0, 0);
 
 Mt.from_pair_suites("Gpr_1749_test", suites.contents);
 

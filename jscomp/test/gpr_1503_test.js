@@ -20,7 +20,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -43,11 +43,11 @@ var s = Caml_int64.to_string(i);
 
 var i$p = Caml_format.int64_of_string(s);
 
-eq("File \"gpr_1503_test.ml\", line 18, characters 5-12", i, i$p);
+eq("File \"gpr_1503_test.res\", line 15, characters 5-12", i, i$p);
 
-eq("File \"gpr_1503_test.ml\", line 21, characters 7-14", Int64.max_int, Caml_format.int64_of_string(Caml_int64.to_string(Int64.max_int)));
+eq("File \"gpr_1503_test.res\", line 19, characters 5-12", Int64.max_int, Caml_format.int64_of_string(Caml_int64.to_string(Int64.max_int)));
 
-eq("File \"gpr_1503_test.ml\", line 22, characters 7-14", Int64.min_int, Caml_format.int64_of_string(Caml_int64.to_string(Int64.min_int)));
+eq("File \"gpr_1503_test.res\", line 20, characters 5-12", Int64.min_int, Caml_format.int64_of_string(Caml_int64.to_string(Int64.min_int)));
 
 Mt.from_pair_suites("Gpr_1503_test", suites.contents);
 

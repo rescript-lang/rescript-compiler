@@ -11,7 +11,9 @@ type t = {
     Res_diagnostics.category ->
     unit;
   mutable ch: charEncoding; (* current character *)
-  mutable offset: int; (* character offset *)
+  mutable offset: int; (* current byte offset *)
+  mutable offset16: int;
+      (* current number of utf16 code units since line start *)
   mutable lineOffset: int; (* current line offset *)
   mutable lnum: int; (* current line number *)
   mutable mode: mode list;

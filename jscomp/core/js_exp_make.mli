@@ -89,6 +89,7 @@ val ocaml_fun :
   ?immutable_mask:bool array ->
   return_unit:bool ->
   async:bool ->
+  oneUnitArg:bool ->
   J.ident list ->
   J.block ->
   t
@@ -185,6 +186,8 @@ val assign_by_exp : t -> t -> t -> t
 
 val assign : ?comment:string -> t -> t -> t
 
+val literal : Ast_untagged_variants.literal_type -> t
+
 val triple_equal : ?comment:string -> t -> t -> t
 (* TODO: reduce [triple_equal] use *)
 
@@ -200,11 +203,17 @@ val neq_null_undefined_boolean : ?comment:string -> t -> t -> t
 
 val is_type_number : ?comment:string -> t -> t
 
+val is_int_tag : ?has_null_undefined_other:(bool * bool * bool) -> t -> t
+
+val is_a_literal_case : literal_cases:Ast_untagged_variants.literal_type list -> block_cases:Ast_untagged_variants.block_type list -> t -> t
+
 val is_type_string : ?comment:string -> t -> t
 
 val is_type_object : t -> t
 
 val typeof : ?comment:string -> t -> t
+val instanceof : ?comment:string -> t -> t -> t
+val is_array : t -> t
 
 val to_int32 : ?comment:string -> t -> t
 
@@ -303,7 +312,7 @@ val unit : t
 
 val undefined : t
 
-val tag : ?comment:string -> J.expression -> t
+val tag : ?comment:string -> ?name:string -> J.expression -> t
 
 (** Note that this is coupled with how we encode block, if we use the 
     `Object.defineProperty(..)` since the array already hold the length,

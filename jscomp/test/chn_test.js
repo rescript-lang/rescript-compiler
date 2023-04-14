@@ -19,7 +19,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -42,18 +42,18 @@ function convert(s) {
                     throw {
                           RE_EXN_ID: "Assert_failure",
                           _1: [
-                            "chn_test.ml",
-                            20,
-                            18
+                            "chn_test.res",
+                            17,
+                            14
                           ],
                           Error: new Error()
                         };
                   })));
 }
 
-eq("File \"chn_test.ml\", line 25, characters 7-14", "你好，\n世界", "你好，\n世界");
+eq("File \"chn_test.res\", line 24, characters 4-11", "你好，\n世界", "你好，\n世界");
 
-eq("File \"chn_test.ml\", line 27, characters 7-14", convert("汉字是世界上最美丽的character"), {
+eq("File \"chn_test.res\", line 30, characters 4-11", convert("汉字是世界上最美丽的character"), {
       hd: 27721,
       tl: {
         hd: 23383,
@@ -112,7 +112,7 @@ eq("File \"chn_test.ml\", line 27, characters 7-14", convert("汉字是世界上
       }
     });
 
-eq("File \"chn_test.ml\", line 48, characters 5-12", convert("\x3f\x3fa"), {
+eq("File \"chn_test.res\", line 54, characters 5-12", convert("\x3f\x3fa"), {
       hd: 63,
       tl: {
         hd: 63,
@@ -123,7 +123,7 @@ eq("File \"chn_test.ml\", line 48, characters 5-12", convert("\x3f\x3fa"), {
       }
     });
 
-eq("File \"chn_test.ml\", line 50, characters 5-12", convert("??a"), {
+eq("File \"chn_test.res\", line 55, characters 5-12", convert("??a"), {
       hd: 63,
       tl: {
         hd: 63,
@@ -134,7 +134,7 @@ eq("File \"chn_test.ml\", line 50, characters 5-12", convert("??a"), {
       }
     });
 
-eq("File \"chn_test.ml\", line 52, characters 5-12", convert("\u003f\x3fa"), {
+eq("File \"chn_test.res\", line 56, characters 5-12", convert("\u003f\x3fa"), {
       hd: 63,
       tl: {
         hd: 63,
@@ -145,7 +145,7 @@ eq("File \"chn_test.ml\", line 52, characters 5-12", convert("\u003f\x3fa"), {
       }
     });
 
-eq("File \"chn_test.ml\", line 54, characters 5-12", convert("🚀🚀a"), {
+eq("File \"chn_test.res\", line 57, characters 5-12", convert("🚀🚀a"), {
       hd: 128640,
       tl: {
         hd: 128640,
@@ -156,7 +156,7 @@ eq("File \"chn_test.ml\", line 54, characters 5-12", convert("🚀🚀a"), {
       }
     });
 
-eq("File \"chn_test.ml\", line 56, characters 5-12", convert("\uD83D\uDE80a"), {
+eq("File \"chn_test.res\", line 58, characters 5-12", convert("\uD83D\uDE80a"), {
       hd: 128640,
       tl: {
         hd: 97,
@@ -164,7 +164,7 @@ eq("File \"chn_test.ml\", line 56, characters 5-12", convert("\uD83D\uDE80a"), {
       }
     });
 
-eq("File \"chn_test.ml\", line 58, characters 5-12", convert("\uD83D\uDE80\x3f"), {
+eq("File \"chn_test.res\", line 59, characters 5-12", convert("\uD83D\uDE80\x3f"), {
       hd: 128640,
       tl: {
         hd: 63,
@@ -172,7 +172,7 @@ eq("File \"chn_test.ml\", line 58, characters 5-12", convert("\uD83D\uDE80\x3f")
       }
     });
 
-eq("File \"chn_test.ml\", line 63, characters 5-12", convert("\uD83D\uDE80\uD83D\uDE80a"), {
+eq("File \"chn_test.res\", line 63, characters 5-12", convert("\uD83D\uDE80\uD83D\uDE80a"), {
       hd: 128640,
       tl: {
         hd: 128640,
@@ -185,16 +185,16 @@ eq("File \"chn_test.ml\", line 63, characters 5-12", convert("\uD83D\uDE80\uD83D
 
 eq("No inline string length", "\uD83D\uDE80\0".length, 3);
 
-eq("File \"chn_test.ml\", line 72, characters 6-13", Caml_string.get("\uD83D\uDE80\0", 0), 128640);
+eq("File \"chn_test.res\", line 70, characters 4-11", Caml_string.get("\uD83D\uDE80\0", 0), 128640);
 
-eq("File \"chn_test.ml\", line 76, characters 6-13", Caml_string.get("🚀", 0), 128640);
+eq("File \"chn_test.res\", line 75, characters 5-12", Caml_string.get("🚀", 0), 128640);
 
-eq("File \"chn_test.ml\", line 81, characters 5-12", convert("\uD83D\uDE80"), {
+eq("File \"chn_test.res\", line 80, characters 5-12", convert("\uD83D\uDE80"), {
       hd: 128640,
       tl: /* [] */0
     });
 
-eq("File \"chn_test.ml\", line 83, characters 5-12", convert("\uD83D\uDE80\uD83D\uDE80"), {
+eq("File \"chn_test.res\", line 81, characters 5-12", convert("\uD83D\uDE80\uD83D\uDE80"), {
       hd: 128640,
       tl: {
         hd: 128640,
@@ -202,7 +202,7 @@ eq("File \"chn_test.ml\", line 83, characters 5-12", convert("\uD83D\uDE80\uD83D
       }
     });
 
-eq("File \"chn_test.ml\", line 84, characters 5-12", convert(" \b\t\n\v\f\ra"), {
+eq("File \"chn_test.res\", line 82, characters 5-12", convert(" \b\t\n\v\f\ra"), {
       hd: 32,
       tl: {
         hd: 8,
@@ -228,7 +228,7 @@ eq("File \"chn_test.ml\", line 84, characters 5-12", convert(" \b\t\n\v\f\ra"), 
       }
     });
 
-eq("File \"chn_test.ml\", line 91, characters 6-13", convert(" \b\t\n\v\f\r\"'\\\0a"), {
+eq("File \"chn_test.res\", line 89, characters 4-11", convert(" \b\t\n\v\f\r\"'\\\0a"), {
       hd: 32,
       tl: {
         hd: 8,

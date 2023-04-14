@@ -17,7 +17,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -27,7 +27,7 @@ function eq(loc, x, y) {
   };
 }
 
-eq("File \"ffi_array_test.ml\", line 12, characters 5-12", [
+eq("File \"ffi_array_test.res\", line 11, characters 12-19", [
         1,
         2,
         3,

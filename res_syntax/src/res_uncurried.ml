@@ -1,17 +1,11 @@
-type config = Legacy | Default
-
-let init = Legacy
-
-let isDefault = function
-  | Legacy -> false
-  | Default -> true
-
 (* For parsing *)
 let fromDotted ~dotted = function
-  | Legacy -> dotted
-  | Default -> not dotted
+  | Config.Legacy -> dotted
+  | Swap -> not dotted
+  | Uncurried -> true
 
 (* For printing *)
 let getDotted ~uncurried = function
-  | Legacy -> uncurried
-  | Default -> not uncurried
+  | Config.Legacy -> uncurried
+  | Swap -> not uncurried
+  | Uncurried -> false

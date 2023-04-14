@@ -76,7 +76,7 @@ function eq(loc, x, y) {
       loc + (" id " + String(test_id.contents)),
       (function (param) {
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: x,
                   _1: y
                 };
@@ -142,15 +142,15 @@ var c = Curry._2(g(0), 3, 4);
 
 var d = Curry._2(g(0), 3, 5);
 
-eq("File \"earger_curry_test.ml\", line 118, characters 7-14", a, 10);
+eq("File \"earger_curry_test.res\", line 138, characters 5-12", a, 10);
 
-eq("File \"earger_curry_test.ml\", line 119, characters 7-14", b, 11);
+eq("File \"earger_curry_test.res\", line 139, characters 5-12", b, 11);
 
-eq("File \"earger_curry_test.ml\", line 120, characters 7-14", c, 10);
+eq("File \"earger_curry_test.res\", line 140, characters 5-12", c, 10);
 
-eq("File \"earger_curry_test.ml\", line 121, characters 7-14", d, 11);
+eq("File \"earger_curry_test.res\", line 141, characters 5-12", d, 11);
 
-eq("File \"earger_curry_test.ml\", line 122, characters 7-14", all_v.contents, {
+eq("File \"earger_curry_test.res\", line 142, characters 5-12", all_v.contents, {
       hd: 8,
       tl: {
         hd: 8,

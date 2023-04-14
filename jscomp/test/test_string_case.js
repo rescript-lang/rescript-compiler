@@ -1,8 +1,8 @@
 'use strict';
 
 
-function f(param) {
-  switch (param) {
+function f(x) {
+  switch (x) {
     case "abcd" :
         return 0;
     case "bcde" :
@@ -11,8 +11,8 @@ function f(param) {
       throw {
             RE_EXN_ID: "Assert_failure",
             _1: [
-              "test_string_case.ml",
-              4,
+              "test_string_case.res",
+              5,
               9
             ],
             Error: new Error()

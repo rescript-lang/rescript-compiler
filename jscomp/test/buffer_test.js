@@ -4,6 +4,7 @@ var Mt = require("./mt.js");
 var Bytes = require("../../lib/js/bytes.js");
 var $$Buffer = require("../../lib/js/buffer.js");
 var Caml_bytes = require("../../lib/js/caml_bytes.js");
+var Caml_string = require("../../lib/js/caml_string.js");
 
 var v = "gso";
 
@@ -11,7 +12,7 @@ var suites_0 = [
   "equal",
   (function (param) {
       return {
-              TAG: /* Eq */0,
+              TAG: "Eq",
               _0: [
                 Caml_bytes.get(Bytes.make(3, /* 'a' */97), 0),
                 Bytes.make(3, /* 'a' */97)[0]
@@ -31,10 +32,10 @@ var suites_1 = {
         var u = Bytes.make(3, /* 'a' */97);
         u[0] = /* 'b' */98;
         return {
-                TAG: /* Eq */0,
+                TAG: "Eq",
                 _0: [
                   u[0],
-                  /* 'g' */103
+                  Caml_string.get(v, 0)
                 ],
                 _1: [
                   /* 'b' */98,
@@ -52,7 +53,7 @@ var suites_1 = {
             $$Buffer.add_string(v, String(i));
           }
           return {
-                  TAG: /* Eq */0,
+                  TAG: "Eq",
                   _0: $$Buffer.contents(v),
                   _1: "012345678910"
                 };
