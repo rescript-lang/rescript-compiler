@@ -154,13 +154,27 @@ let funExpr expr =
   let rec collect ~uncurried ~nFun attrsBefore acc expr =
     match expr with
     | {
-     pexp_desc =
-       Pexp_fun
-         ( Nolabel,
-           None,
-           {ppat_desc = Ppat_var {txt = "__x"}},
-           {pexp_desc = Pexp_apply _} );
-    } ->
+        pexp_desc =
+          Pexp_fun
+            ( Nolabel,
+              None,
+              {ppat_desc = Ppat_var {txt = "__x"}},
+              {pexp_desc = Pexp_apply _} );
+      }
+    | {
+        pexp_desc =
+          Pexp_construct
+            ( {txt = Lident "Function$"},
+              Some
+                {
+                  pexp_desc =
+                    Pexp_fun
+                      ( Nolabel,
+                        None,
+                        {ppat_desc = Ppat_var {txt = "__x"}},
+                        {pexp_desc = Pexp_apply _} );
+                } );
+      } ->
       (uncurried, attrsBefore, List.rev acc, rewriteUnderscoreApply expr)
     | {pexp_desc = Pexp_newtype (stringLoc, rest); pexp_attributes = attrs} ->
       let stringLocs, returnExpr = collectNewTypes [stringLoc] rest in

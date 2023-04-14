@@ -2681,7 +2681,18 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
         ( Nolabel,
           None,
           {ppat_desc = Ppat_var {txt = "__x"}},
-          {pexp_desc = Pexp_apply _} ) ->
+          {pexp_desc = Pexp_apply _} )
+    | Pexp_construct
+        ( {txt = Lident "Function$"},
+          Some
+            {
+              pexp_desc =
+                Pexp_fun
+                  ( Nolabel,
+                    None,
+                    {ppat_desc = Ppat_var {txt = "__x"}},
+                    {pexp_desc = Pexp_apply _} );
+            } ) ->
       (* (__x) => f(a, __x, c) -----> f(a, _, c)  *)
       printExpressionWithComments ~state
         (ParsetreeViewer.rewriteUnderscoreApply e_fun)

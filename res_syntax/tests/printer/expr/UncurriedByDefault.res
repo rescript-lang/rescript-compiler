@@ -157,3 +157,4 @@ let fnU = (_x): ((unit) => unit) => fooC
 let aU = (() => "foo")->Ok
 
 let toIgnoredName = concatStrings("abc", _)
+Ok("_")->Belt.Result.map(concatStrings(_, "foo"))
