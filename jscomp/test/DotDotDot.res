@@ -35,6 +35,8 @@ type svgProps = {
   y?: string,
 }
 
+let x: svgProps = {x: "test"}
+
 module MultipleDotDotDots = {
   type t1 = {x: int}
   type t2 = {y: string}
