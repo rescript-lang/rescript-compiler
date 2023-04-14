@@ -12,6 +12,10 @@
 
 # 11.0.0-alpha.4 (Unreleased)
 
+#### :bug: Bug Fix
+
+- Fix broken formatting in uncurried mode for functions with _ placeholder args. https://github.com/rescript-lang/rescript-compiler/pull/6148
+
 # 11.0.0-alpha.3
 
 #### :rocket: Main New Feature
