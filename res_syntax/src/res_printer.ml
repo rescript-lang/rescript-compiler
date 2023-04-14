@@ -2671,8 +2671,12 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
       (Doc.concat
          [attrs; parametersDoc; typConstraintDoc; Doc.text " =>"; returnExprDoc])
   in
+  let uncurried = Ast_uncurried.exprIsUncurriedFun e in
+  let e_fun =
+    if uncurried then Ast_uncurried.exprExtractUncurriedFun e else e
+  in
   let printedExpression =
-    match e.pexp_desc with
+    match e_fun.pexp_desc with
     | Pexp_fun
         ( Nolabel,
           None,
@@ -2680,9 +2684,8 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
           {pexp_desc = Pexp_apply _} ) ->
       (* (__x) => f(a, __x, c) -----> f(a, _, c)  *)
       printExpressionWithComments ~state
-        (ParsetreeViewer.rewriteUnderscoreApply e)
+        (ParsetreeViewer.rewriteUnderscoreApply e_fun)
         cmtTbl
-    | _ when Ast_uncurried.exprIsUncurriedFun e -> printArrow e
     | Pexp_fun _ | Pexp_newtype _ -> printArrow e
     | Parsetree.Pexp_constant c ->
       printConstant ~templateLiteral:(ParsetreeViewer.isTemplateLiteral e) c
