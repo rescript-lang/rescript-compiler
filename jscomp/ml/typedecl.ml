@@ -425,20 +425,20 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
         Ast_untagged_variants.check_well_formed ~isUntaggedDef cstrs;
         Ttype_variant tcstrs, Type_variant cstrs, sdecl
       | Ptype_record lbls_ ->
-        let has_optional attrs = Ext_list.exists attrs (fun ({txt },_) -> txt = "res.optional") in
-        let optionalLabels =
-            Ext_list.filter_map lbls_
-            (fun lbl -> if has_optional lbl.pld_attributes then Some lbl.pld_name.txt else None) in
-        let lbls =
-          if optionalLabels = [] then lbls_
-          else Ext_list.map lbls_ (fun lbl ->
-            let typ = lbl.pld_type in
-            let typ =
-              if has_optional lbl.pld_attributes then
-                {typ with ptyp_desc = Ptyp_constr ({txt = Lident "option"; loc=typ.ptyp_loc}, [typ])}
-              else typ in
-            {lbl with  pld_type = typ }) in
-        let lbls, lbls' = transl_labels env true lbls in
+          let has_optional attrs = Ext_list.exists attrs (fun ({txt },_) -> txt = "res.optional") in
+          let optionalLabels =
+              Ext_list.filter_map lbls_
+              (fun lbl -> if has_optional lbl.pld_attributes then Some lbl.pld_name.txt else None) in
+          let lbls =
+            if optionalLabels = [] then lbls_
+            else Ext_list.map lbls_ (fun lbl ->
+              let typ = lbl.pld_type in
+              let typ =
+                if has_optional lbl.pld_attributes then
+                  {typ with ptyp_desc = Ptyp_constr ({txt = Lident "option"; loc=typ.ptyp_loc}, [typ])}
+                else typ in
+              {lbl with  pld_type = typ }) in
+          let lbls, lbls' = transl_labels env true lbls in
           let lbls_opt = match lbls, lbls' with
             | {ld_name = {txt = "..."}; ld_type} :: _, _ :: _ ->
               let rec extract t = match t.desc with
