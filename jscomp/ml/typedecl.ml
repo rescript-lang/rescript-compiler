@@ -426,26 +426,19 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
         Ttype_variant tcstrs, Type_variant cstrs, sdecl
       | Ptype_record lbls_ ->
           let has_optional attrs = Ext_list.exists attrs (fun ({txt },_) -> txt = "res.optional") in
-          let optionalLabels =
-              Ext_list.filter_map lbls_
-              (fun lbl -> if has_optional lbl.pld_attributes then Some lbl.pld_name.txt else None) in
-          let lbls =
-            if optionalLabels = [] then lbls_
-            else Ext_list.map lbls_ (fun lbl ->
-              let typ = lbl.pld_type in
-              let typ =
-                if has_optional lbl.pld_attributes then
-                  {typ with ptyp_desc = Ptyp_constr ({txt = Lident "option"; loc=typ.ptyp_loc}, [typ])}
-                else typ in
-              {lbl with  pld_type = typ }) in
-          let lbls, lbls' = transl_labels env true lbls in
-          let rep =
-            if unbox then Record_unboxed false
-            else 
-              if optionalLabels <> []
-              then Record_optional_labels optionalLabels
-              else Record_regular
+          let hasOptionalLabels = 
+            lbls_ |> List.exists(fun lbl -> has_optional lbl.pld_attributes) 
           in
+          let lbls = 
+            if hasOptionalLabels then
+              Ext_list.map lbls_ (fun lbl ->
+                let typ = lbl.pld_type in
+                if has_optional lbl.pld_attributes then
+                  {lbl with pld_type={typ with ptyp_desc = Ptyp_constr ({txt = Lident "option"; loc=typ.ptyp_loc}, [typ])}}
+                else lbl) 
+            else lbls_ 
+          in
+          let lbls, lbls' = transl_labels env true lbls in
           let lbls_opt = match lbls, lbls' with
             | {ld_name = {txt = "..."}; ld_type} :: _, _ :: _ ->
               let rec extract t = match t.desc with
@@ -462,7 +455,13 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
                 | {ld_name = {txt = "..."}; ld_type} :: rest, _ :: rest' ->
                   (match Ctype.extract_concrete_typedecl env (extract ld_type.ctyp_type) with
                     (_p0, _p, {type_kind=Type_record (fields, _repr)}) ->
-                      process_lbls (fst acc @ (fields |> List.map mkLbl), snd acc @ fields) rest rest'
+                      process_lbls (fst acc @ (fields |> List.map(fun (lbl: Types.label_declaration) ->
+                        let typ = lbl.ld_type in
+                        let typ =
+                          if has_optional lbl.ld_attributes then
+                            (Ctype.newconstr (Path.Pident (Ident.create "option")) [typ])
+                          else typ in
+                        {lbl with ld_type = typ }) |> List.map mkLbl), snd acc @ fields) rest rest'
                     | _ -> assert false
                     | exception _ -> None)
                 | lbl::rest, lbl'::rest' -> process_lbls (fst acc @ [lbl], snd acc @ [lbl']) rest rest'
@@ -479,6 +478,15 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
           (match lbls_opt with
           | Some (lbls, lbls') ->
             check_duplicates lbls StringSet.empty;
+            let optionalLabels =
+              Ext_list.filter_map lbls (fun lbl ->
+                  if has_optional lbl.ld_attributes then Some lbl.ld_name.txt else None)
+            in
+            let rep =
+              if unbox then Record_unboxed false
+              else if optionalLabels <> [] then Record_optional_labels optionalLabels
+              else Record_regular
+            in
             Ttype_record lbls, Type_record(lbls', rep), sdecl
           | None ->
              (* Could not find record type decl for ...t: assume t is an object type and this is syntax ambiguity *)

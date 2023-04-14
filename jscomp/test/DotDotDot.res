@@ -35,7 +35,7 @@ type svgProps = {
   y?: string,
 }
 
-let x: svgProps = {x: "test"}
+let x: svgProps = {x: "test", name: "test"}
 
 // uncomment this to reveal a parser error
 // type copiedSvgProps = {...svgProps}
