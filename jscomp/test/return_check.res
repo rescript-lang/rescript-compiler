@@ -20,7 +20,7 @@ let test = dom => {
 
 let f_undefined = (xs, i) =>
   switch get_undefined(xs, i) {
-  | None => assert false
+  | None => assert(false)
   | Some(k) => k
   }
 
@@ -48,7 +48,7 @@ let f_escaped_2 = (xs, i) => Js.log(get_undefined(xs, i))
 
 let f_null = (xs, i) =>
   switch get_null(xs, i) {
-  | None => assert false
+  | None => assert(false)
   | Some(k) => k
   }
 
@@ -56,6 +56,6 @@ let f_null = (xs, i) =>
 
 let f_null_undefined = (xs, i) =>
   switch get_null_undefined(xs, i) {
-  | None => assert false
+  | None => assert(false)
   | Some(k) => k
   }

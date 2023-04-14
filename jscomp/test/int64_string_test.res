@@ -188,7 +188,7 @@ let random_data = list{
 Belt_List.forEach(random_data, u =>
   switch u {
   | list{(v, str)} => eq(__LOC__, Int64.to_string(v), str)
-  | _ => assert false
+  | _ => assert(false)
   }
 )
 

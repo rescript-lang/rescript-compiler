@@ -340,7 +340,7 @@ let rec chop = (k, l) =>
   } else {
     switch l {
     | list{x, ...t} => chop(k - 1, t)
-    | _ => assert false
+    | _ => assert(false)
     }
   }
 

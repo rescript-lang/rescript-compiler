@@ -275,7 +275,7 @@ let internal_bal = (l, v, r) => {
   }
   if hl > hr + 2 {
     switch l {
-    | Empty => assert false
+    | Empty => assert(false)
     | Node(ll, lv, lr, _) =>
       if height(ll) >= height(lr) {
         /* [ll] >~ [lr] 
@@ -285,7 +285,7 @@ let internal_bal = (l, v, r) => {
         create(ll, lv, create(lr, v, r))
       } else {
         switch lr {
-        | Empty => assert false
+        | Empty => assert(false)
         | Node(lrl, lrv, lrr, _) =>
           /* [lr] >~ [ll]
              [lr] >~ [r]
@@ -297,13 +297,13 @@ let internal_bal = (l, v, r) => {
     }
   } else if hr > hl + 2 {
     switch r {
-    | Empty => assert false
+    | Empty => assert(false)
     | Node(rl, rv, rr, _) =>
       if height(rr) >= height(rl) {
         create(create(l, v, rl), rv, rr)
       } else {
         switch rl {
-        | Empty => assert false
+        | Empty => assert(false)
         | Node(rll, rlv, rlr, _) => create(create(l, v, rll), rlv, create(rlr, rv, rr))
         }
       }
@@ -444,7 +444,7 @@ let of_sorted_list = l => {
       let nl = n / 2
       let (left, l) = sub(nl, l)
       switch l {
-      | list{} => assert false
+      | list{} => assert(false)
       | list{mid, ...l} =>
         let (right, l) = sub(n - nl - 1, l)
         (create(left, mid, right), l)

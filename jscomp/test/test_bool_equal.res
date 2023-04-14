@@ -13,14 +13,14 @@ let bool_equal = (x, y) =>
    which return the same value whether user input [true] or [false]
    u.bool_equal(false,true) */
 let assertions = () => {
-  assert bool_equal(true, true)
-  assert bool_equal(false, false)
-  assert !bool_equal(true, false)
-  assert !bool_equal(false, true)
+  assert(bool_equal(true, true))
+  assert(bool_equal(false, false))
+  assert(!bool_equal(true, false))
+  assert(!bool_equal(false, true))
   assert (true == true)
   assert (false == false)
-  assert !(true == false)
-  assert !(false == true)
+  assert (!(true == false))
+  assert (!(false == true))
 }
 
 let f0 = x =>

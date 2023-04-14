@@ -469,7 +469,7 @@ let rec assoc_by_string = (def, k: string, lst) =>
   switch lst {
   | list{} =>
     switch def {
-    | None => assert false
+    | None => assert(false)
     | Some(x) => x
     }
   | list{(k1, v1), ...rest} =>
@@ -484,7 +484,7 @@ let rec assoc_by_int = (def, k: int, lst) =>
   switch lst {
   | list{} =>
     switch def {
-    | None => assert false
+    | None => assert(false)
     | Some(x) => x
     }
   | list{(k1, v1), ...rest} =>

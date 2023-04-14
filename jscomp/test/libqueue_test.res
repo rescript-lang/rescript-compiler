@@ -44,17 +44,17 @@ let () = {
   assert (Q.to_list(q) == list{4} && Q.length(q) == 1)
   assert (Q.take(q) == 4)
   assert (Q.to_list(q) == list{} && Q.length(q) == 0)
-  assert does_raise(Q.take, q)
+  assert (does_raise(Q.take, q))
 }
 
 let () = {
   let q = Q.create()
   Q.add(1, q)
   assert (Q.take(q) == 1)
-  assert does_raise(Q.take, q)
+  assert (does_raise(Q.take, q))
   Q.add(2, q)
   assert (Q.take(q) == 2)
-  assert does_raise(Q.take, q)
+  assert (does_raise(Q.take, q))
   assert (Q.length(q) == 0)
 }
 
@@ -72,8 +72,8 @@ let () = {
   assert (Q.take(q) == 2)
   assert (Q.peek(q) == 3)
   assert (Q.take(q) == 3)
-  assert does_raise(Q.peek, q)
-  assert does_raise(Q.peek, q)
+  assert (does_raise(Q.peek, q))
+  assert (does_raise(Q.peek, q))
 }
 
 let () = {
@@ -83,7 +83,7 @@ let () = {
   }
   Q.clear(q)
   assert (Q.length(q) == 0)
-  assert does_raise(Q.take, q)
+  assert (does_raise(Q.take, q))
   assert (q == Q.create())
   Q.add(42, q)
   assert (Q.take(q) == 42)
@@ -109,19 +109,19 @@ let () = {
 
 let () = {
   let q = Q.create()
-  assert Q.is_empty(q)
+  assert (Q.is_empty(q))
   for i in 1 to 10 {
     Q.add(i, q)
     assert (Q.length(q) == i)
-    assert !Q.is_empty(q)
+    assert (!Q.is_empty(q))
   }
   for i in 10 downto 1 {
     assert (Q.length(q) == i)
-    assert !Q.is_empty(q)
+    assert (!Q.is_empty(q))
     ignore((Q.take(q): int))
   }
   assert (Q.length(q) == 0)
-  assert Q.is_empty(q)
+  assert (Q.is_empty(q))
 }
 
 let () = {

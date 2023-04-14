@@ -37,8 +37,8 @@ module Make = (G: G) => {
     let counter = ref(1)
 
     let rec step2 = (top, rest_of_stack) => {
-      assert !is_already_processed(top)
-      assert !is_on_the_stack(top)
+      assert(!is_already_processed(top))
+      assert(!is_on_the_stack(top))
       H.add(on_the_stack, top, true)
       H.add(n_labels, top, counter.contents)
       counter := counter.contents + 1

@@ -253,7 +253,7 @@ module Re_cset: {
       } else {
         list{(list{(d, c - 1)}, x'), ...prepend(s, x, list{(list{(c, d')}, x'), ...r'})}
       }
-    | _ => assert false
+    | _ => assert(false)
     }
 
   let pick = x =>
@@ -813,7 +813,7 @@ module Re_automata: {
 
   let rec split_at_match_rec = (l', x) =>
     switch x {
-    | list{} => assert false
+    | list{} => assert(false)
     | list{E.TMatch(_), ...r} => (List.rev(l'), remove_matches(r))
     | list{x, ...r} => split_at_match_rec(list{x, ...l'}, r)
     }
@@ -2166,7 +2166,7 @@ let rec loop info s pos st =
       | Intersection(_)
       | Complement(_)
       | Difference(_) =>
-        assert false
+        assert(false)
       }
 
     colorize(regexp)
@@ -2400,7 +2400,7 @@ let rec loop info s pos st =
       } else {
         (A.seq(ids, #First, A.erase(ids, b, e), cr), kind')
       }
-    | Difference(_) | Complement(_) | Intersection(_) | No_case(_) | Case(_) => assert false
+    | Difference(_) | Complement(_) | Intersection(_) | No_case(_) | Case(_) => assert(false)
     | Pmark(i, r') =>
       let (cr, kind') = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, r')
       (A.seq(ids, #First, A.pmark(ids, i), cr), kind')
@@ -2435,7 +2435,7 @@ let rec loop info s pos st =
   let as_set = x =>
     switch x {
     | Set(s) => s
-    | _ => assert false
+    | _ => assert(false)
     }
 
   /* XXX Should split alternatives into (1) charsets and (2) more
@@ -3108,7 +3108,7 @@ let rec loop info s pos st =
       | Set(c) => String.make(1, Char.chr(Cset.pick(c)))
       | Sequence(xs) => String.concat("", List.map(witness, xs))
       | Alternative(list{x, ..._}) => witness(x)
-      | Alternative(list{}) => assert false
+      | Alternative(list{}) => assert(false)
       | Repeat(r, from, _to) =>
         let w = witness(r)
         let b = Buffer.create(String.length(w) * from)
@@ -3120,7 +3120,7 @@ let rec loop info s pos st =
       | Intersection(_)
       | Complement(_)
       | Difference(_, _) =>
-        assert false
+        assert(false)
       | Group(r)
       | No_group(r)
       | Nest(r)

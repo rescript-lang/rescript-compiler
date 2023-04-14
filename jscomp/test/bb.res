@@ -10,7 +10,7 @@ let ff = x =>
   | "a" => #a
   | "b" => #b
   | "c" => #c
-  | _ => assert false
+  | _ => assert(false)
   }
 
 let test = x =>
@@ -18,7 +18,7 @@ let test = x =>
   | "a" => #a
   | "b" => #b
   | "c" => #c
-  | _ => assert false
+  | _ => assert(false)
   } {
   | #a => "a"
   | #b => "b"

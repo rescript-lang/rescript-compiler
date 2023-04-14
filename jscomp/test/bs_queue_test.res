@@ -35,15 +35,15 @@ let () = {
   assert (Q.toArray(q) == [4] && Q.size(q) == 1)
   assert (Q.popExn(q) == 4)
   assert (Q.toArray(q) == [] && Q.size(q) == 0)
-  assert does_raise(Q.popExn, q)
+  assert(does_raise(Q.popExn, q))
 }
 
 let () = {
   let q = Q.make()
   assert (Q.popExn(\"++"(q, 1)) == 1)
-  assert does_raise(Q.popExn, q)
+  assert (does_raise(Q.popExn, q))
   assert (Q.popExn(\"++"(q, 2)) == 2)
-  assert does_raise(Q.popExn, q)
+  assert (does_raise(Q.popExn, q))
   assert (Q.size(q) == 0)
 }
 
@@ -58,8 +58,8 @@ let () = {
   assert (Q.popExn(q) == 2)
   assert (Q.peekExn(q) == 3)
   assert (Q.popExn(q) == 3)
-  assert does_raise(Q.peekExn, q)
-  assert does_raise(Q.peekExn, q)
+  assert (does_raise(Q.peekExn, q))
+  assert (does_raise(Q.peekExn, q))
 }
 
 let () = {
@@ -69,7 +69,7 @@ let () = {
   }
   Q.clear(q)
   assert (Q.size(q) == 0)
-  assert does_raise(Q.popExn, q)
+  assert (does_raise(Q.popExn, q))
   assert (q == Q.make())
   Q.add(q, 42)
   assert (Q.popExn(q) == 42)
@@ -95,19 +95,19 @@ let () = {
 
 let () = {
   let q = Q.make()
-  assert Q.isEmpty(q)
+  assert (Q.isEmpty(q))
   for i in 1 to 10 {
     Q.add(q, i)
     assert (Q.size(q) == i)
-    assert !Q.isEmpty(q)
+    assert (!Q.isEmpty(q))
   }
   for i in 10 downto 1 {
     assert (Q.size(q) == i)
-    assert !Q.isEmpty(q)
+    assert (!Q.isEmpty(q))
     ignore((Q.popExn(q): int))
   }
   assert (Q.size(q) == 0)
-  assert Q.isEmpty(q)
+  assert (Q.isEmpty(q))
 }
 
 let () = {

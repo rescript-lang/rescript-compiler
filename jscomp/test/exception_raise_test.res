@@ -101,7 +101,7 @@ let a0 = try %raw(` function (){throw 2} () `) catch {
 /* throw is a statement */
 | A(x) => x
 | Js.Exn.Error(v) => Obj.magic(v)
-| _ => assert false
+| _ => assert(false)
 }
 
 let a1: exn = try %raw(` function (){throw 2} () `) catch {
@@ -124,7 +124,7 @@ let suites = ref({
       _ =>
         switch a1 {
         | Js.Exn.Error(v) => Eq(Obj.magic(v), 2)
-        | _ => assert false
+        | _ => assert(false)
         },
     ),
   }

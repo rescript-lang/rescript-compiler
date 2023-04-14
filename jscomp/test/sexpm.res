@@ -149,7 +149,7 @@ module MakeDecode = (M: MONAD) => {
 
   and expr_starting_with = (c, k, t) =>
     switch c {
-    | ' ' | '\t' | '\n' => assert false
+    | ' ' | '\t' | '\n' => assert(false)
     | ';' => skip_comment((_, ()) => expr(k, t), t)
     | '(' => expr_list(list{}, k, t)
     | ')' => _error(t, "unexpected ')'")
