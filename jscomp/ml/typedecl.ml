@@ -425,20 +425,20 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
         Ast_untagged_variants.check_well_formed ~isUntaggedDef cstrs;
         Ttype_variant tcstrs, Type_variant cstrs, sdecl
       | Ptype_record lbls_ ->
-          let has_optional attrs = Ext_list.exists attrs (fun ({txt },_) -> txt = "res.optional") in
-          let hasOptionalLabels = 
-            lbls_ |> List.exists(fun lbl -> has_optional lbl.pld_attributes) 
-          in
-          let lbls = 
-            if hasOptionalLabels then
-              Ext_list.map lbls_ (fun lbl ->
-                let typ = lbl.pld_type in
-                if has_optional lbl.pld_attributes then
-                  {lbl with pld_type={typ with ptyp_desc = Ptyp_constr ({txt = Lident "option"; loc=typ.ptyp_loc}, [typ])}}
-                else lbl) 
-            else lbls_ 
-          in
-          let lbls, lbls' = transl_labels env true lbls in
+        let has_optional attrs = Ext_list.exists attrs (fun ({txt },_) -> txt = "res.optional") in
+        let optionalLabels =
+            Ext_list.filter_map lbls_
+            (fun lbl -> if has_optional lbl.pld_attributes then Some lbl.pld_name.txt else None) in
+        let lbls =
+          if optionalLabels = [] then lbls_
+          else Ext_list.map lbls_ (fun lbl ->
+            let typ = lbl.pld_type in
+            let typ =
+              if has_optional lbl.pld_attributes then
+                {typ with ptyp_desc = Ptyp_constr ({txt = Lident "option"; loc=typ.ptyp_loc}, [typ])}
+              else typ in
+            {lbl with  pld_type = typ }) in
+        let lbls, lbls' = transl_labels env true lbls in
           let lbls_opt = match lbls, lbls' with
             | {ld_name = {txt = "..."}; ld_type} :: _, _ :: _ ->
               let rec extract t = match t.desc with
@@ -482,12 +482,9 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
               Ext_list.filter_map lbls (fun lbl ->
                   if has_optional lbl.ld_attributes then Some lbl.ld_name.txt else None)
             in
-            let rep =
-              if unbox then Record_unboxed false
-              else if optionalLabels <> [] then Record_optional_labels optionalLabels
-              else Record_regular
-            in
-            Ttype_record lbls, Type_record(lbls', rep), sdecl
+            Ttype_record lbls, Type_record(lbls', if unbox then Record_unboxed false
+            else if optionalLabels <> [] then Record_optional_labels optionalLabels
+            else Record_regular), sdecl
           | None ->
              (* Could not find record type decl for ...t: assume t is an object type and this is syntax ambiguity *)
              typeRecordAsObject := true;
