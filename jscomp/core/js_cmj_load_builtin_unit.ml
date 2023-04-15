@@ -39,7 +39,7 @@ let load_builin_unit (unit_name : string) : Js_cmj_format.cmj_load_info =
   let { Cmij_cache.module_names; module_data } = Lazy.force cmj_cache in
   match Ext_string_array.find_sorted module_names unit_name with
   | Some i ->
-      if Js_config.get_diagnose () then
+      if !Js_config.diagnose then
         Format.fprintf Format.err_formatter ">Cmj: %s@." unit_name;
       let cmj_table : Js_cmj_format.t =
         let { Cmij_cache.values; pure } =
@@ -53,7 +53,7 @@ let load_builin_unit (unit_name : string) : Js_cmj_format.cmj_load_info =
         }
         (* FIXME when we change it *)
       in
-      if Js_config.get_diagnose () then
+      if !Js_config.diagnose then
         Format.fprintf Format.err_formatter "<Cmj: %s@." unit_name;
       {
         package_path = Filename.dirname (Filename.dirname Sys.executable_name);

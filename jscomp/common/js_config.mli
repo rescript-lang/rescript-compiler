@@ -52,9 +52,6 @@ val cross_module_inline : bool ref
 val diagnose : bool ref
 (** diagnose option *)
 
-val get_diagnose : unit -> bool
-(* val set_diagnose : bool -> unit  *)
-
 val no_builtin_ppx : bool ref
 (** options for builtin ppx *)
 
