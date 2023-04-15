@@ -61,11 +61,6 @@ let unboxed_types = ref false
 
 type mli_status =  Mli_exists | Mli_non_exists
 let assume_no_mli = ref Mli_non_exists
-let bs_vscode =
-    try ignore @@ Sys.getenv "BS_VSCODE" ; true with _ -> false
-    (* We get it from environment variable mostly due to
-       we don't want to rebuild when flip on or off
-    *)
 let dont_record_crc_unit : string option ref = ref None
 let bs_gentype = ref false
 let no_assert_false = ref false
