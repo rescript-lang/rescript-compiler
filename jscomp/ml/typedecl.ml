@@ -455,13 +455,7 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
                 | {ld_name = {txt = "..."}; ld_type} :: rest, _ :: rest' ->
                   (match Ctype.extract_concrete_typedecl env (extract ld_type.ctyp_type) with
                     (_p0, _p, {type_kind=Type_record (fields, _repr)}) ->
-                      process_lbls (fst acc @ (fields |> List.map(fun (lbl: Types.label_declaration) ->
-                        let typ = lbl.ld_type in
-                        let typ =
-                          if has_optional lbl.ld_attributes then
-                            (Ctype.newconstr (Path.Pident (Ident.create "option")) [typ])
-                          else typ in
-                        {lbl with ld_type = typ }) |> List.map mkLbl), snd acc @ fields) rest rest'
+                      process_lbls (fst acc @ (fields |> List.map mkLbl), snd acc @ fields) rest rest'
                     | _ -> assert false
                     | exception _ -> None)
                 | lbl::rest, lbl'::rest' -> process_lbls (fst acc @ [lbl], snd acc @ [lbl']) rest rest'
