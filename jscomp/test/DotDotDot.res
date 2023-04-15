@@ -20,14 +20,14 @@ type globalProps = {
 }
 
 type anchorProps = {
-  \"...": globalProps,
+  ...globalProps,
   download?: string,
   href?: string,
   target?: [#_self | #_blank | #_parent | #_top],
 }
 
 // globalProps only case?
-type divProps = {\"...": globalProps}
+type divProps = {...globalProps}
 
 type svgProps = {
   ...globalProps,
