@@ -4125,6 +4125,13 @@ and parseTypeAlias p typ =
    *  | . type_parameter
 *)
 and parseTypeParameter p =
+  let docAttr : Parsetree.attributes =
+    match p.Parser.token with
+    | DocComment (loc, s) ->
+      Parser.next p;
+      [docCommentToAttribute loc s]
+    | _ -> []
+  in
   if
     p.Parser.token = Token.Tilde
     || p.token = Dot
@@ -4132,7 +4139,7 @@ and parseTypeParameter p =
   then
     let startPos = p.Parser.startPos in
     let dotted = Parser.optional p Dot in
-    let attrs = parseAttributes p in
+    let attrs = docAttr @ parseAttributes p in
     match p.Parser.token with
     | Tilde -> (
       Parser.next p;
@@ -4236,6 +4243,7 @@ and parseEs6ArrowType ~attrs p =
     let returnType = parseTypExpr ~alias:false p in
     let loc = mkLoc startPos p.prevEndPos in
     Ast_helper.Typ.arrow ~loc ~attrs arg typ returnType
+  | DocComment _ -> assert false
   | _ ->
     let parameters = parseTypeParameters p in
     Parser.expect EqualGreater p;
@@ -6399,14 +6407,16 @@ and parseAttribute p =
     Some (attrId, payload)
   | DocComment (loc, s) ->
     Parser.next p;
-    Some
-      ( {txt = "res.doc"; loc},
-        PStr
-          [
-            Ast_helper.Str.eval ~loc
-              (Ast_helper.Exp.constant ~loc (Pconst_string (s, None)));
-          ] )
+    Some (docCommentToAttribute loc s)
   | _ -> None
+
+and docCommentToAttribute loc s : Parsetree.attribute =
+  ( {txt = "res.doc"; loc},
+    PStr
+      [
+        Ast_helper.Str.eval ~loc
+          (Ast_helper.Exp.constant ~loc (Pconst_string (s, None)));
+      ] )
 
 and parseAttributes p =
   parseRegion p ~grammar:Grammar.Attribute ~f:parseAttribute
