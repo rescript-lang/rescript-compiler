@@ -17,6 +17,7 @@
 - Fix broken formatting in uncurried mode for functions with _ placeholder args. https://github.com/rescript-lang/rescript-compiler/pull/6148
 - Fix issue where spreading record types with optional labels would not have their labels preserved as optional. https://github.com/rescript-lang/rescript-compiler/pull/6154
 - Fix error location to be the type with the spreads when spreading record types with duplicate labels. https://github.com/rescript-lang/rescript-compiler/pull/6157
+- Disable warning on `@inline` attibute on uncurried functions. https://github.com/rescript-lang/rescript-compiler/pull/6152
 
 # 11.0.0-alpha.3
 

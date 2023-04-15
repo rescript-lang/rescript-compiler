@@ -26,3 +26,9 @@ let bar3: _ => _ = foo3(_, 3, 4)
 
 type cmp = Jsx.component<int>
 let q: cmp = _ => Jsx.null // Check that subtyping works past type definitions
+
+@inline
+let inl = () => ()
+
+@inline
+let inl2 = (x,y) => x+y
