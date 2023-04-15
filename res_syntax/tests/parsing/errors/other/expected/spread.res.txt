@@ -63,19 +63,6 @@ Explanation: a list spread at the tail is efficient, but a spread in the middle 
 
 
   Syntax error!
-  tests/parsing/errors/other/spread.res:9:16-10:4
-
-   7 │ let list{...x, ...y} = myList
-   8 │ 
-   9 │ type t = {...a}
-  10 │ type t = Foo({...a})
-  11 │ type t = option<foo, {...x}>
-  12 │ 
-
-  Did you forget a `}` here?
-
-
-  Syntax error!
   tests/parsing/errors/other/spread.res:10:20
 
    8 │ 
