@@ -4975,15 +4975,20 @@ and parseRecordOrObjectDecl p =
     (* start of object type spreading, e.g. `type u = {...a, "u": int}` *)
     Parser.next p;
     let typ = parseTypExpr p in
-    let () =
-      match p.token with
-      | Rbrace ->
-        (* {...x}, spread without extra fields *)
-        Parser.next p
-      | _ -> Parser.expect Comma p
-    in
     match p.token with
+    | Rbrace ->
+      (* {...x}, spread without extra fields *)
+      Parser.next p;
+      let loc = mkLoc startPos p.prevEndPos in
+      let dotField =
+        Ast_helper.Type.field ~loc
+          {txt = "..."; loc = mkLoc dotdotdotStart dotdotdotEnd}
+          typ
+      in
+      let kind = Parsetree.Ptype_record [dotField] in
+      (None, Public, kind)
     | _ ->
+      Parser.expect Comma p;
       let loc = mkLoc startPos p.prevEndPos in
       let dotField =
         Ast_helper.Type.field ~loc

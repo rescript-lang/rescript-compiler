@@ -61,9 +61,8 @@ let rec error_of_extension ext =
 
 let cat s1 s2 =
   if s2 = "" then s1 else
-    if Clflags.bs_vscode then s1 ^ " " ^ s2
     (* 2 spaces indentation for the next line *)
-    else s1 ^ "\n  " ^ s2 
+    s1 ^ "\n  " ^ s2 
 
 let rec deprecated_of_attrs = function
   | [] -> None

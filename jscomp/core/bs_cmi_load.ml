@@ -47,10 +47,10 @@ let load_cmi ~unit_name : Env.Persistent_signature.t option =
       let {Cmij_cache.module_names; module_data} = Lazy.force cmi_cache in
       match Ext_string_array.find_sorted module_names unit_name with
       | Some index ->
-        if Js_config.get_diagnose () then
+        if !Js_config.diagnose then
           Format.fprintf Format.err_formatter ">Cmi: %s@." unit_name;
         let cmi = Cmij_cache.unmarshal_cmi_data module_data.(index) in
-        if Js_config.get_diagnose () then
+        if !Js_config.diagnose then
           Format.fprintf Format.err_formatter "<Cmi: %s@." unit_name;
         Some {filename = Sys.executable_name ; 
               cmi }

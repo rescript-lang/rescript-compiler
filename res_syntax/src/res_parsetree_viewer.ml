@@ -109,7 +109,12 @@ let collectListExpressions expr =
 
 (* (__x) => f(a, __x, c) -----> f(a, _, c)  *)
 let rewriteUnderscoreApply expr =
-  match expr.pexp_desc with
+  let expr_fun =
+    if Ast_uncurried.exprIsUncurriedFun expr then
+      Ast_uncurried.exprExtractUncurriedFun expr
+    else expr
+  in
+  match expr_fun.pexp_desc with
   | Pexp_fun
       ( Nolabel,
         None,
@@ -154,27 +159,13 @@ let funExpr expr =
   let rec collect ~uncurried ~nFun attrsBefore acc expr =
     match expr with
     | {
-        pexp_desc =
-          Pexp_fun
-            ( Nolabel,
-              None,
-              {ppat_desc = Ppat_var {txt = "__x"}},
-              {pexp_desc = Pexp_apply _} );
-      }
-    | {
-        pexp_desc =
-          Pexp_construct
-            ( {txt = Lident "Function$"},
-              Some
-                {
-                  pexp_desc =
-                    Pexp_fun
-                      ( Nolabel,
-                        None,
-                        {ppat_desc = Ppat_var {txt = "__x"}},
-                        {pexp_desc = Pexp_apply _} );
-                } );
-      } ->
+     pexp_desc =
+       Pexp_fun
+         ( Nolabel,
+           None,
+           {ppat_desc = Ppat_var {txt = "__x"}},
+           {pexp_desc = Pexp_apply _} );
+    } ->
       (uncurried, attrsBefore, List.rev acc, rewriteUnderscoreApply expr)
     | {pexp_desc = Pexp_newtype (stringLoc, rest); pexp_attributes = attrs} ->
       let stringLocs, returnExpr = collectNewTypes [stringLoc] rest in

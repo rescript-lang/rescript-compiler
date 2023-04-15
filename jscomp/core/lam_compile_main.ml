@@ -208,7 +208,7 @@ let compile
 #ifndef RELEASE
 let () =
   Ext_log.dwarn ~__POS__ "After coercion: %a@." Lam_stats.print meta ;
-  if Js_config.get_diagnose () then
+  if !Js_config.diagnose then
     let f =
       Ext_filename.new_extension !Location.input_name  ".lambda" in
     Ext_fmt.with_file_as_pp f begin fun fmt ->

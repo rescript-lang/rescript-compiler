@@ -22,7 +22,13 @@ var v2 = {
   w: 2.0
 };
 
+var x = {
+  name: "test",
+  x: "test"
+};
+
 exports.v = v;
 exports.v2 = v2;
+exports.x = x;
 exports.MultipleDotDotDots = MultipleDotDotDots;
 /* No side effect */

@@ -34,12 +34,6 @@ let directives = ref []
 let cross_module_inline = ref false
 let diagnose = ref false
 
-let get_diagnose () =
-  !diagnose
-#ifndef RELEASE
-  || Sys.getenv_opt "RES_DEBUG_FILE" <> None
-#endif
-
 (* let (//) = Filename.concat *)
 
 (* let get_packages_info () = !packages_info *)

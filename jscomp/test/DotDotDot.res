@@ -20,20 +20,25 @@ type globalProps = {
 }
 
 type anchorProps = {
-  \"...": globalProps,
+  ...globalProps,
   download?: string,
   href?: string,
   target?: [#_self | #_blank | #_parent | #_top],
 }
 
 // globalProps only case?
-type divProps = {\"...": globalProps}
+type divProps = {...globalProps}
 
 type svgProps = {
   ...globalProps,
   x?: string,
   y?: string,
 }
+
+let x: svgProps = {x: "test", name: "test"}
+
+// uncomment this to reveal a parser error
+// type copiedSvgProps = {...svgProps}
 
 module MultipleDotDotDots = {
   type t1 = {x: int}
