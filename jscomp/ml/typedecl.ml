@@ -463,15 +463,15 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
               in
               process_lbls ([], []) lbls lbls'
             | _ -> Some (lbls, lbls') in
-          let rec check_duplicates (lbls : Typedtree.label_declaration list) seen = match lbls with
+          let rec check_duplicates loc (lbls : Typedtree.label_declaration list) seen = match lbls with
           | [] -> ()
           | lbl::rest ->
             let name = lbl.ld_id.name in
-            if StringSet.mem name seen then raise(Error(lbl.ld_loc, Duplicate_label name));
-            check_duplicates rest (StringSet.add name seen) in
+            if StringSet.mem name seen then raise(Error(loc, Duplicate_label name));
+            check_duplicates loc rest (StringSet.add name seen) in
           (match lbls_opt with
           | Some (lbls, lbls') ->
-            check_duplicates lbls StringSet.empty;
+            check_duplicates sdecl.ptype_loc lbls StringSet.empty;
             let optionalLabels =
               Ext_list.filter_map lbls (fun lbl ->
                   if has_optional lbl.ld_attributes then Some lbl.ld_name.txt else None)
