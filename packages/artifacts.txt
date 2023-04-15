@@ -965,10 +965,6 @@ linux/bsb_helper.exe
 linux/bsc.exe
 linux/ninja.exe
 linux/rescript.exe
-linuxarm64/bsb_helper.exe
-linuxarm64/bsc.exe
-linuxarm64/ninja.exe
-linuxarm64/rescript.exe
 ninja.COPYING
 package.json
 rescript

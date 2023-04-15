@@ -36,7 +36,7 @@ let to_method_callback loc (self : Bs_ast_mapper.mapper) label
     match Ast_attributes.process_attributes_rev body.pexp_attributes with
     | Nothing, attrs -> (
       match body.pexp_desc with
-      | Pexp_fun (arg_label, _, arg, body) ->
+      | Pexp_fun (arg_label, _, arg, body, _) ->
         Bs_syntaxerr.optional_err loc arg_label;
         aux ((arg_label, self.pat self arg, attrs) :: acc) body
       | _ -> (self.expr self body, acc))
@@ -45,7 +45,7 @@ let to_method_callback loc (self : Bs_ast_mapper.mapper) label
   let result, rev_extra_args = aux [(label, self_pat, [])] body in
   let body =
     Ext_list.fold_left rev_extra_args result (fun e (label, p, attrs) ->
-        Ast_helper.Exp.fun_ ~loc ~attrs label None p e)
+        Ast_helper.Exp.fun_ ~loc ~attrs label None p e [])
   in
   let arity = List.length rev_extra_args in
   let arity_s = string_of_int arity in
@@ -75,7 +75,7 @@ let to_uncurry_fn (e : Parsetree.expression) (self : Bs_ast_mapper.mapper)
     match Ast_attributes.process_attributes_rev body.pexp_attributes with
     | Nothing, _ -> (
       match body.pexp_desc with
-      | Pexp_fun (arg_label, _, arg, body) ->
+      | Pexp_fun (arg_label, _, arg, body, _) ->
         Bs_syntaxerr.optional_err loc arg_label;
         aux ((arg_label, self.pat self arg) :: acc) body
       | _ -> (self.expr self body, acc))
@@ -87,7 +87,7 @@ let to_uncurry_fn (e : Parsetree.expression) (self : Bs_ast_mapper.mapper)
   let result = Ast_async.add_promise_type ~async result in
   let body =
     Ext_list.fold_left rev_extra_args result (fun e (label, p) ->
-        Ast_helper.Exp.fun_ ~loc label None p e)
+        Ast_helper.Exp.fun_ ~loc label None p e [])
   in
   let body = Ast_async.add_async_attribute ~async body in
 

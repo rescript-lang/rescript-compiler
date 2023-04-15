@@ -551,10 +551,10 @@ and expression ctxt f x =
     | Pexp_let _ | Pexp_letmodule _ | Pexp_open _ | Pexp_letexception _
         when ctxt.semi ->
         paren true (expression reset_ctxt) f x
-    | Pexp_fun (l, e0, p, e) ->
-        pp f "@[<2>fun@;%a->@;%a@]"
+    | Pexp_fun (l, e0, p, e, a) ->
+        pp f "@[<2>fun@;%a->@;%a%a@]"
           (label_exp ctxt) (l, e0, p)
-          (expression ctxt) e
+          (expression ctxt) e (attributes ctxt) a
     | Pexp_function l ->
         pp f "@[<hv>function%a@]" (case_list ctxt) l
     | Pexp_match (e, l) ->
@@ -1092,12 +1092,12 @@ and binding ctxt f {pvb_pat=p; pvb_expr=x; _} =
   let rec pp_print_pexp_function f x =
     if x.pexp_attributes <> [] then pp f "=@;%a" (expression ctxt) x
     else match x.pexp_desc with
-      | Pexp_fun (label, eo, p, e) ->
+      | Pexp_fun (label, eo, p, e, a) ->
           if label=Nolabel then
-            pp f "%a@ %a" (simple_pattern ctxt) p pp_print_pexp_function e
+            pp f "%a@ %a%a" (simple_pattern ctxt) p pp_print_pexp_function e (attributes ctxt) a
           else
-            pp f "%a@ %a"
-              (label_exp ctxt) (label,eo,p) pp_print_pexp_function e
+            pp f "%a@ %a%a"
+              (label_exp ctxt) (label,eo,p) pp_print_pexp_function e (attributes ctxt) a
       | Pexp_newtype (str,e) ->
           pp f "(type@ %s)@ %a" str.txt pp_print_pexp_function e
       | _ -> pp f "=@;%a" (expression ctxt) x

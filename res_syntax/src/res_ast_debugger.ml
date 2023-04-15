@@ -549,7 +549,7 @@ module SexpAst = struct
       | Pexp_function cases ->
         Sexp.list
           [Sexp.atom "Pexp_function"; Sexp.list (mapEmpty ~f:case cases)]
-      | Pexp_fun (argLbl, exprOpt, pat, expr) ->
+      | Pexp_fun (argLbl, exprOpt, pat, expr, a) ->
         Sexp.list
           [
             Sexp.atom "Pexp_fun";
@@ -559,6 +559,7 @@ module SexpAst = struct
             | Some expr -> Sexp.list [Sexp.atom "Some"; expression expr]);
             pattern pat;
             expression expr;
+            attributes a;
           ]
       | Pexp_apply (expr, args) ->
         Sexp.list

@@ -415,7 +415,7 @@ let normalize =
                                 (Location.mknoloc (Longident.Lident "x"));
                           },
                           mapper.cases mapper cases );
-                  } );
+                  }, [] );
           }
         | Pexp_apply
             ( {pexp_desc = Pexp_ident {txt = Longident.Lident "!"}},

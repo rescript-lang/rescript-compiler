@@ -264,7 +264,7 @@ let funExpr expr =
   let rec collect attrsBefore acc expr =
     match expr with
     | {
-     pexp_desc = Pexp_fun (lbl, defaultExpr, pattern, returnExpr);
+     pexp_desc = Pexp_fun (lbl, defaultExpr, pattern, returnExpr, _);
      pexp_attributes = [];
     } ->
       let parameter = ([], lbl, defaultExpr, pattern) in
@@ -279,7 +279,7 @@ let funExpr expr =
       in
       collect attrsBefore (parameter :: acc) returnExpr
     | {
-     pexp_desc = Pexp_fun (lbl, defaultExpr, pattern, returnExpr);
+     pexp_desc = Pexp_fun (lbl, defaultExpr, pattern, returnExpr, _);
      pexp_attributes = [({txt = "bs"}, _)] as attrs;
     } ->
       let parameter = (attrs, lbl, defaultExpr, pattern) in
@@ -287,7 +287,7 @@ let funExpr expr =
     | {
      pexp_desc =
        Pexp_fun
-         (((Labelled _ | Optional _) as lbl), defaultExpr, pattern, returnExpr);
+         (((Labelled _ | Optional _) as lbl), defaultExpr, pattern, returnExpr, _);
      pexp_attributes = attrs;
     } ->
       let parameter = (attrs, lbl, defaultExpr, pattern) in
@@ -296,7 +296,7 @@ let funExpr expr =
   in
   match expr with
   | {
-      pexp_desc = Pexp_fun (Nolabel, _defaultExpr, _pattern, _returnExpr);
+      pexp_desc = Pexp_fun (Nolabel, _defaultExpr, _pattern, _returnExpr, _);
       pexp_attributes = attrs;
     } as expr ->
     collect attrs [] {expr with pexp_attributes = []}
@@ -1365,7 +1365,7 @@ and walkExpression expr t comments =
       let afterExpr, rest = partitionAdjacentTrailing callExpr.pexp_loc after in
       attach t.trailing callExpr.pexp_loc afterExpr;
       walkList (arguments |> List.map (fun (_, e) -> ExprArgument e)) t rest
-  | Pexp_fun (_, _, _, _) | Pexp_newtype _ -> (
+  | Pexp_fun _ | Pexp_newtype _ -> (
     let _, parameters, returnExpr = funExpr expr in
     let comments =
       visitListButContinueWithRemainingComments ~newlineDelimited:false

@@ -163,7 +163,7 @@ let handleExternalInStru (self : Bs_ast_mapper.mapper)
                                 ( 0,
                                   Exp.fun_ Nolabel None
                                     (Pat.var ~loc {txt = "obj"; loc})
-                                    body )
+                                    body [] )
                                 (fun arg (i, obj) ->
                                   ( i + 1,
                                     Exp.fun_ arg None
@@ -177,7 +177,7 @@ let handleExternalInStru (self : Bs_ast_mapper.mapper)
                                                ^ string_of_int (arity - i - 1));
                                            loc;
                                          })
-                                      obj )));
+                                      obj [] )) );
                       ];
                   ]))
       else normal ())

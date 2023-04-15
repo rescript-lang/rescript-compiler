@@ -169,7 +169,7 @@ let init () =
                 Ast_comb.single_non_rec_value patToJs
                   (Ast_compatible.fun_
                      (Pat.constraint_ (Pat.var pat_param) core_type)
-                     body)
+                     body [])
               in
               let ( +> ) a ty = Exp.constraint_ (eraseType a) ty in
               let ( +: ) a ty = eraseType (Exp.constraint_ a ty) in
@@ -216,7 +216,7 @@ let init () =
                         Exp.let_ Nonrecursive
                           [Vb.mk (Pat.var pat_param) (exp_param +: newType)]
                           (Exp.constraint_ obj_exp core_type)
-                       else Exp.constraint_ obj_exp core_type))
+                       else Exp.constraint_ obj_exp core_type) [])
                 in
                 let rest = [toJs; fromJs] in
                 if createType then eraseTypeStr :: newTypeStr :: rest else rest
@@ -255,7 +255,7 @@ let init () =
                               app2 unsafeIndexGetExp revExpMap exp_param
                             in
                             if createType then raiseWhenNotFound result
-                            else result));
+                            else result) []);
                     ]
                   in
                   if createType then newTypeStr :: v else v

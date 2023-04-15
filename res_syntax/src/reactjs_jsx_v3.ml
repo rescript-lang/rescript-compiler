@@ -449,15 +449,15 @@ let jsxMapper ~config =
   let rec recursivelyTransformNamedArgsForMake expr args newtypes =
     match expr.pexp_desc with
     (* TODO: make this show up with a loc. *)
-    | Pexp_fun (Labelled "key", _, _, _) | Pexp_fun (Optional "key", _, _, _) ->
+    | Pexp_fun (Labelled "key", _, _, _, _) | Pexp_fun (Optional "key", _, _, _, _) ->
       React_jsx_common.raiseError ~loc:expr.pexp_loc
         "Key cannot be accessed inside of a component. Don't worry - you can \
          always key a component from its parent!"
-    | Pexp_fun (Labelled "ref", _, _, _) | Pexp_fun (Optional "ref", _, _, _) ->
+    | Pexp_fun (Labelled "ref", _, _, _, _) | Pexp_fun (Optional "ref", _, _, _, _) ->
       React_jsx_common.raiseError ~loc:expr.pexp_loc
         "Ref cannot be passed as a normal prop. Either give the prop a \
          different name or use the `forwardRef` API instead."
-    | Pexp_fun (arg, default, pattern, expression)
+    | Pexp_fun (arg, default, pattern, expression, _)
       when isOptional arg || isLabelled arg ->
       let () =
         match (isOptional arg, pattern, default) with
@@ -500,7 +500,7 @@ let jsxMapper ~config =
         ( Nolabel,
           _,
           {ppat_desc = Ppat_construct ({txt = Lident "()"}, _) | Ppat_any},
-          _expression ) ->
+          _expression, _ ) ->
       (args, newtypes, None)
     | Pexp_fun
         ( Nolabel,
@@ -509,9 +509,9 @@ let jsxMapper ~config =
             ppat_desc =
               Ppat_var {txt} | Ppat_constraint ({ppat_desc = Ppat_var {txt}}, _);
           },
-          _expression ) ->
+          _expression, _ ) ->
       (args, newtypes, Some txt)
-    | Pexp_fun (Nolabel, _, pattern, _expression) ->
+    | Pexp_fun (Nolabel, _, pattern, _expression, _) ->
       Location.raise_errorf ~loc:pattern.ppat_loc
         "React: react.component refs only support plain arguments and type \
          annotations."
@@ -721,7 +721,7 @@ let jsxMapper ~config =
                    ( ((Labelled _ | Optional _) as label),
                      default,
                      pattern,
-                     ({pexp_desc = Pexp_fun _} as internalExpression) );
+                     ({pexp_desc = Pexp_fun _} as internalExpression), a );
               } ->
                 let wrap, hasUnit, exp =
                   spelunkForFunExpression internalExpression
@@ -731,7 +731,7 @@ let jsxMapper ~config =
                   unerasableIgnoreExp
                     {
                       expression with
-                      pexp_desc = Pexp_fun (label, default, pattern, exp);
+                      pexp_desc = Pexp_fun (label, default, pattern, exp, a);
                     } )
               (* let make = (()) => ... *)
               (* let make = (_) => ... *)
@@ -744,7 +744,7 @@ let jsxMapper ~config =
                        ppat_desc =
                          Ppat_construct ({txt = Lident "()"}, _) | Ppat_any;
                      },
-                     _internalExpression );
+                     _internalExpression, _ );
               } ->
                 ((fun a -> a), true, expression)
               (* let make = (~prop) => ... *)
@@ -754,13 +754,13 @@ let jsxMapper ~config =
                    ( (Labelled _ | Optional _),
                      _default,
                      _pattern,
-                     _internalExpression );
+                     _internalExpression, _ );
               } ->
                 ((fun a -> a), false, unerasableIgnoreExp expression)
               (* let make = (prop) => ... *)
               | {
                pexp_desc =
-                 Pexp_fun (_nolabel, _default, pattern, _internalExpression);
+                 Pexp_fun (_nolabel, _default, pattern, _internalExpression, _);
               } ->
                 if hasApplication.contents then
                   ((fun a -> a), false, unerasableIgnoreExp expression)
@@ -943,7 +943,7 @@ let jsxMapper ~config =
                         ppat_loc = emptyLoc;
                         ppat_attributes = [];
                       },
-                      innerExpression );
+                      innerExpression, [] );
               }
             | None -> innerExpression
           in
@@ -957,7 +957,7 @@ let jsxMapper ~config =
                 ppat_loc = emptyLoc;
                 ppat_attributes = [];
               }
-              innerExpressionWithRef
+              innerExpressionWithRef []
           in
           let fullExpression =
             if !Config.uncurried = Uncurried then
