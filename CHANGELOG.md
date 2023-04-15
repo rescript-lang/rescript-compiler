@@ -19,6 +19,7 @@
 - Fix error location to be the type with the spreads when spreading record types with duplicate labels. https://github.com/rescript-lang/rescript-compiler/pull/6157
 - Disable warning on `@inline` attibute on uncurried functions. https://github.com/rescript-lang/rescript-compiler/pull/6152
 - Support doc comments on arguments of function types. https://github.com/rescript-lang/rescript-compiler/pull/6161
+- Fix issue with record type coercion and unboxed. https://github.com/rescript-lang/rescript-compiler/issues/6158
 
 # 11.0.0-alpha.3
 

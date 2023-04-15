@@ -3954,26 +3954,36 @@ let rec subtype_rec env trace t1 t2 cstrs =
     | (Tconstr(_, [], _), Tconstr(_, [], _)) -> (* type coercion for records *)
       (match extract_concrete_typedecl env t1, extract_concrete_typedecl env t2 with
       | (_, _, {type_kind=Type_record (fields1, repr1)}), (_, _, {type_kind=Type_record (fields2, repr2)}) ->
-        let field_is_optional id repr = match repr with
-          | Record_optional_labels lbls -> List.mem (Ident.name id) lbls
+        let same_repr = match repr1, repr2 with
+          | (Record_regular | Record_optional_labels _), (Record_regular | Record_optional_labels _) ->
+            true (* handled in the fields checks *)
+          | Record_unboxed b1, Record_unboxed b2 -> b1 = b2
+          | Record_inlined _, Record_inlined _ -> repr1 = repr2
+          | Record_extension, Record_extension -> true
           | _ -> false in
-        let violation = ref false in
-        let label_decl_sub (acc1, acc2) ld2 =
-          match fields1 |> List.find_opt (fun ld1 -> Ident.name ld1.ld_id = Ident.name ld2.ld_id) with
-          | Some ld1 ->
-            if field_is_optional ld1.ld_id repr1 && not (field_is_optional ld2.ld_id repr2) then
-              (* optional field can't be cast to non-optional one *)
+        if same_repr then
+          let field_is_optional id repr = match repr with
+            | Record_optional_labels lbls -> List.mem (Ident.name id) lbls
+            | _ -> false in
+          let violation = ref false in
+          let label_decl_sub (acc1, acc2) ld2 =
+            match fields1 |> List.find_opt (fun ld1 -> Ident.name ld1.ld_id = Ident.name ld2.ld_id) with
+            | Some ld1 ->
+              if field_is_optional ld1.ld_id repr1 && not (field_is_optional ld2.ld_id repr2) then
+                (* optional field can't be cast to non-optional one *)
+                violation := true;
+              ld1.ld_type :: acc1, ld2.ld_type :: acc2
+            | None ->
+              (* field must be present *)
               violation := true;
-            ld1.ld_type :: acc1, ld2.ld_type :: acc2
-          | None ->
-            (* field must be present *)
-            violation := true;
-            (acc1, acc2) in
-        let tl1, tl2 = List.fold_left label_decl_sub ([], []) fields2 in
-        if !violation
-        then (trace, t1, t2, !univar_pairs)::cstrs
+              (acc1, acc2) in
+          let tl1, tl2 = List.fold_left label_decl_sub ([], []) fields2 in
+          if !violation
+          then (trace, t1, t2, !univar_pairs)::cstrs
+          else
+            subtype_list env trace tl1 tl2 cstrs
         else
-          subtype_list env trace tl1 tl2 cstrs
+          (trace, t1, t2, !univar_pairs)::cstrs
       | _ -> (trace, t1, t2, !univar_pairs)::cstrs
       | exception Not_found -> (trace, t1, t2, !univar_pairs)::cstrs
     )
