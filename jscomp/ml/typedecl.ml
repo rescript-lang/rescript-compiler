@@ -439,13 +439,6 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
                 else typ in
               {lbl with  pld_type = typ }) in
           let lbls, lbls' = transl_labels env true lbls in
-          let rep =
-            if unbox then Record_unboxed false
-            else 
-              if optionalLabels <> []
-              then Record_optional_labels optionalLabels
-              else Record_regular
-          in
           let lbls_opt = match lbls, lbls' with
             | {ld_name = {txt = "..."}; ld_type} :: _, _ :: _ ->
               let rec extract t = match t.desc with
@@ -479,7 +472,15 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
           (match lbls_opt with
           | Some (lbls, lbls') ->
             check_duplicates lbls StringSet.empty;
-            Ttype_record lbls, Type_record(lbls', rep), sdecl
+            let optionalLabels =
+              Ext_list.filter_map lbls (fun lbl ->
+                  if has_optional lbl.ld_attributes then Some lbl.ld_name.txt else None)
+            in
+            Ttype_record lbls, Type_record(lbls', if unbox then 
+                Record_unboxed false
+              else if optionalLabels <> [] then 
+                Record_optional_labels optionalLabels
+              else Record_regular), sdecl
           | None ->
              (* Could not find record type decl for ...t: assume t is an object type and this is syntax ambiguity *)
              typeRecordAsObject := true;
