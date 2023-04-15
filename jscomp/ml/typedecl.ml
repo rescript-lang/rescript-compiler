@@ -476,9 +476,11 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
               Ext_list.filter_map lbls (fun lbl ->
                   if has_optional lbl.ld_attributes then Some lbl.ld_name.txt else None)
             in
-            Ttype_record lbls, Type_record(lbls', if unbox then Record_unboxed false
-            else if optionalLabels <> [] then Record_optional_labels optionalLabels
-            else Record_regular), sdecl
+            Ttype_record lbls, Type_record(lbls', if unbox then 
+                Record_unboxed false
+              else if optionalLabels <> [] then 
+                Record_optional_labels optionalLabels
+              else Record_regular), sdecl
           | None ->
              (* Could not find record type decl for ...t: assume t is an object type and this is syntax ambiguity *)
              typeRecordAsObject := true;
