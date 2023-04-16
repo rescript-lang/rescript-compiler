@@ -27,7 +27,7 @@ var Media = {};
 
 var $$Image = {};
 
-var Animation = {};
+var $$Animation = {};
 
 var Transition = {};
 
@@ -44,6 +44,6 @@ exports.UI = UI;
 exports.Wheel = Wheel;
 exports.Media = Media;
 exports.$$Image = $$Image;
-exports.Animation = Animation;
+exports.$$Animation = $$Animation;
 exports.Transition = Transition;
 /* No side effect */
