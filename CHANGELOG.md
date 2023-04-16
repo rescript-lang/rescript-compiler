@@ -20,6 +20,9 @@
 - Disable warning on `@inline` attibute on uncurried functions. https://github.com/rescript-lang/rescript-compiler/pull/6152
 - Support doc comments on arguments of function types. https://github.com/rescript-lang/rescript-compiler/pull/6161
 - Fix issue with record type coercion and unboxed. https://github.com/rescript-lang/rescript-compiler/issues/6158
+- Fixed subtype checking for record types with "@as" attributes: The subtype relationship now takes into account the compatibility of "@as" attributes between corresponding fields, ensuring correctness in runtime representation.
+ https://github.com/rescript-lang/rescript-compiler/issues/6158
+
 
 # 11.0.0-alpha.3
 
