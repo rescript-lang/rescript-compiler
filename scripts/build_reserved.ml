@@ -228,6 +228,6 @@ for i = 0 to Array.length Sys.argv - 1  do
   print_endline ">"; print_string Sys.argv.(i)
 done 
 ;; *)
-let () = main Sys.argv.(1) "ext/js_reserved_map.ml"
+let () = main Sys.argv.(1) Sys.argv.(2)
 
 
