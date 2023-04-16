@@ -3598,6 +3598,17 @@ and parseCallExpr p funExpr =
     parseCommaDelimitedRegion ~grammar:Grammar.ArgumentList ~closing:Rparen
       ~f:parseArgument p
   in
+  let resPartialAttr =
+    let loc = mkLoc startPos p.prevEndPos in
+    (Location.mkloc "res.partial" loc, Parsetree.PStr [])
+  in
+  let isPartial =
+    match p.token with
+    | DotDotDot when args <> [] ->
+      Parser.next p;
+      true
+    | _ -> false
+  in
   Parser.expect Rparen p;
   let args =
     match args with
@@ -3626,7 +3637,8 @@ and parseCallExpr p funExpr =
          } as expr;
      };
     ]
-      when (not loc.loc_ghost) && p.mode = ParseForTypeChecker ->
+      when (not loc.loc_ghost) && p.mode = ParseForTypeChecker && not isPartial
+      ->
       (*  Since there is no syntax space for arity zero vs arity one,
        *  we expand
        *    `fn(. ())` into
@@ -3670,22 +3682,20 @@ and parseCallExpr p funExpr =
     | [] -> []
   in
   let apply =
-    List.fold_left
-      (fun callBody group ->
+    Ext_list.fold_left args funExpr (fun callBody group ->
         let dotted, args = group in
         let args, wrap = processUnderscoreApplication p args in
         let exp =
           let uncurried =
             p.uncurried_config |> Res_uncurried.fromDotted ~dotted
           in
-          if uncurried then
-            let attrs = [uncurriedAppAttr] in
-            Ast_helper.Exp.apply ~loc ~attrs callBody args
-          else Ast_helper.Exp.apply ~loc callBody args
+          let attrs = if uncurried then [uncurriedAppAttr] else [] in
+          let attrs = if isPartial then resPartialAttr :: attrs else attrs in
+          Ast_helper.Exp.apply ~loc ~attrs callBody args
         in
         wrap exp)
-      funExpr args
   in
+
   Parser.eatBreadcrumb p;
   apply
 

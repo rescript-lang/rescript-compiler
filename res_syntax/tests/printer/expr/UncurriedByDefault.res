@@ -157,3 +157,5 @@ let fnU = (_x): ((unit) => unit) => fooC
 let aU = (() => "foo")->Ok
 
 Ok("_")->Belt.Result.map(concatStrings(_, "foo"))
+
+let ptl1 =  add(1, ...)

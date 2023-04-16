@@ -20,6 +20,9 @@ val processBsAttribute : Parsetree.attributes -> bool * Parsetree.attributes
 val processUncurriedAppAttribute :
   Parsetree.attributes -> bool * Parsetree.attributes
 
+val processPartialAppAttribute :
+  Parsetree.attributes -> bool * Parsetree.attributes
+
 type functionAttributesInfo = {
   async: bool;
   bs: bool;

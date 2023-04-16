@@ -12,6 +12,9 @@
 
 # 11.0.0-alpha.4 (Unreleased)
 
+#### :rocket: Main New Feature
+- Add surface synyax for partial application of uncurried functions.
+
 #### :bug: Bug Fix
 
 - Fix broken formatting in uncurried mode for functions with _ placeholder args. https://github.com/rescript-lang/rescript-compiler/pull/6148
