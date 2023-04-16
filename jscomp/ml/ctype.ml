@@ -3967,11 +3967,18 @@ let rec subtype_rec env trace t1 t2 cstrs =
             | _ -> false in
           let violation = ref false in
           let label_decl_sub (acc1, acc2) ld2 =
-            match fields1 |> List.find_opt (fun ld1 -> Ident.name ld1.ld_id = Ident.name ld2.ld_id) with
+            match Ext_list.find_first fields1 (fun ld1 -> ld1.ld_id.name = ld2.ld_id.name) with
             | Some ld1 ->
               if field_is_optional ld1.ld_id repr1 && not (field_is_optional ld2.ld_id repr2) then
                 (* optional field can't be cast to non-optional one *)
                 violation := true;
+              let get_as (({txt}, payload) : Parsetree.attribute) =
+                if txt = "as" then Ast_payload.is_single_string payload
+                else None in
+              let get_as_name ld = match Ext_list.filter_map ld.ld_attributes get_as with
+                | [] -> ld.ld_id.name
+                | (s,_)::_ -> s in
+              if get_as_name ld1 <> get_as_name ld2 then violation := true;
               ld1.ld_type :: acc1, ld2.ld_type :: acc2
             | None ->
               (* field must be present *)
