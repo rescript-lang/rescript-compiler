@@ -13,7 +13,7 @@
 # 11.0.0-alpha.4 (Unreleased)
 
 #### :rocket: Main New Feature
-- Add surface syntax for partial application of uncurried functions.
+- Add surface syntax for partial application of uncurried functions: `foo(1, ...)`. This corresponds to curried application in the old mode. 
 
 #### :bug: Bug Fix
 
