@@ -72,6 +72,15 @@ let processUncurriedAppAttribute attrs =
   in
   process false [] attrs
 
+let processPartialAppAttribute attrs =
+  let rec process partialApp acc attrs =
+    match attrs with
+    | [] -> (partialApp, List.rev acc)
+    | ({Location.txt = "res.partial"}, _) :: rest -> process true acc rest
+    | attr :: rest -> process partialApp (attr :: acc) rest
+  in
+  process false [] attrs
+
 type functionAttributesInfo = {
   async: bool;
   bs: bool;
