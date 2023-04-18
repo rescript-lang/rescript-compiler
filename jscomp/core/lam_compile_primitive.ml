@@ -52,7 +52,7 @@ let wrap_then import value =
     ~info:{ arity = Full; call_info = Call_na }
     (E.dot import "then")
     [
-      E.ocaml_fun ~return_unit:false ~async:false [ arg ]
+      E.ocaml_fun ~return_unit:false ~async:false ~oneUnitArg:false  [ arg ]
         [
           {
             statement_desc = J.Return (E.dot (E.var arg) value);
