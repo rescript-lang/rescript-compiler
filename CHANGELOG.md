@@ -29,6 +29,7 @@
 #### :nail_care: Polish
 
 - Update list of reserved JS keywords. https://github.com/rescript-lang/rescript-compiler/pull/6167
+- Add error message to `@@directive`. https://github.com/rescript-lang/rescript-compiler/pull/6174
 
 # 11.0.0-alpha.3
 
