@@ -503,8 +503,8 @@ and compile_recursive_lets output_prefix module_system cxt id_args : Js_output.t
 and compile_general_cases :
       'a .
       string ->
-  Js_packages_info.module_system ->
-  ('a -> Ast_untagged_variants.literal option) ->
+      Js_packages_info.module_system ->
+      ('a -> Ast_untagged_variants.literal option) ->
       ('a -> J.expression) ->
       ('a option -> J.expression -> 'a option -> J.expression -> J.expression) ->
       Lam_compile_context.t ->
@@ -629,12 +629,12 @@ and use_compile_literal_cases table get_name =
     | Some {name; literal_type = None}, Some string_table -> Some ((String name, lam) :: string_table)
     | _, _ -> None
   ) table (Some [])
-and compile_cases ?(untagged=false) output_prefix module_system cxt (switch_exp : E.t) table default get_name =
+and compile_cases ?(untagged=false) output_prefix module_system cxt (switch_exp : E.t) table default get_name : initialization =
     match use_compile_literal_cases table get_name with
     | Some string_table ->
       if untagged
-      then compile_untagged_cases cxt switch_exp string_table default
-      else compile_string_cases cxt switch_exp string_table default
+      then compile_untagged_cases output_prefix module_system cxt switch_exp string_table default
+      else compile_string_cases output_prefix module_system cxt switch_exp string_table default
     | None ->
       compile_general_cases output_prefix module_system get_name
         (fun i -> match get_name i with
@@ -646,7 +646,7 @@ and compile_cases ?(untagged=false) output_prefix module_system cxt (switch_exp 
           S.int_switch ?default ?declaration e clauses)
         switch_exp table default
   
-and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
+and compile_switch output_prefix module_system (switch_arg : Lam.t) (sw : Lam.lambda_switch)
     (lambda_cxt : Lam_compile_context.t) =
   (* TODO: if default is None, we can do some optimizations
       Use switch vs if/then/else
@@ -735,8 +735,8 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
   | EffectCall _ | Assign _ -> Js_output.make (compile_whole lambda_cxt)
 
 
-  and compile_string_cases output_prefix module_system cxt switch_exp table default =
-  let literal = function
+and compile_string_cases output_prefix module_system cxt switch_exp table default : initialization  =
+  let literal = function  
     | literal -> E.literal literal
   in
   compile_general_cases
@@ -749,7 +749,7 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
     (fun ?default ?declaration e clauses ->
       S.string_switch ?default ?declaration e clauses)
     switch_exp table default
-and compile_untagged_cases cxt switch_exp table default =
+and compile_untagged_cases output_prefix module_system cxt switch_exp table default =
   let literal = function
     | literal -> E.literal literal
   in
@@ -782,7 +782,7 @@ and compile_untagged_cases cxt switch_exp table default =
     | _ :: _ :: _ -> assert false (* at most 1 array case *)
     | _ ->
       S.string_switch ?default ?declaration (E.typeof e) clauses in
-  compile_general_cases
+  compile_general_cases output_prefix module_system
     (fun _ -> None)
     literal
     mk_eq
@@ -1639,7 +1639,7 @@ and compile_prim output_prefix module_system (prim_info : Lam.prim_info)
       compile_lambda output_prefix module_system lambda_cxt
         (Lam_eta_conversion.unsafe_adjust_to_arity loc ~to_:arity ?from:None fn)
   | { primitive = Pjs_fn_make_unit; args = [ fn ]; loc } ->
-    compile_lambda lambda_cxt fn
+    compile_lambda output_prefix module_system lambda_cxt fn
   | { primitive = Pjs_fn_make _; args = [] | _ :: _ :: _ } -> assert false
   | { primitive = Pjs_object_create labels; args } ->
       let args_block, args_expr =

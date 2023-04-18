@@ -224,16 +224,21 @@ let expr_mapper ~async_context ~in_function_def (self : mapper)
   match Ast_attributes.has_await_payload e.pexp_attributes with
   | None -> result
   | Some _ ->
-      (if !async_context = false then
-        let isJsImport (e : Parsetree.expression) =
-          match e with
-          | { pexp_desc = Pexp_apply ({ pexp_desc = Pexp_ident { txt = Ldot ( Lident "Js", "import") } }, _) } -> true
-          | _ -> false
-        in
-        if not (isJsImport e) then
-         Location.raise_errorf ~loc:e.pexp_loc
-           "Await on expression not in an async context");
-      Ast_await.create_await_expression result
+    (if !async_context = false then
+     let isJsImport (e : Parsetree.expression) =
+       match e with
+       | {
+        pexp_desc =
+          Pexp_apply
+            ({pexp_desc = Pexp_ident {txt = Ldot (Lident "Js", "import")}}, _);
+       } ->
+         true
+       | _ -> false
+     in
+     if not (isJsImport e) then
+       Location.raise_errorf ~loc:e.pexp_loc
+         "Await on expression not in an async context");
+    Ast_await.create_await_expression result
 
 let typ_mapper (self : mapper) (typ : Parsetree.core_type) =
   Ast_core_type_class_type.typ_mapper self typ
@@ -432,9 +437,10 @@ let local_module_name =
 
 let local_module_type_name =
   let v = ref 0 in
-  fun ({ txt } : Longident.t Location.loc) ->
+  fun ({txt} : Longident.t Location.loc) ->
     incr v;
-    "__" ^ (Longident.flatten txt |> List.fold_left (fun ll l -> ll ^ l) "")
+    "__"
+    ^ (Longident.flatten txt |> List.fold_left (fun ll l -> ll ^ l) "")
     ^ string_of_int !v ^ "__"
 
 let expand_reverse (stru : Ast_structure.t) (acc : Ast_structure.t) :
@@ -500,36 +506,34 @@ let rec structure_mapper (self : mapper) (stru : Ast_structure.t) =
       in
       aux [] stru
     | Pstr_module
-        ({
-            pmb_expr =
-              { pmod_desc = Pmod_ident { txt; loc }; pmod_attributes } as me;
-          } as mb)
+        ({pmb_expr = {pmod_desc = Pmod_ident {txt; loc}; pmod_attributes} as me}
+        as mb)
     (* module M = @res.await Belt.List *)
       when Res_parsetree_viewer.hasAwaitAttribute pmod_attributes ->
-        let item = self.structure_item self item in
-        let safe_module_type_name = local_module_type_name { txt; loc } in
-        let module_type_decl =
-          let open Ast_helper in
-          Str.modtype ~loc
-            (Mtd.mk ~loc
-                { txt = safe_module_type_name; loc }
-                ~typ:(Mty.typeof_ ~loc me))
-        in
-        (* module __BeltList1__ = module type of Belt.List *)
-        module_type_decl
-        :: {
-              item with
-              pstr_desc =
-                Pstr_module
-                  {
-                    mb with
-                    pmb_expr =
-                      Ast_await.create_await_module_expression
-                        ~module_type_name:safe_module_type_name mb.pmb_expr;
-                  };
-            }
-            (* module M = @res.await Belt.List *)
-        :: structure_mapper self rest
+      let item = self.structure_item self item in
+      let safe_module_type_name = local_module_type_name {txt; loc} in
+      let module_type_decl =
+        let open Ast_helper in
+        Str.modtype ~loc
+          (Mtd.mk ~loc
+             {txt = safe_module_type_name; loc}
+             ~typ:(Mty.typeof_ ~loc me))
+      in
+      (* module __BeltList1__ = module type of Belt.List *)
+      module_type_decl
+      :: {
+           item with
+           pstr_desc =
+             Pstr_module
+               {
+                 mb with
+                 pmb_expr =
+                   Ast_await.create_await_module_expression
+                     ~module_type_name:safe_module_type_name mb.pmb_expr;
+               };
+         }
+         (* module M = @res.await Belt.List *)
+      :: structure_mapper self rest
     | _ -> self.structure_item self item :: structure_mapper self rest)
 
 let mapper : mapper =
