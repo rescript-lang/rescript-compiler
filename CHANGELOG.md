@@ -25,6 +25,7 @@
 - Fix issue with record type coercion and unboxed. https://github.com/rescript-lang/rescript-compiler/issues/6158
 - Fixed subtype checking for record types with "@as" attributes: The subtype relationship now takes into account the compatibility of "@as" attributes between corresponding fields, ensuring correctness in runtime representation.
  https://github.com/rescript-lang/rescript-compiler/issues/6158
+- Emit directive above header comment. https://github.com/rescript-lang/rescript-compiler/pull/6172
 
 #### :nail_care: Polish
 
