@@ -10,6 +10,12 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
+# 10.1.5
+
+#### :bug: Bug Fix
+
+- Emit directive above header comment. https://github.com/rescript-lang/rescript-compiler/pull/6171
+
 # 10.1.4
 
 #### :bug: Bug Fix
