@@ -475,7 +475,8 @@ let rec structure_mapper (self : mapper) (stru : Ast_structure.t) =
           match payload with
           | PStr work ->
             if List.length work = 0 then
-              Location.raise_errorf ~loc "%%%%private extension expects a body";
+              Location.raise_errorf ~loc
+                {|%%%%private extension expects a definition as its argument. Example: %%%%private(let a = "Hello")|};
             aux
               (Ext_list.rev_map_append work acc (fun x ->
                    self.structure_item self x))
