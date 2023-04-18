@@ -57,7 +57,7 @@ let process_directives str =
                  Js_config.directives := !Js_config.directives @ [d]
                | _ ->
                  Location.raise_errorf ~loc:item.pstr_loc
-                   "@@@directive argument expect an string")
+                   "@@@directive argument expect a string")
              | _ ->
                Location.raise_errorf ~loc:item.pstr_loc
                  "@@@directive attribute expect an argument")
