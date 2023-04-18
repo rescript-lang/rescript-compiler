@@ -46,17 +46,24 @@ let process_directives str =
   str
   |> List.iter (fun (item : Parsetree.structure_item) ->
          match item.pstr_desc with
-         | Pstr_attribute
-             ( {txt = "directive"},
-               PStr
-                 [
-                   {
-                     pstr_desc =
-                       Pstr_eval
-                         ({pexp_desc = Pexp_constant (Pconst_string (d, _))}, _);
-                   };
-                 ] ) ->
-           Js_config.directives := !Js_config.directives @ [d]
+         | Pstr_attribute ({txt = "directive"}, payload) -> (
+           match payload with
+           | PStr structure -> (
+             match structure with
+             | [item] -> (
+               match item.pstr_desc with
+               | Pstr_eval
+                   ({pexp_desc = Pexp_constant (Pconst_string (d, _))}, _) ->
+                 Js_config.directives := !Js_config.directives @ [d]
+               | _ ->
+                 Location.raise_errorf ~loc:item.pstr_loc
+                   "@@@directive argument expect an string")
+             | _ ->
+               Location.raise_errorf ~loc:item.pstr_loc
+                 "@@@directive attribute expect an argument")
+           | _ ->
+             Location.raise_errorf ~loc:item.pstr_loc
+               "@@@directive attribute can only be applied to a string")
          | Pstr_attribute ({txt = "uncurried"}, _) ->
            Config.uncurried := Uncurried
          | _ -> ())
