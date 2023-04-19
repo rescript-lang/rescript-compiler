@@ -174,7 +174,6 @@ Subcommands:
   build
   clean
   format
-  convert
   dump
   help
 
@@ -261,14 +260,6 @@ if (
       break;
     case "dump":
       require("./scripts/rescript_dump.js").main(
-        process.argv.slice(3),
-        rescript_exe,
-        bsc_exe
-      );
-      break;
-    case "convert":
-      // Todo
-      require("./scripts/rescript_convert.js").main(
         process.argv.slice(3),
         rescript_exe,
         bsc_exe
