@@ -10,9 +10,10 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# 11.0.0-alpha.4 (Unreleased)
+# 11.0.0-alpha.4
 
 #### :rocket: Main New Feature
+
 - Add surface syntax for partial application of uncurried functions: `foo(1, ...)`. This corresponds to curried application in the old mode. https://github.com/rescript-lang/rescript-compiler/pull/6166
 
 #### :bug: Bug Fix
