@@ -2,7 +2,7 @@ let f = x =>
   switch x {
   | "aaaabb" => 0
   | "bbbb" => 1
-  | _ => /* 2 */ assert false
+  | _ => /* 2 */ assert(false)
   }
 
 let a = x => "hello" ++ ("world" ++ ("hello" ++ x))

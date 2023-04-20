@@ -12,6 +12,10 @@
 
 # 11.0.0-alpha.5 (Unreleased)
 
+#### :boom: Breaking Change
+
+- Parse `assert` as a regular function. `assert` is no longer a unary expression. Example: before `assert 1 == 2` is parsed as `(assert 1) == 2`, now it is parsed as `assert(1 == 2)`. https://github.com/rescript-lang/rescript-compiler/pull/6180
+
 # 11.0.0-alpha.4
 
 #### :rocket: Main New Feature

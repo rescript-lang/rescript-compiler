@@ -5,7 +5,7 @@ let bench = () => {
     Hashtbl.add(table, i, i)
   }
   for i in 0 to count {
-    assert Hashtbl.mem(table, i)
+    assert(Hashtbl.mem(table, i))
   }
   for i in 0 to count {
     Hashtbl.remove(table, i)

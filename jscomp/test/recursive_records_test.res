@@ -46,7 +46,7 @@ let hd = x =>
 
 let tl_exn = x =>
   switch x {
-  | Nil => assert false
+  | Nil => assert(false)
   | Cons(x) => x.next
   }
 

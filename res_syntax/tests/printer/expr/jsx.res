@@ -173,7 +173,7 @@ let x =
       raise(Exit)
     }}
     lazyExpr={lazy stuff()}
-    assertExpr={assert true}
+    assertExpr={assert(true)}
     pack=module(Foo)
     pack={module(Foo)}
     pack=module(Foo: Bar)
@@ -245,7 +245,7 @@ let x =
       raise(Exit)
     }}
     {lazy stuff()}
-    {assert true}
+    {assert(true)}
     {module(Foo)}
     module(Foo)
     {module(Foo: Bar)}

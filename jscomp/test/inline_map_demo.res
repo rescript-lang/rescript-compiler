@@ -38,13 +38,13 @@ let bal = (l, x, d, r) => {
   }
   if hl > hr + 2 {
     switch l {
-    | Empty => assert false
+    | Empty => assert(false)
     | Node(ll, lv, ld, lr, _) =>
       if height(ll) >= height(lr) {
         create(ll, lv, ld, create(lr, x, d, r))
       } else {
         switch lr {
-        | Empty => assert false
+        | Empty => assert(false)
         | Node(lrl, lrv, lrd, lrr, _) =>
           create(create(ll, lv, ld, lrl), lrv, lrd, create(lrr, x, d, r))
         }
@@ -52,13 +52,13 @@ let bal = (l, x, d, r) => {
     }
   } else if hr > hl + 2 {
     switch r {
-    | Empty => assert false
+    | Empty => assert(false)
     | Node(rl, rv, rd, rr, _) =>
       if height(rr) >= height(rl) {
         create(create(l, x, d, rl), rv, rd, rr)
       } else {
         switch rl {
-        | Empty => assert false
+        | Empty => assert(false)
         | Node(rll, rlv, rld, rlr, _) =>
           create(create(l, x, d, rll), rlv, rld, create(rlr, rv, rd, rr))
         }

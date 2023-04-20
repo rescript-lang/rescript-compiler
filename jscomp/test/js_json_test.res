@@ -34,7 +34,7 @@ let () = {
             let ty3 = J.classify(x)
             switch ty3 {
             | J.JSONNumber(_) => ()
-            | _ => assert false
+            | _ => assert(false)
             }
           }) |> (() => Mt.Ok(true))
         | _ => Mt.Ok(false)
@@ -108,7 +108,7 @@ let () = {
 
 let option_get = x =>
   switch x {
-  | None => assert false
+  | None => assert(false)
   | Some(x) => x
   }
 

@@ -56,5 +56,5 @@ let f = (x: u) =>
   | B
   | C => 2
 
-  | _ => assert false
+  | _ => assert(false)
   }

@@ -70,7 +70,7 @@ let cli = () => {
       | list{cmt, ...rest} =>
         let mlast = rest |> String.concat("")
         (cmt, mlast)
-      | _ => assert false
+      | _ => assert(false)
       }
       let config = Paths.readConfig(~bsVersion, ~namespace=cmt |> Paths.findNameSpace)
       if Debug.basic.contents {

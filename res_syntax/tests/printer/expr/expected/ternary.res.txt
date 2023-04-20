@@ -219,7 +219,7 @@ let () = condition
       exception Exit
       raise(Exit)
     }
-let () = condition ? lazy foo() : assert false
+let () = condition ? lazy foo() : assert(false)
 
 let x = condition ? module(Foo) : module(Int: Number)
 let x = condition

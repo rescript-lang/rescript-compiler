@@ -364,7 +364,7 @@ module State = {
 
   let sequence = states =>
     switch states {
-    | list{} => assert false
+    | list{} => assert(false)
     | list{s, ...nextStates} => List.fold_left(seq, s, nextStates)
     }
 
@@ -382,7 +382,7 @@ module State = {
 
   let nondet = states =>
     switch states {
-    | list{} => assert false
+    | list{} => assert(false)
     | list{s, ...nextStates} => List.fold_left(nd, s, nextStates)
     }
 
@@ -530,14 +530,14 @@ module FunctionTable = {
 
   let getFunctionDefinition = (~functionName, tbl: t) =>
     try Hashtbl.find(tbl, functionName) catch {
-    | Not_found => assert false
+    | Not_found => assert(false)
     }
 
   let isInFunctionInTable = (~functionTable, path) => Hashtbl.mem(functionTable, Path.name(path))
 
   let addFunction = (~functionName, tbl: t) => {
     if Hashtbl.mem(tbl, functionName) {
-      assert false
+      assert(false)
     }
     Hashtbl.replace(tbl, functionName, initialFunctionDefinition())
   }
@@ -870,7 +870,7 @@ module Compile = {
         | Some(_kind) =>
           // TODO when kinds are extended in future: check that args matches with kind
           // and create a function call with the appropriate arguments
-          assert false
+          assert(false)
         | None => expr |> expression(~ctx) |> evalArgs(~args, ~ctx)
         }
       }
@@ -945,7 +945,7 @@ module Compile = {
         \"+++"(cE, nondet(cCases))
       }
 
-    | Texp_match(_, _, list{_, ..._} as _casesExn, _) => assert false
+    | Texp_match(_, _, list{_, ..._} as _casesExn, _) => assert(false)
 
     | Texp_field(e, _lid, _desc) => e |> expression(~ctx)
 
@@ -972,23 +972,23 @@ module Compile = {
 
     | Texp_assert(_) => Command.nothing
 
-    | Texp_try(_) => assert false
-    | Texp_variant(_) => assert false
-    | Texp_array(_) => assert false
-    | Texp_while(_) => assert false
-    | Texp_for(_) => assert false
-    | Texp_send(_) => assert false
-    | Texp_new(_) => assert false
-    | Texp_instvar(_) => assert false
-    | Texp_setinstvar(_) => assert false
-    | Texp_override(_) => assert false
-    | Texp_letmodule(_) => assert false
-    | Texp_letexception(_) => assert false
-    | Texp_lazy(_) => assert false
-    | Texp_object(_) => assert false
-    | Texp_pack(_) => assert false
-    | Texp_unreachable => assert false
-    | Texp_extension_constructor(_) => assert false
+    | Texp_try(_) => assert(false)
+    | Texp_variant(_) => assert(false)
+    | Texp_array(_) => assert(false)
+    | Texp_while(_) => assert(false)
+    | Texp_for(_) => assert(false)
+    | Texp_send(_) => assert(false)
+    | Texp_new(_) => assert(false)
+    | Texp_instvar(_) => assert(false)
+    | Texp_setinstvar(_) => assert(false)
+    | Texp_override(_) => assert(false)
+    | Texp_letmodule(_) => assert(false)
+    | Texp_letexception(_) => assert(false)
+    | Texp_lazy(_) => assert(false)
+    | Texp_object(_) => assert(false)
+    | Texp_pack(_) => assert(false)
+    | Texp_unreachable => assert(false)
+    | Texp_extension_constructor(_) => assert(false)
     }
   }
   and expressionOpt = (~ctx, eOpt) =>
@@ -1144,7 +1144,7 @@ module Eval = {
         callStack |> CallStack.addFunctionCall(~functionCall, ~pos)
         let body = switch functionDefinition.body {
         | Some(body) => body
-        | None => assert false
+        | None => assert(false)
         }
         let stateAfterCall =
           body |> run(
@@ -1305,7 +1305,7 @@ module Eval = {
     } else {
       let body = switch functionDefinition.body {
       | Some(body) => body
-      | None => assert false
+      | None => assert(false)
       }
       let state =
         body |> run(
@@ -1340,7 +1340,7 @@ let progressFunctionsFromAttributes = attributes => {
         |> List.map(x =>
           switch x {
           | Annotation.IdentPayload(lid) => lidToString(lid)
-          | _ => assert false
+          | _ => assert(false)
           }
         )
       | _ => list{}

@@ -13,7 +13,7 @@ let to_int = (x: attr) =>
   | Str(_) => -1
   | N.Int(a, _) => a
   | Int(_, b) => b
-  | _ => assert false
+  | _ => assert(false)
   }
 
 let suites = {

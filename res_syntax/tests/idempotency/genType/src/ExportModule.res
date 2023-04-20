@@ -43,7 +43,7 @@ let rec extendExportModuleItem = (x, ~exportModuleItem: exportModuleItem, ~type_
   | list{fieldName, ...rest} =>
     let innerExportModuleItem = switch Hashtbl.find(exportModuleItem, fieldName) {
     | M(innerExportModuleItem) => innerExportModuleItem
-    | S(_) => assert false
+    | S(_) => assert(false)
     | exception Not_found =>
       let innerExportModuleItem = Hashtbl.create(1)
       Hashtbl.replace(exportModuleItem, fieldName, M(innerExportModuleItem))
@@ -54,7 +54,7 @@ let rec extendExportModuleItem = (x, ~exportModuleItem: exportModuleItem, ~type_
 
 let extendExportModuleItems = (x, ~exportModuleItems: exportModuleItems, ~type_, ~valueName) =>
   switch x {
-  | list{} => assert false
+  | list{} => assert(false)
   | list{_valueName} => ()
   | list{moduleName, ...rest} =>
     let exportModuleItem = switch Hashtbl.find(exportModuleItems, moduleName) {

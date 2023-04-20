@@ -57,7 +57,7 @@ let resize = newSize => {
 
         newArr[ind] = list{n, ...newArr[ind]}
         copyBucket(ns)
-      | _ => assert false
+      | _ => assert(false)
       }
     }
 
@@ -118,7 +118,7 @@ let mkNode = (low, v, high) => {
           } else {
             lookup(ns)
           }
-        | _ => assert false
+        | _ => assert(false)
         }
       }
 
@@ -298,7 +298,7 @@ let main = () => {
   for i in 1 to ntests {
     succeeded := succeeded.contents && test_hwb(bdd, random_vars(n))
   }
-  assert succeeded.contents
+  assert(succeeded.contents)
 }
 
 let _ = main()

@@ -34,7 +34,7 @@ let bench = () => {
     N.set(empty, i, i)
   }
   for i in 0 to count {
-    assert mem(empty, i)
+    assert(mem(empty, i))
   }
   N.logStats(empty)
 }
@@ -58,7 +58,7 @@ let bench2 = (type t, m: Belt.Id.hashable<string, t>) => {
     M.set(empty, string_of_int(i), i)
   }
   for i in 0 to count {
-    assert M.has(empty, string_of_int(i))
+    assert(M.has(empty, string_of_int(i)))
   }
   for i in 0 to count {
     M.remove(empty, string_of_int(i))
@@ -78,7 +78,7 @@ let bench3 = (type t, m: Belt.Id.comparable<string, t>) => {
     table := Md0.set(~cmp, table.contents, string_of_int(i), i)
   }
   for i in 0 to count {
-    assert Md0.has(~cmp, table.contents, string_of_int(i))
+    assert(Md0.has(~cmp, table.contents, string_of_int(i)))
   }
   for i in 0 to count {
     table := Md0.remove(~cmp, table.contents, string_of_int(i))
@@ -95,12 +95,12 @@ let bench4 = () => {
     H.set(table, string_of_int(i), i)
   }
   for i in 0 to count {
-    assert H.has(table, string_of_int(i))
+    assert(H.has(table, string_of_int(i)))
   }
   for i in 0 to count {
     H.remove(table, string_of_int(i))
   }
-  assert H.isEmpty(table)
+  assert(H.isEmpty(table))
 }
 
 module H0 = Belt.HashMap
@@ -116,7 +116,7 @@ let bench5 = () => {
   )
   %time(
     for i in 0 to count {
-      assert H0.has(table, i)
+      assert(H0.has(table, i))
     }
   )
   %time(
@@ -124,7 +124,7 @@ let bench5 = () => {
       H0.remove(table, i)
     }
   )
-  assert H0.isEmpty(table)
+  assert(H0.isEmpty(table))
 }
 
 module HI = Belt.HashMap.Int
@@ -135,7 +135,7 @@ let bench6 = () => {
     HI.set(table, i, i)
   }
   for i in 0 to count {
-    assert HI.has(table, i)
+    assert(HI.has(table, i))
   }
   for i in 0 to count {
     HI.remove(table, i)
@@ -157,7 +157,7 @@ let bench7 = () => {
 
   /* [%time */
   for i in 0 to count {
-    assert S.has(table, i)
+    assert(S.has(table, i))
   }
   /* ] */
 

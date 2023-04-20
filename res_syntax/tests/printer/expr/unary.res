@@ -27,8 +27,8 @@ let x = -(a.bar)
 
 !(lazy x)
 lazy !x
-!(assert x)
-assert !x
+!(assert(x))
+assert(!x)
 !(@attr expr)
 !(arg => doStuffWith(arg))
 let x = !(truth: bool)

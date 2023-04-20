@@ -9,7 +9,7 @@ let rec findProjectRoot = (~dir) =>
     let parent = dir |> Filename.dirname
     if parent == dir {
       prerr_endline("Error: cannot find project root containing " ++ (bsconfig ++ "."))
-      assert false
+      assert(false)
     } else {
       findProjectRoot(~dir=parent)
     }

@@ -16,8 +16,8 @@ switch truth {
 }
 
 switch sphere->intersect(~ray) {
-| None => assert false
-| Some((x, y)) => assert true
+| None => assert(false)
+| Some((x, y)) => assert(true)
 }
 
 

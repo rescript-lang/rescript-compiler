@@ -47,7 +47,7 @@ let x = lazy (
   }
 )
 
-let x = lazy (assert false)
+let x = lazy (assert(false))
 let x = lazy (
   try sideEffect() catch {
   | Exit => ()

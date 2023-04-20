@@ -39,7 +39,7 @@ let matmatmul = (mat1: array<float>, mat2: array<float>) =>
     mat1[6] = ma *. m6 +. md *. m7 +. mg *. m8
     mat1[7] = mb *. m6 +. me *. m7 +. mh *. m8
     mat1[8] = mc *. m6 +. mf *. m7 +. mi *. m8
-  | _ => assert false
+  | _ => assert(false)
   }
 
 /* **
@@ -101,5 +101,5 @@ let matinv = mat =>
       invdet *. adj21,
       invdet *. adj22,
     ]
-  | _ => assert false
+  | _ => assert(false)
   }

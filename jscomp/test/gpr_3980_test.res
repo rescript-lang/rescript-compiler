@@ -10,7 +10,7 @@ let _ = switch Some(1) {
       name: "bye",
       age: Js.Math.floor(1.),
     }
-  | _ => assert false
+  | _ => assert(false)
   }
-| _ => assert false
+| _ => assert(false)
 }

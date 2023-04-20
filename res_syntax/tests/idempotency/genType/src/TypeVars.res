@@ -5,7 +5,7 @@ let extractFromTypeExpr = typeParams => typeParams |> List.fold_left((soFar, typ
     | {Types.desc: Tvar(Some(s))} =>
       let typeName = s
       list{typeName, ...soFar}
-    | _ => assert false
+    | _ => assert(false)
     }
   , list{}) |> List.rev
 

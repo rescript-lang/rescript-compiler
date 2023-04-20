@@ -145,8 +145,8 @@ let () = assert (pathsort(grwork) == list{"wake", "shower", "dress", "eat", "was
 
 let () = try {
   \"@@"(ignore, pathsort(list{("go", "eat"), ...grwork}))
-  assert false
+  assert(false)
 } catch {
 | Cycle(list{"go", "washup", "eat", "go"}) => ()
-| _ => assert false
+| _ => assert(false)
 }

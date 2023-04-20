@@ -28,7 +28,7 @@ let blockExpression = ({
   a + b
 })
 
-let assertSmthing = (assert true)
+let assertSmthing = (assert(true))
 
 let lazyThing = (lazy true)
 

@@ -10,7 +10,7 @@ let bench = () => {
   )
   %time(
     for i in 0 to count {
-      assert V.mem(i, data.contents)
+      assert(V.mem(i, data.contents))
     }
   )
   %time(
