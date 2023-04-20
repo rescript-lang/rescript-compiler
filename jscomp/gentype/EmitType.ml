@@ -20,12 +20,17 @@ let generatedFilesExtension ~(config : Config.t) =
     Filename.remove_extension s
   | None -> ".gen"
 
-let outputFileSuffix ~(config : Config.t) =
+let outputFileSuffix ~(config : Config.t) ?(moduleExtension = ".tsx") () =
   match config.generatedFileExtension with
   | Some s when Filename.extension s <> "" (* double extension  *) -> s
-  | _ -> generatedFilesExtension ~config ^ ".tsx"
+  | _ -> generatedFilesExtension ~config ^ moduleExtension
 
-let generatedModuleExtension ~config = generatedFilesExtension ~config
+let generatedModuleExtension ~(config : Config.t) =
+  match config.moduleResolution with
+  | Node -> generatedFilesExtension ~config
+  | Node16 -> outputFileSuffix ~config ~moduleExtension:".js" ()
+  | Bundler -> outputFileSuffix ~config ()
+
 let shimExtension = ".shim.ts"
 
 let interfaceName ~(config : Config.t) name =

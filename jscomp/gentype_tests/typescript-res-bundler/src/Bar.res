@@ -1,5 +1,5 @@
 @genType
 let makeFoo = (~bar) => {
-  let foo = Foo.make
-  {...foo, bar}
+  open Foo
+  {...make(), bar}
 }

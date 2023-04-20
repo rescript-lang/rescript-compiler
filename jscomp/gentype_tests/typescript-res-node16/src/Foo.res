@@ -2,4 +2,4 @@
 type t = {foo: int, bar: int}
 
 @genType
-let make = () => {foo: 0, bar: int}
+let make = () => {foo: 0, bar: 0}

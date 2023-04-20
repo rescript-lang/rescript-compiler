@@ -3,7 +3,9 @@
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
     "rootDir": "src",
+    "jsx": "react",
     "noEmit": true
   },
   "include": [

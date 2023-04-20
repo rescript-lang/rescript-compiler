@@ -1,5 +1,5 @@
 {
-  "name": "typescript-res-node16",
+  "name": "typescript-res-bundler",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

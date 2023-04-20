@@ -2,7 +2,7 @@
   "gentypeconfig": {
     "language": "typescript",
     "module": "es6",
-    "moduleResolution": "node16",
+    "moduleResolution": "bundler",
     "importPath": "relative",
     "debug": {
       "all": false
