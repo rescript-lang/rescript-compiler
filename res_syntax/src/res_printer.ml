@@ -3174,9 +3174,11 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
       printExpressionBlock ~state ~braces:true e cmtTbl
     | Pexp_assert expr ->
       let doc = printExpressionWithComments ~state expr cmtTbl in
-      let expr = match expr with
-      | { pexp_desc = Pexp_constraint _; } -> addParens doc
-      | _ -> doc in
+      let expr =
+        match expr with
+        | {pexp_desc = Pexp_constraint _} -> addParens doc
+        | _ -> doc
+      in
       Doc.concat [Doc.text "assert("; expr; Doc.text ")"]
     | Pexp_lazy expr ->
       let rhs =
