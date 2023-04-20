@@ -72,6 +72,15 @@ let processUncurriedAppAttribute attrs =
   in
   process false [] attrs
 
+let processPartialAppAttribute attrs =
+  let rec process partialApp acc attrs =
+    match attrs with
+    | [] -> (partialApp, List.rev acc)
+    | ({Location.txt = "res.partial"}, _) :: rest -> process true acc rest
+    | attr :: rest -> process partialApp (attr :: acc) rest
+  in
+  process false [] attrs
+
 type functionAttributesInfo = {
   async: bool;
   bs: bool;
@@ -109,7 +118,12 @@ let collectListExpressions expr =
 
 (* (__x) => f(a, __x, c) -----> f(a, _, c)  *)
 let rewriteUnderscoreApply expr =
-  match expr.pexp_desc with
+  let expr_fun =
+    if Ast_uncurried.exprIsUncurriedFun expr then
+      Ast_uncurried.exprExtractUncurriedFun expr
+    else expr
+  in
+  match expr_fun.pexp_desc with
   | Pexp_fun
       ( Nolabel,
         None,

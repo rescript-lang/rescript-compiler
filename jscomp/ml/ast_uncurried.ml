@@ -50,7 +50,7 @@ let rec attributes_to_arity (attrs : Parsetree.attributes) =
 let uncurriedFun ~loc ~arity funExpr =
     Ast_helper.Exp.construct ~loc
       ~attrs:(arity_to_attributes arity)
-      { txt = Lident "Function$"; loc }
+      (Location.mknoloc (Longident.Lident "Function$"))
       (Some funExpr)
 
 let exprIsUncurriedFun (expr : Parsetree.expression) =

@@ -121,7 +121,7 @@ let get_dependent_module_effect (maybe_pure : string option)
    [lambda_exports] is
    lambda expression to be exported
    for the js backend, we compile to js
-   for the inliner, we try to seriaize it --
+   for the inliner, we try to serialize it --
    relies on other optimizations to make this happen
    {[
      exports.Make = function () {.....}

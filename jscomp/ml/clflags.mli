@@ -38,7 +38,6 @@ val reset_dump_state: unit -> unit
 
 type mli_status =  Mli_exists | Mli_non_exists
 val assume_no_mli : mli_status ref
-val bs_vscode : bool
 val dont_record_crc_unit : string option ref
 val bs_gentype : bool ref
 val no_assert_false : bool ref

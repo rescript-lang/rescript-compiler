@@ -155,3 +155,7 @@ type callback6 = (ReactEvent.Mouse.t => unit) as 'callback
 let fooU = () => ()
 let fnU = (_x): (unit => unit) => fooC
 let aU = (() => "foo")->Ok
+
+Ok("_")->Belt.Result.map(concatStrings(_, "foo"))
+
+let ptl1 = add(1, ...)

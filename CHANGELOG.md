@@ -10,7 +10,33 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# 11.0.0-alpha.3 (Unreleased)
+# 11.0.0-alpha.5 (Unreleased)
+
+# 11.0.0-alpha.4
+
+#### :rocket: Main New Feature
+
+- Add surface syntax for partial application of uncurried functions: `foo(1, ...)`. This corresponds to curried application in the old mode. https://github.com/rescript-lang/rescript-compiler/pull/6166
+
+#### :bug: Bug Fix
+
+- Fix broken formatting in uncurried mode for functions with _ placeholder args. https://github.com/rescript-lang/rescript-compiler/pull/6148
+- Fix issue where spreading record types with optional labels would not have their labels preserved as optional. https://github.com/rescript-lang/rescript-compiler/pull/6154
+- Fix error location to be the type with the spreads when spreading record types with duplicate labels. https://github.com/rescript-lang/rescript-compiler/pull/6157
+- Disable warning on `@inline` attibute on uncurried functions. https://github.com/rescript-lang/rescript-compiler/pull/6152
+- Support doc comments on arguments of function types. https://github.com/rescript-lang/rescript-compiler/pull/6161
+- Fix issue with record type coercion and unboxed. https://github.com/rescript-lang/rescript-compiler/issues/6158
+- Fixed subtype checking for record types with "@as" attributes: The subtype relationship now takes into account the compatibility of "@as" attributes between corresponding fields, ensuring correctness in runtime representation.
+ https://github.com/rescript-lang/rescript-compiler/issues/6158
+- Emit directive above header comment. https://github.com/rescript-lang/rescript-compiler/pull/6172
+- Add error message to private extension. https://github.com/rescript-lang/rescript-compiler/pull/6175
+
+#### :nail_care: Polish
+
+- Update list of reserved JS keywords. https://github.com/rescript-lang/rescript-compiler/pull/6167
+- Add error message to `@@directive`. https://github.com/rescript-lang/rescript-compiler/pull/6174
+
+# 11.0.0-alpha.3
 
 #### :rocket: Main New Feature
 

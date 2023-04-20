@@ -439,13 +439,6 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
                 else typ in
               {lbl with  pld_type = typ }) in
           let lbls, lbls' = transl_labels env true lbls in
-          let rep =
-            if unbox then Record_unboxed false
-            else 
-              if optionalLabels <> []
-              then Record_optional_labels optionalLabels
-              else Record_regular
-          in
           let lbls_opt = match lbls, lbls' with
             | {ld_name = {txt = "..."}; ld_type} :: _, _ :: _ ->
               let rec extract t = match t.desc with
@@ -470,16 +463,24 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
               in
               process_lbls ([], []) lbls lbls'
             | _ -> Some (lbls, lbls') in
-          let rec check_duplicates (lbls : Typedtree.label_declaration list) seen = match lbls with
+          let rec check_duplicates loc (lbls : Typedtree.label_declaration list) seen = match lbls with
           | [] -> ()
           | lbl::rest ->
             let name = lbl.ld_id.name in
-            if StringSet.mem name seen then raise(Error(lbl.ld_loc, Duplicate_label name));
-            check_duplicates rest (StringSet.add name seen) in
+            if StringSet.mem name seen then raise(Error(loc, Duplicate_label name));
+            check_duplicates loc rest (StringSet.add name seen) in
           (match lbls_opt with
           | Some (lbls, lbls') ->
-            check_duplicates lbls StringSet.empty;
-            Ttype_record lbls, Type_record(lbls', rep), sdecl
+            check_duplicates sdecl.ptype_loc lbls StringSet.empty;
+            let optionalLabels =
+              Ext_list.filter_map lbls (fun lbl ->
+                  if has_optional lbl.ld_attributes then Some lbl.ld_name.txt else None)
+            in
+            Ttype_record lbls, Type_record(lbls', if unbox then 
+                Record_unboxed false
+              else if optionalLabels <> [] then 
+                Record_optional_labels optionalLabels
+              else Record_regular), sdecl
           | None ->
              (* Could not find record type decl for ...t: assume t is an object type and this is syntax ambiguity *)
              typeRecordAsObject := true;

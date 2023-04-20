@@ -35,7 +35,7 @@ let log_counter = ref 0
 let dump name (prog : J.program) =
   begin
     let () = 
-      if Js_config.get_diagnose ()
+      if !Js_config.diagnose
       then 
         begin
           incr log_counter ; 

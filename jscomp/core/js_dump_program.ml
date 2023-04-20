@@ -102,11 +102,12 @@ let es6_program ~output_dir fmt f (x : J.deps_program) =
 let pp_deps_program ~(output_prefix : string)
     (kind : Js_packages_info.module_system) (program : J.deps_program)
     (f : Ext_pp.t) =
-  if not !Js_config.no_version_header then (
-    P.string f Bs_version.header;
-    P.newline f);
+
   !Js_config.directives |> List.iter (fun prim ->
     P.string f prim;
+    P.newline f);
+  if not !Js_config.no_version_header then (
+    P.string f Bs_version.header;
     P.newline f);
 
   if deps_program_is_empty program then P.string f empty_explanation

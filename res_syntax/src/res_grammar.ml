@@ -299,7 +299,7 @@ let isListTerminator grammar token =
   | _, Token.Eof
   | ExprList, (Rparen | Forwardslash | Rbracket)
   | ListExpr, Rparen
-  | ArgumentList, Rparen
+  | ArgumentList, (Rparen | DotDotDot)
   | TypExprList, (Rparen | Forwardslash | GreaterThan | Equal)
   | ModExprList, Rparen
   | ( (PatternList | PatternOcamlList | PatternRecord),
