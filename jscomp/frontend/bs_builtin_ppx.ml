@@ -435,6 +435,8 @@ let local_module_name =
     incr v;
     "local_" ^ string_of_int !v
 
+(* Unpack requires core_type package for type inference;
+   use module type bindings and a function to create safe local names instead. *)
 let local_module_type_name =
   let v = ref 0 in
   fun ({txt} : Longident.t Location.loc) ->
@@ -505,10 +507,10 @@ let rec structure_mapper (self : mapper) (stru : Ast_structure.t) =
         | _ -> expand_reverse acc (structure_mapper self rest)
       in
       aux [] stru
+    (* Dynamic import of module transformation: module M = @res.await Belt.List *)
     | Pstr_module
         ({pmb_expr = {pmod_desc = Pmod_ident {txt; loc}; pmod_attributes} as me}
         as mb)
-    (* module M = @res.await Belt.List *)
       when Res_parsetree_viewer.hasAwaitAttribute pmod_attributes ->
       let item = self.structure_item self item in
       let safe_module_type_name = local_module_type_name {txt; loc} in

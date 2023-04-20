@@ -60,20 +60,20 @@ let compile_group output_prefix module_system (meta : Lam_stats.t)
     (* let lam = Optimizer.simplify_lets [] lam in  *)
     (* can not apply again, it's wrong USE it with care*)
     (* ([Js_stmt_make.comment (Gen_of_env.query_type id  env )], None)  ++ *)
-    Lam_compile.compile_lambda output_prefix module_system { continuation = Declare (kind, id);
+    Lam_compile.compile_lambda ~output_prefix module_system { continuation = Declare (kind, id);
                                  jmp_table = Lam_compile_context.empty_handler_map;
                                  meta
                                } lam
 
   | Recursive id_lams   -> 
-    Lam_compile.compile_recursive_lets output_prefix module_system
+    Lam_compile.compile_recursive_lets ~output_prefix module_system
       { continuation = EffectCall Not_tail; 
         jmp_table = Lam_compile_context.empty_handler_map;
         meta
       } 
       id_lams
   | Nop lam -> (* TODO: Side effect callls, log and see statistics *)
-    Lam_compile.compile_lambda output_prefix module_system {continuation = EffectCall Not_tail;
+    Lam_compile.compile_lambda ~output_prefix module_system {continuation = EffectCall Not_tail;
                                 jmp_table = Lam_compile_context.empty_handler_map;
                                 meta
                                } lam
@@ -288,18 +288,18 @@ js
 let (//) = Filename.concat  
 
 let lambda_as_module 
-    (lambda_output : Js_packages_info.module_system -> J.deps_program)
+    (lambda_output : module_system: Js_packages_info.module_system -> J.deps_program)
     (output_prefix : string)
   : unit = 
   let package_info = Js_packages_state.get_packages_info () in 
   if Js_packages_info.is_empty package_info && !Js_config.js_stdout then begin    
-    Js_dump_program.dump_deps_program ~output_prefix NodeJS (lambda_output NodeJS) stdout
+    Js_dump_program.dump_deps_program ~output_prefix NodeJS (lambda_output ~module_system: NodeJS) stdout
   end else
     Js_packages_info.iter package_info (fun {module_system; path; suffix} -> 
         let output_chan chan  = 
           Js_dump_program.dump_deps_program ~output_prefix
             module_system 
-            (lambda_output module_system)
+            (lambda_output ~module_system)
             chan in
         let basename =  
           Ext_namespace.change_ext_ns_suffix 

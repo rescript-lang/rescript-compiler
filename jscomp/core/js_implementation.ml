@@ -164,7 +164,7 @@ let after_parsing_impl ppf outputprefix (ast : Parsetree.structure) =
         let lambda, exports =
           Translmod.transl_implementation modulename typedtree_coercion
         in
-        let js_program module_system =
+        let js_program ~module_system =
           print_if_pipe ppf Clflags.dump_rawlambda Printlambda.lambda lambda
           |> Lam_compile_main.compile outputprefix module_system exports
         in

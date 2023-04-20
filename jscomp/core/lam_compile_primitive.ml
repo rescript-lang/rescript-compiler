@@ -103,6 +103,8 @@ let translate output_prefix module_system loc (cxt : Lam_compile_context.t)
           | _ -> E.runtime_call Js_runtime_modules.option "nullable_to_opt" args
           )
       | _ -> assert false)
+  (* Compile #import: The module argument for dynamic import is represented as a path,
+     and the module value is expressed through wrapping it with promise.then *)
   | Pimport -> (
       match args with
       | [ e ] -> (
@@ -111,8 +113,8 @@ let translate output_prefix module_system loc (cxt : Lam_compile_context.t)
           let module_id, module_value =
             match module_of_expression e.expression_desc with
             | [ module_ ] -> module_
-            | _ -> assert false
-            (* TODO: graceful error message here *)
+            | _ -> Location.raise_errorf ~loc
+                "Invalid argument: Dynamic import requires a module or a module value as its argument. Passing a value or local module is not allowed."
           in
 
           let path =
@@ -123,7 +125,9 @@ let translate output_prefix module_system loc (cxt : Lam_compile_context.t)
           match module_value with
           | Some value -> wrap_then (import_of_path path) value
           | None -> import_of_path path)
-      | _ -> assert false)
+      | [] | _ ->
+          Location.raise_errorf ~loc
+            "Invalid argument: Dynamic import must take a single module or module value as its argument.")
   | Pjs_function_length -> E.function_length (Ext_list.singleton_exn args)
   | Pcaml_obj_length -> E.obj_length (Ext_list.singleton_exn args)
   | Pis_null -> E.is_null (Ext_list.singleton_exn args)

@@ -32,4 +32,4 @@ val compile : string -> Js_packages_info.module_system -> Ident.t list -> Lambda
     {!Env.get_unit_name ()}
 *)
 
-val lambda_as_module : (Js_packages_info.module_system -> J.deps_program) -> string -> unit
+val lambda_as_module : (module_system: Js_packages_info.module_system -> J.deps_program) -> string -> unit
