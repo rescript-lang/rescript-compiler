@@ -62,6 +62,9 @@
 
 [@@@bs.config {flags = [| "-bs-noassertfalse" |]}]
 
+type variant = V
+let v = V
+
 type 'a t = 'a list
 
 module A = Belt_Array

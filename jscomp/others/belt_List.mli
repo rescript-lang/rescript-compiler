@@ -32,6 +32,9 @@
   - Better memory usage & performance.
 *)
 
+type variant = V
+val v : variant
+
 type 'a t = 'a list
 (** `'a t` is compatible with built-in `list` type *)
 

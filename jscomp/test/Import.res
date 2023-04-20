@@ -11,7 +11,15 @@ let _ = list{1, 2, 3}->eachIntAsync(n => Js.log2("async", n))
 module type BeltList = module type of Belt.List
 let beltAsModule = await Js.import(module(Belt.List: BeltList))
 
-// module type BeltList0 = module type of Belt.List
-// module M = unpack(@res.await Js.import(module(Belt.List: BeltList0)))
-module M = @res.await Belt.List
-let each = M.forEach
+module List2 = @res.await Belt.List
+let v = List2.v
+let w: Belt.List.variant = v
+
+module Local = {
+  type variant = V
+  let v = V
+}
+
+module Local2 = @res.await Local
+let v = Local2.v
+let w: Local.variant = v
