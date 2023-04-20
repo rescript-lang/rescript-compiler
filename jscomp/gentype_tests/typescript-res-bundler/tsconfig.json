@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "rootDir": "src",
+    "noEmit": true
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+  ]
+}

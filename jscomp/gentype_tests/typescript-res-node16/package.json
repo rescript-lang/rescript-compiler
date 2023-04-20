@@ -1,0 +1,17 @@
+{
+  "name": "typescript-res-node16",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+  },
+  "scripts": {
+    "start": "rescript build -w",
+    "build": "rescript",
+    "clean": "rescript clean -with-deps",
+    "tsc": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "rescript": "file:../../..",
+    "typescript": "^5.0.4"
+  }
+}
