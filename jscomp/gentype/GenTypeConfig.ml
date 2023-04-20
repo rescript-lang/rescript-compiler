@@ -1,6 +1,7 @@
 module ModuleNameMap = Map.Make (ModuleName)
 
 type module_ = CommonJS | ES6
+type moduleResolution = Node | Node16 | Bundler
 type bsVersion = int * int * int
 
 type t = {
@@ -13,6 +14,7 @@ type t = {
   exportInterfaces: bool;
   generatedFileExtension: string option;
   module_: module_;
+  moduleResolution: moduleResolution;
   namespace: string option;
   platformLib: string;
   mutable projectRoot: string;
@@ -32,6 +34,7 @@ let default =
     exportInterfaces = false;
     generatedFileExtension = None;
     module_ = ES6;
+    moduleResolution = Node;
     namespace = None;
     platformLib = "";
     projectRoot = "";
@@ -112,6 +115,7 @@ let readConfig ~getBsConfigFile ~namespace =
   in
   let parseConfig ~bsconf ~gtconf =
     let moduleString = gtconf |> getStringOption "module" in
+    let moduleResolutionString = gtconf |> getStringOption "moduleResolution" in
     let exportInterfacesBool = gtconf |> getBool "exportInterfaces" in
     let generatedFileExtensionStringOption =
       gtconf |> getStringOption "generatedFileExtension"
@@ -142,6 +146,13 @@ let readConfig ~getBsConfigFile ~namespace =
       | None, Some "commonjs" -> CommonJS
       | None, Some ("es6" | "es6-global") -> ES6
       | _ -> default.module_
+    in
+    let moduleResolution =
+      match moduleResolutionString with
+      | Some "node" -> Node
+      | Some "node16" -> Node16
+      | Some "bundler" -> Bundler
+      | _ -> default.moduleResolution
     in
     let exportInterfaces =
       match exportInterfacesBool with
@@ -204,6 +215,7 @@ let readConfig ~getBsConfigFile ~namespace =
       exportInterfaces;
       generatedFileExtension;
       module_;
+      moduleResolution;
       namespace;
       platformLib;
       projectRoot;
