@@ -17,10 +17,10 @@ let assertions = () => {
   assert(bool_equal(false, false))
   assert(!bool_equal(true, false))
   assert(!bool_equal(false, true))
-  assert (true == true)
-  assert (false == false)
-  assert (!(true == false))
-  assert (!(false == true))
+  assert(true == true)
+  assert(false == false)
+  assert(!(true == false))
+  assert(!(false == true))
 }
 
 let f0 = x =>
