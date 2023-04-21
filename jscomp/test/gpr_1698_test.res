@@ -38,7 +38,7 @@ let rec compare = (context, state, a, b) =>
   | (_, Sum(_), _) => 1
   | (Gcd(_), _, _) => 1
   | (_, Gcd(_), _) => -1
-  | _ => assert false
+  | _ => assert(false)
   }
 let a = Sum(list{sym("a"), Val(Natural(2))})
 let b = sym("x")

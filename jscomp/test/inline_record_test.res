@@ -44,7 +44,7 @@ eq(
   __LOC__,
   switch v3 {
   | A0({lbl}) => lbl
-  | _ => assert false
+  | _ => assert(false)
   },
   3,
 )
@@ -71,7 +71,7 @@ eq(
   __LOC__,
   switch v4 {
   | A0(u) => u.x
-  | _ => assert false
+  | _ => assert(false)
   },
   11,
 )
@@ -80,7 +80,7 @@ eq(
   __LOC__,
   switch v5 {
   | A1(u) => u.z
-  | _ => assert false
+  | _ => assert(false)
   },
   22,
 )
@@ -105,7 +105,7 @@ eq(
   __LOC__,
   switch v6 {
   | A4(u) => u.x
-  | _ => assert false
+  | _ => assert(false)
   },
   11,
 )

@@ -127,7 +127,7 @@ let readCmt = cmtFile =>
     )
     Log_.item("Check that bs-platform is version 6.2.x or later.\n")
     Log_.item("And try to clean and rebuild.\n\n")
-    assert false
+    assert(false)
   }
 
 let processCmtFile = (~signFile, ~config, cmt) => {

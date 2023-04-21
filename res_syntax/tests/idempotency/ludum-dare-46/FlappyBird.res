@@ -176,7 +176,7 @@ let drawBird = ({pos: (x, y), img} as state, env) => {
       ~texHeight=17,
       env,
     )
-  | _ => assert false
+  | _ => assert(false)
   }
   Draw.popMatrix(env)
 }

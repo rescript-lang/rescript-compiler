@@ -49,4 +49,4 @@ let f3: (. unit) => bool = %raw("()=>true")
 
 let bbbb = f3(.)
 
-assert bbbb
+assert(bbbb)

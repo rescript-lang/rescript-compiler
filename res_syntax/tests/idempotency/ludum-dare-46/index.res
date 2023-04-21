@@ -571,7 +571,7 @@ let drawLines = (map, env) => {
                 )
               | turn => (turnFacing(currFacing, turn), list{prevPoint, ...rest})
               }
-            | _ => assert false
+            | _ => assert(false)
             },
           (
             facing,

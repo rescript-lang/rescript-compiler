@@ -12,14 +12,14 @@ module Set = {
   module Make = (Ord:OrderedType) : (S with type elt = Ord.t) => {
     type rec elt = Ord.t
     type rec t
-    let compare = assert false
-    let empty = assert false
+    let compare = assert(false)
+    let empty = assert(false)
   }
 }
 
 module Hashtbl = {
   type t<'a, 'b>
-  let create = (x:int) : t<_, _> => assert false
+  let create = (x:int) : t<_, _> => assert(false)
 }
 
 let name = "Steve"

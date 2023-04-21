@@ -494,7 +494,7 @@ module Make = (Ord: OrderedType) => {
         let nl = n / 2
         let (left, l) = sub(nl, l)
         switch l {
-        | list{} => assert false
+        | list{} => assert(false)
         | list{mid, ...l} =>
           let (right, l) = sub(n - nl - 1, l)
           (create(left, mid, right), l)

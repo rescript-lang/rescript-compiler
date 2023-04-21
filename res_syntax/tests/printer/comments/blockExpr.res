@@ -357,7 +357,7 @@ if {
   true
 } // trailing
 
-assert {
+assert({
   // here 
   open /* inside */ Matrix
   // c
@@ -367,7 +367,7 @@ assert {
   // after
 
   // test
-}
+})
 
 lazy {
   // here 

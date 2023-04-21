@@ -124,8 +124,8 @@ map((
   x +. (Environment.width /. 2. -. centering.x)
 })
 
-let _ = assert { true }
-let _ = { assert { true } }
+let _ = assert({ true })
+let _ = { assert({ true }) }
 let _ = { lazy { true } }
 
 let _ = { %extension }

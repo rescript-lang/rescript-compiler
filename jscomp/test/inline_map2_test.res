@@ -356,7 +356,7 @@ module Make = (Ord: OrderedType) => {
     | (_, Node(l2, v2, d2, r2, h2)) =>
       let (l1, d1, r1) = split(v2, s1)
       concat_or_join(merge(f, l1, l2), v2, f(v2, d1, Some(d2)), merge(f, r1, r2))
-    | _ => assert false
+    | _ => assert(false)
     }
 
   let rec filter = (p, x) =>

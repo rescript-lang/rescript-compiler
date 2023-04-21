@@ -9,5 +9,5 @@ let () = {
     Tuple.makePoint(0., Js.Math.sqrt(2.) /. 2., Js.Math.sqrt(2.) /. 2.),
   ) */
   
-  assert Tuple.equals(fullQuarter->applyTo(point), Tuple.makePoint(0., 0., 1.))
+  assert(Tuple.equals(fullQuarter->applyTo(point), Tuple.makePoint(0., 0., 1.)))
 }

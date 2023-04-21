@@ -30,9 +30,9 @@ let () = {
 let tst02 = s => {
   let len = String.length(s)
   switch s {
-  | "" if len < 0 => assert false
+  | "" if len < 0 => assert(false)
   | "" => 1
-  | _ if len == 0 => assert false
+  | _ if len == 0 => assert(false)
   | "A" => 2
   | _ => 3
   }

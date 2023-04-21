@@ -5,7 +5,7 @@ var format_usage = `Usage: rescript format <options> [files]
 \`rescript format\` formats the current directory
 `;
 var child_process = require("child_process");
-var util = require("node:util");
+var util = require("util");
 var asyncExecFile = util.promisify(child_process.execFile);
 var path = require("path");
 var fs = require("fs");

@@ -10,7 +10,7 @@ let bench = () => {
   )
   %time(
     for i in 0 to count {
-      assert N.has(data.contents, i)
+      assert(N.has(data.contents, i))
     }
   )
   %time(

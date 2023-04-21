@@ -61,7 +61,7 @@ let unbalanced_left = x =>
       Node(Black, a, x, balance_left(Node(Red, b, y, c), z, d)),
       false,
     )
-  | _ => assert false
+  | _ => assert(false)
   }
 
 let unbalanced_right = x =>
@@ -72,7 +72,7 @@ let unbalanced_right = x =>
       Node(Black, balance_right(a, x, Node(Red, b, y, c)), z, d),
       false,
     )
-  | _ => assert false
+  | _ => assert(false)
   }
 
 let lbalance = (x1, x2, x3) =>
@@ -135,7 +135,7 @@ let rec remove_min = x =>
   switch x {
   | Empty
   | Node(Black, Empty, _, Node(Black, _, _, _)) =>
-    assert false
+    assert(false)
   | Node(Black, Empty, x, Empty) => (Empty, x, true)
   | Node(Black, Empty, x, Node(Red, l, y, r)) => (Node(Black, l, y, r), x, false)
   | Node(Red, Empty, x, r) => (r, x, false)

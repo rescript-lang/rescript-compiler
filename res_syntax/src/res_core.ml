@@ -2110,7 +2110,7 @@ and parseOperandExpr ~context p =
     match p.Parser.token with
     | Assert ->
       Parser.next p;
-      let expr = parseUnaryExpr p in
+      let expr = parseExpr p in
       let loc = mkLoc startPos p.prevEndPos in
       Ast_helper.Exp.assert_ ~loc expr
     | Lident "async"

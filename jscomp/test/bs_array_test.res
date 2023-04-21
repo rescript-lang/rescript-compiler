@@ -48,7 +48,7 @@ let () = {
     __LOC__,
     {
       let v = [1, 2]
-      assert A.set(v, 0, 0)
+      assert(A.set(v, 0, 0))
       A.getExn(v, 0) == 0
     },
   )
@@ -56,7 +56,7 @@ let () = {
     __LOC__,
     {
       let v = [1, 2]
-      assert A.set(v, 1, 0)
+      assert(A.set(v, 1, 0))
       A.getExn(v, 1) == 0
     },
   )
@@ -150,7 +150,7 @@ let addone = (. x) => x + 1
 
 let makeMatrixExn = (sx, sy, init) => {
   /* let open A in */
-  assert (sx >= 0 && sy >= 0)
+  assert(sx >= 0 && sy >= 0)
   let res = A.makeUninitializedUnsafe(sx)
   for x in 0 to sx - 1 {
     let initY = A.makeUninitializedUnsafe(sy)

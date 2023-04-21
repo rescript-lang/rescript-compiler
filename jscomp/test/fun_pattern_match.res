@@ -30,13 +30,13 @@ let f3 = ({rank: lhs, _}, {rank: rhs}) =>
   /* generate curried version when pattern match against arguments */
   switch (lhs, rhs) {
   | (Ranked(x), Ranked(y)) => Pervasives.compare(x, y)
-  | _ => assert false
+  | _ => assert(false)
   }
 
 let f4 = ({rank: lhs, _}, {rank: rhs}) =>
   switch (lhs, rhs) {
   | (Ranked(x), Ranked(y)) => Pervasives.compare(x, y)
-  | _ => assert false
+  | _ => assert(false)
   }
 
 /* #995 test case */

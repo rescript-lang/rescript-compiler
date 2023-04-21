@@ -97,7 +97,7 @@ let f = children =>
                                       a14,
                                       a15,
                                     ]
-                                  | list{a16, ...children} => assert false
+                                  | list{a16, ...children} => assert(false)
                                   }
                                 }
                               }

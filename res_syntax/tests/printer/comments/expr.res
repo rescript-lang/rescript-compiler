@@ -62,7 +62,7 @@ let x = {
 }
 
 // Pexp_assert
-let x = /* here */ assert /* c0 */ true /* c1 */
+let x = /* here */ assert( /* c0 */ true /* c1 */)
 
 // Pexp_lazy
 let x = /* here */ lazy /* c0 */ true /* c1 */
