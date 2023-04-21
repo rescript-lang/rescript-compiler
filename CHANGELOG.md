@@ -16,6 +16,10 @@
 
 - Parse `assert` as a regular function. `assert` is no longer a unary expression. Example: before `assert 1 == 2` is parsed as `(assert 1) == 2`, now it is parsed as `assert(1 == 2)`. https://github.com/rescript-lang/rescript-compiler/pull/6180
 
+#### :bug: Bug Fix
+
+- Make "rescript format" work with node 10 again and set minimum required node version to 10 in package.json. https://github.com/rescript-lang/rescript-compiler/pull/6186
+
 # 11.0.0-alpha.4
 
 #### :rocket: Main New Feature
