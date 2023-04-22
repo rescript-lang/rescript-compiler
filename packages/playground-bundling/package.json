@@ -11,6 +11,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@rescript/react": "^0.10.2"
+    "@rescript/react": "^0.11.0"
   }
 }
