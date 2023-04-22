@@ -25,6 +25,6 @@ let () = {
     await delay(20)
 }
 
-let forEach = await Js.Import(Belt.List.forEach)
+let forEach = await @a @b Js.Import(Belt.List.forEach)
 
-module M = await Belt.List
+module M = await @a @b Belt.List

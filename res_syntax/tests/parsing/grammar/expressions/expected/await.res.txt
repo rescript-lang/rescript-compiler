@@ -16,5 +16,5 @@ let () =
 let () = ((delay 10)[@res.braces ][@res.await ])
 let () = ((((delay 10)[@res.await ]); ((delay 20)[@res.await ]))
   [@res.braces ])
-let forEach = ((Js.Import Belt.List.forEach)[@res.await ])
-module M = ((Belt.List)[@res.await ])
+let forEach = ((Js.Import Belt.List.forEach)[@res.await ][@a ][@b ])
+module M = ((Belt.List)[@res.await ][@a ][@b ])
