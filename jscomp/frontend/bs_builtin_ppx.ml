@@ -424,8 +424,8 @@ let local_module_name =
     incr v;
     "local_" ^ string_of_int !v
 
-(* Unpack requires core_type package for type inference;
-   use module type bindings and a function to create safe local names instead. *)
+(* Unpack requires core_type package for type inference:
+   Generate a module type name eg. __Belt_List__*)
 let local_module_type_name txt =
   "_"
   ^ (Longident.flatten txt |> List.fold_left (fun ll l -> ll ^ "_" ^ l) "")
