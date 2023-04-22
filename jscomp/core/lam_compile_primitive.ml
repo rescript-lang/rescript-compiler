@@ -114,7 +114,7 @@ let translate output_prefix module_system loc (cxt : Lam_compile_context.t)
             match module_of_expression e.expression_desc with
             | [ module_ ] -> module_
             | _ -> Location.raise_errorf ~loc
-                "Invalid argument: Dynamic import requires a module or a module value as its argument. Passing a value or local module is not allowed."
+                "Invalid argument: Dynamic import requires a module or module value that is a file as argument. Passing a value or local module is not allowed."
           in
 
           let path =
