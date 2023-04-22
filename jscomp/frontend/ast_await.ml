@@ -10,12 +10,15 @@ let create_await_expression (e : Parsetree.expression) =
 let create_await_module_expression ~module_type_name (e : Parsetree.module_expr)
     =
   let open Ast_helper in
+  let remove_await_attribute =
+    List.filter (fun ((loc, _) : Parsetree.attribute) -> loc.txt != "res.await")
+  in
   {
     e with
     pmod_desc =
       Pmod_unpack
         (create_await_expression
-           (Exp.apply
+           (Exp.apply ~loc:e.pmod_loc
               (Exp.ident ~loc:e.pmod_loc
                  {
                    txt = Longident.Ldot (Lident "Js", "import");
@@ -24,7 +27,12 @@ let create_await_module_expression ~module_type_name (e : Parsetree.module_expr)
               [
                 ( Nolabel,
                   Exp.constraint_ ~loc:e.pmod_loc
-                    (Exp.pack ~loc:e.pmod_loc e)
+                    (Exp.pack ~loc:e.pmod_loc
+                       {
+                         e with
+                         pmod_attributes =
+                           remove_await_attribute e.pmod_attributes;
+                       })
                     (Typ.package ~loc:e.pmod_loc
                        {txt = Lident module_type_name; loc = e.pmod_loc}
                        []) );
