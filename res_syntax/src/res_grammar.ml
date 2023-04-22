@@ -215,7 +215,8 @@ let isFunctorArgStart = function
   | _ -> false
 
 let isModExprStart = function
-  | Token.At | Percent | Uident _ | Lbrace | Lparen | Lident "unpack" -> true
+  | Token.At | Percent | Uident _ | Lbrace | Lparen | Lident "unpack" | Await ->
+    true
   | _ -> false
 
 let isRecordRowStart = function
