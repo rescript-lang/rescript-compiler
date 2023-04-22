@@ -13,5 +13,5 @@ let beltAsModule = await Js.import(module(Belt.List: BeltList))
 
 // module type BeltList0 = module type of Belt.List
 // module M = unpack(@res.await Js.import(module(Belt.List: BeltList0)))
-module M = @res.await Belt.List
+module M = await Belt.List
 let each = M.forEach
