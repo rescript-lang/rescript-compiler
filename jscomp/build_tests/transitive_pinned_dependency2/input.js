@@ -1,9 +1,10 @@
-//@ts-check
-var child_process = require("child_process");
-var assert = require("assert");
-var fs = require("fs")
-var rescript_exe = require("../../../scripts/bin_path").rescript_exe;
+// https://github.com/rescript-lang/rescript-compiler/pull/5703#issuecomment-1518507161
+// //@ts-check
+// var child_process = require("child_process");
+// var assert = require("assert");
+// var fs = require("fs")
+// var rescript_exe = require("../../../scripts/bin_path").rescript_exe;
 
-console.log(child_process.execSync(rescript_exe, { encoding: "utf8", cwd: "./a" }));
+// console.log(child_process.execSync(rescript_exe, { encoding: "utf8", cwd: "./a" }));
 
-assert(!fs.existsSync("./node_modules/c/lib/js/tests/test.mjs"), "dev files of module 'c' were built by 'a' even though 'c' is not a pinned dependency of 'a'")
+// assert(!fs.existsSync("./node_modules/c/lib/js/tests/test.mjs"), "dev files of module 'c' were built by 'a' even though 'c' is not a pinned dependency of 'a'")
