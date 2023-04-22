@@ -283,7 +283,7 @@ and statement_desc =
   | Try of block * (exception_ident * block) option * block option
   | Debugger
 
-and expression = { expression_desc : expression_desc; comment : string option }
+and expression = { expression_desc : expression_desc; comment : string option; annotate_pure : bool }
 and statement = { statement_desc : statement_desc; comment : string option }
 
 and variable_declaration = {

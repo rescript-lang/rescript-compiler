@@ -510,6 +510,7 @@ and vident cxt f (v : J.vident) =
 (* The higher the level, the more likely that inner has to add parens *)
 and expression ~level:l cxt f (exp : J.expression) : cxt =
   pp_comment_option f exp.comment;
+  if exp.annotate_pure then P.string f "/*#__PURE__*/ ";
   expression_desc cxt ~level:l f exp.expression_desc
 
 and expression_desc cxt ~(level : int) f x : cxt =

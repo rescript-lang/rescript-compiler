@@ -273,7 +273,7 @@ val js_comp : Lam_compat.comparison -> ?comment:string -> t -> t -> t
 
 val not : t -> t
 
-val call : ?comment:string -> info:Js_call_info.t -> t -> t list -> t
+val call : ?comment:string -> ?annotate_pure:bool -> info:Js_call_info.t -> t -> t list -> t
 
 val flat_call : ?comment:string -> t -> t -> t
 

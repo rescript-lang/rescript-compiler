@@ -263,9 +263,9 @@ let statement_desc : statement_desc fn =
   | Debugger as v -> v
 
 let expression : expression fn =
- fun _self { expression_desc = _x0; comment = _x1 } ->
+ fun _self { expression_desc = _x0; comment = _x1; annotate_pure = _x2 } ->
   let _x0 = expression_desc _self _x0 in
-  { expression_desc = _x0; comment = _x1 }
+  { expression_desc = _x0; comment = _x1; annotate_pure = _x2 }
 
 let statement : statement fn =
  fun _self { statement_desc = _x0; comment = _x1 } ->

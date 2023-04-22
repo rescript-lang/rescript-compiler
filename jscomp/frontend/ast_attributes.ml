@@ -121,6 +121,7 @@ let external_attrs =
     "send";
     "new";
     "set_index";
+    "pure";
     Literals.gentype_import1;
     Literals.gentype_import2;
   |]

@@ -184,6 +184,7 @@ type external_desc = {
   get_name: bundle_source option;
   mk_obj: bool;
   return_wrapper: External_ffi_types.return_wrapper;
+  annotate_pure: bool;
 }
 
 let init_st =
@@ -202,6 +203,7 @@ let init_st =
     get_name = None;
     mk_obj = false;
     return_wrapper = Return_unset;
+    annotate_pure = false;
   }
 
 let return_wrapper loc (txt : string) : External_ffi_types.return_wrapper =
@@ -251,6 +253,7 @@ let parse_external_attributes (no_arguments : bool) (prim_name_check : string)
       else
         let action () =
           match txt with
+          | "pure" -> {st with annotate_pure = true}
           | "bs.val" | "val" ->
             if no_arguments then
               {st with val_name = Some (name_from_payload_or_prim ~loc payload)}
@@ -372,6 +375,7 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
      []
      (* wrapper does not work with @obj
         TODO: better error message *);
+   annotate_pure = _;
   } ->
     if String.length prim_name <> 0 then
       Location.raise_errorf ~loc
@@ -545,6 +549,7 @@ let external_desc_of_non_obj (loc : Location.t) (st : external_desc)
    get_name = None;
    return_wrapper = _;
    mk_obj = _;
+   annotate_pure = _;
   } ->
     if arg_type_specs_length = 3 then
       Js_set_index {js_set_index_scopes = scopes}
@@ -569,6 +574,7 @@ let external_desc_of_non_obj (loc : Location.t) (st : external_desc)
    set_index = false;
    mk_obj = _;
    return_wrapper = _;
+   annotate_pure = _;
   } ->
     if arg_type_specs_length = 2 then
       Js_get_index {js_get_index_scopes = scopes}
@@ -595,6 +601,7 @@ let external_desc_of_non_obj (loc : Location.t) (st : external_desc)
    set_index = false;
    return_wrapper = _;
    mk_obj = _;
+   annotate_pure = _;
   } -> (
     match (arg_types_ty, new_name, val_name) with
     | [], None, _ -> Js_module_as_var external_module_name
@@ -636,6 +643,7 @@ let external_desc_of_non_obj (loc : Location.t) (st : external_desc)
    mk_obj = _;
    (* mk_obj is always false *)
    return_wrapper = _;
+   annotate_pure;
   } ->
     let name = prim_name_or_pval_prim.name in
     if arg_type_specs_length = 0 then
@@ -643,10 +651,11 @@ let external_desc_of_non_obj (loc : Location.t) (st : external_desc)
          {[
            external ff : int -> int [@bs] = "" [@@module "xx"]
          ]}
-         FIXME: splice is not supported here 
+         FIXME: splice is not supported here
       *)
       Js_var {name; external_module_name = None; scopes}
-    else Js_call {splice; name; external_module_name = None; scopes}
+    else
+      Js_call {splice; name; external_module_name = None; scopes; annotate_pure}
   | {
    call_name = Some {name; source = _};
    splice;
@@ -662,6 +671,7 @@ let external_desc_of_non_obj (loc : Location.t) (st : external_desc)
    get_name = None;
    mk_obj = _;
    return_wrapper = _;
+   annotate_pure;
   } ->
     if arg_type_specs_length = 0 then
       (*
@@ -671,7 +681,7 @@ let external_desc_of_non_obj (loc : Location.t) (st : external_desc)
         *)
       Js_var {name; external_module_name; scopes}
       (*FIXME: splice is not supported here *)
-    else Js_call {splice; name; external_module_name; scopes}
+    else Js_call {splice; name; external_module_name; scopes; annotate_pure}
   | {call_name = Some _; _} ->
     Bs_syntaxerr.err loc
       (Conflict_ffi_attribute "Attribute found that conflicts with %@val")
@@ -690,6 +700,7 @@ let external_desc_of_non_obj (loc : Location.t) (st : external_desc)
    return_wrapper = _;
    splice = false;
    scopes;
+   annotate_pure = _;
   } ->
     (*
          if no_arguments -->
@@ -716,6 +727,7 @@ let external_desc_of_non_obj (loc : Location.t) (st : external_desc)
    get_name = None;
    mk_obj = _;
    return_wrapper = _;
+   annotate_pure;
   } ->
     let name = prim_name_or_pval_prim.name in
     if arg_type_specs_length = 0 then
@@ -725,7 +737,7 @@ let external_desc_of_non_obj (loc : Location.t) (st : external_desc)
          ]}
       *)
       Js_var {name; external_module_name; scopes}
-    else Js_call {splice; name; external_module_name; scopes}
+    else Js_call {splice; name; external_module_name; scopes; annotate_pure}
   | {
    val_send = Some {name; source = _};
    splice;
@@ -741,6 +753,7 @@ let external_desc_of_non_obj (loc : Location.t) (st : external_desc)
    external_module_name = None;
    mk_obj = _;
    return_wrapper = _;
+   annotate_pure = _;
   } -> (
     (* PR #2162 - since when we assemble arguments the first argument in
        [@@send] is ignored
@@ -772,6 +785,7 @@ let external_desc_of_non_obj (loc : Location.t) (st : external_desc)
    scopes;
    mk_obj = _;
    return_wrapper = _;
+   annotate_pure = _;
   } ->
     Js_new {name; external_module_name; splice; scopes}
   | {new_name = Some _; _} ->
@@ -792,6 +806,7 @@ let external_desc_of_non_obj (loc : Location.t) (st : external_desc)
    mk_obj = _;
    return_wrapper = _;
    scopes;
+   annotate_pure = _;
   } ->
     if arg_type_specs_length = 2 then
       Js_set {js_set_scopes = scopes; js_set_name = name}
@@ -815,6 +830,7 @@ let external_desc_of_non_obj (loc : Location.t) (st : external_desc)
    mk_obj = _;
    return_wrapper = _;
    scopes;
+   annotate_pure = _;
   } ->
     if arg_type_specs_length = 1 then
       Js_get {js_get_name = name; js_get_scopes = scopes}

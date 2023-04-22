@@ -17,7 +17,7 @@ open Format
 
 type t = { stamp: int; name: string; mutable flags: int }
 
-let [@inlnie] max (x:int) y = if x >= y then x else y 
+let [@inline] max (x:int) y = if x >= y then x else y
 let global_flag = 1
 let predef_exn_flag = 2
 
