@@ -38,6 +38,8 @@ test-syntax-roundtrip:
 
 test-gentype:
 	make -C jscomp/gentype_tests/typescript-react-example clean test
+	make -C jscomp/gentype_tests/typescript-res-node16 clean test
+	make -C jscomp/gentype_tests/typescript-res-bundler clean test
 
 test-all: test test-gentype
 
@@ -61,6 +63,8 @@ checkformat:
 
 clean-gentype:
 	make -C jscomp/gentype_tests/typescript-react-example clean
+	make -C jscomp/gentype_tests/typescript-res-node16 clean
+	make -C jscomp/gentype_tests/typescript-res-bundler clean
 
 clean:
 	dune clean
