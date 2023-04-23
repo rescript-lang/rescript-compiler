@@ -5783,7 +5783,22 @@ and parseFunctorModuleExpr p =
  *  | extension
  *  | attributes module-expr *)
 and parseModuleExpr p =
+  let hasAwait, loc_await =
+    let startPos = p.startPos in
+    match p.Parser.token with
+    | Await ->
+      Parser.expect Await p;
+      let endPos = p.endPos in
+      (true, mkLoc startPos endPos)
+    | _ -> (false, mkLoc startPos startPos)
+  in
   let attrs = parseAttributes p in
+  let attrs =
+    if hasAwait then
+      (({txt = "res.await"; loc = loc_await}, PStr []) : Parsetree.attribute)
+      :: attrs
+    else attrs
+  in
   let modExpr =
     if isEs6ArrowFunctor p then parseFunctorModuleExpr p
     else parsePrimaryModExpr p

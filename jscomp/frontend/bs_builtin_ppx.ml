@@ -424,6 +424,13 @@ let local_module_name =
     incr v;
     "local_" ^ string_of_int !v
 
+(* Unpack requires core_type package for type inference:
+   Generate a module type name eg. __Belt_List__*)
+let local_module_type_name txt =
+  "_"
+  ^ (Longident.flatten txt |> List.fold_left (fun ll l -> ll ^ "_" ^ l) "")
+  ^ "__"
+
 let expand_reverse (stru : Ast_structure.t) (acc : Ast_structure.t) :
     Ast_structure.t =
   if stru = [] then acc
@@ -456,14 +463,15 @@ let expand_reverse (stru : Ast_structure.t) (acc : Ast_structure.t) :
          }
     :: acc)
 
-let rec structure_mapper (self : mapper) (stru : Ast_structure.t) =
+let rec structure_mapper ~await_context (self : mapper) (stru : Ast_structure.t)
+    =
   match stru with
   | [] -> []
   | item :: rest -> (
     match item.pstr_desc with
     | Pstr_extension (({txt = "bs.raw" | "raw"; loc}, payload), _attrs) ->
       Ast_exp_handle_external.handle_raw_structure loc payload
-      :: structure_mapper self rest
+      :: structure_mapper ~await_context self rest
     (* | Pstr_extension (({txt = "i"}, _),_)
        ->
        structure_mapper self rest *)
@@ -483,10 +491,58 @@ let rec structure_mapper (self : mapper) (stru : Ast_structure.t) =
               next
           | PSig _ | PTyp _ | PPat _ ->
             Location.raise_errorf ~loc "private extension is not support")
-        | _ -> expand_reverse acc (structure_mapper self rest)
+        | _ -> expand_reverse acc (structure_mapper ~await_context self rest)
       in
       aux [] stru
-    | _ -> self.structure_item self item :: structure_mapper self rest)
+    (* Dynamic import of module transformation: module M = @res.await Belt.List *)
+    | Pstr_module
+        ({pmb_expr = {pmod_desc = Pmod_ident {txt; loc}; pmod_attributes} as me}
+        as mb)
+      when Res_parsetree_viewer.hasAwaitAttribute pmod_attributes ->
+      let item = self.structure_item self item in
+      let safe_module_type_name = local_module_type_name txt in
+      let has_local_module_name =
+        Hashtbl.find_opt !await_context safe_module_type_name
+      in
+      (* module __Belt_List__ = module type of Belt.List *)
+      let module_type_decl =
+        match has_local_module_name with
+        | Some _ -> []
+        | None ->
+          let open Ast_helper in
+          Hashtbl.add !await_context safe_module_type_name safe_module_type_name;
+          [
+            Str.modtype ~loc
+              (Mtd.mk ~loc
+                 {txt = safe_module_type_name; loc}
+                 ~typ:(Mty.typeof_ ~loc me));
+          ]
+      in
+      module_type_decl
+      @ (* module M = @res.await Belt.List *)
+      {
+        item with
+        pstr_desc =
+          Pstr_module
+            {
+              mb with
+              pmb_expr =
+                Ast_await.create_await_module_expression
+                  ~module_type_name:safe_module_type_name mb.pmb_expr;
+            };
+      }
+      :: structure_mapper ~await_context self rest
+    | _ ->
+      self.structure_item self item :: structure_mapper ~await_context self rest
+    )
+
+let structure_mapper ~await_context (self : mapper) (stru : Ast_structure.t) =
+  let await_saved = !await_context in
+  let result =
+    structure_mapper ~await_context:(ref (Hashtbl.create 10)) self stru
+  in
+  await_context := await_saved;
+  result
 
 let mapper : mapper =
   {
@@ -497,7 +553,7 @@ let mapper : mapper =
     signature_item = signature_item_mapper;
     value_bindings = Ast_tuple_pattern_flatten.value_bindings_mapper;
     structure_item = structure_item_mapper;
-    structure = structure_mapper;
+    structure = structure_mapper ~await_context:(ref (Hashtbl.create 10));
     (* Ad-hoc way to internalize stuff *)
     label_declaration =
       (fun self lbl ->
