@@ -1,7 +1,15 @@
 module ModuleNameMap = Map.Make (ModuleName)
 
 type module_ = CommonJS | ES6
-type moduleResolution = Node | Node16 | Bundler
+
+(** Compatibility for `compilerOptions.moduleResolution` in TypeScript projects. *)
+type moduleResolution =
+  | Node  (** should drop extension on import statements *)
+  | Node16
+      (** should use TS output's extension (e.g. `.gen.js`) on import statements *)
+  | Bundler
+      (** should use TS input's extension (e.g. `.gen.tsx`) on import statements *)
+
 type bsVersion = int * int * int
 
 type t = {
