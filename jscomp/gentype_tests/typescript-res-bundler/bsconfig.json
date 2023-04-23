@@ -4,6 +4,9 @@
     "module": "es6",
     "moduleResolution": "bundler",
     "importPath": "relative",
+    "shims": {
+      "Js": "Js"
+    },
     "debug": {
       "all": false
     },

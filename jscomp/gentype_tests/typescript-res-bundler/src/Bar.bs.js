@@ -10,7 +10,12 @@ function makeFoo(bar) {
         };
 }
 
+function jsonStringify(prim) {
+  return JSON.stringify(prim);
+}
+
 export {
   makeFoo ,
+  jsonStringify ,
 }
 /* No side effect */
