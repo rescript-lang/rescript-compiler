@@ -374,7 +374,9 @@ let emitRequire ~importedValueOrComponent ~early ~emitters ~(config : Config.t)
   in
   let importPath =
     match config.moduleResolution with
-    | Node -> importPath |> ImportPath.chopExtensionSafe (* for backward compatibility *)
+    | Node ->
+      importPath
+      |> ImportPath.chopExtensionSafe (* for backward compatibility *)
     | _ -> importPath
   in
   match config.module_ with

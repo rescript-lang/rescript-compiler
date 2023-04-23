@@ -20,12 +20,10 @@ let dump (dir, s) = NodeFilename.concat dir s
 
 let toCmt ~(config : Config.t) ~outputFileRelative (dir, s) =
   let open Filename in
-  concat
-    (outputFileRelative |> dirname)
-    ((dir, s) |> chopExtensionSafe |> dump)
-    ^ (match config.namespace with
-      | None -> ""
-      | Some name -> "-" ^ name)
-    ^ ".cmt"
+  concat (outputFileRelative |> dirname) ((dir, s) |> chopExtensionSafe |> dump)
+  ^ (match config.namespace with
+    | None -> ""
+    | Some name -> "-" ^ name)
+  ^ ".cmt"
 
 let emit (dir, s) = (dir, s) |> dump
