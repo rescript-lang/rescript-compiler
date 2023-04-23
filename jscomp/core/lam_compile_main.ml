@@ -288,18 +288,18 @@ js
 let (//) = Filename.concat  
 
 let lambda_as_module 
-    (lambda_output : module_system: Js_packages_info.module_system -> J.deps_program)
+    (lambda_output : J.deps_program)
     (output_prefix : string)
   : unit = 
   let package_info = Js_packages_state.get_packages_info () in 
   if Js_packages_info.is_empty package_info && !Js_config.js_stdout then begin    
-    Js_dump_program.dump_deps_program ~output_prefix NodeJS (lambda_output ~module_system: NodeJS) stdout
+    Js_dump_program.dump_deps_program ~output_prefix NodeJS (lambda_output) stdout
   end else
     Js_packages_info.iter package_info (fun {module_system; path; suffix} -> 
         let output_chan chan  = 
           Js_dump_program.dump_deps_program ~output_prefix
             module_system 
-            (lambda_output ~module_system)
+            (lambda_output)
             chan in
         let basename =  
           Ext_namespace.change_ext_ns_suffix 
