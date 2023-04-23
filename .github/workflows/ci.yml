@@ -198,6 +198,9 @@ jobs:
       - name: Check for changes in lib folder
         run: git diff --exit-code lib/js lib/es6
 
+      - name: Populate lib/ocaml
+        run: ./scripts/prebuilt.js
+
       - name: Run tests
         if: runner.os != 'Windows'
         run: node scripts/ciTest.js -all
@@ -207,9 +210,7 @@ jobs:
         run: node scripts/ciTest.js -mocha -theme -format
 
       - name: Prepare artifact upload
-        run: |
-          ./scripts/prebuilt.js
-          node .github/workflows/get_artifact_info.js
+        run: node .github/workflows/get_artifact_info.js
 
       - name: "Upload artifacts: binaries"
         uses: actions/upload-artifact@v3
@@ -223,15 +224,6 @@ jobs:
         with:
           name: lib-ocaml
           path: lib/ocaml
-
-      - name: "Upload artifacts: cmi cache"
-        if: runner.os == 'Linux'
-        uses: actions/upload-artifact@v3
-        with:
-          name: cmij-cache
-          path: |
-            lib/cmi_cache.bin
-            lib/cmj_cache.bin
 
   package:
     needs: build
