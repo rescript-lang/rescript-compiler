@@ -24,5 +24,5 @@ let outputFileSuffix ~(config : Config.t) =
 let generatedModuleExtension ~(config : Config.t) =
   match config.moduleResolution with
   | Node -> generatedFilesExtension ~config
-  | Node16 -> inputFileSuffix ~config
-  | Bundler -> outputFileSuffix ~config
+  | Node16 -> outputFileSuffix ~config
+  | Bundler -> inputFileSuffix ~config
