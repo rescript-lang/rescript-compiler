@@ -67,7 +67,7 @@ function handleOneFile(file, bsc_exe) {
  * @param {string} rescript_exe
  * @param {string} bsc_exe
  */
-function main(argv, rescript_exe, bsc_exe) {
+function main(argv, rescript_exe, bsc_exe, project_path) {
   try {
     /**
      * @type {string[]}
@@ -88,7 +88,7 @@ function main(argv, rescript_exe, bsc_exe) {
       // TODO: check the rest arguments
       var output = child_process.spawnSync(
         rescript_exe,
-        ["info", "-list-files"],
+        ["info", "-list-files", "-project", project_path],
         {
           encoding: "utf-8",
         }

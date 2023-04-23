@@ -13,7 +13,6 @@ var path = require("path");
 var fs = require("fs");
 var bsc_exe = require("./scripts/bin_path").bsc_exe;
 var rescript_exe = require("./scripts/bin_path").rescript_exe;
-var bsconfig = "bsconfig.json";
 
 var LAST_BUILD_START = 0;
 var LAST_FIRED_EVENT = 0;
@@ -28,13 +27,23 @@ var lockFileName = path.join(cwd, ".bsb.lock");
 process.env.BSB_PROJECT_ROOT = cwd;
 // console.log('BSB_PROJECT_ROOT:', process.env.BSB_PROJECT_ROOT)
 
+var bsConfig = "bsconfig.json"
+var resConfig = "rescript.json";
+var resConfigFile = path.join(cwd, resConfig);
+if (!fs.existsSync(resConfigFile)) {
+  resConfig = bsConfig;
+  resConfigFile = path.join(cwd, bsConfig);
+}
+
 // If the project uses gentype and uses custom file extension
 // via generatedFileExtension, ignore them in watch mode
-var bsConfigFile = path.join(cwd, bsconfig);
 var genTypeFileExtension = undefined;
 
-if (fs.existsSync(bsConfigFile)) {
-  var genTypeConfig = require(bsConfigFile).gentypeconfig
+if (fs.existsSync(resConfigFile)) {
+  if (resConfig === bsConfig) {
+    console.warn("bsconfig.json is deprecated. Use rescript.json instead.");
+  }
+  var genTypeConfig = require(resConfigFile).gentypeconfig
   if (genTypeConfig) {
     genTypeFileExtension = genTypeConfig.generatedFileExtension
   }
@@ -249,21 +258,16 @@ if (
       require("./scripts/rescript_format.js").main(
         process.argv.slice(3),
         rescript_exe,
-        bsc_exe
+        bsc_exe,
+        resConfigFile
       );
       break;
     case "dump":
       require("./scripts/rescript_dump.js").main(
         process.argv.slice(3),
         rescript_exe,
-        bsc_exe
-      );
-      break;
-    case "dump":
-      require("./scripts/rescript_dump.js").main(
-        process.argv.slice(3),
-        rescript_exe,
-        bsc_exe
+        bsc_exe,
+        resConfigFile
       );
       break;
     case "convert":
@@ -271,7 +275,8 @@ if (
       require("./scripts/rescript_convert.js").main(
         process.argv.slice(3),
         rescript_exe,
-        bsc_exe
+        bsc_exe,
+        resConfigFile
       );
       break;
     case "-h":
@@ -312,6 +317,11 @@ if (
   }
 
   verbose = delegate_args.includes("-verbose");
+
+  if (!delegate_args.includes("-config")) {
+    delegate_args = delegate_args.concat(["-project", resConfigFile]);
+  }
+
   /**
    * @type {child_process.ChildProcess}
    */
@@ -373,7 +383,7 @@ if (
       watch_generated = watch_config.generated;
       // close and remove all unused watchers
       watchers = watchers.filter(function (watcher) {
-        if (watcher.dir === bsconfig) {
+        if (watcher.dir === resConfig) {
           return true;
         } else if (watch_files.indexOf(watcher.dir) < 0) {
           dlog(`${watcher.dir} is no longer watched`);
@@ -583,7 +593,7 @@ if (
       }
     }
 
-    watchers.push({ watcher: fs.watch(bsconfig, on_change), dir: bsconfig });
+    watchers.push({ watcher: fs.watch(resConfig, on_change), dir: resConfig });
     build(0);
   }
 }

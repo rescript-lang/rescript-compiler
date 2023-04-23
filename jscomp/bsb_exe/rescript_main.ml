@@ -26,6 +26,9 @@ let () = Bsb_log.setup ()
 
 let separator = "--"
 
+(* FIXME: should be swapped in v12 *)
+let project_path = ref "bsconfig.json"
+
 let watch_mode = ref false
 
 let make_world = ref false
@@ -148,9 +151,10 @@ let build_subcommand ~start argv argv_len =
       ( "-regen",
         unit_set_spec force_regenerate,
         "*internal* \n\
-         Always regenerate build.ninja no matter bsconfig.json is changed or \
+         Always regenerate build.ninja no matter rescript.json is changed or \
          not" );
       ("-verbose", call_spec Bsb_log.verbose, "Set the output to be verbose");
+      ("-project", string_set_spec project_path, "Project file (rescript.json) path");
     |]
     failed_annon;
 
