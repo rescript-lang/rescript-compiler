@@ -193,7 +193,7 @@ let has_null_undefined_other (sw_names : Ast_untagged_variants.switch_names opti
 let no_effects_const = lazy true
 (* let has_effects_const = lazy false *)
 
-(** We drop the ability of cross-compiling
+(* We drop the ability of cross-compiling
         the compiler has to be the same running
 *)
 
@@ -224,11 +224,14 @@ type initialization = J.block
    -: we should not do functor application inlining in a
       non-toplevel, it will explode code very quickly
 *)
+
+let compile output_prefix = 
+
 let rec compile_external_field (* Like [List.empty]*)
-    output_prefix (lamba_cxt : Lam_compile_context.t) (id : Ident.t) name : Js_output.t =
+    (lamba_cxt : Lam_compile_context.t) (id : Ident.t) name : Js_output.t =
   match Lam_compile_env.query_external_id_info id name with
   | { persistent_closed_lambda = Some lam } when Lam_util.not_function lam ->
-      compile_lambda ~output_prefix lamba_cxt lam
+      compile_lambda lamba_cxt lam
   | _ ->
       Js_output.output_of_expression lamba_cxt.continuation
         ~no_effects:no_effects_const (E.ml_var_dot id name)
@@ -249,7 +252,7 @@ let rec compile_external_field (* Like [List.empty]*)
    @param args arguments
 *)
 
-(** This can not happen since this id should be already consulted by type checker
+(* This can not happen since this id should be already consulted by type checker
           Worst case
     {[
       E.array_index_by_int m pos
@@ -260,7 +263,7 @@ let rec compile_external_field (* Like [List.empty]*)
     for the function, generative module or functor can be a function,
     however it can not be global -- global can only module
 *)
-and compile_external_field_apply output_prefix (appinfo : Lam.apply) (module_id : Ident.t)
+and compile_external_field_apply (appinfo : Lam.apply) (module_id : Ident.t)
     (field_name : string) (lambda_cxt : Lam_compile_context.t) : Js_output.t =
   let ident_info =
     Lam_compile_env.query_external_id_info module_id field_name
@@ -273,7 +276,7 @@ and compile_external_field_apply output_prefix (appinfo : Lam.apply) (module_id 
       let _, param_map =
         Lam_closure.is_closed_with_map Set_ident.empty params body
       in
-      compile_lambda ~output_prefix lambda_cxt
+      compile_lambda lambda_cxt
         (Lam_beta_reduce.propagate_beta_reduce_with_map lambda_cxt.meta
            param_map params body ap_args)
   | _ ->
@@ -283,7 +286,7 @@ and compile_external_field_apply output_prefix (appinfo : Lam.apply) (module_id 
         else
           let arg_cxt = { lambda_cxt with continuation = NeedValue Not_tail } in
           Ext_list.fold_right ap_args dummy (fun arg_lambda (args_code, args) ->
-              match compile_lambda ~output_prefix arg_cxt arg_lambda with
+              match compile_lambda arg_cxt arg_lambda with
               | { block; value = Some b } ->
                   (Ext_list.append block args_code, b :: args)
               | _ -> assert false)
@@ -304,7 +307,7 @@ and compile_external_field_apply output_prefix (appinfo : Lam.apply) (module_id 
       Js_output.output_of_block_and_expression lambda_cxt.continuation args_code
         expression
 
-(**
+(*
     The second return values are values which need to be wrapped using
    [update_dummy]
 
@@ -312,7 +315,7 @@ and compile_external_field_apply output_prefix (appinfo : Lam.apply) (module_id 
        here we share env
 
 *)
-and compile_recursive_let ~output_prefix ~all_bindings (cxt : Lam_compile_context.t)
+and compile_recursive_let ~all_bindings (cxt : Lam_compile_context.t)
     (id : Ident.t) (arg : Lam.t) : Js_output.t * initialization =
   match arg with
   | Lfunction { params; body; attr = { return_unit; async; oneUnitArg } } ->
@@ -336,7 +339,6 @@ and compile_recursive_let ~output_prefix ~all_bindings (cxt : Lam_compile_contex
       in
       let output =
         compile_lambda
-          ~output_prefix
           {
             cxt with
             continuation =
@@ -376,7 +378,7 @@ and compile_recursive_let ~output_prefix ~all_bindings (cxt : Lam_compile_contex
         [] )
   | Lprim { primitive = Pmakeblock (_, _, _); args }
     when args_either_function_or_const args ->
-      (compile_lambda ~output_prefix { cxt with continuation = Declare (Alias, id) } arg, [])
+      (compile_lambda { cxt with continuation = Declare (Alias, id) } arg, [])
   (* case of lazy blocks, treat it as usual *)
   | Lprim
       {
@@ -434,7 +436,7 @@ and compile_recursive_let ~output_prefix ~all_bindings (cxt : Lam_compile_contex
          however it would affect scope issues, we have to declare it first
       *)
       match
-        compile_lambda ~output_prefix { cxt with continuation = NeedValue Not_tail } arg
+        compile_lambda { cxt with continuation = NeedValue Not_tail } arg
       with
       | { block = b; value = Some v } ->
           (* TODO: check recursive value ..
@@ -471,15 +473,15 @@ and compile_recursive_let ~output_prefix ~all_bindings (cxt : Lam_compile_contex
                fun _-> print_endline "hey"; v ()
          ]}
       *)
-      (compile_lambda ~output_prefix { cxt with continuation = Declare (Alias, id) } arg, [])
+      (compile_lambda { cxt with continuation = Declare (Alias, id) } arg, [])
 
-and compile_recursive_lets_aux output_prefix cxt (id_args : Lam_scc.bindings) : Js_output.t =
+and compile_recursive_lets_aux cxt (id_args : Lam_scc.bindings) : Js_output.t =
   (* #1716 *)
   let output_code, ids =
     Ext_list.fold_right id_args (Js_output.dummy, [])
       (fun (ident, arg) (acc, ids) ->
         let code, declare_ids =
-          compile_recursive_let ~output_prefix ~all_bindings:id_args cxt ident arg
+          compile_recursive_let ~all_bindings:id_args cxt ident arg
         in
         (Js_output.append_output code acc, Ext_list.append declare_ids ids))
   in
@@ -487,7 +489,7 @@ and compile_recursive_lets_aux output_prefix cxt (id_args : Lam_scc.bindings) : 
   | [] -> output_code
   | _ -> Js_output.append_output (Js_output.make ids) output_code
 
-and compile_recursive_lets ~output_prefix cxt id_args : Js_output.t =
+and compile_recursive_lets cxt id_args : Js_output.t =
   match id_args with
   | [] -> Js_output.dummy
   | _ -> (
@@ -495,38 +497,37 @@ and compile_recursive_lets ~output_prefix cxt id_args : Js_output.t =
       match id_args_group with
       | [] -> assert false
       | first :: rest ->
-          let acc = compile_recursive_lets_aux output_prefix cxt first in
+          let acc = compile_recursive_lets_aux cxt first in
           Ext_list.fold_left rest acc (fun acc x ->
-              Js_output.append_output acc (compile_recursive_lets_aux output_prefix cxt x)))
+              Js_output.append_output acc (compile_recursive_lets_aux cxt x)))
 
 and compile_general_cases :
       'a .
-      string ->
-      ('a -> Ast_untagged_variants.literal option) ->
-      ('a -> J.expression) ->
-      ('a option -> J.expression -> 'a option -> J.expression -> J.expression) ->
-      Lam_compile_context.t ->
-      (?default:J.block ->
-      ?declaration:Lam_compat.let_kind * Ident.t ->
-      _ ->
-      ('a * J.case_clause) list ->
-      J.statement) ->
-      _ ->
-      ('a * Lam.t) list ->
-      default_case ->
+      get_cstr_name: ('a -> Ast_untagged_variants.literal option) ->
+      make_exp: ('a -> J.expression) ->
+      eq_exp: ('a option -> J.expression -> 'a option -> J.expression -> J.expression) ->
+      cxt: Lam_compile_context.t ->
+      switch: (?default:J.block -> ?declaration:Lam_compat.let_kind * Ident.t ->
+        _ -> ('a * J.case_clause) list -> J.statement) ->
+      switch_exp: J.expression ->
+      cases: ('a * Lam.t) list ->
+      default: default_case ->
       J.block =
- fun (output_prefix: string) (get_cstr_name : _ -> Ast_untagged_variants.literal option) (make_exp : _ -> J.expression)
-     (eq_exp : 'a option -> J.expression -> 'a option -> J.expression -> J.expression)
-     (cxt : Lam_compile_context.t)
-     (switch :
-       ?default:J.block ->
-       ?declaration:Lam_compat.let_kind * Ident.t ->
-       _ ->
-       (_ * J.case_clause) list ->
-       J.statement) (switch_exp : J.expression) (cases : (_ * Lam.t) list)
-     (default : default_case) ->
+  fun (type a)
+    ~(get_cstr_name : a -> Ast_untagged_variants.literal option)
+    ~(make_exp : a -> J.expression)
+    ~(eq_exp : a option -> J.expression -> a option -> J.expression -> J.expression)
+    ~(cxt : Lam_compile_context.t)
+    ~(switch :
+      ?default:J.block ->
+      ?declaration:Lam_compat.let_kind * Ident.t ->
+      _ -> (a * J.case_clause) list -> J.statement
+    )
+    ~(switch_exp : J.expression)
+    ~(cases : (a * Lam.t) list)
+    ~(default : default_case) ->
   match (cases, default) with
-  | [], Default lam -> Js_output.output_as_block (compile_lambda ~output_prefix cxt lam)
+  | [], Default lam -> Js_output.output_as_block (compile_lambda cxt lam)
   | [], (Complete | NonComplete) -> []
   | [ (_, lam) ], Complete ->
       (* To take advantage of such optimizations,
@@ -535,19 +536,19 @@ and compile_general_cases :
           otherwise the compiler engine would think that
           it's also complete
       *)
-      Js_output.output_as_block (compile_lambda ~output_prefix cxt lam)
+      Js_output.output_as_block (compile_lambda cxt lam)
   | [ (id, lam) ], NonComplete ->
       morph_declare_to_assign cxt (fun cxt define ->
           [
             S.if_ ?declaration:define
 
               (eq_exp None switch_exp (Some id) (make_exp id))
-              (Js_output.output_as_block (compile_lambda ~output_prefix cxt lam));
+              (Js_output.output_as_block (compile_lambda cxt lam));
           ])
   | [ (id, lam) ], Default x | [ (id, lam); (_, x) ], Complete ->
       morph_declare_to_assign cxt (fun cxt define ->
-          let else_block = Js_output.output_as_block (compile_lambda ~output_prefix cxt x) in
-          let then_block = Js_output.output_as_block (compile_lambda ~output_prefix cxt lam) in
+          let else_block = Js_output.output_as_block (compile_lambda cxt x) in
+          let then_block = Js_output.output_as_block (compile_lambda cxt lam) in
           [
             S.if_ ?declaration:define
               (eq_exp None switch_exp (Some id) (make_exp id))
@@ -578,7 +579,7 @@ and compile_general_cases :
             | Complete -> None
             | NonComplete -> None
             | Default lam ->
-                Some (Js_output.output_as_block (compile_lambda ~output_prefix cxt lam))
+                Some (Js_output.output_as_block (compile_lambda cxt lam))
           in
           let make_comment i = match get_cstr_name i with
             | None -> None
@@ -588,7 +589,7 @@ and compile_general_cases :
                 if last then
                   (* merge and shared *)
                   let switch_body, should_break =
-                    Js_output.to_break_block (compile_lambda ~output_prefix cxt lam)
+                    Js_output.to_break_block (compile_lambda cxt lam)
                   in
                   let should_break =
                     if
@@ -627,24 +628,28 @@ and use_compile_literal_cases table get_name =
     | Some {name; literal_type = None}, Some string_table -> Some ((String name, lam) :: string_table)
     | _, _ -> None
   ) table (Some [])
-and compile_cases ?(untagged=false) output_prefix cxt (switch_exp : E.t) table default get_name : initialization =
+and compile_cases ?(untagged=false) cxt (switch_exp : E.t) table default get_name : initialization =
     match use_compile_literal_cases table get_name with
     | Some string_table ->
       if untagged
-      then compile_untagged_cases output_prefix cxt switch_exp string_table default
-      else compile_string_cases output_prefix cxt switch_exp string_table default
+      then compile_untagged_cases cxt switch_exp string_table default
+      else compile_string_cases cxt switch_exp string_table default
     | None ->
-      compile_general_cases output_prefix get_name
-        (fun i -> match get_name i with
+      compile_general_cases
+        ~get_cstr_name:get_name
+        ~make_exp:(fun i -> match get_name i with
           | None -> E.small_int i
           | Some {literal_type = Some(String s)} -> E.str s
           | Some {name} -> E.str name)
-        (fun _ x _ y -> E.int_equal x y) cxt
-        (fun ?default ?declaration e clauses ->
+        ~eq_exp: (fun _ x _ y -> E.int_equal x y)
+        ~cxt
+        ~switch: (fun ?default ?declaration e clauses ->
           S.int_switch ?default ?declaration e clauses)
-        switch_exp table default
+        ~switch_exp
+        ~cases:table
+        ~default
   
-and compile_switch output_prefix (switch_arg : Lam.t) (sw : Lam.lambda_switch)
+and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
     (lambda_cxt : Lam_compile_context.t) =
   (* TODO: if default is None, we can do some optimizations
       Use switch vs if/then/else
@@ -681,16 +686,16 @@ and compile_switch output_prefix (switch_arg : Lam.t) (sw : Lam.lambda_switch)
   let untagged = block_cases <> [] in
   let compile_whole (cxt : Lam_compile_context.t) =
     match
-      compile_lambda ~output_prefix { cxt with continuation = NeedValue Not_tail } switch_arg
+      compile_lambda { cxt with continuation = NeedValue Not_tail } switch_arg
     with
     | { value = None; _ } -> assert false
     | { block; value = Some e } -> (
         block
         @
         if sw_consts_full && sw_consts = [] then
-          compile_cases ~untagged output_prefix cxt (if untagged then e else E.tag ~name:tag_name e) sw_blocks sw_blocks_default get_block_name
+          compile_cases ~untagged cxt (if untagged then e else E.tag ~name:tag_name e) sw_blocks sw_blocks_default get_block_name
         else if sw_blocks_full && sw_blocks = [] then
-          compile_cases output_prefix cxt e sw_consts sw_num_default get_const_name
+          compile_cases cxt e sw_consts sw_num_default get_const_name
         else
           (* [e] will be used twice  *)
           let dispatch e =
@@ -702,9 +707,9 @@ and compile_switch output_prefix (switch_arg : Lam.t) (sw : Lam.lambda_switch)
               else
                E.is_int_tag ~has_null_undefined_other:(has_null_undefined_other sw_names) e in
             S.if_ is_a_literal_case
-              (compile_cases output_prefix cxt e sw_consts sw_num_default get_const_name)
+              (compile_cases cxt e sw_consts sw_num_default get_const_name)
               ~else_:
-                (compile_cases ~untagged output_prefix cxt (if untagged then e else E.tag ~name:tag_name e) sw_blocks sw_blocks_default
+                (compile_cases ~untagged cxt (if untagged then e else E.tag ~name:tag_name e) sw_blocks sw_blocks_default
                    get_block_name)
           in
           match e.expression_desc with
@@ -733,23 +738,21 @@ and compile_switch output_prefix (switch_arg : Lam.t) (sw : Lam.lambda_switch)
   | EffectCall _ | Assign _ -> Js_output.make (compile_whole lambda_cxt)
 
 
-and compile_string_cases output_prefix cxt switch_exp table default : initialization  =
+and compile_string_cases cxt switch_exp cases default : initialization  =
   let literal = function  
     | literal -> E.literal literal
   in
   compile_general_cases
-    output_prefix
-    (fun _ -> None)
-    literal
-    (fun _ x _ y -> E.string_equal x y)
-    cxt
-    (fun ?default ?declaration e clauses ->
+    ~get_cstr_name:(fun _ -> None)
+    ~make_exp:literal
+    ~eq_exp: (fun _ x _ y -> E.string_equal x y)
+    ~cxt
+    ~switch: (fun ?default ?declaration e clauses ->
       S.string_switch ?default ?declaration e clauses)
-    switch_exp table default
-and compile_untagged_cases output_prefix cxt switch_exp table default =
-  let literal = function
-    | literal -> E.literal literal
-  in
+    ~switch_exp
+    ~cases
+    ~default
+and compile_untagged_cases cxt switch_exp cases default =
   let add_runtime_type_check (literal: Ast_untagged_variants.literal_type) x y = match literal with
   | Block IntType
   | Block StringType
@@ -768,7 +771,7 @@ and compile_untagged_cases output_prefix cxt switch_exp table default =
     | _ -> E.string_equal x y
   in
   let is_array (l, _) = l = Ast_untagged_variants.Block Array in
-  let body ?default ?declaration e clauses =
+  let switch ?default ?declaration e clauses =
     let array_clauses = Ext_list.filter clauses is_array in
     match array_clauses with
     | [(l, {J.switch_body})] when List.length clauses > 1 ->
@@ -779,22 +782,24 @@ and compile_untagged_cases output_prefix cxt switch_exp table default =
     | _ :: _ :: _ -> assert false (* at most 1 array case *)
     | _ ->
       S.string_switch ?default ?declaration (E.typeof e) clauses in
-  compile_general_cases output_prefix
-    (fun _ -> None)
-    literal
-    mk_eq
-    cxt
-    body
-    switch_exp table default
+  compile_general_cases
+    ~get_cstr_name:(fun _ -> None)
+    ~make_exp:E.literal
+    ~eq_exp: mk_eq
+    ~cxt
+    ~switch
+    ~switch_exp
+    ~cases
+    ~default
 
-and compile_stringswitch output_prefix l cases default (lambda_cxt : Lam_compile_context.t) =
+and compile_stringswitch l cases default (lambda_cxt : Lam_compile_context.t) =
   (* TODO might better optimization according to the number of cases
       Be careful: we should avoid multiple evaluation of l,
       The [gen] can be elimiated when number of [cases] is less than 3
   *)
   let cases = cases |> List.map (fun (s,l) -> Ast_untagged_variants.String s, l) in
   match
-    compile_lambda ~output_prefix { lambda_cxt with continuation = NeedValue Not_tail } l
+    compile_lambda { lambda_cxt with continuation = NeedValue Not_tail } l
   with
   | { value = None } -> assert false
   | { block; value = Some e } -> (
@@ -809,14 +814,14 @@ and compile_stringswitch output_prefix l cases default (lambda_cxt : Lam_compile
           let v = Ext_ident.create_tmp () in
           Js_output.make
             (Ext_list.append block
-               (compile_string_cases output_prefix
+               (compile_string_cases
                   { lambda_cxt with continuation = Declare (Variable, v) }
                   e cases default))
             ~value:(E.var v)
       | _ ->
           Js_output.make
             (Ext_list.append block
-               (compile_string_cases output_prefix lambda_cxt e cases default)))
+               (compile_string_cases lambda_cxt e cases default)))
 
 (*
          This should be optimized in lambda layer
@@ -828,7 +833,7 @@ and compile_stringswitch output_prefix l cases default (lambda_cxt : Lam_compile
          default: (exit 1))
          with (1) 2))
       *)
-and compile_staticraise output_prefix i (largs : Lam.t list)
+and compile_staticraise i (largs : Lam.t list)
     (lambda_cxt : Lam_compile_context.t) =
   (* [i] is the jump table, [largs] is the arguments passed to [Lstaticcatch]*)
   match Lam_compile_context.find_exn lambda_cxt i with
@@ -843,7 +848,7 @@ and compile_staticraise output_prefix i (largs : Lam.t list)
             | Lvar id -> Js_output.make [ S.assign bind (E.var id) ]
             | _ ->
                 (* TODO: should be Assign -- Assign is an optimization *)
-                compile_lambda ~output_prefix
+                compile_lambda
                   { lambda_cxt with continuation = Assign bind }
                   larg
           in
@@ -878,7 +883,7 @@ and compile_staticraise output_prefix i (largs : Lam.t list)
 
    ]}
 *)
-and compile_staticcatch output_prefix (lam : Lam.t) (lambda_cxt : Lam_compile_context.t) =
+and compile_staticcatch (lam : Lam.t) (lambda_cxt : Lam_compile_context.t) =
   let code_table, body = flatten_nested_caches lam in
   let exit_id = Ext_ident.create_tmp ~name:"exit" () in
   match (lambda_cxt.continuation, code_table) with
@@ -900,13 +905,13 @@ and compile_staticcatch output_prefix (lam : Lam.t) (lambda_cxt : Lam_compile_co
         }
       in
 
-      let lbody = compile_lambda ~output_prefix new_cxt body in
+      let lbody = compile_lambda new_cxt body in
       let declares =
         Ext_list.map code_table.bindings (fun x ->
             S.declare_variable ~kind:Variable x)
       in
       Js_output.append_output (Js_output.make declares)
-        (Js_output.append_output lbody (compile_lambda ~output_prefix lambda_cxt handler))
+        (Js_output.append_output lbody (compile_lambda lambda_cxt handler))
   | _ -> (
       let exit_expr = E.var exit_id in
       let jmp_table, handlers =
@@ -928,12 +933,12 @@ and compile_staticcatch output_prefix (lam : Lam.t) (lambda_cxt : Lam_compile_co
           let new_cxt =
             { lambda_cxt with jmp_table; continuation = Assign v }
           in
-          let lbody = compile_lambda ~output_prefix new_cxt body in
+          let lbody = compile_lambda new_cxt body in
           Js_output.append_output
             (Js_output.make (S.declare_variable ~kind:Variable v :: declares))
             (Js_output.append_output lbody
                (Js_output.make
-                  (compile_cases output_prefix new_cxt exit_expr handlers NonComplete
+                  (compile_cases new_cxt exit_expr handlers NonComplete
                      (fun _ -> None))
                   ~value:(E.var v)))
       | Declare (kind, id) (* declare first this we will do branching*) ->
@@ -941,11 +946,11 @@ and compile_staticcatch output_prefix (lam : Lam.t) (lambda_cxt : Lam_compile_co
           let new_cxt =
             { lambda_cxt with jmp_table; continuation = Assign id }
           in
-          let lbody = compile_lambda ~output_prefix new_cxt body in
+          let lbody = compile_lambda new_cxt body in
           Js_output.append_output (Js_output.make declares)
             (Js_output.append_output lbody
                (Js_output.make
-                  (compile_cases output_prefix new_cxt exit_expr handlers NonComplete
+                  (compile_cases new_cxt exit_expr handlers NonComplete
                      (fun _ -> None))))
       (* place holder -- tell the compiler that
          we don't know if it's complete
@@ -957,31 +962,31 @@ and compile_staticcatch output_prefix (lam : Lam.t) (lambda_cxt : Lam_compile_co
             else EffectCall new_tail_type
           in
           let new_cxt = { lambda_cxt with jmp_table; continuation } in
-          let lbody = compile_lambda ~output_prefix new_cxt body in
+          let lbody = compile_lambda new_cxt body in
           Js_output.append_output (Js_output.make declares)
             (Js_output.append_output lbody
                (Js_output.make
-                  (compile_cases output_prefix new_cxt exit_expr handlers NonComplete
+                  (compile_cases new_cxt exit_expr handlers NonComplete
                      (fun _ -> None))))
       | Assign _ ->
           let new_cxt = { lambda_cxt with jmp_table } in
-          let lbody = compile_lambda ~output_prefix new_cxt body in
+          let lbody = compile_lambda new_cxt body in
           Js_output.append_output (Js_output.make declares)
             (Js_output.append_output lbody
                (Js_output.make
-                  (compile_cases output_prefix new_cxt exit_expr handlers NonComplete
+                  (compile_cases new_cxt exit_expr handlers NonComplete
                      (fun _ -> None)))))
 
-and compile_sequand output_prefix (l : Lam.t) (r : Lam.t) (lambda_cxt : Lam_compile_context.t)
+and compile_sequand (l : Lam.t) (r : Lam.t) (lambda_cxt : Lam_compile_context.t)
     =
   if Lam_compile_context.continuation_is_return lambda_cxt.continuation then
-    compile_lambda ~output_prefix lambda_cxt (Lam.sequand l r)
+    compile_lambda lambda_cxt (Lam.sequand l r)
   else
     let new_cxt = { lambda_cxt with continuation = NeedValue Not_tail } in
-    match compile_lambda ~output_prefix new_cxt l with
+    match compile_lambda new_cxt l with
     | { value = None } -> assert false
     | { block = l_block; value = Some l_expr } -> (
-        match compile_lambda ~output_prefix new_cxt r with
+        match compile_lambda new_cxt r with
         | { value = None } -> assert false
         | { block = []; value = Some r_expr } ->
             Js_output.output_of_block_and_expression lambda_cxt.continuation
@@ -1012,16 +1017,16 @@ and compile_sequand output_prefix (l : Lam.t) (r : Lam.t) (lambda_cxt : Lam_comp
                   @ [ S.if_ l_expr (r_block @ [ S.assign v r_expr ]) ])
                   ~value:(E.var v)))
 
-and compile_sequor output_prefix (l : Lam.t) (r : Lam.t) (lambda_cxt : Lam_compile_context.t)
+and compile_sequor (l : Lam.t) (r : Lam.t) (lambda_cxt : Lam_compile_context.t)
     =
   if Lam_compile_context.continuation_is_return lambda_cxt.continuation then
-    compile_lambda ~output_prefix lambda_cxt (Lam.sequor l r)
+    compile_lambda lambda_cxt (Lam.sequor l r)
   else
     let new_cxt = { lambda_cxt with continuation = NeedValue Not_tail } in
-    match compile_lambda ~output_prefix new_cxt l with
+    match compile_lambda new_cxt l with
     | { value = None } -> assert false
     | { block = l_block; value = Some l_expr } -> (
-        match compile_lambda ~output_prefix new_cxt r with
+        match compile_lambda new_cxt r with
         | { value = None } -> assert false
         | { block = []; value = Some r_expr } ->
             let exp = E.or_ l_expr r_expr in
@@ -1060,10 +1065,10 @@ and compile_sequor output_prefix (l : Lam.t) (r : Lam.t) (lambda_cxt : Lam_compi
             while expression, here we generate for statement, leave optimization later.
             (Sine OCaml expression can be really complex..)
 *)
-and compile_while output_prefix (predicate : Lam.t) (body : Lam.t)
+and compile_while (predicate : Lam.t) (body : Lam.t)
     (lambda_cxt : Lam_compile_context.t) =
   match
-    compile_lambda ~output_prefix
+    compile_lambda
       { lambda_cxt with continuation = NeedValue Not_tail }
       predicate
   with
@@ -1075,7 +1080,7 @@ and compile_while output_prefix (predicate : Lam.t) (body : Lam.t)
         [
           S.while_ e
             (Js_output.output_as_block
-            @@ compile_lambda ~output_prefix
+            @@ compile_lambda
                  { lambda_cxt with continuation = EffectCall Not_tail }
                  body);
         ]
@@ -1083,7 +1088,7 @@ and compile_while output_prefix (predicate : Lam.t) (body : Lam.t)
       Js_output.output_of_block_and_expression lambda_cxt.continuation block
         E.unit
 
-(** all non-tail 
+(* all non-tail 
     TODO: check semantics should start, finish be executed each time in both
      ocaml and js?, also check evaluation order..
      in ocaml id is not in the scope of finish, so it should be safe here
@@ -1095,12 +1100,12 @@ and compile_while output_prefix (predicate : Lam.t) (body : Lam.t)
     print i each time, so they are different semantics...
 *)
 
-and compile_for output_prefix (id : J.for_ident) (start : Lam.t) (finish : Lam.t)
+and compile_for (id : J.for_ident) (start : Lam.t) (finish : Lam.t)
     (direction : Js_op.direction_flag) (body : Lam.t)
     (lambda_cxt : Lam_compile_context.t) =
   let new_cxt = { lambda_cxt with continuation = NeedValue Not_tail } in
   let block =
-    match (compile_lambda ~output_prefix new_cxt start, compile_lambda ~output_prefix new_cxt finish) with
+    match (compile_lambda new_cxt start, compile_lambda new_cxt finish) with
     | { value = None }, _ | _, { value = None } -> assert false
     | { block = b1; value = Some e1 }, { block = b2; value = Some e2 } -> (
         (* order b1 -- (e1 -- b2 -- e2)
@@ -1113,7 +1118,7 @@ and compile_for output_prefix (id : J.for_ident) (start : Lam.t) (finish : Lam.t
         *)
         let block_body =
           Js_output.output_as_block
-            (compile_lambda ~output_prefix
+            (compile_lambda
                { lambda_cxt with continuation = EffectCall Not_tail }
                body)
         in
@@ -1139,7 +1144,7 @@ and compile_for output_prefix (id : J.for_ident) (start : Lam.t) (finish : Lam.t
   in
   Js_output.output_of_block_and_expression lambda_cxt.continuation block E.unit
 
-and compile_assign output_prefix id (lambda : Lam.t) (lambda_cxt : Lam_compile_context.t) =
+and compile_assign id (lambda : Lam.t) (lambda_cxt : Lam_compile_context.t) =
   let block =
     match lambda with
     | Lprim { primitive = Poffsetint v; args = [ Lvar bid ] }
@@ -1147,7 +1152,7 @@ and compile_assign output_prefix id (lambda : Lam.t) (lambda_cxt : Lam_compile_c
         [ S.exp (E.assign (E.var id) (E.int32_add (E.var id) (E.small_int v))) ]
     | _ -> (
         match
-          compile_lambda ~output_prefix
+          compile_lambda
             { lambda_cxt with continuation = NeedValue Not_tail }
             lambda
         with
@@ -1170,16 +1175,16 @@ and compile_assign output_prefix id (lambda : Lam.t) (lambda_cxt : Lam_compile_c
    }
    ]}
 *)
-and compile_trywith output_prefix lam id catch (lambda_cxt : Lam_compile_context.t) =
+and compile_trywith lam id catch (lambda_cxt : Lam_compile_context.t) =
   let aux (with_context : Lam_compile_context.t)
       (body_context : Lam_compile_context.t) =
     (* should_return is passed down
        #1701, try should prevent tailcall *)
     [
       S.try_
-        (Js_output.output_as_block (compile_lambda ~output_prefix body_context lam))
+        (Js_output.output_as_block (compile_lambda body_context lam))
         ~with_:
-          (id, Js_output.output_as_block (compile_lambda ~output_prefix with_context catch));
+          (id, Js_output.output_as_block (compile_lambda with_context catch));
     ]
   in
   match lambda_cxt.continuation with
@@ -1246,10 +1251,10 @@ and compile_trywith output_prefix lam id catch (lambda_cxt : Lam_compile_context
          mutable initializers: (obj -> unit) list }
    ]}
 *)
-and compile_ifthenelse output_prefix (predicate : Lam.t) (t_branch : Lam.t) (f_branch : Lam.t)
+and compile_ifthenelse (predicate : Lam.t) (t_branch : Lam.t) (f_branch : Lam.t)
     (lambda_cxt : Lam_compile_context.t) =
   match
-    compile_lambda ~output_prefix
+    compile_lambda
       { lambda_cxt with continuation = NeedValue Not_tail }
       predicate
   with
@@ -1258,8 +1263,8 @@ and compile_ifthenelse output_prefix (predicate : Lam.t) (t_branch : Lam.t) (f_b
       match lambda_cxt.continuation with
       | NeedValue _ -> (
           match
-            ( compile_lambda ~output_prefix lambda_cxt t_branch,
-              compile_lambda ~output_prefix lambda_cxt f_branch )
+            ( compile_lambda lambda_cxt t_branch,
+              compile_lambda lambda_cxt f_branch )
           with
           | { block = []; value = Some out1 }, { block = []; value = Some out2 }
             ->
@@ -1271,8 +1276,8 @@ and compile_ifthenelse output_prefix (predicate : Lam.t) (t_branch : Lam.t) (f_b
               let id = Ext_ident.create_tmp () in
               let assign_cxt = { lambda_cxt with continuation = Assign id } in
               match
-                ( compile_lambda ~output_prefix assign_cxt t_branch,
-                  compile_lambda ~output_prefix assign_cxt f_branch )
+                ( compile_lambda assign_cxt t_branch,
+                  compile_lambda assign_cxt f_branch )
               with
               | out1, out2 ->
                   Js_output.make
@@ -1289,8 +1294,8 @@ and compile_ifthenelse output_prefix (predicate : Lam.t) (t_branch : Lam.t) (f_b
             { lambda_cxt with continuation = NeedValue Not_tail }
           in
           match
-            ( compile_lambda ~output_prefix declare_cxt t_branch,
-              compile_lambda ~output_prefix declare_cxt f_branch )
+            ( compile_lambda declare_cxt t_branch,
+              compile_lambda declare_cxt f_branch )
           with
           | { block = []; value = Some out1 }, { block = []; value = Some out2 }
             ->
@@ -1303,20 +1308,20 @@ and compile_ifthenelse output_prefix (predicate : Lam.t) (t_branch : Lam.t) (f_b
                 (Ext_list.append_one b
                    (S.if_ ~declaration:(kind, id) e
                       (Js_output.output_as_block
-                      @@ compile_lambda ~output_prefix
+                      @@ compile_lambda
                            { lambda_cxt with continuation = Assign id }
                            t_branch)
                       ~else_:
                         (Js_output.output_as_block
-                        @@ compile_lambda ~output_prefix
+                        @@ compile_lambda
                              { lambda_cxt with continuation = Assign id }
                              f_branch))))
       | Assign _ ->
           let then_output =
-            Js_output.output_as_block (compile_lambda ~output_prefix lambda_cxt t_branch)
+            Js_output.output_as_block (compile_lambda lambda_cxt t_branch)
           in
           let else_output =
-            Js_output.output_as_block (compile_lambda ~output_prefix lambda_cxt f_branch)
+            Js_output.output_as_block (compile_lambda lambda_cxt f_branch)
           in
           Js_output.make
             (Ext_list.append_one b (S.if_ e then_output ~else_:else_output))
@@ -1326,8 +1331,8 @@ and compile_ifthenelse output_prefix (predicate : Lam.t) (t_branch : Lam.t) (f_b
           in
           match
             ( should_return,
-              compile_lambda ~output_prefix context1 t_branch,
-              compile_lambda ~output_prefix context1 f_branch )
+              compile_lambda context1 t_branch,
+              compile_lambda context1 f_branch )
           with
           (* see PR#83 *)
           | ( Not_tail,
@@ -1358,7 +1363,7 @@ and compile_ifthenelse output_prefix (predicate : Lam.t) (t_branch : Lam.t) (f_b
                      [
                        S.if_ (E.not e)
                          (Js_output.output_as_block
-                         @@ compile_lambda ~output_prefix lambda_cxt f_branch);
+                         @@ compile_lambda lambda_cxt f_branch);
                      ])
               else
                 Js_output.make
@@ -1366,10 +1371,10 @@ and compile_ifthenelse output_prefix (predicate : Lam.t) (t_branch : Lam.t) (f_b
                      [
                        S.if_ e
                          (Js_output.output_as_block
-                         @@ compile_lambda ~output_prefix lambda_cxt t_branch)
+                         @@ compile_lambda lambda_cxt t_branch)
                          ~else_:
                            (Js_output.output_as_block
-                           @@ compile_lambda ~output_prefix lambda_cxt f_branch);
+                           @@ compile_lambda lambda_cxt f_branch);
                      ])
           | Not_tail, _, { block = []; value = Some out2 } ->
               let else_ =
@@ -1377,13 +1382,13 @@ and compile_ifthenelse output_prefix (predicate : Lam.t) (t_branch : Lam.t) (f_b
                 else
                   Some
                     (Js_output.output_as_block
-                       (compile_lambda ~output_prefix lambda_cxt f_branch))
+                       (compile_lambda lambda_cxt f_branch))
               in
               Js_output.make
                 (Ext_list.append_one b
                    (S.if_ e
                       (Js_output.output_as_block
-                         (compile_lambda ~output_prefix lambda_cxt t_branch))
+                         (compile_lambda lambda_cxt t_branch))
                       ?else_))
           | ( Maybe_tail_is_return _,
               { block = []; value = Some out1 },
@@ -1393,16 +1398,16 @@ and compile_ifthenelse output_prefix (predicate : Lam.t) (t_branch : Lam.t) (f_b
                 ~output_finished:True
           | _, _, _ ->
               let then_output =
-                Js_output.output_as_block (compile_lambda ~output_prefix lambda_cxt t_branch)
+                Js_output.output_as_block (compile_lambda lambda_cxt t_branch)
               in
               let else_output =
-                Js_output.output_as_block (compile_lambda ~output_prefix lambda_cxt f_branch)
+                Js_output.output_as_block (compile_lambda lambda_cxt f_branch)
               in
               Js_output.make
                 (Ext_list.append_one b (S.if_ e then_output ~else_:else_output))
           ))
 
-and compile_apply output_prefix (appinfo : Lam.apply) (lambda_cxt : Lam_compile_context.t) =
+and compile_apply (appinfo : Lam.apply) (lambda_cxt : Lam_compile_context.t) =
   match appinfo with
   | {
    ap_func =
@@ -1414,7 +1419,7 @@ and compile_apply output_prefix (appinfo : Lam.apply) (lambda_cxt : Lam_compile_
         if outer_ap_info.ap_inlined = ap_inlined then outer_ap_info
         else { outer_ap_info with ap_inlined }
       in
-      compile_lambda ~output_prefix lambda_cxt
+      compile_lambda lambda_cxt
         (Lam.apply ap_func (Ext_list.append ap_args appinfo.ap_args) ap_info)
   (* External function call: it can not be tailcall in this case*)
   | {
@@ -1423,7 +1428,7 @@ and compile_apply output_prefix (appinfo : Lam.apply) (lambda_cxt : Lam_compile_
   } -> (
       match fld_info with
       | Fld_module { name } ->
-          compile_external_field_apply output_prefix appinfo id name lambda_cxt
+          compile_external_field_apply appinfo id name lambda_cxt
       | _ -> assert false)
   | _ -> (
       (* TODO: ---
@@ -1436,7 +1441,7 @@ and compile_apply output_prefix (appinfo : Lam.apply) (lambda_cxt : Lam_compile_
           =
         Ext_list.fold_right (ap_func :: appinfo.ap_args) ([], [])
           (fun x (args_code, fn_code) ->
-            match compile_lambda ~output_prefix new_cxt x with
+            match compile_lambda new_cxt x with
             | { block; value = Some b } ->
                 (Ext_list.append block args_code, b :: fn_code)
             | { value = None } -> assert false)
@@ -1497,18 +1502,18 @@ and compile_apply output_prefix (appinfo : Lam.apply) (lambda_cxt : Lam_compile_
                ~info:(call_info_of_ap_status appinfo.ap_info.ap_status)
                fn_code args))
 
-and compile_prim output_prefix (prim_info : Lam.prim_info)
+and compile_prim (prim_info : Lam.prim_info)
     (lambda_cxt : Lam_compile_context.t) =
   match prim_info with
   | { primitive = Pfield (_, fld_info); args = [ Lglobal_module id ]; _ } -> (
       (* should be before Lglobal_global *)
       match fld_info with
       | Fld_module { name = field } ->
-          compile_external_field output_prefix lambda_cxt id field
+          compile_external_field lambda_cxt id field
       | _ -> assert false)
   | { primitive = Praise; args = [ e ]; _ } -> (
       match
-        compile_lambda ~output_prefix { lambda_cxt with continuation = NeedValue Not_tail } e
+        compile_lambda { lambda_cxt with continuation = NeedValue Not_tail } e
       with
       | { block; value = Some v } ->
           Js_output.make
@@ -1519,8 +1524,8 @@ and compile_prim output_prefix (prim_info : Lam.prim_info)
       *)
       | { value = None } -> assert false)
   | { primitive = Psequand; args = [ l; r ]; _ } ->
-      compile_sequand output_prefix l r lambda_cxt
-  | { primitive = Psequor; args = [ l; r ] } -> compile_sequor output_prefix l r lambda_cxt
+      compile_sequand l r lambda_cxt
+  | { primitive = Psequor; args = [ l; r ] } -> compile_sequor l r lambda_cxt
   | { primitive = Pdebugger; _ } ->
       (* [%bs.debugger] guarantees that the expression does not matter
          TODO: make it even safer *)
@@ -1540,7 +1545,7 @@ and compile_prim output_prefix (prim_info : Lam.prim_info)
       assert (not setter);
 
       match
-        compile_lambda ~output_prefix { lambda_cxt with continuation = NeedValue Not_tail } obj
+        compile_lambda { lambda_cxt with continuation = NeedValue Not_tail } obj
       with
       | { value = None } -> assert false
       | { block; value = Some b } ->
@@ -1569,8 +1574,8 @@ and compile_prim output_prefix (prim_info : Lam.prim_info)
       let need_value_no_return_cxt =
         { lambda_cxt with continuation = NeedValue Not_tail }
       in
-      let obj_output = compile_lambda ~output_prefix need_value_no_return_cxt obj in
-      let arg_output = compile_lambda ~output_prefix need_value_no_return_cxt setter_val in
+      let obj_output = compile_lambda need_value_no_return_cxt obj in
+      let arg_output = compile_lambda need_value_no_return_cxt setter_val in
       let cont obj_block arg_block obj_code =
         Js_output.output_of_block_and_expression lambda_cxt.continuation
           (match obj_code with
@@ -1602,7 +1607,7 @@ and compile_prim output_prefix (prim_info : Lam.prim_info)
       *)
       match args with
       | fn :: rest ->
-          compile_lambda ~output_prefix lambda_cxt
+          compile_lambda lambda_cxt
             (Lam.apply fn rest
                {
                  ap_loc = loc;
@@ -1620,7 +1625,7 @@ and compile_prim output_prefix (prim_info : Lam.prim_info)
                   here we share env
                *)
                (Js_output.output_as_block
-                  (compile_lambda ~output_prefix
+                  (compile_lambda
                      {
                        lambda_cxt with
                        continuation =
@@ -1633,10 +1638,10 @@ and compile_prim output_prefix (prim_info : Lam.prim_info)
                      body)))
       | _ -> assert false)
   | { primitive = Pjs_fn_make arity; args = [ fn ]; loc } ->
-      compile_lambda ~output_prefix lambda_cxt
+      compile_lambda lambda_cxt
         (Lam_eta_conversion.unsafe_adjust_to_arity loc ~to_:arity ?from:None fn)
   | { primitive = Pjs_fn_make_unit; args = [ fn ]; loc } ->
-    compile_lambda ~output_prefix lambda_cxt fn
+    compile_lambda lambda_cxt fn
   | { primitive = Pjs_fn_make _; args = [] | _ :: _ :: _ } -> assert false
   | { primitive = Pjs_object_create labels; args } ->
       let args_block, args_expr =
@@ -1644,7 +1649,7 @@ and compile_prim output_prefix (prim_info : Lam.prim_info)
         else
           let new_cxt = { lambda_cxt with continuation = NeedValue Not_tail } in
           Ext_list.split_map args (fun x ->
-              match compile_lambda ~output_prefix new_cxt x with
+              match compile_lambda new_cxt x with
               | { block; value = Some b } -> (block, b)
               | { value = None } -> assert false)
       in
@@ -1660,7 +1665,7 @@ and compile_prim output_prefix (prim_info : Lam.prim_info)
         else
           let new_cxt = { lambda_cxt with continuation = NeedValue Not_tail } in
           Ext_list.split_map args (fun x ->
-              match compile_lambda ~output_prefix new_cxt x with
+              match compile_lambda new_cxt x with
               | { block; value = Some b } -> (block, b)
               | { value = None } -> assert false)
       in
@@ -1672,7 +1677,7 @@ and compile_prim output_prefix (prim_info : Lam.prim_info)
       Js_output.output_of_block_and_expression lambda_cxt.continuation args_code
         exp
 
-and compile_lambda ~output_prefix (lambda_cxt : Lam_compile_context.t) (cur_lam : Lam.t) :
+and compile_lambda (lambda_cxt : Lam_compile_context.t) (cur_lam : Lam.t) :
     Js_output.t =
   match cur_lam with
   | Lfunction { params; body; attr = { return_unit; async; oneUnitArg } } ->
@@ -1683,7 +1688,7 @@ and compile_lambda ~output_prefix (lambda_cxt : Lam_compile_context.t) (cur_lam 
               here we share env
            *)
            (Js_output.output_as_block
-              (compile_lambda ~output_prefix
+              (compile_lambda
                  {
                    lambda_cxt with
                    continuation =
@@ -1694,15 +1699,15 @@ and compile_lambda ~output_prefix (lambda_cxt : Lam_compile_context.t) (cur_lam 
                    jmp_table = Lam_compile_context.empty_handler_map;
                  }
                  body)))
-  | Lapply appinfo -> compile_apply output_prefix appinfo lambda_cxt
+  | Lapply appinfo -> compile_apply appinfo lambda_cxt
   | Llet (let_kind, id, arg, body) ->
       (* Order matters..  see comment below in [Lletrec] *)
       let args_code =
-        compile_lambda ~output_prefix
+        compile_lambda
           { lambda_cxt with continuation = Declare (let_kind, id) }
           arg
       in
-      Js_output.append_output args_code (compile_lambda ~output_prefix lambda_cxt body)
+      Js_output.append_output args_code (compile_lambda lambda_cxt body)
   | Lletrec (id_args, body) ->
       (* There is a bug in our current design,
          it requires compile args first (register that some objects are jsidentifiers)
@@ -1715,8 +1720,8 @@ and compile_lambda ~output_prefix (lambda_cxt : Lam_compile_context.t) (cur_lam 
          1. scan the lambda layer first, register js identifier before proceeding
          2. delay the method call into javascript ast
       *)
-      let v = compile_recursive_lets ~output_prefix lambda_cxt id_args in
-      Js_output.append_output v (compile_lambda ~output_prefix lambda_cxt body)
+      let v = compile_recursive_lets lambda_cxt id_args in
+      Js_output.append_output v (compile_lambda lambda_cxt body)
   | Lvar id ->
       Js_output.output_of_expression lambda_cxt.continuation
         ~no_effects:no_effects_const (E.var id)
@@ -1731,21 +1736,21 @@ and compile_lambda ~output_prefix (lambda_cxt : Lam_compile_context.t) (cur_lam 
       *)
       Js_output.output_of_block_and_expression lambda_cxt.continuation []
         (E.ml_module_as_var i)
-  | Lprim prim_info -> compile_prim output_prefix prim_info lambda_cxt
+  | Lprim prim_info -> compile_prim prim_info lambda_cxt
   | Lsequence (l1, l2) ->
       let output_l1 =
-        compile_lambda ~output_prefix { lambda_cxt with continuation = EffectCall Not_tail } l1
+        compile_lambda { lambda_cxt with continuation = EffectCall Not_tail } l1
       in
-      let output_l2 = compile_lambda ~output_prefix lambda_cxt l2 in
+      let output_l2 = compile_lambda lambda_cxt l2 in
       Js_output.append_output output_l1 output_l2
   | Lifthenelse (predicate, t_branch, f_branch) ->
-      compile_ifthenelse output_prefix predicate t_branch f_branch lambda_cxt
+      compile_ifthenelse predicate t_branch f_branch lambda_cxt
   | Lstringswitch (l, cases, default) ->
-      compile_stringswitch output_prefix l cases default lambda_cxt
-  | Lswitch (switch_arg, sw) -> compile_switch output_prefix switch_arg sw lambda_cxt
-  | Lstaticraise (i, largs) -> compile_staticraise output_prefix i largs lambda_cxt
-  | Lstaticcatch _ -> compile_staticcatch output_prefix cur_lam lambda_cxt
-  | Lwhile (p, body) -> compile_while output_prefix p body lambda_cxt
+      compile_stringswitch l cases default lambda_cxt
+  | Lswitch (switch_arg, sw) -> compile_switch switch_arg sw lambda_cxt
+  | Lstaticraise (i, largs) -> compile_staticraise i largs lambda_cxt
+  | Lstaticcatch _ -> compile_staticcatch cur_lam lambda_cxt
+  | Lwhile (p, body) -> compile_while p body lambda_cxt
   | Lfor (id, start, finish, direction, body) -> (
       match (direction, finish) with
       | ( Upto,
@@ -1755,12 +1760,17 @@ and compile_lambda ~output_prefix (lambda_cxt : Lam_compile_context.t) (cur_lam 
                 args = [ new_finish; Lconst (Const_int { i = 1l }) ];
               }
           | Lprim { primitive = Poffsetint -1; args = [ new_finish ] } ) ) ->
-          compile_for output_prefix id start new_finish Up body lambda_cxt
+          compile_for id start new_finish Up body lambda_cxt
       | _ ->
-          compile_for output_prefix id start finish
+          compile_for id start finish
             (if direction = Upto then Upto else Downto)
             body lambda_cxt)
-  | Lassign (id, lambda) -> compile_assign output_prefix id lambda lambda_cxt
+  | Lassign (id, lambda) -> compile_assign id lambda lambda_cxt
   | Ltrywith (lam, id, catch) ->
       (* generate documentation *)
-      compile_trywith output_prefix lam id catch lambda_cxt
+      compile_trywith lam id catch lambda_cxt
+
+in compile_recursive_lets, compile_lambda
+
+let compile_recursive_lets ~output_prefix = fst (compile output_prefix)
+let compile_lambda ~output_prefix = snd (compile output_prefix)
