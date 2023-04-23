@@ -104,7 +104,7 @@ let processCmtFile cmt =
     let isInterface = Filename.check_suffix cmtFile ".cmti" in
     let resolver =
       ModuleResolver.createLazyResolver ~config
-        ~extensions:[".res"; EmitType.shimExtension] ~excludeFile:(fun fname ->
+        ~extensions:[".res"; ".shim.ts"] ~excludeFile:(fun fname ->
           fname = "React.res" || fname = "ReasonReact.res")
     in
     let inputCMT, hasGenTypeAnnotations =

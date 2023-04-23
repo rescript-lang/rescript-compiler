@@ -40,7 +40,7 @@ let default =
     projectRoot = "";
     shimsMap = ModuleNameMap.empty;
     sources = None;
-    suffix = "";
+    suffix = ".bs.js";
   }
 
 let bsPlatformLib ~config =
@@ -182,9 +182,8 @@ let readConfig ~getBsConfigFile ~namespace =
     in
     let suffix =
       match bsconf |> getStringOption "suffix" with
-      | Some ".bs.js" -> ".bs"
       | Some s -> s
-      | _ -> ".bs"
+      | _ -> default.suffix
     in
     let bsDependencies =
       match bsconf |> getOpt "bs-dependencies" with

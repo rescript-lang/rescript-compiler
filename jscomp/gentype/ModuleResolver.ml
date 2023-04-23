@@ -256,7 +256,7 @@ let resolveGeneratedModule ~config ~outputFileRelative ~resolver moduleName =
       (moduleName |> ModuleName.toString);
   let importPath =
     resolveModule ~config
-      ~importExtension:(EmitType.generatedModuleExtension ~config)
+      ~importExtension:(ModuleExtension.generatedModuleExtension ~config)
       ~outputFileRelative ~resolver ~useBsDependencies:true moduleName
   in
   if !Debug.moduleResolution then
@@ -272,12 +272,7 @@ let importPathForReasonModuleName ~(config : Config.t) ~outputFileRelative
   | shimModuleName ->
     if !Debug.moduleResolution then
       Log_.item "ShimModuleName: %s\n" (shimModuleName |> ModuleName.toString);
-    let importExtension =
-      match config.moduleResolution with
-      | Node -> ".shim"
-      | Node16 -> ".shim.js"
-      | Bundler -> ".shim.ts"
-    in
+    let importExtension = ModuleExtension.shimExtension ~config in
     let importPath =
       resolveModule ~config ~importExtension ~outputFileRelative
         ~resolver ~useBsDependencies:false shimModuleName

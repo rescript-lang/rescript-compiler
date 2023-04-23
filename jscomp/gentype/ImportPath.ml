@@ -13,8 +13,8 @@ let fromModule ~dir ~importExtension moduleName =
 
 let fromStringUnsafe s = ("", s)
 
-let chopExtensionSafe s =
-  try s |> Filename.chop_extension with Invalid_argument _ -> s
+let chopExtensionSafe (dir, s) =
+  try (dir, s |> Filename.chop_extension) with Invalid_argument _ -> (dir, s)
 
 let dump (dir, s) = NodeFilename.concat dir s
 
@@ -22,10 +22,10 @@ let toCmt ~(config : Config.t) ~outputFileRelative (dir, s) =
   let open Filename in
   concat
     (outputFileRelative |> dirname)
-    (((dir, s |> chopExtensionSafe) |> dump)
+    ((dir, s) |> chopExtensionSafe |> dump)
     ^ (match config.namespace with
       | None -> ""
       | Some name -> "-" ^ name)
-    ^ ".cmt")
+    ^ ".cmt"
 
 let emit (dir, s) = (dir, s) |> dump
