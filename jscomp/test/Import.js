@@ -49,11 +49,46 @@ var beltAsModule = await import("../../lib/js/belt_List.js");
 
 var M = await import("../../lib/js/belt_List.js");
 
-var each = M.forEach;
+var N0 = await import("../../lib/js/belt_List.js");
+
+var O = await import("../../lib/js/belt_List.js");
+
+var N1_each = O.forEach;
+
+var N1 = {
+  O: O,
+  each: N1_each
+};
+
+var N2 = await import("../../lib/js/belt_List.js");
+
+var N_each = N2.forEach;
+
+var N = {
+  N0: N0,
+  N1: N1,
+  N2: N2,
+  each: N_each
+};
+
+var M0 = await import("../../lib/js/belt_List.js");
+
+var M1 = await import("../../lib/js/belt_List.js");
+
+var each = M1.forEach;
+
+var M2;
+
+var each2 = O.forEach;
 
 exports.eachIntAsync = eachIntAsync;
 exports.eachIntLazy = eachIntLazy;
 exports.beltAsModule = beltAsModule;
 exports.M = M;
+exports.N = N;
+exports.M0 = M0;
+exports.M1 = M1;
 exports.each = each;
+exports.M2 = M2;
+exports.each2 = each2;
 /*  Not a pure module */
