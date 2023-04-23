@@ -30,7 +30,6 @@
 
 val translate :
   string ->
-  Js_packages_info.module_system ->
   Location.t ->
   Lam_compile_context.t ->
   Lam_primitive.t ->
