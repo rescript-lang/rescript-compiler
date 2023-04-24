@@ -15,6 +15,10 @@
 #### :rocket: Main New Feature
 
 - Add support for Dynamic import. https://github.com/rescript-lang/rescript-compiler/pull/5703
+- GenType: Add `moduleResolution` option to customize extensions on emitted import statements. This helps to adjust output compatibility with TypeScript projects using ESM. https://github.com/rescript-lang/rescript-compiler/pull/6182
+  - `node` (default): Drop extensions.
+  - `node16`: Use TS output's extensions. Make it ESM-compatible.
+  - `bundler`: Use TS input's extensions. Make it ESM-compatible.
 
 #### :boom: Breaking Change
 

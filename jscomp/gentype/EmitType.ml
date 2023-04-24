@@ -13,21 +13,6 @@ let fileHeader ~sourceFile =
     ~lines:["TypeScript file generated from " ^ sourceFile ^ " by genType."]
   ^ "/* eslint-disable import/first */\n\n"
 
-let generatedFilesExtension ~(config : Config.t) =
-  match config.generatedFileExtension with
-  | Some s ->
-    (* from .foo.bar to .foo *)
-    Filename.remove_extension s
-  | None -> ".gen"
-
-let outputFileSuffix ~(config : Config.t) =
-  match config.generatedFileExtension with
-  | Some s when Filename.extension s <> "" (* double extension  *) -> s
-  | _ -> generatedFilesExtension ~config ^ ".tsx"
-
-let generatedModuleExtension ~config = generatedFilesExtension ~config
-let shimExtension = ".shim.ts"
-
 let interfaceName ~(config : Config.t) name =
   match config.exportInterfaces with
   | true -> "I" ^ name
@@ -386,6 +371,13 @@ let emitRequire ~importedValueOrComponent ~early ~emitters ~(config : Config.t)
     match importedValueOrComponent with
     | true -> "// tslint:disable-next-line:no-var-requires\n"
     | false -> "// @ts-ignore: Implicit any on import\n"
+  in
+  let importPath =
+    match config.moduleResolution with
+    | Node ->
+      importPath
+      |> ImportPath.chopExtensionSafe (* for backward compatibility *)
+    | _ -> importPath
   in
   match config.module_ with
   | ES6 when not importedValueOrComponent ->

@@ -14,9 +14,9 @@
     "tsc": "tsc -p tsconfig.json"
   },
   "devDependencies": {
-    "@types/node": "^13.13.4",
-    "@types/react-dom": "^16.9.7",
+    "@types/node": "^18.15.12",
+    "@types/react-dom": "^18.0.11",
     "rescript": "file:../../..",
-    "typescript": "3.9.2"
+    "typescript": "^5.0.4"
   }
 }
