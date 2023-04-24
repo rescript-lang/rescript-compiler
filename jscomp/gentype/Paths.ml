@@ -29,7 +29,7 @@ let findNameSpace cmt =
   |> keepAfterDash
 
 let getOutputFileRelative ~config cmt =
-  (cmt |> handleNamespace) ^ ModuleExtension.inputFileSuffix ~config
+  (cmt |> handleNamespace) ^ ModuleExtension.tsInputFileSuffix ~config
 
 let getOutputFile ~(config : Config.t) cmt =
   Filename.concat config.projectRoot (getOutputFileRelative ~config cmt)

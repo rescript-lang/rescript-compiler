@@ -1,6 +1,6 @@
 open GenTypeCommon
 
-let shimExtension ~(config : Config.t) =
+let shimTsOutputFileExtension ~(config : Config.t) =
   match config.moduleResolution with
   | Node -> ".shim"
   | Node16 -> ".shim.js"
@@ -13,16 +13,16 @@ let generatedFilesExtension ~(config : Config.t) =
     Filename.remove_extension s
   | None -> ".gen"
 
-let inputFileSuffix ~(config : Config.t) =
+let tsInputFileSuffix ~(config : Config.t) =
   match config.generatedFileExtension with
   | Some s when Filename.extension s <> "" (* double extension  *) -> s
   | _ -> generatedFilesExtension ~config ^ ".tsx"
 
-let outputFileSuffix ~(config : Config.t) =
+let tsOutputFileSuffix ~(config : Config.t) =
   generatedFilesExtension ~config ^ ".js"
 
 let generatedModuleExtension ~(config : Config.t) =
   match config.moduleResolution with
   | Node -> generatedFilesExtension ~config
-  | Node16 -> outputFileSuffix ~config
-  | Bundler -> inputFileSuffix ~config
+  | Node16 -> tsOutputFileSuffix ~config
+  | Bundler -> tsInputFileSuffix ~config

@@ -272,7 +272,7 @@ let importPathForReasonModuleName ~(config : Config.t) ~outputFileRelative
   | shimModuleName ->
     if !Debug.moduleResolution then
       Log_.item "ShimModuleName: %s\n" (shimModuleName |> ModuleName.toString);
-    let importExtension = ModuleExtension.shimExtension ~config in
+    let importExtension = ModuleExtension.shimTsOutputFileExtension ~config in
     let importPath =
       resolveModule ~config ~importExtension ~outputFileRelative ~resolver
         ~useBsDependencies:false shimModuleName
