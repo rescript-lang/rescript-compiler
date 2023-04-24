@@ -1468,13 +1468,6 @@ function main() {
             cwd: jscompDir,
             stdio: [0, 1, 2],
           });
-          if (!isPlayground) {
-            cp.execFileSync(path.join(duneBinDir, "cmij"), {
-              encoding: "utf8",
-              cwd: jscompDir,
-              stdio: [0, 1, 2],
-            });
-          }
         } catch (e) {
           console.log(e.message);
           console.log(`please run "./scripts/ninja.js config" first`);

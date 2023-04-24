@@ -48,9 +48,9 @@ reanalyze:
 lib: build node_modules/.bin/semver
 	node scripts/ninja.js config
 	node scripts/ninja.js build
+	./scripts/prebuilt.js
 
 artifacts: lib
-	./scripts/prebuilt.js
 	./scripts/makeArtifactList.js
 
 format:

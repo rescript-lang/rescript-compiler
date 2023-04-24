@@ -22,44 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-#ifdef RELEASE 
-(*true *)
-
-let cmi_cache_path =
-  let ( // ) = Filename.concat in
-  Filename.dirname Sys.executable_name
-  // Filename.parent_dir_name // "lib" // "cmi_cache.bin"
-  
-let load_cmi_cache () =
-  let channel = open_in_bin cmi_cache_path in
-  let cache: Cmij_cache.t = Marshal.from_channel channel in
-  close_in channel;
-  cache
-
-let cmi_cache = lazy (load_cmi_cache ())
-
-let load_cmi ~unit_name : Env.Persistent_signature.t option =
-  match Config_util.find_opt (unit_name ^".cmi") with 
-  | Some filename -> Some {filename; cmi = Cmi_format.read_cmi filename}
-  | None ->
-    if !Js_config.no_stdlib then None
-    else
-      let {Cmij_cache.module_names; module_data} = Lazy.force cmi_cache in
-      match Ext_string_array.find_sorted module_names unit_name with
-      | Some index ->
-        if !Js_config.diagnose then
-          Format.fprintf Format.err_formatter ">Cmi: %s@." unit_name;
-        let cmi = Cmij_cache.unmarshal_cmi_data module_data.(index) in
-        if !Js_config.diagnose then
-          Format.fprintf Format.err_formatter "<Cmi: %s@." unit_name;
-        Some {filename = Sys.executable_name ; 
-              cmi }
-      | None -> None
-
-#else
-
 let load_cmi ~unit_name : Env.Persistent_signature.t option =
   match Config_util.find_opt (unit_name ^".cmi") with 
   | Some filename -> Some {filename; cmi = Cmi_format.read_cmi filename}
   | None -> None 
-#endif    
