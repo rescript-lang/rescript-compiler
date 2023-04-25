@@ -32,3 +32,36 @@ let inl = () => ()
 
 @inline
 let inl2 = (x,y) => x+y
+
+module AllLabels = {
+  let foo = (~x, ~y, ~z) => (x, y, z)
+
+  let ptl = foo(~y="y", ...)
+
+  let a1 = ptl(~x="x", ~z="z")
+  Js.log2("a1:", a1)
+}
+
+module OptAtEnd = {
+  let foo = (~x, ~y, ~z, ~d="d=0") => (x, y, z, d)
+
+  let ptl = foo(~y="y", ...)
+
+  let b1 = ptl(~x="x", ~z="z")
+  Js.log2("b1:", b1)
+  let b2 = ptl(~x="x", ~z="z", ~d="d<-100")
+  Js.log2("b2:", b2)
+}
+
+module OptMixed = {
+  let foo = (~d1="d1=0", ~x, ~d2="d2=0",  ~y, ~d3="d3=0", ~z, ~d4="d4=0", ~w, ~d5="d5=0") => (d1, x, d2, y, d3, z, d4, w, d5)
+
+  let ptl = foo(~y="y", ~w="w", ...)
+
+  let c1 = ptl(~x="x", ~z="z")
+  Js.log2("c1:", c1)
+  let c2 = ptl(~x="x", ~z="z", ~d1="d1<-100")
+  Js.log2("c2:", c2)
+  let c3 = ptl(~x="x", ~z="z", ~d2="d2<-200", ~d4="d4<-400")
+  Js.log2("c3:", c3)
+}
