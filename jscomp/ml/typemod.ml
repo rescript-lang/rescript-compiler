@@ -33,7 +33,7 @@ type error =
       Longident.t * Path.t * Includemod.error list
   | With_changes_module_alias of Longident.t * Ident.t * Path.t
   | With_cannot_remove_constrained_type
-  | Repeated_name of string * string
+  | Repeated_name of string * string * Warnings.loc
   | Non_generalizable of type_expr
   | Non_generalizable_module of module_type
   | Interface_not_compiled of string
@@ -623,25 +623,26 @@ let check_recmod_typedecls env sdecls decls =
 module StringSet =
   Set.Make(struct type t = string let compare (x:t) y = String.compare x y end)
 
-let check cl loc set_ref name =
-  if StringSet.mem name !set_ref
-  then raise(Error(loc, Env.empty, Repeated_name(cl, name)))
-  else set_ref := StringSet.add name !set_ref
+let check cl loc tbl name =
+  match Hashtbl.find_opt tbl name with
+  | Some repeated_loc ->
+    raise(Error(loc, Env.empty, Repeated_name(cl, name, repeated_loc)))
+  | None -> Hashtbl.add tbl name loc
 
 type names =
   {
-    types: StringSet.t ref;
-    modules: StringSet.t ref;
-    modtypes: StringSet.t ref;
-    typexts: StringSet.t ref;
+    types: (string, Warnings.loc) Hashtbl.t;
+    modules: (string, Warnings.loc) Hashtbl.t;
+    modtypes: (string, Warnings.loc) Hashtbl.t;
+    typexts: (string, Warnings.loc) Hashtbl.t;
   }
 
 let new_names () =
   {
-    types = ref StringSet.empty;
-    modules = ref StringSet.empty;
-    modtypes = ref StringSet.empty;
-    typexts = ref StringSet.empty;
+    types = (Hashtbl.create 10);
+    modules = (Hashtbl.create 10);
+    modtypes = (Hashtbl.create 10);
+    typexts = (Hashtbl.create 10);
   }
 
 
@@ -1853,10 +1854,13 @@ let report_error ppf = function
         "@[<v>Destructive substitutions are not supported for constrained @ \
               types (other than when replacing a type constructor with @ \
               a type constructor with the same arguments).@]"
-  | Repeated_name(kind, name) ->
+  | Repeated_name(kind, name, repeated_loc) ->
+      let start_line = repeated_loc.loc_start.pos_lnum in
+      let start_col = repeated_loc.loc_start.pos_cnum - repeated_loc.loc_start.pos_bol in
+      let end_col = repeated_loc.loc_end.pos_cnum - repeated_loc.loc_end.pos_bol in
       fprintf ppf
-        "@[Multiple definition of the %s name %s.@ \
-           Names must be unique in a given structure or signature.@]" kind name
+        "@[Multiple definition of the %s name %s at line %d, characters %d-%d.@ \
+           Names must be unique in a given structure or signature.@]" kind name start_line start_col end_col
   | Non_generalizable typ ->
       fprintf ppf
         "@[The type of this expression,@ %a,@ \
