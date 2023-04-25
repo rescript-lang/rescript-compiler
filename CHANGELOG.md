@@ -28,6 +28,10 @@
 
 - Make "rescript format" work with node 10 again and set minimum required node version to 10 in package.json. https://github.com/rescript-lang/rescript-compiler/pull/6186
 
+#### :nail_care: Polish
+
+- Add location information to duplicate type definition error messages. https://github.com/rescript-lang/rescript-compiler/pull/6199
+
 # 11.0.0-alpha.4
 
 #### :rocket: Main New Feature
