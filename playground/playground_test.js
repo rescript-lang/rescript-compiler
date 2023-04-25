@@ -1,4 +1,5 @@
 require("./compiler.js")
+require("./packages/compilerCmij.js")
 require("./packages/@rescript/react/cmij.js")
 
 let compiler = rescript_compiler.make()

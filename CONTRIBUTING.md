@@ -196,8 +196,6 @@ This is usually the file you want to create to test certain compile behavior wit
 
 ## Contribute to the ReScript Playground Bundle
 
-> Note: These instructions are designed for building the 4.06 based version of ReScript (ReScript v6).
-
 The "Playground bundle" is a JS version of the ReScript compiler; including all necessary dependency files (stdlib / belt etc). It is useful for building tools where you want to compile and execute arbitrary ReScript code in the browser.
 
 The ReScript source code is compiled with a tool called [JSOO (js_of_ocaml)](https://ocsigen.org/js_of_ocaml/4.0.0/manual/overview), which uses OCaml bytecode to compile to JavaScript and is part of the bigger OCaml ecosystem.
@@ -210,84 +208,47 @@ opam install js_of_ocaml.4.0.0
 
 ### Building the Bundle
 
-The entry point of the JSOO bundle is located in `jscomp/main/jsoo_playground_main.ml`, the code for packing the compiler into a single compiler file is located in `jscomp/snapshot.ninja`, and the script for running JSOO can be found in `scripts/repl.js`. A full clean build can be done like this:
+The entry point of the JSOO bundle is located in `jscomp/jsoo/jsoo_playground_main.ml`, the compiler and its relevant runtime cmij files can be built via make:
 
-```
-# We create a target directory for storing the bundle / stdlib files
-mkdir playground && mkdir playground/stdlib
-
-# We build the ReScript source code and also the bytecode for the JSOO entrypoint
-node scripts/ninja.js config && node scripts/ninja.js build
-
-# Now we run the repl.js script which will create all the required artifacts in the `./playground` directory
-node scripts/repl.js
+```sh
+make playground
+make playground-cmijs
 ```
 
-In case you want to build the project with our default third party packages (like `@rescript/react`), prepare the `playground-bundling` project and then run `repl.js` with `BUILD_THIRD_PARTY` enabled:
-
-```
-# Prepare the `playground-bundling` project to allow building of the third party cmij packages
-npm link
-cd packages/playground-bundling
-npm install
-npm link rescript
-
-BUILD_THIRD_PARTY=true node scripts/repl.js
-```
-
-_Troubleshooting: if ninja build step failed with `Error: cannot find file '+runtime.js'`, make sure `ocamlfind` is installed with `opam install ocamlfind`._
+Note that building the cmijs is based on the dependencies defined in `packages/playground-bundling/package.json`. In case you want to build some different version of e.g. `@rescript/react` or just want to add a new package, change the definition within the `package.json` file and re-run `make playground-cmijs` again.
 
 After a successful compilation, you will find following files in your project:
 
 - `playground/compiler.js` -> This is the ReScript compiler, which binds the ReScript API to the `window` object.
-- `playground/stdlib/*.js` -> All the ReScript runtime files.
 - `playground/packages` -> Contains third party deps with cmij.js files (as defined in `packages/playground-bundling/bsconfig.json`)
+- `playground/compilerCmij.js` -> The compiler base cmij containing all the relevant core modules (`Js`, `Belt`, `Pervasives`, etc.)
 
-You can now use the `compiler.js` file either directly by using a `<script src="/path/to/compiler.js"/>` inside a html file, use a browser bundler infrastructure to optimize it, or you can even use it with `nodejs`:
+You can now use the `compiler.js` file either directly by using a `<script src="/path/to/compiler.js"/>` and `<script src="/path/to/packages/compilerCmij.js"/>` inside a html file, use a browser bundler infrastructure to optimize it, or use `nodejs` to run it on a command line:
 
 ```
 $ node
 > require("./compiler.js");
+> require("./packages/compilerCmij.js")
 > let compiler = rescript_compiler.make()
 > let result = compiler.rescript.compile(`Js.log(Sys.ocaml_version)`);
 > eval(result.js_code);
 4.06.2+BS
 ```
 
-You can also run `node playground/playground_test.js` for a quick sanity check to see if all the build artifacts are working together correctly.
+### Testing the Playground bundle
 
-### Playground JS bundle API
-
-As soon as the bundle is loaded, you will get access to the functions exposed in [`jsoo_playground_main.ml`](jscomp/main/jsoo_playground_main.ml). Best way to check out the API is by inspecting a compiler instance it either in node, or in the browser:
-
-```
-$ node
-require('./compiler.js')
-
-> let compiler = rescript_compiler.make()
-> console.log(compiler)
-```
+Run `node playground/playground_test.js` for a quick sanity check to see if all the build artifacts are working together correctly. When releasing the playground bundle, the test will always be executed before publishing to catch regressions.
 
 ### Working on the Playground JS API
 
 Whenever you are modifying any files in the ReScript compiler, or in the `jsoo_playground_main.ml` file, you'll need to rebuild the source and recreate the JS bundle.
 
-```sh
-node scripts/ninja.js config && node scripts/ninja.js build
-node scripts/repl.js
 ```
+make playground
 
-**.cmj files in the Web**
-
-A `.cmj` file contains compile information and JS package information of ReScript build artifacts (your `.res / .ml` modules) and are generated on build (`scripts/ninja.js build`).
-
-A `.cmi` file is an [OCaml originated file extension](https://waleedkhan.name/blog/ocaml-file-extensions/) and contains all interface information of a certain module without any implementation.
-
-In this repo, these files usually sit right next to each compiled `.ml` / `.res` file. The structure of a `.cmj` file is defined in [js_cmj_format.ml](jscomp/core/js_cmj_format.ml). You can run a tool called `./jscomp/bin/cmjdump.exe [some-file.cmj]` to inspect the contents of given `.cmj` file.
-
-`.cmj` files are required to compile modules (this includes modules like RescriptReact). ReScript includes a subset of modules by default, which can be found in `jscomp/stdlib-406` and `jscomp/others`. You can also find those modules listed in the JSOO call in `scripts/repl.js`. As you probably noticed, the generated `playground` files are all plain `.js`, so how are the `cmj` / `cmi` files embedded?
-
-JSOO offers an `build-fs` subcommand that takes a list of `.cmi` and `.cmj` files and creates a `cmij.js` file that can be loaded by the JS runtime **after** the `compiler.js` bundle has been loaded (either via a `require()` call in Node, or via `<link/>` directive in an HTML file). Since we are shipping our playground with third party modules like `RescriptReact`, we created a utility directory `packages/playground-bundling` that comes with a utility script to do the `cmij.js` file creation for us. Check out `packages/playground-bundling/scripts/generate_cmijs.js` for details.
+# optionally run your test / arbitrary node script to verify your changes
+node playground/playground_test.js
+```
 
 ### Publishing the Playground Bundle on our KeyCDN
 
@@ -295,13 +256,15 @@ JSOO offers an `build-fs` subcommand that takes a list of `.cmi` and `.cmj` file
 
 Our `compiler.js` and third-party packages bundles are hosted on [KeyCDN](https://www.keycdn.com) and uploaded via FTPS.
 
-After a successful bundle build, run our upload script to publish the build artifacts to our server:
+The full release can be executed with the following make script:
 
 ```
-playground/upload_bundle.sh
+make playground-release
 ```
 
 The script will automatically detect the ReScript version from the `compiler.js` bundle and automatically create the correct directory structure on our CDN ftp server.
+
+Note that there's currently still a manual step involved on [rescript-lang.org](https://rescript-lang.org) to make the uploaded playground version publicly available.
 
 ## Contribute to the API Reference
 
