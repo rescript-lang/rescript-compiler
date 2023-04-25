@@ -45,6 +45,24 @@ function e(cmd) {
 
 const packages = bsconfig["bs-dependencies"];
 
+// We need to build the compiler's builtin modules as a separate cmij.
+// Otherwise we can't use them for compilation within the playground.
+function buildCompilerCmij() {
+  const rescriptLibOcamlFolder = path.join(
+    PROJECT_ROOT_DIR,
+    "node_modules",
+    "rescript",
+    "lib",
+    "ocaml"
+  );
+
+  const rescriptCompilerCmijFile = path.join(PACKAGES_DIR, "compilerCmij.js");
+
+  e(
+    `find ${rescriptLibOcamlFolder} -name "*.cmi" -or -name "*.cmj" | xargs -n1 basename | xargs js_of_ocaml build-fs -o ${rescriptCompilerCmijFile} -I ${rescriptLibOcamlFolder}`
+  );
+}
+
 packages.forEach(function installLib(package) {
   const libOcamlFolder = path.join(
     PROJECT_ROOT_DIR,
