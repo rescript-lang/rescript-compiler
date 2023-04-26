@@ -25,7 +25,7 @@
 let names_from_construct_pattern (pat : Typedtree.pattern) =
   let rec resolve_path n (path : Path.t) =
     match Env.find_type path pat.pat_env with
-    | { type_kind = Type_variant cstrs; _ } -> Ast_untagged_variants.names_from_type_variant cstrs
+    | { type_kind = Type_variant cstrs; _ } -> Ast_untagged_variants.names_from_type_variant ~env:pat.pat_env cstrs
     | { type_kind = Type_abstract; type_manifest = Some t; _ } -> (
         match (Ctype.unalias t).desc with
         | Tconstr (pathn, _, _) ->

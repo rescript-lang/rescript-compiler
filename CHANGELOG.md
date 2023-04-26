@@ -19,6 +19,7 @@
   - `node` (default): Drop extensions.
   - `node16`: Use TS output's extensions. Make it ESM-compatible.
   - `bundler`: Use TS input's extensions. Make it ESM-compatible.
+- Make untagged variants understand payloads defined as records. https://github.com/rescript-lang/rescript-compiler/pull/6208
 
 #### :boom: Breaking Change
 
