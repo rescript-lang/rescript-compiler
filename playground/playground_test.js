@@ -1,15 +1,19 @@
 require("./compiler.js")
 require("./packages/compilerCmij.js")
 require("./packages/@rescript/react/cmij.js")
+require("./packages/@rescript/core/cmij.js")
 
 let compiler = rescript_compiler.make()
 
 let result = compiler.rescript.compile(`
   @@jsxConfig({ version: 4, mode: "automatic" })
 
+  open RescriptCore
+
   module A = {
     @react.component
     let make = (~a) => {
+      let state = React.useState(() => 0)
       <div> {React.string(a)} </div>
     }
   }
@@ -21,6 +25,12 @@ let result = compiler.rescript.compile(`
       <A a/>
     }
   }
+
+  let sum = [1,2,3] 
+    ->Array.map(x => x * 2)
+    ->Array.reduce(0, (acc, item) => acc + item)
+
+  Console.log("Hello world!")
 
   let a = <B a="hello" />
 `);
