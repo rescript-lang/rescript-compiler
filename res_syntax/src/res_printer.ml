@@ -3570,12 +3570,25 @@ and printBinaryExpression ~state (expr : Parsetree.expression) cmtTbl =
                     Doc.rparen;
                   ]
               else
-                Doc.concat
-                  [
-                    leftPrinted;
-                    printBinaryOperator ~inlineRhs:false operator;
-                    rightPrinted;
-                  ]
+                match operator with
+                | "|." | "|.u" ->
+                  Doc.concat
+                    [
+                      leftPrinted;
+                      Doc.breakableGroup ~forceBreak:true
+                        (Doc.concat
+                           [
+                             printBinaryOperator ~inlineRhs:false operator;
+                             rightPrinted;
+                           ]);
+                    ]
+                | _ ->
+                  Doc.concat
+                    [
+                      leftPrinted;
+                      printBinaryOperator ~inlineRhs:false operator;
+                      rightPrinted;
+                    ]
             in
 
             let doc =

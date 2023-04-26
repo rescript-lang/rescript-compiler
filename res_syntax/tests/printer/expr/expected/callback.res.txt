@@ -36,7 +36,10 @@ let make = (arr, ~compare) => {
 let tbl = data->Js.Array2.reduce((map, curr) => {
   let (website, user) = curr
   if map->Belt.Map.String.has(website) {
-    let set = map->Belt.Map.String.getExn(website)->Belt.Set.Int.add(user)
+    let set =
+      map
+      ->Belt.Map.String.getExn(website)
+      ->Belt.Set.Int.add(user)
     map->Belt.Map.String.set(website, set)
   } else {
     let set = Belt.Set.Int.empty->Belt.Set.Int.add(user)
@@ -50,7 +53,10 @@ let _ = {
     let tbl = data->Js.Array2.reduce((map, curr) => {
       let (website, user) = curr
       if map->Belt.Map.String.has(website) {
-        let set = map->Belt.Map.String.getExn(website)->Belt.Set.Int.add(user)
+        let set =
+          map
+          ->Belt.Map.String.getExn(website)
+          ->Belt.Set.Int.add(user)
         map->Belt.Map.String.set(website, set)
       } else {
         let set = Belt.Set.Int.empty->Belt.Set.Int.add(user)
@@ -65,7 +71,10 @@ let trees =
     combination->Belt.Array.reduceU(Nil, (. tree, curr) => tree->insert(curr))
   )
 
-let set = mapThatHasAVeryLongName->Belt.Map.String.getExn(website)->Belt.Set.Int.add(user)
+let set =
+  mapThatHasAVeryLongName
+  ->Belt.Map.String.getExn(website)
+  ->Belt.Set.Int.add(user)
 
 let add = (y: coll, e: key) =>
   if List.exists(x => eq(x, e), y) {
@@ -215,13 +224,16 @@ let f = () => {
   </div>
 }
 
-myPromise->Js.Promise.then_(value => {
+myPromise
+->Js.Promise.then_(value => {
   Js.log(value)
   Js.Promise.resolve(value + 2)
-}, _)->Js.Promise.then_(value => {
+}, _)
+->Js.Promise.then_(value => {
   Js.log(value)
   Js.Promise.resolve(value + 3)
-}, _)->Js.Promise.catch(err => {
+}, _)
+->Js.Promise.catch(err => {
   Js.log2("Failure!!", err)
   Js.Promise.resolve(-2)
 }, _)

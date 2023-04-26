@@ -99,7 +99,11 @@ let make = () => {
     switch containerRef.current->Js.Nullable.toOption {
     | Some(containerRef) =>
       open Webapi.Dom
-      containerRef->Element.setScrollTop(containerRef->Element.scrollHeight->float_of_int)
+      containerRef->Element.setScrollTop(
+        containerRef
+        ->Element.scrollHeight
+        ->float_of_int,
+      )
     | None => ()
     }
     None

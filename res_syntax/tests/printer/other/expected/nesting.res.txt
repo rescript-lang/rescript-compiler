@@ -41,9 +41,13 @@ let unitsCommands = state.units->Js.Array2.mapi((
             ),
             coordinates: {x: sparksX, y: sparksY, z: 0.},
           }
-          particlesToAdd->Js.Array2.push(spark)->ignore
+          particlesToAdd
+          ->Js.Array2.push(spark)
+          ->ignore
 
-          res->Js.Array2.push(Unit.CommandAttacked({damage: damage}))->ignore
+          res
+          ->Js.Array2.push(Unit.CommandAttacked({damage: damage}))
+          ->ignore
         }
       | _ => ()
       }

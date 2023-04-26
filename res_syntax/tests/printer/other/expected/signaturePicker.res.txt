@@ -32,7 +32,9 @@ let make = () => {
       {options
       ->Belt.List.map(option =>
         <option key={option->TimeSignature.toString}>
-          {option->TimeSignature.toString->string}
+          {option
+          ->TimeSignature.toString
+          ->string}
         </option>
       )
       ->Belt.List.toArray
