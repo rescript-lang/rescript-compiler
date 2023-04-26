@@ -84,4 +84,4 @@ clean-all: clean clean-gentype
 
 .DEFAULT_GOAL := build
 
-.PHONY: build watch ninja bench dce test test-syntax test-syntax-roundtrip test-gentype test-all lib playground playground-cmijs test-playground playground-release artifacts format checkformat clean-gentype clean clean-all
+.PHONY: build watch ninja bench dce test test-syntax test-syntax-roundtrip test-gentype test-all lib playground playground-cmijs playground-release artifacts format checkformat clean-gentype clean clean-all
