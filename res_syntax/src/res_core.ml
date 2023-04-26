@@ -4498,7 +4498,18 @@ and parseFieldDeclarationRegion ?foundObjectField p =
     let loc = mkLoc startPos typ.ptyp_loc.loc_end in
     let attrs = if optional then optionalAttr :: attrs else attrs in
     Some (Ast_helper.Type.field ~attrs ~loc ~mut name typ)
-  | _ -> None
+  | _ ->
+    if attrs <> [] then
+      Parser.err ~startPos p
+        (Diagnostics.message
+           "Attributes and doc comments can only be used at the beginning of a \
+            field declaration");
+    if mut = Mutable then
+      Parser.err ~startPos p
+        (Diagnostics.message
+           "The `mutable` qualifier can only be used at the beginning of a \
+            field declaration");
+    None
 
 (* record-decl ::=
  *  | { field-decl }
