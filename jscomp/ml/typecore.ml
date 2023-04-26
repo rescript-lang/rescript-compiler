@@ -3035,7 +3035,7 @@ and type_application uncurried env funct (sargs : sargs) : targs * Types.type_ex
       (fully_applied, newT)
     | _ -> (false, newT)
   in
-  let rec type_unknown_args max_arity (args : lazy_args) omitted ty_fun (syntax_args : sargs)
+  let rec type_unknown_args max_arity ~(args : lazy_args) omitted ty_fun (syntax_args : sargs)
      : targs * _ = 
     match syntax_args with
     | [] ->
@@ -3050,14 +3050,14 @@ and type_application uncurried env funct (sargs : sargs) : targs * Types.type_ex
           | Tarrow (Optional l,t1,t2,_) ->
             ignored := (Optional l,t1,ty_fun.level) :: !ignored;
             let arg = Optional l, Some (fun () -> option_none (instance env t1) Location.none) in
-            type_unknown_args max_arity (arg::args) omitted t2 []
+            type_unknown_args max_arity ~args:(arg::args) omitted t2 []
           | _ -> collect_args ())
         else
           collect_args ()
     | [(Nolabel, {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)})]
       when uncurried && omitted = [] && args <> [] && List.length args = List.length !ignored ->
       (* foo(. ) treated as empty application if all args are optional (hence ignored) *)
-        type_unknown_args max_arity args omitted ty_fun []
+        type_unknown_args max_arity ~args omitted ty_fun []
     | (l1, sarg1) :: sargl ->
         let (ty1, ty2) =
           let ty_fun = expand_head env ty_fun in
@@ -3097,7 +3097,7 @@ and type_application uncurried env funct (sargs : sargs) : targs * Types.type_ex
             unify_exp env arg1 (type_option(newvar()));
           arg1
         in
-        type_unknown_args max_arity ((l1, Some arg1) :: args) omitted ty2 sargl
+        type_unknown_args max_arity ~args:((l1, Some arg1) :: args) omitted ty2 sargl
   in
   let rec type_args max_arity args omitted ~ty_fun ty_fun0  ~(sargs : sargs)  =
     match expand_head env ty_fun, expand_head env ty_fun0 with
@@ -3130,7 +3130,7 @@ and type_application uncurried env funct (sargs : sargs) : targs * Types.type_ex
         in
         type_args max_arity ((l,arg)::args) omitted ~ty_fun ty_fun0 ~sargs 
     | _ ->
-        type_unknown_args max_arity args omitted ty_fun0 sargs (* This is the hot path for non-labeled function*)
+        type_unknown_args max_arity ~args omitted ty_fun0 sargs (* This is the hot path for non-labeled function*)
   in
   let () =  
     let ls, tvar = list_labels env funct.exp_type in

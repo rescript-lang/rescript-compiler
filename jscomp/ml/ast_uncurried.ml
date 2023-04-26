@@ -106,3 +106,9 @@ let uncurried_type_get_arity ~env typ =
   | Tconstr (Pident { name = "function$" }, [ _t; tArity ], _) ->
       type_to_arity tArity
   | _ -> assert false
+
+let uncurried_type_get_arity_opt ~env typ =
+  match (Ctype.expand_head env typ).desc with
+  | Tconstr (Pident { name = "function$" }, [ _t; tArity ], _) ->
+      Some (type_to_arity tArity)
+  | _ -> None
