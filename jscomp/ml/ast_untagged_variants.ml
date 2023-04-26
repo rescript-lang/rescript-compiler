@@ -92,7 +92,7 @@ let () =
         None
     )
 
-let get_untagged (cstr: Types.constructor_declaration) : block_type option =
+let get_untagged ~env (cstr: Types.constructor_declaration) : block_type option =
   match process_untagged cstr.cd_attributes, cstr.cd_args with
   | false, _ -> None
   | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path.same path Predef.path_string ->
@@ -105,17 +105,21 @@ let get_untagged (cstr: Types.constructor_declaration) : block_type option =
       Some Array
   | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path. same path Predef.path_string ->
       Some StringType
-  | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] ->
-    (match Path.name path with
-    | "Js.Dict.t"
-    | "Js_dict.t" -> Some Object
-    | _ -> Some Unknown)
-  | true, Cstr_tuple (_ :: _ :: _) ->
+  | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when
+    let name = Path.name path in
+    name = "Js.Dict.t" || name = "Js_dict.t" ->
+      Some Object
+  | true, Cstr_tuple [ty] ->
+    let default = Some Unknown in
+    (match Ctype.extract_concrete_typedecl env ty with
+    | (_, _, {type_kind = Type_record (_, Record_unboxed _)}) -> default
+    | (_, _, {type_kind = Type_record (_, _)}) -> Some Object
+      | _ -> default
+      | exception _ -> default
+    )
+| true, Cstr_tuple (_ :: _ :: _) ->
       (* C(_, _) with at least 2 args is an object *)
       Some Object
-  | true, Cstr_tuple [_] ->
-      (* Every other single payload is unknown *)
-      Some Unknown
   | true, Cstr_record _ ->
       (* inline record is an object *)
       Some Object
@@ -209,13 +213,13 @@ let checkInvariant ~isUntaggedDef ~(consts : (Location.t * literal) list) ~(bloc
       invariant loc      
     | None -> ())
 
-let names_from_type_variant ?(isUntaggedDef=false) (cstrs : Types.constructor_declaration list) =
+let names_from_type_variant ?(isUntaggedDef=false) ~env (cstrs : Types.constructor_declaration list) =
   let get_cstr_name (cstr: Types.constructor_declaration) =
     (cstr.cd_loc,
       { name = Ident.name cstr.cd_id;
         literal_type = process_literal_type cstr.cd_attributes }) in
   let get_block cstr : block =
-    {literal = snd (get_cstr_name cstr); tag_name = get_tag_name cstr; block_type = get_untagged cstr} in
+    {literal = snd (get_cstr_name cstr); tag_name = get_tag_name cstr; block_type = get_untagged ~env cstr} in
   let consts, blocks =
     Ext_list.fold_left cstrs ([], []) (fun (consts, blocks) cstr ->
         if is_nullary_variant cstr.cd_args then
@@ -229,6 +233,6 @@ let names_from_type_variant ?(isUntaggedDef=false) (cstrs : Types.constructor_de
   let blocks = Ext_array.reverse_of_list blocks in
   Some { consts; blocks }
 
-let check_well_formed ~isUntaggedDef (cstrs: Types.constructor_declaration list) =
-  ignore (names_from_type_variant ~isUntaggedDef cstrs)
+let check_well_formed ~env ~isUntaggedDef (cstrs: Types.constructor_declaration list) =
+  ignore (names_from_type_variant ~env ~isUntaggedDef cstrs)
 

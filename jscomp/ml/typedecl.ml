@@ -422,7 +422,7 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
         in
         let tcstrs, cstrs = List.split (List.map make_cstr scstrs) in
         let isUntaggedDef = Ast_untagged_variants.has_untagged sdecl.ptype_attributes in
-        Ast_untagged_variants.check_well_formed ~isUntaggedDef cstrs;
+        Ast_untagged_variants.check_well_formed ~env ~isUntaggedDef cstrs;
         Ttype_variant tcstrs, Type_variant cstrs, sdecl
       | Ptype_record lbls_ ->
           let has_optional attrs = Ext_list.exists attrs (fun ({txt },_) -> txt = "res.optional") in

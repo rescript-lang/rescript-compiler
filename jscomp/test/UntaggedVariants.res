@@ -235,3 +235,17 @@ module OverlapObject = {
     | Object(_) => "Object..."
     }
 }
+
+module RecordIsObject = {
+  // @unboxed
+  // this is not allowed
+  type r = {x:int}
+
+  @unboxed
+  type t = | Array(array<int>) | Record(r)
+
+  let classify = v => switch v {
+    | Record({x}) => x
+    | Array(a) => a[0]
+  }
+}
