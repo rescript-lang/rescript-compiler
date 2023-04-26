@@ -215,7 +215,7 @@ make playground
 make playground-cmijs
 ```
 
-Note that building the cmijs is based on the dependencies defined in `packages/playground-bundling/package.json`. In case you want to build some different version of e.g. `@rescript/react` or just want to add a new package, change the definition within the `package.json` file and re-run `make playground-cmijs` again.
+Note that building the cmijs is based on the dependencies defined in `packages/playground-bundling/package.json`. In case you want to build some different version of e.g. `@rescript/react` or just want to add a new package, change the definition within the `package.json` file and run `make playground-cmijs` again.
 
 After a successful compilation, you will find following files in your project:
 
