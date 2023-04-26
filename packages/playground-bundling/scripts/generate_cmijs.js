@@ -48,6 +48,7 @@ function e(cmd) {
 
 e(`npm install`);
 e(`npm link ${RESCRIPT_COMPILER_ROOT_DIR}`);
+e(`npx rescript`)
 
 const packages = bsconfig["bs-dependencies"];
 
@@ -89,14 +90,10 @@ function buildThirdPartyCmijs() {
 
     const cmijFile = path.join(outputFolder, `cmij.js`);
 
-    if (!fs.existsSync(PLAYGROUND_DIR)) {
-      console.error(`PLAYGROUND_DIR "${PLAYGROUND_DIR}" does not exist`);
-      process.exit(1);
-    }
-
     if (!fs.existsSync(outputFolder)) {
       fs.mkdirSync(outputFolder, { recursive: true });
     }
+
     e(`find ${libEs6Folder} -name '*.js' -exec cp {} ${outputFolder} \\;`);
     e(
       `find ${libOcamlFolder} -name "*.cmi" -or -name "*.cmj" | xargs -n1 basename | xargs js_of_ocaml build-fs -o ${cmijFile} -I ${libOcamlFolder}`
