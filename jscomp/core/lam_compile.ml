@@ -757,20 +757,20 @@ and compile_untagged_cases cxt switch_exp cases default =
   | Block IntType
   | Block StringType
   | Block FloatType
-  | Block Object -> E.string_equal (E.typeof y) x 
-  | Block Array -> E.is_array y
-  | Block Unknown ->
+  | Block ObjectType -> E.string_equal (E.typeof y) x 
+  | Block ArrayType -> E.is_array y
+  | Block UnknownType ->
     (* This should not happen because unknown must be the only non-literal case *)
     assert false 
   | Bool _ | Float _ | Int _ | String _ | Null | Undefined -> x in
   let mk_eq (i : Ast_untagged_variants.literal_type option) x j y = match i, j with
-    | Some literal, _ -> (* XX *)
+    | Some literal, _ ->
       add_runtime_type_check literal x y
     | _, Some literal ->
       add_runtime_type_check literal y x
     | _ -> E.string_equal x y
   in
-  let is_array (l, _) = l = Ast_untagged_variants.Block Array in
+  let is_array (l, _) = l = Ast_untagged_variants.Block ArrayType in
   let switch ?default ?declaration e clauses =
     let array_clauses = Ext_list.filter clauses is_array in
     match array_clauses with

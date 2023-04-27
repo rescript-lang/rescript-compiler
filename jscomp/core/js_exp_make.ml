@@ -336,22 +336,6 @@ let zero_float_lit : t =
 let float_mod ?comment e1 e2 : J.expression =
   { comment; expression_desc = Bin (Mod, e1, e2) }
 
-let literal = function
-  | Ast_untagged_variants.String s -> str s ~delim:DStarJ
-  | Int i -> small_int i
-  | Float f -> float f
-  | Bool b -> bool b
-  | Null -> nil
-  | Undefined -> undefined
-  | Block IntType -> str "number"
-  | Block FloatType -> str "number"
-  | Block StringType -> str "string"
-  | Block Array -> str "Array" ~delim:DNoQuotes
-  | Block Object -> str "object"
-  | Block Unknown ->
-    (* TODO: clean up pattern mathing algo whih confuses literal with blocks *)
-    assert false
-
 let array_index ?comment (e0 : t) (e1 : t) : t =
   match (e0.expression_desc, e1.expression_desc) with
   | Array (l, _), Number (Int { i; _ })
@@ -776,6 +760,22 @@ let string_equal ?comment (e0 : t) (e1 : t) : t =
 let is_type_number ?comment (e : t) : t =
   string_equal ?comment (typeof e) (str "number")
 
+let literal = function
+  | Ast_untagged_variants.String s -> str s ~delim:DStarJ
+  | Int i -> small_int i
+  | Float f -> float f
+  | Bool b -> bool b
+  | Null -> nil
+  | Undefined -> undefined
+  | Block IntType -> str "number"
+  | Block FloatType -> str "number"
+  | Block StringType -> str "string"
+  | Block ArrayType -> str "Array" ~delim:DNoQuotes
+  | Block ObjectType -> str "object"
+  | Block UnknownType ->
+    (* TODO: clean up pattern mathing algo whih confuses literal with blocks *)
+    assert false
+
 let rec is_a_literal_case ~(literal_cases : Ast_untagged_variants.literal_type list) ~block_cases (e:t) : t =
   let literals_overlaps_with_string () = 
     Ext_list.exists literal_cases (function
@@ -801,16 +801,16 @@ let rec is_a_literal_case ~(literal_cases : Ast_untagged_variants.literal_type l
     (typeof e) != (str "number")
   | FloatType when literals_overlaps_with_number () = false ->
     (typeof e) != (str "number")
-  | Array -> 
+  | ArrayType -> 
     not (is_array e)
-  | Object when literals_overlaps_with_object () = false ->
+  | ObjectType when literals_overlaps_with_object () = false ->
     (typeof e) != (str "object")
-  | Object (* overlap *) ->
+  | ObjectType (* overlap *) ->
     e == nil || (typeof e) != (str "object")
   | StringType (* overlap *)
   | IntType (* overlap *)
   | FloatType (* overlap *)
-  | Unknown ->
+  | UnknownType ->
     (* We don't know the type of unknown, so we need to express:
        this is not one of the literals *)
     (match literal_cases with
