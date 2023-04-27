@@ -628,7 +628,7 @@ and use_compile_literal_cases table get_name =
     | Some {name; literal_type = None}, Some string_table -> Some ((String name, lam) :: string_table)
     | _, _ -> None
   ) table (Some [])
-and compile_cases ?(untagged=false) cxt (switch_exp : E.t) default get_name cases : initialization =
+and compile_cases ?(untagged=false) ~cxt ~(switch_exp : E.t) ?(default = NonComplete) ?(get_name = fun _ -> None) cases : initialization =
     match use_compile_literal_cases cases get_name with
     | Some string_table ->
       if untagged
@@ -692,9 +692,13 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
         block
         @
         if sw_consts_full && sw_consts = [] then
-          compile_cases ~untagged cxt (if untagged then e else E.tag ~name:tag_name e) sw_blocks_default get_block_name sw_blocks
+          compile_cases
+            ~untagged ~cxt
+            ~switch_exp:(if untagged then e else E.tag ~name:tag_name e)
+            ~default:sw_blocks_default
+            ~get_name:get_block_name sw_blocks
         else if sw_blocks_full && sw_blocks = [] then
-          compile_cases cxt e sw_num_default get_const_name sw_consts
+          compile_cases ~cxt ~switch_exp:e ~default:sw_num_default ~get_name:get_const_name sw_consts
         else
           (* [e] will be used twice  *)
           let dispatch e =
@@ -706,9 +710,13 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
               else
                E.is_int_tag ~has_null_undefined_other:(has_null_undefined_other sw_names) e in
             S.if_ is_a_literal_case
-              (compile_cases cxt e sw_num_default get_const_name sw_consts)
-              ~else_:
-                (compile_cases ~untagged cxt (if untagged then e else E.tag ~name:tag_name e) sw_blocks_default get_block_name sw_blocks)
+              (compile_cases ~cxt ~switch_exp:e ~default:sw_num_default ~get_name:get_const_name sw_consts)
+            ~else_:
+              (compile_cases 
+                ~untagged ~cxt
+                ~switch_exp:(if untagged then e else E.tag ~name:tag_name e)
+                ~default:sw_blocks_default
+                ~get_name:get_block_name sw_blocks)
           in
           match e.expression_desc with
           | J.Var _ -> [ dispatch e ]
@@ -932,7 +940,7 @@ and compile_staticcatch (lam : Lam.t) (lambda_cxt : Lam_compile_context.t) =
             (Js_output.make (S.declare_variable ~kind:Variable v :: declares))
             (Js_output.append_output lbody
                (Js_output.make
-                  (compile_cases new_cxt exit_expr NonComplete (fun _ -> None) handlers)
+                  (compile_cases ~cxt:new_cxt ~switch_exp:exit_expr handlers)
                   ~value:(E.var v)))
       | Declare (kind, id) (* declare first this we will do branching*) ->
           let declares = S.declare_variable ~kind id :: declares in
@@ -943,7 +951,7 @@ and compile_staticcatch (lam : Lam.t) (lambda_cxt : Lam_compile_context.t) =
           Js_output.append_output (Js_output.make declares)
             (Js_output.append_output lbody
                (Js_output.make
-                  (compile_cases new_cxt exit_expr NonComplete (fun _ -> None) handlers)))
+                  (compile_cases ~cxt:new_cxt ~switch_exp:exit_expr handlers)))
       (* place holder -- tell the compiler that
          we don't know if it's complete
       *)
@@ -958,14 +966,14 @@ and compile_staticcatch (lam : Lam.t) (lambda_cxt : Lam_compile_context.t) =
           Js_output.append_output (Js_output.make declares)
             (Js_output.append_output lbody
                (Js_output.make
-                  (compile_cases new_cxt exit_expr  NonComplete (fun _ -> None) handlers)))
+                  (compile_cases ~cxt:new_cxt ~switch_exp:exit_expr handlers)))
       | Assign _ ->
           let new_cxt = { lambda_cxt with jmp_table } in
           let lbody = compile_lambda new_cxt body in
           Js_output.append_output (Js_output.make declares)
             (Js_output.append_output lbody
                (Js_output.make
-                  (compile_cases new_cxt exit_expr NonComplete (fun _ -> None) handlers))))
+                  (compile_cases ~cxt:new_cxt ~switch_exp:exit_expr handlers))))
 
 and compile_sequand (l : Lam.t) (r : Lam.t) (lambda_cxt : Lam_compile_context.t)
     =
