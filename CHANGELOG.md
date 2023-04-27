@@ -31,6 +31,7 @@
 #### :nail_care: Polish
 
 - Add location information to duplicate type definition error messages. https://github.com/rescript-lang/rescript-compiler/pull/6199
+- Replace normal module errors with Super_error module, and clean up Super_error. https://github.com/rescript-lang/rescript-compiler/pull/6199
 
 # 11.0.0-alpha.4
 
