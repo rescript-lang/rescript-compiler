@@ -66,7 +66,11 @@ type + 'a undefined
 (** value of this type can be either [undefined] or ['a]
     this type is the same as type [t] in {!Undefined}  *)
 
-type + 'a nullable
+type + 'a nullable =
+  | Present of 'a
+  | Null [@as null]
+  | Undefined [@as undefined]
+[@@unboxed]
 (** value of this type can be [undefined], [null] or ['a]
     this type is the same as type [t] n {!Null_undefined} *)
 
