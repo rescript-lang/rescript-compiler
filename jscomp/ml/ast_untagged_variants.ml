@@ -256,6 +256,8 @@ module DynamiChecks = struct
   let nil = Null |> tag_type
   let undefined = Undefined |> tag_type
   let object_ = Untagged ObjectType |> tag_type
+  let string = Untagged StringType |> tag_type
+  let number = Untagged IntType |> tag_type
 
   let (==) x y = bin EqEqEq x y
   let (!=) x y = bin NotEqEq x y
@@ -279,17 +281,17 @@ module DynamiChecks = struct
     let is_literal_case (t: tag_type) : _ t =  e == (tag_type t) in
     let is_not_block_case (c: block_type) : _ t = match c with
     | StringType when literals_overlaps_with_string () = false  (* No overlap *) -> 
-      (typeof e) != (str "string")
+      typeof e != string
     | IntType when literals_overlaps_with_number () = false ->
-      (typeof e) != (str "number")
+      typeof e != number
     | FloatType when literals_overlaps_with_number () = false ->
-      (typeof e) != (str "number")
+      typeof e != number
     | ArrayType -> 
       not (is_array e)
     | ObjectType when literals_overlaps_with_object () = false ->
-      (typeof e) != (str "object")
+      typeof e != object_
     | ObjectType (* overlap *) ->
-      e == nil ||| (typeof e != str "object")
+      e == nil ||| (typeof e != object_)
     | StringType (* overlap *)
     | IntType (* overlap *)
     | FloatType (* overlap *)
