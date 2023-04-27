@@ -776,80 +776,28 @@ let tag_type = function
     (* TODO: this should not happen *)
     assert false
 
-let rec is_a_literal_case ~(literal_cases : Ast_untagged_variants.tag_type list) ~block_cases (e:t) : t =
-  let literals_overlaps_with_string () = 
-    Ext_list.exists literal_cases (function
-      | String _ -> true
-      | l -> false ) in
-  let literals_overlaps_with_number () = 
-    Ext_list.exists literal_cases (function
-      | Int _ | Float _ -> true
-      | l -> false ) in
-  let literals_overlaps_with_object () = 
-    Ext_list.exists literal_cases (function
-      | Null -> true
-      | l -> false ) in
-  let (==) x y = bin EqEqEq x y in
-  let (!=) x y = bin NotEqEq x y in
-  let (||) x y = bin Or x y in
-  let (&&) x y = bin And x y in
-  let is_literal_case (t: Ast_untagged_variants.tag_type) : t =  e == (tag_type t) in
-  let is_not_block_case (c: Ast_untagged_variants.block_type) : t = match c with
-  | StringType when literals_overlaps_with_string () = false  (* No overlap *) -> 
-    (typeof e) != (str "string")
-  | IntType when literals_overlaps_with_number () = false ->
-    (typeof e) != (str "number")
-  | FloatType when literals_overlaps_with_number () = false ->
-    (typeof e) != (str "number")
-  | ArrayType -> 
-    not (is_array e)
-  | ObjectType when literals_overlaps_with_object () = false ->
-    (typeof e) != (str "object")
-  | ObjectType (* overlap *) ->
-    e == nil || (typeof e) != (str "object")
-  | StringType (* overlap *)
-  | IntType (* overlap *)
-  | FloatType (* overlap *)
-  | UnknownType ->
-    (* We don't know the type of unknown, so we need to express:
-       this is not one of the literals *)
-    (match literal_cases with
-      | [] ->
-        (* this should not happen *)
-        assert false
-      | l1 :: others ->
-        let is_literal_1 = is_literal_case l1 in
-        Ext_list.fold_right others is_literal_1 (fun literal_n acc ->
-          (is_literal_case literal_n) || acc
-        )
-    )
-  in
-  match block_cases with
-  | [c] -> is_not_block_case c
-  | c1 :: (_::_ as rest) ->
-    (is_not_block_case c1) && (is_a_literal_case ~literal_cases ~block_cases:rest e)
-  | [] -> assert false
+let rec emit_check (check : t Ast_untagged_variants.DynamicChecks.t) = match check with
+  | TagType t -> tag_type t
+  | BinOp(op, x, y) ->
+    let op = match op with
+      | EqEqEq -> Js_op.EqEqEq
+      | NotEqEq -> NotEqEq
+      | And -> And
+      | Or -> Or
+    in
+    bin op (emit_check x) (emit_check y)
+  | TypeOf x -> typeof (emit_check x)
+  | IsArray x -> is_array (emit_check x)
+  | Not x -> not (emit_check x)
+  | Expr x -> x
 
-let is_int_tag ?(has_null_undefined_other=(false, false, false)) (e : t) : t =
-  let (has_null, has_undefined, has_other) = has_null_undefined_other in
-  if has_null && (has_undefined = false) && (has_other = false) then (* null *)
-    { expression_desc = Bin (EqEqEq, e, nil); comment=None }
-  else if has_null && has_undefined && has_other=false then (* null + undefined *)
-    { J.expression_desc = Bin
-      (Or,
-        { expression_desc = Bin (EqEqEq, e, nil); comment=None },
-        { expression_desc = Bin (EqEqEq, e, undefined); comment=None }
-      ); comment=None }
-  else if has_null=false && has_undefined && has_other=false then (* undefined *)
-    { expression_desc = Bin (EqEqEq, e, undefined); comment=None }
-  else if has_null then (* (null + undefined + other) || (null + other) *)
-    { J.expression_desc = Bin
-      (Or,
-        { expression_desc = Bin (EqEqEq, e, nil); comment=None },
-        { expression_desc = Bin (NotEqEq, typeof e, str "object"); comment=None }
-      ); comment=None }
-  else (* (undefiled + other) || other *)
-    { expression_desc = Bin (NotEqEq, typeof e, str "object"); comment=None }
+let is_a_literal_case ~literal_cases ~block_cases (e:t) =
+  let check = Ast_untagged_variants.DynamicChecks.is_a_literal_case ~literal_cases ~block_cases (Expr e) in
+  emit_check check
+
+let is_int_tag ?has_null_undefined_other e =
+    let check = Ast_untagged_variants.DynamicChecks.is_int_tag ?has_null_undefined_other (Expr e) in
+    emit_check check
 
 let is_type_string ?comment (e : t) : t =
   string_equal ?comment (typeof e) (str "string")

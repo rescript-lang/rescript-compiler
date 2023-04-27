@@ -241,3 +241,101 @@ let names_from_type_variant ?(isUntaggedDef=false) ~env (cstrs : Types.construct
 
 let check_well_formed ~env ~isUntaggedDef (cstrs: Types.constructor_declaration list) =
   ignore (names_from_type_variant ~env ~isUntaggedDef cstrs)
+
+module DynamicChecks = struct
+
+  type op = EqEqEq | NotEqEq | Or | And
+  type 'a t = BinOp of op * 'a t * 'a t | TagType of tag_type | TypeOf of 'a t | IsArray of 'a t | Not of 'a t | Expr of 'a
+
+  let bin op x y = BinOp(op, x, y)
+  let tag_type t = TagType t
+  let typeof x = TypeOf x
+  let str s = String s |> tag_type
+  let is_array x = IsArray x
+  let not x = Not x
+  let nil = Null |> tag_type
+  let undefined = Undefined |> tag_type
+  let object_ = Untagged ObjectType |> tag_type
+  let string = Untagged StringType |> tag_type
+  let number = Untagged IntType |> tag_type
+
+  let (==) x y = bin EqEqEq x y
+  let (!=) x y = bin NotEqEq x y
+  let (|||) x y = bin Or x y
+  let (&&&) x y = bin And x y
+
+
+  let rec is_a_literal_case ~(literal_cases : tag_type list) ~block_cases (e: _ t) =
+    let literals_overlaps_with_string () = 
+      Ext_list.exists literal_cases (function
+        | String _ -> true
+        | _ -> false ) in
+    let literals_overlaps_with_number () = 
+      Ext_list.exists literal_cases (function
+        | Int _ | Float _ -> true
+        | _ -> false ) in
+    let literals_overlaps_with_object () = 
+      Ext_list.exists literal_cases (function
+        | Null -> true
+        | _ -> false ) in
+    let is_literal_case (t: tag_type) : _ t =  e == (tag_type t) in
+    let is_not_block_case (c: block_type) : _ t = match c with
+    | StringType when literals_overlaps_with_string () = false  (* No overlap *) -> 
+      typeof e != string
+    | IntType when literals_overlaps_with_number () = false ->
+      typeof e != number
+    | FloatType when literals_overlaps_with_number () = false ->
+      typeof e != number
+    | ArrayType -> 
+      not (is_array e)
+    | ObjectType when literals_overlaps_with_object () = false ->
+      typeof e != object_
+    | ObjectType (* overlap *) ->
+      e == nil ||| (typeof e != object_)
+    | StringType (* overlap *)
+    | IntType (* overlap *)
+    | FloatType (* overlap *)
+    | UnknownType ->
+      (* We don't know the type of unknown, so we need to express:
+        this is not one of the literals *)
+      (match literal_cases with
+        | [] ->
+          (* this should not happen *)
+          assert false
+        | l1 :: others ->
+          let is_literal_1 = is_literal_case l1 in
+          Ext_list.fold_right others is_literal_1 (fun literal_n acc ->
+            (is_literal_case literal_n) ||| acc
+          )
+      )
+    in
+    match block_cases with
+    | [c] -> is_not_block_case c
+    | c1 :: (_::_ as rest) ->
+      (is_not_block_case c1) &&& (is_a_literal_case ~literal_cases ~block_cases:rest e)
+    | [] -> assert false
+
+  let is_int_tag ?(has_null_undefined_other=(false, false, false)) (e : _ t) : _ t =
+    let (has_null, has_undefined, has_other) = has_null_undefined_other in
+    if has_null && (has_undefined = false) && (has_other = false) then (* null *)
+      bin EqEqEq e nil
+    else if has_null && has_undefined && has_other=false then (* null + undefined *)
+      e == nil ||| e == undefined
+    else if has_null=false && has_undefined && has_other=false then (* undefined *)
+       e == undefined
+    else if has_null then (* (null + undefined + other) || (null + other) *)
+      e == nil ||| typeof e != object_
+    else (* (undefiled + other) || other *)
+      typeof e != object_
+
+  let add_runtime_type_check ~tag_type x y = match tag_type with
+    | Untagged IntType
+    | Untagged StringType
+    | Untagged FloatType
+    | Untagged ObjectType -> typeof y == x 
+    | Untagged ArrayType -> is_array y
+    | Untagged UnknownType ->
+      (* This should not happen because unknown must be the only non-literal case *)
+      assert false 
+    | Bool _ | Float _ | Int _ | String _ | Null | Undefined -> x
+end
