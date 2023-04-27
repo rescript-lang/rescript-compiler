@@ -26,7 +26,10 @@
 
 (** Provides functionality for dealing with the `Js.null('a)` type *)
 
-type +'a t = 'a Js.null
+type +'a t = 'a Js.null =
+  | Value of 'a
+  | Null [@as null]
+[@@unboxed]
 (** Local alias for `Js.null('a)` *)
 
 external return : 'a -> 'a t = "%identity"

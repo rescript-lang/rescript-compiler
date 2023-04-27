@@ -57,7 +57,10 @@ end
 (**/**)
 
 
-type + 'a null
+type + 'a null =
+  | Value of 'a
+  | Null [@as null]
+[@@unboxed]
 (** nullable, value of this type can be either [null] or ['a]
     this type is the same as type [t] in {!Null}
 *)
@@ -67,7 +70,7 @@ type + 'a undefined
     this type is the same as type [t] in {!Undefined}  *)
 
 type + 'a nullable =
-  | Present of 'a
+  | Value of 'a
   | Null [@as null]
   | Undefined [@as undefined]
 [@@unboxed]

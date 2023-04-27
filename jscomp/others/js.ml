@@ -86,7 +86,10 @@ end
 
 (**/**)
 
-type +'a null
+type +'a null =
+  | Value of 'a
+  | Null [@as null]
+[@@unboxed]
 (**
   Nullable value of this type can be either null or 'a. This type is equivalent to Js.Null.t.
 *)
@@ -97,7 +100,7 @@ type +'a undefined
 *)
 
 type +'a nullable =
-  | Present of 'a
+  | Value of 'a
   | Null [@as null]
   | Undefined [@as undefined]
 [@@unboxed]

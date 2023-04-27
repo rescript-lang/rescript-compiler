@@ -25,7 +25,10 @@
 (** Provides functionality for dealing with the `'a Js.null` type *)
 
 
-type + 'a t = 'a Js.null
+type + 'a t = 'a Js.null =
+  | Value of 'a
+  | Null [@as null]
+[@@unboxed]
 
 external to_opt : 'a t -> 'a option = "#null_to_opt"
 external toOption : 'a t -> 'a option = "#null_to_opt"
