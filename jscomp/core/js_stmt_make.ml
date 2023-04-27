@@ -129,7 +129,7 @@ let int_switch ?(comment : string option)
 
 let string_switch ?(comment : string option)
     ?(declaration : (J.property * Ident.t) option) ?(default : J.block option)
-    (e : J.expression) (clauses : (Ast_untagged_variants.literal_type * J.case_clause) list) : t =
+    (e : J.expression) (clauses : (Ast_untagged_variants.tag_type * J.case_clause) list) : t =
   match e.expression_desc with
   | Str {txt} -> (
       let continuation =
@@ -138,9 +138,8 @@ let string_switch ?(comment : string option)
             match switch_case with
             | String s ->
               if s = txt then Some x.switch_body else None
-            | Int _  | Float _| Bool _ | Null
-            | Undefined
-            | Block _ -> None)
+            | Int _  | Float _| Bool _ | Null | Undefined | Untagged _ ->
+              None)
         with
         | Some case -> case
         | None -> ( match default with Some x -> x | None -> assert false)

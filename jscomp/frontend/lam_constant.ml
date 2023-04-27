@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type constructor_tag = {
-  cstr_name: Ast_untagged_variants.literal;
+  cstr_name: Ast_untagged_variants.tag;
   const: int;
   non_const: int;
 }
