@@ -328,11 +328,17 @@ module DynamicChecks = struct
     else (* (undefiled + other) || other *)
       typeof e != object_
 
-  let add_runtime_type_check ~tag_type x y = match tag_type with
+  let add_runtime_type_check ~tag_type ~(block_cases: block_type list) x y =
+    let has_array() = Ext_list.exists block_cases (fun t -> t = ArrayType) in
+    match tag_type with
     | Untagged IntType
     | Untagged StringType
-    | Untagged FloatType
-    | Untagged ObjectType -> typeof y == x 
+    | Untagged FloatType -> typeof y == x
+    | Untagged ObjectType ->
+      if has_array() then
+        typeof y == x &&& not (is_array y)
+      else
+        typeof y == x
     | Untagged ArrayType -> is_array y
     | Untagged UnknownType ->
       (* This should not happen because unknown must be the only non-literal case *)
