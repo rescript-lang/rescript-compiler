@@ -1808,6 +1808,13 @@ let save_signature modname tsg outputprefix source_file initial_env cmi =
 
 open Printtyp
 
+let non_generalizable_msg ppf print_fallback_msg =
+  fprintf ppf
+    "%a@,@,\
+     @[This happens when the type system senses there's a mutation/side-effect,@ in combination with a polymorphic value.@,\
+     @{<info>Using or annotating that value usually solves it.@}@]"
+    print_fallback_msg ()
+
 let report_error ppf = function
     Cannot_apply mty ->
       fprintf ppf
@@ -1861,13 +1868,25 @@ let report_error ppf = function
         "@[Multiple definition of the %s name %s at line %d, characters %d-%d.@ \
            Names must be unique in a given structure or signature.@]" kind name start_line start_char end_char
   | Non_generalizable typ ->
-      fprintf ppf
-        "@[The type of this expression,@ %a,@ \
-           contains type variables that cannot be generalized@]" type_scheme typ
+    (* modified *)
+    fprintf ppf "@[<v>";
+    non_generalizable_msg
+      ppf
+      (fun ppf () ->
+         fprintf ppf
+           "@[This expression's type contains type variables that cannot be generalized:@,@{<error>%a@}@]"
+           type_scheme typ);
+    fprintf ppf "@]"
   | Non_generalizable_module mty ->
-      fprintf ppf
-        "@[The type of this module,@ %a,@ \
-           contains type variables that cannot be generalized@]" modtype mty
+    (* modified *)
+    fprintf ppf "@[<v>";
+    non_generalizable_msg
+      ppf
+      (fun ppf () ->
+         fprintf ppf
+           "@[The type of this module contains type variables that cannot be generalized:@,@{<error>%a@}@]"
+           modtype mty);
+    fprintf ppf "@]"
   | Interface_not_compiled intf_name ->
       fprintf ppf
         "@[Could not find the .cmi file for interface@ %a.@]"

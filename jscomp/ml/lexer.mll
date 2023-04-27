@@ -254,7 +254,7 @@ let report_error ppf = function
   | Unterminated_string_in_comment (_, loc) ->
       fprintf ppf "This comment contains an unterminated string literal@.\
                    %aString literal begins here"
-              Location.print_error loc
+              (Location.print_error "") loc
   | Keyword_as_label kwd ->
       fprintf ppf "`%s' is a keyword, it cannot be used as label name" kwd
   | Invalid_literal s ->

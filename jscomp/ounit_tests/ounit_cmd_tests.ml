@@ -292,7 +292,7 @@ let () =
   push a "3" |. ignore  
   |} in
       OUnit.assert_bool __LOC__
-        (Ext_string.contain_substring should_err.stderr "has type string")
+        (Ext_string.contain_substring should_err.stderr "string")
     end
     (* __LOC__ >:: begin fun _ ->  *)
     (*   let should_infer = perform_bsc [| "-i"; "-bs-eval"|] {| *)

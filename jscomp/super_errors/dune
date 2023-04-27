@@ -1,6 +1,0 @@
-(library
- (name super_errors)
- (wrapped false)
- (flags
-  (:standard -w +a-4-9-40-42-70))
- (libraries ml))

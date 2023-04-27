@@ -610,6 +610,119 @@ let rec expand_path env p =
 let compare_type_path env tpath1 tpath2 =
   Path.same (expand_path env tpath1) (expand_path env tpath2)
 
+let fprintf = Format.fprintf
+
+let rec bottom_aliases = function
+  | (_, one) :: (_, two) :: rest -> begin match bottom_aliases rest with
+      | Some types -> Some types
+      | None -> Some (one, two)
+    end
+  | _ -> None
+
+let simple_conversions = [
+  (("float", "int"), "Belt.Float.toInt");
+  (("float", "string"), "Belt.Float.toString");
+  (("int", "float"), "Belt.Int.toFloat");
+  (("int", "string"), "Belt.Int.toString");
+  (("string", "float"), "Belt.Float.fromString");
+  (("string", "int"), "Belt.Int.fromString");
+]
+
+let print_simple_conversion ppf (actual, expected) =
+  try (
+    let converter = List.assoc (actual, expected) simple_conversions in
+    fprintf ppf "@,@,@[<v 2>You can convert @{<info>%s@} to @{<info>%s@} with @{<info>%s@}.@]" actual expected converter
+  ) with | Not_found -> ()
+  
+let print_simple_message ppf = function
+  | ("float", "int") -> fprintf ppf "@ If this is a literal, try a number without a trailing dot (e.g. @{<info>20@})."
+  | ("int", "float") -> fprintf ppf "@ If this is a literal, try a number with a trailing dot (e.g. @{<info>20.@})."
+  | _ -> ()
+
+let show_extra_help ppf _env trace = begin
+  match bottom_aliases trace with
+  | Some ({Types.desc = Tconstr (actualPath, actualArgs, _)}, {desc = Tconstr (expectedPath, expextedArgs, _)}) -> begin
+      match (actualPath, actualArgs, expectedPath, expextedArgs) with
+      | (Pident {name = actualName}, [], Pident {name = expectedName}, []) -> begin
+          print_simple_conversion ppf (actualName, expectedName);
+          print_simple_message ppf (actualName, expectedName);
+        end
+      | _ -> ()
+    end;
+  | _ -> ();
+end
+
+let rec collect_missing_arguments env type1 type2 = match type1 with
+  (* why do we use Ctype.matches here? Please see https://github.com/rescript-lang/rescript-compiler/pull/2554 *)
+  | {Types.desc=Tarrow (label, argtype, typ, _)} when Ctype.matches env typ type2 ->
+    Some [(label, argtype)]
+  | {desc=Tarrow (label, argtype, typ, _)} -> begin
+      match collect_missing_arguments env typ type2 with
+      | Some res -> Some ((label, argtype) :: res)
+      | None -> None
+    end
+  | _ -> None
+
+let print_expr_type_clash env trace ppf = begin
+  (* this is the most frequent error. We should do whatever we can to provide
+      specific guidance to this generic error before giving up *)
+  let bottom_aliases_result = bottom_aliases trace in
+  let missing_arguments = match bottom_aliases_result with
+    | Some (actual, expected) -> collect_missing_arguments env actual expected
+    | None -> assert false
+  in
+  let print_arguments =
+    Format.pp_print_list
+      ~pp_sep:(fun ppf _ -> fprintf ppf ",@ ")
+      (fun ppf (label, argtype) ->
+          match label with
+          | Asttypes.Nolabel -> fprintf ppf "@[%a@]" Printtyp.type_expr argtype
+          | Labelled label ->
+            fprintf ppf "@[(~%s: %a)@]" label Printtyp.type_expr argtype
+          | Optional label ->
+            fprintf ppf "@[(?%s: %a)@]" label Printtyp.type_expr argtype
+      )
+  in
+  match missing_arguments with
+  | Some [singleArgument] ->
+    (* btw, you can't say "final arguments". Intermediate labeled
+        arguments might be the ones missing *)
+    fprintf ppf "@[@{<info>This call is missing an argument@} of type@ %a@]"
+      print_arguments [singleArgument]
+  | Some arguments ->
+    fprintf ppf "@[<hv>@{<info>This call is missing arguments@} of type:@ %a@]"
+      print_arguments arguments
+  | None ->
+    let missing_parameters = match bottom_aliases_result with
+      | Some (actual, expected) -> collect_missing_arguments env expected actual
+      | None -> assert false
+    in
+    begin match missing_parameters with
+      | Some [singleParameter] ->
+        fprintf ppf "@[This value might need to be @{<info>wrapped in a function@ that@ takes@ an@ extra@ parameter@}@ of@ type@ %a@]@,@,"
+          print_arguments [singleParameter];
+        fprintf ppf "@[@{<info>Here's the original error message@}@]@,"
+      | Some arguments ->
+        fprintf ppf "@[This value seems to @{<info>need to be wrapped in a function that takes extra@ arguments@}@ of@ type:@ @[<hv>%a@]@]@,@,"
+          print_arguments arguments;
+        fprintf ppf "@[@{<info>Here's the original error message@}@]@,"
+      | None -> ()
+    end;
+
+    Printtyp.super_report_unification_error ppf env trace
+      (function ppf ->
+          fprintf ppf "This has type:")
+      (function ppf ->
+          fprintf ppf "Somewhere wanted:");
+    show_extra_help ppf env trace;
+end
+  
+let reportArityMismatch ~arityA ~arityB ppf =
+  fprintf ppf "This function expected @{<info>%s@} %s, but got @{<error>%s@}"
+    arityB
+    (if arityB = "1" then "argument" else "arguments")
+    arityA
+  
 (* Records *)
 let label_of_kind kind =
   if kind = "record" then "field" else "constructor"
@@ -3656,30 +3769,32 @@ let report_error env ppf = function
       fprintf ppf "@[The record field %a is polymorphic.@ %s@]"
         longident lid "You cannot instantiate it in a pattern."
   | Constructor_arity_mismatch(lid, expected, provided) ->
-      fprintf ppf
-       "@[The constructor %a@ expects %i argument(s),@ \
-        but is applied here to %i argument(s)@]"
-       longident lid expected provided
+    (* modified *)
+    fprintf ppf
+      "@[This variant constructor, %a, expects %i %s; here, we've %sfound %i.@]"
+      longident lid expected (if expected == 1 then "argument" else "arguments") (if provided < expected then "only " else "") provided
   | Label_mismatch(lid, trace) ->
-      report_unification_error ppf env trace
-        (function ppf ->
-           fprintf ppf "The record field %a@ belongs to the type"
-                   longident lid)
-        (function ppf ->
-           fprintf ppf "but is mixed here with fields of type")
+    (* modified *)
+    super_report_unification_error ppf env trace
+      (function ppf ->
+         fprintf ppf "The record field %a@ belongs to the type"
+           longident lid)
+      (function ppf ->
+         fprintf ppf "but is mixed here with fields of type")
   | Pattern_type_clash trace ->
-      report_unification_error ppf env trace
-        (function ppf ->
-          fprintf ppf "This pattern matches values of type")
-        (function ppf ->
-          fprintf ppf "but a pattern was expected which matches values of type")
+    (* modified *)
+    super_report_unification_error ppf env trace
+      (function ppf ->
+         fprintf ppf "This pattern matches values of type")
+      (function ppf ->
+         fprintf ppf "but a pattern was expected which matches values of type")
   | Or_pattern_type_clash (id, trace) ->
-      report_unification_error ppf env trace
-        (function ppf ->
-          fprintf ppf "The variable %s on the left-hand side of this \
-                       or-pattern has type" (Ident.name id))
-        (function ppf ->
-          fprintf ppf "but on the right-hand side it has type")
+    (* modified *)
+    super_report_unification_error ppf env trace
+      (function ppf ->
+         fprintf ppf "The variable %s on the left-hand side of this or-pattern has type" (Ident.name id))
+      (function ppf ->
+         fprintf ppf "but on the right-hand side it has type")
   | Multiply_bound_variable name ->
       fprintf ppf "Variable %s is bound several times in this matching" name
   | Orpat_vars (id, valid_idents) ->
@@ -3687,30 +3802,53 @@ let report_error env ppf = function
         (Ident.name id);
       spellcheck_idents ppf id valid_idents
   | Expr_type_clash ( 
+    (_, {desc = Tarrow _}) ::
+    (_, {desc = Tconstr (Pident {name = "function$"},_,_)}) :: _
+   ) -> 
+    fprintf ppf "This function is a curried function where an uncurried function is expected"
+  | Expr_type_clash ( 
+    (_, {desc = Tconstr (Pident {name = "function$"}, [{desc=Tvar _}; _],_)}) ::
+    (_, {desc = Tarrow _}) :: _
+   ) -> 
+    fprintf ppf "This function is an uncurried function where a curried function is expected"
+  | Expr_type_clash (
+      (_, {desc = Tconstr (Pident {name = "function$"},[_; tA],_)}) ::
+      (_, {desc = Tconstr (Pident {name = "function$"},[_; tB],_)}) :: _
+    ) when Ast_uncurried.type_to_arity tA <> Ast_uncurried.type_to_arity tB ->
+    let arityA = Ast_uncurried.type_to_arity tA |> string_of_int in
+    let arityB = Ast_uncurried.type_to_arity tB |> string_of_int in
+    reportArityMismatch ~arityA ~arityB ppf
+  | Expr_type_clash ( 
       (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js_OO"},"Meth",_),a,_),_,_)}) ::
       (_, {desc = Tconstr (Pdot (Pdot(Pident {name = "Js_OO"},"Meth",_),b,_),_,_)}) :: _
    ) when a <> b -> 
       fprintf ppf "This method has %s but was expected %s" a b 
 
   | Expr_type_clash trace ->
-      report_unification_error ppf env trace
-        (function ppf ->
-           fprintf ppf "This expression has type")
-        (function ppf ->
-           fprintf ppf "but an expression was expected of type")
+    (* modified *)
+    fprintf ppf "@[<v>";
+    print_expr_type_clash env trace ppf;
+    fprintf ppf "@]"
   | Apply_non_function typ ->
-      reset_and_mark_loops typ;
-      begin match (repr typ).desc with
-        Tarrow _ ->
-          fprintf ppf "@[<v>@[<2>This function has type@ %a@]"
-            type_expr typ;
-          fprintf ppf "@ @[It is applied to too many arguments;@ %s@]@]"
-                      "maybe you forgot a `;'."
+    (* modified *)
+    reset_and_mark_loops typ;
+    begin match (repr typ).desc with
+        Tarrow (_, _inputType, returnType, _) ->
+        let rec countNumberOfArgs count {Types.desc} = match desc with
+          | Tarrow (_, _inputType, returnType, _) -> countNumberOfArgs (count + 1) returnType
+          | _ -> count
+        in
+        let countNumberOfArgs = countNumberOfArgs 1 in
+        let acceptsCount = countNumberOfArgs returnType in
+        fprintf ppf "@[<v>@[<2>This function has type@ @{<info>%a@}@]"
+          type_expr typ;
+        fprintf ppf "@ @[It only accepts %i %s; here, it's called with more.@]@]"
+          acceptsCount (if acceptsCount == 1 then "argument" else "arguments")
       | _ ->
-          fprintf ppf "@[<v>@[<2>This expression has type@ %a@]@ %s@]"
-            type_expr typ
-            "This is not a function; it cannot be applied."
-      end
+        fprintf ppf "@[<v>@[<2>This expression has type@ %a@]@ %s@]"
+          type_expr typ
+          "It is not a function."
+    end
   | Apply_wrong_label (l, ty) ->
       let print_label ppf = function
         | Nolabel -> fprintf ppf "without label"
@@ -3732,20 +3870,22 @@ let report_error env ppf = function
   | Label_not_mutable lid ->
       fprintf ppf "The record field %a is not mutable" longident lid
   | Wrong_name (eorp, ty, kind, p, name, valid_names) ->
-      reset_and_mark_loops ty;
-      if Path.is_constructor_typath p then begin
-        fprintf ppf "@[The field %s is not part of the record \
-                     argument for the %a constructor@]"
-          name
-          path p;
-      end else begin
-      fprintf ppf "@[@[<2>%s type@ %a@]@ "
+    (* modified *)
+    reset_and_mark_loops ty;
+    if Path.is_constructor_typath p then begin
+      fprintf ppf "@[The field %s is not part of the record \
+                   argument for the %a constructor@]"
+        name
+        Printtyp.path p;
+    end else begin
+      fprintf ppf "@[@[<2>%s type@ @{<info>%a@}@]@ "
         eorp type_expr ty;
-      fprintf ppf "The %s %s does not belong to type %a@]"
+
+      fprintf ppf "The %s @{<error>%s@} does not belong to type @{<info>%a@}@]"
         (label_of_kind kind)
-        name (*kind*) path p;
-       end;
-      spellcheck ppf name valid_names;
+        name (*kind*) Printtyp.path p;
+    end;
+    spellcheck ppf name valid_names;
   | Name_type_mismatch (kind, lid, tp, tpl) ->
       let name = label_of_kind kind in
       report_ambiguous_type_error ppf env tp tpl
@@ -3770,29 +3910,35 @@ let report_error env ppf = function
   | Not_subtype(tr1, tr2) ->
       report_subtyping_error ppf env tr1 "is not a subtype of" tr2
   | Coercion_failure (ty, ty', trace, b) ->
-      report_unification_error ppf env trace
-        (function ppf ->
-           let ty, ty' = prepare_expansion (ty, ty') in
-           fprintf ppf
-             "This expression cannot be coerced to type@;<1 2>%a;@ it has type"
-           (type_expansion ty) ty')
-        (function ppf ->
-           fprintf ppf "but is here used with type");
-      if b then
-        fprintf ppf ".@.@[<hov>%s@ %s@]"
-          "This simple coercion was not fully general."
-          "Consider using a double coercion."
+    (* modified *)
+    super_report_unification_error ppf env trace
+      (function ppf ->
+         let ty, ty' = Printtyp.prepare_expansion (ty, ty') in
+         fprintf ppf
+           "This expression cannot be coerced to type@;<1 2>%a;@ it has type"
+           (Printtyp.type_expansion ty) ty')
+      (function ppf ->
+         fprintf ppf "but is here used with type");
+    if b then
+      fprintf ppf ".@.@[<hov>%s@ %s@]"
+        "This simple coercion was not fully general."
+        "Consider using a double coercion."
   | Too_many_arguments (in_function, ty) ->
-      reset_and_mark_loops ty;
-      if in_function then begin
-        fprintf ppf "This function expects too many arguments,@ ";
-        fprintf ppf "it should have type@ %a"
+    (* modified *)
+    reset_and_mark_loops ty;
+    if in_function then begin
+      fprintf ppf "@[This function expects too many arguments,@ ";
+      fprintf ppf "it should have type@ %a@]"
+        type_expr ty
+    end else begin
+      match ty with
+      | {desc = Tconstr (Pident {name = "function$"},_,_)} ->
+        fprintf ppf "This expression is expected to have an uncurried function"
+      | _ ->
+        fprintf ppf "@[This expression should not be a function,@ ";
+        fprintf ppf "the expected type is@ %a@]"
           type_expr ty
-      end else begin
-        fprintf ppf "This expression should not be a function,@ ";
-        fprintf ppf "the expected type is@ %a"
-          type_expr ty
-      end
+    end
   | Abstract_wrong_label (l, ty) ->
       let label_mark = function
         | Nolabel -> "but its first argument is not labelled"
@@ -3819,9 +3965,10 @@ let report_error env ppf = function
       fprintf ppf "in an order different from other calls.@ ";
       fprintf ppf "This is only allowed when the real type is known."
   | Less_general (kind, trace) ->
-      report_unification_error ppf env trace
-        (fun ppf -> fprintf ppf "This %s has type" kind)
-        (fun ppf -> fprintf ppf "which is less general than")
+    (* modified *)
+    super_report_unification_error ppf env trace
+      (fun ppf -> fprintf ppf "This %s has type" kind)
+      (fun ppf -> fprintf ppf "which is less general than")
   | Modules_not_allowed ->
       fprintf ppf "Modules are not allowed in this pattern."
   | Cannot_infer_signature ->
@@ -3832,11 +3979,12 @@ let report_error env ppf = function
         "This expression is packed module, but the expected type is@ %a"
         type_expr ty
   | Recursive_local_constraint trace ->
-      report_unification_error ppf env trace
-        (function ppf ->
-           fprintf ppf "Recursive local constraint when unifying")
-        (function ppf ->
-           fprintf ppf "with")
+    (* modified *)
+    super_report_unification_error ppf env trace
+      (function ppf ->
+         fprintf ppf "Recursive local constraint when unifying")
+      (function ppf ->
+         fprintf ppf "with")
   | Unexpected_existential ->
       fprintf ppf
         "Unexpected existential"
