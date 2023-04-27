@@ -503,7 +503,6 @@ and compile_recursive_lets cxt id_args : Js_output.t =
 
 and compile_general_cases :
       'a .
-      ?get_literal: ('a -> Ast_untagged_variants.literal option) ->
       make_exp: ('a -> J.expression) ->
       eq_exp: ('a option -> J.expression -> 'a option -> J.expression -> J.expression) ->
       cxt: Lam_compile_context.t ->
@@ -514,7 +513,6 @@ and compile_general_cases :
       ('a * Lam.t) list ->
       J.block =
   fun (type a)
-    ?(get_literal : a -> Ast_untagged_variants.literal option = fun _ -> None)
     ~(make_exp : a -> J.expression)
     ~(eq_exp : a option -> J.expression -> a option -> J.expression -> J.expression)
     ~(cxt : Lam_compile_context.t)
@@ -581,9 +579,6 @@ and compile_general_cases :
             | Default lam ->
                 Some (Js_output.output_as_block (compile_lambda cxt lam))
           in
-          let make_comment i = match get_literal i with
-            | None -> None
-            | Some {name} -> Some name  in
           let body =
             group_apply cases (fun last (switch_case, lam) ->
                 if last then
@@ -604,14 +599,14 @@ and compile_general_cases :
                       {
                         switch_body;
                         should_break;
-                        comment = make_comment switch_case;
+                        comment = None;
                       } )
                 else
                   ( switch_case,
                     {
                       switch_body = [];
                       should_break = false;
-                      comment = make_comment switch_case;
+                      comment = None;
                     } ))
             (* TODO: we should also group default *)
             (* The last clause does not need [break]
@@ -638,7 +633,6 @@ and compile_cases
       else compile_string_cases ~cxt ~switch_exp ~default string_cases
     | None ->
       cases |> compile_general_cases
-        ~get_literal
         ~make_exp:(fun i -> match get_literal i with
           | None -> E.small_int i
           | Some {literal_type = Some(String s)} -> E.str s
