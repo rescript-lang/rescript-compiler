@@ -1862,11 +1862,10 @@ let report_error ppf = function
               types (other than when replacing a type constructor with @ \
               a type constructor with the same arguments).@]"
   | Repeated_name(kind, name, repeated_loc) ->
-      let (_, start_line, start_char) = Location.get_pos_info repeated_loc.loc_start in
-      let (_, _, end_char) = Location.get_pos_info repeated_loc.loc_end in
       fprintf ppf
-        "@[Multiple definition of the %s name %s at line %d, characters %d-%d.@ \
-           Names must be unique in a given structure or signature.@]" kind name start_line start_char end_char
+        "@[Multiple definition of the %s name %s @ \
+           at @{<loc>%a@}@ @ \
+           Names must be unique in a given structure or signature.@]" kind name Location.print_loc repeated_loc
   | Non_generalizable typ ->
     (* modified *)
     fprintf ppf "@[<v>";
