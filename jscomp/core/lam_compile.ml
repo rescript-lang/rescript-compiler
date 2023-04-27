@@ -674,8 +674,8 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
   let get_block_tag i : Ast_untagged_variants.tag option = match get_block i with
     | None -> None
     | Some ({tag = {name}; block_type = Some block_type}) ->
-      Some {name; tag_type = Some (Block block_type)}
-    | Some ({block_type = None; tag}) ->
+      Some {name; tag_type = Some (Untagged block_type)} (* untagged block *)
+    | Some ({block_type = None; tag}) -> (* tagged block *)
       Some tag in
   let tag_name = get_tag_name sw_names in
   let untagged = block_cases <> [] in
@@ -751,12 +751,12 @@ and compile_string_cases ~cxt ~switch_exp ~default cases: initialization  =
     ~default
 and compile_untagged_cases ~cxt ~switch_exp ~default cases =
   let add_runtime_type_check (literal: Ast_untagged_variants.tag_type) x y = match literal with
-  | Block IntType
-  | Block StringType
-  | Block FloatType
-  | Block ObjectType -> E.string_equal (E.typeof y) x 
-  | Block ArrayType -> E.is_array y
-  | Block UnknownType ->
+  | Untagged IntType
+  | Untagged StringType
+  | Untagged FloatType
+  | Untagged ObjectType -> E.string_equal (E.typeof y) x 
+  | Untagged ArrayType -> E.is_array y
+  | Untagged UnknownType ->
     (* This should not happen because unknown must be the only non-literal case *)
     assert false 
   | Bool _ | Float _ | Int _ | String _ | Null | Undefined -> x in
@@ -767,7 +767,7 @@ and compile_untagged_cases ~cxt ~switch_exp ~default cases =
       add_runtime_type_check literal y x
     | _ -> E.string_equal x y
   in
-  let is_array (l, _) = l = Ast_untagged_variants.Block ArrayType in
+  let is_array (l, _) = l = Ast_untagged_variants.Untagged ArrayType in
   let switch ?default ?declaration e clauses =
     let array_clauses = Ext_list.filter clauses is_array in
     match array_clauses with

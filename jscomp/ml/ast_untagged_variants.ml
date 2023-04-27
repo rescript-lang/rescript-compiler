@@ -27,11 +27,18 @@ let report_error ppf =
     | DuplicateLiteral s -> "Duplicate literal " ^ s ^ "."
     )
 
+(* Type of the runtime representation of an untagged block (case with payoad) *)
 type block_type =
   | IntType | StringType | FloatType | ArrayType | ObjectType | UnknownType
+
+(*
+  Type of the runtime representation of a tag.
+  Can be a literal (case with no payload), or a block (case with payload).
+  In the case of block it can be tagged or untagged.
+*)
 type tag_type =
-  | String of string | Int of int | Float of string | Bool of bool | Null | Undefined
-  | Block of block_type
+  | String of string | Int of int | Float of string | Bool of bool | Null | Undefined (* literal or tagged block *)
+  | Untagged of block_type (* untagged block *)
 type tag = {name: string; tag_type: tag_type option}
 type block = {tag: tag; tag_name: string option; block_type: block_type option}
 type switch_names = {consts: tag array; blocks: block array}
@@ -188,7 +195,7 @@ let checkInvariant ~isUntaggedDef ~(consts : (Location.t * tag) list) ~(blocks :
       addNonstringLiteral ~loc "undefined"
     | Some (Bool b) ->
       addNonstringLiteral ~loc (if b then "true" else "false")
-    | Some (Block _) -> ()
+    | Some (Untagged _) -> ()
     | None ->
       addStringLiteral ~loc literal.name
     );

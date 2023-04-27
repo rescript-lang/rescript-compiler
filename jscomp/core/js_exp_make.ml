@@ -767,13 +767,13 @@ let tag_type = function
   | Bool b -> bool b
   | Null -> nil
   | Undefined -> undefined
-  | Block IntType -> str "number"
-  | Block FloatType -> str "number"
-  | Block StringType -> str "string"
-  | Block ArrayType -> str "Array" ~delim:DNoQuotes
-  | Block ObjectType -> str "object"
-  | Block UnknownType ->
-    (* TODO: clean up pattern mathing algo whih confuses literal with blocks *)
+  | Untagged IntType -> str "number"
+  | Untagged FloatType -> str "number"
+  | Untagged StringType -> str "string"
+  | Untagged ArrayType -> str "Array" ~delim:DNoQuotes
+  | Untagged ObjectType -> str "object"
+  | Untagged UnknownType ->
+    (* TODO: this should not happen *)
     assert false
 
 let rec is_a_literal_case ~(literal_cases : Ast_untagged_variants.tag_type list) ~block_cases (e:t) : t =
