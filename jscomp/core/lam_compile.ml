@@ -171,8 +171,8 @@ let get_literal_cases (sw_names : Ast_untagged_variants.switch_names option) =
   | None -> res := []
   | Some { consts  } ->
     Ext_array.iter consts (function
-    | {literal_type = Some literal} -> res := literal :: !res
-    | {name; literal_type = None} -> res := String name :: !res
+    | {tag_type = Some t} -> res := t :: !res
+    | {name; tag_type = None} -> res := String name :: !res
     )
   );
   !res
@@ -183,7 +183,7 @@ let has_null_undefined_other (sw_names : Ast_untagged_variants.switch_names opti
   (match sw_names with
   | None -> ()
   | Some { consts; blocks } ->
-    Ext_array.iter consts (fun x -> match x.literal_type with
+    Ext_array.iter consts (fun x -> match x.tag_type with
       | Some Undefined -> undefined := true
       | Some Null -> null := true
       | _ -> other := true);
@@ -618,9 +618,9 @@ and compile_general_cases :
 and use_compile_literal_cases table ~(get_tag : _ -> Ast_untagged_variants.tag option) =
   List.fold_right (fun (i, lam) acc ->
     match get_tag i, acc with
-    | Some {Ast_untagged_variants.literal_type = Some literal}, Some string_table ->
-       Some ((literal, lam) :: string_table)
-    | Some {name; literal_type = None}, Some string_table -> Some ((String name, lam) :: string_table)
+    | Some {Ast_untagged_variants.tag_type = Some t}, Some string_table ->
+       Some ((t, lam) :: string_table)
+    | Some {name; tag_type = None}, Some string_table -> Some ((String name, lam) :: string_table)
     | _, _ -> None
   ) table (Some [])
 and compile_cases
@@ -635,7 +635,7 @@ and compile_cases
       cases |> compile_general_cases
         ~make_exp:(fun i -> match get_tag i with
           | None -> E.small_int i
-          | Some {literal_type = Some(String s)} -> E.str s
+          | Some {tag_type = Some(String s)} -> E.str s
           | Some {name} -> E.str name)
         ~eq_exp: (fun _ x _ y -> E.int_equal x y)
         ~cxt
@@ -674,7 +674,7 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
   let get_block_tag i : Ast_untagged_variants.tag option = match get_block i with
     | None -> None
     | Some ({tag = {name}; block_type = Some block_type}) ->
-      Some {name; literal_type = Some (Block block_type)}
+      Some {name; tag_type = Some (Block block_type)}
     | Some ({block_type = None; tag}) ->
       Some tag in
   let tag_name = get_tag_name sw_names in
@@ -741,11 +741,8 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
 
 
 and compile_string_cases ~cxt ~switch_exp ~default cases: initialization  =
-  let literal = function  
-    | literal -> E.literal literal
-  in
   cases |> compile_general_cases
-    ~make_exp:literal
+    ~make_exp:E.tag_type
     ~eq_exp: (fun _ x _ y -> E.string_equal x y)
     ~cxt
     ~switch: (fun ?default ?declaration e clauses ->
@@ -753,7 +750,7 @@ and compile_string_cases ~cxt ~switch_exp ~default cases: initialization  =
     ~switch_exp
     ~default
 and compile_untagged_cases ~cxt ~switch_exp ~default cases =
-  let add_runtime_type_check (literal: Ast_untagged_variants.literal_type) x y = match literal with
+  let add_runtime_type_check (literal: Ast_untagged_variants.tag_type) x y = match literal with
   | Block IntType
   | Block StringType
   | Block FloatType
@@ -763,7 +760,7 @@ and compile_untagged_cases ~cxt ~switch_exp ~default cases =
     (* This should not happen because unknown must be the only non-literal case *)
     assert false 
   | Bool _ | Float _ | Int _ | String _ | Null | Undefined -> x in
-  let mk_eq (i : Ast_untagged_variants.literal_type option) x j y = match i, j with
+  let mk_eq (i : Ast_untagged_variants.tag_type option) x j y = match i, j with
     | Some literal, _ ->
       add_runtime_type_check literal x y
     | _, Some literal ->
@@ -783,7 +780,7 @@ and compile_untagged_cases ~cxt ~switch_exp ~default cases =
     | _ ->
       S.string_switch ?default ?declaration (E.typeof e) clauses in
   cases |> compile_general_cases
-    ~make_exp:E.literal
+    ~make_exp:E.tag_type
     ~eq_exp: mk_eq
     ~cxt
     ~switch

@@ -760,7 +760,7 @@ let string_equal ?comment (e0 : t) (e1 : t) : t =
 let is_type_number ?comment (e : t) : t =
   string_equal ?comment (typeof e) (str "number")
 
-let literal = function
+let tag_type = function
   | Ast_untagged_variants.String s -> str s ~delim:DStarJ
   | Int i -> small_int i
   | Float f -> float f
@@ -776,7 +776,7 @@ let literal = function
     (* TODO: clean up pattern mathing algo whih confuses literal with blocks *)
     assert false
 
-let rec is_a_literal_case ~(literal_cases : Ast_untagged_variants.literal_type list) ~block_cases (e:t) : t =
+let rec is_a_literal_case ~(literal_cases : Ast_untagged_variants.tag_type list) ~block_cases (e:t) : t =
   let literals_overlaps_with_string () = 
     Ext_list.exists literal_cases (function
       | String _ -> true
@@ -793,8 +793,8 @@ let rec is_a_literal_case ~(literal_cases : Ast_untagged_variants.literal_type l
   let (!=) x y = bin NotEqEq x y in
   let (||) x y = bin Or x y in
   let (&&) x y = bin And x y in
-  let is_literal_case (l:Ast_untagged_variants.literal_type) : t =  e == (literal l) in
-  let is_not_block_case (c:Ast_untagged_variants.block_type) : t = match c with
+  let is_literal_case (t: Ast_untagged_variants.tag_type) : t =  e == (tag_type t) in
+  let is_not_block_case (c: Ast_untagged_variants.block_type) : t = match c with
   | StringType when literals_overlaps_with_string () = false  (* No overlap *) -> 
     (typeof e) != (str "string")
   | IntType when literals_overlaps_with_number () = false ->

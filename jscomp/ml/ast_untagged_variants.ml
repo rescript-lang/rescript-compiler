@@ -29,10 +29,10 @@ let report_error ppf =
 
 type block_type =
   | IntType | StringType | FloatType | ArrayType | ObjectType | UnknownType
-type literal_type =
+type tag_type =
   | String of string | Int of int | Float of string | Bool of bool | Null | Undefined
   | Block of block_type
-type tag = {name: string; literal_type: literal_type option}
+type tag = {name: string; tag_type: tag_type option}
 type block = {tag: tag; tag_name: string option; block_type: block_type option}
 type switch_names = {consts: tag array; blocks: block array}
 
@@ -49,8 +49,8 @@ let process_untagged (attrs : Parsetree.attributes) =
       | _ -> ());
   !st
 
-let process_literal_type (attrs : Parsetree.attributes) =
-  let st : literal_type option ref = ref None in
+let process_tag_type (attrs : Parsetree.attributes) =
+  let st : tag_type option ref = ref None in
   Ext_list.iter attrs (fun (({txt; loc}, payload)) ->
       match txt with
       | "bs.as" | "as" ->
@@ -175,7 +175,7 @@ let checkInvariant ~isUntaggedDef ~(consts : (Location.t * tag) list) ~(blocks :
     if !numberTypes > 1
       then raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneNumber));
     () in
-  Ext_list.rev_iter consts (fun (loc, literal) -> match literal.literal_type with
+  Ext_list.rev_iter consts (fun (loc, literal) -> match literal.tag_type with
     | Some (String s) ->
       addStringLiteral ~loc s
     | Some (Int i) ->
@@ -215,7 +215,7 @@ let names_from_type_variant ?(isUntaggedDef=false) ~env (cstrs : Types.construct
   let get_cstr_name (cstr: Types.constructor_declaration) =
     (cstr.cd_loc,
       { name = Ident.name cstr.cd_id;
-        literal_type = process_literal_type cstr.cd_attributes }) in
+        tag_type = process_tag_type cstr.cd_attributes }) in
   let get_block (cstr: Types.constructor_declaration) : block =
     let tag = snd (get_cstr_name cstr) in
     {tag; tag_name = get_tag_name cstr; block_type = get_block_type ~env cstr} in
