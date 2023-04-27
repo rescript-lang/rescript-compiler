@@ -620,7 +620,7 @@ and compile_general_cases :
 
           [ switch ?default ?declaration switch_exp body ])
 
-and use_compile_literal_cases table get_name =
+and use_compile_literal_cases table (get_name : _ -> Ast_untagged_variants.literal option) =
   List.fold_right (fun (i, lam) acc ->
     match get_name i, acc with
     | Some {Ast_untagged_variants.literal_type = Some literal}, Some string_table ->
@@ -628,7 +628,9 @@ and use_compile_literal_cases table get_name =
     | Some {name; literal_type = None}, Some string_table -> Some ((String name, lam) :: string_table)
     | _, _ -> None
   ) table (Some [])
-and compile_cases ?(untagged=false) ~cxt ~(switch_exp : E.t) ?(default = NonComplete) ?(get_literal = fun _ -> None) cases : initialization =
+and compile_cases
+  ?(untagged=false) ~cxt ~(switch_exp : E.t) ?(default = NonComplete)
+  ?(get_literal = fun _ -> None) cases : initialization =
     match use_compile_literal_cases cases get_literal with
     | Some string_cases ->
       if untagged
@@ -675,12 +677,12 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
   let get_const_name i = get_const_name i sw_names in
   let get_block i = get_block i sw_names in
   let block_cases = get_block_cases sw_names in
-  let get_block_name i = match get_block i with
+  let get_block_name i : Ast_untagged_variants.literal option = match get_block i with
     | None -> None
-    | Some ({block_type = Some block_type} as block) ->
-      Some {block.literal with literal_type = Some (Block block_type)}
-    | Some ({block_type = None; literal}) ->
-      Some literal in
+    | Some ({name; block_type = Some block_type}) ->
+      Some {name; literal_type = Some (Block block_type)}
+    | Some ({block_type = None; name; literal_type}) ->
+      Some {name; literal_type} in
   let tag_name = get_tag_name sw_names in
   let untagged = block_cases <> [] in
   let compile_whole (cxt : Lam_compile_context.t) =

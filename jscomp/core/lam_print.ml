@@ -322,7 +322,7 @@ let lambda ppf v =
             (fun (n, l) ->
               if !spc then fprintf ppf "@ " else spc := true;
               fprintf ppf "@[<hv 1>case tag %i %S:@ %a@]" n
-                (match sw.sw_names with None -> "" | Some x -> x.blocks.(n).literal.name)
+                (match sw.sw_names with None -> "" | Some x -> x.blocks.(n).name)
                 lam l)
             sw.sw_blocks;
           match sw.sw_failaction with

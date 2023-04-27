@@ -33,7 +33,7 @@ type literal_type =
   | String of string | Int of int | Float of string | Bool of bool | Null | Undefined
   | Block of block_type
 type literal = {name: string; literal_type: literal_type option}
-type block = {literal: literal; tag_name: string option; block_type : block_type option}
+type block = {name: string; literal_type: literal_type option; tag_name: string option; block_type: block_type option}
 type switch_names = {consts: literal array; blocks: block array}
 
 let untagged = "unboxed"
@@ -216,8 +216,9 @@ let names_from_type_variant ?(isUntaggedDef=false) ~env (cstrs : Types.construct
     (cstr.cd_loc,
       { name = Ident.name cstr.cd_id;
         literal_type = process_literal_type cstr.cd_attributes }) in
-  let get_block cstr : block =
-    {literal = snd (get_cstr_name cstr); tag_name = get_tag_name cstr; block_type = get_block_type ~env cstr} in
+  let get_block (cstr: Types.constructor_declaration) : block =
+    let literal = snd (get_cstr_name cstr) in
+    {name = literal.name; literal_type = literal.literal_type; tag_name = get_tag_name cstr; block_type = get_block_type ~env cstr} in
   let consts, blocks =
     Ext_list.fold_left cstrs ([], []) (fun (consts, blocks) cstr ->
         if is_nullary_variant cstr.cd_args then
