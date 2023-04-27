@@ -56,15 +56,11 @@ val input_lexbuf: Lexing.lexbuf option ref
 
 val get_pos_info: Lexing.position -> string * int * int (* file, line, char *)
 val print_loc: formatter -> t -> unit
-val print_error: formatter -> t -> unit
-val print_error_cur_file: formatter -> unit -> unit
+val print_error: tag -> formatter -> t -> unit
 
 val prerr_warning: t -> Warnings.t -> unit
 val echo_eof: unit -> unit
 val reset: unit -> unit
-
-val default_printer : formatter -> t -> unit
-val printer : (formatter -> t -> unit) ref
 
 val warning_printer : (t -> formatter -> Warnings.t -> unit) ref
 (** Hook for intercepting warnings. *)
@@ -82,7 +78,7 @@ type 'a loc = {
 val mknoloc : 'a -> 'a loc
 val mkloc : 'a -> t -> 'a loc
 
-val print: formatter -> t -> unit
+val print: message_kind:[< `error | `warning | `warning_as_error > `warning] -> string -> formatter -> t -> unit
 val print_compact: formatter -> t -> unit
 val print_filename: formatter -> string -> unit
 

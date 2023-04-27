@@ -27,7 +27,7 @@ let atLeastOneTaskFailed = false
 
 fixtures.forEach(fileName => {
   const fullFilePath = path.join(__dirname, 'fixtures', fileName)
-  const command = `${prefix} -color always -bs-super-errors ${fullFilePath}`
+  const command = `${prefix} -color always ${fullFilePath}`
   console.log(`running ${command}`)
   child_process.exec(command, (err, stdout, stderr) => {
     doneTasksCount++

@@ -24,6 +24,7 @@
 #### :boom: Breaking Change
 
 - Parse `assert` as a regular function. `assert` is no longer a unary expression. Example: before `assert 1 == 2` is parsed as `(assert 1) == 2`, now it is parsed as `assert(1 == 2)`. https://github.com/rescript-lang/rescript-compiler/pull/6180
+- `-bs-super-errors` flag has been removed along with Super_errors. https://github.com/rescript-lang/rescript-compiler/pull/6199
 
 #### :bug: Bug Fix
 
@@ -31,6 +32,11 @@
 - Fix partial application for uncurried functions with labeled args https://github.com/rescript-lang/rescript-compiler/pull/6198
 - Add error messages for dangling doc comments/attributes and mutable in record type definition. https://github.com/rescript-lang/rescript-compiler/pull/6206
 - Fix issue with overlapping array and object in untagged variants https://github.com/rescript-lang/rescript-compiler/pull/6219
+
+#### :nail_care: Polish
+
+- Add location information to duplicate type definition error messages. https://github.com/rescript-lang/rescript-compiler/pull/6199
+- Replace normal module errors with Super_error module, and clean up Super_error. https://github.com/rescript-lang/rescript-compiler/pull/6199
 
 # 11.0.0-alpha.4
 

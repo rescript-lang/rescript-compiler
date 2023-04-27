@@ -15,7 +15,7 @@
     "exportInterfaces": false
   },
   "name": "sample-typescript-app",
-  "bsc-flags": ["-bs-super-errors"],
+  "bsc-flags": [],
   "jsx": { "version": 3 },
   "bs-dependencies": ["@rescript/react"],
   "sources": [

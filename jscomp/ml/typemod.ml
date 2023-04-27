@@ -33,7 +33,7 @@ type error =
       Longident.t * Path.t * Includemod.error list
   | With_changes_module_alias of Longident.t * Ident.t * Path.t
   | With_cannot_remove_constrained_type
-  | Repeated_name of string * string
+  | Repeated_name of string * string * Warnings.loc
   | Non_generalizable of type_expr
   | Non_generalizable_module of module_type
   | Interface_not_compiled of string
@@ -623,25 +623,26 @@ let check_recmod_typedecls env sdecls decls =
 module StringSet =
   Set.Make(struct type t = string let compare (x:t) y = String.compare x y end)
 
-let check cl loc set_ref name =
-  if StringSet.mem name !set_ref
-  then raise(Error(loc, Env.empty, Repeated_name(cl, name)))
-  else set_ref := StringSet.add name !set_ref
+let check cl loc tbl name =
+  match Hashtbl.find_opt tbl name with
+  | Some repeated_loc ->
+    raise(Error(loc, Env.empty, Repeated_name(cl, name, repeated_loc)))
+  | None -> Hashtbl.add tbl name loc
 
 type names =
   {
-    types: StringSet.t ref;
-    modules: StringSet.t ref;
-    modtypes: StringSet.t ref;
-    typexts: StringSet.t ref;
+    types: (string, Warnings.loc) Hashtbl.t;
+    modules: (string, Warnings.loc) Hashtbl.t;
+    modtypes: (string, Warnings.loc) Hashtbl.t;
+    typexts: (string, Warnings.loc) Hashtbl.t;
   }
 
 let new_names () =
   {
-    types = ref StringSet.empty;
-    modules = ref StringSet.empty;
-    modtypes = ref StringSet.empty;
-    typexts = ref StringSet.empty;
+    types = (Hashtbl.create 10);
+    modules = (Hashtbl.create 10);
+    modtypes = (Hashtbl.create 10);
+    typexts = (Hashtbl.create 10);
   }
 
 
@@ -1807,6 +1808,13 @@ let save_signature modname tsg outputprefix source_file initial_env cmi =
 
 open Printtyp
 
+let non_generalizable_msg ppf print_fallback_msg =
+  fprintf ppf
+    "%a@,@,\
+     @[This happens when the type system senses there's a mutation/side-effect,@ in combination with a polymorphic value.@,\
+     @{<info>Using or annotating that value usually solves it.@}@]"
+    print_fallback_msg ()
+
 let report_error ppf = function
     Cannot_apply mty ->
       fprintf ppf
@@ -1853,18 +1861,31 @@ let report_error ppf = function
         "@[<v>Destructive substitutions are not supported for constrained @ \
               types (other than when replacing a type constructor with @ \
               a type constructor with the same arguments).@]"
-  | Repeated_name(kind, name) ->
+  | Repeated_name(kind, name, repeated_loc) ->
       fprintf ppf
-        "@[Multiple definition of the %s name %s.@ \
-           Names must be unique in a given structure or signature.@]" kind name
+        "@[Multiple definition of the %s name %s @ \
+           at @{<loc>%a@}@ @ \
+           Names must be unique in a given structure or signature.@]" kind name Location.print_loc repeated_loc
   | Non_generalizable typ ->
-      fprintf ppf
-        "@[The type of this expression,@ %a,@ \
-           contains type variables that cannot be generalized@]" type_scheme typ
+    (* modified *)
+    fprintf ppf "@[<v>";
+    non_generalizable_msg
+      ppf
+      (fun ppf () ->
+         fprintf ppf
+           "@[This expression's type contains type variables that cannot be generalized:@,@{<error>%a@}@]"
+           type_scheme typ);
+    fprintf ppf "@]"
   | Non_generalizable_module mty ->
-      fprintf ppf
-        "@[The type of this module,@ %a,@ \
-           contains type variables that cannot be generalized@]" modtype mty
+    (* modified *)
+    fprintf ppf "@[<v>";
+    non_generalizable_msg
+      ppf
+      (fun ppf () ->
+         fprintf ppf
+           "@[The type of this module contains type variables that cannot be generalized:@,@{<error>%a@}@]"
+           modtype mty);
+    fprintf ppf "@]"
   | Interface_not_compiled intf_name ->
       fprintf ppf
         "@[Could not find the .cmi file for interface@ %a.@]"

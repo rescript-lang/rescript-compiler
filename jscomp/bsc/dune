@@ -8,5 +8,4 @@
  (public_name bsc)
  (flags
   (:standard -w +a-4-9-30-40-41-42-48-70))
- (libraries common core depends gentype js_parser syntax super_errors
-   outcome_printer))
+ (libraries common core depends gentype js_parser syntax outcome_printer))
