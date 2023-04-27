@@ -306,6 +306,18 @@ var RecordIsObject = {
   classify: classify$7
 };
 
+function classify$8(v) {
+  if (typeof v === "object" && !Array.isArray(v)) {
+    return v.x;
+  } else {
+    return Caml_array.get(v, 0);
+  }
+}
+
+var ArrayAndObject = {
+  classify: classify$8
+};
+
 var i = 42;
 
 var i2 = 42.5;
@@ -344,4 +356,5 @@ exports.OverlapString = OverlapString;
 exports.OverlapNumber = OverlapNumber;
 exports.OverlapObject = OverlapObject;
 exports.RecordIsObject = RecordIsObject;
+exports.ArrayAndObject = ArrayAndObject;
 /* l2 Not a pure module */

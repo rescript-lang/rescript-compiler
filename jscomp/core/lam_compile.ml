@@ -625,11 +625,11 @@ and use_compile_literal_cases table ~(get_tag : _ -> Ast_untagged_variants.tag o
   ) table (Some [])
 and compile_cases
   ?(untagged=false) ~cxt ~(switch_exp : E.t) ?(default = NonComplete)
-  ?(get_tag = fun _ -> None) cases : initialization =
+  ?(get_tag = fun _ -> None) ?(block_cases=[]) cases : initialization =
     match use_compile_literal_cases cases ~get_tag with
     | Some string_cases ->
       if untagged
-      then compile_untagged_cases ~cxt ~switch_exp ~default string_cases
+      then compile_untagged_cases ~cxt ~switch_exp ~block_cases ~default string_cases
       else compile_string_cases ~cxt ~switch_exp ~default string_cases
     | None ->
       cases |> compile_general_cases
@@ -688,13 +688,13 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
         block
         @
         if sw_consts_full && sw_consts = [] then
-          compile_cases
+          compile_cases ~block_cases
             ~untagged ~cxt
             ~switch_exp:(if untagged then e else E.tag ~name:tag_name e)
             ~default:sw_blocks_default
             ~get_tag:get_block_tag sw_blocks
         else if sw_blocks_full && sw_blocks = [] then
-          compile_cases ~cxt ~switch_exp:e ~default:sw_num_default ~get_tag:get_const_tag sw_consts
+          compile_cases ~cxt ~switch_exp:e ~block_cases ~default:sw_num_default ~get_tag:get_const_tag sw_consts
         else
           (* [e] will be used twice  *)
           let dispatch e =
@@ -706,11 +706,12 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
               else
                E.is_int_tag ~has_null_undefined_other:(has_null_undefined_other sw_names) e in
             S.if_ is_a_literal_case
-              (compile_cases ~cxt ~switch_exp:e ~default:sw_num_default ~get_tag:get_const_tag sw_consts)
+              (compile_cases ~cxt ~switch_exp:e ~block_cases ~default:sw_num_default ~get_tag:get_const_tag sw_consts)
             ~else_:
               (compile_cases 
                 ~untagged ~cxt
                 ~switch_exp:(if untagged then e else E.tag ~name:tag_name e)
+                ~block_cases
                 ~default:sw_blocks_default
                 ~get_tag:get_block_tag sw_blocks)
           in
@@ -749,13 +750,13 @@ and compile_string_cases ~cxt ~switch_exp ~default cases: initialization  =
       S.string_switch ?default ?declaration e clauses)
     ~switch_exp
     ~default
-and compile_untagged_cases ~cxt ~switch_exp ~default cases =
+and compile_untagged_cases ~cxt ~switch_exp ~default ~block_cases cases =
   let mk_eq (i : Ast_untagged_variants.tag_type option) x j y =
     let check =  match i, j with
     | Some tag_type, _ ->
-      Ast_untagged_variants.DynamicChecks.add_runtime_type_check ~tag_type (Expr x) (Expr y)
+      Ast_untagged_variants.DynamicChecks.add_runtime_type_check ~tag_type ~block_cases (Expr x) (Expr y)
     | _, Some tag_type ->
-      Ast_untagged_variants.DynamicChecks.add_runtime_type_check ~tag_type (Expr y) (Expr x)
+      Ast_untagged_variants.DynamicChecks.add_runtime_type_check ~tag_type ~block_cases (Expr y) (Expr x)
     | _ ->
       Ast_untagged_variants.DynamicChecks.(==) (Expr x) (Expr y)
     in
