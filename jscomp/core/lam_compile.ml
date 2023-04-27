@@ -673,10 +673,10 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
   let block_cases = get_block_cases sw_names in
   let get_block_tag i : Ast_untagged_variants.tag option = match get_block i with
     | None -> None
-    | Some ({name; block_type = Some block_type}) ->
+    | Some ({tag = {name}; block_type = Some block_type}) ->
       Some {name; literal_type = Some (Block block_type)}
-    | Some ({block_type = None; name; literal_type}) ->
-      Some {name; literal_type} in
+    | Some ({block_type = None; tag}) ->
+      Some tag in
   let tag_name = get_tag_name sw_names in
   let untagged = block_cases <> [] in
   let compile_whole (cxt : Lam_compile_context.t) =
