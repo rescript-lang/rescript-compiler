@@ -96,7 +96,12 @@ type +'a undefined
   A value of this type can be either undefined or 'a. This type is equivalent to Js.Undefined.t.
 *)
 
-type +'a nullable
+type +'a nullable =
+  | Present of 'a
+  | Null [@as null]
+  | Undefined [@as undefined]
+[@@unboxed]
+
 (**
   A value of this type can be undefined, null or 'a. This type is equivalent to Js.Null_undefined.t.
 *)
