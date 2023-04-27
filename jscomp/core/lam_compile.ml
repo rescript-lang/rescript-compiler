@@ -138,7 +138,7 @@ let default_action ~saturated failaction =
   | None -> Complete
   | Some x -> if saturated then Complete else Default x
 
-let get_const_name i (sw_names : Ast_untagged_variants.switch_names option) =
+let get_const_tag i (sw_names : Ast_untagged_variants.switch_names option) =
   match sw_names with None -> None | Some { consts } -> Some consts.(i)
 
 let get_block i (sw_names : Ast_untagged_variants.switch_names option) =
@@ -615,9 +615,9 @@ and compile_general_cases :
 
           [ switch ?default ?declaration switch_exp body ])
 
-and use_compile_literal_cases table (get_name : _ -> Ast_untagged_variants.literal option) =
+and use_compile_literal_cases table ~(get_tag : _ -> Ast_untagged_variants.tag option) =
   List.fold_right (fun (i, lam) acc ->
-    match get_name i, acc with
+    match get_tag i, acc with
     | Some {Ast_untagged_variants.literal_type = Some literal}, Some string_table ->
        Some ((literal, lam) :: string_table)
     | Some {name; literal_type = None}, Some string_table -> Some ((String name, lam) :: string_table)
@@ -625,15 +625,15 @@ and use_compile_literal_cases table (get_name : _ -> Ast_untagged_variants.liter
   ) table (Some [])
 and compile_cases
   ?(untagged=false) ~cxt ~(switch_exp : E.t) ?(default = NonComplete)
-  ?(get_literal = fun _ -> None) cases : initialization =
-    match use_compile_literal_cases cases get_literal with
+  ?(get_tag = fun _ -> None) cases : initialization =
+    match use_compile_literal_cases cases ~get_tag with
     | Some string_cases ->
       if untagged
       then compile_untagged_cases ~cxt ~switch_exp ~default string_cases
       else compile_string_cases ~cxt ~switch_exp ~default string_cases
     | None ->
       cases |> compile_general_cases
-        ~make_exp:(fun i -> match get_literal i with
+        ~make_exp:(fun i -> match get_tag i with
           | None -> E.small_int i
           | Some {literal_type = Some(String s)} -> E.str s
           | Some {name} -> E.str name)
@@ -668,10 +668,10 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
   let sw_blocks_default =
     default_action ~saturated:sw_blocks_full sw_failaction
   in
-  let get_const_name i = get_const_name i sw_names in
+  let get_const_tag i = get_const_tag i sw_names in
   let get_block i = get_block i sw_names in
   let block_cases = get_block_cases sw_names in
-  let get_block_name i : Ast_untagged_variants.literal option = match get_block i with
+  let get_block_tag i : Ast_untagged_variants.tag option = match get_block i with
     | None -> None
     | Some ({name; block_type = Some block_type}) ->
       Some {name; literal_type = Some (Block block_type)}
@@ -692,9 +692,9 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
             ~untagged ~cxt
             ~switch_exp:(if untagged then e else E.tag ~name:tag_name e)
             ~default:sw_blocks_default
-            ~get_literal:get_block_name sw_blocks
+            ~get_tag:get_block_tag sw_blocks
         else if sw_blocks_full && sw_blocks = [] then
-          compile_cases ~cxt ~switch_exp:e ~default:sw_num_default ~get_literal:get_const_name sw_consts
+          compile_cases ~cxt ~switch_exp:e ~default:sw_num_default ~get_tag:get_const_tag sw_consts
         else
           (* [e] will be used twice  *)
           let dispatch e =
@@ -706,13 +706,13 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
               else
                E.is_int_tag ~has_null_undefined_other:(has_null_undefined_other sw_names) e in
             S.if_ is_a_literal_case
-              (compile_cases ~cxt ~switch_exp:e ~default:sw_num_default ~get_literal:get_const_name sw_consts)
+              (compile_cases ~cxt ~switch_exp:e ~default:sw_num_default ~get_tag:get_const_tag sw_consts)
             ~else_:
               (compile_cases 
                 ~untagged ~cxt
                 ~switch_exp:(if untagged then e else E.tag ~name:tag_name e)
                 ~default:sw_blocks_default
-                ~get_literal:get_block_name sw_blocks)
+                ~get_tag:get_block_tag sw_blocks)
           in
           match e.expression_desc with
           | J.Var _ -> [ dispatch e ]

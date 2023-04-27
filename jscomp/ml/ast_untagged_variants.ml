@@ -32,9 +32,9 @@ type block_type =
 type literal_type =
   | String of string | Int of int | Float of string | Bool of bool | Null | Undefined
   | Block of block_type
-type literal = {name: string; literal_type: literal_type option}
+type tag = {name: string; literal_type: literal_type option}
 type block = {name: string; literal_type: literal_type option; tag_name: string option; block_type: block_type option}
-type switch_names = {consts: literal array; blocks: block array}
+type switch_names = {consts: tag array; blocks: block array}
 
 let untagged = "unboxed"
 
@@ -146,7 +146,7 @@ let get_tag_name (cstr: Types.constructor_declaration) =
 let is_nullary_variant (x : Types.constructor_arguments) =
   match x with Types.Cstr_tuple [] -> true | _ -> false
 
-let checkInvariant ~isUntaggedDef ~(consts : (Location.t * literal) list) ~(blocks : (Location.t * block) list) =
+let checkInvariant ~isUntaggedDef ~(consts : (Location.t * tag) list) ~(blocks : (Location.t * block) list) =
   let module StringSet = Set.Make(String) in
   let string_literals = ref StringSet.empty in
   let nonstring_literals = ref StringSet.empty in
