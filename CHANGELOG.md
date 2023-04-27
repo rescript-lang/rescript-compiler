@@ -23,7 +23,7 @@
 #### :boom: Breaking Change
 
 - Parse `assert` as a regular function. `assert` is no longer a unary expression. Example: before `assert 1 == 2` is parsed as `(assert 1) == 2`, now it is parsed as `assert(1 == 2)`. https://github.com/rescript-lang/rescript-compiler/pull/6180
-- -bs-super-errors flag has been removed along with Super_errors. https://github.com/rescript-lang/rescript-compiler/pull/6199
+- `-bs-super-errors` flag has been removed along with Super_errors. https://github.com/rescript-lang/rescript-compiler/pull/6199
 
 #### :bug: Bug Fix
 
