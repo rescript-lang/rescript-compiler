@@ -24,7 +24,15 @@
 
 (** Efficient JSON encoding using JavaScript API *)
 
-type t
+type t =
+  | False [@as false]
+  | True [@as true]
+  | Null [@as null]
+  | String of string
+  | Number of float
+  | Object of t Js.Dict.t
+  | Array of t array
+[@@unboxed]
 
 type _ kind =
   | String : Js_string.t kind
