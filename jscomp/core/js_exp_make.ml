@@ -776,7 +776,7 @@ let tag_type = function
     (* TODO: this should not happen *)
     assert false
 
-let rec emit_check (check : t Ast_untagged_variants.DynamiChecks.t) = match check with
+let rec emit_check (check : t Ast_untagged_variants.DynamicChecks.t) = match check with
   | TagType t -> tag_type t
   | BinOp(op, x, y) ->
     let op = match op with
@@ -792,11 +792,11 @@ let rec emit_check (check : t Ast_untagged_variants.DynamiChecks.t) = match chec
   | Expr x -> x
 
 let is_a_literal_case ~literal_cases ~block_cases (e:t) =
-  let check = Ast_untagged_variants.DynamiChecks.is_a_literal_case ~literal_cases ~block_cases (Expr e) in
+  let check = Ast_untagged_variants.DynamicChecks.is_a_literal_case ~literal_cases ~block_cases (Expr e) in
   emit_check check
 
 let is_int_tag ?has_null_undefined_other e =
-    let check = Ast_untagged_variants.DynamiChecks.is_int_tag ?has_null_undefined_other (Expr e) in
+    let check = Ast_untagged_variants.DynamicChecks.is_int_tag ?has_null_undefined_other (Expr e) in
     emit_check check
 
 let is_type_string ?comment (e : t) : t =

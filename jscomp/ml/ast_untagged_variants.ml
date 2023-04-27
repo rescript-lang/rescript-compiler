@@ -242,7 +242,7 @@ let names_from_type_variant ?(isUntaggedDef=false) ~env (cstrs : Types.construct
 let check_well_formed ~env ~isUntaggedDef (cstrs: Types.constructor_declaration list) =
   ignore (names_from_type_variant ~env ~isUntaggedDef cstrs)
 
-module DynamiChecks = struct
+module DynamicChecks = struct
 
   type op = EqEqEq | NotEqEq | Or | And
   type 'a t = BinOp of op * 'a t * 'a t | TagType of tag_type | TypeOf of 'a t | IsArray of 'a t | Not of 'a t | Expr of 'a
@@ -327,4 +327,15 @@ module DynamiChecks = struct
       e == nil ||| typeof e != object_
     else (* (undefiled + other) || other *)
       typeof e != object_
+
+  let add_runtime_type_check ~tag_type x y = match tag_type with
+    | Untagged IntType
+    | Untagged StringType
+    | Untagged FloatType
+    | Untagged ObjectType -> typeof y == x 
+    | Untagged ArrayType -> is_array y
+    | Untagged UnknownType ->
+      (* This should not happen because unknown must be the only non-literal case *)
+      assert false 
+    | Bool _ | Float _ | Int _ | String _ | Null | Undefined -> x
 end

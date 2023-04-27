@@ -750,22 +750,16 @@ and compile_string_cases ~cxt ~switch_exp ~default cases: initialization  =
     ~switch_exp
     ~default
 and compile_untagged_cases ~cxt ~switch_exp ~default cases =
-  let add_runtime_type_check (literal: Ast_untagged_variants.tag_type) x y = match literal with
-  | Untagged IntType
-  | Untagged StringType
-  | Untagged FloatType
-  | Untagged ObjectType -> E.string_equal (E.typeof y) x 
-  | Untagged ArrayType -> E.is_array y
-  | Untagged UnknownType ->
-    (* This should not happen because unknown must be the only non-literal case *)
-    assert false 
-  | Bool _ | Float _ | Int _ | String _ | Null | Undefined -> x in
-  let mk_eq (i : Ast_untagged_variants.tag_type option) x j y = match i, j with
-    | Some literal, _ ->
-      add_runtime_type_check literal x y
-    | _, Some literal ->
-      add_runtime_type_check literal y x
-    | _ -> E.string_equal x y
+  let mk_eq (i : Ast_untagged_variants.tag_type option) x j y =
+    let check =  match i, j with
+    | Some tag_type, _ ->
+      Ast_untagged_variants.DynamicChecks.add_runtime_type_check ~tag_type (Expr x) (Expr y)
+    | _, Some tag_type ->
+      Ast_untagged_variants.DynamicChecks.add_runtime_type_check ~tag_type (Expr y) (Expr x)
+    | _ ->
+      Ast_untagged_variants.DynamicChecks.(==) (Expr x) (Expr y)
+    in
+    E.emit_check check
   in
   let is_array (l, _) = l = Ast_untagged_variants.Untagged ArrayType in
   let switch ?default ?declaration e clauses =
@@ -780,7 +774,7 @@ and compile_untagged_cases ~cxt ~switch_exp ~default cases =
     | _ ->
       S.string_switch ?default ?declaration (E.typeof e) clauses in
   cases |> compile_general_cases
-    ~make_exp:E.tag_type
+    ~make_exp: E.tag_type
     ~eq_exp: mk_eq
     ~cxt
     ~switch
