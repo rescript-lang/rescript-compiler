@@ -503,7 +503,7 @@ and compile_recursive_lets cxt id_args : Js_output.t =
 
 and compile_general_cases :
       'a .
-      ?get_cstr_name: ('a -> Ast_untagged_variants.literal option) ->
+      ?get_literal: ('a -> Ast_untagged_variants.literal option) ->
       make_exp: ('a -> J.expression) ->
       eq_exp: ('a option -> J.expression -> 'a option -> J.expression -> J.expression) ->
       cxt: Lam_compile_context.t ->
@@ -514,7 +514,7 @@ and compile_general_cases :
       ('a * Lam.t) list ->
       J.block =
   fun (type a)
-    ?(get_cstr_name : a -> Ast_untagged_variants.literal option = fun _ -> None)
+    ?(get_literal : a -> Ast_untagged_variants.literal option = fun _ -> None)
     ~(make_exp : a -> J.expression)
     ~(eq_exp : a option -> J.expression -> a option -> J.expression -> J.expression)
     ~(cxt : Lam_compile_context.t)
@@ -581,7 +581,7 @@ and compile_general_cases :
             | Default lam ->
                 Some (Js_output.output_as_block (compile_lambda cxt lam))
           in
-          let make_comment i = match get_cstr_name i with
+          let make_comment i = match get_literal i with
             | None -> None
             | Some {name} -> Some name  in
           let body =
@@ -628,16 +628,16 @@ and use_compile_literal_cases table get_name =
     | Some {name; literal_type = None}, Some string_table -> Some ((String name, lam) :: string_table)
     | _, _ -> None
   ) table (Some [])
-and compile_cases ?(untagged=false) ~cxt ~(switch_exp : E.t) ?(default = NonComplete) ?(get_name = fun _ -> None) cases : initialization =
-    match use_compile_literal_cases cases get_name with
+and compile_cases ?(untagged=false) ~cxt ~(switch_exp : E.t) ?(default = NonComplete) ?(get_literal = fun _ -> None) cases : initialization =
+    match use_compile_literal_cases cases get_literal with
     | Some string_cases ->
       if untagged
       then compile_untagged_cases ~cxt ~switch_exp ~default string_cases
       else compile_string_cases ~cxt ~switch_exp ~default string_cases
     | None ->
       cases |> compile_general_cases
-        ~get_cstr_name:get_name
-        ~make_exp:(fun i -> match get_name i with
+        ~get_literal
+        ~make_exp:(fun i -> match get_literal i with
           | None -> E.small_int i
           | Some {literal_type = Some(String s)} -> E.str s
           | Some {name} -> E.str name)
@@ -696,9 +696,9 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
             ~untagged ~cxt
             ~switch_exp:(if untagged then e else E.tag ~name:tag_name e)
             ~default:sw_blocks_default
-            ~get_name:get_block_name sw_blocks
+            ~get_literal:get_block_name sw_blocks
         else if sw_blocks_full && sw_blocks = [] then
-          compile_cases ~cxt ~switch_exp:e ~default:sw_num_default ~get_name:get_const_name sw_consts
+          compile_cases ~cxt ~switch_exp:e ~default:sw_num_default ~get_literal:get_const_name sw_consts
         else
           (* [e] will be used twice  *)
           let dispatch e =
@@ -710,13 +710,13 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
               else
                E.is_int_tag ~has_null_undefined_other:(has_null_undefined_other sw_names) e in
             S.if_ is_a_literal_case
-              (compile_cases ~cxt ~switch_exp:e ~default:sw_num_default ~get_name:get_const_name sw_consts)
+              (compile_cases ~cxt ~switch_exp:e ~default:sw_num_default ~get_literal:get_const_name sw_consts)
             ~else_:
               (compile_cases 
                 ~untagged ~cxt
                 ~switch_exp:(if untagged then e else E.tag ~name:tag_name e)
                 ~default:sw_blocks_default
-                ~get_name:get_block_name sw_blocks)
+                ~get_literal:get_block_name sw_blocks)
           in
           match e.expression_desc with
           | J.Var _ -> [ dispatch e ]
