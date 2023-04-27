@@ -630,10 +630,10 @@ and use_compile_literal_cases table get_name =
   ) table (Some [])
 and compile_cases ?(untagged=false) ~cxt ~(switch_exp : E.t) ?(default = NonComplete) ?(get_name = fun _ -> None) cases : initialization =
     match use_compile_literal_cases cases get_name with
-    | Some string_table ->
+    | Some string_cases ->
       if untagged
-      then compile_untagged_cases cxt switch_exp string_table default
-      else compile_string_cases cxt switch_exp string_table default
+      then compile_untagged_cases ~cxt ~switch_exp ~default string_cases
+      else compile_string_cases ~cxt ~switch_exp ~default string_cases
     | None ->
       cases |> compile_general_cases
         ~get_cstr_name:get_name
@@ -744,7 +744,7 @@ and compile_switch (switch_arg : Lam.t) (sw : Lam.lambda_switch)
   | EffectCall _ | Assign _ -> Js_output.make (compile_whole lambda_cxt)
 
 
-and compile_string_cases cxt switch_exp cases default : initialization  =
+and compile_string_cases ~cxt ~switch_exp ~default cases: initialization  =
   let literal = function  
     | literal -> E.literal literal
   in
@@ -756,7 +756,7 @@ and compile_string_cases cxt switch_exp cases default : initialization  =
       S.string_switch ?default ?declaration e clauses)
     ~switch_exp
     ~default
-and compile_untagged_cases cxt switch_exp cases default =
+and compile_untagged_cases ~cxt ~switch_exp ~default cases =
   let add_runtime_type_check (literal: Ast_untagged_variants.literal_type) x y = match literal with
   | Block IntType
   | Block StringType
@@ -817,13 +817,13 @@ and compile_stringswitch l cases default (lambda_cxt : Lam_compile_context.t) =
           Js_output.make
             (Ext_list.append block
                (compile_string_cases
-                  { lambda_cxt with continuation = Declare (Variable, v) }
-                  e cases default))
+                  ~cxt: { lambda_cxt with continuation = Declare (Variable, v) }
+                  ~switch_exp:e ~default cases))
             ~value:(E.var v)
       | _ ->
           Js_output.make
             (Ext_list.append block
-               (compile_string_cases lambda_cxt e cases default)))
+               (compile_string_cases ~cxt:lambda_cxt ~switch_exp:e ~default cases )))
 
 (*
          This should be optimized in lambda layer
