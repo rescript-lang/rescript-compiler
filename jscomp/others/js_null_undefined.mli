@@ -24,7 +24,11 @@
 
 (** Contains functionality for dealing with values that can be both `null` and `undefined` *)
 
-type +'a t = 'a Js.null_undefined
+type +'a t = 'a Js.nullable = 
+  | Present of 'a
+  | Null [@as null]
+  | Undefined [@as undefined]
+[@@unboxed]
 (** Local alias for `Js.null_undefined('a)`. *)
 
 external return : 'a -> 'a t = "%identity"
