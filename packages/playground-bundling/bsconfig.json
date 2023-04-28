@@ -9,5 +9,6 @@
   "sources": {
     "dir": "src",
     "subdirs": true
-  }
+  },
+  "uncurried": true
 }

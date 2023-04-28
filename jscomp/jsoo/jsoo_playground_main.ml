@@ -44,10 +44,12 @@
  * and use the proper interfaces as stated by the apiVersion.
  *
  * -----------------------------
- * Version History:
- * v2: Remove refmt support (removes compiler.reason apis)
+ * Version History: * v2: Remove refmt support (removes compiler.reason apis)
+ * v3: Switched to Uncurried mode by default (requires third party packages
+ to be built with uncurried: true in bsconfig.json). Also added
+ `config.uncurried` to the BundleConfig.
  * *)
-let apiVersion = "2"
+let apiVersion = "3"
 
 module Js = Jsoo_common.Js
 
@@ -73,12 +75,18 @@ module BundleConfig = struct
     mutable module_system: Js_packages_info.module_system;
     mutable filename: string option;
     mutable warn_flags: string;
+
+    (* This one can't be mutated since we only provide
+       third-party packages that were compiled for uncurried
+       mode *)
+    uncurried: bool;
   }
 
   let make () = {
     module_system=Js_packages_info.NodeJS;
     filename=None;
     warn_flags=Bsc_warnings.defaults_w;
+    uncurried=(!Config.uncurried = Uncurried);
   }
 
 
@@ -661,6 +669,7 @@ module Export = struct
                              );
                              "warn_flags",
                              inject @@ (Js.string config.warn_flags);
+                             "uncurried", inject @@ (Js.bool config.uncurried);
                            |]))
           );
       |])
@@ -668,6 +677,8 @@ module Export = struct
 end
 
 let () =
+  (* From now on the default setting will be uncurried mode *)
+  Config.uncurried := Uncurried;
   export "rescript_compiler"
     (Js.Unsafe.(obj
                   [|

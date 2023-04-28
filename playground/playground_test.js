@@ -30,6 +30,11 @@ let result = compiler.rescript.compile(`
     ->Array.map(x => x * 2)
     ->Array.reduce(0, (acc, item) => acc + item)
 
+
+  // Test uncurried behavior
+  let runFn = (f, x) => f(x)
+  runFn(x => x + 1, 1)->Console.log
+
   Console.log("Hello world!")
 
   let a = <B a="hello" />
