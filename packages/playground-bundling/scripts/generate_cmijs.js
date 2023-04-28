@@ -48,7 +48,7 @@ function e(cmd) {
 
 e(`npm install`);
 e(`npm link ${RESCRIPT_COMPILER_ROOT_DIR}`);
-e(`npx rescript`)
+e(`npx rescript`);
 
 const packages = bsconfig["bs-dependencies"];
 
