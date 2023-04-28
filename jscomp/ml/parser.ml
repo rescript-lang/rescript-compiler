@@ -7852,7 +7852,7 @@ let yyact = [|
     Obj.repr(
 # 1116 "ml/parser.mly"
       ( let (l,o,p) = _3 in
-        mkexp_attrs (Pexp_fun(l, o, p, _4)) _2 )
+        mkexp_attrs (Pexp_fun(l, o, p, _4, [])) _2 )
 # 7857 "ml/parser.ml"
                : 'expr))
 ; (fun __caml_parser_env ->
@@ -9025,7 +9025,7 @@ let yyact = [|
     let _2 = (Parsing.peek_val __caml_parser_env 0 : 'fun_binding) in
     Obj.repr(
 # 1451 "ml/parser.mly"
-      ( let (l, o, p) = _1 in ghexp(Pexp_fun(l, o, p, _2)) )
+      ( let (l, o, p) = _1 in ghexp(Pexp_fun(l, o, p, _2, [])) )
 # 9030 "ml/parser.ml"
                : 'strict_binding))
 ; (fun __caml_parser_env ->
@@ -9097,7 +9097,7 @@ let yyact = [|
 # 1474 "ml/parser.mly"
       (
        let (l,o,p) = _1 in
-       ghexp(Pexp_fun(l, o, p, _2))
+       ghexp(Pexp_fun(l, o, p, _2, []))
       )
 # 9103 "ml/parser.ml"
                : 'fun_def))

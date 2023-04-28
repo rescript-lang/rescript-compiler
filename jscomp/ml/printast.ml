@@ -263,12 +263,13 @@ and expression i ppf x =
   | Pexp_function l ->
       line i ppf "Pexp_function\n";
       list i case ppf l;
-  | Pexp_fun (l, eo, p, e) ->
+  | Pexp_fun (l, eo, p, e, a) ->
       line i ppf "Pexp_fun\n";
       arg_label i ppf l;
       option i expression ppf eo;
       pattern i ppf p;
       expression i ppf e;
+      attributes i ppf a;
   | Pexp_apply (e, l) ->
       line i ppf "Pexp_apply\n";
       expression i ppf e;

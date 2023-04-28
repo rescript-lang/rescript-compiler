@@ -534,7 +534,7 @@ let processUnderscoreApplication (p : Parser.t) args =
           (Ppat_var (Location.mkloc hidden_var loc))
           ~loc:Location.none
       in
-      let funExpr = Ast_helper.Exp.fun_ ~loc Nolabel None pattern exp_apply in
+      let funExpr = Ast_helper.Exp.fun_ ~loc Nolabel None pattern exp_apply [] in
       if p.uncurried_config = Legacy then funExpr
       else Ast_uncurried.uncurriedFun ~loc ~arity:1 funExpr
     | None -> exp_apply
@@ -1587,7 +1587,7 @@ and parseEs6ArrowExpression ?(arrowAttrs = []) ?(arrowStartPos = None) ?context
             } ->
           let loc = mkLoc startPos endPos in
           let funExpr =
-            Ast_helper.Exp.fun_ ~loc ~attrs lbl defaultExpr pat expr
+              Ast_helper.Exp.fun_ ~loc ~attrs lbl defaultExpr pat expr []
           in
           let uncurried =
             p.uncurried_config |> Res_uncurried.fromDotted ~dotted
@@ -2346,14 +2346,14 @@ and overParseConstrainedOrCoercedOrArrowExpression p expr =
         Ast_helper.Exp.fun_
           ~loc:(mkLoc expr.pexp_loc.loc_start body.pexp_loc.loc_end)
           Asttypes.Nolabel None pat
-          (Ast_helper.Exp.constraint_ body typ)
+          (Ast_helper.Exp.constraint_ body typ) []
       in
       let arrow2 =
         Ast_helper.Exp.fun_
           ~loc:(mkLoc expr.pexp_loc.loc_start body.pexp_loc.loc_end)
           Asttypes.Nolabel None
           (Ast_helper.Pat.constraint_ pat typ)
-          body
+          body []
       in
       let msg =
         Doc.breakableGroup ~forceBreak:true

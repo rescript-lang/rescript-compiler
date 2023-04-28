@@ -72,4 +72,4 @@ let convertBsErrorFunction loc (self : Bs_ast_mapper.mapper) attrs
                      {txt = Ast_literal.predef_some; loc}
                      (Some pc_rhs);
                })))
-       (Some none))
+       (Some none)) []

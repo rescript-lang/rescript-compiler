@@ -128,7 +128,7 @@ let rewriteUnderscoreApply expr =
       ( Nolabel,
         None,
         {ppat_desc = Ppat_var {txt = "__x"}},
-        ({pexp_desc = Pexp_apply (callExpr, args)} as e) ) ->
+        ({pexp_desc = Pexp_apply (callExpr, args)} as e), _ ) ->
     let newArgs =
       List.map
         (fun arg ->
@@ -173,7 +173,7 @@ let funExpr expr =
          ( Nolabel,
            None,
            {ppat_desc = Ppat_var {txt = "__x"}},
-           {pexp_desc = Pexp_apply _} );
+           {pexp_desc = Pexp_apply _}, _ );
     } ->
       (uncurried, attrsBefore, List.rev acc, rewriteUnderscoreApply expr)
     | {pexp_desc = Pexp_newtype (stringLoc, rest); pexp_attributes = attrs} ->
@@ -181,7 +181,7 @@ let funExpr expr =
       let param = NewTypes {attrs; locs = stringLocs} in
       collect ~uncurried ~nFun attrsBefore (param :: acc) returnExpr
     | {
-     pexp_desc = Pexp_fun (lbl, defaultExpr, pattern, returnExpr);
+     pexp_desc = Pexp_fun (lbl, defaultExpr, pattern, returnExpr, _);
      pexp_attributes = [];
     } ->
       let parameter = Parameter {attrs = []; lbl; defaultExpr; pat = pattern} in
@@ -708,7 +708,7 @@ let isUnderscoreApplySugar expr =
       ( Nolabel,
         None,
         {ppat_desc = Ppat_var {txt = "__x"}},
-        {pexp_desc = Pexp_apply _} ) ->
+        {pexp_desc = Pexp_apply _}, _ ) ->
     true
   | _ -> false
 

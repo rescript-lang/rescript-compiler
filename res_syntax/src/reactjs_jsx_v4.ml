@@ -600,15 +600,15 @@ let transformLowercaseCall3 ~config mapper jsxExprLoc callExprLoc attrs
 let rec recursivelyTransformNamedArgsForMake expr args newtypes coreType =
   match expr.pexp_desc with
   (* TODO: make this show up with a loc. *)
-  | Pexp_fun (Labelled "key", _, _, _) | Pexp_fun (Optional "key", _, _, _) ->
+  | Pexp_fun (Labelled "key", _, _, _, _) | Pexp_fun (Optional "key", _, _, _, _) ->
     React_jsx_common.raiseError ~loc:expr.pexp_loc
       "Key cannot be accessed inside of a component. Don't worry - you can \
        always key a component from its parent!"
-  | Pexp_fun (Labelled "ref", _, _, _) | Pexp_fun (Optional "ref", _, _, _) ->
+  | Pexp_fun (Labelled "ref", _, _, _, _) | Pexp_fun (Optional "ref", _, _, _, _) ->
     React_jsx_common.raiseError ~loc:expr.pexp_loc
       "Ref cannot be passed as a normal prop. Please use `forwardRef` API \
        instead."
-  | Pexp_fun (arg, default, pattern, expression)
+  | Pexp_fun (arg, default, pattern, expression, _)
     when isOptional arg || isLabelled arg ->
     let () =
       match (isOptional arg, pattern, default) with
@@ -652,7 +652,7 @@ let rec recursivelyTransformNamedArgsForMake expr args newtypes coreType =
       ( Nolabel,
         _,
         {ppat_desc = Ppat_construct ({txt = Lident "()"}, _) | Ppat_any},
-        _expression ) ->
+        _expression, _ ) ->
     (args, newtypes, coreType)
   | Pexp_fun
       ( Nolabel,
@@ -661,7 +661,7 @@ let rec recursivelyTransformNamedArgsForMake expr args newtypes coreType =
            ppat_desc =
              Ppat_var {txt} | Ppat_constraint ({ppat_desc = Ppat_var {txt}}, _);
          } as pattern),
-        _expression ) ->
+        _expression, _ ) ->
     if txt = "ref" then
       let type_ =
         match pattern with
@@ -673,7 +673,7 @@ let rec recursivelyTransformNamedArgsForMake expr args newtypes coreType =
         newtypes,
         coreType )
     else (args, newtypes, coreType)
-  | Pexp_fun (Nolabel, _, pattern, _expression) ->
+  | Pexp_fun (Nolabel, _, pattern, _expression, _) ->
     Location.raise_errorf ~loc:pattern.ppat_loc
       "React: react.component refs only support plain arguments and type \
        annotations."
@@ -775,14 +775,14 @@ let modifiedBinding ~bindingLoc ~bindingPatLoc ~fnName binding =
          ( ((Labelled _ | Optional _) as label),
            default,
            pattern,
-           ({pexp_desc = Pexp_fun _} as internalExpression) );
+           ({pexp_desc = Pexp_fun _} as internalExpression), a );
     } ->
       let wrap, hasForwardRef, exp =
         spelunkForFunExpression internalExpression
       in
       ( wrap,
         hasForwardRef,
-        {expression with pexp_desc = Pexp_fun (label, default, pattern, exp)} )
+        {expression with pexp_desc = Pexp_fun (label, default, pattern, exp, a)} )
     (* let make = (()) => ... *)
     (* let make = (_) => ... *)
     | {
@@ -791,18 +791,18 @@ let modifiedBinding ~bindingLoc ~bindingPatLoc ~fnName binding =
          ( Nolabel,
            _default,
            {ppat_desc = Ppat_construct ({txt = Lident "()"}, _) | Ppat_any},
-           _internalExpression );
+           _internalExpression, _ );
     } ->
       ((fun a -> a), false, expression)
     (* let make = (~prop) => ... *)
     | {
      pexp_desc =
        Pexp_fun
-         ((Labelled _ | Optional _), _default, _pattern, _internalExpression);
+         ((Labelled _ | Optional _), _default, _pattern, _internalExpression, _);
     } ->
       ((fun a -> a), false, expression)
     (* let make = (prop) => ... *)
-    | {pexp_desc = Pexp_fun (_nolabel, _default, pattern, _internalExpression)}
+    | {pexp_desc = Pexp_fun (_nolabel, _default, pattern, _internalExpression, _)}
       ->
       if !hasApplication then ((fun a -> a), false, expression)
       else
@@ -949,8 +949,8 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
         (if hasForwardRef then
          Exp.fun_ nolabel None
            (Pat.var @@ Location.mknoloc "ref")
-           innerExpression
-        else innerExpression)
+           innerExpression []
+        else innerExpression) []
     in
     let fullExpression =
       if !Config.uncurried = Uncurried then
@@ -989,9 +989,9 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
           ( _arg_label,
             _default,
             {ppat_desc = Ppat_construct ({txt = Lident "()"}, _)},
-            expr ) ->
+            expr, _ ) ->
         (patternsWithLabel, patternsWithNolabel, expr)
-      | Pexp_fun (arg_label, _default, ({ppat_loc; ppat_desc} as pattern), expr)
+      | Pexp_fun (arg_label, _default, ({ppat_loc; ppat_desc} as pattern), expr, _)
         -> (
         let patternWithoutConstraint =
           stripConstraintUnpack ~label:(getLabel arg_label) pattern
@@ -1035,7 +1035,7 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
     (* (ref) => expr *)
     let expression =
       List.fold_left
-        (fun expr (_, pattern) -> Exp.fun_ Nolabel None pattern expr)
+        (fun expr (_, pattern) -> Exp.fun_ Nolabel None pattern expr [])
         expression patternsWithNolabel
     in
     (* ({a, b, _}: props<'a, 'b>) *)
@@ -1057,7 +1057,7 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
                 match typVarsOfCoreType with
                 | [] -> []
                 | _ -> [Typ.any ()]))))
-        expression
+        expression []
     in
     let expression =
       (* Add new tupes (type a,b,c) to make's definition *)

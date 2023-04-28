@@ -1114,7 +1114,7 @@ expr:
       { mkexp_attrs (Pexp_function(List.rev $4)) $2 }
   | FUN ext_attributes labeled_simple_pattern fun_def
       { let (l,o,p) = $3 in
-        mkexp_attrs (Pexp_fun(l, o, p, $4)) $2 }
+        mkexp_attrs (Pexp_fun(l, o, p, $4, [])) $2 }
   | FUN ext_attributes LPAREN TYPE lident_list RPAREN fun_def
       { mkexp_attrs (mk_newtypes $5 $7).pexp_desc $2 }
   | MATCH ext_attributes seq_expr WITH opt_bar match_cases
@@ -1448,7 +1448,7 @@ strict_binding:
     EQUAL seq_expr
       { $2 }
   | labeled_simple_pattern fun_binding
-      { let (l, o, p) = $1 in ghexp(Pexp_fun(l, o, p, $2)) }
+      { let (l, o, p) = $1 in ghexp(Pexp_fun(l, o, p, $2, [])) }
   | LPAREN TYPE lident_list RPAREN fun_binding
       { mk_newtypes $3 $5 }
 ;
@@ -1473,7 +1473,7 @@ fun_def:
   | labeled_simple_pattern fun_def
       {
        let (l,o,p) = $1 in
-       ghexp(Pexp_fun(l, o, p, $2))
+       ghexp(Pexp_fun(l, o, p, $2, []))
       }
   | LPAREN TYPE lident_list RPAREN fun_def
       { mk_newtypes $3 $5 }

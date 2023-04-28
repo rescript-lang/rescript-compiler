@@ -31,7 +31,7 @@ let init () =
                          (Pat.constraint_ (Pat.var {txt; loc}) core_type)
                          (Exp.field
                             (Exp.ident {txt = Lident txt; loc})
-                            {txt = Longident.Lident pld_label; loc})))
+                            {txt = Longident.Lident pld_label; loc}) []))
               | Ptype_variant constructor_declarations ->
                 Ext_list.map constructor_declarations
                   (fun
@@ -85,7 +85,7 @@ let init () =
                             annotate_type
                         in
                         Ext_list.fold_right vars exp (fun var b ->
-                            Ast_compatible.fun_ (Pat.var {loc; txt = var}) b)))
+                            Ast_compatible.fun_ (Pat.var {loc; txt = var}) b [])))
               | Ptype_abstract | Ptype_open ->
                 Ast_derive_util.notApplicable tdcl.ptype_loc derivingName;
                 []

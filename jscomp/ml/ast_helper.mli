@@ -121,7 +121,7 @@ module Exp:
     val let_: ?loc:loc -> ?attrs:attrs -> rec_flag -> value_binding list
               -> expression -> expression
     val fun_: ?loc:loc -> ?attrs:attrs -> arg_label -> expression option
-              -> pattern -> expression -> expression
+              -> pattern -> expression -> attributes -> expression
     val function_: ?loc:loc -> ?attrs:attrs -> case list -> expression
     val apply: ?loc:loc -> ?attrs:attrs -> expression
                -> (arg_label * expression) list -> expression

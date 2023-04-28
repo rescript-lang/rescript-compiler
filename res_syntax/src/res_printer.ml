@@ -2686,7 +2686,7 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
         ( Nolabel,
           None,
           {ppat_desc = Ppat_var {txt = "__x"}},
-          {pexp_desc = Pexp_apply _} )
+          {pexp_desc = Pexp_apply _}, _ )
     | Pexp_construct
         ( {txt = Lident "Function$"},
           Some
@@ -2696,7 +2696,7 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
                   ( Nolabel,
                     None,
                     {ppat_desc = Ppat_var {txt = "__x"}},
-                    {pexp_desc = Pexp_apply _} );
+                    {pexp_desc = Pexp_apply _}, _ );
             } ) ->
       (* (__x) => f(a, __x, c) -----> f(a, _, c)  *)
       printExpressionWithComments ~state

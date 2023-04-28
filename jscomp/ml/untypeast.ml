@@ -357,7 +357,7 @@ let expression sub exp =
     (* One case, no guard: It's a fun. *)
     | Texp_function { arg_label; cases = [{c_lhs=p; c_guard=None; c_rhs=e}];
           _ } ->
-        Pexp_fun (arg_label, None, sub.pat sub p, sub.expr sub e)
+        Pexp_fun (arg_label, None, sub.pat sub p, sub.expr sub e, [])
     (* No label: it's a function. *)
     | Texp_function { arg_label = Nolabel; cases; _; } ->
         Pexp_function (sub.cases sub cases)
@@ -367,7 +367,7 @@ let expression sub exp =
         let name = fresh_name s exp.exp_env in
         Pexp_fun (label, None, Pat.var ~loc {loc;txt = name },
           Exp.match_ ~loc (Exp.ident ~loc {loc;txt= Lident name})
-                          (sub.cases sub cases))
+                          (sub.cases sub cases), [])
     | Texp_apply (exp, list) ->
         Pexp_apply (sub.expr sub exp,
           List.fold_right (fun (label, expo) list ->
