@@ -237,7 +237,7 @@ end = struct
     Benchmark.report b
 
   let run () =
-    let dataDir = "res_syntax/benchmarks/data" in
+    let dataDir = "jscomp/syntax/benchmarks/data" in
     benchmark (Filename.concat dataDir "RedBlackTree.res") Rescript Parse;
     benchmark (Filename.concat dataDir "RedBlackTree.ml") Ocaml Parse;
     benchmark (Filename.concat dataDir "RedBlackTree.res") Rescript Print;
