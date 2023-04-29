@@ -381,7 +381,6 @@ These are only breaking changes for unformatted code.
 
 #### :boom: Breaking Change
 
-- Vendor genType, which does not need to be installed separately anymore. **Only TypeScript back-end** supported.
 - Pipe `->` does not support a code block on the right-hand side e.g. `x->{ open A; get("test") }`
 
 #### :rocket: New Feature
@@ -421,6 +420,8 @@ These are only breaking changes for unformatted code.
 - Changed return type of `Js.String.match_` as it was wrong. [#5070](https://github.com/rescript-lang/rescript-compiler/pull/5070)
   - Example: any use of `Js.String.match_` and `Js.String2.match_`
   - Fix: follow the type errors
+- GenType is now vendored in the compiler and drops support for the Flow and untyped back-ends to focus on providing a better experience for TypeScript.
+  - Fix: keep on using the older version of the compiler and the separate genType package if Flow support is required. Migrate to TS if one wants to upgrade the compiler version.
 
 #### :rocket: New Feature
 
