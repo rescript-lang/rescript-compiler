@@ -466,6 +466,8 @@ let file_level_flags_handler (e : Parsetree.expression option) =
 
 let _ : unit =   
   Bs_conditional_initial.setup_env ();
+  Clflags.color := Some Always;
+    
   let flags = "flags" in 
   Ast_config.add_structure 
     flags file_level_flags_handler;    

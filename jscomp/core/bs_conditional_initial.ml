@@ -34,10 +34,6 @@ let setup_env () =
   Clflags.dump_location := false;  
   Config.syntax_kind := `rescript;
   Parmatch.print_res_pat := Pattern_printer.print_pattern;
-#ifdef BROWSER
-#else    
-  Clflags.color := Some Always;
-#endif  
   (* default true
      otherwise [bsc -I sc src/hello.ml ] will include current directory to search path
   *)
@@ -53,21 +49,11 @@ let setup_env () =
   Lambda.blk_record := Record_attributes_check.blk_record;
   Matching.names_from_construct_pattern := 
     Matching_polyfill.names_from_construct_pattern;
-#ifndef RELEASE 
-    (let root_dir = 
-       Filename.dirname 
-         (Filename.dirname Sys.executable_name) in 
-     let (//) = Filename.concat in       
-     Clflags.include_dirs :=
-       (root_dir//"jscomp"//"others") ::
-       (root_dir//"jscomp"//"stdlib-406") ::
-       !Clflags.include_dirs);
-#endif
-  Rescript_cpp.replace_directive_bool "BS" true;
+  
+    Rescript_cpp.replace_directive_bool "BS" true;
   Rescript_cpp.replace_directive_bool "JS" true;
   Rescript_cpp.replace_directive_string "BS_VERSION"  Bs_version.version
   (*; Switch.cut := 100*) (* tweakable but not very useful *)
-
 
 let () = 
   at_exit (fun _ -> Format.pp_print_flush Format.err_formatter ())
