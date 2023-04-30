@@ -145,6 +145,8 @@ function classify$4(x) {
         return "string";
     case "number" :
         return "int";
+    case "boolean" :
+        return "bool";
     case "object" :
         return "Object" + x.name;
     

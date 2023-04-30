@@ -770,6 +770,7 @@ let tag_type = function
   | Untagged IntType -> str "number"
   | Untagged FloatType -> str "number"
   | Untagged StringType -> str "string"
+  | Untagged BoolType -> str "boolean"
   | Untagged ArrayType -> str "Array" ~delim:DNoQuotes
   | Untagged ObjectType -> str "object"
   | Untagged UnknownType ->

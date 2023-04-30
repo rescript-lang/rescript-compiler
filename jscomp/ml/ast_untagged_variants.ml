@@ -1,4 +1,4 @@
-type untaggedError = OnlyOneUnknown | AtMostOneObject | AtMostOneArray | AtMostOneString | AtMostOneNumber | DuplicateLiteral of string
+type untaggedError = OnlyOneUnknown | AtMostOneObject | AtMostOneBool | AtMostOneArray | AtMostOneString | AtMostOneNumber | DuplicateLiteral of string
 type error =
   | InvalidVariantAsAnnotation
   | Duplicated_bs_as
@@ -24,12 +24,13 @@ let report_error ppf =
     | AtMostOneArray -> "At most one case can be an array type."
     | AtMostOneString -> "At most one case can be a string type."
     | AtMostOneNumber -> "At most one case can be a number type (int or float)."
+    | AtMostOneBool -> "At most one case can be a boolean type."
     | DuplicateLiteral s -> "Duplicate literal " ^ s ^ "."
     )
 
 (* Type of the runtime representation of an untagged block (case with payoad) *)
 type block_type =
-  | IntType | StringType | FloatType | ArrayType | ObjectType | UnknownType
+  | IntType | StringType | FloatType | BoolType | ArrayType | ObjectType | UnknownType
 
 (*
   Type of the runtime representation of a tag.
@@ -110,8 +111,10 @@ let get_block_type ~env (cstr: Types.constructor_declaration) : block_type optio
       Some FloatType
   | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path.same path Predef.path_array ->
       Some ArrayType
-  | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path. same path Predef.path_string ->
+  | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path.same path Predef.path_string ->
       Some StringType
+  | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path.same path Predef.path_bool ->
+      Some BoolType
   | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when
     let name = Path.name path in
     name = "Js.Dict.t" || name = "Js_dict.t" ->
@@ -161,6 +164,7 @@ let checkInvariant ~isUntaggedDef ~(consts : (Location.t * tag) list) ~(blocks :
   let objectTypes = ref 0 in
   let stringTypes = ref 0 in
   let numberTypes = ref 0 in
+  let boolTypes = ref 0 in
   let unknownTypes = ref 0 in
   let addStringLiteral ~loc s = 
     if StringSet.mem s !string_literals then
@@ -179,6 +183,8 @@ let checkInvariant ~isUntaggedDef ~(consts : (Location.t * tag) list) ~(blocks :
       then raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneArray));
     if !stringTypes > 1
       then raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneString));
+    if !boolTypes > 1
+      then raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneBool));
     if !numberTypes > 1
       then raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneNumber));
     () in
@@ -206,6 +212,9 @@ let checkInvariant ~isUntaggedDef ~(consts : (Location.t * tag) list) ~(blocks :
       invariant loc
     | Some ObjectType ->
       incr objectTypes;
+      invariant loc
+    | Some BoolType ->
+      incr boolTypes;
       invariant loc
     | Some ArrayType ->
       incr arrayTypes;
@@ -258,6 +267,7 @@ module DynamicChecks = struct
   let object_ = Untagged ObjectType |> tag_type
   let string = Untagged StringType |> tag_type
   let number = Untagged IntType |> tag_type
+  let bool = Untagged BoolType |> tag_type
 
   let (==) x y = bin EqEqEq x y
   let (!=) x y = bin NotEqEq x y
@@ -274,6 +284,10 @@ module DynamicChecks = struct
       Ext_list.exists literal_cases (function
         | Int _ | Float _ -> true
         | _ -> false ) in
+    let literals_overlaps_with_bool () = 
+      Ext_list.exists literal_cases (function
+        | Bool _ -> true
+        | _ -> false ) in
     let literals_overlaps_with_object () = 
       Ext_list.exists literal_cases (function
         | Null -> true
@@ -286,6 +300,8 @@ module DynamicChecks = struct
       typeof e != number
     | FloatType when literals_overlaps_with_number () = false ->
       typeof e != number
+    | BoolType when literals_overlaps_with_bool () = false ->
+      typeof e != bool
     | ArrayType -> 
       not (is_array e)
     | ObjectType when literals_overlaps_with_object () = false ->
@@ -295,6 +311,7 @@ module DynamicChecks = struct
     | StringType (* overlap *)
     | IntType (* overlap *)
     | FloatType (* overlap *)
+    | BoolType (* overlap *)
     | UnknownType ->
       (* We don't know the type of unknown, so we need to express:
         this is not one of the literals *)
@@ -333,6 +350,7 @@ module DynamicChecks = struct
     match tag_type with
     | Untagged IntType
     | Untagged StringType
+    | Untagged BoolType
     | Untagged FloatType -> typeof y == x
     | Untagged ObjectType ->
       if has_array() then
