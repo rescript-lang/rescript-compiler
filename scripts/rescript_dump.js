@@ -15,7 +15,7 @@ var specs = [];
  * @param {string} rescript_exe
  * @param {string} bsc_exe
  */
-function main(argv, rescript_exe, bsc_exe, project_path) {
+function main(argv, rescript_exe, bsc_exe) {
   var target;
   arg.parse_exn(dump_usage, argv, specs, xs => {
     if (xs.length !== 1) {
@@ -30,11 +30,9 @@ function main(argv, rescript_exe, bsc_exe, project_path) {
     process.exit(2);
   }
 
-  var output = child_process.spawnSync(
-    rescript_exe,
-    ["build", "-project", project_path, "--", target],
-    { encoding: "utf-8" }
-  );
+  var output = child_process.spawnSync(rescript_exe, ["build", "--", target], {
+    encoding: "utf-8",
+  });
   if (output.status !== 0) {
     console.log(output.stdout);
     console.error(output.stderr);

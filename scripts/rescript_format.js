@@ -73,21 +73,15 @@ async function readStdin() {
  * @param {(x: string) => boolean} isSupportedFile
  * @param {boolean} checkFormatting
  */
-async function formatFiles(
-  files,
-  bsc_exe,
-  project_path,
-  isSupportedFile,
-  checkFormatting
-) {
+async function formatFiles(files, bsc_exe, isSupportedFile, checkFormatting) {
   var incorrectlyFormattedFiles = 0;
   try {
     const _promises = await Promise.all(
       files.map(async file => {
         if (isSupportedFile(file)) {
           const flags = checkFormatting
-            ? ["-project", project_path, "-format", file]
-            : ["-project", project_path, "-o", file, "-format", file];
+            ? ["-format", file]
+            : ["-o", file, "-format", file];
           const { stdout } = await asyncExecFile(bsc_exe, flags);
           if (check.val) {
             const original = await asyncFs.readFile(file, "utf-8");
@@ -121,7 +115,7 @@ async function formatFiles(
  * @param {string} rescript_exe
  * @param {string} bsc_exe
  */
-async function main(argv, rescript_exe, bsc_exe, project_path) {
+async function main(argv, rescript_exe, bsc_exe) {
   var isSupportedFile = hasExtension(formattedFileExtensions);
   var isSupportedStd = hasExtension(formattedStdExtensions);
 
@@ -166,13 +160,7 @@ async function main(argv, rescript_exe, bsc_exe, project_path) {
         process.exit(2);
       }
       files = output.stdout.split("\n").map(x => x.trim());
-      await formatFiles(
-        files,
-        bsc_exe,
-        project_path,
-        isSupportedFile,
-        check.val
-      );
+      await formatFiles(files, bsc_exe, isSupportedFile, check.val);
     } else if (use_stdin) {
       if (check.val) {
         console.error("format -stdin cannot be used with -check flag");
@@ -195,7 +183,7 @@ async function main(argv, rescript_exe, bsc_exe, project_path) {
           process.addListener("exit", () => fs.unlinkSync(filename));
           child_process.execFile(
             bsc_exe,
-            ["-project", project_path, "-format", filename],
+            ["-format", filename],
             (error, stdout, stderr) => {
               if (error === null) {
                 process.stdout.write(stdout);
@@ -226,13 +214,7 @@ async function main(argv, rescript_exe, bsc_exe, project_path) {
           process.exit(2);
         }
       }
-      await formatFiles(
-        files,
-        bsc_exe,
-        project_path,
-        isSupportedFile,
-        check.val
-      );
+      await formatFiles(files, bsc_exe, isSupportedFile, check.val);
     }
   } catch (e) {
     if (e instanceof arg.ArgError) {
