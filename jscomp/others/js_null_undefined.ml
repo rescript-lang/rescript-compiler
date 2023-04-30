@@ -24,7 +24,12 @@
 
 (** Contains functionality for dealing with values that can be both `null` and `undefined` *)
 
-type + 'a t = 'a Js.nullable
+type + 'a t = 'a Js.nullable = 
+  | Value of 'a
+  | Null [@as null]
+  | Undefined [@as undefined]
+[@@unboxed]
+
 external toOption : 'a t -> 'a option = "#nullable_to_opt"
 external to_opt : 'a t -> 'a option = "#nullable_to_opt"
 external return : 'a -> 'a t = "%identity"

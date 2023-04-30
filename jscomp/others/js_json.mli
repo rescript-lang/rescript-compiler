@@ -30,7 +30,15 @@
 
 (** ## Types *)
 
-type t
+type t =
+  | False [@as false]
+  | True [@as true]
+  | Null [@as null]
+  | String of string
+  | Number of float
+  | Object of t Js.Dict.t
+  | Array of t array
+[@@unboxed]
 (** The JSON data structure *)
 
 (** Underlying type of a JSON value *)

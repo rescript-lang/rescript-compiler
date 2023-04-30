@@ -81,7 +81,7 @@ add_test("File \"js_json_test.res\", line 22, characters 11-18", (function (para
                   _0: false
                 };
         }
-        var ty2 = Js_json.classify(Caml_option.valFromOption(v$1));
+        var ty2 = Js_json.classify(v$1);
         if (typeof ty2 !== "object") {
           return {
                   TAG: "Ok",
