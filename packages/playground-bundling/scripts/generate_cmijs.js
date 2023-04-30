@@ -48,6 +48,7 @@ function e(cmd) {
 
 e(`npm install`);
 e(`npm link ${RESCRIPT_COMPILER_ROOT_DIR}`);
+e(`npx rescript clean`);
 e(`npx rescript`);
 
 const packages = bsconfig["bs-dependencies"];
@@ -63,10 +64,16 @@ function buildCompilerCmij() {
     "ocaml"
   );
 
-  const rescriptCompilerCmijFile = path.join(PACKAGES_DIR, "compilerCmij.js");
+  const outputFolder = path.join(PACKAGES_DIR, "compiler-builtins");
+
+  const cmijFile = path.join(outputFolder, `cmij.js`);
+
+  if (!fs.existsSync(outputFolder)) {
+    fs.mkdirSync(outputFolder, { recursive: true });
+  }
 
   e(
-    `find ${rescriptLibOcamlFolder} -name "*.cmi" -or -name "*.cmj" | xargs -n1 basename | xargs js_of_ocaml build-fs -o ${rescriptCompilerCmijFile} -I ${rescriptLibOcamlFolder}`
+    `find ${rescriptLibOcamlFolder} -name "*.cmi" -or -name "*.cmj" | xargs -n1 basename | xargs js_of_ocaml build-fs -o ${cmijFile} -I ${rescriptLibOcamlFolder}`
   );
 }
 

@@ -1,5 +1,5 @@
 require("./compiler.js")
-require("./packages/compilerCmij.js")
+require("./packages/compiler-builtins/cmij.js")
 require("./packages/@rescript/react/cmij.js")
 require("./packages/@rescript/core/cmij.js")
 
