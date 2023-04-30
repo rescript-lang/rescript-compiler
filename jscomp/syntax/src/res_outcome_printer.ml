@@ -319,6 +319,9 @@ let rec printOutTypeDoc (outType : Outcometree.out_type) =
       ]
 
 and printOutArrowType ~uncurried typ =
+  let uncurried =
+    if !Config.uncurried <> Legacy then not uncurried else uncurried
+  in
   let typArgs, typ = collectArrowArgs typ [] in
   let args =
     Doc.join
