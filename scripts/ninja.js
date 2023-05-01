@@ -13,7 +13,6 @@ var othersDir = path.join(jscompDir, "others");
 var testDir = path.join(jscompDir, "test");
 
 var jsDir = path.join(__dirname, "..", "lib", "js");
-var duneBinDir = require("./dune").duneBinDir;
 
 var runtimeFiles = fs.readdirSync(runtimeDir, "ascii");
 var runtimeMlFiles = runtimeFiles.filter(
@@ -1448,15 +1447,9 @@ rule copy
 }
 
 function main() {
-  var emptyCount = 2;
-  var isPlayground = false;
   if (require.main === module) {
     if (process.argv.includes("-check")) {
       checkEffect();
-    }
-    if (process.argv.includes("-playground")) {
-      isPlayground = true;
-      emptyCount++;
     }
 
     var subcommand = process.argv[2];
@@ -1522,7 +1515,7 @@ function main() {
         `);
         break;
       default:
-        if (process.argv.length === emptyCount) {
+        if (process.argv.length === 2) {
           updateDev();
           updateRelease();
         } else {
