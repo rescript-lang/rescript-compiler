@@ -73,8 +73,12 @@ let node_program ~output_dir f (x : J.deps_program) =
   P.newline f;
   let cxt =
     Js_dump_import_export.requires L.require Ext_pp_scope.empty f
-      (Ext_list.map x.modules (fun x ->
-           ( x.id,
+      (* dynamic import should not print in require statement *)
+      (Ext_list.filter_map x.modules (fun x ->
+        match x.dynamic_import with
+        | true -> None
+        | false -> 
+           Some ( x.id,
              Js_name_of_module_id.string_of_module_id x ~output_dir NodeJS,
              is_default x.kind )))
   in
@@ -83,8 +87,12 @@ let node_program ~output_dir f (x : J.deps_program) =
 let es6_program ~output_dir fmt f (x : J.deps_program) =
   let cxt =
     Js_dump_import_export.imports Ext_pp_scope.empty f
-      (Ext_list.map x.modules (fun x ->
-           ( x.id,
+      (* dynamic import should not print in import statement *)
+      (Ext_list.filter_map x.modules (fun x ->
+        match x.dynamic_import with
+        | true -> None
+        | false -> 
+           Some ( x.id,
              Js_name_of_module_id.string_of_module_id x ~output_dir fmt,
              is_default x.kind )))
   in

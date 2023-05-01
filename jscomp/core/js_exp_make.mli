@@ -49,7 +49,7 @@ val runtime_var_dot : ?comment:string -> string -> string -> t
 
 (* val runtime_var_vid : string -> string -> J.vident *)
 
-val ml_var_dot : ?comment:string -> Ident.t -> string -> t
+val ml_var_dot : ?comment:string -> ?dynamic_import:bool -> Ident.t -> string -> t
 (** [ml_var_dot ocaml_module name]
 *)
 
@@ -66,7 +66,7 @@ val external_var_field :
 
 val external_var : ?comment:string -> external_name:string -> Ident.t -> t
 
-val ml_module_as_var : ?comment:string -> Ident.t -> t
+val ml_module_as_var : ?comment:string -> ?dynamic_import:bool -> Ident.t -> t
 
 val runtime_call :
   string -> (* module_name *)

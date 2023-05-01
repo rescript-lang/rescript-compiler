@@ -89,7 +89,7 @@ module Types = struct
 
   and t =
     | Lvar of ident
-    | Lglobal_module of ident
+    | Lglobal_module of ident * bool
     | Lconst of Lam_constant.t
     | Lapply of apply
     | Lfunction of lfunction
@@ -136,7 +136,7 @@ module X = struct
 
   and t = Types.t =
     | Lvar of ident
-    | Lglobal_module of ident
+    | Lglobal_module of ident * bool
     | Lconst of Lam_constant.t
     | Lapply of apply
     | Lfunction of lfunction
@@ -344,8 +344,8 @@ let rec apply fn args (ap_info : ap_info) : t =
 
 let rec eq_approx (l1 : t) (l2 : t) =
   match l1 with
-  | Lglobal_module i1 -> (
-      match l2 with Lglobal_module i2 -> Ident.same i1 i2 | _ -> false)
+  | Lglobal_module (i1, b1) -> (
+      match l2 with Lglobal_module (i2, b2) -> Ident.same i1 i2 && b1 = b2 | _ -> false)
   | Lvar i1 -> ( match l2 with Lvar i2 -> Ident.same i1 i2 | _ -> false)
   | Lconst c1 -> (
       match l2 with Lconst c2 -> Lam_constant.eq_approx c1 c2 | _ -> false)
@@ -434,7 +434,7 @@ let rec seq (a : t) b : t =
   | _ -> Lsequence (a, b)
 
 let var id : t = Lvar id
-let global_module id = Lglobal_module id
+let global_module ?(dynamic_import = false) id = Lglobal_module (id, dynamic_import)
 let const ct : t = Lconst ct
 
 let function_ ~attr ~arity ~params ~body : t =
@@ -574,7 +574,7 @@ let prim ~primitive:(prim : Lam_primitive.t) ~args loc : t =
                 Lprim
                   {
                     primitive = Pfield (pos, Fld_module { name = f1 });
-                    args = [ (Lglobal_module v1 | Lvar v1) ];
+                    args = [ (Lglobal_module (v1, _) | Lvar v1) ];
                   }
                 :: args ) ->
                 pos = i && f = f1 && Ident.same var v1
@@ -586,7 +586,7 @@ let prim ~primitive:(prim : Lam_primitive.t) ~args loc : t =
               Lprim
                 {
                   primitive = Pfield (pos, Fld_module { name = f1 });
-                  args = [ ((Lglobal_module v1 | Lvar v1) as lam) ];
+                  args = [ ((Lglobal_module (v1, _) | Lvar v1) as lam) ];
                 }
               :: args1 ) ->
               if pos = 0 && field1 = f1 && aux rest args1 v1 1 then lam

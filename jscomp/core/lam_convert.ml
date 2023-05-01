@@ -505,9 +505,13 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
                  primitive %s"
                 s
         in
-        let args = Ext_list.map args convert_aux in
+        let dynamic_import = match primitive with
+        | Pimport -> true
+        | _ -> false
+        in
+        let args = Ext_list.map args (convert_aux ~dynamic_import) in
         prim ~primitive ~args loc
-  and convert_aux (lam : Lambda.lambda) : Lam.t =
+  and convert_aux ?(dynamic_import = false) (lam : Lambda.lambda) : Lam.t =
     match lam with
     | Lvar x -> Lam.var (Hash_ident.find_default alias_tbl x x)
     | Lconst x -> Lam.const (Lam_constant_convert.convert_constant x)
@@ -547,9 +551,9 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
         if Ident.is_predef_exn id then
           Lam.const (Const_string { s = id.name; unicode = false })
         else (
-          may_depend may_depends (Lam_module_ident.of_ml id);
+          may_depend may_depends (Lam_module_ident.of_ml ~dynamic_import id);
           assert (args = []);
-          Lam.global_module id)
+          Lam.global_module ~dynamic_import id)
     | Lprim
         ( Puncurried_apply,
           [ Lapply { ap_func = Lprim (Popaque, [ ap_func ], _); ap_args } ],
@@ -561,7 +565,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
            for cases like `(fun [@bs] a b -> a + b ) 1 2 [@bs]` *)
     | Lprim (Puncurried_apply, _, _) -> assert false
     | Lprim (primitive, args, loc) ->
-        let args = Ext_list.map args convert_aux in
+        let args = Ext_list.map args (convert_aux ~dynamic_import) in
         lam_prim ~primitive ~args loc
     | Lswitch (e, s, _loc) -> convert_switch e s
     | Lstringswitch (e, cases, default, _) ->

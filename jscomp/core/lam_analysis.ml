@@ -32,7 +32,7 @@ let not_zero_constant (x : Lam_constant.t) =
 let rec no_side_effects (lam : Lam.t) : bool =
   match lam with
   | Lvar _ | Lconst _ | Lfunction _ -> true
-  | Lglobal_module _ -> true
+  | Lglobal_module (_, dynamic_import) -> not dynamic_import
   (* we record side effect in the global level,
      this expression itself is side effect free
   *)
