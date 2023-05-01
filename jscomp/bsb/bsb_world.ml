@@ -34,7 +34,7 @@ let make_world_deps cwd (config : Bsb_config_types.t option)
            we will read such json file to know which [package-specs]
            it wants
         *)
-        Bsb_config_parse.deps_from_bsconfig ()
+        Bsb_config_interpret.deps_from_bsconfig ()
     | Some config ->
         (config.package_specs, config.jsx, config.uncurried, config.pinned_dependencies)
   in

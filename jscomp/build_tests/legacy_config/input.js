@@ -4,6 +4,7 @@ var fs = require("fs");
 var path = require("path");
 var {rescript_exe} = require("../../../scripts/bin_path");
 
-var {stdout} = p.execSync(rescript_exe, { cwd: __dirname });
+var out = p.spawnSync(rescript_exe, { cwd: __dirname });
 
+// console.log(out);
 // TODO: test deprecation warning

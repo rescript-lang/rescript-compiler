@@ -408,11 +408,11 @@ and walk_source_dir_map (cxt : walk_cxt) sub_dirs_field =
    TODO: make it configurable
 *)
 let clean_re_js root =
+  let cwd = Bsb_global_paths.cwd in
   match
-    Ext_json_parse.parse_json_from_file
-      (Filename.concat root Literals.bsconfig_json)
+    Bsb_config_parse.parse_json ~per_proj_dir:cwd ~warn_legacy_config:false
   with
-  | Obj { map } ->
+  | _, _, Obj { map } ->
       let ignored_dirs =
         match map.?(Bsb_build_schemas.ignored_dirs) with
         | Some (Arr { content = x }) ->
@@ -441,5 +441,5 @@ let clean_re_js root =
               }
               config
           with _ -> ())
-  | _ -> ()
+  | _, _, _ -> ()
   | exception _ -> ()

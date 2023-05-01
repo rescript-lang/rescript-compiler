@@ -269,6 +269,6 @@ let rec find_root_filename ~cwd filename =
       find_root_filename ~cwd:cwd' filename
     else Ext_fmt.failwithf ~loc:__LOC__ "%s not found from %s" filename cwd
 
-let find_package_json_dir cwd = find_root_filename ~cwd Literals.bsconfig_json
+let find_package_json_dir cwd = find_root_filename ~cwd Literals.package_json
 
 let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
