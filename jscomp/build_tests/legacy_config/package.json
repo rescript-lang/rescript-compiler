@@ -1,0 +1,13 @@
+{
+  "name": "legacy_config",
+  "version": "0.1.0",
+  "scripts": {
+    "clean": "rescript clean -with-deps",
+    "build": "rescript",
+    "watch": "rescript build -w"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "rescript": "11.0.0"
+  }
+}
