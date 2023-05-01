@@ -87,7 +87,7 @@ let node_program ~output_dir f (x : J.deps_program) =
 let es6_program ~output_dir fmt f (x : J.deps_program) =
   let cxt =
     Js_dump_import_export.imports Ext_pp_scope.empty f
-      (* Not be emitted in require statements *)
+      (* Not be emitted in import statements *)
       (Ext_list.filter_map x.modules (fun x ->
         match x.dynamic_import with
         | true -> None
