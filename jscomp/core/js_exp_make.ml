@@ -76,12 +76,12 @@ let runtime_var_dot ?comment (x : string) (e1 : string) : J.expression =
   {
     expression_desc =
       Var
-        (Qualified ({ id = Ident.create_persistent x; kind = Runtime }, Some e1));
+        (Qualified ({ id = Ident.create_persistent x; kind = Runtime; dynamic_import = false }, Some e1));
     comment;
   }
 
-let ml_var_dot ?comment (id : Ident.t) e : J.expression =
-  { expression_desc = Var (Qualified ({ id; kind = Ml }, Some e)); comment }
+let ml_var_dot ?comment ?(dynamic_import = false) (id : Ident.t) e : J.expression =
+  { expression_desc = Var (Qualified ({ id; kind = Ml; dynamic_import }, Some e)); comment }
 
 (** 
    module as a value 
@@ -93,7 +93,7 @@ let external_var_field ?comment ~external_name:name (id : Ident.t) ~field
     ~default : t =
   {
     expression_desc =
-      Var (Qualified ({ id; kind = External { name; default } }, Some field));
+      Var (Qualified ({ id; kind = External { name; default }; dynamic_import = false }, Some field));
     comment;
   }
 
@@ -102,13 +102,13 @@ let external_var ?comment ~external_name (id : Ident.t) : t =
     expression_desc =
       Var
         (Qualified
-           ( { id; kind = External { name = external_name; default = false } },
+           ( { id; kind = External { name = external_name; default = false }; dynamic_import = false },
              None ));
     comment;
   }
 
-let ml_module_as_var ?comment (id : Ident.t) : t =
-  { expression_desc = Var (Qualified ({ id; kind = Ml }, None)); comment }
+let ml_module_as_var ?comment ?(dynamic_import = false) (id : Ident.t) : t =
+  { expression_desc = Var (Qualified ({ id; kind = Ml; dynamic_import }, None)); comment }
 
 (* Static_index .....................**)
 let runtime_call module_name fn_name args =

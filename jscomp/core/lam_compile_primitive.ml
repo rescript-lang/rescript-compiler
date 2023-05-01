@@ -130,7 +130,7 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
 
           let path =
             let module_system = get_module_system () in
-            Js_name_of_module_id.string_of_module_id module_id ~output_dir module_system
+            Js_name_of_module_id.string_of_module_id {module_id with dynamic_import = true} ~output_dir module_system
           in
 
           match module_value with

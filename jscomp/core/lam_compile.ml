@@ -228,13 +228,13 @@ type initialization = J.block
 let compile output_prefix = 
 
 let rec compile_external_field (* Like [List.empty]*)
-    (lamba_cxt : Lam_compile_context.t) (id : Ident.t) name : Js_output.t =
-  match Lam_compile_env.query_external_id_info id name with
+    ?(dynamic_import = false) (lamba_cxt : Lam_compile_context.t) (id : Ident.t) name : Js_output.t =
+  match Lam_compile_env.query_external_id_info ~dynamic_import id name with
   | { persistent_closed_lambda = Some lam } when Lam_util.not_function lam ->
       compile_lambda lamba_cxt lam
   | _ ->
       Js_output.output_of_expression lamba_cxt.continuation
-        ~no_effects:no_effects_const (E.ml_var_dot id name)
+        ~no_effects:no_effects_const (E.ml_var_dot ~dynamic_import id name)
 (* TODO: how nested module call would behave,
    In the future, we should keep in track  of if
    it is fully applied from [Lapply]
@@ -263,10 +263,10 @@ let rec compile_external_field (* Like [List.empty]*)
     for the function, generative module or functor can be a function,
     however it can not be global -- global can only module
 *)
-and compile_external_field_apply (appinfo : Lam.apply) (module_id : Ident.t)
+and compile_external_field_apply ?(dynamic_import = false) (appinfo : Lam.apply) (module_id : Ident.t)
     (field_name : string) (lambda_cxt : Lam_compile_context.t) : Js_output.t =
   let ident_info =
-    Lam_compile_env.query_external_id_info module_id field_name
+    Lam_compile_env.query_external_id_info ~dynamic_import module_id field_name
   in
   let ap_args = appinfo.ap_args in
   match ident_info.persistent_closed_lambda with
@@ -292,7 +292,7 @@ and compile_external_field_apply (appinfo : Lam.apply) (module_id : Ident.t)
               | _ -> assert false)
       in
 
-      let fn = E.ml_var_dot module_id ident_info.name in
+      let fn = E.ml_var_dot ~dynamic_import module_id ident_info.name in
       let expression =
         match appinfo.ap_info.ap_status with
         | (App_infer_full | App_uncurry) as ap_status ->
@@ -1410,11 +1410,11 @@ and compile_apply (appinfo : Lam.apply) (lambda_cxt : Lam_compile_context.t) =
   (* External function call: it can not be tailcall in this case*)
   | {
    ap_func =
-     Lprim { primitive = Pfield (_, fld_info); args = [ Lglobal_module id ]; _ };
+     Lprim { primitive = Pfield (_, fld_info); args = [ Lglobal_module (id, dynamic_import) ]; _ };
   } -> (
       match fld_info with
       | Fld_module { name } ->
-          compile_external_field_apply appinfo id name lambda_cxt
+          compile_external_field_apply ~dynamic_import appinfo id name lambda_cxt
       | _ -> assert false)
   | _ -> (
       (* TODO: ---
@@ -1491,11 +1491,11 @@ and compile_apply (appinfo : Lam.apply) (lambda_cxt : Lam_compile_context.t) =
 and compile_prim (prim_info : Lam.prim_info)
     (lambda_cxt : Lam_compile_context.t) =
   match prim_info with
-  | { primitive = Pfield (_, fld_info); args = [ Lglobal_module id ]; _ } -> (
+  | { primitive = Pfield (_, fld_info); args = [ Lglobal_module (id, dynamic_import) ]; _ } -> (
       (* should be before Lglobal_global *)
       match fld_info with
       | Fld_module { name = field } ->
-          compile_external_field lambda_cxt id field
+          compile_external_field ~dynamic_import lambda_cxt id field
       | _ -> assert false)
   | { primitive = Praise; args = [ e ]; _ } -> (
       match
@@ -1715,13 +1715,13 @@ and compile_lambda (lambda_cxt : Lam_compile_context.t) (cur_lam : Lam.t) :
       Js_output.output_of_expression lambda_cxt.continuation
         ~no_effects:no_effects_const
         (Lam_compile_const.translate c)
-  | Lglobal_module i ->
+  | Lglobal_module (i, dynamic_import) ->
       (* introduced by
          1. {[ include Array --> let include  = Array  ]}
          2. inline functor application
       *)
       Js_output.output_of_block_and_expression lambda_cxt.continuation []
-        (E.ml_module_as_var i)
+        (E.ml_module_as_var ~dynamic_import i)
   | Lprim prim_info -> compile_prim prim_info lambda_cxt
   | Lsequence (l1, l2) ->
       let output_l1 =
