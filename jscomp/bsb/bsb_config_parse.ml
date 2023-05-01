@@ -237,7 +237,7 @@ let extract_js_post_build (map : json_map) cwd : string option =
 
 (** ATT: make sure such function is re-entrant. 
     With a given [cwd] it works anywhere*)
-let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
+let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string) ~(warn_legacy_config : bool)
     : Bsb_config_types.t =
   (* we should not resolve it too early,
       since it is external configuration, no {!Bsb_build_util.convert_and_resolve_path}
@@ -253,10 +253,26 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
      1. if [build.ninja] does use [ninja] we need set a variable
      2. we need store it so that we can call ninja correctly
   *)
+  let legacy_config_fname = per_proj_dir // Literals.bsconfig_json in
+  let fname, in_chan =
+    let fname = per_proj_dir // Literals.rescript_json in
+    match open_in fname
+    with
+    | in_chan -> (fname, in_chan)
+    | exception e ->
+      let fname = legacy_config_fname in
+      match open_in fname
+      with
+      | in_chan -> (fname, in_chan)
+      | exception _ -> raise e (* forward error from rescript.json *)
+  in
+  if warn_legacy_config && fname = legacy_config_fname then
+    print_endline "TODO: deprecation warning" ;
   match
-    Ext_json_parse.parse_json_from_file (per_proj_dir // Literals.bsconfig_json)
+    Ext_json_parse.parse_json_from_chan fname in_chan
   with
   | Obj { map } -> (
+    close_in in_chan ; 
       let package_name, namespace = extract_package_name_and_namespace map in
       let gentype_config = extract_gentype_config map in
 
@@ -352,7 +368,8 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
           }
       | None ->
           Bsb_exception.invalid_spec "no sources specified in bsconfig.json")
-  | _ -> Bsb_exception.invalid_spec "bsconfig.json expect a json object {}"
+  | _ -> close_in in_chan ; Bsb_exception.invalid_spec "bsconfig.json expect a json object {}"
+  | exception e -> close_in in_chan ; raise e
 
 let deps_from_bsconfig () =
   let json = Ext_json_parse.parse_json_from_file Literals.bsconfig_json in
