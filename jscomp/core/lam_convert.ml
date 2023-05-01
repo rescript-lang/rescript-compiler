@@ -505,10 +505,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
                  primitive %s"
                 s
         in
-        let dynamic_import = match primitive with
-        | Pimport -> true
-        | _ -> false
-        in
+        let dynamic_import = primitive = Pimport in
         let args = Ext_list.map args (convert_aux ~dynamic_import) in
         prim ~primitive ~args loc
   and convert_aux ?(dynamic_import = false) (lam : Lambda.lambda) : Lam.t =
