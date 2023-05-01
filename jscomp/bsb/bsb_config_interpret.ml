@@ -352,8 +352,8 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
             filename;
           }
       | None ->
-          Bsb_exception.invalid_spec "no sources specified in bsconfig.json")
-  | _, _, _ -> Bsb_exception.invalid_spec "bsconfig.json expect a json object {}"
+          Bsb_exception.invalid_spec ("no sources specified in " ^ filename))
+  | filename, _, _ -> Bsb_exception.invalid_spec (filename ^ " expect a json object {}")
 
 let deps_from_bsconfig () =
   let cwd = Bsb_global_paths.cwd in

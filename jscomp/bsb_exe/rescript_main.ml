@@ -148,7 +148,7 @@ let build_subcommand ~start argv argv_len =
       ( "-regen",
         unit_set_spec force_regenerate,
         "*internal* \n\
-         Always regenerate build.ninja no matter bsconfig.json is changed or \
+         Always regenerate build.ninja no matter rescript.json is changed or \
          not" );
       ("-verbose", call_spec Bsb_log.verbose, "Set the output to be verbose");
     |]

@@ -4,7 +4,7 @@ The motiviation of this repo is that when ReScript users want to share their lib
 
 It shares the same version schema with ReScript compiler.
 
-When you use this library, the config would be adding such things in bsconfig.json
+When you use this library, the config would be adding such things in rescript.json
 
 ```json
 "external-stdlib" : "@rescript/std"

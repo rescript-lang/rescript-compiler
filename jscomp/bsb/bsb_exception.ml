@@ -58,13 +58,13 @@ let print (fmt : Format.formatter) (x : error) =
       let name = Bsb_pkg_types.to_string name in
       if Ext_string.equal name !Bs_version.package_name then
         Format.fprintf fmt
-          "File \"bsconfig.json\", line 1\n\
+          "File \"rescript.json\", line 1\n\
            @{<error>Error:@} package @{<error>%s@} is not found %s\n\
            It's the basic, required package. If you have it installed globally,\n\
            Please run `npm link rescript` to make it available" name in_json
       else
         Format.fprintf fmt
-          "File \"bsconfig.json\", line 1\n\
+          "File \"rescript.json\", line 1\n\
            @{<error>Error:@} package @{<error>%s@} not found or built %s\n\
            - Did you install it?\n\
            - If you did, did you run `rescript build -with-deps`?" name in_json
@@ -76,7 +76,7 @@ let print (fmt : Format.formatter) (x : error) =
          https://rescript-lang.org/docs/manual/latest/build-configuration-schema"
         pos.pos_fname pos.pos_lnum s
   | Invalid_spec s ->
-      Format.fprintf fmt "@{<error>Error: Invalid bsconfig.json %s@}" s
+      Format.fprintf fmt "@{<error>Error: Invalid rescript.json %s@}" s
   | Invalid_json s ->
       Format.fprintf fmt
         "File %S, line 1\n@{<error>Error: Invalid json format@}" s
