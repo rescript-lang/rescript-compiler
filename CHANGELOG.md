@@ -16,6 +16,10 @@
 
 - `-bs-super-errors` flag has been removed along with Super_errors. https://github.com/rescript-lang/rescript-compiler/pull/6199
 
+#### :bug: Bug Fix
+
+- Remove unnecessary require and import statements when using dynamic imports. https://github.com/rescript-lang/rescript-compiler/pull/6232
+
 #### :nail_care: Polish
 
 - In uncurried mode, outcome printer swaps curried and uncurries function printing compared to legacy.
