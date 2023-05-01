@@ -7,5 +7,8 @@ var a = import("./import_lazy_component.js").then(function (m) {
       return m.a;
     });
 
+var LazyC = await import("./import_lazy_component.js");
+
 exports.a = a;
-/* Import_lazy_component Not a pure module */
+exports.LazyC = LazyC;
+/* LazyC Not a pure module */
