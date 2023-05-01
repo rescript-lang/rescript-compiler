@@ -1304,12 +1304,7 @@ function checkEffect() {
       return { file: path.basename(file), effect };
     });
 
-  var black_list = new Set([
-    "caml_int32.js",
-    "caml_int64.js",
-    "caml_lexer.js",
-    "caml_parser.js",
-  ]);
+  var black_list = new Set(["caml_lexer.js", "caml_parser.js"]);
 
   var assert = require("assert");
   // @ts-ignore
