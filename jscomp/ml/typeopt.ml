@@ -44,7 +44,7 @@ let scrape env ty =
      records the type at the definition type so for ['a option]
      it will always be [Tvar]
 *)
-let rec cannot_inhabit_none_like_value (typ : Types.type_expr) (env : Env.t) =
+let rec type_cannot_contain_undefined (typ : Types.type_expr) (env : Env.t) =
   match scrape env typ with
   |  Tconstr(p, _,_) ->
       (* all built in types could not inhabit none-like values:
@@ -76,25 +76,20 @@ let rec cannot_inhabit_none_like_value (typ : Types.type_expr) (env : Env.t) =
              )
              -> false (* conservative *)
         | Type_variant cdecls ->
-          let type_can_contain_undefined t =
-            not (Ast_untagged_variants.type_is_builtin_object t) &&
-            not (cannot_inhabit_none_like_value t env) in
-          let can_contain_undefined =
-            Ext_list.exists cdecls (fun cd ->
+            Ext_list.for_all cdecls (fun cd ->
               if Ast_untagged_variants.has_undefined_literal cd.cd_attributes
-              then true
+              then false
               else if !untagged then
                 match cd.cd_args with
                 | Cstr_tuple [t] ->
-                  type_can_contain_undefined  t
-                | Cstr_tuple [] -> false
-                | Cstr_tuple (_::_::_) -> false (* Not actually possible for untagged *)
+                  Ast_untagged_variants.type_is_builtin_object t || type_cannot_contain_undefined t env
+                | Cstr_tuple [] -> true
+                | Cstr_tuple (_::_::_) -> true (* Not actually possible for untagged *)
                 | Cstr_record [{ld_type=t}] ->
-                  type_can_contain_undefined t
-                | Cstr_record ([] | _::_::_) -> false
+                  Ast_untagged_variants.type_is_builtin_object t || type_cannot_contain_undefined t env
+                | Cstr_record ([] | _::_::_) -> true
               else
-                false) in
-          not can_contain_undefined
+                true)
         end)
   | Ttuple _
   | Tvariant _

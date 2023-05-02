@@ -839,7 +839,7 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
               if Datarepr.constructor_has_optional_shape cstr then
                 match args with
                 | [ arg ]
-                  when Typeopt.cannot_inhabit_none_like_value arg.exp_type
+                  when Typeopt.type_cannot_contain_undefined arg.exp_type
                          arg.exp_env ->
                     (* Format.fprintf Format.err_formatter "@[special boxingl@]@."; *)
                     Blk_some_not_nested
