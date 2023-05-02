@@ -3,30 +3,8 @@ daysUntilStale: 720
 # Number of days of inactivity before a stale issue is closed
 daysUntilClose: 7
 # Issues with these labels will never be considered stale
-exemptLabels:
-  - "PRIORITY:HIGH"
-  - bug
-  - non-critical-bug
-  - security
-  - enhancement
-  - optimization
-  - v8-breaking-changes
-  - documentation
-  - "need feedback"
-  - "GOOD FIRST TASK"
-  - "BREAKING CHANGES"
-  - APPROVED
-  - discussion
-  - BUILD
-  - "help wanted"
-  - "GOOD FOR PR"
-  - "TO REPRODUCE"
-  - FFI
-  - internal
-  - ideas
-  - playground
-  - Syntax
-  - test
+# exemptLabels:
+#   - test
 # Label to use when marking an issue as stale
 staleLabel: stale
 # Comment to post when marking an issue as stale. Set to `false` to disable
