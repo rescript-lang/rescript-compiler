@@ -2,6 +2,7 @@
 'use strict';
 
 var Caml_array = require("../../lib/js/caml_array.js");
+var Caml_option = require("../../lib/js/caml_option.js");
 
 function classify(x) {
   if (x === "A" && typeof x !== "number") {
@@ -318,6 +319,49 @@ var ArrayAndObject = {
   classify: classify$8
 };
 
+function testHasNull(x) {
+  return x;
+}
+
+function testHasUndefined(x) {
+  return Caml_option.some(x);
+}
+
+function untaggedWithOptionPayload(x) {
+  return Caml_option.some(x);
+}
+
+function untaggedWithIntPayload(x) {
+  return x;
+}
+
+function untaggedInlineNoOptions(x) {
+  return x;
+}
+
+function untaggedInlineUnaryWihtExplicitOption(x) {
+  return Caml_option.some(x);
+}
+
+function untaggedInlineUnaryWihtImplicitOption(x) {
+  return Caml_option.some(x);
+}
+
+function untaggedInlineMultinaryOption(x) {
+  return x;
+}
+
+var OptionUnboxingHeuristic = {
+  testHasNull: testHasNull,
+  testHasUndefined: testHasUndefined,
+  untaggedWithOptionPayload: untaggedWithOptionPayload,
+  untaggedWithIntPayload: untaggedWithIntPayload,
+  untaggedInlineNoOptions: untaggedInlineNoOptions,
+  untaggedInlineUnaryWihtExplicitOption: untaggedInlineUnaryWihtExplicitOption,
+  untaggedInlineUnaryWihtImplicitOption: untaggedInlineUnaryWihtImplicitOption,
+  untaggedInlineMultinaryOption: untaggedInlineMultinaryOption
+};
+
 var i = 42;
 
 var i2 = 42.5;
@@ -357,4 +401,5 @@ exports.OverlapNumber = OverlapNumber;
 exports.OverlapObject = OverlapObject;
 exports.RecordIsObject = RecordIsObject;
 exports.ArrayAndObject = ArrayAndObject;
+exports.OptionUnboxingHeuristic = OptionUnboxingHeuristic;
 /* l2 Not a pure module */

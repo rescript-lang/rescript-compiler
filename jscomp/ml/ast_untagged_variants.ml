@@ -99,6 +99,12 @@ let () =
         None
     )
 
+let type_is_builtin_object (t:Types.type_expr) = match t.desc with
+ | Tconstr (path, _, _) ->
+  let name = Path.name path in
+  name = "Js.Dict.t" || name = "Js_dict.t"
+| _ -> false
+
 let get_block_type ~env (cstr: Types.constructor_declaration) : block_type option =
   match process_untagged cstr.cd_attributes, cstr.cd_args with
   | false, _ -> None
@@ -112,9 +118,7 @@ let get_block_type ~env (cstr: Types.constructor_declaration) : block_type optio
       Some ArrayType
   | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path. same path Predef.path_string ->
       Some StringType
-  | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when
-    let name = Path.name path in
-    name = "Js.Dict.t" || name = "Js_dict.t" ->
+  | true, Cstr_tuple [{desc = Tconstr _} as t] when type_is_builtin_object t ->
       Some ObjectType
   | true, Cstr_tuple [ty] ->
     let default = Some UnknownType in
@@ -241,6 +245,12 @@ let names_from_type_variant ?(isUntaggedDef=false) ~env (cstrs : Types.construct
 
 let check_well_formed ~env ~isUntaggedDef (cstrs: Types.constructor_declaration list) =
   ignore (names_from_type_variant ~env ~isUntaggedDef cstrs)
+
+let has_undefined_literal attrs =
+  process_tag_type attrs = Some Undefined
+
+let block_is_object ~env attrs =
+  get_block_type ~env attrs = Some ObjectType
 
 module DynamicChecks = struct
 
