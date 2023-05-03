@@ -44,6 +44,11 @@ if(result.js_code != "") {
   console.log('-- Playground test output --');
   console.log(`ReScript version: ${compiler.rescript.version}`);
   console.log('----');
+  if(result.type === "unexpected_error") {
+    console.log("UNEXPECTED ERROR");
+    console.log(result.msg);
+    process.exit(1);
+  }
   if(result.errors && result.errors.length > 0) {
     console.log("COMPILATION ERROR");
     for(let error of result.errors) {
