@@ -626,6 +626,12 @@ let rec filter_bool (e: t) ~j ~b = match e.expression_desc with
     | None, Some e -> Some e
     | Some e1, Some e2 ->
       Some {e with expression_desc = Bin (And, e1, e2)} )
+  | Bin (Or, e1, e2) ->
+    (match (filter_bool e1 ~j ~b, filter_bool e2 ~j ~b) with
+    | None, _ | _, None ->
+      None
+    | Some e1, Some e2 ->
+      Some {e with expression_desc = Bin (Or, e1, e2)} )
   | Bin
     ( NotEqEq,
       {expression_desc = Typeof {expression_desc = Var i}},

@@ -397,9 +397,9 @@ function check$1(s) {
       return ;
     }
     var match = s[0];
-    if ((match === null || typeof match !== "object") && match === true) {
+    if (match === true) {
       var match$1 = s[1];
-      if ((match$1 === null || typeof match$1 !== "object") && match$1 === false) {
+      if (match$1 === false) {
         var match$2 = s[2];
         if (!Array.isArray(match$2) && (match$2 === null || typeof match$2 !== "object") && typeof match$2 !== "number" && typeof match$2 !== "string") {
           console.log("Nope...");
