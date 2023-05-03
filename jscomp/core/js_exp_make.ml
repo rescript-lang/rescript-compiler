@@ -633,6 +633,10 @@ let rec filter_bool (e: t) ~j ~b = match e.expression_desc with
     if txt <> "bool"
     then None
     else assert false
+  | Js_not {expression_desc =
+    Call ({expression_desc = Str {txt = "Array.isArray"}},
+      [{expression_desc = Var i}], _)} when Js_op_util.same_vident i j ->
+    None
   | _ -> Some e
 
 let and_ ?comment (e1 : t) (e2 : t) : t =
