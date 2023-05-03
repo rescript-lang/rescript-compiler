@@ -20,6 +20,7 @@
 
 - Remove unnecessary require and import statements when using dynamic imports. https://github.com/rescript-lang/rescript-compiler/pull/6232
 - Fix option unboxing logic in the presence of untagged variants. https://github.com/rescript-lang/rescript-compiler/pull/6233
+- Fix printing of local module with type. https://github.com/rescript-lang/rescript-compiler/issues/6212
 
 #### :nail_care: Polish
 

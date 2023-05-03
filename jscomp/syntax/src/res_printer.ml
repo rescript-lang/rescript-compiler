@@ -4965,6 +4965,15 @@ and printExpressionBlock ~state ~braces expr cmtTbl =
         let doc = Doc.text modName.txt in
         printComments doc cmtTbl modName.loc
       in
+      let name, modExpr =
+        match modExpr.pmod_desc with
+        | Pmod_constraint (modExpr, modType) ->
+          let name =
+            Doc.concat [name; Doc.text ": "; printModType ~state modType cmtTbl]
+          in
+          (name, modExpr)
+        | _ -> (name, modExpr)
+      in
       let letModuleDoc =
         Doc.concat
           [
