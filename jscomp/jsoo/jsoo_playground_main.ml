@@ -51,7 +51,7 @@
  * *)
 let apiVersion = "3"
 
-module Js = Jsoo_common.Js
+module Js = Js_of_ocaml.Js
 
 let export (field : string) v =
   Js.Unsafe.set (Js.Unsafe.global) field v
@@ -199,9 +199,10 @@ end
 (* One time setup for all relevant modules *)
 let () =
   Bs_conditional_initial.setup_env ();
+  (* From now on the default setting will be uncurried mode *)
+  Config.uncurried := Uncurried;
   Clflags.binary_annotations := false;
-  Misc.Color.setup (Some Always);
-  Lazy.force Super_main.setup;
+  Clflags.color := Some Always;
   Lazy.force Res_outcome_printer.setup
 
 let error_of_exn e =
@@ -329,7 +330,7 @@ module Compile = struct
     match Warnings.report w with
       | `Inactive -> ()
       | `Active { Warnings. number; is_error; } ->
-        Super_location.super_warning_printer loc ppf w;
+        !Location.warning_printer loc ppf w;
         let open LocWarnInfo in
         let fullMsg = flush_warning_buffer () in
         let shortMsg = Warnings.message w in
@@ -458,7 +459,7 @@ module Compile = struct
     List.iter Iter.iter_structure_item structure.str_items;
     Js.array (!acc |> Array.of_list)
 
-  let implementation ~(config: BundleConfig.t) ~lang str  : Js.Unsafe.obj =
+  let implementation ~(config: BundleConfig.t) ~lang str =
     let {BundleConfig.module_system; warn_flags} = config in
     try
       reset_compiler ();
@@ -677,8 +678,6 @@ module Export = struct
 end
 
 let () =
-  (* From now on the default setting will be uncurried mode *)
-  Config.uncurried := Uncurried;
   export "rescript_compiler"
     (Js.Unsafe.(obj
                   [|
