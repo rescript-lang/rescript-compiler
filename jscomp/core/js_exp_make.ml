@@ -618,6 +618,23 @@ let bin ?comment (op : J.binop) (e0 : t) (e1 : t) : t =
      be careful for side effect
 *)
 
+let rec filter_bool (e: t) ~j ~b = match e.expression_desc with
+  | Bin (And, e1, e2) ->
+    (match (filter_bool e1 ~j ~b, filter_bool e2 ~j ~b) with
+    | None, None -> None
+    | Some e, None
+    | None, Some e -> Some e
+    | Some e1, Some e2 ->
+      Some {e with expression_desc = Bin (And, e1, e2)} )
+  | Bin
+    ( NotEqEq,
+      {expression_desc = Typeof {expression_desc = Var i}},
+      {expression_desc = Str {txt}}) when Js_op_util.same_vident i j ->
+    if txt <> "bool"
+    then None
+    else assert false
+  | _ -> Some e
+
 let and_ ?comment (e1 : t) (e2 : t) : t =
   match (e1.expression_desc, e2.expression_desc) with
   | Var i, Var j when Js_op_util.same_vident i j -> e1
@@ -634,6 +651,15 @@ let and_ ?comment (e1 : t) (e2 : t) : t =
           { expression_desc = Str _ | Number _ } ) )
     when Js_op_util.same_vident i j ->
       e2
+  | ( _,
+      Bin
+      ( EqEqEq,
+        { expression_desc = Var j },
+        { expression_desc = Bool b } )
+        ) ->
+    (match filter_bool e1 ~j ~b with
+     | None -> e2
+     | Some e1 -> { expression_desc = Bin (And, e1, e2); comment })
   | _, _ -> { expression_desc = Bin (And, e1, e2); comment }
 
 let or_ ?comment (e1 : t) (e2 : t) =
