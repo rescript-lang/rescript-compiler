@@ -14,7 +14,7 @@
 
 #### :boom: Breaking Change
 
-- `-bs-super-errors` flag has been removed along with Super_errors. https://github.com/rescript-lang/rescript-compiler/pull/6199
+- `-bs-super-errors` flag has been deprecated along with Super_errors. https://github.com/rescript-lang/rescript-compiler/pull/6243
 
 #### :bug: Bug Fix
 
