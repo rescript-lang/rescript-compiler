@@ -292,6 +292,9 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
 
     (******************************************************************************)
 
+    "-bs-super-errors", unit_call (fun _ -> ()),
+    "*deprecated* Better error message combined with other tools ";
+
     "-unboxed-types", set Clflags.unboxed_types,
     "*internal* Unannotated unboxable types will be unboxed";
 
