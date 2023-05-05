@@ -1358,7 +1358,6 @@ let expr ~config mapper expression =
       in
       let childrenExpr = transformChildrenIfList ~mapper listItems in
       let recordOfChildren children =
-        (* FIXME: missing loc *)
         Exp.record [(Location.mknoloc (Lident "children"), children)] None
       in
       let applyReactArray expr =
