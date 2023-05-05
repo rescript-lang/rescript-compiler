@@ -10,6 +10,8 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
+# 11.0.0-beta.1 (Unreleased)
+
 # 11.0.0-alpha.6
 
 #### :boom: Breaking Change
