@@ -358,7 +358,7 @@ function has the name of the enclosing module/file.
 // is transformed to
 
 // v4
-ReactDOMRe.createElement(ReasonReact.fragment, [comp1, comp2, comp3])
+React.createElement(React.fragment, {children: [comp1, comp2, comp3]})
 
 // v4 @ new jsx transform
 React.jsxs(React.jsxFragment, {children: [comp1, comp2, comp3]})
