@@ -890,10 +890,16 @@ lib/ocaml/js_weakset.cmi
 lib/ocaml/js_weakset.cmj
 lib/ocaml/js_weakset.cmt
 lib/ocaml/js_weakset.ml
+lib/ocaml/jsx.cmi
+lib/ocaml/jsx.cmj
+lib/ocaml/jsx.cmt
 lib/ocaml/jsxC.cmi
 lib/ocaml/jsxC.cmj
 lib/ocaml/jsxC.cmt
 lib/ocaml/jsxC.res
+lib/ocaml/jsxDOM.cmi
+lib/ocaml/jsxDOM.cmj
+lib/ocaml/jsxDOM.cmt
 lib/ocaml/jsxDOMC.cmi
 lib/ocaml/jsxDOMC.cmj
 lib/ocaml/jsxDOMC.cmt
@@ -906,6 +912,9 @@ lib/ocaml/jsxDOMU.cmi
 lib/ocaml/jsxDOMU.cmj
 lib/ocaml/jsxDOMU.cmt
 lib/ocaml/jsxDOMU.res
+lib/ocaml/jsxEvent.cmi
+lib/ocaml/jsxEvent.cmj
+lib/ocaml/jsxEvent.cmt
 lib/ocaml/jsxEventC.cmi
 lib/ocaml/jsxEventC.cmj
 lib/ocaml/jsxEventC.cmt
@@ -914,6 +923,9 @@ lib/ocaml/jsxEventU.cmi
 lib/ocaml/jsxEventU.cmj
 lib/ocaml/jsxEventU.cmt
 lib/ocaml/jsxEventU.res
+lib/ocaml/jsxPPXReactSupport.cmi
+lib/ocaml/jsxPPXReactSupport.cmj
+lib/ocaml/jsxPPXReactSupport.cmt
 lib/ocaml/jsxPPXReactSupportC.cmi
 lib/ocaml/jsxPPXReactSupportC.cmj
 lib/ocaml/jsxPPXReactSupportC.cmt
@@ -1024,6 +1036,10 @@ lib/ocaml/pervasivesU.cmt
 lib/ocaml/pervasivesU.cmti
 lib/ocaml/pervasivesU.res
 lib/ocaml/pervasivesU.resi
+lib/ocaml/printexc.cmi
+lib/ocaml/printexc.cmj
+lib/ocaml/printexc.cmt
+lib/ocaml/printexc.cmti
 lib/ocaml/queue.cmi
 lib/ocaml/queue.cmj
 lib/ocaml/queue.cmt
