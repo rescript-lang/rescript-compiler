@@ -22,8 +22,9 @@ module V4C = {
   type props = {}
 
   let make = (_: props) =>
-    ReactDOM.createElement(
+    React.createElementVariadic(
       React.fragment,
+      {},
       [
         JsxPPXReactSupport.createElementWithKey(~key="k", V4CA.make, {}),
         JsxPPXReactSupport.createElementWithKey(~key="k", V4CB.make, {}),
@@ -63,10 +64,10 @@ module V4C = {
     React.jsxs(
       React.jsxFragment,
       {
-        children: [
+        children: React.array([
           React.jsxKeyed(V4CA.make, {}, ~key="k", ()),
           React.jsxKeyed(V4CB.make, {}, ~key="k", ()),
-        ],
+        ]),
       },
     )
   let make = {

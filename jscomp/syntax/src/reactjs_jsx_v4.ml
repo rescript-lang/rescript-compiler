@@ -1360,25 +1360,39 @@ let expr ~config mapper expression =
       let recordOfChildren children =
         Exp.record [(Location.mknoloc (Lident "children"), children)] None
       in
-      let args =
-        [
-          (nolabel, fragment);
-          (match config.mode with
-          | "automatic" -> (
-            ( nolabel,
-              match childrenExpr with
-              | {pexp_desc = Pexp_array children} -> (
-                match children with
-                | [] -> emptyRecord ~loc:Location.none
-                | [child] -> recordOfChildren child
-                | _ -> recordOfChildren childrenExpr)
-              | _ -> recordOfChildren childrenExpr ))
-          | "classic" | _ -> (nolabel, childrenExpr));
-        ]
+      let applyReactArray expr =
+        Exp.apply
+          (Exp.ident
+             {txt = Ldot (Lident "React", "array"); loc = Location.none})
+          [(Nolabel, expr)]
       in
       let countOfChildren = function
         | {pexp_desc = Pexp_array children} -> List.length children
         | _ -> 0
+      in
+      let transformChildrenToProps childrenExpr =
+        match childrenExpr with
+        | {pexp_desc = Pexp_array children} -> (
+          match children with
+          | [] -> emptyRecord ~loc:Location.none
+          | [child] -> recordOfChildren child
+          | _ -> (
+            match config.mode with
+            | "automatic" -> recordOfChildren @@ applyReactArray childrenExpr
+            | "classic" | _ -> emptyRecord ~loc:Location.none))
+        | _ -> (
+          match config.mode with
+          | "automatic" -> recordOfChildren @@ applyReactArray childrenExpr
+          | "classic" | _ -> emptyRecord ~loc:Location.none)
+      in
+      let args =
+        (nolabel, fragment)
+        :: (nolabel, transformChildrenToProps childrenExpr)
+        ::
+        (match config.mode with
+        | "classic" when countOfChildren childrenExpr > 1 ->
+          [(nolabel, childrenExpr)]
+        | _ -> [])
       in
       Exp.apply
         ~loc (* throw away the [@JSX] attribute and keep the others, if any *)
@@ -1390,7 +1404,11 @@ let expr ~config mapper expression =
             Exp.ident ~loc {loc; txt = Ldot (Lident "React", "jsxs")}
           else Exp.ident ~loc {loc; txt = Ldot (Lident "React", "jsx")}
         | "classic" | _ ->
-          Exp.ident ~loc {loc; txt = Ldot (Lident "ReactDOM", "createElement")})
+          if countOfChildren childrenExpr > 1 then
+            Exp.ident ~loc
+              {loc; txt = Ldot (Lident "React", "createElementVariadic")}
+          else
+            Exp.ident ~loc {loc; txt = Ldot (Lident "React", "createElement")})
         args)
   (* Delegate to the default mapper, a deep identity traversal *)
   | e -> default_mapper.expr mapper e
