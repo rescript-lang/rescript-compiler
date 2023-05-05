@@ -10,11 +10,12 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# 11.0.0-alpha.6 (Unreleased)
+# 11.0.0-alpha.6
 
 #### :boom: Breaking Change
 
 - `-bs-super-errors` flag has been deprecated along with Super_errors. https://github.com/rescript-lang/rescript-compiler/pull/6243
+- `@rescript/react` >= 0.12.0-alpha.2 is now required because of the React.fragment's children type fix. https://github.com/rescript-lang/rescript-compiler/pull/6238
 
 #### :bug: Bug Fix
 
