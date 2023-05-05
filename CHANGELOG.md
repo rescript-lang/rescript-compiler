@@ -29,9 +29,6 @@
 #### :nail_care: Polish
 
 - In uncurried mode, outcome printer swaps curried and uncurries function printing compared to legacy.
-
-#### :nail_care: Polish
-
 - Add location information to duplicate type definition error messages. https://github.com/rescript-lang/rescript-compiler/pull/6199
 - Replace normal module errors with Super_error module, and clean up Super_error. https://github.com/rescript-lang/rescript-compiler/pull/6199
 - `Js.Json.t`, `Js.null` and `Js.nullable` are now untagged variants representing their runtime values, instead of abstract types. https://github.com/rescript-lang/rescript-compiler/pull/6218
