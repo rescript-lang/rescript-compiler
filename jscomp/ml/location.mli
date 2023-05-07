@@ -78,7 +78,7 @@ type 'a loc = {
 val mknoloc : 'a -> 'a loc
 val mkloc : 'a -> t -> 'a loc
 
-val print: message_kind:[< `error | `warning | `warning_as_error > `warning] -> string -> formatter -> t -> unit
+val print: ?src:string option -> message_kind:[< `error | `warning | `warning_as_error > `warning] -> string -> formatter -> t -> unit
 val print_compact: formatter -> t -> unit
 val print_filename: formatter -> string -> unit
 
@@ -131,12 +131,12 @@ val register_error_of_exn: (exn -> error option) -> unit
     a location, a message, and optionally sub-messages (each of them
     being located as well). *)
 
-val report_error: formatter -> error -> unit
+val report_error: ?src:string option -> formatter -> error -> unit
 
-val error_reporter : (formatter -> error -> unit) ref
+val error_reporter : (?src:string option -> formatter -> error -> unit) ref
 (** Hook for intercepting error reports. *)
 
-val default_error_reporter : formatter -> error -> unit
+val default_error_reporter : ?src:string option -> formatter -> error -> unit
 (** Original error reporter for use in hooks. *)
 
 val report_exception: formatter -> exn -> unit
