@@ -12,6 +12,10 @@
 
 # 11.0.0-beta.1 (Unreleased)
 
+#### :nail_care: Polish
+
+- Removed duplicate Super_error implementation in syntax https://github.com/rescript-lang/rescript-compiler/pull/6246
+
 # 11.0.0-alpha.6
 
 #### :boom: Breaking Change
