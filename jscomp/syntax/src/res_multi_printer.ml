@@ -1,7 +1,7 @@
 let defaultPrintWidth = 100
 
 (* Determine if the file is in uncurried mode by looking for
-   the fist ancestor .bsconfig and see if it contains "uncurried": true *)
+   the fist ancestor .bsconfig and see if it contains "uncurried": false *)
 let getUncurriedFromBsconfig ~filename =
   let rec findBsconfig ~dir =
     let bsconfig = Filename.concat dir "bsconfig.json" in
