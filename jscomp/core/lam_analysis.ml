@@ -98,7 +98,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
           true
       | Pjs_apply | Pjs_runtime_apply | Pjs_call _ | Pinit_mod | Pupdate_mod
       | Pjs_unsafe_downgrade _ | Pdebugger | Pvoid_run | Pfull_apply
-      | Pjs_fn_method
+      | Pjs_fn_method  | Pjs_tagged_template _
       (* TODO *)
       | Praw_js_code _ | Pbytessetu | Pbytessets
       (* Operations on boxed integers (Nativeint.t, Int32.t, Int64.t) *)

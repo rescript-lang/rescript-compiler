@@ -36,6 +36,12 @@ val translate_ffi :
   J.expression list ->
   J.expression
 
+val translate_scoped_module_val :
+  External_ffi_types.external_module_name option -> 
+  string -> 
+  string list -> 
+  J.expression 
+
 (** TODO: document supported attributes
     Attributes starting with `js` are reserved
     examples: "variadic"

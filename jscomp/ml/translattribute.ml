@@ -21,6 +21,9 @@ let is_inline_attribute (attr : t) =
 let is_inlined_attribute (attr : t) =
   match attr with { txt = "inlined" }, _ -> true | _ -> false
 
+let is_tagged_template_attribute (attr : t) =
+  match attr with { txt = "res.taggedTemplate" }, _ -> true | _ -> false
+
 let find_attribute p (attributes : t list) =
   let inline_attribute, other_attributes = List.partition p attributes in
   let attr =
@@ -92,6 +95,16 @@ let get_and_remove_inlined_attribute (e : Typedtree.expression) =
   in
   let inlined = parse_inline_attribute attr in
   (inlined, { e with exp_attributes })
+
+let get_and_remove_tagged_template_attribute (e : Typedtree.expression) =
+  let attr, exp_attributes =
+    find_attribute is_tagged_template_attribute e.exp_attributes
+  in
+  let tagged_template = match attr with
+    | Some(_) -> true
+    | None -> false 
+  in
+  (tagged_template, { e with exp_attributes })
 
 let get_and_remove_inlined_attribute_on_module (e : Typedtree.module_expr) =
   let attr, mod_attributes =

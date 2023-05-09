@@ -93,6 +93,7 @@ let primitive ppf (prim : Lam_primitive.t) =
   | Plazyforce -> fprintf ppf "force"
   | Pccall p -> fprintf ppf "%s" p.prim_name
   | Pjs_call { prim_name } -> fprintf ppf "%s[js]" prim_name
+  | Pjs_tagged_template { prim_name } -> fprintf ppf "%s[js.tagged_template]" prim_name
   | Pjs_object_create _ -> fprintf ppf "[js.obj]"
   | Praise -> fprintf ppf "raise"
   | Psequand -> fprintf ppf "&&"
@@ -263,12 +264,13 @@ let lambda ppf v =
     | Lvar id -> Ident.print ppf id
     | Lglobal_module (id, dynamic_import) -> fprintf ppf (if dynamic_import then "dynamic global %a" else "global %a") Ident.print id
     | Lconst cst -> struct_const ppf cst
-    | Lapply { ap_func; ap_args; ap_info = { ap_inlined } } ->
+    | Lapply { ap_func; ap_args; ap_info = { ap_inlined; ap_tagged_template } } ->
         let lams ppf args =
           List.iter (fun l -> fprintf ppf "@ %a" lam l) args
         in
-        fprintf ppf "@[<2>(apply%s@ %a%a)@]"
+        fprintf ppf "@[<2>(apply%s%s@ %a%a)@]"
           (match ap_inlined with Always_inline -> "%inlned" | _ -> "")
+          (match ap_tagged_template with true -> "%tagged_template" | _ -> "")
           lam ap_func lams ap_args
     | Lfunction { params; body; _ } ->
         let pr_params ppf params =

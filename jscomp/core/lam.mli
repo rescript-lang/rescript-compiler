@@ -27,6 +27,7 @@ type apply_status = App_na | App_infer_full | App_uncurry
 type ap_info = {
   ap_loc : Location.t;
   ap_inlined : Lambda.inline_attribute;
+  ap_tagged_template : bool;
   ap_status : apply_status;
 }
 

@@ -109,6 +109,7 @@ and apply_coercion_result loc strict funct params args cc_res =
                        ap_func = Lvar id;
                        ap_args = List.rev args;
                        ap_inlined = Default_inline;
+                       ap_tagged_template = false;
                      });
             })
 
@@ -308,6 +309,7 @@ and transl_module cc rootpath mexp =
                  ap_func = transl_module Tcoerce_none None funct;
                  ap_args = [ transl_module ccarg None arg ];
                  ap_inlined = inlined_attribute;
+                 ap_tagged_template = false;
                })
       | Tmod_constraint (arg, _, _, ccarg) ->
           transl_module (compose_coercions cc ccarg) rootpath arg

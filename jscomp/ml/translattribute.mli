@@ -26,5 +26,8 @@ val get_inline_attribute : Parsetree.attributes -> Lambda.inline_attribute
 val get_and_remove_inlined_attribute :
   Typedtree.expression -> Lambda.inline_attribute * Typedtree.expression
 
+val get_and_remove_tagged_template_attribute :
+  Typedtree.expression -> bool * Typedtree.expression
+
 val get_and_remove_inlined_attribute_on_module :
   Typedtree.module_expr -> Lambda.inline_attribute * Typedtree.module_expr

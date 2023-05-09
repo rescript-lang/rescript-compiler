@@ -147,6 +147,8 @@ let exp_need_paren (e : J.expression) =
   match e.expression_desc with
   (* | Caml_uninitialized_obj _  *)
   | Call ({ expression_desc = Fun _ | Raw_js_code _ }, _, _) -> true
+    (* TODO: implement this *)
+  | Tagged_template _ -> false
   | Raw_js_code { code_info = Exp _ }
   | Fun _
   | Caml_block
@@ -596,6 +598,29 @@ and expression_desc cxt ~(level : int) f x : cxt =
               P.string f L.null;
               comma_sp f;
               expression ~level:1 cxt f el))
+  | Tagged_template (callExpr, stringArgs, valueArgs) ->
+    let cxt = expression cxt ~level f callExpr in
+    P.string f "`";
+    let rec aux cxt xs ys = match xs, ys with
+    | [], [] -> ()
+    | x_head :: x_rest, ys ->
+      let cxt = (match x_head with
+      | {J.expression_desc = Str { txt; _ }} ->
+        P.string f txt;
+        cxt
+      | _ -> 
+        P.string f "${";
+        let cxt = expression cxt ~level f x_head in
+        P.string f "}";
+        cxt
+      )
+      in
+      aux cxt ys x_rest
+    | _ -> assert false
+    in
+    aux cxt stringArgs valueArgs;
+    P.string f "`";
+    cxt
   | String_index (a, b) ->
       P.group f 1 (fun _ ->
           let cxt = expression ~level:15 cxt f a in

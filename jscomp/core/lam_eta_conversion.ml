@@ -111,7 +111,7 @@ let transform_under_supply n ap_info fn args =
 let unsafe_adjust_to_arity loc ~(to_ : int) ?(from : int option) (fn : Lam.t) :
     Lam.t =
   let ap_info : Lam.ap_info =
-    { ap_loc = loc; ap_inlined = Default_inline; ap_status = App_na }
+    { ap_loc = loc; ap_inlined = Default_inline; ap_tagged_template = false; ap_status = App_na }
   in
   let is_async_fn = match fn with
     | Lfunction { attr = {async}} -> async 

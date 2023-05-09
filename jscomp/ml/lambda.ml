@@ -354,6 +354,7 @@ and lambda_apply =
     ap_args : lambda list;
     ap_loc : Location.t;
     ap_inlined : inline_attribute;
+    ap_tagged_template : bool;
     }
 
 and lambda_switch =
@@ -688,12 +689,13 @@ let rec map f lam =
     | Lvar _ -> lam
     | Lconst _ -> lam
     | Lapply { ap_func; ap_args; ap_loc; 
-          ap_inlined;  } ->
+          ap_inlined; ap_tagged_template; } ->
         Lapply {
           ap_func = map f ap_func;
           ap_args = List.map (map f) ap_args;
           ap_loc;
-          ap_inlined;
+          ap_inlined; 
+          ap_tagged_template ;
         }
     | Lfunction {  params; body; attr; loc; } ->
         Lfunction {  params; body = map f body; attr; loc; }

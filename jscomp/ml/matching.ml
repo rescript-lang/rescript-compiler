@@ -1514,7 +1514,13 @@ let code_force =
 
 
 let inline_lazy_force arg loc =
-    Lapply { ap_func = Lazy.force code_force; ap_inlined = Default_inline;  ap_args = [arg]; ap_loc = loc}
+  Lapply {
+    ap_func = Lazy.force code_force; 
+    ap_inlined = Default_inline;
+    ap_tagged_template = false;
+    ap_args = [arg];
+    ap_loc = loc;
+  }
 let make_lazy_matching def = function
     [] -> fatal_error "Matching.make_lazy_matching"
   | (arg,_mut) :: argl ->
