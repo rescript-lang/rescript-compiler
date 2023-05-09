@@ -97,7 +97,7 @@ let extract_gentype_config (map : json_map) : Bsb_config_types.gentype_config =
 
 let extract_uncurried (map : json_map) : bool =
   match map.?(Bsb_build_schemas.uncurried) with
-  | None -> false
+  | None -> true
   | Some (True _) -> true
   | Some (False _) -> false
   | Some config ->
