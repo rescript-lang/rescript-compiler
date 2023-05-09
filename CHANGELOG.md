@@ -12,6 +12,9 @@
 
 # 11.0.0-beta.1 (Unreleased)
 
+#### :rocket: Main New Feature
+- Make uncurried mode opt-out: by default, every project is now in uncurried mode, unless `"uncurried": false` is specified in the project config. https://github.com/rescript-lang/rescript-compiler/pull/6249
+
 # 11.0.0-alpha.6
 
 #### :boom: Breaking Change
