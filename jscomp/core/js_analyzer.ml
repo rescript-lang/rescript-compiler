@@ -103,12 +103,7 @@ let rec no_side_effect_expression_desc (x : J.expression_desc) =
   | String_append (a, b) | Seq (a, b) -> no_side_effect a && no_side_effect b
   | Length (e, _) | Caml_block_tag (e, _) | Typeof e -> no_side_effect e
   | Bin (op, a, b) -> op <> Eq && no_side_effect a && no_side_effect b
-  (*
-    TODO: we should check look at each of the expressions in the 'values' list/array
-    to determine if any of them have side-effects.  For now we'll just return false
-    to make the compiler happy.
-   *)
-  | Tagged_template _ -> false
+  | Tagged_template (_call_expr, _strings, values) -> Ext_list.for_all values no_side_effect
   | Js_not _ | Cond _ | FlatCall _ | Call _ | New _ | Raw_js_code _
   (* actually true? *) ->
       false
