@@ -2270,7 +2270,7 @@ and parseBinaryExpr ?(context = OrdinaryExpr) ?a p prec =
 and parseTemplateExpr ?(prefix = "js") p =
   let partPrefix =
     match prefix with
-    | "js" | "j" -> Some prefix
+    | "js" | "j" | "json" -> Some prefix
     | _ -> None
   in
   let startPos = p.Parser.startPos in
@@ -2350,8 +2350,7 @@ and parseTemplateExpr ?(prefix = "js") p =
         (fun acc subpart ->
           Some
             (match acc with
-            | Some expr ->
-              concat expr subpart
+            | Some expr -> concat expr subpart
             | None -> subpart))
         None subparts
     in
@@ -2361,7 +2360,7 @@ and parseTemplateExpr ?(prefix = "js") p =
   in
 
   match prefix with
-  | "js" | "j" -> genInterpolatedString ()
+  | "js" | "j" | "json" -> genInterpolatedString ()
   | _ -> genTaggedTemplateCall ()
 
 (* Overparse: let f = a : int => a + 1, is it (a : int) => or (a): int =>
