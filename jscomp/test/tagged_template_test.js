@@ -2,25 +2,28 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Caml_splice_call = require("../../lib/js/caml_splice_call.js");
+var Caml_array = require("../../lib/js/caml_array.js");
 var Tagged_template_libJs = require("./tagged_template_lib.js");
 
-function sql(prim0, prim1) {
-  return Caml_splice_call.spliceApply(Tagged_template_libJs.sql, [
-              prim0,
-              prim1
-            ]);
+var query = Tagged_template_libJs.sql`SELECT * FROM users WHERE id = 5`;
+
+function foo(strings, values) {
+  var res = "";
+  var valueCount = values.length;
+  for(var i = 0; i < valueCount; ++i){
+    res = res + Caml_array.get(strings, i) + String(Math.imul(Caml_array.get(values, i), 10));
+  }
+  return res + Caml_array.get(strings, valueCount);
 }
 
-var table = "users";
+var res = foo([
+      "| 5 * 10 = ",
+      " |"
+    ], [5]);
 
-var id = "5";
-
-var query = Tagged_template_libJs.sql`SELECT * FROM ${table} WHERE id = ${id}`;
-
-Mt.from_pair_suites("tagged template", {
+Mt.from_pair_suites("tagged templates", {
       hd: [
-        "it should return a string with the correct interpolations",
+        "with externals, it should return a string with the correct interpolations",
         (function (param) {
             return {
                     TAG: "Eq",
@@ -29,11 +32,31 @@ Mt.from_pair_suites("tagged template", {
                   };
           })
       ],
-      tl: /* [] */0
+      tl: {
+        hd: [
+          "with rescript function, it should return a string with the correct interpolations",
+          (function (param) {
+              return {
+                      TAG: "Eq",
+                      _0: res,
+                      _1: "| 5 * 10 = 50 |"
+                    };
+            })
+        ],
+        tl: {
+          hd: [
+            "a template literal tagged with json should generate a regular string interpolation for now",
+            (function (param) {
+                return {
+                        TAG: "Eq",
+                        _0: "some random " + "string",
+                        _1: "some random string"
+                      };
+              })
+          ],
+          tl: /* [] */0
+        }
+      }
     });
 
-exports.sql = sql;
-exports.table = table;
-exports.id = id;
-exports.query = query;
 /* query Not a pure module */
