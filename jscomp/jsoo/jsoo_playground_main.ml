@@ -326,11 +326,13 @@ module Compile = struct
     Buffer.reset warning_buffer;
     str
 
-  let super_warning_printer loc ppf w =
+  (* We need to overload the original warning printer to capture the warnings
+     as an array *)
+  let playground_warning_printer loc ppf w =
     match Warnings.report w with
       | `Inactive -> ()
       | `Active { Warnings. number; is_error; } ->
-        !Location.warning_printer loc ppf w;
+        Location.default_warning_printer loc ppf w;
         let open LocWarnInfo in
         let fullMsg = flush_warning_buffer () in
         let shortMsg = Warnings.message w in
@@ -345,7 +347,7 @@ module Compile = struct
 
   let () =
     Location.formatter_for_warnings := warning_ppf;
-    Location.warning_printer := super_warning_printer
+    Location.warning_printer := playground_warning_printer
 
   let handle_err e =
     (match error_of_exn e with
