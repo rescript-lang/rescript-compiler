@@ -22,7 +22,7 @@ Mt.from_pair_suites(
   list{
     (
       "with externals, it should return a string with the correct interpolations",
-      () => Eq(query, "SELECT * FROM users WHERE id = 5"),
+      () => Eq(query, "SELECT * FROM 'users' WHERE id = '5'"),
     ),
     (
       "with rescript function, it should return a string with the correct interpolations",

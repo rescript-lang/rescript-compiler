@@ -28,7 +28,7 @@ Mt.from_pair_suites("tagged templates", {
             return {
                     TAG: "Eq",
                     _0: query,
-                    _1: "SELECT * FROM users WHERE id = 5"
+                    _1: "SELECT * FROM 'users' WHERE id = '5'"
                   };
           })
       ],
