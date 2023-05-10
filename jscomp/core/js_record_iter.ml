@@ -107,9 +107,10 @@ let expression_desc : expression_desc fn =
   | Call (_x0, _x1, _x2) ->
       _self.expression _self _x0;
       list _self.expression _self _x1
-  | Tagged_template (exprCall, _, _) ->
-    (* TODO: implement this *)
-    _self.expression _self exprCall;
+  | Tagged_template (_x0, _x1, _x2) ->
+    _self.expression _self _x0;
+    list _self.expression _self _x1;
+    list _self.expression _self _x2
   | String_index (_x0, _x1) ->
       _self.expression _self _x0;
       _self.expression _self _x1
