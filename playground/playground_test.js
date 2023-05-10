@@ -13,6 +13,7 @@ let result = compiler.rescript.compile(`
   module A = {
     @react.component
     let make = (~a) => {
+      // This should yield a warning (unused variable state)
       let state = React.useState(() => 0)
       <div> {React.string(a)} </div>
     }
@@ -46,7 +47,7 @@ if(result.js_code != "") {
   console.log('----');
   if(result.type === "unexpected_error") {
     console.log("UNEXPECTED ERROR");
-    console.log(result.msg);
+    console.log(result);
     process.exit(1);
   }
   if(result.errors && result.errors.length > 0) {
@@ -56,6 +57,13 @@ if(result.js_code != "") {
     }
     process.exit(1);
   }
+
+  if(result.warnings.length === 0) {
+    console.log("TEST FAILED");
+    console.log("The code should have at least one warning.");
+    process.exit(1);
+  }
+
   console.log(result.js_code);
   console.log('-- Playground test complete --');
 }
