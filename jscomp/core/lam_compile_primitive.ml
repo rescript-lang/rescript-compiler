@@ -339,21 +339,7 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
   | Pjs_object_create _ -> assert false
   | Pjs_call { arg_types; ffi } ->
       Lam_compile_external_call.translate_ffi cxt arg_types ffi args
-  | Pjs_tagged_template { ffi } -> (
-    (* TODO: extract this into lam_compile_external_call.ml *)
-    let fn = match ffi with
-    | Js_call { external_module_name; name; scopes } ->
-        Lam_compile_external_call.translate_scoped_module_val external_module_name name scopes
-    | _ -> assert false
-    in
-    match args with
-    | [ stringArgs; valueArgs ] -> (
-        match (stringArgs, valueArgs) with
-        | ({expression_desc = Array (strings, _)}, {expression_desc = Array (values, _)}) ->
-            E.tagged_template fn strings values
-        | _ -> assert false
-        )
-    | _ -> assert false)
+  | Pjs_tagged_template { ffi } -> Lam_compile_external_call.translate_tagged_template cxt ffi args
   (* FIXME, this can be removed later *)
   | Pisint -> E.is_type_number (Ext_list.singleton_exn args)
   | Pis_poly_var_block -> E.is_type_object (Ext_list.singleton_exn args)

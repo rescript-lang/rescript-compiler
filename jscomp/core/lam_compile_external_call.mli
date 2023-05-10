@@ -36,11 +36,11 @@ val translate_ffi :
   J.expression list ->
   J.expression
 
-val translate_scoped_module_val :
-  External_ffi_types.external_module_name option -> 
-  string -> 
-  string list -> 
-  J.expression 
+val translate_tagged_template :
+  Lam_compile_context.t ->
+  External_ffi_types.external_spec ->
+  J.expression list ->
+  J.expression
 
 (** TODO: document supported attributes
     Attributes starting with `js` are reserved

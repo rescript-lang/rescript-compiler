@@ -381,3 +381,19 @@ let translate_ffi (cxt : Lam_compile_context.t) arg_types
       | [ obj; v; value ] ->
           Js_arr.set_array (translate_scoped_access scopes obj) v value
       | _ -> assert false)
+
+let translate_tagged_template (cxt : Lam_compile_context.t)
+  (ffi : External_ffi_types.external_spec) (args : J.expression list) = 
+  let fn = match ffi with
+  | Js_call { external_module_name; name; scopes; _ } ->
+      translate_scoped_module_val external_module_name name scopes
+  | _ ->  assert false
+  in
+  match args with
+  | [ stringArgs; valueArgs ] -> (
+      match (stringArgs, valueArgs) with
+      | ({expression_desc = Array (strings, _); _}, {expression_desc = Array (values, _); _}) ->
+          E.tagged_template fn strings values
+      | _ -> assert false
+      )
+  | _ -> assert false
