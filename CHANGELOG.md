@@ -15,6 +15,9 @@
 #### :rocket: Main New Feature
 - Make uncurried mode opt-out: by default, every project is now in uncurried mode, unless `"uncurried": false` is specified in the project config. https://github.com/rescript-lang/rescript-compiler/pull/6249
 
+#### :nail_care: Polish
+- Removed duplicate Super_error implementation in syntax https://github.com/rescript-lang/rescript-compiler/pull/6246
+
 # 11.0.0-alpha.6
 
 #### :boom: Breaking Change

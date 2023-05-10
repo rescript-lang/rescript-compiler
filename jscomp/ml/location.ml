@@ -156,7 +156,7 @@ let print_loc ppf (loc : t) =
   fprintf ppf "@{<filename>%a@}%a" print_filename loc.loc_start.pos_fname dim_loc normalized_range
 ;;
 
-let print ~message_kind intro ppf (loc : t) =
+let print ?(src = None) ~message_kind intro ppf (loc : t) =
   begin match message_kind with
     | `warning -> fprintf ppf "@[@{<info>%s@}@]@," intro
     | `warning_as_error -> fprintf ppf "@[@{<error>%s@} (configured as error) @]@," intro
@@ -193,7 +193,12 @@ let print ~message_kind intro ppf (loc : t) =
   | None -> ()
   | Some _ -> begin
       try
-        let src = Ext_io.load_file file in
+        (* Print a syntax error that is a list of Res_diagnostics.t.
+           Instead of reading file for every error, it uses the source that the parser already has. *)
+        let src = match src with
+        | Some src -> src
+        | None -> Ext_io.load_file file
+        in
         (* we're putting the line break `@,` here rather than above, because this
            branch might not be reached (aka no inline file content display) so
            we don't wanna end up with two line breaks in the the consequent *)
@@ -329,17 +334,22 @@ let error_of_exn exn =
 
 (* taken from https://github.com/rescript-lang/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/parsing/location.ml#L380 *)
 (* This is the error report entry point. We'll replace the default reporter with this one. *)
-let rec default_error_reporter ppf ({loc; msg; sub}) =
+let rec default_error_reporter ?(src = None) ppf ({loc; msg; sub}) =
   setup_colors ();
   (* open a vertical box. Everything in our message is indented 2 spaces *)
-  Format.fprintf ppf "@[<v>@,  %a@,  %s@,@]" (print ~message_kind:`error "We've found a bug for you!") loc msg;
-  List.iter (Format.fprintf ppf "@,@[%a@]" default_error_reporter) sub
+  (* If src is given, it will display a syntax error after parsing. *)
+  let intro = match src with
+  | Some _ -> "Syntax error!"
+  | None -> "We've found a bug for you!"
+  in
+  Format.fprintf ppf "@[<v>@,  %a@,  %s@,@]" (print ~src ~message_kind:`error intro) loc msg;
+  List.iter (Format.fprintf ppf "@,@[%a@]" (default_error_reporter ~src)) sub
 (* no need to flush here; location's report_exception (which uses this ultimately) flushes *)
     
 let error_reporter = ref default_error_reporter
 
-let report_error ppf err =
-   !error_reporter ppf err
+let report_error ?(src = None) ppf err =
+   !error_reporter ~src ppf err
 ;;
 
 let error_of_printer loc print x =
@@ -375,7 +385,7 @@ let rec report_exception_rec n ppf exn =
     match error_of_exn exn with
     | None -> reraise exn
     | Some `Already_displayed -> ()
-    | Some (`Ok err) -> fprintf ppf "@[%a@]@." report_error err
+    | Some (`Ok err) -> fprintf ppf "@[%a@]@." (report_error ~src:None) err
   with exn when n > 0 -> report_exception_rec (n-1) ppf exn
 
 let report_exception ppf exn = report_exception_rec 5 ppf exn
