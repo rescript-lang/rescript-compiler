@@ -52,6 +52,21 @@ lib: build node_modules/.bin/semver
 artifacts: lib
 	./scripts/makeArtifactList.js
 
+# Builds the core playground bundle (without the relevant cmijs files for the runtime)
+playground:
+	dune build --profile browser
+	cp ./_build/default/jscomp/jsoo/jsoo_playground_main.bc.js playground/compiler.js
+
+# Creates all the relevant core and third party cmij files to side-load together with the playground bundle
+playground-cmijs: artifacts
+	node packages/playground-bundling/scripts/generate_cmijs.js
+
+# Builds the playground, runs some e2e tests and releases the playground to the
+# CDN (requires KEYCDN_USER and KEYCDN_PASSWORD set in the env variables)
+playground-release: playground playground-cmijs
+	node playground/playground_test.js
+	sh playground/upload_bundle.sh
+
 format:
 	dune build @fmt --auto-promote
 
@@ -69,4 +84,4 @@ clean-all: clean clean-gentype
 
 .DEFAULT_GOAL := build
 
-.PHONY: build watch ninja bench dce test test-syntax test-syntax-roundtrip test-gentype test-all lib artifacts format checkformat clean-gentype clean clean-all
+.PHONY: build watch ninja bench dce test test-syntax test-syntax-roundtrip test-gentype test-all lib playground playground-cmijs playground-release artifacts format checkformat clean-gentype clean clean-all
