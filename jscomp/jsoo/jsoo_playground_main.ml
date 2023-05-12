@@ -239,15 +239,15 @@ module ResDriver = struct
     Res_parser.make ~mode src filename
 
   (* get full super error message *)
-  let diagnosticToString ~src (d: Res_diagnostics.t) =
+  let diagnosticToString ~(src: string) (d: Res_diagnostics.t) =
     let startPos = Res_diagnostics.getStartPos(d) in
     let endPos = Res_diagnostics.getEndPos(d) in
     let msg = Res_diagnostics.explain(d) in
     let loc = {loc_start = startPos; Location.loc_end=endPos; loc_ghost=false} in
     let err = { Location.loc; msg; sub=[]; if_highlight=""} in
-    Res_diagnostics_printing_utils.Super_location.super_error_reporter
+    Location.default_error_reporter
+      ~src:(Some src)
       Format.str_formatter
-      src
       err;
     Format.flush_str_formatter ()
 
