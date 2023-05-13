@@ -25,7 +25,22 @@
 let (=)  (x : int) (y:float) = assert false 
 *)
 
+#ifdef BROWSER
 
+let string_of_module_id_in_browser (x : Lam_module_ident.t) =  
+  match x.kind with
+  | External {name} -> name
+  | Runtime | Ml -> 
+    "./stdlib/" ^  Ext_string.uncapitalize_ascii x.id.name ^ ".js"
+
+let string_of_module_id 
+    (id : Lam_module_ident.t)
+    ~output_dir:(_:string)
+    (_module_system : Js_packages_info.module_system)
+  = string_of_module_id_in_browser id
+
+#else
+  
 let (//) = Filename.concat 
 
 
@@ -86,8 +101,6 @@ let get_runtime_module_path
            | Some path -> 
              path //dep_path // js_file 
           )  
-
-
 
 (* [output_dir] is decided by the command line argument *)
 let string_of_module_id 
@@ -187,18 +200,4 @@ let string_of_module_id
           | None -> 
             Bs_exception.error (Js_not_found js_file))
 
-
-
-(* Override it in browser *)
-#ifdef BROWSER
-let string_of_module_id_in_browser (x : Lam_module_ident.t) =  
-  match x.kind with
-  | External {name} -> name
-  | Runtime | Ml -> 
-    "./stdlib/" ^  Ext_string.uncapitalize_ascii x.id.name ^ ".js"
-let string_of_module_id 
-    (id : Lam_module_ident.t)
-    ~output_dir:(_:string)
-    (_module_system : Js_packages_info.module_system)
-  = string_of_module_id_in_browser id
 #endif
