@@ -13,7 +13,10 @@
 (*                                                                        *)
 (**************************************************************************)
 
-open Cmi_format
+#ifdef BROWSER
+[@@@warning "-32"]
+#endif
+
 open Typedtree
 
 (* Note that in Typerex, there is an awful hack to save a cmt file
@@ -164,10 +167,12 @@ let record_value_dependency vd1 vd2 =
   if vd1.Types.val_loc <> vd2.Types.val_loc then
     value_deps := (vd1, vd2) :: !value_deps
 
-let save_cmt filename modname binary_annots sourcefile initial_env cmi =
 #ifdef BROWSER
-  ()  
-#else  
+let save_cmt _filename _modname _binary_annots _sourcefile _initial_env _cmi = ()  
+#else
+open Cmi_format
+
+let save_cmt filename modname binary_annots sourcefile initial_env cmi =
   if !Clflags.binary_annotations then begin
     (if !Config.bs_only then Misc.output_to_bin_file_directly else 
     Misc.output_to_file_via_temporary
