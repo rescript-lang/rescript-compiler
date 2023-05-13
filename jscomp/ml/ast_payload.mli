@@ -47,7 +47,7 @@ val is_single_ident : t -> Longident.t option
 
 val raw_as_string_exp_exn :
   kind:Js_raw_info.raw_kind ->
-  ?is_function:bool ref ->
+  ?is_function:int option ref ->
   t ->
   Parsetree.expression option
 (** Convert %raw into expression *)

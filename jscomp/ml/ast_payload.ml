@@ -138,11 +138,11 @@ let raw_as_string_exp_exn ~(kind : Js_raw_info.raw_kind) ?is_function (x : t) :
            Location.raise_errorf ~loc
              "Syntax error: a valid JS regex literal expected");
         (match is_function with
-        | Some is_function -> (
-          match Classify_function.classify_exp prog with
-          | Js_function {arity = _; _} -> is_function := true
-          | _ -> ())
-        | None -> ());
+          | Some is_function -> (
+            match Classify_function.classify_exp prog with
+            | Js_function {arity; _} -> is_function := Some arity
+            | _ -> ())
+          | None -> ());
         errors
       | Raw_program -> snd (Parser_flow.parse_program false None str));
     Some {e with pexp_desc = Pexp_constant (Pconst_string (str, None))}

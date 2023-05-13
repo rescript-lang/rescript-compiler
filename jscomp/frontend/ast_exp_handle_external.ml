@@ -72,7 +72,7 @@ let handle_debugger loc (payload : Ast_payload.t) =
     Location.raise_errorf ~loc "%%debugger extension doesn't accept arguments"
 
 let handle_raw ~kind loc payload =
-  let is_function = ref false in
+  let is_function = ref None in
   match Ast_payload.raw_as_string_exp_exn ~kind ~is_function payload with
   | None -> (
     match kind with
@@ -93,9 +93,11 @@ let handle_raw ~kind loc payload =
           ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Typ.any ()))
           [exp];
       pexp_attributes =
-        (if !is_function then
-         Ast_attributes.internal_expansive :: exp.pexp_attributes
-        else exp.pexp_attributes);
+        (match !is_function with
+        | None -> exp.pexp_attributes
+        | Some arity ->
+          Printf.eprintf "XXX raw arity:%d\n" arity;
+          Ast_attributes.internal_expansive :: exp.pexp_attributes);
     }
 
 let handle_raw_structure loc payload =
