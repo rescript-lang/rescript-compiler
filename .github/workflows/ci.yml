@@ -209,6 +209,22 @@ jobs:
         if: runner.os == 'Windows'
         run: node scripts/ciTest.js -mocha -theme -format
 
+      # Build the playground compiler on our fastest runner (macOS ARM)
+      - name: Install JSOO
+        if: matrix.os == 'macos-arm'
+        run: opam install js_of_ocaml.4.0.0
+
+      - name: Build playground compiler
+        if: matrix.os == 'macos-arm'
+        run: |
+          opam exec -- node packages/playground-bundling/scripts/generate_cmijs.js
+          opam exec -- dune build --profile browser
+          cp ./_build/default/jscomp/jsoo/jsoo_playground_main.bc.js playground/compiler.js
+
+      - name: Test playground compiler
+        if: matrix.os == 'macos-arm'
+        run: node playground/playground_test.js
+
       - name: Prepare artifact upload
         run: node .github/workflows/get_artifact_info.js
 
