@@ -226,6 +226,13 @@ jobs:
         if: matrix.os == 'macos-arm'
         run: node playground/playground_test.js
 
+      - name: Upload playground compiler to CDN
+        if: ${{ matrix.os == 'macos-arm' && startsWith(github.ref, 'refs/tags/v') }}
+        env:
+          KEYCDN_USER: ${{ secrets.KEYCDN_USER }}
+          KEYCDN_PASSWORD: ${{ secrets.KEYCDN_PASSWORD }}
+        run: sh playground/upload_bundle.sh
+
       - name: Prepare artifact upload
         run: node .github/workflows/get_artifact_info.js
 
