@@ -95,10 +95,41 @@ let handle_raw ~kind loc payload =
       pexp_attributes =
         (match !is_function with
         | None -> exp.pexp_attributes
-        | Some arity ->
-          Printf.eprintf "XXX raw arity:%d\n" arity;
-          Ast_attributes.internal_expansive :: exp.pexp_attributes);
+        | Some _ -> Ast_attributes.internal_expansive :: exp.pexp_attributes);
     }
+
+let handle_ffi ~loc ~payload =
+  let is_function = ref None in
+  match
+    Ast_payload.raw_as_string_exp_exn ~kind:Raw_exp ~is_function payload
+  with
+  | None ->
+    Location.raise_errorf ~loc "%%ffi extension can only be applied to a string"
+  | Some exp ->
+    let wrap (e : Parsetree.expression) =
+      match !is_function with
+      | Some 0 ->
+        let loc = e.pexp_loc in
+        let unit = Ast_literal.type_unit ~loc () in
+        let arrow =
+          Ast_uncurried.uncurriedType ~loc ~arity:1
+            (Ast_helper.Typ.arrow Nolabel unit (Ast_helper.Typ.any ()))
+        in
+        Ast_helper.Exp.constraint_ e arrow ~loc:e.pexp_loc
+      | _ -> e
+    in
+    wrap
+      {
+        exp with
+        pexp_desc =
+          Ast_external_mk.local_external_apply loc ~pval_prim:["#raw_expr"]
+            ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Typ.any ()))
+            [exp];
+        pexp_attributes =
+          (match !is_function with
+          | None -> exp.pexp_attributes
+          | Some _ -> Ast_attributes.internal_expansive :: exp.pexp_attributes);
+      }
 
 let handle_raw_structure loc payload =
   match Ast_payload.raw_as_string_exp_exn ~kind:Raw_program payload with
