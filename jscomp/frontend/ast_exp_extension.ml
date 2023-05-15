@@ -26,7 +26,7 @@ open Ast_helper
 let handle_extension e (self : Bs_ast_mapper.mapper)
     (({txt; loc}, payload) : Parsetree.extension) =
   match txt with
-  | "ffi" -> Ast_exp_handle_external.handle_ffi  ~loc ~payload
+  | "ffi" -> Ast_exp_handle_external.handle_ffi ~loc ~payload
   | "bs.raw" | "raw" ->
     Ast_exp_handle_external.handle_raw ~kind:Raw_exp loc payload
   | "bs.re" | "re" ->
