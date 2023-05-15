@@ -354,11 +354,11 @@ Note that there is one design goal to keep in mind, never introduce any meaningl
 
 To build a new version and release it on NPM, follow these steps:
 
-1. Increment the version number in `package.json`.
-1. Run `node scripts/setVersion.js` to take that version number over into other files.
-1. Update `CHANGELOG.md`.
-1. Create a PR.
-1. Once that PR is merged, download the `npm-packages.zip` artifact for that commit from the Github Actions page.
+1. Verify that the version number is already set correctly for the release. (It should have been incremented after releasing the previous version.)
+1. Create a PR to update `CHANGELOG.md`, removing the "(Unreleased)" for the version to be released.
+1. Once that PR is merged and built successfully, tag the commit with the version number (e.g., "v10.0.0", or "v10.0.0-beta.1") and push the tag.
+1. Verify that this triggers a tag build, and that the playground bundle is uploaded to the CDN as part of the build.
+1. Download the `npm-packages.zip` artifact for the tag build from the Github Actions page.
 1. Extract `npm-packages.zip` to get the package tarballs to publish.
 1. Run the publish commands with `--dry-run` to see if everything (especially the version number) looks good:
    ```sh
@@ -372,8 +372,10 @@ To build a new version and release it on NPM, follow these steps:
    npm publish rescript-<version>.tgz [--tag next]
    npm publish rescript-std-<version>.tgz [--tag next]
    ```
-1. Tag the commit with the version number (e.g., "10.0.0", or "10.0.0-beta.1") and push the tag.
-1. Create a release entry for that tag on the [Github Releases page](https://github.com/rescript-lang/rescript-compiler/releases), copying the changes from `CHANGELOG.md`.
+1. Create a release entry for the version tag on the [Github Releases page](https://github.com/rescript-lang/rescript-compiler/releases), copying the changes from `CHANGELOG.md`.
+1. Increment the version number in `package.json` for the next version.
+1. Run `node scripts/setVersion.js` to take that version number over into other files.
+1. Update `CHANGELOG.md` and add an entry for the next version, e.g., "10.0.0-beta.2 (Unreleased)"
 1. Coordinate any forum/blog posts with [@ryyppy](https://github.com/ryyppy).
 
 ## Debugging issues from CI builds
