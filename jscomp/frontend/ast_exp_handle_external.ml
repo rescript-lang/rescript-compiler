@@ -110,7 +110,9 @@ let handle_ffi ~loc ~payload =
   with
   | None -> err ()
   | Some exp ->
-    let wrap (e : Parsetree.expression) =
+    (* Wrap a type constraing base on arity.
+       E.g. for arity 2 constrain to type (_, _) => _ *)
+    let wrapTypeConstraint (e : Parsetree.expression) =
       let loc = e.pexp_loc in
       let any = Ast_helper.Typ.any ~loc:e.pexp_loc () in
       let unit = Ast_literal.type_unit ~loc () in
@@ -129,7 +131,7 @@ let handle_ffi ~loc ~payload =
         Ast_helper.Exp.constraint_ ~loc e type_
       | _ -> err ()
     in
-    wrap
+    wrapTypeConstraint
       {
         exp with
         pexp_desc =
