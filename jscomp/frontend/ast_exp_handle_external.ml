@@ -100,23 +100,34 @@ let handle_raw ~kind loc payload =
 
 let handle_ffi ~loc ~payload =
   let is_function = ref None in
+  let err () =
+    Location.raise_errorf ~loc
+      "%%ffi extension can only be applied to a string containing a JavaScript \
+       function such as \"(x) => ...\""
+  in
   match
     Ast_payload.raw_as_string_exp_exn ~kind:Raw_exp ~is_function payload
   with
-  | None ->
-    Location.raise_errorf ~loc "%%ffi extension can only be applied to a string"
+  | None -> err ()
   | Some exp ->
     let wrap (e : Parsetree.expression) =
+      let loc = e.pexp_loc in
+      let any = Ast_helper.Typ.any ~loc:e.pexp_loc () in
+      let unit = Ast_literal.type_unit ~loc () in
+      let rec arrow ~arity =
+        if arity = 0 then Ast_helper.Typ.arrow ~loc Nolabel unit any
+        else if arity = 1 then Ast_helper.Typ.arrow ~loc Nolabel any any
+        else Ast_helper.Typ.arrow ~loc Nolabel any (arrow ~arity:(arity - 1))
+      in
       match !is_function with
-      | Some 0 ->
-        let loc = e.pexp_loc in
-        let unit = Ast_literal.type_unit ~loc () in
-        let arrow =
-          Ast_uncurried.uncurriedType ~loc ~arity:1
-            (Ast_helper.Typ.arrow Nolabel unit (Ast_helper.Typ.any ()))
+      | Some arity ->
+        let type_ =
+          Ast_uncurried.uncurriedType ~loc
+            ~arity:(if arity = 0 then 1 else arity)
+            (arrow ~arity)
         in
-        Ast_helper.Exp.constraint_ e arrow ~loc:e.pexp_loc
-      | _ -> e
+        Ast_helper.Exp.constraint_ ~loc e type_
+      | _ -> err ()
     in
     wrap
       {
