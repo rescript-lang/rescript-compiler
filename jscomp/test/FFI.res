@@ -5,3 +5,5 @@ let canUseCanvas: unit => bool = %ffi(`
     return !!document.createElement('canvas').getContext;
   }
 `)
+
+let add: (int, int) => int = %ffi(`(x,y)=>x+y`)

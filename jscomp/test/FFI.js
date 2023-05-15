@@ -6,5 +6,8 @@ var canUseCanvas = (function canUseCanvas() {
     return !!document.createElement('canvas').getContext;
   });
 
+var add = ((x,y)=>x+y);
+
 exports.canUseCanvas = canUseCanvas;
+exports.add = add;
 /* No side effect */
