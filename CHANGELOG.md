@@ -18,6 +18,9 @@
 #### :nail_care: Polish
 - Removed duplicate Super_error implementation in syntax https://github.com/rescript-lang/rescript-compiler/pull/6246
 
+#### :bug: Bug Fix
+- Fix issue with inlining records in the presence of record coercion https://github.com/rescript-lang/rescript-compiler/pull/6256
+
 # 11.0.0-alpha.6
 
 #### :boom: Breaking Change

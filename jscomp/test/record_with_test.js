@@ -14,8 +14,10 @@ var v = {
   extends: 0
 };
 
+var u_v_syntax = v.syntax;
+
 var u_v = {
-  syntax: undefined,
+  syntax: u_v_syntax,
   imports: 0,
   file_options: 0,
   package: 0,
