@@ -193,7 +193,18 @@ let field_flatten_get
       | SimpleForm l -> l
       | exception _ -> lam ()
     end
-  | Some (Constant (Const_block (_,_,ls))) -> 
+  | Some (Constant (Const_block (_, Blk_record {fields}, ls))) ->
+    (match info with
+      | Fld_record {name} ->
+        let found = ref None in
+        for i = 0 to Array.length fields - 1 do
+          if fields.(i) = name then found := Ext_list.nth_opt ls i done;
+        (match !found with
+        | Some c -> Lam.const c
+        | None  -> lam())
+      | _ -> lam ()
+    )
+  | Some (Constant (Const_block (_,_,ls))) ->
     begin match Ext_list.nth_opt ls i with 
       | None -> lam  ()
       | Some x -> Lam.const x

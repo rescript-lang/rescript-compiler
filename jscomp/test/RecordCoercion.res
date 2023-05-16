@@ -15,3 +15,19 @@ let _ = (x: r3) => (x :> r4) // omit everything
 type nested1 = {n: r1, extra: int}
 type nested2 = {n: r2}
 let _ = (x: nested1) => (x :> nested2)
+
+module TestInlining = {
+  type a = {
+    number: int,
+    name: string,
+  }
+
+  type b = {name: string}
+
+  let a: a = {
+    number: 42,
+    name: "a",
+  }
+
+  let name = (a :> b).name
+}
