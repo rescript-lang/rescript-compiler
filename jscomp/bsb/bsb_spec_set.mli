@@ -21,11 +21,10 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-type format = Ext_module_system.t
 
-type spec = { format : format; in_source : bool; suffix : Ext_js_suffix.t }
+type spec = Bsb_manifest_types.package_spec
 
-type t = private spec list
+type t = spec list
 
 val empty : t
 

@@ -24,10 +24,7 @@
 
 [@@@warning "+9"]
 
-(* TODO: sync up with {!Js_packages_info.module_system}  *)
-type format = Ext_module_system.t = NodeJS | Es6 | Es6_global
-
-type spec = { format : format; in_source : bool; suffix : Ext_js_suffix.t }
+type spec = Bsb_manifest_types.package_spec
 
 type t = spec list
 

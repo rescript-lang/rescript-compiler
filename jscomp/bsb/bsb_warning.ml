@@ -22,15 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type warning_error =
-  | Warn_error_false
-  (* default [false] to make our changes non-intrusive *)
-  | Warn_error_true
-  | Warn_error_number of string
-
-type t0 = { number : string option; error : warning_error }
-
-type nonrec t = t0 option
+open Bsb_manifest_types.Warning
+type t = Bsb_manifest_types.Warning.t option
 
 let use_default = None
 
