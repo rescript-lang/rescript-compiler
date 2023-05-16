@@ -45,16 +45,14 @@ function f(x) {
         };
 }
 
-var v = {
-  a0: 0,
-  a1: 0,
-  a2: 0,
-  a3: 0,
-  a4: 0,
-  a5: 0
-};
-
-eq("File \"update_record_test.res\", line 28, characters 5-12", v.a0 + 1 | 0, f(v).a0);
+eq("File \"update_record_test.res\", line 28, characters 5-12", 1, f({
+          a0: 0,
+          a1: 0,
+          a2: 0,
+          a3: 0,
+          a4: 0,
+          a5: 0
+        }).a0);
 
 var val0 = {
   "invalid_js_id'": 3,
@@ -70,7 +68,7 @@ function fff(x) {
 
 var val1 = fff(val0);
 
-eq("File \"update_record_test.res\", line 41, characters 5-12", val0["invalid_js_id'"], 3);
+eq("File \"update_record_test.res\", line 41, characters 5-12", 3, 3);
 
 eq("File \"update_record_test.res\", line 42, characters 5-12", val1["invalid_js_id'"], 5);
 
