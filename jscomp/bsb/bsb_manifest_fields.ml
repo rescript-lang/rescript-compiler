@@ -14,15 +14,15 @@ let extract_string (map : json_map) (field : string) =
   match map.?(field) with
   | None -> None
   | Some (Str { str }) -> Some(str)
-  | Some config -> Bsb_exception.config_error config (field ^ " expects a string")
+  | Some manifest -> Bsb_exception.manifest_error manifest (field ^ " expects a string")
 
 let extract_boolean (map : json_map) (field : string) (default : bool) : bool =
   match map.?(field) with
   | None -> default
   | Some (True _) -> true
   | Some (False _) -> false
-  | Some config ->
-      Bsb_exception.config_error config (field ^ " expects a boolean")
+  | Some manifest ->
+      Bsb_exception.manifest_error manifest (field ^ " expects a boolean")
 
 (* return an empty array if not found *)
 let extract_string_list (map : json_map) (field : string) =
@@ -30,17 +30,17 @@ let extract_string_list (map : json_map) (field : string) =
   match map.?(field) with
   | None -> []
   | Some (Arr { content = s }) -> get_list_string s
-  | Some config -> Bsb_exception.config_error config (field ^ " expects an array of string")
+  | Some manifest -> Bsb_exception.manifest_error manifest (field ^ " expects an array of string")
 
 let extract_package_name_and_namespace (map : json_map) : string * string option
     =
   let package_name =
     match map.?(Bsb_build_schemas.name) with
-    | Some (Str { str = "_" } as config) ->
-        Bsb_exception.config_error config "_ is a reserved package name"
+    | Some (Str { str = "_" } as manifest) ->
+        Bsb_exception.manifest_error manifest "_ is a reserved package name"
     | Some (Str { str = name }) -> name
-    | Some config ->
-        Bsb_exception.config_error config "name expect a string field"
+    | Some manifest ->
+        Bsb_exception.manifest_error manifest "name expect a string field"
     | None -> Bsb_exception.invalid_spec "field name is required"
   in
   let namespace =
@@ -51,8 +51,8 @@ let extract_package_name_and_namespace (map : json_map) : string * string option
     | Some (Str { str }) ->
         (*TODO : check the validity of namespace *)
         Some (Ext_namespace.namespace_of_package_name str)
-    | Some x ->
-        Bsb_exception.config_error x "namespace field expects string or boolean"
+    | Some manifest ->
+        Bsb_exception.manifest_error manifest "namespace field expects string or boolean"
   in
   (package_name, namespace)
 
@@ -70,7 +70,7 @@ let extract_reason_react (map : json_map) =
                | _ -> Bsb_exception.errorf ~loc "Unsupported jsx version %s" flo
                )
            | Some x ->
-               Bsb_exception.config_error x
+               Bsb_exception.manifest_error x
                  "Unexpected input (expect a version number) for jsx, note \
                   boolean is no longer allowed"
            | None -> ()) )
@@ -78,10 +78,33 @@ let extract_reason_react (map : json_map) =
   !default
 
 let extract_warning (map : json_map) =
+  let open Bsb_manifest_types.Warning in
   match map.?(Bsb_build_schemas.warnings) with
-  | None -> Bsb_warning.use_default
-  | Some (Obj { map }) -> Bsb_warning.from_map map
-  | Some config -> Bsb_exception.config_error config "expect an object"
+  | None -> None
+  | Some (Obj { map }) -> (
+    let number_opt = Map_string.find_opt map Bsb_build_schemas.number in
+    let error_opt = Map_string.find_opt map Bsb_build_schemas.error in
+    match (number_opt, error_opt) with
+    | None, None -> None
+    | _, _ ->
+        let error =
+          match error_opt with
+          | Some (True _) -> Warn_error_true
+          | Some (False _) -> Warn_error_false
+          | Some (Str { str }) -> Warn_error_number str
+          | Some x -> Bsb_exception.manifest_error x "expect boolean or string"
+          | None -> Warn_error_false
+          (* To make it less intrusive : warning error has to be enabled*)
+        in
+        let number =
+          match number_opt with
+          | Some (Str { str = number }) -> Some number
+          | None -> None
+          | Some x -> Bsb_exception.manifest_error x "expect a string"
+        in
+        Some { number; error }
+  )
+  | Some config -> Bsb_exception.manifest_error config "expect an object"
 
 let extract_generators (map : json_map) =
   let generators = ref Map_string.empty in
@@ -102,8 +125,8 @@ let extract_generators (map : json_map) =
                       {| generators exepect format like { "name" : "cppo",  "command"  : "cppo $in -o $out"} |}
                 )
             | _ -> acc)
-  | Some config ->
-      Bsb_exception.config_error config
+  | Some manifest ->
+      Bsb_exception.manifest_error manifest
         (Bsb_build_schemas.generators ^ " expect an array field"));
   !generators
 
@@ -189,12 +212,12 @@ let extract_ppx_specs (map : json_map) =
           | Arr { content } -> (
               let xs = get_list_string content in
               match xs with
-              | [] -> Bsb_exception.config_error x " empty array is not allowed"
+              | [] -> Bsb_exception.manifest_error x " empty array is not allowed"
               | name :: args -> { Bsb_manifest_types.name = name; args })
-          | config ->
-              Bsb_exception.config_error config
+          | x ->
+              Bsb_exception.manifest_error x
                 (field ^ "expect each item to be either string or array"))
-  | Some config -> Bsb_exception.config_error config (field ^ " expect an array")
+  | Some manifest -> Bsb_exception.manifest_error manifest (field ^ " expect an array")
 
 let extract_suffix (map : json_map) : Ext_js_suffix.t =
   match map.?(Bsb_build_schemas.suffix) with
@@ -205,8 +228,8 @@ let extract_suffix (map : json_map) : Ext_js_suffix.t =
         Bsb_exception.errorf ~loc
           "expect .js, .mjs, .cjs or .bs.js, .bs.mjs, .bs.cjs here"
       else s
-  | Some config ->
-      Bsb_exception.config_error config
+  | Some manifest ->
+      Bsb_exception.manifest_error manifest
         "expect a string exteion like \".js\" here"
 
 let extract_js_post_build (map : json_map) =
@@ -224,7 +247,6 @@ let extract_js_post_build (map : json_map) =
 
 let extract_jsx (map : json_map) =
   let open Bsb_manifest_types.Jsx in
-
   let version : version option ref = ref None in
   let module_ : module_ option ref = ref None in
   let mode : mode option ref = ref None in
@@ -241,7 +263,7 @@ let extract_jsx (map : json_map) =
                | _ -> Bsb_exception.errorf ~loc "Unsupported jsx version %s" flo
                )
            | Some x ->
-               Bsb_exception.config_error x
+               Bsb_exception.manifest_error x
                  "Unexpected input (expect a version number) for jsx version"
            | None -> ()) )
   |? ( Bsb_build_schemas.jsx,
@@ -253,7 +275,7 @@ let extract_jsx (map : json_map) =
                | "react" -> module_ := Some React
                | _ -> Bsb_exception.errorf ~loc "Unsupported jsx module %s" str)
            | Some x ->
-               Bsb_exception.config_error x
+               Bsb_exception.manifest_error x
                  "Unexpected input (jsx module name) for jsx module"
            | None -> ()) )
   |? ( Bsb_build_schemas.jsx,
@@ -266,7 +288,7 @@ let extract_jsx (map : json_map) =
                | "automatic" -> mode := Some Automatic
                | _ -> Bsb_exception.errorf ~loc "Unsupported jsx mode %s" str)
            | Some x ->
-               Bsb_exception.config_error x
+               Bsb_exception.manifest_error x
                  "Unexpected input (expect classic or automatic) for jsx mode"
            | None -> ()) )
   |? ( Bsb_build_schemas.jsx,
@@ -276,7 +298,7 @@ let extract_jsx (map : json_map) =
            | Some (Arr { content }) ->
             v3_dependencies := get_list_string content
            | Some x ->
-               Bsb_exception.config_error x
+               Bsb_exception.manifest_error x
                  "Unexpected input for jsx v3-dependencies"
            | None -> ()) )
   |> ignore;

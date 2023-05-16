@@ -191,8 +191,8 @@ let extract_bs_suffix_exn (map : json_map) : Ext_js_suffix.t =
         Bsb_exception.errorf ~loc
           "expect .js, .mjs, .cjs or .bs.js, .bs.mjs, .bs.cjs here"
       else s
-  | Some config ->
-      Bsb_exception.config_error config
+  | Some manifest ->
+      Bsb_exception.manifest_error manifest
         "expect a string exteion like \".js\" here"
 
 let from_map ~(cwd : string) map =

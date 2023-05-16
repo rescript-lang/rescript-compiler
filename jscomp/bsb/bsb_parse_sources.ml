@@ -76,13 +76,13 @@ let extract_pub (input : Ext_json_types.t Map_string.t)
       else errorf x "invalid str for %s " s
   | Some (Arr { content }) ->
       Export_set (collect_pub_modules content cur_sources)
-  | Some config -> Bsb_exception.config_error config "expect array or string"
+  | Some x -> Bsb_exception.manifest_error x "expect array or string"
   | None -> Export_all
 
 let extract_resources (input : Ext_json_types.t Map_string.t) : string list =
   match input.?(Bsb_build_schemas.resources) with
   | Some (Arr x) -> Bsb_build_util.get_list_string x.content
-  | Some config -> Bsb_exception.config_error config "expect array "
+  | Some x -> Bsb_exception.manifest_error x "expect array "
   | None -> []
 
 let extract_input_output (edge : Ext_json_types.t) : string list * string list =
@@ -138,7 +138,7 @@ let extract_predicate (m : json_map) : string -> bool =
     match m.?(Bsb_build_schemas.excludes) with
     | None -> []
     | Some (Arr { content = arr }) -> Bsb_build_util.get_list_string arr
-    | Some x -> Bsb_exception.config_error x "excludes expect array "
+    | Some x -> Bsb_exception.manifest_error x "excludes expect array "
   in
   let slow_re = m.?(Bsb_build_schemas.slow_re) in
   match (slow_re, excludes) with
@@ -149,8 +149,8 @@ let extract_predicate (m : json_map) : string -> bool =
       let re = Str.regexp s in
       fun name ->
         Str.string_match re name 0 && not (Ext_list.mem_string excludes name)
-  | Some config, _ ->
-      Bsb_exception.config_error config
+  | Some x, _ ->
+      Bsb_exception.manifest_error x
         (Bsb_build_schemas.slow_re ^ " expect a string literal")
   | None, _ -> fun name -> not (Ext_list.mem_string excludes name)
 
@@ -222,7 +222,7 @@ let rec parsing_source_dir_map ({ cwd = dir } as cxt)
               then acc
               else Bsb_db_util.add_basename ~dir acc basename)
       | Some x ->
-          Bsb_exception.config_error x "files field expect array or object "
+          Bsb_exception.manifest_error x "files field expect array or object "
     in
     let resources = extract_resources input in
     let public = extract_pub input sources in
@@ -289,7 +289,7 @@ and parsing_single_source ({ package_kind; is_dev; cwd } as cxt)
         match map.?(Bsb_build_schemas.type_) with
         | Some (Str { str = "dev" }) -> true
         | Some _ ->
-            Bsb_exception.config_error x {|type field expect "dev" literal |}
+            Bsb_exception.manifest_error x {|type field expect "dev" literal |}
         | None -> is_dev
       in
       match (package_kind, current_dir_index) with
@@ -299,13 +299,13 @@ and parsing_single_source ({ package_kind; is_dev; cwd } as cxt)
             match map.?(Bsb_build_schemas.dir) with
             | Some (Str { str }) ->
                 if str = Literals.library_file then
-                    Bsb_exception.config_error x (Printf.sprintf "dir field should be different from `%s`" Literals.library_file)
+                    Bsb_exception.manifest_error x (Printf.sprintf "dir field should be different from `%s`" Literals.library_file)
                 else
                 Ext_path.simple_convert_node_path_to_os_path str
             | Some x ->
-                Bsb_exception.config_error x "dir expected to be a string"
+                Bsb_exception.manifest_error x "dir expected to be a string"
             | None ->
-                Bsb_exception.config_error x
+                Bsb_exception.manifest_error x
                   ("required field :" ^ Bsb_build_schemas.dir ^ " missing")
           in
 
@@ -420,10 +420,10 @@ let clean_re_js root =
         | Some _ | None -> Set_string.empty
       in
       let gentype_language =
-        match map.?(Bsb_build_schemas.gentypeconfig) with
+        match map.?(Bsb_build_schemas.gentype) with
         | None -> ""
         | Some (Obj { map }) -> (
-            match map.?(Bsb_build_schemas.language) with
+            match map.?(Bsb_build_schemas.gentype_language) with
             | None -> ""
             | Some (Str { str }) -> str
             | Some _ -> "")

@@ -24,7 +24,7 @@
 
 type error =
   | Package_not_found of Bsb_pkg_types.t * string option (* json file *)
-  | Json_config of Ext_position.t * string
+  | Json_manifest of Ext_position.t * string
   | Invalid_json of string
   | Invalid_spec of string
   | Conflict_module of string * string * string
@@ -68,7 +68,7 @@ let print (fmt : Format.formatter) (x : error) =
            @{<error>Error:@} package @{<error>%s@} not found or built %s\n\
            - Did you install it?\n\
            - If you did, did you run `rescript build -with-deps`?" name in_json
-  | Json_config (pos, s) ->
+  | Json_manifest (pos, s) ->
       Format.fprintf fmt
         "File %S, line %d:\n\
          @{<error>Error:@} %s \n\
@@ -89,12 +89,12 @@ let no_implementation modname = error (No_implementation modname)
 let not_consistent modname = error (Not_consistent modname)
 
 let errorf ~loc fmt =
-  Format.ksprintf (fun s -> error (Json_config (loc, s))) fmt
+  Format.ksprintf (fun s -> error (Json_manifest (loc, s))) fmt
 
-let config_error config fmt =
-  let loc = Ext_json.loc_of config in
+let manifest_error manifest fmt =
+  let loc = Ext_json.loc_of manifest in
 
-  error (Json_config (loc, fmt))
+  error (Json_manifest (loc, fmt))
 
 let invalid_spec s = error (Invalid_spec s)
 

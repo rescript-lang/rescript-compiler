@@ -61,7 +61,7 @@ let from_map (m : Ext_json_types.t Map_string.t) =
         | Some (True _) -> Warn_error_true
         | Some (False _) -> Warn_error_false
         | Some (Str { str }) -> Warn_error_number str
-        | Some x -> Bsb_exception.config_error x "expect true/false or string"
+        | Some x -> Bsb_exception.manifest_error x "expect true/false or string"
         | None -> Warn_error_false
         (* To make it less intrusive : warning error has to be enabled*)
       in
@@ -69,7 +69,7 @@ let from_map (m : Ext_json_types.t Map_string.t) =
         match number_opt with
         | Some (Str { str = number }) -> Some number
         | None -> None
-        | Some x -> Bsb_exception.config_error x "expect a string"
+        | Some x -> Bsb_exception.manifest_error x "expect a string"
       in
       Some { number; error }
 

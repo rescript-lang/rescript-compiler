@@ -151,7 +151,7 @@ let extract_pinned_dependencies (map : Ext_json_types.t Map_string.t) : Set_stri
   | None -> Set_string.empty
   | Some (Arr { content }) ->
       Set_string.of_list (get_list_string content)
-  | Some config -> Bsb_exception.config_error config "expect an array of string"
+  | Some manifest -> Bsb_exception.manifest_error manifest "expect an array of string"
 
 let rec walk_all_deps_aux (visited : string Hash_string.t) (paths : string list)
     ~(top : top) (dir : string) (queue : _ Queue.t) ~pinned_dependencies =

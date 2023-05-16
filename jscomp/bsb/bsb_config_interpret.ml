@@ -44,11 +44,11 @@ let extract_package_name_and_namespace (map : json_map) : string * string option
     =
   let package_name =
     match map.?(Bsb_build_schemas.name) with
-    | Some (Str { str = "_" } as config) ->
-        Bsb_exception.config_error config "_ is a reserved package name"
+    | Some (Str { str = "_" } as manifest) ->
+        Bsb_exception.manifest_error manifest "_ is a reserved package name"
     | Some (Str { str = name }) -> name
-    | Some config ->
-        Bsb_exception.config_error config "name expect a string field"
+    | Some manifest ->
+        Bsb_exception.manifest_error manifest "name expect a string field"
     | None -> Bsb_exception.invalid_spec "field name is required"
   in
   let namespace =
@@ -59,8 +59,8 @@ let extract_package_name_and_namespace (map : json_map) : string * string option
     | Some (Str { str }) ->
         (*TODO : check the validity of namespace *)
         Some (Ext_namespace.namespace_of_package_name str)
-    | Some x ->
-        Bsb_exception.config_error x "namespace field expects string or boolean"
+    | Some manifest ->
+        Bsb_exception.manifest_error manifest "namespace field expects string or boolean"
   in
   (package_name, namespace)
 
@@ -89,33 +89,33 @@ let check_stdlib (map : json_map) : bool =
   | None | Some _ -> true
 
 let extract_gentype_config (map : json_map) : Bsb_config_types.gentype_config =
-  match map.?(Bsb_build_schemas.gentypeconfig) with
+  match map.?(Bsb_build_schemas.gentype) with
   | None -> false
   | Some (Obj _) -> true
-  | Some config ->
-      Bsb_exception.config_error config "gentypeconfig expect an object"
+  | Some manifest ->
+      Bsb_exception.manifest_error manifest "gentypeconfig expect an object"
 
 let extract_uncurried (map : json_map) : bool =
   match map.?(Bsb_build_schemas.uncurried) with
   | None -> true
   | Some (True _) -> true
   | Some (False _) -> false
-  | Some config ->
-      Bsb_exception.config_error config "uncurried expects one of: true, false."
+  | Some manifest ->
+      Bsb_exception.manifest_error manifest "uncurried expects one of: true, false."
 
 let extract_string (map : json_map) (field : string) cb =
   match map.?(field) with
   | None -> None
   | Some (Str { str }) -> cb str
-  | Some config -> Bsb_exception.config_error config (field ^ " expect a string")
+  | Some manifest -> Bsb_exception.manifest_error manifest (field ^ " expect a string")
 
 let extract_boolean (map : json_map) (field : string) (default : bool) : bool =
   match map.?(field) with
   | None -> default
   | Some (True _) -> true
   | Some (False _) -> false
-  | Some config ->
-      Bsb_exception.config_error config (field ^ " expect a boolean")
+  | Some manifest ->
+      Bsb_exception.manifest_error manifest (field ^ " expect a boolean")
 
 let extract_reason_react_jsx (map : json_map) =
   let default : Bsb_config_types.reason_react_jsx option ref = ref None in
@@ -130,7 +130,7 @@ let extract_reason_react_jsx (map : json_map) =
                | _ -> Bsb_exception.errorf ~loc "Unsupported jsx version %s" flo
                )
            | Some x ->
-               Bsb_exception.config_error x
+               Bsb_exception.manifest_error x
                  "Unexpected input (expect a version number) for jsx, note \
                   boolean is no longer allowed"
            | None -> ()) )
@@ -141,14 +141,14 @@ let extract_warning (map : json_map) =
   match map.?(Bsb_build_schemas.warnings) with
   | None -> Bsb_warning.use_default
   | Some (Obj { map }) -> Bsb_warning.from_map map
-  | Some config -> Bsb_exception.config_error config "expect an object"
+  | Some manifest -> Bsb_exception.manifest_error manifest "expect an object"
 
 let extract_ignored_dirs (map : json_map) : Set_string.t =
   match map.?(Bsb_build_schemas.ignored_dirs) with
   | None -> Set_string.empty
   | Some (Arr { content }) ->
       Set_string.of_list (Bsb_build_util.get_list_string content)
-  | Some config -> Bsb_exception.config_error config "expect an array of string"
+  | Some manifest -> Bsb_exception.manifest_error manifest "expect an array of string"
 
 let extract_generators (map : json_map) =
   let generators = ref Map_string.empty in
@@ -169,8 +169,8 @@ let extract_generators (map : json_map) =
                       {| generators exepect format like { "name" : "cppo",  "command"  : "cppo $in -o $out"} |}
                 )
             | _ -> acc)
-  | Some config ->
-      Bsb_exception.config_error config
+  | Some manifest ->
+      Bsb_exception.manifest_error manifest
         (Bsb_build_schemas.generators ^ " expect an array field"));
   !generators
 
@@ -181,14 +181,14 @@ let extract_dependencies (map : json_map) cwd (field : string) :
   | Some (Arr { content = s }) ->
       Ext_list.map (Bsb_build_util.get_list_string s) (fun s ->
           resolve_package cwd (Bsb_pkg_types.string_as_package s))
-  | Some config -> Bsb_exception.config_error config (field ^ " expect an array")
+  | Some manifest -> Bsb_exception.manifest_error manifest (field ^ " expect an array")
 
 (* return an empty array if not found *)
 let extract_string_list (map : json_map) (field : string) : string list =
   match map.?(field) with
   | None -> []
   | Some (Arr { content = s }) -> Bsb_build_util.get_list_string s
-  | Some config -> Bsb_exception.config_error config (field ^ " expect an array")
+  | Some manifest -> Bsb_exception.manifest_error manifest (field ^ " expect an array")
 
 let extract_ppx (map : json_map) (field : string) ~(cwd : string) :
     Bsb_config_types.ppx list =
@@ -209,12 +209,12 @@ let extract_ppx (map : json_map) (field : string) ~(cwd : string) :
           | Arr { content } -> (
               let xs = Bsb_build_util.get_list_string content in
               match xs with
-              | [] -> Bsb_exception.config_error x " empty array is not allowed"
+              | [] -> Bsb_exception.manifest_error x " empty array is not allowed"
               | name :: args -> { Bsb_config_types.name = resolve name; args })
-          | config ->
-              Bsb_exception.config_error config
+          | manifest ->
+              Bsb_exception.manifest_error manifest
                 (field ^ "expect each item to be either string or array"))
-  | Some config -> Bsb_exception.config_error config (field ^ " expect an array")
+  | Some manifest -> Bsb_exception.manifest_error manifest (field ^ " expect an array")
 
 let extract_js_post_build (map : json_map) cwd : string option =
   let js_post_build_cmd = ref None in

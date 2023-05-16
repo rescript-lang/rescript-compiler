@@ -48,7 +48,7 @@ let from_map map =
                | _ -> Bsb_exception.errorf ~loc "Unsupported jsx version %s" flo
                )
            | Some x ->
-               Bsb_exception.config_error x
+               Bsb_exception.manifest_error x
                  "Unexpected input (expect a version number) for jsx version"
            | None -> ()) )
   |? ( Bsb_build_schemas.jsx,
@@ -60,7 +60,7 @@ let from_map map =
                | "react" -> module_ := Some React
                | _ -> Bsb_exception.errorf ~loc "Unsupported jsx module %s" str)
            | Some x ->
-               Bsb_exception.config_error x
+               Bsb_exception.manifest_error x
                  "Unexpected input (jsx module name) for jsx module"
            | None -> ()) )
   |? ( Bsb_build_schemas.jsx,
@@ -73,7 +73,7 @@ let from_map map =
                | "automatic" -> mode := Some Automatic
                | _ -> Bsb_exception.errorf ~loc "Unsupported jsx mode %s" str)
            | Some x ->
-               Bsb_exception.config_error x
+               Bsb_exception.manifest_error x
                  "Unexpected input (expect classic or automatic) for jsx mode"
            | None -> ()) )
   |? ( Bsb_build_schemas.jsx,
@@ -83,7 +83,7 @@ let from_map map =
            | Some (Arr { content }) ->
             v3_dependencies := get_list_string content
            | Some x ->
-               Bsb_exception.config_error x
+               Bsb_exception.manifest_error x
                  "Unexpected input for jsx v3-dependencies"
            | None -> ()) )
   |> ignore;
