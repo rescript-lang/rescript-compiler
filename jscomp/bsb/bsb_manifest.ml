@@ -32,9 +32,12 @@ let parse ~(filename : string) ~(json : Ext_json_types.t) : Bsb_manifest_types.t
     let open Bsb_manifest_fields in
     let package_name, namespace = extract_package_name_and_namespace map in
     let suffix = extract_suffix map in
+    let package_specs = extract_package_specs map ~suffix in
     {
       package_name;
       namespace;
+      suffix;
+      package_specs;
       warning = extract_warning map;
       external_includes = extract_string_list map Bsb_build_schemas.bs_external_includes;
       bsc_flags = extract_string_list map Bsb_build_schemas.bsc_flags;
@@ -46,14 +49,13 @@ let parse ~(filename : string) ~(json : Ext_json_types.t) : Bsb_manifest_types.t
       pp_file = extract_string map Bsb_build_schemas.pp_flags;
       js_post_build_cmd = extract_js_post_build map;
       ignored_dirs = extract_string_list map Bsb_build_schemas.ignored_dirs;
-      package_specs = extract_package_specs map ~suffix;
       use_stdlib = extract_boolean map Bsb_build_schemas.use_stdlib true;
       external_stdlib = extract_string map Bsb_build_schemas.external_stdlib;
-      suffix;
       reason_react = extract_reason_react map;
       jsx = extract_jsx map;
       cut_generators = extract_boolean map Bsb_build_schemas.cut_generators false;
       uncurried = extract_boolean map Bsb_build_schemas.uncurried true;
+      gentype = extract_gentype map ~package_specs;
     }
   )
   | _ -> Bsb_exception.invalid_spec (filename ^ " expect a json object {}")

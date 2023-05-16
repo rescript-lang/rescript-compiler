@@ -131,17 +131,15 @@ let extract_generators (map : json_map) =
   !generators
 
 let extract_package_specs (map : json_map) ~suffix =
-  let bad_module_format_message_exn ~loc format =
-    Bsb_exception.errorf ~loc
-      "package-specs: `%s` isn't a valid output module format. It has to be one \
-      of:  %s, %s or %s"
-      format Literals.commonjs Literals.es6 Literals.es6_global
-  in
   let supported_format (x : string) loc : Ext_module_system.t =
     if x = Literals.commonjs then NodeJS
     else if x = Literals.es6 then Es6
     else if x = Literals.es6_global then Es6_global
-    else bad_module_format_message_exn ~loc x
+    else
+      Bsb_exception.errorf ~loc
+      "package-specs: `%s` isn't a valid output module format. It has to be one \
+      of:  %s, %s or %s"
+      x Literals.commonjs Literals.es6 Literals.es6_global
   in
   let from_json_single suffix (x : Ext_json_types.t) : Bsb_manifest_types.package_spec =
     match x with
@@ -182,7 +180,7 @@ let extract_package_specs (map : json_map) ~suffix =
         Bsb_exception.errorf ~loc:(Ext_json.loc_of x)
           "package-specs: we expect either a string or an object."
   in
-  let from_json suffix arr =
+  let from_json_array suffix arr =
     let spec = ref Bsb_spec_set.empty in
     let has_in_source = ref false in
     Ext_array.iter arr (fun x ->
@@ -198,7 +196,7 @@ let extract_package_specs (map : json_map) ~suffix =
     (* TODO: FIXME: better API without mutating *)
   in
   match map.?(Bsb_build_schemas.package_specs) with
-  | Some (Arr { content }) -> from_json suffix content
+  | Some (Arr { content }) -> from_json_array suffix content
   | Some _ | None -> Bsb_spec_set.singleton ({ format = NodeJS; in_source = false; suffix })
 
 let extract_ppx_specs (map : json_map) =
@@ -308,3 +306,53 @@ let extract_jsx (map : json_map) =
     mode = !mode;
     v3_dependencies = !v3_dependencies;
   }
+
+let extract_gentype (map : json_map) ~package_specs =
+  let open Bsb_manifest_types.Gentype in
+  match map.?(Bsb_build_schemas.gentype) with
+  | None -> None
+  | Some (Obj { map }) -> (
+    let { Bsb_manifest_types.format } = List.hd package_specs in
+    let module_ =
+      match (extract_string map Bsb_build_schemas.gentype_module, format) with
+      | Some "commonjs", _ -> CommonJS
+      | Some "es6", _ -> ES6
+      | None, NodeJS -> CommonJS
+      | None, (Es6 | Es6_global) -> ES6
+      | _ -> ES6
+    in
+    let moduleResolution =
+      match extract_string map Bsb_build_schemas.gentype_module_resolution with
+      | Some "node" -> Node
+      | Some "node16" -> Node16
+      | Some "bundler" -> Bundler
+      | _ -> Node
+    in
+    let shims =
+      match map.?(Bsb_build_schemas.gentype_shims) with
+      | None -> Map_string.empty
+      | Some (Obj { map }) ->
+        Map_string.map map
+          (fun x ->
+            match x with
+            | Str { str } -> str
+            | x -> Bsb_exception.manifest_error x "shims expects a record"
+        )
+      | Some manifest ->
+          Bsb_exception.manifest_error manifest "shims expects a record"
+    in
+    let debug =
+      match map.?(Bsb_build_schemas.gentype_debug) with
+      | Some (Obj { map }) -> Some map
+      | _ -> None
+    in
+    Some {
+      module_;
+      moduleResolution;
+      shims;
+      debug;
+      exportInterfaces = extract_boolean map Bsb_build_schemas.gentype_export_interfaces false;
+      generatedFileExtension = extract_string map Bsb_build_schemas.gentype_generated_file_extension;
+    }
+  )
+  | Some manifest -> Bsb_exception.manifest_error manifest "expect an object"

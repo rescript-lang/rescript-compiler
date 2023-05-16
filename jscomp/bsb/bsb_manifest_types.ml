@@ -42,6 +42,27 @@ module Jsx = struct
   }
 end
 
+module Gentype = struct
+  type module_ = CommonJS | ES6
+
+  (** Compatibility for `compilerOptions.moduleResolution` in TypeScript projects. *)
+  type moduleResolution =
+    | Node  (** should drop extension on import statements *)
+    | Node16
+        (** should use TS output's extension (e.g. `.gen.js`) on import statements *)
+    | Bundler
+        (** should use TS input's extension (e.g. `.gen.tsx`) on import statements *)
+
+  type t = {
+    module_ : module_;
+    moduleResolution : moduleResolution;
+    exportInterfaces : bool;
+    generatedFileExtension : string option;
+    shims : string Map_string.t;
+    debug : Ext_json_types.t Map_string.t option;
+  }
+end
+
 type t = {
   package_name : string;
   namespace : string option;
@@ -64,4 +85,5 @@ type t = {
   ignored_dirs : string list;
   use_stdlib : bool;
   external_stdlib : string option;
+  gentype : Gentype.t option;
 }

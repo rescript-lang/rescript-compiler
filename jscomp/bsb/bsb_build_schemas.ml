@@ -81,6 +81,8 @@ let gentype_module = "module"
 let gentype_module_resolution = "moduleResolution"
 let gentype_export_interfaces = "exportInterfaces"
 let gentype_generated_file_extension = "moduleResolution"
+let gentype_shims = "shims"
+let gentype_debug = "debug"
 let path = "path"
 let ignored_dirs = "ignored-dirs"
 
