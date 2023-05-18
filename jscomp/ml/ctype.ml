@@ -3969,8 +3969,8 @@ let rec subtype_rec env trace t1 t2 cstrs =
           let label_decl_sub (acc1, acc2) ld2 =
             match Ext_list.find_first fields1 (fun ld1 -> ld1.ld_id.name = ld2.ld_id.name) with
             | Some ld1 ->
-              if field_is_optional ld1.ld_id repr1 && not (field_is_optional ld2.ld_id repr2) then
-                (* optional field can't be cast to non-optional one *)
+              if field_is_optional ld1.ld_id repr1 <> (field_is_optional ld2.ld_id repr2) then
+                (* optional field can't be modified *)
                 violation := true;
               let get_as (({txt}, payload) : Parsetree.attribute) =
                 if txt = "as" then Ast_payload.is_single_string payload
