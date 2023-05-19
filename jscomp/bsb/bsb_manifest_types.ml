@@ -1,3 +1,43 @@
+module SourceItem = struct
+  type type_ = Dev
+  type public = Export_none | Export_all | Export_set of Set_string.t
+
+  type source =
+    | Path_set of Set_string.t
+    | Predicate of { regex : string; excludes : string list }
+
+  type subdir = Recursive_none | Recursive_all | Recursive_source of source
+
+  type generator = {
+    name : string;
+    edge : string;
+  }
+
+  type t = {
+    dir : string;
+    type_ : type_ option;
+    files : source option;
+    generators : generator list;
+    public : public;
+    resources : string list;
+    subdir : subdir;
+  }
+
+  let from_string dir =
+    {
+      dir;
+      type_ = None;
+      files = None;
+      generators = [];
+      public = Export_all;
+      resources = [];
+      subdir = Recursive_all;
+    }
+
+  let from_string_array dirs =
+    Ext_list.map dirs from_string
+end
+
 type package_spec = {
   format : Ext_module_system.t;
   in_source : bool;
@@ -68,13 +108,14 @@ type t = {
   namespace : string option;
   external_includes : string list;
   bsc_flags : string list;
-  ppx_specs : ppx_spec list;
-  pp_file : string option;
-  bs_dependencies : Set_string.t;
-  bs_dev_dependencies : Set_string.t;
+  ppx_flags: ppx_spec list;
+  pp_flags: string option;
+  bs_dependencies : string list;
+  bs_dev_dependencies : string list;
   pinned_dependencies : Set_string.t;
   warning : Warning.t option;
   js_post_build_cmd : string option;
+  sources : SourceItem.t list;
   package_specs : package_spec list;
   suffix : Ext_js_suffix.t;
   reason_react : ReasonReact.t option;

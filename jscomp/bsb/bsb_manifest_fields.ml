@@ -130,6 +130,8 @@ let extract_generators (map : json_map) =
         (Bsb_build_schemas.generators ^ " expect an array field"));
   !generators
 
+let extract_sources (map : json_map) = ()
+
 let extract_package_specs (map : json_map) ~suffix =
   let supported_format (x : string) loc : Ext_module_system.t =
     if x = Literals.commonjs then NodeJS
@@ -199,7 +201,7 @@ let extract_package_specs (map : json_map) ~suffix =
   | Some (Arr { content }) -> from_json_array suffix content
   | Some _ | None -> Bsb_spec_set.singleton ({ format = NodeJS; in_source = false; suffix })
 
-let extract_ppx_specs (map : json_map) =
+let extract_ppx_flags (map : json_map) =
   let field = Bsb_build_schemas.ppx_flags in
   match map.?(field) with
   | None -> []
