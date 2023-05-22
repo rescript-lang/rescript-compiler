@@ -357,7 +357,7 @@ To build a new version and release it on NPM, follow these steps:
 1. Verify that the version number is already set correctly for the release. (It should have been incremented after releasing the previous version.)
 1. Create a PR to update `CHANGELOG.md`, removing the "(Unreleased)" for the version to be released.
 1. Once that PR is merged and built successfully, tag the commit with the version number (e.g., "v10.0.0", or "v10.0.0-beta.1") and push the tag.
-1. Verify that this triggers a tag build, and that the playground bundle is uploaded to the CDN as part of the build.
+1. Verify that this triggers a tag build, and that the playground bundle is uploaded to the CDN as part of the build (check https://cdn.rescript-lang.org/ after the build completes).
 1. Download the `npm-packages.zip` artifact for the tag build from the Github Actions page.
 1. Extract `npm-packages.zip` to get the package tarballs to publish.
 1. Run the publish commands with `--dry-run` to see if everything (especially the version number) looks good:
