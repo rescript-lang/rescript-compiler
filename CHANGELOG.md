@@ -10,16 +10,19 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# 11.0.0-beta.1 (Unreleased)
+# 11.0.0-beta.1
 
 #### :rocket: Main New Feature
+
 - Make uncurried mode opt-out: by default, every project is now in uncurried mode, unless `"uncurried": false` is specified in the project config. https://github.com/rescript-lang/rescript-compiler/pull/6249
 
 #### :nail_care: Polish
-- Removed duplicate Super_error implementation in syntax https://github.com/rescript-lang/rescript-compiler/pull/6246
+
+- Removed duplicate Super_error implementation in syntax. https://github.com/rescript-lang/rescript-compiler/pull/6246
 
 #### :bug: Bug Fix
-- Fix issue with inlining records in the presence of record coercion https://github.com/rescript-lang/rescript-compiler/pull/6256
+
+- Fix issue with inlining records in the presence of record coercion. https://github.com/rescript-lang/rescript-compiler/pull/6256
 
 # 11.0.0-alpha.6
 
