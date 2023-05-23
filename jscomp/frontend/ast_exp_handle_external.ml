@@ -72,7 +72,7 @@ let handle_debugger loc (payload : Ast_payload.t) =
     Location.raise_errorf ~loc "%%debugger extension doesn't accept arguments"
 
 let handle_raw ~kind loc payload =
-  let is_function = ref false in
+  let is_function = ref None in
   match Ast_payload.raw_as_string_exp_exn ~kind ~is_function payload with
   | None -> (
     match kind with
@@ -93,10 +93,56 @@ let handle_raw ~kind loc payload =
           ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Typ.any ()))
           [exp];
       pexp_attributes =
-        (if !is_function then
-         Ast_attributes.internal_expansive :: exp.pexp_attributes
-        else exp.pexp_attributes);
+        (match !is_function with
+        | None -> exp.pexp_attributes
+        | Some _ -> Ast_attributes.internal_expansive :: exp.pexp_attributes);
     }
+
+let handle_ffi ~loc ~payload =
+  let is_function = ref None in
+  let err () =
+    Location.raise_errorf ~loc
+      "%%ffi extension can only be applied to a string containing a JavaScript \
+       function such as \"(x) => ...\""
+  in
+  match
+    Ast_payload.raw_as_string_exp_exn ~kind:Raw_exp ~is_function payload
+  with
+  | None -> err ()
+  | Some exp ->
+    (* Wrap a type constraint based on arity.
+       E.g. for arity 2 constrain to type (_, _) => _ *)
+    let wrapTypeConstraint (e : Parsetree.expression) =
+      let loc = e.pexp_loc in
+      let any = Ast_helper.Typ.any ~loc:e.pexp_loc () in
+      let unit = Ast_literal.type_unit ~loc () in
+      let rec arrow ~arity =
+        if arity = 0 then Ast_helper.Typ.arrow ~loc Nolabel unit any
+        else if arity = 1 then Ast_helper.Typ.arrow ~loc Nolabel any any
+        else Ast_helper.Typ.arrow ~loc Nolabel any (arrow ~arity:(arity - 1))
+      in
+      match !is_function with
+      | Some arity ->
+        let type_ =
+          Ast_uncurried.uncurriedType ~loc
+            ~arity:(if arity = 0 then 1 else arity)
+            (arrow ~arity)
+        in
+        Ast_helper.Exp.constraint_ ~loc e type_
+      | _ -> err ()
+    in
+    wrapTypeConstraint
+      {
+        exp with
+        pexp_desc =
+          Ast_external_mk.local_external_apply loc ~pval_prim:["#raw_expr"]
+            ~pval_type:(Typ.arrow Nolabel (Typ.any ()) (Typ.any ()))
+            [exp];
+        pexp_attributes =
+          (match !is_function with
+          | None -> exp.pexp_attributes
+          | Some _ -> Ast_attributes.internal_expansive :: exp.pexp_attributes);
+      }
 
 let handle_raw_structure loc payload =
   match Ast_payload.raw_as_string_exp_exn ~kind:Raw_program payload with
