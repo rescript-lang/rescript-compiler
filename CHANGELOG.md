@@ -16,6 +16,11 @@
 
 - Introduced a new `%ffi` extension that provides a more robust mechanism for JavaScript function interoperation by considering function arity in type constraints. This enhancement improves safety when dealing with JavaScript functions by enforcing type constraints based on the arity of the function. [PR #6251](https://github.com/rescript-lang/rescript-compiler/pull/6251)
 
+#### :bug: Bug Fix
+
+- Fix issue where uncurried type internals leak in type error. https://github.com/rescript-lang/rescript-compiler/pull/6264
+
+
 # 11.0.0-beta.1
 
 #### :rocket: Main New Feature
