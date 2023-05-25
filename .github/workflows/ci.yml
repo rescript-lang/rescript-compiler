@@ -290,17 +290,20 @@ jobs:
         run: npm pack
         working-directory: packages/std
 
-      - name: Get package info
+      - name: Prepare package upload
         # For pull requests, pass the correct commit SHA explicitly as GITHUB_SHA points to the wrong commit.
-        run: node .github/workflows/get_package_info.js ${{ github.event.pull_request.head.sha }}
+        run: node .github/workflows/prepare_package_upload.js ${{ github.event.pull_request.head.sha }}
 
       - name: "Upload artifact: npm packages"
         uses: actions/upload-artifact@v3
         with:
           name: npm-packages
           path: |
-            ${{ env.rescript_package }}
-            ${{ env.stdlib_package }}
+            rescript-${{ env.rescript_version }}.tgz
+            rescript-std-${{ env.rescript_version }}.tgz
+
+    outputs:
+      rescript_version: ${{ env.rescript_version }}
 
   installationTest:
     needs: package
@@ -334,7 +337,7 @@ jobs:
           path: packages/test
 
       - name: Install ReScript package
-        run: npm i rescript-11*.tgz
+        run: npm i rescript-${{ needs.package.outputs.rescript_version }}.tgz
         shell: bash
         working-directory: packages/test
 
