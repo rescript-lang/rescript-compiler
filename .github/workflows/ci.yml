@@ -345,3 +345,28 @@ jobs:
         run: npx rescript -h && npx rescript build && cat src/Test.bs.js
         shell: bash
         working-directory: packages/test
+
+  publish:
+    needs: [package, installationTest]
+
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: npm-packages
+
+      - name: Publish packages on npm with tag "ci"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
+        run: |
+          npm publish rescript-${{ needs.package.outputs.rescript_version }}.tgz --tag ci
+          npm publish rescript-std-${{ needs.package.outputs.rescript_version }}.tgz --tag ci
