@@ -913,14 +913,6 @@ var dTypeString = "TYPE_STRING";
 
 var dTypeInt = "TYPE_INT";
 
-var dTypeFunctor = "TYPE_FUNCTOR";
-
-var dTypeLocalIdent = "TYPE_LOCAL_IDENT";
-
-var dTypeIdent = "TYPE_IDENT";
-
-var dTypePoly = "TYPE_POLY";
-
 var cppoRuleName = `cppo`;
 
 var cppoRule = (flags = "") => `
@@ -1357,37 +1349,6 @@ include body.ninja
 exports.updateDev = updateDev;
 exports.updateRelease = updateRelease;
 
-/**
- *
- * @param {string} dir
- */
-function readdirSync(dir) {
-  return fs.readdirSync(dir, "ascii");
-}
-/**
- * @type {string[]}
- */
-var black_list = [];
-/**
- *
- * @param {string} dir
- */
-function test(dir) {
-  return readdirSync(path.join(jscompDir, dir))
-    .filter(x => {
-      return (
-        (x.endsWith(".ml") || x.endsWith(".mli")) &&
-        !(x.endsWith(".cppo.ml") || x.endsWith(".cppo.mli")) &&
-        !(x.endsWith(".pp.ml") || x.endsWith(".pp.mli")) &&
-        !black_list.some(name => x.includes(name))
-      );
-    })
-    .map(x => path.join(dir, x));
-}
-
-/**
- * Built cppo.exe for dev purpose
- */
 function preprocessorNinjaSync() {
   var cppoNative = `
 ${cppoRule()}
