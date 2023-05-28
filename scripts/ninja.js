@@ -13,7 +13,6 @@ var othersDir = path.join(jscompDir, "others");
 var testDir = path.join(jscompDir, "test");
 
 var jsDir = path.join(__dirname, "..", "lib", "js");
-var duneBinDir = require("./dune").duneBinDir;
 
 var runtimeFiles = fs.readdirSync(runtimeDir, "ascii");
 var runtimeMlFiles = runtimeFiles.filter(
@@ -434,7 +433,7 @@ function ninjaQuickBuild(
  * @param {BuildList[]} xs
  * @returns {string}
  */
-function ninjaQuickBuidList(xs) {
+function ninjaQuickBuildList(xs) {
   return xs
     .map(x => ninjaQuickBuild(x[0], x[1], x[2], x[3], x[4], x[5], x[6]))
     .join("\n");
@@ -851,7 +850,7 @@ async function runtimeNinja(devmode = true) {
 bsc_no_open_flags =  ${commonBsFlags} -bs-cross-module-opt -make-runtime  -nopervasives  -unsafe -w +50 -warn-error A
 bsc_flags = $bsc_no_open_flags -open Bs_stdlib_mini
 ${ruleCC(ninjaCwd)}
-${ninjaQuickBuidList([
+${ninjaQuickBuildList([
   [
     "bs_stdlib_mini.cmi",
     "bs_stdlib_mini.mli",
@@ -957,7 +956,7 @@ async function othersNinja(devmode = true) {
 bsc_primitive_flags =  ${commonBsFlags} -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50 -warn-error A
 bsc_flags = $bsc_primitive_flags -open Belt_internals
 ${ruleCC(ninjaCwd)}
-${ninjaQuickBuidList([
+${ninjaQuickBuildList([
   [
     ["belt.cmj", "belt.cmi"],
     "belt.ml",
@@ -1080,7 +1079,7 @@ async function stdlibNinja(devmode = true) {
   var templateStdlibRules = `
 ${bsc_flags} = ${commonBsFlags} -bs-cross-module-opt -make-runtime ${warnings} -I others
 ${ruleCC(ninjaCwd)}
-${ninjaQuickBuidList([
+${ninjaQuickBuildList([
   // we make it still depends on external
   // to enjoy free ride on dev config for compiler-deps
 
@@ -1305,12 +1304,7 @@ function checkEffect() {
       return { file: path.basename(file), effect };
     });
 
-  var black_list = new Set([
-    "caml_int32.js",
-    "caml_int64.js",
-    "caml_lexer.js",
-    "caml_parser.js",
-  ]);
+  var black_list = new Set(["caml_lexer.js", "caml_parser.js"]);
 
   var assert = require("assert");
   // @ts-ignore
@@ -1448,15 +1442,9 @@ rule copy
 }
 
 function main() {
-  var emptyCount = 2;
-  var isPlayground = false;
   if (require.main === module) {
     if (process.argv.includes("-check")) {
       checkEffect();
-    }
-    if (process.argv.includes("-playground")) {
-      isPlayground = true;
-      emptyCount++;
     }
 
     var subcommand = process.argv[2];
@@ -1522,7 +1510,7 @@ function main() {
         `);
         break;
       default:
-        if (process.argv.length === emptyCount) {
+        if (process.argv.length === 2) {
           updateDev();
           updateRelease();
         } else {
