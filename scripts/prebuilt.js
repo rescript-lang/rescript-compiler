@@ -91,7 +91,7 @@ function populateLibDir() {
     if (y.ext === ".cmi") {
       return !y.base.match(/Belt_internal/i);
     }
-    return installed_suffixes.includes(y.ext);
+    return installed_suffixes.includes(y.ext) && !y.name.endsWith(".cppo");
   });
   installDirBy(stdlib_dir, ocaml_dir, file => {
     var y = path.parse(file);
