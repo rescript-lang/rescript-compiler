@@ -26,7 +26,7 @@ let load_json ~(per_proj_dir : string) ~(warn_legacy_manifest : bool) : string *
   | v -> close_in in_chan ; (filename, absolute_path, v)
   | exception e -> close_in in_chan ; raise e
 
-let parse_json (json : Ext_json_types.t) ~(filename : string)  : Bsb_manifest_types.t =
+let from_json (json : Ext_json_types.t) ~(filename : string)  : Bsb_manifest_types.t =
   match json with
   | Obj { map } -> (
     let open Bsb_manifest_fields in
@@ -47,6 +47,7 @@ let parse_json (json : Ext_json_types.t) ~(filename : string)  : Bsb_manifest_ty
       pinned_dependencies = extract_string_list map Bsb_build_schemas.pinned_dependencies |> Set_string.of_list;
       ppx_flags = extract_ppx_flags map;
       pp_flags = extract_string map Bsb_build_schemas.pp_flags;
+      sources = extract_sources map;
       js_post_build_cmd = extract_js_post_build map;
       ignored_dirs = extract_string_list map Bsb_build_schemas.ignored_dirs;
       use_stdlib = extract_boolean map Bsb_build_schemas.use_stdlib true;

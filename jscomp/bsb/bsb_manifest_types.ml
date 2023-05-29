@@ -1,37 +1,38 @@
 module SourceItem = struct
   type type_ = Dev
-  type public = Export_none | Export_all | Export_set of Set_string.t
+  type public = Export_all | Export_set of Set_string.t
 
   type source =
-    | Path_set of Set_string.t
-    | Predicate of { regex : string; excludes : string list }
+    | Files_auto
+    | Files_set of Set_string.t
+    | Files_predicate of { regex : Str.regexp; excludes : string list }
 
-  type subdir = Recursive_none | Recursive_all | Recursive_source of source
-
-  type generator = {
+  type build_generator = {
     name : string;
-    edge : string;
+    input : string list;
+    output : string list;
   }
 
-  type t = {
+  type subdirs = Recursive_none | Recursive_all | Recursive_source of t
+  and t = {
     dir : string;
     type_ : type_ option;
-    files : source option;
-    generators : generator list;
+    files : source;
+    generators : build_generator list;
     public : public;
     resources : string list;
-    subdir : subdir;
+    subdirs : subdirs option;
   }
 
   let from_string dir =
     {
       dir;
       type_ = None;
-      files = None;
+      files = Files_auto;
       generators = [];
       public = Export_all;
       resources = [];
-      subdir = Recursive_all;
+      subdirs = None;
     }
 
   let from_string_array dirs =
