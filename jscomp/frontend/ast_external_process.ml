@@ -68,7 +68,7 @@ let spec_of_ptyp (nolabel : bool) (ptyp : Parsetree.core_type) :
     | _ -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_unwrap_type)
   | `Uncurry opt_arity -> (
     let real_arity =
-      if Ast_uncurried.typeIsUncurriedFun ptyp then
+      if Ast_uncurried.coreTypeIsUncurriedFun ptyp then
         let arity, _ = Ast_uncurried.typeExtractUncurriedFun ptyp in
         Some arity
       else Ast_core_type.get_uncurry_arity ptyp

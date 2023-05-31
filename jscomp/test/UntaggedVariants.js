@@ -362,6 +362,28 @@ var OptionUnboxingHeuristic = {
   untaggedInlineMultinaryOption: untaggedInlineMultinaryOption
 };
 
+function classify$9(v) {
+  if (Array.isArray(v)) {
+    return Caml_array.get(v, 0);
+  }
+  switch (typeof v) {
+    case "object" :
+        return v.x;
+    case "function" :
+        return v(3);
+    
+  }
+}
+
+var ff = (function (x) {
+    return x + 1 | 0;
+  });
+
+var TestFunctionCase = {
+  classify: classify$9,
+  ff: ff
+};
+
 var i = 42;
 
 var i2 = 42.5;
@@ -402,4 +424,5 @@ exports.OverlapObject = OverlapObject;
 exports.RecordIsObject = RecordIsObject;
 exports.ArrayAndObject = ArrayAndObject;
 exports.OptionUnboxingHeuristic = OptionUnboxingHeuristic;
+exports.TestFunctionCase = TestFunctionCase;
 /* l2 Not a pure module */

@@ -293,3 +293,17 @@ module OptionUnboxingHeuristic = {
   type untaggedInlineMultinaryOption = A | B({x: option<int>, y?: string})
   let untaggedInlineMultinaryOption = (x: untaggedInlineMultinaryOption) => Some(x)
 }
+
+module TestFunctionCase = {
+  @unboxed
+  type t = Array(array<int>) | Record({x:int}) | Function((. int) => int)
+
+  let classify = v =>
+    switch v {
+    | Record({x}) => x
+    | Array(a) => a[0]
+    | Function(f) => f(. 3) 
+    }
+
+    let ff = Function((. x) => x+1)
+}

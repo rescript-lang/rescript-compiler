@@ -769,6 +769,7 @@ let tag_type = function
   | Undefined -> undefined
   | Untagged IntType -> str "number"
   | Untagged FloatType -> str "number"
+  | Untagged FunctionType -> str "function"
   | Untagged StringType -> str "string"
   | Untagged ArrayType -> str "Array" ~delim:DNoQuotes
   | Untagged ObjectType -> str "object"

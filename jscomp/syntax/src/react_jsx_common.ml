@@ -45,7 +45,7 @@ let raiseErrorMultipleReactComponent ~loc =
 let optionalAttr = ({txt = "res.optional"; loc = Location.none}, PStr [])
 
 let extractUncurried typ =
-  if Ast_uncurried.typeIsUncurriedFun typ then
+  if Ast_uncurried.coreTypeIsUncurriedFun typ then
     let _arity, t = Ast_uncurried.typeExtractUncurriedFun typ in
     t
   else typ

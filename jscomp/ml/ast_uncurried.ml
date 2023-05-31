@@ -63,11 +63,18 @@ let exprExtractUncurriedFun (expr : Parsetree.expression) =
   | Pexp_construct ({ txt = Lident "Function$" }, Some e) -> e
   | _ -> assert false
 
-let typeIsUncurriedFun (typ : Parsetree.core_type) =
+let coreTypeIsUncurriedFun (typ : Parsetree.core_type) =
   match typ.ptyp_desc with
   | Ptyp_constr ({txt = Lident "function$"}, [{ptyp_desc = Ptyp_arrow _}; _]) ->
     true
   | _ -> false
+
+let typeIsUncurriedFun (typ : Types.type_expr) =
+  match typ.desc with
+  | Tconstr (Pident {name = "function$"}, [{desc = Tarrow _}; _], _) ->
+    true
+  | _ -> false
+
 
 let typeExtractUncurriedFun (typ : Parsetree.core_type) =
   match typ.ptyp_desc with
