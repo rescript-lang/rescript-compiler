@@ -1388,8 +1388,6 @@ ${cppoList("others", [
   ["belt_internalMapInt.res", "internal_map.cppo.res", dTypeInt],
   ["belt_internalSetString.res", "internal_set.cppo.res", dTypeString],
   ["belt_internalSetInt.res", "internal_set.cppo.res", dTypeInt],
-  ["js_typed_array.ml", "js_typed_array.cppo.ml", ""],
-  ["js_typed_array2.ml", "js_typed_array2.cppo.ml", ""],
 ])}
 
 rule copy
