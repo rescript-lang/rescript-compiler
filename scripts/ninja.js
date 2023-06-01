@@ -895,10 +895,6 @@ ${ninjaQuickBuildList([
   }
 }
 
-var dTypeString = "TYPE_STRING";
-
-var dTypeInt = "TYPE_INT";
-
 var cppoRuleName = `cppo`;
 
 var cppoRule = (flags = "") => `
@@ -1333,6 +1329,9 @@ exports.updateDev = updateDev;
 exports.updateRelease = updateRelease;
 
 function preprocessorNinjaSync() {
+  var dTypeString = "TYPE_STRING";
+  var dTypeInt = "TYPE_INT";
+
   var cppoNative = `
 ${cppoRule("-n")}
 ${cppoList("others", [
