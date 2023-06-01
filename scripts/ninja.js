@@ -951,7 +951,7 @@ ${ruleCC(ninjaCwd)}
 ${ninjaQuickBuildList([
   [
     ["belt.cmj", "belt.cmi"],
-    "belt.ml",
+    "belt.res",
     "cc",
     ninjaCwd,
     [["bsc_flags", "$bsc_primitive_flags"]],
@@ -969,7 +969,7 @@ ${ninjaQuickBuildList([
   ],
   [
     ["belt_internals.cmi"],
-    "belt_internals.mli",
+    "belt_internals.resi",
     "cc",
     ninjaCwd,
     [["bsc_flags", "$bsc_primitive_flags"]],
@@ -1003,10 +1003,13 @@ ${ninjaQuickBuildList([
   var othersFiles = othersDirFiles.filter(
     x =>
       !x.startsWith("js") &&
-      x !== "belt.ml" &&
-      x !== "belt_internals.mli" &&
+      x !== "belt.res" &&
+      x !== "belt_internals.resi" &&
       x !== "node.ml" &&
-      (x.endsWith(".ml") || x.endsWith(".mli")) &&
+      (x.endsWith(".ml") ||
+        x.endsWith(".mli") ||
+        x.endsWith(".res") ||
+        x.endsWith(".resi")) &&
       !x.includes("#") &&
       !x.includes(".cppo") // we have node ..
   );
@@ -1351,40 +1354,40 @@ exports.updateRelease = updateRelease;
 
 function preprocessorNinjaSync() {
   var cppoNative = `
-${cppoRule()}
+${cppoRule("-n")}
 ${cppoList("others", [
-  ["belt_HashSetString.ml", "hashset.cppo.ml", dTypeString],
-  ["belt_HashSetString.mli", "hashset.cppo.mli", dTypeString],
-  ["belt_HashSetInt.ml", "hashset.cppo.ml", dTypeInt],
-  ["belt_HashSetInt.mli", "hashset.cppo.mli", dTypeInt],
-  ["belt_HashMapString.ml", "hashmap.cppo.ml", dTypeString],
-  ["belt_HashMapString.mli", "hashmap.cppo.mli", dTypeString],
-  ["belt_HashMapInt.ml", "hashmap.cppo.ml", dTypeInt],
-  ["belt_HashMapInt.mli", "hashmap.cppo.mli", dTypeInt],
-  ["belt_MapString.ml", "map.cppo.ml", dTypeString],
-  ["belt_MapString.mli", "map.cppo.mli", dTypeString],
-  ["belt_MapInt.ml", "map.cppo.ml", dTypeInt],
-  ["belt_MapInt.mli", "map.cppo.mli", dTypeInt],
-  ["belt_SetString.ml", "belt_Set.cppo.ml", dTypeString],
-  ["belt_SetString.mli", "belt_Set.cppo.mli", dTypeString],
-  ["belt_SetInt.ml", "belt_Set.cppo.ml", dTypeInt],
-  ["belt_SetInt.mli", "belt_Set.cppo.mli", dTypeInt],
-  ["belt_MutableMapString.ml", "mapm.cppo.ml", dTypeString],
-  ["belt_MutableMapString.mli", "mapm.cppo.mli", dTypeString],
-  ["belt_MutableMapInt.ml", "mapm.cppo.ml", dTypeInt],
-  ["belt_MutableMapInt.mli", "mapm.cppo.mli", dTypeInt],
-  ["belt_MutableSetString.ml", "setm.cppo.ml", dTypeString],
-  ["belt_MutableSetString.mli", "setm.cppo.mli", dTypeString],
-  ["belt_MutableSetInt.ml", "setm.cppo.ml", dTypeInt],
-  ["belt_MutableSetInt.mli", "setm.cppo.mli", dTypeInt],
-  ["belt_SortArrayString.ml", "sort.cppo.ml", dTypeString],
-  ["belt_SortArrayString.mli", "sort.cppo.mli", dTypeString],
-  ["belt_SortArrayInt.ml", "sort.cppo.ml", dTypeInt],
-  ["belt_SortArrayInt.mli", "sort.cppo.mli", dTypeInt],
-  ["belt_internalMapString.ml", "internal_map.cppo.ml", dTypeString],
-  ["belt_internalMapInt.ml", "internal_map.cppo.ml", dTypeInt],
-  ["belt_internalSetString.ml", "internal_set.cppo.ml", dTypeString],
-  ["belt_internalSetInt.ml", "internal_set.cppo.ml", dTypeInt],
+  ["belt_HashSetString.res", "hashset.cppo.res", dTypeString],
+  ["belt_HashSetString.resi", "hashset.cppo.resi", dTypeString],
+  ["belt_HashSetInt.res", "hashset.cppo.res", dTypeInt],
+  ["belt_HashSetInt.resi", "hashset.cppo.resi", dTypeInt],
+  ["belt_HashMapString.res", "hashmap.cppo.res", dTypeString],
+  ["belt_HashMapString.resi", "hashmap.cppo.resi", dTypeString],
+  ["belt_HashMapInt.res", "hashmap.cppo.res", dTypeInt],
+  ["belt_HashMapInt.resi", "hashmap.cppo.resi", dTypeInt],
+  ["belt_MapString.res", "map.cppo.res", dTypeString],
+  ["belt_MapString.resi", "map.cppo.resi", dTypeString],
+  ["belt_MapInt.res", "map.cppo.res", dTypeInt],
+  ["belt_MapInt.resi", "map.cppo.resi", dTypeInt],
+  ["belt_SetString.res", "belt_Set.cppo.res", dTypeString],
+  ["belt_SetString.resi", "belt_Set.cppo.resi", dTypeString],
+  ["belt_SetInt.res", "belt_Set.cppo.res", dTypeInt],
+  ["belt_SetInt.resi", "belt_Set.cppo.resi", dTypeInt],
+  ["belt_MutableMapString.res", "mapm.cppo.res", dTypeString],
+  ["belt_MutableMapString.resi", "mapm.cppo.resi", dTypeString],
+  ["belt_MutableMapInt.res", "mapm.cppo.res", dTypeInt],
+  ["belt_MutableMapInt.resi", "mapm.cppo.resi", dTypeInt],
+  ["belt_MutableSetString.res", "setm.cppo.res", dTypeString],
+  ["belt_MutableSetString.resi", "setm.cppo.resi", dTypeString],
+  ["belt_MutableSetInt.res", "setm.cppo.res", dTypeInt],
+  ["belt_MutableSetInt.resi", "setm.cppo.resi", dTypeInt],
+  ["belt_SortArrayString.res", "sort.cppo.res", dTypeString],
+  ["belt_SortArrayString.resi", "sort.cppo.resi", dTypeString],
+  ["belt_SortArrayInt.res", "sort.cppo.res", dTypeInt],
+  ["belt_SortArrayInt.resi", "sort.cppo.resi", dTypeInt],
+  ["belt_internalMapString.res", "internal_map.cppo.res", dTypeString],
+  ["belt_internalMapInt.res", "internal_map.cppo.res", dTypeInt],
+  ["belt_internalSetString.res", "internal_set.cppo.res", dTypeString],
+  ["belt_internalSetInt.res", "internal_set.cppo.res", dTypeInt],
   ["js_typed_array.ml", "js_typed_array.cppo.ml", ""],
   ["js_typed_array2.ml", "js_typed_array2.cppo.ml", ""],
 ])}
