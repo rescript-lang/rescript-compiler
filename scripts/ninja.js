@@ -478,20 +478,6 @@ function mllList(cwd, xs) {
 
 /**
  *
- * @param {string} cwd
- * @param {string[]} xs
- * @returns {string}
- */
-function mlyList(cwd, xs) {
-  return xs
-    .map(x => {
-      var output = baseName(x) + ".ml";
-      return ninjaQuickBuild(output, x, mlyRuleName, cwd, [], [], []);
-    })
-    .join("\n");
-}
-/**
- *
  * @param {string} name
  * @returns {Target}
  */
@@ -928,12 +914,6 @@ rule ${mllRuleName}
     generator = true
 `;
 
-var mlyRuleName = `mly`;
-var mlyRule = `
-rule ${mlyRuleName}
-    command = $ocamlyacc -v --strict $in
-    generator = true
-`;
 async function othersNinja(devmode = true) {
   var compilerTarget = pseudoTarget("$bsc");
   var externalDeps = [
