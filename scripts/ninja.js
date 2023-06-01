@@ -478,20 +478,6 @@ function mllList(cwd, xs) {
 
 /**
  *
- * @param {string} cwd
- * @param {string[]} xs
- * @returns {string}
- */
-function mlyList(cwd, xs) {
-  return xs
-    .map(x => {
-      var output = baseName(x) + ".ml";
-      return ninjaQuickBuild(output, x, mlyRuleName, cwd, [], [], []);
-    })
-    .join("\n");
-}
-/**
- *
  * @param {string} name
  * @returns {Target}
  */
@@ -909,10 +895,6 @@ ${ninjaQuickBuildList([
   }
 }
 
-var dTypeString = "TYPE_STRING";
-
-var dTypeInt = "TYPE_INT";
-
 var cppoRuleName = `cppo`;
 
 var cppoRule = (flags = "") => `
@@ -928,12 +910,6 @@ rule ${mllRuleName}
     generator = true
 `;
 
-var mlyRuleName = `mly`;
-var mlyRule = `
-rule ${mlyRuleName}
-    command = $ocamlyacc -v --strict $in
-    generator = true
-`;
 async function othersNinja(devmode = true) {
   var compilerTarget = pseudoTarget("$bsc");
   var externalDeps = [
@@ -1353,6 +1329,9 @@ exports.updateDev = updateDev;
 exports.updateRelease = updateRelease;
 
 function preprocessorNinjaSync() {
+  var dTypeString = "TYPE_STRING";
+  var dTypeInt = "TYPE_INT";
+
   var cppoNative = `
 ${cppoRule("-n")}
 ${cppoList("others", [
@@ -1388,8 +1367,6 @@ ${cppoList("others", [
   ["belt_internalMapInt.res", "internal_map.cppo.res", dTypeInt],
   ["belt_internalSetString.res", "internal_set.cppo.res", dTypeString],
   ["belt_internalSetInt.res", "internal_set.cppo.res", dTypeInt],
-  ["js_typed_array.ml", "js_typed_array.cppo.ml", ""],
-  ["js_typed_array2.ml", "js_typed_array2.cppo.ml", ""],
 ])}
 
 rule copy
