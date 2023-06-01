@@ -184,7 +184,14 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
                |> field ~name:(Runtime.jsVariantTag ~polymorphic:false)
              in
              match (unboxed, type_) with
-             | true, type_ -> type_ |> render
+             | true, type_ ->
+               let needParens =
+                 match type_ with
+                 | Function _ -> true
+                 | _ -> false
+               in
+               let t = type_ |> render in
+               if needParens then EmitText.parens [t] else t
              | false, type_ when polymorphic ->
                (* poly variant *)
                [

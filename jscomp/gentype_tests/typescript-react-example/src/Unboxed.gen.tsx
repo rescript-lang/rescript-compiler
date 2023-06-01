@@ -18,6 +18,9 @@ export type r1 = number;
 // tslint:disable-next-line:interface-over-type-literal
 export type r2 = string;
 
+// tslint:disable-next-line:interface-over-type-literal
+export type t = number[] | number | ((_1:number) => number);
+
 export const testV1: (x:v1) => v1 = UnboxedBS.testV1;
 
 export const r2Test: (x:r2) => r2 = UnboxedBS.r2Test;

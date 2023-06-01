@@ -1,4 +1,4 @@
-type untaggedError = OnlyOneUnknown | AtMostOneObject | AtMostOneArray | AtMostOneString | AtMostOneNumber | DuplicateLiteral of string
+type untaggedError = OnlyOneUnknown | AtMostOneObject | AtMostOneArray | AtMostOneFunction | AtMostOneString | AtMostOneNumber | DuplicateLiteral of string
 type error =
   | InvalidVariantAsAnnotation
   | Duplicated_bs_as
@@ -22,6 +22,7 @@ let report_error ppf =
     | OnlyOneUnknown -> "An unknown case must be the only case with payloads."
     | AtMostOneObject -> "At most one case can be an object type."
     | AtMostOneArray -> "At most one case can be an array type."
+    | AtMostOneFunction -> "At most one case can be a function type."
     | AtMostOneString -> "At most one case can be a string type."
     | AtMostOneNumber -> "At most one case can be a number type (int or float)."
     | DuplicateLiteral s -> "Duplicate literal " ^ s ^ "."
@@ -29,7 +30,7 @@ let report_error ppf =
 
 (* Type of the runtime representation of an untagged block (case with payoad) *)
 type block_type =
-  | IntType | StringType | FloatType | ArrayType | ObjectType | UnknownType
+  | IntType | StringType | FloatType | ArrayType | FunctionType | ObjectType | UnknownType
 
 (*
   Type of the runtime representation of a tag.
@@ -116,6 +117,10 @@ let get_block_type ~env (cstr: Types.constructor_declaration) : block_type optio
       Some FloatType
   | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path.same path Predef.path_array ->
       Some ArrayType
+  | true, Cstr_tuple [{desc = Tconstr _}  as t] when Ast_uncurried.typeIsUncurriedFun t ->
+      Some FunctionType
+  | true, Cstr_tuple [{desc = Tarrow _} ] ->
+      Some FunctionType
   | true, Cstr_tuple [{desc = Tconstr (path, _, _)}] when Path. same path Predef.path_string ->
       Some StringType
   | true, Cstr_tuple [{desc = Tconstr _} as t] when type_is_builtin_object t ->
@@ -162,6 +167,7 @@ let checkInvariant ~isUntaggedDef ~(consts : (Location.t * tag) list) ~(blocks :
   let string_literals = ref StringSet.empty in
   let nonstring_literals = ref StringSet.empty in
   let arrayTypes = ref 0 in
+  let functionTypes = ref 0 in
   let objectTypes = ref 0 in
   let stringTypes = ref 0 in
   let numberTypes = ref 0 in
@@ -181,6 +187,8 @@ let checkInvariant ~isUntaggedDef ~(consts : (Location.t * tag) list) ~(blocks :
       then raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneObject));
     if !arrayTypes > 1
       then raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneArray));
+    if !functionTypes > 1
+      then raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneFunction));
     if !stringTypes > 1
       then raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneString));
     if !numberTypes > 1
@@ -213,6 +221,9 @@ let checkInvariant ~isUntaggedDef ~(consts : (Location.t * tag) list) ~(blocks :
       invariant loc
     | Some ArrayType ->
       incr arrayTypes;
+      invariant loc
+    | Some FunctionType ->
+      incr functionTypes;
       invariant loc
     | Some (IntType | FloatType) ->
       incr numberTypes;
@@ -266,6 +277,8 @@ module DynamicChecks = struct
   let nil = Null |> tag_type
   let undefined = Undefined |> tag_type
   let object_ = Untagged ObjectType |> tag_type
+
+  let function_ = Untagged FunctionType |> tag_type
   let string = Untagged StringType |> tag_type
   let number = Untagged IntType |> tag_type
 
@@ -298,6 +311,8 @@ module DynamicChecks = struct
       typeof e != number
     | ArrayType -> 
       not (is_array e)
+    | FunctionType ->
+      typeof e != function_
     | ObjectType when literals_overlaps_with_object () = false ->
       typeof e != object_
     | ObjectType (* overlap *) ->
@@ -341,9 +356,8 @@ module DynamicChecks = struct
   let add_runtime_type_check ~tag_type ~(block_cases: block_type list) x y =
     let has_array() = Ext_list.exists block_cases (fun t -> t = ArrayType) in
     match tag_type with
-    | Untagged IntType
-    | Untagged StringType
-    | Untagged FloatType -> typeof y == x
+    | Untagged (IntType | StringType | FloatType | FunctionType) ->
+      typeof y == x
     | Untagged ObjectType ->
       if has_array() then
         typeof y == x &&& not (is_array y)

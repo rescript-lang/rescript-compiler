@@ -442,7 +442,7 @@ let includeModExpr modExpr =
 let arrowReturnTypExpr typExpr =
   match typExpr.Parsetree.ptyp_desc with
   | Parsetree.Ptyp_arrow _ -> true
-  | _ when Ast_uncurried.typeIsUncurriedFun typExpr -> true
+  | _ when Ast_uncurried.coreTypeIsUncurriedFun typExpr -> true
   | _ -> false
 
 let patternRecordRowRhs (pattern : Parsetree.pattern) =
