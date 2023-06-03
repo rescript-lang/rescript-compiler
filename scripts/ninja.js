@@ -952,15 +952,6 @@ ${ninjaQuickBuildList([
     [],
     [compilerTarget],
   ],
-  [
-    ["node.cmj", "node.cmi"],
-    "node.ml",
-    "cc",
-    ninjaCwd,
-    [], // depends on belt_internals
-    [],
-    [compilerTarget, fileTarget("js.cmi"), fileTarget("belt_internals.cmi")], // need js.cm*
-  ],
 ])}
 `;
   var othersDirFiles = fs.readdirSync(othersDir, "ascii");
@@ -981,13 +972,12 @@ ${ninjaQuickBuildList([
       !x.startsWith("js") &&
       x !== "belt.res" &&
       x !== "belt_internals.resi" &&
-      x !== "node.ml" &&
       (x.endsWith(".ml") ||
         x.endsWith(".mli") ||
         x.endsWith(".res") ||
         x.endsWith(".resi")) &&
       !x.includes("#") &&
-      !x.includes(".cppo") // we have node ..
+      !x.includes(".cppo")
   );
   var jsTargets = collectTarget(jsPrefixSourceFiles);
   var allJsTargets = scanFileTargets(jsTargets, []);
@@ -1004,13 +994,10 @@ ${ninjaQuickBuildList([
   // belt_xx.cmi we need enforce the order to
   // avoid data race issues
   var beltPackage = fileTarget("belt.cmi");
-  var nodePackage = fileTarget("node.cmi");
   var beltTargets = collectTarget(othersFiles);
   depsMap.forEach((s, k) => {
     if (k.startsWith("belt")) {
       s.add(beltPackage);
-    } else if (k.startsWith("node")) {
-      s.add(nodePackage);
     }
     s.add(js_package);
   });

@@ -32,10 +32,13 @@ let assert_strict_notequal = strict_neq
 let assert_ok = a => ok(a)
 let assert_fail = msg => fail((), (), Js.Undefined.return(msg), "")
 
+@module("process") external argv: array<string> = "argv"
+@module("path") external basename: string => string = "basename"
+
 let is_mocha = () =>
-  switch Array.to_list(Node.Process.process["argv"]) {
+  switch Array.to_list(argv) {
   | list{_node, mocha, ..._} =>
-    let exec = Node.Path.basename(mocha)
+    let exec = basename(mocha)
     exec == "mocha" || exec == "_mocha"
   | _ => false
   }
@@ -247,7 +250,7 @@ function from_promise_suites(name, suites) {
 `)
 
 let old_from_promise_suites_donotuse = (name, suites: list<(string, Js.Promise.t<_>)>) =>
-  switch Array.to_list(Node.Process.process["argv"]) {
+  switch Array.to_list(argv) {
   | list{cmd, ..._} =>
     if is_mocha() {
       describe(name, (. ()) =>
