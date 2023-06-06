@@ -237,6 +237,35 @@ and compare_variants ~loc env params1 params2 n
       end
 
 
+and compare_records_fast ~loc env params1 params2 n
+    (labels1 : Types.label_declaration list)
+    (labels2 : Types.label_declaration list) =
+  match labels1, labels2 with
+    [], [] ->
+      Ctype.equal env true params1 params2
+  | [], _::_ -> false
+  | _::_, [] -> false
+  | ld1::rem1, ld2::rem2 ->
+      if Ident.name ld1.ld_id <> Ident.name ld2.ld_id
+      then false
+      else if ld1.ld_mutable <> ld2.ld_mutable then false else begin
+        Builtin_attributes.check_deprecated_mutable_inclusion
+          ~def:ld1.ld_loc
+          ~use:ld2.ld_loc
+          loc
+          ld1.ld_attributes ld2.ld_attributes
+          (Ident.name ld1.ld_id);
+        let field_mismatch = !Builtin_attributes.check_bs_attributes_inclusion  
+          ld1.ld_attributes ld2.ld_attributes
+          (Ident.name ld1.ld_id) in 
+        match field_mismatch with
+        | Some _ -> false
+        | None ->
+          compare_records_fast ~loc env
+            (ld1.ld_type::params1) (ld2.ld_type::params2)
+            (n+1)
+            rem1 rem2
+      end  
 and compare_records ~loc env params1 params2 n
     (labels1 : Types.label_declaration list)
     (labels2 : Types.label_declaration list) =
@@ -324,8 +353,9 @@ let type_declarations ?(equality = false) ~loc env name decl1 id decl2 =
         if equality then mark cstrs2 Env.Positive (Ident.name id) decl2;
         compare_variants ~loc env decl1.type_params decl2.type_params 1 cstrs1 cstrs2
     | (Type_record(labels1,rep1), Type_record(labels2,rep2)) ->
-        let err = compare_records ~loc env decl1.type_params decl2.type_params
-            1 labels1 labels2 in
+        let ok = compare_records_fast ~loc env decl1.type_params decl2.type_params 1 labels1 labels2 in
+        let err = if ok then [] else
+          compare_records ~loc env decl1.type_params decl2.type_params 1 labels1 labels2 in
         if err <> [] || rep1 = rep2 then err else
         [Record_representation (rep1, rep2)]
     | (Type_open, Type_open) -> []
