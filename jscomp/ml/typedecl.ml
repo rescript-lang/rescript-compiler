@@ -321,20 +321,7 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
     | Ptype_abstract ->
         raise(Error(sdecl.ptype_loc, Bad_unboxed_attribute
                       "it is abstract"))
-    | Ptype_variant [{pcd_args = Pcstr_tuple []}] ->
-      raise(Error(sdecl.ptype_loc, Bad_unboxed_attribute
-                    "its constructor has no argument"))
-    | Ptype_variant [{pcd_args = Pcstr_tuple _}] -> ()
-    | Ptype_variant [{pcd_args = Pcstr_record
-                        [{pld_mutable=Immutable; _}]}] -> ()
-    | Ptype_variant [{pcd_args = Pcstr_record [{pld_mutable=Mutable; _}]}] ->
-      raise(Error(sdecl.ptype_loc, Bad_unboxed_attribute "it is mutable"))
-    | Ptype_variant [{pcd_args = Pcstr_record _}] ->
-      raise(Error(sdecl.ptype_loc, Bad_unboxed_attribute
-                    "its constructor has more than one argument"))
-    | Ptype_variant _ ->
-      raise(Error(sdecl.ptype_loc, Bad_unboxed_attribute
-                    "it has more than one constructor"))
+    | Ptype_variant _ -> ()
     | Ptype_record [{pld_mutable=Immutable; _}] -> ()
     | Ptype_record [{pld_mutable=Mutable; _}] ->
       raise(Error(sdecl.ptype_loc, Bad_unboxed_attribute
