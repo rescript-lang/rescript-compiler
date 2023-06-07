@@ -304,38 +304,24 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
   in
   let raw_status = get_unboxed_from_attributes sdecl in
 
-  let checkUntaggedVariant = match sdecl.ptype_kind with
+  let checkUntaggedVariant() = match sdecl.ptype_kind with
   | Ptype_variant cds -> Ext_list.for_all cds (function
       | {pcd_args = Pcstr_tuple ([] | [_])} ->
         (* at most one payload allowed for untagged  variants *)
         true
+      | {pcd_args = Pcstr_tuple (_::_::_); pcd_name={txt=name}} ->
+        Ast_untagged_variants.reportConstructorMoreThanOneArg ~loc:sdecl.ptype_loc ~name
       | {pcd_args = Pcstr_record _} -> true
-      | _ -> false )
+     )
   | _ -> false
   in
 
-  if raw_status.unboxed && not raw_status.default && not checkUntaggedVariant then begin
+  if raw_status.unboxed && not raw_status.default && not (checkUntaggedVariant()) then begin
     match sdecl.ptype_kind with
     | Ptype_abstract ->
         raise(Error(sdecl.ptype_loc, Bad_unboxed_attribute
                       "it is abstract"))
-    | Ptype_variant [{pcd_args = Pcstr_tuple []; _}] ->
-      raise(Error(sdecl.ptype_loc, Bad_unboxed_attribute
-                    "its constructor has no argument"))
-    | Ptype_variant [{pcd_args = Pcstr_tuple [_]; _}] -> ()
-    | Ptype_variant [{pcd_args = Pcstr_tuple _; _}] ->
-      raise(Error(sdecl.ptype_loc, Bad_unboxed_attribute
-                    "its constructor has more than one argument"))
-    | Ptype_variant [{pcd_args = Pcstr_record
-                        [{pld_mutable=Immutable; _}]; _}] -> ()
-    | Ptype_variant [{pcd_args = Pcstr_record [{pld_mutable=Mutable; _}]; _}] ->
-      raise(Error(sdecl.ptype_loc, Bad_unboxed_attribute "it is mutable"))
-    | Ptype_variant [{pcd_args = Pcstr_record _; _}] ->
-      raise(Error(sdecl.ptype_loc, Bad_unboxed_attribute
-                    "its constructor has more than one argument"))
-    | Ptype_variant _ ->
-      raise(Error(sdecl.ptype_loc, Bad_unboxed_attribute
-                    "it has more than one constructor"))
+    | Ptype_variant _ -> ()
     | Ptype_record [{pld_mutable=Immutable; _}] -> ()
     | Ptype_record [{pld_mutable=Mutable; _}] ->
       raise(Error(sdecl.ptype_loc, Bad_unboxed_attribute
