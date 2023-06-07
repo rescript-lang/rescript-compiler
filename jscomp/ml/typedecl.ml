@@ -323,7 +323,7 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
       raise(Error(sdecl.ptype_loc, Bad_unboxed_attribute
                     "its constructor has no argument"))
     | Ptype_variant [{pcd_args = Pcstr_tuple [_]}] -> ()
-    | Ptype_variant [{pcd_args = Pcstr_tuple _; pcd_name = {txt=name}}] ->
+    | Ptype_variant [{pcd_args = Pcstr_tuple (_::_::_); pcd_name = {txt=name}}] ->
       Ast_untagged_variants.reportConstructorMoreThanOneArg ~loc:sdecl.ptype_loc ~name
     | Ptype_variant [{pcd_args = Pcstr_record
                         [{pld_mutable=Immutable; _}]}] -> ()
