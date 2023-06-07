@@ -24,6 +24,7 @@
 #### :bug: Bug Fix
 
 - Fix issue where uncurried type internals leak in type error. https://github.com/rescript-lang/rescript-compiler/pull/6264
+- Improve error messages for untagged variant definitions https://github.com/rescript-lang/rescript-compiler/pull/6290
 
 
 # 11.0.0-beta.1
