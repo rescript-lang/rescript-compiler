@@ -6,6 +6,7 @@ type untaggedError =
   | AtMostOneString
   | AtMostOneNumber
   | DuplicateLiteral of string
+  | ConstructorMoreThanOneArg of string
 type error =
   | InvalidVariantAsAnnotation
   | Duplicated_bs_as
@@ -33,7 +34,8 @@ let report_error ppf =
       | AtMostOneString -> "At most one case can be a string type."
       | AtMostOneNumber ->
         "At most one case can be a number type (int or float)."
-      | DuplicateLiteral s -> "Duplicate literal " ^ s ^ ".")
+      | DuplicateLiteral s -> "Duplicate literal " ^ s ^ "."
+      | ConstructorMoreThanOneArg (name) -> "Constructor " ^ name ^ " has more than one argument.")
 
 (* Type of the runtime representation of an untagged block (case with payoad) *)
 type block_type =
@@ -107,6 +109,9 @@ let () =
   Location.register_error_of_exn (function
     | Error (loc, err) -> Some (Location.error_of_printer loc report_error err)
     | _ -> None)
+
+let reportConstructorMoreThanOneArg ~loc ~name =
+  raise (Error (loc, InvalidUntaggedVariantDefinition (ConstructorMoreThanOneArg name)))
 
 let type_is_builtin_object (t : Types.type_expr) =
   match t.desc with

@@ -319,18 +319,17 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
     | Ptype_abstract ->
         raise(Error(sdecl.ptype_loc, Bad_unboxed_attribute
                       "it is abstract"))
-    | Ptype_variant [{pcd_args = Pcstr_tuple []; _}] ->
+    | Ptype_variant [{pcd_args = Pcstr_tuple []}] ->
       raise(Error(sdecl.ptype_loc, Bad_unboxed_attribute
                     "its constructor has no argument"))
-    | Ptype_variant [{pcd_args = Pcstr_tuple [_]; _}] -> ()
-    | Ptype_variant [{pcd_args = Pcstr_tuple _; _}] ->
-      raise(Error(sdecl.ptype_loc, Bad_unboxed_attribute
-                    "its constructor has more than one argument"))
+    | Ptype_variant [{pcd_args = Pcstr_tuple [_]}] -> ()
+    | Ptype_variant [{pcd_args = Pcstr_tuple _; pcd_name = {txt=name}}] ->
+      Ast_untagged_variants.reportConstructorMoreThanOneArg ~loc:sdecl.ptype_loc ~name
     | Ptype_variant [{pcd_args = Pcstr_record
-                        [{pld_mutable=Immutable; _}]; _}] -> ()
-    | Ptype_variant [{pcd_args = Pcstr_record [{pld_mutable=Mutable; _}]; _}] ->
+                        [{pld_mutable=Immutable; _}]}] -> ()
+    | Ptype_variant [{pcd_args = Pcstr_record [{pld_mutable=Mutable; _}]}] ->
       raise(Error(sdecl.ptype_loc, Bad_unboxed_attribute "it is mutable"))
-    | Ptype_variant [{pcd_args = Pcstr_record _; _}] ->
+    | Ptype_variant [{pcd_args = Pcstr_record _}] ->
       raise(Error(sdecl.ptype_loc, Bad_unboxed_attribute
                     "its constructor has more than one argument"))
     | Ptype_variant _ ->
