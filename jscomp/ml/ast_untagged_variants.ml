@@ -1,5 +1,5 @@
 type untaggedError =
-  | OnlyOneUnknown
+  | OnlyOneUnknown of string
   | AtMostOneObject
   | AtMostOneArray
   | AtMostOneFunction
@@ -27,7 +27,7 @@ let report_error ppf =
   | InvalidUntaggedVariantDefinition untaggedVariant ->
     fprintf ppf "This untagged variant definition is invalid: %s"
       (match untaggedVariant with
-      | OnlyOneUnknown -> "An unknown case must be the only case with payloads."
+      | OnlyOneUnknown name -> "Case " ^ name ^ " has a payload that is not of one of the recognized shapes (object, array, etc). Then it must be the only case with payloads."
       | AtMostOneObject -> "At most one case can be an object type."
       | AtMostOneArray -> "At most one case can be an array type."
       | AtMostOneFunction -> "At most one case can be a function type."
@@ -204,9 +204,9 @@ let checkInvariant ~isUntaggedDef ~(consts : (Location.t * tag) list)
       raise (Error (loc, InvalidUntaggedVariantDefinition (DuplicateLiteral s)));
     nonstring_literals := StringSet.add s !nonstring_literals
   in
-  let invariant loc =
+  let invariant loc name =
     if !unknownTypes <> 0 && List.length blocks <> 1 then
-      raise (Error (loc, InvalidUntaggedVariantDefinition OnlyOneUnknown));
+      raise (Error (loc, InvalidUntaggedVariantDefinition (OnlyOneUnknown name)));
     if !objectTypes > 1 then
       raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneObject));
     if !arrayTypes > 1 then
@@ -232,25 +232,26 @@ let checkInvariant ~isUntaggedDef ~(consts : (Location.t * tag) list)
       | None -> addStringLiteral ~loc literal.name);
   if isUntaggedDef then
     Ext_list.rev_iter blocks (fun (loc, block) ->
+        let name = block.tag.name in
         match block.block_type with
         | Some UnknownType ->
           incr unknownTypes;
-          invariant loc
+          invariant loc name
         | Some ObjectType ->
           incr objectTypes;
-          invariant loc
+          invariant loc name
         | Some ArrayType ->
           incr arrayTypes;
-          invariant loc
+          invariant loc name
         | Some FunctionType ->
           incr functionTypes;
-          invariant loc
+          invariant loc name
         | Some (IntType | FloatType) ->
           incr numberTypes;
-          invariant loc
+          invariant loc name
         | Some StringType ->
           incr stringTypes;
-          invariant loc
+          invariant loc name
         | None -> ())
 
 let names_from_type_variant ?(isUntaggedDef = false) ~env

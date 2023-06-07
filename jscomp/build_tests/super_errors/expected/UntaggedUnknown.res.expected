@@ -6,4 +6,4 @@
   [1;31m2[0m [2m│[0m type t = [1;31mTuple((float, string))[0m | Float(float)
   3 [2m│[0m 
 
-  This untagged variant definition is invalid: An unknown case must be the only case with payloads.
+  This untagged variant definition is invalid: Case Tuple has a payload that is not of one of the recognized shapes (object, array, etc). Then it must be the only case with payloads.
