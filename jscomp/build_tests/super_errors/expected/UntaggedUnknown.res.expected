@@ -1,0 +1,9 @@
+
+  [1;31mWe've found a bug for you![0m
+  [36m/.../fixtures/UntaggedUnknown.res[0m:[2m2:10-31[0m
+
+  1 [2m│[0m @unboxed
+  [1;31m2[0m [2m│[0m type t = [1;31mTuple((float, string))[0m | Float(float)
+  3 [2m│[0m 
+
+  This untagged variant definition is invalid: An unknown case must be the only case with payloads.
