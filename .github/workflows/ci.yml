@@ -358,6 +358,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
+          registry-url: https://registry.npmjs.org # Needed to make auth work for publishing
 
       - name: Download artifacts
         uses: actions/download-artifact@v3
