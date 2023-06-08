@@ -14,7 +14,7 @@
 
 #### :rocket: New Feature
 
-- Introduced a new `%ffi` extension that provides a more robust mechanism for JavaScript function interoperation by considering function arity in type constraints. This enhancement improves safety when dealing with JavaScript functions by enforcing type constraints based on the arity of the function. https://github.com/rescript-lang/rescript-compiler/pull/6251
+- Introduced a new  `%ffi` extension (*experimental* - not for production use!) that provides a more robust mechanism for JavaScript function interoperation by considering function arity in type constraints. This enhancement improves safety when dealing with JavaScript functions by enforcing type constraints based on the arity of the function. https://github.com/rescript-lang/rescript-compiler/pull/6251
 - Extended untagged variants with function types. https://github.com/rescript-lang/rescript-compiler/pull/6279
 
 #### :boom: Breaking Change
