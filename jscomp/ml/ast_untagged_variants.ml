@@ -117,7 +117,7 @@ let type_is_builtin_object (t : Types.type_expr) =
   match t.desc with
   | Tconstr (path, _, _) ->
     let name = Path.name path in
-    name = "Js.Dict.t" || name = "Js_dict.t"
+    name = "Js.Dict.t" || name = "Js_dict.t" || name = "Js.Re.t" || name = "RescriptCore.Re.t"
   | _ -> false
 
 let get_block_type ~env (cstr : Types.constructor_declaration) :
