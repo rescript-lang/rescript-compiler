@@ -12,6 +12,9 @@
 
 # 11.0.0-beta.3 (Unreleased)
 
+#### :rocket: New Feature
+- Untagged variants: consider regexp as an object type. https://github.com/rescript-lang/rescript-compiler/pull/6296
+
 # 11.0.0-beta.2
 
 #### :rocket: New Feature
