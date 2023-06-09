@@ -61,6 +61,8 @@ module OutcomePrinterTests = struct
   let signatureToOutcome structure =
     Lazy.force Res_outcome_printer.setup;
 
+    Clflags.include_dirs :=
+      Filename.concat "lib" "ocaml" :: !Clflags.include_dirs;
     Res_compmisc.init_path ();
     Clflags.nopervasives := true;
     let env = Res_compmisc.initial_env () in
