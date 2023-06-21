@@ -425,12 +425,18 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
                 else typ in
               {lbl with  pld_type = typ }) in
           let lbls, lbls' = transl_labels env true lbls in
-          let lbls_opt = match lbls, lbls' with
-            | {ld_name = {txt = "..."}; ld_type} :: _, _ :: _ ->
+          let has_spread =
+            lbls
+            |> List.exists (fun l ->
+                   match l with
+                   | {ld_name = {txt = "..."}} -> true
+                   | _ -> false) in
+          let lbls_opt = match has_spread with
+            | true ->
               let rec extract t = match t.desc with
                 | Tpoly(t, []) -> extract t
                 | _ -> Ctype.repr t in
-              let mkLbl (l: Types.label_declaration) : Typedtree.label_declaration =
+              let mkLbl (l: Types.label_declaration) (ld_type: Typedtree.core_type) : Typedtree.label_declaration =
                 { ld_id = l.ld_id;
                   ld_name = {txt = Ident.name l.ld_id; loc = l.ld_loc};
                   ld_mutable = l.ld_mutable;
@@ -441,14 +447,14 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
                 | {ld_name = {txt = "..."}; ld_type} :: rest, _ :: rest' ->
                   (match Ctype.extract_concrete_typedecl env (extract ld_type.ctyp_type) with
                     (_p0, _p, {type_kind=Type_record (fields, _repr)}) ->
-                      process_lbls (fst acc @ (fields |> List.map mkLbl), snd acc @ fields) rest rest'
+                      process_lbls (fst acc @ (fields |> List.map (fun l -> mkLbl l ld_type)), snd acc @ fields) rest rest'
                     | _ -> assert false
                     | exception _ -> None)
                 | lbl::rest, lbl'::rest' -> process_lbls (fst acc @ [lbl], snd acc @ [lbl']) rest rest'
                 | _ -> Some acc
               in
               process_lbls ([], []) lbls lbls'
-            | _ -> Some (lbls, lbls') in
+            | false -> Some (lbls, lbls') in
           let rec check_duplicates loc (lbls : Typedtree.label_declaration list) seen = match lbls with
           | [] -> ()
           | lbl::rest ->
