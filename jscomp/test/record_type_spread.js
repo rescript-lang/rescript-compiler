@@ -15,7 +15,14 @@ var v = {
   x: 3
 };
 
+var d = {
+  a: "",
+  b: 1,
+  c: 1
+};
+
 exports.getY = getY;
 exports.getX = getX;
 exports.v = v;
+exports.d = d;
 /* No side effect */

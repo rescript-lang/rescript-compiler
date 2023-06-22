@@ -36,7 +36,7 @@ type error =
   | Type_clash of Env.t * (type_expr * type_expr) list
   | Parameters_differ of Path.t * type_expr * type_expr
   | Null_arity_external
-  | Unbound_type_var of type_expr * type_declaration
+  | Unbound_type_var of type_expr * type_declaration * string
   | Cannot_extend_private_type of Path.t
   | Not_extensible_type of Path.t
   | Extension_mismatch of Path.t * Includecore.type_mismatch list
@@ -436,18 +436,47 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
               let rec extract t = match t.desc with
                 | Tpoly(t, []) -> extract t
                 | _ -> Ctype.repr t in
-              let mkLbl (l: Types.label_declaration) (ld_type: Typedtree.core_type) : Typedtree.label_declaration =
-                { ld_id = l.ld_id;
+              let mkLbl (l: Types.label_declaration) (ld_type: Typedtree.core_type) (type_vars: Types.type_expr list) : Typedtree.label_declaration =
+                let lbl = {
+                  ld_id = l.ld_id;
                   ld_name = {txt = Ident.name l.ld_id; loc = l.ld_loc};
                   ld_mutable = l.ld_mutable;
-                  ld_type = {ld_type with ctyp_type = l.ld_type};
+                  ld_type =
+                    (if sdecl.ptype_name.txt = "d" then (
+                     print_endline "type vars: "; (type_vars |> List.iter(Format.eprintf "tvar @[%a@]@." Printtyp.raw_type_expr));
+                     Format.eprintf "#1 @[%a@]@." Printtyp.raw_type_expr l.ld_type;
+                     let new_ty =
+                       match l.ld_type with
+                       | ({desc = Tvar (Some tvar_name)} | {desc = Tlink({desc=Tvar (Some tvar_name)})}) -> (
+                        print_endline ("tvarname:" ^ tvar_name);
+                         match
+                           type_vars
+                           |> List.find_opt (fun t ->
+                                  Format.eprintf "t: @[%a@]@." Printtyp.raw_type_expr t;
+                                  match t.desc with
+                                  | (Tvar (Some n) | Tlink ({desc=Tvar (Some n)})) when n = tvar_name -> true
+                                  | _ -> false)
+                         with
+                         | None -> print_endline "no tvar"; {ld_type with ctyp_type = l.ld_type}
+                         | Some tvar -> print_endline "found tvar"; {ld_type with ctyp_type = tvar})
+                       | _ -> print_endline "no typ"; print_endline (match l.ld_type.desc with | Tlink _ -> "Tlink" | _ -> "-"); {ld_type with ctyp_type = l.ld_type}
+                     in
+                     Format.eprintf "#2 @[%a@]@." Printtyp.raw_type_expr new_ty.ctyp_type;
+                     new_ty)
+                    else {ld_type with ctyp_type = l.ld_type});
                   ld_loc = l.ld_loc;
-                  ld_attributes = l.ld_attributes; } in
+                  ld_attributes = l.ld_attributes;
+                } in
+                lbl in
               let rec process_lbls acc lbls lbls' = match lbls, lbls' with
                 | {ld_name = {txt = "..."}; ld_type} :: rest, _ :: rest' ->
+                  let type_vars =
+                    match ld_type.ctyp_type with
+                    | {desc = Tpoly ({desc = Tconstr (_, tvars, _)}, _)} -> tvars
+                    | _ -> [] in
                   (match Ctype.extract_concrete_typedecl env (extract ld_type.ctyp_type) with
                     (_p0, _p, {type_kind=Type_record (fields, _repr)}) ->
-                      process_lbls (fst acc @ (fields |> List.map (fun l -> mkLbl l ld_type)), snd acc @ fields) rest rest'
+                      process_lbls (fst acc @ (fields |> List.map (fun l -> mkLbl l ld_type type_vars)), snd acc @ fields) rest rest'
                     | _ -> assert false
                     | exception _ -> None)
                 | lbl::rest, lbl'::rest' -> process_lbls (fst acc @ [lbl], snd acc @ [lbl']) rest rest'
@@ -1356,7 +1385,7 @@ let transl_type_decl env rec_flag sdecl_list =
     (fun sdecl tdecl ->
       let decl = tdecl.typ_type in
        match Ctype.closed_type_decl decl with
-         Some ty -> raise(Error(sdecl.ptype_loc, Unbound_type_var(ty,decl)))
+         Some ty -> raise(Error(sdecl.ptype_loc, Unbound_type_var(ty,decl, "#2")))
        | None   -> ())
     sdecl_list tdecls;
   (* Check that constraints are enforced *)
@@ -1790,7 +1819,7 @@ let transl_with_constraint env id row_path orig_decl sdecl =
   | Some p -> set_fixed_row env sdecl.ptype_loc p decl
   end;
   begin match Ctype.closed_type_decl decl with None -> ()
-  | Some ty -> raise(Error(sdecl.ptype_loc, Unbound_type_var(ty,decl)))
+  | Some ty -> raise(Error(sdecl.ptype_loc, Unbound_type_var(ty,decl, "not closed #1")))
   end;
   let decl = name_recursion sdecl id decl in
   let type_variance =
@@ -1946,8 +1975,8 @@ let report_error ppf = function
            fprintf ppf "but is used here with type")
   | Null_arity_external ->
       fprintf ppf "External identifiers must be functions"
-  | Unbound_type_var (ty, decl) ->
-      fprintf ppf "A type variable is unbound in this type declaration";
+  | Unbound_type_var (ty, decl, s) ->
+      fprintf ppf "A type variable is unbound in this type declaration: %s" s;
       let ty = Ctype.repr ty in
       begin match decl.type_kind, decl.type_manifest with
       | Type_variant tl, _ ->
