@@ -384,6 +384,80 @@ var TestFunctionCase = {
   ff: ff
 };
 
+var someJson = '[{"name": "Haan"}, {"name": "Mr"}, false]';
+
+function check$1(s) {
+  if (!Array.isArray(s) && (s === null || typeof s !== "object") && typeof s !== "number" && typeof s !== "string") {
+    console.log("Nope...");
+    return ;
+  }
+  if (Array.isArray(s)) {
+    if (s.length !== 3) {
+      console.log("Nope...");
+      return ;
+    }
+    var match = s[0];
+    if (match === true) {
+      var match$1 = s[1];
+      if (match$1 === false) {
+        var match$2 = s[2];
+        if (!Array.isArray(match$2) && (match$2 === null || typeof match$2 !== "object") && typeof match$2 !== "number" && typeof match$2 !== "string") {
+          console.log("Nope...");
+          return ;
+        }
+        if (Array.isArray(match$2)) {
+          if (match$2.length !== 2) {
+            console.log("Nope...");
+            return ;
+          }
+          var match$3 = match$2[0];
+          if (!Array.isArray(match$3) && (match$3 === null || typeof match$3 !== "object") && typeof match$3 !== "number" && typeof match$3 !== "string") {
+            console.log("Nope...");
+            return ;
+          }
+          if (typeof match$3 === "string" && match$3 === "My name is") {
+            var match$4 = match$2[1];
+            if (!Array.isArray(match$4) && (match$4 === null || typeof match$4 !== "object") && typeof match$4 !== "number" && typeof match$4 !== "string") {
+              console.log("Nope...");
+              return ;
+            }
+            if (typeof match$4 === "number") {
+              if (match$4 !== 10) {
+                console.log("Nope...");
+              } else {
+                console.log("yup");
+              }
+              return ;
+            }
+            console.log("Nope...");
+            return ;
+          } else {
+            console.log("Nope...");
+            return ;
+          }
+        } else {
+          console.log("Nope...");
+          return ;
+        }
+      } else {
+        console.log("Nope...");
+        return ;
+      }
+    } else {
+      console.log("Nope...");
+      return ;
+    }
+  } else {
+    console.log("Nope...");
+    return ;
+  }
+}
+
+var ComplexPattern = {
+  someJson: someJson,
+  check: check$1
+};
+
 var i = 42;
 
 var i2 = 42.5;
@@ -425,4 +499,5 @@ exports.RecordIsObject = RecordIsObject;
 exports.ArrayAndObject = ArrayAndObject;
 exports.OptionUnboxingHeuristic = OptionUnboxingHeuristic;
 exports.TestFunctionCase = TestFunctionCase;
+exports.ComplexPattern = ComplexPattern;
 /* l2 Not a pure module */

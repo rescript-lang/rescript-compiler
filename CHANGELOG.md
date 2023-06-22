@@ -14,6 +14,7 @@
 
 #### :rocket: New Feature
 - Untagged variants: consider regexp as an object type. https://github.com/rescript-lang/rescript-compiler/pull/6296
+- Semantic-based optimization of code generated for untagged variants https://github.com/rescript-lang/rescript-compiler/issues/6108
 
 # 11.0.0-beta.2
 

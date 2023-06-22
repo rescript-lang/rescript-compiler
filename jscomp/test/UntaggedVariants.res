@@ -307,3 +307,33 @@ module TestFunctionCase = {
 
     let ff = Function((. x) => x+1)
 }
+
+module ComplexPattern = {
+  @unboxed
+  type rec t =
+    | @as(undefined) Missing
+    | @as(false) False
+    | @as(true) True
+    | @as(null) Null
+    | String(string)
+    | Number(float)
+    | Object(Js.Dict.t<t>)
+    | Array(array<t>)
+
+  type tagged_t =
+    | JSONFalse
+    | JSONTrue
+    | JSONNull
+    | JSONString(string)
+    | JSONNumber(float)
+    | JSONObject(Js.Dict.t<t>)
+    | JSONArray(array<t>)
+
+  let someJson: t = %raw(`'[{"name": "Haan"}, {"name": "Mr"}, false]'`)->Obj.magic
+
+  let check = s =>
+    switch s {
+    | Array([True, False, Array([String("My name is"), Number(10.)])]) => Js.log("yup")
+    | _ => Js.log("Nope...")
+    }
+}
