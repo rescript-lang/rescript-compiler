@@ -142,7 +142,7 @@ jobs:
           chmod +x _build/install/default/bin/*
 
       - name: Use OCaml ${{matrix.ocaml_compiler}}
-        uses: ocaml/setup-ocaml@v2
+        uses: ocaml/setup-ocaml@v2.0.15
         with:
           ocaml-compiler: ${{matrix.ocaml_compiler}}
           opam-pin: false
