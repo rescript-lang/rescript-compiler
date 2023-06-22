@@ -17,8 +17,7 @@ var v = {
 
 var d = {
   a: "",
-  b: 1,
-  c: 1
+  b: 1
 };
 
 exports.getY = getY;

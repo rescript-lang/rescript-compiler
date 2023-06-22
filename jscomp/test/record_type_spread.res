@@ -22,5 +22,4 @@ type d<'a> = {
 let d: d<int> = {
   a: "",
   b: 1,
-  c: 1,
 }
