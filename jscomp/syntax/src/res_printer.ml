@@ -4018,7 +4018,7 @@ and printPexpApply ~state expr cmtTbl =
           argsDoc;
         ]
     else
-      let argsDoc = printArguments ~state ~dotted args cmtTbl in
+      let argsDoc = printArguments ~state ~dotted ~partial args cmtTbl in
       Doc.concat [printAttributes ~state attrs cmtTbl; callExprDoc; argsDoc]
   | _ -> assert false
 
@@ -4524,7 +4524,7 @@ and printArgumentsWithCallbackInLastPosition ~state ~dotted args cmtTbl =
         Lazy.force breakAllArgs;
       ]
 
-and printArguments ~state ~dotted
+and printArguments ~state ~dotted ?(partial = false)
     (args : (Asttypes.arg_label * Parsetree.expression) list) cmtTbl =
   match args with
   | [
@@ -4564,7 +4564,7 @@ and printArguments ~state ~dotted
                     ~sep:(Doc.concat [Doc.comma; Doc.line])
                     (List.map (fun arg -> printArgument ~state arg cmtTbl) args);
                 ]);
-           Doc.trailingComma;
+           (if partial then Doc.nil else Doc.trailingComma);
            Doc.softLine;
            Doc.rparen;
          ])

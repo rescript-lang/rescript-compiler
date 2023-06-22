@@ -159,3 +159,20 @@ let aU = (() => "foo")->Ok
 Ok("_")->Belt.Result.map(concatStrings(_, "foo"))
 
 let ptl1 =  add(1, ...)
+
+let fn = (
+  i,
+  ~hello,
+  ~moreGoesHere,
+  ~provikingMultilineFormattingaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,
+) => {
+  i + hello + moreGoesHere + provikingMultilineFormattingaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+}
+
+let partial =
+  fn(
+    ~hello=1,
+    ~moreGoesHere=1,
+    ~provikingMultilineFormattingaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa=1,
+    ...
+  )
