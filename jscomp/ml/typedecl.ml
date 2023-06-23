@@ -452,17 +452,27 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
                 lbl in
               let rec process_lbls acc lbls lbls' = match lbls, lbls' with
                 | {ld_name = {txt = "..."}; ld_type} :: rest, _ :: rest' ->
-                  let type_vars =
+                  (* The type variables applied to the record spread itself. *)
+                  let applied_type_vars =
                     match Ctype.repr ld_type.ctyp_type with
-                    | {desc = Tpoly ({desc = Tconstr (_, tvars, _)}, _)} ->
-                      tvars
-                      |> List.filter_map (fun tvar ->
-                             match Ctype.repr tvar with
-                             | {desc = Tvar (Some name)} -> Some (name, tvar)
-                             | _ -> None)
+                    | {desc = Tpoly ({desc = Tconstr (_, tvars, _)}, _)} -> tvars
                     | _ -> [] in
                   (match Ctype.extract_concrete_typedecl env (extract ld_type.ctyp_type) with
-                    (_p0, _p, {type_kind=Type_record (fields, _repr)}) ->
+                    (_p0, _p, {type_kind=Type_record (fields, _repr); type_params}) ->
+                      (* Track which type param in the record we're spreading 
+                         belongs to which type variable applied to the spread itself. *)
+                      let idx = ref 0 in
+                      let type_vars =
+                        type_params
+                        |> List.filter_map (fun t ->
+                               let index = !idx in
+                               idx := index + 1;
+                               match t.desc with
+                               | Tvar (Some tname) -> (
+                                 match List.nth_opt applied_type_vars index with
+                                 | None -> None
+                                 | Some t -> Some (tname, t))
+                               | _ -> None) in
                       process_lbls
                         ( fst acc @ (fields |> List.map (fun l -> mkLbl l ld_type type_vars)),
                           snd acc

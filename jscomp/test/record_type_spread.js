@@ -25,8 +25,13 @@ var d = {
   }
 };
 
+var x = {
+  c: "hello"
+};
+
 exports.getY = getY;
 exports.getX = getX;
 exports.v = v;
 exports.d = d;
+exports.x = x;
 /* No side effect */

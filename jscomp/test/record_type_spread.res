@@ -27,3 +27,21 @@ let d: d<int> = {
   c: None,
   d: Some(Ok(1)),
 }
+
+type rn<'aaa> = {c: option<'aaa>}
+
+type withRenamedTypeVariable<'bbb> = {
+  ...rn<'bbb>,
+}
+
+let x: withRenamedTypeVariable<bool> = {
+  c: Some(true),
+}
+
+type rnAsString = {
+  ...rn<string>,
+}
+
+let x: rnAsString = {
+  c: Some("hello"),
+}
