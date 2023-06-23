@@ -17,7 +17,12 @@ var v = {
 
 var d = {
   a: "",
-  b: 1
+  b: 1,
+  c: undefined,
+  d: {
+    TAG: "Ok",
+    _0: 1
+  }
 };
 
 exports.getY = getY;

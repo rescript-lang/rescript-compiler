@@ -13,6 +13,8 @@ let v: y = {y: 3, x: 3}
 type f<'a> = {
   a: string,
   b: 'a,
+  c: option<'a>,
+  d: option<result<'a, 'a>>,
 }
 
 type d<'a> = {
@@ -22,4 +24,6 @@ type d<'a> = {
 let d: d<int> = {
   a: "",
   b: 1,
+  c: None,
+  d: Some(Ok(1)),
 }

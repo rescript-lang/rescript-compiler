@@ -434,29 +434,18 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
           let lbls_opt = match has_spread with
             | true ->
               let substitute_type_vars type_vars typ =
-                match typ with
-                | {desc = Tvar (Some tvar_name)}
-                | {desc = Tlink {desc = Tvar (Some tvar_name)}} ->
-                  type_vars
-                  |> List.find_opt (fun t ->
-                         match t.desc with
-                         | (Tvar (Some n) | Tlink {desc = Tvar (Some n)}) when n = tvar_name
-                           ->
-                           true
-                         | _ -> false)
-                | _ -> None in
+                let open Record_spread in
+                let type_map = type_vars |> List.fold_left (fun acc (tvar_name, tvar_typ) -> StringMap.add tvar_name tvar_typ acc) StringMap.empty in
+                substitute_types ~type_map typ in
               let rec extract t = match t.desc with
                 | Tpoly(t, []) -> extract t
                 | _ -> Ctype.repr t in
-              let mkLbl (l: Types.label_declaration) (ld_type: Typedtree.core_type) (type_vars: Types.type_expr list) : Typedtree.label_declaration =
+              let mkLbl (l: Types.label_declaration) (ld_type: Typedtree.core_type) (type_vars: (string * Types.type_expr) list) : Typedtree.label_declaration =
                 let lbl = {
                   ld_id = l.ld_id;
                   ld_name = {txt = Ident.name l.ld_id; loc = l.ld_loc};
                   ld_mutable = l.ld_mutable;
-                  ld_type =
-                    (match substitute_type_vars type_vars l.ld_type with
-                    | None -> {ld_type with ctyp_type = l.ld_type}
-                    | Some tvar -> {ld_type with ctyp_type = tvar});
+                  ld_type = {ld_type with ctyp_type = substitute_type_vars type_vars l.ld_type};
                   ld_loc = l.ld_loc;
                   ld_attributes = l.ld_attributes;
                 } in
@@ -464,8 +453,13 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
               let rec process_lbls acc lbls lbls' = match lbls, lbls' with
                 | {ld_name = {txt = "..."}; ld_type} :: rest, _ :: rest' ->
                   let type_vars =
-                    match ld_type.ctyp_type with
-                    | {desc = Tpoly ({desc = Tconstr (_, tvars, _)}, _)} -> tvars
+                    match Ctype.repr ld_type.ctyp_type with
+                    | {desc = Tpoly ({desc = Tconstr (_, tvars, _)}, _)} ->
+                      tvars
+                      |> List.filter_map (fun tvar ->
+                             match Ctype.repr tvar with
+                             | {desc = Tvar (Some name)} -> Some (name, tvar)
+                             | _ -> None)
                     | _ -> [] in
                   (match Ctype.extract_concrete_typedecl env (extract ld_type.ctyp_type) with
                     (_p0, _p, {type_kind=Type_record (fields, _repr)}) ->
@@ -477,8 +471,7 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
                                   {
                                     l with
                                     ld_type =
-                                      substitute_type_vars type_vars l.ld_type
-                                      |> Option.value ~default:l.ld_type;
+                                      substitute_type_vars type_vars l.ld_type;
                                   })) )
                         rest rest'
                     | _ -> assert false
