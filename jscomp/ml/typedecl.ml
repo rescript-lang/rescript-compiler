@@ -460,18 +460,15 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
                     (_p0, _p, {type_kind=Type_record (fields, _repr); type_params}) ->
                       (* Track which type param in the record we're spreading 
                          belongs to which type variable applied to the spread itself. *)
-                      let idx = ref 0 in
                       let type_vars =
-                        type_params
-                        |> List.filter_map (fun t ->
-                               let index = !idx in
-                               idx := index + 1;
-                               match t.desc with
-                               | Tvar (Some tname) -> (
-                                 match List.nth_opt applied_type_vars index with
-                                 | None -> None
-                                 | Some t -> Some (tname, t))
-                               | _ -> None) in
+                        if List.length type_params = List.length applied_type_vars then
+                          let paired_type_vars = List.combine type_params applied_type_vars in
+                          paired_type_vars
+                          |> List.filter_map (fun (t, applied_tvar) ->
+                                  match t.desc with
+                                  | Tvar (Some tname) -> Some (tname, applied_tvar)
+                                  | _ -> None)
+                        else [] in
                       process_lbls
                         ( fst acc @ (fields |> List.map (fun l -> mkLbl l ld_type type_vars)),
                           snd acc
