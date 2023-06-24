@@ -441,7 +441,7 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
                 | Tpoly(t, []) -> extract t
                 | _ -> Ctype.repr t in
               let mkLbl (l: Types.label_declaration) (ld_type: Typedtree.core_type) (type_vars: (string * Types.type_expr) list) : Typedtree.label_declaration =
-                let lbl = {
+                {
                   ld_id = l.ld_id;
                   ld_name = {txt = Ident.name l.ld_id; loc = l.ld_loc};
                   ld_mutable = l.ld_mutable;
@@ -449,7 +449,6 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
                   ld_loc = l.ld_loc;
                   ld_attributes = l.ld_attributes;
                 } in
-                lbl in
               let rec process_lbls acc lbls lbls' = match lbls, lbls' with
                 | {ld_name = {txt = "..."}; ld_type} :: rest, _ :: rest' ->
                   (* The type variables applied to the record spread itself. *)
@@ -1392,7 +1391,7 @@ let transl_type_decl env rec_flag sdecl_list =
     (fun sdecl tdecl ->
       let decl = tdecl.typ_type in
        match Ctype.closed_type_decl decl with
-       | Some ty -> raise(Error(sdecl.ptype_loc, Unbound_type_var(ty,decl)))
+         Some ty -> raise(Error(sdecl.ptype_loc, Unbound_type_var(ty,decl)))
        | None   -> ())
     sdecl_list tdecls;
   (* Check that constraints are enforced *)
