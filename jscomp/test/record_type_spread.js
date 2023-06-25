@@ -10,7 +10,18 @@ function getX(v) {
   return v.x;
 }
 
-var DeepSub = {};
+var DeepSub = {
+  d: {
+    x: {
+      TAG: "Ok",
+      _0: 1
+    },
+    z: {
+      NAME: "Two",
+      VAL: 1
+    }
+  }
+};
 
 var v = {
   y: 3,

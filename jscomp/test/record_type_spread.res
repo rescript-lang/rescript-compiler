@@ -49,8 +49,13 @@ let x: rnAsString = {
 module DeepSub = {
   type t<'a, 'b> = {
     x: result<'a, 'b>,
-  } 
+    z: [#One | #Two('a) | #Three('b)],
+  }
   type d = {
     ...t<int, int>,
+  }
+  let d: d = {
+    x: Ok(1),
+    z: #Two(1),
   }
 }
