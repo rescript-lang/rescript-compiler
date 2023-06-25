@@ -45,3 +45,12 @@ type rnAsString = {
 let x: rnAsString = {
   c: Some("hello"),
 }
+
+module DeepSub = {
+  type t<'a, 'b> = {
+    x: result<'a, 'b>,
+  } 
+  type d = {
+    ...t<int, int>,
+  }
+}

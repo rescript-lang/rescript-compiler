@@ -17,8 +17,8 @@ let substitute_types ~type_map (t : Types.type_expr) =
         apply_substitution type_variable_name t
       | Tvar None -> t
       | Tunivar _ -> t
-      | Tconstr (path, args, memo) ->
-        {t with desc = Tconstr (path, args |> List.map loop, memo)}
+      | Tconstr (path, args, _memo) ->
+        {t with desc = Tconstr (path, args |> List.map loop, ref Types.Mnil)}
       | Tsubst t -> {t with desc=Tsubst (loop t)}
       | Tvariant rd -> {t with desc = Tvariant (row_desc rd)}
       | Tnil -> t

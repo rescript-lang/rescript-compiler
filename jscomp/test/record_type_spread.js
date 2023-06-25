@@ -10,6 +10,8 @@ function getX(v) {
   return v.x;
 }
 
+var DeepSub = {};
+
 var v = {
   y: 3,
   x: 3
@@ -34,4 +36,5 @@ exports.getX = getX;
 exports.v = v;
 exports.d = d;
 exports.x = x;
+exports.DeepSub = DeepSub;
 /* No side effect */
