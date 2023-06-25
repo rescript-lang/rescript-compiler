@@ -434,9 +434,8 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
           let lbls_opt = match has_spread with
             | true ->
               let substitute_type_vars type_vars typ =
-                let open Record_spread in
-                let type_map = type_vars |> List.fold_left (fun acc (tvar_name, tvar_typ) -> StringMap.add tvar_name tvar_typ acc) StringMap.empty in
-                substitute_types ~type_map typ in
+                let type_map = type_vars |> List.fold_left (fun acc (tvar_name, tvar_typ) -> Record_spread.StringMap.add tvar_name tvar_typ acc) Record_spread.StringMap.empty in
+                Record_spread.substitute_types ~type_map typ in
               let rec extract t = match t.desc with
                 | Tpoly(t, []) -> extract t
                 | _ -> Ctype.repr t in
