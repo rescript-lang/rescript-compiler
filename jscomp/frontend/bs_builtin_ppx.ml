@@ -72,6 +72,19 @@ let pat_mapper (self : mapper) (p : Parsetree.pattern) =
     Ast_utf8_string_interp.transform_pat p s delim
   | _ -> default_pat_mapper self p
 
+let local_module_name =
+  let v = ref 0 in
+  fun () ->
+    incr v;
+    "local_" ^ string_of_int !v
+
+(* Unpack requires core_type package for type inference:
+   Generate a module type name eg. __Belt_List__*)
+let local_module_type_name txt =
+  "_"
+  ^ (Longident.flatten txt |> List.fold_left (fun ll l -> ll ^ "_" ^ l) "")
+  ^ "__"
+
 let expr_mapper ~async_context ~in_function_def (self : mapper)
     (e : Parsetree.expression) =
   let old_in_function_def = !in_function_def in
@@ -214,6 +227,19 @@ let expr_mapper ~async_context ~in_function_def (self : mapper)
      the attribute to the whole expression, in general, when shuffuling the ast
      it is very hard to place attributes correctly
   *)
+  | Pexp_letmodule
+      (lid, ({pmod_desc = Pmod_ident {txt}; pmod_attributes} as me), expr)
+    when Res_parsetree_viewer.hasAwaitAttribute pmod_attributes ->
+    let safe_module_type_name = local_module_type_name txt in
+    {
+      e with
+      pexp_desc =
+        Pexp_letmodule
+          ( lid,
+            Ast_await.create_await_module_expression
+              ~module_type_name:safe_module_type_name me,
+            expr );
+    }
   | _ -> default_expr_mapper self e
 
 let expr_mapper ~async_context ~in_function_def (self : mapper)
@@ -418,19 +444,6 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) :
   | Pstr_attribute ({txt = "bs.config" | "config"}, _) -> str
   | _ -> default_mapper.structure_item self str
 
-let local_module_name =
-  let v = ref 0 in
-  fun () ->
-    incr v;
-    "local_" ^ string_of_int !v
-
-(* Unpack requires core_type package for type inference:
-   Generate a module type name eg. __Belt_List__*)
-let local_module_type_name txt =
-  "_"
-  ^ (Longident.flatten txt |> List.fold_left (fun ll l -> ll ^ "_" ^ l) "")
-  ^ "__"
-
 let expand_reverse (stru : Ast_structure.t) (acc : Ast_structure.t) :
     Ast_structure.t =
   if stru = [] then acc
@@ -532,6 +545,72 @@ let rec structure_mapper ~await_context (self : mapper) (stru : Ast_structure.t)
             };
       }
       :: structure_mapper ~await_context self rest
+    | Pstr_eval
+        ( {
+            pexp_desc =
+              Pexp_letmodule
+                ( _,
+                  ({pmod_desc = Pmod_ident {txt; loc}; pmod_attributes} as me),
+                  _ );
+          },
+          _ )
+      when Res_parsetree_viewer.hasAwaitAttribute pmod_attributes ->
+      let item = self.structure_item self item in
+      let safe_module_type_name = local_module_type_name txt in
+      let has_local_module_name =
+        Hashtbl.find_opt !await_context safe_module_type_name
+      in
+      (* module __Belt_List__ = module type of Belt.List *)
+      let module_type_decl =
+        match has_local_module_name with
+        | Some _ -> []
+        | None ->
+          let open Ast_helper in
+          Hashtbl.add !await_context safe_module_type_name safe_module_type_name;
+          [
+            Str.modtype ~loc
+              (Mtd.mk ~loc
+                 {txt = safe_module_type_name; loc}
+                 ~typ:(Mty.typeof_ ~loc me));
+          ]
+      in
+      module_type_decl @ (item :: structure_mapper ~await_context self rest)
+    | Pstr_value (_, vbs) ->
+      let item = self.structure_item self item in
+      let module_exprs =
+        vbs
+        |> List.filter_map (fun ({pvb_expr} : Parsetree.value_binding) ->
+               match pvb_expr.pexp_desc with
+               | Pexp_letmodule (_, ({pmod_attributes} as me), _)
+                 when Res_parsetree_viewer.hasAwaitAttribute pmod_attributes ->
+                 Some me
+               | _ -> None)
+      in
+      (* [ module __Belt_List__ = module type of Belt.List ] *)
+      let module_type_decls =
+        module_exprs
+        |> List.filter_map (fun ({pmod_desc} as me : Parsetree.module_expr) ->
+               match pmod_desc with
+               | Pmod_ident {txt; loc} -> (
+                 let safe_module_type_name = local_module_type_name txt in
+                 let has_local_module_name =
+                   Hashtbl.find_opt !await_context safe_module_type_name
+                 in
+
+                 match has_local_module_name with
+                 | Some _ -> None
+                 | None ->
+                   let open Ast_helper in
+                   Hashtbl.add !await_context safe_module_type_name
+                     safe_module_type_name;
+                   Some
+                     (Str.modtype ~loc
+                        (Mtd.mk ~loc
+                           {txt = safe_module_type_name; loc}
+                           ~typ:(Mty.typeof_ ~loc me))))
+               | _ -> None)
+      in
+      module_type_decls @ (item :: structure_mapper ~await_context self rest)
     | _ ->
       self.structure_item self item :: structure_mapper ~await_context self rest
     )
