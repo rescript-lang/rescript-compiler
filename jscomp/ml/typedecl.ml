@@ -425,17 +425,8 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
                 else typ in
               {lbl with  pld_type = typ }) in
           let lbls, lbls' = transl_labels env true lbls in
-          let has_spread =
-            lbls
-            |> List.exists (fun l ->
-                   match l with
-                   | {ld_name = {txt = "..."}} -> true
-                   | _ -> false) in
-          let lbls_opt = match has_spread with
+          let lbls_opt = match Record_type_spread.has_type_spread lbls with
             | true ->
-              let substitute_type_vars type_vars typ =
-                let type_map = type_vars |> List.fold_left (fun acc (tvar_name, tvar_typ) -> Record_type_spread.StringMap.add tvar_name tvar_typ acc) Record_type_spread.StringMap.empty in
-                Record_type_spread.substitute_types ~type_map typ in
               let rec extract t = match t.desc with
                 | Tpoly(t, []) -> extract t
                 | _ -> Ctype.repr t in
@@ -444,30 +435,15 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
                   ld_id = l.ld_id;
                   ld_name = {txt = Ident.name l.ld_id; loc = l.ld_loc};
                   ld_mutable = l.ld_mutable;
-                  ld_type = {ld_type with ctyp_type = substitute_type_vars type_vars l.ld_type};
+                  ld_type = {ld_type with ctyp_type = Record_type_spread.substitute_type_vars type_vars l.ld_type};
                   ld_loc = l.ld_loc;
                   ld_attributes = l.ld_attributes;
                 } in
               let rec process_lbls acc lbls lbls' = match lbls, lbls' with
                 | {ld_name = {txt = "..."}; ld_type} :: rest, _ :: rest' ->
-                  (* The type variables applied to the record spread itself. *)
-                  let applied_type_vars =
-                    match Ctype.repr ld_type.ctyp_type with
-                    | {desc = Tpoly ({desc = Tconstr (_, tvars, _)}, _)} -> tvars
-                    | _ -> [] in
                   (match Ctype.extract_concrete_typedecl env (extract ld_type.ctyp_type) with
                     (_p0, _p, {type_kind=Type_record (fields, _repr); type_params}) ->
-                      (* Track which type param in the record we're spreading 
-                         belongs to which type variable applied to the spread itself. *)
-                      let type_vars =
-                        if List.length type_params = List.length applied_type_vars then
-                          let paired_type_vars = List.combine type_params applied_type_vars in
-                          paired_type_vars
-                          |> List.filter_map (fun (t, applied_tvar) ->
-                                  match t.desc with
-                                  | Tvar (Some tname) -> Some (tname, applied_tvar)
-                                  | _ -> None)
-                        else [] in
+                      let type_vars = Record_type_spread.extract_type_vars type_params ld_type.ctyp_type in
                       process_lbls
                         ( fst acc
                           @ (Ext_list.map fields (fun l ->
@@ -478,7 +454,7 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
                             {
                               l with
                               ld_type =
-                                substitute_type_vars type_vars l.ld_type;
+                                Record_type_spread.substitute_type_vars type_vars l.ld_type;
                             })) )
                         rest rest'
                     | _ -> assert false
