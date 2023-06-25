@@ -2,6 +2,7 @@
 'use strict';
 
 var Curry = require("../../lib/js/curry.js");
+var Belt_List = require("../../lib/js/belt_List.js");
 
 async function eachIntAsync(list, f) {
   return Curry._2(await import("../../lib/js/belt_List.js").then(function (m) {
@@ -75,6 +76,10 @@ var M0 = await import("../../lib/js/belt_List.js");
 
 var M1 = await import("../../lib/js/belt_List.js");
 
+function f(param) {
+  return Belt_List.forEach;
+}
+
 var each = M1.forEach;
 
 var M2;
@@ -91,4 +96,5 @@ exports.M1 = M1;
 exports.each = each;
 exports.M2 = M2;
 exports.each2 = each2;
+exports.f = f;
 /*  Not a pure module */

@@ -28,3 +28,13 @@ let () = {
 let forEach = await @a @b Js.Import(Belt.List.forEach)
 
 module M = await @a @b Belt.List
+
+let f = () => {
+  module M = await @a @b Belt.List
+  M.forEach
+}
+
+let () = {
+  module M = await @a @b Belt.List
+  M.forEach
+}
