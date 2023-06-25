@@ -470,15 +470,17 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
                                   | _ -> None)
                         else [] in
                       process_lbls
-                        ( fst acc @ (fields |> List.map (fun l -> mkLbl l ld_type type_vars)),
+                        ( fst acc
+                          @ (Ext_list.map fields (fun l ->
+                            mkLbl l ld_type type_vars))
+                          ,
                           snd acc
-                          @ (fields
-                            |> List.map (fun (l : Types.label_declaration) ->
-                                  {
-                                    l with
-                                    ld_type =
-                                      substitute_type_vars type_vars l.ld_type;
-                                  })) )
+                          @ (Ext_list.map fields (fun l ->
+                            {
+                              l with
+                              ld_type =
+                                substitute_type_vars type_vars l.ld_type;
+                            })) )
                         rest rest'
                     | _ -> assert false
                     | exception _ -> None)
