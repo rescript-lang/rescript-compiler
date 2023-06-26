@@ -4,6 +4,6 @@ let x = {
 }
 
 let x = {
-  module M = ME
+  module M = await ME
   M.x
 }

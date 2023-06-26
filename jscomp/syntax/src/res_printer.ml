@@ -710,11 +710,6 @@ and printModuleBinding ~state ~isRec moduleBinding cmtTbl i =
         Doc.concat [Doc.text ": "; printModType ~state modType cmtTbl] )
     | modExpr -> (printModExpr ~state modExpr cmtTbl, Doc.nil)
   in
-  let modExprDoc =
-    if ParsetreeViewer.hasAwaitAttribute moduleBinding.pmb_expr.pmod_attributes
-    then Doc.concat [Doc.text "await "; modExprDoc]
-    else modExprDoc
-  in
   let modName =
     let doc = Doc.text moduleBinding.pmb_name.Location.txt in
     printComments doc cmtTbl moduleBinding.pmb_name.loc
@@ -5454,6 +5449,11 @@ and printModExpr ~state modExpr cmtTbl =
           printModType ~state modType cmtTbl;
         ]
     | Pmod_functor _ -> printModFunctor ~state modExpr cmtTbl
+  in
+  let doc =
+    if ParsetreeViewer.hasAwaitAttribute modExpr.pmod_attributes then
+      Doc.concat [Doc.text "await "; doc]
+    else doc
   in
   printComments doc cmtTbl modExpr.pmod_loc
 
