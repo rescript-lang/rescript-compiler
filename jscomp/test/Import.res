@@ -37,3 +37,25 @@ let each = M1.forEach
 
 module M2 = N.N1.O
 let each2 = M2.forEach
+
+let f = async () => {
+  module M3 = await Belt.List
+  M3.forEach
+}
+
+let f1 = async () => {
+  module M3 = await (Belt.List: BeltList)
+  M3.forEach
+}
+
+let f2 = async () => {
+  module M3 = await (Belt.List: BeltList)
+  module M4 = await (Belt.List: BeltList)
+  (M3.forEach, M4.forEach)
+}
+
+let f3 = async () => {
+  module M3 = await Belt.List
+  module M4 = await Belt.List
+  (M3.forEach, M4.forEach)
+}

@@ -75,6 +75,32 @@ var M0 = await import("../../lib/js/belt_List.js");
 
 var M1 = await import("../../lib/js/belt_List.js");
 
+async function f(param) {
+  return (await import("../../lib/js/belt_List.js")).forEach;
+}
+
+async function f1(param) {
+  return (await import("../../lib/js/belt_List.js")).forEach;
+}
+
+async function f2(param) {
+  var M3 = await import("../../lib/js/belt_List.js");
+  var M4 = await import("../../lib/js/belt_List.js");
+  return [
+          M3.forEach,
+          M4.forEach
+        ];
+}
+
+async function f3(param) {
+  var M3 = await import("../../lib/js/belt_List.js");
+  var M4 = await import("../../lib/js/belt_List.js");
+  return [
+          M3.forEach,
+          M4.forEach
+        ];
+}
+
 var each = M1.forEach;
 
 var M2;
@@ -91,4 +117,8 @@ exports.M1 = M1;
 exports.each = each;
 exports.M2 = M2;
 exports.each2 = each2;
+exports.f = f;
+exports.f1 = f1;
+exports.f2 = f2;
+exports.f3 = f3;
 /*  Not a pure module */
