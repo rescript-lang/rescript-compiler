@@ -545,36 +545,6 @@ let rec structure_mapper ~await_context (self : mapper) (stru : Ast_structure.t)
             };
       }
       :: structure_mapper ~await_context self rest
-    | Pstr_eval
-        ( {
-            pexp_desc =
-              Pexp_letmodule
-                ( _,
-                  ({pmod_desc = Pmod_ident {txt; loc}; pmod_attributes} as me),
-                  _ );
-          },
-          _ )
-      when Res_parsetree_viewer.hasAwaitAttribute pmod_attributes ->
-      let item = self.structure_item self item in
-      let safe_module_type_name = local_module_type_name txt in
-      let has_local_module_name =
-        Hashtbl.find_opt !await_context safe_module_type_name
-      in
-      (* module __Belt_List__ = module type of Belt.List *)
-      let module_type_decl =
-        match has_local_module_name with
-        | Some _ -> []
-        | None ->
-          let open Ast_helper in
-          Hashtbl.add !await_context safe_module_type_name safe_module_type_name;
-          [
-            Str.modtype ~loc
-              (Mtd.mk ~loc
-                 {txt = safe_module_type_name; loc}
-                 ~typ:(Mty.typeof_ ~loc me));
-          ]
-      in
-      module_type_decl @ (item :: structure_mapper ~await_context self rest)
     | Pstr_value (_, vbs) ->
       let item = self.structure_item self item in
       let module_exprs =
