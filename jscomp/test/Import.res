@@ -53,3 +53,9 @@ let f2 = async () => {
   module M4 = await (Belt.List: BeltList)
   (M3.forEach, M4.forEach)
 }
+
+let f3 = async () => {
+  module M3 = await Belt.List
+  module M4 = await Belt.List
+  (M3.forEach, M4.forEach)
+}

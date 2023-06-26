@@ -92,6 +92,14 @@ async function f2(param) {
         ];
 }
 
+async function f3(param) {
+  var M3 = await import("../../lib/js/belt_List.js");
+  return [
+          M3.forEach,
+          Belt_List.forEach
+        ];
+}
+
 var each = M1.forEach;
 
 var M2;
@@ -111,4 +119,5 @@ exports.each2 = each2;
 exports.f = f;
 exports.f1 = f1;
 exports.f2 = f2;
+exports.f3 = f3;
 /*  Not a pure module */
