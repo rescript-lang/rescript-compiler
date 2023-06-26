@@ -705,13 +705,12 @@ and printModuleBinding ~state ~isRec moduleBinding cmtTbl i =
   in
   let modExprDoc, modConstraintDoc =
     match moduleBinding.pmb_expr with
-    | {pmod_desc = Pmod_constraint (modExpr, modType)} ->
-      if
-        ParsetreeViewer.hasAwaitAttribute moduleBinding.pmb_expr.pmod_attributes
-      then (printModExpr ~state moduleBinding.pmb_expr cmtTbl, Doc.nil)
-      else
-        ( printModExpr ~state modExpr cmtTbl,
-          Doc.concat [Doc.text ": "; printModType ~state modType cmtTbl] )
+    | {pmod_desc = Pmod_constraint (modExpr, modType)}
+      when not
+             (ParsetreeViewer.hasAwaitAttribute
+                moduleBinding.pmb_expr.pmod_attributes) ->
+      ( printModExpr ~state modExpr cmtTbl,
+        Doc.concat [Doc.text ": "; printModType ~state modType cmtTbl] )
     | modExpr -> (printModExpr ~state modExpr cmtTbl, Doc.nil)
   in
   let modName =
