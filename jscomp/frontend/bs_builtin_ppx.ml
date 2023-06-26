@@ -578,28 +578,29 @@ let rec structure_mapper ~await_context (self : mapper) (stru : Ast_structure.t)
         vbs
         |> List.filter_map (fun ({pvb_expr} : Parsetree.value_binding) ->
                match pvb_expr.pexp_desc with
-               | Pexp_letmodule (_, ({pmod_attributes} as me), _)
+               | Pexp_letmodule
+                   ( _,
+                     ({pmod_desc = Pmod_ident {txt; loc}; pmod_attributes} as
+                     me),
+                     _ )
                  when Res_parsetree_viewer.hasAwaitAttribute pmod_attributes
                  -> (
-                 match me.pmod_desc with
-                 | Pmod_ident {txt; loc} -> (
-                   let safe_module_type_name = local_module_type_name txt in
-                   let has_local_module_name =
-                     Hashtbl.find_opt !await_context safe_module_type_name
-                   in
+                 let safe_module_type_name = local_module_type_name txt in
+                 let has_local_module_name =
+                   Hashtbl.find_opt !await_context safe_module_type_name
+                 in
 
-                   match has_local_module_name with
-                   | Some _ -> None
-                   | None ->
-                     Hashtbl.add !await_context safe_module_type_name
-                       safe_module_type_name;
-                     Some
-                       Ast_helper.(
-                         Str.modtype ~loc
-                           (Mtd.mk ~loc
-                              {txt = safe_module_type_name; loc}
-                              ~typ:(Mty.typeof_ ~loc me))))
-                 | _ -> None)
+                 match has_local_module_name with
+                 | Some _ -> None
+                 | None ->
+                   Hashtbl.add !await_context safe_module_type_name
+                     safe_module_type_name;
+                   Some
+                     Ast_helper.(
+                       Str.modtype ~loc
+                         (Mtd.mk ~loc
+                            {txt = safe_module_type_name; loc}
+                            ~typ:(Mty.typeof_ ~loc me))))
                | _ -> None)
       in
 
