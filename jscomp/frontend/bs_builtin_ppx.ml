@@ -545,13 +545,13 @@ let rec structure_mapper ~await_context (self : mapper) (stru : Ast_structure.t)
         match has_local_module_name with
         | Some _ -> []
         | None ->
-          let open Ast_helper in
           Hashtbl.add !await_context safe_module_type_name safe_module_type_name;
           [
-            Str.modtype ~loc
-              (Mtd.mk ~loc
-                 {txt = safe_module_type_name; loc}
-                 ~typ:(Mty.typeof_ ~loc me));
+            Ast_helper.(
+              Str.modtype ~loc
+                (Mtd.mk ~loc
+                   {txt = safe_module_type_name; loc}
+                   ~typ:(Mty.typeof_ ~loc me)));
           ]
       in
       let safe_module_type_lid : Ast_helper.lid =
@@ -596,14 +596,14 @@ let rec structure_mapper ~await_context (self : mapper) (stru : Ast_structure.t)
                  match has_local_module_name with
                  | Some _ -> None
                  | None ->
-                   let open Ast_helper in
                    Hashtbl.add !await_context safe_module_type_name
                      safe_module_type_name;
                    Some
-                     (Str.modtype ~loc
-                        (Mtd.mk ~loc
-                           {txt = safe_module_type_name; loc}
-                           ~typ:(Mty.typeof_ ~loc me))))
+                     Ast_helper.(
+                       Str.modtype ~loc
+                         (Mtd.mk ~loc
+                            {txt = safe_module_type_name; loc}
+                            ~typ:(Mty.typeof_ ~loc me))))
                | _ -> None)
       in
       module_type_decls @ (item :: structure_mapper ~await_context self rest)
