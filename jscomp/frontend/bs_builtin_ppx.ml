@@ -228,15 +228,16 @@ let expr_mapper ~async_context ~in_function_def (self : mapper)
     let safe_module_type_lid : Ast_helper.lid =
       {txt = Lident (local_module_type_name txt); loc = me.pmod_loc}
     in
-    {
-      e with
-      pexp_desc =
-        Pexp_letmodule
-          ( lid,
-            Ast_await.create_await_module_expression
-              ~module_type_lid:safe_module_type_lid me,
-            expr );
-    }
+    self.expr self
+      {
+        e with
+        pexp_desc =
+          Pexp_letmodule
+            ( lid,
+              Ast_await.create_await_module_expression
+                ~module_type_lid:safe_module_type_lid me,
+              expr );
+      }
   (* module M = await (Belt.List: BeltList) *)
   | Pexp_letmodule
       ( lid,
@@ -248,15 +249,16 @@ let expr_mapper ~async_context ~in_function_def (self : mapper)
          } as me),
         expr )
     when Res_parsetree_viewer.hasAwaitAttribute pmod_attributes ->
-    {
-      e with
-      pexp_desc =
-        Pexp_letmodule
-          ( lid,
-            Ast_await.create_await_module_expression ~module_type_lid:mtyp_lid
-              me,
-            expr );
-    }
+    self.expr self
+      {
+        e with
+        pexp_desc =
+          Pexp_letmodule
+            ( lid,
+              Ast_await.create_await_module_expression ~module_type_lid:mtyp_lid
+                me,
+              expr );
+      }
   | _ -> default_expr_mapper self e
 
 let expr_mapper ~async_context ~in_function_def (self : mapper)
