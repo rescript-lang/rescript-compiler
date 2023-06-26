@@ -9,6 +9,6 @@ let x = {
 }
 
 let x = {
-  module M: MT = ME
+  module M = await (ME: MT)
   M.x
 }
