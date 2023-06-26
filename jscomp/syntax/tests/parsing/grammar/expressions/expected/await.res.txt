@@ -23,3 +23,12 @@ let f () =
   [@res.braces ])
 let () = ((let module M = ((Belt.List)[@res.await ][@a ][@b ]) in M.forEach)
   [@res.braces ])
+module type BeltList  = module type of Belt.List
+let f () =
+  ((let module M = (((Belt.List : BeltList))[@res.await ][@a ][@b ]) in
+      M.forEach)
+  [@res.braces ])
+let () =
+  ((let module M = (((Belt.List : BeltList))[@res.await ][@a ][@b ]) in
+      M.forEach)
+  [@res.braces ])

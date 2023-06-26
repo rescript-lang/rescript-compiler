@@ -38,3 +38,15 @@ let () = {
   module M = await @a @b Belt.List
   M.forEach
 }
+
+module type BeltList = module type of Belt.List
+
+let f = () => {
+  module M = await @a @b (Belt.List: BeltList)
+  M.forEach
+}
+
+let () = {
+  module M = await @a @b (Belt.List: BeltList)
+  M.forEach
+}
