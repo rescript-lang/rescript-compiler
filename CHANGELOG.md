@@ -17,6 +17,9 @@
 - Semantic-based optimization of code generated for untagged variants https://github.com/rescript-lang/rescript-compiler/issues/6108
 - Record type spreads: Allow using type variables in type spreads. Both uninstantiated and instantiated ones https://github.com/rescript-lang/rescript-compiler/pull/6309
 
+#### :bug: Bug Fix
+- Fix issue where dynamic import of module in the expression https://github.com/rescript-lang/rescript-compiler/pull/6310
+
 # 11.0.0-beta.2
 
 #### :rocket: New Feature
