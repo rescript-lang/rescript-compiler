@@ -7,7 +7,7 @@ let create_await_expression (e : Parsetree.expression) =
   Ast_helper.Exp.apply ~loc unsafe_await [(Nolabel, e)]
 
 (* Transform `@res.await M` to unpack(@res.await Js.import(module(M: __M0__))) *)
-let create_await_module_expression ~module_type_name (e : Parsetree.module_expr)
+let create_await_module_expression ~module_type_lid (e : Parsetree.module_expr)
     =
   let open Ast_helper in
   let remove_await_attribute =
@@ -33,8 +33,6 @@ let create_await_module_expression ~module_type_name (e : Parsetree.module_expr)
                          pmod_attributes =
                            remove_await_attribute e.pmod_attributes;
                        })
-                    (Typ.package ~loc:e.pmod_loc
-                       {txt = Lident module_type_name; loc = e.pmod_loc}
-                       []) );
+                    (Typ.package ~loc:e.pmod_loc module_type_lid []) );
               ]));
   }

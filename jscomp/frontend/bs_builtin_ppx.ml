@@ -221,17 +221,40 @@ let expr_mapper ~async_context ~in_function_def (self : mapper)
      the attribute to the whole expression, in general, when shuffuling the ast
      it is very hard to place attributes correctly
   *)
+  (* module M = await Belt.List *)
   | Pexp_letmodule
       (lid, ({pmod_desc = Pmod_ident {txt}; pmod_attributes} as me), expr)
     when Res_parsetree_viewer.hasAwaitAttribute pmod_attributes ->
-    let safe_module_type_name = local_module_type_name txt in
+    let safe_module_type_lid : Ast_helper.lid =
+      {txt = Lident (local_module_type_name txt); loc = me.pmod_loc}
+    in
     {
       e with
       pexp_desc =
         Pexp_letmodule
           ( lid,
             Ast_await.create_await_module_expression
-              ~module_type_name:safe_module_type_name me,
+              ~module_type_lid:safe_module_type_lid me,
+            expr );
+    }
+  (* module M = await (Belt.List: BeltList) *)
+  | Pexp_letmodule
+      ( lid,
+        ({
+           pmod_desc =
+             Pmod_constraint
+               ({pmod_desc = Pmod_ident _}, {pmty_desc = Pmty_ident mtyp_lid});
+           pmod_attributes;
+         } as me),
+        expr )
+    when Res_parsetree_viewer.hasAwaitAttribute pmod_attributes ->
+    {
+      e with
+      pexp_desc =
+        Pexp_letmodule
+          ( lid,
+            Ast_await.create_await_module_expression ~module_type_lid:mtyp_lid
+              me,
             expr );
     }
   | _ -> default_expr_mapper self e
@@ -531,6 +554,9 @@ let rec structure_mapper ~await_context (self : mapper) (stru : Ast_structure.t)
                  ~typ:(Mty.typeof_ ~loc me));
           ]
       in
+      let safe_module_type_lid : Ast_helper.lid =
+        {txt = Lident safe_module_type_name; loc = mb.pmb_expr.pmod_loc}
+      in
       module_type_decl
       @ (* module M = @res.await Belt.List *)
       {
@@ -541,7 +567,7 @@ let rec structure_mapper ~await_context (self : mapper) (stru : Ast_structure.t)
               mb with
               pmb_expr =
                 Ast_await.create_await_module_expression
-                  ~module_type_name:safe_module_type_name mb.pmb_expr;
+                  ~module_type_lid:safe_module_type_lid mb.pmb_expr;
             };
       }
       :: structure_mapper ~await_context self rest
