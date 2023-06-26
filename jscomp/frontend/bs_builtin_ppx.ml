@@ -72,12 +72,6 @@ let pat_mapper (self : mapper) (p : Parsetree.pattern) =
     Ast_utf8_string_interp.transform_pat p s delim
   | _ -> default_pat_mapper self p
 
-let local_module_name =
-  let v = ref 0 in
-  fun () ->
-    incr v;
-    "local_" ^ string_of_int !v
-
 (* Unpack requires core_type package for type inference:
    Generate a module type name eg. __Belt_List__*)
 let local_module_type_name txt =
@@ -443,6 +437,12 @@ let structure_item_mapper (self : mapper) (str : Parsetree.structure_item) :
       })
   | Pstr_attribute ({txt = "bs.config" | "config"}, _) -> str
   | _ -> default_mapper.structure_item self str
+
+let local_module_name =
+  let v = ref 0 in
+  fun () ->
+    incr v;
+    "local_" ^ string_of_int !v
 
 let expand_reverse (stru : Ast_structure.t) (acc : Ast_structure.t) :
     Ast_structure.t =
