@@ -1,5 +1,5 @@
 
-type variant_representation = String | Int | Other
+type variant_representation = String | Int | Float | Other
 
 let find_as_attribute_payload (attributes : Parsetree.attribute list) =
   attributes
@@ -23,6 +23,7 @@ let constructors_representations
          match (c.cd_args, c.cd_attributes |> find_as_attribute_payload) with
          | Cstr_tuple [], (Some (Pconst_string _) | None) -> String
          | Cstr_tuple [], Some (Pconst_integer _) -> Int
+         | Cstr_tuple [], Some (Pconst_float _) -> Float
          | _ -> Other)
 
 (* TODO: Improve error messages? Say why we can't coerce. *)
@@ -32,3 +33,6 @@ let can_coerce_to_string (constructors : Types.constructor_declaration list) =
 
 let can_coerce_to_int (constructors : Types.constructor_declaration list) =
   constructors |> constructors_representations |> List.for_all (( = ) Int)
+
+let can_coerce_to_float (constructors : Types.constructor_declaration list) =
+  constructors |> constructors_representations |> List.for_all (( = ) Float)

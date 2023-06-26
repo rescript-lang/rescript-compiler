@@ -3967,6 +3967,14 @@ let rec subtype_rec env trace t1 t2 cstrs =
         else
           (trace, t1, t2, !univar_pairs)::cstrs
       | _ -> (trace, t1, t2, !univar_pairs)::cstrs)
+    | (Tconstr(_, [], _), Tconstr(p, [], _)) when Path.same p Predef.path_float -> (* type coercion for variants represented by floats *)
+      (match extract_concrete_typedecl env t1 with
+      | (_, _, {type_kind=Type_variant (constructors)}) ->
+        if Variant_coercion.can_coerce_to_float constructors then
+          cstrs
+        else
+          (trace, t1, t2, !univar_pairs)::cstrs
+      | _ -> (trace, t1, t2, !univar_pairs)::cstrs)
     | (Tconstr(_, [], _), Tconstr(_, [], _)) -> (* type coercion for records *)
       (match extract_concrete_typedecl env t1, extract_concrete_typedecl env t2 with
       | (_, _, {type_kind=Type_record (fields1, repr1)}), (_, _, {type_kind=Type_record (fields2, repr2)}) ->
