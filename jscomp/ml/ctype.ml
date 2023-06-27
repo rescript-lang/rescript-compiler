@@ -3964,7 +3964,7 @@ let rec subtype_rec env trace t1 t2 cstrs =
       | None -> (trace, t1, t2, !univar_pairs)::cstrs)
     | (Tconstr(_, [], _), Tconstr(_, [], _)) -> (* type coercion for records *)
       (match extract_concrete_typedecl env t1, extract_concrete_typedecl env t2 with
-      | (_, _, {type_kind=Type_record (fields1, repr1)}), (_, _, {type_kind=Type_record (fields2, repr2)}) -> 
+      | (_, _, {type_kind=Type_record (fields1, repr1)}), (_, _, {type_kind=Type_record (fields2, repr2)}) ->
         let same_repr = match repr1, repr2 with
           | (Record_regular | Record_optional_labels _), (Record_regular | Record_optional_labels _) ->
             true (* handled in the fields checks *)
