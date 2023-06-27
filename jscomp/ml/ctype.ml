@@ -3951,6 +3951,17 @@ let rec subtype_rec env trace t1 t2 cstrs =
         end
     | (Tconstr(p1, _, _), _) when generic_private_abbrev env p1 ->
         subtype_rec env trace (expand_abbrev_opt env t1) t2 cstrs
+    | (Tconstr(_, [], _), Tconstr(path, [], _)) when Variant_coercion.can_coerce_path path && 
+        extract_concrete_typedecl env t1 |> Variant_coercion.is_variant_typedecl |> Option.is_some 
+        -> 
+      (* type coercion for variants *)
+      (match Variant_coercion.is_variant_typedecl (extract_concrete_typedecl env t1) with
+      | Some constructors -> 
+        if constructors |> Variant_coercion.can_coerce_variant ~path then
+          cstrs
+        else 
+          (trace, t1, t2, !univar_pairs)::cstrs
+      | None -> (trace, t1, t2, !univar_pairs)::cstrs)
     | (Tconstr(_, [], _), Tconstr(_, [], _)) -> (* type coercion for records *)
       (match extract_concrete_typedecl env t1, extract_concrete_typedecl env t2 with
       | (_, _, {type_kind=Type_record (fields1, repr1)}), (_, _, {type_kind=Type_record (fields2, repr2)}) ->
