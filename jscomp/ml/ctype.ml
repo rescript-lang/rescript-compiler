@@ -3951,72 +3951,56 @@ let rec subtype_rec env trace t1 t2 cstrs =
         end
     | (Tconstr(p1, _, _), _) when generic_private_abbrev env p1 ->
         subtype_rec env trace (expand_abbrev_opt env t1) t2 cstrs
-    | (Tconstr(_, [], _), Tconstr(p, [], _)) when Path.same p Predef.path_string -> (* type coercion for variants represented by strings *)
+    | (Tconstr(_, [], _), Tconstr(path, [], _)) -> (* type coercion for variants and records *)
       (match extract_concrete_typedecl env t1 with
-      | (_, _, {type_kind=Type_variant (constructors)}) ->
-        if Variant_coercion.can_coerce_to_string constructors then
-          cstrs
-        else
+      | (_, _, {type_kind=Type_variant constructors}) -> 
+        if Variant_coercion.can_coerce_variant constructors ~path then 
+          cstrs 
+        else 
           (trace, t1, t2, !univar_pairs)::cstrs
-      | _ -> (trace, t1, t2, !univar_pairs)::cstrs)
-    | (Tconstr(_, [], _), Tconstr(p, [], _)) when Path.same p Predef.path_int -> (* type coercion for variants represented by ints *)
-      (match extract_concrete_typedecl env t1 with
-      | (_, _, {type_kind=Type_variant (constructors)}) ->
-        if Variant_coercion.can_coerce_to_int constructors then
-          cstrs
-        else
-          (trace, t1, t2, !univar_pairs)::cstrs
-      | _ -> (trace, t1, t2, !univar_pairs)::cstrs)
-    | (Tconstr(_, [], _), Tconstr(p, [], _)) when Path.same p Predef.path_float -> (* type coercion for variants represented by floats *)
-      (match extract_concrete_typedecl env t1 with
-      | (_, _, {type_kind=Type_variant (constructors)}) ->
-        if Variant_coercion.can_coerce_to_float constructors then
-          cstrs
-        else
-          (trace, t1, t2, !univar_pairs)::cstrs
-      | _ -> (trace, t1, t2, !univar_pairs)::cstrs)
-    | (Tconstr(_, [], _), Tconstr(_, [], _)) -> (* type coercion for records *)
-      (match extract_concrete_typedecl env t1, extract_concrete_typedecl env t2 with
-      | (_, _, {type_kind=Type_record (fields1, repr1)}), (_, _, {type_kind=Type_record (fields2, repr2)}) ->
-        let same_repr = match repr1, repr2 with
-          | (Record_regular | Record_optional_labels _), (Record_regular | Record_optional_labels _) ->
-            true (* handled in the fields checks *)
-          | Record_unboxed b1, Record_unboxed b2 -> b1 = b2
-          | Record_inlined _, Record_inlined _ -> repr1 = repr2
-          | Record_extension, Record_extension -> true
-          | _ -> false in
-        if same_repr then
-          let field_is_optional id repr = match repr with
-            | Record_optional_labels lbls -> List.mem (Ident.name id) lbls
+      | (_, _, {type_kind=Type_record (fields1, repr1)}) -> (
+        match extract_concrete_typedecl env t2 with 
+        | (_, _, {type_kind=Type_record (fields2, repr2)}) ->
+          let same_repr = match repr1, repr2 with
+            | (Record_regular | Record_optional_labels _), (Record_regular | Record_optional_labels _) ->
+              true (* handled in the fields checks *)
+            | Record_unboxed b1, Record_unboxed b2 -> b1 = b2
+            | Record_inlined _, Record_inlined _ -> repr1 = repr2
+            | Record_extension, Record_extension -> true
             | _ -> false in
-          let violation = ref false in
-          let label_decl_sub (acc1, acc2) ld2 =
-            match Ext_list.find_first fields1 (fun ld1 -> ld1.ld_id.name = ld2.ld_id.name) with
-            | Some ld1 ->
-              if field_is_optional ld1.ld_id repr1 <> (field_is_optional ld2.ld_id repr2) then
-                (* optional field can't be modified *)
+          if same_repr then
+            let field_is_optional id repr = match repr with
+              | Record_optional_labels lbls -> List.mem (Ident.name id) lbls
+              | _ -> false in
+            let violation = ref false in
+            let label_decl_sub (acc1, acc2) ld2 =
+              match Ext_list.find_first fields1 (fun ld1 -> ld1.ld_id.name = ld2.ld_id.name) with
+              | Some ld1 ->
+                if field_is_optional ld1.ld_id repr1 <> (field_is_optional ld2.ld_id repr2) then
+                  (* optional field can't be modified *)
+                  violation := true;
+                let get_as (({txt}, payload) : Parsetree.attribute) =
+                  if txt = "as" then Ast_payload.is_single_string payload
+                  else None in
+                let get_as_name ld = match Ext_list.filter_map ld.ld_attributes get_as with
+                  | [] -> ld.ld_id.name
+                  | (s,_)::_ -> s in
+                if get_as_name ld1 <> get_as_name ld2 then violation := true;
+                ld1.ld_type :: acc1, ld2.ld_type :: acc2
+              | None ->
+                (* field must be present *)
                 violation := true;
-              let get_as (({txt}, payload) : Parsetree.attribute) =
-                if txt = "as" then Ast_payload.is_single_string payload
-                else None in
-              let get_as_name ld = match Ext_list.filter_map ld.ld_attributes get_as with
-                | [] -> ld.ld_id.name
-                | (s,_)::_ -> s in
-              if get_as_name ld1 <> get_as_name ld2 then violation := true;
-              ld1.ld_type :: acc1, ld2.ld_type :: acc2
-            | None ->
-              (* field must be present *)
-              violation := true;
-              (acc1, acc2) in
-          let tl1, tl2 = List.fold_left label_decl_sub ([], []) fields2 in
-          if !violation
-          then (trace, t1, t2, !univar_pairs)::cstrs
+                (acc1, acc2) in
+            let tl1, tl2 = List.fold_left label_decl_sub ([], []) fields2 in
+            if !violation
+            then (trace, t1, t2, !univar_pairs)::cstrs
+            else
+              subtype_list env trace tl1 tl2 cstrs
           else
-            subtype_list env trace tl1 tl2 cstrs
-        else
-          (trace, t1, t2, !univar_pairs)::cstrs
+            (trace, t1, t2, !univar_pairs)::cstrs
+        | _ -> (trace, t1, t2, !univar_pairs)::cstrs
+        | exception Not_found -> (trace, t1, t2, !univar_pairs)::cstrs) 
       | _ -> (trace, t1, t2, !univar_pairs)::cstrs
-      | exception Not_found -> (trace, t1, t2, !univar_pairs)::cstrs
     )
     (*  | (_, Tconstr(p2, _, _)) when generic_private_abbrev false env p2 ->
         subtype_rec env trace t1 (expand_abbrev_opt env t2) cstrs *)

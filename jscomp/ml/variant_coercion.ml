@@ -37,3 +37,20 @@ let can_coerce_to_float (constructors : Types.constructor_declaration list) =
         true
       | _ -> false)
     constructors
+
+let can_coerce_path (path : Path.t) =
+  Path.same path Predef.path_string
+  || Path.same path Predef.path_int
+  || Path.same path Predef.path_float
+
+let can_coerce_variant ~(path : Path.t)
+    (constructors : Types.constructor_declaration list) =
+  if can_coerce_path path then
+    if Path.same path Predef.path_string && can_coerce_to_string constructors
+    then true
+    else if Path.same path Predef.path_int && can_coerce_to_int constructors
+    then true
+    else if Path.same path Predef.path_float && can_coerce_to_float constructors
+    then true
+    else false
+  else false
