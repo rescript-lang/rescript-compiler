@@ -7,36 +7,37 @@ let find_as_attribute_payload (attributes : Parsetree.attribute list) =
 
 (* TODO: Improve error messages? Say why we can't coerce. *)
 
-let can_coerce_to_string (constructors : Types.constructor_declaration list) =
+let check_constructors (constructors : Types.constructor_declaration list) check
+    =
   List.for_all
     (fun (c : Types.constructor_declaration) ->
-      match (c.cd_args, find_as_attribute_payload c.cd_attributes) with
+      check c.cd_args (find_as_attribute_payload c.cd_attributes))
+    constructors
+
+let can_coerce_to_string (constructors : Types.constructor_declaration list) =
+  check_constructors constructors (fun args payload ->
+      match (args, payload) with
       | Cstr_tuple [], None -> true
       | Cstr_tuple [], Some payload
         when Ast_payload.is_single_string payload |> Option.is_some ->
         true
       | _ -> false)
-    constructors
 
 let can_coerce_to_int (constructors : Types.constructor_declaration list) =
-  List.for_all
-    (fun (c : Types.constructor_declaration) ->
-      match (c.cd_args, find_as_attribute_payload c.cd_attributes) with
+  check_constructors constructors (fun args payload ->
+      match (args, payload) with
       | Cstr_tuple [], Some payload
         when Ast_payload.is_single_int payload |> Option.is_some ->
         true
       | _ -> false)
-    constructors
 
 let can_coerce_to_float (constructors : Types.constructor_declaration list) =
-  List.for_all
-    (fun (c : Types.constructor_declaration) ->
-      match (c.cd_args, find_as_attribute_payload c.cd_attributes) with
+  check_constructors constructors (fun args payload ->
+      match (args, payload) with
       | Cstr_tuple [], Some payload
         when Ast_payload.is_single_float payload |> Option.is_some ->
         true
       | _ -> false)
-    constructors
 
 let can_coerce_path (path : Path.t) =
   Path.same path Predef.path_string
