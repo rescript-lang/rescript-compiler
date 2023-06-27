@@ -45,12 +45,16 @@ let can_coerce_path (path : Path.t) =
 
 let can_coerce_variant ~(path : Path.t)
     (constructors : Types.constructor_declaration list) =
-  if can_coerce_path path then
-    if Path.same path Predef.path_string && can_coerce_to_string constructors
-    then true
-    else if Path.same path Predef.path_int && can_coerce_to_int constructors
-    then true
-    else if Path.same path Predef.path_float && can_coerce_to_float constructors
-    then true
-    else false
+  if Path.same path Predef.path_string && can_coerce_to_string constructors then
+    true
+  else if Path.same path Predef.path_int && can_coerce_to_int constructors then
+    true
+  else if Path.same path Predef.path_float && can_coerce_to_float constructors
+  then true
   else false
+
+let is_variant_typedecl
+    ((_, _, typedecl) : Path.t * Path.t * Types.type_declaration) =
+  match typedecl with
+  | {type_kind = Type_variant constructors} -> Some constructors
+  | _ -> None
