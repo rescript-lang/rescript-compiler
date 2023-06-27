@@ -10,8 +10,14 @@ var i = 1;
 
 var d = 1;
 
+var ii = 1.1;
+
+var dd = 1.1;
+
 exports.a = a;
 exports.b = b;
 exports.i = i;
 exports.d = d;
+exports.ii = ii;
+exports.dd = dd;
 /* No side effect */

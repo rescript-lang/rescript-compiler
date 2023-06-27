@@ -1,38 +1,39 @@
-
-type variant_representation = String | Int | Float | Other
-
 let find_as_attribute_payload (attributes : Parsetree.attribute list) =
   attributes
-  |> List.find_map (fun (({txt = name}, payload) : Parsetree.attribute) ->
-         match (name, payload) with
-         | ( "as",
-             PStr
-               [
-                 {
-                   pstr_desc =
-                     Pstr_eval ({pexp_desc = Pexp_constant constant}, _);
-                 };
-               ] ) ->
-           Some constant
+  |> List.find_map (fun (attr : Parsetree.attribute) ->
+         match attr with
+         | {txt = "as"}, payload -> Some payload
          | _ -> None)
-
-let constructors_representations
-    (constructors : Types.constructor_declaration list) =
-  constructors
-  |> List.map (fun (c : Types.constructor_declaration) ->
-         match (c.cd_args, c.cd_attributes |> find_as_attribute_payload) with
-         | Cstr_tuple [], (Some (Pconst_string _) | None) -> String
-         | Cstr_tuple [], Some (Pconst_integer _) -> Int
-         | Cstr_tuple [], Some (Pconst_float _) -> Float
-         | _ -> Other)
 
 (* TODO: Improve error messages? Say why we can't coerce. *)
 
 let can_coerce_to_string (constructors : Types.constructor_declaration list) =
-  constructors |> constructors_representations |> List.for_all (( = ) String)
+  List.for_all
+    (fun (c : Types.constructor_declaration) ->
+      match (c.cd_args, find_as_attribute_payload c.cd_attributes) with
+      | Cstr_tuple [], None -> true
+      | Cstr_tuple [], Some payload
+        when Ast_payload.is_single_string payload |> Option.is_some ->
+        true
+      | _ -> false)
+    constructors
 
 let can_coerce_to_int (constructors : Types.constructor_declaration list) =
-  constructors |> constructors_representations |> List.for_all (( = ) Int)
+  List.for_all
+    (fun (c : Types.constructor_declaration) ->
+      match (c.cd_args, find_as_attribute_payload c.cd_attributes) with
+      | Cstr_tuple [], Some payload
+        when Ast_payload.is_single_int payload |> Option.is_some ->
+        true
+      | _ -> false)
+    constructors
 
 let can_coerce_to_float (constructors : Types.constructor_declaration list) =
-  constructors |> constructors_representations |> List.for_all (( = ) Float)
+  List.for_all
+    (fun (c : Types.constructor_declaration) ->
+      match (c.cd_args, find_as_attribute_payload c.cd_attributes) with
+      | Cstr_tuple [], Some payload
+        when Ast_payload.is_single_float payload |> Option.is_some ->
+        true
+      | _ -> false)
+    constructors

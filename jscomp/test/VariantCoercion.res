@@ -12,6 +12,6 @@ let d = (i :> int)
 
 type onlyFloats = | @as(1.1) Onef | @as(2.2) Twof | @as(3.3) Threef
 
-let i = Onef
+let ii = Onef
 
-let d = (i :> float)
+let dd = (ii :> float)
