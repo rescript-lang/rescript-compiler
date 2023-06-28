@@ -15,3 +15,12 @@ type onlyFloats = | @as(1.1) Onef | @as(2.2) Twof | @as(3.3) Threef
 let ii = Onef
 
 let dd = (ii :> float)
+
+module CoerceVariants = {
+  type a = One(int) | @as(1.1) Two
+  type b = One(int) | @as(1.1) Two | Three
+
+  let a: a = Two
+
+  let b: b = (a :> b)
+}

@@ -2,6 +2,11 @@
 'use strict';
 
 
+var CoerceVariants = {
+  a: 1.1,
+  b: 1.1
+};
+
 var a = "Three";
 
 var b = "Three";
@@ -20,4 +25,5 @@ exports.i = i;
 exports.d = d;
 exports.ii = ii;
 exports.dd = dd;
+exports.CoerceVariants = CoerceVariants;
 /* No side effect */

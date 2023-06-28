@@ -3954,7 +3954,7 @@ let rec subtype_rec env trace t1 t2 cstrs =
     | (Tconstr(_, [], _), Tconstr(path, [], _)) when Variant_coercion.can_coerce_path path && 
         extract_concrete_typedecl env t1 |> Variant_coercion.is_variant_typedecl |> Option.is_some 
         -> 
-      (* type coercion for variants *)
+      (* type coercion for variants to primitives *)
       (match Variant_coercion.is_variant_typedecl (extract_concrete_typedecl env t1) with
       | Some constructors -> 
         if constructors |> Variant_coercion.can_coerce_variant ~path then
@@ -3962,8 +3962,38 @@ let rec subtype_rec env trace t1 t2 cstrs =
         else 
           (trace, t1, t2, !univar_pairs)::cstrs
       | None -> (trace, t1, t2, !univar_pairs)::cstrs)
-    | (Tconstr(_, [], _), Tconstr(_, [], _)) -> (* type coercion for records *)
+    | (Tconstr(_, [], _), Tconstr(_, [], _)) -> (* type coercion for variants and records *)
       (match extract_concrete_typedecl env t1, extract_concrete_typedecl env t2 with
+      | (_, _, {type_kind=Type_variant (c1); type_attributes=t1attrs}), (_, _, {type_kind=Type_variant (c2); type_attributes=t2attrs}) ->
+        if 
+          Variant_coercion.variant_configuration_can_be_coerced t1attrs t2attrs = false 
+        then 
+          (trace, t1, t2, !univar_pairs)::cstrs 
+        else
+          let c1_len = List.length c1 in
+          if c1_len > List.length c2 then (trace, t1, t2, !univar_pairs)::cstrs
+          else
+            let constructor_map = Hashtbl.create c1_len in
+            c2
+            |> List.iter (fun (c : Types.constructor_declaration) ->
+                  Hashtbl.add constructor_map (Ident.name c.cd_id) c);
+            if c1 |> List.for_all (fun (c : Types.constructor_declaration) ->
+                  match (c, Hashtbl.find_opt constructor_map (Ident.name c.cd_id)) with
+                  | ( {Types.cd_args = Cstr_record _fields1},
+                      Some {Types.cd_args = Cstr_record _fields2} ) ->
+                      (* TODO: Reuse logic from record coercion *)
+                      false
+                  | ( {Types.cd_args = Cstr_tuple tl1; cd_attributes=c1_attributes},
+                      Some {Types.cd_args = Cstr_tuple tl2; cd_attributes=c2_attributes} ) ->
+                      if Variant_coercion.variant_representation_matches c1_attributes c2_attributes then
+                        begin try
+                        let lst = subtype_list env trace tl1 tl2 cstrs in
+                        List.length lst = List.length cstrs
+                        with | _ -> false end
+                      else false
+                  | _ -> false)
+            then cstrs
+            else (trace, t1, t2, !univar_pairs)::cstrs
       | (_, _, {type_kind=Type_record (fields1, repr1)}), (_, _, {type_kind=Type_record (fields2, repr2)}) ->
         let same_repr = match repr1, repr2 with
           | (Record_regular | Record_optional_labels _), (Record_regular | Record_optional_labels _) ->
