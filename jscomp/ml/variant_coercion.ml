@@ -40,10 +40,10 @@ let can_coerce_variant ~(path : Path.t)
   then true
   else false
 
-let is_variant_typedecl
-    ((_, _, typedecl) : Path.t * Path.t * Types.type_declaration) =
+let can_try_coerce_variant_to_primitive
+    ((_, p, typedecl) : Path.t * Path.t * Types.type_declaration) =
   match typedecl with
-  | {type_kind = Type_variant constructors} -> Some constructors
+  | {type_kind = Type_variant constructors; type_params=[]} when Path.name p <> "bool"-> Some constructors
   | _ -> None
 
 let variant_representation_matches (c1_attrs : Parsetree.attributes)
