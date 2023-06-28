@@ -17,10 +17,16 @@ let ii = Onef
 let dd = (ii :> float)
 
 module CoerceVariants = {
-  type a = One(int) | @as(1.1) Two
-  type b = One(int) | @as(1.1) Two | Three
+  @unboxed type a = One(int) | @as(1.1) Two | @as(null) T2
+  @unboxed type b = One(int) | @as(1.1) Two | @as(null) T2 | Three
 
   let a: a = Two
 
   let b: b = (a :> b)
+
+  @tag("kind") type x = One({age: int, name?: string})
+  @tag("kind") type y = One({age: int, name?: string}) | Two({two: string})
+
+  let x: x = One({age: 1})
+  let y: y = (x :> y)
 }

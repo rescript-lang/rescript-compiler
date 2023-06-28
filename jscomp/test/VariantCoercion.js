@@ -2,9 +2,16 @@
 'use strict';
 
 
+var x = {
+  kind: "One",
+  age: 1
+};
+
 var CoerceVariants = {
   a: 1.1,
-  b: 1.1
+  b: 1.1,
+  x: x,
+  y: x
 };
 
 var a = "Three";
