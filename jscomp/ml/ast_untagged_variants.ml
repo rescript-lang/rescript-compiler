@@ -77,6 +77,10 @@ let process_untagged (attrs : Parsetree.attributes) =
       | _ -> ());
   !st
 
+let extract_concrete_typedecl: (Env.t ->
+  Types.type_expr ->
+  Path.t * Path.t * Types.type_declaration) ref = ref (Obj.magic ())
+
 let process_tag_type (attrs : Parsetree.attributes) =
   let st : tag_type option ref = ref None in
   Ext_list.iter attrs (fun ({txt; loc}, payload) ->
@@ -137,7 +141,7 @@ let get_block_type ~env (cstr : Types.constructor_declaration) :
     when Path.same path Predef.path_array ->
     Some ArrayType
   | true, Cstr_tuple [({desc = Tconstr _} as t)]
-    when Ast_uncurried.typeIsUncurriedFun t ->
+    when Ast_uncurried_utils.typeIsUncurriedFun t ->
     Some FunctionType
   | true, Cstr_tuple [{desc = Tarrow _}] -> Some FunctionType
   | true, Cstr_tuple [{desc = Tconstr (path, _, _)}]
@@ -148,7 +152,7 @@ let get_block_type ~env (cstr : Types.constructor_declaration) :
     Some ObjectType
   | true, Cstr_tuple [ty] -> (
     let default = Some UnknownType in
-    match Ctype.extract_concrete_typedecl env ty with
+    match !extract_concrete_typedecl env ty with
     | _, _, {type_kind = Type_record (_, Record_unboxed _)} -> default
     | _, _, {type_kind = Type_record (_, _)} -> Some ObjectType
     | _ -> default
