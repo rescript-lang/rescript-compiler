@@ -10,16 +10,18 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# 11.0.0-beta.3 (Unreleased)
+# 11.0.0-beta.3
 
 #### :rocket: New Feature
+
 - Untagged variants: consider regexp as an object type. https://github.com/rescript-lang/rescript-compiler/pull/6296
-- Semantic-based optimization of code generated for untagged variants https://github.com/rescript-lang/rescript-compiler/issues/6108
-- Record type spreads: Allow using type variables in type spreads. Both uninstantiated and instantiated ones https://github.com/rescript-lang/rescript-compiler/pull/6309
-- Variants: Allow coercing variants to string/int/float when applicable https://github.com/rescript-lang/rescript-compiler/pull/6311
+- Semantic-based optimization of code generated for untagged variants. https://github.com/rescript-lang/rescript-compiler/issues/6108
+- Record type spreads: Allow using type variables in type spreads. Both uninstantiated and instantiated ones. https://github.com/rescript-lang/rescript-compiler/pull/6309
+- Variants: Allow coercing variants to string/int/float when applicable. https://github.com/rescript-lang/rescript-compiler/pull/6311
 
 #### :bug: Bug Fix
-- Fix issue where dynamic import of module in the expression https://github.com/rescript-lang/rescript-compiler/pull/6310
+
+- Fix issue with dynamic import of modules in expressions. https://github.com/rescript-lang/rescript-compiler/pull/6310
 
 # 11.0.0-beta.2
 
