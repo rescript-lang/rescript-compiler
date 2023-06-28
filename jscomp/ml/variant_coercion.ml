@@ -1,45 +1,28 @@
-let find_attribute_payload name (attributes : Parsetree.attribute list) =
-  attributes
-  |> List.find_map (fun (attr : Parsetree.attribute) ->
-         match attr with
-         | {txt}, payload when txt = name -> Some payload
-         | _ -> None)
-
-let find_as_attribute_payload (attributes : Parsetree.attribute list) =
-  find_attribute_payload "as" attributes
-
 (* TODO: Improve error messages? Say why we can't coerce. *)
 
 let check_constructors (constructors : Types.constructor_declaration list) check
     =
   List.for_all
     (fun (c : Types.constructor_declaration) ->
-      check c.cd_args (find_as_attribute_payload c.cd_attributes))
+      check c.cd_args (Ast_untagged_variants.process_tag_type c.cd_attributes))
     constructors
 
 let can_coerce_to_string (constructors : Types.constructor_declaration list) =
   check_constructors constructors (fun args payload ->
       match (args, payload) with
-      | Cstr_tuple [], None -> true
-      | Cstr_tuple [], Some payload
-        when Ast_payload.is_single_string payload |> Option.is_some ->
-        true
+      | Cstr_tuple [], (None | Some (String _)) -> true
       | _ -> false)
 
 let can_coerce_to_int (constructors : Types.constructor_declaration list) =
   check_constructors constructors (fun args payload ->
       match (args, payload) with
-      | Cstr_tuple [], Some payload
-        when Ast_payload.is_single_int payload |> Option.is_some ->
-        true
+      | Cstr_tuple [], Some (Int _) -> true
       | _ -> false)
 
 let can_coerce_to_float (constructors : Types.constructor_declaration list) =
   check_constructors constructors (fun args payload ->
       match (args, payload) with
-      | Cstr_tuple [], Some payload
-        when Ast_payload.is_single_float payload |> Option.is_some ->
-        true
+      | Cstr_tuple [], Some (Float _) -> true
       | _ -> false)
 
 let can_coerce_path (path : Path.t) =
@@ -66,7 +49,8 @@ let is_variant_typedecl
 let variant_representation_matches (c1_attrs : Parsetree.attributes)
     (c2_attrs : Parsetree.attributes) =
   match
-    (Ast_untagged_variants.process_tag_type c1_attrs, Ast_untagged_variants.process_tag_type c2_attrs)
+    ( Ast_untagged_variants.process_tag_type c1_attrs,
+      Ast_untagged_variants.process_tag_type c2_attrs )
   with
   | None, None -> true
   | Some s1, Some s2 when s1 = s2 -> true
@@ -76,7 +60,8 @@ let variant_configuration_can_be_coerced (a1 : Parsetree.attributes)
     (a2 : Parsetree.attributes) =
   let unboxed =
     match
-      (Ast_untagged_variants.process_untagged a1, Ast_untagged_variants.process_untagged a2)
+      ( Ast_untagged_variants.process_untagged a1,
+        Ast_untagged_variants.process_untagged a2 )
     with
     | true, true | false, false -> true
     | _ -> false
@@ -85,10 +70,10 @@ let variant_configuration_can_be_coerced (a1 : Parsetree.attributes)
   else
     let tag =
       match
-        (Ast_untagged_variants.process_tag_name a1,
+        ( Ast_untagged_variants.process_tag_name a1,
           Ast_untagged_variants.process_tag_name a2 )
       with
-      | Some (tag1), Some (tag2) when tag1 = tag2 -> true
+      | Some tag1, Some tag2 when tag1 = tag2 -> true
       | None, None -> true
       | _ -> false
     in
