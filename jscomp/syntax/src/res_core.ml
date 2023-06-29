@@ -4730,6 +4730,12 @@ and parseTypeConstructorDeclaration ~startPos p =
   Parser.leaveBreadcrumb p Grammar.ConstructorDeclaration;
   let attrs = parseAttributes p in
   match p.Parser.token with
+  | DotDotDot ->
+    Parser.next p;
+    let name = Location.mkloc "..." (mkLoc startPos p.prevEndPos) in
+    let typ = parsePolyTypeExpr p in
+    let loc = mkLoc startPos typ.ptyp_loc.loc_end in
+    Ast_helper.Type.constructor ~loc ~attrs ~args:(Pcstr_tuple [typ]) name
   | Uident uident ->
     let uidentLoc = mkLoc p.startPos p.endPos in
     Parser.next p;

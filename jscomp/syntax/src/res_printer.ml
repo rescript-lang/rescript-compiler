@@ -1442,8 +1442,9 @@ and printConstructorDeclarations ~state ~privateFlag
 and printConstructorDeclaration2 ~state i
     (cd : Parsetree.constructor_declaration) cmtTbl =
   let attrs = printAttributes ~state cd.pcd_attributes cmtTbl in
+  let isDotDotDot = cd.pcd_name.txt = "..." in
   let bar =
-    if i > 0 || cd.pcd_attributes <> [] then Doc.text "| "
+    if i > 0 || cd.pcd_attributes <> [] || isDotDotDot then Doc.text "| "
     else Doc.ifBreaks (Doc.text "| ") Doc.nil
   in
   let constrName =
@@ -1451,7 +1452,7 @@ and printConstructorDeclaration2 ~state i
     printComments doc cmtTbl cd.pcd_name.loc
   in
   let constrArgs =
-    printConstructorArguments ~state ~indent:true cd.pcd_args cmtTbl
+    printConstructorArguments ~isDotDotDot ~state ~indent:true cd.pcd_args cmtTbl
   in
   let gadt =
     match cd.pcd_res with
@@ -1473,7 +1474,7 @@ and printConstructorDeclaration2 ~state i
            ]);
     ]
 
-and printConstructorArguments ~state ~indent
+and printConstructorArguments ?(isDotDotDot = false) ~state ~indent
     (cdArgs : Parsetree.constructor_arguments) cmtTbl =
   match cdArgs with
   | Pcstr_tuple [] -> Doc.nil
@@ -1481,7 +1482,7 @@ and printConstructorArguments ~state ~indent
     let args =
       Doc.concat
         [
-          Doc.lparen;
+          (if isDotDotDot then Doc.nil else Doc.lparen);
           Doc.indent
             (Doc.concat
                [
@@ -1494,7 +1495,7 @@ and printConstructorArguments ~state ~indent
                ]);
           Doc.trailingComma;
           Doc.softLine;
-          Doc.rparen;
+          (if isDotDotDot then Doc.nil else Doc.rparen);
         ]
     in
     Doc.group (if indent then Doc.indent args else args)
