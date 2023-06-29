@@ -7,24 +7,7 @@ let check_constructors (constructors : Types.constructor_declaration list) check
       check c.cd_args (Ast_untagged_variants.process_tag_type c.cd_attributes))
     constructors
 
-let can_coerce_to_string (constructors : Types.constructor_declaration list) =
-  check_constructors constructors (fun args payload ->
-      match (args, payload) with
-      | Cstr_tuple [], (None | Some (String _)) -> true
-      | _ -> false)
-
-let can_coerce_to_int (constructors : Types.constructor_declaration list) =
-  check_constructors constructors (fun args payload ->
-      match (args, payload) with
-      | Cstr_tuple [], Some (Int _) -> true
-      | _ -> false)
-
-let can_coerce_to_float (constructors : Types.constructor_declaration list) =
-  check_constructors constructors (fun args payload ->
-      match (args, payload) with
-      | Cstr_tuple [], Some (Float _) -> true
-      | _ -> false)
-
+(* Right now we only allow coercing to primitives string/int/float *)
 let can_coerce_path (path : Path.t) =
   Path.same path Predef.path_string
   || Path.same path Predef.path_int
@@ -32,19 +15,25 @@ let can_coerce_path (path : Path.t) =
 
 let can_coerce_variant ~(path : Path.t)
     (constructors : Types.constructor_declaration list) =
-  if Path.same path Predef.path_string && can_coerce_to_string constructors then
-    true
-  else if Path.same path Predef.path_int && can_coerce_to_int constructors then
-    true
-  else if Path.same path Predef.path_float && can_coerce_to_float constructors
-  then true
-  else false
+  constructors
+  |> List.for_all (fun (c : Types.constructor_declaration) ->
+         let args = c.cd_args in
+         let payload = Ast_untagged_variants.process_tag_type c.cd_attributes in
+         match args with
+         | Cstr_tuple [] -> (
+           match payload with
+           | None | Some (String _) -> Path.same path Predef.path_string
+           | Some (Int _) -> Path.same path Predef.path_int
+           | Some (Float _) -> Path.same path Predef.path_float
+           | Some (Null | Undefined | Bool _ | Untagged _) -> false)
+         | _ -> false)
 
 let can_try_coerce_variant_to_primitive
     ((_, p, typedecl) : Path.t * Path.t * Types.type_declaration) =
   match typedecl with
   | {type_kind = Type_variant constructors; type_params = []}
     when Path.name p <> "bool" ->
+    (* bool is represented as a variant internally, so we need to account for that *)
     Some constructors
   | _ -> None
 
