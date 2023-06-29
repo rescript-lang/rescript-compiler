@@ -69,12 +69,7 @@ let coreTypeIsUncurriedFun (typ : Parsetree.core_type) =
     true
   | _ -> false
 
-let typeIsUncurriedFun (typ : Types.type_expr) =
-  match typ.desc with
-  | Tconstr (Pident {name = "function$"}, [{desc = Tarrow _}; _], _) ->
-    true
-  | _ -> false
-
+let typeIsUncurriedFun = Ast_uncurried_utils.typeIsUncurriedFun
 
 let typeExtractUncurriedFun (typ : Parsetree.core_type) =
   match typ.ptyp_desc with

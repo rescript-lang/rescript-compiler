@@ -2,6 +2,18 @@
 'use strict';
 
 
+var x = {
+  kind: "One",
+  age: 1
+};
+
+var CoerceVariants = {
+  a: 1.1,
+  b: 1.1,
+  x: x,
+  y: x
+};
+
 var a = "Three";
 
 var b = "Three";
@@ -20,4 +32,5 @@ exports.i = i;
 exports.d = d;
 exports.ii = ii;
 exports.dd = dd;
+exports.CoerceVariants = CoerceVariants;
 /* No side effect */

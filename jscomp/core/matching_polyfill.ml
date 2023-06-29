@@ -22,6 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+let () = Ast_untagged_variants.extract_concrete_typedecl := Ctype.extract_concrete_typedecl
+
 let names_from_construct_pattern (pat : Typedtree.pattern) =
   let rec resolve_path n (path : Path.t) =
     match Env.find_type path pat.pat_env with

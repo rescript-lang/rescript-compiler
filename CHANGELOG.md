@@ -11,6 +11,8 @@
 > - :nail_care: [Polish]
 
 # 11.0.0-beta.4 (Unreleased)
+#### :rocket: New Feature
+- Variants: Allow coercing from variant to variant, where applicable. https://github.com/rescript-lang/rescript-compiler/pull/6314
 
 # 11.0.0-beta.3
 
