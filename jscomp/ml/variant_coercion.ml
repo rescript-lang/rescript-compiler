@@ -1,12 +1,5 @@
 (* TODO: Improve error messages? Say why we can't coerce. *)
 
-let check_constructors (constructors : Types.constructor_declaration list) check
-    =
-  List.for_all
-    (fun (c : Types.constructor_declaration) ->
-      check c.cd_args (Ast_untagged_variants.process_tag_type c.cd_attributes))
-    constructors
-
 (* Right now we only allow coercing to primitives string/int/float *)
 let can_coerce_path (path : Path.t) =
   Path.same path Predef.path_string
