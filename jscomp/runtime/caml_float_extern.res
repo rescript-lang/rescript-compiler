@@ -1,0 +1,7 @@
+@val external _NaN: float = "NaN"
+@val external isNaN: float => bool = "isNaN"
+@val external isFinite: float => bool = "isFinite"
+@send external toExponentialWithPrecision: (float, ~digits: int) => string = "toExponential"
+@send external toFixed: float => string = "toFixed"
+@send external toFixedWithPrecision: (float, ~digits: int) => string = "toFixed"
+@val external fromString: string => float = "Number"

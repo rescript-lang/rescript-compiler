@@ -839,7 +839,7 @@ ${ruleCC(ninjaCwd)}
 ${ninjaQuickBuildList([
   [
     "bs_stdlib_mini.cmi",
-    "bs_stdlib_mini.mli",
+    "bs_stdlib_mini.resi",
     "cc",
     ninjaCwd,
     [["bsc_flags", "-nostdlib -nopervasives"]],
@@ -868,9 +868,12 @@ ${ninjaQuickBuildList([
     switch (ext) {
       case "HAS_MLI":
       case "HAS_BOTH":
+      case "HAS_RESI":
+      case "HAS_BOTH_RES":
         updateDepsKVsByFile(mod + ".cmi", manualDeps, depsMap);
         break;
       case "HAS_ML":
+      case "HAS_RES":
         updateDepsKVsByFile(mod + ".cmj", manualDeps, depsMap);
         break;
     }
