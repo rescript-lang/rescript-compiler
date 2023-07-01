@@ -14,6 +14,9 @@
 #### :rocket: New Feature
 - Variants: Allow coercing from variant to variant, where applicable. https://github.com/rescript-lang/rescript-compiler/pull/6314
 
+#### :boom: Breaking Change
+- Fixed Js.Json.kind type shadowing Js.Json.t type: `type kind<_>` -> `type Kind.kind<_>` https://github.com/rescript-lang/rescript-compiler/pull/6317
+
 # 11.0.0-beta.3
 
 #### :rocket: New Feature
