@@ -34,13 +34,15 @@ type rec t =
   | Object(Js.Dict.t<t>)
   | Array(array<t>)
 
-type rec kind<_> =
-  | String: kind<Js_string.t>
-  | Number: kind<float>
-  | Object: kind<Js_dict.t<t>>
-  | Array: kind<array<t>>
-  | Boolean: kind<bool>
-  | Null: kind<Js_types.null_val>
+module Kind = {
+  type rec kind<_> =
+    | String: kind<Js_string.t>
+    | Number: kind<float>
+    | Object: kind<Js_dict.t<t>>
+    | Array: kind<array<t>>
+    | Boolean: kind<bool>
+    | Null: kind<Js_types.null_val>
+}
 
 type tagged_t =
   | JSONFalse
@@ -72,14 +74,14 @@ let classify = (x: t): tagged_t => {
   }
 }
 
-let test = (type a, x: 'a, v: kind<a>): bool =>
+let test = (type a, x: 'a, v: Kind.kind<a>): bool =>
   switch v {
-  | Number => Js.typeof(x) == "number"
-  | Boolean => Js.typeof(x) == "boolean"
-  | String => Js.typeof(x) == "string"
-  | Null => Obj.magic(x) === Js.null
-  | Array => Js_array2.isArray(x)
-  | Object => Obj.magic(x) !== Js.null && (Js.typeof(x) == "object" && !Js_array2.isArray(x))
+  | Kind.Number => Js.typeof(x) == "number"
+  | Kind.Boolean => Js.typeof(x) == "boolean"
+  | Kind.String => Js.typeof(x) == "string"
+  | Kind.Null => Obj.magic(x) === Js.null
+  | Kind.Array => Js_array2.isArray(x)
+  | Kind.Object => Obj.magic(x) !== Js.null && (Js.typeof(x) == "object" && !Js_array2.isArray(x))
   }
 
 let decodeString = json =>
