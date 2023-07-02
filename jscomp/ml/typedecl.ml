@@ -412,7 +412,7 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
                       (args
                       |> List.map (fun texpr : Typedtree.core_type ->
                              {
-                               ctyp_attributes = [];
+                               ctyp_attributes = cstr.cd_attributes;
                                ctyp_loc = cstr.cd_loc;
                                ctyp_env = env;
                                ctyp_type = texpr;
