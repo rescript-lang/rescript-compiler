@@ -387,6 +387,13 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
                              scstr.pcd_args scstr.pcd_res
           in
           if String.starts_with scstr.pcd_name.txt ~prefix:"..." then (
+            (* Any constructor starting with "..." represents a variant type spread, and
+               will have the spread variant itself as a single argument.
+
+               We pull that variant type out, and then track the type of each of its
+               constructors, so that we can replace our dummy constructors added before 
+               type checking  with the realtypes for each constructor.
+               *)
             (match args with
             | Cstr_tuple [spread_variant] -> (
               match Ctype.extract_concrete_typedecl env spread_variant with
@@ -399,7 +406,10 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
             | _ -> ()); 
               None)
           else (
-          let tcstr, cstr = match Hashtbl.find_opt constructors_from_variant_spreads name.name with
+          (* Check if this constructor is from a variant spread. If so, we need to replace 
+             its type with the right type we've pulled from the type checked spread variant
+             itself. *)
+          let tcstr, cstr = match Hashtbl.find_opt constructors_from_variant_spreads (Ident.name name) with
           | Some cstr ->
             let tcstr =
               {
@@ -416,10 +426,10 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
                                ctyp_loc = cstr.cd_loc;
                                ctyp_env = env;
                                ctyp_type = texpr;
-                               ctyp_desc = Ttyp_any;
+                               ctyp_desc = Ttyp_any; (* This is fine because the type checker seems to only look at `ctyp_type` for type checking. *)
                              }))
                   | Cstr_record _lbls -> assert false (* TODO: Translate *));
-                cd_res = tret_type;
+                cd_res = tret_type; (* This is also strictly wrong, but is fine because the type checker does not look at this field. *)
                 cd_loc = scstr.pcd_loc;
                 cd_attributes = scstr.pcd_attributes |> copy_tag_attr_from_decl;
               }

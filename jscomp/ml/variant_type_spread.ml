@@ -25,12 +25,18 @@ let expand_variant_spreads (env : Env.t)
                            Pcstr_tuple
                              [{ptyp_loc; ptyp_desc = Ptyp_constr (loc, [])}];
                         } -> (
+                          (* This is a variant type spread constructor. Look up its type *)
                           try
                             let _path, type_decl =
                               Typetexp.find_type env ptyp_loc loc.txt
                             in
                             match type_decl with
                             | {type_kind = Type_variant cstrs} ->
+                              (* We add back the spread constructor here so the type checker
+                                 helps us resolve its type (we'll obviously filter this out
+                                 at a later stage). We also append the type identifier so we
+                                 can have multiple spreads, since each constructor name needs
+                                 to be unique. *)
                               let spread_constructor_name =
                                 "..."
                                 ^ (Longident.flatten loc.txt
@@ -64,7 +70,8 @@ let expand_variant_spreads (env : Env.t)
                                           (* It's important that we _don't_ fill in pcd_args here, since we have no way to produce
                                              a valid set of args for the parsetree at this stage. Inserting dummies here instead
                                              of later means that our dummies would end up being typechecked, and we don't want that.
-                                             We'll fill this in with dummy info later. *)
+
+                                             We'll fill in the correct arg types in the type checked version of this constructor later. *)
                                           pcd_args = Pcstr_tuple [];
                                           pcd_name =
                                             Location.mkloc cstr.cd_id.name
@@ -86,11 +93,13 @@ let constructor_is_from_spread (attrs : Parsetree.attributes) =
          | {txt = "res.constructor_from_spread"}, PStr [] -> true
          | _ -> false)
 
-(* The type checker matches lengths of constructor arguments etc between the parsetree and 
-   typed constructor definitions at various places. However, it doesn't use the parsetree 
-   definition for anything but the loc after having done the initial type check. So, here
-   we add dummy constructor arguments that match the actual number of arguments that the 
-   type checker has told us each constructor has, so the various invariants check out. *)
+let remove_is_spread_attribute (attr : Parsetree.attribute) =
+  match attr with
+  | {txt = "res.constructor_from_spread"}, PStr [] -> false
+  | _ -> false
+
+(* Add dummy arguments of the right length to constructors that comes 
+   from spreads, and that has arguments. *)
 let expand_dummy_constructor_args (sdecl_list : Parsetree.type_declaration list)
     (decls : (Ident.t * Types.type_declaration) list) =
   List.map2
@@ -117,6 +126,9 @@ let expand_dummy_constructor_args (sdecl_list : Parsetree.type_declaration list)
                          | {cd_args = Cstr_tuple args} ->
                            {
                              c with
+                             pcd_attributes =
+                               c.pcd_attributes
+                               |> List.filter remove_is_spread_attribute;
                              pcd_args =
                                Pcstr_tuple
                                  (args
