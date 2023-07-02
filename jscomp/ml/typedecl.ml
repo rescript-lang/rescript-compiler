@@ -379,34 +379,77 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
         let copy_tag_attr_from_decl attr =
           let tag_attrs = Ext_list.filter sdecl.ptype_attributes (fun ({txt}, _) -> txt = "tag" || txt = Ast_untagged_variants.untagged) in
           if tag_attrs = [] then attr else tag_attrs @ attr in
+        let constructors_from_variant_spreads = Hashtbl.create 10 in
         let make_cstr scstr =
           let name = Ident.create scstr.pcd_name.txt in
           let targs, tret_type, args, ret_type, _cstr_params =
             make_constructor env (Path.Pident id) params
                              scstr.pcd_args scstr.pcd_res
           in
-          let tcstr =
-            { cd_id = name;
-              cd_name = scstr.pcd_name;
-              cd_args = targs;
-              cd_res = tret_type;
-              cd_loc = scstr.pcd_loc;
-              cd_attributes = scstr.pcd_attributes |> copy_tag_attr_from_decl }
-          in
-          let cstr =
-            { Types.cd_id = name;
-              cd_args = args;
-              cd_res = ret_type;
-              cd_loc = scstr.pcd_loc;
-              cd_attributes = scstr.pcd_attributes |> copy_tag_attr_from_decl }
-          in
+          if String.starts_with scstr.pcd_name.txt ~prefix:"..." then (
+            (match args with
+            | Cstr_tuple [spread_variant] -> (
+              match Ctype.extract_concrete_typedecl env spread_variant with
+              | (_, _, {type_kind=Type_variant constructors}) -> (
+                constructors |> List.iter(fun (c: Types.constructor_declaration) ->
+                  Hashtbl.add constructors_from_variant_spreads c.cd_id.name c)
+              )
+              | _ -> ()
+            )
+            | _ -> ()); 
+              None)
+          else (
+          let tcstr, cstr = match Hashtbl.find_opt constructors_from_variant_spreads name.name with
+          | Some cstr ->
+            let tcstr =
+              {
+                cd_id = name;
+                cd_name = scstr.pcd_name;
+                cd_args =
+                  (match cstr.cd_args with
+                  | Cstr_tuple args ->
+                    Cstr_tuple
+                      (args
+                      |> List.map (fun texpr : Typedtree.core_type ->
+                             {
+                               ctyp_attributes = [];
+                               ctyp_loc = cstr.cd_loc;
+                               ctyp_env = env;
+                               ctyp_type = texpr;
+                               ctyp_desc = Ttyp_any;
+                             }))
+                  | Cstr_record _lbls -> assert false (* TODO: Translate *));
+                cd_res = tret_type;
+                cd_loc = scstr.pcd_loc;
+                cd_attributes = scstr.pcd_attributes |> copy_tag_attr_from_decl;
+              }
+            in
             tcstr, cstr
+          | None ->
+            let tcstr =
+              { cd_id = name;
+                cd_name = scstr.pcd_name;
+                cd_args = targs;
+                cd_res = tret_type;
+                cd_loc = scstr.pcd_loc;
+                cd_attributes = scstr.pcd_attributes |> copy_tag_attr_from_decl }
+            in
+            let cstr =
+              { Types.cd_id = name;
+                cd_args = args;
+                cd_res = ret_type;
+                cd_loc = scstr.pcd_loc;
+                cd_attributes = scstr.pcd_attributes |> copy_tag_attr_from_decl }
+            in
+            tcstr, cstr
+          in Some (tcstr, cstr)
+          )
         in
         let make_cstr scstr =
           Builtin_attributes.warning_scope scstr.pcd_attributes
             (fun () -> make_cstr scstr)
         in
-        let tcstrs, cstrs = List.split (List.map make_cstr scstrs) in
+        let tcstrs, cstrs = List.split (List.filter_map make_cstr scstrs) in
         let isUntaggedDef = Ast_untagged_variants.has_untagged sdecl.ptype_attributes in
         Ast_untagged_variants.check_well_formed ~env ~isUntaggedDef cstrs;
         Ttype_variant tcstrs, Type_variant cstrs, sdecl
@@ -1270,7 +1313,7 @@ let transl_type_decl env rec_flag sdecl_list =
         {sdecl with
          ptype_name; ptype_kind = Ptype_abstract; ptype_manifest = None})
       fixed_types
-    @ sdecl_list
+    @ (sdecl_list |> Variant_type_spread.expand_variant_spreads env)
   in
 
   (* Create identifiers. *)
@@ -1324,6 +1367,7 @@ let transl_type_decl env rec_flag sdecl_list =
     List.map2 transl_declaration sdecl_list (List.map id_slots id_list) in
   let decls =
     List.map (fun tdecl -> (tdecl.typ_id, tdecl.typ_type)) tdecls in
+  let sdecl_list = Variant_type_spread.expand_dummy_constructor_args sdecl_list decls in
   current_slot := None;
   (* Check for duplicates *)
   check_duplicates sdecl_list;
