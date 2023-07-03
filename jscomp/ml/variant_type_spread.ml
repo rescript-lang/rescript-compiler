@@ -31,7 +31,14 @@ let expand_variant_spreads (env : Env.t)
                               Typetexp.find_type env ptyp_loc loc.txt
                             in
                             match type_decl with
-                            | {type_kind = Type_variant cstrs} ->
+                            | {type_kind = Type_variant cstrs; type_attributes}
+                              ->
+                              Variant_coercion
+                              .variant_configuration_can_be_coerced_raises
+                                ~is_spread_context:true ~left_loc:loc.loc
+                                ~left_attributes:type_attributes
+                                ~right_attributes:sdecl.ptype_attributes
+                                ~right_loc:sdecl.ptype_loc;
                               (* We add back the spread constructor here so the type checker
                                  helps us resolve its type (we'll obviously filter this out
                                  at a later stage). We also append the type identifier so we
@@ -78,7 +85,11 @@ let expand_variant_spreads (env : Env.t)
                                               cstr.cd_loc;
                                         }))
                             | _ -> [c]
-                          with _ ->
+                          with
+                          | Variant_coercion.VariantConfigurationError _ as err
+                            ->
+                            raise err
+                          | _ ->
                             (* Did not find type. Can't spread here, report as error that types need to be known before hand. *)
                             [c])
                         | _ -> [c])
@@ -98,7 +109,7 @@ let remove_is_spread_attribute (attr : Parsetree.attribute) =
   | {txt = "res.constructor_from_spread"}, PStr [] -> false
   | _ -> false
 
-(* Add dummy arguments of the right length to constructors that comes 
+(* Add dummy arguments of the right length to constructors that comes
    from spreads, and that has arguments. *)
 let expand_dummy_constructor_args (sdecl_list : Parsetree.type_declaration list)
     (decls : (Ident.t * Types.type_declaration) list) =

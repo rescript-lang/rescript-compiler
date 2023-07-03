@@ -53,6 +53,7 @@ type error =
   | Bad_unboxed_attribute of string
   | Boxed_and_unboxed
   | Nonrec_gadt
+  | Variant_runtime_representation_mismatch of Variant_coercion.variant_error
 
 open Typedtree
 
@@ -1323,7 +1324,11 @@ let transl_type_decl env rec_flag sdecl_list =
         {sdecl with
          ptype_name; ptype_kind = Ptype_abstract; ptype_manifest = None})
       fixed_types
-    @ (sdecl_list |> Variant_type_spread.expand_variant_spreads env)
+    @ (try 
+        sdecl_list |> Variant_type_spread.expand_variant_spreads env 
+      with 
+      | Variant_coercion.VariantConfigurationError ((VariantError {left_loc}) as err) -> raise(Error(left_loc, Variant_runtime_representation_mismatch err))
+    )
   in
 
   (* Create identifiers. *)
@@ -2126,6 +2131,32 @@ let report_error ppf = function
   | Nonrec_gadt ->
       fprintf ppf
         "@[GADT case syntax cannot be used in a 'nonrec' block.@]"
+  | Variant_runtime_representation_mismatch
+      (Variant_coercion.VariantError
+        {is_spread_context; error = Variant_coercion.Untagged {left_is_unboxed}})
+    ->
+    let other_variant_text =
+      if is_spread_context then "the variant where this is spread"
+      else "the other variant"
+    in
+    fprintf ppf "@[%s.@]"
+      ("This variant is "
+      ^ (if left_is_unboxed then "unboxed" else "not unboxed")
+      ^ ", but " ^ other_variant_text
+      ^ " is not. Both variants unboxed configuration must match")
+  | Variant_runtime_representation_mismatch
+      (Variant_coercion.VariantError
+        {is_spread_context; error = Variant_coercion.TagName _}) ->
+    let other_variant_text =
+      if is_spread_context then "the variant where this is spread"
+      else "the other variant"
+    in
+    fprintf ppf "@[%s.@]"
+      ("The @tag attribute does not match for this variant and "
+      ^ other_variant_text
+      ^ ". Both variants must have the same @tag attribute configuration, or no \
+        @tag attribute at all")
+  
 
 let () =
   Location.register_error_of_exn
