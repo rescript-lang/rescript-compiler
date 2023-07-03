@@ -54,6 +54,7 @@ type error =
   | Boxed_and_unboxed
   | Nonrec_gadt
   | Variant_runtime_representation_mismatch of Variant_coercion.variant_error
+  | Variant_spread_fail of Variant_type_spread.variant_type_spread_error
 
 open Typedtree
 
@@ -1328,6 +1329,7 @@ let transl_type_decl env rec_flag sdecl_list =
         sdecl_list |> Variant_type_spread.expand_variant_spreads env 
       with 
       | Variant_coercion.VariantConfigurationError ((VariantError {left_loc}) as err) -> raise(Error(left_loc, Variant_runtime_representation_mismatch err))
+      | Variant_type_spread.VariantTypeSpreadError (loc, err) -> raise(Error(loc, Variant_spread_fail err))
     )
   in
 
@@ -2156,6 +2158,8 @@ let report_error ppf = function
       ^ other_variant_text
       ^ ". Both variants must have the same @tag attribute configuration, or no \
         @tag attribute at all")
+  | Variant_spread_fail Variant_type_spread.CouldNotFindType ->
+    fprintf ppf "@[This type could not be found. It's only possible to spread variants that are known as the spread happens. This means for example that you can't spread variants in recursive definitions.@]"
   
 
 let () =

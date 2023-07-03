@@ -1,6 +1,10 @@
 let mk_constructor_comes_from_spread_attr () : Parsetree.attribute =
   (Location.mknoloc "res.constructor_from_spread", PStr [])
 
+type variant_type_spread_error = CouldNotFindType
+
+exception VariantTypeSpreadError of Location.t * variant_type_spread_error
+
 (* Spreads in variants are parsed as constructors named "...", with a single payload that's an identifier
    pointing to the type that's spread. We need to expand those constructors as soon as we can, before type
    checking. So, here we look for constructors named "...", look up their type, and add the constructors that
@@ -91,7 +95,7 @@ let expand_variant_spreads (env : Env.t)
                             raise err
                           | _ ->
                             (* Did not find type. Can't spread here, report as error that types need to be known before hand. *)
-                            [c])
+                            raise(VariantTypeSpreadError(loc.loc, CouldNotFindType)))
                         | _ -> [c])
                  |> List.concat);
            }
