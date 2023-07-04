@@ -42,13 +42,13 @@ type rec t =
 
 module Kind: {
   /** Underlying type of a JSON value */
-  type rec s<_> =
-    | String: s<Js_string.t>
-    | Number: s<float>
-    | Object: s<Js_dict.t<t>>
-    | Array: s<array<t>>
-    | Boolean: s<bool>
-    | Null: s<Js_types.null_val>
+  type rec kind<_> =
+    | String: kind<Js_string.t>
+    | Number: kind<float>
+    | Object: kind<Js_dict.t<t>>
+    | Array: kind<array<t>>
+    | Boolean: kind<bool>
+    | Null: kind<Js_types.null_val>
 }
 
 type tagged_t =
@@ -65,7 +65,7 @@ type tagged_t =
 let classify: t => tagged_t
 
 /** `test(v, kind)` returns `true` if `v` is of `kind`. */
-let test: ('a, Kind.s<'b>) => bool
+let test: ('a, Kind.kind<'b>) => bool
 
 /** `decodeString(json)` returns `Some(s)` if `json` is a `string`, `None` otherwise. */
 let decodeString: t => option<Js_string.t>
