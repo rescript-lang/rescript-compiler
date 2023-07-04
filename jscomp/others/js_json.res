@@ -35,13 +35,14 @@ type rec t =
   | Array(array<t>)
 
 module Kind = {
-  type rec kind<_> =
-    | String: kind<Js_string.t>
-    | Number: kind<float>
-    | Object: kind<Js_dict.t<t>>
-    | Array: kind<array<t>>
-    | Boolean: kind<bool>
-    | Null: kind<Js_types.null_val>
+  type json = t
+  type rec t<_> =
+    | String: t<Js_string.t>
+    | Number: t<float>
+    | Object: t<Js_dict.t<json>>
+    | Array: t<array<json>>
+    | Boolean: t<bool>
+    | Null: t<Js_types.null_val>
 }
 
 type tagged_t =
@@ -74,7 +75,7 @@ let classify = (x: t): tagged_t => {
   }
 }
 
-let test = (type a, x: 'a, v: Kind.kind<a>): bool =>
+let test = (type a, x: 'a, v: Kind.t<a>): bool =>
   switch v {
   | Kind.Number => Js.typeof(x) == "number"
   | Kind.Boolean => Js.typeof(x) == "boolean"

@@ -145,7 +145,7 @@ let () = {
 
 /* Check that the given json value is an array and that its element
  * a position [i] is equal to both the [kind] and [expected] value */
-let eq_at_i = (type a, loc: string, json: J.t, i: int, kind: J.Kind.kind<a>, expected: a): unit => {
+let eq_at_i = (type a, loc: string, json: J.t, i: int, kind: J.Kind.t<a>, expected: a): unit => {
   let ty = J.classify(json)
   switch ty {
   | J.JSONArray(x) =>
