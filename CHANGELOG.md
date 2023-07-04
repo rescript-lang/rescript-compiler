@@ -15,7 +15,7 @@
 - Variants: Allow coercing from variant to variant, where applicable. https://github.com/rescript-lang/rescript-compiler/pull/6314
 
 #### :boom: Breaking Change
-- Fixed the issue of name collision between the newly defined Js.Json.t and the variant constructor in the existing Js.Json.kind type. To address this, the usage of the existing Js.Json.kind type can be updated to Js.Json.Kind.s. https://github.com/rescript-lang/rescript-compiler/pull/6317
+- Fixed the issue of name collision between the newly defined Js.Json.t and the variant constructor in the existing Js.Json.kind type. To address this, the usage of the existing Js.Json.kind type can be updated to Js.Json.Kind.t. https://github.com/rescript-lang/rescript-compiler/pull/6317
 
 # 11.0.0-beta.3
 
