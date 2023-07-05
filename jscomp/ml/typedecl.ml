@@ -428,14 +428,36 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
                                ctyp_loc = cstr.cd_loc;
                                ctyp_env = env;
                                ctyp_type = texpr;
-                               ctyp_desc = Ttyp_any; (* This is fine because the type checker seems to only look at `ctyp_type` for type checking. *)
+                               ctyp_desc = Ttyp_any;
+                               (* This is fine because the type checker seems to only look at `ctyp_type` for type checking. *)
                              }))
-                  | Cstr_record _lbls -> assert false (* TODO: Translate *));
-                cd_res = tret_type; (* This is also strictly wrong, but is fine because the type checker does not look at this field. *)
+                  | Cstr_record lbls ->
+                    Cstr_record
+                      (lbls
+                      |> List.map
+                           (fun (l : Types.label_declaration) : Typedtree.label_declaration
+                           ->
+                             {
+                               ld_id = l.ld_id;
+                               ld_name = Location.mkloc (Ident.name l.ld_id) l.ld_loc;
+                               ld_mutable = l.ld_mutable;
+                               ld_type =
+                                 {
+                                   ctyp_desc = Ttyp_any;
+                                   ctyp_type = l.ld_type;
+                                   ctyp_env = env;
+                                   ctyp_loc = l.ld_loc;
+                                   ctyp_attributes = [];
+                                 };
+                               ld_loc = l.ld_loc;
+                               ld_attributes = l.ld_attributes;
+                             })));
+                cd_res = tret_type;
+                (* This is also strictly wrong, but is fine because the type checker does not look at this field. *)
                 cd_loc = scstr.pcd_loc;
                 cd_attributes = scstr.pcd_attributes |> copy_tag_attr_from_decl;
               }
-            in
+            in            
             tcstr, cstr
           | None ->
             let tcstr =

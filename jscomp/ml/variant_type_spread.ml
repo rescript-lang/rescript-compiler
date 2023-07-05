@@ -149,6 +149,30 @@ let expand_dummy_constructor_args (sdecl_list : Parsetree.type_declaration list)
                        | None -> c
                        | Some constructor -> (
                          match constructor with
+                         | {cd_args = Cstr_record lbls} ->
+                           {
+                             c with
+                             pcd_attributes =
+                               c.pcd_attributes
+                               |> List.filter remove_is_spread_attribute;
+                             pcd_args =
+                               Pcstr_record
+                                 (lbls
+                                 |> List.map
+                                      (fun (l : Types.label_declaration) ->
+                                        {
+                                          Parsetree.pld_name = c.pcd_name;
+                                          pld_mutable = l.ld_mutable;
+                                          pld_loc = l.ld_loc;
+                                          pld_attributes = [];
+                                          pld_type =
+                                            {
+                                              ptyp_desc = Ptyp_any;
+                                              ptyp_loc = l.ld_loc;
+                                              ptyp_attributes = [];
+                                            };
+                                        }));
+                           }
                          | {cd_args = Cstr_tuple args} ->
                            {
                              c with
@@ -164,8 +188,7 @@ let expand_dummy_constructor_args (sdecl_list : Parsetree.type_declaration list)
                                           ptyp_attributes = [];
                                           ptyp_desc = Ptyp_any;
                                         }));
-                           }
-                         | _ -> c)
+                           })
                      else c));
         }
       | _ -> sdecl)

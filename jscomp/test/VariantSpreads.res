@@ -13,3 +13,8 @@ let b2: b = One(true, Bar)
 let c: b = Five(2)
 
 let ddd: b = Six
+
+type f = One({name: string, age?: int}) | Two
+type q = | ...f | Three
+
+let q: q = One({name: "hello"})
