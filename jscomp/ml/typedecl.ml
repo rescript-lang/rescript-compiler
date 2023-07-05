@@ -2160,6 +2160,8 @@ let report_error ppf = function
         @tag attribute at all")
   | Variant_spread_fail Variant_type_spread.CouldNotFindType ->
     fprintf ppf "@[This type could not be found. It's only possible to spread variants that are known as the spread happens. This means for example that you can't spread variants in recursive definitions.@]"
+  | Variant_spread_fail Variant_type_spread.HasTypeParams ->
+    fprintf ppf "@[Type parameters are not supported in variant type spreads.@]"
   | Variant_spread_fail Variant_type_spread.DuplicateConstructor 
     {variant_with_overlapping_constructor; overlapping_constructor_name} ->
     fprintf ppf "@[Variant %s has a constructor named %s, but a constructor named %s already exists in the variant it's spread into.@ You cannot spread variants with overlapping constructors.@]" 

@@ -3,6 +3,7 @@ let mk_constructor_comes_from_spread_attr () : Parsetree.attribute =
 
 type variant_type_spread_error =
   | CouldNotFindType
+  | HasTypeParams
   | DuplicateConstructor of {
       variant_with_overlapping_constructor: string;
       overlapping_constructor_name: string;
@@ -21,16 +22,19 @@ let map_constructors ~(sdecl : Parsetree.type_declaration) ~all_constructors env
   match c with
   | {
    pcd_name = {txt = "..."};
-   pcd_args = Pcstr_tuple [{ptyp_loc; ptyp_desc = Ptyp_constr (loc, [])}];
+   pcd_args = Pcstr_tuple [{ptyp_loc; ptyp_desc = Ptyp_constr (loc, _)}];
   } -> (
     (* This is a variant type spread constructor. Look up its type *)
-    let _path, type_decl =
+    let _, type_decl =
       try Typetexp.find_type env ptyp_loc loc.txt
       with _ -> raise (VariantTypeSpreadError (loc.loc, CouldNotFindType))
     in
 
     match type_decl with
-    | {type_kind = Type_variant cstrs; type_attributes} ->
+    | {type_kind = Type_variant cstrs; type_attributes; type_params} ->
+      if List.length type_params > 0 then
+        raise (VariantTypeSpreadError (loc.loc, HasTypeParams));
+
       Variant_coercion.variant_configuration_can_be_coerced_raises
         ~is_spread_context:true ~left_loc:loc.loc
         ~left_attributes:type_attributes
