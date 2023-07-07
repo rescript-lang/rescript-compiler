@@ -49,6 +49,8 @@ let s = `
 
 let s = `$dollar without $braces $interpolation`
 
+let s = `${(s: string)}`
+
 // don't sugar to one single template literal, keep the concatenation
 `the sky` ++ `is blue`
 
