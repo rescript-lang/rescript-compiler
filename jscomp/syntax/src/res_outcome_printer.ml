@@ -354,7 +354,12 @@ and printOutArrowType ~uncurried typ =
     let needsParens =
       match typArgs with
       | _ when uncurried -> true
-      | [(_, (Otyp_tuple _ | Otyp_arrow _ | Otyp_constr (Oide_ident "function$", [(Otyp_arrow _); _])))] -> true
+      | [
+       ( _,
+         ( Otyp_tuple _ | Otyp_arrow _
+         | Otyp_constr (Oide_ident "function$", [Otyp_arrow _; _]) ) );
+      ] ->
+        true
       (* single argument should not be wrapped *)
       | [("", _)] -> false
       | _ -> true
