@@ -40,6 +40,20 @@ let variant_representation_matches (c1_attrs : Parsetree.attributes)
   | Some s1, Some s2 when s1 = s2 -> true
   | _ -> false
 
+type variant_configuration_error =
+  | Untagged of {left_is_unboxed: bool}
+  | TagName of {left_tag: string option; right_tag: string option}
+
+type variant_error =
+  | VariantError of {
+      left_loc: Location.t;
+      right_loc: Location.t;
+      error: variant_configuration_error;
+      is_spread_context: bool;
+    }
+
+exception VariantConfigurationError of variant_error
+
 let variant_configuration_can_be_coerced (a1 : Parsetree.attributes)
     (a2 : Parsetree.attributes) =
   let unboxed =
@@ -62,3 +76,39 @@ let variant_configuration_can_be_coerced (a1 : Parsetree.attributes)
       | _ -> false
     in
     if not tag then false else true
+
+let variant_configuration_can_be_coerced_raises ~is_spread_context ~left_loc
+    ~right_loc ~(left_attributes : Parsetree.attributes)
+    ~(right_attributes : Parsetree.attributes) =
+  (match
+     ( Ast_untagged_variants.process_untagged left_attributes,
+       Ast_untagged_variants.process_untagged right_attributes )
+   with
+  | true, true | false, false -> ()
+  | left, _right ->
+    raise
+      (VariantConfigurationError
+         (VariantError
+            {
+              is_spread_context;
+              left_loc;
+              right_loc;
+              error = Untagged {left_is_unboxed = left};
+            })));
+
+  match
+    ( Ast_untagged_variants.process_tag_name left_attributes,
+      Ast_untagged_variants.process_tag_name right_attributes )
+  with
+  | Some host_tag, Some spread_tag when host_tag = spread_tag -> ()
+  | None, None -> ()
+  | left_tag, right_tag ->
+    raise
+      (VariantConfigurationError
+         (VariantError
+            {
+              is_spread_context;
+              left_loc;
+              right_loc;
+              error = TagName {left_tag; right_tag};
+            }))

@@ -107,3 +107,10 @@ type color =
   | @rgb Red
   | @rgb Blue
   | @rgb Green
+
+// Spreads
+module S = {
+  type s = Five | Six
+}
+type aa = One | Two
+type bb = | ...aa | Three | Four | ...S.s
