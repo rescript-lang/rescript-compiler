@@ -1452,7 +1452,8 @@ and printConstructorDeclaration2 ~state i
     printComments doc cmtTbl cd.pcd_name.loc
   in
   let constrArgs =
-    printConstructorArguments ~isDotDotDot ~state ~indent:true cd.pcd_args cmtTbl
+    printConstructorArguments ~isDotDotDot ~state ~indent:true cd.pcd_args
+      cmtTbl
   in
   let gadt =
     match cd.pcd_res with
