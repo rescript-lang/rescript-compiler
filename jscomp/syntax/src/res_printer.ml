@@ -1452,7 +1452,8 @@ and printConstructorDeclaration2 ~state i
     printComments doc cmtTbl cd.pcd_name.loc
   in
   let constrArgs =
-    printConstructorArguments ~isDotDotDot ~state ~indent:true cd.pcd_args cmtTbl
+    printConstructorArguments ~isDotDotDot ~state ~indent:true cd.pcd_args
+      cmtTbl
   in
   let gadt =
     match cd.pcd_res with
@@ -3453,6 +3454,12 @@ and printTemplateLiteral ~state expr cmtTbl =
       printStringContents txt
     | _ ->
       let doc = printExpressionWithComments ~state expr cmtTbl in
+      let doc =
+        match Parens.expr expr with
+        | Parens.Parenthesized -> addParens doc
+        | Braced braces -> printBraces doc expr braces
+        | Nothing -> doc
+      in
       Doc.group (Doc.concat [Doc.text "${"; Doc.indent doc; Doc.rbrace])
   in
   let content = walkExpr expr in
