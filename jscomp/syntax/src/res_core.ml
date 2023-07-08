@@ -3604,7 +3604,7 @@ and parseCallExpr p funExpr =
   in
   let isPartial =
     match p.token with
-    | DotDotDot when args <> [] ->
+    | DotDotDot ->
       Parser.next p;
       true
     | _ -> false
