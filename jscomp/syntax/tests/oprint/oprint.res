@@ -308,3 +308,6 @@ type call = CleanStart
 let f = (~a=1, ()) => 1
 
 type opt = {x:int, y?: option<string>}
+
+let secondOrder = f => f()
+let thirdOrder = f => f(() => ())

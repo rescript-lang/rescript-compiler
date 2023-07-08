@@ -217,7 +217,7 @@ type permissions = [#644 | #777]
 type numericPolyVarWithPayload = [#1(string) | #2(int, string)]
 let numericPolyVarMatch: [> #1(string) | #2(int, string)]
 let sort: (module(Set.S with type elt = 'a), list<'a>) => list<'a>
-let make_set: ('a, 'a) => int => module(Set.S with type elt = 'a)
+let make_set: (('a, 'a) => int) => module(Set.S with type elt = 'a)
 type picture = string
 module type DEVICE = {
   let draw: picture => unit
@@ -238,3 +238,5 @@ let f: (~x: 'a=?, ~y: 'b) => option<'a>
 type call = CleanStart
 let f: (~a: int=?, unit) => int
 type opt = {x: int, y?: option<string>}
+let secondOrder: (unit => 'a) => 'a
+let thirdOrder: ((unit => unit) => 'a) => 'a
