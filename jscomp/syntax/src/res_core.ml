@@ -3612,7 +3612,7 @@ and parseCallExpr p funExpr =
   Parser.expect Rparen p;
   let args =
     match args with
-    | [] ->
+    | [] when not isPartial ->
       let loc = mkLoc startPos p.prevEndPos in
       (* No args -> unit sugar: `foo()` *)
       [

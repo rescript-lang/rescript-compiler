@@ -172,5 +172,5 @@ type nonrec callback2 =
   (ReactEvent.Mouse.t -> unit as 'u, [ `Has_arity1 ]) function$
 type nonrec callback3 =
   (ReactEvent.Mouse.t -> unit, [ `Has_arity1 ]) function$ as 'callback
-let partialPipe = x |.u ((f ())[@res.partial ][@res.uapp ])
+let partialPipe = x |.u f
 let partialPipe2 = x |.u ((f y)[@res.partial ][@res.uapp ])
