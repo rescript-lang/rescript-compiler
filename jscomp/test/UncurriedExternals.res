@@ -82,3 +82,8 @@ external useState: (@uncurry (unit => 'state)) => ('state, ('state => 'state) =>
 let (get, set) = useState(() => 3)
 
 let methodWithAsyncU = @this this => async arg => this + arg
+
+let partialPipe: int => int = {
+  let f = (a, b) => a + b
+  2->f(...)
+}
