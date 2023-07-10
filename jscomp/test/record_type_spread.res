@@ -59,3 +59,12 @@ module DeepSub = {
     z: #Two(1),
   }
 }
+
+type base = {
+  id: string,
+  name?: string,
+}
+
+type inlineRecord = One({first: string, ...base})
+
+let o = One({first: "1", id: "1"})

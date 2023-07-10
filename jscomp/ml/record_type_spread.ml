@@ -86,3 +86,54 @@ let extract_type_vars (type_params : Types.type_expr list)
            | Tvar (Some tname) -> Some (tname, applied_tvar)
            | _ -> None)
   else []
+
+let expand_record_spreads env lbls lbls' =
+  (* This tracks whether there are type spreads that doesn't seem to be records.
+     Some parts of the code needs this to handle a syntax ambiguitiy between record 
+     and object type spreads.*)
+  let might_have_object_spreads = ref false in
+  if has_type_spread lbls then
+    let rec extract (t : Types.type_expr) =
+      match t.desc with
+      | Tpoly (t, []) -> extract t
+      | _ -> Ctype.repr t
+    in
+    let mkLbl (l : Types.label_declaration) (ld_type : Typedtree.core_type)
+        (type_vars : (string * Types.type_expr) list) :
+        Typedtree.label_declaration =
+      {
+        ld_id = l.ld_id;
+        ld_name = {txt = Ident.name l.ld_id; loc = l.ld_loc};
+        ld_mutable = l.ld_mutable;
+        ld_type =
+          {ld_type with ctyp_type = substitute_type_vars type_vars l.ld_type};
+        ld_loc = l.ld_loc;
+        ld_attributes = l.ld_attributes;
+      }
+    in
+    let rec process_lbls acc lbls lbls' =
+      match (lbls, lbls') with
+      | {Typedtree.ld_name = {txt = "..."}; ld_type} :: rest, _ :: rest' -> (
+        match
+          Ctype.extract_concrete_typedecl env (extract ld_type.ctyp_type)
+        with
+        | _p0, _p, {type_kind = Type_record (fields, _repr); type_params} ->
+          let type_vars = extract_type_vars type_params ld_type.ctyp_type in
+          process_lbls
+            ( fst acc @ Ext_list.map fields (fun l -> mkLbl l ld_type type_vars),
+              snd acc
+              @ Ext_list.map fields (fun l ->
+                    {l with ld_type = substitute_type_vars type_vars l.ld_type})
+            )
+            rest rest'
+        | _ -> assert false
+        | exception _ ->
+          might_have_object_spreads := true;
+          acc)
+      | lbl :: rest, lbl' :: rest' ->
+        process_lbls (fst acc @ [lbl], snd acc @ [lbl']) rest rest'
+      | _ -> acc
+    in
+    let lbls, lbls' = process_lbls ([], []) lbls lbls' in
+    (!might_have_object_spreads, (lbls, lbls'))
+  else (!might_have_object_spreads, (lbls, lbls'))

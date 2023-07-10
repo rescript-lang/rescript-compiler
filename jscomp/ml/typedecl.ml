@@ -244,7 +244,7 @@ let transl_labels env closed lbls =
          }
       )
       lbls in
-  lbls, lbls'
+  Record_type_spread.expand_record_spreads env lbls lbls'
 
 let transl_constructor_arguments env closed = function
   | Pcstr_tuple l ->
@@ -252,7 +252,7 @@ let transl_constructor_arguments env closed = function
       Types.Cstr_tuple (List.map (fun t -> t.ctyp_type) l),
       Cstr_tuple l
   | Pcstr_record l ->
-      let lbls, lbls' = transl_labels env closed l in
+      let _, (lbls, lbls') = transl_labels env closed l in
       Types.Cstr_record lbls',
       Cstr_record lbls
 
@@ -501,54 +501,14 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
                   {typ with ptyp_desc = Ptyp_constr ({txt = Lident "option"; loc=typ.ptyp_loc}, [typ])}
                 else typ in
               {lbl with  pld_type = typ }) in
-          let lbls, lbls' = transl_labels env true lbls in
-          let lbls_opt = match Record_type_spread.has_type_spread lbls with
-            | true ->
-              let rec extract t = match t.desc with
-                | Tpoly(t, []) -> extract t
-                | _ -> Ctype.repr t in
-              let mkLbl (l: Types.label_declaration) (ld_type: Typedtree.core_type) (type_vars: (string * Types.type_expr) list) : Typedtree.label_declaration =
-                {
-                  ld_id = l.ld_id;
-                  ld_name = {txt = Ident.name l.ld_id; loc = l.ld_loc};
-                  ld_mutable = l.ld_mutable;
-                  ld_type = {ld_type with ctyp_type = Record_type_spread.substitute_type_vars type_vars l.ld_type};
-                  ld_loc = l.ld_loc;
-                  ld_attributes = l.ld_attributes;
-                } in
-              let rec process_lbls acc lbls lbls' = match lbls, lbls' with
-                | {ld_name = {txt = "..."}; ld_type} :: rest, _ :: rest' ->
-                  (match Ctype.extract_concrete_typedecl env (extract ld_type.ctyp_type) with
-                    (_p0, _p, {type_kind=Type_record (fields, _repr); type_params}) ->
-                      let type_vars = Record_type_spread.extract_type_vars type_params ld_type.ctyp_type in
-                      process_lbls
-                        ( fst acc
-                          @ (Ext_list.map fields (fun l ->
-                            mkLbl l ld_type type_vars))
-                          ,
-                          snd acc
-                          @ (Ext_list.map fields (fun l ->
-                            {
-                              l with
-                              ld_type =
-                                Record_type_spread.substitute_type_vars type_vars l.ld_type;
-                            })) )
-                        rest rest'
-                    | _ -> assert false
-                    | exception _ -> None)
-                | lbl::rest, lbl'::rest' -> process_lbls (fst acc @ [lbl], snd acc @ [lbl']) rest rest'
-                | _ -> Some acc
-              in
-              process_lbls ([], []) lbls lbls'
-            | false -> Some (lbls, lbls') in
+          let might_have_object_spreads, (lbls, lbls') = transl_labels env true lbls in
           let rec check_duplicates loc (lbls : Typedtree.label_declaration list) seen = match lbls with
           | [] -> ()
           | lbl::rest ->
             let name = lbl.ld_id.name in
             if StringSet.mem name seen then raise(Error(loc, Duplicate_label name));
             check_duplicates loc rest (StringSet.add name seen) in
-          (match lbls_opt with
-          | Some (lbls, lbls') ->
+          (if might_have_object_spreads = false then (
             check_duplicates sdecl.ptype_loc lbls StringSet.empty;
             let optionalLabels =
               Ext_list.filter_map lbls (fun lbl ->
@@ -559,7 +519,7 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
               else if optionalLabels <> [] then 
                 Record_optional_labels optionalLabels
               else Record_regular), sdecl
-          | None ->
+          ) else (
              (* Could not find record type decl for ...t: assume t is an object type and this is syntax ambiguity *)
              typeRecordAsObject := true;
              let fields = Ext_list.map lbls_ (fun ld ->
@@ -571,7 +531,7 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
                ptype_kind = Ptype_abstract;
                ptype_manifest = Some (Ast_helper.Typ.object_ ~loc:sdecl.ptype_loc fields Closed);
               } in
-             (Ttype_abstract, Type_abstract, sdecl))
+             (Ttype_abstract, Type_abstract, sdecl)))
       | Ptype_open -> Ttype_open, Type_open, sdecl
       in
     let (tman, man) = match sdecl.ptype_manifest with
