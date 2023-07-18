@@ -10,6 +10,8 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
+# 11.0.0-beta.5 (Unreleased)
+
 # 11.0.0-beta.4
 
 #### :rocket: New Feature
@@ -23,7 +25,7 @@
 
 #### :bug: Bug Fix
 
-- Fixed outcome printing of uncurried higehr order function types. https://github.com/rescript-lang/rescript-compiler/pull/6323
+- Fixed outcome printing of uncurried higher order function types. https://github.com/rescript-lang/rescript-compiler/pull/6323
 - Fixed printing of type constraints in template literal substitutions. https://github.com/rescript-lang/rescript-compiler/pull/6324
 
 # 11.0.0-beta.3
