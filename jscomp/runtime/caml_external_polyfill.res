@@ -29,7 +29,7 @@ let getGlobalThis: (. unit) => global = %raw(` function(){
 	if (typeof window !== 'undefined') return window;
 	if (typeof global !== 'undefined') return global;
 	if (typeof this !== 'undefined') return this;
-	throw new Error('Unable to locate global \`this\`');
+	throw new Error('Unable to locate global this');
 }`)
 
 type dyn
