@@ -78,6 +78,7 @@ and field = {
   nameJS: string;
   optional: optional;
   type_: type_;
+  docString: string option;
 }
 
 and function_ = {argTypes: argType list; retType: type_; typeVars: string list}

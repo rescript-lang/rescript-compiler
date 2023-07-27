@@ -45,7 +45,7 @@ let translateObjType closedFlag fieldsTranslations =
              | _ -> (Mandatory, t)
            in
            let name = name |> Runtime.mangleObjectField in
-           {mutable_; nameJS = name; optional; type_})
+           {mutable_; nameJS = name; optional; type_; docString = None})
   in
   let type_ = Object (closedFlag, fields) in
   {dependencies; type_}
@@ -126,6 +126,7 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
                 nameJS = "contents";
                 optional = Mandatory;
                 type_ = paramTranslation.type_;
+                docString = None;
               };
             ] );
     }
@@ -465,7 +466,7 @@ and signatureToModuleRuntimeRepresentation ~config ~typeVarsGen ~typeEnv
     |> List.map (fun signatureItem ->
            match signatureItem with
            | Types.Sig_value (_id, {val_kind = Val_prim _}) -> ([], [])
-           | Types.Sig_value (id, {val_type = typeExpr}) ->
+           | Types.Sig_value (id, {val_type = typeExpr; val_attributes}) ->
              let {dependencies; type_} =
                typeExpr
                |> translateTypeExprFromTypes_ ~config ~typeVarsGen ~typeEnv
@@ -476,6 +477,7 @@ and signatureToModuleRuntimeRepresentation ~config ~typeVarsGen ~typeEnv
                  nameJS = id |> Ident.name;
                  optional = Mandatory;
                  type_;
+                 docString = Annotation.getDocPayload val_attributes;
                }
              in
              (dependencies, [field])
@@ -499,6 +501,8 @@ and signatureToModuleRuntimeRepresentation ~config ~typeVarsGen ~typeEnv
                  nameJS = id |> Ident.name;
                  optional = Mandatory;
                  type_;
+                 docString =
+                   Annotation.getDocPayload moduleDeclaration.md_attributes;
                }
              in
              (dependencies, [field])

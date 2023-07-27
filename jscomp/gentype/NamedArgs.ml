@@ -14,13 +14,25 @@ let rec groupReversed ~revCurGroup ~revResult labeledTypes =
     (* Add it to the current group, not result. *)
     groupReversed
       ~revCurGroup:
-        ({mutable_ = Immutable; nameJS = name; optional = Optional; type_}
+        ({
+           mutable_ = Immutable;
+           nameJS = name;
+           optional = Optional;
+           type_;
+           docString = None;
+         }
         :: revCurGroup)
       ~revResult tl
   | _, (Label name, type_) :: tl ->
     groupReversed
       ~revCurGroup:
-        ({mutable_ = Immutable; nameJS = name; optional = Mandatory; type_}
+        ({
+           mutable_ = Immutable;
+           nameJS = name;
+           optional = Mandatory;
+           type_;
+           docString = None;
+         }
         :: revCurGroup)
       ~revResult tl
   | [], [] -> revResult

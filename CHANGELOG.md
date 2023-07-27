@@ -12,6 +12,10 @@
 
 # 11.0.0-beta.5 (Unreleased)
 
+#### :rocket: New Feature
+
+- GenType: Propagate comments from record fields to emitted TypeScript types. https://github.com/rescript-lang/rescript-compiler/pull/6333
+
 # 11.0.0-beta.4
 
 #### :rocket: New Feature

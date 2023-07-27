@@ -39,6 +39,7 @@ and exportModuleItemToFields =
              nameJS = fieldName;
              optional = Mandatory;
              type_ = typeForType;
+             docString = None;
            }
          in
          let fieldForValue = {fieldForType with type_ = typeForValue} in
