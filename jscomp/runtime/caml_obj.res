@@ -33,19 +33,19 @@ module O = {
 
   @scope(("Object", "prototype", "hasOwnProperty"))
   @val
-  @ocaml.doc(" 
+  /**
      JS objects are not guaranteed to have `Object` in their prototype
      chain so calling `some_obj.hasOwnProperty(key)` can sometimes throw
      an exception when dealing with JS interop. This mainly occurs when
      objects are created via `Object.create(null)`. The only safe way
      to call this function is directly, e.g. `Object.prototype.hasOwnProperty.call(some_obj, key)`.
-  ")
+  */
   external hasOwnProperty: (t, key) => bool = "call"
 
   @get_index external get_value: (Obj.t, key) => Obj.t = ""
 }
 
-@@ocaml.text("
+/**
    Since now we change it back to use
    Array representation
    this function is higly dependent
@@ -70,8 +70,7 @@ module O = {
 
    ]}
    `obj_dup` is a superset of `array_dup`
-")
-
+*/
 let obj_dup: Obj.t => Obj.t = %raw(`function(x){
   if(Array.isArray(x)){
     var len = x.length  
@@ -112,7 +111,7 @@ let update_dummy: (_, _) => unit = %raw(`function(x,y){
 }
 `)
 
-@ocaml.doc(" TODO: investigate total
+/** TODO: investigate total
     [compare x y] returns [0] if [x] is equal to [y],
     a negative integer if [x] is less than [y],
     and a positive integer if [x] is greater than [y].
@@ -128,7 +127,7 @@ let update_dummy: (_, _) => unit = %raw(`function(x,y){
 
     The compare function can be used as the comparison function required by the [Set.Make] and [Map.Make] functors,
     as well as the [List.sort] and [Array.sort] functions.
-")
+*/
 let rec compare = (a: Obj.t, b: Obj.t): int =>
   if a === b {
     0
@@ -300,9 +299,9 @@ and aux_obj_compare = (a: Obj.t, b: Obj.t) => {
 
 type eq = (Obj.t, Obj.t) => bool
 
-@ocaml.doc(" It is easier to do equality check than comparision, since as long as its
+/** It is easier to do equality check than comparision, since as long as its
     basic type is not the same, it will not equal 
-")
+*/
 let rec equal = (a: Obj.t, b: Obj.t): bool =>
   /* front and formoest, we do not compare function values */
   if a === b {
