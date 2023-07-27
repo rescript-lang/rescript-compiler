@@ -47,6 +47,7 @@ let typeReactRef ~type_ =
           nameJS = reactRefCurrent;
           optional = Mandatory;
           type_ = Null type_;
+          docString = None;
         };
       ] )
 
@@ -162,12 +163,13 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
              type_ |> renderType ~config ~indent ~typeNameIsInterface ~inFunType)
     in
     let noPayloadsRendered = noPayloads |> List.map labelJSToString in
-    let field ~name value =
+    let field ~name ?docString value =
       {
         mutable_ = Mutable;
         nameJS = name;
         optional = Mandatory;
         type_ = TypeVar value;
+        docString;
       }
     in
     let fields fields =
@@ -232,7 +234,7 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
            ^ "| "))
 
 and renderField ~config ~indent ~typeNameIsInterface ~inFunType
-    {mutable_; nameJS = lbl; optional; type_} =
+    {mutable_; nameJS = lbl; optional; type_; docString} =
   let optMarker =
     match optional == Optional with
     | true -> "?"
@@ -249,8 +251,16 @@ and renderField ~config ~indent ~typeNameIsInterface ~inFunType
     | false -> EmitText.quotes lbl
   in
 
-  Indent.break ~indent ^ mutMarker ^ lbl ^ optMarker ^ ": "
-  ^ (type_ |> renderType ~config ~indent ~typeNameIsInterface ~inFunType)
+  let defStr =
+    mutMarker ^ lbl ^ optMarker ^ ": "
+    ^ (type_ |> renderType ~config ~indent ~typeNameIsInterface ~inFunType)
+  in
+  match docString with
+  | None -> Indent.break ~indent ^ defStr
+  | Some docString ->
+    (* Always print comments on newline before definition. *)
+    let indentStr = indent |> Option.value ~default:"" in
+    "\n" ^ indentStr ^ "/**" ^ docString ^ "*/\n" ^ indentStr ^ defStr
 
 and renderFields ~config ~indent ~inFunType ~typeNameIsInterface fields =
   let indent1 = indent |> Indent.more in

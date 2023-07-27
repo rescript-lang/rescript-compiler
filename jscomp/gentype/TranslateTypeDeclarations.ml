@@ -103,23 +103,26 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
                mutability,
                ld_type
                |> TranslateTypeExprFromTypes.translateTypeExprFromTypes ~config
-                    ~typeEnv ))
+                    ~typeEnv,
+               Annotation.getDocPayload ld_attributes ))
     in
     let dependencies =
       fieldTranslations
-      |> List.map (fun (_, _, {TranslateTypeExprFromTypes.dependencies}) ->
+      |> List.map (fun (_, _, {TranslateTypeExprFromTypes.dependencies}, _) ->
              dependencies)
       |> List.concat
     in
     let fields =
       fieldTranslations
-      |> List.map (fun (name, mutable_, {TranslateTypeExprFromTypes.type_}) ->
+      |> List.map
+           (fun (name, mutable_, {TranslateTypeExprFromTypes.type_}, docString)
+           ->
              let optional, type1 =
                match type_ with
                | Option type1 when isOptional name -> (Optional, type1)
                | _ -> (Mandatory, type_)
              in
-             {mutable_; nameJS = name; optional; type_ = type1})
+             {mutable_; nameJS = name; optional; type_ = type1; docString})
     in
     let type_ =
       match fields with
