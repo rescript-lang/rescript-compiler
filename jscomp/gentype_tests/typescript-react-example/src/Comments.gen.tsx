@@ -12,9 +12,11 @@ export type DecideSubject_payload = {
 readonly hint: string };
 
 // tslint:disable-next-line:max-classes-per-file 
+/** The input used to generate the prompt and system prompt. */
 export abstract class DecideSubject_input { protected opaque!: any }; /* simulate opaque types */
 
 // tslint:disable-next-line:interface-over-type-literal
+/** The output from evaluating the llm prompt */
 export type DecideSubject_output = {
   /** The text of the poem.*/
   readonly text: string; 
@@ -24,7 +26,7 @@ export type DecideSubject_output = {
   readonly systemPrompt: string
 };
 
-/**  Decide on a subject matter for a poem. */
+/** Decide on a subject matter for a poem. */
 export const DecideSubject__placeholder: (run:string, times:number) => void = CommentsBS.DecideSubject._placeholder;
 
 export const DecideSubject: { _placeholder: (run:string, times:number) => void } = CommentsBS.DecideSubject

@@ -329,7 +329,7 @@ let emitExportDefault ~emitters name =
   "export default " ^ name ^ ";" |> Emitters.export ~emitters
 
 let emitExportType ~(config : Config.t) ~emitters ~nameAs ~opaque ~type_
-    ~typeNameIsInterface ~typeVars resolvedTypeName =
+    ~typeNameIsInterface ~typeVars ~docString resolvedTypeName =
   let typeParamsString = EmitText.genericsString ~typeVars in
   let isInterface = resolvedTypeName |> typeNameIsInterface in
   let resolvedTypeName =
@@ -357,15 +357,15 @@ let emitExportType ~(config : Config.t) ~emitters ~nameAs ~opaque ~type_
     ^ (match String.capitalize_ascii resolvedTypeName <> resolvedTypeName with
       | true -> "// tslint:disable-next-line:class-name\n"
       | false -> "")
-    ^ "export abstract class " ^ resolvedTypeName ^ typeParamsString
+    ^ docString ^ "export abstract class " ^ resolvedTypeName ^ typeParamsString
     ^ " { protected opaque!: " ^ typeOfOpaqueField
     ^ " }; /* simulate opaque types */" ^ exportNameAs
     |> Emitters.export ~emitters
   else
     (if isInterface && config.exportInterfaces then
-     "export interface " ^ resolvedTypeName ^ typeParamsString ^ " "
+     docString ^ "export interface " ^ resolvedTypeName ^ typeParamsString ^ " "
     else
-      "// tslint:disable-next-line:interface-over-type-literal\n"
+      "// tslint:disable-next-line:interface-over-type-literal\n" ^ docString
       ^ "export type " ^ resolvedTypeName ^ typeParamsString ^ " = ")
     ^ (match type_ with
       | _ -> type_ |> typeToString ~config ~typeNameIsInterface)

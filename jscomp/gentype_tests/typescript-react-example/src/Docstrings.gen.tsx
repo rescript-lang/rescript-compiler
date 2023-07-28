@@ -9,10 +9,10 @@ const DocstringsBS: any = DocstringsBS__Es6Import;
 // tslint:disable-next-line:interface-over-type-literal
 export type t = "A" | "B";
 
-/**  hello  */
+/** hello */
 export const flat: number = DocstringsBS.flat;
 
-/** \n  * Sign a message with a key.\n  *\n  * @param message - A message to be signed\n  * @param key - The key with which to sign the message\n  * @returns A signed message\n  */
+/** \n  * Sign a message with a key.\n  *\n  * @param message - A message to be signed\n  * @param key - The key with which to sign the message\n  * @returns A signed message\n */
 export const signMessage: (message:string, key:number) => string = DocstringsBS.signMessage;
 
 export const one: (a:number) => number = DocstringsBS.one;

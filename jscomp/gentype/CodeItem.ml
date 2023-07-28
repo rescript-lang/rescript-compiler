@@ -7,6 +7,7 @@ type exportType = {
   type_: type_;
   typeVars: string list;
   resolvedTypeName: ResolvedName.t;
+  docString: string option;
 }
 
 type importValue = {

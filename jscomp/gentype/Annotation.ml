@@ -149,12 +149,12 @@ let getAttributeImportRenaming attributes =
 let getDocPayload attributes =
   let docPayload = attributes |> getAttributePayload tagIsDoc in
   match docPayload with
-  | Some (_, StringPayload docString) -> Some docString
+  | Some (_, StringPayload docString) when docString <> "" -> Some docString
   | _ -> None
 
 let mkDocString maybeDoc =
   match maybeDoc with
-  | Some docString -> "/** " ^ docString ^ " */\n"
+  | Some docString -> "/** " ^ String.trim docString ^ " */\n"
   | _ -> ""
 
 let getDocString attributes = getDocPayload attributes |> mkDocString
