@@ -185,7 +185,6 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
                case |> labelJSToString
                |> field ~name:(Runtime.jsVariantTag ~polymorphic:false)
              in
-
              match (unboxed, type_) with
              | true, type_ ->
                let needParens =

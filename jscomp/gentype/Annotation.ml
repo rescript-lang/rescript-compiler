@@ -153,7 +153,7 @@ let getDocPayload attributes =
   | _ -> None
 
 let docStringFromAttrs attributes =
-  attributes |> getDocPayload |> GenTypeCommon.DocString.makeOpt
+  attributes |> getDocPayload |> GenTypeCommon.DocString.make
 
 let hasAttribute checkText (attributes : Typedtree.attributes) =
   getAttributePayload checkText attributes <> None

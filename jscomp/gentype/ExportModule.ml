@@ -4,7 +4,7 @@ type exportModuleItem = (string, exportModuleValue) Hashtbl.t
 
 and exportModuleValue =
   | S of {name: string; type_: type_; docString: DocString.t}
-  | M of {exportModuleItem: exportModuleItem; docString: DocString.t}
+  | M of {exportModuleItem: exportModuleItem}
 
 type exportModuleItems = (string, exportModuleItem) Hashtbl.t
 
@@ -16,7 +16,7 @@ let rec exportModuleValueToType ~config exportModuleValue =
   match exportModuleValue with
   | S {name; type_; docString} ->
     {typeForValue = ident name; typeForType = type_; docString}
-  | M {exportModuleItem; docString} ->
+  | M {exportModuleItem} ->
     let fieldsInfo = exportModuleItem |> exportModuleItemToFields ~config in
     let fieldsForValue =
       fieldsInfo |> List.map (fun {fieldForValue} -> fieldForValue)
@@ -27,7 +27,7 @@ let rec exportModuleValueToType ~config exportModuleValue =
     {
       typeForValue = Object (Open, fieldsForValue);
       typeForType = Object (Open, fieldsForType);
-      docString;
+      docString = DocString.empty;
     }
 
 and exportModuleItemToFields =
@@ -66,7 +66,7 @@ let rec extendExportModuleItem ~docString x
       | exception Not_found ->
         let innerExportModuleItem = Hashtbl.create 1 in
         Hashtbl.replace exportModuleItem fieldName
-          (M {exportModuleItem = innerExportModuleItem; docString});
+          (M {exportModuleItem = innerExportModuleItem});
         innerExportModuleItem
     in
     rest
@@ -103,8 +103,7 @@ let emitAllModuleItems ~config ~emitters ~fileName
   |> rev_fold
        (fun moduleName exportModuleItem emitters ->
          let {typeForType; docString} =
-           M {exportModuleItem; docString = DocString.empty}
-           |> exportModuleValueToType ~config
+           M {exportModuleItem} |> exportModuleValueToType ~config
          in
          if !Debug.codeItems then Log_.item "EmitModule %s @." moduleName;
          let emittedModuleItem =
