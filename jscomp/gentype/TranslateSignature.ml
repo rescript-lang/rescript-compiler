@@ -15,7 +15,7 @@ let translateSignatureValue ~config ~outputFileRelative ~resolver ~typeEnv
   | id, GenType ->
     id |> Ident.name
     |> Translation.translateValue ~attributes:val_attributes ~config
-         ~docString:(Annotation.getDocString val_attributes)
+         ~docString:(Annotation.docStringFromAttrs val_attributes)
          ~outputFileRelative ~resolver ~typeEnv ~typeExpr
          ~addAnnotationsToFunction
   | _ -> Translation.empty

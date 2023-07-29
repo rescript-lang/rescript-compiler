@@ -47,7 +47,7 @@ let typeReactRef ~type_ =
           nameJS = reactRefCurrent;
           optional = Mandatory;
           type_ = Null type_;
-          docString = None;
+          docString = DocString.empty;
         };
       ] )
 
@@ -163,7 +163,7 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
              type_ |> renderType ~config ~indent ~typeNameIsInterface ~inFunType)
     in
     let noPayloadsRendered = noPayloads |> List.map labelJSToString in
-    let field ~name ?docString value =
+    let field ~name ?(docString = DocString.empty) value =
       {
         mutable_ = Mutable;
         nameJS = name;
@@ -185,6 +185,7 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
                case |> labelJSToString
                |> field ~name:(Runtime.jsVariantTag ~polymorphic:false)
              in
+
              match (unboxed, type_) with
              | true, type_ ->
                let needParens =
@@ -255,12 +256,11 @@ and renderField ~config ~indent ~typeNameIsInterface ~inFunType
     mutMarker ^ lbl ^ optMarker ^ ": "
     ^ (type_ |> renderType ~config ~indent ~typeNameIsInterface ~inFunType)
   in
-  match docString with
-  | None -> Indent.break ~indent ^ defStr
-  | Some docString ->
+  if DocString.hasContent docString then
     (* Always print comments on newline before definition. *)
     let indentStr = indent |> Option.value ~default:"" in
-    "\n" ^ indentStr ^ "/**" ^ docString ^ "*/\n" ^ indentStr ^ defStr
+    "\n" ^ indentStr ^ DocString.render docString ^ indentStr ^ defStr
+  else Indent.break ~indent ^ defStr
 
 and renderFields ~config ~indent ~inFunType ~typeNameIsInterface fields =
   let indent1 = indent |> Indent.more in
@@ -312,12 +312,13 @@ let typeToString ~config ~typeNameIsInterface type_ =
 let ofType ~config ~typeNameIsInterface ~type_ s =
   s ^ ": " ^ (type_ |> typeToString ~config ~typeNameIsInterface)
 
-let emitExportConst ~early ?(comment = "") ~config ?(docString = "") ~emitters
-    ~name ~type_ ~typeNameIsInterface line =
+let emitExportConst ~early ?(comment = "") ~config
+    ?(docString = DocString.empty) ~emitters ~name ~type_ ~typeNameIsInterface
+    line =
   (match comment = "" with
   | true -> comment
   | false -> "// " ^ comment ^ "\n")
-  ^ docString ^ "export const "
+  ^ DocString.render docString ^ "export const "
   ^ (name |> ofType ~config ~typeNameIsInterface ~type_)
   ^ " = " ^ line
   |> (match early with
@@ -330,6 +331,7 @@ let emitExportDefault ~emitters name =
 
 let emitExportType ~(config : Config.t) ~emitters ~nameAs ~opaque ~type_
     ~typeNameIsInterface ~typeVars ~docString resolvedTypeName =
+  let docString = DocString.render docString in
   let typeParamsString = EmitText.genericsString ~typeVars in
   let isInterface = resolvedTypeName |> typeNameIsInterface in
   let resolvedTypeName =

@@ -2,6 +2,24 @@ module StringMap = Map.Make (String)
 module StringSet = Set.Make (String)
 module Config = GenTypeConfig
 
+module DocString : sig
+  type t
+  val makeOpt : string option -> t
+  val render : ?newLine:bool -> t -> string
+  val hasContent : t -> bool
+  val empty : t
+end = struct
+  type t = string option
+  let makeOpt str = str
+  let render ?(newLine = true) t =
+    match t with
+    | None | Some "" -> ""
+    | Some docString ->
+      "/** " ^ String.trim docString ^ " */" ^ if newLine then "\n" else ""
+  let empty = makeOpt None
+  let hasContent docString = Option.is_some docString
+end
+
 let logNotImplemented x =
   if !Debug.notImplemented then Log_.item "Not Implemented: %s\n" x
 
@@ -78,7 +96,7 @@ and field = {
   nameJS: string;
   optional: optional;
   type_: type_;
-  docString: string option;
+  docString: DocString.t;
 }
 
 and function_ = {argTypes: argType list; retType: type_; typeVars: string list}

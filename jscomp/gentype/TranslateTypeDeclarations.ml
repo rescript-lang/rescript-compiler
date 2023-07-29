@@ -10,7 +10,7 @@ type declarationKind =
   | NoDeclaration
 
 let createExportTypeFromTypeDeclaration ~annotation ~loc ~nameAs ~opaque ~type_
-    ~typeEnv ?docString typeName ~typeVars : CodeItem.exportFromTypeDeclaration
+    ~typeEnv ~docString typeName ~typeVars : CodeItem.exportFromTypeDeclaration
     =
   let resolvedTypeName =
     typeName |> sanitizeTypeName |> TypeEnv.addModulePath ~typeEnv
@@ -52,7 +52,7 @@ let renameRecordField ~attributes ~name =
 let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
     ~typeAttributes ~typeEnv ~typeName ~typeVars declarationKind :
     CodeItem.typeDeclaration list =
-  let docString = typeAttributes |> Annotation.getDocPayload in
+  let docString = typeAttributes |> Annotation.docStringFromAttrs in
   let annotation = typeAttributes |> Annotation.fromAttributes ~config ~loc in
   let opaque =
     match annotation = Annotation.GenTypeOpaque with
@@ -76,7 +76,7 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
     let exportFromTypeDeclaration =
       typeName
       |> createExportTypeFromTypeDeclaration ~annotation ~loc ~nameAs ~opaque
-           ~type_:translation.type_ ~typeEnv ?docString ~typeVars
+           ~type_:translation.type_ ~typeEnv ~docString ~typeVars
     in
     let importTypes =
       translation.dependencies
@@ -107,7 +107,7 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
                ld_type
                |> TranslateTypeExprFromTypes.translateTypeExprFromTypes ~config
                     ~typeEnv,
-               Annotation.getDocPayload ld_attributes ))
+               Annotation.docStringFromAttrs ld_attributes ))
     in
     let dependencies =
       fieldTranslations
@@ -158,7 +158,7 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
     let exportFromTypeDeclaration =
       (* Make the imported type usable from other modules by exporting it too. *)
       typeName_
-      |> createExportTypeFromTypeDeclaration ?docString ~annotation:GenType ~loc
+      |> createExportTypeFromTypeDeclaration ~docString ~annotation:GenType ~loc
            ~nameAs:None ~opaque:(Some false)
            ~type_:
              (asTypeName
@@ -171,7 +171,7 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
       CodeItem.importTypes = [];
       exportFromTypeDeclaration =
         typeName
-        |> createExportTypeFromTypeDeclaration ?docString ~annotation ~loc
+        |> createExportTypeFromTypeDeclaration ~docString ~annotation ~loc
              ~nameAs ~opaque:(Some true) ~type_:unknown ~typeEnv ~typeVars;
     }
     |> returnTypeDeclaration
@@ -221,7 +221,7 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
       CodeItem.importTypes;
       exportFromTypeDeclaration =
         typeName
-        |> createExportTypeFromTypeDeclaration ?docString ~annotation ~loc
+        |> createExportTypeFromTypeDeclaration ~docString ~annotation ~loc
              ~nameAs ~opaque ~type_ ~typeEnv ~typeVars;
     }
     |> returnTypeDeclaration

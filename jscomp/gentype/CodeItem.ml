@@ -7,7 +7,7 @@ type exportType = {
   type_: type_;
   typeVars: string list;
   resolvedTypeName: ResolvedName.t;
-  docString: string option;
+  docString: DocString.t;
 }
 
 type importValue = {
@@ -18,7 +18,7 @@ type importValue = {
 }
 
 type exportValue = {
-  docString: string;
+  docString: DocString.t;
   moduleAccessPath: Runtime.moduleAccessPath;
   originalName: string;
   resolvedName: ResolvedName.t;

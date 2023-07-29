@@ -8,7 +8,7 @@ const CommentsBS: any = CommentsBS__Es6Import;
 
 // tslint:disable-next-line:interface-over-type-literal
 export type DecideSubject_payload = { 
-/** A hint to use as a guide when thinking of your poem.*/
+/** A hint to use as a guide when thinking of your poem. */
 readonly hint: string };
 
 // tslint:disable-next-line:max-classes-per-file 
@@ -18,15 +18,17 @@ export abstract class DecideSubject_input { protected opaque!: any }; /* simulat
 // tslint:disable-next-line:interface-over-type-literal
 /** The output from evaluating the llm prompt */
 export type DecideSubject_output = {
-  /** The text of the poem.*/
+  /** The text of the poem. */
   readonly text: string; 
-  /** The prompt used to generate the poem.*/
+  /** The prompt used to generate the poem. */
   readonly prompt: string; 
-  /** The system prompt used to generate the poem.*/
+  /** The system prompt used to generate the poem. */
   readonly systemPrompt: string
 };
 
 /** Decide on a subject matter for a poem. */
 export const DecideSubject__placeholder: (run:string, times:number) => void = CommentsBS.DecideSubject._placeholder;
 
-export const DecideSubject: { _placeholder: (run:string, times:number) => void } = CommentsBS.DecideSubject
+export const DecideSubject: { 
+/** Decide on a subject matter for a poem. */
+_placeholder: (run:string, times:number) => void } = CommentsBS.DecideSubject

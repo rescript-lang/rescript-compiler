@@ -152,12 +152,8 @@ let getDocPayload attributes =
   | Some (_, StringPayload docString) when docString <> "" -> Some docString
   | _ -> None
 
-let mkDocString maybeDoc =
-  match maybeDoc with
-  | Some docString -> "/** " ^ String.trim docString ^ " */\n"
-  | _ -> ""
-
-let getDocString attributes = getDocPayload attributes |> mkDocString
+let docStringFromAttrs attributes =
+  attributes |> getDocPayload |> GenTypeCommon.DocString.makeOpt
 
 let hasAttribute checkText (attributes : Typedtree.attributes) =
   getAttributePayload checkText attributes <> None

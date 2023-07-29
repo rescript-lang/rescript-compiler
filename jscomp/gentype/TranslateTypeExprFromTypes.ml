@@ -45,7 +45,13 @@ let translateObjType closedFlag fieldsTranslations =
              | _ -> (Mandatory, t)
            in
            let name = name |> Runtime.mangleObjectField in
-           {mutable_; nameJS = name; optional; type_; docString = None})
+           {
+             mutable_;
+             nameJS = name;
+             optional;
+             type_;
+             docString = DocString.empty;
+           })
   in
   let type_ = Object (closedFlag, fields) in
   {dependencies; type_}
@@ -126,7 +132,7 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
                 nameJS = "contents";
                 optional = Mandatory;
                 type_ = paramTranslation.type_;
-                docString = None;
+                docString = DocString.empty;
               };
             ] );
     }
@@ -477,7 +483,7 @@ and signatureToModuleRuntimeRepresentation ~config ~typeVarsGen ~typeEnv
                  nameJS = id |> Ident.name;
                  optional = Mandatory;
                  type_;
-                 docString = Annotation.getDocPayload val_attributes;
+                 docString = Annotation.docStringFromAttrs val_attributes;
                }
              in
              (dependencies, [field])
@@ -502,7 +508,7 @@ and signatureToModuleRuntimeRepresentation ~config ~typeVarsGen ~typeEnv
                  optional = Mandatory;
                  type_;
                  docString =
-                   Annotation.getDocPayload moduleDeclaration.md_attributes;
+                   Annotation.docStringFromAttrs moduleDeclaration.md_attributes;
                }
              in
              (dependencies, [field])

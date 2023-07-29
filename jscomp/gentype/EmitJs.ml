@@ -71,7 +71,6 @@ let codeItemToString ~config ~typeNameIsInterface (codeItem : CodeItem.t) =
 let emitExportType ~emitters ~config ~typeNameIsInterface
     {CodeItem.loc; nameAs; opaque; type_; typeVars; resolvedTypeName; docString}
     =
-  let docString = Annotation.mkDocString docString in
   let freeTypeVars = TypeVars.free type_ in
   let isGADT =
     freeTypeVars |> List.exists (fun s -> not (List.mem s typeVars))
@@ -337,7 +336,8 @@ let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
       | _ -> (type_, None)
     in
 
-    resolvedName |> ExportModule.extendExportModules ~moduleItemsEmitter ~type_;
+    resolvedName
+    |> ExportModule.extendExportModules ~docString ~moduleItemsEmitter ~type_;
     let emitters =
       match hookType with
       | Some {propsType; resolvedTypeName; typeVars} ->
@@ -349,10 +349,7 @@ let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
              type_ = propsType;
              typeVars;
              resolvedTypeName;
-             docString =
-               (match docString with
-               | "" -> None
-               | docString -> Some docString);
+             docString;
            }
             : CodeItem.exportType)
         in
