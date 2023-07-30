@@ -48,6 +48,11 @@ var o = {
   id: "1"
 };
 
+var o2 = {
+  TAG: "OneSingle",
+  id: "1"
+};
+
 exports.getY = getY;
 exports.getX = getX;
 exports.v = v;
@@ -55,4 +60,5 @@ exports.d = d;
 exports.x = x;
 exports.DeepSub = DeepSub;
 exports.o = o;
+exports.o2 = o2;
 /* No side effect */

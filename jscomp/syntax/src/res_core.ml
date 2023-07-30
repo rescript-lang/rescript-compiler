@@ -134,10 +134,6 @@ module ErrorMessages = struct
   let stringInterpolationInPattern =
     "String interpolation is not supported in pattern matching."
 
-  let spreadInRecordDeclaration =
-    "A record type declaration doesn't support the ... spread. Only an object \
-     (with quoted field names) does."
-
   let objectQuotedFieldName name =
     "An object type declaration needs quoted field names. Did you mean \""
     ^ name ^ "\"?"
@@ -481,6 +477,11 @@ let lidentOfPath longident =
   match Longident.flatten longident |> List.rev with
   | [] -> ""
   | ident :: _ -> ident
+
+let makeRecordDotField ~dotdotdotStart ~dotdotdotEnd ~loc typ =
+  Ast_helper.Type.field ~loc
+    {txt = "..."; loc = mkLoc dotdotdotStart dotdotdotEnd}
+    typ
 
 let makeNewtypes ~attrs ~loc newtypes exp =
   let expr =
@@ -4579,40 +4580,37 @@ and parseConstrDeclArgs p =
           (* start of object type spreading, e.g. `User({...a, "u": int})` *)
           Parser.next p;
           let typ = parseTypExpr p in
-          let () =
-            match p.token with
-            | Rbrace ->
-              (* {...x}, spread without extra fields *)
-              Parser.next p
-            | _ -> Parser.expect Comma p
-          in
-          let () =
-            match p.token with
-            | Lident _ ->
-              Parser.err ~startPos:dotdotdotStart ~endPos:dotdotdotEnd p
-                (Diagnostics.message ErrorMessages.spreadInRecordDeclaration)
-            | _ -> ()
-          in
-          let fields =
-            Parsetree.Oinherit typ
-            :: parseCommaDelimitedRegion
-                 ~grammar:Grammar.StringFieldDeclarations ~closing:Rbrace
-                 ~f:parseStringFieldDeclaration p
-          in
-          Parser.expect Rbrace p;
-          let loc = mkLoc startPos p.prevEndPos in
-          let typ =
-            Ast_helper.Typ.object_ ~loc fields Asttypes.Closed
-            |> parseTypeAlias p
-          in
-          let typ = parseArrowTypeRest ~es6Arrow:true ~startPos typ p in
-          Parser.optional p Comma |> ignore;
-          let moreArgs =
-            parseCommaDelimitedRegion ~grammar:Grammar.TypExprList
-              ~closing:Rparen ~f:parseTypExprRegion p
-          in
-          Parser.expect Rparen p;
-          Parsetree.Pcstr_tuple (typ :: moreArgs)
+          (* always treat single spreads as records *)
+          let isSingleSpread = p.token = Rbrace in
+          if isSingleSpread then (
+            Parser.expect Rbrace p;
+            let loc = mkLoc startPos p.prevEndPos in
+            let dotField =
+              typ |> makeRecordDotField ~loc ~dotdotdotStart ~dotdotdotEnd
+            in
+            Parser.expect Rparen p;
+            Parsetree.Pcstr_record [dotField])
+          else
+            let fields =
+              Parsetree.Oinherit typ
+              :: parseCommaDelimitedRegion
+                   ~grammar:Grammar.StringFieldDeclarations ~closing:Rbrace
+                   ~f:parseStringFieldDeclaration p
+            in
+            Parser.expect Rbrace p;
+            let loc = mkLoc startPos p.prevEndPos in
+            let typ =
+              Ast_helper.Typ.object_ ~loc fields Asttypes.Closed
+              |> parseTypeAlias p
+            in
+            let typ = parseArrowTypeRest ~es6Arrow:true ~startPos typ p in
+            Parser.optional p Comma |> ignore;
+            let moreArgs =
+              parseCommaDelimitedRegion ~grammar:Grammar.TypExprList
+                ~closing:Rparen ~f:parseTypExprRegion p
+            in
+            Parser.expect Rparen p;
+            Parsetree.Pcstr_tuple (typ :: moreArgs)
         | _ -> (
           let attrs = parseAttributes p in
           match p.Parser.token with
@@ -5016,9 +5014,7 @@ and parseRecordOrObjectDecl p =
       Parser.next p;
       let loc = mkLoc startPos p.prevEndPos in
       let dotField =
-        Ast_helper.Type.field ~loc
-          {txt = "..."; loc = mkLoc dotdotdotStart dotdotdotEnd}
-          typ
+        typ |> makeRecordDotField ~loc ~dotdotdotStart ~dotdotdotEnd
       in
       let kind = Parsetree.Ptype_record [dotField] in
       (None, Public, kind)
@@ -5026,9 +5022,7 @@ and parseRecordOrObjectDecl p =
       Parser.expect Comma p;
       let loc = mkLoc startPos p.prevEndPos in
       let dotField =
-        Ast_helper.Type.field ~loc
-          {txt = "..."; loc = mkLoc dotdotdotStart dotdotdotEnd}
-          typ
+        typ |> makeRecordDotField ~loc ~dotdotdotStart ~dotdotdotEnd
       in
       let foundObjectField = ref false in
       let fields =
