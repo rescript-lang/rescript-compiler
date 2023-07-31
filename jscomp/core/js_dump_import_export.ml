@@ -50,7 +50,7 @@ let exports cxt f (idents : Ident.t list) =
         ( cxt,
           if id_name = default_export then
             (* TODO check how it will affect AMDJS*)
-            esModule :: (default_export, str) :: (s, str) :: acc
+            esModule :: (default_export, str) :: acc
           else (s, str) :: acc ))
   in
   P.at_least_two_lines f;
@@ -77,7 +77,7 @@ let es6_export cxt f (idents : Ident.t list) =
         let str, cxt = Ext_pp_scope.str_of_ident cxt id in
         ( cxt,
           if id_name = default_export then
-            (default_export, str) :: (s, str) :: acc
+            (default_export, str) :: acc
           else (s, str) :: acc ))
   in
   P.at_least_two_lines f;

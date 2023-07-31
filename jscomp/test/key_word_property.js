@@ -52,7 +52,6 @@ function u(param) {
 
 var $$case = 3;
 
-exports.$$default = $$default;
 exports.default = $$default;
 exports.__esModule = true;
 exports.default2 = default2;
