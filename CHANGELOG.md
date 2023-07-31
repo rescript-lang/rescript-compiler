@@ -16,6 +16,10 @@
 
 - GenType: Propagate comments from record fields to emitted TypeScript types. https://github.com/rescript-lang/rescript-compiler/pull/6333
 
+#### :boom: Breaking Change
+
+- `$$default` is no longer exported from the generated JavaScript when using default exports. https://github.com/rescript-lang/rescript-compiler/pull/6328
+
 # 11.0.0-beta.4
 
 #### :rocket: New Feature
