@@ -35,7 +35,7 @@ type error =
   | Apply_non_function of type_expr
   | Apply_wrong_label of arg_label * type_expr
   | Label_multiply_defined of string
-  | Labels_missing of string list
+  | Labels_missing of string list * bool
   | Label_not_mutable of Longident.t
   | Wrong_name of string * type_expr * string * Path.t * string * string list
   | Name_type_mismatch of
@@ -1963,6 +1963,11 @@ let rec lower_args env seen ty_fun  =
 let not_function env ty =
   let ls, tvar = list_labels env ty in
   ls = [] && not tvar
+
+let check_might_be_component env ty_record =
+  match (expand_head env ty_record).desc with 
+  | Tconstr (path, _, _) when path |> Path.last = "props" -> true 
+  | _ -> false
     
 type lazy_args = 
   (Asttypes.arg_label * (unit -> Typedtree.expression) option) list
@@ -2299,8 +2304,9 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
               else
                 Some name in
             let labels_missing = fields |> List.filter_map filter_missing in
-            if labels_missing <> [] then
-              raise(Error(loc, env, Labels_missing labels_missing));
+            if labels_missing <> [] then (
+              let might_be_component = check_might_be_component env ty_record in
+              raise(Error(loc, env, Labels_missing (labels_missing, might_be_component))));
             [||], representation
         | [], _ ->
           if fields = [] && repr_opt <> None then
@@ -2324,8 +2330,9 @@ and type_expect_ ?in_function ?(recarg=Rejected) env sexp ty_expected =
                       Overridden ({loc ; txt = Lident lbl.lbl_name}, option_none lbl.lbl_arg loc))
                   label_descriptions
         in
-        if !labels_missing <> [] then
-          raise(Error(loc, env, Labels_missing (List.rev !labels_missing)));
+        if !labels_missing <> [] then (
+          let might_be_component = check_might_be_component env ty_record in
+          raise(Error(loc, env, Labels_missing ((List.rev !labels_missing), might_be_component))));
         let fields =
           Array.map2 (fun descr def -> descr, def)
             label_descriptions label_definitions
@@ -3862,11 +3869,12 @@ let report_error env ppf = function
         type_expr ty print_label l
   | Label_multiply_defined s ->
       fprintf ppf "The record field label %s is defined several times" s
-  | Labels_missing labels ->
+  | Labels_missing (labels, might_be_component) ->
       let print_labels ppf =
         List.iter (fun lbl -> fprintf ppf "@ %s" ( lbl)) in
-      fprintf ppf "@[<hov>Some required record fields are missing:%a. If this is a component, add the missing props.@]"
-        print_labels labels
+      let component_text = if might_be_component then " If this is a component, add the missing props." else "" in
+      fprintf ppf "@[<hov>Some required record fields are missing:%a.%s@]"
+        print_labels labels component_text
   | Label_not_mutable lid ->
       fprintf ppf "The record field %a is not mutable" longident lid
   | Wrong_name (eorp, ty, kind, p, name, valid_names) ->

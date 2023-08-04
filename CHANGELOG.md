@@ -20,6 +20,9 @@
 
 - `$$default` is no longer exported from the generated JavaScript when using default exports. https://github.com/rescript-lang/rescript-compiler/pull/6328
 
+#### :nail_care: Polish
+- Conditionally print error message about record with missing label potentially being a component. https://github.com/rescript-lang/rescript-compiler/pull/6337
+
 # 11.0.0-beta.4
 
 #### :rocket: New Feature
