@@ -634,7 +634,7 @@ external int_of_string: string => int = "?int_of_string"
 */
 let int_of_string_opt: string => option<int>
 
-@ocaml.deprecated(
+@deprecated(
   "Please use Js.Float.toString instead, string_of_float generates unparseable floats"
 )
 /** Return the string representation of a floating-point number. */
@@ -675,7 +675,7 @@ external snd: (('a, 'b)) => 'b = "%field1"
    More list operations are provided in module {!List}.
 */
 
-@ocaml.deprecated("Use Belt.List.concat instead")
+@deprecated("Use Belt.List.concat instead")
 /** List concatenation.  Tail-recursive (length of the first argument).
     Right-associative operator at precedence level 5/11. */
 let \"@": (list<'a>, list<'a>) => list<'a>

@@ -83,11 +83,11 @@ let from_val: 'a => t<'a>
     @since 4.00.0 */
 let is_val: t<'a> => bool
 
-@ocaml.deprecated("Use Lazy.from_fun instead.") /** @deprecated synonym for [from_fun]. */
+@deprecated("Use Lazy.from_fun instead.") /** @deprecated synonym for [from_fun]. */
 let lazy_from_fun: (unit => 'a) => t<'a>
 
-@ocaml.deprecated("Use Lazy.from_val instead.") /** @deprecated synonym for [from_val]. */
+@deprecated("Use Lazy.from_val instead.") /** @deprecated synonym for [from_val]. */
 let lazy_from_val: 'a => t<'a>
 
-@ocaml.deprecated("Use Lazy.is_val instead.") /** @deprecated synonym for [is_val]. */
+@deprecated("Use Lazy.is_val instead.") /** @deprecated synonym for [is_val]. */
 let lazy_is_val: t<'a> => bool

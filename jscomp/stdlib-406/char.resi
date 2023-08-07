@@ -32,13 +32,13 @@ let chr: int => char
     escaped, as well as backslash, double-quote, and single-quote. */
 let escaped: char => string
 
-@ocaml.deprecated("Use Char.lowercase_ascii instead.")
+@deprecated("Use Char.lowercase_ascii instead.")
 /** Convert the given character to its equivalent lowercase character,
    using the ISO Latin-1 (8859-1) character set.
    @deprecated Functions operating on Latin-1 character set are deprecated. */
 let lowercase: char => char
 
-@ocaml.deprecated("Use Char.uppercase_ascii instead.")
+@deprecated("Use Char.uppercase_ascii instead.")
 /** Convert the given character to its equivalent uppercase character,
    using the ISO Latin-1 (8859-1) character set.
    @deprecated Functions operating on Latin-1 character set are deprecated. */

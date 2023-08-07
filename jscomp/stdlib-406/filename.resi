@@ -114,7 +114,7 @@ let get_temp_dir_name: unit => string
 */
 let set_temp_dir_name: string => unit
 
-@ocaml.deprecated("Use Filename.get_temp_dir_name instead")
+@deprecated("Use Filename.get_temp_dir_name instead")
 /** The name of the initial temporary directory:
     Under Unix, the value of the [TMPDIR] environment variable, or \"/tmp\"
     if the variable is not set.

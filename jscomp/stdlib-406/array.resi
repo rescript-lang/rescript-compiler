@@ -50,7 +50,7 @@ external set: (array<'a>, int, 'a) => unit = "%array_safe_set"
    size is only [Sys.max_array_length / 2].*/
 external make: (int, 'a) => array<'a> = "?make_vect"
 
-@ocaml.deprecated("Use Array.make instead.")
+@deprecated("Use Array.make instead.")
 /** @deprecated [Array.create] is an alias for {!Array.make}. */
 external create: (int, 'a) => array<'a> = "?make_vect"
 
@@ -59,7 +59,7 @@ external create: (int, 'a) => array<'a> = "?make_vect"
     @since 4.03 */
 external create_float: int => array<float> = "?make_float_vect"
 
-@ocaml.deprecated("Use Array.create_float instead.")
+@deprecated("Use Array.create_float instead.")
 /** @deprecated [Array.make_float] is an alias for {!Array.create_float}. */
 let make_float: int => array<float>
 
@@ -86,7 +86,7 @@ let init: (int, int => 'a) => array<'a>
    size is only [Sys.max_array_length / 2]. */
 let make_matrix: (int, int, 'a) => array<array<'a>>
 
-@ocaml.deprecated("Use Array.make_matrix instead.")
+@deprecated("Use Array.make_matrix instead.")
 /** @deprecated [Array.create_matrix] is an alias for {!Array.make_matrix}. */
 let create_matrix: (int, int, 'a) => array<array<'a>>
 

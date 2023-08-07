@@ -21,13 +21,13 @@
    The new functions are faster and use less memory.
 ")
 
-@ocaml.deprecated("Use List.sort instead.")
+@deprecated("Use List.sort instead.")
 /** Sort a list in increasing order according to an ordering predicate.
    The predicate should return [true] if its first argument is
    less than or equal to its second argument. */
 let list: (('a, 'a) => bool, list<'a>) => list<'a>
 
-@ocaml.deprecated("Use Array.sort instead.")
+@deprecated("Use Array.sort instead.")
 /** Sort an array in increasing order according to an
    ordering predicate.
    The predicate should return [true] if its first argument is
@@ -35,7 +35,7 @@ let list: (('a, 'a) => bool, list<'a>) => list<'a>
    The array is sorted in place. */
 let array: (('a, 'a) => bool, array<'a>) => unit
 
-@ocaml.deprecated("Use List.merge instead.")
+@deprecated("Use List.merge instead.")
 /** Merge two lists according to the given predicate.
    Assuming the two argument lists are sorted according to the
    predicate, [merge] returns a sorted list containing the elements
