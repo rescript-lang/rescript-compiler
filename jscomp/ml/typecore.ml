@@ -3886,12 +3886,16 @@ let report_error env ppf = function
         name
         Printtyp.path p;
     end else begin
-      fprintf ppf "@[@[<2>%s type@ @{<info>%a@}@]@ "
-        eorp type_expr ty;
+      fprintf ppf "@[<v>";
 
-      fprintf ppf "The %s @{<error>%s@} does not belong to type @{<info>%a@}@]"
+      fprintf ppf "@[<2>The %s @{<error>%s@} does not belong to type @{<info>%a@}@]@,@,"
         (label_of_kind kind)
         name (*kind*) Printtyp.path p;
+
+      fprintf ppf "@[<2>%s type@ @{<info>%a@}@]"
+        eorp type_expr ty;
+
+      fprintf ppf "@]";      
     end;
     spellcheck ppf name valid_names;
   | Name_type_mismatch (kind, lid, tp, tpl) ->

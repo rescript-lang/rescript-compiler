@@ -22,6 +22,7 @@
 
 #### :nail_care: Polish
 - Conditionally print error message about record with missing label potentially being a component. https://github.com/rescript-lang/rescript-compiler/pull/6337
+- Put definition in the bottom and the actual error at the top when reporting errors for supplying fields etc with the wrong name. https://github.com/rescript-lang/rescript-compiler/pull/6336
 
 # 11.0.0-beta.4
 
