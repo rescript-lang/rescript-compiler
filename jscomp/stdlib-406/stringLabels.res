@@ -32,8 +32,8 @@ let bos = B.unsafe_of_string
 
 external make: (int, char) => string = "?string_repeat"
 
-let init = (n, ~f) => B.init(n, f) |> bts
-let sub = (s, ~pos as ofs, ~len) => B.sub(bos(s), ofs, len) |> bts
+let init = (n, ~f) => bts(B.init(n, f))
+let sub = (s, ~pos as ofs, ~len) => bts(B.sub(bos(s), ofs, len))
 let blit = (~src, ~src_pos, ~dst, ~dst_pos, ~len) => B.blit_string(src, src_pos, dst, dst_pos, len)
 
 %%private(@send external join: (array<string>, string) => string = "join")
@@ -52,8 +52,8 @@ let iteri = (~f, s) =>
     f(i, unsafe_get(s, i))
   }
 
-let map = (~f, s) => B.map(f, bos(s)) |> bts
-let mapi = (~f, s) => B.mapi(f, bos(s)) |> bts
+let map = (~f, s) => bts(B.map(f, bos(s)))
+let mapi = (~f, s) => bts(B.mapi(f, bos(s)))
 
 /* Beware: we cannot use B.trim or B.escape because they always make a
    copy, but String.mli spells out some cases where we are not allowed
@@ -212,10 +212,10 @@ let rcontains_from = (s, i, c) =>
     }
   }
 
-let uppercase_ascii = s => B.uppercase_ascii(bos(s)) |> bts
-let lowercase_ascii = s => B.lowercase_ascii(bos(s)) |> bts
-let capitalize_ascii = s => B.capitalize_ascii(bos(s)) |> bts
-let uncapitalize_ascii = s => B.uncapitalize_ascii(bos(s)) |> bts
+let uppercase_ascii = s => bts(B.uppercase_ascii(bos(s)))
+let lowercase_ascii = s => bts(B.lowercase_ascii(bos(s)))
+let capitalize_ascii = s => bts(B.capitalize_ascii(bos(s)))
+let uncapitalize_ascii = s => bts(B.uncapitalize_ascii(bos(s)))
 
 type t = string
 
