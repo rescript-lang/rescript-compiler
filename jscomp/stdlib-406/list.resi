@@ -1,4 +1,4 @@
-@@ocaml.text(/* ************************************************************************ */
+/* ************************************************************************ */
 /*  */
 /* OCaml */
 /*  */
@@ -13,7 +13,7 @@
 /*  */
 /* ************************************************************************ */
 
-" List operations.
+/*** List operations.
 
    Some functions are flagged as not tail-recursive.  A tail-recursive
    function uses constant stack space, while a non-tail-recursive function
@@ -24,7 +24,7 @@
 
    The above considerations can usually be ignored if your lists are not
    longer than about 10000 elements.
-")
+*/
 
 /** Return the length (number of elements) of the given list. */
 let length: list<'a> => int
@@ -98,7 +98,7 @@ let concat: list<list<'a>> => list<'a>
 /** An alias for [concat]. */
 let flatten: list<list<'a>> => list<'a>
 
-@@ocaml.text(" {1 Iterators} ")
+/* {1 Iterators} */
 
 /** [List.iter f [a1; ...; an]] applies function [f] in turn to
    [a1; ...; an]. It is equivalent to
@@ -137,7 +137,7 @@ let fold_left: (('a, 'b) => 'a, 'a, list<'b>) => 'a
    [f a1 (f a2 (... (f an b) ...))].  Not tail-recursive. */
 let fold_right: (('a, 'b) => 'b, list<'a>, 'b) => 'b
 
-@@ocaml.text(" {1 Iterators on two lists} ")
+/* {1 Iterators on two lists} */
 
 /** [List.iter2 f [a1; ...; an] [b1; ...; bn]] calls in turn
    [f a1 b1; ...; f an bn].
@@ -168,7 +168,7 @@ let fold_left2: (('a, 'b, 'c) => 'a, 'a, list<'b>, list<'c>) => 'a
    to have different lengths.  Not tail-recursive. */
 let fold_right2: (('a, 'b, 'c) => 'c, list<'a>, list<'b>, 'c) => 'c
 
-@@ocaml.text(" {1 List scanning} ")
+/* {1 List scanning} */
 
 /** [for_all p [a1; ...; an]] checks if all elements of the list
    satisfy the predicate [p]. That is, it returns
@@ -198,7 +198,7 @@ let mem: ('a, list<'a>) => bool
    equality to compare list elements. */
 let memq: ('a, list<'a>) => bool
 
-@@ocaml.text(" {1 List searching} ")
+/* {1 List searching} */
 
 /** [find p l] returns the first element of the list [l]
    that satisfies the predicate [p].
@@ -227,7 +227,7 @@ let find_all: ('a => bool, list<'a>) => list<'a>
    The order of the elements in the input list is preserved. */
 let partition: ('a => bool, list<'a>) => (list<'a>, list<'a>)
 
-@@ocaml.text(" {1 Association lists} ")
+/* {1 Association lists} */
 
 /** [assoc a l] returns the value associated with key [a] in the list of
    pairs [l]. That is,
@@ -272,7 +272,7 @@ let remove_assoc: ('a, list<('a, 'b)>) => list<('a, 'b)>
    of structural equality to compare keys.  Not tail-recursive. */
 let remove_assq: ('a, list<('a, 'b)>) => list<('a, 'b)>
 
-@@ocaml.text(" {1 Lists of pairs} ")
+/* {1 Lists of pairs} */
 
 /** Transform a list of pairs into a pair of lists:
    [split [(a1,b1); ...; (an,bn)]] is [([a1; ...; an], [b1; ...; bn])].
@@ -287,7 +287,7 @@ let split: list<('a, 'b)> => (list<'a>, list<'b>)
    have different lengths.  Not tail-recursive. */
 let combine: (list<'a>, list<'b>) => list<('a, 'b)>
 
-@@ocaml.text(" {1 Sorting} ")
+/* {1 Sorting} */
 
 /** Sort a list in increasing order according to a comparison
    function.  The comparison function must return 0 if its arguments

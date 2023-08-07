@@ -1,21 +1,19 @@
-@@ocaml.text(
-  /* ************************************************************************ */
-  /*  */
-  /* OCaml */
-  /*  */
-  /* Xavier Leroy, projet Cristal, INRIA Rocquencourt */
-  /*  */
-  /* Copyright 1996 Institut National de Recherche en Informatique et */
-  /* en Automatique. */
-  /*  */
-  /* All rights reserved.  This file is distributed under the terms of */
-  /* the GNU Lesser General Public License version 2.1, with the */
-  /* special exception on linking described in the file LICENSE. */
-  /*  */
-  /* ************************************************************************ */
+/* ************************************************************************ */
+/*  */
+/* OCaml */
+/*  */
+/* Xavier Leroy, projet Cristal, INRIA Rocquencourt */
+/*  */
+/* Copyright 1996 Institut National de Recherche en Informatique et */
+/* en Automatique. */
+/*  */
+/* All rights reserved.  This file is distributed under the terms of */
+/* the GNU Lesser General Public License version 2.1, with the */
+/* special exception on linking described in the file LICENSE. */
+/*  */
+/* ************************************************************************ */
 
-  " Character operations. "
-)
+/*** Character operations. */
 
 /** Return the ASCII code of the argument. */
 external code: char => int = "%identity"
@@ -66,8 +64,6 @@ let compare: (t, t) => int
 /** The equal function for chars.
     @since 4.03.0 */
 let equal: (t, t) => bool
-
-@@ocaml.text("/*")
 
 /* The following is for system use only. Do not call directly. */
 

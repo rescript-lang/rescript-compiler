@@ -1,4 +1,4 @@
-@@ocaml.text(/* ************************************************************************ */
+/* ************************************************************************ */
 /*  */
 /* OCaml */
 /*  */
@@ -13,12 +13,12 @@
 /*  */
 /* ************************************************************************ */
 
-" Complex numbers.
+/*** Complex numbers.
 
     This module provides arithmetic operations on complex numbers.
     Complex numbers are represented by their real and imaginary parts
     (cartesian representation).  Each part is represented by a
-    double-precision floating-point number (type [float]).   ")
+    double-precision floating-point number (type [float]). */
 
 /** The type of complex numbers.  [re] is the real part and [im] the
     imaginary part. */

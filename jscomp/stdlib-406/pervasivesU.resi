@@ -634,9 +634,7 @@ external int_of_string: string => int = "?int_of_string"
 */
 let int_of_string_opt: string => option<int>
 
-@deprecated(
-  "Please use Js.Float.toString instead, string_of_float generates unparseable floats"
-)
+@deprecated("Please use Js.Float.toString instead, string_of_float generates unparseable floats")
 /** Return the string representation of a floating-point number. */
 let string_of_float: float => string
 

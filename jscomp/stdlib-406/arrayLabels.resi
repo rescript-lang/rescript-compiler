@@ -1,21 +1,19 @@
-@@ocaml.text(
-  /* ************************************************************************ */
-  /*  */
-  /* OCaml */
-  /*  */
-  /* Xavier Leroy, projet Cristal, INRIA Rocquencourt */
-  /*  */
-  /* Copyright 1996 Institut National de Recherche en Informatique et */
-  /* en Automatique. */
-  /*  */
-  /* All rights reserved.  This file is distributed under the terms of */
-  /* the GNU Lesser General Public License version 2.1, with the */
-  /* special exception on linking described in the file LICENSE. */
-  /*  */
-  /* ************************************************************************ */
+/* ************************************************************************ */
+/*  */
+/* OCaml */
+/*  */
+/* Xavier Leroy, projet Cristal, INRIA Rocquencourt */
+/*  */
+/* Copyright 1996 Institut National de Recherche en Informatique et */
+/* en Automatique. */
+/*  */
+/* All rights reserved.  This file is distributed under the terms of */
+/* the GNU Lesser General Public License version 2.1, with the */
+/* special exception on linking described in the file LICENSE. */
+/*  */
+/* ************************************************************************ */
 
-  " Array operations. "
-)
+/*** Array operations. */
 
 /** Return the length (number of elements) of the given array. */
 external length: array<'a> => int = "%array_length"
@@ -157,7 +155,7 @@ let fold_left: (~f: ('a, 'b) => 'a, ~init: 'a, array<'b>) => 'a
    where [n] is the length of the array [a]. */
 let fold_right: (~f: ('b, 'a) => 'a, array<'b>, ~init: 'a) => 'a
 
-@@ocaml.text(" {6 Iterators on two arrays} ")
+/* {6 Iterators on two arrays} */
 
 /** [Array.iter2 f a b] applies function [f] to all the elements of [a]
    and [b].
@@ -172,7 +170,7 @@ let iter2: (~f: ('a, 'b) => unit, array<'a>, array<'b>) => unit
    @since 4.05.0 */
 let map2: (~f: ('a, 'b) => 'c, array<'a>, array<'b>) => array<'c>
 
-@@ocaml.text(" {6 Array scanning} ")
+/* {6 Array scanning} */
 
 /** [Array.exists p [|a1; ...; an|]] checks if at least one element of
     the array satisfies the predicate [p]. That is, it returns
@@ -206,7 +204,7 @@ external create_float: int => array<float> = "?make_float_vect"
     {!Array.create_float}. */
 let make_float: int => array<float>
 
-@@ocaml.text(" {1 Sorting} ")
+/* {1 Sorting} */
 
 /** Sort an array in increasing order according to a comparison
    function.  The comparison function must return 0 if its arguments
@@ -249,9 +247,7 @@ let stable_sort: (~cmp: ('a, 'a) => int, array<'a>) => unit
 */
 let fast_sort: (~cmp: ('a, 'a) => int, array<'a>) => unit
 
-@@ocaml.text("/*")
-
-@@ocaml.text(" {1 Undocumented functions} ")
+/* {1 Undocumented functions} */
 
 /* The following is for system use only. Do not call directly. */
 

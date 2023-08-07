@@ -1,4 +1,4 @@
-@@ocaml.text(/* ************************************************************************ */
+/* ************************************************************************ */
 /*  */
 /* OCaml */
 /*  */
@@ -13,7 +13,7 @@
 /*  */
 /* ************************************************************************ */
 
-" Extra labeled libraries.
+/*** Extra labeled libraries.
 
    This meta-module provides labelized version of the {!Hashtbl},
    {!Map} and {!Set} modules.
@@ -21,7 +21,7 @@
    They only differ by their labels. They are provided to help
    porting from previous versions of OCaml.
    The contents of this module are subject to change.
-")
+*/
 
 module Hashtbl: {
   type t<'a, 'b> = Hashtbl.t<'a, 'b>

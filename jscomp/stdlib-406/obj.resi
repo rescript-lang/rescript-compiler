@@ -1,4 +1,4 @@
-@@ocaml.text(/* ************************************************************************ */
+/* ************************************************************************ */
 /*  */
 /* OCaml */
 /*  */
@@ -13,10 +13,10 @@
 /*  */
 /* ************************************************************************ */
 
-" Operations on internal representations of values.
+/*** Operations on internal representations of values.
 
    Not for the casual user.
-")
+*/
 
 type t
 
@@ -26,15 +26,14 @@ external magic: 'a => 'b = "%identity"
 @inline(always) let is_block: t => bool
 
 external tag: t => int = "?obj_tag"
-external size: t => int = "#obj_length"
-
-@@ocaml.text("
+/**
      Computes the total size (in words, including the headers) of all
      heap blocks accessible from the argument.  Statically
      allocated blocks are excluded.
 
      @Since 4.04
-  ")
+*/
+external size: t => int = "#obj_length"
 
 external field: (t, int) => t = "%obj_field"
 

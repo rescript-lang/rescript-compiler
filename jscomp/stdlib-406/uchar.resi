@@ -1,4 +1,4 @@
-@@ocaml.text(/* ************************************************************************ */
+/* ************************************************************************ */
 /*  */
 /* OCaml */
 /*  */
@@ -13,9 +13,9 @@
 /*  */
 /* ************************************************************************ */
 
-" Unicode characters.
+/*** Unicode characters.
 
-    @since 4.03 ")
+    @since 4.03 */
 
 /** The type for Unicode characters.
 
@@ -66,9 +66,7 @@ let is_valid: int => bool
     @raise Invalid_argument if [i] does not satisfy {!is_valid}. */
 let of_int: int => t
 
-@@ocaml.text("/*")
 let unsafe_of_int: int => t
-@@ocaml.text("/*")
 
 /** [to_int u] is [u] as an integer. */
 let to_int: t => int
@@ -84,9 +82,7 @@ let of_char: char => t
     @raise Invalid_argument if [u] does not satisfy {!is_char}. */
 let to_char: t => char
 
-@@ocaml.text("/*")
 let unsafe_to_char: t => char
-@@ocaml.text("/*")
 
 /** [equal u u'] is [u = u']. */
 let equal: (t, t) => bool

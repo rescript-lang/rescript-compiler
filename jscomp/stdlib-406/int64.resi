@@ -1,4 +1,4 @@
-@@ocaml.text(/* ************************************************************************ */
+/* ************************************************************************ */
 /*  */
 /* OCaml */
 /*  */
@@ -13,7 +13,7 @@
 /*  */
 /* ************************************************************************ */
 
-" 64-bit integers.
+/*** 64-bit integers.
 
    This module provides operations on the type [int64] of
    signed 64-bit integers.  Unlike the built-in [int] type,
@@ -25,7 +25,7 @@
    space than values of type [int], and arithmetic operations on
    [int64] are generally slower than those on [int].  Use [int64]
    only when the application requires exact 64-bit arithmetic.
-")
+*/
 
 /** The 64-bit integer 0. */
 let zero: int64
@@ -182,9 +182,7 @@ let compare: (t, t) => int
     @since 4.03.0 */
 let equal: (t, t) => bool
 
-@@ocaml.text("/*")
-
-@@ocaml.text(" {1 Deprecated functions} ")
+/* {1 Deprecated functions} */
 
 /** Do not use this deprecated function.  Instead,
    used {!Printf.sprintf} with a [%L...] format. */

@@ -1,4 +1,4 @@
-@@ocaml.text(/* ************************************************************************ */
+/* ************************************************************************ */
 /*  */
 /* OCaml */
 /*  */
@@ -13,7 +13,7 @@
 /*  */
 /* ************************************************************************ */
 
-" MD5 message digest.
+/*** MD5 message digest.
 
    This module provides functions to compute 128-bit 'digests' of
    arbitrary-length strings or files. The digests are of cryptographic
@@ -22,7 +22,7 @@
    used for secure and sensitive cryptographic applications. For these
    kind of applications more recent and stronger cryptographic
    primitives should be used instead.
-")
+*/
 
 /** The type of digests: 16-character strings. */
 type t = string

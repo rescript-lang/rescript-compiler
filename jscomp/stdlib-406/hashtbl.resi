@@ -1,4 +1,4 @@
-@@ocaml.text(/* ************************************************************************ */
+/* ************************************************************************ */
 /*  */
 /* OCaml */
 /*  */
@@ -13,12 +13,12 @@
 /*  */
 /* ************************************************************************ */
 
-" Hash tables and hash functions.
+/*** Hash tables and hash functions.
 
    Hash tables are hashed association tables, with in-place modification.
-")
+*/
 
-@@ocaml.text(" {1 Generic interface} ")
+/* {1 Generic interface} */
 
 /** The type of hash tables from type ['a] to type ['b]. */
 type t<'a, 'b>
@@ -214,9 +214,9 @@ type statistics = {
    @since 4.00.0 */
 let stats: t<'a, 'b> => statistics
 
-@@ocaml.text(" {1 Functorial interface} ")
+/* {1 Functorial interface}
 
-@@ocaml.text(" The functorial interface allows the use of specific comparison
+The functorial interface allows the use of specific comparison
     and hash functions, either for performance/security concerns,
     or because keys are not hashable/comparable with the polymorphic builtins.
 
@@ -243,7 +243,7 @@ let stats: t<'a, 'b> => statistics
     the type [('a,'b) Hashtbl.t] of the generic interface. For
     example, [Hashtbl.length h] would not type-check, you must use
     [IntHashtbl.length].
-")
+*/
 
 /** The input signature of the functor {!Hashtbl.Make}. */
 module type HashedType = {
@@ -367,7 +367,7 @@ module type SeededS = {
     @since 4.00.0 */
 module MakeSeeded: (H: SeededHashedType) => (SeededS with type key = H.t)
 
-@@ocaml.text(" {1 The polymorphic hash functions} ")
+/* {1 The polymorphic hash functions} */
 
 /** [Hashtbl.hash x] associates a nonnegative integer to any value of
    any type. It is guaranteed that

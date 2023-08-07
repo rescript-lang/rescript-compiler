@@ -1,4 +1,4 @@
-@@ocaml.text(/* ************************************************************************ */
+/* ************************************************************************ */
 /*  */
 /* OCaml */
 /*  */
@@ -13,7 +13,7 @@
 /*  */
 /* ************************************************************************ */
 
-" Byte sequence operations.
+/*** Byte sequence operations.
 
    A byte sequence is a mutable data structure that contains a
    fixed-length sequence of bytes. Each byte can be indexed in
@@ -40,7 +40,7 @@
    Bytes are represented by the OCaml type [char].
 
    @since 4.02.0
- ")
+*/
 
 /** Return the length (number of bytes) of the argument. */
 external length: bytes => int = "%bytes_length"
@@ -292,7 +292,7 @@ let compare: (t, t) => int
     @since 4.03.0 */
 let equal: (t, t) => bool
 
-@@ocaml.text(" {3 Unsafe conversions (for advanced users)}
+/* {3 Unsafe conversions (for advanced users)}
 
     This section describes unsafe, low-level conversion functions
     between [bytes] and [string]. They do not copy the internal data;
@@ -300,7 +300,7 @@ let equal: (t, t) => bool
     strings provided by the [-safe-string] option. They are available for
     expert library authors, but for most purposes you should use the
     always-correct {!Bytes.to_string} and {!Bytes.of_string} instead.
-")
+*/
 
 /** Unsafely convert a byte sequence into a string.
 
@@ -420,8 +420,6 @@ let s = Bytes.of_string \"hello\"
     [string] type for this purpose.
 */
 let unsafe_of_string: string => bytes
-
-@@ocaml.text("/*")
 
 /* The following is for system use only. Do not call directly. */
 

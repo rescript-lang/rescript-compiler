@@ -1,4 +1,4 @@
-@@ocaml.text(/* ************************************************************************ */
+/* ************************************************************************ */
 /*  */
 /* OCaml */
 /*  */
@@ -13,7 +13,7 @@
 /*  */
 /* ************************************************************************ */
 
-" A generic lexical analyzer.
+/*** A generic lexical analyzer.
 
 
    This module implements a simple 'standard' lexical analyzer, presented
@@ -43,7 +43,7 @@
    notation for streams are only available through camlp4 extensions. This
    means that one has to preprocess its sources {i e. g.} by using the
    [\"-pp\"] command-line switch of the compilers.
-")
+*/
 
 /** The type of tokens. The lexical classes are: [Int] and [Float]
    for integer and floating-point numbers; [String] for

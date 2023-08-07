@@ -1,4 +1,4 @@
-@@ocaml.text(/* ************************************************************************ */
+/* ************************************************************************ */
 /*  */
 /* OCaml */
 /*  */
@@ -13,13 +13,13 @@
 /*  */
 /* ************************************************************************ */
 
-" Sorting and merging lists.
+/*** Sorting and merging lists.
 
    @deprecated This module is obsolete and exists only for backward
    compatibility.
    The sorting functions in {!Array} and {!List} should be used instead.
    The new functions are faster and use less memory.
-")
+*/
 
 @deprecated("Use List.sort instead.")
 /** Sort a list in increasing order according to an ordering predicate.

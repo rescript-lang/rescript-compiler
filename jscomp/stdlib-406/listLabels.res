@@ -397,7 +397,7 @@ let rec combine = (l1, l2) =>
   | (_, _) => invalid_arg("List.combine")
   }
 
-@@ocaml.text(" sorting ")
+/* sorting */
 
 let rec merge = (~cmp, l1, l2) =>
   switch (l1, l2) {
@@ -522,14 +522,13 @@ let stable_sort = (~cmp, l) => {
 let sort = stable_sort
 let fast_sort = stable_sort
 
-@@ocaml.text(
-  /* Note: on a list of length between about 100000 (depending on the minor
-   heap size and the type of the list) and Sys.max_array_size, it is
-   actually faster to use the following, but it might also use more memory
-   because the argument list cannot be deallocated incrementally.
+/* Note: on a list of length between about 100000 (depending on the minor
+  heap size and the type of the list) and Sys.max_array_size, it is
+  actually faster to use the following, but it might also use more memory
+  because the argument list cannot be deallocated incrementally.
 
-   Also, there seems to be a bug in this code or in the
-   implementation of obj_truncate.
+  Also, there seems to be a bug in this code or in the
+  implementation of obj_truncate.
 
 external obj_truncate : 'a array -> int -> unit = "caml_obj_truncate"
 
@@ -552,11 +551,9 @@ let stable_sort cmp l =
   let a = Array.of_list l in
   Array.stable_sort cmp a;
   array_to_list_in_place a
-
 */
 
-  " sorting + removing duplicates "
-)
+/* sorting + removing duplicates */
 
 let sort_uniq = (~cmp, l) => {
   let rec rev_merge = (l1, l2, accu) =>

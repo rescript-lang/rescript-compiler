@@ -1,4 +1,4 @@
-@@ocaml.text(/* ************************************************************************ */
+/* ************************************************************************ */
 /*  */
 /* OCaml */
 /*  */
@@ -13,12 +13,12 @@
 /*  */
 /* ************************************************************************ */
 
-" System interface.
+/*** System interface.
 
   Every function in this module raises [Sys_error] with an
   informative message when the underlying system call signal
   an error.
-")
+*/
 
 /** The command line arguments given to the process.
    The first element is the command name used to invoke the program.
@@ -157,7 +157,7 @@ external runtime_variant: unit => string = "?runtime_variant"
     @since 4.03.0 */
 external runtime_parameters: unit => string = "?runtime_parameters"
 
-@@ocaml.text(" {1 Signal handling} ")
+/* {1 Signal handling} */
 
 /** What to do when receiving a signal:
    - [Signal_default]: take the default behavior
@@ -180,7 +180,7 @@ let signal: (int, signal_behavior) => signal_behavior
 /** Same as {!Sys.signal} but return value is ignored. */
 let set_signal: (int, signal_behavior) => unit
 
-@@ocaml.text(" {2 Signal numbers for the standard POSIX signals.} ")
+/* {2 Signal numbers for the standard POSIX signals.} */
 
 /** Abnormal termination */
 let sigabrt: int
@@ -303,7 +303,7 @@ let enable_runtime_warnings: bool => unit
     @since 4.03.0 */
 let runtime_warnings_enabled: unit => bool
 
-@@ocaml.text(" {1 Optimization} ")
+/* {1 Optimization} */
 
 /** For the purposes of optimization, [opaque_identity] behaves like an
     unknown (and thus possibly side-effecting) function.

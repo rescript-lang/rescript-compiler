@@ -1,4 +1,4 @@
-@@ocaml.text(/* ************************************************************************ */
+/* ************************************************************************ */
 /*  */
 /* OCaml */
 /*  */
@@ -13,7 +13,7 @@
 /*  */
 /* ************************************************************************ */
 
-" Association tables over ordered types.
+/*** Association tables over ordered types.
 
    This module implements applicative association tables, also known as
    finite maps or dictionaries, given a total ordering function
@@ -41,7 +41,7 @@
    This creates a new module [PairsMap], with a new type ['a PairsMap.t]
    of maps from [int * int] to ['a]. In this example, [m] contains [string]
    values so its type is [string PairsMap.t].
-")
+*/
 
 /** Input signature of the functor {!Map.Make}. */
 module type OrderedType = {

@@ -1,4 +1,4 @@
-@@ocaml.text(/* ************************************************************************ */
+/* ************************************************************************ */
 /*  */
 /* OCaml */
 /*  */
@@ -13,12 +13,12 @@
 /*  */
 /* ************************************************************************ */
 
-" Registering OCaml values with the C runtime.
+/*** Registering OCaml values with the C runtime.
 
    This module allows OCaml values to be registered with the C runtime
    under a symbolic name, so that C code can later call back registered
    OCaml functions, or raise registered OCaml exceptions.
-")
+*/
 
 /** [Callback.register n v] registers the value [v] under
    the name [n]. C code can later retrieve a handle to [v]

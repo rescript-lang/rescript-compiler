@@ -1,21 +1,19 @@
-@@ocaml.text(
-  /* ************************************************************************ */
-  /*  */
-  /* OCaml */
-  /*  */
-  /* Xavier Leroy, projet Cristal, INRIA Rocquencourt */
-  /*  */
-  /* Copyright 1996 Institut National de Recherche en Informatique et */
-  /* en Automatique. */
-  /*  */
-  /* All rights reserved.  This file is distributed under the terms of */
-  /* the GNU Lesser General Public License version 2.1, with the */
-  /* special exception on linking described in the file LICENSE. */
-  /*  */
-  /* ************************************************************************ */
+/* ************************************************************************ */
+/*  */
+/* OCaml */
+/*  */
+/* Xavier Leroy, projet Cristal, INRIA Rocquencourt */
+/*  */
+/* Copyright 1996 Institut National de Recherche en Informatique et */
+/* en Automatique. */
+/*  */
+/* All rights reserved.  This file is distributed under the terms of */
+/* the GNU Lesser General Public License version 2.1, with the */
+/* special exception on linking described in the file LICENSE. */
+/*  */
+/* ************************************************************************ */
 
-  " String operations. "
-)
+/*** String operations. */
 
 /** Return the length (number of characters) of the given string. */
 external length: string => int = "%string_length"
@@ -229,8 +227,6 @@ let equal: (t, t) => bool
     @since 4.05.0
 */
 let split_on_char: (~sep: char, string) => list<string>
-
-@@ocaml.text("/*")
 
 /* The following is for system use only. Do not call directly. */
 

@@ -1,21 +1,19 @@
-@@ocaml.text(
-  /* ************************************************************************ */
-  /*  */
-  /* OCaml */
-  /*  */
-  /* Xavier Leroy, projet Cristal, INRIA Rocquencourt */
-  /*  */
-  /* Copyright 1996 Institut National de Recherche en Informatique et */
-  /* en Automatique. */
-  /*  */
-  /* All rights reserved.  This file is distributed under the terms of */
-  /* the GNU Lesser General Public License version 2.1, with the */
-  /* special exception on linking described in the file LICENSE. */
-  /*  */
-  /* ************************************************************************ */
+/* ************************************************************************ */
+/*  */
+/* OCaml */
+/*  */
+/* Xavier Leroy, projet Cristal, INRIA Rocquencourt */
+/*  */
+/* Copyright 1996 Institut National de Recherche en Informatique et */
+/* en Automatique. */
+/*  */
+/* All rights reserved.  This file is distributed under the terms of */
+/* the GNU Lesser General Public License version 2.1, with the */
+/* special exception on linking described in the file LICENSE. */
+/*  */
+/* ************************************************************************ */
 
-  " Array operations. "
-)
+/* Array operations. */
 
 /** Return the length (number of elements) of the given array. */
 external length: array<'a> => int = "%array_length"
@@ -135,7 +133,7 @@ let to_list: array<'a> => list<'a>
    of [l]. */
 let of_list: list<'a> => array<'a>
 
-@@ocaml.text(" {1 Iterators} ")
+/* {1 Iterators} */
 
 /** [Array.iter f a] applies function [f] in turn to all
    the elements of [a].  It is equivalent to
@@ -167,7 +165,7 @@ let fold_left: (('a, 'b) => 'a, 'a, array<'b>) => 'a
    where [n] is the length of the array [a]. */
 let fold_right: (('b, 'a) => 'a, array<'b>, 'a) => 'a
 
-@@ocaml.text(" {1 Iterators on two arrays} ")
+/* {1 Iterators on two arrays} */
 
 /** [Array.iter2 f a b] applies function [f] to all the elements of [a]
    and [b].
@@ -182,7 +180,7 @@ let iter2: (('a, 'b) => unit, array<'a>, array<'b>) => unit
    @since 4.03.0 */
 let map2: (('a, 'b) => 'c, array<'a>, array<'b>) => array<'c>
 
-@@ocaml.text(" {1 Array scanning} ")
+/* {1 Array scanning} */
 
 /** [Array.for_all p [|a1; ...; an|]] checks if all elements of the array
    satisfy the predicate [p]. That is, it returns
@@ -206,7 +204,7 @@ let mem: ('a, array<'a>) => bool
    @since 4.03.0 */
 let memq: ('a, array<'a>) => bool
 
-@@ocaml.text(" {1 Sorting} ")
+/* {1 Sorting} */
 
 /** Sort an array in increasing order according to a comparison
    function.  The comparison function must return 0 if its arguments
@@ -249,8 +247,7 @@ let stable_sort: (('a, 'a) => int, array<'a>) => unit
 */
 let fast_sort: (('a, 'a) => int, array<'a>) => unit
 
-@@ocaml.text("/*")
-@@ocaml.text(" {1 Undocumented functions} ")
+/* {1 Undocumented functions} */
 
 /* The following is for system use only. Do not call directly. */
 

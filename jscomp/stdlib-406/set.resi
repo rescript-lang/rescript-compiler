@@ -1,4 +1,4 @@
-@@ocaml.text(/* ************************************************************************ */
+/* ************************************************************************ */
 /*  */
 /* OCaml */
 /*  */
@@ -13,7 +13,7 @@
 /*  */
 /* ************************************************************************ */
 
-" Sets over ordered types.
+/*** Sets over ordered types.
 
    This module implements the set data structure, given a total ordering
    function over the set elements. All operations over sets
@@ -42,7 +42,7 @@
 
    This creates a new module [PairsSet], with a new type [PairsSet.t]
    of sets of [int * int].
-")
+*/
 
 /** Input signature of the functor {!Set.Make}. */
 module type OrderedType = {

@@ -1,23 +1,21 @@
-@@ocaml.text(
-  /* ************************************************************************ */
-  /*  */
-  /* OCaml */
-  /*  */
-  /* Damien Doligez, projet Para, INRIA Rocquencourt */
-  /*  */
-  /* Copyright 1996 Institut National de Recherche en Informatique et */
-  /* en Automatique. */
-  /*  */
-  /* All rights reserved.  This file is distributed under the terms of */
-  /* the GNU Lesser General Public License version 2.1, with the */
-  /* special exception on linking described in the file LICENSE. */
-  /*  */
-  /* ************************************************************************ */
+/* ************************************************************************ */
+/*  */
+/* OCaml */
+/*  */
+/* Damien Doligez, projet Para, INRIA Rocquencourt */
+/*  */
+/* Copyright 1996 Institut National de Recherche en Informatique et */
+/* en Automatique. */
+/*  */
+/* All rights reserved.  This file is distributed under the terms of */
+/* the GNU Lesser General Public License version 2.1, with the */
+/* special exception on linking described in the file LICENSE. */
+/*  */
+/* ************************************************************************ */
 
-  " Pseudo-random number generators (PRNG). "
-)
+/*** Pseudo-random number generators (PRNG). */
 
-@@ocaml.text(" {1 Basic functions} ")
+/* {1 Basic functions} */
 
 /** Initialize the generator, using the argument as a seed.
      The same seed will always yield the same sequence of numbers. */
@@ -61,16 +59,16 @@ let float: float => float
 /** [Random.bool ()] returns [true] or [false] with probability 0.5 each. */
 let bool: unit => bool
 
-@@ocaml.text(" {1 Advanced functions} ")
+/* {1 Advanced functions} */
 
-@@ocaml.text(" The functions from module {!State} manipulate the current state
+module State: {
+  /*** The functions from module {!State} manipulate the current state
     of the random generator explicitly.
     This allows using one or several deterministic PRNGs,
     even in a multi-threaded program, without interference from
     other parts of the program.
-")
+  */
 
-module State: {
   /** The type of PRNG states. */
   type t
 

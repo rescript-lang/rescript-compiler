@@ -169,9 +169,7 @@ let compare: (t, t) => int
     @since 4.03.0 */
 let equal: (t, t) => bool
 
-@@ocaml.text("/*")
-
-@@ocaml.text(" {1 Deprecated functions} ")
+/* {1 Deprecated functions} */
 
 /** Do not use this deprecated function.  Instead,
    used {!Printf.sprintf} with a [%l...] format. */

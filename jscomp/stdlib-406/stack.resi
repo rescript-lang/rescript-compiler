@@ -1,4 +1,4 @@
-@@ocaml.text(/* ************************************************************************ */
+/* ************************************************************************ */
 /*  */
 /* OCaml */
 /*  */
@@ -13,10 +13,10 @@
 /*  */
 /* ************************************************************************ */
 
-" Last-in first-out stacks.
+/*** Last-in first-out stacks.
 
    This module implements stacks (LIFOs), with in-place modification.
-")
+*/
 
 /** The type of stacks containing elements of type ['a]. */
 type t<'a>

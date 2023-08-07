@@ -1,4 +1,4 @@
-@@ocaml.text(/* ************************************************************************ */
+/* ************************************************************************ */
 /*  */
 /* OCaml */
 /*  */
@@ -13,7 +13,7 @@
 /*  */
 /* ************************************************************************ */
 
-" String operations.
+/*** String operations.
 
   A string is an immutable data structure that contains a
   fixed-length sequence of (single-byte) characters. Each character
@@ -45,8 +45,7 @@
   All new code should avoid this feature and be compiled with the
   [-safe-string] command-line option to enforce the separation between
   the types [string] and [bytes].
-
- ")
+*/
 
 /** Return the length (number of characters) of the given string. */
 external length: string => int = "%string_length"
@@ -270,8 +269,6 @@ let equal: (t, t) => bool
     @since 4.04.0
 */
 let split_on_char: (char, string) => list<string>
-
-@@ocaml.text("/*")
 
 /* The following is for system use only. Do not call directly. */
 

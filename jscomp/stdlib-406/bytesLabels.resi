@@ -1,4 +1,4 @@
-@@ocaml.text(/* ************************************************************************ */
+/* ************************************************************************ */
 /*  */
 /* OCaml */
 /*  */
@@ -13,9 +13,9 @@
 /*  */
 /* ************************************************************************ */
 
-" Byte sequence operations.
+/*** Byte sequence operations.
     @since 4.02.0
- ")
+*/
 
 /** Return the length (number of bytes) of the argument. */
 external length: bytes => int = "%bytes_length"
@@ -260,8 +260,6 @@ let compare: (t, t) => int
 /** The equality function for byte sequences.
     @since 4.05.0 */
 let equal: (t, t) => bool
-
-@@ocaml.text("/*")
 
 /* The following is for system use only. Do not call directly. */
 
