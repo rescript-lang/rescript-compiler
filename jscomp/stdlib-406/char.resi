@@ -17,54 +17,54 @@
   " Character operations. "
 )
 
-@ocaml.doc(" Return the ASCII code of the argument. ")
+/** Return the ASCII code of the argument. */
 external code: char => int = "%identity"
 
-@ocaml.doc(" Return the character with the given ASCII code.
+/** Return the character with the given ASCII code.
    Raise [Invalid_argument \"Char.chr\"] if the argument is
-   outside the range 0--255. ")
+   outside the range 0--255. */
 let chr: int => char
 
-@ocaml.doc(" Return a string representing the given character,
+/** Return a string representing the given character,
     with special characters escaped following the lexical conventions
     of OCaml.
     All characters outside the ASCII printable range (32..126) are
-    escaped, as well as backslash, double-quote, and single-quote. ")
+    escaped, as well as backslash, double-quote, and single-quote. */
 let escaped: char => string
 
 @ocaml.deprecated("Use Char.lowercase_ascii instead.")
-@ocaml.doc(" Convert the given character to its equivalent lowercase character,
+/** Convert the given character to its equivalent lowercase character,
    using the ISO Latin-1 (8859-1) character set.
-   @deprecated Functions operating on Latin-1 character set are deprecated. ")
+   @deprecated Functions operating on Latin-1 character set are deprecated. */
 let lowercase: char => char
 
 @ocaml.deprecated("Use Char.uppercase_ascii instead.")
-@ocaml.doc(" Convert the given character to its equivalent uppercase character,
+/** Convert the given character to its equivalent uppercase character,
    using the ISO Latin-1 (8859-1) character set.
-   @deprecated Functions operating on Latin-1 character set are deprecated. ")
+   @deprecated Functions operating on Latin-1 character set are deprecated. */
 let uppercase: char => char
 
-@ocaml.doc(" Convert the given character to its equivalent lowercase character,
+/** Convert the given character to its equivalent lowercase character,
    using the US-ASCII character set.
-   @since 4.03.0 ")
+   @since 4.03.0 */
 let lowercase_ascii: char => char
 
-@ocaml.doc(" Convert the given character to its equivalent uppercase character,
+/** Convert the given character to its equivalent uppercase character,
    using the US-ASCII character set.
-   @since 4.03.0 ")
+   @since 4.03.0 */
 let uppercase_ascii: char => char
 
-@ocaml.doc(" An alias for the type of characters. ")
+/** An alias for the type of characters. */
 type t = char
 
-@ocaml.doc(" The comparison function for characters, with the same specification as
+/** The comparison function for characters, with the same specification as
     {!Pervasives.compare}.  Along with the type [t], this function [compare]
     allows the module [Char] to be passed as argument to the functors
-    {!Set.Make} and {!Map.Make}. ")
+    {!Set.Make} and {!Map.Make}. */
 let compare: (t, t) => int
 
-@ocaml.doc(" The equal function for chars.
-    @since 4.03.0 ")
+/** The equal function for chars.
+    @since 4.03.0 */
 let equal: (t, t) => bool
 
 @@ocaml.text("/*")

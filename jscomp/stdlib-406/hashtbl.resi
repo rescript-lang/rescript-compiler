@@ -20,10 +20,10 @@
 
 @@ocaml.text(" {1 Generic interface} ")
 
-@ocaml.doc(" The type of hash tables from type ['a] to type ['b]. ")
+/** The type of hash tables from type ['a] to type ['b]. */
 type t<'a, 'b>
 
-@ocaml.doc(" [Hashtbl.create n] creates a new, empty hash table, with
+/** [Hashtbl.create n] creates a new, empty hash table, with
    initial size [n].  For best results, [n] should be on the
    order of the expected number of elements that will be in
    the table.  The table grows as needed, so [n] is just an
@@ -59,59 +59,59 @@ type t<'a, 'b>
    setting the [R] flag in the [OCAMLRUNPARAM] environment variable.
 
    @before 4.00.0 the [random] parameter was not present and all
-   hash tables were created in non-randomized mode. ")
+   hash tables were created in non-randomized mode. */
 let create: (~random: bool=?, int) => t<'a, 'b>
 
-@ocaml.doc(" Empty a hash table. Use [reset] instead of [clear] to shrink the
-    size of the bucket table to its initial size. ")
+/** Empty a hash table. Use [reset] instead of [clear] to shrink the
+    size of the bucket table to its initial size. */
 let clear: t<'a, 'b> => unit
 
-@ocaml.doc(" Empty a hash table and shrink the size of the bucket table
+/** Empty a hash table and shrink the size of the bucket table
     to its initial size.
-    @since 4.00.0 ")
+    @since 4.00.0 */
 let reset: t<'a, 'b> => unit
 
-@ocaml.doc(" Return a copy of the given hashtable. ")
+/** Return a copy of the given hashtable. */
 let copy: t<'a, 'b> => t<'a, 'b>
 
-@ocaml.doc(" [Hashtbl.add tbl x y] adds a binding of [x] to [y] in table [tbl].
+/** [Hashtbl.add tbl x y] adds a binding of [x] to [y] in table [tbl].
    Previous bindings for [x] are not removed, but simply
    hidden. That is, after performing {!Hashtbl.remove}[ tbl x],
    the previous binding for [x], if any, is restored.
-   (Same behavior as with association lists.) ")
+   (Same behavior as with association lists.) */
 let add: (t<'a, 'b>, 'a, 'b) => unit
 
-@ocaml.doc(" [Hashtbl.find tbl x] returns the current binding of [x] in [tbl],
-   or raises [Not_found] if no such binding exists. ")
+/** [Hashtbl.find tbl x] returns the current binding of [x] in [tbl],
+   or raises [Not_found] if no such binding exists. */
 let find: (t<'a, 'b>, 'a) => 'b
 
-@ocaml.doc(" [Hashtbl.find_opt tbl x] returns the current binding of [x] in [tbl],
+/** [Hashtbl.find_opt tbl x] returns the current binding of [x] in [tbl],
     or [None] if no such binding exists.
-    @since 4.05 ")
+    @since 4.05 */
 let find_opt: (t<'a, 'b>, 'a) => option<'b>
 
-@ocaml.doc(" [Hashtbl.find_all tbl x] returns the list of all data
+/** [Hashtbl.find_all tbl x] returns the list of all data
    associated with [x] in [tbl].
    The current binding is returned first, then the previous
-   bindings, in reverse order of introduction in the table. ")
+   bindings, in reverse order of introduction in the table. */
 let find_all: (t<'a, 'b>, 'a) => list<'b>
 
-@ocaml.doc(" [Hashtbl.mem tbl x] checks if [x] is bound in [tbl]. ")
+/** [Hashtbl.mem tbl x] checks if [x] is bound in [tbl]. */
 let mem: (t<'a, 'b>, 'a) => bool
 
-@ocaml.doc(" [Hashtbl.remove tbl x] removes the current binding of [x] in [tbl],
+/** [Hashtbl.remove tbl x] removes the current binding of [x] in [tbl],
    restoring the previous binding if it exists.
-   It does nothing if [x] is not bound in [tbl]. ")
+   It does nothing if [x] is not bound in [tbl]. */
 let remove: (t<'a, 'b>, 'a) => unit
 
-@ocaml.doc(" [Hashtbl.replace tbl x y] replaces the current binding of [x]
+/** [Hashtbl.replace tbl x y] replaces the current binding of [x]
    in [tbl] by a binding of [x] to [y].  If [x] is unbound in [tbl],
    a binding of [x] to [y] is added to [tbl].
    This is functionally equivalent to {!Hashtbl.remove}[ tbl x]
-   followed by {!Hashtbl.add}[ tbl x y]. ")
+   followed by {!Hashtbl.add}[ tbl x y]. */
 let replace: (t<'a, 'b>, 'a, 'b) => unit
 
-@ocaml.doc(" [Hashtbl.iter f tbl] applies [f] to all bindings in table [tbl].
+/** [Hashtbl.iter f tbl] applies [f] to all bindings in table [tbl].
    [f] receives the key as first argument, and the associated value
    as second argument. Each binding is presented exactly once to [f].
 
@@ -128,20 +128,20 @@ let replace: (t<'a, 'b>, 'a, 'b) => unit
 
    The behavior is not defined if the hash table is modified
    by [f] during the iteration.
-")
+*/
 let iter: (('a, 'b) => unit, t<'a, 'b>) => unit
 
-@ocaml.doc(" [Hashtbl.filter_map_inplace f tbl] applies [f] to all bindings in
+/** [Hashtbl.filter_map_inplace f tbl] applies [f] to all bindings in
     table [tbl] and update each binding depending on the result of
     [f].  If [f] returns [None], the binding is discarded.  If it
     returns [Some new_val], the binding is update to associate the key
     to [new_val].
 
     Other comments for {!Hashtbl.iter} apply as well.
-    @since 4.03.0 ")
+    @since 4.03.0 */
 let filter_map_inplace: (('a, 'b) => option<'b>, t<'a, 'b>) => unit
 
-@ocaml.doc(" [Hashtbl.fold f tbl init] computes
+/** [Hashtbl.fold f tbl init] computes
    [(f kN dN ... (f k1 d1 init)...)],
    where [k1 ... kN] are the keys of all bindings in [tbl],
    and [d1 ... dN] are the associated values.
@@ -160,16 +160,16 @@ let filter_map_inplace: (('a, 'b) => option<'b>, t<'a, 'b>) => unit
 
    The behavior is not defined if the hash table is modified
    by [f] during the iteration.
-")
+*/
 let fold: (('a, 'b, 'c) => 'c, t<'a, 'b>, 'c) => 'c
 
-@ocaml.doc(" [Hashtbl.length tbl] returns the number of bindings in [tbl].
+/** [Hashtbl.length tbl] returns the number of bindings in [tbl].
    It takes constant time.  Multiple bindings are counted once each, so
    [Hashtbl.length] gives the number of times [Hashtbl.iter] calls its
-   first argument. ")
+   first argument. */
 let length: t<'a, 'b> => int
 
-@ocaml.doc(" After a call to [Hashtbl.randomize()], hash tables are created in
+/** After a call to [Hashtbl.randomize()], hash tables are created in
     randomized mode by default: {!Hashtbl.create} returns randomized
     hash tables, unless the [~random:false] optional parameter is given.
     The same effect can be achieved by setting the [R] parameter in
@@ -185,33 +185,33 @@ let length: t<'a, 'b> => int
     This is intentional.  Non-randomized hash tables can still be
     created using [Hashtbl.create ~random:false].
 
-    @since 4.00.0 ")
+    @since 4.00.0 */
 let randomize: unit => unit
 
-@ocaml.doc(" return if the tables are currently created in randomized mode by default
+/** return if the tables are currently created in randomized mode by default
 
-    @since 4.03.0 ")
+    @since 4.03.0 */
 let is_randomized: unit => bool
 
-@ocaml.doc(" @since 4.00.0 ")
+/** @since 4.00.0 */
 type statistics = {
-  @ocaml.doc(" Number of bindings present in the table.
-        Same value as returned by {!Hashtbl.length}. ")
+  /** Number of bindings present in the table.
+        Same value as returned by {!Hashtbl.length}. */
   num_bindings: int,
-  @ocaml.doc(" Number of buckets in the table. ")
+  /** Number of buckets in the table. */
   num_buckets: int,
-  @ocaml.doc(" Maximal number of bindings per bucket. ")
+  /** Maximal number of bindings per bucket. */
   max_bucket_length: int,
-  @ocaml.doc(" Histogram of bucket sizes.  This array [histo] has
+  /** Histogram of bucket sizes.  This array [histo] has
         length [max_bucket_length + 1].  The value of
-        [histo.(i)] is the number of buckets whose size is [i]. ")
+        [histo.(i)] is the number of buckets whose size is [i]. */
   bucket_histogram: array<int>,
 }
 
-@ocaml.doc(" [Hashtbl.stats tbl] returns statistics about the table [tbl]:
+/** [Hashtbl.stats tbl] returns statistics about the table [tbl]:
    number of buckets, size of the biggest bucket, distribution of
    buckets by size.
-   @since 4.00.0 ")
+   @since 4.00.0 */
 let stats: t<'a, 'b> => statistics
 
 @@ocaml.text(" {1 Functorial interface} ")
@@ -245,15 +245,15 @@ let stats: t<'a, 'b> => statistics
     [IntHashtbl.length].
 ")
 
-@ocaml.doc(" The input signature of the functor {!Hashtbl.Make}. ")
+/** The input signature of the functor {!Hashtbl.Make}. */
 module type HashedType = {
-  @ocaml.doc(" The type of the hashtable keys. ")
+  /** The type of the hashtable keys. */
   type t
 
-  @ocaml.doc(" The equality predicate used to compare keys. ")
+  /** The equality predicate used to compare keys. */
   let equal: (t, t) => bool
 
-  @ocaml.doc(" A hashing function on keys. It must be such that if two keys are
+  /** A hashing function on keys. It must be such that if two keys are
           equal according to [equal], then they have identical hash values
           as computed by [hash].
           Examples: suitable ([equal], [hash]) pairs for arbitrary key
@@ -264,40 +264,40 @@ module type HashedType = {
               for comparing objects by structure
               and handling {!Pervasives.nan} correctly
 -         ([(==)], {!Hashtbl.hash}) for comparing objects by physical
-              equality (e.g. for mutable or cyclic objects). ")
+              equality (e.g. for mutable or cyclic objects). */
   let hash: t => int
 }
 
-@ocaml.doc(" The output signature of the functor {!Hashtbl.Make}. ")
+/** The output signature of the functor {!Hashtbl.Make}. */
 module type S = {
   type key
   type t<'a>
   let create: int => t<'a>
   let clear: t<'a> => unit
-  @ocaml.doc(" @since 4.00.0 ")
+  /** @since 4.00.0 */
   let reset: t<'a> => unit
 
   let copy: t<'a> => t<'a>
   let add: (t<'a>, key, 'a) => unit
   let remove: (t<'a>, key) => unit
   let find: (t<'a>, key) => 'a
-  @ocaml.doc(" @since 4.05.0 ")
+  /** @since 4.05.0 */
   let find_opt: (t<'a>, key) => option<'a>
 
   let find_all: (t<'a>, key) => list<'a>
   let replace: (t<'a>, key, 'a) => unit
   let mem: (t<'a>, key) => bool
   let iter: ((key, 'a) => unit, t<'a>) => unit
-  @ocaml.doc(" @since 4.03.0 ")
+  /** @since 4.03.0 */
   let filter_map_inplace: ((key, 'a) => option<'a>, t<'a>) => unit
 
   let fold: ((key, 'a, 'b) => 'b, t<'a>, 'b) => 'b
   let length: t<'a> => int
-  @ocaml.doc(" @since 4.00.0 ")
+  /** @since 4.00.0 */
   let stats: t<'a> => statistics
 }
 
-@ocaml.doc(" Functor building an implementation of the hashtable structure.
+/** Functor building an implementation of the hashtable structure.
     The functor [Hashtbl.Make] returns a structure containing
     a type [key] of keys and a type ['a t] of hash tables
     associating data of type ['a] to keys of type [key].
@@ -306,28 +306,28 @@ module type S = {
     specified in the functor argument [H] instead of generic
     equality and hashing.  Since the hash function is not seeded,
     the [create] operation of the result structure always returns
-    non-randomized hash tables. ")
+    non-randomized hash tables. */
 module Make: (H: HashedType) => (S with type key = H.t)
 
-@ocaml.doc(" The input signature of the functor {!Hashtbl.MakeSeeded}.
-    @since 4.00.0 ")
+/** The input signature of the functor {!Hashtbl.MakeSeeded}.
+    @since 4.00.0 */
 module type SeededHashedType = {
-  @ocaml.doc(" The type of the hashtable keys. ")
+  /** The type of the hashtable keys. */
   type t
 
-  @ocaml.doc(" The equality predicate used to compare keys. ")
+  /** The equality predicate used to compare keys. */
   let equal: (t, t) => bool
 
-  @ocaml.doc(" A seeded hashing function on keys.  The first argument is
+  /** A seeded hashing function on keys.  The first argument is
           the seed.  It must be the case that if [equal x y] is true,
           then [hash seed x = hash seed y] for any value of [seed].
           A suitable choice for [hash] is the function {!Hashtbl.seeded_hash}
-          below. ")
+          below. */
   let hash: (int, t) => int
 }
 
-@ocaml.doc(" The output signature of the functor {!Hashtbl.MakeSeeded}.
-    @since 4.00.0 ")
+/** The output signature of the functor {!Hashtbl.MakeSeeded}.
+    @since 4.00.0 */
 module type SeededS = {
   type key
   type t<'a>
@@ -338,14 +338,14 @@ module type SeededS = {
   let add: (t<'a>, key, 'a) => unit
   let remove: (t<'a>, key) => unit
   let find: (t<'a>, key) => 'a
-  @ocaml.doc(" @since 4.05.0 ")
+  /** @since 4.05.0 */
   let find_opt: (t<'a>, key) => option<'a>
 
   let find_all: (t<'a>, key) => list<'a>
   let replace: (t<'a>, key, 'a) => unit
   let mem: (t<'a>, key) => bool
   let iter: ((key, 'a) => unit, t<'a>) => unit
-  @ocaml.doc(" @since 4.03.0 ")
+  /** @since 4.03.0 */
   let filter_map_inplace: ((key, 'a) => option<'a>, t<'a>) => unit
 
   let fold: ((key, 'a, 'b) => 'b, t<'a>, 'b) => 'b
@@ -353,7 +353,7 @@ module type SeededS = {
   let stats: t<'a> => statistics
 }
 
-@ocaml.doc(" Functor building an implementation of the hashtable structure.
+/** Functor building an implementation of the hashtable structure.
     The functor [Hashtbl.MakeSeeded] returns a structure containing
     a type [key] of keys and a type ['a t] of hash tables
     associating data of type ['a] to keys of type [key].
@@ -364,23 +364,23 @@ module type SeededS = {
     result structure supports the [~random] optional parameter
     and returns randomized hash tables if [~random:true] is passed
     or if randomization is globally on (see {!Hashtbl.randomize}).
-    @since 4.00.0 ")
+    @since 4.00.0 */
 module MakeSeeded: (H: SeededHashedType) => (SeededS with type key = H.t)
 
 @@ocaml.text(" {1 The polymorphic hash functions} ")
 
-@ocaml.doc(" [Hashtbl.hash x] associates a nonnegative integer to any value of
+/** [Hashtbl.hash x] associates a nonnegative integer to any value of
    any type. It is guaranteed that
    if [x = y] or [Pervasives.compare x y = 0], then [hash x = hash y].
-   Moreover, [hash] always terminates, even on cyclic structures. ")
+   Moreover, [hash] always terminates, even on cyclic structures. */
 let hash: 'a => int
 
-@ocaml.doc(" A variant of {!Hashtbl.hash} that is further parameterized by
+/** A variant of {!Hashtbl.hash} that is further parameterized by
    an integer seed.
-   @since 4.00.0 ")
+   @since 4.00.0 */
 let seeded_hash: (int, 'a) => int
 
-@ocaml.doc(" [Hashtbl.hash_param meaningful total x] computes a hash value for [x],
+/** [Hashtbl.hash_param meaningful total x] computes a hash value for [x],
    with the same properties as for [hash]. The two extra integer
    parameters [meaningful] and [total] give more precise control over
    hashing. Hashing performs a breadth-first, left-to-right traversal
@@ -396,11 +396,11 @@ let seeded_hash: (int, 'a) => int
    hashing takes longer. The parameters [meaningful] and [total]
    govern the tradeoff between accuracy and speed.  As default
    choices, {!Hashtbl.hash} and {!Hashtbl.seeded_hash} take
-   [meaningful = 10] and [total = 100]. ")
+   [meaningful = 10] and [total = 100]. */
 let hash_param: (int, int, 'a) => int
 
-@ocaml.doc(" A variant of {!Hashtbl.hash_param} that is further parameterized by
+/** A variant of {!Hashtbl.hash_param} that is further parameterized by
    an integer seed.  Usage:
    [Hashtbl.seeded_hash_param meaningful total seed x].
-   @since 4.00.0 ")
+   @since 4.00.0 */
 let seeded_hash_param: (int, int, int, 'a) => int

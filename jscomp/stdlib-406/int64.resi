@@ -27,113 +27,113 @@
    only when the application requires exact 64-bit arithmetic.
 ")
 
-@ocaml.doc(" The 64-bit integer 0. ")
+/** The 64-bit integer 0. */
 let zero: int64
 
-@ocaml.doc(" The 64-bit integer 1. ")
+/** The 64-bit integer 1. */
 let one: int64
 
-@ocaml.doc(" The 64-bit integer -1. ")
+/** The 64-bit integer -1. */
 let minus_one: int64
 
-@ocaml.doc(" Unary negation. ")
+/** Unary negation. */
 external neg: int64 => int64 = "%int64_neg"
 
-@ocaml.doc(" Addition. ")
+/** Addition. */
 external add: (int64, int64) => int64 = "%int64_add"
 
-@ocaml.doc(" Subtraction. ")
+/** Subtraction. */
 external sub: (int64, int64) => int64 = "%int64_sub"
 
-@ocaml.doc(" Multiplication. ")
+/** Multiplication. */
 external mul: (int64, int64) => int64 = "%int64_mul"
 
-@ocaml.doc(" Integer division.  Raise [Division_by_zero] if the second
+/** Integer division.  Raise [Division_by_zero] if the second
    argument is zero.  This division rounds the real quotient of
-   its arguments towards zero, as specified for {!Pervasives.(/)}. ")
+   its arguments towards zero, as specified for {!Pervasives.(/)}. */
 external div: (int64, int64) => int64 = "%int64_div"
 
-@ocaml.doc(" Integer remainder.  If [y] is not zero, the result
+/** Integer remainder.  If [y] is not zero, the result
    of [Int64.rem x y] satisfies the following property:
    [x = Int64.add (Int64.mul (Int64.div x y) y) (Int64.rem x y)].
-   If [y = 0], [Int64.rem x y] raises [Division_by_zero]. ")
+   If [y = 0], [Int64.rem x y] raises [Division_by_zero]. */
 external rem: (int64, int64) => int64 = "%int64_mod"
 
-@ocaml.doc(" Successor.  [Int64.succ x] is [Int64.add x Int64.one]. ")
+/** Successor.  [Int64.succ x] is [Int64.add x Int64.one]. */
 let succ: int64 => int64
 
-@ocaml.doc(" Predecessor.  [Int64.pred x] is [Int64.sub x Int64.one]. ")
+/** Predecessor.  [Int64.pred x] is [Int64.sub x Int64.one]. */
 let pred: int64 => int64
 
-@ocaml.doc(" Return the absolute value of its argument. ")
+/** Return the absolute value of its argument. */
 let abs: int64 => int64
 
-@ocaml.doc(" The greatest representable 64-bit integer, 2{^63} - 1. ")
+/** The greatest representable 64-bit integer, 2{^63} - 1. */
 let max_int: int64
 
-@ocaml.doc(" The smallest representable 64-bit integer, -2{^63}. ")
+/** The smallest representable 64-bit integer, -2{^63}. */
 let min_int: int64
 
-@ocaml.doc(" Bitwise logical and. ")
+/** Bitwise logical and. */
 external logand: (int64, int64) => int64 = "%int64_and"
 
-@ocaml.doc(" Bitwise logical or. ")
+/** Bitwise logical or. */
 external logor: (int64, int64) => int64 = "%int64_or"
 
-@ocaml.doc(" Bitwise logical exclusive or. ")
+/** Bitwise logical exclusive or. */
 external logxor: (int64, int64) => int64 = "%int64_xor"
 
-@ocaml.doc(" Bitwise logical negation. ")
+/** Bitwise logical negation. */
 let lognot: int64 => int64
 
-@ocaml.doc(" [Int64.shift_left x y] shifts [x] to the left by [y] bits.
-   The result is unspecified if [y < 0] or [y >= 64]. ")
+/** [Int64.shift_left x y] shifts [x] to the left by [y] bits.
+   The result is unspecified if [y < 0] or [y >= 64]. */
 external shift_left: (int64, int) => int64 = "%int64_lsl"
 
-@ocaml.doc(" [Int64.shift_right x y] shifts [x] to the right by [y] bits.
+/** [Int64.shift_right x y] shifts [x] to the right by [y] bits.
    This is an arithmetic shift: the sign bit of [x] is replicated
    and inserted in the vacated bits.
-   The result is unspecified if [y < 0] or [y >= 64]. ")
+   The result is unspecified if [y < 0] or [y >= 64]. */
 external shift_right: (int64, int) => int64 = "%int64_asr"
 
-@ocaml.doc(" [Int64.shift_right_logical x y] shifts [x] to the right by [y] bits.
+/** [Int64.shift_right_logical x y] shifts [x] to the right by [y] bits.
    This is a logical shift: zeroes are inserted in the vacated bits
    regardless of the sign of [x].
-   The result is unspecified if [y < 0] or [y >= 64]. ")
+   The result is unspecified if [y < 0] or [y >= 64]. */
 external shift_right_logical: (int64, int) => int64 = "%int64_lsr"
 
-@ocaml.doc(" Convert the given integer (type [int]) to a 64-bit integer
-    (type [int64]). ")
+/** Convert the given integer (type [int]) to a 64-bit integer
+    (type [int64]). */
 external of_int: int => int64 = "%int64_of_int"
 
-@ocaml.doc(" Convert the given 64-bit integer (type [int64]) to an
+/** Convert the given 64-bit integer (type [int64]) to an
    integer (type [int]).  On 64-bit platforms, the 64-bit integer
    is taken modulo 2{^63}, i.e. the high-order bit is lost
    during the conversion.  On 32-bit platforms, the 64-bit integer
    is taken modulo 2{^31}, i.e. the top 33 bits are lost
-   during the conversion. ")
+   during the conversion. */
 external to_int: int64 => int = "%int64_to_int"
 
-@ocaml.doc(" Convert the given floating-point number to a 64-bit integer,
+/** Convert the given floating-point number to a 64-bit integer,
    discarding the fractional part (truncate towards 0).
    The result of the conversion is undefined if, after truncation,
-   the number is outside the range \[{!Int64.min_int}, {!Int64.max_int}\]. ")
+   the number is outside the range \[{!Int64.min_int}, {!Int64.max_int}\]. */
 external of_float: float => int64 = "?int64_of_float"
 
-@ocaml.doc(" Convert the given 64-bit integer to a floating-point number. ")
+/** Convert the given 64-bit integer to a floating-point number. */
 external to_float: int64 => float = "?int64_to_float"
 
-@ocaml.doc(" Convert the given 32-bit integer (type [int])
-   to a 64-bit integer (type [int64]). ")
+/** Convert the given 32-bit integer (type [int])
+   to a 64-bit integer (type [int64]). */
 external of_int32: int => int64 = "%int64_of_int32"
 
-@ocaml.doc(" Convert the given 64-bit integer (type [int64]) to a
+/** Convert the given 64-bit integer (type [int64]) to a
    32-bit integer (type [int]). The 64-bit integer
    is taken modulo 2{^32}, i.e. the top 32 bits are lost
-   during the conversion.  ")
+   during the conversion.  */
 external to_int32: int64 => int = "%int64_to_int32"
 
-@ocaml.doc(" Convert the given string to a 64-bit integer.
+/** Convert the given string to a 64-bit integer.
    The string is read in decimal (by default, or if the string 
    begins with [0u]) or in hexadecimal, octal or binary if the
    string begins with [0x], [0o] or [0b] respectively.
@@ -147,45 +147,45 @@ external to_int32: int64 => int = "%int64_to_int32"
    and is ignored.
    Raise [Failure \"Int64.of_string\"] if the given string is not
    a valid representation of an integer, or if the integer represented
-   exceeds the range of integers representable in type [int64]. ")
+   exceeds the range of integers representable in type [int64]. */
 external of_string: string => int64 = "?int64_of_string"
 
-@ocaml.doc(" Same as [of_string], but return [None] instead of raising.
-    @since 4.05 ")
+/** Same as [of_string], but return [None] instead of raising.
+    @since 4.05 */
 let of_string_opt: string => option<int64>
 
-@ocaml.doc(" Return the string representation of its argument, in decimal. ")
+/** Return the string representation of its argument, in decimal. */
 let to_string: int64 => string
 
-@ocaml.doc(" Return the internal representation of the given float according
+/** Return the internal representation of the given float according
    to the IEEE 754 floating-point 'double format' bit layout.
    Bit 63 of the result represents the sign of the float;
    bits 62 to 52 represent the (biased) exponent; bits 51 to 0
-   represent the mantissa. ")
+   represent the mantissa. */
 external bits_of_float: float => int64 = "?int64_bits_of_float"
 
-@ocaml.doc(" Return the floating-point number whose internal representation,
+/** Return the floating-point number whose internal representation,
    according to the IEEE 754 floating-point 'double format' bit layout,
-   is the given [int64]. ")
+   is the given [int64]. */
 external float_of_bits: int64 => float = "?int64_float_of_bits"
 
-@ocaml.doc(" An alias for the type of 64-bit integers. ")
+/** An alias for the type of 64-bit integers. */
 type t = int64
 
-@ocaml.doc(" The comparison function for 64-bit integers, with the same specification as
+/** The comparison function for 64-bit integers, with the same specification as
     {!Pervasives.compare}.  Along with the type [t], this function [compare]
     allows the module [Int64] to be passed as argument to the functors
-    {!Set.Make} and {!Map.Make}. ")
+    {!Set.Make} and {!Map.Make}. */
 let compare: (t, t) => int
 
-@ocaml.doc(" The equal function for int64s.
-    @since 4.03.0 ")
+/** The equal function for int64s.
+    @since 4.03.0 */
 let equal: (t, t) => bool
 
 @@ocaml.text("/*")
 
 @@ocaml.text(" {1 Deprecated functions} ")
 
-@ocaml.doc(" Do not use this deprecated function.  Instead,
-   used {!Printf.sprintf} with a [%L...] format. ")
+/** Do not use this deprecated function.  Instead,
+   used {!Printf.sprintf} with a [%L...] format. */
 external format: (string, int64) => string = "?int64_format"

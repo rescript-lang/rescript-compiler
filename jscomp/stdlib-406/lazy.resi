@@ -17,7 +17,7 @@
   " Deferred computations. "
 )
 
-@ocaml.doc(" A value of type ['a Lazy.t] is a deferred computation, called
+/** A value of type ['a Lazy.t] is a deferred computation, called
    a suspension, that has a result of type ['a].  The special
    expression syntax [lazy (expr)] makes a suspension of the
    computation of [expr], without computing [expr] itself yet.
@@ -38,56 +38,56 @@
    loops in the garbage collector and other parts of the run-time system.
    Without the [-rectypes] option, such ill-founded recursive definitions
    are rejected by the type-checker.
-")
+*/
 type t<'a> = lazy_t<'a>
 
 exception Undefined
 
 /* val force : 'a t -> 'a */
-@ocaml.doc(" [force x] forces the suspension [x] and returns its result.
+/** [force x] forces the suspension [x] and returns its result.
    If [x] has already been forced, [Lazy.force x] returns the
    same value again without recomputing it.  If it raised an exception,
    the same exception is raised again.
    Raise {!Undefined} if the forcing of [x] tries to force [x] itself
    recursively.
-")
+*/
 external force: t<'a> => 'a = "%lazy_force"
 
-@ocaml.doc(" [force_val x] forces the suspension [x] and returns its
+/** [force_val x] forces the suspension [x] and returns its
     result.  If [x] has already been forced, [force_val x]
     returns the same value again without recomputing it.
     Raise {!Undefined} if the forcing of [x] tries to force [x] itself
     recursively.
     If the computation of [x] raises an exception, it is unspecified
     whether [force_val x] raises the same exception or {!Undefined}.
-")
+*/
 let force_val: t<'a> => 'a
 
-@ocaml.doc(" [from_fun f] is the same as [lazy (f ())] but slightly more efficient.
+/** [from_fun f] is the same as [lazy (f ())] but slightly more efficient.
 
     [from_fun] should only be used if the function [f] is already defined.
     In particular it is always less efficient to write
     [from_fun (fun () -> expr)] than [lazy expr].
 
-    @since 4.00.0 ")
+    @since 4.00.0 */
 let from_fun: (unit => 'a) => t<'a>
 
-@ocaml.doc(" [from_val v] returns an already-forced suspension of [v].
+/** [from_val v] returns an already-forced suspension of [v].
     This is for special purposes only and should not be confused with
     [lazy (v)].
-    @since 4.00.0 ")
+    @since 4.00.0 */
 let from_val: 'a => t<'a>
 
-@ocaml.doc(" [is_val x] returns [true] if [x] has already been forced and
+/** [is_val x] returns [true] if [x] has already been forced and
     did not raise an exception.
-    @since 4.00.0 ")
+    @since 4.00.0 */
 let is_val: t<'a> => bool
 
-@ocaml.deprecated("Use Lazy.from_fun instead.") @ocaml.doc(" @deprecated synonym for [from_fun]. ")
+@ocaml.deprecated("Use Lazy.from_fun instead.") /** @deprecated synonym for [from_fun]. */
 let lazy_from_fun: (unit => 'a) => t<'a>
 
-@ocaml.deprecated("Use Lazy.from_val instead.") @ocaml.doc(" @deprecated synonym for [from_val]. ")
+@ocaml.deprecated("Use Lazy.from_val instead.") /** @deprecated synonym for [from_val]. */
 let lazy_from_val: 'a => t<'a>
 
-@ocaml.deprecated("Use Lazy.is_val instead.") @ocaml.doc(" @deprecated synonym for [is_val]. ")
+@ocaml.deprecated("Use Lazy.is_val instead.") /** @deprecated synonym for [is_val]. */
 let lazy_is_val: t<'a> => bool

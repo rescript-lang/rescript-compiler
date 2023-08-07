@@ -42,83 +42,83 @@
    @since 4.02.0
  ")
 
-@ocaml.doc(" Return the length (number of bytes) of the argument. ")
+/** Return the length (number of bytes) of the argument. */
 external length: bytes => int = "%bytes_length"
 
-@ocaml.doc(" [get s n] returns the byte at index [n] in argument [s].
+/** [get s n] returns the byte at index [n] in argument [s].
 
-    Raise [Invalid_argument] if [n] is not a valid index in [s]. ")
+    Raise [Invalid_argument] if [n] is not a valid index in [s]. */
 external get: (bytes, int) => char = "%bytes_safe_get"
 
-@ocaml.doc(" [set s n c] modifies [s] in place, replacing the byte at index [n]
+/** [set s n c] modifies [s] in place, replacing the byte at index [n]
     with [c].
 
-    Raise [Invalid_argument] if [n] is not a valid index in [s]. ")
+    Raise [Invalid_argument] if [n] is not a valid index in [s]. */
 external set: (bytes, int, char) => unit = "%bytes_safe_set"
 
-@ocaml.doc(" [create n] returns a new byte sequence of length [n]. The
+/** [create n] returns a new byte sequence of length [n]. The
     sequence is uninitialized and contains arbitrary bytes.
 
-    Raise [Invalid_argument] if [n < 0] or [n > ]{!Sys.max_string_length}. ")
+    Raise [Invalid_argument] if [n < 0] or [n > ]{!Sys.max_string_length}. */
 external create: int => bytes = "?create_bytes"
 
-@ocaml.doc(" [make n c] returns a new byte sequence of length [n], filled with
+/** [make n c] returns a new byte sequence of length [n], filled with
     the byte [c].
 
-    Raise [Invalid_argument] if [n < 0] or [n > ]{!Sys.max_string_length}. ")
+    Raise [Invalid_argument] if [n < 0] or [n > ]{!Sys.max_string_length}. */
 let make: (int, char) => bytes
 
-@ocaml.doc(" [Bytes.init n f] returns a fresh byte sequence of length [n], with
+/** [Bytes.init n f] returns a fresh byte sequence of length [n], with
     character [i] initialized to the result of [f i] (in increasing
     index order).
 
-    Raise [Invalid_argument] if [n < 0] or [n > ]{!Sys.max_string_length}. ")
+    Raise [Invalid_argument] if [n < 0] or [n > ]{!Sys.max_string_length}. */
 let init: (int, int => char) => bytes
 
-@ocaml.doc(" A byte sequence of size 0. ")
+/** A byte sequence of size 0. */
 let empty: bytes
 
-@ocaml.doc(" Return a new byte sequence that contains the same bytes as the
-    argument. ")
+/** Return a new byte sequence that contains the same bytes as the
+    argument. */
 let copy: bytes => bytes
 
-@ocaml.doc(" Return a new byte sequence that contains the same bytes as the
-    given string. ")
+/** Return a new byte sequence that contains the same bytes as the
+    given string. */
 let of_string: string => bytes
 
-@ocaml.doc(" Return a new string that contains the same bytes as the given byte
-    sequence. ")
+/** Return a new string that contains the same bytes as the given byte
+    sequence. */
 let to_string: bytes => string
 
-@ocaml.doc(" [sub s start len] returns a new byte sequence of length [len],
+/** [sub s start len] returns a new byte sequence of length [len],
     containing the subsequence of [s] that starts at position [start]
     and has length [len].
 
     Raise [Invalid_argument] if [start] and [len] do not designate a
-    valid range of [s]. ")
+    valid range of [s]. */
 let sub: (bytes, int, int) => bytes
 
-@ocaml.doc(" Same as [sub] but return a string instead of a byte sequence. ")
+/** Same as [sub] but return a string instead of a byte sequence. */
 let sub_string: (bytes, int, int) => string
 
-@ocaml.doc(" [extend s left right] returns a new byte sequence that contains
+/** [extend s left right] returns a new byte sequence that contains
     the bytes of [s], with [left] uninitialized bytes prepended and
     [right] uninitialized bytes appended to it. If [left] or [right]
     is negative, then bytes are removed (instead of appended) from
     the corresponding side of [s].
 
     Raise [Invalid_argument] if the result length is negative or
-    longer than {!Sys.max_string_length} bytes. ")
+    longer than {!Sys.max_string_length} bytes. */
 let extend: (bytes, int, int) => bytes
 
-@ocaml.doc(" [fill s start len c] modifies [s] in place, replacing [len]
+/** [fill s start len c] modifies [s] in place, replacing [len]
     characters with [c], starting at [start].
 
     Raise [Invalid_argument] if [start] and [len] do not designate a
-    valid range of [s]. ")
+    valid range of [s]. */
 let fill: (bytes, int, int, char) => unit
 
-@ocaml.doc(" [blit src srcoff dst dstoff len] copies [len] bytes from sequence
+/** [blit src srcoff dst dstoff len] copies [len] bytes from sequence
     [src], starting at index [srcoff], to sequence [dst], starting at
     index [dstoff]. It works correctly even if [src] and [dst] are the
     same byte sequence, and the source and destination intervals
@@ -126,170 +126,170 @@ let fill: (bytes, int, int, char) => unit
 
     Raise [Invalid_argument] if [srcoff] and [len] do not
     designate a valid range of [src], or if [dstoff] and [len]
-    do not designate a valid range of [dst]. ")
+    do not designate a valid range of [dst]. */
 let blit: (bytes, int, bytes, int, int) => unit
 
-@ocaml.doc(" [blit src srcoff dst dstoff len] copies [len] bytes from string
+/** [blit src srcoff dst dstoff len] copies [len] bytes from string
     [src], starting at index [srcoff], to byte sequence [dst],
     starting at index [dstoff].
 
     Raise [Invalid_argument] if [srcoff] and [len] do not
     designate a valid range of [src], or if [dstoff] and [len]
-    do not designate a valid range of [dst]. ")
+    do not designate a valid range of [dst]. */
 let blit_string: (string, int, bytes, int, int) => unit
 
-@ocaml.doc(" [concat sep sl] concatenates the list of byte sequences [sl],
+/** [concat sep sl] concatenates the list of byte sequences [sl],
     inserting the separator byte sequence [sep] between each, and
     returns the result as a new byte sequence.
 
     Raise [Invalid_argument] if the result is longer than
-    {!Sys.max_string_length} bytes. ")
+    {!Sys.max_string_length} bytes. */
 let concat: (bytes, list<bytes>) => bytes
 
-@ocaml.doc(" [cat s1 s2] concatenates [s1] and [s2] and returns the result
+/** [cat s1 s2] concatenates [s1] and [s2] and returns the result
      as new byte sequence.
 
     Raise [Invalid_argument] if the result is longer than
-    {!Sys.max_string_length} bytes. ")
+    {!Sys.max_string_length} bytes. */
 let cat: (bytes, bytes) => bytes
 
-@ocaml.doc(" [iter f s] applies function [f] in turn to all the bytes of [s].
+/** [iter f s] applies function [f] in turn to all the bytes of [s].
     It is equivalent to [f (get s 0); f (get s 1); ...; f (get s
-    (length s - 1)); ()]. ")
+    (length s - 1)); ()]. */
 let iter: (char => unit, bytes) => unit
 
-@ocaml.doc(" Same as {!Bytes.iter}, but the function is applied to the index of
+/** Same as {!Bytes.iter}, but the function is applied to the index of
     the byte as first argument and the byte itself as second
-    argument. ")
+    argument. */
 let iteri: ((int, char) => unit, bytes) => unit
 
-@ocaml.doc(" [map f s] applies function [f] in turn to all the bytes of [s]
+/** [map f s] applies function [f] in turn to all the bytes of [s]
     (in increasing index order) and stores the resulting bytes in
-    a new sequence that is returned as the result. ")
+    a new sequence that is returned as the result. */
 let map: (char => char, bytes) => bytes
 
-@ocaml.doc(" [mapi f s] calls [f] with each character of [s] and its
+/** [mapi f s] calls [f] with each character of [s] and its
     index (in increasing index order) and stores the resulting bytes
-    in a new sequence that is returned as the result. ")
+    in a new sequence that is returned as the result. */
 let mapi: ((int, char) => char, bytes) => bytes
 
-@ocaml.doc(" Return a copy of the argument, without leading and trailing
+/** Return a copy of the argument, without leading and trailing
     whitespace. The bytes regarded as whitespace are the ASCII
-    characters [' '], ['\012'], ['\n'], ['\r'], and ['\t']. ")
+    characters [' '], ['\x0c'], ['\n'], ['\r'], and ['\t']. */
 let trim: bytes => bytes
 
-@ocaml.doc(" Return a copy of the argument, with special characters represented
+/** Return a copy of the argument, with special characters represented
     by escape sequences, following the lexical conventions of OCaml.
     All characters outside the ASCII printable range (32..126) are
     escaped, as well as backslash and double-quote.
 
     Raise [Invalid_argument] if the result is longer than
-    {!Sys.max_string_length} bytes. ")
+    {!Sys.max_string_length} bytes. */
 let escaped: bytes => bytes
 
-@ocaml.doc(" [index s c] returns the index of the first occurrence of byte [c]
+/** [index s c] returns the index of the first occurrence of byte [c]
     in [s].
 
-    Raise [Not_found] if [c] does not occur in [s]. ")
+    Raise [Not_found] if [c] does not occur in [s]. */
 let index: (bytes, char) => int
 
-@ocaml.doc(" [index_opt s c] returns the index of the first occurrence of byte [c]
+/** [index_opt s c] returns the index of the first occurrence of byte [c]
     in [s] or [None] if [c] does not occur in [s].
-    @since 4.05 ")
+    @since 4.05 */
 let index_opt: (bytes, char) => option<int>
 
-@ocaml.doc(" [rindex s c] returns the index of the last occurrence of byte [c]
+/** [rindex s c] returns the index of the last occurrence of byte [c]
     in [s].
 
-    Raise [Not_found] if [c] does not occur in [s]. ")
+    Raise [Not_found] if [c] does not occur in [s]. */
 let rindex: (bytes, char) => int
 
-@ocaml.doc(" [rindex_opt s c] returns the index of the last occurrence of byte [c]
+/** [rindex_opt s c] returns the index of the last occurrence of byte [c]
     in [s] or [None] if [c] does not occur in [s].
-    @since 4.05 ")
+    @since 4.05 */
 let rindex_opt: (bytes, char) => option<int>
 
-@ocaml.doc(" [index_from s i c] returns the index of the first occurrence of
+/** [index_from s i c] returns the index of the first occurrence of
     byte [c] in [s] after position [i].  [Bytes.index s c] is
     equivalent to [Bytes.index_from s 0 c].
 
     Raise [Invalid_argument] if [i] is not a valid position in [s].
-    Raise [Not_found] if [c] does not occur in [s] after position [i]. ")
+    Raise [Not_found] if [c] does not occur in [s] after position [i]. */
 let index_from: (bytes, int, char) => int
 
-@ocaml.doc(" [index_from _opts i c] returns the index of the first occurrence of
+/** [index_from _opts i c] returns the index of the first occurrence of
     byte [c] in [s] after position [i] or [None] if [c] does not occur in [s] after position [i].
     [Bytes.index_opt s c] is equivalent to [Bytes.index_from_opt s 0 c].
 
     Raise [Invalid_argument] if [i] is not a valid position in [s].
-    @since 4.05 ")
+    @since 4.05 */
 let index_from_opt: (bytes, int, char) => option<int>
 
-@ocaml.doc(" [rindex_from s i c] returns the index of the last occurrence of
+/** [rindex_from s i c] returns the index of the last occurrence of
     byte [c] in [s] before position [i+1].  [rindex s c] is equivalent
     to [rindex_from s (Bytes.length s - 1) c].
 
     Raise [Invalid_argument] if [i+1] is not a valid position in [s].
-    Raise [Not_found] if [c] does not occur in [s] before position [i+1]. ")
+    Raise [Not_found] if [c] does not occur in [s] before position [i+1]. */
 let rindex_from: (bytes, int, char) => int
 
-@ocaml.doc(" [rindex_from_opt s i c] returns the index of the last occurrence
+/** [rindex_from_opt s i c] returns the index of the last occurrence
     of byte [c] in [s] before position [i+1] or [None] if [c] does not
     occur in [s] before position [i+1].  [rindex_opt s c] is equivalent to
     [rindex_from s (Bytes.length s - 1) c].
 
     Raise [Invalid_argument] if [i+1] is not a valid position in [s].
-    @since 4.05 ")
+    @since 4.05 */
 let rindex_from_opt: (bytes, int, char) => option<int>
 
-@ocaml.doc(" [contains s c] tests if byte [c] appears in [s]. ")
+/** [contains s c] tests if byte [c] appears in [s]. */
 let contains: (bytes, char) => bool
 
-@ocaml.doc(" [contains_from s start c] tests if byte [c] appears in [s] after
+/** [contains_from s start c] tests if byte [c] appears in [s] after
     position [start].  [contains s c] is equivalent to [contains_from
     s 0 c].
 
-    Raise [Invalid_argument] if [start] is not a valid position in [s]. ")
+    Raise [Invalid_argument] if [start] is not a valid position in [s]. */
 let contains_from: (bytes, int, char) => bool
 
-@ocaml.doc(" [rcontains_from s stop c] tests if byte [c] appears in [s] before
+/** [rcontains_from s stop c] tests if byte [c] appears in [s] before
     position [stop+1].
 
     Raise [Invalid_argument] if [stop < 0] or [stop+1] is not a valid
-    position in [s]. ")
+    position in [s]. */
 let rcontains_from: (bytes, int, char) => bool
 
-@ocaml.doc(" Return a copy of the argument, with all lowercase letters
+/** Return a copy of the argument, with all lowercase letters
    translated to uppercase, using the US-ASCII character set.
-   @since 4.03.0 ")
+   @since 4.03.0 */
 let uppercase_ascii: bytes => bytes
 
-@ocaml.doc(" Return a copy of the argument, with all uppercase letters
+/** Return a copy of the argument, with all uppercase letters
    translated to lowercase, using the US-ASCII character set.
-   @since 4.03.0 ")
+   @since 4.03.0 */
 let lowercase_ascii: bytes => bytes
 
-@ocaml.doc(" Return a copy of the argument, with the first character set to uppercase,
+/** Return a copy of the argument, with the first character set to uppercase,
    using the US-ASCII character set.
-   @since 4.03.0 ")
+   @since 4.03.0 */
 let capitalize_ascii: bytes => bytes
 
-@ocaml.doc(" Return a copy of the argument, with the first character set to lowercase,
+/** Return a copy of the argument, with the first character set to lowercase,
    using the US-ASCII character set.
-   @since 4.03.0 ")
+   @since 4.03.0 */
 let uncapitalize_ascii: bytes => bytes
 
-@ocaml.doc(" An alias for the type of byte sequences. ")
+/** An alias for the type of byte sequences. */
 type t = bytes
 
-@ocaml.doc(" The comparison function for byte sequences, with the same
+/** The comparison function for byte sequences, with the same
     specification as {!Pervasives.compare}.  Along with the type [t],
     this function [compare] allows the module [Bytes] to be passed as
-    argument to the functors {!Set.Make} and {!Map.Make}. ")
+    argument to the functors {!Set.Make} and {!Map.Make}. */
 let compare: (t, t) => int
 
-@ocaml.doc(" The equality function for byte sequences.
-    @since 4.03.0 ")
+/** The equality function for byte sequences.
+    @since 4.03.0 */
 let equal: (t, t) => bool
 
 @@ocaml.text(" {3 Unsafe conversions (for advanced users)}
@@ -302,7 +302,7 @@ let equal: (t, t) => bool
     always-correct {!Bytes.to_string} and {!Bytes.of_string} instead.
 ")
 
-@ocaml.doc(" Unsafely convert a byte sequence into a string.
+/** Unsafely convert a byte sequence into a string.
 
     To reason about the use of [unsafe_to_string], it is convenient to
     consider an \"ownership\" discipline. A piece of code that
@@ -375,10 +375,10 @@ let bytes_length (s : bytes) =
    but also higher-order functions: if {!String.length} returned
    a closure to be called later, [s] should not be mutated until this
    closure is fully applied and returns ownership.
-")
+*/
 let unsafe_to_string: bytes => string
 
-@ocaml.doc(" Unsafely convert a shared string to a byte sequence that should
+/** Unsafely convert a shared string to a byte sequence that should
     not be mutated.
 
     The same ownership discipline that makes [unsafe_to_string]
@@ -418,7 +418,7 @@ let s = Bytes.of_string \"hello\"
     low-level programs that manipulate immutable sequences of bytes
     (for example {!Marshal.from_bytes}) and previously used the
     [string] type for this purpose.
-")
+*/
 let unsafe_of_string: string => bytes
 
 @@ocaml.text("/*")

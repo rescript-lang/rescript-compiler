@@ -17,20 +17,20 @@
   " Streams and parsers. "
 )
 
-@ocaml.doc(" The type of streams holding values of type ['a]. ")
+/** The type of streams holding values of type ['a]. */
 type t<'a>
 
-@ocaml.doc(" Raised by parsers when none of the first components of the stream
-   patterns is accepted. ")
+/** Raised by parsers when none of the first components of the stream
+   patterns is accepted. */
 exception Failure
 
-@ocaml.doc(" Raised by parsers when the first component of a stream pattern is
-   accepted, but one of the following components is rejected. ")
+/** Raised by parsers when the first component of a stream pattern is
+   accepted, but one of the following components is rejected. */
 exception Error(string)
 
 @@ocaml.text(" {1 Stream builders} ")
 
-@ocaml.doc(" [Stream.from f] returns a stream built from the function [f].
+/** [Stream.from f] returns a stream built from the function [f].
    To create a new stream element, the function [f] is called with
    the current stream count. The user function [f] must return either
    [Some <value>] for a value or [None] to specify the end of the
@@ -39,52 +39,52 @@ exception Error(string)
    Do note that the indices passed to [f] may not start at [0] in the
    general case. For example, [[< '0; '1; Stream.from f >]] would call
    [f] the first time with count [2].
-")
+*/
 let from: (int => option<'a>) => t<'a>
 
-@ocaml.doc(" Return the stream holding the elements of the list in the same
-   order. ")
+/** Return the stream holding the elements of the list in the same
+   order. */
 let of_list: list<'a> => t<'a>
 
-@ocaml.doc(" Return the stream of the characters of the string parameter. ")
+/** Return the stream of the characters of the string parameter. */
 let of_string: string => t<char>
 
-@ocaml.doc(" Return the stream of the characters of the bytes parameter.
-    @since 4.02.0 ")
+/** Return the stream of the characters of the bytes parameter.
+    @since 4.02.0 */
 let of_bytes: bytes => t<char>
 
 @@ocaml.text(" {1 Stream iterator} ")
 
-@ocaml.doc(" [Stream.iter f s] scans the whole stream s, applying function [f]
-   in turn to each stream element encountered. ")
+/** [Stream.iter f s] scans the whole stream s, applying function [f]
+   in turn to each stream element encountered. */
 let iter: ('a => unit, t<'a>) => unit
 
 @@ocaml.text(" {1 Predefined parsers} ")
 
-@ocaml.doc(" Return the first element of the stream and remove it from the
-   stream. Raise {!Stream.Failure} if the stream is empty. ")
+/** Return the first element of the stream and remove it from the
+   stream. Raise {!Stream.Failure} if the stream is empty. */
 let next: t<'a> => 'a
 
-@ocaml.doc(" Return [()] if the stream is empty, else raise {!Stream.Failure}. ")
+/** Return [()] if the stream is empty, else raise {!Stream.Failure}. */
 let empty: t<'a> => unit
 
 @@ocaml.text(" {1 Useful functions} ")
 
-@ocaml.doc(" Return [Some] of \"the first element\" of the stream, or [None] if
-   the stream is empty. ")
+/** Return [Some] of \"the first element\" of the stream, or [None] if
+   the stream is empty. */
 let peek: t<'a> => option<'a>
 
-@ocaml.doc(" Remove the first element of the stream, possibly unfreezing
-   it before. ")
+/** Remove the first element of the stream, possibly unfreezing
+   it before. */
 let junk: t<'a> => unit
 
-@ocaml.doc(" Return the current count of the stream elements, i.e. the number
-   of the stream elements discarded. ")
+/** Return the current count of the stream elements, i.e. the number
+   of the stream elements discarded. */
 let count: t<'a> => int
 
-@ocaml.doc(" [npeek n] returns the list of the [n] first elements of
+/** [npeek n] returns the list of the [n] first elements of
    the stream, or all its remaining elements if less than [n]
-   elements are available. ")
+   elements are available. */
 let npeek: (int, t<'a>) => list<'a>
 
 @@ocaml.text("/*")

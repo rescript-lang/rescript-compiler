@@ -24,44 +24,44 @@
    primitives should be used instead.
 ")
 
-@ocaml.doc(" The type of digests: 16-character strings. ")
+/** The type of digests: 16-character strings. */
 type t = string
 
-@ocaml.doc(" The comparison function for 16-character digest, with the same
+/** The comparison function for 16-character digest, with the same
     specification as {!Pervasives.compare} and the implementation
     shared with {!String.compare}. Along with the type [t], this
     function [compare] allows the module [Digest] to be passed as
     argument to the functors {!Set.Make} and {!Map.Make}.
-    @since 4.00.0 ")
+    @since 4.00.0 */
 let compare: (t, t) => int
 
-@ocaml.doc(" The equal function for 16-character digest.
-    @since 4.03.0 ")
+/** The equal function for 16-character digest.
+    @since 4.03.0 */
 let equal: (t, t) => bool
 
-@ocaml.doc(" Return the digest of the given string. ")
+/** Return the digest of the given string. */
 let string: string => t
 
-@ocaml.doc(" Return the digest of the given byte sequence.
-    @since 4.02.0 ")
+/** Return the digest of the given byte sequence.
+    @since 4.02.0 */
 let bytes: bytes => t
 
-@ocaml.doc(" [Digest.substring s ofs len] returns the digest of the substring
-   of [s] starting at index [ofs] and containing [len] characters. ")
+/** [Digest.substring s ofs len] returns the digest of the substring
+   of [s] starting at index [ofs] and containing [len] characters. */
 let substring: (string, int, int) => t
 
-@ocaml.doc(" [Digest.subbytes s ofs len] returns the digest of the subsequence
+/** [Digest.subbytes s ofs len] returns the digest of the subsequence
     of [s] starting at index [ofs] and containing [len] bytes.
-    @since 4.02.0 ")
+    @since 4.02.0 */
 let subbytes: (bytes, int, int) => t
 
-@ocaml.doc(" Return the printable hexadecimal representation of the given digest.
+/** Return the printable hexadecimal representation of the given digest.
     Raise [Invalid_argument] if the argument is not exactly 16 bytes.
- ")
+ */
 let to_hex: t => string
 
-@ocaml.doc(" Convert a hexadecimal representation back into the corresponding digest.
+/** Convert a hexadecimal representation back into the corresponding digest.
    Raise [Invalid_argument] if the argument is not exactly 32 hexadecimal
    characters.
-   @since 4.00.0 ")
+   @since 4.00.0 */
 let from_hex: string => t

@@ -43,49 +43,49 @@
    values so its type is [string PairsMap.t].
 ")
 
-@ocaml.doc(" Input signature of the functor {!Map.Make}. ")
+/** Input signature of the functor {!Map.Make}. */
 module type OrderedType = {
-  @ocaml.doc(" The type of the map keys. ")
+  /** The type of the map keys. */
   type t
 
-  @ocaml.doc(" A total ordering function over the keys.
+  /** A total ordering function over the keys.
           This is a two-argument function [f] such that
           [f e1 e2] is zero if the keys [e1] and [e2] are equal,
           [f e1 e2] is strictly negative if [e1] is smaller than [e2],
           and [f e1 e2] is strictly positive if [e1] is greater than [e2].
           Example: a suitable ordering function is the generic structural
-          comparison function {!Pervasives.compare}. ")
+          comparison function {!Pervasives.compare}. */
   let compare: (t, t) => int
 }
 
-@ocaml.doc(" Output signature of the functor {!Map.Make}. ")
+/** Output signature of the functor {!Map.Make}. */
 module type S = {
-  @ocaml.doc(" The type of the map keys. ")
+  /** The type of the map keys. */
   type key
 
-  @ocaml.doc(" The type of maps from type [key] to type ['a]. ")
+  /** The type of maps from type [key] to type ['a]. */
   type t<+'a>
 
-  @ocaml.doc(" The empty map. ")
+  /** The empty map. */
   let empty: t<'a>
 
-  @ocaml.doc(" Test whether a map is empty or not. ")
+  /** Test whether a map is empty or not. */
   let is_empty: t<'a> => bool
 
-  @ocaml.doc(" [mem x m] returns [true] if [m] contains a binding for [x],
-       and [false] otherwise. ")
+  /** [mem x m] returns [true] if [m] contains a binding for [x],
+       and [false] otherwise. */
   let mem: (key, t<'a>) => bool
 
-  @ocaml.doc(" [add x y m] returns a map containing the same bindings as
+  /** [add x y m] returns a map containing the same bindings as
        [m], plus a binding of [x] to [y]. If [x] was already bound
        in [m] to a value that is physically equal to [y],
        [m] is returned unchanged (the result of the function is
        then physically equal to [m]). Otherwise, the previous binding
        of [x] in [m] disappears.
-       @before 4.03 Physical equality was not ensured. ")
+       @before 4.03 Physical equality was not ensured. */
   let add: (key, 'a, t<'a>) => t<'a>
 
-  @ocaml.doc(" [update x f m] returns a map containing the same bindings as
+  /** [update x f m] returns a map containing the same bindings as
         [m], except for the binding of [x]. Depending on the value of
         [y] where [y] is [f (find_opt x m)], the binding of [x] is
         added, removed or updated. If [y] is [None], the binding is
@@ -95,33 +95,33 @@ module type S = {
         is returned unchanged (the result of the function is then
         physically equal to [m]).
         @since 4.06.0
-    ")
+    */
   let update: (key, option<'a> => option<'a>, t<'a>) => t<'a>
 
-  @ocaml.doc(" [singleton x y] returns the one-element map that contains a binding [y]
+  /** [singleton x y] returns the one-element map that contains a binding [y]
         for [x].
         @since 3.12.0
-     ")
+     */
   let singleton: (key, 'a) => t<'a>
 
-  @ocaml.doc(" [remove x m] returns a map containing the same bindings as
+  /** [remove x m] returns a map containing the same bindings as
        [m], except for [x] which is unbound in the returned map.
        If [x] was not in [m], [m] is returned unchanged
        (the result of the function is then physically equal to [m]).
-       @before 4.03 Physical equality was not ensured. ")
+       @before 4.03 Physical equality was not ensured. */
   let remove: (key, t<'a>) => t<'a>
 
-  @ocaml.doc(" [merge f m1 m2] computes a map whose keys is a subset of keys of [m1]
+  /** [merge f m1 m2] computes a map whose keys is a subset of keys of [m1]
         and of [m2]. The presence of each such binding, and the corresponding
         value, is determined with the function [f].
         In terms of the [find_opt] operation, we have
         [find_opt x (merge f m1 m2) = f (find_opt x m1) (find_opt x m2)]
         for any key [x], provided that [f None None = None].
         @since 3.12.0
-     ")
+     */
   let merge: ((key, option<'a>, option<'b>) => option<'c>, t<'a>, t<'b>) => t<'c>
 
-  @ocaml.doc(" [union f m1 m2] computes a map whose keys is the union of keys
+  /** [union f m1 m2] computes a map whose keys is the union of keys
         of [m1] and of [m2].  When the same binding is defined in both
         arguments, the function [f] is used to combine them.
         This is a special case of [merge]: [union f m1 m2] is equivalent
@@ -132,113 +132,113 @@ module type S = {
         - [f' (Some v1) (Some v2) = f v1 v2]
 
         @since 4.03.0
-    ")
+    */
   let union: ((key, 'a, 'a) => option<'a>, t<'a>, t<'a>) => t<'a>
 
-  @ocaml.doc(" Total ordering between maps.  The first argument is a total ordering
-        used to compare data associated with equal keys in the two maps. ")
+  /** Total ordering between maps.  The first argument is a total ordering
+        used to compare data associated with equal keys in the two maps. */
   let compare: (('a, 'a) => int, t<'a>, t<'a>) => int
 
-  @ocaml.doc(" [equal cmp m1 m2] tests whether the maps [m1] and [m2] are
+  /** [equal cmp m1 m2] tests whether the maps [m1] and [m2] are
        equal, that is, contain equal keys and associate them with
        equal data.  [cmp] is the equality predicate used to compare
-       the data associated with the keys. ")
+       the data associated with the keys. */
   let equal: (('a, 'a) => bool, t<'a>, t<'a>) => bool
 
-  @ocaml.doc(" [iter f m] applies [f] to all bindings in map [m].
+  /** [iter f m] applies [f] to all bindings in map [m].
        [f] receives the key as first argument, and the associated value
        as second argument.  The bindings are passed to [f] in increasing
-       order with respect to the ordering over the type of the keys. ")
+       order with respect to the ordering over the type of the keys. */
   let iter: ((key, 'a) => unit, t<'a>) => unit
 
-  @ocaml.doc(" [fold f m a] computes [(f kN dN ... (f k1 d1 a)...)],
+  /** [fold f m a] computes [(f kN dN ... (f k1 d1 a)...)],
        where [k1 ... kN] are the keys of all bindings in [m]
-       (in increasing order), and [d1 ... dN] are the associated data. ")
+       (in increasing order), and [d1 ... dN] are the associated data. */
   let fold: ((key, 'a, 'b) => 'b, t<'a>, 'b) => 'b
 
-  @ocaml.doc(" [for_all p m] checks if all the bindings of the map
+  /** [for_all p m] checks if all the bindings of the map
         satisfy the predicate [p].
         @since 3.12.0
-     ")
+     */
   let for_all: ((key, 'a) => bool, t<'a>) => bool
 
-  @ocaml.doc(" [exists p m] checks if at least one binding of the map
+  /** [exists p m] checks if at least one binding of the map
         satisfies the predicate [p].
         @since 3.12.0
-     ")
+     */
   let exists: ((key, 'a) => bool, t<'a>) => bool
 
-  @ocaml.doc(" [filter p m] returns the map with all the bindings in [m]
+  /** [filter p m] returns the map with all the bindings in [m]
         that satisfy predicate [p]. If [p] satisfies every binding in [m],
         [m] is returned unchanged (the result of the function is then
         physically equal to [m])
         @since 3.12.0
        @before 4.03 Physical equality was not ensured.
-     ")
+     */
   let filter: ((key, 'a) => bool, t<'a>) => t<'a>
 
-  @ocaml.doc(" [partition p m] returns a pair of maps [(m1, m2)], where
+  /** [partition p m] returns a pair of maps [(m1, m2)], where
         [m1] contains all the bindings of [s] that satisfy the
         predicate [p], and [m2] is the map with all the bindings of
         [s] that do not satisfy [p].
         @since 3.12.0
-     ")
+     */
   let partition: ((key, 'a) => bool, t<'a>) => (t<'a>, t<'a>)
 
-  @ocaml.doc(" Return the number of bindings of a map.
+  /** Return the number of bindings of a map.
         @since 3.12.0
-     ")
+     */
   let cardinal: t<'a> => int
 
-  @ocaml.doc(" Return the list of all bindings of the given map.
+  /** Return the list of all bindings of the given map.
        The returned list is sorted in increasing order with respect
        to the ordering [Ord.compare], where [Ord] is the argument
        given to {!Map.Make}.
         @since 3.12.0
-     ")
+     */
   let bindings: t<'a> => list<(key, 'a)>
 
-  @ocaml.doc(" Return the smallest binding of the given map
+  /** Return the smallest binding of the given map
        (with respect to the [Ord.compare] ordering), or raise
        [Not_found] if the map is empty.
         @since 3.12.0
-     ")
+     */
   let min_binding: t<'a> => (key, 'a)
 
-  @ocaml.doc(" Return the smallest binding of the given map
+  /** Return the smallest binding of the given map
        (with respect to the [Ord.compare] ordering), or [None]
        if the map is empty.
         @since 4.05
-     ")
+     */
   let min_binding_opt: t<'a> => option<(key, 'a)>
 
-  @ocaml.doc(" Same as {!Map.S.min_binding}, but returns the largest binding
+  /** Same as {!Map.S.min_binding}, but returns the largest binding
         of the given map.
         @since 3.12.0
-     ")
+     */
   let max_binding: t<'a> => (key, 'a)
 
-  @ocaml.doc(" Same as {!Map.S.min_binding_opt}, but returns the largest binding
+  /** Same as {!Map.S.min_binding_opt}, but returns the largest binding
         of the given map.
         @since 4.05
-     ")
+     */
   let max_binding_opt: t<'a> => option<(key, 'a)>
 
-  @ocaml.doc(" Return one binding of the given map, or raise [Not_found] if
+  /** Return one binding of the given map, or raise [Not_found] if
        the map is empty. Which binding is chosen is unspecified,
        but equal bindings will be chosen for equal maps.
         @since 3.12.0
-     ")
+     */
   let choose: t<'a> => (key, 'a)
 
-  @ocaml.doc(" Return one binding of the given map, or [None] if
+  /** Return one binding of the given map, or [None] if
        the map is empty. Which binding is chosen is unspecified,
        but equal bindings will be chosen for equal maps.
         @since 4.05
-     ")
+     */
   let choose_opt: t<'a> => option<(key, 'a)>
 
-  @ocaml.doc(" [split x m] returns a triple [(l, data, r)], where
+  /** [split x m] returns a triple [(l, data, r)], where
           [l] is the map with all the bindings of [m] whose key
         is strictly less than [x];
           [r] is the map with all the bindings of [m] whose key
@@ -246,20 +246,20 @@ module type S = {
           [data] is [None] if [m] contains no binding for [x],
           or [Some v] if [m] binds [v] to [x].
         @since 3.12.0
-     ")
+     */
   let split: (key, t<'a>) => (t<'a>, option<'a>, t<'a>)
 
-  @ocaml.doc(" [find x m] returns the current binding of [x] in [m],
-       or raises [Not_found] if no such binding exists. ")
+  /** [find x m] returns the current binding of [x] in [m],
+       or raises [Not_found] if no such binding exists. */
   let find: (key, t<'a>) => 'a
 
-  @ocaml.doc(" [find_opt x m] returns [Some v] if the current binding of [x]
+  /** [find_opt x m] returns [Some v] if the current binding of [x]
         in [m] is [v], or [None] if no such binding exists.
         @since 4.05
-    ")
+    */
   let find_opt: (key, t<'a>) => option<'a>
 
-  @ocaml.doc(" [find_first f m], where [f] is a monotonically increasing function,
+  /** [find_first f m], where [f] is a monotonically increasing function,
        returns the binding of [m] with the lowest key [k] such that [f k],
        or raises [Not_found] if no such key exists.
 
@@ -269,42 +269,42 @@ module type S = {
        element of [m].
 
         @since 4.05
-       ")
+       */
   let find_first: (key => bool, t<'a>) => (key, 'a)
 
-  @ocaml.doc(" [find_first_opt f m], where [f] is a monotonically increasing function,
+  /** [find_first_opt f m], where [f] is a monotonically increasing function,
        returns an option containing the binding of [m] with the lowest key [k]
        such that [f k], or [None] if no such key exists.
         @since 4.05
-       ")
+       */
   let find_first_opt: (key => bool, t<'a>) => option<(key, 'a)>
 
-  @ocaml.doc(" [find_last f m], where [f] is a monotonically decreasing function,
+  /** [find_last f m], where [f] is a monotonically decreasing function,
        returns the binding of [m] with the highest key [k] such that [f k],
        or raises [Not_found] if no such key exists.
         @since 4.05
-       ")
+       */
   let find_last: (key => bool, t<'a>) => (key, 'a)
 
-  @ocaml.doc(" [find_last_opt f m], where [f] is a monotonically decreasing function,
+  /** [find_last_opt f m], where [f] is a monotonically decreasing function,
        returns an option containing the binding of [m] with the highest key [k]
        such that [f k], or [None] if no such key exists.
         @since 4.05
-       ")
+       */
   let find_last_opt: (key => bool, t<'a>) => option<(key, 'a)>
 
-  @ocaml.doc(" [map f m] returns a map with same domain as [m], where the
+  /** [map f m] returns a map with same domain as [m], where the
        associated value [a] of all bindings of [m] has been
        replaced by the result of the application of [f] to [a].
        The bindings are passed to [f] in increasing order
-       with respect to the ordering over the type of the keys. ")
+       with respect to the ordering over the type of the keys. */
   let map: ('a => 'b, t<'a>) => t<'b>
 
-  @ocaml.doc(" Same as {!Map.S.map}, but the function receives as arguments both the
-       key and the associated value for each binding of the map. ")
+  /** Same as {!Map.S.map}, but the function receives as arguments both the
+       key and the associated value for each binding of the map. */
   let mapi: ((key, 'a) => 'b, t<'a>) => t<'b>
 }
 
-@ocaml.doc(" Functor building an implementation of the map structure
-   given a totally ordered type. ")
+/** Functor building an implementation of the map structure
+   given a totally ordered type. */
 module Make: (Ord: OrderedType) => (S with type key = Ord.t)

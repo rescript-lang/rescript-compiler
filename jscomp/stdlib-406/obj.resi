@@ -38,7 +38,7 @@ external size: t => int = "#obj_length"
 
 external field: (t, int) => t = "%obj_field"
 
-@ocaml.doc(" When using flambda:
+/** When using flambda:
 
     [set_field] MUST NOT be called on immutable blocks.  (Blocks allocated
     in C stubs, or with [new_block] below, are always considered mutable.)
@@ -47,6 +47,6 @@ external field: (t, int) => t = "%obj_field"
     [set_field] et al can be made safe by first wrapping the block in
     {!Sys.opaque_identity}, so any information about its contents will not
     be propagated.
-")
+*/
 external set_field: (t, int, t) => unit = "%obj_set_field"
 external dup: t => t = "?obj_dup"

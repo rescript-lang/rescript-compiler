@@ -45,14 +45,14 @@
    [\"-pp\"] command-line switch of the compilers.
 ")
 
-@ocaml.doc(" The type of tokens. The lexical classes are: [Int] and [Float]
+/** The type of tokens. The lexical classes are: [Int] and [Float]
    for integer and floating-point numbers; [String] for
    string literals, enclosed in double quotes; [Char] for
    character literals, enclosed in single quotes; [Ident] for
    identifiers (either sequences of letters, digits, underscores
    and quotes, or sequences of 'operator characters' such as
    [+], [*], etc); and [Kwd] for keywords (either identifiers or
-   single 'special characters' such as [(], [}], etc). ")
+   single 'special characters' such as [(], [}], etc). */
 type token =
   | Kwd(string)
   | Ident(string)
@@ -61,7 +61,7 @@ type token =
   | String(string)
   | Char(char)
 
-@ocaml.doc(" Construct the lexer function. The first argument is the list of
+/** Construct the lexer function. The first argument is the list of
    keywords. An identifier [s] is returned as [Kwd s] if [s]
    belongs to this list, and as [Ident s] otherwise.
    A special character [s] is returned as [Kwd s] if [s]
@@ -69,5 +69,5 @@ type token =
    {!Stream.Error} with the offending lexeme as its parameter) otherwise.
    Blanks and newlines are skipped. Comments delimited by [(*] and [*)]
    are skipped as well, and can be nested. A {!Stream.Failure} exception
-   is raised if end of stream is unexpectedly reached.")
+   is raised if end of stream is unexpectedly reached.*/
 let make_lexer: (list<string>, Stream.t<char>) => Stream.t<token>

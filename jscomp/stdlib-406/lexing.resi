@@ -19,7 +19,7 @@
 
 @@ocaml.text(" {1 Positions} ")
 
-@ocaml.doc(" A value of type [position] describes a point in a source file.
+/** A value of type [position] describes a point in a source file.
    [pos_fname] is the file name; [pos_lnum] is the line number;
    [pos_bol] is the offset of the beginning of the line (number
    of characters between the beginning of the lexbuf and the beginning
@@ -31,7 +31,7 @@
 
    See the documentation of type [lexbuf] for information about
    how the lexing engine will manage positions.
- ")
+ */
 type position = {
   pos_fname: string,
   pos_lnum: int,
@@ -39,14 +39,14 @@ type position = {
   pos_cnum: int,
 }
 
-@ocaml.doc(" A value of type [position], guaranteed to be different from any
+/** A value of type [position], guaranteed to be different from any
    valid position.
- ")
+ */
 let dummy_pos: position
 
 @@ocaml.text(" {1 Lexer buffers} ")
 
-@ocaml.doc(" The type of lexer buffers. A lexer buffer is the argument passed
+/** The type of lexer buffers. A lexer buffer is the argument passed
    to the scanning functions defined by the generated scanners.
    The lexer buffer holds the current state of the scanner, plus
    a function to refill the buffer from the input.
@@ -59,7 +59,7 @@ let dummy_pos: position
    accurate, they must be initialised before the first use of the
    lexbuf, and updated by the relevant lexer actions (i.e. at each
    end of line -- see also [new_line]).
- ")
+ */
 type rec lexbuf = {
   refill_buff: lexbuf => unit,
   mutable lex_buffer: bytes,
@@ -75,18 +75,18 @@ type rec lexbuf = {
   mutable lex_curr_p: position,
 }
 
-@ocaml.doc(" Create a lexer buffer which reads from
+/** Create a lexer buffer which reads from
    the given string. Reading starts from the first character in
    the string. An end-of-input condition is generated when the
-   end of the string is reached. ")
+   end of the string is reached. */
 let from_string: string => lexbuf
 
-@ocaml.doc(" Create a lexer buffer with the given function as its reading method.
+/** Create a lexer buffer with the given function as its reading method.
    When the scanner needs more characters, it will call the given
    function, giving it a byte sequence [s] and a byte
    count [n]. The function should put [n] bytes or fewer in [s],
    starting at index 0, and return the number of bytes
-   provided. A return value of 0 means end of input. ")
+   provided. A return value of 0 means end of input. */
 let from_function: ((bytes, int) => int) => lexbuf
 
 @@ocaml.text(" {1 Functions for lexer semantic actions} ")
@@ -100,44 +100,44 @@ let from_function: ((bytes, int) => int) => lexbuf
    [ocamllex], is bound to the lexer buffer passed to the parsing
    function. ")
 
-@ocaml.doc(" [Lexing.lexeme lexbuf] returns the string matched by
-           the regular expression. ")
+/** [Lexing.lexeme lexbuf] returns the string matched by
+           the regular expression. */
 let lexeme: lexbuf => string
 
-@ocaml.doc(" [Lexing.lexeme_char lexbuf i] returns character number [i] in
-   the matched string. ")
+/** [Lexing.lexeme_char lexbuf i] returns character number [i] in
+   the matched string. */
 let lexeme_char: (lexbuf, int) => char
 
-@ocaml.doc(" [Lexing.lexeme_start lexbuf] returns the offset in the
+/** [Lexing.lexeme_start lexbuf] returns the offset in the
    input stream of the first character of the matched string.
-   The first character of the stream has offset 0. ")
+   The first character of the stream has offset 0. */
 let lexeme_start: lexbuf => int
 
-@ocaml.doc(" [Lexing.lexeme_end lexbuf] returns the offset in the input stream
+/** [Lexing.lexeme_end lexbuf] returns the offset in the input stream
    of the character following the last character of the matched
-   string. The first character of the stream has offset 0. ")
+   string. The first character of the stream has offset 0. */
 let lexeme_end: lexbuf => int
 
-@ocaml.doc(" Like [lexeme_start], but return a complete [position] instead
-    of an offset. ")
+/** Like [lexeme_start], but return a complete [position] instead
+    of an offset. */
 let lexeme_start_p: lexbuf => position
 
-@ocaml.doc(" Like [lexeme_end], but return a complete [position] instead
-    of an offset. ")
+/** Like [lexeme_end], but return a complete [position] instead
+    of an offset. */
 let lexeme_end_p: lexbuf => position
 
-@ocaml.doc(" Update the [lex_curr_p] field of the lexbuf to reflect the start
+/** Update the [lex_curr_p] field of the lexbuf to reflect the start
     of a new line.  You can call this function in the semantic action
     of the rule that matches the end-of-line character.
     @since 3.11.0
-")
+*/
 let new_line: lexbuf => unit
 
 @@ocaml.text(" {1 Miscellaneous functions} ")
 
-@ocaml.doc(" Discard the contents of the buffer and reset the current
+/** Discard the contents of the buffer and reset the current
     position to 0.  The next use of the lexbuf will trigger a
-    refill. ")
+    refill. */
 let flush_input: lexbuf => unit
 
 @@ocaml.text("/*")
