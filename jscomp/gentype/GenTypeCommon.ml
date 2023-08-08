@@ -2,20 +2,13 @@ module StringMap = Map.Make (String)
 module StringSet = Set.Make (String)
 module Config = GenTypeConfig
 
-module DocString : sig
-  type t
-  val make : string option -> t
-  val render : t -> string
-  val hasContent : t -> bool
-  val empty : t
-end = struct
+module DocString = struct
   type t = string option
-  let make str = str
   let render t =
     match t with
     | None | Some "" -> ""
     | Some docString -> "/** " ^ String.trim docString ^ " */\n"
-  let empty = make None
+  let empty = None
   let hasContent docString = Option.is_some docString
 end
 

@@ -152,8 +152,7 @@ let getDocPayload attributes =
   | Some (_, StringPayload docString) when docString <> "" -> Some docString
   | _ -> None
 
-let docStringFromAttrs attributes =
-  attributes |> getDocPayload |> GenTypeCommon.DocString.make
+let docStringFromAttrs attributes = attributes |> getDocPayload
 
 let hasAttribute checkText (attributes : Typedtree.attributes) =
   getAttributePayload checkText attributes <> None
