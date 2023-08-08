@@ -205,7 +205,6 @@ var $$default = Hooks;
 
 export {
   make ,
-  $$default ,
   $$default as default,
   Another ,
   Inner ,
