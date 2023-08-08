@@ -19,7 +19,7 @@
 external code: char => int = "%identity"
 
 /** Return the character with the given ASCII code.
-   Raise [Invalid_argument \"Char.chr\"] if the argument is
+   Raise [Invalid_argument "Char.chr"] if the argument is
    outside the range 0--255. */
 let chr: int => char
 

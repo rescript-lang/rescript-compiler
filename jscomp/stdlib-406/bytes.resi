@@ -305,8 +305,8 @@ let equal: (t, t) => bool
 /** Unsafely convert a byte sequence into a string.
 
     To reason about the use of [unsafe_to_string], it is convenient to
-    consider an \"ownership\" discipline. A piece of code that
-    manipulates some data \"owns\" it; there are several disjoint ownership
+    consider an "ownership" discipline. A piece of code that
+    manipulates some data "owns" it; there are several disjoint ownership
     modes, including:
     - Unique ownership: the data may be accessed and mutated
     - Shared ownership: the data has several owners, that may only
@@ -394,19 +394,19 @@ let unsafe_to_string: bytes => string
     compiler, so you never uniquely own them.
 
     {[
-let incorrect = Bytes.unsafe_of_string \"hello\"
-let s = Bytes.of_string \"hello\"
+let incorrect = Bytes.unsafe_of_string "hello"
+let s = Bytes.of_string "hello"
     ]}
 
     The first declaration is incorrect, because the string literal
-    [\"hello\"] could be shared by the compiler with other parts of the
+    ["hello"] could be shared by the compiler with other parts of the
     program, and mutating [incorrect] is a bug. You must always use
     the second version, which performs a copy and is thus correct.
 
     Assuming unique ownership of strings that are not string
     literals, but are (partly) built from string literals, is also
-    incorrect. For example, mutating [unsafe_of_string (\"foo\" ^ s)]
-    could mutate the shared string [\"foo\"] -- assuming a rope-like
+    incorrect. For example, mutating [unsafe_of_string ("foo" ^ s)]
+    could mutate the shared string ["foo"] -- assuming a rope-like
     representation of strings. More generally, functions operating on
     strings will assume shared ownership, they do not preserve unique
     ownership. It is thus incorrect to assume unique ownership of the

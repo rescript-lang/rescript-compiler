@@ -35,7 +35,7 @@
   OCaml strings used to be modifiable in place, for instance via the
   {!String.set} and {!String.blit} functions described below. This
   usage is deprecated and only possible when the compiler is put in
-  \"unsafe-string\" mode by giving the [-unsafe-string] command-line
+  "unsafe-string" mode by giving the [-unsafe-string] command-line
   option (which is currently the default for reasons of backward
   compatibility). This is done by making the types [string] and
   [bytes] (see module {!Bytes}) interchangeable so that functions

@@ -145,7 +145,7 @@ external to_int32: int64 => int = "%int64_to_int32"
 
    The [_] (underscore) character can appear anywhere in the string
    and is ignored.
-   Raise [Failure \"Int64.of_string\"] if the given string is not
+   Raise [Failure "Int64.of_string"] if the given string is not
    a valid representation of an integer, or if the integer represented
    exceeds the range of integers representable in type [int64]. */
 external of_string: string => int64 = "?int64_of_string"

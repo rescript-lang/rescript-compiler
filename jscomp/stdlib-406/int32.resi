@@ -135,7 +135,7 @@ external to_float: t => float = "?int_to_float"
 
    The [_] (underscore) character can appear anywhere in the string
    and is ignored.
-   Raise [Failure \"Int32.of_string\"] if the given string is not
+   Raise [Failure "Int32.of_string"] if the given string is not
    a valid representation of an integer, or if the integer represented
    exceeds the range of integers representable in type [t]. */
 external of_string: string => t = "?int_of_string"

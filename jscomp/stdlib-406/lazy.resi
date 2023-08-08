@@ -19,7 +19,7 @@
    a suspension, that has a result of type ['a].  The special
    expression syntax [lazy (expr)] makes a suspension of the
    computation of [expr], without computing [expr] itself yet.
-   \"Forcing\" the suspension will then compute [expr] and return its
+   "Forcing" the suspension will then compute [expr] and return its
    result.
 
    Note: [lazy_t] is the built-in type constructor used by the compiler

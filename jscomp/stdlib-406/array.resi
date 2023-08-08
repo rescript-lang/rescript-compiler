@@ -23,7 +23,7 @@ external length: array<'a> => int = "%array_length"
    The last element has number [Array.length a - 1].
    You can also write [a.(n)] instead of [Array.get a n].
 
-   Raise [Invalid_argument \"index out of bounds\"]
+   Raise [Invalid_argument "index out of bounds"]
    if [n] is outside the range 0 to [(Array.length a - 1)]. */
 external get: (array<'a>, int) => 'a = "%array_safe_get"
 
@@ -31,7 +31,7 @@ external get: (array<'a>, int) => 'a = "%array_safe_get"
    element number [n] with [x].
    You can also write [a.(n) <- x] instead of [Array.set a n x].
 
-   Raise [Invalid_argument \"index out of bounds\"]
+   Raise [Invalid_argument "index out of bounds"]
    if [n] is outside the range 0 to [Array.length a - 1]. */
 external set: (array<'a>, int, 'a) => unit = "%array_safe_set"
 
@@ -99,7 +99,7 @@ let concat: list<array<'a>> => array<'a>
    containing the elements number [start] to [start + len - 1]
    of array [a].
 
-   Raise [Invalid_argument \"Array.sub\"] if [start] and [len] do not
+   Raise [Invalid_argument "Array.sub"] if [start] and [len] do not
    designate a valid subarray of [a]; that is, if
    [start < 0], or [len < 0], or [start + len > Array.length a]. */
 let sub: (array<'a>, int, int) => array<'a>
@@ -111,7 +111,7 @@ let copy: array<'a> => array<'a>
 /** [Array.fill a ofs len x] modifies the array [a] in place,
    storing [x] in elements number [ofs] to [ofs + len - 1].
 
-   Raise [Invalid_argument \"Array.fill\"] if [ofs] and [len] do not
+   Raise [Invalid_argument "Array.fill"] if [ofs] and [len] do not
    designate a valid subarray of [a]. */
 let fill: (array<'a>, int, int, 'a) => unit
 
@@ -121,7 +121,7 @@ let fill: (array<'a>, int, int, 'a) => unit
    [v1] and [v2] are the same array, and the source and
    destination chunks overlap.
 
-   Raise [Invalid_argument \"Array.blit\"] if [o1] and [len] do not
+   Raise [Invalid_argument "Array.blit"] if [o1] and [len] do not
    designate a valid subarray of [v1], or if [o2] and [len] do not
    designate a valid subarray of [v2]. */
 let blit: (array<'a>, int, array<'a>, int, int) => unit

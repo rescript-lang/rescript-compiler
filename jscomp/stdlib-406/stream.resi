@@ -68,7 +68,7 @@ let empty: t<'a> => unit
 
 /* {1 Useful functions} */
 
-/** Return [Some] of \"the first element\" of the stream, or [None] if
+/** Return [Some] of "the first element" of the stream, or [None] if
    the stream is empty. */
 let peek: t<'a> => option<'a>
 

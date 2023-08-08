@@ -49,23 +49,23 @@ let compare_length_with: (list<'a>, int) => int
 let cons: ('a, list<'a>) => list<'a>
 
 /** Return the first element of the given list. Raise
-   [Failure \"hd\"] if the list is empty. */
+   [Failure "hd"] if the list is empty. */
 let hd: list<'a> => 'a
 
 /** Return the given list without its first element. Raise
-    [Failure \"tl\"] if the list is empty. */
+    [Failure "tl"] if the list is empty. */
 let tl: list<'a> => list<'a>
 
 /** Return the [n]-th element of the given list.
    The first element (head of the list) is at position 0.
-   Raise [Failure \"nth\"] if the list is too short.
-   Raise [Invalid_argument \"List.nth\"] if [n] is negative. */
+   Raise [Failure "nth"] if the list is too short.
+   Raise [Invalid_argument "List.nth"] if [n] is negative. */
 let nth: (list<'a>, int) => 'a
 
 /** Return the [n]-th element of the given list.
     The first element (head of the list) is at position 0.
     Return [None] if the list is too short.
-    Raise [Invalid_argument \"List.nth\"] if [n] is negative.
+    Raise [Invalid_argument "List.nth"] if [n] is negative.
     @since 4.05
 */
 let nth_opt: (list<'a>, int) => option<'a>

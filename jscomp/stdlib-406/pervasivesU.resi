@@ -166,7 +166,7 @@ external \"||": (bool, bool) => bool = "%sequor"
 
 /** [__LOC__] returns the location at which this expression appears in
     the file currently being parsed by the compiler, with the standard
-    error format of OCaml: \"File %S, line %d, characters %d-%d\".
+    error format of OCaml: "File %S, line %d, characters %d-%d".
     @since 4.02.0
 */
 external __LOC__: string = "%loc_LOC"
@@ -200,8 +200,8 @@ external __POS__: (string, int, int, int) = "%loc_POS"
 
 /** [__LOC_OF__ expr] returns a pair [(loc, expr)] where [loc] is the
     location of [expr] in the file currently being parsed by the
-    compiler, with the standard error format of OCaml: \"File %S, line
-    %d, characters %d-%d\".
+    compiler, with the standard error format of OCaml: "File %S, line
+    %d, characters %d-%d".
     @since 4.02.0
 */
 external __LOC_OF__: 'a => (string, 'a) = "%loc_LOC"
@@ -575,7 +575,7 @@ external \"^": (string, string) => string = "#string_append"
 external int_of_char: char => int = "%identity"
 
 /** Return the character with the given ASCII code.
-   Raise [Invalid_argument \"char_of_int\"] if the argument is
+   Raise [Invalid_argument "char_of_int"] if the argument is
    outside the range 0--255. */
 let char_of_int: int => char
 
@@ -597,13 +597,13 @@ external ignore: 'a => unit = "%ignore"
 let string_of_bool: bool => string
 
 /** Convert the given string to a boolean.
-   Raise [Invalid_argument \"bool_of_string\"] if the string is not
-   [\"true\"] or [\"false\"]. */
+   Raise [Invalid_argument "bool_of_string"] if the string is not
+   ["true"] or ["false"]. */
 let bool_of_string: string => bool
 
 /** Convert the given string to a boolean.
     Return [None] if the string is not
-    [\"true\"] or [\"false\"].
+    ["true"] or ["false"].
     @since 4.05
 */
 let bool_of_string_opt: string => option<bool>
@@ -624,7 +624,7 @@ external string_of_int: int => string = "String"
 
    The [_] (underscore) character can appear anywhere in the string
    and is ignored.
-   Raise [Failure \"int_of_string\"] if the given string is not
+   Raise [Failure "int_of_string"] if the given string is not
    a valid representation of an integer, or if the integer represented
    exceeds the range of integers representable in type [int]. */
 external int_of_string: string => int = "?int_of_string"
@@ -651,7 +651,7 @@ let string_of_float: float => string
    and is ignored.
    Depending on the execution platforms, other representations of
    floating-point numbers can be accepted, but should not be relied upon.
-   Raise [Failure \"float_of_string\"] if the given string is not a valid
+   Raise [Failure "float_of_string"] if the given string is not a valid
    representation of a float. */
 external float_of_string: string => float = "?float_of_string"
 

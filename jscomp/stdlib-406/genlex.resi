@@ -23,7 +23,7 @@
 
 
    Example: a lexer suitable for a desk calculator is obtained by
-   {[     let lexer = make_lexer [\"+\";\"-\";\"*\";\"/\";\"let\";\"=\"; \"(\"; \")\"]  ]}
+   {[     let lexer = make_lexer ["+";"-";"*";"/";"let";"="; "("; ")"]  ]}
 
    The associated parser would be a function from [token stream]
    to, for instance, [int], and would have rules such as:
@@ -33,16 +33,16 @@
              | [< n1 = parse_atom; n2 = parse_remainder n1 >] -> n2
            and parse_atom = parser
              | [< 'Int n >] -> n
-             | [< 'Kwd \"(\"; n = parse_expr; 'Kwd \")\" >] -> n
+             | [< 'Kwd "("; n = parse_expr; 'Kwd ")" >] -> n
            and parse_remainder n1 = parser
-             | [< 'Kwd \"+\"; n2 = parse_expr >] -> n1+n2
+             | [< 'Kwd "+"; n2 = parse_expr >] -> n1+n2
              | [< >] -> n1
    ]}
 
    One should notice that the use of the [parser] keyword and associated
    notation for streams are only available through camlp4 extensions. This
    means that one has to preprocess its sources {i e. g.} by using the
-   [\"-pp\"] command-line switch of the compilers.
+   ["-pp"] command-line switch of the compilers.
 */
 
 /** The type of tokens. The lexical classes are: [Int] and [Float]

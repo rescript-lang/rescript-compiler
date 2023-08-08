@@ -49,7 +49,7 @@ external remove: string => unit = "?sys_remove"
     Depending on the operating system, the metadata (permissions,
     owner, etc) of [newpath] can either be preserved or be replaced by
     those of [oldpath].
-   @since 4.06 concerning the \"replace existing file\" behavior */
+   @since 4.06 concerning the "replace existing file" behavior */
 external rename: (string, string) => unit = "?sys_rename"
 
 /** Return the value associated to a variable in the process
@@ -77,7 +77,7 @@ external getcwd: unit => string = "?sys_getcwd"
 
 /** Return the names of all files present in the given directory.
    Names denoting the current directory and the parent directory
-   ([\".\"] and [\"..\"] in Unix) are not returned.  Each string in the
+   (["."] and [".."] in Unix) are not returned.  Each string in the
    result is a file name rather than a complete path.  There is no
    guarantee that the name strings in the resulting array will appear
    in any specific order; they are not, in particular, guaranteed to
@@ -90,9 +90,9 @@ external readdir: string => array<string> = "?sys_read_directory"
 let interactive: ref<bool>
 
 /** Operating system currently executing the OCaml program. One of
--  [\"Unix\"] (for all Unix versions, including Linux and Mac OS X),
--  [\"Win32\"] (for MS-Windows, OCaml compiled with MSVC++ or Mingw),
--  [\"Cygwin\"] (for MS-Windows, OCaml compiled with Cygwin). */
+-  ["Unix"] (for all Unix versions, including Linux and Mac OS X),
+-  ["Win32"] (for MS-Windows, OCaml compiled with MSVC++ or Mingw),
+-  ["Cygwin"] (for MS-Windows, OCaml compiled with Cygwin). */
 let os_type: string
 
 /** Currently, the official distribution only supports [Native] and
@@ -111,15 +111,15 @@ type backend_type =
  */
 let backend_type: backend_type
 
-/** True if [Sys.os_type = \"Unix\"].
+/** True if [Sys.os_type = "Unix"].
     @since 4.01.0 */
 let unix: bool
 
-/** True if [Sys.os_type = \"Win32\"].
+/** True if [Sys.os_type = "Win32"].
     @since 4.01.0 */
 let win32: bool
 
-/** True if [Sys.os_type = \"Cygwin\"].
+/** True if [Sys.os_type = "Cygwin"].
     @since 4.01.0 */
 let cygwin: bool
 
@@ -284,7 +284,7 @@ let sigxfsz: int
 let catch_break: bool => unit
 
 /** [ocaml_version] is the version of OCaml.
-    It is a string of the form [\"major.minor[.patchlevel][+additional-info]\"],
+    It is a string of the form ["major.minor[.patchlevel][+additional-info]"],
     where [major], [minor], and [patchlevel] are integers, and
     [additional-info] is an arbitrary string. The [[.patchlevel]] and
     [[+additional-info]] parts may be absent. */
