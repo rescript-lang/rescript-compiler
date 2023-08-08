@@ -19,7 +19,7 @@ let rec groupReversed ~revCurGroup ~revResult labeledTypes =
            nameJS = name;
            optional = Optional;
            type_;
-           docString = None;
+           docString = DocString.empty;
          }
         :: revCurGroup)
       ~revResult tl
@@ -31,7 +31,7 @@ let rec groupReversed ~revCurGroup ~revResult labeledTypes =
            nameJS = name;
            optional = Mandatory;
            type_;
-           docString = None;
+           docString = DocString.empty;
          }
         :: revCurGroup)
       ~revResult tl

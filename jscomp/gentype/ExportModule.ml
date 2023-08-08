@@ -2,18 +2,21 @@ open GenTypeCommon
 
 type exportModuleItem = (string, exportModuleValue) Hashtbl.t
 
-and exportModuleValue = S of string * type_ | M of exportModuleItem
+and exportModuleValue =
+  | S of {name: string; type_: type_; docString: DocString.t}
+  | M of {exportModuleItem: exportModuleItem}
 
 type exportModuleItems = (string, exportModuleItem) Hashtbl.t
 
-type types = {typeForValue: type_; typeForType: type_}
+type types = {typeForValue: type_; typeForType: type_; docString: DocString.t}
 
 type fieldInfo = {fieldForValue: field; fieldForType: field}
 
 let rec exportModuleValueToType ~config exportModuleValue =
   match exportModuleValue with
-  | S (s, type_) -> {typeForValue = ident s; typeForType = type_}
-  | M exportModuleItem ->
+  | S {name; type_; docString} ->
+    {typeForValue = ident name; typeForType = type_; docString}
+  | M {exportModuleItem} ->
     let fieldsInfo = exportModuleItem |> exportModuleItemToFields ~config in
     let fieldsForValue =
       fieldsInfo |> List.map (fun {fieldForValue} -> fieldForValue)
@@ -24,13 +27,14 @@ let rec exportModuleValueToType ~config exportModuleValue =
     {
       typeForValue = Object (Open, fieldsForValue);
       typeForType = Object (Open, fieldsForType);
+      docString = DocString.empty;
     }
 
 and exportModuleItemToFields =
   (fun ~config exportModuleItem ->
      Hashtbl.fold
        (fun fieldName exportModuleValue fields ->
-         let {typeForValue; typeForType} =
+         let {typeForValue; typeForType; docString} =
            exportModuleValue |> exportModuleValueToType ~config
          in
          let fieldForType =
@@ -39,7 +43,7 @@ and exportModuleItemToFields =
              nameJS = fieldName;
              optional = Mandatory;
              type_ = typeForType;
-             docString = None;
+             docString;
            }
          in
          let fieldForValue = {fieldForType with type_ = typeForValue} in
@@ -47,28 +51,30 @@ and exportModuleItemToFields =
        exportModuleItem []
     : config:Config.t -> exportModuleItem -> fieldInfo list)
 
-let rec extendExportModuleItem x ~(exportModuleItem : exportModuleItem) ~type_
-    ~valueName =
+let rec extendExportModuleItem ~docString x
+    ~(exportModuleItem : exportModuleItem) ~type_ ~valueName =
   match x with
   | [] -> ()
   | [fieldName] ->
-    Hashtbl.replace exportModuleItem fieldName (S (valueName, type_))
+    Hashtbl.replace exportModuleItem fieldName
+      (S {name = valueName; type_; docString})
   | fieldName :: rest ->
     let innerExportModuleItem =
       match Hashtbl.find exportModuleItem fieldName with
-      | M innerExportModuleItem -> innerExportModuleItem
+      | M {exportModuleItem = innerExportModuleItem} -> innerExportModuleItem
       | S _ -> assert false
       | exception Not_found ->
         let innerExportModuleItem = Hashtbl.create 1 in
-        Hashtbl.replace exportModuleItem fieldName (M innerExportModuleItem);
+        Hashtbl.replace exportModuleItem fieldName
+          (M {exportModuleItem = innerExportModuleItem});
         innerExportModuleItem
     in
     rest
-    |> extendExportModuleItem ~exportModuleItem:innerExportModuleItem ~valueName
-         ~type_
+    |> extendExportModuleItem ~docString ~exportModuleItem:innerExportModuleItem
+         ~valueName ~type_
 
-let extendExportModuleItems x ~(exportModuleItems : exportModuleItems) ~type_
-    ~valueName =
+let extendExportModuleItems x ~docString
+    ~(exportModuleItems : exportModuleItems) ~type_ ~valueName =
   match x with
   | [] -> assert false
   | [_valueName] -> ()
@@ -81,7 +87,8 @@ let extendExportModuleItems x ~(exportModuleItems : exportModuleItems) ~type_
         Hashtbl.replace exportModuleItems moduleName exportModuleItem;
         exportModuleItem
     in
-    rest |> extendExportModuleItem ~exportModuleItem ~type_ ~valueName
+    rest
+    |> extendExportModuleItem ~docString ~exportModuleItem ~type_ ~valueName
 
 let createModuleItemsEmitter =
   (fun () -> Hashtbl.create 1 : unit -> exportModuleItems)
@@ -95,8 +102,8 @@ let emitAllModuleItems ~config ~emitters ~fileName
   emitters
   |> rev_fold
        (fun moduleName exportModuleItem emitters ->
-         let {typeForType} =
-           M exportModuleItem |> exportModuleValueToType ~config
+         let {typeForType; docString} =
+           M {exportModuleItem} |> exportModuleValueToType ~config
          in
          if !Debug.codeItems then Log_.item "EmitModule %s @." moduleName;
          let emittedModuleItem =
@@ -104,13 +111,14 @@ let emitAllModuleItems ~config ~emitters ~fileName
            |> ModuleName.toString
          in
          emittedModuleItem
-         |> EmitType.emitExportConst ~early:false ~config ~emitters
+         |> EmitType.emitExportConst ~docString ~early:false ~config ~emitters
               ~name:moduleName ~type_:typeForType ~typeNameIsInterface:(fun _ ->
                 false))
        exportModuleItems
 
-let extendExportModules ~(moduleItemsEmitter : exportModuleItems) ~type_
-    resolvedName =
+let extendExportModules ~(moduleItemsEmitter : exportModuleItems) ~docString
+    ~type_ resolvedName =
   resolvedName |> ResolvedName.toList
   |> extendExportModuleItems ~exportModuleItems:moduleItemsEmitter ~type_
+       ~docString
        ~valueName:(resolvedName |> ResolvedName.toString)
