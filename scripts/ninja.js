@@ -1068,10 +1068,7 @@ ${ninjaQuickBuildList([
   var sources = stdlibDirFiles.filter(x => {
     return (
       !x.startsWith("pervasives.") &&
-      (x.endsWith(".ml") ||
-        x.endsWith(".mli") ||
-        x.endsWith(".res") ||
-        x.endsWith(".resi"))
+      (x.endsWith(".res") || x.endsWith(".resi"))
     );
   });
   let depsMap = new Map();
