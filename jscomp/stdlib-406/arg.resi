@@ -19,9 +19,9 @@
    Examples ([cmd] is assumed to be the command name):
 -   [cmd -flag           ](a unit option)
 -   [cmd -int 1          ](an int option with argument [1])
--   [cmd -string foobar  ](a string option with argument [\"foobar\"])
+-   [cmd -string foobar  ](a string option with argument ["foobar"])
 -   [cmd -float 12.34    ](a float option with argument [12.34])
--   [cmd a b c           ](three anonymous arguments: [\"a\"], [\"b\"], and [\"c\"])
+-   [cmd a b c           ](three anonymous arguments: ["a"], ["b"], and ["c"])
 -   [cmd a b -- c d      ](two anonymous arguments and a rest option with
                            two arguments)
 */
@@ -53,9 +53,9 @@ type rec spec =
 
   | /** If the remaining arguments to process
                                            are of the form
-                                           [[\"-foo\"; \"arg\"] @ rest] where \"foo\" is
+                                           [["-foo"; "arg"] @ rest] where "foo" is
                                            registered as [Expand f], then the
-                                           arguments [f \"arg\" @ rest] are
+                                           arguments [f "arg" @ rest] are
                                            processed. Only allowed in
                                            [parse_and_expand_argv_dynamic]. */
   Expand(string => array<string>)
@@ -84,7 +84,7 @@ type anon_fun = string => unit
     list.
 
     For the user to be able to specify anonymous arguments starting with a
-    [-], include for example [(\"-\", String anon_fun, doc)] in [speclist].
+    [-], include for example [("-", String anon_fun, doc)] in [speclist].
 
     By default, [parse] recognizes two unit options, [-help] and [--help],
     which will print to standard output [usage_msg] and the list of

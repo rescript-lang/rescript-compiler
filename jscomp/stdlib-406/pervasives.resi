@@ -1,4 +1,4 @@
-@@ocaml.text(/* ************************************************************************ */
+/* ************************************************************************ */
 /*  */
 /* OCaml */
 /*  */
@@ -13,7 +13,7 @@
 /*  */
 /* ************************************************************************ */
 
-" The initially opened module.
+/*** The initially opened module.
 
    This module provides the basic operations over the built-in types
    (numbers, booleans, byte sequences, strings, exceptions, references,
@@ -22,7 +22,7 @@
    This module is automatically opened at the beginning of each compilation.
    All components of this module can therefore be referred by their short
    name, without prefixing them by [Pervasives].
-")
+*/
 
 module Jsx = JsxC
 module JsxEvent = JsxEventC
@@ -39,8 +39,7 @@ module JsxModules: {
 
 /* Internal */
 external __unsafe_cast: 'a => 'b = "%identity"
-
-@@ocaml.text(" {1 Exceptions} ")
+/* 1 Exceptions} */
 
 /** Raise the given exception value */
 external raise: exn => 'a = "%raise"
@@ -60,7 +59,7 @@ let failwith: string => 'a
     provided for use in your programs. */
 exception Exit
 
-@@ocaml.text(" {1 Comparisons} ")
+/* {1 Comparisons} */
 
 /** [e1 = e2] tests for structural equality of [e1] and [e2].
    Mutable structures (e.g. references and arrays) are equal
@@ -142,7 +141,7 @@ external \"==": ('a, 'a) => bool = "%eq"
     Left-associative operator at precedence level 4/11. */
 external \"!=": ('a, 'a) => bool = "%noteq"
 
-@@ocaml.text(" {1 Boolean operations} ")
+/* {1 Boolean operations} */
 
 /** The boolean negation. */
 external not: bool => bool = "%boolnot"
@@ -160,11 +159,11 @@ external \"&&": (bool, bool) => bool = "%sequand"
 */
 external \"||": (bool, bool) => bool = "%sequor"
 
-@@ocaml.text(" {1 Debugging} ")
+/* {1 Debugging} */
 
 /** [__LOC__] returns the location at which this expression appears in
     the file currently being parsed by the compiler, with the standard
-    error format of OCaml: \"File %S, line %d, characters %d-%d\".
+    error format of OCaml: "File %S, line %d, characters %d-%d".
     @since 4.02.0
 */
 external __LOC__: string = "%loc_LOC"
@@ -198,8 +197,8 @@ external __POS__: (string, int, int, int) = "%loc_POS"
 
 /** [__LOC_OF__ expr] returns a pair [(loc, expr)] where [loc] is the
     location of [expr] in the file currently being parsed by the
-    compiler, with the standard error format of OCaml: \"File %S, line
-    %d, characters %d-%d\".
+    compiler, with the standard error format of OCaml: "File %S, line
+    %d, characters %d-%d".
     @since 4.02.0
 */
 external __LOC_OF__: 'a => (string, 'a) = "%loc_LOC"
@@ -221,7 +220,7 @@ external __LINE_OF__: 'a => (int, 'a) = "%loc_LINE"
  */
 external __POS_OF__: 'a => ((string, int, int, int), 'a) = "%loc_POS"
 
-@@ocaml.text(" {1 Composition operators} ")
+/* {1 Composition operators} */
 
 /** Reverse-application operator: [x |> f |> g] is exactly equivalent
  to [g (f (x))].
@@ -237,11 +236,11 @@ external \"|>": ('a, 'a => 'b) => 'b = "%revapply"
 */
 external \"@@": ('a => 'b, 'a) => 'b = "%apply"
 
-@@ocaml.text(" {1 Integer arithmetic} ")
+/* {1 Integer arithmetic} */
 
-@@ocaml.text(" Integers are 31 bits wide (or 63 bits on 64-bit processors).
+/* Integers are 31 bits wide (or 63 bits on 64-bit processors).
    All operations are taken modulo 2{^31} (or 2{^63}).
-   They do not fail on overflow. ")
+   They do not fail on overflow. */
 
 /** Unary negation. You can also write [- e] instead of [~- e].
     Unary operator at precedence level 9/11 for [- e]
@@ -302,7 +301,7 @@ let max_int: int
 /** The smallest representable integer. */
 let min_int: int
 
-@@ocaml.text(" {2 Bitwise operations} ")
+/* {2 Bitwise operations} */
 
 /** Bitwise logical and.
     Left-associative operator at precedence level 7/11. */
@@ -339,7 +338,7 @@ external lsr: (int, int) => int = "%lsrint"
    Right-associative operator at precedence level 8/11. */
 external asr: (int, int) => int = "%asrint"
 
-@@ocaml.text(" {1 Floating-point arithmetic}
+/* {1 Floating-point arithmetic}
 
    OCaml's floating-point numbers follow the
    IEEE 754 standard, using double precision (64 bits) numbers.
@@ -351,7 +350,7 @@ external asr: (int, int) => int = "%asrint"
    floating-point computations as expected: for instance,
    [1.0 /. infinity] is [0.0], and any arithmetic operation with [nan]
    as argument returns [nan] as result.
-")
+*/
 
 /** Unary negation. You can also write [-. e] instead of [~-. e].
     Unary operator at precedence level 9/11 for [-. e]
@@ -564,20 +563,20 @@ let classify_float: float => fpclass
     Right-associative operator at precedence level 5/11. */
 external \"^": (string, string) => string = "#string_append"
 
-@@ocaml.text(" {1 Character operations}
+/* {1 Character operations}
 
    More character operations are provided in module {!Char}.
-")
+*/
 
 /** Return the ASCII code of the argument. */
 external int_of_char: char => int = "%identity"
 
 /** Return the character with the given ASCII code.
-   Raise [Invalid_argument \"char_of_int\"] if the argument is
+   Raise [Invalid_argument "char_of_int"] if the argument is
    outside the range 0--255. */
 let char_of_int: int => char
 
-@@ocaml.text(" {1 Unit operations} ")
+/* {1 Unit operations} */
 
 /** Discard the value of its argument and return [()].
    For instance, [ignore(f x)] discards the result of
@@ -587,7 +586,7 @@ let char_of_int: int => char
    avoids the warning. */
 external ignore: 'a => unit = "%ignore"
 
-@@ocaml.text(" {1 String conversion functions} ")
+/* {1 String conversion functions} */
 
 /** Return the string representation of a boolean. As the returned values
    may be shared, the user should not modify them directly.
@@ -595,13 +594,13 @@ external ignore: 'a => unit = "%ignore"
 let string_of_bool: bool => string
 
 /** Convert the given string to a boolean.
-   Raise [Invalid_argument \"bool_of_string\"] if the string is not
-   [\"true\"] or [\"false\"]. */
+   Raise [Invalid_argument "bool_of_string"] if the string is not
+   ["true"] or ["false"]. */
 let bool_of_string: string => bool
 
 /** Convert the given string to a boolean.
     Return [None] if the string is not
-    [\"true\"] or [\"false\"].
+    ["true"] or ["false"].
     @since 4.05
 */
 let bool_of_string_opt: string => option<bool>
@@ -622,7 +621,7 @@ external string_of_int: int => string = "String"
 
    The [_] (underscore) character can appear anywhere in the string
    and is ignored.
-   Raise [Failure \"int_of_string\"] if the given string is not
+   Raise [Failure "int_of_string"] if the given string is not
    a valid representation of an integer, or if the integer represented
    exceeds the range of integers representable in type [int]. */
 external int_of_string: string => int = "?int_of_string"
@@ -632,9 +631,7 @@ external int_of_string: string => int = "?int_of_string"
 */
 let int_of_string_opt: string => option<int>
 
-@ocaml.deprecated(
-  "Please use Js.Float.toString instead, string_of_float generates unparseable floats"
-)
+@deprecated("Please use Js.Float.toString instead, string_of_float generates unparseable floats")
 /** Return the string representation of a floating-point number. */
 let string_of_float: float => string
 
@@ -651,7 +648,7 @@ let string_of_float: float => string
    and is ignored.
    Depending on the execution platforms, other representations of
    floating-point numbers can be accepted, but should not be relied upon.
-   Raise [Failure \"float_of_string\"] if the given string is not a valid
+   Raise [Failure "float_of_string"] if the given string is not a valid
    representation of a float. */
 external float_of_string: string => float = "?float_of_string"
 
@@ -660,7 +657,7 @@ external float_of_string: string => float = "?float_of_string"
 */
 let float_of_string_opt: string => option<float>
 
-@@ocaml.text(" {1 Pair operations} ")
+/* {1 Pair operations} */
 
 /** Return the first component of a pair. */
 external fst: (('a, 'b)) => 'a = "%field0"
@@ -668,12 +665,12 @@ external fst: (('a, 'b)) => 'a = "%field0"
 /** Return the second component of a pair. */
 external snd: (('a, 'b)) => 'b = "%field1"
 
-@@ocaml.text(" {1 List operations}
+/* {1 List operations}
 
    More list operations are provided in module {!List}.
-")
+*/
 
-@ocaml.deprecated("Use Belt.List.concat instead")
+@deprecated("Use Belt.List.concat instead")
 /** List concatenation.  Tail-recursive (length of the first argument).
     Right-associative operator at precedence level 5/11. */
 let \"@": (list<'a>, list<'a>) => list<'a>
@@ -711,7 +708,7 @@ external prerr_endline: string => unit = "error"
    standard error. */
 let prerr_newline: unit => unit
 
-@@ocaml.text(" {1 References} ")
+/* {1 References} */
 
 /** The type of references (mutable indirection cells) containing
    a value of type ['a]. */
@@ -738,14 +735,14 @@ external incr: ref<int> => unit = "%incr"
    Equivalent to [fun r -> r := pred !r]. */
 external decr: ref<int> => unit = "%decr"
 
-@@ocaml.text(" {1 Result type} ")
+/* {1 Result type} */
 
 /** @since 4.03.0 */
 type result<'a, 'b> = Belt.Result.t<'a, 'b> =
   | Ok('a)
   | Error('b)
 
-@@ocaml.text(" {1 Program termination} ")
+/* {1 Program termination} */
 
 /** Terminate the process, returning the given status code
    to the operating system: usually 0 to indicate no errors,
@@ -766,7 +763,5 @@ let exit: int => 'a
    The functions are called in 'last in, first out' order: the
    function most recently added with [at_exit] is called first. */
 let at_exit: (unit => unit) => unit
-
-@@ocaml.text("/*")
 
 let valid_float_lexem: string => string
