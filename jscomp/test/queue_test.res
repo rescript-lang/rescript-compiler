@@ -17,10 +17,10 @@ module Test = (Queue: module type of Queue) => {
     to_array(q)
   }
 
-  @@ocaml.text(
-    " TODO: Note it needs need recursive values support "
+  /*
+    TODO: Note it needs need recursive values support */
     /* let _ = queue_1 [|38|] */
-  )
+  
 }
 
 module T1 = Test(Queue)

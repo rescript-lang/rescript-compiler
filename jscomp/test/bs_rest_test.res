@@ -16,5 +16,5 @@ include (
 )
 
 let u = xxx(. 3)
-@ocaml.doc(" Do we need both [bs.val] and [bs.call]* instead of just one [bs.val] ")
+/** Do we need both [bs.val] and [bs.call]* instead of just one [bs.val] */
 let xx = xxx(. "3")

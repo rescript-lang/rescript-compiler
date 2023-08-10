@@ -1,19 +1,19 @@
-@@ocaml.text(
-  /* ********************************************************************* */
-  /*  */
-  /* OCaml */
-  /*  */
-  /* Xavier Leroy, projet Cristal, INRIA Rocquencourt */
-  /*  */
-  /* Copyright 1996 Institut National de Recherche en Informatique et */
-  /* en Automatique.  All rights reserved.  This file is distributed */
-  /* under the terms of the GNU Library General Public License, with */
-  /* the special exception on linking described in file ../LICENSE. */
-  /*  */
-  /* ********************************************************************* */
+/* ********************************************************************* */
+/*  */
+/* OCaml */
+/*  */
+/* Xavier Leroy, projet Cristal, INRIA Rocquencourt */
+/*  */
+/* Copyright 1996 Institut National de Recherche en Informatique et */
+/* en Automatique.  All rights reserved.  This file is distributed */
+/* under the terms of the GNU Library General Public License, with */
+/* the special exception on linking described in file ../LICENSE. */
+/*  */
+/* ********************************************************************* */
 
-  " balanced tree based on stdlib distribution "
-)
+/***
+  balanced tree based on stdlib distribution
+*/
 
 type rec t<'a> =
   | Empty
@@ -363,7 +363,7 @@ let rec add_max_element = (v, x) =>
   | Node(l, x, r, h) => internal_bal(l, x, add_max_element(v, r))
   }
 
-@ocaml.doc(" 
+/** 
     Invariants:
     1. l < v < r 
     2. l and r are balanced 
@@ -371,7 +371,7 @@ let rec add_max_element = (v, x) =>
     Proof by induction
     The height of output will be ~~ (max (height l) (height r) + 2)
     Also use the lemma from [bal]
-")
+*/
 let rec internal_join = (l, v, r) =>
   switch (l, r) {
   | (Empty, _) => add_min_element(v, r)

@@ -2,7 +2,7 @@ let suites: ref<Mt.pair_suites> = ref(list{})
 let test_id = ref(0)
 let eq = (loc, x, y) => Mt.eq_suites(~test_id, ~suites, loc, x, y)
 
-@ocaml.unboxed type t = A(int)
+@unboxed type t = A(int)
 
 let v0 = A(3)
 
@@ -11,7 +11,7 @@ let make = x => A(x)
 let get = (A(x)) => x
 
 /* For concrete types */
-@ocaml.unboxed type t1 = A(string)
+@unboxed type t1 = A(string)
 
 {
   let x = A("foo")
@@ -27,7 +27,7 @@ let get = (A(x)) => x
 }
 
 /* For records */
-@ocaml.unboxed type t2 = {f: string}
+@unboxed type t2 = {f: string}
 
 {
   let x = {f: "foo"}
@@ -35,7 +35,7 @@ let get = (A(x)) => x
 }
 
 /* For inline records */
-@ocaml.unboxed type t3 = B({g: string})
+@unboxed type t3 = B({g: string})
 
 {
   let x = B({g: "foo"})

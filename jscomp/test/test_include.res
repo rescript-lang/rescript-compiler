@@ -1,6 +1,6 @@
-@ocaml.doc(" luckily we have module alias 
+/** luckily we have module alias 
     so global module alias is fine
-")
+*/
 include List
 module N = List
 let v = N.length

@@ -43,7 +43,7 @@ let of_field: (string, t) => t
 /** Represent a record by its named fields */
 let of_record: list<(string, t)> => t
 
-@@ocaml.text(" {6 Traversal of S-exp}
+/* {6 Traversal of S-exp}
 
     Example: serializing 2D points
     {[
@@ -65,7 +65,7 @@ let of_record: list<(string, t)> => t
       Sexp.Traverse.list_all pt_of_sexp sexp;;
     ]}
 
-")
+*/
 
 module Traverse: {
   /** A converter from S-expressions to 'a is a function [sexp -> 'a option].

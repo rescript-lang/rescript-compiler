@@ -47,10 +47,10 @@ let rec delete = (tr: tree<_>, n) =>
   }
 
 /* it is the same as [push_front] */
-@ocaml.doc(" proof:
+/** proof:
     left => right 
     right has to be left 
-")
+*/
 let rec loext = (tr: tree<_>, w) =>
   switch tr {
   | Lf => Br(w, Lf, Lf)

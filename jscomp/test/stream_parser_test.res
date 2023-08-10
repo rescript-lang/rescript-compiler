@@ -1,6 +1,6 @@
 exception Parse_error(string)
 
-@ocaml.doc("
+/**
 
 expr 
 | expr1  expr_aux 
@@ -15,7 +15,7 @@ expr2
 | Int
 | ( expr )
 
-")
+*/
 let parse = (token: unit => Genlex.token) => {
   let look_ahead = Queue.create()
   let token = () =>
@@ -68,7 +68,7 @@ let token = chars => {
   () => Stream.next(strm)
 }
 
-@@ocaml.text("
+/*
 
 http://www.engr.mun.ca/~theo/Misc/exp_parsing.htm
 
@@ -80,7 +80,7 @@ F
 | Int 
 | (E)
 
-")
+*/
 
 let l_parse = (token: unit => Genlex.token) => {
   let look_ahead = Queue.create()

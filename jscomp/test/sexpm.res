@@ -11,7 +11,7 @@ type rec t = [
 ]
 type sexp = t
 
-@@ocaml.text(" {2 Serialization (encoding)} ")
+/* {2 Serialization (encoding)} */
 
 /* shall we escape the string because of one of its chars? */
 let _must_escape = s =>
@@ -55,7 +55,7 @@ let to_string = t => {
   Buffer.contents(b)
 }
 
-@@ocaml.text(" {2 Deserialization (decoding)} ")
+/* {2 Deserialization (decoding)} */
 
 module type MONAD = {
   type t<'a>

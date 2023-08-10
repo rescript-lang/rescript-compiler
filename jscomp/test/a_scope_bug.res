@@ -1,6 +1,6 @@
-@ocaml.doc(" FIXME: the inner 
+/** FIXME: the inner 
     [even ] is printed as [even] while global [even] is printed as [even$1]
-")
+*/
 let rec odd = z => {
   let a = {
     let even = z

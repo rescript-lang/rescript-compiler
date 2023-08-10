@@ -199,10 +199,10 @@ Were you using this because you needed to pass a children array reference to a D
 Alternatively, if you're using this because the prop name contains a hyphen, please use `ReactDOMRe.createElementVariadic` instead.")
 let createDomElement: (string, ~props: {..}, array<reactElement>) => reactElement
 
-@ocaml.doc("
+/**
  * Wrap props into a JS component
  * Use for interop when Reason components use JS components
- ")
+ */
 let wrapJsForReason: (
   ~reactClass: reactClass,
   ~props: 'a,

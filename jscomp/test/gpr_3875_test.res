@@ -1,14 +1,14 @@
 let result = ref("")
-@ocaml.doc(" TODO: 
+/** TODO: 
   pattern match over (Some \"xx\") could be simplified
-")
+*/
 module Xx = {
   let log = x => result := x
 }
 
-@ocaml.doc(" TODO: 
+/** TODO: 
   pattern match over (Some \"xx\") could be simplified
-")
+*/
 let compilerBug = (a, b, c, f) =>
   switch (a, b) {
   | (Some("x"), _)

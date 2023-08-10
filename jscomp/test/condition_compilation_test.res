@@ -41,13 +41,13 @@ let ocaml_veriosn = "unknown"
 /* #if OCAML_VERSION =~ ">4.02" #then */
 /* #else */
 /* #end */
-@ocaml.doc("
+/**
    #if OCAML_VERSION =~ \"4.02.3\" #then
 
    #elif OCAML_VERSION =~ \"4.03\" #then
    gsho
    #end
-")
+*/
 let suites: ref<Mt.pair_suites> = ref(list{})
 let test_id = ref(0)
 let eq = (loc, x, y) => {

@@ -1,4 +1,4 @@
-@ocaml.doc("
+/**
 var CommentBox = React.createClass({
   render: function() {
     return (
@@ -8,7 +8,7 @@ var CommentBox = React.createClass({
     );
     }
 });
-")
+*/
 type obj_spec
 type react_dom_element
 @val

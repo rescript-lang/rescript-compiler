@@ -65,9 +65,9 @@ external on_exit_slice5: (
   array<int>,
 ) => unit = "xx"
 
-@ocaml.doc("
+/**
  TODO: bs.send conflicts with bs.val: better error message
-")
+*/
 let f = (x: t) => {
   x->on_exit_slice1(__LINE__, [1, 2, 3])
   x->on_exit_slice2(__LINE__, [1, 2, 3])

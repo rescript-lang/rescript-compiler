@@ -97,9 +97,9 @@ let starts_with = (s, beg) => {
     }
 }
 
-@ocaml.doc(" return an index which is minus when [s] does not 
+/** return an index which is minus when [s] does not 
     end with [beg]
-")
+*/
 let ends_with_index = (s, end_) => {
   let s_finish = String.length(s) - 1
   let s_beg = String.length(end_) - 1
@@ -149,10 +149,10 @@ let check_any_suffix_case_then_chop = (s, suffixes) => {
   aux(suffixes)
 }
 
-@ocaml.doc("  In OCaml 4.02.3, {!String.escaped} is locale senstive, 
+/**  In OCaml 4.02.3, {!String.escaped} is locale senstive, 
      this version try to make it not locale senstive, this bug is fixed
      in the compiler trunk     
-")
+*/
 let escaped = s => {
   let rec needs_escape = i =>
     if i >= String.length(s) {
@@ -236,9 +236,9 @@ let find = (~start=0, ~sub, s) => {
 
 let contain_substring = (s, sub) => find(s, ~sub) >= 0
 
-@ocaml.doc(" TODO: optimize 
+/** TODO: optimize 
     avoid nonterminating when string is empty 
-")
+*/
 let non_overlap_count = (~sub, s) => {
   let sub_len = String.length(sub)
   let rec aux = (acc, off) => {
@@ -284,11 +284,11 @@ let tail_from = (s, x) => {
   }
 }
 
-@ocaml.doc("
+/**
    {[ 
      digits_of_str \"11_js\" 2 == 11     
    ]}
-")
+*/
 let digits_of_str = (s, ~offset, x) => {
   let rec aux = (i, acc, s, x) =>
     if i >= x {
@@ -418,10 +418,10 @@ let is_valid_npm_package_name = (s: string) => {
 type check_result =
   | Good
   | Invalid_module_name
-  | @ocaml.doc(" 
+  | /**
    TODO: move to another module 
    Make {!Ext_filename_test} not stateful
-")
+*/
   Suffix_mismatch
 
 let is_valid_source_name = (name): check_result =>
@@ -435,7 +435,7 @@ let is_valid_source_name = (name): check_result =>
     }
   }
 
-@ocaml.doc(" TODO: can be improved to return a positive integer instead ")
+/** TODO: can be improved to return a positive integer instead */
 let rec unsafe_no_char = (x, ch, i, last_idx) =>
   i > last_idx || (String.unsafe_get(x, i) != ch && unsafe_no_char(x, ch, i + 1, last_idx))
 

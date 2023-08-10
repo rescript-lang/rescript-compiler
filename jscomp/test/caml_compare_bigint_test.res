@@ -42,7 +42,7 @@ let isEqual = (title, num1, num2) => list{
 
 let five = bigint("5")
 
-@ocaml.doc(" Not comparing floats and Bigint; not sure this is correct since works in JavaScript")
+/** Not comparing floats and Bigint; not sure this is correct since works in JavaScript */
 let suites: Mt.pair_suites = \"@"(
   isLessThan("123 and 555555", bigint("123"), bigint("555555")),
   \"@"(
