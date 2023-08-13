@@ -1,4 +1,4 @@
-a[/* zz */ 0] = 7
+(@res.syntaxSugar a[/* zz */ 0] = 7)
 
 let _ = /* zz */ a[0]
 

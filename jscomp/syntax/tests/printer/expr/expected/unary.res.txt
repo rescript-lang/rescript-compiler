@@ -84,4 +84,4 @@ let () = {
 }
 
 let x = (!truths)[0]
-(!streets)[0] = "foo-street"
+(@res.syntaxSugar (!streets)[0] = "foo-street")

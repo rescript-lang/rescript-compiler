@@ -21,7 +21,7 @@ let async =
     () |. async;
     async ();
     async.async;
-    { async = (async.(async)) };
+    { async = (((Array.get)[@res.syntaxSugar ]) async async) };
     (result |. async) |. (mapAsync (fun a -> doStuff a)))
   [@res.braces ])
 let f =

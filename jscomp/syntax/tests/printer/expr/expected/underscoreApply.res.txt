@@ -49,7 +49,7 @@ f(a, b, _) ? g(x, y, _) : h(alpha, beta, _)
 <div> {f(a, b, _)} </div>
 
 f(a, b, _)[ix]
-f(a, b, _)[ix] = 2
+(@res.syntaxSugar f(a, b, _)[ix] = 2)
 
 getDirector(a, b, _).name = "Steve"
 
