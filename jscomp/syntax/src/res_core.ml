@@ -2005,7 +2005,7 @@ and parseBracketAccess p expr startPos =
     Parser.eatBreadcrumb p;
     let rbracket = p.prevEndPos in
     let arrayLoc = mkLoc lbracket rbracket in
-    let attr = Location.mkloc "res.syntaxSugar" arrayLoc, Parsetree.PStr [] in
+    let attr = (Location.mkloc "res.syntaxSugar" arrayLoc, Parsetree.PStr []) in
     match p.token with
     | Equal ->
       Parser.leaveBreadcrumb p ExprArrayMutation;
