@@ -220,24 +220,18 @@ let _ = {module(ME: MyMod)}
 }[{
   0
 }]
-(@res.syntaxSugar {myArray}[{0}] = {20})
-(
-  @res.syntaxSugar
-  {
-    myArray
-  }[{
-    0
-  }] = {
-    20
-  }
-)
+{myArray}[{0}] = {20}
+{
+  myArray
+}[{
+  0
+}] = {
+  20
+}
 
-(
-  @res.syntaxSugar
-  myArray[20] = {
-    a + b
-  }
-)
+myArray[20] = {
+  a + b
+}
 
 {jsObject}["foo"]
 {jsObject}["foo"] = {"bar"}

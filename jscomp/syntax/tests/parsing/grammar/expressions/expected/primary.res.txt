@@ -12,7 +12,7 @@ let x =
 let x =
   ((Array.get)[@res.syntaxSugar ])
     (((Array.get)[@res.syntaxSugar ]) arr (x : int)) (y : int)
-;;((arr.(0) <- (a + b))[@res.syntaxSugar ])
+;;((Array.set)[@res.syntaxSugar ]) arr 0 (a + b)
 ;;f ()
 ;;(f ()) ()
 ;;f a
