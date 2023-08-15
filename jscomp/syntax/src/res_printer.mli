@@ -24,3 +24,5 @@ val printImplementation :
   width:int -> Parsetree.structure -> comments:Res_comment.t list -> string
 val printInterface :
   width:int -> Parsetree.signature -> comments:Res_comment.t list -> string
+
+val polyVarIdentToString : string -> string [@@live]
