@@ -734,8 +734,8 @@ lib/ocaml/js_dict.cmi
 lib/ocaml/js_dict.cmj
 lib/ocaml/js_dict.cmt
 lib/ocaml/js_dict.cmti
-lib/ocaml/js_dict.ml
-lib/ocaml/js_dict.mli
+lib/ocaml/js_dict.res
+lib/ocaml/js_dict.resi
 lib/ocaml/js_exn.cmi
 lib/ocaml/js_exn.cmj
 lib/ocaml/js_exn.cmt
@@ -827,7 +827,7 @@ lib/ocaml/js_set.res
 lib/ocaml/js_string.cmi
 lib/ocaml/js_string.cmj
 lib/ocaml/js_string.cmt
-lib/ocaml/js_string.ml
+lib/ocaml/js_string.res
 lib/ocaml/js_string2.cmi
 lib/ocaml/js_string2.cmj
 lib/ocaml/js_string2.cmt
