@@ -52,8 +52,10 @@ let setup_env () =
   
     Rescript_cpp.replace_directive_bool "BS" true;
   Rescript_cpp.replace_directive_bool "JS" true;
+  Printtyp.print_res_poly_identifier := Res_printer.polyVarIdentToString;
   Rescript_cpp.replace_directive_string "BS_VERSION"  Bs_version.version
   (*; Switch.cut := 100*) (* tweakable but not very useful *)
+  
 
 let () = 
   at_exit (fun _ -> Format.pp_print_flush Format.err_formatter ())

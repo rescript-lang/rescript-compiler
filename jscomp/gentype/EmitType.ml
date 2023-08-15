@@ -163,13 +163,13 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
              type_ |> renderType ~config ~indent ~typeNameIsInterface ~inFunType)
     in
     let noPayloadsRendered = noPayloads |> List.map labelJSToString in
-    let field ~name ?(docString = DocString.empty) value =
+    let field ~name value =
       {
         mutable_ = Mutable;
         nameJS = name;
         optional = Mandatory;
         type_ = TypeVar value;
-        docString;
+        docString = DocString.empty;
       }
     in
     let fields fields =

@@ -25,6 +25,8 @@ open Types
 open Btype
 open Outcometree
 
+let print_res_poly_identifier: (string -> string) ref = ref (fun _ -> assert false)
+
 (* Print a long identifier *)
 
 let rec longident ppf = function
@@ -1412,8 +1414,8 @@ let may_prepare_expansion compact (t, t') =
 let print_tags ppf fields =
   match fields with [] -> ()
   | (t, _) :: fields ->
-      fprintf ppf "`%s" t;
-      List.iter (fun (t, _) -> fprintf ppf ",@ `%s" t) fields
+      fprintf ppf "%s" (!print_res_poly_identifier t);
+      List.iter (fun (t, _) -> fprintf ppf ",@ %s" (!print_res_poly_identifier t)) fields
 
 let has_explanation t3 t4 =
   match t3.desc, t4.desc with
@@ -1493,7 +1495,7 @@ let explanation unif t3 t4 ppf =
             "@,@[The second variant type does not allow tag(s)@ @[<hov>%a@]@]"
             print_tags fields
       | [l1,_], true, [l2,_], true when l1 = l2 ->
-          fprintf ppf "@,Types for tag `%s are incompatible" l1
+          fprintf ppf "@,Types for tag %s are incompatible" (!print_res_poly_identifier l1)
       | _ -> ()
       end
   | _ -> ()

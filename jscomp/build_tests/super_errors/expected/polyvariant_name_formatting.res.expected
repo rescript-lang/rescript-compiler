@@ -1,0 +1,13 @@
+
+  [1;31mWe've found a bug for you![0m
+  [36m/.../fixtures/polyvariant_name_formatting.res[0m:[2m6:3-10[0m
+
+  4 [2m│[0m 
+  5 [2m│[0m switch f {
+  [1;31m6[0m [2m│[0m | [1;31m#Invalid[0m => ()
+  7 [2m│[0m }
+  8 [2m│[0m 
+
+  This pattern matches values of type [1;31m[? #Invalid][0m
+  but a pattern was expected which matches values of type [1;33mpolyvariant[0m
+  The second variant type does not allow tag(s) #Invalid
