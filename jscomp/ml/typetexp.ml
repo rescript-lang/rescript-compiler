@@ -946,8 +946,8 @@ let report_error env ppf = function
       end
   | Variant_tags (lab1, lab2) ->
       fprintf ppf
-        "@[Variant tags `%s@ and `%s have the same hash value.@ %s@]"
-        lab1 lab2 "Change one of them."
+        "@[Variant tags %s@ and %s have the same hash value.@ %s@]"
+        (!Printtyp.print_res_poly_identifier lab1) (!Printtyp.print_res_poly_identifier lab2) "Change one of them."
   | Invalid_variable_name name ->
       fprintf ppf "The type variable name %s is not allowed in programs" name
   | Cannot_quantify (name, v) ->

@@ -480,6 +480,10 @@ let printPolyVarIdent txt =
       | "" -> Doc.concat [Doc.text "\""; Doc.text txt; Doc.text "\""]
       | _ -> Doc.text txt)
 
+let polyVarIdentToString polyVarIdent =
+  Doc.concat [Doc.text "#"; printPolyVarIdent polyVarIdent]
+  |> Doc.toString ~width:80
+
 let printLident l =
   let flatLidOpt lid =
     let rec flat accu = function
