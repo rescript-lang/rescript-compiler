@@ -1,48 +1,46 @@
-@@ocaml.text(
-  /* Copyright (C) 2015-2016 Bloomberg Finance L.P.
-   *
-   * This program is free software: you can redistribute it and/or modify
-   * it under the terms of the GNU Lesser General Public License as published by
-   * the Free Software Foundation, either version 3 of the License, or
-   * (at your option) any later version.
-   *
-   * In addition to the permissions granted to you by the LGPL, you may combine
-   * or link a "work that uses the Library" with a publicly distributed version
-   * of this file to produce a combined library or application, then distribute
-   * that combined work under the terms of your choosing, with no requirement
-   * to comply with the obligations normally placed on you by section 4 of the
-   * LGPL version 3 (or the corresponding section of a later version of the LGPL
-   * should you choose to use a later version).
-   *
-   * This program is distributed in the hope that it will be useful,
-   * but WITHOUT ANY WARRANTY; without even the implied warranty of
-   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   * GNU Lesser General Public License for more details.
-   *
-   * You should have received a copy of the GNU Lesser General Public License
-   * along with this program; if not, write to the Free Software
-   * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
+/* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-  " Provides a simple key-value dictionary abstraction over native JavaScript objects "
-)
+/*** Provides a simple key-value dictionary abstraction over native JavaScript objects */
 
-@ocaml.doc(" The dict type ")
+/** The dict type */
 type t<'a>
 
-@ocaml.doc(" The key type, an alias of string ")
+/** The key type, an alias of string */
 type key = string
 
-@ocaml.doc("
+/**
   `unsafeGet dict key` returns the value associated with `key` in `dict`
 
   This function will return an invalid value (`undefined`) if `key` does not exist in `dict`. It
   will not throw an error.
-")
+*/
 @get_index
 external unsafeGet: (t<'a>, key) => 'a = ""
 let \".!()" = unsafeGet
 
-@ocaml.doc(" `get dict key` returns the value associated with `key` in `dict` ")
+/** `get dict key` returns the value associated with `key` in `dict` */
 let get = (type u, dict: t<u>, k: key): option<u> =>
   if %raw(`k in dict`) {
     Some(\".!()"(dict, k))
@@ -50,13 +48,17 @@ let get = (type u, dict: t<u>, k: key): option<u> =>
     None
   }
 
-@ocaml.doc(" `set dict key value` sets the value of `key` in `dict` to `value` ") @set_index
+/** `set dict key value` sets the value of `key` in `dict` to `value` */
+@set_index
 external set: (t<'a>, key, 'a) => unit = ""
 
-@ocaml.doc(" `keys dict` returns an array of all the keys in `dict` ") @val
+/** `keys dict` returns an array of all the keys in `dict` */
+@val
 external keys: t<'a> => array<key> = "Object.keys"
 
-@ocaml.doc(" `empty ()` creates an empty dictionary ") @obj external empty: unit => t<'a> = ""
+/** `empty ()` creates an empty dictionary */
+@obj
+external empty: unit => t<'a> = ""
 
 let unsafeDeleteKey: (. t<string>, string) => unit = %raw(` function (dict,key){
       delete dict[key];
