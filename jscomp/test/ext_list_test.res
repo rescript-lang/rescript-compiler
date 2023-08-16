@@ -77,7 +77,7 @@ let exclude_with_fact = (p, l) => {
   )
 }
 
-@ocaml.doc(" Make sure [p2 x] and [p1 x] will not hold at the same time ")
+/** Make sure [p2 x] and [p1 x] will not hold at the same time */
 let exclude_with_fact2 = (p1, p2, l) => {
   let excluded1 = ref(None)
   let excluded2 = ref(None)
@@ -227,10 +227,10 @@ let try_take = (n, l) => {
   }
 }
 
-@ocaml.doc("
+/**
 
   {[length xs = length ys + n ]}
-")
+*/
 let rec length_compare = (l, n) =>
   if n < 0 {
     #Gt
@@ -246,10 +246,10 @@ let rec length_compare = (l, n) =>
     }
   }
 
-@ocaml.doc("
+/**
 
   {[length xs = length ys + n ]}
-")
+*/
 let rec length_larger_than_n = (n, xs, ys) =>
   switch (xs, ys) {
   | (_, list{}) => length_compare(xs, n) == #Eq
@@ -495,7 +495,8 @@ let rec assoc_by_int = (def, k: int, lst) =>
     }
   }
 
-@@ocaml.text(" `modulo [1;2;3;4] [1;2;3]` => [1;2;3], Some [4] `
+/* `modulo [1;2;3;4] [1;2;3]` => [1;2;3], Some [4] `
   modulo [1;2;3] [1;2;3;4] => [1;2;3] None 
   modulo [1;2;3] [1;2;3] => [1;2;3] Some []
- ")
+ */
+ 

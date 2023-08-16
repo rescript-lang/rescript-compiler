@@ -1,7 +1,7 @@
 module type G = {
   type t
   module V: {
-    @@ocaml.text(" Vertices are {!COMPARABLE}. ")
+    /*** Vertices are {!COMPARABLE}. */
 
     type t
 

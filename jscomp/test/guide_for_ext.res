@@ -1,7 +1,7 @@
-@@ocaml.text(" 
+/*
 [%js{ text : 32 ; label : \"hel\" }]
 Attention: also ok for nested case
-")
+*/
 
 let mk = () => {
   module N = {

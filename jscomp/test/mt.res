@@ -20,9 +20,9 @@
 
 @val
 @module("assert")
-@ocaml.doc(" There is a problem --
+/** There is a problem --
     it does not return [unit]
-")
+*/
 external throws: (unit => unit) => unit = "throws"
 
 let assert_equal = eq

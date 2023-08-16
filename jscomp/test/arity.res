@@ -24,24 +24,6 @@ let add = \"+"
 // let h = add(.1,2);
 // This function is a curried function where an uncurried function is expected
 
-@ocaml.doc("
-let u = obj => {
-    obj##hai(1, 2) ; 
-    obj##hai(3, 4,2)
-}
-")
-@ocaml.doc("
-let u = obj => {
-    obj##hai(1, 2) ; 
-    obj##hai(\"x\",2)
-}
-")
-@ocaml.doc("
-let u = obj => {
-    obj##hai(1, 2) ; 
-    obj##hai(~x=\"x\",2)
-}
-")
 let // This function has arity2 but was expected arity3
 
 // This expression has type string but an expression was expected of type

@@ -27,7 +27,7 @@ function hey_int (option){
  }
 `)
 
-@ocaml.doc(" when marshall, make sure location does not matter ")
+/** when marshall, make sure location does not matter */
 type u = [
   | #on_closed
   | #on_open
@@ -38,7 +38,7 @@ type u = [
 /* TODO: add warning test
  */
 
-@ocaml.doc(" when marshall, make sure location does not matter ") @val
+/** when marshall, make sure location does not matter */ @val
 external test_string_type: (~flag: @string [#on_closed | #on_open | @as("in") #in_]) => string =
   "hey_string"
 
@@ -114,7 +114,7 @@ module N = {
   @module("fs") external readFileSync: (string, [#utf8 | #ascii]) => string = "readFileSync"
   let read = name => readFileSync(name, #utf8)
 }
-@ocaml.doc("
+/**
 let register readline = 
   readline 
   |> on (`line begin fun [@bs] s -> Js.log s end)
@@ -126,10 +126,10 @@ let register readline =
   on (`close begin fun [@bs] () -> Js.log \"finished\" end) readline
 
 ]}
-")
+*/
 let readN = N.read
 
-@ocaml.doc("
+/**
 let register readline = 
   readline 
   |> on (`line begin fun [@bs] s -> Js.log s end)
@@ -141,7 +141,7 @@ let register readline =
   on (`close begin fun [@bs] () -> Js.log \"finished\" end) readline
 
 ]}
-")
+*/
 let test = (readline, x) => on(readline, x)
 
 let p_is_int_test = x =>

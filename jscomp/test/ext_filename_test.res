@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-@ocaml.doc(" Used when produce node compatible paths ")
+/** Used when produce node compatible paths */
 let node_sep = "/"
 let node_parent = ".."
 let node_current = "."
@@ -94,7 +94,7 @@ let chop_extension_if_any = fname =>
 
 let os_path_separator_char = String.unsafe_get(Filename.dir_sep, 0)
 
-@ocaml.doc(" example
+/** example
     {[
       \"/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/external/pervasives.cmj\"
         \"/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/ocaml_array.ml\"
@@ -113,7 +113,7 @@ let os_path_separator_char = String.unsafe_get(Filename.dir_sep, 0)
       /a/b
       /c/d
     ]}
-")
+*/
 let relative_path = (file_or_dir_1, file_or_dir_2) => {
   let sep_char = os_path_separator_char
   let relevant_dir1 = switch file_or_dir_1 {
@@ -138,7 +138,7 @@ let relative_path = (file_or_dir_1, file_or_dir_2) => {
   }
 }
 
-@ocaml.doc(" path2: a/b 
+/** path2: a/b 
     path1: a 
     result:  ./b 
     TODO: [Filename.concat] with care
@@ -147,7 +147,7 @@ let relative_path = (file_or_dir_1, file_or_dir_2) => {
     [file2] is the dependency
     
     TODO: this is a hackish function: FIXME
-")
+*/
 let node_relative_path = (
   node_modules_shorten,
   file1: t,
@@ -219,9 +219,9 @@ let module_name_of_file = file =>
 let module_name_of_file_if_any = file =>
   String.capitalize_ascii(\"@@"(chop_extension_if_any, Filename.basename(file)))
 
-@@ocaml.text(" For win32 or case insensitve OS 
+/* For win32 or case insensitve OS 
     [\".cmj\"] is the same as [\".CMJ\"]
-")
+*/
 /* let has_exact_suffix_then_chop fname suf = */
 
 let combine = (p1, p2) =>
@@ -235,7 +235,7 @@ let combine = (p1, p2) =>
     p2
   }
 
-@ocaml.doc("
+/**
    {[
      split_aux \"//ghosg//ghsogh/\";;
      - : string * string list = (\"/\", [\"ghosg\"; \"ghsogh\"])
@@ -256,7 +256,7 @@ let combine = (p1, p2) =>
        dirname \"\" = \".\"
        dirname \"\" =  \".\"
    ]}  
-")
+*/
 let split_aux = p => {
   let rec go = (p, acc) => {
     let dir = Filename.dirname(p)
@@ -279,10 +279,10 @@ let split_aux = p => {
   go(p, list{})
 }
 
-@ocaml.doc(" 
+/** 
    TODO: optimization
    if [from] and [to] resolve to the same path, a zero-length string is returned 
-")
+*/
 let rel_normalized_absolute_path = (from, to_) => {
   let (root1, paths1) = split_aux(from)
   let (root2, paths2) = split_aux(to_)
@@ -335,7 +335,7 @@ let rel_normalized_absolute_path = (from, to_) => {
   ]}
 */
 
-@ocaml.doc(" See tests in {!Ounit_path_tests} ")
+/** See tests in {!Ounit_path_tests} */
 let normalize_absolute_path = x => {
   let drop_if_exist = xs =>
     switch xs {

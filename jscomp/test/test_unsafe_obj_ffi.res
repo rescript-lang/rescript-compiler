@@ -6,10 +6,11 @@ let h = (x): unit => {
   x["height"] = 3
   x["width"] = 3
 }
-@@ocaml.text(/* can not write set api without syntax extension, any more
+
+/* can not write set api without syntax extension, any more
  */
 
-"
+/*
 imagine you have 
    {[
      let h = x ##_set_height in 
@@ -59,4 +60,4 @@ if it is already a property read, there ? how about
 
    {[ x #.property_fun 1 2   ]} 
 this is mostly an error in FFI binding
-")
+*/

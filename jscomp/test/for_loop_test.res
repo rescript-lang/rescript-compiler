@@ -133,7 +133,7 @@ let for_9 = () => {
   [(vv.contents, get(), vv2.contents)]
 }
 
-@@ocaml.text("
+/*
 
 See how google closure works, in both simple model and advanced model
 
@@ -155,7 +155,7 @@ console.log(result,u)
 ]}
 
 
-")
+*/
 
 let suites = list{
   ("for_loop_test_3", _ => Mt.Eq(90, \"@@"(for_3, Array.make(10, 2)))),

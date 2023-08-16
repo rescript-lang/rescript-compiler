@@ -46,7 +46,7 @@ let u = () => {
 let u1 = "bad character decimal encoding \\"
 let v = "bad character decimal encoding \\%c%c%c"
 
-@ocaml.doc(" test default branch ")
+/** test default branch */
 type u = A | B | C | D(int) | E(char)
 
 let f = (x: u) =>

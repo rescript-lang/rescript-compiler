@@ -1,4 +1,4 @@
-@@ocaml.text(" Test when i is captured 
+/* Test when i is captured 
     {[
     ((fun _ -> j = i; (fun _ -> v := !v + j)) ())
     ]}
@@ -34,7 +34,7 @@ This means inline is tricky in javascript, here we try to inline [_loop]?
     
 
 
- ")
+ */
 
 let v = ref(0)
 let count = 10

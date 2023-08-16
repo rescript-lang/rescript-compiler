@@ -18,7 +18,7 @@ let f2 = x =>
   | None => 1
   }
 
-@ocaml.doc(" if there is [default] in [Lswitch] it means 
+/** if there is [default] in [Lswitch] it means 
     its patten match are complete, 
     in that case
     we can transform
@@ -41,7 +41,7 @@ let f2 = x =>
     { return v[1] + 1 }
     else {return v[1] + 2 }
     ]}
- ")
+ */
 let f3 = x =>
   switch x {
   | A(v) => v + 1

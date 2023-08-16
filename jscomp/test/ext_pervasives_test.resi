@@ -1,4 +1,4 @@
-@@ocaml.text(/* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+/* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,8 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-" Extension to standard library [Pervavives] module, safe to open 
-")
+/*** Extension to standard library [Pervavives] module, safe to open 
+*/
 
 external reraise: exn => 'a = "%reraise"
 
@@ -33,9 +33,9 @@ let is_pos_pow: Int32.t => int
 
 let is_pos_pow_2: Int32.t => int
 
-@ocaml.doc(" Copied from {!Btype.hash_variant}:
+/** Copied from {!Btype.hash_variant}:
     need sync up and add test case
-")
+*/
 let hash_variant: string => int
 
 module LargeFile: {

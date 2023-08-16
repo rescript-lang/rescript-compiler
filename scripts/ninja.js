@@ -1170,7 +1170,8 @@ ${mllList(ninjaCwd, [
     return (
       x.endsWith(".resi") ||
       x.endsWith(".res") ||
-      ((x.endsWith(".ml") || x.endsWith(".mli")) && !x.endsWith("bspack.ml"))
+      x.endsWith(".ml") ||
+      x.endsWith(".mli")
     );
   });
 

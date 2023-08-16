@@ -75,9 +75,9 @@ let () = {
   assert (dfs1(list{"b"}, list{("f", "d"), ...graph}) == list{"b", "e", "g", "f", "d"})
 }
 
-@@ocaml.text(" since [x] is recorded before visiting its successors, so even with 
+/* since [x] is recorded before visiting its successors, so even with 
     cycles, it is still terminating
-")
+*/
 
 let grwork = list{
   ("wake", "shower"),

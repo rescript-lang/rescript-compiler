@@ -1,5 +1,5 @@
-@ocaml.doc(" General purpose utility functions
-  ")
+/** General purpose utility functions
+  */
 module Util = {
   let split = (~delim, s) => {
     let rec loop = (l, x) =>
@@ -33,7 +33,7 @@ module Util = {
     }
 }
 
-@@ocaml.text(" AST for the tickers ")
+/* AST for the tickers */
 
 type binary_op =
   | PLUS
@@ -87,7 +87,7 @@ module Ticker_map = Map.Make({
   let compare = Pervasives.compare
 })
 
-@ocaml.doc(" For each market tickers, this function will compute 
+/** For each market tickers, this function will compute 
     the associated list of tickers value to be updated
     based on the correct graph ordering 
 
@@ -98,7 +98,7 @@ module Ticker_map = Map.Make({
     market tickers and finally we `sort_uniq` that list by rank to 
     guarantee that a composite ticker is update only once and in 
     the correct order. 
- ")
+ */
 let compute_update_sequences = all_tickers => {
   /* Ranking */
 
@@ -162,8 +162,8 @@ let compute_update_sequences = all_tickers => {
   }, map, map)
 }
 
-@ocaml.doc(" Process a new quote for a market ticker 
- ")
+/** Process a new quote for a market ticker 
+ */
 let process_quote = (ticker_map, new_ticker, new_value) => {
   let update_sequence = Ticker_map.find(new_ticker, ticker_map)
 

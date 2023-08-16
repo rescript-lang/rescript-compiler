@@ -13,7 +13,7 @@ let rec f4 = (x, y) => f4(x + 10, y + x)
 
 let rec f5 = (x, y, z) => f5(y + 10, z + 20, z)
 
-@ocaml.doc(" tail call as well ")
+/** tail call as well */
 let rec f6 = b => b && f6(b)
 
 let rec f7 = b => b || f7(b)

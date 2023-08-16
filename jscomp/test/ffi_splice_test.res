@@ -6,9 +6,9 @@ let eq = (loc, x, y) => {
     list{(loc ++ (" id " ++ string_of_int(test_id.contents)), _ => Mt.Eq(x, y)), ...suites.contents}
 }
 
-@@ocaml.text("
+/*
 [%%raw [@import \"jscomp/test/xx.js\"]] (* PATH relative to package.json *)
-")
+*/
 
 %%raw(`
 function Make (){

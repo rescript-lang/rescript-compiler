@@ -1,9 +1,9 @@
-@@ocaml.text(" Checkout [Ctype.arity] [Btype.repr] 
+/* Checkout [Ctype.arity] [Btype.repr] 
     [Predef]
     
     Note that [f g x] can also be [(f g) x] 
     even though we get a non-function return type
- ")
+ */
 
 let f0 = (g, x) => g(x)
 

@@ -1,11 +1,11 @@
-@ocaml.doc(" Imperative style ")
+/** Imperative style */
 let rec fib = x =>
   switch x {
   | 1 | 2 => 1
   | n => fib(n - 1) + fib(n - 2)
   }
 
-@ocaml.doc(" Imperative style ") @ocaml.doc(" List map ")
+/** Imperative style */ /** List map */
 let sum = n => {
   let v = ref(0)
   for i in 0 to n {
@@ -14,7 +14,7 @@ let sum = n => {
   v.contents
 }
 
-@ocaml.doc(" List map ")
+/** List map */
 type rec list<'a> =
   | Nil
   | Cons('a, list<'a>)
@@ -25,25 +25,25 @@ let rec map = (f, x) =>
   | Cons(x, xs) => Cons(f(x), map(f, xs))
   }
 
-@ocaml.doc(" Test curry and uncurry calling convention ")
+/** Test curry and uncurry calling convention */
 let test_curry = (x, y) => x + y
 let f = test_curry(32)
 
-@ocaml.doc(" Create a typed binding for react ")
+/** Create a typed binding for react */
 type t
 type element
 @val external document: t = "document"
 @send external getElementById: (t, string) => element = "getElementById"
 
-@ocaml.doc(" Phantom types ")
+/** Phantom types */
 type config
 type component
 type attrs
 type component_class
 
-@obj @ocaml.doc(" make a json object ")
+@obj /** make a json object */
 external config: (~display_name: string=?, ~render: unit => component, unit) => config = ""
-@ocaml.doc(" make a json object ") @obj
+/** make a json object */ @obj
 external attrs: (~alt: string=?, ~autoPlay: bool=?, unit) => attrs = ""
 external str: string => component = "%identity"
 
