@@ -28,8 +28,6 @@ let separator = "--"
 
 let watch_mode = ref false
 
-let make_world = ref false
-
 let do_install = ref false
 
 let force_regenerate = ref false
@@ -109,24 +107,6 @@ let install_target () =
   let eid = Bsb_unix.run_command_execv install_command in
   if eid <> 0 then Bsb_unix.command_fatal_error install_command eid
 
-(** check if every dependency installation dierctory is there 
-    This is in hot path, so we want it to be fast.
-    The heuristics is that if the installation directory is not there,
-    we definitely need build the world.
-    If it is there, we do not check if it is up-to-date, since that's
-    going be slow, user can use `-with-deps` to enforce such check
-*)
-let check_deps_installation_directory (config_opt : Bsb_config_types.t option) :
-    bool =
-  match config_opt with
-  | Some { bs_dependencies; bs_dev_dependencies } ->
-      not
-        (Ext_list.for_all bs_dependencies (fun x ->
-             Ext_sys.is_directory_no_exn x.package_install_path)
-        && Ext_list.for_all bs_dev_dependencies (fun x ->
-               Ext_sys.is_directory_no_exn x.package_install_path))
-  | None -> false
-
 let build_subcommand ~start argv argv_len =
   let i = Ext_array.rfind_with_index argv Ext_string.equal separator in
 
@@ -135,10 +115,10 @@ let build_subcommand ~start argv argv_len =
     ~argv
     [|
       ("-w", unit_set_spec watch_mode, "Watch mode");
-      ("-with-deps", unit_set_spec make_world, "Build dependencies explicitly");
+      ("-with-deps", unit_set_spec (ref true), "*deprecated* Build dependencies explicitly");
       ( "-install",
         unit_set_spec do_install,
-        "*internal* Install public interface files for dependencies " );
+        "*internal* Install public interface files for dependencies" );
       (* This should be put in a subcommand
          previously it works with the implication `bsb && bsb -install`
       *)
@@ -162,15 +142,8 @@ let build_subcommand ~start argv argv_len =
   | _ ->
       let config_opt =
         Bsb_ninja_regen.regenerate_ninja ~package_kind:Toplevel
-          ~per_proj_dir:Bsb_global_paths.cwd ~forced:!force_regenerate
-      in
-      let implict_build = check_deps_installation_directory config_opt in
-      (match (!make_world, implict_build) with
-      | true, _ ->
-          Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt ninja_args
-      | false, true ->
-          Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt [||]
-      | false, false -> ());
+          ~per_proj_dir:Bsb_global_paths.cwd ~forced:!force_regenerate in
+      Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt ninja_args;
       if !do_install then install_target ();
       if !watch_mode then exit 0 (* let the watcher do the build*)
       else ninja_command_exit ninja_args
@@ -179,8 +152,8 @@ let clean_subcommand ~start argv =
   Bsb_arg.parse_exn ~usage:clean_usage ~start ~argv
     [|
       ( "-with-deps",
-        unit_set_spec make_world,
-        "*internal* Clean dependencies too" );
+        unit_set_spec (ref true),
+        "*deprecated* Clean dependencies too" );
       ("-verbose", call_spec Bsb_log.verbose, "Set the output to be verbose");
     |]
     failed_annon;
@@ -226,10 +199,8 @@ let () =
       (* specialize this path which is used in watcher *)
       let config_opt =
         Bsb_ninja_regen.regenerate_ninja ~package_kind:Toplevel ~forced:false
-          ~per_proj_dir:Bsb_global_paths.cwd
-      in
-      if !make_world || check_deps_installation_directory config_opt then
-        Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt [||];
+          ~per_proj_dir:Bsb_global_paths.cwd in
+      Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt [||];
       ninja_command_exit [||])
     else
       match argv.(1) with
