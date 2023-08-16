@@ -10,6 +10,8 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
+# 11.0.0-rc.2 (Unreleased)
+
 # 11.0.0-rc.1
 
 #### :rocket: New Feature
