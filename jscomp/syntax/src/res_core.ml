@@ -2005,6 +2005,7 @@ and parseBracketAccess p expr startPos =
     Parser.eatBreadcrumb p;
     let rbracket = p.prevEndPos in
     let arrayLoc = mkLoc lbracket rbracket in
+    let attr = (Location.mkloc "res.syntaxSugar" arrayLoc, Parsetree.PStr []) in
     match p.token with
     | Equal ->
       Parser.leaveBreadcrumb p ExprArrayMutation;
@@ -2014,10 +2015,6 @@ and parseBracketAccess p expr startPos =
         Location.mkloc (Longident.Ldot (Lident "Array", "set")) arrayLoc
       in
       let endPos = p.prevEndPos in
-      let attr =
-        ( Location.mkloc "res.syntaxSugar" (mkLoc startPos endPos),
-          Parsetree.PStr [] )
-      in
       let arraySet =
         Ast_helper.Exp.apply ~loc:(mkLoc startPos endPos)
           (Ast_helper.Exp.ident ~loc:arrayLoc arraySet ~attrs:[attr])
@@ -2027,10 +2024,6 @@ and parseBracketAccess p expr startPos =
       arraySet
     | _ ->
       let endPos = p.prevEndPos in
-      let attr =
-        ( Location.mkloc "res.syntaxSugar" (mkLoc startPos endPos),
-          Parsetree.PStr [] )
-      in
       let e =
         Ast_helper.Exp.apply ~loc:(mkLoc startPos endPos)
           (Ast_helper.Exp.ident ~loc:arrayLoc ~attrs:[attr]
