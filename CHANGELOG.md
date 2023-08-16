@@ -12,6 +12,10 @@
 
 # 11.0.0-rc.2 (Unreleased)
 
+#### :rocket: New Feature
+
+- `rescript build` will always build its dependency by default. The argument `-with-deps` is not needed anymore. https://github.com/rescript-lang/rescript-compiler/pull/6350
+
 #### :bug: Bug Fix
 
 - Fixed outcome printer resolution of uncurried config. https://github.com/rescript-lang/rescript-compiler/pull/6353
@@ -31,7 +35,6 @@
 - Conditionally print error message about record with missing label potentially being a component. https://github.com/rescript-lang/rescript-compiler/pull/6337
 - Put definition in the bottom and the actual error at the top when reporting errors for supplying fields etc with the wrong name. https://github.com/rescript-lang/rescript-compiler/pull/6336
 - Fix left over places where polyvariant tag names were printed in OCaml syntax instead of ReScript. https://github.com/rescript-lang/rescript-compiler/pull/6348
-- `rescript build` will always build its dependency by default. The argument `-with-deps` is not needed anymore. https://github.com/rescript-lang/rescript-compiler/pull/6350
 
 # 11.0.0-beta.4
 
