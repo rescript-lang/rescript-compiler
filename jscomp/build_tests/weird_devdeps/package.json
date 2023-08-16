@@ -1,5 +1,5 @@
 {
-  "name": "devdeps",
+  "name": "weird_devdeps",
   "version": "0.1.0",
   "scripts": {
     "clean": "rescript clean",
@@ -11,7 +11,7 @@
   ],
   "author": "",
   "license": "MIT",
-  "devDependencies": {
-    "bs-platform": "^5.0.5"
+  "dependencies": {
+    "rescript": "file:../../.."
   }
 }
