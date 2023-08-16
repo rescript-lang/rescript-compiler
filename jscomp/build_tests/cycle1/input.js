@@ -5,7 +5,7 @@ const fs = require('fs')
 const path = require('path')
 var rescript_exe = require("../../../scripts/bin_path").rescript_exe
 
-cp.execSync(`${rescript_exe} clean -with-deps`, { cwd: __dirname, });
+cp.execSync(`${rescript_exe} clean`, { cwd: __dirname, });
 
 var output = cp.spawnSync(rescript_exe, { encoding: "utf8", shell: true });
 

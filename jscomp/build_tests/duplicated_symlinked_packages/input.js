@@ -12,7 +12,7 @@ function postProcessErrorOutput (output) {
   output = output.replace(new RegExp(__dirname, 'gi'), '.')
   return output
 }
-child_process.execSync(`${rescript_exe} clean -with-deps`,{cwd:__dirname})
+child_process.execSync(`${rescript_exe} clean`,{cwd:__dirname})
 child_process.exec(rescript_exe, {cwd: __dirname}, (err, stdout, stderr) => {
   const actualErrorOutput = postProcessErrorOutput(stderr.toString())
   if (updateTests) {
