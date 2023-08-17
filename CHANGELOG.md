@@ -12,6 +12,10 @@
 
 # 11.0.0-rc.2 (Unreleased)
 
+#### :bug: Bug Fix
+
+- Fixed outcome printer resolution of uncurried config. https://github.com/rescript-lang/rescript-compiler/pull/6353
+
 # 11.0.0-rc.1
 
 #### :rocket: New Feature
