@@ -51,10 +51,11 @@ let ident ppf id = pp_print_string ppf (ident_name id)
 (* Print a path *)
 
 let ident_pervasives = Ident.create_persistent "Pervasives"
+let ident_pervasives_u = Ident.create_persistent "PervasivesU"
 let printing_env = ref Env.empty
 let non_shadowed_pervasive = function
   | Pdot(Pident id, s, _pos) as path ->
-      Ident.same id ident_pervasives &&
+      (Ident.same id ident_pervasives || Ident.same id ident_pervasives_u) &&
       (try Path.same path (Env.lookup_type (Lident s) !printing_env)
        with Not_found -> true)
   | _ -> false
