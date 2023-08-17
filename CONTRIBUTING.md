@@ -163,35 +163,36 @@ Currently all tests are located in the `jscomp/test` directory and you should ei
 There are currently two formats for test files:
 
 1. Mocha test files that run javascript test code
-2. Plain `.ml` files to check the result of compilation to JS (expectation tests)
+2. Plain `.res` files to check the result of compilation to JS (expectation tests)
 
 Below we will discuss on how to write, build and run these test files.
 
 ### 1) Write a Mocha Test File
 
-- Create a file `jscomp/test/feature_abc_test.ml`. Make sure to end the file name with `_test.ml`.
-- Inside the file, add a mocha test suite. The mocha bindings are defined in `jscomp/test/mt.ml`. To get you started, here is a simple scaffold for a test suite with multiple test cases:
+- Create a file `jscomp/test/feature_abc_test.res`. Make sure to end the file name with `_test.res`.
+- Inside the file, add a mocha test suite. The mocha bindings are defined in `jscomp/test/mt.res`. To get you started, here is a simple scaffold for a test suite with multiple test cases:
 
-  ```ocaml
-  let suites : _ Mt.pair_suites =
-     ["hey", (fun _ -> Eq(true, 3 > 2));
-      "hi", (fun _ -> Neq(2,3));
-      "hello", (fun _ -> Approx(3.0, 3.0));
-      "throw", (fun _ -> ThrowAny(fun _ -> raise 3))
-     ]
-  let () = Mt.from_pair_suites __FILE__ suites
+  ```rescript
+  let suites: Mt.pair_suites = list{
+    ("hey", _ => Eq(true, 3 > 2)),
+    ("hi", _ => Neq(2, 3)),
+    ("hello", _ => Approx(3.0, 3.0)),
+    ("throw", _ => ThrowAny(_ => raise(SomeException))),
+  }
+
+  Mt.from_pair_suites(__MODULE__, suites)
   ```
 
 - Build the test files: `node scripts/ninja.js clean && node scripts/ninja.js build`.
 - Run the tests: `npx mocha jscomp/test/**/*test.js`.
 
-### 2) Write a Plain `.ml` Test File
+### 2) Write a Plain `.res` Test File
 
-This is usually the file you want to create to test certain compile behavior without running the JS code formally as a test, i.e. if you add a new type alias to a specific module and you just want to make sure the compiler handles the types correctly (see [`jscomp/test/empty_obj.ml`](jscomp/test/empty_obj.ml) as an example).
+This is usually the file you want to create to test certain compile behavior without running the JS code formally as a test, i.e., when you just want to check that the ReScript code compiles and produces the expected JS code.
 
-- Create your test file `jscomp/test/my_file_test.ml`. Make sure to end the file name with `_test.ml`.
+- Create your test file `jscomp/test/my_file_test.res`. Make sure to end the file name with `_test.res`.
 - Build the `.js` artifact: `node scripts/ninja.js config && node scripts/ninja.js build`.
-- Verify the output, check in the `jscomp/test/my_file_test.ml` and `jscomp/test/my_file_test.js` to version control. The checked in `.js` file is essential for verifying regressions later on.
+- Verify the output, check in the `jscomp/test/my_file_test.res` and `jscomp/test/my_file_test.js` to version control. The checked in `.js` file is essential for verifying regressions later on.
 - Eventually check in other relevant files changed during the rebuild (depends on your compiler changes).
 
 ## Contribute to the ReScript Playground Bundle
