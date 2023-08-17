@@ -602,10 +602,9 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
         let setter = Ext_string.ends_with name Literals.setter_suffix in
         let property =
           if setter then
-            Lam_methname.translate
-              (String.sub name 0
-                 (String.length name - Literals.setter_suffix_len))
-          else Lam_methname.translate name
+            (String.sub name 0
+                (String.length name - Literals.setter_suffix_len))
+          else name
         in
         prim
           ~primitive:(Pjs_unsafe_downgrade { name = property; setter })

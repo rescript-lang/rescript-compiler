@@ -79,10 +79,10 @@ function test3(_open, xx__hi) {
     hi: 2
   };
   if (_open !== undefined) {
-    tmp.open = _open;
+    tmp._open = _open;
   }
   if (xx__hi !== undefined) {
-    tmp.xx = xx__hi;
+    tmp.xx__hi = xx__hi;
   }
   return tmp;
 }
@@ -90,11 +90,11 @@ function test3(_open, xx__hi) {
 function test4(_open, xx__hi) {
   console.log("no inlin");
   var tmp = {
-    open: _open,
+    _open: _open,
     hi: 2
   };
   if (xx__hi !== undefined) {
-    tmp.xx = xx__hi;
+    tmp.xx__hi = xx__hi;
   }
   return tmp;
 }
@@ -106,11 +106,11 @@ function test5(f, x) {
   };
   var tmp$1 = Curry._1(f, x);
   if (tmp$1 !== undefined) {
-    tmp.open = tmp$1;
+    tmp._open = tmp$1;
   }
   var tmp$2 = Curry._1(f, x);
   if (tmp$2 !== undefined) {
-    tmp.xx = tmp$2;
+    tmp.xx__hi = tmp$2;
   }
   return tmp;
 }
@@ -125,11 +125,11 @@ function test6(f, x) {
   };
   var tmp$1 = (x$1.contents = x$1.contents + 1 | 0, x$1.contents);
   if (tmp$1 !== undefined) {
-    tmp.open = tmp$1;
+    tmp._open = tmp$1;
   }
   var tmp$2 = f(x$1);
   if (tmp$2 !== undefined) {
-    tmp.xx = tmp$2;
+    tmp.xx__hi = tmp$2;
   }
   return tmp;
 }
@@ -146,7 +146,7 @@ eq("File \"gpr_1409_test.res\", line 69, characters 3-10", keys({
 eq("File \"gpr_1409_test.res\", line 71, characters 3-10", keys({
           hd: "hi",
           tl: {
-            hd: "open",
+            hd: "_open",
             tl: /* [] */0
           }
         }, Object.keys(test3(2, undefined))), true);
@@ -154,9 +154,9 @@ eq("File \"gpr_1409_test.res\", line 71, characters 3-10", keys({
 eq("File \"gpr_1409_test.res\", line 73, characters 3-10", keys({
           hd: "hi",
           tl: {
-            hd: "open",
+            hd: "_open",
             tl: {
-              hd: "xx",
+              hd: "xx__hi",
               tl: /* [] */0
             }
           }

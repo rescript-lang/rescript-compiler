@@ -68,8 +68,8 @@ let keys = (xs, ys) =>
 
 eq(__LOC__, keys(list{"hi"}, Js.Obj.keys(test3(None, None))), true)
 
-eq(__LOC__, keys(list{"hi", "open"}, Js.Obj.keys(test3(Some(2), None))), true)
+eq(__LOC__, keys(list{"hi", "_open"}, Js.Obj.keys(test3(Some(2), None))), true)
 
-eq(__LOC__, keys(list{"hi", "open", "xx"}, Js.Obj.keys(test3(Some(2), Some(2)))), true)
+eq(__LOC__, keys(list{"hi", "_open", "xx__hi"}, Js.Obj.keys(test3(Some(2), Some(2)))), true)
 
 Mt.from_pair_suites(__MODULE__, suites.contents)

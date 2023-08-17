@@ -49,26 +49,26 @@ var v_ice_cream4 = {
 };
 
 var vv = {
-  x: 3
+  x__ignore: 3
 };
 
 var int_expect = {
-  x: 0
+  x__ignore: 0
 };
 
 var int_expect2 = {
-  x: 0
+  x__ignore: 0
 };
 
 var int_expects_0 = {};
 
 var int_expects_1 = {
   hd: {
-    x: 2
+    x__ignore: 2
   },
   tl: {
     hd: {
-      x: 3
+      x__ignore: 3
     },
     tl: /* [] */0
   }
@@ -112,7 +112,7 @@ var v_mk6_1 = {
 };
 
 var mk_u = {
-  x: 0
+  x__ignore: 0
 };
 
 var v_mk7_0 = {
