@@ -994,6 +994,7 @@ let report_error env ppf = function
                               @{<info>The module or file %a can't be found.@}@,\
                               @[<v 2>- If it's a third-party dependency:@,\
                               - Did you list it in bsconfig.json?@,\
+                              @]@,\
                               - Did you include the file's directory in bsconfig.json?@]\
                               @]"
             Printtyp.longident lid
