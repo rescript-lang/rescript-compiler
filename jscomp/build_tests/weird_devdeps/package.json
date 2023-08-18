@@ -10,8 +10,5 @@
     "BuckleScript"
   ],
   "author": "",
-  "license": "MIT",
-  "dependencies": {
-    "rescript": "file:../../.."
-  }
+  "license": "MIT"
 }
