@@ -115,7 +115,7 @@ let build_subcommand ~start argv argv_len =
     ~argv
     [|
       ("-w", unit_set_spec watch_mode, "Watch mode");
-      ("-with-deps", unit_set_spec (ref true), "*deprecated* Build dependencies explicitly");
+      ("-with-deps", unit_set_spec (ref true), "*deprecated* This is the default behavior now. This option will be removed in a future release");
       ( "-install",
         unit_set_spec do_install,
         "*internal* Install public interface files for dependencies" );
@@ -153,7 +153,7 @@ let clean_subcommand ~start argv =
     [|
       ( "-with-deps",
         unit_set_spec (ref true),
-        "*deprecated* Clean dependencies too" );
+        "*deprecated* This is the default behavior now. This option will be removed in a future release" );
       ("-verbose", call_spec Bsb_log.verbose, "Set the output to be verbose");
     |]
     failed_annon;
