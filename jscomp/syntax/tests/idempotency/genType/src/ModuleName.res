@@ -1,6 +1,6 @@
 type t = string
 
-let createBucklescriptBlock = "CreateBucklescriptBlock"
+let createRescriptBlock = "CreateRescriptBlock"
 
 let curry = "Curry"
 

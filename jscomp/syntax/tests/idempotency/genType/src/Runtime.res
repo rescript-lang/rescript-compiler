@@ -1,6 +1,6 @@
 open GenTypeCommon
 
-let createBucklescriptBlock = "CreateBucklescriptBlock" ++ ".__"
+let createRescriptBlock = "CreateRescriptBlock" ++ ".__"
 
 type recordGen = {
   mutable unboxed: int,
@@ -89,7 +89,7 @@ let emitVariantWithPayload = (~config, ~label, ~numArgs, ~polymorphic, x) =>
   } else {
     config.emitCreateBucklescriptBlock = true
     let args = numArgs == 1 ? list{x} |> EmitText.array : x
-    createBucklescriptBlock |> EmitText.funCall(~args=list{label, args})
+    createRescriptBlock |> EmitText.funCall(~args=list{label, args})
   }
 
 let jsVariantTag = "tag"

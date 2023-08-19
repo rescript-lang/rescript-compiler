@@ -1,5 +1,5 @@
-/* First time reading an OCaml/Reason/BuckleScript file? */
-/* `external` is the foreign function call in OCaml. */
+/* First time reading an ReScript file? */
+/* `external` is the foreign function call. */
 /* here we're saying `I guarantee that on the JS side, we have a `render` function in the module "react-dom"
  that takes in a reactElement, a dom element, and returns unit (nothing) */
 /* It's like `let`, except you're pointing the implementation to the JS side. The compiler will inline these

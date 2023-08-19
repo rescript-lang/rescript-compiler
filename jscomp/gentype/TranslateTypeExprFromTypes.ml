@@ -393,7 +393,7 @@ and translateTypeExprFromTypes_ ~config ~typeVarsGen ~typeEnv
       in
       {dependencies = []; type_}
     | {noPayloads = []; payloads = [(_label, t)]; unknowns = []} ->
-      (* Handle bucklescript's "Arity_" encoding in first argument of Js.Internal.fn(_,_) for uncurried functions.
+      (* Handle ReScript's "Arity_" encoding in first argument of Js.Internal.fn(_,_) for uncurried functions.
          Return the argument tuple. *)
       t |> translateTypeExprFromTypes_ ~config ~typeVarsGen ~typeEnv
     | {noPayloads; payloads; unknowns = []} ->

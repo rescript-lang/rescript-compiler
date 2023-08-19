@@ -83,7 +83,7 @@ let suites =
     "watch": "bsb -w",
   },
   "keywords": [
-    "Bucklescript"
+    "ReScript"
   ],
   "license": "MIT",
   "devDependencies": {
@@ -102,7 +102,7 @@ let suites =
     "watch": "bsb -w",
   },
   "keywords": [
-    "Bucklescript"
+    "ReScript"
   ],
   "license": "MIT",
   "devDependencies": {

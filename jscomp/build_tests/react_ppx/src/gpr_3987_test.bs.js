@@ -28,7 +28,7 @@ function make(_props) {
   return null;
 }
 
-var BuckleScript3987ReproOk = {
+var Gpr3987ReproOk = {
   makeProps: makeProps,
   make: make
 };
@@ -37,30 +37,30 @@ React.createElement(make, makeProps("test", (function (param, param$1) {
             
           }), undefined));
 
-function Gpr_3987_test$BuckleScript3987ReproOk2(Props) {
+function Gpr_3987_test$Gpr3987ReproOk2(Props) {
   return null;
 }
 
-var BuckleScript3987ReproOk2 = {
-  make: Gpr_3987_test$BuckleScript3987ReproOk2
+var Gpr3987ReproOk2 = {
+  make: Gpr_3987_test$Gpr3987ReproOk2
 };
 
-React.createElement(Gpr_3987_test$BuckleScript3987ReproOk2, {
+React.createElement(Gpr_3987_test$Gpr3987ReproOk2, {
       value: "test",
       onChange: (function (param, param$1) {
           
         })
     });
 
-function Gpr_3987_test$BuckleScript3987ReproError(Props) {
+function Gpr_3987_test$Gpr3987ReproError(Props) {
   return null;
 }
 
-var BuckleScript3987ReproError = {
-  make: Gpr_3987_test$BuckleScript3987ReproError
+var Gpr3987ReproError = {
+  make: Gpr_3987_test$Gpr3987ReproError
 };
 
-React.createElement(Gpr_3987_test$BuckleScript3987ReproError, {
+React.createElement(Gpr_3987_test$Gpr3987ReproError, {
       value: "test",
       onChange: (function (param, param$1) {
           
@@ -68,7 +68,7 @@ React.createElement(Gpr_3987_test$BuckleScript3987ReproError, {
     });
 
 exports.makeContainer = makeContainer;
-exports.BuckleScript3987ReproOk = BuckleScript3987ReproOk;
-exports.BuckleScript3987ReproOk2 = BuckleScript3987ReproOk2;
-exports.BuckleScript3987ReproError = BuckleScript3987ReproError;
+exports.Gpr3987ReproOk = Gpr3987ReproOk;
+exports.Gpr3987ReproOk2 = Gpr3987ReproOk2;
+exports.Gpr3987ReproError = Gpr3987ReproError;
 /*  Not a pure module */

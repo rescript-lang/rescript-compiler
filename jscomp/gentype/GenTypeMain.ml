@@ -87,10 +87,8 @@ let readCmt cmtFile =
   with Cmi_format.Error _ ->
     Log_.item "Error loading %s\n\n" cmtFile;
     Log_.item
-      "It looks like you might be using an old version of Bucklescript, or \
-       have stale compilation artifacts.\n";
-    Log_.item "Check that bs-platform is version 6.2.x or later.\n";
-    Log_.item "And try to clean and rebuild.\n\n";
+      "It looks like you might have stale compilation artifacts.\n";
+    Log_.item "Try to clean and rebuild.\n\n";
     assert false
 
 let processCmtFile cmt =

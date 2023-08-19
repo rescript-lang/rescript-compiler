@@ -218,8 +218,8 @@ See [`String.endsWith`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/
 on MDN.
 
 ```res example
-Js.String.endsWith("Script", "BuckleScript") == true
-Js.String.endsWith("Script", "BuckleShoes") == false
+Js.String.endsWith("Script", "ReScript") == true
+Js.String.endsWith("Script", "C++") == false
 ```
 */
 external endsWith: t => bool = "endsWith"
@@ -697,9 +697,9 @@ See [`String.startsWith`](https://developer.mozilla.org/en-US/docs/Web/JavaScrip
 on MDN.
 
 ```res example
-Js.String.startsWith("Buckle", "BuckleScript") == true
-Js.String.startsWith("", "BuckleScript") == true
-Js.String.startsWith("Buckle", "JavaScript") == false
+Js.String.startsWith("Re", "ReScript") == true
+Js.String.startsWith("", "ReScript") == true
+Js.String.startsWith("Re", "JavaScript") == false
 ```
 */
 external startsWith: t => bool = "startsWith"
@@ -714,9 +714,9 @@ See [`String.startsWith`](https://developer.mozilla.org/en-US/docs/Web/JavaScrip
 on MDN.
 
 ```res example
-Js.String.startsWithFrom("kle", 3, "BuckleScript") == true
-Js.String.startsWithFrom("", 3, "BuckleScript") == true
-Js.String.startsWithFrom("Buckle", 2, "JavaScript") == false
+Js.String.startsWithFrom("Scri", 2, "ReScript") == true
+Js.String.startsWithFrom("", 2, "ReScript") == true
+Js.String.startsWithFrom("Scri", 2, "JavaScript") == false
 ```
 */
 external startsWithFrom: (t, int) => bool = "startsWith"
