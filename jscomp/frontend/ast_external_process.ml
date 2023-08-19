@@ -406,17 +406,26 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
                   param_type :: arg_types,
                   result_types )
               | Arg_cst _ ->
-                ( {obj_arg_label = External_arg_spec.obj_label name; obj_arg_type},
+                ( {
+                    obj_arg_label = External_arg_spec.obj_label name;
+                    obj_arg_type;
+                  },
                   arg_types,
                   (* ignored in [arg_types], reserved in [result_types] *)
                   result_types )
               | Nothing ->
-                ( {obj_arg_label = External_arg_spec.obj_label name; obj_arg_type},
+                ( {
+                    obj_arg_label = External_arg_spec.obj_label name;
+                    obj_arg_type;
+                  },
                   param_type :: arg_types,
                   Parsetree.Otag ({Asttypes.txt = name; loc}, [], ty)
                   :: result_types )
               | Int _ ->
-                ( {obj_arg_label = External_arg_spec.obj_label name; obj_arg_type},
+                ( {
+                    obj_arg_label = External_arg_spec.obj_label name;
+                    obj_arg_type;
+                  },
                   param_type :: arg_types,
                   Otag
                     ( {Asttypes.txt = name; loc},
@@ -424,7 +433,10 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
                       Ast_literal.type_int ~loc () )
                   :: result_types )
               | Poly_var_string _ ->
-                ( {obj_arg_label = External_arg_spec.obj_label name; obj_arg_type},
+                ( {
+                    obj_arg_label = External_arg_spec.obj_label name;
+                    obj_arg_type;
+                  },
                   param_type :: arg_types,
                   Otag
                     ( {Asttypes.txt = name; loc},
@@ -953,9 +965,7 @@ let pval_prim_of_labels (labels : string Asttypes.loc list) =
     Ext_list.fold_right labels
       ([] : External_arg_spec.obj_params)
       (fun p arg_kinds ->
-        let obj_arg_label =
-          External_arg_spec.obj_label (p.txt)
-        in
+        let obj_arg_label = External_arg_spec.obj_label p.txt in
         {obj_arg_type = Nothing; obj_arg_label} :: arg_kinds)
   in
   External_ffi_types.ffi_obj_as_prims arg_kinds

@@ -86,8 +86,7 @@ let readCmt cmtFile =
   try Cmt_format.read_cmt cmtFile
   with Cmi_format.Error _ ->
     Log_.item "Error loading %s\n\n" cmtFile;
-    Log_.item
-      "It looks like you might have stale compilation artifacts.\n";
+    Log_.item "It looks like you might have stale compilation artifacts.\n";
     Log_.item "Try to clean and rebuild.\n\n";
     assert false
 
