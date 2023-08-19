@@ -296,7 +296,7 @@ let inline_float_primitive (i : string) : string list =
 let rec ffi_bs_aux acc (params : External_arg_spec.params) =
   match params with
   | {arg_type = Nothing; arg_label = Arg_empty}
-    (* same as External_arg_spec.dummy*)
+      (* same as External_arg_spec.dummy*)
     :: rest ->
     ffi_bs_aux (acc + 1) rest
   | _ :: _ -> -1

@@ -43,7 +43,7 @@ let makeMultiLineComment ~loc ~docComment ~standalone txt =
     loc;
     style =
       (if docComment then if standalone then ModuleComment else DocComment
-      else MultiLine);
+       else MultiLine);
     prevTokEndPos = Lexing.dummy_pos;
   }
 

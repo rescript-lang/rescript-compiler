@@ -364,10 +364,11 @@ let emitExportType ~(config : Config.t) ~emitters ~nameAs ~opaque ~type_
     |> Emitters.export ~emitters
   else
     (if isInterface && config.exportInterfaces then
-     docString ^ "export interface " ^ resolvedTypeName ^ typeParamsString ^ " "
-    else
-      "// tslint:disable-next-line:interface-over-type-literal\n" ^ docString
-      ^ "export type " ^ resolvedTypeName ^ typeParamsString ^ " = ")
+       docString ^ "export interface " ^ resolvedTypeName ^ typeParamsString
+       ^ " "
+     else
+       "// tslint:disable-next-line:interface-over-type-literal\n" ^ docString
+       ^ "export type " ^ resolvedTypeName ^ typeParamsString ^ " = ")
     ^ (match type_ with
       | _ -> type_ |> typeToString ~config ~typeNameIsInterface)
     ^ ";" ^ exportNameAs

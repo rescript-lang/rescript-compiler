@@ -15,4 +15,4 @@ val setup : unit lazy_t [@@live]
 val printOutTypeDoc : Outcometree.out_type -> Res_doc.t [@@live]
 val printOutSigItemDoc :
   ?printNameAsIs:bool -> Outcometree.out_sig_item -> Res_doc.t
-  [@@live]
+[@@live]

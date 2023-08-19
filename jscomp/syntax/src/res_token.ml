@@ -238,7 +238,7 @@ let keywordTable = function
   | "when" -> When
   | "while" -> While
   | _ -> raise Not_found
-  [@@raises Not_found]
+[@@raises Not_found]
 
 let isKeyword = function
   | Await | And | As | Assert | Constraint | Else | Exception | External | False
