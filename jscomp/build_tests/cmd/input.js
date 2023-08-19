@@ -34,7 +34,7 @@ function evalCode(code) {
     {
       encoding: "utf8",
       shell: true,
-      cwd: __dirname
+      cwd: __dirname,
     }
   );
 

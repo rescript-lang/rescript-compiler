@@ -16,7 +16,7 @@ var u = o.stdout.match(/=>/g);
 
 var lines = o.stdout
   .split("\n")
-  .map((x) => x.trim())
+  .map(x => x.trim())
   .filter(Boolean);
 // console.log(`lines: \n${lines}`)
 // console.log(lines[4])

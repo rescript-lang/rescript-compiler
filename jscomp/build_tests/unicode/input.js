@@ -11,4 +11,4 @@ var content =
 
 var assert = require("assert");
 
-assert(JSON.parse(content).dirs.some((x) => x.includes("📕annotation")));
+assert(JSON.parse(content).dirs.some(x => x.includes("📕annotation")));
