@@ -16,6 +16,10 @@
 
 - `rescript build` will always build its dependency by default. The argument `-with-deps` is not needed anymore. https://github.com/rescript-lang/rescript-compiler/pull/6350
 
+#### :boom: Breaking Change
+
+- Stop mangling object field names. If you had objects with field names containing "__" or leading "_", they won't be mangled in the compiled JavaScript and represented as it is without changes.  https://github.com/rescript-lang/rescript-compiler/pull/6354
+
 #### :bug: Bug Fix
 
 - Fixed outcome printer resolution of uncurried config. https://github.com/rescript-lang/rescript-compiler/pull/6353
