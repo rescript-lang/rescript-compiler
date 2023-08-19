@@ -44,7 +44,6 @@ let translateObjType closedFlag fieldsTranslations =
              | Option t -> (Optional, t)
              | _ -> (Mandatory, t)
            in
-           let name = name |> Runtime.mangleObjectField in
            {
              mutable_;
              nameJS = name;
@@ -298,8 +297,7 @@ let rec translateArrowType ~config ~typeVarsGen ~typeEnv ~revArgDeps ~revArgs
       typeExpr2
       |> translateArrowType ~config ~typeVarsGen ~typeEnv
            ~revArgDeps:nextRevDeps
-           ~revArgs:
-             ((Label (lbl |> Runtime.mangleObjectField), type1) :: revArgs)
+           ~revArgs:((Label lbl, type1) :: revArgs)
     | Some (lbl, t1) ->
       let {dependencies; type_ = type1} =
         t1 |> translateTypeExprFromTypes_ ~config ~typeVarsGen ~typeEnv
@@ -308,8 +306,7 @@ let rec translateArrowType ~config ~typeVarsGen ~typeEnv ~revArgDeps ~revArgs
       typeExpr2
       |> translateArrowType ~config ~typeVarsGen ~typeEnv
            ~revArgDeps:nextRevDeps
-           ~revArgs:
-             ((OptLabel (lbl |> Runtime.mangleObjectField), type1) :: revArgs))
+           ~revArgs:((OptLabel lbl, type1) :: revArgs))
   | _ ->
     let {dependencies; type_ = retType} =
       typeExpr |> translateTypeExprFromTypes_ ~config ~typeVarsGen ~typeEnv

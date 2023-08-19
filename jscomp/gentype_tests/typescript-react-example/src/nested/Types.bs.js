@@ -37,19 +37,19 @@ function testConvertLocation(x) {
 }
 
 var testMarshalFields = {
-  rec: "rec",
+  _rec: "rec",
   _switch: "_switch",
   switch: "switch",
   __: "__",
-  _: "_",
-  foo: "foo",
-  _foo: "_foo",
-  Uppercase: "Uppercase",
-  _Uppercase: "_Uppercase"
+  ___: "_",
+  foo__: "foo",
+  _foo__: "_foo",
+  _Uppercase: "Uppercase",
+  _Uppercase__: "_Uppercase"
 };
 
 function setMatch(x) {
-  x.match = 34;
+  x._match = 34;
 }
 
 function testInstantiateTypeParameter(x) {
