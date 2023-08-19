@@ -66,8 +66,7 @@ let print (fmt : Format.formatter) (x : error) =
         Format.fprintf fmt
           "File \"bsconfig.json\", line 1\n\
            @{<error>Error:@} package @{<error>%s@} not found or built %s\n\
-           - Did you install it?\n\
-           - If you did, did you run `rescript build -with-deps`?" name in_json
+           - Did you install it?" name in_json
   | Json_config (pos, s) ->
       Format.fprintf fmt
         "File %S, line %d:\n\

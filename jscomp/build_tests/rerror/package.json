@@ -2,7 +2,7 @@
   "name": "rerror",
   "version": "0.1.0",
   "scripts": {
-    "clean": "rescript clean -with-deps",
+    "clean": "rescript clean",
     "build": "rescript",
     "watch": "rescript build -w"
   },

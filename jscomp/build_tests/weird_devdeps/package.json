@@ -1,5 +1,5 @@
 {
-  "name": "zerocycle",
+  "name": "weird_devdeps",
   "version": "0.1.0",
   "scripts": {
     "clean": "rescript clean",
@@ -10,8 +10,5 @@
     "BuckleScript"
   ],
   "author": "",
-  "license": "MIT",
-  "devDependencies": {
-    "bs-platform": "^2.0.1"
-  }
+  "license": "MIT"
 }

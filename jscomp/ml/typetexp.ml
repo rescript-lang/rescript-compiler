@@ -993,11 +993,9 @@ let report_error env ppf = function
           Format.fprintf ppf "@[<v>\
                               @{<info>The module or file %a can't be found.@}@,\
                               @[<v 2>- If it's a third-party dependency:@,\
-                              - Did you list it in bsconfig.json?@,\
-                              - @[Did you run `rescript build` instead of `rescript build -with-deps`@ (latter builds third-parties)@]?\
-                              @]@,\
-                              - Did you include the file's directory in bsconfig.json?@]\
-                              @]"
+                              - Did you add it to the \"bs-dependencies\" or \"bs-dev-dependencies\" in bsconfig.json?@]@,\
+                              - Did you include the file's directory to the \"sources\" in bsconfig.json?@,\
+                              "
             Printtyp.longident lid
         end
     end;

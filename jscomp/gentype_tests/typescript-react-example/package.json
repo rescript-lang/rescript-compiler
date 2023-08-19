@@ -10,7 +10,7 @@
   "scripts": {
     "start": "rescript build -w",
     "build": "rescript",
-    "clean": "rescript clean -with-deps",
+    "clean": "rescript clean",
     "tsc": "tsc -p tsconfig.json"
   },
   "devDependencies": {

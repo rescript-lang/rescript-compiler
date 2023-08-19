@@ -12,6 +12,10 @@
 
 # 11.0.0-rc.2 (Unreleased)
 
+#### :rocket: New Feature
+
+- `rescript build` will always build its dependency by default. The argument `-with-deps` is not needed anymore. https://github.com/rescript-lang/rescript-compiler/pull/6350
+
 #### :bug: Bug Fix
 
 - Fixed outcome printer resolution of uncurried config. https://github.com/rescript-lang/rescript-compiler/pull/6353
