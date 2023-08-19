@@ -1,4 +1,7 @@
-jscomp/
+jscomp/*
+!jscomp/build_tests
+jscomp/build_tests/*/**
+!jscomp/build_tests/*/input.js
 lib/
 vendor/
 ninja/
