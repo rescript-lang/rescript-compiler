@@ -29,57 +29,57 @@ function eq(loc, x, y) {
 }
 
 function f0(x) {
-  var old = x.open;
-  x.open = old + 1 | 0;
-  return x.open;
-}
-
-function f1(x) {
-  var old = x.in;
-  x.in = old + 1 | 0;
-  return x.in;
-}
-
-function f2(x) {
-  var old = x.MAX_LENGTH;
-  x.MAX_LENGTH = old + 1 | 0;
-  return x.MAX_LENGTH;
-}
-
-function f3(x) {
-  var old = x.Capital;
-  x.Capital = old + 1 | 0;
-  return x.Capital;
-}
-
-function f4(x) {
   var old = x._open;
   x._open = old + 1 | 0;
   return x._open;
 }
 
-function f5(x) {
-  var old = x.open;
-  x.open = old + 1 | 0;
-  return x.open;
+function f1(x) {
+  var old = x._in;
+  x._in = old + 1 | 0;
+  return x._in;
 }
 
-function f6(x) {
-  var old = x["'x"];
-  x["'x"] = old + 1 | 0;
-  return x["'x"];
+function f2(x) {
+  var old = x._MAX_LENGTH;
+  x._MAX_LENGTH = old + 1 | 0;
+  return x._MAX_LENGTH;
 }
 
-function f7(x) {
+function f3(x) {
   var old = x._Capital;
   x._Capital = old + 1 | 0;
   return x._Capital;
 }
 
+function f4(x) {
+  var old = x._open__;
+  x._open__ = old + 1 | 0;
+  return x._open__;
+}
+
+function f5(x) {
+  var old = x.open__;
+  x.open__ = old + 1 | 0;
+  return x.open__;
+}
+
+function f6(x) {
+  var old = x["_'x"];
+  x["_'x"] = old + 1 | 0;
+  return x["_'x"];
+}
+
+function f7(x) {
+  var old = x._Capital__;
+  x._Capital__ = old + 1 | 0;
+  return x._Capital__;
+}
+
 function f8(x) {
-  var old = x._MAX;
-  x._MAX = old + 1 | 0;
-  return x._MAX;
+  var old = x._MAX__;
+  x._MAX__ = old + 1 | 0;
+  return x._MAX__;
 }
 
 function f9(x) {
@@ -95,42 +95,42 @@ function f10(x) {
 }
 
 function f11(x) {
-  var old = x._;
-  x._ = old + 1 | 0;
-  return x._;
+  var old = x.___;
+  x.___ = old + 1 | 0;
+  return x.___;
 }
 
 function f12(x) {
-  var old = x.__;
-  x.__ = old + 1 | 0;
-  return x.__;
+  var old = x.____;
+  x.____ = old + 1 | 0;
+  return x.____;
 }
 
-eq("File \"name_mangle_test.res\", line 94, characters 5-12", f0({open:0}), 1);
+eq("File \"name_mangle_test.res\", line 94, characters 5-12", f0({_open:0}), 1);
 
-eq("File \"name_mangle_test.res\", line 95, characters 5-12", f1({in:0}), 1);
+eq("File \"name_mangle_test.res\", line 95, characters 5-12", f1({_in:0}), 1);
 
-eq("File \"name_mangle_test.res\", line 96, characters 5-12", f2({MAX_LENGTH:0}), 1);
+eq("File \"name_mangle_test.res\", line 96, characters 5-12", f2({_MAX_LENGTH:0}), 1);
 
-eq("File \"name_mangle_test.res\", line 97, characters 5-12", f3({Capital:0}), 1);
+eq("File \"name_mangle_test.res\", line 97, characters 5-12", f3({_Capital:0}), 1);
 
-eq("File \"name_mangle_test.res\", line 98, characters 5-12", f4({_open:0}), 1);
+eq("File \"name_mangle_test.res\", line 98, characters 5-12", f4({_open__:0}), 1);
 
-eq("File \"name_mangle_test.res\", line 99, characters 5-12", f5({open:0}), 1);
+eq("File \"name_mangle_test.res\", line 99, characters 5-12", f5({open__:0}), 1);
 
-eq("File \"name_mangle_test.res\", line 100, characters 5-12", f6({ "'x" :0}), 1);
+eq("File \"name_mangle_test.res\", line 100, characters 5-12", f6({ "_'x" :0}), 1);
 
-eq("File \"name_mangle_test.res\", line 101, characters 5-12", f7({_Capital:0}), 1);
+eq("File \"name_mangle_test.res\", line 101, characters 5-12", f7({_Capital__:0}), 1);
 
-eq("File \"name_mangle_test.res\", line 102, characters 5-12", f8({_MAX:0}), 1);
+eq("File \"name_mangle_test.res\", line 102, characters 5-12", f8({_MAX__:0}), 1);
 
 eq("File \"name_mangle_test.res\", line 103, characters 5-12", f9({__:0}), 1);
 
 eq("File \"name_mangle_test.res\", line 104, characters 5-12", f10({__x:0}), 1);
 
-eq("File \"name_mangle_test.res\", line 105, characters 5-12", f11({_:0}), 1);
+eq("File \"name_mangle_test.res\", line 105, characters 5-12", f11({___:0}), 1);
 
-eq("File \"name_mangle_test.res\", line 106, characters 5-12", f12({__:0}), 1);
+eq("File \"name_mangle_test.res\", line 106, characters 5-12", f12({____:0}), 1);
 
 Mt.from_pair_suites("File \"name_mangle_test.res\", line 109, characters 20-27", suites.contents);
 

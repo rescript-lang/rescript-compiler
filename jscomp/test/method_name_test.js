@@ -31,30 +31,30 @@ function eq(loc, x, y) {
 
 function f(x, i, file, v) {
   Curry._1(x.case, i);
-  Curry._2(x.case, i, v);
-  Curry._1(x.open, file);
-  Curry._1(x.open, file);
-  return x.MAX_LENGTH;
+  Curry._2(x.case__set, i, v);
+  Curry._1(x._open, file);
+  Curry._1(x.open__, file);
+  return x._MAX_LENGTH;
 }
 
 function ff(x, i, v) {
-  x.make = v;
+  x.make__config = v;
   x.make_config = v;
-  Curry._1(x.case, i);
-  return Curry._1(x._open, 3);
+  Curry._1(x.case__unsafe, i);
+  return Curry._1(x._open__, 3);
 }
 
 var u = {
-  "Content'type": "x"
+  "_Content'type": "x"
 };
 
 var h = {
-  open: 3,
-  end: 32
+  _open: 3,
+  _end: 32
 };
 
 function hg(x) {
-  return x.open + x.end | 0;
+  return x._open + x._end | 0;
 }
 
 eq("File \"method_name_test.res\", line 39, characters 12-19", 35, hg(h));

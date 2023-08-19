@@ -29,16 +29,16 @@ function eq(loc, x, y) {
 }
 
 var uu = {
-  "'x": 3
+  "_'x": 3
 };
 
 var uu2 = {
-  then: 1,
+  _then: 1,
   catch: 2,
-  "'x": 3
+  "_'x": 3
 };
 
-var hh = uu["'x"];
+var hh = uu["_'x"];
 
 eq("File \"gpr_459_test.res\", line 23, characters 12-19", hh, 3);
 
@@ -47,9 +47,9 @@ eq("File \"gpr_459_test.res\", line 25, characters 12-19", [
       2,
       3
     ], [
-      uu2.then,
+      uu2._then,
       uu2.catch,
-      uu2["'x"]
+      uu2["_'x"]
     ]);
 
 Mt.from_pair_suites("Gpr_459_test", suites.contents);

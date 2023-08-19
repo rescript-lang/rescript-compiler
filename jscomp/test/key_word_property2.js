@@ -5,7 +5,7 @@ var Export_keyword = require("./export_keyword.js");
 
 function test2(v) {
   return {
-          open: v.open,
+          _open: v._open,
           window: v.window
         };
 }
@@ -13,7 +13,7 @@ function test2(v) {
 function test(p) {
   return [
           p.catch,
-          p.then
+          p._then
         ];
 }
 

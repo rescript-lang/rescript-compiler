@@ -4,7 +4,7 @@
 var Curry = require("../../lib/js/curry.js");
 
 function test_set(x) {
-  x.length = 3;
+  x.length__aux = 3;
 }
 
 function ff(fn, a0, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11) {
