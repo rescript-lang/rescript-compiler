@@ -7,7 +7,7 @@
     "clean": "rescript clean"
   },
   "keywords": [
-    "BuckleScript"
+    "ReScript"
   ],
   "author": "",
   "license": "MIT",

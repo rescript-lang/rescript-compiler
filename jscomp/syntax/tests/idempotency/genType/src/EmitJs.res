@@ -1113,7 +1113,7 @@ let emitTranslationAsString = (
     : env
 
   let finalEnv = config.emitCreateBucklescriptBlock
-    ? ModuleName.createBucklescriptBlock |> requireModule(
+    ? ModuleName.createRescriptBlock |> requireModule(
         ~\"import"=true,
         ~env,
         ~importPath=ImportPath.bsBlockPath(~config),

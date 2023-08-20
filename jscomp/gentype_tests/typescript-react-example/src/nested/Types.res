@@ -79,7 +79,7 @@ type record = {
 
 @genType let testConvertLocation = (x: Location.t) => x
 
-/* Bucklescript's marshaling rules. */
+/* ReScript's marshaling rules. */
 @genType
 type marshalFields = {
   "_rec": string,

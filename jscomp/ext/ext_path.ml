@@ -43,18 +43,18 @@ let split_by_sep_per_os : string -> string list =
 
 (** example
     {[
-      "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/external/pervasives.cmj"
-        "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/ocaml_array.ml"
+      "/bb/mbigc/mbig2899/bgit/rescript/jscomp/stdlib/external/pervasives.cmj"
+        "/bb/mbigc/mbig2899/bgit/rescript/jscomp/stdlib/ocaml_array.ml"
     ]}
 
     The other way
     {[
 
-      "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/ocaml_array.ml"
-        "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/external/pervasives.cmj"
+      "/bb/mbigc/mbig2899/bgit/rescript/jscomp/stdlib/ocaml_array.ml"
+        "/bb/mbigc/mbig2899/bgit/rescript/jscomp/stdlib/external/pervasives.cmj"
     ]}
     {[
-      "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib//ocaml_array.ml"
+      "/bb/mbigc/mbig2899/bgit/rescript/jscomp/stdlib//ocaml_array.ml"
     ]}
     {[
       /a/b

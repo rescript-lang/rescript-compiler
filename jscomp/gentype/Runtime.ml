@@ -113,7 +113,7 @@ module Mangle = struct
   keywords |> Array.iter (fun x -> Hashtbl.add table ("_" ^ x) x)
 
   (**
-    Apply bucklescript's mangling rules for object field names:
+    Apply ReScript's mangling rules for object field names:
     Remove trailing "__" if present.
     Otherwise remove leading "_" when followed by an uppercase letter, or keyword.
   *)

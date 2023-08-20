@@ -21,7 +21,7 @@ let f = () => ()
  * test
 */
 
-/* BuckleScript outperforms a classic for-loop: 
+/* ReScript outperforms a classic for-loop: 
    function equals3(m1, m2) {
     for (var i = 0; i < 4; i++) {
         for (var j = 0; j < 4; j++) {

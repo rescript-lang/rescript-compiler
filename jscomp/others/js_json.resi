@@ -197,7 +197,7 @@ Returns the string representation of a given JSON data structure.
 let dict = Js.Dict.empty()
 Js.Dict.set(dict, "name", Js.Json.string("John Doe"))
 Js.Dict.set(dict, "age", Js.Json.number(30.0))
-Js.Dict.set(dict, "likes", Js.Json.stringArray(["bucklescript", "ocaml", "js"]))
+Js.Dict.set(dict, "likes", Js.Json.stringArray(["ReScript", "ocaml", "js"]))
 
 Js.log(Js.Json.stringify(Js.Json.object_(dict)))
 ```
@@ -218,7 +218,7 @@ Returns the string representation of a given JSON data structure with spacing.
 let dict = Js.Dict.empty()
 Js.Dict.set(dict, "name", Js.Json.string("John Doe"))
 Js.Dict.set(dict, "age", Js.Json.number(30.0))
-Js.Dict.set(dict, "likes", Js.Json.stringArray(["bucklescript", "ocaml", "js"]))
+Js.Dict.set(dict, "likes", Js.Json.stringArray(["ReScript", "ocaml", "js"]))
 
 Js.log(Js.Json.stringifyWithSpace(Js.Json.object_(dict), 2))
 ```
