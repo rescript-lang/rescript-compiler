@@ -67,19 +67,19 @@ export type decorator<a,b> = (_1:a) => b;
 
 // tslint:disable-next-line:interface-over-type-literal
 export type marshalFields = {
-  readonly rec: string; 
+  readonly _rec: string; 
   readonly _switch: string; 
   readonly switch: string; 
   readonly __: string; 
-  readonly _: string; 
-  readonly foo: string; 
-  readonly _foo: string; 
-  readonly Uppercase: string; 
-  readonly _Uppercase: string
+  readonly ___: string; 
+  readonly foo__: string; 
+  readonly _foo__: string; 
+  readonly _Uppercase: string; 
+  readonly _Uppercase__: string
 };
 
 // tslint:disable-next-line:interface-over-type-literal
-export type marshalMutableField = { match: number };
+export type marshalMutableField = { _match: number };
 
 // tslint:disable-next-line:interface-over-type-literal
 export type ocaml_array<a> = a[];

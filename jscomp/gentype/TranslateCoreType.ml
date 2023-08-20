@@ -80,7 +80,7 @@ let rec translateArrowType ~config ~typeVarsGen ~noFunctionReturnDependencies
            ~revArgs:
              (( Label
                   (match asLabel = "" with
-                  | true -> lbl |> Runtime.mangleObjectField
+                  | true -> lbl
                   | false -> asLabel),
                 type1 )
              :: revArgs)
@@ -92,8 +92,7 @@ let rec translateArrowType ~config ~typeVarsGen ~noFunctionReturnDependencies
       coreType2
       |> translateArrowType ~config ~typeVarsGen ~noFunctionReturnDependencies
            ~typeEnv ~revArgDeps:nextRevDeps
-           ~revArgs:
-             ((OptLabel (lbl |> Runtime.mangleObjectField), type1) :: revArgs))
+           ~revArgs:((OptLabel lbl, type1) :: revArgs))
   | _ ->
     let {dependencies; type_ = retType} =
       coreType |> translateCoreType_ ~config ~typeVarsGen ~typeEnv

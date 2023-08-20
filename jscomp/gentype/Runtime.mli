@@ -10,7 +10,6 @@ val default : string
 val emitModuleAccessPath : config:Config.t -> moduleAccessPath -> string
 
 val isMutableObjectField : string -> bool
-val mangleObjectField : string -> string
 val newModuleItem : name:string -> moduleItem
 val newRecordValue : unboxed:bool -> recordGen -> recordValue
 val recordGen : unit -> recordGen

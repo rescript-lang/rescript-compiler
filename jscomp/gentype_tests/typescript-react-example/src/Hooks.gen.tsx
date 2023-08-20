@@ -14,7 +14,7 @@ import type {TypedArray2_Uint8Array_t as Js_TypedArray2_Uint8Array_t} from '../s
 export type vehicle = { readonly name: string };
 
 // tslint:disable-next-line:interface-over-type-literal
-export type cb = (_1:{ readonly to: vehicle }) => void;
+export type cb = (_1:{ readonly _to: vehicle }) => void;
 
 // tslint:disable-next-line:interface-over-type-literal
 export type r = { readonly x: string };
@@ -72,21 +72,21 @@ export type NoProps_make_Props = {};
 export const NoProps_make: React.ComponentType<{}> = HooksBS.NoProps.make;
 
 export const functionWithRenamedArgs: (_1:{
-  readonly to: vehicle; 
-  readonly Type: vehicle; 
+  readonly _to: vehicle; 
+  readonly _Type: vehicle; 
   readonly cb: cb
 }) => string = HooksBS.functionWithRenamedArgs;
 
 // tslint:disable-next-line:interface-over-type-literal
 export type WithRename_componentWithRenamedArgs_Props = {
-  readonly Type: vehicle; 
-  readonly to: vehicle; 
+  readonly _Type: vehicle; 
+  readonly _to: vehicle; 
   readonly cb: cb
 };
 
 export const WithRename_componentWithRenamedArgs: React.ComponentType<{
-  readonly Type: vehicle; 
-  readonly to: vehicle; 
+  readonly _Type: vehicle; 
+  readonly _to: vehicle; 
   readonly cb: cb
 }> = HooksBS.WithRename.componentWithRenamedArgs;
 
@@ -153,8 +153,8 @@ export const Inner: {
 export const RenderPropRequiresConversion: { make: React.ComponentType<{ readonly renderVehicle: React.ComponentType<{ readonly number: number; readonly vehicle: vehicle }> }> } = HooksBS.RenderPropRequiresConversion
 
 export const WithRename: { componentWithRenamedArgs: React.ComponentType<{
-  readonly Type: vehicle; 
-  readonly to: vehicle; 
+  readonly _Type: vehicle; 
+  readonly _to: vehicle; 
   readonly cb: cb
 }> } = HooksBS.WithRename
 
