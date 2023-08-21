@@ -61,13 +61,6 @@ function runTests() {
   if (bsbTest) {
     console.log("Doing build_tests");
     var buildTestDir = path.join(__dirname, "..", "jscomp", "build_tests");
-    var linkCmd = `npm link ../..`;
-    console.log(linkCmd);
-    cp.execSync(linkCmd, {
-      cwd: buildTestDir,
-      stdio: [0, 1, 2],
-      encoding: "utf8",
-    });
     var files = fs.readdirSync(buildTestDir);
     files.forEach(function (file) {
       var testDir = path.join(buildTestDir, file);
