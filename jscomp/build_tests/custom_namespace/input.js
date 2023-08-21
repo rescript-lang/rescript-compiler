@@ -1,6 +1,4 @@
 var child_process = require("child_process");
-var fs = require("fs");
-var path = require("path");
 var assert = require("assert");
 var rescript_exe = require("../../../scripts/bin_path").rescript_exe;
 
