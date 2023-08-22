@@ -82,7 +82,7 @@ function runTests() {
               console.log(stderr);
               throw new Error(`❌ error in ${file}: \n${error} `);
             } else {
-              console.log("✅ success in ", file);
+              console.log("✅ success in", file);
             }
           }
         );
