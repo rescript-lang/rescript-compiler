@@ -79,8 +79,8 @@ function runTests() {
             console.log(stdout);
 
             if (error !== null) {
-              console.log(stderr);
-              throw new Error(`❌ error in ${file}: \n${error} `);
+              console.log(`❌ error in ${file} with stderr:\n`, stderr);
+              throw error;
             } else {
               console.log("✅ success in", file);
             }
