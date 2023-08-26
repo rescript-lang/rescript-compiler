@@ -1,9 +1,6 @@
 {
   "name": "rerror",
   "version": "0.1.0",
-  "sources": [
-    "src"
-  ],
-  "bs-dependencies" : [
-  ]
+  "sources": ["src"],
+  "bs-dependencies": []
 }

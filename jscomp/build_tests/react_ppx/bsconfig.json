@@ -1,18 +1,18 @@
 {
-    "name": "react-ppx-tests",
-    "reason": {
-        "react-jsx": 3
-    },
-    "sources": {
-        "dir": "src",
-        "subdirs": true
-    },
-    "package-specs": [
-        {
-            "module": "commonjs",
-            "in-source": true
-        }
-    ],
-    "suffix": ".bs.js",
-    "namespace": true
+  "name": "react-ppx-tests",
+  "reason": {
+    "react-jsx": 3
+  },
+  "sources": {
+    "dir": "src",
+    "subdirs": true
+  },
+  "package-specs": [
+    {
+      "module": "commonjs",
+      "in-source": true
+    }
+  ],
+  "suffix": ".bs.js",
+  "namespace": true
 }

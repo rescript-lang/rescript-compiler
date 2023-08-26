@@ -1,15 +1,13 @@
 {
   "name": "zerocycle",
   "version": "0.1.0",
-  "sources": [
-    "src"
-  ],
+  "sources": ["src"],
   "package-specs": {
     "module": "commonjs",
     "in-source": true
   },
   "suffix": ".bs.js",
   "bs-dependencies": [
-      // add your bs-dependencies here 
+    // add your bs-dependencies here
   ]
 }
