@@ -10,7 +10,7 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# 11.0.0-rc.2 (Unreleased)
+# 11.0.0-rc.2
 
 #### :rocket: New Feature
 
@@ -18,7 +18,7 @@
 
 #### :boom: Breaking Change
 
-- Stop mangling object field names. If you had objects with field names containing "__" or leading "_", they won't be mangled in the compiled JavaScript and represented as it is without changes.  https://github.com/rescript-lang/rescript-compiler/pull/6354
+- Stop mangling object field names. If you had objects with field names containing "__" or leading "_", they won't be mangled in the compiled JavaScript and represented as it is without changes. https://github.com/rescript-lang/rescript-compiler/pull/6354
 
 #### :bug: Bug Fix
 
