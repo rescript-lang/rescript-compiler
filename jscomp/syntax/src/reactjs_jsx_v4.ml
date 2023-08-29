@@ -634,7 +634,13 @@ let rec recursivelyTransformNamedArgsForMake expr args newtypes coreType =
     in
     let alias =
       match pattern with
-      | {ppat_desc = Ppat_alias (_, {txt}) | Ppat_var {txt}} -> txt
+      | {
+       ppat_desc =
+         ( Ppat_alias (_, {txt})
+         | Ppat_var {txt}
+         | Ppat_constraint ({ppat_desc = Ppat_var {txt}}, _) );
+      } ->
+        txt
       | {ppat_desc = Ppat_any} -> "_"
       | _ -> getLabel arg
     in
@@ -852,7 +858,7 @@ let vbMatch ~expr (name, default, _, alias, loc, _) =
       Vb.mk
         (Pat.var (Location.mkloc alias loc))
         (Exp.match_
-           (Exp.ident {txt = Lident alias; loc = Location.none})
+           (Exp.ident {txt = Lident (alias ^ "__"); loc = Location.none})
            [
              Exp.case
                (Pat.construct
@@ -978,6 +984,14 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
         stripConstraintUnpack ~label pattern
       | _ -> pattern
     in
+    let safePatternLabel pattern =
+      match pattern with
+      | {ppat_desc = Ppat_var {txt; loc}} ->
+        {pattern with ppat_desc = Ppat_var {txt = txt ^ "__"; loc}}
+      | {ppat_desc = Ppat_alias (p, {txt; loc})} ->
+        {pattern with ppat_desc = Ppat_alias (p, {txt = txt ^ "__"; loc})}
+      | _ -> pattern
+    in
     let rec returnedExpression patternsWithLabel patternsWithNolabel
         ({pexp_desc} as expr) =
       match pexp_desc with
@@ -991,16 +1005,26 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
             {ppat_desc = Ppat_construct ({txt = Lident "()"}, _)},
             expr ) ->
         (patternsWithLabel, patternsWithNolabel, expr)
-      | Pexp_fun (arg_label, _default, ({ppat_loc; ppat_desc} as pattern), expr)
+      | Pexp_fun (arg_label, default, ({ppat_loc; ppat_desc} as pattern), expr)
         -> (
         let patternWithoutConstraint =
           stripConstraintUnpack ~label:(getLabel arg_label) pattern
+        in
+        (*
+           If prop has the default value as Ident, it will get a build error
+           when the referenced Ident value and the prop have the same name.
+           So we add a "__" after label to resolve the build error.
+        *)
+        let patternWithSafeLabel =
+          match default with
+          | Some _ -> safePatternLabel patternWithoutConstraint
+          | _ -> patternWithoutConstraint
         in
         if isLabelled arg_label || isOptional arg_label then
           returnedExpression
             (( {loc = ppat_loc; txt = Lident (getLabel arg_label)},
                {
-                 patternWithoutConstraint with
+                 patternWithSafeLabel with
                  ppat_attributes =
                    (if isOptional arg_label then optionalAttrs else [])
                    @ pattern.ppat_attributes;
