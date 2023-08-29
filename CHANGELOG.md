@@ -12,6 +12,10 @@
 
 # 11.0.0-rc.3 (Unreleased)
 
+#### :bug: Bug Fix
+
+- Fix issue with JSX V4 when component props have the default value with same name. https://github.com/rescript-lang/rescript-compiler/pull/6377
+
 # 11.0.0-rc.2
 
 #### :rocket: New Feature
