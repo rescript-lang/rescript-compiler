@@ -858,7 +858,7 @@ let vbMatch ~expr (name, default, _, alias, loc, _) =
       Vb.mk
         (Pat.var (Location.mkloc alias loc))
         (Exp.match_
-           (Exp.ident {txt = Lident (alias ^ "__"); loc = Location.none})
+           (Exp.ident {txt = Lident ("__" ^ alias); loc = Location.none})
            [
              Exp.case
                (Pat.construct
@@ -987,9 +987,9 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
     let safePatternLabel pattern =
       match pattern with
       | {ppat_desc = Ppat_var {txt; loc}} ->
-        {pattern with ppat_desc = Ppat_var {txt = txt ^ "__"; loc}}
+        {pattern with ppat_desc = Ppat_var {txt = "__" ^ txt; loc}}
       | {ppat_desc = Ppat_alias (p, {txt; loc})} ->
-        {pattern with ppat_desc = Ppat_alias (p, {txt = txt ^ "__"; loc})}
+        {pattern with ppat_desc = Ppat_alias (p, {txt = "__" ^ txt; loc})}
       | _ -> pattern
     in
     let rec returnedExpression patternsWithLabel patternsWithNolabel
@@ -1013,7 +1013,7 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
         (*
            If prop has the default value as Ident, it will get a build error
            when the referenced Ident value and the prop have the same name.
-           So we add a "__" after label to resolve the build error.
+           So we add a "__" to label to resolve the build error.
         *)
         let patternWithSafeLabel =
           match default with

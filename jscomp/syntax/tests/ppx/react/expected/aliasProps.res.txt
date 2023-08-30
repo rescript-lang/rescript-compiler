@@ -3,8 +3,8 @@
 module C0 = {
   type props<'priority, 'text> = {priority: 'priority, text?: 'text}
 
-  let make = ({priority: _, text: ?text__, _}: props<_, _>) => {
-    let text = switch text__ {
+  let make = ({priority: _, text: ?__text, _}: props<_, _>) => {
+    let text = switch __text {
     | Some(text) => text
     | None => "Test"
     }
@@ -21,8 +21,8 @@ module C0 = {
 module C1 = {
   type props<'priority, 'text> = {priority: 'priority, text?: 'text}
 
-  let make = ({priority: p, text: ?text__, _}: props<_, _>) => {
-    let text = switch text__ {
+  let make = ({priority: p, text: ?__text, _}: props<_, _>) => {
+    let text = switch __text {
     | Some(text) => text
     | None => "Test"
     }
@@ -39,8 +39,8 @@ module C1 = {
 module C2 = {
   type props<'foo> = {foo?: 'foo}
 
-  let make = ({foo: ?bar__, _}: props<_>) => {
-    let bar = switch bar__ {
+  let make = ({foo: ?__bar, _}: props<_>) => {
+    let bar = switch __bar {
     | Some(foo) => foo
     | None => ""
     }
@@ -57,12 +57,12 @@ module C2 = {
 module C3 = {
   type props<'foo, 'a, 'b> = {foo?: 'foo, a?: 'a, b: 'b}
 
-  let make = ({foo: ?bar__, a: ?a__, b, _}: props<_, _, _>) => {
-    let bar = switch bar__ {
+  let make = ({foo: ?__bar, a: ?__a, b, _}: props<_, _, _>) => {
+    let bar = switch __bar {
     | Some(foo) => foo
     | None => ""
     }
-    let a = switch a__ {
+    let a = switch __a {
     | Some(a) => a
     | None => bar
     }
@@ -81,8 +81,8 @@ module C3 = {
 module C4 = {
   type props<'a, 'x> = {a: 'a, x?: 'x}
 
-  let make = ({a: b, x: ?x__, _}: props<_, _>) => {
-    let x = switch x__ {
+  let make = ({a: b, x: ?__x, _}: props<_, _>) => {
+    let x = switch __x {
     | Some(x) => x
     | None => true
     }
@@ -99,8 +99,8 @@ module C4 = {
 module C5 = {
   type props<'a, 'z> = {a: 'a, z?: 'z}
 
-  let make = ({a: (x, y), z: ?z__, _}: props<_, _>) => {
-    let z = switch z__ {
+  let make = ({a: (x, y), z: ?__z, _}: props<_, _>) => {
+    let z = switch __z {
     | Some(z) => z
     | None => 3
     }
