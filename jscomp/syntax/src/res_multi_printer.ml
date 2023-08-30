@@ -38,26 +38,26 @@ let getUncurriedFromBsconfig ~filename =
   | None -> ()
   | Some bsconfig ->
     let lines = bsconfig |> String.split_on_char '\n' in
-    let uncurried =
+    let is_legacy_uncurried =
       lines
       |> List.exists (fun line ->
-        let uncurried = ref false in
-        let false_ = ref false in
-        let words = line |> String.split_on_char ' ' in
-        words
-        |> List.iter (fun word ->
-          match word with
-          | "\"uncurried\"" | "\"uncurried\":" -> uncurried := true
-          | "\"uncurried\":false" | "\"uncurried\":false," ->
-            uncurried := true;
-            false_ := true
-          | "false" | ":false" | "false," | ":false," ->
-            false_ := true
-          | _ -> ());
-        !uncurried && not !false_
-      )
+             let is_uncurried_option = ref false in
+             let is_option_falsy = ref false in
+             let words = line |> String.split_on_char ' ' in
+             words
+             |> List.iter (fun word ->
+                    match word with
+                    | "\"uncurried\"" | "\"uncurried\":" ->
+                      is_uncurried_option := true
+                    | "\"uncurried\":false" | "\"uncurried\":false," ->
+                      is_uncurried_option := true;
+                      is_option_falsy := true
+                    | "false" | ":false" | "false," | ":false," ->
+                      is_option_falsy := true
+                    | _ -> ());
+             !is_uncurried_option && !is_option_falsy)
     in
-    if uncurried then Config.uncurried := Uncurried
+    if not is_legacy_uncurried then Config.uncurried := Uncurried
 
 (* print res files to res syntax *)
 let printRes ~ignoreParseErrors ~isInterface ~filename =
