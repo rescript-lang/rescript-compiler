@@ -15,6 +15,7 @@
 #### :bug: Bug Fix
 
 - Fix issue with JSX V4 when component props have the default value with same name. https://github.com/rescript-lang/rescript-compiler/pull/6377
+- Fixed printer with `"uncurried": false` in bsconfig. https://github.com/rescript-lang/rescript-compiler/pull/6378
 
 # 11.0.0-rc.2
 

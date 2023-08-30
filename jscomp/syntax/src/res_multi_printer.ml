@@ -1,7 +1,6 @@
 let defaultPrintWidth = 100
 
-(* Determine if the file is in uncurried mode by looking for
-   the fist ancestor .bsconfig and see if it contains "uncurried": false *)
+(* Look at bsconfig.json to set Uncurried or Legacy mode if it contains "uncurried": false *)
 let getUncurriedFromBsconfig ~filename =
   let rec findBsconfig ~dir =
     let bsconfig = Filename.concat dir "bsconfig.json" in
@@ -38,25 +37,26 @@ let getUncurriedFromBsconfig ~filename =
   | None -> ()
   | Some bsconfig ->
     let lines = bsconfig |> String.split_on_char '\n' in
-    let uncurried =
+    let is_legacy_uncurried =
       lines
       |> List.exists (fun line ->
-             let uncurried = ref false in
-             let false_ = ref false in
+             let is_uncurried_option = ref false in
+             let is_option_falsy = ref false in
              let words = line |> String.split_on_char ' ' in
              words
              |> List.iter (fun word ->
                     match word with
-                    | "\"uncurried\"" | "\"uncurried\":" -> uncurried := true
+                    | "\"uncurried\"" | "\"uncurried\":" ->
+                      is_uncurried_option := true
                     | "\"uncurried\":false" | "\"uncurried\":false," ->
-                      uncurried := true;
-                      false_ := true
+                      is_uncurried_option := true;
+                      is_option_falsy := true
                     | "false" | ":false" | "false," | ":false," ->
-                      false_ := true
+                      is_option_falsy := true
                     | _ -> ());
-             not (!uncurried && !false_))
+             !is_uncurried_option && !is_option_falsy)
     in
-    if uncurried then Config.uncurried := Uncurried
+    if not is_legacy_uncurried then Config.uncurried := Uncurried
 
 (* print res files to res syntax *)
 let printRes ~ignoreParseErrors ~isInterface ~filename =
