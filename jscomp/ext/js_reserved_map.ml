@@ -71,6 +71,7 @@ let sorted_keywords = [|
   "BroadcastChannel";
   "BrowserCaptureMediaStreamTrack";
   "Buffer";
+  "Bun";
   "ByteLengthQueuingStrategy";
   "CDATASection";
   "CSS";
