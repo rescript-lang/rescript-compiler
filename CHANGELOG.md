@@ -14,7 +14,7 @@
 
 #### :nail_care: Polish
 
-- Add [`Bun`](https://bun.sh) to reserved names, so that modules named `Bun` don't clash with the globally exposed `Bun` object. 
+- Add [`Bun`](https://bun.sh) to reserved names, so that modules named `Bun` don't clash with the globally exposed `Bun` object. https://github.com/rescript-lang/rescript-compiler/pull/6381
 
 #### :bug: Bug Fix
 
