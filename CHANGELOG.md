@@ -12,6 +12,10 @@
 
 # 11.0.0-rc.3 (Unreleased)
 
+#### :nail_care: Polish
+
+- Add [`Bun`](https://bun.sh) to reserved names, so that modules named `Bun` don't clash with the globally exposed `Bun` object. https://github.com/rescript-lang/rescript-compiler/pull/6381
+
 #### :bug: Bug Fix
 
 - Fix issue with JSX V4 when component props have the default value with same name. https://github.com/rescript-lang/rescript-compiler/pull/6377
