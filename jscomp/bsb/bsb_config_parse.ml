@@ -237,7 +237,11 @@ let extract_js_post_build (map : json_map) cwd : string option =
 
 (** ATT: make sure such function is re-entrant.
     With a given [cwd] it works anywhere*)
-let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string) ~(warn_legacy_config : bool)
+let interpret_json
+  ~(filename : string)
+  ~(json : Ext_json_types.t)
+  ~(package_kind : Bsb_package_kind.t)
+  ~(per_proj_dir : string)
     : Bsb_config_types.t =
   (* we should not resolve it too early,
       since it is external configuration, no {!Bsb_build_util.convert_and_resolve_path}
@@ -253,10 +257,9 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
      1. if [build.ninja] does use [ninja] we need set a variable
      2. we need store it so that we can call ninja correctly
   *)
-  match
-    Bsb_config_load.load_json ~per_proj_dir ~warn_legacy_config
+  match json
   with
-  | filename, Obj { map } -> (
+  | Obj { map } -> (
       let package_name, namespace = extract_package_name_and_namespace map in
       let gentype_config = extract_gentype_config map in
 
@@ -353,7 +356,7 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
           }
       | None ->
           Bsb_exception.invalid_spec ("no sources specified in " ^ filename))
-  | filename, _ -> Bsb_exception.invalid_spec (filename ^ " expect a json object {}")
+  | _ -> Bsb_exception.invalid_spec (filename ^ " expect a json object {}")
 
 let deps_from_bsconfig () =
   let cwd = Bsb_global_paths.cwd in

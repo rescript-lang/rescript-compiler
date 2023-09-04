@@ -17,8 +17,7 @@ let load_json ~(per_proj_dir : string) ~(warn_legacy_config : bool)
       | exception _ -> raise e (* forward error from rescript.json *)
   in
   if warn_legacy_config && filename = Literals.bsconfig_json then
-    (* TODO: warn legacy config *)
-    ();
+    print_endline "Warning: bsconfig.json is deprecated. Migrate it to rescript.json\n";
   match Ext_json_parse.parse_json_from_chan abs in_chan
   with
   | v -> close_in in_chan ; (filename, v)
