@@ -4,7 +4,7 @@
   facilities; https://whitequark.org/blog/2014/04/16/a-guide-to-extension-
   points-in-ocaml/
   You wouldn't use this file directly; it's used by ReScript's
-  bsconfig.json. Specifically, there's a field called `react-jsx` inside the
+  rescript.json. Specifically, there's a field called `react-jsx` inside the
   field `reason`, which enables this ppx through some internal call in bsb
 *)
 

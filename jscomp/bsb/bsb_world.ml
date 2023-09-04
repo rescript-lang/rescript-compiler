@@ -30,7 +30,7 @@ let make_world_deps cwd (config : Bsb_config_types.t option)
   let package_specs, jsx, uncurried, pinned_dependencies =
     match config with
     | None ->
-        (* When this running bsb does not read bsconfig.json,
+        (* When this running bsb does not read rescript.json,
            we will read such json file to know which [package-specs]
            it wants
         *)
@@ -70,6 +70,7 @@ let make_world_deps cwd (config : Bsb_config_types.t option)
                    (if is_pinned then Pinned_dependency { package_specs; jsx; uncurried }
                    else Dependency { package_specs; jsx; uncurried })
                  ~per_proj_dir:proj_dir ~forced:false
+                 ~warn_legacy_config:false
              in
              let command =
                { Bsb_unix.cmd = vendor_ninja; cwd = lib_bs_dir; args }

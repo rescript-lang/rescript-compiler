@@ -30,7 +30,7 @@ let ( // ) = Ext_path.combine
     return None if we dont need regenerate
     otherwise return Some info
 *)
-let regenerate_ninja ~(package_kind : Bsb_package_kind.t) ~forced ~per_proj_dir
+let regenerate_ninja ~(package_kind : Bsb_package_kind.t) ~forced ~per_proj_dir ~warn_legacy_config
     : Bsb_config_types.t option =
   let lib_artifacts_dir = Bsb_config.lib_bs in
   let lib_bs_dir = per_proj_dir // lib_artifacts_dir in
@@ -52,7 +52,7 @@ let regenerate_ninja ~(package_kind : Bsb_package_kind.t) ~forced ~per_proj_dir
         Bsb_clean.clean_self per_proj_dir);
 
       let config : Bsb_config_types.t =
-        Bsb_config_parse.interpret_json ~package_kind ~per_proj_dir
+        Bsb_config_parse.interpret_json ~package_kind ~per_proj_dir ~warn_legacy_config
       in
       (* create directory, lib/bs, lib/js, lib/es6 etc *)
       Bsb_build_util.mkp lib_bs_dir;
@@ -75,5 +75,5 @@ let regenerate_ninja ~(package_kind : Bsb_package_kind.t) ~forced ~per_proj_dir
           since it may add files in the future *)
       Bsb_ninja_check.record ~package_kind ~per_proj_dir ~config
         ~file:output_deps
-        (Literals.bsconfig_json :: config.file_groups.globbed_dirs);
+        (config.filename :: config.file_groups.globbed_dirs);
       Some config

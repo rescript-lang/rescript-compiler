@@ -61,10 +61,14 @@ let getCmtFile cmt =
   in
   cmtFile
 
-let getBsConfigFile ~projectRoot =
-  let bsconfig = concat projectRoot Config.compilerConfigFile in
-  match bsconfig |> Sys.file_exists with
-  | true -> Some bsconfig
-  | false -> None
+let getConfigFile ~projectRoot =
+  let config = concat projectRoot Config.compilerConfigFile in
+  match config |> Sys.file_exists with
+  | true -> Some config
+  | false -> (
+    let config = concat projectRoot Config.legacyCompilerConfigFile in
+    match config |> Sys.file_exists with
+    | true -> Some config
+    | false -> None)
 
-let readConfig ~namespace = Config.readConfig ~getBsConfigFile ~namespace
+let readConfig ~namespace = Config.readConfig ~getConfigFile ~namespace
