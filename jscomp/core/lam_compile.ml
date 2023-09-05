@@ -762,7 +762,7 @@ and compile_untagged_cases ~cxt ~switch_exp ~default ~block_cases cases =
     in
     E.emit_check check
   in
-  let is_array (l, _) = l = Ast_untagged_variants.Untagged ArrayType in
+  let is_array (l, _) = l = Ast_untagged_variants.Untagged (InstanceType Array) in
   let switch ?default ?declaration e clauses =
     let array_clauses = Ext_list.filter clauses is_array in
     match array_clauses with
