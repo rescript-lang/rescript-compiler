@@ -7,16 +7,16 @@ let f = () => {
   b[0] = 3
 }
 
-@ocaml.doc(" should not be inlined here 
+/** should not be inlined here 
         everytime we call [h ()], 
         it should share the same copy
-     ")
+     */
 let h = () => c
 
-@ocaml.doc(" should not be inlined here 
+/** should not be inlined here 
         everytime we call [h ()], 
         it should share the same copy
-     ")
+     */
 let g = () => {
   f()
   Mt.Eq((a[0], b[0]), (3.0, 3))

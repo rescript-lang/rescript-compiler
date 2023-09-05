@@ -57,7 +57,10 @@ end
 (**/**)
 
 
-type + 'a null
+type + 'a null =
+  | Value of 'a
+  | Null [@as null]
+[@@unboxed]
 (** nullable, value of this type can be either [null] or ['a]
     this type is the same as type [t] in {!Null}
 *)
@@ -66,7 +69,11 @@ type + 'a undefined
 (** value of this type can be either [undefined] or ['a]
     this type is the same as type [t] in {!Undefined}  *)
 
-type + 'a nullable
+type + 'a nullable =
+  | Value of 'a
+  | Null [@as null]
+  | Undefined [@as undefined]
+[@@unboxed]
 (** value of this type can be [undefined], [null] or ['a]
     this type is the same as type [t] n {!Null_undefined} *)
 
@@ -77,6 +84,8 @@ external undefinedToOption : 'a undefined -> 'a option = "#undefined_to_opt"
 external nullToOption : 'a null -> 'a option = "#null_to_opt"
 
 external isNullable : 'a nullable -> bool = "#is_nullable"
+
+external import : 'a -> 'a promise = "#import"
 
 (** The same as {!test} except that it is more permissive on the types of input *)
 external testAny : 'a -> bool = "#is_nullable"

@@ -65,7 +65,7 @@ type error =
       Longident.t * Path.t * Includemod.error list
   | With_changes_module_alias of Longident.t * Ident.t * Path.t
   | With_cannot_remove_constrained_type
-  | Repeated_name of string * string
+  | Repeated_name of string * string * Warnings.loc
   | Non_generalizable of type_expr
   | Non_generalizable_module of module_type
   | Interface_not_compiled of string

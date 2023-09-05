@@ -145,40 +145,40 @@ let () = {
 
 /* Check that the given json value is an array and that its element
  * a position [i] is equal to both the [kind] and [expected] value */
-let eq_at_i = (type a, loc: string, json: J.t, i: int, kind: J.kind<a>, expected: a): unit => {
+let eq_at_i = (type a, loc: string, json: J.t, i: int, kind: J.Kind.t<a>, expected: a): unit => {
   let ty = J.classify(json)
   switch ty {
   | J.JSONArray(x) =>
     let ty = J.classify(x[i])
     switch kind {
-    | J.Boolean =>
+    | J.Kind.Boolean =>
       switch ty {
       | JSONTrue => eq(loc, true, expected)
 
       | JSONFalse => eq(loc, false, expected)
       | _ => false_(loc)
       }
-    | J.Number =>
+    | J.Kind.Number =>
       switch ty {
       | JSONNumber(f) => eq(loc, f, expected)
       | _ => false_(loc)
       }
-    | J.Object =>
+    | J.Kind.Object =>
       switch ty {
       | JSONObject(f) => eq(loc, f, expected)
       | _ => false_(loc)
       }
-    | J.Array =>
+    | J.Kind.Array =>
       switch ty {
       | JSONArray(f) => eq(loc, f, expected)
       | _ => false_(loc)
       }
-    | J.Null =>
+    | J.Kind.Null =>
       switch ty {
       | JSONNull => true_(loc)
       | _ => false_(loc)
       }
-    | J.String =>
+    | J.Kind.String =>
       switch ty {
       | JSONString(f) => eq(loc, f, expected)
       | _ => false_(loc)
@@ -196,18 +196,18 @@ let () = {
     |> J.stringify
     |> J.parseExn
 
-  eq_at_i(__LOC__, json, 0, J.String, "string 0")
-  eq_at_i(__LOC__, json, 1, J.String, "string 1")
-  eq_at_i(__LOC__, json, 2, J.String, "string 2")
+  eq_at_i(__LOC__, json, 0, J.Kind.String, "string 0")
+  eq_at_i(__LOC__, json, 1, J.Kind.String, "string 1")
+  eq_at_i(__LOC__, json, 2, J.Kind.String, "string 2")
   ()
 }
 
 let () = {
   let json = ["string 0", "string 1", "string 2"] |> J.stringArray |> J.stringify |> J.parseExn
 
-  eq_at_i(__LOC__, json, 0, J.String, "string 0")
-  eq_at_i(__LOC__, json, 1, J.String, "string 1")
-  eq_at_i(__LOC__, json, 2, J.String, "string 2")
+  eq_at_i(__LOC__, json, 0, J.Kind.String, "string 0")
+  eq_at_i(__LOC__, json, 1, J.Kind.String, "string 1")
+  eq_at_i(__LOC__, json, 2, J.Kind.String, "string 2")
   ()
 }
 
@@ -216,9 +216,9 @@ let () = {
   let json = a |> J.numberArray |> J.stringify |> J.parseExn
 
   /* Loop is unrolled to keep relevant location information */
-  eq_at_i(__LOC__, json, 0, J.Number, a[0])
-  eq_at_i(__LOC__, json, 1, J.Number, a[1])
-  eq_at_i(__LOC__, json, 2, J.Number, a[2])
+  eq_at_i(__LOC__, json, 0, J.Kind.Number, a[0])
+  eq_at_i(__LOC__, json, 1, J.Kind.Number, a[1])
+  eq_at_i(__LOC__, json, 2, J.Kind.Number, a[2])
   ()
 }
 
@@ -227,9 +227,9 @@ let () = {
   let json = a |> Array.map(float_of_int) |> J.numberArray |> J.stringify |> J.parseExn
 
   /* Loop is unrolled to keep relevant location information */
-  eq_at_i(__LOC__, json, 0, J.Number, float_of_int(a[0]))
-  eq_at_i(__LOC__, json, 1, J.Number, float_of_int(a[1]))
-  eq_at_i(__LOC__, json, 2, J.Number, float_of_int(a[2]))
+  eq_at_i(__LOC__, json, 0, J.Kind.Number, float_of_int(a[0]))
+  eq_at_i(__LOC__, json, 1, J.Kind.Number, float_of_int(a[1]))
+  eq_at_i(__LOC__, json, 2, J.Kind.Number, float_of_int(a[2]))
   ()
 }
 
@@ -238,9 +238,9 @@ let () = {
   let json = a |> J.booleanArray |> J.stringify |> J.parseExn
 
   /* Loop is unrolled to keep relevant location information */
-  eq_at_i(__LOC__, json, 0, J.Boolean, a[0])
-  eq_at_i(__LOC__, json, 1, J.Boolean, a[1])
-  eq_at_i(__LOC__, json, 2, J.Boolean, a[2])
+  eq_at_i(__LOC__, json, 0, J.Kind.Boolean, a[0])
+  eq_at_i(__LOC__, json, 1, J.Kind.Boolean, a[1])
+  eq_at_i(__LOC__, json, 2, J.Kind.Boolean, a[2])
   ()
 }
 

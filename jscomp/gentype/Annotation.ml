@@ -33,7 +33,10 @@ let tagIsOneOfTheGenTypeAnnotations s =
 let tagIsGenTypeIgnoreInterface s =
   s = "genType.ignoreInterface" || s = "gentype.ignoreInterface"
 
-let tagIsOcamlDoc s = s = "ocaml.doc"
+let tagIsDoc s =
+  match s with
+  | "ocaml.doc" | "res.doc" -> true
+  | _ -> false
 let tagIsInternLocal s = s = "internal.local"
 
 let rec getAttributePayload checkText (attributes : Typedtree.attributes) =
@@ -143,11 +146,13 @@ let getAttributeImportRenaming attributes =
     (Some importString, Some renameString)
   | _ -> (None, genTypeAsRenaming)
 
-let getDocString attributes =
-  let docPayload = attributes |> getAttributePayload tagIsOcamlDoc in
+let getDocPayload attributes =
+  let docPayload = attributes |> getAttributePayload tagIsDoc in
   match docPayload with
-  | Some (_, StringPayload docString) -> "/** " ^ docString ^ " */\n"
-  | _ -> ""
+  | Some (_, StringPayload docString) when docString <> "" -> Some docString
+  | _ -> None
+
+let docStringFromAttrs attributes = attributes |> getDocPayload
 
 let hasAttribute checkText (attributes : Typedtree.attributes) =
   getAttributePayload checkText attributes <> None

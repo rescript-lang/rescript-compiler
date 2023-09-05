@@ -18,7 +18,7 @@ let v0 = Inline_record({x: 3, y: "4"})
 eq(__LOC__, f(v0), Some(7))
 
 /* Record_unboxed */
-type t1 = | @ocaml.unboxed A({x: int})
+type t1 = | @unboxed A({x: int})
 
 /* Record_inlined */
 type t2 =

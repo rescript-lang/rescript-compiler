@@ -17,10 +17,9 @@ let v = t(~hi=3, ~low=2, ~x=2)
 
 let (a, b, c) = (v->hiGet, v->lowGet, v->xGet)
 
-@ocaml.doc("
-
+/**
   v |. (hi, lo)
-")
+*/
 let ff = () => {
   v->hiSet(3)
   v->lowSet(2)
@@ -32,11 +31,11 @@ type a = {
   hi: int,
 }
 
-@ocaml.doc("
+/**
 external a : ?low:int -> hi:int -> a
 low: a -> int option [@@bs.return undefined_to_opt]
 lowSet : a -> int -> unit
-")
+*/
 let h0 = a(~hi=2, ~low="x")
 
 let h1 = a(~hi=2, ~low="x", ())
@@ -48,11 +47,11 @@ let hh = x => {
   x->lowGet
 }
 
-@@ocaml.text(" should we make the type of
+/* should we make the type of
 
     lowSet : a -> string option -> unit
     lowSet : a -> string -> unit
-")
+*/
 
 let hh2 = x =>
   switch x->lowGet {

@@ -479,6 +479,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
           | "#nullable_to_opt" -> Pnull_undefined_to_opt
           | "#null_to_opt" -> Pnull_to_opt
           | "#is_nullable" -> Pis_null_undefined
+          | "#import" ->Pimport
           | "#string_append" -> Pstringadd
           | "#wrap_exn" -> Pwrap_exn
           | "#obj_length" -> Pcaml_obj_length
@@ -504,9 +505,10 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
                  primitive %s"
                 s
         in
-        let args = Ext_list.map args convert_aux in
+        let dynamic_import = primitive = Pimport in
+        let args = Ext_list.map args (convert_aux ~dynamic_import) in
         prim ~primitive ~args loc
-  and convert_aux (lam : Lambda.lambda) : Lam.t =
+  and convert_aux ?(dynamic_import = false) (lam : Lambda.lambda) : Lam.t =
     match lam with
     | Lvar x -> Lam.var (Hash_ident.find_default alias_tbl x x)
     | Lconst x -> Lam.const (Lam_constant_convert.convert_constant x)
@@ -546,9 +548,9 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
         if Ident.is_predef_exn id then
           Lam.const (Const_string { s = id.name; unicode = false })
         else (
-          may_depend may_depends (Lam_module_ident.of_ml id);
+          may_depend may_depends (Lam_module_ident.of_ml ~dynamic_import id);
           assert (args = []);
-          Lam.global_module id)
+          Lam.global_module ~dynamic_import id)
     | Lprim
         ( Puncurried_apply,
           [ Lapply { ap_func = Lprim (Popaque, [ ap_func ], _); ap_args } ],
@@ -560,7 +562,7 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
            for cases like `(fun [@bs] a b -> a + b ) 1 2 [@bs]` *)
     | Lprim (Puncurried_apply, _, _) -> assert false
     | Lprim (primitive, args, loc) ->
-        let args = Ext_list.map args convert_aux in
+        let args = Ext_list.map args (convert_aux ~dynamic_import) in
         lam_prim ~primitive ~args loc
     | Lswitch (e, s, _loc) -> convert_switch e s
     | Lstringswitch (e, cases, default, _) ->
@@ -600,10 +602,9 @@ let convert (exports : Set_ident.t) (lam : Lambda.lambda) :
         let setter = Ext_string.ends_with name Literals.setter_suffix in
         let property =
           if setter then
-            Lam_methname.translate
-              (String.sub name 0
-                 (String.length name - Literals.setter_suffix_len))
-          else Lam_methname.translate name
+            (String.sub name 0
+                (String.length name - Literals.setter_suffix_len))
+          else name
         in
         prim
           ~primitive:(Pjs_unsafe_downgrade { name = property; setter })

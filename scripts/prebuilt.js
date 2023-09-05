@@ -70,11 +70,9 @@ function populateLibDir() {
     fs.mkdirSync(ocaml_dir);
   }
 
-  // sync up with cmij_main.ml
   installDirBy(runtime_dir, ocaml_dir, function (file) {
     var y = path.parse(file);
-    return y.name === "js" && y.ext !== ".cmj";
-    // install js.cmi, js.mli
+    return y.name === "js";
   });
 
   // for merlin or other IDE
@@ -84,6 +82,7 @@ function populateLibDir() {
     ".res",
     ".resi",
     ".cmi",
+    ".cmj",
     ".cmt",
     ".cmti",
   ];
@@ -92,7 +91,7 @@ function populateLibDir() {
     if (y.ext === ".cmi") {
       return !y.base.match(/Belt_internal/i);
     }
-    return installed_suffixes.includes(y.ext);
+    return installed_suffixes.includes(y.ext) && !y.name.endsWith(".cppo");
   });
   installDirBy(stdlib_dir, ocaml_dir, file => {
     var y = path.parse(file);

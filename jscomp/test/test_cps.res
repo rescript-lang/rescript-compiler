@@ -1,4 +1,4 @@
-@@ocaml.text("
+/*
    To do the right [tail call] conversion
    when the arguments are functions which captures some variables, 
    we need create a scope to capture it 
@@ -63,7 +63,7 @@
    ]}
 
    with [let]
-")
+*/
 
 let rec f = (n, acc) =>
   if n == 0 {
@@ -75,7 +75,7 @@ let rec f = (n, acc) =>
     })
   }
 
-@ocaml.doc(" 
+/**
     Here a naive version would be 
     {[
     for(var i = 0;i<=n;++i)
@@ -87,7 +87,7 @@ let rec f = (n, acc) =>
     for(var i = 0;i<=n;++i)
      {arr[i]= (function(){ var i$1 = i; function(){return i$1;};}())
     ]}
- ")
+ */
 let test_closure = () => {
   let n = 6
   let arr = Array.make(n, x => x)

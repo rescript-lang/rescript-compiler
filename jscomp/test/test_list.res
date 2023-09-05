@@ -320,7 +320,7 @@ let rec combine = (l1, l2) =>
   | (_, _) => invalid_arg("List.combine")
   }
 
-@@ocaml.text(" sorting ")
+/* sorting */
 
 let rec merge = (cmp, l1, l2) =>
   switch (l1, l2) {
@@ -445,7 +445,7 @@ let stable_sort = (cmp, l) => {
 let sort = stable_sort
 let fast_sort = stable_sort
 
-@@ocaml.text(" sorting + removing duplicates ")
+/* sorting + removing duplicates */
 
 let sort_uniq = (cmp, l) => {
   let rec rev_merge = (l1, l2, accu) =>

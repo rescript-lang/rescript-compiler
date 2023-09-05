@@ -68,7 +68,7 @@ let spec_of_ptyp (nolabel : bool) (ptyp : Parsetree.core_type) :
     | _ -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_unwrap_type)
   | `Uncurry opt_arity -> (
     let real_arity =
-      if Ast_uncurried.typeIsUncurriedFun ptyp then
+      if Ast_uncurried.coreTypeIsUncurriedFun ptyp then
         let arity, _ = Ast_uncurried.typeExtractUncurriedFun ptyp in
         Some arity
       else Ast_core_type.get_uncurry_arity ptyp
@@ -406,20 +406,26 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
                   param_type :: arg_types,
                   result_types )
               | Arg_cst _ ->
-                let s = Lam_methname.translate name in
-                ( {obj_arg_label = External_arg_spec.obj_label s; obj_arg_type},
+                ( {
+                    obj_arg_label = External_arg_spec.obj_label name;
+                    obj_arg_type;
+                  },
                   arg_types,
                   (* ignored in [arg_types], reserved in [result_types] *)
                   result_types )
               | Nothing ->
-                let s = Lam_methname.translate name in
-                ( {obj_arg_label = External_arg_spec.obj_label s; obj_arg_type},
+                ( {
+                    obj_arg_label = External_arg_spec.obj_label name;
+                    obj_arg_type;
+                  },
                   param_type :: arg_types,
                   Parsetree.Otag ({Asttypes.txt = name; loc}, [], ty)
                   :: result_types )
               | Int _ ->
-                let s = Lam_methname.translate name in
-                ( {obj_arg_label = External_arg_spec.obj_label s; obj_arg_type},
+                ( {
+                    obj_arg_label = External_arg_spec.obj_label name;
+                    obj_arg_type;
+                  },
                   param_type :: arg_types,
                   Otag
                     ( {Asttypes.txt = name; loc},
@@ -427,8 +433,10 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
                       Ast_literal.type_int ~loc () )
                   :: result_types )
               | Poly_var_string _ ->
-                let s = Lam_methname.translate name in
-                ( {obj_arg_label = External_arg_spec.obj_label s; obj_arg_type},
+                ( {
+                    obj_arg_label = External_arg_spec.obj_label name;
+                    obj_arg_type;
+                  },
                   param_type :: arg_types,
                   Otag
                     ( {Asttypes.txt = name; loc},
@@ -453,7 +461,6 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
                   param_type :: arg_types,
                   result_types )
               | Nothing ->
-                let s = Lam_methname.translate name in
                 let for_sure_not_nested =
                   match ty.ptyp_desc with
                   | Ptyp_constr ({txt = Lident txt; _}, []) ->
@@ -462,7 +469,7 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
                 in
                 ( {
                     obj_arg_label =
-                      External_arg_spec.optional for_sure_not_nested s;
+                      External_arg_spec.optional for_sure_not_nested name;
                     obj_arg_type;
                   },
                   param_type :: arg_types,
@@ -472,9 +479,8 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
                       Ast_comb.to_undefined_type loc ty )
                   :: result_types )
               | Int _ ->
-                let s = Lam_methname.translate name in
                 ( {
-                    obj_arg_label = External_arg_spec.optional true s;
+                    obj_arg_label = External_arg_spec.optional true name;
                     obj_arg_type;
                   },
                   param_type :: arg_types,
@@ -485,9 +491,8 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
                       @@ Ast_literal.type_int ~loc () )
                   :: result_types )
               | Poly_var_string _ ->
-                let s = Lam_methname.translate name in
                 ( {
-                    obj_arg_label = External_arg_spec.optional true s;
+                    obj_arg_label = External_arg_spec.optional true name;
                     obj_arg_type;
                   },
                   param_type :: arg_types,
@@ -960,9 +965,7 @@ let pval_prim_of_labels (labels : string Asttypes.loc list) =
     Ext_list.fold_right labels
       ([] : External_arg_spec.obj_params)
       (fun p arg_kinds ->
-        let obj_arg_label =
-          External_arg_spec.obj_label (Lam_methname.translate p.txt)
-        in
+        let obj_arg_label = External_arg_spec.obj_label p.txt in
         {obj_arg_type = Nothing; obj_arg_label} :: arg_kinds)
   in
   External_ffi_types.ffi_obj_as_prims arg_kinds
@@ -974,7 +977,7 @@ let pval_prim_of_option_labels (labels : (bool * string Asttypes.loc) list)
       (if ends_with_unit then [External_arg_spec.empty_kind Extern_unit]
       else [])
       (fun (is_option, p) arg_kinds ->
-        let label_name = Lam_methname.translate p.txt in
+        let label_name = p.txt in
         let obj_arg_label =
           if is_option then External_arg_spec.optional false label_name
           else External_arg_spec.obj_label label_name

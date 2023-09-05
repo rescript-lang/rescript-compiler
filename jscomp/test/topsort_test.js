@@ -533,8 +533,8 @@ function bal(l, v, r) {
       };
 }
 
-function add(x, t) {
-  if (typeof t !== "object") {
+function add(x, param) {
+  if (typeof param !== "object") {
     return {
             TAG: "Node",
             l: "Empty",
@@ -543,24 +543,24 @@ function add(x, t) {
             h: 1
           };
   }
-  var r = t.r;
-  var v = t.v;
-  var l = t.l;
+  var r = param.r;
+  var v = param.v;
+  var l = param.l;
   var c = Caml.string_compare(x, v);
   if (c === 0) {
-    return t;
+    return param;
   }
   if (c < 0) {
     var ll = add(x, l);
     if (l === ll) {
-      return t;
+      return param;
     } else {
       return bal(ll, v, r);
     }
   }
   var rr = add(x, r);
   if (r === rr) {
-    return t;
+    return param;
   } else {
     return bal(l, v, rr);
   }
@@ -760,13 +760,13 @@ function mem(x, _param) {
   };
 }
 
-function remove(x, t) {
-  if (typeof t !== "object") {
+function remove(x, param) {
+  if (typeof param !== "object") {
     return "Empty";
   }
-  var r = t.r;
-  var v = t.v;
-  var l = t.l;
+  var r = param.r;
+  var v = param.v;
+  var l = param.l;
   var c = Caml.string_compare(x, v);
   if (c === 0) {
     if (typeof l !== "object") {
@@ -780,14 +780,14 @@ function remove(x, t) {
   if (c < 0) {
     var ll = remove(x, l);
     if (l === ll) {
-      return t;
+      return param;
     } else {
       return bal(ll, v, r);
     }
   }
   var rr = remove(x, r);
   if (r === rr) {
-    return t;
+    return param;
   } else {
     return bal(l, v, rr);
   }
@@ -1015,19 +1015,19 @@ function exists(p, _param) {
   };
 }
 
-function filter(p, t) {
-  if (typeof t !== "object") {
+function filter(p, param) {
+  if (typeof param !== "object") {
     return "Empty";
   }
-  var r = t.r;
-  var v = t.v;
-  var l = t.l;
+  var r = param.r;
+  var v = param.v;
+  var l = param.l;
   var l$p = filter(p, l);
   var pv = Curry._1(p, v);
   var r$p = filter(p, r);
   if (pv) {
     if (l === l$p && r === r$p) {
-      return t;
+      return param;
     } else {
       return join(l$p, v, r$p);
     }
@@ -1257,18 +1257,18 @@ function find_opt(x, _param) {
   };
 }
 
-function map(f, t) {
-  if (typeof t !== "object") {
+function map(f, param) {
+  if (typeof param !== "object") {
     return "Empty";
   }
-  var r = t.r;
-  var v = t.v;
-  var l = t.l;
+  var r = param.r;
+  var v = param.v;
+  var l = param.l;
   var l$p = map(f, l);
   var v$p = Curry._1(f, v);
   var r$p = map(f, r);
   if (l === l$p && v === v$p && r === r$p) {
-    return t;
+    return param;
   } else if ((l$p === "Empty" || Caml.string_compare(max_elt(l$p), v$p) < 0) && (r$p === "Empty" || Caml.string_compare(v$p, min_elt(r$p)) < 0)) {
     return join(l$p, v$p, r$p);
   } else {
@@ -1395,9 +1395,9 @@ function of_list(l) {
         throw {
               RE_EXN_ID: "Assert_failure",
               _1: [
-                "set.ml",
-                510,
-                18
+                "set.res",
+                691,
+                20
               ],
               Error: new Error()
             };

@@ -22,10 +22,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+let () = Ast_untagged_variants.extract_concrete_typedecl := Ctype.extract_concrete_typedecl
+
 let names_from_construct_pattern (pat : Typedtree.pattern) =
   let rec resolve_path n (path : Path.t) =
     match Env.find_type path pat.pat_env with
-    | { type_kind = Type_variant cstrs; _ } -> Ast_untagged_variants.names_from_type_variant cstrs
+    | { type_kind = Type_variant cstrs; _ } -> Ast_untagged_variants.names_from_type_variant ~env:pat.pat_env cstrs
     | { type_kind = Type_abstract; type_manifest = Some t; _ } -> (
         match (Ctype.unalias t).desc with
         | Tconstr (pathn, _, _) ->

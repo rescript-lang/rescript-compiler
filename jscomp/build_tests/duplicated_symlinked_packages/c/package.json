@@ -4,10 +4,10 @@
   "scripts": {
     "build": "rescript build",
     "start": "rescript build -w",
-    "clean": "rescript clean -with-deps"
+    "clean": "rescript clean"
   },
   "keywords": [
-    "BuckleScript"
+    "ReScript"
   ],
   "author": "",
   "license": "MIT",

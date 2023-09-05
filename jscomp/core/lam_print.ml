@@ -79,6 +79,7 @@ let primitive ppf (prim : Lam_primitive.t) =
   | Pval_from_option_not_nest -> fprintf ppf "[?unbox-not-nest]"
   | Pis_undefined -> fprintf ppf "[?undefined]"
   | Pis_null_undefined -> fprintf ppf "[?null?undefined]"
+  | Pimport -> fprintf ppf "[import]"
   | Pmakeblock (tag, _, Immutable) -> fprintf ppf "makeblock %i" tag
   | Pmakeblock (tag, _, Mutable) -> fprintf ppf "makemutable %i" tag
   | Pfield (n, field_info) -> (
@@ -260,7 +261,7 @@ let lambda ppf v =
   let rec lam ppf (l : Lam.t) =
     match l with
     | Lvar id -> Ident.print ppf id
-    | Lglobal_module id -> fprintf ppf "global %a" Ident.print id
+    | Lglobal_module (id, dynamic_import) -> fprintf ppf (if dynamic_import then "dynamic global %a" else "global %a") Ident.print id
     | Lconst cst -> struct_const ppf cst
     | Lapply { ap_func; ap_args; ap_info = { ap_inlined } } ->
         let lams ppf args =
@@ -298,10 +299,10 @@ let lambda ppf v =
     | Lprim
         {
           primitive = Pfield (n, Fld_module { name = s });
-          args = [ Lglobal_module id ];
+          args = [ Lglobal_module (id, dynamic_import) ];
           _;
         } ->
-        fprintf ppf "%s.%s/%d" id.name s n
+        fprintf ppf (if dynamic_import then "dynamic %s.%s/%d" else "%s.%s/%d") id.name s n
     | Lprim { primitive = prim; args = largs; _ } ->
         let lams ppf largs =
           List.iter (fun l -> fprintf ppf "@ %a" lam l) largs
@@ -321,7 +322,7 @@ let lambda ppf v =
             (fun (n, l) ->
               if !spc then fprintf ppf "@ " else spc := true;
               fprintf ppf "@[<hv 1>case tag %i %S:@ %a@]" n
-                (match sw.sw_names with None -> "" | Some x -> x.blocks.(n).literal.name)
+                (match sw.sw_names with None -> "" | Some x -> x.blocks.(n).tag.name)
                 lam l)
             sw.sw_blocks;
           match sw.sw_failaction with

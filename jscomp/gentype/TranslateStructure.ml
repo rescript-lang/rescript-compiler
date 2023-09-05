@@ -101,7 +101,7 @@ let translateValueBinding ~config ~outputFileRelative ~resolver ~typeEnv
     then
       id |> Ident.name
       |> Translation.translateValue ~attributes:vb_attributes ~config
-           ~docString:(Annotation.getDocString vb_attributes)
+           ~docString:(Annotation.docStringFromAttrs vb_attributes)
            ~outputFileRelative ~resolver ~typeEnv ~typeExpr:vb_pat.pat_type
            ~addAnnotationsToFunction:
              (addAnnotationsToFunctionType ~config vb_expr)
@@ -288,7 +288,7 @@ and translateStructureItem ~config ~outputFileRelative ~resolver ~typeEnv
     |> Translation.combine
   | {
    str_desc =
-     (* Bucklescript's encoding of bs.module: include with constraint. *)
+     (* ReScript's encoding of bs.module: include with constraint. *)
      Tstr_include
        {
          incl_mod =

@@ -28,7 +28,7 @@ type rec t3<'a, 'b> = [
   | #A(t3_aux<int, string>)
   | #B
 ]
-@ocaml.unboxed and t3_aux<'a, 'b> = {field: t3<'a, 'b>}
+@unboxed and t3_aux<'a, 'b> = {field: t3<'a, 'b>}
 
 let rec v0: t3<_> = #A({field: v0})
 let rec v1: t3<_> = #A({field: #B})

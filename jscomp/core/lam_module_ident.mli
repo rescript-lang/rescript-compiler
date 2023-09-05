@@ -39,7 +39,8 @@
 type t = J.module_id = 
   (*private*) {
   id : Ident.t ; 
-  kind : Js_op.kind 
+  kind : Js_op.kind ;
+  dynamic_import : bool ;
 }
 
 
@@ -49,7 +50,7 @@ val name : t -> string
 
 
 
-val of_ml : Ident.t -> t
+val of_ml : ?dynamic_import:bool -> Ident.t -> t
 
 
 

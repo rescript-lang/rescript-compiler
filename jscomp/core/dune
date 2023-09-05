@@ -6,8 +6,4 @@
    (run %{bin:cppo} %{env:CPPO_FLAGS=} %{input-file})))
  (flags
   (:standard -w +a-4-9-27-30-40-41-42-48-70))
- (libraries depends frontend gentype js_parser outcome_printer))
-
-; There exist cyclic dependencies between core and frontend, therefore include frontend files here:
-
-(copy_files# ../cmij/cmij_cache.{ml,mli})
+ (libraries depends frontend gentype js_parser))

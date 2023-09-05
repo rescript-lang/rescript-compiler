@@ -44,7 +44,7 @@ let scrape env ty =
      records the type at the definition type so for ['a option]
      it will always be [Tvar]
 *)
-let cannot_inhabit_none_like_value (typ : Types.type_expr) (env : Env.t) =
+let rec type_cannot_contain_undefined (typ : Types.type_expr) (env : Env.t) =
   match scrape env typ with
   |  Tconstr(p, _,_) ->
       (* all built in types could not inhabit none-like values:
@@ -52,26 +52,44 @@ let cannot_inhabit_none_like_value (typ : Types.type_expr) (env : Env.t) =
          int32, int64, lazy_t, bytes
       *)
       (match Predef.type_is_builtin_path_but_option p with
-      | For_sure_yes ->  true
+      | For_sure_yes -> true
       | For_sure_no -> false
-      | NA -> 
-      
-        begin match (Env.find_type p env).type_kind with
+      | NA ->
+        let untagged = ref false in
+        begin match
+        let decl = Env.find_type p env in
+        let () =
+          if Ast_untagged_variants.has_untagged decl.type_attributes
+          then untagged := true in
+        decl.type_kind with
         | exception _ -> 
             false
-        | Types.Type_abstract | Types.Type_open -> false
-        | Types.Type_record _ -> true
-        | (Types.Type_variant
+        | Type_abstract | Type_open -> false
+        | Type_record _ -> true
+        | Type_variant
              ([{cd_id = {name="None"}; cd_args = Cstr_tuple [] };
                {cd_id = {name = "Some"}; cd_args = Cstr_tuple [_]}]
              |
               [{cd_id = {name="Some"}; cd_args = Cstr_tuple [_] };
                {cd_id = {name = "None"}; cd_args = Cstr_tuple []}]
              | [{cd_id= {name = "()"}; cd_args = Cstr_tuple []}]               
-             ))
-        (* | Types.Type_variant  *)
+             )
              -> false (* conservative *)
-        | _ -> true
+        | Type_variant cdecls ->
+            Ext_list.for_all cdecls (fun cd ->
+              if Ast_untagged_variants.has_undefined_literal cd.cd_attributes
+              then false
+              else if !untagged then
+                match cd.cd_args with
+                | Cstr_tuple [t] ->
+                  Ast_untagged_variants.type_is_builtin_object t || type_cannot_contain_undefined t env
+                | Cstr_tuple [] -> true
+                | Cstr_tuple (_::_::_) -> true (* Not actually possible for untagged *)
+                | Cstr_record [{ld_type=t}] ->
+                  Ast_untagged_variants.type_is_builtin_object t || type_cannot_contain_undefined t env
+                | Cstr_record ([] | _::_::_) -> true
+              else
+                true)
         end)
   | Ttuple _
   | Tvariant _

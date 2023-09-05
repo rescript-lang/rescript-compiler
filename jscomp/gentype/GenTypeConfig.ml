@@ -1,6 +1,15 @@
 module ModuleNameMap = Map.Make (ModuleName)
 
 type module_ = CommonJS | ES6
+
+(** Compatibility for `compilerOptions.moduleResolution` in TypeScript projects. *)
+type moduleResolution =
+  | Node  (** should drop extension on import statements *)
+  | Node16
+      (** should use TS output's extension (e.g. `.gen.js`) on import statements *)
+  | Bundler
+      (** should use TS input's extension (e.g. `.gen.tsx`) on import statements *)
+
 type bsVersion = int * int * int
 
 type t = {
@@ -13,6 +22,7 @@ type t = {
   exportInterfaces: bool;
   generatedFileExtension: string option;
   module_: module_;
+  moduleResolution: moduleResolution;
   namespace: string option;
   platformLib: string;
   mutable projectRoot: string;
@@ -32,12 +42,13 @@ let default =
     exportInterfaces = false;
     generatedFileExtension = None;
     module_ = ES6;
+    moduleResolution = Node;
     namespace = None;
     platformLib = "";
     projectRoot = "";
     shimsMap = ModuleNameMap.empty;
     sources = None;
-    suffix = "";
+    suffix = ".bs.js";
   }
 
 let bsPlatformLib ~config =
@@ -112,6 +123,7 @@ let readConfig ~getBsConfigFile ~namespace =
   in
   let parseConfig ~bsconf ~gtconf =
     let moduleString = gtconf |> getStringOption "module" in
+    let moduleResolutionString = gtconf |> getStringOption "moduleResolution" in
     let exportInterfacesBool = gtconf |> getBool "exportInterfaces" in
     let generatedFileExtensionStringOption =
       gtconf |> getStringOption "generatedFileExtension"
@@ -143,6 +155,13 @@ let readConfig ~getBsConfigFile ~namespace =
       | None, Some ("es6" | "es6-global") -> ES6
       | _ -> default.module_
     in
+    let moduleResolution =
+      match moduleResolutionString with
+      | Some "node" -> Node
+      | Some "node16" -> Node16
+      | Some "bundler" -> Bundler
+      | _ -> default.moduleResolution
+    in
     let exportInterfaces =
       match exportInterfacesBool with
       | None -> default.exportInterfaces
@@ -171,9 +190,8 @@ let readConfig ~getBsConfigFile ~namespace =
     in
     let suffix =
       match bsconf |> getStringOption "suffix" with
-      | Some ".bs.js" -> ".bs"
       | Some s -> s
-      | _ -> ".bs"
+      | _ -> default.suffix
     in
     let bsDependencies =
       match bsconf |> getOpt "bs-dependencies" with
@@ -204,6 +222,7 @@ let readConfig ~getBsConfigFile ~namespace =
       exportInterfaces;
       generatedFileExtension;
       module_;
+      moduleResolution;
       namespace;
       platformLib;
       projectRoot;

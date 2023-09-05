@@ -26,6 +26,8 @@ val handle_external : Location.t -> string -> Parsetree.expression
 
 val handle_debugger : Location.t -> Ast_payload.t -> Parsetree.expression_desc
 
+val handle_ffi : loc:Location.t -> payload:Ast_payload.t -> Parsetree.expression
+
 val handle_raw :
   kind:Js_raw_info.raw_kind ->
   Location.t ->

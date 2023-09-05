@@ -8,7 +8,7 @@ p.spawnSync(rescript_exe, [`clean`], {
   encoding: "utf8",
   cwd: __dirname,
 });
-p.spawnSync(rescript_exe, [`build`,`-install`], {
+p.spawnSync(rescript_exe, [`build`, `-install`], {
   encoding: "utf8",
   cwd: __dirname,
 });
@@ -20,7 +20,7 @@ p.spawnSync(rescript_exe, {
   encoding: "utf8",
   cwd: __dirname,
 });
-p.spawnSync(rescript_exe ,[`build`,`-install`], {
+p.spawnSync(rescript_exe, [`build`, `-install`], {
   encoding: "utf8",
   cwd: __dirname,
 });

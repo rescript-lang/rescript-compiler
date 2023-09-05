@@ -827,6 +827,32 @@ let transl_type_scheme env styp =
 open Format
 open Printtyp
 
+let did_you_mean ppf choices : bool = 
+  (* flush now to get the error report early, in the (unheard of) case
+     where the linear search would take a bit of time; in the worst
+     case, the user has seen the error, she can interrupt the process
+     before the spell-checking terminates. *)
+  Format.fprintf ppf "@?";  
+  match choices () with   
+  | [] -> false
+  | last :: rev_rest ->
+    Format.fprintf ppf "@[<v 2>@,@,@{<info>Hint: Did you mean %s%s%s?@}@]"
+      (String.concat ", " (List.rev rev_rest))
+      (if rev_rest = [] then "" else " or ")
+      last;
+    true
+
+let super_spellcheck ppf fold env lid =
+  let choices path name : string list = 
+    let env : string list = fold (fun x  _ _ xs -> x ::xs ) path env []   in
+    Misc.spellcheck env name in 
+  match lid with
+  | Longident.Lapply _ -> false
+  | Longident.Lident s ->
+    did_you_mean ppf (fun _ -> choices None s)
+  | Longident.Ldot (r, s) ->
+    did_you_mean ppf (fun _ -> choices (Some r) s)
+
 let spellcheck ppf fold env lid =
   let choices ~path name =
     let env = fold (fun x xs -> x::xs) path env [] in
@@ -834,16 +860,13 @@ let spellcheck ppf fold env lid =
   match lid with
     | Longident.Lapply _ -> ()
     | Longident.Lident s ->
-       Misc.did_you_mean ppf (fun () -> choices ~path:None s)
+        Misc.did_you_mean ppf (fun () -> choices ~path:None s)
     | Longident.Ldot (r, s) ->
-       Misc.did_you_mean ppf (fun () -> choices ~path:(Some r) s)
+        Misc.did_you_mean ppf (fun () -> choices ~path:(Some r) s)
 
 let fold_descr fold get_name f = fold (fun descr acc -> f (get_name descr) acc)
 let fold_simple fold4 f = fold4 (fun name _path _descr acc -> f name acc)
 
-let fold_values = fold_simple Env.fold_values
-let fold_types = fold_simple Env.fold_types
-let fold_modules = fold_simple Env.fold_modules
 let fold_constructors = fold_descr Env.fold_constructors (fun d -> d.cstr_name)
 let fold_labels = fold_descr Env.fold_labels (fun d -> d.lbl_name)
 let fold_classs = fold_simple Env.fold_classs
@@ -857,8 +880,11 @@ let report_error env ppf = function
         should be handled *)
     fprintf ppf "Unbound type parameter %s@." name
   | Unbound_type_constructor lid ->
-    fprintf ppf "Unbound type constructor %a" longident lid;
-    spellcheck ppf fold_types env lid;
+    (* modified *)
+    Format.fprintf ppf "@[<v>This type constructor, `%a`, can't be found.@ "  Printtyp.longident lid;
+    let has_candidate = super_spellcheck ppf Env.fold_types env lid in
+    if !Config.syntax_kind = `rescript && not has_candidate then 
+      Format.fprintf ppf "If you wanted to write a recursive type, don't forget the `rec` in `type rec`@]"
   | Unbound_type_constructor_2 p ->
     fprintf ppf "The type constructor@ %a@ is not yet completely defined"
       path p
@@ -920,8 +946,8 @@ let report_error env ppf = function
       end
   | Variant_tags (lab1, lab2) ->
       fprintf ppf
-        "@[Variant tags `%s@ and `%s have the same hash value.@ %s@]"
-        lab1 lab2 "Change one of them."
+        "@[Variant tags %s@ and %s have the same hash value.@ %s@]"
+        (!Printtyp.print_res_poly_identifier lab1) (!Printtyp.print_res_poly_identifier lab2) "Change one of them."
   | Invalid_variable_name name ->
       fprintf ppf "The type variable name %s is not allowed in programs" name
   | Cannot_quantify (name, v) ->
@@ -939,17 +965,67 @@ let report_error env ppf = function
         fprintf ppf "@[<hov>Method '%s' has type %a,@ which should be %a@]"
           l Printtyp.type_expr ty Printtyp.type_expr ty')
   | Unbound_value lid ->
-      fprintf ppf "Unbound value %a" longident lid;
-      spellcheck ppf fold_values env lid;
+    (* modified *)
+    begin
+      match lid with
+      | Ldot (outer, inner) ->
+        Format.fprintf ppf "The value %s can't be found in %a"
+          inner
+          Printtyp.longident outer;
+      | other_ident -> Format.fprintf ppf "The value %a can't be found" Printtyp.longident other_ident
+    end;
+    super_spellcheck ppf Env.fold_values env lid |> ignore
   | Unbound_module lid ->
-      fprintf ppf "Unbound module %a" longident lid;
-      spellcheck ppf fold_modules env lid;
+    (* modified *)
+    begin match lid with
+      | Lident "Str" ->
+        begin
+          Format.fprintf ppf "@[\
+                              @{<info>The module or file %a can't be found.@}@,@,\
+                              Are you trying to use the standard library's Str?@ \
+                              If you're compiling to JavaScript,@ use @{<info>Js.Re@} instead.@ \
+                              Otherwise, add str.cma to your ocamlc/ocamlopt command.\
+                              @]"
+            Printtyp.longident lid
+        end
+      | lid ->
+        begin
+          Format.fprintf ppf "@[<v>\
+                              @{<info>The module or file %a can't be found.@}@,\
+                              @[<v 2>- If it's a third-party dependency:@,\
+                              - Did you add it to the \"bs-dependencies\" or \"bs-dev-dependencies\" in bsconfig.json?@]@,\
+                              - Did you include the file's directory to the \"sources\" in bsconfig.json?@,\
+                              "
+            Printtyp.longident lid
+        end
+    end;
+    super_spellcheck ppf Env.fold_modules env lid |> ignore
   | Unbound_constructor lid ->
-      fprintf ppf "Unbound constructor %a" longident lid;
-      spellcheck ppf fold_constructors env lid;
+    (* modified *)
+    Format.fprintf ppf "@[<v>\
+                        @{<info>The variant constructor %a can't be found.@}@,@,\
+                        @[<v 2>- If it's defined in another module or file, bring it into scope by:@,\
+                        @[- Prefixing it with said module name:@ @{<info>TheModule.%a@}@]@,\
+                        @[- Or specifying its type:@ @{<info>let theValue: TheModule.theType = %a@}@]\
+                        @]@,\
+                        - @[Constructors and modules are both capitalized.@ Did you want the latter?@ Then instead of @{<dim>let foo = Bar@}, try @{<info>module Foo = Bar@}.@]\
+                        @]"
+      Printtyp.longident lid
+      Printtyp.longident lid
+      Printtyp.longident lid;
+    spellcheck ppf fold_constructors env lid
   | Unbound_label lid ->
-      fprintf ppf "Unbound record field %a" longident lid;
-      spellcheck ppf fold_labels env lid;
+    (* modified *)
+    Format.fprintf ppf "@[<v>\
+                        @{<info>The record field %a can't be found.@}@,@,\
+                        If it's defined in another module or file, bring it into scope by:@,\
+                        @[- Prefixing it with said module name:@ @{<info>TheModule.%a@}@]@,\
+                        @[- Or specifying its type:@ @{<info>let theValue: TheModule.theType = {%a: VALUE}@}@]\
+                        @]"
+      Printtyp.longident lid
+      Printtyp.longident lid
+      Printtyp.longident lid;
+    spellcheck ppf fold_labels env lid;
   | Unbound_class lid ->
       fprintf ppf "Unbound class %a" longident lid;
       spellcheck ppf fold_classs env lid;

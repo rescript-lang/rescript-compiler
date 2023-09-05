@@ -82,7 +82,7 @@ and translateSignatureItemFromTypes ~config ~outputFileRelative ~resolver
     then
       name
       |> Translation.translateValue ~attributes:val_attributes ~config
-           ~docString:(Annotation.getDocString val_attributes)
+           ~docString:(Annotation.docStringFromAttrs val_attributes)
            ~outputFileRelative ~resolver ~typeEnv ~typeExpr:val_type
            ~addAnnotationsToFunction:(fun t -> t)
     else Translation.empty

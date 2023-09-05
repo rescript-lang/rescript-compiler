@@ -21,8 +21,8 @@ var x = ({
   }).x;
 
 var zz = ({
-    "5": 3
-  })[5];
+    _5: 3
+  })._5;
 
 var h = {
   "0123": 2,
@@ -37,8 +37,8 @@ function f(id) {
 }
 
 eq("File \"gpr_1946_test.res\", line 24, characters 3-10", ({
-        "5": 3
-      })[5], 3);
+        _5: 3
+      })._5, 3);
 
 eq("File \"gpr_1946_test.res\", line 25, characters 3-10", [
       2,
@@ -49,7 +49,7 @@ eq("File \"gpr_1946_test.res\", line 25, characters 3-10", [
     ]);
 
 console.log(({
-          "5": 3
+          _5: 3
         }).TAG);
 
 Mt.from_pair_suites("File \"gpr_1946_test.res\", line 28, characters 20-27", suites.contents);

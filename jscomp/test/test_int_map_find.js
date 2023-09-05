@@ -88,8 +88,8 @@ function bal(l, x, d, r) {
       };
 }
 
-function add(x, data, m) {
-  if (typeof m !== "object") {
+function add(x, data, param) {
+  if (typeof param !== "object") {
     return {
             TAG: "Node",
             l: "Empty",
@@ -99,14 +99,14 @@ function add(x, data, m) {
             h: 1
           };
   }
-  var r = m.r;
-  var d = m.d;
-  var v = m.v;
-  var l = m.l;
+  var r = param.r;
+  var d = param.d;
+  var v = param.v;
+  var l = param.l;
   var c = Caml.int_compare(x, v);
   if (c === 0) {
     if (d === data) {
-      return m;
+      return param;
     } else {
       return {
               TAG: "Node",
@@ -114,21 +114,21 @@ function add(x, data, m) {
               v: x,
               d: data,
               r: r,
-              h: m.h
+              h: param.h
             };
     }
   }
   if (c < 0) {
     var ll = add(x, data, l);
     if (l === ll) {
-      return m;
+      return param;
     } else {
       return bal(ll, v, d, r);
     }
   }
   var rr = add(x, data, r);
   if (r === rr) {
-    return m;
+    return param;
   } else {
     return bal(l, v, d, rr);
   }

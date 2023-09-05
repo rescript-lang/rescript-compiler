@@ -23,7 +23,7 @@ function maybeWait {
   [[ $((taskCount % 20)) = 0 ]] && wait
 }
 
-pushd res_syntax
+pushd jscomp/syntax
 
 rm -rf temp
 mkdir temp

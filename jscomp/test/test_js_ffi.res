@@ -1,7 +1,7 @@
 @val("console.log")
-@ocaml.doc(" we should also allow js function call from an external js module 
+/** we should also allow js function call from an external js module 
     
-")
+*/
 external log: 'a => unit = "?ignore"
 
 let v = u => {

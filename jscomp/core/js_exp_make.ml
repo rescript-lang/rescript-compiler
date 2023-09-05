@@ -76,12 +76,12 @@ let runtime_var_dot ?comment (x : string) (e1 : string) : J.expression =
   {
     expression_desc =
       Var
-        (Qualified ({ id = Ident.create_persistent x; kind = Runtime }, Some e1));
+        (Qualified ({ id = Ident.create_persistent x; kind = Runtime; dynamic_import = false }, Some e1));
     comment;
   }
 
-let ml_var_dot ?comment (id : Ident.t) e : J.expression =
-  { expression_desc = Var (Qualified ({ id; kind = Ml }, Some e)); comment }
+let ml_var_dot ?comment ?(dynamic_import = false) (id : Ident.t) e : J.expression =
+  { expression_desc = Var (Qualified ({ id; kind = Ml; dynamic_import }, Some e)); comment }
 
 (** 
    module as a value 
@@ -93,7 +93,7 @@ let external_var_field ?comment ~external_name:name (id : Ident.t) ~field
     ~default : t =
   {
     expression_desc =
-      Var (Qualified ({ id; kind = External { name; default } }, Some field));
+      Var (Qualified ({ id; kind = External { name; default }; dynamic_import = false }, Some field));
     comment;
   }
 
@@ -102,13 +102,13 @@ let external_var ?comment ~external_name (id : Ident.t) : t =
     expression_desc =
       Var
         (Qualified
-           ( { id; kind = External { name = external_name; default = false } },
+           ( { id; kind = External { name = external_name; default = false }; dynamic_import = false },
              None ));
     comment;
   }
 
-let ml_module_as_var ?comment (id : Ident.t) : t =
-  { expression_desc = Var (Qualified ({ id; kind = Ml }, None)); comment }
+let ml_module_as_var ?comment ?(dynamic_import = false) (id : Ident.t) : t =
+  { expression_desc = Var (Qualified ({ id; kind = Ml; dynamic_import }, None)); comment }
 
 (* Static_index .....................**)
 let runtime_call module_name fn_name args =
@@ -335,22 +335,6 @@ let zero_float_lit : t =
 
 let float_mod ?comment e1 e2 : J.expression =
   { comment; expression_desc = Bin (Mod, e1, e2) }
-
-let literal = function
-  | Ast_untagged_variants.String s -> str s ~delim:DStarJ
-  | Int i -> small_int i
-  | Float f -> float f
-  | Bool b -> bool b
-  | Null -> nil
-  | Undefined -> undefined
-  | Block IntType -> str "number"
-  | Block FloatType -> str "number"
-  | Block StringType -> str "string"
-  | Block Array -> str "Array" ~delim:DNoQuotes
-  | Block Object -> str "object"
-  | Block Unknown ->
-    (* TODO: clean up pattern mathing algo whih confuses literal with blocks *)
-    assert false
 
 let array_index ?comment (e0 : t) (e1 : t) : t =
   match (e0.expression_desc, e1.expression_desc) with
@@ -634,6 +618,33 @@ let bin ?comment (op : J.binop) (e0 : t) (e1 : t) : t =
      be careful for side effect
 *)
 
+let rec filter_bool (e: t) ~j ~b = match e.expression_desc with
+  | Bin (And, e1, e2) ->
+    (match (filter_bool e1 ~j ~b, filter_bool e2 ~j ~b) with
+    | None, None -> None
+    | Some e, None
+    | None, Some e -> Some e
+    | Some e1, Some e2 ->
+      Some {e with expression_desc = Bin (And, e1, e2)} )
+  | Bin (Or, e1, e2) ->
+    (match (filter_bool e1 ~j ~b, filter_bool e2 ~j ~b) with
+    | None, _ | _, None ->
+      None
+    | Some e1, Some e2 ->
+      Some {e with expression_desc = Bin (Or, e1, e2)} )
+  | Bin
+    ( NotEqEq,
+      {expression_desc = Typeof {expression_desc = Var i}},
+      {expression_desc = Str {txt}}) when Js_op_util.same_vident i j ->
+    if txt <> "bool"
+    then None
+    else assert false
+  | Js_not {expression_desc =
+    Call ({expression_desc = Str {txt = "Array.isArray"}},
+      [{expression_desc = Var i}], _)} when Js_op_util.same_vident i j ->
+    None
+  | _ -> Some e
+
 let and_ ?comment (e1 : t) (e2 : t) : t =
   match (e1.expression_desc, e2.expression_desc) with
   | Var i, Var j when Js_op_util.same_vident i j -> e1
@@ -650,6 +661,15 @@ let and_ ?comment (e1 : t) (e2 : t) : t =
           { expression_desc = Str _ | Number _ } ) )
     when Js_op_util.same_vident i j ->
       e2
+  | ( _,
+      Bin
+      ( EqEqEq,
+        { expression_desc = Var j },
+        { expression_desc = Bool b } )
+        ) ->
+    (match filter_bool e1 ~j ~b with
+     | None -> e2
+     | Some e1 -> { expression_desc = Bin (And, e1, e2); comment })
   | _, _ -> { expression_desc = Bin (And, e1, e2); comment }
 
 let or_ ?comment (e1 : t) (e2 : t) =
@@ -776,80 +796,45 @@ let string_equal ?comment (e0 : t) (e1 : t) : t =
 let is_type_number ?comment (e : t) : t =
   string_equal ?comment (typeof e) (str "number")
 
-let rec is_a_literal_case ~(literal_cases : Ast_untagged_variants.literal_type list) ~block_cases (e:t) : t =
-  let literals_overlaps_with_string () = 
-    Ext_list.exists literal_cases (function
-      | String _ -> true
-      | l -> false ) in
-  let literals_overlaps_with_number () = 
-    Ext_list.exists literal_cases (function
-      | Int _ | Float _ -> true
-      | l -> false ) in
-  let literals_overlaps_with_object () = 
-    Ext_list.exists literal_cases (function
-      | Null -> true
-      | l -> false ) in
-  let (==) x y = bin EqEqEq x y in
-  let (!=) x y = bin NotEqEq x y in
-  let (||) x y = bin Or x y in
-  let (&&) x y = bin And x y in
-  let is_literal_case (l:Ast_untagged_variants.literal_type) : t =  e == (literal l) in
-  let is_not_block_case (c:Ast_untagged_variants.block_type) : t = match c with
-  | StringType when literals_overlaps_with_string () = false  (* No overlap *) -> 
-    (typeof e) != (str "string")
-  | IntType when literals_overlaps_with_number () = false ->
-    (typeof e) != (str "number")
-  | FloatType when literals_overlaps_with_number () = false ->
-    (typeof e) != (str "number")
-  | Array -> 
-    not (is_array e)
-  | Object when literals_overlaps_with_object () = false ->
-    (typeof e) != (str "object")
-  | Object (* overlap *) ->
-    e == nil || (typeof e) != (str "object")
-  | StringType (* overlap *)
-  | IntType (* overlap *)
-  | FloatType (* overlap *)
-  | Unknown ->
-    (* We don't know the type of unknown, so we need to express:
-       this is not one of the literals *)
-    (match literal_cases with
-      | [] ->
-        (* this should not happen *)
-        assert false
-      | l1 :: others ->
-        let is_literal_1 = is_literal_case l1 in
-        Ext_list.fold_right others is_literal_1 (fun literal_n acc ->
-          (is_literal_case literal_n) || acc
-        )
-    )
-  in
-  match block_cases with
-  | [c] -> is_not_block_case c
-  | c1 :: (_::_ as rest) ->
-    (is_not_block_case c1) && (is_a_literal_case ~literal_cases ~block_cases:rest e)
-  | [] -> assert false
+let tag_type = function
+  | Ast_untagged_variants.String s -> str s ~delim:DStarJ
+  | Int i -> small_int i
+  | Float f -> float f
+  | Bool b -> bool b
+  | Null -> nil
+  | Undefined -> undefined
+  | Untagged IntType -> str "number"
+  | Untagged FloatType -> str "number"
+  | Untagged FunctionType -> str "function"
+  | Untagged StringType -> str "string"
+  | Untagged ArrayType -> str "Array" ~delim:DNoQuotes
+  | Untagged ObjectType -> str "object"
+  | Untagged UnknownType ->
+    (* TODO: this should not happen *)
+    assert false
 
-let is_int_tag ?(has_null_undefined_other=(false, false, false)) (e : t) : t =
-  let (has_null, has_undefined, has_other) = has_null_undefined_other in
-  if has_null && (has_undefined = false) && (has_other = false) then (* null *)
-    { expression_desc = Bin (EqEqEq, e, nil); comment=None }
-  else if has_null && has_undefined && has_other=false then (* null + undefined *)
-    { J.expression_desc = Bin
-      (Or,
-        { expression_desc = Bin (EqEqEq, e, nil); comment=None },
-        { expression_desc = Bin (EqEqEq, e, undefined); comment=None }
-      ); comment=None }
-  else if has_null=false && has_undefined && has_other=false then (* undefined *)
-    { expression_desc = Bin (EqEqEq, e, undefined); comment=None }
-  else if has_null then (* (null + undefined + other) || (null + other) *)
-    { J.expression_desc = Bin
-      (Or,
-        { expression_desc = Bin (EqEqEq, e, nil); comment=None },
-        { expression_desc = Bin (NotEqEq, typeof e, str "object"); comment=None }
-      ); comment=None }
-  else (* (undefiled + other) || other *)
-    { expression_desc = Bin (NotEqEq, typeof e, str "object"); comment=None }
+let rec emit_check (check : t Ast_untagged_variants.DynamicChecks.t) = match check with
+  | TagType t -> tag_type t
+  | BinOp(op, x, y) ->
+    let op = match op with
+      | EqEqEq -> Js_op.EqEqEq
+      | NotEqEq -> NotEqEq
+      | And -> And
+      | Or -> Or
+    in
+    bin op (emit_check x) (emit_check y)
+  | TypeOf x -> typeof (emit_check x)
+  | IsArray x -> is_array (emit_check x)
+  | Not x -> not (emit_check x)
+  | Expr x -> x
+
+let is_a_literal_case ~literal_cases ~block_cases (e:t) =
+  let check = Ast_untagged_variants.DynamicChecks.is_a_literal_case ~literal_cases ~block_cases (Expr e) in
+  emit_check check
+
+let is_int_tag ?has_null_undefined_other e =
+    let check = Ast_untagged_variants.DynamicChecks.is_int_tag ?has_null_undefined_other (Expr e) in
+    emit_check check
 
 let is_type_string ?comment (e : t) : t =
   string_equal ?comment (typeof e) (str "string")

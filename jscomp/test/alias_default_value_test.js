@@ -3,11 +3,11 @@
 
 
 function Alias_default_value_test$C0(props) {
-  var b = props.b;
-  var a = props.a;
-  var a$1 = a !== undefined ? a : 2;
-  var b$1 = b !== undefined ? b : (a$1 << 1);
-  return a$1 + b$1 | 0;
+  var __b = props.b;
+  var __a = props.a;
+  var a = __a !== undefined ? __a : 2;
+  var b = __b !== undefined ? __b : (a << 1);
+  return a + b | 0;
 }
 
 var C0 = {
@@ -15,9 +15,9 @@ var C0 = {
 };
 
 function Alias_default_value_test$C1(props) {
-  var bar = props.foo;
-  if (bar !== undefined) {
-    return bar;
+  var __bar = props.foo;
+  if (__bar !== undefined) {
+    return __bar;
   } else {
     return "";
   }
@@ -28,11 +28,11 @@ var C1 = {
 };
 
 function Alias_default_value_test$C2(props) {
-  var a = props.a;
-  var bar = props.foo;
-  var bar$1 = bar !== undefined ? bar : "";
-  var a$1 = a !== undefined ? a : bar$1;
-  return bar$1 + a$1 + props.b;
+  var __a = props.a;
+  var __bar = props.foo;
+  var bar = __bar !== undefined ? __bar : "";
+  var a = __a !== undefined ? __a : bar;
+  return bar + a + props.b;
 }
 
 var C2 = {
@@ -40,9 +40,9 @@ var C2 = {
 };
 
 function Alias_default_value_test$C3(props) {
-  var text = props.text;
-  if (text !== undefined) {
-    return text;
+  var __text = props.text;
+  if (__text !== undefined) {
+    return __text;
   } else {
     return "Test";
   }

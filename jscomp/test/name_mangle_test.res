@@ -91,19 +91,19 @@ let f12 = (x: {@set "____": int}) => {
 }
 
 let () = {
-  eq(__LOC__, f0(%raw("{open:0}")), 1)
-  eq(__LOC__, f1(%raw("{in:0}")), 1)
-  eq(__LOC__, f2(%raw("{MAX_LENGTH:0}")), 1)
-  eq(__LOC__, f3(%raw("{Capital:0}")), 1)
-  eq(__LOC__, f4(%raw("{_open:0}")), 1)
-  eq(__LOC__, f5(%raw("{open:0}")), 1)
-  eq(__LOC__, f6(%raw(`{ "'x" :0} `)), 1)
-  eq(__LOC__, f7(%raw("{_Capital:0}")), 1)
-  eq(__LOC__, f8(%raw("{_MAX:0}")), 1)
+  eq(__LOC__, f0(%raw("{_open:0}")), 1)
+  eq(__LOC__, f1(%raw("{_in:0}")), 1)
+  eq(__LOC__, f2(%raw("{_MAX_LENGTH:0}")), 1)
+  eq(__LOC__, f3(%raw("{_Capital:0}")), 1)
+  eq(__LOC__, f4(%raw("{_open__:0}")), 1)
+  eq(__LOC__, f5(%raw("{open__:0}")), 1)
+  eq(__LOC__, f6(%raw(`{ "_'x" :0} `)), 1)
+  eq(__LOC__, f7(%raw("{_Capital__:0}")), 1)
+  eq(__LOC__, f8(%raw("{_MAX__:0}")), 1)
   eq(__LOC__, f9(%raw("{__:0}")), 1)
   eq(__LOC__, f10(%raw("{__x:0}")), 1)
-  eq(__LOC__, f11(%raw("{_:0}")), 1)
-  eq(__LOC__, f12(%raw("{__:0}")), 1)
+  eq(__LOC__, f11(%raw("{___:0}")), 1)
+  eq(__LOC__, f12(%raw("{____:0}")), 1)
 }
 
 Mt.from_pair_suites(__LOC__, suites.contents)

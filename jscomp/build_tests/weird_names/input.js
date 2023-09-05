@@ -5,7 +5,6 @@ var rescript_exe = require("../../../scripts/bin_path").rescript_exe;
 
 var out = cp.spawnSync(rescript_exe, { encoding: "utf8" });
 
-console.log(out.stdout);
 if (out.stderr !== "") {
   assert.fail(out.stderr);
 }
@@ -17,11 +16,11 @@ let files = [
   "[[...params]].res",
   "[slug_or_ID].res",
   "404.res",
+  "utils.test.res",
 ];
 
 for (let f of files) {
   let { name } = path.parse(f);
   let m = `./lib/js/src/${name}.js`;
-  //   console.log(m);
   assert.deepEqual(require(m).a, 1);
 }

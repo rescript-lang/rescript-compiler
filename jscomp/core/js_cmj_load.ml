@@ -52,15 +52,7 @@ let load_unit_with_file unit_name : Js_cmj_format.cmj_load_info =
        (* hacking relying on the convention of pkg/lib/ocaml/xx.cmj*)
        Filename.dirname (Filename.dirname (Filename.dirname f)); 
      cmj_table =  Js_cmj_format.from_file f}
-  | None -> 
-    if !Js_config.no_stdlib then Bs_exception.error (Cmj_not_found unit_name)
-    else 
-#ifdef RELEASE
-        Js_cmj_load_builtin_unit.load_builin_unit unit_name 
-#else
-        Bs_exception.error (Cmj_not_found unit_name)
-#endif      
-
+  | None -> Bs_exception.error (Cmj_not_found unit_name)
 
 (* we can disable loading from file for troubleshooting
    Note in dev mode we still allow loading from file is to 

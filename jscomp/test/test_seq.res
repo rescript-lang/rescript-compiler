@@ -93,7 +93,5 @@ let add_help = speclist => {
   \"@"(speclist, \"@"(add1, add2))
 }
 
-@@ocaml.text(
-  " FIXME- not compatible with strict mode  "
-  /* let f x x   =  x */
-)
+/* FIXME- not compatible with strict mode */
+/* let f x x   =  x */

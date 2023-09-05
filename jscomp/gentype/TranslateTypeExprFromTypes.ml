@@ -44,8 +44,13 @@ let translateObjType closedFlag fieldsTranslations =
              | Option t -> (Optional, t)
              | _ -> (Mandatory, t)
            in
-           let name = name |> Runtime.mangleObjectField in
-           {mutable_; nameJS = name; optional; type_})
+           {
+             mutable_;
+             nameJS = name;
+             optional;
+             type_;
+             docString = DocString.empty;
+           })
   in
   let type_ = Object (closedFlag, fields) in
   {dependencies; type_}
@@ -126,6 +131,7 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
                 nameJS = "contents";
                 optional = Mandatory;
                 type_ = paramTranslation.type_;
+                docString = DocString.empty;
               };
             ] );
     }
@@ -291,8 +297,7 @@ let rec translateArrowType ~config ~typeVarsGen ~typeEnv ~revArgDeps ~revArgs
       typeExpr2
       |> translateArrowType ~config ~typeVarsGen ~typeEnv
            ~revArgDeps:nextRevDeps
-           ~revArgs:
-             ((Label (lbl |> Runtime.mangleObjectField), type1) :: revArgs)
+           ~revArgs:((Label lbl, type1) :: revArgs)
     | Some (lbl, t1) ->
       let {dependencies; type_ = type1} =
         t1 |> translateTypeExprFromTypes_ ~config ~typeVarsGen ~typeEnv
@@ -301,8 +306,7 @@ let rec translateArrowType ~config ~typeVarsGen ~typeEnv ~revArgDeps ~revArgs
       typeExpr2
       |> translateArrowType ~config ~typeVarsGen ~typeEnv
            ~revArgDeps:nextRevDeps
-           ~revArgs:
-             ((OptLabel (lbl |> Runtime.mangleObjectField), type1) :: revArgs))
+           ~revArgs:((OptLabel lbl, type1) :: revArgs))
   | _ ->
     let {dependencies; type_ = retType} =
       typeExpr |> translateTypeExprFromTypes_ ~config ~typeVarsGen ~typeEnv
@@ -386,7 +390,7 @@ and translateTypeExprFromTypes_ ~config ~typeVarsGen ~typeEnv
       in
       {dependencies = []; type_}
     | {noPayloads = []; payloads = [(_label, t)]; unknowns = []} ->
-      (* Handle bucklescript's "Arity_" encoding in first argument of Js.Internal.fn(_,_) for uncurried functions.
+      (* Handle ReScript's "Arity_" encoding in first argument of Js.Internal.fn(_,_) for uncurried functions.
          Return the argument tuple. *)
       t |> translateTypeExprFromTypes_ ~config ~typeVarsGen ~typeEnv
     | {noPayloads; payloads; unknowns = []} ->
@@ -465,7 +469,7 @@ and signatureToModuleRuntimeRepresentation ~config ~typeVarsGen ~typeEnv
     |> List.map (fun signatureItem ->
            match signatureItem with
            | Types.Sig_value (_id, {val_kind = Val_prim _}) -> ([], [])
-           | Types.Sig_value (id, {val_type = typeExpr}) ->
+           | Types.Sig_value (id, {val_type = typeExpr; val_attributes}) ->
              let {dependencies; type_} =
                typeExpr
                |> translateTypeExprFromTypes_ ~config ~typeVarsGen ~typeEnv
@@ -476,6 +480,7 @@ and signatureToModuleRuntimeRepresentation ~config ~typeVarsGen ~typeEnv
                  nameJS = id |> Ident.name;
                  optional = Mandatory;
                  type_;
+                 docString = Annotation.docStringFromAttrs val_attributes;
                }
              in
              (dependencies, [field])
@@ -499,6 +504,8 @@ and signatureToModuleRuntimeRepresentation ~config ~typeVarsGen ~typeEnv
                  nameJS = id |> Ident.name;
                  optional = Mandatory;
                  type_;
+                 docString =
+                   Annotation.docStringFromAttrs moduleDeclaration.md_attributes;
                }
              in
              (dependencies, [field])

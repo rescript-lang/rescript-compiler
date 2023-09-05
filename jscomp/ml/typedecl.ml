@@ -53,6 +53,8 @@ type error =
   | Bad_unboxed_attribute of string
   | Boxed_and_unboxed
   | Nonrec_gadt
+  | Variant_runtime_representation_mismatch of Variant_coercion.variant_error
+  | Variant_spread_fail of Variant_type_spread.variant_type_spread_error
 
 open Typedtree
 
@@ -304,38 +306,24 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
   in
   let raw_status = get_unboxed_from_attributes sdecl in
 
-  let checkUntaggedVariant = match sdecl.ptype_kind with
+  let checkUntaggedVariant() = match sdecl.ptype_kind with
   | Ptype_variant cds -> Ext_list.for_all cds (function
       | {pcd_args = Pcstr_tuple ([] | [_])} ->
         (* at most one payload allowed for untagged  variants *)
         true
+      | {pcd_args = Pcstr_tuple (_::_::_); pcd_name={txt=name}} ->
+        Ast_untagged_variants.reportConstructorMoreThanOneArg ~loc:sdecl.ptype_loc ~name
       | {pcd_args = Pcstr_record _} -> true
-      | _ -> false )
+     )
   | _ -> false
   in
 
-  if raw_status.unboxed && not raw_status.default && not checkUntaggedVariant then begin
+  if raw_status.unboxed && not raw_status.default && not (checkUntaggedVariant()) then begin
     match sdecl.ptype_kind with
     | Ptype_abstract ->
         raise(Error(sdecl.ptype_loc, Bad_unboxed_attribute
                       "it is abstract"))
-    | Ptype_variant [{pcd_args = Pcstr_tuple []; _}] ->
-      raise(Error(sdecl.ptype_loc, Bad_unboxed_attribute
-                    "its constructor has no argument"))
-    | Ptype_variant [{pcd_args = Pcstr_tuple [_]; _}] -> ()
-    | Ptype_variant [{pcd_args = Pcstr_tuple _; _}] ->
-      raise(Error(sdecl.ptype_loc, Bad_unboxed_attribute
-                    "its constructor has more than one argument"))
-    | Ptype_variant [{pcd_args = Pcstr_record
-                        [{pld_mutable=Immutable; _}]; _}] -> ()
-    | Ptype_variant [{pcd_args = Pcstr_record [{pld_mutable=Mutable; _}]; _}] ->
-      raise(Error(sdecl.ptype_loc, Bad_unboxed_attribute "it is mutable"))
-    | Ptype_variant [{pcd_args = Pcstr_record _; _}] ->
-      raise(Error(sdecl.ptype_loc, Bad_unboxed_attribute
-                    "its constructor has more than one argument"))
-    | Ptype_variant _ ->
-      raise(Error(sdecl.ptype_loc, Bad_unboxed_attribute
-                    "it has more than one constructor"))
+    | Ptype_variant _ -> ()
     | Ptype_record [{pld_mutable=Immutable; _}] -> ()
     | Ptype_record [{pld_mutable=Mutable; _}] ->
       raise(Error(sdecl.ptype_loc, Bad_unboxed_attribute
@@ -393,36 +381,111 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
         let copy_tag_attr_from_decl attr =
           let tag_attrs = Ext_list.filter sdecl.ptype_attributes (fun ({txt}, _) -> txt = "tag" || txt = Ast_untagged_variants.untagged) in
           if tag_attrs = [] then attr else tag_attrs @ attr in
+        let constructors_from_variant_spreads = Hashtbl.create 10 in
         let make_cstr scstr =
           let name = Ident.create scstr.pcd_name.txt in
           let targs, tret_type, args, ret_type, _cstr_params =
             make_constructor env (Path.Pident id) params
                              scstr.pcd_args scstr.pcd_res
           in
-          let tcstr =
-            { cd_id = name;
-              cd_name = scstr.pcd_name;
-              cd_args = targs;
-              cd_res = tret_type;
-              cd_loc = scstr.pcd_loc;
-              cd_attributes = scstr.pcd_attributes |> copy_tag_attr_from_decl }
-          in
-          let cstr =
-            { Types.cd_id = name;
-              cd_args = args;
-              cd_res = ret_type;
-              cd_loc = scstr.pcd_loc;
-              cd_attributes = scstr.pcd_attributes |> copy_tag_attr_from_decl }
-          in
+          if String.starts_with scstr.pcd_name.txt ~prefix:"..." then (
+            (* Any constructor starting with "..." represents a variant type spread, and
+               will have the spread variant itself as a single argument.
+
+               We pull that variant type out, and then track the type of each of its
+               constructors, so that we can replace our dummy constructors added before 
+               type checking  with the realtypes for each constructor.
+               *)
+            (match args with
+            | Cstr_tuple [spread_variant] -> (
+              match Ctype.extract_concrete_typedecl env spread_variant with
+              | (_, _, {type_kind=Type_variant constructors}) -> (
+                constructors |> List.iter(fun (c: Types.constructor_declaration) ->
+                  Hashtbl.add constructors_from_variant_spreads c.cd_id.name c)
+              )
+              | _ -> ()
+            )
+            | _ -> ()); 
+              None)
+          else (
+          (* Check if this constructor is from a variant spread. If so, we need to replace 
+             its type with the right type we've pulled from the type checked spread variant
+             itself. *)
+          let tcstr, cstr = match Hashtbl.find_opt constructors_from_variant_spreads (Ident.name name) with
+          | Some cstr ->
+            let tcstr =
+              {
+                cd_id = name;
+                cd_name = scstr.pcd_name;
+                cd_args =
+                  (match cstr.cd_args with
+                  | Cstr_tuple args ->
+                    Cstr_tuple
+                      (args
+                      |> List.map (fun texpr : Typedtree.core_type ->
+                             {
+                               ctyp_attributes = cstr.cd_attributes;
+                               ctyp_loc = cstr.cd_loc;
+                               ctyp_env = env;
+                               ctyp_type = texpr;
+                               ctyp_desc = Ttyp_any;
+                               (* This is fine because the type checker seems to only look at `ctyp_type` for type checking. *)
+                             }))
+                  | Cstr_record lbls ->
+                    Cstr_record
+                      (lbls
+                      |> List.map
+                           (fun (l : Types.label_declaration) : Typedtree.label_declaration
+                           ->
+                             {
+                               ld_id = l.ld_id;
+                               ld_name = Location.mkloc (Ident.name l.ld_id) l.ld_loc;
+                               ld_mutable = l.ld_mutable;
+                               ld_type =
+                                 {
+                                   ctyp_desc = Ttyp_any;
+                                   ctyp_type = l.ld_type;
+                                   ctyp_env = env;
+                                   ctyp_loc = l.ld_loc;
+                                   ctyp_attributes = [];
+                                 };
+                               ld_loc = l.ld_loc;
+                               ld_attributes = l.ld_attributes;
+                             })));
+                cd_res = tret_type;
+                (* This is also strictly wrong, but is fine because the type checker does not look at this field. *)
+                cd_loc = scstr.pcd_loc;
+                cd_attributes = scstr.pcd_attributes |> copy_tag_attr_from_decl;
+              }
+            in            
             tcstr, cstr
+          | None ->
+            let tcstr =
+              { cd_id = name;
+                cd_name = scstr.pcd_name;
+                cd_args = targs;
+                cd_res = tret_type;
+                cd_loc = scstr.pcd_loc;
+                cd_attributes = scstr.pcd_attributes |> copy_tag_attr_from_decl }
+            in
+            let cstr =
+              { Types.cd_id = name;
+                cd_args = args;
+                cd_res = ret_type;
+                cd_loc = scstr.pcd_loc;
+                cd_attributes = scstr.pcd_attributes |> copy_tag_attr_from_decl }
+            in
+            tcstr, cstr
+          in Some (tcstr, cstr)
+          )
         in
         let make_cstr scstr =
           Builtin_attributes.warning_scope scstr.pcd_attributes
             (fun () -> make_cstr scstr)
         in
-        let tcstrs, cstrs = List.split (List.map make_cstr scstrs) in
+        let tcstrs, cstrs = List.split (List.filter_map make_cstr scstrs) in
         let isUntaggedDef = Ast_untagged_variants.has_untagged sdecl.ptype_attributes in
-        Ast_untagged_variants.check_well_formed ~isUntaggedDef cstrs;
+        Ast_untagged_variants.check_well_formed ~env ~isUntaggedDef cstrs;
         Ttype_variant tcstrs, Type_variant cstrs, sdecl
       | Ptype_record lbls_ ->
           let has_optional attrs = Ext_list.exists attrs (fun ({txt },_) -> txt = "res.optional") in
@@ -439,30 +502,45 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
                 else typ in
               {lbl with  pld_type = typ }) in
           let lbls, lbls' = transl_labels env true lbls in
-          let lbls_opt = match lbls, lbls' with
-            | {ld_name = {txt = "..."}; ld_type} :: _, _ :: _ ->
+          let lbls_opt = match Record_type_spread.has_type_spread lbls with
+            | true ->
               let rec extract t = match t.desc with
                 | Tpoly(t, []) -> extract t
                 | _ -> Ctype.repr t in
-              let mkLbl (l: Types.label_declaration) : Typedtree.label_declaration =
-                { ld_id = l.ld_id;
+              let mkLbl (l: Types.label_declaration) (ld_type: Typedtree.core_type) (type_vars: (string * Types.type_expr) list) : Typedtree.label_declaration =
+                {
+                  ld_id = l.ld_id;
                   ld_name = {txt = Ident.name l.ld_id; loc = l.ld_loc};
                   ld_mutable = l.ld_mutable;
-                  ld_type = {ld_type with ctyp_type = l.ld_type};
+                  ld_type = {ld_type with ctyp_type = Record_type_spread.substitute_type_vars type_vars l.ld_type};
                   ld_loc = l.ld_loc;
-                  ld_attributes = l.ld_attributes; } in
+                  ld_attributes = l.ld_attributes;
+                } in
               let rec process_lbls acc lbls lbls' = match lbls, lbls' with
                 | {ld_name = {txt = "..."}; ld_type} :: rest, _ :: rest' ->
                   (match Ctype.extract_concrete_typedecl env (extract ld_type.ctyp_type) with
-                    (_p0, _p, {type_kind=Type_record (fields, _repr)}) ->
-                      process_lbls (fst acc @ (fields |> List.map mkLbl), snd acc @ fields) rest rest'
+                    (_p0, _p, {type_kind=Type_record (fields, _repr); type_params}) ->
+                      let type_vars = Record_type_spread.extract_type_vars type_params ld_type.ctyp_type in
+                      process_lbls
+                        ( fst acc
+                          @ (Ext_list.map fields (fun l ->
+                            mkLbl l ld_type type_vars))
+                          ,
+                          snd acc
+                          @ (Ext_list.map fields (fun l ->
+                            {
+                              l with
+                              ld_type =
+                                Record_type_spread.substitute_type_vars type_vars l.ld_type;
+                            })) )
+                        rest rest'
                     | _ -> assert false
                     | exception _ -> None)
                 | lbl::rest, lbl'::rest' -> process_lbls (fst acc @ [lbl], snd acc @ [lbl']) rest rest'
                 | _ -> Some acc
               in
               process_lbls ([], []) lbls lbls'
-            | _ -> Some (lbls, lbls') in
+            | false -> Some (lbls, lbls') in
           let rec check_duplicates loc (lbls : Typedtree.label_declaration list) seen = match lbls with
           | [] -> ()
           | lbl::rest ->
@@ -1269,7 +1347,12 @@ let transl_type_decl env rec_flag sdecl_list =
         {sdecl with
          ptype_name; ptype_kind = Ptype_abstract; ptype_manifest = None})
       fixed_types
-    @ sdecl_list
+    @ (try 
+        sdecl_list |> Variant_type_spread.expand_variant_spreads env 
+      with 
+      | Variant_coercion.VariantConfigurationError ((VariantError {left_loc}) as err) -> raise(Error(left_loc, Variant_runtime_representation_mismatch err))
+      | Variant_type_spread.VariantTypeSpreadError (loc, err) -> raise(Error(loc, Variant_spread_fail err))
+    )
   in
 
   (* Create identifiers. *)
@@ -1323,6 +1406,7 @@ let transl_type_decl env rec_flag sdecl_list =
     List.map2 transl_declaration sdecl_list (List.map id_slots id_list) in
   let decls =
     List.map (fun tdecl -> (tdecl.typ_id, tdecl.typ_type)) tdecls in
+  let sdecl_list = Variant_type_spread.expand_dummy_constructor_args sdecl_list decls in
   current_slot := None;
   (* Check for duplicates *)
   check_duplicates sdecl_list;
@@ -2071,6 +2155,40 @@ let report_error ppf = function
   | Nonrec_gadt ->
       fprintf ppf
         "@[GADT case syntax cannot be used in a 'nonrec' block.@]"
+  | Variant_runtime_representation_mismatch
+      (Variant_coercion.VariantError
+        {is_spread_context; error = Variant_coercion.Untagged {left_is_unboxed}})
+    ->
+    let other_variant_text =
+      if is_spread_context then "the variant where this is spread"
+      else "the other variant"
+    in
+    fprintf ppf "@[%s.@]"
+      ("This variant is "
+      ^ (if left_is_unboxed then "unboxed" else "not unboxed")
+      ^ ", but " ^ other_variant_text
+      ^ " is not. Both variants unboxed configuration must match")
+  | Variant_runtime_representation_mismatch
+      (Variant_coercion.VariantError
+        {is_spread_context; error = Variant_coercion.TagName _}) ->
+    let other_variant_text =
+      if is_spread_context then "the variant where this is spread"
+      else "the other variant"
+    in
+    fprintf ppf "@[%s.@]"
+      ("The @tag attribute does not match for this variant and "
+      ^ other_variant_text
+      ^ ". Both variants must have the same @tag attribute configuration, or no \
+        @tag attribute at all")
+  | Variant_spread_fail Variant_type_spread.CouldNotFindType ->
+    fprintf ppf "@[This type could not be found. It's only possible to spread variants that are known as the spread happens. This means for example that you can't spread variants in recursive definitions.@]"
+  | Variant_spread_fail Variant_type_spread.HasTypeParams ->
+    fprintf ppf "@[Type parameters are not supported in variant type spreads.@]"
+  | Variant_spread_fail Variant_type_spread.DuplicateConstructor 
+    {variant_with_overlapping_constructor; overlapping_constructor_name} ->
+    fprintf ppf "@[Variant %s has a constructor named %s, but a constructor named %s already exists in the variant it's spread into.@ You cannot spread variants with overlapping constructors.@]" 
+      variant_with_overlapping_constructor overlapping_constructor_name overlapping_constructor_name
+  
 
 let () =
   Location.register_error_of_exn

@@ -1,4 +1,3 @@
-@ocaml.doc(" ")
 let a: array<float>
 let b: array<int>
 let c: array<int>

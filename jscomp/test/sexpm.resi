@@ -1,14 +1,14 @@
-@@ocaml.text(/* This file is free software, part of containers. See file "license" for more details. */
+/* This file is free software, part of containers. See file "license" for more details. */
 
-" {1 Simple and efficient S-expression parsing/printing}
+/* {1 Simple and efficient S-expression parsing/printing}
 
-    @since 0.7 ")
+    @since 0.7 " */
 
 type or_error<'a> = [#Ok('a) | #Error(string)]
 type sequence<'a> = ('a => unit) => unit
 type gen<'a> = unit => option<'a>
 
-@@ocaml.text(" {2 Basics} ")
+/* {2 Basics} */
 
 type rec t = [
   | #Atom(string)
@@ -16,11 +16,11 @@ type rec t = [
 ]
 type sexp = t
 
-@@ocaml.text(" {2 Serialization (encoding)} ")
+/* {2 Serialization (encoding)} */
 
 let to_buf: (Buffer.t, t) => unit
 
 let to_string: t => string
 
-@ocaml.doc(" Parse a string ")
+/** Parse a string */
 let parse_string: string => or_error<t>

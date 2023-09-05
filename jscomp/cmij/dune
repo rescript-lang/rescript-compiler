@@ -4,8 +4,8 @@
    (:standard -ccopt -static))))
 
 (executables
- (names cmij_main cmjdump_main)
- (public_names cmij cmjdump)
+ (names cmjdump_main)
+ (public_names cmjdump)
  (flags
   (:standard -w +a-4-9-40-42-69))
  (libraries core))

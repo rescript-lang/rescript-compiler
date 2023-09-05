@@ -149,7 +149,7 @@ let of_list_map = (f, a) =>
     fill(1, tl)
   }
 
-@ocaml.doc("
+/**
 {[
 # rfind_with_index [|1;2;3|] (=) 2;;
 - : int = 1
@@ -160,7 +160,7 @@ let of_list_map = (f, a) =>
 # rfind_with_index [|1;2;3|] (=) 4;;
 - : int = -1
 ]}
-")
+*/
 let rfind_with_index = (arr, cmp, v) => {
   let len = Array.length(arr)
   let rec aux = i =>
@@ -206,7 +206,7 @@ let find_and_split = (arr, cmp, v): split<_> => {
   }
 }
 
-@@ocaml.text(" TODO: available since 4.03, use {!Array.exists} ")
+/* TODO: available since 4.03, use {!Array.exists} */
 
 let exists = (p, a) => {
   let n = Array.length(a)

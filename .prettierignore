@@ -1,8 +1,11 @@
-jscomp/
+jscomp/*
+!jscomp/build_tests
+jscomp/build_tests/*/**
+!jscomp/build_tests/*/input.js
+!jscomp/build_tests/*/*.json
 lib/
 vendor/
 ninja/
-res_syntax/
 _build/
 _opam
 CHANGELOG.md

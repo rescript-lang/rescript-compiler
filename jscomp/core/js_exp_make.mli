@@ -49,7 +49,7 @@ val runtime_var_dot : ?comment:string -> string -> string -> t
 
 (* val runtime_var_vid : string -> string -> J.vident *)
 
-val ml_var_dot : ?comment:string -> Ident.t -> string -> t
+val ml_var_dot : ?comment:string -> ?dynamic_import:bool -> Ident.t -> string -> t
 (** [ml_var_dot ocaml_module name]
 *)
 
@@ -66,7 +66,7 @@ val external_var_field :
 
 val external_var : ?comment:string -> external_name:string -> Ident.t -> t
 
-val ml_module_as_var : ?comment:string -> Ident.t -> t
+val ml_module_as_var : ?comment:string -> ?dynamic_import:bool -> Ident.t -> t
 
 val runtime_call :
   string -> (* module_name *)
@@ -186,7 +186,9 @@ val assign_by_exp : t -> t -> t -> t
 
 val assign : ?comment:string -> t -> t -> t
 
-val literal : Ast_untagged_variants.literal_type -> t
+val tag_type : Ast_untagged_variants.tag_type -> t
+
+val emit_check : t Ast_untagged_variants.DynamicChecks.t -> t
 
 val triple_equal : ?comment:string -> t -> t -> t
 (* TODO: reduce [triple_equal] use *)
@@ -205,7 +207,7 @@ val is_type_number : ?comment:string -> t -> t
 
 val is_int_tag : ?has_null_undefined_other:(bool * bool * bool) -> t -> t
 
-val is_a_literal_case : literal_cases:Ast_untagged_variants.literal_type list -> block_cases:Ast_untagged_variants.block_type list -> t -> t
+val is_a_literal_case : literal_cases:Ast_untagged_variants.tag_type list -> block_cases:Ast_untagged_variants.block_type list -> t -> t
 
 val is_type_string : ?comment:string -> t -> t
 

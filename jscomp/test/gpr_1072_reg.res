@@ -33,7 +33,7 @@ let v1 = make(
   (),
 )
 
-@@ocaml.text(" In the future we might allow below cases , issues are [`num] maybe escaped
+/* In the future we might allow below cases , issues are [`num] maybe escaped
     we need prevent its escaping
 
   external make2 :
@@ -73,4 +73,4 @@ let v2 =
     ~timeZoneName:`short 
     ~hour:`two_digit
     ()
-")
+*/

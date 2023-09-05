@@ -1,4 +1,4 @@
-@@ocaml.text(" TODO: binding -- document.getElementById -- to mount node ")
+/* TODO: binding -- document.getElementById -- to mount node */
 
 type html_element
 

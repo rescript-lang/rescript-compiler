@@ -44,12 +44,14 @@
  * and use the proper interfaces as stated by the apiVersion.
  *
  * -----------------------------
- * Version History:
- * v2: Remove refmt support (removes compiler.reason apis)
+ * Version History: * v2: Remove refmt support (removes compiler.reason apis)
+ * v3: Switched to Uncurried mode by default (requires third party packages
+ to be built with uncurried: true in bsconfig.json). Also added
+ `config.uncurried` to the BundleConfig.
  * *)
-let apiVersion = "2"
+let apiVersion = "3"
 
-module Js = Jsoo_common.Js
+module Js = Js_of_ocaml.Js
 
 let export (field : string) v =
   Js.Unsafe.set (Js.Unsafe.global) field v
@@ -73,12 +75,18 @@ module BundleConfig = struct
     mutable module_system: Js_packages_info.module_system;
     mutable filename: string option;
     mutable warn_flags: string;
+
+    (* This one can't be mutated since we only provide
+       third-party packages that were compiled for uncurried
+       mode *)
+    uncurried: bool;
   }
 
   let make () = {
     module_system=Js_packages_info.NodeJS;
     filename=None;
     warn_flags=Bsc_warnings.defaults_w;
+    uncurried=(!Config.uncurried = Uncurried);
   }
 
 
@@ -191,9 +199,10 @@ end
 (* One time setup for all relevant modules *)
 let () =
   Bs_conditional_initial.setup_env ();
+  (* From now on the default setting will be uncurried mode *)
+  Config.uncurried := Uncurried;
   Clflags.binary_annotations := false;
-  Misc.Color.setup (Some Always);
-  Lazy.force Super_main.setup;
+  Clflags.color := Some Always;
   Lazy.force Res_outcome_printer.setup
 
 let error_of_exn e =
@@ -230,15 +239,15 @@ module ResDriver = struct
     Res_parser.make ~mode src filename
 
   (* get full super error message *)
-  let diagnosticToString ~src (d: Res_diagnostics.t) =
+  let diagnosticToString ~(src: string) (d: Res_diagnostics.t) =
     let startPos = Res_diagnostics.getStartPos(d) in
     let endPos = Res_diagnostics.getEndPos(d) in
     let msg = Res_diagnostics.explain(d) in
     let loc = {loc_start = startPos; Location.loc_end=endPos; loc_ghost=false} in
     let err = { Location.loc; msg; sub=[]; if_highlight=""} in
-    Res_diagnostics_printing_utils.Super_location.super_error_reporter
+    Location.default_error_reporter
+      ~src:(Some src)
       Format.str_formatter
-      src
       err;
     Format.flush_str_formatter ()
 
@@ -317,11 +326,13 @@ module Compile = struct
     Buffer.reset warning_buffer;
     str
 
-  let super_warning_printer loc ppf w =
+  (* We need to overload the original warning printer to capture the warnings
+     as an array *)
+  let playground_warning_printer loc ppf w =
     match Warnings.report w with
       | `Inactive -> ()
       | `Active { Warnings. number; is_error; } ->
-        Super_location.super_warning_printer loc ppf w;
+        Location.default_warning_printer loc ppf w;
         let open LocWarnInfo in
         let fullMsg = flush_warning_buffer () in
         let shortMsg = Warnings.message w in
@@ -336,7 +347,7 @@ module Compile = struct
 
   let () =
     Location.formatter_for_warnings := warning_ppf;
-    Location.warning_printer := super_warning_printer
+    Location.warning_printer := playground_warning_printer
 
   let handle_err e =
     (match error_of_exn e with
@@ -450,7 +461,7 @@ module Compile = struct
     List.iter Iter.iter_structure_item structure.str_items;
     Js.array (!acc |> Array.of_list)
 
-  let implementation ~(config: BundleConfig.t) ~lang str  : Js.Unsafe.obj =
+  let implementation ~(config: BundleConfig.t) ~lang str =
     let {BundleConfig.module_system; warn_flags} = config in
     try
       reset_compiler ();
@@ -469,7 +480,8 @@ module Compile = struct
       let env = Res_compmisc.initial_env () in (* Question ?? *)
       (* let finalenv = ref Env.empty in *)
       let types_signature = ref [] in
-      Js_config.jsx_version := Some Js_config.Jsx_v3; (* default *)
+      Js_config.jsx_version := Some Js_config.Jsx_v4; (* default *)
+      Js_config.jsx_mode := Js_config.Automatic; (* default *)
       let ast = impl (str) in
       let ast = Ppx_entry.rewrite_implementation ast in
       let typed_tree =
@@ -660,6 +672,7 @@ module Export = struct
                              );
                              "warn_flags",
                              inject @@ (Js.string config.warn_flags);
+                             "uncurried", inject @@ (Js.bool config.uncurried);
                            |]))
           );
       |])

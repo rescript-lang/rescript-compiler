@@ -167,10 +167,10 @@ let useUrl = (~serverUrl=?, ()) => {
   React.useEffect0(() => {
     let watcherId = watchUrl(url => setUrl(_ => url))
 
-    @ocaml.doc("
+    /*
       * check for updates that may have occured between
       * the initial state and the subscribe above
-      ")
+      */
     let newUrl = dangerouslyGetInitialUrl()
     if urlNotEqual(newUrl, url) {
       setUrl(_ => newUrl)

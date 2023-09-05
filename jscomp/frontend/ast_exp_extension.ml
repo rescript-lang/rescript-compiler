@@ -26,6 +26,7 @@ open Ast_helper
 let handle_extension e (self : Bs_ast_mapper.mapper)
     (({txt; loc}, payload) : Parsetree.extension) =
   match txt with
+  | "ffi" -> Ast_exp_handle_external.handle_ffi ~loc ~payload
   | "bs.raw" | "raw" ->
     Ast_exp_handle_external.handle_raw ~kind:Raw_exp loc payload
   | "bs.re" | "re" ->
@@ -68,41 +69,6 @@ let handle_extension e (self : Bs_ast_mapper.mapper)
               (Exp.ident ~loc {loc; txt = Lident "timed"})))
     | _ ->
       Location.raise_errorf ~loc "expect a boolean expression in the payload")
-  | "bs.node" | "node" -> (
-    let strip s =
-      match s with
-      | "_module" -> "module"
-      | x -> x
-    in
-    match Ast_payload.as_ident payload with
-    | Some
-        {
-          txt =
-            Lident
-              (("__filename" | "__dirname" | "_module" | "require") as name);
-          loc;
-        } ->
-      let exp = Ast_exp_handle_external.handle_external loc (strip name) in
-      let typ =
-        Ast_core_type.lift_option_type
-          (if name = "_module" then
-           Typ.constr ~loc {txt = Ldot (Lident "Node", "node_module"); loc} []
-          else if name = "require" then
-            Typ.constr ~loc {txt = Ldot (Lident "Node", "node_require"); loc} []
-          else Ast_literal.type_string ~loc ())
-      in
-      Exp.constraint_ ~loc exp typ
-    | Some _ | None -> (
-      match payload with
-      | PTyp _ ->
-        Location.raise_errorf ~loc
-          "Illegal payload, expect an expression payload instead of type \
-           payload"
-      | PPat _ ->
-        Location.raise_errorf ~loc
-          "Illegal payload, expect an expression payload instead of pattern  \
-           payload"
-      | _ -> Location.raise_errorf ~loc "Illegal payload"))
   | "bs.debugger" | "debugger" ->
     {e with pexp_desc = Ast_exp_handle_external.handle_debugger loc payload}
   | "bs.obj" | "obj" -> (

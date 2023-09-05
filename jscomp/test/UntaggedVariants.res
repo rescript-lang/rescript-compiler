@@ -235,3 +235,105 @@ module OverlapObject = {
     | Object(_) => "Object..."
     }
 }
+
+module RecordIsObject = {
+  // @unboxed
+  // this is not allowed
+  type r = {x: int}
+
+  @unboxed
+  type t = Array(array<int>) | Record(r)
+
+  let classify = v =>
+    switch v {
+    | Record({x}) => x
+    | Array(a) => a[0]
+    }
+}
+
+module ArrayAndObject = {
+  @unboxed
+  type t = Record({x: int}) | Array(array<int>)
+
+  let classify = v =>
+    switch v {
+    | Record({x}) => x
+    | Array(a) => a[0]
+    }
+}
+
+module OptionUnboxingHeuristic = {
+  type hasNull = | @as(null) Null | B(int)
+  let testHasNull = (x: hasNull) => Some(x)
+
+  type hasUndefined = | @as(undefined) Undefined | B(int)
+  let testHasUndefined = (x: hasUndefined) => Some(x)
+
+  @unboxed
+  type untaggedWithOptionPayload = A | B(option<string>)
+  let untaggedWithOptionPayload = (x: untaggedWithOptionPayload) => Some(x)
+
+  @unboxed
+  type untaggedWithIntPayload = A | B(int)
+  let untaggedWithIntPayload = (x: untaggedWithIntPayload) => Some(x)
+
+  @unboxed
+  type untaggedInlineNoOption = A | B({x: int})
+  let untaggedInlineNoOptions = (x: untaggedInlineNoOption) => Some(x)
+
+  @unboxed
+  type untaggedInlineUnaryWihtExplicitOption = A | B({x: option<int>})
+  let untaggedInlineUnaryWihtExplicitOption = (x: untaggedInlineUnaryWihtExplicitOption) => Some(x)
+
+  @unboxed
+  type untaggedInlineUnaryWihtImplicitOption = A | B({x?: int})
+  let untaggedInlineUnaryWihtImplicitOption = (x: untaggedInlineUnaryWihtImplicitOption) => Some(x)
+
+  @unboxed
+  type untaggedInlineMultinaryOption = A | B({x: option<int>, y?: string})
+  let untaggedInlineMultinaryOption = (x: untaggedInlineMultinaryOption) => Some(x)
+}
+
+module TestFunctionCase = {
+  @unboxed
+  type t = Array(array<int>) | Record({x:int}) | Function((. int) => int)
+
+  let classify = v =>
+    switch v {
+    | Record({x}) => x
+    | Array(a) => a[0]
+    | Function(f) => f(. 3) 
+    }
+
+    let ff = Function((. x) => x+1)
+}
+
+module ComplexPattern = {
+  @unboxed
+  type rec t =
+    | @as(undefined) Missing
+    | @as(false) False
+    | @as(true) True
+    | @as(null) Null
+    | String(string)
+    | Number(float)
+    | Object(Js.Dict.t<t>)
+    | Array(array<t>)
+
+  type tagged_t =
+    | JSONFalse
+    | JSONTrue
+    | JSONNull
+    | JSONString(string)
+    | JSONNumber(float)
+    | JSONObject(Js.Dict.t<t>)
+    | JSONArray(array<t>)
+
+  let someJson: t = %raw(`'[{"name": "Haan"}, {"name": "Mr"}, false]'`)->Obj.magic
+
+  let check = s =>
+    switch s {
+    | Array([True, False, Array([String("My name is"), Number(10.)])]) => Js.log("yup")
+    | _ => Js.log("Nope...")
+    }
+}

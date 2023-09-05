@@ -3,13 +3,12 @@
   "version": "0.1.0",
   "sources": {
     "dir": "src",
-    "subdirs" : true
-    
+    "subdirs": true
   },
-  "package-specs" : {
+  "package-specs": {
     "module": "commonjs",
     "in-source": true
   },
   "namespace": true,
-  "warnings": {"error": true}
+  "warnings": { "error": true }
 }

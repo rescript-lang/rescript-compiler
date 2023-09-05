@@ -65,7 +65,7 @@ let () =
           Some
             Location.
               (errorf ~loc:(in_file !input_name)
-                 "In this program,@ variant constructors@ `%s and `%s@ \
+                 "In this program,@ variant constructors@ #%s and #%s@ \
                   have the same hash value.@ Change one of them." l l'
               )
       | _ -> None
@@ -3951,8 +3951,56 @@ let rec subtype_rec env trace t1 t2 cstrs =
         end
     | (Tconstr(p1, _, _), _) when generic_private_abbrev env p1 ->
         subtype_rec env trace (expand_abbrev_opt env t1) t2 cstrs
-    | (Tconstr(_, [], _), Tconstr(_, [], _)) -> (* type coercion for records *)
+    | (Tconstr(_, [], _), Tconstr(path, [], _)) when Variant_coercion.can_coerce_path path && 
+        extract_concrete_typedecl env t1 |> Variant_coercion.can_try_coerce_variant_to_primitive |> Option.is_some
+        ->
+      (* type coercion for variants to primitives *)
+      (match Variant_coercion.can_try_coerce_variant_to_primitive (extract_concrete_typedecl env t1) with
+      | Some constructors -> 
+        if constructors |> Variant_coercion.can_coerce_variant ~path then
+          cstrs
+        else 
+          (trace, t1, t2, !univar_pairs)::cstrs
+      | None -> (trace, t1, t2, !univar_pairs)::cstrs)
+    | (Tconstr(_, [], _), Tconstr(_, [], _)) -> (* type coercion for variants and records *)
       (match extract_concrete_typedecl env t1, extract_concrete_typedecl env t2 with
+      | (_, _, {type_kind=Type_variant (c1); type_attributes=t1attrs}), (_, _, {type_kind=Type_variant (c2); type_attributes=t2attrs}) ->
+        if 
+          Variant_coercion.variant_configuration_can_be_coerced t1attrs t2attrs = false 
+        then 
+          (trace, t1, t2, !univar_pairs)::cstrs 
+        else
+          let c1_len = List.length c1 in
+          if c1_len > List.length c2 then (trace, t1, t2, !univar_pairs)::cstrs
+          else
+            let constructor_map = Hashtbl.create c1_len in
+            c2
+            |> List.iter (fun (c : Types.constructor_declaration) ->
+                  Hashtbl.add constructor_map (Ident.name c.cd_id) c);
+            if c1 |> List.for_all (fun (c : Types.constructor_declaration) ->
+                  match (c, Hashtbl.find_opt constructor_map (Ident.name c.cd_id)) with
+                  | ( {Types.cd_args = Cstr_record fields1; cd_attributes=c1_attributes},
+                      Some {Types.cd_args = Cstr_record fields2; cd_attributes=c2_attributes} ) ->
+                      if Variant_coercion.variant_representation_matches c1_attributes c2_attributes then
+                        let violation, tl1, tl2 = Record_coercion.check_record_fields fields1 fields2 in
+                        if violation then false
+                        else
+                          begin try
+                            let lst = subtype_list env trace tl1 tl2 cstrs in
+                            List.length lst = List.length cstrs
+                          with | _ -> false end
+                      else false
+                  | ( {Types.cd_args = Cstr_tuple tl1; cd_attributes=c1_attributes},
+                      Some {Types.cd_args = Cstr_tuple tl2; cd_attributes=c2_attributes} ) ->
+                      if Variant_coercion.variant_representation_matches c1_attributes c2_attributes then
+                        begin try
+                          let lst = subtype_list env trace tl1 tl2 cstrs in
+                          List.length lst = List.length cstrs
+                        with | _ -> false end
+                      else false
+                  | _ -> false)
+            then cstrs
+            else (trace, t1, t2, !univar_pairs)::cstrs
       | (_, _, {type_kind=Type_record (fields1, repr1)}), (_, _, {type_kind=Type_record (fields2, repr2)}) ->
         let same_repr = match repr1, repr2 with
           | (Record_regular | Record_optional_labels _), (Record_regular | Record_optional_labels _) ->
@@ -3962,30 +4010,8 @@ let rec subtype_rec env trace t1 t2 cstrs =
           | Record_extension, Record_extension -> true
           | _ -> false in
         if same_repr then
-          let field_is_optional id repr = match repr with
-            | Record_optional_labels lbls -> List.mem (Ident.name id) lbls
-            | _ -> false in
-          let violation = ref false in
-          let label_decl_sub (acc1, acc2) ld2 =
-            match Ext_list.find_first fields1 (fun ld1 -> ld1.ld_id.name = ld2.ld_id.name) with
-            | Some ld1 ->
-              if field_is_optional ld1.ld_id repr1 && not (field_is_optional ld2.ld_id repr2) then
-                (* optional field can't be cast to non-optional one *)
-                violation := true;
-              let get_as (({txt}, payload) : Parsetree.attribute) =
-                if txt = "as" then Ast_payload.is_single_string payload
-                else None in
-              let get_as_name ld = match Ext_list.filter_map ld.ld_attributes get_as with
-                | [] -> ld.ld_id.name
-                | (s,_)::_ -> s in
-              if get_as_name ld1 <> get_as_name ld2 then violation := true;
-              ld1.ld_type :: acc1, ld2.ld_type :: acc2
-            | None ->
-              (* field must be present *)
-              violation := true;
-              (acc1, acc2) in
-          let tl1, tl2 = List.fold_left label_decl_sub ([], []) fields2 in
-          if !violation
+          let violation, tl1, tl2 = Record_coercion.check_record_fields ~repr1 ~repr2 fields1 fields2 in
+          if violation
           then (trace, t1, t2, !univar_pairs)::cstrs
           else
             subtype_list env trace tl1 tl2 cstrs

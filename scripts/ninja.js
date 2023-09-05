@@ -13,7 +13,6 @@ var othersDir = path.join(jscompDir, "others");
 var testDir = path.join(jscompDir, "test");
 
 var jsDir = path.join(__dirname, "..", "lib", "js");
-var duneBinDir = require("./dune").duneBinDir;
 
 var runtimeFiles = fs.readdirSync(runtimeDir, "ascii");
 var runtimeMlFiles = runtimeFiles.filter(
@@ -434,7 +433,7 @@ function ninjaQuickBuild(
  * @param {BuildList[]} xs
  * @returns {string}
  */
-function ninjaQuickBuidList(xs) {
+function ninjaQuickBuildList(xs) {
   return xs
     .map(x => ninjaQuickBuild(x[0], x[1], x[2], x[3], x[4], x[5], x[6]))
     .join("\n");
@@ -477,20 +476,6 @@ function mllList(cwd, xs) {
     .join("\n");
 }
 
-/**
- *
- * @param {string} cwd
- * @param {string[]} xs
- * @returns {string}
- */
-function mlyList(cwd, xs) {
-  return xs
-    .map(x => {
-      var output = baseName(x) + ".ml";
-      return ninjaQuickBuild(output, x, mlyRuleName, cwd, [], [], []);
-    })
-    .join("\n");
-}
 /**
  *
  * @param {string} name
@@ -851,10 +836,10 @@ async function runtimeNinja(devmode = true) {
 bsc_no_open_flags =  ${commonBsFlags} -bs-cross-module-opt -make-runtime  -nopervasives  -unsafe -w +50 -warn-error A
 bsc_flags = $bsc_no_open_flags -open Bs_stdlib_mini
 ${ruleCC(ninjaCwd)}
-${ninjaQuickBuidList([
+${ninjaQuickBuildList([
   [
     "bs_stdlib_mini.cmi",
-    "bs_stdlib_mini.mli",
+    "bs_stdlib_mini.resi",
     "cc",
     ninjaCwd,
     [["bsc_flags", "-nostdlib -nopervasives"]],
@@ -883,9 +868,12 @@ ${ninjaQuickBuidList([
     switch (ext) {
       case "HAS_MLI":
       case "HAS_BOTH":
+      case "HAS_RESI":
+      case "HAS_BOTH_RES":
         updateDepsKVsByFile(mod + ".cmi", manualDeps, depsMap);
         break;
       case "HAS_ML":
+      case "HAS_RES":
         updateDepsKVsByFile(mod + ".cmj", manualDeps, depsMap);
         break;
     }
@@ -910,18 +898,6 @@ ${ninjaQuickBuidList([
   }
 }
 
-var dTypeString = "TYPE_STRING";
-
-var dTypeInt = "TYPE_INT";
-
-var dTypeFunctor = "TYPE_FUNCTOR";
-
-var dTypeLocalIdent = "TYPE_LOCAL_IDENT";
-
-var dTypeIdent = "TYPE_IDENT";
-
-var dTypePoly = "TYPE_POLY";
-
 var cppoRuleName = `cppo`;
 
 var cppoRule = (flags = "") => `
@@ -937,12 +913,6 @@ rule ${mllRuleName}
     generator = true
 `;
 
-var mlyRuleName = `mly`;
-var mlyRule = `
-rule ${mlyRuleName}
-    command = $ocamlyacc -v --strict $in
-    generator = true
-`;
 async function othersNinja(devmode = true) {
   var compilerTarget = pseudoTarget("$bsc");
   var externalDeps = [
@@ -957,10 +927,10 @@ async function othersNinja(devmode = true) {
 bsc_primitive_flags =  ${commonBsFlags} -bs-cross-module-opt -make-runtime   -nopervasives  -unsafe  -w +50 -warn-error A
 bsc_flags = $bsc_primitive_flags -open Belt_internals
 ${ruleCC(ninjaCwd)}
-${ninjaQuickBuidList([
+${ninjaQuickBuildList([
   [
     ["belt.cmj", "belt.cmi"],
-    "belt.ml",
+    "belt.res",
     "cc",
     ninjaCwd,
     [["bsc_flags", "$bsc_primitive_flags"]],
@@ -978,21 +948,12 @@ ${ninjaQuickBuidList([
   ],
   [
     ["belt_internals.cmi"],
-    "belt_internals.mli",
+    "belt_internals.resi",
     "cc",
     ninjaCwd,
     [["bsc_flags", "$bsc_primitive_flags"]],
     [],
     [compilerTarget],
-  ],
-  [
-    ["node.cmj", "node.cmi"],
-    "node.ml",
-    "cc",
-    ninjaCwd,
-    [], // depends on belt_internals
-    [],
-    [compilerTarget, fileTarget("js.cmi"), fileTarget("belt_internals.cmi")], // need js.cm*
   ],
 ])}
 `;
@@ -1012,12 +973,14 @@ ${ninjaQuickBuidList([
   var othersFiles = othersDirFiles.filter(
     x =>
       !x.startsWith("js") &&
-      x !== "belt.ml" &&
-      x !== "belt_internals.mli" &&
-      x !== "node.ml" &&
-      (x.endsWith(".ml") || x.endsWith(".mli")) &&
+      x !== "belt.res" &&
+      x !== "belt_internals.resi" &&
+      (x.endsWith(".ml") ||
+        x.endsWith(".mli") ||
+        x.endsWith(".res") ||
+        x.endsWith(".resi")) &&
       !x.includes("#") &&
-      !x.includes(".cppo") // we have node ..
+      !x.includes(".cppo")
   );
   var jsTargets = collectTarget(jsPrefixSourceFiles);
   var allJsTargets = scanFileTargets(jsTargets, []);
@@ -1034,13 +997,10 @@ ${ninjaQuickBuidList([
   // belt_xx.cmi we need enforce the order to
   // avoid data race issues
   var beltPackage = fileTarget("belt.cmi");
-  var nodePackage = fileTarget("node.cmi");
   var beltTargets = collectTarget(othersFiles);
   depsMap.forEach((s, k) => {
     if (k.startsWith("belt")) {
       s.add(beltPackage);
-    } else if (k.startsWith("node")) {
-      s.add(nodePackage);
     }
     s.add(js_package);
   });
@@ -1080,7 +1040,7 @@ async function stdlibNinja(devmode = true) {
   var templateStdlibRules = `
 ${bsc_flags} = ${commonBsFlags} -bs-cross-module-opt -make-runtime ${warnings} -I others
 ${ruleCC(ninjaCwd)}
-${ninjaQuickBuidList([
+${ninjaQuickBuildList([
   // we make it still depends on external
   // to enjoy free ride on dev config for compiler-deps
 
@@ -1108,10 +1068,7 @@ ${ninjaQuickBuidList([
   var sources = stdlibDirFiles.filter(x => {
     return (
       !x.startsWith("pervasives.") &&
-      (x.endsWith(".ml") ||
-        x.endsWith(".mli") ||
-        x.endsWith(".res") ||
-        x.endsWith(".resi"))
+      (x.endsWith(".res") || x.endsWith(".resi"))
     );
   });
   let depsMap = new Map();
@@ -1213,7 +1170,8 @@ ${mllList(ninjaCwd, [
     return (
       x.endsWith(".resi") ||
       x.endsWith(".res") ||
-      ((x.endsWith(".ml") || x.endsWith(".mli")) && !x.endsWith("bspack.ml"))
+      x.endsWith(".ml") ||
+      x.endsWith(".mli")
     );
   });
 
@@ -1305,12 +1263,7 @@ function checkEffect() {
       return { file: path.basename(file), effect };
     });
 
-  var black_list = new Set([
-    "caml_int32.js",
-    "caml_int64.js",
-    "caml_lexer.js",
-    "caml_parser.js",
-  ]);
+  var black_list = new Set(["caml_lexer.js", "caml_parser.js"]);
 
   var assert = require("assert");
   // @ts-ignore
@@ -1363,75 +1316,45 @@ include body.ninja
 exports.updateDev = updateDev;
 exports.updateRelease = updateRelease;
 
-/**
- *
- * @param {string} dir
- */
-function readdirSync(dir) {
-  return fs.readdirSync(dir, "ascii");
-}
-/**
- * @type {string[]}
- */
-var black_list = [];
-/**
- *
- * @param {string} dir
- */
-function test(dir) {
-  return readdirSync(path.join(jscompDir, dir))
-    .filter(x => {
-      return (
-        (x.endsWith(".ml") || x.endsWith(".mli")) &&
-        !(x.endsWith(".cppo.ml") || x.endsWith(".cppo.mli")) &&
-        !(x.endsWith(".pp.ml") || x.endsWith(".pp.mli")) &&
-        !black_list.some(name => x.includes(name))
-      );
-    })
-    .map(x => path.join(dir, x));
-}
-
-/**
- * Built cppo.exe for dev purpose
- */
 function preprocessorNinjaSync() {
+  var dTypeString = "TYPE_STRING";
+  var dTypeInt = "TYPE_INT";
+
   var cppoNative = `
-${cppoRule()}
+${cppoRule("-n")}
 ${cppoList("others", [
-  ["belt_HashSetString.ml", "hashset.cppo.ml", dTypeString],
-  ["belt_HashSetString.mli", "hashset.cppo.mli", dTypeString],
-  ["belt_HashSetInt.ml", "hashset.cppo.ml", dTypeInt],
-  ["belt_HashSetInt.mli", "hashset.cppo.mli", dTypeInt],
-  ["belt_HashMapString.ml", "hashmap.cppo.ml", dTypeString],
-  ["belt_HashMapString.mli", "hashmap.cppo.mli", dTypeString],
-  ["belt_HashMapInt.ml", "hashmap.cppo.ml", dTypeInt],
-  ["belt_HashMapInt.mli", "hashmap.cppo.mli", dTypeInt],
-  ["belt_MapString.ml", "map.cppo.ml", dTypeString],
-  ["belt_MapString.mli", "map.cppo.mli", dTypeString],
-  ["belt_MapInt.ml", "map.cppo.ml", dTypeInt],
-  ["belt_MapInt.mli", "map.cppo.mli", dTypeInt],
-  ["belt_SetString.ml", "belt_Set.cppo.ml", dTypeString],
-  ["belt_SetString.mli", "belt_Set.cppo.mli", dTypeString],
-  ["belt_SetInt.ml", "belt_Set.cppo.ml", dTypeInt],
-  ["belt_SetInt.mli", "belt_Set.cppo.mli", dTypeInt],
-  ["belt_MutableMapString.ml", "mapm.cppo.ml", dTypeString],
-  ["belt_MutableMapString.mli", "mapm.cppo.mli", dTypeString],
-  ["belt_MutableMapInt.ml", "mapm.cppo.ml", dTypeInt],
-  ["belt_MutableMapInt.mli", "mapm.cppo.mli", dTypeInt],
-  ["belt_MutableSetString.ml", "setm.cppo.ml", dTypeString],
-  ["belt_MutableSetString.mli", "setm.cppo.mli", dTypeString],
-  ["belt_MutableSetInt.ml", "setm.cppo.ml", dTypeInt],
-  ["belt_MutableSetInt.mli", "setm.cppo.mli", dTypeInt],
-  ["belt_SortArrayString.ml", "sort.cppo.ml", dTypeString],
-  ["belt_SortArrayString.mli", "sort.cppo.mli", dTypeString],
-  ["belt_SortArrayInt.ml", "sort.cppo.ml", dTypeInt],
-  ["belt_SortArrayInt.mli", "sort.cppo.mli", dTypeInt],
-  ["belt_internalMapString.ml", "internal_map.cppo.ml", dTypeString],
-  ["belt_internalMapInt.ml", "internal_map.cppo.ml", dTypeInt],
-  ["belt_internalSetString.ml", "internal_set.cppo.ml", dTypeString],
-  ["belt_internalSetInt.ml", "internal_set.cppo.ml", dTypeInt],
-  ["js_typed_array.ml", "js_typed_array.cppo.ml", ""],
-  ["js_typed_array2.ml", "js_typed_array2.cppo.ml", ""],
+  ["belt_HashSetString.res", "hashset.cppo.res", dTypeString],
+  ["belt_HashSetString.resi", "hashset.cppo.resi", dTypeString],
+  ["belt_HashSetInt.res", "hashset.cppo.res", dTypeInt],
+  ["belt_HashSetInt.resi", "hashset.cppo.resi", dTypeInt],
+  ["belt_HashMapString.res", "hashmap.cppo.res", dTypeString],
+  ["belt_HashMapString.resi", "hashmap.cppo.resi", dTypeString],
+  ["belt_HashMapInt.res", "hashmap.cppo.res", dTypeInt],
+  ["belt_HashMapInt.resi", "hashmap.cppo.resi", dTypeInt],
+  ["belt_MapString.res", "map.cppo.res", dTypeString],
+  ["belt_MapString.resi", "map.cppo.resi", dTypeString],
+  ["belt_MapInt.res", "map.cppo.res", dTypeInt],
+  ["belt_MapInt.resi", "map.cppo.resi", dTypeInt],
+  ["belt_SetString.res", "belt_Set.cppo.res", dTypeString],
+  ["belt_SetString.resi", "belt_Set.cppo.resi", dTypeString],
+  ["belt_SetInt.res", "belt_Set.cppo.res", dTypeInt],
+  ["belt_SetInt.resi", "belt_Set.cppo.resi", dTypeInt],
+  ["belt_MutableMapString.res", "mapm.cppo.res", dTypeString],
+  ["belt_MutableMapString.resi", "mapm.cppo.resi", dTypeString],
+  ["belt_MutableMapInt.res", "mapm.cppo.res", dTypeInt],
+  ["belt_MutableMapInt.resi", "mapm.cppo.resi", dTypeInt],
+  ["belt_MutableSetString.res", "setm.cppo.res", dTypeString],
+  ["belt_MutableSetString.resi", "setm.cppo.resi", dTypeString],
+  ["belt_MutableSetInt.res", "setm.cppo.res", dTypeInt],
+  ["belt_MutableSetInt.resi", "setm.cppo.resi", dTypeInt],
+  ["belt_SortArrayString.res", "sort.cppo.res", dTypeString],
+  ["belt_SortArrayString.resi", "sort.cppo.resi", dTypeString],
+  ["belt_SortArrayInt.res", "sort.cppo.res", dTypeInt],
+  ["belt_SortArrayInt.resi", "sort.cppo.resi", dTypeInt],
+  ["belt_internalMapString.res", "internal_map.cppo.res", dTypeString],
+  ["belt_internalMapInt.res", "internal_map.cppo.res", dTypeInt],
+  ["belt_internalSetString.res", "internal_set.cppo.res", dTypeString],
+  ["belt_internalSetInt.res", "internal_set.cppo.res", dTypeInt],
 ])}
 
 rule copy
@@ -1448,15 +1371,9 @@ rule copy
 }
 
 function main() {
-  var emptyCount = 2;
-  var isPlayground = false;
   if (require.main === module) {
     if (process.argv.includes("-check")) {
       checkEffect();
-    }
-    if (process.argv.includes("-playground")) {
-      isPlayground = true;
-      emptyCount++;
     }
 
     var subcommand = process.argv[2];
@@ -1468,13 +1385,6 @@ function main() {
             cwd: jscompDir,
             stdio: [0, 1, 2],
           });
-          if (!isPlayground) {
-            cp.execFileSync(path.join(duneBinDir, "cmij"), {
-              encoding: "utf8",
-              cwd: jscompDir,
-              stdio: [0, 1, 2],
-            });
-          }
         } catch (e) {
           console.log(e.message);
           console.log(`please run "./scripts/ninja.js config" first`);
@@ -1529,7 +1439,7 @@ function main() {
         `);
         break;
       default:
-        if (process.argv.length === emptyCount) {
+        if (process.argv.length === 2) {
           updateDev();
           updateRelease();
         } else {

@@ -27,12 +27,11 @@ let xs = map([1, 1, 2], (x, y) => y + x + 1)
 
 @val external hi: (@uncurry(1) (unit => unit)) => int = "hi"
 
-@@ocaml.text(" 
+/*
 fun (_){
     f 0
 }
-
-")
+*/
 
 let f_0 = () => hi(() => ())
 let f_01 = () =>
@@ -78,7 +77,7 @@ external optional_cb: (
   string,
 ) => int = "optional_cb"
 
-@@ocaml.text(/*
+/*
 let fishy_unit = fun () -> Js.log 1 
 
 let fishy_unit_2 = fun [@bs] (() as x) -> Js.log x
@@ -133,10 +132,10 @@ let f : expected =
     ~lo:3 
     ()
 */
+/*
 " we auto-uncurry 
 so the inferred type would be 
-")
-
+*/
 /*
 let v = ref 0  
 

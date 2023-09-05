@@ -1,12 +1,6 @@
 {
   "name": "duplicated-symlinked-packages",
   "version": "0.1.0",
-  "sources": [
-    "src"
-  ],
-  "bs-dependencies" : [
-    "a",
-    "b",
-    "z"
-  ]
+  "sources": ["src"],
+  "bs-dependencies": ["a", "b", "z"]
 }

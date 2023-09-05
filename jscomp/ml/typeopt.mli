@@ -34,7 +34,7 @@ val classify_lazy_argument : Typedtree.expression ->
                              | `Identifier of [`Forward_value | `Other]
                              | `Other]
 
-val cannot_inhabit_none_like_value:
+val type_cannot_contain_undefined:
   Types.type_expr ->
   Env.t -> 
   bool

@@ -1,6 +1,6 @@
 let v = ref(0)
 
-@ocaml.doc(" Test when i is captured 
+/** Test when i is captured 
     {[
     ((fun _ -> j = i; (fun _ -> v := !v + j)) ())
     ]}
@@ -36,7 +36,7 @@ This means inline is tricky in javascript, here we try to inline [_loop]?
     
 
 
- ")
+ */
 let f = () => {
   let n = 10
   let arr = Array.make(10, _ => ())

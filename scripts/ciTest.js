@@ -61,13 +61,6 @@ function runTests() {
   if (bsbTest) {
     console.log("Doing build_tests");
     var buildTestDir = path.join(__dirname, "..", "jscomp", "build_tests");
-    var linkCmd = `npm link ../..`;
-    console.log(linkCmd);
-    cp.execSync(linkCmd, {
-      cwd: buildTestDir,
-      stdio: [0, 1, 2],
-      encoding: "utf8",
-    });
     var files = fs.readdirSync(buildTestDir);
     files.forEach(function (file) {
       var testDir = path.join(buildTestDir, file);
@@ -86,10 +79,10 @@ function runTests() {
             console.log(stdout);
 
             if (error !== null) {
-              console.log(stderr);
-              throw new Error(`❌ error in ${file}: \n${error} `);
+              console.log(`❌ error in ${file} with stderr:\n`, stderr);
+              throw error;
             } else {
-              console.log("✅ success in ", file);
+              console.log("✅ success in", file);
             }
           }
         );

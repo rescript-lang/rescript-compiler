@@ -7,7 +7,7 @@ let f = ((c, d)) => {
   Js.log2(a, b)
 }
 
-@@ocaml.text(" escape analysis to avoid allocation
+/* escape analysis to avoid allocation
     {[
       let match/xx = [a,b,c]
       ]}
@@ -22,7 +22,7 @@ let f = ((c, d)) => {
 
     This also applies to [reference]
     exception allocation
-")
+*/
 
 type t = {x: int, y: int}
 

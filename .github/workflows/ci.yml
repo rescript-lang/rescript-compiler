@@ -3,6 +3,11 @@ name: CI
 on:
   push:
     branches: [master]
+    # See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#filter-pattern-cheat-sheet
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+      - "v[0-9]+.[0-9]+.[0-9]+-*"
+
   pull_request:
     branches: [master]
 
@@ -122,7 +127,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          fetch-depth: 2 # to be able to check for changes in subfolder res_syntax later
+          fetch-depth: 2 # to be able to check for changes in subfolder jscomp/syntax later
 
       - name: Download static linux binaries
         if: runner.os == 'Linux'
@@ -175,7 +180,7 @@ jobs:
         id: syntax-diff
         shell: bash
         run: |
-          if git diff --name-only --exit-code HEAD^ HEAD -- res_syntax; then
+          if git diff --name-only --exit-code HEAD^ HEAD -- jscomp/syntax; then
             echo "syntax_status=unchanged" >> $GITHUB_ENV
           else
             echo "syntax_status=changed" >> $GITHUB_ENV
@@ -198,6 +203,9 @@ jobs:
       - name: Check for changes in lib folder
         run: git diff --exit-code lib/js lib/es6
 
+      - name: Populate lib/ocaml
+        run: ./scripts/prebuilt.js
+
       - name: Run tests
         if: runner.os != 'Windows'
         run: node scripts/ciTest.js -all
@@ -206,10 +214,31 @@ jobs:
         if: runner.os == 'Windows'
         run: node scripts/ciTest.js -mocha -theme -format
 
-      - name: Prepare artifact upload
+      # Build the playground compiler on our fastest runner (macOS ARM)
+      - name: Install JSOO
+        if: matrix.os == 'macos-arm'
+        run: opam install js_of_ocaml.4.0.0
+
+      - name: Build playground compiler
+        if: matrix.os == 'macos-arm'
         run: |
-          ./scripts/prebuilt.js
-          node .github/workflows/get_artifact_info.js
+          opam exec -- node packages/playground-bundling/scripts/generate_cmijs.js
+          opam exec -- dune build --profile browser
+          cp ./_build/default/jscomp/jsoo/jsoo_playground_main.bc.js playground/compiler.js
+
+      - name: Test playground compiler
+        if: matrix.os == 'macos-arm'
+        run: node playground/playground_test.js
+
+      - name: Upload playground compiler to CDN
+        if: ${{ matrix.os == 'macos-arm' && startsWith(github.ref, 'refs/tags/v') }}
+        env:
+          KEYCDN_USER: ${{ secrets.KEYCDN_USER }}
+          KEYCDN_PASSWORD: ${{ secrets.KEYCDN_PASSWORD }}
+        run: sh playground/upload_bundle.sh
+
+      - name: Prepare artifact upload
+        run: node .github/workflows/get_artifact_info.js
 
       - name: "Upload artifacts: binaries"
         uses: actions/upload-artifact@v3
@@ -223,15 +252,6 @@ jobs:
         with:
           name: lib-ocaml
           path: lib/ocaml
-
-      - name: "Upload artifacts: cmi cache"
-        if: runner.os == 'Linux'
-        uses: actions/upload-artifact@v3
-        with:
-          name: cmij-cache
-          path: |
-            lib/cmi_cache.bin
-            lib/cmj_cache.bin
 
   package:
     needs: build
@@ -270,17 +290,20 @@ jobs:
         run: npm pack
         working-directory: packages/std
 
-      - name: Get package info
+      - name: Prepare package upload
         # For pull requests, pass the correct commit SHA explicitly as GITHUB_SHA points to the wrong commit.
-        run: node .github/workflows/get_package_info.js ${{ github.event.pull_request.head.sha }}
+        run: node .github/workflows/prepare_package_upload.js ${{ github.event.pull_request.head.sha }}
 
       - name: "Upload artifact: npm packages"
         uses: actions/upload-artifact@v3
         with:
           name: npm-packages
           path: |
-            ${{ env.rescript_package }}
-            ${{ env.stdlib_package }}
+            rescript-${{ env.rescript_version }}.tgz
+            rescript-std-${{ env.rescript_version }}.tgz
+
+    outputs:
+      rescript_version: ${{ env.rescript_version }}
 
   installationTest:
     needs: package
@@ -314,7 +337,7 @@ jobs:
           path: packages/test
 
       - name: Install ReScript package
-        run: npm i rescript-11*.tgz
+        run: npm i rescript-${{ needs.package.outputs.rescript_version }}.tgz
         shell: bash
         working-directory: packages/test
 
@@ -322,3 +345,29 @@ jobs:
         run: npx rescript -h && npx rescript build && cat src/Test.bs.js
         shell: bash
         working-directory: packages/test
+
+  publish:
+    needs: [package, installationTest]
+
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          registry-url: https://registry.npmjs.org # Needed to make auth work for publishing
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: npm-packages
+
+      - name: Publish packages on npm with tag "ci"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
+        run: |
+          npm publish rescript-${{ needs.package.outputs.rescript_version }}.tgz --tag ci
+          npm publish rescript-std-${{ needs.package.outputs.rescript_version }}.tgz --tag ci

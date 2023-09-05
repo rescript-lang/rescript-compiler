@@ -48,8 +48,8 @@ let v_ice_cream4: list<u> = list{
 
 @obj external label_test: (~x__ignore: int, unit) => _ = ""
 
-@ocaml.doc(" here the type label should be the same, 
-    when get the object, it will be mangled ")
+/** here the type label should be the same, 
+    when get the object, it will be mangled */    
 type label_expect = {"x__ignore": int}
 
 let vv: label_expect = label_test(~x__ignore=3, ())

@@ -116,7 +116,7 @@ let f = children =>
     }
   }
 
-@@ocaml.text(/*
+/*
                                     match children with 
                                     | [] ->   [|a0;a1;a2;a3;a4;a5;a6;a7;a8;a9;a10;a11;a12;a13;a14;a15;a16|]
                                     | a17::children -> 
@@ -132,13 +132,13 @@ let f = children =>
 
 */
 
-" This function seems to trigger quadratice behavior with the length of [children] 
+/* This function seems to trigger quadratice behavior with the length of [children] 
                                           memory consumption is okay
                                           17 -> 4s
                                           18 -> 9s
                                           19 -> 19s
                                           20 -> 40s
-                                      ")
+                                      */
 /*
 let f children = 
   match children with

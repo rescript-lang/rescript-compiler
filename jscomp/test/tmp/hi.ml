@@ -1,2 +1,0 @@
-let b = Hey.a
-

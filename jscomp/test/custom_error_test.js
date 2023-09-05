@@ -2,7 +2,6 @@
 'use strict';
 
 var Js_exn = require("../../lib/js/js_exn.js");
-var Caml_option = require("../../lib/js/caml_option.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
 function test_js_error(param) {
@@ -18,7 +17,7 @@ function test_js_error(param) {
     }
     throw err;
   }
-  return Caml_option.some(e);
+  return e;
 }
 
 function test_js_error2(param) {
@@ -48,12 +47,12 @@ function example1(param) {
     }
     throw err;
   }
-  return Caml_option.some(v);
+  return v;
 }
 
 function example2(param) {
   try {
-    return Caml_option.some(JSON.parse(" {\"x\"}"));
+    return JSON.parse(" {\"x\"}");
   }
   catch (raw_exn){
     var exn = Caml_js_exceptions.internalToOCamlException(raw_exn);

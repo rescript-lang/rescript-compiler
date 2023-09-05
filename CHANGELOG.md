@@ -10,7 +10,140 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# 11.0.0-alpha.5 (Unreleased)
+# 11.0.0-rc.4 (Unreleased)
+
+# 11.0.0-rc.3
+
+#### :bug: Bug Fix
+
+- Fix issue with JSX V4 when component props have the default value with same name. https://github.com/rescript-lang/rescript-compiler/pull/6377
+- Fixed code formatter with `"uncurried": false` in bsconfig. https://github.com/rescript-lang/rescript-compiler/pull/6378
+
+#### :nail_care: Polish
+
+- Add [`Bun`](https://bun.sh) to reserved names, so that modules named `Bun` don't clash with the globally exposed `Bun` object. https://github.com/rescript-lang/rescript-compiler/pull/6381
+
+# 11.0.0-rc.2
+
+#### :rocket: New Feature
+
+- `rescript build` will always build its dependency by default. The argument `-with-deps` is not needed anymore. https://github.com/rescript-lang/rescript-compiler/pull/6350
+
+#### :boom: Breaking Change
+
+- Stop mangling object field names. If you had objects with field names containing "__" or leading "_", they won't be mangled in the compiled JavaScript and represented as it is without changes. https://github.com/rescript-lang/rescript-compiler/pull/6354
+
+#### :bug: Bug Fix
+
+- Fixed outcome printer resolution of uncurried config. https://github.com/rescript-lang/rescript-compiler/pull/6353
+
+# 11.0.0-rc.1
+
+#### :rocket: New Feature
+
+- GenType: Propagate comments from record fields to emitted TypeScript types. https://github.com/rescript-lang/rescript-compiler/pull/6333
+
+#### :boom: Breaking Change
+
+- `$$default` is no longer exported from the generated JavaScript when using default exports. https://github.com/rescript-lang/rescript-compiler/pull/6328
+
+#### :nail_care: Polish
+
+- Conditionally print error message about record with missing label potentially being a component. https://github.com/rescript-lang/rescript-compiler/pull/6337
+- Put definition in the bottom and the actual error at the top when reporting errors for supplying fields etc with the wrong name. https://github.com/rescript-lang/rescript-compiler/pull/6336
+- Fix left over places where polyvariant tag names were printed in OCaml syntax instead of ReScript. https://github.com/rescript-lang/rescript-compiler/pull/6348
+
+# 11.0.0-beta.4
+
+#### :rocket: New Feature
+
+- Variants: Allow coercing from variant to variant where applicable. https://github.com/rescript-lang/rescript-compiler/pull/6314
+- Variants: Experimental support for spreading variant type definitions to copy constructors from one variant to another. https://github.com/rescript-lang/rescript-compiler/pull/6316
+
+#### :boom: Breaking Change
+
+- Fixed name collision between the newly defined Js.Json.t and the variant constructor in the existing Js.Json.kind type. To address this, the usage of the existing Js.Json.kind type can be updated to Js.Json.Kind.t. https://github.com/rescript-lang/rescript-compiler/pull/6317
+
+#### :bug: Bug Fix
+
+- Fixed outcome printing of uncurried higher order function types. https://github.com/rescript-lang/rescript-compiler/pull/6323
+- Fixed printing of type constraints in template literal substitutions. https://github.com/rescript-lang/rescript-compiler/pull/6324
+
+# 11.0.0-beta.3
+
+#### :rocket: New Feature
+
+- Untagged variants: consider regexp as an object type. https://github.com/rescript-lang/rescript-compiler/pull/6296
+- Semantic-based optimization of code generated for untagged variants. https://github.com/rescript-lang/rescript-compiler/issues/6108
+- Record type spreads: Allow using type variables in type spreads. Both uninstantiated and instantiated ones. https://github.com/rescript-lang/rescript-compiler/pull/6309
+- Variants: Allow coercing variants to string/int/float when applicable. https://github.com/rescript-lang/rescript-compiler/pull/6311
+
+#### :bug: Bug Fix
+
+- Fix issue with dynamic import of modules in expressions. https://github.com/rescript-lang/rescript-compiler/pull/6310
+
+# 11.0.0-beta.2
+
+#### :rocket: New Feature
+
+- Introduced a new  `%ffi` extension (*experimental* - not for production use!) that provides a more robust mechanism for JavaScript function interoperation by considering function arity in type constraints. This enhancement improves safety when dealing with JavaScript functions by enforcing type constraints based on the arity of the function. https://github.com/rescript-lang/rescript-compiler/pull/6251
+- Extended untagged variants with function types. https://github.com/rescript-lang/rescript-compiler/pull/6279
+
+#### :boom: Breaking Change
+
+- Remove rudimentary node bindings and undocumented `%node` extension. https://github.com/rescript-lang/rescript-compiler/pull/6285
+
+#### :bug: Bug Fix
+
+- Fix issue where uncurried type internals leak in type error. https://github.com/rescript-lang/rescript-compiler/pull/6264
+- Improve error messages for untagged variant definition. https://github.com/rescript-lang/rescript-compiler/pull/6290
+- Fix type checking performance issue for large records. https://github.com/rescript-lang/rescript-compiler/pull/6289
+
+# 11.0.0-beta.1
+
+#### :rocket: Main New Feature
+
+- Make uncurried mode opt-out: by default, every project is now in uncurried mode, unless `"uncurried": false` is specified in the project config. https://github.com/rescript-lang/rescript-compiler/pull/6249
+
+#### :nail_care: Polish
+
+- Removed duplicate Super_error implementation in syntax. https://github.com/rescript-lang/rescript-compiler/pull/6246
+
+#### :bug: Bug Fix
+
+- Fix issue with inlining records in the presence of record coercion. https://github.com/rescript-lang/rescript-compiler/pull/6256
+
+# 11.0.0-alpha.6
+
+#### :boom: Breaking Change
+
+- `-bs-super-errors` flag has been deprecated along with Super_errors. https://github.com/rescript-lang/rescript-compiler/pull/6243
+- `@rescript/react` >= 0.12.0-alpha.2 is now required because of the React.fragment's children type fix. https://github.com/rescript-lang/rescript-compiler/pull/6238
+
+#### :bug: Bug Fix
+
+- Remove unnecessary require and import statements when using dynamic imports. https://github.com/rescript-lang/rescript-compiler/pull/6232
+- Fix option unboxing logic in the presence of untagged variants. https://github.com/rescript-lang/rescript-compiler/pull/6233
+- Fix printing of local module with type. https://github.com/rescript-lang/rescript-compiler/issues/6212
+- Adapting JSX4 to React.fragment's children type change (`'children` -> `React.element`) https://github.com/rescript-lang/rescript-compiler/pull/6238
+
+#### :nail_care: Polish
+
+- In uncurried mode, outcome printer swaps curried and uncurries function printing compared to legacy.
+- Add location information to duplicate type definition error messages. https://github.com/rescript-lang/rescript-compiler/pull/6199
+- Replace normal module errors with Super_error module, and clean up Super_error. https://github.com/rescript-lang/rescript-compiler/pull/6199
+- `Js.Json.t`, `Js.null` and `Js.nullable` are now untagged variants representing their runtime values, instead of abstract types. https://github.com/rescript-lang/rescript-compiler/pull/6218
+
+# 11.0.0-alpha.5
+
+#### :rocket: Main New Feature
+
+- Add support for Dynamic import. https://github.com/rescript-lang/rescript-compiler/pull/5703
+- GenType: Add `moduleResolution` option to customize extensions on emitted import statements. This helps to adjust output compatibility with TypeScript projects using ESM. https://github.com/rescript-lang/rescript-compiler/pull/6182
+  - `node` (default): Drop extensions.
+  - `node16`: Use TS output's extensions. Make it ESM-compatible.
+  - `bundler`: Use TS input's extensions. Make it ESM-compatible.
+- Make untagged variants understand payloads defined as records. https://github.com/rescript-lang/rescript-compiler/pull/6208
 
 #### :boom: Breaking Change
 
@@ -19,6 +152,9 @@
 #### :bug: Bug Fix
 
 - Make "rescript format" work with node 10 again and set minimum required node version to 10 in package.json. https://github.com/rescript-lang/rescript-compiler/pull/6186
+- Fix partial application for uncurried functions with labeled args https://github.com/rescript-lang/rescript-compiler/pull/6198
+- Add error messages for dangling doc comments/attributes and mutable in record type definition. https://github.com/rescript-lang/rescript-compiler/pull/6206
+- Fix issue with overlapping array and object in untagged variants https://github.com/rescript-lang/rescript-compiler/pull/6219
 
 # 11.0.0-alpha.4
 
@@ -358,7 +494,6 @@ These are only breaking changes for unformatted code.
 
 #### :boom: Breaking Change
 
-- Vendor genType, which does not need to be installed separately anymore. **Only TypeScript back-end** supported.
 - Pipe `->` does not support a code block on the right-hand side e.g. `x->{ open A; get("test") }`
 
 #### :rocket: New Feature
@@ -398,6 +533,8 @@ These are only breaking changes for unformatted code.
 - Changed return type of `Js.String.match_` as it was wrong. [#5070](https://github.com/rescript-lang/rescript-compiler/pull/5070)
   - Example: any use of `Js.String.match_` and `Js.String2.match_`
   - Fix: follow the type errors
+- GenType is now vendored in the compiler and drops support for the Flow and untyped back-ends to focus on providing a better experience for TypeScript.
+  - Fix: keep on using the older version of the compiler and the separate genType package if Flow support is required. Migrate to TS if one wants to upgrade the compiler version.
 
 #### :rocket: New Feature
 

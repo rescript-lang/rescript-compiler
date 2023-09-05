@@ -86,11 +86,8 @@ let readCmt cmtFile =
   try Cmt_format.read_cmt cmtFile
   with Cmi_format.Error _ ->
     Log_.item "Error loading %s\n\n" cmtFile;
-    Log_.item
-      "It looks like you might be using an old version of Bucklescript, or \
-       have stale compilation artifacts.\n";
-    Log_.item "Check that bs-platform is version 6.2.x or later.\n";
-    Log_.item "And try to clean and rebuild.\n\n";
+    Log_.item "It looks like you might have stale compilation artifacts.\n";
+    Log_.item "Try to clean and rebuild.\n\n";
     assert false
 
 let processCmtFile cmt =
@@ -103,8 +100,8 @@ let processCmtFile cmt =
     let fileName = cmt |> Paths.getModuleName in
     let isInterface = Filename.check_suffix cmtFile ".cmti" in
     let resolver =
-      ModuleResolver.createLazyResolver ~config
-        ~extensions:[".res"; EmitType.shimExtension] ~excludeFile:(fun fname ->
+      ModuleResolver.createLazyResolver ~config ~extensions:[".res"; ".shim.ts"]
+        ~excludeFile:(fun fname ->
           fname = "React.res" || fname = "ReasonReact.res")
     in
     let inputCMT, hasGenTypeAnnotations =

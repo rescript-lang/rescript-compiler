@@ -103,8 +103,8 @@ function functionWithRenamedArgs(_to, _Type, cb) {
 }
 
 function Hooks$WithRename$componentWithRenamedArgs(Props) {
-  var _to = Props.to;
-  var _Type = Props.Type;
+  var _to = Props._to;
+  var _Type = Props._Type;
   var cb = Props.cb;
   Curry._1(cb, _to);
   return _to.name + _Type.name;
@@ -205,7 +205,6 @@ var $$default = Hooks;
 
 export {
   make ,
-  $$default ,
   $$default as default,
   Another ,
   Inner ,

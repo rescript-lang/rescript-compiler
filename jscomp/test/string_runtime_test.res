@@ -1,12 +1,12 @@
 module S = Caml_string
-@ocaml.doc(" TODO: performance could be improved, however, 
+/** TODO: performance could be improved, however, 
     this function is not in critical Path
- ")
+ */
 module B = Caml_bytes
 
-@ocaml.doc(" TODO: performance could be improved, however, 
+/** TODO: performance could be improved, however, 
     this function is not in critical Path
- ")
+ */
 let suites = {
   open Mt
   list{

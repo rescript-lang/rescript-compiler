@@ -80,7 +80,6 @@ export {
   returnedFromHigherOrder ,
   convertVariant ,
   polymorphic ,
-  $$default ,
   $$default as default,
 }
 /* roundedNumber Not a pure module */

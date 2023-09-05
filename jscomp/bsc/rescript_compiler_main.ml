@@ -25,8 +25,7 @@ let setup_compiler_printer (syntax_kind : [ syntax_kind | `default])=
    | `default -> ()  
    | #syntax_kind as k -> Config.syntax_kind := k);   
   let syntax_kind = !Config.syntax_kind in
-  if syntax_kind = `rescript then begin 
-    Lazy.force Super_main.setup;  
+  if syntax_kind = `rescript then begin
     Lazy.force Res_outcome_printer.setup  
   end  
 
@@ -206,7 +205,6 @@ let print_version_string () =
 
 let [@inline] set s : Bsc_args.spec = Unit (Unit_set s)
 let [@inline] clear s : Bsc_args.spec = Unit (Unit_clear s)
-let [@inline] unit_lazy s : Bsc_args.spec = Unit(Unit_lazy s)
 let [@inline] string_call s : Bsc_args.spec = 
   String (String_call s)
 let [@inline] string_optional_set s : Bsc_args.spec = 
@@ -294,9 +292,8 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
 
     (******************************************************************************)
 
-
-    "-bs-super-errors", unit_lazy Super_main.setup,
-    "*internal* Better error message combined with other tools ";
+    "-bs-super-errors", unit_call (fun _ -> ()),
+    "*deprecated* Better error message combined with other tools ";
 
     "-unboxed-types", set Clflags.unboxed_types,
     "*internal* Unannotated unboxable types will be unboxed";
@@ -472,6 +469,8 @@ let file_level_flags_handler (e : Parsetree.expression option) =
 
 let _ : unit =   
   Bs_conditional_initial.setup_env ();
+  Clflags.color := Some Always;
+    
   let flags = "flags" in 
   Ast_config.add_structure 
     flags file_level_flags_handler;    

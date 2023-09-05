@@ -1,8 +1,6 @@
 {
   "name": "hyphen2",
   "version": "0.1.0",
-  "sources": [
-    "y-src"
-  ],
+  "sources": ["y-src"],
   "namespace": true
 }

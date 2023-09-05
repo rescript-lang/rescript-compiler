@@ -13,21 +13,6 @@ let fileHeader ~sourceFile =
     ~lines:["TypeScript file generated from " ^ sourceFile ^ " by genType."]
   ^ "/* eslint-disable import/first */\n\n"
 
-let generatedFilesExtension ~(config : Config.t) =
-  match config.generatedFileExtension with
-  | Some s ->
-    (* from .foo.bar to .foo *)
-    Filename.remove_extension s
-  | None -> ".gen"
-
-let outputFileSuffix ~(config : Config.t) =
-  match config.generatedFileExtension with
-  | Some s when Filename.extension s <> "" (* double extension  *) -> s
-  | _ -> generatedFilesExtension ~config ^ ".tsx"
-
-let generatedModuleExtension ~config = generatedFilesExtension ~config
-let shimExtension = ".shim.ts"
-
 let interfaceName ~(config : Config.t) name =
   match config.exportInterfaces with
   | true -> "I" ^ name
@@ -62,6 +47,7 @@ let typeReactRef ~type_ =
           nameJS = reactRefCurrent;
           optional = Mandatory;
           type_ = Null type_;
+          docString = DocString.empty;
         };
       ] )
 
@@ -183,6 +169,7 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
         nameJS = name;
         optional = Mandatory;
         type_ = TypeVar value;
+        docString = DocString.empty;
       }
     in
     let fields fields =
@@ -199,7 +186,14 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
                |> field ~name:(Runtime.jsVariantTag ~polymorphic:false)
              in
              match (unboxed, type_) with
-             | true, type_ -> type_ |> render
+             | true, type_ ->
+               let needParens =
+                 match type_ with
+                 | Function _ -> true
+                 | _ -> false
+               in
+               let t = type_ |> render in
+               if needParens then EmitText.parens [t] else t
              | false, type_ when polymorphic ->
                (* poly variant *)
                [
@@ -240,7 +234,7 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
            ^ "| "))
 
 and renderField ~config ~indent ~typeNameIsInterface ~inFunType
-    {mutable_; nameJS = lbl; optional; type_} =
+    {mutable_; nameJS = lbl; optional; type_; docString} =
   let optMarker =
     match optional == Optional with
     | true -> "?"
@@ -257,8 +251,15 @@ and renderField ~config ~indent ~typeNameIsInterface ~inFunType
     | false -> EmitText.quotes lbl
   in
 
-  Indent.break ~indent ^ mutMarker ^ lbl ^ optMarker ^ ": "
-  ^ (type_ |> renderType ~config ~indent ~typeNameIsInterface ~inFunType)
+  let defStr =
+    mutMarker ^ lbl ^ optMarker ^ ": "
+    ^ (type_ |> renderType ~config ~indent ~typeNameIsInterface ~inFunType)
+  in
+  if DocString.hasContent docString then
+    (* Always print comments on newline before definition. *)
+    let indentStr = indent |> Option.value ~default:"" in
+    "\n" ^ indentStr ^ DocString.render docString ^ indentStr ^ defStr
+  else Indent.break ~indent ^ defStr
 
 and renderFields ~config ~indent ~inFunType ~typeNameIsInterface fields =
   let indent1 = indent |> Indent.more in
@@ -310,12 +311,13 @@ let typeToString ~config ~typeNameIsInterface type_ =
 let ofType ~config ~typeNameIsInterface ~type_ s =
   s ^ ": " ^ (type_ |> typeToString ~config ~typeNameIsInterface)
 
-let emitExportConst ~early ?(comment = "") ~config ?(docString = "") ~emitters
-    ~name ~type_ ~typeNameIsInterface line =
+let emitExportConst ~early ?(comment = "") ~config
+    ?(docString = DocString.empty) ~emitters ~name ~type_ ~typeNameIsInterface
+    line =
   (match comment = "" with
   | true -> comment
   | false -> "// " ^ comment ^ "\n")
-  ^ docString ^ "export const "
+  ^ DocString.render docString ^ "export const "
   ^ (name |> ofType ~config ~typeNameIsInterface ~type_)
   ^ " = " ^ line
   |> (match early with
@@ -327,7 +329,8 @@ let emitExportDefault ~emitters name =
   "export default " ^ name ^ ";" |> Emitters.export ~emitters
 
 let emitExportType ~(config : Config.t) ~emitters ~nameAs ~opaque ~type_
-    ~typeNameIsInterface ~typeVars resolvedTypeName =
+    ~typeNameIsInterface ~typeVars ~docString resolvedTypeName =
+  let docString = DocString.render docString in
   let typeParamsString = EmitText.genericsString ~typeVars in
   let isInterface = resolvedTypeName |> typeNameIsInterface in
   let resolvedTypeName =
@@ -355,15 +358,15 @@ let emitExportType ~(config : Config.t) ~emitters ~nameAs ~opaque ~type_
     ^ (match String.capitalize_ascii resolvedTypeName <> resolvedTypeName with
       | true -> "// tslint:disable-next-line:class-name\n"
       | false -> "")
-    ^ "export abstract class " ^ resolvedTypeName ^ typeParamsString
+    ^ docString ^ "export abstract class " ^ resolvedTypeName ^ typeParamsString
     ^ " { protected opaque!: " ^ typeOfOpaqueField
     ^ " }; /* simulate opaque types */" ^ exportNameAs
     |> Emitters.export ~emitters
   else
     (if isInterface && config.exportInterfaces then
-     "export interface " ^ resolvedTypeName ^ typeParamsString ^ " "
+     docString ^ "export interface " ^ resolvedTypeName ^ typeParamsString ^ " "
     else
-      "// tslint:disable-next-line:interface-over-type-literal\n"
+      "// tslint:disable-next-line:interface-over-type-literal\n" ^ docString
       ^ "export type " ^ resolvedTypeName ^ typeParamsString ^ " = ")
     ^ (match type_ with
       | _ -> type_ |> typeToString ~config ~typeNameIsInterface)
@@ -386,6 +389,13 @@ let emitRequire ~importedValueOrComponent ~early ~emitters ~(config : Config.t)
     match importedValueOrComponent with
     | true -> "// tslint:disable-next-line:no-var-requires\n"
     | false -> "// @ts-ignore: Implicit any on import\n"
+  in
+  let importPath =
+    match config.moduleResolution with
+    | Node ->
+      importPath
+      |> ImportPath.chopExtensionSafe (* for backward compatibility *)
+    | _ -> importPath
   in
   match config.module_ with
   | ES6 when not importedValueOrComponent ->

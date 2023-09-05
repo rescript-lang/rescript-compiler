@@ -500,7 +500,9 @@ and vident cxt f (v : J.vident) =
   | Qualified ({ id; kind = Ml | Runtime }, Some name) ->
       let cxt = Ext_pp_scope.ident cxt f id in
       P.string f L.dot;
-      P.string f (Ext_ident.convert name);
+      P.string f
+        (if name = Js_dump_import_export.default_export then name
+        else Ext_ident.convert name);
       cxt
   | Qualified ({ id; kind = External _ }, Some name) ->
       let cxt = Ext_pp_scope.ident cxt f id in
@@ -779,15 +781,15 @@ and expression_desc cxt ~(level : int) f x : cxt =
           tails
         else
           (Js_op.Lit tag_name, (* TAG:xx for inline records *)
-            match Ast_untagged_variants.process_literal_type p.attrs with
+            match Ast_untagged_variants.process_tag_type p.attrs with
             | None -> E.str p.name
-            | Some literal -> E.literal literal )
+            | Some t -> E.tag_type t )
           :: tails
       in
       expression_desc cxt ~level f (Object objs)
   | Caml_block (el, _, tag, Blk_constructor p) ->
       let not_is_cons = p.name <> Literals.cons in
-      let literal = Ast_untagged_variants.process_literal_type p.attrs in
+      let tag_type = Ast_untagged_variants.process_tag_type p.attrs in
       let untagged = Ast_untagged_variants.process_untagged p.attrs in
       let tag_name = match Ast_untagged_variants.process_tag_name p.attrs with
         | None -> L.tag
@@ -808,9 +810,9 @@ and expression_desc cxt ~(level : int) f x : cxt =
         if untagged || (not_is_cons = false) && p.num_nonconst = 1 then tails
         else
           ( Js_op.Lit tag_name, (* TAG:xx *) 
-            match literal with
+            match tag_type with
             | None -> E.str p.name
-            | Some literal -> E.literal literal )
+            | Some t -> E.tag_type t )
           :: tails
       in
       let exp = match objs with
@@ -1210,8 +1212,8 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
       let cxt = P.paren_group f 1 (fun _ -> expression ~level:0 cxt f e) in
       P.space f;
       P.brace_vgroup f 1 (fun _ ->
-          let pp_as_value f (literal: Ast_untagged_variants.literal_type) =
-            let e = E.literal literal in
+          let pp_as_value f (tag_type: Ast_untagged_variants.tag_type) =
+            let e = E.tag_type tag_type in
             ignore @@ expression_desc cxt ~level:0 f e.expression_desc in
           let cxt = loop_case_clauses cxt f pp_as_value cc in
           match def with

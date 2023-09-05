@@ -36,8 +36,44 @@ let ensure_value_unit (st : Lam_compile_context.continuation) e : E.t =
   | EffectCall Not_tail -> e
 (* NeedValue should return a meaningful expression*)
 
-let translate loc (cxt : Lam_compile_context.t) (prim : Lam_primitive.t)
-    (args : J.expression list) : J.expression =
+let module_of_expression = function
+  | J.Var (J.Qualified (module_id, value)) -> [ (module_id, value) ]
+  | _ -> []
+
+let get_module_system () =
+    let package_info = Js_packages_state.get_packages_info () in
+    let module_system =
+        if Js_packages_info.is_empty package_info && !Js_config.js_stdout then
+            [Js_packages_info.NodeJS]
+        else Js_packages_info.map package_info (fun {module_system} -> module_system)
+    in
+    match module_system with
+    | [module_system] -> module_system
+    | _ -> NodeJS
+
+let import_of_path path =
+  E.call
+    ~info:{ arity = Full; call_info = Call_na }
+    (E.js_global "import")
+    [ E.str path ]
+
+let wrap_then import value =
+  let arg = Ident.create "m" in
+  E.call
+    ~info:{ arity = Full; call_info = Call_na }
+    (E.dot import "then")
+    [
+      E.ocaml_fun ~return_unit:false ~async:false ~oneUnitArg:false  [ arg ]
+        [
+          {
+            statement_desc = J.Return (E.dot (E.var arg) value);
+            comment = None;
+          };
+        ];
+    ]
+
+let translate output_prefix loc (cxt : Lam_compile_context.t)
+    (prim : Lam_primitive.t) (args : J.expression list) : J.expression =
   match prim with
   | Pis_not_none -> Js_of_lam_option.is_not_none (Ext_list.singleton_exn args)
   | Pcreate_extension s -> E.make_exception s
@@ -78,6 +114,31 @@ let translate loc (cxt : Lam_compile_context.t) (prim : Lam_primitive.t)
           | _ -> E.runtime_call Js_runtime_modules.option "nullable_to_opt" args
           )
       | _ -> assert false)
+  (* Compile #import: The module argument for dynamic import is represented as a path,
+     and the module value is expressed through wrapping it with promise.then *)
+  | Pimport -> (
+      match args with
+      | [ e ] -> (
+          let output_dir = Filename.dirname output_prefix in
+
+          let module_id, module_value =
+            match module_of_expression e.expression_desc with
+            | [ module_ ] -> module_
+            | _ -> Location.raise_errorf ~loc
+                "Invalid argument: Dynamic import requires a module or module value that is a file as argument. Passing a value or local module is not allowed."
+          in
+
+          let path =
+            let module_system = get_module_system () in
+            Js_name_of_module_id.string_of_module_id {module_id with dynamic_import = true} ~output_dir module_system
+          in
+
+          match module_value with
+          | Some value -> wrap_then (import_of_path path) value
+          | None -> import_of_path path)
+      | [] | _ ->
+          Location.raise_errorf ~loc
+            "Invalid argument: Dynamic import must take a single module or module value as its argument.")
   | Pjs_function_length -> E.function_length (Ext_list.singleton_exn args)
   | Pcaml_obj_length -> E.obj_length (Ext_list.singleton_exn args)
   | Pis_null -> E.is_null (Ext_list.singleton_exn args)

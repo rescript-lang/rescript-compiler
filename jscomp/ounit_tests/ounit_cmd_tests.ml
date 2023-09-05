@@ -276,38 +276,5 @@ let rec y = A y;;
       OUnit.assert_bool __LOC__
         (Ext_string.contain_substring should_err.stderr "contravariant")
     end;
-    __LOC__ >:: begin fun _ ->
-      let should_err = bsc_check_eval {|
-    let u = [||]
-    |} in
-      OUnit.assert_bool __LOC__
-        (Ext_string.contain_substring should_err.stderr "cannot be generalized")
-    end;
-    __LOC__ >:: begin fun _ -> 
-      let should_err = bsc_check_eval {|  
-external push : 'a array -> 'a -> unit = "push" [@@send]
-let a = [||]
-let () = 
-  push a 3 |. ignore ; 
-  push a "3" |. ignore  
-  |} in
-      OUnit.assert_bool __LOC__
-        (Ext_string.contain_substring should_err.stderr "has type string")
-    end
-    (* __LOC__ >:: begin fun _ ->  *)
-    (*   let should_infer = perform_bsc [| "-i"; "-bs-eval"|] {| *)
-         (*      let  f = fun [@bs] x -> let (a,b) = x in a + b  *)
-         (* |}  in  *)
-    (*   let infer_type  = bsc_eval (Printf.sprintf {| *)
-
-         (*      let f : %s  = fun [@bs] x -> let (a,b) = x in a + b  *)
-         (*  |} should_infer.stdout ) in  *)
-    (*  begin  *)
-    (*    Ounit_cmd_util.debug_output should_infer ; *)
-    (*    Ounit_cmd_util.debug_output infer_type ; *)
-    (*    OUnit.assert_bool __LOC__  *)
-    (*      ((Ext_string.is_empty infer_type.stderr)) *)
-    (*  end *)
-    (* end *)
   ]
 

@@ -19,6 +19,7 @@ open Format
 open Types
 open Outcometree
 
+val print_res_poly_identifier: (string -> string) ref
 val longident: formatter -> Longident.t -> unit
 val ident: formatter -> Ident.t -> unit
 val tree_of_path: Path.t -> out_ident

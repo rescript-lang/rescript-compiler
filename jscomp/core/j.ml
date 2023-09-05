@@ -51,7 +51,7 @@ and ident = Ident.t
     currently we always use quote
 *)
 
-and module_id = { id : ident; kind : Js_op.kind }
+and module_id = { id : ident; kind : Js_op.kind ; dynamic_import : bool }
 
 and required_modules = module_id list
 and vident = Id of ident | Qualified of module_id * string option
@@ -244,7 +244,7 @@ and case_clause = {
   comment : string option;
 }
 
-and string_clause = Ast_untagged_variants.literal_type * case_clause
+and string_clause = Ast_untagged_variants.tag_type * case_clause
 and int_clause = int * case_clause
 
 and statement_desc =
