@@ -490,21 +490,33 @@ var PromiseSync = {
 };
 
 async function classify$10(a) {
-  if (Array.isArray(a)) {
-    console.log(function (param) {
-          return Belt_Array.joinWith(a, "-", param);
-        });
+  if (typeof a !== "object" && !(a instanceof Promise) && (a === "test" || a === 12) && !Array.isArray(a)) {
+    if (a === "test") {
+      console.log("testing");
+      return ;
+    }
+    console.log(12);
     return ;
-  }
-  if (a instanceof Promise) {
-    console.log(await a);
-    return ;
-  }
-  switch (typeof a) {
-    case "string" :
-        console.log(a);
-        return ;
-    
+  } else {
+    if (Array.isArray(a)) {
+      console.log(function (param) {
+            return Belt_Array.joinWith(a, "-", param);
+          });
+      return ;
+    }
+    if (a instanceof Promise) {
+      console.log(await a);
+      return ;
+    }
+    switch (typeof a) {
+      case "string" :
+          console.log(a);
+          return ;
+      case "object" :
+          console.log(a.userName);
+          return ;
+      
+    }
   }
 }
 

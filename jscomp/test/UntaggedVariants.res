@@ -362,12 +362,24 @@ module PromiseSync = {
 }
 
 module Arr = {
-  @unboxed type arr = Array(array<string>) | String(string) | Promise(promise<string>)
+  type record = {userName: string}
+
+  @unboxed
+  type arr =
+    | Array(array<string>)
+    | String(string)
+    | Promise(promise<string>)
+    | Object(record)
+    | @as("test") Test
+    | @as(12) TestInt
 
   let classify = async (a: arr) =>
     switch a {
     | Array(arr) => Js.log(arr->Belt.Array.joinWith("-"))
     | String(s) => Js.log(s)
     | Promise(p) => Js.log(await p)
+    | Object({userName}) => Js.log(userName)
+    | Test => Js.log("testing")
+    | TestInt => Js.log(12)
     }
 }
