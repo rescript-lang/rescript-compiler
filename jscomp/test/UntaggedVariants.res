@@ -296,16 +296,16 @@ module OptionUnboxingHeuristic = {
 
 module TestFunctionCase = {
   @unboxed
-  type t = Array(array<int>) | Record({x:int}) | Function((. int) => int)
+  type t = Array(array<int>) | Record({x: int}) | Function((. int) => int)
 
   let classify = v =>
     switch v {
     | Record({x}) => x
     | Array(a) => a[0]
-    | Function(f) => f(. 3) 
+    | Function(f) => f(. 3)
     }
 
-    let ff = Function((. x) => x+1)
+  let ff = Function((. x) => x + 1)
 }
 
 module ComplexPattern = {
@@ -335,5 +335,39 @@ module ComplexPattern = {
     switch s {
     | Array([True, False, Array([String("My name is"), Number(10.)])]) => Js.log("yup")
     | _ => Js.log("Nope...")
+    }
+}
+
+module PromiseSync = {
+  type user = {name: string}
+
+  @unboxed type value = Sync(user) | Async(promise<user>) | Name(string)
+
+  let getUserName = async (u: value) =>
+    switch u {
+    | Sync(user) => user.name
+    | Async(userPromise) =>
+      let user = await userPromise
+      user.name
+    | Name(name) => name
+    }
+
+  let awaitUser = async (u: value) =>
+    switch u {
+    | Async(userPromise) =>
+      let user = await userPromise
+      user.name
+    | _ => "dummy"
+    }
+}
+
+module Arr = {
+  @unboxed type arr = Array(array<string>) | String(string) | Promise(promise<string>)
+
+  let classify = async (a: arr) =>
+    switch a {
+    | Array(arr) => Js.log(arr->Belt.Array.joinWith("-"))
+    | String(s) => Js.log(s)
+    | Promise(p) => Js.log(await p)
     }
 }
