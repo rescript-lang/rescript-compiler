@@ -383,3 +383,28 @@ module Arr = {
     | TestInt => Js.log(12)
     }
 }
+
+module AllInstanceofTypes = {
+  type record = {userName: string}
+
+  @unboxed
+  type t =
+    | String(string)
+    | Array(array<string>)
+    | Promise(promise<string>)
+    | Object(record)
+    | Date(Js.Date.t)
+    | RegExp(Js.Re.t)
+    | BigInt(Js.Bigint.t)
+
+  let classifyAll = async (t: t) =>
+    switch t {
+    | String(s) => Js.log(s)
+    | Promise(p) => Js.log(await p)
+    | Object({userName}) => Js.log(userName)
+    | Date(date) => Js.log(date->Js.Date.toString)
+    | RegExp(re) => Js.log(re->Js.Re.test_("test"))
+    | BigInt(i) => Js.log(Js.String.make(i))
+    | Array(arr) => Js.log(arr->Belt.Array.joinWith("-"))
+    }
+}

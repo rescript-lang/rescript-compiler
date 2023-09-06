@@ -1,6 +1,10 @@
 module Instance = struct
-  type t = Array | Promise
-  let to_string = function Array -> "Array" | Promise -> "Promise"
+  type t = Array | Promise | Date | RegExp
+  let to_string = function 
+      Array -> "Array" 
+    | Promise -> "Promise" 
+    | Date -> "Date" 
+    | RegExp -> "RegExp"
 end
 
 type untaggedError =
@@ -126,8 +130,19 @@ let type_is_builtin_object (t : Types.type_expr) =
   match t.desc with
   | Tconstr (path, _, _) ->
     let name = Path.name path in
-    name = "Js.Dict.t" || name = "Js_dict.t" || name = "Js.Re.t" || name = "RescriptCore.Re.t"
+    name = "Js.Dict.t" || name = "Js_dict.t"
   | _ -> false
+
+let type_to_instanceof_backed_obj (t : Types.type_expr) =
+  match t.desc with
+  | Tconstr (path, _, _) -> (
+    match Path.name path with
+    | "Js.Date.t" -> Some(Instance.Date)
+    | "Js.Re.t" | "RescriptCore.Re.t" -> 
+      (* TODO: Get rid of explicit Core by digging through aliases *) 
+      Some(RegExp)
+    | _ -> None)
+  | _ -> None
 
 let get_block_type ~env (cstr : Types.constructor_declaration) :
     block_type option =
@@ -158,6 +173,11 @@ let get_block_type ~env (cstr : Types.constructor_declaration) :
   | true, Cstr_tuple [({desc = Tconstr _} as t)] when type_is_builtin_object t
     ->
     Some ObjectType
+  | true, Cstr_tuple [({desc = Tconstr _} as t)] when type_to_instanceof_backed_obj t |> Option.is_some
+    ->
+    (match type_to_instanceof_backed_obj t with 
+    | None -> None 
+    | Some instanceType -> Some (InstanceType instanceType))
   | true, Cstr_tuple [ty] -> (
     let default = Some UnknownType in
     match !extract_concrete_typedecl env ty with

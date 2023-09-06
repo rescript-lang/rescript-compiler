@@ -524,6 +524,44 @@ var Arr = {
   classify: classify$10
 };
 
+async function classifyAll(t) {
+  if (Array.isArray(t)) {
+    console.log(function (param) {
+          return Belt_Array.joinWith(t, "-", param);
+        });
+    return ;
+  }
+  if (t instanceof Promise) {
+    console.log(await t);
+    return ;
+  }
+  if (t instanceof Date) {
+    console.log(t.toString());
+    return ;
+  }
+  if (t instanceof RegExp) {
+    console.log(t.test("test"));
+    return ;
+  }
+  if (t instanceof BigInt) {
+    console.log(String(t));
+    return ;
+  }
+  switch (typeof t) {
+    case "string" :
+        console.log(t);
+        return ;
+    case "object" :
+        console.log(t.userName);
+        return ;
+    
+  }
+}
+
+var AllInstanceofTypes = {
+  classifyAll: classifyAll
+};
+
 var i = 42;
 
 var i2 = 42.5;
@@ -568,4 +606,5 @@ exports.TestFunctionCase = TestFunctionCase;
 exports.ComplexPattern = ComplexPattern;
 exports.PromiseSync = PromiseSync;
 exports.Arr = Arr;
+exports.AllInstanceofTypes = AllInstanceofTypes;
 /* l2 Not a pure module */
