@@ -228,6 +228,12 @@ module Int = Js_int
 module Bigint = Js_bigint
 (** Provide utilities for bigint *)
 
+module File = Js_file
+(** Provide utilities for File *)
+
+module Blob = Js_blob
+(** Provide utilities for Blob *)
+
 module Option = Js_option
 (** Provide utilities for option *)
 

@@ -387,6 +387,9 @@ module Arr = {
 module AllInstanceofTypes = {
   type record = {userName: string}
 
+  @get external fileName: Js.File.t => string = "name"
+  @get external blobSize: Js.Blob.t => float = "size"
+
   @unboxed
   type t =
     | String(string)
@@ -395,7 +398,8 @@ module AllInstanceofTypes = {
     | Object(record)
     | Date(Js.Date.t)
     | RegExp(Js.Re.t)
-    | BigInt(Js.Bigint.t)
+    | File(Js.File.t)
+    | Blob(Js.Blob.t)
 
   let classifyAll = async (t: t) =>
     switch t {
@@ -404,7 +408,8 @@ module AllInstanceofTypes = {
     | Object({userName}) => Js.log(userName)
     | Date(date) => Js.log(date->Js.Date.toString)
     | RegExp(re) => Js.log(re->Js.Re.test_("test"))
-    | BigInt(i) => Js.log(Js.String.make(i))
     | Array(arr) => Js.log(arr->Belt.Array.joinWith("-"))
+    | File(file) => Js.log(file->fileName)
+    | Blob(blob) => Js.log(blob->blobSize)
     }
 }

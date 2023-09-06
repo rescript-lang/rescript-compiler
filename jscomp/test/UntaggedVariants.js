@@ -543,8 +543,12 @@ async function classifyAll(t) {
     console.log(t.test("test"));
     return ;
   }
-  if (t instanceof BigInt) {
-    console.log(String(t));
+  if (t instanceof File) {
+    console.log(t.name);
+    return ;
+  }
+  if (t instanceof Blob) {
+    console.log(t.size);
     return ;
   }
   switch (typeof t) {

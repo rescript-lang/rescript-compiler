@@ -1,10 +1,18 @@
 module Instance = struct
-  type t = Array | Promise | Date | RegExp
+  type t = 
+    | Array 
+    | Promise 
+    | Date 
+    | RegExp 
+    | File 
+    | Blob
   let to_string = function 
       Array -> "Array" 
     | Promise -> "Promise" 
     | Date -> "Date" 
     | RegExp -> "RegExp"
+    | File -> "File"
+    | Blob -> "Blob"
 end
 
 type untaggedError =
@@ -137,10 +145,12 @@ let type_to_instanceof_backed_obj (t : Types.type_expr) =
   match t.desc with
   | Tconstr (path, _, _) -> (
     match Path.name path with
-    | "Js.Date.t" -> Some(Instance.Date)
-    | "Js.Re.t" | "RescriptCore.Re.t" -> 
+    | "Js.Date.t" | "Js_date.t" -> Some(Instance.Date)
+    | "Js.Re.t" | "Js_re.t" | "RescriptCore.Re.t" -> 
       (* TODO: Get rid of explicit Core by digging through aliases *) 
       Some(RegExp)
+    | "Js.File.t" | "Js_file.t" -> Some(File)
+    | "Js.Blob.t" | "Js_blob.t" -> Some(Blob)
     | _ -> None)
   | _ -> None
 
