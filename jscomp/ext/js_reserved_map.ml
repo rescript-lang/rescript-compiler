@@ -126,7 +126,6 @@ let sorted_keywords = [|
   "CSSUnparsedValue";
   "CSSVariableReferenceValue";
   "CanvasCaptureMediaStreamTrack";
-  "CanvasFilter";
   "CanvasGradient";
   "CanvasPattern";
   "CanvasRenderingContext2D";
@@ -172,6 +171,7 @@ let sorted_keywords = [|
   "DelegatedInkTrailPresenter";
   "Document";
   "DocumentFragment";
+  "DocumentPictureInPictureEvent";
   "DocumentTimeline";
   "DocumentType";
   "DragEvent";
@@ -571,6 +571,7 @@ let sorted_keywords = [|
   "Screen";
   "ScreenOrientation";
   "ScriptProcessorNode";
+  "ScrollTimeline";
   "SecurityPolicyViolationEvent";
   "Selection";
   "Set";
@@ -610,6 +611,7 @@ let sorted_keywords = [|
   "TextTrackCueList";
   "TextTrackList";
   "TimeRanges";
+  "ToggleEvent";
   "Touch";
   "TouchEvent";
   "TouchList";
@@ -639,8 +641,10 @@ let sorted_keywords = [|
   "VideoColorSpace";
   "VideoFrame";
   "VideoPlaybackQuality";
+  "ViewTimeline";
   "ViewTransition";
   "VirtualKeyboardGeometryChangeEvent";
+  "VisibilityStateEntry";
   "VisualViewport";
   "WaveShaperNode";
   "WeakMap";
