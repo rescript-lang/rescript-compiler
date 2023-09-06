@@ -97,7 +97,6 @@ CSSUnitValue
 CSSUnparsedValue
 CSSVariableReferenceValue
 CanvasCaptureMediaStreamTrack
-CanvasFilter
 CanvasGradient
 CanvasPattern
 CanvasRenderingContext2D
@@ -143,6 +142,7 @@ DelayNode
 DelegatedInkTrailPresenter
 Document
 DocumentFragment
+DocumentPictureInPictureEvent
 DocumentTimeline
 DocumentType
 DragEvent
@@ -542,6 +542,7 @@ Scheduling
 Screen
 ScreenOrientation
 ScriptProcessorNode
+ScrollTimeline
 SecurityPolicyViolationEvent
 Selection
 Set
@@ -581,6 +582,7 @@ TextTrackCue
 TextTrackCueList
 TextTrackList
 TimeRanges
+ToggleEvent
 Touch
 TouchEvent
 TouchList
@@ -610,8 +612,10 @@ ValidityState
 VideoColorSpace
 VideoFrame
 VideoPlaybackQuality
+ViewTimeline
 ViewTransition
 VirtualKeyboardGeometryChangeEvent
+VisibilityStateEntry
 VisualViewport
 WaveShaperNode
 WeakMap

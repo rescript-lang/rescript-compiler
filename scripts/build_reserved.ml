@@ -127,7 +127,10 @@
     "setTimeout";
     "__dirname";
     "__filename";
-    "__esModule"
+    "__esModule";
+
+    (* Bun global obj *)
+    "Bun"
   |] 
 
 
