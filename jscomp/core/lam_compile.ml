@@ -766,8 +766,7 @@ and compile_untagged_cases ~cxt ~switch_exp ~default ~block_cases cases =
   | Ast_untagged_variants.Untagged (InstanceType _) -> true
   | _ -> false in
   let switch ?default ?declaration e clauses =
-    let not_typeof_clauses = Ext_list.filter clauses is_not_typeof in
-    let typeof_clauses = Ext_list.filter clauses (fun c -> not (is_not_typeof c)) in
+    let (not_typeof_clauses, typeof_clauses) = List.partition is_not_typeof clauses in
     let rec build_if_chain remaining_clauses = (match remaining_clauses with 
     | (Ast_untagged_variants.Untagged (InstanceType Array), {J.switch_body}) :: rest -> 
       S.if_ (E.is_array e)

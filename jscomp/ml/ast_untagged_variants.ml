@@ -1,18 +1,18 @@
 module Instance = struct
   type t = 
-    | Array 
-    | Promise 
-    | Date 
-    | RegExp 
-    | File 
+    | Array
     | Blob
-  let to_string = function 
+    | Date
+    | File
+    | Promise 
+    | RegExp
+  let to_string = function
       Array -> "Array" 
-    | Promise -> "Promise" 
-    | Date -> "Date" 
-    | RegExp -> "RegExp"
-    | File -> "File"
     | Blob -> "Blob"
+    | Date -> "Date"
+    | File -> "File"
+    | Promise -> "Promise" 
+    | RegExp -> "RegExp"
 end
 
 type untaggedError =
@@ -143,9 +143,13 @@ let type_is_builtin_object (t : Types.type_expr) =
 
 let type_to_instanceof_backed_obj (t : Types.type_expr) =
   match t.desc with
+  | Tconstr (path, _, _) when Path.same path Predef.path_promise ->
+    Some Instance.Promise
+  | Tconstr (path, _, _) when Path.same path Predef.path_array ->
+    Some Array
   | Tconstr (path, _, _) -> (
     match Path.name path with
-    | "Js.Date.t" | "Js_date.t" -> Some(Instance.Date)
+    | "Js.Date.t" | "Js_date.t" -> Some(Date)
     | "Js.Re.t" | "Js_re.t" | "RescriptCore.Re.t" -> 
       (* TODO: Get rid of explicit Core by digging through aliases *) 
       Some(RegExp)
@@ -167,12 +171,6 @@ let get_block_type ~env (cstr : Types.constructor_declaration) :
   | true, Cstr_tuple [{desc = Tconstr (path, _, _)}]
     when Path.same path Predef.path_float ->
     Some FloatType
-  | true, Cstr_tuple [{desc = Tconstr (path, _, _)}]
-    when Path.same path Predef.path_array ->
-    Some (InstanceType Array)
-  | true, Cstr_tuple [{desc = Tconstr (path, _, _)}]
-    when Path.same path Predef.path_promise ->
-    Some (InstanceType Promise)
   | true, Cstr_tuple [({desc = Tconstr _} as t)]
     when Ast_uncurried_utils.typeIsUncurriedFun t ->
     Some FunctionType
