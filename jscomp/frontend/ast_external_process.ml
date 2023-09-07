@@ -413,7 +413,7 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
                   arg_types,
                   (* ignored in [arg_types], reserved in [result_types] *)
                   result_types )
-              | Nothing ->
+              | Nothing | Unwrap ->
                 ( {
                     obj_arg_label = External_arg_spec.obj_label name;
                     obj_arg_type;
@@ -449,10 +449,7 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
               | Extern_unit -> assert false
               | Poly_var _ ->
                 Location.raise_errorf ~loc
-                  "%@obj label %s does not support such arg type" name
-              | Unwrap ->
-                Location.raise_errorf ~loc
-                  "%@obj label %s does not support %@unwrap arguments" name)
+                  "%@obj label %s does not support such arg type" name)
             | Optional name -> (
               let obj_arg_type = get_opt_arg_type ~nolabel:false ty in
               match obj_arg_type with
@@ -460,7 +457,7 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
                 ( External_arg_spec.empty_kind obj_arg_type,
                   param_type :: arg_types,
                   result_types )
-              | Nothing ->
+              | Nothing | Unwrap ->
                 let for_sure_not_nested =
                   match ty.ptyp_desc with
                   | Ptyp_constr ({txt = Lident txt; _}, []) ->
@@ -511,10 +508,7 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
               | Extern_unit -> assert false
               | Poly_var _ ->
                 Location.raise_errorf ~loc
-                  "%@obj label %s does not support such arg type" name
-              | Unwrap ->
-                Location.raise_errorf ~loc
-                  "%@obj label %s does not support %@unwrap arguments" name)
+                  "%@obj label %s does not support such arg type" name)
           in
           (new_arg_label :: arg_labels, new_arg_types, output_tys))
     in
