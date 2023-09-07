@@ -443,16 +443,20 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
                       [],
                       Ast_literal.type_string ~loc () )
                   :: result_types )
+              | Unwrap ->
+                ( {
+                    obj_arg_label = External_arg_spec.obj_label name;
+                    obj_arg_type;
+                  },
+                  param_type :: arg_types,
+                  Otag ({Asttypes.txt = name; loc}, [], ty) :: result_types )
               | Fn_uncurry_arity _ ->
                 Location.raise_errorf ~loc
                   "The combination of %@obj, %@uncurry is not supported yet"
               | Extern_unit -> assert false
               | Poly_var _ ->
                 Location.raise_errorf ~loc
-                  "%@obj label %s does not support such arg type" name
-              | Unwrap ->
-                Location.raise_errorf ~loc
-                  "%@obj label %s does not support %@unwrap arguments" name)
+                  "%@obj label %s does not support such arg type" name)
             | Optional name -> (
               let obj_arg_type = get_opt_arg_type ~nolabel:false ty in
               match obj_arg_type with
@@ -502,6 +506,17 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
                       Ast_comb.to_undefined_type loc
                       @@ Ast_literal.type_string ~loc () )
                   :: result_types )
+              | Unwrap ->
+                ( {
+                    obj_arg_label = External_arg_spec.optional false name;
+                    obj_arg_type;
+                  },
+                  param_type :: arg_types,
+                  Otag
+                    ( {Asttypes.txt = name; loc},
+                      [],
+                      Ast_comb.to_undefined_type loc @@ ty )
+                  :: result_types )
               | Arg_cst _ ->
                 Location.raise_errorf ~loc
                   "%@as is not supported with optional yet"
@@ -511,10 +526,7 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
               | Extern_unit -> assert false
               | Poly_var _ ->
                 Location.raise_errorf ~loc
-                  "%@obj label %s does not support such arg type" name
-              | Unwrap ->
-                Location.raise_errorf ~loc
-                  "%@obj label %s does not support %@unwrap arguments" name)
+                  "%@obj label %s does not support such arg type" name)
           in
           (new_arg_label :: arg_labels, new_arg_types, output_tys))
     in
