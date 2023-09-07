@@ -4,7 +4,7 @@
 
 var user = {
   TAG: "User",
-  name: "Corentin"
+  renamed: "Corentin"
 };
 
 exports.user = user;
