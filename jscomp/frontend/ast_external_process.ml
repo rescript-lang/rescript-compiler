@@ -413,7 +413,7 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
                   arg_types,
                   (* ignored in [arg_types], reserved in [result_types] *)
                   result_types )
-              | Nothing ->
+              | Nothing | Unwrap ->
                 ( {
                     obj_arg_label = External_arg_spec.obj_label name;
                     obj_arg_type;
@@ -443,13 +443,6 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
                       [],
                       Ast_literal.type_string ~loc () )
                   :: result_types )
-              | Unwrap ->
-                ( {
-                    obj_arg_label = External_arg_spec.obj_label name;
-                    obj_arg_type;
-                  },
-                  param_type :: arg_types,
-                  Otag ({Asttypes.txt = name; loc}, [], ty) :: result_types )
               | Fn_uncurry_arity _ ->
                 Location.raise_errorf ~loc
                   "The combination of %@obj, %@uncurry is not supported yet"
@@ -464,7 +457,7 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
                 ( External_arg_spec.empty_kind obj_arg_type,
                   param_type :: arg_types,
                   result_types )
-              | Nothing ->
+              | Nothing | Unwrap ->
                 let for_sure_not_nested =
                   match ty.ptyp_desc with
                   | Ptyp_constr ({txt = Lident txt; _}, []) ->
@@ -505,17 +498,6 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
                       [],
                       Ast_comb.to_undefined_type loc
                       @@ Ast_literal.type_string ~loc () )
-                  :: result_types )
-              | Unwrap ->
-                ( {
-                    obj_arg_label = External_arg_spec.optional false name;
-                    obj_arg_type;
-                  },
-                  param_type :: arg_types,
-                  Otag
-                    ( {Asttypes.txt = name; loc},
-                      [],
-                      Ast_comb.to_undefined_type loc @@ ty )
                   :: result_types )
               | Arg_cst _ ->
                 Location.raise_errorf ~loc
