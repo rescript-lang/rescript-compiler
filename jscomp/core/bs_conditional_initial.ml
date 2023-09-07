@@ -47,6 +47,7 @@ let setup_env () =
   Lambda.fld_record := Record_attributes_check.fld_record;
   Lambda.fld_record_set := Record_attributes_check.fld_record_set;
   Lambda.blk_record := Record_attributes_check.blk_record;
+  Lambda.blk_record_inlined := Record_attributes_check.blk_record_inlined;
   Matching.names_from_construct_pattern := 
     Matching_polyfill.names_from_construct_pattern;
   

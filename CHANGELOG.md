@@ -12,6 +12,10 @@
 
 # 11.0.0-rc.4 (Unreleased)
 
+#### :rocket: New Feature
+
+- Support renaming fields in inline records with `@as` attribute. [#6391](https://github.com/rescript-lang/rescript-compiler/pull/6391)
+
 # 11.0.0-rc.3
 
 #### :bug: Bug Fix
