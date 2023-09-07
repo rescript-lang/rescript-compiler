@@ -1,7 +1,24 @@
+module Instance = struct
+  type t = 
+    | Array
+    | Blob
+    | Date
+    | File
+    | Promise 
+    | RegExp
+  let to_string = function
+      Array -> "Array" 
+    | Blob -> "Blob"
+    | Date -> "Date"
+    | File -> "File"
+    | Promise -> "Promise" 
+    | RegExp -> "RegExp"
+end
+
 type untaggedError =
   | OnlyOneUnknown of string
   | AtMostOneObject
-  | AtMostOneArray
+  | AtMostOneInstance of Instance.t
   | AtMostOneFunction
   | AtMostOneString
   | AtMostOneNumber
@@ -29,7 +46,7 @@ let report_error ppf =
       (match untaggedVariant with
       | OnlyOneUnknown name -> "Case " ^ name ^ " has a payload that is not of one of the recognized shapes (object, array, etc). Then it must be the only case with payloads."
       | AtMostOneObject -> "At most one case can be an object type."
-      | AtMostOneArray -> "At most one case can be an array type."
+      | AtMostOneInstance i -> "At most one case can be a " ^ (Instance.to_string i) ^ " type."
       | AtMostOneFunction -> "At most one case can be a function type."
       | AtMostOneString -> "At most one case can be a string type."
       | AtMostOneNumber ->
@@ -42,7 +59,7 @@ type block_type =
   | IntType
   | StringType
   | FloatType
-  | ArrayType
+  | InstanceType of Instance.t
   | FunctionType
   | ObjectType
   | UnknownType
@@ -121,8 +138,25 @@ let type_is_builtin_object (t : Types.type_expr) =
   match t.desc with
   | Tconstr (path, _, _) ->
     let name = Path.name path in
-    name = "Js.Dict.t" || name = "Js_dict.t" || name = "Js.Re.t" || name = "RescriptCore.Re.t"
+    name = "Js.Dict.t" || name = "Js_dict.t"
   | _ -> false
+
+let type_to_instanceof_backed_obj (t : Types.type_expr) =
+  match t.desc with
+  | Tconstr (path, _, _) when Path.same path Predef.path_promise ->
+    Some Instance.Promise
+  | Tconstr (path, _, _) when Path.same path Predef.path_array ->
+    Some Array
+  | Tconstr (path, _, _) -> (
+    match Path.name path with
+    | "Js.Date.t" | "Js_date.t" -> Some(Date)
+    | "Js.Re.t" | "Js_re.t" | "RescriptCore.Re.t" -> 
+      (* TODO: Get rid of explicit Core by digging through aliases *) 
+      Some(RegExp)
+    | "Js.File.t" | "Js_file.t" -> Some(File)
+    | "Js.Blob.t" | "Js_blob.t" -> Some(Blob)
+    | _ -> None)
+  | _ -> None
 
 let get_block_type ~env (cstr : Types.constructor_declaration) :
     block_type option =
@@ -137,9 +171,6 @@ let get_block_type ~env (cstr : Types.constructor_declaration) :
   | true, Cstr_tuple [{desc = Tconstr (path, _, _)}]
     when Path.same path Predef.path_float ->
     Some FloatType
-  | true, Cstr_tuple [{desc = Tconstr (path, _, _)}]
-    when Path.same path Predef.path_array ->
-    Some ArrayType
   | true, Cstr_tuple [({desc = Tconstr _} as t)]
     when Ast_uncurried_utils.typeIsUncurriedFun t ->
     Some FunctionType
@@ -150,6 +181,11 @@ let get_block_type ~env (cstr : Types.constructor_declaration) :
   | true, Cstr_tuple [({desc = Tconstr _} as t)] when type_is_builtin_object t
     ->
     Some ObjectType
+  | true, Cstr_tuple [({desc = Tconstr _} as t)] when type_to_instanceof_backed_obj t |> Option.is_some
+    ->
+    (match type_to_instanceof_backed_obj t with 
+    | None -> None 
+    | Some instanceType -> Some (InstanceType instanceType))
   | true, Cstr_tuple [ty] -> (
     let default = Some UnknownType in
     match !extract_concrete_typedecl env ty with
@@ -192,7 +228,7 @@ let checkInvariant ~isUntaggedDef ~(consts : (Location.t * tag) list)
   let module StringSet = Set.Make (String) in
   let string_literals = ref StringSet.empty in
   let nonstring_literals = ref StringSet.empty in
-  let arrayTypes = ref 0 in
+  let instanceTypes = Hashtbl.create 1 in
   let functionTypes = ref 0 in
   let objectTypes = ref 0 in
   let stringTypes = ref 0 in
@@ -213,8 +249,10 @@ let checkInvariant ~isUntaggedDef ~(consts : (Location.t * tag) list)
       raise (Error (loc, InvalidUntaggedVariantDefinition (OnlyOneUnknown name)));
     if !objectTypes > 1 then
       raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneObject));
-    if !arrayTypes > 1 then
-      raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneArray));
+    Hashtbl.iter (fun i count ->
+        if count > 1 then
+          raise (Error (loc, InvalidUntaggedVariantDefinition (AtMostOneInstance i))))
+      instanceTypes;
     if !functionTypes > 1 then
       raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneFunction));
     if !stringTypes > 1 then
@@ -244,8 +282,9 @@ let checkInvariant ~isUntaggedDef ~(consts : (Location.t * tag) list)
         | Some ObjectType ->
           incr objectTypes;
           invariant loc name
-        | Some ArrayType ->
-          incr arrayTypes;
+        | Some (InstanceType i) ->
+          let count = Hashtbl.find_opt instanceTypes i |> Option.value ~default:0 in
+          Hashtbl.replace instanceTypes i (count + 1);
           invariant loc name
         | Some FunctionType ->
           incr functionTypes;
@@ -298,7 +337,7 @@ module DynamicChecks = struct
     | BinOp of op * 'a t * 'a t
     | TagType of tag_type
     | TypeOf of 'a t
-    | IsArray of 'a t
+    | IsInstanceOf of Instance.t * 'a t
     | Not of 'a t
     | Expr of 'a
 
@@ -306,7 +345,7 @@ module DynamicChecks = struct
   let tag_type t = TagType t
   let typeof x = TypeOf x
   let str s = String s |> tag_type
-  let is_array x = IsArray x
+  let is_instance i x = IsInstanceOf (i, x)
   let not x = Not x
   let nil = Null |> tag_type
   let undefined = Undefined |> tag_type
@@ -348,7 +387,7 @@ module DynamicChecks = struct
         typeof e != number
       | FloatType when literals_overlaps_with_number () = false ->
         typeof e != number
-      | ArrayType -> not (is_array e)
+      | InstanceType i -> not (is_instance i e)
       | FunctionType -> typeof e != function_
       | ObjectType when literals_overlaps_with_object () = false ->
         typeof e != object_
@@ -394,13 +433,18 @@ module DynamicChecks = struct
       typeof e != object_
 
   let add_runtime_type_check ~tag_type ~(block_cases : block_type list) x y =
-    let has_array () = Ext_list.exists block_cases (fun t -> t = ArrayType) in
+    let instances = Ext_list.filter_map block_cases (function InstanceType i -> Some i | _ -> None) in
     match tag_type with
     | Untagged (IntType | StringType | FloatType | FunctionType) ->
       typeof y == x
     | Untagged ObjectType ->
-      if has_array () then typeof y == x &&& not (is_array y) else typeof y == x
-    | Untagged ArrayType -> is_array y
+      if instances <> [] then
+         let not_one_of_the_instances =
+          Ext_list.fold_right instances (typeof y == x) (fun i x -> x &&& not (is_instance i y))  in
+         not_one_of_the_instances
+      else
+        typeof y == x
+    | Untagged (InstanceType i) -> is_instance i y
     | Untagged UnknownType ->
       (* This should not happen because unknown must be the only non-literal case *)
       assert false

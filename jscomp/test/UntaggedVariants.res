@@ -296,16 +296,16 @@ module OptionUnboxingHeuristic = {
 
 module TestFunctionCase = {
   @unboxed
-  type t = Array(array<int>) | Record({x:int}) | Function((. int) => int)
+  type t = Array(array<int>) | Record({x: int}) | Function((. int) => int)
 
   let classify = v =>
     switch v {
     | Record({x}) => x
     | Array(a) => a[0]
-    | Function(f) => f(. 3) 
+    | Function(f) => f(. 3)
     }
 
-    let ff = Function((. x) => x+1)
+  let ff = Function((. x) => x + 1)
 }
 
 module ComplexPattern = {
@@ -335,5 +335,81 @@ module ComplexPattern = {
     switch s {
     | Array([True, False, Array([String("My name is"), Number(10.)])]) => Js.log("yup")
     | _ => Js.log("Nope...")
+    }
+}
+
+module PromiseSync = {
+  type user = {name: string}
+
+  @unboxed type value = Sync(user) | Async(promise<user>) | Name(string)
+
+  let getUserName = async (u: value) =>
+    switch u {
+    | Sync(user) => user.name
+    | Async(userPromise) =>
+      let user = await userPromise
+      user.name
+    | Name(name) => name
+    }
+
+  let awaitUser = async (u: value) =>
+    switch u {
+    | Async(userPromise) =>
+      let user = await userPromise
+      user.name
+    | _ => "dummy"
+    }
+}
+
+module Arr = {
+  type record = {userName: string}
+
+  @unboxed
+  type arr =
+    | Array(array<string>)
+    | String(string)
+    | Promise(promise<string>)
+    | Object(record)
+    | @as("test") Test
+    | @as(12) TestInt
+
+  let classify = async (a: arr) =>
+    switch a {
+    | Array(arr) => Js.log(arr->Belt.Array.joinWith("-"))
+    | String(s) => Js.log(s)
+    | Promise(p) => Js.log(await p)
+    | Object({userName}) => Js.log(userName)
+    | Test => Js.log("testing")
+    | TestInt => Js.log(12)
+    }
+}
+
+module AllInstanceofTypes = {
+  type record = {userName: string}
+
+  @get external fileName: Js.File.t => string = "name"
+  @get external blobSize: Js.Blob.t => float = "size"
+
+  @unboxed
+  type t =
+    | String(string)
+    | Array(array<string>)
+    | Promise(promise<string>)
+    | Object(record)
+    | Date(Js.Date.t)
+    | RegExp(Js.Re.t)
+    | File(Js.File.t)
+    | Blob(Js.Blob.t)
+
+  let classifyAll = async (t: t) =>
+    switch t {
+    | String(s) => Js.log(s)
+    | Promise(p) => Js.log(await p)
+    | Object({userName}) => Js.log(userName)
+    | Date(date) => Js.log(date->Js.Date.toString)
+    | RegExp(re) => Js.log(re->Js.Re.test_("test"))
+    | Array(arr) => Js.log(arr->Belt.Array.joinWith("-"))
+    | File(file) => Js.log(file->fileName)
+    | Blob(blob) => Js.log(blob->blobSize)
     }
 }

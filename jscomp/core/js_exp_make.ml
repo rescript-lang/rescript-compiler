@@ -807,7 +807,7 @@ let tag_type = function
   | Untagged FloatType -> str "number"
   | Untagged FunctionType -> str "function"
   | Untagged StringType -> str "string"
-  | Untagged ArrayType -> str "Array" ~delim:DNoQuotes
+  | Untagged (InstanceType i) -> str (Ast_untagged_variants.Instance.to_string i) ~delim:DNoQuotes
   | Untagged ObjectType -> str "object"
   | Untagged UnknownType ->
     (* TODO: this should not happen *)
@@ -824,7 +824,10 @@ let rec emit_check (check : t Ast_untagged_variants.DynamicChecks.t) = match che
     in
     bin op (emit_check x) (emit_check y)
   | TypeOf x -> typeof (emit_check x)
-  | IsArray x -> is_array (emit_check x)
+  | IsInstanceOf (Array, x) -> is_array (emit_check x)
+  | IsInstanceOf (instance, x) ->
+    let instance_name = Ast_untagged_variants.Instance.to_string instance in
+    instanceof (emit_check x) (str instance_name ~delim:DNoQuotes) 
   | Not x -> not (emit_check x)
   | Expr x -> x
 

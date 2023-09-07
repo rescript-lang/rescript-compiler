@@ -762,18 +762,18 @@ and compile_untagged_cases ~cxt ~switch_exp ~default ~block_cases cases =
     in
     E.emit_check check
   in
-  let is_array (l, _) = l = Ast_untagged_variants.Untagged ArrayType in
+  let is_not_typeof (l, _) = match l with 
+  | Ast_untagged_variants.Untagged (InstanceType _) -> true
+  | _ -> false in
   let switch ?default ?declaration e clauses =
-    let array_clauses = Ext_list.filter clauses is_array in
-    match array_clauses with
-    | [(l, {J.switch_body})] when List.length clauses > 1 ->
-      let rest = Ext_list.filter clauses (fun c -> not (is_array c)) in
-      S.if_ (E.is_array e)
+    let (not_typeof_clauses, typeof_clauses) = List.partition is_not_typeof clauses in
+    let rec build_if_chain remaining_clauses = (match remaining_clauses with 
+    | (Ast_untagged_variants.Untagged (InstanceType instanceType), {J.switch_body}) :: rest -> 
+      S.if_ (E.emit_check (IsInstanceOf (instanceType, Expr e)))
         (switch_body)
-        ~else_:([S.string_switch ?default ?declaration (E.typeof e) rest])
-    | _ :: _ :: _ -> assert false (* at most 1 array case *)
-    | _ ->
-      S.string_switch ?default ?declaration (E.typeof e) clauses in
+        ~else_:([build_if_chain rest])
+    | _ -> S.string_switch ?default ?declaration (E.typeof e) typeof_clauses) in
+    build_if_chain not_typeof_clauses in
   cases |> compile_general_cases
     ~make_exp: E.tag_type
     ~eq_exp: mk_eq
