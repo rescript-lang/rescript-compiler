@@ -768,12 +768,8 @@ and compile_untagged_cases ~cxt ~switch_exp ~default ~block_cases cases =
   let switch ?default ?declaration e clauses =
     let (not_typeof_clauses, typeof_clauses) = List.partition is_not_typeof clauses in
     let rec build_if_chain remaining_clauses = (match remaining_clauses with 
-    | (Ast_untagged_variants.Untagged (InstanceType Array), {J.switch_body}) :: rest -> 
-      S.if_ (E.is_array e)
-        (switch_body)
-        ~else_:([build_if_chain rest])
     | (Ast_untagged_variants.Untagged (InstanceType instanceType), {J.switch_body}) :: rest -> 
-      S.if_ (E.instanceof e (E.js_global (Ast_untagged_variants.Instance.to_string instanceType)))
+      S.if_ (E.emit_check (IsInstanceOf (instanceType, Expr e)))
         (switch_body)
         ~else_:([build_if_chain rest])
     | _ -> S.string_switch ?default ?declaration (E.typeof e) typeof_clauses) in
