@@ -98,6 +98,8 @@ let extract_concrete_typedecl: (Env.t ->
   Types.type_expr ->
   Path.t * Path.t * Types.type_declaration) ref = ref (Obj.magic ())
 
+let expand_head: (Env.t -> Types.type_expr -> Types.type_expr) ref = ref (Obj.magic ())
+
 let process_tag_type (attrs : Parsetree.attributes) =
   let st : tag_type option ref = ref None in
   Ext_list.iter attrs (fun ({txt; loc}, payload) ->
@@ -158,34 +160,33 @@ let type_to_instanceof_backed_obj (t : Types.type_expr) =
     | _ -> None)
   | _ -> None
 
+let get_block_type_from_typ ~env (t: Types.type_expr) : block_type option = 
+  let t = !expand_head env t in
+  match t with
+  | {desc = Tconstr (path, _, _)} when Path.same path Predef.path_string ->
+    Some StringType
+  | {desc = Tconstr (path, _, _)} when Path.same path Predef.path_int ->
+    Some IntType
+  | {desc = Tconstr (path, _, _)} when Path.same path Predef.path_float ->
+    Some FloatType
+  | ({desc = Tconstr _} as t) when Ast_uncurried_utils.typeIsUncurriedFun t ->
+    Some FunctionType
+  | {desc = Tarrow _} -> Some FunctionType
+  | {desc = Tconstr (path, _, _)} when Path.same path Predef.path_string ->
+    Some StringType
+  | ({desc = Tconstr _} as t) when type_is_builtin_object t ->
+    Some ObjectType
+  | ({desc = Tconstr _} as t) when type_to_instanceof_backed_obj t |> Option.is_some ->
+    (match type_to_instanceof_backed_obj t with 
+    | None -> None 
+    | Some instanceType -> Some (InstanceType instanceType))
+  | _ -> None
+
 let get_block_type ~env (cstr : Types.constructor_declaration) :
     block_type option =
   match (process_untagged cstr.cd_attributes, cstr.cd_args) with
   | false, _ -> None
-  | true, Cstr_tuple [{desc = Tconstr (path, _, _)}]
-    when Path.same path Predef.path_string ->
-    Some StringType
-  | true, Cstr_tuple [{desc = Tconstr (path, _, _)}]
-    when Path.same path Predef.path_int ->
-    Some IntType
-  | true, Cstr_tuple [{desc = Tconstr (path, _, _)}]
-    when Path.same path Predef.path_float ->
-    Some FloatType
-  | true, Cstr_tuple [({desc = Tconstr _} as t)]
-    when Ast_uncurried_utils.typeIsUncurriedFun t ->
-    Some FunctionType
-  | true, Cstr_tuple [{desc = Tarrow _}] -> Some FunctionType
-  | true, Cstr_tuple [{desc = Tconstr (path, _, _)}]
-    when Path.same path Predef.path_string ->
-    Some StringType
-  | true, Cstr_tuple [({desc = Tconstr _} as t)] when type_is_builtin_object t
-    ->
-    Some ObjectType
-  | true, Cstr_tuple [({desc = Tconstr _} as t)] when type_to_instanceof_backed_obj t |> Option.is_some
-    ->
-    (match type_to_instanceof_backed_obj t with 
-    | None -> None 
-    | Some instanceType -> Some (InstanceType instanceType))
+  | true, Cstr_tuple [{desc = Tconstr _} as t] when get_block_type_from_typ ~env t |> Option.is_some -> get_block_type_from_typ ~env t
   | true, Cstr_tuple [ty] -> (
     let default = Some UnknownType in
     match !extract_concrete_typedecl env ty with
