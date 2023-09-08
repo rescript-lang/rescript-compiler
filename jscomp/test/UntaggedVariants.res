@@ -413,3 +413,17 @@ module AllInstanceofTypes = {
     | Blob(blob) => Js.log(blob->blobSize)
     }
 }
+
+module Aliased = {
+  type dict = Js.Dict.t<string>
+  type fn = (. unit) => option<string>
+  @unboxed type t = Object(dict) | String(string) | Function(fn)
+
+  let test = (t: t) => {
+    switch t {
+    | Object(d) => d->Js.Dict.get("Hello")
+    | String(s) => Some(s)
+    | Function(fn) => fn(.)
+    }
+  }
+}
