@@ -151,12 +151,10 @@ let type_to_instanceof_backed_obj (t : Types.type_expr) =
     Some Array
   | Tconstr (path, _, _) -> (
     match Path.name path with
-    | "Js.Date.t" | "Js_date.t" -> Some(Date)
-    | "Js.Re.t" | "Js_re.t" | "RescriptCore.Re.t" -> 
-      (* TODO: Get rid of explicit Core by digging through aliases *) 
-      Some(RegExp)
-    | "Js.File.t" | "Js_file.t" -> Some(File)
-    | "Js.Blob.t" | "Js_blob.t" -> Some(Blob)
+    | "Js_date.t" -> Some(Date)
+    | "Js_re.t" -> Some(RegExp)
+    | "Js_file.t" -> Some(File)
+    | "Js_blob.t" -> Some(Blob)
     | _ -> None)
   | _ -> None
 
