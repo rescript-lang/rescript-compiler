@@ -6,7 +6,7 @@ let make = async ({a, _}: props<_>) => {
   ReactDOM.jsx("div", {children: ?ReactDOM.someElement({React.int(a)})})
 }
 let make = {
-  let \"AsyncAwait" = (props: props<_>) => make(props)
+  let \"AsyncAwait" = JsxPPXReactSupport.asyncComponent((props: props<_>) => make(props))
 
   \"AsyncAwait"
 }

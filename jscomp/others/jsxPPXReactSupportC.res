@@ -48,3 +48,7 @@ let createElementWithKey = (~key=?, component, props) =>
 
 let createElementVariadicWithKey = (~key=?, component, props, elements) =>
   createElementVariadic(component, addKeyProp(~key?, props), elements)
+
+external asyncComponent: ('props => promise<Jsx.element>) => Jsx.component<
+  'props,
+> = "%identity"

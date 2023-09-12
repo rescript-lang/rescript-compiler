@@ -970,6 +970,17 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
       else fullExpression
     in
     let fullExpression =
+      if isAsync then
+        Exp.apply
+          (Exp.ident
+             {
+               loc = Location.none;
+               txt = Ldot (Lident "JsxPPXReactSupport", "asyncComponent");
+             })
+          [(Nolabel, fullExpression)]
+      else fullExpression
+    in
+    let fullExpression =
       match fullModuleName with
       | "" -> fullExpression
       | txt ->
