@@ -909,6 +909,11 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
     let bindingWrapper, hasForwardRef, expression =
       modifiedBinding ~bindingLoc ~bindingPatLoc ~fnName binding
     in
+    let isAsync =
+      Ext_list.find_first binding.pvb_expr.pexp_attributes
+        React_jsx_common.is_async
+      |> Option.is_some
+    in
     (* do stuff here! *)
     let namedArgList, newtypes, _typeConstraints =
       recursivelyTransformNamedArgsForMake
@@ -1082,6 +1087,9 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
                 | [] -> []
                 | _ -> [Typ.any ()]))))
         expression
+    in
+    let expression =
+      React_jsx_common.add_async_attribute ~async:isAsync expression
     in
     let expression =
       (* Add new tupes (type a,b,c) to make's definition *)
