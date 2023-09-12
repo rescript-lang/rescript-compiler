@@ -77,12 +77,14 @@ let add_async_attribute ~async (body : Parsetree.expression) =
 let is_async : Parsetree.attribute -> bool =
  fun ({txt}, _) -> txt = "async" || txt = "res.async"
 
-let async_component expr =
-  let open Ast_helper in
-  Exp.apply
-    (Exp.ident
-       {
-         loc = Location.none;
-         txt = Ldot (Lident "JsxPPXReactSupport", "asyncComponent");
-       })
-    [(Nolabel, expr)]
+let async_component ~async expr =
+  if async then
+    let open Ast_helper in
+    Exp.apply
+      (Exp.ident
+         {
+           loc = Location.none;
+           txt = Ldot (Lident "JsxPPXReactSupport", "asyncComponent");
+         })
+      [(Nolabel, expr)]
+  else expr
