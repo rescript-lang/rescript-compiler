@@ -24,7 +24,7 @@
 - Add builtin abstract types for File and Blob APIs. https://github.com/rescript-lang/rescript-compiler/pull/6383
 - Untagged variants: Support `promise`, RegExes, Dates, File and Blob. https://github.com/rescript-lang/rescript-compiler/pull/6383
 - Support aliased types as payloads to untagged variants. https://github.com/rescript-lang/rescript-compiler/pull/6394
-- Support the async component for React Server Component in JSX ppx
+- Support the async component for React Server Component in JSX V4. https://github.com/rescript-lang/rescript-compiler/pull/6399
 
 #### :nail_care: Polish
 
