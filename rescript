@@ -20,23 +20,24 @@ var LAST_FIRED_EVENT = 0;
 /**
  * @type {[string,string][]}
  */
-var reasons_to_rebuild = [["proj", "started"]];
+var reasonsToRebuild = [["proj", "started"]];
 
 var LAST_SUCCESS_BUILD_STAMP = 0;
 var cwd = process.cwd();
 var lockFileName = path.join(cwd, ".bsb.lock");
 process.env.BSB_PROJECT_ROOT = cwd;
-// console.log('BSB_PROJECT_ROOT:', process.env.BSB_PROJECT_ROOT)
+
+var error_is_tty = process.stderr.isTTY;
+var std_is_tty = process.stdout.isTTY;
 
 // If the project uses gentype and uses custom file extension
 // via generatedFileExtension, ignore them in watch mode
 var bsConfigFile = path.join(cwd, bsconfig);
-var genTypeFileExtension = undefined;
-
+var genTypeFileExtension = ".gen.tsx";
 if (fs.existsSync(bsConfigFile)) {
-  var genTypeConfig = require(bsConfigFile).gentypeconfig
+  var genTypeConfig = require(bsConfigFile).gentypeconfig;
   if (genTypeConfig) {
-    genTypeFileExtension = genTypeConfig.generatedFileExtension
+    genTypeFileExtension = genTypeConfig.generatedFileExtension;
   }
 }
 
@@ -45,31 +46,16 @@ if (fs.existsSync(bsConfigFile)) {
  * @type {any[]}
  */
 var wsClients = [];
-var watch_mode = false;
+var isWatchMode = false;
 var verbose = false;
 /**
  * @type {string | undefined}
  */
 var postBuild = undefined;
-var useWebSocket = false;
+var withWebSocket = false;
 var webSocketHost = "localhost";
 var webSocketPort = 9999;
 
-/**
- * @returns {string}
- */
-function getDateAsString() {
-  var n = new Date();
-  return (
-    n.getHours() +
-    ":" +
-    n.getMinutes() +
-    ":" +
-    n.getSeconds() +
-    ":" +
-    n.getMilliseconds()
-  );
-}
 /**
  * @time{[number,number]}
  */
@@ -105,13 +91,12 @@ function dlog(str) {
     console.log(str);
   }
 }
+
 function notifyClients() {
-  wsClients = wsClients.filter((x) => !x.closed && !x.socket.destroyed);
+  wsClients = wsClients.filter(x => !x.closed && !x.socket.destroyed);
   var wsClientsLen = wsClients.length;
   dlog(`Alive sockets number: ${wsClientsLen}`);
-  var data = JSON.stringify({
-    LAST_SUCCESS_BUILD_STAMP: LAST_SUCCESS_BUILD_STAMP,
-  });
+  var data = '{"LAST_SUCCESS_BUILD_STAMP":' + LAST_SUCCESS_BUILD_STAMP + "}";
   for (var i = 0; i < wsClientsLen; ++i) {
     // in reverse order, the last pushed get notified earlier
     var client = wsClients[wsClientsLen - i - 1];
@@ -151,7 +136,7 @@ Please pick a different one using the \`-ws [host:]port\` flag from bsb.`);
 /**
  * @type {string[]}
  */
-var delegate_args = [];
+var delegatedArgs = [];
 var process_argv = process.argv;
 
 if (process.env.NINJA_ANSI_FORCED === undefined) {
@@ -185,36 +170,34 @@ The default \`rescript\` is equivalent to \`rescript build\` subcommand
 `);
 }
 
-var maybe_subcommand = process_argv[2];
-var is_building = false;
+var isBuilding = false;
 function releaseBuild() {
-  if (is_building) {
+  if (isBuilding) {
     try {
       fs.unlinkSync(lockFileName);
-    } catch (err) { }
-    is_building = false;
+    } catch (err) {}
+    isBuilding = false;
   }
 }
 
 // We use [~perm:0o664] rather than our usual default perms, [0o666], because
 // lock files shouldn't rely on the umask to disallow tampering by other.
 function acquireBuild() {
-  if (is_building) {
+  if (isBuilding) {
     return false;
   } else {
     try {
       const fid = fs.openSync(lockFileName, "wx", 0o664);
       fs.closeSync(fid);
-      is_building = true;
+      isBuilding = true;
     } catch (err) {
       if (err.code === "EEXIST") {
         console.warn(lockFileName, "already exists, try later");
       } else console.log(err);
     }
-    return is_building;
+    return isBuilding;
   }
 }
-
 
 function onUncaughtException(err) {
   console.error("Uncaught Exception", err);
@@ -237,14 +220,15 @@ process.on("SIGUSR2", exitProcess);
 process.on("SIGTERM", exitProcess);
 process.on("SIGHUP", exitProcess);
 
+var maybeSubcommand = process_argv[2];
 if (
-  maybe_subcommand !== undefined &&
-  maybe_subcommand !== "build" &&
-  maybe_subcommand !== "clean" &&
-  maybe_subcommand !== "info"
+  maybeSubcommand !== undefined &&
+  maybeSubcommand !== "build" &&
+  maybeSubcommand !== "clean" &&
+  maybeSubcommand !== "info"
   // delegate to native
 ) {
-  switch (maybe_subcommand) {
+  switch (maybeSubcommand) {
     case "format":
       require("./scripts/rescript_format.js").main(
         process.argv.slice(3),
@@ -284,16 +268,16 @@ if (
       console.log(require("./package.json").version);
       break;
     default:
-      console.error(`Unknown subcommand or flags: ${maybe_subcommand}`);
+      console.error(`Unknown subcommand or flags: ${maybeSubcommand}`);
       help();
       process.exit(2);
   }
 } else {
-  var delegate_args = process_argv.slice(2);
-  var watch_mode = delegate_args.includes("-w");
-  var wsParamIndex = delegate_args.indexOf("-ws");
+  var delegatedArgs = process_argv.slice(2);
+  var isWatchMode = delegatedArgs.includes("-w");
+  var wsParamIndex = delegatedArgs.indexOf("-ws");
   if (wsParamIndex > -1) {
-    var hostAndPortNumber = (delegate_args[wsParamIndex + 1] || "").split(":");
+    var hostAndPortNumber = (delegatedArgs[wsParamIndex + 1] || "").split(":");
     /**
      * @type {number}
      */
@@ -307,19 +291,21 @@ if (
     if (!isNaN(portNumber)) {
       webSocketPort = portNumber;
     }
-    useWebSocket = true;
+    withWebSocket = true;
     dlog(`WebSocket host & port number: ${webSocketHost}:${webSocketPort}`);
   }
 
-  verbose = delegate_args.includes("-verbose");
+  verbose = delegatedArgs.includes("-verbose");
   /**
    * @type {child_process.ChildProcess}
    */
   var p;
   if (acquireBuild()) {
     try {
-      p = child_process.spawn(rescript_exe, delegate_args, { stdio: "inherit" });
-      LAST_BUILD_START = +Date.now();
+      p = child_process.spawn(rescript_exe, delegatedArgs, {
+        stdio: "inherit",
+      });
+      LAST_BUILD_START = Date.now();
     } catch (e) {
       if (e.code === "ENOENT") {
         // when bsb is actually not found
@@ -330,12 +316,12 @@ if (
     }
     // The 'close' event will always emit after 'exit' was already emitted, or
     // 'error' if the child failed to spawn.
-    p.on("close", (code, signal) => {
+    p.on("close", code => {
       releaseBuild();
       if (code !== 0) {
         process.exit(code);
-      } else if (watch_mode) {
-        in_watch_mode(useWebSocket);
+      } else if (isWatchMode) {
+        startWatchMode(withWebSocket);
       }
     });
   } else {
@@ -345,10 +331,10 @@ if (
   }
   /**
    *
-   * @param {boolean} useWebSocket
+   * @param {boolean} withWebSocket
    */
-  function in_watch_mode(useWebSocket) {
-    if (useWebSocket) {
+  function startWatchMode(withWebSocket) {
+    if (withWebSocket) {
       setUpWebSocket();
     }
     // for column one based error message
@@ -366,16 +352,16 @@ if (
     }
 
     var sourcedirs = path.join("lib", "bs", ".sourcedirs.json");
-    var watch_generated = [];
+    var watchGenerated = [];
 
-    function watch_build(watch_config) {
-      var watch_files = watch_config.dirs;
-      watch_generated = watch_config.generated;
+    function watchBuild(watchConfig) {
+      var watchFiles = watchConfig.dirs;
+      watchGenerated = watchConfig.generated;
       // close and remove all unused watchers
       watchers = watchers.filter(function (watcher) {
         if (watcher.dir === bsconfig) {
           return true;
-        } else if (watch_files.indexOf(watcher.dir) < 0) {
+        } else if (watchFiles.indexOf(watcher.dir) < 0) {
           dlog(`${watcher.dir} is no longer watched`);
           watcher.watcher.close();
           return false;
@@ -385,15 +371,15 @@ if (
       });
 
       // adding new watchers
-      for (var i = 0; i < watch_files.length; ++i) {
-        var dir = watch_files[i];
+      for (var i = 0; i < watchFiles.length; ++i) {
+        var dir = watchFiles[i];
         if (
           !watchers.find(function (watcher) {
             return watcher.dir === dir;
           })
         ) {
           dlog(`watching dir ${dir} now`);
-          var watcher = fs.watch(dir, on_change);
+          var watcher = fs.watch(dir, onChange);
           watchers.push({ dir: dir, watcher: watcher });
         } else {
           // console.log(dir, 'already watched')
@@ -402,11 +388,9 @@ if (
     }
 
     /**
-     *
-     * @param {string} eventType
-     * @param {string} fileName
+     * @param {string | null} fileName
      */
-    function validEvent(eventType, fileName) {
+    function checkIsRebuildReason(fileName) {
       // Return true if filename is nil, filename is only provided on Linux, macOS, Windows, and AIX.
       // On other systems, we just have to assume that any change is valid.
       // This could cause problems if source builds (generating js files in the same directory) are supported.
@@ -417,56 +401,51 @@ if (
         fileName.endsWith(".js") ||
         fileName.endsWith(".mjs") ||
         fileName.endsWith(".cjs") ||
-        fileName.endsWith(".gen.tsx") ||
-        (genTypeFileExtension && fileName.endsWith(genTypeFileExtension)) ||
-        watch_generated.indexOf(fileName) >= 0 ||
+        fileName.endsWith(genTypeFileExtension) ||
+        watchGenerated.indexOf(fileName) >= 0 ||
         fileName.endsWith(".swp")
       );
     }
+
     /**
      * @return {boolean}
      */
     function needRebuild() {
-      return reasons_to_rebuild.length != 0;
+      return reasonsToRebuild.length !== 0;
     }
-    var error_is_tty = process.stderr.isTTY;
-    var std_is_tty = process.stdout.isTTY;
+
     function logFinish(code) {
+      let log = `>>>> Finish compiling`;
+      if (code !== 0) {
+        log = log + " (exit: " + code + ")";
+      }
       if (std_is_tty) {
-        if (code === 0) {
-          console.log(
-            "\x1b[36m>>>> Finish compiling\x1b[0m",
-            Math.floor(updateFinishTime() / 1e6),
-            "mseconds"
-          );
-        } else {
-          console.log(
-            "\x1b[1;31m>>>> Finish compiling(exit: " + code + ")\x1b[0m"
-          );
-        }
+        log = "\x1b[36m" + log + "\x1b[0m";
+      }
+      if (code !== 0) {
+        console.log(log);
       } else {
-        if (code === 0) {
-          console.log(">>>> Finish compiling");
-        } else {
-          console.log(">>>> Finish compiling(exit: " + code + ")");
-        }
+        console.log(log, Math.floor(updateFinishTime() / 1e6), "mseconds");
       }
     }
+
     function logStart() {
+      updateStartTime();
+      let log = `>>>> Start compiling`;
       if (std_is_tty) {
-        console.log("\x1b[36m>>>> Start compiling\x1b[0m", updateStartTime());
-      } else {
-        console.log(">>>> Start compiling");
+        log = "\x1b[36m" + log + "\x1b[0m";
       }
+      console.log(log);
     }
+
     /**
      *
      * @param code {number}
      * @param signal {string}
      */
-    function build_finished_callback(code, signal) {
+    function buildFinishedCallback(code, signal) {
       if (code === 0) {
-        LAST_SUCCESS_BUILD_STAMP = +new Date();
+        LAST_SUCCESS_BUILD_STAMP = Date.now();
         notifyClients();
         if (postBuild) {
           dlog(`running postbuild command: ${postBuild}`);
@@ -479,22 +458,22 @@ if (
         build(0);
       } else {
         var files = getWatchFiles(sourcedirs);
-        watch_build(files);
+        watchBuild(files);
       }
     }
 
     /**
      * TODO: how to make it captured by vscode
-     * @param output {string}
+     * @param error {string}
      * @param highlight {string}
      */
-    function error_output(output, highlight) {
+    function outputError(error, highlight) {
       if (error_is_tty && highlight) {
         process.stderr.write(
-          output.replace(highlight, "\x1b[1;31m" + highlight + "\x1b[0m")
+          error.replace(highlight, "\x1b[1;31m" + highlight + "\x1b[0m")
         );
       } else {
-        process.stderr.write(output);
+        process.stderr.write(error);
       }
     }
     // Note this function filters the error output
@@ -507,11 +486,11 @@ if (
      * @returns
      */
     function build(depth) {
-      if (reasons_to_rebuild.length === 0) {
+      if (reasonsToRebuild.length === 0) {
         dlog("No need to rebuild");
         return;
       } else {
-        dlog(`Rebuilding since ${reasons_to_rebuild}`);
+        dlog(`Rebuilding since ${reasonsToRebuild}`);
       }
       if (acquireBuild()) {
         logStart();
@@ -521,22 +500,22 @@ if (
           })
           // @ts-ignore
           .on("data", function (s) {
-            error_output(s, "ninja: error");
+            outputError(s, "ninja: error");
           })
-          .on("exit", build_finished_callback)
+          .on("exit", buildFinishedCallback)
           .stderr.setEncoding("utf8");
         // This is important to clean up all
         // previous queued events
-        reasons_to_rebuild = [];
-        LAST_BUILD_START = +Date.now();
+        reasonsToRebuild = [];
+        LAST_BUILD_START = Date.now();
       }
       // if acquiring lock failed, no need retry here
-      // since build_finished_callback will try again
+      // since buildFinishedCallback will try again
       // however this is no longer the case for multiple-process
       // it could fail due to other issues like .bsb.lock
       else {
         dlog(
-          `Acquire lock failed, do the build later ${depth} : ${reasons_to_rebuild}`
+          `Acquire lock failed, do the build later ${depth} : ${reasonsToRebuild}`
         );
         var waitTime = Math.pow(2, depth) * 40;
         setTimeout(function () {
@@ -547,28 +526,28 @@ if (
     }
     /**
      *
-     * @param {string} event
-     * @param {string} reason
+     * @param {fs.WatchEventType} event
+     * @param {string | null} reason
      */
-    function on_change(event, reason) {
-      var event_time = +Date.now();
-      var time_diff = event_time - LAST_BUILD_START;
-      var event_diff = event_time - LAST_FIRED_EVENT;
-      dlog(`Since last build : ${time_diff} -- ${event_diff}`);
-      if (time_diff < 5 || event_diff < 5) {
+    function onChange(event, reason) {
+      var eventTime = Date.now();
+      var timeDiff = eventTime - LAST_BUILD_START;
+      var eventDiff = eventTime - LAST_FIRED_EVENT;
+      dlog(`Since last build : ${timeDiff} -- ${eventDiff}`);
+      if (timeDiff < 5 || eventDiff < 5) {
         // for 5ms, we could think that the ninja not get
         // kicked yet, so there is really no need
         // to send more events here
 
-        // note reasons_to_rebuild also
+        // note reasonsToRebuild also
         // helps avoid redundant build, but this will
         // save the event loop call `setImmediate`
         return;
       }
-      if (validEvent(event, reason)) {
+      if (checkIsRebuildReason(reason)) {
         dlog(`\nEvent ${event} ${reason}`);
-        LAST_FIRED_EVENT = event_time;
-        reasons_to_rebuild.push([event, reason]);
+        LAST_FIRED_EVENT = eventTime;
+        reasonsToRebuild.push([event, reason || ""]);
         // Some editors are using temporary files to store edits.
         // This results in two sync change events: change + rename and two sync builds.
         // Using setImmediate will ensure that only one build done.
@@ -583,7 +562,7 @@ if (
       }
     }
 
-    watchers.push({ watcher: fs.watch(bsconfig, on_change), dir: bsconfig });
+    watchers.push({ watcher: fs.watch(bsconfig, onChange), dir: bsconfig });
     build(0);
   }
 }
