@@ -19,6 +19,10 @@
 - Untagged variants: Support `promise`, RegExes, Dates, File and Blob. https://github.com/rescript-lang/rescript-compiler/pull/6383
 - Support aliased types as payloads to untagged variants. https://github.com/rescript-lang/rescript-compiler/pull/6394
 
+#### :nail_care: Polish
+
+- A little performance improvement for JSX V4 runtime helper by removing one object allocation for components with key prop. https://github.com/rescript-lang/rescript-compiler/pull/6376
+
 # 11.0.0-rc.3
 
 #### :bug: Bug Fix

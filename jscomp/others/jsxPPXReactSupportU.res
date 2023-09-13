@@ -26,12 +26,12 @@ module Jsx = JsxU
 
 %%private(
   @val
-  external propsWithKey: (@as(json`{}`) _, 'props, {"key": string}) => 'props = "Object.assign"
+  external propsWithKey: ({"key": string}, 'props) => 'props = "Object.assign"
 
   @inline
   let addKeyProp = (~key: option<string>=?, p: 'props): 'props =>
     switch key {
-    | Some(key) => propsWithKey(p, {"key": key})
+    | Some(key) => propsWithKey({"key": key}, p)
     | None => p
     }
 )
