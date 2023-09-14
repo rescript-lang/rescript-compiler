@@ -27,8 +27,8 @@ var cwd = process.cwd();
 var lockFileName = path.join(cwd, ".bsb.lock");
 process.env.BSB_PROJECT_ROOT = cwd;
 
-var error_is_tty = process.stderr.isTTY;
-var std_is_tty = process.stdout.isTTY;
+var isTtyError = process.stderr.isTTY;
+var isTtyStd = process.stdout.isTTY;
 
 // If the project uses gentype and uses custom file extension
 // via generatedFileExtension, ignore them in watch mode
@@ -122,7 +122,7 @@ function setUpWebSocket() {
     .on("error", function (err) {
       // @ts-ignore
       if (err !== undefined && err.code === "EADDRINUSE") {
-        var error = std_is_tty ? `\x1b[1;31mERROR:\x1b[0m` : `ERROR:`;
+        var error = isTtyStd ? `\x1b[1;31mERROR:\x1b[0m` : `ERROR:`;
         console.error(`${error} The websocket port number ${webSocketPort} is in use.
 Please pick a different one using the \`-ws [host:]port\` flag from bsb.`);
       } else {
@@ -296,6 +296,8 @@ if (
   }
 
   verbose = delegatedArgs.includes("-verbose");
+  const rescriptBuildArgs = verbose ? ["build", "-verbose"] : ["build"];
+
   /**
    * @type {child_process.ChildProcess}
    */
@@ -419,7 +421,7 @@ if (
       if (code !== 0) {
         log = log + " (exit: " + code + ")";
       }
-      if (std_is_tty) {
+      if (isTtyStd) {
         log = "\x1b[36m" + log + "\x1b[0m";
       }
       if (code !== 0) {
@@ -432,7 +434,7 @@ if (
     function logStart() {
       updateStartTime();
       let log = `>>>> Start compiling`;
-      if (std_is_tty) {
+      if (isTtyStd) {
         log = "\x1b[36m" + log + "\x1b[0m";
       }
       console.log(log);
@@ -468,7 +470,7 @@ if (
      * @param highlight {string}
      */
     function outputError(error, highlight) {
-      if (error_is_tty && highlight) {
+      if (isTtyError && highlight) {
         process.stderr.write(
           error.replace(highlight, "\x1b[1;31m" + highlight + "\x1b[0m")
         );
@@ -495,7 +497,7 @@ if (
       if (acquireBuild()) {
         logStart();
         child_process
-          .spawn(rescript_exe, [], {
+          .spawn(rescript_exe, rescriptBuildArgs, {
             stdio: ["inherit", "inherit", "pipe"],
           })
           // @ts-ignore
@@ -533,7 +535,7 @@ if (
       var eventTime = Date.now();
       var timeDiff = eventTime - LAST_BUILD_START;
       var eventDiff = eventTime - LAST_FIRED_EVENT;
-      dlog(`Since last build : ${timeDiff} -- ${eventDiff}`);
+      dlog(`Since last build: ${timeDiff} -- ${eventDiff}`);
       if (timeDiff < 5 || eventDiff < 5) {
         // for 5ms, we could think that the ninja not get
         // kicked yet, so there is really no need
