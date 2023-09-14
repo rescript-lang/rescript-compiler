@@ -22,6 +22,7 @@
 #### :nail_care: Polish
 
 - A little performance improvement for JSX V4 runtime helper by removing one object allocation for components with key prop. https://github.com/rescript-lang/rescript-compiler/pull/6376
+- The `-verbose` flag now also affects builds in the watch mode. https://github.com/rescript-lang/rescript-compiler/pull/6403
 
 # 11.0.0-rc.3
 
