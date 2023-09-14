@@ -26,7 +26,7 @@ let () = Bsb_log.setup ()
 
 let separator = "--"
 
-let watch_mode = ref false
+let no_deps_mode = ref false
 
 let do_install = ref false
 
@@ -84,13 +84,13 @@ let ninja_command_exit (type t) (ninja_args : string array) : t =
    ninja -C _build
 *)
 let clean_usage =
-  "Usage: rescript.exe clean <options>\n\n\
-   `rescript clean` only cleans the current project\n"
+  "Usage: rescript clean <options>\n\n\
+   `rescript clean` cleans build artifacts. It is useful for edge-case reasons in case you get into a stale build\n"
 
 let build_usage =
-  "Usage: rescript.exe build <options> -- <ninja_options>\n\n\
-   `rescript build` implicitly builds dependencies if they aren't built\n\n\
-   `rescript.exe -- -h` for Ninja options (internal usage only; unstable)\n"
+  "Usage: rescript build <options> -- <ninja_options>\n\n\
+   `rescript build` builds the project with dependencies\n\n\
+   `rescript -- -h` for Ninja options (internal usage only; unstable)\n"
 
 let install_target () =
   let ( // ) = Filename.concat in
@@ -114,7 +114,11 @@ let build_subcommand ~start argv argv_len =
     ?finish:(if i < 0 then None else Some i)
     ~argv
     [|
-      ("-w", unit_set_spec watch_mode, "Watch mode");
+      ("-w", unit_set_spec (ref false), "Watch mode");
+      ( "-ws",
+        string_set_spec (ref ""),
+        "[host]:port set up host & port for WebSocket build notifications" );
+      ("-verbose", call_spec Bsb_log.verbose, "Set the output to be verbose");
       ("-with-deps", unit_set_spec (ref true), "*deprecated* This is the default behavior now. This option will be removed in a future release");
       ( "-install",
         unit_set_spec do_install,
@@ -122,15 +126,12 @@ let build_subcommand ~start argv argv_len =
       (* This should be put in a subcommand
          previously it works with the implication `bsb && bsb -install`
       *)
-      ( "-ws",
-        string_set_spec (ref ""),
-        "[host]:port set up host & port for WebSocket build notifications" );
       ( "-regen",
         unit_set_spec force_regenerate,
         "*internal* \n\
          Always regenerate build.ninja no matter bsconfig.json is changed or \
          not" );
-      ("-verbose", call_spec Bsb_log.verbose, "Set the output to be verbose");
+      ("-no-deps", unit_set_spec no_deps_mode, "*internal* Needed for watcher to build without dependencies on file change");
     |]
     failed_annon;
 
@@ -143,18 +144,17 @@ let build_subcommand ~start argv argv_len =
       let config_opt =
         Bsb_ninja_regen.regenerate_ninja ~package_kind:Toplevel
           ~per_proj_dir:Bsb_global_paths.cwd ~forced:!force_regenerate in
-      Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt ninja_args;
+      if not !no_deps_mode then Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt ninja_args;
       if !do_install then install_target ();
-      if !watch_mode then exit 0 (* let the watcher do the build*)
-      else ninja_command_exit ninja_args
+      ninja_command_exit ninja_args
 
 let clean_subcommand ~start argv =
   Bsb_arg.parse_exn ~usage:clean_usage ~start ~argv
     [|
+      ("-verbose", call_spec Bsb_log.verbose, "Set the output to be verbose");
       ( "-with-deps",
         unit_set_spec (ref true),
         "*deprecated* This is the default behavior now. This option will be removed in a future release" );
-      ("-verbose", call_spec Bsb_log.verbose, "Set the output to be verbose");
     |]
     failed_annon;
   Bsb_clean.clean_bs_deps Bsb_global_paths.cwd;
