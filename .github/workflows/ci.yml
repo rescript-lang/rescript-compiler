@@ -146,6 +146,7 @@ jobs:
           ocaml-compiler: ${{matrix.ocaml_compiler}}
           opam-pin: false
           opam-depext: false
+          dune-cache: true
 
       - name: Use OCaml ${{matrix.ocaml_compiler}} (Win)
         uses: ocaml/setup-ocaml@v2
