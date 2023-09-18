@@ -40,11 +40,6 @@ let rec substitute ~f type0 =
           |> List.map (fun {aName; aType = t} ->
                  {aName; aType = t |> substitute ~f});
       }
-  | GroupOfLabeledArgs fields ->
-    GroupOfLabeledArgs
-      (fields
-      |> List.map (fun field ->
-             {field with type_ = field.type_ |> substitute ~f}))
   | Ident {typeArgs = []} -> type0
   | Ident ({typeArgs} as ident) ->
     Ident {ident with typeArgs = typeArgs |> List.map (substitute ~f)}
@@ -80,7 +75,7 @@ let rec free_ type0 : StringSet.t =
     StringSet.diff
       ((argTypes |> freeOfList_) +++ (retType |> free_))
       (typeVars |> StringSet.of_list)
-  | GroupOfLabeledArgs fields | Object (_, fields) ->
+  | Object (_, fields) ->
     fields
     |> List.fold_left
          (fun s {type_} -> StringSet.union s (type_ |> free_))

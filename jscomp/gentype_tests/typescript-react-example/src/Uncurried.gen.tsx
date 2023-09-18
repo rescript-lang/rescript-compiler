@@ -46,4 +46,4 @@ export const sumU2: (n:number) => (_1:number) => void = UncurriedBS.sumU2;
 
 export const sumCurried: (n:number, _2:number) => void = UncurriedBS.sumCurried;
 
-export const sumLblCurried: (s:string, _2:{ readonly n: number; readonly m: number }) => void = UncurriedBS.sumLblCurried;
+export const sumLblCurried: (s:string, n:number, m:number) => void = UncurriedBS.sumLblCurried;

@@ -12,6 +12,10 @@
 
 # 11.0.0-rc.4 (Unreleased)
 
+#### :bug: Bug Fix
+
+- Fix issue with GenType and labelled arguments https://github.com/rescript-lang/rescript-compiler/pull/6406
+
 #### :rocket: New Feature
 
 - Support renaming fields in inline records with `@as` attribute. [#6391](https://github.com/rescript-lang/rescript-compiler/pull/6391)

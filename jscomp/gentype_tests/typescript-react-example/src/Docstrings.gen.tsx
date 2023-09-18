@@ -39,7 +39,7 @@ export const unnamed2: (param_0:number, param_1:number) => number = DocstringsBS
 
 export const unnamed2U: (param_0:number, param_1:number) => number = DocstringsBS.unnamed2U;
 
-export const grouped: (_1:{ readonly x: number; readonly y: number }, a:number, b:number, c:number, _5:{ readonly z: number }) => number = DocstringsBS.grouped;
+export const grouped: (x:number, y:number, a:number, b:number, c:number, z:number) => number = DocstringsBS.grouped;
 
 export const unitArgWithoutConversion: () => string = DocstringsBS.unitArgWithoutConversion;
 

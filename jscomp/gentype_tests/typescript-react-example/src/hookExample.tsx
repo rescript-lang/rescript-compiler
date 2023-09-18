@@ -1,8 +1,6 @@
 import * as React from "react";
 
-export const foo = (x: {
-  person: { readonly name: string; readonly age: number };
-}) => x.person.name;
+export const foo = (person: { readonly name: string; readonly age: number }) => person.name;
 
 type Props = {
   readonly person: { readonly name: string; readonly age: number };

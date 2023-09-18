@@ -23,10 +23,10 @@ export const makeRenamed: unknown = makeRenamedTypeChecked as React.ComponentTyp
 }>;
 
 // In case of type error, check the type of 'foo' in 'ImportHooks.res' and './hookExample'.
-export const fooTypeChecked: (_1:{ readonly person: person }) => string = fooNotChecked;
+export const fooTypeChecked: (person:person) => string = fooNotChecked;
 
 // Export 'foo' early to allow circular import from the '.bs.js' file.
-export const foo: unknown = fooTypeChecked as (_1:{ readonly person: person }) => string;
+export const foo: unknown = fooTypeChecked as (person:person) => string;
 
 // tslint:disable-next-line:interface-over-type-literal
 export type person = { readonly name: string; readonly age: number };
