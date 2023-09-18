@@ -17,4 +17,4 @@ export type toPayload = { readonly result: string };
 
 export const convert: (_1:Promise<fromPayload>) => Promise<toPayload> = TestPromiseBS.convert;
 
-export const barx: (_1:{ readonly x?: Promise<(undefined | string)> }, _2:void) => boolean = TestPromiseBS.barx;
+export const barx: (x:(undefined | Promise<(undefined | string)>), _2:void) => boolean = TestPromiseBS.barx;

@@ -549,7 +549,7 @@ let propagateAnnotationToSubTypes ~codeItems (typeMap : CodeItem.exportTypeMap)
       | Function {argTypes; retType} ->
         argTypes |> List.iter (fun {aType} -> visit aType);
         retType |> visit
-      | GroupOfLabeledArgs fields | Object (_, fields) ->
+      | Object (_, fields) ->
         fields |> List.iter (fun {type_} -> type_ |> visit)
       | Option t | Null t | Nullable t | Promise t -> t |> visit
       | Tuple innerTypes -> innerTypes |> List.iter visit

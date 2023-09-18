@@ -13,9 +13,6 @@ let typeGetInlined ~config ~lookupId ~typeNameIsInterface type0 =
       let argConverted = argTypes |> List.map (argTypeToGroupedArg ~visited) in
       let retNormalized = retType |> visit ~visited in
       Function {function_ with argTypes = argConverted; retType = retNormalized}
-    | GroupOfLabeledArgs _ ->
-      (* This case should only fire from withing a function *)
-      normalized_
     | Ident {builtin = true} -> normalized_
     | Ident {builtin = false; name; typeArgs} -> (
       if visited |> StringSet.mem name then (
@@ -77,21 +74,8 @@ let typeGetInlined ~config ~lookupId ~typeNameIsInterface type0 =
       in
       normalized
   and argTypeToGroupedArg ~visited {aName; aType} =
-    match aType with
-    | GroupOfLabeledArgs fields ->
-      let fieldsConverted =
-        fields
-        |> List.map (fun ({type_} as field) -> (field, type_ |> visit ~visited))
-      in
-      let tNormalized =
-        GroupOfLabeledArgs
-          (fieldsConverted
-          |> List.map (fun (field, t) -> {field with type_ = t}))
-      in
-      {aName; aType = tNormalized}
-    | _ ->
-      let tNormalized = aType |> visit ~visited in
-      {aName; aType = tNormalized}
+    let tNormalized = aType |> visit ~visited in
+    {aName; aType = tNormalized}
   in
   let normalized = type0 |> visit ~visited:StringSet.empty in
   if !Debug.converter then

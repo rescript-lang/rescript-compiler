@@ -3,14 +3,19 @@ open GenTypeCommon
 let rec addAnnotationsToTypes_ ~config ~(expr : Typedtree.expression)
     (argTypes : argType list) =
   match (expr.exp_desc, expr.exp_type.desc, argTypes) with
-  | _, _, {aName; aType = GroupOfLabeledArgs fields} :: nextTypes ->
-    let fields1, nextTypes1 =
-      addAnnotationsToFields ~config expr fields nextTypes
-    in
-    {aName; aType = GroupOfLabeledArgs fields1} :: nextTypes1
-  | Texp_function {param; cases = [{c_rhs}]}, _, {aType} :: nextTypes ->
+  | Texp_function {arg_label; param; cases = [{c_rhs}]}, _, {aType} :: nextTypes
+    ->
     let nextTypes1 = nextTypes |> addAnnotationsToTypes_ ~config ~expr:c_rhs in
     let aName = Ident.name param in
+    let _ = Printtyped.implementation in
+    let aName =
+      if aName = "*opt*" then
+        match arg_label with
+        | Optional l ->
+          l
+        | _ -> "" (* should not happen *)
+      else aName
+    in
     {aName; aType} :: nextTypes1
   | Texp_construct ({txt = Lident "Function$"}, _, [funExpr]), _, _ ->
     (* let uncurried1: function$<_, _> = Function$(x => x |> string_of_int, [`Has_arity1]) *)

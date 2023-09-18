@@ -69,7 +69,6 @@ type type_ =
   | Array of type_ * mutable_
   | Dict of type_
   | Function of function_
-  | GroupOfLabeledArgs of fields
   | Ident of ident
   | Null of type_
   | Nullable of type_

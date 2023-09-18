@@ -14,7 +14,7 @@ import type {TypedArray2_Uint8Array_t as Js_TypedArray2_Uint8Array_t} from '../s
 export type vehicle = { readonly name: string };
 
 // tslint:disable-next-line:interface-over-type-literal
-export type cb = (_1:{ readonly _to: vehicle }) => void;
+export type cb = (_to:vehicle) => void;
 
 // tslint:disable-next-line:interface-over-type-literal
 export type r = { readonly x: string };
@@ -71,11 +71,7 @@ export type NoProps_make_Props = {};
 
 export const NoProps_make: React.ComponentType<{}> = HooksBS.NoProps.make;
 
-export const functionWithRenamedArgs: (_1:{
-  readonly _to: vehicle; 
-  readonly _Type: vehicle; 
-  readonly cb: cb
-}) => string = HooksBS.functionWithRenamedArgs;
+export const functionWithRenamedArgs: (_to:vehicle, _Type:vehicle, cb:cb) => string = HooksBS.functionWithRenamedArgs;
 
 // tslint:disable-next-line:interface-over-type-literal
 export type WithRename_componentWithRenamedArgs_Props = {
