@@ -7,8 +7,8 @@
 
   This is at the top level and is expected to return `unit`. But, it's returning `int`.
 
-In ReScript, anything at the top level must evaluate to `unit`. You can fix this by assigning the expression to a value, or piping it into the `ignore` function.
+  In ReScript, anything at the top level must evaluate to `unit`. You can fix this by assigning the expression to a value, or piping it into the `ignore` function.
 
-Possible solutions:
-- Assigning to a value that is then ignored: `let _ = yourExpression`
-- Piping into the built-in ignore function to ignore the result: `yourExpression->ignore`
+  Possible solutions:
+  - Assigning to a value that is then ignored: `let _ = yourExpression`
+  - Piping into the built-in ignore function to ignore the result: `yourExpression->ignore`
