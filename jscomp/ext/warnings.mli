@@ -19,6 +19,8 @@ type loc = {
   loc_ghost : bool;
 }
 
+type topLevelUnitHelp = FunctionCall | Other
+
 type t =
   | Comment_start (*  1 *)
   | Comment_not_end (*  2 *)
@@ -76,7 +78,7 @@ type t =
   | Bs_unimplemented_primitive of string (* 106 *)
   | Bs_integer_literal_overflow (* 107 *)
   | Bs_uninterpreted_delimiters of string (* 108 *)
-  | Bs_toplevel_expression_unit (* 109 *)
+  | Bs_toplevel_expression_unit of (string * topLevelUnitHelp) option (* 109 *)
 
 val parse_options : bool -> string -> unit
 

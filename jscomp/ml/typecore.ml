@@ -3743,11 +3743,21 @@ let type_expression env sexp =
   Typetexp.reset_type_variables();
   begin_def();
   let exp = type_exp env sexp in
-  if Warnings.is_active Bs_toplevel_expression_unit then 
+  if Warnings.is_active (Bs_toplevel_expression_unit None) then 
     (try unify env exp.exp_type 
       (instance_def Predef.type_unit) with 
-    | Unify _ 
-    | Tags _  -> Location.prerr_warning sexp.pexp_loc Bs_toplevel_expression_unit);
+    | Unify _ ->
+      let buffer = Buffer.create 10 in
+      let formatter = Format.formatter_of_buffer buffer in
+      Printtyp.type_expr formatter exp.exp_type;
+      Format.pp_print_flush formatter ();
+      let returnType = Buffer.contents buffer in
+      Location.prerr_warning sexp.pexp_loc (Bs_toplevel_expression_unit (
+        match sexp.pexp_desc with 
+        | Pexp_apply _ -> Some (returnType, FunctionCall)
+        | _ -> Some (returnType, Other)
+      ))
+    | Tags _  -> Location.prerr_warning sexp.pexp_loc (Bs_toplevel_expression_unit None));
   end_def();
   if not (is_nonexpansive exp) then generalize_expansive env exp.exp_type;
   generalize exp.exp_type;
