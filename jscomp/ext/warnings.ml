@@ -493,7 +493,7 @@ let message = function
       "Integer literal exceeds the range of representable integers of type int"
   | Bs_uninterpreted_delimiters s -> "Uninterpreted delimiters " ^ s
   | Bs_toplevel_expression_unit help ->
-      Printf.sprintf "This%sis at the top level and is expected to return `unit`. But, it's returning %s.\n\n  In ReScript, anything at the top level must evaluate to `unit`. You can fix this by assigning the expression to a value, or piping it into the `ignore` function.%s" 
+      Printf.sprintf "This%sis at the top level and is expected to return `unit`. But it's returning %s.\n\n  In ReScript, anything at the top level must evaluate to `unit`. You can fix this by assigning the expression to a value, or piping it into the `ignore` function.%s" 
         (match help with 
         | Some (_, FunctionCall) -> " function call " 
         | _ -> " ") 
