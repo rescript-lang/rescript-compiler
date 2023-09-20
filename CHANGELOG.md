@@ -31,7 +31,7 @@
 - Improve "Somewhere wanted" error messages by changing wording and adding more context + suggested solutions to the error messages where appropriate. https://github.com/rescript-lang/rescript-compiler/pull/6410
 - Add smart printer for pipe-chains. https://github.com/rescript-lang/rescript-compiler/pull/6411
 - Display the compile time for `rescript build` command. https://github.com/rescript-lang/rescript-compiler/pull/6404
-- Actualize help message for `build` and `clean` commands. https://github.com/rescript-lang/rescript-compiler/pull/6404
+- Improve help message for `build` and `clean` commands. https://github.com/rescript-lang/rescript-compiler/pull/6404
 - Pass through the `-verbose` flag to builds in watch mode. https://github.com/rescript-lang/rescript-compiler/pull/6404
 
 # 11.0.0-rc.3
