@@ -60,6 +60,9 @@ val name_pattern : string -> Typedtree.case list -> Ident.t
 
 val self_coercion : (Path.t * Location.t list ref) list ref
 
+type typeClashStatement = FunctionCall
+type typeClashContext = FunctionReturn |MaybeUnwrapOption | IfCondition | IfReturn | Switch | StringConcat | ComparisonOperator | MathOperator of {forFloat: bool; operator: string; isConstant: string option} | FunctionArgument | Statement of typeClashStatement 
+
 type error =
     Polymorphic_label of Longident.t
   | Constructor_arity_mismatch of Longident.t * int * int
@@ -68,7 +71,7 @@ type error =
   | Or_pattern_type_clash of Ident.t * (type_expr * type_expr) list
   | Multiply_bound_variable of string
   | Orpat_vars of Ident.t * Ident.t list
-  | Expr_type_clash of (type_expr * type_expr) list
+  | Expr_type_clash of (type_expr * type_expr) list * (typeClashContext option)
   | Apply_non_function of type_expr
   | Apply_wrong_label of arg_label * type_expr
   | Label_multiply_defined of string
