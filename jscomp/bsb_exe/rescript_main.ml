@@ -85,7 +85,7 @@ let ninja_command_exit (type t) (ninja_args : string array) : t =
 *)
 let clean_usage =
   "Usage: rescript clean <options>\n\n\
-   `rescript clean` cleans build artifacts. It is useful for edge-case reasons in case you get into a stale build\n"
+   `rescript clean` cleans build artifacts\n"
 
 let build_usage =
   "Usage: rescript build <options> -- <ninja_options>\n\n\
