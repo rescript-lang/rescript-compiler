@@ -7,7 +7,7 @@
   [1;31m5[0m [2m│[0m [1;31mf(1, 2)[0m
   6 [2m│[0m 
 
-  This function call is at the top level and is expected to return `unit`. But, it's returning `int => int`.
+  This function call is at the top level and is expected to return `unit`. But it's returning `int => int`.
 
   In ReScript, anything at the top level must evaluate to `unit`. You can fix this by assigning the expression to a value, or piping it into the `ignore` function.
 
