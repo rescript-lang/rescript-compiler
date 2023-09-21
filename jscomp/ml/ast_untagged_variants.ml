@@ -22,6 +22,7 @@ type untaggedError =
   | AtMostOneFunction
   | AtMostOneString
   | AtMostOneNumber
+  | AtMostOneBoolean
   | DuplicateLiteral of string
   | ConstructorMoreThanOneArg of string
 type error =
@@ -49,6 +50,7 @@ let report_error ppf =
       | AtMostOneInstance i -> "At most one case can be a " ^ (Instance.to_string i) ^ " type."
       | AtMostOneFunction -> "At most one case can be a function type."
       | AtMostOneString -> "At most one case can be a string type."
+      | AtMostOneBoolean -> "At most one case can be a boolean type."
       | AtMostOneNumber ->
         "At most one case can be a number type (int or float)."
       | DuplicateLiteral s -> "Duplicate literal " ^ s ^ "."
@@ -59,6 +61,7 @@ type block_type =
   | IntType
   | StringType
   | FloatType
+  | BooleanType
   | InstanceType of Instance.t
   | FunctionType
   | ObjectType
@@ -167,6 +170,8 @@ let get_block_type_from_typ ~env (t: Types.type_expr) : block_type option =
     Some IntType
   | {desc = Tconstr (path, _, _)} when Path.same path Predef.path_float ->
     Some FloatType
+  | {desc = Tconstr (path, _, _)} when Path.same path Predef.path_bool ->
+      Some BooleanType
   | ({desc = Tconstr _} as t) when Ast_uncurried_utils.typeIsUncurriedFun t ->
     Some FunctionType
   | {desc = Tarrow _} -> Some FunctionType
@@ -232,6 +237,7 @@ let checkInvariant ~isUntaggedDef ~(consts : (Location.t * tag) list)
   let objectTypes = ref 0 in
   let stringTypes = ref 0 in
   let numberTypes = ref 0 in
+  let booleanTypes = ref 0 in
   let unknownTypes = ref 0 in
   let addStringLiteral ~loc s =
     if StringSet.mem s !string_literals then
@@ -258,6 +264,10 @@ let checkInvariant ~isUntaggedDef ~(consts : (Location.t * tag) list)
       raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneString));
     if !numberTypes > 1 then
       raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneNumber));
+    if !booleanTypes > 1 then
+      raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneBoolean));
+    if !booleanTypes > 0 && (StringSet.mem "true" !nonstring_literals || StringSet.mem "false" !nonstring_literals) then
+      raise (Error (loc, InvalidUntaggedVariantDefinition AtMostOneBoolean));
     ()
   in
   Ext_list.rev_iter consts (fun (loc, literal) ->
@@ -267,34 +277,27 @@ let checkInvariant ~isUntaggedDef ~(consts : (Location.t * tag) list)
       | Some (Float f) -> addNonstringLiteral ~loc f
       | Some Null -> addNonstringLiteral ~loc "null"
       | Some Undefined -> addNonstringLiteral ~loc "undefined"
-      | Some (Bool b) ->
-        addNonstringLiteral ~loc (if b then "true" else "false")
+      | Some (Bool b) -> addNonstringLiteral ~loc (if b then "true" else "false")
       | Some (Untagged _) -> ()
       | None -> addStringLiteral ~loc literal.name);
   if isUntaggedDef then
     Ext_list.rev_iter blocks (fun (loc, block) ->
-        let name = block.tag.name in
-        match block.block_type with
-        | Some UnknownType ->
-          incr unknownTypes;
-          invariant loc name
-        | Some ObjectType ->
-          incr objectTypes;
-          invariant loc name
-        | Some (InstanceType i) ->
+      match block.block_type with
+      | Some block_type ->
+        (match block_type with
+        | UnknownType -> incr unknownTypes;
+        | ObjectType -> incr objectTypes;
+        | (InstanceType i) ->
           let count = Hashtbl.find_opt instanceTypes i |> Option.value ~default:0 in
           Hashtbl.replace instanceTypes i (count + 1);
-          invariant loc name
-        | Some FunctionType ->
-          incr functionTypes;
-          invariant loc name
-        | Some (IntType | FloatType) ->
-          incr numberTypes;
-          invariant loc name
-        | Some StringType ->
-          incr stringTypes;
-          invariant loc name
-        | None -> ())
+        | FunctionType -> incr functionTypes;
+        | (IntType | FloatType) -> incr numberTypes;
+        | BooleanType -> incr booleanTypes;
+        | StringType -> incr stringTypes;
+        );
+        invariant loc block.tag.name
+      | None -> ()
+    )
 
 let names_from_type_variant ?(isUntaggedDef = false) ~env
     (cstrs : Types.constructor_declaration list) =
@@ -353,6 +356,7 @@ module DynamicChecks = struct
   let function_ = Untagged FunctionType |> tag_type
   let string = Untagged StringType |> tag_type
   let number = Untagged IntType |> tag_type
+  let boolean = Untagged BooleanType |> tag_type
 
   let ( == ) x y = bin EqEqEq x y
   let ( != ) x y = bin NotEqEq x y
@@ -371,6 +375,11 @@ module DynamicChecks = struct
         | Int _ | Float _ -> true
         | _ -> false)
     in
+    let literals_overlaps_with_boolean () =
+      Ext_list.exists literal_cases (function
+        | Bool _ -> true
+        | _ -> false)
+    in
     let literals_overlaps_with_object () =
       Ext_list.exists literal_cases (function
         | Null -> true
@@ -386,6 +395,8 @@ module DynamicChecks = struct
         typeof e != number
       | FloatType when literals_overlaps_with_number () = false ->
         typeof e != number
+      | BooleanType when literals_overlaps_with_boolean () = false ->
+        typeof e != boolean
       | InstanceType i -> not (is_instance i e)
       | FunctionType -> typeof e != function_
       | ObjectType when literals_overlaps_with_object () = false ->
@@ -394,6 +405,7 @@ module DynamicChecks = struct
       | StringType (* overlap *)
       | IntType (* overlap *)
       | FloatType (* overlap *)
+      | BooleanType (* overlap *)
       | UnknownType -> (
         (* We don't know the type of unknown, so we need to express:
            this is not one of the literals *)
@@ -434,7 +446,7 @@ module DynamicChecks = struct
   let add_runtime_type_check ~tag_type ~(block_cases : block_type list) x y =
     let instances = Ext_list.filter_map block_cases (function InstanceType i -> Some i | _ -> None) in
     match tag_type with
-    | Untagged (IntType | StringType | FloatType | FunctionType) ->
+    | Untagged (IntType | StringType | FloatType | BooleanType | FunctionType) ->
       typeof y == x
     | Untagged ObjectType ->
       if instances <> [] then
