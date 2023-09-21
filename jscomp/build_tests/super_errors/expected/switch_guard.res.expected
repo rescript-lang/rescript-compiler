@@ -11,4 +11,4 @@
   This has type: [1;31mstring[0m
   But [1;33mif[0m conditions must always be of type: [1;33mbool[0m
 
-  Conditions for [1;33mif[0m statements must always evaluate to [1;33mbool[0m. To fix this, change the highlighted code so it evaluates to a [1;33mbool[0m.
+  To fix this, change the highlighted code so it evaluates to a [1;33mbool[0m.

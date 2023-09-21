@@ -771,7 +771,7 @@ let print_expr_type_clash ?typeClashContext env trace ppf = begin
     | Some Switch ->
       fprintf ppf "\n\n  All branches in a @{<info>switch@} must return the same type. To fix this, change your branch to return the expected type."
     | Some IfCondition ->
-      fprintf ppf "\n\n  Conditions for @{<info>if@} statements must always evaluate to @{<info>bool@}. To fix this, change the highlighted code so it evaluates to a @{<info>bool@}."
+      fprintf ppf "\n\n  To fix this, change the highlighted code so it evaluates to a @{<info>bool@}."
     | Some IfReturn ->
       fprintf ppf "\n\n  @{<info>if@} expressions must return the same type in all branches (@{<info>if@}, @{<info>else if@}, @{<info>else@})."
     | Some MaybeUnwrapOption ->
