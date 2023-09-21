@@ -11,6 +11,6 @@
   This has type: [1;31mint[0m
   But this [1;33mif[0m statement is expected to return: [1;33mstring[0m
 
-  In ReScript, `if` statements must return the same type in all branches (`if`, `else if`, `else`).
+  [1;33mif[0m expressions must return the same type in all branches ([1;33mif[0m, [1;33melse if[0m, [1;33melse[0m).
   
   You can convert [1;33mint[0m to [1;33mstring[0m with [1;33mBelt.Int.toString[0m.

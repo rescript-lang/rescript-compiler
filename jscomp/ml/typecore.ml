@@ -751,7 +751,7 @@ let print_expr_type_clash ?typeClashContext env trace ppf = begin
       | '*' -> "multiply"
       | _ -> "compute") in
       (* TODO check int vs float explicitly before showing this *)
-      (fprintf ppf "\n\n  In ReScript, floats and ints have their own mathematical operators. This means you cannot %s a float and an int without converting between the two.\n\n  Possible solutions:\n  - Ensure all values in this calculation has the type @{<info>%s@}. You can convert between floats and ints via @{<info>Belt.Float.toInt@} and @{<info>Belt.Int.fromFloat@}." 
+      (fprintf ppf "\n\n  Floats and ints have their own mathematical operators. This means you cannot %s a float and an int without converting between the two.\n\n  Possible solutions:\n  - Ensure all values in this calculation has the type @{<info>%s@}. You can convert between floats and ints via @{<info>Belt.Float.toInt@} and @{<info>Belt.Int.fromFloat@}." 
         operatorText
         (if forFloat then "float" else "int"));
       (match isConstant, trace with 
@@ -769,13 +769,15 @@ let print_expr_type_clash ?typeClashContext env trace ppf = begin
         | _ -> ())
       | _ -> ())
     | Some Switch ->
-      fprintf ppf "\n\n  All branches in a `switch` must return the same type. To fix this, change your branch to return the expected type."
+      fprintf ppf "\n\n  All branches in a @{<info>switch@} must return the same type. To fix this, change your branch to return the expected type."
     | Some IfCondition ->
-      fprintf ppf "\n\n  Conditions for `if` statements must always evaluate to `bool`. To fix this, change the highlighted code so it evaluates to a `bool`."
+      fprintf ppf "\n\n  Conditions for @{<info>if@} statements must always evaluate to @{<info>bool@}. To fix this, change the highlighted code so it evaluates to a @{<info>bool@}."
     | Some IfReturn ->
-      fprintf ppf "\n\n  In ReScript, `if` statements must return the same type in all branches (`if`, `else if`, `else`)."
+      fprintf ppf "\n\n  @{<info>if@} expressions must return the same type in all branches (@{<info>if@}, @{<info>else if@}, @{<info>else@})."
     | Some MaybeUnwrapOption ->
       fprintf ppf "\n\n  Possible solutions:\n  - Unwrap the option to its underlying value using `yourValue->Belt.Option.getWithDefault(someDefaultValue)`"
+    | Some ComparisonOperator ->
+      fprintf ppf "\n\n  You can only compare things of the same type."
     | _ -> ()
     );
     show_extra_help ppf env trace;

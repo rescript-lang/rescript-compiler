@@ -9,3 +9,5 @@
 
   This has type: [1;31moption<int>[0m
   But it's being compared to something of type: [1;33mint[0m
+
+  You can only compare things of the same type.
