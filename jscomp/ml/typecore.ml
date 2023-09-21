@@ -24,7 +24,7 @@ open Btype
 open Ctype
 
 type typeClashStatement = FunctionCall
-type typeClashContext = FunctionReturn | MaybeUnwrapOption | IfCondition | IfReturn | Switch | StringConcat | ComparisonOperator | MathOperator of {forFloat: bool; operator: string; isConstant: string option} | FunctionArgument | Statement of typeClashStatement 
+type typeClashContext = SetRecordField | ArrayValue | FunctionReturn | MaybeUnwrapOption | IfCondition | IfReturn | Switch | StringConcat | ComparisonOperator | MathOperator of {forFloat: bool; operator: string; isConstant: string option} | FunctionArgument | Statement of typeClashStatement 
 
 type error =
     Polymorphic_label of Longident.t
@@ -718,6 +718,7 @@ let print_expr_type_clash ?typeClashContext env trace ppf = begin
           let text = (match typeClashContext with 
           | Some (Statement(FunctionCall)) -> "This function call returns:" 
           | Some (MathOperator{isConstant=Some _}) -> "This value has type:" 
+          | Some (ArrayValue) -> "This array item has type:"
           | _ -> "This has type:"
           ) in
           fprintf ppf "%s" text)
@@ -728,6 +729,8 @@ let print_expr_type_clash ?typeClashContext env trace ppf = begin
           | Some Switch -> fprintf ppf "But this switch is expected to return:"
           | Some IfCondition -> fprintf ppf "But @{<info>if@} conditions must always be of type:"
           | Some IfReturn -> fprintf ppf "But this @{<info>if@} statement is expected to return:"
+          | Some ArrayValue -> fprintf ppf "But this array is expected to have items of type:"
+          | Some SetRecordField -> fprintf ppf "But this record field is of type:"
           | Some (Statement(FunctionCall)) -> fprintf ppf "But it's expected to return:"
           | Some (MathOperator {operator}) -> fprintf ppf "But it's being used with the @{<info>%s@} operator, which works on:" operator
           | Some FunctionReturn -> fprintf ppf "But this function is expecting you to return:"
@@ -778,6 +781,8 @@ let print_expr_type_clash ?typeClashContext env trace ppf = begin
       fprintf ppf "\n\n  Possible solutions:\n  - Unwrap the option to its underlying value using `yourValue->Belt.Option.getWithDefault(someDefaultValue)`"
     | Some ComparisonOperator ->
       fprintf ppf "\n\n  You can only compare things of the same type."
+    | Some ArrayValue ->
+      fprintf ppf "\n\n  Arrays can only contain items of the same type."
     | _ -> ()
     );
     show_extra_help ppf env trace;
@@ -2527,7 +2532,7 @@ and type_expect_ ?typeClashContext ?tctx ?in_function ?(recarg=Rejected) env sex
       let (record, label, opath) = type_label_access env srecord lid in
       let ty_record = if opath = None then newvar () else record.exp_type in
       let (label_loc, label, newval) =
-        type_label_exp false env loc ty_record (lid, label, snewval) in
+        type_label_exp ~typeClashContext:SetRecordField false env loc ty_record (lid, label, snewval) in
       unify_exp ~ctx:"set field" env record ty_record;
       if label.lbl_mut = Immutable then
         raise(Error(loc, env, Label_not_mutable lid.txt));
@@ -2543,7 +2548,7 @@ and type_expect_ ?typeClashContext ?tctx ?in_function ?(recarg=Rejected) env sex
       let ty = newgenvar() in
       let to_unify = Predef.type_array ty in
       unify_exp_types ~ctx:"array" loc env to_unify ty_expected;
-      let argl = List.map (fun sarg -> type_expect ~ctx:"pexp_array" env sarg ty) sargl in
+      let argl = List.map (fun sarg -> type_expect ~typeClashContext:ArrayValue ~ctx:"pexp_array" env sarg ty) sargl in
       re {
         exp_desc = Texp_array argl;
         exp_loc = loc; exp_extra = [];
@@ -3043,7 +3048,7 @@ and type_label_access env srecord lid =
 (* Typing format strings for printing or reading.
    These formats are used by functions in modules Printf, Format, and Scanf.
    (Handling of * modifiers contributed by Thorsten Ohl.) *)
-and type_label_exp create env loc ty_expected
+and type_label_exp ?typeClashContext create env loc ty_expected
           (lid, label, sarg) =
   (* Here also ty_expected may be at generic_level *)
   begin_def ();
@@ -3075,7 +3080,7 @@ and type_label_exp create env loc ty_expected
       raise (Error(lid.loc, env, Private_label(lid.txt, ty_expected)));
   let arg =
     let snap = if vars = [] then None else Some (Btype.snapshot ()) in
-    let arg = type_argument ~ctx:"typelabelexp#1" env sarg ty_arg (instance env ty_arg) in
+    let arg = type_argument ?typeClashContext ~ctx:"typelabelexp#1" env sarg ty_arg (instance env ty_arg) in
     end_def ();
     try
       check_univars env (vars <> []) "field value" arg label.lbl_arg vars;
