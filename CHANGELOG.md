@@ -21,6 +21,7 @@
 - Support renaming fields in inline records with `@as` attribute. [#6391](https://github.com/rescript-lang/rescript-compiler/pull/6391)
 - Add builtin abstract types for File and Blob APIs. https://github.com/rescript-lang/rescript-compiler/pull/6383
 - Untagged variants: Support `promise`, RegExes, Dates, File and Blob. https://github.com/rescript-lang/rescript-compiler/pull/6383
+- Untagged variants: Support `bool`. https://github.com/rescript-lang/rescript-compiler/pull/6368
 - Support aliased types as payloads to untagged variants. https://github.com/rescript-lang/rescript-compiler/pull/6394
 
 #### :nail_care: Polish
