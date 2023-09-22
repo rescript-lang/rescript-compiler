@@ -10,11 +10,8 @@ var out = cp.spawnSync(rescript_exe, {
 });
 
 assert.equal(
-  out.stdout.slice(out.stdout.indexOf("FAILED: src/Main.cmj")),
-  `FAILED: src/Main.cmj
-
-  We've found a bug for you!
-  /Users/dzakh/code/DZakh-forks/rescript-compiler/jscomp/build_tests/unboxed_bool_with_const/src/Main.res:3:3-14
+  out.stdout.slice(out.stdout.indexOf("Main.res:3:3-14")),
+  `Main.res:3:3-14
 
   1 │ @unboxed
   2 │ type t<'a> =
