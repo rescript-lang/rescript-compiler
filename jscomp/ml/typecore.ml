@@ -719,6 +719,7 @@ let print_expr_type_clash ?typeClashContext env trace ppf = begin
           | Some (Statement(FunctionCall)) -> "This function call returns:" 
           | Some (MathOperator{isConstant=Some _}) -> "This value has type:" 
           | Some (ArrayValue) -> "This array item has type:"
+          | Some SetRecordField -> "You're assigning something to this field that has type:"
           | _ -> "This has type:"
           ) in
           fprintf ppf "%s" text)
