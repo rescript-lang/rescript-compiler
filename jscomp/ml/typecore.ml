@@ -3244,10 +3244,9 @@ and type_application ?typeClashContext uncurried env funct (sargs : sargs) : tar
                 (Warnings.Nonoptional_label (Printtyp.string_of_label l));
              sargs, omitted ,            
              Some (
-            if not optional || is_optional l' then(
-              let typeClashContext = typeClashContextForFunctionArgument typeClashContext sarg0 in
-               (fun () -> type_argument ?typeClashContext env sarg0 ty ty0)
-            )else 
+            if not optional || is_optional l' then
+               (fun () -> type_argument ?typeClashContext:(typeClashContextForFunctionArgument typeClashContext sarg0) env sarg0 ty ty0)
+            else 
                (fun () -> option_some (type_argument ?typeClashContext env sarg0
                                              (extract_option_type env ty)
                                              (extract_option_type env ty0))))
