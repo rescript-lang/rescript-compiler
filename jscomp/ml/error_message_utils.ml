@@ -166,3 +166,34 @@ let typeClashContextFromFunction sexp sfunct =
     Some (MathOperator {forFloat = false; operator; isConstant})
   | _ -> Some FunctionArgument
   
+let typeClashContextForFunctionArgument typeClashContext sarg0 =
+  match typeClashContext with
+  | Some (MathOperator {forFloat; operator}) ->
+    Some
+      (MathOperator
+          {
+            forFloat;
+            operator;
+            isConstant =
+              (match sarg0.Parsetree.pexp_desc with
+              | Pexp_constant (Pconst_integer (txt, _) | Pconst_float (txt, _))
+                ->
+                Some txt
+              | _ -> None);
+          })
+  | typeClashContext -> typeClashContext
+
+let typeClashContextMaybeOption ty_expected ty_res =
+  match (ty_expected, ty_res) with
+  | ( {Types.desc = Tconstr (expectedPath, _, _)},
+      {Types.desc = Tconstr (typePath, _, _)} )
+    when Path.same Predef.path_option typePath
+          && Path.same expectedPath Predef.path_option = false ->
+    Some MaybeUnwrapOption
+  | _ -> None
+
+let typeClashContextInStatement sexp =
+  match sexp.Parsetree.pexp_desc with
+  | Pexp_apply _ -> Some (Statement FunctionCall)
+  | _ -> None
+  

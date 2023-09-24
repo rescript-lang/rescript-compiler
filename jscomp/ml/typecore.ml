@@ -3245,13 +3245,7 @@ and type_application ?typeClashContext uncurried env funct (sargs : sargs) : tar
              sargs, omitted ,            
              Some (
             if not optional || is_optional l' then(
-              let typeClashContext = (match typeClashContext with 
-              | Some MathOperator {forFloat; operator} -> Some 
-                (MathOperator {forFloat; operator; isConstant = 
-                  match sarg0.pexp_desc with 
-                  | Pexp_constant (Pconst_integer (txt, _) | Pconst_float (txt, _)) -> Some txt 
-                  | _ -> None}) 
-              | typeClashContext -> typeClashContext) in
+              let typeClashContext = typeClashContextForFunctionArgument typeClashContext sarg0 in
                (fun () -> type_argument ?typeClashContext env sarg0 ty ty0)
             )else 
                (fun () -> option_some (type_argument ?typeClashContext env sarg0
@@ -3333,10 +3327,7 @@ and type_construct env loc lid sarg ty_expected attrs =
       exp_type = ty_res;
       exp_attributes = attrs;
       exp_env = env } in
-  let typeClashContext = (match ty_expected, ty_res with 
-  | {desc=Tconstr (expectedPath, _, _)}, {desc=Tconstr (typePath, _, _)} 
-      when Path.same Predef.path_option typePath && Path.same expectedPath Predef.path_option = false -> Some MaybeUnwrapOption
-  | _ -> None) in
+  let typeClashContext = typeClashContextMaybeOption ty_expected ty_res in
   if separate then begin
     end_def ();
     generalize_structure ty_res;
@@ -3386,10 +3377,7 @@ and type_statement env sexp =
   if is_Tvar ty && ty.level > tv.level then
       Location.prerr_warning loc Warnings.Nonreturning_statement;
   let expected_ty = instance_def Predef.type_unit in
-  let typeClashContext = (match sexp.pexp_desc with 
-  | Pexp_apply _ -> Some(Statement(FunctionCall)) 
-  | _ -> None
-  ) in
+  let typeClashContext = typeClashContextInStatement sexp in
   unify_exp ?typeClashContext env exp expected_ty;
   exp
 
@@ -3502,7 +3490,7 @@ and type_cases ?rootTypeClashContext ?in_function env ty_arg ty_res partial_flag
           | None -> None
           | Some scond ->
               Some
-                (type_expect ?typeClashContext:(match rootTypeClashContext with | Some _ -> Some IfCondition | None -> None) ext_env (wrap_unpacks scond unpacks)
+                (type_expect ?typeClashContext:(if Option.is_some rootTypeClashContext then Some IfCondition else None) ext_env (wrap_unpacks scond unpacks)
                    Predef.type_bool)
         in
         let exp = type_expect ?typeClashContext:rootTypeClashContext ?in_function ext_env sexp ty_res' in
