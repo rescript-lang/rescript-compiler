@@ -9,5 +9,9 @@
   But this array is expected to have items of type: [1;33mint[0m
 
   Arrays can only contain items of the same type.
+
+  Possible solutions:
+  - Convert all values in the array to the same type.
+  - Use a tuple, if your array is of fixed length. Tuples can mix types freely, and compiles to a JavaScript array.
   
   You can convert [1;33mstring[0m to [1;33mint[0m with [1;33mBelt.Int.fromString[0m.

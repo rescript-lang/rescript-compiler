@@ -783,7 +783,7 @@ let print_expr_type_clash ?typeClashContext env trace ppf = begin
     | Some ComparisonOperator ->
       fprintf ppf "\n\n  You can only compare things of the same type."
     | Some ArrayValue ->
-      fprintf ppf "\n\n  Arrays can only contain items of the same type."
+      fprintf ppf "\n\n  Arrays can only contain items of the same type.\n\n  Possible solutions:\n  - Convert all values in the array to the same type.\n  - Use a tuple, if your array is of fixed length. Tuples can mix types freely, and compiles to a JavaScript array."
     | _ -> ()
     );
     show_extra_help ppf env trace;
