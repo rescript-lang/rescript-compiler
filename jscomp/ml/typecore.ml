@@ -712,9 +712,9 @@ let print_expr_type_clash ?typeClashContext env trace ppf = begin
 
     Printtyp.super_report_unification_error ppf env trace
       (function ppf ->
-        errorTypeText ppf typeClashContext)
+          errorTypeText ppf typeClashContext)
       (function ppf ->
-        errorExpectedTypeText ppf typeClashContext);
+          errorExpectedTypeText ppf typeClashContext);
     printExtraTypeClashHelp ppf trace typeClashContext;
     show_extra_help ppf env trace;
 end
