@@ -12,6 +12,6 @@
 
   Possible solutions:
   - Convert all values in the array to the same type.
-  - Use a tuple, if your array is of fixed length. Tuples can mix types freely, and compiles to a JavaScript array.
+  - Use a tuple, if your array is of fixed length. Tuples can mix types freely, and compiles to a JavaScript array. Example of a tuple: `let myTuple = (10, "hello", 15.5, true)
   
   You can convert [1;33mstring[0m to [1;33mint[0m with [1;33mBelt.Int.fromString[0m.

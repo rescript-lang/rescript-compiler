@@ -145,7 +145,8 @@ let printExtraTypeClashHelp ppf trace typeClashContext =
       \  Possible solutions:\n\
       \  - Convert all values in the array to the same type.\n\
       \  - Use a tuple, if your array is of fixed length. Tuples can mix types \
-       freely, and compiles to a JavaScript array."
+       freely, and compiles to a JavaScript array. Example of a tuple: `let \
+       myTuple = (10, \"hello\", 15.5, true)"
   | _ -> ()
 
 let typeClashContextFromFunction sexp sfunct =
@@ -165,22 +166,22 @@ let typeClashContextFromFunction sexp sfunct =
   | Pexp_ident {txt = Lident (("/" | "*" | "+" | "-") as operator)} ->
     Some (MathOperator {forFloat = false; operator; isConstant})
   | _ -> Some FunctionArgument
-  
+
 let typeClashContextForFunctionArgument typeClashContext sarg0 =
   match typeClashContext with
   | Some (MathOperator {forFloat; operator}) ->
     Some
       (MathOperator
-          {
-            forFloat;
-            operator;
-            isConstant =
-              (match sarg0.Parsetree.pexp_desc with
-              | Pexp_constant (Pconst_integer (txt, _) | Pconst_float (txt, _))
-                ->
-                Some txt
-              | _ -> None);
-          })
+         {
+           forFloat;
+           operator;
+           isConstant =
+             (match sarg0.Parsetree.pexp_desc with
+             | Pexp_constant (Pconst_integer (txt, _) | Pconst_float (txt, _))
+               ->
+               Some txt
+             | _ -> None);
+         })
   | typeClashContext -> typeClashContext
 
 let typeClashContextMaybeOption ty_expected ty_res =
@@ -188,7 +189,7 @@ let typeClashContextMaybeOption ty_expected ty_res =
   | ( {Types.desc = Tconstr (expectedPath, _, _)},
       {Types.desc = Tconstr (typePath, _, _)} )
     when Path.same Predef.path_option typePath
-          && Path.same expectedPath Predef.path_option = false ->
+         && Path.same expectedPath Predef.path_option = false ->
     Some MaybeUnwrapOption
   | _ -> None
 
@@ -196,4 +197,3 @@ let typeClashContextInStatement sexp =
   match sexp.Parsetree.pexp_desc with
   | Pexp_apply _ -> Some (Statement FunctionCall)
   | _ -> None
-  
