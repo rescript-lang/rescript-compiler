@@ -147,3 +147,22 @@ let printExtraTypeClashHelp ppf trace typeClashContext =
       \  - Use a tuple, if your array is of fixed length. Tuples can mix types \
        freely, and compiles to a JavaScript array."
   | _ -> ()
+
+let typeClashContextFromFunction sexp sfunct =
+  let isConstant =
+    match sexp.Parsetree.pexp_desc with
+    | Pexp_constant (Pconst_integer (txt, _) | Pconst_float (txt, _)) ->
+      Some txt
+    | _ -> None
+  in
+  match sfunct.Parsetree.pexp_desc with
+  | Pexp_ident
+      {txt = Lident ("=" | "==" | "<>" | "!=" | ">" | ">=" | "<" | "<=")} ->
+    Some ComparisonOperator
+  | Pexp_ident {txt = Lident "++"} -> Some StringConcat
+  | Pexp_ident {txt = Lident (("/." | "*." | "+." | "-.") as operator)} ->
+    Some (MathOperator {forFloat = true; operator; isConstant})
+  | Pexp_ident {txt = Lident (("/" | "*" | "+" | "-") as operator)} ->
+    Some (MathOperator {forFloat = false; operator; isConstant})
+  | _ -> Some FunctionArgument
+  

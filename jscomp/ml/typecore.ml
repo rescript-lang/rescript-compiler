@@ -2140,16 +2140,7 @@ and type_expect_ ?typeClashContext ?in_function ?(recarg=Rejected) env sexp ty_e
         Ext_list.exists sexp.pexp_attributes (fun ({txt },_) -> txt = "res.uapp")
         && not @@ Ext_list.exists sexp.pexp_attributes (fun ({txt },_) -> txt = "res.partial")
         && not @@ is_automatic_curried_application env funct in
-      let isConstant = (match sexp.pexp_desc with 
-      | Pexp_constant (Pconst_integer(txt, _) | Pconst_float (txt, _)) -> Some txt 
-      | _ -> None) in
-      let typeClashContext = (match sfunct.pexp_desc with
-      | Pexp_ident {txt=Lident ("=" | "==" | "<>" | "!=" | ">" | ">=" | "<" | "<=")} -> Some (ComparisonOperator) 
-      | Pexp_ident {txt=Lident ("++")} -> Some (StringConcat) 
-      | Pexp_ident {txt=Lident ("/." | "*." | "+." | "-." as operator)} -> Some (MathOperator {forFloat=true; operator; isConstant}) 
-      | Pexp_ident {txt=Lident ("/" | "*" | "+" | "-" as operator)} -> Some (MathOperator {forFloat=false; operator; isConstant}) 
-      | _ -> Some (FunctionArgument)
-      ) in
+      let typeClashContext = typeClashContextFromFunction sexp sfunct in
       let (args, ty_res, fully_applied) = type_application ?typeClashContext uncurried env funct sargs in
       end_def ();
       unify_var env (newvar()) funct.exp_type;
