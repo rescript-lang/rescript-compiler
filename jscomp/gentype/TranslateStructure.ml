@@ -11,8 +11,7 @@ let rec addAnnotationsToTypes_ ~config ~(expr : Typedtree.expression)
     let aName =
       if aName = "*opt*" then
         match arg_label with
-        | Optional l ->
-          l
+        | Optional l -> l
         | _ -> "" (* should not happen *)
       else aName
     in
@@ -56,6 +55,7 @@ and addAnnotationsToFields ~config (expr : Typedtree.expression)
     in
     ({field with nameJS = name} :: nextFields1, types1)
   | _ -> (fields, argTypes)
+  [@@live]
 
 (** Recover from expr the renaming annotations on named arguments. *)
 let addAnnotationsToFunctionType ~config (expr : Typedtree.expression)
