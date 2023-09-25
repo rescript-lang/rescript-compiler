@@ -3527,8 +3527,8 @@ and printBinaryExpression ~state (expr : Parsetree.expression) cmtTbl =
     Doc.concat
       [spacingBeforeOperator; Doc.text operatorTxt; spacingAfterOperator]
   in
-  let printOperand ~isLhs expr parentOperator =
-    let rec flatten ~isLhs expr parentOperator =
+  let printOperand ~isLhs ~isMultiLine expr parentOperator =
+    let rec flatten ~isLhs ~isMultiLine expr parentOperator =
       if ParsetreeViewer.isBinaryExpression expr then
         match expr with
         | {
@@ -3541,7 +3541,7 @@ and printBinaryExpression ~state (expr : Parsetree.expression) cmtTbl =
             ParsetreeViewer.flattenableOperators parentOperator operator
             && not (ParsetreeViewer.hasAttributes expr.pexp_attributes)
           then
-            let leftPrinted = flatten ~isLhs:true left operator in
+            let leftPrinted = flatten ~isLhs:true ~isMultiLine left operator in
             let rightPrinted =
               let rightPrinteableAttrs, rightInternalAttrs =
                 ParsetreeViewer.partitionPrintableAttributes
@@ -3585,12 +3585,26 @@ and printBinaryExpression ~state (expr : Parsetree.expression) cmtTbl =
                     Doc.rparen;
                   ]
               else
-                Doc.concat
-                  [
-                    leftPrinted;
-                    printBinaryOperator ~inlineRhs:false operator;
-                    rightPrinted;
-                  ]
+                match operator with
+                | ("|." | "|.u") when isMultiLine ->
+                  (* If the pipe-chain is written over multiple lines, break automatically
+                   * `let x = a->b->c -> same line, break when line-width exceeded
+                   * `let x = a->
+                   *   b->c` -> pipe-chain is written on multiple lines, break the group *)
+                  Doc.breakableGroup ~forceBreak:true
+                    (Doc.concat
+                       [
+                         leftPrinted;
+                         printBinaryOperator ~inlineRhs:false operator;
+                         rightPrinted;
+                       ])
+                | _ ->
+                  Doc.concat
+                    [
+                      leftPrinted;
+                      printBinaryOperator ~inlineRhs:false operator;
+                      rightPrinted;
+                    ]
             in
 
             let doc =
@@ -3665,7 +3679,7 @@ and printBinaryExpression ~state (expr : Parsetree.expression) cmtTbl =
           | Braced braces -> printBraces doc expr braces
           | Nothing -> doc)
     in
-    flatten ~isLhs expr parentOperator
+    flatten ~isLhs ~isMultiLine expr parentOperator
   in
   match expr.pexp_desc with
   | Pexp_apply
@@ -3679,8 +3693,8 @@ and printBinaryExpression ~state (expr : Parsetree.expression) cmtTbl =
            || ParsetreeViewer.isBinaryExpression rhs
            || printAttributes ~state expr.pexp_attributes cmtTbl <> Doc.nil) ->
     let lhsHasCommentBelow = hasCommentBelow cmtTbl lhs.pexp_loc in
-    let lhsDoc = printOperand ~isLhs:true lhs op in
-    let rhsDoc = printOperand ~isLhs:false rhs op in
+    let lhsDoc = printOperand ~isLhs:true ~isMultiLine:false lhs op in
+    let rhsDoc = printOperand ~isLhs:false ~isMultiLine:false rhs op in
     Doc.group
       (Doc.concat
          [
@@ -3697,12 +3711,16 @@ and printBinaryExpression ~state (expr : Parsetree.expression) cmtTbl =
   | Pexp_apply
       ( {pexp_desc = Pexp_ident {txt = Longident.Lident operator}},
         [(Nolabel, lhs); (Nolabel, rhs)] ) ->
+    let isMultiLine =
+      lhs.pexp_loc.loc_start.pos_lnum < rhs.pexp_loc.loc_start.pos_lnum
+    in
+
     let right =
       let operatorWithRhs =
         let rhsDoc =
           printOperand
             ~isLhs:(ParsetreeViewer.isRhsBinaryOperator operator)
-            rhs operator
+            ~isMultiLine rhs operator
         in
         Doc.concat
           [
@@ -3722,7 +3740,7 @@ and printBinaryExpression ~state (expr : Parsetree.expression) cmtTbl =
            [
              printOperand
                ~isLhs:(not @@ ParsetreeViewer.isRhsBinaryOperator operator)
-               lhs operator;
+               ~isMultiLine lhs operator;
              right;
            ])
     in
