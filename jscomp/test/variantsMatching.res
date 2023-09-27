@@ -275,7 +275,7 @@ module CustomTagNotInline = {
 
 module UntaggedWithBool = {
   @unboxed @genType
-  type t<'a> = String(string) | Float(float) | Bool(bool) | Object({name: string})
+  type t = String(string) | Float(float) | Bool(bool) | Object({name: string})
 
   let classify = x =>
     switch x {
