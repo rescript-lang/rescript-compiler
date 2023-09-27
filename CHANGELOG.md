@@ -60,6 +60,7 @@
 #### :rocket: New Feature
 
 - GenType: Propagate comments from record fields to emitted TypeScript types. https://github.com/rescript-lang/rescript-compiler/pull/6333
+- Variant payloads: Allow spreading record definitions into inline records in variant payloads. https://github.com/rescript-lang/rescript-compiler/pull/6326
 
 #### :boom: Breaking Change
 
