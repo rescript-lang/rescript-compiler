@@ -28,6 +28,7 @@
 - A little performance improvement for JSX V4 runtime helper by removing one object allocation for components with key prop. https://github.com/rescript-lang/rescript-compiler/pull/6376
 - The error message for "toplevel expressions should evaluate to unit" has been revamped and improved. https://github.com/rescript-lang/rescript-compiler/pull/6407
 - Improve "Somewhere wanted" error messages by changing wording and adding more context + suggested solutions to the error messages where appropriate. https://github.com/rescript-lang/rescript-compiler/pull/6410
+- Add smart printer for pipe-chains. https://github.com/rescript-lang/rescript-compiler/pull/6411
 
 # 11.0.0-rc.3
 
