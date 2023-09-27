@@ -400,7 +400,9 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
                   "expect label, optional, or unit here")
             | Labelled label -> (
               let fieldName =
-                match Ast_attributes.iter_process_bs_string_as param_type.attr with
+                match
+                  Ast_attributes.iter_process_bs_string_as param_type.attr
+                with
                 | Some alias -> alias
                 | None -> label
               in
@@ -460,7 +462,9 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
                   "%@obj label %s does not support %@unwrap arguments" label)
             | Optional label -> (
               let fieldName =
-                match Ast_attributes.iter_process_bs_string_as param_type.attr with
+                match
+                  Ast_attributes.iter_process_bs_string_as param_type.attr
+                with
                 | Some alias -> alias
                 | None -> label
               in
