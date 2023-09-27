@@ -57,7 +57,6 @@ and addAnnotationsToFields ~config (expr : Typedtree.expression)
   | _ -> (fields, argTypes)
   [@@live]
 
-[@@live]
 (** Recover from expr the renaming annotations on named arguments. *)
 let addAnnotationsToFunctionType ~config (expr : Typedtree.expression)
     (type_ : type_) =

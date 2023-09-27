@@ -349,27 +349,6 @@ type response = {
   no_inline_cross_module: bool;
 }
 
-let get_maybe_obj_field_alias attributes =
-  attributes
-  |> List.find_map (fun (attr : Parsetree.attribute) ->
-         match attr with
-         | ( {txt = "as"; _},
-             PStr
-               [
-                 {
-                   pstr_desc =
-                     Pstr_eval
-                       ( {
-                           pexp_desc = Pexp_constant (Pconst_string (alias, _));
-                           _;
-                         },
-                         _ );
-                   _;
-                 };
-               ] ) ->
-           Some alias
-         | _ -> None)
-
 let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
     (arg_types_ty : Ast_core_type.param_type list)
     (result_type : Ast_core_type.t) : Parsetree.core_type * External_ffi_types.t
@@ -421,7 +400,7 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
                   "expect label, optional, or unit here")
             | Labelled label -> (
               let fieldName =
-                match get_maybe_obj_field_alias param_type.attr with
+                match Ast_attributes.iter_process_bs_string_as param_type.attr with
                 | Some alias -> alias
                 | None -> label
               in
@@ -481,7 +460,7 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
                   "%@obj label %s does not support %@unwrap arguments" label)
             | Optional label -> (
               let fieldName =
-                match get_maybe_obj_field_alias param_type.attr with
+                match Ast_attributes.iter_process_bs_string_as param_type.attr with
                 | Some alias -> alias
                 | None -> label
               in
