@@ -34,6 +34,8 @@
 - Display the compile time for `rescript build` command. https://github.com/rescript-lang/rescript-compiler/pull/6404
 - Improve help message for `build` and `clean` commands. https://github.com/rescript-lang/rescript-compiler/pull/6404
 - Pass through the `-verbose` flag to builds in watch mode. https://github.com/rescript-lang/rescript-compiler/pull/6404
+- Improve error message when defining duplicate labels in a record. https://github.com/rescript-lang/rescript-compiler/pull/6415
+- Improve error message when trying to concatenate strings using the wrong operator. https://github.com/rescript-lang/rescript-compiler/pull/6416
 
 # 11.0.0-rc.3
 
