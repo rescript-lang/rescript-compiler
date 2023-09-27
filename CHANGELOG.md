@@ -14,7 +14,8 @@
 
 #### :bug: Bug Fix
 
-- Fix issue with GenType and labelled arguments https://github.com/rescript-lang/rescript-compiler/pull/6406
+- Fix issue with GenType and labelled arguments. https://github.com/rescript-lang/rescript-compiler/pull/6406
+- Fix dependencies reinitialization on every change in watch mode. Leads to faster rebuilds and cleaner terminal. https://github.com/rescript-lang/rescript-compiler/pull/6404
 
 #### :rocket: New Feature
 
@@ -29,6 +30,9 @@
 - The error message for "toplevel expressions should evaluate to unit" has been revamped and improved. https://github.com/rescript-lang/rescript-compiler/pull/6407
 - Improve "Somewhere wanted" error messages by changing wording and adding more context + suggested solutions to the error messages where appropriate. https://github.com/rescript-lang/rescript-compiler/pull/6410
 - Add smart printer for pipe-chains. https://github.com/rescript-lang/rescript-compiler/pull/6411
+- Display the compile time for `rescript build` command. https://github.com/rescript-lang/rescript-compiler/pull/6404
+- Improve help message for `build` and `clean` commands. https://github.com/rescript-lang/rescript-compiler/pull/6404
+- Pass through the `-verbose` flag to builds in watch mode. https://github.com/rescript-lang/rescript-compiler/pull/6404
 
 # 11.0.0-rc.3
 
