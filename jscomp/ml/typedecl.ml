@@ -27,7 +27,7 @@ type native_repr_kind = Unboxed | Untagged
 type error =
     Repeated_parameter
   | Duplicate_constructor of string
-  | Duplicate_label of string
+  | Duplicate_label of string * string option
   | Recursive_abbrev of string
   | Cycle_in_def of string * type_expr
   | Definition_mismatch of type_expr * Includecore.type_mismatch list
@@ -207,17 +207,17 @@ let make_params env params =
   in
     List.map make_param params
 
-let transl_labels env closed lbls =
+let transl_labels ?recordName env closed lbls =
   if !Config.bs_only then 
     match !Builtin_attributes.check_duplicated_labels lbls with 
     | None -> ()
-    | Some {loc;txt=name} -> raise (Error(loc,Duplicate_label name))
+    | Some {loc;txt=name} -> raise (Error(loc,Duplicate_label (name, recordName)))
   else (
   let all_labels = ref StringSet.empty in
   List.iter
     (fun {pld_name = {txt=name; loc}} ->
        if StringSet.mem name !all_labels then
-         raise(Error(loc, Duplicate_label name));
+         raise(Error(loc, Duplicate_label (name, recordName)));
        all_labels := StringSet.add name !all_labels)
     lbls);
   let mk {pld_name=name;pld_mutable=mut;pld_type=arg;pld_loc=loc;
@@ -501,7 +501,7 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
                   {typ with ptyp_desc = Ptyp_constr ({txt = Lident "option"; loc=typ.ptyp_loc}, [typ])}
                 else typ in
               {lbl with  pld_type = typ }) in
-          let lbls, lbls' = transl_labels env true lbls in
+          let lbls, lbls' = transl_labels ~recordName:(sdecl.ptype_name.txt) env true lbls in
           let lbls_opt = match Record_type_spread.has_type_spread lbls with
             | true ->
               let rec extract t = match t.desc with
@@ -545,7 +545,7 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
           | [] -> ()
           | lbl::rest ->
             let name = lbl.ld_id.name in
-            if StringSet.mem name seen then raise(Error(loc, Duplicate_label name));
+            if StringSet.mem name seen then raise(Error(loc, Duplicate_label (name, Some sdecl.ptype_name.txt)));
             check_duplicates loc rest (StringSet.add name seen) in
           (match lbls_opt with
           | Some (lbls, lbls') ->
@@ -1998,8 +1998,10 @@ let report_error ppf = function
       fprintf ppf "A type parameter occurs several times"
   | Duplicate_constructor s ->
       fprintf ppf "Two constructors are named %s" s
-  | Duplicate_label s ->
-      fprintf ppf "Two labels are named %s" s
+  | Duplicate_label (s, None) ->
+      fprintf ppf "The field @{<info>%s@} is defined several times in this record. Fields can only be added once to a record." s
+  | Duplicate_label (s, Some recordName) ->
+    fprintf ppf "The field @{<info>%s@} is defined several times in the record @{<info>%s@}. Fields can only be added once to a record." s recordName
   | Recursive_abbrev s ->
       fprintf ppf "The type abbreviation %s is cyclic" s
   | Cycle_in_def (s, ty) ->

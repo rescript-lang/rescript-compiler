@@ -7,4 +7,4 @@
   [1;31m5[0m [2m│[0m [1;31mtype t3 = {...t, ...t2}[0m
   6 [2m│[0m 
 
-  Two labels are named x
+  The field [1;33mx[0m is defined several times in the record [1;33mt3[0m. Fields can only be added once to a record.
