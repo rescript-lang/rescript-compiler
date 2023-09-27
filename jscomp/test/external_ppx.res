@@ -10,6 +10,15 @@ external make_config: (~length: 'a, ~width: int) => unit = ""
 @obj external opt_make: (~length: int, ~width: int=?) => (_ as 'event) = ""
 
 @obj
+external renamed_make: (
+  @as("type") ~_type: string,
+  @as("WIDTH") ~width: int=?,
+  ~normal: float,
+) => (_ as 'event) = ""
+
+let renamed = renamed_make(~_type="123", ~normal=12.)
+
+@obj
 external ff: (
   ~hi: int,
   ~lo: @as(3) _,

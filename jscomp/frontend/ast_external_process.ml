@@ -398,7 +398,14 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
               | _ ->
                 Location.raise_errorf ~loc
                   "expect label, optional, or unit here")
-            | Labelled name -> (
+            | Labelled label -> (
+              let fieldName =
+                match
+                  Ast_attributes.iter_process_bs_string_as param_type.attr
+                with
+                | Some alias -> alias
+                | None -> label
+              in
               let obj_arg_type = refine_obj_arg_type ~nolabel:false ty in
               match obj_arg_type with
               | Ignore ->
@@ -407,7 +414,7 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
                   result_types )
               | Arg_cst _ ->
                 ( {
-                    obj_arg_label = External_arg_spec.obj_label name;
+                    obj_arg_label = External_arg_spec.obj_label fieldName;
                     obj_arg_type;
                   },
                   arg_types,
@@ -415,31 +422,31 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
                   result_types )
               | Nothing ->
                 ( {
-                    obj_arg_label = External_arg_spec.obj_label name;
+                    obj_arg_label = External_arg_spec.obj_label fieldName;
                     obj_arg_type;
                   },
                   param_type :: arg_types,
-                  Parsetree.Otag ({Asttypes.txt = name; loc}, [], ty)
+                  Parsetree.Otag ({Asttypes.txt = fieldName; loc}, [], ty)
                   :: result_types )
               | Int _ ->
                 ( {
-                    obj_arg_label = External_arg_spec.obj_label name;
+                    obj_arg_label = External_arg_spec.obj_label fieldName;
                     obj_arg_type;
                   },
                   param_type :: arg_types,
                   Otag
-                    ( {Asttypes.txt = name; loc},
+                    ( {Asttypes.txt = fieldName; loc},
                       [],
                       Ast_literal.type_int ~loc () )
                   :: result_types )
               | Poly_var_string _ ->
                 ( {
-                    obj_arg_label = External_arg_spec.obj_label name;
+                    obj_arg_label = External_arg_spec.obj_label fieldName;
                     obj_arg_type;
                   },
                   param_type :: arg_types,
                   Otag
-                    ( {Asttypes.txt = name; loc},
+                    ( {Asttypes.txt = fieldName; loc},
                       [],
                       Ast_literal.type_string ~loc () )
                   :: result_types )
@@ -449,11 +456,18 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
               | Extern_unit -> assert false
               | Poly_var _ ->
                 Location.raise_errorf ~loc
-                  "%@obj label %s does not support such arg type" name
+                  "%@obj label %s does not support such arg type" label
               | Unwrap ->
                 Location.raise_errorf ~loc
-                  "%@obj label %s does not support %@unwrap arguments" name)
-            | Optional name -> (
+                  "%@obj label %s does not support %@unwrap arguments" label)
+            | Optional label -> (
+              let fieldName =
+                match
+                  Ast_attributes.iter_process_bs_string_as param_type.attr
+                with
+                | Some alias -> alias
+                | None -> label
+              in
               let obj_arg_type = get_opt_arg_type ~nolabel:false ty in
               match obj_arg_type with
               | Ignore ->
@@ -469,35 +483,35 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
                 in
                 ( {
                     obj_arg_label =
-                      External_arg_spec.optional for_sure_not_nested name;
+                      External_arg_spec.optional for_sure_not_nested fieldName;
                     obj_arg_type;
                   },
                   param_type :: arg_types,
                   Parsetree.Otag
-                    ( {Asttypes.txt = name; loc},
+                    ( {Asttypes.txt = fieldName; loc},
                       [],
                       Ast_comb.to_undefined_type loc ty )
                   :: result_types )
               | Int _ ->
                 ( {
-                    obj_arg_label = External_arg_spec.optional true name;
+                    obj_arg_label = External_arg_spec.optional true fieldName;
                     obj_arg_type;
                   },
                   param_type :: arg_types,
                   Otag
-                    ( {Asttypes.txt = name; loc},
+                    ( {Asttypes.txt = fieldName; loc},
                       [],
                       Ast_comb.to_undefined_type loc
                       @@ Ast_literal.type_int ~loc () )
                   :: result_types )
               | Poly_var_string _ ->
                 ( {
-                    obj_arg_label = External_arg_spec.optional true name;
+                    obj_arg_label = External_arg_spec.optional true fieldName;
                     obj_arg_type;
                   },
                   param_type :: arg_types,
                   Otag
-                    ( {Asttypes.txt = name; loc},
+                    ( {Asttypes.txt = fieldName; loc},
                       [],
                       Ast_comb.to_undefined_type loc
                       @@ Ast_literal.type_string ~loc () )
@@ -511,10 +525,10 @@ let process_obj (loc : Location.t) (st : external_desc) (prim_name : string)
               | Extern_unit -> assert false
               | Poly_var _ ->
                 Location.raise_errorf ~loc
-                  "%@obj label %s does not support such arg type" name
+                  "%@obj label %s does not support such arg type" label
               | Unwrap ->
                 Location.raise_errorf ~loc
-                  "%@obj label %s does not support %@unwrap arguments" name)
+                  "%@obj label %s does not support %@unwrap arguments" label)
           in
           (new_arg_label :: arg_labels, new_arg_types, output_tys))
     in
