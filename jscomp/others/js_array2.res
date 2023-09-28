@@ -28,7 +28,7 @@
   Here is an example to find the sum of squares of all even numbers in an array.
   Without pipe first, we must call the functions in reverse order:
 
-  ```res example
+  ```rescript
   let isEven = x => mod(x, 2) == 0
   let square = x => x * x
   let result = {
@@ -39,7 +39,7 @@
 
   With pipe first, we call the functions in the “natural” order:
 
-  ```res example
+  ```rescript
   let isEven = x => mod(x, 2) == 0
   let square = x => x * x
   let result = {
@@ -65,7 +65,7 @@ Creates a shallow copy of an array from an array-like object. See
 [`Array.from`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from)
 on MDN.
 
-```res example
+```rescript
 let strArr = Js.String.castToArrayLike("abcd")
 Js.Array2.from(strArr) == ["a", "b", "c", "d"]
 ```
@@ -81,7 +81,7 @@ in the `array_like` first argument.  See
 [`Array.from`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from)
 on MDN.
 
-```res example
+```rescript
 let strArr = Js.String.castToArrayLike("abcd")
 let code = s => Js.String.charCodeAt(0, s)
 Js.Array2.fromMap(strArr, code) == [97.0, 98.0, 99.0, 100.0]
@@ -95,7 +95,7 @@ external fromMap: (array_like<'a>, @uncurry ('a => 'b)) => array<'b> = "Array.fr
 /**
 Returns `true` if its argument is an array; `false` otherwise. This is a runtime check, which is why the second example returns `true`---a list is internally represented as a nested JavaScript array.
 
-```res example
+```rescript
 Js.Array2.isArray([5, 2, 3, 1, 4]) == true
 Js.Array2.isArray(list{5, 2, 3, 1, 4}) == true
 Js.Array2.isArray("abcd") == false
@@ -121,7 +121,7 @@ array.* See
 [`Array.copyWithin`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/copyWithin)
 on MDN.
 
-```res example
+```rescript
 let arr = [100, 101, 102, 103, 104]
 Js.Array2.copyWithin(arr, ~to_=2) == [100, 101, 100, 101, 102]
 arr == [100, 101, 100, 101, 102]
@@ -139,7 +139,7 @@ array.* See
 [`Array.copyWithin`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/copyWithin)
 on MDN.
 
-```res example
+```rescript
 let arr = [100, 101, 102, 103, 104]
 Js.Array2.copyWithinFrom(arr, ~from=2, ~to_=0) == [102, 103, 104, 103, 104]
 arr == [102, 103, 104, 103, 104]
@@ -157,7 +157,7 @@ function modifies the original array.* See
 [`Array.copyWithin`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/copyWithin)
 on MDN.
 
-```res example
+```rescript
 let arr = [100, 101, 102, 103, 104, 105]
 Js.Array2.copyWithinFromRange(arr, ~start=2, ~end_=5, ~to_=1) == [100, 102, 103, 104, 104, 105]
 arr == [100, 102, 103, 104, 104, 105]
@@ -177,7 +177,7 @@ See
 [`Array.fill`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/fill)
 on MDN.
 
-```res example
+```rescript
 let arr = [100, 101, 102, 103, 104]
 Js.Array2.fillInPlace(arr, 99) == [99, 99, 99, 99, 99]
 arr == [99, 99, 99, 99, 99]
@@ -195,7 +195,7 @@ resulting array. *This function modifies the original array.* See
 [`Array.fill`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/fill)
 on MDN.
 
-```res example
+```rescript
 let arr = [100, 101, 102, 103, 104]
 Js.Array2.fillFromInPlace(arr, 99, ~from=2) == [100, 101, 99, 99, 99]
 arr == [100, 101, 99, 99, 99]
@@ -214,7 +214,7 @@ original array.* See
 [`Array.fill`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/fill)
 on MDN.
 
-```res example
+```rescript
 let arr = [100, 101, 102, 103, 104]
 Js.Array2.fillRangeInPlace(arr, 99, ~start=1, ~end_=4) == [100, 99, 99, 99, 104]
 arr == [100, 99, 99, 99, 104]
@@ -233,7 +233,7 @@ the original array.* See
 [`Array.pop`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/pop)
 on MDN.
 
-```res example
+```rescript
 let arr = [100, 101, 102, 103, 104]
 Js.Array2.pop(arr) == Some(104)
 arr == [100, 101, 102, 103]
@@ -251,7 +251,7 @@ updated array. *This function modifies the original array.* See
 [`Array.push`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push)
 on MDN.
 
-```res example
+```rescript
 let arr = ["ant", "bee", "cat"]
 Js.Array2.push(arr, "dog") == 4
 arr == ["ant", "bee", "cat", "dog"]
@@ -268,7 +268,7 @@ function modifies the original array.* See
 [`Array.push`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push)
 on MDN.
 
-```res example
+```rescript
 let arr = ["ant", "bee", "cat"]
 Js.Array2.pushMany(arr, ["dog", "elk"]) == 5
 arr == ["ant", "bee", "cat", "dog", "elk"]
@@ -283,7 +283,7 @@ function modifies the original array.* See
 [`Array.reverse`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reverse)
 on MDN.
 
-```res example
+```rescript
 let arr = ["ant", "bee", "cat"]
 Js.Array2.reverseInPlace(arr) == ["cat", "bee", "ant"]
 arr == ["cat", "bee", "ant"]
@@ -300,7 +300,7 @@ the original array.* See
 [`Array.shift`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/shift)
 on MDN.
 
-```res example
+```rescript
 let arr = [100, 101, 102, 103, 104]
 Js.Array2.shift(arr) == Some(100)
 arr == [101, 102, 103, 104]
@@ -320,7 +320,7 @@ the second example with sorting numbers, which does not do a numeric sort.
 [`Array.sort`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort)
 on MDN.
 
-```res example
+```rescript
 let words = ["bee", "dog", "ant", "cat"]
 Js.Array2.sortInPlace(words) == ["ant", "bee", "cat", "dog"]
 words == ["ant", "bee", "cat", "dog"]
@@ -348,7 +348,7 @@ See
 [`Array.sort`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort)
 on MDN.
 
-```res example
+```rescript
 // sort by word length
 let words = ["horse", "aardvark", "dog", "camel"]
 let byLength = (s1, s2) => Js.String.length(s1) - Js.String.length(s2)
@@ -372,7 +372,7 @@ items. *This function modifies the original array.* See
 [`Array.splice`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice)
 on MDN.
 
-```res example
+```rescript
 let arr = ["a", "b", "c", "d", "e", "f"]
 Js.Array2.spliceInPlace(arr, ~pos=2, ~remove=2, ~add=["x", "y", "z"]) == ["c", "d"]
 arr == ["a", "b", "x", "y", "z", "e", "f"]
@@ -396,7 +396,7 @@ array.* See
 [`Array.splice`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice)
 on MDN.
 
-```res example
+```rescript
 let arr = ["a", "b", "c", "d", "e", "f"]
 Js.Array2.removeFromInPlace(arr, ~pos=4) == ["e", "f"]
 arr == ["a", "b", "c", "d"]
@@ -412,7 +412,7 @@ See
 [`Array.splice`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice)
 on MDN.
 
-```res example
+```rescript
 let arr = ["a", "b", "c", "d", "e", "f"]
 Js.Array2.removeCountInPlace(arr, ~pos=2, ~count=3) == ["c", "d", "e"]
 arr == ["a", "b", "f"]
@@ -427,7 +427,7 @@ the array. *This function modifies the original array.* See
 [`Array.unshift`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/unshift)
 on MDN.
 
-```res example
+```rescript
 let arr = ["b", "c", "d"]
 Js.Array2.unshift(arr, "a") == 4
 arr == ["a", "b", "c", "d"]
@@ -444,7 +444,7 @@ function modifies the original array.* See
 [`Array.unshift`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/unshift)
 on MDN.
 
-```res example
+```rescript
 let arr = ["d", "e"]
 Js.Array2.unshiftMany(arr, ["a", "b", "c"]) == 5
 arr == ["a", "b", "c", "d", "e"]
@@ -464,7 +464,7 @@ new array. The original arrays are not modified. See
 [`Array.concat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat)
 on MDN.
 
-```res example
+```rescript
 Js.Array2.concat(["a", "b"], ["c", "d", "e"]) == ["a", "b", "c", "d", "e"]
 ```
 */
@@ -478,7 +478,7 @@ the end of the first argument, returning a new array. See
 [`Array.concat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat)
 on MDN.
 
-```res example
+```rescript
 Js.Array2.concatMany(["a", "b", "c"], [["d", "e"], ["f", "g", "h"]]) == [
     "a",
     "b",
@@ -499,7 +499,7 @@ Returns true if the given value is in the array, `false` otherwise. See
 [`Array.includes`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes)
 on MDN.
 
-```res example
+```rescript
 Js.Array2.includes(["a", "b", "c"], "b") == true
 Js.Array2.includes(["a", "b", "c"], "x") == false
 ```
@@ -513,7 +513,7 @@ If the value is not in the array, returns -1. See
 [`Array.indexOf`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf)
 on MDN.
 
-```res example
+```rescript
 Js.Array2.indexOf([100, 101, 102, 103], 102) == 2
 Js.Array2.indexOf([100, 101, 102, 103], 999) == -1
 ```
@@ -527,7 +527,7 @@ search starts at position `~from`. See
 [`Array.indexOf`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf)
 on MDN.
 
-```res example
+```rescript
 Js.Array2.indexOfFrom(["a", "b", "a", "c", "a"], "a", ~from=2) == 2
 Js.Array2.indexOfFrom(["a", "b", "a", "c", "a"], "a", ~from=3) == 4
 Js.Array2.indexOfFrom(["a", "b", "a", "c", "a"], "b", ~from=2) == -1
@@ -543,7 +543,7 @@ into a single string. See
 [`Array.join`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/join)
 on MDN.
 
-```res example
+```rescript
 Js.Array2.joinWith(["ant", "bee", "cat"], "--") == "ant--bee--cat"
 Js.Array2.joinWith(["door", "bell"], "") == "doorbell"
 Js.Array2.joinWith([2020, 9, 4], "/") == "2020/9/4"
@@ -559,7 +559,7 @@ the value is not in the array, returns -1. See
 [`Array.lastIndexOf`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/lastIndexOf)
 on MDN.
 
-```res example
+```rescript
 Js.Array2.lastIndexOf(["a", "b", "a", "c"], "a") == 2
 Js.Array2.lastIndexOf(["a", "b", "a", "c"], "x") == -1
 ```
@@ -574,7 +574,7 @@ not in the array, returns -1. See
 [`Array.lastIndexOf`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/lastIndexOf)
 on MDN.
 
-```res example
+```rescript
 Js.Array2.lastIndexOfFrom(["a", "b", "a", "c", "a", "d"], "a", ~from=3) == 2
 Js.Array2.lastIndexOfFrom(["a", "b", "a", "c", "a", "d"], "c", ~from=2) == -1
 ```
@@ -589,7 +589,7 @@ end of the array. See
 [`Array.slice`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
 on MDN.
 
-```res example
+```rescript
 let arr = [100, 101, 102, 103, 104, 105, 106]
 Js.Array2.slice(arr, ~start=2, ~end_=5) == [102, 103, 104]
 Js.Array2.slice(arr, ~start=-3, ~end_=-1) == [104, 105]
@@ -623,7 +623,7 @@ ReasonML array must have the same type. See
 [`Array.toString`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/toString)
 on MDN.
 
-```res example
+```rescript
 Js.Array2.toString([3.5, 4.6, 7.8]) == "3.5,4.6,7.8"
 Js.Array2.toString(["a", "b", "c"]) == "a,b,c"
 ```
@@ -639,7 +639,7 @@ type. See
 [`Array.toLocaleString`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/toLocaleString)
 on MDN.
 
-```res example
+```rescript
 Js.Array2.toLocaleString([Js.Date.make()])
 // returns "3/19/2020, 10:52:11 AM" for locale en_US.utf8
 // returns "2020-3-19 10:52:11" for locale de_DE.utf8
@@ -662,7 +662,7 @@ array, returns `true`. See
 [`Array.every`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/every)
 on MDN.
 
-```res example
+```rescript
 let isEven = x => mod(x, 2) == 0
 Js.Array2.every([6, 22, 8, 4], isEven) == true
 Js.Array2.every([6, 22, 7, 4], isEven) == false
@@ -680,7 +680,7 @@ array, returns `true`. See
 [`Array.every`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/every)
 on MDN.
 
-```res example
+```rescript
 // determine if all even-index items are positive
 let evenIndexPositive = (item, index) => mod(index, 2) == 0 ? item > 0 : true
 
@@ -698,7 +698,7 @@ function returned `true`. See
 [`Array.filter`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter)
 on MDN.
 
-```res example
+```rescript
 let nonEmpty = s => s != ""
 Js.Array2.filter(["abc", "", "", "def", "ghi"], nonEmpty) == ["abc", "def", "ghi"]
 ```
@@ -715,7 +715,7 @@ See
 [`Array.filter`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter)
 on MDN.
 
-```res example
+```rescript
 // keep only positive elements at odd indices
 let positiveOddElement = (item, index) => mod(index, 2) == 1 && item > 0
 
@@ -732,7 +732,7 @@ given predicate function, or `None` if no element satisifies the predicate. See
 [`Array.find`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find)
 on MDN.
 
-```res example
+```rescript
 // find first negative element
 Js.Array2.find([33, 22, -55, 77, -44], x => x < 0) == Some(-55)
 Js.Array2.find([33, 22, 55, 77, 44], x => x < 0) == None
@@ -751,7 +751,7 @@ predicate function takes an array element and an index as its parameters. See
 [`Array.find`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find)
 on MDN.
 
-```res example
+```rescript
 // find first positive item at an odd index
 let positiveOddElement = (item, index) => mod(index, 2) == 1 && item > 0
 
@@ -770,7 +770,7 @@ predicate function, or -1 if no element satisifies the predicate. See
 [`Array.find`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find)
 on MDN.
 
-```res example
+```rescript
 Js.Array2.findIndex([33, 22, -55, 77, -44], x => x < 0) == 2
 Js.Array2.findIndex([33, 22, 55, 77, 44], x => x < 0) == -1
 ```
@@ -787,7 +787,7 @@ predicate function takes an array element and an index as its parameters. See
 [`Array.find`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find)
 on MDN.
 
-```res example
+```rescript
 // find index of first positive item at an odd index
 let positiveOddElement = (item, index) => mod(index, 2) == 1 && item > 0
 
@@ -809,7 +809,7 @@ example, to print the items in an array. See
 [`Array.forEach`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach)
 on MDN.
 
-```res example
+```rescript
 // display all elements in an array
 Js.Array2.forEach(["a", "b", "c"], x => Js.log(x)) == ()
 ```
@@ -827,7 +827,7 @@ items in an array. See
 [`Array.forEach`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach)
 on MDN.
 
-```res example
+```rescript
 // display all elements in an array as a numbered list
 Js.Array2.forEachi(["a", "b", "c"], (item, index) => Js.log2(index + 1, item)) == ()
 ```
@@ -846,7 +846,7 @@ as the input array. See
 [`Array.map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)
 on MDN.
 
-```res example
+```rescript
 Js.Array2.map([12, 4, 8], x => x * x) == [144, 16, 64]
 Js.Array2.map(["animal", "vegetable", "mineral"], Js.String.length) == [6, 9, 7]
 ```
@@ -862,7 +862,7 @@ as the input array. See
 [`Array.map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)
 on MDN.
 
-```res example
+```rescript
 // multiply each item in array by its position
 let product = (item, index) => item * index
 Js.Array2.mapi([10, 11, 12], product) == [0, 11, 24]
@@ -887,7 +887,7 @@ becomes the return value of `reduce()`. See
 [`Array.reduce`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce)
 on MDN.
 
-```res example
+```rescript
 let sumOfSquares = (accumulator, item) => accumulator + item * item
 
 Js.Array2.reduce([10, 2, 4], sumOfSquares, 0) == 120
@@ -921,7 +921,7 @@ becomes the return value of `reducei()`. See
 [`Array.reduce`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce)
 on MDN.
 
-```res example
+```rescript
 // find sum of even-index elements in array
 let sumOfEvens = (accumulator, item, index) =>
   if mod(index, 2) == 0 {
@@ -956,7 +956,7 @@ on MDN.
 However, see the last example here and compare it to the example from
 `reduce()`, where order makes a difference.
 
-```res example
+```rescript
 let sumOfSquares = (accumulator, item) => accumulator + item * item
 
 Js.Array2.reduceRight([10, 2, 4], sumOfSquares, 0) == 120
@@ -986,7 +986,7 @@ on MDN.
 However, there are cases where the order in which items are processed makes a
 difference.
 
-```res example
+```rescript
 // find sum of even-index elements in array
 let sumOfEvens = (accumulator, item, index) =>
   if mod(index, 2) == 0 {
@@ -1005,7 +1005,7 @@ external reduceRighti: (t<'a>, @uncurry ('b, 'a, int) => 'b, 'b) => 'b = "reduce
 Returns `true` if the predicate function given as the second argument to
 `some()` returns `true` for any element in the array; `false` otherwise.
 
-```res example
+```rescript
 let isEven = x => mod(x, 2) == 0
 
 Js.Array2.some([3, 7, 5, 2, 9], isEven) == true
@@ -1021,7 +1021,7 @@ Returns `true` if the predicate function given as the second argument to
 predicate function has two arguments: an item from the array and the index
 value
 
-```res example
+```rescript
 // Does any string in the array
 // have the same length as its index?
 
@@ -1043,7 +1043,7 @@ external somei: (t<'a>, @uncurry ('a, int) => bool) => bool = "some"
 Returns the value at the given position in the array if the position is in
 bounds; returns the JavaScript value `undefined` otherwise.
 
-```res example
+```rescript
 let arr = [100, 101, 102, 103]
 Js.Array2.unsafe_get(arr, 3) == 103
 Js.Array2.unsafe_get(arr, 4) // returns undefined
@@ -1057,7 +1057,7 @@ If the index is out of bounds, well, “here there be dragons.“
 
 *This function modifies the original array.*
 
-```res example
+```rescript
 let arr = [100, 101, 102, 103]
 Js.Array2.unsafe_set(arr, 3, 99)
 // result is [100, 101, 102, 99];

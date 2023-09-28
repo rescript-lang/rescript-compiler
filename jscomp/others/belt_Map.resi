@@ -12,15 +12,18 @@
 /* Adapted by authors of ReScript without using functors */
 /* ********************************************************************* */
 
-/*** The top level provides generic immutable map operations.
+/***
+The top level provides generic immutable map operations.
 
-    It also has three specialized inner modules `Belt.Map.Int`,
-    `Belt.Map.String` and `Belt.Map.Dict`. */
+It also has three specialized inner modules `Belt.Map.Int`, `Belt.Map.String`
+and `Belt.Map.Dict`.
+*/
 
-/* ```res prelude
-    type t<'key, 'value, 'identity>
-    type id<'key, 'id> = Belt_Id.comparable<'key, 'id>
-    ```
+/**
+```rescript
+type t<'key, 'value, 'identity>
+type id<'key, 'id> = Belt_Id.comparable<'key, 'id>
+```
 */
 
 module Int = Belt_MapInt
@@ -29,48 +32,53 @@ module String = Belt_MapString
 
 module Dict = Belt_MapDict
 
-/** `'key` is the field type
+/**
+`'key` is the field type
 
-    `'value` is the element type
+`'value` is the element type
 
-    `'identity` the identity of the collection
+`'identity` the identity of the collection
 */
 type t<'key, 'value, 'identity>
 
 /** The identity needed for making an empty map. */
 type id<'key, 'id> = Belt_Id.comparable<'key, 'id>
 
-/** `make(~id)` creates a new map by taking in the comparator.
+/**
+`make(~id)` creates a new map by taking in the comparator.
 
-    ```res example
-    module IntCmp = Belt.Id.MakeComparable({
-      type t = int
-      let cmp = (a, b) => Pervasives.compare(a, b)
-    })
+```rescript
+module IntCmp = Belt.Id.MakeComparable({
+  type t = int
+  let cmp = (a, b) => Pervasives.compare(a, b)
+})
 
-    let m = Belt.Map.make(~id=module(IntCmp))
+let m = Belt.Map.make(~id=module(IntCmp))
 
-    Belt.Map.set(m, 0, "a")
-    ```
+Belt.Map.set(m, 0, "a")
+```
 */
 let make: (~id: id<'k, 'id>) => t<'k, 'v, 'id>
 
-/** `isEmpty(m)` checks whether a map m is empty.
+/**
 
-    ```res example
-    module IntCmp = Belt.Id.MakeComparable({
-      type t = int
-      let cmp = (a, b) => Pervasives.compare(a, b)
-    })
+`isEmpty(m)` checks whether a map m is empty.
 
-    Belt.Map.isEmpty(Belt.Map.fromArray([(1, "1")], ~id=module(IntCmp))) == false
-    ```
+```rescript
+module IntCmp = Belt.Id.MakeComparable({
+  type t = int
+  let cmp = (a, b) => Pervasives.compare(a, b)
+})
+
+Belt.Map.isEmpty(Belt.Map.fromArray([(1, "1")], ~id=module(IntCmp))) == false
+```
 */
 let isEmpty: t<_> => bool
 
-/** `has(m, k)` checks whether `m` has the key `k`.
+/**
+`has(m, k)` checks whether `m` has the key `k`.
 
-    ```res example
+    ```rescript
     module IntCmp = Belt.Id.MakeComparable({
       type t = int
       let cmp = (a, b) => Pervasives.compare(a, b)
@@ -100,7 +108,7 @@ let findFirstByU: (t<'k, 'v, 'id>, (. 'k, 'v) => bool) => option<('k, 'v)>
 /** `findFirstBy(m, p)` uses function `f` to find the first key value pair to
     match predicate `p`.
 
-    ```res example
+    ```rescript
     module IntCmp = Belt.Id.MakeComparable({
       type t = int
       let cmp = (a, b) => Pervasives.compare(a, b)
@@ -119,7 +127,7 @@ let forEachU: (t<'k, 'v, 'id>, (. 'k, 'v) => unit) => unit
     bindings are passed to `f` in increasing order with respect to the ordering
     over the type of the keys.
 
-    ```res example
+    ```rescript
     module IntCmp = Belt.Id.MakeComparable({
       type t = int
       let cmp = (a, b) => Pervasives.compare(a, b)
@@ -141,7 +149,7 @@ let reduceU: (t<'k, 'v, 'id>, 'acc, (. 'acc, 'k, 'v) => 'acc) => 'acc
     ... kN` are the keys of all bindings in m (in increasing order), and `d1
     ... dN` are the associated data.
 
-    ```res example
+    ```rescript
     module IntCmp = Belt.Id.MakeComparable({
       type t = int
       let cmp = (a, b) => Pervasives.compare(a, b)
@@ -169,7 +177,7 @@ let some: (t<'k, 'v, 'id>, ('k, 'v) => bool) => bool
 
 /** `size(s)`
 
-    ```res example
+    ```rescript
     module IntCmp = Belt.Id.MakeComparable({
       type t = int
       let cmp = (a, b) => Pervasives.compare(a, b)
@@ -182,7 +190,7 @@ let size: t<'k, 'v, 'id> => int
 
 /** `toArray(s)`
 
-    ```res example
+    ```rescript
     module IntCmp = Belt.Id.MakeComparable({
       type t = int
       let cmp = (a, b) => Pervasives.compare(a, b)
@@ -205,7 +213,7 @@ let toList: t<'k, 'v, 'id> => list<('k, 'v)>
 
 /** `fromArray(kvs, ~id);`
 
-    ```res example
+    ```rescript
     module IntCmp = Belt.Id.MakeComparable({
       type t = int
       let cmp = (a, b) => Pervasives.compare(a, b)
@@ -222,7 +230,7 @@ let fromArray: (array<('k, 'v)>, ~id: id<'k, 'id>) => t<'k, 'v, 'id>
 
 /** `keysToArray(s);`
 
-    ```res example
+    ```rescript
     module IntCmp = Belt.Id.MakeComparable({
       type t = int
       let cmp = (a, b) => Pervasives.compare(a, b)
@@ -239,7 +247,7 @@ let keysToArray: t<'k, 'v, 'id> => array<'k>
 
 /** `valuesToArray(s);`
 
-    ```res example
+    ```rescript
     module IntCmp = Belt.Id.MakeComparable({
       type t = int
       let cmp = (a, b) => Pervasives.compare(a, b)
@@ -278,7 +286,7 @@ let maxUndefined: t<'k, 'v, _> => Js.undefined<('k, 'v)>
 
 /** `get(s, k)`
 
-    ```res example
+    ```rescript
     module IntCmp = Belt.Id.MakeComparable({
       type t = int
       let cmp = (a, b) => Pervasives.compare(a, b)
@@ -318,7 +326,7 @@ let getExn: (t<'k, 'v, 'id>, 'k) => 'v
 
 /** `remove(m, x)` when `x` is not in `m`, `m` is returned reference unchanged.
 
-    ```res example
+    ```rescript
     module IntCmp = Belt.Id.MakeComparable({
       type t = int
       let cmp = (a, b) => Pervasives.compare(a, b)
@@ -348,7 +356,7 @@ let removeMany: (t<'k, 'v, 'id>, array<'k>) => t<'k, 'v, 'id>
     new binding of `x` to `y`. If `x` was already bound in `m`, its previous
     binding disappears.
 
-    ```res example
+    ```rescript
     module IntCmp = Belt.Id.MakeComparable({
       type t = int
       let cmp = (a, b) => Pervasives.compare(a, b)

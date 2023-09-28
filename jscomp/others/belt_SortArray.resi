@@ -37,7 +37,7 @@ let strictlySortedLengthU: (array<'a>, (. 'a, 'a) => bool) => int
 /**
   `strictlySortedLenght(xs, cmp);` return `+n` means increasing order `-n` means negative order
 
-  ```res example
+  ```rescript
   Belt.SortArray.strictlySortedLength([1, 2, 3, 4, 3], (x, y) => x < y) == 4
 
   Belt.SortArray.strictlySortedLength([], (x, y) => x < y) == 0
@@ -79,7 +79,7 @@ let binarySearchByU: (array<'a>, 'a, (. 'a, 'a) => int) => int
   smaller than all elements return `-1` since `lnot(-1) == 0` if `key` is larger
   than all elements return `lnot(-1) == 0` since `lnot(- (len + 1)) == len`
 
-  ```res example
+  ```rescript
   Belt.SortArray.binarySearchBy([1, 2, 3, 4, 33, 35, 36], 33, Pervasives.compare) == 4
 
   lnot(Belt.SortArray.binarySearchBy([1, 3, 5, 7], 4, Pervasives.compare)) == 2

@@ -152,7 +152,7 @@ external atanh : float -> float = "atanh" [@@bs.val] [@@bs.scope "Math"]
   [`Math.atan2`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/atan2)
   on MDN.
 
-  ```res example
+  ```rescript
   Js.Math.atan2(~y=0.0, ~x=10.0, ()) == 0.0
   Js.Math.atan2(~x=5.0, ~y=5.0, ()) == Js.Math._PI /. 4.0
   Js.Math.atan2(~x=-5.0, ~y=5.0, ())
@@ -178,7 +178,7 @@ external cbrt : float -> float = "cbrt" [@@bs.val] [@@bs.scope "Math"]
   [`Math.ceil`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/ceil)
   on MDN.
 
-  ```res example
+  ```rescript
   Js.Math.unsafe_ceil_int(3.1) == 4
   Js.Math.unsafe_ceil_int(3.0) == 3
   Js.Math.unsafe_ceil_int(-3.1) == -3
@@ -197,7 +197,7 @@ let unsafe_ceil = unsafe_ceil_int
   [`Math.ceil`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/ceil)
   on MDN.
 
-  ```res example
+  ```rescript
   Js.Math.ceil_int(3.1) == 4
   Js.Math.ceil_int(3.0) == 3
   Js.Math.ceil_int(-3.1) == -3
@@ -221,7 +221,7 @@ let ceil = ceil_int
   [`Math.ceil`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/ceil)
   on MDN.
 
-  ```res example
+  ```rescript
   Js.Math.ceil_float(3.1) == 4.0
   Js.Math.ceil_float(3.0) == 3.0
   Js.Math.ceil_float(-3.1) == -3.0
@@ -235,7 +235,7 @@ external ceil_float : float -> float = "ceil" [@@bs.val] [@@bs.scope "Math"]
   [`Math.clz32`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/clz32)
   on MDN.
 
-  ```res example
+  ```rescript
   Js.Math.clz32(0) == 32
   Js.Math.clz32(-1) == 0
   Js.Math.clz32(255) == 24
@@ -282,7 +282,7 @@ external expm1 : float -> float = "expm1" [@@bs.val] [@@bs.scope "Math"]
   [`Math.floor`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/floor)
   on MDN.
 
-  ```res example
+  ```rescript
   Js.Math.unsafe_floor_int(3.7) == 3
   Js.Math.unsafe_floor_int(3.0) == 3
   Js.Math.unsafe_floor_int(-3.7) == -4
@@ -301,7 +301,7 @@ let unsafe_floor = unsafe_floor_int
   [`Math.floor`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/floor)
   on MDN.
 
-  ```res example
+  ```rescript
   Js.Math.floor_int(3.7) == 3
   Js.Math.floor_int(3.0) == 3
   Js.Math.floor_int(-3.1) == -4
@@ -324,7 +324,7 @@ let floor = floor_int
   [`Math.floor`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/floor)
   on MDN.
 
-  ```res example
+  ```rescript
   Js.Math.floor_float(3.7) == 3.0
   Js.Math.floor_float(3.0) == 3.0
   Js.Math.floor_float(-3.1) == -4.0
@@ -338,7 +338,7 @@ external floor_float : float -> float = "floor" [@@bs.val] [@@bs.scope "Math"]
   [`Math.fround`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/fround)
   on MDN.
 
-  ```res example
+  ```rescript
   Js.Math.fround(5.5) == 5.5
   Js.Math.fround(5.05) == 5.050000190734863
   ```
@@ -360,7 +360,7 @@ external hypot : float -> float -> float = "hypot" [@@bs.val] [@@bs.scope "Math"
   [`Math.hypot`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/hypot)
   on MDN.
 
-  ```res example
+  ```rescript
   Js.Math.hypotMany([3.0, 4.0, 12.0]) == 13.0
   ```
 *)
@@ -381,7 +381,7 @@ external imul : int -> int -> int = "imul" [@@bs.val] [@@bs.scope "Math"]
   [`Math.log`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/log)
   on MDN.
 
-  ```res example
+  ```rescript
   Js.Math.log(Js.Math._E) == 1.0
   Js.Math.log(100.0) == 4.605170185988092
   ```
@@ -394,7 +394,7 @@ external log : float -> float = "log" [@@bs.val] [@@bs.scope "Math"]
   [`Math.log1p`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/log1p)
   on MDN.
 
-  ```res example
+  ```rescript
   Js.Math.log1p(Js.Math._E -. 1.0) == 1.0
   Js.Math.log1p(99.0) == 4.605170185988092
   ```
@@ -407,7 +407,7 @@ external log1p : float -> float = "log1p" [@@bs.val] [@@bs.scope "Math"]
   [`Math.log10`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/log10)
   on MDN.
 
-  ```res example
+  ```rescript
   Js.Math.log10(1000.0) == 3.0
   Js.Math.log10(0.01) == -2.0
   Js.Math.log10(Js.Math.sqrt(10.0)) == 0.5
@@ -421,7 +421,7 @@ external log10 : float -> float = "log10" [@@bs.val] [@@bs.scope "Math"]
   [`Math.log2`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/log2)
   on MDN.
 
-  ```res example
+  ```rescript
   Js.Math.log2(512.0) == 9.0
   Js.Math.log2(0.125) == -3.0
   Js.Math.log2(Js.Math._SQRT2) == 0.5000000000000001 // due to precision
@@ -491,7 +491,7 @@ external minMany_float : float array -> float = "min" [@@bs.val] [@@bs.splice] [
   [`Math.pow`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/pow)
   on MDN.
 
-  ```res example
+  ```rescript
   Js.Math.pow_int(~base=3, ~exp=4) == 81
   ```
 *)
@@ -504,7 +504,7 @@ external pow_int : base:int -> exp:int -> int = "pow" [@@bs.val] [@@bs.scope "Ma
   [`Math.pow`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/pow)
   on MDN.
 
-  ```res example
+  ```rescript
   Js.Math.pow_float(~base=3.0, ~exp=4.0) == 81.0
   Js.Math.pow_float(~base=4.0, ~exp=-2.0) == 0.0625
   Js.Math.pow_float(~base=625.0, ~exp=0.5) == 25.0
@@ -540,7 +540,7 @@ let random_int min max =
   [`Math.round`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/round)
   on MDN.
 
-  ```res example
+  ```rescript
   Js.Math.unsafe_round(3.7) == 4
   Js.Math.unsafe_round(-3.5) == -3
   Js.Math.unsafe_round(2_150_000_000_000.3) // out of range for int

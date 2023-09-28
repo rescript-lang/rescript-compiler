@@ -49,7 +49,7 @@ If `Js.null_undefined('a)` contains a value, that value is unwrapped, mapped to
 a `'b` using the given function `a' => 'b`, then wrapped back up and returned
 as `Js.null_undefined('b)`.
 
-```res example
+```rescript
 let maybeGreetWorld = (maybeGreeting: Js.null_undefined<string>) =>
   Js.Null_undefined.bind(maybeGreeting, (. greeting) => greeting ++ " world!")
 ```
@@ -60,7 +60,7 @@ let bind: (t<'a>, (. 'a) => 'b) => t<'b>
 Iterates over the contained value with the given function.
 If `Js.null_undefined('a)` contains a value, that value is unwrapped and applied to the given function.
 
-```res example
+```rescript
 let maybeSay = (maybeMessage: Js.null_undefined<string>) =>
   Js.Null_undefined.iter(maybeMessage, (. message) => Js.log(message))
 ```

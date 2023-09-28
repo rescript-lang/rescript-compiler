@@ -23,7 +23,7 @@ type t<'a> = array<'a>
 
 /** return the size of the array
 
-```res example
+```rescript
 // Returns 1
 Belt.Array.length(["test"])
 ```
@@ -36,7 +36,8 @@ external size: t<'a> => int = "%array_length"
 /**
    If `i <= 0 <= length(arr)` returns `Some(value)` where `value` is the item at index `i`.
   If `i` is out of range returns `None`.
-  ```
+
+  ```rescript
   Belt.Array.get(["a", "b", "c"], 0) == Some("a")
   Belt.Array.get(["a", "b", "c"], 3) == None
   Belt.Array.get(["a", "b", "c"], -1) == None
@@ -90,7 +91,7 @@ let shuffle: t<'a> => t<'a>
 /**
   `reverseInPlace(arr)` reverses items in `arr` in place.
 
-  ```res example
+  ```rescript
   let arr = [10, 11, 12, 13, 14]
 
   let () = Belt.Array.reverseInPlace(arr)
@@ -103,7 +104,7 @@ let reverseInPlace: t<'a> => unit
 /**
   `reverse(arr)` returns a fresh array with items in arr in reverse order.
 
-  ```res example
+  ```rescript
   Belt.Array.reverse([10, 11, 12, 13, 14]) == [14, 13, 12, 11, 10]
   ```
 */
@@ -113,7 +114,7 @@ let reverse: t<'a> => t<'a>
 /**
   `makeUninitialized(n)` creates an array of length `n` filled with the undefined value. You must specify the type of data that will eventually fill the array.
 
-  ```res example
+  ```rescript
   let arr: array<Js.undefined<string>> = Belt.Array.makeUninitialized(5)
 
   Belt.Array.getExn(arr, 0) == Js.undefined
@@ -125,7 +126,7 @@ external makeUninitialized: int => array<Js.undefined<'a>> = "Array"
 /**
   **Unsafe**
 
-  ```res example
+  ```rescript
   let arr = Belt.Array.makeUninitializedUnsafe(5)
 
   Js.log(Belt.Array.getExn(arr, 0)) // undefined
@@ -146,7 +147,7 @@ let make: (int, 'a) => t<'a>
 /**
   `range(start, finish)` create an inclusive array.
 
-  ```res example
+  ```rescript
   Belt.Array.range(0, 3) == [0, 1, 2, 3]
 
   Belt.Array.range(3, 0) == []
@@ -161,7 +162,7 @@ let range: (int, int) => array<int>
 
   Returns empty array when step is 0 or negative. It also return an empty array when `start > finish`.
 
-  ```res example
+  ```rescript
   Belt.Array.rangeBy(0, 10, ~step=3) == [0, 3, 6, 9]
 
   Belt.Array.rangeBy(0, 12, ~step=3) == [0, 3, 6, 9, 12]
@@ -185,7 +186,7 @@ let makeByU: (int, (. int) => 'a) => t<'a>
 
   Return an empty array when n is negative return an array of size n populated by `f(i)` start from `0` to `n - 1`.
 
-  ```res example
+  ```rescript
   Belt.Array.makeBy(5, (i) => i) == [0, 1, 2, 3, 4]
 
   Belt.Array.makeBy(5, (i) => i * i) == [0, 1, 4, 9, 16]
@@ -204,7 +205,7 @@ let makeByAndShuffle: (int, int => 'a) => t<'a>
 
   Create an array of pairs from corresponding elements of a and b. Stop with the shorter array.
 
-  ```res example
+  ```rescript
   Belt.Array.zip([1, 2], [3, 4, 5]) == [(1, 3), (2, 4)]
   ```
 */
@@ -218,7 +219,7 @@ let zipByU: (t<'a>, array<'b>, (. 'a, 'b) => 'c) => array<'c>
 
   Equivalent to `map(zip(xs, ys), ((a, b)) => f(a, b))`
 
-  ```res example
+  ```rescript
   Belt.Array.zipBy([1, 2, 3], [4, 5], (a, b) => 2 * a + b) == [6, 9]
   ```
 */
@@ -227,7 +228,7 @@ let zipBy: (t<'a>, array<'b>, ('a, 'b) => 'c) => array<'c>
 /**
   `unzip(a)` takes an array of pairs and creates a pair of arrays. The first array contains all the first items of the pairs; the second array contains all the second items.
 
-  ```res example
+  ```rescript
   Belt.Array.unzip([(1, 2), (3, 4)]) == ([1, 3], [2, 4])
 
   Belt.Array.unzip([(1, 2), (3, 4), (5, 6), (7, 8)]) == ([1, 3, 5, 7], [2, 4, 6, 8])
@@ -240,7 +241,7 @@ let unzip: array<('a, 'b)> => (t<'a>, array<'b>)
 
   Returns a fresh array containing the concatenation of the arrays `v1` and `v2`;so even if `v1` or `v2` is empty; it can not be shared
 
-  ```res example
+  ```rescript
   Belt.Array.concat([1, 2, 3], [4, 5]) == [1, 2, 3, 4, 5]
 
   Belt.Array.concat([], ["a", "b", "c"]) == ["a", "b", "c"]
@@ -253,7 +254,7 @@ let concat: (t<'a>, t<'a>) => t<'a>
 
   Returns a fresh array as the concatenation of `xss` (an array of arrays)
 
-  ```res example
+  ```rescript
   Belt.Array.concatMany([[1, 2, 3], [4, 5, 6], [7, 8]]) == [1, 2, 3, 4, 5, 6, 7, 8]
   ```
 */
@@ -268,7 +269,7 @@ let concatMany: array<t<'a>> => t<'a>
 
   if `len` is negative; returns the empty array.
 
-  ```res example
+  ```rescript
   Belt.Array.slice([10, 11, 12, 13, 14, 15, 16], ~offset=2, ~len=3) == [12, 13, 14]
 
   Belt.Array.slice([10, 11, 12, 13, 14, 15, 16], ~offset=-4, ~len=3) == [13, 14, 15]
@@ -285,7 +286,7 @@ let slice: (t<'a>, ~offset: int, ~len: int) => t<'a>
 
   `sliceToEnd(xs, 0)` will return a copy of the array
 
-  ```res example
+  ```rescript
   Belt.Array.sliceToEnd([10, 11, 12, 13, 14, 15, 16], 2) == [12, 13, 14, 15, 16]
 
   Belt.Array.sliceToEnd([10, 11, 12, 13, 14, 15, 16], -4) == [13, 14, 15, 16]
@@ -309,7 +310,7 @@ external copy: (t<'a>, @as(0) _) => t<'a> = "slice"
 
   `fill(arr, ~offset=-1, ~len=1)` means fill the last element, if the array does not have enough data; `fill` will ignore it
 
-  ```res example
+  ```rescript
   let arr = Belt.Array.makeBy(5, (i) => i)
 
   Belt.Array.fill(arr, ~offset=2, ~len=2, 9)
@@ -333,7 +334,7 @@ let fill: (t<'a>, ~offset: int, ~len: int, 'a) => unit
 
   For each of the examples;presume that `v1 == [10, 11, 12, 13, 14, 15, 16, 17]` and `v2 == [20, 21, 22, 23, 24, 25, 26, 27]`. The result shown is the content of the destination array.
 
-  ```res example
+  ```rescript
   let v1 = [10, 11, 12, 13, 14, 15, 16, 17]
   let v2 = [20, 21, 22, 23, 24, 25, 26, 27]
 
@@ -357,7 +358,7 @@ let forEachU: (t<'a>, (. 'a) => unit) => unit
 
   Call `f` on each element of `xs` from the beginning to end. `f` returns `unit`;so no new array is created. Use `forEach` when you are primarily concerned with repetitively creating side effects.
 
-  ```res example
+  ```rescript
   Belt.Array.forEach(["a", "b", "c"], x => Js.log("Item: " ++ x))
 
   /*
@@ -381,7 +382,7 @@ let mapU: (t<'a>, (. 'a) => 'b) => array<'b>
 
   Returns a new array by calling `f` for each element of `xs` from the beginning to end.
 
-  ```res example
+  ```rescript
   Belt.Array.map([1, 2], (x) => x + 1) == [3, 4]
   ```
 */
@@ -394,7 +395,7 @@ let flatMapU: (t<'a>, (. 'a) => array<'b>) => array<'b>
   **Returns** a new array by calling `f` for each element of `xs` from
   the beginning to end, concatenating the results.
 
-  ```res example
+  ```rescript
   flatMap([1, 2], x => [x + 10, x + 20]) == [11, 21, 12, 22]
   ```
 */
@@ -406,7 +407,7 @@ let getByU: (t<'a>, (. 'a) => bool) => option<'a>
 
   Returns `Some(value)` for the first value in `xs` that satisifies the predicate function `p`; returns `None` if no element satisifies the function.
 
-  ```res example
+  ```rescript
   Belt.Array.getBy([1, 4, 3, 2], (x) => mod(x, 2) == 0) == Some(4)
   Belt.Array.getBy([15, 13, 11], (x) => mod(x, 2) == 0) == None
   ```
@@ -418,7 +419,7 @@ let getIndexByU: (t<'a>, (. 'a) => bool) => option<int>
   `getIndexBy(xs, p)` returns `Some(index)` for the first value in `xs` that satisifies the predicate function `p`;
   returns `None` if no element satisifies the function.
 
-  ```res example
+  ```rescript
   Belt.Array.getIndexBy([1, 4, 3, 2], (x) => mod(x, 2) == 0) == Some(1)
   Belt.Array.getIndexBy([15, 13, 11], (x) => mod(x, 2) == 0) == None
   ```
@@ -437,7 +438,7 @@ let keepWithIndexU: (t<'a>, (. 'a, int) => bool) => t<'a>
 
   Returns a new array that keep all elements satisfy `p`.
 
-  ```res example
+  ```rescript
   Belt.Array.keepWithIndex([1, 2, 3], (_x, i) => i == 1) == [2]
   ```
 */
@@ -449,7 +450,7 @@ let keepMapU: (t<'a>, (. 'a) => option<'b>) => array<'b>
 
   Returns a new array that keep all elements that return a non-None applied `p`.
 
-  ```res example
+  ```rescript
   Belt.Array.keepMap([1, 2, 3], x =>
     if mod(x, 2) == 0 {
       Some(x)
@@ -469,7 +470,7 @@ let forEachWithIndexU: (t<'a>, (. int, 'a) => unit) => unit
   The same as `Belt.Array.forEach`;
   except that `f` is supplied two arguments: the index starting from 0 and the element from `xs`.
 
-  ```res example
+  ```rescript
   Belt.Array.forEachWithIndex(["a", "b", "c"], (i, x) => Js.log("Item " ++ Belt.Int.toString(i) ++ " is " ++ x))
 
   /*
@@ -493,7 +494,7 @@ let mapWithIndexU: (t<'a>, (. int, 'a) => 'b) => array<'b>
 
   `mapWithIndex(xs, f)` applies `f` to each element of `xs`. Function `f` takes two arguments: the index starting from 0 and the element from `xs`.
 
-  ```res example
+  ```rescript
   Belt.Array.mapWithIndex([1, 2, 3], (i, x) => i + x) == [0 + 1, 1 + 2, 2 + 3]
   ```
 */
@@ -503,7 +504,7 @@ let partitionU: (t<'a>, (. 'a) => bool) => (t<'a>, t<'a>)
 /**
   `partition(f, a)` split array into tuple of two arrays based on predicate `f`; first of tuple where predicate cause true, second where predicate cause false
 
-  ```res example
+  ```rescript
   Belt.Array.partition([1, 2, 3, 4, 5], (x) => mod(x, 2) == 0) == ([2, 4], [1, 3, 5])
 
   Belt.Array.partition([1, 2, 3, 4, 5], (x) => mod(x, 2) != 0) == ([1, 3, 5], [2, 4])
@@ -517,7 +518,7 @@ let reduceU: (array<'b>, 'a, (. 'a, 'b) => 'a) => 'a
 
   Applies `f` to each element of `xs` from beginning to end. Function `f` has two parameters: the item from the list and an “accumulator”; which starts with a value of `init`. `reduce` returns the final value of the accumulator.
 
-  ```res example
+  ```rescript
   Belt.Array.reduce([2, 3, 4], 1, (a, b) => a + b) == 10
 
   Belt.Array.reduce(["a", "b", "c", "d"], "", (a, b) => a ++ b) == "abcd"
@@ -531,7 +532,7 @@ let reduceReverseU: (array<'b>, 'a, (. 'a, 'b) => 'a) => 'a
 
   Works like `Belt_Array.reduce`; except that function `f` is applied to each item of `xs` from the last back to the first.
 
-  ```res example
+  ```rescript
   Belt.Array.reduceReverse(["a", "b", "c", "d"], "", (a, b) => a ++ b) == "dcba"
   ```
 */
@@ -543,7 +544,7 @@ let reduceReverse2U: (t<'a>, array<'b>, 'c, (. 'c, 'a, 'b) => 'c) => 'c
 
   Reduces two arrays xs and ys;taking items starting at `min(length(xs), length(ys))` down to and including zero.
 
-  ```res example
+  ```rescript
   Belt.Array.reduceReverse2([1, 2, 3], [1, 2], 0, (acc, x, y) => acc + x + y) == 6
   ```
 */
@@ -553,7 +554,7 @@ let reduceWithIndexU: (t<'a>, 'b, (. 'b, 'a, int) => 'b) => 'b
 /**
   Applies `f` to each element of `xs` from beginning to end. Function `f` has three parameters: the item from the array and an “accumulator”, which starts with a value of `init` and the index of each element. `reduceWithIndex` returns the final value of the accumulator.
 
-  ```res example
+  ```rescript
   Belt.Array.reduceWithIndex([1, 2, 3, 4], 0, (acc, x, i) => acc + x + i) == 16
   ```
 */
@@ -569,7 +570,7 @@ let joinWithU: (t<'a>, string, (. 'a) => string) => string
   without using the separator.
   If the array is empty, the empty string will be returned.
 
-  ```res example
+  ```rescript
   joinWith([0, 1], ", ", string_of_int) == "0, 1"
   joinWith([], " ", string_of_int) == ""
   joinWith([1], " ", string_of_int) == "1"
@@ -583,7 +584,7 @@ let someU: (t<'a>, (. 'a) => bool) => bool
 
   Returns true if at least one of the elements in `xs` satifies `p`; where `p` is a predicate: a function taking an element and returning a `bool`.
 
-  ```res example
+  ```rescript
   Belt.Array.some([2, 3, 4], (x) => mod(x, 2) == 1) == true
 
   Belt.Array.some([(-1), (-3), (-5)], (x) => x > 0) == false
@@ -597,7 +598,7 @@ let everyU: (t<'a>, (. 'a) => bool) => bool
 
   Returns `true` if all elements satisfy `p`; where `p` is a predicate: a function taking an element and returning a `bool`.
 
-  ```res example
+  ```rescript
   Belt.Array.every([1, 3, 5], (x) => mod(x, 2) == 1) == true
 
   Belt.Array.every([1, (-3), 5], (x) => x > 0) == false
@@ -611,7 +612,7 @@ let every2U: (t<'a>, array<'b>, (. 'a, 'b) => bool) => bool
 
   returns true if `p(xi, yi)` is true for all pairs of elements up to the shorter length (i.e. `min(length(xs), length(ys))`)
 
-  ```res example
+  ```rescript
   Belt.Array.every2([1, 2, 3], [0, 1], (a, b) => a > b) == true
 
   Belt.Array.every2([], [1], (x, y) => x > y) == true
@@ -629,7 +630,7 @@ let some2U: (t<'a>, array<'b>, (. 'a, 'b) => bool) => bool
 
   returns true if `p(xi, yi)` is true for any pair of elements up to the shorter length (i.e. `min(length(xs), length(ys))`)
 
-  ```res example
+  ```rescript
   Belt.Array.some2([0, 2], [1, 0, 3], (a, b) => a > b) == true
 
   Belt.Array.some2([], [1], (x, y) => x > y) == false
@@ -650,7 +651,7 @@ let cmpU: (t<'a>, t<'a>, (. 'a, 'a) => int) => int
   a positive number if `x` is “greater than” `y`
   The comparison returns the first non-zero result of `f`;or zero if `f` returns zero for all `x` and `y`.
 
-  ```res example
+  ```rescript
   Belt.Array.cmp([1, 3, 5], [1, 4, 2], (a, b) => compare(a, b)) == -1
 
   Belt.Array.cmp([1, 3, 5], [1, 2, 3], (a, b) => compare(a, b)) == 1
@@ -667,7 +668,7 @@ let eqU: (t<'a>, t<'a>, (. 'a, 'a) => bool) => bool
   return false if length is not the same
   otherwise compare items one by one using `f(xi, yi)`; and return true if all results are truefalse otherwise
 
-  ```res example
+  ```rescript
   Belt.Array.eq([1, 2, 3], [(-1), (-2), (-3)], (a, b) => abs(a) == abs(b)) == true
   ```
 */
@@ -681,7 +682,7 @@ let eq: (t<'a>, t<'a>, ('a, 'a) => bool) => bool
 
   If `n` is less than zero; raises a `RangeError`.
 
-  ```res example
+  ```rescript
   let arr = ["ant", "bee", "cat", "dog", "elk"]
 
   Belt.Array.truncateToLengthUnsafe(arr, 3)

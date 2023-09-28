@@ -28,7 +28,7 @@
 
   It also has two specialized inner modules [Belt.MutableSet.Int](mutable-set-int) and [Belt.MutableSet.String](mutable-set-string) - This module separates data from function which is more verbose but slightly more efficient
 
-  ```res example
+  ```rescript
   module PairComparator = Belt.Id.MakeComparable({
     type t = (int, int)
     let cmp = ((a0, a1), (b0, b1)) =>
@@ -72,7 +72,7 @@ let make: (~id: id<'value, 'id>) => t<'value, 'id>
 /**
   Creates new set from array of elements.
 
-  ```res example
+  ```rescript
   module IntCmp = Belt.Id.MakeComparable({
     type t = int
     let cmp = Pervasives.compare
@@ -93,7 +93,7 @@ let fromSortedArrayUnsafe: (array<'value>, ~id: id<'value, 'id>) => t<'value, 'i
 /**
   Returns copy of a set.
 
-  ```res example
+  ```rescript
   module IntCmp = Belt.Id.MakeComparable({
     type t = int
     let cmp = Pervasives.compare
@@ -110,7 +110,7 @@ let copy: t<'value, 'id> => t<'value, 'id>
 /**
   Checks if set is empty.
 
-  ```res example
+  ```rescript
   module IntCmp = Belt.Id.MakeComparable({
     type t = int
     let cmp = Pervasives.compare
@@ -128,7 +128,7 @@ let isEmpty: t<_> => bool
 /**
   Checks if element exists in set.
 
-  ```res example
+  ```rescript
   module IntCmp = Belt.Id.MakeComparable({
     type t = int
     let cmp = Pervasives.compare
@@ -145,7 +145,7 @@ let has: (t<'value, 'id>, 'value) => bool
 /**
   Adds element to set. If element existed in set, value is unchanged.
 
-  ```res example
+  ```rescript
   module IntCmp = Belt.Id.MakeComparable({
     type t = int
     let cmp = Pervasives.compare
@@ -166,7 +166,7 @@ let addCheck: (t<'value, 'id>, 'value) => bool
 /**
   Adds each element of array to set.
 
-  ```res example
+  ```rescript
   module IntCmp = Belt.Id.MakeComparable({
     type t = int
     let cmp = Pervasives.compare
@@ -183,7 +183,7 @@ let mergeMany: (t<'value, 'id>, array<'value>) => unit
 /**
   Removes element from set. If element did not exist in set, value is unchanged.
 
-  ```res example
+  ```rescript
   module IntCmp = Belt.Id.MakeComparable({
     type t = int
     let cmp = Pervasives.compare
@@ -205,7 +205,7 @@ let removeCheck: (t<'value, 'id>, 'value) => bool
 /**
   Removes each element of array from set.
 
-  ```res example
+  ```rescript
   module IntCmp = Belt.Id.MakeComparable({
     type t = int
     let cmp = Pervasives.compare
@@ -222,7 +222,7 @@ let removeMany: (t<'value, 'id>, array<'value>) => unit
 /**
   Returns union of two sets.
 
-  ```res example
+  ```rescript
   module IntCmp = Belt.Id.MakeComparable({
     type t = int
     let cmp = Pervasives.compare
@@ -239,7 +239,7 @@ let union: (t<'value, 'id>, t<'value, 'id>) => t<'value, 'id>
 /**
   Returns intersection of two sets.
 
-  ```res example
+  ```rescript
   module IntCmp = Belt.Id.MakeComparable({
     type t = int
     let cmp = Pervasives.compare
@@ -256,7 +256,7 @@ let intersect: (t<'value, 'id>, t<'value, 'id>) => t<'value, 'id>
 /**
   Returns elements from first set, not existing in second set.
 
-  ```res example
+  ```rescript
   module IntCmp = Belt.Id.MakeComparable({
     type t = int
     let cmp = Pervasives.compare
@@ -273,7 +273,7 @@ let diff: (t<'value, 'id>, t<'value, 'id>) => t<'value, 'id>
 /**
   Checks if second set is subset of first set.
 
-  ```res example
+  ```rescript
   module IntCmp = Belt.Id.MakeComparable({
     type t = int
     let cmp = Pervasives.compare
@@ -297,7 +297,7 @@ let cmp: (t<'value, 'id>, t<'value, 'id>) => int
 /**
   Checks if two sets are equal.
 
-  ```res example
+  ```rescript
   module IntCmp = Belt.Id.MakeComparable({
     type t = int
     let cmp = Pervasives.compare
@@ -319,7 +319,7 @@ let forEachU: (t<'value, 'id>, (. 'value) => unit) => unit
 /**
   Applies function `f` in turn to all elements of set in increasing order.
 
-  ```res example
+  ```rescript
   module IntCmp = Belt.Id.MakeComparable({
     type t = int
     let cmp = Pervasives.compare
@@ -338,7 +338,7 @@ let reduceU: (t<'value, 'id>, 'a, (. 'a, 'value) => 'a) => 'a
 /**
   Applies function `f` to each element of set in increasing order. Function `f` has two parameters: the item from the set and an “accumulator”, which starts with a value of `initialValue`. `reduce` returns the final value of the accumulator.
 
-  ```res example
+  ```rescript
   module IntCmp = Belt.Id.MakeComparable({
     type t = int
     let cmp = Pervasives.compare
@@ -355,7 +355,7 @@ let everyU: (t<'value, 'id>, (. 'value) => bool) => bool
 /**
   Checks if all elements of the set satisfy the predicate. Order unspecified.
 
-  ```res example
+  ```rescript
   module IntCmp = Belt.Id.MakeComparable({
     type t = int
     let cmp = Pervasives.compare
@@ -374,7 +374,7 @@ let someU: (t<'value, 'id>, (. 'value) => bool) => bool
 /**
   Checks if at least one element of the set satisfies the predicate.
 
-  ```res example
+  ```rescript
   module IntCmp = Belt.Id.MakeComparable({
     type t = int
     let cmp = Pervasives.compare
@@ -393,7 +393,7 @@ let keepU: (t<'value, 'id>, (. 'value) => bool) => t<'value, 'id>
 /**
   Returns the set of all elements that satisfy the predicate.
 
-  ```res example
+  ```rescript
   module IntCmp = Belt.Id.MakeComparable({
     type t = int
     let cmp = Pervasives.compare
@@ -412,7 +412,7 @@ let keep: (t<'value, 'id>, 'value => bool) => t<'value, 'id>
 let partitionU: (t<'value, 'id>, (. 'value) => bool) => (t<'value, 'id>, t<'value, 'id>)
 
 /**
-  ```res example
+  ```rescript
   module IntCmp = Belt.Id.MakeComparable({
     type t = int
     let cmp = Pervasives.compare
@@ -432,7 +432,7 @@ let partition: (t<'value, 'id>, 'value => bool) => (t<'value, 'id>, t<'value, 'i
 /**
   Returns size of the set.
 
-  ```res example
+  ```rescript
   module IntCmp = Belt.Id.MakeComparable({
     type t = int
     let cmp = Pervasives.compare
@@ -448,7 +448,7 @@ let size: t<'value, 'id> => int
 /**
   Returns list of ordered set elements.
 
-  ```res example
+  ```rescript
   module IntCmp = Belt.Id.MakeComparable({
     type t = int
     let cmp = Pervasives.compare
@@ -464,7 +464,7 @@ let toList: t<'value, 'id> => list<'value>
 /**
   Returns array of ordered set elements.
 
-  ```res example
+  ```rescript
   module IntCmp = Belt.Id.MakeComparable({
     type t = int
     let cmp = Pervasives.compare
@@ -480,7 +480,7 @@ let toArray: t<'value, 'id> => array<'value>
 /**
   Returns minimum value of the collection. `None` if collection is empty.
 
-  ```res example
+  ```rescript
   module IntCmp = Belt.Id.MakeComparable({
     type t = int
     let cmp = Pervasives.compare
@@ -498,7 +498,7 @@ let minimum: t<'value, 'id> => option<'value>
 /**
   Returns minimum value of the collection. `undefined` if collection is empty.
 
-  ```res example
+  ```rescript
   module IntCmp = Belt.Id.MakeComparable({
     type t = int
     let cmp = Pervasives.compare
@@ -516,7 +516,7 @@ let minUndefined: t<'value, 'id> => Js.undefined<'value>
 /**
   Returns maximum value of the collection. `None` if collection is empty.
 
-  ```res example
+  ```rescript
   module IntCmp = Belt.Id.MakeComparable({
     type t = int
     let cmp = Pervasives.compare
@@ -534,7 +534,7 @@ let maximum: t<'value, 'id> => option<'value>
 /**
   Returns maximum value of the collection. `undefined` if collection is empty.
 
-  ```res example
+  ```rescript
   module IntCmp = Belt.Id.MakeComparable({
     type t = int
     let cmp = Pervasives.compare
@@ -552,7 +552,7 @@ let maxUndefined: t<'value, 'id> => Js.undefined<'value>
 /**
   Returns the reference of the value which is equivalent to value using the comparator specifiecd by this collection. Returns `None` if element does not exist.
 
-  ```res example
+  ```rescript
   module IntCmp = Belt.Id.MakeComparable({
     type t = int
     let cmp = Pervasives.compare
@@ -579,7 +579,7 @@ let getExn: (t<'value, 'id>, 'value) => 'value
 /**
   Returns a tuple `((smaller, larger), present)`, `present` is true when element exist in set.
 
-  ```res example
+  ```rescript
   module IntCmp = Belt.Id.MakeComparable({
     type t = int
     let cmp = Pervasives.compare

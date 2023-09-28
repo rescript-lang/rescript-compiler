@@ -29,7 +29,7 @@
     **_Advanced usage only_**
 */
 
-/* ```res prelude
+/* ```rescript
     type t<'key, 'value, 'id>
     type cmp<'key, 'id> = Belt_Id.cmp<'key, 'id>
     ```
@@ -58,7 +58,7 @@ let findFirstByU: (t<'k, 'v, 'id>, (. 'k, 'v) => bool) => option<('k, 'v)>
 /** `findFirstBy(m, p)` uses function `f` to find the first key value pair to
     match predicate `p`.
 
-    ```res example
+    ```rescript
     module IntCmp = Belt.Id.MakeComparable({
       type t = int
       let cmp = Pervasives.compare

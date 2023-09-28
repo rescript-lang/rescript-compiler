@@ -273,17 +273,17 @@ module Int8Array = {
   external fromBuffer: array_buffer => t = "Int8Array"
 
   @new /**
-    **raise** Js.Exn.Error raise Js exception
+    raise Js.Exn.Error raise Js exception
 
-    **param** offset is in bytes
+    param offset is in bytes
   */
   external fromBufferOffset: (array_buffer, int) => t = "Int8Array"
 
   @new
   /**
-    **raise** Js.Exn.Error raises Js exception
+    raise Js.Exn.Error raises Js exception
 
-    **param** offset is in bytes, length in elements
+    param offset is in bytes, length in elements
   */
   external fromBufferRange: (array_buffer, ~offset: int, ~length: int) => t = "Int8Array"
 

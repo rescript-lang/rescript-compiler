@@ -35,7 +35,7 @@ Returns `target`.
 
 **See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign)
 
-```res example
+```rescript
 /* Copy an object */
 
 let obj = {"a": 1}

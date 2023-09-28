@@ -35,7 +35,7 @@ type timeoutId
 /**
 Clear an interval started by `Js.Global.setInterval`
 
-```res example
+```rescript
 /* API for a somewhat aggressive snoozing alarm clock */
 
 let punchSleepyGuy = () => Js.log("Punch")
@@ -60,7 +60,7 @@ external clearInterval: intervalId => unit = "clearInterval"
 /**
 Clear a timeout started by `Js.Global.setTimeout`.
 
-```res example
+```rescript
 /* A simple model of a code monkey's brain */
 
 let closeHackerNewsTab = () => Js.log("close")
@@ -83,7 +83,7 @@ Repeatedly executes a callback with a specified interval (in milliseconds)
 between calls. Returns a `Js.Global.intervalId` that can be passed to
 `Js.Global.clearInterval` to cancel the timeout.
 
-```res example
+```rescript
 /* Will count up and print the count to the console every second */
 
 let count = ref(0)
@@ -104,7 +104,7 @@ Repeatedly executes a callback with a specified interval (in milliseconds)
 between calls. Returns a `Js.Global.intervalId` that can be passed to
 `Js.Global.clearInterval` to cancel the timeout.
 
-```res example
+```rescript
 /* Will count up and print the count to the console every second */
 
 let count = ref(0)
@@ -125,7 +125,7 @@ Execute a callback after a specified delay (in milliseconds). Returns a
 `Js.Global.timeoutId` that can be passed to `Js.Global.clearTimeout` to cancel
 the timeout.
 
-```res example
+```rescript
 /* Prints "Timed out!" in the console after one second */
 
 let message = "Timed out!"
@@ -141,7 +141,7 @@ Execute a callback after a specified delay (in milliseconds). Returns a
 `Js.Global.timeoutId` that can be passed to `Js.Global.clearTimeout` to cancel
 the timeout.
 
-```res example
+```rescript
 /* Prints "Timed out!" in the console after one second */
 
 let message = "Timed out!"

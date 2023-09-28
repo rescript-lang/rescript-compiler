@@ -38,7 +38,7 @@ type t<'a> = list<'a>
 /**
   Returns the length of a list.
 
-  ```res example
+  ```rescript
   Belt.List.length(list{1, 2, 3}) // 3
   ```
 */
@@ -51,7 +51,7 @@ let size: t<'a> => int
   Returns `Some(value)` where `value` is the first element in the list, or
   `None` if `someList` is an empty list.
 
-  ```res example
+  ```rescript
   Belt.List.head(list{}) // None
   Belt.List.head(list{1, 2, 3}) // Some(1)
   ```
@@ -62,7 +62,7 @@ let head: t<'a> => option<'a>
   Same as [head](#head), but raises an exception if `someList` is empty. Use
   with care.
 
-  ```res example
+  ```rescript
   Belt.List.headExn(list{1, 2, 3}) // 1
 
   Belt.List.headExn(list{}) // Raises an Error
@@ -74,7 +74,7 @@ let headExn: t<'a> => 'a
   Returns `None` if `someList` is empty, otherwise it returns `Some(tail)`
   where `tail` is everything except the first element of `someList`.
 
-  ```res example
+  ```rescript
   Belt.List.tail(list{1, 2, 3}) // Some(list{2, 3})
 
   Belt.List.tail(list{}) // None
@@ -86,7 +86,7 @@ let tail: t<'a> => option<t<'a>>
   Same as [tail](#tail), but raises an exception if `someList` is empty. Use
   with care.
 
-  ```res example
+  ```rescript
   Belt.List.tailExn(list{1, 2, 3}) // list{2, 3}
 
   Belt.List.tailExn(list{}) // Raises an Error
@@ -97,7 +97,7 @@ let tailExn: t<'a> => t<'a>
 /**
   Adds `value` to the beginning of `someList`.
 
-  ```res example
+  ```rescript
   Belt.List.add(list{2, 3}, 1) // list{1, 2, 3}
 
   Belt.List.add(list{"World", "!"}, "Hello") // list{"Hello", "World", "!"}
@@ -109,7 +109,7 @@ let add: (t<'a>, 'a) => t<'a>
   Return the nth element in `someList`, or `None` if `index` is larger than the
   length.
 
-  ```res example
+  ```rescript
   let abc = list{"A", "B", "C"}
 
   abc->Belt.List.get(1) // Some("B")
@@ -123,7 +123,7 @@ let get: (t<'a>, int) => option<'a>
   Same as [get](#get), but raises an exception if `index` is larger than the
   length. Use with care.
 
-  ```res example
+  ```rescript
   let abc = list{"A", "B", "C"}
 
   abc->Belt.List.getExn(1) // "B"
@@ -136,7 +136,7 @@ let getExn: (t<'a>, int) => 'a
 /**
   Returns a list of length `numItems` with each element filled with value `v`. Returns an empty list if `numItems` is negative.
 
-  ```res example
+  ```rescript
   Belt.List.make(3, 1) // list{1, 1, 1}
   ```
 */
@@ -149,7 +149,7 @@ let makeByU: (int, (. int) => 'a) => t<'a>
 Return a list of length `numItems` with element `i` initialized with `f(i)`.
 Returns an empty list if `numItems` is negative.
 
-```res example
+```rescript
 Belt.List.makeBy(5, i => i) // list{0, 1, 2, 3, 4}
 
 Belt.List.makeBy(5, i => i * i) // list{0, 1, 4, 9, 16}
@@ -160,7 +160,7 @@ let makeBy: (int, int => 'a) => t<'a>
 /**
   Returns a new list in random order.
 
-  ```res example
+  ```rescript
   Belt.List.shuffle(list{1, 2, 3}) // list{2, 1, 3}
   ```
 */
@@ -169,7 +169,7 @@ let shuffle: t<'a> => t<'a>
 /**
   Return a new list, dropping the first `n` elements. Returns `None` if `someList` has fewer than `n` elements.
 
-  ```res example
+  ```rescript
   list{1, 2, 3}->Belt.List.drop(2) // Some(list{3})
 
   list{1, 2, 3}->Belt.List.drop(3) // Some(list{})
@@ -182,7 +182,7 @@ let drop: (t<'a>, int) => option<t<'a>>
 /**
 Returns a list with the first `n` elements from `someList`, or `None` if `someList` has fewer than `n` elements.
 
-```res example
+```rescript
 list{1, 2, 3}->Belt.List.take(1) // Some(list{1})
 
 list{1, 2, 3}->Belt.List.take(2) // Some(list{1, 2})
@@ -195,7 +195,7 @@ let take: (t<'a>, int) => option<t<'a>>
 /**
   Split the list `someList` at `index`. Returns `None` when the length of `someList` is less than `index`.
 
-  ```res example
+  ```rescript
   list{"Hello", "World"}->Belt.List.splitAt(1) // Some((list{"Hello"}, list{"World"}))
 
   list{0, 1, 2, 3, 4}->Belt.List.splitAt(2) // Some((list{0, 1}, list{2, 3, 4}))
@@ -206,7 +206,7 @@ let splitAt: (t<'a>, int) => option<(list<'a>, list<'a>)>
 /**
   Returns the list obtained by adding `secondList` after `firstList`.
 
-  ```res example
+  ```rescript
   Belt.List.concat(list{1, 2, 3}, list{4, 5}) // list{1, 2, 3, 4, 5}
   ```
 */
@@ -216,7 +216,7 @@ let concat: (t<'a>, t<'a>) => t<'a>
   Returns the list obtained by concatenating all the lists in array `a`, in
   order.
 
-  ```res example
+  ```rescript
   Belt.List.concatMany([list{1, 2, 3}, list{}, list{3}]) // list{1, 2, 3, 3}
   ```
 */
@@ -225,7 +225,7 @@ let concatMany: array<t<'a>> => t<'a>
 /**
   Equivalent to writing: `concat(reverse(firstList, secondList)`
 
-  ```res example
+  ```rescript
   Belt.List.reverseConcat(list{1, 2}, list{3, 4}) // list{2, 1, 3, 4}
   ```
 */
@@ -234,7 +234,7 @@ let reverseConcat: (t<'a>, t<'a>) => t<'a>
 /**
   Return the list obtained by concatenating all the lists in list `ls`, in order.
 
-  ```res example
+  ```rescript
   Belt.List.flatten(list{list{1, 2, 3}, list{}, list{3}}) // list{1, 2, 3, 3}
   ```
 */
@@ -246,7 +246,7 @@ let mapU: (t<'a>, (. 'a) => 'b) => t<'b>
 /**
   Returns a new list with `f` applied to each element of `someList`.
 
-  ```res example
+  ```rescript
   list{1, 2}->Belt.List.map(x => x + 1) // list{3, 4}
   ```
 */
@@ -255,7 +255,7 @@ let map: (t<'a>, 'a => 'b) => t<'b>
 /**
   Returns a list of pairs from the two lists with the length of the shorter list.
 
-  ```res example
+  ```rescript
   Belt.List.zip(list{1, 2}, list{3, 4, 5}) // list{(1, 3), (2, 4)}
   ```
 */
@@ -267,7 +267,7 @@ let zipByU: (t<'a>, t<'b>, (. 'a, 'b) => 'c) => t<'c>
 /**
   **See:** [zip](#zip)
 
-  ```res example
+  ```rescript
   Belt.List.zipBy(list{1, 2, 3}, list{4, 5}, (a, b) => 2 * a + b) // list{6, 9}
   ```
 */
@@ -280,7 +280,7 @@ let mapWithIndexU: (t<'a>, (. int, 'a) => 'b) => t<'b>
   Applies `f` to each element of `someList`.
   Function `f` takes two arguments: the index starting from 0 and the element from `someList`, in that order.
 
-  ```res example
+  ```rescript
   list{1, 2, 3}->Belt.List.mapWithIndex((index, x) => index + x) // list{1, 3, 5}
   ```
 */
@@ -289,7 +289,7 @@ let mapWithIndex: (t<'a>, (int, 'a) => 'b) => t<'b>
 /**
   Converts the given array to a list.
 
-  ```res example
+  ```rescript
   Belt.List.fromArray([1, 2, 3]) // list{1, 2, 3}
   ```
 */
@@ -298,7 +298,7 @@ let fromArray: array<'a> => t<'a>
 /**
   Converts the given list to an array.
 
-  ```res example
+  ```rescript
   Belt.List.toArray(list{1, 2, 3}) // [1, 2, 3]
   ```
 */
@@ -312,7 +312,7 @@ let toArray: t<'a> => array<'a>
 /**
   Returns a new list whose elements are those of `someList` in reversed order.
 
-  ```res example
+  ```rescript
   Belt.List.reverse(list{1, 2, 3}) /* list{3, 2, 1} */
   ```
 */
@@ -328,7 +328,7 @@ let mapReverseU: (t<'a>, (. 'a) => 'b) => t<'b>
   map(someList, f)->reverse
   ```
 
-  ```res example
+  ```rescript
   list{3, 4, 5}->Belt.List.mapReverse(x => x * x) /* list{25, 16, 9} */
   ```
 */
@@ -341,7 +341,7 @@ let forEachU: (t<'a>, (. 'a) => 'b) => unit
   Call `f` on each element of `someList` from the beginning to end.
   `f` returns `unit`, so no new array is created. Use `forEach` when you are primarily concerned with repetitively creating side effects.
 
-  ```res example
+  ```rescript
   Belt.List.forEach(list{"a", "b", "c"}, x => Js.log("Item: " ++ x))
   /*
     prints:
@@ -360,7 +360,7 @@ let forEachWithIndexU: (t<'a>, (. int, 'a) => 'b) => unit
   Call `f` on each element of `someList` from beginning to end.
   Function `f` takes two arguments: the index starting from 0 and the element from `someList`. `f` returns `unit`.
 
-  ```res example
+  ```rescript
   Belt.List.forEachWithIndex(list{"a", "b", "c"}, (index, x) => {
     Js.log("Item " ++ Belt.Int.toString(index) ++ " is " ++ x)
   })
@@ -380,7 +380,7 @@ let reduceU: (t<'a>, 'b, (. 'b, 'a) => 'b) => 'b
 /**
   Applies `f` to each element of `someList` from beginning to end. Function `f` has two parameters: the item from the list and an “accumulator”, which starts with a value of `initialValue`. reduce returns the final value of the accumulator.
 
-  ```res example
+  ```rescript
   list{1, 2, 3, 4}->Belt.List.reduce(0, (a, b) => a + b) /* 10 */
 
   /* same as */
@@ -396,7 +396,7 @@ let reduceWithIndexU: (t<'a>, 'b, (. 'b, 'a, int) => 'b) => 'b
 /**
   Applies `f` to each element of `someList` from beginning to end. Function `f` has three parameters: the item from the list and an “accumulator”, which starts with a value of `initialValue` and the index of each element. `reduceWithIndex` returns the final value of the accumulator.
 
-  ```res example
+  ```rescript
   list{1, 2, 3, 4}->Belt.List.reduceWithIndex(0, (acc, item, index) => acc + item + index) /* 16 */
   ```
 */
@@ -409,7 +409,7 @@ let reduceReverseU: (t<'a>, 'b, (. 'b, 'a) => 'b) => 'b
   Works like [reduce](#reduce), except that function `f` is applied to each
   item of `someList` from the last back to the first.
 
-  ```res example
+  ```rescript
   list{1, 2, 3, 4}->Belt.List.reduceReverse(0, (a, b) => a + b) /* 10 */
 
   list{1, 2, 3, 4}->Belt.List.reduceReverse(10, (a, b) => a - b) /* 0 */
@@ -425,7 +425,7 @@ let mapReverse2U: (t<'a>, t<'b>, (. 'a, 'b) => 'c) => t<'c>
 /**
   Equivalent to: `zipBy(xs, ys, f)->reverse`
 
-  ```res example
+  ```rescript
 
   Belt.List.mapReverse2(list{1, 2, 3}, list{1, 2}, (a, b) => a + b) // list{4, 2}
   ```
@@ -438,7 +438,7 @@ let forEach2U: (t<'a>, t<'b>, (. 'a, 'b) => 'c) => unit
 /**
   Stops at the length of the shorter list.
 
-  ```res example
+  ```rescript
   Belt.List.forEach2(list{"Z", "Y"}, list{"A", "B", "C"}, (x, y) => Js.log2(x, y))
 
   /*
@@ -456,7 +456,7 @@ let reduce2U: (t<'b>, t<'c>, 'a, (. 'a, 'b, 'c) => 'a) => 'a
 /**
   Applies `f` to each element of `firstList` and `secondList` from beginning to end. Stops with the shorter list. Function `f` has three parameters: an “accumulator” which starts with a value of `initialValue`, an item from `firstList`, and an item from `secondList`. `reduce2` returns the final value of the accumulator.
 
-  ```res example
+  ```rescript
   Belt.List.reduce2(list{1, 2, 3}, list{4, 5}, 0, (acc, x, y) => acc + x * x + y) /* 0 + (1 * 1 + 4) + (2 * 2 + 5) */
   ```
 */
@@ -472,7 +472,7 @@ let reduceReverse2U: (t<'a>, t<'b>, 'c, (. 'c, 'a, 'b) => 'c) => 'c
   and an item from `secondList`. `reduce2` returns the final value of the
   accumulator.
 
-  ```res example
+  ```rescript
   Belt.List.reduceReverse2(list{1, 2, 3}, list{4, 5}, 0, (acc, x, y) => acc + x * x + y) /*  + (1 * 1 + 4) + (2 * 2 + 5) */
   ```
 */
@@ -484,7 +484,7 @@ let everyU: (t<'a>, (. 'a) => bool) => bool
 /**
   Returns `true` if all elements satisfy `pred`, where `pred` is a predicate: a function taking an element and returning a bool.
 
-  ```res example
+  ```rescript
   let isBelow10 = value => value < 10
 
   list{1, 9, 8, 2}->Belt.List.every(isBelow10) /* true */
@@ -502,7 +502,7 @@ let someU: (t<'a>, (. 'a) => bool) => bool
   `pred`, where `pred` is a predicate: a function taking an element and
   returning a bool.
 
-  ```res example
+  ```rescript
   let isAbove100 = value => value > 100
 
   list{101, 1, 2, 3}->Belt.List.some(isAbove100) /* true */
@@ -519,7 +519,7 @@ let every2U: (t<'a>, t<'b>, (. 'a, 'b) => bool) => bool
   Returns `true` if predicate `pred(a, b)` is `true` for all pairs of elements
   up to the shorter length (i.e. `min(length(firstList), length(secondList))`)
 
-  ```res example
+  ```rescript
   Belt.List.every2(list{1, 2, 3}, list{0, 1}, (a, b) => a > b) /* true */
 
   Belt.List.every2(list{}, list{1}, (a, b) => a > b) /* true */
@@ -538,7 +538,7 @@ let some2U: (t<'a>, t<'b>, (. 'a, 'b) => bool) => bool
   Returns `true` if predicate `pred(a, b)` is true for any pair of elements up
   to the shorter length (i.e. `min(length(firstList), length(secondList))`)
 
-  ```res example
+  ```rescript
   Belt.List.some2(list{1, 2, 3}, list{0, 1}, (a, b) => a > b) /* true */
 
   Belt.List.some2(list{}, list{1}, (a, b) => a > b) /* false */
@@ -556,7 +556,7 @@ let some2: (t<'a>, t<'b>, ('a, 'b) => bool) => bool
   `length(secondList)`, and `1` if `length(firstList)` is greater than
   `length(secondList)`.
 
-  ```res example
+  ```rescript
   Belt.List.cmpByLength(list{1, 2}, list{3, 4, 5, 6}) /* -1 */
 
   Belt.List.cmpByLength(list{1, 2, 3}, list{4, 5, 6}) /* = 0 */
@@ -577,7 +577,7 @@ let cmpU: (t<'a>, t<'a>, (. 'a, 'a) => int) => int
   If all items have compared equal, but `firstList` is exhausted first, return `-1`. (`firstList` is shorter).
   If all items have compared equal, but `secondList` is exhausted first, return `1` (`firstList` is longer).
 
-  ```res example
+  ```rescript
   Belt.List.cmp(list{3}, list{3, 7}, (a, b) => compare(a, b)) /* (-1) */
 
   Belt.List.cmp(list{5, 3}, list{5}, (a, b) => compare(a, b)) /* 1 */
@@ -604,7 +604,7 @@ let eqU: (t<'a>, t<'a>, (. 'a, 'a) => bool) => bool
   `y` meet some criterion for equality, `false` otherwise. eq `false` if length
   of `firstList` and `secondList` are not the same.
 
-  ```res example
+  ```rescript
   Belt.List.eq(list{1, 2, 3}, list{1, 2}, (a, b) => a == b) /* false */
 
   Belt.List.eq(list{1, 2}, list{1, 2}, (a, b) => a == b) /* true */
@@ -621,7 +621,7 @@ let hasU: (t<'a>, 'b, (. 'a, 'b) => bool) => bool
   Returns `true` if the list contains at least one element for which
   `eqFunction(x)` returns true.
 
-  ```res example
+  ```rescript
   list{1, 2, 3}->Belt.List.has(2, (a, b) => a == b) /* true */
 
   list{1, 2, 3}->Belt.List.has(4, (a, b) => a == b) /* false */
@@ -638,7 +638,7 @@ let getByU: (t<'a>, (. 'a) => bool) => option<'a>
   Returns `Some(value)` for the first value in `someList` that satisfies the
   predicate function `pred`. Returns `None` if no element satisfies the function.
 
-  ```res example
+  ```rescript
   Belt.List.getBy(list{1, 4, 3, 2}, x => x > 3) /* Some(4) */
 
   Belt.List.getBy(list{1, 4, 3, 2}, x => x > 4) /* None */
@@ -652,7 +652,7 @@ let keepU: (t<'a>, (. 'a) => bool) => t<'a>
 /**
   Returns a list of all elements in `someList` which satisfy the predicate function `pred`.
 
-  ```res example
+  ```rescript
   let isEven = x => mod(x, 2) == 0
 
   Belt.List.keep(list{1, 2, 3, 4}, isEven) /* list{2, 4} */
@@ -666,7 +666,7 @@ let keep: (t<'a>, 'a => bool) => t<'a>
 /**
   Returns a list of all elements in `someList` which satisfy the predicate function `pred`.
 
-  ```res example
+  ```rescript
   let isEven = x => mod(x, 2) == 0
 
   Belt.List.filter(list{1, 2, 3, 4}, isEven) /* list{2, 4} */
@@ -682,7 +682,7 @@ let keepWithIndexU: (t<'a>, (. 'a, int) => bool) => t<'a>
 /**
   Returns a list of all elements in `someList` which satisfy the predicate function `pred`.
 
-  ```res example
+  ```rescript
   let isEven = x => mod(x, 2) == 0
 
   Belt.List.keepWithIndex(list{1, 2, 3, 4}, (_x, index) => isEven(index)) /* list{1, 3} */
@@ -697,7 +697,7 @@ let keepWithIndex: (t<'a>, ('a, int) => bool) => t<'a>
 /**
   Returns a list of all elements in `someList` which satisfy the predicate function `pred`.
 
-  ```res example
+  ```rescript
   let isEven = x => mod(x, 2) == 0
 
   Belt.List.filterWithIndex(list{1, 2, 3, 4}, (_x, index) => isEven(index)) /* list{1, 3} */
@@ -712,7 +712,7 @@ let keepMapU: (t<'a>, (. 'a) => option<'b>) => t<'b>
   Applies `f` to each element of `someList`. If `f(x)` returns `Some(value)`, then `value` is _kept_ in the resulting list.
   If `f(x)` returns `None`, the element is _not_ retained in the result.
 
-  ```res example
+  ```rescript
   let isEven = x => mod(x, 2) == 0
 
   list{1, 2, 3, 4}
@@ -741,7 +741,7 @@ let partitionU: (t<'a>, (. 'a) => bool) => (t<'a>, t<'a>)
   (elementsThatSatisfies, elementsThatDoesNotSatisfy)
   ```
 
-  ```res example
+  ```rescript
   Belt.List.partition(list{1, 2, 3, 4}, x => x > 2) /* (list{3, 4}, list{1, 2}) */
   ```
 */
@@ -750,7 +750,7 @@ let partition: (t<'a>, 'a => bool) => (t<'a>, t<'a>)
 /**
   Takes a list of pairs and creates a pair of lists. The first list contains all the first items of the pairs; the second list contains all the second items.
 
-  ```res example
+  ```rescript
   Belt.List.unzip(list{(1, 2), (3, 4)}) /* (list{1, 3}, list{2, 4}) */
 
   Belt.List.unzip(list{("H", "W"), ("e", "o"), ("l", "r"), ("l", "l"), ("o", "d"), (" ", "!")})
@@ -765,7 +765,7 @@ let getAssocU: (t<('a, 'c)>, 'b, (. 'a, 'b) => bool) => option<'c>
 /**
   Return the second element of a pair in `someList` where the first element equals `k` as per the predicate function `eqFunction`, or `None` if not found.
 
-  ```res example
+  ```rescript
   list{(1, "a"), (2, "b"), (3, "c")}->Belt.List.getAssoc(3, (a, b) => a == b) /* Some("c") */
 
   list{(9, "morning"), (15, "afternoon"), (22, "night")}
@@ -781,7 +781,7 @@ let hasAssocU: (t<('a, 'c)>, 'b, (. 'a, 'b) => bool) => bool
 /**
   Returns `true` if there is a pair in `someList` where the first element equals `k` as per the predicate function `eqFunction`.
 
-  ```res example
+  ```rescript
   list{(1, "a"), (2, "b"), (3, "c")}->Belt.List.hasAssoc(1, (a, b) => a == b) /* true */
 
   list{(9, "morning"), (15, "afternoon"), (22, "night")}
@@ -796,7 +796,7 @@ let removeAssocU: (t<('a, 'c)>, 'b, (. 'a, 'b) => bool) => t<('a, 'c)>
 /**
   Return a list after removing the first pair whose first value is `k` per the equality predicate `eqFunction`; if not found, return a new list identical to `someList`.
 
-  ```res example
+  ```rescript
   list{(1, "a"), (2, "b"), (3, "c")}->Belt.List.removeAssoc(1, (a, b) => a == b) /* list{(2, "b"), (3, "c")} */
 
   list{(9, "morning"), (15, "afternoon"), (22, "night")}
@@ -812,7 +812,7 @@ let setAssocU: (t<('a, 'c)>, 'a, 'c, (. 'a, 'a) => bool) => t<('a, 'c)>
 /**
   If `k` exists in `someList` by satisfying the `eqFunction` predicate, return a new list with the key and value replaced by the new `k` and `v`; otherwise, return a new list with the pair `k`, `v` added to the head of `someList`.
 
-  ```res example
+  ```rescript
   list{(1, "a"), (2, "b"), (3, "c")}->Belt.List.setAssoc(2, "x", (a, b) => a == b) /* list{(1, "a"), (2, "x"), (3, "c")} */
 
   list{(1, "a"), (3, "c")}->Belt.List.setAssoc(2, "b", (a, b) => a == b) /* list{(2, "b"), (1, "a"), (3, "c")} */
@@ -836,7 +836,7 @@ let sortU: (t<'a>, (. 'a, 'a) => int) => t<'a>
 /**
   Returns a sorted list.
 
-  ```res example
+  ```rescript
   Belt.List.sort(list{5, 4, 9, 3, 7}, (a, b) => a - b) // list{3, 4, 5, 7, 9}
   ```
 */

@@ -55,7 +55,7 @@ type rec t<_> =
    `test(value, t)` returns `true` if `value` is `typeof t`, otherwise `false`.
    This is useful for doing runtime reflection on any given value.
 
-   ```res example
+   ```rescript
    test("test", String) == true
    test(() => true, Function) == true
    test("test", Boolean) == false

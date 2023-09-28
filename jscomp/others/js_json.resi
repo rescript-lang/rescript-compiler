@@ -140,7 +140,7 @@ Raises `SyntaxError` if the given string is not a valid JSON. Note: `SyntaxError
 
 **See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse)
 
-```res example
+```rescript
 /* parse a simple JSON string */
 
 let json = try Js.Json.parseExn(` "hello" `) catch {
@@ -153,7 +153,7 @@ switch Js.Json.classify(json) {
 }
 ```
 
-```res example
+```rescript
 /* parse a complex JSON string */
 
 let getIds = s => {
@@ -191,7 +191,7 @@ Returns the string representation of a given JSON data structure.
 
 **See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify)
 
-```res example
+```rescript
 /* Creates and stringifies a simple JS object */
 
 let dict = Js.Dict.empty()
@@ -212,7 +212,7 @@ Returns the string representation of a given JSON data structure with spacing.
 
 **See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify)
 
-```res example
+```rescript
 /* Creates and stringifies a simple JS object with spacing */
 
 let dict = Js.Dict.empty()
@@ -230,7 +230,7 @@ external stringifyWithSpace: (t, @as(json`null`) _, int) => string = "stringify"
 /**
 `stringifyAny(value)` formats any value into a JSON string.
 
-```res example
+```rescript
 /* prints `["hello", "world"]` */
 Js.log(Js.Json.stringifyAny(["hello", "world"]))
 ```

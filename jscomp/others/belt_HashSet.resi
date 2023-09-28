@@ -31,7 +31,7 @@
 
   For example:
 
-  ```res prelude
+  ```rescript
   module I0 = unpack(
     Belt.Id.hashableU(
       ~hash=(. a: int) => land(a, 65535),
@@ -60,7 +60,7 @@
   Here the compiler would infer `s0` and `s1` having different type so that it
   would not mix.
 
-  ```res sig
+  ```rescript
   let s0: Belt.HashSet.t<int, I0.identity>
   let s1: Belt.HashSet.t<int, I1.identity>
   ```

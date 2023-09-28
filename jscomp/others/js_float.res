@@ -53,7 +53,7 @@ external isNaN: float => bool = "isNaN"
 
   **return** `true` if the given value is a finite number, `false` otherwise
 
-  ```res example
+  ```rescript
   /* returns [false] */
   Js.Float.isFinite(infinity)
 
@@ -79,7 +79,7 @@ external isFinite: float => bool = "isFinite"
 
   **raise** RangeError if digits is not in the range [0, 20] (inclusive)
 
-  ```res example
+  ```rescript
   /* prints "7.71234e+1" */
   Js.Float.toExponential(77.1234)->Js.log
 
@@ -104,7 +104,7 @@ external toExponential: float => string = "toExponential"
 
   **raise** RangeError if digits is not in the range [0, 20] (inclusive)
 
-  ```res example
+  ```rescript
   /* prints "7.71e+1" */
   Js.Float.toExponentialWithPrecision(77.1234, ~digits=2)->Js.log
   ```
@@ -121,7 +121,7 @@ external toExponentialWithPrecision: (float, ~digits: int) => string = "toExpone
 
   **raise** RangeError if digits is not in the range [0, 20] (inclusive)
 
-  ```res example
+  ```rescript
   /* prints "12346" (note the rounding) */
   Js.Float.toFixed(12345.6789)->Js.log
 
@@ -146,7 +146,7 @@ external toFixed: float => string = "toFixed"
 
   **raise** RangeError if digits is not in the range [0, 20] (inclusive)
 
-  ```res example
+  ```rescript
   /* prints "12345.7" (note the rounding) */
   Js.Float.toFixedWithPrecision(12345.6789, ~digits=1)->Js.log
 
@@ -170,7 +170,7 @@ external toFixedWithPrecision: (float, ~digits: int) => string = "toFixed"
 
   **raise** RangeError if digits is not in the range accepted by this function (what do you mean "vague"?)
 
-  ```res example
+  ```rescript
   /* prints "12345.6789" */
   Js.Float.toPrecision(12345.6789)->Js.log
 
@@ -204,7 +204,7 @@ external toPrecision: float => string = "toPrecision"
 
   **raise** RangeError if digits is not in the range accepted by this function (what do you mean "vague"?)
 
-  ```res example
+  ```rescript
   /* prints "1e+4" */
   Js.Float.toPrecisionWithPrecision(12345.6789, ~digits=1)->Js.log
 
@@ -222,7 +222,7 @@ external toPrecisionWithPrecision: (float, ~digits: int) => string = "toPrecisio
 
   **return** a `string` representing the given value in fixed-point (usually)
 
-  ```res example
+  ```rescript
   /* prints "12345.6789" */
   Js.Float.toString(12345.6789)->Js.log
   ```
@@ -242,7 +242,7 @@ external toString: float => string = "toString"
 
   **raise** RangeError if radix is not in the range [2, 36] (inclusive)
 
-  ```res example
+  ```rescript
   /* prints "110" */
   Js.Float.toStringWithRadix(6., ~radix=2)->Js.log
 
@@ -266,7 +266,7 @@ external toStringWithRadix: (float, ~radix: int) => string = "toString"
 
   **return** the number as a `float` if successfully parsed, `_NaN` otherwise.
 
-  ```res example
+  ```rescript
   /* returns 123 */
   Js.Float.fromString("123")
 

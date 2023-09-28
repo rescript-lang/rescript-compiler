@@ -39,7 +39,7 @@ type t<'a, 'b> =
   In this concrete example, we are defining our own `Result` type to reflect an HTTP like
   query operation:
 
-  ```res example
+  ```rescript
   type responseError = NotAvailable | NotFound
   type queryResult = t<string, responseError>
 
@@ -53,7 +53,7 @@ type t<'a, 'b> =
 /**
   `getExn(res)`: when `res` is `Ok(n)`, returns `n` when `res` is `Error(m)`, raise an exception
 
-  ```res example
+  ```rescript
   Belt.Result.getExn(Belt.Result.Ok(42)) == 42
 
   Belt.Result.getExn(Belt.Result.Error("Invalid data")) /* raises exception */
@@ -66,7 +66,7 @@ let mapWithDefaultU: (t<'a, 'c>, 'b, (. 'a) => 'b) => 'b
   `mapWithDefault(res, default, f)`: When res is `Ok(n)`, returns `f(n)`,
   otherwise `default`.
 
-  ```res example
+  ```rescript
   let ok = Belt.Result.Ok(42)
   Belt.Result.mapWithDefault(ok, 0, (x) => x / 2) == 21
 
@@ -82,7 +82,7 @@ let mapU: (t<'a, 'c>, (. 'a) => 'b) => t<'b, 'c>
   unchanged. Function `f` takes a value of the same type as `n` and returns an
   ordinary value.
 
-  ```res example
+  ```rescript
   let f = (x) => sqrt(Belt.Int.toFloat(x))
 
   Belt.Result.map(Ok(64), f) == Ok(8.0)
@@ -98,7 +98,7 @@ let flatMapU: (t<'a, 'c>, (. 'a) => t<'b, 'c>) => t<'b, 'c>
   unchanged. Function `f` takes a value of the same type as `n` and returns a
   `Belt.Result`.
 
-  ```res example
+  ```rescript
   let recip = (x) =>
     if (x !== 0.0) {
       Belt.Result.Ok(1.0 /. x)
@@ -119,7 +119,7 @@ let flatMap: (t<'a, 'c>, 'a => t<'b, 'c>) => t<'b, 'c>
   `getWithDefault(res, defaultValue)`: If `res` is `Ok(n)`, returns `n`,
   otherwise `default`
 
-  ```res example
+  ```rescript
   Belt.Result.getWithDefault(Ok(42), 0) == 42
 
   Belt.Result.getWithDefault(Error("Invalid Data"), 0) == 0
@@ -147,7 +147,7 @@ let eqU: (t<'a, 'c>, t<'b, 'd>, (. 'a, 'b) => bool) => bool
   the form `Error(e)`, return false If both `res1` and `res2` are of the form
   `Error(e)`, return true
 
-  ```res example
+  ```rescript
   let good1 = Belt.Result.Ok(42)
 
   let good2 = Belt.Result.Ok(32)
@@ -182,7 +182,7 @@ let cmpU: (t<'a, 'c>, t<'b, 'd>, (. 'a, 'b) => int) => int
   `res2` of the form `Error(e)`, return 1 (something is greater than nothing) If
   both `res1` and `res2` are of the form `Error(e)`, return 0 (equal)
 
-  ```res example
+  ```rescript
   let good1 = Belt.Result.Ok(59)
 
   let good2 = Belt.Result.Ok(37)
