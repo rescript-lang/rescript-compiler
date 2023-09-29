@@ -25,12 +25,14 @@
 - Untagged variants: Support `promise`, RegExes, Dates, File and Blob. https://github.com/rescript-lang/rescript-compiler/pull/6383
 - Support aliased types as payloads to untagged variants. https://github.com/rescript-lang/rescript-compiler/pull/6394
 
+#### :boom: Breaking Change
+- Add smart printer for pipe-chains.  https://github.com/rescript-lang/rescript-compiler/pull/6411 (the formatter will reformat existing code in certain cases)
+
 #### :nail_care: Polish
 
 - A little performance improvement for JSX V4 runtime helper by removing one object allocation for components with key prop. https://github.com/rescript-lang/rescript-compiler/pull/6376
 - The error message for "toplevel expressions should evaluate to unit" has been revamped and improved. https://github.com/rescript-lang/rescript-compiler/pull/6407
 - Improve "Somewhere wanted" error messages by changing wording and adding more context + suggested solutions to the error messages where appropriate. https://github.com/rescript-lang/rescript-compiler/pull/6410
-- Add smart printer for pipe-chains. https://github.com/rescript-lang/rescript-compiler/pull/6411
 - Display the compile time for `rescript build` command. https://github.com/rescript-lang/rescript-compiler/pull/6404
 - Improve help message for `build` and `clean` commands. https://github.com/rescript-lang/rescript-compiler/pull/6404
 - Pass through the `-verbose` flag to builds in watch mode. https://github.com/rescript-lang/rescript-compiler/pull/6404
