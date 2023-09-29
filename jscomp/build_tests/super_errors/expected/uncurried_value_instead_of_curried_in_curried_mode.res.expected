@@ -19,9 +19,9 @@
   let add: (int, int) => int
 }
   Values do not match:
-    let add: (. int, int) => int
+    let add: (. int, int) => int (uncurried)
   is not included in
-    let add: (int, int) => int
+    let add: (int, int) => int (curried)
   [36m/.../fixtures/uncurried_value_instead_of_curried_in_curried_mode.res[0m:[2m2:3-28[0m:
     Expected declaration
   [36m/.../fixtures/uncurried_value_instead_of_curried_in_curried_mode.res[0m:[2m4:7-9[0m:

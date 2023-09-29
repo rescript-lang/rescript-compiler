@@ -8,4 +8,4 @@ let fromDotted ~dotted = function
 let getDotted ~uncurried = function
   | Config.Legacy -> uncurried
   | Swap -> not uncurried
-  | Uncurried -> not uncurried
+  | Uncurried -> false

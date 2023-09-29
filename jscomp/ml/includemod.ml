@@ -537,6 +537,20 @@ let include_err ppf = function
   | Missing_field (id, loc, kind) ->
       fprintf ppf "The %s `%a' is required but not provided" kind ident id;
       show_loc "Expected declaration" ppf loc
+  | Value_descriptions(id, 
+      ({ val_type = { desc = Tlink { desc = Tconstr (Pident {name = "function$"},_,_) }}} as d1), 
+      ({ val_type = { desc = Tarrow _ }} as d2)) ->
+          fprintf ppf
+            "@[<hv 2>Values do not match:@ %a (uncurried)@;<1 -2>is not included in@ %a (curried)@]"
+            (value_description id) d1 (value_description id) d2;
+          show_locs ppf (d1.val_loc, d2.val_loc)
+  | Value_descriptions(id, 
+      ({ val_type = { desc = Tlink { desc = Tarrow _ }}} as d1), 
+      ({ val_type = { desc = Tconstr (Pident {name = "function$"},_,_)}} as d2)) ->
+          fprintf ppf
+            "@[<hv 2>Values do not match:@ %a (curried)@;<1 -2>is not included in@ %a (uncurried)@]"
+            (value_description id) d1 (value_description id) d2;
+          show_locs ppf (d1.val_loc, d2.val_loc)
   | Value_descriptions(id, d1, d2) ->
       fprintf ppf
         "@[<hv 2>Values do not match:@ %a@;<1 -2>is not included in@ %a@]"
