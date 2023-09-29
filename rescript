@@ -7,13 +7,29 @@
  * and its content are file/directories with regard to project root
  */
 
+/**
+ * @typedef {Object} WatchCtx
+ * @property {string} projectPath - The path to the project root.
+ * @property {string} genTypeFileExtension - The genType file extention to ignore generated file changes in watcher.
+ * @property {{ [dir: string]: fs.FSWatcher }} dirWatchers - Dict of project dir watchers (mutable).
+ * @property {boolean} isBsConfigDirty - Responsible for syncing dirWatchers on bsconfig change (mutable).
+ * @property {boolean} isRebuildPending - Allow only one rebuild at a time (mutable).
+ * @property {boolean} isReRebuildNeeded - In case there was a change when compiler was running (mutable).
+ * @property {NodeJS.Timeout | undefined} rebuildTimeout - Timeout to debounce planned rebuilds (mutable).
+ */
+
+/**
+ * @typedef {Object} ProjectFiles
+ * @property {Set<string>} dirsSet
+ * @property {Set<string>} generatedFilesSet
+ */
+
 var child_process = require("child_process");
 var os = require("os");
 var path = require("path");
 var fs = require("fs");
 var bsc_exe = require("./scripts/bin_path").bsc_exe;
 var rescript_exe = require("./scripts/bin_path").rescript_exe;
-var bsconfig = "bsconfig.json";
 
 var LAST_SUCCESS_BUILD_STAMP = 0;
 var cwd = process.cwd();
@@ -22,17 +38,6 @@ process.env.BSB_PROJECT_ROOT = cwd;
 
 const isTtyError = process.stderr.isTTY;
 const isTtyStd = process.stdout.isTTY;
-
-// If the project uses gentype and uses custom file extension
-// via generatedFileExtension, ignore them in watch mode
-var bsConfigFile = path.join(cwd, bsconfig);
-var genTypeFileExtension = ".gen.tsx";
-if (fs.existsSync(bsConfigFile)) {
-  var genTypeConfig = require(bsConfigFile).gentypeconfig;
-  if (genTypeConfig) {
-    genTypeFileExtension = genTypeConfig.generatedFileExtension;
-  }
-}
 
 let verbose = false;
 
@@ -49,21 +54,33 @@ function updateFinishTime() {
 }
 
 /**
- *
- * @param {string} file
- * @returns
+ * @param {string} projectPath
+ * @return {ProjectFiles}
  */
-function getWatchFiles(file) {
-  if (fs.existsSync(file)) {
-    return JSON.parse(fs.readFileSync(file, "utf8"));
+function getProjectFiles(projectPath) {
+  const sourcedirsPath = path.join(
+    projectPath,
+    "lib",
+    "bs",
+    ".sourcedirs.json"
+  );
+  if (fs.existsSync(sourcedirsPath)) {
+    const sourcedirs = JSON.parse(fs.readFileSync(sourcedirsPath, "utf8"));
+    return {
+      dirsSet: new Set(sourcedirs.dirs),
+      generatedFilesSet: new Set(sourcedirs.generated),
+    };
   } else {
-    return { dirs: [], generated: [] };
+    return {
+      dirsSet: new Set(),
+      generatedFilesSet: new Set(),
+    };
   }
 }
 
 /**
  *
- * @param {*} str
+ * @param {string} str
  */
 function dlog(str) {
   if (verbose) {
@@ -104,32 +121,36 @@ The default \`rescript\` is equivalent to \`rescript build\` subcommand
 `);
 }
 
-var isBuilding = false;
+var isBuildLocked = false;
 function releaseBuild() {
-  if (isBuilding) {
+  if (isBuildLocked) {
     try {
       fs.unlinkSync(lockFileName);
-    } catch (err) {}
-    isBuilding = false;
+    } catch (err) {
+      if (verbose) {
+        console.error("Failed releasing build", err);
+      }
+    }
+    isBuildLocked = false;
   }
 }
 
 // We use [~perm:0o664] rather than our usual default perms, [0o666], because
 // lock files shouldn't rely on the umask to disallow tampering by other.
 function acquireBuild() {
-  if (isBuilding) {
+  if (isBuildLocked) {
     return false;
   } else {
     try {
       const fid = fs.openSync(lockFileName, "wx", 0o664);
       fs.closeSync(fid);
-      isBuilding = true;
+      isBuildLocked = true;
     } catch (err) {
       if (err.code === "EEXIST") {
         console.warn(lockFileName, "already exists, try later");
       } else console.log(err);
     }
-    return isBuilding;
+    return isBuildLocked;
   }
 }
 
@@ -233,20 +254,7 @@ if (maybeSubcommand === "build" && process_argv.includes("-w")) {
   let webSocketHost = "localhost";
   let webSocketPort = 9999;
 
-  const sourcedirs = path.join("lib", "bs", ".sourcedirs.json");
-
   let LAST_BUILD_START = 0;
-  let LAST_FIRED_EVENT = 0;
-  /**
-   * @type {[string,string][]}
-   */
-  let reasonsToRebuild = [];
-  let watchGenerated = [];
-
-  /**
-   * watchers are held so that we close it later
-   */
-  let watchers = [];
 
   const delegatedArgs = process_argv.slice(2);
   verbose = delegatedArgs.includes("-verbose");
@@ -316,43 +324,12 @@ Please pick a different one using the \`-ws [host:]port\` flag from bsb.`);
       .listen(webSocketPort, webSocketHost);
   }
 
-  function watchBuild(watchConfig) {
-    var watchFiles = watchConfig.dirs;
-    watchGenerated = watchConfig.generated;
-    // close and remove all unused watchers
-    watchers = watchers.filter(function (watcher) {
-      if (watcher.dir === bsconfig) {
-        return true;
-      } else if (watchFiles.indexOf(watcher.dir) < 0) {
-        dlog(`${watcher.dir} is no longer watched`);
-        watcher.watcher.close();
-        return false;
-      } else {
-        return true;
-      }
-    });
-
-    // adding new watchers
-    for (var i = 0; i < watchFiles.length; ++i) {
-      var dir = watchFiles[i];
-      if (
-        !watchers.find(function (watcher) {
-          return watcher.dir === dir;
-        })
-      ) {
-        dlog(`watching dir ${dir} now`);
-        var watcher = fs.watch(dir, onChange);
-        watchers.push({ dir: dir, watcher: watcher });
-      } else {
-        // console.log(dir, 'already watched')
-      }
-    }
-  }
-
   /**
+   * @param {WatchCtx} watchCtx
    * @param {string | null} fileName
+   * @param {ProjectFiles} projectFiles
    */
-  function checkIsRebuildReason(fileName) {
+  function checkIsRebuildReason(watchCtx, fileName, projectFiles) {
     // Return true if filename is nil, filename is only provided on Linux, macOS, Windows, and AIX.
     // On other systems, we just have to assume that any change is valid.
     // This could cause problems if source builds (generating js files in the same directory) are supported.
@@ -363,35 +340,10 @@ Please pick a different one using the \`-ws [host:]port\` flag from bsb.`);
       fileName.endsWith(".js") ||
       fileName.endsWith(".mjs") ||
       fileName.endsWith(".cjs") ||
-      fileName.endsWith(genTypeFileExtension) ||
-      watchGenerated.indexOf(fileName) >= 0 ||
+      fileName.endsWith(watchCtx.genTypeFileExtension) ||
+      projectFiles.generatedFilesSet.has(fileName) ||
       fileName.endsWith(".swp")
     );
-  }
-
-  /**
-   * @return {boolean}
-   */
-  function needRebuild() {
-    return reasonsToRebuild.length !== 0;
-  }
-
-  /**
-   * @param code {number}
-   */
-  function buildFinishedCallback(code) {
-    if (code === 0) {
-      LAST_SUCCESS_BUILD_STAMP = Date.now();
-      notifyClients();
-    }
-    logFinishCompiling(code);
-    releaseBuild();
-    if (needRebuild()) {
-      build(0);
-    } else {
-      var files = getWatchFiles(sourcedirs);
-      watchBuild(files);
-    }
   }
 
   /**
@@ -414,91 +366,159 @@ Please pick a different one using the \`-ws [host:]port\` flag from bsb.`);
   // of the compiler output, if it does not
   // then we should have a way to not filter the compiler output
   /**
-   *
-   * @param {number} depth
+   * @param {WatchCtx} watchCtx
+   * @param [number] retry
    */
-  function build(depth) {
-    if (reasonsToRebuild.length === 0) {
-      dlog("No need to rebuild");
-      return;
-    } else {
-      dlog(`Rebuilding since ${reasonsToRebuild}`);
-    }
+  function rebuild(watchCtx, retry = 0) {
+    watchCtx.isRebuildPending = true;
     if (acquireBuild()) {
+      LAST_BUILD_START = Date.now();
+      if (process.env.BS_WATCH_CLEAR && console.clear) {
+        console.clear();
+      }
       logStartCompiling();
       child_process
         .spawn(rescript_exe, rescriptWatchBuildArgs, {
           stdio: ["inherit", "inherit", "pipe"],
         })
-        // @ts-ignore
-        .on("data", function (s) {
+        .on("data", s => {
           outputError(s, "ninja: error");
         })
-        .on("exit", buildFinishedCallback)
+        .on("exit", _code => {
+          // Can be null when exited via signal. Not our case, so treat it as an error
+          const code = _code === null ? 1 : _code;
+          releaseBuild();
+          logFinishCompiling(code);
+          if (code === 0) {
+            LAST_SUCCESS_BUILD_STAMP = Date.now();
+            notifyClients();
+          }
+          // Run it on rebuild complete, since we need to updated sourcedirs.json file
+          if (watchCtx.isBsConfigDirty) {
+            syncDirsWatchers(watchCtx);
+          }
+          if (watchCtx.isReRebuildNeeded) {
+            watchCtx.isReRebuildNeeded = false;
+            rebuild(watchCtx);
+          } else {
+            watchCtx.isRebuildPending = false;
+          }
+        })
         .stderr.setEncoding("utf8");
-      // This is important to clean up all
-      // previous queued events
-      reasonsToRebuild = [];
-      LAST_BUILD_START = Date.now();
+    } else if (retry === 5) {
+      console.error(`Failed to rebuild the project. Can't acquire ".bsb.lock"`);
+      process.exit(2);
     }
-    // if acquiring lock failed, no need retry here
-    // since buildFinishedCallback will try again
-    // however this is no longer the case for multiple-process
-    // it could fail due to other issues like .bsb.lock
+    // if acquiring lock failed, we try to retry in case of a multiple-process
+    // also, it could fail due to other issues like .bsb.lock
     else {
-      dlog(
-        `Acquire lock failed, do the build later ${depth} : ${reasonsToRebuild}`
-      );
-      const waitTime = Math.pow(2, depth) * 40;
+      const waitTime = Math.pow(2, retry) * 40;
+      dlog(`Couldn't acquire ".bsb.lock". Retry in ${waitTime}ms`);
       setTimeout(() => {
-        build(Math.min(depth + 1, 5));
+        rebuild(watchCtx, retry + 1);
       }, waitTime);
     }
   }
 
   /**
-   *
-   * @param {fs.WatchEventType} event
-   * @param {string | null} reason
+   * @param {WatchCtx} watchCtx
+   * @param {string} reason
    */
-  function onChange(event, reason) {
-    var eventTime = Date.now();
-    var timeDiff = eventTime - LAST_BUILD_START;
-    var eventDiff = eventTime - LAST_FIRED_EVENT;
-    dlog(`Since last build: ${timeDiff} -- ${eventDiff}`);
-    if (timeDiff < 5 || eventDiff < 5) {
+  function planRebuild(watchCtx, reason) {
+    const timeFromLastBuild = Date.now() - LAST_BUILD_START;
+    dlog(
+      `Rebuild planned by ${reason}. Time from last build: ${timeFromLastBuild}ms`
+    );
+    if (timeFromLastBuild < 5) {
+      dlog("Rebuild canceled because of little time from the last build");
       // for 5ms, we could think that the ninja not get
       // kicked yet, so there is really no need
       // to send more events here
-
-      // note reasonsToRebuild also
-      // helps avoid redundant build, but this will
-      // save the event loop call `setImmediate`
       return;
     }
-    if (checkIsRebuildReason(reason)) {
-      dlog(`\nEvent ${event} ${reason}`);
-      LAST_FIRED_EVENT = eventTime;
-      reasonsToRebuild.push([event, reason || ""]);
-      // Some editors are using temporary files to store edits.
-      // This results in two sync change events: change + rename and two sync builds.
-      // Using setImmediate will ensure that only one build done.
-      setImmediate(() => {
-        if (needRebuild()) {
-          if (process.env.BS_WATCH_CLEAR && console.clear) {
-            console.clear();
+    if (watchCtx.isRebuildPending) {
+      dlog("Rebuild scheduled after the existing pending rebuild");
+      watchCtx.isReRebuildNeeded = true;
+      return;
+    }
+
+    // Some editors are using temporary files to store edits.
+    // This results in two sync change events: change + rename and two sync builds.
+    // Debounce rebuild to ensure that only one build done.
+    if (watchCtx.rebuildTimeout) {
+      clearTimeout(watchCtx.rebuildTimeout);
+    }
+    watchCtx.rebuildTimeout = setTimeout(() => {
+      watchCtx.rebuildTimeout = undefined;
+      rebuild(watchCtx);
+    });
+  }
+
+  /**
+   * @param {WatchCtx} watchCtx
+   */
+  function syncDirsWatchers(watchCtx) {
+    const projectFiles = getProjectFiles(watchCtx.projectPath);
+
+    for (const dir in watchCtx.dirWatchers) {
+      if (!projectFiles.dirsSet.has(dir)) {
+        const watcher = watchCtx.dirWatchers[dir];
+        delete watchCtx.dirWatchers[dir];
+        watcher.close();
+        dlog(`Removed watcher for the "${dir}" dir`);
+      }
+    }
+
+    for (const dir of projectFiles.dirsSet) {
+      if (!watchCtx.dirWatchers[dir]) {
+        const watcher = fs.watch(dir, (event, reason) => {
+          if (checkIsRebuildReason(watchCtx, reason, projectFiles)) {
+            planRebuild(watchCtx, `${reason || "dir"} ${event} event`);
           }
-          build(0);
-        }
-      });
+        });
+        watchCtx.dirWatchers[dir] = watcher;
+        dlog(`Added watcher for the "${dir}" dir`);
+      }
     }
   }
 
   /**
-   *
+   * @param {string} projectPath
+   */
+  function watchProject(projectPath) {
+    /**
+     * @type {WatchCtx}
+     */
+    const watchCtx = {
+      projectPath,
+      dirWatchers: {},
+      isBsConfigDirty: false,
+      rebuildTimeout: undefined,
+      genTypeFileExtension: ".gen.tsx",
+      isRebuildPending: false,
+      isReRebuildNeeded: false,
+    };
+
+    const bsConfigPath = path.join(projectPath, "bsconfig.json");
+
+    const genTypeConfig = require(bsConfigPath).gentypeconfig;
+    if (genTypeConfig && genTypeConfig.generatedFileExtension) {
+      // If the project uses gentype with a custom file extension
+      // via generatedFileExtension, ignore them in watch mode
+      watchCtx.genTypeFileExtension = genTypeConfig.generatedFileExtension;
+    }
+
+    syncDirsWatchers(watchCtx);
+    fs.watch(bsConfigPath, event => {
+      watchCtx.isBsConfigDirty = true;
+      planRebuild(watchCtx, `bsconfig.json ${event} event`);
+    });
+  }
+
+  /**
    * @param {boolean} withWebSocket
    */
-  function startWatchMode(withWebSocket) {
+  function prepareWatchMode(withWebSocket) {
     if (withWebSocket) {
       setUpWebSocket();
     }
@@ -510,14 +530,15 @@ Please pick a different one using the \`-ws [host:]port\` flag from bsb.`);
       process.stdin.on("end", exitProcess);
       process.stdin.resume();
     }
-
-    watchers.push({ watcher: fs.watch(bsconfig, onChange), dir: bsconfig });
   }
 
   logStartCompiling();
   delegateCommand(delegatedArgs, () => {
-    startWatchMode(withWebSocket);
-    buildFinishedCallback(0);
+    LAST_SUCCESS_BUILD_STAMP = Date.now();
+    logFinishCompiling(0);
+    prepareWatchMode(withWebSocket);
+    notifyClients();
+    watchProject(cwd);
   });
 } else {
   switch (maybeSubcommand) {
@@ -554,7 +575,6 @@ Please pick a different one using the \`-ws [host:]port\` flag from bsb.`);
       );
       break;
     case "convert":
-      // Todo
       require("./scripts/rescript_convert.js").main(
         process.argv.slice(3),
         rescript_exe,
