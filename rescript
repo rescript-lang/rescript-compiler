@@ -22,24 +22,6 @@ process.env.BSB_PROJECT_ROOT = cwd;
 const isTtyError = process.stderr.isTTY;
 const isTtyStd = process.stdout.isTTY;
 
-var bsConfig = "bsconfig.json"
-var resConfig = "rescript.json";
-var resConfigFile = path.join(cwd, resConfig);
-if (!fs.existsSync(resConfigFile)) {
-  resConfig = bsConfig;
-  resConfigFile = path.join(cwd, bsConfig);
-}
-
-// If the project uses gentype and uses custom file extension
-// via generatedFileExtension, ignore them in watch mode
-var genTypeFileExtension = ".gen.tsx";
-if (fs.existsSync(resConfigFile)) {
-  var genTypeConfig = require(resConfigFile).gentypeconfig
-  if (genTypeConfig) {
-    genTypeFileExtension = genTypeConfig.generatedFileExtension;
-  }
-}
-
 let verbose = false;
 
 /**
@@ -239,6 +221,14 @@ if (maybeSubcommand === "build" && process_argv.includes("-w")) {
   let webSocketHost = "localhost";
   let webSocketPort = 9999;
 
+  let resConfig = "rescript.json";
+  let resConfigFile = path.join(cwd, resConfig);
+  if (!fs.existsSync(resConfigFile)) {
+    const bsConfig = "bsconfig.json";
+    resConfig = bsConfig;
+    resConfigFile = path.join(cwd, bsConfig);
+  }
+
   const sourcedirs = path.join("lib", "bs", ".sourcedirs.json");
 
   let LAST_BUILD_START = 0;
@@ -364,14 +354,13 @@ Please pick a different one using the \`-ws [host:]port\` flag from bsb.`);
     // This could cause problems if source builds (generating js files in the same directory) are supported.
     if (!fileName) return true;
 
-    return !(
-      fileName === ".merlin" ||
-      fileName.endsWith(".js") ||
-      fileName.endsWith(".mjs") ||
-      fileName.endsWith(".cjs") ||
-      fileName.endsWith(genTypeFileExtension) ||
-      watchGenerated.indexOf(fileName) >= 0 ||
-      fileName.endsWith(".swp")
+    return (
+      ((fileName.endsWith(".res") ||
+        fileName.endsWith(".resi") ||
+        fileName.endsWith(".ml") ||
+        fileName.endsWith(".mli")) &&
+        !watchGenerated.includes(fileName)) ||
+      fileName === resConfig
     );
   }
 
