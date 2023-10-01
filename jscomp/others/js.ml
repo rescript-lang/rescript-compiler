@@ -123,7 +123,6 @@ external testAny : 'a -> bool = "#is_nullable"
 type (+'a, +'e) promise
 (**
   The promise type, defined here for interoperation across packages.
-  @deprecated please use `Js.Promise`.
 *)
 
 external null : 'a null = "#null"
