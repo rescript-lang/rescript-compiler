@@ -947,6 +947,9 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
           (Pat.var @@ Location.mknoloc "props")
           (Typ.constr (Location.mknoloc @@ Lident "props") [Typ.any ()])
     in
+    let innerExpression =
+      React_jsx_common.async_component ~async:isAsync innerExpression
+    in
     let fullExpression =
       (* React component name should start with uppercase letter *)
       (* let make = { let \"App" = props => make(props); \"App" } *)
@@ -968,9 +971,6 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
         fullExpression
         |> Ast_uncurried.uncurriedFun ~loc:fullExpression.pexp_loc ~arity:1
       else fullExpression
-    in
-    let fullExpression =
-      React_jsx_common.async_component ~async:isAsync fullExpression
     in
     let fullExpression =
       match fullModuleName with
