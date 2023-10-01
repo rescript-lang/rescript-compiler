@@ -30,7 +30,6 @@ More details on proper Promise usage can be found here:
 https://rescript-lang.org/docs/manual/latest/promise#promise-legacy
 */
 
-@@deprecated("Use Js.Promise2 instead")
 @@warning("-103")
 
 type t<+'a> = promise<'a>
