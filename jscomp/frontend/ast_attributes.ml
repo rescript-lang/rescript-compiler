@@ -166,14 +166,8 @@ let is_inline : attr -> bool =
 
 let has_inline_payload (attrs : t) = Ext_list.find_first attrs is_inline
 
-let is_await : attr -> bool =
- fun ({txt}, _) -> txt = "await" || txt = "res.await"
-
-let is_async : attr -> bool =
- fun ({txt}, _) -> txt = "async" || txt = "res.async"
-
-let has_await_payload (attrs : t) = Ext_list.find_first attrs is_await
-let has_async_payload (attrs : t) = Ext_list.find_first attrs is_async
+let has_await_payload (attrs : t) = Ext_list.find_first attrs Ast_await.is_await
+let has_async_payload (attrs : t) = Ext_list.find_first attrs Ast_async.is_async
 
 type derive_attr = {bs_deriving: Ast_payload.action list option} [@@unboxed]
 

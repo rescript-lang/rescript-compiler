@@ -909,6 +909,10 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
     let bindingWrapper, hasForwardRef, expression =
       modifiedBinding ~bindingLoc ~bindingPatLoc ~fnName binding
     in
+    let isAsync =
+      Ext_list.find_first binding.pvb_expr.pexp_attributes Ast_async.is_async
+      |> Option.is_some
+    in
     (* do stuff here! *)
     let namedArgList, newtypes, _typeConstraints =
       recursivelyTransformNamedArgsForMake
@@ -941,6 +945,9 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
         Pat.constraint_
           (Pat.var @@ Location.mknoloc "props")
           (Typ.constr (Location.mknoloc @@ Lident "props") [Typ.any ()])
+    in
+    let innerExpression =
+      React_jsx_common.async_component ~async:isAsync innerExpression
     in
     let fullExpression =
       (* React component name should start with uppercase letter *)
@@ -1083,6 +1090,7 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
                 | _ -> [Typ.any ()]))))
         expression
     in
+    let expression = Ast_async.add_async_attribute ~async:isAsync expression in
     let expression =
       (* Add new tupes (type a,b,c) to make's definition *)
       newtypes

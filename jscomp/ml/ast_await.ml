@@ -1,3 +1,6 @@
+let is_await : Parsetree.attribute -> bool =
+  fun ({txt}, _) -> txt = "await" || txt = "res.await"
+
 let create_await_expression (e : Parsetree.expression) =
   let loc = e.pexp_loc in
   let unsafe_await =

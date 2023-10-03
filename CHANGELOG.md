@@ -25,6 +25,7 @@
 - Untagged variants: Support `promise`, RegExes, Dates, File and Blob. https://github.com/rescript-lang/rescript-compiler/pull/6383
 - Untagged variants: Support `bool`. https://github.com/rescript-lang/rescript-compiler/pull/6368
 - Support aliased types as payloads to untagged variants. https://github.com/rescript-lang/rescript-compiler/pull/6394
+- Support the async component for React Server Component in JSX V4. https://github.com/rescript-lang/rescript-compiler/pull/6399
 
 #### :boom: Breaking Change
 - Add smart printer for pipe-chains.  https://github.com/rescript-lang/rescript-compiler/pull/6411 (the formatter will reformat existing code in certain cases)
