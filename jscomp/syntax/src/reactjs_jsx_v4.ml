@@ -1091,9 +1091,7 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
                 | _ -> [Typ.any ()]))))
         expression
     in
-    let expression =
-      React_jsx_common.add_async_attribute ~async:isAsync expression
-    in
+    let expression = Ast_async.add_async_attribute ~async:isAsync expression in
     let expression =
       (* Add new tupes (type a,b,c) to make's definition *)
       newtypes

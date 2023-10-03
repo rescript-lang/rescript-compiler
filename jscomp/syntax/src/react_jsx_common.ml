@@ -64,16 +64,6 @@ let removeArity binding =
   in
   {binding with pvb_expr = removeArityRecord binding.pvb_expr}
 
-let add_async_attribute ~async (body : Parsetree.expression) =
-  if async then
-    {
-      body with
-      pexp_attributes =
-        ({txt = "res.async"; loc = Location.none}, PStr [])
-        :: body.pexp_attributes;
-    }
-  else body
-
 let is_async : Parsetree.attribute -> bool =
  fun ({txt}, _) -> txt = "async" || txt = "res.async"
 
