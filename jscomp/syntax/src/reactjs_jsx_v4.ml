@@ -910,8 +910,7 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
       modifiedBinding ~bindingLoc ~bindingPatLoc ~fnName binding
     in
     let isAsync =
-      Ext_list.find_first binding.pvb_expr.pexp_attributes
-        React_jsx_common.is_async
+      Ext_list.find_first binding.pvb_expr.pexp_attributes Ast_async.is_async
       |> Option.is_some
     in
     (* do stuff here! *)
