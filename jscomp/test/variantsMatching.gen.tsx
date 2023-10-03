@@ -19,3 +19,6 @@ export type MyNullable_t<a> = null | undefined | a;
 
 // tslint:disable-next-line:interface-over-type-literal
 export type MyNullableExtended_t<a> = null | undefined | "WhyNotAnotherOne" | a;
+
+// tslint:disable-next-line:interface-over-type-literal
+export type UntaggedWithBool_t = string | number | boolean | string;

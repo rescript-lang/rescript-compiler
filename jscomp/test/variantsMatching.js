@@ -389,6 +389,28 @@ var CustomTagNotInline = {
   b: CustomTagNotInline_b
 };
 
+function classify(x) {
+  switch (typeof x) {
+    case "string" :
+        return "string";
+    case "number" :
+        return "int";
+    case "boolean" :
+        if (x) {
+          return "true";
+        } else {
+          return "boolean";
+        }
+    case "object" :
+        return "Object" + x.name;
+    
+  }
+}
+
+var UntaggedWithBool = {
+  classify: classify
+};
+
 exports.toEnum = toEnum;
 exports.toString = toString;
 exports.bar = bar;
@@ -406,4 +428,5 @@ exports.MyNullable = MyNullable;
 exports.MyNullableExtended = MyNullableExtended;
 exports.TaggedUnions = TaggedUnions;
 exports.CustomTagNotInline = CustomTagNotInline;
+exports.UntaggedWithBool = UntaggedWithBool;
 /* expectSeven Not a pure module */
