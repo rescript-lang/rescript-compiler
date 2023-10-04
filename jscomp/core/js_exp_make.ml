@@ -805,6 +805,7 @@ let tag_type = function
   | Undefined -> undefined
   | Untagged IntType -> str "number"
   | Untagged FloatType -> str "number"
+  | Untagged BooleanType -> str "boolean"
   | Untagged FunctionType -> str "function"
   | Untagged StringType -> str "string"
   | Untagged (InstanceType i) -> str (Ast_untagged_variants.Instance.to_string i) ~delim:DNoQuotes
