@@ -10,14 +10,7 @@
   6 [2m│[0m 
 
   Signature mismatch:
-  Modules do not match:
-    {
-  let add: (. int, int) => int
-}
-  is not included in
-    {
-  let add: (int, int) => int
-}
+  ...
   Values do not match:
     let add: (. int, int) => int (uncurried)
   is not included in
