@@ -32,8 +32,7 @@
 
 @unboxed /** The JSON data structure */
 type rec t =
-  | @as(false) False
-  | @as(true) True
+  | Boolean(bool)
   | @as(null) Null
   | String(string)
   | Number(float)

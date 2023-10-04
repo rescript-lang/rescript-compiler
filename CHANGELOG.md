@@ -29,6 +29,7 @@
 
 #### :boom: Breaking Change
 - Add smart printer for pipe-chains.  https://github.com/rescript-lang/rescript-compiler/pull/6411 (the formatter will reformat existing code in certain cases)
+- `Js.Json.t` now uses `Boolean(bool)` instead of explicit `@as(true) True | @as(false) False`. https://github.com/rescript-lang/rescript-compiler/pull/6421
 
 #### :nail_care: Polish
 
