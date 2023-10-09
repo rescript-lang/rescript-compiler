@@ -222,11 +222,8 @@ if (maybeSubcommand === "build" && process_argv.includes("-w")) {
   let webSocketPort = 9999;
 
   let resConfig = "rescript.json";
-  let resConfigFile = path.join(cwd, resConfig);
-  if (!fs.existsSync(resConfigFile)) {
-    const bsConfig = "bsconfig.json";
-    resConfig = bsConfig;
-    resConfigFile = path.join(cwd, bsConfig);
+  if (!fs.existsSync(resConfig)) {
+    resConfig = "bsconfig.json";
   }
 
   const sourcedirs = path.join("lib", "bs", ".sourcedirs.json");
