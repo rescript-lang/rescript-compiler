@@ -70,10 +70,10 @@ let extract_package_name_and_namespace (map : json_map) : string * string option
    - the running bsb need delete stale build artifacts
       (kinda check npm upgrade)
 
-      Note if the setup is correct: 
+      Note if the setup is correct:
       the running compiler and node_modules/rescript
-      should be the same version, 
-      The exact check is that the running compiler should have a 
+      should be the same version,
+      The exact check is that the running compiler should have a
       compatible runtime version installed, the location of the
       compiler is actually not relevant.
       We disable the check temporarily
@@ -235,9 +235,13 @@ let extract_js_post_build (map : json_map) cwd : string option =
   |> ignore;
   !js_post_build_cmd
 
-(** ATT: make sure such function is re-entrant. 
+(** ATT: make sure such function is re-entrant.
     With a given [cwd] it works anywhere*)
-let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
+let interpret_json
+  ~(filename : string)
+  ~(json : Ext_json_types.t)
+  ~(package_kind : Bsb_package_kind.t)
+  ~(per_proj_dir : string)
     : Bsb_config_types.t =
   (* we should not resolve it too early,
       since it is external configuration, no {!Bsb_build_util.convert_and_resolve_path}
@@ -253,8 +257,7 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
      1. if [build.ninja] does use [ninja] we need set a variable
      2. we need store it so that we can call ninja correctly
   *)
-  match
-    Ext_json_parse.parse_json_from_file (per_proj_dir // Literals.bsconfig_json)
+  match json
   with
   | Obj { map } -> (
       let package_name, namespace = extract_package_name_and_namespace map in
@@ -349,17 +352,19 @@ let interpret_json ~(package_kind : Bsb_package_kind.t) ~(per_proj_dir : string)
             (match package_kind with
             | Toplevel -> extract_uncurried map
             | Pinned_dependency x | Dependency x -> x.uncurried);
+            filename;
           }
       | None ->
-          Bsb_exception.invalid_spec "no sources specified in bsconfig.json")
-  | _ -> Bsb_exception.invalid_spec "bsconfig.json expect a json object {}"
+          Bsb_exception.invalid_spec ("no sources specified in " ^ filename))
+  | _ -> Bsb_exception.invalid_spec (filename ^ " expect a json object {}")
 
 let deps_from_bsconfig () =
-  let json = Ext_json_parse.parse_json_from_file Literals.bsconfig_json in
-  match json with
-  | Obj { map } ->
-      ( Bsb_package_specs.from_map ~cwd:Bsb_global_paths.cwd map,
+  let cwd = Bsb_global_paths.cwd in
+  match Bsb_config_load.load_json ~per_proj_dir:cwd ~warn_legacy_config:false
+  with
+  | _, Obj { map } ->
+      ( Bsb_package_specs.from_map ~cwd map,
         Bsb_jsx.from_map map,
         extract_uncurried map,
         Bsb_build_util.extract_pinned_dependencies map )
-  | _ -> assert false
+  | _, _ -> assert false

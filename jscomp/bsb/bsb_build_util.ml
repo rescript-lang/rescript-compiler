@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -101,7 +101,7 @@ let resolve_bsb_magic_file ~cwd ~desc p : result =
 
 (** converting a file from Linux path format to Windows *)
 
-(** 
+(**
    {[
      mkp "a/b/c/d";;
      mkp "/a/b/c/d"
@@ -155,9 +155,8 @@ let extract_pinned_dependencies (map : Ext_json_types.t Map_string.t) : Set_stri
 
 let rec walk_all_deps_aux (visited : string Hash_string.t) (paths : string list)
     ~(top : top) (dir : string) (queue : _ Queue.t) ~pinned_dependencies =
-  let bsconfig_json = dir // Literals.bsconfig_json in
-  match Ext_json_parse.parse_json_from_file bsconfig_json with
-  | Obj { map; loc } ->
+  match Bsb_config_load.load_json ~per_proj_dir:dir ~warn_legacy_config:false with
+  | _, Obj { map; loc } ->
       let cur_package_name =
         match Map_string.find_opt map Bsb_build_schemas.name with
         | Some (Str { str; loc }) ->
@@ -183,7 +182,7 @@ let rec walk_all_deps_aux (visited : string Hash_string.t) (paths : string list)
       else
         let explore_deps (deps : string) pinned_dependencies =
           map
-          |? ( deps,                
+          |? ( deps,
                `Arr
                  (fun (new_packages : Ext_json_types.t array) ->
                    Ext_array.iter new_packages (fun js ->
@@ -205,8 +204,8 @@ let rec walk_all_deps_aux (visited : string Hash_string.t) (paths : string list)
         | Expect_name n when Set_string.mem pinned_dependencies n -> true
         | _ -> false
         in
-        let pinned_dependencies = match is_pinned with 
-        | true -> 
+        let pinned_dependencies = match is_pinned with
+        | true ->
           let transitive_pinned_dependencies = extract_pinned_dependencies map
           in
           Set_string.union transitive_pinned_dependencies pinned_dependencies

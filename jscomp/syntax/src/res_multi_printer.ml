@@ -1,20 +1,26 @@
 let defaultPrintWidth = 100
 
-(* Look at bsconfig.json to set Uncurried or Legacy mode if it contains "uncurried": false *)
-let getUncurriedFromBsconfig ~filename =
-  let rec findBsconfig ~dir =
-    let bsconfig = Filename.concat dir "bsconfig.json" in
-    if Sys.file_exists bsconfig then Some (Res_io.readFile ~filename:bsconfig)
+(* Look at rescript.json (or bsconfig.json) to set Uncurried or Legacy mode if it contains "uncurried": false *)
+let getUncurriedFromConfig ~filename =
+  let rec findConfig ~dir =
+    let config = Filename.concat dir "rescript.json" in
+    if Sys.file_exists config then Some (Res_io.readFile ~filename:config)
     else
-      let parent = Filename.dirname dir in
-      if parent = dir then None else findBsconfig ~dir:parent
+      let config = Filename.concat dir "bsconfig.json" in
+      if Sys.file_exists config then Some (Res_io.readFile ~filename:config)
+      else
+        let parent = Filename.dirname dir in
+        if parent = dir then None else findConfig ~dir:parent
   in
   let rec findFromNodeModules ~dir =
     let parent = Filename.dirname dir in
     if Filename.basename dir = "node_modules" then
-      let bsconfig = Filename.concat parent "bsconfig.json" in
-      if Sys.file_exists bsconfig then Some (Res_io.readFile ~filename:bsconfig)
-      else None
+      let config = Filename.concat parent "rescript.json" in
+      if Sys.file_exists config then Some (Res_io.readFile ~filename:config)
+      else
+        let config = Filename.concat parent "bsconfig.json" in
+        if Sys.file_exists config then Some (Res_io.readFile ~filename:config)
+        else None
     else if parent = dir then None
     else findFromNodeModules ~dir:parent
   in
@@ -23,8 +29,8 @@ let getUncurriedFromBsconfig ~filename =
       Filename.dirname (Filename.concat (Sys.getcwd ()) filename)
     else Filename.dirname filename
   in
-  let bsconfig () =
-    match findBsconfig ~dir with
+  let config () =
+    match findConfig ~dir with
     | None ->
       (* The editor calls format on a temporary file. So bsconfig can't be found.
          This looks outside the node_modules containing the bsc binary *)
@@ -32,11 +38,11 @@ let getUncurriedFromBsconfig ~filename =
       findFromNodeModules ~dir
     | x -> x
   in
-  match bsconfig () with
+  match config () with
   | exception _ -> ()
   | None -> ()
-  | Some bsconfig ->
-    let lines = bsconfig |> String.split_on_char '\n' in
+  | Some config ->
+    let lines = config |> String.split_on_char '\n' in
     let is_legacy_uncurried =
       lines
       |> List.exists (fun line ->
@@ -60,7 +66,7 @@ let getUncurriedFromBsconfig ~filename =
 
 (* print res files to res syntax *)
 let printRes ~ignoreParseErrors ~isInterface ~filename =
-  getUncurriedFromBsconfig ~filename;
+  getUncurriedFromConfig ~filename;
   if isInterface then (
     let parseResult =
       Res_driver.parsingEngine.parseInterface ~forPrinter:true ~filename

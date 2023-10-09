@@ -101,10 +101,14 @@ let setDebug ~gtconf =
   | Some (Obj {map}) -> Map_string.iter map Debug.setItem
   | _ -> ()
 
-let compilerConfigFile = "bsconfig.json"
+let compilerConfigFile = "rescript.json"
+let legacyCompilerConfigFile = "bsconfig.json"
 
 let rec findProjectRoot ~dir =
-  if Sys.file_exists (Filename.concat dir compilerConfigFile) then dir
+  if
+    Sys.file_exists (Filename.concat dir compilerConfigFile)
+    || Sys.file_exists (Filename.concat dir legacyCompilerConfigFile)
+  then dir
   else
     let parent = dir |> Filename.dirname in
     if parent = dir then (
@@ -114,7 +118,7 @@ let rec findProjectRoot ~dir =
       assert false)
     else findProjectRoot ~dir:parent
 
-let readConfig ~getBsConfigFile ~namespace =
+let readConfig ~getConfigFile ~namespace =
   let projectRoot = findProjectRoot ~dir:(Sys.getcwd ()) in
   let bsbProjectRoot =
     match Sys.getenv_opt "BSB_PROJECT_ROOT" with
@@ -175,7 +179,7 @@ let readConfig ~getBsConfigFile ~namespace =
       | Some externalStdlib -> externalStdlib
     in
     if !Debug.config then (
-      Log_.item "Project root: %s\n" projectRoot;
+      Log_.item "Project roLiterals.bsconfig_jsonot: %s\n" projectRoot;
       if bsbProjectRoot <> projectRoot then
         Log_.item "bsb project root: %s\n" bsbProjectRoot;
       Log_.item "Config module:%s shims:%d entries \n"
@@ -230,7 +234,7 @@ let readConfig ~getBsConfigFile ~namespace =
       sources;
     }
   in
-  match getBsConfigFile ~projectRoot with
+  match getConfigFile ~projectRoot with
   | Some bsConfigFile -> (
     try
       let json = bsConfigFile |> Ext_json_parse.parse_json_from_file in

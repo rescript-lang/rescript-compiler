@@ -76,6 +76,8 @@ let package_json = "package.json"
 
 let bsconfig_json = "bsconfig.json"
 
+let rescript_json = "rescript.json"
+
 let build_ninja = "build.ninja"
 
 (* Name of the library file created for each external dependency. *)

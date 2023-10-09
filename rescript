@@ -13,7 +13,6 @@ var path = require("path");
 var fs = require("fs");
 var bsc_exe = require("./scripts/bin_path").bsc_exe;
 var rescript_exe = require("./scripts/bin_path").rescript_exe;
-var bsconfig = "bsconfig.json";
 
 var LAST_SUCCESS_BUILD_STAMP = 0;
 var cwd = process.cwd();
@@ -23,12 +22,19 @@ process.env.BSB_PROJECT_ROOT = cwd;
 const isTtyError = process.stderr.isTTY;
 const isTtyStd = process.stdout.isTTY;
 
+var bsConfig = "bsconfig.json"
+var resConfig = "rescript.json";
+var resConfigFile = path.join(cwd, resConfig);
+if (!fs.existsSync(resConfigFile)) {
+  resConfig = bsConfig;
+  resConfigFile = path.join(cwd, bsConfig);
+}
+
 // If the project uses gentype and uses custom file extension
 // via generatedFileExtension, ignore them in watch mode
-var bsConfigFile = path.join(cwd, bsconfig);
 var genTypeFileExtension = ".gen.tsx";
-if (fs.existsSync(bsConfigFile)) {
-  var genTypeConfig = require(bsConfigFile).gentypeconfig;
+if (fs.existsSync(resConfigFile)) {
+  var genTypeConfig = require(resConfigFile).gentypeconfig
   if (genTypeConfig) {
     genTypeFileExtension = genTypeConfig.generatedFileExtension;
   }
@@ -100,7 +106,7 @@ Subcommands:
 Run \`rescript <subcommand> -h\` for subcommand help. Examples:
   rescript build -h
   rescript format -h
-The default \`rescript\` is equivalent to \`rescript build\` subcommand  
+The default \`rescript\` is equivalent to \`rescript build\` subcommand
 `);
 }
 
@@ -321,7 +327,7 @@ Please pick a different one using the \`-ws [host:]port\` flag from bsb.`);
     watchGenerated = watchConfig.generated;
     // close and remove all unused watchers
     watchers = watchers.filter(function (watcher) {
-      if (watcher.dir === bsconfig) {
+      if (watcher.dir === resConfig) {
         return true;
       } else if (watchFiles.indexOf(watcher.dir) < 0) {
         dlog(`${watcher.dir} is no longer watched`);
@@ -511,7 +517,7 @@ Please pick a different one using the \`-ws [host:]port\` flag from bsb.`);
       process.stdin.resume();
     }
 
-    watchers.push({ watcher: fs.watch(bsconfig, onChange), dir: bsconfig });
+    watchers.push({ watcher: fs.watch(resConfig, onChange), dir: resConfig });
   }
 
   logStartCompiling();

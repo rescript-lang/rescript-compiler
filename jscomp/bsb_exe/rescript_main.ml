@@ -142,8 +142,12 @@ let build_subcommand ~start argv argv_len =
   | [| "-h" |] -> ninja_command_exit ninja_args
   | _ ->
       let config_opt =
-        Bsb_ninja_regen.regenerate_ninja ~package_kind:Toplevel
-          ~per_proj_dir:Bsb_global_paths.cwd ~forced:!force_regenerate in
+        Bsb_ninja_regen.regenerate_ninja
+          ~package_kind:Toplevel
+          ~per_proj_dir:Bsb_global_paths.cwd
+          ~forced:!force_regenerate
+          ~warn_legacy_config:true
+        in
       if not !no_deps_mode then Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt ninja_args;
       if !do_install then install_target ();
       ninja_command_exit ninja_args
@@ -171,8 +175,11 @@ let info_subcommand ~start argv =
       | [] -> ());
       if !list_files then
         match
-          Bsb_ninja_regen.regenerate_ninja ~package_kind:Toplevel ~forced:true
+          Bsb_ninja_regen.regenerate_ninja
+            ~package_kind:Toplevel
             ~per_proj_dir:Bsb_global_paths.cwd
+            ~forced:true
+            ~warn_legacy_config:true
         with
         | None -> assert false
         | Some { file_groups = { files } } ->
@@ -198,8 +205,12 @@ let () =
     if argv_len = 1 then (
       (* specialize this path which is used in watcher *)
       let config_opt =
-        Bsb_ninja_regen.regenerate_ninja ~package_kind:Toplevel ~forced:false
-          ~per_proj_dir:Bsb_global_paths.cwd in
+        Bsb_ninja_regen.regenerate_ninja
+          ~package_kind:Toplevel
+          ~per_proj_dir:Bsb_global_paths.cwd
+          ~forced:false
+          ~warn_legacy_config:true
+      in
       Bsb_world.make_world_deps Bsb_global_paths.cwd config_opt [||];
       ninja_command_exit [||])
     else
