@@ -35,6 +35,7 @@
 
 - Fix issue with GenType and labelled arguments. https://github.com/rescript-lang/rescript-compiler/pull/6406
 - Fix dependencies reinitialization on every change in watch mode. Leads to faster rebuilds and cleaner terminal. https://github.com/rescript-lang/rescript-compiler/pull/6404
+- Fix issue with Dynamic import of module in nested expressions https://github.com/rescript-lang/rescript-compiler/pull/6431
 
 #### :nail_care: Polish
 
