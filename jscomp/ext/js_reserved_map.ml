@@ -169,6 +169,7 @@ let sorted_keywords = [|
   "DecompressionStream";
   "DelayNode";
   "DelegatedInkTrailPresenter";
+  "Deno";
   "Document";
   "DocumentFragment";
   "DocumentPictureInPictureEvent";
