@@ -10,16 +10,7 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# 11.0.0-rc.4 (Unreleased)
-
-#### :boom: Breaking Change
-
-- Updated watcher rules to recompile only on config and `*.res`/`*.resi`/`*.ml`/`.mli` file changes. Solves the issue of unnecessary recompiles on `.css`, `.ts`, and other unrelated file changes. https://github.com/rescript-lang/rescript-compiler/pull/6420
-
-#### :bug: Bug Fix
-
-- Fix issue with GenType and labelled arguments. https://github.com/rescript-lang/rescript-compiler/pull/6406
-- Fix dependencies reinitialization on every change in watch mode. Leads to faster rebuilds and cleaner terminal. https://github.com/rescript-lang/rescript-compiler/pull/6404
+# 11.0.0-rc.4
 
 #### :rocket: New Feature
 
@@ -30,11 +21,18 @@
 - Untagged variants: Support `bool`. https://github.com/rescript-lang/rescript-compiler/pull/6368
 - Support aliased types as payloads to untagged variants. https://github.com/rescript-lang/rescript-compiler/pull/6394
 - Support the async component for React Server Component in JSX V4. https://github.com/rescript-lang/rescript-compiler/pull/6399
-- Support `rescript.json` configuration file and deprecated `bsconfig.json`. https://github.com/rescript-lang/rescript-compiler/pull/6382
+- Support `rescript.json` configuration file and deprecate `bsconfig.json`. https://github.com/rescript-lang/rescript-compiler/pull/6382
 
 #### :boom: Breaking Change
-- Add smart printer for pipe-chains.  https://github.com/rescript-lang/rescript-compiler/pull/6411 (the formatter will reformat existing code in certain cases)
+
+- Update watcher rules to recompile only on config and `*.res`/`*.resi`/`*.ml`/`.mli` file changes. Solves the issue of unnecessary recompiles on `.css`, `.ts`, and other unrelated file changes. https://github.com/rescript-lang/rescript-compiler/pull/6420
+- Add smart printer for pipe chains. https://github.com/rescript-lang/rescript-compiler/pull/6411 (the formatter will reformat existing code in certain cases)
 - `Js.Json.t` now uses `Boolean(bool)` instead of explicit `@as(true) True | @as(false) False`. https://github.com/rescript-lang/rescript-compiler/pull/6421
+
+#### :bug: Bug Fix
+
+- Fix issue with GenType and labelled arguments. https://github.com/rescript-lang/rescript-compiler/pull/6406
+- Fix dependencies reinitialization on every change in watch mode. Leads to faster rebuilds and cleaner terminal. https://github.com/rescript-lang/rescript-compiler/pull/6404
 
 #### :nail_care: Polish
 
