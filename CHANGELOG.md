@@ -12,6 +12,10 @@
 
 # 11.0.0-rc.4 (Unreleased)
 
+#### :boom: Breaking Change
+
+- Updated watcher rules to recompile only on config and `*.res`/`*.resi`/`*.ml`/`.mli` file changes. Solves the issue of unnecessary recompiles on `.css`, `.ts`, and other unrelated file changes. https://github.com/rescript-lang/rescript-compiler/pull/6420
+
 #### :bug: Bug Fix
 
 - Fix issue with GenType and labelled arguments. https://github.com/rescript-lang/rescript-compiler/pull/6406
