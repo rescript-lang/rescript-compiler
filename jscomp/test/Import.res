@@ -59,3 +59,14 @@ let f3 = async () => {
   module M4 = await Belt.List
   (M3.forEach, M4.forEach)
 }
+
+let f4 = async () => {
+  module A = await Belt.Array
+  A.forEach
+}
+
+let f5 = async () => {
+  module A = await Belt.Array
+  module O = await Belt.Option
+  (A.forEach, O.forEach)
+}
