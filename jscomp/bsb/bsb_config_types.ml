@@ -65,4 +65,6 @@ type t = {
   (* note when used as a dev mode, we will always ignore it *)
   gentype_config : gentype_config;
   uncurried: bool;
+
+  filename: string;
 }

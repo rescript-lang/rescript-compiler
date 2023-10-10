@@ -10,12 +10,9 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# 11.0.0-rc.4 (Unreleased)
+# 11.0.0-rc.5 (Unreleased)
 
-#### :bug: Bug Fix
-
-- Fix issue with GenType and labelled arguments. https://github.com/rescript-lang/rescript-compiler/pull/6406
-- Fix dependencies reinitialization on every change in watch mode. Leads to faster rebuilds and cleaner terminal. https://github.com/rescript-lang/rescript-compiler/pull/6404
+# 11.0.0-rc.4
 
 #### :rocket: New Feature
 
@@ -23,17 +20,32 @@
 - Support renaming object fields of `@obj` external ppx with `@as` attribute. [#6391](https://github.com/rescript-lang/rescript-compiler/pull/6412)
 - Add builtin abstract types for File and Blob APIs. https://github.com/rescript-lang/rescript-compiler/pull/6383
 - Untagged variants: Support `promise`, RegExes, Dates, File and Blob. https://github.com/rescript-lang/rescript-compiler/pull/6383
+- Untagged variants: Support `bool`. https://github.com/rescript-lang/rescript-compiler/pull/6368
 - Support aliased types as payloads to untagged variants. https://github.com/rescript-lang/rescript-compiler/pull/6394
+- Support the async component for React Server Component in JSX V4. https://github.com/rescript-lang/rescript-compiler/pull/6399
+- Support `rescript.json` configuration file and deprecate `bsconfig.json`. https://github.com/rescript-lang/rescript-compiler/pull/6382
+
+#### :boom: Breaking Change
+
+- Update watcher rules to recompile only on config and `*.res`/`*.resi`/`*.ml`/`.mli` file changes. Solves the issue of unnecessary recompiles on `.css`, `.ts`, and other unrelated file changes. https://github.com/rescript-lang/rescript-compiler/pull/6420
+- Add smart printer for pipe chains. https://github.com/rescript-lang/rescript-compiler/pull/6411 (the formatter will reformat existing code in certain cases)
+- `Js.Json.t` now uses `Boolean(bool)` instead of explicit `@as(true) True | @as(false) False`. https://github.com/rescript-lang/rescript-compiler/pull/6421
+
+#### :bug: Bug Fix
+
+- Fix issue with GenType and labelled arguments. https://github.com/rescript-lang/rescript-compiler/pull/6406
+- Fix dependencies reinitialization on every change in watch mode. Leads to faster rebuilds and cleaner terminal. https://github.com/rescript-lang/rescript-compiler/pull/6404
 
 #### :nail_care: Polish
 
 - A little performance improvement for JSX V4 runtime helper by removing one object allocation for components with key prop. https://github.com/rescript-lang/rescript-compiler/pull/6376
 - The error message for "toplevel expressions should evaluate to unit" has been revamped and improved. https://github.com/rescript-lang/rescript-compiler/pull/6407
 - Improve "Somewhere wanted" error messages by changing wording and adding more context + suggested solutions to the error messages where appropriate. https://github.com/rescript-lang/rescript-compiler/pull/6410
-- Add smart printer for pipe-chains. https://github.com/rescript-lang/rescript-compiler/pull/6411
 - Display the compile time for `rescript build` command. https://github.com/rescript-lang/rescript-compiler/pull/6404
 - Improve help message for `build` and `clean` commands. https://github.com/rescript-lang/rescript-compiler/pull/6404
 - Pass through the `-verbose` flag to builds in watch mode. https://github.com/rescript-lang/rescript-compiler/pull/6404
+- Improve error message when defining duplicate labels in a record. https://github.com/rescript-lang/rescript-compiler/pull/6415
+- Improve error message when trying to concatenate strings using the wrong operator. https://github.com/rescript-lang/rescript-compiler/pull/6416
 
 # 11.0.0-rc.3
 

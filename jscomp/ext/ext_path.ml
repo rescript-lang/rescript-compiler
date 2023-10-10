@@ -1,5 +1,5 @@
 (* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -117,7 +117,7 @@ let ( // ) x y =
      split_aux "//ghosg//ghsogh/";;
      - : string * string list = ("/", ["ghosg"; "ghsogh"])
    ]}
-   Note that 
+   Note that
    {[
      Filename.dirname "/a/" = "/"
        Filename.dirname "/a/b/" = Filename.dirname "/a/b" = "/a"
@@ -132,7 +132,7 @@ let ( // ) x y =
        basename "" = "."
        dirname "" = "."
        dirname "" =  "."
-   ]}  
+   ]}
 *)
 let split_aux p =
   let rec go p acc =
@@ -149,11 +149,11 @@ let split_aux p =
 
   go p []
 
-(** 
+(**
    TODO: optimization
-   if [from] and [to] resolve to the same path, a zero-length string is returned 
+   if [from] and [to] resolve to the same path, a zero-length string is returned
 
-   This function is useed in [es6-global] and 
+   This function is useed in [es6-global] and
    [amdjs-global] format and tailored for `rollup`
 *)
 let rel_normalized_absolute_path ~from to_ =
@@ -261,14 +261,17 @@ let concat dirname filename =
 let check_suffix_case = Ext_string.ends_with
 
 (* Input must be absolute directory *)
-let rec find_root_filename ~cwd filename =
-  if Sys.file_exists (Filename.concat cwd filename) then cwd
+let rec find_root_filename ~cwd filenames =
+  let file_exists = Ext_list.exists filenames (fun filename ->
+    Sys.file_exists (Filename.concat cwd filename))
+  in
+  if file_exists then cwd
   else
     let cwd' = Filename.dirname cwd in
     if String.length cwd' < String.length cwd then
-      find_root_filename ~cwd:cwd' filename
-    else Ext_fmt.failwithf ~loc:__LOC__ "%s not found from %s" filename cwd
+      find_root_filename ~cwd:cwd' filenames
+    else Ext_fmt.failwithf ~loc:__LOC__ "%s not found from %s" (List.hd filenames) cwd
 
-let find_package_json_dir cwd = find_root_filename ~cwd Literals.bsconfig_json
+let find_config_dir cwd = find_root_filename ~cwd [Literals.rescript_json; Literals.bsconfig_json]
 
-let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
+let package_dir = lazy (find_config_dir (Lazy.force cwd))

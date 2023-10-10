@@ -1,3 +1,6 @@
+let is_async : Parsetree.attribute -> bool =
+  fun ({txt}, _) -> txt = "async" || txt = "res.async"
+
 let add_promise_type ?(loc = Location.none) ~async
     (result : Parsetree.expression) =
   if async then

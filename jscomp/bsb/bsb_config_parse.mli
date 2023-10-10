@@ -25,4 +25,8 @@
 val deps_from_bsconfig : unit -> Bsb_package_specs.t * Bsb_jsx.t * bool *  Set_string.t
 
 val interpret_json :
-  package_kind:Bsb_package_kind.t -> per_proj_dir:string -> Bsb_config_types.t
+  filename:string ->
+  json:Ext_json_types.t ->
+  package_kind:Bsb_package_kind.t ->
+  per_proj_dir:string ->
+  Bsb_config_types.t

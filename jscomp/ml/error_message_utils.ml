@@ -55,8 +55,8 @@ let errorExpectedTypeText ppf typeClashContext =
   | _ -> fprintf ppf "But it's expected to have type:"
 
 let printExtraTypeClashHelp ppf trace typeClashContext =
-  match typeClashContext with
-  | Some (MathOperator {forFloat; operator; isConstant}) -> (
+  match (typeClashContext, trace) with
+  | Some (MathOperator {forFloat; operator; isConstant}), _ -> (
     let operatorForOtherType =
       match operator with
       | "+" -> "+."
@@ -77,16 +77,31 @@ let printExtraTypeClashHelp ppf trace typeClashContext =
       | _ -> "compute"
     in
     (* TODO check int vs float explicitly before showing this *)
-    fprintf ppf
-      "\n\n\
-      \  Floats and ints have their own mathematical operators. This means you \
-       cannot %s a float and an int without converting between the two.\n\n\
-      \  Possible solutions:\n\
-      \  - Ensure all values in this calculation has the type @{<info>%s@}. \
-       You can convert between floats and ints via @{<info>Belt.Float.toInt@} \
-       and @{<info>Belt.Int.fromFloat@}."
-      operatorText
-      (if forFloat then "float" else "int");
+    (match (operator, trace) with
+    | ( "+",
+        [
+          ({Types.desc = Tconstr (p1, _, _)}, _);
+          ({desc = Tconstr (p2, _, _)}, _);
+        ] )
+      when Path.same Predef.path_string p1 || Path.same Predef.path_string p2 ->
+      fprintf ppf
+        "\n\n\
+        \  Are you looking to concatenate strings? Use the operator \
+         @{<info>++@}, which concatenates strings.\n\n\
+        \  Possible solutions:\n\
+        \  - Change the @{<info>+@} operator to @{<info>++@} to concatenate \
+         strings instead."
+    | _ ->
+      fprintf ppf
+        "\n\n\
+        \  Floats and ints have their own mathematical operators. This means \
+         you cannot %s a float and an int without converting between the two.\n\n\
+        \  Possible solutions:\n\
+        \  - Ensure all values in this calculation has the type @{<info>%s@}. \
+         You can convert between floats and ints via \
+         @{<info>Belt.Float.toInt@} and @{<info>Belt.Int.fromFloat@}."
+        operatorText
+        (if forFloat then "float" else "int"));
     match (isConstant, trace) with
     | Some constant, _ ->
       if forFloat then
@@ -115,30 +130,30 @@ let printExtraTypeClashHelp ppf trace typeClashContext =
           (if forFloat then "int" else "float")
       | _ -> ())
     | _ -> ())
-  | Some Switch ->
+  | Some Switch, _ ->
     fprintf ppf
       "\n\n\
       \  All branches in a @{<info>switch@} must return the same type. To fix \
        this, change your branch to return the expected type."
-  | Some IfCondition ->
+  | Some IfCondition, _ ->
     fprintf ppf
       "\n\n\
       \  To fix this, change the highlighted code so it evaluates to a \
        @{<info>bool@}."
-  | Some IfReturn ->
+  | Some IfReturn, _ ->
     fprintf ppf
       "\n\n\
       \  @{<info>if@} expressions must return the same type in all branches \
        (@{<info>if@}, @{<info>else if@}, @{<info>else@})."
-  | Some MaybeUnwrapOption ->
+  | Some MaybeUnwrapOption, _ ->
     fprintf ppf
       "\n\n\
       \  Possible solutions:\n\
       \  - Unwrap the option to its underlying value using \
        `yourValue->Belt.Option.getWithDefault(someDefaultValue)`"
-  | Some ComparisonOperator ->
+  | Some ComparisonOperator, _ ->
     fprintf ppf "\n\n  You can only compare things of the same type."
-  | Some ArrayValue ->
+  | Some ArrayValue, _ ->
     fprintf ppf
       "\n\n\
       \  Arrays can only contain items of the same type.\n\n\
