@@ -70,3 +70,23 @@ let f5 = async () => {
   module O = await Belt.Option
   (A.forEach, O.forEach)
 }
+
+let f6 = async () => {
+  let a = 0
+  and b = {
+    module MS = await Belt.Map.String
+    MS.forEach
+  }
+  module A = await Belt.Array
+  (a, b, A.forEach)
+}
+
+let f7 = async () => {
+  if true {
+    module MI = await Belt.Map.Int
+    1
+  } else {
+    module MI = await Belt.Map.Dict
+    0
+  }
+}
