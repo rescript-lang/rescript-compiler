@@ -601,7 +601,10 @@ let rec structure_mapper ~await_context (self : mapper) (stru : Ast_structure.t)
                        {txt = safe_module_type_name; loc}
                        ~typ:(Mty.typeof_ ~loc me)))
                 :: aux expr)
-            | Pexp_fun (_, _, _, expr) -> aux expr
+            | Pexp_let (_, vbs, expr) -> aux expr @ spelunk_vbs acc vbs
+            | Pexp_ifthenelse (_, then_expr, Some else_expr) ->
+              aux then_expr @ aux else_expr
+            | Pexp_fun (_, _, _, expr) | Pexp_newtype (_, expr) -> aux expr
             | _ -> acc
           in
           aux pvb_expr @ spelunk_vbs acc tl
