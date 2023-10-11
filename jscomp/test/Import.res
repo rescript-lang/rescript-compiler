@@ -59,3 +59,34 @@ let f3 = async () => {
   module M4 = await Belt.List
   (M3.forEach, M4.forEach)
 }
+
+let f4 = async () => {
+  module A = await Belt.Array
+  A.forEach
+}
+
+let f5 = async () => {
+  module A = await Belt.Array
+  module O = await Belt.Option
+  (A.forEach, O.forEach)
+}
+
+let f6 = async () => {
+  let a = 0
+  and b = {
+    module MS = await Belt.Map.String
+    MS.forEach
+  }
+  module A = await Belt.Array
+  (a, b, A.forEach)
+}
+
+let f7 = async () => {
+  if true {
+    module MI = await Belt.Map.Int
+    1
+  } else {
+    module MI = await Belt.Map.Dict
+    0
+  }
+}

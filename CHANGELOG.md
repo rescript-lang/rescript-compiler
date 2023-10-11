@@ -12,6 +12,10 @@
 
 # 11.0.0-rc.5 (Unreleased)
 
+#### :bug: Bug Fix
+
+- Fix issue with Dynamic import of module in nested expressions https://github.com/rescript-lang/rescript-compiler/pull/6431
+
 # 11.0.0-rc.4
 
 #### :rocket: New Feature
