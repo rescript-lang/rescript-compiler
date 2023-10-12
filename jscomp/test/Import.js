@@ -101,6 +101,34 @@ async function f3(param) {
         ];
 }
 
+async function f4(param) {
+  return (await import("../../lib/js/belt_Array.js")).forEach;
+}
+
+async function f5(param) {
+  var A = await import("../../lib/js/belt_Array.js");
+  var O = await import("../../lib/js/belt_Option.js");
+  return [
+          A.forEach,
+          O.forEach
+        ];
+}
+
+async function f6(param) {
+  var MS = await import("../../lib/js/belt_MapString.js");
+  var A = await import("../../lib/js/belt_Array.js");
+  return [
+          0,
+          MS.forEach,
+          A.forEach
+        ];
+}
+
+async function f7(param) {
+  await import("../../lib/js/belt_MapInt.js");
+  return 1;
+}
+
 var each = M1.forEach;
 
 var M2;
@@ -121,4 +149,8 @@ exports.f = f;
 exports.f1 = f1;
 exports.f2 = f2;
 exports.f3 = f3;
+exports.f4 = f4;
+exports.f5 = f5;
+exports.f6 = f6;
+exports.f7 = f7;
 /*  Not a pure module */

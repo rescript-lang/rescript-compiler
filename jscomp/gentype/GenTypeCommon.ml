@@ -99,6 +99,7 @@ and variant = {
   noPayloads: case list;
   payloads: payload list;
   polymorphic: bool; (* If true, this is a polymorphic variant *)
+  tag: string option; (* The name of the tag field at runtime *)
   unboxed: bool;
 }
 
@@ -168,8 +169,8 @@ let rec depToResolvedName (dep : dep) =
   | Internal resolvedName -> resolvedName
   | Dot (p, s) -> ResolvedName.dot s (p |> depToResolvedName)
 
-let createVariant ~inherits ~noPayloads ~payloads ~polymorphic ~unboxed =
-  Variant {inherits; noPayloads; payloads; polymorphic; unboxed}
+let createVariant ~inherits ~noPayloads ~payloads ~polymorphic ~tag ~unboxed =
+  Variant {inherits; noPayloads; payloads; polymorphic; tag; unboxed}
 
 let ident ?(builtin = true) ?(typeArgs = []) name =
   Ident {builtin; name; typeArgs}
