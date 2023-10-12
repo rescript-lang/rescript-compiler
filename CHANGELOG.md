@@ -15,6 +15,7 @@
 #### :bug: Bug Fix
 
 - Fix issue with Dynamic import of module in nested expressions https://github.com/rescript-lang/rescript-compiler/pull/6431
+- Fix issue where GenType was not supporting `@tag` on ordinary variatns https://github.com/rescript-lang/rescript-compiler/pull/6437
 
 # 11.0.0-rc.4
 

@@ -22,6 +22,9 @@ let tagIsGenTypeAs s = s = "genType.as" || s = "gentype.as"
 let tagIsAs s = s = "bs.as" || s = "as"
 let tagIsInt s = s = "bs.int" || s = "int"
 let tagIsString s = s = "bs.string" || s = "string"
+
+let tagIsTag s = s = "tag"
+
 let tagIsUnboxed s = s = "unboxed" || s = "ocaml.unboxed"
 let tagIsGenTypeImport s = s = "genType.import" || s = "gentype.import"
 let tagIsGenTypeOpaque s = s = "genType.opaque" || s = "gentype.opaque"
@@ -145,6 +148,11 @@ let getAttributeImportRenaming attributes =
       _ ) ->
     (Some importString, Some renameString)
   | _ -> (None, genTypeAsRenaming)
+
+let getTag attributes =
+  match attributes |> getAttributePayload tagIsTag with
+  | Some (_, StringPayload s) -> Some s
+  | _ -> None
 
 let getDocPayload attributes =
   let docPayload = attributes |> getAttributePayload tagIsDoc in
