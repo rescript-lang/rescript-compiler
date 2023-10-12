@@ -156,7 +156,7 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
       |> String.concat ", ")
     ^ "]"
   | TypeVar s -> s
-  | Variant {inherits; noPayloads; payloads; polymorphic; unboxed} ->
+  | Variant {inherits; noPayloads; payloads; polymorphic; tag; unboxed} ->
     let inheritsRendered =
       inherits
       |> List.map (fun type_ ->
@@ -183,7 +183,8 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
              in
              let tagField =
                case |> labelJSToString
-               |> field ~name:(Runtime.jsVariantTag ~polymorphic:false)
+               |> field
+                    ~name:(Runtime.jsVariantTag ~polymorphic:false ~tag)
              in
              match (unboxed, type_) with
              | true, type_ ->
@@ -198,7 +199,7 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
                (* poly variant *)
                [
                  case |> labelJSToString
-                 |> field ~name:(Runtime.jsVariantTag ~polymorphic);
+                 |> field ~name:(Runtime.jsVariantTag ~polymorphic ~tag);
                  type_ |> render
                  |> field ~name:(Runtime.jsVariantValue ~polymorphic);
                ]
