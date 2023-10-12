@@ -17,6 +17,10 @@
 - Fix issue with Dynamic import of module in nested expressions https://github.com/rescript-lang/rescript-compiler/pull/6431
 - Fix issue where GenType was not supporting `@tag` on ordinary variatns https://github.com/rescript-lang/rescript-compiler/pull/6437
 
+#### :nail_care: Polish
+
+- Add [`Deno`](https://deno.land/api?s=Deno) to reserved names, so that modules named `Deno` don't clash with the globally exposed `Deno` object. https://github.com/rescript-lang/rescript-compiler/pull/6428
+
 # 11.0.0-rc.4
 
 #### :rocket: New Feature

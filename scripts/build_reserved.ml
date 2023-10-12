@@ -24,7 +24,7 @@
 
  let reserved_words =
   [|
-    (* keywork *)
+    (* keywords *)
     "break";
     "case"; "catch"; "continue";
     "debugger";"default";"delete";"do";
@@ -130,7 +130,10 @@
     "__esModule";
 
     (* Bun global obj *)
-    "Bun"
+    "Bun";
+
+    (* Deno global obj *)
+    "Deno";
   |] 
 
 
