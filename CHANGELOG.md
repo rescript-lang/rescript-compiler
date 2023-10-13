@@ -28,6 +28,8 @@
 - Fix printing of exotic JSX names https://github.com/rescript-lang/rescript-compiler/pull/6451
 - Fix locations when code with `await` fails to compile (all locations would point to the internal function `unsafe_await`) https://github.com/rescript-lang/rescript-compiler/pull/6452
 - Fix renaming fields (with @as) in inline records doesn't work when destructuring https://github.com/rescript-lang/rescript-compiler/pull/6456
+- Fix `rc.4` regressions:
+  - Don't show compilation time when calling `rescript build -help` command. https://github.com/rescript-lang/rescript-compiler/pull/6439
 
 #### :house: Internal
 

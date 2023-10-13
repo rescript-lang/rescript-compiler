@@ -512,6 +512,10 @@ Please pick a different one using the \`-ws [host:]port\` flag from bsb.`);
     buildFinishedCallback(0);
   });
 } else {
+  // We want to show the compile time for build
+  // But bsb might show a help message in some cases
+  // We don't want to show the compile time in the case
+  // But we can only be sure about that when building without any additional args
   const isDefinitelyBuild =
     maybeSubcommand === undefined ||
     (maybeSubcommand === "build" && process_argv.length === 3);
