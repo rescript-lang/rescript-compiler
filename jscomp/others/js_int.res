@@ -22,13 +22,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-/*** Provide utilities for handling `int`. */
+/***
+Provide utilities for handling `int`.
+*/
 
 /*
-  If we use number, we need coerce to int32 by adding `|0`,
-  otherwise `+0` can be wrong.
-  Most JS API is float oriented, it may overflow int32 or
-  comes with `NAN`
+If we use number, we need coerce to int32 by adding `|0`,
+otherwise `+0` can be wrong.
+Most JS API is float oriented, it may overflow int32 or
+comes with `NAN`
 */
 
 /* + conversion */

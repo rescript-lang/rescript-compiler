@@ -52,16 +52,16 @@ type rec t<_> =
   | BigInt: t<bigint_val>
 
 /**
-   `test(value, t)` returns `true` if `value` is `typeof t`, otherwise `false`.
-   This is useful for doing runtime reflection on any given value.
+`test(value, t)` returns `true` if `value` is `typeof t`, otherwise `false`.
+This is useful for doing runtime reflection on any given value.
 
-   ## Examples
+## Examples
 
 ```rescript
-   test("test", String) == true
-   test(() => true, Function) == true
-   test("test", Boolean) == false
-   ```
+test("test", String) == true
+test(() => true, Function) == true
+test("test", Boolean) == false
+```
 */
 let test: ('a, t<'b>) => bool
 

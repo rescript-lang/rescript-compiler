@@ -22,8 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-/*** Contains functions available in the global scope
-    (`window` in a browser context) */
+/***
+Contains functions available in the global scope (`window` in a browser context)
+*/
 
 /** Identify an interval started by `Js.Global.setInterval`. */
 type intervalId
@@ -165,32 +166,32 @@ external setTimeoutFloat: (unit => unit, float) => timeoutId = "setTimeout"
 
 @val
 /**
-  URL-encodes a string.
+URL-encodes a string.
 
-  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI)
+**see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI)
 */
 external encodeURI: string => string = "encodeURI"
 
 @val
 /**
-  Decodes a URL-enmcoded string produced by `encodeURI`
+Decodes a URL-enmcoded string produced by `encodeURI`
 
-  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI)
+**see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI)
 */
 external decodeURI: string => string = "decodeURI"
 
 @val
 /**
-  URL-encodes a string, including characters with special meaning in a URI.
+URL-encodes a string, including characters with special meaning in a URI.
 
-  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent)
+**see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent)
 */
 external encodeURIComponent: string => string = "encodeURIComponent"
 
 @val
 /**
-  Decodes a URL-enmcoded string produced by `encodeURIComponent`
+Decodes a URL-enmcoded string produced by `encodeURIComponent`
 
-  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent)
+**see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent)
 */
 external decodeURIComponent: string => string = "decodeURIComponent"

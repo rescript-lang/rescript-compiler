@@ -22,9 +22,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-/*** Contains functionality for dealing with values that can be both `null` and `undefined` */
+/***
+Contains functionality for dealing with values that can be both `null` and `undefined`
+*/
 
-@unboxed /** Local alias for `Js.null_undefined('a)`. */
+/** Local alias for `Js.null_undefined('a)`. */
+@unboxed
 type t<+'a> = Js.nullable<'a> =
   | Value('a)
   | @as(null) Null

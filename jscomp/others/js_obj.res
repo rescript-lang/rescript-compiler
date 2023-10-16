@@ -22,7 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-/*** Provides functions for inspecting and manipulating native JavaScript objects */
+/***
+Provides functions for inspecting and manipulating native JavaScript objects
+*/
 
 @obj /** `empty()` returns the empty object `{}` */
 external empty: unit => {..} = ""
@@ -96,5 +98,6 @@ external assign: ({..}, {..}) => {..} = "Object.assign"
    - Object.is
 */
 
-@val /** `keys(obj)` returns an `array` of the keys of `obj`'s own enumerable properties. */
+/** `keys(obj)` returns an `array` of the keys of `obj`'s own enumerable properties. */
+@val
 external keys: {..} => array<string> = "Object.keys"

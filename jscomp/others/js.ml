@@ -31,46 +31,46 @@
 *)
 
 (**
-  The Js module mostly contains ReScript bindings to _standard JavaScript APIs_
-  like [console.log](https://developer.mozilla.org/en-US/docs/Web/API/Console/log),
-  or the JavaScript
-  [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String),
-  [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date), and
-  [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
-  classes.
+The Js module mostly contains ReScript bindings to _standard JavaScript APIs_
+like [console.log](https://developer.mozilla.org/en-US/docs/Web/API/Console/log),
+or the JavaScript
+[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String),
+[Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date), and
+[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
+classes.
 
-  It is meant as a zero-abstraction interop layer and directly exposes JavaScript functions as they are. If you can find your API in this module, prefer this over an equivalent Belt helper. For example, prefer [Js.Array2](js/array-2) over [Belt.Array](belt/array)
+It is meant as a zero-abstraction interop layer and directly exposes JavaScript functions as they are. If you can find your API in this module, prefer this over an equivalent Belt helper. For example, prefer [Js.Array2](js/array-2) over [Belt.Array](belt/array)
 
-  ## Argument Order
+## Argument Order
 
-  For historical reasons, some APIs in the Js namespace (e.g. [Js.String](js/string)) are
-  using the data-last argument order whereas others (e.g. [Js.Date](js/date)) are using data-first.
+For historical reasons, some APIs in the Js namespace (e.g. [Js.String](js/string)) are
+using the data-last argument order whereas others (e.g. [Js.Date](js/date)) are using data-first.
 
-  For more information about these argument orders and the trade-offs between them, see
-  [this blog post](https://www.javierchavarri.com/data-first-and-data-last-a-comparison/).
+For more information about these argument orders and the trade-offs between them, see
+[this blog post](https://www.javierchavarri.com/data-first-and-data-last-a-comparison/).
 
-  _Eventually, all modules in the Js namespace are going to be migrated to data-first though._
+_Eventually, all modules in the Js namespace are going to be migrated to data-first though._
 
-  In the meantime, there are several options for dealing with the data-last APIs:
+In the meantime, there are several options for dealing with the data-last APIs:
 
-  ## Examples
+## Examples
 
 ```rescript
-  /* Js.String (data-last API used with pipe last operator) */
-  Js.log("2019-11-10" |> Js.String.split("-"))
-  Js.log("ReScript" |> Js.String.startsWith("Re"))
+/* Js.String (data-last API used with pipe last operator) */
+Js.log("2019-11-10" |> Js.String.split("-"))
+Js.log("ReScript" |> Js.String.startsWith("Re"))
 
-  /* Js.String (data-last API used with pipe first operator) */
-  Js.log("2019-11-10"->Js.String.split("-", _))
-  Js.log("ReScript"->Js.String.startsWith("Re", _))
+/* Js.String (data-last API used with pipe first operator) */
+Js.log("2019-11-10"->Js.String.split("-", _))
+Js.log("ReScript"->Js.String.startsWith("Re", _))
 
-  /* Js.String (data-last API used without any piping) */
-  Js.log(Js.String.split("-", "2019-11-10"))
-  Js.log(Js.String.startsWith("Re", "ReScript"))
-  ```
-  ## Js.Xxx2 Modules
+/* Js.String (data-last API used without any piping) */
+Js.log(Js.String.split("-", "2019-11-10"))
+Js.log(Js.String.startsWith("Re", "ReScript"))
+```
+## Js.Xxx2 Modules
 
-  Prefer `Js.Array2` over `Js.Array`, `Js.String2` over `Js.String`, etc. The latters are old modules.
+Prefer `Js.Array2` over `Js.Array`, `Js.String2` over `Js.String`, etc. The latters are old modules.
 *)
 
 type 'a t = < .. > as 'a

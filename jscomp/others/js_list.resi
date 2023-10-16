@@ -53,8 +53,7 @@ let iteri: ((. int, 'a) => unit, t<'a>) => unit
 /** Application order is left to right, tail recurisve */
 let foldLeft: ((. 'a, 'b) => 'a, 'a, list<'b>) => 'a
 
-/** Application order is right to left
-    tail-recursive. */
+/** Application order is right to left tail-recursive. */
 let foldRight: ((. 'a, 'b) => 'b, list<'a>, 'b) => 'b
 
 let flatten: t<t<'a>> => t<'a>

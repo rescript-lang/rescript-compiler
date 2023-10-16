@@ -25,8 +25,7 @@
 let raiseWhenNotFound: 'a => 'a
 
 /**
-  `fromInt len array int`
-  return the mapped `enum`
+`fromInt len array int` return the mapped `enum`
 */
 let fromInt: (int, array<int>, int) => option<int>
 

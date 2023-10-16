@@ -23,11 +23,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 /***
-  Provide bindings to JS regular expressions (RegExp).
+Provide bindings to JS regular expressions (RegExp).
 
-  **Note:** This is not an immutable API. A RegExp object with the `global` ("g")
-  flag set will modify the [`lastIndex`]() property when the RegExp object is used,
-  and subsequent uses will continue the search from the previous [`lastIndex`]().
+**Note:** This is not an immutable API. A RegExp object with the `global` ("g")
+flag set will modify the [`lastIndex`]() property when the RegExp object is used,
+and subsequent uses will continue the search from the previous [`lastIndex`]().
 */
 
 /** The RegExp object. */
@@ -37,8 +37,8 @@ type t
 type result
 
 /**
-  An `array` of the match and captures, the first is the full match and the
-  remaining are the substring captures.
+An `array` of the match and captures, the first is the full match and the
+remaining are the substring captures.
 */
 external captures: result => array<Js.nullable<string>> = "%identity"
 
@@ -54,40 +54,40 @@ external index: result => int = "index"
 external input: result => string = "input"
 
 /**
-  Constructs a RegExp object (Js.Re.t) from a `string`.
-  Regex literals `%re("/.../")` should generally be preferred, but `fromString`
-  is useful when you need to dynamically construct a regex using strings,
-  exactly like when you do so in JavaScript.
+Constructs a RegExp object (Js.Re.t) from a `string`.
+Regex literals `%re("/.../")` should generally be preferred, but `fromString`
+is useful when you need to dynamically construct a regex using strings,
+exactly like when you do so in JavaScript.
 
-  ## Examples
+## Examples
 
 ```rescript
-  let firstReScriptFileExtension = (filename, content) => {
-    let result = Js.Re.fromString(filename ++ "\.(res|resi)")->Js.Re.exec_(content)
-    switch result {
-    | Some(r) => Js.Nullable.toOption(Js.Re.captures(r)[1])
-    | None => None
-    }
+let firstReScriptFileExtension = (filename, content) => {
+  let result = Js.Re.fromString(filename ++ "\.(res|resi)")->Js.Re.exec_(content)
+  switch result {
+  | Some(r) => Js.Nullable.toOption(Js.Re.captures(r)[1])
+  | None => None
   }
+}
 
-  // outputs "res"
-  firstReScriptFileExtension("School", "School.res School.resi Main.js School.bs.js")
-  ```
+// outputs "res"
+firstReScriptFileExtension("School", "School.res School.resi Main.js School.bs.js")
+```
 */
 @new
 external fromString: string => t = "RegExp"
 
 /**
-  Constructs a RegExp object (`Js.Re.t`) from a string with the given flags.
-  See `Js.Re.fromString`.
+Constructs a RegExp object (`Js.Re.t`) from a string with the given flags.
+See `Js.Re.fromString`.
 
-  Valid flags:
+Valid flags:
 
-  - **g** global
-  - **i** ignore case
-  - **m** multiline
-  - **u** unicode (es2015)
-  - **y** sticky (es2015)
+- **g** global
+- **i** ignore case
+- **m** multiline
+- **u** unicode (es2015)
+- **y** sticky (es2015)
 */
 @new
 external fromStringWithFlags: (string, ~flags: string) => t = "RegExp"
@@ -105,31 +105,31 @@ external global: t => bool = "global"
 external ignoreCase: t => bool = "ignoreCase"
 
 /**
-  Returns the index where the next match will start its search. This property
-  will be modified when the RegExp object is used, if the global ("g") flag is
-  set.
+Returns the index where the next match will start its search. This property
+will be modified when the RegExp object is used, if the global ("g") flag is
+set.
 
-  ## Examples
+## Examples
 
 ```rescript
-  let re = %re("/ab*TODO/g")
-  let str = "abbcdefabh"
+let re = %re("/ab*TODO/g")
+let str = "abbcdefabh"
 
-  let break = ref(false)
-  while !break.contents {
-    switch Js.Re.exec_(re, str) {
-    | Some(result) => Js.Nullable.iter(Js.Re.captures(result)[0], (. match_) => {
-        let next = Belt.Int.toString(Js.Re.lastIndex(re))
-        Js.log("Found " ++ (match_ ++ (". Next match starts at " ++ next)))
-      })
-    | None => break := true
-    }
+let break = ref(false)
+while !break.contents {
+  switch Js.Re.exec_(re, str) {
+  | Some(result) => Js.Nullable.iter(Js.Re.captures(result)[0], (. match_) => {
+      let next = Belt.Int.toString(Js.Re.lastIndex(re))
+      Js.log("Found " ++ (match_ ++ (". Next match starts at " ++ next)))
+    })
+  | None => break := true
   }
-  ```
+}
+```
 
-  See
-  [`RegExp: lastIndex`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex)
-  on MDN.
+See
+[`RegExp: lastIndex`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex)
+on MDN.
 */
 @get
 external lastIndex: t => int = "lastIndex"
@@ -155,49 +155,47 @@ external sticky: t => bool = "sticky"
 external unicode: t => bool = "unicode"
 
 /**
-  Executes a search on a given string using the given RegExp object.
-  Returns `Some(Js.Re.result)` if a match is found, `None` otherwise.
+Executes a search on a given string using the given RegExp object.
+Returns `Some(Js.Re.result)` if a match is found, `None` otherwise.
 
-  ## Examples
+## Examples
 
 ```rescript
-  /* Match "quick brown" followed by "jumps", ignoring characters in between
-   * Remember "brown" and "jumps"
-   * Ignore case
-   */
+/* Match "quick brown" followed by "jumps", ignoring characters in between
+ * Remember "brown" and "jumps"
+  * Ignore case
+  */
 
-  let re = %re("/quick\s(brown).+?(jumps)/ig")
-  let result = Js.Re.exec_(re, "The Quick Brown Fox Jumps Over The Lazy Dog")
-  ```
+let re = %re("/quick\s(brown).+?(jumps)/ig")
+let result = Js.Re.exec_(re, "The Quick Brown Fox Jumps Over The Lazy Dog")
+```
 
-  See
-  [`RegExp.prototype.exec()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec)
-  on MDN.
+See [`RegExp.prototype.exec()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec)
+on MDN.
 */
 @send
 @return(null_to_opt)
 external exec_: (t, string) => option<result> = "exec"
 
 /**
-  Tests whether the given RegExp object will match a given `string`.
-  Returns true if a match is found, false otherwise.
+Tests whether the given RegExp object will match a given `string`.
+Returns true if a match is found, false otherwise.
 
-  ## Examples
+## Examples
 
 ```rescript
-  /* A simple implementation of Js.String.startsWith */
+/* A simple implementation of Js.String.startsWith */
 
-  let str = "hello world!"
+let str = "hello world!"
 
-  let startsWith = (target, substring) =>
-    Js.Re.fromString("^" ++ substring)->Js.Re.test_(target)
+let startsWith = (target, substring) =>
+  Js.Re.fromString("^" ++ substring)->Js.Re.test_(target)
 
-  Js.log(str->startsWith("hello")) /* prints "true" */
-  ```
+Js.log(str->startsWith("hello")) /* prints "true" */
+```
 
-  See
-  [`RegExp.prototype.test()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test)
-  on MDN.
+See [`RegExp.prototype.test()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test)
+on MDN.
 */
 @send
 external test_: (t, string) => bool = "test"

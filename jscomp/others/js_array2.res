@@ -23,40 +23,42 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 /***
-  Provides bindings to JavaScript’s `Array` functions. These bindings are optimized for pipe-first (`->`), where the array to be processed is the first parameter in the function.
+Provides bindings to JavaScript’s `Array` functions. These bindings are optimized for pipe-first (`->`), where the array to be processed is the first parameter in the function.
 
-  Here is an example to find the sum of squares of all even numbers in an array.
-  Without pipe first, we must call the functions in reverse order:
+Here is an example to find the sum of squares of all even numbers in an array.
+Without pipe first, we must call the functions in reverse order:
 
-  ## Examples
-
-```rescript
-  let isEven = x => mod(x, 2) == 0
-  let square = x => x * x
-  let result = {
-    open Js.Array2
-    reduce(map(filter([5, 2, 3, 4, 1], isEven), square), "+", 0)
-  }
-  ```
-
-  With pipe first, we call the functions in the “natural” order:
-
-  ## Examples
+## Examples
 
 ```rescript
-  let isEven = x => mod(x, 2) == 0
-  let square = x => x * x
-  let result = {
-    open Js.Array2
-    [5, 2, 3, 4, 1]->filter(isEven)->map(square)->reduce("+", 0)
-  }
-  ```
+let isEven = x => mod(x, 2) == 0
+let square = x => x * x
+let result = {
+  open Js.Array2
+  reduce(map(filter([5, 2, 3, 4, 1], isEven), square), "+", 0)
+}
+```
+
+With pipe first, we call the functions in the “natural” order:
+
+```rescript
+let isEven = x => mod(x, 2) == 0
+let square = x => x * x
+let result = {
+  open Js.Array2
+  [5, 2, 3, 4, 1]->filter(isEven)->map(square)->reduce("+", 0)
+}
+```
 */
 
-/** The type used to describe a JavaScript array. */
+/**
+The type used to describe a JavaScript array.
+*/
 type t<'a> = array<'a>
 
-/** A type used to describe JavaScript objects that are like an array or are iterable. */
+/**
+A type used to describe JavaScript objects that are like an array or are iterable.
+*/
 type array_like<'a>
 
 /* commented out until bs has a plan for iterators
