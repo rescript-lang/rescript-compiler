@@ -53,7 +53,9 @@
 
   In the meantime, there are several options for dealing with the data-last APIs:
 
-  ```rescript
+  ## Examples
+
+```rescript
   /* Js.String (data-last API used with pipe last operator) */
   Js.log("2019-11-10" |> Js.String.split("-"))
   Js.log("ReScript" |> Js.String.startsWith("Re"))

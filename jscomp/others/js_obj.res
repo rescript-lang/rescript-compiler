@@ -35,6 +35,8 @@ Returns `target`.
 
 **See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign)
 
+## Examples
+
 ```rescript
 /* Copy an object */
 

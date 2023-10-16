@@ -29,11 +29,15 @@
 
    The `option` type is a part of the ReScript standard library which is defined like this:
 
-   ```rescript
+   ## Examples
+
+```rescript
    type option<'a> = None | Some('a)
    ```
 
-   ```rescript
+   ## Examples
+
+```rescript
    let someString: option<string> = Some("hello")
    ```
 */
@@ -44,7 +48,9 @@ let keepU: (option<'a>, (. 'a) => bool) => option<'a>
 /**
    If `optionValue` is `Some(value)` and `p(value) = true`, it returns `Some(value)`; otherwise returns `None`
 
-   ```rescript
+   ## Examples
+
+```rescript
    Belt.Option.keep(Some(10), x => x > 5) /* returns `Some(10)` */
    Belt.Option.keep(Some(4), x => x > 5) /* returns `None` */
    Belt.Option.keep(None, x => x > 5) /* returns `None` */
@@ -58,7 +64,9 @@ let forEachU: (option<'a>, (. 'a) => unit) => unit
 /**
    If `optionValue` is `Some(value`), it calls `f(value)`; otherwise returns `()`
 
-   ```rescript
+   ## Examples
+
+```rescript
    Belt.Option.forEach(Some("thing"), x => Js.log(x)) /* logs "thing" */
    Belt.Option.forEach(None, x => Js.log(x)) /* returns () */
    ```
@@ -68,7 +76,9 @@ let forEach: (option<'a>, 'a => unit) => unit
 /**
    Raises an Error in case `None` is provided. Use with care.
 
-   ```rescript
+   ## Examples
+
+```rescript
    Belt.Option.getExn(Some(3)) /* 3 */
 
    Belt.Option.getExn(None) /* Raises an Error */
@@ -93,7 +103,9 @@ let mapWithDefaultU: (option<'a>, 'b, (. 'a) => 'b) => 'b
 
    If `optionValue` is `None`, the default is returned.
 
-   ```rescript
+   ## Examples
+
+```rescript
    let someValue = Some(3)
    someValue->Belt.Option.mapWithDefault(0, x => x + 5) /* 8 */
 
@@ -109,7 +121,9 @@ let mapU: (option<'a>, (. 'a) => 'b) => option<'b>
 /**
    If `optionValue` is `Some(value)` this returns `f(value)`, otherwise it returns `None`.
 
-   ```rescript
+   ## Examples
+
+```rescript
    Belt.Option.map(Some(3), x => x * x) /* Some(9) */
 
    Belt.Option.map(None, x => x * x) /* None */
@@ -125,7 +139,9 @@ let flatMapU: (option<'a>, (. 'a) => option<'b>) => option<'b>
    `None`.<br/>
    The function `f` must have a return type of `option<'b>`.
 
-   ```rescript
+   ## Examples
+
+```rescript
    let addIfAboveOne = value =>
      if (value > 1) {
        Some(value + 1)
@@ -145,13 +161,17 @@ let flatMap: (option<'a>, 'a => option<'b>) => option<'b>
 /**
    If `optionalValue` is `Some(value)`, returns `value`, otherwise default.
 
-   ```rescript
+   ## Examples
+
+```rescript
    Belt.Option.getWithDefault(None, "Banana") /* Banana */
 
    Belt.Option.getWithDefault(Some("Apple"), "Banana") /* Apple */
    ```
 
-   ```rescript
+   ## Examples
+
+```rescript
    let greet = (firstName: option<string>) =>
      "Greetings " ++ firstName->Belt.Option.getWithDefault("Anonymous")
 
@@ -178,7 +198,9 @@ let orElse: (option<'a>, option<'a>) => option<'a>
 /**
    Returns `true` if the argument is `Some(value)`, `false` otherwise.
 
-   ```rescript
+   ## Examples
+
+```rescript
    Belt.Option.isSome(None) /* false */
 
    Belt.Option.isSome(Some(1)) /* true */
@@ -189,7 +211,9 @@ let isSome: option<'a> => bool
 /**
    Returns `true` if the argument is `None`, `false` otherwise.
 
-   ```rescript
+   ## Examples
+
+```rescript
    Belt.Option.isNone(None) /* true */
 
    Belt.Option.isNone(Some(1)) /* false */
@@ -211,7 +235,9 @@ let eqU: (option<'a>, option<'b>, (. 'a, 'b) => bool) => bool
    If arguments are `Some(value1)` and `Some(value2)`, returns the result of
    `predicate(value1, value2)`; the predicate function must return a bool.
 
-   ```rescript
+   ## Examples
+
+```rescript
    let clockEqual = (a, b) => mod(a, 12) == mod(b, 12)
 
    open Belt.Option
@@ -247,7 +273,9 @@ let cmpU: (option<'a>, option<'b>, (. 'a, 'b) => int) => int
    and returns `-1` if the first argument is less than the second, `0` if the
    arguments are equal, and `1` if the first argument is greater than the second.
 
-   ```rescript
+   ## Examples
+
+```rescript
    let clockCompare = (a, b) => compare(mod(a, 12), mod(b, 12))
 
    open Belt.Option

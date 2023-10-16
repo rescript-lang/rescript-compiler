@@ -31,7 +31,9 @@
 
   For example:
 
-  ```rescript
+  ## Examples
+
+```rescript
   type t = int
   module I0 = unpack(Belt.Id.hashableU(~hash=(. a: t) => "&"(a, 0xff_ff), ~eq=(. a, b) => a == b))
   let s0: t<_, string, _> = make(~hintSize=40, ~id=module(I0))
@@ -46,14 +48,18 @@
   Here the compiler would infer `s0` and `s1` having different type so that
   it would not mix.
 
-  ```rescript
+  ## Examples
+
+```rescript
   let s0: t<int, I0.identity>
   let s1: t<int, I1.identity>
   ```
 
   We can add elements to the collection:
 
-  ```rescript
+  ## Examples
+
+```rescript
   let () = {
     add(s1, 0, "3")
     add(s1, 1, "3")
@@ -80,7 +86,9 @@ type id<'a, 'id> = Belt_Id.hashable<'a, 'id>
 /**
   `make(~hintSize=10, ~id)` creates a new map by taking in the comparator and `hintSize`.
 
-  ```rescript
+  ## Examples
+
+```rescript
   module IntHash = Belt.Id.MakeHashable({
     type t = int
     let hash = a => a
@@ -99,7 +107,9 @@ let make: (~hintSize: int, ~id: id<'key, 'id>) => t<'key, 'value, 'id>
 /** 
   Clears a hash table.
 
-  ```rescript
+  ## Examples
+
+```rescript
   module IntHash = Belt.Id.MakeHashable({
     type t = int
     let hash = a => a
@@ -116,7 +126,9 @@ let clear: t<'key, 'value, 'id> => unit
 /**
   `isEmpty(m)` checks whether a hash map is empty.
 
-  ```rescript
+  ## Examples
+
+```rescript
   module IntHash = Belt.Id.MakeHashable({
     type t = int
     let hash = a => a
@@ -131,7 +143,9 @@ let isEmpty: t<_> => bool
 /**
   `set(hMap, k, v)` if `k` does not exist, add the binding `k,v`, otherwise, update the old value with the new `v`.
 
-  ```rescript
+  ## Examples
+
+```rescript
   module IntHash = Belt.Id.MakeHashable({
     type t = int
     let hash = a => a
@@ -150,7 +164,9 @@ let set: (t<'key, 'value, 'id>, 'key, 'value) => unit
 /**
   Creates copy of a hash map.
 
-  ```rescript
+  ## Examples
+
+```rescript
   module IntHash = Belt.Id.MakeHashable({
     type t = int
     let hash = a => a
@@ -169,6 +185,8 @@ let copy: t<'key, 'value, 'id> => t<'key, 'value, 'id>
 
 /**
 Returns value bound under specific key. If values not exist returns `None`.
+
+## Examples
 
 ```rescript
 module IntHash = Belt.Id.MakeHashable({
@@ -189,7 +207,9 @@ let get: (t<'key, 'value, 'id>, 'key) => option<'value>
 /** 
   Checks if `x` is bound in `tbl`.
 
-  ```rescript
+  ## Examples
+
+```rescript
   module IntHash = Belt.Id.MakeHashable({
     type t = int
     let hash = a => a
@@ -208,7 +228,9 @@ let has: (t<'key, 'value, 'id>, 'key) => bool
 /**
   If bound exists, removes it from the hash map.
 
-  ```rescript
+  ## Examples
+
+```rescript
   module IntHash = Belt.Id.MakeHashable({
     type t = int
     let hash = a => a
@@ -229,7 +251,9 @@ let forEachU: (t<'key, 'value, 'id>, (. 'key, 'value) => unit) => unit
 /**
   `forEach(tbl, f)` applies `f` to all bindings in table `tbl`. `f` receives the key as first argument, and the associated value as second argument. Each binding is presented exactly once to `f`.
 
-  ```rescript
+  ## Examples
+
+```rescript
   module IntHash = Belt.Id.MakeHashable({
     type t = int
     let hash = a => a
@@ -250,7 +274,9 @@ let reduceU: (t<'key, 'value, 'id>, 'c, (. 'c, 'key, 'value) => 'c) => 'c
 
   The order in which the bindings are passed to `f` is unspecified. However, if the table contains several bindings for the same key, they are passed to `f` in reverse order of introduction, that is, the most recent binding is passed first.
 
-  ```rescript
+  ## Examples
+
+```rescript
   module IntHash = Belt.Id.MakeHashable({
     type t = int
     let hash = a => a
@@ -272,7 +298,9 @@ let keepMapInPlaceU: (t<'key, 'value, 'id>, (. 'key, 'value) => option<'value>) 
 /**
   Filters out values for which function `f` returned `None`.
 
-  ```rescript
+  ## Examples
+
+```rescript
   module IntHash = Belt.Id.MakeHashable({
     type t = int
     let hash = a => a
@@ -291,7 +319,9 @@ let keepMapInPlace: (t<'key, 'value, 'id>, ('key, 'value) => option<'value>) => 
 /** 
   `size(tbl)` returns the number of bindings in `tbl`. It takes constant time.
 
-  ```rescript
+  ## Examples
+
+```rescript
   module IntHash = Belt.Id.MakeHashable({
     type t = int
     let hash = a => a
@@ -310,7 +340,9 @@ let size: t<_> => int
 /**
   Returns array of key value pairs.
 
-  ```rescript
+  ## Examples
+
+```rescript
   module IntHash = Belt.Id.MakeHashable({
     type t = int
     let hash = a => a
@@ -329,7 +361,9 @@ let toArray: t<'key, 'value, 'id> => array<('key, 'value)>
 /**
   Returns array of keys.
 
-  ```rescript
+  ## Examples
+
+```rescript
   module IntHash = Belt.Id.MakeHashable({
     type t = int
     let hash = a => a
@@ -348,7 +382,9 @@ let keysToArray: t<'key, _, _> => array<'key>
 /**
   Returns array of values.
 
-  ```rescript
+  ## Examples
+
+```rescript
   module IntHash = Belt.Id.MakeHashable({
     type t = int
     let hash = a => a
@@ -369,6 +405,8 @@ Creates new hash map from array of pairs.
 
 Returns array of values.
 
+## Examples
+
 ```rescript
 module IntHash = Belt.Id.MakeHashable({
   type t = int
@@ -383,6 +421,8 @@ Belt.HashMap.toArray(s0) == [(1, "value1"), (2, "value2")]
 let fromArray: (array<('key, 'value)>, ~id: id<'key, 'id>) => t<'key, 'value, 'id>
 
 /**
+## Examples
+
 ```rescript
 module IntHash = Belt.Id.MakeHashable({
   type t = int
@@ -397,7 +437,9 @@ Belt.HashMap.mergeMany(hMap, [(1, "1"), (2, "2")])
 let mergeMany: (t<'key, 'value, 'id>, array<('key, 'value)>) => unit
 
 /**
-  ```rescript
+  ## Examples
+
+```rescript
   module IntHash = Belt.Id.MakeHashable({
     type t = int
     let hash = a => a
@@ -412,7 +454,9 @@ let mergeMany: (t<'key, 'value, 'id>, array<('key, 'value)>) => unit
 let getBucketHistogram: t<_> => array<int>
 
 /**
-  ```rescript
+  ## Examples
+
+```rescript
   module IntHash = Belt.Id.MakeHashable({
     type t = int
     let hash = a => a

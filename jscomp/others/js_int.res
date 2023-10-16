@@ -41,6 +41,8 @@ Raises `RangeError` if digits is not in the range \[0, 20\] (inclusive).
 
 **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential)
 
+## Examples
+
 ```rescript
 /* prints "7.7e+1" */
 Js.log(Js.Int.toExponential(77))
@@ -59,6 +61,8 @@ The output will be rounded or padded with zeroes if necessary.
 Raises `RangeError` if `digits` is not in the range \[0, 20\] (inclusive).
 
 **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential)
+
+## Examples
 
 ```rescript
 /* prints "7.70e+1" */
@@ -79,6 +83,8 @@ Returns a `string` representing the given value in fixed-point (usually).
 Raises `RangeError` if `digits` is not in the range accepted by this function.
 
 **See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision)
+
+## Examples
 
 ```rescript
 /* prints "123456789" */
@@ -103,6 +109,8 @@ Raises `RangeError` if `digits` is not in the range accepted by this function.
 
 **See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision)
 
+## Examples
+
 ```rescript
 /* prints "1.2e+8" */
 Js.log(Js.Int.toPrecisionWithPrecision(123456789, ~digits=2))
@@ -120,6 +128,8 @@ in fixed-point (usually).
 
 **See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString)
 
+## Examples
+
 ```rescript
 /* prints "123456789" */
 Js.log(Js.Int.toString(123456789))
@@ -136,6 +146,8 @@ a `string` representing the given value in fixed-point (usually). Raises
 
 
 **See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString)
+
+## Examples
 
 ```rescript
 /* prints "110" */

@@ -40,6 +40,8 @@ Belt provides:
 
 To use modules from Belt, either refer to them by their fully qualified name (`Belt.List`, `Belt.Array` etc.) or open the `Belt` module by putting
 
+## Examples
+
 ```rescript
 open Belt
 ```
@@ -57,6 +59,8 @@ into your `bsconfig.json`.
 **Note**: this is the **only** `open` we encourage.
 
 Example usage:
+
+## Examples
 
 ```rescript
 let someNumbers = [1, 1, 4, 2, 3, 6, 3, 4, 2]
@@ -81,6 +85,8 @@ available:
 
 E.g.:
 
+## Examples
+
 ```rescript
 let forEach: (t<'a>, 'a => unit) => unit
 
@@ -90,6 +96,8 @@ let forEachU: (t<'a>, (. 'a) => unit) => unit
 The uncurried version will be faster in some cases, but for simplicity we recommend to stick with the curried version unless you need the extra performance.
 
 The two versions can be invoked as follows:
+
+## Examples
 
 ```rescript
 ["a", "b", "c"]->Belt.Array.forEach(x => Js.log(x))
@@ -113,6 +121,8 @@ For example, Belt has the following set modules:
 
 One common confusion comes from the way Belt handles array access. It differs from than the default standard library's.
 
+## Examples
+
 ```rescript
 let letters = ["a", "b", "c"]
 let a = letters[0] // a == "a"
@@ -121,6 +131,8 @@ let k = letters[10] // Raises an exception! The 10th index doesn't exist.
 ```
 
 Because Belt avoids exceptions and returns `options` instead, this code behaves differently:
+
+## Examples
 
 ```rescript
 open Belt
@@ -137,6 +149,8 @@ Although we've fixed the problem where `k` raises an exception, we now have a ty
 - `Belt.Array.get` returns values wrapped in options, so `letters[0] == Some("a")`.
 
 Fortunately, this is easy to fix:
+
+## Examples
 
 ```rescript
 open Belt
@@ -160,6 +174,8 @@ With that little bit of tweaking, our code now compiles successfully and is 100%
 When we create a collection library for a custom data type we need a way to provide a comparator function. Take Set for example, suppose its element type is a pair of ints, it needs a custom compare function that takes two tuples and returns their order. The Set could not just be typed as Set.t (int \* int) , its customized compare function needs to manifest itself in the signature, otherwise, if the user creates another customized compare function, the two collection could mix which would result in runtime error.
 
 We use a phantom type to solve the problem:
+
+## Examples
 
 ```rescript
 module Comparable1 =
@@ -192,6 +208,8 @@ let mySet2 = Belt.Set.make(~id=module(Comparable2))
 ```
 
 Here, the compiler would infer `mySet1` and `mySet2` having different type, so e.g. a `merge` operation that tries to merge these two sets will correctly fail.
+
+## Examples
 
 ```rescript
 let mySet1: t<(int, int), Comparable1.identity>

@@ -59,7 +59,9 @@ external input: result => string = "input"
   is useful when you need to dynamically construct a regex using strings,
   exactly like when you do so in JavaScript.
 
-  ```rescript
+  ## Examples
+
+```rescript
   let firstReScriptFileExtension = (filename, content) => {
     let result = Js.Re.fromString(filename ++ "\.(res|resi)")->Js.Re.exec_(content)
     switch result {
@@ -107,7 +109,9 @@ external ignoreCase: t => bool = "ignoreCase"
   will be modified when the RegExp object is used, if the global ("g") flag is
   set.
 
-  ```rescript
+  ## Examples
+
+```rescript
   let re = %re("/ab*TODO/g")
   let str = "abbcdefabh"
 
@@ -154,7 +158,9 @@ external unicode: t => bool = "unicode"
   Executes a search on a given string using the given RegExp object.
   Returns `Some(Js.Re.result)` if a match is found, `None` otherwise.
 
-  ```rescript
+  ## Examples
+
+```rescript
   /* Match "quick brown" followed by "jumps", ignoring characters in between
    * Remember "brown" and "jumps"
    * Ignore case
@@ -176,7 +182,9 @@ external exec_: (t, string) => option<result> = "exec"
   Tests whether the given RegExp object will match a given `string`.
   Returns true if a match is found, false otherwise.
 
-  ```rescript
+  ## Examples
+
+```rescript
   /* A simple implementation of Js.String.startsWith */
 
   let str = "hello world!"

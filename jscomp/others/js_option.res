@@ -32,7 +32,9 @@ type t<'a> = option<'a>
 /**
   Wraps the given value in `Some()`
 
-  ```rescript
+  ## Examples
+
+```rescript
   Js.Option.some(1066) == Some(1066)
   ```
 */
@@ -56,7 +58,9 @@ let isSome = x =>
   the third argument is `Some(v2)`, `isSomeValue()` returns the result of
   calling `eq(v1, v2)`.
 
-  ```rescript
+  ## Examples
+
+```rescript
   let clockEqual = (. a, b) => mod(a, 12) == mod(b, 12)
   Js.Option.isSomeValue(clockEqual, 3, Some(15)) == true
   Js.Option.isSomeValue(clockEqual, 3, Some(4)) == false
@@ -98,7 +102,9 @@ and third arguments are `option` values.
   * `None` and `Some(v2)`: returns `false`
   * `None` and `None`: returns `true`
 
-  ```rescript
+  ## Examples
+
+```rescript
   let clockEqual = (. a, b) => mod(a, 12) == mod(b, 12)
   Js.Option.equal(clockEqual, Some(3), Some(15)) == true
   Js.Option.equal(clockEqual, Some(3), Some(16)) == false
@@ -123,7 +129,9 @@ let equal = (eq, a, b) =>
   `option` value. If the second argument is `None`, the return value is `None`.
   If the second argument is `Some(v)`, the return value is `f(v)`.
 
-  ```rescript
+  ## Examples
+
+```rescript
   let reciprocal = (. x) => x == 0 ? None : Some(1.0 /. Belt.Int.toFloat(x))
   Js.Option.andThen(reciprocal, Some(5)) == Some(0.2)
   Js.Option.andThen(reciprocal, Some(0)) == None
@@ -142,7 +150,9 @@ let andThen = (f, x) =>
   value. If it is of the form `Some(v)`, `map()` returns `Some(f(v))`; if it is
   `None`, the return value is `None`, and function `f()` is not called.
 
-  ```rescript
+  ## Examples
+
+```rescript
   let square = (. x) => x * x
   Js.Option.map(square, Some(3)) == Some(9)
   Js.Option.map(square, None) == None
@@ -159,7 +169,9 @@ let map = (f, x) =>
   argument is of the form `Some(v)`, `getWithDefault()` returns `v`; if the
   second argument is `None`, the return value is the default value.
 
-  ```rescript
+  ## Examples
+
+```rescript
   Js.Option.getWithDefault(1066, Some(15)) == 15
   Js.Option.getWithDefault(1066, None) == 1066
   ```
@@ -180,7 +192,9 @@ let default = getWithDefault
   If the second argument is of the form `Some(v)` and `f(v)` is `true`,
   the return value is `Some(v)`. Otherwise, the return value is `None`.
 
-  ```rescript
+  ## Examples
+
+```rescript
   let isEven = (. x) => mod(x, 2) == 0
   Js.Option.filter(isEven, Some(2)) == Some(2)
   Js.Option.filter(isEven, Some(3)) == None
@@ -201,7 +215,9 @@ let filter = (f, x) =>
 /**
   The `firstSome()` function takes two `option` values; if the first is of the form `Some(v1)`, that is the return value. Otherwise, `firstSome()` returns the second value.
 
-  ```rescript
+  ## Examples
+
+```rescript
   Js.Option.firstSome(Some("one"), Some("two")) == Some("one")
   Js.Option.firstSome(Some("one"), None) == Some("one")
   Js.Option.firstSome(None, Some("two")) == Some("two")

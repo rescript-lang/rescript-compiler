@@ -50,7 +50,9 @@ external isCamlExceptionOrOpenVariant: 'a => bool = "?is_extension"
 
   **IMPORTANT**: This is an internal API and may be changed / removed any time in the future.
 
-  ```rescript
+  ## Examples
+
+```rescript
   switch (Js.Exn.unsafeAnyToExn("test")) {
   | Js.Exn.Error(v) =>
     switch(Js.Exn.message(v)) {

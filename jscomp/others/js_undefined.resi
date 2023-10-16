@@ -53,6 +53,8 @@ If `Js.undefined('a)` contains a value, that value is unwrapped, mapped to a
 `'b` using the given function `a' => 'b`, then wrapped back up and returned as
 `Js.undefined('b)`.
 
+## Examples
+
 ```rescript
 let maybeGreetWorld = (maybeGreeting: Js.undefined<string>) =>
   Js.Undefined.bind(maybeGreeting, (. greeting) => greeting ++ " world!")
@@ -64,6 +66,8 @@ let bind: (t<'a>, (. 'a) => 'b) => t<'b>
 Iterates over the contained value with the given function. If
 `Js.undefined('a)` contains a value, that value is unwrapped and applied to the
 given function.
+
+## Examples
 
 ```rescript
 let maybeSay = (maybeMessage: Js.undefined<string>) =>

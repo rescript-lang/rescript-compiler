@@ -31,7 +31,9 @@ module String = Belt_MutableMapString
     Same as `Belt.Map`, but mutable.
 */
 
-/* ```rescript
+/* ## Examples
+
+```rescript
     type t<'k, 'v, 'id>
     type id<'key, 'id> = Belt_Id.comparable<'key, 'id>
     ```

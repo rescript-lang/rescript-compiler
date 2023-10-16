@@ -139,6 +139,8 @@ Raises `SyntaxError` if the given string is not a valid JSON. Note: `SyntaxError
 
 **See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse)
 
+## Examples
+
 ```rescript
 /* parse a simple JSON string */
 
@@ -151,6 +153,8 @@ switch Js.Json.classify(json) {
 | _ => failwith("Expected a string")
 }
 ```
+
+## Examples
 
 ```rescript
 /* parse a complex JSON string */
@@ -190,6 +194,8 @@ Returns the string representation of a given JSON data structure.
 
 **See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify)
 
+## Examples
+
 ```rescript
 /* Creates and stringifies a simple JS object */
 
@@ -211,6 +217,8 @@ Returns the string representation of a given JSON data structure with spacing.
 
 **See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify)
 
+## Examples
+
 ```rescript
 /* Creates and stringifies a simple JS object with spacing */
 
@@ -228,6 +236,8 @@ external stringifyWithSpace: (t, @as(json`null`) _, int) => string = "stringify"
 @scope("JSON")
 /**
 `stringifyAny(value)` formats any value into a JSON string.
+
+## Examples
 
 ```rescript
 /* prints `["hello", "world"]` */

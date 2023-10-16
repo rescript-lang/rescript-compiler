@@ -20,6 +20,8 @@ and `Belt.Map.Dict`.
 */
 
 /**
+## Examples
+
 ```rescript
 type t<'key, 'value, 'identity>
 type id<'key, 'id> = Belt_Id.comparable<'key, 'id>
@@ -47,6 +49,8 @@ type id<'key, 'id> = Belt_Id.comparable<'key, 'id>
 /**
 `make(~id)` creates a new map by taking in the comparator.
 
+## Examples
+
 ```rescript
 module IntCmp = Belt.Id.MakeComparable({
   type t = int
@@ -64,6 +68,8 @@ let make: (~id: id<'k, 'id>) => t<'k, 'v, 'id>
 
 `isEmpty(m)` checks whether a map m is empty.
 
+## Examples
+
 ```rescript
 module IntCmp = Belt.Id.MakeComparable({
   type t = int
@@ -78,7 +84,9 @@ let isEmpty: t<_> => bool
 /**
 `has(m, k)` checks whether `m` has the key `k`.
 
-    ```rescript
+    ## Examples
+
+```rescript
     module IntCmp = Belt.Id.MakeComparable({
       type t = int
       let cmp = (a, b) => Pervasives.compare(a, b)
@@ -108,7 +116,9 @@ let findFirstByU: (t<'k, 'v, 'id>, (. 'k, 'v) => bool) => option<('k, 'v)>
 /** `findFirstBy(m, p)` uses function `f` to find the first key value pair to
     match predicate `p`.
 
-    ```rescript
+    ## Examples
+
+```rescript
     module IntCmp = Belt.Id.MakeComparable({
       type t = int
       let cmp = (a, b) => Pervasives.compare(a, b)
@@ -127,7 +137,9 @@ let forEachU: (t<'k, 'v, 'id>, (. 'k, 'v) => unit) => unit
     bindings are passed to `f` in increasing order with respect to the ordering
     over the type of the keys.
 
-    ```rescript
+    ## Examples
+
+```rescript
     module IntCmp = Belt.Id.MakeComparable({
       type t = int
       let cmp = (a, b) => Pervasives.compare(a, b)
@@ -149,7 +161,9 @@ let reduceU: (t<'k, 'v, 'id>, 'acc, (. 'acc, 'k, 'v) => 'acc) => 'acc
     ... kN` are the keys of all bindings in m (in increasing order), and `d1
     ... dN` are the associated data.
 
-    ```rescript
+    ## Examples
+
+```rescript
     module IntCmp = Belt.Id.MakeComparable({
       type t = int
       let cmp = (a, b) => Pervasives.compare(a, b)
@@ -177,7 +191,9 @@ let some: (t<'k, 'v, 'id>, ('k, 'v) => bool) => bool
 
 /** `size(s)`
 
-    ```rescript
+    ## Examples
+
+```rescript
     module IntCmp = Belt.Id.MakeComparable({
       type t = int
       let cmp = (a, b) => Pervasives.compare(a, b)
@@ -190,7 +206,9 @@ let size: t<'k, 'v, 'id> => int
 
 /** `toArray(s)`
 
-    ```rescript
+    ## Examples
+
+```rescript
     module IntCmp = Belt.Id.MakeComparable({
       type t = int
       let cmp = (a, b) => Pervasives.compare(a, b)
@@ -213,7 +231,9 @@ let toList: t<'k, 'v, 'id> => list<('k, 'v)>
 
 /** `fromArray(kvs, ~id);`
 
-    ```rescript
+    ## Examples
+
+```rescript
     module IntCmp = Belt.Id.MakeComparable({
       type t = int
       let cmp = (a, b) => Pervasives.compare(a, b)
@@ -230,7 +250,9 @@ let fromArray: (array<('k, 'v)>, ~id: id<'k, 'id>) => t<'k, 'v, 'id>
 
 /** `keysToArray(s);`
 
-    ```rescript
+    ## Examples
+
+```rescript
     module IntCmp = Belt.Id.MakeComparable({
       type t = int
       let cmp = (a, b) => Pervasives.compare(a, b)
@@ -247,7 +269,9 @@ let keysToArray: t<'k, 'v, 'id> => array<'k>
 
 /** `valuesToArray(s);`
 
-    ```rescript
+    ## Examples
+
+```rescript
     module IntCmp = Belt.Id.MakeComparable({
       type t = int
       let cmp = (a, b) => Pervasives.compare(a, b)
@@ -286,7 +310,9 @@ let maxUndefined: t<'k, 'v, _> => Js.undefined<('k, 'v)>
 
 /** `get(s, k)`
 
-    ```rescript
+    ## Examples
+
+```rescript
     module IntCmp = Belt.Id.MakeComparable({
       type t = int
       let cmp = (a, b) => Pervasives.compare(a, b)
@@ -326,7 +352,9 @@ let getExn: (t<'k, 'v, 'id>, 'k) => 'v
 
 /** `remove(m, x)` when `x` is not in `m`, `m` is returned reference unchanged.
 
-    ```rescript
+    ## Examples
+
+```rescript
     module IntCmp = Belt.Id.MakeComparable({
       type t = int
       let cmp = (a, b) => Pervasives.compare(a, b)
@@ -356,7 +384,9 @@ let removeMany: (t<'k, 'v, 'id>, array<'k>) => t<'k, 'v, 'id>
     new binding of `x` to `y`. If `x` was already bound in `m`, its previous
     binding disappears.
 
-    ```rescript
+    ## Examples
+
+```rescript
     module IntCmp = Belt.Id.MakeComparable({
       type t = int
       let cmp = (a, b) => Pervasives.compare(a, b)

@@ -36,6 +36,8 @@ type t<+'a> = promise<'a>
 type error = Js_promise2.error
 
 /*
+## Examples
+
 ```rescript
 type error
 ```
