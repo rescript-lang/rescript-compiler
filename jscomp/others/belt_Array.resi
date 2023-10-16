@@ -12,16 +12,23 @@
 /* ********************************************************************* */
 /* Adapted significantly by Authors of ReScript */
 
-/*** Utililites for `Array` functions.
+/***
+Utililites for `Array` functions.
 
 ### Note about index syntax
 
-Code like `arr[0]` does *not* compile to JavaScript `arr[0]`. Reason transforms the `[]` index syntax into a function: `Array.get(arr, 0)`. By default, this uses the default standard library's `Array.get` function, which may raise an exception if the index isn't found. If you `open Belt`, it will use the `Belt.Array.get` function which returns options instead of raising exceptions. [See this for more information](../belt.mdx#array-access-runtime-safety).
+Code like `arr[0]` does *not* compile to JavaScript `arr[0]`. Reason transforms
+the `[]` index syntax into a function: `Array.get(arr, 0)`. By default, this
+uses the default standard library's `Array.get` function, which may raise an
+exception if the index isn't found. If you `open Belt`, it will use the
+`Belt.Array.get` function which returns options instead of raising exceptions. 
+[See this for more information](../belt.mdx#array-access-runtime-safety).
 */
 
 type t<'a> = array<'a>
 
-/** return the size of the array
+/**
+return the size of the array
 
 ## Examples
 
@@ -36,7 +43,7 @@ external length: t<'a> => int = "%array_length"
 external size: t<'a> => int = "%array_length"
 
 /**
- If `i <= 0 <= length(arr)` returns `Some(value)` where `value` is the item at index `i`.
+If `i <= 0 <= length(arr)` returns `Some(value)` where `value` is the item at index `i`.
 If `i` is out of range returns `None`.
 
 ## Examples
@@ -74,8 +81,8 @@ in range or not
 external getUndefined: (t<'a>, int) => Js.undefined<'a> = "%array_unsafe_get"
 
 /**
-`set(arr, n, x)` modifies `arr` in place; it replaces the nth element of `arr` with `x`.
-Returning `false` means not updated due to out of range.
+`set(arr, n, x)` modifies `arr` in place; it replaces the nth element of `arr`
+with `x`. Returning `false` means not updated due to out of range.
 */
 let set: (t<'a>, int, 'a) => bool
 
@@ -122,7 +129,8 @@ let reverse: t<'a> => t<'a>
 
 @new
 /**
-`makeUninitialized(n)` creates an array of length `n` filled with the undefined value. You must specify the type of data that will eventually fill the array.
+`makeUninitialized(n)` creates an array of length `n` filled with the undefined
+value. You must specify the type of data that will eventually fill the array.
 
 ## Examples
 
@@ -216,7 +224,7 @@ let makeBy: (int, int => 'a) => t<'a>
 
 let makeByAndShuffleU: (int, (. int) => 'a) => t<'a>
 /**
-  Equivalent to `shuffle(makeBy(n, f))`
+Equivalent to `shuffle(makeBy(n, f))`
 */
 let makeByAndShuffle: (int, int => 'a) => t<'a>
 
@@ -312,9 +320,11 @@ Belt.Array.slice([10, 11, 12, 13, 14, 15, 16], ~offset=4, ~len=9) == [14, 15, 16
 let slice: (t<'a>, ~offset: int, ~len: int) => t<'a>
 
 /**
-`sliceToEnd(xs, offset)` creates a new array with the elements of `xs` starting at `offset`
+`sliceToEnd(xs, offset)` creates a new array with the elements of `xs` starting
+at `offset`
 
-`offset` can be negative; and is evaluated as `length(xs) - offset(sliceToEnd, xs) - 1` means get the last element as a singleton array
+`offset` can be negative; and is evaluated as `length(xs) - offset(sliceToEnd, xs) - 1`
+means get the last element as a singleton array
 
 `sliceToEnd(xs, 0)` will return a copy of the array
 
@@ -449,7 +459,8 @@ let getByU: (t<'a>, (. 'a) => bool) => option<'a>
 /**
 `getBy(xs, p)`
 
-Returns `Some(value)` for the first value in `xs` that satisifies the predicate function `p`; returns `None` if no element satisifies the function.
+Returns `Some(value)` for the first value in `xs` that satisifies the predicate
+function `p`; returns `None` if no element satisifies the function.
 
 ## Examples
 
@@ -462,8 +473,9 @@ let getBy: (t<'a>, 'a => bool) => option<'a>
 
 let getIndexByU: (t<'a>, (. 'a) => bool) => option<int>
 /**
-`getIndexBy(xs, p)` returns `Some(index)` for the first value in `xs` that satisifies the predicate function `p`;
-returns `None` if no element satisifies the function.
+`getIndexBy(xs, p)` returns `Some(index)` for the first value in `xs` that
+satisifies the predicate function `p`; returns `None` if no element satisifies
+the function.
 
 ## Examples
 
@@ -520,7 +532,8 @@ let forEachWithIndexU: (t<'a>, (. int, 'a) => unit) => unit
 `forEachWithIndex(xs, f)`
 
 The same as `Belt.Array.forEach`;
-except that `f` is supplied two arguments: the index starting from 0 and the element from `xs`.
+except that `f` is supplied two arguments: the index starting from 0 and the 
+element from `xs`.
 
 ## Examples
 
@@ -546,7 +559,8 @@ let mapWithIndexU: (t<'a>, (. int, 'a) => 'b) => array<'b>
 /**
 `mapWithIndex(xs, f)`
 
-`mapWithIndex(xs, f)` applies `f` to each element of `xs`. Function `f` takes two arguments: the index starting from 0 and the element from `xs`.
+`mapWithIndex(xs, f)` applies `f` to each element of `xs`. Function `f` takes two
+arguments: the index starting from 0 and the element from `xs`.
 
 ## Examples
 
@@ -558,7 +572,8 @@ let mapWithIndex: (t<'a>, (int, 'a) => 'b) => array<'b>
 
 let partitionU: (t<'a>, (. 'a) => bool) => (t<'a>, t<'a>)
 /**
-`partition(f, a)` split array into tuple of two arrays based on predicate `f`; first of tuple where predicate cause true, second where predicate cause false
+`partition(f, a)` split array into tuple of two arrays based on predicate `f`;
+first of tuple where predicate cause true, second where predicate cause false
 
 ## Examples
 
@@ -574,7 +589,9 @@ let reduceU: (array<'b>, 'a, (. 'a, 'b) => 'a) => 'a
 /**
 `reduce(xs, init, f)`
 
-Applies `f` to each element of `xs` from beginning to end. Function `f` has two parameters: the item from the list and an “accumulator”; which starts with a value of `init`. `reduce` returns the final value of the accumulator.
+Applies `f` to each element of `xs` from beginning to end. Function `f` has two
+parameters: the item from the list and an “accumulator”; which starts with a value
+of `init`. `reduce` returns the final value of the accumulator.
 
 ## Examples
 
@@ -590,7 +607,8 @@ let reduceReverseU: (array<'b>, 'a, (. 'a, 'b) => 'a) => 'a
 /**
 `reduceReverse(xs, init, f)`
 
-Works like `Belt_Array.reduce`; except that function `f` is applied to each item of `xs` from the last back to the first.
+Works like `Belt_Array.reduce`; except that function `f` is applied to each item
+of `xs` from the last back to the first.
 
 ## Examples
 
@@ -604,7 +622,8 @@ let reduceReverse2U: (t<'a>, array<'b>, 'c, (. 'c, 'a, 'b) => 'c) => 'c
 /**
 `reduceReverse2(xs, ys, init, f)`
 
-Reduces two arrays xs and ys;taking items starting at `min(length(xs), length(ys))` down to and including zero.
+Reduces two arrays xs and ys;taking items starting at `min(length(xs), length(ys))`
+down to and including zero.
 
 ## Examples
 
@@ -616,7 +635,10 @@ let reduceReverse2: (t<'a>, array<'b>, 'c, ('c, 'a, 'b) => 'c) => 'c
 
 let reduceWithIndexU: (t<'a>, 'b, (. 'b, 'a, int) => 'b) => 'b
 /**
-Applies `f` to each element of `xs` from beginning to end. Function `f` has three parameters: the item from the array and an “accumulator”, which starts with a value of `init` and the index of each element. `reduceWithIndex` returns the final value of the accumulator.
+Applies `f` to each element of `xs` from beginning to end. Function `f` has
+three parameters: the item from the array and an “accumulator”, which starts 
+with a value of `init` and the index of each element. `reduceWithIndex` returns
+the final value of the accumulator.
 
 ## Examples
 
@@ -630,11 +652,10 @@ let joinWithU: (t<'a>, string, (. 'a) => string) => string
 /**
 `joinWith(xs, sep, toString)`
 
-Concatenates all the elements of `xs` converted to string with `toString`, each separated by `sep`, the string
-given as the second argument, into a single string.
-If the array has only one element, then that element will be returned
-without using the separator.
-If the array is empty, the empty string will be returned.
+Concatenates all the elements of `xs` converted to string with `toString`, each
+separated by `sep`, the string given as the second argument, into a single string.
+If the array has only one element, then that element will be returned without 
+using the separator. If the array is empty, the empty string will be returned.
 
 ## Examples
 
@@ -650,7 +671,8 @@ let someU: (t<'a>, (. 'a) => bool) => bool
 /**
 `some(xs, p)`
 
-Returns true if at least one of the elements in `xs` satifies `p`; where `p` is a predicate: a function taking an element and returning a `bool`.
+Returns true if at least one of the elements in `xs` satifies `p`; where `p` is
+a predicate: a function taking an element and returning a `bool`.
 
 ## Examples
 
@@ -666,7 +688,8 @@ let everyU: (t<'a>, (. 'a) => bool) => bool
 /**
 `every(xs, p)`
 
-Returns `true` if all elements satisfy `p`; where `p` is a predicate: a function taking an element and returning a `bool`.
+Returns `true` if all elements satisfy `p`; where `p` is a predicate: a function
+taking an element and returning a `bool`.
 
 ## Examples
 
@@ -682,7 +705,8 @@ let every2U: (t<'a>, array<'b>, (. 'a, 'b) => bool) => bool
 /**
 `every2(xs, ys, p)`
 
-returns true if `p(xi, yi)` is true for all pairs of elements up to the shorter length (i.e. `min(length(xs), length(ys))`)
+returns true if `p(xi, yi)` is true for all pairs of elements up to the shorter
+length (i.e. `min(length(xs), length(ys))`)
 
 ## Examples
 
@@ -702,7 +726,8 @@ let some2U: (t<'a>, array<'b>, (. 'a, 'b) => bool) => bool
 /**
 `some2(xs, ys, p)`
 
-returns true if `p(xi, yi)` is true for any pair of elements up to the shorter length (i.e. `min(length(xs), length(ys))`)
+returns true if `p(xi, yi)` is true for any pair of elements up to the shorter
+length (i.e. `min(length(xs), length(ys))`)
 
 ## Examples
 
@@ -744,7 +769,8 @@ let eqU: (t<'a>, t<'a>, (. 'a, 'a) => bool) => bool
 `eq(xs, ys)`
 
 return false if length is not the same
-otherwise compare items one by one using `f(xi, yi)`; and return true if all results are truefalse otherwise
+otherwise compare items one by one using `f(xi, yi)`; and return true if all
+results are true false otherwise
 
 ## Examples
 

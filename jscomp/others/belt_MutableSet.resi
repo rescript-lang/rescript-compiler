@@ -208,7 +208,7 @@ s0->Belt.MutableSet.remove(3)
 s0->Belt.MutableSet.remove(3)
 
 s0->Belt.MutableSet.toArray /* [2,4,5] */
-  ```
+```
 */
 let remove: (t<'value, 'id>, 'value) => unit
 
