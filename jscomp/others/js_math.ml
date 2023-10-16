@@ -187,7 +187,6 @@ external cbrt : float -> float = "cbrt" [@@bs.val] [@@bs.scope "Math"]
 *)
 external unsafe_ceil_int : float -> int = "ceil" [@@bs.val] [@@bs.scope "Math"]
 
-(** Deprecated; please use [`unsafe_ceil_int`](#unsafe_ceil_int) instead. *)
 let unsafe_ceil = unsafe_ceil_int
 [@@deprecated "Please use `unsafe_ceil_int` instead"]
 
@@ -210,7 +209,6 @@ let ceil_int (f : float) : int =
   else if f < Js_int.toFloat Js_int.min then Js_int.min
   else unsafe_ceil_int f
 
-(** Deprecated; please use [`ceil_int`](#ceil_int) instead. *)
 let ceil = ceil_int
 [@@deprecated "Please use `ceil_int` instead"]
 
@@ -291,7 +289,6 @@ external expm1 : float -> float = "expm1" [@@bs.val] [@@bs.scope "Math"]
 *)
 external unsafe_floor_int : float -> int = "floor" [@@bs.val] [@@bs.scope "Math"]
 
-(** Deprecated; please use [`unsafe_floor_int`](#unsafe_floor_int) instead. *)
 let unsafe_floor = unsafe_floor_int
 [@@deprecated "Please use `unsafe_floor_int` instead"]
 
@@ -314,7 +311,6 @@ let floor_int f =
   else if f < Js_int.toFloat Js_int.min then Js_int.min
   else unsafe_floor f
 
-(** Deprecated; please use [`floor_int`](#floor_int) instead. *)
 let floor = floor_int
 [@@deprecated "Please use `floor_int` instead"]
 

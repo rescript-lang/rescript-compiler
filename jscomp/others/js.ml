@@ -198,7 +198,7 @@ module Nullable = Js_null_undefined
 (** Provide utilities for `Js.null_undefined` *)
 
 module Null_undefined = Js_null_undefined
-(** @deprecated please use `Js.Nullable` *)
+[@deprecated "Please use `Js.Nullable`"]
 
 module Exn = Js_exn
 (** Provide utilities for dealing with Js exceptions *)

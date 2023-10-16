@@ -485,9 +485,7 @@ external indexOf: 'a => int = "indexOf"
 */
 external indexOfFrom: ('a, ~from: int) => int = "indexOf"
 
-@send @deprecated("please use joinWith instead") /**
-  @deprecated: Use `joinWith` instead.
-*/
+@send @deprecated("please use joinWith instead")
 external join: t<'a> => string = "join"
 
 @bs.send.pipe(: t<'a> as 'this)

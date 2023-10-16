@@ -42,9 +42,6 @@ type result
 */
 external captures: result => array<Js.nullable<string>> = "%identity"
 
-/**
-  Deprecated. Use `captures` instead.
-*/
 @deprecated("Use Js.Re.captures instead")
 external matches: result => array<string> = "%identity"
 
