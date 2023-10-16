@@ -42,7 +42,7 @@ external asJsExn: exn => option<t> = "?as_js_exn"
 external isCamlExceptionOrOpenVariant: 'a => bool = "?is_extension"
 
 /**
-`anyToExnInternal obj` will take any value `obj` and wrap it
+`anyToExnInternal(obj)` will take any value `obj` and wrap it
 in a Js.Exn.Error if given value is not an exn already. If
 `obj` is an exn, it will return `obj` without any changes.
 
