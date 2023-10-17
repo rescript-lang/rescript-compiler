@@ -264,13 +264,29 @@ let expr_mapper ~async_context ~in_function_def (self : mapper)
   let async_saved = !async_context in
   let result = expr_mapper ~async_context ~in_function_def self e in
   async_context := async_saved;
-  match Ast_attributes.has_await_payload e.pexp_attributes with
+  let is_module, has_await =
+    match e.pexp_desc with
+    | Pexp_letmodule (_, {pmod_desc = Pmod_ident _; pmod_attributes}, _)
+    | Pexp_letmodule
+        ( _,
+          {
+            pmod_desc =
+              Pmod_constraint
+                ({pmod_desc = Pmod_ident _}, {pmty_desc = Pmty_ident _});
+            pmod_attributes;
+          },
+          _ ) ->
+      (true, Ast_attributes.has_await_payload pmod_attributes)
+    | _ -> (false, Ast_attributes.has_await_payload e.pexp_attributes)
+  in
+  match has_await with
   | None -> result
   | Some _ ->
     if !async_context = false then
       Location.raise_errorf ~loc:e.pexp_loc
         "Await on expression not in an async context";
-    Ast_await.create_await_expression result
+    if is_module = false then Ast_await.create_await_expression result
+    else result
 
 let typ_mapper (self : mapper) (typ : Parsetree.core_type) =
   Ast_core_type_class_type.typ_mapper self typ
@@ -604,6 +620,7 @@ let rec structure_mapper ~await_context (self : mapper) (stru : Ast_structure.t)
             | Pexp_let (_, vbs, expr) -> aux expr @ spelunk_vbs acc vbs
             | Pexp_ifthenelse (_, then_expr, Some else_expr) ->
               aux then_expr @ aux else_expr
+            | Pexp_construct (_, Some expr) -> aux expr
             | Pexp_fun (_, _, _, expr) | Pexp_newtype (_, expr) -> aux expr
             | _ -> acc
           in
