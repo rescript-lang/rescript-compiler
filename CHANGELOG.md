@@ -12,6 +12,9 @@
 
 # 11.0.0-rc.5 (Unreleased)
 
+#### :rocket: New Feature
+- Allow coercing unboxed variants with only strings (now including with a single payload of string) to the primitive string. https://github.com/rescript-lang/rescript-compiler/pull/6441
+
 #### :bug: Bug Fix
 
 - Fix issue with dynamic import of module in nested expressions https://github.com/rescript-lang/rescript-compiler/pull/6431
