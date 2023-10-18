@@ -30,3 +30,17 @@ module CoerceVariants = {
   let x: x = One({age: 1})
   let y: y = (x :> y)
 }
+
+module CoerceWithPayload = {
+  @unboxed type strings = String(string) | First | Second | Third
+  let a: strings = String("hello")
+  let aa: strings = First
+  let b: string = (a :> string)
+  let bb: string = (aa :> string)
+
+  @unboxed type floats = Number(float) | @as(1.) First | @as(2.) Second | @as(3.) Third
+  let c: floats = Number(100.)
+  let cc: floats = Second
+  let d: float = (c :> float)
+  let dd: float = (cc :> float)
+}
