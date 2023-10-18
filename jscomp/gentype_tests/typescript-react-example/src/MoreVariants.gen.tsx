@@ -2,14 +2,15 @@
 /* eslint-disable import/first */
 
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Implicit any on import
 import * as MoreVariantsBS__Es6Import from './MoreVariants.bs';
 const MoreVariantsBS: any = MoreVariantsBS__Es6Import;
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type withRenaming = "type_" | "b";
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type withoutRenaming = "type_" | "b";
 
 export const testWithRenaming: (x:withRenaming) => withRenaming = MoreVariantsBS.testWithRenaming;

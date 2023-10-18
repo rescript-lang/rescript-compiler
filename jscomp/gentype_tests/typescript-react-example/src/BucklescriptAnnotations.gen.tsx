@@ -2,7 +2,7 @@
 /* eslint-disable import/first */
 
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type someMutableFields = {
   mutable0: string; 
   readonly immutable: number; 
@@ -10,7 +10,7 @@ export type someMutableFields = {
   mutable2: string
 };
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type someMethods = {
   readonly send: (_1:string) => void; 
   readonly on: (_1:string, _2:((_1:number) => void)) => void; 

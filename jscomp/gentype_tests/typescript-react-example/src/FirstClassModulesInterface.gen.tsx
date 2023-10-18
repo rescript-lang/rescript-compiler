@@ -2,14 +2,15 @@
 /* eslint-disable import/first */
 
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Implicit any on import
 import * as FirstClassModulesInterfaceBS__Es6Import from './FirstClassModulesInterface.bs';
 const FirstClassModulesInterfaceBS: any = FirstClassModulesInterfaceBS__Es6Import;
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type record = { readonly x: number; readonly y: string };
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type firstClassModule = { readonly x: number };
 
 export const MT_x: number = FirstClassModulesInterfaceBS.MT.x;

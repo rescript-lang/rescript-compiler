@@ -2,6 +2,7 @@
 /* eslint-disable import/first */
 
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Implicit any on import
 import * as TestImmutableArrayBS__Es6Import from './TestImmutableArray.bs';
 const TestImmutableArrayBS: any = TestImmutableArrayBS__Es6Import;

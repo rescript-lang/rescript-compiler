@@ -28,8 +28,8 @@ export const fooTypeChecked: (person:person) => string = fooNotChecked;
 // Export 'foo' early to allow circular import from the '.bs.js' file.
 export const foo: unknown = fooTypeChecked as (person:person) => string;
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type person = { readonly name: string; readonly age: number };
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type renderMe<a> = React.ComponentType<{ readonly randomString: string; readonly poly: a }>;

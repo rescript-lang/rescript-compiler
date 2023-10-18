@@ -2,6 +2,7 @@
 /* eslint-disable import/first */
 
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Implicit any on import
 import * as UseImportJsValueBS__Es6Import from './UseImportJsValue.bs';
 const UseImportJsValueBS: any = UseImportJsValueBS__Es6Import;

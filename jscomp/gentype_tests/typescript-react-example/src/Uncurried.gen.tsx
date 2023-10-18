@@ -2,26 +2,27 @@
 /* eslint-disable import/first */
 
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Implicit any on import
 import * as UncurriedBS__Es6Import from './Uncurried.bs';
 const UncurriedBS: any = UncurriedBS__Es6Import;
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type u0 = () => string;
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type u1 = (_1:number) => string;
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type u2 = (_1:number, _2:string) => string;
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type u3 = (_1:number, _2:string, _3:number) => string;
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type auth = { readonly login: () => string };
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type authU = { readonly loginU: () => string };
 
 export const uncurried0: () => string = UncurriedBS.uncurried0;

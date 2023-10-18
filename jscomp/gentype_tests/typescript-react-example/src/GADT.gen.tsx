@@ -2,10 +2,8 @@
 /* eslint-disable import/first */
 
 
-// tslint:disable-next-line:max-classes-per-file 
-// tslint:disable-next-line:class-name
+// eslint-disable-next-line max-classes-per-file naming-convention
 export abstract class t { protected opaque!: any }; /* simulate opaque types */
 
-// tslint:disable-next-line:max-classes-per-file 
-// tslint:disable-next-line:class-name
+// eslint-disable-next-line max-classes-per-file naming-convention
 export abstract class tt { protected opaque!: any }; /* simulate opaque types */

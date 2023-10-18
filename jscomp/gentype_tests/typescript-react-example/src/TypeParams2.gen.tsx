@@ -4,11 +4,11 @@
 
 import type {ocaml_array as TypeParams1_ocaml_array} from './TypeParams1.gen';
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type item = { readonly id: number };
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type items = TypeParams1_ocaml_array<item>;
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type items2 = item[];

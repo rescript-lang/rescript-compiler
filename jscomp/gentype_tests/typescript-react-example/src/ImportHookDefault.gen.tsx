@@ -36,7 +36,7 @@ export const $$default: unknown = defaultTypeChecked as React.ComponentType<{
 
 import type {renderMe as ImportHooks_renderMe} from './ImportHooks.gen';
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type person = { readonly name: string; readonly age: number };
 
 export default $$default;

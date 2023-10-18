@@ -2,17 +2,18 @@
 /* eslint-disable import/first */
 
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Implicit any on import
 import * as ReferencesBS__Es6Import from './References.bs';
 const ReferencesBS: any = ReferencesBS__Es6Import;
 
-// tslint:disable-next-line:max-classes-per-file 
+// eslint-disable-next-line max-classes-per-file naming-convention
 export abstract class R_t<a> { protected opaque!: a }; /* simulate opaque types */
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type t<a> = R_t<a>;
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type requiresConversion = { readonly x: number };
 
 export const create: (x:number) => { contents: number } = ReferencesBS.create;

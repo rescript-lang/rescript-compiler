@@ -2,6 +2,7 @@
 /* eslint-disable import/first */
 
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Implicit any on import
 import * as TestFirstClassModulesBS__Es6Import from './TestFirstClassModules.bs';
 const TestFirstClassModulesBS: any = TestFirstClassModulesBS__Es6Import;
@@ -12,7 +13,7 @@ import type {firstClassModule as FirstClassModules_firstClassModule} from './Fir
 
 import type {record as FirstClassModulesInterface_record} from './FirstClassModulesInterface.gen';
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type firstClassModuleWithTypeEquations<i,o> = { readonly out: (_1:o) => o; readonly Inner: { readonly inn: (_1:i) => i } };
 
 export const convert: (x:FirstClassModules_firstClassModule) => FirstClassModules_firstClassModule = TestFirstClassModulesBS.convert;

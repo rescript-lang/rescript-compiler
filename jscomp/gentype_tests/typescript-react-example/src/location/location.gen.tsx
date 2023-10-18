@@ -2,5 +2,5 @@
 /* eslint-disable import/first */
 
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type t = { readonly id: string; readonly name: string };

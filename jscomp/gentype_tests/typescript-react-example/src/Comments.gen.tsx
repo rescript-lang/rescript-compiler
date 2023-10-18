@@ -2,20 +2,21 @@
 /* eslint-disable import/first */
 
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Implicit any on import
 import * as CommentsBS__Es6Import from './Comments.bs';
 const CommentsBS: any = CommentsBS__Es6Import;
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type DecideSubject_payload = { 
 /** A hint to use as a guide when thinking of your poem. */
 readonly hint: string };
 
-// tslint:disable-next-line:max-classes-per-file 
+// eslint-disable-next-line max-classes-per-file naming-convention
 /** The input used to generate the prompt and system prompt. */
 export abstract class DecideSubject_input { protected opaque!: any }; /* simulate opaque types */
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 /** The output from evaluating the llm prompt */
 export type DecideSubject_output = {
   /** The text of the poem. */

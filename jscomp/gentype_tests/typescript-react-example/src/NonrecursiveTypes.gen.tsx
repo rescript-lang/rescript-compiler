@@ -2,11 +2,11 @@
 /* eslint-disable import/first */
 
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type notRecursive = number;
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type M_notRecursive = notRecursive[];
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type M_recursive = { readonly self: M_recursive };

@@ -2,6 +2,7 @@
 /* eslint-disable import/first */
 
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Implicit any on import
 import * as with_underscoreBS__Es6Import from './with_underscore.bs';
 const with_underscoreBS: any = with_underscoreBS__Es6Import;

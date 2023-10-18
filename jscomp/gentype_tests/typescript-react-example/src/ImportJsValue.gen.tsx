@@ -74,7 +74,7 @@ export const defaultTypeChecked: number = defaultNotChecked;
 // Export '$$default' early to allow circular import from the '.bs.js' file.
 export const $$default: unknown = defaultTypeChecked as number;
 
-// tslint:disable-next-line:no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const ImportJsValueBS = require('./ImportJsValue.bs');
 
 import type {AbsoluteValue as $$AbsoluteValue_t} from './MyMath';
@@ -89,33 +89,33 @@ import type {polyType as $$polyType} from './MyMath';
 
 import type {stringFunction as $$stringFunction} from './MyMath';
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type point = { readonly x: number; readonly y: (undefined | number) };
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type numberOrString = $$numberOrString;
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type AbsoluteValue_t = $$AbsoluteValue_t;
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type stringFunction = $$stringFunction;
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type color = "tomato" | "gray";
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type variant = 
     { TAG: "I"; _0: number }
   | { TAG: "S"; _0: string };
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type num = $$num;
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type myNum = $$myNum;
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type polyType<a> = $$polyType<a>;
 
 export const roundedNumber: number = ImportJsValueBS.roundedNumber;

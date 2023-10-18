@@ -4,8 +4,8 @@
 
 import type {t3 as TransitiveType3_t3} from './TransitiveType3.gen';
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type t2 = (undefined | TransitiveType3_t3);
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type t2Alias = t2;

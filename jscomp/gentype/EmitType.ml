@@ -355,20 +355,18 @@ let emitExportType ~(config : Config.t) ~emitters ~nameAs ~opaque ~type_
       | true -> "any"
       | false -> typeVars |> String.concat " | "
     in
-    "// tslint:disable-next-line:max-classes-per-file \n"
-    ^ (match String.capitalize_ascii resolvedTypeName <> resolvedTypeName with
-      | true -> "// tslint:disable-next-line:class-name\n"
-      | false -> "")
+    "// eslint-disable-next-line max-classes-per-file naming-convention\n"
     ^ docString ^ "export abstract class " ^ resolvedTypeName ^ typeParamsString
     ^ " { protected opaque!: " ^ typeOfOpaqueField
     ^ " }; /* simulate opaque types */" ^ exportNameAs
     |> Emitters.export ~emitters
   else
-    (if isInterface && config.exportInterfaces then
-     docString ^ "export interface " ^ resolvedTypeName ^ typeParamsString ^ " "
-    else
-      "// tslint:disable-next-line:interface-over-type-literal\n" ^ docString
-      ^ "export type " ^ resolvedTypeName ^ typeParamsString ^ " = ")
+    "// eslint-disable-next-line consistent-type-definitions\n"
+    ^ (if isInterface && config.exportInterfaces then
+       docString ^ "export interface " ^ resolvedTypeName ^ typeParamsString
+       ^ " "
+      else
+        docString ^ "export type " ^ resolvedTypeName ^ typeParamsString ^ " = ")
     ^ (match type_ with
       | _ -> type_ |> typeToString ~config ~typeNameIsInterface)
     ^ ";" ^ exportNameAs
@@ -388,8 +386,10 @@ let emitRequire ~importedValueOrComponent ~early ~emitters ~(config : Config.t)
     ~moduleName importPath =
   let commentBeforeRequire =
     match importedValueOrComponent with
-    | true -> "// tslint:disable-next-line:no-var-requires\n"
-    | false -> "// @ts-ignore: Implicit any on import\n"
+    | true -> "// eslint-disable-next-line @typescript-eslint/no-var-requires\n"
+    | false ->
+      "// eslint-disable-next-line @typescript-eslint/ban-ts-comment\n"
+      ^ "// @ts-ignore: Implicit any on import\n"
   in
   let importPath =
     match config.moduleResolution with

@@ -2,11 +2,11 @@
 /* eslint-disable import/first */
 
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type red = "Ruby" | "Redwood" | "Rust";
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type blue = "Sapphire" | "Neon" | "Navy";
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type color = red | blue;

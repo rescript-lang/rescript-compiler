@@ -2,47 +2,48 @@
 /* eslint-disable import/first */
 
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Implicit any on import
 import * as RecordsBS__Es6Import from './Records.bs';
 const RecordsBS: any = RecordsBS__Es6Import;
 
 import type {list} from '../src/shims/RescriptPervasives.shim';
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type coord = {
   readonly x: number; 
   readonly y: number; 
   readonly z: (undefined | number)
 };
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type person = {
   readonly name: string; 
   readonly age: number; 
   readonly address: (undefined | string)
 };
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type business = {
   readonly name: string; 
   readonly owner: (undefined | person); 
   readonly address: (undefined | string)
 };
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type payload<a> = { readonly num: number; readonly payload: a };
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type record = { readonly v: number; readonly w: number };
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type business2 = {
   readonly name: string; 
   readonly owner: (null | undefined | person); 
   readonly address2: (null | undefined | string)
 };
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type mix = {
   readonly a: number; 
   readonly b: number; 
@@ -52,13 +53,13 @@ export type mix = {
   }
 };
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type myRec = { readonly type: string };
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type myObj = { readonly type_: string };
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type myRecBsAs = {
   readonly jsValid0: string; 
   readonly type: string; 

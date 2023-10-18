@@ -2,6 +2,7 @@
 /* eslint-disable import/first */
 
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Implicit any on import
 import * as TypeParams3BS__Es6Import from './TypeParams3.bs';
 const TypeParams3BS: any = TypeParams3BS__Es6Import;

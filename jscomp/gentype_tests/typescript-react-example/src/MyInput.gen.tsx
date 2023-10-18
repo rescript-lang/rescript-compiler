@@ -12,7 +12,7 @@ export const $$default: unknown = defaultTypeChecked as React.ComponentType<{ re
 
 import type {inputFocusEvent as $$inputFocusEvent} from './shims/ReactEvent.shim';
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type inputFocusEvent = $$inputFocusEvent;
 
 export default $$default;

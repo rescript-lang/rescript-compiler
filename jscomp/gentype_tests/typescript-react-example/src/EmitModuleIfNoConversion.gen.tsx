@@ -2,11 +2,12 @@
 /* eslint-disable import/first */
 
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Implicit any on import
 import * as EmitModuleIfNoConversionBS__Es6Import from './EmitModuleIfNoConversion.bs';
 const EmitModuleIfNoConversionBS: any = EmitModuleIfNoConversionBS__Es6Import;
 
-// tslint:disable-next-line:interface-over-type-literal
+// eslint-disable-next-line consistent-type-definitions
 export type t = "A" | { TAG: "B"; readonly name: string };
 
 export const X_foo: (t:t) => void = EmitModuleIfNoConversionBS.X.foo;
