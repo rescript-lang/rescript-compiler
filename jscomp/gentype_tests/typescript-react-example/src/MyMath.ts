@@ -4,7 +4,6 @@ export const round: (_: number) => number = Math.round;
 
 export const round2 = round;
 
-// tslint:disable-next-line:only-arrow-functions
 export const area = function(point: { x: number; y?: number }): number {
   return point.x * (point.y === undefined ? 1 : point.y);
 };
@@ -27,7 +26,6 @@ export class AbsoluteValue {
 
 export type stringFunction = (_: string) => string;
 
-// tslint:disable-next-line:only-arrow-functions
 export const useColor = function(x: "tomato" | "gray"): number {
   return 0;
 };
