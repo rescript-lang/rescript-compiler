@@ -6,7 +6,8 @@
     "start": "rescript build -w",
     "build": "rescript",
     "clean": "rescript clean",
-    "tsc": "tsc -p tsconfig.json"
+    "tsc": "tsc -p tsconfig.json",
+    "lint": "eslint src"
   },
   "dependencies": {
     "@rescript/react": "^0.11.0",
