@@ -44,3 +44,11 @@ module CoerceWithPayload = {
   let d: float = (c :> float)
   let dd: float = (cc :> float)
 }
+
+module CoerceFromStringToVariant = {
+  @unboxed type strings = String(string) | First | Second | Third
+  let a = "hello"
+  let aa = "First"
+  let b: strings = (a :> strings)
+  let bb: strings = (aa :> strings)
+}
