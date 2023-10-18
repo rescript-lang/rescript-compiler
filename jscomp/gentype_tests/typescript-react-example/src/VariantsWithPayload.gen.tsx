@@ -1,16 +1,13 @@
 /* TypeScript file generated from VariantsWithPayload.res by genType. */
-/* eslint-disable import/first */
 
+/* eslint-disable */
+/* tslint:disable */
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore: Implicit any on import
 import * as VariantsWithPayloadBS__Es6Import from './VariantsWithPayload.bs';
 const VariantsWithPayloadBS: any = VariantsWithPayloadBS__Es6Import;
 
-// eslint-disable-next-line consistent-type-definitions
 export type payload = { readonly x: number; readonly y?: string };
 
-// eslint-disable-next-line consistent-type-definitions
 export type withPayload = 
     "a"
   | "b"
@@ -19,16 +16,13 @@ export type withPayload =
   | "Half"
   | { NAME: "c"; VAL: payload };
 
-// eslint-disable-next-line consistent-type-definitions
 export type manyPayloads = 
     { NAME: "one"; VAL: number }
   | { NAME: "two"; VAL: [string, string] }
   | { NAME: "three"; VAL: payload };
 
-// eslint-disable-next-line consistent-type-definitions
 export type simpleVariant = "A" | "B" | "C";
 
-// eslint-disable-next-line consistent-type-definitions
 export type variantWithPayloads = 
     "A"
   | { TAG: "B"; _0: number }
@@ -36,10 +30,8 @@ export type variantWithPayloads =
   | { TAG: "D"; _0: number; _1: number }
   | { TAG: "E"; _0: number; _1: string; _2: number };
 
-// eslint-disable-next-line consistent-type-definitions
 export type variant1Int = { TAG: "R"; _0: number };
 
-// eslint-disable-next-line consistent-type-definitions
 export type variant1Object = { TAG: "R"; _0: payload };
 
 export const testWithPayload: (x:withPayload) => withPayload = VariantsWithPayloadBS.testWithPayload;

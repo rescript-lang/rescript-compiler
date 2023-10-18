@@ -1,6 +1,7 @@
 /* TypeScript file generated from JSXV4.res by genType. */
-/* eslint-disable import/first */
 
+/* eslint-disable */
+/* tslint:disable */
 
 import {make as makeNotChecked} from './hookExample';
 
@@ -22,19 +23,14 @@ export const make: unknown = makeTypeChecked as React.ComponentType<{
   readonly renderMe: renderMe<any>
 }>;
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const JSXV4BS = require('./JSXV4.bs');
 
-// eslint-disable-next-line consistent-type-definitions
 export type CompV4_props<x,y> = { readonly x: x; readonly y: y };
 
-// eslint-disable-next-line consistent-type-definitions
 export type person = { readonly name: string; readonly age: number };
 
-// eslint-disable-next-line consistent-type-definitions
 export type renderMe<a> = React.ComponentType<{ readonly randomString: string; readonly poly: a }>;
 
-// eslint-disable-next-line consistent-type-definitions
 export type props<actions,person,children,renderMe> = {
   readonly actions?: actions; 
   readonly person: person; 
@@ -44,7 +40,6 @@ export type props<actions,person,children,renderMe> = {
 
 export const CompV4_make: React.ComponentType<{ readonly x: string; readonly y: string }> = JSXV4BS.CompV4.make;
 
-// eslint-disable-next-line consistent-type-definitions
 export type Props = { readonly x: string; readonly y: string };
 
 export const CompV3_make: React.ComponentType<{ readonly x: string; readonly y: string }> = JSXV4BS.CompV3.make;

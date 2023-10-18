@@ -12,10 +12,6 @@
 
 # 11.0.0-rc.5 (Unreleased)
 
-#### :boom: Breaking Change
-
-- Gentype now emits comments to suppress warnings from [`@typescript-eslint/plugin`](https://typescript-eslint.io/) instead of TSLint. https://github.com/rescript-lang/rescript-compiler/pull/6442
-
 #### :bug: Bug Fix
 
 - Fix issue with dynamic import of module in nested expressions https://github.com/rescript-lang/rescript-compiler/pull/6431
@@ -26,6 +22,7 @@
 #### :nail_care: Polish
 
 - Add [`Deno`](https://deno.land/api?s=Deno) to reserved names, so that modules named `Deno` don't clash with the globally exposed `Deno` object. https://github.com/rescript-lang/rescript-compiler/pull/6428
+- Disable ESLint/TSLint on gentype outputs properly. https://github.com/rescript-lang/rescript-compiler/pull/6442
 
 # 11.0.0-rc.4
 

@@ -1,9 +1,8 @@
 /* TypeScript file generated from NestedModulesInSignature.resi by genType. */
-/* eslint-disable import/first */
 
+/* eslint-disable */
+/* tslint:disable */
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore: Implicit any on import
 import * as NestedModulesInSignatureBS__Es6Import from './NestedModulesInSignature.bs';
 const NestedModulesInSignatureBS: any = NestedModulesInSignatureBS__Es6Import;
 

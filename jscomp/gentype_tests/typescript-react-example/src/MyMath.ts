@@ -26,6 +26,7 @@ export class AbsoluteValue {
 
 export type stringFunction = (_: string) => string;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const useColor = function(x: "tomato" | "gray"): number {
   return 0;
 };
@@ -33,6 +34,7 @@ export const useColor = function(x: "tomato" | "gray"): number {
 export const higherOrder = (foo: (_1: number, _2: number) => number) =>
   foo(3, 4);
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const convertVariant = (x: any) => x;
 
 export const polymorphic = <T>(x: T): T => x;

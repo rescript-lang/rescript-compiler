@@ -3,15 +3,15 @@ open GenTypeCommon
 let fileHeader ~sourceFile =
   let makeHeader ~lines =
     match lines with
-    | [line] -> "/* " ^ line ^ " */\n"
+    | [line] -> "/* " ^ line ^ " */\n\n"
     | _ ->
       "/** \n"
       ^ (lines |> List.map (fun line -> " * " ^ line) |> String.concat "\n")
-      ^ "\n */\n"
+      ^ "\n */\n\n"
   in
   makeHeader
     ~lines:["TypeScript file generated from " ^ sourceFile ^ " by genType."]
-  ^ "/* eslint-disable import/first */\n\n"
+  ^ "/* eslint-disable */\n" ^ "/* tslint:disable */\n"
 
 let interfaceName ~(config : Config.t) name =
   match config.exportInterfaces with
@@ -354,18 +354,15 @@ let emitExportType ~(config : Config.t) ~emitters ~nameAs ~opaque ~type_
       | true -> "any"
       | false -> typeVars |> String.concat " | "
     in
-    "// eslint-disable-next-line max-classes-per-file naming-convention\n"
-    ^ docString ^ "export abstract class " ^ resolvedTypeName ^ typeParamsString
+    docString ^ "export abstract class " ^ resolvedTypeName ^ typeParamsString
     ^ " { protected opaque!: " ^ typeOfOpaqueField
     ^ " }; /* simulate opaque types */" ^ exportNameAs
     |> Emitters.export ~emitters
   else
-    "// eslint-disable-next-line consistent-type-definitions\n"
-    ^ (if isInterface && config.exportInterfaces then
-       docString ^ "export interface " ^ resolvedTypeName ^ typeParamsString
-       ^ " "
-      else
-        docString ^ "export type " ^ resolvedTypeName ^ typeParamsString ^ " = ")
+    (if isInterface && config.exportInterfaces then
+     docString ^ "export interface " ^ resolvedTypeName ^ typeParamsString ^ " "
+    else
+      docString ^ "export type " ^ resolvedTypeName ^ typeParamsString ^ " = ")
     ^ (match type_ with
       | _ -> type_ |> typeToString ~config ~typeNameIsInterface)
     ^ ";" ^ exportNameAs
@@ -383,13 +380,6 @@ let emitImportValueAsEarly ~emitters ~name ~nameAs importPath =
 
 let emitRequire ~importedValueOrComponent ~early ~emitters ~(config : Config.t)
     ~moduleName importPath =
-  let commentBeforeRequire =
-    match importedValueOrComponent with
-    | true -> "// eslint-disable-next-line @typescript-eslint/no-var-requires\n"
-    | false ->
-      "// eslint-disable-next-line @typescript-eslint/ban-ts-comment\n"
-      ^ "// @ts-ignore: Implicit any on import\n"
-  in
   let importPath =
     match config.moduleResolution with
     | Node ->
@@ -401,7 +391,7 @@ let emitRequire ~importedValueOrComponent ~early ~emitters ~(config : Config.t)
   | ES6 when not importedValueOrComponent ->
     let moduleNameString = ModuleName.toString moduleName in
     (let es6ImportModule = moduleNameString ^ "__Es6Import" in
-     commentBeforeRequire ^ "import * as " ^ es6ImportModule ^ " from '"
+     "import * as " ^ es6ImportModule ^ " from '"
      ^ (importPath |> ImportPath.emit)
      ^ "';\n" ^ "const " ^ moduleNameString ^ ": any = " ^ es6ImportModule ^ ";")
     |> (match early with
@@ -409,7 +399,7 @@ let emitRequire ~importedValueOrComponent ~early ~emitters ~(config : Config.t)
        | false -> Emitters.require)
          ~emitters
   | _ ->
-    commentBeforeRequire ^ "const "
+    "const "
     ^ ModuleName.toString moduleName
     ^ " = require('"
     ^ (importPath |> ImportPath.emit)

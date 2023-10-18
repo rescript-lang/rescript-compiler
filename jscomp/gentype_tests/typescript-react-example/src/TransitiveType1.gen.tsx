@@ -1,9 +1,8 @@
 /* TypeScript file generated from TransitiveType1.res by genType. */
-/* eslint-disable import/first */
 
+/* eslint-disable */
+/* tslint:disable */
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore: Implicit any on import
 import * as TransitiveType1BS__Es6Import from './TransitiveType1.bs';
 const TransitiveType1BS: any = TransitiveType1BS__Es6Import;
 

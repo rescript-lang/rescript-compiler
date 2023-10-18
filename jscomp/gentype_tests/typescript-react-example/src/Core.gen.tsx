@@ -1,6 +1,7 @@
 /* TypeScript file generated from Core.res by genType. */
-/* eslint-disable import/first */
 
+/* eslint-disable */
+/* tslint:disable */
 
 import {someFunWithNullThenOptionalArgs as someFunWithNullThenOptionalArgsNotChecked} from './CoreTS';
 
@@ -18,16 +19,12 @@ export const someFunWithNullUndefinedArgTypeChecked: (_1:(null | undefined | str
 // Export 'someFunWithNullUndefinedArg' early to allow circular import from the '.bs.js' file.
 export const someFunWithNullUndefinedArg: unknown = someFunWithNullUndefinedArgTypeChecked as (_1:(null | undefined | string), _2:number) => string;
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const CoreBS = require('./Core.bs');
 
-// eslint-disable-next-line consistent-type-definitions
 export type variant = "A" | { TAG: "B"; _0: string };
 
-// eslint-disable-next-line consistent-type-definitions
 export type t1 = { readonly x?: string };
 
-// eslint-disable-next-line consistent-type-definitions
 export type t2 = { readonly x: (undefined | string) };
 
 export const null0: (x:(null | number)) => (null | number) = CoreBS.null0;

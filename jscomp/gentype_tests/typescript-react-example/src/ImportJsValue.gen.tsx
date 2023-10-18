@@ -1,6 +1,7 @@
 /* TypeScript file generated from ImportJsValue.res by genType. */
-/* eslint-disable import/first */
 
+/* eslint-disable */
+/* tslint:disable */
 
 import {round as roundNotChecked} from './MyMath';
 
@@ -74,7 +75,6 @@ export const defaultTypeChecked: number = defaultNotChecked;
 // Export '$$default' early to allow circular import from the '.bs.js' file.
 export const $$default: unknown = defaultTypeChecked as number;
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const ImportJsValueBS = require('./ImportJsValue.bs');
 
 import type {AbsoluteValue as $$AbsoluteValue_t} from './MyMath';
@@ -89,33 +89,24 @@ import type {polyType as $$polyType} from './MyMath';
 
 import type {stringFunction as $$stringFunction} from './MyMath';
 
-// eslint-disable-next-line consistent-type-definitions
 export type point = { readonly x: number; readonly y: (undefined | number) };
 
-// eslint-disable-next-line consistent-type-definitions
 export type numberOrString = $$numberOrString;
 
-// eslint-disable-next-line consistent-type-definitions
 export type AbsoluteValue_t = $$AbsoluteValue_t;
 
-// eslint-disable-next-line consistent-type-definitions
 export type stringFunction = $$stringFunction;
 
-// eslint-disable-next-line consistent-type-definitions
 export type color = "tomato" | "gray";
 
-// eslint-disable-next-line consistent-type-definitions
 export type variant = 
     { TAG: "I"; _0: number }
   | { TAG: "S"; _0: string };
 
-// eslint-disable-next-line consistent-type-definitions
 export type num = $$num;
 
-// eslint-disable-next-line consistent-type-definitions
 export type myNum = $$myNum;
 
-// eslint-disable-next-line consistent-type-definitions
 export type polyType<a> = $$polyType<a>;
 
 export const roundedNumber: number = ImportJsValueBS.roundedNumber;
