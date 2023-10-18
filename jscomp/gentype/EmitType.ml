@@ -183,8 +183,7 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
              in
              let tagField =
                case |> labelJSToString
-               |> field
-                    ~name:(Runtime.jsVariantTag ~polymorphic:false ~tag)
+               |> field ~name:(Runtime.jsVariantTag ~polymorphic:false ~tag)
              in
              match (unboxed, type_) with
              | true, type_ ->
