@@ -3956,8 +3956,8 @@ let rec subtype_rec env trace t1 t2 cstrs =
         ->
       (* type coercion for variants to primitives *)
       (match Variant_coercion.can_try_coerce_variant_to_primitive (extract_concrete_typedecl env t1) with
-      | Some constructors -> 
-        if constructors |> Variant_coercion.can_coerce_variant ~path then
+      | Some (constructors, unboxed) -> 
+        if constructors |> Variant_coercion.can_coerce_variant ~path ~unboxed then
           cstrs
         else 
           (trace, t1, t2, !univar_pairs)::cstrs
