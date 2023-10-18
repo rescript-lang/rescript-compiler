@@ -12,6 +12,10 @@
 
 # 11.0.0-rc.5 (Unreleased)
 
+#### :boom: Breaking Change
+
+- Gentype now emits comments to suppress warnings from [`@typescript-eslint/plugin`](https://typescript-eslint.io/) instead of TSLint. https://github.com/rescript-lang/rescript-compiler/pull/6442
+
 #### :bug: Bug Fix
 
 - Fix issue with dynamic import of module in nested expressions https://github.com/rescript-lang/rescript-compiler/pull/6431
