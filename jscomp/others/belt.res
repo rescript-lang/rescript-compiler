@@ -51,7 +51,9 @@ at the top of your source files. After opening Belt this way, `Array` will refer
 If you want to open Belt globally for all files in your project instead, you can put
 
 ```json
-"bsc-flags": ["-open Belt"]
+{
+  "bsc-flags": ["-open Belt"]
+}
 ```
 
 into your `bsconfig.json`.

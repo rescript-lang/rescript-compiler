@@ -27,8 +27,6 @@ let findFirstByU: (t<'v>, (. key, 'v) => bool) => option<(key, 'v)>
 `findFirstBy(m, p)` uses funcion `f` to find the first key value pair
 to match predicate `p`.
 
-## Examples
-
 ```rescript
 let s0 = fromArray(~id=module(IntCmp), [(4, "4"), (1, "1"), (2, "2,"(3, ""))])
 findFirstBy(s0, (k, v) => k == 4) == option((4, "4"))
@@ -111,17 +109,16 @@ let getExn: (t<'v>, key) => 'v
 */
 let checkInvariantInternal: t<_> => unit
 
-/**
-`remove(m, x)` returns a map containing the same bindings as `m`, except for `x`
-which is unbound in the returned map.
-*/
+/** `remove m x` returns a map containing the same bindings as
+    `m`, except for `x` which is unbound in the returned map. */
 let remove: (t<'v>, key) => t<'v>
 
 let removeMany: (t<'v>, array<key>) => t<'v>
 
 /**
-`set(m, x, y)` returns a map containing the same bindings as `m`, plus a binding
-of `x` to `y`. If `x` was already bound in `m`, its previous binding disappears.
+`set(m, x, y)` returns a map containing the same bindings as
+`m`, plus a binding of `x` to `y`. If `x` was already bound
+in `m`, its previous binding disappears.
 */
 let set: (t<'v>, key, 'v) => t<'v>
 
