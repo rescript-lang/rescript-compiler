@@ -3960,7 +3960,7 @@ let rec subtype_rec env trace t1 t2 cstrs =
          - must have a constructor case with a string payload *)
       (match Variant_coercion.can_try_coerce_variant_to_primitive (extract_concrete_typedecl env t2) with
       | Some (constructors, true) -> 
-        if constructors |> Variant_coercion.can_coerce_variant ~path ~unboxed:true 
+        if constructors |> Variant_coercion.variant_has_same_runtime_representation_as_target ~targetPath:path ~unboxed:true 
           && constructors |> List.exists(fun (c: constructor_declaration) -> 
             match c.cd_args with 
             | Cstr_tuple [{desc=Tconstr (p, [], _)}] when Path.same p Predef.path_string -> true 
