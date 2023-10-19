@@ -29,7 +29,22 @@ var CoerceWithPayload = {
   dd: 2
 };
 
-var a$1 = "Three";
+var a$1 = "hello";
+
+var aa = "First";
+
+var c$1 = "Hi";
+
+var CoerceFromStringToVariant = {
+  a: a$1,
+  aa: aa,
+  b: a$1,
+  bb: aa,
+  c: c$1,
+  cc: c$1
+};
+
+var a$2 = "Three";
 
 var b = "Three";
 
@@ -41,7 +56,7 @@ var ii = 1.1;
 
 var dd = 1.1;
 
-exports.a = a$1;
+exports.a = a$2;
 exports.b = b;
 exports.i = i;
 exports.d = d;
@@ -49,4 +64,5 @@ exports.ii = ii;
 exports.dd = dd;
 exports.CoerceVariants = CoerceVariants;
 exports.CoerceWithPayload = CoerceWithPayload;
+exports.CoerceFromStringToVariant = CoerceFromStringToVariant;
 /* No side effect */

@@ -9,6 +9,17 @@ let can_coerce_path (path : Path.t) =
 let check_paths_same p1 p2 target_path =
   Path.same p1 target_path && Path.same p2 target_path
 
+let variant_has_catch_all_string_case (constructors : Types.constructor_declaration list) =
+  let has_catch_all_string_case (c : Types.constructor_declaration) =
+    let args = c.cd_args in
+    match args with
+    | Cstr_tuple [{desc = Tconstr (p, [], _)}] ->
+      Path.same p Predef.path_string
+    | _ -> false
+  in
+
+  constructors |> List.exists has_catch_all_string_case 
+
 (* Checks if every case of the variant has the same runtime representation as the target type. *)
 let variant_has_same_runtime_representation_as_target ~(targetPath : Path.t)
     ~unboxed (constructors : Types.constructor_declaration list) =
