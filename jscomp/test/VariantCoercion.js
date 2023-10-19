@@ -33,11 +33,15 @@ var a$1 = "hello";
 
 var aa = "First";
 
+var c$1 = "Hi";
+
 var CoerceFromStringToVariant = {
   a: a$1,
   aa: aa,
   b: a$1,
-  bb: aa
+  bb: aa,
+  c: c$1,
+  cc: c$1
 };
 
 var a$2 = "Three";

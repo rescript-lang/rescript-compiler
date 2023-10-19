@@ -51,4 +51,8 @@ module CoerceFromStringToVariant = {
   let aa = "First"
   let b: strings = (a :> strings)
   let bb: strings = (aa :> strings)
+
+  @unboxed type mixed = String(string) | @as(1) One | @as(null) Null | Two
+  let c = "Hi"
+  let cc: mixed = (c :> mixed)
 }
