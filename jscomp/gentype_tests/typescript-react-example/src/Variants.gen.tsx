@@ -1,14 +1,13 @@
 /* TypeScript file generated from Variants.res by genType. */
-/* eslint-disable import/first */
 
+/* eslint-disable */
+/* tslint:disable */
 
-// @ts-ignore: Implicit any on import
 import * as VariantsBS__Es6Import from './Variants.bs';
 const VariantsBS: any = VariantsBS__Es6Import;
 
 import type {list} from '../src/shims/RescriptPervasives.shim';
 
-// tslint:disable-next-line:interface-over-type-literal
 export type weekday = 
     "monday"
   | "tuesday"
@@ -18,42 +17,31 @@ export type weekday =
   | "saturday"
   | "sunday";
 
-// tslint:disable-next-line:interface-over-type-literal
 export type testGenTypeAs = "type_" | "module_" | "fortytwo";
 
-// tslint:disable-next-line:interface-over-type-literal
 export type testGenTypeAs2 = "type_" | "module" | 42;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type testGenTypeAs3 = "type_" | "module" | 42;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type x1 = "x" | "x1";
 
-// tslint:disable-next-line:interface-over-type-literal
 export type x2 = "x" | "x2";
 
-// tslint:disable-next-line:interface-over-type-literal
 export type type_ = "Type";
 export type type = type_;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type myList = "E" | { TAG: "C"; _0: number; _1: myList };
 
-// tslint:disable-next-line:interface-over-type-literal
 export type builtinList = list<number>;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type result1<a,b> = 
     { TAG: "Ok"; _0: a }
   | { TAG: "Error"; _0: b };
 
-// tslint:disable-next-line:interface-over-type-literal
 export type result2<a,b> = 
     { TAG: "Ok"; _0: a }
   | { TAG: "Error"; _0: b };
 
-// tslint:disable-next-line:interface-over-type-literal
 export type result3<a,b> = 
     { TAG: "Ok"; _0: a }
   | { TAG: "Error"; _0: b };

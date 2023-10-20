@@ -1,12 +1,11 @@
 /* TypeScript file generated from Docstrings.res by genType. */
-/* eslint-disable import/first */
 
+/* eslint-disable */
+/* tslint:disable */
 
-// @ts-ignore: Implicit any on import
 import * as DocstringsBS__Es6Import from './Docstrings.bs';
 const DocstringsBS: any = DocstringsBS__Es6Import;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type t = "A" | "B";
 
 /** hello */

@@ -1,8 +1,8 @@
 /* TypeScript file generated from TestModuleAliases.res by genType. */
-/* eslint-disable import/first */
 
+/* eslint-disable */
+/* tslint:disable */
 
-// @ts-ignore: Implicit any on import
 import * as TestModuleAliasesBS__Es6Import from './TestModuleAliases.bs';
 const TestModuleAliasesBS: any = TestModuleAliasesBS__Es6Import;
 
@@ -14,28 +14,20 @@ import type {Outer_outer as ModuleAliases2_Outer_outer} from './ModuleAliases2.g
 
 import type {record as ModuleAliases2_record} from './ModuleAliases2.gen';
 
-// tslint:disable-next-line:interface-over-type-literal
 export type OtherFile_record = { readonly x: number; readonly y: string };
 
-// tslint:disable-next-line:interface-over-type-literal
 export type record = ModuleAliases2_record;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type record2 = ModuleAliases2_record;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type outer = ModuleAliases2_Outer_outer;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type outer2 = ModuleAliases2_Outer_outer;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type my2 = ModuleAliases2_Outer_Inner_inner;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type inner1 = ModuleAliases2_InnerAlias_inner;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type inner2 = ModuleAliases2_Outer_Inner_inner;
 
 export const testInner1: (x:inner1) => inner1 = TestModuleAliasesBS.testInner1;

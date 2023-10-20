@@ -1,6 +1,7 @@
 /* TypeScript file generated from ImportIndex.res by genType. */
-/* eslint-disable import/first */
 
+/* eslint-disable */
+/* tslint:disable */
 
 import {default as defaultNotChecked} from './';
 

@@ -1,21 +1,17 @@
 /* TypeScript file generated from Tuples.res by genType. */
-/* eslint-disable import/first */
 
+/* eslint-disable */
+/* tslint:disable */
 
-// @ts-ignore: Implicit any on import
 import * as TuplesBS__Es6Import from './Tuples.bs';
 const TuplesBS: any = TuplesBS__Es6Import;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type coord = [number, number, (undefined | number)];
 
-// tslint:disable-next-line:interface-over-type-literal
 export type coord2 = [number, number, (null | undefined | number)];
 
-// tslint:disable-next-line:interface-over-type-literal
 export type person = { readonly name: string; readonly age: number };
 
-// tslint:disable-next-line:interface-over-type-literal
 export type couple = [person, person];
 
 export const testTuple: (param:[number, number]) => number = TuplesBS.testTuple;

@@ -1,48 +1,41 @@
 /* TypeScript file generated from Records.res by genType. */
-/* eslint-disable import/first */
 
+/* eslint-disable */
+/* tslint:disable */
 
-// @ts-ignore: Implicit any on import
 import * as RecordsBS__Es6Import from './Records.bs';
 const RecordsBS: any = RecordsBS__Es6Import;
 
 import type {list} from '../src/shims/RescriptPervasives.shim';
 
-// tslint:disable-next-line:interface-over-type-literal
 export type coord = {
   readonly x: number; 
   readonly y: number; 
   readonly z: (undefined | number)
 };
 
-// tslint:disable-next-line:interface-over-type-literal
 export type person = {
   readonly name: string; 
   readonly age: number; 
   readonly address: (undefined | string)
 };
 
-// tslint:disable-next-line:interface-over-type-literal
 export type business = {
   readonly name: string; 
   readonly owner: (undefined | person); 
   readonly address: (undefined | string)
 };
 
-// tslint:disable-next-line:interface-over-type-literal
 export type payload<a> = { readonly num: number; readonly payload: a };
 
-// tslint:disable-next-line:interface-over-type-literal
 export type record = { readonly v: number; readonly w: number };
 
-// tslint:disable-next-line:interface-over-type-literal
 export type business2 = {
   readonly name: string; 
   readonly owner: (null | undefined | person); 
   readonly address2: (null | undefined | string)
 };
 
-// tslint:disable-next-line:interface-over-type-literal
 export type mix = {
   readonly a: number; 
   readonly b: number; 
@@ -52,13 +45,10 @@ export type mix = {
   }
 };
 
-// tslint:disable-next-line:interface-over-type-literal
 export type myRec = { readonly type: string };
 
-// tslint:disable-next-line:interface-over-type-literal
 export type myObj = { readonly type_: string };
 
-// tslint:disable-next-line:interface-over-type-literal
 export type myRecBsAs = {
   readonly jsValid0: string; 
   readonly type: string; 

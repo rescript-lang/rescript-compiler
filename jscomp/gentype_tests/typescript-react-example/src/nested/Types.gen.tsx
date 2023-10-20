@@ -1,8 +1,8 @@
 /* TypeScript file generated from Types.res by genType. */
-/* eslint-disable import/first */
 
+/* eslint-disable */
+/* tslint:disable */
 
-// @ts-ignore: Implicit any on import
 import * as TypesBS__Es6Import from './Types.bs';
 const TypesBS: any = TypesBS__Es6Import;
 
@@ -16,56 +16,40 @@ import type {t_ as TypeNameSanitize_t_} from '../../src/TypeNameSanitize.gen';
 
 import type {t as Location_t} from '../../src/location/location.gen';
 
-// tslint:disable-next-line:interface-over-type-literal
 export type t = number;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type typeWithVars<x,y,z> = 
     { TAG: "A"; _0: x; _1: y }
   | { TAG: "B"; _0: z };
 
-// tslint:disable-next-line:interface-over-type-literal
 export type tree = {
   readonly label: string; 
   readonly left?: tree; 
   readonly right?: tree
 };
 
-// tslint:disable-next-line:interface-over-type-literal
 export type selfRecursive = { readonly self: selfRecursive };
 
-// tslint:disable-next-line:interface-over-type-literal
 export type mutuallyRecursiveA = { readonly b: mutuallyRecursiveB };
 
-// tslint:disable-next-line:interface-over-type-literal
 export type mutuallyRecursiveB = { readonly a: mutuallyRecursiveA };
 
-// tslint:disable-next-line:max-classes-per-file 
-// tslint:disable-next-line:class-name
 export abstract class opaqueVariant { protected opaque!: any }; /* simulate opaque types */
 
-// tslint:disable-next-line:interface-over-type-literal
 export type twice<a> = [a, a];
 
-// tslint:disable-next-line:interface-over-type-literal
 export type genTypeMispelled = number;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type dictString = {[id: string]: string};
 
-// tslint:disable-next-line:interface-over-type-literal
 export type nullOrString = (null | string);
 
-// tslint:disable-next-line:interface-over-type-literal
 export type nullOrString2 = (null | string);
 
-// tslint:disable-next-line:interface-over-type-literal
 export type record = { readonly i: number; readonly s: string };
 
-// tslint:disable-next-line:interface-over-type-literal
 export type decorator<a,b> = (_1:a) => b;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type marshalFields = {
   readonly _rec: string; 
   readonly _switch: string; 
@@ -78,35 +62,25 @@ export type marshalFields = {
   readonly _Uppercase__: string
 };
 
-// tslint:disable-next-line:interface-over-type-literal
 export type marshalMutableField = { _match: number };
 
-// tslint:disable-next-line:interface-over-type-literal
 export type ocaml_array<a> = a[];
 
-// tslint:disable-next-line:interface-over-type-literal
 export type someRecord = { readonly id: number };
 
-// tslint:disable-next-line:interface-over-type-literal
 export type instantiateTypeParameter = ocaml_array<someRecord>;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type vector<a> = [a, a];
 export type Vector<a> = vector<a>;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type date = Date;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type i64A = [number, number];
 
-// tslint:disable-next-line:interface-over-type-literal
 export type i64B = [number, number];
 
-// tslint:disable-next-line:interface-over-type-literal
 export type ObjectId_t = number;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type tPrimed = [TypeNameSanitize_t_, TypeNameSanitize_M_t__];
 
 export const someIntList: list<number> = TypesBS.someIntList;

@@ -1,18 +1,15 @@
 /* TypeScript file generated from References.res by genType. */
-/* eslint-disable import/first */
 
+/* eslint-disable */
+/* tslint:disable */
 
-// @ts-ignore: Implicit any on import
 import * as ReferencesBS__Es6Import from './References.bs';
 const ReferencesBS: any = ReferencesBS__Es6Import;
 
-// tslint:disable-next-line:max-classes-per-file 
 export abstract class R_t<a> { protected opaque!: a }; /* simulate opaque types */
 
-// tslint:disable-next-line:interface-over-type-literal
 export type t<a> = R_t<a>;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type requiresConversion = { readonly x: number };
 
 export const create: (x:number) => { contents: number } = ReferencesBS.create;

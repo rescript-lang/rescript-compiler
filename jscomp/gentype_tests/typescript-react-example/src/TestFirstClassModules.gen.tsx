@@ -1,8 +1,8 @@
 /* TypeScript file generated from TestFirstClassModules.res by genType. */
-/* eslint-disable import/first */
 
+/* eslint-disable */
+/* tslint:disable */
 
-// @ts-ignore: Implicit any on import
 import * as TestFirstClassModulesBS__Es6Import from './TestFirstClassModules.bs';
 const TestFirstClassModulesBS: any = TestFirstClassModulesBS__Es6Import;
 
@@ -12,7 +12,6 @@ import type {firstClassModule as FirstClassModules_firstClassModule} from './Fir
 
 import type {record as FirstClassModulesInterface_record} from './FirstClassModulesInterface.gen';
 
-// tslint:disable-next-line:interface-over-type-literal
 export type firstClassModuleWithTypeEquations<i,o> = { readonly out: (_1:o) => o; readonly Inner: { readonly inn: (_1:i) => i } };
 
 export const convert: (x:FirstClassModules_firstClassModule) => FirstClassModules_firstClassModule = TestFirstClassModulesBS.convert;

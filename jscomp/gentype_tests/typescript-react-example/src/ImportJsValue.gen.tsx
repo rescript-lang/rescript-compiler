@@ -1,6 +1,7 @@
 /* TypeScript file generated from ImportJsValue.res by genType. */
-/* eslint-disable import/first */
 
+/* eslint-disable */
+/* tslint:disable */
 
 import {round as roundNotChecked} from './MyMath';
 
@@ -74,7 +75,6 @@ export const defaultTypeChecked: number = defaultNotChecked;
 // Export '$$default' early to allow circular import from the '.bs.js' file.
 export const $$default: unknown = defaultTypeChecked as number;
 
-// tslint:disable-next-line:no-var-requires
 const ImportJsValueBS = require('./ImportJsValue.bs');
 
 import type {AbsoluteValue as $$AbsoluteValue_t} from './MyMath';
@@ -89,33 +89,24 @@ import type {polyType as $$polyType} from './MyMath';
 
 import type {stringFunction as $$stringFunction} from './MyMath';
 
-// tslint:disable-next-line:interface-over-type-literal
 export type point = { readonly x: number; readonly y: (undefined | number) };
 
-// tslint:disable-next-line:interface-over-type-literal
 export type numberOrString = $$numberOrString;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type AbsoluteValue_t = $$AbsoluteValue_t;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type stringFunction = $$stringFunction;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type color = "tomato" | "gray";
 
-// tslint:disable-next-line:interface-over-type-literal
 export type variant = 
     { TAG: "I"; _0: number }
   | { TAG: "S"; _0: string };
 
-// tslint:disable-next-line:interface-over-type-literal
 export type num = $$num;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type myNum = $$myNum;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type polyType<a> = $$polyType<a>;
 
 export const roundedNumber: number = ImportJsValueBS.roundedNumber;

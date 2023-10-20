@@ -1,8 +1,8 @@
 /* TypeScript file generated from BucklescriptAnnotations.res by genType. */
-/* eslint-disable import/first */
 
+/* eslint-disable */
+/* tslint:disable */
 
-// tslint:disable-next-line:interface-over-type-literal
 export type someMutableFields = {
   mutable0: string; 
   readonly immutable: number; 
@@ -10,7 +10,6 @@ export type someMutableFields = {
   mutable2: string
 };
 
-// tslint:disable-next-line:interface-over-type-literal
 export type someMethods = {
   readonly send: (_1:string) => void; 
   readonly on: (_1:string, _2:((_1:number) => void)) => void; 

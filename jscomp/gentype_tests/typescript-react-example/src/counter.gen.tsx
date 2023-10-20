@@ -1,8 +1,8 @@
 /* TypeScript file generated from counter.res by genType. */
-/* eslint-disable import/first */
 
+/* eslint-disable */
+/* tslint:disable */
 
-// @ts-ignore: Implicit any on import
 import * as counterBS__Es6Import from './counter.bs';
 const counterBS: any = counterBS__Es6Import;
 
