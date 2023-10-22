@@ -968,7 +968,8 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
     let fullExpression =
       if !Config.uncurried = Uncurried then
         fullExpression
-        |> Ast_uncurried.uncurriedFun ~loc:fullExpression.pexp_loc ~arity:1
+        |> Ast_uncurried.uncurriedFun ~loc:fullExpression.pexp_loc
+             ~arity:(if hasForwardRef then 2 else 1)
       else fullExpression
     in
     let fullExpression =
