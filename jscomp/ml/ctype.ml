@@ -3951,6 +3951,8 @@ let rec subtype_rec env trace t1 t2 cstrs =
         end
     | (Tconstr(p1, _, _), _) when generic_private_abbrev env p1 ->
         subtype_rec env trace (expand_abbrev_opt env t1) t2 cstrs
+    | (Tconstr(p1, [], _), Tconstr(p2, [], _)) when Path.same p1 Predef.path_int && Path.same p2 Predef.path_float ->
+        cstrs 
     | (Tconstr(path, [], _), Tconstr(_, [], _)) when Path.same path Predef.path_string && 
         extract_concrete_typedecl env t2 |> Variant_coercion.can_try_coerce_variant_to_primitive |> Option.is_some
         ->
