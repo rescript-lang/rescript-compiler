@@ -16,6 +16,7 @@
 - Allow coercing unboxed variants with only strings (now including with a single payload of string) to the primitive string. https://github.com/rescript-lang/rescript-compiler/pull/6441
 - Allow coercing strings to unboxed variants that has a catch-all unboxed string case. https://github.com/rescript-lang/rescript-compiler/pull/6443
 - Allow coercing `int` to `float`. https://github.com/rescript-lang/rescript-compiler/pull/6448
+- Playground: Add support for implicitly opened modules. https://github.com/rescript-lang/rescript-compiler/pull/6446
 
 #### :bug: Bug Fix
 
