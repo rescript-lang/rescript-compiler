@@ -39,6 +39,7 @@ and ident_exn = ident_create "exn"
 and ident_array = ident_create "array"
 and ident_list = ident_create "list"
 and ident_option = ident_create "option"
+and ident_result = ident_create "result"
 
 and ident_int64 = ident_create "int64"
 and ident_lazy_t = ident_create "lazy_t"
@@ -80,6 +81,7 @@ and path_exn = Pident ident_exn
 and path_array = Pident ident_array
 and path_list = Pident ident_list
 and path_option = Pident ident_option
+and path_result = Pident ident_result
 
 
 and path_int64 = Pident ident_int64
@@ -102,7 +104,7 @@ and type_exn = newgenty (Tconstr(path_exn, [], ref Mnil))
 and type_array t = newgenty (Tconstr(path_array, [t], ref Mnil))
 and type_list t = newgenty (Tconstr(path_list, [t], ref Mnil))
 and type_option t = newgenty (Tconstr(path_option, [t], ref Mnil))
-
+and type_result t1 t2 = newgenty (Tconstr(path_result, [t1; t2], ref Mnil))
 
 and type_int64 = newgenty (Tconstr(path_int64, [], ref Mnil))
 and type_lazy_t t = newgenty (Tconstr(path_lazy_t, [t], ref Mnil))
@@ -117,6 +119,8 @@ let ident_match_failure = ident_create_predef_exn "Match_failure"
 
 and ident_invalid_argument = ident_create_predef_exn "Invalid_argument"
 and ident_failure = ident_create_predef_exn "Failure"
+and ident_ok = ident_create_predef_exn "Ok"
+and ident_error = ident_create_predef_exn "Error"
 
 and ident_js_error = ident_create_predef_exn "JsError"
 and ident_not_found = ident_create_predef_exn "Not_found"
@@ -213,6 +217,15 @@ let common_initial_env add_type add_extension empty_env =
      type_arity = 1;
      type_kind = Type_variant([cstr ident_none []; cstr ident_some [tvar]]);
      type_variance = [Variance.covariant]}
+  and decl_result =
+    let tvar1, tvar2 = newgenvar(), newgenvar() in
+    {decl_abstr with
+     type_params = [tvar1; tvar2];
+     type_arity = 2;
+     type_kind =
+     Type_variant([cstr ident_ok [tvar1];
+                   cstr ident_error [tvar2]]);
+     type_variance = [Variance.covariant; Variance.covariant]}
   and decl_uncurried =
     let tvar1, tvar2 = newgenvar(), newgenvar() in
     {decl_abstr with
@@ -278,6 +291,7 @@ let common_initial_env add_type add_extension empty_env =
 
   add_type ident_lazy_t decl_lazy_t (
   add_type ident_option decl_option (
+  add_type ident_result decl_result (
   add_type ident_list decl_list (
   add_type ident_array decl_array (
   add_type ident_exn decl_exn (
@@ -291,7 +305,7 @@ let common_initial_env add_type add_extension empty_env =
   add_type ident_extension_constructor decl_abstr (
   add_type ident_floatarray decl_abstr (
     add_type ident_promise decl_promise (
-      empty_env)))))))))))))))))))))))))
+      empty_env))))))))))))))))))))))))))
 
 let build_initial_env add_type add_exception empty_env =
   let common = common_initial_env add_type add_exception empty_env in
