@@ -213,12 +213,6 @@ external \":=": (ref<'a>, 'a) => unit = "%bs_ref_setfield0"
 external incr: ref<int> => unit = "%incr"
 external decr: ref<int> => unit = "%decr"
 
-/* Result type */
-
-type result<'a, 'b> = Belt.Result.t<'a, 'b> =
-  | Ok('a)
-  | Error('b)
-
 /* String conversion functions */
 external format_float: (string, float) => string = "?format_float"
 
