@@ -22,9 +22,7 @@ const cliHelp =
   "\n" +
   "Run `rescript <subcommand> -h` for subcommand help. Examples:\n" +
   "  rescript build -h\n" +
-  "  rescript format -h\n" +
-  "The default `rescript` is equivalent to `rescript build` subcommand\n" +
-  "\n";
+  "  rescript format -h\n";
 
 const buildHelp =
   "Usage: rescript build <options> -- <ninja_options>\n" +
@@ -105,7 +103,7 @@ out = child_process.spawnSync(`../../../rescript`, ["build", "-wtf"], {
   encoding: "utf8",
   cwd: __dirname,
 });
-assert.equal(out.stderr, "Error: unknown option: '-wtf'.\n" + buildHelp + "\n");
+assert.equal(out.stderr, 'Error: Unknown option "-wtf".\n' + buildHelp + "\n");
 assert.equal(out.status, 2);
 
 // Shows cli help with --help arg
@@ -114,8 +112,7 @@ out = child_process.spawnSync(`../../../rescript`, ["--help"], {
   cwd: __dirname,
 });
 assert.equal(out.stdout, cliHelp);
-// FIXME: Should be 0
-assert.equal(out.status, 2);
+assert.equal(out.status, 0);
 
 // Shows cli help with -h arg
 out = child_process.spawnSync(`../../../rescript`, ["-h"], {
@@ -138,9 +135,7 @@ out = child_process.spawnSync(`../../../rescript`, ["built"], {
   encoding: "utf8",
   cwd: __dirname,
 });
-// Should write to stderr instead ???
-assert.equal(out.stdout, cliHelp);
-// FIXME: Should show a warning that it's an unknown command
+assert.equal(out.stderr, `Error: Unknown command or flag "built".\n` + cliHelp);
 assert.equal(out.status, 2);
 
 // Shows cli help with unknown args
@@ -148,9 +143,7 @@ out = child_process.spawnSync(`../../../rescript`, ["-w"], {
   encoding: "utf8",
   cwd: __dirname,
 });
-// Should write to stderr instead ???
-assert.equal(out.stdout, cliHelp);
-// FIXME: Should show a warning that it's an unknown arg
+assert.equal(out.stderr, `Error: Unknown command or flag "-w".\n` + cliHelp);
 assert.equal(out.status, 2);
 
 // Shows clean help with --help arg
@@ -174,7 +167,7 @@ out = child_process.spawnSync(`../../../rescript`, ["clean", "-wtf"], {
   encoding: "utf8",
   cwd: __dirname,
 });
-assert.equal(out.stderr, "Error: unknown option: '-wtf'.\n" + cleanHelp + "\n");
+assert.equal(out.stderr, 'Error: Unknown option "-wtf".\n' + cleanHelp + "\n");
 assert.equal(out.status, 2);
 
 // Shows format help with --help arg
