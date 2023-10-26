@@ -234,6 +234,6 @@ let () =
         start.pos_lnum Ext_json_parse.report_error e;
       exit 2
   | Bsb_arg.Bad s | Sys_error s ->
-      Format.fprintf Format.err_formatter "@{<error>Error:@} %s@." s;
+      Format.fprintf Format.err_formatter "@{<error>Error:@} %s" s;
       exit 2
   | e -> Ext_pervasives.reraise e

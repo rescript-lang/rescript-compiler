@@ -78,15 +78,23 @@ let out = child_process.spawnSync(`../../../rescript`, ["build", "--help"], {
   cwd: __dirname,
 });
 assert.equal(out.stdout, buildHelp);
+assert.equal(out.stderr, "");
 assert.equal(out.status, 0);
 
-// Shows build help with --help arg
+// FIXME: Help works incorrectly in watch mode
 out = child_process.spawnSync(`../../../rescript`, ["build", "-w", "--help"], {
   encoding: "utf8",
   cwd: __dirname,
 });
 // FIXME: Shouldn't have "Start compiling" for help
 assert.equal(out.stdout, ">>>> Start compiling\n" + buildHelp);
+// FIXME: Don't run the watcher when showing help
+assert.match(
+  out.stderr,
+  new RegExp(
+    "Uncaught Exception Error: ENOENT: no such file or directory, watch 'bsconfig.json'\n"
+  )
+);
 // FIXME: Should be 0
 assert.equal(out.status, 1);
 
@@ -96,6 +104,7 @@ out = child_process.spawnSync(`../../../rescript`, ["build", "-h"], {
   cwd: __dirname,
 });
 assert.equal(out.stdout, buildHelp);
+assert.equal(out.stderr, "");
 assert.equal(out.status, 0);
 
 // Exits with build help with unknown arg
@@ -103,7 +112,8 @@ out = child_process.spawnSync(`../../../rescript`, ["build", "-wtf"], {
   encoding: "utf8",
   cwd: __dirname,
 });
-assert.equal(out.stderr, 'Error: Unknown option "-wtf".\n' + buildHelp + "\n");
+assert.equal(out.stdout, "");
+assert.equal(out.stderr, 'Error: Unknown option "-wtf".\n' + buildHelp);
 assert.equal(out.status, 2);
 
 // Shows cli help with --help arg
@@ -112,6 +122,7 @@ out = child_process.spawnSync(`../../../rescript`, ["--help"], {
   cwd: __dirname,
 });
 assert.equal(out.stdout, cliHelp);
+assert.equal(out.stderr, "");
 assert.equal(out.status, 0);
 
 // Shows cli help with -h arg
@@ -120,6 +131,7 @@ out = child_process.spawnSync(`../../../rescript`, ["-h"], {
   cwd: __dirname,
 });
 assert.equal(out.stdout, cliHelp);
+assert.equal(out.stderr, "");
 assert.equal(out.status, 0);
 
 // Shows cli help with help command
@@ -128,6 +140,7 @@ out = child_process.spawnSync(`../../../rescript`, ["help"], {
   cwd: __dirname,
 });
 assert.equal(out.stdout, cliHelp);
+assert.equal(out.stderr, "");
 assert.equal(out.status, 0);
 
 // Shows cli help with unknown command
@@ -135,6 +148,7 @@ out = child_process.spawnSync(`../../../rescript`, ["built"], {
   encoding: "utf8",
   cwd: __dirname,
 });
+assert.equal(out.stdout, "");
 assert.equal(out.stderr, `Error: Unknown command or flag "built".\n` + cliHelp);
 assert.equal(out.status, 2);
 
@@ -143,6 +157,7 @@ out = child_process.spawnSync(`../../../rescript`, ["-w"], {
   encoding: "utf8",
   cwd: __dirname,
 });
+assert.equal(out.stdout, "");
 assert.equal(out.stderr, `Error: Unknown command or flag "-w".\n` + cliHelp);
 assert.equal(out.status, 2);
 
@@ -152,6 +167,7 @@ out = child_process.spawnSync(`../../../rescript`, ["clean", "--help"], {
   cwd: __dirname,
 });
 assert.equal(out.stdout, cleanHelp);
+assert.equal(out.stderr, "");
 assert.equal(out.status, 0);
 
 // Shows clean help with -h arg
@@ -160,6 +176,7 @@ out = child_process.spawnSync(`../../../rescript`, ["clean", "-h"], {
   cwd: __dirname,
 });
 assert.equal(out.stdout, cleanHelp);
+assert.equal(out.stderr, "");
 assert.equal(out.status, 0);
 
 // Exits with clean help with unknown arg
@@ -167,7 +184,8 @@ out = child_process.spawnSync(`../../../rescript`, ["clean", "-wtf"], {
   encoding: "utf8",
   cwd: __dirname,
 });
-assert.equal(out.stderr, 'Error: Unknown option "-wtf".\n' + cleanHelp + "\n");
+assert.equal(out.stdout, "");
+assert.equal(out.stderr, 'Error: Unknown option "-wtf".\n' + cleanHelp);
 assert.equal(out.status, 2);
 
 // Shows format help with --help arg
@@ -175,8 +193,8 @@ out = child_process.spawnSync(`../../../rescript`, ["format", "--help"], {
   encoding: "utf8",
   cwd: __dirname,
 });
-// Note: it writes to stderr
-assert.equal(out.stderr, formatHelp);
+assert.equal(out.stdout, formatHelp);
+assert.equal(out.stderr, "");
 assert.equal(out.status, 0);
 
 // Shows format help with -h arg
@@ -184,8 +202,8 @@ out = child_process.spawnSync(`../../../rescript`, ["format", "-h"], {
   encoding: "utf8",
   cwd: __dirname,
 });
-// Note: it writes to stderr
-assert.equal(out.stderr, formatHelp);
+assert.equal(out.stdout, formatHelp);
+assert.equal(out.stderr, "");
 assert.equal(out.status, 0);
 
 // Shows convert help with --help arg
@@ -193,8 +211,8 @@ out = child_process.spawnSync(`../../../rescript`, ["convert", "--help"], {
   encoding: "utf8",
   cwd: __dirname,
 });
-// Note: it writes to stderr
-assert.equal(out.stderr, convertHelp);
+assert.equal(out.stdout, convertHelp);
+assert.equal(out.stderr, "");
 assert.equal(out.status, 0);
 
 // Shows convert help with -h arg
@@ -202,8 +220,8 @@ out = child_process.spawnSync(`../../../rescript`, ["convert", "-h"], {
   encoding: "utf8",
   cwd: __dirname,
 });
-// Note: it writes to stderr
-assert.equal(out.stderr, convertHelp);
+assert.equal(out.stdout, convertHelp);
+assert.equal(out.stderr, "");
 assert.equal(out.status, 0);
 
 // Shows dump help with --help arg
@@ -211,8 +229,8 @@ out = child_process.spawnSync(`../../../rescript`, ["dump", "--help"], {
   encoding: "utf8",
   cwd: __dirname,
 });
-// Note: it writes to stderr
-assert.equal(out.stderr, dumpHelp);
+assert.equal(out.stdout, dumpHelp);
+assert.equal(out.stderr, "");
 assert.equal(out.status, 0);
 
 // Shows dump help with -h arg
@@ -220,6 +238,6 @@ out = child_process.spawnSync(`../../../rescript`, ["dump", "-h"], {
   encoding: "utf8",
   cwd: __dirname,
 });
-// Note: it writes to stderr
-assert.equal(out.stderr, dumpHelp);
+assert.equal(out.stdout, dumpHelp);
+assert.equal(out.stderr, "");
 assert.equal(out.status, 0);
