@@ -4354,19 +4354,19 @@ and printJsxProp ~state arg cmtTbl =
  * Navabar.createElement -> Navbar
  * Staff.Users.createElement -> Staff.Users *)
 and printJsxName {txt = lident} =
+  let printIdent = printIdentLike ~allowUident:true in
   let rec flatten acc lident =
     match lident with
-    | Longident.Lident txt -> txt :: acc
-    | Ldot (lident, txt) ->
-      let acc = if txt = "createElement" then acc else txt :: acc in
-      flatten acc lident
+    | Longident.Lident txt -> printIdent txt :: acc
+    | Ldot (lident, "createElement") -> flatten acc lident
+    | Ldot (lident, txt) -> flatten (printIdent txt :: acc) lident
     | _ -> acc
   in
   match lident with
-  | Longident.Lident txt -> Doc.text txt
+  | Longident.Lident txt -> printIdent txt
   | _ as lident ->
     let segments = flatten [] lident in
-    Doc.join ~sep:Doc.dot (List.map Doc.text segments)
+    Doc.join ~sep:Doc.dot segments
 
 and printArgumentsWithCallbackInFirstPosition ~dotted ~state args cmtTbl =
   (* Because the same subtree gets printed twice, we need to copy the cmtTbl.

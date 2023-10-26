@@ -25,6 +25,7 @@
 - Fix using dynamic import of module in block instead of async function https://github.com/rescript-lang/rescript-compiler/pull/6434
 - Fix issue with using dynamic import of module in uncurried mode https://github.com/rescript-lang/rescript-compiler/pull/6434
 - Fix build error where JSX v4 transformation of the discouraged forwardRef in uncurried mode https://github.com/rescript-lang/rescript-compiler/pull/6447
+- Fix printing of exotic JSX names https://github.com/rescript-lang/rescript-compiler/pull/6451
 
 #### :nail_care: Polish
 
