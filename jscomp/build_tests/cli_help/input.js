@@ -29,7 +29,7 @@ const buildHelp =
   "\n" +
   "`rescript build` builds the project with dependencies\n" +
   "\n" +
-  "`rescript -- -h` for Ninja options (internal usage only; unstable)\n" +
+  "`rescript build -- -h` for Ninja options (internal usage only; unstable)\n" +
   "\n" +
   "Options:\n" +
   "  -w          Watch mode\n" +

@@ -90,7 +90,7 @@ let clean_usage =
 let build_usage =
   "Usage: rescript build <options> -- <ninja_options>\n\n\
    `rescript build` builds the project with dependencies\n\n\
-   `rescript -- -h` for Ninja options (internal usage only; unstable)\n"
+   `rescript build -- -h` for Ninja options (internal usage only; unstable)\n"
 
 let install_target () =
   let ( // ) = Filename.concat in
