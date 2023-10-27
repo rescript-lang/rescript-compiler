@@ -371,3 +371,9 @@ jobs:
         run: |
           npm publish rescript-${{ needs.package.outputs.rescript_version }}.tgz --tag ci
           npm publish rescript-std-${{ needs.package.outputs.rescript_version }}.tgz --tag ci
+
+      - name: Update Website Playground
+        env:
+          NEXT_REVALIDATE_SECRET_TOKEN: ${{ secrets.NEXT_REVALIDATE_SECRET_TOKEN }}
+        run: ./playground/website_update_playground.sh
+        shell: bash
