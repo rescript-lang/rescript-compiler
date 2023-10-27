@@ -26,6 +26,7 @@
 - Fix issue with using dynamic import of module in uncurried mode https://github.com/rescript-lang/rescript-compiler/pull/6434
 - Fix build error where JSX v4 transformation of the discouraged forwardRef in uncurried mode https://github.com/rescript-lang/rescript-compiler/pull/6447
 - Fix printing of exotic JSX names https://github.com/rescript-lang/rescript-compiler/pull/6451
+- Fix locations when code with `await` fails to compile (all locations would point to the internal function `unsafe_await`) https://github.com/rescript-lang/rescript-compiler/pull/6452
 
 #### :nail_care: Polish
 
