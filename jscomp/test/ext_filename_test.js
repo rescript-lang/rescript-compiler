@@ -3,11 +3,11 @@
 
 var Sys = require("../../lib/js/sys.js");
 var List = require("../../lib/js/list.js");
+var $$Array = require("../../lib/js/array.js");
 var Bytes = require("../../lib/js/bytes.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_sys = require("../../lib/js/caml_sys.js");
 var Filename = require("../../lib/js/filename.js");
-var Belt_List = require("../../lib/js/belt_List.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Test_literals = require("./test_literals.js");
 var Ext_string_test = require("./ext_string_test.js");
@@ -115,19 +115,19 @@ function relative_path(file_or_dir_1, file_or_dir_2) {
   var ys = go(dir1, dir2);
   if (ys) {
     if (ys.hd === node_parent) {
-      return Belt_List.toArray(ys).join(node_sep);
+      return $$Array.of_list(ys).join(node_sep);
     }
     var xs = {
       hd: node_current,
       tl: ys
     };
-    return Belt_List.toArray(xs).join(node_sep);
+    return $$Array.of_list(xs).join(node_sep);
   }
   var xs$1 = {
     hd: node_current,
     tl: ys
   };
-  return Belt_List.toArray(xs$1).join(node_sep);
+  return $$Array.of_list(xs$1).join(node_sep);
 }
 
 function node_relative_path(node_modules_shorten, file1, dep_file) {

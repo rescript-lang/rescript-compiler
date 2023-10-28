@@ -38,7 +38,7 @@ let blit = B.blit_string
 
 %%private(@send external join: (array<string>, string) => string = "join")
 
-let concat = (sep: string, xs: list<string>) => xs->Belt_List.toArray->join(sep)
+let concat = (sep: string, xs: list<string>) => xs->Array.of_list->join(sep)
 
 /* duplicated in bytes.ml */
 let iter = (f, s) =>

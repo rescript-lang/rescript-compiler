@@ -81,9 +81,9 @@ o stdlib-406/stdLabels.cmj : cc_cmi stdlib-406/stdLabels.res | stdlib-406/arrayL
 o stdlib-406/stdLabels.cmi : cc stdlib-406/stdLabels.resi | stdlib-406/arrayLabels.cmi stdlib-406/bytesLabels.cmi stdlib-406/listLabels.cmi stdlib-406/pervasives.cmj stdlib-406/stringLabels.cmi $bsc others
 o stdlib-406/stream.cmj : cc_cmi stdlib-406/stream.res | stdlib-406/bytes.cmj stdlib-406/lazy.cmj stdlib-406/list.cmj stdlib-406/stream.cmi stdlib-406/string.cmj $bsc others
 o stdlib-406/stream.cmi : cc stdlib-406/stream.resi | stdlib-406/pervasives.cmj $bsc others
-o stdlib-406/string.cmj : cc_cmi stdlib-406/string.res | stdlib-406/bytes.cmj stdlib-406/string.cmi $bsc others
+o stdlib-406/string.cmj : cc_cmi stdlib-406/string.res | stdlib-406/array.cmj stdlib-406/bytes.cmj stdlib-406/string.cmi $bsc others
 o stdlib-406/string.cmi : cc stdlib-406/string.resi | stdlib-406/pervasives.cmj $bsc others
-o stdlib-406/stringLabels.cmj : cc_cmi stdlib-406/stringLabels.res | stdlib-406/bytes.cmj stdlib-406/stringLabels.cmi $bsc others
+o stdlib-406/stringLabels.cmj : cc_cmi stdlib-406/stringLabels.res | stdlib-406/array.cmj stdlib-406/bytes.cmj stdlib-406/stringLabels.cmi $bsc others
 o stdlib-406/stringLabels.cmi : cc stdlib-406/stringLabels.resi | stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/sys.cmj : cc_cmi stdlib-406/sys.res | stdlib-406/sys.cmi $bsc others
 o stdlib-406/sys.cmi : cc stdlib-406/sys.resi | stdlib-406/pervasives.cmj $bsc others
