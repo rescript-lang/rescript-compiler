@@ -5,3 +5,8 @@ type user =
     })
 
 let user = User({name: "Corentin"})
+
+let getName = t =>
+  switch t {
+  | User({name}) => name
+  }

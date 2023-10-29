@@ -2,10 +2,15 @@
 'use strict';
 
 
+function getName(t) {
+  return t.renamed;
+}
+
 var user = {
   TAG: "User",
   renamed: "Corentin"
 };
 
 exports.user = user;
+exports.getName = getName;
 /* No side effect */
