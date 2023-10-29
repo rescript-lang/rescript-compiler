@@ -94,8 +94,6 @@ external appendChild: (Dom.element, Dom.element) => Dom.element = "appendChild"
 let querySelectorAll = (element, string) => Js.Array.from(querySelectorAll(element, string))
 
 module DOM = {
-  open Belt
-
   @return(nullable) @get
   external value: Dom.element => option<string> = "value"
 
@@ -104,30 +102,31 @@ module DOM = {
   let findByAllSelector = (element, selector) => querySelectorAll(element, selector)
 
   let findBySelectorAndTextContent = (element, selector, content) =>
-    querySelectorAll(element, selector)->Array.getBy(node => node->textContent === content)
+    querySelectorAll(element, selector)->Js.Array2.find(node => node->textContent === content)
 
   let findBySelectorAndPartialTextContent = (element, selector, content) =>
-    querySelectorAll(element, selector)->Array.getBy(node =>
+    querySelectorAll(element, selector)->Js.Array2.find(node =>
       node->textContent->Js.String2.includes(content)
     )
 }
 
 let prepareContainer = (container: ref<option<Dom.element>>, ()) => {
-  open Belt
-
   let containerElement = document->createElement("div")
-  let _ = document->body->Option.map(body => body->appendChild(containerElement))
+  switch document->body {
+    | Some(body) => let _ = body->appendChild(containerElement)
+    | None => ()
+  }
   container := Some(containerElement)
 }
 
 let cleanupContainer = (container: ref<option<Dom.element>>, ()) => {
-  open Belt
-
-  let _ = container.contents->Option.map(remove)
+  switch container.contents {
+    | Some(contents) => let _ = contents->remove
+    | None => ()
+  }
   container := None
 }
 
 let getContainer = container => {
-  open Belt
-  container.contents->Option.getExn
+  container.contents->Js.Option.getExn
 }

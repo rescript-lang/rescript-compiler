@@ -2,7 +2,6 @@
 'use strict';
 
 var Js_dict = require("../../lib/js/js_dict.js");
-var Belt_Array = require("../../lib/js/belt_Array.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_option = require("../../lib/js/caml_option.js");
 
@@ -500,9 +499,7 @@ async function classify$10(a) {
     return ;
   } else {
     if (Array.isArray(a)) {
-      console.log(function (param) {
-            return Belt_Array.joinWith(a, "-", param);
-          });
+      console.log(a.join("-"));
       return ;
     }
     if (a instanceof Promise) {
@@ -527,9 +524,7 @@ var Arr = {
 
 async function classifyAll(t) {
   if (Array.isArray(t)) {
-    console.log(function (param) {
-          return Belt_Array.joinWith(t, "-", param);
-        });
+    console.log(t.join("-"));
     return ;
   }
   if (t instanceof Promise) {
