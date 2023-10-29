@@ -28,6 +28,10 @@
 - Fix printing of exotic JSX names https://github.com/rescript-lang/rescript-compiler/pull/6451
 - Fix locations when code with `await` fails to compile (all locations would point to the internal function `unsafe_await`) https://github.com/rescript-lang/rescript-compiler/pull/6452
 
+#### :house: Internal
+
+- Remove dependency stdlib-406 -> belt. https://github.com/rescript-lang/rescript-compiler/pull/6453
+
 #### :nail_care: Polish
 
 - Add [`Deno`](https://deno.land/api?s=Deno) to reserved names, so that modules named `Deno` don't clash with the globally exposed `Deno` object. https://github.com/rescript-lang/rescript-compiler/pull/6428
