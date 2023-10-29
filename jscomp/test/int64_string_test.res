@@ -185,7 +185,7 @@ let random_data = list{
   list{(-8852749148056563032L, "-8852749148056563032")},
 }
 
-Belt_List.forEach(random_data, u =>
+random_data |> List.iter(u =>
   switch u {
   | list{(v, str)} => eq(__LOC__, Int64.to_string(v), str)
   | _ => assert(false)

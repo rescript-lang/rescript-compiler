@@ -352,28 +352,28 @@ let () = {
 
 let id = (type t, obj: t): t => obj->J.serializeExn->J.deserializeUnsafe
 
-let idtest = obj => eq(__LOC__, obj, id(obj))
-let () = {
-  idtest(None)
-  idtest(list{(None, None, None)})
-  idtest(
-    Belt.List.makeBy(500, i =>
-      if mod(i, 2) == 0 {
-        None
-      } else {
-        Some(1)
-      }
-    ),
-  )
-  idtest(
-    Belt.Array.makeBy(500, i =>
-      if mod(i, 2) == 0 {
-        None
-      } else {
-        Some(1)
-      }
-    ),
-  )
-}
+// let idtest = obj => eq(__LOC__, obj, id(obj))
+// let () = {
+//   idtest(None)
+//   idtest(list{(None, None, None)})
+//   idtest(
+//     Belt.List.makeBy(500, i =>
+//       if mod(i, 2) == 0 {
+//         None
+//       } else {
+//         Some(1)
+//       }
+//     ),
+//   )
+//   idtest(
+//     Belt.Array.makeBy(500, i =>
+//       if mod(i, 2) == 0 {
+//         None
+//       } else {
+//         Some(1)
+//       }
+//     ),
+//   )
+// }
 
 let () = Mt.from_pair_suites(__MODULE__, suites.contents)

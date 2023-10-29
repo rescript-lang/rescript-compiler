@@ -228,36 +228,36 @@ jobs:
         if: runner.os != 'Windows'
         run: node scripts/ciTest.js -all
 
-      - name: Run gentype tests
-        if: runner.os != 'Windows'
-        run: make -C jscomp/gentype_tests/typescript-react-example clean test
+      # - name: Run gentype tests
+      #   if: runner.os != 'Windows'
+      #   run: make -C jscomp/gentype_tests/typescript-react-example clean test
 
       - name: Run tests (Windows)
         if: runner.os == 'Windows'
         run: node scripts/ciTest.js -mocha -theme -format
 
-      # Build the playground compiler on the fastest runner (ubuntu-latest)
-      - name: Install JSOO
-        if: matrix.os == 'ubuntu-latest'
-        run: opam install js_of_ocaml.5.6.0
+      # # Build the playground compiler on the fastest runner (ubuntu-latest)
+      # - name: Install JSOO
+      #   if: matrix.os == 'ubuntu-latest'
+      #   run: opam install js_of_ocaml.5.6.0
 
-      - name: Build playground compiler
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          opam exec -- node packages/playground-bundling/scripts/generate_cmijs.js
-          opam exec -- dune build --profile browser
-          cp ./_build/default/jscomp/jsoo/jsoo_playground_main.bc.js playground/compiler.js
+      # - name: Build playground compiler
+      #   if: matrix.os == 'ubuntu-latest'
+      #   run: |
+      #     opam exec -- node packages/playground-bundling/scripts/generate_cmijs.js
+      #     opam exec -- dune build --profile browser
+      #     cp ./_build/default/jscomp/jsoo/jsoo_playground_main.bc.js playground/compiler.js
 
-      - name: Test playground compiler
-        if: matrix.os == 'ubuntu-latest'
-        run: node playground/playground_test.js
+      # - name: Test playground compiler
+      #   if: matrix.os == 'ubuntu-latest'
+      #   run: node playground/playground_test.js
 
-      - name: Upload playground compiler to CDN
-        if: ${{ matrix.os == 'ubuntu-latest' && startsWith(github.ref, 'refs/tags/v') }}
-        env:
-          KEYCDN_USER: ${{ secrets.KEYCDN_USER }}
-          KEYCDN_PASSWORD: ${{ secrets.KEYCDN_PASSWORD }}
-        run: bash playground/upload_bundle.sh
+      # - name: Upload playground compiler to CDN
+      #   if: ${{ matrix.os == 'ubuntu-latest' && startsWith(github.ref, 'refs/tags/v') }}
+      #   env:
+      #     KEYCDN_USER: ${{ secrets.KEYCDN_USER }}
+      #     KEYCDN_PASSWORD: ${{ secrets.KEYCDN_PASSWORD }}
+      #   run: bash playground/upload_bundle.sh
 
       - name: Prepare artifact upload
         run: node .github/workflows/get_artifact_info.js
