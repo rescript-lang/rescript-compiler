@@ -6,11 +6,17 @@ function getName(t) {
   return t.renamed;
 }
 
+function getAge(t) {
+  return t.age;
+}
+
 var user = {
   TAG: "User",
-  renamed: "Corentin"
+  renamed: "Corentin",
+  age: 35
 };
 
 exports.user = user;
 exports.getName = getName;
+exports.getAge = getAge;
 /* No side effect */
