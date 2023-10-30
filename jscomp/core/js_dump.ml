@@ -565,11 +565,17 @@ and expression_desc cxt ~(level : int) f x : cxt =
                                async;
                              };
                        };
-                      ] ->
+                      ] -> (* *)
+
                           pp_function ~is_method ~return_unit ~async cxt f
                             ~fn_state:(No_name { single_arg = true })
                             params body env
-                      | _ -> arguments cxt f el)
+                      | _ ->
+                        let el = match el with
+                        | [e] when e.expression_desc = Undefined -> []
+                        | _ ->el in
+
+                         arguments cxt f el)
               | _, _ ->
                   let len = List.length el in
                   if 1 <= len && len <= 8 then (

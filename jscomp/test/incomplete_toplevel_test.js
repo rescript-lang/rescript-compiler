@@ -11,7 +11,7 @@ function f(param) {
         ];
 }
 
-var match = f(undefined);
+var match = f();
 
 var a = match[0];
 

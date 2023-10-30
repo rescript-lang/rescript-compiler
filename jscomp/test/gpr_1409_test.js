@@ -58,9 +58,9 @@ function make(foo) {
   };
 }
 
-var a_ = make(undefined)(undefined);
+var a_ = make()();
 
-var b_ = make(42)(undefined);
+var b_ = make(42)();
 
 eq("File \"gpr_1409_test.res\", line 26, characters 3-10", b_.foo, "42");
 

@@ -30,9 +30,9 @@ var arr = [
   3
 ];
 
-var toplevelAwait = await topFoo(undefined);
+var toplevelAwait = await topFoo();
 
-var toplevelAwait2 = Caml_array.get(arr, await topFoo(undefined));
+var toplevelAwait2 = Caml_array.get(arr, await topFoo());
 
 exports.next = next;
 exports.useNext = useNext;

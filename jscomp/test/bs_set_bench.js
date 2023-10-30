@@ -47,7 +47,7 @@ function bench(param) {
 
 console.time("bs_set_bench.res 24");
 
-bench(undefined);
+bench();
 
 console.timeEnd("bs_set_bench.res 24");
 

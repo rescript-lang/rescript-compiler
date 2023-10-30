@@ -55,7 +55,7 @@ function fff(param) {
 }
 
 function g() {
-  fff(undefined);
+  fff();
 }
 
 function abc(x, y, z) {
@@ -66,7 +66,7 @@ function abc(x, y, z) {
 
 var abc_u = abc;
 
-fff(undefined);
+fff();
 
 Mt.from_pair_suites("Ffi_arity_test", {
       hd: [

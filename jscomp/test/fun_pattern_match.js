@@ -69,7 +69,7 @@ function r(param) {
   return x;
 }
 
-var match = r(undefined);
+var match = r();
 
 var v = Curry._1(match.VAL, undefined);
 

@@ -49,7 +49,7 @@ function g(param) {
   console.log(String(next(0, true)));
 }
 
-g(undefined);
+g();
 
 var x = {};
 

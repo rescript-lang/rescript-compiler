@@ -23,7 +23,7 @@ var node_current = ".";
 var cwd = {
   LAZY_DONE: false,
   VAL: (function () {
-      return Caml_sys.sys_getcwd(undefined);
+      return Caml_sys.sys_getcwd();
     })
 };
 

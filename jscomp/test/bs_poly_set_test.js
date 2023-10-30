@@ -187,13 +187,13 @@ b("File \"bs_poly_set_test.res\", line 85, characters 4-11", undefined === Belt_
 
 eq("File \"bs_poly_set_test.res\", line 87, characters 5-12", Belt_SetDict.size(u25.data), 60);
 
-b("File \"bs_poly_set_test.res\", line 88, characters 4-11", Belt_SetDict.minimum(undefined) === undefined);
+b("File \"bs_poly_set_test.res\", line 88, characters 4-11", Belt_SetDict.minimum() === undefined);
 
-b("File \"bs_poly_set_test.res\", line 89, characters 4-11", Belt_SetDict.maximum(undefined) === undefined);
+b("File \"bs_poly_set_test.res\", line 89, characters 4-11", Belt_SetDict.maximum() === undefined);
 
-b("File \"bs_poly_set_test.res\", line 90, characters 4-11", Belt_SetDict.minUndefined(undefined) === undefined);
+b("File \"bs_poly_set_test.res\", line 90, characters 4-11", Belt_SetDict.minUndefined() === undefined);
 
-b("File \"bs_poly_set_test.res\", line 91, characters 4-11", Belt_SetDict.maxUndefined(undefined) === undefined);
+b("File \"bs_poly_set_test.res\", line 91, characters 4-11", Belt_SetDict.maxUndefined() === undefined);
 
 function testIterToList(xs) {
   var v = {

@@ -217,7 +217,7 @@ function open_out_bin(name) {
 }
 
 function flush_all(param) {
-  var _x = Caml_external_polyfill.resolve("ml_out_channels_list")(undefined);
+  var _x = Caml_external_polyfill.resolve("ml_out_channels_list")();
   while(true) {
     var x = _x;
     if (!x) {

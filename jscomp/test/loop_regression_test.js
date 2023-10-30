@@ -27,7 +27,7 @@ var suites_0 = [
       return {
               TAG: "Eq",
               _0: 55,
-              _1: f(undefined)
+              _1: f()
             };
     })
 ];

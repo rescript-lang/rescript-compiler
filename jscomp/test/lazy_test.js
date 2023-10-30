@@ -188,7 +188,7 @@ Mt.from_pair_suites("Lazy_test", {
         (function (param) {
             return {
                     TAG: "Eq",
-                    _0: lazy_test(undefined),
+                    _0: lazy_test(),
                     _1: [
                       3,
                       32

@@ -14,9 +14,9 @@ function g(param) {
   return 1;
 }
 
-var c = g(undefined);
+var c = g();
 
-var d = g(undefined);
+var d = g();
 
 exports.f = f;
 exports.a = a;

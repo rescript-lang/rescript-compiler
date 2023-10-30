@@ -45,7 +45,7 @@ function iter(_bounce) {
     if (bounce.TAG === "Continue") {
       return bounce._0;
     }
-    _bounce = bounce._0(undefined);
+    _bounce = bounce._0();
     continue ;
   };
 }

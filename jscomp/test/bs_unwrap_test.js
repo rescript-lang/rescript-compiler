@@ -30,7 +30,7 @@ var arg_pair = {
 
 console.log(arg_pair.VAL);
 
-console.log(undefined);
+console.log();
 
 console.log(1, undefined);
 

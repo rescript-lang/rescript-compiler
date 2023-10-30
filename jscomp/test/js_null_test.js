@@ -22,8 +22,8 @@ var suites_1 = {
     (function (param) {
         return {
                 TAG: "Eq",
-                _0: Caml_option.some(undefined),
-                _1: Caml_option.some(undefined)
+                _0: Caml_option.some(),
+                _1: Caml_option.some()
               };
       })
   ],
@@ -127,7 +127,7 @@ var suites_1 = {
                         return {
                                 TAG: "Eq",
                                 _0: null,
-                                _1: Js_null.fromOption(undefined)
+                                _1: Js_null.fromOption()
                               };
                       })
                   ],

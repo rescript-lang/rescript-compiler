@@ -85,7 +85,7 @@ function f8(x) {
   }
 }
 
-var u = f8(undefined);
+var u = f8();
 
 function f9(x) {
   if (x === null) {
@@ -170,7 +170,7 @@ function f8$1(x) {
   }
 }
 
-var u$1 = f8$1(undefined);
+var u$1 = f8$1();
 
 function f9$1(x) {
   if (x === undefined) {
@@ -253,7 +253,7 @@ function f8$2(x) {
   }
 }
 
-var u$2 = f8$2(undefined);
+var u$2 = f8$2();
 
 function f9$2(x) {
   if (x == null) {

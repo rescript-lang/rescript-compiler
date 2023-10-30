@@ -46,13 +46,13 @@ function test2(param) {
 
 console.time("imm_map_bench.res 43");
 
-test(undefined);
+test();
 
 console.timeEnd("imm_map_bench.res 43");
 
 console.time("imm_map_bench.res 44");
 
-test2(undefined);
+test2();
 
 console.timeEnd("imm_map_bench.res 44");
 

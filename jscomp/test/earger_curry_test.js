@@ -60,7 +60,7 @@ function f2(param) {
   console.log(Pervasives.string_of_float(v));
 }
 
-f2(undefined);
+f2();
 
 var suites = {
   contents: /* [] */0

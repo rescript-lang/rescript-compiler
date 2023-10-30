@@ -47,7 +47,7 @@ function emptyMap(param) {
 function mergeInter(s1, s2) {
   var m = Belt_Map.merge(s1, s2, (function (k, v1, v2) {
           if (v1 !== undefined && v2 !== undefined) {
-            return Caml_option.some(undefined);
+            return Caml_option.some();
           }
           
         }));
@@ -57,7 +57,7 @@ function mergeInter(s1, s2) {
 function mergeUnion(s1, s2) {
   var m = Belt_Map.merge(s1, s2, (function (k, v1, v2) {
           if (v1 !== undefined || v2 !== undefined) {
-            return Caml_option.some(undefined);
+            return Caml_option.some();
           }
           
         }));
@@ -67,7 +67,7 @@ function mergeUnion(s1, s2) {
 function mergeDiff(s1, s2) {
   var m = Belt_Map.merge(s1, s2, (function (k, v1, v2) {
           if (v1 !== undefined && v2 === undefined) {
-            return Caml_option.some(undefined);
+            return Caml_option.some();
           }
           
         }));

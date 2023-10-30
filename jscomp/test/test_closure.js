@@ -23,7 +23,7 @@ function f(param) {
   return arr;
 }
 
-var u = f(undefined);
+var u = f();
 
 $$Array.iter((function (x) {
         Curry._1(x, undefined);

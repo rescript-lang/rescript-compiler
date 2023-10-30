@@ -30,7 +30,7 @@ var suites_0 = [
   (function (param) {
       return {
               TAG: "Eq",
-              _0: f(undefined),
+              _0: f(),
               _1: [
                 0,
                 1,

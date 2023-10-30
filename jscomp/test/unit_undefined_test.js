@@ -46,21 +46,21 @@ function u0(x) {
   return Caml_option.some(x);
 }
 
-var u1 = Caml_option.some(undefined);
+var u1 = Caml_option.some();
 
 function u2(x) {
   return Caml_option.some(x);
 }
 
-var u3 = Caml_option.some(undefined);
+var u3 = Caml_option.some();
 
-eq("File \"unit_undefined_test.res\", line 41, characters 3-10", Caml_option.some(undefined), Caml_option.some(undefined));
+eq("File \"unit_undefined_test.res\", line 41, characters 3-10", Caml_option.some(), Caml_option.some());
 
-eq("File \"unit_undefined_test.res\", line 42, characters 3-10", u1, Caml_option.some(undefined));
+eq("File \"unit_undefined_test.res\", line 42, characters 3-10", u1, Caml_option.some());
 
-eq("File \"unit_undefined_test.res\", line 43, characters 3-10", Caml_option.some(undefined), Caml_option.some(undefined));
+eq("File \"unit_undefined_test.res\", line 43, characters 3-10", Caml_option.some(), Caml_option.some());
 
-eq("File \"unit_undefined_test.res\", line 44, characters 3-10", u3, Caml_option.some(undefined));
+eq("File \"unit_undefined_test.res\", line 44, characters 3-10", u3, Caml_option.some());
 
 eq("File \"unit_undefined_test.res\", line 45, characters 3-10", undefined, undefined);
 
