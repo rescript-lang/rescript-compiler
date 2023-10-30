@@ -1,6 +1,7 @@
 /* TypeScript file generated from MyInput.res by genType. */
-/* eslint-disable import/first */
 
+/* eslint-disable */
+/* tslint:disable */
 
 import {default as defaultNotChecked} from './MyInput';
 
@@ -12,7 +13,6 @@ export const $$default: unknown = defaultTypeChecked as React.ComponentType<{ re
 
 import type {inputFocusEvent as $$inputFocusEvent} from './shims/ReactEvent.shim';
 
-// tslint:disable-next-line:interface-over-type-literal
 export type inputFocusEvent = $$inputFocusEvent;
 
 export default $$default;

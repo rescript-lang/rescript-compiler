@@ -1,6 +1,7 @@
 /* TypeScript file generated from ImportHookDefault.res by genType. */
-/* eslint-disable import/first */
 
+/* eslint-disable */
+/* tslint:disable */
 
 import {default as makeNotChecked} from './hookExample';
 
@@ -36,7 +37,6 @@ export const $$default: unknown = defaultTypeChecked as React.ComponentType<{
 
 import type {renderMe as ImportHooks_renderMe} from './ImportHooks.gen';
 
-// tslint:disable-next-line:interface-over-type-literal
 export type person = { readonly name: string; readonly age: number };
 
 export default $$default;

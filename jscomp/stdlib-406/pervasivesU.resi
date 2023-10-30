@@ -738,13 +738,6 @@ external incr: ref<int> => unit = "%incr"
    Equivalent to [fun r -> r := pred !r]. */
 external decr: ref<int> => unit = "%decr"
 
-/*** {1 Result type} */
-
-/** @since 4.03.0 */
-type result<'a, 'b> = Belt.Result.t<'a, 'b> =
-  | Ok('a)
-  | Error('b)
-
 /*** {1 Program termination} */
 
 /** Terminate the process, returning the given status code

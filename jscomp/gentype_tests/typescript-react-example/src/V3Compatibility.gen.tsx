@@ -1,6 +1,6 @@
 /* TypeScript file generated from V3Compatibility.res by genType. */
-/* eslint-disable import/first */
 
+/* eslint-disable */
+/* tslint:disable */
 
-// tslint:disable-next-line:interface-over-type-literal
 export type cb = (_1:number) => string;

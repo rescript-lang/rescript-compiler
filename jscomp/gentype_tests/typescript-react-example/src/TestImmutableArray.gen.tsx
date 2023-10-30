@@ -1,8 +1,8 @@
 /* TypeScript file generated from TestImmutableArray.res by genType. */
-/* eslint-disable import/first */
 
+/* eslint-disable */
+/* tslint:disable */
 
-// @ts-ignore: Implicit any on import
 import * as TestImmutableArrayBS__Es6Import from './TestImmutableArray.bs';
 const TestImmutableArrayBS: any = TestImmutableArrayBS__Es6Import;
 

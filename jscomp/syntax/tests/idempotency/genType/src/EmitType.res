@@ -479,7 +479,7 @@ let emitRequire = (
   importPath,
 ) => {
   let commentBeforeRequire = switch config.language {
-  | TypeScript => "// tslint:disable-next-line:no-var-requires\n"
+  | TypeScript => "// eslint-disable-next-line @typescript-eslint/no-var-requires\n"
   | Flow => strict ? early ? "// flowlint-next-line nonstrict-import:off\n" : "" : flowExpectedError
   | Untyped => ""
   }

@@ -12,6 +12,31 @@
 
 # 11.0.0-rc.5 (Unreleased)
 
+#### :rocket: New Feature
+- Allow coercing unboxed variants with only strings (now including with a single payload of string) to the primitive string. https://github.com/rescript-lang/rescript-compiler/pull/6441
+- Allow coercing strings to unboxed variants that has a catch-all unboxed string case. https://github.com/rescript-lang/rescript-compiler/pull/6443
+- Allow coercing `int` to `float`. https://github.com/rescript-lang/rescript-compiler/pull/6448
+- Playground: Add support for implicitly opened modules. https://github.com/rescript-lang/rescript-compiler/pull/6446
+
+#### :bug: Bug Fix
+
+- Fix issue with dynamic import of module in nested expressions https://github.com/rescript-lang/rescript-compiler/pull/6431
+- Fix issue where GenType was not supporting `@tag` on ordinary variatns https://github.com/rescript-lang/rescript-compiler/pull/6437
+- Fix using dynamic import of module in block instead of async function https://github.com/rescript-lang/rescript-compiler/pull/6434
+- Fix issue with using dynamic import of module in uncurried mode https://github.com/rescript-lang/rescript-compiler/pull/6434
+- Fix build error where JSX v4 transformation of the discouraged forwardRef in uncurried mode https://github.com/rescript-lang/rescript-compiler/pull/6447
+- Fix printing of exotic JSX names https://github.com/rescript-lang/rescript-compiler/pull/6451
+- Fix locations when code with `await` fails to compile (all locations would point to the internal function `unsafe_await`) https://github.com/rescript-lang/rescript-compiler/pull/6452
+
+#### :house: Internal
+
+- Remove dependency stdlib-406 -> belt. https://github.com/rescript-lang/rescript-compiler/pull/6453
+
+#### :nail_care: Polish
+
+- Add [`Deno`](https://deno.land/api?s=Deno) to reserved names, so that modules named `Deno` don't clash with the globally exposed `Deno` object. https://github.com/rescript-lang/rescript-compiler/pull/6428
+- Disable ESLint/TSLint on gentype outputs properly. https://github.com/rescript-lang/rescript-compiler/pull/6442
+
 # 11.0.0-rc.4
 
 #### :rocket: New Feature

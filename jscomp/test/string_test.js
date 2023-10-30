@@ -3,9 +3,9 @@
 
 var Mt = require("./mt.js");
 var List = require("../../lib/js/list.js");
+var $$Array = require("../../lib/js/array.js");
 var Bytes = require("../../lib/js/bytes.js");
 var $$String = require("../../lib/js/string.js");
-var Belt_List = require("../../lib/js/belt_List.js");
 var Ext_string_test = require("./ext_string_test.js");
 var Caml_js_exceptions = require("../../lib/js/caml_js_exceptions.js");
 
@@ -131,7 +131,7 @@ function string_of_chars(x) {
   var xs = List.map((function (prim) {
           return String.fromCharCode(prim);
         }), x);
-  return Belt_List.toArray(xs).join("");
+  return $$Array.of_list(xs).join("");
 }
 
 Mt.from_pair_suites("String_test", {

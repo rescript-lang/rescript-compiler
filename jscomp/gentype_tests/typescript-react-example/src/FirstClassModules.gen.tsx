@@ -1,18 +1,15 @@
 /* TypeScript file generated from FirstClassModules.res by genType. */
-/* eslint-disable import/first */
 
+/* eslint-disable */
+/* tslint:disable */
 
-// @ts-ignore: Implicit any on import
 import * as FirstClassModulesBS__Es6Import from './FirstClassModules.bs';
 const FirstClassModulesBS: any = FirstClassModulesBS__Es6Import;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type MT_t = number;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type MT_InnerModule3_inner = number;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type firstClassModule = {
   readonly x: number; 
   readonly EmptyInnerModule: {

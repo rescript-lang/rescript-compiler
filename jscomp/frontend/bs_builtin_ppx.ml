@@ -264,13 +264,29 @@ let expr_mapper ~async_context ~in_function_def (self : mapper)
   let async_saved = !async_context in
   let result = expr_mapper ~async_context ~in_function_def self e in
   async_context := async_saved;
-  match Ast_attributes.has_await_payload e.pexp_attributes with
+  let is_module, has_await =
+    match e.pexp_desc with
+    | Pexp_letmodule (_, {pmod_desc = Pmod_ident _; pmod_attributes}, _)
+    | Pexp_letmodule
+        ( _,
+          {
+            pmod_desc =
+              Pmod_constraint
+                ({pmod_desc = Pmod_ident _}, {pmty_desc = Pmty_ident _});
+            pmod_attributes;
+          },
+          _ ) ->
+      (true, Ast_attributes.has_await_payload pmod_attributes)
+    | _ -> (false, Ast_attributes.has_await_payload e.pexp_attributes)
+  in
+  match has_await with
   | None -> result
   | Some _ ->
     if !async_context = false then
       Location.raise_errorf ~loc:e.pexp_loc
         "Await on expression not in an async context";
-    Ast_await.create_await_expression result
+    if is_module = false then Ast_await.create_await_expression result
+    else result
 
 let typ_mapper (self : mapper) (typ : Parsetree.core_type) =
   Ast_core_type_class_type.typ_mapper self typ
@@ -574,35 +590,43 @@ let rec structure_mapper ~await_context (self : mapper) (stru : Ast_structure.t)
     | Pstr_value (_, vbs) ->
       let item = self.structure_item self item in
       (* [ module __Belt_List__ = module type of Belt.List ] *)
-      let module_type_decls =
-        vbs
-        |> List.filter_map (fun ({pvb_expr} : Parsetree.value_binding) ->
-               match pvb_expr.pexp_desc with
-               | Pexp_letmodule
-                   ( _,
-                     ({pmod_desc = Pmod_ident {txt; loc}; pmod_attributes} as
-                     me),
-                     _ )
-                 when Res_parsetree_viewer.hasAwaitAttribute pmod_attributes
-                 -> (
-                 let safe_module_type_name = local_module_type_name txt in
-                 let has_local_module_name =
-                   Hashtbl.find_opt !await_context safe_module_type_name
-                 in
+      let rec spelunk_vbs acc vbs =
+        match vbs with
+        | [] -> acc
+        | ({pvb_expr} : Parsetree.value_binding) :: tl ->
+          let rec aux (expr : Parsetree.expression) =
+            match expr.pexp_desc with
+            | Pexp_letmodule
+                ( _,
+                  ({pmod_desc = Pmod_ident {txt; loc}; pmod_attributes} as me),
+                  expr )
+              when Res_parsetree_viewer.hasAwaitAttribute pmod_attributes -> (
+              let safe_module_type_name = local_module_type_name txt in
+              let has_local_module_name =
+                Hashtbl.find_opt !await_context safe_module_type_name
+              in
 
-                 match has_local_module_name with
-                 | Some _ -> None
-                 | None ->
-                   Hashtbl.add !await_context safe_module_type_name
-                     safe_module_type_name;
-                   Some
-                     Ast_helper.(
-                       Str.modtype ~loc
-                         (Mtd.mk ~loc
-                            {txt = safe_module_type_name; loc}
-                            ~typ:(Mty.typeof_ ~loc me))))
-               | _ -> None)
+              match has_local_module_name with
+              | Some _ -> aux expr
+              | None ->
+                Hashtbl.add !await_context safe_module_type_name
+                  safe_module_type_name;
+                Ast_helper.(
+                  Str.modtype ~loc
+                    (Mtd.mk ~loc
+                       {txt = safe_module_type_name; loc}
+                       ~typ:(Mty.typeof_ ~loc me)))
+                :: aux expr)
+            | Pexp_let (_, vbs, expr) -> aux expr @ spelunk_vbs acc vbs
+            | Pexp_ifthenelse (_, then_expr, Some else_expr) ->
+              aux then_expr @ aux else_expr
+            | Pexp_construct (_, Some expr) -> aux expr
+            | Pexp_fun (_, _, _, expr) | Pexp_newtype (_, expr) -> aux expr
+            | _ -> acc
+          in
+          aux pvb_expr @ spelunk_vbs acc tl
       in
+      let module_type_decls = spelunk_vbs [] vbs in
 
       module_type_decls @ (item :: structure_mapper ~await_context self rest)
     | _ ->

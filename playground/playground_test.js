@@ -5,10 +5,10 @@ require("./packages/@rescript/core/cmij.js")
 
 let compiler = rescript_compiler.make()
 
+compiler.setOpenModules(["RescriptCore"])
+
 let result = compiler.rescript.compile(`
   @@jsxConfig({ version: 4, mode: "automatic" })
-
-  open RescriptCore
 
   module A = {
     @react.component

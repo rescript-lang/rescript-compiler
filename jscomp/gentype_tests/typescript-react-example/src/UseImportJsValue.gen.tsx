@@ -1,8 +1,8 @@
 /* TypeScript file generated from UseImportJsValue.res by genType. */
-/* eslint-disable import/first */
 
+/* eslint-disable */
+/* tslint:disable */
 
-// @ts-ignore: Implicit any on import
 import * as UseImportJsValueBS__Es6Import from './UseImportJsValue.bs';
 const UseImportJsValueBS: any = UseImportJsValueBS__Es6Import;
 

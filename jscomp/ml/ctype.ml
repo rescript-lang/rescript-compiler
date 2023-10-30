@@ -3951,13 +3951,28 @@ let rec subtype_rec env trace t1 t2 cstrs =
         end
     | (Tconstr(p1, _, _), _) when generic_private_abbrev env p1 ->
         subtype_rec env trace (expand_abbrev_opt env t1) t2 cstrs
+    | (Tconstr(p1, [], _), Tconstr(p2, [], _)) when Path.same p1 Predef.path_int && Path.same p2 Predef.path_float ->
+        cstrs 
+    | (Tconstr(path, [], _), Tconstr(_, [], _)) when Path.same path Predef.path_string && 
+        extract_concrete_typedecl env t2 |> Variant_coercion.can_try_coerce_variant_to_primitive |> Option.is_some
+        ->
+      (* type coercion for strings to elgible unboxed variants:
+         - must be unboxed
+         - must have a constructor case with a string payload *)
+      (match Variant_coercion.can_try_coerce_variant_to_primitive (extract_concrete_typedecl env t2) with
+      | Some (constructors, true) -> 
+        if constructors |> Variant_coercion.variant_has_catch_all_string_case then
+          cstrs
+        else 
+          (trace, t1, t2, !univar_pairs)::cstrs
+      | _ -> (trace, t1, t2, !univar_pairs)::cstrs)
     | (Tconstr(_, [], _), Tconstr(path, [], _)) when Variant_coercion.can_coerce_path path && 
         extract_concrete_typedecl env t1 |> Variant_coercion.can_try_coerce_variant_to_primitive |> Option.is_some
         ->
       (* type coercion for variants to primitives *)
       (match Variant_coercion.can_try_coerce_variant_to_primitive (extract_concrete_typedecl env t1) with
-      | Some constructors -> 
-        if constructors |> Variant_coercion.can_coerce_variant ~path then
+      | Some (constructors, unboxed) -> 
+        if constructors |> Variant_coercion.variant_has_same_runtime_representation_as_target ~targetPath:path ~unboxed then
           cstrs
         else 
           (trace, t1, t2, !univar_pairs)::cstrs

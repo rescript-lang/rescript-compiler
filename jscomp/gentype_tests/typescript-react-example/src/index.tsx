@@ -21,7 +21,6 @@ import {
 } from "./VariantsWithPayload.gen";
 import * as TestPromise from "./TestPromise.gen";
 
-// tslint:disable-next-line:no-console
 const consoleLog = console.log;
 
 const intList = Types.map((x) => x + 1, Types.someIntList);
@@ -129,6 +128,7 @@ TestPromise.convert(Promise.resolve({ x: 3, s: "hello" })).then((x) =>
 type Props = {
   readonly method?: "push" | "replace";
 };
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const make: React.FC<Props> = (x: Props) => {
   return <div></div>;
 };

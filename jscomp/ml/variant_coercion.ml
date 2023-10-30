@@ -6,28 +6,55 @@ let can_coerce_path (path : Path.t) =
   || Path.same path Predef.path_int
   || Path.same path Predef.path_float
 
-let can_coerce_variant ~(path : Path.t)
-    (constructors : Types.constructor_declaration list) =
-  constructors
-  |> List.for_all (fun (c : Types.constructor_declaration) ->
-         let args = c.cd_args in
-         let payload = Ast_untagged_variants.process_tag_type c.cd_attributes in
-         match args with
-         | Cstr_tuple [] -> (
-           match payload with
-           | None | Some (String _) -> Path.same path Predef.path_string
-           | Some (Int _) -> Path.same path Predef.path_int
-           | Some (Float _) -> Path.same path Predef.path_float
-           | Some (Null | Undefined | Bool _ | Untagged _) -> false)
-         | _ -> false)
+let check_paths_same p1 p2 target_path =
+  Path.same p1 target_path && Path.same p2 target_path
+
+let variant_has_catch_all_string_case (constructors : Types.constructor_declaration list) =
+  let has_catch_all_string_case (c : Types.constructor_declaration) =
+    let args = c.cd_args in
+    match args with
+    | Cstr_tuple [{desc = Tconstr (p, [], _)}] ->
+      Path.same p Predef.path_string
+    | _ -> false
+  in
+
+  constructors |> List.exists has_catch_all_string_case 
+
+(* Checks if every case of the variant has the same runtime representation as the target type. *)
+let variant_has_same_runtime_representation_as_target ~(targetPath : Path.t)
+    ~unboxed (constructors : Types.constructor_declaration list) =
+  (* Helper function to check if a constructor has the same runtime representation as the target type *)
+  let has_same_runtime_representation (c : Types.constructor_declaration) =
+    let args = c.cd_args in
+    let asPayload = Ast_untagged_variants.process_tag_type c.cd_attributes in
+
+    match args with
+    | Cstr_tuple [{desc = Tconstr (p, [], _)}] when unboxed ->
+      let path_same = check_paths_same p targetPath in
+      (* unboxed String(string) :> string *)
+      path_same Predef.path_string
+      || (* unboxed Number(float) :> float *)
+      path_same Predef.path_float
+    | Cstr_tuple [] -> (
+      (* Check that @as payloads match with the target path to coerce to.
+           No @as means the default encoding, which is string *)
+      match asPayload with
+      | None | Some (String _) -> Path.same targetPath Predef.path_string
+      | Some (Int _) -> Path.same targetPath Predef.path_int
+      | Some (Float _) -> Path.same targetPath Predef.path_float
+      | Some (Null | Undefined | Bool _ | Untagged _) -> false)
+    | _ -> false
+  in
+
+  List.for_all has_same_runtime_representation constructors
 
 let can_try_coerce_variant_to_primitive
     ((_, p, typedecl) : Path.t * Path.t * Types.type_declaration) =
   match typedecl with
-  | {type_kind = Type_variant constructors; type_params = []}
+  | {type_kind = Type_variant constructors; type_params = []; type_attributes}
     when Path.name p <> "bool" ->
     (* bool is represented as a variant internally, so we need to account for that *)
-    Some constructors
+    Some (constructors, type_attributes |> Ast_untagged_variants.has_untagged)
   | _ -> None
 
 let variant_representation_matches (c1_attrs : Parsetree.attributes)

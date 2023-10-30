@@ -1,8 +1,8 @@
 /* TypeScript file generated from TestEmitInnerModules.res by genType. */
-/* eslint-disable import/first */
 
+/* eslint-disable */
+/* tslint:disable */
 
-// @ts-ignore: Implicit any on import
 import * as TestEmitInnerModulesBS__Es6Import from './TestEmitInnerModules.bs';
 const TestEmitInnerModulesBS: any = TestEmitInnerModulesBS__Es6Import;
 

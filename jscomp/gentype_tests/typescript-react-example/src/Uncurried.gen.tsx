@@ -1,27 +1,21 @@
 /* TypeScript file generated from Uncurried.res by genType. */
-/* eslint-disable import/first */
 
+/* eslint-disable */
+/* tslint:disable */
 
-// @ts-ignore: Implicit any on import
 import * as UncurriedBS__Es6Import from './Uncurried.bs';
 const UncurriedBS: any = UncurriedBS__Es6Import;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type u0 = () => string;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type u1 = (_1:number) => string;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type u2 = (_1:number, _2:string) => string;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type u3 = (_1:number, _2:string, _3:number) => string;
 
-// tslint:disable-next-line:interface-over-type-literal
 export type auth = { readonly login: () => string };
 
-// tslint:disable-next-line:interface-over-type-literal
 export type authU = { readonly loginU: () => string };
 
 export const uncurried0: () => string = UncurriedBS.uncurried0;

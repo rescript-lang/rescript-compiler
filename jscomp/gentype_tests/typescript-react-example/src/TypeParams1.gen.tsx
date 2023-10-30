@@ -1,6 +1,6 @@
 /* TypeScript file generated from TypeParams1.res by genType. */
-/* eslint-disable import/first */
 
+/* eslint-disable */
+/* tslint:disable */
 
-// tslint:disable-next-line:interface-over-type-literal
 export type ocaml_array<a> = a[];

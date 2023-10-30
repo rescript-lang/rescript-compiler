@@ -3,15 +3,15 @@ open GenTypeCommon
 let fileHeader ~sourceFile =
   let makeHeader ~lines =
     match lines with
-    | [line] -> "/* " ^ line ^ " */\n"
+    | [line] -> "/* " ^ line ^ " */\n\n"
     | _ ->
       "/** \n"
       ^ (lines |> List.map (fun line -> " * " ^ line) |> String.concat "\n")
-      ^ "\n */\n"
+      ^ "\n */\n\n"
   in
   makeHeader
     ~lines:["TypeScript file generated from " ^ sourceFile ^ " by genType."]
-  ^ "/* eslint-disable import/first */\n\n"
+  ^ "/* eslint-disable */\n" ^ "/* tslint:disable */\n"
 
 let interfaceName ~(config : Config.t) name =
   match config.exportInterfaces with
@@ -156,7 +156,7 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
       |> String.concat ", ")
     ^ "]"
   | TypeVar s -> s
-  | Variant {inherits; noPayloads; payloads; polymorphic; unboxed} ->
+  | Variant {inherits; noPayloads; payloads; polymorphic; tag; unboxed} ->
     let inheritsRendered =
       inherits
       |> List.map (fun type_ ->
@@ -183,7 +183,7 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
              in
              let tagField =
                case |> labelJSToString
-               |> field ~name:(Runtime.jsVariantTag ~polymorphic:false)
+               |> field ~name:(Runtime.jsVariantTag ~polymorphic:false ~tag)
              in
              match (unboxed, type_) with
              | true, type_ ->
@@ -198,7 +198,7 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
                (* poly variant *)
                [
                  case |> labelJSToString
-                 |> field ~name:(Runtime.jsVariantTag ~polymorphic);
+                 |> field ~name:(Runtime.jsVariantTag ~polymorphic ~tag);
                  type_ |> render
                  |> field ~name:(Runtime.jsVariantValue ~polymorphic);
                ]
@@ -354,11 +354,7 @@ let emitExportType ~(config : Config.t) ~emitters ~nameAs ~opaque ~type_
       | true -> "any"
       | false -> typeVars |> String.concat " | "
     in
-    "// tslint:disable-next-line:max-classes-per-file \n"
-    ^ (match String.capitalize_ascii resolvedTypeName <> resolvedTypeName with
-      | true -> "// tslint:disable-next-line:class-name\n"
-      | false -> "")
-    ^ docString ^ "export abstract class " ^ resolvedTypeName ^ typeParamsString
+    docString ^ "export abstract class " ^ resolvedTypeName ^ typeParamsString
     ^ " { protected opaque!: " ^ typeOfOpaqueField
     ^ " }; /* simulate opaque types */" ^ exportNameAs
     |> Emitters.export ~emitters
@@ -366,8 +362,7 @@ let emitExportType ~(config : Config.t) ~emitters ~nameAs ~opaque ~type_
     (if isInterface && config.exportInterfaces then
      docString ^ "export interface " ^ resolvedTypeName ^ typeParamsString ^ " "
     else
-      "// tslint:disable-next-line:interface-over-type-literal\n" ^ docString
-      ^ "export type " ^ resolvedTypeName ^ typeParamsString ^ " = ")
+      docString ^ "export type " ^ resolvedTypeName ^ typeParamsString ^ " = ")
     ^ (match type_ with
       | _ -> type_ |> typeToString ~config ~typeNameIsInterface)
     ^ ";" ^ exportNameAs
@@ -385,11 +380,6 @@ let emitImportValueAsEarly ~emitters ~name ~nameAs importPath =
 
 let emitRequire ~importedValueOrComponent ~early ~emitters ~(config : Config.t)
     ~moduleName importPath =
-  let commentBeforeRequire =
-    match importedValueOrComponent with
-    | true -> "// tslint:disable-next-line:no-var-requires\n"
-    | false -> "// @ts-ignore: Implicit any on import\n"
-  in
   let importPath =
     match config.moduleResolution with
     | Node ->
@@ -401,7 +391,7 @@ let emitRequire ~importedValueOrComponent ~early ~emitters ~(config : Config.t)
   | ES6 when not importedValueOrComponent ->
     let moduleNameString = ModuleName.toString moduleName in
     (let es6ImportModule = moduleNameString ^ "__Es6Import" in
-     commentBeforeRequire ^ "import * as " ^ es6ImportModule ^ " from '"
+     "import * as " ^ es6ImportModule ^ " from '"
      ^ (importPath |> ImportPath.emit)
      ^ "';\n" ^ "const " ^ moduleNameString ^ ": any = " ^ es6ImportModule ^ ";")
     |> (match early with
@@ -409,7 +399,7 @@ let emitRequire ~importedValueOrComponent ~early ~emitters ~(config : Config.t)
        | false -> Emitters.require)
          ~emitters
   | _ ->
-    commentBeforeRequire ^ "const "
+    "const "
     ^ ModuleName.toString moduleName
     ^ " = require('"
     ^ (importPath |> ImportPath.emit)

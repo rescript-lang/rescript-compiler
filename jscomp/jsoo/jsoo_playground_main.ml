@@ -48,8 +48,10 @@
  * v3: Switched to Uncurried mode by default (requires third party packages
  to be built with uncurried: true in bsconfig.json). Also added
  `config.uncurried` to the BundleConfig.
+ * v4: Added `config.open_modules` to the BundleConfig to enable implicitly opened
+ * modules in the playground.
  * *)
-let apiVersion = "3"
+let apiVersion = "4"
 
 module Js = Js_of_ocaml.Js
 
@@ -75,6 +77,7 @@ module BundleConfig = struct
     mutable module_system: Js_packages_info.module_system;
     mutable filename: string option;
     mutable warn_flags: string;
+    mutable open_modules: string list;
 
     (* This one can't be mutated since we only provide
        third-party packages that were compiled for uncurried
@@ -86,6 +89,7 @@ module BundleConfig = struct
     module_system=Js_packages_info.NodeJS;
     filename=None;
     warn_flags=Bsc_warnings.defaults_w;
+    open_modules=[];
     uncurried=(!Config.uncurried = Uncurried);
   }
 
@@ -462,7 +466,7 @@ module Compile = struct
     Js.array (!acc |> Array.of_list)
 
   let implementation ~(config: BundleConfig.t) ~lang str =
-    let {BundleConfig.module_system; warn_flags} = config in
+    let {BundleConfig.module_system; warn_flags; open_modules} = config in
     try
       reset_compiler ();
       Warnings.parse_options false warn_flags;
@@ -472,6 +476,7 @@ module Compile = struct
         | Lang.OCaml -> ocaml_parse ~filename
         | Res -> rescript_parse ~filename
       in
+      Clflags.open_modules := open_modules;
       (* let env = !Toploop.toplevel_env in *)
       (* Res_compmisc.init_path (); *)
       (* let modulename = module_of_filename ppf sourcefile outputprefix in *)
@@ -613,6 +618,9 @@ module Export = struct
     let set_warn_flags value =
       config.warn_flags <- value; true
     in
+    let set_open_modules value =
+      config.open_modules <- value; true
+    in
     let convert_syntax ~(fromLang: string) ~(toLang: string) (src: string) =
       let open Lang in
       match (fromString fromLang, fromString toLang) with
@@ -658,6 +666,12 @@ module Export = struct
           (fun _ value ->
              (Js.bool (set_warn_flags (Js.to_string value)))
           );
+        "setOpenModules",
+        inject @@
+        Js.wrap_meth_callback
+          (fun _ (value) ->
+             (Js.bool (set_open_modules (value |> Js.to_array |> Array.map Js.to_string |> Array.to_list)))
+          );
         "getConfig",
         inject @@
         Js.wrap_meth_callback
@@ -673,6 +687,7 @@ module Export = struct
                              "warn_flags",
                              inject @@ (Js.string config.warn_flags);
                              "uncurried", inject @@ (Js.bool config.uncurried);
+                             "open_modules", inject @@ (config.open_modules |> Array.of_list |> Js.array);
                            |]))
           );
       |])

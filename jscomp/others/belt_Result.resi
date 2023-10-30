@@ -29,28 +29,7 @@ without relying on exceptions or `option` types.
 This module gives you useful utilities to create and combine `Result` data.
 */
 
-/**
-The type `Result.t(result, err)` describes a variant of two states:
-`Ok(someResult)` represents a successful operation, whereby
-``Error(someError)` signals an erronous operation.
-
-In this concrete example, we are defining our own `Result` type to reflect an HTTP like
-query operation:
-
-## Examples
-
-```rescript
-type responseError = NotAvailable | NotFound
-type queryResult = t<string, responseError>
-
-let failQueryUser = (username: string): queryResult => {
-  Error(NotAvailable)
-}
-```
-*/
-type t<'a, 'b> =
-  | Ok('a)
-  | Error('b)
+type t<'a, 'b> = result<'a, 'b>
 
 /**
 `getExn(res)`: when `res` is `Ok(n)`, returns `n` when `res` is `Error(m)`, raise an exception
