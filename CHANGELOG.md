@@ -28,6 +28,8 @@
 - Fix printing of exotic JSX names https://github.com/rescript-lang/rescript-compiler/pull/6451
 - Fix locations when code with `await` fails to compile (all locations would point to the internal function `unsafe_await`) https://github.com/rescript-lang/rescript-compiler/pull/6452
 - Fix renaming fields (with @as) in inline records doesn't work when destructuring https://github.com/rescript-lang/rescript-compiler/pull/6456
+- Fix `rc.4` regressions:
+  - Don't show compilation time when calling `rescript build -help` command. https://github.com/rescript-lang/rescript-compiler/pull/6439
 
 #### :house: Internal
 
@@ -37,6 +39,7 @@
 
 - Add [`Deno`](https://deno.land/api?s=Deno) to reserved names, so that modules named `Deno` don't clash with the globally exposed `Deno` object. https://github.com/rescript-lang/rescript-compiler/pull/6428
 - Disable ESLint/TSLint on gentype outputs properly. https://github.com/rescript-lang/rescript-compiler/pull/6442
+- Improve `rescript` CLI to use `stdout`/`stderr` appropriately for help command's message. https://github.com/rescript-lang/rescript-compiler/pull/6439
 
 # 11.0.0-rc.4
 

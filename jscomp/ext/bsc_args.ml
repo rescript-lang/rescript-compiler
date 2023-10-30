@@ -86,13 +86,13 @@ let stop_raise ~usage ~(error : error) (speclist : t) =
       Ext_buffer.output_buffer stdout b;
       exit 0
   | Unknown s ->
-      b +> "unknown option: '";
+      b +> "Unknown option \"";
       b +> s;
-      b +> "'.\n"
+      b +> "\".\n"
   | Missing s ->
-      b +> "option '";
+      b +> "Option \"";
       b +> s;
-      b +> "' needs an argument.\n");
+      b +> "\" needs an argument.\n");
   usage_b b ~usage speclist;
   bad_arg (Ext_buffer.contents b)
 

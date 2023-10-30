@@ -68,8 +68,8 @@ if (process.env.NINJA_ANSI_FORCED === undefined) {
 } else {
   dlog(`NINJA_ANSI_FORCED: "${process.env.NINJA_ANSI_FORCED}"`);
 }
-function help() {
-  console.log(`Usage: rescript <options> <subcommand>
+
+const helpMessage = `Usage: rescript <options> <subcommand>
 
 \`rescript\` is equivalent to \`rescript build\`
 
@@ -87,10 +87,7 @@ Subcommands:
 
 Run \`rescript <subcommand> -h\` for subcommand help. Examples:
   rescript build -h
-  rescript format -h
-The default \`rescript\` is equivalent to \`rescript build\` subcommand
-`);
-}
+  rescript format -h`;
 
 var isBuilding = false;
 function releaseBuild() {
@@ -512,59 +509,63 @@ Please pick a different one using the \`-ws [host:]port\` flag from bsb.`);
     buildFinishedCallback(0);
   });
 } else {
-  switch (maybeSubcommand) {
-    case "info":
-    case "clean": {
-      delegateCommand(process_argv.slice(2));
-      break;
+  // We want to show the compile time for build
+  // But bsb might show a help message in some cases
+  // We don't want to show the compile time in the case
+  // But we can only be sure about that when building without any additional args
+  const isDefinitelyBuild =
+    maybeSubcommand === undefined ||
+    (maybeSubcommand === "build" && process_argv.length === 3);
+
+  if (isDefinitelyBuild) {
+    logStartCompiling();
+    delegateCommand(process_argv.slice(2), logFinishCompiling);
+  } else {
+    switch (maybeSubcommand) {
+      case "info":
+      case "clean":
+      case "build": {
+        delegateCommand(process_argv.slice(2));
+        break;
+      }
+      case "format":
+        require("./scripts/rescript_format.js").main(
+          process.argv.slice(3),
+          rescript_exe,
+          bsc_exe
+        );
+        break;
+      case "dump":
+        require("./scripts/rescript_dump.js").main(
+          process.argv.slice(3),
+          rescript_exe,
+          bsc_exe
+        );
+        break;
+      case "convert":
+        require("./scripts/rescript_convert.js").main(
+          process.argv.slice(3),
+          rescript_exe,
+          bsc_exe
+        );
+        break;
+      case "-h":
+      case "-help":
+      case "--help":
+      case "help":
+        console.log(helpMessage);
+        break;
+      case "-v":
+      case "-version":
+      case "--version":
+      case "version":
+        console.log(require("./package.json").version);
+        break;
+      default:
+        console.error(
+          `Error: Unknown command or flag "${maybeSubcommand}".\n${helpMessage}`
+        );
+        process.exit(2);
     }
-    case undefined:
-    case "build": {
-      logStartCompiling();
-      delegateCommand(process_argv.slice(2), logFinishCompiling);
-      break;
-    }
-    case "format":
-      require("./scripts/rescript_format.js").main(
-        process.argv.slice(3),
-        rescript_exe,
-        bsc_exe
-      );
-      break;
-    case "dump":
-      require("./scripts/rescript_dump.js").main(
-        process.argv.slice(3),
-        rescript_exe,
-        bsc_exe
-      );
-      break;
-    case "dump":
-      require("./scripts/rescript_dump.js").main(
-        process.argv.slice(3),
-        rescript_exe,
-        bsc_exe
-      );
-      break;
-    case "convert":
-      // Todo
-      require("./scripts/rescript_convert.js").main(
-        process.argv.slice(3),
-        rescript_exe,
-        bsc_exe
-      );
-      break;
-    case "-h":
-    case "-help":
-    case "help":
-      help();
-      break;
-    case "-v":
-    case "-version":
-      console.log(require("./package.json").version);
-      break;
-    default:
-      console.error(`Unknown subcommand or flags: ${maybeSubcommand}`);
-      help();
-      process.exit(2);
   }
 }
