@@ -18,6 +18,9 @@
 open Typedtree
 open Lambda
 
+val find_name :
+  Parsetree.attribute -> Asttypes.label option
+
 val call_switcher_variant_constant : 
   (Location.t ->
    Lambda.lambda option ->

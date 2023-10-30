@@ -24,18 +24,7 @@
 
 type label = Types.label_description
 
-let find_name (attr : Parsetree.attribute) =
-  match attr with
-  | ( { txt = "bs.as" | "as" },
-      PStr
-        [
-          {
-            pstr_desc =
-              Pstr_eval ({ pexp_desc = Pexp_constant (Pconst_string (s, _)) }, _);
-          };
-        ] ) ->
-      Some s
-  | _ -> None
+let find_name = Matching.find_name
 
 let find_name_with_loc (attr : Parsetree.attribute) : string Asttypes.loc option
     =
