@@ -10,24 +10,24 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# 11.0.0-rc.5 (Unreleased)
+# 11.0.0-rc.5
 
 #### :rocket: New Feature
+
 - Allow coercing unboxed variants with only strings (now including with a single payload of string) to the primitive string. https://github.com/rescript-lang/rescript-compiler/pull/6441
-- Allow coercing strings to unboxed variants that has a catch-all unboxed string case. https://github.com/rescript-lang/rescript-compiler/pull/6443
+- Allow coercing strings to unboxed variants that have a catch-all unboxed string case. https://github.com/rescript-lang/rescript-compiler/pull/6443
 - Allow coercing `int` to `float`. https://github.com/rescript-lang/rescript-compiler/pull/6448
-- Playground: Add support for implicitly opened modules. https://github.com/rescript-lang/rescript-compiler/pull/6446
 
 #### :bug: Bug Fix
 
-- Fix issue with dynamic import of module in nested expressions https://github.com/rescript-lang/rescript-compiler/pull/6431
-- Fix issue where GenType was not supporting `@tag` on ordinary variatns https://github.com/rescript-lang/rescript-compiler/pull/6437
-- Fix using dynamic import of module in block instead of async function https://github.com/rescript-lang/rescript-compiler/pull/6434
-- Fix issue with using dynamic import of module in uncurried mode https://github.com/rescript-lang/rescript-compiler/pull/6434
-- Fix build error where JSX v4 transformation of the discouraged forwardRef in uncurried mode https://github.com/rescript-lang/rescript-compiler/pull/6447
-- Fix printing of exotic JSX names https://github.com/rescript-lang/rescript-compiler/pull/6451
-- Fix locations when code with `await` fails to compile (all locations would point to the internal function `unsafe_await`) https://github.com/rescript-lang/rescript-compiler/pull/6452
-- Fix renaming fields (with @as) in inline records doesn't work when destructuring https://github.com/rescript-lang/rescript-compiler/pull/6456
+- Fix issue with dynamic import of module in nested expressions. https://github.com/rescript-lang/rescript-compiler/pull/6431
+- Fix issue where GenType was not supporting `@tag` on ordinary variants. https://github.com/rescript-lang/rescript-compiler/pull/6437
+- Fix using dynamic import of module in block instead of async function. https://github.com/rescript-lang/rescript-compiler/pull/6434
+- Fix issue with using dynamic import of module in uncurried mode. https://github.com/rescript-lang/rescript-compiler/pull/6434
+- Fix build error with JSX v4 transformation of React.forwardRef in uncurried mode. https://github.com/rescript-lang/rescript-compiler/pull/6447
+- Fix printing of exotic JSX names. https://github.com/rescript-lang/rescript-compiler/pull/6451
+- Fix locations when code with `await` fails to compile (all locations would point to the internal function `unsafe_await`). https://github.com/rescript-lang/rescript-compiler/pull/6452
+- Fix renaming fields (with @as) in inline records doesn't work when destructuring. https://github.com/rescript-lang/rescript-compiler/pull/6456
 - Fix `rc.4` regressions:
   - Don't show compilation time when calling `rescript build -help` command. https://github.com/rescript-lang/rescript-compiler/pull/6439
   - Running `rescript build -w` with a compilation error doesn't exit with an error code and continues waiting for changes. https://github.com/rescript-lang/rescript-compiler/pull/6460
@@ -35,13 +35,14 @@
 #### :house: Internal
 
 - Remove dependency stdlib-406 -> belt. https://github.com/rescript-lang/rescript-compiler/pull/6453
+- Playground: Add support for implicitly opened modules. https://github.com/rescript-lang/rescript-compiler/pull/6446
 
 #### :nail_care: Polish
 
 - Add [`Deno`](https://deno.land/api?s=Deno) to reserved names, so that modules named `Deno` don't clash with the globally exposed `Deno` object. https://github.com/rescript-lang/rescript-compiler/pull/6428
 - Disable ESLint/TSLint on gentype outputs properly. https://github.com/rescript-lang/rescript-compiler/pull/6442
 - Improve `rescript` CLI to use `stdout`/`stderr` appropriately for help command's message. https://github.com/rescript-lang/rescript-compiler/pull/6439
-- Generate `f()` instead of `f(undefined)` for `f()` https://github.com/rescript-lang/rescript-compiler/pull/6459
+- Generate `f()` instead of `f(undefined)` for `f()`. https://github.com/rescript-lang/rescript-compiler/pull/6459
 
 # 11.0.0-rc.4
 
