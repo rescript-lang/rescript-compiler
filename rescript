@@ -158,9 +158,9 @@ function logStartCompiling() {
 
 /**
  * @param {Array<string>} args
- * @param {() => void} [maybeOnSuccess]
+ * @param {(code: number) => void} [maybeOnClose]
  */
-function delegateCommand(args, maybeOnSuccess) {
+function delegateCommand(args, maybeOnClose) {
   /**
    * @type {child_process.ChildProcess}
    */
@@ -182,11 +182,12 @@ function delegateCommand(args, maybeOnSuccess) {
     // 'error' if the child failed to spawn.
     p.on("close", code => {
       releaseBuild();
-      if (maybeOnSuccess && !code) {
-        maybeOnSuccess();
+      const exitCode = code === null ? 1 : code;
+      if (maybeOnClose) {
+        maybeOnClose(exitCode);
         return;
       }
-      process.exit(code || 0);
+      process.exit(exitCode);
     });
   } else {
     console.warn(`Another build detected or stale lockfile ${lockFileName}`);
@@ -504,7 +505,7 @@ Please pick a different one using the \`-ws [host:]port\` flag from bsb.`);
   }
 
   logStartCompiling();
-  delegateCommand(delegatedArgs, () => {
+  delegateCommand(delegatedArgs, _ => {
     startWatchMode(withWebSocket);
     buildFinishedCallback(0);
   });
@@ -519,7 +520,10 @@ Please pick a different one using the \`-ws [host:]port\` flag from bsb.`);
 
   if (isDefinitelyBuild) {
     logStartCompiling();
-    delegateCommand(process_argv.slice(2), logFinishCompiling);
+    delegateCommand(process_argv.slice(2), exitCode => {
+      logFinishCompiling(exitCode);
+      process.exit(exitCode);
+    });
   } else {
     switch (maybeSubcommand) {
       case "info":

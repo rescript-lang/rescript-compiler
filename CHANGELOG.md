@@ -30,6 +30,7 @@
 - Fix renaming fields (with @as) in inline records doesn't work when destructuring https://github.com/rescript-lang/rescript-compiler/pull/6456
 - Fix `rc.4` regressions:
   - Don't show compilation time when calling `rescript build -help` command. https://github.com/rescript-lang/rescript-compiler/pull/6439
+  - Running `rescript build -w` with a compilation error doesn't exit with an error code and continues waiting for changes. https://github.com/rescript-lang/rescript-compiler/pull/6460
 
 #### :house: Internal
 
