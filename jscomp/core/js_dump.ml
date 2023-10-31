@@ -160,7 +160,7 @@ let exp_need_paren (e : J.expression) =
   | Raw_js_code { code_info = Stmt _ }
   | Length _ | Call _ | Caml_block_tag _ | Seq _ | Static_index _ | Cond _
   | Bin _ | Is_null_or_undefined _ | String_index _ | Array_index _
-  | String_append _ | Var _ | Undefined | Null | Str _ | Array _
+  | String_append _ | Var _ | Undefined _ | Null | Str _ | Array _
   | Optional_block _ | Caml_block _ | FlatCall _ | Typeof _ | Number _
   | Js_not _ | Bool _ | New _ ->
       false
@@ -519,7 +519,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
   | Null ->
       P.string f L.null;
       cxt
-  | Undefined ->
+  | Undefined _ ->
       P.string f L.undefined;
       cxt
   | Var v -> vident cxt f v
@@ -572,7 +572,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
                             params body env
                       | _ ->
                         let el = match el with
-                        | [e] when e.expression_desc = Undefined -> []
+                        | [e] when e.expression_desc = Undefined true (* unit *) -> []
                         | _ ->el in
 
                          arguments cxt f el)
@@ -742,7 +742,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
             let fields =
               Ext_list.array_list_filter_map fields el (fun f x ->
                   match x.expression_desc with
-                  | Undefined -> None
+                  | Undefined _ -> None
                   | _ -> Some (Js_op.Lit f, x))
             in
             expression_desc cxt ~level f (Object fields))
@@ -780,7 +780,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
           | _ ->
             Ext_list.filter_map tails (fun (f, x) ->
               match x.expression_desc with
-              | Undefined when is_optional f -> None
+              | Undefined _ when is_optional f -> None
               | _ -> Some (f, x))
           in
         if untagged then
@@ -1182,7 +1182,7 @@ and statement_desc top cxt f (s : J.statement_desc) : cxt =
           in
           semi f;
           cxt
-      | Undefined ->
+      | Undefined _ ->
           return_sp f;
           semi f;
           cxt
@@ -1276,16 +1276,16 @@ and function_body (cxt : cxt) f ~return_unit (b : J.block) : unit =
       | If
           ( bool,
             then_,
-            [ { statement_desc = Return { expression_desc = Undefined } } ] ) ->
+            [ { statement_desc = Return { expression_desc = Undefined _ } } ] ) ->
           ignore
             (statement false cxt f
                { s with statement_desc = If (bool, then_, []) }
               : cxt)
-      | Return { expression_desc = Undefined } -> ()
+      | Return { expression_desc = Undefined _ } -> ()
       | Return exp when return_unit ->
           ignore (statement false cxt f (S.exp exp) : cxt)
       | _ -> ignore (statement false cxt f s : cxt))
-  | [ s; { statement_desc = Return { expression_desc = Undefined } } ] ->
+  | [ s; { statement_desc = Return { expression_desc = Undefined _ } } ] ->
       ignore (statement false cxt f s : cxt)
   | s :: r ->
       let cxt = statement false cxt f s in

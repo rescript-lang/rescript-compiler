@@ -175,7 +175,7 @@ let expression_desc : 'a. ('a, expression_desc) fn =
   | Object _x0 ->
       let st = property_map _self st _x0 in
       st
-  | Undefined -> st
+  | Undefined _ -> st
   | Null -> st
   | Await _x0 ->
     let st = _self.expression _self st _x0 in

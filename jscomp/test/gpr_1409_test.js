@@ -58,7 +58,7 @@ function make(foo) {
   };
 }
 
-var a_ = make()();
+var a_ = make(undefined)();
 
 var b_ = make(42)();
 

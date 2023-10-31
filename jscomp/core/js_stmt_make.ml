@@ -44,10 +44,10 @@ let rec block ?comment (b : J.block) : t =
 (* It's a statement, we can discard some values *)
 let rec exp ?comment (e : E.t) : t =
   match e.expression_desc with
-  | Seq ({ expression_desc = Number _ | Undefined }, b)
-  | Seq (b, { expression_desc = Number _ | Undefined }) ->
+  | Seq ({ expression_desc = Number _ | Undefined _ }, b)
+  | Seq (b, { expression_desc = Number _ | Undefined _ }) ->
       exp ?comment b
-  | Number _ | Undefined -> block []
+  | Number _ | Undefined _ -> block []
   (* TODO: we can do more *)
   (* | _ when is_pure e ->  block [] *)
   | _ -> { statement_desc = Exp e; comment }
@@ -63,10 +63,10 @@ let declare_variable ?comment ?ident_info ~kind (ident : Ident.t) : t =
   }
 
 let define_variable ?comment ?ident_info ~kind (v : Ident.t)
-    (exp : J.expression) : t =
-  if exp.expression_desc = Undefined then
+    (exp : J.expression) : t = match exp.expression_desc with
+  | Undefined _ ->
     declare_variable ?comment ?ident_info ~kind v
-  else
+  | _ ->
     let property : J.property = kind in
     let ident_info : J.ident_info =
       match ident_info with None -> { used_stats = NA } | Some x -> x
