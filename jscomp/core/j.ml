@@ -159,7 +159,7 @@ and expression_desc =
   *)
   | Number of number
   | Object of property_map
-  | Undefined of bool (* true means: unit *)
+  | Undefined of {isUnit: bool}
   | Null
   | Await of expression
 

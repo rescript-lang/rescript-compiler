@@ -419,7 +419,7 @@ let stringswitch (lam : t) cases default : t =
 
 let true_ : t = Lconst Const_js_true
 let false_ : t = Lconst Const_js_false
-let unit : t = Lconst (Const_js_undefined true)
+let unit : t = Lconst (Const_js_undefined {isUnit = true})
 
 let rec seq (a : t) b : t =
   match a with

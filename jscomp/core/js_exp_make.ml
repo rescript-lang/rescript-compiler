@@ -60,7 +60,7 @@ let var ?comment id : t = { expression_desc = Var (Id id); comment }
     Invariant: it should not call an external module .. *)
 
 let js_global ?comment (v : string) = var ?comment (Ext_ident.create_js v)
-let undefined : t = { expression_desc = Undefined false; comment = None }
+let undefined : t = { expression_desc = Undefined {isUnit = false}; comment = None }
 let nil : t = { expression_desc = Null; comment = None }
 
 let call ?comment ~info e0 args : t =
@@ -183,7 +183,7 @@ let is_array  (e0 : t) : t =
 let new_ ?comment e0 args : t =
   { expression_desc = New (e0, Some args); comment }
 
-let unit : t = { expression_desc = Undefined true; comment = None }
+let unit : t = { expression_desc = Undefined {isUnit = true}; comment = None }
 
 (* let math ?comment v args  : t =
    {comment ; expression_desc = Math(v,args)} *)
