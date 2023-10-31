@@ -572,7 +572,7 @@ and expression_desc cxt ~(level : int) f x : cxt =
                       | _ ->
                         let el = match el with
                         | [e] when e.expression_desc = Undefined {isUnit = true} ->
-                          (* omit passing undefined when the calls is f() *)
+                          (* omit passing undefined when the call is f() *)
                           []
                         | _ ->
                           el in
