@@ -361,7 +361,7 @@ function random(param) {
 function random_vars(n) {
   var vars = Caml_array.make(n, false);
   for(var i = 0; i < n; ++i){
-    Caml_array.set(vars, i, random(undefined));
+    Caml_array.set(vars, i, random());
   }
   return vars;
 }
@@ -411,7 +411,7 @@ function main(param) {
       };
 }
 
-main(undefined);
+main();
 
 var initSize_1 = 8191;
 

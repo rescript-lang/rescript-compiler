@@ -26,7 +26,7 @@ function f(param) {
   };
 }
 
-f(undefined);
+f();
 
 $$Array.iter((function (x) {
         Curry._1(x, undefined);

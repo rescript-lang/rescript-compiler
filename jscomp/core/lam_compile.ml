@@ -30,6 +30,7 @@ let args_either_function_or_const (args : Lam.t list) =
       match x with Lfunction _ | Lconst _ -> true | _ -> false)
 
 let call_info_of_ap_status (ap_status : Lam.apply_status) : Js_call_info.t =
+  (* XXX *)
   match ap_status with
   | App_infer_full -> { arity = Full; call_info = Call_ml }
   | App_uncurry -> { arity = Full; call_info = Call_na }

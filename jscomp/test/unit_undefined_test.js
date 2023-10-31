@@ -54,11 +54,11 @@ function u2(x) {
 
 var u3 = Caml_option.some(undefined);
 
-eq("File \"unit_undefined_test.res\", line 41, characters 3-10", Caml_option.some(undefined), Caml_option.some(undefined));
+eq("File \"unit_undefined_test.res\", line 41, characters 3-10", Caml_option.some(), Caml_option.some(undefined));
 
 eq("File \"unit_undefined_test.res\", line 42, characters 3-10", u1, Caml_option.some(undefined));
 
-eq("File \"unit_undefined_test.res\", line 43, characters 3-10", Caml_option.some(undefined), Caml_option.some(undefined));
+eq("File \"unit_undefined_test.res\", line 43, characters 3-10", Caml_option.some(), Caml_option.some(undefined));
 
 eq("File \"unit_undefined_test.res\", line 44, characters 3-10", u3, Caml_option.some(undefined));
 

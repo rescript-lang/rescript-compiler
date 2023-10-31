@@ -43,7 +43,7 @@ forIn({
 
 var f3 = (()=>true);
 
-var bbbb = f3(undefined);
+var bbbb = f3();
 
 if (!bbbb) {
   throw {

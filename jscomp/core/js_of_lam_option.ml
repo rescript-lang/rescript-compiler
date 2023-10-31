@@ -36,7 +36,9 @@ type option_unwrap_time = Static_unwrapped | Runtime_maybe_unwrapped
 *)
 let none : J.expression = E.undefined
 
-let is_none_static (arg : J.expression_desc) = arg = Undefined
+let is_none_static (arg : J.expression_desc) = match arg with
+  | Undefined _ -> true
+  | _ -> false
 
 let is_not_none (e : J.expression) : J.expression =
   let desc = e.expression_desc in

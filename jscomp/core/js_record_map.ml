@@ -173,7 +173,7 @@ let expression_desc : expression_desc fn =
   | Object _x0 ->
       let _x0 = property_map _self _x0 in
       Object _x0
-  | Undefined as v -> v
+  | Undefined _ as v -> v
   | Null as v -> v
   | Await _x0 ->
     let _x0 = _self.expression _self _x0 in

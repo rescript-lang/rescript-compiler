@@ -95,14 +95,14 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
       match args with
       | [ e ] -> (
           match e.expression_desc with
-          | Var _ | Undefined | Null -> Js_of_lam_option.null_to_opt e
+          | Var _ | Undefined _ | Null -> Js_of_lam_option.null_to_opt e
           | _ -> E.runtime_call Js_runtime_modules.option "null_to_opt" args)
       | _ -> assert false)
   | Pundefined_to_opt -> (
       match args with
       | [ e ] -> (
           match e.expression_desc with
-          | Var _ | Undefined | Null -> Js_of_lam_option.undef_to_opt e
+          | Var _ | Undefined _ | Null -> Js_of_lam_option.undef_to_opt e
           | _ ->
               E.runtime_call Js_runtime_modules.option "undefined_to_opt" args)
       | _ -> assert false)
@@ -110,7 +110,7 @@ let translate output_prefix loc (cxt : Lam_compile_context.t)
       match args with
       | [ e ] -> (
           match e.expression_desc with
-          | Var _ | Undefined | Null -> Js_of_lam_option.null_undef_to_opt e
+          | Var _ | Undefined _ | Null -> Js_of_lam_option.null_undef_to_opt e
           | _ -> E.runtime_call Js_runtime_modules.option "nullable_to_opt" args
           )
       | _ -> assert false)

@@ -847,7 +847,7 @@ function make$2($staropt$star, $staropt$star$1, spawnable, context, param) {
   var dir = $staropt$star$1 !== undefined ? $staropt$star$1 : "Left";
   var spr = make(spawnable, dir, context);
   var params = make_type$2(spawnable);
-  var id$1 = id !== undefined ? id : new_id(undefined);
+  var id$1 = id !== undefined ? id : new_id();
   var obj = {
     params: params,
     pos: {
@@ -2253,7 +2253,7 @@ function translate_keys(param) {
 function run_update_collid(state, collid, all_collids) {
   if (collid.TAG === "Player") {
     var o = collid._2;
-    var keys = translate_keys(undefined);
+    var keys = translate_keys();
     o.crouch = false;
     var match = update_player(o, keys, state.ctx);
     var player;
@@ -3313,7 +3313,7 @@ function generate(w, h, context) {
 }
 
 function init(param) {
-  Random.self_init(undefined);
+  Random.self_init();
 }
 
 var Procedural_generator = {
@@ -3326,7 +3326,7 @@ var loadCount = {
 };
 
 function load(param) {
-  Random.self_init(undefined);
+  Random.self_init();
   var canvas_id = "canvas";
   var el = document.getElementById(canvas_id);
   var canvas;
@@ -3343,7 +3343,7 @@ function load(param) {
   var context = Curry._1(canvas.getContext, "2d");
   document.addEventListener("keydown", keydown, true);
   document.addEventListener("keyup", keyup, true);
-  Random.self_init(undefined);
+  Random.self_init();
   update_loop(canvas, generate(2400, 256, context), [
         2400,
         256
@@ -3354,7 +3354,7 @@ function load(param) {
 function inc_counter(param) {
   loadCount.contents = loadCount.contents + 1 | 0;
   if (loadCount.contents === 4) {
-    return load(undefined);
+    return load();
   }
   
 }
@@ -3365,7 +3365,7 @@ function preload(param) {
                 var img = document.createElement("img");
                 img.src = img_src$1;
                 img.addEventListener("load", (function (ev) {
-                        inc_counter(undefined);
+                        inc_counter();
                         return true;
                       }), true);
               }), {
@@ -3384,7 +3384,7 @@ function preload(param) {
 }
 
 window.onload = (function (param) {
-    preload(undefined);
+    preload();
     return true;
   });
 

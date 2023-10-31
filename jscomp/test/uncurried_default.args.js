@@ -103,7 +103,7 @@ function foo3$1(xOpt, yOpt) {
 var r3$1 = foo3$1(undefined, undefined);
 
 function foo(func) {
-  return func(undefined) + 1 | 0;
+  return func() + 1 | 0;
 }
 
 var M = {

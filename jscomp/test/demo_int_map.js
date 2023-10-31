@@ -160,6 +160,6 @@ function test(param) {
   }
 }
 
-test(undefined);
+test();
 
 /*  Not a pure module */

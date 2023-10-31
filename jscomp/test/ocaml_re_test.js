@@ -3490,7 +3490,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
               Error: new Error()
             };
       }
-      var c = get(undefined);
+      var c = get();
       switch (c) {
         case 48 :
         case 49 :
@@ -3646,7 +3646,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
               Error: new Error()
             };
       }
-      var c$1 = get(undefined);
+      var c$1 = get();
       if (c$1 >= 64) {
         if (c$1 !== 92) {
           if (c$1 !== 123) {
@@ -3693,7 +3693,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     if (i.contents === l) {
       return ;
     }
-    var d = get(undefined);
+    var d = get();
     if (d > 57 || d < 48) {
       i.contents = i.contents - 1 | 0;
       return ;
@@ -3704,7 +3704,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         if (i.contents === l) {
           return i$1;
         }
-        var d$1 = get(undefined);
+        var d$1 = get();
         if (d$1 > 57 || d$1 < 48) {
           i.contents = i.contents - 1 | 0;
           return i$1;
@@ -3728,7 +3728,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
             Error: new Error()
           };
     }
-    var c = get(undefined);
+    var c = get();
     if (c === /* '[' */91) {
       if (accept(/* '=' */61)) {
         throw {
@@ -3819,7 +3819,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
               Error: new Error()
             };
       }
-      var c$1 = get(undefined);
+      var c$1 = get();
       if (!accept(/* '.' */46)) {
         throw {
               RE_EXN_ID: Not_supported,
@@ -3843,7 +3843,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
               VAL: c
             };
     }
-    var c$2 = get(undefined);
+    var c$2 = get();
     if (c$2 >= 58) {
       if (c$2 >= 123) {
         return {
@@ -4022,7 +4022,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
       if (s !== /* [] */0 && accept(/* ']' */93)) {
         return s;
       }
-      var match = $$char(undefined);
+      var match = $$char();
       if (match.NAME === "Char") {
         var c = match.VAL;
         if (accept(/* '-' */45)) {
@@ -4047,7 +4047,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                     }
                   };
           }
-          var match$1 = $$char(undefined);
+          var match$1 = $$char();
           if (match$1.NAME !== "Char") {
             return {
                     hd: {
@@ -4098,7 +4098,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     };
   };
   var piece = function (param) {
-    var r = atom(undefined);
+    var r = atom();
     if (accept(/* '*' */42)) {
       return greedy_mod(repn(r, 0, undefined));
     }
@@ -4111,9 +4111,9 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     if (!accept(/* '{' */123)) {
       return r;
     }
-    var i$1 = integer(undefined);
+    var i$1 = integer();
     if (i$1 !== undefined) {
-      var j = accept(/* ',' */44) ? integer(undefined) : i$1;
+      var j = accept(/* ',' */44) ? integer() : i$1;
       if (!accept(/* '}' */125)) {
         throw {
               RE_EXN_ID: Parse_error,
@@ -4138,7 +4138,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         return seq$2(List.rev(left));
       }
       _left = {
-        hd: piece(undefined),
+        hd: piece(),
         tl: left
       };
       continue ;

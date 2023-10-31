@@ -574,7 +574,7 @@ function test(t) {
     case "string" :
         return t;
     case "function" :
-        return t(undefined);
+        return t();
     
   }
 }
