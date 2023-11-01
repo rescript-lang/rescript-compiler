@@ -31,7 +31,7 @@ function callback2(auth) {
 }
 
 function callback2U(auth) {
-  return auth.loginU(undefined);
+  return auth.loginU();
 }
 
 function sumU(n, m) {
