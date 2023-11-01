@@ -64,7 +64,7 @@ let rec from_array suffix (arr : Ext_json_types.t array) : Spec_set.t =
         if not !has_in_source then has_in_source := true
         else
           Bsb_exception.errorf ~loc:(Ext_json.loc_of x)
-            "package-specs: we've detected two module formats that are both \
+            "package-specs: detected two module formats that are both \
              configured to be in-source.";
       spec := Spec_set.add result !spec);
   !spec
@@ -87,11 +87,11 @@ and from_json_single suffix (x : Ext_json_types.t) : Bsb_spec_set.spec =
             | Some (Str { str = suffix; loc }) ->
                 let s = Ext_js_suffix.of_string suffix in
                 if s = Unknown_extension then
-                  Bsb_exception.errorf ~loc "expect .js,.bs.js,.mjs or .cjs"
+                  Bsb_exception.errorf ~loc "expected .js, .mjs, .cjs or .bs.js, .bs.mjs, .bs.cjs"
                 else s
             | Some _ ->
                 Bsb_exception.errorf ~loc:(Ext_json.loc_of x)
-                  "expect a string field"
+                  "expected a string field"
             | None -> suffix
           in
           { format = supported_format format loc; in_source; suffix }
@@ -107,7 +107,7 @@ and from_json_single suffix (x : Ext_json_types.t) : Bsb_spec_set.spec =
              field is mandatory.")
   | _ ->
       Bsb_exception.errorf ~loc:(Ext_json.loc_of x)
-        "package-specs: we expect either a string or an object."
+        "package-specs: expected either a string or an object."
 
 let from_json suffix (x : Ext_json_types.t) : Spec_set.t =
   match x with
@@ -189,11 +189,11 @@ let extract_bs_suffix_exn (map : json_map) : Ext_js_suffix.t =
       let s = Ext_js_suffix.of_string str in
       if s = Unknown_extension then
         Bsb_exception.errorf ~loc
-          "expect .js, .mjs, .cjs or .bs.js, .bs.mjs, .bs.cjs here"
+          "expected .js, .mjs, .cjs or .bs.js, .bs.mjs, .bs.cjs"
       else s
   | Some config ->
       Bsb_exception.config_error config
-        "expect a string exteion like \".js\" here"
+        "expected a string extension like \".js\""
 
 let from_map ~(cwd : string) map =
   let suffix = extract_bs_suffix_exn map in
