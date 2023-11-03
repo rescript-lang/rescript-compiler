@@ -55,6 +55,10 @@ let string_of_format (x : Ext_module_system.t) =
   | Es6 -> Literals.es6
   | Es6_global -> Literals.es6_global
 
+let js_suffix_regexp = Str.regexp "[A-Za-z0-9-_.]*\\.[cm]?js"
+
+let validate_js_suffix suffix = Str.string_match js_suffix_regexp suffix 0
+
 let rec from_array suffix (arr : Ext_json_types.t array) : Spec_set.t =
   let spec = ref Spec_set.empty in
   let has_in_source = ref false in
@@ -83,15 +87,14 @@ and from_json_single suffix (x : Ext_json_types.t) : Bsb_spec_set.spec =
             | Some _ | None -> false
           in
           let suffix =
-            match map.?("suffix") with
-            | Some (Str { str = suffix; loc }) ->
-                let s = Ext_js_suffix.of_string suffix in
-                if s = Unknown_extension then
-                  Bsb_exception.errorf ~loc "expected .js, .mjs, .cjs or .bs.js, .bs.mjs, .bs.cjs"
-                else s
+            match map.?(Bsb_build_schemas.suffix) with
+            | Some (Str { str = suffix; _ }) when validate_js_suffix suffix -> suffix
+            | Some (Str {str; loc}) ->
+              Bsb_exception.errorf ~loc
+                ("invalid js file extension \"%s\"") str
             | Some _ ->
-                Bsb_exception.errorf ~loc:(Ext_json.loc_of x)
-                  "expected a string field"
+              Bsb_exception.errorf ~loc:(Ext_json.loc_of x)
+                "expected a string extension like \".js\""
             | None -> suffix
           in
           { format = supported_format format loc; in_source; suffix }
@@ -128,7 +131,7 @@ let package_flag ({ format; in_source; suffix } : Bsb_spec_set.spec) dir =
        (if in_source then dir
        else Bsb_config.top_prefix_of_format format // dir)
        Ext_string.single_colon
-       (Ext_js_suffix.to_string suffix))
+      suffix)
 
 (* FIXME: we should adapt it *)
 let package_flag_of_package_specs (package_specs : t) ~(dirname : string) :
@@ -166,8 +169,7 @@ let get_list_of_output_js (package_specs : t)
   Spec_set.fold
     (fun (spec : Bsb_spec_set.spec) acc ->
       let basename =
-        Ext_namespace.change_ext_ns_suffix output_file_sans_extension
-          (Ext_js_suffix.to_string spec.suffix)
+        Ext_namespace.change_ext_ns_suffix output_file_sans_extension spec.suffix
       in
       (if spec.in_source then Bsb_config.rev_lib_bs_prefix basename
       else Bsb_config.lib_bs_prefix_of_format spec.format // basename)
@@ -182,21 +184,19 @@ let list_dirs_by (package_specs : t) (f : string -> unit) =
 
 type json_map = Ext_json_types.t Map_string.t
 
-let extract_bs_suffix_exn (map : json_map) : Ext_js_suffix.t =
+let extract_js_suffix_exn (map : json_map) : string =
   match map.?(Bsb_build_schemas.suffix) with
-  | None -> Js
-  | Some (Str { str; loc }) ->
-      let s = Ext_js_suffix.of_string str in
-      if s = Unknown_extension then
-        Bsb_exception.errorf ~loc
-          "expected .js, .mjs, .cjs or .bs.js, .bs.mjs, .bs.cjs"
-      else s
+  | None -> Literals.suffix_js
+  | Some (Str { str = suffix; _ }) when validate_js_suffix suffix -> suffix
+  | Some ((Str {str; _}) as config)  -> 
+    Bsb_exception.config_error config
+      ("invalid js file extension \"" ^ str ^ "\"")
   | Some config ->
-      Bsb_exception.config_error config
-        "expected a string extension like \".js\""
+    Bsb_exception.config_error config
+      "expected a string extension like \".js\""
 
 let from_map ~(cwd : string) map =
-  let suffix = extract_bs_suffix_exn map in
+  let suffix = extract_js_suffix_exn map in
   let modules =
     match map.?(Bsb_build_schemas.package_specs) with
     | Some x -> from_json suffix x

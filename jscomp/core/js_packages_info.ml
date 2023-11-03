@@ -38,7 +38,7 @@ let compatible (dep : module_system) (query : module_system) =
 type package_info = {
   module_system : module_system;
   path : string;
-  suffix : Ext_js_suffix.t;
+  suffix : string;
 }
 
 type package_name = Pkg_empty | Pkg_runtime | Pkg_normal of string
@@ -61,8 +61,8 @@ let runtime_package_specs : t =
     name = Pkg_runtime;
     module_systems =
       [
-        { module_system = Es6; path = "lib/es6"; suffix = Js };
-        { module_system = NodeJS; path = "lib/js"; suffix = Js };
+        { module_system = Es6; path = "lib/es6"; suffix = Literals.suffix_js };
+        { module_system = NodeJS; path = "lib/js"; suffix = Literals.suffix_js };
       ];
   }
 
@@ -121,7 +121,7 @@ let dump_package_info (fmt : Format.formatter)
   Format.fprintf fmt "@[%s@ %s@ %s@]"
     (string_of_module_system ms)
     name
-    (Ext_js_suffix.to_string suffix)
+    suffix
 
 let dump_package_name fmt (x : package_name) =
   match x with
@@ -140,7 +140,7 @@ let dump_packages_info (fmt : Format.formatter)
 type package_found_info = {
   rel_path : string;
   pkg_rel_path : string;
-  suffix : Ext_js_suffix.t;
+  suffix : string;
 }
 
 type info_query =
@@ -201,18 +201,18 @@ let add_npm_package_path (packages_info : t) (s : string) : t =
     in
     let m =
       match Ext_string.split ~keep_empty:true s ':' with
-      | [ path ] -> { module_system = NodeJS; path; suffix = Js }
+      | [ path ] -> { module_system = NodeJS; path; suffix = Literals.suffix_js }
       | [ module_system; path ] ->
           {
             module_system = handle_module_system module_system;
             path;
-            suffix = Js;
+            suffix = Literals.suffix_js;
           }
       | [ module_system; path; suffix ] ->
           {
             module_system = handle_module_system module_system;
             path;
-            suffix = Ext_js_suffix.of_string suffix;
+            suffix;
           }
       | _ -> Bsc_args.bad_arg ("invalid npm package path: " ^ s)
     in
