@@ -14,6 +14,7 @@
 
 #### :bug: Bug Fix
 - Fix issue with GenType and `result` introduced in rc.5. https://github.com/rescript-lang/rescript-compiler/pull/6464
+- Fix compiler crash when inlining complex constants in pattern matching. https://github.com/rescript-lang/rescript-compiler/pull/6471
 
 # 11.0.0-rc.5
 
