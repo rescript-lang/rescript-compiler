@@ -7,7 +7,7 @@
     },
     "suffix-spec": {
       "type": "string",
-      "description": "Suffix of generated js files. Default: .js"
+      "description": "Suffix of generated js files. Default: .js. May contain letters, digits, \"-\", \"_\" and \".\" and must end with .js, .mjs or .cjs."
     },
     "module-format-object": {
       "type": "object",
