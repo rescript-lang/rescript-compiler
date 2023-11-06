@@ -91,7 +91,7 @@ and from_json_single suffix (x : Ext_json_types.t) : Bsb_spec_set.spec =
             | Some (Str { str = suffix; _ }) when validate_js_suffix suffix -> suffix
             | Some (Str {str; loc}) ->
               Bsb_exception.errorf ~loc
-                ("invalid js file extension \"%s\"") str
+                ("invalid suffix \"%s\". The suffix and may contain letters, digits, \"-\", \"_\" and \".\" and must end with .js, .mjs or .cjs.") str
             | Some _ ->
               Bsb_exception.errorf ~loc:(Ext_json.loc_of x)
                 "expected a string extension like \".js\""
@@ -190,7 +190,7 @@ let extract_js_suffix_exn (map : json_map) : string =
   | Some (Str { str = suffix; _ }) when validate_js_suffix suffix -> suffix
   | Some ((Str {str; _}) as config)  -> 
     Bsb_exception.config_error config
-      ("invalid js file extension \"" ^ str ^ "\"")
+      ("invalid suffix \"" ^ str ^ "\". The suffix and may contain letters, digits, \"-\", \"_\" and \".\" and must end with .js, .mjs or .cjs.")
   | Some config ->
     Bsb_exception.config_error config
       "expected a string extension like \".js\""
