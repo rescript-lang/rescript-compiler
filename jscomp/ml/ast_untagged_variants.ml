@@ -189,7 +189,7 @@ let get_block_type ~env (cstr : Types.constructor_declaration) :
     block_type option =
   match (process_untagged cstr.cd_attributes, cstr.cd_args) with
   | false, _ -> None
-  | true, Cstr_tuple [{desc = Tconstr _} as t] when get_block_type_from_typ ~env t |> Option.is_some -> get_block_type_from_typ ~env t
+  | true, Cstr_tuple [t] when get_block_type_from_typ ~env t |> Option.is_some -> get_block_type_from_typ ~env t
   | true, Cstr_tuple [ty] -> (
     let default = Some UnknownType in
     match !extract_concrete_typedecl env ty with
