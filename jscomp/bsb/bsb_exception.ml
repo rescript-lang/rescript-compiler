@@ -71,7 +71,7 @@ let print (fmt : Format.formatter) (x : error) =
       Format.fprintf fmt
         "File %S, line %d:\n\
          @{<error>Error:@} %s \n\
-         For more details, please checkout the schema \
+         For more details, please check out the schema at \
          https://rescript-lang.org/docs/manual/latest/build-configuration-schema"
         pos.pos_fname pos.pos_lnum s
   | Invalid_spec s ->

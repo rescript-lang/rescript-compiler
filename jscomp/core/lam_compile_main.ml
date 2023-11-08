@@ -301,10 +301,7 @@ let lambda_as_module
             (lambda_output)
             chan in
         let basename =  
-          Ext_namespace.change_ext_ns_suffix 
-            (Filename.basename
-               output_prefix) 
-            (Ext_js_suffix.to_string  suffix) 
+          Ext_namespace.change_ext_ns_suffix (Filename.basename output_prefix) suffix
         in
         let target_file = 
           (Lazy.force Ext_path.package_dir //

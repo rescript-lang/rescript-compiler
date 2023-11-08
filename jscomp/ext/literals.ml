@@ -121,16 +121,6 @@ let suffix_d = ".d"
 
 let suffix_js = ".js"
 
-let suffix_bs_js = ".bs.js"
-
-let suffix_mjs = ".mjs"
-
-let suffix_bs_mjs = ".bs.mjs"
-
-let suffix_cjs = ".cjs"
-
-let suffix_bs_cjs = ".bs.cjs"
-
 let suffix_gen_js = ".gen.js"
 
 let suffix_gen_tsx = ".gen.tsx"
