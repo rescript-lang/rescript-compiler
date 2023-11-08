@@ -421,12 +421,13 @@ and pp_function ~return_unit ~async ~is_method cxt (f : P.t) ~fn_state
             | No_name _ -> ()
             | Name_non_top name | Name_top name ->
                 ignore (pp_var_assign inner_cxt f name : cxt));
+            if async then P.string f L.await;
             P.string f L.lparen;
             P.string f (L.function_async ~async);
             pp_paren_params inner_cxt f lexical;
             P.brace_vgroup f 0 (fun _ ->
                 return_sp f;
-                P.string f L.function_;
+                P.string f (L.function_async ~async);
                 P.space f;
                 (match fn_state with
                 | Is_return | No_name _ -> ()
