@@ -44,7 +44,6 @@ type immutable_mask =
 
 type t = {
   mutable unbounded : Set_ident.t;
-  mutable bound_loop_mutable_values : Set_ident.t;
   used_mask : bool array;
   immutable_mask : immutable_mask;
 }
@@ -58,7 +57,6 @@ let make ?immutable_mask n =
       (match immutable_mask with
       | Some x -> Immutable_mask x
       | None -> All_immutable_and_no_tail_call);
-    bound_loop_mutable_values = Set_ident.empty;
   }
 
 let no_tailcall x =
@@ -92,13 +90,3 @@ let set_unbounded env v =
   (* if Set_ident.is_empty env.bound then *)
   env.unbounded <- v
 (* else assert false *)
-
-let set_lexical_scope env bound_loop_mutable_values =
-  env.bound_loop_mutable_values <- bound_loop_mutable_values
-
-let get_lexical_scope env = env.bound_loop_mutable_values
-
-(* TODO:  can be refined if it
-    only enclose toplevel variables
-*)
-(* let is_empty t = Set_ident.is_empty t.unbounded *)
