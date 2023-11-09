@@ -194,7 +194,7 @@ let rec size (lam : Lam.t) =
 and size_constant x =
   match x with
   | Const_int _ | Const_char _ | Const_float _ | Const_int64 _ | Const_pointer _
-  | Const_js_null | Const_js_undefined | Const_module_alias | Const_js_true
+  | Const_js_null | Const_js_undefined _ | Const_module_alias | Const_js_true
   | Const_js_false ->
       1
   | Const_string _ ->
@@ -270,6 +270,6 @@ let safe_to_inline (lam : Lam.t) =
   | Lconst
       ( Const_pointer _
       | Const_int { comment = Pt_constructor _ }
-      | Const_js_true | Const_js_false | Const_js_undefined ) ->
+      | Const_js_true | Const_js_false | Const_js_undefined _ ) ->
       true
   | _ -> false

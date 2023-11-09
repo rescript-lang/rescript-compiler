@@ -59,7 +59,7 @@ let get_runtime_module_path
       module_system  in
   let js_file =  
     Ext_namespace.js_name_of_modulename dep_module_id.id.name 
-      Little Js in 
+      Little Literals.suffix_js in 
   match current_info_query with        
   | Package_not_found -> assert false
   | Package_script -> 
@@ -183,7 +183,7 @@ let string_of_module_id
         | Package_script, Package_script 
           -> 
           let js_file =  
-            Ext_namespace.js_name_of_modulename dep_module_id.id.name case Js in 
+            Ext_namespace.js_name_of_modulename dep_module_id.id.name case Literals.suffix_js in 
           match Config_util.find_opt js_file with 
           | Some file -> 
             let basename = Filename.basename file in 

@@ -405,10 +405,14 @@ and eq_approx_list ls ls1 = Ext_list.for_all2_no_exn ls ls1 eq_approx
 let switch lam (lam_switch : lambda_switch) : t =
   match lam with
   | Lconst (Const_int { i }) ->
-      Ext_list.assoc_by_int lam_switch.sw_consts (Int32.to_int i)
-        lam_switch.sw_failaction
+      (* Because of inlining and dead code, we might be looking at a value of unexpected type 
+         e.g. an integer, so the const case might not be found *)
+      (try
+        Ext_list.assoc_by_int lam_switch.sw_consts (Int32.to_int i) lam_switch.sw_failaction
+      with _ -> Lswitch(lam, lam_switch))
   | Lconst (Const_block (i, _, _)) ->
-      Ext_list.assoc_by_int lam_switch.sw_blocks i lam_switch.sw_failaction
+      (try Ext_list.assoc_by_int lam_switch.sw_blocks i lam_switch.sw_failaction
+      with _ -> Lswitch(lam, lam_switch))
   | _ -> Lswitch (lam, lam_switch)
 
 let stringswitch (lam : t) cases default : t =
@@ -419,7 +423,7 @@ let stringswitch (lam : t) cases default : t =
 
 let true_ : t = Lconst Const_js_true
 let false_ : t = Lconst Const_js_false
-let unit : t = Lconst Const_js_undefined
+let unit : t = Lconst (Const_js_undefined {isUnit = true})
 
 let rec seq (a : t) b : t =
   match a with
@@ -635,7 +639,7 @@ let rec eval_const_as_bool (v : Lam_constant.t) : bool =
   | Const_int { i = x } -> x <> 0l
   | Const_char x -> x <> 0
   | Const_int64 x -> x <> 0L
-  | Const_js_false | Const_js_null | Const_module_alias | Const_js_undefined ->
+  | Const_js_false | Const_js_null | Const_module_alias | Const_js_undefined _ ->
       false
   | Const_js_true | Const_string _ | Const_pointer _ | Const_float _
   | Const_block _ | Const_float_array _ ->

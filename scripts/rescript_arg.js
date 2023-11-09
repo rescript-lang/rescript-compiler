@@ -84,13 +84,13 @@ function stop_raise(usage, error, specs) {
     case "Unknown":
       if (["-help", "--help", "-h"].includes(error.data)) {
         usage_b(b, usage, specs);
-        process.stderr.write(b.val);
+        process.stdout.write(b.val);
         process.exit(0);
       } else {
-        b.add("unknown option: '").add(error.data).add("'.\n");
+        b.add(`Unknown option "${error.data}".\n'`);
       }
     case "Missing":
-      b.add("option '").add(error.data).add("' needs an argument.\n");
+      b.add(`Option "${error.data}" needs an argument.\n'`);
   }
   usage_b(b, usage, specs);
   bad_arg(b.val);

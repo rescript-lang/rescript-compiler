@@ -294,7 +294,7 @@ function bench7(param) {
 
 console.time("bs_hashtbl_string_test.res 181");
 
-bench7(undefined);
+bench7();
 
 console.timeEnd("bs_hashtbl_string_test.res 181");
 

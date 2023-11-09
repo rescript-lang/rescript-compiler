@@ -17,7 +17,7 @@ function ff(param) {
   return "cool " + a22;
 }
 
-var a23 = ff(undefined);
+var a23 = ff();
 
 var a15 = a10;
 

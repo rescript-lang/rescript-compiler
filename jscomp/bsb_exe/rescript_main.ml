@@ -90,7 +90,7 @@ let clean_usage =
 let build_usage =
   "Usage: rescript build <options> -- <ninja_options>\n\n\
    `rescript build` builds the project with dependencies\n\n\
-   `rescript -- -h` for Ninja options (internal usage only; unstable)\n"
+   `rescript build -- -h` for Ninja options (internal usage only; unstable)\n"
 
 let install_target () =
   let ( // ) = Filename.concat in
@@ -234,6 +234,6 @@ let () =
         start.pos_lnum Ext_json_parse.report_error e;
       exit 2
   | Bsb_arg.Bad s | Sys_error s ->
-      Format.fprintf Format.err_formatter "@{<error>Error:@} %s@." s;
+      Format.fprintf Format.err_formatter "@{<error>Error:@} %s" s;
       exit 2
   | e -> Ext_pervasives.reraise e

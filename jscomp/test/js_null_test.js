@@ -23,7 +23,7 @@ var suites_1 = {
         return {
                 TAG: "Eq",
                 _0: Caml_option.some(undefined),
-                _1: Caml_option.some(undefined)
+                _1: Caml_option.some()
               };
       })
   ],

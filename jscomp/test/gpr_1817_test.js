@@ -39,7 +39,7 @@ function f(param) {
         ];
 }
 
-var match = f(undefined);
+var match = f();
 
 var a2 = match[2];
 

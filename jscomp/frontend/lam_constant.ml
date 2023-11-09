@@ -42,7 +42,7 @@ let string_of_pointer_info (x : pointer_info) : string option =
 
 type t =
   | Const_js_null
-  | Const_js_undefined
+  | Const_js_undefined of {isUnit: bool}
   | Const_js_true
   | Const_js_false
   | Const_int of {i: int32; comment: pointer_info}
@@ -63,7 +63,7 @@ let rec eq_approx (x : t) (y : t) =
   match x with
   | Const_module_alias -> y = Const_module_alias
   | Const_js_null -> y = Const_js_null
-  | Const_js_undefined -> y = Const_js_undefined
+  | Const_js_undefined b -> y = Const_js_undefined b
   | Const_js_true -> y = Const_js_true
   | Const_js_false -> y = Const_js_false
   | Const_int ix -> (
@@ -104,4 +104,4 @@ let rec eq_approx (x : t) (y : t) =
     | Const_some iy -> eq_approx ix iy
     | _ -> false)
 
-let lam_none : t = Const_js_undefined
+let lam_none : t = Const_js_undefined {isUnit = false}

@@ -28,7 +28,7 @@ var areaValue = ImportJsValueGen$1.area({
 
 function getAbs(x) {
   var getAbs$1 = x.getAbs;
-  return getAbs$1(undefined);
+  return getAbs$1();
 }
 
 var AbsoluteValue = {

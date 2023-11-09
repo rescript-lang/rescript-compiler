@@ -135,7 +135,7 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
               };
             ] );
     }
-  | ( (["Pervasives"; "result"] | ["Belt"; "Result"; "t"]),
+  | ( (["Pervasives"; "result"] | ["Belt"; "Result"; "t"] | ["result"]),
       [paramTranslation1; paramTranslation2] ) ->
     let case n name type_ =
       {case = {label = string_of_int n; labelJS = StringLabel name}; t = type_}

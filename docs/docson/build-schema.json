@@ -6,8 +6,8 @@
       "description": "es6-global generate relative `require` paths instead of relying on NodeJS' module resolution. Default: commonjs."
     },
     "suffix-spec": {
-      "enum": [".js", ".mjs", ".cjs", ".bs.js", ".bs.mjs", ".bs.cjs"],
-      "description": "suffix of generated js files, default to [.js] "
+      "type": "string",
+      "description": "Suffix of generated js files. Default: .js. May contain letters, digits, \"-\", \"_\" and \".\" and must end with .js, .mjs or .cjs."
     },
     "module-format-object": {
       "type": "object",
@@ -295,26 +295,6 @@
       ],
       "description": "Example: `\"src\"` or `[\"src\", \"test\"]` or `[{\"dir\": \"src\", \"subdirs\": [...]}]`"
     },
-    "targetItems": {
-      "type": "object",
-      "properties": {
-        "kind": {
-          "enum": ["native", "bytecode", "js"],
-          "description": "The compiler to use for the target"
-        },
-        "main": {
-          "type": "string",
-          "description": "Name of the main module used as entry point for this target. 'entry-point' isn't used when this project is built as a dependency."
-        }
-      }
-    },
-    "entries": {
-      "type": "array",
-      "items": {
-        "$ref": "#/definitions/targetItems"
-      },
-      "description": "A list of buildable targets"
-    },
     "gentype-specs": {
       "type": "object",
       "properties": {
@@ -493,10 +473,6 @@
     "package-specs": {
       "$ref": "#/definitions/package-specs",
       "description": "ReScript can currently output to [Commonjs](https://en.wikipedia.org/wiki/CommonJS), and [ES6 modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)"
-    },
-    "entries": {
-      "$ref": "#/definitions/entries",
-      "description": "(internal) Used by bsb to build to different targets: native (ocamlopt), bytecode (ocamlc) or JS (bsc)"
     },
     "use-stdlib": {
       "type": "boolean",

@@ -82,7 +82,7 @@ let free_variables_of_expression st =
 
 let rec no_side_effect_expression_desc (x : J.expression_desc) =
   match x with
-  | Undefined | Null | Bool _ | Var _ -> true
+  | Undefined _ | Null | Bool _ | Var _ -> true
   | Fun _ -> true
   | Number _ -> true (* Can be refined later *)
   | Static_index (obj, (_name : string), (_pos : int32 option)) ->
@@ -153,7 +153,7 @@ let rec eq_expression ({ expression_desc = x0 } : J.expression)
     ({ expression_desc = y0 } : J.expression) =
   match x0 with
   | Null -> y0 = Null
-  | Undefined -> y0 = Undefined
+  | Undefined x -> y0 = Undefined x
   | Number (Int { i }) -> (
       match y0 with Number (Int { i = j }) -> i = j | _ -> false)
   | Number (Float _) -> false

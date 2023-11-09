@@ -7,11 +7,11 @@ function mk(fn) {
   return Curry._1(fn, undefined);
 }
 
-(((_)=> console.log('should works'))(undefined));
+(((_)=> console.log('should works'))());
 
 console.log((function () {
           return 1;
-        })(undefined));
+        })());
 
 exports.mk = mk;
 /*  Not a pure module */

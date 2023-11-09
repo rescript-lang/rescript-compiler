@@ -122,7 +122,7 @@ function unit_magic(param) {
   return 3;
 }
 
-var f_unit_magic = unit_magic(undefined);
+var f_unit_magic = unit_magic();
 
 function hh(xs) {
   return function (param) {

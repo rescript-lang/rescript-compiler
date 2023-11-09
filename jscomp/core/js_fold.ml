@@ -169,7 +169,7 @@ class fold =
       | Object _x0 ->
           let _self = _self#property_map _x0 in
           _self
-      | Undefined -> _self
+      | Undefined _ -> _self
       | Null -> _self
       | Await _x0 ->
         let _self = _self#expression _x0 in

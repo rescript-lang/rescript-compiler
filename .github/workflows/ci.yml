@@ -210,6 +210,10 @@ jobs:
         if: runner.os != 'Windows'
         run: node scripts/ciTest.js -all
 
+      - name: Run gentype tests
+        if: runner.os != 'Windows'
+        run: make -C jscomp/gentype_tests/typescript-react-example clean test
+
       - name: Run tests (Windows)
         if: runner.os == 'Windows'
         run: node scripts/ciTest.js -mocha -theme -format
@@ -260,8 +264,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          submodules: true
 
       - name: Use Node.js
         uses: actions/setup-node@v3
@@ -354,6 +356,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:

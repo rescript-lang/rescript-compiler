@@ -45,7 +45,7 @@ let js_name_of_modulename s (case : Ext_js_file_kind.case) suffix : string =
   let s =
     match case with Little -> Ext_string.uncapitalize_ascii s | Upper -> s
   in
-  change_ext_ns_suffix s (Ext_js_suffix.to_string suffix)
+  change_ext_ns_suffix s suffix
 
 (* https://docs.npmjs.com/files/package.json
    Some rules:

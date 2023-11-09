@@ -188,7 +188,7 @@ function eq(loc, x, y) {
 }
 
 try {
-  ((()=>{throw 2})(undefined));
+  ((()=>{throw 2})());
 }
 catch (raw_e$2){
   var e = Caml_js_exceptions.internalToOCamlException(raw_e$2);

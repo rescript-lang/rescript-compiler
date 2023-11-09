@@ -8,7 +8,7 @@ async function willBeInlined(param) {
   return 3;
 }
 
-var inlined = willBeInlined(undefined);
+var inlined = willBeInlined();
 
 function wrapSomethingAsync(param) {
   ((async function (param) {
@@ -21,7 +21,7 @@ function wrapSomethingAsync2(param) {
   ((async function (param) {
           var test = await Promise.resolve("Test");
           console.log(test);
-        })(undefined));
+        })());
 }
 
 async function doSomethingAsync(someAsyncFunction) {

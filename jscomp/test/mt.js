@@ -201,7 +201,7 @@ var from_pair_suites = (function from_pair_suites(name, suites) {
   
 });
 
-var val_unit = Promise.resolve(undefined);
+var val_unit = Promise.resolve();
 
 var from_promise_suites = (function from_promise_suites(name, suites) {
   var match = $$Array.to_list(Process.argv);
@@ -230,7 +230,7 @@ var from_promise_suites = (function from_promise_suites(name, suites) {
 function old_from_promise_suites_donotuse(name, suites) {
   var match = $$Array.to_list(Process.argv);
   if (match) {
-    if (is_mocha(undefined)) {
+    if (is_mocha()) {
       describe(name, (function () {
               List.iter((function (param) {
                       var code = param[1];
