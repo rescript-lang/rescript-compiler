@@ -41,8 +41,13 @@ let open_implicit_module m env =
   in
   snd (Typemod.type_open_ Override env lid.loc lid)
 
-let initial_env () =
+let initial_env ?(modulename) () =
   Ident.reinit ();
+  let open_modules = (match modulename with 
+  | None -> !Clflags.open_modules 
+  | Some modulename -> 
+    !Clflags.open_modules |> List.filter(fun m -> m <> modulename)
+  ) in
   let initial = Env.initial_safe_string in
   let env =
     if !Clflags.nopervasives then initial
@@ -51,4 +56,4 @@ let initial_env () =
   List.fold_left
     (fun env m -> open_implicit_module m env)
     env
-    (List.rev !Clflags.open_modules)
+    (List.rev open_modules)

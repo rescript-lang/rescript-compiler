@@ -64,7 +64,7 @@ let after_parsing_sig ppf outputprefix ast =
     else
       let modulename = module_of_filename outputprefix in
       Lam_compile_env.reset ();
-      let initial_env = Res_compmisc.initial_env () in
+      let initial_env = Res_compmisc.initial_env ~modulename () in
       Env.set_unit_name modulename;
       let tsg = Typemod.transl_signature initial_env ast in
       if !Clflags.dump_typedtree then
@@ -149,7 +149,7 @@ let after_parsing_impl ppf outputprefix (ast : Parsetree.structure) =
     else
       let modulename = Ext_filename.module_name outputprefix in
       Lam_compile_env.reset ();
-      let env = Res_compmisc.initial_env () in
+      let env = Res_compmisc.initial_env ~modulename () in
       Env.set_unit_name modulename;
       let typedtree, coercion, _, _ =
         Typemod.type_implementation_more
