@@ -382,7 +382,13 @@ and translateTypeExprFromTypes_ ~config ~typeVarsGen ~typeEnv
     | {noPayloads; payloads = []; unknowns = []} ->
       let noPayloads =
         noPayloads
-        |> List.map (fun label -> {label; labelJS = StringLabel label})
+        |> List.map (fun label ->
+               {
+                 label;
+                 labelJS =
+                   (if isNumber label then IntLabel label
+                   else StringLabel label);
+               })
       in
       let type_ =
         createVariant ~inherits:[] ~noPayloads ~payloads:[] ~polymorphic:true

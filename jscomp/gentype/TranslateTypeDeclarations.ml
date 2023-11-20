@@ -21,7 +21,7 @@ let createExportTypeFromTypeDeclaration ~annotation ~loc ~nameAs ~opaque ~type_
     annotation;
   }
 
-let createCase (label, attributes) =
+let createCase (label, attributes) ~poly =
   {
     label;
     labelJS =
@@ -34,7 +34,8 @@ let createCase (label, attributes) =
       | Some (_, FloatPayload s) -> FloatLabel s
       | Some (_, IntPayload i) -> IntLabel i
       | Some (_, StringPayload asLabel) -> StringLabel asLabel
-      | _ -> StringLabel label);
+      | _ ->
+        if poly && isNumber label then IntLabel label else StringLabel label);
   }
 
 (**
@@ -190,7 +191,9 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
       match (coreType, translation.type_) with
       | {ctyp_desc = Ttyp_variant (rowFields, _, _)}, Variant variant ->
         let rowFieldsVariants = rowFields |> TranslateCoreType.processVariant in
-        let noPayloads = rowFieldsVariants.noPayloads |> List.map createCase in
+        let noPayloads =
+          rowFieldsVariants.noPayloads |> List.map (createCase ~poly:true)
+        in
         let payloads =
           if
             variant.payloads |> List.length
@@ -199,7 +202,7 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
             (List.combine variant.payloads rowFieldsVariants.payloads
              [@doesNotRaise])
             |> List.map (fun (payload, (label, attributes, _)) ->
-                   let case = (label, attributes) |> createCase in
+                   let case = (label, attributes) |> createCase ~poly:true in
                    {payload with case})
           else variant.payloads
         in
@@ -277,7 +280,10 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
       variantsNoPayload
       |> List.map
            (fun (name, attributes, _argTypes, _importTypes, recordValue) ->
-             {((name, attributes) |> createCase) with label = recordValue})
+             {
+               ((name, attributes) |> createCase ~poly:false) with
+               label = recordValue;
+             })
     in
     let payloads =
       variantsWithPayload
@@ -290,7 +296,10 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
              in
              {
                case =
-                 {((name, attributes) |> createCase) with label = recordValue};
+                 {
+                   ((name, attributes) |> createCase ~poly:false) with
+                   label = recordValue;
+                 };
                t = type_;
              })
     in
