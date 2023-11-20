@@ -178,7 +178,9 @@ and translateCoreType_ ~config ~typeVarsGen
                  if asString then
                    match attributes |> Annotation.getAsString with
                    | Some labelRenamed -> StringLabel labelRenamed
-                   | None -> StringLabel label
+                   | None ->
+                     if isNumber label then IntLabel label
+                     else StringLabel label
                  else if asInt then (
                    match attributes |> Annotation.getAsInt with
                    | Some n ->
@@ -187,6 +189,7 @@ and translateCoreType_ ~config ~typeVarsGen
                    | None ->
                      lastBsInt := !lastBsInt + 1;
                      IntLabel (string_of_int !lastBsInt))
+                 else if isNumber label then IntLabel label
                  else StringLabel label
                in
                {label; labelJS})
@@ -202,7 +205,13 @@ and translateCoreType_ ~config ~typeVarsGen
         payloadsTranslations
         |> List.map (fun (label, _attributes, translation) ->
                {
-                 case = {label; labelJS = StringLabel label};
+                 case =
+                   {
+                     label;
+                     labelJS =
+                       (if isNumber label then IntLabel label
+                       else StringLabel label);
+                   };
                  t = translation.type_;
                })
       in
