@@ -16,7 +16,7 @@ export type r2 = string;
 
 export type t = number[] | number | ((_1:number) => number);
 
-export type tabIndex = "0" | "1";
+export type tabIndex = "0" | "1" | 0;
 
 export const testV1: (x:v1) => v1 = UnboxedBS.testV1;
 

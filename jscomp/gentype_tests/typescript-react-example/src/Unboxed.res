@@ -18,7 +18,7 @@ type r2 = B({g: string})
 type t = Array(array<int>) | Record({x: int}) | Function((. int) => int)
 
 @genType
-type tabIndex = | @as("0") Activity | @as("1") UserKeyword
+type tabIndex = | @as("0") Activity | @as("1") UserKeyword | @as(0) NumZero
 
 @genType
 let a = Activity
