@@ -1,0 +1,28 @@
+
+  [1;31mWe've found a bug for you![0m
+  [36m/.../fixtures/c_for_u_in_c_mode.res[0m:[2m3:5-5:1[0m
+
+  1 [2m│[0m module Foo: {
+  2 [2m│[0m   let add: (. int, int) => int
+  [1;31m3[0m [2m│[0m } = [1;31m{[0m
+  [1;31m4[0m [2m│[0m [1;31m  let add = (a, b) => a + b[0m
+  [1;31m5[0m [2m│[0m [1;31m}[0m
+  6 [2m│[0m 
+
+  Signature mismatch:
+  Modules do not match:
+    {
+  let add: (int, int) => int
+}
+  is not included in
+    {
+  let add: (. int, int) => int
+}
+  Values do not match:
+    let add: (int, int) => int (curried)
+  is not included in
+    let add: (. int, int) => int (uncurried)
+  [36m/.../fixtures/c_for_u_in_c_mode.res[0m:[2m2:3-30[0m:
+    Expected declaration
+  [36m/.../fixtures/c_for_u_in_c_mode.res[0m:[2m4:7-9[0m:
+    Actual declaration
