@@ -1,6 +1,6 @@
 
   [1;31mWe've found a bug for you![0m
-  [36m/.../fixtures/uncurried_value_instead_of_curried_in_uncurried_mode.res[0m:[2m6:5-8:1[0m
+  [36m/.../fixtures/u_value_wanted_c_in_u_mode.res[0m:[2m6:5-8:1[0m
 
   4 [2m│[0m   @@uncurried.swap
   5 [2m│[0m   let add: (. int, int) => int
@@ -22,7 +22,7 @@
     let add: (int, int) => int (uncurried)
   is not included in
     let add: (int, int) => int (curried)
-  [36m/.../fixtures/uncurried_value_instead_of_curried_in_uncurried_mode.res[0m:[2m5:3-30[0m:
+  [36m/.../fixtures/u_value_wanted_c_in_u_mode.res[0m:[2m5:3-30[0m:
     Expected declaration
-  [36m/.../fixtures/uncurried_value_instead_of_curried_in_uncurried_mode.res[0m:[2m7:7-9[0m:
+  [36m/.../fixtures/u_value_wanted_c_in_u_mode.res[0m:[2m7:7-9[0m:
     Actual declaration
