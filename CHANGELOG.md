@@ -10,7 +10,7 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# 11.0.0-rc.6 (Unreleased)
+# 11.0.0-rc.6
 
 #### :rocket: New Feature
 
@@ -22,7 +22,11 @@
 - Fix compiler crash when inlining complex constants in pattern matching. https://github.com/rescript-lang/rescript-compiler/pull/6471
 - Fix issue with generating async functions inside loops. https://github.com/rescript-lang/rescript-compiler/pull/6479
 - Fix issue with Gentype and string annotations with numbers such as `@as("0")`. https://github.com/rescript-lang/rescript-compiler/pull/6487
+- Fix error message on curried/uncurried signature mismatch. https://github.com/rescript-lang/rescript-compiler/pull/6414
 
+#### :nail_care: Polish
+
+- Improve some error messages in rescript.conf parsing. https://github.com/rescript-lang/rescript-compiler/pull/6469
 
 # 11.0.0-rc.5
 
