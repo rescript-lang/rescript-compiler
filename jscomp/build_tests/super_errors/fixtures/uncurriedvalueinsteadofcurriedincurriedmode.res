@@ -1,5 +1,5 @@
 module Foo: {
-  let add: (int, int) => int
+  let adducc: (int, int) => int
 } = {
-  let add = (. a, b) => a + b
+  let adducc = (. a, b) => a + b
 }

@@ -2,7 +2,7 @@
 
 module Foo: {
   @@uncurried.swap
-  let add: (. int, int) => int
+  let adducu: (. int, int) => int
 } = {
-  let add = (a, b) => a + b
+  let adducu = (a, b) => a + b
 }
