@@ -1,6 +1,6 @@
 
   [1;31mWe've found a bug for you![0m
-  [36m/.../fixtures/uncurriedvalueinsteadofcurriedinuncurriedmode.res[0m:[2m6:5-8:1[0m
+  [36m/.../fixtures/variant_spread_tag_value_mismatch4.res[0m:[2m6:5-8:1[0m
 
   4 [2m│[0m   @@uncurried.swap
   5 [2m│[0m   let adducu: (. int, int) => int
@@ -10,12 +10,19 @@
   9 [2m│[0m 
 
   Signature mismatch:
-  ...
+  Modules do not match:
+    {
+  let adducu: (int, int) => int
+}
+  is not included in
+    {
+  let adducu: (int, int) => int
+}
   Values do not match:
     let adducu: (int, int) => int (uncurried)
   is not included in
     let adducu: (int, int) => int (curried)
-  [36m/.../fixtures/uncurriedvalueinsteadofcurriedinuncurriedmode.res[0m:[2m5:3-33[0m:
+  [36m/.../fixtures/variant_spread_tag_value_mismatch4.res[0m:[2m5:3-33[0m:
     Expected declaration
-  [36m/.../fixtures/uncurriedvalueinsteadofcurriedinuncurriedmode.res[0m:[2m7:7-12[0m:
+  [36m/.../fixtures/variant_spread_tag_value_mismatch4.res[0m:[2m7:7-12[0m:
     Actual declaration
