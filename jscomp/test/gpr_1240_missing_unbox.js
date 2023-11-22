@@ -3,8 +3,8 @@
 
 
 function f(x, y) {
-  var x$1 = x;
-  var y$1 = y;
+  let x$1 = x;
+  let y$1 = y;
   return [
           x$1,
           y$1

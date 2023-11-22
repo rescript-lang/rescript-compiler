@@ -4,9 +4,9 @@
 
 console.log(3);
 
-var v = console.log(3);
+let v = console.log(3);
 
-var u;
+let u;
 
 exports.u = u;
 exports.v = v;

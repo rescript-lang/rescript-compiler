@@ -2,17 +2,17 @@
 'use strict';
 
 
-var List = {
+let List = {
   u: 3
 };
 
-var X = {
+let X = {
   List: List
 };
 
-var Hashtbl;
+let Hashtbl;
 
-var V;
+let V;
 
 exports.X = X;
 exports.Hashtbl = Hashtbl;

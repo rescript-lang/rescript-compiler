@@ -2,14 +2,14 @@
 'use strict';
 
 
-var N = {};
+let N = {};
 
 function f(e) {
   return (e.a + e.b | 0) + e.c | 0;
 }
 
 function f1(e) {
-  var c = e.c;
+  let c = e.c;
   return ((e.a + e.b | 0) + c | 0) + e.d(c) | 0;
 }
 

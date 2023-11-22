@@ -3,19 +3,19 @@
 
 
 function Alias_default_value_test$C0(props) {
-  var __b = props.b;
-  var __a = props.a;
-  var a = __a !== undefined ? __a : 2;
-  var b = __b !== undefined ? __b : (a << 1);
+  let __b = props.b;
+  let __a = props.a;
+  let a = __a !== undefined ? __a : 2;
+  let b = __b !== undefined ? __b : (a << 1);
   return a + b | 0;
 }
 
-var C0 = {
+let C0 = {
   make: Alias_default_value_test$C0
 };
 
 function Alias_default_value_test$C1(props) {
-  var __bar = props.foo;
+  let __bar = props.foo;
   if (__bar !== undefined) {
     return __bar;
   } else {
@@ -23,24 +23,24 @@ function Alias_default_value_test$C1(props) {
   }
 }
 
-var C1 = {
+let C1 = {
   make: Alias_default_value_test$C1
 };
 
 function Alias_default_value_test$C2(props) {
-  var __a = props.a;
-  var __bar = props.foo;
-  var bar = __bar !== undefined ? __bar : "";
-  var a = __a !== undefined ? __a : bar;
+  let __a = props.a;
+  let __bar = props.foo;
+  let bar = __bar !== undefined ? __bar : "";
+  let a = __a !== undefined ? __a : bar;
   return bar + a + props.b;
 }
 
-var C2 = {
+let C2 = {
   make: Alias_default_value_test$C2
 };
 
 function Alias_default_value_test$C3(props) {
-  var __text = props.text;
+  let __text = props.text;
   if (__text !== undefined) {
     return __text;
   } else {
@@ -48,7 +48,7 @@ function Alias_default_value_test$C3(props) {
   }
 }
 
-var C3 = {
+let C3 = {
   make: Alias_default_value_test$C3
 };
 
@@ -56,7 +56,7 @@ function Alias_default_value_test$C4(props) {
   return props.a;
 }
 
-var C4 = {
+let C4 = {
   make: Alias_default_value_test$C4
 };
 
@@ -64,7 +64,7 @@ function Alias_default_value_test$C6(props) {
   return props.comp.xx;
 }
 
-var C6 = {
+let C6 = {
   make: Alias_default_value_test$C6
 };
 

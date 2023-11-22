@@ -2,9 +2,9 @@
 'use strict';
 
 
-var _map = {"Horizontal":"horizontal","Vertical":"vertical"};
+let _map = {"Horizontal":"horizontal","Vertical":"vertical"};
 
-var _revMap = {"horizontal":"Horizontal","vertical":"Vertical"};
+let _revMap = {"horizontal":"Horizontal","vertical":"Vertical"};
 
 function orientationToJs(param) {
   return _map[param];

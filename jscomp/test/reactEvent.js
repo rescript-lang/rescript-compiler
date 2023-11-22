@@ -2,35 +2,35 @@
 'use strict';
 
 
-var Synthetic = {};
+let Synthetic = {};
 
-var Clipboard = {};
+let Clipboard = {};
 
-var Composition = {};
+let Composition = {};
 
-var Keyboard = {};
+let Keyboard = {};
 
-var Focus = {};
+let Focus = {};
 
-var Form = {};
+let Form = {};
 
-var Mouse = {};
+let Mouse = {};
 
-var $$Selection = {};
+let $$Selection = {};
 
-var $$Touch = {};
+let $$Touch = {};
 
-var UI = {};
+let UI = {};
 
-var Wheel = {};
+let Wheel = {};
 
-var Media = {};
+let Media = {};
 
-var $$Image = {};
+let $$Image = {};
 
-var $$Animation = {};
+let $$Animation = {};
 
-var Transition = {};
+let Transition = {};
 
 exports.Synthetic = Synthetic;
 exports.Clipboard = Clipboard;

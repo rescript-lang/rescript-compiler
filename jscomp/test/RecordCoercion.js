@@ -2,12 +2,12 @@
 'use strict';
 
 
-var TestInlining_a = {
+let TestInlining_a = {
   number: 42,
   name: "a"
 };
 
-var TestInlining = {
+let TestInlining = {
   a: TestInlining_a,
   name: "a"
 };

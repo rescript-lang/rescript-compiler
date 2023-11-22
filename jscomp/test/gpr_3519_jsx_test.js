@@ -2,7 +2,7 @@
 'use strict';
 
 
-var React = {
+let React = {
   $$null: undefined
 };
 
@@ -10,7 +10,7 @@ function make(param, param$1) {
   
 }
 
-var Foo = {
+let Foo = {
   make: make
 };
 

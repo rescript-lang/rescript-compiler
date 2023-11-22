@@ -2,7 +2,7 @@
 'use strict';
 
 
-var L;
+let L;
 
 exports.L = L;
 /* No side effect */

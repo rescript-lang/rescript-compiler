@@ -2,19 +2,19 @@
 'use strict';
 
 
-var N = {
+let N = {
   b: 3
 };
 
-var v = 3;
+let v = 3;
 
-var u = 3;
+let u = 3;
 
-var h = 4;
+let h = 4;
 
-var g = 3;
+let g = 3;
 
-var gg = 4;
+let gg = 4;
 
 exports.N = N;
 exports.v = v;

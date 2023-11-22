@@ -3,7 +3,7 @@
 
 
 function ff(x) {
-  var a;
+  let a;
   switch (x) {
     case "0" :
     case "1" :
@@ -26,28 +26,28 @@ function ff(x) {
 }
 
 function f(x) {
-  var y;
+  let y;
   y = x.TAG === "A" ? 3 : 4;
   return y + 32 | 0;
 }
 
 function f2(x) {
-  var v = 0;
-  var y;
+  let v = 0;
+  let y;
   v = 1;
   if (x.TAG === "A") {
-    var z = 33;
+    let z = 33;
     y = z + 3 | 0;
   } else {
-    var z$1 = 33;
+    let z$1 = 33;
     y = z$1 + 4 | 0;
   }
   return y + 32 | 0;
 }
 
 function f3(x) {
-  var v = 0;
-  var y;
+  let v = 0;
+  let y;
   v = 1;
   y = x.TAG === "A" ? 3 : 4;
   return y + 32 | 0;

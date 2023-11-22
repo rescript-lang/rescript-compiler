@@ -10,7 +10,7 @@ function getX(v) {
   return v.x;
 }
 
-var DeepSub = {
+let DeepSub = {
   d: {
     x: {
       TAG: "Ok",
@@ -23,12 +23,12 @@ var DeepSub = {
   }
 };
 
-var v = {
+let v = {
   y: 3,
   x: 3
 };
 
-var d = {
+let d = {
   a: "",
   b: 1,
   c: undefined,
@@ -38,7 +38,7 @@ var d = {
   }
 };
 
-var x = {
+let x = {
   c: "hello"
 };
 

@@ -2,7 +2,7 @@
 'use strict';
 
 
-var f = {
+let f = {
   "Content-Type": 3
 };
 

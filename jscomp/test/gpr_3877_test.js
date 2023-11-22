@@ -16,9 +16,9 @@ function test(code) {
   }
 }
 
-var a = "good response";
+let a = "good response";
 
-var b = "bad response";
+let b = "bad response";
 
 if (a !== "good response") {
   throw {

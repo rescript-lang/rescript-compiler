@@ -2,13 +2,13 @@
 'use strict';
 
 
-var a = Math.pow(2, Math.pow(3, 2));
+let a = Math.pow(2, Math.pow(3, 2));
 
-var b = Math.pow(2, Math.pow(-3, 2));
+let b = Math.pow(2, Math.pow(-3, 2));
 
-var c = Math.pow(Math.pow(2, 3), 2);
+let c = Math.pow(Math.pow(2, 3), 2);
 
-var d = Math.pow(-2, 2);
+let d = Math.pow(-2, 2);
 
 exports.a = a;
 exports.b = b;

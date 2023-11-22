@@ -2,7 +2,7 @@
 'use strict';
 
 
-var a = [];
+let a = [];
 
 exports.a = a;
 /* No side effect */

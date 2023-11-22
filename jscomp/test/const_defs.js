@@ -2,7 +2,7 @@
 'use strict';
 
 
-var v = true;
+let v = true;
 
 exports.v = v;
 /* No side effect */

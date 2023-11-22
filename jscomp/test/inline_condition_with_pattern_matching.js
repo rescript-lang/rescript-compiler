@@ -2,43 +2,43 @@
 'use strict';
 
 
-var person1 = {
+let person1 = {
   TAG: "Teacher",
   age: 12345
 };
 
-var message;
+let message;
 
 if (person1.TAG === "Teacher") {
   message = "b";
 } else {
-  var tmp = 12345;
+  let tmp = 12345;
   message = typeof tmp !== "object" || tmp.TAG === "Vacations" ? "a" : "b";
 }
 
-var Test1 = {
+let Test1 = {
   person1: person1,
   message: message
 };
 
-var person2 = {
+let person2 = {
   TAG: "Teacher",
   name: "Jane",
   age: 12345
 };
 
-var message$1;
+let message$1;
 
 if (person2.TAG === "Teacher") {
   message$1 = "Hello Jane.";
 } else {
-  var name = "Jane";
-  var match = person2.reportCard;
+  let name = "Jane";
+  let match = person2.reportCard;
   if (match.passing) {
     message$1 = "Congrats " + name + ", nice GPA of " + match.gpa.toString() + " you got there!";
   } else {
-    var exit = 0;
-    var tmp$1 = 12345;
+    let exit = 0;
+    let tmp$1 = 12345;
     if (typeof tmp$1 !== "object") {
       message$1 = tmp$1 === "Sick" ? "How are you feeling?" : "Good luck next semester " + name + "!";
     } else {
@@ -51,7 +51,7 @@ if (person2.TAG === "Teacher") {
   }
 }
 
-var Test2 = {
+let Test2 = {
   person2: person2,
   message: message$1
 };

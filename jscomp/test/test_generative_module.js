@@ -8,7 +8,7 @@ function M($star) {
         };
 }
 
-var V = {
+let V = {
   v: 3
 };
 

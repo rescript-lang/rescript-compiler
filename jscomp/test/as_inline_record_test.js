@@ -10,7 +10,7 @@ function getAge(t) {
   return t.age;
 }
 
-var user = {
+let user = {
   TAG: "User",
   renamed: "Corentin",
   age: 35
