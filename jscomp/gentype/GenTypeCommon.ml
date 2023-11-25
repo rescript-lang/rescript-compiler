@@ -26,7 +26,7 @@ type labelJS =
   | IntLabel of string
   | StringLabel of string
 
-type case = {label: string; labelJS: labelJS}
+type case = {label: string; [@dead "case.label"] labelJS: labelJS}
 
 let isJSSafePropertyName name =
   name = ""
