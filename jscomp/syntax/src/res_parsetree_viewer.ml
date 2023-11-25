@@ -135,7 +135,7 @@ let rewriteUnderscoreApply expr =
           match arg with
           | ( lbl,
               ({pexp_desc = Pexp_ident ({txt = Longident.Lident "__x"} as lid)}
-              as argExpr) ) ->
+               as argExpr) ) ->
             ( lbl,
               {
                 argExpr with

@@ -347,4 +347,4 @@ let debug t =
   in
   let doc = toDoc t in
   toString ~width:10 doc |> print_endline
-  [@@live]
+[@@live]

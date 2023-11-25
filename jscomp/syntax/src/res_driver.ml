@@ -140,7 +140,7 @@ let parse_implementation ?(ignoreParseErrors = false) sourcefile =
     Res_diagnostics.printReport parseResult.diagnostics parseResult.source;
     if not ignoreParseErrors then exit 1);
   parseResult.parsetree
-  [@@raises exit]
+[@@raises exit]
 
 let parse_interface ?(ignoreParseErrors = false) sourcefile =
   Location.input_name := sourcefile;
@@ -151,11 +151,11 @@ let parse_interface ?(ignoreParseErrors = false) sourcefile =
     Res_diagnostics.printReport parseResult.diagnostics parseResult.source;
     if not ignoreParseErrors then exit 1);
   parseResult.parsetree
-  [@@raises exit]
+[@@raises exit]
 
 (* suppress unused optional arg *)
 let _ =
  fun s ->
   ( parse_implementation ~ignoreParseErrors:false s,
     parse_interface ~ignoreParseErrors:false s )
- [@@raises exit]
+[@@raises exit]

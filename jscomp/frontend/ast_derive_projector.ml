@@ -60,32 +60,33 @@ let init () =
                     Ast_comb.single_non_rec_value
                       {loc; txt = little_con_name}
                       (if arity = 0 then
-                       (*TODO: add a prefix, better inter-op with FFI *)
-                       Exp.constraint_
-                         (Exp.construct
-                            {loc; txt = Longident.Lident con_name}
-                            None)
-                         annotate_type
-                      else
-                        let vars =
-                          Ext_list.init arity (fun x ->
-                              "param_" ^ string_of_int x)
-                        in
-                        let exp =
-                          Exp.constraint_
-                            (Exp.construct
-                               {loc; txt = Longident.Lident con_name}
-                            @@ Some
-                                 (if arity = 1 then
-                                  Exp.ident {loc; txt = Lident (List.hd vars)}
-                                 else
-                                   Exp.tuple
-                                     (Ext_list.map vars (fun x ->
-                                          Exp.ident {loc; txt = Lident x}))))
-                            annotate_type
-                        in
-                        Ext_list.fold_right vars exp (fun var b ->
-                            Ast_compatible.fun_ (Pat.var {loc; txt = var}) b)))
+                         (*TODO: add a prefix, better inter-op with FFI *)
+                         Exp.constraint_
+                           (Exp.construct
+                              {loc; txt = Longident.Lident con_name}
+                              None)
+                           annotate_type
+                       else
+                         let vars =
+                           Ext_list.init arity (fun x ->
+                               "param_" ^ string_of_int x)
+                         in
+                         let exp =
+                           Exp.constraint_
+                             (Exp.construct
+                                {loc; txt = Longident.Lident con_name}
+                             @@ Some
+                                  (if arity = 1 then
+                                     Exp.ident
+                                       {loc; txt = Lident (List.hd vars)}
+                                   else
+                                     Exp.tuple
+                                       (Ext_list.map vars (fun x ->
+                                            Exp.ident {loc; txt = Lident x}))))
+                             annotate_type
+                         in
+                         Ext_list.fold_right vars exp (fun var b ->
+                             Ast_compatible.fun_ (Pat.var {loc; txt = var}) b)))
               | Ptype_abstract | Ptype_open ->
                 Ast_derive_util.notApplicable tdcl.ptype_loc derivingName;
                 []

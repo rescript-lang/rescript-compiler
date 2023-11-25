@@ -960,10 +960,10 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
         | None -> makePropsPattern namedTypeList
         | Some _ -> makePropsPattern typVarsOfCoreType)
         (if hasForwardRef then
-         Exp.fun_ nolabel None
-           (Pat.var @@ Location.mknoloc "ref")
-           innerExpression
-        else innerExpression)
+           Exp.fun_ nolabel None
+             (Pat.var @@ Location.mknoloc "ref")
+             innerExpression
+         else innerExpression)
     in
     let fullExpression =
       if !Config.uncurried = Uncurried then
@@ -1283,8 +1283,8 @@ let transformSignatureItem ~config item =
           psig_loc
           ((* If there is Nolabel arg, regard the type as ref in forwardRef *)
            (if !hasForwardRef then
-            [(true, "ref", [], Location.none, refType Location.none)]
-           else [])
+              [(true, "ref", [], Location.none, refType Location.none)]
+            else [])
           @ namedTypeList)
       in
       (* can't be an arrow because it will defensively uncurry *)

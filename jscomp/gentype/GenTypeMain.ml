@@ -167,4 +167,4 @@ let processCmtFile cmt =
     else (
       outputFile |> GeneratedFiles.logFileAction NoMatch;
       if Sys.file_exists outputFile then Sys.remove outputFile)
-  [@@live]
+[@@live]

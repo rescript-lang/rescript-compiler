@@ -84,8 +84,8 @@ let handleTdcl light (tdcl : Parsetree.type_declaration) :
       Ext_list.fold_right label_declarations
         ( [],
           (if has_optional_field then
-           Ast_compatible.arrow ~loc (Ast_literal.type_unit ()) core_type
-          else core_type),
+             Ast_compatible.arrow ~loc (Ast_literal.type_unit ()) core_type
+           else core_type),
           [] )
         (fun ({
                 pld_name = {txt = label_name; loc = label_loc} as pld_name;
@@ -109,7 +109,7 @@ let handleTdcl light (tdcl : Parsetree.type_declaration) :
               ( Ast_compatible.opt_arrow ~loc:pld_loc label_name pld_type maker,
                 Val.mk ~loc:pld_loc
                   (if light then pld_name
-                  else {pld_name with txt = pld_name.txt ^ "Get"})
+                   else {pld_name with txt = pld_name.txt ^ "Get"})
                   ~attrs:get_optional_attrs ~prim
                   (Ast_compatible.arrow ~loc core_type optional_type)
                 :: acc )
@@ -117,7 +117,7 @@ let handleTdcl light (tdcl : Parsetree.type_declaration) :
               ( Ast_compatible.label_arrow ~loc:pld_loc label_name pld_type maker,
                 Val.mk ~loc:pld_loc
                   (if light then pld_name
-                  else {pld_name with txt = pld_name.txt ^ "Get"})
+                   else {pld_name with txt = pld_name.txt ^ "Get"})
                   ~attrs:get_attrs
                   ~prim:
                     ((* Not needed actually*)
