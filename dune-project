@@ -21,7 +21,7 @@
   (ocaml
    (>= 4.10))
   (ocamlformat
-   (= 0.22.4))
+   (= 0.26.1))
   (cppo
    (= 1.6.9))
   (js_of_ocaml-compiler
