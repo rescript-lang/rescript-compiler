@@ -124,5 +124,5 @@ let b = B({})
 
 let () = switch b {
 | A => Js.log("A!")
-| B(_) => Js.log("B")
+| B({}) => Js.log("B")
 }
