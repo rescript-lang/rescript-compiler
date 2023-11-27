@@ -192,7 +192,7 @@ and translateCoreType_ ~config ~typeVarsGen
                  else if isNumber label then IntLabel label
                  else StringLabel label
                in
-               {label; labelJS})
+               {labelJS})
       in
       let payloadsTranslations =
         payloads
@@ -207,7 +207,6 @@ and translateCoreType_ ~config ~typeVarsGen
                {
                  case =
                    {
-                     label;
                      labelJS =
                        (if isNumber label then IntLabel label
                        else StringLabel label);
