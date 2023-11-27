@@ -12,6 +12,11 @@
 
 # 11.0.0-rc.7 (Unreleased)
 
+#### :rocket: New Feature
+
+- Allow empty inline records in variants. https://github.com/rescript-lang/rescript-compiler/pull/6494
+- Allow empty record patterns in pattern matching. https://github.com/rescript-lang/rescript-compiler/pull/6494
+
 # 11.0.0-rc.6
 
 #### :rocket: New Feature
