@@ -1,20 +1,5 @@
-type recordGen = {mutable unboxed: int; mutable boxed: int}
-type recordValue = int
 type moduleItem = string
 type moduleAccessPath = Root of string | Dot of moduleAccessPath * moduleItem
-
-let recordValueToString recordValue = recordValue |> string_of_int
-let recordGen () = {unboxed = 0; boxed = 0}
-
-let newRecordValue ~unboxed recordGen =
-  if unboxed then (
-    let v = recordGen.unboxed in
-    recordGen.unboxed <- recordGen.unboxed + 1;
-    v)
-  else
-    let v = recordGen.boxed in
-    recordGen.boxed <- recordGen.boxed + 1;
-    v
 
 let newModuleItem ~name = name
 
