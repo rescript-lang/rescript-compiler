@@ -4675,12 +4675,15 @@ and parseConstrDeclArgs p =
                   let attrs =
                     if optional then optionalAttr :: attrs else attrs
                   in
-                  Parser.expect Comma p;
                   {field with Parsetree.pld_attributes = attrs}
                 in
-                first
-                :: parseCommaDelimitedRegion ~grammar:Grammar.FieldDeclarations
-                     ~closing:Rbrace ~f:parseFieldDeclarationRegion p
+                if p.token = Rbrace then [first]
+                else (
+                  Parser.expect Comma p;
+                  first
+                  :: parseCommaDelimitedRegion
+                       ~grammar:Grammar.FieldDeclarations ~closing:Rbrace
+                       ~f:parseFieldDeclarationRegion p)
             in
             Parser.expect Rbrace p;
             Parser.optional p Comma |> ignore;

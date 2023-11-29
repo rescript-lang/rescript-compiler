@@ -17,6 +17,9 @@
 - Allow empty inline records in variants. https://github.com/rescript-lang/rescript-compiler/pull/6494
 - Allow empty record patterns in pattern matching. https://github.com/rescript-lang/rescript-compiler/pull/6494
 
+#### :bug: Bug Fix
+- Fix issue where an inline record with attributes did not parse. https://github.com/rescript-lang/rescript-compiler/pull/6499
+
 # 11.0.0-rc.6
 
 #### :rocket: New Feature

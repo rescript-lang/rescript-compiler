@@ -43,3 +43,6 @@ type nonrec multipleWithAttrs = {
   y: string [@res.optional ][@attr ]}
 type nonrec singleWithAttrs = {
   y: string [@res.optional ][@attr ]}
+type nonrec inlineWithAttrs =
+  | A of {
+  value: string [@as {js|VALUE|js}]} 
