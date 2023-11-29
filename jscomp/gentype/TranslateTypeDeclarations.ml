@@ -23,7 +23,6 @@ let createExportTypeFromTypeDeclaration ~annotation ~loc ~nameAs ~opaque ~type_
 
 let createCase (label, attributes) ~poly =
   {
-    label;
     labelJS =
       (match
          attributes |> Annotation.getAttributePayload Annotation.tagIsAs
@@ -230,7 +229,6 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
     }
     |> returnTypeDeclaration
   | VariantDeclarationFromTypes constructorDeclarations, None ->
-    let recordGen = Runtime.recordGen () in
     let variants =
       constructorDeclarations
       |> List.map (fun constructorDeclaration ->
@@ -262,46 +260,25 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
                |> Translation.translateDependencies ~config ~outputFileRelative
                     ~resolver
              in
-             let recordValue =
-               recordGen
-               |> Runtime.newRecordValue
-                    ~unboxed:(constructorArgs = Cstr_tuple [])
-             in
-             ( name,
-               attributes,
-               argTypes,
-               importTypes,
-               recordValue |> Runtime.recordValueToString ))
+             (name, attributes, argTypes, importTypes))
     in
     let variantsNoPayload, variantsWithPayload =
-      variants |> List.partition (fun (_, _, argTypes, _, _) -> argTypes = [])
+      variants |> List.partition (fun (_, _, argTypes, _) -> argTypes = [])
     in
     let noPayloads =
       variantsNoPayload
-      |> List.map
-           (fun (name, attributes, _argTypes, _importTypes, recordValue) ->
-             {
-               ((name, attributes) |> createCase ~poly:false) with
-               label = recordValue;
-             })
+      |> List.map (fun (name, attributes, _argTypes, _importTypes) ->
+             (name, attributes) |> createCase ~poly:false)
     in
     let payloads =
       variantsWithPayload
-      |> List.map
-           (fun (name, attributes, argTypes, _importTypes, recordValue) ->
+      |> List.map (fun (name, attributes, argTypes, _importTypes) ->
              let type_ =
                match argTypes with
                | [type_] -> type_
                | _ -> Tuple argTypes
              in
-             {
-               case =
-                 {
-                   ((name, attributes) |> createCase ~poly:false) with
-                   label = recordValue;
-                 };
-               t = type_;
-             })
+             {case = (name, attributes) |> createCase ~poly:false; t = type_})
     in
     let variantTyp =
       createVariant ~inherits:[] ~noPayloads ~payloads ~polymorphic:false
@@ -325,7 +302,7 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
     in
     let importTypes =
       variants
-      |> List.map (fun (_, _, _, importTypes, _) -> importTypes)
+      |> List.map (fun (_, _, _, importTypes) -> importTypes)
       |> List.concat
     in
     {CodeItem.exportFromTypeDeclaration; importTypes} |> returnTypeDeclaration
