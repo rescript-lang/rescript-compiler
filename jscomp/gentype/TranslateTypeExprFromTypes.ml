@@ -383,8 +383,7 @@ and translateTypeExprFromTypes_ ~config ~typeVarsGen ~typeEnv
         |> List.map (fun label ->
                {
                  labelJS =
-                   (if isNumber label then IntLabel label
-                   else StringLabel label);
+                   (if isNumber label then IntLabel label else StringLabel label);
                })
       in
       let type_ =

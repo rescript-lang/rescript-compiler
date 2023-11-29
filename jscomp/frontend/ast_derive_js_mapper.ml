@@ -213,10 +213,10 @@ let init () =
                   Ast_comb.single_non_rec_value patFromJs
                     (Ast_compatible.fun_ (Pat.var pat_param)
                        (if createType then
-                        Exp.let_ Nonrecursive
-                          [Vb.mk (Pat.var pat_param) (exp_param +: newType)]
-                          (Exp.constraint_ obj_exp core_type)
-                       else Exp.constraint_ obj_exp core_type))
+                          Exp.let_ Nonrecursive
+                            [Vb.mk (Pat.var pat_param) (exp_param +: newType)]
+                            (Exp.constraint_ obj_exp core_type)
+                        else Exp.constraint_ obj_exp core_type))
                 in
                 let rest = [toJs; fromJs] in
                 if createType then eraseTypeStr :: newTypeStr :: rest else rest
@@ -239,16 +239,17 @@ let init () =
                            ));
                       Ast_comb.single_non_rec_value {loc; txt = revMap}
                         (if has_bs_as then
-                         Exp.extension
-                           ( {txt = "raw"; loc},
-                             PStr
-                               [Str.eval (Exp.constant (Const.string revData))]
-                           )
-                        else expMap);
+                           Exp.extension
+                             ( {txt = "raw"; loc},
+                               PStr
+                                 [
+                                   Str.eval (Exp.constant (Const.string revData));
+                                 ] )
+                         else expMap);
                       toJsBody
                         (if has_bs_as then
-                         app2 unsafeIndexGetExp expMap exp_param
-                        else app1 eraseTypeExp exp_param);
+                           app2 unsafeIndexGetExp expMap exp_param
+                         else app1 eraseTypeExp exp_param);
                       Ast_comb.single_non_rec_value patFromJs
                         (Ast_compatible.fun_ (Pat.var pat_param)
                            (let result =

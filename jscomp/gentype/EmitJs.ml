@@ -156,7 +156,7 @@ let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
       match type_ with
       | Function
           ({argTypes = [{aType = Object (closedFlag, fields); aName}]; retType}
-          as function_)
+           as function_)
         when retType |> EmitType.isTypeFunctionComponent ~fields ->
         (* JSX V3 *)
         let fields =
@@ -178,7 +178,7 @@ let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
         Function function_
       | Function
           ({argTypes = [{aType = Ident {name} as propsType; aName}]; retType} as
-          function_)
+           function_)
         when Filename.check_suffix name "props"
              && retType |> EmitType.isTypeFunctionComponent ~fields:[] -> (
         match inlineOneLevel propsType with
@@ -305,7 +305,7 @@ let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
           Some {HookType.propsType; resolvedTypeName; typeVars} )
       | Function
           ({argTypes = [{aType = Ident {name} as propsType}]; retType} as
-          function_)
+           function_)
         when Filename.check_suffix name "props"
              && retType |> EmitType.isTypeFunctionComponent ~fields:[] ->
         let compType =

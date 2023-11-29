@@ -119,8 +119,8 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
     let fields =
       fieldTranslations
       |> List.map
-           (fun (name, mutable_, {TranslateTypeExprFromTypes.type_}, docString)
-           ->
+           (fun
+             (name, mutable_, {TranslateTypeExprFromTypes.type_}, docString) ->
              let optional, type1 =
                match type_ with
                | Option type1 when isOptional name -> (Optional, type1)

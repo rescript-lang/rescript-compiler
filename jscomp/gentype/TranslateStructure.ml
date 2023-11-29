@@ -55,7 +55,7 @@ and addAnnotationsToFields ~config (expr : Typedtree.expression)
     in
     ({field with nameJS = name} :: nextFields1, types1)
   | _ -> (fields, argTypes)
-  [@@live]
+[@@live]
 
 (** Recover from expr the renaming annotations on named arguments. *)
 let addAnnotationsToFunctionType ~config (expr : Typedtree.expression)

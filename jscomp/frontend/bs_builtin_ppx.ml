@@ -549,7 +549,7 @@ let rec structure_mapper ~await_context (self : mapper) (stru : Ast_structure.t)
     (* Dynamic import of module transformation: module M = @res.await Belt.List *)
     | Pstr_module
         ({pmb_expr = {pmod_desc = Pmod_ident {txt; loc}; pmod_attributes} as me}
-        as mb)
+         as mb)
       when Res_parsetree_viewer.hasAwaitAttribute pmod_attributes ->
       let item = self.structure_item self item in
       let safe_module_type_name = local_module_type_name txt in

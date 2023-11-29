@@ -41,11 +41,11 @@ let process_method_attributes_rev (attrs : t) =
                   | None -> true
                   | Some e -> Ast_payload.assert_bool_lit e),
                   undefined )
-              | "undefined" -> (
+              | "undefined" ->
                 ( null,
                   match opt_expr with
                   | None -> true
-                  | Some e -> Ast_payload.assert_bool_lit e ))
+                  | Some e -> Ast_payload.assert_bool_lit e )
               | "nullable" -> (
                 match opt_expr with
                 | None -> (true, true)

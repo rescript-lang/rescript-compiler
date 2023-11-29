@@ -15,10 +15,10 @@ val addParens : Res_doc.t -> Res_doc.t
 val printExpression : Parsetree.expression -> Res_comments_table.t -> Res_doc.t
 
 val printPattern : Parsetree.pattern -> Res_comments_table.t -> Res_doc.t
-  [@@live]
+[@@live]
 
 val printStructure : Parsetree.structure -> Res_comments_table.t -> Res_doc.t
-  [@@live]
+[@@live]
 
 val printImplementation :
   width:int -> Parsetree.structure -> comments:Res_comment.t list -> string

@@ -119,11 +119,11 @@ and translateCoreType_ ~config ~typeVarsGen
   | Ttyp_object (tObj, closedFlag) ->
     let getFieldType objectField =
       match objectField with
-      | Typedtree.OTtag ({txt = name}, _, t) -> (
+      | Typedtree.OTtag ({txt = name}, _, t) ->
         ( name,
           match name |> Runtime.isMutableObjectField with
           | true -> {dependencies = []; type_ = ident ""}
-          | false -> t |> translateCoreType_ ~config ~typeVarsGen ~typeEnv ))
+          | false -> t |> translateCoreType_ ~config ~typeVarsGen ~typeEnv )
       | OTinherit t ->
         ("Inherit", t |> translateCoreType_ ~config ~typeVarsGen ~typeEnv)
     in
@@ -209,7 +209,7 @@ and translateCoreType_ ~config ~typeVarsGen
                    {
                      labelJS =
                        (if isNumber label then IntLabel label
-                       else StringLabel label);
+                        else StringLabel label);
                    };
                  t = translation.type_;
                })
