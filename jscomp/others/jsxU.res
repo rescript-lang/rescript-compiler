@@ -18,3 +18,6 @@ type component<'props> = componentLike<'props, element>
 
 /* this function exists to prepare for making `component` abstract */
 external component: componentLike<'props, element> => component<'props> = "%identity"
+
+/* React hook dependencies */
+type dependency
