@@ -158,12 +158,32 @@ var OptMixed = {
   c3: c3
 };
 
+function fn(cb) {
+  return cb();
+}
+
+((function (s) {
+        console.log({
+              NAME: "foo",
+              VAL: s
+            });
+      })());
+
+function fn1(a, b, param) {
+  return a() + b | 0;
+}
+
+function a$1(__x) {
+  return fn1((function () {
+                return 1;
+              }), 2, __x);
+}
+
 exports.foo = foo;
 exports.z = z;
 exports.bar = bar;
 exports.b = b;
 exports.w = w;
-exports.a = a;
 exports.ptl = ptl;
 exports.foo2 = foo2;
 exports.bar2 = bar2;
@@ -175,4 +195,7 @@ exports.inl2 = inl2;
 exports.AllLabels = AllLabels;
 exports.OptAtEnd = OptAtEnd;
 exports.OptMixed = OptMixed;
+exports.fn = fn;
+exports.fn1 = fn1;
+exports.a = a$1;
 /*  Not a pure module */
