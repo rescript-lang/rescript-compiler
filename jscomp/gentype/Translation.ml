@@ -90,9 +90,9 @@ let translateValue ~attributes ~config ~docString ~outputFileRelative ~resolver
     |> addAnnotationsToFunction
   in
   let resolvedNameOriginal =
-    nameAs |> TypeEnv.addModulePath ~typeEnv |> ResolvedName.toString
+    name |> TypeEnv.addModulePath ~typeEnv |> ResolvedName.toString
   in
-  let resolvedName = name |> TypeEnv.addModulePath ~typeEnv in
+  let resolvedName = nameAs |> TypeEnv.addModulePath ~typeEnv in
   let moduleAccessPath =
     typeEnv |> TypeEnv.getModuleAccessPath ~name:resolvedNameOriginal
   in
