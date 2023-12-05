@@ -3,8 +3,7 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as VariantsWithPayloadBS__Es6Import from './VariantsWithPayload.bs';
-const VariantsWithPayloadBS: any = VariantsWithPayloadBS__Es6Import;
+import * as VariantsWithPayloadBS from './VariantsWithPayload.bs';
 
 export type payload = { readonly x: number; readonly y?: string };
 
@@ -34,20 +33,20 @@ export type variant1Int = { TAG: "R"; _0: number };
 
 export type variant1Object = { TAG: "R"; _0: payload };
 
-export const testWithPayload: (x:withPayload) => withPayload = VariantsWithPayloadBS.testWithPayload;
+export const testWithPayload: (x:withPayload) => withPayload = VariantsWithPayloadBS.testWithPayload as any;
 
-export const printVariantWithPayload: (x:withPayload) => void = VariantsWithPayloadBS.printVariantWithPayload;
+export const printVariantWithPayload: (x:withPayload) => void = VariantsWithPayloadBS.printVariantWithPayload as any;
 
-export const testManyPayloads: (x:manyPayloads) => manyPayloads = VariantsWithPayloadBS.testManyPayloads;
+export const testManyPayloads: (x:manyPayloads) => manyPayloads = VariantsWithPayloadBS.testManyPayloads as any;
 
-export const printManyPayloads: (x:manyPayloads) => void = VariantsWithPayloadBS.printManyPayloads;
+export const printManyPayloads: (x:manyPayloads) => void = VariantsWithPayloadBS.printManyPayloads as any;
 
-export const testSimpleVariant: (x:simpleVariant) => simpleVariant = VariantsWithPayloadBS.testSimpleVariant;
+export const testSimpleVariant: (x:simpleVariant) => simpleVariant = VariantsWithPayloadBS.testSimpleVariant as any;
 
-export const testVariantWithPayloads: (x:variantWithPayloads) => variantWithPayloads = VariantsWithPayloadBS.testVariantWithPayloads;
+export const testVariantWithPayloads: (x:variantWithPayloads) => variantWithPayloads = VariantsWithPayloadBS.testVariantWithPayloads as any;
 
-export const printVariantWithPayloads: (x:variantWithPayloads) => void = VariantsWithPayloadBS.printVariantWithPayloads;
+export const printVariantWithPayloads: (x:variantWithPayloads) => void = VariantsWithPayloadBS.printVariantWithPayloads as any;
 
-export const testVariant1Int: (x:variant1Int) => variant1Int = VariantsWithPayloadBS.testVariant1Int;
+export const testVariant1Int: (x:variant1Int) => variant1Int = VariantsWithPayloadBS.testVariant1Int as any;
 
-export const testVariant1Object: (x:variant1Object) => variant1Object = VariantsWithPayloadBS.testVariant1Object;
+export const testVariant1Object: (x:variant1Object) => variant1Object = VariantsWithPayloadBS.testVariant1Object as any;

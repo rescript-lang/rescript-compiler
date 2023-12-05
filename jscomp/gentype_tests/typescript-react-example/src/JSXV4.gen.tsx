@@ -13,7 +13,7 @@ export const makeTypeChecked: React.ComponentType<{
   readonly person: person; 
   readonly children: React.ReactNode; 
   readonly renderMe: renderMe<any>
-}> = makeNotChecked;
+}> = makeNotChecked as any;
 
 // Export 'make' early to allow circular import from the '.bs.js' file.
 export const make: unknown = makeTypeChecked as React.ComponentType<{
@@ -21,7 +21,7 @@ export const make: unknown = makeTypeChecked as React.ComponentType<{
   readonly person: person; 
   readonly children: React.ReactNode; 
   readonly renderMe: renderMe<any>
-}>;
+}> as any;
 
 const JSXV4BS = require('./JSXV4.bs');
 
@@ -38,12 +38,12 @@ export type props<actions,person,children,renderMe> = {
   readonly renderMe: renderMe
 };
 
-export const CompV4_make: React.ComponentType<{ readonly x: string; readonly y: string }> = JSXV4BS.CompV4.make;
+export const CompV4_make: React.ComponentType<{ readonly x: string; readonly y: string }> = JSXV4BS.CompV4.make as any;
 
 export type Props = { readonly x: string; readonly y: string };
 
-export const CompV3_make: React.ComponentType<{ readonly x: string; readonly y: string }> = JSXV4BS.CompV3.make;
+export const CompV3_make: React.ComponentType<{ readonly x: string; readonly y: string }> = JSXV4BS.CompV3.make as any;
 
-export const CompV3: { make: React.ComponentType<{ readonly x: string; readonly y: string }> } = JSXV4BS.CompV3
+export const CompV3: { make: React.ComponentType<{ readonly x: string; readonly y: string }> } = JSXV4BS.CompV3 as any;
 
-export const CompV4: { make: React.ComponentType<{ readonly x: string; readonly y: string }> } = JSXV4BS.CompV4
+export const CompV4: { make: React.ComponentType<{ readonly x: string; readonly y: string }> } = JSXV4BS.CompV4 as any;

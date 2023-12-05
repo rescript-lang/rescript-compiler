@@ -12,28 +12,28 @@ export const makeTypeChecked: React.ComponentType<{
   readonly person: person; 
   readonly children: React.ReactNode; 
   readonly renderMe: ImportHooks_renderMe<string>
-}> = makeNotChecked;
+}> = makeNotChecked as any;
 
 // Export 'make' early to allow circular import from the '.bs.js' file.
 export const make: unknown = makeTypeChecked as React.ComponentType<{
   readonly person: person; 
   readonly children: React.ReactNode; 
   readonly renderMe: ImportHooks_renderMe<string>
-}>;
+}> as any;
 
 // In case of type error, check the type of 'default' in 'ImportHookDefault.res' and './hookExample'.
 export const defaultTypeChecked: React.ComponentType<{
   readonly person: person; 
   readonly children: React.ReactNode; 
   readonly renderMe: ImportHooks_renderMe<string>
-}> = defaultNotChecked;
+}> = defaultNotChecked as any;
 
 // Export '$$default' early to allow circular import from the '.bs.js' file.
 export const $$default: unknown = defaultTypeChecked as React.ComponentType<{
   readonly person: person; 
   readonly children: React.ReactNode; 
   readonly renderMe: ImportHooks_renderMe<string>
-}>;
+}> as any;
 
 import type {renderMe as ImportHooks_renderMe} from './ImportHooks.gen';
 

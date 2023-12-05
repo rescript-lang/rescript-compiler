@@ -3,15 +3,14 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as TestEmitInnerModulesBS__Es6Import from './TestEmitInnerModules.bs';
-const TestEmitInnerModulesBS: any = TestEmitInnerModulesBS__Es6Import;
+import * as TestEmitInnerModulesBS from './TestEmitInnerModules.bs';
 
-export const Inner_x: number = TestEmitInnerModulesBS.Inner.x;
+export const Inner_x: number = TestEmitInnerModulesBS.Inner.x as any;
 
-export const Inner_y: string = TestEmitInnerModulesBS.Inner.y;
+export const Inner_y: string = TestEmitInnerModulesBS.Inner.y as any;
 
-export const Outer_Medium_Inner_y: number = TestEmitInnerModulesBS.Outer.Medium.Inner.y;
+export const Outer_Medium_Inner_y: number = TestEmitInnerModulesBS.Outer.Medium.Inner.y as any;
 
-export const Inner: { x: number; y: string } = TestEmitInnerModulesBS.Inner
+export const Inner: { x: number; y: string } = TestEmitInnerModulesBS.Inner as any;
 
-export const Outer: { Medium: { Inner: { y: number } } } = TestEmitInnerModulesBS.Outer
+export const Outer: { Medium: { Inner: { y: number } } } = TestEmitInnerModulesBS.Outer as any;

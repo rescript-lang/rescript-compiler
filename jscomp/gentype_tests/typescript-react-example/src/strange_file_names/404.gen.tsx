@@ -3,7 +3,6 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as _404BS__Es6Import from './404.bs';
-const _404BS: any = _404BS__Es6Import;
+import * as _404BS from './404.bs';
 
-export const x: number = _404BS.x;
+export const x: number = _404BS.x as any;

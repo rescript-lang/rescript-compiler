@@ -3,13 +3,12 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as TransitiveType1BS__Es6Import from './TransitiveType1.bs';
-const TransitiveType1BS: any = TransitiveType1BS__Es6Import;
+import * as TransitiveType1BS from './TransitiveType1.bs';
 
 import type {t2Alias as TransitiveType2_t2Alias} from './TransitiveType2.gen';
 
 import type {t2 as TransitiveType2_t2} from './TransitiveType2.gen';
 
-export const convert: (x:TransitiveType2_t2) => TransitiveType2_t2 = TransitiveType1BS.convert;
+export const convert: (x:TransitiveType2_t2) => TransitiveType2_t2 = TransitiveType1BS.convert as any;
 
-export const convertAlias: (x:TransitiveType2_t2Alias) => TransitiveType2_t2Alias = TransitiveType1BS.convertAlias;
+export const convertAlias: (x:TransitiveType2_t2Alias) => TransitiveType2_t2Alias = TransitiveType1BS.convertAlias as any;

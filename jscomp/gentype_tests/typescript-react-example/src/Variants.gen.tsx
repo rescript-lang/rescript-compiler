@@ -3,8 +3,7 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as VariantsBS__Es6Import from './Variants.bs';
-const VariantsBS: any = VariantsBS__Es6Import;
+import * as VariantsBS from './Variants.bs';
 
 import type {list} from '../src/shims/RescriptPervasives.shim';
 
@@ -46,40 +45,40 @@ export type result3<a,b> =
     { TAG: "Ok"; _0: a }
   | { TAG: "Error"; _0: b };
 
-export const isWeekend: (x:weekday) => boolean = VariantsBS.isWeekend;
+export const isWeekend: (x:weekday) => boolean = VariantsBS.isWeekend as any;
 
-export const monday: "monday" = VariantsBS.monday;
+export const monday: "monday" = VariantsBS.monday as any;
 
-export const saturday: "saturday" = VariantsBS.saturday;
+export const saturday: "saturday" = VariantsBS.saturday as any;
 
-export const sunday: "sunday" = VariantsBS.sunday;
+export const sunday: "sunday" = VariantsBS.sunday as any;
 
-export const onlySunday: (param:"sunday") => void = VariantsBS.onlySunday;
+export const onlySunday: (param:"sunday") => void = VariantsBS.onlySunday as any;
 
-export const swap: (x:"saturday" | "sunday") => "saturday" | "sunday" = VariantsBS.swap;
+export const swap: (x:"saturday" | "sunday") => "saturday" | "sunday" = VariantsBS.swap as any;
 
-export const testConvert: (x:testGenTypeAs) => testGenTypeAs = VariantsBS.testConvert;
+export const testConvert: (x:testGenTypeAs) => testGenTypeAs = VariantsBS.testConvert as any;
 
-export const fortytwoOK: testGenTypeAs = VariantsBS.fortytwoOK;
+export const fortytwoOK: testGenTypeAs = VariantsBS.fortytwoOK as any;
 
-export const fortytwoBAD: "fortytwo" = VariantsBS.fortytwoBAD;
+export const fortytwoBAD: "fortytwo" = VariantsBS.fortytwoBAD as any;
 
-export const testConvert2: (x:testGenTypeAs2) => testGenTypeAs2 = VariantsBS.testConvert2;
+export const testConvert2: (x:testGenTypeAs2) => testGenTypeAs2 = VariantsBS.testConvert2 as any;
 
-export const testConvert3: (x:testGenTypeAs3) => testGenTypeAs3 = VariantsBS.testConvert3;
+export const testConvert3: (x:testGenTypeAs3) => testGenTypeAs3 = VariantsBS.testConvert3 as any;
 
-export const testConvert2to3: (x:testGenTypeAs2) => testGenTypeAs3 = VariantsBS.testConvert2to3;
+export const testConvert2to3: (x:testGenTypeAs2) => testGenTypeAs3 = VariantsBS.testConvert2to3 as any;
 
-export const id1: (x:x1) => x1 = VariantsBS.id1;
+export const id1: (x:x1) => x1 = VariantsBS.id1 as any;
 
-export const id2: (x:x2) => x2 = VariantsBS.id2;
+export const id2: (x:x2) => x2 = VariantsBS.id2 as any;
 
 export const polyWithOpt: (foo:string) => (undefined | (
     { NAME: "One"; VAL: string }
-  | { NAME: "Two"; VAL: number })) = VariantsBS.polyWithOpt;
+  | { NAME: "Two"; VAL: number })) = VariantsBS.polyWithOpt as any;
 
-export const restResult1: (x:result1<number,string>) => result1<number,string> = VariantsBS.restResult1;
+export const restResult1: (x:result1<number,string>) => result1<number,string> = VariantsBS.restResult1 as any;
 
-export const restResult2: (x:result2<number,string>) => result2<number,string> = VariantsBS.restResult2;
+export const restResult2: (x:result2<number,string>) => result2<number,string> = VariantsBS.restResult2 as any;
 
-export const restResult3: (x:result3<number,string>) => result3<number,string> = VariantsBS.restResult3;
+export const restResult3: (x:result3<number,string>) => result3<number,string> = VariantsBS.restResult3 as any;

@@ -3,8 +3,7 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as TypesBS__Es6Import from './Types.bs';
-const TypesBS: any = TypesBS__Es6Import;
+import * as TypesBS from './Types.bs';
 
 import type {Json_t as Js_Json_t} from '../../src/shims/Js.shim';
 
@@ -83,38 +82,38 @@ export type ObjectId_t = number;
 
 export type tPrimed = [TypeNameSanitize_t_, TypeNameSanitize_M_t__];
 
-export const someIntList: list<number> = TypesBS.someIntList;
+export const someIntList: list<number> = TypesBS.someIntList as any;
 
-export const map: <T1,T2>(_1:((_1:T1) => T2), _2:list<T1>) => list<T2> = TypesBS.map;
+export const map: <T1,T2>(_1:((_1:T1) => T2), _2:list<T1>) => list<T2> = TypesBS.map as any;
 
-export const swap: (tree:tree) => tree = TypesBS.swap;
+export const swap: (tree:tree) => tree = TypesBS.swap as any;
 
-export const selfRecursiveConverter: (param:selfRecursive) => selfRecursive = TypesBS.selfRecursiveConverter;
+export const selfRecursiveConverter: (param:selfRecursive) => selfRecursive = TypesBS.selfRecursiveConverter as any;
 
-export const mutuallyRecursiveConverter: (param:mutuallyRecursiveA) => mutuallyRecursiveB = TypesBS.mutuallyRecursiveConverter;
+export const mutuallyRecursiveConverter: (param:mutuallyRecursiveA) => mutuallyRecursiveB = TypesBS.mutuallyRecursiveConverter as any;
 
-export const testFunctionOnOptionsAsArgument: <T1,a>(a:(undefined | a), foo:((_1:(undefined | a)) => T1)) => T1 = TypesBS.testFunctionOnOptionsAsArgument;
+export const testFunctionOnOptionsAsArgument: <T1,a>(a:(undefined | a), foo:((_1:(undefined | a)) => T1)) => T1 = TypesBS.testFunctionOnOptionsAsArgument as any;
 
-export const stringT: string = TypesBS.stringT;
+export const stringT: string = TypesBS.stringT as any;
 
-export const jsStringT: string = TypesBS.jsStringT;
+export const jsStringT: string = TypesBS.jsStringT as any;
 
-export const jsString2T: string = TypesBS.jsString2T;
+export const jsString2T: string = TypesBS.jsString2T as any;
 
-export const jsonStringify: (_1:Js_Json_t) => string = TypesBS.jsonStringify;
+export const jsonStringify: (_1:Js_Json_t) => string = TypesBS.jsonStringify as any;
 
-export const testConvertNull: (x:(null | record)) => (null | record) = TypesBS.testConvertNull;
+export const testConvertNull: (x:(null | record)) => (null | record) = TypesBS.testConvertNull as any;
 
-export const testConvertLocation: (x:Location_t) => Location_t = TypesBS.testConvertLocation;
+export const testConvertLocation: (x:Location_t) => Location_t = TypesBS.testConvertLocation as any;
 
-export const testMarshalFields: marshalFields = TypesBS.testMarshalFields;
+export const testMarshalFields: marshalFields = TypesBS.testMarshalFields as any;
 
-export const setMatch: (x:marshalMutableField) => void = TypesBS.setMatch;
+export const setMatch: (x:marshalMutableField) => void = TypesBS.setMatch as any;
 
-export const testInstantiateTypeParameter: (x:instantiateTypeParameter) => instantiateTypeParameter = TypesBS.testInstantiateTypeParameter;
+export const testInstantiateTypeParameter: (x:instantiateTypeParameter) => instantiateTypeParameter = TypesBS.testInstantiateTypeParameter as any;
 
-export const currentTime: Date = TypesBS.currentTime;
+export const currentTime: Date = TypesBS.currentTime as any;
 
-export const i64Const: i64B = TypesBS.i64Const;
+export const i64Const: i64B = TypesBS.i64Const as any;
 
-export const optFunction: (undefined | (() => number)) = TypesBS.optFunction;
+export const optFunction: (undefined | (() => number)) = TypesBS.optFunction as any;

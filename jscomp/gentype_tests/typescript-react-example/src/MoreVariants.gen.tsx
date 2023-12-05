@@ -3,13 +3,12 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as MoreVariantsBS__Es6Import from './MoreVariants.bs';
-const MoreVariantsBS: any = MoreVariantsBS__Es6Import;
+import * as MoreVariantsBS from './MoreVariants.bs';
 
 export type withRenaming = "type_" | "b";
 
 export type withoutRenaming = "type_" | "b";
 
-export const testWithRenaming: (x:withRenaming) => withRenaming = MoreVariantsBS.testWithRenaming;
+export const testWithRenaming: (x:withRenaming) => withRenaming = MoreVariantsBS.testWithRenaming as any;
 
-export const testWithoutRenaming: (x:withoutRenaming) => withoutRenaming = MoreVariantsBS.testWithoutRenaming;
+export const testWithoutRenaming: (x:withoutRenaming) => withoutRenaming = MoreVariantsBS.testWithoutRenaming as any;

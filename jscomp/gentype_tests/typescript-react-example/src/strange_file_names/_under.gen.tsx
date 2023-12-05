@@ -3,7 +3,6 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as _underBS__Es6Import from './_under.bs';
-const _underBS: any = _underBS__Es6Import;
+import * as _underBS from './_under.bs';
 
-export const x: number = _underBS.x;
+export const x: number = _underBS.x as any;

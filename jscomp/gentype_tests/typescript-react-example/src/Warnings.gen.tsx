@@ -3,7 +3,6 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as WarningsBS__Es6Import from './Warnings.bs';
-const WarningsBS: any = WarningsBS__Es6Import;
+import * as WarningsBS from './Warnings.bs';
 
-export const ddd: number = WarningsBS.x;
+export const ddd: number = WarningsBS.x as any;

@@ -3,17 +3,16 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as EmitModuleIfNoConversionBS__Es6Import from './EmitModuleIfNoConversion.bs';
-const EmitModuleIfNoConversionBS: any = EmitModuleIfNoConversionBS__Es6Import;
+import * as EmitModuleIfNoConversionBS from './EmitModuleIfNoConversion.bs';
 
 export type t = "A" | { TAG: "B"; readonly name: string };
 
-export const X_foo: (t:t) => void = EmitModuleIfNoConversionBS.X.foo;
+export const X_foo: (t:t) => void = EmitModuleIfNoConversionBS.X.foo as any;
 
-export const X_x: number = EmitModuleIfNoConversionBS.X.x;
+export const X_x: number = EmitModuleIfNoConversionBS.X.x as any;
 
-export const Y_x: string = EmitModuleIfNoConversionBS.Y.x;
+export const Y_x: string = EmitModuleIfNoConversionBS.Y.x as any;
 
-export const Y: { x: string } = EmitModuleIfNoConversionBS.Y
+export const Y: { x: string } = EmitModuleIfNoConversionBS.Y as any;
 
-export const X: { x: number; foo: (t:t) => void } = EmitModuleIfNoConversionBS.X
+export const X: { x: number; foo: (t:t) => void } = EmitModuleIfNoConversionBS.X as any;
