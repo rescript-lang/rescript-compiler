@@ -20,6 +20,7 @@
 #### :bug: Bug Fix
 - Fix issue where an inline record with attributes did not parse. https://github.com/rescript-lang/rescript-compiler/pull/6499
 - Fix issue with uncurried function with 1 arg being a variable where an undefined variable could be emitted. https://github.com/rescript-lang/rescript-compiler/pull/6507
+- Fix runtime errors on `@genType.as("alias")` output. https://github.com/rescript-lang/rescript-compiler/pull/6509
 
 # 11.0.0-rc.6
 

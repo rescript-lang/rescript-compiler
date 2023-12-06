@@ -10,4 +10,4 @@ const ExportWithRenameBS: any = ExportWithRenameBS__Es6Import;
 
 export type Props = { readonly s: string };
 
-export const make: React.ComponentType<{ readonly s: string }> = ExportWithRenameBS.ExportWithRename;
+export const Renamed: React.ComponentType<{ readonly s: string }> = ExportWithRenameBS.make;
