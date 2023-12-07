@@ -15,6 +15,7 @@
 #### :bug: Bug Fix
 
 - Fix accidental removal of `Belt.Result.Ok` and `Belt.Result.Error` constructors in rc.5 https://github.com/rescript-lang/rescript-compiler/pull/6514
+- Add missing check that the runtime representation of variants matches implementation and interface. https://github.com/rescript-lang/rescript-compiler/pull/6513/files
 
 # 11.0.0-rc.7
 
