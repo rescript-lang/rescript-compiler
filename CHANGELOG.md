@@ -12,6 +12,10 @@
 
 # 11.0.0-rc.8 (Unreleased)
 
+#### :bug: Bug Fix
+
+- Fix accidental removal of `Belt.Result.Ok` and `Belt.Result.Error` constructors in rc.5
+
 # 11.0.0-rc.7
 
 #### :rocket: New Feature
