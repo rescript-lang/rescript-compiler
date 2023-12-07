@@ -22,7 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-type t<'a, 'b> = result<'a, 'b>
+type t<'a, 'b> = result<'a, 'b> =
+  | Ok('a)
+  | Error('b)
 
 let getExn = x =>
   switch x {
