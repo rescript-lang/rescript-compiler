@@ -139,6 +139,8 @@ type type_mismatch =
   | Record_representation of record_representation * record_representation
   | Unboxed_representation of bool  (* true means second one is unboxed *)
   | Immediate
+  | Tag_name
+  | Variant_representation of Ident.t
 
 let report_type_mismatch0 first second decl ppf err =
   let pr fmt = Format.fprintf ppf fmt in
@@ -183,6 +185,9 @@ let report_type_mismatch0 first second decl ppf err =
          (if b then second else first) decl
          "uses unboxed representation"
   | Immediate -> pr "%s is not an immediate type" first
+  | Tag_name -> pr "Their @tag annotations differ"
+  | Variant_representation s ->
+    pr "The internal representations for case %s are not equal" (Ident.name s)
 
 let report_type_mismatch first second decl ppf =
   List.iter
@@ -231,6 +236,17 @@ and compare_variants ~loc env params1 params2 n
           | _ ->
               compare_constructor_arguments ~loc env cd1.cd_id
                 params1 params2 cd1.cd_args cd2.cd_args
+        in
+        let r =
+          if r <> [] then r
+          else match Ast_untagged_variants.is_nullary_variant cd1.cd_args with
+          | true ->
+            let tag_type1 = Ast_untagged_variants.process_tag_type cd1.cd_attributes in
+            let tag_type2 = Ast_untagged_variants.process_tag_type cd2.cd_attributes in
+            if tag_type1 <> tag_type2 then [Variant_representation cd1.cd_id]
+            else []
+          | false ->
+            r
         in
         if r <> [] then r
         else compare_variants ~loc env params1 params2 (n+1) rem1 rem2
@@ -319,6 +335,11 @@ let type_declarations ?(equality = false) ~loc env name decl1 id decl2 =
     | _, false, true -> [Unboxed_representation true]
     | _ -> []
   in
+  if err <> [] then err else
+  let err =
+    let tag1 = Ast_untagged_variants.process_tag_name decl1.type_attributes in
+    let tag2 = Ast_untagged_variants.process_tag_name decl2.type_attributes in
+    if tag1 <> tag2 then [Tag_name] else err in
   if err <> [] then err else
   let err = match (decl1.type_kind, decl2.type_kind) with
       (_, Type_abstract) -> []

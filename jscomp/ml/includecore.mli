@@ -35,6 +35,8 @@ type type_mismatch =
   | Record_representation of record_representation * record_representation
   | Unboxed_representation of bool
   | Immediate
+  | Tag_name
+  | Variant_representation of Ident.t
 
 val value_descriptions:
   loc:Location.t -> Env.t -> Ident.t ->
