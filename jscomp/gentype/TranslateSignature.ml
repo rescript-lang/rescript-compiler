@@ -61,8 +61,18 @@ and translateModuleTypeDeclaration ~config ~outputFileRelative ~resolver
     match mtd_type.mty_desc with
     | Tmty_signature signature ->
       let name = mtd_id |> Ident.name in
+      (* Only translate types *)
+      let signature_without_values =
+        {
+          signature with
+          sig_items =
+            Ext_list.filter signature.sig_items (function
+              | {sig_desc = Tsig_value _} -> false
+              | _ -> true);
+        }
+      in
       let translation =
-        signature
+        signature_without_values
         |> translateSignature ~config ~outputFileRelative ~resolver
              ~typeEnv:(typeEnv |> TypeEnv.newModuleType ~name ~signature)
         |> Translation.combine
