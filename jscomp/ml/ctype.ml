@@ -3939,8 +3939,14 @@ let rec subtype_rec env trace t1 t2 cstrs =
               let (co, cn) = Variance.get_upper v in
               if co then
                 if cn then
-                  (trace, newty2 t1.level (Ttuple[t1]),
-                   newty2 t2.level (Ttuple[t2]), !univar_pairs) :: cstrs
+                  (* Invariant type argument: check both ways *)
+                  if
+                    subtype_rec env ((t1, t2)::trace) t1 t2 [] = [] &&
+                    subtype_rec env ((t2, t1)::trace) t2 t1 [] = [] then
+                    cstrs
+                  else
+                      (trace, newty2 t1.level (Ttuple[t1]),
+                      newty2 t2.level (Ttuple[t2]), !univar_pairs) :: cstrs
                 else subtype_rec env ((t1, t2)::trace) t1 t2 cstrs
               else
                 if cn then subtype_rec env ((t2, t1)::trace) t2 t1 cstrs
