@@ -2,10 +2,15 @@
 'use strict';
 
 
+function foo(x) {
+  return x;
+}
+
 var x = 1;
 
 var xx = 1;
 
 exports.x = x;
 exports.xx = xx;
+exports.foo = foo;
 /* No side effect */
