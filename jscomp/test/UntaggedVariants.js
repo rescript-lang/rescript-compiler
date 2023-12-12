@@ -583,6 +583,10 @@ var Aliased = {
   test: test
 };
 
+var OnlyOne = {
+  onlyOne: "OnlyOne"
+};
+
 var i = 42;
 
 var i2 = 42.5;
@@ -629,4 +633,5 @@ exports.PromiseSync = PromiseSync;
 exports.Arr = Arr;
 exports.AllInstanceofTypes = AllInstanceofTypes;
 exports.Aliased = Aliased;
+exports.OnlyOne = OnlyOne;
 /* l2 Not a pure module */

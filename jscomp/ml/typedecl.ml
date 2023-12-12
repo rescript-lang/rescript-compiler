@@ -337,6 +337,8 @@ let transl_declaration ~typeRecordAsObject env sdecl id =
   end;
   let unboxed_status =
     match sdecl.ptype_kind with
+    | Ptype_variant [{pcd_args = Pcstr_tuple []; _}] ->
+      unboxed_false_default_false
     | Ptype_variant [{pcd_args = Pcstr_tuple _; _}]
       | Ptype_variant [{pcd_args = Pcstr_record
                           [{pld_mutable = Immutable; _}]; _}]
