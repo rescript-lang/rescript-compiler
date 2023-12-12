@@ -12,6 +12,9 @@
 
 # 11.0.0-rc.8 (Unreleased)
 
+#### :rocket: New Feature
+- Add support for type coercion for invariant type arguments such as array payloads. https://github.com/rescript-lang/rescript-compiler/pull/6518
+
 #### :bug: Bug Fix
 
 - Fix accidental removal of `Belt.Result.Ok` and `Belt.Result.Error` constructors in rc.5 https://github.com/rescript-lang/rescript-compiler/pull/6514
