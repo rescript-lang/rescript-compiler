@@ -117,7 +117,7 @@ external length: t => int = "length"
 /**
 `get(s, n)` returns as a `string` the character at the given index number. If
 `n` is out of range, this function returns `undefined`, so at some point this
-function may be modified to return `option(string)`.
+function may be modified to return `option<string>`.
 
 ```res example
 Js.String2.get("Reason", 0) == "R"
