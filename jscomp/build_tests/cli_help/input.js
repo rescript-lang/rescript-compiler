@@ -98,6 +98,19 @@ assert.match(
 // FIXME: Should be 0
 assert.equal(out.status, 1);
 
+// FIXME: Has the same problem with `rescript -w`
+out = child_process.spawnSync(`../../../rescript`, ["-w", "--help"], {
+  encoding: "utf8",
+  cwd: __dirname,
+});
+assert.equal(out.stdout, ">>>> Start compiling\n" + buildHelp);
+assert.match(
+  out.stderr,
+  new RegExp(
+    "Uncaught Exception Error: ENOENT: no such file or directory, watch 'bsconfig.json'\n"
+  )
+);
+
 // Shows build help with -h arg
 out = child_process.spawnSync(`../../../rescript`, ["build", "-h"], {
   encoding: "utf8",
@@ -153,12 +166,12 @@ assert.equal(out.stderr, `Error: Unknown command or flag "built".\n` + cliHelp);
 assert.equal(out.status, 2);
 
 // Shows cli help with unknown args
-out = child_process.spawnSync(`../../../rescript`, ["-w"], {
+out = child_process.spawnSync(`../../../rescript`, ["-foo"], {
   encoding: "utf8",
   cwd: __dirname,
 });
 assert.equal(out.stdout, "");
-assert.equal(out.stderr, `Error: Unknown command or flag "-w".\n` + cliHelp);
+assert.equal(out.stderr, `Error: Unknown command or flag "-foo".\n` + cliHelp);
 assert.equal(out.status, 2);
 
 // Shows clean help with --help arg

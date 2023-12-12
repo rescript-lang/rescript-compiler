@@ -209,7 +209,10 @@ process.on("SIGHUP", exitProcess);
 
 const maybeSubcommand = process_argv[2];
 
-if (maybeSubcommand === "build" && process_argv.includes("-w")) {
+if (
+  (maybeSubcommand === "build" && process_argv.includes("-w")) ||
+  maybeSubcommand === "-w"
+) {
   // All clients of type MiniWebSocket
   /**
    * @type {any[]}
@@ -240,6 +243,9 @@ if (maybeSubcommand === "build" && process_argv.includes("-w")) {
   let watchers = [];
 
   const delegatedArgs = process_argv.slice(2);
+  if (maybeSubcommand === "-w") {
+    delegatedArgs.unshift("build");
+  }
   verbose = delegatedArgs.includes("-verbose");
 
   var wsParamIndex = delegatedArgs.indexOf("-ws");
