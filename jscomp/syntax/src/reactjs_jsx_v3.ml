@@ -228,7 +228,7 @@ let rec recursivelyMakeNamedArgsForExternal list args =
            }
          (* ~foo: int=1 *)
          | _label, Some type_, Some _ -> type_
-         (* ~foo: option(int)=? *)
+         (* ~foo: option<int>=? *)
          | ( label,
              Some {ptyp_desc = Ptyp_constr ({txt = Lident "option"}, [type_])},
              _ )
@@ -477,7 +477,7 @@ let jsxMapper ~config =
               (Preprocessor
                  (Printf.sprintf
                     "React: optional argument annotations must have explicit \
-                     `option`. Did you mean `option(%s)=?`?"
+                     `option`. Did you mean `option<%s>=?`?"
                     currentType)))
         | _ -> ()
       in

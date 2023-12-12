@@ -24,30 +24,30 @@
 
 /*** Contains functionality for dealing with values that can be both `null` and `undefined` */
 
-@unboxed /** Local alias for `Js.null_undefined('a)`. */
+@unboxed /** Local alias for `Js.null_undefined<'a>`. */
 type t<+'a> = Js.nullable<'a> =
   | Value('a)
   | @as(null) Null
   | @as(undefined) Undefined
 
-/** Constructs a value of `Js.null_undefined('a)` containing a value of `'a`. */
+/** Constructs a value of `Js.null_undefined<'a>` containing a value of `'a`. */
 external return: 'a => t<'a> = "%identity"
 
 /** Returns `true` if the given value is null or undefined, `false` otherwise. */
 external isNullable: t<'a> => bool = "#is_nullable"
 
-/** The null value of type `Js.null_undefined('a)`. */
+/** The null value of type `Js.null_undefined<'a>`. */
 external null: t<'a> = "#null"
 
-/** The undefined value of type `Js.null_undefined('a)`. */
+/** The undefined value of type `Js.null_undefined<'a>`. */
 external undefined: t<'a> = "#undefined"
 
 /**
 Maps the contained value using the given function.
 
-If `Js.null_undefined('a)` contains a value, that value is unwrapped, mapped to
+If `Js.null_undefined<'a>` contains a value, that value is unwrapped, mapped to
 a `'b` using the given function `a' => 'b`, then wrapped back up and returned
-as `Js.null_undefined('b)`.
+as `Js.null_undefined<'b>`.
 
 ```res example
 let maybeGreetWorld = (maybeGreeting: Js.null_undefined<string>) =>
@@ -58,7 +58,7 @@ let bind: (t<'a>, (. 'a) => 'b) => t<'b>
 
 /**
 Iterates over the contained value with the given function.
-If `Js.null_undefined('a)` contains a value, that value is unwrapped and applied to the given function.
+If `Js.null_undefined<'a>` contains a value, that value is unwrapped and applied to the given function.
 
 ```res example
 let maybeSay = (maybeMessage: Js.null_undefined<string>) =>
@@ -68,7 +68,7 @@ let maybeSay = (maybeMessage: Js.null_undefined<string>) =>
 let iter: (t<'a>, (. 'a) => unit) => unit
 
 /**
-Maps `option('a)` to `Js.null_undefined('a)`.
+Maps `option<'a>` to `Js.null_undefined<'a>`.
 `Some(a)` => `a`
 `None` => `undefined`
 */
@@ -77,7 +77,7 @@ let fromOption: option<'a> => t<'a>
 @deprecated("Use fromOption instead") let from_opt: option<'a> => t<'a>
 
 /**
-Maps `Js.null_undefined('a)` to `option('a)`.
+Maps `Js.null_undefined<'a>` to `option<'a>`.
 `a` => `Some(a)`
 `undefined` => `None`
 `null` => `None`

@@ -24,12 +24,12 @@
 
 /*** Provides functionality for dealing with the `Js.null<'a>` type */
 
-@unboxed /** Local alias for `Js.null('a)` */
+@unboxed /** Local alias for `Js.null<'a>` */
 type t<+'a> = Js.null<'a> =
   | Value('a)
   | @as(null) Null
 
-/** Constructs a value of `Js.null('a)` containing a value of `'a`. */
+/** Constructs a value of `Js.null<'a>` containing a value of `'a`. */
 external return: 'a => t<'a> = "%identity"
 
 @deprecated("Use = Js.null directly ")
@@ -45,9 +45,9 @@ let getExn: t<'a> => 'a
 /**
 Maps the contained value using the given function.
 
-If `Js.null('a)` contains a value, that value is unwrapped, mapped to a `'b`
+If `Js.null<'a>` contains a value, that value is unwrapped, mapped to a `'b`
 using the given function `'a => 'b`, then wrapped back up and returned as
-`Js.null('b)`.
+`Js.null<'b>`.
 
 ```res example
 let maybeGreetWorld = (maybeGreeting: Js.null<string>) =>
@@ -58,7 +58,7 @@ let bind: (t<'a>, (. 'a) => 'b) => t<'b>
 
 /**
 Iterates over the contained value with the given function.
-If `Js.null('a)` contains a value, that value is unwrapped and applied to the given function.
+If `Js.null<'a>` contains a value, that value is unwrapped and applied to the given function.
 
 ```res example
 let maybeSay = (maybeMessage: Js.null<string>) =>
@@ -68,7 +68,7 @@ let maybeSay = (maybeMessage: Js.null<string>) =>
 let iter: (t<'a>, (. 'a) => unit) => unit
 
 /**
-Maps `option('a)` to `Js.null('a)`.
+Maps `option<'a>` to `Js.null<'a>`.
 `Some(a)` => `a`
 `None` => `empty`
 */
@@ -77,7 +77,7 @@ let fromOption: option<'a> => t<'a>
 @deprecated("Use fromOption instead") let from_opt: option<'a> => t<'a>
 
 /**
-Maps `Js.null('a)` to `option('a)`.
+Maps `Js.null<'a>` to `option<'a>`.
 `a` => `Some(a)`
 `empty` => `None`
 */

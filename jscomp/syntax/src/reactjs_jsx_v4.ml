@@ -628,7 +628,7 @@ let rec recursivelyTransformNamedArgsForMake expr args newtypes coreType =
             (Preprocessor
                (Printf.sprintf
                   "React: optional argument annotations must have explicit \
-                   `option`. Did you mean `option(%s)=?`?"
+                   `option`. Did you mean `option<%s>=?`?"
                   currentType)))
       | _ -> ()
     in
