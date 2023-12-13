@@ -14,6 +14,7 @@
 
 #### :rocket: New Feature
 - Add support for type coercion for invariant type arguments such as array payloads. https://github.com/rescript-lang/rescript-compiler/pull/6518
+- Start treating `rescript` command the same as the `rescript build` command, so now you can do `rescript -w`. https://github.com/rescript-lang/rescript-compiler/pull/6524
 
 #### :bug: Bug Fix
 
