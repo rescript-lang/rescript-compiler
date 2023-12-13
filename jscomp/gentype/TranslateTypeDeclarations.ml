@@ -313,13 +313,19 @@ let hasSomeGADTLeaf constructorDeclarations =
     (fun declaration -> declaration.Types.cd_res != None)
     constructorDeclarations
 
+let addRecursiveTypesToTypEnv ~typeEnv typeDeclarations =
+  typeDeclarations
+  |> List.map (fun ({typ_id} : Typedtree.type_declaration) -> typ_id)
+  |> List.iter (fun type_id ->
+         typeEnv |> TypeEnv.newType ~name:(type_id |> Ident.name))
+
 let translateTypeDeclaration ~config ~outputFileRelative ~recursive ~resolver
     ~typeEnv
     ({typ_attributes; typ_id; typ_loc; typ_manifest; typ_params; typ_type} :
       Typedtree.type_declaration) : CodeItem.typeDeclaration list =
   if !Debug.translation then
     Log_.item "Translate Type Declaration %s\n" (typ_id |> Ident.name);
-  if recursive then typeEnv |> TypeEnv.newType ~name:(typ_id |> Ident.name);
+
   let typeName = Ident.name typ_id in
   let typeVars =
     typ_params

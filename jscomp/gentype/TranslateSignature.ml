@@ -98,13 +98,17 @@ and translateSignatureItem ~config ~outputFileRelative ~resolver ~typeEnv
     signatureItem : Translation.t =
   match signatureItem with
   | {Typedtree.sig_desc = Typedtree.Tsig_type (recFlag, typeDeclarations)} ->
+    let recursive = recFlag = Recursive in
+    if recursive then
+      typeDeclarations
+      |> TranslateTypeDeclarations.addRecursiveTypesToTypEnv ~typeEnv;
     {
       importTypes = [];
       codeItems = [];
       typeDeclarations =
         typeDeclarations
         |> TranslateTypeDeclarations.translateTypeDeclarations ~config
-             ~outputFileRelative ~recursive:(recFlag = Recursive) ~resolver
+             ~outputFileRelative ~recursive ~resolver
              ~typeEnv;
     }
   | {Typedtree.sig_desc = Tsig_value valueDescription} ->
