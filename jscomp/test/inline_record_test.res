@@ -117,3 +117,20 @@ let ff1 = (x: t1): t1 =>
   }
 
 let () = Mt.from_pair_suites(__MODULE__, suites.contents)
+
+type emptyRecord = A | B({})
+
+let b = B({})
+
+let () = switch b {
+| A => Js.log("A!")
+| B({}) => Js.log("B")
+}
+
+type r = {y: int}
+let r = {y: 10}
+
+switch r {
+| {y: 10} => Js.log("10!")
+| {} => Js.log("Catch all?")
+}

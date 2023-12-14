@@ -6,4 +6,4 @@
 import * as WarningsBS__Es6Import from './Warnings.bs';
 const WarningsBS: any = WarningsBS__Es6Import;
 
-export const x: number = WarningsBS.ddd;
+export const ddd: number = WarningsBS.x;

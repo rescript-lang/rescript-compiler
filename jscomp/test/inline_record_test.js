@@ -195,6 +195,18 @@ function ff1(x) {
 
 Mt.from_pair_suites("Inline_record_test", suites.contents);
 
+var b = {
+  TAG: "B"
+};
+
+if (typeof b !== "object") {
+  console.log("A!");
+} else {
+  console.log("B");
+}
+
+console.log("10!");
+
 var v2 = {
   TAG: "A0",
   lbl: 3,
@@ -205,6 +217,10 @@ var vvv = {
   TAG: "A0",
   lbl: 3,
   more: /* [] */0
+};
+
+var r = {
+  y: 10
 };
 
 exports.suites = suites;
@@ -224,4 +240,6 @@ exports.A4 = A4;
 exports.v6 = v6;
 exports.ff0 = ff0;
 exports.ff1 = ff1;
+exports.b = b;
+exports.r = r;
 /*  Not a pure module */

@@ -90,7 +90,7 @@ module Color = struct
     | Format.String_tag "dim" -> [Dim]
     | Format.String_tag "filename" -> [FG Cyan]
     | _ -> raise Not_found
-    [@@raises Not_found]
+  [@@raises Not_found]
 
   let color_enabled = ref true
 
@@ -305,7 +305,7 @@ module CliArgProcessor = struct
         in
         printEngine.printImplementation ~width ~filename
           ~comments:parseResult.comments parsetree
-    [@@raises exit]
+  [@@raises exit]
 end
 
 let () =
@@ -317,4 +317,4 @@ let () =
       ~jsxVersion:!ResClflags.jsxVersion ~jsxModule:!ResClflags.jsxModule
       ~jsxMode:!ResClflags.jsxMode ~typechecker:!ResClflags.typechecker
       !ResClflags.file)
-  [@@raises exit]
+[@@raises exit]

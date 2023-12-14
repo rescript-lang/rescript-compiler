@@ -66,8 +66,8 @@ module ErrorMessages = struct
      record, since a record needs an explicit declaration and that subset \
      wouldn't have one.\n\
      Solution: you need to pull out each field you want explicitly."
-    (* let recordPatternUnderscore = "Record patterns only support one `_`, at the end." *)
-    [@@live]
+  (* let recordPatternUnderscore = "Record patterns only support one `_`, at the end." *)
+  [@@live]
 
   let arrayPatternSpread =
     "Array's `...` spread is not supported in pattern matches.\n\
@@ -1290,9 +1290,9 @@ and parseRecordPattern ~attrs p =
         match field with
         | PatField field ->
           (if hasSpread then
-           let _, pattern = field in
-           Parser.err ~startPos:pattern.Parsetree.ppat_loc.loc_start p
-             (Diagnostics.message ErrorMessages.recordPatternSpread));
+             let _, pattern = field in
+             Parser.err ~startPos:pattern.Parsetree.ppat_loc.loc_start p
+               (Diagnostics.message ErrorMessages.recordPatternSpread));
           (field :: fields, flag)
         | PatUnderscore -> (fields, flag))
       ([], flag) rawFields
@@ -4544,7 +4544,6 @@ and parseConstrDeclArgs p =
       (* TODO: this could use some cleanup/stratification *)
       match p.Parser.token with
       | Lbrace -> (
-        let lbrace = p.startPos in
         Parser.next p;
         let startPos = p.Parser.startPos in
         match p.Parser.token with
@@ -4676,20 +4675,15 @@ and parseConstrDeclArgs p =
                   let attrs =
                     if optional then optionalAttr :: attrs else attrs
                   in
-                  Parser.expect Comma p;
                   {field with Parsetree.pld_attributes = attrs}
                 in
-                first
-                :: parseCommaDelimitedRegion ~grammar:Grammar.FieldDeclarations
-                     ~closing:Rbrace ~f:parseFieldDeclarationRegion p
-            in
-            let () =
-              match fields with
-              | [] ->
-                Parser.err ~startPos:lbrace p
-                  (Diagnostics.message
-                     "An inline record declaration needs at least one field")
-              | _ -> ()
+                if p.token = Rbrace then [first]
+                else (
+                  Parser.expect Comma p;
+                  first
+                  :: parseCommaDelimitedRegion
+                       ~grammar:Grammar.FieldDeclarations ~closing:Rbrace
+                       ~f:parseFieldDeclarationRegion p)
             in
             Parser.expect Rbrace p;
             Parser.optional p Comma |> ignore;
@@ -5621,7 +5615,7 @@ and parseStructureItemRegion p =
       Some
         (Ast_helper.Str.eval ~loc:(mkLoc p.startPos p.prevEndPos) ~attrs expr)
     | _ -> None)
-  [@@progress Parser.next, Parser.expect, LoopProgress.listRest]
+[@@progress Parser.next, Parser.expect, LoopProgress.listRest]
 
 (* include-statement ::= include module-expr *)
 and parseIncludeStatement ~attrs p =
@@ -6253,7 +6247,7 @@ and parseSignatureItemRegion p =
         (Diagnostics.message (ErrorMessages.attributeWithoutNode attr));
       Some Recover.defaultSignatureItem
     | _ -> None)
-  [@@progress Parser.next, Parser.expect, LoopProgress.listRest]
+[@@progress Parser.next, Parser.expect, LoopProgress.listRest]
 
 (* module rec module-name :  module-type  { and module-name:  module-type } *)
 and parseRecModuleSpec ~attrs ~startPos p =

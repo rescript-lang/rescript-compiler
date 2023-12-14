@@ -92,7 +92,7 @@ let _printDebug ~startPos ~endPos scanner token =
   print_char '-';
   print_int endPos.pos_cnum;
   print_endline ""
-  [@@live]
+[@@live]
 
 let next scanner =
   let nextOffset = scanner.offset + 1 in

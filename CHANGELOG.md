@@ -10,7 +10,32 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# 11.0.0-rc.6 (Unreleased)
+# 11.0.0-rc.8 (Unreleased)
+
+#### :rocket: New Feature
+- Add support for type coercion for invariant type arguments such as array payloads. https://github.com/rescript-lang/rescript-compiler/pull/6518
+
+#### :bug: Bug Fix
+
+- Fix accidental removal of `Belt.Result.Ok` and `Belt.Result.Error` constructors in rc.5 https://github.com/rescript-lang/rescript-compiler/pull/6514
+- Add missing check that the runtime representation of variants matches implementation and interface. https://github.com/rescript-lang/rescript-compiler/pull/6513/files
+- GenType: only export types (not values) from module types. https://github.com/rescript-lang/rescript-compiler/pull/6516
+- Fix compiler crash with unboxed variant definition with only 1 constructor. https://github.com/rescript-lang/rescript-compiler/pull/6523
+
+# 11.0.0-rc.7
+
+#### :rocket: New Feature
+
+- Allow empty inline records in variants. https://github.com/rescript-lang/rescript-compiler/pull/6494
+- Allow empty record patterns in pattern matching. https://github.com/rescript-lang/rescript-compiler/pull/6494
+
+#### :bug: Bug Fix
+
+- Fix issue where an inline record with attributes did not parse. https://github.com/rescript-lang/rescript-compiler/pull/6499
+- Fix issue with uncurried function with 1 arg being a variable where an undefined variable could be emitted. https://github.com/rescript-lang/rescript-compiler/pull/6507
+- Fix runtime errors on `@genType.as("alias")` output. https://github.com/rescript-lang/rescript-compiler/pull/6509
+
+# 11.0.0-rc.6
 
 #### :rocket: New Feature
 
@@ -20,6 +45,13 @@
 
 - Fix issue with GenType and `result` introduced in rc.5. https://github.com/rescript-lang/rescript-compiler/pull/6464
 - Fix compiler crash when inlining complex constants in pattern matching. https://github.com/rescript-lang/rescript-compiler/pull/6471
+- Fix issue with generating async functions inside loops. https://github.com/rescript-lang/rescript-compiler/pull/6479
+- Fix issue with Gentype and string annotations with numbers such as `@as("0")`. https://github.com/rescript-lang/rescript-compiler/pull/6487
+- Fix error message on curried/uncurried signature mismatch. https://github.com/rescript-lang/rescript-compiler/pull/6414
+
+#### :nail_care: Polish
+
+- Improve some error messages in rescript.conf parsing. https://github.com/rescript-lang/rescript-compiler/pull/6469
 
 #### :nail_care: Polish
 

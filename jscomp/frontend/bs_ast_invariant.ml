@@ -166,9 +166,6 @@ let emit_external_warnings : iterator =
       (fun self (pat : Parsetree.pattern) ->
         match pat.ppat_desc with
         | Ppat_constant constant -> check_constant pat.ppat_loc constant
-        | Ppat_record ([], _) ->
-          Location.raise_errorf ~loc:pat.ppat_loc
-            "Empty record pattern is not supported"
         | _ -> super.pat self pat);
   }
 

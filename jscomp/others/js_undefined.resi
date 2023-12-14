@@ -22,12 +22,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-/*** Provides functionality for dealing with the `Js.undefined('a)` type */
+/*** Provides functionality for dealing with the `Js.undefined<'a>` type */
 
-/** Local alias for `Js.undefined('a)` */
+/** Local alias for `Js.undefined<'a>` */
 type t<+'a> = Js.undefined<'a>
 
-/** Constructs a value of `Js.undefined('a)` containing a value of `'a`. */
+/** Constructs a value of `Js.undefined<'a>` containing a value of `'a`. */
 external return: 'a => t<'a> = "%identity"
 
 @deprecated("Use = Js.undefined directly")
@@ -49,9 +49,9 @@ let getExn: t<'a> => 'a
 
 /**
 Maps the contained value using the given function.
-If `Js.undefined('a)` contains a value, that value is unwrapped, mapped to a
+If `Js.undefined<'a>` contains a value, that value is unwrapped, mapped to a
 `'b` using the given function `a' => 'b`, then wrapped back up and returned as
-`Js.undefined('b)`.
+`Js.undefined<'b>`.
 
 ## Examples
 
@@ -64,7 +64,7 @@ let bind: (t<'a>, (. 'a) => 'b) => t<'b>
 
 /**
 Iterates over the contained value with the given function. If
-`Js.undefined('a)` contains a value, that value is unwrapped and applied to the
+`Js.undefined<'a>` contains a value, that value is unwrapped and applied to the
 given function.
 
 ## Examples
@@ -77,7 +77,7 @@ let maybeSay = (maybeMessage: Js.undefined<string>) =>
 let iter: (t<'a>, (. 'a) => unit) => unit
 
 /**
-Maps `option('a)` to `Js.undefined('a)`.
+Maps `option<'a>` to `Js.undefined<'a>`.
 `Some(a)` => `a`
 `None` => `empty`
 */
@@ -86,7 +86,7 @@ let fromOption: option<'a> => t<'a>
 @deprecated("Use fromOption instead") let from_opt: option<'a> => t<'a>
 
 /**
-Maps `Js.undefined('a)` to `option('a)`
+Maps `Js.undefined<'a>` to `option<'a>`
 `a` => `Some(a)`
 `empty` => `None`
 */

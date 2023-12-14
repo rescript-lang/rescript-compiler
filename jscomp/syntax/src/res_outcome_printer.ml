@@ -395,7 +395,7 @@ and printOutVariant variant =
            Doc.concat
              [
                (if i > 0 then Doc.text "| "
-               else Doc.ifBreaks (Doc.text "| ") Doc.nil);
+                else Doc.ifBreaks (Doc.text "| ") Doc.nil);
                Doc.group
                  (Doc.concat
                     [
@@ -477,7 +477,7 @@ and printOutConstructorsDoc constructors =
                    Doc.concat
                      [
                        (if i > 0 then Doc.text "| "
-                       else Doc.ifBreaks (Doc.text "| ") Doc.nil);
+                        else Doc.ifBreaks (Doc.text "| ") Doc.nil);
                        printOutConstructorDoc constructor;
                      ])
                  constructors);
@@ -733,7 +733,7 @@ let rec printOutSigItemDoc ?(printNameAsIs = false)
                   attrs;
                   kw;
                   (if printNameAsIs then Doc.text outTypeDecl.otype_name
-                  else printIdentLike ~allowUident:false outTypeDecl.otype_name);
+                   else printIdentLike ~allowUident:false outTypeDecl.otype_name);
                   typeParams;
                   kind;
                 ]);
@@ -870,7 +870,7 @@ and printOutExtensionConstructorDoc
          Doc.text " += ";
          Doc.line;
          (if outExt.oext_private = Asttypes.Private then Doc.text "private "
-         else Doc.nil);
+          else Doc.nil);
          printOutConstructorDoc
            (outExt.oext_name, outExt.oext_args, outExt.oext_ret_type);
        ])
@@ -908,8 +908,8 @@ and printOutTypeExtensionDoc (typeExtension : Outcometree.out_type_extension) =
          typeParams;
          Doc.text " += ";
          (if typeExtension.otyext_private = Asttypes.Private then
-          Doc.text "private "
-         else Doc.nil);
+            Doc.text "private "
+          else Doc.nil);
          printOutConstructorsDoc typeExtension.otyext_constructors;
        ])
 

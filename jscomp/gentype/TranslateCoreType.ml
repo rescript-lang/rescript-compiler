@@ -119,11 +119,11 @@ and translateCoreType_ ~config ~typeVarsGen
   | Ttyp_object (tObj, closedFlag) ->
     let getFieldType objectField =
       match objectField with
-      | Typedtree.OTtag ({txt = name}, _, t) -> (
+      | Typedtree.OTtag ({txt = name}, _, t) ->
         ( name,
           match name |> Runtime.isMutableObjectField with
           | true -> {dependencies = []; type_ = ident ""}
-          | false -> t |> translateCoreType_ ~config ~typeVarsGen ~typeEnv ))
+          | false -> t |> translateCoreType_ ~config ~typeVarsGen ~typeEnv )
       | OTinherit t ->
         ("Inherit", t |> translateCoreType_ ~config ~typeVarsGen ~typeEnv)
     in
@@ -178,7 +178,9 @@ and translateCoreType_ ~config ~typeVarsGen
                  if asString then
                    match attributes |> Annotation.getAsString with
                    | Some labelRenamed -> StringLabel labelRenamed
-                   | None -> StringLabel label
+                   | None ->
+                     if isNumber label then IntLabel label
+                     else StringLabel label
                  else if asInt then (
                    match attributes |> Annotation.getAsInt with
                    | Some n ->
@@ -187,9 +189,10 @@ and translateCoreType_ ~config ~typeVarsGen
                    | None ->
                      lastBsInt := !lastBsInt + 1;
                      IntLabel (string_of_int !lastBsInt))
+                 else if isNumber label then IntLabel label
                  else StringLabel label
                in
-               {label; labelJS})
+               {labelJS})
       in
       let payloadsTranslations =
         payloads
@@ -202,7 +205,12 @@ and translateCoreType_ ~config ~typeVarsGen
         payloadsTranslations
         |> List.map (fun (label, _attributes, translation) ->
                {
-                 case = {label; labelJS = StringLabel label};
+                 case =
+                   {
+                     labelJS =
+                       (if isNumber label then IntLabel label
+                        else StringLabel label);
+                   };
                  t = translation.type_;
                })
       in

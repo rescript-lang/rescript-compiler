@@ -26,7 +26,7 @@ type labelJS =
   | IntLabel of string
   | StringLabel of string
 
-type case = {label: string; labelJS: labelJS}
+type case = {labelJS: labelJS}
 
 let isJSSafePropertyName name =
   name = ""
@@ -38,30 +38,29 @@ let isJSSafePropertyName name =
              | 'A' .. 'z' | '0' .. '9' -> true
              | _ -> false)
 
+let isNumber s =
+  let len = String.length s in
+  len > 0
+  && (match len > 1 with
+     | true -> (s.[0] [@doesNotRaise]) > '0'
+     | false -> true)
+  &&
+  let res = ref true in
+  for i = 0 to len - 1 do
+    match s.[i] [@doesNotRaise] with
+    | '0' .. '9' -> ()
+    | _ -> res := false
+  done;
+  res.contents
+
 let labelJSToString case =
-  let isNumber s =
-    let len = String.length s in
-    len > 0
-    && (match len > 1 with
-       | true -> (s.[0] [@doesNotRaise]) > '0'
-       | false -> true)
-    &&
-    let res = ref true in
-    for i = 0 to len - 1 do
-      match s.[i] [@doesNotRaise] with
-      | '0' .. '9' -> ()
-      | _ -> res := false
-    done;
-    res.contents
-  in
   match case.labelJS with
   | NullLabel -> "null"
   | UndefinedLabel -> "undefined"
   | BoolLabel b -> b |> string_of_bool
   | FloatLabel s -> s
   | IntLabel i -> i
-  | StringLabel s ->
-    if s = case.label && isNumber s then s else s |> EmitText.quotes
+  | StringLabel s -> s |> EmitText.quotes
 
 type closedFlag = Open | Closed
 

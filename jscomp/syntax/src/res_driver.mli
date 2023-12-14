@@ -24,14 +24,14 @@ val parseImplementationFromSource :
   displayFilename:string ->
   source:string ->
   (Parsetree.structure, Res_diagnostics.t list) parseResult
-  [@@live]
+[@@live]
 
 val parseInterfaceFromSource :
   forPrinter:bool ->
   displayFilename:string ->
   source:string ->
   (Parsetree.signature, Res_diagnostics.t list) parseResult
-  [@@live]
+[@@live]
 
 type printEngine = {
   printImplementation:
@@ -55,8 +55,8 @@ val printEngine : printEngine
 (* ReScript implementation parsing compatible with ocaml pparse driver. Used by the compiler. *)
 val parse_implementation :
   ?ignoreParseErrors:bool -> string -> Parsetree.structure
-  [@@live] [@@raises Location.Error]
+[@@live] [@@raises Location.Error]
 
 (* ReScript interface parsing compatible with ocaml pparse driver. Used by the compiler *)
 val parse_interface : ?ignoreParseErrors:bool -> string -> Parsetree.signature
-  [@@live] [@@raises Location.Error]
+[@@live] [@@raises Location.Error]

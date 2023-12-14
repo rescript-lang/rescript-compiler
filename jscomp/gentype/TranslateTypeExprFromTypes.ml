@@ -137,15 +137,13 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
     }
   | ( (["Pervasives"; "result"] | ["Belt"; "Result"; "t"] | ["result"]),
       [paramTranslation1; paramTranslation2] ) ->
-    let case n name type_ =
-      {case = {label = string_of_int n; labelJS = StringLabel name}; t = type_}
-    in
+    let case name type_ = {case = {labelJS = StringLabel name}; t = type_} in
     let variant =
       createVariant ~inherits:[] ~noPayloads:[]
         ~payloads:
           [
-            case 0 "Ok" paramTranslation1.type_;
-            case 1 "Error" paramTranslation2.type_;
+            case "Ok" paramTranslation1.type_;
+            case "Error" paramTranslation2.type_;
           ]
         ~polymorphic:false ~tag:None ~unboxed:false
     in
@@ -382,7 +380,11 @@ and translateTypeExprFromTypes_ ~config ~typeVarsGen ~typeEnv
     | {noPayloads; payloads = []; unknowns = []} ->
       let noPayloads =
         noPayloads
-        |> List.map (fun label -> {label; labelJS = StringLabel label})
+        |> List.map (fun label ->
+               {
+                 labelJS =
+                   (if isNumber label then IntLabel label else StringLabel label);
+               })
       in
       let type_ =
         createVariant ~inherits:[] ~noPayloads ~payloads:[] ~polymorphic:true
@@ -395,8 +397,7 @@ and translateTypeExprFromTypes_ ~config ~typeVarsGen ~typeEnv
       t |> translateTypeExprFromTypes_ ~config ~typeVarsGen ~typeEnv
     | {noPayloads; payloads; unknowns = []} ->
       let noPayloads =
-        noPayloads
-        |> List.map (fun label -> {label; labelJS = StringLabel label})
+        noPayloads |> List.map (fun label -> {labelJS = StringLabel label})
       in
       let payloadTranslations =
         payloads
@@ -408,10 +409,7 @@ and translateTypeExprFromTypes_ ~config ~typeVarsGen ~typeEnv
       let payloads =
         payloadTranslations
         |> List.map (fun (label, translation) ->
-               {
-                 case = {label; labelJS = StringLabel label};
-                 t = translation.type_;
-               })
+               {case = {labelJS = StringLabel label}; t = translation.type_})
       in
       let type_ =
         createVariant ~inherits:[] ~noPayloads ~payloads ~polymorphic:true

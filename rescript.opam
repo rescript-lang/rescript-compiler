@@ -8,7 +8,7 @@ homepage: "https://github.com/rescript-lang/rescript-compiler"
 bug-reports: "https://github.com/rescript-lang/rescript-compiler/issues"
 depends: [
   "ocaml" {>= "4.10"}
-  "ocamlformat" {= "0.22.4"}
+  "ocamlformat" {= "0.26.1"}
   "cppo" {= "1.6.9"}
   "js_of_ocaml-compiler" {= "4.0.0"}
   "ounit2" {= "2.2.6"}

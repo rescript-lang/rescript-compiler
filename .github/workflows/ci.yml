@@ -142,11 +142,23 @@ jobs:
           chmod +x _build/install/default/bin/*
 
       - name: Use OCaml ${{matrix.ocaml_compiler}}
-        uses: ocaml/setup-ocaml@v2
+        uses: ocaml/setup-ocaml@v2.1.7
+        if: matrix.os != 'windows-latest'
         with:
           ocaml-compiler: ${{matrix.ocaml_compiler}}
           opam-pin: false
           opam-depext: false
+
+      - name: Use OCaml ${{matrix.ocaml_compiler}} (Win)
+        uses: ocaml/setup-ocaml@v2.1.7
+        if: matrix.os == 'windows-latest'
+        with:
+          ocaml-compiler: ${{matrix.ocaml_compiler}}
+          opam-pin: false
+          opam-depext: false
+          opam-repositories: |
+            opam-repository-mingw: https://github.com/ocaml-opam/opam-repository-mingw.git#sunset
+            default: https://github.com/ocaml/opam-repository.git
 
       - name: "Install OPAM dependencies"
         run: opam install . --deps-only

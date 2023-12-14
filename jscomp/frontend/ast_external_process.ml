@@ -896,22 +896,22 @@ let handle_attributes (loc : Bs_loc.t) (type_annotation : Parsetree.core_type)
           let arg_label = param_type.label in
           let ty = param_type.ty in
           (if i = 0 && splice then
-           match arg_label with
-           | Optional _ ->
-             Location.raise_errorf ~loc
-               "%@variadic expect the last type to be a non optional"
-           | Labelled _ | Nolabel -> (
-             if ty.ptyp_desc = Ptyp_any then
+             match arg_label with
+             | Optional _ ->
                Location.raise_errorf ~loc
-                 "%@variadic expect the last type to be an array";
-             if spec_of_ptyp true ty <> Nothing then
-               Location.raise_errorf ~loc
-                 "%@variadic expect the last type to be an array";
-             match ty.ptyp_desc with
-             | Ptyp_constr ({txt = Lident "array"; _}, [_]) -> ()
-             | _ ->
-               Location.raise_errorf ~loc
-                 "%@variadic expect the last type to be an array"));
+                 "%@variadic expect the last type to be a non optional"
+             | Labelled _ | Nolabel -> (
+               if ty.ptyp_desc = Ptyp_any then
+                 Location.raise_errorf ~loc
+                   "%@variadic expect the last type to be an array";
+               if spec_of_ptyp true ty <> Nothing then
+                 Location.raise_errorf ~loc
+                   "%@variadic expect the last type to be an array";
+               match ty.ptyp_desc with
+               | Ptyp_constr ({txt = Lident "array"; _}, [_]) -> ()
+               | _ ->
+                 Location.raise_errorf ~loc
+                   "%@variadic expect the last type to be an array"));
           let ( (arg_label : External_arg_spec.label_noname),
                 arg_type,
                 new_arg_types ) =
@@ -988,8 +988,7 @@ let pval_prim_of_option_labels (labels : (bool * string Asttypes.loc) list)
     (ends_with_unit : bool) =
   let arg_kinds =
     Ext_list.fold_right labels
-      (if ends_with_unit then [External_arg_spec.empty_kind Extern_unit]
-      else [])
+      (if ends_with_unit then [External_arg_spec.empty_kind Extern_unit] else [])
       (fun (is_option, p) arg_kinds ->
         let label_name = p.txt in
         let obj_arg_label =

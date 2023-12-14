@@ -427,3 +427,8 @@ module Aliased = {
     }
   }
 }
+
+module OnlyOne = {
+  @unboxed type onlyOne = OnlyOne
+  let onlyOne = OnlyOne
+}

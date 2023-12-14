@@ -85,7 +85,7 @@ let printRes ~ignoreParseErrors ~isInterface ~filename =
       if not ignoreParseErrors then exit 1);
     Res_printer.printImplementation ~width:defaultPrintWidth
       ~comments:parseResult.comments parseResult.parsetree
-  [@@raises exit]
+[@@raises exit]
 
 (* print ocaml files to res syntax *)
 let printMl ~isInterface ~filename =
@@ -113,7 +113,7 @@ let print ?(ignoreParseErrors = false) language ~input =
   match language with
   | `res -> printRes ~ignoreParseErrors ~isInterface ~filename:input
   | `ml -> printMl ~isInterface ~filename:input
-  [@@raises exit]
+[@@raises exit]
 
 (* suppress unused optional arg *)
 let _ = fun s -> print ~ignoreParseErrors:false s [@@raises exit]

@@ -65,3 +65,13 @@ module OptMixed = {
   let c3 = ptl(~x="x", ~z="z", ~d2="d2<-200", ~d4="d4<-400")
   Js.log2("c3:", c3)
 }
+
+let fn = cb => {
+  cb()
+}
+
+fn(s => Js.log(#foo(s)))
+
+let fn1 = (a, b, ()) => a() + b 
+
+let a = fn1(() => 1, 2, _)
