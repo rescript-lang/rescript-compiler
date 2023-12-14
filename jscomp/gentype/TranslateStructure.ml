@@ -260,17 +260,14 @@ and translateStructureItem ~config ~outputFileRelative ~resolver ~typeEnv
     (structItem : Typedtree.structure_item) : Translation.t =
   match structItem with
   | {str_desc = Tstr_type (recFlag, typeDeclarations)} ->
-    let recursive = recFlag = Recursive in
-    if recursive then
-      typeDeclarations
-      |> TranslateTypeDeclarations.addRecursiveTypesToTypEnv ~typeEnv;
     {
       importTypes = [];
       codeItems = [];
       typeDeclarations =
         typeDeclarations
         |> TranslateTypeDeclarations.translateTypeDeclarations ~config
-             ~outputFileRelative ~recursive ~resolver ~typeEnv;
+             ~outputFileRelative ~recursive:(recFlag = Recursive) ~resolver
+             ~typeEnv;
     }
   | {str_desc = Tstr_value (_loc, valueBindings)} ->
     valueBindings

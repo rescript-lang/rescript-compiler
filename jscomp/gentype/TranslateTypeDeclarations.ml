@@ -313,14 +313,7 @@ let hasSomeGADTLeaf constructorDeclarations =
     (fun declaration -> declaration.Types.cd_res != None)
     constructorDeclarations
 
-let addRecursiveTypesToTypEnv ~typeEnv typeDeclarations =
-  typeDeclarations
-  |> List.map (fun ({typ_id} : Typedtree.type_declaration) -> typ_id)
-  |> List.iter (fun type_id ->
-         typeEnv |> TypeEnv.newType ~name:(type_id |> Ident.name))
-
-let translateTypeDeclaration ~config ~outputFileRelative ~recursive ~resolver
-    ~typeEnv
+let translateTypeDeclaration ~config ~outputFileRelative ~resolver ~typeEnv
     ({typ_attributes; typ_id; typ_loc; typ_manifest; typ_params; typ_type} :
       Typedtree.type_declaration) : CodeItem.typeDeclaration list =
   if !Debug.translation then
@@ -341,19 +334,27 @@ let translateTypeDeclaration ~config ~outputFileRelative ~recursive ~resolver
     | Type_abstract -> GeneralDeclaration typ_manifest
     | _ -> NoDeclaration
   in
-  let res =
-    declarationKind
-    |> traslateDeclarationKind ~config ~loc:typ_loc ~outputFileRelative
-         ~resolver ~typeAttributes:typ_attributes ~typeEnv ~typeName ~typeVars
-  in
-  if not recursive then typeEnv |> TypeEnv.newType ~name:(typ_id |> Ident.name);
-  res
+  declarationKind
+  |> traslateDeclarationKind ~config ~loc:typ_loc ~outputFileRelative ~resolver
+       ~typeAttributes:typ_attributes ~typeEnv ~typeName ~typeVars
+
+let addTypeDeclarationIdToTypeEnv ~typeEnv
+    ({typ_id} : Typedtree.type_declaration) =
+  typeEnv |> TypeEnv.newType ~name:(typ_id |> Ident.name)
 
 let translateTypeDeclarations ~config ~outputFileRelative ~recursive ~resolver
     ~typeEnv (typeDeclarations : Typedtree.type_declaration list) :
     CodeItem.typeDeclaration list =
+  if recursive then
+    typeDeclarations |> List.iter (addTypeDeclarationIdToTypeEnv ~typeEnv);
   typeDeclarations
-  |> List.map
-       (translateTypeDeclaration ~config ~outputFileRelative ~recursive
-          ~resolver ~typeEnv)
+  |> List.map (fun typeDeclaration ->
+         let res =
+           typeDeclaration
+           |> translateTypeDeclaration ~config ~outputFileRelative ~resolver
+                ~typeEnv
+         in
+         if not recursive then
+           typeDeclaration |> addTypeDeclarationIdToTypeEnv ~typeEnv;
+         res)
   |> List.concat
