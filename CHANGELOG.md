@@ -21,6 +21,7 @@
 - Add missing check that the runtime representation of variants matches implementation and interface. https://github.com/rescript-lang/rescript-compiler/pull/6513/files
 - GenType: only export types (not values) from module types. https://github.com/rescript-lang/rescript-compiler/pull/6516
 - Fix compiler crash with unboxed variant definition with only 1 constructor. https://github.com/rescript-lang/rescript-compiler/pull/6523
+- Workaround for `@as`in labels in uncurried externals, which was broken. https://github.com/rescript-lang/rescript-compiler/pull/6527
 
 # 11.0.0-rc.7
 

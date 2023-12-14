@@ -16,11 +16,11 @@ var options = {
   someOther: true
 };
 
-function shouldFail(objectMode, name) {
+function shouldNotFail(objectMode, name) {
   return 3;
 }
 
 exports.mo = mo;
 exports.options = options;
-exports.shouldFail = shouldFail;
+exports.shouldNotFail = shouldNotFail;
 /* No side effect */

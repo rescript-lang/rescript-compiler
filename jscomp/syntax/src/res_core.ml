@@ -151,6 +151,10 @@ module ErrorMessages = struct
      mean `#" ^ number ^ "`?"
 end
 
+module InExternal = struct
+  let status = ref false
+end
+
 let jsxAttr = (Location.mknoloc "JSX", Parsetree.PStr [])
 let uncurriedAppAttr = (Location.mknoloc "res.uapp", Parsetree.PStr [])
 let ternaryAttr = (Location.mknoloc "res.ternary", Parsetree.PStr [])
@@ -4288,7 +4292,8 @@ and parseEs6ArrowType ~attrs p =
               let has_as =
                 Ext_list.exists typ.ptyp_attributes (fun (x, _) -> x.txt = "as")
               in
-              if typ_is_any && has_as then arity - 1 else arity
+              if !InExternal.status && typ_is_any && has_as then arity - 1
+              else arity
             | _ -> arity
           in
           let tArg = Ast_helper.Typ.arrow ~loc ~attrs argLbl typ t in
@@ -5456,6 +5461,8 @@ and parseTypeDefinitionOrExtension ~attrs p =
 
 (* external value-name : typexp = external-declaration *)
 and parseExternalDef ~attrs ~startPos p =
+  let inExternal = !InExternal.status in
+  InExternal.status := true;
   Parser.leaveBreadcrumb p Grammar.External;
   Parser.expect Token.External p;
   let name, loc = parseLident p in
@@ -5480,6 +5487,7 @@ and parseExternalDef ~attrs ~startPos p =
   let loc = mkLoc startPos p.prevEndPos in
   let vb = Ast_helper.Val.mk ~loc ~attrs ~prim name typExpr in
   Parser.eatBreadcrumb p;
+  InExternal.status := inExternal;
   vb
 
 (* constr-def ::=
