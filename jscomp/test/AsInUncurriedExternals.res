@@ -4,6 +4,7 @@
 external makeOptions: (
   ~objectMode: @as(json`false`) _,
   ~name: string,
+  ~someOther: @as(json`true`) _,
   unit,
 ) => int = ""
 
