@@ -22,6 +22,7 @@
 - GenType: only export types (not values) from module types. https://github.com/rescript-lang/rescript-compiler/pull/6516
 - Fix compiler crash with unboxed variant definition with only 1 constructor. https://github.com/rescript-lang/rescript-compiler/pull/6523
 - GenType: support mutual recursive types inside modules. https://github.com/rescript-lang/rescript-compiler/pull/6528
+- Workaround for `@as`in labels in uncurried externals, which was broken. https://github.com/rescript-lang/rescript-compiler/pull/6527
 
 # 11.0.0-rc.7
 
