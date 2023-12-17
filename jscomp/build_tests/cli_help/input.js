@@ -98,6 +98,28 @@ assert.match(
 // FIXME: Should be 0
 assert.equal(out.status, 1);
 
+// FIXME: Has the same problem with `rescript -w`
+out = child_process.spawnSync(`../../../rescript`, ["-w", "--help"], {
+  encoding: "utf8",
+  cwd: __dirname,
+});
+assert.equal(out.stdout, ">>>> Start compiling\n" + buildHelp);
+assert.match(
+  out.stderr,
+  new RegExp(
+    "Uncaught Exception Error: ENOENT: no such file or directory, watch 'bsconfig.json'\n"
+  )
+);
+
+// Shows cli help with --help arg even if there are invalid arguments after it
+out = child_process.spawnSync(`../../../rescript`, ["--help", "-w"], {
+  encoding: "utf8",
+  cwd: __dirname,
+});
+assert.equal(out.stdout, cliHelp);
+assert.equal(out.stderr, "");
+assert.equal(out.status, 0);
+
 // Shows build help with -h arg
 out = child_process.spawnSync(`../../../rescript`, ["build", "-h"], {
   encoding: "utf8",
@@ -108,12 +130,12 @@ assert.equal(out.stderr, "");
 assert.equal(out.status, 0);
 
 // Exits with build help with unknown arg
-out = child_process.spawnSync(`../../../rescript`, ["build", "-wtf"], {
+out = child_process.spawnSync(`../../../rescript`, ["build", "-foo"], {
   encoding: "utf8",
   cwd: __dirname,
 });
 assert.equal(out.stdout, "");
-assert.equal(out.stderr, 'Error: Unknown option "-wtf".\n' + buildHelp);
+assert.equal(out.stderr, 'Error: Unknown option "-foo".\n' + buildHelp);
 assert.equal(out.status, 2);
 
 // Shows cli help with --help arg
@@ -143,22 +165,22 @@ assert.equal(out.stdout, cliHelp);
 assert.equal(out.stderr, "");
 assert.equal(out.status, 0);
 
-// Shows cli help with unknown command
+// Exits with cli help with unknown command
 out = child_process.spawnSync(`../../../rescript`, ["built"], {
   encoding: "utf8",
   cwd: __dirname,
 });
 assert.equal(out.stdout, "");
-assert.equal(out.stderr, `Error: Unknown command or flag "built".\n` + cliHelp);
+assert.equal(out.stderr, `Error: Unknown command "built".\n` + cliHelp);
 assert.equal(out.status, 2);
 
-// Shows cli help with unknown args
-out = child_process.spawnSync(`../../../rescript`, ["-w"], {
+// Exits with build help with unknown args
+out = child_process.spawnSync(`../../../rescript`, ["-foo"], {
   encoding: "utf8",
   cwd: __dirname,
 });
 assert.equal(out.stdout, "");
-assert.equal(out.stderr, `Error: Unknown command or flag "-w".\n` + cliHelp);
+assert.equal(out.stderr, 'Error: Unknown option "-foo".\n' + buildHelp);
 assert.equal(out.status, 2);
 
 // Shows clean help with --help arg
@@ -180,12 +202,12 @@ assert.equal(out.stderr, "");
 assert.equal(out.status, 0);
 
 // Exits with clean help with unknown arg
-out = child_process.spawnSync(`../../../rescript`, ["clean", "-wtf"], {
+out = child_process.spawnSync(`../../../rescript`, ["clean", "-foo"], {
   encoding: "utf8",
   cwd: __dirname,
 });
 assert.equal(out.stdout, "");
-assert.equal(out.stderr, 'Error: Unknown option "-wtf".\n' + cleanHelp);
+assert.equal(out.stderr, 'Error: Unknown option "-foo".\n' + cleanHelp);
 assert.equal(out.status, 2);
 
 // Shows format help with --help arg

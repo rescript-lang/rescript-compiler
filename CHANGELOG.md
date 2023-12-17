@@ -14,6 +14,7 @@
 
 #### :rocket: New Feature
 - Add support for type coercion for invariant type arguments such as array payloads. https://github.com/rescript-lang/rescript-compiler/pull/6518
+- Start treating `rescript` command the same as the `rescript build` command, so now you can do `rescript -w`. https://github.com/rescript-lang/rescript-compiler/pull/6524
 
 #### :bug: Bug Fix
 
@@ -21,6 +22,8 @@
 - Add missing check that the runtime representation of variants matches implementation and interface. https://github.com/rescript-lang/rescript-compiler/pull/6513/files
 - GenType: only export types (not values) from module types. https://github.com/rescript-lang/rescript-compiler/pull/6516
 - Fix compiler crash with unboxed variant definition with only 1 constructor. https://github.com/rescript-lang/rescript-compiler/pull/6523
+- GenType: support mutual recursive types inside modules. https://github.com/rescript-lang/rescript-compiler/pull/6528
+- Workaround for `@as`in labels in uncurried externals, which was broken. https://github.com/rescript-lang/rescript-compiler/pull/6527
 
 # 11.0.0-rc.7
 

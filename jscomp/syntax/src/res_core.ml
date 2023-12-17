@@ -151,6 +151,10 @@ module ErrorMessages = struct
      mean `#" ^ number ^ "`?"
 end
 
+module InExternal = struct
+  let status = ref false
+end
+
 let jsxAttr = (Location.mknoloc "JSX", Parsetree.PStr [])
 let uncurriedAppAttr = (Location.mknoloc "res.uapp", Parsetree.PStr [])
 let ternaryAttr = (Location.mknoloc "res.ternary", Parsetree.PStr [])
@@ -4276,6 +4280,22 @@ and parseEs6ArrowType ~attrs p =
             p.uncurried_config |> Res_uncurried.fromDotted ~dotted
           in
           let loc = mkLoc startPos endPos in
+          let arity =
+            (* Workaround for ~lbl: @as(json`false`) _, which changes the arity *)
+            match argLbl with
+            | Labelled _s ->
+              let typ_is_any =
+                match typ.ptyp_desc with
+                | Ptyp_any -> true
+                | _ -> false
+              in
+              let has_as =
+                Ext_list.exists typ.ptyp_attributes (fun (x, _) -> x.txt = "as")
+              in
+              if !InExternal.status && typ_is_any && has_as then arity - 1
+              else arity
+            | _ -> arity
+          in
           let tArg = Ast_helper.Typ.arrow ~loc ~attrs argLbl typ t in
           if uncurried && (paramNum = 1 || p.uncurried_config = Legacy) then
             (paramNum - 1, Ast_uncurried.uncurriedType ~loc ~arity tArg, 1)
@@ -5441,6 +5461,8 @@ and parseTypeDefinitionOrExtension ~attrs p =
 
 (* external value-name : typexp = external-declaration *)
 and parseExternalDef ~attrs ~startPos p =
+  let inExternal = !InExternal.status in
+  InExternal.status := true;
   Parser.leaveBreadcrumb p Grammar.External;
   Parser.expect Token.External p;
   let name, loc = parseLident p in
@@ -5465,6 +5487,7 @@ and parseExternalDef ~attrs ~startPos p =
   let loc = mkLoc startPos p.prevEndPos in
   let vb = Ast_helper.Val.mk ~loc ~attrs ~prim name typExpr in
   Parser.eatBreadcrumb p;
+  InExternal.status := inExternal;
   vb
 
 (* constr-def ::=
