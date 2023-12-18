@@ -3,9 +3,8 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as MachineBS__Es6Import from './Machine.bs';
-const MachineBS: any = MachineBS__Es6Import;
+import * as MachineBS from './Machine.bs';
 
 export type aa = { TAG: "A"; _0: number };
 
-export const a: aa = MachineBS.a;
+export const a: aa = MachineBS.a as any;

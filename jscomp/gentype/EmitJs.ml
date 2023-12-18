@@ -206,7 +206,7 @@ let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
     in
     let valueNameTypeChecked = valueName ^ "TypeChecked" in
     let emitters =
-      (importedAsName ^ restOfPath) ^ ";"
+      importedAsName ^ restOfPath
       |> EmitType.emitExportConst ~config
            ~comment:
              ("In case of type error, check the type of '" ^ valueName
@@ -224,9 +224,8 @@ let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
       | false -> valueName
     in
     let emitters =
-      (valueNameTypeChecked
-      |> EmitType.emitTypeCast ~config ~type_ ~typeNameIsInterface)
-      ^ ";"
+      valueNameTypeChecked
+      |> EmitType.emitTypeCast ~config ~type_ ~typeNameIsInterface
       |> EmitType.emitExportConst
            ~comment:
              ("Export '" ^ valueNameNotDefault
@@ -359,10 +358,9 @@ let emitCodeItem ~config ~emitters ~moduleItemsEmitter ~env ~fileName
       | _ -> emitters
     in
     let emitters =
-      ((fileNameBs |> ModuleName.toString)
+      (fileNameBs |> ModuleName.toString)
       ^ "."
-      ^ (moduleAccessPath |> Runtime.emitModuleAccessPath ~config))
-      ^ ";"
+      ^ (moduleAccessPath |> Runtime.emitModuleAccessPath ~config)
       |> EmitType.emitExportConst ~config ~docString ~early:false ~emitters
            ~name ~type_ ~typeNameIsInterface
     in

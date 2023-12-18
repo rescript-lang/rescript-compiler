@@ -308,18 +308,15 @@ and renderFunType ~config ~indent ~inFunType ~typeNameIsInterface ~typeVars
 let typeToString ~config ~typeNameIsInterface type_ =
   type_ |> renderType ~config ~typeNameIsInterface ~inFunType:false
 
-let ofType ~config ~typeNameIsInterface ~type_ s =
-  s ^ ": " ^ (type_ |> typeToString ~config ~typeNameIsInterface)
-
 let emitExportConst ~early ?(comment = "") ~config
     ?(docString = DocString.empty) ~emitters ~name ~type_ ~typeNameIsInterface
     line =
+  let typeString = type_ |> typeToString ~config ~typeNameIsInterface in
   (match comment = "" with
   | true -> comment
   | false -> "// " ^ comment ^ "\n")
-  ^ DocString.render docString ^ "export const "
-  ^ (name |> ofType ~config ~typeNameIsInterface ~type_)
-  ^ " = " ^ line
+  ^ DocString.render docString ^ "export const " ^ name ^ ": " ^ typeString
+  ^ " = " ^ line ^ " as any;"
   |> (match early with
      | true -> Emitters.exportEarly
      | false -> Emitters.export)
@@ -388,27 +385,20 @@ let emitRequire ~importedValueOrComponent ~early ~emitters ~(config : Config.t)
       |> ImportPath.chopExtensionSafe (* for backward compatibility *)
     | _ -> importPath
   in
-  match config.module_ with
-  | ES6 when not importedValueOrComponent ->
-    let moduleNameString = ModuleName.toString moduleName in
-    (let es6ImportModule = moduleNameString ^ "__Es6Import" in
-     "import * as " ^ es6ImportModule ^ " from '"
-     ^ (importPath |> ImportPath.emit)
-     ^ "';\n" ^ "const " ^ moduleNameString ^ ": any = " ^ es6ImportModule ^ ";")
-    |> (match early with
-       | true -> Emitters.requireEarly
-       | false -> Emitters.require)
-         ~emitters
-  | _ ->
-    "const "
-    ^ ModuleName.toString moduleName
-    ^ " = require('"
-    ^ (importPath |> ImportPath.emit)
-    ^ "');"
-    |> (match early with
-       | true -> Emitters.requireEarly
-       | false -> Emitters.require)
-         ~emitters
+  let moduleNameString = ModuleName.toString moduleName in
+  let importPathString = ImportPath.emit importPath in
+  let output =
+    match config.module_ with
+    | ES6 when not importedValueOrComponent ->
+      "import * as " ^ moduleNameString ^ " from '" ^ importPathString ^ "';"
+    | _ ->
+      "const " ^ moduleNameString ^ " = require('" ^ importPathString ^ "');"
+  in
+  output
+  |> (match early with
+     | true -> Emitters.requireEarly
+     | false -> Emitters.require)
+       ~emitters
 
 let require ~early =
   match early with

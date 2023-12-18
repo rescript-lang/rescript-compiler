@@ -25,6 +25,10 @@
 - GenType: support mutual recursive types inside modules. https://github.com/rescript-lang/rescript-compiler/pull/6528
 - Workaround for `@as`in labels in uncurried externals, which was broken. https://github.com/rescript-lang/rescript-compiler/pull/6527
 
+#### :nail_care: Polish
+
+- GenType: make outputs DCE-friendly. https://github.com/rescript-lang/rescript-compiler/pull/6508
+
 # 11.0.0-rc.7
 
 #### :rocket: New Feature

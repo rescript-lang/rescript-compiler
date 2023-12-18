@@ -13,7 +13,7 @@ export const makeRenamedTypeChecked: React.ComponentType<{
   readonly person: person; 
   readonly children: React.ReactNode; 
   readonly renderMe: renderMe<any>
-}> = makeRenamedNotChecked;
+}> = makeRenamedNotChecked as any;
 
 // Export 'makeRenamed' early to allow circular import from the '.bs.js' file.
 export const makeRenamed: unknown = makeRenamedTypeChecked as React.ComponentType<{
@@ -21,13 +21,13 @@ export const makeRenamed: unknown = makeRenamedTypeChecked as React.ComponentTyp
   readonly person: person; 
   readonly children: React.ReactNode; 
   readonly renderMe: renderMe<any>
-}>;
+}> as any;
 
 // In case of type error, check the type of 'foo' in 'ImportHooks.res' and './hookExample'.
-export const fooTypeChecked: (person:person) => string = fooNotChecked;
+export const fooTypeChecked: (person:person) => string = fooNotChecked as any;
 
 // Export 'foo' early to allow circular import from the '.bs.js' file.
-export const foo: unknown = fooTypeChecked as (person:person) => string;
+export const foo: unknown = fooTypeChecked as (person:person) => string as any;
 
 export type person = { readonly name: string; readonly age: number };
 
