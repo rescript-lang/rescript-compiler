@@ -3,9 +3,8 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as TransitiveType3BS__Es6Import from './TransitiveType3.bs';
-const TransitiveType3BS: any = TransitiveType3BS__Es6Import;
+import * as TransitiveType3BS from './TransitiveType3.bs';
 
 export type t3 = { readonly i: number; readonly s: string };
 
-export const convertT3: (x:t3) => t3 = TransitiveType3BS.convertT3;
+export const convertT3: (x:t3) => t3 = TransitiveType3BS.convertT3 as any;

@@ -304,6 +304,7 @@ let rescript_parse ~filename src =
 module Printer = struct
   let printExpr typ =
     Printtyp.reset_names();
+    Printtyp.reset_and_mark_loops typ;
     Res_doc.toString
       ~width:60 (Res_outcome_printer.printOutTypeDoc (Printtyp.tree_of_typexp false typ))
 

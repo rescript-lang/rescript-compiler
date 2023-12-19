@@ -3,8 +3,7 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as CommentsBS__Es6Import from './Comments.bs';
-const CommentsBS: any = CommentsBS__Es6Import;
+import * as CommentsBS from './Comments.bs';
 
 export type DecideSubject_payload = { 
 /** A hint to use as a guide when thinking of your poem. */
@@ -24,8 +23,8 @@ export type DecideSubject_output = {
 };
 
 /** Decide on a subject matter for a poem. */
-export const DecideSubject__placeholder: (run:string, times:number) => void = CommentsBS.DecideSubject._placeholder;
+export const DecideSubject__placeholder: (run:string, times:number) => void = CommentsBS.DecideSubject._placeholder as any;
 
 export const DecideSubject: { 
 /** Decide on a subject matter for a poem. */
-_placeholder: (run:string, times:number) => void } = CommentsBS.DecideSubject
+_placeholder: (run:string, times:number) => void } = CommentsBS.DecideSubject as any;

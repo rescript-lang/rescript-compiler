@@ -3,7 +3,6 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as ShadowBS__Es6Import from './Shadow.bs';
-const ShadowBS: any = ShadowBS__Es6Import;
+import * as ShadowBS from './Shadow.bs';
 
-export const test: () => string = ShadowBS.test;
+export const test: () => string = ShadowBS.test as any;

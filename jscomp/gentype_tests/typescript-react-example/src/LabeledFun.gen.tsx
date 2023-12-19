@@ -3,7 +3,6 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as LabeledFunBS__Es6Import from './LabeledFun.bs';
-const LabeledFunBS: any = LabeledFunBS__Es6Import;
+import * as LabeledFunBS from './LabeledFun.bs';
 
-export const labelled: (a:number, b:(undefined | number), c:number, _4:number, e:number, f:number) => number = LabeledFunBS.labelled;
+export const labelled: (a:number, b:(undefined | number), c:number, _4:number, e:number, f:number) => number = LabeledFunBS.labelled as any;

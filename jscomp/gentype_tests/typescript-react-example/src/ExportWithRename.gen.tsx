@@ -5,9 +5,8 @@
 
 import * as React from 'react';
 
-import * as ExportWithRenameBS__Es6Import from './ExportWithRename.bs';
-const ExportWithRenameBS: any = ExportWithRenameBS__Es6Import;
+import * as ExportWithRenameBS from './ExportWithRename.bs';
 
 export type Props = { readonly s: string };
 
-export const Renamed: React.ComponentType<{ readonly s: string }> = ExportWithRenameBS.make;
+export const Renamed: React.ComponentType<{ readonly s: string }> = ExportWithRenameBS.make as any;

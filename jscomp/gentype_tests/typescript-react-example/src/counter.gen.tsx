@@ -3,9 +3,8 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as counterBS__Es6Import from './counter.bs';
-const counterBS: any = counterBS__Es6Import;
+import * as counterBS from './counter.bs';
 
 import type {aa as Machine_aa} from './Machine.gen';
 
-export const b: Machine_aa = counterBS.b;
+export const b: Machine_aa = counterBS.b as any;

@@ -3,8 +3,7 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as TestModuleAliasesBS__Es6Import from './TestModuleAliases.bs';
-const TestModuleAliasesBS: any = TestModuleAliasesBS__Es6Import;
+import * as TestModuleAliasesBS from './TestModuleAliases.bs';
 
 import type {InnerAlias_inner as ModuleAliases2_InnerAlias_inner} from './ModuleAliases2.gen';
 
@@ -30,10 +29,10 @@ export type inner1 = ModuleAliases2_InnerAlias_inner;
 
 export type inner2 = ModuleAliases2_Outer_Inner_inner;
 
-export const testInner1: (x:inner1) => inner1 = TestModuleAliasesBS.testInner1;
+export const testInner1: (x:inner1) => inner1 = TestModuleAliasesBS.testInner1 as any;
 
-export const testInner1Expanded: (x:ModuleAliases2_InnerAlias_inner) => ModuleAliases2_InnerAlias_inner = TestModuleAliasesBS.testInner1Expanded;
+export const testInner1Expanded: (x:ModuleAliases2_InnerAlias_inner) => ModuleAliases2_InnerAlias_inner = TestModuleAliasesBS.testInner1Expanded as any;
 
-export const testInner2: (x:inner2) => inner2 = TestModuleAliasesBS.testInner2;
+export const testInner2: (x:inner2) => inner2 = TestModuleAliasesBS.testInner2 as any;
 
-export const testInner2Expanded: (x:ModuleAliases2_Outer_Inner_inner) => ModuleAliases2_Outer_Inner_inner = TestModuleAliasesBS.testInner2Expanded;
+export const testInner2Expanded: (x:ModuleAliases2_Outer_Inner_inner) => ModuleAliases2_Outer_Inner_inner = TestModuleAliasesBS.testInner2Expanded as any;
