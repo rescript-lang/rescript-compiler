@@ -12,6 +12,10 @@
 
 # 11.0.0-rc.9 (Unreleased)
 
+#### :rocket: New Feature
+
+- GenType: support `@deriving(accessors)` outputs. https://github.com/rescript-lang/rescript-compiler/pull/6537
+
 # 11.0.0-rc.8
 
 #### :rocket: New Feature
