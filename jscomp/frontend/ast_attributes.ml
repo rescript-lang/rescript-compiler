@@ -373,3 +373,10 @@ let bs_return_undefined : attr =
           pstr_loc = locg;
         };
       ] )
+
+let is_gentype (attr : attr) =
+  match attr with
+  | {Location.txt = "genType" | "gentype"; _}, _ -> true
+  | _ -> false
+
+let gentype : attr = ({txt = "genType"; loc = locg}, Ast_payload.empty)
