@@ -26,8 +26,8 @@ open Ast_helper
 
 let core_type_of_type_declaration (tdcl : Parsetree.type_declaration) =
   match tdcl with
-  | {ptype_name = {txt; loc}; ptype_params} ->
-    Typ.constr {txt = Lident txt; loc} (Ext_list.map ptype_params fst)
+  | {ptype_name = {txt; loc}; ptype_params; ptype_attributes = attrs} ->
+    Typ.constr ~attrs {txt = Lident txt; loc} (Ext_list.map ptype_params fst)
 
 let new_type_of_type_declaration (tdcl : Parsetree.type_declaration) newName =
   match tdcl with
