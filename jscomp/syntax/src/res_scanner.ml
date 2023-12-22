@@ -196,6 +196,10 @@ let scanIdentifier scanner =
     next scanner;
     (* TODO: this isn't great *)
     Token.lookupKeyword "list{")
+  else if '{' == scanner.ch && str = "dict" then (
+    next scanner;
+    (* TODO: this isn't great *)
+    Token.lookupKeyword "dict{")
   else Token.lookupKeyword str
 
 let scanDigits scanner ~base =

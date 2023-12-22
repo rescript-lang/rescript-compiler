@@ -230,6 +230,7 @@ let getClosingToken = function
   | Lbrace -> Rbrace
   | Lbracket -> Rbracket
   | List -> Rbrace
+  | Dict -> Rbrace
   | LessThan -> GreaterThan
   | _ -> assert false
 
@@ -241,7 +242,7 @@ let rec goToClosing closingToken state =
   | GreaterThan, GreaterThan ->
     Parser.next state;
     ()
-  | ((Token.Lbracket | Lparen | Lbrace | List | LessThan) as t), _ ->
+  | ((Token.Lbracket | Lparen | Lbrace | List | Dict | LessThan) as t), _ ->
     Parser.next state;
     goToClosing (getClosingToken t) state;
     goToClosing closingToken state
@@ -1918,6 +1919,9 @@ and parseAtomicExpr p =
     | List ->
       Parser.next p;
       parseListExpr ~startPos p
+    | Dict ->
+      Parser.next p;
+      parseDictExpr ~startPos p
     | Module ->
       Parser.next p;
       parseFirstClassModuleExpr ~startPos p
@@ -3879,6 +3883,34 @@ and parseListExpr ~startPos p =
                (Longident.Ldot (Longident.Lident "Belt", "List"), "concatMany"))
             loc))
       [(Asttypes.Nolabel, Ast_helper.Exp.array ~loc listExprs)]
+
+and parseDictExpr ~startPos p =
+  let expressions =
+    parseCommaDelimitedRegion ~grammar:Grammar.RecordRowsStringKey
+      ~closing:Rbrace ~f:parseRecordExprRowWithStringKey p
+  in
+  (* TODO: Disallow empty dict? *)
+  Parser.expect Rbrace p;
+  let loc = mkLoc startPos p.prevEndPos in
+  Ast_helper.Exp.apply ~loc
+    (Ast_helper.Exp.ident ~loc ~attrs:[spreadAttr]
+       (Location.mkloc
+          (Longident.Ldot
+             (Longident.Ldot (Longident.Lident "Js", "Dict"), "fromArray"))
+          loc))
+    [
+      ( Asttypes.Nolabel,
+        Ast_helper.Exp.array ~loc
+          (expressions
+          |> List.map
+               (fun ((id, exp) : Ast_helper.lid * Parsetree.expression) ->
+                 Ast_helper.Exp.tuple
+                   [
+                     Ast_helper.Exp.constant ~loc:id.loc
+                       (Pconst_string (Longident.last id.txt, None));
+                     exp;
+                   ])) );
+    ]
 
 (* Overparse ... and give a nice error message *)
 and parseNonSpreadExp ~msg p =

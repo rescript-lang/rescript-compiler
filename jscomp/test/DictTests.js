@@ -11,6 +11,13 @@ var dictCreationCanBeInlined = {
   more: "stuff"
 };
 
+var dictWithSyntax = {
+  first: 1,
+  second: 2,
+  third: 3
+};
+
 exports.dictCreationCanBeInlined = dictCreationCanBeInlined;
 exports.dictCreationCanNotBeInlined = dictCreationCanNotBeInlined;
+exports.dictWithSyntax = dictWithSyntax;
 /* dictCreationCanNotBeInlined Not a pure module */
