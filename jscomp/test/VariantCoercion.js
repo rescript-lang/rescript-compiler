@@ -44,6 +44,24 @@ var CoerceFromStringToVariant = {
   cc: c$1
 };
 
+var CoerceFromIntToVariant = {
+  a: 100,
+  aa: 1,
+  b: 100,
+  bb: 1,
+  c: 120,
+  cc: 120
+};
+
+var CoerceFromFloatToVariant = {
+  a: 100,
+  aa: 1,
+  b: 100,
+  bb: 1,
+  c: 120,
+  cc: 120
+};
+
 var a$2 = "Three";
 
 var b = "Three";
@@ -65,4 +83,6 @@ exports.dd = dd;
 exports.CoerceVariants = CoerceVariants;
 exports.CoerceWithPayload = CoerceWithPayload;
 exports.CoerceFromStringToVariant = CoerceFromStringToVariant;
+exports.CoerceFromIntToVariant = CoerceFromIntToVariant;
+exports.CoerceFromFloatToVariant = CoerceFromFloatToVariant;
 /* No side effect */
