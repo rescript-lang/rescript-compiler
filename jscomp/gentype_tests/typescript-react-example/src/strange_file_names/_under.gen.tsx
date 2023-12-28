@@ -3,6 +3,6 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as _underBS from './_under.bs';
+import * as _underJS from './_under.res.js';
 
-export const x: number = _underBS.x as any;
+export const x: number = _underJS.x as any;

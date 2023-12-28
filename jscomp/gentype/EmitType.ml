@@ -378,13 +378,6 @@ let emitImportValueAsEarly ~emitters ~name ~nameAs importPath =
 
 let emitRequire ~importedValueOrComponent ~early ~emitters ~(config : Config.t)
     ~moduleName importPath =
-  let importPath =
-    match config.moduleResolution with
-    | Node ->
-      importPath
-      |> ImportPath.chopExtensionSafe (* for backward compatibility *)
-    | _ -> importPath
-  in
   let moduleNameString = ModuleName.toString moduleName in
   let importPathString = ImportPath.emit importPath in
   let output =

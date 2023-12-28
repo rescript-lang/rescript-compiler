@@ -3,8 +3,8 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as counterBS from './counter.bs';
+import * as counterJS from './counter.res.js';
 
 import type {aa as Machine_aa} from './Machine.gen';
 
-export const b: Machine_aa = counterBS.b as any;
+export const b: Machine_aa = counterJS.b as any;

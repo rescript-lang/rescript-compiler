@@ -2,8 +2,8 @@
 
 import * as Curry from "rescript/lib/es6/curry.js";
 import * as React from "react";
-import * as ImportHooks from "./ImportHooks.bs.js";
-import * as ImportHookDefault from "./ImportHookDefault.bs.js";
+import * as ImportHooks from "./ImportHooks.res.js";
+import * as ImportHookDefault from "./ImportHookDefault.res.js";
 
 function Hooks(Props) {
   var vehicle = Props.vehicle;

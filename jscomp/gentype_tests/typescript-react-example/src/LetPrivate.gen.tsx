@@ -3,6 +3,6 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as LetPrivateBS from './LetPrivate.bs';
+import * as LetPrivateJS from './LetPrivate.res.js';
 
-export const y: number = LetPrivateBS.y as any;
+export const y: number = LetPrivateJS.y as any;

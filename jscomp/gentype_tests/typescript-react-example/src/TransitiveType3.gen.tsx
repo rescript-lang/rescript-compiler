@@ -3,8 +3,8 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as TransitiveType3BS from './TransitiveType3.bs';
+import * as TransitiveType3JS from './TransitiveType3.res.js';
 
 export type t3 = { readonly i: number; readonly s: string };
 
-export const convertT3: (x:t3) => t3 = TransitiveType3BS.convertT3 as any;
+export const convertT3: (x:t3) => t3 = TransitiveType3JS.convertT3 as any;

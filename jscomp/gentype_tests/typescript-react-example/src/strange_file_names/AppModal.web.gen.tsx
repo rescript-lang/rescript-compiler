@@ -3,6 +3,6 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as AppModal_webBS from './AppModal.web.bs';
+import * as AppModal_webJS from './AppModal.web.res.js';
 
-export const x: number = AppModal_webBS.x as any;
+export const x: number = AppModal_webJS.x as any;

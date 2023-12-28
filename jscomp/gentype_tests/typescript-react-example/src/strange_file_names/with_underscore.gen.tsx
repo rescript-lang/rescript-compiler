@@ -3,6 +3,6 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as with_underscoreBS from './with_underscore.bs';
+import * as with_underscoreJS from './with_underscore.res.js';
 
-export const x: number = with_underscoreBS.x as any;
+export const x: number = with_underscoreJS.x as any;

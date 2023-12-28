@@ -3,7 +3,7 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as OpaqueBS from './Opaque.bs';
+import * as OpaqueJS from './Opaque.res.js';
 
 import type {business as Records_business} from './Records.gen';
 
@@ -11,6 +11,6 @@ export abstract class opaqueFromRecords { protected opaque!: any }; /* simulate 
 
 export type pair = [opaqueFromRecords, opaqueFromRecords];
 
-export const noConversion: (x:opaqueFromRecords) => opaqueFromRecords = OpaqueBS.noConversion as any;
+export const noConversion: (x:opaqueFromRecords) => opaqueFromRecords = OpaqueJS.noConversion as any;
 
-export const testConvertNestedRecordFromOtherFile: (x:Records_business) => Records_business = OpaqueBS.testConvertNestedRecordFromOtherFile as any;
+export const testConvertNestedRecordFromOtherFile: (x:Records_business) => Records_business = OpaqueJS.testConvertNestedRecordFromOtherFile as any;

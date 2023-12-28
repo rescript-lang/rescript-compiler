@@ -7,7 +7,7 @@ test:
 	npm run lint
 
 clean:
-	rm -rf node_modules lib src/*.bs.js src/*.gen.tsx
+	rm -rf node_modules lib src/*.res.js src/*.gen.tsx
 
 .DEFAULT_GOAL := test
 

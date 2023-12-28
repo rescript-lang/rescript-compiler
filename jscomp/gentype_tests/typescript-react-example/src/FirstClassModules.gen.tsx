@@ -3,7 +3,7 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as FirstClassModulesBS from './FirstClassModules.bs';
+import * as FirstClassModulesJS from './FirstClassModules.res.js';
 
 export type MT_t = number;
 
@@ -23,7 +23,7 @@ export type firstClassModule = {
   readonly y: string
 };
 
-export const firstClassModule: firstClassModule = FirstClassModulesBS.firstClassModule as any;
+export const firstClassModule: firstClassModule = FirstClassModulesJS.firstClassModule as any;
 
 export const testConvert: (m:{
   readonly x: number; 
@@ -49,7 +49,7 @@ export const testConvert: (m:{
   }; 
   readonly Z: unknown; 
   readonly y: string
-} = FirstClassModulesBS.testConvert as any;
+} = FirstClassModulesJS.testConvert as any;
 
 export const someFunctorAsFunction: (x:{
   readonly x: number; 
@@ -63,4 +63,4 @@ export const someFunctorAsFunction: (x:{
   }; 
   readonly Z: unknown; 
   readonly y: string
-}) => { readonly ww: string } = FirstClassModulesBS.someFunctorAsFunction as any;
+}) => { readonly ww: string } = FirstClassModulesJS.someFunctorAsFunction as any;

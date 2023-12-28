@@ -3,15 +3,15 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as DerivingsBS from './Derivings.bs';
+import * as DerivingsJS from './Derivings.res.js';
 
 export type action = 
     "Click"
   | "Cancel"
   | { TAG: "Submit"; _0: string };
 
-export const click: action = DerivingsBS.click as any;
+export const click: action = DerivingsJS.click as any;
 
-export const submit: (_1:string) => action = DerivingsBS.submit as any;
+export const submit: (_1:string) => action = DerivingsJS.submit as any;
 
-export const cancel: action = DerivingsBS.cancel as any;
+export const cancel: action = DerivingsJS.cancel as any;

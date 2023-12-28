@@ -23,7 +23,7 @@ export const make: unknown = makeTypeChecked as React.ComponentType<{
   readonly renderMe: renderMe<any>
 }> as any;
 
-const JSXV4BS = require('./JSXV4.bs');
+const JSXV4JS = require('./JSXV4.res.js');
 
 export type CompV4_props<x,y> = { readonly x: x; readonly y: y };
 
@@ -38,12 +38,12 @@ export type props<actions,person,children,renderMe> = {
   readonly renderMe: renderMe
 };
 
-export const CompV4_make: React.ComponentType<{ readonly x: string; readonly y: string }> = JSXV4BS.CompV4.make as any;
+export const CompV4_make: React.ComponentType<{ readonly x: string; readonly y: string }> = JSXV4JS.CompV4.make as any;
 
 export type Props = { readonly x: string; readonly y: string };
 
-export const CompV3_make: React.ComponentType<{ readonly x: string; readonly y: string }> = JSXV4BS.CompV3.make as any;
+export const CompV3_make: React.ComponentType<{ readonly x: string; readonly y: string }> = JSXV4JS.CompV3.make as any;
 
-export const CompV3: { make: React.ComponentType<{ readonly x: string; readonly y: string }> } = JSXV4BS.CompV3 as any;
+export const CompV3: { make: React.ComponentType<{ readonly x: string; readonly y: string }> } = JSXV4JS.CompV3 as any;
 
-export const CompV4: { make: React.ComponentType<{ readonly x: string; readonly y: string }> } = JSXV4BS.CompV4 as any;
+export const CompV4: { make: React.ComponentType<{ readonly x: string; readonly y: string }> } = JSXV4JS.CompV4 as any;
