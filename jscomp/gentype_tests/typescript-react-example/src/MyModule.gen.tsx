@@ -3,8 +3,8 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as MyModuleBS from './MyModule.bs';
+import * as MyModuleJS from './MyModule.res.js';
 
 export type t = number;
 
-export const add: (a:t, b:t) => t = MyModuleBS.add as any;
+export const add: (a:t, b:t) => t = MyModuleJS.add as any;

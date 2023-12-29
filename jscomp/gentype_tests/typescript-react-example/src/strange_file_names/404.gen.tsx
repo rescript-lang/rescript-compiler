@@ -3,6 +3,6 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as _404BS from './404.bs';
+import * as _404JS from './404.res.js';
 
-export const x: number = _404BS.x as any;
+export const x: number = _404JS.x as any;

@@ -17,10 +17,10 @@ let sanitizeId s =
   then s
   else "_" ^ s
 
-let forBsFile s = sanitizeId s ^ "BS"
+let forJsFile s = sanitizeId s ^ "JS"
 
 let forInnerModule ~fileName ~innerModuleName =
-  (fileName |> forBsFile) ^ "." ^ innerModuleName
+  (fileName |> forJsFile) ^ "." ^ innerModuleName
 
 let fromStringUnsafe s = s
 let toString s = s

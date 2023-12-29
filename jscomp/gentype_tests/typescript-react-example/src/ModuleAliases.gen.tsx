@@ -3,7 +3,7 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as ModuleAliasesBS from './ModuleAliases.bs';
+import * as ModuleAliasesJS from './ModuleAliases.res.js';
 
 export type Outer_Inner_innerT = { readonly inner: string };
 
@@ -19,8 +19,8 @@ export type Outer2Alias_Inner2_OuterInnerAlias2_innerT = Outer2_Inner2_OuterInne
 
 export type InnerNestedAlias_t = Outer2_Inner2_InnerNested_t;
 
-export const testNested: (x:InnerNestedAlias_t) => InnerNestedAlias_t = ModuleAliasesBS.testNested as any;
+export const testNested: (x:InnerNestedAlias_t) => InnerNestedAlias_t = ModuleAliasesJS.testNested as any;
 
-export const testInner: (x:Outer2Alias_OuterInnerAlias_innerT) => Outer2Alias_OuterInnerAlias_innerT = ModuleAliasesBS.testInner as any;
+export const testInner: (x:Outer2Alias_OuterInnerAlias_innerT) => Outer2Alias_OuterInnerAlias_innerT = ModuleAliasesJS.testInner as any;
 
-export const testInner2: (x:Outer2Alias_Inner2_OuterInnerAlias2_innerT) => Outer2Alias_Inner2_OuterInnerAlias2_innerT = ModuleAliasesBS.testInner2 as any;
+export const testInner2: (x:Outer2Alias_Inner2_OuterInnerAlias2_innerT) => Outer2Alias_Inner2_OuterInnerAlias2_innerT = ModuleAliasesJS.testInner2 as any;

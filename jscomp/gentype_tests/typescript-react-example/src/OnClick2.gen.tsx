@@ -5,8 +5,8 @@
 
 import * as React from 'react';
 
-import * as OnClick2BS from './OnClick2.bs';
+import * as OnClick2JS from './OnClick2.res.js';
 
 export type Props = { readonly onClick: (_1:MouseEvent) => void };
 
-export const make: React.ComponentType<{ readonly onClick: (_1:MouseEvent) => void }> = OnClick2BS.make as any;
+export const make: React.ComponentType<{ readonly onClick: (_1:MouseEvent) => void }> = OnClick2JS.make as any;

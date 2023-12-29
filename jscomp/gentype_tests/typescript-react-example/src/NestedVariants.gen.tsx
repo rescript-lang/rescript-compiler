@@ -3,7 +3,7 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as NestedVariantsBS from './NestedVariants.bs';
+import * as NestedVariantsJS from './NestedVariants.res.js';
 
 export type typeL = 
     { TAG: "NonUnary"; _0: number; _1: number };
@@ -43,28 +43,28 @@ export type inline =
   | { TAG: "J"; readonly i: number; readonly j: number }
   | { TAG: "K"; _0: number; _1: number };
 
-export const makeVariant: () => typeL = NestedVariantsBS.makeVariant as any;
+export const makeVariant: () => typeL = NestedVariantsJS.makeVariant as any;
 
-export const makeABC: () => typeA<typeB> = NestedVariantsBS.makeABC as any;
+export const makeABC: () => typeA<typeB> = NestedVariantsJS.makeABC as any;
 
-export const makeBC: () => typeB = NestedVariantsBS.makeBC as any;
+export const makeBC: () => typeB = NestedVariantsJS.makeBC as any;
 
-export const makeAC: () => typeA<typeC> = NestedVariantsBS.makeAC as any;
+export const makeAC: () => typeA<typeC> = NestedVariantsJS.makeAC as any;
 
-export const makeAD: () => typeA<typeD> = NestedVariantsBS.makeAD as any;
+export const makeAD: () => typeA<typeD> = NestedVariantsJS.makeAD as any;
 
-export const makeAE: () => typeA<typeE> = NestedVariantsBS.makeAE as any;
+export const makeAE: () => typeA<typeE> = NestedVariantsJS.makeAE as any;
 
-export const makeFD: () => typeF<typeD> = NestedVariantsBS.makeFD as any;
+export const makeFD: () => typeF<typeD> = NestedVariantsJS.makeFD as any;
 
-export const makeHD: () => typeH = NestedVariantsBS.makeHD as any;
+export const makeHD: () => typeH = NestedVariantsJS.makeHD as any;
 
-export const makeJ: () => typeJ = NestedVariantsBS.makeJ as any;
+export const makeJ: () => typeJ = NestedVariantsJS.makeJ as any;
 
-export const makeK: () => typeK = NestedVariantsBS.makeK as any;
+export const makeK: () => typeK = NestedVariantsJS.makeK as any;
 
-export const testBoxedBinary: (param:boxedBinary) => number = NestedVariantsBS.testBoxedBinary as any;
+export const testBoxedBinary: (param:boxedBinary) => number = NestedVariantsJS.testBoxedBinary as any;
 
-export const testUnboxedBinary: (param:unboxedBinary) => number = NestedVariantsBS.testUnboxedBinary as any;
+export const testUnboxedBinary: (param:unboxedBinary) => number = NestedVariantsJS.testUnboxedBinary as any;
 
-export const testInline: (x:inline) => inline = NestedVariantsBS.testInline as any;
+export const testInline: (x:inline) => inline = NestedVariantsJS.testInline as any;

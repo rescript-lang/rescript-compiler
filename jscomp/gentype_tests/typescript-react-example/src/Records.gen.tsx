@@ -3,7 +3,7 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as RecordsBS from './Records.bs';
+import * as RecordsJS from './Records.res.js';
 
 import type {list} from '../src/shims/RescriptPervasives.shim';
 
@@ -57,52 +57,52 @@ export type myRecBsAs = {
   readonly "1number": string
 };
 
-export const origin: coord = RecordsBS.origin as any;
+export const origin: coord = RecordsJS.origin as any;
 
-export const computeArea: (param:coord) => number = RecordsBS.computeArea as any;
+export const computeArea: (param:coord) => number = RecordsJS.computeArea as any;
 
-export const coord2d: (x:number, y:number) => coord = RecordsBS.coord2d as any;
+export const coord2d: (x:number, y:number) => coord = RecordsJS.coord2d as any;
 
-export const findAddress: (business:business) => list<string> = RecordsBS.findAddress as any;
+export const findAddress: (business:business) => list<string> = RecordsJS.findAddress as any;
 
-export const someBusiness: business = RecordsBS.someBusiness as any;
+export const someBusiness: business = RecordsJS.someBusiness as any;
 
-export const findAllAddresses: (businesses:business[]) => string[] = RecordsBS.findAllAddresses as any;
+export const findAllAddresses: (businesses:business[]) => string[] = RecordsJS.findAllAddresses as any;
 
-export const getPayload: <T1>(param:payload<T1>) => T1 = RecordsBS.getPayload as any;
+export const getPayload: <T1>(param:payload<T1>) => T1 = RecordsJS.getPayload as any;
 
-export const getPayloadRecord: (param:payload<record>) => record = RecordsBS.getPayloadRecord as any;
+export const getPayloadRecord: (param:payload<record>) => record = RecordsJS.getPayloadRecord as any;
 
-export const recordValue: record = RecordsBS.recordValue as any;
+export const recordValue: record = RecordsJS.recordValue as any;
 
-export const payloadValue: payload<record> = RecordsBS.payloadValue as any;
+export const payloadValue: payload<record> = RecordsJS.payloadValue as any;
 
-export const getPayloadRecordPlusOne: (param:payload<record>) => record = RecordsBS.getPayloadRecordPlusOne as any;
+export const getPayloadRecordPlusOne: (param:payload<record>) => record = RecordsJS.getPayloadRecordPlusOne as any;
 
-export const findAddress2: (business:business2) => list<string> = RecordsBS.findAddress2 as any;
+export const findAddress2: (business:business2) => list<string> = RecordsJS.findAddress2 as any;
 
-export const someBusiness2: business2 = RecordsBS.someBusiness2 as any;
+export const someBusiness2: business2 = RecordsJS.someBusiness2 as any;
 
 export const computeArea3: (o:{
   readonly x: number; 
   readonly y: number; 
   readonly z: (null | undefined | number)
-}) => number = RecordsBS.computeArea3 as any;
+}) => number = RecordsJS.computeArea3 as any;
 
 export const computeArea4: (o:{
   readonly x: number; 
   readonly y: number; 
   readonly z?: number
-}) => number = RecordsBS.computeArea4 as any;
+}) => number = RecordsJS.computeArea4 as any;
 
-export const testMyRec: (x:myRec) => string = RecordsBS.testMyRec as any;
+export const testMyRec: (x:myRec) => string = RecordsJS.testMyRec as any;
 
-export const testMyRec2: (x:myRec) => myRec = RecordsBS.testMyRec2 as any;
+export const testMyRec2: (x:myRec) => myRec = RecordsJS.testMyRec2 as any;
 
-export const testMyObj: (x:myObj) => string = RecordsBS.testMyObj as any;
+export const testMyObj: (x:myObj) => string = RecordsJS.testMyObj as any;
 
-export const testMyObj2: (x:myObj) => myObj = RecordsBS.testMyObj2 as any;
+export const testMyObj2: (x:myObj) => myObj = RecordsJS.testMyObj2 as any;
 
-export const testMyRecBsAs: (x:myRecBsAs) => string[] = RecordsBS.testMyRecBsAs as any;
+export const testMyRecBsAs: (x:myRecBsAs) => string[] = RecordsJS.testMyRecBsAs as any;
 
-export const testMyRecBsAs2: (x:myRecBsAs) => myRecBsAs = RecordsBS.testMyRecBsAs2 as any;
+export const testMyRecBsAs2: (x:myRecBsAs) => myRecBsAs = RecordsJS.testMyRecBsAs2 as any;

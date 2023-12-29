@@ -3,8 +3,8 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as NestedModulesInSignatureBS from './NestedModulesInSignature.bs';
+import * as NestedModulesInSignatureJS from './NestedModulesInSignature.res.js';
 
-export const Universe_theAnswer: number = NestedModulesInSignatureBS.Universe.theAnswer as any;
+export const Universe_theAnswer: number = NestedModulesInSignatureJS.Universe.theAnswer as any;
 
-export const Universe: { theAnswer: number } = NestedModulesInSignatureBS.Universe as any;
+export const Universe: { theAnswer: number } = NestedModulesInSignatureJS.Universe as any;
