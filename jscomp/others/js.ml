@@ -39,7 +39,7 @@ or the JavaScript
 [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
 classes.
 
-It is meant as a zero-abstraction interop layer and directly exposes JavaScript functions as they are. If you can find your API in this module, prefer this over an equivalent Belt helper. For example, prefer [Js.Array2](js/array-2) over [Belt.Array](belt/array)
+It is meant as a zero-abstraction interop layer and directly exposes JavaScript functions as they are. If you can find your API in this module, prefer this over an equivalent Belt helper. For example, prefer [Js.Array2](js/array2) over [Belt.Array](belt/array)
 
 ## Argument Order
 
@@ -172,7 +172,7 @@ external unsafe_lt : 'a -> 'a -> bool = "#unsafe_lt"
 
 external unsafe_le : 'a -> 'a -> bool = "#unsafe_le"
 (**
-   `unsafe_le(a, b) will be compiled as `a <= b`.
+   `unsafe_le(a, b)` will be compiled as `a <= b`.
    See also `Js.unsafe_lt`.
 *)
 

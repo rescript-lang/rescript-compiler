@@ -151,7 +151,7 @@ external objectArray: array<Js_dict.t<t>> => t = "%identity"
 Returns a JSON data structure.
 Raises `SyntaxError` if the given string is not a valid JSON. Note: `SyntaxError` is a JavaScript exception.
 
-**See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse)
+See [`parse`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse) on MDN.
 
 ## Examples
 
@@ -204,7 +204,7 @@ external parseExn: string => t = "parse"
 `stringify(json)` formats the JSON data structure as a `string`.
 Returns the string representation of a given JSON data structure.
 
-**See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify)
+See [`stringify`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify) on MDN.
 
 ## Examples
 
@@ -227,7 +227,7 @@ external stringify: t => string = "stringify"
 `stringifyWithSpace(json)` formats the JSON data structure as a `string`.
 Returns the string representation of a given JSON data structure with spacing.
 
-**See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify)
+See [`stringify`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify) on MDN.
 
 ## Examples
 

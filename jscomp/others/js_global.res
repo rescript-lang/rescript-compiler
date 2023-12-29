@@ -168,7 +168,7 @@ external setTimeoutFloat: (unit => unit, float) => timeoutId = "setTimeout"
 /**
 URL-encodes a string.
 
-**see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI)
+See [`encodeURI`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI) on MDN.
 */
 external encodeURI: string => string = "encodeURI"
 
@@ -176,7 +176,7 @@ external encodeURI: string => string = "encodeURI"
 /**
 Decodes a URL-enmcoded string produced by `encodeURI`
 
-**see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI)
+See [`decodeURI`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI) on MDN.
 */
 external decodeURI: string => string = "decodeURI"
 
@@ -184,7 +184,7 @@ external decodeURI: string => string = "decodeURI"
 /**
 URL-encodes a string, including characters with special meaning in a URI.
 
-**see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent)
+See [`encodeURIComponent`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent) on MDN.
 */
 external encodeURIComponent: string => string = "encodeURIComponent"
 
@@ -192,6 +192,6 @@ external encodeURIComponent: string => string = "encodeURIComponent"
 /**
 Decodes a URL-enmcoded string produced by `encodeURIComponent`
 
-**see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent)
+See [`decodeURIComponent`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent) on MDN.
 */
 external decodeURIComponent: string => string = "decodeURIComponent"

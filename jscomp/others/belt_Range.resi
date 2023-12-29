@@ -31,9 +31,7 @@ pretty performant and memory friendly.
 let forEachU: (int, int, (. int) => unit) => unit
 
 /**
-`forEach(start, finish, action)`
-
-equivalent to `Belt.Array.(forEach(range(start, finish), action))`
+`forEach(start, finish, action)` equivalent to `Belt.Array.forEach(Belt.Array.range(start, finish), action))`
 
 ## Examples
 
@@ -53,10 +51,7 @@ let forEach: (int, int, int => unit) => unit
 let everyU: (int, int, (. int) => bool) => bool
 
 /**
-`every(start, finish, p)`
-
-equivalent to `Belt.Array.(every(range(start, finish), p))`
-
+`every(start, finish, p)` equivalent to `Belt.Array.every(Belt.Array.range(start, finish), p)`
 ## Examples
 
 ```rescript
@@ -70,11 +65,8 @@ let every: (int, int, int => bool) => bool
 let everyByU: (int, int, ~step: int, (. int) => bool) => bool
 
 /**
-`everyBy(start, finish, ~step, p)`
-
-See `Belt_Array.rangeBy`
-
-equivalent to `Belt.Array.(every(rangeBy(start, finish, ~step), p))`
+`everyBy(start, finish, ~step, p)`. See `Belt.Array.rangeBy`, equivalent to
+`Belt.Array.every(Belt.Array.rangeBy(start, finish, ~step), p)`
 
 ## Examples
 
@@ -89,9 +81,7 @@ let everyBy: (int, int, ~step: int, int => bool) => bool
 let someU: (int, int, (. int) => bool) => bool
 
 /**
-`some(start, finish, p)`
-
-equivalent to `Belt.Array.(some(range(start, finish), p))`
+`some(start, finish, p)` equivalent to `Belt.Array.some(Belt.Array.range(start, finish), p)`
 
 ## Examples
 
@@ -106,11 +96,8 @@ let some: (int, int, int => bool) => bool
 let someByU: (int, int, ~step: int, (. int) => bool) => bool
 
 /**
-`someBy(start, finish, ~step, p)`
-
-See `Belt_Array.rangeBy`
-
-equivalent to `Belt.Array.(some(rangeBy(start, finish, ~step), p))`
+`someBy(start, finish, ~step, p)` See `Belt.Array.rangeBy`, equivalent to
+`Belt.Array.some(Belt.Array.rangeBy(start, finish, ~step), p)`
 
 ## Examples
 

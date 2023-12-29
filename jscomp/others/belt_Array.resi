@@ -28,7 +28,7 @@ exception if the index isn't found. If you `open Belt`, it will use the
 type t<'a> = array<'a>
 
 /**
-return the size of the array
+Return the size of the array
 
 ## Examples
 
@@ -39,7 +39,7 @@ Belt.Array.length(["test"])
 */
 external length: t<'a> => int = "%array_length"
 
-/** **See** [`length`]() */
+/** See [`Belt.Array.length`]() */
 external size: t<'a> => int = "%array_length"
 
 /**
@@ -182,9 +182,8 @@ Belt.Array.range(3, 3) == [3]
 let range: (int, int) => array<int>
 
 /**
-`rangeBy(start, finish, ~step)`
-
-Returns empty array when step is 0 or negative. It also return an empty array when `start > finish`.
+`rangeBy(start, finish, ~step)` returns empty array when step is 0 or negative.
+It also return an empty array when `start > finish`.
 
 ## Examples
 
@@ -208,9 +207,8 @@ let rangeBy: (int, int, ~step: int) => array<int>
 
 let makeByU: (int, (. int) => 'a) => t<'a>
 /**
-`makeBy(n, f)`
-
-Return an empty array when n is negative return an array of size n populated by `f(i)` start from `0` to `n - 1`.
+`makeBy(n, f)` return an empty array when n is negative return an array of size
+n populated by `f(i)` start from `0` to `n - 1`.
 
 ## Examples
 
@@ -229,9 +227,8 @@ Equivalent to `shuffle(makeBy(n, f))`
 let makeByAndShuffle: (int, int => 'a) => t<'a>
 
 /**
-`zip(a, b)`
-
-Create an array of pairs from corresponding elements of a and b. Stop with the shorter array.
+`zip(a, b)` create an array of pairs from corresponding elements of a and b.
+Stop with the shorter array.
 
 ## Examples
 
@@ -243,9 +240,8 @@ let zip: (t<'a>, array<'b>) => array<('a, 'b)>
 
 let zipByU: (t<'a>, array<'b>, (. 'a, 'b) => 'c) => array<'c>
 /**
-`zipBy(xs, ys, f)`
-
-Create an array by applying `f` to corresponding elements of `xs` and `ys`. Stops with shorter array.
+`zipBy(xs, ys, f)` create an array by applying `f` to corresponding elements of
+`xs` and `ys`. Stops with shorter array.
 
 Equivalent to `map(zip(xs, ys), ((a, b)) => f(a, b))`
 
@@ -258,7 +254,9 @@ Belt.Array.zipBy([1, 2, 3], [4, 5], (a, b) => 2 * a + b) == [6, 9]
 let zipBy: (t<'a>, array<'b>, ('a, 'b) => 'c) => array<'c>
 
 /**
-`unzip(a)` takes an array of pairs and creates a pair of arrays. The first array contains all the first items of the pairs; the second array contains all the second items.
+`unzip(a)` takes an array of pairs and creates a pair of arrays. The first array
+contains all the first items of the pairs; the second array contains all the
+second items.
 
 ## Examples
 
@@ -271,9 +269,8 @@ Belt.Array.unzip([(1, 2), (3, 4), (5, 6), (7, 8)]) == ([1, 3, 5, 7], [2, 4, 6, 8
 let unzip: array<('a, 'b)> => (t<'a>, array<'b>)
 
 /**
-`concat(xs, ys)`
-
-Returns a fresh array containing the concatenation of the arrays `v1` and `v2`;so even if `v1` or `v2` is empty; it can not be shared
+`concat(xs, ys)` returns a fresh array containing the concatenation of the arrays
+`v1` and `v2`, so even if `v1` or `v2` is empty; it can not be shared.
 
 ## Examples
 
@@ -286,9 +283,7 @@ Belt.Array.concat([], ["a", "b", "c"]) == ["a", "b", "c"]
 let concat: (t<'a>, t<'a>) => t<'a>
 
 /**
-`concatMany(xss)`
-
-Returns a fresh array as the concatenation of `xss` (an array of arrays)
+`concatMany(xss)` returns a fresh array as the concatenation of `xss` (an array of arrays)
 
 ## Examples
 
@@ -340,17 +335,15 @@ let sliceToEnd: (t<'a>, int) => t<'a>
 
 @send
 /**
-`copy(a)`
-
-Returns a copy of a; that is; a fresh array containing the same elements as a.
+`copy(a)` returns a copy of `a`; that is; a fresh array containing the same
+elements as `a`.
 */
 external copy: (t<'a>, @as(0) _) => t<'a> = "slice"
 
 /**
-`fill(arr, ~offset, ~len, x)`
-
-Modifies `arr` in place, storing `x` in elements number `offset` to `offset + len - 1`.
-`offset` can be negative; and is evaluated as `length(arr - offset)`
+`fill(arr, ~offset, ~len, x)` modifies `arr` in place, storing `x` in elements
+number `offset` to `offset + len - 1`. `offset` can be negative; and is evaluated
+as `length(arr - offset)`.
 
 `fill(arr, ~offset=-1, ~len=1)` means fill the last element, if the array does not have enough data; `fill` will ignore it
 
@@ -370,11 +363,10 @@ arr == [0, 1, 9, 9, 4]
 let fill: (t<'a>, ~offset: int, ~len: int, 'a) => unit
 
 /**
-`blit(~src=v1, ~srcOffset=o1, ~dst=v2, ~dstOffset=o2, ~len)`
-
-copies `len` elements from array `v1`;starting at element number `o1`;to array `v2`, starting at element number `o2`.
-
-It works correctly even if `v1` and `v2` are the same array;and the source and destination chunks overlap.
+`blit(~src=v1, ~srcOffset=o1, ~dst=v2, ~dstOffset=o2, ~len)` copies `len` elements
+from array `v1`;starting at element number `o1`;to array `v2`, starting at element
+number `o2`. It works correctly even if `v1` and `v2` are the same array and the
+source and destination chunks overlap.
 
 `offset` can be negative; `-1` means `len - 1`; if `len + offset` is still negative;it will be set as 0
 
@@ -404,7 +396,9 @@ let forEachU: (t<'a>, (. 'a) => unit) => unit
 /**
 `forEach(xs, f)`
 
-Call `f` on each element of `xs` from the beginning to end. `f` returns `unit`;so no new array is created. Use `forEach` when you are primarily concerned with repetitively creating side effects.
+Call `f` on each element of `xs` from the beginning to end. `f` returns `unit`
+so no new array is created. Use `forEach` when you are primarily concerned with
+repetitively creating side effects.
 
 ## Examples
 
@@ -428,9 +422,8 @@ let forEach: (t<'a>, 'a => unit) => unit
 
 let mapU: (t<'a>, (. 'a) => 'b) => array<'b>
 /**
-`map(xs, f)`
-
-Returns a new array by calling `f` for each element of `xs` from the beginning to end.
+`map(xs, f)` returns a new array by calling `f` for each element of `xs` from
+the beginning to end.
 
 ## Examples
 
@@ -442,25 +435,21 @@ let map: (t<'a>, 'a => 'b) => array<'b>
 
 let flatMapU: (t<'a>, (. 'a) => array<'b>) => array<'b>
 /**
-`flatMap(xs, f)`
-
-**Returns** a new array by calling `f` for each element of `xs` from
+`flatMap(xs, f)` returns a new array by calling `f` for each element of `xs` from
 the beginning to end, concatenating the results.
 
 ## Examples
 
 ```rescript
-flatMap([1, 2], x => [x + 10, x + 20]) == [11, 21, 12, 22]
+Belt.Array.flatMap([1, 2], x => [x + 10, x + 20]) == [11, 21, 12, 22]
 ```
 */
 let flatMap: (t<'a>, 'a => array<'b>) => array<'b>
 
 let getByU: (t<'a>, (. 'a) => bool) => option<'a>
 /**
-`getBy(xs, p)`
-
-Returns `Some(value)` for the first value in `xs` that satisifies the predicate
-function `p`; returns `None` if no element satisifies the function.
+`getBy(xs, p)` returns `Some(value)` for the first value in `xs` that satisifies
+the predicate function `p`; returns `None` if no element satisifies the function.
 
 ## Examples
 
@@ -494,9 +483,7 @@ let keep: (t<'a>, 'a => bool) => t<'a>
 
 let keepWithIndexU: (t<'a>, (. 'a, int) => bool) => t<'a>
 /**
-`keepWithIndex(xs, p)`
-
-Returns a new array that keep all elements satisfy `p`.
+`keepWithIndex(xs, p)` returns a new array that keep all elements satisfy `p`.
 
 ## Examples
 
@@ -508,9 +495,8 @@ let keepWithIndex: (t<'a>, ('a, int) => bool) => t<'a>
 
 let keepMapU: (t<'a>, (. 'a) => option<'b>) => array<'b>
 /**
-`keepMap(xs, p)`
-
-Returns a new array that keep all elements that return a non-None applied `p`.
+`keepMap(xs, p)` returns a new array that keep all elements that return a non
+None applied `p`.
 
 ## Examples
 
@@ -529,11 +515,8 @@ let keepMap: (t<'a>, 'a => option<'b>) => array<'b>
 
 let forEachWithIndexU: (t<'a>, (. int, 'a) => unit) => unit
 /**
-`forEachWithIndex(xs, f)`
-
-The same as `Belt.Array.forEach`;
-except that `f` is supplied two arguments: the index starting from 0 and the 
-element from `xs`.
+`forEachWithIndex(xs, f)` same as `Belt.Array.forEach`, except that `f` is
+supplied two arguments: the index starting from 0 and the element from `xs`.
 
 ## Examples
 
@@ -557,10 +540,8 @@ let forEachWithIndex: (t<'a>, (int, 'a) => unit) => unit
 
 let mapWithIndexU: (t<'a>, (. int, 'a) => 'b) => array<'b>
 /**
-`mapWithIndex(xs, f)`
-
-`mapWithIndex(xs, f)` applies `f` to each element of `xs`. Function `f` takes two
-arguments: the index starting from 0 and the element from `xs`.
+`mapWithIndex(xs, f)` applies `f` to each element of `xs`. Function `f` takes
+two arguments: the index starting from 0 and the element from `xs`.
 
 ## Examples
 
@@ -587,11 +568,10 @@ let partition: (t<'a>, 'a => bool) => (t<'a>, t<'a>)
 
 let reduceU: (array<'b>, 'a, (. 'a, 'b) => 'a) => 'a
 /**
-`reduce(xs, init, f)`
-
-Applies `f` to each element of `xs` from beginning to end. Function `f` has two
-parameters: the item from the list and an “accumulator”; which starts with a value
-of `init`. `reduce` returns the final value of the accumulator.
+`reduce(xs, init, f)` applies `f` to each element of `xs` from beginning to end.
+Function `f` has two parameters: the item from the list and an “accumulator”;
+which starts with a value of `init`. `reduce` returns the final value of the
+accumulator.
 
 ## Examples
 
@@ -605,10 +585,8 @@ let reduce: (array<'b>, 'a, ('a, 'b) => 'a) => 'a
 
 let reduceReverseU: (array<'b>, 'a, (. 'a, 'b) => 'a) => 'a
 /**
-`reduceReverse(xs, init, f)`
-
-Works like `Belt_Array.reduce`; except that function `f` is applied to each item
-of `xs` from the last back to the first.
+`reduceReverse(xs, init, f)` works like `Belt.Array.reduce` except that
+function `f` is applied to each item of `xs` from the last back to the first.
 
 ## Examples
 
@@ -620,10 +598,8 @@ let reduceReverse: (array<'b>, 'a, ('a, 'b) => 'a) => 'a
 
 let reduceReverse2U: (t<'a>, array<'b>, 'c, (. 'c, 'a, 'b) => 'c) => 'c
 /**
-`reduceReverse2(xs, ys, init, f)`
-
-Reduces two arrays xs and ys;taking items starting at `min(length(xs), length(ys))`
-down to and including zero.
+`reduceReverse2(xs, ys, init, f)` reduces two arrays xs and ys;taking items
+starting at `min(length(xs), length(ys))` down to and including zero.
 
 ## Examples
 
@@ -660,19 +636,17 @@ using the separator. If the array is empty, the empty string will be returned.
 ## Examples
 
 ```rescript
-joinWith([0, 1], ", ", string_of_int) == "0, 1"
-joinWith([], " ", string_of_int) == ""
-joinWith([1], " ", string_of_int) == "1"
+Belt.Array.joinWith([0, 1], ", ", Js.Int.toString) == "0, 1"
+Belt.Array.joinWith([], " ", Js.Int.toString) == ""
+Belt.Array.joinWith([1], " ", Js.Int.toString) == "1"
 ```
 */
 let joinWith: (t<'a>, string, 'a => string) => string
 
 let someU: (t<'a>, (. 'a) => bool) => bool
 /**
-`some(xs, p)`
-
-Returns true if at least one of the elements in `xs` satifies `p`; where `p` is
-a predicate: a function taking an element and returning a `bool`.
+`some(xs, p)` returns true if at least one of the elements in `xs` satifies `p`;
+where `p` is a predicate: a function taking an element and returning a `bool`.
 
 ## Examples
 
@@ -686,10 +660,8 @@ let some: (t<'a>, 'a => bool) => bool
 
 let everyU: (t<'a>, (. 'a) => bool) => bool
 /**
-`every(xs, p)`
-
-Returns `true` if all elements satisfy `p`; where `p` is a predicate: a function
-taking an element and returning a `bool`.
+`every(xs, p)` returns `true` if all elements satisfy `p`; where `p` is a
+predicate: a function taking an element and returning a `bool`.
 
 ## Examples
 
@@ -703,10 +675,8 @@ let every: (t<'a>, 'a => bool) => bool
 
 let every2U: (t<'a>, array<'b>, (. 'a, 'b) => bool) => bool
 /**
-`every2(xs, ys, p)`
-
-returns true if `p(xi, yi)` is true for all pairs of elements up to the shorter
-length (i.e. `min(length(xs), length(ys))`)
+`every2(xs, ys, p)` returns true if `p(xi, yi)` is true for all pairs of
+elements up to the shorter length (i.e. `min(length(xs), length(ys))`)
 
 ## Examples
 
@@ -724,10 +694,8 @@ let every2: (t<'a>, array<'b>, ('a, 'b) => bool) => bool
 
 let some2U: (t<'a>, array<'b>, (. 'a, 'b) => bool) => bool
 /**
-`some2(xs, ys, p)`
-
-returns true if `p(xi, yi)` is true for any pair of elements up to the shorter
-length (i.e. `min(length(xs), length(ys))`)
+`some2(xs, ys, p)` returns true if `p(xi, yi)` is true for any pair of elements
+up to the shorter length (i.e. `min(length(xs), length(ys))`)
 
 ## Examples
 
@@ -743,14 +711,12 @@ let some2: (t<'a>, array<'b>, ('a, 'b) => bool) => bool
 
 let cmpU: (t<'a>, t<'a>, (. 'a, 'a) => int) => int
 /**
-`cmp(xs, ys, f)`
-
-Compared by length if `length(xs) != length(ys)`; returning -1 if `length(xs) < length(ys)` or 1 if `length(xs) > length(ys)`
-Otherwise compare one by one `f(x, y)`. `f` returns
-a negative number if `x` is “less than” `y`
-zero if `x` is “equal to” `y`
-a positive number if `x` is “greater than” `y`
-The comparison returns the first non-zero result of `f`;or zero if `f` returns zero for all `x` and `y`.
+`cmp(xs, ys, f)` compared by length if `length(xs) != length(ys)`; returning `-1`
+if `length(xs) < length(ys)` or 1 if `length(xs) > length(ys)`. Otherwise
+compare one by one `f(x, y)`. `f` returns a negative number if `x` is “less than” `y`
+zero if `x` is “equal to” `y` a positive number if `x` is “greater than”
+`y`. The comparison returns the first non-zero result of `f`; or zero if `f`
+returns zero for all `x` and `y`.
 
 ## Examples
 
@@ -766,11 +732,8 @@ let cmp: (t<'a>, t<'a>, ('a, 'a) => int) => int
 
 let eqU: (t<'a>, t<'a>, (. 'a, 'a) => bool) => bool
 /**
-`eq(xs, ys)`
-
-return false if length is not the same
-otherwise compare items one by one using `f(xi, yi)`; and return true if all
-results are true false otherwise
+`eq(xs, ys)` return `false` if length is not the same otherwise compare items
+one by one using `f(xi, yi)`; and return true if all results are true false otherwise
 
 ## Examples
 
@@ -782,10 +745,8 @@ let eq: (t<'a>, t<'a>, ('a, 'a) => bool) => bool
 
 @set
 /**
-Unsafe `truncateToLengthUnsafe(xs, n)` sets length of array `xs` to `n`.
-
-If `n` is greater than the length of `xs`; the extra elements are set to `Js.Null_undefined.null`.
-
+Unsafe `truncateToLengthUnsafe(xs, n)` sets length of array `xs` to `n`. If `n`
+is greater than the length of `xs`; the extra elements are set to `Js.Null_undefined.null`.
 If `n` is less than zero; raises a `RangeError`.
 
 ## Examples

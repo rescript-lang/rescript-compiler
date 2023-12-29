@@ -114,8 +114,8 @@ For collections types like set or map, Belt provides both a generic module as we
 For example, Belt has the following set modules:
 
 - [Belt.Set](belt/set)
-- [Belt.Set.Int](belt/set-int)
-- [Belt.Set.String](belt/set-string)
+- [Belt.Set.Int](belt/set/int)
+- [Belt.Set.String](belt/set/string)
 
 ## Implementation Details
 

@@ -338,7 +338,7 @@ Belt.MutableSet.eq(s0, s1) /* true */
 let eq: (t<'value, 'id>, t<'value, 'id>) => bool
 
 /**
-  Same as [forEach](##forEach) but takes uncurried functon.
+  Same as `Belt.MutableSet.forEach` but takes uncurried functon.
 */
 let forEachU: (t<'value, 'id>, (. 'value) => unit) => unit
 
@@ -621,12 +621,12 @@ s0->Belt.MutableSet.get(20) /* None */
 let get: (t<'value, 'id>, 'value) => option<'value>
 
 /**
-Same as [get](#get) but returns `undefined` when element does not exist.
+Same as `Belt.MutableSet.get` but returns `undefined` when element does not exist.
 */
 let getUndefined: (t<'value, 'id>, 'value) => Js.undefined<'value>
 
 /**
-Same as [get](#get) but raise when element does not exist.
+Same as `Belt.MutableSet.get` but raise when element does not exist.
 */
 let getExn: (t<'value, 'id>, 'value) => 'value
 

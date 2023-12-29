@@ -41,7 +41,7 @@ Formats an `int` using exponential (scientific) notation.
 Returns a `string` representing the given value in exponential notation.
 Raises `RangeError` if digits is not in the range \[0, 20\] (inclusive).
 
-**see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential)
+See [`toExponential`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential) on MDN.
 
 ## Examples
 
@@ -62,7 +62,7 @@ Returns a `string` representing the given value in exponential notation.
 The output will be rounded or padded with zeroes if necessary.
 Raises `RangeError` if `digits` is not in the range \[0, 20\] (inclusive).
 
-**see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential)
+See [`toExponential`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential) on MDN.
 
 ## Examples
 
@@ -84,7 +84,7 @@ Returns a `string` representing the given value in fixed-point (usually).
 `toPrecision` differs from `toFixed` in that the former will format the number with full precision, while the latter will not output any digits after the decimal point.
 Raises `RangeError` if `digits` is not in the range accepted by this function.
 
-**See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision)
+See [`toPrecision`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision) on MDN.
 
 ## Examples
 
@@ -109,7 +109,7 @@ The output will be rounded or padded with zeroes if necessary.
 Raises `RangeError` if `digits` is not in the range accepted by this function.
 
 
-**See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision)
+See [`toPrecision`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision) on MDN.
 
 ## Examples
 
@@ -128,7 +128,7 @@ external toPrecisionWithPrecision: (int, ~digits: int) => string = "toPrecision"
 Formats an `int` as a `string`. Returns a `string` representing the given value
 in fixed-point (usually).
 
-**See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString)
+See [`toString`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString) on MDN.
 
 ## Examples
 
@@ -147,7 +147,7 @@ a `string` representing the given value in fixed-point (usually). Raises
 `RangeError` if `radix` is not in the range \[2, 36\] (inclusive).
 
 
-**See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString)
+See [`toString`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString) on MDN.
 
 ## Examples
 

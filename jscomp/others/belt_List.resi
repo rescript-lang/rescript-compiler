@@ -46,7 +46,7 @@ Belt.List.length(list{1, 2, 3}) // 3
 */
 let length: t<'a> => int
 
-/** **See** [`length`](##length) */
+/** See `Belt.List.length` */
 let size: t<'a> => int
 
 /**
@@ -63,7 +63,7 @@ Belt.List.head(list{1, 2, 3}) // Some(1)
 let head: t<'a> => option<'a>
 
 /**
-Same as [head](#head), but raises an exception if `someList` is empty. Use
+Same as `Belt.List.head` but raises an exception if `someList` is empty. Use
 with care.
 
 ## Examples
@@ -91,7 +91,7 @@ Belt.List.tail(list{}) // None
 let tail: t<'a> => option<t<'a>>
 
 /**
-Same as [tail](#tail), but raises an exception if `someList` is empty. Use
+Same as `Belt.List.tail` but raises an exception if `someList` is empty. Use
 with care.
 
 ## Examples
@@ -134,7 +134,7 @@ abc->Belt.List.get(4) // None
 let get: (t<'a>, int) => option<'a>
 
 /**
-Same as [get](#get), but raises an exception if `index` is larger than the
+Same as `Belt.List.get` but raises an exception if `index` is larger than the
 length. Use with care.
 
 ## Examples
@@ -305,7 +305,7 @@ let zip: (t<'a>, t<'b>) => t<('a, 'b)>
 let zipByU: (t<'a>, t<'b>, (. 'a, 'b) => 'c) => t<'c>
 
 /**
-**See:** [zip](#zip)
+See [Belt.List.zip](#zip)
 
 ## Examples
 

@@ -179,9 +179,8 @@ None->greet /* "Greetings Anonymous" */
 let getWithDefault: (option<'a>, 'a) => 'a
 
 /**
-`orElse(optionalValue, otherOptional)`
-
-If `optionalValue` is `Some(value)`, returns `Some(value)`, otherwise `otherOptional`
+`orElse(optionalValue, otherOptional)` if `optionalValue` is `Some(value)`,
+returns `Some(value)`, otherwise `otherOptional`
 
 ## Examples
 

@@ -170,7 +170,7 @@ s2 == s3 /* true */
 let add: (t<'value, 'id>, 'value) => t<'value, 'id>
 
 /**
-Adds each element of array to set. Unlike [add](#add), the reference of return value might be changed even if all values in array already exist in set
+Adds each element of array to set. Unlike `Belt.Set.add`](#add), the reference of return value might be changed even if all values in array already exist in set
 
 ## Examples
 
@@ -295,7 +295,7 @@ Belt.Set.eq(s0, s1) /* true */
 let eq: (t<'value, 'id>, t<'value, 'id>) => bool
 
 /**
-Same as [forEach](##forEach) but takes uncurried functon.
+Same as [forEach](#forEach) but takes uncurried functon.
 */
 let forEachU: (t<'value, 'id>, (. 'value) => unit) => unit
 
