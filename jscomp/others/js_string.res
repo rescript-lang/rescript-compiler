@@ -32,7 +32,9 @@ type t = string
 /**
 `make(value)` converts the given value to a `string`.
 
-```res example
+## Examples
+
+```rescript
 Js.String2.make(3.5) == "3.5"
 Js.String2.make([1, 2, 3]) == "1,2,3"
 ```
@@ -44,7 +46,9 @@ external make: 'a => t = "String"
 `fromCharCode(n)` creates a `string` containing the character corresponding to that number; `n` ranges from 0 to 65535.
 If out of range, the lower 16 bits of the value are used. Thus, `fromCharCode(0x1F63A)` gives the same result as `fromCharCode(0xF63A)`. See [`String.fromCharCode`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/fromCharCode) on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String2.fromCharCode(65) == "A"
 Js.String2.fromCharCode(0x3c8) == `ψ`
 Js.String2.fromCharCode(0xd55c) == `한`
@@ -74,7 +78,9 @@ unlike `fromCharCode(0x1F63A)`, and `fromCodePoint(-5)` will raise a
 See [`String.fromCodePoint`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/fromCodePoint)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String2.fromCodePoint(65) == "A"
 Js.String2.fromCodePoint(0x3c8) == `ψ`
 Js.String2.fromCodePoint(0xd55c) == `한`
@@ -93,7 +99,9 @@ corresponding to the given code point numbers, using the same rules as
 See [`String.fromCodePoint`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/fromCodePoint)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String2.fromCodePointMany([0xd55c, 0xae00, 0x1f63a]) == `한글😺`
 ```
 */
@@ -107,7 +115,9 @@ external fromCodePointMany: array<int> => t = "String.fromCodePoint"
 [`String.length`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/length)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String2.length("abcd") == 4
 ```
 */
@@ -119,7 +129,9 @@ external length: t => int = "length"
 `n` is out of range, this function returns `undefined`, so at some point this
 function may be modified to return `option<string>`.
 
-```res example
+## Examples
+
+```rescript
 Js.String2.get("Reason", 0) == "R"
 Js.String2.get("Reason", 4) == "o"
 Js.String2.get(`Rẽasöń`, 5) == `ń`
@@ -137,7 +149,9 @@ first 16-bit value at that position in the string.
 See [`String.charAt`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/charAt)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.charAt(0, "Reason") == "R"
 Js.String.charAt(12, "Reason") == ""
 Js.String.charAt(5, `Rẽasöń`) == `ń`
@@ -156,7 +170,9 @@ zero or greater than the length of the string.
 See [`String.charCodeAt`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/charCodeAt)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.charCodeAt(0, `😺`) == 0xd83d->Belt.Int.toFloat
 Js.String.codePointAt(0, `😺`) == Some(0x1f63a)
 ```
@@ -173,7 +189,9 @@ a `Some(value)`. The return value handles code points greater than or equal to
 See [`String.codePointAt`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/codePointAt)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.codePointAt(1, `¿😺?`) == Some(0x1f63a)
 Js.String.codePointAt(5, "abc") == None
 ```
@@ -188,7 +206,9 @@ external codePointAt: int => option<int> = "codePointAt"
 See [`String.concat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/concat)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.concat("bell", "cow") == "cowbell"
 ```
 */
@@ -203,7 +223,9 @@ array of strings added to the `original` string.
 See [`String.concat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/concat)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.concatMany(["2nd", "3rd", "4th"], "1st") == "1st2nd3rd4th"
 ```
 */
@@ -217,7 +239,9 @@ ES2015: `endsWith(substr, str)` returns `true` if the `str` ends with `substr`,
 See [`String.endsWith`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/endsWith)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.endsWith("Script", "ReScript") == true
 Js.String.endsWith("Script", "C++") == false
 ```
@@ -234,7 +258,9 @@ have been named endsWithAt, but oh well.)
 See [`String.endsWith`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/endsWith)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.endsWithFrom("cd", 4, "abcd") == true
 Js.String.endsWithFrom("cd", 3, "abcde") == false
 Js.String.endsWithFrom("cde", 99, "abcde") == true
@@ -251,7 +277,9 @@ anywhere within `str`, false otherwise.
 See [`String.includes`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.includes("gram", "programmer") == true
 Js.String.includes("er", "programmer") == true
 Js.String.includes("pro", "programmer") == true
@@ -269,7 +297,9 @@ the first character), `false` otherwise.
 See [`String.includes`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.includesFrom("gram", 1, "programmer") == true
 Js.String.includesFrom("gram", 4, "programmer") == false
 Js.String.includesFrom(`한`, 1, `대한민국`) == true
@@ -285,7 +315,9 @@ was first found within `str`, or -1 if `searchValue` is not in `str`.
 See [`String.indexOf`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/indexOf)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.indexOf("ok", "bookseller") == 2
 Js.String.indexOf("sell", "bookseller") == 4
 Js.String.indexOf("ee", "beekeeper") == 1
@@ -305,7 +337,9 @@ from.
 See [`String.indexOf`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/indexOf)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.indexOfFrom("ok", 1, "bookseller") == 2
 Js.String.indexOfFrom("sell", 2, "bookseller") == 4
 Js.String.indexOfFrom("sell", 5, "bookseller") == -1
@@ -323,7 +357,9 @@ relative to the beginning of the string.
 See [`String.lastIndexOf`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/lastIndexOf)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.lastIndexOf("ok", "bookseller") == 2
 Js.String.lastIndexOf("ee", "beekeeper") == 4
 Js.String.lastIndexOf("xyz", "abcdefg") == -1
@@ -341,7 +377,9 @@ is always relative to the beginning of the string.
 See [`String.lastIndexOf`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/lastIndexOf)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.lastIndexOfFrom("ok", 6, "bookseller") == 2
 Js.String.lastIndexOfFrom("ee", 8, "beekeeper") == 4
 Js.String.lastIndexOfFrom("ee", 3, "beekeeper") == 1
@@ -361,7 +399,9 @@ external lastIndexOfFrom: (t, int) => int = "lastIndexOf"
 
 See [`String.localeCompare`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/localeCompare) on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.localeCompare("ant", "zebra") > 0.0
 Js.String.localeCompare("zebra", "ant") < 0.0
 Js.String.localeCompare("cat", "cat") == 0.0
@@ -385,7 +425,9 @@ For regular expressions with the g modifier, a matched expression returns
 See [`String.match`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/match)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.match_(%re("/b[aeiou]t/"), "The better bats") == Some(["bet"])
 Js.String.match_(%re("/b[aeiou]t/g"), "The better bats") == Some(["bet", "bat"])
 Js.String.match_(%re("/(\d+)-(\d+)-(\d+)/"), "Today is 2018-04-05.") ==
@@ -433,7 +475,9 @@ Raises `RangeError` if `n` is negative.
 See [`String.repeat`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/repeat)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.repeat(3, "ha") == "hahaha"
 Js.String.repeat(0, "empty") == ""
 ```
@@ -450,7 +494,9 @@ regular expression.
 See [`String.replace`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.replace("old", "new", "old string") == "new string"
 Js.String.replace("the", "this", "the cat and the dog") == "this cat and the dog"
 ```
@@ -465,7 +511,9 @@ matching regex have been replaced by `replacement`.
 See [`String.replace`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.replaceByRe(%re("/[aeiou]/g"), "x", "vowels be gone") == "vxwxls bx gxnx"
 Js.String.replaceByRe(%re("/(\w+) (\w+)/"), "$2, $1", "Juan Fulano") == "Fulano, Juan"
 ```
@@ -482,7 +530,9 @@ match begins, and the whole string being matched.
 See [`String.replace`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 let str = "beautiful vowels"
 let re = %re("/[aeiou]/g")
 let matchFn = (matchPart, _offset, _wholeString) => Js.String.toUpperCase(matchPart)
@@ -503,7 +553,9 @@ matched.
 See [`String.replace`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 let str = "Jony is 40"
 let re = %re("/(Jony is )\d+/g")
 let matchFn = (_match, part1, _offset, _wholeString) => {
@@ -526,7 +578,9 @@ matched.
 See [`String.replace`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 let str = "7 times 6"
 let re = %re("/(\d+) times (\d+)/")
 let matchFn = (_match, p1, p2, _offset, _wholeString) => {
@@ -562,7 +616,9 @@ external unsafeReplaceBy3: (Js_re.t, @uncurry (t, t, t, t, int, t) => t) => t = 
 See [`String.search`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/search)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.search(%re("/\d+/"), "testing 1 2 3") == 8
 Js.String.search(%re("/\d+/"), "no numbers") == -1
 ```
@@ -579,7 +635,9 @@ character `n1` up to but not including `n2`.
 
 See [`String.slice`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/slice) on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.slice(~from=2, ~to_=5, "abcdefg") == "cde"
 Js.String.slice(~from=2, ~to_=9, "abcdefg") == "cdefg"
 Js.String.slice(~from=-4, ~to_=-2, "abcdefg") == "de"
@@ -597,7 +655,9 @@ external slice: (~from: int, ~to_: int) => t = "slice"
 
 See [`String.slice`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/slice) on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.sliceToEnd(~from=4, "abcdefg") == "efg"
 Js.String.sliceToEnd(~from=-2, "abcdefg") == "fg"
 Js.String.sliceToEnd(~from=7, "abcdefg") == ""
@@ -613,7 +673,9 @@ external sliceToEnd: (~from: int) => t = "slice"
 See [`String.split`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.split("-", "2018-01-02") == ["2018", "01", "02"]
 Js.String.split(",", "a,b,,c") == ["a", "b", "", "c"]
 Js.String.split("::", "good::bad as great::awful") == ["good", "bad as great", "awful"]
@@ -632,7 +694,9 @@ array will contain all the substrings.
 See [`String.split`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.splitAtMost("/", ~limit=3, "ant/bee/cat/dog/elk") == ["ant", "bee", "cat"]
 Js.String.splitAtMost("/", ~limit=0, "ant/bee/cat/dog/elk") == []
 Js.String.splitAtMost("/", ~limit=9, "ant/bee/cat/dog/elk") == ["ant", "bee", "cat", "dog", "elk"]
@@ -648,7 +712,9 @@ and returns an array of the resulting substrings.
 See [`String.split`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.splitByRe(%re(\"/\s*[,;]\s*/\"), \"art; bed , cog ;dad\") == [
     Some(\"art\"),
     Some(\"bed\"),
@@ -669,7 +735,9 @@ array will contain all the substrings.
 See [`String.split`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.splitByReAtMost(%re(\"/\s*:\s*/\"), ~limit=3, \"one: two: three: four\") == [
     Some(\"one\"),
     Some(\"two\"),
@@ -696,7 +764,9 @@ ES2015: `startsWith(substr, str)` returns `true` if the `str` starts with
 See [`String.startsWith`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/startsWith)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.startsWith("Re", "ReScript") == true
 Js.String.startsWith("", "ReScript") == true
 Js.String.startsWith("Re", "JavaScript") == false
@@ -713,7 +783,9 @@ the search starts at the beginning of `str`.
 See [`String.startsWith`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/startsWith)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.startsWithFrom("Scri", 2, "ReScript") == true
 Js.String.startsWithFrom("", 2, "ReScript") == true
 Js.String.startsWithFrom("Scri", 2, "JavaScript") == false
@@ -734,7 +806,9 @@ JavaScript’s `String.substr()` is a legacy function. When possible, use
 See [`String.substr`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/substr)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.substr(~from=3, "abcdefghij") == "defghij"
 Js.String.substr(~from=-3, "abcdefghij") == "hij"
 Js.String.substr(~from=12, "abcdefghij") == ""
@@ -756,7 +830,9 @@ JavaScript’s `String.substr()` is a legacy function. When possible, use
 See [`String.substr`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/substr)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.substrAtMost(~from=3, ~length=4, "abcdefghij") == "defg"
 Js.String.substrAtMost(~from=-3, ~length=4, "abcdefghij") == "hij"
 Js.String.substrAtMost(~from=12, ~length=2, "abcdefghij") == ""
@@ -774,7 +850,9 @@ but not including finish from `str`.
 
 See [`String.substring`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/substring) on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.substring(~from=3, ~to_=6, "playground") == "ygr"
 Js.String.substring(~from=6, ~to_=3, "playground") == "ygr"
 Js.String.substring(~from=4, ~to_=12, "playground") == "ground"
@@ -791,7 +869,9 @@ position `start` to the end.
 
 See [`String.substring`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/substring) on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.substringToEnd(~from=4, "playground") == "ground"
 Js.String.substringToEnd(~from=-3, "playground") == "playground"
 Js.String.substringToEnd(~from=12, "playground") == ""
@@ -810,7 +890,9 @@ character in a string and another when it is not.
 See [`String.toLowerCase`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/toLowerCase)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.toLowerCase("ABC") == "abc"
 Js.String.toLowerCase(`ΣΠ`) == `σπ`
 Js.String.toLowerCase(`ΠΣ`) == `πς`
@@ -837,7 +919,9 @@ capitalizes to two Ses in a row.
 See [`String.toUpperCase`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/toUpperCase)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.toUpperCase("abc") == "ABC"
 Js.String.toUpperCase(`Straße`) == `STRASSE`
 Js.String.toUpperCase(`πς`) == `ΠΣ`
@@ -862,7 +946,9 @@ ends. Internal whitespace is not removed.
 See [`String.trim`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/trim)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.trim("   abc def   ") == "abc def"
 Js.String.trim("\n\r\t abc def \n\n\t\r ") == "abc def"
 ```
@@ -880,7 +966,9 @@ not use this method, as it has been removed from the relevant web standards.
 See [`String.anchor`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/anchor)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.anchor("page1", "Page One") == "<a name="page1">Page One</a>"
 ```
 */
@@ -895,7 +983,9 @@ use this method, as it has been removed from the relevant web standards.
 See [`String.link`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/link)
 on MDN.
 
-```res example
+## Examples
+
+```rescript
 Js.String.link("page2.html", "Go to page two") == "<a href="page2.html">Go to page two</a>"
 ```
 */
@@ -905,7 +995,9 @@ external link: t => t = "link"
 Casts its argument to an `array_like` entity that can be processed by functions
 such as `Js.Array2.fromMap()`
 
-```res example
+## Examples
+
+```rescript
 let s = "abcde"
 let arr = Js.Array2.fromMap(Js.String.castToArrayLike(s), x => x)
 arr == ["a", "b", "c", "d", "e"]

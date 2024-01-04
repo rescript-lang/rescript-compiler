@@ -23,36 +23,36 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 /***
-  [`Belt.Id`]()
+[`Belt.Id`]()
 
-  Provide utiliites to create identified comparators or hashes for
-  data structures used below.
+Provide utiliites to create identified comparators or hashes for
+data structures used below.
 
-  It create a unique identifer per module of functions so that different data structures with slightly different
-  comparison functions won't mix.
+It create a unique identifer per module of functions so that different data structures with slightly different
+comparison functions won't mix.
 */
 
 /**
-  `('a, 'id) hash`
+`('a, 'id) hash`
 
-  Its runtime represenation is a `hash` function, but signed with a
-  type parameter, so that different hash functions type mismatch
+Its runtime represenation is a `hash` function, but signed with a
+type parameter, so that different hash functions type mismatch
 */
 type hash<'a, 'id>
 
 /**
-  `('a, 'id) eq`
+`('a, 'id) eq`
 
-  Its runtime represenation is an `eq` function, but signed with a
-  type parameter, so that different hash functions type mismatch
+Its runtime represenation is an `eq` function, but signed with a
+type parameter, so that different hash functions type mismatch
 */
 type eq<'a, 'id>
 
 /**
-  `('a,'id) cmp`
+`('a,'id) cmp`
 
-  Its runtime representation is a `cmp` function, but signed with a
-  type parameter, so that different hash functions type mismatch
+Its runtime representation is a `cmp` function, but signed with a
+type parameter, so that different hash functions type mismatch
 */
 type cmp<'a, 'id>
 
@@ -63,15 +63,15 @@ module type Comparable = {
 }
 
 /**
-  `('key, 'id) cmparable` is a module of functions, here it only includes `cmp`.
+`('key, 'id) cmparable` is a module of functions, here it only includes `cmp`.
 
-  Unlike normal functions, when created, it comes with a unique identity (guaranteed
-  by the type system).
+Unlike normal functions, when created, it comes with a unique identity (guaranteed
+by the type system).
 
-  It can be created using function [`comparableU`]() or [`comparable`]().
+It can be created using function [`comparableU`]() or [`comparable`]().
 
-  The idea of a unique identity when created is that it makes sure two sets would type
-  mismatch if they use different comparison function
+The idea of a unique identity when created is that it makes sure two sets would type
+mismatch if they use different comparison function
 */
 type comparable<'key, 'id> = module(Comparable with type t = 'key and type identity = 'id)
 
@@ -92,14 +92,15 @@ module MakeComparable: (
 let comparableU: (~cmp: (. 'a, 'a) => int) => module(Comparable with type t = 'a)
 
 /**
-  ```
-  module C = (
-    val Belt.Id.comparable ~cmp:(compare : int -> int -> int)
-  )
-  let m = Belt.Set.make(module C)
-  ```
+## Examples
 
-  Note that the name of C can not be ignored
+```rescript
+module C = (
+  val Belt.Id.comparable ~cmp:(compare : int -> int -> int)
+)
+let m = Belt.Set.make(module C)
+```
+Note that the name of C can not be ignored
 */
 let comparable: (~cmp: ('a, 'a) => int) => module(Comparable with type t = 'a)
 
@@ -111,15 +112,15 @@ module type Hashable = {
 }
 
 /**
-  `('key, 'id) hashable` is a module of functions, here it only includes `hash`, `eq`.
+`('key, 'id) hashable` is a module of functions, here it only includes `hash`, `eq`.
 
-  Unlike normal functions, when created, it comes with a unique identity (guaranteed
-  by the type system).
+Unlike normal functions, when created, it comes with a unique identity (guaranteed
+by the type system).
 
-  It can be created using function [`hashableU`]() or [`hashable`]().
+It can be created using function [`hashableU`]() or [`hashable`]().
 
-  The idea of a unique identity when created is that it makes sure two hash sets would type
-  mismatch if they use different comparison function
+The idea of a unique identity when created is that it makes sure two hash sets would type
+mismatch if they use different comparison function
 */
 type hashable<'key, 'id> = module(Hashable with type t = 'key and type identity = 'id)
 

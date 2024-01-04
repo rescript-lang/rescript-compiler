@@ -22,13 +22,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-/*** Provide utilities for handling `int`. */
+/***
+Provide utilities for handling `int`.
+*/
 
 /*
-  If we use number, we need coerce to int32 by adding `|0`,
-  otherwise `+0` can be wrong.
-  Most JS API is float oriented, it may overflow int32 or
-  comes with `NAN`
+If we use number, we need coerce to int32 by adding `|0`,
+otherwise `+0` can be wrong.
+Most JS API is float oriented, it may overflow int32 or
+comes with `NAN`
 */
 
 /* + conversion */
@@ -39,9 +41,11 @@ Formats an `int` using exponential (scientific) notation.
 Returns a `string` representing the given value in exponential notation.
 Raises `RangeError` if digits is not in the range \[0, 20\] (inclusive).
 
-**see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential)
+See [`toExponential`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential) on MDN.
 
-```res example
+## Examples
+
+```rescript
 /* prints "7.7e+1" */
 Js.log(Js.Int.toExponential(77))
 ```
@@ -58,9 +62,11 @@ Returns a `string` representing the given value in exponential notation.
 The output will be rounded or padded with zeroes if necessary.
 Raises `RangeError` if `digits` is not in the range \[0, 20\] (inclusive).
 
-**see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential)
+See [`toExponential`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toExponential) on MDN.
 
-```res example
+## Examples
+
+```rescript
 /* prints "7.70e+1" */
 Js.log(Js.Int.toExponentialWithPrecision(77, ~digits=2))
 
@@ -78,9 +84,11 @@ Returns a `string` representing the given value in fixed-point (usually).
 `toPrecision` differs from `toFixed` in that the former will format the number with full precision, while the latter will not output any digits after the decimal point.
 Raises `RangeError` if `digits` is not in the range accepted by this function.
 
-**See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision)
+See [`toPrecision`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision) on MDN.
 
-```res example
+## Examples
+
+```rescript
 /* prints "123456789" */
 Js.log(Js.Int.toPrecision(123456789))
 ```
@@ -101,9 +109,11 @@ The output will be rounded or padded with zeroes if necessary.
 Raises `RangeError` if `digits` is not in the range accepted by this function.
 
 
-**See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision)
+See [`toPrecision`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toPrecision) on MDN.
 
-```res example
+## Examples
+
+```rescript
 /* prints "1.2e+8" */
 Js.log(Js.Int.toPrecisionWithPrecision(123456789, ~digits=2))
 
@@ -118,9 +128,11 @@ external toPrecisionWithPrecision: (int, ~digits: int) => string = "toPrecision"
 Formats an `int` as a `string`. Returns a `string` representing the given value
 in fixed-point (usually).
 
-**See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString)
+See [`toString`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString) on MDN.
 
-```res example
+## Examples
+
+```rescript
 /* prints "123456789" */
 Js.log(Js.Int.toString(123456789))
 ```
@@ -135,9 +147,11 @@ a `string` representing the given value in fixed-point (usually). Raises
 `RangeError` if `radix` is not in the range \[2, 36\] (inclusive).
 
 
-**See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString)
+See [`toString`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/toString) on MDN.
 
-```res example
+## Examples
+
+```rescript
 /* prints "110" */
 Js.log(Js.Int.toStringWithRadix(6, ~radix=2))
 

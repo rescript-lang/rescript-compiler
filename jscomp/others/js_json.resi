@@ -23,9 +23,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 /***
-  Efficient JSON encoding using JavaScript API
+Efficient JSON encoding using JavaScript API
 
-  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON)
+**see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON)
 */
 
 /* ## Types */
@@ -64,25 +64,39 @@ type tagged_t =
 
 let classify: t => tagged_t
 
-/** `test(v, kind)` returns `true` if `v` is of `kind`. */
+/**
+`test(v, kind)` returns `true` if `v` is of `kind`.
+*/
 let test: ('a, Kind.t<'b>) => bool
 
-/** `decodeString(json)` returns `Some(s)` if `json` is a `string`, `None` otherwise. */
+/**
+`decodeString(json)` returns `Some(s)` if `json` is a `string`, `None` otherwise.
+*/
 let decodeString: t => option<Js_string.t>
 
-/** `decodeNumber(json)` returns `Some(n)` if `json` is a `number`, `None` otherwise. */
+/**
+`decodeNumber(json)` returns `Some(n)` if `json` is a `number`, `None` otherwise.
+*/
 let decodeNumber: t => option<float>
 
-/** `decodeObject(json)` returns `Some(o)` if `json` is an `object`, `None` otherwise. */
+/**
+`decodeObject(json)` returns `Some(o)` if `json` is an `object`, `None` otherwise.
+*/
 let decodeObject: t => option<Js_dict.t<t>>
 
-/** `decodeArray(json)` returns `Some(a)` if `json` is an `array`, `None` otherwise. */
+/**
+`decodeArray(json)` returns `Some(a)` if `json` is an `array`, `None` otherwise.
+*/
 let decodeArray: t => option<array<t>>
 
-/** `decodeBoolean(json)` returns `Some(b)` if `json` is a `boolean`, `None` otherwise. */
+/**
+`decodeBoolean(json)` returns `Some(b)` if `json` is a `boolean`, `None` otherwise.
+*/
 let decodeBoolean: t => option<bool>
 
-/** `decodeNull(json)` returns `Some(null)` if `json` is a `null`, `None` otherwise. */
+/**
+`decodeNull(json)` returns `Some(null)` if `json` is a `null`, `None` otherwise.
+*/
 let decodeNull: t => option<Js_null.t<'a>>
 
 /* ## Constructors */
@@ -137,9 +151,11 @@ external objectArray: array<Js_dict.t<t>> => t = "%identity"
 Returns a JSON data structure.
 Raises `SyntaxError` if the given string is not a valid JSON. Note: `SyntaxError` is a JavaScript exception.
 
-**See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse)
+See [`parse`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse) on MDN.
 
-```res example
+## Examples
+
+```rescript
 /* parse a simple JSON string */
 
 let json = try Js.Json.parseExn(` "hello" `) catch {
@@ -152,7 +168,7 @@ switch Js.Json.classify(json) {
 }
 ```
 
-```res example
+```rescript
 /* parse a complex JSON string */
 
 let getIds = s => {
@@ -188,9 +204,11 @@ external parseExn: string => t = "parse"
 `stringify(json)` formats the JSON data structure as a `string`.
 Returns the string representation of a given JSON data structure.
 
-**See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify)
+See [`stringify`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify) on MDN.
 
-```res example
+## Examples
+
+```rescript
 /* Creates and stringifies a simple JS object */
 
 let dict = Js.Dict.empty()
@@ -209,9 +227,11 @@ external stringify: t => string = "stringify"
 `stringifyWithSpace(json)` formats the JSON data structure as a `string`.
 Returns the string representation of a given JSON data structure with spacing.
 
-**See** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify)
+See [`stringify`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify) on MDN.
 
-```res example
+## Examples
+
+```rescript
 /* Creates and stringifies a simple JS object with spacing */
 
 let dict = Js.Dict.empty()
@@ -229,7 +249,9 @@ external stringifyWithSpace: (t, @as(json`null`) _, int) => string = "stringify"
 /**
 `stringifyAny(value)` formats any value into a JSON string.
 
-```res example
+## Examples
+
+```rescript
 /* prints `["hello", "world"]` */
 Js.log(Js.Json.stringifyAny(["hello", "world"]))
 ```
@@ -237,19 +259,19 @@ Js.log(Js.Json.stringifyAny(["hello", "world"]))
 external stringifyAny: 'a => option<string> = "stringify"
 
 /**
-  Best-effort serialization, it tries to seralize as
-  many objects as possible and deserialize it back
+Best-effort serialization, it tries to seralize as
+many objects as possible and deserialize it back
 
-  It is unsafe in two aspects
-  - It may throw during  parsing
-  - when you cast it to a specific type, it may have a type mismatch
+It is unsafe in two aspects
+- It may throw during  parsing
+- when you cast it to a specific type, it may have a type mismatch
 */
 let deserializeUnsafe: string => 'a
 
 /**
-  It will raise in such situations:
-  - The object can not be serlialized to a JSON
-  - There are cycles
-  - Some JS engines can not stringify deeply nested json objects
+It will raise in such situations:
+- The object can not be serlialized to a JSON
+- There are cycles
+- Some JS engines can not stringify deeply nested json objects
 */
 let serializeExn: 'a => string

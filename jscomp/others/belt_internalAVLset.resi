@@ -23,10 +23,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 /*
-  This internal module
-  contains methods which does not rely on ordering.
-  Such methods could be shared between
-  `generic set/specalized set` whether mutable or immutable depends on use cases
+This internal module contains methods which does not rely on ordering.
+Such methods could be shared between `generic set/specalized set` whether mutable
+or immutable depends on use cases
 */
 type rec t<'value> = option<node<'value>>
 and node<'value> = {
@@ -89,7 +88,7 @@ let size: t<'a> => int
 let toList: t<'a> => list<'a>
 
 /**
-  **raise** when invariant is not held
+**raise** when invariant is not held
 */
 let checkInvariantInternal: t<_> => unit
 
@@ -111,7 +110,7 @@ let fromArray: (array<'a>, ~cmp: cmp<'a, 'b>) => t<'a>
 let addMutate: (~cmp: cmp<'a, 'b>, t<'a>, 'a) => t<'a>
 let balMutate: node<'a> => node<'a>
 /**
-  `removeMinAuxWithRootMutate root n`
-   remove the minimum of n in place and store its value in the `key root`
+`removeMinAuxWithRootMutate(root, n)` remove the minimum of n in place and store
+its value in the `key root`
 */
 let removeMinAuxWithRootMutate: (node<'a>, node<'a>) => t<'a>

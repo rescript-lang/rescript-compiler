@@ -30,17 +30,17 @@ modification.
 type t<'a>
 
 /**
-  Returns a new stack, initially empty.
+Returns a new stack, initially empty.
 */
 let make: unit => t<'a>
 
 /**
-  Discard all elements from the stack.
+Discard all elements from the stack.
 */
 let clear: t<'a> => unit
 
 /**
-  `copy(x)` O(1) operation, return a new stack.
+`copy(x)` O(1) operation, return a new stack.
 */
 let copy: t<'a> => t<'a>
 
@@ -56,8 +56,8 @@ let forEach: (t<'a>, 'a => unit) => unit
 let dynamicPopIterU: (t<'a>, (. 'a) => unit) => unit
 
 /**
-  `dynamicPopIter(s, f)` apply `f` to each element of `s`. The item is poped
-  before applying `f`, `s` will be empty after this opeartion. This function is
-  useful for worklist algorithm.
+`dynamicPopIter(s, f)` apply `f` to each element of `s`. The item is poped
+before applying `f`, `s` will be empty after this opeartion. This function is
+useful for worklist algorithm.
  */
 let dynamicPopIter: (t<'a>, 'a => unit) => unit

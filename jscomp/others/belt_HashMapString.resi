@@ -9,9 +9,8 @@ let clear: t<'b> => unit
 let isEmpty: t<_> => bool
 
 /**
-  `setDone tbl k v` if `k` does not exist,
-  add the binding `k,v`, otherwise, update the old value with the new
-  `v`
+`setDone(tbl, k, v)` if `k` does not exist, add the binding `k,v`, otherwise,
+update the old value with the new `v`
 */
 let set: (t<'a>, key, 'a) => unit
 

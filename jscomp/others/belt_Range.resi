@@ -23,92 +23,87 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 /***
-  A small utility module to provide inclusive range operations for `[start,
-  finish]`.  Internally it is relying on loops instead of creating new arrays,
-  which makes it pretty performant and memory friendly.
+A small utility module to provide inclusive range operations for `[start, finish]`.
+Internally it is relying on loops instead of creating new arrays, which makes it
+pretty performant and memory friendly.
 */
 
 let forEachU: (int, int, (. int) => unit) => unit
 
 /**
-  `forEach(start, finish, action)`
+`forEach(start, finish, action)` equivalent to `Belt.Array.forEach(Belt.Array.range(start, finish), action))`
 
-  equivalent to `Belt.Array.(forEach(range(start, finish), action))`
+## Examples
 
-  ```res example
-  Belt.Range.forEach(0, 4, (i) => Js.log(i))
+```rescript
+Belt.Range.forEach(0, 4, (i) => Js.log(i))
 
-  /**
-   * prints:
-   *   0
-   *   1
-   *   2
-   *   3
-   *   4
-   */
-  ```
+// Prints:
+// 0
+// 1
+// 2
+// 3
+// 4
+```
 */
 let forEach: (int, int, int => unit) => unit
 
 let everyU: (int, int, (. int) => bool) => bool
 
 /**
-  `every(start, finish, p)`
+`every(start, finish, p)` equivalent to `Belt.Array.every(Belt.Array.range(start, finish), p)`
+## Examples
 
-  equivalent to `Belt.Array.(every(range(start, finish), p))`
+```rescript
+Belt.Range.every(0, 4, (i) => i < 5) /* true */
 
-  ```res example
-  Belt.Range.every(0, 4, (i) => i < 5) /* true */
-
-  Belt.Range.every(0, 4, (i) => i < 4) /* false */
-  ```
+Belt.Range.every(0, 4, (i) => i < 4) /* false */
+```
 */
 let every: (int, int, int => bool) => bool
 
 let everyByU: (int, int, ~step: int, (. int) => bool) => bool
 
 /**
-  `everyBy(start, finish, ~step, p)`
+`everyBy(start, finish, ~step, p)`. See `Belt.Array.rangeBy`, equivalent to
+`Belt.Array.every(Belt.Array.rangeBy(start, finish, ~step), p)`
 
-  See `Belt_Array.rangeBy`
+## Examples
 
-  equivalent to `Belt.Array.(every(rangeBy(start, finish, ~step), p))`
+```rescript
+Belt.Range.everyBy(0, 4, ~step=1, (i) => mod(i, 2) === 0) /* false */
 
-  ```res example
-  Belt.Range.everyBy(0, 4, ~step=1, (i) => mod(i, 2) === 0) /* false */
-
-  Belt.Range.everyBy(0, 4, ~step=2, (i) => mod(i, 2) === 0) /* true */
-  ```
+Belt.Range.everyBy(0, 4, ~step=2, (i) => mod(i, 2) === 0) /* true */
+```
 */
 let everyBy: (int, int, ~step: int, int => bool) => bool
 
 let someU: (int, int, (. int) => bool) => bool
 
 /**
-  `some(start, finish, p)`
+`some(start, finish, p)` equivalent to `Belt.Array.some(Belt.Array.range(start, finish), p)`
 
-  equivalent to `Belt.Array.(some(range(start, finish), p))`
+## Examples
 
-  ```res example
-  Belt.Range.some(0, 4, (i) => i > 5) /* false */
+```rescript
+Belt.Range.some(0, 4, (i) => i > 5) /* false */
 
-  Belt.Range.some(0, 4, (i) => i > 2) /* true */
-  ```
+Belt.Range.some(0, 4, (i) => i > 2) /* true */
+```
 */
 let some: (int, int, int => bool) => bool
 
 let someByU: (int, int, ~step: int, (. int) => bool) => bool
 
 /**
-  `someBy(start, finish, ~step, p)`
+`someBy(start, finish, ~step, p)` See `Belt.Array.rangeBy`, equivalent to
+`Belt.Array.some(Belt.Array.rangeBy(start, finish, ~step), p)`
 
-  See `Belt_Array.rangeBy`
+## Examples
 
-  equivalent to `Belt.Array.(some(rangeBy(start, finish, ~step), p))`
-
-  ```res example
-  Belt.Range.someBy(1, 5, ~step=2, (i) => mod(i, 2) === 0) /* false */
-  Belt.Range.someBy(0, 4, ~step=2, (i) => mod(i, 2) === 0) /* true */
-  ```
+```rescript
+Belt.Range.someBy(1, 5, ~step=2, (i) => mod(i, 2) === 0) /* false */
+Belt.Range.someBy(0, 4, ~step=2, (i) => mod(i, 2) === 0) /* true */
+```
 */
 let someBy: (int, int, ~step: int, int => bool) => bool

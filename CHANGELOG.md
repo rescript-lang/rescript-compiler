@@ -21,6 +21,10 @@
 
 - GenType: now emits full suffix on JS import path to be compatible with `.res.js`. https://github.com/rescript-lang/rescript-compiler/pull/6541
 
+#### :nail_care: Polish
+
+- Format docstrings. https://github.com/rescript-lang/rescript-compiler/pull/6417
+
 # 11.0.0-rc.8
 
 #### :rocket: New Feature

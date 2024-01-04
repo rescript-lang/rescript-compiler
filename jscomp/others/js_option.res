@@ -25,22 +25,24 @@
 /*** Provide utilities for handling `option`. */
 
 /**
-  `Js.Option.t` is an alias for `option`
+`Js.Option.t` is an alias for `option`
 */
 type t<'a> = option<'a>
 
 /**
-  Wraps the given value in `Some()`
+Wraps the given value in `Some()`
 
-  ```res example
-  Js.Option.some(1066) == Some(1066)
-  ```
+## Examples
+
+```rescript
+Js.Option.some(1066) == Some(1066)
+```
 */
 let some = x => Some(x)
 
 /**
-  Returns `true` if the argument is `Some(value)`; `false` if the argument is
-  `None`.
+Returns `true` if the argument is `Some(value)`; `false` if the argument is
+`None`.
 */
 let isSome = x =>
   switch x {
@@ -49,19 +51,21 @@ let isSome = x =>
   }
 
 /**
-  The first argument to `isSomeValue` is an uncurried function `eq()` that
-  takes two arguments and returns `true` if they are considered to be equal. It
-  is used to compare a plain value `v1`(the second argument) with an `option`
-  value. If the `option` value is `None`, `isSomeValue()` returns `false`; if
-  the third argument is `Some(v2)`, `isSomeValue()` returns the result of
-  calling `eq(v1, v2)`.
+The first argument to `isSomeValue` is an uncurried function `eq()` that
+takes two arguments and returns `true` if they are considered to be equal. It
+is used to compare a plain value `v1`(the second argument) with an `option`
+value. If the `option` value is `None`, `isSomeValue()` returns `false`; if
+the third argument is `Some(v2)`, `isSomeValue()` returns the result of
+calling `eq(v1, v2)`.
 
-  ```res example
-  let clockEqual = (. a, b) => mod(a, 12) == mod(b, 12)
-  Js.Option.isSomeValue(clockEqual, 3, Some(15)) == true
-  Js.Option.isSomeValue(clockEqual, 3, Some(4)) == false
-  Js.Option.isSomeValue(clockEqual, 3, None) == false
-  ```
+## Examples
+
+```rescript
+let clockEqual = (. a, b) => mod(a, 12) == mod(b, 12)
+Js.Option.isSomeValue(clockEqual, 3, Some(15)) == true
+Js.Option.isSomeValue(clockEqual, 3, Some(4)) == false
+Js.Option.isSomeValue(clockEqual, 3, None) == false
+```
 */
 let isSomeValue = (eq, v, x) =>
   switch x {
@@ -77,8 +81,8 @@ let isNone = x =>
   }
 
 /**
-  If the argument to `getExn()` is of the form `Some(value)`, returns `value`.
-  If given `None`, it throws a `getExn` exception.
+If the argument to `getExn()` is of the form `Some(value)`, returns `value`.
+If given `None`, it throws a `getExn` exception.
 */
 let getExn = x =>
   switch x {
@@ -87,25 +91,27 @@ let getExn = x =>
   }
 
 /**
-  The first argument to `equal` is an uncurried function `eq()` that takes two
-  arguments and returns `true` if they are considered to be equal. The second
+The first argument to `equal` is an uncurried function `eq()` that takes two
+arguments and returns `true` if they are considered to be equal. The second
 and third arguments are `option` values.
 
-  If the second and third arguments are of the form:
+If the second and third arguments are of the form:
 
-  * `Some(v1)` and `Some(v2)`: returns `eq(v1, v2)`
-  * `Some(v1)` and `None`: returns `false`
-  * `None` and `Some(v2)`: returns `false`
-  * `None` and `None`: returns `true`
+* `Some(v1)` and `Some(v2)`: returns `eq(v1, v2)`
+* `Some(v1)` and `None`: returns `false`
+* `None` and `Some(v2)`: returns `false`
+* `None` and `None`: returns `true`
 
-  ```res example
-  let clockEqual = (. a, b) => mod(a, 12) == mod(b, 12)
-  Js.Option.equal(clockEqual, Some(3), Some(15)) == true
-  Js.Option.equal(clockEqual, Some(3), Some(16)) == false
-  Js.Option.equal(clockEqual, Some(3), None) == false
-  Js.Option.equal(clockEqual, None, Some(15)) == false
-  Js.Option.equal(clockEqual, None, None) == true
-  ```
+## Examples
+
+```rescript
+let clockEqual = (. a, b) => mod(a, 12) == mod(b, 12)
+Js.Option.equal(clockEqual, Some(3), Some(15)) == true
+Js.Option.equal(clockEqual, Some(3), Some(16)) == false
+Js.Option.equal(clockEqual, Some(3), None) == false
+Js.Option.equal(clockEqual, None, Some(15)) == false
+Js.Option.equal(clockEqual, None, None) == true
+```
 */
 let equal = (eq, a, b) =>
   switch a {
@@ -118,17 +124,19 @@ let equal = (eq, a, b) =>
   }
 
 /**
-  The first argument to `andThen()` is an uncurried function `f()` that takes a
-  plain value and returns an `option` result. The second argument is an
-  `option` value. If the second argument is `None`, the return value is `None`.
-  If the second argument is `Some(v)`, the return value is `f(v)`.
+The first argument to `andThen()` is an uncurried function `f()` that takes a
+plain value and returns an `option` result. The second argument is an
+`option` value. If the second argument is `None`, the return value is `None`.
+If the second argument is `Some(v)`, the return value is `f(v)`.
 
-  ```res example
-  let reciprocal = (. x) => x == 0 ? None : Some(1.0 /. Belt.Int.toFloat(x))
-  Js.Option.andThen(reciprocal, Some(5)) == Some(0.2)
-  Js.Option.andThen(reciprocal, Some(0)) == None
-  Js.Option.andThen(reciprocal, None) == None
-  ```
+## Examples
+
+```rescript
+let reciprocal = (. x) => x == 0 ? None : Some(1.0 /. Belt.Int.toFloat(x))
+Js.Option.andThen(reciprocal, Some(5)) == Some(0.2)
+Js.Option.andThen(reciprocal, Some(0)) == None
+Js.Option.andThen(reciprocal, None) == None
+```
 */
 let andThen = (f, x) =>
   switch x {
@@ -137,16 +145,18 @@ let andThen = (f, x) =>
   }
 
 /**
-  The first argument to `map()` is an uncurried function `f()` that takes a
-  plain value and returns a plain result. The second argument is an `option`
-  value. If it is of the form `Some(v)`, `map()` returns `Some(f(v))`; if it is
-  `None`, the return value is `None`, and function `f()` is not called.
+The first argument to `map()` is an uncurried function `f()` that takes a
+plain value and returns a plain result. The second argument is an `option`
+value. If it is of the form `Some(v)`, `map()` returns `Some(f(v))`; if it is
+`None`, the return value is `None`, and function `f()` is not called.
 
-  ```res example
-  let square = (. x) => x * x
-  Js.Option.map(square, Some(3)) == Some(9)
-  Js.Option.map(square, None) == None
-  ```
+## Examples
+
+```rescript
+let square = (. x) => x * x
+Js.Option.map(square, Some(3)) == Some(9)
+Js.Option.map(square, None) == None
+```
 */
 let map = (f, x) =>
   switch x {
@@ -155,14 +165,16 @@ let map = (f, x) =>
   }
 
 /**
-  The first argument to `getWithDefault()` is a default value. If the second
-  argument is of the form `Some(v)`, `getWithDefault()` returns `v`; if the
-  second argument is `None`, the return value is the default value.
+The first argument to `getWithDefault()` is a default value. If the second
+argument is of the form `Some(v)`, `getWithDefault()` returns `v`; if the
+second argument is `None`, the return value is the default value.
 
-  ```res example
-  Js.Option.getWithDefault(1066, Some(15)) == 15
-  Js.Option.getWithDefault(1066, None) == 1066
-  ```
+## Examples
+
+```rescript
+Js.Option.getWithDefault(1066, Some(15)) == 15
+Js.Option.getWithDefault(1066, None) == 1066
+```
 */
 let getWithDefault = (a, x) =>
   switch x {
@@ -174,18 +186,20 @@ let getWithDefault = (a, x) =>
 let default = getWithDefault
 
 /**
-  The first argument to `filter()` is an uncurried function that takes a plain
-  value and returns a boolean. The second argument is an `option` value.
+The first argument to `filter()` is an uncurried function that takes a plain
+value and returns a boolean. The second argument is an `option` value.
 
-  If the second argument is of the form `Some(v)` and `f(v)` is `true`,
-  the return value is `Some(v)`. Otherwise, the return value is `None`.
+If the second argument is of the form `Some(v)` and `f(v)` is `true`,
+the return value is `Some(v)`. Otherwise, the return value is `None`.
 
-  ```res example
-  let isEven = (. x) => mod(x, 2) == 0
-  Js.Option.filter(isEven, Some(2)) == Some(2)
-  Js.Option.filter(isEven, Some(3)) == None
-  Js.Option.filter(isEven, None) == None
-  ```
+## Examples
+
+```rescript
+let isEven = (. x) => mod(x, 2) == 0
+Js.Option.filter(isEven, Some(2)) == Some(2)
+Js.Option.filter(isEven, Some(3)) == None
+Js.Option.filter(isEven, None) == None
+```
 */
 let filter = (f, x) =>
   switch x {
@@ -199,14 +213,16 @@ let filter = (f, x) =>
   }
 
 /**
-  The `firstSome()` function takes two `option` values; if the first is of the form `Some(v1)`, that is the return value. Otherwise, `firstSome()` returns the second value.
+The `firstSome()` function takes two `option` values; if the first is of the form `Some(v1)`, that is the return value. Otherwise, `firstSome()` returns the second value.
 
-  ```res example
-  Js.Option.firstSome(Some("one"), Some("two")) == Some("one")
-  Js.Option.firstSome(Some("one"), None) == Some("one")
-  Js.Option.firstSome(None, Some("two")) == Some("two")
-  Js.Option.firstSome(None, None) == None
-  ```
+## Examples
+
+```rescript
+Js.Option.firstSome(Some("one"), Some("two")) == Some("one")
+Js.Option.firstSome(Some("one"), None) == Some("one")
+Js.Option.firstSome(None, Some("two")) == Some("two")
+Js.Option.firstSome(None, None) == None
+```
 */
 let firstSome = (a, b) =>
   switch (a, b) {

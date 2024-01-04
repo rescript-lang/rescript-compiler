@@ -23,23 +23,26 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 /***
-  Safe cast between OCaml values which share the same
-  runtime representation
+Safe cast between OCaml values which share the same
+runtime representation
 
-  Different OCaml types might share the same represention in the
-  ReScript runtime; while this is a compiler internal knowledge,
-  applications might benefit from having a safe and zero cost
-  conversion between those types.
+Different OCaml types might share the same represention in the
+ReScript runtime; while this is a compiler internal knowledge,
+applications might benefit from having a safe and zero cost
+conversion between those types.
 
-  This modules acts as the **single place** for such conversion.
+This modules acts as the **single place** for such conversion.
 
-  If for any reason, the runtime representation changes, those function
-  will be modified accordingly.
+If for any reason, the runtime representation changes, those function
+will be modified accordingly.
 */
 
-/** `intOfBool b` returns `1` for when `b` is `true` and `0` when `b` is
-    `false` */
+/**
+`intOfBool(b)` returns `1` for when `b` is `true` and `0` when `b` is `false`
+*/
 external intOfBool: bool => int = "%identity"
 
-/** `floatOfInt i` returns the float value of `i` */
+/**
+`floatOfInt(i)` returns the float value of `i`
+*/
 external floatOfInt: int => float = "%identity"

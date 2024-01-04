@@ -23,58 +23,58 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 /***
-  A **mutable** Hash set which allows customized `hash` behavior.
+A **mutable** Hash set which allows customized `hash` behavior.
 
-  All data are parameterized by not its only type but also a unique identity in
-  the time of initialization, so that two _HashSets of ints_ initialized with
-  different _hash_ functions will have different type.
+All data are parameterized by not its only type but also a unique identity in
+the time of initialization, so that two _HashSets of ints_ initialized with
+different _hash_ functions will have different type.
 
-  For example:
+## Examples
 
-  ```res prelude
-  module I0 = unpack(
-    Belt.Id.hashableU(
-      ~hash=(. a: int) => land(a, 65535),
-      ~eq=(. a, b) => a == b,
-    )
+```rescript
+module I0 = unpack(
+  Belt.Id.hashableU(
+    ~hash=(. a: int) => land(a, 65535),
+    ~eq=(. a, b) => a == b,
   )
+)
 
-  let s0 = Belt.HashSet.make(~id=module(I0), ~hintSize=40)
+let s0 = Belt.HashSet.make(~id=module(I0), ~hintSize=40)
 
-  module I1 = unpack(
-    Belt.Id.hashableU(
-      ~hash=(. a: int) => land(a, 255),
-      ~eq=(. a, b) => a == b,
-    )
+module I1 = unpack(
+  Belt.Id.hashableU(
+    ~hash=(. a: int) => land(a, 255),
+    ~eq=(. a, b) => a == b,
   )
+)
 
-  let s1 = Belt.HashSet.make(~id=module(I1), ~hintSize=40)
+let s1 = Belt.HashSet.make(~id=module(I1), ~hintSize=40)
 
-  Belt.HashSet.add(s1, 0)
-  Belt.HashSet.add(s1, 1)
-  ```
+Belt.HashSet.add(s1, 0)
+Belt.HashSet.add(s1, 1)
+```
 
-  The invariant must be held: for two elements who are equal, their hashed
-  value should be the same.
+The invariant must be held: for two elements who are equal, their hashed
+value should be the same.
 
-  Here the compiler would infer `s0` and `s1` having different type so that it
-  would not mix.
+Here the compiler would infer `s0` and `s1` having different type so that it
+would not mix.
 
-  ```res sig
-  let s0: Belt.HashSet.t<int, I0.identity>
-  let s1: Belt.HashSet.t<int, I1.identity>
-  ```
+## Examples
 
-  We can add elements to the collection (see last two lines in the example
-  above). Since this is an mutable data structure, `s1` will contain two pairs.
+```rescript
+let s0: Belt.HashSet.t<int, I0.identity>
+let s1: Belt.HashSet.t<int, I1.identity>
+```
+
+We can add elements to the collection (see last two lines in the example
+above). Since this is an mutable data structure, `s1` will contain two pairs.
 */
 
-/** Specalized when key type is `int`, more efficient
-    than the generic type */
+/** Specalized when key type is `int`, more efficient than the generic type */
 module Int = Belt_HashSetInt
 
-/** Specalized when key type is `string`, more efficient
-    than the generic type */
+/** Specalized when key type is `string`, more efficient than the generic type */
 module String = Belt_HashSetString
 
 /* TODO: add a poly module

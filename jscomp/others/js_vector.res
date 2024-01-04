@@ -31,9 +31,10 @@ external make: (int, 'a) => array<'a> = "?make_vect"
 external unsafe_get: (t<'a>, int) => 'a = "%array_unsafe_get"
 external unsafe_set: (t<'a>, int, 'a) => unit = "%array_unsafe_set"
 
-/** **param** a array
+/** 
+**param** a array
 
-    **param** p predicate
+**param** p predicate
 */
 let filterInPlace = (p, a) => {
   let i = ref(0)

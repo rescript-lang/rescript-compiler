@@ -22,8 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-/*** Contains functions available in the global scope
-    (`window` in a browser context) */
+/***
+Contains functions available in the global scope (`window` in a browser context)
+*/
 
 /** Identify an interval started by `Js.Global.setInterval`. */
 type intervalId
@@ -35,7 +36,9 @@ type timeoutId
 /**
 Clear an interval started by `Js.Global.setInterval`
 
-```res example
+## Examples
+
+```rescript
 /* API for a somewhat aggressive snoozing alarm clock */
 
 let punchSleepyGuy = () => Js.log("Punch")
@@ -60,7 +63,9 @@ external clearInterval: intervalId => unit = "clearInterval"
 /**
 Clear a timeout started by `Js.Global.setTimeout`.
 
-```res example
+## Examples
+
+```rescript
 /* A simple model of a code monkey's brain */
 
 let closeHackerNewsTab = () => Js.log("close")
@@ -83,7 +88,9 @@ Repeatedly executes a callback with a specified interval (in milliseconds)
 between calls. Returns a `Js.Global.intervalId` that can be passed to
 `Js.Global.clearInterval` to cancel the timeout.
 
-```res example
+## Examples
+
+```rescript
 /* Will count up and print the count to the console every second */
 
 let count = ref(0)
@@ -104,7 +111,9 @@ Repeatedly executes a callback with a specified interval (in milliseconds)
 between calls. Returns a `Js.Global.intervalId` that can be passed to
 `Js.Global.clearInterval` to cancel the timeout.
 
-```res example
+## Examples
+
+```rescript
 /* Will count up and print the count to the console every second */
 
 let count = ref(0)
@@ -125,7 +134,9 @@ Execute a callback after a specified delay (in milliseconds). Returns a
 `Js.Global.timeoutId` that can be passed to `Js.Global.clearTimeout` to cancel
 the timeout.
 
-```res example
+## Examples
+
+```rescript
 /* Prints "Timed out!" in the console after one second */
 
 let message = "Timed out!"
@@ -141,7 +152,9 @@ Execute a callback after a specified delay (in milliseconds). Returns a
 `Js.Global.timeoutId` that can be passed to `Js.Global.clearTimeout` to cancel
 the timeout.
 
-```res example
+## Examples
+
+```rescript
 /* Prints "Timed out!" in the console after one second */
 
 let message = "Timed out!"
@@ -153,32 +166,32 @@ external setTimeoutFloat: (unit => unit, float) => timeoutId = "setTimeout"
 
 @val
 /**
-  URL-encodes a string.
+URL-encodes a string.
 
-  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI)
+See [`encodeURI`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI) on MDN.
 */
 external encodeURI: string => string = "encodeURI"
 
 @val
 /**
-  Decodes a URL-enmcoded string produced by `encodeURI`
+Decodes a URL-enmcoded string produced by `encodeURI`
 
-  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI)
+See [`decodeURI`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI) on MDN.
 */
 external decodeURI: string => string = "decodeURI"
 
 @val
 /**
-  URL-encodes a string, including characters with special meaning in a URI.
+URL-encodes a string, including characters with special meaning in a URI.
 
-  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent)
+See [`encodeURIComponent`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent) on MDN.
 */
 external encodeURIComponent: string => string = "encodeURIComponent"
 
 @val
 /**
-  Decodes a URL-enmcoded string produced by `encodeURIComponent`
+Decodes a URL-enmcoded string produced by `encodeURIComponent`
 
-  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent)
+See [`decodeURIComponent`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent) on MDN.
 */
 external decodeURIComponent: string => string = "decodeURIComponent"

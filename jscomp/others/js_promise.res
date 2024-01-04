@@ -22,11 +22,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-/*** Deprecation note: These bindings are pretty outdated and cannot be used
-    properly with the `->` operator.
+/***
+Deprecation note: These bindings are pretty outdated and cannot be used properly
+with the `->` operator.
 
-    More details on proper Promise usage can be found here:
-    https://rescript-lang.org/docs/manual/latest/promise#promise-legacy
+More details on proper Promise usage can be found here:
+https://rescript-lang.org/docs/manual/latest/promise#promise-legacy
 */
 
 @@warning("-103")
@@ -35,7 +36,9 @@ type t<+'a> = promise<'a>
 type error = Js_promise2.error
 
 /*
-```res prelude
+## Examples
+
+```rescript
 type error
 ```
 */

@@ -22,7 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-/*** Provide utilities for dealing with JS exceptions. */
+/***
+Provide utilities for dealing with JS exceptions.
+*/
 
 /** Represents a JS exception */
 type t
@@ -40,25 +42,27 @@ external asJsExn: exn => option<t> = "?as_js_exn"
 external isCamlExceptionOrOpenVariant: 'a => bool = "?is_extension"
 
 /**
-  `anyToExnInternal obj` will take any value `obj` and wrap it
-  in a Js.Exn.Error if given value is not an exn already. If
-  `obj` is an exn, it will return `obj` without any changes.
+`anyToExnInternal(obj)` will take any value `obj` and wrap it
+in a Js.Exn.Error if given value is not an exn already. If
+`obj` is an exn, it will return `obj` without any changes.
 
-  This function is mostly useful for cases where you want to unify a type of a value
-  that potentially is either exn, a JS error, or any other JS value really (e.g. for
-  a value passed to a Promise.catch callback)
+This function is mostly useful for cases where you want to unify a type of a value
+that potentially is either exn, a JS error, or any other JS value really (e.g. for
+a value passed to a Promise.catch callback)
 
-  **IMPORTANT**: This is an internal API and may be changed / removed any time in the future.
+**IMPORTANT**: This is an internal API and may be changed / removed any time in the future.
 
-  ```
-  switch (Js.Exn.unsafeAnyToExn("test")) {
-  | Js.Exn.Error(v) =>
-    switch(Js.Exn.message(v)) {
-    | Some(str) => Js.log("We won't end up here")
-    | None => Js.log2("We will land here: ", v)
-    }
+## Examples
+
+```rescript
+switch (Js.Exn.unsafeAnyToExn("test")) {
+| Js.Exn.Error(v) =>
+  switch(Js.Exn.message(v)) {
+  | Some(str) => Js.log("We won't end up here")
+  | None => Js.log2("We will land here: ", v)
   }
-  ```
+}
+```
 */
 external anyToExnInternal: 'a => exn = "#wrap_exn"
 

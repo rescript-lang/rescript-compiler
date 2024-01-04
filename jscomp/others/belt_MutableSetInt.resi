@@ -23,12 +23,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 /***
-  This module is [`Belt.MutableSet`]() specialized with key type to be a primitive type.
+This module is [`Belt.MutableSet`]() specialized with key type to be a primitive type.
 
-  It is more efficient in general, the  API is the same with [`Belt.MutableSet`]() except its key type is fixed,
-  and identity is not needed(using the built-in one)
+It is more efficient in general, the  API is the same with [`Belt.MutableSet`]() except its key type is fixed,
+and identity is not needed(using the built-in one)
 
-  **See** [`Belt.MutableSet`]()
+**See** [`Belt.MutableSet`]()
 */
 
 /** The type of the set elements. */
@@ -73,28 +73,34 @@ let reduce: (t, 'a, ('a, value) => 'a) => 'a
 
 let everyU: (t, (. value) => bool) => bool
 
-/** `every p s` checks if all elements of the set
-  satisfy the predicate `p`. Order unspecified. */
+/**
+`every(p, s)` checks if all elements of the set satisfy the predicate `p`.
+Order unspecified. */
 let every: (t, value => bool) => bool
 
 let someU: (t, (. value) => bool) => bool
 
-/** `some p s` checks if at least one element of
-  the set satisfies the predicate `p`. Oder unspecified. */
+/**
+`some(p, s)` checks if at least one element of the set satisfies the predicate
+`p`. Oder unspecified.
+*/
 let some: (t, value => bool) => bool
 
 let keepU: (t, (. value) => bool) => t
 
-/** `keep s p` returns a fresh copy of the set of all elements in `s`
-  that satisfy predicate `p`. */
+/** 
+`keep(s, p)` returns a fresh copy of the set of all elements in `s` that satisfy
+predicate `p`.
+*/
 let keep: (t, value => bool) => t
 
 let partitionU: (t, (. value) => bool) => (t, t)
 
-/** `partition s p` returns a fresh copy pair of sets `(s1, s2)`, where
-  `s1` is the set of all the elements of `s` that satisfy the
-  predicate `p`, and `s2` is the set of all the elements of
-  `s` that do not satisfy `p`. */
+/** 
+`partition(s, p)` returns a fresh copy pair of sets `(s1, s2)`, where `s1` is
+the set of all the elements of `s` that satisfy the predicate `p`, and `s2` is
+the set of all the elements of `s` that do not satisfy `p`. 
+*/
 let partition: (t, value => bool) => (t, t)
 
 let size: t => int
@@ -115,11 +121,11 @@ let getUndefined: (t, value) => Js.undefined<value>
 let getExn: (t, value) => value
 
 /**
-  `split s key` return a fresh copy of each
+`split(s, key)` return a fresh copy of each
 */
 let split: (t, value) => ((t, t), bool)
 
 /**
-  **raise** when invariant is not held
+**raise** when invariant is not held
 */
 let checkInvariantInternal: t => unit

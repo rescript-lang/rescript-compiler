@@ -23,9 +23,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 /***
-  JavaScript Typed Array API
+JavaScript Typed Array API
 
-  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray)
+**see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray)
 */
 
 type array_buffer
@@ -33,9 +33,9 @@ type array_like<'a> /* should be shared with js_array */
 
 module ArrayBuffer = {
   /***
-    The underlying buffer that the typed arrays provide views of
+  The underlying buffer that the typed arrays provide views of
 
-    **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer)
+  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer)
   */
 
   type t = array_buffer
@@ -160,18 +160,19 @@ module Int8Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Int8Array"
 
-  @new /**
-    **raise** Js.Exn.Error raise Js exception
+  @new
+  /**
+  **raise** Js.Exn.Error raise Js exception
 
-    **param** offset is in bytes
+  **param** offset is in bytes
   */
   external fromBufferOffset: (array_buffer, int) => t = "Int8Array"
 
   @new
   /**
-    **raise** Js.Exn.Error raises Js exception
+  **raise** Js.Exn.Error raises Js exception
 
-    **param** offset is in bytes, length in elements
+  **param** offset is in bytes, length in elements
   */
   external fromBufferRange: (array_buffer, ~offset: int, ~length: int) => t = "Int8Array"
 
@@ -281,18 +282,19 @@ module Uint8Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Uint8Array"
 
-  @new /**
-    **raise** Js.Exn.Error raise Js exception
+  @new 
+  /**
+  **raise** Js.Exn.Error raise Js exception
 
-    **param** offset is in bytes
+  **param** offset is in bytes
   */
   external fromBufferOffset: (array_buffer, int) => t = "Uint8Array"
 
   @new
   /**
-    **raise** Js.Exn.Error raises Js exception
+  **raise** Js.Exn.Error raises Js exception
 
-    **param** offset is in bytes, length in elements
+  **param** offset is in bytes, length in elements
   */
   external fromBufferRange: (array_buffer, ~offset: int, ~length: int) => t = "Uint8Array"
 
@@ -402,18 +404,19 @@ module Uint8ClampedArray = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Uint8ClampedArray"
 
-  @new /**
-    **raise** Js.Exn.Error raise Js exception
+  @new
+  /**
+  **raise** Js.Exn.Error raise Js exception
 
-    **param** offset is in bytes
+  **param** offset is in bytes
   */
   external fromBufferOffset: (array_buffer, int) => t = "Uint8ClampedArray"
 
   @new
   /**
-    **raise** Js.Exn.Error raises Js exception
+  **raise** Js.Exn.Error raises Js exception
 
-    **param** offset is in bytes, length in elements
+  **param** offset is in bytes, length in elements
   */
   external fromBufferRange: (array_buffer, ~offset: int, ~length: int) => t = "Uint8ClampedArray"
 
@@ -523,18 +526,19 @@ module Int16Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Int16Array"
 
-  @new /**
-    **raise** Js.Exn.Error raise Js exception
+  @new 
+  /**
+  **raise** Js.Exn.Error raise Js exception
 
-    **param** offset is in bytes
+  **param** offset is in bytes
   */
   external fromBufferOffset: (array_buffer, int) => t = "Int16Array"
 
   @new
   /**
-    **raise** Js.Exn.Error raises Js exception
+  **raise** Js.Exn.Error raises Js exception
 
-    **param** offset is in bytes, length in elements
+  **param** offset is in bytes, length in elements
   */
   external fromBufferRange: (array_buffer, ~offset: int, ~length: int) => t = "Int16Array"
 
@@ -644,18 +648,19 @@ module Uint16Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Uint16Array"
 
-  @new /**
-    **raise** Js.Exn.Error raise Js exception
+  @new 
+  /**
+  **raise** Js.Exn.Error raise Js exception
 
-    **param** offset is in bytes
+  **param** offset is in bytes
   */
   external fromBufferOffset: (array_buffer, int) => t = "Uint16Array"
 
   @new
   /**
-    **raise** Js.Exn.Error raises Js exception
+  **raise** Js.Exn.Error raises Js exception
 
-    **param** offset is in bytes, length in elements
+  **param** offset is in bytes, length in elements
   */
   external fromBufferRange: (array_buffer, ~offset: int, ~length: int) => t = "Uint16Array"
 
@@ -765,18 +770,19 @@ module Int32Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Int32Array"
 
-  @new /**
-    **raise** Js.Exn.Error raise Js exception
+  @new 
+  /**
+  **raise** Js.Exn.Error raise Js exception
 
-    **param** offset is in bytes
+  **param** offset is in bytes
   */
   external fromBufferOffset: (array_buffer, int) => t = "Int32Array"
 
   @new
   /**
-    **raise** Js.Exn.Error raises Js exception
+  **raise** Js.Exn.Error raises Js exception
 
-    **param** offset is in bytes, length in elements
+  **param** offset is in bytes, length in elements
   */
   external fromBufferRange: (array_buffer, ~offset: int, ~length: int) => t = "Int32Array"
 
@@ -886,18 +892,19 @@ module Uint32Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Uint32Array"
 
-  @new /**
-    **raise** Js.Exn.Error raise Js exception
+  @new 
+  /**
+  **raise** Js.Exn.Error raise Js exception
 
-    **param** offset is in bytes
+  **param** offset is in bytes
   */
   external fromBufferOffset: (array_buffer, int) => t = "Uint32Array"
 
   @new
   /**
-    **raise** Js.Exn.Error raises Js exception
+  **raise** Js.Exn.Error raises Js exception
 
-    **param** offset is in bytes, length in elements
+  **param** offset is in bytes, length in elements
   */
   external fromBufferRange: (array_buffer, ~offset: int, ~length: int) => t = "Uint32Array"
 
@@ -1010,18 +1017,19 @@ module Float32Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Float32Array"
 
-  @new /**
-    **raise** Js.Exn.Error raise Js exception
+  @new 
+  /**
+  **raise** Js.Exn.Error raise Js exception
 
-    **param** offset is in bytes
+  **param** offset is in bytes
   */
   external fromBufferOffset: (array_buffer, int) => t = "Float32Array"
 
   @new
   /**
-    **raise** Js.Exn.Error raises Js exception
+  **raise** Js.Exn.Error raises Js exception
 
-    **param** offset is in bytes, length in elements
+  **param** offset is in bytes, length in elements
   */
   external fromBufferRange: (array_buffer, ~offset: int, ~length: int) => t = "Float32Array"
 
@@ -1131,18 +1139,19 @@ module Float64Array = {
   @new /** can throw */
   external fromBuffer: array_buffer => t = "Float64Array"
 
-  @new /**
-    **raise** Js.Exn.Error raise Js exception
+  @new 
+  /**
+  **raise** Js.Exn.Error raise Js exception
 
-    **param** offset is in bytes
+  **param** offset is in bytes
   */
   external fromBufferOffset: (array_buffer, int) => t = "Float64Array"
 
   @new
   /**
-    **raise** Js.Exn.Error raises Js exception
+  **raise** Js.Exn.Error raises Js exception
 
-    **param** offset is in bytes, length in elements
+  **param** offset is in bytes, length in elements
   */
   external fromBufferRange: (array_buffer, ~offset: int, ~length: int) => t = "Float64Array"
 
@@ -1152,10 +1161,10 @@ module Float64Array = {
 }
 
 /**
-  The DataView view provides a low-level interface for reading and writing
-  multiple number types in an ArrayBuffer irrespective of the platform's endianness.
+The DataView view provides a low-level interface for reading and writing
+multiple number types in an ArrayBuffer irrespective of the platform's endianness.
 
-  **see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView)
+**see** [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView)
 */
 module DataView = {
   type t

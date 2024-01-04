@@ -22,9 +22,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-/*** Contains functionality for dealing with values that can be both `null` and `undefined` */
+/***
+Contains functionality for dealing with values that can be both `null` and `undefined`
+*/
 
-@unboxed /** Local alias for `Js.null_undefined<'a>`. */
+/** Local alias for `Js.null_undefined<'a>`. */
+@unboxed
 type t<+'a> = Js.nullable<'a> =
   | Value('a)
   | @as(null) Null
@@ -49,7 +52,9 @@ If `Js.null_undefined<'a>` contains a value, that value is unwrapped, mapped to
 a `'b` using the given function `a' => 'b`, then wrapped back up and returned
 as `Js.null_undefined<'b>`.
 
-```res example
+## Examples
+
+```rescript
 let maybeGreetWorld = (maybeGreeting: Js.null_undefined<string>) =>
   Js.Null_undefined.bind(maybeGreeting, (. greeting) => greeting ++ " world!")
 ```
@@ -60,7 +65,9 @@ let bind: (t<'a>, (. 'a) => 'b) => t<'b>
 Iterates over the contained value with the given function.
 If `Js.null_undefined<'a>` contains a value, that value is unwrapped and applied to the given function.
 
-```res example
+## Examples
+
+```rescript
 let maybeSay = (maybeMessage: Js.null_undefined<string>) =>
   Js.Null_undefined.iter(maybeMessage, (. message) => Js.log(message))
 ```

@@ -23,52 +23,54 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 /***
-  A **mutable** Hash map which allows customized [`hash`]() behavior.
+A **mutable** Hash map which allows customized [`hash`]() behavior.
 
-  All data are parameterized by not its only type but also a unique identity in
-  the time of initialization, so that two _HashMaps of ints_ initialized with different
-  _hash_ functions will have different type.
+All data are parameterized by not its only type but also a unique identity in
+the time of initialization, so that two _HashMaps of ints_ initialized with different
+_hash_ functions will have different type.
 
-  For example:
+## Examples
 
-  ```
-  type t = int
-  module I0 = unpack(Belt.Id.hashableU(~hash=(. a: t) => "&"(a, 0xff_ff), ~eq=(. a, b) => a == b))
-  let s0: t<_, string, _> = make(~hintSize=40, ~id=module(I0))
+```rescript
+type t = int
+module I0 = unpack(Belt.Id.hashableU(~hash=(. a: t) => "&"(a, 0xff_ff), ~eq=(. a, b) => a == b))
+let s0: t<_, string, _> = make(~hintSize=40, ~id=module(I0))
 
-  module I1 = unpack(Belt.Id.hashableU(~hash=(. a: t) => "&"(a, 0xff), ~eq=(. a, b) => a == b))
-  let s1: t<_, string, _> = make(~hintSize=40, ~id=module(I1))
-  ```
+module I1 = unpack(Belt.Id.hashableU(~hash=(. a: t) => "&"(a, 0xff), ~eq=(. a, b) => a == b))
+let s1: t<_, string, _> = make(~hintSize=40, ~id=module(I1))
+```
 
-  The invariant must be held: for two elements who are _equal_,
-  their hashed value should be the same
+The invariant must be held: for two elements who are _equal_,
+their hashed value should be the same
 
-  Here the compiler would infer `s0` and `s1` having different type so that
-  it would not mix.
+Here the compiler would infer `s0` and `s1` having different type so that
+it would not mix.
 
-  ```
-  let s0: t<int, I0.identity>
-  let s1: t<int, I1.identity>
-  ```
+## Examples
 
-  We can add elements to the collection:
+```rescript
+let s0: t<int, I0.identity>
+let s1: t<int, I1.identity>
+```
 
-  ```
-  let () = {
-    add(s1, 0, "3")
-    add(s1, 1, "3")
-  }
-  ```
+We can add elements to the collection:
 
-  Since this is an mutable data strucure, `s1` will contain two pairs.
+## Examples
+
+```rescript
+let () = {
+  add(s1, 0, "3")
+  add(s1, 1, "3")
+}
+```
+
+Since this is an mutable data strucure, `s1` will contain two pairs.
 */
 
-/** Specalized when key type is `int`, more efficient
-    than the generic type */
+/** Specalized when key type is `int`, more efficient than the generic type */
 module Int = Belt_HashMapInt
 
-/** Specalized when key type is `string`, more efficient
-    than the generic type */
+/** Specalized when key type is `string`, more efficient than the generic type */
 module String = Belt_HashMapString
 
 /** The type of hash tables from type `'key` to type `'value`. */
@@ -78,99 +80,111 @@ type t<'key, 'value, 'id>
 type id<'a, 'id> = Belt_Id.hashable<'a, 'id>
 
 /**
-  `make(~hintSize=10, ~id)` creates a new map by taking in the comparator and `hintSize`.
+`make(~hintSize=10, ~id)` creates a new map by taking in the comparator and `hintSize`.
 
-  ```res example
-  module IntHash = Belt.Id.MakeHashable({
-    type t = int
-    let hash = a => a
-    let eq = (a, b) => a == b
-  })
+## Examples
 
-  let hMap = Belt.HashMap.make(~hintSize=10, ~id=module(IntHash))
+```rescript
+module IntHash = Belt.Id.MakeHashable({
+  type t = int
+  let hash = a => a
+  let eq = (a, b) => a == b
+})
 
-  Belt.HashMap.set(hMap, 0, "a")
-  ```
+let hMap = Belt.HashMap.make(~hintSize=10, ~id=module(IntHash))
+
+Belt.HashMap.set(hMap, 0, "a")
+```
 */
 let make: (~hintSize: int, ~id: id<'key, 'id>) => t<'key, 'value, 'id>
 
 /* TODO: allow randomization for security */
 
 /** 
-  Clears a hash table.
+Clears a hash table.
 
-  ```res example
-  module IntHash = Belt.Id.MakeHashable({
-    type t = int
-    let hash = a => a
-    let eq = (a, b) => a == b
-  })
+## Examples
 
-  let hMap = Belt.HashMap.fromArray([(1, "1")], ~id=module(IntHash))
-  Belt.HashMap.clear(hMap)
-  Belt.HashMap.isEmpty(hMap) == true
-  ```
+```rescript
+module IntHash = Belt.Id.MakeHashable({
+  type t = int
+  let hash = a => a
+  let eq = (a, b) => a == b
+})
+
+let hMap = Belt.HashMap.fromArray([(1, "1")], ~id=module(IntHash))
+Belt.HashMap.clear(hMap)
+Belt.HashMap.isEmpty(hMap) == true
+```
 */
 let clear: t<'key, 'value, 'id> => unit
 
 /**
-  `isEmpty(m)` checks whether a hash map is empty.
+`isEmpty(m)` checks whether a hash map is empty.
 
-  ```res example
-  module IntHash = Belt.Id.MakeHashable({
-    type t = int
-    let hash = a => a
-    let eq = (a, b) => a == b
-  })
+## Examples
 
-  Belt.HashMap.isEmpty(Belt.HashMap.fromArray([(1, "1")], ~id=module(IntHash))) == false
-  ```
+```rescript
+module IntHash = Belt.Id.MakeHashable({
+  type t = int
+  let hash = a => a
+  let eq = (a, b) => a == b
+})
+
+Belt.HashMap.isEmpty(Belt.HashMap.fromArray([(1, "1")], ~id=module(IntHash))) == false
+```
 */
 let isEmpty: t<_> => bool
 
 /**
-  `set(hMap, k, v)` if `k` does not exist, add the binding `k,v`, otherwise, update the old value with the new `v`.
+`set(hMap, k, v)` if `k` does not exist, add the binding `k,v`, otherwise, update the old value with the new `v`.
 
-  ```res example
-  module IntHash = Belt.Id.MakeHashable({
-    type t = int
-    let hash = a => a
-    let eq = (a, b) => a == b
-  })
+## Examples
 
-  let s0 = Belt.HashMap.fromArray([(2, "2"), (1, "1"), (3, "3")], ~id=module(IntHash))
+```rescript
+module IntHash = Belt.Id.MakeHashable({
+  type t = int
+  let hash = a => a
+  let eq = (a, b) => a == b
+})
 
-  Belt.HashMap.set(s0, 2, "3")
+let s0 = Belt.HashMap.fromArray([(2, "2"), (1, "1"), (3, "3")], ~id=module(IntHash))
 
-  Belt.HashMap.valuesToArray(s0) == ["1", "3", "3"]
-  ```
+Belt.HashMap.set(s0, 2, "3")
+
+Belt.HashMap.valuesToArray(s0) == ["1", "3", "3"]
+```
 */
 let set: (t<'key, 'value, 'id>, 'key, 'value) => unit
 
 /**
-  Creates copy of a hash map.
+Creates copy of a hash map.
 
-  ```res example
-  module IntHash = Belt.Id.MakeHashable({
-    type t = int
-    let hash = a => a
-    let eq = (a, b) => a == b
-  })
+## Examples
 
-  let s0 = Belt.HashMap.fromArray([(2, "2"), (1, "1"), (3, "3")], ~id=module(IntHash))
-  let s1 = Belt.HashMap.copy(s0)
+```rescript
+module IntHash = Belt.Id.MakeHashable({
+  type t = int
+  let hash = a => a
+  let eq = (a, b) => a == b
+})
 
-  Belt.HashMap.set(s0, 2, "3")
+let s0 = Belt.HashMap.fromArray([(2, "2"), (1, "1"), (3, "3")], ~id=module(IntHash))
+let s1 = Belt.HashMap.copy(s0)
 
-  Belt.HashMap.get(s0, 2) != Belt.HashMap.get(s1, 2)
-  ```
+Belt.HashMap.set(s0, 2, "3")
+
+Belt.HashMap.get(s0, 2) != Belt.HashMap.get(s1, 2)
+```
 */
 let copy: t<'key, 'value, 'id> => t<'key, 'value, 'id>
 
 /**
 Returns value bound under specific key. If values not exist returns `None`.
 
-```res example
+## Examples
+
+```rescript
 module IntHash = Belt.Id.MakeHashable({
   type t = int
   let hash = a => a
@@ -187,39 +201,43 @@ Belt.HashMap.get(s0, 2) == None
 let get: (t<'key, 'value, 'id>, 'key) => option<'value>
 
 /** 
-  Checks if `x` is bound in `tbl`.
+Checks if `x` is bound in `tbl`.
 
-  ```res example
-  module IntHash = Belt.Id.MakeHashable({
-    type t = int
-    let hash = a => a
-    let eq = (a, b) => a == b
-  })
+## Examples
 
-  let s0 = Belt.HashMap.make(~hintSize=10, ~id=module(IntHash))
-  Belt.HashMap.set(s0, 1, "value1")
+```rescript
+module IntHash = Belt.Id.MakeHashable({
+  type t = int
+  let hash = a => a
+  let eq = (a, b) => a == b
+})
 
-  Belt.HashMap.has(s0, 1) == true
-  Belt.HashMap.has(s0, 2) == false
-  ```
+let s0 = Belt.HashMap.make(~hintSize=10, ~id=module(IntHash))
+Belt.HashMap.set(s0, 1, "value1")
+
+Belt.HashMap.has(s0, 1) == true
+Belt.HashMap.has(s0, 2) == false
+```
 */
 let has: (t<'key, 'value, 'id>, 'key) => bool
 
 /**
-  If bound exists, removes it from the hash map.
+If bound exists, removes it from the hash map.
 
-  ```res example
-  module IntHash = Belt.Id.MakeHashable({
-    type t = int
-    let hash = a => a
-    let eq = (a, b) => a == b
-  })
+## Examples
 
-  let s0 = Belt.HashMap.make(~hintSize=10, ~id=module(IntHash))
-  Belt.HashMap.set(s0, 1, "value1")
-  Belt.HashMap.remove(s0, 1)
-  Belt.HashMap.has(s0, 1) == false
-  ```
+```rescript
+module IntHash = Belt.Id.MakeHashable({
+  type t = int
+  let hash = a => a
+  let eq = (a, b) => a == b
+})
+
+let s0 = Belt.HashMap.make(~hintSize=10, ~id=module(IntHash))
+Belt.HashMap.set(s0, 1, "value1")
+Belt.HashMap.remove(s0, 1)
+Belt.HashMap.has(s0, 1) == false
+```
 */
 let remove: (t<'key, 'value, 'id>, 'key) => unit
 
@@ -227,42 +245,46 @@ let remove: (t<'key, 'value, 'id>, 'key) => unit
 let forEachU: (t<'key, 'value, 'id>, (. 'key, 'value) => unit) => unit
 
 /**
-  `forEach(tbl, f)` applies `f` to all bindings in table `tbl`. `f` receives the key as first argument, and the associated value as second argument. Each binding is presented exactly once to `f`.
+`forEach(tbl, f)` applies `f` to all bindings in table `tbl`. `f` receives the key as first argument, and the associated value as second argument. Each binding is presented exactly once to `f`.
 
-  ```res example
-  module IntHash = Belt.Id.MakeHashable({
-    type t = int
-    let hash = a => a
-    let eq = (a, b) => a == b
-  })
+## Examples
 
-  let s0 = Belt.HashMap.make(~hintSize=10, ~id=module(IntHash))
-  Belt.HashMap.set(s0, 1, "value1")
-  Belt.HashMap.forEach(s0, (key, value) => Js.log2(key, value))
-  // prints (1, "value1")
-  ```
+```rescript
+module IntHash = Belt.Id.MakeHashable({
+  type t = int
+  let hash = a => a
+  let eq = (a, b) => a == b
+})
+
+let s0 = Belt.HashMap.make(~hintSize=10, ~id=module(IntHash))
+Belt.HashMap.set(s0, 1, "value1")
+Belt.HashMap.forEach(s0, (key, value) => Js.log2(key, value))
+// prints (1, "value1")
+```
 */
 let forEach: (t<'key, 'value, 'id>, ('key, 'value) => unit) => unit
 
 let reduceU: (t<'key, 'value, 'id>, 'c, (. 'c, 'key, 'value) => 'c) => 'c
 /**
-  `reduce(tbl, init, f)` computes `(f(kN, dN) ... (f(k1, d1, init))...)`, where `k1 ... kN` are the keys of all bindings in `tbl`, and `d1 ... dN` are the associated values. Each binding is presented exactly once to `f`.
+`reduce(tbl, init, f)` computes `(f(kN, dN) ... (f(k1, d1, init))...)`, where `k1 ... kN` are the keys of all bindings in `tbl`, and `d1 ... dN` are the associated values. Each binding is presented exactly once to `f`.
 
-  The order in which the bindings are passed to `f` is unspecified. However, if the table contains several bindings for the same key, they are passed to `f` in reverse order of introduction, that is, the most recent binding is passed first.
+The order in which the bindings are passed to `f` is unspecified. However, if the table contains several bindings for the same key, they are passed to `f` in reverse order of introduction, that is, the most recent binding is passed first.
 
-  ```res example
-  module IntHash = Belt.Id.MakeHashable({
-    type t = int
-    let hash = a => a
-    let eq = (a, b) => a == b
-  })
+## Examples
 
-  let s0 = Belt.HashMap.make(~hintSize=10, ~id=module(IntHash))
-  Belt.HashMap.set(s0, 1, "value1")
-  Belt.HashMap.set(s0, 2, "value2")
+```rescript
+module IntHash = Belt.Id.MakeHashable({
+  type t = int
+  let hash = a => a
+  let eq = (a, b) => a == b
+})
 
-  Belt.HashMap.reduce(s0, "", (acc, key, value) => acc ++ (", " ++ value)) == "value1, value2"
-  ```
+let s0 = Belt.HashMap.make(~hintSize=10, ~id=module(IntHash))
+Belt.HashMap.set(s0, 1, "value1")
+Belt.HashMap.set(s0, 2, "value2")
+
+Belt.HashMap.reduce(s0, "", (acc, key, value) => acc ++ (", " ++ value)) == "value1, value2"
+```
 */
 let reduce: (t<'key, 'value, 'id>, 'c, ('c, 'key, 'value) => 'c) => 'c
 
@@ -270,97 +292,107 @@ let reduce: (t<'key, 'value, 'id>, 'c, ('c, 'key, 'value) => 'c) => 'c
 let keepMapInPlaceU: (t<'key, 'value, 'id>, (. 'key, 'value) => option<'value>) => unit
 
 /**
-  Filters out values for which function `f` returned `None`.
+Filters out values for which function `f` returned `None`.
 
-  ```res example
-  module IntHash = Belt.Id.MakeHashable({
-    type t = int
-    let hash = a => a
-    let eq = (a, b) => a == b
-  })
+## Examples
 
-  let s0 = Belt.HashMap.make(~hintSize=10, ~id=module(IntHash))
-  Belt.HashMap.set(s0, 1, "value1")
-  Belt.HashMap.set(s0, 2, "value2")
+```rescript
+module IntHash = Belt.Id.MakeHashable({
+  type t = int
+  let hash = a => a
+  let eq = (a, b) => a == b
+})
 
-  Belt.HashMap.keepMapInPlace(s0, (key, value) => key == 1 ? None : Some(value))
-  ```
+let s0 = Belt.HashMap.make(~hintSize=10, ~id=module(IntHash))
+Belt.HashMap.set(s0, 1, "value1")
+Belt.HashMap.set(s0, 2, "value2")
+
+Belt.HashMap.keepMapInPlace(s0, (key, value) => key == 1 ? None : Some(value))
+```
 */
 let keepMapInPlace: (t<'key, 'value, 'id>, ('key, 'value) => option<'value>) => unit
 
 /** 
-  `size(tbl)` returns the number of bindings in `tbl`. It takes constant time.
+`size(tbl)` returns the number of bindings in `tbl`. It takes constant time.
 
-  ```res example
-  module IntHash = Belt.Id.MakeHashable({
-    type t = int
-    let hash = a => a
-    let eq = (a, b) => a == b
-  })
+## Examples
 
-  let s0 = Belt.HashMap.make(~hintSize=10, ~id=module(IntHash))
-  Belt.HashMap.set(s0, 1, "value1")
-  Belt.HashMap.set(s0, 2, "value2")
+```rescript
+module IntHash = Belt.Id.MakeHashable({
+  type t = int
+  let hash = a => a
+  let eq = (a, b) => a == b
+})
 
-  Belt.HashMap.size(s0) == 2
-  ```
+let s0 = Belt.HashMap.make(~hintSize=10, ~id=module(IntHash))
+Belt.HashMap.set(s0, 1, "value1")
+Belt.HashMap.set(s0, 2, "value2")
+
+Belt.HashMap.size(s0) == 2
+```
 */
 let size: t<_> => int
 
 /**
-  Returns array of key value pairs.
+Returns array of key value pairs.
 
-  ```res example
-  module IntHash = Belt.Id.MakeHashable({
-    type t = int
-    let hash = a => a
-    let eq = (a, b) => a == b
-  })
+## Examples
 
-  let s0 = Belt.HashMap.make(~hintSize=10, ~id=module(IntHash))
-  Belt.HashMap.set(s0, 1, "value1")
-  Belt.HashMap.set(s0, 2, "value2")
+```rescript
+module IntHash = Belt.Id.MakeHashable({
+  type t = int
+  let hash = a => a
+  let eq = (a, b) => a == b
+})
 
-  Belt.HashMap.toArray(s0) == [(1, "value1"), (2, "value2")]
-  ```
+let s0 = Belt.HashMap.make(~hintSize=10, ~id=module(IntHash))
+Belt.HashMap.set(s0, 1, "value1")
+Belt.HashMap.set(s0, 2, "value2")
+
+Belt.HashMap.toArray(s0) == [(1, "value1"), (2, "value2")]
+```
 */
 let toArray: t<'key, 'value, 'id> => array<('key, 'value)>
 
 /**
-  Returns array of keys.
+Returns array of keys.
 
-  ```res example
-  module IntHash = Belt.Id.MakeHashable({
-    type t = int
-    let hash = a => a
-    let eq = (a, b) => a == b
-  })
+## Examples
 
-  let s0 = Belt.HashMap.make(~hintSize=10, ~id=module(IntHash))
-  Belt.HashMap.set(s0, 1, "value1")
-  Belt.HashMap.set(s0, 2, "value2")
+```rescript
+module IntHash = Belt.Id.MakeHashable({
+  type t = int
+  let hash = a => a
+  let eq = (a, b) => a == b
+})
 
-  Belt.HashMap.keysToArray(s0) == [1, 2]
-  ```
+let s0 = Belt.HashMap.make(~hintSize=10, ~id=module(IntHash))
+Belt.HashMap.set(s0, 1, "value1")
+Belt.HashMap.set(s0, 2, "value2")
+
+Belt.HashMap.keysToArray(s0) == [1, 2]
+```
  */
 let keysToArray: t<'key, _, _> => array<'key>
 
 /**
-  Returns array of values.
+Returns array of values.
 
-  ```res example
-  module IntHash = Belt.Id.MakeHashable({
-    type t = int
-    let hash = a => a
-    let eq = (a, b) => a == b
-  })
+## Examples
 
-  let s0 = Belt.HashMap.make(~hintSize=10, ~id=module(IntHash))
-  Belt.HashMap.set(s0, 1, "value1")
-  Belt.HashMap.set(s0, 2, "value2")
+```rescript
+module IntHash = Belt.Id.MakeHashable({
+  type t = int
+  let hash = a => a
+  let eq = (a, b) => a == b
+})
 
-  Belt.HashMap.valuesToArray(s0) == ["value1", "value2"]
-  ```
+let s0 = Belt.HashMap.make(~hintSize=10, ~id=module(IntHash))
+Belt.HashMap.set(s0, 1, "value1")
+Belt.HashMap.set(s0, 2, "value2")
+
+Belt.HashMap.valuesToArray(s0) == ["value1", "value2"]
+```
 */
 let valuesToArray: t<_, 'value, _> => array<'value>
 
@@ -369,7 +401,9 @@ Creates new hash map from array of pairs.
 
 Returns array of values.
 
-```res example
+## Examples
+
+```rescript
 module IntHash = Belt.Id.MakeHashable({
   type t = int
   let hash = a => a
@@ -383,7 +417,9 @@ Belt.HashMap.toArray(s0) == [(1, "value1"), (2, "value2")]
 let fromArray: (array<('key, 'value)>, ~id: id<'key, 'id>) => t<'key, 'value, 'id>
 
 /**
-```res example
+## Examples
+
+```rescript
 module IntHash = Belt.Id.MakeHashable({
   type t = int
   let hash = a => a
@@ -397,31 +433,35 @@ Belt.HashMap.mergeMany(hMap, [(1, "1"), (2, "2")])
 let mergeMany: (t<'key, 'value, 'id>, array<('key, 'value)>) => unit
 
 /**
-  ```res example
-  module IntHash = Belt.Id.MakeHashable({
-    type t = int
-    let hash = a => a
-    let eq = (a, b) => a == b
-  })
-  let hMap = Belt.HashMap.make(~hintSize=10, ~id=module(IntHash))
-  Belt.HashMap.set(hMap, 1, "1")
+## Examples
 
-  Belt.HashMap.getBucketHistogram(hMap)
-  ```
+```rescript
+module IntHash = Belt.Id.MakeHashable({
+  type t = int
+  let hash = a => a
+  let eq = (a, b) => a == b
+})
+let hMap = Belt.HashMap.make(~hintSize=10, ~id=module(IntHash))
+Belt.HashMap.set(hMap, 1, "1")
+
+Belt.HashMap.getBucketHistogram(hMap)
+```
 */
 let getBucketHistogram: t<_> => array<int>
 
 /**
-  ```res example
-  module IntHash = Belt.Id.MakeHashable({
-    type t = int
-    let hash = a => a
-    let eq = (a, b) => a == b
-  })
-  let hMap = Belt.HashMap.make(~hintSize=10, ~id=module(IntHash))
-  Belt.HashMap.set(hMap, 1, "1")
+## Examples
 
-  Belt.HashMap.logStats(hMap)
-  ```
+```rescript
+module IntHash = Belt.Id.MakeHashable({
+  type t = int
+  let hash = a => a
+  let eq = (a, b) => a == b
+})
+let hMap = Belt.HashMap.make(~hintSize=10, ~id=module(IntHash))
+Belt.HashMap.set(hMap, 1, "1")
+
+Belt.HashMap.logStats(hMap)
+```
 */
 let logStats: t<_> => unit
