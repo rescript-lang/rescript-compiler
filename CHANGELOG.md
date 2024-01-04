@@ -29,6 +29,7 @@
 #### :nail_care: Polish
 
 - GenType: make outputs DCE-friendly. https://github.com/rescript-lang/rescript-compiler/pull/6508
+- Format docstrings. https://github.com/rescript-lang/rescript-compiler/pull/6417
 
 # 11.0.0-rc.7
 
@@ -60,10 +61,6 @@
 #### :nail_care: Polish
 
 - Improve some error messages in rescript.conf parsing. https://github.com/rescript-lang/rescript-compiler/pull/6469
-
-#### :nail_care: Polish
-
-- Format docstrings. https://github.com/rescript-lang/rescript-compiler/pull/6417
 
 # 11.0.0-rc.5
 
