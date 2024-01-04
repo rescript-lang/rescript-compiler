@@ -5,8 +5,8 @@
 
 import * as React from 'react';
 
-import * as ExportWithRenameBS from './ExportWithRename.bs';
+import * as ExportWithRenameJS from './ExportWithRename.res.js';
 
 export type Props = { readonly s: string };
 
-export const Renamed: React.ComponentType<{ readonly s: string }> = ExportWithRenameBS.make as any;
+export const Renamed: React.ComponentType<{ readonly s: string }> = ExportWithRenameJS.make as any;

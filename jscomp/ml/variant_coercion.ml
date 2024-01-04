@@ -1,7 +1,7 @@
 (* TODO: Improve error messages? Say why we can't coerce. *)
 
 (* Right now we only allow coercing to primitives string/int/float *)
-let can_coerce_path (path : Path.t) =
+let can_coerce_primitive (path : Path.t) =
   Path.same path Predef.path_string
   || Path.same path Predef.path_int
   || Path.same path Predef.path_float
@@ -9,16 +9,19 @@ let can_coerce_path (path : Path.t) =
 let check_paths_same p1 p2 target_path =
   Path.same p1 target_path && Path.same p2 target_path
 
-let variant_has_catch_all_string_case (constructors : Types.constructor_declaration list) =
+let variant_has_catch_all_case (constructors : Types.constructor_declaration list) path_is_same =
   let has_catch_all_string_case (c : Types.constructor_declaration) =
     let args = c.cd_args in
     match args with
     | Cstr_tuple [{desc = Tconstr (p, [], _)}] ->
-      Path.same p Predef.path_string
+      path_is_same p
     | _ -> false
   in
 
   constructors |> List.exists has_catch_all_string_case 
+
+let variant_has_relevant_primitive_catch_all (constructors : Types.constructor_declaration list) = 
+  variant_has_catch_all_case constructors can_coerce_primitive
 
 (* Checks if every case of the variant has the same runtime representation as the target type. *)
 let variant_has_same_runtime_representation_as_target ~(targetPath : Path.t)

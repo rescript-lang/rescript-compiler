@@ -3,6 +3,6 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as WarningsBS from './Warnings.bs';
+import * as WarningsJS from './Warnings.res.js';
 
-export const ddd: number = WarningsBS.x as any;
+export const ddd: number = WarningsJS.x as any;

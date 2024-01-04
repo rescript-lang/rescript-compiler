@@ -18,6 +18,14 @@ let init () =
               let core_type =
                 Ast_derive_util.core_type_of_type_declaration tdcl
               in
+              let gentype_attrs =
+                match
+                  Ext_list.exists core_type.ptyp_attributes
+                    Ast_attributes.is_gentype
+                with
+                | true -> Some [Ast_attributes.gentype]
+                | false -> None
+              in
               match tdcl.ptype_kind with
               | Ptype_record label_declarations ->
                 Ext_list.map label_declarations
@@ -26,7 +34,7 @@ let init () =
                       Parsetree.label_declaration)
                   ->
                     let txt = "param" in
-                    Ast_comb.single_non_rec_value pld_name
+                    Ast_comb.single_non_rec_value ?attrs:gentype_attrs pld_name
                       (Ast_compatible.fun_
                          (Pat.constraint_ (Pat.var {txt; loc}) core_type)
                          (Exp.field
@@ -57,7 +65,7 @@ let init () =
                       | None -> core_type
                       | Some x -> x
                     in
-                    Ast_comb.single_non_rec_value
+                    Ast_comb.single_non_rec_value ?attrs:gentype_attrs
                       {loc; txt = little_con_name}
                       (if arity = 0 then
                          (*TODO: add a prefix, better inter-op with FFI *)
@@ -99,10 +107,18 @@ let init () =
               let core_type =
                 Ast_derive_util.core_type_of_type_declaration tdcl
               in
+              let gentype_attrs =
+                match
+                  Ext_list.exists core_type.ptyp_attributes
+                    Ast_attributes.is_gentype
+                with
+                | true -> Some [Ast_attributes.gentype]
+                | false -> None
+              in
               match tdcl.ptype_kind with
               | Ptype_record label_declarations ->
                 Ext_list.map label_declarations (fun {pld_name; pld_type} ->
-                    Ast_comb.single_non_rec_val pld_name
+                    Ast_comb.single_non_rec_val ?attrs:gentype_attrs pld_name
                       (Ast_compatible.arrow core_type pld_type))
               | Ptype_variant constructor_declarations ->
                 Ext_list.map constructor_declarations
@@ -124,7 +140,7 @@ let init () =
                       | Some x -> x
                       | None -> core_type
                     in
-                    Ast_comb.single_non_rec_val
+                    Ast_comb.single_non_rec_val ?attrs:gentype_attrs
                       {loc; txt = Ext_string.uncapitalize_ascii con_name}
                       (Ext_list.fold_right pcd_args annotate_type (fun x acc ->
                            Ast_compatible.arrow x acc)))

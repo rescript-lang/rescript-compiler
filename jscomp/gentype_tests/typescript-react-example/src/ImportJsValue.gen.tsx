@@ -75,7 +75,7 @@ export const defaultTypeChecked: number = defaultNotChecked as any;
 // Export '$$default' early to allow circular import from the '.bs.js' file.
 export const $$default: unknown = defaultTypeChecked as number as any;
 
-const ImportJsValueBS = require('./ImportJsValue.bs');
+const ImportJsValueJS = require('./ImportJsValue.res.js');
 
 import type {AbsoluteValue as $$AbsoluteValue_t} from './MyMath';
 
@@ -109,14 +109,14 @@ export type myNum = $$myNum;
 
 export type polyType<a> = $$polyType<a>;
 
-export const roundedNumber: number = ImportJsValueBS.roundedNumber as any;
+export const roundedNumber: number = ImportJsValueJS.roundedNumber as any;
 
-export const areaValue: number = ImportJsValueBS.areaValue as any;
+export const areaValue: number = ImportJsValueJS.areaValue as any;
 
-export const useGetProp: (x:AbsoluteValue_t) => number = ImportJsValueBS.useGetProp as any;
+export const useGetProp: (x:AbsoluteValue_t) => number = ImportJsValueJS.useGetProp as any;
 
-export const useGetAbs: (x:AbsoluteValue_t) => number = ImportJsValueBS.useGetAbs as any;
+export const useGetAbs: (x:AbsoluteValue_t) => number = ImportJsValueJS.useGetAbs as any;
 
-export const returnedFromHigherOrder: number = ImportJsValueBS.returnedFromHigherOrder as any;
+export const returnedFromHigherOrder: number = ImportJsValueJS.returnedFromHigherOrder as any;
 
 export default $$default;

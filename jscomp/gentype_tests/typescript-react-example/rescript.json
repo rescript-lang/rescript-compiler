@@ -29,5 +29,5 @@
     "module": "es6",
     "in-source": true
   },
-  "suffix": ".bs.js"
+  "suffix": ".res.js"
 }

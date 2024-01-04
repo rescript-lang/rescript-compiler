@@ -3,8 +3,8 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as MachineBS from './Machine.bs';
+import * as MachineJS from './Machine.res.js';
 
 export type aa = { TAG: "A"; _0: number };
 
-export const a: aa = MachineBS.a as any;
+export const a: aa = MachineJS.a as any;

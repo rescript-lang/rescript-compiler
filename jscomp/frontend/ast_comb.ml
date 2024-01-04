@@ -62,7 +62,7 @@ let to_js_re_type loc = Typ.constr ~loc {txt = re_id; loc} []
 let to_undefined_type loc x =
   Typ.constr ~loc {txt = Ast_literal.Lid.js_undefined; loc} [x]
 
-let single_non_rec_value name exp =
-  Str.value Nonrecursive [Vb.mk (Pat.var name) exp]
+let single_non_rec_value ?(attrs = []) name exp =
+  Str.value Nonrecursive [Vb.mk ~attrs (Pat.var name) exp]
 
-let single_non_rec_val name ty = Sig.value (Val.mk name ty)
+let single_non_rec_val ?(attrs = []) name ty = Sig.value (Val.mk ~attrs name ty)

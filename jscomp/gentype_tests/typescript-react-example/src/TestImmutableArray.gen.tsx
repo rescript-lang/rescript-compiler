@@ -3,6 +3,6 @@
 /* eslint-disable */
 /* tslint:disable */
 
-import * as TestImmutableArrayBS from './TestImmutableArray.bs';
+import * as TestImmutableArrayJS from './TestImmutableArray.res.js';
 
-export const testImmutableArrayGet: <T1>(arr:ReadonlyArray<T1>) => (undefined | T1) = TestImmutableArrayBS.testImmutableArrayGet as any;
+export const testImmutableArrayGet: <T1>(arr:ReadonlyArray<T1>) => (undefined | T1) = TestImmutableArrayJS.testImmutableArrayGet as any;

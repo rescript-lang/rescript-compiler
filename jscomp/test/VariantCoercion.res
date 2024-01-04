@@ -56,3 +56,27 @@ module CoerceFromStringToVariant = {
   let c = "Hi"
   let cc: mixed = (c :> mixed)
 }
+
+module CoerceFromIntToVariant = {
+  @unboxed type ints = Int(int) | @as(1) First | @as(2) Second | @as(3) Third
+  let a = 100
+  let aa = 1
+  let b: ints = (a :> ints)
+  let bb: ints = (aa :> ints)
+
+  @unboxed type mixed = Int(int) | @as(1) One | @as(null) Null | Two
+  let c = 120
+  let cc: mixed = (c :> mixed)
+}
+
+module CoerceFromFloatToVariant = {
+  @unboxed type floats = Float(float) | @as(1.) First | @as(2.) Second | @as(3.) Third
+  let a = 100.
+  let aa = 1.
+  let b: floats = (a :> floats)
+  let bb: floats = (aa :> floats)
+
+  @unboxed type mixed = Float(float) | @as(1.) One | @as(null) Null | Two
+  let c = 120.
+  let cc: mixed = (c :> mixed)
+}

@@ -10,6 +10,17 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
+# 11.0.0-rc.9 (Unreleased)
+
+#### :rocket: New Feature
+
+- GenType: support `@deriving(accessors)` outputs. https://github.com/rescript-lang/rescript-compiler/pull/6537
+- Allow coercing ints and floats to unboxed variants that have a catch-all unboxed int or float case. https://github.com/rescript-lang/rescript-compiler/pull/6540
+
+#### :bug: Bug Fix
+
+- GenType: now emits full suffix on JS import path to be compatible with `.res.js`. https://github.com/rescript-lang/rescript-compiler/pull/6541
+
 # 11.0.0-rc.8
 
 #### :rocket: New Feature
