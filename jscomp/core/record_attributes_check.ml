@@ -51,6 +51,22 @@ let fld_record_set (lbl : label) =
   Lambda.Fld_record_set
     (Ext_list.find_def lbl.lbl_attributes find_name lbl.lbl_name)
 
+let fld_record_inline (lbl : label) =
+  Lambda.Fld_record_inline
+    { name = Ext_list.find_def lbl.lbl_attributes find_name lbl.lbl_name }
+
+let fld_record_inline_set (lbl : label) =
+  Lambda.Fld_record_inline_set
+    (Ext_list.find_def lbl.lbl_attributes find_name lbl.lbl_name)
+
+let fld_record_extension (lbl : label) =
+  Lambda.Fld_record_extension
+    { name = Ext_list.find_def lbl.lbl_attributes find_name lbl.lbl_name }
+
+let fld_record_extension_set (lbl : label) =
+  Lambda.Fld_record_extension_set
+    (Ext_list.find_def lbl.lbl_attributes find_name lbl.lbl_name)
+
 let blk_record (fields : (label * _) array) mut record_repr =
   let all_labels_info =
     Ext_array.map fields (fun (lbl, _) ->
@@ -58,6 +74,15 @@ let blk_record (fields : (label * _) array) mut record_repr =
   in
   Lambda.Blk_record
     { fields = all_labels_info; mutable_flag = mut; record_repr }
+
+let blk_record_ext fields mutable_flag =
+  let all_labels_info =
+    Array.map
+      (fun ((lbl : label), _) ->
+        Ext_list.find_def lbl.Types.lbl_attributes find_name lbl.lbl_name)
+      fields
+  in
+  Lambda.Blk_record_ext {fields = all_labels_info; mutable_flag }
 
 let blk_record_inlined fields name num_nonconst optional_labels ~tag ~attrs mutable_flag =
   let fields =

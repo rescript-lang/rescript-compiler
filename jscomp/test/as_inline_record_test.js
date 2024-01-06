@@ -6,7 +6,15 @@ function getName(t) {
   return t.renamed;
 }
 
+function getName$p(t) {
+  return t.name;
+}
+
 function getAge(t) {
+  return t.age;
+}
+
+function getAge$p(t) {
   return t.age;
 }
 
@@ -18,5 +26,7 @@ var user = {
 
 exports.user = user;
 exports.getName = getName;
+exports.getName$p = getName$p;
 exports.getAge = getAge;
+exports.getAge$p = getAge$p;
 /* No side effect */

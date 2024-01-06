@@ -121,6 +121,12 @@ type field_dbg_info =
 let fld_record = ref (fun (lbl : Types.label_description) ->
   Fld_record {name = lbl.lbl_name; mutable_flag = Mutable})
 
+let fld_record_inline = ref (fun (lbl : Types.label_description) ->
+  Fld_record_inline {name = lbl.lbl_name})
+
+let fld_record_extension = ref (fun (lbl : Types.label_description) ->
+  Fld_record_extension {name = lbl.lbl_name})
+
 let ref_field_info : field_dbg_info = 
   Fld_record { name = "contents"; mutable_flag = Mutable}
 
@@ -133,6 +139,12 @@ type set_field_dbg_info =
 let ref_field_set_info : set_field_dbg_info = Fld_record_set "contents"    
 let fld_record_set = ref ( fun (lbl : Types.label_description) ->
   Fld_record_set lbl.lbl_name  )
+
+let fld_record_inline_set = ref ( fun (lbl : Types.label_description) ->
+  Fld_record_inline_set lbl.lbl_name )
+
+let fld_record_extension_set = ref ( fun (lbl : Types.label_description) ->
+  Fld_record_extension_set lbl.lbl_name )
 
 type immediate_or_pointer =
   | Immediate
