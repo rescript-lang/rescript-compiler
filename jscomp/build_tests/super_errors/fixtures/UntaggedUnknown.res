@@ -1,2 +1,2 @@
 @unboxed
-type t = Tuple((float, string)) | Float(float)
+type t = List(list<float>) | Float(float)

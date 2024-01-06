@@ -16,6 +16,7 @@
 
 - GenType: support `@deriving(accessors)` outputs. https://github.com/rescript-lang/rescript-compiler/pull/6537
 - Allow coercing ints and floats to unboxed variants that have a catch-all unboxed int or float case. https://github.com/rescript-lang/rescript-compiler/pull/6540
+- Allow tuples in untagged variants https://github.com/rescript-lang/rescript-compiler/pull/6550
 
 #### :bug: Bug Fix
 

@@ -411,6 +411,18 @@ var UntaggedWithBool = {
   classify: classify
 };
 
+function classify$1(x) {
+  if (typeof x === "string") {
+    return "string";
+  } else {
+    return "tuple";
+  }
+}
+
+var UntaggedWithTuple = {
+  classify: classify$1
+};
+
 exports.toEnum = toEnum;
 exports.toString = toString;
 exports.bar = bar;
@@ -429,4 +441,5 @@ exports.MyNullableExtended = MyNullableExtended;
 exports.TaggedUnions = TaggedUnions;
 exports.CustomTagNotInline = CustomTagNotInline;
 exports.UntaggedWithBool = UntaggedWithBool;
+exports.UntaggedWithTuple = UntaggedWithTuple;
 /* expectSeven Not a pure module */

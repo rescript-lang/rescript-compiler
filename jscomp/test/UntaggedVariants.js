@@ -41,13 +41,13 @@ var ListWithTuples = {};
 var ListWithObjects = {};
 
 function tuplesToObjects(l) {
-  if (l === undefined) {
-    return null;
-  } else {
+  if (Array.isArray(l)) {
     return {
             hd: l[0],
             tl: tuplesToObjects(l[1])
           };
+  } else {
+    return null;
   }
 }
 
@@ -221,18 +221,18 @@ var Json = {
 };
 
 function check(s, y) {
-  if (s === "B") {
+  if (!Array.isArray(s)) {
     return 42;
   }
   var x = s[0];
-  if (x === "B") {
+  if (!Array.isArray(x)) {
     return 42;
   }
   var tmp = s[1];
-  if (tmp === "B" && x !== y) {
-    return 41;
-  } else {
+  if (Array.isArray(tmp) || x === y) {
     return 42;
+  } else {
+    return 41;
   }
 }
 

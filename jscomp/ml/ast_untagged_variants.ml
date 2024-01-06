@@ -47,6 +47,7 @@ let report_error ppf =
       (match untaggedVariant with
       | OnlyOneUnknown name -> "Case " ^ name ^ " has a payload that is not of one of the recognized shapes (object, array, etc). Then it must be the only case with payloads."
       | AtMostOneObject -> "At most one case can be an object type."
+      | AtMostOneInstance Array -> "At most one case can be an array or tuple type."
       | AtMostOneInstance i -> "At most one case can be a " ^ (Instance.to_string i) ^ " type."
       | AtMostOneFunction -> "At most one case can be a function type."
       | AtMostOneString -> "At most one case can be a string type."
@@ -183,6 +184,7 @@ let get_block_type_from_typ ~env (t: Types.type_expr) : block_type option =
     (match type_to_instanceof_backed_obj t with 
     | None -> None 
     | Some instanceType -> Some (InstanceType instanceType))
+  | {desc = Ttuple _} -> Some (InstanceType Array)
   | _ -> None
 
 let get_block_type ~env (cstr : Types.constructor_declaration) :
