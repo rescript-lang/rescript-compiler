@@ -286,3 +286,14 @@ module UntaggedWithBool = {
     | Object({name}) => "Object" ++ name
     }
 }
+
+module UntaggedWithTuple = {
+  @unboxed @genType
+  type t = String(string) | Tuple((int, float, string)) 
+
+  let classify = x =>
+    switch x {
+    | String(_) => "string"
+    | Tuple(_) => "tuple"
+    }
+}
