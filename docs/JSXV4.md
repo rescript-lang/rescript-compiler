@@ -43,7 +43,7 @@ Another example is a V4 project that also uses `"rescript-react-native", "rescri
 
 ### Classic and Automatic Mode
 
-Classic mode is the default and generates calls to `React.createElement` just as with V3.
+Classic mode generates calls to `React.createElement` just as with V3.
 
 ```json
 "jsx": {
@@ -52,7 +52,7 @@ Classic mode is the default and generates calls to `React.createElement` just as
 }
 ```
 
-Automatic mode is an experimental mode that generate calls to `_jsx` functions (similar to TypeScript's `react-jsx` mode)
+Automatic mode is the default and generates calls to `_jsx` functions (similar to TypeScript's `react-jsx` mode)
 
 ```json
 "jsx": {
