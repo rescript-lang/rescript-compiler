@@ -25,6 +25,7 @@
 #### :nail_care: Polish
 
 - Format docstrings. https://github.com/rescript-lang/rescript-compiler/pull/6417
+- JSX v4 automatic mode as the default mode https://github.com/rescript-lang/rescript-compiler/pull/6552
 
 # 11.0.0-rc.8
 
