@@ -283,10 +283,11 @@ let scanNumber scanner =
   else Token.Int {i = literal; suffix}
 
 let scanExoticIdentifier scanner =
-  (* TODO: are we disregarding the current char...? Should be a quote *)
-  next scanner;
   let buffer = Buffer.create 20 in
   let startPos = position scanner in
+
+  (* TODO: are we disregarding the current char...? Should be a quote *)
+  next scanner;
 
   let rec scan () =
     match scanner.ch with
@@ -307,8 +308,17 @@ let scanExoticIdentifier scanner =
       scan ()
   in
   scan ();
+
+  let ident = Buffer.contents buffer in
+  let _ =
+    if ident = "" then
+      let endPos = position scanner in
+      scanner.err ~startPos ~endPos
+        (Diagnostics.message "A quoted identifier can't be empty string.")
+  in
+
   (* TODO: do we really need to create a new buffer instead of substring once? *)
-  Token.Lident (Buffer.contents buffer)
+  Token.Lident ident
 
 let scanStringEscapeSequence ~startPos scanner =
   let scan ~n ~base ~max =
