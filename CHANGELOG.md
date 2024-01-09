@@ -10,13 +10,13 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# 11.0.0-rc.9 (Unreleased)
+# 11.0.0-rc.9
 
 #### :rocket: New Feature
 
 - GenType: support `@deriving(accessors)` outputs. https://github.com/rescript-lang/rescript-compiler/pull/6537
 - Allow coercing ints and floats to unboxed variants that have a catch-all unboxed int or float case. https://github.com/rescript-lang/rescript-compiler/pull/6540
-- Allow tuples in untagged variants https://github.com/rescript-lang/rescript-compiler/pull/6550
+- Allow tuples in untagged variants. https://github.com/rescript-lang/rescript-compiler/pull/6550
 
 #### :bug: Bug Fix
 
@@ -25,7 +25,7 @@
 #### :nail_care: Polish
 
 - Format docstrings. https://github.com/rescript-lang/rescript-compiler/pull/6417
-- JSX v4 automatic mode as the default mode https://github.com/rescript-lang/rescript-compiler/pull/6552
+- JSX v4: make automatic mode the default. https://github.com/rescript-lang/rescript-compiler/pull/6552
 
 # 11.0.0-rc.8
 
