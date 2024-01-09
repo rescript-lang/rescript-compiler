@@ -177,7 +177,7 @@ end = struct
   let interface = ref false
   let jsxVersion = ref (-1)
   let jsxModule = ref "react"
-  let jsxMode = ref "classic"
+  let jsxMode = ref "automatic"
   let file = ref ""
   let typechecker = ref false
 
@@ -215,7 +215,7 @@ end = struct
         "Specify the jsx module. Default: react" );
       ( "-jsx-mode",
         Arg.String (fun txt -> jsxMode := txt),
-        "Specify the jsx mode, classic or automatic. Default: classic" );
+        "Specify the jsx mode, classic or automatic. Default: automatic" );
       ( "-typechecker",
         Arg.Unit (fun () -> typechecker := true),
         "Parses the ast as it would be passed to the typechecker and not the \
