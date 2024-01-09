@@ -12,7 +12,7 @@ o stdlib-406/pervasives.cmj : cc_cmi stdlib-406/pervasives.res | stdlib-406/perv
     bsc_flags = $bsc_flags -nopervasives
 o stdlib-406/pervasives.cmi : cc stdlib-406/pervasives.resi | $bsc others
     bsc_flags = $bsc_flags -nopervasives
-o stdlib-406/arg.cmj : cc_cmi stdlib-406/arg.res | stdlib-406/arg.cmi stdlib-406/array.cmj stdlib-406/buffer.cmj stdlib-406/list.cmj stdlib-406/string.cmj stdlib-406/sys.cmj $bsc others
+o stdlib-406/arg.cmj : cc_cmi stdlib-406/arg.res | stdlib-406/arg.cmi stdlib-406/array.cmj stdlib-406/buffer.cmj stdlib-406/list.cmj stdlib-406/set.cmj stdlib-406/string.cmj stdlib-406/sys.cmj $bsc others
 o stdlib-406/arg.cmi : cc stdlib-406/arg.resi | stdlib-406/pervasives.cmj $bsc others
 o stdlib-406/array.cmj : cc_cmi stdlib-406/array.res | stdlib-406/array.cmi $bsc others
 o stdlib-406/array.cmi : cc stdlib-406/array.resi | stdlib-406/pervasives.cmj $bsc others
