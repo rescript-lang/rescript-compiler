@@ -316,7 +316,10 @@ let parse_external_attributes (no_arguments : bool) (prim_name_check : string)
                          | Pexp_constant (Pconst_string (s, _)) -> (
                            match l.txt with
                            | Longident.Lident "type_" -> Some ("type", s)
-                           | Longident.Lident txt -> Some (txt, s)
+                           | Longident.Lident name when Ext_ident.is_exotic name
+                             ->
+                             Some (Ext_ident.unwrap_exotic name, s)
+                           | Longident.Lident name -> Some (name, s)
                            | _ ->
                              Location.raise_errorf ~loc:exp.pexp_loc
                                "Field must be a regular key.")

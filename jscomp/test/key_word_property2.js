@@ -21,11 +21,11 @@ var $$case = Export_keyword.$$case;
 
 var $$window = Export_keyword.$$window;
 
-var $$switch = Export_keyword.$$switch;
+var switch = Export_keyword.switch;
 
 exports.test2 = test2;
 exports.test = test;
 exports.$$case = $$case;
 exports.$$window = $$window;
-exports.$$switch = $$switch;
+exports.switch = switch;
 /* No side effect */
