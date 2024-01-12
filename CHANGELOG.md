@@ -10,7 +10,7 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# 11.0.2 (Unreleased)
+# 11.1.0 (Unreleased)
 
 # 11.0.1
 
