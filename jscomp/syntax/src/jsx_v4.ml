@@ -4,6 +4,9 @@ open Asttypes
 open Parsetree
 open Longident
 
+let moduleAccessName = Jsx_common.mkModuleAccessName
+let jsxComponentName = Jsx_common.mkJsxComponentName
+
 let nolabel = Nolabel
 
 let labelled str = Labelled str
@@ -116,7 +119,7 @@ let extractChildren ?(removeLastPositionUnit = false) ~loc propsAndChildren =
 let merlinFocus = ({loc = Location.none; txt = "merlin.focus"}, PStr [])
 
 (* Helper method to filter out any attribute that isn't [@react.component] *)
-let otherAttrsPure (loc, _) = loc.txt <> "react.component"
+let otherAttrsPure ~config (loc, _) = loc.txt <> jsxComponentName config
 
 (* Finds the name of the variable the binding is assigned to, otherwise raises Invalid_argument *)
 let rec getFnName binding =
@@ -125,7 +128,7 @@ let rec getFnName binding =
   | {ppat_desc = Ppat_constraint (pat, _)} -> getFnName pat
   | {ppat_loc} ->
     Jsx_common.raiseError ~loc:ppat_loc
-      "react.component calls cannot be destructured."
+      "JSX component calls cannot be destructured."
 
 let makeNewBinding binding expression newName =
   match binding with
@@ -139,7 +142,7 @@ let makeNewBinding binding expression newName =
     }
   | {pvb_loc} ->
     Jsx_common.raiseError ~loc:pvb_loc
-      "react.component calls cannot be destructured."
+      "JSX component calls cannot be destructured."
 
 (* Lookup the filename from the location information on the AST node and turn it into a valid module identifier *)
 let filenameFromLoc (pstr_loc : Location.t) =
@@ -379,7 +382,10 @@ let transformUppercaseCall3 ~config modulePath mapper jsxExprLoc callExprLoc
           ( labelled "children",
             Exp.apply
               (Exp.ident
-                 {txt = Ldot (Lident "React", "array"); loc = Location.none})
+                 {
+                   txt = Ldot (Lident (moduleAccessName config), "array");
+                   loc = Location.none;
+                 })
               [(Nolabel, expression)] );
         ]
       | _ ->
@@ -423,16 +429,31 @@ let transformUppercaseCall3 ~config modulePath mapper jsxExprLoc callExprLoc
       match (!childrenArg, keyProp) with
       | None, key :: _ ->
         ( Exp.ident
-            {loc = Location.none; txt = Ldot (Lident "React", "jsxKeyed")},
+            {
+              loc = Location.none;
+              txt = Ldot (Lident (moduleAccessName config), "jsxKeyed");
+            },
           [key; (nolabel, unitExpr ~loc:Location.none)] )
       | None, [] ->
-        (Exp.ident {loc = Location.none; txt = Ldot (Lident "React", "jsx")}, [])
+        ( Exp.ident
+            {
+              loc = Location.none;
+              txt = Ldot (Lident (moduleAccessName config), "jsx");
+            },
+          [] )
       | Some _, key :: _ ->
         ( Exp.ident
-            {loc = Location.none; txt = Ldot (Lident "React", "jsxsKeyed")},
+            {
+              loc = Location.none;
+              txt = Ldot (Lident (moduleAccessName config), "jsxsKeyed");
+            },
           [key; (nolabel, unitExpr ~loc:Location.none)] )
       | Some _, [] ->
-        ( Exp.ident {loc = Location.none; txt = Ldot (Lident "React", "jsxs")},
+        ( Exp.ident
+            {
+              loc = Location.none;
+              txt = Ldot (Lident (moduleAccessName config), "jsxs");
+            },
           [] )
     in
     Exp.apply ~loc:jsxExprLoc ~attrs jsxExpr
@@ -476,6 +497,12 @@ let transformLowercaseCall3 ~config mapper jsxExprLoc callExprLoc attrs
   match config.Jsx_common.mode with
   (* the new jsx transform *)
   | "automatic" ->
+    let domBinding =
+      match moduleAccessName config with
+      | "React" -> Lident "ReactDOM"
+      | generic -> Ldot (Lident generic, "DOM")
+    in
+
     let children, nonChildrenProps =
       extractChildren ~removeLastPositionUnit:true ~loc:jsxExprLoc callArguments
     in
@@ -496,10 +523,7 @@ let transformLowercaseCall3 ~config mapper jsxExprLoc callExprLoc attrs
           ( labelled "children",
             Exp.apply ~attrs:optionalAttrs
               (Exp.ident
-                 {
-                   txt = Ldot (Lident "ReactDOM", "someElement");
-                   loc = Location.none;
-                 })
+                 {txt = Ldot (domBinding, "someElement"); loc = Location.none})
               [(Nolabel, children)] );
         ]
       | ListLiteral {pexp_desc = Pexp_array list} when list = [] -> []
@@ -510,7 +534,10 @@ let transformLowercaseCall3 ~config mapper jsxExprLoc callExprLoc attrs
           ( labelled "children",
             Exp.apply
               (Exp.ident
-                 {txt = Ldot (Lident "React", "array"); loc = Location.none})
+                 {
+                   txt = Ldot (Lident (moduleAccessName config), "array");
+                   loc = Location.none;
+                 })
               [(Nolabel, expression)] );
         ]
     in
@@ -529,19 +556,15 @@ let transformLowercaseCall3 ~config mapper jsxExprLoc callExprLoc attrs
     let jsxExpr, keyAndUnit =
       match (!childrenArg, keyProp) with
       | None, key :: _ ->
-        ( Exp.ident
-            {loc = Location.none; txt = Ldot (Lident "ReactDOM", "jsxKeyed")},
+        ( Exp.ident {loc = Location.none; txt = Ldot (domBinding, "jsxKeyed")},
           [key; (nolabel, unitExpr ~loc:Location.none)] )
       | None, [] ->
-        ( Exp.ident {loc = Location.none; txt = Ldot (Lident "ReactDOM", "jsx")},
-          [] )
+        (Exp.ident {loc = Location.none; txt = Ldot (domBinding, "jsx")}, [])
       | Some _, key :: _ ->
-        ( Exp.ident
-            {loc = Location.none; txt = Ldot (Lident "ReactDOM", "jsxsKeyed")},
+        ( Exp.ident {loc = Location.none; txt = Ldot (domBinding, "jsxsKeyed")},
           [key; (nolabel, unitExpr ~loc:Location.none)] )
       | Some _, [] ->
-        ( Exp.ident {loc = Location.none; txt = Ldot (Lident "ReactDOM", "jsxs")},
-          [] )
+        (Exp.ident {loc = Location.none; txt = Ldot (domBinding, "jsxs")}, [])
     in
     Exp.apply ~loc:jsxExprLoc ~attrs jsxExpr
       ([(nolabel, componentNameExpr); (nolabel, props)] @ keyAndUnit)
@@ -727,11 +750,11 @@ let check_string_int_attribute_iter =
 
   {Ast_iterator.default_iterator with attribute}
 
-let checkMultipleReactComponents ~config ~loc =
-  (* If there is another @react.component, throw error *)
-  if config.Jsx_common.hasReactComponent then
-    Jsx_common.raiseErrorMultipleReactComponent ~loc
-  else config.hasReactComponent <- true
+let checkMultipleComponents ~config ~loc =
+  (* If there is another component, throw error *)
+  if config.Jsx_common.hasComponent then
+    Jsx_common.raiseErrorMultipleComponent ~loc
+  else config.hasComponent <- true
 
 let modifiedBindingOld binding =
   let expression = binding.pvb_expr in
@@ -757,8 +780,8 @@ let modifiedBindingOld binding =
       spelunkForFunExpression innerFunctionExpression
     | {pexp_loc} ->
       Jsx_common.raiseError ~loc:pexp_loc
-        "react.component calls can only be on function definitions or \
-         component wrappers (forwardRef, memo)."
+        "JSX component calls can only be on function definitions or component \
+         wrappers (forwardRef, memo)."
   in
   spelunkForFunExpression expression
 
@@ -881,10 +904,12 @@ let vbMatchExpr namedArgList expr =
   aux (List.rev namedArgList)
 
 let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
-  if Jsx_common.hasAttrOnBinding binding then (
-    checkMultipleReactComponents ~config ~loc:pstr_loc;
+  if Jsx_common.hasAttrOnBinding ~config binding then (
+    checkMultipleComponents ~config ~loc:pstr_loc;
     let binding = Jsx_common.removeArity binding in
-    let coreTypeOfAttr = Jsx_common.coreTypeOfAttrs binding.pvb_attributes in
+    let coreTypeOfAttr =
+      Jsx_common.coreTypeOfAttrs ~config binding.pvb_attributes
+    in
     let typVarsOfCoreType =
       coreTypeOfAttr
       |> Option.map Jsx_common.typVarsOfCoreType
@@ -897,7 +922,8 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
         binding with
         pvb_pat = {binding.pvb_pat with ppat_loc = emptyLoc};
         pvb_loc = emptyLoc;
-        pvb_attributes = binding.pvb_attributes |> List.filter otherAttrsPure;
+        pvb_attributes =
+          binding.pvb_attributes |> List.filter (otherAttrsPure ~config);
       }
     in
     let fnName = getFnName binding.pvb_pat in
@@ -1126,16 +1152,16 @@ let transformStructureItem ~config item =
       pstr_desc =
         Pstr_primitive ({pval_attributes; pval_type} as value_description);
     } as pstr -> (
-    match List.filter Jsx_common.hasAttr pval_attributes with
+    match List.filter (Jsx_common.hasAttr ~config) pval_attributes with
     | [] -> [item]
     | [_] ->
-      checkMultipleReactComponents ~config ~loc:pstr_loc;
+      checkMultipleComponents ~config ~loc:pstr_loc;
       check_string_int_attribute_iter.structure_item
         check_string_int_attribute_iter item;
       let pval_type = Jsx_common.extractUncurried pval_type in
       let coreTypeOfAttr = Jsx_common.coreTypeOfAttrs pval_attributes in
       let typVarsOfCoreType =
-        coreTypeOfAttr
+        coreTypeOfAttr ~config
         |> Option.map Jsx_common.typVarsOfCoreType
         |> Option.value ~default:[]
       in
@@ -1157,7 +1183,7 @@ let transformStructureItem ~config item =
       let retPropsType =
         Typ.constr ~loc:pstr_loc
           (Location.mkloc (Lident "props") pstr_loc)
-          (match coreTypeOfAttr with
+          (match coreTypeOfAttr ~config with
           | None -> makePropsTypeParams namedTypeList
           | Some _ -> (
             match typVarsOfCoreType with
@@ -1166,13 +1192,16 @@ let transformStructureItem ~config item =
       in
       (* type props<'x, 'y> = { x: 'x, y?: 'y, ... } *)
       let propsRecordType =
-        makePropsRecordType ~coreTypeOfAttr ~typVarsOfCoreType "props" pstr_loc
-          namedTypeList
+        makePropsRecordType ~coreTypeOfAttr:(coreTypeOfAttr ~config)
+          ~typVarsOfCoreType "props" pstr_loc namedTypeList
       in
       (* can't be an arrow because it will defensively uncurry *)
       let newExternalType =
         Ptyp_constr
-          ( {loc = pstr_loc; txt = Ldot (Lident "React", "componentLike")},
+          ( {
+              loc = pstr_loc;
+              txt = Ldot (Lident (moduleAccessName config), "componentLike");
+            },
             [retPropsType; innerType] )
       in
       let newStructure =
@@ -1183,14 +1212,15 @@ let transformStructureItem ~config item =
               {
                 value_description with
                 pval_type = {pval_type with ptyp_desc = newExternalType};
-                pval_attributes = List.filter otherAttrsPure pval_attributes;
+                pval_attributes =
+                  List.filter (otherAttrsPure ~config) pval_attributes;
               };
         }
       in
       [propsRecordType; newStructure]
     | _ ->
       Jsx_common.raiseError ~loc:pstr_loc
-        "Only one react.component call can exist on a component at one time")
+        "Only one JSX component call can exist on a component at one time")
   (* let component = ... *)
   | {pstr_loc; pstr_desc = Pstr_value (recFlag, valueBindings)} -> (
     let fileName = filenameFromLoc pstr_loc in
@@ -1229,17 +1259,17 @@ let transformSignatureItem ~config item =
       psig_loc;
       psig_desc = Psig_value ({pval_attributes; pval_type} as psig_desc);
     } as psig -> (
-    match List.filter Jsx_common.hasAttr pval_attributes with
+    match List.filter (Jsx_common.hasAttr ~config) pval_attributes with
     | [] -> [item]
     | [_] ->
-      checkMultipleReactComponents ~config ~loc:psig_loc;
+      checkMultipleComponents ~config ~loc:psig_loc;
       let pval_type = Jsx_common.extractUncurried pval_type in
       check_string_int_attribute_iter.signature_item
         check_string_int_attribute_iter item;
       let hasForwardRef = ref false in
       let coreTypeOfAttr = Jsx_common.coreTypeOfAttrs pval_attributes in
       let typVarsOfCoreType =
-        coreTypeOfAttr
+        coreTypeOfAttr ~config
         |> Option.map Jsx_common.typVarsOfCoreType
         |> Option.value ~default:[]
       in
@@ -1268,7 +1298,7 @@ let transformSignatureItem ~config item =
       let retPropsType =
         Typ.constr
           (Location.mkloc (Lident "props") psig_loc)
-          (match coreTypeOfAttr with
+          (match coreTypeOfAttr ~config with
           | None -> makePropsTypeParams namedTypeList
           | Some _ -> (
             match typVarsOfCoreType with
@@ -1276,8 +1306,8 @@ let transformSignatureItem ~config item =
             | _ -> [Typ.any ()]))
       in
       let propsRecordType =
-        makePropsRecordTypeSig ~coreTypeOfAttr ~typVarsOfCoreType "props"
-          psig_loc
+        makePropsRecordTypeSig ~coreTypeOfAttr:(coreTypeOfAttr ~config)
+          ~typVarsOfCoreType "props" psig_loc
           ((* If there is Nolabel arg, regard the type as ref in forwardRef *)
            (if !hasForwardRef then
               [(true, "ref", [], Location.none, refType Location.none)]
@@ -1287,7 +1317,10 @@ let transformSignatureItem ~config item =
       (* can't be an arrow because it will defensively uncurry *)
       let newExternalType =
         Ptyp_constr
-          ( {loc = psig_loc; txt = Ldot (Lident "React", "componentLike")},
+          ( {
+              loc = psig_loc;
+              txt = Ldot (Lident (moduleAccessName config), "componentLike");
+            },
             [retPropsType; innerType] )
       in
       let newStructure =
@@ -1298,14 +1331,15 @@ let transformSignatureItem ~config item =
               {
                 psig_desc with
                 pval_type = {pval_type with ptyp_desc = newExternalType};
-                pval_attributes = List.filter otherAttrsPure pval_attributes;
+                pval_attributes =
+                  List.filter (otherAttrsPure ~config) pval_attributes;
               };
         }
       in
       [propsRecordType; newStructure]
     | _ ->
       Jsx_common.raiseError ~loc:psig_loc
-        "Only one react.component call can exist on a component at one time")
+        "Only one JSX component call can exist on a component at one time")
   | _ -> [item]
 
 let transformJsxCall ~config mapper callExpression callArguments jsxExprLoc
@@ -1382,7 +1416,8 @@ let expr ~config mapper expression =
       let fragment =
         match config.mode with
         | "automatic" ->
-          Exp.ident ~loc {loc; txt = Ldot (Lident "React", "jsxFragment")}
+          Exp.ident ~loc
+            {loc; txt = Ldot (Lident (moduleAccessName config), "jsxFragment")}
         | "classic" | _ ->
           Exp.ident ~loc {loc; txt = Ldot (Lident "React", "fragment")}
       in
@@ -1390,10 +1425,13 @@ let expr ~config mapper expression =
       let recordOfChildren children =
         Exp.record [(Location.mknoloc (Lident "children"), children)] None
       in
-      let applyReactArray expr =
+      let applyJsxArray expr =
         Exp.apply
           (Exp.ident
-             {txt = Ldot (Lident "React", "array"); loc = Location.none})
+             {
+               txt = Ldot (Lident (moduleAccessName config), "array");
+               loc = Location.none;
+             })
           [(Nolabel, expr)]
       in
       let countOfChildren = function
@@ -1408,11 +1446,11 @@ let expr ~config mapper expression =
           | [child] -> recordOfChildren child
           | _ -> (
             match config.mode with
-            | "automatic" -> recordOfChildren @@ applyReactArray childrenExpr
+            | "automatic" -> recordOfChildren @@ applyJsxArray childrenExpr
             | "classic" | _ -> emptyRecord ~loc:Location.none))
         | _ -> (
           match config.mode with
-          | "automatic" -> recordOfChildren @@ applyReactArray childrenExpr
+          | "automatic" -> recordOfChildren @@ applyJsxArray childrenExpr
           | "classic" | _ -> emptyRecord ~loc:Location.none)
       in
       let args =
@@ -1431,8 +1469,11 @@ let expr ~config mapper expression =
         (match config.mode with
         | "automatic" ->
           if countOfChildren childrenExpr > 1 then
-            Exp.ident ~loc {loc; txt = Ldot (Lident "React", "jsxs")}
-          else Exp.ident ~loc {loc; txt = Ldot (Lident "React", "jsx")}
+            Exp.ident ~loc
+              {loc; txt = Ldot (Lident (moduleAccessName config), "jsxs")}
+          else
+            Exp.ident ~loc
+              {loc; txt = Ldot (Lident (moduleAccessName config), "jsx")}
         | "classic" | _ ->
           if countOfChildren childrenExpr > 1 then
             Exp.ident ~loc

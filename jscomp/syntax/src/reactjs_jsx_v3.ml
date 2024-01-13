@@ -594,7 +594,7 @@ let jsxMapper ~config =
             ({pval_name = {txt = fnName}; pval_attributes; pval_type} as
              value_description);
       } as pstr -> (
-      match List.filter Jsx_common.hasAttr pval_attributes with
+      match List.filter (Jsx_common.hasAttr ~config) pval_attributes with
       | [] -> [item]
       | [_] ->
         let pval_type = Jsx_common.extractUncurried pval_type in
@@ -648,7 +648,7 @@ let jsxMapper ~config =
       let fileName = filenameFromLoc pstr_loc in
       let emptyLoc = Location.in_file fileName in
       let mapBinding binding =
-        if Jsx_common.hasAttrOnBinding binding then
+        if Jsx_common.hasAttrOnBinding ~config binding then
           let binding = Jsx_common.removeArity binding in
           let bindingLoc = binding.pvb_loc in
           let bindingPatLoc = binding.pvb_pat.ppat_loc in
@@ -814,7 +814,9 @@ let jsxMapper ~config =
           in
           let bindingWrapper, hasUnit, expression = modifiedBinding binding in
           let reactComponentAttribute =
-            try Some (List.find Jsx_common.hasAttr binding.pvb_attributes)
+            try
+              Some
+                (List.find (Jsx_common.hasAttr ~config) binding.pvb_attributes)
             with Not_found -> None
           in
           let _attr_loc, payload =
@@ -1037,7 +1039,7 @@ let jsxMapper ~config =
             ({pval_name = {txt = fnName}; pval_attributes; pval_type} as
              psig_desc);
       } as psig -> (
-      match List.filter Jsx_common.hasAttr pval_attributes with
+      match List.filter (Jsx_common.hasAttr ~config) pval_attributes with
       | [] -> [item]
       | [_] ->
         let pval_type = Jsx_common.extractUncurried pval_type in

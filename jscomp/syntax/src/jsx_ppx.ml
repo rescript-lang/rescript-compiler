@@ -51,7 +51,7 @@ let updateConfig config payload =
   (match getInt ~key:"version" fields with
   | None -> ()
   | Some i -> config.Jsx_common.version <- i);
-  (match getString ~key:"module" fields with
+  (match getString ~key:"module_" fields with
   | None -> ()
   | Some s -> config.module_ <- s);
   match getString ~key:"mode" fields with
@@ -89,18 +89,18 @@ let getMapper ~config =
       version = config.version;
       module_ = config.module_;
       mode = config.mode;
-      hasReactComponent = config.hasReactComponent;
+      hasComponent = config.hasComponent;
     }
   in
   let restoreConfig oldConfig =
     config.version <- oldConfig.Jsx_common.version;
     config.module_ <- oldConfig.module_;
     config.mode <- oldConfig.mode;
-    config.hasReactComponent <- oldConfig.hasReactComponent
+    config.hasComponent <- oldConfig.hasComponent
   in
   let signature mapper items =
     let oldConfig = saveConfig () in
-    config.hasReactComponent <- false;
+    config.hasComponent <- false;
     let result =
       List.map
         (fun item ->
@@ -119,7 +119,7 @@ let getMapper ~config =
   in
   let structure mapper items =
     let oldConfig = saveConfig () in
-    config.hasReactComponent <- false;
+    config.hasComponent <- false;
     let result =
       List.map
         (fun item ->
@@ -147,7 +147,7 @@ let rewrite_implementation ~jsxVersion ~jsxModule ~jsxMode
       module_ = jsxModule;
       mode = jsxMode;
       nestedModules = [];
-      hasReactComponent = false;
+      hasComponent = false;
     }
   in
   let mapper = getMapper ~config in
@@ -161,7 +161,7 @@ let rewrite_signature ~jsxVersion ~jsxModule ~jsxMode
       module_ = jsxModule;
       mode = jsxMode;
       nestedModules = [];
-      hasReactComponent = false;
+      hasComponent = false;
     }
   in
   let mapper = getMapper ~config in
