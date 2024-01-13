@@ -169,7 +169,8 @@ let make_custom_rules ~(gentype_config : Bsb_config_types.gentype_config)
     | None, None -> ());
     (match jsx.module_ with
     | None -> ()
-    | Some React -> Ext_buffer.add_string buf " -bs-jsx-module react");
+    | Some React -> Ext_buffer.add_string buf " -bs-jsx-module react"
+    | Some Generic {moduleName} -> Ext_buffer.add_string buf (" -bs-jsx-module " ^ moduleName));
     (match jsx.mode with
     | None -> ()
     | Some Classic -> Ext_buffer.add_string buf " -bs-jsx-mode classic"

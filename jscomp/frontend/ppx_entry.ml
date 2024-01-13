@@ -35,7 +35,7 @@ let rewrite_signature (ast : Parsetree.signature) : Parsetree.signature =
       let jsxVersion = int_of_jsx_version jsxVersion in
       let jsxModule = string_of_jsx_module !jsx_module in
       let jsxMode = string_of_jsx_mode !jsx_mode in
-      Reactjs_jsx_ppx.rewrite_signature ~jsxVersion ~jsxModule ~jsxMode ast
+      Jsx_ppx.rewrite_signature ~jsxVersion ~jsxModule ~jsxMode ast
   in
   if !Js_config.no_builtin_ppx then ast
   else
@@ -55,7 +55,7 @@ let rewrite_implementation (ast : Parsetree.structure) : Parsetree.structure =
       let jsxVersion = int_of_jsx_version jsxVersion in
       let jsxModule = string_of_jsx_module !jsx_module in
       let jsxMode = string_of_jsx_mode !jsx_mode in
-      Reactjs_jsx_ppx.rewrite_implementation ~jsxVersion ~jsxModule ~jsxMode ast
+      Jsx_ppx.rewrite_implementation ~jsxVersion ~jsxModule ~jsxMode ast
   in
   if !Js_config.no_builtin_ppx then ast
   else
