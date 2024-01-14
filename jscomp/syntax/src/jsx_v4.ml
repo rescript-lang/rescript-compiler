@@ -500,7 +500,7 @@ let transformLowercaseCall3 ~config mapper jsxExprLoc callExprLoc attrs
     let domBinding =
       match moduleAccessName config with
       | "React" -> Lident "ReactDOM"
-      | generic -> Ldot (Lident generic, "DOM")
+      | generic -> Ldot (Lident generic, "Elements")
     in
 
     let children, nonChildrenProps =

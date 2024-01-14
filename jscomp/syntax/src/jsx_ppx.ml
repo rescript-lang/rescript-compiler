@@ -3,7 +3,12 @@ open Asttypes
 open Parsetree
 open Longident
 
-let getPayloadFields payload =
+type configPayload =
+  | ModuleName of string
+  | Fields of (t loc * expression) list
+  | Invalid
+
+let getConfigPayload payload =
   match payload with
   | PStr
       ({
@@ -11,8 +16,16 @@ let getPayloadFields payload =
            Pstr_eval ({pexp_desc = Pexp_record (recordFields, None)}, _);
        }
       :: _rest) ->
-    recordFields
-  | _ -> []
+    Fields recordFields
+  | PStr
+      ({
+         pstr_desc =
+           Pstr_eval
+             ({pexp_desc = Pexp_constant (Pconst_string (moduleName, _))}, _);
+       }
+      :: _rest) ->
+    ModuleName moduleName
+  | _ -> Invalid
 
 type configKey = Int | String
 
@@ -47,16 +60,24 @@ let getInt ~key fields =
 let getString ~key fields = fields |> getJsxConfigByKey ~key ~type_:String
 
 let updateConfig config payload =
-  let fields = getPayloadFields payload in
-  (match getInt ~key:"version" fields with
-  | None -> ()
-  | Some i -> config.Jsx_common.version <- i);
-  (match getString ~key:"module_" fields with
-  | None -> ()
-  | Some s -> config.module_ <- s);
-  match getString ~key:"mode" fields with
-  | None -> ()
-  | Some s -> config.mode <- s
+  match getConfigPayload payload with
+  | Invalid -> () (* TODO(generic-jsx): Report error? *)
+  | ModuleName moduleName ->
+    config.Jsx_common.module_ <- moduleName;
+    if String.lowercase_ascii moduleName <> "react" then (
+      (* Force set automatic/version for anything but React *)
+      config.version <- 4;
+      config.mode <- "automatic")
+  | Fields fields -> (
+    (match getInt ~key:"version" fields with
+    | None -> ()
+    | Some i -> config.Jsx_common.version <- i);
+    (match getString ~key:"module_" fields with
+    | None -> ()
+    | Some s -> config.module_ <- s);
+    match getString ~key:"mode" fields with
+    | None -> ()
+    | Some s -> config.mode <- s)
 
 let isJsxConfigAttr ((loc, _) : attribute) = loc.txt = "jsxConfig"
 
