@@ -351,6 +351,13 @@ Javascript Code
 
 Note that there is one design goal to keep in mind, never introduce any meaningless symbol unless necessary, we do optimizations, however, it should also compile readable output code.
 
+## PR target branch
+
+Target branch `master` for development of new (breaking) features (v12).
+
+Bug fixes and maintenance should target branch `11.0_release`.
+We'll merge `11.0_release` into `master` from time to time to propagate those changes.
+
 ## Release Process
 
 To build a new version and release it on NPM, follow these steps:
