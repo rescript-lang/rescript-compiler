@@ -67,7 +67,7 @@ let simplify_alias (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
     | Lprim { primitive = Pfull_apply; args = Lvar v :: ap_args as args; loc }
       -> (
         (* Inline uncurried application when safe *)
-        let normal () =
+        let[@local] normal () =
           Lam.prim ~primitive:Pfull_apply ~args:(Ext_list.map args simpl) loc
         in
         let ap_args = Ext_list.map ap_args simpl in
