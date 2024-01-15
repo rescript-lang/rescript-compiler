@@ -7,7 +7,7 @@ function getName(t) {
 }
 
 function getName$p(t) {
-  return t.name;
+  return t.renamed;
 }
 
 function getAge(t) {

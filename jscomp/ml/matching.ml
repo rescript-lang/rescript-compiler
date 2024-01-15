@@ -1614,10 +1614,9 @@ let make_record_matching loc all_labels def = function
             | Record_regular | Record_optional_labels _ -> 
               Lprim (Pfield (lbl.lbl_pos, !Lambda.fld_record lbl), [arg], loc) 
             | Record_inlined _ ->
-              let name = Ext_list.find_def lbl.lbl_attributes find_name lbl.lbl_name in
-              Lprim (Pfield (lbl.lbl_pos, Fld_record_inline {name}), [arg], loc)
+              Lprim (Pfield (lbl.lbl_pos, !Lambda.fld_record_inline lbl), [arg], loc)
             | Record_unboxed _ -> arg
-            | Record_extension -> Lprim (Pfield (lbl.lbl_pos + 1, Fld_record_extension {name = lbl.lbl_name}), [arg], loc) 
+            | Record_extension -> Lprim (Pfield (lbl.lbl_pos + 1, !Lambda.fld_record_extension lbl), [arg], loc) 
           in
           let str =
             match lbl.lbl_mut with
