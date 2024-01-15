@@ -10,7 +10,9 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
-# master
+# 11.0.1 (Unreleased)
+
+#### :nail_care: Polish
 
 - Remove redundant space before comma in the generated JavaScript for ESM export. https://github.com/rescript-lang/rescript-compiler/pull/6560
 
