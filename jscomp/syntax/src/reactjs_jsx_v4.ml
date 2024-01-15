@@ -1347,6 +1347,61 @@ let transformJsxCall ~config mapper callExpression callArguments jsxExprLoc
 
 let expr ~config mapper expression =
   match expression with
+  | {
+   pexp_desc =
+     Pexp_apply
+       ( ({
+            pexp_desc =
+              Pexp_ident
+                {
+                  txt =
+                    Ldot
+                      ( Lident "React",
+                        ( "useEffect" | "useLayoutEffect" | "useMemo"
+                        | "useImperativeHandle" | "useInsertionEffect"
+                        | "useCallback" ) );
+                };
+          } as hookIdent),
+         [
+           hookDef;
+           (Nolabel, ({pexp_desc = Pexp_array args | Pexp_tuple args} as deps));
+         ] );
+  } ->
+    let newDeps =
+      match args with
+      | [] | [_] -> Pexp_array args
+      | _ -> Pexp_tuple args
+    in
+    let depsExpr =
+      Pexp_apply
+        ( {
+            pexp_desc =
+              Pexp_ident
+                {
+                  txt =
+                    Ldot (Lident "JsxPPXReactSupport", "unsafeToDependencyArray");
+                  loc = Location.none;
+                };
+            pexp_loc = Location.none;
+            pexp_attributes = [];
+          },
+          [(Nolabel, {deps with pexp_desc = newDeps})] )
+    in
+    {
+      expression with
+      pexp_desc =
+        Pexp_apply
+          ( hookIdent,
+            [
+              hookDef;
+              ( Nolabel,
+                {
+                  pexp_loc = Location.none;
+                  pexp_attributes = [];
+                  pexp_desc = depsExpr;
+                } );
+            ] );
+    }
   (* Does the function application have the @JSX attribute? *)
   | {
    pexp_desc = Pexp_apply (callExpression, callArguments);
