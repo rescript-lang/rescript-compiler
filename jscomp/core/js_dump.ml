@@ -147,8 +147,6 @@ let exp_need_paren (e : J.expression) =
   match e.expression_desc with
   (* | Caml_uninitialized_obj _  *)
   | Call ({ expression_desc = Fun _ | Raw_js_code _ }, _, _) -> true
-    (* TODO: implement this *)
-  | Tagged_template _ -> false
   | Raw_js_code { code_info = Exp _ }
   | Fun _
   | Caml_block
@@ -167,6 +165,7 @@ let exp_need_paren (e : J.expression) =
   | Js_not _ | Bool _ | New _ ->
       false
   | Await _ -> false
+  | Tagged_template _ -> false
 
 let comma_idents (cxt : cxt) f ls = iter_lst cxt f ls Ext_pp_scope.ident comma
 
