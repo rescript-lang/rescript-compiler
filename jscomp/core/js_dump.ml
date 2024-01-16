@@ -603,19 +603,14 @@ and expression_desc cxt ~(level : int) f x : cxt =
     P.string f "`";
     let rec aux cxt xs ys = match xs, ys with
     | [], [] -> ()
-    | x_head :: x_rest, ys ->
-      let cxt = (match x_head with
-      | {J.expression_desc = Str { txt; _ }} ->
+    | [{J.expression_desc = Str { txt; _ }}], [] ->  
+        P.string f txt
+    | {J.expression_desc = Str { txt; _ }} :: x_rest, y :: y_rest ->
         P.string f txt;
-        cxt
-      | _ -> 
         P.string f "${";
-        let cxt = expression cxt ~level f x_head in
+        let cxt = expression cxt ~level f y in
         P.string f "}";
-        cxt
-      )
-      in
-      aux cxt ys x_rest
+        aux cxt x_rest y_rest
     | _ -> assert false
     in
     aux cxt stringArgs valueArgs;

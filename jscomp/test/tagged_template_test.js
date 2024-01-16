@@ -5,7 +5,7 @@ var Mt = require("./mt.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 var Tagged_template_libJs = require("./tagged_template_lib.js");
 
-var query = Tagged_template_libJs.sql`SELECT * FROM users WHERE id = 5`;
+var query = Tagged_template_libJs.sql`SELECT * FROM ${"users"} WHERE id = ${"5"}`;
 
 function foo(strings, values) {
   var res = "";
