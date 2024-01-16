@@ -17,16 +17,6 @@ end
 let mkLoc startLoc endLoc =
   Location.{loc_start = startLoc; loc_end = endLoc; loc_ghost = false}
 
-let filter_map (f : 'a -> 'b option) xs =
-  let rec aux acc = function
-    | [] -> List.rev acc
-    | y :: ys -> (
-      match f y with
-      | None -> aux acc ys
-      | Some z -> aux (z :: acc) ys)
-  in
-  aux [] xs
-
 module Recover = struct
   let defaultExpr () =
     let id = Location.mknoloc "rescript.exprhole" in
@@ -2305,7 +2295,7 @@ and parseTemplateExpr ?(prefix = "js") p =
   in
   let parts = parseParts p in
   let strings = List.map fst parts in
-  let values = filter_map snd parts in
+  let values = Ext_list.filter_map parts snd in
   let endPos = p.Parser.endPos in
 
   let genTaggedTemplateCall () =
