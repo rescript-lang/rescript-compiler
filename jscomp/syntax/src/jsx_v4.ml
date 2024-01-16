@@ -5,7 +5,6 @@ open Parsetree
 open Longident
 
 let moduleAccessName = Jsx_common.mkModuleAccessName
-let jsxComponentName = Jsx_common.mkJsxComponentName
 
 let nolabel = Nolabel
 
@@ -119,7 +118,10 @@ let extractChildren ?(removeLastPositionUnit = false) ~loc propsAndChildren =
 let merlinFocus = ({loc = Location.none; txt = "merlin.focus"}, PStr [])
 
 (* Helper method to filter out any attribute that isn't [@react.component] *)
-let otherAttrsPure ~config (loc, _) = loc.txt <> jsxComponentName config
+let otherAttrsPure (loc, _) =
+  match loc.txt with
+  | "react.component" | "jsx.component" -> false
+  | _ -> true
 
 (* Finds the name of the variable the binding is assigned to, otherwise raises Invalid_argument *)
 let rec getFnName binding =
@@ -904,12 +906,10 @@ let vbMatchExpr namedArgList expr =
   aux (List.rev namedArgList)
 
 let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
-  if Jsx_common.hasAttrOnBinding ~config binding then (
+  if Jsx_common.hasAttrOnBinding binding then (
     checkMultipleComponents ~config ~loc:pstr_loc;
     let binding = Jsx_common.removeArity binding in
-    let coreTypeOfAttr =
-      Jsx_common.coreTypeOfAttrs ~config binding.pvb_attributes
-    in
+    let coreTypeOfAttr = Jsx_common.coreTypeOfAttrs binding.pvb_attributes in
     let typVarsOfCoreType =
       coreTypeOfAttr
       |> Option.map Jsx_common.typVarsOfCoreType
@@ -922,8 +922,7 @@ let mapBinding ~config ~emptyLoc ~pstr_loc ~fileName ~recFlag binding =
         binding with
         pvb_pat = {binding.pvb_pat with ppat_loc = emptyLoc};
         pvb_loc = emptyLoc;
-        pvb_attributes =
-          binding.pvb_attributes |> List.filter (otherAttrsPure ~config);
+        pvb_attributes = binding.pvb_attributes |> List.filter otherAttrsPure;
       }
     in
     let fnName = getFnName binding.pvb_pat in
@@ -1152,7 +1151,7 @@ let transformStructureItem ~config item =
       pstr_desc =
         Pstr_primitive ({pval_attributes; pval_type} as value_description);
     } as pstr -> (
-    match List.filter (Jsx_common.hasAttr ~config) pval_attributes with
+    match List.filter Jsx_common.hasAttr pval_attributes with
     | [] -> [item]
     | [_] ->
       checkMultipleComponents ~config ~loc:pstr_loc;
@@ -1161,7 +1160,7 @@ let transformStructureItem ~config item =
       let pval_type = Jsx_common.extractUncurried pval_type in
       let coreTypeOfAttr = Jsx_common.coreTypeOfAttrs pval_attributes in
       let typVarsOfCoreType =
-        coreTypeOfAttr ~config
+        coreTypeOfAttr
         |> Option.map Jsx_common.typVarsOfCoreType
         |> Option.value ~default:[]
       in
@@ -1183,7 +1182,7 @@ let transformStructureItem ~config item =
       let retPropsType =
         Typ.constr ~loc:pstr_loc
           (Location.mkloc (Lident "props") pstr_loc)
-          (match coreTypeOfAttr ~config with
+          (match coreTypeOfAttr with
           | None -> makePropsTypeParams namedTypeList
           | Some _ -> (
             match typVarsOfCoreType with
@@ -1192,8 +1191,8 @@ let transformStructureItem ~config item =
       in
       (* type props<'x, 'y> = { x: 'x, y?: 'y, ... } *)
       let propsRecordType =
-        makePropsRecordType ~coreTypeOfAttr:(coreTypeOfAttr ~config)
-          ~typVarsOfCoreType "props" pstr_loc namedTypeList
+        makePropsRecordType ~coreTypeOfAttr ~typVarsOfCoreType "props" pstr_loc
+          namedTypeList
       in
       (* can't be an arrow because it will defensively uncurry *)
       let newExternalType =
@@ -1212,8 +1211,7 @@ let transformStructureItem ~config item =
               {
                 value_description with
                 pval_type = {pval_type with ptyp_desc = newExternalType};
-                pval_attributes =
-                  List.filter (otherAttrsPure ~config) pval_attributes;
+                pval_attributes = List.filter otherAttrsPure pval_attributes;
               };
         }
       in
@@ -1259,7 +1257,7 @@ let transformSignatureItem ~config item =
       psig_loc;
       psig_desc = Psig_value ({pval_attributes; pval_type} as psig_desc);
     } as psig -> (
-    match List.filter (Jsx_common.hasAttr ~config) pval_attributes with
+    match List.filter Jsx_common.hasAttr pval_attributes with
     | [] -> [item]
     | [_] ->
       checkMultipleComponents ~config ~loc:psig_loc;
@@ -1269,7 +1267,7 @@ let transformSignatureItem ~config item =
       let hasForwardRef = ref false in
       let coreTypeOfAttr = Jsx_common.coreTypeOfAttrs pval_attributes in
       let typVarsOfCoreType =
-        coreTypeOfAttr ~config
+        coreTypeOfAttr
         |> Option.map Jsx_common.typVarsOfCoreType
         |> Option.value ~default:[]
       in
@@ -1298,7 +1296,7 @@ let transformSignatureItem ~config item =
       let retPropsType =
         Typ.constr
           (Location.mkloc (Lident "props") psig_loc)
-          (match coreTypeOfAttr ~config with
+          (match coreTypeOfAttr with
           | None -> makePropsTypeParams namedTypeList
           | Some _ -> (
             match typVarsOfCoreType with
@@ -1306,8 +1304,8 @@ let transformSignatureItem ~config item =
             | _ -> [Typ.any ()]))
       in
       let propsRecordType =
-        makePropsRecordTypeSig ~coreTypeOfAttr:(coreTypeOfAttr ~config)
-          ~typVarsOfCoreType "props" psig_loc
+        makePropsRecordTypeSig ~coreTypeOfAttr ~typVarsOfCoreType "props"
+          psig_loc
           ((* If there is Nolabel arg, regard the type as ref in forwardRef *)
            (if !hasForwardRef then
               [(true, "ref", [], Location.none, refType Location.none)]
@@ -1331,8 +1329,7 @@ let transformSignatureItem ~config item =
               {
                 psig_desc with
                 pval_type = {pval_type with ptyp_desc = newExternalType};
-                pval_attributes =
-                  List.filter (otherAttrsPure ~config) pval_attributes;
+                pval_attributes = List.filter otherAttrsPure pval_attributes;
               };
         }
       in

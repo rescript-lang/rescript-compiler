@@ -11,21 +11,21 @@ type jsxConfig = {
 
 let mkModuleAccessName config = String.capitalize_ascii config.module_
 
-let mkJsxComponentName config =
-  String.lowercase_ascii config.module_ ^ ".component"
-
 (* Helper method to look up the [@react.component] attribute *)
-let hasAttr ~config (loc, _) = loc.txt = mkJsxComponentName config
+let hasAttr (loc, _) =
+  match loc.txt with
+  | "react.component" | "jsx.component" -> true
+  | _ -> false
 
 (* Iterate over the attributes and try to find the [@react.component] attribute *)
-let hasAttrOnBinding ~config {pvb_attributes} =
-  List.find_opt (hasAttr ~config) pvb_attributes <> None
+let hasAttrOnBinding {pvb_attributes} =
+  List.find_opt hasAttr pvb_attributes <> None
 
-let coreTypeOfAttrs ~config attributes =
+let coreTypeOfAttrs attributes =
   List.find_map
     (fun ({txt}, payload) ->
       match (txt, payload) with
-      | txt, PTyp coreType when txt = mkJsxComponentName config -> Some coreType
+      | ("react.component" | "jsx.component"), PTyp coreType -> Some coreType
       | _ -> None)
     attributes
 
