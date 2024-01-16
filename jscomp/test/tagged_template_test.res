@@ -6,6 +6,12 @@ let id = "5"
 
 let query = sql`SELECT * FROM ${table} WHERE id = ${id}`
 
+@module("./tagged_template_lib.js") @variadic
+external length: (array<string>, array<int>) => int = "length"
+
+let extraLength = 10
+let length = length`hello ${extraLength} what's the total length? Is it ${3}?`
+
 let foo = (strings, values) => {
   let res = ref("")
   let valueCount = Array.length(values)
@@ -23,6 +29,10 @@ Mt.from_pair_suites(
     (
       "with externals, it should return a string with the correct interpolations",
       () => Eq(query, "SELECT * FROM 'users' WHERE id = '5'"),
+    ),
+        (
+      "with externals, it should return the result of the function",
+      () => Eq(length, 52),
     ),
     (
       "with rescript function, it should return a string with the correct interpolations",

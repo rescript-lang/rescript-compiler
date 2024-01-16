@@ -6,3 +6,7 @@ exports.sql = (strings, ...values) => {
     result += strings[values.length];
     return result;
 };
+
+exports.length = (strings, ...values) => 
+    strings.reduce((acc, curr) => acc + curr.length, 0) + 
+        values.reduce((acc, curr) => acc + curr, 0);

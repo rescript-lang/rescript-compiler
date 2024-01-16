@@ -7,6 +7,8 @@ var Tagged_template_libJs = require("./tagged_template_lib.js");
 
 var query = Tagged_template_libJs.sql`SELECT * FROM ${"users"} WHERE id = ${"5"}`;
 
+var length = Tagged_template_libJs.length`hello ${10} what's the total length? Is it ${3}?`;
+
 function foo(strings, values) {
   var res = "";
   var valueCount = values.length;
@@ -34,27 +36,39 @@ Mt.from_pair_suites("tagged templates", {
       ],
       tl: {
         hd: [
-          "with rescript function, it should return a string with the correct interpolations",
+          "with externals, it should return the result of the function",
           (function (param) {
               return {
                       TAG: "Eq",
-                      _0: res,
-                      _1: "| 5 * 10 = 50 |"
+                      _0: length,
+                      _1: 52
                     };
             })
         ],
         tl: {
           hd: [
-            "a template literal tagged with json should generate a regular string interpolation for now",
+            "with rescript function, it should return a string with the correct interpolations",
             (function (param) {
                 return {
                         TAG: "Eq",
-                        _0: "some random " + "string",
-                        _1: "some random string"
+                        _0: res,
+                        _1: "| 5 * 10 = 50 |"
                       };
               })
           ],
-          tl: /* [] */0
+          tl: {
+            hd: [
+              "a template literal tagged with json should generate a regular string interpolation for now",
+              (function (param) {
+                  return {
+                          TAG: "Eq",
+                          _0: "some random " + "string",
+                          _1: "some random string"
+                        };
+                })
+            ],
+            tl: /* [] */0
+          }
         }
       }
     });
