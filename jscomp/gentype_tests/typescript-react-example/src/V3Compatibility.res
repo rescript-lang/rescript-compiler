@@ -1,4 +1,4 @@
 open ReactV3
 
 @genType
-type cb = React.callback<int, string>
+type cb = int => string
