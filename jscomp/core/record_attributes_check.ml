@@ -24,7 +24,7 @@
 
 type label = Types.label_description
 
-let find_name = Matching.find_name
+let find_name = Lambda.find_name
 
 let find_name_with_loc (attr : Parsetree.attribute) : string Asttypes.loc option
     =
@@ -39,59 +39,6 @@ let find_name_with_loc (attr : Parsetree.attribute) : string Asttypes.loc option
         ] ) ->
       Some { txt = s; loc }
   | _ -> None
-
-let fld_record (lbl : label) =
-  Lambda.Fld_record
-    {
-      name = Ext_list.find_def lbl.lbl_attributes find_name lbl.lbl_name;
-      mutable_flag = lbl.lbl_mut;
-    }
-
-let fld_record_set (lbl : label) =
-  Lambda.Fld_record_set
-    (Ext_list.find_def lbl.lbl_attributes find_name lbl.lbl_name)
-
-let fld_record_inline (lbl : label) =
-  Lambda.Fld_record_inline
-    { name = Ext_list.find_def lbl.lbl_attributes find_name lbl.lbl_name }
-
-let fld_record_inline_set (lbl : label) =
-  Lambda.Fld_record_inline_set
-    (Ext_list.find_def lbl.lbl_attributes find_name lbl.lbl_name)
-
-let fld_record_extension (lbl : label) =
-  Lambda.Fld_record_extension
-    { name = Ext_list.find_def lbl.lbl_attributes find_name lbl.lbl_name }
-
-let fld_record_extension_set (lbl : label) =
-  Lambda.Fld_record_extension_set
-    (Ext_list.find_def lbl.lbl_attributes find_name lbl.lbl_name)
-
-let blk_record (fields : (label * _) array) mut record_repr =
-  let all_labels_info =
-    Ext_array.map fields (fun (lbl, _) ->
-        Ext_list.find_def lbl.lbl_attributes find_name lbl.lbl_name)
-  in
-  Lambda.Blk_record
-    { fields = all_labels_info; mutable_flag = mut; record_repr }
-
-let blk_record_ext fields mutable_flag =
-  let all_labels_info =
-    Array.map
-      (fun ((lbl : label), _) ->
-        Ext_list.find_def lbl.Types.lbl_attributes find_name lbl.lbl_name)
-      fields
-  in
-  Lambda.Blk_record_ext {fields = all_labels_info; mutable_flag }
-
-let blk_record_inlined fields name num_nonconst optional_labels ~tag ~attrs mutable_flag =
-  let fields =
-    Array.map
-      (fun ((lbl : label), _) ->
-        Ext_list.find_def lbl.lbl_attributes find_name lbl.lbl_name)
-      fields
-  in
-  Lambda.Blk_record_inlined {fields; name; num_nonconst; tag; mutable_flag; optional_labels; attrs }
 
 let check_bs_attributes_inclusion (attrs1 : Parsetree.attributes)
     (attrs2 : Parsetree.attributes) lbl_name =

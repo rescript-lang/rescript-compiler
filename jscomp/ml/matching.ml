@@ -26,19 +26,6 @@ open Printf
 
 let dbg = false
 
-let find_name (attr : Parsetree.attribute) =
-  match attr with
-  | ( { txt = "bs.as" | "as" },
-      PStr
-        [
-          {
-            pstr_desc =
-              Pstr_eval ({ pexp_desc = Pexp_constant (Pconst_string (s, _)) }, _);
-          };
-        ] ) ->
-      Some s
-  | _ -> None
-
 (*  See Peyton-Jones, ``The Implementation of functional programming
     languages'', chapter 5. *)
 (*
@@ -1612,11 +1599,11 @@ let make_record_matching loc all_labels def = function
             match lbl.lbl_repres with
             | Record_float_unused -> assert false
             | Record_regular | Record_optional_labels _ -> 
-              Lprim (Pfield (lbl.lbl_pos, !Lambda.fld_record lbl), [arg], loc) 
+              Lprim (Pfield (lbl.lbl_pos, Lambda.fld_record lbl), [arg], loc) 
             | Record_inlined _ ->
-              Lprim (Pfield (lbl.lbl_pos, !Lambda.fld_record_inline lbl), [arg], loc)
+              Lprim (Pfield (lbl.lbl_pos, Lambda.fld_record_inline lbl), [arg], loc)
             | Record_unboxed _ -> arg
-            | Record_extension -> Lprim (Pfield (lbl.lbl_pos + 1, !Lambda.fld_record_extension lbl), [arg], loc) 
+            | Record_extension -> Lprim (Pfield (lbl.lbl_pos + 1, Lambda.fld_record_extension lbl), [arg], loc) 
           in
           let str =
             match lbl.lbl_mut with
