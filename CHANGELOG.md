@@ -12,6 +12,9 @@
 
 # 11.0.1 (Unreleased)
 
+#### :bug: Bug Fix
+- Fix issue with recursive modules and uncurried. https://github.com/rescript-lang/rescript-compiler/pull/6575
+
 # 11.0.0
 
 No changes compared to rc.9.
