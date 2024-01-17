@@ -3907,7 +3907,7 @@ let subtype_error env trace =
 let extract_concrete_typedecl_opt env t = 
   match extract_concrete_typedecl env t with 
   | v -> Some v 
-  | exception _ -> None
+  | exception Not_found -> None
 
 let rec subtype_rec env trace t1 t2 cstrs =
   let t1 = repr t1 in
