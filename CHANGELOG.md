@@ -12,6 +12,10 @@
 
 # 12.0.0-alpha.1 (Unreleased)
 
+#### :bug: Bug Fix
+
+- Fixed issue with coercions sometimes raising a `Not_found` instead of giving a proper error message. https://github.com/rescript-lang/rescript-compiler/pull/6573
+
 # 11.0.0
 
 No changes compared to rc.9.
