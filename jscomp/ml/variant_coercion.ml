@@ -60,6 +60,11 @@ let can_try_coerce_variant_to_primitive
     Some (constructors, type_attributes |> Ast_untagged_variants.has_untagged)
   | _ -> None
 
+let can_try_coerce_variant_to_primitive_opt p = 
+  match p with 
+  | None -> None 
+  | Some p -> can_try_coerce_variant_to_primitive p
+
 let variant_representation_matches (c1_attrs : Parsetree.attributes)
     (c2_attrs : Parsetree.attributes) =
   match
