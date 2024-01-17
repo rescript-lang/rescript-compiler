@@ -13,6 +13,8 @@
 # 11.0.1 (Unreleased)
 
 #### :bug: Bug Fix
+
+- Fixed issue with coercions sometimes raising a `Not_found` instead of giving a proper error message. https://github.com/rescript-lang/rescript-compiler/pull/6574
 - Fix issue with recursive modules and uncurried. https://github.com/rescript-lang/rescript-compiler/pull/6575
 
 # 11.0.0
