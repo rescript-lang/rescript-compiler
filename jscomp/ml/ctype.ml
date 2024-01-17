@@ -3904,6 +3904,11 @@ let subtypes = TypePairs.create 17
 let subtype_error env trace =
   raise (Subtype (expand_trace env (List.rev trace), []))
 
+let extract_concrete_typedecl_opt env t = 
+  match extract_concrete_typedecl env t with 
+  | v -> Some v 
+  | exception _ -> None
+
 let rec subtype_rec env trace t1 t2 cstrs =
   let t1 = repr t1 in
   let t2 = repr t2 in
@@ -3960,12 +3965,12 @@ let rec subtype_rec env trace t1 t2 cstrs =
     | (Tconstr(p1, [], _), Tconstr(p2, [], _)) when Path.same p1 Predef.path_int && Path.same p2 Predef.path_float ->
         cstrs 
     | (Tconstr(path, [], _), Tconstr(_, [], _)) when Variant_coercion.can_coerce_primitive path && 
-        extract_concrete_typedecl env t2 |> Variant_coercion.can_try_coerce_variant_to_primitive |> Option.is_some
+        extract_concrete_typedecl_opt env t2 |> Variant_coercion.can_try_coerce_variant_to_primitive_opt |> Option.is_some
         ->
       (* type coercion for primitives (int/float/string) to elgible unboxed variants:
          - must be unboxed
          - must have a constructor case with a supported and matching primitive payload *)
-      (match Variant_coercion.can_try_coerce_variant_to_primitive (extract_concrete_typedecl env t2) with
+      (match Variant_coercion.can_try_coerce_variant_to_primitive_opt (extract_concrete_typedecl_opt env t2) with
       | Some (constructors, true) -> 
         if Variant_coercion.variant_has_catch_all_case constructors (fun p -> Path.same p path) then
           cstrs
@@ -3973,10 +3978,10 @@ let rec subtype_rec env trace t1 t2 cstrs =
           (trace, t1, t2, !univar_pairs)::cstrs
       | _ -> (trace, t1, t2, !univar_pairs)::cstrs)
     | (Tconstr(_, [], _), Tconstr(path, [], _)) when Variant_coercion.can_coerce_primitive path && 
-        extract_concrete_typedecl env t1 |> Variant_coercion.can_try_coerce_variant_to_primitive |> Option.is_some
+        extract_concrete_typedecl_opt env t1 |> Variant_coercion.can_try_coerce_variant_to_primitive_opt |> Option.is_some
         ->
       (* type coercion for variants to primitives *)
-      (match Variant_coercion.can_try_coerce_variant_to_primitive (extract_concrete_typedecl env t1) with
+      (match Variant_coercion.can_try_coerce_variant_to_primitive_opt (extract_concrete_typedecl_opt env t1) with
       | Some (constructors, unboxed) -> 
         if constructors |> Variant_coercion.variant_has_same_runtime_representation_as_target ~targetPath:path ~unboxed then
           cstrs
