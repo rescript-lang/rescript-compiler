@@ -10,6 +10,8 @@
 > - :house: [Internal]
 > - :nail_care: [Polish]
 
+# 11.0.1 (Unreleased)
+
 #### :bug: Bug Fix
 
 - Fixed issue with coercions sometimes raising a `Not_found` instead of giving a proper error message. https://github.com/rescript-lang/rescript-compiler/pull/6574
