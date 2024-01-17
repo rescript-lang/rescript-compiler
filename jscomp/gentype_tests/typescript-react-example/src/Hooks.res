@@ -99,7 +99,7 @@ module ForwardRef = {
   )
 }
 
-@genType type callback<'input, 'output> = React.callback<'input, 'output>
+@genType type callback<'input, 'output> = 'input => 'output
 
 @genType type testReactContext = React.Context.t<int>
 
