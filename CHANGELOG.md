@@ -14,6 +14,7 @@
 
 #### :bug: Bug Fix
 
+- Renamed inline record fields : fix renamed field access in inline records https://github.com/rescript-lang/rescript-compiler/pull/6551
 - Fixed issue with coercions sometimes raising a `Not_found` instead of giving a proper error message. https://github.com/rescript-lang/rescript-compiler/pull/6574
 - Fix issue with recursive modules and uncurried. https://github.com/rescript-lang/rescript-compiler/pull/6575
 

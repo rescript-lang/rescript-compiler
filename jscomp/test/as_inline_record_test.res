@@ -12,7 +12,17 @@ let getName = t =>
   | User({name}) => name
   }
 
+let getName' = t =>
+  switch t {
+  | User(u) => u.name
+  }
+
 let getAge = t => 
   switch t {
   | User({age}) => age
+  }
+
+let getAge' = t => 
+  switch t {
+  | User(u) => u.age
   }
