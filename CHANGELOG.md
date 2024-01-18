@@ -18,6 +18,10 @@
 - Fixed issue with coercions sometimes raising a `Not_found` instead of giving a proper error message. https://github.com/rescript-lang/rescript-compiler/pull/6574
 - Fix issue with recursive modules and uncurried. https://github.com/rescript-lang/rescript-compiler/pull/6575
 
+#### :nail_care: Polish
+
+- Improve error message for missing label(s) in function application. https://github.com/rescript-lang/rescript-compiler/pull/6576
+
 # 11.0.0
 
 No changes compared to rc.9.
