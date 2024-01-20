@@ -4056,9 +4056,13 @@ let report_error env ppf = function
   | Illegal_letrec_pat ->
       fprintf ppf
         "Only variables are allowed as left-hand side of `let rec'"
+  | Labels_omitted [label] ->
+      fprintf ppf "Label ~%s was omitted in the application of this labeled function." 
+      label  
   | Labels_omitted labels ->
-      fprintf ppf  "For labeled function, labels %s were omitted in the application of this function." 
-      (String.concat ", " labels)  
+      let labelsString = labels |> List.map(fun label -> "~" ^ label) |> String.concat ", " in
+      fprintf ppf "Labels %s were omitted in the application of this labeled function." 
+      labelsString 
   | Empty_record_literal ->
       fprintf ppf  "Empty record literal {} should be type annotated or used in a record context."
   | Uncurried_arity_mismatch (typ, arity, args) ->
