@@ -44,10 +44,6 @@ let setup_env () =
   Builtin_attributes.check_bs_attributes_inclusion := Record_attributes_check.check_bs_attributes_inclusion;
   Builtin_attributes.check_duplicated_labels :=
     Record_attributes_check.check_duplicated_labels;
-  Lambda.fld_record := Record_attributes_check.fld_record;
-  Lambda.fld_record_set := Record_attributes_check.fld_record_set;
-  Lambda.blk_record := Record_attributes_check.blk_record;
-  Lambda.blk_record_inlined := Record_attributes_check.blk_record_inlined;
   Matching.names_from_construct_pattern := 
     Matching_polyfill.names_from_construct_pattern;
   

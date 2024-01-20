@@ -63,34 +63,34 @@ type tag_info =
   | Blk_record_ext of {fields : string array; mutable_flag : mutable_flag}
   | Blk_lazy_general    
 
+val find_name :
+  Parsetree.attribute -> Asttypes.label option
+
 val tag_of_tag_info : tag_info -> int 
 val mutable_flag_of_tag_info : tag_info -> mutable_flag 
-val blk_record : 
-  ( 
-    (Types.label_description* Typedtree.record_label_definition) array ->
-    mutable_flag -> 
-    record_repr -> 
-    tag_info
-  ) ref
+val blk_record :    
+  (Types.label_description* Typedtree.record_label_definition) array ->
+  mutable_flag -> 
+  record_repr -> 
+  tag_info
+  
 
 val blk_record_ext :
-  ( 
-    (Types.label_description* Typedtree.record_label_definition) array ->
-    mutable_flag -> 
-    tag_info
-  ) ref
+  (Types.label_description* Typedtree.record_label_definition) array ->
+  mutable_flag -> 
+  tag_info
+
 
 val blk_record_inlined :   
-  ( 
-    (Types.label_description* Typedtree.record_label_definition) array ->
-    string ->
-    int ->
-    string list ->
-    tag:int ->
-    attrs:Parsetree.attributes ->
-    mutable_flag ->  
-    tag_info
-  ) ref
+  (Types.label_description* Typedtree.record_label_definition) array ->
+  string ->
+  int ->
+  string list ->
+  tag:int ->
+  attrs:Parsetree.attributes ->
+  mutable_flag ->  
+  tag_info
+
 
 
 
@@ -110,8 +110,16 @@ type field_dbg_info =
   | Fld_array
   
 val fld_record :
-  (Types.label_description -> 
-  field_dbg_info) ref
+  Types.label_description -> 
+  field_dbg_info
+
+val fld_record_inline :
+  Types.label_description -> 
+  field_dbg_info
+
+val fld_record_extension :
+  Types.label_description -> 
+  field_dbg_info
 
 val ref_field_info : field_dbg_info   
 
@@ -125,8 +133,16 @@ type set_field_dbg_info =
 val ref_field_set_info : set_field_dbg_info    
 
 val fld_record_set : 
-  (Types.label_description ->
-  set_field_dbg_info) ref
+  Types.label_description ->
+  set_field_dbg_info
+
+val fld_record_inline_set : 
+  Types.label_description ->
+  set_field_dbg_info
+
+val fld_record_extension_set :
+  Types.label_description -> 
+  set_field_dbg_info
 
 type immediate_or_pointer =
   | Immediate
