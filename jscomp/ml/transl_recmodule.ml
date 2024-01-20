@@ -51,18 +51,22 @@ let init_shape modl =
     match sg with
     | [] -> []
     | Sig_value (id, { val_kind = Val_reg; val_type = ty }) :: rem ->
+        let is_function t =
+          Ast_uncurried_utils.typeIsUncurriedFun t || match t.desc with
+          | Tarrow _ -> true
+          | _ -> false in
         let init_v =
           match Ctype.expand_head env ty with
-          | { desc = Tarrow (_, _, _, _) } ->
-              Const_pointer
-                ( 0,
-                  Pt_constructor
-                    {
-                      name = "Function";
-                      const = cstr_const;
-                      non_const = cstr_non_const;
-                      attrs = [];
-                    } )
+          | t when is_function t ->
+            Const_pointer
+            ( 0,
+              Pt_constructor
+                {
+                  name = "Function";
+                  const = cstr_const;
+                  non_const = cstr_non_const;
+                  attrs = [];
+                } )
           | { desc = Tconstr (p, _, _) } when Path.same p Predef.path_lazy_t ->
               Const_pointer
                 ( 1,

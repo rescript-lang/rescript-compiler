@@ -7,7 +7,6 @@ var duneBinDir = require("./dune").duneBinDir;
 
 var ounitTest = false;
 var mochaTest = false;
-var themeTest = false;
 var bsbTest = false;
 var formatTest = false;
 var all = false;
@@ -18,10 +17,6 @@ if (process.argv.includes("-ounit")) {
 
 if (process.argv.includes("-mocha")) {
   mochaTest = true;
-}
-
-if (process.argv.includes("-theme")) {
-  themeTest = true;
 }
 
 if (process.argv.includes("-bsb")) {
@@ -38,7 +33,6 @@ if (process.argv.includes("-all")) {
 if (all) {
   ounitTest = true;
   mochaTest = true;
-  themeTest = true;
   bsbTest = true;
   formatTest = true;
 }

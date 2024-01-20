@@ -886,17 +886,17 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
       | Record_float_unused -> assert false
       | Record_regular | Record_optional_labels _ ->
           Lprim
-            (Pfield (lbl.lbl_pos, !Lambda.fld_record lbl), [ targ ], e.exp_loc)
+            (Pfield (lbl.lbl_pos, Lambda.fld_record lbl), [ targ ], e.exp_loc)
       | Record_inlined _ ->
           Lprim
-            ( Pfield (lbl.lbl_pos, Fld_record_inline { name = lbl.lbl_name }),
+            ( Pfield (lbl.lbl_pos, Lambda.fld_record_inline lbl),
               [ targ ],
               e.exp_loc )
       | Record_unboxed _ -> targ
       | Record_extension ->
           Lprim
             ( Pfield
-                (lbl.lbl_pos + 1, Fld_record_extension { name = lbl.lbl_name }),
+                (lbl.lbl_pos + 1, Lambda.fld_record_extension lbl),
               [ targ ],
               e.exp_loc ))
   | Texp_setfield (arg, _, lbl, newval) ->
@@ -904,12 +904,12 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
         match lbl.lbl_repres with
         | Record_float_unused -> assert false
         | Record_regular | Record_optional_labels _ ->
-            Psetfield (lbl.lbl_pos, !Lambda.fld_record_set lbl)
+            Psetfield (lbl.lbl_pos, Lambda.fld_record_set lbl)
         | Record_inlined _ ->
-            Psetfield (lbl.lbl_pos, Fld_record_inline_set lbl.lbl_name)
+            Psetfield (lbl.lbl_pos, Lambda.fld_record_inline_set lbl)
         | Record_unboxed _ -> assert false
         | Record_extension ->
-            Psetfield (lbl.lbl_pos + 1, Fld_record_extension_set lbl.lbl_name)
+            Psetfield (lbl.lbl_pos + 1, Lambda.fld_record_extension_set lbl)
       in
       Lprim (access, [ transl_exp arg; transl_exp newval ], e.exp_loc)
   | Texp_array expr_list ->
@@ -1167,13 +1167,13 @@ and transl_record loc env fields repres opt_init_expr =
                     match repres with
                     | Record_float_unused -> assert false
                     | Record_regular | Record_optional_labels _ ->
-                        Pfield (i, !Lambda.fld_record lbl)
+                        Pfield (i, Lambda.fld_record lbl)
                     | Record_inlined _ ->
-                        Pfield (i, Fld_record_inline { name = lbl.lbl_name })
+                        Pfield (i, Lambda.fld_record_inline lbl)
                     | Record_unboxed _ -> assert false
                     | Record_extension ->
                         Pfield
-                          (i + 1, Fld_record_extension { name = lbl.lbl_name })
+                          (i + 1, Lambda.fld_record_extension lbl)
                   in
                   Lprim (access, [ Lvar init_id ], loc)
               | Overridden (_lid, expr) -> transl_exp expr)
@@ -1193,14 +1193,14 @@ and transl_record loc env fields repres opt_init_expr =
             | Record_float_unused -> assert false
             | Record_regular ->
                 Lconst
-                  (Const_block (!Lambda.blk_record fields mut Record_regular, cl))
+                  (Const_block (Lambda.blk_record fields mut Record_regular, cl))
             | Record_optional_labels _ ->
                 Lconst
-                  (Const_block (!Lambda.blk_record fields mut Record_optional, cl))
+                  (Const_block (Lambda.blk_record fields mut Record_optional, cl))
             | Record_inlined { tag; name; num_nonconsts; optional_labels; attrs } ->
                 Lconst
                   (Const_block
-                     ( !Lambda.blk_record_inlined fields name num_nonconsts optional_labels ~tag ~attrs
+                     ( Lambda.blk_record_inlined fields name num_nonconsts optional_labels ~tag ~attrs
                          mut,
                        cl ))
             | Record_unboxed _ ->
@@ -1210,19 +1210,19 @@ and transl_record loc env fields repres opt_init_expr =
             match repres with
             | Record_regular ->
                 Lprim
-                  ( Pmakeblock (!Lambda.blk_record fields mut Record_regular),
+                  ( Pmakeblock (Lambda.blk_record fields mut Record_regular),
                     ll,
                     loc )
             | Record_optional_labels _ ->
                 Lprim
-                  ( Pmakeblock (!Lambda.blk_record fields mut Record_optional),
+                  ( Pmakeblock (Lambda.blk_record fields mut Record_optional),
                     ll,
                     loc )
             | Record_float_unused -> assert false
             | Record_inlined { tag; name; num_nonconsts; optional_labels; attrs } ->
                 Lprim
                   ( Pmakeblock
-                      (!Lambda.blk_record_inlined fields name num_nonconsts optional_labels ~tag ~attrs
+                      (Lambda.blk_record_inlined fields name num_nonconsts optional_labels ~tag ~attrs
                          mut),
                     ll,
                     loc )
@@ -1237,7 +1237,7 @@ and transl_record loc env fields repres opt_init_expr =
                 in
                 let slot = transl_extension_path env path in
                 Lprim
-                  ( Pmakeblock (!Lambda.blk_record_ext fields mut),
+                  ( Pmakeblock (Lambda.blk_record_ext fields mut),
                     slot :: ll,
                     loc ))
         in
@@ -1257,13 +1257,13 @@ and transl_record loc env fields repres opt_init_expr =
                 match repres with
                 | Record_float_unused -> assert false
                 | Record_regular | Record_optional_labels _ ->
-                    Psetfield (lbl.lbl_pos, !Lambda.fld_record_set lbl)
+                    Psetfield (lbl.lbl_pos, Lambda.fld_record_set lbl)
                 | Record_inlined _ ->
-                    Psetfield (lbl.lbl_pos, Fld_record_inline_set lbl.lbl_name)
+                    Psetfield (lbl.lbl_pos, Lambda.fld_record_inline_set lbl)
                 | Record_unboxed _ -> assert false
                 | Record_extension ->
                     Psetfield
-                      (lbl.lbl_pos + 1, Fld_record_extension_set lbl.lbl_name)
+                      (lbl.lbl_pos + 1, Lambda.fld_record_extension_set lbl)
               in
               Lsequence
                 (Lprim (upd, [ Lvar copy_id; transl_exp expr ], loc), cont)
