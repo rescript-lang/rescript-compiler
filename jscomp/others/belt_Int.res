@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 /*** [`Belt.Int`]()
-    Utililites for Int
+    Utilities for Int
 */
 
 @val external isNaN: int => bool = "isNaN"

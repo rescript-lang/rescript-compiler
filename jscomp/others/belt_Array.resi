@@ -13,7 +13,7 @@
 /* Adapted significantly by Authors of ReScript */
 
 /***
-Utililites for `Array` functions.
+Utilities for `Array` functions.
 
 ### Note about index syntax
 
