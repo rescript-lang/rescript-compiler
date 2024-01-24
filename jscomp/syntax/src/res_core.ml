@@ -2259,6 +2259,8 @@ and parseBinaryExpr ?(context = OrdinaryExpr) ?a p prec =
 
 and parseTemplateExpr ?(prefix = "js") p =
   let partPrefix =
+    (* we could stop treating js and j prefix as something special
+       for json, we would first need to remove @as(json`true`) feature *)
     match prefix with
     | "js" | "j" | "json" -> Some prefix
     | _ -> None
