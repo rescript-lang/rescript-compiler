@@ -762,20 +762,6 @@ and transl_exp0 (e : Typedtree.expression) : Lambda.lambda =
               wrap (Lprim (prim, argl, e.exp_loc))
               ))
   | Texp_apply (funct, oargs) ->
-      (* let () = print_string "#2 attrs = " in *)
-      (* let () = (
-        List.iter (
-          function ({txt = attrName}, _) -> print_string (attrName ^ "\n")
-        ) e.exp_attributes
-      ) in
-      let isTaggedTemplate = List.exists (
-        function ({txt = attrName}, _) -> attrName = "res.taggedTemplate"
-      ) e.exp_attributes in
-      let () = if isTaggedTemplate then
-        (print_string "isTaggedTemplate\n")
-      else 
-        (print_string "not isTaggedTemplate\n")
-      in *)
       let inlined, funct =
         Translattribute.get_and_remove_inlined_attribute funct
       in
