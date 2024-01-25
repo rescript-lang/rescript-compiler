@@ -15,3 +15,5 @@ let s = "unknown escape \m111 as passed through"
 let heart = "\u2665"
 
 let smile = "emoji: \u{1F600}"
+
+let taggedTemplate = sql`select * from ${table} where id = ${id}`
