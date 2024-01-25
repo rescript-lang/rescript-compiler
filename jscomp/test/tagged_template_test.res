@@ -1,4 +1,4 @@
-@module("./tagged_template_lib.js") @variadic
+@module("./tagged_template_lib.js") @taggedTemplate
 external sql: (array<string>, array<string>) => string = "sql"
 
 let table = "users"
@@ -6,7 +6,7 @@ let id = "5"
 
 let query = sql`SELECT * FROM ${table} WHERE id = ${id}`
 
-@module("./tagged_template_lib.js") @variadic
+@module("./tagged_template_lib.js") @taggedTemplate
 external length: (array<string>, array<int>) => int = "length"
 
 let extraLength = 10

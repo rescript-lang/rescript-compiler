@@ -1599,7 +1599,6 @@ and compile_prim (prim_info : Lam.prim_info)
                {
                  ap_loc = loc;
                  ap_inlined = Default_inline;
-                 ap_tagged_template = false;
                  ap_status = App_uncurry;
                })
       (*FIXME: should pass info down: `f a [@bs][@inlined]`*)
