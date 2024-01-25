@@ -9,8 +9,6 @@ type jsxConfig = {
   mutable hasComponent: bool;
 }
 
-let mkModuleAccessName config = String.capitalize_ascii config.module_
-
 (* Helper method to look up the [@react.component] attribute *)
 let hasAttr (loc, _) =
   match loc.txt with

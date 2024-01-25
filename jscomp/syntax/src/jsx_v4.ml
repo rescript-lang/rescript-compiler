@@ -4,7 +4,7 @@ open Asttypes
 open Parsetree
 open Longident
 
-let moduleAccessName = Jsx_common.mkModuleAccessName
+let moduleAccessName config = String.capitalize_ascii config.Jsx_common.module_
 
 let nolabel = Nolabel
 
