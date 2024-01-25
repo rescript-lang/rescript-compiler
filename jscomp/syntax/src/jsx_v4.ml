@@ -499,7 +499,7 @@ let transformLowercaseCall3 ~config mapper jsxExprLoc callExprLoc attrs
   match config.Jsx_common.mode with
   (* the new jsx transform *)
   | "automatic" ->
-    let domBinding =
+    let elementBinding =
       match moduleAccessName config with
       | "React" -> Lident "ReactDOM"
       | generic -> Ldot (Lident generic, "DOM")
@@ -525,7 +525,10 @@ let transformLowercaseCall3 ~config mapper jsxExprLoc callExprLoc attrs
           ( labelled "children",
             Exp.apply ~attrs:optionalAttrs
               (Exp.ident
-                 {txt = Ldot (domBinding, "someElement"); loc = Location.none})
+                 {
+                   txt = Ldot (elementBinding, "someElement");
+                   loc = Location.none;
+                 })
               [(Nolabel, children)] );
         ]
       | ListLiteral {pexp_desc = Pexp_array list} when list = [] -> []
@@ -558,15 +561,18 @@ let transformLowercaseCall3 ~config mapper jsxExprLoc callExprLoc attrs
     let jsxExpr, keyAndUnit =
       match (!childrenArg, keyProp) with
       | None, key :: _ ->
-        ( Exp.ident {loc = Location.none; txt = Ldot (domBinding, "jsxKeyed")},
+        ( Exp.ident
+            {loc = Location.none; txt = Ldot (elementBinding, "jsxKeyed")},
           [key; (nolabel, unitExpr ~loc:Location.none)] )
       | None, [] ->
-        (Exp.ident {loc = Location.none; txt = Ldot (domBinding, "jsx")}, [])
+        (Exp.ident {loc = Location.none; txt = Ldot (elementBinding, "jsx")}, [])
       | Some _, key :: _ ->
-        ( Exp.ident {loc = Location.none; txt = Ldot (domBinding, "jsxsKeyed")},
+        ( Exp.ident
+            {loc = Location.none; txt = Ldot (elementBinding, "jsxsKeyed")},
           [key; (nolabel, unitExpr ~loc:Location.none)] )
       | Some _, [] ->
-        (Exp.ident {loc = Location.none; txt = Ldot (domBinding, "jsxs")}, [])
+        ( Exp.ident {loc = Location.none; txt = Ldot (elementBinding, "jsxs")},
+          [] )
     in
     Exp.apply ~loc:jsxExprLoc ~attrs jsxExpr
       ([(nolabel, componentNameExpr); (nolabel, props)] @ keyAndUnit)
