@@ -85,7 +85,8 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
     in
     {CodeItem.importTypes; exportFromTypeDeclaration}
   in
-  let translateLabelDeclarations ~recordRepresentation labelDeclarations =
+  let translateLabelDeclarations ?(inline = false) ~recordRepresentation
+      labelDeclarations =
     let isOptional l =
       match recordRepresentation with
       | Types.Record_optional_labels lbls -> List.mem l lbls
@@ -131,7 +132,7 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
     let type_ =
       match fields with
       | [field] when unboxedAnnotation -> field.type_
-      | _ -> Object (Closed, fields)
+      | _ -> Object ((if inline then Inline else Closed), fields)
     in
     {TranslateTypeExprFromTypes.dependencies; type_}
   in
@@ -244,7 +245,7 @@ let traslateDeclarationKind ~config ~loc ~outputFileRelative ~resolver
                | Cstr_record labelDeclarations ->
                  [
                    labelDeclarations
-                   |> translateLabelDeclarations
+                   |> translateLabelDeclarations ~inline:true
                         ~recordRepresentation:Types.Record_regular;
                  ]
              in

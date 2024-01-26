@@ -62,7 +62,7 @@ let labelJSToString case =
   | IntLabel i -> i
   | StringLabel s -> s |> EmitText.quotes
 
-type closedFlag = Open | Closed
+type closedFlag = Open | Closed | Inline
 
 type type_ =
   | Array of type_ * mutable_
