@@ -61,6 +61,7 @@ type inline =
   | I({i: int, j: int})
   | J({i: int, j: int})
   | K(int, int)
+  | L({"i": int, "j": int})
 
 @genType
 let testBoxedBinary = (_: boxedBinary) => 34
@@ -74,5 +75,6 @@ let testInline = x =>
   | I(q) => I({...q, i: q.i})
   | J(q) => J(q)
   | K(a, b) => K(b, a)
+  | L(q) => L(q)
   }
 

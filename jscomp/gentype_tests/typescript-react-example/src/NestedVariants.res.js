@@ -136,6 +136,11 @@ function testInline(x) {
                 _0: x._1,
                 _1: x._0
               };
+    case "L" :
+        return {
+                TAG: "L",
+                _0: x._0
+              };
     
   }
 }
