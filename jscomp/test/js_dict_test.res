@@ -26,7 +26,7 @@ let suites = {
     ("fromArray", _ => Eq([("x", 23), ("y", 46)], fromArray([("x", 23), ("y", 46)]) |> entries)),
     (
       "map",
-      _ => Eq({"foo": "43", "bar": "86"} |> Obj.magic, map((. i) => string_of_int(i), obj())),
+      _ => Eq({"foo": "43", "bar": "86"} |> Obj.magic, map(i => string_of_int(i), obj())),
     ),
   }
 }

@@ -39,7 +39,7 @@ Dictionary type (ie an '{ }' JS object). However it is restricted to hold a
 single type; therefore values must have the same type. This Dictionary type is
 mostly used with the Js_json.t type.
 */
-type t<'a>
+type t<'a> = dict<'a>
 
 /**
   The type for dictionary keys. This means that dictionaries *must* use `string`s as their keys.
@@ -107,7 +107,7 @@ external keys: t<'a> => array<string> = "Object.keys"
 external empty: unit => t<'a> = ""
 
 /** Experimental internal function */
-let unsafeDeleteKey: (. t<string>, string) => unit
+let unsafeDeleteKey: (t<string>, string) => unit
 
 /**
 Returns an array of key/value pairs in the given dictionary (ES2017).
@@ -170,4 +170,4 @@ let salePrices = Js.Dict.map(discount, prices)
 salePrices == Js.Dict.fromList(list{("pen", 0.90), ("book", 4.50), ("stapler", 6.30)})
 ```
 */
-let map: ((. 'a) => 'b, t<'a>) => t<'b>
+let map: ('a => 'b, t<'a>) => t<'b>
