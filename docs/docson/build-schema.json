@@ -323,8 +323,7 @@
         },
         "module": {
           "type": "string",
-          "enum": ["react"],
-          "description": "JSX module, currently only support the React."
+          "description": "JSX module. Either \"react\" for React, or (since v11.1) any valid module name to apply a generic JSX transform."
         },
         "mode": {
           "type": "string",
