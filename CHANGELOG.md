@@ -14,7 +14,8 @@
 
 #### :rocket: New Feature
 
-- experimental support of tagged template literals, eg ```sql`select * from ${table}```. https://github.com/rescript-lang/rescript-compiler/pull/6250
+- Experimental support of tagged template literals, eg ```sql`select * from ${table}```. https://github.com/rescript-lang/rescript-compiler/pull/6250
+- Experimental support for generic/custom JSX transforms. https://github.com/rescript-lang/rescript-compiler/pull/6565
 
 #### :bug: Bug Fix
 
