@@ -25,7 +25,7 @@ module C2 = {
 
 module C3 = {
   @react.component
-  let make = (~priority as _, ~text="Test") => React.string(text)
+  let make = (~priority as _: string, ~text="Test") => React.string(text)
 }
 
 module C4 = {
@@ -41,5 +41,5 @@ module C6 = {
   }
 
   @react.component
-  let make = (~comp as module(Comp: Comp), ~x as (a, b)) => Comp.xx
+  let make = (~comp as module(Comp: Comp), ~x as (a, b): (string, string)) => React.int(Comp.xx)
 }

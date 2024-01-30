@@ -7,6 +7,6 @@ let make = (
   React.string(x)
 }
 let make = React.forwardRef({
-  let \"InterfaceWithRef" = (props: props<_>, ref) => make(props, ref)
+  let \"InterfaceWithRef" = React.component((props: props<_>, ref) => make(props, ref))
   \"InterfaceWithRef"
 })

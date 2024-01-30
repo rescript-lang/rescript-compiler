@@ -14,7 +14,7 @@ external string: string => element = "%identity"
 external array: array<element> => element = "%identity"
 
 type componentLike<'props, 'return> = 'props => 'return
-type component<'props> = componentLike<'props, element>
+type component<'props>
 
 /* this function exists to prepare for making `component` abstract */
 external component: componentLike<'props, element> => component<'props> = "%identity"

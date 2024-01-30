@@ -77,7 +77,7 @@ module Select = {
     ReactDOM.createDOMElementVariadic("div", [])
   }
   let make = {
-    let \"FirstClassModules$Select" = (props: props<_>) => make(props)
+    let \"FirstClassModules$Select" = React.component((props: props<_>) => make(props))
 
     \"FirstClassModules$Select"
   }
@@ -96,13 +96,12 @@ module External = {
   }
 
   @module("c")
-  external make: React.componentLike<
+  external make: React.component<
     props<
       module(T with type t = 'a and type key = 'key),
       option<'key>,
       (option<'key> => unit),
       array<'a>,
     >,
-    React.element,
   > = "default"
 }

@@ -22,7 +22,7 @@ module V4C = {
   }
 
   @module("c")
-  external make: React.componentLike<props<t<'a>, React.element>, React.element> = "component"
+  external make: React.component<props<t<'a>, React.element>> = "component"
 }
 
 @@jsxConfig({version: 4, mode: "automatic"})
@@ -34,5 +34,5 @@ module V4C = {
   }
 
   @module("c")
-  external make: React.componentLike<props<t<'a>, React.element>, React.element> = "component"
+  external make: React.component<props<t<'a>, React.element>> = "component"
 }
