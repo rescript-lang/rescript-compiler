@@ -43,7 +43,7 @@ jobs:
         run: sed -i "s:ID=alpine:ID=NotpineForGHA:" /etc/os-release
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Build compiler binaries
         run: opam exec -- dune build --display quiet --profile static
@@ -55,7 +55,7 @@ jobs:
         run: python3 configure.py --bootstrap --verbose
 
       - name: "Upload artifacts"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: static-binaries-linux-${{runner.arch}}
           path: |
@@ -72,7 +72,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Download static linux binaries
         if: runner.os == 'Linux'
@@ -87,7 +87,7 @@ jobs:
           chmod +x _build/install/default/bin/*
 
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 16
 
@@ -98,7 +98,7 @@ jobs:
         run: node .github/workflows/get_artifact_info.js
 
       - name: "Upload artifacts: binaries"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.artifact_name }}
           path: ${{ env.artifact_path }}
@@ -130,7 +130,7 @@ jobs:
           git config --global core.eol lf
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 2 # to be able to check for changes in subfolder jscomp/syntax later
 
@@ -173,7 +173,7 @@ jobs:
         run: opam exec -- dune build --display quiet --profile release
 
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 16
 
@@ -262,14 +262,14 @@ jobs:
         run: node .github/workflows/get_artifact_info.js
 
       - name: "Upload artifacts: binaries"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.artifact_name }}
           path: ${{ env.artifact_path }}
 
       - name: "Upload artifacts: lib/ocaml"
         if: runner.os == 'Linux'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: lib-ocaml
           path: lib/ocaml
@@ -280,10 +280,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 16
 
@@ -314,7 +314,7 @@ jobs:
         run: node .github/workflows/prepare_package_upload.js ${{ github.event.pull_request.head.sha }}
 
       - name: "Upload artifact: npm packages"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: npm-packages
           path: |
@@ -341,10 +341,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 16
 
@@ -373,10 +373,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 16
           registry-url: https://registry.npmjs.org # Needed to make auth work for publishing
