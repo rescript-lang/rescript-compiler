@@ -236,7 +236,7 @@ let translateConstr ~config ~paramsTranslation ~(path : Path.t) ~typeEnv =
   | ( (["Js"; "Promise"; "t"] | ["Promise"; "t"] | ["promise"]),
       [paramTranslation] ) ->
     {paramTranslation with type_ = Promise paramTranslation.type_}
-  | (["Js"; "Dict"; "t"] | ["Dict"; "t"]), [paramTranslation] ->
+  | (["Js"; "Dict"; "t"] | ["Dict"; "t"] | ["dict"]), [paramTranslation] ->
     {paramTranslation with type_ = Dict paramTranslation.type_}
   | ["function$"], [arg; _arity] ->
     {dependencies = arg.dependencies; type_ = arg.type_}

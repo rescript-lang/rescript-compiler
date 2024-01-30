@@ -16,6 +16,7 @@
 
 - Experimental support of tagged template literals, eg ```sql`select * from ${table}```. https://github.com/rescript-lang/rescript-compiler/pull/6250
 - Experimental support for generic/custom JSX transforms. https://github.com/rescript-lang/rescript-compiler/pull/6565
+- `dict` is now a builtin type. https://github.com/rescript-lang/rescript-compiler/pull/6590
 
 #### :bug: Bug Fix
 
