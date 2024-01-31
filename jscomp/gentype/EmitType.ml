@@ -203,7 +203,7 @@ let rec renderType ~(config : Config.t) ?(indent = None) ~typeNameIsInterface
                  |> field ~name:(Runtime.jsVariantValue ~polymorphic);
                ]
                |> fields
-             | false, Object (_, flds) ->
+             | false, Object (Inline, flds) ->
                (* inlined record *)
                tagField :: flds |> fields
              | false, type_ ->

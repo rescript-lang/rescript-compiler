@@ -103,6 +103,8 @@ let rec no_side_effect_expression_desc (x : J.expression_desc) =
   | String_append (a, b) | Seq (a, b) -> no_side_effect a && no_side_effect b
   | Length (e, _) | Caml_block_tag (e, _) | Typeof e -> no_side_effect e
   | Bin (op, a, b) -> op <> Eq && no_side_effect a && no_side_effect b
+  | Tagged_template (call_expr, strings, values) -> no_side_effect call_expr &&
+      Ext_list.for_all strings no_side_effect && Ext_list.for_all values no_side_effect
   | Js_not _ | Cond _ | FlatCall _ | Call _ | New _ | Raw_js_code _
   (* actually true? *) ->
       false
@@ -204,7 +206,7 @@ let rec eq_expression ({ expression_desc = x0 } : J.expression)
       | _ -> false)
   | Length _ | Is_null_or_undefined _ | String_append _ | Typeof _ | Js_not _
   | Cond _ | FlatCall _ | New _ | Fun _ | Raw_js_code _ | Array _
-  | Caml_block_tag _ | Object _
+  | Caml_block_tag _ | Object _ | Tagged_template _
   | Number (Uint _) ->
       false
   | Await _ -> false

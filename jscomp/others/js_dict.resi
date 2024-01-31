@@ -39,7 +39,7 @@ Dictionary type (ie an '{ }' JS object). However it is restricted to hold a
 single type; therefore values must have the same type. This Dictionary type is
 mostly used with the Js_json.t type.
 */
-type t<'a>
+type t<'a> = dict<'a>
 
 /**
   The type for dictionary keys. This means that dictionaries *must* use `string`s as their keys.

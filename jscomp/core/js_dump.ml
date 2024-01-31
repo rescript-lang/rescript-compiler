@@ -165,6 +165,7 @@ let exp_need_paren (e : J.expression) =
   | Js_not _ | Bool _ | New _ ->
       false
   | Await _ -> false
+  | Tagged_template _ -> false
 
 let comma_idents (cxt : cxt) f ls = iter_lst cxt f ls Ext_pp_scope.ident comma
 
@@ -596,6 +597,24 @@ and expression_desc cxt ~(level : int) f x : cxt =
               P.string f L.null;
               comma_sp f;
               expression ~level:1 cxt f el))
+  | Tagged_template (callExpr, stringArgs, valueArgs) ->
+    let cxt = expression cxt ~level f callExpr in
+    P.string f "`";
+    let rec aux cxt xs ys = match xs, ys with
+    | [], [] -> ()
+    | [{J.expression_desc = Str { txt; _ }}], [] ->  
+        P.string f txt
+    | {J.expression_desc = Str { txt; _ }} :: x_rest, y :: y_rest ->
+        P.string f txt;
+        P.string f "${";
+        let cxt = expression cxt ~level f y in
+        P.string f "}";
+        aux cxt x_rest y_rest
+    | _ -> assert false
+    in
+    aux cxt stringArgs valueArgs;
+    P.string f "`";
+    cxt
   | String_index (a, b) ->
       P.group f 1 (fun _ ->
           let cxt = expression ~level:15 cxt f a in

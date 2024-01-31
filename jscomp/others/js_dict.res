@@ -25,7 +25,7 @@
 /*** Provides a simple key-value dictionary abstraction over native JavaScript objects */
 
 /** The dict type */
-type t<'a>
+type t<'a> = dict<'a>
 
 /** The key type, an alias of string */
 type key = string

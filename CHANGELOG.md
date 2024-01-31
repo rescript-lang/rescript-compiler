@@ -12,6 +12,18 @@
 
 # 12.0.0-alpha.1 (Unreleased)
 
+# 11.1.0-rc.1
+
+#### :rocket: New Feature
+
+- Experimental support of tagged template literals, e.g. ```sql`select * from ${table}```. https://github.com/rescript-lang/rescript-compiler/pull/6250
+- Experimental support for generic/custom JSX transforms. https://github.com/rescript-lang/rescript-compiler/pull/6565
+- `dict` is now a builtin type. https://github.com/rescript-lang/rescript-compiler/pull/6590
+
+#### :bug: Bug Fix
+
+- GenType: distinguish inline records from unary variant cases of object type. https://github.com/rescript-lang/rescript-compiler/pull/6586
+
 # 11.0.1
 
 #### :bug: Bug Fix

@@ -142,6 +142,7 @@ let reportConstructorMoreThanOneArg ~loc ~name =
 
 let type_is_builtin_object (t : Types.type_expr) =
   match t.desc with
+  | Tconstr (Path.Pident ident, [_], _) when Ident.name ident = "dict" -> true
   | Tconstr (path, _, _) ->
     let name = Path.name path in
     name = "Js.Dict.t" || name = "Js_dict.t"

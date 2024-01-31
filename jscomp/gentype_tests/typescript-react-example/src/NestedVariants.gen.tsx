@@ -41,7 +41,8 @@ export type unboxedBinary = { TAG: "UB"; _0: typeD; _1: number };
 export type inline = 
     { TAG: "I"; readonly i: number; readonly j: number }
   | { TAG: "J"; readonly i: number; readonly j: number }
-  | { TAG: "K"; _0: number; _1: number };
+  | { TAG: "K"; _0: number; _1: number }
+  | { TAG: "L"; _0: { readonly j: number; readonly i: number } };
 
 export const makeVariant: () => typeL = NestedVariantsJS.makeVariant as any;
 

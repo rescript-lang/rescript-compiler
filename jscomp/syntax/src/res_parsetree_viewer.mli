@@ -137,6 +137,7 @@ val collectPatternsFromListConstruct :
 val isBlockExpr : Parsetree.expression -> bool
 
 val isTemplateLiteral : Parsetree.expression -> bool
+val isTaggedTemplateLiteral : Parsetree.expression -> bool
 val hasTemplateLiteralAttr : Parsetree.attributes -> bool
 
 val isSpreadBeltListConcat : Parsetree.expression -> bool

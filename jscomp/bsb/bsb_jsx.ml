@@ -1,5 +1,5 @@
 type version = Jsx_v3 | Jsx_v4
-type module_ = React
+type module_ = React | Generic of {moduleName: string}
 type mode = Classic | Automatic
 type dependencies = string list
 
@@ -15,7 +15,7 @@ let encode_no_nl jsx =
   | None -> ""
   | Some Jsx_v3 -> "3"
   | Some Jsx_v4 -> "4")
-  ^ (match jsx.module_ with None -> "" | Some React -> "React")
+  ^ (match jsx.module_ with None -> "" | Some React -> "React" | Some Generic {moduleName} -> moduleName)
   ^
   match jsx.mode with
   | None -> ""
@@ -55,10 +55,10 @@ let from_map map =
        `Obj
          (fun m ->
            match m.?(Bsb_build_schemas.jsx_module) with
-           | Some (Str { loc; str }) -> (
+           | Some (Str { str }) -> (
                match str with
                | "react" -> module_ := Some React
-               | _ -> Bsb_exception.errorf ~loc "Unsupported jsx module %s" str)
+               | moduleName -> module_ := Some (Generic {moduleName}))
            | Some x ->
                Bsb_exception.config_error x
                  "Unexpected input (jsx module name) for jsx module"

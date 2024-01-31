@@ -87,7 +87,7 @@ let extractChildren ?(removeLastPositionUnit = false) ~loc propsAndChildren =
     | [(Nolabel, {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)})] ->
       acc
     | (Nolabel, {pexp_loc}) :: _rest ->
-      React_jsx_common.raiseError ~loc:pexp_loc
+      Jsx_common.raiseError ~loc:pexp_loc
         "JSX: found non-labelled argument before the last position"
     | arg :: rest -> allButLast_ rest (arg :: acc)
   in
@@ -104,7 +104,7 @@ let extractChildren ?(removeLastPositionUnit = false) ~loc propsAndChildren =
   | [(_, childrenExpr)], props ->
     (childrenExpr, if removeLastPositionUnit then allButLast props else props)
   | _ ->
-    React_jsx_common.raiseError ~loc
+    Jsx_common.raiseError ~loc
       "JSX: somehow there's more than one `children` label"
 
 let unerasableIgnore loc =
@@ -122,7 +122,7 @@ let rec getFnName binding =
   | {ppat_desc = Ppat_var {txt}} -> txt
   | {ppat_desc = Ppat_constraint (pat, _)} -> getFnName pat
   | {ppat_loc} ->
-    React_jsx_common.raiseError ~loc:ppat_loc
+    Jsx_common.raiseError ~loc:ppat_loc
       "react.component calls cannot be destructured."
 
 let makeNewBinding binding expression newName =
@@ -136,7 +136,7 @@ let makeNewBinding binding expression newName =
       pvb_attributes = [merlinFocus];
     }
   | {pvb_loc} ->
-    React_jsx_common.raiseError ~loc:pvb_loc
+    Jsx_common.raiseError ~loc:pvb_loc
       "react.component calls cannot be destructured."
 
 (* Lookup the value of `props` otherwise raise Invalid_argument error *)
@@ -145,7 +145,7 @@ let getPropsNameValue _acc (loc, exp) =
   | {txt = Lident "props"}, {pexp_desc = Pexp_ident {txt = Lident str}} ->
     {propsName = str}
   | {txt; loc}, _ ->
-    React_jsx_common.raiseError ~loc
+    Jsx_common.raiseError ~loc
       "react.component only accepts props as an option, given: { %s }"
       (Longident.last txt)
 
@@ -170,7 +170,7 @@ let getPropsAttr payload =
         :: _rest)) ->
     {propsName = "props"}
   | Some (PStr ({pstr_desc = Pstr_eval (_, _); pstr_loc} :: _rest)) ->
-    React_jsx_common.raiseError ~loc:pstr_loc
+    Jsx_common.raiseError ~loc:pstr_loc
       "react.component accepts a record config with props as an options."
   | _ -> defaultProps
 
@@ -368,7 +368,7 @@ let jsxMapper ~config =
       | Lident path -> Lident (path ^ "Props")
       | Ldot (ident, path) -> Ldot (ident, path ^ "Props")
       | _ ->
-        React_jsx_common.raiseError ~loc
+        Jsx_common.raiseError ~loc
           "JSX name can't be the result of function applications"
     in
     let props =
@@ -407,7 +407,7 @@ let jsxMapper ~config =
         "createDOMElementVariadic"
       (* [@JSX] div(~children= value), coming from <div> ...(value) </div> *)
       | {pexp_loc} ->
-        React_jsx_common.raiseError ~loc:pexp_loc
+        Jsx_common.raiseError ~loc:pexp_loc
           "A spread as a DOM element's children don't make sense written \
            together. You can simply remove the spread."
     in
@@ -450,11 +450,11 @@ let jsxMapper ~config =
     match expr.pexp_desc with
     (* TODO: make this show up with a loc. *)
     | Pexp_fun (Labelled "key", _, _, _) | Pexp_fun (Optional "key", _, _, _) ->
-      React_jsx_common.raiseError ~loc:expr.pexp_loc
+      Jsx_common.raiseError ~loc:expr.pexp_loc
         "Key cannot be accessed inside of a component. Don't worry - you can \
          always key a component from its parent!"
     | Pexp_fun (Labelled "ref", _, _, _) | Pexp_fun (Optional "ref", _, _, _) ->
-      React_jsx_common.raiseError ~loc:expr.pexp_loc
+      Jsx_common.raiseError ~loc:expr.pexp_loc
         "Ref cannot be passed as a normal prop. Either give the prop a \
          different name or use the `forwardRef` API instead."
     | Pexp_fun (arg, default, pattern, expression)
@@ -594,10 +594,10 @@ let jsxMapper ~config =
             ({pval_name = {txt = fnName}; pval_attributes; pval_type} as
              value_description);
       } as pstr -> (
-      match List.filter React_jsx_common.hasAttr pval_attributes with
+      match List.filter Jsx_common.hasAttr pval_attributes with
       | [] -> [item]
       | [_] ->
-        let pval_type = React_jsx_common.extractUncurried pval_type in
+        let pval_type = Jsx_common.extractUncurried pval_type in
         let rec getPropTypes types ({ptyp_loc; ptyp_desc} as fullType) =
           match ptyp_desc with
           | Ptyp_arrow (name, type_, ({ptyp_desc = Ptyp_arrow _} as rest))
@@ -641,15 +641,15 @@ let jsxMapper ~config =
         in
         [externalPropsDecl; newStructure]
       | _ ->
-        React_jsx_common.raiseError ~loc:pstr_loc
+        Jsx_common.raiseError ~loc:pstr_loc
           "Only one react.component call can exist on a component at one time")
     (* let component = ... *)
     | {pstr_loc; pstr_desc = Pstr_value (recFlag, valueBindings)} -> (
       let fileName = filenameFromLoc pstr_loc in
       let emptyLoc = Location.in_file fileName in
       let mapBinding binding =
-        if React_jsx_common.hasAttrOnBinding binding then
-          let binding = React_jsx_common.removeArity binding in
+        if Jsx_common.hasAttrOnBinding binding then
+          let binding = Jsx_common.removeArity binding in
           let bindingLoc = binding.pvb_loc in
           let bindingPatLoc = binding.pvb_pat.ppat_loc in
           let binding =
@@ -689,7 +689,7 @@ let jsxMapper ~config =
               | {pexp_desc = Pexp_constraint (innerFunctionExpression, _typ)} ->
                 spelunkForFunExpression innerFunctionExpression
               | {pexp_loc} ->
-                React_jsx_common.raiseError ~loc:pexp_loc
+                Jsx_common.raiseError ~loc:pexp_loc
                   "react.component calls can only be on function definitions \
                    or component wrappers (forwardRef, memo)."
             in
@@ -814,7 +814,7 @@ let jsxMapper ~config =
           in
           let bindingWrapper, hasUnit, expression = modifiedBinding binding in
           let reactComponentAttribute =
-            try Some (List.find React_jsx_common.hasAttr binding.pvb_attributes)
+            try Some (List.find Jsx_common.hasAttr binding.pvb_attributes)
             with Not_found -> None
           in
           let _attr_loc, payload =
@@ -1037,10 +1037,10 @@ let jsxMapper ~config =
             ({pval_name = {txt = fnName}; pval_attributes; pval_type} as
              psig_desc);
       } as psig -> (
-      match List.filter React_jsx_common.hasAttr pval_attributes with
+      match List.filter Jsx_common.hasAttr pval_attributes with
       | [] -> [item]
       | [_] ->
-        let pval_type = React_jsx_common.extractUncurried pval_type in
+        let pval_type = Jsx_common.extractUncurried pval_type in
         let rec getPropTypes types ({ptyp_loc; ptyp_desc} as fullType) =
           match ptyp_desc with
           | Ptyp_arrow (name, type_, ({ptyp_desc = Ptyp_arrow _} as rest))
@@ -1084,7 +1084,7 @@ let jsxMapper ~config =
         in
         [externalPropsDecl; newStructure]
       | _ ->
-        React_jsx_common.raiseError ~loc:psig_loc
+        Jsx_common.raiseError ~loc:psig_loc
           "Only one react.component call can exist on a component at one time")
     | _ -> [item]
   in
@@ -1094,37 +1094,35 @@ let jsxMapper ~config =
     | Pexp_ident caller -> (
       match caller with
       | {txt = Lident "createElement"; loc} ->
-        React_jsx_common.raiseError ~loc
+        Jsx_common.raiseError ~loc
           "JSX: `createElement` should be preceeded by a module name."
       (* Foo.createElement(~prop1=foo, ~prop2=bar, ~children=[], ()) *)
       | {loc; txt = Ldot (modulePath, ("createElement" | "make"))} -> (
-        match config.React_jsx_common.version with
+        match config.Jsx_common.version with
         | 3 ->
           transformUppercaseCall3 modulePath mapper loc attrs callExpression
             callArguments
-        | _ ->
-          React_jsx_common.raiseError ~loc "JSX: the JSX version must be  3")
+        | _ -> Jsx_common.raiseError ~loc "JSX: the JSX version must be  3")
       (* div(~prop1=foo, ~prop2=bar, ~children=[bla], ()) *)
       (* turn that into
          ReactDOMRe.createElement(~props=ReactDOMRe.props(~props1=foo, ~props2=bar, ()), [|bla|]) *)
       | {loc; txt = Lident id} -> (
         match config.version with
         | 3 -> transformLowercaseCall3 mapper loc attrs callArguments id
-        | _ -> React_jsx_common.raiseError ~loc "JSX: the JSX version must be 3"
-        )
+        | _ -> Jsx_common.raiseError ~loc "JSX: the JSX version must be 3")
       | {txt = Ldot (_, anythingNotCreateElementOrMake); loc} ->
-        React_jsx_common.raiseError ~loc
+        Jsx_common.raiseError ~loc
           "JSX: the JSX attribute should be attached to a \
            `YourModuleName.createElement` or `YourModuleName.make` call. We \
            saw `%s` instead"
           anythingNotCreateElementOrMake
       | {txt = Lapply _; loc} ->
         (* don't think there's ever a case where this is reached *)
-        React_jsx_common.raiseError ~loc
+        Jsx_common.raiseError ~loc
           "JSX: encountered a weird case while processing the code. Please \
            report this!")
     | _ ->
-      React_jsx_common.raiseError ~loc:callExpression.pexp_loc
+      Jsx_common.raiseError ~loc:callExpression.pexp_loc
         "JSX: `createElement` should be preceeded by a simple, direct module \
          name."
   in

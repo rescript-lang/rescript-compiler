@@ -2,14 +2,14 @@ name: CI
 
 on:
   push:
-    branches: [master]
+    branches: [master, 11.0_release]
     # See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#filter-pattern-cheat-sheet
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+"
       - "v[0-9]+.[0-9]+.[0-9]+-*"
 
   pull_request:
-    branches: [master]
+    branches: [master, 11.0_release]
 
 concurrency:
   group: ci-${{ github.ref }}-1
@@ -109,7 +109,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest, macos-arm]
+        os: [
+            macos-13, # x64
+            macos-14, # ARM
+            ubuntu-latest,
+            windows-latest,
+          ]
         ocaml_compiler: [4.14.0]
 
     runs-on: ${{matrix.os}}
@@ -230,24 +235,24 @@ jobs:
         if: runner.os == 'Windows'
         run: node scripts/ciTest.js -mocha -theme -format
 
-      # Build the playground compiler on our fastest runner (macOS ARM)
+      # Build the playground compiler on the fastest runner (ubuntu-latest)
       - name: Install JSOO
-        if: matrix.os == 'macos-arm'
+        if: matrix.os == 'ubuntu-latest'
         run: opam install js_of_ocaml.4.0.0
 
       - name: Build playground compiler
-        if: matrix.os == 'macos-arm'
+        if: matrix.os == 'ubuntu-latest'
         run: |
           opam exec -- node packages/playground-bundling/scripts/generate_cmijs.js
           opam exec -- dune build --profile browser
           cp ./_build/default/jscomp/jsoo/jsoo_playground_main.bc.js playground/compiler.js
 
       - name: Test playground compiler
-        if: matrix.os == 'macos-arm'
+        if: matrix.os == 'ubuntu-latest'
         run: node playground/playground_test.js
 
       - name: Upload playground compiler to CDN
-        if: ${{ matrix.os == 'macos-arm' && startsWith(github.ref, 'refs/tags/v') }}
+        if: ${{ matrix.os == 'ubuntu-latest' && startsWith(github.ref, 'refs/tags/v') }}
         env:
           KEYCDN_USER: ${{ secrets.KEYCDN_USER }}
           KEYCDN_PASSWORD: ${{ secrets.KEYCDN_PASSWORD }}
@@ -324,10 +329,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os:
-          [
-            macos-latest,
-            macos-arm,
+        os: [
+            macos-13, # x64
+            macos-14, # ARM
             ubuntu-latest,
             buildjet-2vcpu-ubuntu-2204-arm,
             windows-latest,
