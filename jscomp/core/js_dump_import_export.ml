@@ -132,7 +132,7 @@ let dumpImportAttributes f (importAttributes : External_ffi_types.import_attribu
     P.brace_group f 0 (
       fun _ -> 
         importAttributes |> Hashtbl.iter(fun key value ->
-          P.string f key;
+          Js_dump_string.pp_string f key;
           P.string f L.colon_space;
           Js_dump_string.pp_string f value;
           let shouldAddComma = !idx < total in
