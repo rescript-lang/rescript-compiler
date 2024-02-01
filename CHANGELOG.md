@@ -12,6 +12,10 @@
 
 # 11.1.0-rc.2 (Unreleased)
 
+#### :bug: Bug Fix
+
+- Fix issue with async and newtype in uncurried mode. https://github.com/rescript-lang/rescript-compiler/pull/6601
+
 # 11.1.0-rc.1
 
 #### :rocket: New Feature

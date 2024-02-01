@@ -34,6 +34,10 @@ var toplevelAwait = await topFoo();
 
 var toplevelAwait2 = Caml_array.get(arr, await topFoo());
 
+async function f(value) {
+  return await Promise.resolve(1);
+}
+
 exports.next = next;
 exports.useNext = useNext;
 exports.Make = Make;
@@ -41,4 +45,5 @@ exports.topFoo = topFoo;
 exports.arr = arr;
 exports.toplevelAwait = toplevelAwait;
 exports.toplevelAwait2 = toplevelAwait2;
+exports.f = f;
 /* toplevelAwait Not a pure module */
