@@ -59,7 +59,7 @@ let reset () =
     since when we print it in the end, it will 
     be escaped quite ugly
 *)
-let add_js_module (hint_name : External_ffi_types.module_bind_name)
+let add_js_module ?import_attributes (hint_name : External_ffi_types.module_bind_name)
     (module_name : string) default : Ident.t =
   let id =
     Ident.create
@@ -71,7 +71,7 @@ let add_js_module (hint_name : External_ffi_types.module_bind_name)
       | Phint_nothing -> Ext_modulename.js_id_name_of_hint_name module_name)
   in
   let lam_module_ident : J.module_id =
-    { id; kind = External { name = module_name; default }; dynamic_import = false }
+    { id; kind = External { name = module_name; default }; dynamic_import = false ; import_attributes }
   in
   match Lam_module_ident.Hash.find_key_opt cached_tbl lam_module_ident with
   | None ->

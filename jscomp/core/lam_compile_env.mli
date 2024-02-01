@@ -27,7 +27,7 @@
 val reset : unit -> unit
 
 val add_js_module :
-  External_ffi_types.module_bind_name -> string -> bool -> Ident.t
+  ?import_attributes:External_ffi_types.import_attributes -> External_ffi_types.module_bind_name -> string -> bool -> Ident.t
 (** 
    [add_js_module hint_name module_name]
    Given a js module name and hint name, assign an id to it

@@ -31,16 +31,16 @@
 
 
 type t = J.module_id = 
-  { id : Ident.t ; kind : Js_op.kind ; dynamic_import : bool }
+  { id : Ident.t ; kind : Js_op.kind ; dynamic_import : bool ; import_attributes : External_ffi_types.import_attributes option }
 
 
 
 let id x = x.id 
 
-let of_ml ?(dynamic_import = false) id = { id ; kind =  Ml ; dynamic_import }
+let of_ml ?(dynamic_import = false) id = { id ; kind =  Ml ; dynamic_import ; import_attributes = None }
 
 
-let of_runtime id = { id ; kind = Runtime ; dynamic_import = false }
+let of_runtime id = { id ; kind = Runtime ; dynamic_import = false ; import_attributes = None }
 
 let name  (x : t) : string  = 
   match x.kind  with 

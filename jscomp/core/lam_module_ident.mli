@@ -41,6 +41,7 @@ type t = J.module_id =
   id : Ident.t ; 
   kind : Js_op.kind ;
   dynamic_import : bool ;
+  import_attributes : External_ffi_types.import_attributes option;
 }
 
 

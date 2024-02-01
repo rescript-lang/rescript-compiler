@@ -51,7 +51,7 @@ and ident = Ident.t
     currently we always use quote
 *)
 
-and module_id = { id : ident; kind : Js_op.kind ; dynamic_import : bool }
+and module_id = { id : ident; kind : Js_op.kind ; dynamic_import : bool ; import_attributes : External_ffi_types.import_attributes option }
 
 and required_modules = module_id list
 and vident = Id of ident | Qualified of module_id * string option

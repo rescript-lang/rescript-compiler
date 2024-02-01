@@ -120,16 +120,40 @@ let requires require_lit cxt f (modules : (Ident.t * string * bool) list) =
       P.newline f);
   outer_cxt
 
+let dumpImportAttributes f (importAttributes : External_ffi_types.import_attributes option) = 
+  match importAttributes with 
+  | None -> () 
+  | Some importAttributes -> 
+    P.space f;
+    P.string f "with";
+    P.space f;
+    let total = Hashtbl.length importAttributes in
+    let idx = ref 1 in
+    P.brace_group f 0 (
+      fun _ -> 
+        importAttributes |> Hashtbl.iter(fun key value ->
+          P.string f key;
+          P.string f L.colon_space;
+          Js_dump_string.pp_string f value;
+          let shouldAddComma = !idx < total in
+          if shouldAddComma then (
+            P.string f L.comma;
+            P.space f
+          );
+          idx := !idx + 1;
+        )
+    )
+
 (** ES6 module style imports *)
-let imports cxt f (modules : (Ident.t * string * bool) list) =
+let imports cxt f (modules : (Ident.t * string * bool * External_ffi_types.import_attributes option) list) =
   (* the context used to print the following program *)
   let outer_cxt, reversed_list =
-    Ext_list.fold_left modules (cxt, []) (fun (cxt, acc) (id, s, b) ->
+    Ext_list.fold_left modules (cxt, []) (fun (cxt, acc) (id, s, b, i) ->
         let str, cxt = Ext_pp_scope.str_of_ident cxt id in
-        (cxt, (str, s, b) :: acc))
+        (cxt, (str, s, b, i) :: acc))
   in
   P.at_least_two_lines f;
-  Ext_list.rev_iter reversed_list (fun (s, file, default) ->
+  Ext_list.rev_iter reversed_list (fun (s, file, default, import_attributes) ->
       P.string f L.import;
       P.space f;
       if default then (
@@ -137,7 +161,8 @@ let imports cxt f (modules : (Ident.t * string * bool) list) =
         P.space f;
         P.string f L.from;
         P.space f;
-        Js_dump_string.pp_string f file)
+        Js_dump_string.pp_string f file;
+        dumpImportAttributes f import_attributes)
       else (
         P.string f L.star;
         P.space f;
@@ -148,7 +173,8 @@ let imports cxt f (modules : (Ident.t * string * bool) list) =
         P.space f;
         P.string f L.from;
         P.space f;
-        Js_dump_string.pp_string f file);
+        Js_dump_string.pp_string f file;
+        dumpImportAttributes f import_attributes);
       P.string f L.semi;
       P.newline f);
   outer_cxt
