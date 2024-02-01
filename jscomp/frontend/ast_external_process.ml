@@ -276,56 +276,70 @@ let parse_external_attributes (no_arguments : bool) (prim_name_check : string)
                         ({pexp_loc; pexp_desc = Pexp_record (fields, _); _}, _);
                     _;
                   };
-                ] ->
+                ] -> (
               let fromName = ref None in
-              let importAttributesFromRecord =
-                fields
-                |> List.filter_map
-                     (fun
-                       ((l, exp) :
-                         Longident.t Location.loc * Parsetree.expression)
-                     ->
-                       match exp.pexp_desc with
-                       | Pexp_constant (Pconst_string (s, _)) -> (
-                         match l.txt with
-                         | Longident.Lident "from" ->
-                           fromName := Some s;
-                           None
-                         | Longident.Lident "type_" -> Some ("type", s)
-                         | Longident.Lident txt -> Some (txt, s)
+              let with_ = ref None in
+              fields
+              |> List.iter
+                   (fun
+                     ((l, exp) :
+                       Longident.t Location.loc * Parsetree.expression)
+                   ->
+                     match (l, exp.pexp_desc) with
+                     | ( {txt = Lident "from"; _},
+                         Pexp_constant (Pconst_string (s, _)) ) ->
+                       fromName := Some s
+                     | {txt = Lident "with"; _}, Pexp_record (fields, _) ->
+                       with_ := Some fields
+                     | _ -> ());
+              match (!fromName, !with_) with
+              | None, _ ->
+                Location.raise_errorf ~loc:pexp_loc
+                  "@module annotations with import attributes must have a \
+                   \"from\" field. This \"from\" field should point to the JS \
+                   module to import, just like the string payload to @module \
+                   normally does."
+              | Some _, None ->
+                Location.raise_errorf ~loc:pexp_loc
+                  "@module annotations with import attributes must have a \
+                   \"with\" field. This \"with\" field should hold a record of \
+                   the import attributes you want applied to the import."
+              | Some fromName, Some withFields ->
+                let importAttributesFromRecord =
+                  withFields
+                  |> List.filter_map
+                       (fun
+                         ((l, exp) :
+                           Longident.t Location.loc * Parsetree.expression)
+                       ->
+                         match exp.pexp_desc with
+                         | Pexp_constant (Pconst_string (s, _)) -> (
+                           match l.txt with
+                           | Longident.Lident "type_" -> Some ("type", s)
+                           | Longident.Lident txt -> Some (txt, s)
+                           | _ ->
+                             Location.raise_errorf ~loc:exp.pexp_loc
+                               "Field must be a regular key.")
                          | _ ->
                            Location.raise_errorf ~loc:exp.pexp_loc
-                             "Field must be a regular key.")
-                       | _ ->
-                         Location.raise_errorf ~loc:exp.pexp_loc
-                           "Only string values are allowed here.")
-              in
-              let fromName =
-                match !fromName with
-                | None ->
-                  Location.raise_errorf ~loc:pexp_loc
-                    "@module annotations with import attributes must have a \
-                     \"from\" field. This \"from\" field should point to the \
-                     JS module to import, just like the string payload to \
-                     @module normally does."
-                | Some fromName -> fromName
-              in
-              let import_attributes =
-                Hashtbl.create (List.length importAttributesFromRecord)
-              in
-              importAttributesFromRecord
-              |> List.iter (fun (key, value) ->
-                     Hashtbl.replace import_attributes key value);
-              {
-                st with
-                external_module_name =
-                  Some
-                    {
-                      bundle = fromName;
-                      module_bind_name = Phint_nothing;
-                      import_attributes = Some import_attributes;
-                    };
-              }
+                             "Only string values are allowed here.")
+                in
+                let import_attributes =
+                  Hashtbl.create (List.length importAttributesFromRecord)
+                in
+                importAttributesFromRecord
+                |> List.iter (fun (key, value) ->
+                       Hashtbl.replace import_attributes key value);
+                {
+                  st with
+                  external_module_name =
+                    Some
+                      {
+                        bundle = fromName;
+                        module_bind_name = Phint_nothing;
+                        import_attributes = Some import_attributes;
+                      };
+                })
             | _ -> (
               match Ast_payload.assert_strings loc payload with
               | [bundle] ->
