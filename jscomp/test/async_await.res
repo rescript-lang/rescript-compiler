@@ -16,3 +16,7 @@ let arr = [1, 2, 3]
 
 let toplevelAwait = await topFoo()
 let toplevelAwait2 = arr[await topFoo()]
+
+let f = async (type input, value: input) => {
+  await Js.Promise.resolve(. 1)
+}
