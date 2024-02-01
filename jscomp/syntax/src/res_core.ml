@@ -437,6 +437,22 @@ let makeUnaryExpr startPos tokenEnd token operand =
       [(Nolabel, operand)]
   | _ -> operand
 
+let makeArrayExpression loc seq extOpt =
+  let els = Ast_helper.Exp.array ~loc seq
+  in let expr = (match extOpt with
+  | None -> els
+  | Some ext -> 
+      Ast_helper.Exp.apply ~loc
+        (Ast_helper.Exp.ident ~loc ~attrs:[spreadAttr]
+           (Location.mkloc
+              (Longident.Ldot
+                 (Longident.Ldot (Longident.Lident "Belt", "Array"), "concatMany"))
+              loc))
+        [(Asttypes.Nolabel, Ast_helper.Exp.array ~loc [els; ext])]
+
+  )
+  in {expr with pexp_loc = loc}
+
 let makeListExpression loc seq extOpt =
   let rec handleSeq = function
     | [] -> (
@@ -3837,6 +3853,17 @@ and parseSpreadExprRegionWithLoc p =
   | _ -> None
 
 and parseListExpr ~startPos p =
+  (* 
+    list of expressions: list{1, 2, ...xs, 2, ...xs} 
+
+    [s, x, s, x, x]
+
+    [([], Some s)]
+    [([x], Some s)]
+    [([], Some s), ([x], Some s)]
+    [([x], Some s), ([x], Some s)]
+    [([x, x], Some s), ([x], Some s)]
+  *)
   let split_by_spread exprs =
     List.fold_left
       (fun acc curr ->
@@ -3881,7 +3908,7 @@ and parseListExpr ~startPos p =
       [(Asttypes.Nolabel, Ast_helper.Exp.array ~loc listExprs)]
 
 (* Overparse ... and give a nice error message *)
-and parseNonSpreadExp ~msg p =
+and _parseNonSpreadExp ~msg p =
   let () =
     match p.Parser.token with
     | DotDotDot ->
@@ -3901,15 +3928,61 @@ and parseNonSpreadExp ~msg p =
     | _ -> Some expr)
   | _ -> None
 
-and parseArrayExp p =
+and _parseArrayExp p =
   let startPos = p.Parser.startPos in
   Parser.expect Lbracket p;
   let exprs =
     parseCommaDelimitedRegion p ~grammar:Grammar.ExprList ~closing:Rbracket
-      ~f:(parseNonSpreadExp ~msg:ErrorMessages.arrayExprSpread)
+      ~f:(_parseNonSpreadExp ~msg:ErrorMessages.arrayExprSpread)
   in
   Parser.expect Rbracket p;
   Ast_helper.Exp.array ~loc:(mkLoc startPos p.prevEndPos) exprs
+
+and parseArrayExp p =
+  let startPos = p.Parser.startPos in
+  Parser.expect Lbracket p;
+  let split_by_spread exprs =
+    List.fold_left
+      (fun acc curr ->
+        match (curr, acc) with
+        | (true, expr, startPos, endPos), _ ->
+          (* find a spread expression, prepend a new sublist *)
+          ([], Some expr, startPos, endPos) :: acc
+        | ( (false, expr, startPos, _endPos),
+            (no_spreads, spread, _accStartPos, accEndPos) :: acc ) ->
+          (* find a non-spread expression, and the accumulated is not empty,
+           * prepend to the first sublist, and update the loc of the first sublist *)
+          (expr :: no_spreads, spread, startPos, accEndPos) :: acc
+        | (false, expr, startPos, endPos), [] ->
+          (* find a non-spread expression, and the accumulated is empty *)
+          [([expr], None, startPos, endPos)])
+      [] exprs
+  in
+  let make_sub_expr = function
+    | exprs, Some spread, startPos, endPos ->
+      makeArrayExpression (mkLoc startPos endPos) exprs (Some spread)
+    | exprs, None, startPos, endPos ->
+      makeArrayExpression (mkLoc startPos endPos) exprs None
+  in
+  let listExprsRev =
+    parseCommaDelimitedReversedList p ~grammar:Grammar.ExprList ~closing:Rbracket
+      ~f:parseSpreadExprRegionWithLoc
+  in
+  Parser.expect Rbracket p;
+  let loc = mkLoc startPos p.prevEndPos in
+  match split_by_spread listExprsRev with
+  | [] -> Ast_helper.Exp.array ~loc:(mkLoc startPos p.prevEndPos) []
+  | [(exprs, Some spread, _, _)] -> makeArrayExpression loc exprs (Some spread)
+  | [(exprs, None, _, _)] -> Ast_helper.Exp.array ~loc:(mkLoc startPos p.prevEndPos) exprs
+  | exprs ->
+    let listExprs = List.map make_sub_expr exprs in
+    Ast_helper.Exp.apply ~loc
+      (Ast_helper.Exp.ident ~loc ~attrs:[spreadAttr]
+         (Location.mkloc
+            (Longident.Ldot
+               (Longident.Ldot (Longident.Lident "Belt", "Array"), "concatMany"))
+            loc))
+      [(Asttypes.Nolabel, Ast_helper.Exp.array ~loc listExprs)]
 
 (* TODO: check attributes in the case of poly type vars,
  * might be context dependend: parseFieldDeclaration (see ocaml) *)
