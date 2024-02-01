@@ -437,7 +437,7 @@ let makeUnaryExpr startPos tokenEnd token operand =
       [(Nolabel, operand)]
   | _ -> operand
 
-let makeArrayExpression loc seq extOpt =
+let _makeArrayExpression loc seq extOpt =
   let els = Ast_helper.Exp.array ~loc seq
   in let expr = (match extOpt with
   | None -> els
@@ -3963,7 +3963,8 @@ and parseArrayExp p =
   in
   Parser.expect Rbracket p;
   let loc = mkLoc startPos p.prevEndPos in
-  let handleExprs = function 
+  let collectExprs = function 
+    | [], Some spread, _startPos, _endPos -> [spread]
     | exprs, Some spread, _startPos, _endPos -> (
       let els = Ast_helper.Exp.array ~loc exprs
       in [els; spread])
@@ -3973,10 +3974,9 @@ and parseArrayExp p =
   in
   match split_by_spread listExprsRev with
   | [] -> Ast_helper.Exp.array ~loc:(mkLoc startPos p.prevEndPos) []
-  | [(exprs, Some spread, _, _)] -> makeArrayExpression loc exprs (Some spread)
   | [(exprs, None, _, _)] -> Ast_helper.Exp.array ~loc:(mkLoc startPos p.prevEndPos) exprs
   | exprs ->
-    let xs = List.map handleExprs exprs in
+    let xs = List.map collectExprs exprs in
     let listExprs = List.fold_right (fun exprs1 acc -> 
       List.fold_right (fun expr1 acc1 -> expr1::acc1) exprs1 acc
     ) xs [] in
