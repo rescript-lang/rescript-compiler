@@ -3966,8 +3966,9 @@ and parseArrayExp p =
   let collectExprs = function 
     | [], Some spread, _startPos, _endPos -> [spread]
     | exprs, Some spread, _startPos, _endPos -> (
-      let els = Ast_helper.Exp.array ~loc exprs
-      in [els; spread])
+      let els = Ast_helper.Exp.array ~loc exprs in
+      let _spread_expr = {spread with Parsetree.pexp_attributes = [spreadAttr]} in
+      [els; spread])
     | exprs, None, _startPos, _endPos -> (
       let els = Ast_helper.Exp.array ~loc exprs
       in [els])
