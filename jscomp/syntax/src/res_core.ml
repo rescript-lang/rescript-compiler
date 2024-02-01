@@ -452,7 +452,6 @@ let makeArrayExpression loc seq extOpt =
                  (Longident.Ldot (Longident.Lident "Belt", "Array"), "concatMany"))
               loc))
         [(Asttypes.Nolabel, Ast_helper.Exp.array ~loc [els; ext])]
-
   )
   in {expr with pexp_loc = loc}
 
@@ -3998,24 +3997,29 @@ and parseArrayExp p =
           [([expr], None, startPos, endPos)])
       [] exprs
   in
-  let make_sub_expr = function
-    | exprs, Some spread, startPos, endPos ->
-      makeArrayExpression (mkLoc startPos endPos) exprs (Some spread)
-    | exprs, None, startPos, endPos ->
-      makeArrayExpression (mkLoc startPos endPos) exprs None
-  in
   let listExprsRev =
     parseCommaDelimitedReversedList p ~grammar:Grammar.ExprList ~closing:Rbracket
       ~f:parseSpreadExprRegionWithLoc
   in
   Parser.expect Rbracket p;
   let loc = mkLoc startPos p.prevEndPos in
+  let handleExprs = function 
+    | exprs, Some spread, _startPos, _endPos -> (
+      let els = Ast_helper.Exp.array ~loc exprs
+      in [els; spread])
+    | exprs, None, _startPos, _endPos -> (
+      let els = Ast_helper.Exp.array ~loc exprs
+      in [els])
+  in
   match split_by_spread listExprsRev with
   | [] -> Ast_helper.Exp.array ~loc:(mkLoc startPos p.prevEndPos) []
   | [(exprs, Some spread, _, _)] -> makeArrayExpression loc exprs (Some spread)
   | [(exprs, None, _, _)] -> Ast_helper.Exp.array ~loc:(mkLoc startPos p.prevEndPos) exprs
   | exprs ->
-    let listExprs = List.map make_sub_expr exprs in
+    let xs = List.map handleExprs exprs in
+    let listExprs = List.fold_right (fun exprs1 acc -> 
+      List.fold_right (fun expr1 acc1 -> expr1::acc1) exprs1 acc
+    ) xs [] in
     Ast_helper.Exp.apply ~loc
       (Ast_helper.Exp.ident ~loc ~attrs:[spreadAttr]
          (Location.mkloc
