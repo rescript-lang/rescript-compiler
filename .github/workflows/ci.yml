@@ -147,7 +147,7 @@ jobs:
           chmod +x _build/install/default/bin/*
 
       - name: Use OCaml ${{matrix.ocaml_compiler}}
-        uses: ocaml/setup-ocaml@v2.1.7
+        uses: ocaml/setup-ocaml@v2
         if: matrix.os != 'windows-latest'
         with:
           ocaml-compiler: ${{matrix.ocaml_compiler}}
@@ -155,7 +155,7 @@ jobs:
           opam-depext: false
 
       - name: Use OCaml ${{matrix.ocaml_compiler}} (Win)
-        uses: ocaml/setup-ocaml@v2.1.7
+        uses: ocaml/setup-ocaml@v2
         if: matrix.os == 'windows-latest'
         with:
           ocaml-compiler: ${{matrix.ocaml_compiler}}
