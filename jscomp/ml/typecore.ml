@@ -805,7 +805,9 @@ end) = struct
     Env.mark_type_used env (Path.last tpath) (Env.find_type tpath env);
     match lid.txt with
       Longident.Lident s_ -> begin
-        let s = if List.exists (fun nd -> get_name nd = s_) descrs
+        let s = 
+          if List.exists (fun nd -> get_name nd = s_) descrs
+          || not (List.exists (fun nd -> get_name nd = "anyOtherField") descrs)
           then s_
           else "anyOtherField" in 
         try
