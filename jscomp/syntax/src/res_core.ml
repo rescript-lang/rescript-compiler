@@ -78,10 +78,6 @@ module ErrorMessages = struct
      + Array size check + `get` checks on the current pattern. If it's to \
      obtain a subarray, use `Array.sub` or `Belt.Array.slice`."
 
-  let arrayExprSpread =
-    "Arrays can't use the `...` spread currently. Please use `concat` or other \
-     Array helpers."
-
   let recordExprSpread =
     "Records can only have one `...` spread, at the beginning.\n\
      Explanation: since records have a known, fixed shape, a spread like `{a, \
@@ -439,21 +435,6 @@ let makeUnaryExpr startPos tokenEnd token operand =
          (Location.mkloc (Longident.Lident "not") tokenLoc))
       [(Nolabel, operand)]
   | _ -> operand
-
-let _makeArrayExpression loc seq extOpt =
-  let els = Ast_helper.Exp.array ~loc seq
-  in let expr = (match extOpt with
-  | None -> els
-  | Some ext -> 
-      Ast_helper.Exp.apply ~loc
-        (Ast_helper.Exp.ident ~loc ~attrs:[spreadAttr]
-           (Location.mkloc
-              (Longident.Ldot
-                 (Longident.Ldot (Longident.Lident "Belt", "Array"), "concatMany"))
-              loc))
-        [(Asttypes.Nolabel, Ast_helper.Exp.array ~loc [els; ext])]
-  )
-  in {expr with pexp_loc = loc}
 
 let makeListExpression loc seq extOpt =
   let rec handleSeq = function
@@ -3892,17 +3873,6 @@ and parseSpreadExprRegionWithLoc p =
   | _ -> None
 
 and parseListExpr ~startPos p =
-  (* 
-    list of expressions: list{1, 2, ...xs, 2, ...xs} 
-
-    [s, x, s, x, x]
-
-    [([], Some s)]
-    [([x], Some s)]
-    [([], Some s), ([x], Some s)]
-    [([x], Some s), ([x], Some s)]
-    [([x, x], Some s), ([x], Some s)]
-  *)
   let split_by_spread exprs =
     List.fold_left
       (fun acc curr ->
@@ -3946,37 +3916,6 @@ and parseListExpr ~startPos p =
             loc))
       [(Asttypes.Nolabel, Ast_helper.Exp.array ~loc listExprs)]
 
-(* Overparse ... and give a nice error message *)
-and _parseNonSpreadExp ~msg p =
-  let () =
-    match p.Parser.token with
-    | DotDotDot ->
-      Parser.err p (Diagnostics.message msg);
-      Parser.next p
-    | _ -> ()
-  in
-  match p.Parser.token with
-  | token when Grammar.isExprStart token -> (
-    let expr = parseExpr p in
-    match p.Parser.token with
-    | Colon ->
-      Parser.next p;
-      let typ = parseTypExpr p in
-      let loc = mkLoc expr.pexp_loc.loc_start typ.ptyp_loc.loc_end in
-      Some (Ast_helper.Exp.constraint_ ~loc expr typ)
-    | _ -> Some expr)
-  | _ -> None
-
-and _parseArrayExp p =
-  let startPos = p.Parser.startPos in
-  Parser.expect Lbracket p;
-  let exprs =
-    parseCommaDelimitedRegion p ~grammar:Grammar.ExprList ~closing:Rbracket
-      ~f:(_parseNonSpreadExp ~msg:ErrorMessages.arrayExprSpread)
-  in
-  Parser.expect Rbracket p;
-  Ast_helper.Exp.array ~loc:(mkLoc startPos p.prevEndPos) exprs
-
 and parseArrayExp p =
   let startPos = p.Parser.startPos in
   Parser.expect Lbracket p;
@@ -4007,7 +3946,6 @@ and parseArrayExp p =
     | [], Some spread, _startPos, _endPos -> [spread]
     | exprs, Some spread, _startPos, _endPos -> (
       let els = Ast_helper.Exp.array ~loc exprs in
-      let _spread_expr = {spread with Parsetree.pexp_attributes = [spreadAttr]} in
       [els; spread])
     | exprs, None, _startPos, _endPos -> (
       let els = Ast_helper.Exp.array ~loc exprs
