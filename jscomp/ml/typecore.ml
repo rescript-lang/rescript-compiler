@@ -789,7 +789,7 @@ module NameChoice(Name : sig
   val get_type: t -> type_expr
   val get_descrs: Env.type_descriptions -> t list
 
-  val set_name: t -> string -> t
+  val add_with_name: t -> string -> t
   val unbound_name_error: Env.t -> Longident.t loc -> 'a
 
 end) = struct
@@ -813,7 +813,7 @@ end) = struct
         try
           let x = List.find (fun nd -> get_name nd = s) descrs in
           if s = "anyOtherField"
-            then set_name x s_
+            then add_with_name x s_
             else x
         with Not_found ->
           let names = List.map get_name descrs in
@@ -894,13 +894,15 @@ module Label = NameChoice (struct
   type t = label_description
   let type_kind = "record"
   let get_name lbl = lbl.lbl_name
-  let set_name lbl name =
+  let add_with_name lbl name =
     let l = 
       {lbl with
         lbl_name = name;
+        lbl_pos = Array.length lbl.lbl_all;
         lbl_repres = Record_optional_labels [name]} in
-    let lbl_all = lbl.lbl_all in
-    lbl_all.(Array.length lbl_all - 1) <- l; (* assume "anyOtherField" is the last label *)
+    let lbl_all_list = Array.to_list lbl.lbl_all @ [l] in
+    let lbl_all = Array.of_list lbl_all_list in
+    Ext_array.iter lbl_all (fun lbl -> lbl.lbl_all <- lbl_all);
     l
   let get_type lbl = lbl.lbl_res
   let get_descrs = snd
@@ -1059,7 +1061,7 @@ module Constructor = NameChoice (struct
   let get_name cstr = cstr.cstr_name
   let get_type cstr = cstr.cstr_res
 
-  let set_name _cstr _name = assert false
+  let add_with_name _cstr _name = assert false
   let get_descrs = fst
   let unbound_name_error = Typetexp.unbound_constructor_error
 end)
