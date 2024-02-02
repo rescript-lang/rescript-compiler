@@ -34,7 +34,7 @@ jobs:
     runs-on: ${{matrix.os}}
 
     container:
-      image: ghcr.io/rescript-lang/rescript-ci-build:v1.1.0
+      image: ghcr.io/rescript-lang/rescript-ci-build:v1.2.0
 
     steps:
       # See https://github.com/actions/runner/issues/801#issuecomment-1374967227.
@@ -115,7 +115,7 @@ jobs:
             ubuntu-latest,
             windows-latest,
           ]
-        ocaml_compiler: [4.14.0]
+        ocaml_compiler: [4.14.1]
 
     runs-on: ${{matrix.os}}
 
@@ -147,7 +147,7 @@ jobs:
           chmod +x _build/install/default/bin/*
 
       - name: Use OCaml ${{matrix.ocaml_compiler}}
-        uses: ocaml/setup-ocaml@v2.1.7
+        uses: ocaml/setup-ocaml@v2
         if: matrix.os != 'windows-latest'
         with:
           ocaml-compiler: ${{matrix.ocaml_compiler}}
@@ -155,7 +155,7 @@ jobs:
           opam-depext: false
 
       - name: Use OCaml ${{matrix.ocaml_compiler}} (Win)
-        uses: ocaml/setup-ocaml@v2.1.7
+        uses: ocaml/setup-ocaml@v2
         if: matrix.os == 'windows-latest'
         with:
           ocaml-compiler: ${{matrix.ocaml_compiler}}

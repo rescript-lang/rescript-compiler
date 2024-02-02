@@ -12,6 +12,14 @@
 
 # 12.0.0-alpha.1 (Unreleased)
 
+#### :bug: Bug Fix
+
+- Fix issue with async and newtype in uncurried mode. https://github.com/rescript-lang/rescript-compiler/pull/6601
+
+#### :house: Internal
+
+- Use OCaml 4.14.1 (+ Alpine 3.19 container) for CI build. https://github.com/rescript-lang/rescript-compiler/pull/6600
+
 # 11.1.0-rc.1
 
 #### :rocket: New Feature
