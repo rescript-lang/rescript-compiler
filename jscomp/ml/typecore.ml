@@ -788,6 +788,8 @@ module NameChoice(Name : sig
   val get_name: t -> string
   val get_type: t -> type_expr
   val get_descrs: Env.type_descriptions -> t list
+
+  val set_name: t -> string -> t
   val unbound_name_error: Env.t -> Longident.t loc -> 'a
 
 end) = struct
@@ -798,13 +800,19 @@ end) = struct
     | Tconstr(p, _, _) -> p
     | _ -> assert false
 
-  let lookup_from_type env tpath lid =
+  let lookup_from_type env tpath (lid : Longident.t loc) : Name.t =
     let descrs = get_descrs (Env.find_type_descrs tpath env) in
     Env.mark_type_used env (Path.last tpath) (Env.find_type tpath env);
     match lid.txt with
-      Longident.Lident s -> begin
+      Longident.Lident s_ -> begin
+        let s = if List.exists (fun nd -> get_name nd = s_) descrs
+          then s_
+          else "anyOtherField" in 
         try
-          List.find (fun nd -> get_name nd = s) descrs
+          let x = List.find (fun nd -> get_name nd = s) descrs in
+          if s = "anyOtherField"
+            then set_name x s_
+            else x
         with Not_found ->
           let names = List.map get_name descrs in
           raise (Error (lid.loc, env,
@@ -884,6 +892,14 @@ module Label = NameChoice (struct
   type t = label_description
   let type_kind = "record"
   let get_name lbl = lbl.lbl_name
+  let set_name lbl name =
+    let l = 
+      {lbl with
+        lbl_name = name;
+        lbl_repres = Record_optional_labels [name]} in
+    let lbl_all = lbl.lbl_all in
+    lbl_all.(Array.length lbl_all - 1) <- l; (* assume "anyOtherField" is the last label *)
+    l
   let get_type lbl = lbl.lbl_res
   let get_descrs = snd
   let unbound_name_error = Typetexp.unbound_label_error
@@ -1040,6 +1056,8 @@ module Constructor = NameChoice (struct
   let type_kind = "variant"
   let get_name cstr = cstr.cstr_name
   let get_type cstr = cstr.cstr_res
+
+  let set_name _cstr _name = assert false
   let get_descrs = fst
   let unbound_name_error = Typetexp.unbound_constructor_error
 end)
