@@ -48,15 +48,23 @@ let getString ~key fields = fields |> getJsxConfigByKey ~key ~type_:String
 
 let updateConfig config payload =
   let fields = getPayloadFields payload in
-  (match getInt ~key:"version" fields with
-  | None -> ()
-  | Some i -> config.Jsx_common.version <- i);
-  (match getString ~key:"module_" fields with
+  let moduleRaw = getString ~key:"module_" fields in
+  let isGeneric =
+    match moduleRaw |> Option.map (fun m -> String.lowercase_ascii m) with
+    | Some "react" | None -> false
+    | Some _ -> true
+  in
+  (match (isGeneric, getInt ~key:"version" fields) with
+  | true, _ -> config.Jsx_common.version <- 4
+  | false, Some i -> config.Jsx_common.version <- i
+  | _ -> ());
+  (match moduleRaw with
   | None -> ()
   | Some s -> config.module_ <- s);
-  match getString ~key:"mode" fields with
-  | None -> ()
-  | Some s -> config.mode <- s
+  match (isGeneric, getString ~key:"mode" fields) with
+  | true, _ -> config.mode <- "automatic"
+  | false, Some s -> config.mode <- s
+  | _ -> ()
 
 let isJsxConfigAttr ((loc, _) : attribute) = loc.txt = "jsxConfig"
 
