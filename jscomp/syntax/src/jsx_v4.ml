@@ -4,7 +4,9 @@ open Asttypes
 open Parsetree
 open Longident
 
-let moduleAccessName config = String.capitalize_ascii config.Jsx_common.module_
+let moduleAccessName config value =
+  String.capitalize_ascii config.Jsx_common.module_ ^ "." ^ value
+  |> Longident.parse
 
 let nolabel = Nolabel
 
@@ -384,10 +386,7 @@ let transformUppercaseCall3 ~config modulePath mapper jsxExprLoc callExprLoc
           ( labelled "children",
             Exp.apply
               (Exp.ident
-                 {
-                   txt = Ldot (Lident (moduleAccessName config), "array");
-                   loc = Location.none;
-                 })
+                 {txt = moduleAccessName config "array"; loc = Location.none})
               [(Nolabel, expression)] );
         ]
       | _ ->
@@ -431,31 +430,17 @@ let transformUppercaseCall3 ~config modulePath mapper jsxExprLoc callExprLoc
       match (!childrenArg, keyProp) with
       | None, key :: _ ->
         ( Exp.ident
-            {
-              loc = Location.none;
-              txt = Ldot (Lident (moduleAccessName config), "jsxKeyed");
-            },
+            {loc = Location.none; txt = moduleAccessName config "jsxKeyed"},
           [key; (nolabel, unitExpr ~loc:Location.none)] )
       | None, [] ->
-        ( Exp.ident
-            {
-              loc = Location.none;
-              txt = Ldot (Lident (moduleAccessName config), "jsx");
-            },
+        ( Exp.ident {loc = Location.none; txt = moduleAccessName config "jsx"},
           [] )
       | Some _, key :: _ ->
         ( Exp.ident
-            {
-              loc = Location.none;
-              txt = Ldot (Lident (moduleAccessName config), "jsxsKeyed");
-            },
+            {loc = Location.none; txt = moduleAccessName config "jsxsKeyed"},
           [key; (nolabel, unitExpr ~loc:Location.none)] )
       | Some _, [] ->
-        ( Exp.ident
-            {
-              loc = Location.none;
-              txt = Ldot (Lident (moduleAccessName config), "jsxs");
-            },
+        ( Exp.ident {loc = Location.none; txt = moduleAccessName config "jsxs"},
           [] )
     in
     Exp.apply ~loc:jsxExprLoc ~attrs jsxExpr
@@ -500,9 +485,9 @@ let transformLowercaseCall3 ~config mapper jsxExprLoc callExprLoc attrs
   (* the new jsx transform *)
   | "automatic" ->
     let elementBinding =
-      match moduleAccessName config with
-      | "React" -> Lident "ReactDOM"
-      | generic -> Ldot (Lident generic, "DOM")
+      match config.module_ |> String.lowercase_ascii with
+      | "react" -> Lident "ReactDOM"
+      | _generic -> moduleAccessName config "Elements"
     in
 
     let children, nonChildrenProps =
@@ -539,10 +524,7 @@ let transformLowercaseCall3 ~config mapper jsxExprLoc callExprLoc attrs
           ( labelled "children",
             Exp.apply
               (Exp.ident
-                 {
-                   txt = Ldot (Lident (moduleAccessName config), "array");
-                   loc = Location.none;
-                 })
+                 {txt = moduleAccessName config "array"; loc = Location.none})
               [(Nolabel, expression)] );
         ]
     in
@@ -1203,10 +1185,7 @@ let transformStructureItem ~config item =
       (* can't be an arrow because it will defensively uncurry *)
       let newExternalType =
         Ptyp_constr
-          ( {
-              loc = pstr_loc;
-              txt = Ldot (Lident (moduleAccessName config), "componentLike");
-            },
+          ( {loc = pstr_loc; txt = moduleAccessName config "componentLike"},
             [retPropsType; innerType] )
       in
       let newStructure =
@@ -1321,10 +1300,7 @@ let transformSignatureItem ~config item =
       (* can't be an arrow because it will defensively uncurry *)
       let newExternalType =
         Ptyp_constr
-          ( {
-              loc = psig_loc;
-              txt = Ldot (Lident (moduleAccessName config), "componentLike");
-            },
+          ( {loc = psig_loc; txt = moduleAccessName config "componentLike"},
             [retPropsType; innerType] )
       in
       let newStructure =
@@ -1419,8 +1395,7 @@ let expr ~config mapper expression =
       let fragment =
         match config.mode with
         | "automatic" ->
-          Exp.ident ~loc
-            {loc; txt = Ldot (Lident (moduleAccessName config), "jsxFragment")}
+          Exp.ident ~loc {loc; txt = moduleAccessName config "jsxFragment"}
         | "classic" | _ ->
           Exp.ident ~loc {loc; txt = Ldot (Lident "React", "fragment")}
       in
@@ -1431,10 +1406,7 @@ let expr ~config mapper expression =
       let applyJsxArray expr =
         Exp.apply
           (Exp.ident
-             {
-               txt = Ldot (Lident (moduleAccessName config), "array");
-               loc = Location.none;
-             })
+             {txt = moduleAccessName config "array"; loc = Location.none})
           [(Nolabel, expr)]
       in
       let countOfChildren = function
@@ -1472,11 +1444,8 @@ let expr ~config mapper expression =
         (match config.mode with
         | "automatic" ->
           if countOfChildren childrenExpr > 1 then
-            Exp.ident ~loc
-              {loc; txt = Ldot (Lident (moduleAccessName config), "jsxs")}
-          else
-            Exp.ident ~loc
-              {loc; txt = Ldot (Lident (moduleAccessName config), "jsx")}
+            Exp.ident ~loc {loc; txt = moduleAccessName config "jsxs"}
+          else Exp.ident ~loc {loc; txt = moduleAccessName config "jsx"}
         | "classic" | _ ->
           if countOfChildren childrenExpr > 1 then
             Exp.ident ~loc

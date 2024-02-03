@@ -251,7 +251,14 @@ let buckle_script_flags : (string * Bsc_args.spec * string) array =
     "*internal* Set jsx version";
 
     "-bs-jsx-module", string_call (fun i ->
-      Js_config.jsx_module := Js_config.jsx_module_of_string i),
+      let isGeneric = match i |> String.lowercase_ascii with
+      | "react" -> false
+      | _ -> true in
+      Js_config.jsx_module := Js_config.jsx_module_of_string i;
+      if isGeneric then (
+        Js_config.jsx_mode := Automatic;
+        Js_config.jsx_version := Some Jsx_v4
+      )),
     "*internal* Set jsx module";
 
     "-bs-jsx-mode", string_call (fun i ->
