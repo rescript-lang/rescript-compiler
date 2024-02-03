@@ -15,6 +15,7 @@
 #### :rocket: New Feature
 
 - Support import attributes (https://github.com/tc39/proposal-import-attributes) in `@module()`. https://github.com/rescript-lang/rescript-compiler/pull/6599
+- allow hyphens in jsx tag names (e.g. `<mj-column>`). https://github.com/rescript-lang/rescript-compiler/pull/6609
 
 #### :bug: Bug Fix
 
