@@ -12,6 +12,19 @@
 
 # 12.0.0-alpha.1 (Unreleased)
 
+# 11.1.0-rc.2 (Unreleased)
+
+#### :bug: Bug Fix
+
+- Fix issue with async and newtype in uncurried mode. https://github.com/rescript-lang/rescript-compiler/pull/6601
+- Generic JSX transform: Rename expected module name for lowercase JSX to `Elements` from `DOM`. https://github.com/rescript-lang/rescript-compiler/pull/6606
+- Generic JSX transform: Set default config params for `jsxConfig`. https://github.com/rescript-lang/rescript-compiler/pull/6606
+- Generic JSX transform: Handle namespaced names. https://github.com/rescript-lang/rescript-compiler/pull/6606
+
+#### :house: Internal
+
+- Use OCaml 4.14.1 (+ Alpine 3.19 container) for CI build. https://github.com/rescript-lang/rescript-compiler/pull/6600
+
 # 11.1.0-rc.1
 
 #### :rocket: New Feature
