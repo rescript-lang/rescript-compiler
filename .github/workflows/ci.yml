@@ -34,7 +34,7 @@ jobs:
     runs-on: ${{matrix.os}}
 
     container:
-      image: ghcr.io/rescript-lang/rescript-ci-build:v1.2.0
+      image: ghcr.io/rescript-lang/rescript-ci-build:alpine-3.19-ocaml-4.14.1-02
 
     steps:
       # See https://github.com/actions/runner/issues/801#issuecomment-1374967227.
