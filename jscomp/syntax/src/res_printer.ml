@@ -421,7 +421,7 @@ let printLongident = function
 
 type identifierStyle = ExoticIdent | NormalIdent
 
-let classifyIdentContent ?(allowUident = false) txt =
+let classifyIdentContent ?(allowUident = false) ?(allowHyphen = false) txt =
   if Token.isKeywordTxt txt then ExoticIdent
   else
     let len = String.length txt in
@@ -431,16 +431,18 @@ let classifyIdentContent ?(allowUident = false) txt =
         match String.unsafe_get txt i with
         | 'A' .. 'Z' when allowUident -> loop (i + 1)
         | 'a' .. 'z' | '_' -> loop (i + 1)
+        | '-' when allowHyphen -> loop (i + 1)
         | _ -> ExoticIdent
       else
         match String.unsafe_get txt i with
         | 'A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '\'' | '_' -> loop (i + 1)
+        | '-' when allowHyphen -> loop (i + 1)
         | _ -> ExoticIdent
     in
     loop 0
 
-let printIdentLike ?allowUident txt =
-  match classifyIdentContent ?allowUident txt with
+let printIdentLike ?allowUident ?allowHyphen txt =
+  match classifyIdentContent ?allowUident ?allowHyphen txt with
   | ExoticIdent -> Doc.concat [Doc.text "\\\""; Doc.text txt; Doc.text "\""]
   | NormalIdent -> Doc.text txt
 
@@ -4462,7 +4464,7 @@ and printJsxProp ~state arg cmtTbl =
  * Navabar.createElement -> Navbar
  * Staff.Users.createElement -> Staff.Users *)
 and printJsxName {txt = lident} =
-  let printIdent = printIdentLike ~allowUident:true in
+  let printIdent = printIdentLike ~allowUident:true ~allowHyphen:true in
   let rec flatten acc lident =
     match lident with
     | Longident.Lident txt -> printIdent txt :: acc
