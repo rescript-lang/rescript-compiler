@@ -1,21 +1,10 @@
 
   Syntax error!
-  tests/parsing/errors/other/spread.res:1:12-14
+  jscomp/syntax/tests/parsing/errors/other/spread.res:1:6-8
 
-  1 │ let arr = [...x, ...y]
-  2 │ let [...arr, _] = [1, 2, 3]
-  3 │ 
-
-  Arrays can't use the `...` spread currently. Please use `concat` or other Array helpers.
-
-
-  Syntax error!
-  tests/parsing/errors/other/spread.res:2:6-8
-
-  1 │ let arr = [...x, ...y]
-  2 │ let [...arr, _] = [1, 2, 3]
-  3 │ 
-  4 │ let record = {...x, ...y}
+  1 │ let [...arr, _] = [1, 2, 3]
+  2 │
+  3 │ let record = {...x, ...y}
 
   Array's `...` spread is not supported in pattern matches.
 Explanation: such spread would create a subarray; out of performance concern, our pattern matching currently guarantees to never create new intermediate data.
@@ -23,26 +12,26 @@ Solution: if it's to validate the first few elements, use a `when` clause + Arra
 
 
   Syntax error!
-  tests/parsing/errors/other/spread.res:4:21-23
+  jscomp/syntax/tests/parsing/errors/other/spread.res:3:21-23
 
-  2 │ let [...arr, _] = [1, 2, 3]
-  3 │ 
-  4 │ let record = {...x, ...y}
-  5 │ let {...x, ...y} = myRecord
-  6 │ 
+  1 │ let [...arr, _] = [1, 2, 3]
+  2 │
+  3 │ let record = {...x, ...y}
+  4 │ let {...x, ...y} = myRecord
+  5 │
 
   Records can only have one `...` spread, at the beginning.
 Explanation: since records have a known, fixed shape, a spread like `{a, ...b}` wouldn't make sense, as `b` would override every field of `a` anyway.
 
 
   Syntax error!
-  tests/parsing/errors/other/spread.res:5:15-18
+  jscomp/syntax/tests/parsing/errors/other/spread.res:4:15-18
 
-  3 │ 
-  4 │ let record = {...x, ...y}
-  5 │ let {...x, ...y} = myRecord
-  6 │ 
-  7 │ let list{...x, ...y} = myList
+  2 │
+  3 │ let record = {...x, ...y}
+  4 │ let {...x, ...y} = myRecord
+  5 │
+  6 │ let list{...x, ...y} = myList
 
   Record's `...` spread is not supported in pattern matches.
 Explanation: you can't collect a subset of a record's field into its own record, since a record needs an explicit declaration and that subset wouldn't have one.
@@ -50,30 +39,29 @@ Solution: you need to pull out each field you want explicitly.
 
 
   Syntax error!
-  tests/parsing/errors/other/spread.res:7:13-22
+  jscomp/syntax/tests/parsing/errors/other/spread.res:6:13-22
 
-  5 │ let {...x, ...y} = myRecord
-  6 │ 
-  7 │ let list{...x, ...y} = myList
-  8 │ 
-  9 │ type t = {...a}
+  4 │ let {...x, ...y} = myRecord
+  5 │
+  6 │ let list{...x, ...y} = myList
+  7 │
+  8 │ type t = {...a}
 
   List pattern matches only supports one `...` spread, at the end.
 Explanation: a list spread at the tail is efficient, but a spread in the middle would create new lists; out of performance concern, our pattern matching currently guarantees to never create new intermediate data.
 
 
   Syntax error!
-  tests/parsing/errors/other/spread.res:10:20
+  jscomp/syntax/tests/parsing/errors/other/spread.res:9:20
 
-   8 │ 
-   9 │ type t = {...a}
-  10 │ type t = Foo({...a})
-  11 │ type t = option<foo, {...x}>
-  12 │ 
+   7 │
+   8 │ type t = {...a}
+   9 │ type t = Foo({...a})
+  10 │ type t = option<foo, {...x}>
+  11 │
 
   I'm not sure what to parse here when looking at ")".
 
-let arr = [|x;y|]
 let [|arr;_|] = [|1;2;3|]
 let record = { x with y }
 let { x; y } = myRecord
@@ -81,5 +69,5 @@ let x::y = myList
 type nonrec t = {
   ...: a }
 type nonrec t =
-  | Foo of < a  >  
+  | Foo of < a  >
 type nonrec t = (foo, < x  > ) option
