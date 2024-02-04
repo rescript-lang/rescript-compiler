@@ -56,6 +56,7 @@ type t =
   | TypeConstraint
   | AtomicTypExpr
   | ListExpr
+  | DictExpr
   | Pattern
   | AttributePayload
   | TagNames
@@ -114,6 +115,7 @@ let toString = function
   | TypeConstraint -> "constraints on a type"
   | AtomicTypExpr -> "a type"
   | ListExpr -> "an ocaml list expr"
+  | DictExpr -> "a dict literal expr"
   | PackageConstraint -> "a package constraint"
   | JsxChild -> "jsx child"
   | Pattern -> "pattern"
@@ -168,8 +170,8 @@ let isStructureItemStart = function
 
 let isPatternStart = function
   | Token.Int _ | Float _ | String _ | Codepoint _ | Backtick | True | False
-  | Minus | Plus | Lparen | Lbracket | Lbrace | List | Underscore | Lident _
-  | Uident _ | Hash | Exception | Lazy | Percent | Module | At ->
+  | Minus | Plus | Lparen | Lbracket | Lbrace | List | Dict | Underscore
+  | Lident _ | Uident _ | Hash | Exception | Lazy | Percent | Module | At ->
     true
   | _ -> false
 
@@ -267,7 +269,7 @@ let isBlockExprStart = function
 let isListElement grammar token =
   match grammar with
   | ExprList -> token = Token.DotDotDot || isExprStart token
-  | ListExpr -> token = DotDotDot || isExprStart token
+  | ListExpr | DictExpr -> token = DotDotDot || isExprStart token
   | PatternList -> token = DotDotDot || isPatternStart token
   | ParameterList -> isParameterStart token
   | StringFieldDeclarations -> isStringFieldDeclStart token
@@ -324,3 +326,7 @@ let isListTerminator grammar token =
 
 let isPartOfList grammar token =
   isListElement grammar token || isListTerminator grammar token
+
+let isDictElement = isListElement
+let isDictTerminator = isListTerminator
+let isPartOfDict = isPartOfList

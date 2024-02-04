@@ -144,7 +144,10 @@ val isTemplateLiteral : Parsetree.expression -> bool
 val isTaggedTemplateLiteral : Parsetree.expression -> bool
 val hasTemplateLiteralAttr : Parsetree.attributes -> bool
 
+val hasSpreadAttr : (string Location.loc * 'a) list -> bool
 val isSpreadBeltListConcat : Parsetree.expression -> bool
+val hasDictAttr : (string Location.loc * 'a) list -> bool
+val isDictFromArray : Parsetree.expression -> bool
 
 val isSpreadBeltArrayConcat : Parsetree.expression -> bool
 

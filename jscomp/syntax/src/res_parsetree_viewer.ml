@@ -694,6 +694,26 @@ let isSpreadBeltArrayConcat expr =
     hasSpreadAttr expr.pexp_attributes
   | _ -> false
 
+let hasDictAttr attrs =
+  List.exists
+    (fun attr ->
+      match attr with
+      | {Location.txt = "res.dict"}, _ -> true
+      | _ -> false)
+    attrs
+
+let isDictFromArray expr =
+  match expr.pexp_desc with
+  | Pexp_ident
+      {
+        txt =
+          Longident.Ldot
+            (Longident.Ldot (Longident.Lident "Js", "Dict"), "fromArray");
+      } ->
+    let v = hasDictAttr expr.pexp_attributes in
+    v
+  | _ -> false
+
 (* Blue | Red | Green -> [Blue; Red; Green] *)
 let collectOrPatternChain pat =
   let rec loop pattern chain =

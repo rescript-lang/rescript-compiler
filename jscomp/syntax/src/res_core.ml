@@ -14,6 +14,8 @@ module LoopProgress = struct
     | _ :: rest -> rest
 end
 
+type ('a, 'b) spreadInline = Spread of 'a | Inline of 'b
+
 let mkLoc startLoc endLoc =
   Location.{loc_start = startLoc; loc_end = endLoc; loc_ghost = false}
 
@@ -180,6 +182,7 @@ let taggedTemplateLiteralAttr =
   (Location.mknoloc "res.taggedTemplate", Parsetree.PStr [])
 
 let spreadAttr = (Location.mknoloc "res.spread", Parsetree.PStr [])
+let dictAttr = (Location.mknoloc "res.dict", Parsetree.PStr [])
 
 type argument = {
   dotted: bool;
@@ -229,6 +232,7 @@ let getClosingToken = function
   | Lbrace -> Rbrace
   | Lbracket -> Rbracket
   | List -> Rbrace
+  | Dict -> Rbrace
   | LessThan -> GreaterThan
   | _ -> assert false
 
@@ -240,7 +244,7 @@ let rec goToClosing closingToken state =
   | GreaterThan, GreaterThan ->
     Parser.next state;
     ()
-  | ((Token.Lbracket | Lparen | Lbrace | List | LessThan) as t), _ ->
+  | ((Token.Lbracket | Lparen | Lbrace | List | Dict | LessThan) as t), _ ->
     Parser.next state;
     goToClosing (getClosingToken t) state;
     goToClosing closingToken state
@@ -1917,6 +1921,9 @@ and parseAtomicExpr p =
     | List ->
       Parser.next p;
       parseListExpr ~startPos p
+    | Dict ->
+      Parser.next p;
+      parseDictExpr ~startPos p
     | Module ->
       Parser.next p;
       parseFirstClassModuleExpr ~startPos p
@@ -3876,6 +3883,18 @@ and parseSpreadExprRegionWithLoc p =
     Some (false, parseConstrainedOrCoercedExpr p, startPos, p.prevEndPos)
   | _ -> None
 
+and parseSpreadRecordExprRowWithStringKeyRegionWithLoc p =
+  let startPos = p.Parser.prevEndPos in
+  match p.Parser.token with
+  | DotDotDot ->
+    Parser.next p;
+    let expr = parseConstrainedOrCoercedExpr p in
+    Some (Spread expr, startPos, p.prevEndPos)
+  | token when Grammar.isExprStart token ->
+    parseRecordExprRowWithStringKey p
+    |> Option.map (fun parsedRow -> (Inline parsedRow, startPos, p.prevEndPos))
+  | _ -> None
+
 and parseListExpr ~startPos p =
   let split_by_spread exprs =
     List.fold_left
@@ -3919,6 +3938,100 @@ and parseListExpr ~startPos p =
                (Longident.Ldot (Longident.Lident "Belt", "List"), "concatMany"))
             loc))
       [(Asttypes.Nolabel, Ast_helper.Exp.array ~loc listExprs)]
+
+and parseDictExpr ~startPos p =
+  let makeDictRowTuples ~loc idExps =
+    idExps
+    |> List.map (fun ((id, exp) : Ast_helper.lid * Parsetree.expression) ->
+           Ast_helper.Exp.tuple
+             [
+               Ast_helper.Exp.constant ~loc:id.loc
+                 (Pconst_string (Longident.last id.txt, None));
+               exp;
+             ])
+    |> Ast_helper.Exp.array ~loc
+  in
+
+  let makeSpreadDictRowTuples ~loc spreadDict =
+    Ast_helper.Exp.apply ~loc
+      (Ast_helper.Exp.ident ~loc ~attrs:[dictAttr]
+         (Location.mkloc
+            (Longident.Ldot
+               (Longident.Ldot (Longident.Lident "Js", "Dict"), "entries"))
+            loc))
+      [(Asttypes.Nolabel, spreadDict)]
+  in
+
+  let concatManyExpr ~loc listExprs =
+    Ast_helper.Exp.apply ~loc
+      (Ast_helper.Exp.ident ~loc ~attrs:[spreadAttr]
+         (Location.mkloc
+            (Longident.Ldot
+               (Longident.Ldot (Longident.Lident "Belt", "Array"), "concatMany"))
+            loc))
+      [(Asttypes.Nolabel, Ast_helper.Exp.array ~loc listExprs)]
+  in
+
+  let makeDictFromRowTuples ~loc arrayEntriesExp =
+    Ast_helper.Exp.apply ~loc
+      (Ast_helper.Exp.ident ~loc ~attrs:[dictAttr]
+         (Location.mkloc
+            (Longident.Ldot
+               (Longident.Ldot (Longident.Lident "Js", "Dict"), "fromArray"))
+            loc))
+      [(Asttypes.Nolabel, arrayEntriesExp)]
+  in
+  let split_by_spread exprs =
+    List.fold_left
+      (fun acc curr ->
+        match (curr, acc) with
+        | (Spread expr, startPos, endPos), _ ->
+          (* find a spread expression, prepend a new sublist *)
+          ([], Some expr, startPos, endPos) :: acc
+        | ( (Inline fieldExprTuple, startPos, _endPos),
+            (no_spreads, spread, _accStartPos, accEndPos) :: acc ) ->
+          (* find a non-spread expression, and the accumulated is not empty,
+           * prepend to the first sublist, and update the loc of the first sublist *)
+          (fieldExprTuple :: no_spreads, spread, startPos, accEndPos) :: acc
+        | (Inline fieldExprTuple, startPos, endPos), [] ->
+          (* find a non-spread expression, and the accumulated is empty *)
+          [([fieldExprTuple], None, startPos, endPos)])
+      [] exprs
+  in
+  let rec getListOfEntryArraysReversed ?(accum = []) ~loc spreadSplit =
+    match spreadSplit with
+    | [] -> accum
+    | (idExps, None, _, _) :: tail ->
+      let accum = (idExps |> makeDictRowTuples ~loc) :: accum in
+      tail |> getListOfEntryArraysReversed ~loc ~accum
+    | ([], Some spread, _, _) :: tail ->
+      let accum = (spread |> makeSpreadDictRowTuples ~loc) :: accum in
+      tail |> getListOfEntryArraysReversed ~loc ~accum
+    | (idExps, Some spread, _, _) :: tail ->
+      let accum =
+        (spread |> makeSpreadDictRowTuples ~loc)
+        :: (idExps |> makeDictRowTuples ~loc)
+        :: accum
+      in
+      tail |> getListOfEntryArraysReversed ~loc ~accum
+  in
+
+  let dictExprsRev =
+    parseCommaDelimitedReversedList ~grammar:Grammar.RecordRowsStringKey
+      ~closing:Rbrace ~f:parseSpreadRecordExprRowWithStringKeyRegionWithLoc p
+  in
+  Parser.expect Rbrace p;
+  let loc = mkLoc startPos p.prevEndPos in
+  let arrDictEntries =
+    match
+      dictExprsRev |> split_by_spread |> getListOfEntryArraysReversed ~loc
+    with
+    | [] -> Ast_helper.Exp.array ~loc []
+    | [singleArrDictEntries] -> singleArrDictEntries
+    | multipleArrDictEntries ->
+      multipleArrDictEntries |> List.rev |> concatManyExpr ~loc
+  in
+  makeDictFromRowTuples ~loc arrDictEntries
 
 and parseArrayExp p =
   let startPos = p.Parser.startPos in
