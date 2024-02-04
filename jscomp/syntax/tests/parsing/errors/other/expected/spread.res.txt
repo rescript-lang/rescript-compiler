@@ -1,9 +1,9 @@
 
   Syntax error!
-  jscomp/syntax/tests/parsing/errors/other/spread.res:1:6-8
+  tests/parsing/errors/other/spread.res:1:6-8
 
   1 │ let [...arr, _] = [1, 2, 3]
-  2 │
+  2 │ 
   3 │ let record = {...x, ...y}
 
   Array's `...` spread is not supported in pattern matches.
@@ -12,25 +12,25 @@ Solution: if it's to validate the first few elements, use a `when` clause + Arra
 
 
   Syntax error!
-  jscomp/syntax/tests/parsing/errors/other/spread.res:3:21-23
+  tests/parsing/errors/other/spread.res:3:21-23
 
   1 │ let [...arr, _] = [1, 2, 3]
-  2 │
+  2 │ 
   3 │ let record = {...x, ...y}
   4 │ let {...x, ...y} = myRecord
-  5 │
+  5 │ 
 
   Records can only have one `...` spread, at the beginning.
 Explanation: since records have a known, fixed shape, a spread like `{a, ...b}` wouldn't make sense, as `b` would override every field of `a` anyway.
 
 
   Syntax error!
-  jscomp/syntax/tests/parsing/errors/other/spread.res:4:15-18
+  tests/parsing/errors/other/spread.res:4:15-18
 
-  2 │
+  2 │ 
   3 │ let record = {...x, ...y}
   4 │ let {...x, ...y} = myRecord
-  5 │
+  5 │ 
   6 │ let list{...x, ...y} = myList
 
   Record's `...` spread is not supported in pattern matches.
@@ -39,12 +39,12 @@ Solution: you need to pull out each field you want explicitly.
 
 
   Syntax error!
-  jscomp/syntax/tests/parsing/errors/other/spread.res:6:13-22
+  tests/parsing/errors/other/spread.res:6:13-22
 
   4 │ let {...x, ...y} = myRecord
-  5 │
+  5 │ 
   6 │ let list{...x, ...y} = myList
-  7 │
+  7 │ 
   8 │ type t = {...a}
 
   List pattern matches only supports one `...` spread, at the end.
@@ -52,13 +52,13 @@ Explanation: a list spread at the tail is efficient, but a spread in the middle 
 
 
   Syntax error!
-  jscomp/syntax/tests/parsing/errors/other/spread.res:9:20
+  tests/parsing/errors/other/spread.res:9:20
 
-   7 │
+   7 │ 
    8 │ type t = {...a}
    9 │ type t = Foo({...a})
   10 │ type t = option<foo, {...x}>
-  11 │
+  11 │ 
 
   I'm not sure what to parse here when looking at ")".
 
@@ -69,5 +69,5 @@ let x::y = myList
 type nonrec t = {
   ...: a }
 type nonrec t =
-  | Foo of < a  >
+  | Foo of < a  >  
 type nonrec t = (foo, < x  > ) option

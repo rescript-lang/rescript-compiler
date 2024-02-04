@@ -3937,28 +3937,32 @@ and parseArrayExp p =
       [] exprs
   in
   let listExprsRev =
-    parseCommaDelimitedReversedList p ~grammar:Grammar.ExprList ~closing:Rbracket
-      ~f:parseSpreadExprRegionWithLoc
+    parseCommaDelimitedReversedList p ~grammar:Grammar.ExprList
+      ~closing:Rbracket ~f:parseSpreadExprRegionWithLoc
   in
   Parser.expect Rbracket p;
   let loc = mkLoc startPos p.prevEndPos in
-  let collectExprs = function 
+  let collectExprs = function
     | [], Some spread, _startPos, _endPos -> [spread]
-    | exprs, Some spread, _startPos, _endPos -> (
+    | exprs, Some spread, _startPos, _endPos ->
       let els = Ast_helper.Exp.array ~loc exprs in
-      [els; spread])
-    | exprs, None, _startPos, _endPos -> (
-      let els = Ast_helper.Exp.array ~loc exprs
-      in [els])
+      [els; spread]
+    | exprs, None, _startPos, _endPos ->
+      let els = Ast_helper.Exp.array ~loc exprs in
+      [els]
   in
   match split_by_spread listExprsRev with
   | [] -> Ast_helper.Exp.array ~loc:(mkLoc startPos p.prevEndPos) []
-  | [(exprs, None, _, _)] -> Ast_helper.Exp.array ~loc:(mkLoc startPos p.prevEndPos) exprs
+  | [(exprs, None, _, _)] ->
+    Ast_helper.Exp.array ~loc:(mkLoc startPos p.prevEndPos) exprs
   | exprs ->
     let xs = List.map collectExprs exprs in
-    let listExprs = List.fold_right (fun exprs1 acc -> 
-      List.fold_right (fun expr1 acc1 -> expr1::acc1) exprs1 acc
-    ) xs [] in
+    let listExprs =
+      List.fold_right
+        (fun exprs1 acc ->
+          List.fold_right (fun expr1 acc1 -> expr1 :: acc1) exprs1 acc)
+        xs []
+    in
     Ast_helper.Exp.apply ~loc
       (Ast_helper.Exp.ident ~loc ~attrs:[spreadAttr]
          (Location.mkloc
