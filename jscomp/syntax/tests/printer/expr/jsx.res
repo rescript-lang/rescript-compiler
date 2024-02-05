@@ -7,6 +7,7 @@ let x = <Foo.baz
  className="multiline"
 />
 let x = <custom-tag className="container" />
+let x = <Foo.custom-tag className="container" />
 
 // https://github.com/rescript-lang/syntax/issues/570
 let x = <A> <B> <C> <D /> <E /> </C> <F> <G /> <H /> </F> </B> </A>
@@ -15,6 +16,7 @@ let x = <A> <B/> {children} </A>
 let x = <A> {a} </A>
 let x = <A> {a} {b} </A>
 let x = <custom-tag className="container" > {a} <B/> </custom-tag>
+let x = <Foo.custom-tag className="container" > {a} <B/> </Foo.custom-tag>
 
 let x =
   <div
