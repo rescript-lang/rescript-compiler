@@ -19,6 +19,7 @@
 - Generic JSX transform: Set default config params for `jsxConfig`. https://github.com/rescript-lang/rescript-compiler/pull/6606
 - Generic JSX transform: Handle namespaced names. https://github.com/rescript-lang/rescript-compiler/pull/6606
 - Fix issue with doc comment in recursive module. https://github.com/rescript-lang/rescript-compiler/pull/6613
+- Fix issue with Exceptions and Extensible types runtime generation. https://github.com/rescript-lang/rescript-compiler/pull/6570
 
 #### :house: Internal
 
