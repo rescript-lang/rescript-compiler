@@ -48,6 +48,10 @@
 
 - Improve error message for missing label(s) in function application. https://github.com/rescript-lang/rescript-compiler/pull/6576
 
+#### :nail_care: Polish
+
+- Remove redundant space before comma in the generated JavaScript for ESM export. https://github.com/rescript-lang/rescript-compiler/pull/6560
+
 # 11.0.0
 
 No changes compared to rc.9.
