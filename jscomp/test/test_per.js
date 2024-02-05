@@ -17,19 +17,21 @@ Caml_external_polyfill.resolve("register_named_value")("Pervasives.array_bound_e
     });
 
 function failwith(s) {
-  throw {
-        RE_EXN_ID: "Failure",
-        _1: s,
-        Error: new Error()
-      };
+  throw new Error("Failure", {
+            cause: {
+              RE_EXN_ID: "Failure",
+              _1: s
+            }
+          });
 }
 
 function invalid_arg(s) {
-  throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: s,
-        Error: new Error()
-      };
+  throw new Error("Invalid_argument", {
+            cause: {
+              RE_EXN_ID: "Invalid_argument",
+              _1: s
+            }
+          });
 }
 
 var Exit = /* @__PURE__ */Caml_exceptions.create("Test_per.Exit");
@@ -105,11 +107,12 @@ function $caret(s1, s2) {
 
 function char_of_int(n) {
   if (n < 0 || n > 255) {
-    throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "char_of_int",
-          Error: new Error()
-        };
+    throw new Error("Invalid_argument", {
+              cause: {
+                RE_EXN_ID: "Invalid_argument",
+                _1: "char_of_int"
+              }
+            });
   }
   return n;
 }
@@ -129,11 +132,12 @@ function bool_of_string(x) {
     case "true" :
         return true;
     default:
-      throw {
-            RE_EXN_ID: "Invalid_argument",
-            _1: "bool_of_string",
-            Error: new Error()
-          };
+      throw new Error("Invalid_argument", {
+                cause: {
+                  RE_EXN_ID: "Invalid_argument",
+                  _1: "bool_of_string"
+                }
+              });
   }
 }
 
@@ -244,22 +248,24 @@ function output_string(oc, s) {
 
 function output(oc, s, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > (s.length - len | 0)) {
-    throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "output",
-          Error: new Error()
-        };
+    throw new Error("Invalid_argument", {
+              cause: {
+                RE_EXN_ID: "Invalid_argument",
+                _1: "output"
+              }
+            });
   }
   Caml_external_polyfill.resolve("ml_output")(oc, s, ofs, len);
 }
 
 function output_substring(oc, s, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > (s.length - len | 0)) {
-    throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "output_substring",
-          Error: new Error()
-        };
+    throw new Error("Invalid_argument", {
+              cause: {
+                RE_EXN_ID: "Invalid_argument",
+                _1: "output_substring"
+              }
+            });
   }
   Caml_external_polyfill.resolve("ml_output")(oc, s, ofs, len);
 }
@@ -314,11 +320,12 @@ function open_in_bin(name) {
 
 function input(ic, s, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > (s.length - len | 0)) {
-    throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "input",
-          Error: new Error()
-        };
+    throw new Error("Invalid_argument", {
+              cause: {
+                RE_EXN_ID: "Invalid_argument",
+                _1: "input"
+              }
+            });
   }
   return Caml_external_polyfill.resolve("ml_input")(ic, s, ofs, len);
 }
@@ -332,10 +339,11 @@ function unsafe_really_input(ic, s, _ofs, _len) {
     }
     var r = Caml_external_polyfill.resolve("ml_input")(ic, s, ofs, len);
     if (r === 0) {
-      throw {
-            RE_EXN_ID: "End_of_file",
-            Error: new Error()
-          };
+      throw new Error("End_of_file", {
+                cause: {
+                  RE_EXN_ID: "End_of_file"
+                }
+              });
     }
     _len = len - r | 0;
     _ofs = ofs + r | 0;
@@ -345,11 +353,12 @@ function unsafe_really_input(ic, s, _ofs, _len) {
 
 function really_input(ic, s, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > (s.length - len | 0)) {
-    throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "really_input",
-          Error: new Error()
-        };
+    throw new Error("Invalid_argument", {
+              cause: {
+                RE_EXN_ID: "Invalid_argument",
+                _1: "really_input"
+              }
+            });
   }
   unsafe_really_input(ic, s, ofs, len);
 }
@@ -386,10 +395,11 @@ function input_line(chan) {
       if (accu) {
         return build_result(Caml_bytes.create(len), len, accu);
       }
-      throw {
-            RE_EXN_ID: "End_of_file",
-            Error: new Error()
-          };
+      throw new Error("End_of_file", {
+                cause: {
+                  RE_EXN_ID: "End_of_file"
+                }
+              });
     }
     if (n > 0) {
       var res = Caml_bytes.create(n - 1 | 0);

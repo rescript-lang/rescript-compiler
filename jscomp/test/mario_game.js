@@ -1508,11 +1508,12 @@ function game_win(ctx) {
   ctx.fillStyle = "white";
   ctx.font = "20px 'Press Start 2P'";
   Curry._3(ctx.fillText, "You win!", 180, 128);
-  throw {
-        RE_EXN_ID: "Failure",
-        _1: "Game over.",
-        Error: new Error()
-      };
+  throw new Error("Failure", {
+            cause: {
+              RE_EXN_ID: "Failure",
+              _1: "Game over."
+            }
+          });
 }
 
 function game_loss(ctx) {
@@ -1522,11 +1523,12 @@ function game_loss(ctx) {
   ctx.fillStyle = "white";
   ctx.font = "20px 'Press Start 2P'";
   Curry._3(ctx.fillText, "GAME OVER. You lose!", 60, 128);
-  throw {
-        RE_EXN_ID: "Failure",
-        _1: "Game over.",
-        Error: new Error()
-      };
+  throw new Error("Failure", {
+            cause: {
+              RE_EXN_ID: "Failure",
+              _1: "Game over."
+            }
+          });
 }
 
 var Draw = {
@@ -2522,11 +2524,12 @@ function choose_enemy_typ(typ) {
     case 2 :
         return "Goomba";
     default:
-      throw {
-            RE_EXN_ID: "Failure",
-            _1: "Shouldn't reach here",
-            Error: new Error()
-          };
+      throw new Error("Failure", {
+                cause: {
+                  RE_EXN_ID: "Failure",
+                  _1: "Shouldn't reach here"
+                }
+              });
   }
 }
 
@@ -2546,11 +2549,12 @@ function choose_sblock_typ(typ) {
     case 4 :
         return "Ground";
     default:
-      throw {
-            RE_EXN_ID: "Failure",
-            _1: "Shouldn't reach here",
-            Error: new Error()
-          };
+      throw new Error("Failure", {
+                cause: {
+                  RE_EXN_ID: "Failure",
+                  _1: "Shouldn't reach here"
+                }
+              });
   }
 }
 
@@ -3061,11 +3065,12 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
                 tl: /* [] */0
               };
     default:
-      throw {
-            RE_EXN_ID: "Failure",
-            _1: "Shouldn't reach here",
-            Error: new Error()
-          };
+      throw new Error("Failure", {
+                cause: {
+                  RE_EXN_ID: "Failure",
+                  _1: "Shouldn't reach here"
+                }
+              });
   }
 }
 
@@ -3334,11 +3339,12 @@ function load(param) {
     canvas = el;
   } else {
     console.log("cant find canvas " + canvas_id);
-    throw {
-          RE_EXN_ID: "Failure",
-          _1: "fail",
-          Error: new Error()
-        };
+    throw new Error("Failure", {
+              cause: {
+                RE_EXN_ID: "Failure",
+                _1: "fail"
+              }
+            });
   }
   var context = Curry._1(canvas.getContext, "2d");
   document.addEventListener("keydown", keydown, true);

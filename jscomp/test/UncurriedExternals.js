@@ -4,10 +4,11 @@
 var React = require("react");
 
 function dd(param) {
-  throw {
-        RE_EXN_ID: "Not_found",
-        Error: new Error()
-      };
+  throw new Error("Not_found", {
+            cause: {
+              RE_EXN_ID: "Not_found"
+            }
+          });
 }
 
 var h = sum(1.0, 2.0);
@@ -80,10 +81,11 @@ function methodWithAsync(param) {
 }
 
 function dd$1(param) {
-  throw {
-        RE_EXN_ID: "Not_found",
-        Error: new Error()
-      };
+  throw new Error("Not_found", {
+            cause: {
+              RE_EXN_ID: "Not_found"
+            }
+          });
 }
 
 var h$1 = sum(1.0, 2.0);

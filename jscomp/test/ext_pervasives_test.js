@@ -13,7 +13,9 @@ function $$finally(v, action, f) {
   }
   catch (e$1){
     Curry._1(action, v);
-    throw e$1;
+    throw new Error(e$1.RE_EXN_ID, {
+              cause: e$1
+            });
   }
   Curry._1(action, v);
   return e;
@@ -38,10 +40,11 @@ function is_pos_pow(n) {
         _c = c + 1 | 0;
         continue ;
       }
-      throw {
-            RE_EXN_ID: E,
-            Error: new Error()
-          };
+      throw new Error(E, {
+                cause: {
+                  RE_EXN_ID: E
+                }
+              });
     };
   }
   catch (raw_exn){
@@ -49,7 +52,9 @@ function is_pos_pow(n) {
     if (exn.RE_EXN_ID === E) {
       return -1;
     }
-    throw exn;
+    throw new Error(exn.RE_EXN_ID, {
+              cause: exn
+            });
   }
 }
 
@@ -72,10 +77,11 @@ function is_pos_pow_2(n) {
         _c = c + 1 | 0;
         continue ;
       }
-      throw {
-            RE_EXN_ID: E,
-            Error: new Error()
-          };
+      throw new Error(E, {
+                cause: {
+                  RE_EXN_ID: E
+                }
+              });
     };
   }
   catch (raw_exn){
@@ -83,7 +89,9 @@ function is_pos_pow_2(n) {
     if (exn.RE_EXN_ID === E) {
       return -1;
     }
-    throw exn;
+    throw new Error(exn.RE_EXN_ID, {
+              cause: exn
+            });
   }
 }
 

@@ -11,10 +11,11 @@ function sub(_tr, _k) {
     var k = _k;
     var tr = _tr;
     if (typeof tr !== "object") {
-      throw {
-            RE_EXN_ID: "Not_found",
-            Error: new Error()
-          };
+      throw new Error("Not_found", {
+                cause: {
+                  RE_EXN_ID: "Not_found"
+                }
+              });
     }
     if (k === 1) {
       return tr._0;
@@ -40,10 +41,11 @@ function update(tr, k, w) {
               _2: "Lf"
             };
     }
-    throw {
-          RE_EXN_ID: "Not_found",
-          Error: new Error()
-        };
+    throw new Error("Not_found", {
+              cause: {
+                RE_EXN_ID: "Not_found"
+              }
+            });
   }
   var r = tr._2;
   var l = tr._1;
@@ -75,10 +77,11 @@ function update(tr, k, w) {
 
 function $$delete(tr, n) {
   if (typeof tr !== "object") {
-    throw {
-          RE_EXN_ID: "Not_found",
-          Error: new Error()
-        };
+    throw new Error("Not_found", {
+              cause: {
+                RE_EXN_ID: "Not_found"
+              }
+            });
   }
   if (n === 1) {
     return "Lf";
@@ -123,10 +126,11 @@ function loext(tr, w) {
 
 function lorem(tr) {
   if (typeof tr !== "object") {
-    throw {
-          RE_EXN_ID: "Not_found",
-          Error: new Error()
-        };
+    throw new Error("Not_found", {
+              cause: {
+                RE_EXN_ID: "Not_found"
+              }
+            });
   }
   var l = tr._1;
   if (typeof l === "object") {
@@ -141,15 +145,16 @@ function lorem(tr) {
   if (typeof tmp !== "object") {
     return "Lf";
   }
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "flexible_array_test.res",
-          80,
-          9
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "flexible_array_test.res",
+                80,
+                9
+              ]
+            }
+          });
 }
 
 var empty = [
@@ -165,11 +170,12 @@ function get(param, i) {
   if (i >= 0 && i < param[1]) {
     return sub(param[0], i + 1 | 0);
   }
-  throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Array.get",
-        Error: new Error()
-      };
+  throw new Error("Invalid_argument", {
+            cause: {
+              RE_EXN_ID: "Invalid_argument",
+              _1: "Array.get"
+            }
+          });
 }
 
 function set(param, i, v) {
@@ -180,11 +186,12 @@ function set(param, i, v) {
             k
           ];
   }
-  throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Array.set",
-        Error: new Error()
-      };
+  throw new Error("Invalid_argument", {
+            cause: {
+              RE_EXN_ID: "Invalid_argument",
+              _1: "Array.set"
+            }
+          });
 }
 
 function push_front(param, v) {
@@ -202,11 +209,12 @@ function pop_front(param) {
             k - 1 | 0
           ];
   }
-  throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Array.pop_front",
-        Error: new Error()
-      };
+  throw new Error("Invalid_argument", {
+            cause: {
+              RE_EXN_ID: "Invalid_argument",
+              _1: "Array.pop_front"
+            }
+          });
 }
 
 function push_back(param, v) {
@@ -225,11 +233,12 @@ function pop_back(param) {
             k - 1 | 0
           ];
   }
-  throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "Array.pop_back",
-        Error: new Error()
-      };
+  throw new Error("Invalid_argument", {
+            cause: {
+              RE_EXN_ID: "Invalid_argument",
+              _1: "Array.pop_back"
+            }
+          });
 }
 
 function filter_from(i, p, s) {
@@ -317,15 +326,16 @@ if (!Caml_obj.equal(x, of_array([
             5,
             6
           ]))) {
-  throw {
-        RE_EXN_ID: "Assert_failure",
-        _1: [
-          "flexible_array_test.res",
-          184,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Assert_failure", {
+            cause: {
+              RE_EXN_ID: "Assert_failure",
+              _1: [
+                "flexible_array_test.res",
+                184,
+                2
+              ]
+            }
+          });
 }
 
 var v = $$Array.init(500, (function (i) {

@@ -5,11 +5,12 @@
 var u = 3;
 
 function f(param) {
-  throw {
-        RE_EXN_ID: "Invalid_argument",
-        _1: "hi",
-        Error: new Error()
-      };
+  throw new Error("Invalid_argument", {
+            cause: {
+              RE_EXN_ID: "Invalid_argument",
+              _1: "hi"
+            }
+          });
 }
 
 exports.u = u;

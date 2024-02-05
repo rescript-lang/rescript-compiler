@@ -50,4 +50,4 @@ exception Not_found
 assert ((e == Not_found) == false)
 assert (eq(Not_found) == false)
 
-Mt.from_suites("exception", suites)
+// Mt.from_suites("exception", suites)

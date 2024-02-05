@@ -6,22 +6,24 @@ var Caml_external_polyfill = require("../../lib/js/caml_external_polyfill.js");
 
 function to_buffer(buff, ofs, len, v, flags) {
   if (ofs < 0 || len < 0 || ofs > (buff.length - len | 0)) {
-    throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Marshal.to_buffer: substring out of bounds",
-          Error: new Error()
-        };
+    throw new Error("Invalid_argument", {
+              cause: {
+                RE_EXN_ID: "Invalid_argument",
+                _1: "Marshal.to_buffer: substring out of bounds"
+              }
+            });
   }
   return Caml_external_polyfill.resolve("output_value_to_buffer")(buff, ofs, len, v, flags);
 }
 
 function data_size(buff, ofs) {
   if (ofs < 0 || ofs > (buff.length - 20 | 0)) {
-    throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Marshal.data_size",
-          Error: new Error()
-        };
+    throw new Error("Invalid_argument", {
+              cause: {
+                RE_EXN_ID: "Invalid_argument",
+                _1: "Marshal.data_size"
+              }
+            });
   }
   return Caml_external_polyfill.resolve("marshal_data_size")(buff, ofs);
 }
@@ -32,19 +34,21 @@ function total_size(buff, ofs) {
 
 function from_bytes(buff, ofs) {
   if (ofs < 0 || ofs > (buff.length - 20 | 0)) {
-    throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Marshal.from_bytes",
-          Error: new Error()
-        };
+    throw new Error("Invalid_argument", {
+              cause: {
+                RE_EXN_ID: "Invalid_argument",
+                _1: "Marshal.from_bytes"
+              }
+            });
   }
   var len = Caml_external_polyfill.resolve("marshal_data_size")(buff, ofs);
   if (ofs > (buff.length - (20 + len | 0) | 0)) {
-    throw {
-          RE_EXN_ID: "Invalid_argument",
-          _1: "Marshal.from_bytes",
-          Error: new Error()
-        };
+    throw new Error("Invalid_argument", {
+              cause: {
+                RE_EXN_ID: "Invalid_argument",
+                _1: "Marshal.from_bytes"
+              }
+            });
   }
   return Caml_external_polyfill.resolve("input_value_from_string")(buff, ofs);
 }

@@ -38,15 +38,16 @@ function f(x) {
   if (x$1 !== undefined) {
     return 1;
   }
-  throw {
-        RE_EXN_ID: "Match_failure",
-        _1: [
-          "lazy_test.res",
-          14,
-          2
-        ],
-        Error: new Error()
-      };
+  throw new Error("Match_failure", {
+            cause: {
+              RE_EXN_ID: "Match_failure",
+              _1: [
+                "lazy_test.res",
+                14,
+                2
+              ]
+            }
+          });
 }
 
 var s = {
@@ -81,7 +82,9 @@ catch (raw_exn){
   if (exn.RE_EXN_ID === "Match_failure") {
     h = 2;
   } else {
-    throw exn;
+    throw new Error(exn.RE_EXN_ID, {
+              cause: exn
+            });
   }
 }
 
@@ -133,10 +136,11 @@ var f006 = {
 var f007 = {
   LAZY_DONE: false,
   VAL: (function () {
-      throw {
-            RE_EXN_ID: "Not_found",
-            Error: new Error()
-          };
+      throw new Error("Not_found", {
+                cause: {
+                  RE_EXN_ID: "Not_found"
+                }
+              });
     })
 };
 
@@ -144,10 +148,11 @@ var f008 = {
   LAZY_DONE: false,
   VAL: (function () {
       console.log("hi");
-      throw {
-            RE_EXN_ID: "Not_found",
-            Error: new Error()
-          };
+      throw new Error("Not_found", {
+                cause: {
+                  RE_EXN_ID: "Not_found"
+                }
+              });
     })
 };
 
@@ -330,10 +335,11 @@ Mt.from_pair_suites("Lazy_test", {
                                           _0: !Lazy.is_val({
                                                 LAZY_DONE: false,
                                                 VAL: (function () {
-                                                    throw {
-                                                          RE_EXN_ID: "Not_found",
-                                                          Error: new Error()
-                                                        };
+                                                    throw new Error("Not_found", {
+                                                              cause: {
+                                                                RE_EXN_ID: "Not_found"
+                                                              }
+                                                            });
                                                   })
                                               })
                                         };

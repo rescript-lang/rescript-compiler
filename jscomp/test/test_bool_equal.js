@@ -18,48 +18,52 @@ function bool_equal(x, y) {
 
 function assertions(param) {
   if (!bool_equal(true, true)) {
-    throw {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "test_bool_equal.res",
-            16,
-            2
-          ],
-          Error: new Error()
-        };
+    throw new Error("Assert_failure", {
+              cause: {
+                RE_EXN_ID: "Assert_failure",
+                _1: [
+                  "test_bool_equal.res",
+                  16,
+                  2
+                ]
+              }
+            });
   }
   if (!bool_equal(false, false)) {
-    throw {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "test_bool_equal.res",
-            17,
-            2
-          ],
-          Error: new Error()
-        };
+    throw new Error("Assert_failure", {
+              cause: {
+                RE_EXN_ID: "Assert_failure",
+                _1: [
+                  "test_bool_equal.res",
+                  17,
+                  2
+                ]
+              }
+            });
   }
   if (bool_equal(true, false)) {
-    throw {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "test_bool_equal.res",
-            18,
-            2
-          ],
-          Error: new Error()
-        };
+    throw new Error("Assert_failure", {
+              cause: {
+                RE_EXN_ID: "Assert_failure",
+                _1: [
+                  "test_bool_equal.res",
+                  18,
+                  2
+                ]
+              }
+            });
   }
   if (bool_equal(false, true)) {
-    throw {
-          RE_EXN_ID: "Assert_failure",
-          _1: [
-            "test_bool_equal.res",
-            19,
-            2
-          ],
-          Error: new Error()
-        };
+    throw new Error("Assert_failure", {
+              cause: {
+                RE_EXN_ID: "Assert_failure",
+                _1: [
+                  "test_bool_equal.res",
+                  19,
+                  2
+                ]
+              }
+            });
   }
   
 }
