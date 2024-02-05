@@ -14,6 +14,7 @@
 
 #### :rocket: New Feature
 
+- Add support for array spread. https://github.com/rescript-lang/rescript-compiler/pull/6608
 - Support import attributes (https://github.com/tc39/proposal-import-attributes) in `@module()`. https://github.com/rescript-lang/rescript-compiler/pull/6599
 - allow hyphens in jsx tag names (e.g. `<mj-column>`). https://github.com/rescript-lang/rescript-compiler/pull/6609
 
@@ -37,7 +38,6 @@
 - Experimental support of tagged template literals, e.g. ```sql`select * from ${table}```. https://github.com/rescript-lang/rescript-compiler/pull/6250
 - Experimental support for generic/custom JSX transforms. https://github.com/rescript-lang/rescript-compiler/pull/6565
 - `dict` is now a builtin type. https://github.com/rescript-lang/rescript-compiler/pull/6590
-- Add support for array spread. https://github.com/rescript-lang/rescript-compiler/pull/6608
 
 #### :bug: Bug Fix
 
