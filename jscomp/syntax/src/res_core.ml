@@ -6028,7 +6028,14 @@ and parseModuleBindingBody p =
 and parseModuleBindings ~attrs ~startPos p =
   let rec loop p acc =
     let startPos = p.Parser.startPos in
-    let attrs = parseAttributesAndBinding p in
+    let docAttr : Parsetree.attributes =
+      match p.Parser.token with
+      | DocComment (loc, s) ->
+        Parser.next p;
+        [docCommentToAttribute loc s]
+      | _ -> []
+    in
+    let attrs = docAttr @ parseAttributesAndBinding p in
     match p.Parser.token with
     | And ->
       Parser.next p;
