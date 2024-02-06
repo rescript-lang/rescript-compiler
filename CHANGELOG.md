@@ -12,6 +12,10 @@
 
 # 11.1.0-rc.2 (Unreleased)
 
+#### :rocket: New Feature
+
+- Support import attributes (https://github.com/tc39/proposal-import-attributes) in `@module()`. https://github.com/rescript-lang/rescript-compiler/pull/6599
+
 #### :bug: Bug Fix
 
 - Fix issue with async and newtype in uncurried mode. https://github.com/rescript-lang/rescript-compiler/pull/6601

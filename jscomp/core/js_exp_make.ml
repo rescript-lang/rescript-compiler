@@ -92,20 +92,20 @@ let ml_var_dot ?comment ?(dynamic_import = false) (id : Ident.t) e : J.expressio
      var http = require("http")
    ]}
 *)
-let external_var_field ?comment ~external_name:name (id : Ident.t) ~field
+let external_var_field ?import_attributes ?comment ~external_name:name (id : Ident.t) ~field
     ~default : t =
   {
     expression_desc =
-      Var (Qualified ({ id; kind = External { name; default }; dynamic_import = false }, Some field));
+      Var (Qualified ({ id; kind = External { name; default; import_attributes }; dynamic_import = false }, Some field));
     comment;
   }
 
-let external_var ?comment ~external_name (id : Ident.t) : t =
+let external_var ?import_attributes ?comment ~external_name (id : Ident.t) : t =
   {
     expression_desc =
       Var
         (Qualified
-           ( { id; kind = External { name = external_name; default = false }; dynamic_import = false },
+           ( { id; kind = External { name = external_name; default = false; import_attributes }; dynamic_import = false },
              None ));
     comment;
   }

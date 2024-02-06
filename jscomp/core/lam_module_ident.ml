@@ -52,9 +52,9 @@ module Cmp = struct
   type nonrec t = t
   let equal (x : t) y = 
     match x.kind with 
-    | External {name = x_kind; default = x_default}-> 
+    | External {name = x_kind; default = x_default; _} -> 
       begin match y.kind with 
-        | External {name = y_kind; default = y_default} -> 
+        | External {name = y_kind; default = y_default; _} -> 
           x_kind = (y_kind : string) && x_default = y_default
         | _ -> false 
       end
