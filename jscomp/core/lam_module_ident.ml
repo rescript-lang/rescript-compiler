@@ -31,16 +31,16 @@
 
 
 type t = J.module_id = 
-  { id : Ident.t ; kind : Js_op.kind ; dynamic_import : bool ; import_attributes : External_ffi_types.import_attributes option }
+  { id : Ident.t ; kind : Js_op.kind ; dynamic_import : bool}
 
 
 
 let id x = x.id 
 
-let of_ml ?(dynamic_import = false) id = { id ; kind =  Ml ; dynamic_import ; import_attributes = None }
+let of_ml ?(dynamic_import = false) id = { id ; kind =  Ml ; dynamic_import }
 
 
-let of_runtime id = { id ; kind = Runtime ; dynamic_import = false ; import_attributes = None }
+let of_runtime id = { id ; kind = Runtime ; dynamic_import = false }
 
 let name  (x : t) : string  = 
   match x.kind  with 
@@ -52,9 +52,9 @@ module Cmp = struct
   type nonrec t = t
   let equal (x : t) y = 
     match x.kind with 
-    | External {name = x_kind; default = x_default}-> 
+    | External {name = x_kind; default = x_default; _} -> 
       begin match y.kind with 
-        | External {name = y_kind; default = y_default} -> 
+        | External {name = y_kind; default = y_default; _} -> 
           x_kind = (y_kind : string) && x_default = y_default
         | _ -> false 
       end

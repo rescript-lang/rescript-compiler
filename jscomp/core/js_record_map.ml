@@ -56,9 +56,9 @@ let label : label fn = unknown
 let ident : ident fn = unknown
 
 let module_id : module_id fn =
- fun _self { id = _x0; kind = _x1; dynamic_import = _x2; import_attributes = _x3 } ->
+ fun _self { id = _x0; kind = _x1; dynamic_import = _x2 } ->
   let _x0 = _self.ident _self _x0 in
-  { id = _x0; kind = _x1; dynamic_import = _x2; import_attributes = _x3 }
+  { id = _x0; kind = _x1; dynamic_import = _x2 }
 
 let required_modules : required_modules fn =
  fun _self arg -> list _self.module_id _self arg

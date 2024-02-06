@@ -114,7 +114,7 @@ type int_op =
 *)
 type level = Log | Info | Warn | Error
 
-type kind = Ml | Runtime | External of { name : string; default : bool (* TODO(import-attributes) add here instead? *) }
+type kind = Ml | Runtime | External of { name : string; default : bool; import_attributes : External_ffi_types.import_attributes option }
 
 type property = Lam_compat.let_kind = Strict | Alias | StrictOpt | Variable
 

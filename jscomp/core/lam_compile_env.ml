@@ -71,7 +71,7 @@ let add_js_module ?import_attributes (hint_name : External_ffi_types.module_bind
       | Phint_nothing -> Ext_modulename.js_id_name_of_hint_name module_name)
   in
   let lam_module_ident : J.module_id =
-    { id; kind = External { name = module_name; default }; dynamic_import = false ; import_attributes }
+    { id; kind = External { name = module_name; default; import_attributes }; dynamic_import = false }
   in
   match Lam_module_ident.Hash.find_key_opt cached_tbl lam_module_ident with
   | None ->
