@@ -2965,40 +2965,29 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
           match spreadExpr with
           | None -> Doc.nil
           | Some ({pexp_desc} as expr) ->
+            let doc =
               match pexp_desc with
-              | Pexp_constant (Pconst_string (_txt, _)) ->
-                  let doc = 
-                    Doc.concat
-                     [
-                        Doc.dotdotdot;
-                        (let doc = printExpression ~state expr cmtTbl in
-                         match Parens.expr expr with
-                         | Parens.Parenthesized -> addParens doc
-                         | Braced braces -> printBraces doc expr braces
-                         | Nothing -> doc);
-                     ] in 
-                  Doc.concat [
-                      printComments doc cmtTbl expr.Parsetree.pexp_loc;
-                      Doc.comma;
-                      Doc.line;
-                     ]
-              | Pexp_ident {txt = Lident txt} -> 
-                  let doc = 
-                    Doc.concat
-                     [
-                        Doc.dotdotdot;
-                        (let doc = printIdentLike txt in
-                         match Parens.expr expr with
-                         | Parens.Parenthesized -> addParens doc
-                         | Braced braces -> printBraces doc expr braces
-                         | Nothing -> doc);
-                     ] in 
-                  Doc.concat [
-                      printComments doc cmtTbl expr.Parsetree.pexp_loc;
-                      Doc.comma;
-                      Doc.line;
-                     ]
+              | Pexp_constant (Pconst_string _) ->
+                printExpression ~state expr cmtTbl
+              | Pexp_ident {txt = Lident txt} -> printIdentLike txt
               | _ -> Doc.nil
+            in
+            let docWithSpread =
+              Doc.concat
+                [
+                  Doc.dotdotdot;
+                  (match Parens.expr expr with
+                  | Parens.Parenthesized -> addParens doc
+                  | Braced braces -> printBraces doc expr braces
+                  | Nothing -> doc);
+                ]
+            in
+            Doc.concat
+              [
+                printComments docWithSpread cmtTbl expr.Parsetree.pexp_loc;
+                Doc.comma;
+                Doc.line;
+              ]
         in
         (* If the record is written over multiple lines, break automatically
          * `let x = {a: 1, b: 3}` -> same line, break when line-width exceeded
