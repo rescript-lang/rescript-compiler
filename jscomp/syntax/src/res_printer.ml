@@ -2964,18 +2964,41 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
         let spread =
           match spreadExpr with
           | None -> Doc.nil
-          | Some expr ->
-            Doc.concat
-              [
-                Doc.dotdotdot;
-                (let doc = printExpressionWithComments ~state expr cmtTbl in
-                 match Parens.expr expr with
-                 | Parens.Parenthesized -> addParens doc
-                 | Braced braces -> printBraces doc expr braces
-                 | Nothing -> doc);
-                Doc.comma;
-                Doc.line;
-              ]
+          | Some ({pexp_desc} as expr) ->
+              match pexp_desc with
+              | Pexp_constant (Pconst_string (_txt, _)) ->
+                  let doc = 
+                    Doc.concat
+                     [
+                        Doc.dotdotdot;
+                        (let doc = printExpression ~state expr cmtTbl in
+                         match Parens.expr expr with
+                         | Parens.Parenthesized -> addParens doc
+                         | Braced braces -> printBraces doc expr braces
+                         | Nothing -> doc);
+                     ] in 
+                  Doc.concat [
+                      printComments doc cmtTbl expr.Parsetree.pexp_loc;
+                      Doc.comma;
+                      Doc.line;
+                     ]
+              | Pexp_ident {txt = Lident txt} -> 
+                  let doc = 
+                    Doc.concat
+                     [
+                        Doc.dotdotdot;
+                        (let doc = printIdentLike txt in
+                         match Parens.expr expr with
+                         | Parens.Parenthesized -> addParens doc
+                         | Braced braces -> printBraces doc expr braces
+                         | Nothing -> doc);
+                     ] in 
+                  Doc.concat [
+                      printComments doc cmtTbl expr.Parsetree.pexp_loc;
+                      Doc.comma;
+                      Doc.line;
+                     ]
+              | _ -> Doc.nil
         in
         (* If the record is written over multiple lines, break automatically
          * `let x = {a: 1, b: 3}` -> same line, break when line-width exceeded
