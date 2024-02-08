@@ -253,11 +253,12 @@ jobs:
         run: node playground/playground_test.js
 
       - name: Upload playground compiler to CDN
-        if: ${{ matrix.os == 'ubuntu-latest' && startsWith(github.ref, 'refs/tags/v') }}
+        # if: ${{ matrix.os == 'ubuntu-latest' && startsWith(github.ref, 'refs/tags/v') }}
+        if: ${{ matrix.os == 'ubuntu-latest' }}
         env:
           KEYCDN_USER: ${{ secrets.KEYCDN_USER }}
           KEYCDN_PASSWORD: ${{ secrets.KEYCDN_PASSWORD }}
-        run: sh playground/upload_bundle.sh
+        run: bash playground/upload_bundle.sh
 
       - name: Prepare artifact upload
         run: node .github/workflows/get_artifact_info.js
