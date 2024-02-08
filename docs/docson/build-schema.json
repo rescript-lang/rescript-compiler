@@ -335,8 +335,7 @@
           "description": "Build the given dependencies in JSX V3 compatibility mode."
         }
       },
-      "additionalProperties": false,
-      "required": ["version"]
+      "additionalProperties": false
     },
     "bsc-flags": {
       "oneOf": [
