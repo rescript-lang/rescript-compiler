@@ -301,7 +301,7 @@ type a = {
   // spread c
   ...c,
   // no spread
-  b: string
+  b: string,
 }
 
 let b = {
@@ -322,5 +322,5 @@ let c = {
   // from different module
   ...M.a,
   // foo
-  bar: "foo"
+  bar: "foo",
 }
