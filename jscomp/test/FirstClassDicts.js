@@ -2,17 +2,17 @@
 'use strict';
 
 
-let test_create = {
+function test_lookup(d) {
+  return d.something;
+}
+
+let CreateAndLookup_test_create = {
   name: "hello",
   something: 5
 };
 
-function test_lookup(d) {
-  d.something = 10;
-}
-
 let CreateAndLookup = {
-  test_create: test_create,
+  test_create: CreateAndLookup_test_create,
   test_lookup: test_lookup
 };
 

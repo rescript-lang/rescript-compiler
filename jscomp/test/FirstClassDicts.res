@@ -1,9 +1,9 @@
 module CreateAndLookup = {
-  type myDict = {name?: string, mutable anyOtherField?: int}
+  type myDict = {name?: string, anyOtherField?: int}
 
   let test_create: myDict = {name: "hello", something: 5}
 
-  let test_lookup = (d: myDict) => d.something = Some(10)
+  let test_lookup = (d: myDict) : option<int> => d.something
 }
 
 
