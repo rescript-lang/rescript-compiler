@@ -1,6 +1,6 @@
 {
   "name": "rescript",
-  "version": "11.1.0-rc.2",
+  "version": "11.1.0-rc.3",
   "devDependencies": {
     "mocha": "10.1.0",
     "nyc": "15.0.0",
