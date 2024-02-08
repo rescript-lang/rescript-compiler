@@ -104,6 +104,11 @@ let hasAwaitAttribute attrs =
       | _ -> false)
     attrs
 
+let collectArrayExpressions expr =
+  match expr.pexp_desc with
+  | Pexp_array exprs -> (exprs, None)
+  | _ -> ([], Some expr)
+
 let collectListExpressions expr =
   let rec collect acc expr =
     match expr.pexp_desc with
@@ -674,6 +679,17 @@ let isSpreadBeltListConcat expr =
         txt =
           Longident.Ldot
             (Longident.Ldot (Longident.Lident "Belt", "List"), "concatMany");
+      } ->
+    hasSpreadAttr expr.pexp_attributes
+  | _ -> false
+
+let isSpreadBeltArrayConcat expr =
+  match expr.pexp_desc with
+  | Pexp_ident
+      {
+        txt =
+          Longident.Ldot
+            (Longident.Ldot (Longident.Lident "Belt", "Array"), "concatMany");
       } ->
     hasSpreadAttr expr.pexp_attributes
   | _ -> false

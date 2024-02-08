@@ -27,7 +27,13 @@ type module_bind_name =
   (* explicit hint name *)
   | Phint_nothing
 
-type external_module_name = {bundle: string; module_bind_name: module_bind_name}
+type import_attributes = (string, string) Hashtbl.t
+
+type external_module_name = {
+  bundle: string;
+  module_bind_name: module_bind_name;
+  import_attributes: import_attributes option;
+}
 
 type arg_type = External_arg_spec.attr
 

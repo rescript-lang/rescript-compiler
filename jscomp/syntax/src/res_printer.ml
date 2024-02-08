@@ -421,7 +421,7 @@ let printLongident = function
 
 type identifierStyle = ExoticIdent | NormalIdent
 
-let classifyIdentContent ?(allowUident = false) txt =
+let classifyIdentContent ?(allowUident = false) ?(allowHyphen = false) txt =
   if Token.isKeywordTxt txt then ExoticIdent
   else
     let len = String.length txt in
@@ -431,16 +431,18 @@ let classifyIdentContent ?(allowUident = false) txt =
         match String.unsafe_get txt i with
         | 'A' .. 'Z' when allowUident -> loop (i + 1)
         | 'a' .. 'z' | '_' -> loop (i + 1)
+        | '-' when allowHyphen -> loop (i + 1)
         | _ -> ExoticIdent
       else
         match String.unsafe_get txt i with
         | 'A' .. 'Z' | 'a' .. 'z' | '0' .. '9' | '\'' | '_' -> loop (i + 1)
+        | '-' when allowHyphen -> loop (i + 1)
         | _ -> ExoticIdent
     in
     loop 0
 
-let printIdentLike ?allowUident txt =
-  match classifyIdentContent ?allowUident txt with
+let printIdentLike ?allowUident ?allowHyphen txt =
+  match classifyIdentContent ?allowUident ?allowHyphen txt with
   | ExoticIdent -> Doc.concat [Doc.text "\\\""; Doc.text txt; Doc.text "\""]
   | NormalIdent -> Doc.text txt
 
@@ -3047,6 +3049,9 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
              ])
       | extension -> printExtension ~state ~atModuleLvl:false extension cmtTbl)
     | Pexp_apply (e, [(Nolabel, {pexp_desc = Pexp_array subLists})])
+      when ParsetreeViewer.isSpreadBeltArrayConcat e ->
+      printBeltArrayConcatApply ~state subLists cmtTbl
+    | Pexp_apply (e, [(Nolabel, {pexp_desc = Pexp_array subLists})])
       when ParsetreeViewer.isSpreadBeltListConcat e ->
       printBeltListConcatApply ~state subLists cmtTbl
     | Pexp_apply (callExpr, args) ->
@@ -3813,6 +3818,61 @@ and printBinaryExpression ~state (expr : Parsetree.expression) cmtTbl =
          ])
   | _ -> Doc.nil
 
+and printBeltArrayConcatApply ~state subLists cmtTbl =
+  let makeSpreadDoc commaBeforeSpread = function
+    | Some expr ->
+      Doc.concat
+        [
+          commaBeforeSpread;
+          Doc.dotdotdot;
+          (let doc = printExpressionWithComments ~state expr cmtTbl in
+           match Parens.expr expr with
+           | Parens.Parenthesized -> addParens doc
+           | Braced braces -> printBraces doc expr braces
+           | Nothing -> doc);
+        ]
+    | None -> Doc.nil
+  in
+  let makeSubListDoc (expressions, spread) =
+    let commaBeforeSpread =
+      match expressions with
+      | [] -> Doc.nil
+      | _ -> Doc.concat [Doc.text ","; Doc.line]
+    in
+    let spreadDoc = makeSpreadDoc commaBeforeSpread spread in
+    Doc.concat
+      [
+        Doc.join
+          ~sep:(Doc.concat [Doc.text ","; Doc.line])
+          (List.map
+             (fun expr ->
+               let doc = printExpressionWithComments ~state expr cmtTbl in
+               match Parens.expr expr with
+               | Parens.Parenthesized -> addParens doc
+               | Braced braces -> printBraces doc expr braces
+               | Nothing -> doc)
+             expressions);
+        spreadDoc;
+      ]
+  in
+  Doc.group
+    (Doc.concat
+       [
+         Doc.lbracket;
+         Doc.indent
+           (Doc.concat
+              [
+                Doc.softLine;
+                Doc.join
+                  ~sep:(Doc.concat [Doc.text ","; Doc.line])
+                  (List.map makeSubListDoc
+                     (List.map ParsetreeViewer.collectArrayExpressions subLists));
+              ]);
+         Doc.trailingComma;
+         Doc.softLine;
+         Doc.rbracket;
+       ])
+
 and printBeltListConcatApply ~state subLists cmtTbl =
   let makeSpreadDoc commaBeforeSpread = function
     | Some expr ->
@@ -4404,7 +4464,7 @@ and printJsxProp ~state arg cmtTbl =
  * Navabar.createElement -> Navbar
  * Staff.Users.createElement -> Staff.Users *)
 and printJsxName {txt = lident} =
-  let printIdent = printIdentLike ~allowUident:true in
+  let printIdent = printIdentLike ~allowUident:true ~allowHyphen:true in
   let rec flatten acc lident =
     match lident with
     | Longident.Lident txt -> printIdent txt :: acc

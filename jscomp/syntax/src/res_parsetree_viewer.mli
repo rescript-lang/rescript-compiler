@@ -46,6 +46,10 @@ val collectIfExpressions :
   (Location.t * ifConditionKind * Parsetree.expression) list
   * Parsetree.expression option
 
+val collectArrayExpressions :
+  Parsetree.expression ->
+  Parsetree.expression list * Parsetree.expression option
+
 val collectListExpressions :
   Parsetree.expression ->
   Parsetree.expression list * Parsetree.expression option
@@ -141,6 +145,8 @@ val isTaggedTemplateLiteral : Parsetree.expression -> bool
 val hasTemplateLiteralAttr : Parsetree.attributes -> bool
 
 val isSpreadBeltListConcat : Parsetree.expression -> bool
+
+val isSpreadBeltArrayConcat : Parsetree.expression -> bool
 
 val collectOrPatternChain : Parsetree.pattern -> Parsetree.pattern list
 

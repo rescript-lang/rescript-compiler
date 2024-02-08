@@ -27,7 +27,13 @@ type module_bind_name =
   (* explicit hint name *)
   | Phint_nothing
 
-type external_module_name = {bundle: string; module_bind_name: module_bind_name}
+type import_attributes = (string, string) Hashtbl.t
+
+type external_module_name = {
+  bundle: string;
+  module_bind_name: module_bind_name;
+  import_attributes: import_attributes option;
+}
 
 type arg_type = External_arg_spec.attr
 (** TODO: information between [arg_type] and [arg_label] are duplicated,
@@ -165,7 +171,7 @@ let valid_method_name ?loc:_ _txt = ()
 
 let check_external_module_name ?loc x =
   match x with
-  | {bundle = ""; _} | {module_bind_name = Phint_name ""; bundle = _} ->
+  | {bundle = ""; _} | {module_bind_name = Phint_name ""; bundle = _; _} ->
     Location.raise_errorf ?loc "empty name encountered"
   | _ -> ()
 

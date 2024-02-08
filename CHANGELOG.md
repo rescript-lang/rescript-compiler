@@ -12,7 +12,17 @@
 
 # 12.0.0-alpha.1 (Unreleased)
 
-# 11.1.0-rc.2 (Unreleased)
+#### :house: Internal
+
+- Build with OCaml 5.1.0. https://github.com/rescript-lang/rescript-compiler/pull/5895
+
+# 11.1.0-rc.2
+
+#### :rocket: New Feature
+
+- Add support for array spread. https://github.com/rescript-lang/rescript-compiler/pull/6608
+- Support import attributes (https://github.com/tc39/proposal-import-attributes) in `@module()`. https://github.com/rescript-lang/rescript-compiler/pull/6599
+- allow hyphens in jsx tag names (e.g. `<mj-column>`). https://github.com/rescript-lang/rescript-compiler/pull/6609
 
 #### :bug: Bug Fix
 
@@ -20,6 +30,8 @@
 - Generic JSX transform: Rename expected module name for lowercase JSX to `Elements` from `DOM`. https://github.com/rescript-lang/rescript-compiler/pull/6606
 - Generic JSX transform: Set default config params for `jsxConfig`. https://github.com/rescript-lang/rescript-compiler/pull/6606
 - Generic JSX transform: Handle namespaced names. https://github.com/rescript-lang/rescript-compiler/pull/6606
+- Fix issue with doc comment in recursive module. https://github.com/rescript-lang/rescript-compiler/pull/6613
+- Fix issue with Exceptions and Extensible types runtime generation. https://github.com/rescript-lang/rescript-compiler/pull/6570
 
 #### :house: Internal
 
