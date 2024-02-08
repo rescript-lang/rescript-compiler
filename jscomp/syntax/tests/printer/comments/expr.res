@@ -286,6 +286,15 @@ type b = {
   b: string
 }
 
+type a = {
+  // spread from different module
+  ...M.a,
+  // spread c
+  ...c,
+  // no spread
+  b: string
+}
+
 let b = {
   // exotic
   ...\"let",
@@ -296,6 +305,13 @@ let b = {
 let b = {
   // quote
   ..."let",
+  // foo
+  bar: "foo"
+}
+
+let c = {
+  // from different module
+  ...M.a,
   // foo
   bar: "foo"
 }
