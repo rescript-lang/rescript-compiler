@@ -2967,10 +2967,8 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
           | Some ({pexp_desc} as expr) ->
             let doc =
               match pexp_desc with
-              | Pexp_constant (Pconst_string _) ->
-                printExpression ~state expr cmtTbl
               | Pexp_ident {txt = expr} -> printLident expr
-              | _ -> Doc.nil
+              | _ -> printExpression ~state expr cmtTbl
             in
             let docWithSpread =
               Doc.concat
