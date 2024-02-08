@@ -1,4 +1,4 @@
-(* Copyright (C) 2017 Hongbo Zhang, Authors of ReScript
+/* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -20,20 +20,12 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
-val default_export : string
+type t = {@as("RE_EXN_ID") id: string}
 
-val exports : Ext_pp_scope.t -> Ext_pp.t -> Ident.t list -> Ext_pp_scope.t
+let create: string => string
 
-val es6_export : Ext_pp_scope.t -> Ext_pp.t -> Ident.t list -> Ext_pp_scope.t
+let is_extension: 'a => bool
 
-val requires :
-  string ->
-  Ext_pp_scope.t ->
-  Ext_pp.t ->
-  (Ident.t * string * bool) list ->
-  Ext_pp_scope.t
-
-val imports :
-  Ext_pp_scope.t -> Ext_pp.t -> (Ident.t * string * bool * External_ffi_types.import_attributes option) list -> Ext_pp_scope.t
+let exn_slot_name: t => string

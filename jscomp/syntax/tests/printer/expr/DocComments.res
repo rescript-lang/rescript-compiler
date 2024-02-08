@@ -11,3 +11,18 @@ module M : {
 
 @val
 external ex : (/** ddd */ ~x: int, /** eee */ n) => int = "ex"
+
+/** A */
+module rec A : { type t } = {
+  type t
+}
+
+/** B */ 
+and B : { type t } = {
+  type t
+}
+
+@res.doc(" C ")
+and C : { type t} = {
+  type t
+}

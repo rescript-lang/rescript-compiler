@@ -78,10 +78,6 @@ module ErrorMessages = struct
      + Array size check + `get` checks on the current pattern. If it's to \
      obtain a subarray, use `Array.sub` or `Belt.Array.slice`."
 
-  let arrayExprSpread =
-    "Arrays can't use the `...` spread currently. Please use `concat` or other \
-     Array helpers."
-
   let recordExprSpread =
     "Records can only have one `...` spread, at the beginning.\n\
      Explanation: since records have a known, fixed shape, a spread like `{a, \
@@ -2621,10 +2617,11 @@ and parseJsxOpeningOrSelfClosingElement ~startPos p =
     | GreaterThan -> (
       (* <foo a=b> bar </foo> *)
       let childrenStartPos = p.Parser.startPos in
-      Scanner.setJsxMode p.scanner;
       Parser.next p;
       let spread, children = parseJsxChildren p in
       let childrenEndPos = p.Parser.startPos in
+      Scanner.popMode p.scanner Jsx;
+      Scanner.setJsxMode p.scanner;
       let () =
         match p.token with
         | LessThanSlash -> Parser.next p
@@ -2689,6 +2686,8 @@ and parseJsxOpeningOrSelfClosingElement ~startPos p =
  *  jsx-children ::= primary-expr*          * => 0 or more
  *)
 and parseJsx p =
+  Scanner.popMode p.scanner Jsx;
+  Scanner.setJsxMode p.Parser.scanner;
   Parser.leaveBreadcrumb p Grammar.Jsx;
   let startPos = p.Parser.startPos in
   Parser.expect LessThan p;
@@ -2700,6 +2699,7 @@ and parseJsx p =
       parseJsxFragment p
     | _ -> parseJsxName p
   in
+  Scanner.popMode p.scanner Jsx;
   Parser.eatBreadcrumb p;
   {jsxExpr with pexp_attributes = [jsxAttr]}
 
@@ -2710,12 +2710,12 @@ and parseJsx p =
  *)
 and parseJsxFragment p =
   let childrenStartPos = p.Parser.startPos in
-  Scanner.setJsxMode p.scanner;
   Parser.expect GreaterThan p;
   let _spread, children = parseJsxChildren p in
   let childrenEndPos = p.Parser.startPos in
   Parser.expect LessThanSlash p;
   Parser.expect GreaterThan p;
+  Scanner.popMode p.scanner Jsx;
   let loc = mkLoc childrenStartPos childrenEndPos in
   makeListExpression loc children None
 
@@ -2747,6 +2747,7 @@ and parseJsxProp p =
         Parser.next p;
         (* no punning *)
         let optional = Parser.optional p Question in
+        Scanner.popMode p.scanner Jsx;
         let attrExpr =
           let e = parsePrimaryExpr ~operand:(parseAtomicExpr p) p in
           {e with pexp_attributes = propLocAttr :: e.pexp_attributes}
@@ -2769,6 +2770,7 @@ and parseJsxProp p =
     Parser.next p;
     match p.Parser.token with
     | DotDotDot -> (
+      Scanner.popMode p.scanner Jsx;
       Parser.next p;
       let loc = mkLoc p.Parser.startPos p.prevEndPos in
       let propLocAttr =
@@ -2794,9 +2796,7 @@ and parseJsxProps p =
 and parseJsxChildren p =
   let rec loop p children =
     match p.Parser.token with
-    | Token.Eof | LessThanSlash ->
-      Scanner.popMode p.scanner Jsx;
-      List.rev children
+    | Token.Eof | LessThanSlash -> children
     | LessThan ->
       (* Imagine: <div> <Navbar /> <
        * is `<` the start of a jsx-child? <div …
@@ -2812,23 +2812,23 @@ and parseJsxChildren p =
       else
         (* LessThanSlash *)
         let () = p.token <- token in
-        let () = Scanner.popMode p.scanner Jsx in
-        List.rev children
+        children
     | token when Grammar.isJsxChildStart token ->
       let () = Scanner.popMode p.scanner Jsx in
       let child =
         parsePrimaryExpr ~operand:(parseAtomicExpr p) ~noCall:true p
       in
       loop p (child :: children)
-    | _ ->
-      Scanner.popMode p.scanner Jsx;
-      List.rev children
+    | _ -> children
   in
   match p.Parser.token with
   | DotDotDot ->
     Parser.next p;
     (true, [parsePrimaryExpr ~operand:(parseAtomicExpr p) ~noCall:true p])
-  | _ -> (false, loop p [])
+  | _ ->
+    let children = List.rev (loop p []) in
+    Scanner.popMode p.scanner Jsx;
+    (false, children)
 
 and parseBracedOrRecordExpr p =
   let startPos = p.Parser.startPos in
@@ -3920,36 +3920,60 @@ and parseListExpr ~startPos p =
             loc))
       [(Asttypes.Nolabel, Ast_helper.Exp.array ~loc listExprs)]
 
-(* Overparse ... and give a nice error message *)
-and parseNonSpreadExp ~msg p =
-  let () =
-    match p.Parser.token with
-    | DotDotDot ->
-      Parser.err p (Diagnostics.message msg);
-      Parser.next p
-    | _ -> ()
-  in
-  match p.Parser.token with
-  | token when Grammar.isExprStart token -> (
-    let expr = parseExpr p in
-    match p.Parser.token with
-    | Colon ->
-      Parser.next p;
-      let typ = parseTypExpr p in
-      let loc = mkLoc expr.pexp_loc.loc_start typ.ptyp_loc.loc_end in
-      Some (Ast_helper.Exp.constraint_ ~loc expr typ)
-    | _ -> Some expr)
-  | _ -> None
-
 and parseArrayExp p =
   let startPos = p.Parser.startPos in
   Parser.expect Lbracket p;
-  let exprs =
-    parseCommaDelimitedRegion p ~grammar:Grammar.ExprList ~closing:Rbracket
-      ~f:(parseNonSpreadExp ~msg:ErrorMessages.arrayExprSpread)
+  let split_by_spread exprs =
+    List.fold_left
+      (fun acc curr ->
+        match (curr, acc) with
+        | (true, expr, startPos, endPos), _ ->
+          (* find a spread expression, prepend a new sublist *)
+          ([], Some expr, startPos, endPos) :: acc
+        | ( (false, expr, startPos, _endPos),
+            (no_spreads, spread, _accStartPos, accEndPos) :: acc ) ->
+          (* find a non-spread expression, and the accumulated is not empty,
+           * prepend to the first sublist, and update the loc of the first sublist *)
+          (expr :: no_spreads, spread, startPos, accEndPos) :: acc
+        | (false, expr, startPos, endPos), [] ->
+          (* find a non-spread expression, and the accumulated is empty *)
+          [([expr], None, startPos, endPos)])
+      [] exprs
+  in
+  let listExprsRev =
+    parseCommaDelimitedReversedList p ~grammar:Grammar.ExprList
+      ~closing:Rbracket ~f:parseSpreadExprRegionWithLoc
   in
   Parser.expect Rbracket p;
-  Ast_helper.Exp.array ~loc:(mkLoc startPos p.prevEndPos) exprs
+  let loc = mkLoc startPos p.prevEndPos in
+  let collectExprs = function
+    | [], Some spread, _startPos, _endPos -> [spread]
+    | exprs, Some spread, _startPos, _endPos ->
+      let els = Ast_helper.Exp.array ~loc exprs in
+      [els; spread]
+    | exprs, None, _startPos, _endPos ->
+      let els = Ast_helper.Exp.array ~loc exprs in
+      [els]
+  in
+  match split_by_spread listExprsRev with
+  | [] -> Ast_helper.Exp.array ~loc:(mkLoc startPos p.prevEndPos) []
+  | [(exprs, None, _, _)] ->
+    Ast_helper.Exp.array ~loc:(mkLoc startPos p.prevEndPos) exprs
+  | exprs ->
+    let xs = List.map collectExprs exprs in
+    let listExprs =
+      List.fold_right
+        (fun exprs1 acc ->
+          List.fold_right (fun expr1 acc1 -> expr1 :: acc1) exprs1 acc)
+        xs []
+    in
+    Ast_helper.Exp.apply ~loc
+      (Ast_helper.Exp.ident ~loc ~attrs:[spreadAttr]
+         (Location.mkloc
+            (Longident.Ldot
+               (Longident.Ldot (Longident.Lident "Belt", "Array"), "concatMany"))
+            loc))
+      [(Asttypes.Nolabel, Ast_helper.Exp.array ~loc listExprs)]
 
 (* TODO: check attributes in the case of poly type vars,
  * might be context dependend: parseFieldDeclaration (see ocaml) *)
@@ -6008,7 +6032,14 @@ and parseModuleBindingBody p =
 and parseModuleBindings ~attrs ~startPos p =
   let rec loop p acc =
     let startPos = p.Parser.startPos in
-    let attrs = parseAttributesAndBinding p in
+    let docAttr : Parsetree.attributes =
+      match p.Parser.token with
+      | DocComment (loc, s) ->
+        Parser.next p;
+        [docCommentToAttribute loc s]
+      | _ -> []
+    in
+    let attrs = docAttr @ parseAttributesAndBinding p in
     match p.Parser.token with
     | And ->
       Parser.next p;

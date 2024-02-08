@@ -94,7 +94,8 @@ let es6_program ~output_dir fmt f (x : J.deps_program) =
         | false -> 
            Some ( x.id,
              Js_name_of_module_id.string_of_module_id x ~output_dir fmt,
-             is_default x.kind )))
+             is_default x.kind,
+             (match x.kind with | External {import_attributes} -> import_attributes | _ -> None) )))
   in
   let () = P.at_least_two_lines f in
   let cxt = Js_dump.statements true cxt f x.program.block in
