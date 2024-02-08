@@ -1,4 +1,4 @@
-#/usr/bin/sh
+#!/bin/bash
 
 # This script will publish the compiler.js bundle / packages cmij.js files to our KeyCDN server.
 # The target folder on KeyCDN will be the compiler.js' version number.
@@ -29,7 +29,7 @@ if [ ! -f "${NETRC_FILE}" ]; then
   echo "machine ${KEYCDN_SRV} login $KEYCDN_USER password $KEYCDN_PASSWORD" > "${NETRC_FILE}"
 fi
 
-PACKAGES=( "compiler-builtins" "@rescript/react" "@rescript/core")
+PACKAGES=("compiler-builtins" "@rescript/react" "@rescript/core")
 
 echo "Uploading compiler.js file..."
 curl --ftp-create-dirs -T "${SCRIPT_DIR}/compiler.js" --ssl --netrc-file $NETRC_FILE ftp://${KEYCDN_SRV}/v${VERSION}/compiler.js
@@ -45,7 +45,3 @@ do
 
   curl --ftp-create-dirs -T "${SOURCE}/cmij.js" --ssl --netrc-file $NETRC_FILE "${TARGET}/cmij.js"
 done
-   
-
-
-
