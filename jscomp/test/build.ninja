@@ -165,7 +165,7 @@ o test/earger_curry_test.cmi test/earger_curry_test.cmj : cc test/earger_curry_t
 o test/effect.cmi test/effect.cmj : cc test/effect.res | $bsc $stdlib runtime
 o test/epsilon_test.cmi test/epsilon_test.cmj : cc test/epsilon_test.res | test/mt.cmj $bsc $stdlib runtime
 o test/equal_box_test.cmi test/equal_box_test.cmj : cc test/equal_box_test.res | test/mt.cmj $bsc $stdlib runtime
-o test/equal_exception_test.cmi test/equal_exception_test.cmj : cc test/equal_exception_test.res | $bsc $stdlib runtime
+o test/equal_exception_test.cmi test/equal_exception_test.cmj : cc test/equal_exception_test.res | test/mt.cmj $bsc $stdlib runtime
 o test/equal_test.cmi test/equal_test.cmj : cc test/equal_test.res | $bsc $stdlib runtime
 o test/es6_export.cmi test/es6_export.cmj : cc test/es6_export.res | $bsc $stdlib runtime
 o test/es6_import.cmi test/es6_import.cmj : cc test/es6_import.res | test/es6_export.cmj $bsc $stdlib runtime
