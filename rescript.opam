@@ -12,6 +12,7 @@ depends: [
   "cppo" {= "1.6.9"}
   "js_of_ocaml-compiler" {= "5.6.0"}
   "ounit2" {= "2.2.7"}
+  "reanalyze" {= "2.24.0"}
   "dune"
 ]
 build: [

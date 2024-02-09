@@ -28,7 +28,6 @@
    (= 5.6.0))
   (ounit2
    (= 2.2.7))
-  ; No OCaml 5 compatible reanalyze on OPAM yet
-  ; (reanalyze
-  ;  (= 2.23.0))
+  (reanalyze
+   (= 2.24.0))
   dune))
