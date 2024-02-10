@@ -46,7 +46,7 @@ let no_type_defined (x : Parsetree.structure_item) =
      generated code from:
      {[
        external %private x : int -> int =  "x"
-       [@@bs.module "./x"]
+       [@@module "./x"]
      ]}
   *)
   | _ -> false

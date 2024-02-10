@@ -293,7 +293,7 @@ and translateStructureItem ~config ~outputFileRelative ~resolver ~typeEnv
     |> Translation.combine
   | {
    str_desc =
-     (* ReScript's encoding of bs.module: include with constraint. *)
+     (* ReScript's encoding of @module: include with constraint. *)
      Tstr_include
        {
          incl_mod =

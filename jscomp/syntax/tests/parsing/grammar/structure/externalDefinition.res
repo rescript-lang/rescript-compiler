@@ -12,7 +12,7 @@ external svg: () => React.element = "svg";
 external svg: () => React.element = "svg"
 
 // should not infinite loop
-@bs.new
+@new
 external createDate: (unit, unit) => date = "Date"
 
 let foobar = createDate()()

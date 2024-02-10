@@ -112,7 +112,7 @@ let translateValue ~attributes ~config ~docString ~outputFileRelative ~resolver
 
 (**
  [@genType]
- [@bs.module] external myBanner : ReasonReact.reactClass = "./MyBanner";
+ [@module] external myBanner : ReasonReact.reactClass = "./MyBanner";
 *)
 let translatePrimitive ~config ~outputFileRelative ~resolver ~typeEnv
     (valueDescription : Typedtree.value_description) : t =

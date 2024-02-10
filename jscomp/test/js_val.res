@@ -5,7 +5,7 @@
 @val @module(("x", "U")) external vvv: int = "vv"
 @module(("x", "U")) external vvvv: int = "vvvv"
 
-/* TODO: unify all [bs.module] name, here ideally,
+/* TODO: unify all [module] name, here ideally,
  we should have only one [require("x")] here */
 let h = u
 let hh = vv

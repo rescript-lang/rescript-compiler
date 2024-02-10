@@ -7,9 +7,9 @@ var bsc_exe_path = require("../../../scripts/bin_path").bsc_exe;
 var react = `
 type u 
 
-external a : u = "react" [@@bs.module]
+external a : u = "react" [@@module]
 
-external b : unit -> int = "bool" [@@bs.module "react"]
+external b : unit -> int = "bool" [@@module "react"]
 
 let v = a
 let h = b ()
@@ -19,9 +19,9 @@ var foo_react = `
 type bla
 
 
-external foo : bla = "foo.react" [@@bs.module]
+external foo : bla = "foo.react" [@@module]
 
-external bar : unit -> bla  = "bar" [@@bs.val] [@@bs.module "foo.react"]
+external bar : unit -> bla  = "bar" [@@bs.val] [@@module "foo.react"]
 
 let c = foo 
 

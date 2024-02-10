@@ -7,5 +7,5 @@ external attachShader :
 [@@bs.send ]
 external svg : unit -> React.element = "svg"
 external svg : unit -> React.element = "svg"
-external createDate : unit -> unit -> date = "Date"[@@bs.new ]
+external createDate : unit -> unit -> date = "Date"[@@new ]
 let foobar = (createDate ()) ()

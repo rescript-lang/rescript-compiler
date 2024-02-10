@@ -11843,7 +11843,7 @@ module Scanner = {
 module JsFfi = {
   type scope =
     | Global
-    | Module(string) /* bs.module("path") */
+    | Module(string) /* module("path") */
     | Scope(Longident.t) /* bs.scope(/"window", "location"/) */
 
   type label_declaration = {
