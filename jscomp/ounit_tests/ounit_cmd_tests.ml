@@ -271,7 +271,7 @@ let rec y = A y;;
     end;
     __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
-    type -'a t = {k : 'a } [@@bs.deriving abstract]
+    type -'a t = {k : 'a } [@@deriving abstract]
     |} in
       OUnit.assert_bool __LOC__
         (Ext_string.contain_substring should_err.stderr "contravariant")

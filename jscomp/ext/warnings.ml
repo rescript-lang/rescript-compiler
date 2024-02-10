@@ -630,7 +630,7 @@ let descriptions =
     (101, "Unused bs attributes");
     (102, "Polymorphic comparison introduced (maybe unsafe)");
     (103, "Fragile FFI definitions");
-    (104, "bs.deriving warning with customized message ");
+    (104, "@deriving warning with customized message ");
     ( 105,
       "External name is inferred from val name is unsafe from refactoring when \
        changing value name" );

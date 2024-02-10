@@ -37,7 +37,7 @@ let () = {
   | A
   | B [@as 3]
   | C
-[@@bs.deriving {jsConverter = newType}]      
+[@@deriving {jsConverter = newType}]      
 
 let id  x = 
     eq  __LOC__ (aFromJs (aToJs x ))  x 
@@ -54,7 +54,7 @@ let a1 = aToJs B */
   | D1
   | D2 
   | D3 
-[@@bs.deriving {jsConverter = newType }]       
+[@@deriving {jsConverter = newType }]       
 
 
 let b0 = bToJs D0 
@@ -70,7 +70,7 @@ let () = idb D0; idb D1; idb D2 ; idb D3 */
   | D1
   | D2 
   | D3 
-[@@bs.deriving {jsConverter = {newType }}]       
+[@@deriving {jsConverter = {newType }}]       
 
 let c0 = cToJs D0 
 
@@ -80,14 +80,14 @@ let () = idc D0; idc D1 ; idc D2; idc D3 */
 
 /* type h = 
   | JsMapperEraseType
-  | B [@@bs.deriving {accessors; jsConverter = newType} ] */
+  | B [@@deriving {accessors; jsConverter = newType} ] */
 
 /*
 type z =    
   | ZFromJs 
   | ZToJs
   | ZXx (* not overridden *)
-[@@bs.deriving {
+[@@deriving {
   accessors;
   jsConverter
 }
