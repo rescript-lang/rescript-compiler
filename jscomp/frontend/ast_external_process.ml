@@ -266,7 +266,7 @@ let parse_external_attributes (no_arguments : bool) (prim_name_check : string)
                 st with
                 call_name = Some (name_from_payload_or_prim ~loc payload);
               }
-          | "bs.module" | "module" -> (
+          | "module" -> (
             match payload with
             | PStr
                 [
@@ -391,7 +391,7 @@ let parse_external_attributes (no_arguments : bool) (prim_name_check : string)
             {st with set_name = Some (name_from_payload_or_prim ~loc payload)}
           | "get" ->
             {st with get_name = Some (name_from_payload_or_prim ~loc payload)}
-          | "bs.new" | "new" ->
+          | "new" ->
             {st with new_name = Some (name_from_payload_or_prim ~loc payload)}
           | "set_index" ->
             if String.length prim_name_check <> 0 then

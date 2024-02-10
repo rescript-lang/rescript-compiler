@@ -29,7 +29,7 @@ type cst = private Arg_int_lit of int | Arg_string_lit of string * delim
 type attr =
   | Poly_var_string of {descr: (string * string) list}
   | Poly_var of {descr: (string * string) list option}
-  | Int of (string * int) list (* ([`a | `b ] [@bs.int])*)
+  | Int of (string * int) list (* ([`a | `b ] [@int])*)
   | Arg_cst of cst
   | Fn_uncurry_arity of
       int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)

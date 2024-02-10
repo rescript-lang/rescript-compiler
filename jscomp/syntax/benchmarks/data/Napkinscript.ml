@@ -11476,7 +11476,7 @@ end
 module JsFfi = struct
   type scope =
     | Global
-    | Module of string (* bs.module("path") *)
+    | Module of string (* module("path") *)
     | Scope of Longident.t (* bs.scope(/"window", "location"/) *)
 
   type label_declaration = {

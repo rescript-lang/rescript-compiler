@@ -288,7 +288,7 @@ and print_simple_out_type ppf =
           Otyp_arrow ("", Otyp_constr (Oide_ident "unit", []),tyl)
         else tyl
       in 
-      fprintf ppf "@[<0>(%a@ [@bs.meth])@]" print_out_type_1 res
+      fprintf ppf "@[<0>(%a@ [@meth])@]" print_out_type_1 res
   | Otyp_constr (Oide_dot (Oide_dot (Oide_ident "Js_OO", "Callback" ), _),
                  [tyl])
     -> 

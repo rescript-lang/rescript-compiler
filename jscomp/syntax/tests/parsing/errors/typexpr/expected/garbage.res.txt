@@ -2,11 +2,11 @@
   Syntax error!
   tests/parsing/errors/typexpr/garbage.res:2:28
 
-  1 │ @bs.module("moduleName")
+  1 │ @module("moduleName")
   2 │ external printName: (~name:?, unit) => unit = "printName"
   3 │ 
 
   I'm not sure what to parse here when looking at "?".
 
 external printName : name:((unit)[@res.namedArgLoc ]) -> unit = "printName"
-[@@bs.module {js|moduleName|js}]
+[@@module {js|moduleName|js}]

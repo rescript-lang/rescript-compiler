@@ -38,7 +38,7 @@ type t
 @send external sum: (t, unit) => int = "sum"
 
 /* compile error */
-/* external join : string  -> string = "" [@@bs.module "path"] [@@bs.splice] */
+/* external join : string  -> string = "" [@@module "path"] [@@bs.splice] */
 @module("path") @variadic external join: array<string> => string = "join"
 
 @send @variadic external test: (t, array<string>) => t = "test" /* FIXME */

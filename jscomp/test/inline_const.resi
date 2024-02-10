@@ -23,7 +23,7 @@ let hh: string
 
 @inline(1) let f6: int
 
-/* val f7 : bool [@@bs.inline 1L] */
+/* val f7 : bool [@@inline 1L] */
 
 @inline(100L) let v: int64
 @inline(1L) let u: int64

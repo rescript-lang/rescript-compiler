@@ -23,12 +23,12 @@ type vdom
 /* FIXME: investigate 
    cases:
    {[
-     [@@bs.module "package1" "same_name"]
-     [@@bs.module "package2" "same_name"]
+     [@@module "package1" "same_name"]
+     [@@module "package2" "same_name"]
    ]}
    {[
-     [@@bs.module "package" "name1"]
-     [@@bs.module "package" "name2"]
+     [@@module "package" "name1"]
+     [@@module "package" "name2"]
    ]}
 */
 @send @variadic external h1: (vdom, ~attrs: attrs=?, array<component>) => component = "h1"

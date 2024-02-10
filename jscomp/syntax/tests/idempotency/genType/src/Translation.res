@@ -276,7 +276,7 @@ let translateComponent = (
 
 @ocaml.doc("
  * [@genType]
- * [@bs.module] external myBanner : ReasonReact.reactClass = \"./MyBanner\";
+ * [@module] external myBanner : ReasonReact.reactClass = \"./MyBanner\";
  ")
 let translatePrimitive = (
   ~config,

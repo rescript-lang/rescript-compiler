@@ -88,7 +88,7 @@ let process_attributes_rev (attrs : t) : attr_kind * t =
         (Uncurry attr, acc) (* TODO: warn unused/duplicated attribute *)
       | ("bs.this" | "this"), (Nothing | Meth_callback _) ->
         (Meth_callback attr, acc)
-      | ("bs.meth" | "meth"), (Nothing | Method _) -> (Method attr, acc)
+      | "meth", (Nothing | Method _) -> (Method attr, acc)
       | ("bs" | "bs.this" | "this"), _ ->
         Bs_syntaxerr.err loc Conflict_bs_bs_this_bs_meth
       | _, _ -> (st, attr :: acc))
@@ -154,8 +154,7 @@ let rs_externals (attrs : t) pval_prim =
         || Ext_array.exists external_attrs (fun (x : string) -> txt = x))
     || prims_to_be_encoded pval_prim
 
-let is_inline : attr -> bool =
- fun ({txt}, _) -> txt = "bs.inline" || txt = "inline"
+let is_inline : attr -> bool = fun ({txt}, _) -> txt = "inline"
 
 let has_inline_payload (attrs : t) = Ext_list.find_first attrs is_inline
 
@@ -223,8 +222,8 @@ let iter_process_bs_string_int_unwrap_uncurry (attrs : t) =
   Ext_list.iter attrs (fun (({txt; loc = _}, (payload : _)) as attr) ->
       match txt with
       | "bs.string" | "string" -> assign `String attr
-      | "bs.int" | "int" -> assign `Int attr
-      | "bs.ignore" | "ignore" -> assign `Ignore attr
+      | "int" -> assign `Int attr
+      | "ignore" -> assign `Ignore attr
       | "bs.unwrap" | "unwrap" -> assign `Unwrap attr
       | "bs.uncurry" | "uncurry" ->
         assign (`Uncurry (Ast_payload.is_single_int payload)) attr
