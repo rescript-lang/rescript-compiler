@@ -387,19 +387,19 @@ let parse_external_attributes (no_arguments : bool) (prim_name_check : string)
           | "bs.splice" | "bs.variadic" | "variadic" -> {st with splice = true}
           | "bs.send" | "send" ->
             {st with val_send = Some (name_from_payload_or_prim ~loc payload)}
-          | "bs.set" | "set" ->
+          | "set" ->
             {st with set_name = Some (name_from_payload_or_prim ~loc payload)}
-          | "bs.get" | "get" ->
+          | "get" ->
             {st with get_name = Some (name_from_payload_or_prim ~loc payload)}
           | "bs.new" | "new" ->
             {st with new_name = Some (name_from_payload_or_prim ~loc payload)}
-          | "bs.set_index" | "set_index" ->
+          | "set_index" ->
             if String.length prim_name_check <> 0 then
               Location.raise_errorf ~loc
                 "%@set_index this particular external's name needs to be a \
                  placeholder empty string";
             {st with set_index = true}
-          | "bs.get_index" | "get_index" ->
+          | "get_index" ->
             if String.length prim_name_check <> 0 then
               Location.raise_errorf ~loc
                 "%@get_index this particular external's name needs to be a \
@@ -946,9 +946,9 @@ let external_desc_of_non_obj (loc : Location.t) (st : external_desc)
       Js_get {js_get_name = name; js_get_scopes = scopes}
     else
       Location.raise_errorf ~loc
-        "Ill defined attribute %@bs.get (only one argument)"
+        "Ill defined attribute %@get (only one argument)"
   | {get_name = Some _; _} ->
-    Location.raise_errorf ~loc "Attribute found that conflicts with %@bs.get"
+    Location.raise_errorf ~loc "Attribute found that conflicts with %@get"
 
 (** Note that the passed [type_annotation] is already processed by visitor pattern before*)
 let handle_attributes (loc : Bs_loc.t) (type_annotation : Parsetree.core_type)

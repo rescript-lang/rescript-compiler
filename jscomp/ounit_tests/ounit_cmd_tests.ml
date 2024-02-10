@@ -73,7 +73,7 @@ let suites =
       let should_err = bsc_check_eval {|
 external ff :
     resp -> (_ [@as "x"]) -> int -> unit =
-    "x" [@@bs.set]
+    "x" [@@set]
       |} in
       OUnit.assert_bool __LOC__
         (Ext_string.contain_substring should_err.stderr

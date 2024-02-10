@@ -31,7 +31,7 @@ let process_method_attributes_rev (attrs : t) =
     ({get = None; set = None}, [])
     (fun (st, acc) (({txt; loc}, payload) as attr) ->
       match txt with
-      | "bs.get" | "get" (* @bs.get{null; undefined}*) ->
+      | "get" (* @get{null; undefined}*) ->
         let result =
           Ext_list.fold_left (Ast_payload.ident_or_record_as_config loc payload)
             (false, false) (fun (null, undefined) ({txt; loc}, opt_expr) ->
@@ -56,7 +56,7 @@ let process_method_attributes_rev (attrs : t) =
         in
 
         ({st with get = Some result}, acc)
-      | "bs.set" | "set" ->
+      | "set" ->
         let result =
           Ext_list.fold_left (Ast_payload.ident_or_record_as_config loc payload)
             `Get (fun _st ({txt; loc}, opt_expr) ->
@@ -330,9 +330,9 @@ let is_bs (attr : attr) =
 
 let res_uapp : attr = ({txt = "res.uapp"; loc = locg}, Ast_payload.empty)
 
-let bs_get : attr = ({txt = "bs.get"; loc = locg}, Ast_payload.empty)
+let get : attr = ({txt = "get"; loc = locg}, Ast_payload.empty)
 
-let bs_get_index : attr = ({txt = "bs.get_index"; loc = locg}, Ast_payload.empty)
+let get_index : attr = ({txt = "get_index"; loc = locg}, Ast_payload.empty)
 
 let bs_get_arity : attr =
   ( {txt = "internal.arity"; loc = locg},
@@ -344,7 +344,7 @@ let bs_get_arity : attr =
         };
       ] )
 
-let bs_set : attr = ({txt = "bs.set"; loc = locg}, Ast_payload.empty)
+let set : attr = ({txt = "set"; loc = locg}, Ast_payload.empty)
 
 let internal_expansive : attr =
   ({txt = "internal.expansive"; loc = locg}, Ast_payload.empty)

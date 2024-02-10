@@ -72,13 +72,13 @@ val is_bs : attr -> bool
 (* Attribute for uncurried application coming from the ReScript parser *)
 val res_uapp : attr
 
-val bs_get : attr
+val get : attr
 
-val bs_get_index : attr
+val get_index : attr
 
 val bs_get_arity : attr
 
-val bs_set : attr
+val set : attr
 
 val bs_return_undefined : attr
 
