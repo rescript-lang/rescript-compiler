@@ -169,7 +169,7 @@ let process_derive_type (attrs : t) : derive_attr * t =
     ({bs_deriving = None}, [])
     (fun (st, acc) (({txt; loc}, payload) as attr) ->
       match txt with
-      | "bs.deriving" | "deriving" -> (
+      | "deriving" -> (
         match st.bs_deriving with
         | None ->
           ( {
