@@ -2,4 +2,4 @@
 
 @obj external mk: (~hi: int, unit) => {"hi": int} = ""
 
-/* external set_name : < > ->  string -> unit = "1name" [@@bs.set] */
+/* external set_name : < > ->  string -> unit = "1name" [@@set] */

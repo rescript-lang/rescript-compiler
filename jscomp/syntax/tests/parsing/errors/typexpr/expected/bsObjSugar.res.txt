@@ -75,11 +75,11 @@
 
 
   Syntax error!
-  tests/parsing/errors/typexpr/bsObjSugar.res:33:18
+  tests/parsing/errors/typexpr/bsObjSugar.res:33:15
 
   31 │ 
   32 │ type state = {
-  33 │   @bs.set "age": ,
+  33 │   @set "age": ,
   34 │   "name": string
   35 │ }
 
@@ -143,8 +143,7 @@ type nonrec state =
 type nonrec state = < url: string  ;protocols: [%rescript.typehole ]   > 
 type nonrec state = < send: string -> [%rescript.typehole ] [@bs.meth ]  > 
 type nonrec state = < age: [%rescript.typehole ]  ;name: string   > 
-type nonrec state =
-  < age: [%rescript.typehole ] [@bs.set ] ;name: string   > 
+type nonrec state = < age: [%rescript.typehole ] [@set ] ;name: string   > 
 type nonrec state = < age: [%rescript.typehole ]   ;.. > 
 type nonrec state = < age: [%rescript.typehole ]  ;name: string   ;.. > 
 type nonrec websocket =

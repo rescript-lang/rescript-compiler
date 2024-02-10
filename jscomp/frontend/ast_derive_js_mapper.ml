@@ -75,7 +75,7 @@ let unsafeIndexGet =
   Str.primitive
     (Val.mk ~prim:[""]
        {loc = noloc; txt = unsafeIndex}
-       ~attrs:[Ast_attributes.bs_get_index]
+       ~attrs:[Ast_attributes.get_index]
        (Ast_compatible.arrow any (Ast_compatible.arrow any any)))
 
 let unsafeIndexGetExp = Exp.ident {loc = noloc; txt = Lident unsafeIndex}

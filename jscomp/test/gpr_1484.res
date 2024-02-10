@@ -4,6 +4,6 @@ type t
 /* TODO: more test cases */
 /* external clearNodeValue2 : */
 /* t -> (_ [@as {json|null|json}]) -> int -> unit = */
-/* "nodeValue" [@@bs.set] */
+/* "nodeValue" [@@set] */
 
 let test = x => clearNodeValue(x)

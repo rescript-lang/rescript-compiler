@@ -30,7 +30,7 @@ let translateObjType closedFlag fieldsTranslations =
     match fields with
     | (previousName, {type_ = _}) :: (name, {type_}) :: rest
       when Runtime.checkMutableObjectField ~previousName ~name ->
-      (* The field was annotated "@bs.set" *)
+      (* The field was annotated "@set" *)
       rest |> checkMutableField ~acc:((name, type_, Mutable) :: acc)
     | (name, {type_}) :: rest ->
       rest |> checkMutableField ~acc:((name, type_, Immutable) :: acc)

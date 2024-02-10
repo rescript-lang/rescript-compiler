@@ -61,7 +61,7 @@ module Impl = (
   external offsetParent: t_htmlElement => option<Dom.element> = "" /* experimental */
   @get external offsetTop: t_htmlElement => int = "" /* experimental, but widely supported */
   @get external offsetWidth: t_htmlElement => int = "" /* experimental */
-  /* external properties : r => HTMLPropertiesCollection.t = "properties" [@@bs.get]; /* experimental */ */
+  /* external properties : r => HTMLPropertiesCollection.t = "properties" [@@get]; /* experimental */ */
   @get external spellcheck: t_htmlElement => bool = ""
   @set external setSpellcheck: (t_htmlElement, bool) => unit = "spellcheck"
   /* let setSpellcheck : t_htmlElement => bool => unit = fun self value => setSpellcheck self (Js.Boolean.to_js_boolean value); */ /* temproarily removed to reduce codegen size */
