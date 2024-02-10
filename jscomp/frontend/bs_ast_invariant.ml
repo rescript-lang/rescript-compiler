@@ -129,7 +129,7 @@ let emit_external_warnings : iterator =
       (fun self lbl ->
         Ext_list.iter lbl.pld_attributes (fun attr ->
             match attr with
-            | {txt = "bs.as" | "as"}, _ -> mark_used_bs_attribute attr
+            | {txt = "as"}, _ -> mark_used_bs_attribute attr
             | _ -> ());
         super.label_declaration self lbl);
     constructor_declaration =

@@ -21,7 +21,7 @@ module Impl = (
   /* let setNodeValue : T.t => option string => unit = fun self value => setNodeValue self (Js.Null.fromOption value); */ /* temporarily removed to reduce codegen size */
   /* Not supported yet
   external setNodeValue : T.t => string => unit = "nodeValue" [@@bs.set];
-  external clearNodeValue : T.t => _ [@bs.as {json|null|json}] => unit = "nodeValue" [@@bs.set];
+  external clearNodeValue : T.t => _ [@as {json|null|json}] => unit = "nodeValue" [@@bs.set];
  */
   /* outerText */
   @get external ownerDocument: T.t => Dom.document = ""

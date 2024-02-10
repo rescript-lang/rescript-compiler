@@ -29,7 +29,7 @@ let find_name = Lambda.find_name
 let find_name_with_loc (attr : Parsetree.attribute) : string Asttypes.loc option
     =
   match attr with
-  | ( { txt = "bs.as" | "as"; loc },
+  | ( { txt = "as"; loc },
       PStr
         [
           {

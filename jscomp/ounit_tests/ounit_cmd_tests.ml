@@ -72,7 +72,7 @@ let suites =
     __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
 external ff :
-    resp -> (_ [@bs.as "x"]) -> int -> unit =
+    resp -> (_ [@as "x"]) -> int -> unit =
     "x" [@@bs.set]
       |} in
       OUnit.assert_bool __LOC__
@@ -139,7 +139,7 @@ external ff :
     __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
       type t
-      external mk : int -> (_ [@bs.as {json| { x : 3 } |json}]) ->  t = "mk" [@@bs.val]
+      external mk : int -> (_ [@as {json| { x : 3 } |json}]) ->  t = "mk" [@@bs.val]
       |} in
       OUnit.assert_bool __LOC__ (Ext_string.is_empty should_err.stderr)
     end
@@ -147,7 +147,7 @@ external ff :
     __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
       type t
-      external mk : int -> (_ [@bs.as {json| { "x" : 3 } |json}]) ->  t = "mk" [@@bs.val]
+      external mk : int -> (_ [@as {json| { "x" : 3 } |json}]) ->  t = "mk" [@@bs.val]
       |} in
       OUnit.assert_bool __LOC__ (Ext_string.is_empty should_err.stderr)
     end
@@ -248,7 +248,7 @@ let rec y = A y;;
     __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
     external foo_bar :
-    (_ [@bs.as "foo"]) ->
+    (_ [@as "foo"]) ->
     string ->
     string = "bar"
   [@@bs.send]

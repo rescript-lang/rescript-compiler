@@ -66,7 +66,7 @@ let idb v =
 let () = idb D0; idb D1; idb D2 ; idb D3 */
 
 /* type c = 
-  | D0 [@bs.as 3]
+  | D0 [@as 3]
   | D1
   | D2 
   | D3 

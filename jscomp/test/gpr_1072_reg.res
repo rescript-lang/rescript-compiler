@@ -38,24 +38,24 @@ let v1 = make(
 
   external make2 :
     ?localeMatcher:
-      ([`lookup | `best_fit [@bs.as \"best fit\"]] [@bs.string]) ->
+      ([`lookup | `best_fit [@as \"best fit\"]] [@bs.string]) ->
 
     ?timeZone:string ->
     ?hour12:bool ->
     ?formatMatcher:
-      ([`basic | `best_fit [@bs.as \"best fit\"]] [@bs.string]) ->
+      ([`basic | `best_fit [@as \"best fit\"]] [@bs.string]) ->
 
     ?weekday:([`narrow | `short | `long] [@bs.string]) ->
     ?era:([`narrow | `short | `long] [@bs.string]) ->
-    ?year:([`numeric | `two_digit [@bs.as \"2-digit\"]] [@bs.string]) ->
+    ?year:([`numeric | `two_digit [@as \"2-digit\"]] [@bs.string]) ->
     ?month:
       ([`narrow |
         `short |
         `long |
         `numeric |
-        `two_digit [@bs.as \"2-digit\"]] [@bs.string]) ->
+        `two_digit [@as \"2-digit\"]] [@bs.string]) ->
 
-    ?day:(([`numeric | `two_digit [@bs.as \"2-digit\"]] [@bs.string]) as 'num) ->
+    ?day:(([`numeric | `two_digit [@as \"2-digit\"]] [@bs.string]) as 'num) ->
     ?hour:('num) ->
     ?minute:('num) ->
     ?second:('num) ->
