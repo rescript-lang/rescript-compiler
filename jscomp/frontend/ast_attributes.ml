@@ -235,7 +235,7 @@ let iter_process_bs_string_as (attrs : t) : string option =
   let st = ref None in
   Ext_list.iter attrs (fun (({txt; loc}, payload) as attr) ->
       match txt with
-      | "bs.as" | "as" ->
+      | "as" ->
         if !st = None then (
           match Ast_payload.is_single_string payload with
           | None -> Bs_syntaxerr.err loc Expect_string_literal
@@ -257,7 +257,7 @@ let iter_process_bs_int_as (attrs : t) =
   let st = ref None in
   Ext_list.iter attrs (fun (({txt; loc}, payload) as attr) ->
       match txt with
-      | "bs.as" | "as" ->
+      | "as" ->
         if !st = None then (
           match Ast_payload.is_single_int payload with
           | None -> Bs_syntaxerr.err loc Expect_int_literal
@@ -274,7 +274,7 @@ let iter_process_bs_string_or_int_as (attrs : Parsetree.attributes) =
   let st = ref None in
   Ext_list.iter attrs (fun (({txt; loc}, payload) as attr) ->
       match txt with
-      | "bs.as" | "as" ->
+      | "as" ->
         if !st = None then (
           Bs_ast_invariant.mark_used_bs_attribute attr;
           match Ast_payload.is_single_int payload with

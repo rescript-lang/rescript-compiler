@@ -108,7 +108,7 @@ let process_tag_type (attrs : Parsetree.attributes) =
   let st : tag_type option ref = ref None in
   Ext_list.iter attrs (fun ({txt; loc}, payload) ->
       match txt with
-      | "bs.as" | "as" ->
+      | "as" ->
         if !st = None then (
           (match Ast_payload.is_single_string payload with
           | None -> ()
