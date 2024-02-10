@@ -110,16 +110,9 @@ let expr_mapper ~async_context ~in_function_def (self : mapper)
   | Pexp_constant (Pconst_integer (s, Some 'l')) ->
     {e with pexp_desc = Pexp_constant (Pconst_integer (s, None))}
   (* End rewriting *)
-  | Pexp_function cases -> (
-    (* {[ function [@bs.exn]
-         | Not_found -> 0
-         | Invalid_argument -> 1
-       ]}*)
+  | Pexp_function _ ->
     async_context := false;
-    match Ast_attributes.process_pexp_fun_attributes_rev e.pexp_attributes with
-    | false, _ -> default_expr_mapper self e
-    | true, pexp_attributes ->
-      Ast_bs_open.convertBsErrorFunction e.pexp_loc self pexp_attributes cases)
+    default_expr_mapper self e
   | _
     when Ast_uncurried.exprIsUncurriedFun e
          &&

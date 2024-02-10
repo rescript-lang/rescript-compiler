@@ -93,13 +93,6 @@ let process_attributes_rev (attrs : t) : attr_kind * t =
         Bs_syntaxerr.err loc Conflict_bs_bs_this_bs_meth
       | _, _ -> (st, attr :: acc))
 
-let process_pexp_fun_attributes_rev (attrs : t) =
-  Ext_list.fold_left attrs (false, [])
-    (fun (st, acc) (({txt; loc = _}, _) as attr) ->
-      match txt with
-      | "bs.open" -> (true, acc)
-      | _ -> (st, attr :: acc))
-
 let process_bs (attrs : t) =
   Ext_list.fold_left attrs (false, [])
     (fun (st, acc) (({txt; loc = _}, _) as attr) ->

@@ -37,8 +37,6 @@ type attr_kind =
 
 val process_attributes_rev : t -> attr_kind * t
 
-val process_pexp_fun_attributes_rev : t -> bool * t
-
 val process_bs : t -> bool * t
 
 val has_inline_payload : t -> attr option
