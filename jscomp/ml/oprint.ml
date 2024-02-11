@@ -562,7 +562,7 @@ and print_out_sig_item ppf =
             fprintf ppf "@ = \"%s\"" s;
             List.iter (fun s ->
 (* TODO: in general, we should print bs attributes, some attributes like
-  bs.splice does need it *)  
+   variadic do need it *)  
       fprintf ppf "@ \"%s\"" (!map_primitive_name s)
               ) sl
       in

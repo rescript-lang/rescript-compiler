@@ -384,7 +384,7 @@ let parse_external_attributes (no_arguments : bool) (prim_name_check : string)
             *)
             | scopes -> {st with scopes})
           | "taggedTemplate" -> {st with splice = true; tagged_template = true}
-          | "bs.splice" | "bs.variadic" | "variadic" -> {st with splice = true}
+          | "variadic" -> {st with splice = true}
           | "send" ->
             {st with val_send = Some (name_from_payload_or_prim ~loc payload)}
           | "set" ->

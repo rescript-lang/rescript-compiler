@@ -395,7 +395,7 @@ on MDN.
 *)
 
 external hypotMany : float array -> float = "hypot"
-[@@bs.val] [@@bs.splice] [@@scope "Math"]
+[@@bs.val] [@@variadic] [@@scope "Math"]
 (**
 Returns the square root of the sum of squares of the numbers in the array
 argument (generalized Pythagorean equation). Using an array allows you to
@@ -495,7 +495,7 @@ on MDN.
 *)
 
 external maxMany_int : int array -> int = "max"
-[@@bs.val] [@@bs.splice] [@@scope "Math"]
+[@@bs.val] [@@variadic] [@@scope "Math"]
 (**
 Returns the maximum of the integers in the given array.  See
 [`Math.max`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/max)
@@ -511,7 +511,7 @@ on MDN.
 *)
 
 external maxMany_float : float array -> float = "max"
-[@@bs.val] [@@bs.splice] [@@scope "Math"]
+[@@bs.val] [@@variadic] [@@scope "Math"]
 (**
 Returns the maximum of the floating point values in the given array. See
 [`Math.max`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/max)
@@ -527,7 +527,7 @@ on MDN.
 *)
 
 external minMany_int : int array -> int = "min"
-[@@bs.val] [@@bs.splice] [@@scope "Math"]
+[@@bs.val] [@@variadic] [@@scope "Math"]
 (**
 Returns the minimum of the integers in the given array. See
 [`Math.min`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/min)
@@ -543,7 +543,7 @@ on MDN.
 *)
 
 external minMany_float : float array -> float = "min"
-[@@bs.val] [@@bs.splice] [@@scope "Math"]
+[@@bs.val] [@@variadic] [@@scope "Math"]
 (**
 Returns the minimum of the floating point values in the given array. See
 [`Math.min`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/min)

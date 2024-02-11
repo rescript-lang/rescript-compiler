@@ -49,7 +49,7 @@ let suites =
       int -> int -> int arra -> unit
       = ""
       [@@bs.send.pipe:int]
-      [@@bs.splice]|}|] in  
+      [@@variadic]|}|] in  
       OUnit.assert_bool __LOC__ (Ext_string.contain_substring v_output.stderr "variadic")
     end;
     __LOC__ >:: begin fun _ -> 
@@ -58,7 +58,7 @@ let suites =
   int -> int -> ?y:int array -> unit  
   = ""
   [@@bs.send.pipe:int]
-  [@@bs.splice]  |}|] in  
+  [@@variadic]  |}|] in  
       OUnit.assert_bool __LOC__ (Ext_string.contain_substring v_output.stderr "variadic")
     end;
 

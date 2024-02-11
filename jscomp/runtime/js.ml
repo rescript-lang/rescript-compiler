@@ -110,7 +110,7 @@ external log4 : 'a -> 'b -> 'c -> 'd -> unit = "log"
 [@@bs.val] [@@scope "console"]
 
 external logMany : 'a array -> unit = "log"
-[@@bs.val] [@@scope "console"] [@@bs.splice]
+[@@bs.val] [@@scope "console"] [@@variadic]
 (** A convenience function to log more than 4 arguments *)
 
 external eqNull : 'a -> 'a null -> bool = "%bs_equal_null"
