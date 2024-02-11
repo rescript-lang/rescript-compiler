@@ -93,7 +93,7 @@ let register = readline => {
 /* external on : */
 /* ([ `line of (string -> unit [@bs]) */
 /* | `close of (unit -> unit [@bs])] */
-/* [@bs.string]) -> */
+/* [@string]) -> */
 /* readline -> readline  = */
 /* "on" [@@send] */
 @send

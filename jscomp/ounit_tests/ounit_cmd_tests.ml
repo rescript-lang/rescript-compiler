@@ -64,7 +64,7 @@ let suites =
 
     __LOC__ >:: begin fun _ ->
       let should_be_warning =
-        bsc_check_eval  {| external mk : int -> ([`a|`b [@bs.string]]) = "mk" [@@bs.val] |} in
+        bsc_check_eval  {| external mk : int -> ([`a|`b [@string]]) = "mk" [@@bs.val] |} in
       OUnit.assert_bool __LOC__
         (Ext_string.contain_substring
            should_be_warning.stderr "Unused")
@@ -120,7 +120,7 @@ external ff :
 
     __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
-      external mk : int -> ([`a|`b] [@bs.string]) = "" [@@bs.val]
+      external mk : int -> ([`a|`b] [@string]) = "" [@@bs.val]
       |} in
       OUnit.assert_bool __LOC__ (not @@ Ext_string.is_empty should_err.stderr)
     end;
@@ -131,7 +131,7 @@ external ff :
       |} in
       OUnit.assert_bool __LOC__ ( Ext_string.is_empty should_err.stderr)
       (* give a warning or ?
-         ( [`a | `b ] [@bs.string] )
+         ( [`a | `b ] [@string] )
          (* auto-convert to ocaml poly-variant *)
       *)
     end;
@@ -261,7 +261,7 @@ let rec y = A y;;
     external mk : int ->
   (
     [`a|`b]
-     [@bs.string]
+     [@string]
   ) = "mk" [@@bs.val]
     |} in
       (* Ounit_cmd_util.debug_output should_err ;  *)

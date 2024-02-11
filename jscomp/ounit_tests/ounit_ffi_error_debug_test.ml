@@ -22,7 +22,7 @@ let suites =
         __LOC__ >:: begin fun _ -> 
         let output = bsc_eval {|
 external err : 
-   hi_should_error:([`a of int | `b of string ] [@bs.string]) ->         
+   hi_should_error:([`a of int | `b of string ] [@string]) ->         
    unit -> _ = "" [@@obj]
         |} in
         OUnit.assert_bool __LOC__
@@ -31,7 +31,7 @@ external err :
         __LOC__ >:: begin fun _ -> 
 let output = bsc_eval {|
     external err : 
-   ?hi_should_error:([`a of int | `b of string ] [@bs.string]) ->         
+   ?hi_should_error:([`a of int | `b of string ] [@string]) ->         
    unit -> _ = "" [@@obj]
         |} in
         OUnit.assert_bool __LOC__
@@ -40,7 +40,7 @@ let output = bsc_eval {|
         __LOC__ >:: begin fun _ -> 
         let output = bsc_eval {|
     external err : 
-   ?hi_should_error:([`a of int | `b of string ] [@bs.string]) ->         
+   ?hi_should_error:([`a of int | `b of string ] [@string]) ->         
    unit -> unit = "err" [@@bs.val]
         |} in
         OUnit.assert_bool __LOC__

@@ -221,7 +221,7 @@ let iter_process_bs_string_int_unwrap_uncurry (attrs : t) =
   in
   Ext_list.iter attrs (fun (({txt; loc = _}, (payload : _)) as attr) ->
       match txt with
-      | "bs.string" | "string" -> assign `String attr
+      | "string" -> assign `String attr
       | "int" -> assign `Int attr
       | "ignore" -> assign `Ignore attr
       | "bs.unwrap" | "unwrap" -> assign `Unwrap attr
