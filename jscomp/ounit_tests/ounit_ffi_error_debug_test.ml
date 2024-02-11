@@ -23,7 +23,7 @@ let suites =
         let output = bsc_eval {|
 external err : 
    hi_should_error:([`a of int | `b of string ] [@bs.string]) ->         
-   unit -> _ = "" [@@bs.obj]
+   unit -> _ = "" [@@obj]
         |} in
         OUnit.assert_bool __LOC__
             (Ext_string.contain_substring output.stderr "hi_should_error")
@@ -32,7 +32,7 @@ external err :
 let output = bsc_eval {|
     external err : 
    ?hi_should_error:([`a of int | `b of string ] [@bs.string]) ->         
-   unit -> _ = "" [@@bs.obj]
+   unit -> _ = "" [@@obj]
         |} in
         OUnit.assert_bool __LOC__
             (Ext_string.contain_substring output.stderr "hi_should_error")        
@@ -63,12 +63,12 @@ let output = bsc_eval {|
 
         __LOC__ >:: begin fun _ ->
           (*
-             [@bs.unwrap] args are not supported in [@@bs.obj] functions
+             [@bs.unwrap] args are not supported in [@@obj] functions
           *)
           let output =
             bsc_eval {|
               external err :
-              ?hi_should_error:([`a of int] [@bs.unwrap]) -> unit -> _ = "" [@@bs.obj]
+              ?hi_should_error:([`a of int] [@bs.unwrap]) -> unit -> _ = "" [@@obj]
             |}
           in
           OUnit.assert_bool __LOC__

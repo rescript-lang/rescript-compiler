@@ -3014,7 +3014,7 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
              ])
     | Pexp_extension extension -> (
       match extension with
-      | ( {txt = "bs.obj" | "obj"},
+      | ( {txt = "obj"},
           PStr
             [
               {

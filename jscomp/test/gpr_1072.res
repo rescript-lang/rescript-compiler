@@ -4,7 +4,7 @@ external ice_cream:
     num:int ->
     unit -> 
     _ =  ""
-[@@bs.obj]
+[@@obj]
 
 
 let my_scoop = ice_cream ~flavor:`vanilla ~num:3 ()
@@ -15,7 +15,7 @@ external ice_cream_2:
     num:int ->
     unit -> 
     _ =  ""
-[@@bs.obj]
+[@@obj]
 
 let my_scoop2 = ice_cream_2 ~flavor:`vanilla ~num:3 ()
 */
@@ -27,7 +27,7 @@ let u: opt_test = opt_test(~y=3, ())
 
 @obj
 external ice_cream3: (~flavor: @string [#vanilla | @as("x") #chocolate]=?, ~num: int, unit) => _ =
-  "" /* TODO: warn when [_] happens in any place except `bs.obj` */
+  "" /* TODO: warn when [_] happens in any place except `obj` */
 type ice_cream3_expect = {"flavor": Js.undefined<string>, "num": int}
 
 let v_ice_cream3: list<ice_cream3_expect> = list{

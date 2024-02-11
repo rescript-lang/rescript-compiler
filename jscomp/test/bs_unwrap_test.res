@@ -76,7 +76,7 @@ external log4: @unwrap
   | #Options({"foo": int})
 ] => unit = "console.log"
 
-/* Make sure [@bs.unwrap] plays nicely with [%bs.obj] */
+/* Make sure [@bs.unwrap] plays nicely with [%obj] */
 let _ = log4(#String("foo"))
 let _ = log4(#Options({"foo": 1}))
 

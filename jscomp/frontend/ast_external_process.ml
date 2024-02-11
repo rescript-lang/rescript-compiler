@@ -405,7 +405,7 @@ let parse_external_attributes (no_arguments : bool) (prim_name_check : string)
                 "%@get_index this particular external's name needs to be a \
                  placeholder empty string";
             {st with get_index = true}
-          | "bs.obj" | "obj" -> {st with mk_obj = true}
+          | "obj" -> {st with mk_obj = true}
           | "bs.return" | "return" -> (
             let actions = Ast_payload.ident_or_record_as_config loc payload in
             match actions with

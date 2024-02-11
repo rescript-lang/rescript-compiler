@@ -62,7 +62,7 @@ let v1 = make(
     ?timeZoneName:([`short | `long] [@bs.string]) ->
     unit ->
     t =
-    \"\" [@@bs.obj]
+    \"\" [@@obj]
 
 
 let v2 =

@@ -120,7 +120,7 @@ external config :
     hi: (int -> int [@bs.uncurry]) ->    
     lo: int -> 
     unit -> 
-    _ = "" [@@bs.obj]
+    _ = "" [@@obj]
 
 type expected = 
     < hi : int -> int [@bs]; 

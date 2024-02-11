@@ -3222,7 +3222,7 @@ module ParsetreeViewer: {
     | Pexp_array(_)
     | Pexp_tuple(_)
     | Pexp_construct({txt: Longident.Lident("::" | "[]")}, _)
-    | Pexp_extension({txt: "bs.obj"}, _)
+    | Pexp_extension({txt: "obj"}, _)
     | Pexp_record(_) => true
     | _ when isBlockExpr(expr) => true
     | _ when isBracedExpr(expr) => true
@@ -3234,7 +3234,7 @@ module ParsetreeViewer: {
     | Pexp_array(_)
     | Pexp_tuple(_)
     | Pexp_construct({txt: Longident.Lident("::" | "[]")}, _)
-    | Pexp_extension({txt: "bs.obj"}, _)
+    | Pexp_extension({txt: "obj"}, _)
     | Pexp_record(_) => true
     | _ when isBracedExpr(expr) => true
     | _ => false
@@ -5030,7 +5030,7 @@ module CommentTable = {
         attach(t.trailing, expr2.pexp_loc, trailing)
       }
     | Pexp_extension(
-        {txt: "bs.obj"},
+        {txt: "obj"},
         PStr(list{{pstr_desc: Pstr_eval({pexp_desc: Pexp_record(rows, _)}, list{})}}),
       ) =>
       walkList(~getLoc=((longident, expr): (Asttypes.loc<Longident.t>, Parsetree.expression)) => {
@@ -8713,7 +8713,7 @@ module Printer = {
     | Pexp_extension(extension) =>
       switch extension {
       | (
-          {txt: "bs.obj"},
+          {txt: "obj"},
           PStr(list{{
             pstr_loc: loc,
             pstr_desc: Pstr_eval({pexp_desc: Pexp_record(rows, _)}, list{}),
@@ -15884,7 +15884,7 @@ Solution: directly use `concat`."
     let recordStrExpr = Ast_helper.Str.eval(~loc, Ast_helper.Exp.record(~loc, rows, None))
     Ast_helper.Exp.extension(
       ~loc,
-      (Location.mkloc("bs.obj", loc), Parsetree.PStr(list{recordStrExpr})),
+      (Location.mkloc("obj", loc), Parsetree.PStr(list{recordStrExpr})),
     )
   }
 
