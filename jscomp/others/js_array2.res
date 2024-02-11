@@ -720,7 +720,7 @@ external toLocaleString: t<'a> => string = "toLocaleString"
 /* Iteration functions
  */
 /* commented out until bs has a plan for iterators
-   external entries : 'a t -> (int * 'a) array_iter = "" [@@bs.send] (* ES2015 *)
+   external entries : 'a t -> (int * 'a) array_iter = "" [@@send] (* ES2015 *)
 */
 
 @send
@@ -925,7 +925,7 @@ Js.Array2.forEachi(["a", "b", "c"], (item, index) => Js.log2(index + 1, item)) =
 external forEachi: (t<'a>, @uncurry ('a, int) => unit) => unit = "forEach"
 
 /* commented out until bs has a plan for iterators
-   external keys : 'a t -> int array_iter = "" [@@bs.send] (* ES2015 *)
+   external keys : 'a t -> int array_iter = "" [@@send] (* ES2015 *)
 */
 
 @send
@@ -1142,7 +1142,7 @@ Js.Array2.somei(["a", "bc", "def", "gh"], sameLength) == false
 external somei: (t<'a>, @uncurry ('a, int) => bool) => bool = "some"
 
 /* commented out until bs has a plan for iterators
-   external values : 'a t -> 'a array_iter = "" [@@bs.send] (* ES2015 *)
+   external values : 'a t -> 'a array_iter = "" [@@send] (* ES2015 *)
 */
 
 /**

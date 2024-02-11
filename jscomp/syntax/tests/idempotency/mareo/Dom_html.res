@@ -8,7 +8,7 @@ type canvasElement
 
 @val external window: Dom.window = ""
 
-/* external createImg: (_ [@as "img"]) -> document -> imageElement = "createElement" [@@bs.send] */
+/* external createImg: (_ [@as "img"]) -> document -> imageElement = "createElement" [@@send] */
 @send
 external createImg: (Dom.document, @as("img") _) => imageElement = "createElement"
 

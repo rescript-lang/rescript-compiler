@@ -4,7 +4,7 @@ external attachShader :
   t ->
     program:((webGlProgram)[@res.namedArgLoc ]) ->
       shader:((webGlShader)[@res.namedArgLoc ]) -> unit = "attachShader"
-[@@bs.send ]
+[@@send ]
 external svg : unit -> React.element = "svg"
 external svg : unit -> React.element = "svg"
 external createDate : unit -> unit -> date = "Date"[@@new ]

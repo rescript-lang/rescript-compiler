@@ -9,7 +9,7 @@ open Reprocessing_Common
  * [@bs.val] external sandboxCanvasId: string = \"\";
  * [@bs.val] external sandboxCanvas: 'canvas = \"\";
  * [@bs.val] external containerDiv: 'node = \"\";
- * [@bs.send] external addEventListener: ('node, string, 'eventT => unit) => unit = \"addEventListener\";
+ * [@send] external addEventListener: ('node, string, 'eventT => unit) => unit = \"addEventListener\";
  * let id = sandboxCanvasId;
  * addEventListener(containerDiv, \"mouseleave\", (_) => Reprocessing.playPause(id, false) |> ignore);
  * addEventListener(containerDiv, \"mouseenter\", (_) => Reprocessing.playPause(id, true) |> ignore);

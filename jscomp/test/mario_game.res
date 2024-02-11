@@ -151,7 +151,7 @@ module Dom_html = {
   @val external document: Dom.document = "document"
   @val external window: Dom.window = "window"
 
-  /* external createImg: (_ [@as "img"]) -> document -> imageElement = "createElement" [@@bs.send] */
+  /* external createImg: (_ [@as "img"]) -> document -> imageElement = "createElement" [@@send] */
   @send external createImg: (Dom.document, @as("img") _) => imageElement = "createElement"
   @val external requestAnimationFrame: (float => unit) => unit = "requestAnimationFrame"
   @return(null_to_opt) @send

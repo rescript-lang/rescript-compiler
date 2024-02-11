@@ -87,7 +87,7 @@ external assign: ({..}, {..}) => {..} = "Object.assign"
    - Object.setPrototypeOf
    - Object.values - experimental
 
-   bs.send:
+   send:
    - hasOwnProperty
    - isPrototypeOf
    - propertyIsEnumerable

@@ -172,7 +172,7 @@ external ff :
 
     (* __LOC__ >:: begin fun _ ->
        let should_err = bsc_check_eval {|
-       external f : string -> unit -> unit = "x.y" [@@bs.send]
+       external f : string -> unit -> unit = "x.y" [@@send]
        |} in
        OUnit.assert_bool __LOC__
         (Ext_string.contain_substring should_err.stderr "Not a valid method name")
@@ -251,7 +251,7 @@ let rec y = A y;;
     (_ [@as "foo"]) ->
     string ->
     string = "bar"
-  [@@bs.send]
+  [@@send]
     |} in
       OUnit.assert_bool __LOC__
         (Ext_string.contain_substring should_err.stderr "Ill defined attribute")

@@ -11,7 +11,7 @@
        return Math.min(x,y)
      }
    ]}
-   There are other things like [@bs.send] which does not like eta reduction
+   There are other things like [@send] which does not like eta reduction
    
 */
 let min_int = min_int

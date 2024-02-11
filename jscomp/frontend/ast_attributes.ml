@@ -199,7 +199,7 @@ let process_send_pipe (attrs : t) : (Parsetree.core_type * t) option =
                      "This attribute is deprecated, use @send instead.");
 
                 ty := Some (Ast_payload.as_core_type loc payload);
-                ({Asttypes.txt = "bs.send"; loc}, Parsetree.PStr []) :: acc
+                ({Asttypes.txt = "send"; loc}, Parsetree.PStr []) :: acc
               | Some _ -> Location.raise_errorf ~loc "Duplicated bs.send.pipe")
             | _ -> attr :: acc)
       in

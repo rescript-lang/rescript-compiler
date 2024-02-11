@@ -3,7 +3,7 @@ external clear : (t, int) => unit = "clear"
 // multiple primitives
 external add_nat: nat => int = "add_nat_bytecode"
 
-@bs.send
+@send
 external attachShader: (t, ~program: webGlProgram, ~shader: webGlShader) => unit = "attachShader"
 
 // with semicolon

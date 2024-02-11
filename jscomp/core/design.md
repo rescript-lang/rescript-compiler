@@ -157,7 +157,7 @@ spliced_external a0 a1 [|b0;b1|] x
 ```
 
 So our optimizer needs to handle this case to make sure `spliced_external` not escaped, 
-also becaues the interaction of `[@bs.splice]` and `[@bs.send]`, the spliced argument
+also becaues the interaction of `[@bs.splice]` and `[@send]`, the spliced argument
 is no longer  in tail position, so that people can write such code
 
 ```ocaml
@@ -179,7 +179,7 @@ for example
 
 ```ocaml
 external filter : 'a array -> ('a -> bool [@bs.uncurry]) -> 'a array = "filter"
-[@@bs.send]
+[@@send]
 
 let f xs =
     xs |. filter (fun x -> x > 2)
