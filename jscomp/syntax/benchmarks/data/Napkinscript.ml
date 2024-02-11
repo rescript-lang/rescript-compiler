@@ -3520,11 +3520,11 @@ end = struct
       let open Parsetree in
       match attrs with
       | [] -> JsGlobalImport
-      | ({Location.txt = "bs.scope"}, PStr [{pstr_desc = Pstr_eval ({pexp_desc = Pexp_constant (Pconst_string (s, _))}, _)}])::_ ->
+      | ({Location.txt = "scope"}, PStr [{pstr_desc = Pstr_eval ({pexp_desc = Pexp_constant (Pconst_string (s, _))}, _)}])::_ ->
         JsScopedImport [s]
       | ({Location.txt = "genType.import"}, PStr [{pstr_desc = Pstr_eval ({pexp_desc = Pexp_constant (Pconst_string (s, _))}, _)}])::_ ->
         JsModuleImport s
-      | ({Location.txt = "bs.scope"}, PStr [{pstr_desc = Pstr_eval ({pexp_desc = Pexp_tuple exprs}, _)}])::_ ->
+      | ({Location.txt = "scope"}, PStr [{pstr_desc = Pstr_eval ({pexp_desc = Pexp_tuple exprs}, _)}])::_ ->
         let scopes = List.fold_left (fun acc curr ->
           match curr.Parsetree.pexp_desc with
           | Pexp_constant (Pconst_string (s, _)) -> s::acc
@@ -6714,7 +6714,7 @@ module Printer = struct
   and printJsFfiImport (valueDescription: Parsetree.value_description) cmtTbl =
     let attrs = List.filter (fun attr ->
       match attr with
-      | ({Location.txt = "bs.val" | "genType.import" | "bs.scope" }, _) -> false
+      | ({Location.txt = "bs.val" | "genType.import" | "scope" }, _) -> false
       | _ -> true
     ) valueDescription.pval_attributes in
     let (ident, alias) = match valueDescription.pval_prim with
@@ -11477,7 +11477,7 @@ module JsFfi = struct
   type scope =
     | Global
     | Module of string (* module("path") *)
-    | Scope of Longident.t (* bs.scope(/"window", "location"/) *)
+    | Scope of Longident.t (* scope(/"window", "location"/) *)
 
   type label_declaration = {
     jld_attributes: Parsetree.attributes; [@live]
@@ -11538,7 +11538,7 @@ module JsFfi = struct
         Ast_helper.Str.eval expr
       in
       let bsScope = (
-        Location.mknoloc "bs.scope",
+        Location.mknoloc "scope",
         Parsetree. PStr [structureItem]
       ) in
       [bsVal; bsScope]

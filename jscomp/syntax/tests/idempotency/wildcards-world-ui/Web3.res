@@ -49,7 +49,7 @@ module Contract = {
 
   type dai
 
-  // [@send] [@new] [@bs.scope "eth"]
+  // [@send] [@new] [@scope "eth"]
   // external getContract: (t, abi, ethAddress) => contract = "Contract";
 
   // Temporary code until I work out how to make the above binding work...

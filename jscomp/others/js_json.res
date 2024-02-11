@@ -131,7 +131,7 @@ let decodeNull = (json): option<Js.null<_>> =>
   }
 
 /* external parse : string -> t = "parse"
- [@@bs.val][@@bs.scope "JSON"] */
+ [@@bs.val][@@scope "JSON"] */
 
 @val @scope("JSON") external parseExn: string => t = "parse"
 

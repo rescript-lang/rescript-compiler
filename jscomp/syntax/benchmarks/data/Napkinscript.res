@@ -3596,7 +3596,7 @@ module ParsetreeViewer: {
       | list{} => JsGlobalImport
       | list{
           (
-            {Location.txt: "bs.scope"},
+            {Location.txt: "scope"},
             PStr(list{{pstr_desc: Pstr_eval({pexp_desc: Pexp_constant(Pconst_string(s, _))}, _)}}),
           ),
           ..._,
@@ -3612,7 +3612,7 @@ module ParsetreeViewer: {
         JsModuleImport(s)
       | list{
           (
-            {Location.txt: "bs.scope"},
+            {Location.txt: "scope"},
             PStr(list{{pstr_desc: Pstr_eval({pexp_desc: Pexp_tuple(exprs)}, _)}}),
           ),
           ..._,
@@ -6906,7 +6906,7 @@ module Printer = {
   and printJsFfiImport = (valueDescription: Parsetree.value_description, cmtTbl) => {
     let attrs = List.filter(attr =>
       switch attr {
-      | ({Location.txt: "bs.val" | "genType.import" | "bs.scope"}, _) => false
+      | ({Location.txt: "bs.val" | "genType.import" | "scope"}, _) => false
       | _ => true
       }
     , valueDescription.pval_attributes)
@@ -11844,7 +11844,7 @@ module JsFfi = {
   type scope =
     | Global
     | Module(string) /* module("path") */
-    | Scope(Longident.t) /* bs.scope(/"window", "location"/) */
+    | Scope(Longident.t) /* scope(/"window", "location"/) */
 
   type label_declaration = {
     @live jld_attributes: Parsetree.attributes,
@@ -11904,7 +11904,7 @@ module JsFfi = {
         Ast_helper.Str.eval(expr)
       }
 
-      let bsScope = (Location.mknoloc("bs.scope"), Parsetree.PStr(list{structureItem}))
+      let bsScope = (Location.mknoloc("scope"), Parsetree.PStr(list{structureItem}))
       list{bsVal, bsScope}
     }
 

@@ -376,7 +376,7 @@ let parse_external_attributes (no_arguments : bool) (prim_name_check : string)
                       };
                 }
               | _ -> Bs_syntaxerr.err loc Illegal_attribute))
-          | "bs.scope" | "scope" -> (
+          | "scope" -> (
             match Ast_payload.assert_strings loc payload with
             | [] -> Bs_syntaxerr.err loc Illegal_attribute
             (* We need err on empty scope, so we can tell the difference
