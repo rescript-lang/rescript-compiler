@@ -349,7 +349,7 @@ let internal_expansive : attr =
   ({txt = "internal.expansive"; loc = locg}, Ast_payload.empty)
 
 let bs_return_undefined : attr =
-  ( {txt = "bs.return"; loc = locg},
+  ( {txt = "return"; loc = locg},
     PStr
       [
         {

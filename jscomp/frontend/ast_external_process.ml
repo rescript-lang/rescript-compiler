@@ -406,7 +406,7 @@ let parse_external_attributes (no_arguments : bool) (prim_name_check : string)
                  placeholder empty string";
             {st with get_index = true}
           | "obj" -> {st with mk_obj = true}
-          | "bs.return" | "return" -> (
+          | "return" -> (
             let actions = Ast_payload.ident_or_record_as_config loc payload in
             match actions with
             | [({txt; _}, None)] ->
