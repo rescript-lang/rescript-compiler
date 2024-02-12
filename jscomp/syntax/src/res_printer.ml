@@ -2964,15 +2964,25 @@ and printExpression ~state (e : Parsetree.expression) cmtTbl =
         let spread =
           match spreadExpr with
           | None -> Doc.nil
-          | Some expr ->
+          | Some ({pexp_desc} as expr) ->
+            let doc =
+              match pexp_desc with
+              | Pexp_ident {txt = expr} -> printLident expr
+              | _ -> printExpression ~state expr cmtTbl
+            in
+            let docWithSpread =
+              Doc.concat
+                [
+                  Doc.dotdotdot;
+                  (match Parens.expr expr with
+                  | Parens.Parenthesized -> addParens doc
+                  | Braced braces -> printBraces doc expr braces
+                  | Nothing -> doc);
+                ]
+            in
             Doc.concat
               [
-                Doc.dotdotdot;
-                (let doc = printExpressionWithComments ~state expr cmtTbl in
-                 match Parens.expr expr with
-                 | Parens.Parenthesized -> addParens doc
-                 | Braced braces -> printBraces doc expr braces
-                 | Nothing -> doc);
+                printComments docWithSpread cmtTbl expr.Parsetree.pexp_loc;
                 Doc.comma;
                 Doc.line;
               ]

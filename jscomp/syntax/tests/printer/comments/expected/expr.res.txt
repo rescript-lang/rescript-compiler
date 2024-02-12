@@ -125,7 +125,7 @@ let user = /* before */ {
 } // after
 
 let spreadUser = {
-  .../* before */ user1 /* after */,
+  /* before */ ...user1 /* after */,
   /* c0 */ age /* c1 */: /* c2 */ 32 /* c3 */,
 }
 
@@ -284,3 +284,43 @@ Doc.concat(list{
   rows,
   /* a */
 })
+
+// More record spread test
+type b = {
+  // spread a
+  ...a,
+  // spread c
+  ...c,
+  // no spread
+  b: string,
+}
+
+type a = {
+  // spread from different module
+  ...M.a,
+  // spread c
+  ...c,
+  // no spread
+  b: string,
+}
+
+let b = {
+  // exotic
+  ...\"let",
+  // foo
+  bar: "foo",
+}
+
+let b = {
+  // quote
+  ..."let",
+  // foo
+  bar: "foo",
+}
+
+let c = {
+  // from different module
+  ...M.a,
+  // foo
+  bar: "foo",
+}

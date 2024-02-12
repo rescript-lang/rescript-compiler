@@ -28,6 +28,7 @@
 - Generic JSX transform: Handle namespaced names. https://github.com/rescript-lang/rescript-compiler/pull/6606
 - Fix issue with doc comment in recursive module. https://github.com/rescript-lang/rescript-compiler/pull/6613
 - Fix issue with Exceptions and Extensible types runtime generation. https://github.com/rescript-lang/rescript-compiler/pull/6570
+- Fix inline comment before spread syntax in record. https://github.com/rescript-lang/rescript-compiler/pull/6615
 
 #### :house: Internal
 
