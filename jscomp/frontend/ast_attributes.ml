@@ -199,7 +199,7 @@ let process_send_pipe (attrs : t) : (Parsetree.core_type * t) option =
                      "This attribute is deprecated, use @send instead.");
 
                 ty := Some (Ast_payload.as_core_type loc payload);
-                ({Asttypes.txt = "bs.send"; loc}, Parsetree.PStr []) :: acc
+                ({Asttypes.txt = "send"; loc}, Parsetree.PStr []) :: acc
               | Some _ -> Location.raise_errorf ~loc "Duplicated bs.send.pipe")
             | _ -> attr :: acc)
       in
@@ -247,7 +247,7 @@ let iter_process_bs_string_as (attrs : t) : string option =
 let has_bs_optional (attrs : t) : bool =
   Ext_list.exists attrs (fun (({txt}, _) as attr) ->
       match txt with
-      | "bs.optional" | "optional" ->
+      | "optional" ->
         Bs_ast_invariant.mark_used_bs_attribute attr;
         true
       | _ -> false)
@@ -349,7 +349,7 @@ let internal_expansive : attr =
   ({txt = "internal.expansive"; loc = locg}, Ast_payload.empty)
 
 let bs_return_undefined : attr =
-  ( {txt = "bs.return"; loc = locg},
+  ( {txt = "return"; loc = locg},
     PStr
       [
         {

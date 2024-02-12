@@ -181,7 +181,7 @@ let init () =
                 let exp =
                   coerceResultToNewType
                     (Exp.extension
-                       ( {Asttypes.loc; txt = "bs.obj"},
+                       ( {Asttypes.loc; txt = "obj"},
                          PStr
                            [
                              Str.eval

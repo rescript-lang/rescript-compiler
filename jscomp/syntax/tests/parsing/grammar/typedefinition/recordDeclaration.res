@@ -23,7 +23,7 @@ type t = {mutable form}
 type t = {form, answers}
 type t = {mutable form, mutable answers}
 
-// parses bs object type correct
+// parses object type correct
 type t = {"age": int}
 type t = {..}
 type t = {"age": int,}
@@ -39,10 +39,10 @@ type t = {@attr "age": int, @attr2 "name": string}
 
 // list is accepted as record key
 type domProps = {
-  @bs.optional
+  @optional
   label: string,
-  @bs.optional
+  @optional
   list: string,
-  @bs.optional
+  @optional
   loop: bool,
 }

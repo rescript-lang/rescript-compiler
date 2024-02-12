@@ -16,7 +16,7 @@ let f2: (list<{"x": {"y": {"z": int}}}>, array<{"x": {"y": {"z": int}}}>) = (
 let f3: {"x": {"y": {"z": int}}} = {"x": {"y": {"z": 3}}}
 
 /* how about 
-let f x = [%bs.obj (x : < x : int > ) ] 
+let f x = [%obj (x : < x : int > ) ] 
 */
 /*
 advantage of extension point

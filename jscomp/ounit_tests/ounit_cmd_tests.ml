@@ -49,7 +49,7 @@ let suites =
       int -> int -> int arra -> unit
       = ""
       [@@bs.send.pipe:int]
-      [@@bs.splice]|}|] in  
+      [@@variadic]|}|] in  
       OUnit.assert_bool __LOC__ (Ext_string.contain_substring v_output.stderr "variadic")
     end;
     __LOC__ >:: begin fun _ -> 
@@ -58,7 +58,7 @@ let suites =
   int -> int -> ?y:int array -> unit  
   = ""
   [@@bs.send.pipe:int]
-  [@@bs.splice]  |}|] in  
+  [@@variadic]  |}|] in  
       OUnit.assert_bool __LOC__ (Ext_string.contain_substring v_output.stderr "variadic")
     end;
 
@@ -172,7 +172,7 @@ external ff :
 
     (* __LOC__ >:: begin fun _ ->
        let should_err = bsc_check_eval {|
-       external f : string -> unit -> unit = "x.y" [@@bs.send]
+       external f : string -> unit -> unit = "x.y" [@@send]
        |} in
        OUnit.assert_bool __LOC__
         (Ext_string.contain_substring should_err.stderr "Not a valid method name")
@@ -251,7 +251,7 @@ let rec y = A y;;
     (_ [@as "foo"]) ->
     string ->
     string = "bar"
-  [@@bs.send]
+  [@@send]
     |} in
       OUnit.assert_bool __LOC__
         (Ext_string.contain_substring should_err.stderr "Ill defined attribute")

@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-[@@@bs.config {flags = [|"-unboxed-types";"-w" ;"-49"|]}]
+[@@@bs.config {flags = [|"-unboxed-types"; "-w"; "-49"|]}]
 (* DESIGN:
    - It does not have any code, all its code will be inlined so that
        there will never be
@@ -42,44 +42,38 @@
 *)
 
 (**/**)
-(** Types for JS objects *)
+
 type 'a t = < .. > as 'a
+(** Types for JS objects *)
 
 module MapperRt = Js_mapperRt
-module Internal = struct 
+module Internal = struct
   external opaqueFullApply : 'a -> 'a = "%uncurried_apply"
 
   (* Use opaque instead of [._n] to prevent some optimizations happening *)
-  external run : (unit -> 'a [@bs]) -> 'a = "#run"
+  external run : ((unit -> 'a)[@bs]) -> 'a = "#run"
   external opaque : 'a -> 'a = "%opaque"
+end
 
-end    
 (**/**)
 
-
-type + 'a null =
-  | Value of 'a
-  | Null [@as null]
-[@@unboxed]
 (** nullable, value of this type can be either [null] or ['a]
     this type is the same as type [t] in {!Null}
 *)
+type +'a null = Value of 'a | Null [@as null] [@@unboxed]
 
-type + 'a undefined
+type +'a undefined
 (** value of this type can be either [undefined] or ['a]
     this type is the same as type [t] in {!Undefined}  *)
 
-type + 'a nullable =
-  | Value of 'a
-  | Null [@as null]
-  | Undefined [@as undefined]
-[@@unboxed]
 (** value of this type can be [undefined], [null] or ['a]
     this type is the same as type [t] n {!Null_undefined} *)
+type +'a nullable = Value of 'a | Null [@as null] | Undefined [@as undefined]
+[@@unboxed]
 
-type + 'a null_undefined = 'a nullable
+type +'a null_undefined = 'a nullable
 
-external toOption : 'a nullable  -> 'a option = "#nullable_to_opt"
+external toOption : 'a nullable -> 'a option = "#nullable_to_opt"
 external undefinedToOption : 'a undefined -> 'a option = "#undefined_to_opt"
 external nullToOption : 'a null -> 'a option = "#null_to_opt"
 
@@ -87,9 +81,8 @@ external isNullable : 'a nullable -> bool = "#is_nullable"
 
 external import : 'a -> 'a promise = "#import"
 
-(** The same as {!test} except that it is more permissive on the types of input *)
 external testAny : 'a -> bool = "#is_nullable"
-
+(** The same as {!test} except that it is more permissive on the types of input *)
 
 type (+'a, +'e) promise
 (** The promise type, defined here for interoperation across packages
@@ -102,8 +95,6 @@ external null : 'a null = "#null"
 external undefined : 'a undefined = "#undefined"
 (** The same as  [empty] {!Js.Undefined} will be compiled as [undefined]*)
 
-
-
 external typeof : 'a -> string = "#typeof"
 (** [typeof x] will be compiled as [typeof x] in JS
     Please consider functions in {!Types} for a type safe way of reflection
@@ -113,15 +104,13 @@ external log : 'a -> unit = "log"
 [@@val] [@@scope "console"]
 (** A convenience function to log everything *)
 
-external log2 : 'a -> 'b -> unit = "log"
-[@@bs.val] [@@bs.scope "console"]
-external log3 : 'a -> 'b -> 'c -> unit = "log"
-[@@bs.val] [@@bs.scope "console"]
+external log2 : 'a -> 'b -> unit = "log" [@@bs.val] [@@scope "console"]
+external log3 : 'a -> 'b -> 'c -> unit = "log" [@@bs.val] [@@scope "console"]
 external log4 : 'a -> 'b -> 'c -> 'd -> unit = "log"
-[@@bs.val] [@@bs.scope "console"]
+[@@bs.val] [@@scope "console"]
 
 external logMany : 'a array -> unit = "log"
-[@@bs.val] [@@bs.scope "console"] [@@bs.splice]
+[@@bs.val] [@@scope "console"] [@@variadic]
 (** A convenience function to log more than 4 arguments *)
 
 external eqNull : 'a -> 'a null -> bool = "%bs_equal_null"
@@ -136,12 +125,10 @@ external unsafe_lt : 'a -> 'a -> bool = "#unsafe_lt"
     to give a proper semantics for comparision which applies to any type
 *)
 
-
 external unsafe_le : 'a -> 'a -> bool = "#unsafe_le"
 (**  [unsafe_le a b] will be compiled as [a <= b].
      See also {!unsafe_lt}
 *)
-
 
 external unsafe_gt : 'a -> 'a -> bool = "#unsafe_gt"
 (**  [unsafe_gt a b] will be compiled as [a > b].
@@ -152,7 +139,6 @@ external unsafe_ge : 'a -> 'a -> bool = "#unsafe_ge"
 (**  [unsafe_ge a b] will be compiled as [a >= b].
      See also {!unsafe_lt}
 *)
-
 
 (** {12 nested modules}*)
 
@@ -207,7 +193,7 @@ module Json = Js_json
 module Math = Js_math
 (** Provide bindings for JS [Math] object *)
 
-module Obj  = Js_obj
+module Obj = Js_obj
 (** Provide utilities for {!Js.t} *)
 
 module Typed_array = Js_typed_array

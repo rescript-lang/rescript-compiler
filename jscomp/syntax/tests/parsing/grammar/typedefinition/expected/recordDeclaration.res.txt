@@ -51,6 +51,6 @@ type nonrec t = < age: int [@attr ] ;name: string   >
 type nonrec t = < age: int [@attr ] ;name: string [@attr2 ]  > 
 type nonrec domProps =
   {
-  label: string [@bs.optional ];
-  list: string [@bs.optional ];
-  loop: bool [@bs.optional ]}
+  label: string [@optional ];
+  list: string [@optional ];
+  loop: bool [@optional ]}

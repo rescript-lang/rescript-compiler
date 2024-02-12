@@ -71,7 +71,7 @@ let handle_extension e (self : Bs_ast_mapper.mapper)
       Location.raise_errorf ~loc "expect a boolean expression in the payload")
   | "bs.debugger" | "debugger" ->
     {e with pexp_desc = Ast_exp_handle_external.handle_debugger loc payload}
-  | "bs.obj" | "obj" -> (
+  | "obj" -> (
     match payload with
     | PStr
         [

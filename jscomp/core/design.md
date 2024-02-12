@@ -134,11 +134,11 @@ Lalias-bound variables are never assigned, so it can only
 appear in `Lvar`, then it is easy to eliminate it 
 
 
-# interaction between `bs.splice` and `|>`
+# interaction between `variadic` and `|>`
 
 Note in general, it is fine whether we do beta reduction or not, it is just optimization. 
 
-However, since we introduced `bs.splice` which does require the `spliced argument` to be captured
+However, since we introduced `variadic` which does require the `spliced argument` to be captured
 
 ```ocaml
 spliced_external a0 a1 [|b0;b1|]
@@ -157,7 +157,7 @@ spliced_external a0 a1 [|b0;b1|] x
 ```
 
 So our optimizer needs to handle this case to make sure `spliced_external` not escaped, 
-also becaues the interaction of `[@bs.splice]` and `[@bs.send]`, the spliced argument
+also becaues the interaction of `[@variadic]` and `[@send]`, the spliced argument
 is no longer  in tail position, so that people can write such code
 
 ```ocaml
@@ -171,7 +171,7 @@ Internally in lambda layer it would be
 
 We can simply do inlining, it may have side efffect in `b0`, `b1`, our optimizer also need handle such case.
 
-Maybe in the future, we should lift the restriction about `bs.splice` (delegate to `slow` mode when we can not resolve it statically, my personal expereince is that people will complain about why it fails to compile more than why it is slow in some corner cases)
+Maybe in the future, we should lift the restriction about `variadic` (delegate to `slow` mode when we can not resolve it statically, my personal expereince is that people will complain about why it fails to compile more than why it is slow in some corner cases)
 
 Note this also interacts with `[@bs.uncurry]`
 
@@ -179,7 +179,7 @@ for example
 
 ```ocaml
 external filter : 'a array -> ('a -> bool [@bs.uncurry]) -> 'a array = "filter"
-[@@bs.send]
+[@@send]
 
 let f xs =
     xs |. filter (fun x -> x > 2)

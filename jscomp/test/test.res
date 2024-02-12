@@ -8,7 +8,7 @@ let a =
 
 
 external file : string option = "__filename" 
-[@@bs.val] [@@bs.return{undefined_to_opt}]
+[@@bs.val] [@@return{undefined_to_opt}]
 
 
 let a = 

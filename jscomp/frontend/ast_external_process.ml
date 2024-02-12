@@ -376,7 +376,7 @@ let parse_external_attributes (no_arguments : bool) (prim_name_check : string)
                       };
                 }
               | _ -> Bs_syntaxerr.err loc Illegal_attribute))
-          | "bs.scope" | "scope" -> (
+          | "scope" -> (
             match Ast_payload.assert_strings loc payload with
             | [] -> Bs_syntaxerr.err loc Illegal_attribute
             (* We need err on empty scope, so we can tell the difference
@@ -384,8 +384,8 @@ let parse_external_attributes (no_arguments : bool) (prim_name_check : string)
             *)
             | scopes -> {st with scopes})
           | "taggedTemplate" -> {st with splice = true; tagged_template = true}
-          | "bs.splice" | "bs.variadic" | "variadic" -> {st with splice = true}
-          | "bs.send" | "send" ->
+          | "variadic" -> {st with splice = true}
+          | "send" ->
             {st with val_send = Some (name_from_payload_or_prim ~loc payload)}
           | "set" ->
             {st with set_name = Some (name_from_payload_or_prim ~loc payload)}
@@ -405,8 +405,8 @@ let parse_external_attributes (no_arguments : bool) (prim_name_check : string)
                 "%@get_index this particular external's name needs to be a \
                  placeholder empty string";
             {st with get_index = true}
-          | "bs.obj" | "obj" -> {st with mk_obj = true}
-          | "bs.return" | "return" -> (
+          | "obj" -> {st with mk_obj = true}
+          | "return" -> (
             let actions = Ast_payload.ident_or_record_as_config loc payload in
             match actions with
             | [({txt; _}, None)] ->

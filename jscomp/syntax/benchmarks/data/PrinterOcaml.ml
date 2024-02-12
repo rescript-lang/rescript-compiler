@@ -1706,7 +1706,7 @@ module Printer = struct
     | Pexp_extension extension ->
       begin match extension with
       | (
-          {txt = "bs.obj"},
+          {txt = "obj"},
           PStr [{
             pstr_loc = loc;
             pstr_desc = Pstr_eval({pexp_desc = Pexp_record (rows, _)}, [])

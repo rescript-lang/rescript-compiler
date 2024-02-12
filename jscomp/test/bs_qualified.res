@@ -35,7 +35,7 @@ external makeBuffer3: int => buffer = "makeBuffer3"
 type t
 @scope("mat4") @module("gl-matrix") external create: unit => t = "create"
 
-/* external scope_f : t -> int = "" [@@get] [@@bs.scope "hi"] */
+/* external scope_f : t -> int = "" [@@get] [@@scope "hi"] */
 
 @get_index @scope("a0") external getMockFn1: (t, int) => string = ""
 

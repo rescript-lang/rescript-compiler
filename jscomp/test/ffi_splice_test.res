@@ -38,13 +38,13 @@ type t
 @send external sum: (t, unit) => int = "sum"
 
 /* compile error */
-/* external join : string  -> string = "" [@@module "path"] [@@bs.splice] */
+/* external join : string  -> string = "" [@@module "path"] [@@variadic] */
 @module("path") @variadic external join: array<string> => string = "join"
 
 @send @variadic external test: (t, array<string>) => t = "test" /* FIXME */
 
 /* compile error */
-/* external test2 : int -> string -> t= "" [@@bs.send.pipe: t ] [@@bs.splice] */
+/* external test2 : int -> string -> t= "" [@@bs.send.pipe: t ] [@@variadic] */
 let u = ["x", "d"]
 let f = x => x->test(["a", "b"])->test(["a", "b"])
 /* |> test u */

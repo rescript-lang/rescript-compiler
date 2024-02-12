@@ -66,7 +66,7 @@ external on_exit_slice5: (
 ) => unit = "xx"
 
 /**
- TODO: bs.send conflicts with bs.val: better error message
+ TODO: @send conflicts with bs.val: better error message
 */
 let f = (x: t) => {
   x->on_exit_slice1(__LINE__, [1, 2, 3])

@@ -1,6 +1,6 @@
 let structural_obj = {"x": {"y": {"z": 3}}}
 /* compiler inferred type :
- val structural_obj : < x : < y : < z : int >  >  > [@bs.obj] */
+ val structural_obj : < x : < y : < z : int >  >  > [@obj] */
 
 type x<'a> = {x: 'a}
 type y<'a> = {y: 'a}
