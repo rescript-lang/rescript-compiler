@@ -155,7 +155,7 @@ external ff :
     (* #1510 *)
     __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
-       let should_fail = fun [@bs.this] (Some x) y u -> y + u
+       let should_fail = fun [@this] (Some x) y u -> y + u
       |} in
       OUnit.assert_bool __LOC__
         (Ext_string.contain_substring  should_err.stderr "simple")
@@ -163,7 +163,7 @@ external ff :
 
     __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
-       let should_fail = fun [@bs.this] (Some x as v) y u -> y + u
+       let should_fail = fun [@this] (Some x as v) y u -> y + u
       |} in
       (* Ounit_cmd_util.debug_output should_err; *)
       OUnit.assert_bool __LOC__

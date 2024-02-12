@@ -86,11 +86,9 @@ let process_attributes_rev (attrs : t) : attr_kind * t =
       match (txt, st) with
       | "bs", (Nothing | Uncurry _) ->
         (Uncurry attr, acc) (* TODO: warn unused/duplicated attribute *)
-      | ("bs.this" | "this"), (Nothing | Meth_callback _) ->
-        (Meth_callback attr, acc)
+      | "this", (Nothing | Meth_callback _) -> (Meth_callback attr, acc)
       | "meth", (Nothing | Method _) -> (Method attr, acc)
-      | ("bs" | "bs.this" | "this"), _ ->
-        Bs_syntaxerr.err loc Conflict_bs_bs_this_bs_meth
+      | ("bs" | "this"), _ -> Bs_syntaxerr.err loc Conflict_bs_bs_this_bs_meth
       | _, _ -> (st, attr :: acc))
 
 let process_bs (attrs : t) =
