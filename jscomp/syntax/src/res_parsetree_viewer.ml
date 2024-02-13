@@ -224,7 +224,8 @@ let filterParsingAttrs attrs =
             Location.txt =
               ( "bs" | "res.uapp" | "res.arity" | "res.braces" | "ns.braces"
               | "res.iflet" | "res.namedArgLoc" | "res.optional" | "res.ternary"
-              | "res.async" | "res.await" | "res.template" );
+              | "res.async" | "res.await" | "res.template"
+              | "res.taggedTemplate" );
           },
           _ ) ->
         false
