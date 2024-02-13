@@ -13,7 +13,7 @@
 # 11.1.0-rc.3 (Unreleased)
 
 #### :nail_care: Polish
-- No parens around tagged template literals.
+- No parens around tagged template literals. https://github.com/rescript-lang/rescript-compiler/pull/6639
 
 # 11.1.0-rc.2
 
