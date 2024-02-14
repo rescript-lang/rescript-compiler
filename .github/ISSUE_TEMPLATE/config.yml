@@ -4,14 +4,14 @@ contact_links:
     url: https://github.com/rescript-association/rescript-lang.org/issues
     about: Please report problems about the documentation page here.
   - name: rescript-vscode
-    url: https://github.com/rescript-lang/rescript-vscode
+    url: https://github.com/rescript-lang/rescript-vscode/issues
     about: VSCode language support, LSP, tools
   - name: create-rescript-app
-    url: https://github.com/rescript-lang/create-rescript-app
+    url: https://github.com/rescript-lang/create-rescript-app/issues
     about: ReScript's project generator
   - name: rescript-react
-    url: https://github.com/rescript-lang/rescript-react
+    url: https://github.com/rescript-lang/rescript-react/issues
     about: ReScript bindings to React.js
   - name: rescript-core
-    url: https://github.com/rescript-association/rescript-core
+    url: https://github.com/rescript-association/rescript-core/issues
     about: New ReScript standard library
