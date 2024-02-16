@@ -15,3 +15,6 @@ contact_links:
   - name: 🌐 rescript-core
     url: https://github.com/rescript-association/rescript-core/issues
     about: New ReScript standard library
+  - name: 💬 ReScript Forum
+    url: https://forum.rescript-lang.org/
+    about: For discussions about ReScript, please visit the official ReScript forum.
