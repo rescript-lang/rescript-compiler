@@ -11,3 +11,4 @@ _opam
 CHANGELOG.md
 README.md
 playground/
+.github/ISSUE_TEMPLATE/*.md
