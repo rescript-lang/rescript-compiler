@@ -6906,7 +6906,7 @@ module Printer = {
   and printJsFfiImport = (valueDescription: Parsetree.value_description, cmtTbl) => {
     let attrs = List.filter(attr =>
       switch attr {
-      | ({Location.txt: "bs.val" | "genType.import" | "scope"}, _) => false
+      | ({Location.txt: "val" | "genType.import" | "scope"}, _) => false
       | _ => true
       }
     , valueDescription.pval_attributes)
@@ -11881,7 +11881,7 @@ module JsFfi = {
   }
 
   let toParsetree = importDescr => {
-    let bsVal = (Location.mknoloc("bs.val"), Parsetree.PStr(list{}))
+    let bsVal = (Location.mknoloc("val"), Parsetree.PStr(list{}))
     let attrs = switch importDescr.jid_scope {
     | Global => list{bsVal}
     /* @genType.import("./MyMath"),

@@ -8,7 +8,7 @@ external on : process ->
   ] ->  unit Js.fn -> unit = "on" [@@send]
 
 
-external p : process = "process" [@@bs.val]
+external p : process = "process" [@@val]
 
 
 external on_hi : process -> 

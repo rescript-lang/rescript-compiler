@@ -176,6 +176,6 @@ let () = {
 }
 
 /* external again5 : ?x__ignore:([`a of unit -> int | `b of string -> int ] [@string]) */
-/* -> int -> unit = "" [@@bs.val] */
+/* -> int -> unit = "" [@@val] */
 
 /* let v = again5 3 */

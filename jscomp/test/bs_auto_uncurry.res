@@ -95,7 +95,7 @@ external ff :
     (unit -> unit [@uncurry]) -> 
     int = 
     ""
-[@@bs.val]
+[@@val]
 */
 
 /*

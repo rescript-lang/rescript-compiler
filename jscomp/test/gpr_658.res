@@ -1,4 +1,4 @@
-/* external obj : < hi : int  >   = "{hi:1}" [@@bs.val] */
+/* external obj : < hi : int  >   = "{hi:1}" [@@val] */
 
 @obj external mk: (~hi: int, unit) => {"hi": int} = ""
 

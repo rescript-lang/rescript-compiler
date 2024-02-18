@@ -211,7 +211,7 @@ if (typeof x === "undefined"){
 
 ```ocaml
 external of_char : char -> string = "String.fromCharCode"
-[@@bs.val]
+[@@val]
 ```
 
 We introduced `#` so that we can do some optimizations.

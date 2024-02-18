@@ -104,13 +104,12 @@ external log : 'a -> unit = "log"
 [@@val] [@@scope "console"]
 (** A convenience function to log everything *)
 
-external log2 : 'a -> 'b -> unit = "log" [@@bs.val] [@@scope "console"]
-external log3 : 'a -> 'b -> 'c -> unit = "log" [@@bs.val] [@@scope "console"]
-external log4 : 'a -> 'b -> 'c -> 'd -> unit = "log"
-[@@bs.val] [@@scope "console"]
+external log2 : 'a -> 'b -> unit = "log" [@@val] [@@scope "console"]
+external log3 : 'a -> 'b -> 'c -> unit = "log" [@@val] [@@scope "console"]
+external log4 : 'a -> 'b -> 'c -> 'd -> unit = "log" [@@val] [@@scope "console"]
 
 external logMany : 'a array -> unit = "log"
-[@@bs.val] [@@scope "console"] [@@variadic]
+[@@val] [@@scope "console"] [@@variadic]
 (** A convenience function to log more than 4 arguments *)
 
 external eqNull : 'a -> 'a null -> bool = "%bs_equal_null"

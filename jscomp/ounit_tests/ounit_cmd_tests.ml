@@ -64,7 +64,7 @@ let suites =
 
     __LOC__ >:: begin fun _ ->
       let should_be_warning =
-        bsc_check_eval  {| external mk : int -> ([`a|`b [@string]]) = "mk" [@@bs.val] |} in
+        bsc_check_eval  {| external mk : int -> ([`a|`b [@string]]) = "mk" [@@val] |} in
       OUnit.assert_bool __LOC__
         (Ext_string.contain_substring
            should_be_warning.stderr "Unused")
@@ -89,7 +89,7 @@ external ff :
       let should_err = bsc_check_eval {|
     external v3 :
     int -> int -> (int -> int -> int [@uncurry])
-    = "v3"[@@bs.val]
+    = "v3"[@@val]
 
     |} in
       (* Ounit_cmd_util.debug_output should_err;*)
@@ -102,7 +102,7 @@ external ff :
       let should_err = bsc_check_eval {|
     external v4 :
     (int -> int -> int [@uncurry]) = ""
-    [@@bs.val]
+    [@@val]
 
     |} in
       (* Ounit_cmd_util.debug_output should_err ; *)
@@ -120,14 +120,14 @@ external ff :
 
     __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
-      external mk : int -> ([`a|`b] [@string]) = "" [@@bs.val]
+      external mk : int -> ([`a|`b] [@string]) = "" [@@val]
       |} in
       OUnit.assert_bool __LOC__ (not @@ Ext_string.is_empty should_err.stderr)
     end;
 
     __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
-      external mk : int -> ([`a|`b] ) = "mk" [@@bs.val]
+      external mk : int -> ([`a|`b] ) = "mk" [@@val]
       |} in
       OUnit.assert_bool __LOC__ ( Ext_string.is_empty should_err.stderr)
       (* give a warning or ?
@@ -139,7 +139,7 @@ external ff :
     __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
       type t
-      external mk : int -> (_ [@as {json| { x : 3 } |json}]) ->  t = "mk" [@@bs.val]
+      external mk : int -> (_ [@as {json| { x : 3 } |json}]) ->  t = "mk" [@@val]
       |} in
       OUnit.assert_bool __LOC__ (Ext_string.is_empty should_err.stderr)
     end
@@ -147,7 +147,7 @@ external ff :
     __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
       type t
-      external mk : int -> (_ [@as {json| { "x" : 3 } |json}]) ->  t = "mk" [@@bs.val]
+      external mk : int -> (_ [@as {json| { "x" : 3 } |json}]) ->  t = "mk" [@@val]
       |} in
       OUnit.assert_bool __LOC__ (Ext_string.is_empty should_err.stderr)
     end
@@ -262,7 +262,7 @@ let rec y = A y;;
   (
     [`a|`b]
      [@string]
-  ) = "mk" [@@bs.val]
+  ) = "mk" [@@val]
     |} in
       (* Ounit_cmd_util.debug_output should_err ;  *)
       OUnit.assert_bool __LOC__

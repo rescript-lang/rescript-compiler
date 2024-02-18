@@ -258,7 +258,7 @@ let parse_external_attributes (no_arguments : bool) (prim_name_check : string)
       else
         let action () =
           match txt with
-          | "bs.val" | "val" ->
+          | "val" ->
             if no_arguments then
               {st with val_name = Some (name_from_payload_or_prim ~loc payload)}
             else
